@@ -1,0 +1,902 @@
+\input texinfo   @c -*-texinfo-*-
+@comment $Id: akfavatar-en.texinfo,v 2.1 2007-08-20 18:04:51 akf Exp $
+
+@comment %**start of header
+@setfilename akfavatar-en.info
+@settitle AKFAvatar Manual
+@afourpaper
+@comment %**end of header
+
+@include version.texi
+
+@documentlanguage en
+@documentencoding US-ASCII
+
+@dircategory Miscellaneous
+@direntry
+* AKFAvatar: (akfavatar-en).    A graphical avatar.
+@end direntry
+
+@copying
+This is the documentation for AKFAvatar
+(version @value{VERSION}, @value{UPDATED}).
+
+@quotation
+AKFAvatar is a fancy text-viewer, scripting language for making demos, 
+and a library for writing programs in C, C++ or Pascal.
+
+Homepage: @uref{http://akfoerster.de/akfavatar/}
+
+Copyright @copyright{} 2007 @uref{http://akfoerster.de/, Andreas K. Foerster}
+
+Copying and distribution of this documentation, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+@end quotation
+@end copying
+
+@titlepage
+@title AKFAvatar
+@subtitle a fancy text-viewer and much more
+@author Andreas K. Foerster
+
+@comment The following two commands start the copyright page.
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@c the table of contents
+@contents
+
+@ifnottex
+@node Top
+@top AKFAvatar
+
+@insertcopying
+@end ifnottex
+
+@menu
+* Overview::              Overview of AKFAvatar
+* Using avatarsay::       Using the tool @command{avatarsay}
+* Using gnome-akfavatar:: Using it under GNOME
+* Programming::           Programming with AKFAvatar
+* Concept Index::         Index of this documentation
+@end menu
+
+
+@node Overview
+@chapter Overview of AKFAvatar
+@cindex overview
+
+AKFAvatar is a graphical program and a library, where an avatar appears
+on the screen, and tells things to the user written in a balloon.  There
+can also be recorded audio files, so that the user even can hear, what
+it is saying.
+
+AKFAvatar can be used in several different ways.  I list them here from
+the most simple one to the most complicated for advanced users.
+
+@enumerate
+@item
+The most simple thing is to use he command @command{avatarsay} as a fancy 
+text-viewer, more or less like @command{more} or @command{less}.
+
+It is not suited for long, complicated texts, but rather for short and 
+funny stuff.
+
+@item 
+But the command @command{avatarsay} can do much more than that.  It can
+be used as a simple scripting language for making demos that you can
+show for example at an information booth or in a shop's window.  It can
+be used for making funny tutorials.
+
+Don't worry, it sounds more complicated, than it is.  I should rather
+say, you can spice up your texts with occasional commands.  Then you can
+set the executable bit on your@dots{} ``text'', and it is executable.
+
+@item
+The command @command{avatarsay} can also be called from other scripting
+languages and the scripting language can communicate with that program
+through @acronym{FIFO}s.
+
+
+@item  
+Then there is the library @code{libavatar}, which you can use from
+compiled languages.  Currently @w{Free Pascal}, @acronym{GNU}-Pascal,
+C++ and C are supported.  Especially the Pascal language is suited for
+beginners to learn how to program.  The library is simple to use, like writing
+command-line programs --- but it's much more fun!
+
+@end enumerate
+
+@page
+@section General usage
+@cindex keys
+
+A lot of AKFAvatar applications need no interaction with the user.  They
+are often demos that are meant to run without any interaction.  So it is
+not obvious how to interact with the  program.
+
+@cindex stopping (Esc key)
+When you have AKFAvatar running, you can press the key @key{Esc} at any
+time to stop the program.  When it runs in a window you can of course
+also use the close button of your window manager or any other means the
+window system offers for stopping a program.
+
+@cindex pausing (Pause key)
+The text is normally displayed in a quite slow pace.  Nevertheless it
+might sometimes be to fast.  If you want to have a closer look at the
+text, you can press the @key{Pause} key at any time.  (There might be a
+small delay in pausing the audio output.)  Press any other key to continue 
+again.
+
+@cindex flush (Space key)
+@cindex space key
+On the other hand sometimes it might be to slow for you.  Then you can
+use the @key{SPACE} bar.@footnote{The @key{SPACE} bar is the long bar at
+the bottom of the keyboard, with actually nothing but empty space printed 
+on it.}  This displays the whole page of text immediately.  The next page 
+starts in the normal pace again.  So you can press the @key{SPACE} bar 
+again and again.
+
+@cindex switching fullscreen/window
+@cindex toggle fullscreen/window
+@cindex fullscreen mode
+@cindex window mode
+On some systems you can use the @key{F11} key to toggle between the window
+mode and the fullscreen mode.  Alternatively you can also use the key 
+combimations @key{Alt}+@key{Enter} or @key{Crtl}+@key{Alt}+@key{F}.
+
+@cindex window usage
+When AKFAvatar runs in a window you can resize the window as you wish.  The
+content doesn't get resized, but it is centered on the window.  You cannot
+resize it beyond a minimal size, which is currently 640 to 480.  You can
+of course also maximize the window.  When you minimize the window the 
+program continues to print the text.  So you probably want to press the
+@key{Pause} key before you minimze the window.
+
+@node Using avatarsay
+@chapter Using the tool @command{avatarsay}
+@cindex avatarsay
+@cindex command line tool
+
+This chapter explains the various uses of the tool @command{avatarsay}.
+
+@menu
+* Text-viewer::                Using @command{avatarsay} as fancy text-viewer.
+* Make your text executable::  How to turn your text into a program
+* Different avatar image::     Using a different avatar image
+* Invoking avatarsay::         Command line interface
+* Commands for avatarsay::     Advanced features of @command{avatarsay}
+* Pipes::                      Pipes and @acronym{FIFO}s
+@end menu
+
+@node Text-viewer
+@section Using @command{avatarsay} as fancy text-viewer.
+@cindex text-viewer
+@cindex viewer
+@cindex reader
+
+The program @command{avatarsay} can be used as a fancy text-viewer.
+If you have a textfile, say @file{mytext}, then you can read it 
+with the command @samp{avatarsay mytext}.  Try it!  Now! @t{@w{;-)}}
+
+That is easy, isn't it?  Well, if your text file is not encoded in 
+@code{@acronym{ASCII}} or @code{UTF-8}, you might have trouble with 
+non-@code{@acronym{ASCII}} characters.  There are different encodings. 
+The most commonly used encodings are @code{ISO-8859-1} (also known as
+@code{Latin-1}) and  @code{UTF-8}.
+The program @code{avatarsay} defaults to @code{UTF-8}, because you can 
+encode almost any known language with that.  And I hope, in the future 
+anybody will switch to @code{UTF-8}.
+So if you have trouble with non-English characters, try to use the 
+parameter @option{--latin1} --- like this: @samp{avatarsay --latin1 
+mytext}.
+
+@cindex stripline
+@cindex tearline
+Now, you might notice that the page-breaks don't appear where you want
+them to appear.  You can structure your text by including a stripline.
+A stripline is a line like this: @samp{---------}.  The line must start
+at the very first column and there must be at least three successive
+hyphens (@code{U+002D}).  Of course you can use more than three ones.
+
+
+@node Make your text executable
+@section How to turn your text into a program
+@cindex executable text
+
+You don't always have to use the command @command{avatarsay} for viewing
+your texts.  You can turn your text itself into a command.  How that works
+depends on your system.
+
+@cindex #!
+On a @acronym{POSIX} compatible system, such as the @acronym{GNU} system
+you can put a special line at the beginning of your file. The line looks
+like this: @samp{#! /usr/local/avatarsay --utf-8}.  Of course you have
+to make sure that you use the correct pathname.  This has to be the very
+first line.  You can put one or more empty lines after this line ---
+they are ignored.  Then you have to set the executable bit of your
+text file.  That goes like this: @samp{chmod +x mytext}.  Then your text
+is executable.  It accepts almost all the options that 
+@command{avatarsay} accepts.
+
+On systems like Windows or ReactOS this line doesn't work --- but it doesn't
+harm either.  On those systems you have to use a different trick.  You could 
+rename your file such, that it has a special extension; for example 
+@file{.avt}.  Now you have to configure your system, that the file extension
+@file{.avt} gets associated with the program @file{avatarsay.exe}.  Then
+you can double-click on your ``text'' and it is executed.
+
+@node Different avatar image
+@section Using a different avatar image
+@cindex different avatar
+@cindex change the avatar
+@cindex exchange the avatar
+
+Up to now you have always seen the same avatar --- a gnu.
+Maybe you don't like gnus or what you want the avatar to say doesn't 
+fit the @acronym{GNU}-project. --- Well, that is just the default avatar. 
+You can exchange it.
+
+There are basically two different methods to exchange the avatar in 
+@command{avatarsay}:
+
+@enumerate
+
+@item
+You can change it globally for any use of @command{avatarsay}. 
+This can be done with an environment variable.
+
+@item
+Or you can change it on a text-by-text basis, using a command in the 
+text.
+
+@end enumerate
+
+Well, first you might want to try the environment variable.  That is simple.
+The variable is called @env{AVATARIMAGE}.  So with the @code{GNU bash} you 
+can set this variable like this: 
+@samp{export AVATARIMAGE=/home/user/akfavatar/human-peasant.bmp}. 
+Important: You should always use the full path!
+
+Using a command in @command{avatarsay} is explained in
+@ref{Commands for avatarsay}.
+
+Which file-formats AKFAvatar supports depends on which libraries you have 
+installed.  Uncompressed @code{BMP} images are always supported.
+
+@subsection Transparent avatar background
+@cindex transparency (avatar image)
+
+The avatar-image should have a transparent background of course.  Well,
+most image formats don't support transparency at all.  Therefore
+AKFAvatar has a trick.  If the avatar image has no transparency, then it
+looks up the first color in the image, that is the color in the upper
+left corner, and defines this color to be transparent.  So when you
+prepare an image as replacement for the avatar, make sure the upper left
+corner is ``empty'' and make sure to choose a background color, which
+doesn't appear in the part of the image which is meant to be visible. 
+Also make sure, that the background is ``flat'' with only one single
+color without any variations.  Because of this requirement the
+@abbr{JPEG} format is not appropriate, you cannot get a really flat
+background in that format.
+
+When you can use image formats which support transparency, then use it.
+AKFAvatar will not interfere with it then.  Note however that the trick
+explained above is always used when the image @emph{has} no
+transparency, independent from the question, whether the image format
+@emph{could} have transparency.
+
+@node Invoking avatarsay
+@section Invoking @command{avatarsay}
+
+The format for running @command{avatarsay} is:
+
+@example
+avatarsay [@var{options}] @var{textfile}(@var{s})
+@end example
+
+@noindent
+If @var{textfile} is @file{-} then the input is read from @file{stdin} 
+and the program doesn't loop.
+
+@need 800
+The program @command{avatarsay} supports the following options:
+
+@comment don't use @option here
+@table @code
+@item --help
+@itemx -h
+show a short summary about the invocation of @command{avatarsay}
+
+@item --version
+@itemx -v
+show the version of the command
+
+@item --window
+@itemx -w
+try to run the program in a window (default)
+
+@item --fullscreen
+@itemx -f
+try to run the program in fullscreen mode
+
+@item --fullfullscreen
+@itemx -F
+like @var{-f}, but use the current display size
+
+This option is also useful when there is only a fullscreen mode, but
+switching the screen resolution doesn't work; for example with the
+@code{VESA} framebuffer device of the kernel Linux
+
+This option is only supported with SDL version 1.2.10 or newer.
+
+@item --latin1
+@itemx -l
+the input data is encoded in Latin-1
+
+@item --utf-8
+@itemx --utf8
+@itemx -u8
+@itemx -u
+the input data is encoded in @code{UTF-8}
+
+@item --once
+@itemx -1
+run only once (don't loop)
+
+@item --raw
+@itemx -r
+output raw text (don't handle any commands or striplines)
+
+@item --ignoreeof
+@itemx -i
+ignore end of file conditions; use this when the input is not a file
+
+@item --saypipe @var{filename}
+@itemx -s @var{filename}
+create named pipe for @var{filename}
+
+@xref{Pipes}.
+
+@end table
+
+@node Commands for avatarsay
+@section Commands for @command{avatarsay}
+@cindex commands for avatarsay
+
+The program @command{avatarsay} understands a small set of commands.
+So you can spice up your ``executable texts'' even further.
+
+A line starting with a hash sign (@code{#}, @code{U+0023}) is a 
+@emph{comment}.  Those lines are simply ignored by the program.
+@strong{Attention:} unlike in other scripting languages there may
+even be no whitespace in front of the hash sign.
+
+You can structure your text by including a @emph{stripline}.
+A stripline is a line like this: @samp{---------}.  The line must start
+at the very first column and there must be at least three successive
+hypens (@code{U+002D}).  Of course you can use more than three ones.
+
+@need 1000
+A @emph{command} for @command{avatarsay} starts with a dot (@code{U+002E})
+in the very first position of a new line.
+
+@table @command
+
+@item .datadir @var{directory}
+with this command you can set the directory, where images and sound files are
+located
+
+The directory must end with a directory deliminator 
+(depending on the system either @file{/} or @file{\}).
+
+The data directory can also be set with the environment variable 
+@env{AVATARDATADIR}. The command has precedence over the environment
+variable.
+
+@item .avatarimage @var{imagefile}
+with this command you can use a different image for the avatar.
+
+@strong{Attention}: This command has to be used before the text starts
+
+The avatar image can also be set with the environment variable 
+@env{AVATARIMAGE}. The command has precedence over the environment
+variable.
+
+Which file-formats AKFAvatar supports depends on which libraries you have 
+installed.  Uncompressed @code{BMP} images are always supported.
+
+@item .encoding @var{encodingname}
+sets the encoding of the text; 
+such as @samp{ISO-8859-1} or @samp{UTF-8}
+
+@strong{Attention}: This command has to be used before the text starts
+(of course).  You may change the encoding inside of the text, if that makes
+sense to you.
+
+It depends on your systems @code{iconv} implementation, which encodings
+are supported.  On some systems you can get a list with the command 
+@code{iconv -l}.
+
+@item .backgroundcolor #@var{color-definition}
+set a different background color
+
+The @var{color-definition} has to be given as six hexadecimal characters;
+with two digits each for @code{red}, @code{green} and @code{blue}. 
+The default value is @samp{#CCCCCC}.
+
+@strong{Attention}: This command has to be used before the text starts
+
+@item .left-to-right
+@itemx .right-to-left
+changes the text direction; this is useful if you have text written in
+Hebrew or Yiddish (Arabic is not supported)
+
+You can only switch the text-direction on a line by line basis.  Different
+text directions inside of one line is not supported.
+
+@item .flip
+flip the page; the same effect as with a stripline
+
+@item .clear
+clears the text-area; unlike @command{.flip} it doesn't wait, but clears it 
+immediately
+
+@item .pause
+a longer pause; the avatar is shown without the balloon for some time
+
+@item .image @var{imagefile}
+shows an image for a while (without the avatar)
+
+The image is centered on the screen.  If the image is larger than the screen,
+the screen is centered on the image.
+
+You can use a stripline @emph{after} this command if you wish.  
+The stripline doesn't have any effect then.
+
+Which file-formats AKFAvatar supports depends on which libraries you have 
+installed.  Uncompressed @code{BMP} images are always supported.
+
+@item .audio @var{audiofile}
+plays an audio file
+
+The text continues to be shown, so you can play an audio file with the 
+recorded words of the following text.
+
+Currently only @code{WAV}-files with @code{PCM} or @code{ADPCM} encoding 
+are supported.
+
+@item .waitaudio
+wait until the audio output ends
+
+This can be used to synchronize the recorded and the written text to some
+extend.
+
+@item .effectpause
+short pause while the text stays visible
+
+If you want to make an effect-pause within a line, you can end the previous
+line with a backslash (@code{\}, @code{U+005C}), so the line-ending has no
+effect for the output.
+
+@item .back @var{number}
+delete the last @var{number} of characters
+
+The previous line has to be ended with a backslash (@code{\}, @code{U+005C}).
+You could use this command after an @command{.effectpause}-command for a 
+nice effect.
+
+@item .read
+reserved for later versions
+
+@item .end
+end of the text
+
+The avatar moves out. 
+
+Anything behind the @command{.end} command is ignored.
+
+@item .stop
+stops the output immediately
+
+The avatar is not moved out, but the text ends immediately.
+
+Anything behind the @command{.stop} command is ignored.
+
+@end table
+
+@node Pipes
+@section Pipes and @acronym{FIFO}s
+@cindex other commands, using avatarsay with
+
+@cindex pipes
+You don't always have to write static texts to use AKFAvatar.  You can use
+the command @command{avatarsay} also to show you the output of other commands.
+Therefore you can use a single hyphen (@option{-}, @code{U+002D}) as option.
+
+It is best to try these features in a window based environment, where you have
+one window for your command line and @command{avatarsay} opens up in a 
+separate window.
+
+So try this: @samp{@w{echo Hey pal, what's GNU? | avatarsay -}}.  The gnu 
+appears and says that words. Be careful with using the exclamation mark 
+though, some shells have problems with that.
+
+You can also see the output of any other command with
+@command{avatarsay}.  For example try this: @samp{@w{df | avatarsay -}}, or
+this: @samp{@w{dir | avatarsay -}}.  You could even read this manual this way:
+@samp{@w{makeinfo --plaintext akfavatar.texinfo | avatarsay -}}, 
+although that's probably a bit too long.
+
+@cindex FIFOs
+@cindex named pipe
+Using the command @command{echo} this way to let the avatar say something 
+might be fun, but it's not so funny when the window always opens and closes 
+and the avatar always moves in and out@enddots{}  This is what a @acronym{FIFO}
+is good for.  A @acronym{FIFO} is also called a @dfn{named pipe}, because it
+is a pipe with a name.  To use this the command @command{avatarsay} supports
+the option @option{--saypipe}.  This is only supported on 
+@acronym{POSIX}-compatible systems.  Use it like this:
+@samp{@w{avatarsay --saypipe avatar &}}.  Because of the @code{&} at the end 
+of the line you get back to the shell prompt immediately.  First you might 
+think that nothing happened.  But look into the current directory: there is a 
+new entry named @samp{avatar}.  This is the @dfn{named pipe}.  It is a 
+communication channel to the program.  Now enter this:
+@samp{@w{echo Hello, anybody there? > avatar}}.  Now the window opens, the 
+avatar moves in, says the text@dots{} and the window stays open.  Go back to 
+the window with the command line and let the avatar say something else@enddots{}
+That's funny, isn't it?  Of course you can use all the commands as described in
+@ref{Commands for avatarsay}.  For example @samp{@w{echo .clear > avatar}} clears
+the text-area, and then you can let it say something new; for example 
+@samp{@w{df > avatar}}. You can also display an image with the @command{.image} 
+command, or play a sound with the @command{.audio} command.
+
+You might sometimes notice delays. They are intentionally there, because it was
+not primarily meant to be used interactively.
+
+Now enough fun.  Let's stop it@enddots{}  Can you guess how?
+Well you could simply press the close button of the window, but that's boring.
+Why not use this: @samp{@w{echo .end > avatar}}. The avatar moves out of the
+window, the window closes, and also the @dfn{named pipe} is away.
+
+
+@node Using gnome-akfavatar
+@chapter Using it under @acronym{GNOME}
+@cindex GNOME
+
+This chapter explains the use of the tool @command{gnome-akfavatar}.
+It is mainly a frontend for the command @command{avatarsay} with some of
+its functionality presented in a menu.
+
+@menu
+* Requirements::        What you need to use @command{gnome-akfavatar}
+* Main-menu::           The main-menu of @command{gnome-akfavatar}
+@end menu
+
+@node Requirements
+@section What you need to use @command{gnome-akfavatar}.
+@cindex requirements for @command{gnome-akfavatar}
+
+The command @command{gnome-akfavatar} is a shell script, so it needs a bourne
+shell. It has been tested with @acronym{GNU} bash, but any 
+@acronym{POSIX}-compatible bourne shell should be sufficient.
+
+Then it needs the command @command{avatarsay}. It is searched in the 
+@code{PATH} and also in the current directory.
+
+For the visible interface it uses the program @command{zenity}. As text-editor
+it needs @command{gedit} and as help browser it uses @command{yelp}. These
+commands have to be in your @code{PATH}.
+
+Since the command @command{avatarsay} is also looked up in the current
+directory the package need not be installed. But the documentation has to be
+installed in order to view it from @command{gnome-akfavatar}.
+
+@node Main-menu
+@section The main-menu of @command{gnome-akfavatar}
+@cindex menu of @command{gnome-akfavatar}
+
+When you invoke the command @command{gnome-akfavatar} you will get a menu 
+from which you can choose what to do.
+
+@noindent
+You get the following menu-items:
+
+@table @code
+@item show a demo or textfile
+You get a file selection box and you can choose a text-file or a demo,
+which is then opened in @command{avatarsay}. A demo is a text-file, which uses
+commands for @command{avatarsay} (@pxref{Commands for avatarsay}).
+
+@item create or edit a demo
+can be used to create a new demo or edit an existing one. When you enter
+a filename which doesn't exist yet, the file is created with an 
+appropriate @code{#!}-line. If you chose a different avatar-image before
+invoking this item, a command @command{.avatarimage} is also included in this
+file. The executable bit will be set on the created file. Note: All this is
+just be done for @emph{new} files, not for files which already existed before.
+
+@item show a manpage
+you are prompted to enter the name of a manpage you want to view.
+If you want to see a manpage from a special section, you can enter the section
+number in front of the name separated by a space. For example @samp{6 intro}
+shows the intro manpage of section 6.
+
+@item show the output of a command
+shows the output of a command in @command{avatarsay}. This is only for commands
+which print something to the standard output or standard error channel. It is
+not for interactive commands or commands that use curses.
+
+@item change avatar image
+lets you select a different avatar image. @xref{Different avatar image}.
+This setting is only used for the current session unless you use the item
+@dfn{save settings}.
+
+@item fullscreen or window mode
+click on @code{Okay} to select the fullscreen-mode, or @code{Cancel} to
+select the window-mode.
+This setting is only used for the current session unless you use the item
+@dfn{save settings}.
+
+@item save settings
+saves the settings, that is the avatar image and whether to run in fullscreen
+or window mode. Note: these settings are just for @command{gnome-akfavatar};
+they have no influence when you call @command{avatarsay} directly or any other
+program using the AKFAvatar library.
+
+@item help for AKFAvatar
+shows this document in the help-browser of @acronym{GNOME}
+
+@item Exit
+exit the program. Note: you can also exit the program by clicking on 
+@code{Cancel} or the @code{close} button of the window or pressing the
+@key{Esc}-key.
+
+@end table
+
+
+@node Programming
+@chapter Programming with AKFAvatar
+@cindex programming
+
+If you want to learn how to program, learn Pascal!
+
+Unfortunately Pascal is not so widely spread. Pascal has a bad name for some
+people, while C has a good name. Well, I don't understand why. I have used both
+languages and in my opinion it should be quite the opposite.
+
+Before you ask: Yes, it would have been possible to write the whole thing in 
+Pascal. But as I said, C is more widely spread, and that has its consequences.
+Every modern system comes with a C compiler (except Windows of course) and 
+almost every other language can use libraries written in C.
+
+@menu
+* Pascal::           How to program the avatar in Pascal
+@end menu
+
+@node Pascal
+@section How to program the avatar in Pascal
+@cindex Pascal
+
+You can use the avatar for your Pascal programs.
+
+First of all the avatar library must already be installed on your system.
+You also need the file @file{avatar.pas}.  That file usually is not 
+automatically installed, because there is no standard directory for that.  
+But it is found, if it simply is in the current directory.
+
+Be careful @file{avatar.pas} should never be in the same directory with
+@file{avatar.c}, because both produce a file named @file{avatar.o}.
+
+
+@subsection Simple use cases
+
+In the source-package you will find the scripts @file{gpcavatar} and 
+@file{fpcavatar} in the subdirectory @file{pascal/}.
+If you have @acronym{GNU}-Pascal (@command{gpc}) just try this: 
+@samp{./gpcavatar example.pas} This should compile a program 
+@file{example}.
+
+You can compile any program, that just uses plain standard input/output
+like this.  There are no changes to the source-code necessary!
+Just make sure, the program doesn't use the @code{CRT} unit or any other
+non-standard output facilities.
+
+That is easy, isn't it?
+
+
+@subsection Installing
+
+Have a look into the scripts.  There are some variables you should adapt
+to your needs.  Copy the scripts into @file{/usr/local/bin}, so you can use
+them from anywhere.  Copy the file @file{avatar.pas} to where you want to
+have your personal units and make sure that directory is listed in the
+scripts.
+
+
+@subsection Advanced use
+@cindex unit (Pascal)
+@cindex uses (Pascal)
+
+To use more advanced features of the library, you of course have to make 
+changes to your program.  After the @code{program}-line add 
+@samp{uses avatar;}. Then you don't have to use the scripts anymore.
+
+You can use a different image for the avatar with the command
+@example
+@w{AvatarImageFile ('/usr/local/share/pixmaps/human-peasant.bmp');}
+@end example
+@noindent
+This is of course only an example.
+This command must be used before any input/output took place!
+
+You can define in your program which charset encoding you use.  If you
+have an old system based on the Latin-1 charset, use the command
+@code{@w{setEncoding ('ISO-8859-1');}}.  If you have to handle with different
+charsets at the same time, you can repeat this command whenever you
+want to change it.  Different charsets can be visible in the text-area at
+the same time.  (Internally a Unicode charset is used.)
+
+There are also characters for Hebrew or Yiddish texts.  To use them you
+have to change the text direction.  You can do this with the command
+@code{@w{setTextDirection (RightToLeft);}} and  
+@code{@w{setTextDirection (LeftToRight);}}. 
+Please make sure that you start a new line or page before or after using
+this command.  Mixing different text directions in one line is not
+supported.
+
+The input/output is done with the common Pascal commands (Read, ReadLn,
+Write, WriteLn, Page).  You can use the full Pascal formatting-syntax. 
+For example: @samp{@w{WriteLn ('Pi is ', Pi:0:8, ' and so on.');}}
+
+If you want to enforce a new page, use the command @command{page;}.  This is 
+in fact also a Standard-Pascal command, which is seldom used; so seldom,
+that it is even missing in Free Pascal.  But my unit defines it also for
+Free Pascal.  Normally the command @command{page;} is used to get a new page
+on a printer.
+
+You can also clear the text-area with the command @command{ClrScr;}. 
+Unlike @command{page;} the command @command{ClrScr;} doesn't wait, but
+clears the text-area immediately.  You can put the cursor in a deliberate
+position with the command @code{@w{GotoXY (x, y);}}.  You find out, where 
+the cursor is with the functions @command{WhereX} or @command{WhereY}.  
+The coordinates 1, 1 is in the upper left corner (independent from the text
+direction).  You can find the maximum positions with @code{ScreenSize.x} and
+@code{ScreenSize.y}.  All these names where chosen to get some compatiblity
+with the @code{CRT} unit.  Actually they don't handle the screen, but only the
+text-area!
+
+If you want to print warnings, error messages or debugging information to
+the text-terminal, use the file-descriptor @code{stderr}.@footnote{on 
+Windows or ReactOS systems these messages cannot be seen, due to
+limitations inherent in these systems.  Terefore the output is written
+into text-files named @file{stdout.txt} and @file{stderr.txt}.  If there
+was no output to these files, they are automatically deleted.}  For
+example: @samp{WriteLn (stderr, 'Error: ', AvatarGetError);} Well, the
+function @command{AvatarGetError} gets an error message from the library.
+
+The command @command{ShowAvatar;} shows only the avatar without the balloon.
+The commands @command{MoveAvatarIn;} or @command{MoveAvatarOut;} move the 
+avatar in or out.  The Command @code{@w{Delay (500);}} waits approximately 
+for 500 milliseconds.  If you prefer the scale in seconds use 
+@code{@w{Delay (seconds(0.5));}}.
+
+@page
+@subsection Pascal reference
+@cindex Pascal reference
+@cindex reference for Pascal
+
+The following text shows the @code{interface} of the Pascal unit
+@code{avatar.pas}:
+
+@verbatim
+
+{ length of an output line }
+{ input is one less }
+const LineLength = 80;
+
+{ The following two definitions are in fact more complicated
+  I made them simpler for clearity }
+{ Default encoding of the system }
+const DefaultEncoding = 'UTF-8';
+type LineString = String;
+
+type TextDirection = (LeftToRight, RightToLeft);
+
+{ The "Screen" is the textarea }
+{ The name is chosen for compatiblity with the CRT unit }
+{ This variable only set after the avatar is visible }
+var ScreenSize : record x, y: Integer end;
+
+
+{ load the Avatar image from a file }
+{ must be used before any output took place }
+procedure AvatarImageFile(FileName: string);
+
+{ set a different background color (default is grey) }
+{ must be used before any output took place }
+procedure setBackgroundColor (red, green, blue: byte);
+
+{ change the encoding }
+procedure setEncoding(const newEncoding: string);
+
+{ change text direction (for hebrew/yiddish texts) }
+{ you should start a new line before or after this command }
+procedure setTextDirection (direction: TextDirection);
+
+{ assign text-variable to the avatar }
+procedure AssignAvatar (var f: text);
+
+{ Restore Input/Output system }
+{ use this to output help or version information }
+procedure RestoreInOut;
+
+{$IfDef FPC}
+  { the page command is defined in the Pascal standard,
+    but missing in FreePascal }
+
+  { action: wait a while and then clear the textfield }
+
+  procedure page (var f: text);
+  procedure page;
+{$EndIf}
+
+{ wait for a key }
+procedure waitkey (const message: string);
+
+{ wait some time }
+{ compatible to CRT unit }
+procedure delay (milliseconds: Integer);
+
+{ example use: delay (seconds (2.5)); }
+function seconds (s: Real): Integer;
+
+{ clears the textfield (not the screen!) }
+{ the name was chosen for compatiblity to the CRT unit }
+procedure clrscr;
+
+{ shows the avatar without the balloon }
+procedure ShowAvatar;
+
+{ moves the avatar in or out }
+procedure MoveAvatarIn;
+procedure MoveAvatarOut;
+
+{ loads image
+  after that call delay or waitkey 
+  the supported image formats depend on your libraries
+  uncompressed BMP is always supported
+}
+function ShowImageFile(FileName: string): boolean;
+
+{ plays Audio File
+  currently only WAV files supported
+  encodings: PCM, MS-ADPCM, IMA-ADPCM }
+procedure PlayAudioFile(const FileName: string);
+
+{ wait until the end of the audio output }
+procedure WaitAudioEnd;
+
+{ stops audio output imediately }
+procedure StopAudio;
+
+{ handle coordinates (inside the balloon) }
+{ compatible to CRT unit }
+function WhereX: Integer;
+function WhereY: Integer;
+procedure GotoXY (x, y: Integer);
+
+{ get last error message }
+function AvatarGetError: ShortString;
+
+@end verbatim
+
+@node Concept Index
+@unnumbered Index
+
+@printindex cp
+
+@bye

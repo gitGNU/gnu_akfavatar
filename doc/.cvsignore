@@ -1,0 +1,10 @@
+akfavatar-??
+version.texi
+*.aux *.cp *.cps *.fn *.ky *.pg *.tp *.vr
+*.log *.toc
+akfavatar-??.info
+akfavatar-??.pdf
+akfavatar-??.ps
+akfavatar-??.dvi
+akfavatar-??.txt
+avatarsay.1

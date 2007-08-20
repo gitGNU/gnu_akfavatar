@@ -1,0 +1,14 @@
+You can convert the documentation into other formats.
+
+make info  - creates info pages
+make txt   - creates a plain text file
+make html  - creates HTML pages
+make dvi   - creates a dvi file
+make pdf   - creates a PDF file
+make       - makes all of the above
+
+To read the documentation with avatarsay, use a command like this:
+makeinfo --plaintext akfavatar.texinfo | avatarsay -
+
+The documentation on the homepage may be newer than the documentation
+in this package.

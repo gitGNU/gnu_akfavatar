@@ -1,0 +1,37 @@
+You can use the Avatar for your pascal programs
+
+First of all the avatar library must already be installed on your system.
+You also need the file "avatar.pas". That is not automatically installed,
+because there is no standard directory for that. But it is found, if it 
+simply is in the current directory.
+
+Be careful "avatar.pas" should never be in the same directory with
+"avatar.c", because both produce a file named "avatar.o".
+
+
+SIMPLE USE CASES
+
+In this directory you will find the scripts "gpcavatar" and "fpcavatar".
+If you have GNU-Pascal (gpc) just try this: "./gpcavatar example.pas"
+This should compile a program "example".
+
+You can compile any program, that just uses plain standard input/output
+like this. There are no changes to the source-code necessary!
+Just make sure, the program doesn't use the CRT unit or any other
+non-standard output facillities.
+
+That is easy, isn't it?
+
+
+INSTALLING
+
+Have a look into the scripts. There are some variables you should adapt
+to your needs. Copy the scripts into "/usr/local/bin", so you can use
+them from anywhere. Copy the file "avatar.pas" to where you want to
+have your personal units and make sure that directory is listed in the
+scripts.
+
+
+ADVANCED USE
+
+please look into the documentation...

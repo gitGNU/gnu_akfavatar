@@ -1,0 +1,15 @@
+#!/bin/sh
+# this file is in the Public Doman - AKFoerster
+
+GPC=gpc
+GPCFLAGS=""
+UNITPATH=~/units:/usr/local/lib/gpc/units
+
+# uncomment the following if your system is still Latin-1 based
+# otherwise UTF-8 is assumed
+#DEFINES="-DLATIN1"
+
+exec $GPC --executable-file-name $GPCFLAGS $DEFINES \
+          --automake --unit-path="$UNITPATH" --uses=avatar \
+          "$@"
+

@@ -1,0 +1,14 @@
+#!/bin/sh
+# this file is in the Public Doman - AKFoerster
+
+FPC=fpc
+FPCFLAGS=""
+UNITPATH=~/units:/usr/local/lib/fpc/units
+
+# uncomment the following if your system is still Latin-1 based
+# otherwise UTF-8 is assumed
+#DEFINES="-dLATIN1"
+
+
+exec $FPC $FPCFLAGS -Fu"$UNITPATH" $DEFINES -Faavatar "$@"
+
