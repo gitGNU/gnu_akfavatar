@@ -1,5 +1,5 @@
 #!/bin/sh
-# this file is in the Public Doman - AKFoerster
+# this file is in the Public Domain - AKFoerster
 
 GPC=gpc
 GPCFLAGS=""
