@@ -1,0 +1,12 @@
+config.status
+version.h
+Makefile
+avatarsay
+avatarsay-d
+example
+bdfread
+libavatar.so*
+avatar.lib
+*.lo
+a.out
+*.tar.gz

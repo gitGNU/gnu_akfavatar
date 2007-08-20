@@ -1,0 +1,214 @@
+#!/bin/sh
+
+#########################################################################
+# GNOME frontend for avatarsay using zenity, yelp, gedit
+# Copyright (c) 2007 Andreas K. Foerster <info@akfoerster.de>
+#
+# This file is part of AKFAvatar
+#
+# AKFAvatar is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# AKFAvatar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
+#########################################################################
+
+CONFIGFILE=~/.gnome-akfavatar
+
+# default mode
+MODE=--window
+
+# comment that out if you don't want to have the window centered
+SDL_VIDEO_CENTERED=1
+export SDL_VIDEO_CENTERED
+
+#########################################################################
+# functions
+
+run_avatarsay ()
+{
+  local MESSAGE
+
+  if [ "$1" = "-" -o -r "$1" ]
+  then
+    if MESSAGE=`$AVATARSAY $MODE "$1" 2>&1`
+    then
+      [ -n "$MESSAGE" ] && $ZENITY --warning --text="$MESSAGE"
+    else
+      $ZENITY --error --text="$MESSAGE"
+    fi
+  fi
+}
+
+show_demo ()
+{
+  local FILE
+
+  if FILE=`$ZENITY --file-selection \
+                --title="Which text to show with AKFAvatar?"`
+  then
+    run_avatarsay "$FILE"
+  fi
+}
+
+edit_demo ()
+{
+  local FILE MESSAGE
+  
+  if FILE=`$ZENITY --file-selection --save --title="file to edit"` \
+     && [ -n "$FILE" ]
+  then
+    if [ ! -e "$FILE" ]
+    then
+      {
+        echo "#!$AVATARSAY"
+        echo
+        [ -n "$AVATARIMAGE" ] && echo ".avatarimage $AVATARIMAGE"
+      } > "$FILE"
+      chmod a+x "$FILE"
+    fi
+    
+    gedit --encoding=UTF-8 "$FILE" && run_avatarsay "$FILE"
+  fi
+}
+
+show_command ()
+{
+  local COMMAND
+  
+  $ZENITY --warning \
+  --text="This is only for commands which only print text to\
+  standard output or standard error.\
+  You can not use interactive commands with this." || return
+
+  COMMAND=`$ZENITY --entry \
+         --text="The output of which command to show with AKFAvatar?"` \
+  && [ -n "$COMMAND" ] \
+  && type $COMMAND > /dev/null 2>&1 \
+  && $COMMAND 2>&1 | run_avatarsay -
+}
+
+show_manpage ()
+{
+  local MANPAGE
+  
+  if MANPAGE=`$ZENITY --entry \
+                 --text="Which manpage to show with AKFAvatar?"`
+  then
+    (
+    TERM=dumb
+    PAGER="$AVATARSAY $MODE --raw --latin1 -"
+    MANWIDTH=80
+    export PAGER MANWIDTH TERM
+
+    # execute the command
+    man -E latin1 $MANPAGE 2>/dev/null \
+      || $ZENITY --error --text="error showing manpage"
+    )
+  fi
+}
+
+choose_avatar_image ()
+{
+  AVATARIMAGE=`$ZENITY --file-selection \
+         --title "Which image to use as avatar? (cancel for default)"`
+  
+  if [ -n "$AVATARIMAGE" ]
+  then
+     export AVATARIMAGE 
+  else
+     unset AVATARIMAGE
+     $ZENITY --info --text="Using the default avatar image"
+  fi
+}
+
+choose_fullscreen ()
+{
+  if $ZENITY --question --text="Run the program in fullscreen mode?"
+  then MODE="--fullscreen" 
+  else MODE="--window" 
+  fi
+}
+
+save_settings ()
+{
+  {
+  echo "MODE=$MODE"
+  echo "AVATARIMAGE=$AVATARIMAGE"
+  } > $CONFIGFILE
+}
+
+#########################################################################
+# main program
+
+if [ -z "$DISPLAY" ]
+then
+  echo "must be started from the X-Window-System" 1>&2
+  exit 1
+fi
+
+# seacrch for zenity
+ZENITY=`command -v zenity`
+
+if [ -z "$ZENITY" ]
+then
+    echo "Command \"zenity\" not found" 1>&2
+    exit 1
+fi
+
+# search for avatarsay
+AVATARSAY=`command -v avatarsay`
+[ -z "$AVATARSAY" -a -x "./avatarsay" ] && AVATARSAY=`pwd`/avatarsay
+
+if [ -z "$AVATARSAY" ]
+then
+    $ZENITY --error --text "Command \"avatarsay\" not found"
+    exit 1
+fi
+
+# read configuration
+[ -r $CONFIGFILE ] && . $CONFIGFILE
+
+if [ -n "$AVATARIMAGE" ]
+then
+   export AVATARIMAGE 
+else
+   unset AVATARIMAGE
+fi
+
+# main menu
+while true
+do
+  MENU=`$ZENITY --list --title=AKFAvatar --width 300 --height 370 \
+       --column "key" --column "what to do" \
+     D "show a demo or textfile" \
+     E "create or edit a demo" \
+     M "show a manpage" \
+     C "show the output of a command" \
+     I "change avatar image" \
+     F "fullscreen or window mode" \
+     S "save settings" \
+     H "help for AKFAvatar" \
+     X "Exit"` \
+     || exit 0
+
+  case $MENU in
+    D) show_demo ;;
+    E) edit_demo ;;
+    M) show_manpage ;;
+    C) show_command ;;
+    I) choose_avatar_image ;;
+    F) choose_fullscreen ;;
+    S) save_settings ;;
+    H) yelp info:akfavatar-en & ;;
+    X) exit 0 ;;
+  esac
+
+done

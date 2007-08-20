@@ -1,0 +1,41 @@
+#!/bin/sh
+
+# This file is in the Public Domain - AKFoerster
+
+# use avatar as reader for manpages
+# probably needs the GNU variant of troff: groff
+
+# emphasized text is printed slower than normal text
+
+# You can set the Avatar-Image with the environment variable
+# AVATARIMAGE
+
+
+# check if ./avatarsay-s exists and is executable
+if [ -x "./avatarsay" ]
+then
+  AVATARSAY="$(pwd)/avatarsay"
+else
+  AVATARSAY="avatarsay"
+fi
+
+# split options for man and for avatarsay
+AVATAROPTS=""
+MANOPTS=""
+while [ $# -ne 0 ]
+do
+  case $1 in
+  -w | --window | \
+  -f | --fullscreen)	AVATAROPTS="$AVATAROPTS $1" ;;
+  *)			MANOPTS="$MANOPTS $1" ;;
+  esac
+  shift
+done
+
+TERM=dumb
+PAGER="$AVATARSAY $AVATAROPTS --raw --latin1 -"
+MANWIDTH=80
+export PAGER MANWIDTH TERM
+
+# execute the command
+exec man -E latin1 $MANOPTS

@@ -1,0 +1,225 @@
+2007-08-20  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.12 released
+	migration to Savannah
+	
+	* renamed documentation to akfavatar-en.texinfo
+
+        * akfavatar.xpm, regicon.c:
+	new icon
+
+	* avatar.h (avt_default): prototype added
+	avatarsay.c: prototype avt_default removed
+
+2007-08-18  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.11 released
+
+	* avatar.c (avt_say):
+	ignore a BOM and derived forms
+
+	* avatarsay.c (check_bom): new function
+	(processfile): use check_bom
+
+	* avatarsay.c (process_line_end, processfile):
+	support for \r\n as line ending
+
+	* avatarsay.c (main):
+	changed option list (SDL-hack needed for Windows)
+
+	* avatar.c (avt_toggle_fullscreen):
+	new method to toggle the fullscreen mode
+	(should also work on Windows?)
+
+	* avatarsay.c (iscommand, handle_backgoundcolor_command):
+	new command: .backgroundcolor
+
+2007-08-11  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.10 released
+
+	* avatar.c avatar.h (avt_set_background_color):
+	new function
+
+	* avatar.c [OLD_SDL] (_avt_iconv):
+	new function: imitates SDL_iconv () for old SDL versions
+
+	* avatar.c, avatar.h:
+	(avt_mb_encoding): new function
+	(avt_say_mb, avt_wait_key_mb, avt_ask_mb, avt_quit): adapted
+	avatarsay.c (set_encoding): new function
+	(main, iscommand): adapted
+
+	* avatar.c (avt_mb_encoding):
+        use macro ICONV_TARGET
+
+	* avatar.c (avt_ask_mb):
+	fix: string termination
+
+	* avatar.c (avt_drawchar):
+	try to fix font drawing again
+	
+	* configure, avatar.c:
+	support for "./configure --with-oldsdl"
+
+2007-08-06  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.9 released
+
+	* avatar.c (avt_wait), avatar-audio.c (avt_wait_audio_end):
+	only sleep for one process cycle
+
+	* avatar.c (avt_move_in, avt_move_out):
+	rewritten (no fixed framerate anymore)
+
+	* avatar.c (avt_analyze_event):
+	Left Alt + Return -> avt_toggle_fullscreen
+	Left Alt + Ctrl + F -> avt_toggle_fullscreen
+
+	* avatar.c (avt_toggle_fullscreen):
+	new function
+
+	* gnome-akfavatar (show_command):
+	show a warning
+
+	* gnome-akfavatar:
+	fix: exit code 0 when stopped with the cancel button
+	search for avatarsay in PATH before the current dir
+	reordered the main menu
+
+2007-07-29  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.8a released
+
+	* gnome-akfavatar:
+	improved main menu
+	save settings
+
+	* avtman, gnome-akfavatar (show_manpage):
+	use Latin1 encoding (workaround: man outputs broken UTF-8 code)
+
+2007-07-28  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.8 released
+
+	* avatar.c, avatar.h (avt_version, avt_copyright, avt_license):
+	new functions
+	
+	* gnome-akfavatar:
+	new script
+
+	* avatarsay.c (iscommand):
+	silently ignore .avatarimage command when it's too late
+
+	* avatarsay.c (checkenvironment):
+	errors while loading the AVATARIMAGE are considered fatal
+
+	* avatar.c (avt_initialize):
+	don't try to center the window
+	switch handling of not needed events off
+	support for alpha channel in avatar image
+	
+	* avatar.c (avt_drawbaloon):
+	cut balloonpointer if it's too large
+
+	* avatarsay.c (notice):
+	new function for unimportant notices
+
+	* avatar-default.c:
+	support for smaller image
+
+	* avatar.c, ucsfont4x6.c:
+	support for tiny font
+
+	* avatar.c (avt_drawchar):
+	fixed font interpretation
+
+2007-07-19  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.7 released
+
+	* avatarsay.c (help, showversion, warning, error):
+	use MessageBox under Windows
+
+	* avatar.c (avt_initialize, avt_resize):
+	screenflags as global variable
+
+2007-07-17  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.6 released
+	
+	* avatar.c (avt_set_colors):
+	new function (fixes wrong colors after resizing)
+
+2007-07-16  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.5 released
+
+	* avatar.pas:
+	GPC: link with pthread under GNU/Linux
+
+	* avatar.c (avt_import_image_data):
+	can use SDL_image
+
+	* avatar.c (load_SDL_image):
+	load function "IMG_Load_RW"
+
+	* avatar.c (avt_show_image_data):
+	new function
+	
+	* avatar.c, avatar.h (avt_show_image):
+	made static, removed from header
+
+2007-07-13  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.4 released
+
+        * avatarsay.c (processfile):
+	fixes bugs with ignore_eof
+
+	* avatarsay.c: eliminated some possible buffer-overflows
+
+	* avatarsay.c (iscommand, handle_image_command):
+	(handle_audio_command, handle_back_command, handle_read_command): 
+	check for all commands whether the avatar is initialized or not
+
+	* avatarsay.c (iscommand): support for ".encoding"
+
+	* configure: exports "srcdir"
+	creates "doc/version.texi"
+
+	* fsdemo-??, avtcharset:
+	run with ./avatarsay-s
+
+	* avatarsay.c (help, checkoptions):
+	support for -F, --fullfullscreen
+
+	* avatarsay.c (avt_analyze_event):
+	don't toggle fullscreenmode when FULLSCREENNOSWITCH is requested	
+
+        * avatarsay.c (avt_initialize, avt_analyze_event, avt_ask)
+	(avt_move_in, avt_move_out, avt_wait_key): 
+	support for resizing the window
+	(avt_resize): new function
+
+	* avatarsay.c (avt_initialize): 
+	renamed variable "mymode" to "screenflags"
+	avt_mode as global variable
+
+	* avatarsay.c (iscommand): support for "stripline"
+	changed: \f as first caracter - rest of line is ignored
+
+	* avatar.c (avt_initialize): don't even try to initialize the 
+	mouse with the fbcon driver
+
+	* Makefile.in (install) (install-strip): 
+	create directories if necessary
+
+	* avtman: uses "./avatarsay-s" when it exists
+
+	* Makefile.in: target uninstall,
+	make avatarsay-s as default
+
+2007-07-01  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.3 released
