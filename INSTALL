@@ -1,0 +1,114 @@
+AKFAvatar
+
+REQUIREMENTS
+
+Needed
+
+ * SDL-1.2.x (version 1.2.11 or higher recommended)
+     http://libsdl.org/download-1.2.php
+   You need the "Runtime Libraries" as well as the "Development Libraries"!
+
+   Of course SDL needs a graphical environment to run in.
+   For example the X-Window system or a Linux framebuffer-device...
+    
+ * An ANSI-C Compiler (gcc or others)
+     http://gcc.gnu.org/
+
+Recommended
+
+ * SDL_image
+     http://www.libsdl.org/projects/SDL_image/
+   There the Runtime Libraries are sufficient
+   SDL_image in turn needs other libraries:
+   libz, libpng, libjpeg, libtiff
+
+Without SDL_image you can only use uncompressed BMP images.
+SDL_image can be installed after the installation of this package.
+
+Optional
+
+  * GNU-Pascal or Free Pascal
+      http://www.gnu-pascal.de/
+      http://www.freepascal.org/
+
+
+INSTALLATION
+
+Compiling
+
+Run "./configure". If that succeeds run "make" to create the binaries. 
+There are two variants of avatarsay being compiled: 1. "avatarsay" has
+been statically linked with the avatar library. You can use this to
+test and play around with it before you install it. 2. "avatarsay-d"
+is dynamically linked and will only work, when the library is installed. 
+This is the variant that gets installed.
+
+
+Compiling - special cases
+
+To support old versions of SDL on a target machine, it might be 
+necessary to use the parameter "--with-oldsdl". Note that this is
+not needed if you just want to run the program on the same machine
+on which you compile it.
+
+If you want to use it on devices with a very small display, use the 
+parameter "--enable-qvga" with configure. It is then compiled for 
+displays with 320*240 Pixel. This feature is experimental.
+
+
+Testing
+
+The program "avatarsay" is a text reader and a simple scripting language.
+Try to view this text with that program: "./avatarsay INSTALL".
+
+You can stop avatarsay any time with the [Esc] key. On some systems you can 
+toggle between window and fullscreen mode using the key [F11]. Other usefull
+keys are the [Pause] key and the space key.
+
+There are some example scripts in the package. 
+Try to run "./fsdemo-en" or whatever language you prefer. Open fsdemo-en in 
+a texteditor to see how to write such scripts...
+
+The script "./avtcharset" shows which characters are available.
+
+You can also use it as a fancy manpage reader.
+Try "avtman man"...
+
+
+Installing
+
+First make sure "/usr/local/lib" is mentioned in the file
+"/etc/ld.so.conf"; either directly or indirectly. Also make sure
+that "/usr/local/bin" is in your "PATH" evironment variable.
+
+Now get root privileges and run "make install" to install it in 
+/usr/local. If you are low on disk space, you can instead use  
+"make install-strip". This installs binaries stripped from 
+debugging information.
+
+If you want to uninstall it later, you can use the command 
+"make uninstall".
+
+
+SPECIAL TARGETS
+
+With the command "make example" you can compile the program example.c.
+To run the program, the library has to be already installed.
+The file "example.c" is an example, which you can use to start your own
+programs.
+
+
+TROUBLESHOOTING
+
+ * Problem: the system can't find the library "libavatar.so"
+   Solution: first try to add /usr/local/lib or wherever you installed it 
+   to the environment variable LD_LIBRARY_PATH: 
+   "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib".
+   
+   As a more permanent solution make sure "/usr/local/lib" is directly or
+   indirectly included in the file "/etc/ld.so.conf". Then run the command
+   "ldconfig" with root privileges.
+ 
+ * Problem: some characters are not shown correctly with "avatarsay"
+   Solution: There are different character sets. Try to use the parameters
+   "--utf-8" or "--latin1".
