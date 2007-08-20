@@ -1,0 +1,7 @@
+*.exe
+libinfo.rc avtsayinfo.rc
+avatar.def
+avatar.dll
+avatar.lib
+libavatar.a
+version

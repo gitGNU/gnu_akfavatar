@@ -1,0 +1,3 @@
+/* windows ressource file for GNU windres */
+
+AppIcon ICON "akfavatar.ico"

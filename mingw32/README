@@ -1,0 +1,11 @@
+This Makefile has probably to be tweaked for your needs.
+I use it for a MinGW32 crosscompiler under GNU+Linux.
+
+When crosscompiling, please keep in mind, that you have to have the SDL
+installed for the *target* platform.
+
+It builds:
+  avatar.dll:        dynamic link library
+  libavatar.dll.a:   import library for avatar.dll
+  avatar.def:        definitions file for avatar.dll
+  libavatar.a:       static library
