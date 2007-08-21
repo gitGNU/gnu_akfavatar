@@ -172,7 +172,7 @@ dist: info txt man distclean
 	ln README INSTALL AUTHORS COPYING \
 	   avatar.c avatar.h avatar-audio.c avatar-audio.h avatar-default.c \
 	   balloonpointer.c circle.c regicon.c gnu-head.bmp gnu-head.c \
-	   ucsfont7x14.c avatarsay.c avtman example.c fsdemo-?? avtcharset \
+	   ucsfont7x14.c avatarsay.c avtman example.c fsdemo-?? \
 	   gnome-akfavatar bdfread.pas human-peasant.bmp \
 	   gnu-small.bmp gnu-small.c akfavatar.xpm \
 	   ucsfont4x6.c configure Makefile.in \
@@ -192,7 +192,7 @@ dist: info txt man distclean
 	mkdir akfavatar-$(VERSION).$(SUBVERSION)$(VARIANT)/mingw32
 	ln mingw32/akfavatar.ico mingw32/icon.rc \
 	   mingw32/Makefile mingw32/README \
-	   mingw32/avtcharset.bat mingw32/fsdemo-??.bat \
+	   mingw32/fsdemo-??.bat \
 	   akfavatar-$(VERSION).$(SUBVERSION)$(VARIANT)/mingw32/
 	
 	tar -cvf akfavatar-$(VERSION).$(SUBVERSION)$(VARIANT).tar \
@@ -203,7 +203,7 @@ dist: info txt man distclean
 dist-bin: avatarsay
 	strip avatarsay
 	mkdir avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT)
-	ln COPYING AUTHORS avatarsay avtman fsdemo-?? avtcharset \
+	ln COPYING AUTHORS avatarsay avtman fsdemo-?? \
 	   gnome-akfavatar human-peasant.bmp \
 	   avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT)/
 	tar -cvf avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT).bin.gnu-linux.x86.tar \

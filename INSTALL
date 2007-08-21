@@ -69,8 +69,6 @@ There are some example scripts in the package.
 Try to run "./fsdemo-en" or whatever language you prefer. Open fsdemo-en in 
 a texteditor to see how to write such scripts...
 
-The script "./avtcharset" shows which characters are available.
-
 You can also use it as a fancy manpage reader.
 Try "avtman man"...
 
