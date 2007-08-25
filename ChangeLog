@@ -1,3 +1,15 @@
+2007-08-25  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_new_line, avt_say, avt_ask):
+	a new line doesn't enforce a new page yet, only actually trying
+	to print something outside the area does
+	
+	* gpcavatar, fpcavatar:
+	define the symbol AKFAvatar
+	
+	* avatar.pas (initializeAvatar):
+	use "AKFAvatar" as title and icon name
+
 2007-08-20  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.12 released

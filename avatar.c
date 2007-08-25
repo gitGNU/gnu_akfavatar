@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.1 2007-08-20 17:55:15 akf Exp $ */
+/* $Id: avatar.c,v 2.2 2007-08-25 12:10:44 akf Exp $ */
 
 #include "avatar.h"
 #include "SDL.h"
@@ -757,8 +757,6 @@ avt_new_line (void)
   cursor.x = linestart;
   cursor.y += LINEHEIGHT;
 
-  if (cursor.y >= textfield.y + textfield.h - LINEHEIGHT)
-    avt_flip_page ();
   return _avt_STATUS;
 }
 
@@ -878,6 +876,12 @@ avt_say (const wchar_t * txt)
   if (textfield.x < 0)
     avt_drawballoon ();
 
+  /* if the cursor is beyond the end of the textarea,
+   * get a new page 
+   */
+  if (cursor.y >= textfield.y + textfield.h - LINEHEIGHT)
+    avt_flip_page ();
+
   while (*txt != 0)
     {
       switch (*txt)
@@ -899,7 +903,9 @@ avt_say (const wchar_t * txt)
 	  avt_backspace ();
 	  break;
 
-        /* ignore BOM */
+        /* ignore BOM here 
+         * must be handled outside of the library
+         */
 	case L'\xFEFF':
 	case L'\xFFFE':
 	  break;
@@ -1090,6 +1096,12 @@ avt_ask (wchar_t * s, const int size)
   /* no textfield? => draw balloon */
   if (textfield.x < 0)
     avt_drawballoon ();
+
+  /* if the cursor is beyond the end of the textarea,
+   * get a new page 
+   */
+  if (cursor.y >= textfield.y + textfield.h - LINEHEIGHT)
+    avt_flip_page ();
 
   /* maxlen is the rest of line minus one for the cursor */
   /* it is not changed when the window is resized */
