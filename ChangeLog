@@ -1,5 +1,8 @@
 2007-08-25  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatar.pas (Initialize):
+	don't close input/output (fixes problem under Windows)
+
 	* avatar.c (avt_new_line, avt_say, avt_ask):
 	a new line doesn't enforce a new page yet, only actually trying
 	to print something outside the area does

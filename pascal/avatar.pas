@@ -620,8 +620,8 @@ Initialization
   avt_mb_encoding(DefaultEncoding);
 
   { redirect i/o to Avatar }
-  Close (input);
-  Close (output);
+  { do they have to be closed? Problems under Windows then }
+  {Close (input);  Close (output);}
   AssignAvatar (input);
   AssignAvatar (output);
   Reset (input);
