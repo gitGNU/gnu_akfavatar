@@ -335,7 +335,7 @@ procedure initializeAvatar;
 begin
 if AvatarImage = NIL then AvatarImage := avt_default;
 
-if initialize('Avatar', 'Avatar', AvatarImage,
+if initialize('AKFAvatar', 'AKFAvatar', AvatarImage,
               ord(fullscreen)) < 0 
   then 
     begin
