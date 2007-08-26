@@ -22,10 +22,9 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.1 2007-08-20 17:55:15 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.2 2007-08-26 12:17:14 akf Exp $ */
 
-#include "avatar-audio.h"
-#include "avatar.h"
+#include "akfavatar.h"
 #include "SDL.h"
 #include "SDL_audio.h"
 

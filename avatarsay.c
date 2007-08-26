@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.1 2007-08-20 17:55:15 akf Exp $ */
+/* $Id: avatarsay.c,v 2.2 2007-08-26 12:17:15 akf Exp $ */
 
 /* TODO: stop as global variable */
 
@@ -27,8 +27,7 @@
 #endif
 
 #include "version.h"
-#include "avatar.h"
-#include "avatar-audio.h"
+#include "akfavatar.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

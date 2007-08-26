@@ -9,7 +9,7 @@
 #include <wchar.h>
 
 /* the avatar library: */
-#include "avatar.h"
+#include "akfavatar.h"
 
 
 void

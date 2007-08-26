@@ -1,4 +1,6 @@
-2007-08-25  Andreas K. Foerster  <info@akfoerster.de>
+2007-08-26  Andreas K. Foerster  <info@akfoerster.de>
+
+	* joined header files together to akfavatar.h
 
 	* renamed library to libakfavatar
 

@@ -17,7 +17,7 @@ INSTALL_DATA = $(INSTALL) -m 644
 
 all: libakfavatar.so libakfavatar.a avatarsay avatarsay-d
 
-avatar.o: avatar.c avatar.h version.h balloonpointer.c circle.c regicon.c ucsfont7x14.c
+avatar.o: avatar.c akfavatar.h version.h balloonpointer.c circle.c regicon.c ucsfont7x14.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) $(ICONV_TARGET) -c $<
 
 %.o: %.c
@@ -27,7 +27,7 @@ libakfavatar.a: avatar.o avatar-default.o avatar-audio.o
 	$(AR) rcu $@ avatar.o avatar-default.o avatar-audio.o
 	-$(RANLIB) $@
 
-avatar.lo: avatar.c avatar.h version.h balloonpointer.c circle.c regicon.c ucsfont7x14.c
+avatar.lo: avatar.c akfavatar.h version.h balloonpointer.c circle.c regicon.c ucsfont7x14.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) $(ICONV_TARGET) -c -fpic -o $@ $<
 
 %.lo: %.c
@@ -63,7 +63,7 @@ installdirs:
 	-[ -d $(DESTDIR)$(mandir)/man1 ] || $(INSTALL) -d $(DESTDIR)$(mandir)/man1
 
 install: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info install-man
-	$(INSTALL_DATA) avatar.h avatar-audio.h $(DESTDIR)$(includedir)
+	$(INSTALL_DATA) akfavatar.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) $(LIBNAME) $(DESTDIR)$(libdir)
 	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
 	-ln -sf $(LIBNAME) $(DESTDIR)$(libdir)/libakfavatar.so
@@ -73,7 +73,7 @@ install: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info ins
 	$(INSTALL_PROGRAM) gnome-akfavatar $(DESTDIR)$(bindir)
 
 install-strip: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info install-man
-	$(INSTALL_DATA) avatar.h avatar-audio.h $(DESTDIR)$(includedir)
+	$(INSTALL_DATA) akfavatar.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) -s $(LIBNAME) $(DESTDIR)$(libdir)
 	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
 	-ln -sf $(LIBNAME) $(DESTDIR)$(libdir)/libakfavatar.so
@@ -83,8 +83,7 @@ install-strip: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-in
 	$(INSTALL_PROGRAM) gnome-akfavatar $(DESTDIR)$(bindir)
 
 uninstall: uninstall-info uninstall-man
-	-rm -f $(includedir)/avatar.h
-	-rm -f $(includedir)/avatar-audio.h
+	-rm -f $(includedir)/akfavatar.h
 	-rm -f $(libdir)/$(LIBNAME)
 	-rm -f $(libdir)/$(SONAME)
 	-rm -f $(libdir)/libakfavatar.so
@@ -170,7 +169,7 @@ maintainerclean: distclean
 dist: info txt man distclean
 	mkdir akfavatar-$(VERSION).$(SUBVERSION)$(VARIANT)
 	ln README INSTALL AUTHORS COPYING \
-	   avatar.c avatar.h avatar-audio.c avatar-audio.h avatar-default.c \
+	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
 	   balloonpointer.c circle.c regicon.c gnu-head.bmp gnu-head.c \
 	   ucsfont7x14.c avatarsay.c avtman example.c fsdemo-?? \
 	   gnome-akfavatar bdfread.pas human-peasant.bmp \

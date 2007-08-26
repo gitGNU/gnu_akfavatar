@@ -83,7 +83,7 @@ avtsayinfo.o: avtsayinfo.rc akfavatar.ico
 libinfo.o: libinfo.rc
 	$(WINDRES) -o $@ -i $<
 
-avatar.o: ../avatar.c ../avatar.h ../ucsfont7x14.c
+avatar.o: ../avatar.c ../akfavatar.h ../ucsfont7x14.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) $(ICONV_TARGET) -c $<
 
 %.o: ../%.c
@@ -103,12 +103,12 @@ akfavatar.dll: avatar.o avatar-default.o avatar-audio.o libinfo.o
 		$(LDFLAGS) $(SDLLDFLAGS)
 
 install: akfavatar.dll libakfavatar.a
-	install -m 644 ../avatar.h ../avatar-audio.h $(includedir)
+	install -m 644 ../akfavatar.h $(includedir)
 	install -m 644 libakfavatar.a libakfavatar.dll.a $(libdir)
 	install -m 644 akfavatar.dll $(libdir)
 
 install-strip: akfavatar.dll libakfavatar.a
-	install -m 644 ../avatar.h ../avatar-audio.h $(includedir)
+	install -m 644 ../akfavatar.h $(includedir)
 	install -m 644 libakfavatar.a libakfavatar.dll.a $(libdir)
 	install -m 644 -s akfavatar.dll $(libdir)
 

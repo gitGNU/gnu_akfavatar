@@ -23,9 +23,9 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.2 2007-08-25 12:10:44 akf Exp $ */
+/* $Id: avatar.c,v 2.3 2007-08-26 12:17:14 akf Exp $ */
 
-#include "avatar.h"
+#include "akfavatar.h"
 #include "SDL.h"
 #include "version.h"
 

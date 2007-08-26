@@ -19,7 +19,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-default.c,v 2.1 2007-08-20 17:55:15 akf Exp $ */
+/* $Id: avatar-default.c,v 2.2 2007-08-26 12:17:14 akf Exp $ */
 
 #ifdef QVGA
 #  include "gnu-small.c"
@@ -27,7 +27,7 @@
 #  include "gnu-head.c"
 #endif
 
-#include "avatar.h"
+#include "akfavatar.h"
 
 avt_image_t *
 avt_default (void)

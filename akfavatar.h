@@ -23,10 +23,10 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.h,v 2.1 2007-08-20 17:55:15 akf Exp $ */
+/* $Id: akfavatar.h,v 2.1 2007-08-26 12:17:14 akf Exp $ */
 
-#ifndef _avatar_h
-#define _avatar_h
+#ifndef _akfavatar_h
+#define _akfavatar_h
 
 /* to get the systems definition of wchar_t */
 #include <stddef.h>
@@ -317,8 +317,36 @@ extern int avt_get_max_y (void);
 extern void avt_move_x (int x);
 extern void avt_move_y (int y);
 
+/***********************************************************************/
+/* audio stuff */
+
+/* must be called AFTER avt_initialize! */
+extern int avt_initialize_audio (void);
+
+/* should be called BEFORE avt_quit */
+extern void avt_quit_audio (void);
+
+/* 
+ * loads a wave file 
+ * supported: PCM, MS-ADPCM, IMA-ADPCM
+ */
+extern int avt_load_wave_file (const char *file);
+extern int avt_load_wave_data (void *data, int datasize);
+
+/* stops audio and frees the audio memory */
+extern void avt_free_wave (void);
+
+extern int avt_play_audio (void);
+
+extern int avt_wait_audio_end (void);
+
+/* stops audio, but leaves the file loaded */
+/* the next call to avt_play_audio will start from the beginning */
+extern void avt_stop_audio (void);
+
+
 #ifdef __cplusplus
 /* *INDENT-OFF* */
 }
-#endif				/* __cplusplus */
-#endif				/* _avatar_h */
+#endif /* __cplusplus */
+#endif /* _akfavatar_h */
