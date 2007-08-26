@@ -1,5 +1,7 @@
 2007-08-25  Andreas K. Foerster  <info@akfoerster.de>
 
+	* renamed library to libakfavatar
+
 	* avatar.pas (Initialize):
 	don't close input/output (fixes problem under Windows)
 
