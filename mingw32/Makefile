@@ -20,7 +20,7 @@ prefix = /usr/$(TARGET)
 libdir = $(prefix)/lib
 includedir = $(prefix)/include
 
-all: libavatar.a avatar.dll avatarsay.exe
+all: libakfavatar.a akfavatar.dll avatarsay.exe
 
 avtsayinfo.rc:
 	@echo "AppIcon ICON \"akfavatar.ico\"" > $@
@@ -90,35 +90,40 @@ avatar.o: ../avatar.c ../avatar.h ../ucsfont7x14.c
 	$(CC) -c $(CFLAGS) $(SDLCFLAGS) -o $@ $<
 
 # static library
-libavatar.a: avatar.o avatar-default.o avatar-audio.o
+libakfavatar.a: avatar.o avatar-default.o avatar-audio.o
 	$(AR) rcu $@ avatar.o avatar-default.o avatar-audio.o
 	$(RANLIB) $@
 
-avatar.dll: avatar.o avatar-default.o avatar-audio.o libinfo.o
-	$(CC) -shared -o avatar.dll avatar.o avatar-default.o avatar-audio.o \
+akfavatar.dll: avatar.o avatar-default.o avatar-audio.o libinfo.o
+	$(CC) -shared -o $@ avatar.o avatar-default.o avatar-audio.o \
 	        libinfo.o \
 		-Wl,-no-undefined,--enable-runtime-pseudo-reloc \
-		-Wl,--output-def,avatar.def,--out-implib,libavatar.dll.a \
+	        -Wl,--output-def,akfavatar.def \
+	        -Wl,--out-implib,libakfavatar.dll.a \
 		$(LDFLAGS) $(SDLLDFLAGS)
 
-install: avatar.dll libavatar.a
+install: akfavatar.dll libakfavatar.a
 	install -m 644 ../avatar.h ../avatar-audio.h $(includedir)
-	install -m 644 libavatar.a libavatar.dll.a $(libdir)
-	install -m 644 avatar.dll $(libdir)
+	install -m 644 libakfavatar.a libakfavatar.dll.a $(libdir)
+	install -m 644 akfavatar.dll $(libdir)
 
-install-strip: avatar.dll libavatar.a
+install-strip: akfavatar.dll libakfavatar.a
 	install -m 644 ../avatar.h ../avatar-audio.h $(includedir)
-	install -m 644 libavatar.a libavatar.dll.a $(libdir)
-	install -m 644 -s avatar.dll $(libdir)
+	install -m 644 libakfavatar.a libakfavatar.dll.a $(libdir)
+	install -m 644 -s akfavatar.dll $(libdir)
 
-example.exe: ../example.c avatar.dll icon.o
+example: example.exe
+
+example.exe: ../example.c akfavatar.dll icon.o
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ $< icon.o \
-		-L. -lavatar $(LDFLAGS) $(SDLLDFLAGS)
+			-L. -lakfavatar $(LDFLAGS) $(SDLLDFLAGS)
+
+avatarsay: avatarsay.exe
 
 # uses static lib
-avatarsay.exe: ../avatarsay.c libavatar.a avtsayinfo.o
+avatarsay.exe: ../avatarsay.c libakfavatar.a avtsayinfo.o
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ $< avtsayinfo.o \
-		-L. libavatar.a $(LDFLAGS) $(SDLLDFLAGS)
+		-L. libakfavatar.a $(LDFLAGS) $(SDLLDFLAGS)
 
 clean:
 	-rm -f *~ *.o 
@@ -126,10 +131,10 @@ clean:
 
 distclean: clean
 	-rm -f *.a *.so *.exe avatarsay-*.zip
-	-rm -f avatar.def avatar.dll avatar.lib
+	-rm -f akfavatar.def akfavatar.dll akfavatar.lib
 	-rm -f version
 
-dist-bin: avatar.dll avatarsay.exe
+dist-bin: avatarsay.exe
 	mkdir avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT)
 	cp avatarsay.exe ../fsdemo-?? ../avtcharset \
 	   avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT)/

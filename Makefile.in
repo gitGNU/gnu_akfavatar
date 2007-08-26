@@ -15,7 +15,7 @@ INSTALL_DATA = $(INSTALL) -m 644
 	html dvi pdf ps man install-html install-dvi install-pdf install-ps \
 	clean mostlyclean distclean maintainerclean dist
 
-all: libavatar.so libavatar.a avatarsay avatarsay-d
+all: libakfavatar.so libakfavatar.a avatarsay avatarsay-d
 
 avatar.o: avatar.c avatar.h version.h balloonpointer.c circle.c regicon.c ucsfont7x14.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) $(ICONV_TARGET) -c $<
@@ -23,7 +23,7 @@ avatar.o: avatar.c avatar.h version.h balloonpointer.c circle.c regicon.c ucsfon
 %.o: %.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ $<
 
-libavatar.a: avatar.o avatar-default.o avatar-audio.o
+libakfavatar.a: avatar.o avatar-default.o avatar-audio.o
 	$(AR) rcu $@ avatar.o avatar-default.o avatar-audio.o
 	-$(RANLIB) $@
 
@@ -33,25 +33,25 @@ avatar.lo: avatar.c avatar.h version.h balloonpointer.c circle.c regicon.c ucsfo
 %.lo: %.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -fpic -o $@ $<
 
-libavatar.so: avatar.lo avatar-default.lo avatar-audio.lo
+libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo
 	$(CC) -shared \
 	      -Wl,-soname,$(SONAME) -o $(LIBNAME) \
 	      avatar.lo avatar-default.lo avatar-audio.lo \
 	      $(LDFLAGS) $(SDLLDFLAGS)
 	ln -sf $(LIBNAME) $(SONAME)
-	ln -sf $(LIBNAME) libavatar.so
+	ln -sf $(LIBNAME) libakfavatar.so
 
-example: example.c libavatar.so
-	$(CC) $(CFLAGS) -o $@ $< -L. -lavatar $(LDFLAGS)
+example: example.c libakfavatar.so
+	$(CC) $(CFLAGS) -o $@ $< -L. -lakfavatar $(LDFLAGS)
 
 # avatarsay dynamically linked
 # only works, when the library is installed
-avatarsay-d: avatarsay.c libavatar.so
-	$(CC) $(CFLAGS) -o $@ $< -L. -lavatar $(LDFLAGS)
+avatarsay-d: avatarsay.c libakfavatar.so
+	$(CC) $(CFLAGS) -o $@ $< -L. -lakfavatar $(LDFLAGS)
 
-# avatarsay with statical libavatar.a
-avatarsay: avatarsay.c libavatar.a
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ $< libavatar.a \
+# avatarsay with statical libakfavatar.a
+avatarsay: avatarsay.c libakfavatar.a
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ $< libakfavatar.a \
 	  $(LDFLAGS) $(SDLLDFLAGS)
 
 installdirs:
@@ -62,21 +62,21 @@ installdirs:
 	-[ -d $(DESTDIR)$(mandir) ]     || $(INSTALL) -d $(DESTDIR)$(mandir)
 	-[ -d $(DESTDIR)$(mandir)/man1 ] || $(INSTALL) -d $(DESTDIR)$(mandir)/man1
 
-install: libavatar.so libavatar.a avatarsay-d installdirs install-info install-man
+install: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info install-man
 	$(INSTALL_DATA) avatar.h avatar-audio.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) $(LIBNAME) $(DESTDIR)$(libdir)
-	$(INSTALL_DATA) libavatar.a $(DESTDIR)$(libdir)
-	-ln -sf $(LIBNAME) $(DESTDIR)$(libdir)/libavatar.so
+	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
+	-ln -sf $(LIBNAME) $(DESTDIR)$(libdir)/libakfavatar.so
 	-$(LDCONFIG) $(libdir)
 	$(INSTALL_PROGRAM) avatarsay-d $(DESTDIR)$(bindir)/avatarsay
 	$(INSTALL_PROGRAM) avtman $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) gnome-akfavatar $(DESTDIR)$(bindir)
 
-install-strip: libavatar.so libavatar.a avatarsay-d installdirs install-info install-man
+install-strip: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info install-man
 	$(INSTALL_DATA) avatar.h avatar-audio.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) -s $(LIBNAME) $(DESTDIR)$(libdir)
-	$(INSTALL_DATA) libavatar.a $(DESTDIR)$(libdir)
-	-ln -sf $(LIBNAME) $(DESTDIR)$(libdir)/libavatar.so
+	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
+	-ln -sf $(LIBNAME) $(DESTDIR)$(libdir)/libakfavatar.so
 	-$(LDCONFIG) $(libdir)
 	$(INSTALL_PROGRAM) -s avatarsay-d $(DESTDIR)$(bindir)/avatarsay
 	$(INSTALL_PROGRAM) avtman $(DESTDIR)$(bindir)
@@ -87,8 +87,8 @@ uninstall: uninstall-info uninstall-man
 	-rm -f $(includedir)/avatar-audio.h
 	-rm -f $(libdir)/$(LIBNAME)
 	-rm -f $(libdir)/$(SONAME)
-	-rm -f $(libdir)/libavatar.so
-	-rm -f $(libdir)/libavatar.a
+	-rm -f $(libdir)/libakfavatar.so
+	-rm -f $(libdir)/libakfavatar.a
 	-rm -f $(bindir)/avatarsay
 	-rm -f $(bindir)/avtman
 	-rm -f $(bindir)/gnome-akfavatar

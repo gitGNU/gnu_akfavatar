@@ -1,7 +1,7 @@
 *.exe
 libinfo.rc avtsayinfo.rc
-avatar.def
-avatar.dll
-avatar.lib
-libavatar.a
+akfavatar.def
+akfavatar.dll
+akfavatar.lib
+libakfavatar.a
 version

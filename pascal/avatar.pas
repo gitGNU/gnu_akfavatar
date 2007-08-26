@@ -144,7 +144,7 @@ implementation
 {$IfDef FPC}
   uses DOS;
   {$IfNDef NoLink}
-    {$LinkLib avatar}
+    {$LinkLib akfavatar}
     {$LinkLib SDL}
     {$IfDef Linux} {$LinkLib pthread} {$EndIf}
   {$EndIf}
@@ -154,7 +154,7 @@ implementation
   uses GPC;
 
   {$IfNDef NoLink}
-    {$L avatar}
+    {$L akfavatar}
     {$L SDL}
     {$IfDef __linux__} {$L pthread} {$EndIf}
   {$EndIf}

@@ -5,8 +5,7 @@ avatarsay
 avatarsay-d
 example
 bdfread
-libavatar.so*
-avatar.lib
+libakfavatar.so*
 *.lo
 a.out
 *.tar.gz

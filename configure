@@ -6,20 +6,20 @@
 # This configure script is free software; you have unlimited permission
 # to copy, distribute and modify it.
 #
-# Date of this version: $Date: 2007-08-20 17:57:09 $
+# Date of this version: $Date: 2007-08-26 10:12:09 $
 
 
 # Version and name
 VERSION=0
 SUBVERSION=12
 VARIANT="-cvs"
-LIBNAME=libavatar.so.${VERSION}.${SUBVERSION}
-SONAME=libavatar.so.${VERSION}
+LIBNAME=libakfavatar.so.${VERSION}.${SUBVERSION}
+SONAME=libakfavatar.so.${VERSION}
 
 invocation_name=$0
 args=$*
 no_create=
-pkgname=avatar
+pkgname=akfavatar
 pkgversion=${VERSION}.${SUBVERSION}${VARIANT}
 srctrigger=avatar.h
 QVGA=

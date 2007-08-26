@@ -1,3 +1,5 @@
 *.gpi *.gpm *.ppu
-ppm2pas
+*.exe
 example
+multiply einmaleins
+teacher.bmp
