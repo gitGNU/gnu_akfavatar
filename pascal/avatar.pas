@@ -396,7 +396,7 @@ case Color of
   Cyan         : avt_set_text_color ($00, $88, $88);
   Red          : avt_set_text_color ($88, $00, $00);
   Magenta      : avt_set_text_color ($88, $00, $88);
-  Brown        : avt_set_text_color ($88, $88, $00);
+  Brown        : avt_set_text_color ($88, $44, $22);
   LightGray    : avt_set_text_color ($00, $00, $00); { black for compatiblity }
   DarkGray     : avt_set_text_color ($88, $88, $88);
   LightBlue    : avt_set_text_color ($00, $00, $FF);
@@ -693,12 +693,14 @@ Initialization
 
 Finalization
 
+  { avoid procedures which may call "Halt" again! }
+
   if initialized then
     if avt_get_status = 0 then 
       begin
-      { avoid procedures which may call "Halt" again! }
-      if avt_wait_key_mb('>>>') = 0 then 
-        avt_move_out
+      { wait for key, when balloon is visible }
+      if avt_where_x >= 0 then 
+        if avt_wait_key_mb('>>>') = 0 then avt_move_out
       end;
 
   Quit
