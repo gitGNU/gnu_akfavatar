@@ -51,7 +51,7 @@ const
   Red          = 4;
   Magenta      = 5;
   Brown        = 6;
-  LightGray    = 7;
+  LightGray    = 7; { black for compatiblity }
   DarkGray     = 8;
   LightBlue    = 9;
   LightGreen   = 10;
@@ -59,7 +59,7 @@ const
   LightRed     = 12;
   LightMagenta = 13;
   Yellow       = 14;
-  White        = 15;
+  White        = 15; { black, to avoid invisible text }
   Blink        = 128; { ignored }
 
 {$IfDef FPC}
@@ -397,14 +397,14 @@ case Color of
   Red          : avt_set_text_color ($88, $00, $00);
   Magenta      : avt_set_text_color ($88, $00, $88);
   Brown        : avt_set_text_color ($88, $88, $00);
-  LightGray    : avt_set_text_color ($88, $88, $88);
-  DarkGray     : avt_set_text_color ($33, $33, $33);
+  LightGray    : avt_set_text_color ($00, $00, $00); { black for compatiblity }
+  DarkGray     : avt_set_text_color ($88, $88, $88);
   LightBlue    : avt_set_text_color ($00, $00, $FF);
   LightGreen   : avt_set_text_color ($00, $FF, $00);
   LightCyan    : avt_set_text_color ($00, $FF, $FF);
   LightRed     : avt_set_text_color ($FF, $00, $00); 
   LightMagenta : avt_set_text_color ($FF, $00, $FF);
-  Yellow       : avt_set_text_color ($FF, $FF, $00);
+  Yellow       : avt_set_text_color ($E0, $E0, $00);
   White        : avt_set_text_color ($00, $00, $00)  { black: else invisible }
   end
 end;
