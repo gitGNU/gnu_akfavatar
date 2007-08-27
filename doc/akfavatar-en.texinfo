@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.1 2007-08-20 18:04:51 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.2 2007-08-27 08:12:18 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -802,6 +802,28 @@ const LineLength = 80;
   I made them simpler for clearity }
 { Default encoding of the system }
 const DefaultEncoding = 'UTF-8';
+
+{ Colors for TextColor }
+{ compatible to the CRT unit }
+const
+  Black        = 0;
+  Blue         = 1;
+  Green        = 2;
+  Cyan         = 3;
+  Red          = 4;
+  Magenta      = 5;
+  Brown        = 6;
+  LightGray    = 7;
+  DarkGray     = 8;
+  LightBlue    = 9;
+  LightGreen   = 10;
+  LightCyan    = 11;
+  LightRed     = 12;
+  LightMagenta = 13;
+  Yellow       = 14;
+  White        = 15;
+  Blink        = 128; { ignored }
+
 type LineString = String;
 
 type TextDirection = (LeftToRight, RightToLeft);
@@ -857,6 +879,11 @@ function seconds (s: Real): Integer;
 { clears the textfield (not the screen!) }
 { the name was chosen for compatiblity to the CRT unit }
 procedure clrscr;
+
+{ set the text color }
+{ compatible to CRT unit }
+procedure TextColor (Color: Byte);
+procedure NormVideo;
 
 { shows the avatar without the balloon }
 procedure ShowAvatar;

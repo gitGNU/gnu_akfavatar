@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.1 2007-08-26 12:17:14 akf Exp $ */
+/* $Id: akfavatar.h,v 2.2 2007-08-27 08:12:17 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -97,13 +97,13 @@ typedef void avt_image_t;
 /* base fnctions */
 
 /* which version */
-char *avt_version (void);
+extern char *avt_version (void);
 
 /* copyright information */
-char *avt_copyright (void);
+extern char *avt_copyright (void);
 
 /* license information */
-char *avt_license (void);
+extern char *avt_license (void);
 
 /* 0 = normal; 1 = quit-request; 2 = error */
 extern int avt_get_status (void);
@@ -162,8 +162,13 @@ extern avt_image_t *avt_make_transparent (avt_image_t * image);
  * values in the range 0x00 .. 0xFF
  * must be called before avt_initialize 
  */
-void
-avt_set_background_color (int red, int green, int blue);
+extern void avt_set_background_color (int red, int green, int blue);
+
+/*
+ * change the text color
+ * values in the range 0x00 .. 0xFF
+ */
+extern void avt_set_text_color (int red, int green, int blue);
 
 /* 
  * initialize the avatar system
@@ -259,7 +264,7 @@ extern int avt_show_image_file (const char *file);
  * if SDL_image isn't available then uncompressed BMP is still supported
  * after that call avt_wait or avt_waitkey
  */
-int avt_show_image_data (void *img, int imgsize);
+extern int avt_show_image_data (void *img, int imgsize);
 
 /*
  * show gimp image

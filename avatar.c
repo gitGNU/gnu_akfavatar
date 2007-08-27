@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.3 2007-08-26 12:17:14 akf Exp $ */
+/* $Id: avatar.c,v 2.4 2007-08-27 08:12:18 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -150,8 +150,9 @@ static int textdir_rtl = LEFT_TO_RIGHT;
 static int linestart;
 static int balloonheight;
 
-/* backgroundcolor independent from the screen mode */
+/* colors independent from the screen mode */
 static SDL_Color backgroundcolor_RGB = { 0xCC, 0xCC, 0xCC, 0 };
+static SDL_Color textcolor_RGB = { 0, 0, 0, 0 };
 
 /* conversion descriptors for text input and output */
 static SDL_iconv_t output_cd = ICONV_UNINITIALIZED;
@@ -331,8 +332,9 @@ avt_strwidth (const wchar_t * m)
 static void
 avt_set_colors (void)
 {
-  textcolor = SDL_MapRGB (screen->format, 0x00, 0x00, 0x00);
   ballooncolor = SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF);
+  textcolor = SDL_MapRGB (screen->format, textcolor_RGB.r,
+			  textcolor_RGB.g, textcolor_RGB.b);
   backgroundcolor = SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
 				backgroundcolor_RGB.g, backgroundcolor_RGB.b);
 }
@@ -903,9 +905,9 @@ avt_say (const wchar_t * txt)
 	  avt_backspace ();
 	  break;
 
-        /* ignore BOM here 
-         * must be handled outside of the library
-         */
+	  /* ignore BOM here 
+	   * must be handled outside of the library
+	   */
 	case L'\xFEFF':
 	case L'\xFFFE':
 	  break;
@@ -915,7 +917,7 @@ avt_say (const wchar_t * txt)
 	  break;
 #endif
 
-        /* LRM/RLM: only supported at the beginning of a line */
+	  /* LRM/RLM: only supported at the beginning of a line */
 	case L'\x200E':	/* LEFT-TO-RIGHT MARK (LRM) */
 	  avt_text_direction (LEFT_TO_RIGHT);
 	  break;
@@ -1755,6 +1757,17 @@ avt_set_background_color (int red, int green, int blue)
   backgroundcolor_RGB.r = red;
   backgroundcolor_RGB.g = green;
   backgroundcolor_RGB.b = blue;
+}
+
+void
+avt_set_text_color (int red, int green, int blue)
+{
+  textcolor_RGB.r = red;
+  textcolor_RGB.g = green;
+  textcolor_RGB.b = blue;
+
+  textcolor = SDL_MapRGB (screen->format, textcolor_RGB.r,
+			  textcolor_RGB.g, textcolor_RGB.b);
 }
 
 char *
