@@ -20,6 +20,18 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  *}
 
+{ 
+CRT compatiblity
+
+supported: 
+ClrScr, GotoXY, WhereX, WhereY, Delay, TextColor, TextBackground, NormVideo,
+NoSound, AssignCrt, ScreenSize
+
+not supported (yet): 
+ClrEol, DelLine, InsLine, HighVideo, LowVideo, ReadKey, KeyPressed, 
+Window, Sound, TextMode
+}
+
 {$IfDef FPC}
   {$LongStrings on}
 {$EndIf}
@@ -96,6 +108,9 @@ procedure setTextDirection (direction: TextDirection);
 { assign text-variable to the avatar }
 procedure AssignAvatar (var f: text);
 
+{ the same for CRT compatiblity }
+procedure AssignCrt (var f: text);
+
 { Restore Input/Output system }
 { use this to output help or version information }
 procedure RestoreInOut;
@@ -160,6 +175,9 @@ procedure WaitAudioEnd;
 
 { stops audio output imediately }
 procedure StopAudio;
+
+{ the same for CRT compatiblity }
+procedure NoSound;
 
 { handle coordinates (inside the balloon) }
 { compatible to CRT unit }
@@ -559,6 +577,11 @@ begin
 avt_stop_audio
 end;
 
+procedure NoSound;
+begin
+avt_stop_audio
+end;
+
 {$IfDef FPC}
 
   procedure page (var f: text);
@@ -575,6 +598,11 @@ end;
 
 { ---------------------------------------------------------------------}
 { Input/output handling }
+
+procedure AssignCrt (var f: text);
+begin
+AssignAvatar(f)
+end;
 
 {$IfDef FPC}
 
