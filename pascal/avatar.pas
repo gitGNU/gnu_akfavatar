@@ -41,7 +41,7 @@ const LineLength = 80;
   const DefaultEncoding = 'UTF-8';
 {$EndIf}
 
-{ Colors for TextColor/TextBackgound }
+{ Colors for TextColor/TextBackground }
 { compatible to the CRT unit }
 const
   Black        = 0;
@@ -127,7 +127,13 @@ procedure clrscr;
 { set the text color }
 { compatible to CRT unit }
 procedure TextColor (Color: Byte);
+
+{ set the text background color }
+{ compatible to CRT unit, but light colors can be used }
 procedure TextBackground (Color: Byte);
+
+{ set black on white text colors }
+{ name compatible to CRT unit, but the colors differ }
 procedure NormVideo;
 
 { shows the avatar without the balloon }
