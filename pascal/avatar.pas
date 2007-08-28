@@ -444,6 +444,7 @@ if ScreenSize.x-1 >= $FF
   then WindMax := WindMax or $FF
   else WindMax := WindMax or (ScreenSize.x-1);
 
+NormVideo;
 avt_move_in
 end;
 
@@ -806,6 +807,7 @@ Initialization
   ScreenSize.y := -1;
   WindMin := $0000;
   WindMax := $0000;
+  TextAttr := $F0;
 
   checkParameters;
 
