@@ -14,6 +14,12 @@
 	(avt_set_text_color, avt_set_text_background_color):
 	new functions
 
+	* avatar.pas:
+	(PlaySoundFile): renamed from PlayAudioFile
+	(WaitSoundEnd): renamed from WaitAudioEnd
+	(NoSound): renamed from StopAudio
+	(Sound): added as dummy function, full support planned
+
 	* avatar.pas (TextColor, TextBackground, ClrEol):
 	(NormVideo, HighVideo, LowVideo):
 	new functions

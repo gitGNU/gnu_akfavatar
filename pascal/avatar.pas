@@ -27,8 +27,16 @@ supported:
 ClrScr, ClrEol, GotoXY, WhereX, WhereY, Delay, TextColor, TextBackground,
 NormVideo, HighVideo, LowVideo, NoSound, AssignCrt, ScreenSize
 
-not supported (yet): 
-DelLine, InsLine, ReadKey, KeyPressed, Window, Sound, TextMode
+not supported yet, but planned: 
+DelLine, InsLine, ReadKey, KeyPressed, Window, Sound
+
+no support planned for:
+- TextMode, LastMode, CheckBreak, CheckEof, CheckSnow, DirectVideo:
+    remove that code, or use IfDef
+- writing to WindMin, WindMax:
+    use Window, when it is supported
+- writing to TextAttr: 
+    use TextColor/TextBackground instead
 }
 
 {$IfDef FPC}
@@ -191,15 +199,15 @@ function ShowImageFile(FileName: string): boolean;
 { plays Audio File
   currently only WAV files supported
   encodings: PCM, MS-ADPCM, IMA-ADPCM }
-procedure PlayAudioFile(const FileName: string);
+procedure PlaySoundFile(const FileName: string);
 
 { wait until the end of the audio output }
-procedure WaitAudioEnd;
+procedure WaitSoundEnd;
 
-{ stops audio output imediately }
-procedure StopAudio;
+{ dummy function, full support planned }
+procedure Sound(frequency: Integer);
 
-{ the same for CRT compatiblity }
+{ stop sound output }
 procedure NoSound;
 
 { handle coordinates (inside the balloon) }
@@ -620,7 +628,7 @@ if avt_initialize_audio<>0 then Halt;
 audioinitialized := true
 end;
 
-procedure PlayAudioFile(const FileName: string);
+procedure PlaySoundFile(const FileName: string);
 var status: Integer;
 begin
 if not audioinitialized then InitializeAudio;
@@ -630,15 +638,14 @@ if status = 0 then
   if avt_play_audio<>0 then Halt
 end;
 
-procedure WaitAudioEnd;
+procedure WaitSoundEnd;
 begin
 if avt_wait_audio_end<>0 then Halt
 end;
 
-procedure StopAudio;
-begin
-avt_stop_audio
-end;
+{ dummy function, full support planned }
+procedure Sound(frequency: Integer);
+begin end;
 
 procedure NoSound;
 begin
