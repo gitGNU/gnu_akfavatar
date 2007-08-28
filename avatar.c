@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.5 2007-08-28 06:03:41 akf Exp $ */
+/* $Id: avatar.c,v 2.6 2007-08-28 09:28:38 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -737,6 +737,39 @@ avt_clear (void)
   cursor.x = linestart;
   cursor.y = textfield.y;
   dodelay = 1;
+}
+
+void
+avt_clear_eol (void)
+{
+  SDL_Color color;
+  SDL_Rect dst;
+  
+  /* if there's no balloon, draw it */
+  if (textfield.x < 0)
+    avt_drawballoon ();
+
+  /* use background color of characters */
+  color = avt_character->format->palette->colors[0];
+
+  if (textdir_rtl) /* right to left */
+    {
+      dst.x = textfield.x;
+      dst.y = cursor.y;
+      dst.h = FONTHEIGHT;
+      dst.w = cursor.x + FONTWIDTH - textfield.x;
+    }
+  else  /* left to right */
+    {
+      dst.x = cursor.x;
+      dst.y = cursor.y;
+      dst.h = FONTHEIGHT;
+      dst.w = textfield.w - (cursor.x - textfield.x);
+    }
+
+  SDL_FillRect (screen, &dst,
+		SDL_MapRGB (screen->format, color.r, color.g, color.b));
+  SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
 }
 
 int

@@ -7,11 +7,14 @@
 	* akfavatar.h, avatar.c (avt_clear_screen):
 	new function
 
+	* akfavatar.h, avatar.c (avt_clear_eol):
+	new function
+
 	* akfavatar.h, avatar.c 
 	(avt_set_text_color, avt_set_text_background_color):
 	new functions
 
-	* avatar.pas (TextColor, TextBackground):
+	* avatar.pas (TextColor, TextBackground, ClrEol):
 	new functions
 
 	* avatar.c (avt_wait_key):

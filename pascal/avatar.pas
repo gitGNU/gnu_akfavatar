@@ -24,11 +24,11 @@
 CRT compatiblity
 
 supported: 
-ClrScr, GotoXY, WhereX, WhereY, Delay, TextColor, TextBackground, NormVideo,
-NoSound, AssignCrt, ScreenSize
+ClrScr, ClrEol, GotoXY, WhereX, WhereY, Delay, TextColor, TextBackground,
+NormVideo, NoSound, AssignCrt, ScreenSize
 
 not supported (yet): 
-ClrEol, DelLine, InsLine, HighVideo, LowVideo, ReadKey, KeyPressed, 
+DelLine, InsLine, HighVideo, LowVideo, ReadKey, KeyPressed, 
 Window, Sound, TextMode
 }
 
@@ -137,7 +137,11 @@ function seconds (s: Real): Integer;
 
 { clears the textfield (not the screen!) }
 { the name was chosen for compatiblity to the CRT unit }
-procedure clrscr;
+procedure ClrScr;
+
+{ clears rest of the line }
+{ compatible to CRT unit }
+procedure ClrEol;
 
 { set the text color }
 { compatible to CRT unit }
@@ -251,6 +255,9 @@ function avt_say_mb(t: CString): CInteger;
 
 procedure avt_clear; 
   cdecl; external name 'avt_clear';
+
+procedure avt_clear_eol;
+  cdecl; external name 'avt_clear_eol';
 
 function avt_mb_encoding (encoding: CString): CInteger;
   cdecl; external name 'avt_mb_encoding';
@@ -495,10 +502,16 @@ if not initialized then initializeAvatar;
 avt_show_avatar
 end;
 
-procedure clrscr;
+procedure ClrScr;
 begin
 if not initialized then initializeAvatar;
 avt_clear
+end;
+
+procedure ClrEol;
+begin
+if not initialized then initializeAvatar;
+avt_clear_eol
 end;
 
 function ShowImageFile (FileName: string): boolean;

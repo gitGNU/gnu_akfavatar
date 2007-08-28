@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.3 2007-08-28 06:03:41 akf Exp $ */
+/* $Id: akfavatar.h,v 2.4 2007-08-28 09:28:38 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -290,6 +290,12 @@ extern int avt_move_out (void);
  * if there is no balloon yet, it is drawn
  */
 extern void avt_clear (void);
+
+/* 
+ * clear end of line
+ * depending on text direction
+ */
+extern void avt_clear_eol (void);
 
 /* forward one character position
  * ie. print a space
