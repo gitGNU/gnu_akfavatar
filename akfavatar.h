@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.2 2007-08-27 08:12:17 akf Exp $ */
+/* $Id: akfavatar.h,v 2.3 2007-08-28 06:03:41 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -169,6 +169,7 @@ extern void avt_set_background_color (int red, int green, int blue);
  * values in the range 0x00 .. 0xFF
  */
 extern void avt_set_text_color (int red, int green, int blue);
+extern void avt_set_text_background_color (int red, int green, int blue);
 
 /* 
  * initialize the avatar system
@@ -248,6 +249,9 @@ extern int avt_wait_key_mb (char *message);
 
 
 /* functions for extended use */
+
+/* show an empty screen with the background color */
+extern void avt_clear_screen (void);
 
 /* show just the avatar without the balloon */
 extern void avt_show_avatar (void);

@@ -41,7 +41,7 @@ const LineLength = 80;
   const DefaultEncoding = 'UTF-8';
 {$EndIf}
 
-{ Colors for TextColor }
+{ Colors for TextColor/TextBackgound }
 { compatible to the CRT unit }
 const
   Black        = 0;
@@ -51,7 +51,7 @@ const
   Red          = 4;
   Magenta      = 5;
   Brown        = 6;
-  LightGray    = 7; { black for compatiblity }
+  LightGray    = 7;
   DarkGray     = 8;
   LightBlue    = 9;
   LightGreen   = 10;
@@ -59,7 +59,7 @@ const
   LightRed     = 12;
   LightMagenta = 13;
   Yellow       = 14;
-  White        = 15; { black, to avoid invisible text }
+  White        = 15;
   Blink        = 128; { ignored }
 
 {$IfDef FPC}
@@ -127,6 +127,7 @@ procedure clrscr;
 { set the text color }
 { compatible to CRT unit }
 procedure TextColor (Color: Byte);
+procedure TextBackground (Color: Byte);
 procedure NormVideo;
 
 { shows the avatar without the balloon }
@@ -263,6 +264,9 @@ procedure avt_set_background_color (red, green, blue: CInteger);
 procedure avt_set_text_color (red, green, blue: CInteger);
   cdecl; external name 'avt_set_text_color';
 
+procedure avt_set_text_background_color (red, green, blue: CInteger);
+  cdecl; external name 'avt_set_text_background_color';
+
 function initialize(title, icon: CString;
                      image: PAvatarImage;
                      mode: CInteger): CInteger;
@@ -397,22 +401,50 @@ case Color of
   Red          : avt_set_text_color ($88, $00, $00);
   Magenta      : avt_set_text_color ($88, $00, $88);
   Brown        : avt_set_text_color ($88, $44, $22);
-  LightGray    : avt_set_text_color ($00, $00, $00); { black for compatiblity }
-  DarkGray     : avt_set_text_color ($88, $88, $88);
+  LightGray    : avt_set_text_color ($88, $88, $88);
+  DarkGray     : avt_set_text_color ($44, $44, $44);
   LightBlue    : avt_set_text_color ($00, $00, $FF);
   LightGreen   : avt_set_text_color ($00, $FF, $00);
   LightCyan    : avt_set_text_color ($00, $FF, $FF);
   LightRed     : avt_set_text_color ($FF, $00, $00); 
   LightMagenta : avt_set_text_color ($FF, $00, $FF);
   Yellow       : avt_set_text_color ($E0, $E0, $00);
-  White        : avt_set_text_color ($00, $00, $00)  { black: else invisible }
+  White        : avt_set_text_color ($FF, $FF, $FF)
+  end
+end;
+
+procedure TextBackground (Color: Byte);
+begin
+if not initialized then initializeAvatar;
+
+{ strip what we don't need }
+Color := Color and $0F;
+
+case Color of
+  Black        : avt_set_text_background_color ($00, $00, $00);
+  Blue         : avt_set_text_background_color ($00, $00, $88);
+  Green        : avt_set_text_background_color ($00, $88, $00);
+  Cyan         : avt_set_text_background_color ($00, $88, $88);
+  Red          : avt_set_text_background_color ($88, $00, $00);
+  Magenta      : avt_set_text_background_color ($88, $00, $88);
+  Brown        : avt_set_text_background_color ($88, $44, $22);
+  LightGray    : avt_set_text_background_color ($88, $88, $88);
+  DarkGray     : avt_set_text_background_color ($44, $44, $44);
+  LightBlue    : avt_set_text_background_color ($00, $00, $FF);
+  LightGreen   : avt_set_text_background_color ($00, $FF, $00);
+  LightCyan    : avt_set_text_background_color ($00, $FF, $FF);
+  LightRed     : avt_set_text_background_color ($FF, $00, $00); 
+  LightMagenta : avt_set_text_background_color ($FF, $00, $FF);
+  Yellow       : avt_set_text_background_color ($E0, $E0, $00);
+  White        : avt_set_text_background_color ($FF, $FF, $FF)
   end
 end;
 
 procedure NormVideo;
 begin
 if not initialized then initializeAvatar;
-avt_set_text_color (0, 0, 0)
+avt_set_text_color ($00, $00, $00);
+avt_set_text_background_color ($FF, $FF, $FF)
 end;
 
 procedure delay (milliseconds: Integer);

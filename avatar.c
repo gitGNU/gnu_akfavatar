@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.4 2007-08-27 08:12:18 akf Exp $ */
+/* $Id: avatar.c,v 2.5 2007-08-28 06:03:41 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -137,22 +137,20 @@ static SDL_Surface *(*IMG_Load) (const char *file) = NULL;
 static SDL_Surface *(*IMG_Load_RW) (SDL_RWops * src, int freesrc) = NULL;
 
 
-static SDL_Surface *screen = NULL, *avt_image = NULL;
+static SDL_Surface *screen = NULL, *avt_image = NULL, *avt_character = NULL;
 static Uint32 screenflags;	/* flags for the screen */
 static int avt_mode;		/* whether fullscreen or window or ... */
 static int must_lock;		/* must the screen be locked? */
 static SDL_Rect window;		/* if screen is in fact larger */
 static int avt_visible = 0;
 static SDL_Rect textfield = { -1, -1, -1, -1 };
-static Uint32 textcolor, ballooncolor, backgroundcolor;
 static int textdir_rtl = LEFT_TO_RIGHT;
 /* beginning of line - depending on text direction */
 static int linestart;
 static int balloonheight;
 
-/* colors independent from the screen mode */
+/* color independent from the screen mode */
 static SDL_Color backgroundcolor_RGB = { 0xCC, 0xCC, 0xCC, 0 };
-static SDL_Color textcolor_RGB = { 0, 0, 0, 0 };
 
 /* conversion descriptors for text input and output */
 static SDL_iconv_t output_cd = ICONV_UNINITIALIZED;
@@ -328,20 +326,10 @@ avt_strwidth (const wchar_t * m)
   return l;
 }
 
-/* set the colors */
-static void
-avt_set_colors (void)
-{
-  ballooncolor = SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF);
-  textcolor = SDL_MapRGB (screen->format, textcolor_RGB.r,
-			  textcolor_RGB.g, textcolor_RGB.b);
-  backgroundcolor = SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
-				backgroundcolor_RGB.g, backgroundcolor_RGB.b);
-}
-
 static void
 avt_drawballoon (void)
 {
+  Uint32 ballooncolor, backgroundcolor;
   SDL_Rect dst;
   int x, y;
   int xoffs, yoffs;
@@ -349,6 +337,10 @@ avt_drawballoon (void)
 
   if (!avt_visible)
     avt_show_avatar ();
+
+  backgroundcolor = SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
+				backgroundcolor_RGB.g, backgroundcolor_RGB.b);
+  ballooncolor = SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF);
 
   textfield.x = window.x + (window.w / 2) - (BALLOONWIDTH * FONTWIDTH / 2);
   textfield.y = window.y + TOPMARGIN + BALLOON_INNER_MARGIN;
@@ -451,6 +443,28 @@ avt_drawballoon (void)
   SDL_UpdateRect (screen, window.x, window.y, window.w, window.h);
 }
 
+static void
+avt_free_screen (void)
+{
+  /* switch clipping off */
+  SDL_SetClipRect (screen, NULL);
+  /* fill the whole screen with background color */
+  SDL_FillRect (screen, NULL,
+		SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
+			    backgroundcolor_RGB.g, backgroundcolor_RGB.b));
+}
+
+void
+avt_clear_screen (void)
+{
+  avt_free_screen ();
+  SDL_UpdateRect (screen, 0, 0, 0, 0);
+  
+  /* undefine textfield */
+  textfield.x = textfield.y = -1;
+  avt_visible = 0;
+}
+
 void
 avt_text_direction (int direction)
 {
@@ -497,11 +511,7 @@ avt_resize (int w, int h)
   /* must the screen be locked? */
   must_lock = SDL_MUSTLOCK (screen);
 
-  /* redefine the colors */
-  avt_set_colors ();
-
-  /* fill the whole screen with background color */
-  SDL_FillRect (screen, NULL, backgroundcolor);
+  avt_free_screen ();
 
   /* new position of the window on the screen */
   window.x = screen->w > window.w ? (screen->w / 2) - (window.w / 2) : 0;
@@ -578,18 +588,14 @@ avt_analyze_event (SDL_Event * event)
 	  /* Left Alt + Return -> avt_toggle_fullscreen */
 	case SDLK_RETURN:
 	  if (event->key.keysym.mod & KMOD_LALT)
-	    {
-	      avt_toggle_fullscreen ();
-	    }
+	    avt_toggle_fullscreen ();
 	  break;
 
 	  /* Ctrl + Left Alt + F -> avt_toggle_fullscreen */
 	case SDLK_f:
 	  if ((event->key.keysym.mod & KMOD_CTRL)
 	      && (event->key.keysym.mod & KMOD_LALT))
-	    {
-	      avt_toggle_fullscreen ();
-	    }
+	    avt_toggle_fullscreen ();
 	  break;
 
 	default:
@@ -716,11 +722,17 @@ avt_move_y (int y)
 void
 avt_clear (void)
 {
+  SDL_Color color;
+
   /* if there's no balloon, draw it */
   if (textfield.x < 0)
     avt_drawballoon ();
 
-  SDL_FillRect (screen, &textfield, ballooncolor);
+  /* use background color of characters */
+  color = avt_character->format->palette->colors[0];
+  SDL_FillRect (screen, &textfield,
+		SDL_MapRGB (screen->format, color.r, color.g, color.b));
+
   SDL_UpdateRect (screen, textfield.x, textfield.y, textfield.w, textfield.h);
   cursor.x = linestart;
   cursor.y = textfield.y;
@@ -768,21 +780,25 @@ avt_drawchar (wint_t ch)
 {
   int lx, ly;
   size_t font_offset;
+  SDL_Rect dest;
+  Uint8 *p, *dest_line;
+  unsigned char font_line;
 
   font_offset = get_font_offset (ch);
 
-  if (must_lock)
-    SDL_LockSurface (screen);
-
+  p = (Uint8 *) avt_character->pixels;
   for (ly = 0; ly < FONTHEIGHT; ly++)
-    for (lx = 0; lx < FONTWIDTH; lx++)
-      {
-	if (font[font_offset + ly] & (1 << (7 - lx)))	/* sic */
-	  putpixel (screen, cursor.x + lx, cursor.y + ly, textcolor);
-      }
+    {
+      dest_line = p + (ly * 8);
+      font_line = font[font_offset + ly];
 
-  if (must_lock)
-    SDL_UnlockSurface (screen);
+      for (lx = 0; lx < FONTWIDTH; lx++)
+	*(dest_line + lx) = (font_line & (1 << (7 - lx))) ? 1 : 0;
+    }
+
+  dest.x = cursor.x;
+  dest.y = cursor.y;
+  SDL_BlitSurface (avt_character, NULL, screen, &dest);
 }
 
 /* make current char visible */
@@ -845,12 +861,16 @@ static void
 avt_clearchar (void)
 {
   SDL_Rect dst;
+  SDL_Color color;
 
   dst.x = cursor.x;
   dst.y = cursor.y;
   dst.w = FONTWIDTH;
   dst.h = FONTHEIGHT;
-  SDL_FillRect (screen, &dst, ballooncolor);
+
+  color = avt_character->format->palette->colors[0];
+  SDL_FillRect (screen, &dst,
+		SDL_MapRGB (screen->format, color.r, color.g, color.b));
   avt_showchar ();
 }
 
@@ -926,6 +946,7 @@ avt_say (const wchar_t * txt)
 	  break;
 
 	case L' ':		/* space */
+	  avt_clearchar ();
 	  avt_forward ();
 	  /* 
 	   * no delay for the space char 
@@ -1211,8 +1232,7 @@ avt_show_avatar (void)
 
   /* fill the screen with background color */
   /* (not only the window!) */
-  SDL_SetClipRect (screen, NULL);
-  SDL_FillRect (screen, NULL, backgroundcolor);
+  avt_free_screen ();
 
   SDL_SetClipRect (screen, &window);
 
@@ -1239,9 +1259,7 @@ avt_move_in (void)
 {
   /* fill the screen with background color */
   /* (not only the window!) */
-  SDL_SetClipRect (screen, NULL);
-  SDL_FillRect (screen, NULL, backgroundcolor);
-  SDL_UpdateRect (screen, 0, 0, 0, 0);
+  avt_clear_screen ();
 
   /* undefine textfield */
   textfield.x = textfield.y = -1;
@@ -1250,7 +1268,12 @@ avt_move_in (void)
     {
       SDL_Rect dst;
       Uint32 start_time;
+      Uint32 backgroundcolor;
       SDL_Rect mywindow;
+
+      backgroundcolor =
+	SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
+		    backgroundcolor_RGB.g, backgroundcolor_RGB.b);
 
       /*
        * mywindow is like window, 
@@ -1315,9 +1338,6 @@ avt_move_out (void)
   if (!avt_visible)
     return _avt_STATUS;
 
-  /* not yet invisible, but handle as if */
-  avt_visible = 0;
-
   /* needed to remove the balloon */
   avt_show_avatar ();
 
@@ -1330,8 +1350,13 @@ avt_move_out (void)
     {
       SDL_Rect dst;
       Uint32 start_time;
+      Uint32 backgroundcolor;
       Sint16 start_position;
       SDL_Rect mywindow;
+
+      backgroundcolor =
+	SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
+		    backgroundcolor_RGB.g, backgroundcolor_RGB.b);
 
       /*
        * mywindow is like window, 
@@ -1391,8 +1416,7 @@ avt_move_out (void)
     }
 
   /* fill the whole screen with background color */
-  SDL_FillRect (screen, NULL, backgroundcolor);
-  SDL_UpdateRect (screen, 0, 0, 0, 0);
+  avt_clear_screen ();
 
   return _avt_STATUS;
 }
@@ -1408,7 +1432,21 @@ avt_wait_key (const wchar_t * message)
   /* print message (outside of textfield!) */
   if (*message)
     {
+      const wchar_t * m;
+      SDL_Color colors[2], old_colors[2];
+
       SDL_SetClipRect (screen, &window);
+
+      old_colors[0] = avt_character->format->palette->colors[0];
+      old_colors[1] = avt_character->format->palette->colors[1];
+      
+      /* background-color */
+      colors[0] = backgroundcolor_RGB;
+      /* black foreground */
+      colors[1].r = 0x00;
+      colors[1].g = 0x00;
+      colors[1].b = 0x00;
+      SDL_SetColors (avt_character, colors, 0, 2);
 
       /* alignment: right with one letter space to the border */
       dst.x =
@@ -1422,16 +1460,19 @@ avt_wait_key (const wchar_t * message)
       cursor.x = dst.x;
       cursor.y = dst.y;
 
-      while (*message)
+      /* message is also needed later in this function */
+      m = message;
+      while (*m)
 	{
-	  avt_drawchar (*message);
+	  avt_drawchar (*m);
 	  cursor.x += FONTWIDTH;
 	  if (cursor.x > window.x + window.w + FONTWIDTH)
 	    break;
-	  message++;
+	  m++;
 	}
 
       SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
+      SDL_SetColors (avt_character, old_colors, 0, 2);
       cursor = oldcursor;
     }
 
@@ -1472,7 +1513,10 @@ avt_wait_key (const wchar_t * message)
   /* clear message */
   if (*message)
     {
-      SDL_FillRect (screen, &dst, backgroundcolor);
+      SDL_FillRect (screen, &dst,
+		    SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
+				backgroundcolor_RGB.g,
+				backgroundcolor_RGB.b));
       SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
     }
 
@@ -1536,8 +1580,7 @@ avt_show_image (avt_image_t * image)
   SDL_Surface *img = (SDL_Surface *) image;
 
   /* clear the screen */
-  SDL_SetClipRect (screen, NULL);
-  SDL_FillRect (screen, NULL, backgroundcolor);
+  avt_free_screen ();
 
   /* set informational variables */
   avt_visible = 0;
@@ -1762,12 +1805,23 @@ avt_set_background_color (int red, int green, int blue)
 void
 avt_set_text_color (int red, int green, int blue)
 {
-  textcolor_RGB.r = red;
-  textcolor_RGB.g = green;
-  textcolor_RGB.b = blue;
+  SDL_Color color;
 
-  textcolor = SDL_MapRGB (screen->format, textcolor_RGB.r,
-			  textcolor_RGB.g, textcolor_RGB.b);
+  color.r = red;
+  color.g = green;
+  color.b = blue;
+  SDL_SetColors (avt_character, &color, 1, 1);
+}
+
+void
+avt_set_text_background_color (int red, int green, int blue)
+{
+  SDL_Color color;
+
+  color.r = red;
+  color.g = green;
+  color.b = blue;
+  SDL_SetColors (avt_character, &color, 0, 1);
 }
 
 char *
@@ -1796,6 +1850,8 @@ avt_quit (void)
     SDL_iconv_close (input_cd);
   output_cd = input_cd = ICONV_UNINITIALIZED;
 
+  SDL_FreeSurface (avt_character);
+  avt_character = NULL;
   SDL_FreeSurface (avt_image);
   avt_image = NULL;
   SDL_Quit ();
@@ -1876,12 +1932,33 @@ avt_initialize (const char *title, const char *icontitle,
    */
   SDL_ShowCursor (SDL_DISABLE);
 
-  /* set the colors */
-  avt_set_colors ();
-
   /* fill the whole screen with background color */
-  SDL_FillRect (screen, NULL, backgroundcolor);
-  SDL_UpdateRect (screen, 0, 0, 0, 0);
+  avt_clear_screen ();
+
+  /* reserve memory for one character */
+  avt_character = SDL_CreateRGBSurface (SDL_SWSURFACE, FONTWIDTH, FONTHEIGHT,
+					8, 0, 0, 0, 0);
+
+  if (!avt_character)
+    {
+      _avt_STATUS = AVATARERROR;
+      return _avt_STATUS;
+    }
+
+  /* set color table for character canvas */
+  {
+    SDL_Color colors[2];
+
+    /* white background */
+    colors[0].r = 0xFF;
+    colors[0].g = 0xFF;
+    colors[0].b = 0xFF;
+    /* black foreground */
+    colors[1].r = 0x00;
+    colors[1].g = 0x00;
+    colors[1].b = 0x00;
+    SDL_SetColors (avt_character, colors, 0, 2);
+  }
 
   /* import the avatar image */
   if (image)
@@ -1934,7 +2011,5 @@ avt_initialize (const char *title, const char *icontitle,
   SDL_EventState (SDL_MOUSEBUTTONUP, SDL_IGNORE);
   SDL_EventState (SDL_KEYUP, SDL_IGNORE);
 
-  avt_visible = 0;
-  textfield.x = textfield.y = -1;
   return _avt_STATUS;
 }

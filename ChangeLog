@@ -1,6 +1,21 @@
-2007-08-26  Andreas K. Foerster  <info@akfoerster.de>
+2007-08-28  Andreas K. Foerster  <info@akfoerster.de>
+
+	* major rewrite of character and color handling
 
 	* joined header files together to akfavatar.h
+
+	* akfavatar.h, avatar.c (avt_clear_screen):
+	new function
+
+	* akfavatar.h, avatar.c 
+	(avt_set_text_color, avt_set_text_background_color):
+	new functions
+
+	* avatar.pas (TextColor, TextBackground):
+	new functions
+
+	* avatar.c (avt_wait_key):
+	fix: message gets cleared again
 
 	* renamed library to libakfavatar
 
