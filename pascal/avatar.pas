@@ -525,15 +525,13 @@ end;
 procedure HighVideo;
 begin
 { set highcolor bit }
-TextAttr := TextAttr or $08;
-TextColor (TextAttr)
+TextColor ((TextAttr and $0F) or $08)
 end;
 
 procedure LowVideo;
 begin
 { unset highcolor bit }
-TextAttr := TextAttr and $F7;
-TextColor (TextAttr)
+TextColor (TextAttr and $07)
 end;
 
 procedure delay (milliseconds: Integer);
