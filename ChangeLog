@@ -15,7 +15,10 @@
 	new functions
 
 	* avatar.pas (TextColor, TextBackground, ClrEol):
+	(NormVideo, HighVideo, LowVideo):
 	new functions
+	(TextAttr, WindMin, WindMax):
+	new variables (just for reading!)
 
 	* avatar.c (avt_wait_key):
 	fix: message gets cleared again

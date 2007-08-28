@@ -25,11 +25,10 @@ CRT compatiblity
 
 supported: 
 ClrScr, ClrEol, GotoXY, WhereX, WhereY, Delay, TextColor, TextBackground,
-NormVideo, NoSound, AssignCrt, ScreenSize
+NormVideo, HighVideo, LowVideo, NoSound, AssignCrt, ScreenSize
 
 not supported (yet): 
-DelLine, InsLine, HighVideo, LowVideo, ReadKey, KeyPressed, 
-Window, Sound, TextMode
+DelLine, InsLine, ReadKey, KeyPressed, Window, Sound, TextMode
 }
 
 {$IfDef FPC}
@@ -84,10 +83,24 @@ const
 
 type TextDirection = (LeftToRight, RightToLeft);
 
+{ 
+  Text Attributes
+  partly compatible to the CRT unit
+  Just for reading!
+  the "blink-bit" means a bright background color
+}
+var TextAttr : byte;
+
 { The "Screen" is the textarea }
 { The name is chosen for compatiblity with the CRT unit }
-{ This variable only set after the avatar is visible }
+{ Just for reading! }
+{ This variable is only set after the avatar is visible }
 var ScreenSize : record x, y: Integer end;
+
+{ for CRT compatiblity, use ScreenSize for new programs }
+{ Just for reading! }
+{ These variables are only set after the avatar is visible }
+var WindMin, WindMax: word;
 
 
 { load the Avatar image from a file }
@@ -154,6 +167,12 @@ procedure TextBackground (Color: Byte);
 { set black on white text colors }
 { name compatible to CRT unit, but the colors differ }
 procedure NormVideo;
+
+{ set high color intensity }
+procedure HighVideo;
+
+{ set low color intensity }
+procedure LowVideo;
 
 { shows the avatar without the balloon }
 procedure ShowAvatar;
@@ -414,6 +433,17 @@ audioinitialized := false;
 ScreenSize.x := avt_get_max_x;
 ScreenSize.y := avt_get_max_y;
 
+{ set WindMin und WindMax }
+WindMin := $0000;
+
+if ScreenSize.y-1 >= $FF
+  then WindMax := $FF shl 8
+  else WindMax := (ScreenSize.y-1) shl 8;
+
+if ScreenSize.x-1 >= $FF
+  then WindMax := WindMax or $FF
+  else WindMax := WindMax or (ScreenSize.x-1);
+
 avt_move_in
 end;
 
@@ -424,6 +454,8 @@ if not initialized then initializeAvatar;
 { strip blink attribute }
 Color := Color and $0F;
 
+TextAttr := (TextAttr and $F0) or Color;
+
 case Color of
   Black        : avt_set_text_color ($00, $00, $00);
   Blue         : avt_set_text_color ($00, $00, $88);
@@ -433,7 +465,7 @@ case Color of
   Magenta      : avt_set_text_color ($88, $00, $88);
   Brown        : avt_set_text_color ($88, $44, $22);
   LightGray    : avt_set_text_color ($88, $88, $88);
-  DarkGray     : avt_set_text_color ($44, $44, $44);
+  DarkGray     : avt_set_text_color ($55, $55, $55);
   LightBlue    : avt_set_text_color ($00, $00, $FF);
   LightGreen   : avt_set_text_color ($00, $FF, $00);
   LightCyan    : avt_set_text_color ($00, $FF, $FF);
@@ -451,6 +483,8 @@ if not initialized then initializeAvatar;
 { strip what we don't need }
 Color := Color and $0F;
 
+TextAttr := (TextAttr and $0F) or (Color shl 4);
+
 case Color of
   Black        : avt_set_text_background_color ($00, $00, $00);
   Blue         : avt_set_text_background_color ($00, $00, $88);
@@ -460,13 +494,13 @@ case Color of
   Magenta      : avt_set_text_background_color ($88, $00, $88);
   Brown        : avt_set_text_background_color ($88, $44, $22);
   LightGray    : avt_set_text_background_color ($88, $88, $88);
-  DarkGray     : avt_set_text_background_color ($44, $44, $44);
+  DarkGray     : avt_set_text_background_color ($55, $55, $55);
   LightBlue    : avt_set_text_background_color ($00, $00, $FF);
   LightGreen   : avt_set_text_background_color ($00, $FF, $00);
   LightCyan    : avt_set_text_background_color ($00, $FF, $FF);
   LightRed     : avt_set_text_background_color ($FF, $00, $00); 
   LightMagenta : avt_set_text_background_color ($FF, $00, $FF);
-  Yellow       : avt_set_text_background_color ($E0, $E0, $00);
+  Yellow       : avt_set_text_background_color ($FF, $FF, $00);
   White        : avt_set_text_background_color ($FF, $FF, $FF)
   end
 end;
@@ -474,8 +508,23 @@ end;
 procedure NormVideo;
 begin
 if not initialized then initializeAvatar;
+TextAttr := $F0;
 avt_set_text_color ($00, $00, $00);
 avt_set_text_background_color ($FF, $FF, $FF)
+end;
+
+procedure HighVideo;
+begin
+{ set highcolor bit }
+TextAttr := TextAttr or $08;
+TextColor (TextAttr)
+end;
+
+procedure LowVideo;
+begin
+{ unset highcolor bit }
+TextAttr := TextAttr and $F7;
+TextColor (TextAttr)
 end;
 
 procedure delay (milliseconds: Integer);
@@ -755,6 +804,8 @@ Initialization
   { these values are not yet known }
   ScreenSize.x := -1;
   ScreenSize.y := -1;
+  WindMin := $0000;
+  WindMax := $0000;
 
   checkParameters;
 
