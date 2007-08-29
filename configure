@@ -6,21 +6,22 @@
 # This configure script is free software; you have unlimited permission
 # to copy, distribute and modify it.
 #
-# Date of this version: $Date: 2007-08-26 12:17:15 $
+# Date of this version: $Date: 2007-08-29 13:51:15 $
 
 
 # Version and name
 VERSION=0
-SUBVERSION=12
+SUBVERSION=13
+REVISION=1
 VARIANT="-cvs"
-LIBNAME=libakfavatar.so.${VERSION}.${SUBVERSION}
-SONAME=libakfavatar.so.${VERSION}
+LIBNAME=libakfavatar.so.${VERSION}.${SUBVERSION}.${REVISION}
+SONAME=libakfavatar.so.${VERSION}.${SUBVERSION}
 
 invocation_name=$0
 args=$*
 no_create=
 pkgname=akfavatar
-pkgversion=${VERSION}.${SUBVERSION}${VARIANT}
+pkgversion=${VERSION}.${SUBVERSION}.${REVISION}${VARIANT}
 srctrigger=akfavatar.h
 QVGA=
 OLDSDL=
@@ -224,6 +225,7 @@ fi
 echo "creating Makefile"
 echo "VERSION = ${VERSION}"
 echo "SUBVERSION = ${SUBVERSION}"
+echo "REVISION = ${REVISION}"
 echo "VARIANT = ${VARIANT}"
 echo "LIBNAME = ${LIBNAME}"
 echo "SONAME = ${SONAME}"
@@ -256,7 +258,7 @@ cat > version.h << EOF
 /* This file was generated automatically by configure. Do not edit. */
 
 #ifndef AVTVERSION
-#  define AVTVERSION "${VERSION}.${SUBVERSION}${VARIANT}"
+#  define AVTVERSION "${VERSION}.${SUBVERSION}.${REVISION}${VARIANT}"
 #endif
 EOF
 
@@ -272,6 +274,7 @@ cat > Makefile << EOF
 
 VERSION = ${VERSION}
 SUBVERSION = ${SUBVERSION}
+REVISION = ${REVISION}
 VARIANT = ${VARIANT}
 LIBNAME = ${LIBNAME}
 SONAME = ${SONAME}
@@ -308,7 +311,7 @@ rm -f doc/version.texi
 cat > doc/version.texi <<EOF
 @c This file was generated automatically by configure. Do not edit.
 
-@set VERSION ${VERSION}.${SUBVERSION}${VARIANT}
+@set VERSION ${VERSION}.${SUBVERSION}.${REVISION}${VARIANT}
 @set UPDATED $(date -I)
 
 EOF
@@ -318,6 +321,7 @@ then
   {
     echo "VERSION = ${VERSION}"
     echo "SUBVERSION = ${SUBVERSION}"
+    echo "REVISION = ${REVISION}"
     echo "VARIANT = ${VARIANT}"
   } > mingw32/version
 fi

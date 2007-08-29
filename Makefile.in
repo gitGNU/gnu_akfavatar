@@ -167,7 +167,7 @@ distclean: clean
 maintainerclean: distclean
 
 dist: info txt man distclean
-	mkdir akfavatar-$(VERSION).$(SUBVERSION)$(VARIANT)
+	mkdir akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)
 	ln README INSTALL AUTHORS COPYING \
 	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
 	   balloonpointer.c circle.c regicon.c gnu-head.bmp gnu-head.c \
@@ -175,37 +175,37 @@ dist: info txt man distclean
 	   gnome-akfavatar bdfread.pas human-peasant.bmp \
 	   gnu-small.bmp gnu-small.c akfavatar.xpm \
 	   ucsfont4x6.c configure Makefile.in \
-	   akfavatar-$(VERSION).$(SUBVERSION)$(VARIANT)/
+	   akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/
 	
-	mkdir akfavatar-$(VERSION).$(SUBVERSION)$(VARIANT)/pascal
+	mkdir akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/pascal
 	ln pascal/README pascal/avatar.pas pascal/example.pas \
 	   pascal/gpcavatar pascal/fpcavatar \
-	   akfavatar-$(VERSION).$(SUBVERSION)$(VARIANT)/pascal/
+	   akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/pascal/
 	
-	mkdir akfavatar-$(VERSION).$(SUBVERSION)$(VARIANT)/doc
+	mkdir akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/doc
 	ln doc/README doc/Makefile doc/avatarsay.1 \
 	   doc/akfavatar-en.texinfo doc/akfavatar-en.info \
 	   doc/akfavatar-en.txt \
-	   akfavatar-$(VERSION).$(SUBVERSION)$(VARIANT)/doc/
+	   akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/doc/
 	  
-	mkdir akfavatar-$(VERSION).$(SUBVERSION)$(VARIANT)/mingw32
+	mkdir akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/mingw32
 	ln mingw32/akfavatar.ico mingw32/icon.rc \
 	   mingw32/Makefile mingw32/README \
 	   mingw32/fsdemo-??.bat \
-	   akfavatar-$(VERSION).$(SUBVERSION)$(VARIANT)/mingw32/
+	   akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/mingw32/
 	
-	tar -cvf akfavatar-$(VERSION).$(SUBVERSION)$(VARIANT).tar \
-	    akfavatar-$(VERSION).$(SUBVERSION)$(VARIANT)/
-	gzip -9 akfavatar-$(VERSION).$(SUBVERSION)$(VARIANT).tar
-	rm -r akfavatar-$(VERSION).$(SUBVERSION)$(VARIANT)/
+	tar -cvf akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).tar \
+	    akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/
+	gzip -9 akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).tar
+	rm -r akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/
 
 dist-bin: avatarsay
 	strip avatarsay
-	mkdir avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT)
+	mkdir avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)
 	ln COPYING AUTHORS avatarsay avtman fsdemo-?? \
 	   gnome-akfavatar human-peasant.bmp \
-	   avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT)/
-	tar -cvf avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT).bin.gnu-linux.x86.tar \
-	    avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT)/
-	gzip -9 avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT).bin.gnu-linux.x86.tar
-	rm -r avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT)/
+	   avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/
+	tar -cvf avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin.gnu-linux.x86.tar \
+	    avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/
+	gzip -9 avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin.gnu-linux.x86.tar
+	rm -r avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/

@@ -26,8 +26,8 @@ avtsayinfo.rc:
 	@echo "AppIcon ICON \"akfavatar.ico\"" > $@
 	@echo >> $@
 	@echo "1 VERSIONINFO" >> $@
-	@echo "FILEVERSION $(VERSION), $(SUBVERSION), 0, 0" >> $@
-	@echo "PRODUCTVERSION $(VERSION), $(SUBVERSION), 0, 0" >> $@
+	@echo "FILEVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0" >> $@
+	@echo "PRODUCTVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0" >> $@
 	@echo "FILEFLAGSMASK 0x3F" >> $@
 	@echo "FILEOS 0x4" >> $@
 	@echo "FILETYPE 0x1" >> $@
@@ -38,21 +38,21 @@ avtsayinfo.rc:
 	@echo "  BEGIN" >> $@
 	@echo "   VALUE \"CompanyName\", \"AKFoerster\"" >> $@
 	@echo "   VALUE \"FileDescription\", \"fancy text-viewer and scripting language\"" >> $@
-	@echo "   VALUE \"FileVersion\", \"$(VERSION).$(SUBVERSION)$(VARIANT)\"" >> $@
+	@echo "   VALUE \"FileVersion\", \"$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)\"" >> $@
 	@echo "   VALUE \"InternalName\", \"avatarsay\"" >> $@
 	@echo "   VALUE \"LegalCopyright\", \"GPLv3+, Andreas K. F\366rster\"" >> $@
 	@echo "   VALUE \"OriginalFilename\", \"avatarsay.exe\"" >> $@
 	@echo "   VALUE \"Comments\", \"primarily written for GNU/Linux\"" >> $@
 	@echo "   VALUE \"ProductName\", \"AKFAvatar\"" >> $@
-	@echo "   VALUE \"ProductVersion\", \"$(VERSION).$(SUBVERSION)$(VARIANT)\"" >> $@
+	@echo "   VALUE \"ProductVersion\", \"$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)\"" >> $@
 	@echo "  END" >> $@
 	@echo " END" >> $@
 	@echo "END" >> $@
 
 libinfo.rc:
 	@echo "1 VERSIONINFO" > $@
-	@echo "FILEVERSION $(VERSION), $(SUBVERSION), 0, 0" >> $@
-	@echo "PRODUCTVERSION $(VERSION), $(SUBVERSION), 0, 0" >> $@
+	@echo "FILEVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0" >> $@
+	@echo "PRODUCTVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0" >> $@
 	@echo "FILEFLAGSMASK 0x3F" >> $@
 	@echo "FILEOS 0x4" >> $@
 	@echo "FILETYPE 0x1" >> $@
@@ -63,13 +63,13 @@ libinfo.rc:
 	@echo "  BEGIN" >> $@
 	@echo "   VALUE \"CompanyName\", \"AKFoerster\"" >> $@
 	@echo "   VALUE \"FileDescription\", \"Avatar library\"" >> $@
-	@echo "   VALUE \"FileVersion\", \"$(VERSION).$(SUBVERSION)$(VARIANT)\"" >> $@
+	@echo "   VALUE \"FileVersion\", \"$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)\"" >> $@
 	@echo "   VALUE \"InternalName\", \"avatar\"" >> $@
 	@echo "   VALUE \"LegalCopyright\", \"GPLv3+, Andreas K. F\366rster\"" >> $@
 	@echo "   VALUE \"OriginalFilename\", \"avatar.dll\"" >> $@
 	@echo "   VALUE \"Comments\", \"primarily written for GNU/Linux\"" >> $@
 	@echo "   VALUE \"ProductName\", \"AKFAvatar\"" >> $@
-	@echo "   VALUE \"ProductVersion\", \"$(VERSION).$(SUBVERSION)$(VARIANT)\"" >> $@
+	@echo "   VALUE \"ProductVersion\", \"$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)\"" >> $@
 	@echo "  END" >> $@
 	@echo " END" >> $@
 	@echo "END" >> $@
@@ -135,17 +135,17 @@ distclean: clean
 	-rm -f version
 
 dist-bin: avatarsay.exe
-	mkdir avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT)
+	mkdir avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)
 	cp avatarsay.exe ../fsdemo-?? ../avtcharset \
-	   avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT)/
+	   avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/
 	cp fsdemo-??.bat avtcharset.bat \
-	   avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT)/
-	cp ../COPYING avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT)/gpl-3.0.txt
-	strip avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT)/avatarsay.exe
-	todos avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT)/fsdemo-??
-	todos avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT)/avtcharset
-	todos avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT)/*.bat
-	todos avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT)/gpl-3.0.txt
-	zip -9vr avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT).bin.w32.zip \
-	    avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT)/
-	rm -r avatarsay-$(VERSION).$(SUBVERSION)$(VARIANT)/
+	   avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/
+	cp ../COPYING avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/gpl-3.0.txt
+	strip avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/avatarsay.exe
+	todos avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/fsdemo-??
+	todos avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/avtcharset
+	todos avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/*.bat
+	todos avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/gpl-3.0.txt
+	zip -9vr avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin.w32.zip \
+	    avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/
+	rm -r avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/
