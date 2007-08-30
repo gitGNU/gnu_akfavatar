@@ -1,5 +1,9 @@
 2007-08-28  Andreas K. Foerster  <info@akfoerster.de>
 
+	* version 0.13.1 released
+
+	* switching to a 3 number version scheme with 2 numbers in the so-name
+
 	* major rewrite of character and color handling
 
 	* joined header files together to akfavatar.h
