@@ -136,9 +136,9 @@ distclean: clean
 
 dist-bin: avatarsay.exe
 	mkdir avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)
-	cp avatarsay.exe ../fsdemo-?? ../avtcharset \
+	cp avatarsay.exe ../fsdemo-?? \
 	   avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/
-	cp fsdemo-??.bat avtcharset.bat \
+	cp fsdemo-??.bat \
 	   avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/
 	cp ../COPYING avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/gpl-3.0.txt
 	strip avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/avatarsay.exe
