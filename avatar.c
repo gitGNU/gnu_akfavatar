@@ -1,5 +1,4 @@
 /*
-/*
  * AKFAvatar library - for giving your programs a graphical Avatar
  * Copyright (c) 2007 Andreas K. Foerster <info@akfoerster.de>
  *
@@ -24,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.7 2007-09-01 07:10:11 akf Exp $ */
+/* $Id: avatar.c,v 2.8 2007-09-01 08:35:04 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
