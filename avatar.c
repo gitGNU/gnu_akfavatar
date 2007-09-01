@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.8 2007-09-01 08:35:04 akf Exp $ */
+/* $Id: avatar.c,v 2.9 2007-09-01 14:51:15 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2063,4 +2063,3 @@ avt_initialize (const char *title, const char *icontitle,
 
   return _avt_STATUS;
 }
- 
