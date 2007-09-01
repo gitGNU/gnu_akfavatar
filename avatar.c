@@ -1,4 +1,5 @@
 /*
+/*
  * AKFAvatar library - for giving your programs a graphical Avatar
  * Copyright (c) 2007 Andreas K. Foerster <info@akfoerster.de>
  *
@@ -23,7 +24,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.6 2007-08-28 09:28:38 akf Exp $ */
+/* $Id: avatar.c,v 2.7 2007-09-01 07:10:11 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -135,6 +136,9 @@ static int try_to_load_SDL_image = 1;
 static void *SDL_image_handle = NULL;
 static SDL_Surface *(*IMG_Load) (const char *file) = NULL;
 static SDL_Surface *(*IMG_Load_RW) (SDL_RWops * src, int freesrc) = NULL;
+
+/* for an external keyboard handler */
+static void (*avt_ext_keyhandler) (int sym, int mod, int unicode) = NULL;
 
 
 static SDL_Surface *screen = NULL, *avt_image = NULL, *avt_character = NULL;
@@ -459,7 +463,7 @@ avt_clear_screen (void)
 {
   avt_free_screen ();
   SDL_UpdateRect (screen, 0, 0, 0, 0);
-  
+
   /* undefine textfield */
   textfield.x = textfield.y = -1;
   avt_visible = 0;
@@ -572,10 +576,6 @@ avt_analyze_event (SDL_Event * event)
 	  _avt_STATUS = AVATARQUIT;
 	  break;
 
-	case SDLK_SPACE:
-	  dodelay = 0;
-	  break;
-
 	case SDLK_PAUSE:
 	  avt_pause ();
 	  break;
@@ -585,20 +585,32 @@ avt_analyze_event (SDL_Event * event)
 	  avt_toggle_fullscreen ();
 	  break;
 
+	  /* no "break" for the following ones: */
+	  
 	  /* Left Alt + Return -> avt_toggle_fullscreen */
 	case SDLK_RETURN:
 	  if (event->key.keysym.mod & KMOD_LALT)
-	    avt_toggle_fullscreen ();
-	  break;
+	    {
+	      avt_toggle_fullscreen ();
+	      break;
+	    }
 
 	  /* Ctrl + Left Alt + F -> avt_toggle_fullscreen */
 	case SDLK_f:
 	  if ((event->key.keysym.mod & KMOD_CTRL)
 	      && (event->key.keysym.mod & KMOD_LALT))
-	    avt_toggle_fullscreen ();
-	  break;
+	    {
+	      avt_toggle_fullscreen ();
+	      break;
+	    }
+
+	case SDLK_SPACE:
+	  dodelay = 0;
 
 	default:
+	  if (avt_ext_keyhandler)
+	    avt_ext_keyhandler (event->key.keysym.sym, event->key.keysym.mod,
+				event->key.keysym.unicode);
 	  break;
 	}			/* switch (*event.key.keysym.sym) */
 
@@ -744,7 +756,7 @@ avt_clear_eol (void)
 {
   SDL_Color color;
   SDL_Rect dst;
-  
+
   /* if there's no balloon, draw it */
   if (textfield.x < 0)
     avt_drawballoon ();
@@ -752,14 +764,14 @@ avt_clear_eol (void)
   /* use background color of characters */
   color = avt_character->format->palette->colors[0];
 
-  if (textdir_rtl) /* right to left */
+  if (textdir_rtl)		/* right to left */
     {
       dst.x = textfield.x;
       dst.y = cursor.y;
       dst.h = FONTHEIGHT;
       dst.w = cursor.x + FONTWIDTH - textfield.x;
     }
-  else  /* left to right */
+  else				/* left to right */
     {
       dst.x = cursor.x;
       dst.y = cursor.y;
@@ -1465,14 +1477,14 @@ avt_wait_key (const wchar_t * message)
   /* print message (outside of textfield!) */
   if (*message)
     {
-      const wchar_t * m;
+      const wchar_t *m;
       SDL_Color colors[2], old_colors[2];
 
       SDL_SetClipRect (screen, &window);
 
       old_colors[0] = avt_character->format->palette->colors[0];
       old_colors[1] = avt_character->format->palette->colors[1];
-      
+
       /* background-color */
       colors[0] = backgroundcolor_RGB;
       /* black foreground */
@@ -1836,6 +1848,12 @@ avt_set_background_color (int red, int green, int blue)
 }
 
 void
+avt_register_keyhandler (void *handler)
+{
+  avt_ext_keyhandler = handler;
+}
+
+void
 avt_set_text_color (int red, int green, int blue)
 {
   SDL_Color color;
@@ -2046,3 +2064,4 @@ avt_initialize (const char *title, const char *icontitle,
 
   return _avt_STATUS;
 }
+ 

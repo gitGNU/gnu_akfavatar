@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.4 2007-08-28 09:28:38 akf Exp $ */
+/* $Id: akfavatar.h,v 2.5 2007-09-01 07:10:10 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -170,6 +170,9 @@ extern void avt_set_background_color (int red, int green, int blue);
  */
 extern void avt_set_text_color (int red, int green, int blue);
 extern void avt_set_text_background_color (int red, int green, int blue);
+
+/* register an external keyhandler */
+extern void avt_register_keyhandler (void *handler);
 
 /* 
  * initialize the avatar system

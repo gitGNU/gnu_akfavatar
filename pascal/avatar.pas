@@ -25,18 +25,20 @@ CRT compatiblity
 
 supported: 
 ClrScr, ClrEol, GotoXY, WhereX, WhereY, Delay, TextColor, TextBackground,
-NormVideo, HighVideo, LowVideo, NoSound, AssignCrt, ScreenSize
+NormVideo, HighVideo, LowVideo, TextAttr, NoSound, (ReadKey), KeyPressed, 
+AssignCrt, ScreenSize, CheckBreak
 
 not supported yet, but planned: 
-DelLine, InsLine, ReadKey, KeyPressed, Window, Sound
+DelLine, InsLine, Window
+
+dummies for:
+CheckEof, CheckSnow, DirectVideo, Sound
 
 no support planned for:
-- TextMode, LastMode, CheckBreak, CheckEof, CheckSnow, DirectVideo:
-    remove that code, or use IfDef
+- TextMode, LastMode:
+    remove that code, or use $IfDef MSDOS
 - writing to WindMin, WindMax:
     use Window, when it is supported
-- writing to TextAttr: 
-    use TextColor/TextBackground instead
 }
 
 {$IfDef FPC}
@@ -93,11 +95,17 @@ type TextDirection = (LeftToRight, RightToLeft);
 
 { 
   Text Attributes
-  partly compatible to the CRT unit
-  Just for reading!
+  mostly compatible to the CRT unit
   the "blink-bit" means a bright background color
 }
 var TextAttr : byte;
+
+{ compatible to the CRT unit }
+var 
+  CheckBreak: boolean;
+  CheckEof: boolean;
+  CheckSnow: boolean;
+  DirectVideo: boolean;
 
 { The "Screen" is the textarea }
 { The name is chosen for compatiblity with the CRT unit }
@@ -145,6 +153,11 @@ procedure RestoreInOut;
   procedure page (var f: text);
   procedure page;
 {$EndIf}
+
+{ keyboard handling }
+{ partly CRT compatible - Latin1 chars so far }
+function KeyPressed: boolean;
+function ReadKey: char;
 
 { wait for a key }
 procedure waitkey (const message: string);
@@ -268,9 +281,15 @@ type
     pixel_data : char; { startpoint }
     end;
 
+var OldTextAttr : byte;
+var FastQuit : boolean;
 var fullscreen, initialized, audioinitialized: boolean;
 var AvatarImage: PAvatarImage;
 var InputBuffer: array [ 0 .. (4 * LineLength) + 2] of char;
+
+const KeyboardBufferSize = 40;
+var KeyboardBuffer: array [ 0 .. KeyboardBufferSize-1 ] of char;
+var KeyboardBufferRead, KeyboardBufferWrite: integer;
 
 function avt_default: PAvatarImage; cdecl; external name 'avt_default';
 
@@ -361,6 +380,9 @@ function avt_get_max_y: CInteger; cdecl; external name 'avt_get_max_y';
 
 procedure avt_text_direction (direction: CInteger); 
   cdecl; external name 'avt_text_direction';
+  
+procedure avt_register_keyhandler (handler: Pointer);
+  cdecl; external name 'avt_register_keyhandler';
 
 {$IfNDef __GPC__}
 
@@ -464,6 +486,7 @@ if not initialized then initializeAvatar;
 Color := Color and $0F;
 
 TextAttr := (TextAttr and $F0) or Color;
+OldTextAttr := TextAttr;
 
 case Color of
   Black        : avt_set_text_color ($00, $00, $00);
@@ -493,6 +516,7 @@ if not initialized then initializeAvatar;
 Color := Color and $0F;
 
 TextAttr := (TextAttr and $0F) or (Color shl 4);
+OldTextAttr := TextAttr;
 
 case Color of
   Black        : avt_set_text_background_color ($00, $00, $00);
@@ -514,10 +538,21 @@ case Color of
   end
 end;
 
+procedure UpdateTextAttr;
+begin
+TextBackground(TextAttr shr 4);
+TextColor(TextAttr and $0F);
+
+{$IfDef Debug}
+  if TextAttr<>OldTextAttr then RunError;
+{$EndIf}
+end;
+
 procedure NormVideo;
 begin
 if not initialized then initializeAvatar;
 TextAttr := $F0;
+OldTextAttr := TextAttr;
 avt_set_text_color ($00, $00, $00);
 avt_set_text_background_color ($FF, $FF, $FF)
 end;
@@ -561,12 +596,14 @@ end;
 procedure ClrScr;
 begin
 if not initialized then initializeAvatar;
+if TextAttr<>OldTextAttr then UpdateTextAttr;
 avt_clear
 end;
 
 procedure ClrEol;
 begin
 if not initialized then initializeAvatar;
+if TextAttr<>OldTextAttr then UpdateTextAttr;
 avt_clear_eol
 end;
 
@@ -664,6 +701,49 @@ end;
 
 {$EndIf} { FPC }
 
+procedure KeyHandler(sym, modifiers, unicode: CInteger); cdecl;
+begin
+{$IfDef Debug}
+  WriteLn(stderr, 'sym: ', sym, ' modifiers: ', modifiers,
+          ' unicode: ', unicode);
+{$EndIf}
+
+{ CheckBreak }
+if CheckBreak and (unicode=3) then 
+  begin
+  FastQuit := true;
+  Halt
+  end;
+
+{ put ISO-8859-1 characters into buffer }
+if (unicode>0) and (unicode<=255) then
+  begin
+  KeyBoardBuffer[KeyboardBufferWrite] := chr(unicode);
+  KeyboardBufferWrite := (KeyboardBufferWrite + 1) mod KeyboardBufferSize
+  end
+end;
+
+function KeyPressed: boolean;
+begin
+if not initialized then initializeAvatar;
+
+if avt_wait(1)<>0 then Halt;
+
+KeyPressed := (KeyboardBufferRead <> KeyboardBufferWrite)
+end;
+
+function ReadKey: char;
+begin
+if not initialized then initializeAvatar;
+
+{ wait for key to be pressed }
+while KeyboardBufferRead=KeyboardBufferWrite do 
+  if avt_wait(1)<>0 then Halt;
+
+ReadKey := KeyboardBuffer [KeyboardBufferRead];
+KeyboardBufferRead := (KeyboardBufferRead + 1) mod KeyboardBufferSize
+end;
+
 { ---------------------------------------------------------------------}
 { Input/output handling }
 
@@ -692,7 +772,9 @@ end;
   begin
   if F.BufPos > 0 then
     begin
-    if not initialized then initializeAvatar; 
+    if not initialized then initializeAvatar;
+
+    if TextAttr<>OldTextAttr then UpdateTextAttr;
 
     GetMem (s, F.BufPos + 1);
     move (F.BufPtr^, s^, F.BufPos);
@@ -708,7 +790,8 @@ end;
   function fpc_io_read (var F: TextRec): Integer;
   begin
   if not initialized then initializeAvatar;
-  
+  if TextAttr<>OldTextAttr then UpdateTextAttr;
+
   if avt_ask_mb (F.BufPtr, F.BufSize) <> 0 then Halt;
 
   F.BufPos := 0;
@@ -758,6 +841,7 @@ end;
   if size > 0 then
     begin
     if not initialized then initializeAvatar;
+    if TextAttr<>OldTextAttr then UpdateTextAttr;
     
     move (Buffer, s, size);
     s [size+1] := #0;
@@ -773,7 +857,8 @@ end;
     CharBuf: array [0 .. size-1] of char absolute Buffer;
   begin
   if not initialized then initializeAvatar;
-  
+  if TextAttr<>OldTextAttr then UpdateTextAttr;
+
   if avt_ask_mb (addr (InputBuffer), sizeof (InputBuffer)) <> 0 
     then Halt;
   
@@ -806,17 +891,28 @@ Initialization
   fullscreen := false;
   initialized := false;
   audioinitialized := false;
+  KeyboardBufferRead := 0;
+  KeyboardBufferWrite := 0;
 
   { these values are not yet known }
   ScreenSize.x := -1;
   ScreenSize.y := -1;
   WindMin := $0000;
   WindMax := $0000;
+ 
   TextAttr := $F0;
+  OldTextAttr := TextAttr;
+  CheckBreak := true;
+  CheckEof := false;
+  CheckSnow := true;
+  DirectVideo := true;
+  FastQuit := false;
 
   checkParameters;
 
   avt_mb_encoding(DefaultEncoding);
+  
+  avt_register_keyhandler(@KeyHandler);
 
   { redirect i/o to Avatar }
   { do they have to be closed? Problems under Windows then }
@@ -832,7 +928,7 @@ Finalization
 
   { avoid procedures which may call "Halt" again! }
 
-  if initialized then
+  if initialized and not FastQuit then
     if avt_get_status = 0 then 
       begin
       { wait for key, when balloon is visible }

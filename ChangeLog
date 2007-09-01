@@ -1,3 +1,18 @@
+2007-09-01  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_register_keyhandler):
+	new function
+
+	* avatar.c (avt_analyze_event):
+	support for external keyhandler
+	
+	* avatar.pas:
+	support for writing to TextAttr
+	support for KeyPressed, ReadKey
+	support for CheckBreak
+	dummys for CheckEof, CheckSnow, DirectVideo
+	dummy for Sound
+
 2007-08-28  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.13.1 released
