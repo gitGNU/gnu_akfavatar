@@ -232,6 +232,10 @@ procedure GotoXY (x, y: Integer);
 { get last error message }
 function AvatarGetError: ShortString;
 
+{ ignore TextColor TextBackground and so on }
+{ compatible with GNU-Pascal's CRT unit }
+procedure SetMonochrome(monochrome: boolean);
+
 {-----------------------------------------------------------------------}
 
 implementation
@@ -283,6 +287,7 @@ type
 
 var OldTextAttr : byte;
 var FastQuit : boolean;
+var isMonochrome : boolean;
 var fullscreen, initialized, audioinitialized: boolean;
 var AvatarImage: PAvatarImage;
 var InputBuffer: array [ 0 .. (4 * LineLength) + 2] of char;
@@ -481,6 +486,7 @@ end;
 procedure TextColor (Color: Byte);
 begin
 if not initialized then initializeAvatar;
+if isMonochrome then exit;
 
 { strip blink attribute }
 Color := Color and $0F;
@@ -511,6 +517,7 @@ end;
 procedure TextBackground (Color: Byte);
 begin
 if not initialized then initializeAvatar;
+if isMonochrome then exit;
 
 { strip what we don't need }
 Color := Color and $0F;
@@ -567,6 +574,11 @@ procedure LowVideo;
 begin
 { unset highcolor bit }
 TextColor (TextAttr and $07)
+end;
+
+procedure SetMonochrome (monochrome: Boolean);
+begin
+isMonochrome := monochrome
 end;
 
 procedure delay (milliseconds: Integer);
@@ -891,6 +903,7 @@ Initialization
   fullscreen := false;
   initialized := false;
   audioinitialized := false;
+  isMonochrome := false;
   KeyboardBufferRead := 0;
   KeyboardBufferWrite := 0;
 
