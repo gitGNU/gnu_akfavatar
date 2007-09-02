@@ -486,13 +486,15 @@ end;
 procedure TextColor (Color: Byte);
 begin
 if not initialized then initializeAvatar;
-if isMonochrome then exit;
 
 { strip blink attribute }
 Color := Color and $0F;
 
 TextAttr := (TextAttr and $F0) or Color;
 OldTextAttr := TextAttr;
+
+{ keep only the highcolor-bit }
+if isMonochrome then Color := Color and $08;
 
 case Color of
   Black        : avt_set_text_color ($00, $00, $00);
@@ -517,13 +519,19 @@ end;
 procedure TextBackground (Color: Byte);
 begin
 if not initialized then initializeAvatar;
-if isMonochrome then exit;
 
 { strip what we don't need }
 Color := Color and $0F;
 
 TextAttr := (TextAttr and $0F) or (Color shl 4);
 OldTextAttr := TextAttr;
+
+{ no background color }
+if isMonochrome then
+  begin
+  avt_set_text_background_color ($FF, $FF, $FF);
+  exit
+  end;
 
 case Color of
   Black        : avt_set_text_background_color ($00, $00, $00);
