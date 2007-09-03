@@ -244,8 +244,6 @@ implementation
   uses DOS;
   {$IfNDef NoLink}
     {$LinkLib akfavatar}
-    {$LinkLib SDL}
-    {$IfDef Linux} {$LinkLib pthread} {$EndIf}
   {$EndIf}
 {$EndIf}
 
@@ -254,8 +252,6 @@ implementation
 
   {$IfNDef NoLink}
     {$L akfavatar}
-    {$L SDL}
-    {$IfDef __linux__} {$L pthread} {$EndIf}
   {$EndIf}
 
   {$Define cdecl attribute(cdecl)} 

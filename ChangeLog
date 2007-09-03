@@ -1,4 +1,7 @@
-2007-09-01  Andreas K. Foerster  <info@akfoerster.de>
+2007-09-03  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.pas:
+	no need to link to SDL or pthread directly
 
 	* akfavatar.h, avatar.c (avt_register_keyhandler):
 	new function
