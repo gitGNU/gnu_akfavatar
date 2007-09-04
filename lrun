@@ -1,0 +1,24 @@
+#!/bin/sh
+# this file is in the Public Domain -- AKFoerster
+
+localdir=$(dirname $0)
+
+if [ $# -ne 1 -o "$1" = "--help" -o "$1" = "-h" ]
+then
+  echo "usage: ./lrun program"
+  echo "lrun runs programs using libraries in lrun's directory"
+  exit 0
+fi
+
+PATH=$PATH:$localdir:.
+
+if [ -z "$LD_LIBRARY_PATH" ]
+then
+  LD_LIBRARY_PATH="$localdir"
+else
+  LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$localdir"
+fi
+
+export PATH LD_LIBRARY_PATH
+
+exec $1
