@@ -52,7 +52,7 @@ const
 {$EndIf}
 
 {$IfDef deutsch}
-  const question = '1) multiplizieren oder 2) dividiren '#252'ben?';
+  const question = '1) multiplizieren oder 2) dividieren '#252'ben?';
   const
     correct = 'richtig';
     wrong = 'falsch';
