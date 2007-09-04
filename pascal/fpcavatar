@@ -10,5 +10,5 @@ UNITPATH=~/units:/usr/local/lib/fpc/units
 #DEFINES="-dLATIN1"
 
 
-exec $FPC $FPCFLAGS -Fu"$UNITPATH" -dAKFAVATAR $DEFINES -Faavatar "$@"
+exec $FPC $FPCFLAGS -Fu"$UNITPATH" -dAKFAVATAR $DEFINES -Faakfavatar "$@"
 

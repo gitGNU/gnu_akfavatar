@@ -5,9 +5,6 @@ You also need the file "avatar.pas". That is not automatically installed,
 because there is no standard directory for that. But it is found, if it 
 simply is in the current directory.
 
-Be careful "avatar.pas" should never be in the same directory with
-"avatar.c", because both produce a file named "avatar.o".
-
 
 SIMPLE USE CASES
 

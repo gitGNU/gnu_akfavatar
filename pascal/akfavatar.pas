@@ -47,7 +47,7 @@ no support planned for:
 
 {$X+}
 
-unit avatar;
+unit akfavatar;
 
 interface
 

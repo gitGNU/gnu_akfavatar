@@ -164,6 +164,10 @@ distclean: clean
 	$(MAKE) -C mingw32 distclean
 	$(MAKE) -C doc distclean
 
+
+# the rest is just for the maintainer
+# use at your own risk
+
 maintainerclean: distclean
 
 dist: info txt man distclean
@@ -178,7 +182,8 @@ dist: info txt man distclean
 	   akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/
 	
 	mkdir akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/pascal
-	ln pascal/README pascal/avatar.pas pascal/example.pas \
+	ln pascal/README pascal/akfavatar.pas pascal/example.pas \
+	   pascal/multiply.pas pascal/correct.wav pascal/wrong.wav \
 	   pascal/gpcavatar pascal/fpcavatar \
 	   akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/pascal/
 	

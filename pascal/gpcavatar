@@ -10,6 +10,6 @@ UNITPATH=~/units:/usr/local/lib/gpc/units
 #DEFINES="-DLATIN1"
 
 exec $GPC --executable-file-name $GPCFLAGS -DAKFAVATAR $DEFINES \
-          --automake --unit-path="$UNITPATH" --uses=avatar \
+          --automake --unit-path="$UNITPATH" --uses=akfavatar \
           "$@"
 
