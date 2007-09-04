@@ -141,8 +141,16 @@ repeat
       begin
       GotoXY(30, WhereY-1);
       if isCorrect
-        then begin TextColor(green); WriteLn(correct) end
-        else begin TextColor(red); WriteLn(wrong) end;
+        then begin 
+	     {$IfDef AKFAVATAR} PlaySoundFile('correct.wav'); {$EndIf}
+	     TextColor(green);
+	     WriteLn(correct) 
+	     end
+        else begin 
+	     {$IfDef AKFAVATAR} PlaySoundFile('wrong.wav'); {$EndIf}
+	     TextColor(red); 
+	     WriteLn(wrong) 
+	     end;
       NormVideo
       end
   until isCorrect or endRequest
