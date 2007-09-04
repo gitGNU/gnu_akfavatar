@@ -178,7 +178,7 @@ Randomize;
 AskWhatToExercise;
 query;
 
-{$IfDef AKFAvatar}
+{$IfDef AKFAVATAR}
   { Avoid waiting for a keypress }
   MoveAvatarOut;
 {$EndIf}
