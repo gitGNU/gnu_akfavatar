@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.2 2007-08-26 12:17:14 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.3 2007-09-05 06:16:08 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -35,6 +35,7 @@ static Uint8 *sound = NULL;	/* Pointer to wave data */
 static Uint8 *soundpos = NULL;	/* Current play position */
 static Uint32 soundlen = 0;	/* Length of wave data */
 static Uint32 soundleft = 0;	/* Length of left unplayed wave data */
+static int loop = 0;
 
 extern int avt_checkevent (void);
 
@@ -43,7 +44,15 @@ fill_audio (void *unused, Uint8 * stream, int len)
 {
   /* only play, when there is data left */
   if (soundleft <= 0)
-    return;
+    {
+      if (!loop)
+	return;
+      else			/* rewind to beginning */
+	{
+	  soundpos = sound;
+	  soundleft = soundlen;
+	}
+    }
 
   /* Mix as much data as possible */
   len = (len > soundleft ? soundleft : len);
@@ -163,11 +172,11 @@ avt_play_audio (void)
 int
 avt_wait_audio_end (void)
 {
-  if (soundleft > 0)
+  if (soundleft > 0 && !loop)
     {
       /* loop while sound is still playing, and there is no event */
       while ((soundleft > 0) && !avt_checkevent ())
-	SDL_Delay (1);	/* give some time to other processes */
+	SDL_Delay (1);		/* give some time to other processes */
       /* wait for last buffer + somewhat extra to be sure */
       SDL_Delay (((audiospec.samples * 1000) / audiospec.freq) + 100);
       avt_checkevent ();
