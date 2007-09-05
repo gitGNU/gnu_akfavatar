@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.5 2007-09-01 07:10:10 akf Exp $ */
+/* $Id: akfavatar.h,v 2.6 2007-09-05 17:35:53 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -49,6 +49,10 @@
 #define AVATARNORMAL 0
 #define AVATARQUIT 1
 #define AVATARERROR -1
+
+/* for avt_set_delays */
+#define DEFAULT_TEXT_DELAY 75
+#define DEFAULT_FLIP_PAGE_DELAY 2700
 
 /* for avt_text_direction */
 #define LEFT_TO_RIGHT 0
@@ -108,8 +112,8 @@ extern char *avt_license (void);
 /* 0 = normal; 1 = quit-request; 2 = error */
 extern int avt_get_status (void);
 
-/* set status to 0 */
-extern void avt_reset_status (void);
+/* set status */
+extern void avt_set_status (int status);
 
 /* get error message */
 extern char *avt_get_error (void);
@@ -170,6 +174,13 @@ extern void avt_set_background_color (int red, int green, int blue);
  */
 extern void avt_set_text_color (int red, int green, int blue);
 extern void avt_set_text_background_color (int red, int green, int blue);
+
+/*
+ * delay times for text-writing and for avt_flip_page
+ * times are in milliseconds
+ * default: DEFAULT_TEXT_DELAY, DEFAULT_FLIP_PAGE_DELAY
+ */
+extern void avt_set_delays (int text, int flip_page);
 
 /* register an external keyhandler */
 extern void avt_register_keyhandler (void *handler);

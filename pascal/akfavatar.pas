@@ -100,9 +100,13 @@ type TextDirection = (LeftToRight, RightToLeft);
 }
 var TextAttr : byte;
 
+{ methods to stop the program }
+var
+  CheckBreak: boolean; { compatible to CRT }
+  CheckEsc: boolean;
+
 { compatible to the CRT unit }
 var 
-  CheckBreak: boolean;
   CheckEof: boolean;
   CheckSnow: boolean;
   DirectVideo: boolean;
@@ -126,6 +130,9 @@ procedure AvatarImageFile(FileName: string);
 { set a different background color (default is grey) }
 { must be used before any output took place }
 procedure setBackgroundColor (red, green, blue: byte);
+
+{ change pace of text and page flipping }
+procedure setDelays(text, flip_page: Integer);
 
 { change the encoding }
 procedure setEncoding(const newEncoding: string);
@@ -297,6 +304,9 @@ function avt_default: PAvatarImage; cdecl; external name 'avt_default';
 function avt_get_status: CInteger; 
   cdecl; external name 'avt_get_status';
 
+procedure avt_set_delays (txt, flip_page: CInteger);
+  cdecl; external name 'avt_set_delays';
+
 function avt_say_mb(t: CString): CInteger; 
   cdecl; external name 'avt_say_mb';
 
@@ -409,7 +419,12 @@ begin
 avt_mb_encoding(String2CString(newEncoding))
 end;
 
-procedure setTextDirection (direction: TextDirection);
+procedure setDelays(text, flip_page: Integer);
+begin
+avt_set_delays (text, flip_page)
+end;
+
+procedure setTextDirection(direction: TextDirection);
 begin
 avt_text_direction (ord (direction))
 end;
@@ -724,8 +739,9 @@ begin
           ' unicode: ', unicode);
 {$EndIf}
 
-{ CheckBreak }
-if CheckBreak and (unicode=3) then 
+{ CheckBreak, CheckEsc }
+if (CheckBreak and (unicode=3)) or 
+   (CheckEsc and (unicode=27)) then 
   begin
   FastQuit := true;
   Halt
@@ -919,6 +935,7 @@ Initialization
  
   TextAttr := $F0;
   OldTextAttr := TextAttr;
+  CheckEsc := true;
   CheckBreak := true;
   CheckEof := false;
   CheckSnow := true;

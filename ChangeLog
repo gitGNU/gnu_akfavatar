@@ -1,8 +1,21 @@
-2007-09-04  Andreas K. Foerster  <info@akfoerster.de>
+2007-09-05  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_set_delays):
+	new function
+	dodelay: variable removed
+
+	* avatarsay.c (keyhandler): new function
+
+	* avatar.c (avt_analyze_event):
+	don't check for the Esc key or space key
+	these have to be handled externally
+
+	* akfavatar.h, avatar.c (avt_reset_status): removed
+	(avt_set_status): new function
 
 	* avatar.pas renamed to akfavatar.pas
 
-	* avatar.pas:
+	* akfavatar.pas:
 	no need to link to SDL or pthread directly
 
 	* akfavatar.h, avatar.c (avt_register_keyhandler):
@@ -11,10 +24,11 @@
 	* avatar.c (avt_analyze_event):
 	support for external keyhandler
 	
-	* avatar.pas:
+	* akfavatar.pas:
 	support for writing to TextAttr
 	support for KeyPressed, ReadKey
 	support for CheckBreak
+	support for CheckEsc
 	dummys for CheckEof, CheckSnow, DirectVideo
 	dummy for Sound
 

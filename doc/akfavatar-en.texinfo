@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.4 2007-08-28 06:03:41 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.5 2007-09-05 17:35:53 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -119,10 +119,10 @@ are often demos that are meant to run without any interaction.  So it is
 not obvious how to interact with the  program.
 
 @cindex stopping (Esc key)
-When you have AKFAvatar running, you can press the key @key{Esc} at any
-time to stop the program.  When it runs in a window you can of course
-also use the close button of your window manager or any other means the
-window system offers for stopping a program.
+In most AKFAvatar programs, you can press the key @key{Esc} at any
+time to stop the program.  When it runs in a window you can also use 
+the close button of your window manager or any other means the window 
+system offers for stopping a program.
 
 @cindex pausing (Pause key)
 The text is normally displayed in a quite slow pace.  Nevertheless it
@@ -131,14 +131,14 @@ text, you can press the @key{Pause} key at any time.  (There might be a
 small delay in pausing the audio output.)  Press any other key to continue 
 again.
 
-@cindex flush (Space key)
-@cindex space key
-On the other hand sometimes it might be to slow for you.  Then you can
-use the @key{SPACE} bar.@footnote{The @key{SPACE} bar is the long bar at
-the bottom of the keyboard, with actually nothing but empty space printed 
-on it.}  This displays the whole page of text immediately.  The next page 
-starts in the normal pace again.  So you can press the @key{SPACE} bar 
-again and again.
+@c @cindex flush (Space key)
+@c @cindex space key
+@c On the other hand sometimes it might be to slow for you.  Then you can
+@c use the @key{SPACE} bar.@footnote{The @key{SPACE} bar is the long bar at
+@c the bottom of the keyboard, with actually nothing but empty space printed 
+@c on it.}  This displays the whole page of text immediately.  The next page 
+@c starts in the normal pace again.  So you can press the @key{SPACE} bar 
+@c again and again.
 
 @cindex switching fullscreen/window
 @cindex toggle fullscreen/window

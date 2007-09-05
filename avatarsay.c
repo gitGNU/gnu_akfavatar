@@ -18,9 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.2 2007-08-26 12:17:15 akf Exp $ */
-
-/* TODO: stop as global variable */
+/* $Id: avatarsay.c,v 2.3 2007-09-05 17:35:53 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -55,6 +53,9 @@ static char encoding[80] = "UTF-8";
 /* if rawmode is set, then don't interpret any commands or comments */
 /* rawmode can be activated with the options -r or --raw */
 static int rawmode = 0;
+
+/* stop the program? */
+static int stop = 0;
 
 /* 
  * ignore end of file conditions
@@ -346,6 +347,13 @@ checkenvironment (void)
 }
 
 static void
+keyhandler (int sym, int mod, int unicode)
+{
+  if (sym == 27)
+    avt_set_status(AVATARQUIT);
+}
+
+static void
 move_in (void)
 {
   if (initialized)
@@ -517,7 +525,7 @@ strip (char **s)
 
 /* handle commads, including comments */
 static int
-iscommand (char *s, int *stop)
+iscommand (char *s)
 {
   if (rawmode)
     return 0;
@@ -531,7 +539,7 @@ iscommand (char *s, int *stop)
     {
       if (initialized)
 	if (avt_flip_page ())
-	  *stop = 1;
+	  stop = 1;
       return 1;
     }
 
@@ -591,7 +599,7 @@ iscommand (char *s, int *stop)
 	{
 	  if (initialized)
 	    if (avt_flip_page ())
-	      *stop = 1;
+	      stop = 1;
 	  return 1;
 	}
 
@@ -609,11 +617,11 @@ iscommand (char *s, int *stop)
 	  if (!initialized)
 	    initialize ();
 	  else if (avt_wait (2700))
-	    *stop = 1;
+	    stop = 1;
 
 	  avt_show_avatar ();
 	  if (avt_wait (4000))
-	    *stop = 1;
+	    stop = 1;
 	  return 1;
 	}
 
@@ -636,7 +644,7 @@ iscommand (char *s, int *stop)
 	{
 	  if (initialized)
 	    if (avt_wait_audio_end ())
-	      *stop = 1;
+	      stop = 1;
 	  return 1;
 	}
 
@@ -648,7 +656,7 @@ iscommand (char *s, int *stop)
 	{
 	  if (initialized)
 	    if (avt_wait (2500))
-	      *stop = 1;
+	      stop = 1;
 	  return 1;
 	}
 
@@ -672,14 +680,14 @@ iscommand (char *s, int *stop)
 	{
 	  if (initialized)
 	    avt_move_out ();
-	  *stop = 1;
+	  stop = 1;
 	  return 1;
 	}
 
       if (strcmp (s, ".stop") == 0)
 	{
 	  /* doesn't matter whether it's initialized */
-	  *stop = 1;
+	  stop = 1;
 	  return 1;
 	}
 
@@ -767,7 +775,6 @@ check_bom (char *line, int len)
 static int
 processfile (const char *fname)
 {
-  int stop = 0;
   FILE *text;
   char *line = NULL;
   size_t len = 0;
@@ -810,8 +817,7 @@ processfile (const char *fname)
       }
     while (read != EOF
 	   && (strcmp (line, "\n") == 0
-	       || strcmp (line, "\r\n") == 0
-	       || iscommand (line, &stop)) && !stop);
+	       || strcmp (line, "\r\n") == 0 || iscommand (line)) && !stop);
 
   if (!initialized && !stop)
     {
@@ -842,7 +848,7 @@ processfile (const char *fname)
 	    }
 	}
 
-      if (read != EOF && !stop && !iscommand (line, &stop))
+      if (read != EOF && !stop && !iscommand (line))
 	if (avt_say_mb (process_line_end (line)))
 	  stop = 1;
     }
@@ -879,6 +885,7 @@ main (int argc, char *argv[])
   checkoptions (argc, argv);
 
   set_encoding (encoding);
+  avt_register_keyhandler (&keyhandler);
 
   do
     {

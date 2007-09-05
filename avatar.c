@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.9 2007-09-01 14:51:15 akf Exp $ */
+/* $Id: avatar.c,v 2.10 2007-09-05 17:35:53 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -100,9 +100,6 @@
 #  define MOVE_DELAY 5
 #endif /* QVGA */
 
-#define TEXT_DELAY 75
-#define FLIP_PAGE_DELAY 2700
-
 
 /* for dynamically loading SDL_image */
 #ifndef SDL_IMAGE_LIB
@@ -152,16 +149,16 @@ static int textdir_rtl = LEFT_TO_RIGHT;
 static int linestart;
 static int balloonheight;
 
+/* delay values for printing text and flipping the page */
+static int text_delay = DEFAULT_TEXT_DELAY;
+static int flip_page_delay = DEFAULT_FLIP_PAGE_DELAY;
+
 /* color independent from the screen mode */
 static SDL_Color backgroundcolor_RGB = { 0xCC, 0xCC, 0xCC, 0 };
 
 /* conversion descriptors for text input and output */
 static SDL_iconv_t output_cd = ICONV_UNINITIALIZED;
 static SDL_iconv_t input_cd = ICONV_UNINITIALIZED;
-
-/* wheather or not the writing is delayed */
-/* pressing the space key flushes the output */
-static int dodelay = 1;
 
 static struct pos
 {
@@ -236,9 +233,9 @@ avt_get_status (void)
 }
 
 void
-avt_reset_status (void)
+avt_set_status (int status)
 {
-  _avt_STATUS = AVATARNORMAL;
+  _avt_STATUS = status;
 }
 
 /* taken from the SDL documentation */
@@ -436,7 +433,6 @@ avt_drawballoon (void)
   /* cursor at top  */
   cursor.x = linestart;
   cursor.y = textfield.y;
-  dodelay = 1;
 
   /* 
    * only allow drawings inside this area from now on 
@@ -571,10 +567,6 @@ avt_analyze_event (SDL_Event * event)
     case SDL_KEYDOWN:
       switch (event->key.keysym.sym)
 	{
-	case SDLK_ESCAPE:
-	  _avt_STATUS = AVATARQUIT;
-	  break;
-
 	case SDLK_PAUSE:
 	  avt_pause ();
 	  break;
@@ -602,9 +594,6 @@ avt_analyze_event (SDL_Event * event)
 	      avt_toggle_fullscreen ();
 	      break;
 	    }
-
-	case SDLK_SPACE:
-	  dodelay = 0;
 
 	default:
 	  if (avt_ext_keyhandler)
@@ -747,7 +736,6 @@ avt_clear (void)
   SDL_UpdateRect (screen, textfield.x, textfield.y, textfield.w, textfield.h);
   cursor.x = linestart;
   cursor.y = textfield.y;
-  dodelay = 1;
 }
 
 void
@@ -796,11 +784,11 @@ avt_flip_page (void)
 
   /* the textarea must be updated, 
      if it's not updated letter by letter */
-  if (!dodelay)
+  if (!text_delay)
     SDL_UpdateRect (screen, textfield.x,
 		    textfield.y, textfield.w, textfield.h);
 
-  avt_wait (FLIP_PAGE_DELAY);
+  avt_wait (flip_page_delay);
   avt_clear ();
   return _avt_STATUS;
 }
@@ -1002,10 +990,10 @@ avt_say (const wchar_t * txt)
 	  if (*txt > 32)
 	    {
 	      avt_drawchar (*txt);
-	      if (dodelay)
+	      if (text_delay)
 		{
 		  avt_showchar ();
-		  avt_wait (TEXT_DELAY);
+		  avt_wait (text_delay);
 		}
 	      avt_forward ();
 	    }			/* if (*txt > 32) */
@@ -1017,7 +1005,7 @@ avt_say (const wchar_t * txt)
       txt++;
     }				/* while (*t != 0) */
 
-  if (!dodelay)
+  if (!text_delay)
     SDL_UpdateRect (screen, textfield.x,
 		    textfield.y, textfield.w, textfield.h);
 
@@ -1137,7 +1125,6 @@ avt_getchar (void)
 {
   SDL_Event event;
   wchar_t ch;
-  int delaystate = dodelay;
 
   ch = 0;
   while ((ch <= 0) && (_avt_STATUS == AVATARNORMAL))
@@ -1149,7 +1136,6 @@ avt_getchar (void)
 	ch = (wchar_t) event.key.keysym.unicode;
     }
 
-  dodelay = delaystate;
   return ch;
 }
 
@@ -1872,6 +1858,13 @@ avt_set_text_background_color (int red, int green, int blue)
   color.g = green;
   color.b = blue;
   SDL_SetColors (avt_character, &color, 0, 1);
+}
+
+void
+avt_set_delays (int text, int flip_page)
+{
+  text_delay = text;
+  flip_page_delay = flip_page;
 }
 
 char *
