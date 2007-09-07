@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.6 2007-09-05 17:35:53 akf Exp $ */
+/* $Id: akfavatar.h,v 2.7 2007-09-07 13:10:29 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -96,6 +96,12 @@ extern "C"
  * may change in the future!
  */
 typedef void avt_image_t;
+
+/* 
+ * general type for audio data
+ * may change in the future!
+ */
+typedef void avt_audio_t;
 
 
 /* base fnctions */
@@ -359,13 +365,17 @@ extern void avt_quit_audio (void);
  * loads a wave file 
  * supported: PCM, MS-ADPCM, IMA-ADPCM
  */
-extern int avt_load_wave_file (const char *file);
-extern int avt_load_wave_data (void *data, int datasize);
+extern avt_audio_t *avt_load_wave_file (const char *file);
 
-/* stops audio and frees the audio memory */
-extern void avt_free_wave (void);
+/*
+ * loads wave data from memory
+ * must still be freed with avt_free_audio!
+ */
+extern avt_audio_t *avt_load_wave_data (void *data, int datasize);
 
-extern int avt_play_audio (void);
+extern void avt_free_audio (avt_audio_t * snd);
+
+extern int avt_play_audio (avt_audio_t * snd);
 
 extern int avt_wait_audio_end (void);
 

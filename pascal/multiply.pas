@@ -69,6 +69,10 @@ const divisionSign = '/';
 var endRequest: boolean;
 var exercise: (multiplication, division);
 
+var 
+  correctsnd: Pointer = NIL;
+  wrongsnd: Pointer = NIL;
+
 function GetRandomNumber(minimum, maximum: integer): integer;
 begin
 GetRandomNumber := Random(maximum-minimum+1) + minimum
@@ -142,12 +146,12 @@ repeat
       GotoXY(30, WhereY-1);
       if isCorrect
         then begin 
-	     {$IfDef AKFAVATAR} PlaySoundFile('correct.wav'); {$EndIf}
+	     {$IfDef AKFAVATAR} PlaySound(correctsnd); {$EndIf}
 	     TextColor(green);
 	     WriteLn(correct) 
 	     end
         else begin 
-	     {$IfDef AKFAVATAR} PlaySoundFile('wrong.wav'); {$EndIf}
+	     {$IfDef AKFAVATAR} PlaySound(wrongsnd); {$EndIf}
 	     TextColor(red); 
 	     WriteLn(wrong) 
 	     end;
@@ -167,6 +171,9 @@ Begin { main program }
 
   { load the image of the teacher, if there is one }
   AvatarImageFile('teacher.bmp');
+  
+  correctsnd := LoadSoundFile('correct.wav');
+  wrongsnd := LoadSoundFile('wrong.wav');
 {$EndIf}
 
 { This is either defined in AKFAvatar or in CRT }
@@ -179,6 +186,9 @@ AskWhatToExercise;
 query;
 
 {$IfDef AKFAVATAR}
+  FreeSound(correctsnd);
+  FreeSound(wrongsnd);
+  
   { Avoid waiting for a keypress }
   MoveAvatarOut;
 {$EndIf}

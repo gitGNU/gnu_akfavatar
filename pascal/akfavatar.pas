@@ -216,10 +216,12 @@ procedure MoveAvatarOut;
 }
 function ShowImageFile(FileName: string): boolean;
 
-{ plays Audio File
+{ loads Audio File
   currently only WAV files supported
   encodings: PCM, MS-ADPCM, IMA-ADPCM }
-procedure PlaySoundFile(const FileName: string);
+function LoadSoundFile(const FileName: string): Pointer;
+procedure FreeSound(snd: Pointer);
+procedure PlaySound(snd: Pointer);
 
 { wait until the end of the audio output }
 procedure WaitSoundEnd;
@@ -367,12 +369,13 @@ procedure avt_quit; cdecl; external name 'avt_quit';
 
 procedure avt_quit_audio; cdecl; external name 'avt_quit_audio';
 
-function avt_load_wave_file(f: CString): CInteger;
+function avt_load_wave_file(f: CString): Pointer;
   cdecl; external name 'avt_load_wave_file';
 
-procedure avt_free_wave; cdecl; external name 'avt_free_wave';
+procedure avt_free_audio(snd: Pointer); 
+  cdecl; external name 'avt_free_audio';
 
-function avt_play_audio: CInteger; 
+function avt_play_audio(snd: Pointer): CInteger; 
   cdecl; external name 'avt_play_audio';
 
 function avt_wait_audio_end: CInteger;
@@ -694,14 +697,20 @@ if avt_initialize_audio<>0 then Halt;
 audioinitialized := true
 end;
 
-procedure PlaySoundFile(const FileName: string);
-var status: Integer;
+function LoadSoundFile(const FileName: string): Pointer;
+begin
+LoadSoundFile := avt_load_wave_file(String2CString(FileName))
+end;
+
+procedure FreeSound(snd: Pointer);
+begin
+avt_free_audio(snd)
+end;
+
+procedure PlaySound(snd: Pointer);
 begin
 if not audioinitialized then InitializeAudio;
-status := avt_load_wave_file(String2CString(FileName));
-if status = 1 then Halt;
-if status = 0 then 
-  if avt_play_audio<>0 then Halt
+avt_play_audio(snd)
 end;
 
 procedure WaitSoundEnd;

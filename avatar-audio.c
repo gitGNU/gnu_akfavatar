@@ -22,18 +22,25 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.3 2007-09-05 06:16:08 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.4 2007-09-07 13:10:29 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
 #include "SDL_audio.h"
 
+typedef struct
+{
+  SDL_AudioSpec audiospec;
+  Uint8 *sound;			/* Pointer to sound data */
+  Uint32 len;			/* Length of wave data */
+  Uint8 wave;			/* wether SDL_FreeWav is needed? */
+} AudioStruct;
+
 extern int _avt_STATUS;
 
-static SDL_AudioSpec audiospec;
-static Uint8 *sound = NULL;	/* Pointer to wave data */
+/* current sound */
+static AudioStruct current_sound;
 static Uint8 *soundpos = NULL;	/* Current play position */
-static Uint32 soundlen = 0;	/* Length of wave data */
 static Uint32 soundleft = 0;	/* Length of left unplayed wave data */
 static int loop = 0;
 
@@ -49,8 +56,8 @@ fill_audio (void *unused, Uint8 * stream, int len)
 	return;
       else			/* rewind to beginning */
 	{
-	  soundpos = sound;
-	  soundleft = soundlen;
+	  soundpos = current_sound.sound;
+	  soundleft = current_sound.len;
 	}
     }
 
@@ -71,97 +78,114 @@ avt_initialize_audio (void)
   return _avt_STATUS;
 }
 
-/* stops audio, but leaves the file loaded */
+/* stops audio */
 void
 avt_stop_audio (void)
 {
   SDL_CloseAudio ();
+  soundpos = NULL;
+  soundleft = 0;
+  loop = 0;
+  current_sound.len = 0;
+  current_sound.sound = NULL;
 }
 
 /* should be called BEFORE avt_quit */
 void
 avt_quit_audio (void)
 {
-  avt_free_wave ();
+  SDL_CloseAudio ();
+  soundpos = NULL;
+  soundleft = 0;
+  current_sound.len = 0;
+  current_sound.sound = NULL;
   SDL_QuitSubSystem (SDL_INIT_AUDIO);
 }
 
-int
+avt_audio_t *
 avt_load_wave_file (const char *file)
 {
-  if (sound)
-    avt_free_wave ();
+  AudioStruct *s;
 
-  SDL_LockAudio ();
+  s = malloc (sizeof (AudioStruct));
+  if (s == NULL)
+    return NULL;
 
-  if (SDL_LoadWAV (file, &audiospec, &sound, &soundlen) == NULL)
+  s->wave = 1;
+  if (SDL_LoadWAV (file, &s->audiospec, &s->sound, &s->len) == NULL)
     {
-      sound = NULL;
-      return AVATARERROR;
+      SDL_free (s);
+      return NULL;
     }
 
-  soundpos = sound;
-  soundleft = soundlen;
-  audiospec.callback = fill_audio;
-  SDL_UnlockAudio ();
-
-  return _avt_STATUS;
+  return (avt_audio_t *) s;
 }
 
-int
+avt_audio_t *
 avt_load_wave_data (void *data, int datasize)
 {
-  if (sound)
-    avt_free_wave ();
+  AudioStruct *s;
 
-  SDL_LockAudio ();
+  s = malloc (sizeof (AudioStruct));
+  if (s == NULL)
+    return NULL;
 
+  s->wave = 1;
   if (SDL_LoadWAV_RW (SDL_RWFromMem (data, datasize), 1,
-		      &audiospec, &sound, &soundlen) == NULL)
+		      &s->audiospec, &s->sound, &s->len) == NULL)
     {
-      sound = NULL;
-      return AVATARERROR;
+      SDL_free (s);
+      return NULL;
     }
 
-  soundpos = sound;
-  soundleft = soundlen;
-  audiospec.callback = fill_audio;
-  SDL_UnlockAudio ();
-
-  return _avt_STATUS;
+  return (avt_audio_t *) s;
 }
 
 void
-avt_free_wave (void)
+avt_free_audio (avt_audio_t * snd)
 {
-  SDL_CloseAudio ();
-  soundpos = NULL;
-  soundlen = 0;
-  soundleft = 0;
-  SDL_FreeWAV (sound);
-  sound = NULL;
+  AudioStruct *s;
+
+  if (snd)
+    {
+      s = (AudioStruct *) snd;
+
+      /* free the sound data */
+      if (s->wave)
+	SDL_FreeWAV (s->sound);
+      else
+	SDL_free (s->sound);
+
+      /* free the rest */
+      SDL_free (s);
+    }
 }
 
 int
-avt_play_audio (void)
+avt_play_audio (avt_audio_t * snd)
 {
+  AudioStruct *newsound;
+
   /* no sound? - just ignore it */
-  if (!sound)
+  if (!snd)
     return _avt_STATUS;
+
+  newsound = (AudioStruct *) snd;
 
   /* close audio, in case it is left open */
   SDL_CloseAudio ();
   SDL_LockAudio ();
 
-  /* rewind to beginning of sound */
-  soundpos = sound;
-  soundleft = soundlen;
+  /* load sound */
+  current_sound.sound = newsound->sound;
+  current_sound.len = newsound->len;
+  current_sound.audiospec = newsound->audiospec;
+  current_sound.audiospec.callback = fill_audio;
+  soundpos = current_sound.sound;
+  soundleft = current_sound.len;
 
-  if (SDL_OpenAudio (&audiospec, NULL) < 0)
-    {
-      avt_free_wave ();
-      return AVATARERROR;
-    }
+  if (SDL_OpenAudio (&current_sound.audiospec, NULL) < 0)
+    return AVATARERROR;
 
   SDL_UnlockAudio ();
   SDL_PauseAudio (0);
@@ -177,10 +201,12 @@ avt_wait_audio_end (void)
       /* loop while sound is still playing, and there is no event */
       while ((soundleft > 0) && !avt_checkevent ())
 	SDL_Delay (1);		/* give some time to other processes */
+
       /* wait for last buffer + somewhat extra to be sure */
-      SDL_Delay (((audiospec.samples * 1000) / audiospec.freq) + 100);
-      avt_checkevent ();
+      SDL_Delay (((current_sound.audiospec.samples * 1000)
+		  / current_sound.audiospec.freq) + 100);
     }
 
+  avt_checkevent ();
   return _avt_STATUS;
 }

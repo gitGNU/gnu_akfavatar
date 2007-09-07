@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.3 2007-09-05 17:35:53 akf Exp $ */
+/* $Id: avatarsay.c,v 2.4 2007-09-07 13:10:29 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -87,11 +87,18 @@ static char datadir[255] = "";
 /* for loading an avt_image */
 static avt_image_t *avt_image = NULL;
 
+/* for loading sound files */
+static avt_audio_t *sound = NULL;
+
+
 static void
 quit (int exitcode)
 {
   if (initialized)
     {
+      if (sound)
+	avt_free_audio (sound);
+
       avt_quit_audio ();
       avt_quit ();
     }
@@ -350,7 +357,7 @@ static void
 keyhandler (int sym, int mod, int unicode)
 {
   if (sym == 27)
-    avt_set_status(AVATARQUIT);
+    avt_set_status (AVATARQUIT);
 }
 
 static void
@@ -457,16 +464,21 @@ handle_audio_command (const char *s)
 
   if (sscanf (s, ".audio %255s", (char *) &filename) > 0)
     {
+      if (sound)
+	avt_free_audio (sound);
+      sound = NULL;
+
       strcpy (file, datadir);
       strncat (file, filename, 255 - strlen (datadir));
 
-      if (avt_load_wave_file (file))
+      sound = avt_load_wave_file (file);
+      if (!sound)
 	{
 	  notice ("can not load audio file", avt_get_error ());
 	  return;
 	}
 
-      if (avt_play_audio ())
+      if (avt_play_audio (sound))
 	notice ("can not play audio file", avt_get_error ());
     }
 }
