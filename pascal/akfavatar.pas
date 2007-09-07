@@ -301,6 +301,9 @@ const KeyboardBufferSize = 40;
 var KeyboardBuffer: array [ 0 .. KeyboardBufferSize-1 ] of char;
 var KeyboardBufferRead, KeyboardBufferWrite: integer;
 
+procedure avt_stop_on_esc (stop: CInteger);
+  cdecl; external name 'avt_stop_on_esc';
+
 function avt_default: PAvatarImage; cdecl; external name 'avt_default';
 
 function avt_get_status: CInteger; 
@@ -955,6 +958,7 @@ Initialization
 
   avt_mb_encoding(DefaultEncoding);
   
+  avt_stop_on_esc(ord(false)); { Esc is handled in the KeyHandler }
   avt_register_keyhandler(@KeyHandler);
 
   { redirect i/o to Avatar }

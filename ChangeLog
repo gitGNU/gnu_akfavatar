@@ -1,4 +1,7 @@
-2007-09-05  Andreas K. Foerster  <info@akfoerster.de>
+2007-09-07  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_stop_on_esc):
+	new function
 
 	* akfavatar.h, avatar.c (avt_set_delays):
 	new function

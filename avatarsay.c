@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.4 2007-09-07 13:10:29 akf Exp $ */
+/* $Id: avatarsay.c,v 2.5 2007-09-07 18:02:14 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -351,13 +351,6 @@ checkenvironment (void)
   if (e && !avt_image)
     if (!(avt_image = avt_import_image_file (e)))
       error ("error while loading the AVATARIMAGE", avt_get_error ());
-}
-
-static void
-keyhandler (int sym, int mod, int unicode)
-{
-  if (sym == 27)
-    avt_set_status (AVATARQUIT);
 }
 
 static void
@@ -897,7 +890,6 @@ main (int argc, char *argv[])
   checkoptions (argc, argv);
 
   set_encoding (encoding);
-  avt_register_keyhandler (&keyhandler);
 
   do
     {

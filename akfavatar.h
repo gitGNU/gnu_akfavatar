@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.7 2007-09-07 13:10:29 akf Exp $ */
+/* $Id: akfavatar.h,v 2.8 2007-09-07 18:02:14 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -130,6 +130,9 @@ extern char *avt_get_error (void);
  * in a text, you might want to call avt_newline after that
  */
 extern void avt_text_direction (int direction);
+
+/* stop, when Esc is pressed? (default: yes) */
+extern void avt_stop_on_esc (int stop);
 
 /*
  * get the default avatar image

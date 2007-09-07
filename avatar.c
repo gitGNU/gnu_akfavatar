@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.10 2007-09-05 17:35:53 akf Exp $ */
+/* $Id: avatar.c,v 2.11 2007-09-07 18:02:14 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -143,6 +143,7 @@ static int avt_mode;		/* whether fullscreen or window or ... */
 static int must_lock;		/* must the screen be locked? */
 static SDL_Rect window;		/* if screen is in fact larger */
 static int avt_visible = 0;
+static int do_stop_on_esc = 1;	/* stop, when Esc is pressed? */
 static SDL_Rect textfield = { -1, -1, -1, -1 };
 static int textdir_rtl = LEFT_TO_RIGHT;
 /* beginning of line - depending on text direction */
@@ -577,10 +578,18 @@ avt_analyze_event (SDL_Event * event)
 	  break;
 
 	  /* no "break" for the following ones: */
-	  
+
+	case SDLK_ESCAPE:
+	  if (do_stop_on_esc)
+	    {
+	      _avt_STATUS = AVATARQUIT;
+	      break;
+	    }
+
 	  /* Left Alt + Return -> avt_toggle_fullscreen */
 	case SDLK_RETURN:
-	  if (event->key.keysym.mod & KMOD_LALT)
+	  if (event->key.keysym.sym == SDLK_RETURN
+	      && event->key.keysym.mod & KMOD_LALT)
 	    {
 	      avt_toggle_fullscreen ();
 	      break;
@@ -588,7 +597,8 @@ avt_analyze_event (SDL_Event * event)
 
 	  /* Ctrl + Left Alt + F -> avt_toggle_fullscreen */
 	case SDLK_f:
-	  if ((event->key.keysym.mod & KMOD_CTRL)
+	  if (event->key.keysym.sym == SDLK_f
+	      && (event->key.keysym.mod & KMOD_CTRL)
 	      && (event->key.keysym.mod & KMOD_LALT))
 	    {
 	      avt_toggle_fullscreen ();
@@ -1830,6 +1840,12 @@ avt_set_background_color (int red, int green, int blue)
   backgroundcolor_RGB.r = red;
   backgroundcolor_RGB.g = green;
   backgroundcolor_RGB.b = blue;
+}
+
+void
+avt_stop_on_esc (int stop)
+{
+  do_stop_on_esc = (stop != 0);
 }
 
 void
