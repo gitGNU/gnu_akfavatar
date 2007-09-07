@@ -64,7 +64,7 @@ const
   const multiplicationSign = '*';
 {$EndIf}
 
-const divisionSign = '/';
+const divisionSign = ':';
 
 var endRequest: boolean;
 var exercise: (multiplication, division);
