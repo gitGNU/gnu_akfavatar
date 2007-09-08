@@ -62,11 +62,11 @@ libinfo.rc:
 	@echo "  BLOCK \"040904E4\"" >> $@
 	@echo "  BEGIN" >> $@
 	@echo "   VALUE \"CompanyName\", \"AKFoerster\"" >> $@
-	@echo "   VALUE \"FileDescription\", \"Avatar library\"" >> $@
+	@echo "   VALUE \"FileDescription\", \"AKFAvatar library\"" >> $@
 	@echo "   VALUE \"FileVersion\", \"$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)\"" >> $@
-	@echo "   VALUE \"InternalName\", \"avatar\"" >> $@
+	@echo "   VALUE \"InternalName\", \"akfavatar\"" >> $@
 	@echo "   VALUE \"LegalCopyright\", \"GPLv3+, Andreas K. F\366rster\"" >> $@
-	@echo "   VALUE \"OriginalFilename\", \"avatar.dll\"" >> $@
+	@echo "   VALUE \"OriginalFilename\", \"akfavatar.dll\"" >> $@
 	@echo "   VALUE \"Comments\", \"primarily written for GNU/Linux\"" >> $@
 	@echo "   VALUE \"ProductName\", \"AKFAvatar\"" >> $@
 	@echo "   VALUE \"ProductVersion\", \"$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)\"" >> $@
