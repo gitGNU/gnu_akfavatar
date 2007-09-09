@@ -3,7 +3,7 @@
 
 FPC=fpc
 FPCFLAGS=""
-UNITPATH=~/units:/usr/local/lib/fpc/units
+UNITPATH=~/units;/usr/local/lib/fpc/units
 
 # uncomment the following if your system is still Latin-1 based
 # otherwise UTF-8 is assumed
