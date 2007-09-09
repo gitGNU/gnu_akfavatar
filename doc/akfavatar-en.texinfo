@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.5 2007-09-05 17:35:53 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.6 2007-09-09 08:22:42 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -665,8 +665,8 @@ exit the program. Note: you can also exit the program by clicking on
 If you want to learn how to program, learn Pascal!
 
 Unfortunately Pascal is not so widely spread. Pascal has a bad name for some
-people, while C has a good name. Well, I don't understand why. I have used both
-languages and in my opinion it should be quite the opposite.
+people, while C has a good name. Well, I really don't understand why. 
+I have used both languages and in my opinion it should be quite the opposite.
 
 Before you ask: Yes, it would have been possible to write the whole thing in 
 Pascal. But as I said, C is more widely spread, and that has its consequences.
@@ -678,18 +678,15 @@ almost every other language can use libraries written in C.
 @end menu
 
 @node Pascal
-@section How to program the avatar in Pascal
+@section How to program with AKFAvatar in Pascal
 @cindex Pascal
 
-You can use the avatar for your Pascal programs.
+You can use AKFAvatar for your Pascal programs.
 
-First of all the avatar library must already be installed on your system.
-You also need the file @file{avatar.pas}.  That file usually is not 
+First of all the library must already be installed on your system.
+You also need the file @file{akfavatar.pas}.  That file usually is not 
 automatically installed, because there is no standard directory for that.  
 But it is found, if it simply is in the current directory.
-
-Be careful @file{avatar.pas} should never be in the same directory with
-@file{avatar.c}, because both produce a file named @file{avatar.o}.
 
 
 @subsection Simple use cases
@@ -697,16 +694,20 @@ Be careful @file{avatar.pas} should never be in the same directory with
 In the source-package you will find the scripts @file{gpcavatar} and 
 @file{fpcavatar} in the subdirectory @file{pascal/}.
 If you have @acronym{GNU}-Pascal (@command{gpc}) just try this: 
-@samp{./gpcavatar example.pas} This should compile a program 
-@file{example}.
+@samp{./gpcavatar example.pas}
+This should compile a program @file{example}.
 
 You can compile any program, that just uses plain standard input/output
 like this.  There are no changes to the source-code necessary!
-Just make sure, the program doesn't use the @code{CRT} unit or any other
-non-standard output facilities.
+
+If you want to start a new page, simply use the command @command{page;}.
 
 That is easy, isn't it?
 
+@display
+@emph{Note:} If the program uses the @code{CRT} unit, you have to make 
+changes to your program as described below.
+@end display
 
 @subsection Installing
 
@@ -718,20 +719,85 @@ scripts.
 
 
 @subsection Advanced use
-@cindex unit (Pascal)
-@cindex uses (Pascal)
 
-To use more advanced features of the library, you of course have to make 
-changes to your program.  After the @code{program}-line add 
-@samp{uses avatar;}. Then you don't have to use the scripts anymore.
+It is also possible to port programs, which use the @code{CRT} unit with
+AKFAvatar.  But then you have to make changes to your program.  
+
+The scripts @file{gpcavatar} and @file{fpcavatar} both define the symbol
+@code{AKFAVATAR}, so you can use @code{@{$IfDef AKFAVATAR@}} or 
+@code{@{$IfNDef AKFAVATAR@}} to control what to do when it it compiled 
+with AKFAvatar or without.
+
+To make sure your program can still be used with the @code{CRT} unit, you can 
+make something like this: @samp{@{$IfNDef AKFAVATAR@} uses CRT; @{$EndIf@}}. 
+The program @file{multiply.pas} is an example for this technique.
+
+AKFAvatar supports most commands and variables from the original @code{CRT} 
+unit.  For example the command @command{ClrScr} clears the text-area (not
+the whole screen!), @command{ClrEol} clears the rest of the line.
+You can use the command @command{GotoXY(@var{x}, @var{y});} to go to a special
+position inside the text-area, or use the functions @command{WhereX}
+and @command{WhereY} to find out the current position.
+
+@display
+@emph{Attention:} The width of the display is 80 characters as
+with a terminal display, but the height is much smaller.
+You can find out the dimensions of the text-area with 
+@code{ScreenSize.x} and @code{ScreenSize.y}, but only when the 
+text-area is already visible.  To ensure this, you could use the
+command @command{ClrScr;} before you check for the screen size.
+@end display
+
+You can use the command @command{TextColor(@var{color});} to change the
+color of the text.  You can even set the background color of the 
+text with the command @command{TextBackground(@var{color});}, but that
+doesn't look as good as on a text-terminal.
+
+To switch back to the ``normal'' text-color, you should use the 
+command @command{NormVideo;}.  The ``normal'' text-color is different
+when you use it with AKFAvatar or with the @code{CRT} unit.  So with
+this command you can ensure, that you get the desired result with 
+both.
+
+The commands @command{HighVideo} and @command{LowVideo} are supported
+and even the variable @code{TextAttr} is fully supported as in the 
+original @code{CRT} unit.  But it is better to avoid the use of that.
+
+The function @command{ReadKey} waits for a key to be pressed and returns
+the code of the pressed key.  To find out, whether a key was pressed without
+blocking the program, you can use the function @command{KeyPressed}.
+
+@display
+@emph{Attention:} 
+Function keys are not supported yet.  The key @key{Esc} stops the
+program immediately.  If you need the @key{Esc}-key for something
+else, you can set the variable @code{CheckEsc} to @code{false}.
+The program also stops when @key{Ctrl}+@key{C} is pressed.  You can
+set the variable @code{CheckBreak} to @code{false} to avoid that.
+The variable @code{CheckBreak} is compatible to the @code{CRT} unit,
+while @code{CheckEsc} is an extension.
+@end display
+
+
+There are many additional commands, which are not compatible to the @code{CRT}
+unit.
 
 You can use a different image for the avatar with the command
-@example
-@w{AvatarImageFile ('/usr/local/share/pixmaps/human-peasant.bmp');}
-@end example
+@verbatim
+{$IfDef AKFAVATAR}
+  AvatarImageFile ('/usr/local/share/pixmaps/human-peasant.bmp');
+{$EndIf}
+@end verbatim
 @noindent
 This is of course only an example.
 This command must be used before any input/output took place!
+
+If you want to change the background color of the window (not the text-area), 
+you can use the command @command{setBackgroundColor(@var{red}, @var{green}, 
+@var{blue});} at the beginning of the program.  The value for red, green and 
+blue represent the intensity of that color.  You can mix up any possible color 
+with these 3 values.  The maximum is 255 ($FF).  For example 
+@samp{setBackgroundColor(0, 0, 100);} sets a dark blue background color.
 
 You can define in your program which charset encoding you use.  If you
 have an old system based on the Latin-1 charset, use the command
@@ -765,17 +831,14 @@ position with the command @code{@w{GotoXY (x, y);}}.  You find out, where
 the cursor is with the functions @command{WhereX} or @command{WhereY}.  
 The coordinates 1, 1 is in the upper left corner (independent from the text
 direction).  You can find the maximum positions with @code{ScreenSize.x} and
-@code{ScreenSize.y}.  All these names where chosen to get some compatiblity
+@code{ScreenSize.y}.  All these names where chosen to get some compatibility
 with the @code{CRT} unit.  Actually they don't handle the screen, but only the
 text-area!
 
 If you want to print warnings, error messages or debugging information to
-the text-terminal, use the file-descriptor @code{stderr}.@footnote{on 
-Windows or ReactOS systems these messages cannot be seen, due to
-limitations inherent in these systems.  Terefore the output is written
-into text-files named @file{stdout.txt} and @file{stderr.txt}.  If there
-was no output to these files, they are automatically deleted.}  For
-example: @samp{WriteLn (stderr, 'Error: ', AvatarGetError);} Well, the
+the text-terminal, use the file-descriptor @code{stderr}.@footnote{this doesn't
+work on Windows or ReactOS systems.}  
+For example: @samp{WriteLn (stderr, 'Error: ', AvatarGetError);} Well, the
 function @command{AvatarGetError} gets an error message from the library.
 
 The command @command{ShowAvatar;} shows only the avatar without the balloon.
@@ -799,10 +862,11 @@ The following text shows the @code{interface} of the Pascal unit
 const LineLength = 80;
 
 { The following two definitions are in fact more complicated
-  I made them simpler for clearity }
+  I made them simpler here for clearity }
 { Default encoding of the system }
 const DefaultEncoding = 'UTF-8';
 type LineString = String;
+
 
 { Colors for TextColor/TextBackground }
 { compatible to the CRT unit }
@@ -827,10 +891,34 @@ const
 
 type TextDirection = (LeftToRight, RightToLeft);
 
+{ 
+  Text Attributes
+  mostly compatible to the CRT unit
+  the "blink-bit" means a bright background color
+}
+var TextAttr : byte;
+
+{ methods to stop the program }
+var
+  CheckBreak: boolean; { compatible to CRT }
+  CheckEsc: boolean;
+
+{ compatible to the CRT unit }
+var 
+  CheckEof: boolean;
+  CheckSnow: boolean;
+  DirectVideo: boolean;
+
 { The "Screen" is the textarea }
 { The name is chosen for compatiblity with the CRT unit }
-{ This variable only set after the avatar is visible }
+{ Just for reading! }
+{ This variable is only set after the avatar is visible }
 var ScreenSize : record x, y: Integer end;
+
+{ for CRT compatiblity, use ScreenSize for new programs }
+{ Just for reading! }
+{ These variables are only set after the avatar is visible }
+var WindMin, WindMax: word;
 
 
 { load the Avatar image from a file }
@@ -839,17 +927,23 @@ procedure AvatarImageFile(FileName: string);
 
 { set a different background color (default is grey) }
 { must be used before any output took place }
-procedure setBackgroundColor (red, green, blue: byte);
+procedure setBackgroundColor(red, green, blue: byte);
+
+{ change pace of text and page flipping }
+procedure setDelays(text, flip_page: Integer);
 
 { change the encoding }
 procedure setEncoding(const newEncoding: string);
 
 { change text direction (for hebrew/yiddish texts) }
 { you should start a new line before or after this command }
-procedure setTextDirection (direction: TextDirection);
+procedure setTextDirection(direction: TextDirection);
 
 { assign text-variable to the avatar }
-procedure AssignAvatar (var f: text);
+procedure AssignAvatar(var f: text);
+
+{ the same for CRT compatiblity }
+procedure AssignCrt(var f: text);
 
 { Restore Input/Output system }
 { use this to output help or version information }
@@ -861,29 +955,50 @@ procedure RestoreInOut;
 
   { action: wait a while and then clear the textfield }
 
-  procedure page (var f: text);
+  procedure page(var f: text);
   procedure page;
 {$EndIf}
+
+{ keyboard handling }
+{ partly CRT compatible - Latin1 chars so far }
+function KeyPressed: boolean;
+function ReadKey: char;
 
 { wait for a key }
 procedure waitkey (const message: string);
 
 { wait some time }
 { compatible to CRT unit }
-procedure delay (milliseconds: Integer);
+procedure delay(milliseconds: Integer);
 
 { example use: delay (seconds (2.5)); }
-function seconds (s: Real): Integer;
+function seconds(s: Real): Integer;
 
 { clears the textfield (not the screen!) }
 { the name was chosen for compatiblity to the CRT unit }
-procedure clrscr;
+procedure ClrScr;
+
+{ clears rest of the line }
+{ compatible to CRT unit }
+procedure ClrEol;
 
 { set the text color }
 { compatible to CRT unit }
 procedure TextColor (Color: Byte);
+
+{ set the text background color }
+{ compatible to CRT unit, but light colors can be used }
 procedure TextBackground (Color: Byte);
+
+{ set black on white text colors }
+{ name compatible to CRT unit, but the colors differ }
 procedure NormVideo;
+
+{ set high color intensity }
+procedure HighVideo;
+
+{ set low color intensity }
+procedure LowVideo;
 
 { shows the avatar without the balloon }
 procedure ShowAvatar;
@@ -899,16 +1014,21 @@ procedure MoveAvatarOut;
 }
 function ShowImageFile(FileName: string): boolean;
 
-{ plays Audio File
+{ loads Audio File
   currently only WAV files supported
   encodings: PCM, MS-ADPCM, IMA-ADPCM }
-procedure PlayAudioFile(const FileName: string);
+function LoadSoundFile(const FileName: string): Pointer;
+procedure FreeSound(snd: Pointer);
+procedure PlaySound(snd: Pointer);
 
 { wait until the end of the audio output }
-procedure WaitAudioEnd;
+procedure WaitSoundEnd;
 
-{ stops audio output imediately }
-procedure StopAudio;
+{ dummy function, full support planned }
+procedure Sound(frequency: Integer);
+
+{ stop sound output }
+procedure NoSound;
 
 { handle coordinates (inside the balloon) }
 { compatible to CRT unit }
@@ -918,6 +1038,10 @@ procedure GotoXY (x, y: Integer);
 
 { get last error message }
 function AvatarGetError: ShortString;
+
+{ ignore TextColor TextBackground and so on }
+{ compatible with GNU-Pascal's CRT unit }
+procedure SetMonochrome(monochrome: boolean);
 
 @end verbatim
 
