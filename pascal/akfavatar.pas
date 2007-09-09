@@ -221,7 +221,7 @@ function ShowImageFile(FileName: string): boolean;
   encodings: PCM, MS-ADPCM, IMA-ADPCM }
 function LoadSoundFile(const FileName: string): Pointer;
 procedure FreeSound(snd: Pointer);
-procedure PlaySound(snd: Pointer);
+procedure PlaySound(snd: Pointer; loop: boolean);
 
 { wait until the end of the audio output }
 procedure WaitSoundEnd;
@@ -378,7 +378,7 @@ function avt_load_wave_file(f: CString): Pointer;
 procedure avt_free_audio(snd: Pointer); 
   cdecl; external name 'avt_free_audio';
 
-function avt_play_audio(snd: Pointer): CInteger; 
+function avt_play_audio(snd: Pointer; loop: CInteger): CInteger; 
   cdecl; external name 'avt_play_audio';
 
 function avt_wait_audio_end: CInteger;
@@ -710,10 +710,10 @@ begin
 avt_free_audio(snd)
 end;
 
-procedure PlaySound(snd: Pointer);
+procedure PlaySound(snd: Pointer; loop: boolean);
 begin
 if not audioinitialized then InitializeAudio;
-avt_play_audio(snd)
+avt_play_audio(snd, ord(loop))
 end;
 
 procedure WaitSoundEnd;

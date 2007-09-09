@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.4 2007-09-07 13:10:29 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.5 2007-09-09 15:43:12 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -162,7 +162,7 @@ avt_free_audio (avt_audio_t * snd)
 }
 
 int
-avt_play_audio (avt_audio_t * snd)
+avt_play_audio (avt_audio_t * snd, int doloop)
 {
   AudioStruct *newsound;
 
@@ -183,6 +183,7 @@ avt_play_audio (avt_audio_t * snd)
   current_sound.audiospec.callback = fill_audio;
   soundpos = current_sound.sound;
   soundleft = current_sound.len;
+  loop = (doloop != 0);
 
   if (SDL_OpenAudio (&current_sound.audiospec, NULL) < 0)
     return AVATARERROR;
@@ -196,9 +197,12 @@ avt_play_audio (avt_audio_t * snd)
 int
 avt_wait_audio_end (void)
 {
-  if (soundleft > 0 && !loop)
-    {
-      /* loop while sound is still playing, and there is no event */
+  /* end the loop, but wait for end of sound */
+  loop = 0;
+
+  if (soundleft > 0)
+    {      
+      /* wait while sound is still playing, and there is no event */
       while ((soundleft > 0) && !avt_checkevent ())
 	SDL_Delay (1);		/* give some time to other processes */
 

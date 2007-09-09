@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.5 2007-09-07 18:02:14 akf Exp $ */
+/* $Id: avatarsay.c,v 2.6 2007-09-09 15:43:12 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -471,7 +471,7 @@ handle_audio_command (const char *s)
 	  return;
 	}
 
-      if (avt_play_audio (sound))
+      if (avt_play_audio (sound, 0))
 	notice ("can not play audio file", avt_get_error ());
     }
 }

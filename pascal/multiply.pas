@@ -109,6 +109,26 @@ case c of
 ClrScr
 end;
 
+procedure sayCorrect;
+begin 
+{$IfDef AKFAVATAR} 
+  PlaySound(correctsnd, false);
+{$EndIf}
+
+TextColor(green);
+WriteLn(correct) 
+end;
+
+procedure sayWrong;
+begin 
+{$IfDef AKFAVATAR}
+  PlaySound(wrongsnd, false);
+{$EndIf}
+
+TextColor(red); 
+WriteLn(wrong) 
+end;
+
 procedure query;
 var a, b, r, e: integer;
 var counter: integer;
@@ -144,17 +164,7 @@ repeat
     if not endRequest and (e<>-1) then
       begin
       GotoXY(30, WhereY-1);
-      if isCorrect
-        then begin 
-	     {$IfDef AKFAVATAR} PlaySound(correctsnd); {$EndIf}
-	     TextColor(green);
-	     WriteLn(correct) 
-	     end
-        else begin 
-	     {$IfDef AKFAVATAR} PlaySound(wrongsnd); {$EndIf}
-	     TextColor(red); 
-	     WriteLn(wrong) 
-	     end;
+      if isCorrect then sayCorrect else sayWrong;
       NormVideo
       end
   until isCorrect or endRequest

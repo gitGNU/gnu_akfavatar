@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.8 2007-09-07 18:02:14 akf Exp $ */
+/* $Id: akfavatar.h,v 2.9 2007-09-09 15:43:12 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -376,14 +376,23 @@ extern avt_audio_t *avt_load_wave_file (const char *file);
  */
 extern avt_audio_t *avt_load_wave_data (void *data, int datasize);
 
+/*
+ * frees memory of a loaded sound
+ */
 extern void avt_free_audio (avt_audio_t * snd);
 
-extern int avt_play_audio (avt_audio_t * snd);
+/*
+ * plays a sound
+ */
+extern int avt_play_audio (avt_audio_t * snd, int doloop);
 
+/*
+ * wait until the sound ends
+ * this stops a loop, but still plays to the end of the sound
+ */
 extern int avt_wait_audio_end (void);
 
-/* stops audio, but leaves the file loaded */
-/* the next call to avt_play_audio will start from the beginning */
+/* stops audio */
 extern void avt_stop_audio (void);
 
 
