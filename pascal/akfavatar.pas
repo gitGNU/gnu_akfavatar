@@ -129,7 +129,7 @@ procedure AvatarImageFile(FileName: string);
 
 { set a different background color (default is grey) }
 { must be used before any output took place }
-procedure setBackgroundColor (red, green, blue: byte);
+procedure setBackgroundColor(red, green, blue: byte);
 
 { change pace of text and page flipping }
 procedure setDelays(text, flip_page: Integer);
@@ -139,13 +139,13 @@ procedure setEncoding(const newEncoding: string);
 
 { change text direction (for hebrew/yiddish texts) }
 { you should start a new line before or after this command }
-procedure setTextDirection (direction: TextDirection);
+procedure setTextDirection(direction: TextDirection);
 
 { assign text-variable to the avatar }
-procedure AssignAvatar (var f: text);
+procedure AssignAvatar(var f: text);
 
 { the same for CRT compatiblity }
-procedure AssignCrt (var f: text);
+procedure AssignCrt(var f: text);
 
 { Restore Input/Output system }
 { use this to output help or version information }
@@ -157,7 +157,7 @@ procedure RestoreInOut;
 
   { action: wait a while and then clear the textfield }
 
-  procedure page (var f: text);
+  procedure page(var f: text);
   procedure page;
 {$EndIf}
 
@@ -171,10 +171,10 @@ procedure waitkey (const message: string);
 
 { wait some time }
 { compatible to CRT unit }
-procedure delay (milliseconds: Integer);
+procedure delay(milliseconds: Integer);
 
 { example use: delay (seconds (2.5)); }
-function seconds (s: Real): Integer;
+function seconds(s: Real): Integer;
 
 { clears the textfield (not the screen!) }
 { the name was chosen for compatiblity to the CRT unit }
@@ -245,9 +245,9 @@ function AvatarGetError: ShortString;
 { compatible with GNU-Pascal's CRT unit }
 procedure SetMonochrome(monochrome: boolean);
 
-{-----------------------------------------------------------------------}
-
 implementation
+
+{-----------------------------------------------------------------------}
 
 {$IfDef FPC}
   uses DOS;
