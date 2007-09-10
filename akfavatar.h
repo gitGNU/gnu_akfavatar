@@ -23,13 +23,15 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.10 2007-09-10 09:17:40 akf Exp $ */
+/* $Id: akfavatar.h,v 2.11 2007-09-10 09:47:32 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
 
 /* SDL redefines main on some systems */
+#if defined(__WIN32__) ||  defined(__MACOS__) || defined(__MACOSX__)
 #include "SDL.h"
+#endif
 
 /* to get the systems definition of wchar_t */
 #include <stddef.h>
