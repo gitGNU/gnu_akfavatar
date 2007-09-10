@@ -42,12 +42,14 @@ libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo
 	ln -sf $(LIBNAME) libakfavatar.so
 
 example: example.c libakfavatar.so
-	$(CC) $(CFLAGS) -o $@ $< -L. -lakfavatar $(LDFLAGS)
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ $< -L. -lakfavatar \
+	  $(LDFLAGS) $(SDLLDFLAGS)
 
 # avatarsay dynamically linked
 # only works, when the library is installed
 avatarsay-d: avatarsay.c libakfavatar.so
-	$(CC) $(CFLAGS) -o $@ $< -L. -lakfavatar $(LDFLAGS)
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ $< -L. -lakfavatar \
+	  $(LDFLAGS) $(SDLLDFLAGS)
 
 # avatarsay with statical libakfavatar.a
 avatarsay: avatarsay.c libakfavatar.a
