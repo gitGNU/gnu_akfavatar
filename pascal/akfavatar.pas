@@ -251,9 +251,9 @@ implementation
 
 {$IfDef FPC}
   uses DOS;
-  {$IfNDef NoLink}
-    {$LinkLib akfavatar}
-  {$EndIf}
+  
+  {$MACRO ON}  
+  {$Define libakfavatar:=cdecl; external 'akfavatar' name}
 {$EndIf}
 
 {$IfDef __GPC__} 
@@ -263,7 +263,7 @@ implementation
     {$L akfavatar}
   {$EndIf}
 
-  {$Define cdecl attribute(cdecl)} 
+  {$Define libakfavatar external name}
 {$EndIf}
 
 
@@ -301,105 +301,96 @@ const KeyboardBufferSize = 40;
 var KeyboardBuffer: array [ 0 .. KeyboardBufferSize-1 ] of char;
 var KeyboardBufferRead, KeyboardBufferWrite: integer;
 
-procedure avt_stop_on_esc (stop: CInteger);
-  cdecl; external name 'avt_stop_on_esc';
+procedure avt_stop_on_esc (stop: CInteger); libakfavatar 'avt_stop_on_esc';
 
-function avt_default: PAvatarImage; cdecl; external name 'avt_default';
+function avt_default: PAvatarImage; libakfavatar 'avt_default';
 
-function avt_get_status: CInteger; 
-  cdecl; external name 'avt_get_status';
+function avt_get_status: CInteger; libakfavatar 'avt_get_status';
 
 procedure avt_set_delays (txt, flip_page: CInteger);
-  cdecl; external name 'avt_set_delays';
+  libakfavatar 'avt_set_delays';
 
-function avt_say_mb(t: CString): CInteger; 
-  cdecl; external name 'avt_say_mb';
+function avt_say_mb(t: CString): CInteger; libakfavatar 'avt_say_mb';
 
-procedure avt_clear; 
-  cdecl; external name 'avt_clear';
+procedure avt_clear; libakfavatar 'avt_clear';
 
-procedure avt_clear_eol;
-  cdecl; external name 'avt_clear_eol';
+procedure avt_clear_eol; libakfavatar 'avt_clear_eol';
 
 function avt_mb_encoding (encoding: CString): CInteger;
-  cdecl; external name 'avt_mb_encoding';
+  libakfavatar 'avt_mb_encoding';
 
 function avt_ask_mb(t: Pointer; size: CInteger): CInteger; 
-  cdecl; external name 'avt_ask_mb';
+  libakfavatar 'avt_ask_mb';
 
 function avt_wait(milliseconds: CInteger): CInteger; 
-  cdecl; external name 'avt_wait';
+  libakfavatar 'avt_wait';
 
 function avt_wait_key_mb(message : CString): CInteger; 
-  cdecl; external name 'avt_wait_key_mb';
+  libakfavatar 'avt_wait_key_mb';
 
-function avt_move_in: CInteger; 
-  cdecl; external name 'avt_move_in';
+function avt_move_in: CInteger; libakfavatar 'avt_move_in';
 
-function avt_move_out: CInteger; 
-  cdecl; external name 'avt_move_out';
+function avt_move_out: CInteger; libakfavatar 'avt_move_out';
 
-procedure avt_show_avatar;
-  cdecl; external name 'avt_show_avatar';
+procedure avt_show_avatar; libakfavatar 'avt_show_avatar';
 
 function avt_import_gimp_image(gimp_image: PGimpImage): PAvatarImage;
-   cdecl; external name 'avt_import_gimp_image';
+   libakfavatar 'avt_import_gimp_image';
 
 function avt_import_image_file (FileName: CString): PAvatarImage;
-  cdecl; external name 'avt_import_image_file';
+  libakfavatar 'avt_import_image_file';
 
 function avt_show_image_file(FileName: CString): CInteger;
-  cdecl; external name 'avt_show_image_file';
+  libakfavatar 'avt_show_image_file';
 
 procedure avt_set_background_color (red, green, blue: CInteger);
-  cdecl; external name 'avt_set_background_color';
+  libakfavatar 'avt_set_background_color';
 
 procedure avt_set_text_color (red, green, blue: CInteger);
-  cdecl; external name 'avt_set_text_color';
+  libakfavatar 'avt_set_text_color';
 
 procedure avt_set_text_background_color (red, green, blue: CInteger);
-  cdecl; external name 'avt_set_text_background_color';
+  libakfavatar 'avt_set_text_background_color';
 
 function initialize(title, icon: CString;
                      image: PAvatarImage;
                      mode: CInteger): CInteger;
-  cdecl; external name 'avt_initialize';
+  libakfavatar 'avt_initialize';
 
 function avt_initialize_audio: CInteger; 
-  cdecl; external name 'avt_initialize_audio';
+  libakfavatar 'avt_initialize_audio';
 
-procedure avt_quit; cdecl; external name 'avt_quit';
+procedure avt_quit; libakfavatar 'avt_quit';
 
-procedure avt_quit_audio; cdecl; external name 'avt_quit_audio';
+procedure avt_quit_audio; libakfavatar 'avt_quit_audio';
 
 function avt_load_wave_file(f: CString): Pointer;
-  cdecl; external name 'avt_load_wave_file';
+  libakfavatar 'avt_load_wave_file';
 
 procedure avt_free_audio(snd: Pointer); 
-  cdecl; external name 'avt_free_audio';
+  libakfavatar 'avt_free_audio';
 
 function avt_play_audio(snd: Pointer; loop: CInteger): CInteger; 
-  cdecl; external name 'avt_play_audio';
+  libakfavatar 'avt_play_audio';
 
-function avt_wait_audio_end: CInteger;
-  cdecl; external name 'avt_wait_audio_end';
+function avt_wait_audio_end: CInteger; libakfavatar 'avt_wait_audio_end';
 
-procedure avt_stop_audio; cdecl; external name 'avt_stop_audio';
+procedure avt_stop_audio; libakfavatar 'avt_stop_audio';
 
-function avt_get_error: CString; cdecl; external name 'avt_get_error';
+function avt_get_error: CString; libakfavatar 'avt_get_error';
 
-function avt_where_x: CInteger; cdecl; external name 'avt_where_x';
-function avt_where_y: CInteger; cdecl; external name 'avt_where_y';
-procedure avt_move_x (x: CInteger); cdecl; external name 'avt_move_x';
-procedure avt_move_y (x: CInteger); cdecl; external name 'avt_move_y';
-function avt_get_max_x: CInteger; cdecl; external name 'avt_get_max_x'; 
-function avt_get_max_y: CInteger; cdecl; external name 'avt_get_max_y'; 
+function avt_where_x: CInteger; libakfavatar 'avt_where_x';
+function avt_where_y: CInteger; libakfavatar 'avt_where_y';
+procedure avt_move_x (x: CInteger); libakfavatar 'avt_move_x';
+procedure avt_move_y (x: CInteger); libakfavatar 'avt_move_y';
+function avt_get_max_x: CInteger; libakfavatar 'avt_get_max_x'; 
+function avt_get_max_y: CInteger; libakfavatar 'avt_get_max_y'; 
 
 procedure avt_text_direction (direction: CInteger); 
-  cdecl; external name 'avt_text_direction';
+  libakfavatar 'avt_text_direction';
   
 procedure avt_register_keyhandler (handler: Pointer);
-  cdecl; external name 'avt_register_keyhandler';
+  libakfavatar 'avt_register_keyhandler';
 
 {$IfNDef __GPC__}
 
@@ -744,7 +735,8 @@ end;
 
 {$EndIf} { FPC }
 
-procedure KeyHandler(sym, modifiers, unicode: CInteger); cdecl;
+procedure KeyHandler(sym, modifiers, unicode: CInteger); 
+{$IfDef FPC} cdecl; {$EndIf}
 begin
 {$IfDef Debug}
   WriteLn(stderr, 'sym: ', sym, ' modifiers: ', modifiers,
