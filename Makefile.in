@@ -11,6 +11,11 @@ INSTALL_DATA = $(INSTALL) -m 644
 # native charset encoding (defaults to "WCHAR_T")
 #ICONV_TARGET = -DICONV_TARGET=\"UCS-2\"
 
+# names for packages
+PKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)
+BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
+
+
 .PHONY: all check doc txt info install install-strip installdirs uninstall \
 	html dvi pdf ps man install-html install-dvi install-pdf install-ps \
 	clean mostlyclean distclean maintainerclean dist
@@ -161,17 +166,35 @@ distclean: clean
 	-rm -f pascal/example
 	-rm -f akfavatar-*.tar.gz
 	-rm -f avatarsay-*.tar.gz
+	-rm -f multiply-bin multiply
+	-rm -f multiplizieren-bin multiplizieren
 	$(MAKE) -C mingw32 distclean
 	$(MAKE) -C doc distclean
 
 
 # the rest is just for the maintainer
-# use at your own risk
+# don't use it unless you know what you are doing
 
 maintainerclean: distclean
 
+multiply: pascal/multiply.pas
+	fpcavatar -dRELEASE -FE. -omultiply-bin $<
+	echo "#!/bin/sh" >$@
+	echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:." >>$@
+	echo "export LD_LIBRARY_PATH" >>$@
+	echo "exec ./multiply-bin \"$@\"" >>$@
+	chmod +x $@
+
+multiplizieren: pascal/multiply.pas
+	fpcavatar -dRELEASE -FE. -omultiplizieren-bin $<
+	echo "#!/bin/sh" >$@
+	echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:." >>$@
+	echo "export LD_LIBRARY_PATH" >>$@
+	echo "exec ./multiplizieren-bin \"$@\"" >>$@
+	chmod +x $@
+
 dist: info txt man distclean
-	mkdir akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)
+	mkdir $(PKGNAME)
 	ln README INSTALL AUTHORS COPYING \
 	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
 	   balloonpointer.c circle.c regicon.c gnu-head.bmp gnu-head.c \
@@ -179,38 +202,40 @@ dist: info txt man distclean
 	   gnome-akfavatar bdfread.pas human-peasant.bmp \
 	   gnu-small.bmp gnu-small.c akfavatar.xpm \
 	   ucsfont4x6.c configure Makefile.in \
-	   akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/
+	   $(PKGNAME)/
 	
-	mkdir akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/pascal
+	mkdir $(PKGNAME)/pascal
 	ln pascal/README pascal/akfavatar.pas pascal/example.pas \
 	   pascal/multiply.pas pascal/correct.wav pascal/wrong.wav \
 	   pascal/gpcavatar pascal/fpcavatar \
-	   akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/pascal/
+	   $(PKGNAME)/pascal/
 	
-	mkdir akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/doc
+	mkdir $(PKGNAME)/doc
 	ln doc/README doc/Makefile doc/avatarsay.1 \
 	   doc/akfavatar-en.texinfo doc/akfavatar-en.info \
 	   doc/akfavatar-en.txt \
-	   akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/doc/
+	   $(PKGNAME)/doc/
 	  
-	mkdir akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/mingw32
+	mkdir $(PKGNAME)/mingw32
 	ln mingw32/akfavatar.ico mingw32/icon.rc \
 	   mingw32/Makefile mingw32/README \
 	   mingw32/fsdemo-??.bat \
-	   akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/mingw32/
+	   $(PKGNAME)/mingw32/
 	
-	tar -cvf akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).tar \
-	    akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/
-	gzip -9 akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).tar
-	rm -r akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/
+	tar -cvf $(PKGNAME).tar $(PKGNAME)/
+	gzip -9 $(PKGNAME).tar
+	rm -r $(PKGNAME)/
 
-dist-bin: avatarsay
+dist-bin: avatarsay multiply multiplizieren
 	strip avatarsay
-	mkdir avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)
+	mkdir $(BINPKGNAME)
+	ln $(LIBNAME) $(SONAME) $(BINPKGNAME)/
+	ln multiply-bin multiply $(BINPKGNAME)/
+	ln multiplizieren-bin multiplizieren $(BINPKGNAME)/
+	ln pascal/correct.wav pascal/wrong.wav $(BINPKGNAME)/
 	ln COPYING AUTHORS avatarsay avtman fsdemo-?? \
 	   gnome-akfavatar human-peasant.bmp \
-	   avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/
-	tar -cvf avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin.gnu-linux.x86.tar \
-	    avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/
-	gzip -9 avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin.gnu-linux.x86.tar
-	rm -r avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/
+	   $(BINPKGNAME)/
+	tar -cvf $(BINPKGNAME).gnu-linux.x86.tar $(BINPKGNAME)/
+	gzip -9 $(BINPKGNAME).gnu-linux.x86.tar
+	rm -r $(BINPKGNAME)/

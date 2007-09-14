@@ -16,11 +16,14 @@ SDLLDFLAGS = -L/usr/$(TARGET)/lib/ -lmingw32 -lSDLmain -lSDL -mwindows
 # native charset encoding (defaults to "WCHAR_T")
 ICONV_TARGET = -DICONV_TARGET=\"UCS-2\"
 
+# name for binary packages
+BINPKGNAME=akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
+
 prefix = /usr/$(TARGET)
 libdir = $(prefix)/lib
 includedir = $(prefix)/include
 
-all: libakfavatar.a akfavatar.dll avatarsay.exe
+all: akfavatar.dll avatarsay.exe
 
 avtsayinfo.rc:
 	@echo "AppIcon ICON \"akfavatar.ico\"" > $@
@@ -120,13 +123,13 @@ example.exe: ../example.c akfavatar.dll icon.o
 
 avatarsay: avatarsay.exe
 
-# uses static lib
-avatarsay.exe: ../avatarsay.c libakfavatar.a avtsayinfo.o
+# uses dynamic lib
+avatarsay.exe: ../avatarsay.c akfavatar.dll avtsayinfo.o
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ $< avtsayinfo.o \
-		-L. libakfavatar.a $(LDFLAGS) $(SDLLDFLAGS)
+		-L. -lakfavatar $(LDFLAGS) $(SDLLDFLAGS)
 
 clean:
-	-rm -f *~ *.o 
+	-rm -f *~ *.o *.ppu *.gpi
 	-rm -f libinfo.rc avtsayinfo.rc
 
 distclean: clean
@@ -134,18 +137,30 @@ distclean: clean
 	-rm -f akfavatar.def akfavatar.dll akfavatar.lib
 	-rm -f version
 
-dist-bin: avatarsay.exe
-	mkdir avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)
-	cp avatarsay.exe ../fsdemo-?? \
-	   avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/
-	cp fsdemo-??.bat \
-	   avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/
-	cp ../COPYING avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/gpl-3.0.txt
-	strip avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/avatarsay.exe
-	todos avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/fsdemo-??
-	todos avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/avtcharset
-	todos avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/*.bat
-	todos avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/gpl-3.0.txt
-	zip -9vr avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin.w32.zip \
-	    avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/
-	rm -r avatarsay-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)/
+
+# the folowing targets are for the maintainer
+# don't use them unless you know what you are doing
+
+multiply.exe: ../pascal/multiply.pas
+	fpcwavatar -dRELEASE -FE. -o$@ $<
+
+multiplizieren.exe: ../pascal/multiply.pas
+	fpcwavatar -dRELEASE -ddeutsch -FE. -o$@ $<
+
+dist-bin: avatarsay.exe multiply.exe multiplizieren.exe
+	mkdir $(BINPKGNAME)
+	cp akfavatar.dll $(BINPKGNAME)/
+	cp avatarsay.exe ../fsdemo-?? $(BINPKGNAME)/
+	cp fsdemo-??.bat $(BINPKGNAME)/
+	cp ../COPYING $(BINPKGNAME)/gpl-3.0.txt
+	cp ../AUTHORS $(BINPKGNAME)/AUTHORS.txt
+	cp ../pascal/correct.wav ../pascal/wrong.wav $(BINPKGNAME)/
+	cp multiply.exe multiplizieren.exe $(BINPKGNAME)/
+	strip $(BINPKGNAME)/*.exe $(BINPKGNAME)/akfavatar.dll
+	todos $(BINPKGNAME)/fsdemo-??
+	todos $(BINPKGNAME)/avtcharset
+	todos $(BINPKGNAME)/*.bat
+	todos $(BINPKGNAME)/*.txt
+	-rm -f $(BINPKGNAME).w32.zip
+	zip -9vr $(BINPKGNAME).w32.zip $(BINPKGNAME)/
+	rm -r $(BINPKGNAME)/

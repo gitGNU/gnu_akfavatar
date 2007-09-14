@@ -8,4 +8,7 @@ bdfread
 libakfavatar.so*
 *.lo
 a.out
-*.tar.gz
+*.tar.gz *.zip
+*.ppu
+multiply-bin multiply
+multiplizieren-bin multiplizieren
