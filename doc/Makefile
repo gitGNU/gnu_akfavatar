@@ -35,7 +35,8 @@ akfavatar-en.pdf: akfavatar-en.texinfo
 
 ps: akfavatar-en.ps
 
-akfavatar-en.ps: akfavatar-en.texinfo
+akfavatar-en.ps: akfavatar-en.dvi
+	dvips -Pwww -o $@ $<
 
 man: avatarsay.1
 
