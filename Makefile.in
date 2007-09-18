@@ -186,7 +186,7 @@ multiply: pascal/multiply.pas
 	chmod +x $@
 
 multiplizieren: pascal/multiply.pas
-	fpcavatar -dRELEASE -FE. -omultiplizieren-bin $<
+	fpcavatar -dRELEASE -ddeutsch -FE. -omultiplizieren-bin $<
 	echo "#!/bin/sh" >$@
 	echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:." >>$@
 	echo "export LD_LIBRARY_PATH" >>$@
