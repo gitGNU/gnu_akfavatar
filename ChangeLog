@@ -1,3 +1,18 @@
+2007-09-18  Andreas K. Foerster  <info@akfoerster.de>
+
+	* separate compilation of the font
+	
+	* avatar.c (avt_drawchar):
+	fix: font-rendering for QVGA fixed
+
+2007-09-14  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.14.0 released
+
+	* reorganized creation of binary-packages
+	
+	* link directly to SDL on Windows and Mac
+
 2007-09-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_stop_on_esc):

@@ -93,13 +93,13 @@ avatar.o: ../avatar.c ../akfavatar.h ../ucsfont7x14.c
 	$(CC) -c $(CFLAGS) $(SDLCFLAGS) -o $@ $<
 
 # static library
-libakfavatar.a: avatar.o avatar-default.o avatar-audio.o
-	$(AR) rcu $@ avatar.o avatar-default.o avatar-audio.o
+libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o
+	$(AR) rcu $@ avatar.o avatar-default.o avatar-audio.o font.o
 	$(RANLIB) $@
 
-akfavatar.dll: avatar.o avatar-default.o avatar-audio.o libinfo.o
+akfavatar.dll: avatar.o avatar-default.o avatar-audio.o font.o libinfo.o 
 	$(CC) -shared -o $@ avatar.o avatar-default.o avatar-audio.o \
-	        libinfo.o \
+	        font.o libinfo.o \
 		-Wl,-no-undefined,--enable-runtime-pseudo-reloc \
 	        -Wl,--output-def,akfavatar.def \
 	        -Wl,--out-implib,libakfavatar.dll.a \

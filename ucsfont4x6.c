@@ -6,10 +6,6 @@
 
 #include <stddef.h>
 
-#define FONTWIDTH 4
-#define FONTHEIGHT 6
-#define LINEHEIGHT 8 /* some space between lines */
-
 #define DEFAULT_CHAR 0
 
 unsigned char font[] = {

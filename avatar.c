@@ -23,21 +23,24 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.11 2007-09-07 18:02:14 akf Exp $ */
+/* $Id: avatar.c,v 2.12 2007-09-19 10:41:58 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
 #include "version.h"
-
-#ifdef QVGA
-#  include "ucsfont4x6.c"
-#else
-#  include "ucsfont7x14.c"
-#endif
-
 #include "balloonpointer.c"
 #include "circle.c"
 #include "regicon.c"
+
+#ifdef QVGA
+#  define FONTWIDTH 4
+#  define FONTHEIGHT 6
+#  define LINEHEIGHT 8 /* some space between lines */
+#else
+#  define FONTWIDTH 7
+#  define FONTHEIGHT 14
+#  define LINEHEIGHT 17 /* some space between lines */
+#endif
 
 /* 
  * newer vesions of SDL have some fallback implementations
@@ -168,6 +171,9 @@ static struct pos
 
 /* 0 = normal; 1 = quit-request; -1 = error */
 int _avt_STATUS = AVATARNORMAL;
+
+extern unsigned char font [];
+extern size_t get_font_offset (wchar_t ch);
 
 /* forward declaration */
 static int avt_pause (void);
@@ -825,13 +831,15 @@ avt_drawchar (wint_t ch)
   SDL_Rect dest;
   Uint8 *p, *dest_line;
   unsigned char font_line;
+  Uint16 pitch;
 
   font_offset = get_font_offset (ch);
 
+  pitch = avt_character->pitch;
   p = (Uint8 *) avt_character->pixels;
   for (ly = 0; ly < FONTHEIGHT; ly++)
     {
-      dest_line = p + (ly * 8);
+      dest_line = p + (ly * pitch);
       font_line = font[font_offset + ly];
 
       for (lx = 0; lx < FONTWIDTH; lx++)
