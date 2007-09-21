@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.8 2007-09-21 10:14:02 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.9 2007-09-21 21:07:55 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -23,7 +23,7 @@ This is the documentation for AKFAvatar
 
 @quotation
 AKFAvatar is a fancy text-viewer, scripting language for making demos, 
-and a library for writing programs in C, C++ or Pascal.
+and a library for writing programs in C or Pascal.
 
 Homepage: @uref{http://akfoerster.de/akfavatar/}
 
@@ -61,6 +61,7 @@ notice and this notice are preserved.
 * Using avatarsay::       Using the tool @command{avatarsay}
 * Using gnome-akfavatar:: Using it under GNOME
 * Programming::           Programming with AKFAvatar
+* Pascal reference::      Reference for Pascal
 * Concept Index::         Index of this documentation
 @end menu
 
@@ -103,8 +104,8 @@ through @acronym{FIFO}s.
 
 @item  
 Then there is the library @code{libavatar}, which you can use from
-compiling languages.  Currently @w{Free Pascal}, @acronym{GNU}-Pascal,
-C++ and C are supported.  Especially the Pascal language is suited for
+compiling languages.  Currently @w{Free Pascal}, @acronym{GNU}-Pascal
+and C are supported.  Especially the Pascal language is suited for
 beginners to learn how to program.  The library is simple to use, like writing
 command-line programs --- but it's much more fun!
 
@@ -572,11 +573,11 @@ It is mainly a frontend for the command @command{avatarsay} with some of
 its functionality presented in a menu.
 
 @menu
-* Requirements::        What you need to use @command{gnome-akfavatar}
-* Main-menu::           The main-menu of @command{gnome-akfavatar}
+* GNOME Requirements::   What you need to use @command{gnome-akfavatar}
+* GNOME Main-menu::      The main-menu of @command{gnome-akfavatar}
 @end menu
 
-@node Requirements
+@node GNOME Requirements
 @section What you need to use @command{gnome-akfavatar}.
 @cindex requirements for @command{gnome-akfavatar}
 
@@ -596,7 +597,7 @@ Since the command @command{avatarsay} is also looked up in the current
 directory the package need not be installed.  But the documentation has to be
 installed in order to view it from @command{gnome-akfavatar}.
 
-@node Main-menu
+@node GNOME Main-menu
 @section The main-menu of @command{gnome-akfavatar}
 @cindex menu of @command{gnome-akfavatar}
 
@@ -850,13 +851,16 @@ avatar in or out.  The Command @code{@w{Delay (500);}} waits approximately
 for 500 milliseconds.  If you prefer the scale in seconds use 
 @code{@w{Delay (seconds(0.5));}}.
 
-@page
-@subsection Pascal reference
+A full reference for the Pascal language can be found in 
+@ref{Pascal reference}.
+
+@node Pascal reference
+@appendix Pascal reference
 @cindex Pascal reference
 @cindex reference for Pascal
 
 The following text shows the @code{interface} of the Pascal unit
-@code{avatar.pas}:
+@code{akfavatar.pas}:
 
 @verbatim
 
