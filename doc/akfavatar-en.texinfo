@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.7 2007-09-20 07:36:11 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.8 2007-09-21 10:14:02 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -103,7 +103,7 @@ through @acronym{FIFO}s.
 
 @item  
 Then there is the library @code{libavatar}, which you can use from
-compiled languages.  Currently @w{Free Pascal}, @acronym{GNU}-Pascal,
+compiling languages.  Currently @w{Free Pascal}, @acronym{GNU}-Pascal,
 C++ and C are supported.  Especially the Pascal language is suited for
 beginners to learn how to program.  The library is simple to use, like writing
 command-line programs --- but it's much more fun!
@@ -140,6 +140,7 @@ again.
 @c starts in the normal pace again.  So you can press the @key{SPACE} bar 
 @c again and again.
 
+@cindex F11
 @cindex switching fullscreen/window
 @cindex toggle fullscreen/window
 @cindex fullscreen mode
@@ -208,13 +209,13 @@ hyphens (@code{U+002D}).  Of course you can use more than three ones.
 @cindex executable text
 
 You don't always have to use the command @command{avatarsay} for viewing
-your texts.  You can turn your text itself into a command.  How that works
-depends on your system.
+your texts.  You can turn your text itself into a ``program''.  How that 
+works depends on your system.
 
 @cindex #!
 On a @acronym{POSIX} compatible system, such as the @acronym{GNU} system
-you can put a special line at the beginning of your file. The line looks
-like this: @samp{#! /usr/local/avatarsay --utf-8}.  Of course you have
+you can put a special line at the beginning of your file.  The line looks
+like this: @samp{#! /usr/local/avatarsay}.  Of course you have
 to make sure that you use the correct pathname.  This has to be the very
 first line.  You can put one or more empty lines after this line ---
 they are ignored.  Then you have to set the executable bit of your
@@ -251,7 +252,7 @@ This can be done with an environment variable.
 
 @item
 Or you can change it on a text-by-text basis, using a command in the 
-text.
+text-file.
 
 @end enumerate
 
@@ -261,8 +262,7 @@ can set this variable like this:
 @samp{export AVATARIMAGE=/home/user/akfavatar/human-peasant.bmp}. 
 Important: You should always use the full path!
 
-Using a command in @command{avatarsay} is explained in
-@ref{Commands for avatarsay}.
+Using a command in a text-file is explained in @ref{Commands for avatarsay}.
 
 Which file-formats AKFAvatar supports depends on which libraries you have 
 installed.  Uncompressed @code{BMP} images are always supported.
@@ -272,7 +272,7 @@ installed.  Uncompressed @code{BMP} images are always supported.
 
 The avatar-image should have a transparent background of course.  Well,
 most image formats don't support transparency at all.  Therefore
-AKFAvatar has a trick.  If the avatar image has no transparency, then it
+AKFAvatar has a trick.  If the avatar-image has no transparency, then it
 looks up the first color in the image, that is the color in the upper
 left corner, and defines this color to be transparent.  So when you
 prepare an image as replacement for the avatar, make sure the upper left
@@ -295,7 +295,7 @@ transparency, independent from the question, whether the image format
 The format for running @command{avatarsay} is:
 
 @example
-avatarsay [@var{options}] @var{textfile}(@var{s})
+avatarsay [@var{options}] @var{textfile}(s)
 @end example
 
 @noindent
@@ -357,7 +357,7 @@ ignore end of file conditions; use this when the input is not a file
 
 @item --saypipe @var{filename}
 @itemx -s @var{filename}
-create named pipe for @var{filename}
+create @dfn{named pipe} for @var{filename}
 
 @xref{Pipes}.
 
@@ -394,7 +394,7 @@ The directory must end with a directory deliminator
 (depending on the system either @file{/} or @file{\}).
 
 The data directory can also be set with the environment variable 
-@env{AVATARDATADIR}. The command has precedence over the environment
+@env{AVATARDATADIR}.  The command has precedence over the environment
 variable.
 
 @item .avatarimage @var{imagefile}
@@ -403,7 +403,7 @@ with this command you can use a different image for the avatar.
 @strong{Attention}: This command has to be used before the text starts
 
 The avatar image can also be set with the environment variable 
-@env{AVATARIMAGE}. The command has precedence over the environment
+@env{AVATARIMAGE}.  The command has precedence over the environment
 variable.
 
 Which file-formats AKFAvatar supports depends on which libraries you have 
@@ -521,7 +521,7 @@ It is best to try these features in a window based environment, where you have
 one window for your command line and @command{avatarsay} opens up in a 
 separate window.
 
-So try this: @samp{@w{echo Hey pal, what's GNU? | avatarsay -}}.  The gnu 
+So try this: @samp{@w{echo "Hey pal, what's GNU?" | avatarsay -}}.  The gnu 
 appears and says that words. Be careful with using the exclamation mark 
 though, some shells have problems with that.
 
@@ -545,7 +545,7 @@ of the line you get back to the shell prompt immediately.  First you might
 think that nothing happened.  But look into the current directory: there is a 
 new entry named @samp{avatar}.  This is the @dfn{named pipe}.  It is a 
 communication channel to the program.  Now enter this:
-@samp{@w{echo Hello, anybody there? > avatar}}.  Now the window opens, the 
+@samp{@w{echo "Hello, anybody there?" > avatar}}.  Now the window opens, the 
 avatar moves in, says the text@dots{} and the window stays open.  Go back to 
 the window with the command line and let the avatar say something else@enddots{}
 That's funny, isn't it?  Of course you can use all the commands as described in
@@ -580,19 +580,20 @@ its functionality presented in a menu.
 @section What you need to use @command{gnome-akfavatar}.
 @cindex requirements for @command{gnome-akfavatar}
 
-The command @command{gnome-akfavatar} is a shell script, so it needs a bourne
-shell. It has been tested with @acronym{GNU} bash, but any 
-@acronym{POSIX}-compatible bourne shell should be sufficient.
+The command @command{gnome-akfavatar} is a shell script, so it needs a Bourne
+shell.  It has been tested with @acronym{GNU} bash, but any 
+@acronym{POSIX}-compatible Bourne shell should be sufficient.
 
-Then it needs the command @command{avatarsay}. It is searched in the 
+Then it needs the command @command{avatarsay}.  It is searched in the 
 @code{PATH} and also in the current directory.
 
-For the visible interface it uses the program @command{zenity}. As text-editor
-it needs @command{gedit} and as help browser it uses @command{yelp}. These
-commands have to be in your @code{PATH}.
+For the visible interface it uses the program @command{zenity}.  As text-editor
+it needs @command{gedit} and as help browser it uses @command{yelp}.  These
+commands have to be in your @code{PATH}.  They are usually included with 
+@acronym{GNOME}.
 
 Since the command @command{avatarsay} is also looked up in the current
-directory the package need not be installed. But the documentation has to be
+directory the package need not be installed.  But the documentation has to be
 installed in order to view it from @command{gnome-akfavatar}.
 
 @node Main-menu
@@ -608,26 +609,26 @@ You get the following menu-items:
 @table @code
 @item show a demo or textfile
 You get a file selection box and you can choose a text-file or a demo,
-which is then opened in @command{avatarsay}. A demo is a text-file, which uses
-commands for @command{avatarsay} (@pxref{Commands for avatarsay}).
+which is then opened in @command{avatarsay}. A @dfn{demo} is a text-file, 
+which uses commands for @command{avatarsay} (@pxref{Commands for avatarsay}).
 
 @item create or edit a demo
 can be used to create a new demo or edit an existing one. When you enter
 a filename which doesn't exist yet, the file is created with an 
-appropriate @code{#!}-line. If you chose a different avatar-image before
+appropriate @code{#!}-line.  If you chose a different avatar-image before
 invoking this item, a command @command{.avatarimage} is also included in this
-file. The executable bit will be set on the created file. Note: All this is
+file.  The executable bit will be set on the created file.  Note: All this is
 just be done for @emph{new} files, not for files which already existed before.
 
 @item show a manpage
 you are prompted to enter the name of a manpage you want to view.
 If you want to see a manpage from a special section, you can enter the section
-number in front of the name separated by a space. For example @samp{6 intro}
+number in front of the name separated by a space.  For example @samp{6 intro}
 shows the intro manpage of section 6.
 
 @item show the output of a command
-shows the output of a command in @command{avatarsay}. This is only for commands
-which print something to the standard output or standard error channel. It is
+shows the output of a command in @command{avatarsay}.  This is only for commands
+which print something to the standard output or standard error channel.  It is
 not for interactive commands or commands that use curses.
 
 @item change avatar image
@@ -643,7 +644,7 @@ This setting is only used for the current session unless you use the item
 
 @item save settings
 saves the settings, that is the avatar image and whether to run in fullscreen
-or window mode. Note: these settings are just for @command{gnome-akfavatar};
+or window mode.  Note: these settings are just for @command{gnome-akfavatar};
 they have no influence when you call @command{avatarsay} directly or any other
 program using the AKFAvatar library.
 
@@ -651,7 +652,7 @@ program using the AKFAvatar library.
 shows this document in the help-browser of @acronym{GNOME}
 
 @item Exit
-exit the program. Note: you can also exit the program by clicking on 
+exit the program.  Note: you can also exit the program by clicking on 
 @code{Cancel} or the @code{close} button of the window or pressing the
 @key{Esc}-key.
 
@@ -662,14 +663,15 @@ exit the program. Note: you can also exit the program by clicking on
 @chapter Programming with AKFAvatar
 @cindex programming
 
-If you want to learn how to program, learn Pascal!
-
-Unfortunately Pascal is not so widely spread. Pascal has a bad name for some
-people, while C has a good name. Well, I really don't understand why. 
-I have used both languages and in my opinion it should be quite the opposite.
+If you want to learn how to program, Pascal is a very good choice as your first 
+language.  But unfortunately Pascal is not so widely spread.  Nevertheless, 
+with @uref{http://www.gnu-pascal.de/, GNU-Pascal} and 
+@uref{http://www.freepascal.org/, Free Pascal} we have two very good Free 
+Software implementations for Pascal, which are available for many different 
+platforms.
 
 Before you ask: Yes, it would have been possible to write the whole thing in 
-Pascal. But as I said, C is more widely spread, and that has its consequences.
+Pascal.  But C is more widely spread, and that has its consequences.
 Every modern system comes with a C compiler (except Windows of course) and 
 almost every other language can use libraries written in C.
 
@@ -697,8 +699,9 @@ If you have @acronym{GNU}-Pascal (@command{gpc}) just try this:
 @samp{./gpcavatar example.pas}
 This should compile a program @file{example}.
 
-You can compile any program, that just uses plain standard input/output
-like this.  There are no changes to the source-code necessary!
+You can compile any pascal program, that just uses plain standard input/output
+like this.  There are no changes to the source-code of the pascal program 
+necessary!
 
 If you want to start a new page, simply use the command @command{page;}.
 
@@ -711,11 +714,11 @@ changes to your program as described below.
 
 @subsection Installing
 
-Have a look into the scripts.  There are some variables you should adapt
-to your needs.  Copy the scripts into @file{/usr/local/bin}, so you can use
-them from anywhere.  Copy the file @file{avatar.pas} to where you want to
-have your personal units and make sure that directory is listed in the
-scripts.
+Have a look into the scripts @file{gpcavatar} and @file{fpcavatar}.  
+There are some variables you should adapt to your needs.  Copy the scripts 
+into @file{/usr/local/bin}, so you can use them from anywhere.  Copy the file 
+@file{akfavatar.pas} to where you want to have your personal units and make 
+sure that directory is listed in the scripts.
 
 
 @subsection Advanced use
@@ -836,8 +839,8 @@ with the @code{CRT} unit.  Actually they don't handle the screen, but only the
 text-area!
 
 If you want to print warnings, error messages or debugging information to
-the text-terminal, use the file-descriptor @code{stderr}.@footnote{this doesn't
-work on Windows or ReactOS systems.}  
+the text-terminal, use the file-descriptor @code{stderr}. (This doesn't
+work on Windows or ReactOS systems.) 
 For example: @samp{WriteLn (stderr, 'Error: ', AvatarGetError);} Well, the
 function @command{AvatarGetError} gets an error message from the library.
 
