@@ -102,8 +102,11 @@ info:
 
 install-info: info
 	$(INSTALL_DATA) doc/akfavatar-en.info $(DESTDIR)$(infodir)
+	$(INSTALL_DATA) doc/akfavatar-de.info $(DESTDIR)$(infodir)
 	-install-info --info-dir=$(DESTDIR)$(infodir) \
 	   $(DESTDIR)$(infodir)/akfavatar-en.info 
+	-install-info --info-dir=$(DESTDIR)$(infodir) \
+	   $(DESTDIR)$(infodir)/akfavatar-de.info 
 
 uninstall-info:
 	-install-info --remove --info-dir=$(DESTDIR)$(infodir) \

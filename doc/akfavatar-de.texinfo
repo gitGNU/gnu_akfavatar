@@ -1,0 +1,1142 @@
+\input texinfo   @c -*-texinfo-*-
+@comment $Id: akfavatar-de.texinfo,v 2.1 2007-09-21 21:09:52 akf Exp $
+
+@comment %**start of header
+@setfilename akfavatar-de.info
+@settitle AKFAvatar Anleitung
+@afourpaper
+@comment %**end of header
+
+@include version.texi
+
+@documentlanguage de
+@documentencoding UTF-8
+
+@iftex
+  @frenchspacing on
+@end iftex
+
+@dircategory Miscellaneous
+@direntry
+* AKFAvatar: (akfavatar-de).    Ein grafischer Avatar
+@end direntry
+
+@copying
+Dies ist die Bedienungsanleitung für AKFAvatar
+(Version @value{VERSION}, @value{UPDATED}).
+
+@quotation
+AKFAvatar ist ein witziger Text-Betrachter, eine Skript-Sprache um Demos zu
+erstellen und eine Programmbibliothek um dafür Programme in C oder Pascal 
+zu schreiben.
+
+Homepage: @uref{http://akfoerster.de/akfavatar/}
+
+Copyright @copyright{} 2007 @uref{http://akfoerster.de/, Andreas K. Förster}
+
+Vervielfältigung und Verbreitung dieser Anleitung, mit oder ohne Veränderungen,
+sind in jeglicher Form ohne Gebühr erlaubt, solange der Copyright Vermerk
+sowie dieser Hinweis erhalten bleiben.
+@end quotation
+@end copying
+
+@titlepage
+@title AKFAvatar
+@subtitle Ein witziger Text-Betrachter und viel mehr
+@author Andreas K. Förster
+
+@c Die folgendern Befehle erzeugen die Copyright Seite.
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@c Das Inhaltsverzeichnis
+@contents
+
+@ifnottex
+@node Top
+@top AKFAvatar
+
+@insertcopying
+@end ifnottex
+
+@menu
+* Überblick::                      Überblick über AKFAvatar
+* Verwendung von avatarsay::       Verwendung des Werkzeugs @command{avatarsay}
+* Verwendung von gnome-akfavatar:: Wie man es unter @acronym{GNOME} verwendet
+* Programmierung::                 Programmierung mit AKFAvatar
+* Pascal Referenz::                Referenz für Pascal
+* Index::                          Index für diese Dokumentation
+@end menu
+
+
+@node Überblick
+@chapter Überblick über AKFAvatar
+@cindex Überblick
+
+AKFAvatar ist ein graphisches Programm und eine Bibliothek, bei denen ein
+Avatar auf dem Bildschirm erscheint und dem Benutzer Sachen in einer
+Sprechblase mitteilt.  Man kann auch Audio-Aufnahmen abspielen lassen, so dass
+der Benutzer sogar hören kann, was der Avatar sagt.
+
+AKFAvatar kann auf verschiedene Arten eingesetzt werden.  Ich liste sie hier
+kurz auf, angefangen von der einfachsten bis zur kompliziertesten für 
+fortgeschrittene Benutzer.
+
+@enumerate
+@item
+Am einfachsten ist es, den Befehl @command{avatarsay} als witzigen 
+Text-Betrachter zu verwenden, mehr oder weniger wie @command{more} oder
+@command{less}.
+
+Das ist nicht gerade für lange und komplizierte Texte geeignet, sondern eher
+für kurze, lustige Sachen.
+
+@item
+Aber der Befehl @command{avatarsay} kann noch viel mehr.  Er kann als einfache 
+Skript-Sprache verwendet werden, mit der man Demos erstellen kann, die man zum
+Beispiel an Info-Ständen oder in Schaufenstern zeigen kann.  Er kann auch dafür
+verwendet werden, um lustige Übungen zu erstellen.
+
+Keine Angst, das klingt viel komplizierter als es ist.  Vielleicht sollte ich
+eher sagen, man kann seine Texte mit gelegentlichen Befehlen aufpeppen.
+Dann kann man das Ausführungs-Bit bei seiner@dots{} ``Text-Datei'' setzen,
+und schon ist es ausführbar.
+
+@item
+Der Befehl @command{avatarsay} kann auch von anderen Skript-Sprachen aus
+aufgerufen werden und die Skript-Sprache kann mit dem Programm über 
+@acronym{FIFO}s kommunizieren.
+
+@item
+Dann gibt es da noch die Programmbibliothek @code{libavatar}, die man von
+kompilierenden Sprachen aus verwenden kann.  Zur Zeit werden @w{Free Pascal},
+@acronym{GNU}-Pascal und C unterstützt.  Insbesondere die Sprache Pascal
+ist für Anfänger geeignet, die programmieren lernen wollen.  Die Bibliothek ist
+so einfach zu verwenden, wie Kommandozeilen-Programme zu schreiben --- es macht
+aber wesentlich mehr Spaß!
+
+@end enumerate
+
+@page
+@section Allgemeine Verwendung
+@cindex Tasten
+
+Viele AKFAvatar Anwendungen laufen automatisch ab ohne Interaktion mit dem
+Benutzer. Es handelt sich häufig um Demos, die darauf hin ausgelegt sind ohne
+irgendwelche Eingriffe vom Benutzer zu laufen.  Aus diesem Grund ist es nicht 
+direkt offensichtlich, wie man mit dem laufenden Programm interagieren kann.
+
+@cindex Stoppen (Esc-Taste)
+
+Bei den meisten AKFAvatar-Anwendungen kann man jederzeit die @key{Esc}-Taste
+drücken um das Programm zu stoppen.  Wenn es in einem Fenster läuft, kann man
+natürlich auch einfach den Schließen-Knopf des Fenster-Managers betätigen, oder
+das Programm mit jeder anderen Methode, die der Fenster-Manager bietet,
+beenden.
+
+@cindex pausieren (Pause-Taste)
+Der Text wird normalerweise in einer recht langsamen Geschwindigkeit angezeigt.
+Dennoch kann das einem manchmal zu schnell sein.  Wenn man einen genaueren
+Blick auf den angezeigten Text werfen will, kann man jederzeit die 
+@key{Pause}-Taste betätigen.  (Es könnte eine kurze Verzögerung beim Pausieren
+der Audio-Ausgabe geben.)  Durch den Druck auf eine andere Taste, kann die
+Pause wieder aufgehoben werden.
+
+@c @cindex Leertaste
+@c Andererseits kann die Textausgabe auch manchmal als zu langsam empfunden
+@c werden.  Dann kann man die Leertaste@footnote{Die Leertaste ist der lange
+@c Balken unten an der Tastatur} drücken.  Das zeigt eine vollständige Seite
+@c sofort an.  Die nächste Seite beginnt wieder in der normalen Geschwindigkeit.
+@c Man kann aber die Leertaste immer und immer wieder drücken.
+
+@cindex F11
+@cindex umschalten Vollbild/Fenster
+@cindex Vollbild-Modus
+@cindex Fenster-Modus
+Auf manchen Systemen kann man die @key{F11}-Taste verwenden um zwischen
+der Darstellung im Fenster oder der Vollbild-Darstellung hin und her zu 
+schalten.  Alternativ kann man auch die Tastenkombinationen 
+@key{Alt}+@key{Enter} oder @key{Strg}+@key{Alt}+@key{F} verwenden.
+
+@cindex Fenster Verwendung
+Wenn AKFAvatar in einem Fenster läuft, kann man die Fenstergröße verändern,
+wenn man will.  Die Größe des Inhaltes wird dadurch aber nicht verändert,
+sondern der Inhalt wird lediglich auf dem Fenster zentriert.  Man kann das 
+Fenster nicht unter eine bestimmte Mindestgröße verkleinern.  Diese
+Mindestgröße ist derzeit 640 mal 480 Pixel.  Man kann das Fenster natürlich
+auch maximieren.  Wenn man das Fenster minimiert, läuft das Programm übrigens
+weiter.  Man sollte also vielleicht die @key{Pause}-Taste drücken, bevor man
+das Fenster minimiert.
+
+
+@node Verwendung von avatarsay
+@chapter Verwendung des Werkzeugs @command{avatarsay}
+@cindex avatarsay
+@cindex Eingabe-Aufforderung
+@cindex Kommandozeilen Werkzeug
+
+Dieses Kapitel erklärt die verschiedenen Anwendungsbereiche des 
+Werkzeugs @command{avatarsay}.
+
+@menu
+* Text-Betrachter::            Einsatz als witziger Text-Betrachter
+* Den Text ausführbar machen:: Wie man seinen Text in ein Programm verwandelt
+* Anderes Avatar-Bild::        Wie man ein anderes Avatar-Bild verwendet
+* Aufruf von avatarsay::       Die genaue Verwendung von @command{avatarsay}
+* Befehle für avatarsay::      Befehle für das Programm @command{avatarsay}
+* Pipes::                      Pipes und @acronym{FIFO}s
+@end menu
+
+@node Text-Betrachter
+@section Einsatz von @command{avatarsay} als witziger Text-Betrachter
+@cindex Text-Betrachter
+@cindex Betrachter
+@cindex Lese-Software
+
+Das Programm @command{avatarsay} kann als witziger Text-Betrachter
+verwendet werden.  Wenn man eine Text-Datei hat, sagen wir mal 
+@file{MeinText}, dann kann man sie sich mit dem Befehl 
+@samp{avatarsay MeinText} ansehen.  
+Probiere es mal aus! Jetzt! @t{@w{;-)}}
+
+Das ist doch einfach, oder?  Nun, wenn die Textdatei nicht in 
+@code{@acronym{ASCII}} oder @code{UTF-8} kodiert ist, könnte man 
+Probleme bei Zeichen bekommen haben, die in @code{@acronym{ASCII}}
+nicht vorkommen, wie die deutschen Umlaute (ä, ü, ü, ß).
+Nun, es gibt wie gesagt verschiedene Kodierungen dafür.  Die am 
+meisten verwendeten Kodierungen für deutsche Texte sind 
+@code{ISO-8859-1} (auch bekannt als @code{Latin-1}) und 
+@code{UTF-8}.
+Das Programm @code{avatarsay} erwartet in der Voreinstellung 
+@code{UTF-8}, da das am weitesten entwickelt ist und man fast
+jede bekannte Sprache damit darstellen kann.  Ich hoffe einfach,
+dass in der nahen Zukunft jeder auf @code{UTF-8} umsteigen wird.
+Wenn man also Probleme mit deutschen Umlauten oder anderen Zeichen
+hat, kann man mal den Parameter @option{--latin1} ausprobieren --- 
+Wie in diesem Beispiel: @samp{avatarsay --latin1 MeinText}.
+
+@cindex Trennlinie
+@cindex Abtrennlinie
+@cindex Reißkante
+Häufig muss man die Erfahrung machen, dass Seiten-Umbrüche nicht 
+immer da auftauchen, wo man sie haben will.  Man kann seinen Text aber
+mit Trennlinien strukturieren.  Eine Trennlinie ist eine Zeile wie
+diese: @samp{---------}.  Die Zeile muss in der aller ersten Spalte
+beginnen und sie muss mindestens drei aufeinander folgende Bindestriche
+(@code{U+002D}) umfassen.  Natürlich kann man auch mehr als drei benutzen.
+
+
+@node Den Text ausführbar machen
+@section Wie man seinen Text in ein Programm verwandelt
+@cindex ausführbarer Text
+
+Man muss nicht unbedingt immer den Befehl @command{avatarsay} von Hand
+eingeben um seine Texte damit zu betrachten.  Man kann auch den Text 
+selbst in ein ``Programm'' verwandeln.  Wie das funktioniert hängt vom 
+verwendeten Betriebssystem ab.
+
+@cindex #!
+Auf einem @acronym{POSIX}-kompatiblen System, wie dem @acronym{GNU}-System
+kann man eine spezielle Zeile an den Anfang der Datei einfügen.  Diese
+Zeile sieht zum Beispiel so aus: @samp{#! /usr/local/avatarsay}.  
+Natürlich sollte man darauf achten, dass man den richtigen Pfad angibt.
+Dies muss die aller erste Zeile der Datei sein.  Man kann eine oder 
+mehrere Leerzeilen nach dieser Zeile einfügen --- diese werden ignoriert.
+Danach muss man das Ausführungs-Bit bei der Text-Datei setzen.  Das geht
+folgendermaßen: @samp{chmod +x MeinText}.  Schon ist der Text selbst 
+ausführbar.  Er akzeptiert fast alle Parameter, die auch 
+@command{avatarsay} akzeptiert.
+
+Auf Systemen wie Windows oder ReactOS funktioniert diese Zeile nicht ---
+sie schadet aber auch nicht.  Auf diesen Systemen muss man einen anderen
+Trick anwenden.  Man könnte die Datei so umbenennen, dass sie eine spezielle
+Datei-Endung bekommt; zum Beispiel @file{.avt}.  Nun muss man sein System so
+konfigurieren, dass die Datei-Endung @file{.avt} mit dem Programm 
+@file{avatarsay.exe} verknüpft wird.  Dann kann man auf seinen Text 
+doppelklicken und er wird ausgeführt.
+
+
+@node Anderes Avatar-Bild
+@section Wie man ein anderes Avatar-Bild verwendet
+@cindex anderes Avatar-Bild
+@cindex Avatar-Bild
+@cindex Wechsel des Avatar-Bildes
+@cindex Bild (Avatar)
+
+Bisher haben wir immer ein und denselben Avatar gesehen --- ein Gnu.
+Aber nicht jeder mag Gnus oder das, was man sagen will entspricht
+nicht dem @acronym{GNU}-Projekt. --- Nun, das ist nur der 
+Vorgabe-Avatar.  Man kann ihn austauschen.
+
+Es gibt grundsätzlich zwei verschiedene Methoden um den Avatar bei
+@command{avatarsay} auszutauschen:
+
+@enumerate
+
+@item
+Man kann es allgemein einstellen, dass jeder Aufruf von 
+@command{avatarsay} den neuen Avatar verwendet.  Dies wird über
+eine Umgebungsvariable gemacht.
+
+@item
+Oder man kann ihn auf eine Text-für-Text Basis austauschen, indem man 
+einen Befehl in der Text-Datei verwendet.
+
+@end enumerate
+
+Nun, zuerst sollte man die Umgebungsvariable ausprobieren.  Das ist
+einfach.  Die Variable heißt @env{AVATARIMAGE}.  Zum Beispiel mit der
+@code{GNU bash} kann man die Variable folgendermaßen setzen:
+@samp{export AVATARIMAGE=/home/user/akfavatar/human-peasant.bmp}. 
+Wichtig: Man sollte immer den vollständigen Pfad angeben!
+
+Wie man einen Befehl in der Text-Datei verwendet, wird in
+@ref{Befehle für avatarsay} erklärt.
+
+Welche Bilddatei-Formate von AKFAvatar unterstützt werden, hängt davon
+ab, welche Bibliotheken auf dem System installiert sind.  Unkomprimierte
+@code{BMP}-Bilder werden immer unterstützt.
+
+@subsection Transparenter Avatar Hintergrund
+@cindex Transparenz (Avatar-Bild)
+
+Das Avatar-Bild sollte natürlich einen transparenten Hintergrund haben.
+Leider unterstützen die meisten Bild-Formate keine Transparenz.  Darum
+verwendet AKFAvatar einen Trick.  Wenn das Avatar-Bild keine Transparenz
+hat, dann wird der erste Farbwert im Bild genommen, das ist der Farbwert
+in der oberen linken Ecke, und dieser Farbwert wird als transparent 
+deklariert.  Wenn man ein Bild für die Verwendung als Avatar vorbereiten 
+will, sollte man also darauf achten, dass die obere linke Ecke ``leer'' 
+ist und man sollte darauf achten, eine Hintergrund-Farbe zu wählen, die 
+in dem Teil des Bildes, der sichtbar sein soll, nicht vorkommt. Man 
+muss außerdem darauf achten, dass der Hintergrund ``glatt'' ist und
+nur einen einzigen Farbwert ohne jegliche Schattierungen erhält.
+Wegen dieser Voraussetzung ist übrigens das @abbr{JPEG}-Format nicht
+geeignet.  Man kann nämlich in diesem Format niemals einen wirklich
+``glatten'' Hintergrund bekommen.
+
+Wenn man Bildformate verwenden kann, die Transparenz unterstützen, dann
+sollte man die auch verwenden.  AKFAvatar wird dann nicht in die 
+Transparenz eingreifen.  Es ist jedoch zu beachten, dass der oben
+beschriebene Trick immer angewendet wird, wenn das Bild keine 
+Transparenz @emph{hat}, unabhängig davon, ob das Bildformat 
+Transparenz unterstützen @emph{würde}.
+
+@node Aufruf von avatarsay
+@section Die genaue Verwendung von @command{avatarsay}
+
+Das genaue Aufruf-Format für @command{avatarsay} ist:
+
+@example
+avatarsay [@var{Optionen}] @var{Text-Datei}(en)
+@end example
+
+@noindent
+Wenn @var{Text-Datei} nur ein @file{-} ist, dann liest das Programm von 
+der Standard-Eingabe (@file{stdin}) und es läuft nicht in einer Schleife.
+
+@need 800
+Das Programm @command{avatarsay} unterstützt die folgenden Optionen:
+
+@comment hier nicht @option verwenden
+@table @code
+@item --help
+@itemx -h
+zeige eine kurze Zusammenfassung der Aufruf-Optionen
+
+@item --version
+@itemx -v
+zeige die Version des Befehls an
+
+@item --window
+@itemx -w
+versuche das Programm in einem Fenster zu starten (Vorgabe)
+
+@item --fullscreen
+@itemx -f
+versuche das Programm im Vollbild-Modus zu starten
+
+@item --fullfullscreen
+@itemx -F
+wie @var{-f}, aber verwende die aktuelle Bildschirm-Auflösung
+
+Diese Option ist auch nützlich, wenn es nur einen Vollbild-Modus gibt,
+aber die Bildschirm-Auflösung nicht umgestellt werden kann; zum Beispiel
+mit dem @code{VESA}-Framebuffer des Kernels Linux.
+
+Diese Option wird erst ab SDL Version 1.2.10 oder neuer unterstützt.
+
+@item --latin1
+@itemx -l
+die Eingabe-Daten sind in Latin-1 kodiert
+
+@item --utf-8
+@itemx --utf8
+@itemx -u8
+@itemx -u
+die Eingabe-Daten sind in @code{UTF-8} kodiert
+
+@item --once
+@itemx -1
+nur einmal ablaufen (keine Schleife)
+
+@item --raw
+@itemx -r
+den rohen Text ausgeben (keine Befehle oder Trennlinien beachten)
+
+@item --ignoreeof
+@itemx -i
+ignoriere Dateiende Situationen; dies sollte man verwenden, wenn die
+Eingabe nicht von einer Datei stammt
+
+@item --saypipe @var{Dateiname}
+@itemx -s @var{Dateiname}
+erzeuge eine @dfn{Named Pipe} für @var{Dateiname}
+
+@xref{Pipes}.
+
+@end table
+
+@node Befehle für avatarsay
+@section Befehle für das Programm @command{avatarsay}
+@cindex Befehle für avatarsay
+
+Das Programm @command{avatarsay} versteht ein paar wenige Befehle.
+Damit kann man seine ``ausführbaren Texte'' noch weiter aufpeppen.
+
+Eine Zeile, die mit einer Raute (@code{#}, @code{U+0023}) beginnt,
+ist ein Kommentar.  Diese Zeilen werden von dem Programm einfach 
+ignoriert.  @strong{Achtung:} Im Gegensatz zu anderen Skript-Sprachen
+dürfen vor der Raute noch nicht mal Leerzeichen stehen.
+
+Man kann seinen Text mit Trennlinien strukturieren.  Eine Trennlinie ist 
+eine Zeile wie diese: @samp{---------}.  Die Zeile muss in der aller 
+ersten Spalte beginnen und sie muss mindestens drei aufeinander folgende 
+Bindestriche (@code{U+002D}) umfassen.  Natürlich kann man auch mehr als 
+drei benutzen.
+
+@need 1000
+Ein @emph{Befehl} für @command{avatarsay} fängt mit einem Punkt
+(@code{U+002E}) in der aller ersten Spalte einer neuen Zeile an.
+
+@table @command
+
+@item .datadir @var{Verzeichnis}
+mit diesem Befehl kann man das Verzeichnis festlegen, in dem sich Bilder
+und Audio-Dateien befinden
+
+Das Verzeichnis muss mit einem Verzeichnis-Trennzeichen enden
+(je nach Betriebssystem also entweder @file{/} oder @file{\}).
+
+Das Daten-Verzeichnis kann auch mit der Umgebungsvariablen
+@env{AVATARDATADIR} eingestellt werden.  Der Befehl hat Vorrang
+vor der Umgebungsvariablen.
+
+@item .avatarimage @var{imagefile}
+mit diesem Befehl kann man ein anderes Bild für den Avatar festlegen
+
+@strong{Achtung}: Dieser Befehl muss benutzt werden, bevor der eigentliche
+Text anfängt.
+
+Das Avatar-Bild kann auch mit der Umgebungsvariablen @env{AVATARIMAGE}
+eingestellt werden.  Der Befehl hat Vorrang vor der Umgebungsvariablen.
+
+Welche Bilddatei-Formate von AKFAvatar unterstützt werden, hängt davon
+ab, welche Bibliotheken auf dem System installiert sind.  Unkomprimierte
+@code{BMP}-Bilder werden immer unterstützt.
+
+@item .encoding @var{Kodierung}
+gibt die Kodierung des Textes an; 
+zum Beispiel @samp{ISO-8859-1} oder @samp{UTF-8}
+
+@strong{Achtung}: Dieser Befehl muss natürlich benutzt werden, bevor der 
+eigentliche Text anfängt.  Man kann die Kodierung aber auch innerhalb des
+Textes verändern, falls das Sinn macht.
+
+Welche Kodierungen unterstützt werden, hängt von der 
+@code{iconv}-Implementierung des Systems ab.  Auf einigen Systemen kann man
+eine Liste mit dem Befehl @code{iconv -l} bekommen.
+
+@item .backgroundcolor #@var{Farb-Definition}
+ändert die Hintergrund-Farbe
+
+Die @var{Farb-Definition} muss als sechs stellige Hexadezimalzahl
+angegeben werden, mit jeweils zwei Ziffern für @code{rot}, 
+@code{grün} und @code{blau}.  Der Vorgabe-Wert ist @samp{#CCCCCC}.
+
+@strong{Achtung}: Dieser Befehl muss benutzt werden, bevor der eigentliche
+Text anfängt.
+
+@item .left-to-right
+@itemx .right-to-left
+ändert die Text-Richtung; das ist nützlich, wenn man Text in hebräisch 
+oder jiddisch hat (arabisch wird nicht unterstützt)
+
+Man kann die Text-Richtung nur Zeile für Zeile ändern.  Verschiedene
+Text-Richtungen innerhalb einer Zeile werden nicht unterstützt.
+
+@item .flip
+umblättern; der selbe Effekt wie mit einer Trennlinie
+
+@item .clear
+löscht den Text-Bereich; im Gegensatz zu @command{.flip} wird nicht erst
+etwas gewartet, sondern der Text-Bereich wird sofort gelöscht 
+
+@item .pause
+eine längere Pause; der Avatar wird einige Zeit ohne die Sprechblase angezeigt
+
+@item .image @var{imagefile}
+zeigt ein Bild für einige Zeit (ohne den Avatar)
+
+Das Bild wird auf dem Bildschirm zentriert.  Wenn das Bild größer als der
+Bildschirm ist, wird der Bildschirm auf dem Bild zentriert.
+
+Man kann eine Trennlinie @emph{nach} diesem Befehl einfügen, wenn man will.
+Die Trennlinie hat dann keine Auswirkung.
+
+Welche Bilddatei-Formate von AKFAvatar unterstützt werden, hängt davon
+ab, welche Bibliotheken auf dem System installiert sind.  Unkomprimierte
+@code{BMP}-Bilder werden immer unterstützt.
+
+@item .audio @var{audiofile}
+spielt eine Audio-Datei ab
+
+Der Text wird weiterhin angezeigt. Auf diese Weise kann man eine Audio
+Datei mit dem aufgenommenen Text abspielen, während gleichzeitig der 
+Text auf dem Bildschirm erscheint.
+
+Derzeit werden nur @code{WAV}-Dateien mit @code{PCM}- oder 
+@code{ADPCM}-Kodierung unterstützt.
+
+@item .waitaudio
+warte bis die Audio-Ausgabe beendet ist
+
+Dies kann dafür verwendet werden, um den aufgenommenen Text mit dem
+geschriebenen Text halbwegs zu synchronisieren.
+
+@item .effectpause
+kurze Pause, während der Text sichtbar bleibt
+
+Wenn man eine Kunstpause innerhalb einer Zeile einlegen will, kann man die
+vorhergehende Zeile mit einem umgekehrten Schrägstrich (@code{\}, 
+@code{U+005C}) beenden, so dass das Zeilenende keine Auswirkung auf die 
+Ausgabe hat.
+
+@item .back @var{Anzahl}
+löscht die letzten @var{Anzahl} Zeichen
+
+Die vorhergehende Zeile muss mit einem umgekehrten Schrägstrich (@code{\}, 
+@code{U+005C}) beendet worden sein.  Man kann diesen Befehl nach dem Befehl
+@command{.effectpause} verwenden, um einen schönen Effekt zu erzielen.
+
+@item .read
+reserviert für spätere Versionen
+
+@item .end
+beendet den Text
+
+Der Avatar bewegt sich aus dem Bild. 
+
+Alles nach dem @command{.end}-Befehl wird ignoriert.
+
+@item .stop
+stoppt die Ausgabe sofort
+
+Der Avatar wird nicht aus dem Bild bewegt, sondern die Textausgabe wird
+sofort beendet.
+
+Alles nach dem @command{.stop}-Befehl wird ignoriert.
+
+@end table
+
+@node Pipes
+@section Pipes und @acronym{FIFO}s
+@cindex andere Befehle (avatarsay mit anderen Befehlen benutzen)
+
+@cindex Pipes
+Man muss nicht immer feststehende Texte schreiben um AKFAvatar zu benutzen.
+Man kann den Befehl @command{avatarsay} auch dafür verwenden um sich die 
+Ausgabe anderer Befehle anzeigen zu lassen.  Hierfür kann man einen einzelnen
+Bindestrich (@option{-}, @code{U+002D}) als Option angeben.
+
+Am besten versucht man das in eine Fenster-basierten Umgebung, wo man ein
+Fenster für die Eingabe-Zeile hat und @command{avatarsay} in einem anderen
+Fenster dargestellt wird.
+
+Man kann zum Beispiel mal folgendes ausprobieren: @*
+@samp{@w{echo "Hallo du. Wie geht's?" | avatarsay -}}.  Das Gnu erscheint und 
+sagt diese Worte.  Man sollte aber vorsichtig mit der Verwendung von 
+Ausrufungszeichen sein, einige Shells haben damit Probleme.
+
+Man kann sich aber auch die Ausgabe von anderen Befehlen mit 
+@command{avatarsay} ansehen.  Als Beispiel das: @samp{@w{df | avatarsay -}}, 
+oder das: @samp{@w{dir | avatarsay -}}.  Man könnte sogar diese Anleitung auf
+folgende Weise lesen: @*
+@samp{@w{makeinfo --plaintext akfavatar-de.texinfo | avatarsay -}}, 
+aber das ist wohl etwas zu langatmig.
+
+@cindex FIFOs
+@cindex Named Pipe
+Den Befehl @command{echo} auf diese Weise zu verwenden macht vielleicht Spaß,
+aber es verdirbt den Spaß ein wenig, dass das Fenster immer wieder auf geht 
+und sich schließt und der Avatar ständig rein kommt und raus geht@enddots{}
+Hier kann ein @acronym{FIFO} Abhilfe schaffen.  Ein @acronym{FIFO} wird auch 
+als @dfn{Named Pipe} bezeichnet, denn es ist letztendlich eine Pipe mit einem
+Namen.  Um diese zu verwenden unterstützt der Befehl @command{avatarsay} die
+Option @option{--saypipe}.  Das wird nur auf @acronym{POSIX}-kompatiblen 
+Systemen unterstützt.  Man kann es folgendermaßen verwenden: 
+@samp{@w{avatarsay --saypipe avatar &}}.  Wegen dem @code{&} am Ende der Zeile
+kommt man sofort auf die Eingabe-Aufforderung zurück.  Zunächst sieht es so
+aus, als ob gar nichts passiert wäre.  Wenn man sich aber mal das aktuelle
+Verzeichnis genauer ansieht, stellt man fest, dass sich dort ein neuer Eintrag 
+namens @samp{avatar} befindet.  Das ist die @dfn{Named Pipe}.  Es ist ein
+Kommunikations-Kanal zu dem Programm.  Nun kann man zum Beispiel folgendes 
+eingeben: @samp{@w{echo "Hallo, jemand zuhause?" > avatar}}.  Jetzt öffnet sich
+das Fenster, der Avatar kommt herein, sagt den Text@dots{} und das Fenster 
+bleibt offen.  Nun kann man zurück in das Fenster mit der Eingabeaufforderung
+gehen und den Avatar auf die selbe Weise noch etwas anderes sagen 
+lassen@enddots{}  Das macht doch Spaß, oder?  Natürlich kann man auch all die 
+Befehle verwenden, wie sie in @ref{Befehle für avatarsay} beschrieben sind.
+Zum Beispiel @samp{@w{echo .clear > avatar}} löscht den Text-Bereich, und dann
+kann man den Avatar wieder etwas anderes sagen lassen; zum Beispiel auch
+@samp{@w{df > avatar}}.  Man kann auch ein Bild anzeigen lassen mit dem Befehl
+@command{.image}, oder eine Audio-Datei abspielen lassen mit dem Befehl 
+@command{.audio}.
+
+Manchmal gibt es einige Verzögerungen.  Diese wurden bewusst eingeführt, da es
+nicht primär für den interaktiven Betrieb gedacht war.
+
+Genug Spaß gehabt.  Wir wollen aufhören und das Programm beenden@enddots{}
+Aber wie?  Nun, man könnte einfach den Schließen-Knopf an dem Fenster 
+betätigen, aber das wäre ja langweilig.  Wie wäre es damit:
+@samp{@w{echo .end > avatar}}.  Der Avatar bewegt sich aus dem Fenster heraus,
+das Fenster wird geschlossen, und auch die @dfn{Named Pipe} ist nun fort.
+
+@node Verwendung von gnome-akfavatar
+@chapter Wie man es unter @acronym{GNOME} verwendet
+@cindex GNOME
+
+Dieses Kapitel erklärt die Verwendung des Skriptes 
+@command{gnome-akfavatar}.  Es handelt sich dabei um eine einfache
+Benutzeroberfläche für den Befehl @command{avatarsay}, bei der einige
+Funktionen über ein Menü abrufbar sind.
+
+@menu
+* GNOME Voraussetzungen::  Was für @command{gnome-akfavatar} benötigt wird
+* GNOME Hauptmenü::        Das Hauptmenü von @command{gnome-akfavatar}
+@end menu
+
+@node GNOME Voraussetzungen
+@section Was für @command{gnome-akfavatar} benötigt wird
+@cindex Voraussetzungen für @command{gnome-akfavatar}
+
+Bei dem Befehl @command{gnome-akfavatar} handelt es sich um ein Shell-Skript,
+er benötigt also eine Bourne-Shell.  Er wurde mit der @acronym{GNU} bash
+getestet, aber jede andere @acronym{POSIX}-kompatible Bourne-Shell sollte
+auch funktionieren.
+
+Dann benötigt er das Programm @command{avatarsay}.  Das wird über den
+@code{PATH} gesucht und im aktuellen Verzeichnis.
+
+Für die sichtbare Oberfläche benutzt er das Programm @command{zenity}.
+Als Text-Editor wird @command{gedit} benötigt und als Hilfe-Browser wird
+@command{yelp} verwendet.  Diese Befehle müssen über den @code{PATH} 
+abrufbar sein.  Das sind aber alles Programme, die zu @acronym{GNOME}
+gehören, und somit schon vorinstalliert sein sollten.
+
+Da der Befehl @command{avatarsay} auch im aktuellen Verzeichnis gesucht
+wird, braucht das Paket nicht unbedingt installiert zu werden.  Aber
+die Anleitung muss installiert sein, damit man sie aus 
+@command{gnome-akfavatar} heraus aufrufen kann.
+
+@node GNOME Hauptmenü
+@section Das Hauptmenü von @command{gnome-akfavatar}
+@cindex Menü von @command{gnome-akfavatar}
+@cindex Hauptmenü von @command{gnome-akfavatar}
+
+Wenn man @command{gnome-akfavatar} aufruft, bekommt man ein Menü, aus 
+welchem man auswählen kann, was man damit tun will.
+
+@noindent
+Man bekommt die folgenden Menüpunkte:
+
+@table @code
+@item show a demo or textfile (ein Demo oder eine Text-Datei anzeigen)
+Man bekommt eine Datei-Auswahl-Box mit der man eine Text-Datei oder ein
+Demo auswählen kann, um sie mit @command{avatarsay} anzeigen zu lassen.
+Ein @dfn{Demo} ist eine Text-Datei, die Befehle für @command{avatarsay}
+enthält (@pxref{Befehle für avatarsay}). 
+
+@item create or edit a demo (ein Demo erstellen oder bearbeiten)
+kann dafür verwendet werden, um ein neues Demo zu erstellen, oder um ein
+bestehendes zu bearbeiten.  Wenn man einen Dateinamen angibt, der noch nicht
+existiert, wird die Datei mit einer geeigneten @code{#!}-Zeile angelegt.
+Wenn man ein anderes Avatar-Bild eingestellt hat bevor man diesen Menüpunkt
+verwendet hat, wird auch ein passender @command{.avatarimage}-Befehl mit
+eingefügt.  Das Ausführungs-Bit wird bei der erstellten Datei gesetzt.
+Anmerkung: Das alles wird nur für @emph{neu angelegte} Dateien gemacht, 
+nicht für Dateien, die vorher schon existiert haben.
+
+@item show a manpage (eine Manpage anzeigen)
+man wird gefragt, welche Manage man betrachten will.  Wenn man eine Manpage
+aus einem bestimmten Abschnitt ansehen will, kann man die Abschnitt-Nummer
+vor dem Namen der Manpage, getrennt durch ein Leerzeichen, angeben.
+Zum Beispiel @samp{6 intro} zeigt die Einleitung zu Abschnitt 6.
+
+@item show the output of a command (zeige die Ausgabe eines Befehls)
+zeigt die Ausgabe eines Befehls in @command{avatarsay}.  Das ist nur
+für Befehle geeignet, die etwas über die Standard-Ausgabe oder der 
+Standard-Fehlerausgabe ausgeben.  Es ist nicht für interaktive Programme
+geeignet, oder für Programme, die curses verwenden.
+
+@item change avatar image (ändere das Avatar-Bild)
+lässt einen das Avatar-Bild verändern.  @xref{Anderes Avatar-Bild}.
+Diese Einstellung gilt erstmal nur für die aktuelle Sitzung, es sei denn,
+man verwendet den Menüpunkt @dfn{save settings}.
+
+@item fullscreen or window mode (Vollbild- oder Fenster-Modus)
+wenn man auf @code{Okay} klickt, wird der Vollbild-Modus aktiviert,
+wenn man auf @code{Cancel}/@code{Abbrechen} klickt, wird der 
+Fenster-Modus ausgewählt.
+Diese Einstellung gilt erstmal nur für die aktuelle Sitzung, es sei denn,
+man verwendet den Menüpunkt @dfn{save settings}.
+
+@item save settings (speichere Einstellungen)
+speichert die Einstellungen, also das Avatar-Bild und ob es im Volbild-Modus
+oder im Fenster-Modus läuft.  Anmerkung: diese Einstellungen gelten nur für
+@command{gnome-akfavatar}; sie haben keine Auswirkung wenn man 
+@command{avatarsay} direkt aufruft, oder auf andere Programme, die die 
+AKFAvatar-Bibliothek verwenden.
+
+@item help for AKFAvatar (Hilfe für AKFAvatar)
+zeigt die Onlinehilfe für AKFAvatar mit dem Hilfe-Zentrum von 
+@acronym{GNOME} an.
+
+@item Exit (beenden)
+beendet das Programm. 
+Anmerkung: Man kann das Programm auch beenden, indem man auf @code{Abbrechen} 
+klickt oder auf den @code{Schließen}-Knopf des Fensters, oder indem man die 
+@key{Esc}-Taste drückt.
+
+@end table
+
+
+@node Programmierung
+@chapter Programmierung mit AKFAvatar
+@cindex Programmierung
+
+Wenn man anfangen will programmieren zu lernen, ist Pascal eine sehr gute Wahl
+als Einstiegssprache.  Leider ist Pascal jedoch nicht sehr weit verbreitet.
+Dennoch haben wir mit @uref{http://www.gnu-pascal.de/, GNU-Pascal} und 
+@uref{http://www.freepascal.org/, Free Pascal} zwei sehr gute Freie Software
+Implementierungen zur Verfügung, die auf vielen verschiedene Plattformen 
+einsetzbar sind.
+
+Es wäre durchaus auch möglich gewesen, das Ganze komplett in Pascal zu 
+schreiben.  Aber C ist viel weiter verbreitet und das hat seine Konsequenzen.
+Jedes moderne System bringt in der Regel bereits einen C-Compiler mit (außer
+Windows natürlich) und fast jede andere Programmiersprache kann Bibliotheken, 
+die in C geschrieben wurden verwenden.
+
+@menu
+* Pascal::           Wie man den Avatar in Pascal programmiert
+@end menu
+
+@node Pascal
+@section Wie man den Avatar in Pascal programmiert
+@cindex Pascal
+
+Man kann AKFAvatar für Pascal-Programme verwenden.
+
+Zunächst einmal muss die Bibliothek bereits auf dem System installiert sein.
+Man benötigt außerdem die Datei @file{akfavatar.pas}.  Die Datei wird
+normalerweise nicht automatisch installiert, da es kein Standard-Verzeichnis
+dafür gibt.  Wenn sie sich aber im aktuellen Verzeichnis befindet, wird sie
+dennoch gefunden.
+
+@subsection Einfache Anwendungs-Fälle
+
+In dem Paket mit den Quelltexten findet man unter anderem die Skripte 
+@file{gpcavatar} und @file{fpcavatar} im Unterverzeichnis @file{pascal/}.
+Wenn man zum Beispiel @acronym{GNU}-Pascal (@command{gpc}) hat, kann man
+folgendes eingeben: @samp{./gpcavatar example.pas}
+Damit sollte das Programm @file{example} kompiliert werden.
+
+Auf diese Weise kann man jedes Pascal-Programm, das nur die 
+Standard-Eingabe/Ausgabe verwendet kompilieren.  Es sind keine Änderenungen am
+Quelltext des Pascal-Programmes nötig!
+
+Wenn man eine neue Seiten anfangen will, kann man einfach den Befehl 
+@command{page;} verwenden.
+
+Na? Das ist doch einfach, oder?
+
+@display
+@emph{Hinweis:} Wenn das Programm die Unit @code{CRT} verwendet, muss man 
+Äanderngen am Quelltext vornehmen. Das wird weiter unten beschrieben.
+@end display
+
+@subsection Installation
+
+Erstmal sollte man sich die Skripte @file{gpcavatar} und @file{fpcavatar} 
+ansehen.  Am Anfang dieser Skripte befinden sich einige Variablen, die man
+an seine Bedürfnisse anpassen sollte.  Dann kann man die Skripte nach 
+@file{/usr/local/bin} kopieren, so dass man sie von überall her aufrufen kann.
+Die Datei @file{akfavatar.pas} sollte man dahin kopieren, wo man seine
+persönlichen Units haben möchte.  Ma sollte sicher stellen, dass dieses
+Verzeichnis auch in den Skripten mit aufgelistet ist.
+
+@subsection Verwendung für Fortgeschrittene
+
+Es ist auch möglich Programme mit AKFAvatar zu verwenden, die auf der Unit 
+@code{CRT} basieren.  Dafür sind aber Veränderungen am Programm notwendig.
+
+Die Skripte @file{gpcavatar} und @file{fpcavatar} definieren beide das Symbol
+@code{AKFAVATAR}, so dass man @code{@{$IfDef AKFAVATAR@}} oder 
+@code{@{$IfNDef AKFAVATAR@}} verwenden kann, um zu kontrollieren, was passiert, 
+wenn man es mit oder ohne AKFAvatar kompiliert.
+
+Um sicher zu stellen, dass das Programm immer noch mit der Unit @code{CRT} 
+funktioniert, kann man folgendes verwenden: 
+@samp{@{$IfNDef AKFAVATAR@} uses CRT; @{$EndIf@}}.  Das Programm 
+@file{multiply.pas} ist ein Beispiel für diese Methode.
+
+AKFAvatar unterstützt die meisten Befehle und Variablen wie die originale
+@code{CRT} Unit.  Zum Beispiel der Befehl @command{ClrScr} löscht den 
+Text-Bereich (nicht den ganzen Bildschirm!), @command{ClrEol} löscht den
+Rest der Zeile.  Man kann den Befehl @command{GotoXY(@var{x}, @var{y});}
+verwenden um an eine bestimmte Stelle innerhalb des Text-Bereiches zu 
+springen.  Die Funktionen @command{WhereX} und @command{WhereY} geben
+Auskunft über die aktuelle Position.
+
+@display
+@emph{Achtung:} Die Breite der Anzeige umfasst 80 Zeichen wie bei einem
+Text-Terminal, aber die Höhe ist wesentlich geringer.  Man kann die 
+Dimensionen des Text-Bereiches über die Variablen @code{ScreenSize.x} 
+und @code{ScreenSize.y} herausfinden, aber erst, wenn der Text-Bereich
+bereits sichtbar ist.  Um das sicher zu stellen könnte man den Befehl
+@command{ClrScr;} aufrufen, bevor man die Größe der Anzeige ausliest.
+@end display
+
+Man kann den Befehl @command{TextColor(@var{color});} verwenden, um die
+Text-Farbe zu verändern.  Man kann sogar die Hintergrund-Farbe des Textes
+mit dem Befehl @command{TextBackground(@var{color});} verändern.  Aber
+das sieht nicht so gut aus, wie auf einem Text-Terminal.
+
+Um zurück auf die ``normale'' Text-Farbe zu schalten, sollte man den
+Befehl @command{NormVideo;} verwenden.  Die ``normale'' Text-Farbe ist
+bei AKFAvatar eine ganz andere als mit der @code{CRT} Unit.  Durch
+verwendung dieses Befehles kann man also sicher gehen, dass man mit
+beidem ein Vernünftiges Ergebnis bekommt.
+
+Die Befehle @command{HighVideo} und @command{LowVideo} werden unterstützt
+und sogar die Variable @code{TextAttr} wird vollständig unterstützt wie
+in der origiinalen @code{CRT}-Unit.  Aber diese Befehle und diese Variable
+sollten nach Möglichkeit vermieden werden.
+
+Die Funktion @command{ReadKey} wartet auf einen Tastendruck und gibt den
+Code der gedückten Taste wieder.  Um heraus zu finden ob eine Taste gedrückt
+wurde, ohne das Programm zu blockieren, kann man die Funktion 
+@command{KeyPressed} verwenden.
+
+@display
+@emph{Achtung:} 
+Funktionstasten werden noch nicht unterstützt.  Die Taste @key{Esc} 
+beendet das Programm.  Wenn man die @key{Esc}-Taste für etwas anderes
+benötigt, kann man die Variable @code{CheckEsc} auf @code{false} setzen.
+Das Programm wird auch beendet, wenn @key{Strg}+@key{C} gedrückt wird.
+Um das zu verhindern, kann man die Variable @code{CheckBreak} auf
+@code{false} setzen.  Die Variable @code{CheckBreak} ist kompatibel
+zur @code{CRT}-Unit, während @code{CheckEsc} eine Erweiterung ist.
+@end display
+
+Es gibt noch eine Menge zusätzlicher Befehle, die nicht kompatibel zur
+@code{CRT}-Unit sind.
+
+Mit dem folgenden Befehl kann man ein anderes Bild für den Avatar einstellen:
+@verbatim
+{$IfDef AKFAVATAR}
+  AvatarImageFile ('/usr/local/share/pixmaps/human-peasant.bmp');
+{$EndIf}
+@end verbatim
+@noindent
+Das ist natürlich nur ein Beispiel.
+Dieser Befehl muss verwendet werden, bevor irgendeine Ausgabe oder Eingabe 
+stattfindet!
+
+Wenn man die Hintergrund-Farbe des Fensters (also nicht des Text-Bereiches) 
+verändern will, kann man den Befehl @command{setBackgroundColor(@var{rot}, 
+@var{grün}, @var{blau});} am Anfang des Programmes verwenden.  Die Werte
+für rot, grün und blau repräsentieren die Farbintesität dieses Farbanteils.
+Man kann jede darstellbare Farbe mit diesen drei Werten zusammen mischen.
+Der Maximalwert beträgt 255 ($FF).  Zum Beispiel
+@samp{setBackgroundColor(0, 0, 100);} stellt einen dunkel-blauen Hintergrund
+ein.
+
+
+Man kann in seinem Programm festlegen welche Zeichensatz-Kodierung man
+verwendet.  Wenn man noch ein altes System hat, das auf dem Latin-1 
+Zeichensatz basiert, kann man den Befehl 
+@code{@w{setEncoding ('ISO-8859-1');}} einsetzen.  Falls man mit mehreren
+Zeichensätzen gleichzeitig hantieren muss, kann man den Befehl auch 
+mehrfach verwenden.  Unterschiedliche Zeichensätze können im Text-Bereich
+gleichzeitig dargestellt werden.  (Intern wird ein Unicode-Zeichensatz
+verwendet.)
+
+Es gibt auch Zeichen für hebräische oder jiddische Texte.  Um diese
+zu verwenden muss man die Text-Richtung ändern.  Dass kann man mit
+den Befehlen @code{@w{setTextDirection (RightToLeft);}} und  
+@code{@w{setTextDirection (LeftToRight);}} tun.  Man sollte aber
+darauf achten, dass man vor oder nach Verwendung dieser Befehle eine
+neue Zeile oder eine neue Seite anfängt.  Unterschiedliche 
+Text-Richtungen innerhalb einer Zeile zu verwenden wird nicht 
+unterstützt.
+
+Die Eingabe und Ausgabe wird über die üblichen Pascal-Befehle gehandhabt
+(Read, ReadLn, Write, WriteLn, Page).  Man kann die vollständige Pascal
+Syntax für diese Befehle ausnutzen.  Zum Beispiel:
+@samp{@w{WriteLn ('Pi ist ', Pi:0:8, ' und so weiter.');}}
+
+Wenn man einen Seitenumbruch auslösen will, kann man den Befehl 
+@command{page;} verwenden.  Tatsächlich handelt es sich dabei auch um
+einen Befehl aus Standard-Pascal, der aber selten benutzt wird; so
+selten, dass er in Free Pascal sogar ganz weggelassen wurde.  Aber meine
+Unit definiert ihn auch für Free Pascal.  Normalerweise wird 
+@command{page;} dafür verwendet um eine neue Seite bei einem Drucker 
+anzufordern.
+
+Man kann den Text-Bereich auch mit dem Befehl @command{ClrScr;} löschen.
+Im Gegensatz zu @command{page;} wartet der Befehl @command{ClrScr;} nicht
+erst, sondern löscht den Text-Bereich sofort.  Man kann den Cursor mit dem
+Befehl @code{@w{GotoXY (x, y);}} an jede belibige Stelle bewegen.  Man 
+kann die Position des Cursors mit den Funktionen @command{WhereX} und
+@command{WhereY} heraus finden.  Die Koordinaten 1, 1 bezeichnen die
+obere linke Ecke (unabhängig von der Text-Richtung).  Man kann die
+Maximalwerte mit @code{ScreenSize.x} und @code{ScreenSize.y} heraus
+finden.  All diese Namen wurden gewählt, um eine gewisse Kompatiblität
+zur @code{CRT}-Unit zu bekommen.  Ungeachtet ihrer Bezeichnungen 
+verwalten sie nicht den Bildschirm, sondern nur den Text-Bereich.
+
+Wenn man Warnungen Fehlermeldungen oder Debug-Informationen ausgeben will
+sollte man @code{stderr} verwenden. (Das funktioniert nicht unter Windows
+oder ReactOS)  
+Zum Beispiel: @samp{WriteLn (stderr, 'Error: ', AvatarGetError);}
+Nun, die Funktion @command{AvatarGetError} holt eine Fehlermeldung von
+der Bibliothek ein.
+
+Der Befehl @command{ShowAvatar;} zeigt nur den Avatar ohne die Sprechblase.
+Die Befehle @command{MoveAvatarIn;} oder @command{MoveAvatarOut;} bewegen
+den Avatar heraus beziehungsweise herein.  Der Befehl
+@code{@w{Delay (500);}} wartet ungefähr 500 Millisekunden.  Falls man eine
+Angabe in Sekunden bevorzugt, kann man folgendes verwenden:
+@code{@w{Delay (seconds(0.5));}}.
+
+Eine vollständige Übersicht über alle Pascal-Befehle und Funktionen findet
+man in @ref{Pascal Referenz}.
+
+@node Pascal Referenz
+@appendix Pascal Referenz
+@cindex Pascal Referenz
+@cindex Referenz für Pascal
+
+Der folgende Text zeigt das @code{interface} der Pascal-Unit
+@code{akfavatar.pas}:
+
+@verbatim
+
+{ length of an output line }
+{ input is one less }
+const LineLength = 80;
+
+{ The following two definitions are in fact more complicated
+  I made them simpler here for clearity }
+{ Default encoding of the system }
+const DefaultEncoding = 'UTF-8';
+type LineString = String;
+
+
+{ Colors for TextColor/TextBackground }
+{ compatible to the CRT unit }
+const
+  Black        = 0;
+  Blue         = 1;
+  Green        = 2;
+  Cyan         = 3;
+  Red          = 4;
+  Magenta      = 5;
+  Brown        = 6;
+  LightGray    = 7;
+  DarkGray     = 8;
+  LightBlue    = 9;
+  LightGreen   = 10;
+  LightCyan    = 11;
+  LightRed     = 12;
+  LightMagenta = 13;
+  Yellow       = 14;
+  White        = 15;
+  Blink        = 128; { ignored }
+
+type TextDirection = (LeftToRight, RightToLeft);
+
+{ 
+  Text Attributes
+  mostly compatible to the CRT unit
+  the "blink-bit" means a bright background color
+}
+var TextAttr : byte;
+
+{ methods to stop the program }
+var
+  CheckBreak: boolean; { compatible to CRT }
+  CheckEsc: boolean;
+
+{ compatible to the CRT unit }
+var 
+  CheckEof: boolean;
+  CheckSnow: boolean;
+  DirectVideo: boolean;
+
+{ The "Screen" is the textarea }
+{ The name is chosen for compatiblity with the CRT unit }
+{ Just for reading! }
+{ This variable is only set after the avatar is visible }
+var ScreenSize : record x, y: Integer end;
+
+{ for CRT compatiblity, use ScreenSize for new programs }
+{ Just for reading! }
+{ These variables are only set after the avatar is visible }
+var WindMin, WindMax: word;
+
+
+{ load the Avatar image from a file }
+{ must be used before any output took place }
+procedure AvatarImageFile(FileName: string);
+
+{ set a different background color (default is grey) }
+{ must be used before any output took place }
+procedure setBackgroundColor(red, green, blue: byte);
+
+{ change pace of text and page flipping }
+procedure setDelays(text, flip_page: Integer);
+
+{ change the encoding }
+procedure setEncoding(const newEncoding: string);
+
+{ change text direction (for hebrew/yiddish texts) }
+{ you should start a new line before or after this command }
+procedure setTextDirection(direction: TextDirection);
+
+{ assign text-variable to the avatar }
+procedure AssignAvatar(var f: text);
+
+{ the same for CRT compatiblity }
+procedure AssignCrt(var f: text);
+
+{ Restore Input/Output system }
+{ use this to output help or version information }
+procedure RestoreInOut;
+
+{$IfDef FPC}
+  { the page command is defined in the Pascal standard,
+    but missing in FreePascal }
+
+  { action: wait a while and then clear the textfield }
+
+  procedure page(var f: text);
+  procedure page;
+{$EndIf}
+
+{ keyboard handling }
+{ partly CRT compatible - Latin1 chars so far }
+function KeyPressed: boolean;
+function ReadKey: char;
+
+{ wait for a key }
+procedure waitkey (const message: string);
+
+{ wait some time }
+{ compatible to CRT unit }
+procedure delay(milliseconds: Integer);
+
+{ example use: delay (seconds (2.5)); }
+function seconds(s: Real): Integer;
+
+{ clears the textfield (not the screen!) }
+{ the name was chosen for compatiblity to the CRT unit }
+procedure ClrScr;
+
+{ clears rest of the line }
+{ compatible to CRT unit }
+procedure ClrEol;
+
+{ set the text color }
+{ compatible to CRT unit }
+procedure TextColor (Color: Byte);
+
+{ set the text background color }
+{ compatible to CRT unit, but light colors can be used }
+procedure TextBackground (Color: Byte);
+
+{ set black on white text colors }
+{ name compatible to CRT unit, but the colors differ }
+procedure NormVideo;
+
+{ set high color intensity }
+procedure HighVideo;
+
+{ set low color intensity }
+procedure LowVideo;
+
+{ shows the avatar without the balloon }
+procedure ShowAvatar;
+
+{ moves the avatar in or out }
+procedure MoveAvatarIn;
+procedure MoveAvatarOut;
+
+{ loads image
+  after that call delay or waitkey 
+  the supported image formats depend on your libraries
+  uncompressed BMP is always supported
+}
+function ShowImageFile(FileName: string): boolean;
+
+{ loads Audio File
+  currently only WAV files supported
+  encodings: PCM, MS-ADPCM, IMA-ADPCM }
+function LoadSoundFile(const FileName: string): Pointer;
+procedure FreeSound(snd: Pointer);
+procedure PlaySound(snd: Pointer; loop: boolean);
+
+{ wait until the end of the audio output }
+procedure WaitSoundEnd;
+
+{ dummy function, full support planned }
+procedure Sound(frequency: Integer);
+
+{ stop sound output }
+procedure NoSound;
+
+{ handle coordinates (inside the balloon) }
+{ compatible to CRT unit }
+function WhereX: Integer;
+function WhereY: Integer;
+procedure GotoXY (x, y: Integer);
+
+{ get last error message }
+function AvatarGetError: ShortString;
+
+{ ignore TextColor TextBackground and so on }
+{ compatible with GNU-Pascal's CRT unit }
+procedure SetMonochrome(monochrome: boolean);
+
+@end verbatim
+
+@node Index
+@unnumbered Index
+
+@printindex cp
+
+@bye
