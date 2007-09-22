@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.1 2007-09-21 21:09:52 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.2 2007-09-22 12:46:49 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -129,7 +129,6 @@ irgendwelche Eingriffe vom Benutzer zu laufen.  Aus diesem Grund ist es nicht
 direkt offensichtlich, wie man mit dem laufenden Programm interagieren kann.
 
 @cindex Stoppen (Esc-Taste)
-
 Bei den meisten AKFAvatar-Anwendungen kann man jederzeit die @key{Esc}-Taste
 drücken um das Programm zu stoppen.  Wenn es in einem Fenster läuft, kann man
 natürlich auch einfach den Schließen-Knopf des Fenster-Managers betätigen, oder
@@ -199,7 +198,7 @@ Das Programm @command{avatarsay} kann als witziger Text-Betrachter
 verwendet werden.  Wenn man eine Text-Datei hat, sagen wir mal 
 @file{MeinText}, dann kann man sie sich mit dem Befehl 
 @samp{avatarsay MeinText} ansehen.  
-Probiere es mal aus! Jetzt! @t{@w{;-)}}
+Ausprobieren! Sofort! @t{@w{;-)}}
 
 Das ist doch einfach, oder?  Nun, wenn die Textdatei nicht in 
 @code{@acronym{ASCII}} oder @code{UTF-8} kodiert ist, könnte man 
@@ -765,7 +764,7 @@ folgendes eingeben: @samp{./gpcavatar example.pas}
 Damit sollte das Programm @file{example} kompiliert werden.
 
 Auf diese Weise kann man jedes Pascal-Programm, das nur die 
-Standard-Eingabe/Ausgabe verwendet kompilieren.  Es sind keine Änderenungen am
+Standard-Eingabe/Ausgabe verwendet kompilieren.  Es sind keine Änderungen am
 Quelltext des Pascal-Programmes nötig!
 
 Wenn man eine neue Seiten anfangen will, kann man einfach den Befehl 
@@ -785,7 +784,7 @@ ansehen.  Am Anfang dieser Skripte befinden sich einige Variablen, die man
 an seine Bedürfnisse anpassen sollte.  Dann kann man die Skripte nach 
 @file{/usr/local/bin} kopieren, so dass man sie von überall her aufrufen kann.
 Die Datei @file{akfavatar.pas} sollte man dahin kopieren, wo man seine
-persönlichen Units haben möchte.  Ma sollte sicher stellen, dass dieses
+persönlichen Units haben möchte.  Man sollte sicher stellen, dass dieses
 Verzeichnis auch in den Skripten mit aufgelistet ist.
 
 @subsection Verwendung für Fortgeschrittene
@@ -823,13 +822,13 @@ bereits sichtbar ist.  Um das sicher zu stellen könnte man den Befehl
 Man kann den Befehl @command{TextColor(@var{color});} verwenden, um die
 Text-Farbe zu verändern.  Man kann sogar die Hintergrund-Farbe des Textes
 mit dem Befehl @command{TextBackground(@var{color});} verändern.  Aber
-das sieht nicht so gut aus, wie auf einem Text-Terminal.
+das sieht nicht so gut aus wie auf einem Text-Terminal.
 
 Um zurück auf die ``normale'' Text-Farbe zu schalten, sollte man den
 Befehl @command{NormVideo;} verwenden.  Die ``normale'' Text-Farbe ist
-bei AKFAvatar eine ganz andere als mit der @code{CRT} Unit.  Durch
-verwendung dieses Befehles kann man also sicher gehen, dass man mit
-beidem ein Vernünftiges Ergebnis bekommt.
+bei AKFAvatar eine ganz andere als mit der @code{CRT}-Unit.  Durch
+Verwendung dieses Befehles kann man also sicher gehen, dass man mit
+beidem ein vernünftiges Ergebnis bekommt.
 
 Die Befehle @command{HighVideo} und @command{LowVideo} werden unterstützt
 und sogar die Variable @code{TextAttr} wird vollständig unterstützt wie
@@ -837,8 +836,8 @@ in der origiinalen @code{CRT}-Unit.  Aber diese Befehle und diese Variable
 sollten nach Möglichkeit vermieden werden.
 
 Die Funktion @command{ReadKey} wartet auf einen Tastendruck und gibt den
-Code der gedückten Taste wieder.  Um heraus zu finden ob eine Taste gedrückt
-wurde, ohne das Programm zu blockieren, kann man die Funktion 
+Code der gedrückten Taste wieder.  Um heraus zu finden ob eine Taste gedrückt
+wurde ohne das Programm zu blockieren, kann man die Funktion 
 @command{KeyPressed} verwenden.
 
 @display
@@ -869,7 +868,7 @@ stattfindet!
 Wenn man die Hintergrund-Farbe des Fensters (also nicht des Text-Bereiches) 
 verändern will, kann man den Befehl @command{setBackgroundColor(@var{rot}, 
 @var{grün}, @var{blau});} am Anfang des Programmes verwenden.  Die Werte
-für rot, grün und blau repräsentieren die Farbintesität dieses Farbanteils.
+für rot, grün und blau repräsentieren die Farbintensität dieses Farbanteils.
 Man kann jede darstellbare Farbe mit diesen drei Werten zusammen mischen.
 Der Maximalwert beträgt 255 ($FF).  Zum Beispiel
 @samp{setBackgroundColor(0, 0, 100);} stellt einen dunkel-blauen Hintergrund
@@ -910,12 +909,12 @@ anzufordern.
 Man kann den Text-Bereich auch mit dem Befehl @command{ClrScr;} löschen.
 Im Gegensatz zu @command{page;} wartet der Befehl @command{ClrScr;} nicht
 erst, sondern löscht den Text-Bereich sofort.  Man kann den Cursor mit dem
-Befehl @code{@w{GotoXY (x, y);}} an jede belibige Stelle bewegen.  Man 
+Befehl @code{@w{GotoXY (x, y);}} an jede beliebige Stelle bewegen.  Man 
 kann die Position des Cursors mit den Funktionen @command{WhereX} und
 @command{WhereY} heraus finden.  Die Koordinaten 1, 1 bezeichnen die
 obere linke Ecke (unabhängig von der Text-Richtung).  Man kann die
 Maximalwerte mit @code{ScreenSize.x} und @code{ScreenSize.y} heraus
-finden.  All diese Namen wurden gewählt, um eine gewisse Kompatiblität
+finden.  All diese Namen wurden gewählt, um eine gewisse Kompatibilität
 zur @code{CRT}-Unit zu bekommen.  Ungeachtet ihrer Bezeichnungen 
 verwalten sie nicht den Bildschirm, sondern nur den Text-Bereich.
 
