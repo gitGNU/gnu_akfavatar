@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.2 2007-09-22 12:46:49 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.3 2007-09-22 13:02:37 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -832,7 +832,7 @@ beidem ein vernünftiges Ergebnis bekommt.
 
 Die Befehle @command{HighVideo} und @command{LowVideo} werden unterstützt
 und sogar die Variable @code{TextAttr} wird vollständig unterstützt wie
-in der origiinalen @code{CRT}-Unit.  Aber diese Befehle und diese Variable
+in der originalen @code{CRT}-Unit.  Aber diese Befehle und diese Variable
 sollten nach Möglichkeit vermieden werden.
 
 Die Funktion @command{ReadKey} wartet auf einen Tastendruck und gibt den
@@ -873,7 +873,6 @@ Man kann jede darstellbare Farbe mit diesen drei Werten zusammen mischen.
 Der Maximalwert beträgt 255 ($FF).  Zum Beispiel
 @samp{setBackgroundColor(0, 0, 100);} stellt einen dunkel-blauen Hintergrund
 ein.
-
 
 Man kann in seinem Programm festlegen welche Zeichensatz-Kodierung man
 verwendet.  Wenn man noch ein altes System hat, das auf dem Latin-1 
