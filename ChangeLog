@@ -1,5 +1,21 @@
-2007-09-18  Andreas K. Foerster  <info@akfoerster.de>
+2007-09-23  Andreas K. Foerster  <info@akfoerster.de>
 
+	* akfavatar.h, avatar.c (avt_bell, avt_flash):
+	new functions
+	
+	* akfavatar.pas (beep):
+	new procedure
+
+	* akfavatar.pas (initializeAvatar):
+	always try to initialize the audio system
+	
+	* avatar.c (avt_say, avt_ask):
+	support avt_bell
+
+	* avatar-audio.c (avt_initialize_audio, avt_quit_audio):
+	register audio sound with bell function
+	(short_audio_sound): new function
+	
 	* separate compilation of the font
 	
 	* avatar.c (avt_drawchar):

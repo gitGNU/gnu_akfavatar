@@ -28,8 +28,8 @@ avatar.o: avatar.c akfavatar.h version.h balloonpointer.c circle.c regicon.c
 %.o: %.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ $<
 
-libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o
-	$(AR) rcu $@ avatar.o avatar-default.o avatar-audio.o font.o
+libakfavatar.a: avatar.o avatar-default.o avatar-audio.o bell.o font.o
+	$(AR) rcu $@ avatar.o avatar-default.o avatar-audio.o bell.o font.o
 	-$(RANLIB) $@
 
 avatar.lo: avatar.c akfavatar.h version.h balloonpointer.c circle.c regicon.c
@@ -38,10 +38,10 @@ avatar.lo: avatar.c akfavatar.h version.h balloonpointer.c circle.c regicon.c
 %.lo: %.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -fpic -o $@ $<
 
-libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo font.lo
+libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo bell.lo font.lo
 	$(CC) -shared \
 	      -Wl,-soname,$(SONAME) -o $(LIBNAME) \
-	      avatar.lo avatar-default.lo avatar-audio.lo font.lo \
+	      avatar.lo avatar-default.lo avatar-audio.lo bell.lo font.lo \
 	      $(LDFLAGS) $(SDLLDFLAGS)
 	ln -sf $(LIBNAME) $(SONAME)
 	ln -sf $(LIBNAME) libakfavatar.so

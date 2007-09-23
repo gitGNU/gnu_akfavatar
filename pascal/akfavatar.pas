@@ -216,6 +216,9 @@ procedure MoveAvatarOut;
 }
 function ShowImageFile(FileName: string): boolean;
 
+{ play a short sound as with chr(7) }
+procedure beep;
+
 { loads Audio File
   currently only WAV files supported
   encodings: PCM, MS-ADPCM, IMA-ADPCM }
@@ -293,7 +296,7 @@ type
 var OldTextAttr : byte;
 var FastQuit : boolean;
 var isMonochrome : boolean;
-var fullscreen, initialized, audioinitialized: boolean;
+var fullscreen, initialized: boolean;
 var AvatarImage: PAvatarImage;
 var InputBuffer: array [ 0 .. (4 * LineLength) + 2] of char;
 
@@ -363,6 +366,8 @@ function avt_initialize_audio: CInteger;
 procedure avt_quit; libakfavatar 'avt_quit';
 
 procedure avt_quit_audio; libakfavatar 'avt_quit_audio';
+
+procedure avt_bell; libakfavatar 'avt_bell';
 
 function avt_load_wave_file(f: CString): Pointer;
   libakfavatar 'avt_load_wave_file';
@@ -453,8 +458,11 @@ begin
 RestoreInOut;
 
 { the order is important! }
-if audioinitialized then avt_quit_audio;
-if initialized then avt_quit
+if initialized then 
+  begin
+  avt_quit_audio;
+  avt_quit
+  end
 end;
 
 procedure initializeAvatar;
@@ -472,7 +480,6 @@ if initialize('AKFAvatar', 'AKFAvatar', AvatarImage,
 if avt_get_status = 1 then Halt; { shouldn't happen here yet }
 
 initialized := true;
-audioinitialized := false;
 ScreenSize.x := avt_get_max_x;
 ScreenSize.y := avt_get_max_y;
 
@@ -487,8 +494,10 @@ if ScreenSize.x-1 >= $FF
   then WindMax := WindMax or $FF
   else WindMax := WindMax or (ScreenSize.x-1);
 
+avt_initialize_audio;
+
 NormVideo;
-avt_move_in
+if avt_move_in<>0 then Halt
 end;
 
 procedure TextColor (Color: Byte);
@@ -685,15 +694,14 @@ for i := 1 to ParamCount do
     then fullscreen := true
 end;
 
-procedure InitializeAudio;
-begin
-if avt_initialize_audio<>0 then Halt;
-audioinitialized := true
-end;
-
 function LoadSoundFile(const FileName: string): Pointer;
 begin
 LoadSoundFile := avt_load_wave_file(String2CString(FileName))
+end;
+
+procedure beep;
+begin
+avt_bell
 end;
 
 procedure FreeSound(snd: Pointer);
@@ -703,7 +711,6 @@ end;
 
 procedure PlaySound(snd: Pointer; loop: boolean);
 begin
-if not audioinitialized then InitializeAudio;
 avt_play_audio(snd, ord(loop))
 end;
 
@@ -926,7 +933,6 @@ Initialization
   AvatarImage := NIL;
   fullscreen := false;
   initialized := false;
-  audioinitialized := false;
   isMonochrome := false;
   KeyboardBufferRead := 0;
   KeyboardBufferWrite := 0;

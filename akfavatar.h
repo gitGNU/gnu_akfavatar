@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.11 2007-09-10 09:47:32 akf Exp $ */
+/* $Id: akfavatar.h,v 2.12 2007-09-23 10:25:45 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -312,6 +312,19 @@ extern int avt_move_in (void);
  * move the avatar out => empty screen
  */
 extern int avt_move_out (void);
+
+/*
+ * make a short sound, when audio is initialized
+ * else it is the same as avt_flash
+ * same as with \a in avt_say
+ * the sound is actually not a bell ;-)
+ */
+void avt_bell (void);
+
+/*
+ * visual flash of the screen
+ */
+void avt_flash (void);
 
 /* 
  * clears the textfield in the balloon

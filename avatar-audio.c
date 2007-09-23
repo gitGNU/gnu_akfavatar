@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.5 2007-09-09 15:43:12 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.6 2007-09-23 10:25:45 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -38,6 +38,9 @@ typedef struct
 
 extern int _avt_STATUS;
 
+/* short sound for the "bell" function */
+static avt_audio_t *mybell;
+
 /* current sound */
 static AudioStruct current_sound;
 static Uint8 *soundpos = NULL;	/* Current play position */
@@ -45,7 +48,9 @@ static Uint32 soundleft = 0;	/* Length of left unplayed wave data */
 static int loop = 0;
 
 extern int avt_checkevent (void);
+extern void (*avt_bell_func) (void);
 
+/* this is the callback function */
 void
 fill_audio (void *unused, Uint8 * stream, int len)
 {
@@ -68,12 +73,25 @@ fill_audio (void *unused, Uint8 * stream, int len)
   soundleft -= len;
 }
 
+static void
+short_audio_sound (void)
+{
+  if (mybell)
+    avt_play_audio (mybell, 0);
+}
+
 /* must be called AFTER avt_initialize! */
 int
 avt_initialize_audio (void)
 {
+  extern const char avt_bell_data[];
+  extern const int avt_bell_data_size;
+
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
     return AVATARERROR;
+
+  mybell = avt_load_wave_data(&avt_bell_data, avt_bell_data_size);
+  avt_bell_func = short_audio_sound;
 
   return _avt_STATUS;
 }
@@ -99,6 +117,9 @@ avt_quit_audio (void)
   soundleft = 0;
   current_sound.len = 0;
   current_sound.sound = NULL;
+  avt_bell_func = avt_flash;
+  avt_free_audio (mybell);
+  mybell = NULL;
   SDL_QuitSubSystem (SDL_INIT_AUDIO);
 }
 

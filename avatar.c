@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.12 2007-09-19 10:41:58 akf Exp $ */
+/* $Id: avatar.c,v 2.13 2007-09-23 10:25:45 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -35,11 +35,11 @@
 #ifdef QVGA
 #  define FONTWIDTH 4
 #  define FONTHEIGHT 6
-#  define LINEHEIGHT 8 /* some space between lines */
+#  define LINEHEIGHT 8		/* some space between lines */
 #else
 #  define FONTWIDTH 7
 #  define FONTHEIGHT 14
-#  define LINEHEIGHT 17 /* some space between lines */
+#  define LINEHEIGHT 17		/* some space between lines */
 #endif
 
 /* 
@@ -172,7 +172,9 @@ static struct pos
 /* 0 = normal; 1 = quit-request; -1 = error */
 int _avt_STATUS = AVATARNORMAL;
 
-extern unsigned char font [];
+void (*avt_bell_func) (void) = NULL;
+
+extern unsigned char font[];
 extern size_t get_font_offset (wchar_t ch);
 
 /* forward declaration */
@@ -543,6 +545,47 @@ avt_resize (int w, int h)
     }
 
   /* make all changes visible */
+  SDL_UpdateRect (screen, 0, 0, 0, 0);
+}
+
+void
+avt_bell (void)
+{
+  if (avt_bell_func)
+    (*avt_bell_func) ();
+}
+
+void
+avt_flash (void)
+{
+  SDL_Surface *oldwindowimage;
+
+  oldwindowimage = SDL_CreateRGBSurface (SDL_SWSURFACE, window.w, window.h,
+					 screen->format->BitsPerPixel,
+					 screen->format->Rmask,
+					 screen->format->Gmask,
+					 screen->format->Bmask,
+					 screen->format->Amask);
+
+  SDL_BlitSurface (screen, &window, oldwindowimage, NULL);
+
+  /* switch clipping off */
+  SDL_SetClipRect (screen, NULL);
+  /* fill the whole screen with color */
+  SDL_FillRect (screen, NULL, SDL_MapRGB (screen->format, 0xFF, 0xFF, 0x00));
+  SDL_UpdateRect (screen, 0, 0, 0, 0);
+  SDL_Delay (150);
+
+  /* fill the whole screen with background color */
+  SDL_FillRect (screen, NULL,
+		SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
+			    backgroundcolor_RGB.g, backgroundcolor_RGB.b));
+  /* restore image */
+  SDL_SetClipRect (screen, &window);
+  SDL_BlitSurface (oldwindowimage, NULL, screen, &window);
+  SDL_FreeSurface (oldwindowimage);
+
+  /* make visible again */
   SDL_UpdateRect (screen, 0, 0, 0, 0);
 }
 
@@ -975,6 +1018,11 @@ avt_say (const wchar_t * txt)
 	  avt_backspace ();
 	  break;
 
+	case L'\a':
+	  if (avt_bell_func)
+	    (*avt_bell_func) ();
+	  break;
+
 	  /* ignore BOM here 
 	   * must be handled outside of the library
 	   */
@@ -1210,6 +1258,8 @@ avt_ask (wchar_t * s, const int size)
 	      avt_backspace ();
 	      avt_backspace ();
 	    }
+	  else
+	    avt_bell ();
 	  break;
 
 	case 13:
@@ -1230,6 +1280,8 @@ avt_ask (wchar_t * s, const int size)
 	      cursor.x =
 		(textdir_rtl) ? cursor.x - FONTWIDTH : cursor.x + FONTWIDTH;
 	    }
+	  else
+	    avt_bell ();
 	}
     }
   while ((ch != 13) && (_avt_STATUS == AVATARNORMAL));
@@ -1921,6 +1973,7 @@ avt_quit (void)
   avt_character = NULL;
   SDL_FreeSurface (avt_image);
   avt_image = NULL;
+  avt_bell_func = NULL;
   SDL_Quit ();
   screen = NULL;		/* it was freed by SDL_Quit */
   avt_visible = 0;
@@ -2078,5 +2131,9 @@ avt_initialize (const char *title, const char *icontitle,
   SDL_EventState (SDL_MOUSEBUTTONUP, SDL_IGNORE);
   SDL_EventState (SDL_KEYUP, SDL_IGNORE);
 
+  /* visual flash for the bell */
+  /* when you initialize the audo stuff you get an audio "bell" */
+  avt_bell_func = avt_flash;
+  
   return _avt_STATUS;
 }

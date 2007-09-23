@@ -10,6 +10,8 @@ at all
 
 program example (input, output);
 
+const BeepSound = chr(7);
+
 var name: string;
 
 Begin
@@ -18,7 +20,7 @@ Write('What''s your name? ');
 ReadLn(name);
 
 if name = '' { no name was given }
-  then WriteLn ('That was not nice. :-(')
+  then WriteLn (BeepSound, 'That was not nice. :-(')
   else WriteLn('The name "', name, '" is a nice name. :-)');
 
 WriteLn;
