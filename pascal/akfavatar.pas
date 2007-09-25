@@ -26,10 +26,7 @@ CRT compatiblity
 supported: 
 ClrScr, ClrEol, GotoXY, WhereX, WhereY, Delay, TextColor, TextBackground,
 NormVideo, HighVideo, LowVideo, TextAttr, NoSound, (ReadKey), KeyPressed, 
-Window, AssignCrt, ScreenSize, CheckBreak
-
-not supported yet, but planned: 
-DelLine, InsLine
+Window, DelLine, InsLine, AssignCrt, ScreenSize, CheckBreak
 
 dummies for:
 CheckEof, CheckSnow, DirectVideo, Sound
@@ -186,6 +183,12 @@ procedure ClrScr;
 { clears rest of the line }
 { compatible to CRT unit }
 procedure ClrEol;
+
+{ deletes current line, the rest is scrolled up }
+procedure DelLine;
+
+{ inserts a line before the current line, the rest is scrolled down }
+procedure InsLine;
 
 { set the text color }
 { compatible to CRT unit }
@@ -402,6 +405,12 @@ procedure avt_move_x(x: CInteger); libakfavatar 'avt_move_x';
 procedure avt_move_y(x: CInteger); libakfavatar 'avt_move_y';
 function avt_get_max_x: CInteger; libakfavatar 'avt_get_max_x'; 
 function avt_get_max_y: CInteger; libakfavatar 'avt_get_max_y'; 
+
+procedure avt_delete_lines(line, num: CInteger);
+  libakfavatar 'avt_delete_lines';
+
+procedure avt_insert_lines(line, num: CInteger);
+  libakfavatar 'avt_insert_lines';
 
 procedure avt_text_direction (direction: CInteger); 
   libakfavatar 'avt_text_direction';
@@ -690,6 +699,16 @@ procedure GotoXY (x, y: Integer);
 begin
 avt_move_x (x);
 avt_move_y (y)
+end;
+
+procedure DelLine;
+begin
+avt_delete_lines(WhereY, 1)
+end;
+
+procedure InsLine;
+begin
+avt_insert_lines(WhereY, 1)
 end;
 
 procedure Window(x1, y1, x2, y2: Byte);

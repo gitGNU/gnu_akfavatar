@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.13 2007-09-25 06:20:41 akf Exp $ */
+/* $Id: akfavatar.h,v 2.14 2007-09-25 17:55:07 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -378,6 +378,18 @@ extern int avt_get_max_y (void);
  */
 extern void avt_move_x (int x);
 extern void avt_move_y (int y);
+
+/* 
+ * delete num lines, starting from line
+ * the rest ist scrolled up
+ */
+extern void avt_delete_lines (int line, int num);
+
+/* 
+ * insert num lines, starting at line
+ * the rest ist scrolled down
+ */
+extern void avt_insert_lines (int line, int num);
 
 /***********************************************************************/
 /* audio stuff */

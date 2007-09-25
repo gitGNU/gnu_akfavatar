@@ -1,5 +1,8 @@
-2007-09-23  Andreas K. Foerster  <info@akfoerster.de>
+2007-09-25  Andreas K. Foerster  <info@akfoerster.de>
 
+	* akfavatar.h, avatar.c (avt_delete_lines, avt_insert_lines):
+	new functions
+	
 	* akfavatar.pas (ClearKeys):
 	new procedure
 

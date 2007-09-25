@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.14 2007-09-25 06:20:42 akf Exp $ */
+/* $Id: avatar.c,v 2.15 2007-09-25 17:55:07 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -786,6 +786,95 @@ avt_move_y (int y)
       if (cursor.y > viewport.y + viewport.h - LINEHEIGHT)
 	cursor.y = viewport.y + viewport.h - LINEHEIGHT;
     }
+}
+
+void
+avt_delete_lines (int line, int num)
+{
+  SDL_Rect rest, dest, clear;
+  SDL_Surface *rest_lines;
+
+  /* no textfield? do nothing */
+  if (textfield.x < 0)
+    return;
+
+  /* check if values are sane */
+  if (line < 1 || num < 1 || line > (viewport.h / LINEHEIGHT))
+    return;
+
+  /* get the rest of the viewport */
+  rest.x = viewport.x;
+  rest.w = viewport.w;
+  rest.y = viewport.y + ((line + num - 1) * LINEHEIGHT);
+  rest.h = viewport.h - ((line + num - 1) * LINEHEIGHT);
+
+  rest_lines = SDL_CreateRGBSurface (SDL_SWSURFACE, rest.w, rest.h,
+				     screen->format->BitsPerPixel,
+				     screen->format->Rmask,
+				     screen->format->Gmask,
+				     screen->format->Bmask,
+				     screen->format->Amask);
+
+  SDL_BlitSurface (screen, &rest, rest_lines, NULL);
+
+  dest.x = viewport.x;
+  dest.y = viewport.y + ((line - 1) * LINEHEIGHT);
+  SDL_BlitSurface (rest_lines, NULL, screen, &dest);
+  SDL_FreeSurface (rest_lines);
+
+  clear.w = viewport.w;
+  clear.h = num * LINEHEIGHT;
+  clear.x = viewport.x;
+  clear.y = viewport.y + viewport.h - (num * LINEHEIGHT);
+  SDL_FillRect (screen, &clear,
+		SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF));
+
+  SDL_UpdateRect (screen, viewport.x, viewport.y, viewport.w, viewport.h);
+}
+
+void
+avt_insert_lines (int line, int num)
+{
+  SDL_Rect rest, dest, clear;
+  SDL_Surface *rest_lines;
+
+  /* no textfield? do nothing */
+  if (textfield.x < 0)
+    return;
+
+  /* check if values are sane */
+  if (line < 1 || num < 1 || line > (viewport.h / LINEHEIGHT))
+    return;
+
+  /* get the rest of the viewport */
+  rest.x = viewport.x;
+  rest.w = viewport.w;
+  rest.y = viewport.y + ((line - 1) * LINEHEIGHT);
+  rest.h = viewport.h - ((line + num - 1) * LINEHEIGHT)
+    - (viewport.h % LINEHEIGHT);
+
+  rest_lines = SDL_CreateRGBSurface (SDL_SWSURFACE, rest.w, rest.h,
+				     screen->format->BitsPerPixel,
+				     screen->format->Rmask,
+				     screen->format->Gmask,
+				     screen->format->Bmask,
+				     screen->format->Amask);
+
+  SDL_BlitSurface (screen, &rest, rest_lines, NULL);
+
+  dest.x = viewport.x;
+  dest.y = viewport.y + ((line + num - 1) * LINEHEIGHT);
+  SDL_BlitSurface (rest_lines, NULL, screen, &dest);
+  SDL_FreeSurface (rest_lines);
+
+  clear.x = viewport.x;
+  clear.y = viewport.y + ((line - 1) * LINEHEIGHT);
+  clear.w = viewport.w;
+  clear.h = num * LINEHEIGHT;
+  SDL_FillRect (screen, &clear,
+		SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF));
+
+  SDL_UpdateRect (screen, viewport.x, viewport.y, viewport.w, viewport.h);
 }
 
 void
