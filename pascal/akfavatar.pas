@@ -703,12 +703,12 @@ end;
 
 procedure DelLine;
 begin
-avt_delete_lines(WhereY, 1)
+avt_delete_lines(avt_where_y, 1)
 end;
 
 procedure InsLine;
 begin
-avt_insert_lines(WhereY, 1)
+avt_insert_lines(avt_where_y, 1)
 end;
 
 procedure Window(x1, y1, x2, y2: Byte);
