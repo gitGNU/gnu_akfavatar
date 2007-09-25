@@ -222,6 +222,9 @@ function ShowImageFile(FileName: string): boolean;
 { play a short sound as with chr(7) }
 procedure Beep;
 
+{ a short visual flash on the screen }
+procedure Flash;
+
 { loads Audio File
   currently only WAV files supported
   encodings: PCM, MS-ADPCM, IMA-ADPCM }
@@ -372,6 +375,8 @@ procedure avt_quit; libakfavatar 'avt_quit';
 procedure avt_quit_audio; libakfavatar 'avt_quit_audio';
 
 procedure avt_bell; libakfavatar 'avt_bell';
+
+procedure avt_flash; libakfavatar 'avt_flash';
 
 function avt_load_wave_file(f: CString): Pointer;
   libakfavatar 'avt_load_wave_file';
@@ -723,6 +728,11 @@ end;
 procedure Beep;
 begin
 avt_bell
+end;
+
+procedure Flash;
+begin
+avt_flash
 end;
 
 procedure FreeSound(snd: Pointer);

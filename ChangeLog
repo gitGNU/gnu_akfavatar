@@ -19,8 +19,8 @@
 	* akfavatar.h, avatar.c (avt_bell, avt_flash):
 	new functions
 
-	* akfavatar.pas (beep):
-	new procedure
+	* akfavatar.pas (beep, flash):
+	new procedures
 
 	* akfavatar.pas (initializeAvatar):
 	always try to initialize the audio system
