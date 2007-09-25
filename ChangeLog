@@ -1,5 +1,8 @@
 2007-09-23  Andreas K. Foerster  <info@akfoerster.de>
 
+	* akfavatar.pas (ClearKeys):
+	new procedure
+
 	* avatar.c (avt_say):
 	fix: check cursor position before any character is printed
 	(fixes bug introduced in 0.13.1)

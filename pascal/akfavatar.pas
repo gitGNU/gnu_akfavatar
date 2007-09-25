@@ -166,6 +166,9 @@ procedure RestoreInOut;
 function KeyPressed: boolean;
 function ReadKey: char;
 
+{ clear the keyboard buffer }
+procedure ClearKeys;
+
 { wait for a key }
 procedure waitkey (const message: string);
 
@@ -803,6 +806,11 @@ while KeyboardBufferRead=KeyboardBufferWrite do
 
 ReadKey := KeyboardBuffer [KeyboardBufferRead];
 KeyboardBufferRead := (KeyboardBufferRead + 1) mod KeyboardBufferSize
+end;
+
+procedure ClearKeys;
+begin
+KeyboardBufferRead := KeyboardBufferWrite
 end;
 
 { ---------------------------------------------------------------------}
