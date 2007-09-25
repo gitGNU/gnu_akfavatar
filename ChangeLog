@@ -1,8 +1,21 @@
 2007-09-23  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatar.c (avt_say):
+	fix: check cursor position before any character is printed
+	(fixes bug introduced in 0.13.1)
+	
+	* avatar.c (avt_say, avt_ask):
+	fix: off-by-one error fixes
+
+        * akfavatar.pas (fpc_io_read, gpc_io_read):
+	fix: clear keyboard buffer
+
+	* akfavatar.h, avatar.c (avt_viewport):
+	new function
+
 	* akfavatar.h, avatar.c (avt_bell, avt_flash):
 	new functions
-	
+
 	* akfavatar.pas (beep):
 	new procedure
 

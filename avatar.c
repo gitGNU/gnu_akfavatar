@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.13 2007-09-23 10:25:45 akf Exp $ */
+/* $Id: avatar.c,v 2.14 2007-09-25 06:20:42 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -35,11 +35,11 @@
 #ifdef QVGA
 #  define FONTWIDTH 4
 #  define FONTHEIGHT 6
-#  define LINEHEIGHT 8		/* some space between lines */
+#  define LINEHEIGHT FONTHEIGHT	/* + something, if you want */
 #else
 #  define FONTWIDTH 7
 #  define FONTHEIGHT 14
-#  define LINEHEIGHT 17		/* some space between lines */
+#  define LINEHEIGHT FONTHEIGHT	/* + something, if you want */
 #endif
 
 /* 
@@ -148,6 +148,7 @@ static SDL_Rect window;		/* if screen is in fact larger */
 static int avt_visible = 0;
 static int do_stop_on_esc = 1;	/* stop, when Esc is pressed? */
 static SDL_Rect textfield = { -1, -1, -1, -1 };
+static SDL_Rect viewport;	/* sub-window in textfield */
 static int textdir_rtl = LEFT_TO_RIGHT;
 /* beginning of line - depending on text direction */
 static int linestart;
@@ -355,6 +356,7 @@ avt_drawballoon (void)
   textfield.y = window.y + TOPMARGIN + BALLOON_INNER_MARGIN;
   textfield.w = (BALLOONWIDTH * FONTWIDTH);
   textfield.h = balloonheight - (2 * BALLOON_INNER_MARGIN);
+  viewport = textfield;
 
   /* somewat lager rectangle */
   dst.x = textfield.x - BALLOON_INNER_MARGIN;
@@ -437,17 +439,17 @@ avt_drawballoon (void)
     SDL_UnlockSurface (screen);
 
   linestart =
-    (textdir_rtl) ? textfield.x + textfield.w - FONTWIDTH : textfield.x;
+    (textdir_rtl) ? viewport.x + viewport.w - FONTWIDTH : viewport.x;
 
   /* cursor at top  */
   cursor.x = linestart;
-  cursor.y = textfield.y;
+  cursor.y = viewport.y;
 
   /* 
    * only allow drawings inside this area from now on 
    * (only for blitting)
    */
-  SDL_SetClipRect (screen, &textfield);
+  SDL_SetClipRect (screen, &viewport);
   SDL_UpdateRect (screen, window.x, window.y, window.w, window.h);
 }
 
@@ -468,8 +470,9 @@ avt_clear_screen (void)
   avt_free_screen ();
   SDL_UpdateRect (screen, 0, 0, 0, 0);
 
-  /* undefine textfield */
+  /* undefine textfield / viewport */
   textfield.x = textfield.y = -1;
+  viewport = textfield;
   avt_visible = 0;
 }
 
@@ -485,7 +488,7 @@ avt_text_direction (int direction)
   if (textfield.x >= 0)
     {
       linestart =
-	(textdir_rtl) ? textfield.x + textfield.w - FONTWIDTH : textfield.x;
+	(textdir_rtl) ? viewport.x + viewport.w - FONTWIDTH : viewport.x;
       cursor.x = linestart;
     }
 }
@@ -530,18 +533,21 @@ avt_resize (int w, int h)
   SDL_BlitSurface (oldwindowimage, NULL, screen, &window);
   SDL_FreeSurface (oldwindowimage);
 
-  /* restore textfield positions */
+  /* recalculate textfield & viewport positions */
   if (textfield.x >= 0)
     {
       textfield.x = textfield.x - oldwindow.x + window.x;
       textfield.y = textfield.y - oldwindow.y + window.y;
 
+      viewport.x = viewport.x - oldwindow.x + window.x;
+      viewport.y = viewport.y - oldwindow.y + window.y;
+
       linestart =
-	(textdir_rtl) ? textfield.x + textfield.w - FONTWIDTH : textfield.x;
+	(textdir_rtl) ? viewport.x + viewport.w - FONTWIDTH : viewport.x;
 
       cursor.x = cursor.x - oldwindow.x + window.x;
       cursor.y = cursor.y - oldwindow.y + window.y;
-      SDL_SetClipRect (screen, &textfield);
+      SDL_SetClipRect (screen, &viewport);
     }
 
   /* make all changes visible */
@@ -726,7 +732,7 @@ int
 avt_where_x (void)
 {
   if (textfield.x >= 0)
-    return ((cursor.x - textfield.x) / FONTWIDTH) + 1;
+    return ((cursor.x - viewport.x) / FONTWIDTH) + 1;
   else
     return -1;
 }
@@ -735,7 +741,7 @@ int
 avt_where_y (void)
 {
   if (textfield.x >= 0)
-    return ((cursor.y - textfield.y) / LINEHEIGHT) + 1;
+    return ((cursor.y - viewport.y) / LINEHEIGHT) + 1;
   else
     return -1;
 }
@@ -759,9 +765,11 @@ avt_move_x (int x)
     {
       if (x < 1)
 	x = 1;
-      if (x > LINELENGTH)
-	x = LINELENGTH;
-      cursor.x = (x - 1) * FONTWIDTH + textfield.x;
+      cursor.x = (x - 1) * FONTWIDTH + viewport.x;
+
+      /* max-pos exeeded? */
+      if (cursor.x > viewport.x + viewport.w - FONTWIDTH)
+	cursor.x = viewport.x + viewport.w - FONTWIDTH;
     }
 }
 
@@ -772,10 +780,33 @@ avt_move_y (int y)
     {
       if (y < 1)
 	y = 1;
-      if (y >= avt_get_max_y ())
-	y = avt_get_max_y ();
-      cursor.y = (y - 1) * LINEHEIGHT + textfield.y;
+      cursor.y = (y - 1) * LINEHEIGHT + viewport.y;
+
+      /* max-pos exeeded? */
+      if (cursor.y > viewport.y + viewport.h - LINEHEIGHT)
+	cursor.y = viewport.y + viewport.h - LINEHEIGHT;
     }
+}
+
+void
+avt_viewport (int x, int y, int width, int height)
+{
+  /* if there's no balloon, draw it */
+  if (textfield.x < 0)
+    avt_drawballoon ();
+
+  viewport.x = textfield.x + ((x - 1) * FONTWIDTH);
+  viewport.y = textfield.y + ((y - 1) * LINEHEIGHT);
+  viewport.w = width * FONTWIDTH;
+  viewport.h = height * LINEHEIGHT;
+
+  linestart =
+    (textdir_rtl) ? viewport.x + viewport.w - FONTWIDTH : viewport.x;
+
+  cursor.x = linestart;
+  cursor.y = viewport.y;
+
+  SDL_SetClipRect (screen, &viewport);
 }
 
 void
@@ -789,12 +820,12 @@ avt_clear (void)
 
   /* use background color of characters */
   color = avt_character->format->palette->colors[0];
-  SDL_FillRect (screen, &textfield,
+  SDL_FillRect (screen, &viewport,
 		SDL_MapRGB (screen->format, color.r, color.g, color.b));
 
-  SDL_UpdateRect (screen, textfield.x, textfield.y, textfield.w, textfield.h);
+  SDL_UpdateRect (screen, viewport.x, viewport.y, viewport.w, viewport.h);
   cursor.x = linestart;
-  cursor.y = textfield.y;
+  cursor.y = viewport.y;
 }
 
 void
@@ -812,17 +843,17 @@ avt_clear_eol (void)
 
   if (textdir_rtl)		/* right to left */
     {
-      dst.x = textfield.x;
+      dst.x = viewport.x;
       dst.y = cursor.y;
       dst.h = FONTHEIGHT;
-      dst.w = cursor.x + FONTWIDTH - textfield.x;
+      dst.w = cursor.x + FONTWIDTH - viewport.x;
     }
   else				/* left to right */
     {
       dst.x = cursor.x;
       dst.y = cursor.y;
       dst.h = FONTHEIGHT;
-      dst.w = textfield.w - (cursor.x - textfield.x);
+      dst.w = viewport.w - (cursor.x - viewport.x);
     }
 
   SDL_FillRect (screen, &dst,
@@ -838,14 +869,13 @@ avt_flip_page (void)
     return _avt_STATUS;
 
   /* do nothing when the textfield is already empty */
-  if (cursor.x == linestart && cursor.y == textfield.y)
+  if (cursor.x == linestart && cursor.y == viewport.y)
     return _avt_STATUS;
 
-  /* the textarea must be updated, 
+  /* the viewport must be updated, 
      if it's not updated letter by letter */
   if (!text_delay)
-    SDL_UpdateRect (screen, textfield.x,
-		    textfield.y, textfield.w, textfield.h);
+    SDL_UpdateRect (screen, viewport.x, viewport.y, viewport.w, viewport.h);
 
   avt_wait (flip_page_delay);
   avt_clear ();
@@ -912,13 +942,13 @@ avt_forward (void)
   if (textdir_rtl)		/* right to left */
     {
       cursor.x -= FONTWIDTH;
-      if (cursor.x < textfield.x)
+      if (cursor.x < viewport.x)
 	avt_new_line ();
     }
   else				/* left to right */
     {
       cursor.x += FONTWIDTH;
-      if (cursor.x > textfield.x + textfield.w - FONTWIDTH)
+      if (cursor.x > viewport.x + viewport.w - FONTWIDTH)
 	avt_new_line ();
     }
 
@@ -929,20 +959,21 @@ avt_forward (void)
 static void
 avt_nexttab (void)
 {
-  int x = avt_where_x ();
-  int i;
+  int x, i;
+
+  x = avt_where_x ();
 
   if (textdir_rtl)
     {
       if (x < 8)
 	avt_new_line ();
-      else
-	for (i = 0; i < 8 - ((LINELENGTH - x - 1) % 8); i++)
+      else			/* TODO: improve */
+	for (i = 0; i < 8 - (((viewport.w / FONTWIDTH) - x - 1) % 8); i++)
 	  avt_forward ();
     }
   else
     {
-      if (x > LINELENGTH - 8)
+      if (x > (viewport.w / FONTWIDTH) - 8)
 	avt_new_line ();
       else
 	for (i = 0; i < 8 - (x % 8); i++)
@@ -990,12 +1021,6 @@ avt_say (const wchar_t * txt)
   /* no textfield? => draw balloon */
   if (textfield.x < 0)
     avt_drawballoon ();
-
-  /* if the cursor is beyond the end of the textarea,
-   * get a new page 
-   */
-  if (cursor.y >= textfield.y + textfield.h - LINEHEIGHT)
-    avt_flip_page ();
 
   while (*txt != 0)
     {
@@ -1055,6 +1080,12 @@ avt_say (const wchar_t * txt)
 	default:
 	  if (*txt > 32)
 	    {
+	      /* if the cursor is beyond the end of the viewport,
+	       * get a new page 
+	       */
+	      if (cursor.y > viewport.y + viewport.h - LINEHEIGHT)
+		avt_flip_page ();
+
 	      avt_drawchar (*txt);
 	      if (text_delay)
 		{
@@ -1071,9 +1102,8 @@ avt_say (const wchar_t * txt)
       txt++;
     }				/* while (*t != 0) */
 
-  if (!text_delay)
-    SDL_UpdateRect (screen, textfield.x,
-		    textfield.y, textfield.w, textfield.h);
+  if (!text_delay)		/* TODO: optimize */
+    SDL_UpdateRect (screen, viewport.x, viewport.y, viewport.w, viewport.h);
 
   return _avt_STATUS;
 }
@@ -1216,18 +1246,18 @@ avt_ask (wchar_t * s, const int size)
   if (textfield.x < 0)
     avt_drawballoon ();
 
-  /* if the cursor is beyond the end of the textarea,
+  /* if the cursor is beyond the end of the viewport,
    * get a new page 
    */
-  if (cursor.y >= textfield.y + textfield.h - LINEHEIGHT)
+  if (cursor.y > viewport.y + viewport.h - LINEHEIGHT)
     avt_flip_page ();
 
   /* maxlen is the rest of line minus one for the cursor */
   /* it is not changed when the window is resized */
   if (textdir_rtl)
-    maxlen = ((cursor.x - textfield.x) / FONTWIDTH) - 1;
+    maxlen = ((cursor.x - viewport.x) / FONTWIDTH) - 1;
   else
-    maxlen = (((textfield.x + textfield.w) - cursor.x) / FONTWIDTH) - 1;
+    maxlen = (((viewport.x + viewport.w) - cursor.x) / FONTWIDTH) - 1;
 
   /* does it fit in the buffer size? */
   if (maxlen > size / sizeof (wchar_t))
@@ -1258,8 +1288,8 @@ avt_ask (wchar_t * s, const int size)
 	      avt_backspace ();
 	      avt_backspace ();
 	    }
-	  else
-	    avt_bell ();
+	  else if (avt_bell_func)
+	    (*avt_bell_func) ();
 	  break;
 
 	case 13:
@@ -1280,8 +1310,8 @@ avt_ask (wchar_t * s, const int size)
 	      cursor.x =
 		(textdir_rtl) ? cursor.x - FONTWIDTH : cursor.x + FONTWIDTH;
 	    }
-	  else
-	    avt_bell ();
+	  else if (avt_bell_func)
+	    (*avt_bell_func) ();
 	}
     }
   while ((ch != 13) && (_avt_STATUS == AVATARNORMAL));
@@ -1351,6 +1381,7 @@ avt_show_avatar (void)
 
   /* undefine textfield */
   textfield.x = textfield.y = -1;
+  viewport = textfield;
   avt_visible = 1;
 }
 
@@ -1363,6 +1394,7 @@ avt_move_in (void)
 
   /* undefine textfield */
   textfield.x = textfield.y = -1;
+  viewport = textfield;
 
   if (avt_image)
     {
@@ -1621,7 +1653,7 @@ avt_wait_key (const wchar_t * message)
     }
 
   if (textfield.x >= 0)
-    SDL_SetClipRect (screen, &textfield);
+    SDL_SetClipRect (screen, &viewport);
 
   return _avt_STATUS;
 }
@@ -1685,6 +1717,7 @@ avt_show_image (avt_image_t * image)
   /* set informational variables */
   avt_visible = 0;
   textfield.x = textfield.y = -1;
+  viewport = textfield;
 
   /* center image on screen */
   dst.x = (screen->w / 2) - (img->w / 2);
@@ -1978,6 +2011,7 @@ avt_quit (void)
   screen = NULL;		/* it was freed by SDL_Quit */
   avt_visible = 0;
   textfield.x = textfield.y = -1;
+  viewport = textfield;
 }
 
 int
@@ -2134,6 +2168,6 @@ avt_initialize (const char *title, const char *icontitle,
   /* visual flash for the bell */
   /* when you initialize the audo stuff you get an audio "bell" */
   avt_bell_func = avt_flash;
-  
+
   return _avt_STATUS;
 }

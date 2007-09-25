@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.12 2007-09-23 10:25:45 akf Exp $ */
+/* $Id: akfavatar.h,v 2.13 2007-09-25 06:20:41 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -278,6 +278,12 @@ extern int avt_wait_key_mb (char *message);
 
 /* functions for extended use */
 
+/* 
+ * set a viewport (sub-area of the textarea)
+ * upper left corner is 1, 1
+ */
+void avt_viewport (int x, int y, int width, int height);
+
 /* show an empty screen with the background color */
 extern void avt_clear_screen (void);
 
@@ -327,7 +333,7 @@ void avt_bell (void);
 void avt_flash (void);
 
 /* 
- * clears the textfield in the balloon
+ * clears the viewport
  * if there is no balloon yet, it is drawn
  */
 extern void avt_clear (void);
@@ -358,12 +364,12 @@ extern void avt_backspace (void);
  */
 
 /*
- * get position in the balloon
+ * get position in the viewport
  */
 extern int avt_where_x (void);
 extern int avt_where_y (void);
 
-/* maximum positions */
+/* maximum positions (whole text-field) */
 extern int avt_get_max_x (void);
 extern int avt_get_max_y (void);
 

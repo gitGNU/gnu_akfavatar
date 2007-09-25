@@ -26,10 +26,10 @@ CRT compatiblity
 supported: 
 ClrScr, ClrEol, GotoXY, WhereX, WhereY, Delay, TextColor, TextBackground,
 NormVideo, HighVideo, LowVideo, TextAttr, NoSound, (ReadKey), KeyPressed, 
-AssignCrt, ScreenSize, CheckBreak
+Window, AssignCrt, ScreenSize, CheckBreak
 
 not supported yet, but planned: 
-DelLine, InsLine, Window
+DelLine, InsLine
 
 dummies for:
 CheckEof, CheckSnow, DirectVideo, Sound
@@ -38,7 +38,7 @@ no support planned for:
 - TextMode, LastMode:
     remove that code, or use $IfDef MSDOS
 - writing to WindMin, WindMax:
-    use Window, when it is supported
+    use Window
 }
 
 {$IfDef FPC}
@@ -176,7 +176,7 @@ procedure delay(milliseconds: Integer);
 { example use: delay (seconds (2.5)); }
 function seconds(s: Real): Integer;
 
-{ clears the textfield (not the screen!) }
+{ clears the window (not the screen!) }
 { the name was chosen for compatiblity to the CRT unit }
 procedure ClrScr;
 
@@ -217,7 +217,7 @@ procedure MoveAvatarOut;
 function ShowImageFile(FileName: string): boolean;
 
 { play a short sound as with chr(7) }
-procedure beep;
+procedure Beep;
 
 { loads Audio File
   currently only WAV files supported
@@ -239,7 +239,8 @@ procedure NoSound;
 { compatible to CRT unit }
 function WhereX: Integer;
 function WhereY: Integer;
-procedure GotoXY (x, y: Integer);
+procedure GotoXY(x, y: Integer);
+procedure Window(x1, y1, x2, y2: Byte);
 
 { get last error message }
 function AvatarGetError: ShortString;
@@ -384,10 +385,13 @@ procedure avt_stop_audio; libakfavatar 'avt_stop_audio';
 
 function avt_get_error: CString; libakfavatar 'avt_get_error';
 
+procedure avt_viewport(x, y, width, height: CInteger); 
+  libakfavatar 'avt_viewport';
+
 function avt_where_x: CInteger; libakfavatar 'avt_where_x';
 function avt_where_y: CInteger; libakfavatar 'avt_where_y';
-procedure avt_move_x (x: CInteger); libakfavatar 'avt_move_x';
-procedure avt_move_y (x: CInteger); libakfavatar 'avt_move_y';
+procedure avt_move_x(x: CInteger); libakfavatar 'avt_move_x';
+procedure avt_move_y(x: CInteger); libakfavatar 'avt_move_y';
 function avt_get_max_x: CInteger; libakfavatar 'avt_get_max_x'; 
 function avt_get_max_y: CInteger; libakfavatar 'avt_get_max_y'; 
 
@@ -674,10 +678,24 @@ begin
 WhereY := avt_where_y
 end;
 
-Procedure GotoXY (x, y: Integer);
+procedure GotoXY (x, y: Integer);
 begin
 avt_move_x (x);
 avt_move_y (y)
+end;
+
+procedure Window(x1, y1, x2, y2: Byte);
+begin
+{ do nothing when one value is invalid (defined behaviour) }
+if (x1 >= 1) and (x1 <= ScreenSize.x) and
+   (y1 >= 1) and (y1 <= ScreenSize.y) and
+   (x2 >= x1) and (x2 <= ScreenSize.x) and
+   (y2 >= y1) and (y2 <= ScreenSize.y) then
+  begin
+  avt_viewport(x1, y1, x2-x1+1, y2-y1+1);
+  WindMin := ((y1-1) shl 8) or (x1-1);
+  WindMax := ((y2-1) shl 8) or (x2-1)
+  end
 end;
 
 procedure waitkey(const message: string);
@@ -699,7 +717,7 @@ begin
 LoadSoundFile := avt_load_wave_file(String2CString(FileName))
 end;
 
-procedure beep;
+procedure Beep;
 begin
 avt_bell
 end;
@@ -845,7 +863,10 @@ end;
 
   F.BufPtr^ [F.BufEnd-2] := #13;
   F.BufPtr^ [F.BufEnd-1] := #10;
-
+  
+  { clear KeyBoardBuffer }
+  KeyboardBufferRead := KeyboardBufferWrite;
+  
   fpc_io_read := 0
   end;
 
@@ -915,6 +936,9 @@ end;
   CharBuf [i] := #10;
   inc (i);
   
+  { clear KeyBoardBuffer }
+  KeyboardBufferRead := KeyboardBufferWrite;
+
   gpc_io_read := i
   end;
 
