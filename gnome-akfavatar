@@ -186,7 +186,7 @@ fi
 # main menu
 while true
 do
-  MENU=`$ZENITY --list --title=AKFAvatar --width 300 --height 370 \
+  MENU=`$ZENITY --list --title=AKFAvatar --width 350 --height 370 \
        --column "key" --column "what to do" \
      D "show a demo or textfile" \
      E "create or edit a demo" \
@@ -195,7 +195,8 @@ do
      I "change avatar image" \
      F "fullscreen or window mode" \
      S "save settings" \
-     H "help for AKFAvatar" \
+     H "help for AKFAvatar - english" \
+     G "Hilfe zu AKFAvatar - deutsch (german)" \
      X "Exit"` \
      || exit 0
 
@@ -208,6 +209,7 @@ do
     F) choose_fullscreen ;;
     S) save_settings ;;
     H) yelp info:akfavatar-en & ;;
+    G) yelp info:akfavatar-de & ;;
     X) exit 0 ;;
   esac
 
