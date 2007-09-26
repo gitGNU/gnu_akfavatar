@@ -635,14 +635,15 @@ end;
 
 procedure MoveAvatarIn;
 begin
-if not initialized then initializeAvatar;
-if avt_move_in <> 0 then Halt
+if not initialized 
+  then initializeAvatar
+  else if avt_move_in <> 0 then Halt
 end;
 
 procedure MoveAvatarOut;
 begin
-if not initialized then initializeAvatar;
-if avt_move_out <> 0 then Halt
+if initialized then
+  if avt_move_out <> 0 then Halt
 end;
 
 procedure ShowAvatar;
