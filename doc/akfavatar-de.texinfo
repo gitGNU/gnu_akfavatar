@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.3 2007-09-22 13:02:37 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.4 2007-09-26 08:33:48 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -812,11 +812,12 @@ Auskunft über die aktuelle Position.
 
 @display
 @emph{Achtung:} Die Breite der Anzeige umfasst 80 Zeichen wie bei einem
-Text-Terminal, aber die Höhe ist wesentlich geringer.  Man kann die 
+Text-Terminal, aber die Höhe ist meist wesentlich geringer.  Man kann die 
 Dimensionen des Text-Bereiches über die Variablen @code{ScreenSize.x} 
-und @code{ScreenSize.y} herausfinden, aber erst, wenn der Text-Bereich
-bereits sichtbar ist.  Um das sicher zu stellen könnte man den Befehl
-@command{ClrScr;} aufrufen, bevor man die Größe der Anzeige ausliest.
+und @code{ScreenSize.y} herausfinden, aber erst, nachdem die Bibliothek
+bereits initialisiert ist.  Um das sicher zu stellen, könnte man den Befehl
+@command{MoveAvatarIn} oder @command{ClrScr;} aufrufen, bevor man versucht 
+die Größe der Anzeige auszulesen.
 @end display
 
 Man kann den Befehl @command{TextColor(@var{color});} verwenden, um die
@@ -942,195 +943,7 @@ man in @ref{Pascal Referenz}.
 Der folgende Text zeigt das @code{interface} der Pascal-Unit
 @code{akfavatar.pas}:
 
-@verbatim
-
-{ length of an output line }
-{ input is one less }
-const LineLength = 80;
-
-{ The following two definitions are in fact more complicated
-  I made them simpler here for clearity }
-{ Default encoding of the system }
-const DefaultEncoding = 'UTF-8';
-type LineString = String;
-
-
-{ Colors for TextColor/TextBackground }
-{ compatible to the CRT unit }
-const
-  Black        = 0;
-  Blue         = 1;
-  Green        = 2;
-  Cyan         = 3;
-  Red          = 4;
-  Magenta      = 5;
-  Brown        = 6;
-  LightGray    = 7;
-  DarkGray     = 8;
-  LightBlue    = 9;
-  LightGreen   = 10;
-  LightCyan    = 11;
-  LightRed     = 12;
-  LightMagenta = 13;
-  Yellow       = 14;
-  White        = 15;
-  Blink        = 128; { ignored }
-
-type TextDirection = (LeftToRight, RightToLeft);
-
-{ 
-  Text Attributes
-  mostly compatible to the CRT unit
-  the "blink-bit" means a bright background color
-}
-var TextAttr : byte;
-
-{ methods to stop the program }
-var
-  CheckBreak: boolean; { compatible to CRT }
-  CheckEsc: boolean;
-
-{ compatible to the CRT unit }
-var 
-  CheckEof: boolean;
-  CheckSnow: boolean;
-  DirectVideo: boolean;
-
-{ The "Screen" is the textarea }
-{ The name is chosen for compatiblity with the CRT unit }
-{ Just for reading! }
-{ This variable is only set after the avatar is visible }
-var ScreenSize : record x, y: Integer end;
-
-{ for CRT compatiblity, use ScreenSize for new programs }
-{ Just for reading! }
-{ These variables are only set after the avatar is visible }
-var WindMin, WindMax: word;
-
-
-{ load the Avatar image from a file }
-{ must be used before any output took place }
-procedure AvatarImageFile(FileName: string);
-
-{ set a different background color (default is grey) }
-{ must be used before any output took place }
-procedure setBackgroundColor(red, green, blue: byte);
-
-{ change pace of text and page flipping }
-procedure setDelays(text, flip_page: Integer);
-
-{ change the encoding }
-procedure setEncoding(const newEncoding: string);
-
-{ change text direction (for hebrew/yiddish texts) }
-{ you should start a new line before or after this command }
-procedure setTextDirection(direction: TextDirection);
-
-{ assign text-variable to the avatar }
-procedure AssignAvatar(var f: text);
-
-{ the same for CRT compatiblity }
-procedure AssignCrt(var f: text);
-
-{ Restore Input/Output system }
-{ use this to output help or version information }
-procedure RestoreInOut;
-
-{$IfDef FPC}
-  { the page command is defined in the Pascal standard,
-    but missing in FreePascal }
-
-  { action: wait a while and then clear the textfield }
-
-  procedure page(var f: text);
-  procedure page;
-{$EndIf}
-
-{ keyboard handling }
-{ partly CRT compatible - Latin1 chars so far }
-function KeyPressed: boolean;
-function ReadKey: char;
-
-{ wait for a key }
-procedure waitkey (const message: string);
-
-{ wait some time }
-{ compatible to CRT unit }
-procedure delay(milliseconds: Integer);
-
-{ example use: delay (seconds (2.5)); }
-function seconds(s: Real): Integer;
-
-{ clears the textfield (not the screen!) }
-{ the name was chosen for compatiblity to the CRT unit }
-procedure ClrScr;
-
-{ clears rest of the line }
-{ compatible to CRT unit }
-procedure ClrEol;
-
-{ set the text color }
-{ compatible to CRT unit }
-procedure TextColor (Color: Byte);
-
-{ set the text background color }
-{ compatible to CRT unit, but light colors can be used }
-procedure TextBackground (Color: Byte);
-
-{ set black on white text colors }
-{ name compatible to CRT unit, but the colors differ }
-procedure NormVideo;
-
-{ set high color intensity }
-procedure HighVideo;
-
-{ set low color intensity }
-procedure LowVideo;
-
-{ shows the avatar without the balloon }
-procedure ShowAvatar;
-
-{ moves the avatar in or out }
-procedure MoveAvatarIn;
-procedure MoveAvatarOut;
-
-{ loads image
-  after that call delay or waitkey 
-  the supported image formats depend on your libraries
-  uncompressed BMP is always supported
-}
-function ShowImageFile(FileName: string): boolean;
-
-{ loads Audio File
-  currently only WAV files supported
-  encodings: PCM, MS-ADPCM, IMA-ADPCM }
-function LoadSoundFile(const FileName: string): Pointer;
-procedure FreeSound(snd: Pointer);
-procedure PlaySound(snd: Pointer; loop: boolean);
-
-{ wait until the end of the audio output }
-procedure WaitSoundEnd;
-
-{ dummy function, full support planned }
-procedure Sound(frequency: Integer);
-
-{ stop sound output }
-procedure NoSound;
-
-{ handle coordinates (inside the balloon) }
-{ compatible to CRT unit }
-function WhereX: Integer;
-function WhereY: Integer;
-procedure GotoXY (x, y: Integer);
-
-{ get last error message }
-function AvatarGetError: ShortString;
-
-{ ignore TextColor TextBackground and so on }
-{ compatible with GNU-Pascal's CRT unit }
-procedure SetMonochrome(monochrome: boolean);
-
-@end verbatim
+@verbatiminclude pasref.txt
 
 @node Index
 @unnumbered Index
