@@ -1,5 +1,12 @@
 2007-09-26  Andreas K. Foerster  <info@akfoerster.de>
 
+	* akfavatar.h, avatar.c (avt_set_text_delay, avt_set_flip_page_delay):
+	new functions
+	(avt_set_delays): marked deprecated
+	
+	* akfavatar.pas (SetTextDelay, SetFlipPageDelay)
+	new functions
+
 	* akfavatar.pas 
 	(MoveAvatarIn): fix: after initializing the system, the avatar
 	  isn't moved in a second time

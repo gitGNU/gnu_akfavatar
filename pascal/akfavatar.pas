@@ -59,6 +59,11 @@ const LineLength = 80;
   const DefaultEncoding = 'UTF-8';
 {$EndIf}
 
+{ defaults for SetTextDelay and SetFlipPageDelay }
+const
+  DefaultTextDelay = 75;
+  DefaultFlipPageDelay = 2700;
+
 { Colors for TextColor/TextBackground }
 { compatible to the CRT unit }
 const
@@ -129,7 +134,8 @@ procedure AvatarImageFile(FileName: string);
 procedure setBackgroundColor(red, green, blue: byte);
 
 { change pace of text and page flipping }
-procedure setDelays(text, flip_page: integer);
+procedure setTextDelay(delay:integer);
+procedure setFlipPageDelay(delay: integer);
 
 { change the encoding }
 procedure setEncoding(const newEncoding: string);
@@ -325,8 +331,11 @@ function avt_default: PAvatarImage; libakfavatar 'avt_default';
 
 function avt_get_status: CInteger; libakfavatar 'avt_get_status';
 
-procedure avt_set_delays (txt, flip_page: CInteger);
-  libakfavatar 'avt_set_delays';
+procedure avt_set_text_delay (delay: CInteger);
+  libakfavatar 'avt_set_text_delay';
+
+procedure avt_set_flip_page_delay (delay: CInteger);
+  libakfavatar 'avt_set_flip_page_delay';
 
 function avt_say_mb(t: CString): CInteger; libakfavatar 'avt_say_mb';
 
@@ -453,9 +462,14 @@ begin
 avt_mb_encoding(String2CString(newEncoding))
 end;
 
-procedure setDelays(text, flip_page: integer);
+procedure setTextDelay(delay: integer);
 begin
-avt_set_delays (text, flip_page)
+avt_set_text_delay (delay)
+end;
+
+procedure setFlipPageDelay(delay: integer);
+begin
+avt_set_flip_page_delay (delay)
 end;
 
 procedure setTextDirection(direction: TextDirection);

@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.16 2007-09-26 11:10:17 akf Exp $ */
+/* $Id: avatar.c,v 2.17 2007-09-26 13:17:38 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2076,11 +2076,24 @@ avt_set_text_background_color (int red, int green, int blue)
   SDL_SetColors (avt_character, &color, 0, 1);
 }
 
+/* about to be removed */
 void
 avt_set_delays (int text, int flip_page)
 {
   text_delay = text;
   flip_page_delay = flip_page;
+}
+
+void
+avt_set_text_delay (int delay)
+{
+  text_delay = delay;
+}
+
+void
+avt_set_flip_page_delay (int delay)
+{
+  flip_page_delay = delay;
 }
 
 void

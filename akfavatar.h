@@ -23,14 +23,14 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.15 2007-09-26 11:10:17 akf Exp $ */
+/* $Id: akfavatar.h,v 2.16 2007-09-26 13:17:38 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
 
 /* SDL redefines main on some systems */
 #if defined(__WIN32__) ||  defined(__MACOS__) || defined(__MACOSX__)
-#include "SDL.h"
+#  include "SDL.h"
 #endif
 
 /* to get the systems definition of wchar_t */
@@ -190,10 +190,18 @@ extern void avt_set_text_color (int red, int green, int blue);
 extern void avt_set_text_background_color (int red, int green, int blue);
 
 /*
- * delay times for text-writing and for avt_flip_page
- * times are in milliseconds
- * default: DEFAULT_TEXT_DELAY, DEFAULT_FLIP_PAGE_DELAY
+ * delay time for text-writing
+ * default: DEFAULT_TEXT_DELAY
  */
+extern void avt_set_text_delay (int delay);
+
+/*
+ * delay time for page flipping
+ * default: DEFAULT_FLIP_PAGE_DELAY
+ */
+extern void avt_set_flip_page_delay (int delay);
+
+/* don't use this anymore, it is about to be removed */
 extern void avt_set_delays (int text, int flip_page);
 
 /* register an external keyhandler */
