@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.14 2007-09-25 17:55:07 akf Exp $ */
+/* $Id: akfavatar.h,v 2.15 2007-09-26 11:10:17 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -354,6 +354,13 @@ extern int avt_forward (void);
  */
 extern void avt_backspace (void);
 
+/*
+ * set scroll mode
+ * 0 = off (page-flipping), 1 = normal
+ * (further modes are planned, it is not meant as a boolean)
+ */
+extern void avt_set_scroll_mode (int mode);
+extern int avt_get_scroll_mode (void);
 
 /* 
  * handle coordinates

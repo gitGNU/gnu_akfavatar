@@ -112,7 +112,7 @@ var
 { The name is chosen for compatiblity with the CRT unit }
 { Just for reading! }
 { This variable is only set after the avatar is visible }
-var ScreenSize : record x, y: Integer end;
+var ScreenSize : record x, y: integer end;
 
 { for CRT compatiblity, use ScreenSize for new programs }
 { Just for reading! }
@@ -129,7 +129,7 @@ procedure AvatarImageFile(FileName: string);
 procedure setBackgroundColor(red, green, blue: byte);
 
 { change pace of text and page flipping }
-procedure setDelays(text, flip_page: Integer);
+procedure setDelays(text, flip_page: integer);
 
 { change the encoding }
 procedure setEncoding(const newEncoding: string);
@@ -171,10 +171,10 @@ procedure waitkey (const message: string);
 
 { wait some time }
 { compatible to CRT unit }
-procedure delay(milliseconds: Integer);
+procedure delay(milliseconds: integer);
 
 { example use: delay (seconds (2.5)); }
-function seconds(s: Real): Integer;
+function seconds(s: Real): integer;
 
 { clears the window (not the screen!) }
 { the name was chosen for compatiblity to the CRT unit }
@@ -231,25 +231,30 @@ procedure Flash;
 { loads Audio File
   currently only WAV files supported
   encodings: PCM, MS-ADPCM, IMA-ADPCM }
-function LoadSoundFile(const FileName: string): Pointer;
-procedure FreeSound(snd: Pointer);
-procedure PlaySound(snd: Pointer; loop: boolean);
+function LoadSoundFile(const FileName: string): pointer;
+procedure FreeSound(snd: pointer);
+procedure PlaySound(snd: pointer; loop: boolean);
 
 { wait until the end of the audio output }
 procedure WaitSoundEnd;
 
 { dummy function, full support planned }
-procedure Sound(frequency: Integer);
+procedure Sound(frequency: integer);
 
 { stop sound output }
 procedure NoSound;
 
 { handle coordinates (inside the balloon) }
 { compatible to CRT unit }
-function WhereX: Integer;
-function WhereY: Integer;
-procedure GotoXY(x, y: Integer);
+function WhereX: integer;
+function WhereY: integer;
+procedure GotoXY(x, y: integer);
 procedure Window(x1, y1, x2, y2: Byte);
+
+{ set/get scroll mode }
+{ 0 = off (page-flipping), 1 = normal }
+procedure SetScrollMode(mode: integer);
+function GetScrollMode: integer;
 
 { get last error message }
 function AvatarGetError: ShortString;
@@ -288,12 +293,12 @@ implementation
 
 {$IfDef __GPC__}
   {$if __GPC_RELEASE__ < 20041218}
-    type CInteger = Integer;
+    type CInteger = integer;
   {$EndIf}
 {$EndIf}
 
 
-type PAvatarImage = Pointer;
+type PAvatarImage = pointer;
 
 type 
   PGimpImage = ^TGimpImage;
@@ -332,7 +337,7 @@ procedure avt_clear_eol; libakfavatar 'avt_clear_eol';
 function avt_mb_encoding (encoding: CString): CInteger;
   libakfavatar 'avt_mb_encoding';
 
-function avt_ask_mb(t: Pointer; size: CInteger): CInteger; 
+function avt_ask_mb(t: pointer; size: CInteger): CInteger; 
   libakfavatar 'avt_ask_mb';
 
 function avt_wait(milliseconds: CInteger): CInteger; 
@@ -381,13 +386,13 @@ procedure avt_bell; libakfavatar 'avt_bell';
 
 procedure avt_flash; libakfavatar 'avt_flash';
 
-function avt_load_wave_file(f: CString): Pointer;
+function avt_load_wave_file(f: CString): pointer;
   libakfavatar 'avt_load_wave_file';
 
-procedure avt_free_audio(snd: Pointer); 
+procedure avt_free_audio(snd: pointer); 
   libakfavatar 'avt_free_audio';
 
-function avt_play_audio(snd: Pointer; loop: CInteger): CInteger; 
+function avt_play_audio(snd: pointer; loop: CInteger): CInteger; 
   libakfavatar 'avt_play_audio';
 
 function avt_wait_audio_end: CInteger; libakfavatar 'avt_wait_audio_end';
@@ -412,11 +417,17 @@ procedure avt_delete_lines(line, num: CInteger);
 procedure avt_insert_lines(line, num: CInteger);
   libakfavatar 'avt_insert_lines';
 
-procedure avt_text_direction (direction: CInteger); 
+procedure avt_text_direction(direction: CInteger); 
   libakfavatar 'avt_text_direction';
   
-procedure avt_register_keyhandler (handler: Pointer);
+procedure avt_register_keyhandler(handler: pointer);
   libakfavatar 'avt_register_keyhandler';
+
+procedure avt_set_scroll_mode(mode: CInteger); 
+  libakfavatar 'avt_set_scroll_mode';
+
+function avt_get_scroll_mode: CInteger; 
+  libakfavatar 'avt_get_scroll_mode';
 
 {$IfNDef __GPC__}
 
@@ -442,7 +453,7 @@ begin
 avt_mb_encoding(String2CString(newEncoding))
 end;
 
-procedure setDelays(text, flip_page: Integer);
+procedure setDelays(text, flip_page: integer);
 begin
 avt_set_delays (text, flip_page)
 end;
@@ -627,7 +638,7 @@ begin
 isMonochrome := monochrome
 end;
 
-procedure delay (milliseconds: Integer);
+procedure delay (milliseconds: integer);
 begin
 if not initialized then initializeAvatar;
 if avt_wait (milliseconds) <> 0 then Halt
@@ -678,7 +689,7 @@ if result = 0
   else ShowImageFile := false { failure }
 end;
 
-function seconds(s: Real): Integer;
+function seconds(s: Real): integer;
 begin seconds := trunc (s * 1000) end;
 
 function AvatarGetError: ShortString;
@@ -686,17 +697,17 @@ begin
 AvatarGetError := CString2String (avt_get_error)
 end;
 
-function WhereX: Integer;
+function WhereX: integer;
 begin
 WhereX := avt_where_x
 end;
 
-function WhereY: Integer;
+function WhereY: integer;
 begin
 WhereY := avt_where_y
 end;
 
-procedure GotoXY (x, y: Integer);
+procedure GotoXY (x, y: integer);
 begin
 avt_move_x (x);
 avt_move_y (y)
@@ -733,14 +744,14 @@ if avt_wait_key_mb(String2CString(message))<>0 then Halt
 end;
 
 procedure checkParameters;
-var i: Integer;
+var i: integer;
 begin
 for i := 1 to ParamCount do
   if (ParamStr(i)='--fullscreen') or (ParamStr(i)='-f')
     then fullscreen := true
 end;
 
-function LoadSoundFile(const FileName: string): Pointer;
+function LoadSoundFile(const FileName: string): pointer;
 begin
 LoadSoundFile := avt_load_wave_file(String2CString(FileName))
 end;
@@ -755,12 +766,12 @@ begin
 avt_flash
 end;
 
-procedure FreeSound(snd: Pointer);
+procedure FreeSound(snd: pointer);
 begin
 avt_free_audio(snd)
 end;
 
-procedure PlaySound(snd: Pointer; loop: boolean);
+procedure PlaySound(snd: pointer; loop: boolean);
 begin
 avt_play_audio(snd, ord(loop))
 end;
@@ -771,7 +782,7 @@ if avt_wait_audio_end<>0 then Halt
 end;
 
 { dummy function, full support planned }
-procedure Sound(frequency: Integer);
+procedure Sound(frequency: integer);
 begin end;
 
 procedure NoSound;
@@ -843,6 +854,16 @@ begin
 KeyboardBufferRead := KeyboardBufferWrite
 end;
 
+procedure SetScrollMode(mode: integer);
+begin
+avt_set_scroll_mode(mode)
+end;
+
+function GetScrollMode: integer;
+begin
+GetScrollMode := avt_get_scroll_mode
+end;
+
 { ---------------------------------------------------------------------}
 { Input/output handling }
 
@@ -853,21 +874,21 @@ end;
 
 {$IfDef FPC}
 
-  function fpc_io_dummy (var F: TextRec): Integer;
+  function fpc_io_dummy (var F: TextRec): integer;
   begin
   fpc_io_dummy := 0
   end;
 
-  function fpc_io_close (var F: TextRec): Integer;
+  function fpc_io_close (var F: TextRec): integer;
   begin
   F.Mode := fmClosed;
   fpc_io_close := 0
   end;
 
-  function fpc_io_write (var F: TextRec): Integer;
+  function fpc_io_write (var F: TextRec): integer;
   var 
     s: CString;
-    Status: Integer;
+    Status: integer;
   begin
   if F.BufPos > 0 then
     begin
@@ -886,7 +907,7 @@ end;
   fpc_io_write := 0
   end;
 
-  function fpc_io_read (var F: TextRec): Integer;
+  function fpc_io_read (var F: TextRec): integer;
   begin
   if not initialized then initializeAvatar;
   if TextAttr<>OldTextAttr then UpdateTextAttr;
@@ -908,7 +929,7 @@ end;
   fpc_io_read := 0
   end;
 
-  function fpc_io_open (var F: TextRec): Integer;
+  function fpc_io_open (var F: TextRec): integer;
   begin
   if F.Mode = fmOutput 
     then begin
@@ -1017,6 +1038,7 @@ Initialization
   checkParameters;
 
   avt_mb_encoding(DefaultEncoding);
+  avt_set_scroll_mode(1);
   
   avt_stop_on_esc(ord(false)); { Esc is handled in the KeyHandler }
   avt_register_keyhandler(@KeyHandler);

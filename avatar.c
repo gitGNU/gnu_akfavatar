@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.15 2007-09-25 17:55:07 akf Exp $ */
+/* $Id: avatar.c,v 2.16 2007-09-26 11:10:17 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -147,6 +147,7 @@ static int must_lock;		/* must the screen be locked? */
 static SDL_Rect window;		/* if screen is in fact larger */
 static int avt_visible = 0;
 static int do_stop_on_esc = 1;	/* stop, when Esc is pressed? */
+static int scroll_mode = 1;
 static SDL_Rect textfield = { -1, -1, -1, -1 };
 static SDL_Rect viewport;	/* sub-window in textfield */
 static int textdir_rtl = LEFT_TO_RIGHT;
@@ -850,8 +851,7 @@ avt_insert_lines (int line, int num)
   rest.x = viewport.x;
   rest.w = viewport.w;
   rest.y = viewport.y + ((line - 1) * LINEHEIGHT);
-  rest.h = viewport.h - ((line + num - 1) * LINEHEIGHT)
-    - (viewport.h % LINEHEIGHT);
+  rest.h = viewport.h - ((line + num - 1) * LINEHEIGHT);
 
   rest_lines = SDL_CreateRGBSurface (SDL_SWSURFACE, rest.w, rest.h,
 				     screen->format->BitsPerPixel,
@@ -983,6 +983,24 @@ avt_new_line (void)
 
   return _avt_STATUS;
 }
+
+/* @@@
+ * only for internal use, 
+ * when the cursor is already outside the text-area
+ */
+static void
+avt_scroll_up (void)
+{
+  if (scroll_mode)
+    {
+      avt_delete_lines (1, 1);
+      /* horizontal position unchanged! */
+      cursor.y = viewport.y + viewport.h - LINEHEIGHT;
+    }
+  else
+    avt_flip_page ();
+}
+
 
 /* draws the raw char - with no interpretation */
 static void
@@ -1173,7 +1191,7 @@ avt_say (const wchar_t * txt)
 	       * get a new page 
 	       */
 	      if (cursor.y > viewport.y + viewport.h - LINEHEIGHT)
-		avt_flip_page ();
+		avt_scroll_up ();
 
 	      avt_drawchar (*txt);
 	      if (text_delay)
@@ -2065,6 +2083,18 @@ avt_set_delays (int text, int flip_page)
   flip_page_delay = flip_page;
 }
 
+void
+avt_set_scroll_mode (int mode)
+{
+  scroll_mode = mode;
+}
+
+int
+avt_get_scroll_mode (void)
+{
+  return scroll_mode;
+}
+
 char *
 avt_get_error (void)
 {
@@ -2228,9 +2258,12 @@ avt_initialize (const char *title, const char *icontitle,
   if (avt_image)
     {
       balloonheight = window.h - avt_image->h - 2 * TOPMARGIN - AVATAR_MARGIN;
+      /* align with LINEHEIGHT */
+      balloonheight -=
+	(balloonheight - (2 * BALLOON_INNER_MARGIN)) % LINEHEIGHT;
 
-      /* check, if image is too high */
-      if (balloonheight < (2 * LINEHEIGHT))
+      /* check, whether image is too high */
+      if (balloonheight < (3 * LINEHEIGHT) + (2 * BALLOON_INNER_MARGIN))
 	{
 	  SDL_SetError ("Avatar image too large");
 	  _avt_STATUS = AVATARERROR;

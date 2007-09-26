@@ -1,4 +1,15 @@
-2007-09-25  Andreas K. Foerster  <info@akfoerster.de>
+2007-09-26  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.pas 
+	(MoveAvatarIn): fix: after initializing the system, the avatar
+	  isn't moved in a second time
+	(MoveAvatarOut): if not initialized, do nothing
+
+	* avatar.c (avt_initialize):
+	ballonheight is aligned with the LINEHEIGHT
+
+	* akfavatar.h, avatar.c (avt_set_scroll_mode, avt_get_scroll_mode):
+	new functions
 
 	* akfavatar.h, avatar.c (avt_delete_lines, avt_insert_lines):
 	new functions
