@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.17 2007-09-26 13:17:38 akf Exp $ */
+/* $Id: avatar.c,v 2.18 2007-09-26 14:18:33 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -971,6 +971,19 @@ avt_flip_page (void)
   return _avt_STATUS;
 }
 
+static void
+avt_scroll_up (void)
+{
+  if (scroll_mode)
+    {
+      avt_delete_lines (1, 1);
+      cursor.x = linestart;
+      cursor.y = viewport.y + viewport.h - LINEHEIGHT;
+    }
+  else
+    avt_flip_page ();
+}
+
 int
 avt_new_line (void)
 {
@@ -981,26 +994,14 @@ avt_new_line (void)
   cursor.x = linestart;
   cursor.y += LINEHEIGHT;
 
+  /* if the cursor is beyond the end of the viewport,
+   * get a new page 
+   */
+  if (cursor.y > viewport.y + viewport.h - LINEHEIGHT)
+    avt_scroll_up ();
+
   return _avt_STATUS;
 }
-
-/* @@@
- * only for internal use, 
- * when the cursor is already outside the text-area
- */
-static void
-avt_scroll_up (void)
-{
-  if (scroll_mode)
-    {
-      avt_delete_lines (1, 1);
-      /* horizontal position unchanged! */
-      cursor.y = viewport.y + viewport.h - LINEHEIGHT;
-    }
-  else
-    avt_flip_page ();
-}
-
 
 /* draws the raw char - with no interpretation */
 static void
@@ -1187,12 +1188,6 @@ avt_say (const wchar_t * txt)
 	default:
 	  if (*txt > 32)
 	    {
-	      /* if the cursor is beyond the end of the viewport,
-	       * get a new page 
-	       */
-	      if (cursor.y > viewport.y + viewport.h - LINEHEIGHT)
-		avt_scroll_up ();
-
 	      avt_drawchar (*txt);
 	      if (text_delay)
 		{

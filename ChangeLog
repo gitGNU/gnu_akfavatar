@@ -24,8 +24,8 @@
 	* akfavatar.pas (ClearKeys):
 	new procedure
 
-	* avatar.c (avt_say):
-	fix: check cursor position before any character is printed
+	* avatar.c (avt_say, avt_new_line):
+	fix: new line after the last line make the text scroll or page flip
 	(fixes bug introduced in 0.13.1)
 	
 	* avatar.c (avt_say, avt_ask):
