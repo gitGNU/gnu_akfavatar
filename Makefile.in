@@ -204,7 +204,7 @@ dist: info txt man distclean
 	   ucsfont7x14.c avatarsay.c avtman example.c fsdemo-?? \
 	   gnome-akfavatar bdfread.pas human-peasant.bmp \
 	   gnu-small.bmp gnu-small.c akfavatar.xpm \
-	   ucsfont4x6.c configure Makefile.in \
+	   ucsfont4x6.c font.c bell.wav bell.c configure Makefile.in \
 	   $(PKGNAME)/
 	
 	mkdir $(PKGNAME)/pascal
@@ -217,8 +217,11 @@ dist: info txt man distclean
 	ln doc/README doc/Makefile doc/avatarsay.1 \
 	   doc/akfavatar-en.texinfo doc/akfavatar-en.info \
 	   doc/akfavatar-en.txt \
+	   doc/akfavatar-de.texinfo doc/akfavatar-de.info \
+	   doc/akfavatar-de.txt \
+	   doc/akfavatar.css \
 	   $(PKGNAME)/doc/
-	  
+	
 	mkdir $(PKGNAME)/mingw32
 	ln mingw32/akfavatar.ico mingw32/icon.rc \
 	   mingw32/Makefile mingw32/README \
