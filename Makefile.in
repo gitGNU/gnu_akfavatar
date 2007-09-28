@@ -181,20 +181,10 @@ distclean: clean
 maintainerclean: distclean
 
 multiply: pascal/multiply.pas
-	fpcavatar -dRELEASE -FE. -omultiply-bin $<
-	echo "#!/bin/sh" >$@
-	echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:." >>$@
-	echo "export LD_LIBRARY_PATH" >>$@
-	echo "exec ./multiply-bin \"$@\"" >>$@
-	chmod +x $@
+	fpcavatar -dRELEASE -FE. -o$@ $< -k-rpath=.
 
 multiplizieren: pascal/multiply.pas
-	fpcavatar -dRELEASE -ddeutsch -FE. -omultiplizieren-bin $<
-	echo "#!/bin/sh" >$@
-	echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:." >>$@
-	echo "export LD_LIBRARY_PATH" >>$@
-	echo "exec ./multiplizieren-bin \"$@\"" >>$@
-	chmod +x $@
+	fpcavatar -dRELEASE -ddeutsch -FE. -o$@ $< -k-rpath=.
 
 dist: info txt man distclean
 	mkdir $(PKGNAME)
@@ -236,8 +226,8 @@ dist-bin: avatarsay multiply multiplizieren
 	strip avatarsay
 	mkdir $(BINPKGNAME)
 	ln $(LIBNAME) $(SONAME) $(BINPKGNAME)/
-	ln multiply-bin multiply $(BINPKGNAME)/
-	ln multiplizieren-bin multiplizieren $(BINPKGNAME)/
+	ln multiply $(BINPKGNAME)/
+	ln multiplizieren $(BINPKGNAME)/
 	ln pascal/correct.wav pascal/wrong.wav $(BINPKGNAME)/
 	ln COPYING AUTHORS avatarsay avtman fsdemo-?? \
 	   gnome-akfavatar human-peasant.bmp \
