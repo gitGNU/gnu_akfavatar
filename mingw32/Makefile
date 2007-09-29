@@ -28,6 +28,8 @@ all: akfavatar.dll avatarsay.exe
 avtsayinfo.rc:
 	@echo "AppIcon ICON \"akfavatar.ico\"" > $@
 	@echo >> $@
+	@echo "LANGUAGE 9, 1" >> $@
+	@echo >> $@
 	@echo "1 VERSIONINFO" >> $@
 	@echo "FILEVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0" >> $@
 	@echo "PRODUCTVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0" >> $@
@@ -50,10 +52,16 @@ avtsayinfo.rc:
 	@echo "   VALUE \"ProductVersion\", \"$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)\"" >> $@
 	@echo "  END" >> $@
 	@echo " END" >> $@
+	@echo " BLOCK \"VarFileInfo\"" >> $@
+	@echo "  BEGIN" >> $@
+	@echo "   VALUE \"Translation\", 0x409, 1200" >> $@
+	@echo " END" >> $@
 	@echo "END" >> $@
 
 libinfo.rc:
-	@echo "1 VERSIONINFO" > $@
+	@echo "LANGUAGE 9, 1" > $@
+	@echo >> $@
+	@echo "1 VERSIONINFO" >> $@
 	@echo "FILEVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0" >> $@
 	@echo "PRODUCTVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0" >> $@
 	@echo "FILEFLAGSMASK 0x3F" >> $@
@@ -74,6 +82,10 @@ libinfo.rc:
 	@echo "   VALUE \"ProductName\", \"AKFAvatar\"" >> $@
 	@echo "   VALUE \"ProductVersion\", \"$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)\"" >> $@
 	@echo "  END" >> $@
+	@echo " END" >> $@
+	@echo " BLOCK \"VarFileInfo\"" >> $@
+	@echo "  BEGIN" >> $@
+	@echo "   VALUE \"Translation\", 0x409, 1200" >> $@
 	@echo " END" >> $@
 	@echo "END" >> $@
 
