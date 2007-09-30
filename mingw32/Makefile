@@ -148,7 +148,7 @@ distclean: clean
 	-rm -f *.a *.so *.exe avatarsay-*.zip
 	-rm -f akfavatar.def akfavatar.dll akfavatar.lib
 	-rm -f version
-
+	-rm -f akfavatar*.zip
 
 # the folowing targets are for the maintainer
 # don't use them unless you know what you are doing
@@ -161,7 +161,8 @@ multiplizieren.exe: ../pascal/multiply.pas
 
 dist-bin: avatarsay.exe multiply.exe multiplizieren.exe
 	mkdir $(BINPKGNAME)
-	cp akfavatar.dll $(BINPKGNAME)/
+	cp akfavatar.dll libakfavatar.dll.a $(BINPKGNAME)/
+	cp ../akfavatar.h akfavatar.def ../pascal/akfavatar.pas $(BINPKGNAME)/
 	cp avatarsay.exe ../fsdemo-?? $(BINPKGNAME)/
 	cp fsdemo-??.bat $(BINPKGNAME)/
 	cp ../COPYING $(BINPKGNAME)/gpl-3.0.txt

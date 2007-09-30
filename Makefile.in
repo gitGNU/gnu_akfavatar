@@ -168,7 +168,6 @@ distclean: clean
 	-rm -f Makefile
 	-rm -f pascal/example
 	-rm -f akfavatar-*.tar.gz
-	-rm -f avatarsay-*.tar.gz
 	-rm -f multiply-bin multiply
 	-rm -f multiplizieren-bin multiplizieren
 	$(MAKE) -C mingw32 distclean
@@ -226,6 +225,7 @@ dist-bin: avatarsay multiply multiplizieren
 	strip avatarsay
 	mkdir $(BINPKGNAME)
 	ln $(LIBNAME) $(SONAME) $(BINPKGNAME)/
+	ln akfavatar.h pascal/akfavatar.pas $(BINPKGNAME)/
 	ln multiply $(BINPKGNAME)/
 	ln multiplizieren $(BINPKGNAME)/
 	ln pascal/correct.wav pascal/wrong.wav $(BINPKGNAME)/
