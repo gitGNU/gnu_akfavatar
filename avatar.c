@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.19 2007-09-26 19:58:59 akf Exp $ */
+/* $Id: avatar.c,v 2.20 2007-09-30 08:26:52 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1189,11 +1189,9 @@ avt_say (const wchar_t * txt)
 	  if (*txt > 32)
 	    {
 	      avt_drawchar (*txt);
+	      avt_showchar ();
 	      if (text_delay)
-		{
-		  avt_showchar ();
-		  avt_wait (text_delay);
-		}
+		avt_wait (text_delay);
 	      else
 		avt_checkevent ();
 	      avt_forward ();
@@ -1205,9 +1203,6 @@ avt_say (const wchar_t * txt)
 	return _avt_STATUS;
       txt++;
     }				/* while (*t != 0) */
-
-  if (!text_delay)		/* TODO: optimize */
-    SDL_UpdateRect (screen, viewport.x, viewport.y, viewport.w, viewport.h);
 
   return _avt_STATUS;
 }
