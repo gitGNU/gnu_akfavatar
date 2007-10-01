@@ -98,6 +98,22 @@ avtsayinfo.o: avtsayinfo.rc akfavatar.ico
 libinfo.o: libinfo.rc
 	$(WINDRES) -o $@ -i $<
 
+# don't use $(CC) becaus it is a cross-compiler
+../bin2c: ../bin2c.c
+	cc -o $@ $<
+
+../gnu-head.c: ../gnu-head.bmp ../bin2c
+	../bin2c avatar_image < $< > $@
+
+../gnu-small.c: ../gnu-small.bmp ../bin2c
+	../bin2c avatar_image < $< > $@
+
+../bell.c: ../bell.wav ../bin2c
+	../bin2c avt_bell_data < $< > $@
+
+avatar-default.o: ../avatar-default.c ../gnu-head.c ../gnu-small.c
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ $<
+
 avatar.o: ../avatar.c ../akfavatar.h ../ucsfont7x14.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) $(ICONV_TARGET) -c $<
 
