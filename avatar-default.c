@@ -19,7 +19,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-default.c,v 2.2 2007-08-26 12:17:14 akf Exp $ */
+/* $Id: avatar-default.c,v 2.3 2007-10-01 15:27:18 akf Exp $ */
 
 #ifdef QVGA
 #  include "gnu-small.c"
@@ -32,5 +32,5 @@
 avt_image_t *
 avt_default (void)
 {
-  return avt_import_image_data (image_gnu_head, sizeof (image_gnu_head));
+  return avt_import_image_data ((void *) avatar_image, avatar_image_size);
 }

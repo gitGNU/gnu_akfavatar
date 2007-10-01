@@ -22,6 +22,19 @@ BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 
 all: libakfavatar.so libakfavatar.a avatarsay avatarsay-d
 
+# don't use $(CC) becaus it could be a cross-compiler
+bin2c: bin2c.c
+	cc -o $@ $<
+
+gnu-head.c: gnu-head.bmp bin2c
+	./bin2c avatar_image < $< > $@
+
+gnu-small.c: gnu-small.bmp bin2c
+	./bin2c avatar_image < $< > $@
+
+bell.c: bell.wav bin2c
+	./bin2c avt_bell_data < $< > $@
+
 avatar.o: avatar.c akfavatar.h version.h balloonpointer.c circle.c regicon.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) $(ICONV_TARGET) -c $<
 
@@ -37,6 +50,12 @@ avatar.lo: avatar.c akfavatar.h version.h balloonpointer.c circle.c regicon.c
 
 %.lo: %.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -fpic -o $@ $<
+
+avatar-default.lo: avatar-default.c gnu-head.c gnu-small.c
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -fpic -o $@ $<
+
+avatar-default.o: avatar-default.c gnu-head.c gnu-small.c
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ $<
 
 libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo bell.lo font.lo
 	$(CC) -shared \
@@ -153,6 +172,8 @@ check:
 clean:
 	-rm -f *~
 	-rm -f *.o *.lo 
+	-rm -f bin2c
+	-rm -f gnu-head.c gnu-small.c bell.c
 	-rm -f pascal/*.o pascal/*.gpi pascal/*.gpm pascal/*.ppu
 	-rm -f pascal/link.res pascal/ppas.sh
 	$(MAKE) -C mingw32 clean
@@ -189,11 +210,11 @@ dist: info txt man distclean
 	mkdir $(PKGNAME)
 	ln README INSTALL AUTHORS COPYING \
 	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
-	   balloonpointer.c circle.c regicon.c gnu-head.bmp gnu-head.c \
+	   balloonpointer.c circle.c regicon.c gnu-head.bmp \
 	   ucsfont7x14.c avatarsay.c avtman example.c fsdemo-?? \
 	   gnome-akfavatar bdfread.pas human-peasant.bmp \
-	   gnu-small.bmp gnu-small.c akfavatar.xpm \
-	   ucsfont4x6.c font.c bell.wav bell.c configure Makefile.in \
+	   gnu-small.bmp akfavatar.xpm \
+	   ucsfont4x6.c font.c bell.wav configure Makefile.in \
 	   $(PKGNAME)/
 	
 	mkdir $(PKGNAME)/pascal
