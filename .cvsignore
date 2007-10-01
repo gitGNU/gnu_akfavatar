@@ -6,6 +6,7 @@ avatarsay-d
 example
 bdfread
 libakfavatar.so*
+bin2c
 gnu-head.c gnu-small.c bell.c
 *.lo
 a.out
