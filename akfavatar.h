@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.16 2007-09-26 13:17:38 akf Exp $ */
+/* $Id: akfavatar.h,v 2.17 2007-10-02 12:05:56 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -290,7 +290,7 @@ extern int avt_wait_key_mb (char *message);
  * set a viewport (sub-area of the textarea)
  * upper left corner is 1, 1
  */
-void avt_viewport (int x, int y, int width, int height);
+extern void avt_viewport (int x, int y, int width, int height);
 
 /* show an empty screen with the background color */
 extern void avt_clear_screen (void);
@@ -333,12 +333,12 @@ extern int avt_move_out (void);
  * same as with \a in avt_say
  * the sound is actually not a bell ;-)
  */
-void avt_bell (void);
+extern void avt_bell (void);
 
 /*
  * visual flash of the screen
  */
-void avt_flash (void);
+extern void avt_flash (void);
 
 /* 
  * clears the viewport
