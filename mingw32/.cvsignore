@@ -1,7 +1,9 @@
-*.exe
+*.exe *.zip
 libinfo.rc avtsayinfo.rc
 akfavatar.def
 akfavatar.dll
 akfavatar.lib
 libakfavatar.a
 version
+*.ppu *.gpi *.gpm
+
