@@ -186,7 +186,7 @@ fi
 # main menu
 while true
 do
-  MENU=`$ZENITY --list --title=AKFAvatar --width 350 --height 370 \
+  MENU=`$ZENITY --list --title=AKFAvatar --width 350 --height 395 \
        --column "key" --column "what to do" \
      D "show a demo or textfile" \
      E "create or edit a demo" \
@@ -197,6 +197,7 @@ do
      S "save settings" \
      H "help for AKFAvatar - english" \
      G "Hilfe zu AKFAvatar - deutsch (german)" \
+     W "Website" \
      X "Exit"` \
      || exit 0
 
@@ -210,6 +211,7 @@ do
     S) save_settings ;;
     H) yelp info:akfavatar-en & ;;
     G) yelp info:akfavatar-de & ;;
+    W) gnome-open 'http://akfoerster.de/akfavatar/' ;;
     X) exit 0 ;;
   esac
 
