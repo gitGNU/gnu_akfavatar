@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.6 2007-09-09 15:43:12 akf Exp $ */
+/* $Id: avatarsay.c,v 2.7 2007-10-04 16:44:00 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -82,7 +82,7 @@ static int initialized = 0;
 static int loop = 1;
 
 /* where to find imagefiles */
-static char datadir[255] = "";
+static char datadir[512] = "";
 
 /* for loading an avt_image */
 static avt_image_t *avt_image = NULL;
@@ -175,7 +175,7 @@ help (const char *prgname)
 #endif
   puts ("\nEnvironment variables:");
   puts (" AVATARIMAGE          different image as avatar");
-  puts (" AVATARDATADIR        data-directory (with trailing /)");
+  puts (" AVATARDATADIR        data-directory");
   puts ("\nReport bugs to <info@akfoerster.de>");
   exit (EXIT_SUCCESS);
 }
@@ -396,12 +396,14 @@ static void
 handle_image_command (const char *s)
 {
   char filename[255];
-  char file[255];
+  char file[512];
 
   if (sscanf (s, ".image %255s", (char *) &filename) > 0)
     {
       strcpy (file, datadir);
-      strncat (file, filename, 255 - strlen (datadir));
+      if (file[0] != '\0')
+        strcat (file, "/");
+      strncat (file, filename, sizeof (file) - 1 - strlen (datadir));
 
       if (!initialized)
 	initialize ();
@@ -417,7 +419,7 @@ static void
 handle_avatarimage_command (const char *s)
 {
   char filename[255];
-  char file[255];
+  char file[512];
 
   /* if already assigned, delete it */
   if (avt_image)
@@ -426,7 +428,9 @@ handle_avatarimage_command (const char *s)
   if (sscanf (s, ".avatarimage %255s", (char *) &filename) > 0)
     {
       strcpy (file, datadir);
-      strncat (file, filename, 255 - strlen (datadir));
+      if (file[0] != '\0')
+        strcat (file, "/");
+      strncat (file, filename, sizeof (file) - 1 - strlen (datadir));
       if (!(avt_image = avt_import_image_file (file)))
 	warning ("warning", avt_get_error ());
     }
@@ -447,7 +451,7 @@ static void
 handle_audio_command (const char *s)
 {
   char filename[255];
-  char file[255];
+  char file[512];
 
   if (!initialized)
     {
@@ -462,7 +466,9 @@ handle_audio_command (const char *s)
       sound = NULL;
 
       strcpy (file, datadir);
-      strncat (file, filename, 255 - strlen (datadir));
+      if (file[0] != '\0')
+        strcat (file, "/");
+      strncat (file, filename, sizeof (file) - 1 - strlen (datadir));
 
       sound = avt_load_wave_file (file);
       if (!sound)

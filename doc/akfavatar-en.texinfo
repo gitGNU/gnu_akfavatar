@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.10 2007-09-26 08:33:48 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.11 2007-10-04 16:44:01 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -390,9 +390,6 @@ in the very first position of a new line.
 @item .datadir @var{directory}
 with this command you can set the directory, where images and sound files are
 located
-
-The directory must end with a directory deliminator 
-(depending on the system either @file{/} or @file{\}).
 
 The data directory can also be set with the environment variable 
 @env{AVATARDATADIR}.  The command has precedence over the environment

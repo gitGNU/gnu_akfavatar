@@ -3,13 +3,15 @@
 .encoding UTF-8
 .backgroundcolor #BBBB88
 
-#.datadir /home/akf/Bilder/
-# datadir - where to find the images - the trailing slash is needed
-# can also be set by the environment variable AVATARDATADIR
+#.datadir /home/akf/Bilder
+# datadir - wo sich die Medien-Dateien befinden
+# Kann auch über die Umgebungsvariable AVATARDATADIR gesetzt werden
 
 #.avatarimage human-peasant.bmp
-# avatarimage - what image file to use as avatar - must be before any text!
-# can also be set by the environment variable AVATARIMAGE (with full path)
+# avatarimage - welches Bild als Avatar verwendet wwerden soll 
+# muss vor dem auszugebenden Text angegeben werden!
+# Kann auch über die Umgebungsvariable AVATARIMAGE gesetzt werden
+# (mit vollständiger Pfadangabe)
 
 Bei dem Begriff „Freie Software“ geht es um Freiheit, nicht um den Preis.
 Um dieses Konzept richtig begreifen zu können, sollte man an „frei“ wie in

@@ -1,3 +1,12 @@
+2007-10-04  Andreas K. Foerster  <info@akfoerster.de>
+
+	* gnome-akfavatar:
+	open Website from menu
+	
+	* avatarsay.c (help, handle_image_command)
+	(handle_avatarimage_command, handle_audio_command):
+	datadir needs no trailing slash anymore
+
 2007-09-27  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.14.1 released

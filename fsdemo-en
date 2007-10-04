@@ -3,8 +3,8 @@
 .encoding UTF-8
 .backgroundcolor #BBBB88
 
-#.datadir /home/akf/Bilder/
-# datadir - where to find the images - the trailing slash is needed
+#.datadir /home/akf/Bilder
+# datadir - where to find the images and sounds
 # can also be set by the environment variable AVATARDATADIR
 
 #.avatarimage human-peasant.bmp
