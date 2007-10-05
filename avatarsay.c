@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.7 2007-10-04 16:44:00 akf Exp $ */
+/* $Id: avatarsay.c,v 2.8 2007-10-05 15:33:56 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -42,13 +42,8 @@
 
 /* encoding of the input files */
 /* supported in SDL: ASCII, ISO-8859-1, UTF-8, UTF-16, UTF-32 */
-#ifdef __WIN32__
-  /* under Windows UTF-8 is saved with a BOM 
-   * and so it can be autodetected */
+/* ISO-8859-1 is a sane default */
 static char encoding[80] = "ISO-8859-1";
-#else
-static char encoding[80] = "UTF-8";
-#endif
 
 /* if rawmode is set, then don't interpret any commands or comments */
 /* rawmode can be activated with the options -r or --raw */
@@ -257,6 +252,45 @@ set_encoding (const char *encoding)
 }
 
 static void
+check_system_encoding (void)
+{
+  char *s;
+
+  s = getenv ("LC_ALL");
+  if (s == NULL)
+    s = getenv ("LC_CTYPE");
+  if (s == NULL)
+    s = getenv ("LANG");
+  if (s == NULL)
+    return;			/* give up */
+
+  if (strstr (s, "UTF") || strstr (s, "utf"))
+    strcpy (encoding, "UTF-8");
+  else if (strstr (s, "euro"))
+    strcpy (encoding, "ISO-8859-15");
+  else if (strstr (s, "KOI8-R") || strstr (s, "KOI8R"))
+    strcpy (encoding, "KOI8-R");
+  else if (strstr (s, "KOI8-U") || strstr (s, "KOI8U"))
+    strcpy (encoding, "KOI8-U");
+  else if (strstr (s, "KOI8"))
+    strcpy (encoding, "KOI8");
+  else				/* ISO 8859- family */
+    {
+      char *p = strstr (s, "8859-");
+      if (p)
+	{
+	  strcpy (encoding, "ISO-8859-");
+	  p += 5;
+	  /* two digits following? */
+	  if (*(p + 1) >= '0' && *(p + 1) <= '9')
+	    strncat (encoding, p, 2);
+	  else
+	    strncat (encoding, p, 1);
+	}
+    }
+}
+
+static void
 checkoptions (int argc, char **argv)
 {
   int i;
@@ -402,7 +436,7 @@ handle_image_command (const char *s)
     {
       strcpy (file, datadir);
       if (file[0] != '\0')
-        strcat (file, "/");
+	strcat (file, "/");
       strncat (file, filename, sizeof (file) - 1 - strlen (datadir));
 
       if (!initialized)
@@ -429,7 +463,7 @@ handle_avatarimage_command (const char *s)
     {
       strcpy (file, datadir);
       if (file[0] != '\0')
-        strcat (file, "/");
+	strcat (file, "/");
       strncat (file, filename, sizeof (file) - 1 - strlen (datadir));
       if (!(avt_image = avt_import_image_file (file)))
 	warning ("warning", avt_get_error ());
@@ -467,7 +501,7 @@ handle_audio_command (const char *s)
 
       strcpy (file, datadir);
       if (file[0] != '\0')
-        strcat (file, "/");
+	strcat (file, "/");
       strncat (file, filename, sizeof (file) - 1 - strlen (datadir));
 
       sound = avt_load_wave_file (file);
@@ -893,6 +927,7 @@ main (int argc, char *argv[])
     help (argv[0]);
 
   checkenvironment ();
+  check_system_encoding ();
   checkoptions (argc, argv);
 
   set_encoding (encoding);
