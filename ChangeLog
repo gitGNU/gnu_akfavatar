@@ -1,4 +1,7 @@
-2007-10-05  Andreas K. Foerster  <info@akfoerster.de>
+2007-10-06  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_mb_decode):
+	error-tolerance for broken multibyte encodings (UTF-8)
 
 	* avatarsay.c (check_system_encoding):
 	new function: try to get encoding from LC_ALL, LC_CTYPE or LANG

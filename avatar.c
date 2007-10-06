@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.20 2007-09-30 08:26:52 akf Exp $ */
+/* $Id: avatar.c,v 2.21 2007-10-06 11:14:25 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1283,12 +1283,33 @@ avt_mb_decode (char *txt)
   outbytesleft = wcstring_size;
 
   /* do the conversion */
-  returncode = SDL_iconv (output_cd, &inbuf, &inbytesleft,
-			  &outbuf, &outbytesleft);
+  do
+    {
+      returncode = SDL_iconv (output_cd, &inbuf, &inbytesleft,
+			      &outbuf, &outbytesleft);
 
-  /* check for errors (damn SDL) */
-  if (returncode == SDL_ICONV_ERROR || returncode == SDL_ICONV_E2BIG
-      || returncode == SDL_ICONV_EILSEQ || returncode == SDL_ICONV_EINVAL)
+      /* handle invalid characters */
+      if (returncode == SDL_ICONV_EILSEQ || returncode == SDL_ICONV_EINVAL)
+	{
+	  const char *ch_unknown = (char *) L"\xFFFD";
+	  int i;
+
+	  inbuf++;
+	  inbytesleft--;
+
+	  for (i = 0; i < sizeof (wchar_t); i++)
+	    {
+	      *outbuf = *(ch_unknown + i);
+	      outbuf++;
+	    }
+
+	  outbytesleft -= sizeof (wchar_t);
+	}
+    }
+  while (returncode == SDL_ICONV_EILSEQ);
+
+  /* check for fatal errors */
+  if (returncode == SDL_ICONV_ERROR || returncode == SDL_ICONV_E2BIG)
     {
       SDL_free (wcstring);
       wcstring = NULL;
