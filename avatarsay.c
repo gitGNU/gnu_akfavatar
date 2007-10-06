@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.8 2007-10-05 15:33:56 akf Exp $ */
+/* $Id: avatarsay.c,v 2.9 2007-10-06 14:51:46 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -157,6 +157,7 @@ help (const char *prgname)
   puts (" -w, --window         try to run the program in a window (default)");
   puts (" -f, --fullscreen     try to run the program in fullscreen mode");
   puts (" -F, --fullfullscreen like -f, but use current display-size");
+  puts ("     --encoding=enc   input data is encoded in encoding \"enc\"");
   puts (" -l, --latin1         input data is encoded in Latin-1");
   puts (" -u, --utf-8          input data is encoded in UTF-8");
   puts (" -1, --once           run only once (don't loop)");
@@ -350,6 +351,12 @@ checkoptions (int argc, char **argv)
 	  ignore_eof = 1;
 	  continue;
 #endif /* not NOFIFO */
+	}
+
+      if (strncmp (argv[i], "--encoding=", 11) == 0)
+        {
+	  sscanf (argv[i], "--encoding=%79s", (char *) &encoding);
+	  continue;
 	}
 
       if (strcmp (argv[i], "--latin1") == 0 || strcmp (argv[i], "-l") == 0)
@@ -609,7 +616,7 @@ iscommand (char *s)
 
       if (strncmp (s, ".encoding ", 10) == 0)
 	{
-	  if (sscanf (s, ".encoding %80s", (char *) &encoding) <= 0)
+	  if (sscanf (s, ".encoding %79s", (char *) &encoding) <= 0)
 	    warning ("warning", "cannot read the \".encoding\" line.");
 	  else
 	    set_encoding (encoding);

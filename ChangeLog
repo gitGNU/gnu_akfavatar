@@ -1,5 +1,8 @@
 2007-10-06  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatarsay.c (checkoptions, help):
+	new option: "--encoding="
+
 	* avatar.c (avt_mb_decode):
 	error-tolerance for broken multibyte encodings (UTF-8)
 
