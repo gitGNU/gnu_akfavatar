@@ -75,9 +75,13 @@ mostlyclean: clean
 
 distclean: clean
 	-rm -rf akfavatar-en/
+	-rm -rf akfavatar-de/
 	-rm -f version.texi
 	-rm -f akfavatar-en.pdf akfavatar-en.ps akfavatar-en.dvi
+	-rm -f akfavatar-de.pdf akfavatar-de.ps akfavatar-de.dvi
 
 maintainerclean: distclean
-	-rm -f akfavatar-en.info akfavatar-en.txt avatarsay.1
+	-rm -f akfavatar-en.info akfavatar-en.txt
+	-rm -f akfavatar-de.info akfavatar-de.txt
+	-rm -f avatarsay.1
 
