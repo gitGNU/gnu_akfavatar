@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.10 2007-10-06 16:24:38 akf Exp $ */
+/* $Id: avatarsay.c,v 2.11 2007-10-06 18:20:49 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -416,8 +416,11 @@ move_out (void)
     {
       if (avt_move_out ())
 	quit (EXIT_SUCCESS);
-      if (avt_wait (seconds (5.0)))
-	quit (EXIT_SUCCESS);
+
+      /* if running in a loop, wait a while */
+      if (loop)
+	if (avt_wait (seconds (5.0)))
+	  quit (EXIT_SUCCESS);
     }
 }
 

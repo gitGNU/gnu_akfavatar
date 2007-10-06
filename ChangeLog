@@ -1,5 +1,8 @@
 2007-10-06  Andreas K. Foerster  <info@akfoerster.de>
 
+	* acatarsay.c (move_out):
+	don't wait after moving out, unless running as loop
+
 	* avatarsay.c (checkoptions, help):
 	new option: "--encoding="
 
