@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.9 2007-10-06 14:51:46 akf Exp $ */
+/* $Id: avatarsay.c,v 2.10 2007-10-06 16:24:38 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -152,26 +152,29 @@ help (const char *prgname)
   puts ("A fancy text-viewer and scripting language for making demos.\n");
   puts ("If textfile is - then read from stdin and don't loop.\n");
   puts ("Options:");
-  puts (" -h, --help           show this help");
-  puts (" -v, --version        show the version");
-  puts (" -w, --window         try to run the program in a window (default)");
-  puts (" -f, --fullscreen     try to run the program in fullscreen mode");
-  puts (" -F, --fullfullscreen like -f, but use current display-size");
-  puts ("     --encoding=enc   input data is encoded in encoding \"enc\"");
-  puts (" -l, --latin1         input data is encoded in Latin-1");
-  puts (" -u, --utf-8          input data is encoded in UTF-8");
-  puts (" -1, --once           run only once (don't loop)");
-  puts (" -r, --raw            output raw text (don't handle any commands)");
-  puts (" -i, --ignoreeof      ignore end of file conditions "
+  puts (" -h, --help              show this help");
+  puts (" -v, --version           show the version");
+  puts (" -w, --window            try to run the program in a window"
+	" (default)");
+  puts (" -f, --fullscreen        try to run the program in fullscreen mode");
+  puts (" -F, --fullfullscreen    like -f, but use current display-size");
+  puts ("     --encoding=enc      input data is encoded in encoding \"enc\"");
+  puts (" -l, --latin1            input data is encoded in Latin-1");
+  puts (" -u, --utf-8             input data is encoded in UTF-8");
+  puts (" -1, --once              run only once (don't loop)");
+  puts (" -r, --raw               output raw text"
+	" (don't handle any commands)");
+  puts (" -i, --ignoreeof         ignore end of file conditions "
 	"(input is not a file)");
 #ifdef NOFIFO
-  puts (" -s, --saypipe        not supported on this system");
+  puts (" -s, --saypipe           not supported on this system");
 #else
-  puts (" -s, --saypipe        create named pipe for filename");
+  puts (" -s, --saypipe           create named pipe for filename");
 #endif
   puts ("\nEnvironment variables:");
-  puts (" AVATARIMAGE          different image as avatar");
-  puts (" AVATARDATADIR        data-directory");
+  puts (" AVATARIMAGE             different image as avatar");
+  puts (" AVATARDATADIR           data-directory");
+  puts (" LC_ALL, LC_CTYPE, LANG  check for default encoding");
   puts ("\nReport bugs to <info@akfoerster.de>");
   exit (EXIT_SUCCESS);
 }
@@ -354,7 +357,7 @@ checkoptions (int argc, char **argv)
 	}
 
       if (strncmp (argv[i], "--encoding=", 11) == 0)
-        {
+	{
 	  sscanf (argv[i], "--encoding=%79s", (char *) &encoding);
 	  continue;
 	}
