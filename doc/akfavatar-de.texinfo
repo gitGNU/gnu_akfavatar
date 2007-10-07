@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.5 2007-10-04 16:44:00 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.6 2007-10-07 05:32:13 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -200,31 +200,28 @@ verwendet werden.  Wenn man eine Text-Datei hat, sagen wir mal
 @samp{avatarsay MeinText} ansehen.  
 Ausprobieren! Sofort! @t{@w{;-)}}
 
-Das ist doch einfach, oder?  Nun, wenn die Textdatei nicht in 
-@code{@acronym{ASCII}} oder @code{UTF-8} kodiert ist, könnte man 
-Probleme bei Zeichen bekommen haben, die in @code{@acronym{ASCII}}
-nicht vorkommen, wie die deutschen Umlaute (ä, ü, ü, ß).
+Das ist doch einfach, oder?  Wenn die Textdatei nicht richtig für das 
+verwendete System kodiert ist, könnte man Probleme bei Zeichen bekommen 
+haben, die in @code{@acronym{ASCII}} nicht vorkommen, wie die deutschen 
+Umlaute (ä, ü, ü, ß).
 Nun, es gibt wie gesagt verschiedene Kodierungen dafür.  Die am 
 meisten verwendeten Kodierungen für deutsche Texte sind 
-@code{ISO-8859-1} (auch bekannt als @code{Latin-1}) und 
-@code{UTF-8}.
-Das Programm @code{avatarsay} erwartet in der Voreinstellung 
-@code{UTF-8}, da das am weitesten entwickelt ist und man fast
-jede bekannte Sprache damit darstellen kann.  Ich hoffe einfach,
-dass in der nahen Zukunft jeder auf @code{UTF-8} umsteigen wird.
+@code{ISO-8859-1} (auch bekannt als @code{Latin-1}) und @code{UTF-8}.
 Wenn man also Probleme mit deutschen Umlauten oder anderen Zeichen
-hat, kann man mal den Parameter @option{--latin1} ausprobieren --- 
-Wie in diesem Beispiel: @samp{avatarsay --latin1 MeinText}.
+hat, kann man mal den Parameter @option{--encoding=UTF-8} oder
+@option{--encoding=ISO-8859-1} ausprobieren --- 
+Wie in diesem Beispiel: @samp{avatarsay --encoding=ISO-8859-1 MeinText}.
 
 @cindex Trennlinie
 @cindex Abtrennlinie
 @cindex Reißkante
-Häufig muss man die Erfahrung machen, dass Seiten-Umbrüche nicht 
-immer da auftauchen, wo man sie haben will.  Man kann seinen Text aber
-mit Trennlinien strukturieren.  Eine Trennlinie ist eine Zeile wie
-diese: @samp{---------}.  Die Zeile muss in der aller ersten Spalte
-beginnen und sie muss mindestens drei aufeinander folgende Bindestriche
-(@code{U+002D}) umfassen.  Natürlich kann man auch mehr als drei benutzen.
+Nun, manchmal möchte man nicht, dass der Text in einem kontinuierlichen 
+Textfluss dargestellt wird.  Man kann seinen Text deshalb mit Trennlinien
+strukturieren.  Eine Trennlinie ist eine Zeile wie diese: @samp{---------}.  
+Die Zeile muss in der aller ersten Spalte beginnen und sie muss mindestens 
+drei aufeinander folgende Bindestriche (@code{U+002D}) umfassen.  Natürlich 
+kann man auch mehr als drei benutzen.  Wenn @command{avatarsay} auf eine solche 
+Trennlinie stößt, wartet es es eine Weile und fängt dann eine neue Seite an.
 
 
 @node Den Text ausführbar machen
@@ -366,6 +363,13 @@ aber die Bildschirm-Auflösung nicht umgestellt werden kann; zum Beispiel
 mit dem @code{VESA}-Framebuffer des Kernels Linux.
 
 Diese Option wird erst ab SDL Version 1.2.10 oder neuer unterstützt.
+
+@item --encoding=@var{Name}
+die Eingabe-Daten sind in der Kodieriung @var{Name} kodiert
+
+Welche Kodierungen unterstützt werden, hängt von der 
+@code{iconv}-Implementierung des Systems ab.  Auf einigen Systemen kann man
+eine Liste mit dem Befehl @code{iconv -l} bekommen.
 
 @item --latin1
 @itemx -l
@@ -709,6 +713,9 @@ AKFAvatar-Bibliothek verwenden.
 @item help for AKFAvatar (Hilfe für AKFAvatar)
 zeigt die Onlinehilfe für AKFAvatar mit dem Hilfe-Zentrum von 
 @acronym{GNOME} an.
+
+@item Website
+öffnet die Homepage von AKFAvatar in einem Web-Browser
 
 @item Exit (beenden)
 beendet das Programm. 

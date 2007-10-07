@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.11 2007-10-04 16:44:01 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.12 2007-10-07 05:32:13 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -185,25 +185,23 @@ If you have a textfile, say @file{mytext}, then you can read it
 with the command @samp{avatarsay mytext}.  Try it!  Now! @t{@w{;-)}}
 
 That is easy, isn't it?  Well, if your text file is not encoded in 
-@code{@acronym{ASCII}} or @code{UTF-8}, you might have trouble with 
+the right encoding for your system, you might have trouble with 
 non-@code{@acronym{ASCII}} characters.  There are different encodings. 
 The most commonly used encodings are @code{ISO-8859-1} (also known as
 @code{Latin-1}) and  @code{UTF-8}.
-The program @code{avatarsay} defaults to @code{UTF-8}, because you can 
-encode almost any known language with that.  And I hope, in the future 
-anybody will switch to @code{UTF-8}.
 So if you have trouble with non-English characters, try to use the 
-parameter @option{--latin1} --- like this: @samp{avatarsay --latin1 
-mytext}.
+parameter @option{--encoding=UTF-8} or @option{--encoding=ISO-8859-1} --- 
+like this: @samp{avatarsay --encoding=ISO-8859-1 mytext}.
 
 @cindex stripline
 @cindex tearline
-Now, you might notice that the page-breaks don't appear where you want
-them to appear.  You can structure your text by including a stripline.
+Now, sometimes you might not want to show the whole in one continuous stream.
+So you can structure your text by including a stripline.
 A stripline is a line like this: @samp{---------}.  The line must start
 at the very first column and there must be at least three successive
 hyphens (@code{U+002D}).  Of course you can use more than three ones.
-
+When @command{avatarsay} sees a stripline, it waits a moment and then it 
+starts a new page.
 
 @node Make your text executable
 @section How to turn your text into a program
@@ -333,6 +331,13 @@ switching the screen resolution doesn't work; for example with the
 @code{VESA} framebuffer device of the kernel Linux
 
 This option is only supported with SDL version 1.2.10 or newer.
+
+@item --encoding=@var{name}
+the input data is encoded in the encoding @var{name}
+
+It depends on your systems @code{iconv} implementation, which encodings
+are supported.  On some systems you can get a list with the command 
+@code{iconv -l}.
 
 @item --latin1
 @itemx -l
@@ -648,6 +653,9 @@ program using the AKFAvatar library.
 
 @item help for AKFAvatar
 shows this document in the help-browser of @acronym{GNOME}
+
+@item Website
+opens the homepage for AKFAvatar in a web-browser.
 
 @item Exit
 exit the program.  Note: you can also exit the program by clicking on 
