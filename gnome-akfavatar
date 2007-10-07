@@ -29,6 +29,72 @@ MODE=--window
 SDL_VIDEO_CENTERED=1
 export SDL_VIDEO_CENTERED
 
+# may be overridden by language specific content
+WWW="http://akfoerster.de/akfavatar/"
+
+case "$LANG" in
+  de*) WWW="http://akfoerster.de/akfavatar/index.de.html"
+       HELPTEXT="info:akfavatar-de"
+       WHICHTEXT="Welchen Text mit AKFAvatar anzeigen?"
+       FILEEDIT="Weche Datei editieren"
+       PRINTONLY="Dies ist nur für Befehle, die etwas über die"
+       PRINTONLY="$PRINTONLY Standard-Ausgabe oder die"
+       PRINTONLY="$PRINTONLY Standard-Fehlerausgabe ausgeben."
+       PRINTONLY="$PRINTONLY Man kann es nicht für interaktive Programme"
+       PRINTONLY="$PRINTONLY verwenden."
+       WHICHCOMMAND="Die Ausgabe welchen Befehles mit AKFAvatar anzeigen?"
+       WHICHMANPAGE="Welche Hilfeseite (Manpage) mit AKFAvatar anzeigen?"
+       MANPAGEERROR="Fehler beim Anzeigen der Manpage"
+       WHICHAVATARIMAGE="Welches Bild als Avatar verwenden?"
+       WHICHAVATARIMAGE="$WHICHAVATARIMAGE (\"Abbruch\" für Vorgabe)"
+       DEFAULTAVATARIMAGE="Verwende das Vorgabe-Bild als Avatar"
+       FULLSCREENMODE="Das Programm im Vollbild-Modus laufen lassen?"
+       NOX="muss vom X-Window-System aus gestartet werden"
+       NOZENITY="Befehl \"zenity\" nicht gefunden"
+       NOAVATARSAY="Befehl \"avatarsay\" nicht gefunden"
+       KEY="Taste"
+       WHATTODO="was machen"
+       SHOWDEMO="ein Demo oder eine Text-Datei anzeigen"
+       EDITDEMO="ein Demo erstellen oder bearbeiten"
+       SHOWMANPAGE="eine Hilfeseite (Manpage) anzeigen"
+       SHOWCOMMAND="zeige die Ausgabe eines Befehls"
+       CHANGEAVATARIMAGE="ändere das Avatar-Bild"
+       FULLSCREENORWINDOW="Vollbild- oder Fenster-Modus"
+       SAVESETTINGS="speichere Einstellungen"
+       HELP="Hilfe für AKFAvatar"
+       WEBSITE="Website"
+       EXIT="beenden";;
+
+  *)   WWW="http://akfoerster.de/akfavatar/index.en.html"
+       HELPTEXT="info:akfavatar-en"
+       WHICHTEXT="Which text to show with AKFAvatar?"
+       FILEEDIT="file to edit"
+       PRINTONLY="This is only for commands which only print text to "
+       PRINTONLY="$PRINTONLY standard output or standard error."
+       PRINTONLY="$PRINTONLY You can not use interactive commands with this."
+       WHICHCOMMAND="The output of which command to show with AKFAvatar?"
+       WHICHMANPAGE="Which manpage to show with AKFAvatar?"
+       MANPAGEERROR="error showing manpage"
+       WHICHAVATARIMAGE="Which image to use as avatar? (cancel for default)"
+       DEFAULTAVATARIMAGE="Using the default avatar image"
+       FULLSCREENMODE="Run the program in fullscreen mode?"
+       NOX="must be started from the X-Window-System"
+       NOZENITY="Command \"zenity\" not found"
+       NOAVATARSAY="Command \"avatarsay\" not found"
+       KEY="key"
+       WHATTODO="what to do"
+       SHOWDEMO="show a demo or textfile"
+       EDITDEMO="create or edit a demo"
+       SHOWMANPAGE="show a manpage"
+       SHOWCOMMAND="show the output of a command"
+       CHANGEAVATARIMAGE="change avatar image"
+       FULLSCREENORWINDOW="fullscreen or window mode"
+       SAVESETTINGS="save settings"
+       HELP="help for AKFAvatar"
+       WEBSITE="Website"
+       EXIT="Exit";;
+esac
+
 #########################################################################
 # functions
 
@@ -51,8 +117,7 @@ show_demo ()
 {
   local FILE
 
-  if FILE=`$ZENITY --file-selection \
-                --title="Which text to show with AKFAvatar?"`
+  if FILE=`$ZENITY --file-selection --title="$WHICHTEXT"`
   then
     run_avatarsay "$FILE"
   fi
@@ -62,7 +127,7 @@ edit_demo ()
 {
   local FILE MESSAGE
   
-  if FILE=`$ZENITY --file-selection --save --title="file to edit"` \
+  if FILE=`$ZENITY --file-selection --save --title="$FILEEDIT"` \
      && [ -n "$FILE" ]
   then
     if [ ! -e "$FILE" ]
@@ -84,12 +149,9 @@ show_command ()
   local COMMAND
   
   $ZENITY --warning \
-  --text="This is only for commands which only print text to\
-  standard output or standard error.\
-  You can not use interactive commands with this." || return
+  --text="$PRINTONLY" || return
 
-  COMMAND=`$ZENITY --entry \
-         --text="The output of which command to show with AKFAvatar?"` \
+  COMMAND=`$ZENITY --entry --text="$WHICHCOMMAND"` \
   && [ -n "$COMMAND" ] \
   && type $COMMAND > /dev/null 2>&1 \
   && $COMMAND 2>&1 | run_avatarsay -
@@ -99,8 +161,7 @@ show_manpage ()
 {
   local MANPAGE
   
-  if MANPAGE=`$ZENITY --entry \
-                 --text="Which manpage to show with AKFAvatar?"`
+  if MANPAGE=`$ZENITY --entry --text="$WHICHMANPAGE"`
   then
     (
     TERM=dumb
@@ -110,28 +171,27 @@ show_manpage ()
 
     # execute the command
     man -E latin1 $MANPAGE 2>/dev/null \
-      || $ZENITY --error --text="error showing manpage"
+      || $ZENITY --error --text="$MANPAGEERROR"
     )
   fi
 }
 
 choose_avatar_image ()
 {
-  AVATARIMAGE=`$ZENITY --file-selection \
-         --title "Which image to use as avatar? (cancel for default)"`
+  AVATARIMAGE=`$ZENITY --file-selection --title "$WHICHAVATARIMAGE"`
   
   if [ -n "$AVATARIMAGE" ]
   then
      export AVATARIMAGE 
   else
      unset AVATARIMAGE
-     $ZENITY --info --text="Using the default avatar image"
+     $ZENITY --info --text="$DEFAULTAVATARIMAGE"
   fi
 }
 
 choose_fullscreen ()
 {
-  if $ZENITY --question --text="Run the program in fullscreen mode?"
+  if $ZENITY --question --text="$FULLSCREENMODE"
   then MODE="--fullscreen" 
   else MODE="--window" 
   fi
@@ -150,7 +210,7 @@ save_settings ()
 
 if [ -z "$DISPLAY" ]
 then
-  echo "must be started from the X-Window-System" 1>&2
+  echo "$NOX" 1>&2
   exit 1
 fi
 
@@ -159,7 +219,7 @@ ZENITY=`command -v zenity`
 
 if [ -z "$ZENITY" ]
 then
-    echo "Command \"zenity\" not found" 1>&2
+    echo "$NOZENITY" 1>&2
     exit 1
 fi
 
@@ -169,7 +229,7 @@ AVATARSAY=`command -v avatarsay`
 
 if [ -z "$AVATARSAY" ]
 then
-    $ZENITY --error --text "Command \"avatarsay\" not found"
+    $ZENITY --error --text "$NOAVATARSAY"
     exit 1
 fi
 
@@ -186,19 +246,18 @@ fi
 # main menu
 while true
 do
-  MENU=`$ZENITY --list --title=AKFAvatar --width 350 --height 395 \
-       --column "key" --column "what to do" \
-     D "show a demo or textfile" \
-     E "create or edit a demo" \
-     M "show a manpage" \
-     C "show the output of a command" \
-     I "change avatar image" \
-     F "fullscreen or window mode" \
-     S "save settings" \
-     H "help for AKFAvatar - english" \
-     G "Hilfe zu AKFAvatar - deutsch (german)" \
-     W "Website" \
-     X "Exit"` \
+  MENU=`$ZENITY --list --title=AKFAvatar --width 355 --height 370 \
+       --column "$KEY" --column "$WHATTODO" \
+     D "$SHOWDEMO" \
+     E "$EDITDEMO" \
+     M "$SHOWMANPAGE" \
+     C "$SHOWCOMMAND" \
+     I "$CHANGEAVATARIMAGE" \
+     F "$FULLSCREENORWINDOW" \
+     S "$SAVESETTINGS" \
+     H "$HELP" \
+     W "$WEBSITE" \
+     X "$EXIT"` \
      || exit 0
 
   case $MENU in
@@ -209,9 +268,8 @@ do
     I) choose_avatar_image ;;
     F) choose_fullscreen ;;
     S) save_settings ;;
-    H) yelp info:akfavatar-en & ;;
-    G) yelp info:akfavatar-de & ;;
-    W) gnome-open 'http://akfoerster.de/akfavatar/' ;;
+    H) yelp "$HELPTEXT" & ;;
+    W) gnome-open "$WWW" ;;
     X) exit 0 ;;
   esac
 

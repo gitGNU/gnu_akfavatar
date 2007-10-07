@@ -1,4 +1,7 @@
-2007-10-06  Andreas K. Foerster  <info@akfoerster.de>
+2007-10-07  Andreas K. Foerster  <info@akfoerster.de>
+
+	* gnome-akfavatar:
+	german translation
 
 	* acatarsay.c (move_out):
 	don't wait after moving out, unless running as loop
