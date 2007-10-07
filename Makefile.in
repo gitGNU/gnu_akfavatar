@@ -213,7 +213,7 @@ dist: info txt man distclean
 	   balloonpointer.c circle.c regicon.c gnu-head.bmp \
 	   ucsfont7x14.c avatarsay.c avtman example.c fsdemo-?? \
 	   gnome-akfavatar bdfread.pas human-peasant.bmp \
-	   gnu-small.bmp akfavatar.xpm \
+	   gnu-small.bmp akfavatar.xpm bin2c.c \
 	   ucsfont4x6.c font.c bell.wav configure Makefile.in \
 	   $(PKGNAME)/
 	
