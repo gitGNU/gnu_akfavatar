@@ -14,7 +14,8 @@ USECSS = --css-include akfavatar.css
 all: txt info html dvi pdf ps
 
 pasref.txt: ../pascal/akfavatar.pas
-	sed -n '/^interface/,/^implementation/p' < $< > $@
+	sed -n '/^unit/,/^implementation/p' < $< \
+	  | sed '/^implementation/ d' > $@
 
 info: akfavatar-en.info akfavatar-de.info
 
@@ -69,7 +70,6 @@ clean:
 	-rm -f *~
 	-rm -f *.aux *.cp *.cps *.fn *.ky *.pg *.tp *.vr
 	-rm -f *.log *.toc
-	-rm -f pasref.txt
 
 mostlyclean: clean
 
@@ -77,6 +77,7 @@ distclean: clean
 	-rm -rf akfavatar-en/
 	-rm -rf akfavatar-de/
 	-rm -f version.texi
+	-rm -f pasref.txt
 	-rm -f akfavatar-en.pdf akfavatar-en.ps akfavatar-en.dvi
 	-rm -f akfavatar-de.pdf akfavatar-de.ps akfavatar-de.dvi
 

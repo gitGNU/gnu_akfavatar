@@ -36,26 +36,26 @@ bell.c: bell.wav bin2c
 	./bin2c avt_bell_data < $< > $@
 
 avatar.o: avatar.c akfavatar.h version.h balloonpointer.c circle.c regicon.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) $(ICONV_TARGET) -c $<
+	$(CC) $(CFLAGS) $(SDLCFLAGS) $(ICONV_TARGET) -I. -c $<
 
 %.o: %.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ $<
 
 libakfavatar.a: avatar.o avatar-default.o avatar-audio.o bell.o font.o
 	$(AR) rcu $@ avatar.o avatar-default.o avatar-audio.o bell.o font.o
 	-$(RANLIB) $@
 
 avatar.lo: avatar.c akfavatar.h version.h balloonpointer.c circle.c regicon.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) $(ICONV_TARGET) -c -fpic -o $@ $<
+	$(CC) $(CFLAGS) $(SDLCFLAGS) $(ICONV_TARGET) -I. -c -fpic -o $@ $<
 
 %.lo: %.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -fpic -o $@ $<
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fpic -o $@ $<
 
 avatar-default.lo: avatar-default.c gnu-head.c gnu-small.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -fpic -o $@ $<
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fpic -o $@ $<
 
 avatar-default.o: avatar-default.c gnu-head.c gnu-small.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ $<
 
 libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo bell.lo font.lo
 	$(CC) -shared \
@@ -66,16 +66,16 @@ libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo bell.lo font.lo
 	ln -sf $(LIBNAME) libakfavatar.so
 
 example: example.c libakfavatar.so
-	$(CC) $(CFLAGS) -o $@ $< -L. -lakfavatar $(LDFLAGS)
+	$(CC) $(CFLAGS) -I. -o $@ $< -L. -lakfavatar $(LDFLAGS)
 
 # avatarsay dynamically linked
 # only works, when the library is installed
 avatarsay-d: avatarsay.c libakfavatar.so
-	$(CC) $(CFLAGS) -o $@ $< -L. -lakfavatar $(LDFLAGS)
+	$(CC) $(CFLAGS) -I. -o $@ $< -L. -lakfavatar $(LDFLAGS)
 
 # avatarsay with statical libakfavatar.a
 avatarsay: avatarsay.c libakfavatar.a
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ $< libakfavatar.a \
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -o $@ $< libakfavatar.a \
 	  $(LDFLAGS) $(SDLLDFLAGS)
 
 installdirs:
@@ -87,24 +87,24 @@ installdirs:
 	-[ -d $(DESTDIR)$(mandir)/man1 ] || $(INSTALL) -d $(DESTDIR)$(mandir)/man1
 
 install: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info install-man
-	$(INSTALL_DATA) akfavatar.h $(DESTDIR)$(includedir)
+	$(INSTALL_DATA) $(srcdir)/akfavatar.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) $(LIBNAME) $(DESTDIR)$(libdir)
 	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
 	-ln -sf $(LIBNAME) $(DESTDIR)$(libdir)/libakfavatar.so
 	-$(LDCONFIG) $(libdir)
 	$(INSTALL_PROGRAM) avatarsay-d $(DESTDIR)$(bindir)/avatarsay
-	$(INSTALL_PROGRAM) avtman $(DESTDIR)$(bindir)
-	$(INSTALL_PROGRAM) gnome-akfavatar $(DESTDIR)$(bindir)
+	$(INSTALL_PROGRAM) $(srcdir)/avtman $(DESTDIR)$(bindir)
+	$(INSTALL_PROGRAM) $(srcdir)/gnome-akfavatar $(DESTDIR)$(bindir)
 
 install-strip: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info install-man
-	$(INSTALL_DATA) akfavatar.h $(DESTDIR)$(includedir)
+	$(INSTALL_DATA) $(srcdir)/akfavatar.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) -s $(LIBNAME) $(DESTDIR)$(libdir)
 	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
 	-ln -sf $(LIBNAME) $(DESTDIR)$(libdir)/libakfavatar.so
 	-$(LDCONFIG) $(libdir)
 	$(INSTALL_PROGRAM) -s avatarsay-d $(DESTDIR)$(bindir)/avatarsay
-	$(INSTALL_PROGRAM) avtman $(DESTDIR)$(bindir)
-	$(INSTALL_PROGRAM) gnome-akfavatar $(DESTDIR)$(bindir)
+	$(INSTALL_PROGRAM) $(srcdir)/avtman $(DESTDIR)$(bindir)
+	$(INSTALL_PROGRAM) $(srcdir)/gnome-akfavatar $(DESTDIR)$(bindir)
 
 uninstall: uninstall-info uninstall-man
 	-rm -f $(includedir)/akfavatar.h
@@ -117,11 +117,11 @@ uninstall: uninstall-info uninstall-man
 	-rm -f $(bindir)/gnome-akfavatar
 
 info:
-	$(MAKE) -C doc info
+	$(MAKE) -C $(srcdir)/doc info
 
 install-info: info
-	$(INSTALL_DATA) doc/akfavatar-en.info $(DESTDIR)$(infodir)
-	$(INSTALL_DATA) doc/akfavatar-de.info $(DESTDIR)$(infodir)
+	$(INSTALL_DATA) $(srcdir)/doc/akfavatar-en.info $(DESTDIR)$(infodir)
+	$(INSTALL_DATA) $(srcdir)/doc/akfavatar-de.info $(DESTDIR)$(infodir)
 	-install-info --info-dir=$(DESTDIR)$(infodir) \
 	   $(DESTDIR)$(infodir)/akfavatar-en.info 
 	-install-info --info-dir=$(DESTDIR)$(infodir) \
@@ -133,39 +133,39 @@ uninstall-info:
 	-rm -f $(DESTDIR)$(infodir)/akfavatar-en.info
 
 install-man:
-	-$(INSTALL_DATA) doc/avatarsay.1 $(DESTDIR)$(mandir)/man1
+	-$(INSTALL_DATA) $(srcdir)/doc/avatarsay.1 $(DESTDIR)$(mandir)/man1
 
 uninstall-man:
 	-rm -f $(DESTDIR)$(mandir)/man1/avatarsay.1
 
 txt:
-	$(MAKE) -C doc txt
+	$(MAKE) -C $(srcdir)/doc txt
 
 html:
-	$(MAKE) -C doc html
+	$(MAKE) -C $(srcdir)/doc html
 
 install-html:
 
 dvi:
-	$(MAKE) -C doc dvi
+	$(MAKE) -C $(srcdir)/doc dvi
 
 install-dvi:
 
 pdf:
-	$(MAKE) -C doc pdf
+	$(MAKE) -C $(srcdir)/doc pdf
 
 install-pdf:
 
 ps:
-	$(MAKE) -C doc ps
+	$(MAKE) -C $(srcdir)/doc ps
 
 install-ps:
 
 man:
-	$(MAKE) -C doc man
+	$(MAKE) -C $(srcdir)/doc man
 
 doc:
-	$(MAKE) -C doc all
+	$(MAKE) -C $(srcdir)/doc all
 
 check:
 
@@ -176,8 +176,8 @@ clean:
 	-rm -f gnu-head.c gnu-small.c bell.c
 	-rm -f pascal/*.o pascal/*.gpi pascal/*.gpm pascal/*.ppu
 	-rm -f pascal/link.res pascal/ppas.sh
-	$(MAKE) -C mingw32 clean
-	$(MAKE) -C doc clean
+	$(MAKE) -C $(srcdir)/mingw32 clean
+	$(MAKE) -C $(srcdir)/doc clean
 
 mostlyclean: clean
 
@@ -187,12 +187,12 @@ distclean: clean
 	-rm -f config.status
 	-rm -f version.h
 	-rm -f Makefile
-	-rm -f pascal/example
+	-rm -f $(srcdir)/pascal/example
 	-rm -f akfavatar-*.tar.gz
 	-rm -f multiply-bin multiply
 	-rm -f multiplizieren-bin multiplizieren
-	$(MAKE) -C mingw32 distclean
-	$(MAKE) -C doc distclean
+	$(MAKE) -C $(srcdir)/mingw32 distclean
+	$(MAKE) -C $(srcdir)/doc distclean
 
 
 # the rest is just for the maintainer
@@ -200,10 +200,10 @@ distclean: clean
 
 maintainerclean: distclean
 
-multiply: pascal/multiply.pas
+multiply: $(srcdir)/pascal/multiply.pas
 	fpcavatar -dRELEASE -FE. -o$@ $< -k-rpath=.
 
-multiplizieren: pascal/multiply.pas
+multiplizieren: $(srcdir)/pascal/multiply.pas
 	fpcavatar -dRELEASE -ddeutsch -FE. -o$@ $< -k-rpath=.
 
 dist: info txt man distclean
