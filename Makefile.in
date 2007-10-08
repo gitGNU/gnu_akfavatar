@@ -246,12 +246,14 @@ dist-bin: avatarsay multiply multiplizieren
 	strip avatarsay
 	mkdir $(BINPKGNAME)
 	ln $(LIBNAME) $(SONAME) $(BINPKGNAME)/
-	ln akfavatar.h pascal/akfavatar.pas $(BINPKGNAME)/
+	ln $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/
 	ln multiply $(BINPKGNAME)/
 	ln multiplizieren $(BINPKGNAME)/
-	ln pascal/correct.wav pascal/wrong.wav $(BINPKGNAME)/
-	ln COPYING AUTHORS avatarsay avtman fsdemo-?? \
-	   gnome-akfavatar human-peasant.bmp \
+	ln $(srcdir)/pascal/correct.wav $(srcdir)/pascal/wrong.wav \
+	   $(BINPKGNAME)/
+	ln $(srcdir)/COPYING $(srcdir)/AUTHORS avatarsay $(srcdir)/avtman \
+	   $(srcdir)/fsdemo-?? \
+	   $(srcdir)/gnome-akfavatar $(srcdir)/human-peasant.bmp \
 	   $(BINPKGNAME)/
 	tar -cvf $(BINPKGNAME).gnu-linux.x86.tar $(BINPKGNAME)/
 	gzip -9 $(BINPKGNAME).gnu-linux.x86.tar
