@@ -247,6 +247,7 @@ dist-bin: avatarsay multiply multiplizieren
 	mkdir $(BINPKGNAME)
 	ln $(LIBNAME) $(SONAME) $(BINPKGNAME)/
 	ln $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/
+	ln $(srcdir)/pascal/?pcavatar $(BINPKGNAME)/
 	ln multiply $(BINPKGNAME)/
 	ln multiplizieren $(BINPKGNAME)/
 	ln $(srcdir)/pascal/correct.wav $(srcdir)/pascal/wrong.wav \
