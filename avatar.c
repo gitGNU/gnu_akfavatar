@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.21 2007-10-06 11:14:25 akf Exp $ */
+/* $Id: avatar.c,v 2.22 2007-10-12 11:24:52 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -793,7 +793,6 @@ void
 avt_delete_lines (int line, int num)
 {
   SDL_Rect rest, dest, clear;
-  SDL_Surface *rest_lines;
 
   /* no textfield? do nothing */
   if (textfield.x < 0)
@@ -806,22 +805,12 @@ avt_delete_lines (int line, int num)
   /* get the rest of the viewport */
   rest.x = viewport.x;
   rest.w = viewport.w;
-  rest.y = viewport.y + ((line + num - 1) * LINEHEIGHT);
-  rest.h = viewport.h - ((line + num - 1) * LINEHEIGHT);
-
-  rest_lines = SDL_CreateRGBSurface (SDL_SWSURFACE, rest.w, rest.h,
-				     screen->format->BitsPerPixel,
-				     screen->format->Rmask,
-				     screen->format->Gmask,
-				     screen->format->Bmask,
-				     screen->format->Amask);
-
-  SDL_BlitSurface (screen, &rest, rest_lines, NULL);
+  rest.y = viewport.y + ((line - 1 + num) * LINEHEIGHT);
+  rest.h = viewport.h - ((line - 1 + num) * LINEHEIGHT);
 
   dest.x = viewport.x;
   dest.y = viewport.y + ((line - 1) * LINEHEIGHT);
-  SDL_BlitSurface (rest_lines, NULL, screen, &dest);
-  SDL_FreeSurface (rest_lines);
+  SDL_BlitSurface (screen, &rest, screen, &dest);
 
   clear.w = viewport.w;
   clear.h = num * LINEHEIGHT;
@@ -837,7 +826,6 @@ void
 avt_insert_lines (int line, int num)
 {
   SDL_Rect rest, dest, clear;
-  SDL_Surface *rest_lines;
 
   /* no textfield? do nothing */
   if (textfield.x < 0)
@@ -851,21 +839,11 @@ avt_insert_lines (int line, int num)
   rest.x = viewport.x;
   rest.w = viewport.w;
   rest.y = viewport.y + ((line - 1) * LINEHEIGHT);
-  rest.h = viewport.h - ((line + num - 1) * LINEHEIGHT);
-
-  rest_lines = SDL_CreateRGBSurface (SDL_SWSURFACE, rest.w, rest.h,
-				     screen->format->BitsPerPixel,
-				     screen->format->Rmask,
-				     screen->format->Gmask,
-				     screen->format->Bmask,
-				     screen->format->Amask);
-
-  SDL_BlitSurface (screen, &rest, rest_lines, NULL);
+  rest.h = viewport.h - ((line - 1 + num) * LINEHEIGHT);
 
   dest.x = viewport.x;
-  dest.y = viewport.y + ((line + num - 1) * LINEHEIGHT);
-  SDL_BlitSurface (rest_lines, NULL, screen, &dest);
-  SDL_FreeSurface (rest_lines);
+  dest.y = viewport.y + ((line - 1 + num) * LINEHEIGHT);
+  SDL_BlitSurface (screen, &rest, screen, &dest);
 
   clear.x = viewport.x;
   clear.y = viewport.y + ((line - 1) * LINEHEIGHT);
