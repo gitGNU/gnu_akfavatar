@@ -125,7 +125,9 @@ show_demo ()
 
 edit_demo ()
 {
-  local FILE MESSAGE
+  local FILE ENCODING
+  
+  ENCODING="UTF-8"
   
   if FILE=`$ZENITY --file-selection --save --title="$FILEEDIT"` \
      && [ -n "$FILE" ]
@@ -135,12 +137,16 @@ edit_demo ()
       {
         echo "#!$AVATARSAY"
         echo
+	echo ".encoding $ENCODING"
         [ -n "$AVATARIMAGE" ] && echo ".avatarimage $AVATARIMAGE"
+        echo
+        echo "# Text:"
+        echo
       } > "$FILE"
       chmod a+x "$FILE"
     fi
     
-    gedit --encoding=UTF-8 "$FILE" && run_avatarsay "$FILE"
+    gedit --encoding=$ENCODING "$FILE" && run_avatarsay "$FILE"
   fi
 }
 

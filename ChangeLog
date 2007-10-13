@@ -1,4 +1,7 @@
-2007-10-12  Andreas K. Foerster  <info@akfoerster.de>
+2007-10-13  Andreas K. Foerster  <info@akfoerster.de>
+
+	* gnome-avatarsay:
+	write .encoding into new files
 
 	* avatar.c (avt_delete_lines, avt_insert_lines):
 	optimized scrolling
