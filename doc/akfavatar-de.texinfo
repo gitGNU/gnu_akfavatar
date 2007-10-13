@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.6 2007-10-07 05:32:13 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.7 2007-10-13 11:09:43 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -182,6 +182,7 @@ Werkzeugs @command{avatarsay}.
 @menu
 * Text-Betrachter::            Einsatz als witziger Text-Betrachter
 * Den Text ausführbar machen:: Wie man seinen Text in ein Programm verwandelt
+* Einschränkungen::            Einschränkungen von @command{avatarsay}
 * Anderes Avatar-Bild::        Wie man ein anderes Avatar-Bild verwendet
 * Aufruf von avatarsay::       Die genaue Verwendung von @command{avatarsay}
 * Befehle für avatarsay::      Befehle für das Programm @command{avatarsay}
@@ -253,6 +254,20 @@ konfigurieren, dass die Datei-Endung @file{.avt} mit dem Programm
 @file{avatarsay.exe} verknüpft wird.  Dann kann man auf seinen Text 
 doppelklicken und er wird ausgeführt.
 
+@node Einschränkungen
+@section Einschränkungen von @command{avatarsay}
+@cindex Einschränkungen von @command{avatarsay}
+
+Die aktuelle Version von @command{avatarsay} kann nicht mit den Kodierungen 
+@code{UTF-16}, @code{UTF-32}, @code{UCS-2} oder @code{UCS-4} umgehen. Auch
+nicht, wenn diese vom System her unterstützt werden.  Wenn man Unicode-Zeichen
+benötigt, sollte man seinen Text stattdessen als @code{UTF-8} abspeichern.  
+Obwohl diese Kodierung weniger Platz benötigt als die anderen, gibt es hierbei 
+jedoch keinen Informationsverlust.
+
+Allgemein kommt @command{avatarsay} nicht mit Kodierungen zurecht, die Bytes 
+mit dem Wert Null aufweisen können.  Ich hoffe diese Einschränkung in
+zukünftigen Versionen beseitigen zu können.
 
 @node Anderes Avatar-Bild
 @section Wie man ein anderes Avatar-Bild verwendet
@@ -401,6 +416,27 @@ erzeuge eine @dfn{Named Pipe} für @var{Dateiname}
 @xref{Pipes}.
 
 @end table
+
+@subsection Umgebungsvariablen
+
+Der Befehl @command{avatarsay} unterstützt die folgenden Umgebungsvariablen:
+
+@table @code
+
+@item AVATARIMAGE
+Bilddatei für den Avatar mit vollständigem Pfad
+
+@item DATADIR
+das Verzeichnis, in dem sich Bilder und Audio-Dateien befinden (hat keinen
+Einfluss auf die Umgebungsvariable @code{AVATARIMAGE})
+
+@item LC_ALL
+@itemx LC_CTYPE
+@itemx LANG
+diese Variablen beeinflussen die Standard-Kodierung
+
+@end table
+
 
 @node Befehle für avatarsay
 @section Befehle für das Programm @command{avatarsay}

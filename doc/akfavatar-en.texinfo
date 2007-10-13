@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.12 2007-10-07 05:32:13 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.13 2007-10-13 11:09:43 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -168,6 +168,7 @@ This chapter explains the various uses of the tool @command{avatarsay}.
 @menu
 * Text-viewer::                Using @command{avatarsay} as fancy text-viewer.
 * Make your text executable::  How to turn your text into a program
+* Limitations::                Limitations of @command{avatarsay}
 * Different avatar image::     Using a different avatar image
 * Invoking avatarsay::         Command line interface
 * Commands for avatarsay::     Advanced features of @command{avatarsay}
@@ -228,6 +229,19 @@ rename your file such, that it has a special extension; for example
 @file{.avt}.  Now you have to configure your system, that the file extension
 @file{.avt} gets associated with the program @file{avatarsay.exe}.  Then
 you can double-click on your ``text'' and it is executed.
+
+@node Limitations
+@section Limitations of @command{avatarsay}
+@cindex limitations of @command{avatarsay}
+
+The current version of @command{avatarsay} cannot cope with the encodings
+@code{UTF-16}, @code{UTF-32}, @code{UCS-2} or @code{UCS-4}, even when they are
+supported by your system.  If you need unicode characters, please convert your
+text to @code{UTF-8} instead.  There are no limitations in @code{UTF-8}.  While 
+this encoding needs less disk space, there is no loss in information.
+
+In general @command{avatarsay} cannot cope with encodings, in which bytes with
+the value zero occur.  I hope I can remove this limitation in later versions.
 
 @node Different avatar image
 @section Using a different avatar image
@@ -366,6 +380,26 @@ ignore end of file conditions; use this when the input is not a file
 create @dfn{named pipe} for @var{filename}
 
 @xref{Pipes}.
+
+@end table
+
+@subsection Environment variables
+
+The command @command{avatarsay} supports the following environment variables:
+
+@table @code
+
+@item AVATARIMAGE
+image file with an avatar with the full path
+
+@item DATADIR
+the directory, where images and audio files are located (has no influence on
+the environment variable @code{AVATARIMAGE})
+
+@item LC_ALL
+@itemx LC_CTYPE
+@itemx LANG
+these variables influence the default encoding
 
 @end table
 
