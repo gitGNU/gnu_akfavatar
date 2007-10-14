@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.11 2007-10-06 18:20:49 akf Exp $ */
+/* $Id: avatarsay.c,v 2.12 2007-10-14 11:28:09 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -48,6 +48,9 @@ static char encoding[80] = "ISO-8859-1";
 /* if rawmode is set, then don't interpret any commands or comments */
 /* rawmode can be activated with the options -r or --raw */
 static int rawmode = 0;
+
+/* popup-mode? */
+static int popup = 0;
 
 /* stop the program? */
 static int stop = 0;
@@ -162,6 +165,7 @@ help (const char *prgname)
   puts (" -l, --latin1            input data is encoded in Latin-1");
   puts (" -u, --utf-8             input data is encoded in UTF-8");
   puts (" -1, --once              run only once (don't loop)");
+  puts ("     --popup             popup, ie. don't move the avatar in");
   puts (" -r, --raw               output raw text"
 	" (don't handle any commands)");
   puts (" -i, --ignoreeof         ignore end of file conditions "
@@ -376,6 +380,12 @@ checkoptions (int argc, char **argv)
 	  continue;
 	}
 
+      if (strcmp (argv[i], "--popup") == 0)
+	{
+	  popup = 1;
+	  continue;
+	}
+
       /* check for unknown option */
       if (argv[i][0] == '-' && argv[i][1] != '\0')
 	error ("unknown option", argv[i]);
@@ -503,7 +513,9 @@ handle_audio_command (const char *s)
   if (!initialized)
     {
       initialize ();
-      move_in ();
+
+      if (!popup)
+	move_in ();
     }
 
   if (sscanf (s, ".audio %255s", (char *) &filename) > 0)
@@ -880,7 +892,9 @@ processfile (const char *fname)
   if (!initialized && !stop)
     {
       initialize ();
-      move_in ();
+      
+      if (!popup)
+	move_in ();
     }
 
   /* show text */
@@ -947,7 +961,8 @@ main (int argc, char *argv[])
 
   do
     {
-      move_in ();
+      if (initialized && !popup)
+	move_in ();
 
       for (i = 1; i < argc; i++)
 	{

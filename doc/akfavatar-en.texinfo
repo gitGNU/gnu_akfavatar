@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.13 2007-10-13 11:09:43 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.14 2007-10-14 11:27:48 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -366,6 +366,12 @@ the input data is encoded in @code{UTF-8}
 @item --once
 @itemx -1
 run only once (don't loop)
+
+@item --popup
+popup, ie. don’t move the avatar in
+
+Use this for a fast popup text. 
+Use the command @command{.stop} to also get a fast end.
 
 @item --raw
 @itemx -r

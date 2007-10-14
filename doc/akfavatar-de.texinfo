@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.7 2007-10-13 11:09:43 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.8 2007-10-14 11:27:48 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -399,6 +399,13 @@ die Eingabe-Daten sind in @code{UTF-8} kodiert
 @item --once
 @itemx -1
 nur einmal ablaufen (keine Schleife)
+
+@item --popup
+Popup, dh. bewege nicht den Avatar langsam ins Bild
+
+Dies kann man für schnelle Popup-Texte verwenden. 
+Um das Programm auch wieder schnell zu beenden, kann man den Befehl 
+@command{.stop} verwenden.
 
 @item --raw
 @itemx -r
