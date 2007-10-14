@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.12 2007-10-14 11:28:09 akf Exp $ */
+/* $Id: avatarsay.c,v 2.13 2007-10-14 11:54:41 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -892,7 +892,7 @@ processfile (const char *fname)
   if (!initialized && !stop)
     {
       initialize ();
-      
+
       if (!popup)
 	move_in ();
     }
