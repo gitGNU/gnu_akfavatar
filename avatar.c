@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.22 2007-10-12 11:24:52 akf Exp $ */
+/* $Id: avatar.c,v 2.23 2007-10-15 07:22:15 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -32,13 +32,17 @@
 #include "circle.c"
 #include "regicon.c"
 
-#ifdef QVGA
+#if defined(QVGA)
 #  define FONTWIDTH 4
 #  define FONTHEIGHT 6
 #  define LINEHEIGHT FONTHEIGHT	/* + something, if you want */
-#else
+#elif defined(VGA)
 #  define FONTWIDTH 7
 #  define FONTHEIGHT 14
+#  define LINEHEIGHT FONTHEIGHT	/* + something, if you want */
+#else
+#  define FONTWIDTH 9
+#  define FONTHEIGHT 18
 #  define LINEHEIGHT FONTHEIGHT	/* + something, if you want */
 #endif
 
@@ -84,7 +88,15 @@
 
 #define COLORDEPTH 24
 
-#ifndef QVGA
+#if defined(QVGA)
+#  define MINIMALWIDTH 320
+#  define MINIMALHEIGHT 240
+#  define TOPMARGIN 10
+#  define BALLOONWIDTH LINELENGTH
+#  define BALLOON_INNER_MARGIN 10
+#  define AVATAR_MARGIN 5
+#  define MOVE_DELAY 5
+#elif defined(VGA)
 #  define MINIMALWIDTH 640
 #  define MINIMALHEIGHT 480
 #  define TOPMARGIN 25
@@ -93,15 +105,16 @@
 #  define AVATAR_MARGIN 10
    /* Delay for moving in or out - the higher, the slower */
 #  define MOVE_DELAY 2.5
-#else /* QVGA */
-#  define MINIMALWIDTH 320
-#  define MINIMALHEIGHT 240
-#  define TOPMARGIN 10
+#else
+#  define MINIMALWIDTH 800
+#  define MINIMALHEIGHT 600
+#  define TOPMARGIN 25
 #  define BALLOONWIDTH LINELENGTH
-#  define BALLOON_INNER_MARGIN 10
-#  define AVATAR_MARGIN 5
-#  define MOVE_DELAY 5
-#endif /* QVGA */
+#  define BALLOON_INNER_MARGIN 15
+#  define AVATAR_MARGIN 20
+   /* Delay for moving in or out - the higher, the slower */
+#  define MOVE_DELAY 1.8
+#endif /* !QVGA, !LARGRE */
 
 
 /* for dynamically loading SDL_image */
@@ -175,9 +188,6 @@ static struct pos
 int _avt_STATUS = AVATARNORMAL;
 
 void (*avt_bell_func) (void) = NULL;
-
-extern unsigned char font[];
-extern size_t get_font_offset (wchar_t ch);
 
 /* forward declaration */
 static int avt_pause (void);
@@ -981,10 +991,45 @@ avt_new_line (void)
   return _avt_STATUS;
 }
 
-/* draws the raw char - with no interpretation */
+/* avt_drawchar: draws the raw char - with no interpretation */
+#if (FONTWIDTH > 8)
 static void
 avt_drawchar (wint_t ch)
 {
+  extern unsigned short font[];
+  extern size_t get_font_offset (wchar_t ch);
+  int lx, ly;
+  size_t font_offset;
+  SDL_Rect dest;
+  Uint8 *p, *dest_line;
+  unsigned short font_line;
+  Uint16 pitch;
+
+  font_offset = get_font_offset (ch);
+
+  pitch = avt_character->pitch;
+  p = (Uint8 *) avt_character->pixels;
+  for (ly = 0; ly < FONTHEIGHT; ly++)
+    {
+      dest_line = p + (ly * pitch);
+      font_line = font[font_offset + ly];
+
+      for (lx = 0; lx < FONTWIDTH; lx++)
+	*(dest_line + lx) = (font_line & (1 << (15 - lx))) ? 1 : 0;
+    }
+
+  dest.x = cursor.x;
+  dest.y = cursor.y;
+  SDL_BlitSurface (avt_character, NULL, screen, &dest);
+}
+
+#else /* FONTWIDTH <= 8 */
+
+static void
+avt_drawchar (wint_t ch)
+{
+  extern unsigned char font[];
+  extern size_t get_font_offset (wchar_t ch);
   int lx, ly;
   size_t font_offset;
   SDL_Rect dest;
@@ -1009,6 +1054,8 @@ avt_drawchar (wint_t ch)
   dest.y = cursor.y;
   SDL_BlitSurface (avt_character, NULL, screen, &dest);
 }
+
+#endif /* FONTWIDTH <= 8 */
 
 /* make current char visible */
 static void

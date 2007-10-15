@@ -1,4 +1,11 @@
-2007-10-13  Andreas K. Foerster  <info@akfoerster.de>
+2007-10-15  Andreas K. Foerster  <info@akfoerster.de>
+
+	* font.c, avatar.c:
+	support for 9x18 font with 800x600 resolution
+	640x480 only used, when compiled for symbol "VGA"
+	
+	* avatar.c (avt_drawchar):
+	added general support for fixed fontwidth > 8 <= 16
 
 	* avatarsay:
 	new option: --popup

@@ -18,8 +18,10 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef QVGA
+#if defined(QVGA)
 #  include "ucsfont4x6.c"
-#else
+#elif defined(VGA)
 #  include "ucsfont7x14.c"
+#else
+#  include "ucsfont9x18.c"
 #endif

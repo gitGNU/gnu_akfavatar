@@ -51,9 +51,11 @@ necessary to use the parameter "--with-oldsdl". Note that this is
 not needed if you just want to run the program on the same machine
 on which you compile it.
 
-If you want to use it on devices with a very small display, use the 
-parameter "--enable-qvga" with configure. It is then compiled for 
-displays with 320*240 Pixel. This feature is experimental.
+If you want to use it on devices with a small display, use the 
+parameter "--enable-size=vga" or "--enable-size=qvga" with configure. 
+The value "vga" means a size of 640*480 pixels, while "qvga" is for very
+small displays with 320*240 pixels. The size "qvga" doesn't look good, it
+is just barely readable and supports less characters.
 
 
 Testing
@@ -62,8 +64,8 @@ The program "avatarsay" is a text reader and a simple scripting language.
 Try to view this text with that program: "./avatarsay INSTALL".
 
 You can stop avatarsay any time with the [Esc] key. On some systems you can 
-toggle between window and fullscreen mode using the key [F11]. Other usefull
-keys are the [Pause] key and the space key.
+toggle between window and fullscreen mode using the key [F11]. Another usefull
+key is the [Pause] key.
 
 There are some example scripts in the package. 
 Try to run "./fsdemo-en" or whatever language you prefer. Open fsdemo-en in 
