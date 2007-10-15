@@ -124,10 +124,13 @@ var ScreenSize : record x, y: integer end;
 { These variables are only set after the avatar is visible }
 var WindMin, WindMax: word;
 
-
 { load the Avatar image from a file }
 { must be used before any output took place }
 procedure AvatarImageFile(FileName: string);
+
+{ load the Avatar image from memory }
+{ must be used before any output took place }
+procedure AvatarImageData(data: pointer; size: LongInt);
 
 { set a different background color (default is grey) }
 { must be used before any output took place }
@@ -367,6 +370,9 @@ function avt_import_gimp_image(gimp_image: PGimpImage): PAvatarImage;
 function avt_import_image_file (FileName: CString): PAvatarImage;
   libakfavatar 'avt_import_image_file';
 
+function avt_import_image_data (Data: Pointer; size: CInteger): PAvatarImage;
+  libakfavatar 'avt_import_image_data';
+
 function avt_show_image_file(FileName: CString): CInteger;
   libakfavatar 'avt_show_image_file';
 
@@ -482,6 +488,13 @@ begin
 { when it is already initialized, it's too late }
 if AvatarImage = NIL then
   AvatarImage := avt_import_image_file (String2CString(FileName))
+end;
+
+procedure AvatarImageData(data: pointer; size: LongInt);
+begin
+{ when it is already initialized, it's too late }
+if AvatarImage = NIL then
+  AvatarImage := avt_import_image_data (data, size)
 end;
 
 procedure RestoreInOut;

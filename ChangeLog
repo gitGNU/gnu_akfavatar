@@ -1,5 +1,8 @@
 2007-10-15  Andreas K. Foerster  <info@akfoerster.de>
 
+	* akfavatar.pas (AvatarImageData):
+	new function
+
 	* font.c, avatar.c:
 	support for 9x18 font with 800x600 resolution
 	640x480 only used, when compiled for symbol "VGA"
