@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.14 2007-10-14 11:27:48 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.15 2007-10-15 17:51:24 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -58,6 +58,7 @@ notice and this notice are preserved.
 
 @menu
 * Overview::              Overview of AKFAvatar
+* Installation::          How to install AKFAvatar
 * Using avatarsay::       Using the tool @command{avatarsay}
 * Using gnome-akfavatar:: Using it under GNOME
 * Programming::           Programming with AKFAvatar
@@ -148,7 +149,7 @@ again.
 @cindex window mode
 On some systems you can use the @key{F11} key to toggle between the window
 mode and the fullscreen mode.  Alternatively you can also use the key 
-combimations @key{Alt}+@key{Enter} or @key{Crtl}+@key{Alt}+@key{F}.
+combinations @key{Alt}+@key{Enter} or @key{Crtl}+@key{Alt}+@key{F}.
 
 @cindex window usage
 When AKFAvatar runs in a window you can resize the window as you wish.  The
@@ -157,6 +158,152 @@ resize it beyond a minimal size, which is currently 640 to 480.  You can
 of course also maximize the window.  When you minimize the window the 
 program continues to print the text.  So you probably want to press the
 @key{Pause} key before you minimze the window.
+
+@node Installation
+@chapter How to install AKFAvatar
+@cindex installation
+
+Although there are binary packages available, you should install AKFAvatar
+from the source code package to use the software to its full capacity.
+
+This chapter describes the installation for @sc{posix} compatible operating
+systems, such as GNU/Linux.
+
+For short: @samp{./configure && make && make install}
+
+@section Requirements
+
+@subheading Needed
+
+@itemize
+@item SDL-1.2.x (version 1.2.11 or higher recommended)@*
+@uref{http://libsdl.org/download-1.2.php}@*
+You need the ``Runtime Libraries'' as well as the ``Development Libraries''!
+
+Of course SDL needs a graphical environment to run in.
+For example the X-Window-System or a Linux framebuffer-device@enddots{}
+
+@item An ANSI-C Compiler (gcc or others)@*
+@uref{http://gcc.gnu.org/}
+@end itemize
+
+@subheading Recommended
+
+@itemize
+@item SDL_image@*
+@uref{http://www.libsdl.org/projects/SDL_image/}@*
+There the Runtime Libraries are sufficient@*
+SDL_image in turn needs other libraries:
+libz, libpng, libjpeg, libtiff
+
+Without SDL_image you can only use uncompressed BMP images.
+SDL_image can be installed after the installation of this package.
+@end itemize
+
+@subheading Optional
+
+@itemize
+@item GNU-Pascal or Free Pascal@*
+@uref{http://www.gnu-pascal.de/}@*
+@uref{http://www.freepascal.org/}
+@end itemize
+
+@section Installation
+
+@subheading Compiling
+
+Run @samp{./configure}. If that succeeds run @samp{make} to create the
+binaries.  There are two variants of avatarsay being compiled: 
+1. ``avatarsay'' has been statically linked with the avatar library. 
+You can use this to test and play around with it before you install it. 
+2. ``avatarsay-d'' is dynamically linked and will only work, when the library
+is installed.  This is the variant that gets installed.
+
+@subsubheading Compiling --- special cases
+@cindex QVGA
+@cindex VGA
+
+To support old versions of SDL on a target machine, it might be 
+necessary to use the parameter @option{--with-oldsdl}.  Note that this is
+not needed if you just want to run the program on the same machine
+on which you compile it.
+
+If you want to use it on devices with a small display, use the 
+parameter @option{--enable-size=vga} or @option{--enable-size=qvga} with
+configure.  The value @var{vga} means a size of 640*480 pixels, while 
+@var{qvga} is for very small displays with 320*240 pixels.  The size @var{qvga}
+doesn't look good, it is just barely readable and supports less characters.
+
+@subheading Testing
+
+The program @command{avatarsay} is a text reader and a simple scripting
+language.  Try to view this text with that program: @samp{./avatarsay INSTALL}.
+
+You can stop @command{avatarsay} any time with the @key{Esc} key.  On some
+systems you can toggle between window and fullscreen mode using the key 
+@key{F11}.  Another useful key is the @key{Pause} key.
+
+There are some example scripts in the package. 
+Try to run @samp{./fsdemo-en} or whatever language you prefer. 
+Open @file{fsdemo-en} in a text-editor to see how to write such 
+scripts@enddots{}
+
+You can also use it as a fancy manpage reader.
+Try @samp{avtman man}@enddots{}
+
+@subsubheading The script @command{lrun}
+@cindex lrun
+
+Dynamically linked programs normally need the libraries to be installed
+on the system. The script @command{lrun} can be used to start programs, when
+the library is not yet installed.  It searches the libraries also in the
+script's directory and in the current directory.  Use it like this:
+@samp{./lrun example} finds the library in the current directory.  Or from
+the Pascal subdirectory @samp{../lrun multiply} will find the library in the
+parent directory.
+
+@subheading Installing
+
+First make sure @file{/usr/local/lib} is mentioned in the file
+@file{/etc/ld.so.conf}; either directly or indirectly. Also make sure
+that @file{/usr/local/bin} is in your @code{PATH} evironment variable.
+
+Now get root privileges and run @samp{make install} to install it in 
+@file{/usr/local}. If you are low on disk space, you can instead use  
+@samp{make install-strip}. This installs binaries stripped from 
+debugging information.
+
+If you want to uninstall it later, you can use the command 
+@samp{make uninstall}.
+
+@subsubheading Special targets
+
+With the command @samp{make example} you can compile the program 
+@file{example.c}.  The file @file{example.c} is an example, which you can use
+to start your own programs.  The program gets dynamically linked, that means it
+needs the installed library.  If you want to test it without the library being 
+installed, use the script @command{lrun} (see above).
+
+@subheading Trouble-shouting
+@cindex trouble-shouting
+
+@itemize
+@item Problem: the system can't find the library @file{libavatar.so}
+
+Solution: first try to add @file{/usr/local/lib} or wherever you 
+installed it to the environment variable @code{LD_LIBRARY_PATH}: 
+@samp{export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib}.
+
+As a more permanent solution make sure @file{/usr/local/lib} is directly or
+indirectly included in the file @file{/etc/ld.so.conf}. Then run the command
+@command{ldconfig} with root privileges.
+
+@item Problem: some characters are not shown correctly with @command{avatarsay}
+
+Solution: There are different character sets. Try to use the parameters
+@option{--utf-8} or @option{--latin1}.
+
+@end itemize
 
 @node Using avatarsay
 @chapter Using the tool @command{avatarsay}

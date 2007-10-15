@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.8 2007-10-14 11:27:48 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.9 2007-10-15 17:51:24 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -63,6 +63,7 @@ sowie dieser Hinweis erhalten bleiben.
 
 @menu
 * Überblick::                      Überblick über AKFAvatar
+* Installation::		   AKFAvatar installieren
 * Verwendung von avatarsay::       Verwendung des Werkzeugs @command{avatarsay}
 * Verwendung von gnome-akfavatar:: Wie man es unter @acronym{GNOME} verwendet
 * Programmierung::                 Programmierung mit AKFAvatar
@@ -168,6 +169,169 @@ Mindestgröße ist derzeit 640 mal 480 Pixel.  Man kann das Fenster natürlich
 auch maximieren.  Wenn man das Fenster minimiert, läuft das Programm übrigens
 weiter.  Man sollte also vielleicht die @key{Pause}-Taste drücken, bevor man
 das Fenster minimiert.
+
+@node Installation
+@chapter AKFAvatar installieren
+@cindex Installation
+
+Obwohl auch Pakete mit Binärdateien zur Verfügung stehen, sollte man 
+AKFAvatar vom Quelltext-Paket installieren um das vollständige Potential
+der Software ausnutzen zu können.
+
+Dieses Kapitel beschreibt die Installation für @sc{posix}-kompatible
+Betriebssysteme, wie GNU/Linux.
+
+Kurz gesagt: @samp{./configure && make && make install}
+
+@section Voraussetzungen
+
+@subheading Benötigt
+
+@itemize
+@item SDL-1.2.x (Version 1.2.11 oder höher empfohlen)@*
+@uref{http://libsdl.org/download-1.2.php}@*
+Man benötigt die ``Runtime Libraries'' sowie die ``Development Libraries''!
+
+Natürlich benötigt SDL eine grafische Umgebung.
+Zum Beispiel das X-Window-System oder einen Linux Framebuffer@enddots{}
+
+@item Einen ANSI-C Compiler (gcc oder andere)@*
+@uref{http://gcc.gnu.org/}
+@end itemize
+
+@subheading Empfohlen
+
+@itemize
+@item SDL_image@*
+@uref{http://www.libsdl.org/projects/SDL_image/}@*
+Dabei sind die ``Runtime Libraries'' ausreichend@*
+SDL_image benötigt wiederum andere Bibliotheken:
+libz, libpng, libjpeg, libtiff
+
+Ohne SDL_image kann man nur unkomprimierte BMP Dateien verwenden.
+SDL_image kann auch nach der Installation dieses Paketes noch 
+nachinstalliert werden.
+@end itemize
+
+@subheading Optional
+
+@itemize
+@item GNU-Pascal oder Free Pascal@*
+@uref{http://www.gnu-pascal.de/}@*
+@uref{http://www.freepascal.org/}
+@end itemize
+
+@section Installation
+
+@subheading Kompilieren
+
+Zunächst sollte man @samp{./configure} aufrufen.  Wenn das klappt, kann
+man @samp{make} eingeben, um die ausführbaren Programme zu kompilieren.
+Es werden zwei Varianten von avatarsay kompiliert: 1. ``avatarsay'' ist
+statisch mit der Bibliothek verlinkt.  Das kann man verwenden, um das 
+Programm auszuprobieren, ohne dass man erst die Bibliothek installieren 
+muss.  2. ``avatarsay-d'' ist dynamisch mit der Bibliothek verlinkt und
+wird nur funktionieren, wenn man zuvor die Bibliothek installiert hat.
+Diese Variante wird für die Installation verwendet.
+
+@subsubheading Kompilieren --- Sonderfälle
+@cindex QVGA
+@cindex VGA
+
+Um ältere SDL-Versionen auf dem Ziel-Computer zu unterstützen, könnte
+es notwendig sein, den Parameter @option{--with-oldsdl} bei 
+@command{./configure} zu verwenden.  Das ist jedoch nicht notwendig, wenn
+man das Programm nur auf dem selben Computer verwenden will, auf dem
+man es kompiliert.
+
+Wenn man es auf Geräten mit einer kleinen Anzeige verwenden will, kann man
+den Parameter @option{--enable-size=vga} oder @option{--enable-size=qvga}
+mit configure verwenden.  Der Wert @var{vga} steht dabei für eine Auflösung
+von 640*480 Pixeln, während @var{qvga} für ganz kleine Anzeigen mit 320*240
+Pixeln geeignet ist.  De Größe @var{qvga} ist dabei nicht gerade schön, es 
+ist gerade so eben noch lesbar und unterstützt weniger Zeichen.
+
+@subheading Testen
+
+Das Programm @command{avatarsay} ist ein Text-Betrachter und eine simple
+Skript-Sprache.  Man kann sich zum Beispiel die Installations-Anleitung
+mit diesem Programm folgendermaßen ansehen: @samp{./avatarsay INSTALL}.
+
+Man kann @command{avatarsay} jederzeit mit der Taste @key{Esc} beenden.
+Auf einigen Systemen kann man zwischen dem Vollbild-Modus und dem 
+Fenster-Modus mit der Taste @key{F11} umschalten.  Auch die 
+@key{Pause}-Taste ist hier sehr nützlich.
+
+In dem Paket befinden sich ein paar Beispiel-Skripte.  Zum Beispiel
+sollte man mal @samp{./fsdemo-de} ausprobieren.  Man kann die Datei
+@file{fsdemo-de} in einem Text-Editor öffnen, um sich anzusehen, wie
+man so etwas selber umsetzen kann@enddots{}
+
+Man kann es auch als ein witziges Manpage-Leseprogramm einsetzen.
+Hierfür gibt man zum Beispiel den Befehl @samp{avtman man} 
+ein@enddots{}
+
+@subsubheading Das Skript @command{lrun}
+@cindex lrun
+
+Dynamisch gelinkte Programme setzen normalerweise voraus, dass die
+Bibliotheken auf dem System schon installiert sind.  Das Skript 
+@command{lrun} kann verwendet werden, um Programme zu starten, wenn die
+Bibliothek noch nicht installiert ist.  Es sucht die Bibliotheken auch
+in dem Verzeichnis, in dem es sich selber befindet, sowie im aktuellen 
+Verzeichnis.  Man kann es wie folgt verwenden: @samp{./lrun example}
+findet die Bibliothek im aktuellen Verzeichnis.  Oder beispielsweise
+vom Pascal Unterverzeichnis aus @samp{../lrun multiply} findet die 
+Bibliothek im übergeordneten Verzeichnis (wo sich @command{lrun} selber
+befindet).
+
+@subheading Installieren
+
+Zunächst sollte man sicher stellen, dass @file{/usr/local/lib} in der 
+Datei @file{/etc/ld.so.conf} aufgeführt ist; entweder direkt, oder 
+indirekt.  Ebenso sollte man sicher stellen, dass @file{/usr/local/bin} 
+in der @code{PATH} Umgebungs-Variablen mit eingetragen ist.
+
+Nun sollte man sich als root einloggen und @samp{make install} eingeben
+um das Ganze nach @file{/usr/local} zu installieren.  Falls man wenig
+Speicherplatz auf der Festplatte hat, kann man stattdessen auch 
+@samp{make install-strip} verwenden.  Das isntalliert die Binärdateien
+ohne Debugger-Informationen.
+
+Wenn man das Ganze später wieder deinstallieren will, kann man dann
+den Befehl @samp{make uninstall} verwenden.
+
+@subsubheading Weitere Möglichkeiten
+
+Mit dem Befehl @samp{make example} kann man das Programm @file{example.c}
+kompilieren.  Die Datei @file{example.c} ist ein Beispiel, das man als 
+Ausgangspunkt für eigene Programme verwenden kann.  Das Programm wird 
+dynamisch verlinkt, das bedeutet, dass die Bibliothek bereits installiert
+sein muss.  Wenn man es ausprobieren will, ohne dass die Bibliothek 
+installiert ist, kann man das Skript @command{lrun} verwenden (siehe oben).
+
+@subheading Problem-Lösungen
+@cindex Problem-Lösungen
+
+@itemize
+@item Problem: Das System kann die Bibliothek @file{libavatar.so} nicht finden.
+
+Lösung: zunächst kann man versuchen das Verzeichnis @file{/usr/local/lib}, 
+oder wohin man das auch immer installiert hat, bei der Umgebungs-Variablen 
+@code{LD_LIBRARY_PATH} mit aufzuführen: 
+@samp{export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib}.
+
+Als dauerhaftere Lösung sollte man sicher stellen, dass @file{/usr/local/lib}
+direkt oder indirekt in der Datei @file{/etc/ld.so.conf} aufgeführt ist.
+Dann sollte man mit root-Rechten den Befehl @command{ldconfig} aufrufen.
+
+@item Problem: Einige Zeichen werden bei @command{avatarsay} nicht richtig 
+angezeigt.
+
+Lösung: Es gibt verschiedene Zeichensatz-Kodierungen.  Man könnte versuchen 
+die Parameter @option{--utf-8} oder @option{--latin1} mit anzugeben.
+
+@end itemize
 
 
 @node Verwendung von avatarsay
