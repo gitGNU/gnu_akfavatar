@@ -211,10 +211,11 @@ dist: info txt man distclean
 	ln README INSTALL AUTHORS COPYING \
 	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
 	   balloonpointer.c circle.c regicon.c gnu-head.bmp \
-	   ucsfont7x14.c avatarsay.c avtman example.c fsdemo-?? \
+	   avatarsay.c avtman example.c fsdemo-?? \
 	   gnome-akfavatar bdfread.pas human-peasant.bmp \
 	   gnu-small.bmp akfavatar.xpm bin2c.c \
-	   ucsfont4x6.c font.c bell.wav configure Makefile.in \
+	   ucsfont7x14.c ucsfont4x6.c ucsfont9x18.c font.c \
+	   bell.wav configure Makefile.in \
 	   $(PKGNAME)/
 	
 	mkdir $(PKGNAME)/pascal
