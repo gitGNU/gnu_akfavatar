@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.16 2007-10-16 06:26:29 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.17 2007-10-16 06:29:47 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -987,7 +987,7 @@ You can use a different image for the avatar with the command
 This is of course only an example.
 This command must be used before any input/output took place!
 The size of the avatar image also influences the size of the text-area.  
-Thus this must be used, before using the function @command{ScreenSize).
+Thus this must be used, before using the function @command{ScreenSize}.
 
 If you want to change the background color of the window (not the text-area), 
 you can use the command @command{setBackgroundColor(@var{red}, @var{green}, 
