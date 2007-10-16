@@ -1,4 +1,6 @@
-2007-10-15  Andreas K. Foerster  <info@akfoerster.de>
+2007-10-16  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.14.3 released
 
 	* akfavatar.pas (ScreenSize):
 	implemented as functuion (was a variable)
