@@ -3,7 +3,7 @@
 	* akfavatar.pas (ScreenSize):
 	implemented as functuion (was a variable)
 
-	* akfavatar.pas (AvatarImageData, LoadSoundData):
+	* akfavatar.pas (AvatarImageData, LoadSoundData, ShowImageData):
 	new functions
 
 	* font.c, avatar.c:

@@ -232,6 +232,7 @@ procedure MoveAvatarOut;
   uncompressed BMP is always supported
 }
 function ShowImageFile(FileName: string): boolean;
+procedure ShowImageData(data: pointer; size: LongInt);
 
 { play a short sound as with chr(7) }
 procedure Beep;
@@ -379,6 +380,9 @@ function avt_import_image_data (Data: Pointer; size: CInteger): PAvatarImage;
 
 function avt_show_image_file(FileName: CString): CInteger;
   libakfavatar 'avt_show_image_file';
+
+function avt_show_image_data(Data: pointer; size:CInteger): CInteger;
+  libakfavatar 'avt_show_image_data';
 
 procedure avt_set_background_color (red, green, blue: CInteger);
   libakfavatar 'avt_set_background_color';
@@ -721,6 +725,17 @@ if result = 1 then Halt; { halt requested }
 if result = 0 
   then ShowImageFile := true { success }
   else ShowImageFile := false { failure }
+end;
+
+procedure ShowImageData(data: pointer; size: LongInt);
+var result : CInteger;
+begin
+if not initialized then initializeAvatar;
+
+result := avt_show_image_data (data, size);
+if result = 1 then Halt; { halt requested }
+
+{ ignore failure to show image }
 end;
 
 function seconds(s: Real): integer;
