@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.15 2007-10-15 17:51:24 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.16 2007-10-16 06:26:29 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -939,10 +939,9 @@ and @command{WhereY} to find out the current position.
 @emph{Attention:} The width of the display is 80 characters as
 with a terminal display, but the height is often much smaller.
 You can find out the dimensions of the text-area with 
-@code{ScreenSize.x} and @code{ScreenSize.y}, but only after the library
-is already initialized.  To ensure this, you could use the
-command @command{MoveAvatarIn;} or @command{ClrScr;} before you try to
-check for the screen size.
+@code{ScreenSize.x} and @code{ScreenSize.y}.  The avatar is shown, when it
+wasn't visible yet.  So if you want to change the avatar-image or the 
+background color, you have to do it, before asking for the size.
 @end display
 
 You can use the command @command{TextColor(@var{color});} to change the
@@ -975,7 +974,6 @@ The variable @code{CheckBreak} is compatible to the @code{CRT} unit,
 while @code{CheckEsc} is an extension.
 @end display
 
-
 There are many additional commands, which are not compatible to the @code{CRT}
 unit.
 
@@ -988,6 +986,8 @@ You can use a different image for the avatar with the command
 @noindent
 This is of course only an example.
 This command must be used before any input/output took place!
+The size of the avatar image also influences the size of the text-area.  
+Thus this must be used, before using the function @command{ScreenSize).
 
 If you want to change the background color of the window (not the text-area), 
 you can use the command @command{setBackgroundColor(@var{red}, @var{green}, 

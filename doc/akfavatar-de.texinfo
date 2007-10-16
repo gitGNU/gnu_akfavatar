@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.9 2007-10-15 17:51:24 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.10 2007-10-16 06:26:29 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -1024,11 +1024,11 @@ Auskunft über die aktuelle Position.
 @display
 @emph{Achtung:} Die Breite der Anzeige umfasst 80 Zeichen wie bei einem
 Text-Terminal, aber die Höhe ist meist wesentlich geringer.  Man kann die 
-Dimensionen des Text-Bereiches über die Variablen @code{ScreenSize.x} 
-und @code{ScreenSize.y} herausfinden, aber erst, nachdem die Bibliothek
-bereits initialisiert ist.  Um das sicher zu stellen, könnte man den Befehl
-@command{MoveAvatarIn} oder @command{ClrScr;} aufrufen, bevor man versucht 
-die Größe der Anzeige auszulesen.
+Dimensionen des Text-Bereiches über die Funktion @code{ScreenSize.x} 
+und @code{ScreenSize.y} herausfinden.  Der Avatar wird nun angezeigt, wenn
+er vorher noch nicht sichtbar war.  Wenn man also ein anderes Avatar-Bild oder
+eine andere Hintergrundfarbe einstellen will, muss man das vor der Abfrage
+der Größe tun.
 @end display
 
 Man kann den Befehl @command{TextColor(@var{color});} verwenden, um die
@@ -1075,7 +1075,9 @@ Mit dem folgenden Befehl kann man ein anderes Bild für den Avatar einstellen:
 @noindent
 Das ist natürlich nur ein Beispiel.
 Dieser Befehl muss verwendet werden, bevor irgendeine Ausgabe oder Eingabe 
-stattfindet!
+stattfindet!  Die Größe des Avatar-Bildes hat auch Einfluss auf die Größe des
+Text-Bereiches.  Darum muss der Befehl auch verwendet werden, bevor man die
+Funktion @command{ScreenSize} verwendet.
 
 Wenn man die Hintergrund-Farbe des Fensters (also nicht des Text-Bereiches) 
 verändern will, kann man den Befehl @command{setBackgroundColor(@var{rot}, 

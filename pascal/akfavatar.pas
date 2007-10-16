@@ -95,6 +95,8 @@ const
 
 type TextDirection = (LeftToRight, RightToLeft);
 
+type TScreenSize = record x, y: integer end;
+
 { 
   Text Attributes
   mostly compatible to the CRT unit
@@ -112,12 +114,6 @@ var
   CheckEof: boolean;
   CheckSnow: boolean;
   DirectVideo: boolean;
-
-{ The "Screen" is the textarea }
-{ The name is chosen for compatiblity with the CRT unit }
-{ Just for reading! }
-{ This variable is only set after the avatar is visible }
-var ScreenSize : record x, y: integer end;
 
 { for CRT compatiblity, use ScreenSize for new programs }
 { Just for reading! }
@@ -146,6 +142,12 @@ procedure setEncoding(const newEncoding: string);
 { change text direction (for hebrew/yiddish texts) }
 { you should start a new line before or after this command }
 procedure setTextDirection(direction: TextDirection);
+
+{ The "Screen" is the textarea }
+{ The name is chosen for compatiblity with the CRT unit }
+{ This causes the Library to be initialized }
+{ The Avatar-Image and the background color must be set before this }
+function ScreenSize: TScreenSize;
 
 { assign text-variable to the avatar }
 procedure AssignAvatar(var f: text);
@@ -323,6 +325,7 @@ var isMonochrome : boolean;
 var fullscreen, initialized: boolean;
 var AvatarImage: PAvatarImage;
 var InputBuffer: array [ 0 .. (4 * LineLength) + 2] of char;
+var ScrSize : TScreenSize;
 
 const KeyboardBufferSize = 40;
 var KeyboardBuffer: array [ 0 .. KeyboardBufferSize-1 ] of char;
@@ -539,19 +542,19 @@ if initialize('AKFAvatar', 'AKFAvatar', AvatarImage,
 if avt_get_status = 1 then Halt; { shouldn't happen here yet }
 
 initialized := true;
-ScreenSize.x := avt_get_max_x;
-ScreenSize.y := avt_get_max_y;
+ScrSize.x := avt_get_max_x;
+ScrSize.y := avt_get_max_y;
 
 { set WindMin und WindMax }
 WindMin := $0000;
 
-if ScreenSize.y-1 >= $FF
+if ScrSize.y-1 >= $FF
   then WindMax := $FF shl 8
-  else WindMax := (ScreenSize.y-1) shl 8;
+  else WindMax := (ScrSize.y-1) shl 8;
 
-if ScreenSize.x-1 >= $FF
+if ScrSize.x-1 >= $FF
   then WindMax := WindMax or $FF
-  else WindMax := WindMax or (ScreenSize.x-1);
+  else WindMax := WindMax or (ScrSize.x-1);
 
 avt_initialize_audio;
 
@@ -753,10 +756,10 @@ end;
 procedure Window(x1, y1, x2, y2: Byte);
 begin
 { do nothing when one value is invalid (defined behaviour) }
-if (x1 >= 1) and (x1 <= ScreenSize.x) and
-   (y1 >= 1) and (y1 <= ScreenSize.y) and
-   (x2 >= x1) and (x2 <= ScreenSize.x) and
-   (y2 >= y1) and (y2 <= ScreenSize.y) then
+if (x1 >= 1) and (x1 <= ScrSize.x) and
+   (y1 >= 1) and (y1 <= ScrSize.y) and
+   (x2 >= x1) and (x2 <= ScrSize.x) and
+   (y2 >= y1) and (y2 <= ScrSize.y) then
   begin
   avt_viewport(x1, y1, x2-x1+1, y2-y1+1);
   WindMin := ((y1-1) shl 8) or (x1-1);
@@ -889,6 +892,12 @@ end;
 function GetScrollMode: integer;
 begin
 GetScrollMode := avt_get_scroll_mode
+end;
+
+function ScreenSize: TScreenSize;
+begin
+if not initialized then initializeAvatar;
+ScreenSize := ScrSize
 end;
 
 { ---------------------------------------------------------------------}
@@ -1048,8 +1057,8 @@ Initialization
   KeyboardBufferWrite := 0;
 
   { these values are not yet known }
-  ScreenSize.x := -1;
-  ScreenSize.y := -1;
+  ScrSize.x := -1;
+  ScrSize.y := -1;
   WindMin := $0000;
   WindMax := $0000;
  
