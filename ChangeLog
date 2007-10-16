@@ -3,8 +3,8 @@
 	* akfavatar.pas (ScreenSize):
 	implemented as functuion (was a variable)
 
-	* akfavatar.pas (AvatarImageData):
-	new function
+	* akfavatar.pas (AvatarImageData, LoadSoundData):
+	new functions
 
 	* font.c, avatar.c:
 	support for 9x18 font with 800x600 resolution

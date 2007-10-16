@@ -243,6 +243,7 @@ procedure Flash;
   currently only WAV files supported
   encodings: PCM, MS-ADPCM, IMA-ADPCM }
 function LoadSoundFile(const FileName: string): pointer;
+function LoadSoundData(data: pointer; size: LongInt): pointer;
 procedure FreeSound(snd: pointer);
 procedure PlaySound(snd: pointer; loop: boolean);
 
@@ -406,6 +407,9 @@ procedure avt_flash; libakfavatar 'avt_flash';
 
 function avt_load_wave_file(f: CString): pointer;
   libakfavatar 'avt_load_wave_file';
+
+function avt_load_wave_data (Data: Pointer; size: CInteger): PAvatarImage;
+  libakfavatar 'avt_load_wave_data';
 
 procedure avt_free_audio(snd: pointer); 
   libakfavatar 'avt_free_audio';
@@ -784,6 +788,11 @@ end;
 function LoadSoundFile(const FileName: string): pointer;
 begin
 LoadSoundFile := avt_load_wave_file(String2CString(FileName))
+end;
+
+function LoadSoundData(data: pointer; size: LongInt): pointer;
+begin
+LoadSoundData := avt_load_wave_data(data, size)
 end;
 
 procedure Beep;
