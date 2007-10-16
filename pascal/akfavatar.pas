@@ -145,8 +145,8 @@ procedure setTextDirection(direction: TextDirection);
 
 { The "Screen" is the textarea }
 { The name is chosen for compatiblity with the CRT unit }
-{ This causes the Library to be initialized }
-{ The Avatar-Image and the background color must be set before this }
+{ This causes the library to be initialized }
+{ The avatar-image and the background color must be set before this }
 function ScreenSize: TScreenSize;
 
 { assign text-variable to the avatar }
