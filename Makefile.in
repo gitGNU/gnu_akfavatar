@@ -8,9 +8,6 @@ SHELL = /bin/sh
 INSTALL_PROGRAM = $(INSTALL) -m 755
 INSTALL_DATA = $(INSTALL) -m 644
 
-# native charset encoding (defaults to "WCHAR_T")
-#ICONV_TARGET = -DICONV_TARGET=\"UCS-2\"
-
 # names for packages
 PKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)
 BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
@@ -22,40 +19,53 @@ BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 
 all: libakfavatar.so libakfavatar.a avatarsay avatarsay-d
 
-# don't use $(CC) becaus it could be a cross-compiler
+# don't use $(CC) because it could be a cross-compiler
 bin2c: bin2c.c
-	cc -o $@ $<
+	cc -o $@ bin2c.c
 
 gnu-head.c: gnu-head.bmp bin2c
-	./bin2c avatar_image < $< > $@
+	./bin2c avatar_image < gnu-head.bmp > $@
 
 gnu-small.c: gnu-small.bmp bin2c
-	./bin2c avatar_image < $< > $@
+	./bin2c avatar_image < gnu-small.bmp > $@
 
 bell.c: bell.wav bin2c
-	./bin2c avt_bell_data < $< > $@
+	./bin2c avt_bell_data < bell.wav > $@
 
 avatar.o: avatar.c akfavatar.h version.h balloonpointer.c circle.c regicon.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) $(ICONV_TARGET) -I. -c $<
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c avatar.c
 
-%.o: %.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ $<
+avatar-default.o: avatar-default.c gnu-head.c gnu-small.c akfavatar.h
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ avatar-default.c
+
+avatar-audio.o: avatar-audio.c akfavatar.h
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ avatar-audio.c
+
+bell.o: bell.c
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ bell.c
+
+font.o: font.c ucsfont7x14.c ucsfont4x6.c ucsfont9x18.c
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ font.c
 
 libakfavatar.a: avatar.o avatar-default.o avatar-audio.o bell.o font.o
 	$(AR) rcu $@ avatar.o avatar-default.o avatar-audio.o bell.o font.o
 	-$(RANLIB) $@
 
 avatar.lo: avatar.c akfavatar.h version.h balloonpointer.c circle.c regicon.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) $(ICONV_TARGET) -I. -c -fpic -o $@ $<
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fpic -o $@ \
+	  avatar.c
 
-%.lo: %.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fpic -o $@ $<
+avatar-default.lo: avatar-default.c gnu-head.c gnu-small.c akfavatar.h
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fpic -o $@ avatar-default.c
 
-avatar-default.lo: avatar-default.c gnu-head.c gnu-small.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fpic -o $@ $<
+avatar-audio.lo: avatar-audio.c akfavatar.h
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fpic -o $@ avatar-audio.c
 
-avatar-default.o: avatar-default.c gnu-head.c gnu-small.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ $<
+bell.lo: bell.c
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fpic -o $@ bell.c
+
+font.lo: font.c ucsfont7x14.c ucsfont4x6.c ucsfont9x18.c
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fpic -o $@ font.c
 
 libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo bell.lo font.lo
 	$(CC) -shared \
@@ -66,24 +76,24 @@ libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo bell.lo font.lo
 	ln -sf $(LIBNAME) libakfavatar.so
 
 example: example.c libakfavatar.so
-	$(CC) $(CFLAGS) -I. -o $@ $< -L. -lakfavatar $(LDFLAGS)
+	$(CC) $(CFLAGS) -I. -o $@ example.c -L. -lakfavatar $(LDFLAGS)
 
 # avatarsay dynamically linked
 # only works, when the library is installed
 avatarsay-d: avatarsay.c libakfavatar.so
-	$(CC) $(CFLAGS) -I. -o $@ $< -L. -lakfavatar $(LDFLAGS)
+	$(CC) $(CFLAGS) -I. -o $@ avatarsay.c -L. -lakfavatar $(LDFLAGS)
 
 # avatarsay with statical libakfavatar.a
 avatarsay: avatarsay.c libakfavatar.a
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -o $@ $< libakfavatar.a \
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -o $@ avatarsay.c libakfavatar.a \
 	  $(LDFLAGS) $(SDLLDFLAGS)
 
 installdirs:
-	-[ -d $(DESTDIR)$(includedir) ] || $(INSTALL) -d $(DESTDIR)$(includedir)
-	-[ -d $(DESTDIR)$(libdir) ]     || $(INSTALL) -d $(DESTDIR)$(libdir)
-	-[ -d $(DESTDIR)$(bindir) ]     || $(INSTALL) -d $(DESTDIR)$(bindir)
-	-[ -d $(DESTDIR)$(infodir) ]    || $(INSTALL) -d $(DESTDIR)$(infodir)
-	-[ -d $(DESTDIR)$(mandir) ]     || $(INSTALL) -d $(DESTDIR)$(mandir)
+	-[ -d $(DESTDIR)$(includedir) ]  || $(INSTALL) -d $(DESTDIR)$(includedir)
+	-[ -d $(DESTDIR)$(libdir) ]      || $(INSTALL) -d $(DESTDIR)$(libdir)
+	-[ -d $(DESTDIR)$(bindir) ]      || $(INSTALL) -d $(DESTDIR)$(bindir)
+	-[ -d $(DESTDIR)$(infodir) ]     || $(INSTALL) -d $(DESTDIR)$(infodir)
+	-[ -d $(DESTDIR)$(mandir) ]      || $(INSTALL) -d $(DESTDIR)$(mandir)
 	-[ -d $(DESTDIR)$(mandir)/man1 ] || $(INSTALL) -d $(DESTDIR)$(mandir)/man1
 
 install: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info install-man
@@ -201,14 +211,15 @@ distclean: clean
 maintainerclean: distclean
 
 multiply: $(srcdir)/pascal/multiply.pas
-	fpcavatar -dRELEASE -FE. -o$@ $< -k-rpath=.
+	fpcavatar -dRELEASE -FE. -o$@ $(srcdir)/pascal/multiply.pas -k-rpath=.
 
 multiplizieren: $(srcdir)/pascal/multiply.pas
-	fpcavatar -dRELEASE -ddeutsch -FE. -o$@ $< -k-rpath=.
+	fpcavatar -dRELEASE -ddeutsch -FE. -o$@ $(srcdir)/pascal/multiply.pas \
+	  -k-rpath=.
 
 dist: info txt man distclean
 	mkdir $(PKGNAME)
-	ln README INSTALL AUTHORS COPYING \
+	ln README INSTALL AUTHORS COPYING ChangeLog \
 	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
 	   balloonpointer.c circle.c regicon.c gnu-head.bmp \
 	   avatarsay.c avtman example.c fsdemo-?? \

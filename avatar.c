@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.23 2007-10-15 07:22:15 akf Exp $ */
+/* $Id: avatar.c,v 2.24 2007-10-21 16:18:38 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -74,6 +74,8 @@
 #  define SDL_free                free
 #  undef SDL_strlen
 #  define SDL_strlen              strlen
+#  undef SDL_memcpy
+#  define SDL_memcpy              memcpy
 #  undef SDL_iconv_t
 #  define SDL_iconv_t             iconv_t
 #  undef SDL_iconv_open
@@ -81,10 +83,6 @@
 #  undef SDL_iconv_close
 #  define SDL_iconv_close         iconv_close
 #endif /* OLD_SDL */
-
-#ifndef ICONV_TARGET
-#  define ICONV_TARGET "WCHAR_T"
-#endif
 
 #define COLORDEPTH 24
 
@@ -132,7 +130,7 @@
  * this will be used, when somebody forgets to set the
  * encoding
  */
-#define MB_DEFAULT_ENCODING "UFT-8"
+#define MB_DEFAULT_ENCODING "UTF-8"
 
 /* type for gimp images */
 typedef struct
@@ -994,7 +992,7 @@ avt_new_line (void)
 /* avt_drawchar: draws the raw char - with no interpretation */
 #if (FONTWIDTH > 8)
 static void
-avt_drawchar (wint_t ch)
+avt_drawchar (wchar_t ch)
 {
   extern unsigned short font[];
   extern size_t get_font_offset (wchar_t ch);
@@ -1026,7 +1024,7 @@ avt_drawchar (wint_t ch)
 #else /* FONTWIDTH <= 8 */
 
 static void
-avt_drawchar (wint_t ch)
+avt_drawchar (wchar_t ch)
 {
   extern unsigned char font[];
   extern size_t get_font_offset (wchar_t ch);
@@ -1235,6 +1233,26 @@ avt_say (const wchar_t * txt)
 int
 avt_mb_encoding (const char *encoding)
 {
+  char internal_encoding[10];
+
+  /* (all the "if"s are optimized away at compile time
+     so there is no slowdown at all) */
+
+  if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+    {
+      if (sizeof (wchar_t) == 2)
+	SDL_memcpy (internal_encoding, "UTF-16BE", sizeof ("UTF-16BE"));
+      else
+	SDL_memcpy (internal_encoding, "UTF-32BE", sizeof ("UTF-32BE"));
+    }
+  else
+    {
+      if (sizeof (wchar_t) == 2)
+	SDL_memcpy (internal_encoding, "UTF-16LE", sizeof ("UTF-16LE"));
+      else
+	SDL_memcpy (internal_encoding, "UTF-32LE", sizeof ("UTF-32LE"));
+    }
+
   /* output */
 
   /*  if it is already open, close it first */
@@ -1242,7 +1260,7 @@ avt_mb_encoding (const char *encoding)
     SDL_iconv_close (output_cd);
 
   /* initialize the conversion framework */
-  output_cd = SDL_iconv_open (ICONV_TARGET, encoding);
+  output_cd = SDL_iconv_open (internal_encoding, encoding);
 
   /* check if is was successfully initialized */
   if (output_cd == ICONV_UNINITIALIZED)
@@ -1259,7 +1277,7 @@ avt_mb_encoding (const char *encoding)
     SDL_iconv_close (input_cd);
 
   /* initialize the conversion framework */
-  input_cd = SDL_iconv_open (encoding, ICONV_TARGET);
+  input_cd = SDL_iconv_open (encoding, internal_encoding);
 
   /* check if is was successfully initialized */
   if (input_cd == ICONV_UNINITIALIZED)
@@ -1384,7 +1402,7 @@ avt_getchar (void)
 int
 avt_ask (wchar_t * s, const int size)
 {
-  wint_t ch;
+  wchar_t ch;
   int len, maxlen;
 
   /* no textfield? => draw balloon */

@@ -1,3 +1,17 @@
+2007-10-21  Andreas K. Foerster  <info@akfoerster.de>
+
+	* configure, Makefile.in:
+	compatiblity to FreeBSD (pmake)
+	
+	* avatar.c (avt_mb_encoding):
+	try to autodetect internal encoding
+
+	* avatar.c (MB_DEFAULT_ENCODING):
+	fixed typo
+
+	* avatar.c (avt_drawchar, avt_ask):
+	don't use wint_t for compatiblity reasons (wasn't needed anyway)
+
 2007-10-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.14.3 released

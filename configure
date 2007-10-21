@@ -6,14 +6,14 @@
 # This configure script is free software; you have unlimited permission
 # to copy, distribute and modify it.
 #
-# Date of this version: $Date: 2007-10-16 12:15:34 $
+# Date of this version: $Date: 2007-10-21 16:18:39 $
 
 
 # Version and name
 VERSION=0
 SUBVERSION=14
 REVISION=3
-#VARIANT="-cvs"
+VARIANT="-cvs"
 LIBNAME=libakfavatar.so.${VERSION}.${SUBVERSION}.${REVISION}
 SONAME=libakfavatar.so.${VERSION}.${SUBVERSION}
 
@@ -165,6 +165,11 @@ esac
 SDLCFLAGS=`sdl-config --cflags`
 SDLLDFLAGS=`sdl-config --libs`
 
+# system specific stuff
+SYSTEM=`uname -s`
+case ${SYSTEM} in
+  FreeBSD) LDFLAGS="${LDFLAGS} -lpthread -Wl,-rpath,/usr/local/lib"
+esac
 
 # Find the source files, if location was not specified.
 srcdirtext=
@@ -317,7 +322,7 @@ cat > ${srcdir}/doc/version.texi <<EOF
 @c This file was generated automatically by configure. Do not edit.
 
 @set VERSION ${VERSION}.${SUBVERSION}.${REVISION}${VARIANT}
-@set UPDATED $(date -I)
+@set UPDATED $(date +%Y-%m-%d)
 
 EOF
 

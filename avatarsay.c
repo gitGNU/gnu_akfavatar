@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.13 2007-10-14 11:54:41 akf Exp $ */
+/* $Id: avatarsay.c,v 2.14 2007-10-21 16:18:39 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -256,7 +256,7 @@ static void
 set_encoding (const char *encoding)
 {
   if (avt_mb_encoding (encoding))
-    error ("charset encoding not supported", encoding);
+    error ("charset encoding not supported", avt_get_error() );
 }
 
 static void

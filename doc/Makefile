@@ -14,16 +14,16 @@ USECSS = --css-include akfavatar.css
 all: txt info html dvi pdf ps
 
 pasref.txt: ../pascal/akfavatar.pas
-	sed -n '/^unit/,/^implementation/p' < $< \
+	sed -n '/^unit/,/^implementation/p' < ../pascal/akfavatar.pas \
 	  | sed '/^implementation/ d' > $@
 
 info: akfavatar-en.info akfavatar-de.info
 
 akfavatar-en.info: akfavatar-en.texinfo pasref.txt
-	$(MAKEINFO) $<
+	$(MAKEINFO) akfavatar-en.texinfo
 
 akfavatar-de.info: akfavatar-de.texinfo pasref.txt
-	$(MAKEINFO) --enable-encoding $<
+	$(MAKEINFO) --enable-encoding akfavatar-de.texinfo
 
 html: akfavatar-en.texinfo akfavatar-de.texinfo pasref.txt
 	$(MAKEINFO) --html --enable-encoding $(USECSS) akfavatar-en.texinfo
@@ -32,34 +32,34 @@ html: akfavatar-en.texinfo akfavatar-de.texinfo pasref.txt
 txt: akfavatar-en.txt akfavatar-de.txt
 
 akfavatar-en.txt: akfavatar-en.texinfo pasref.txt
-	$(MAKEINFO) --plaintext -o $@ $<
+	$(MAKEINFO) --plaintext -o $@ akfavatar-en.texinfo
 
 akfavatar-de.txt: akfavatar-de.texinfo pasref.txt
-	$(MAKEINFO) --enable-encoding --plaintext -o $@ $<
+	$(MAKEINFO) --enable-encoding --plaintext -o $@ akfavatar-de.texinfo
 
 dvi: akfavatar-en.dvi akfavatar-de.dvi
 
 akfavatar-en.dvi: akfavatar-en.texinfo pasref.txt
-	$(TEXI2DVI) $<
+	$(TEXI2DVI) akfavatar-en.texinfo
 
 akfavatar-de.dvi: akfavatar-de.texinfo pasref.txt
-	$(TEXI2DVI) $<
+	$(TEXI2DVI) akfavatar-de.texinfo
 
 pdf: akfavatar-en.pdf akfavatar-de.pdf
 
 akfavatar-en.pdf: akfavatar-en.texinfo pasref.txt
-	$(TEXI2DVI) --pdf $<
+	$(TEXI2DVI) --pdf akfavatar-en.texinfo
 
 akfavatar-de.pdf: akfavatar-de.texinfo pasref.txt
-	$(TEXI2DVI) --pdf $<
+	$(TEXI2DVI) --pdf akfavatar-de.texinfo
 
 ps: akfavatar-en.ps akfavatar-de.ps
 
 akfavatar-en.ps: akfavatar-en.dvi
-	dvips -Pwww -o $@ $<
+	dvips -Pwww -o $@ akfavatar-en.dvi
 
 akfavatar-de.ps: akfavatar-de.dvi
-	dvips -Pwww -o $@ $<
+	dvips -Pwww -o $@ akfavatar-de.dvi
 
 man: avatarsay.1
 

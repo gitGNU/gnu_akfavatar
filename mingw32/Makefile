@@ -13,9 +13,6 @@ SDLCFLAGS = -I/usr/$(TARGET)/include/SDL/ \
          -D_GNU_SOURCE -Dmain=SDL_main
 SDLLDFLAGS = -L/usr/$(TARGET)/lib/ -lmingw32 -lSDLmain -lSDL -mwindows
 
-# native charset encoding (defaults to "WCHAR_T")
-ICONV_TARGET = -DICONV_TARGET=\"UCS-2\"
-
 # name for binary packages
 BINPKGNAME=akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 
@@ -90,35 +87,41 @@ libinfo.rc:
 	@echo "END" >> $@
 
 icon.o: icon.rc akfavatar.ico
-	$(WINDRES) -o $@ -i $<
+	$(WINDRES) -o $@ -i icon.rc
 
 avtsayinfo.o: avtsayinfo.rc akfavatar.ico
-	$(WINDRES) -o $@ -i $<
+	$(WINDRES) -o $@ -i avtsayinfo.rc
 
 libinfo.o: libinfo.rc
-	$(WINDRES) -o $@ -i $<
+	$(WINDRES) -o $@ -i libinfo.rc
 
 # don't use $(CC) becaus it is a cross-compiler
 ../bin2c: ../bin2c.c
-	cc -o $@ $<
+	cc -o $@ ../bin2c.c
 
 ../gnu-head.c: ../gnu-head.bmp ../bin2c
-	../bin2c avatar_image < $< > $@
+	../bin2c avatar_image < ../gnu-head.bmp > $@
 
 ../gnu-small.c: ../gnu-small.bmp ../bin2c
-	../bin2c avatar_image < $< > $@
+	../bin2c avatar_image < ../gnu-small.bmp > $@
 
 ../bell.c: ../bell.wav ../bin2c
-	../bin2c avt_bell_data < $< > $@
+	../bin2c avt_bell_data < ../bell.wav > $@
 
 avatar-default.o: ../avatar-default.c ../gnu-head.c ../gnu-small.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ ../avatar-default.c
 
-avatar.o: ../avatar.c ../akfavatar.h ../ucsfont7x14.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) $(ICONV_TARGET) -c $<
+avatar.o: ../avatar.c ../akfavatar.h
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -c ../avatar.c
 
-%.o: ../%.c
-	$(CC) -c $(CFLAGS) $(SDLCFLAGS) -o $@ $<
+avatar-audio.o: ../avatar-audio.c ../akfavatar.h
+	$(CC) -c $(CFLAGS) $(SDLCFLAGS) -o $@ ../avatar-audio.c
+
+bell.o: ../bell.c
+	$(CC) -c $(CFLAGS) $(SDLCFLAGS) -o $@ ../bell.c
+
+font.o: ../font.c ../ucsfont7x14.c ../ucsfont4x6.c ../ucsfont9x18.c
+	$(CC) -c $(CFLAGS) $(SDLCFLAGS) -o $@ ../font.c
 
 # static library
 libakfavatar.a: avatar.o avatar-default.o avatar-audio.o bell.o font.o
@@ -146,14 +149,14 @@ install-strip: akfavatar.dll libakfavatar.a
 example: example.exe
 
 example.exe: ../example.c akfavatar.dll icon.o
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ $< icon.o \
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ ../example.c icon.o \
 			-L. -lakfavatar $(LDFLAGS) $(SDLLDFLAGS)
 
 avatarsay: avatarsay.exe
 
 # uses dynamic lib
 avatarsay.exe: ../avatarsay.c akfavatar.dll avtsayinfo.o
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ $< avtsayinfo.o \
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ ../avatarsay.c avtsayinfo.o \
 		-L. -lakfavatar $(LDFLAGS) $(SDLLDFLAGS)
 
 clean:
@@ -170,10 +173,10 @@ distclean: clean
 # don't use them unless you know what you are doing
 
 multiply.exe: ../pascal/multiply.pas
-	fpcwavatar -dRELEASE -FE. -o$@ $<
+	fpcwavatar -dRELEASE -FE. -o$@ ../pascal/multiply.pas
 
 multiplizieren.exe: ../pascal/multiply.pas
-	fpcwavatar -dRELEASE -ddeutsch -FE. -o$@ $<
+	fpcwavatar -dRELEASE -ddeutsch -FE. -o$@ ../pascal/multiply.pas
 
 dist-bin: avatarsay.exe multiply.exe multiplizieren.exe
 	mkdir $(BINPKGNAME)
