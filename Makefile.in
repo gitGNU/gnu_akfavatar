@@ -211,10 +211,10 @@ distclean: clean
 maintainerclean: distclean
 
 multiply: $(srcdir)/pascal/multiply.pas
-	fpcavatar -dRELEASE -FE. -o$@ $(srcdir)/pascal/multiply.pas -k-rpath=.
+	-fpcavatar -dRELEASE -FE. -o$@ $(srcdir)/pascal/multiply.pas -k-rpath=.
 
 multiplizieren: $(srcdir)/pascal/multiply.pas
-	fpcavatar -dRELEASE -ddeutsch -FE. -o$@ $(srcdir)/pascal/multiply.pas \
+	-fpcavatar -dRELEASE -ddeutsch -FE. -o$@ $(srcdir)/pascal/multiply.pas \
 	  -k-rpath=.
 
 dist: info txt man distclean
@@ -260,14 +260,14 @@ dist-bin: avatarsay multiply multiplizieren
 	ln $(LIBNAME) $(SONAME) $(BINPKGNAME)/
 	ln $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/
 	ln $(srcdir)/pascal/?pcavatar $(BINPKGNAME)/
-	ln multiply $(BINPKGNAME)/
-	ln multiplizieren $(BINPKGNAME)/
+	-ln multiply $(BINPKGNAME)/
+	-ln multiplizieren $(BINPKGNAME)/
 	ln $(srcdir)/pascal/correct.wav $(srcdir)/pascal/wrong.wav \
 	   $(BINPKGNAME)/
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS avatarsay $(srcdir)/avtman \
 	   $(srcdir)/fsdemo-?? \
 	   $(srcdir)/gnome-akfavatar $(srcdir)/human-peasant.bmp \
 	   $(BINPKGNAME)/
-	tar -cvf $(BINPKGNAME).gnu-linux.x86.tar $(BINPKGNAME)/
-	gzip -9 $(BINPKGNAME).gnu-linux.x86.tar
+	tar -cvf $(BINPKGNAME).$(SYSTEM).$(ARCH).tar $(BINPKGNAME)/
+	gzip -9 $(BINPKGNAME).$(SYSTEM).$(ARCH).tar
 	rm -r $(BINPKGNAME)/

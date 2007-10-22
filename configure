@@ -6,7 +6,7 @@
 # This configure script is free software; you have unlimited permission
 # to copy, distribute and modify it.
 #
-# Date of this version: $Date: 2007-10-22 04:59:44 $
+# Date of this version: $Date: 2007-10-22 12:02:30 $
 
 
 # Version and name
@@ -168,7 +168,15 @@ SDLLDFLAGS=`sdl-config --libs`
 # system specific stuff
 SYSTEM=`uname -s`
 case ${SYSTEM} in
-  FreeBSD) LDFLAGS="${LDFLAGS} -lpthread -Wl,-rpath,/usr/local/lib" ;;
+  Linux | linux)     SYSTEM="linux-gnu" ;;
+  FreeBSD | freebsd) SYSTEM="freebsd"
+                     LDFLAGS="${LDFLAGS} -lpthread -Wl,-rpath,/usr/local/lib" 
+                     ;;
+esac
+
+ARCH=`uname -m`
+case ${ARCH} in
+  i?86) ARCH="x86" ;;
 esac
 
 # Find the source files, if location was not specified.
@@ -261,6 +269,8 @@ echo "AR = ${AR}"
 echo "RANLIB = ${RANLIB}"
 echo "INSTALL = ${INSTALL}"
 echo "LDCONFIG = ${LDCONFIG}"
+echo "SYSTEM = ${SYSTEM}"
+echo "ARCH = ${ARCH}"
 
 rm -f version.h
 cat > version.h << EOF
@@ -313,6 +323,8 @@ INSTALL = ${INSTALL}
 LDCONFIG = ${LDCONFIG}
 SDLCFLAGS = ${SDLCFLAGS}
 SDLLDFLAGS = ${SDLLDFLAGS}
+SYSTEM = ${SYSTEM}
+ARCH = ${ARCH}
 
 EOF
 cat ${srcdir}/Makefile.in >> Makefile
