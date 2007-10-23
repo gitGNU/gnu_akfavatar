@@ -1,4 +1,7 @@
-2007-10-21  Andreas K. Foerster  <info@akfoerster.de>
+2007-10-23  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay (processfile):
+	fix: use clearerr when ignore_eof is set
 
 	* configure, Makefile.in:
 	compatiblity to FreeBSD (pmake)

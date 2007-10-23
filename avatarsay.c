@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.14 2007-10-21 16:18:39 akf Exp $ */
+/* $Id: avatarsay.c,v 2.15 2007-10-23 08:00:32 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -805,7 +805,7 @@ getline (char **lineptr, size_t * n, FILE * stream)
   if (fgets (*lineptr, *n, stream))
     return strlen (*lineptr);
   else
-    return -1;
+    return EOF;
 }
 
 #endif /* not __USE_GNU */
@@ -879,6 +879,7 @@ processfile (const char *fname)
 	/* simulate empty lines when ignore_eof is set */
 	if (ignore_eof && read == EOF)
 	  {
+	    clearerr (text);
 	    strcpy (line, "\n");
 	    read = 1;
 	    if (avt_wait (10))
@@ -910,6 +911,8 @@ processfile (const char *fname)
 	  /* wait for input */
 	  while (read == EOF)
 	    {
+	      clearerr (text);
+	      
 	      if (avt_wait (10))
 		{
 		  stop = 1;
