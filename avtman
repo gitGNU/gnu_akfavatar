@@ -33,9 +33,9 @@ do
 done
 
 TERM=dumb
-PAGER="$AVATARSAY $AVATAROPTS --raw --latin1 -"
+PAGER="$AVATARSAY $AVATAROPTS --raw -"
 MANWIDTH=80
 export PAGER MANWIDTH TERM
 
 # execute the command
-exec man -E latin1 $MANOPTS
+exec man $MANOPTS

@@ -171,12 +171,12 @@ show_manpage ()
   then
     (
     TERM=dumb
-    PAGER="$AVATARSAY $MODE --raw --latin1 -"
+    PAGER="$AVATARSAY $MODE --raw -"
     MANWIDTH=80
     export PAGER MANWIDTH TERM
 
     # execute the command
-    man -E latin1 $MANPAGE 2>/dev/null \
+    man $MANPAGE 2>/dev/null \
       || $ZENITY --error --text="$MANPAGEERROR"
     )
   fi
