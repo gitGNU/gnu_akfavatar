@@ -123,6 +123,20 @@ show_demo ()
   fi
 }
 
+zenity_edit ()
+{
+  local FILE TMP
+  
+  FILE="$2"
+  TMP="${FILE}.$$.tmp"
+  
+  [ -e "$TMP" ] && return
+  
+  # output may be on stdout or stderr :-(
+  zenity --text-info --title="$FILE" --filename="$FILE" --editable 2>&1 >"$TMP"
+  mv "$TMP" "$FILE"
+}
+
 edit_demo ()
 {
   local FILE ENCODING
@@ -146,7 +160,8 @@ edit_demo ()
       chmod a+x "$FILE"
     fi
     
-    gedit --encoding=$ENCODING "$FILE" && run_avatarsay "$FILE"
+    # $FILE must be the second parameter for zenity_edit
+    $AVTEDITOR --encoding=$ENCODING "$FILE" && run_avatarsay "$FILE"
   fi
 }
 
@@ -239,6 +254,10 @@ then
     exit 1
 fi
 
+# search for gedit, use zenity as fallback-editor
+AVTEDITOR=`command -v gedit`
+[ -z "$AVTEDITOR" ] && AVTEDITOR=zenity_edit
+
 # read configuration
 [ -r $CONFIGFILE ] && . $CONFIGFILE
 
@@ -275,7 +294,7 @@ do
     F) choose_fullscreen ;;
     S) save_settings ;;
     H) yelp "$HELPTEXT" & ;;
-    W) gnome-open "$WWW" ;;
+    W) gnome-open "$WWW" || firefox "$WWW" & ;;
     X) exit 0 ;;
   esac
 
