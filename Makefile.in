@@ -219,7 +219,7 @@ multiplizieren: $(srcdir)/pascal/multiply.pas
 
 dist: info txt man distclean
 	mkdir $(PKGNAME)
-	ln README INSTALL AUTHORS COPYING ChangeLog \
+	ln README INSTALL AUTHORS COPYING ChangeLog lrun \
 	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
 	   balloonpointer.c circle.c regicon.c gnu-head.bmp \
 	   avatarsay.c avtman example.c fsdemo-?? \
