@@ -6,7 +6,7 @@
 # This configure script is free software; you have unlimited permission
 # to copy, distribute and modify it.
 #
-# Date of this version: $Date: 2007-10-23 08:00:32 $
+# Date of this version: $Date: 2007-10-23 14:45:05 $
 
 
 # Version and name
@@ -25,6 +25,7 @@ pkgversion=${VERSION}.${SUBVERSION}.${REVISION}${VARIANT}
 srctrigger=akfavatar.h
 SIZE=DEFAULT
 OLDSDL=
+FORCE_ICONV=
 
 # clear some things potentially inherited from environment.
 srcdir=
@@ -77,6 +78,7 @@ while [ x"$1" != x ] ; do
 		echo "  --mandir=DIR        man pages directory [${mandir}]"
 		echo "  --sysconfdir=DIR    read-only single-machine data directory [${sysconfdir}]"
 		echo "  --with-oldsdl       support for older SDL versions on target machine"
+		echo "  --with-iconv        force use of iconv (normally not needed)"
 		echo "  --enable-qvga       compile for small QVGA (320x240) displays"
 		echo "  --enable-size=qvga  compile for small QVGA (320x240) displays"
 		echo "  --enable-vga        compile for VGA (640x480) displays"
@@ -127,6 +129,7 @@ while [ x"$1" != x ] ; do
 	LDCONFIG=*) LDCONFIG=${optarg} ;;
 
         --with-oldsdl) OLDSDL="yes";;
+	--with-iconv) FORCE_ICONV="yes";;
 	--enable-qvga | --enable-qvga=yes | --enable-size=qvga) SIZE="QVGA";;
 	--enable-vga | --enable-vga=yes | --enable-size=vga) SIZE="VGA";;
 	
@@ -143,6 +146,7 @@ done
 # old SDL is meant for the target machine 
 # and independant of the systems SDL-Version
 [ "$OLDSDL" = "yes" ] && CFLAGS="$CFLAGS -DOLD_SDL=1"
+[ "$FORCE_ICONV" = "yes" ] && CFLAGS="$CFLAGS -DFORCE_ICONV=1"
 
 # Check for SDL version
 sdlversion=`sdl-config --version`

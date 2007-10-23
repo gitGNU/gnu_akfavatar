@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.24 2007-10-21 16:18:38 akf Exp $ */
+/* $Id: avatar.c,v 2.25 2007-10-23 14:45:05 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -58,16 +58,11 @@
 #ifdef OLD_SDL
 #  include <stdlib.h>
 #  include <string.h>
-#  include <iconv.h>
-#  include <errno.h>
-#  undef SDL_ICONV_ERROR
-#  define SDL_ICONV_ERROR         (size_t)(-1)
-#  undef SDL_ICONV_E2BIG
-#  define SDL_ICONV_E2BIG         (size_t)(-2)
-#  undef SDL_ICONV_EILSEQ
-#  define SDL_ICONV_EILSEQ        (size_t)(-3)
-#  undef SDL_ICONV_EINVAL
-#  define SDL_ICONV_EINVAL        (size_t)(-4)
+
+#  ifndef FORCE_ICONV
+#    define FORCE_ICONV
+#  endif
+
 #  undef SDL_malloc
 #  define SDL_malloc              malloc
 #  undef SDL_free
@@ -76,13 +71,30 @@
 #  define SDL_strlen              strlen
 #  undef SDL_memcpy
 #  define SDL_memcpy              memcpy
-#  undef SDL_iconv_t
-#  define SDL_iconv_t             iconv_t
-#  undef SDL_iconv_open
-#  define SDL_iconv_open          iconv_open
-#  undef SDL_iconv_close
-#  define SDL_iconv_close         iconv_close
 #endif /* OLD_SDL */
+
+#ifdef FORCE_ICONV
+#  include <iconv.h>
+#  include <errno.h>
+#  define AVT_ICONV_ERROR         (size_t)(-1)
+#  define AVT_ICONV_E2BIG         (size_t)(-2)
+#  define AVT_ICONV_EILSEQ        (size_t)(-3)
+#  define AVT_ICONV_EINVAL        (size_t)(-4)
+#  define avt_iconv_t             iconv_t
+#  define avt_iconv_open          iconv_open
+#  define avt_iconv_close         iconv_close
+   /* avt_iconv implemented below */
+#else
+#  define AVT_ICONV_ERROR         SDL_ICONV_ERROR
+#  define AVT_ICONV_E2BIG         SDL_ICONV_E2BIG
+#  define AVT_ICONV_EILSEQ        SDL_ICONV_EILSEQ
+#  define AVT_ICONV_EINVAL        SDL_ICONV_EINVAL
+#  define avt_iconv_t             SDL_iconv_t
+#  define avt_iconv_open          SDL_iconv_open
+#  define avt_iconv_close         SDL_iconv_close
+#  define avt_iconv               SDL_iconv
+#endif /* OLD_SDL */
+
 
 #define COLORDEPTH 24
 
@@ -124,7 +136,7 @@
 #  endif /* not Windows */
 #endif /* not SDL_IMAGE_LIB */
 
-#define ICONV_UNINITIALIZED (SDL_iconv_t)(-1)
+#define ICONV_UNINITIALIZED   (avt_iconv_t)(-1)
 
 /* 
  * this will be used, when somebody forgets to set the
@@ -174,8 +186,8 @@ static int flip_page_delay = DEFAULT_FLIP_PAGE_DELAY;
 static SDL_Color backgroundcolor_RGB = { 0xCC, 0xCC, 0xCC, 0 };
 
 /* conversion descriptors for text input and output */
-static SDL_iconv_t output_cd = ICONV_UNINITIALIZED;
-static SDL_iconv_t input_cd = ICONV_UNINITIALIZED;
+static avt_iconv_t output_cd = ICONV_UNINITIALIZED;
+static avt_iconv_t input_cd = ICONV_UNINITIALIZED;
 
 static struct pos
 {
@@ -191,13 +203,11 @@ void (*avt_bell_func) (void) = NULL;
 static int avt_pause (void);
 
 
-#ifdef OLD_SDL
-#define SDL_iconv _avt_iconv
-
+#ifdef FORCE_ICONV
 static size_t
-_avt_iconv (SDL_iconv_t cd,
-	    char **inbuf, size_t * inbytesleft,
-	    char **outbuf, size_t * outbytesleft)
+avt_iconv (avt_iconv_t cd,
+	   char **inbuf, size_t * inbytesleft,
+	   char **outbuf, size_t * outbytesleft)
 {
   size_t r;
 
@@ -208,19 +218,19 @@ _avt_iconv (SDL_iconv_t cd,
       switch (errno)
 	{
 	case E2BIG:
-	  return SDL_ICONV_E2BIG;
+	  return AVT_ICONV_E2BIG;
 	case EILSEQ:
-	  return SDL_ICONV_EILSEQ;
+	  return AVT_ICONV_EILSEQ;
 	case EINVAL:
-	  return SDL_ICONV_EINVAL;
+	  return AVT_ICONV_EINVAL;
 	default:
-	  return SDL_ICONV_ERROR;
+	  return AVT_ICONV_ERROR;
 	}
     }
 
   return r;
 }
-#endif /* OLD_SDL */
+#endif /* FORCE_ICONV */
 
 
 char *
@@ -1257,10 +1267,10 @@ avt_mb_encoding (const char *encoding)
 
   /*  if it is already open, close it first */
   if (output_cd != ICONV_UNINITIALIZED)
-    SDL_iconv_close (output_cd);
+    avt_iconv_close (output_cd);
 
   /* initialize the conversion framework */
-  output_cd = SDL_iconv_open (internal_encoding, encoding);
+  output_cd = avt_iconv_open (internal_encoding, encoding);
 
   /* check if is was successfully initialized */
   if (output_cd == ICONV_UNINITIALIZED)
@@ -1274,10 +1284,10 @@ avt_mb_encoding (const char *encoding)
 
   /*  if it is already open, close it first */
   if (input_cd != ICONV_UNINITIALIZED)
-    SDL_iconv_close (input_cd);
+    avt_iconv_close (input_cd);
 
   /* initialize the conversion framework */
-  input_cd = SDL_iconv_open (encoding, internal_encoding);
+  input_cd = avt_iconv_open (encoding, internal_encoding);
 
   /* check if is was successfully initialized */
   if (input_cd == ICONV_UNINITIALIZED)
@@ -1328,11 +1338,11 @@ avt_mb_decode (char *txt)
   /* do the conversion */
   do
     {
-      returncode = SDL_iconv (output_cd, &inbuf, &inbytesleft,
+      returncode = avt_iconv (output_cd, &inbuf, &inbytesleft,
 			      &outbuf, &outbytesleft);
 
       /* handle invalid characters */
-      if (returncode == SDL_ICONV_EILSEQ || returncode == SDL_ICONV_EINVAL)
+      if (returncode == AVT_ICONV_EILSEQ || returncode == AVT_ICONV_EINVAL)
 	{
 	  const char *ch_unknown = (char *) L"\xFFFD";
 	  int i;
@@ -1349,10 +1359,10 @@ avt_mb_decode (char *txt)
 	  outbytesleft -= sizeof (wchar_t);
 	}
     }
-  while (returncode == SDL_ICONV_EILSEQ);
+  while (returncode == AVT_ICONV_EILSEQ);
 
   /* check for fatal errors */
-  if (returncode == SDL_ICONV_ERROR || returncode == SDL_ICONV_E2BIG)
+  if (returncode == AVT_ICONV_ERROR || returncode == AVT_ICONV_E2BIG)
     {
       SDL_free (wcstring);
       wcstring = NULL;
@@ -1513,7 +1523,7 @@ avt_ask_mb (char *s, const int size)
   outbytesleft = size;
 
   /* do the conversion */
-  SDL_iconv (input_cd, &inbuf, &inbytesleft, &s, &outbytesleft);
+  avt_iconv (input_cd, &inbuf, &inbytesleft, &s, &outbytesleft);
 
   return _avt_STATUS;
 }
@@ -2185,9 +2195,9 @@ avt_quit (void)
 
   /* close conversion descriptors */
   if (output_cd != ICONV_UNINITIALIZED)
-    SDL_iconv_close (output_cd);
+    avt_iconv_close (output_cd);
   if (input_cd != ICONV_UNINITIALIZED)
-    SDL_iconv_close (input_cd);
+    avt_iconv_close (input_cd);
   output_cd = input_cd = ICONV_UNINITIALIZED;
 
   SDL_FreeSurface (avt_character);
