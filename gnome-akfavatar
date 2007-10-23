@@ -230,8 +230,8 @@ then
 fi
 
 # search for avatarsay
-AVATARSAY=`command -v avatarsay`
-[ -z "$AVATARSAY" -a -x "./avatarsay" ] && AVATARSAY=`pwd`/avatarsay
+[ -x "./avatarsay" ] && AVATARSAY=`pwd`/avatarsay
+[ -z "$AVATARSAY" ] && AVATARSAY=`command -v avatarsay`
 
 if [ -z "$AVATARSAY" ]
 then
