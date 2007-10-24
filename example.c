@@ -22,7 +22,7 @@ say (wchar_t *msg)
 void
 init (int argc, char *argv[])
 {
-  int mode = WINDOW;
+  int mode = AUTOMODE;
   int i;
 
   for (i = 1; i < argc; i++)

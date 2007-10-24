@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.17 2007-10-02 12:05:56 akf Exp $ */
+/* $Id: akfavatar.h,v 2.18 2007-10-24 14:14:15 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -40,6 +40,7 @@
 #define LINELENGTH 80
 
 /* for avt_initialize */
+#define AUTOMODE -1
 #define WINDOW 0
 #define FULLSCREENNOSWITCH 2
 

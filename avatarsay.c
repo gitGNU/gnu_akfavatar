@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.16 2007-10-23 14:45:05 akf Exp $ */
+/* $Id: avatarsay.c,v 2.17 2007-10-24 14:14:16 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -67,7 +67,7 @@ static int say_pipe = 0;
 /* whether to run in a window, or in fullscreen mode */
 /* the mode can be set by -f, --fullscreen or -w, --window */
 /* or with --fullfullscreen or -F */
-static int mode = WINDOW;
+static int mode = AUTOMODE;
 
 /* is the avatar initialized? (0|1) */
 /* for delaying the initialization until it is clear that we actually 

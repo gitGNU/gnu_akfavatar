@@ -1,4 +1,7 @@
-2007-10-23  Andreas K. Foerster  <info@akfoerster.de>
+2007-10-24  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_initialize):
+	new mode: AUTOMODE
 
 	* avatarsay (processfile):
 	fix: use clearerr when ignore_eof is set

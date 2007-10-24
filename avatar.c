@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.25 2007-10-23 14:45:05 akf Exp $ */
+/* $Id: avatar.c,v 2.26 2007-10-24 14:14:15 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2237,6 +2237,19 @@ avt_initialize (const char *title, const char *icontitle,
    * Initialize the display, accept any format
    */
   screenflags = SDL_SWSURFACE | SDL_ANYFORMAT | SDL_RESIZABLE;
+
+  if (avt_mode == AUTOMODE)
+    {
+      SDL_Rect **modes;
+
+      /* if maximum fullscreen mode is exactly the minimal size,
+       * then default to fullscreen, else default to window
+       */
+      modes = SDL_ListModes (NULL, screenflags | SDL_FULLSCREEN);
+      if (modes[0]->w == MINIMALWIDTH && modes[0]->h == MINIMALHEIGHT)
+	screenflags |= SDL_FULLSCREEN;
+    }
+
   if (avt_mode >= 1)
     screenflags |= SDL_FULLSCREEN;
 
