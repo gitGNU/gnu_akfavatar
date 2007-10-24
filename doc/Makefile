@@ -20,51 +20,51 @@ pasref.txt: ../pascal/akfavatar.pas
 info: akfavatar-en.info akfavatar-de.info
 
 akfavatar-en.info: akfavatar-en.texinfo pasref.txt
-	$(MAKEINFO) akfavatar-en.texinfo
+	-$(MAKEINFO) akfavatar-en.texinfo
 
 akfavatar-de.info: akfavatar-de.texinfo pasref.txt
-	$(MAKEINFO) --enable-encoding akfavatar-de.texinfo
+	-$(MAKEINFO) --enable-encoding akfavatar-de.texinfo
 
 html: akfavatar-en.texinfo akfavatar-de.texinfo pasref.txt
-	$(MAKEINFO) --html --enable-encoding $(USECSS) akfavatar-en.texinfo
-	$(MAKEINFO) --html --enable-encoding $(USECSS) akfavatar-de.texinfo
+	-$(MAKEINFO) --html --enable-encoding $(USECSS) akfavatar-en.texinfo
+	-$(MAKEINFO) --html --enable-encoding $(USECSS) akfavatar-de.texinfo
 
 txt: akfavatar-en.txt akfavatar-de.txt
 
 akfavatar-en.txt: akfavatar-en.texinfo pasref.txt
-	$(MAKEINFO) --plaintext -o $@ akfavatar-en.texinfo
+	-$(MAKEINFO) --plaintext -o $@ akfavatar-en.texinfo
 
 akfavatar-de.txt: akfavatar-de.texinfo pasref.txt
-	$(MAKEINFO) --enable-encoding --plaintext -o $@ akfavatar-de.texinfo
+	-$(MAKEINFO) --enable-encoding --plaintext -o $@ akfavatar-de.texinfo
 
 dvi: akfavatar-en.dvi akfavatar-de.dvi
 
 akfavatar-en.dvi: akfavatar-en.texinfo pasref.txt
-	$(TEXI2DVI) akfavatar-en.texinfo
+	-$(TEXI2DVI) akfavatar-en.texinfo
 
 akfavatar-de.dvi: akfavatar-de.texinfo pasref.txt
-	$(TEXI2DVI) akfavatar-de.texinfo
+	-$(TEXI2DVI) akfavatar-de.texinfo
 
 pdf: akfavatar-en.pdf akfavatar-de.pdf
 
 akfavatar-en.pdf: akfavatar-en.texinfo pasref.txt
-	$(TEXI2DVI) --pdf akfavatar-en.texinfo
+	-$(TEXI2DVI) --pdf akfavatar-en.texinfo
 
 akfavatar-de.pdf: akfavatar-de.texinfo pasref.txt
-	$(TEXI2DVI) --pdf akfavatar-de.texinfo
+	-$(TEXI2DVI) --pdf akfavatar-de.texinfo
 
 ps: akfavatar-en.ps akfavatar-de.ps
 
 akfavatar-en.ps: akfavatar-en.dvi
-	dvips -Pwww -o $@ akfavatar-en.dvi
+	-dvips -Pwww -o $@ akfavatar-en.dvi
 
 akfavatar-de.ps: akfavatar-de.dvi
-	dvips -Pwww -o $@ akfavatar-de.dvi
+	-dvips -Pwww -o $@ akfavatar-de.dvi
 
 man: avatarsay.1
 
 avatarsay.1:
-	help2man --info-page=akfavatar-en -o avatarsay.1 avatarsay
+	-help2man --info-page=akfavatar-en -o avatarsay.1 avatarsay
 
 clean:
 	-rm -f *~
