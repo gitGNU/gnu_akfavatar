@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.26 2007-10-24 14:14:15 akf Exp $ */
+/* $Id: avatar.c,v 2.27 2007-10-26 06:27:58 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1243,6 +1243,15 @@ avt_say (const wchar_t * txt)
 int
 avt_mb_encoding (const char *encoding)
 {
+#ifdef WCHAR_ENCODING
+#  define internal_encoding WCHAR_ENCODING
+#else
+#  if defined(HAVE_ICONV) || defined(FORCE_ICONV)
+#    define internal_encoding "WCHAR_T"	/* external iconv */
+#  else
+
+  /* SDL's replacement for iconv doesn't know WCHAR_T */
+  /* so we have to make some checks */
   char internal_encoding[10];
 
   /* (all the "if"s are optimized away at compile time
@@ -1262,6 +1271,8 @@ avt_mb_encoding (const char *encoding)
       else
 	SDL_memcpy (internal_encoding, "UTF-32LE", sizeof ("UTF-32LE"));
     }
+#  endif /* ! (defined(HAVE_ICONV) || defined(FORCE_ICONV)) */
+#endif /* ! WCHAR_ENCODING */
 
   /* output */
 

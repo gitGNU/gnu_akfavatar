@@ -6,13 +6,13 @@
 # This configure script is free software; you have unlimited permission
 # to copy, distribute and modify it.
 #
-# Date of this version: $Date: 2007-10-23 14:45:05 $
+# Date of this version: $Date: 2007-10-26 06:27:58 $
 
 
 # Version and name
 VERSION=0
 SUBVERSION=14
-REVISION=3
+REVISION=4
 VARIANT="-cvs"
 LIBNAME=libakfavatar.so.${VERSION}.${SUBVERSION}.${REVISION}
 SONAME=libakfavatar.so.${VERSION}.${SUBVERSION}
@@ -26,6 +26,7 @@ srctrigger=akfavatar.h
 SIZE=DEFAULT
 OLDSDL=
 FORCE_ICONV=
+WCHAR_ENCODING=
 
 # clear some things potentially inherited from environment.
 srcdir=
@@ -67,32 +68,33 @@ while [ x"$1" != x ] ; do
 		echo "Usage: configure [options]"
 		echo
 		echo "Options: [defaults in brackets]"
-		echo "  --help              display this help and exit"
-		echo "  --version           output version information and exit"
-		echo "  --srcdir=DIR        find the sources in DIR [. or ..]"
-		echo "  --prefix=DIR        install into DIR [${prefix}]"
-		echo "  --exec-prefix=DIR   base directory for arch-dependent files [${exec_prefix}]"
-		echo "  --bindir=DIR        user executables directory [${bindir}]"
-		echo "  --datadir=DIR       base directory for doc and data [${datadir}]"
-		echo "  --infodir=DIR       info files directory [${infodir}]"
-		echo "  --mandir=DIR        man pages directory [${mandir}]"
-		echo "  --sysconfdir=DIR    read-only single-machine data directory [${sysconfdir}]"
-		echo "  --with-oldsdl       support for older SDL versions on target machine"
-		echo "  --with-iconv        force use of iconv (normally not needed)"
-		echo "  --enable-qvga       compile for small QVGA (320x240) displays"
-		echo "  --enable-size=qvga  compile for small QVGA (320x240) displays"
-		echo "  --enable-vga        compile for VGA (640x480) displays"
-		echo "  --enable-size=vga   compile for VGA (640x480) displays"
-		echo "  CC=COMPILER         C compiler to use [gcc]"
-		echo "  CXX=COMPILER        C++ compiler to use [g++]"
-		echo "  CPPFLAGS=OPTIONS    command line options for the preprocessor [${CPPFLAGS}]"
-		echo "  CFLAGS=OPTIONS      command line options for the C compiler [${CFLAGS}]"
-		echo "  CXXFLAGS=OPTIONS    command line options for the C++ compiler [${CXXFLAGS}]"
-		echo "  LDFLAGS=OPTIONS     command line options for the linker [${LDFLAGS}]"
-		echo "  AR=program          ar program to use [${AR}]"
-		echo "  RANLIB=program      ranlib program to use [${RANLIB}]"
-		echo "  INSTALL=program     install program to use [${INSTALL}]"
-		echo "  LDCONFIG=program    ldconfig program to use [${LDCONFIG}]"
+		echo "  --help               display this help and exit"
+		echo "  --version             output version information and exit"
+		echo "  --srcdir=DIR          find the sources in DIR [. or ..]"
+		echo "  --prefix=DIR          install into DIR [${prefix}]"
+		echo "  --exec-prefix=DIR     base directory for arch-dependent files [${exec_prefix}]"
+		echo "  --bindir=DIR          user executables directory [${bindir}]"
+		echo "  --datadir=DIR         base directory for doc and data [${datadir}]"
+		echo "  --infodir=DIR         info files directory [${infodir}]"
+		echo "  --mandir=DIR          man pages directory [${mandir}]"
+		echo "  --sysconfdir=DIR      read-only single-machine data directory [${sysconfdir}]"
+		echo "  --with-oldsdl         support for older SDL versions on target machine"
+		echo "  --with-iconv[=enc]    force use of external iconv (normally not needed)"
+		echo "  --with-sdl-iconv=enc  set encoding for wchar_t when SDL's iconv is used"
+		echo "  --enable-qvga         compile for small QVGA (320x240) displays"
+		echo "  --enable-size=qvga    compile for small QVGA (320x240) displays"
+		echo "  --enable-vga          compile for VGA (640x480) displays"
+		echo "  --enable-size=vga     compile for VGA (640x480) displays"
+		echo "  CC=COMPILER           C compiler to use [gcc]"
+		echo "  CXX=COMPILER          C++ compiler to use [g++]"
+		echo "  CPPFLAGS=OPTIONS      command line options for the preprocessor [${CPPFLAGS}]"
+		echo "  CFLAGS=OPTIONS        command line options for the C compiler [${CFLAGS}]"
+		echo "  CXXFLAGS=OPTIONS      command line options for the C++ compiler [${CXXFLAGS}]"
+		echo "  LDFLAGS=OPTIONS       command line options for the linker [${LDFLAGS}]"
+		echo "  AR=program            ar program to use [${AR}]"
+		echo "  RANLIB=program        ranlib program to use [${RANLIB}]"
+		echo "  INSTALL=program       install program to use [${INSTALL}]"
+		echo "  LDCONFIG=program      ldconfig program to use [${LDCONFIG}]"
 		echo
 		exit 0 ;;
 	--version | --ve*)
@@ -128,10 +130,14 @@ while [ x"$1" != x ] ; do
 	INSTALL=*)  INSTALL=${optarg} ;;
 	LDCONFIG=*) LDCONFIG=${optarg} ;;
 
-        --with-oldsdl) OLDSDL="yes";;
-	--with-iconv) FORCE_ICONV="yes";;
-	--enable-qvga | --enable-qvga=yes | --enable-size=qvga) SIZE="QVGA";;
-	--enable-vga | --enable-vga=yes | --enable-size=vga) SIZE="VGA";;
+        --with-oldsdl) OLDSDL="yes" ;;
+	--with-sdl-iconv=*) WCHAR_ENCODING=${optarg} ;;
+	--with-sdl-iconv) ;;
+	--with-iconv) FORCE_ICONV="yes" ;;
+	--with-iconv=*) FORCE_ICONV="yes"; WCHAR_ENCODING=${optarg} ;;
+	--with-iconv) FORCE_ICONV="yes" ;;
+	--enable-qvga | --enable-qvga=yes | --enable-size=qvga) SIZE="QVGA" ;;
+	--enable-vga | --enable-vga=yes | --enable-size=vga) SIZE="VGA" ;;
 	
 	--build=* | --enable-* | --with-* | --*dir=* | *=*) ;;
 	*)
@@ -147,6 +153,8 @@ done
 # and independant of the systems SDL-Version
 [ "$OLDSDL" = "yes" ] && CFLAGS="$CFLAGS -DOLD_SDL=1"
 [ "$FORCE_ICONV" = "yes" ] && CFLAGS="$CFLAGS -DFORCE_ICONV=1"
+[ -n "$WCHAR_ENCODING" ] \
+  && CFLAGS="$CFLAGS -DWCHAR_ENCODING=\\\"$WCHAR_ENCODING\\\""
 
 # Check for SDL version
 sdlversion=`sdl-config --version`
