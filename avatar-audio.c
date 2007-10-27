@@ -22,11 +22,23 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.6 2007-09-23 10:25:45 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.7 2007-10-27 15:09:40 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
 #include "SDL_audio.h"
+
+#ifndef _SDL_stdinc_h
+#  define OLD_SDL 1
+#endif
+
+#ifdef OLD_SDL
+#  include <stdlib.h>
+#  undef SDL_malloc
+#  define SDL_malloc              malloc
+#  undef SDL_free
+#  define SDL_free                free
+#endif /* OLD_SDL */
 
 typedef struct
 {
@@ -128,7 +140,7 @@ avt_load_wave_file (const char *file)
 {
   AudioStruct *s;
 
-  s = malloc (sizeof (AudioStruct));
+  s = SDL_malloc (sizeof (AudioStruct));
   if (s == NULL)
     return NULL;
 
@@ -147,7 +159,7 @@ avt_load_wave_data (void *data, int datasize)
 {
   AudioStruct *s;
 
-  s = malloc (sizeof (AudioStruct));
+  s = SDL_malloc (sizeof (AudioStruct));
   if (s == NULL)
     return NULL;
 

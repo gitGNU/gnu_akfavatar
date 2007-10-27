@@ -1,4 +1,10 @@
-2007-10-24  Andreas K. Foerster  <info@akfoerster.de>
+2007-10-27  Andreas K. Foerster  <info@akfoerster.de>
+
+	* configure, avatar-audio.c:
+	fixes for old SDL versions (1.2.0)
+
+	* balloonpointer.c, circle.c:
+	fixes for old compilers
 
 	* akfavatar.h, avatar.c (avt_initialize):
 	new mode: AUTOMODE
