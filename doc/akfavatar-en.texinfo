@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.17 2007-10-16 06:29:47 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.18 2007-10-27 09:31:21 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -167,7 +167,8 @@ Although there are binary packages available, you should install AKFAvatar
 from the source code package to use the software to its full capacity.
 
 This chapter describes the installation for @sc{posix} compatible operating
-systems, such as GNU/Linux.
+systems, mainly for GNU/Linux systems.  There are some hints for other systems
+at the end of this chapter.
 
 For short: @samp{./configure && make && make install}
 
@@ -198,6 +199,9 @@ libz, libpng, libjpeg, libtiff
 
 Without SDL_image you can only use uncompressed BMP images.
 SDL_image can be installed after the installation of this package.
+
+@item iconv@*
+on a lot of systems that is already included
 @end itemize
 
 @subheading Optional
@@ -222,6 +226,19 @@ is installed.  This is the variant that gets installed.
 @subsubheading Compiling --- special cases
 @cindex QVGA
 @cindex VGA
+@cindex iconv
+
+On some systems you need the use the parameter @option{--with-iconv} with
+@command{.configure} to get full iconv support (iconv is a charset-encoding
+converter).  This parameter is not needed, when SDL is already configured to
+use an external iconv.  But in some cases it is not, although an external 
+iconv is available (because maybe there is more than one implementation).
+This software (AKFAvatar) does an educated guess to get the internal encoding
+for @code{wchar_t} right.  In some cases it might not work.  You might then
+provide that information with this option, like this 
+@samp{--with-iconv=UCS-4LE}.  On many systems you can get a list with the
+command @command{iconv -l}.  If ``WCHAR_T'' or ``wchar_t'' is on the list, 
+use that.
 
 To support old versions of SDL on a target machine, it might be 
 necessary to use the parameter @option{--with-oldsdl}.  Note that this is
@@ -264,9 +281,9 @@ parent directory.
 
 @subheading Installing
 
-First make sure @file{/usr/local/lib} is mentioned in the file
-@file{/etc/ld.so.conf}; either directly or indirectly. Also make sure
-that @file{/usr/local/bin} is in your @code{PATH} evironment variable.
+On GNU/Linux systems first make sure @file{/usr/local/lib} is mentioned in
+the file @file{/etc/ld.so.conf}; either directly or indirectly. Also make
+sure that @file{/usr/local/bin} is in your @code{PATH} evironment variable.
 
 Now get root privileges and run @samp{make install} to install it in 
 @file{/usr/local}. If you are low on disk space, you can instead use  
@@ -304,6 +321,25 @@ Solution: There are different character sets. Try to use the parameters
 @option{--utf-8} or @option{--latin1}.
 
 @end itemize
+
+@subheading Other systems
+
+@subsubheading BSD
+AKFAvatar is known to be compilable with FreeBSD 6.2.  To get iconv support,
+install @code{libiconv} and use @samp{./configure --with-iconv}.
+
+@subsubheading Windows / ReactOS
+These systems are just partly supported.  I provide binaries which are build
+with a crosscompiler.  I haven't compiled them directly under Windows yet, so
+you're on your own here.  I'm sorry.
+
+On these systems SDL supports a fallback implementation for iconv.
+The charset Windows-1252 (often called ``ANSI'' but it has nothing to do
+with ANSI) is not fully supported.  That charset is partly compatible
+to the ISO-8859-1 standard, which is supported.  Some characters are
+missing then.  If you need these characters, save your text as UTF-8, 
+which is also supported.
+
 
 @node Using avatarsay
 @chapter Using the tool @command{avatarsay}

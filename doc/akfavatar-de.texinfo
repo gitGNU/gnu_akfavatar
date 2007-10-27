@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.10 2007-10-16 06:26:29 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.11 2007-10-27 09:31:21 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -179,7 +179,8 @@ AKFAvatar vom Quelltext-Paket installieren um das vollständige Potential
 der Software ausnutzen zu können.
 
 Dieses Kapitel beschreibt die Installation für @sc{posix}-kompatible
-Betriebssysteme, wie GNU/Linux.
+Betriebssysteme, hauptsächlich für GNU/Linux.  Es gibt ein paar Hinweise 
+für andere Systeme am Ende dieses Kapitels.
 
 Kurz gesagt: @samp{./configure && make && make install}
 
@@ -211,6 +212,9 @@ libz, libpng, libjpeg, libtiff
 Ohne SDL_image kann man nur unkomprimierte BMP Dateien verwenden.
 SDL_image kann auch nach der Installation dieses Paketes noch 
 nachinstalliert werden.
+
+@item iconv@*
+ist auf vielen Systemen bereits integriert
 @end itemize
 
 @subheading Optional
@@ -237,6 +241,22 @@ Diese Variante wird für die Installation verwendet.
 @subsubheading Kompilieren --- Sonderfälle
 @cindex QVGA
 @cindex VGA
+@cindex iconv
+
+Auf einigen Systeme muss man den Parameter @option{--with-iconv} bei
+@command{./configure} mit angeben, um vollständige iconv Unterstützung zu
+erhalten (iconv ist ein Zeichenkodierungs-Konverter).  Diese Parameter wird
+nicht benötigt, wenn bereits die SDL so konfiguriert wurde, dass sie ein 
+externes iconv verwendet.  Auf manchen Systemen ist dies jedoch nicht der 
+Fall, obwohl ein iconv existiert (zum Beispiel, weil evtl. verschiedene
+Implementierungen existieren).
+Diese Software (AKFAvatar) versucht den richtigen Namen für die interne 
+Kodierung von @code{wchar_t} zu erraten.  Das klappt aber nicht in jedem
+Fall.  Man kann dann diese Information zusammen mit dieser Option angeben,
+und zwar folgendermaßen: @samp{--with-iconv=UCS-4LE}.  Auf vielen Systemen
+kann man mit dem Befelh @command{iconv -l} eine Liste erhalten.  Wenn
+`WCHAR_T'' oder ``wchar_t'' auf dieser Liste steht, sollte man es damit
+versuchen.
 
 Um ältere SDL-Versionen auf dem Ziel-Computer zu unterstützen, könnte
 es notwendig sein, den Parameter @option{--with-oldsdl} bei 
@@ -287,15 +307,15 @@ befindet).
 
 @subheading Installieren
 
-Zunächst sollte man sicher stellen, dass @file{/usr/local/lib} in der 
-Datei @file{/etc/ld.so.conf} aufgeführt ist; entweder direkt, oder 
+Bei GNU+Linux sollte man zunächst sicher stellen, dass @file{/usr/local/lib}
+in der Datei @file{/etc/ld.so.conf} aufgeführt ist; entweder direkt, oder 
 indirekt.  Ebenso sollte man sicher stellen, dass @file{/usr/local/bin} 
-in der @code{PATH} Umgebungs-Variablen mit eingetragen ist.
+in der @code{PATH} Umgebungsvariablen mit eingetragen ist.
 
 Nun sollte man sich als root einloggen und @samp{make install} eingeben
 um das Ganze nach @file{/usr/local} zu installieren.  Falls man wenig
 Speicherplatz auf der Festplatte hat, kann man stattdessen auch 
-@samp{make install-strip} verwenden.  Das isntalliert die Binärdateien
+@samp{make install-strip} verwenden.  Das installiert die Binärdateien
 ohne Debugger-Informationen.
 
 Wenn man das Ganze später wieder deinstallieren will, kann man dann
@@ -332,6 +352,27 @@ Lösung: Es gibt verschiedene Zeichensatz-Kodierungen.  Man könnte versuchen
 die Parameter @option{--utf-8} oder @option{--latin1} mit anzugeben.
 
 @end itemize
+
+@subheading Andere Systeme
+
+@subsubheading BSD
+AKFAvatar ist mit FreeBSD 6.2 kompilierbar.  Um iconv-Unterstützung zu 
+erhalten, muss man @code{libiconv} installiert haben und
+@samp{./configure --with-iconv} verwenden.
+
+@subsubheading Windows / ReactOS
+Diese Systeme werden nur teilweise unterstützt.  Ich stelle Binärdateien zur
+Verfügung, die mit einem Crosscompiler erstellt wurden.  Da ich es nie
+direkt unter Windows selber kompiliert habe, kann ich dazu wenig sagen.
+Tut mir Leid.
+
+Auf diesen Systemen wird ein @code{iconv}-Ersatz in der SDL verwendet.
+Der Zeichensatz Windows-1252 (häufig als ``ANSI'' bezeichnet, er hat aber
+nichts mit ANSI zu tun) wird nicht vollständig unterstützt.  Dieser 
+Zeichensatz ist jedoch teilweise kompatibel zu dem Standard ISO-8859-1,
+welcher unterstützt wird.  Einige Zeichen entsprechen jedoch nicht dem
+Standard.  Falls diese Zeichen unbedingt benötigt werden, kann man den 
+Text als UTF-8 abspeichern, welches ebenfalls unterstützt wird.
 
 
 @node Verwendung von avatarsay

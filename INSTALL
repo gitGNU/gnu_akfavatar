@@ -1,5 +1,8 @@
 AKFAvatar
 
+This file mainly describes the installation of AKFAvatar on GNU/Linux systems.
+There are some hints for other systems at the end of this file.
+
 REQUIREMENTS
 
 Needed
@@ -25,6 +28,9 @@ Recommended
 Without SDL_image you can only use uncompressed BMP images.
 SDL_image can be installed after the installation of this package.
 
+ * iconv
+   integrated in GNU libc
+ 
 Optional
 
   * GNU-Pascal or Free Pascal
@@ -45,6 +51,17 @@ This is the variant that gets installed.
 
 
 Compiling - special cases
+
+On some systems you need the use the parameter "--with-iconv" with 
+"./configure" to get full iconv support (iconv is a charset-encoding
+converter).  This parameter is not needed, when SDL is already configured
+to use an external iconv.  But in some cases it is not, although an external
+iconv is available (because maybe there is more than one implementation).
+This software (AKFAvatar) does an educated guess to get the internal encoding
+for wchar_t right.  In some cases it might not work.  You might then provide
+that information with this option, like this "--with-iconv=UCS-4LE".  On many 
+systems you can get a list with the command "iconv -l".  If "WCHAR_T" or
+"wchar_t" is on the list, use that.
 
 To support old versions of SDL on a target machine, it might be 
 necessary to use the parameter "--with-oldsdl". Note that this is
@@ -88,8 +105,8 @@ parent directory.
 
 Installing
 
-First make sure "/usr/local/lib" is mentioned in the file
-"/etc/ld.so.conf"; either directly or indirectly. Also make sure
+On a GNU/Linux system first make sure "/usr/local/lib" is mentioned in
+the file "/etc/ld.so.conf"; either directly or indirectly. Also make sure
 that "/usr/local/bin" is in your "PATH" evironment variable.
 
 Now get root privileges and run "make install" to install it in 
@@ -124,3 +141,22 @@ TROUBLESHOOTING
  * Problem: some characters are not shown correctly with "avatarsay"
    Solution: There are different character sets. Try to use the parameters
    "--utf-8" or "--latin1".
+
+OTHER SYSTEMS
+
+ * BSD
+   AKFAvatar is known to be compilable with FreeBSD 6.2.  To get iconv 
+   support, install libiconv and use "./configure --with-iconv".
+
+ * Windows / ReactOS
+   These systems are just partly supported.  I provide binaries which are
+   build with a crosscompiler.  I haven't compiled them directly under 
+   Windows yet, so you're on your own here.  I'm sorry.
+
+   On these systems SDL supports a fallback implementation for iconv.
+   The charset Windows-1252 (often called "ANSI" but it has nothing to do
+   with ANSI) is not fully supported.  That charset is partly compatible
+   to the ISO-8859-1 standard, which is supported.  Some characters are
+   missing then.  If you need these characters, save your text as UTF-8, 
+   which is also supported.
+   
