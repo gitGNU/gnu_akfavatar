@@ -3,7 +3,7 @@
 static const struct {
   unsigned int   width;
   unsigned int   height;
-  unsigned char  data[];
+  unsigned char  data[64 * 120 * sizeof (unsigned char)];
   } balloonpointer = {
   64, 120,
 "                ................................................"

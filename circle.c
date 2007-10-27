@@ -3,7 +3,7 @@
 static const struct {
   unsigned int   width;
   unsigned int   height;
-  unsigned char  data[];
+  unsigned char  data[30 * 30 * sizeof (unsigned char)];
   } circle = {
   30, 30,
   "          ##########          "
