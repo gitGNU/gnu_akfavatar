@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.17 2007-10-24 14:14:16 akf Exp $ */
+/* $Id: avatarsay.c,v 2.18 2007-10-28 08:18:17 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -108,12 +108,12 @@ quit (int exitcode)
 #ifndef __WIN32__
 
 /* 
- * "warning", "notice" and "error" take 2 message strings
+ * "warning_msg", "notice_msg" and "error_msg" take 2 message strings
  * the second one may simply be NULL if you don't need it
  */
 
 static void
-warning (const char *msg1, const char *msg2)
+warning_msg (const char *msg1, const char *msg2)
 {
   if (msg2)
     fprintf (stderr, PRGNAME ": %s: %s\n", msg1, msg2);
@@ -122,15 +122,15 @@ warning (const char *msg1, const char *msg2)
 }
 
 static void
-notice (const char *msg1, const char *msg2)
+notice_msg (const char *msg1, const char *msg2)
 {
-  warning (msg1, msg2);
+  warning_msg (msg1, msg2);
 }
 
 static void
-error (const char *msg1, const char *msg2)
+error_msg (const char *msg1, const char *msg2)
 {
-  warning (msg1, msg2);
+  warning_msg (msg1, msg2);
   quit (EXIT_FAILURE);
 }
 
@@ -186,7 +186,7 @@ help (const char *prgname)
 #else /* Windows or ReactOS */
 
 static void
-warning (const char *msg1, const char *msg2)
+warning_msg (const char *msg1, const char *msg2)
 {
   char msg[1024];
 
@@ -203,12 +203,12 @@ warning (const char *msg1, const char *msg2)
 
 /* ignore unimportant notices on Windows */
 static void
-notice (const char *msg1, const char *msg2)
+notice_msg (const char *msg1, const char *msg2)
 {
 }
 
 static void
-error (const char *msg1, const char *msg2)
+error_msg (const char *msg1, const char *msg2)
 {
   char msg[1024];
 
@@ -256,7 +256,7 @@ static void
 set_encoding (const char *encoding)
 {
   if (avt_mb_encoding (encoding))
-    error ("charset encoding not supported", avt_get_error ());
+    error_msg ("iconv error", avt_get_error ());
 }
 
 static void
@@ -351,7 +351,7 @@ checkoptions (int argc, char **argv)
       if (strcmp (argv[i], "--saypipe") == 0 || strcmp (argv[i], "-s") == 0)
 	{
 #ifdef NOFIFO
-	  error ("pipes not supported on this system", NULL);
+	  error_msg ("pipes not supported on this system", NULL);
 #else
 	  say_pipe = 1;
 	  loop = 0;
@@ -388,7 +388,7 @@ checkoptions (int argc, char **argv)
 
       /* check for unknown option */
       if (argv[i][0] == '-' && argv[i][1] != '\0')
-	error ("unknown option", argv[i]);
+	error_msg ("unknown option", argv[i]);
     }				/* for */
 }
 
@@ -404,7 +404,7 @@ checkenvironment (void)
   e = getenv ("AVATARIMAGE");
   if (e && !avt_image)
     if (!(avt_image = avt_import_image_file (e)))
-      error ("error while loading the AVATARIMAGE", avt_get_error ());
+      error_msg ("error while loading the AVATARIMAGE", avt_get_error ());
 }
 
 static void
@@ -441,10 +441,10 @@ initialize (void)
     avt_image = avt_default ();
 
   if (avt_initialize ("AKFAvatar", "AKFAvatar", avt_image, mode))
-    error ("cannot initialize graphics", avt_get_error ());
+    error_msg ("cannot initialize graphics", avt_get_error ());
 
   if (avt_initialize_audio ())
-    notice ("cannot initialize audio", avt_get_error ());
+    notice_msg ("cannot initialize audio", avt_get_error ());
 
   initialized = 1;
 }
@@ -489,7 +489,7 @@ handle_avatarimage_command (const char *s)
 	strcat (file, "/");
       strncat (file, filename, sizeof (file) - 1 - strlen (datadir));
       if (!(avt_image = avt_import_image_file (file)))
-	warning ("warning", avt_get_error ());
+	warning_msg ("warning", avt_get_error ());
     }
 }
 
@@ -501,7 +501,7 @@ handle_backgoundcolor_command (const char *s)
   if (sscanf (s, ".backgroundcolor #%2x%2x%2x", &red, &green, &blue) == 3)
     avt_set_background_color (red, green, blue);
   else
-    error ("formatting error for \".backgroundcolor\"", NULL);
+    error_msg ("formatting error for \".backgroundcolor\"", NULL);
 }
 
 static void
@@ -532,12 +532,12 @@ handle_audio_command (const char *s)
       sound = avt_load_wave_file (file);
       if (!sound)
 	{
-	  notice ("can not load audio file", avt_get_error ());
+	  notice_msg ("can not load audio file", avt_get_error ());
 	  return;
 	}
 
       if (avt_play_audio (sound, 0))
-	notice ("can not play audio file", avt_get_error ());
+	notice_msg ("can not play audio file", avt_get_error ());
     }
 }
 
@@ -635,7 +635,7 @@ iscommand (char *s)
       if (strncmp (s, ".encoding ", 10) == 0)
 	{
 	  if (sscanf (s, ".encoding %79s", (char *) &encoding) <= 0)
-	    warning ("warning", "cannot read the \".encoding\" line.");
+	    warning_msg ("warning", "cannot read the \".encoding\" line.");
 	  else
 	    set_encoding (encoding);
 
@@ -824,21 +824,21 @@ check_bom (char *line, int len)
 
   /* UTF-16BE BOM (doesn't work) */
   if (line[0] == '\xFE' && line[1] == '\xFF')
-    error ("UTF-16BE Unicode not supported", "please use UTF-8 for Unicode");
+    error_msg ("UTF-16BE Unicode not supported", "please use UTF-8 for Unicode");
 
   /* UTF-16LE BOM (doesn't work) */
   if (line[0] == '\xFF' && line[1] == '\xFE')
-    error ("UTF-16LE Unicode not supported", "please use UTF-8 for Unicode");
+    error_msg ("UTF-16LE Unicode not supported", "please use UTF-8 for Unicode");
 
   /* UTF-32BE BOM (doesn't work) */
   if (line[0] == '\x00' && line[1] == '\x00'
       && line[2] == '\xFE' && line[3] == '\xFF')
-    error ("UTF-32BE Unicode not supported", "please use UTF-8 for Unicode");
+    error_msg ("UTF-32BE Unicode not supported", "please use UTF-8 for Unicode");
 
   /* UTF-32LE BOM (doesn't work) */
   if (line[0] == '\xFF' && line[1] == '\xFE'
       && line[2] == '\x00' && line[3] == '\x00')
-    error ("UTF-32LE Unicode not supported", "please use UTF-8 for Unicode");
+    error_msg ("UTF-32LE Unicode not supported", "please use UTF-8 for Unicode");
 }
 
 /* shows content of file / other input */
@@ -858,7 +858,7 @@ processfile (const char *fname)
       if (say_pipe)
 	{
 	  if (mkfifo (fname, 0600))
-	    error ("error creating fifo", fname);
+	    error_msg ("error creating fifo", fname);
 	}
 #endif /* not NOFIFO */
       text = fopen (fname, "rt");
@@ -866,7 +866,7 @@ processfile (const char *fname)
 
 
   if (text == NULL)
-    error ("error opening file for reading", fname);
+    error_msg ("error opening file for reading", fname);
 
   if (!rawmode)
     do				/* skip empty lines at the beginning of the file */
@@ -942,7 +942,7 @@ processfile (const char *fname)
   if (avt_get_status () == AVATARERROR)
     {
       stop = 1;
-      warning ("warning", avt_get_error ());
+      warning_msg ("warning", avt_get_error ());
     }
 
   return stop;
