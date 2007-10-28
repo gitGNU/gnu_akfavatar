@@ -1,4 +1,6 @@
-2007-10-27  Andreas K. Foerster  <info@akfoerster.de>
+2007-10-28  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.14.4 released
 
 	* configure, avatar-audio.c:
 	fixes for old SDL versions (1.2.0)
