@@ -16,6 +16,8 @@ SDLLDFLAGS = -L/usr/$(TARGET)/lib/ -lmingw32 -lSDLmain -lSDL -mwindows
 # name for binary packages
 BINPKGNAME=akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 
+VERSIONSTR=$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)
+
 prefix = /usr/$(TARGET)
 libdir = $(prefix)/lib
 includedir = $(prefix)/include
@@ -23,68 +25,73 @@ includedir = $(prefix)/include
 all: akfavatar.dll avatarsay.exe
 
 avtsayinfo.rc:
-	@echo "AppIcon ICON \"akfavatar.ico\"" > $@
-	@echo >> $@
-	@echo "LANGUAGE 9, 1" >> $@
-	@echo >> $@
-	@echo "1 VERSIONINFO" >> $@
-	@echo "FILEVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0" >> $@
-	@echo "PRODUCTVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0" >> $@
-	@echo "FILEFLAGSMASK 0x3F" >> $@
-	@echo "FILEOS 0x4" >> $@
-	@echo "FILETYPE 0x1" >> $@
-	@echo "BEGIN" >> $@
-	@echo " BLOCK \"StringFileInfo\"" >> $@
-	@echo " BEGIN" >> $@
-	@echo "  BLOCK \"040904E4\"" >> $@
-	@echo "  BEGIN" >> $@
-	@echo "   VALUE \"CompanyName\", \"AKFoerster\"" >> $@
-	@echo "   VALUE \"FileDescription\", \"fancy text-viewer and scripting language\"" >> $@
-	@echo "   VALUE \"FileVersion\", \"$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)\"" >> $@
-	@echo "   VALUE \"InternalName\", \"avatarsay\"" >> $@
-	@echo "   VALUE \"LegalCopyright\", \"GPLv3+, Andreas K. F\366rster\"" >> $@
-	@echo "   VALUE \"OriginalFilename\", \"avatarsay.exe\"" >> $@
-	@echo "   VALUE \"Comments\", \"primarily written for GNU/Linux\"" >> $@
-	@echo "   VALUE \"ProductName\", \"AKFAvatar\"" >> $@
-	@echo "   VALUE \"ProductVersion\", \"$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)\"" >> $@
-	@echo "  END" >> $@
-	@echo " END" >> $@
-	@echo " BLOCK \"VarFileInfo\"" >> $@
-	@echo "  BEGIN" >> $@
-	@echo "   VALUE \"Translation\", 0x409, 1200" >> $@
-	@echo " END" >> $@
-	@echo "END" >> $@
+	@{ \
+	echo "AppIcon ICON \"akfavatar.ico\""; \
+	echo; \
+	echo "LANGUAGE 9, 1"; \
+	echo; \
+	echo "1 VERSIONINFO"; \
+	echo "FILEVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0"; \
+	echo "PRODUCTVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0"; \
+	echo "FILEFLAGSMASK 0x3F"; \
+	echo "FILEOS 0x4"; \
+	echo "FILETYPE 0x1"; \
+	echo "BEGIN"; \
+	echo " BLOCK \"StringFileInfo\""; \
+	echo " BEGIN"; \
+	echo "  BLOCK \"040904E4\""; \
+	echo "  BEGIN"; \
+	echo "   VALUE \"CompanyName\", \"AKFoerster\""; \
+	echo "   VALUE \"FileDescription\",";\
+	echo "     \"fancy text-viewer and scripting language\""; \
+	echo "   VALUE \"FileVersion\", \"$(VERSIONSTR)\""; \
+	echo "   VALUE \"InternalName\", \"avatarsay\""; \
+	echo "   VALUE \"LegalCopyright\","; \
+	echo "     \"GPLv3+, Andreas K. F\366rster\""; \
+	echo "   VALUE \"OriginalFilename\", \"avatarsay.exe\""; \
+	echo "   VALUE \"Comments\", \"primarily written for GNU/Linux\""; \
+	echo "   VALUE \"ProductName\", \"AKFAvatar\""; \
+	echo "   VALUE \"ProductVersion\", \"$(VERSIONSTR)\""; \
+	echo "  END"; \
+	echo " END"; \
+	echo " BLOCK \"VarFileInfo\""; \
+	echo "  BEGIN"; \
+	echo "   VALUE \"Translation\", 0x409, 1200"; \
+	echo " END"; \
+	echo "END"; } > $@
 
 libinfo.rc:
-	@echo "LANGUAGE 9, 1" > $@
-	@echo >> $@
-	@echo "1 VERSIONINFO" >> $@
-	@echo "FILEVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0" >> $@
-	@echo "PRODUCTVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0" >> $@
-	@echo "FILEFLAGSMASK 0x3F" >> $@
-	@echo "FILEOS 0x4" >> $@
-	@echo "FILETYPE 0x1" >> $@
-	@echo "BEGIN" >> $@
-	@echo " BLOCK \"StringFileInfo\"" >> $@
-	@echo " BEGIN" >> $@
-	@echo "  BLOCK \"040904E4\"" >> $@
-	@echo "  BEGIN" >> $@
-	@echo "   VALUE \"CompanyName\", \"AKFoerster\"" >> $@
-	@echo "   VALUE \"FileDescription\", \"AKFAvatar library\"" >> $@
-	@echo "   VALUE \"FileVersion\", \"$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)\"" >> $@
-	@echo "   VALUE \"InternalName\", \"akfavatar\"" >> $@
-	@echo "   VALUE \"LegalCopyright\", \"GPLv3+, Andreas K. F\366rster\"" >> $@
-	@echo "   VALUE \"OriginalFilename\", \"akfavatar.dll\"" >> $@
-	@echo "   VALUE \"Comments\", \"primarily written for GNU/Linux\"" >> $@
-	@echo "   VALUE \"ProductName\", \"AKFAvatar\"" >> $@
-	@echo "   VALUE \"ProductVersion\", \"$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)\"" >> $@
-	@echo "  END" >> $@
-	@echo " END" >> $@
-	@echo " BLOCK \"VarFileInfo\"" >> $@
-	@echo "  BEGIN" >> $@
-	@echo "   VALUE \"Translation\", 0x409, 1200" >> $@
-	@echo " END" >> $@
-	@echo "END" >> $@
+	@{ \
+	echo "LANGUAGE 9, 1"; \
+	echo; \
+	echo "1 VERSIONINFO"; \
+	echo "FILEVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0"; \
+	echo "PRODUCTVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0"; \
+	echo "FILEFLAGSMASK 0x3F"; \
+	echo "FILEOS 0x4"; \
+	echo "FILETYPE 0x1"; \
+	echo "BEGIN"; \
+	echo " BLOCK \"StringFileInfo\""; \
+	echo " BEGIN"; \
+	echo "  BLOCK \"040904E4\""; \
+	echo "  BEGIN"; \
+	echo "   VALUE \"CompanyName\", \"AKFoerster\""; \
+	echo "   VALUE \"FileDescription\", \"AKFAvatar library\""; \
+	echo "   VALUE \"FileVersion\", \"$(VERSIONSTR)\""; \
+	echo "   VALUE \"InternalName\", \"akfavatar\""; \
+	echo "   VALUE \"LegalCopyright\","; \
+	echo "     \"GPLv3+, Andreas K. F\366rster\""; \
+	echo "   VALUE \"OriginalFilename\", \"akfavatar.dll\""; \
+	echo "   VALUE \"Comments\", \"primarily written for GNU/Linux\""; \
+	echo "   VALUE \"ProductName\", \"AKFAvatar\""; \
+	echo "   VALUE \"ProductVersion\", \"$(VERSIONSTR)\""; \
+	echo "  END"; \
+	echo " END"; \
+	echo " BLOCK \"VarFileInfo\""; \
+	echo "  BEGIN"; \
+	echo "   VALUE \"Translation\", 0x409, 1200"; \
+	echo " END"; \
+	echo "END"; } > $@
 
 icon.o: icon.rc akfavatar.ico
 	$(WINDRES) -o $@ -i icon.rc
