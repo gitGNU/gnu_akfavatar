@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.18 2007-10-28 08:18:17 akf Exp $ */
+/* $Id: avatarsay.c,v 2.19 2007-11-01 07:56:01 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -848,10 +848,10 @@ processfile (const char *fname)
   FILE *text;
   char *line = NULL;
   size_t len = 0;
-  ssize_t read = 0;
+  ssize_t nread = 0;
 
   if (strcmp (fname, "-") == 0)
-    text = stdin;
+    text = fdopen(0, "rt");
   else
     {
 #ifndef NOFIFO
@@ -871,22 +871,22 @@ processfile (const char *fname)
   if (!rawmode)
     do				/* skip empty lines at the beginning of the file */
       {
-	read = getline (&line, &len, text);
+	nread = getline (&line, &len, text);
 
-	if (read != EOF)
+	if (nread != EOF)
 	  check_bom (line, len);
 
 	/* simulate empty lines when ignore_eof is set */
-	if (ignore_eof && read == EOF)
+	if (ignore_eof && nread == EOF)
 	  {
 	    clearerr (text);
 	    strcpy (line, "\n");
-	    read = 1;
+	    nread = 1;
 	    if (avt_wait (10))
 	      stop = 1;
 	  }
       }
-    while (read != EOF
+    while (nread != EOF
 	   && (strcmp (line, "\n") == 0
 	       || strcmp (line, "\r\n") == 0 || iscommand (line)) && !stop);
 
@@ -902,14 +902,14 @@ processfile (const char *fname)
   if (line && !stop)
     stop = avt_say_mb (process_line_end (line));
 
-  while (!stop && (read != EOF || ignore_eof))
+  while (!stop && (nread != EOF || ignore_eof))
     {
-      read = getline (&line, &len, text);
+      nread = getline (&line, &len, text);
 
       if (ignore_eof)
 	{
 	  /* wait for input */
-	  while (read == EOF)
+	  while (nread == EOF)
 	    {
 	      clearerr (text);
 
@@ -919,11 +919,11 @@ processfile (const char *fname)
 		  break;
 		}
 	      else
-		read = getline (&line, &len, text);
+		nread = getline (&line, &len, text);
 	    }
 	}
 
-      if (read != EOF && !stop && !iscommand (line))
+      if (nread != EOF && !stop && !iscommand (line))
 	if (avt_say_mb (process_line_end (line)))
 	  stop = 1;
     }
