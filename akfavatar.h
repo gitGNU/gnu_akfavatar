@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.18 2007-10-24 14:14:15 akf Exp $ */
+/* $Id: akfavatar.h,v 2.19 2007-11-07 09:45:04 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -224,22 +224,50 @@ extern int avt_initialize (const char *title,
 extern void avt_quit (void);
 
 /* 
- * prints a string in the balloon
+ * prints a L'\0' terminated string in the balloon
  * if there is no balloon, it is drawn
  * if there is no avatar, it is shown (not moved in)
  * interprets control chars
  */
 extern int avt_say (const wchar_t * txt);
 
+/* 
+ * writes string with given length in the balloon
+ * the string needn't be terminated and can contain binary zeros
+ * if there is no balloon, it is drawn
+ * if there is no avatar, it is shown (not moved in)
+ * interprets control characters
+ */
+extern int avt_say_len (const wchar_t * txt, const int len);
+
 /* set encoding for mb functions */
 extern int avt_mb_encoding (const char *encoding);
+
+/* 
+ * decode a string into wchar_t
+ * size in bytes
+ * returns number of characters in dest (without the termination zero)
+ * dest must be freed by caller with avt_free
+ */
+extern int avt_mb_decode (wchar_t **dest, const char *src, const int size);
+
+/* free memory allocated by this library */
+extern void avt_free (void *ptr);
 
 /*
  * like avt_say,
  * but converts from a given charset encoding
  * (see avt_mb_encoding)
+ * the text is a 0 terminated C-String
  */
-extern int avt_say_mb (char *txt);
+extern int avt_say_mb (const char *txt);
+
+/*
+ * the same with a given length
+ * the string needn't be terminated then 
+ * and can contain binary zeros
+ */
+extern int avt_say_mb_len (const char *txt, int len);
 
 /*
  * get string (just one line)

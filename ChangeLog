@@ -1,3 +1,18 @@
+2007-11-05  Andreas K. Foerster  <info@akfoerster.de>
+
+        * akfavatar.h (avt_mb_decode, avt_free):
+	new functions
+
+	* avatar.c (avt_put_char):
+	new function
+	
+	* akfavatar.h, avatar.c (avt_say_len, avt_say_mb_len):
+	new functions
+
+	* avatar.c (avt_mb_decode):
+	decode a given size, input string needn't be terminated anymore
+	incomplete sequences are stored for later use (up to 9 bytes)
+
 2007-10-28  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.14.4 released

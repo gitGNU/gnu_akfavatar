@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.28 2007-10-26 11:46:46 akf Exp $ */
+/* $Id: avatar.c,v 2.29 2007-11-07 09:45:04 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1149,7 +1149,91 @@ avt_backspace (void)
 }
 
 /* 
- * writes string to textfield - 
+ * writes a character to the textfield - 
+ * interprets control characters
+ */
+static int
+avt_put_char (const wchar_t ch)
+{
+  /* nothing to do, when txt == NULL */
+  if (!ch)
+    return _avt_STATUS;
+
+  /* no textfield? => draw balloon */
+  if (textfield.x < 0)
+    avt_drawballoon ();
+
+  switch (ch)
+    {
+    case L'\n':
+      avt_new_line ();
+      break;
+
+    case L'\f':
+    case L'\v':
+      avt_flip_page ();
+      break;
+
+    case L'\t':
+      avt_nexttab ();
+      break;
+
+    case L'\b':
+      avt_backspace ();
+      break;
+
+    case L'\a':
+      if (avt_bell_func)
+	(*avt_bell_func) ();
+      break;
+
+      /* ignore BOM here 
+       * must be handled outside of the library
+       */
+    case L'\xFEFF':
+    case L'\xFFFE':
+      break;
+
+#ifdef __USE_GNU
+    case L'\xFFFE0000':
+      break;
+#endif
+
+      /* LRM/RLM: only supported at the beginning of a line */
+    case L'\x200E':		/* LEFT-TO-RIGHT MARK (LRM) */
+      avt_text_direction (LEFT_TO_RIGHT);
+      break;
+    case L'\x200F':		/* RIGHT-TO-LEFT MARK (RLM) */
+      avt_text_direction (RIGHT_TO_LEFT);
+      break;
+
+    case L' ':			/* space */
+      avt_clearchar ();
+      avt_forward ();
+      /* 
+       * no delay for the space char 
+       * it'd be annoying if you have a sequence of spaces 
+       */
+      break;
+
+    default:
+      if (ch > 32)
+	{
+	  avt_drawchar (ch);
+	  avt_showchar ();
+	  if (text_delay)
+	    avt_wait (text_delay);
+	  else
+	    avt_checkevent ();
+	  avt_forward ();
+	}			/* if (ch > 32) */
+    }				/* switch */
+
+  return _avt_STATUS;
+}
+
+/* 
+ * writes L'\0' terminated string to textfield - 
  * interprets control characters
  */
 int
@@ -1163,79 +1247,47 @@ avt_say (const wchar_t * txt)
   if (textfield.x < 0)
     avt_drawballoon ();
 
-  while (*txt != 0)
+  while (*txt != L'\0')
     {
-      switch (*txt)
-	{
-	case L'\n':
-	  avt_new_line ();
-	  break;
-
-	case L'\f':
-	case L'\v':
-	  avt_flip_page ();
-	  break;
-
-	case L'\t':
-	  avt_nexttab ();
-	  break;
-
-	case L'\b':
-	  avt_backspace ();
-	  break;
-
-	case L'\a':
-	  if (avt_bell_func)
-	    (*avt_bell_func) ();
-	  break;
-
-	  /* ignore BOM here 
-	   * must be handled outside of the library
-	   */
-	case L'\xFEFF':
-	case L'\xFFFE':
-	  break;
-
-#ifdef __USE_GNU
-	case L'\xFFFE0000':
-	  break;
-#endif
-
-	  /* LRM/RLM: only supported at the beginning of a line */
-	case L'\x200E':	/* LEFT-TO-RIGHT MARK (LRM) */
-	  avt_text_direction (LEFT_TO_RIGHT);
-	  break;
-	case L'\x200F':	/* RIGHT-TO-LEFT MARK (RLM) */
-	  avt_text_direction (RIGHT_TO_LEFT);
-	  break;
-
-	case L' ':		/* space */
-	  avt_clearchar ();
-	  avt_forward ();
-	  /* 
-	   * no delay for the space char 
-	   * it'd be annoying if you have a sequence of spaces 
-	   */
-	  break;
-
-	default:
-	  if (*txt > 32)
-	    {
-	      avt_drawchar (*txt);
-	      avt_showchar ();
-	      if (text_delay)
-		avt_wait (text_delay);
-	      else
-		avt_checkevent ();
-	      avt_forward ();
-	    }			/* if (*txt > 32) */
-	}			/* switch */
+      avt_put_char (*txt);
 
       /* premature break */
       if (_avt_STATUS)
 	return _avt_STATUS;
+
       txt++;
-    }				/* while (*t != 0) */
+    }
+
+  return _avt_STATUS;
+}
+
+/* 
+ * writes string with given length to textfield - 
+ * interprets control characters
+ */
+int
+avt_say_len (const wchar_t * txt, const int len)
+{
+  int i;
+
+  /* nothing to do, when txt == NULL */
+  if (!txt)
+    return _avt_STATUS;
+
+  /* no textfield? => draw balloon */
+  if (textfield.x < 0)
+    avt_drawballoon ();
+
+  for (i = 0; i < len; i++)
+    {
+      avt_put_char (*txt);
+
+      /* premature break */
+      if (_avt_STATUS)
+	return _avt_STATUS;
+
+      txt++;
+    }
 
   return _avt_STATUS;
 }
@@ -1307,89 +1359,150 @@ avt_mb_encoding (const char *encoding)
   return _avt_STATUS;
 }
 
-static wchar_t *
-avt_mb_decode (char *txt)
+/* size in bytes */
+/* return buffer must be freed by caller */
+int
+avt_mb_decode (wchar_t ** dest, const char *src, const int size)
 {
-  char *inbuf, *outbuf;
-  wchar_t *wcstring;
-  size_t wcstring_size;
+  static char rest_buffer[10];
+  static size_t rest_bytes = 0;
+  char *inbuf_start, *inbuf, *outbuf;
+  size_t dest_size;
   size_t inbytesleft, outbytesleft;
   size_t returncode;
+
+  /* check if size is useful */
+  if (size <= 0)
+    {
+      *dest = NULL;
+      return -1;
+    }
 
   /* check if encoding was set */
   if (output_cd == ICONV_UNINITIALIZED)
     avt_mb_encoding (MB_DEFAULT_ENCODING);
 
-  inbuf = txt;
-  inbytesleft = SDL_strlen (txt) + 1;
+  inbytesleft = size + rest_bytes;
+  inbuf_start = SDL_malloc (inbytesleft);
 
-  /* get enough space */
-  wcstring_size = inbytesleft * sizeof (wchar_t);
-
-  /* minimal string size */
-  if (wcstring_size < 4)
-    wcstring_size = 4;
-
-  wcstring = SDL_malloc (wcstring_size);
-
-  if (!wcstring)
+  if (!inbuf_start)
     {
       _avt_STATUS = AVATARERROR;
       SDL_SetError ("out of memory");
-      return NULL;
+      *dest = NULL;
+      return -1;
     }
 
-  outbuf = (char *) wcstring;
-  outbytesleft = wcstring_size;
+  inbuf = inbuf_start;
+
+  /* if there is a rest from last call, put it into the buffer */
+  if (rest_bytes > 0)
+    SDL_memcpy (inbuf, &rest_buffer, rest_bytes);
+
+  /* copy the text into the buffer */
+  SDL_memcpy (inbuf + rest_bytes, src, size);
+  rest_bytes = 0;
+
+  /* get enough space */
+  /* +1 for the terminator */
+  dest_size = (inbytesleft + 1) * sizeof (wchar_t);
+
+  /* minimal string size */
+  if (dest_size < 8)
+    dest_size = 8;
+
+  *dest = SDL_malloc (dest_size);
+
+  if (!*dest)
+    {
+      _avt_STATUS = AVATARERROR;
+      SDL_SetError ("out of memory");
+      SDL_free (inbuf_start);
+      return -1;
+    }
+
+  outbuf = (char *) *dest;
+  outbytesleft = dest_size;
 
   /* do the conversion */
-  do
+  returncode =
+    avt_iconv (output_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+
+  /* handle invalid characters */
+  while (returncode == AVT_ICONV_EILSEQ)
     {
-      returncode = avt_iconv (output_cd, &inbuf, &inbytesleft,
-			      &outbuf, &outbytesleft);
+      inbuf++;
+      inbytesleft--;
 
-      /* handle invalid characters */
-      if (returncode == AVT_ICONV_EILSEQ || returncode == AVT_ICONV_EINVAL)
-	{
-	  const char *ch_unknown = (char *) L"\xFFFD";
-	  int i;
+      *((wchar_t *) outbuf) = L'\xFFFD';
 
-	  inbuf++;
-	  inbytesleft--;
-
-	  for (i = 0; i < sizeof (wchar_t); i++)
-	    {
-	      *outbuf = *(ch_unknown + i);
-	      outbuf++;
-	    }
-
-	  outbytesleft -= sizeof (wchar_t);
-	}
+      outbuf += sizeof (wchar_t);
+      outbytesleft -= sizeof (wchar_t);
+      returncode =
+	avt_iconv (output_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
     }
-  while (returncode == AVT_ICONV_EILSEQ);
 
   /* check for fatal errors */
   if (returncode == AVT_ICONV_ERROR || returncode == AVT_ICONV_E2BIG)
     {
-      SDL_free (wcstring);
-      wcstring = NULL;
+      SDL_free (*dest);
+      *dest = NULL;
       _avt_STATUS = AVATARERROR;
       SDL_SetError ("error while converting the encoding");
+      return -1;
     }
 
-  return wcstring;
+  /* check for incomplete sequences and put them into the rest_buffer */
+  if (returncode == AVT_ICONV_EINVAL && inbytesleft <= sizeof (rest_buffer))
+    {
+      rest_bytes = inbytesleft;
+      SDL_memcpy (&rest_buffer, inbuf, rest_bytes);
+    }
+
+  /* free the inbuf */
+  SDL_free (inbuf_start);
+
+  /* terminate outbuf */
+  if (outbytesleft >= sizeof (wchar_t))
+    *((wchar_t *) outbuf) = L'\0';
+
+  return ((dest_size - outbytesleft) / sizeof (wchar_t));
+}
+
+void
+avt_free (void *ptr)
+{
+  if (ptr)
+    SDL_free (ptr);
 }
 
 int
-avt_say_mb (char *txt)
+avt_say_mb (const char *txt)
 {
   wchar_t *wctext;
 
-  wctext = avt_mb_decode (txt);
+  avt_mb_decode (&wctext, txt, SDL_strlen (txt) + 1);
 
   if (wctext)
     {
       avt_say (wctext);
+      SDL_free (wctext);
+    }
+
+  return _avt_STATUS;
+}
+
+int
+avt_say_mb_len (const char *txt, int len)
+{
+  wchar_t *wctext;
+  int wclen;
+
+  wclen = avt_mb_decode (&wctext, txt, len);
+
+  if (wctext)
+    {
+      avt_say_len (wctext, wclen);
       SDL_free (wctext);
     }
 
@@ -1843,7 +1956,7 @@ avt_wait_key_mb (char *message)
 {
   wchar_t *wcmessage;
 
-  wcmessage = avt_mb_decode (message);
+  avt_mb_decode (&wcmessage, message, SDL_strlen (message) + 1);
 
   if (wcmessage)
     {

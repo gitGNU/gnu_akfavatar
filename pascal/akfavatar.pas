@@ -345,7 +345,8 @@ procedure avt_set_text_delay (delay: CInteger);
 procedure avt_set_flip_page_delay (delay: CInteger);
   libakfavatar 'avt_set_flip_page_delay';
 
-function avt_say_mb(t: CString): CInteger; libakfavatar 'avt_say_mb';
+function avt_say_mb_len(t: pointer; size: CInteger): CInteger;
+  libakfavatar 'avt_say_mb_len';
 
 procedure avt_clear; libakfavatar 'avt_clear';
 
@@ -946,9 +947,6 @@ end;
   end;
 
   function fpc_io_write (var F: TextRec): integer;
-  var 
-    s: CString;
-    Status: integer;
   begin
   if F.BufPos > 0 then
     begin
@@ -956,13 +954,8 @@ end;
 
     if TextAttr<>OldTextAttr then UpdateTextAttr;
 
-    GetMem (s, F.BufPos + 1);
-    move (F.BufPtr^, s^, F.BufPos);
-    s [F.BufPos {-1+1}] := #0;
+    if avt_say_mb_len (F.BufPtr, F.BufPos) <> 0 then Halt;
     F.BufPos := 0; { everything read }
-    Status := avt_say_mb (s);
-    FreeMem (s);
-    if Status <> 0 then Halt
     end;
   fpc_io_write := 0
   end;
@@ -1019,16 +1012,13 @@ end;
 {$IfDef __GPC__}
 
   function gpc_io_write (var unused; const Buffer; size: SizeType): SizeType;
-  var s: array [1 .. size+1] of char;
   begin
   if size > 0 then
     begin
     if not initialized then initializeAvatar;
     if TextAttr<>OldTextAttr then UpdateTextAttr;
     
-    move (Buffer, s, size);
-    s [size+1] := #0;
-    if avt_say_mb (s) <> 0 then Halt
+    if avt_say_mb_len (Addr(Buffer), size) <> 0 then Halt
     end;
   
   gpc_io_write := size
