@@ -1,5 +1,8 @@
 2007-11-05  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatar.c (avt_put_char):
+	don't ignore false BOM anymore, just the real BOM
+
 	* akfavatar.pas:
 	use avt_say_mb_len
 	fix fo FPC: for output only the flush function gets defined 

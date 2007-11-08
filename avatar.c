@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.29 2007-11-07 09:45:04 akf Exp $ */
+/* $Id: avatar.c,v 2.30 2007-11-08 11:55:53 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1155,7 +1155,7 @@ avt_backspace (void)
 static int
 avt_put_char (const wchar_t ch)
 {
-  /* nothing to do, when txt == NULL */
+  /* nothing to do, when ch == NULL */
   if (!ch)
     return _avt_STATUS;
 
@@ -1191,13 +1191,7 @@ avt_put_char (const wchar_t ch)
        * must be handled outside of the library
        */
     case L'\xFEFF':
-    case L'\xFFFE':
       break;
-
-#ifdef __USE_GNU
-    case L'\xFFFE0000':
-      break;
-#endif
 
       /* LRM/RLM: only supported at the beginning of a line */
     case L'\x200E':		/* LEFT-TO-RIGHT MARK (LRM) */
@@ -1360,7 +1354,7 @@ avt_mb_encoding (const char *encoding)
 }
 
 /* size in bytes */
-/* return buffer must be freed by caller */
+/* dest must be freed by caller */
 int
 avt_mb_decode (wchar_t ** dest, const char *src, const int size)
 {
