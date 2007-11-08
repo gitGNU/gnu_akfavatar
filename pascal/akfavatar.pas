@@ -986,7 +986,7 @@ end;
   begin
   if F.Mode = fmOutput 
     then begin
-         F.InOutFunc := @fpc_io_write;
+         F.InOutFunc := @fpc_io_dummy; { sic (?!) }
          F.FlushFunc := @fpc_io_write;
          end
     else begin

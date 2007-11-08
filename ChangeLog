@@ -1,5 +1,9 @@
 2007-11-05  Andreas K. Foerster  <info@akfoerster.de>
 
+	* akfavatar.pas:
+	use avt_say_mb_len
+	fix fo FPC: for output only the flush function gets defined 
+	
         * akfavatar.h (avt_mb_decode, avt_free):
 	new functions
 
