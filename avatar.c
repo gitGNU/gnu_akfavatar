@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.30 2007-11-08 11:55:53 akf Exp $ */
+/* $Id: avatar.c,v 2.31 2007-11-11 15:15:45 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -730,6 +730,14 @@ avt_checkevent (void)
   while (SDL_PollEvent (&event))
     avt_analyze_event (&event);
 
+  return _avt_STATUS;
+}
+
+int
+avt_update (void)
+{
+  SDL_Delay (1);
+  avt_checkevent ();
   return _avt_STATUS;
 }
 

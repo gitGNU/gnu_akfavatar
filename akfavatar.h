@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.19 2007-11-07 09:45:04 akf Exp $ */
+/* $Id: akfavatar.h,v 2.20 2007-11-11 15:15:45 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -298,6 +298,10 @@ extern int avt_new_line (void);
  * same as \f in avt_say
  */
 extern int avt_flip_page (void);
+
+/* update, ie handle events and give some time to other processes */
+/* use this in a longer loop in your program */
+extern int avt_update (void);
 
 /* wait a while */
 extern int avt_wait (int milliseconds);
