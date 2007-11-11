@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.20 2007-11-11 15:26:49 akf Exp $ */
+/* $Id: avatarsay.c,v 2.21 2007-11-11 21:49:08 akf Exp $ */
 
 /* TODO: swscanf is crap! */
 
@@ -82,6 +82,9 @@ static int initialized = 0;
 
 /* was the file already checked for a bom at the beginning? */
 static int bom_checked = 0;
+
+/* encoding given on command line */
+static int given_encoding = 0;
 
 /* play it in an endless loop? (0/1) */
 /* deactivated, when input comes from stdin */
@@ -372,12 +375,14 @@ checkoptions (int argc, char **argv)
       if (strncmp (argv[i], "--encoding=", 11) == 0)
 	{
 	  sscanf (argv[i], "--encoding=%79s", (char *) &encoding);
+	  given_encoding = 1;
 	  continue;
 	}
 
       if (strcmp (argv[i], "--latin1") == 0 || strcmp (argv[i], "-l") == 0)
 	{
 	  strcpy (encoding, "ISO-8859-1");
+	  given_encoding = 1;
 	  continue;
 	}
 
@@ -386,6 +391,7 @@ checkoptions (int argc, char **argv)
 	  strcmp (argv[i], "-u8") == 0 || strcmp (argv[i], "-u") == 0)
 	{
 	  strcpy (encoding, "UTF-8");
+	  given_encoding = 1;
 	  continue;
 	}
 
@@ -926,15 +932,16 @@ get_character (int fd)
       while (filebuf_end == -1 && errno == EAGAIN && !stop)
 	{
 	  if (avt_update ())
-	      stop = 1;
+	    stop = 1;
 	  filebuf_end = read (fd, &filebuf, sizeof (filebuf));
 	}
 
       if (filebuf_end == -1)
 	error_msg ("error closing the file", strerror (errno));
 
-      if (!bom_checked)
+      if (!bom_checked && !given_encoding)
 	check_bom (filebuf, &filebuf_end);
+
       wcbuf_len = avt_mb_decode (&wcbuf, (char *) &filebuf, filebuf_end);
       wcbuf_pos = 0;
     }
@@ -1013,7 +1020,7 @@ processfile (const char *fname)
   bom_checked = 0;
 
   if (!rawmode)
-    do				/* skip empty lines at the beginning of the file */
+    do				/* skip empty lines at the beginning */
       {
 	nread = getwline (fd, line, line_size);
 
@@ -1098,8 +1105,6 @@ processfile (const char *fname)
 int
 main (int argc, char *argv[])
 {
-  int i;
-
   if (argc < 2)
     help (argv[0]);
 
@@ -1111,6 +1116,8 @@ main (int argc, char *argv[])
 
   do
     {
+      int i;
+
       if (initialized && !popup)
 	move_in ();
 
@@ -1122,6 +1129,7 @@ main (int argc, char *argv[])
 
 	  if (processfile (argv[i]))
 	    quit (EXIT_SUCCESS);
+
 	  if (avt_flip_page ())
 	    quit (EXIT_SUCCESS);
 

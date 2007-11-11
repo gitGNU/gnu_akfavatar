@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.31 2007-11-11 15:15:45 akf Exp $ */
+/* $Id: avatar.c,v 2.32 2007-11-11 21:49:08 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2502,7 +2502,7 @@ avt_initialize (const char *title, const char *icontitle,
   SDL_EventState (SDL_KEYUP, SDL_IGNORE);
 
   /* visual flash for the bell */
-  /* when you initialize the audo stuff you get an audio "bell" */
+  /* when you initialize the audio stuff, you get an audio "bell" */
   avt_bell_func = avt_flash;
 
   return _avt_STATUS;
