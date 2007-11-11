@@ -18,7 +18,9 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.19 2007-11-01 07:56:01 akf Exp $ */
+/* $Id: avatarsay.c,v 2.20 2007-11-11 15:26:49 akf Exp $ */
+
+/* TODO: swscanf is crap! */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -26,6 +28,10 @@
 
 #include "version.h"
 #include "akfavatar.h"
+#include <wchar.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -73,6 +79,9 @@ static int mode = AUTOMODE;
 /* for delaying the initialization until it is clear that we actually 
    have data to show */
 static int initialized = 0;
+
+/* was the file already checked for a bom at the beginning? */
+static int bom_checked = 0;
 
 /* play it in an endless loop? (0/1) */
 /* deactivated, when input comes from stdin */
@@ -450,12 +459,12 @@ initialize (void)
 }
 
 static void
-handle_image_command (const char *s)
+handle_image_command (const wchar_t * s)
 {
   char filename[255];
   char file[512];
 
-  if (sscanf (s, ".image %255s", (char *) &filename) > 0)
+  if (swscanf (s, L".image %255s", (wchar_t *) & filename) > 0)
     {
       strcpy (file, datadir);
       if (file[0] != '\0')
@@ -473,7 +482,7 @@ handle_image_command (const char *s)
 }
 
 static void
-handle_avatarimage_command (const char *s)
+handle_avatarimage_command (const wchar_t * s)
 {
   char filename[255];
   char file[512];
@@ -482,7 +491,7 @@ handle_avatarimage_command (const char *s)
   if (avt_image)
     avt_free_image (avt_image);
 
-  if (sscanf (s, ".avatarimage %255s", (char *) &filename) > 0)
+  if (swscanf (s, L".avatarimage %255s", (char *) &filename) > 0)
     {
       strcpy (file, datadir);
       if (file[0] != '\0')
@@ -494,18 +503,18 @@ handle_avatarimage_command (const char *s)
 }
 
 static void
-handle_backgoundcolor_command (const char *s)
+handle_backgoundcolor_command (const wchar_t * s)
 {
   unsigned int red, green, blue;
 
-  if (sscanf (s, ".backgroundcolor #%2x%2x%2x", &red, &green, &blue) == 3)
+  if (swscanf (s, L".backgroundcolor #%2x%2x%2x", &red, &green, &blue) == 3)
     avt_set_background_color (red, green, blue);
   else
     error_msg ("formatting error for \".backgroundcolor\"", NULL);
 }
 
 static void
-handle_audio_command (const char *s)
+handle_audio_command (const wchar_t * s)
 {
   char filename[255];
   char file[512];
@@ -518,7 +527,7 @@ handle_audio_command (const char *s)
 	move_in ();
     }
 
-  if (sscanf (s, ".audio %255s", (char *) &filename) > 0)
+  if (swscanf (s, L".audio %255s", (char *) &filename) > 0)
     {
       if (sound)
 	avt_free_audio (sound);
@@ -542,7 +551,7 @@ handle_audio_command (const char *s)
 }
 
 static void
-handle_back_command (const char *s)
+handle_back_command (const wchar_t * s)
 {
   int i, value;
 
@@ -550,7 +559,7 @@ handle_back_command (const char *s)
   if (!initialized)
     return;
 
-  if (sscanf (s, ".back %d", &value) > 0)
+  if (swscanf (s, L".back %d", &value) > 0)
     {
       for (i = 0; i < value; i++)
 	avt_backspace ();
@@ -560,7 +569,7 @@ handle_back_command (const char *s)
 }
 
 static void
-handle_read_command (const char *s)
+handle_read_command (const wchar_t * s)
 {
   wchar_t line[LINELENGTH];
 
@@ -575,27 +584,27 @@ handle_read_command (const char *s)
 
 /* removes trailing space, newline, etc. */
 static void
-strip (char **s)
+strip (wchar_t ** s)
 {
-  char *p;
+  wchar_t *p;
 
   p = *s;
 
   /* search end of string */
-  while (*(p + 1) != '\0')
+  while (*(p + 1) != L'\0')
     p++;
 
   /* search for last non-space char */
-  while (*p == '\n' || *p == '\r' || *p == ' ' || *p == '\t')
+  while (*p == L'\n' || *p == L'\r' || *p == L' ' || *p == L'\t')
     p--;
 
-  *(p + 1) = '\0';
+  *(p + 1) = L'\0';
 }
 
 
 /* handle commads, including comments */
 static int
-iscommand (char *s)
+iscommand (wchar_t * s)
 {
   if (rawmode)
     return 0;
@@ -605,7 +614,7 @@ iscommand (char *s)
    * or it begins with \f 
    * the rest of the line is ignored
    */
-  if (strncmp (s, "---", 3) == 0 || s[0] == '\f')
+  if (wcsncmp (s, L"---", 3) == 0 || s[0] == L'\f')
     {
       if (initialized)
 	if (avt_flip_page ())
@@ -613,18 +622,18 @@ iscommand (char *s)
       return 1;
     }
 
-  if (s[0] == '.')
+  if (s[0] == L'.')
     {
       strip (&s);
 
       /* new datadir */
-      if (strncmp (s, ".datadir ", 9) == 0)
+      if (wcsncmp (s, L".datadir ", 9) == 0)
 	{
-	  sscanf (s, ".datadir %255s", (char *) &datadir);
+	  swscanf (s, L".datadir %255s", (char *) &datadir);
 	  return 1;
 	}
 
-      if (strncmp (s, ".avatarimage ", 13) == 0)
+      if (wcsncmp (s, L".avatarimage ", 13) == 0)
 	{
 	  if (!initialized)
 	    handle_avatarimage_command (s);
@@ -632,9 +641,9 @@ iscommand (char *s)
 	  return 1;
 	}
 
-      if (strncmp (s, ".encoding ", 10) == 0)
+      if (wcsncmp (s, L".encoding ", 10) == 0)
 	{
-	  if (sscanf (s, ".encoding %79s", (char *) &encoding) <= 0)
+	  if (swscanf (s, L".encoding %79s", (char *) &encoding) <= 0)
 	    warning_msg ("warning", "cannot read the \".encoding\" line.");
 	  else
 	    set_encoding (encoding);
@@ -642,7 +651,7 @@ iscommand (char *s)
 	  return 1;
 	}
 
-      if (strncmp (s, ".backgroundcolor ", 17) == 0)
+      if (wcsncmp (s, L".backgroundcolor ", 17) == 0)
 	{
 	  if (!initialized)
 	    handle_backgoundcolor_command (s);
@@ -651,21 +660,21 @@ iscommand (char *s)
 	}
 
       /* default - for most languages */
-      if (strcmp (s, ".left-to-right") == 0)
+      if (wcscmp (s, L".left-to-right") == 0)
 	{
 	  avt_text_direction (LEFT_TO_RIGHT);
 	  return 1;
 	}
 
       /* currently only hebrew/yiddish supported */
-      if (strcmp (s, ".right-to-left") == 0)
+      if (wcscmp (s, L".right-to-left") == 0)
 	{
 	  avt_text_direction (RIGHT_TO_LEFT);
 	  return 1;
 	}
 
       /* new page - same as \f or stripline */
-      if (strcmp (s, ".flip") == 0)
+      if (wcscmp (s, L".flip") == 0)
 	{
 	  if (initialized)
 	    if (avt_flip_page ())
@@ -674,7 +683,7 @@ iscommand (char *s)
 	}
 
       /* clear ballon - don't wait */
-      if (strcmp (s, ".clear") == 0)
+      if (wcscmp (s, L".clear") == 0)
 	{
 	  if (initialized)
 	    avt_clear ();
@@ -682,7 +691,7 @@ iscommand (char *s)
 	}
 
       /* longer intermezzo */
-      if (strcmp (s, ".pause") == 0)
+      if (wcscmp (s, L".pause") == 0)
 	{
 	  if (!initialized)
 	    initialize ();
@@ -696,21 +705,21 @@ iscommand (char *s)
 	}
 
       /* show image */
-      if (strncmp (s, ".image ", 7) == 0)
+      if (wcsncmp (s, L".image ", 7) == 0)
 	{
 	  handle_image_command (s);
 	  return 1;
 	}
 
       /* play sound */
-      if (strncmp (s, ".audio ", 7) == 0)
+      if (wcsncmp (s, L".audio ", 7) == 0)
 	{
 	  handle_audio_command (s);
 	  return 1;
 	}
 
       /* wait until sound ends */
-      if (strcmp (s, ".waitaudio") == 0)
+      if (wcscmp (s, L".waitaudio") == 0)
 	{
 	  if (initialized)
 	    if (avt_wait_audio_end ())
@@ -722,7 +731,7 @@ iscommand (char *s)
        * pause for effect in a sentence
        * the previous line should end with a backslash
        */
-      if (strcmp (s, ".effectpause") == 0)
+      if (wcscmp (s, L".effectpause") == 0)
 	{
 	  if (initialized)
 	    if (avt_wait (2500))
@@ -734,19 +743,19 @@ iscommand (char *s)
        * move back a number of characters
        * the previous line has to end with a backslash!
        */
-      if (strncmp (s, ".back ", 6) == 0)
+      if (wcsncmp (s, L".back ", 6) == 0)
 	{
 	  handle_back_command (s);
 	  return 1;
 	}
 
-      if (strncmp (s, ".read ", 6) == 0)
+      if (wcsncmp (s, L".read ", 6) == 0)
 	{
 	  handle_read_command (s);
 	  return 1;
 	}
 
-      if (strcmp (s, ".end") == 0)
+      if (wcscmp (s, L".end") == 0)
 	{
 	  if (initialized)
 	    avt_move_out ();
@@ -754,7 +763,7 @@ iscommand (char *s)
 	  return 1;
 	}
 
-      if (strcmp (s, ".stop") == 0)
+      if (wcscmp (s, L".stop") == 0)
 	{
 	  /* doesn't matter whether it's initialized */
 	  stop = 1;
@@ -765,93 +774,224 @@ iscommand (char *s)
       return 1;
     }
 
-  if (s[0] == '#')
+
+  if (s[0] == L'#')
     return 1;
 
   return 0;
 }
 
-/* if line ends on \\n, strip it */
-static char *
-process_line_end (char *s)
-{
-  char *p;
-
-  /* in rawmode don't change anything */
-  if (rawmode)
-    return s;
-
-  p = strrchr (s, '\\');
-  if (p)
-    if (*(p + 1) == '\n' || (*(p + 1) == '\r' && *(p + 2) == '\n'))
-      *p = '\0';
-
-  return s;
-}
-
-#ifndef __USE_GNU
-
-/* inferior replacement for GNU specific getline */
-static ssize_t
-getline (char **lineptr, size_t * n, FILE * stream)
-{
-  /* reserve a fixed size of memory */
-  if (*n == 0)
-    {
-      *n = 10240;
-      *lineptr = (char *) malloc (*n);
-    }
-
-  if (fgets (*lineptr, *n, stream))
-    return strlen (*lineptr);
-  else
-    return EOF;
-}
-
-#endif /* not __USE_GNU */
-
 /* check for byte order mark (BOM) U+FEFF and remove it */
 static void
-check_bom (char *line, int len)
+check_bom (char *line, int *size)
 {
+  bom_checked = 1;
+
   /* UTF-8 BOM (as set by Windows notepad) */
   if (line[0] == '\xEF' && line[1] == '\xBB' && line[2] == '\xBF')
     {
       strcpy (encoding, "UTF-8");
       set_encoding (encoding);
-      memmove (line, line + 3, len - 3);
+      memmove (line, line + 3, *size - 3);
+      *size -= 3;
+      return;
     }
 
-  /* UTF-16BE BOM (doesn't work) */
-  if (line[0] == '\xFE' && line[1] == '\xFF')
-    error_msg ("UTF-16BE Unicode not supported", "please use UTF-8 for Unicode");
+  /* check 32 Bit BOMs before 16 Bit ones, to avoid confusion! */
 
-  /* UTF-16LE BOM (doesn't work) */
-  if (line[0] == '\xFF' && line[1] == '\xFE')
-    error_msg ("UTF-16LE Unicode not supported", "please use UTF-8 for Unicode");
-
-  /* UTF-32BE BOM (doesn't work) */
+  /* UTF-32BE BOM */
   if (line[0] == '\x00' && line[1] == '\x00'
       && line[2] == '\xFE' && line[3] == '\xFF')
-    error_msg ("UTF-32BE Unicode not supported", "please use UTF-8 for Unicode");
+    {
+      strcpy (encoding, "UTF-32BE");
+      set_encoding (encoding);
+      memmove (line, line + 4, *size - 4);
+      *size -= 4;
+      return;
+    }
 
-  /* UTF-32LE BOM (doesn't work) */
+  /* UTF-32LE BOM */
   if (line[0] == '\xFF' && line[1] == '\xFE'
       && line[2] == '\x00' && line[3] == '\x00')
-    error_msg ("UTF-32LE Unicode not supported", "please use UTF-8 for Unicode");
+    {
+      strcpy (encoding, "UTF-32LE");
+      set_encoding (encoding);
+      memmove (line, line + 4, *size - 4);
+      *size -= 4;
+      return;
+    }
+
+  /* UTF-16BE BOM */
+  if (line[0] == '\xFE' && line[1] == '\xFF')
+    {
+      strcpy (encoding, "UTF-16BE");
+      set_encoding (encoding);
+      memmove (line, line + 2, *size - 2);
+      *size -= 2;
+      return;
+    }
+
+  /* UTF-16LE BOM */
+  if (line[0] == '\xFF' && line[1] == '\xFE')
+    {
+      strcpy (encoding, "UTF-16LE");
+      set_encoding (encoding);
+      memmove (line, line + 2, *size - 2);
+      *size -= 2;
+      return;
+    }
+
+  /* other heuristics for Unicode */
+
+  if (line[0] == '\x00' && line[1] == '\x00')
+    {
+      strcpy (encoding, "UTF-32BE");
+      set_encoding (encoding);
+      return;
+    }
+
+  if (line[2] == '\x00' && line[3] == '\x00')
+    {
+      strcpy (encoding, "UTF-32LE");
+      set_encoding (encoding);
+      return;
+    }
+
+  if (line[0] == '\x00')
+    {
+      strcpy (encoding, "UTF-16BE");
+      set_encoding (encoding);
+      return;
+    }
+
+  if (line[1] == '\x00')
+    {
+      strcpy (encoding, "UTF-16LE");
+      set_encoding (encoding);
+      return;
+    }
+}
+
+/* if line ends on \, strip and \n */
+void
+process_line_end (wchar_t * s, int *len)
+{
+  /* in rawmode don't change anything */
+  if (rawmode)
+    return;
+
+  if (*len < 3)
+    return;
+
+  /* strip \\\n at the end */
+  if (*(s + *len - 1) == L'\n' && *(s + *len - 2) == L'\\')
+    {
+      *len -= 2;
+      *(s + *len + 1) = L'\0';
+    }
+
+  /* strip \\\r\n at the end */
+  if (*(s + *len - 1) == L'\n' && *(s + *len - 2) == L'\r'
+      && *(s + *len - 3) == L'\\')
+    {
+      *len -= 3;
+      *(s + *len + 1) = L'\0';
+    }
+}
+
+/* on some systems it might be necessary to use wint_t */
+/* @@@ */
+static wchar_t
+get_character (int fd)
+{
+  static wchar_t *wcbuf = NULL;
+  static int wcbuf_pos = 0;
+  static int wcbuf_len = 0;
+  wchar_t ch;
+
+  if (wcbuf_pos >= wcbuf_len)
+    {
+      static char filebuf[128];
+      static int filebuf_end = 0;
+
+      if (wcbuf)
+	{
+	  avt_free (wcbuf);
+	  wcbuf = NULL;
+	}
+
+      filebuf_end = read (fd, &filebuf, sizeof (filebuf));
+
+      /* no data in FIFO */
+      while (filebuf_end == -1 && errno == EAGAIN && !stop)
+	{
+	  if (avt_update ())
+	      stop = 1;
+	  filebuf_end = read (fd, &filebuf, sizeof (filebuf));
+	}
+
+      if (filebuf_end == -1)
+	error_msg ("error closing the file", strerror (errno));
+
+      if (!bom_checked)
+	check_bom (filebuf, &filebuf_end);
+      wcbuf_len = avt_mb_decode (&wcbuf, (char *) &filebuf, filebuf_end);
+      wcbuf_pos = 0;
+    }
+
+  if (wcbuf_len < 0)
+    ch = WEOF;
+  else
+    {
+      ch = *(wcbuf + wcbuf_pos);
+      wcbuf_pos++;
+    }
+
+  return ch;
+}
+
+static ssize_t
+getwline (int fd, wchar_t * lineptr, size_t n)
+{
+  ssize_t nchars, maxchars;
+
+  /* one char reserved for terminator */
+  maxchars = (n / sizeof (wchar_t)) - 1;
+  nchars = 0;
+
+  *lineptr = get_character (fd);
+  nchars++;
+
+  while (*lineptr != WEOF && *lineptr != L'\n' && nchars <= maxchars)
+    {
+      lineptr++;
+      *lineptr = get_character (fd);
+      nchars++;
+    }
+
+  /* terminate */
+  if (*lineptr != WEOF)
+    *(lineptr + 1) = L'\0';
+  else
+    {
+      *lineptr = L'\0';
+      nchars--;
+    }
+
+  return nchars;
 }
 
 /* shows content of file / other input */
 static int
 processfile (const char *fname)
 {
-  FILE *text;
-  char *line = NULL;
-  size_t len = 0;
+  wchar_t *line = NULL;
+  size_t line_size = 0;
   ssize_t nread = 0;
+  int fd = 0;
 
   if (strcmp (fname, "-") == 0)
-    text = fdopen(0, "rt");
+    fd = 0;			/* stdin */
   else
     {
 #ifndef NOFIFO
@@ -861,34 +1001,34 @@ processfile (const char *fname)
 	    error_msg ("error creating fifo", fname);
 	}
 #endif /* not NOFIFO */
-      text = fopen (fname, "rt");
+      fd = open (fname, O_RDONLY | O_NONBLOCK);
     }
 
+  if (fd == -1)
+    error_msg ("error opening file for reading", strerror (errno));
 
-  if (text == NULL)
-    error_msg ("error opening file for reading", fname);
+  line_size = 1024 * sizeof (wchar_t);
+  line = (wchar_t *) malloc (line_size);
+
+  bom_checked = 0;
 
   if (!rawmode)
     do				/* skip empty lines at the beginning of the file */
       {
-	nread = getline (&line, &len, text);
-
-	if (nread != EOF)
-	  check_bom (line, len);
+	nread = getwline (fd, line, line_size);
 
 	/* simulate empty lines when ignore_eof is set */
-	if (ignore_eof && nread == EOF)
+	if (ignore_eof && nread == 0)
 	  {
-	    clearerr (text);
-	    strcpy (line, "\n");
+	    wcscpy (line, L"\n");
 	    nread = 1;
-	    if (avt_wait (10))
+	    if (avt_update ())
 	      stop = 1;
 	  }
       }
-    while (nread != EOF
-	   && (strcmp (line, "\n") == 0
-	       || strcmp (line, "\r\n") == 0 || iscommand (line)) && !stop);
+    while (nread != 0
+	   && (wcscmp (line, L"\n") == 0
+	       || wcscmp (line, L"\r\n") == 0 || iscommand (line)) && !stop);
 
   if (!initialized && !stop)
     {
@@ -900,39 +1040,46 @@ processfile (const char *fname)
 
   /* show text */
   if (line && !stop)
-    stop = avt_say_mb (process_line_end (line));
-
-  while (!stop && (nread != EOF || ignore_eof))
     {
-      nread = getline (&line, &len, text);
+      process_line_end (line, &nread);
+      stop = avt_say_len (line, nread);
+    }
+
+  while (!stop && (nread != 0 || ignore_eof))
+    {
+      nread = getwline (fd, line, line_size);
 
       if (ignore_eof)
 	{
 	  /* wait for input */
-	  while (nread == EOF)
+	  while (nread == 0)
 	    {
-	      clearerr (text);
-
-	      if (avt_wait (10))
+	      if (avt_update ())
 		{
 		  stop = 1;
 		  break;
 		}
 	      else
-		nread = getline (&line, &len, text);
+		nread = getwline (fd, line, line_size);
 	    }
 	}
 
-      if (nread != EOF && !stop && !iscommand (line))
-	if (avt_say_mb (process_line_end (line)))
-	  stop = 1;
+      if (nread != 0 && !stop && !iscommand (line))
+	{
+	  process_line_end (line, &nread);
+	  if (avt_say_len (line, nread))
+	    stop = 1;
+	}
     }
 
   if (line)
-    free (line);
+    {
+      free (line);
+      line_size = 0;
+    }
 
-  if (text != stdin)
-    fclose (text);
+  if (close (fd) == -1)
+    error_msg ("error closing the file", strerror (errno));
 
 #ifndef NOFIFO
   if (say_pipe)

@@ -1,4 +1,11 @@
-2007-11-05  Andreas K. Foerster  <info@akfoerster.de>
+2007-11-11  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c:
+	major rewrite -> low level file handling, 
+	supports UTF-16/UTF-32 files now, better FIFO handling
+
+	* akfavatar.h, aavatar.c (avt_update):
+	new function
 
 	* avatar.c (avt_put_char):
 	don't ignore false BOM anymore, just the real BOM
