@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.21 2007-11-11 21:49:08 akf Exp $ */
+/* $Id: avatarsay.c,v 2.22 2007-11-12 14:49:54 akf Exp $ */
 
 /* TODO: swscanf is crap! */
 
@@ -368,6 +368,8 @@ checkoptions (int argc, char **argv)
 	  say_pipe = 1;
 	  loop = 0;
 	  ignore_eof = 1;
+	  /* autodetecting the encoding doesn't work with FIFOs */
+	  given_encoding = 1;
 	  continue;
 #endif /* not NOFIFO */
 	}
