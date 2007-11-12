@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.11 2007-10-27 09:31:21 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.12 2007-11-12 13:10:04 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -459,21 +459,6 @@ konfigurieren, dass die Datei-Endung @file{.avt} mit dem Programm
 @file{avatarsay.exe} verknüpft wird.  Dann kann man auf seinen Text 
 doppelklicken und er wird ausgeführt.
 
-@node Einschränkungen
-@section Einschränkungen von @command{avatarsay}
-@cindex Einschränkungen von @command{avatarsay}
-
-Die aktuelle Version von @command{avatarsay} kann nicht mit den Kodierungen 
-@code{UTF-16}, @code{UTF-32}, @code{UCS-2} oder @code{UCS-4} umgehen. Auch
-nicht, wenn diese vom System her unterstützt werden.  Wenn man Unicode-Zeichen
-benötigt, sollte man seinen Text stattdessen als @code{UTF-8} abspeichern.  
-Obwohl diese Kodierung weniger Platz benötigt als die anderen, gibt es hierbei 
-jedoch keinen Informationsverlust.
-
-Allgemein kommt @command{avatarsay} nicht mit Kodierungen zurecht, die Bytes 
-mit dem Wert Null aufweisen können.  Ich hoffe diese Einschränkung in
-zukünftigen Versionen beseitigen zu können.
-
 @node Anderes Avatar-Bild
 @section Wie man ein anderes Avatar-Bild verwendet
 @cindex anderes Avatar-Bild
@@ -702,6 +687,11 @@ zum Beispiel @samp{ISO-8859-1} oder @samp{UTF-8}
 @strong{Achtung}: Dieser Befehl muss natürlich benutzt werden, bevor der 
 eigentliche Text anfängt.  Man kann die Kodierung aber auch innerhalb des
 Textes verändern, falls das Sinn macht.
+
+Die Kodierungen @code{UTF-16} (@code{UCS2}) und @code{UTF-32} (@code{UCS4})
+können nicht auf diese Weise definiert werden.  Diese Kodierungen werden 
+in der Regel jedoch automatisch erkannt.  (Ältere Versionen von 
+@command{avatarsay} konnten mit diesen Kodierungen gar nicht umgehen.)
 
 Welche Kodierungen unterstützt werden, hängt von der 
 @code{iconv}-Implementierung des Systems ab.  Auf einigen Systemen kann man

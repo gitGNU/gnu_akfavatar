@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.18 2007-10-27 09:31:21 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.19 2007-11-12 13:10:04 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -413,19 +413,6 @@ rename your file such, that it has a special extension; for example
 @file{.avt} gets associated with the program @file{avatarsay.exe}.  Then
 you can double-click on your ``text'' and it is executed.
 
-@node Limitations
-@section Limitations of @command{avatarsay}
-@cindex limitations of @command{avatarsay}
-
-The current version of @command{avatarsay} cannot cope with the encodings
-@code{UTF-16}, @code{UTF-32}, @code{UCS-2} or @code{UCS-4}, even when they are
-supported by your system.  If you need unicode characters, please convert your
-text to @code{UTF-8} instead.  There are no limitations in @code{UTF-8}.  While 
-this encoding needs less disk space, there is no loss in information.
-
-In general @command{avatarsay} cannot cope with encodings, in which bytes with
-the value zero occur.  I hope I can remove this limitation in later versions.
-
 @node Different avatar image
 @section Using a different avatar image
 @cindex different avatar
@@ -642,6 +629,11 @@ such as @samp{ISO-8859-1} or @samp{UTF-8}
 @strong{Attention}: This command has to be used before the text starts
 (of course).  You may change the encoding inside of the text, if that makes
 sense to you.
+
+The encodings @code{UTF-16} (@code{UCS2}) and @code{UTF-32} (@code{UCS4}) 
+can not be set with this command.  But these encodings are in most cases
+detected automatically.  (Earlier versions of @command{avatarsay} could not
+handle these encodings at all.)
 
 It depends on your systems @code{iconv} implementation, which encodings
 are supported.  On some systems you can get a list with the command 
