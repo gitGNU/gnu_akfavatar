@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.19 2007-11-12 13:10:04 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.20 2007-11-12 14:46:36 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -351,7 +351,6 @@ This chapter explains the various uses of the tool @command{avatarsay}.
 @menu
 * Text-viewer::                Using @command{avatarsay} as fancy text-viewer.
 * Make your text executable::  How to turn your text into a program
-* Limitations::                Limitations of @command{avatarsay}
 * Different avatar image::     Using a different avatar image
 * Invoking avatarsay::         Command line interface
 * Commands for avatarsay::     Advanced features of @command{avatarsay}
