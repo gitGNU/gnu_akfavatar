@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.22 2007-11-12 14:49:54 akf Exp $ */
+/* $Id: avatarsay.c,v 2.23 2007-11-12 19:37:21 akf Exp $ */
 
 /* TODO: swscanf is crap! */
 
@@ -1087,7 +1087,7 @@ processfile (const char *fname)
       line_size = 0;
     }
 
-  if (close (fd) == -1)
+  if (close (fd) == -1 && errno != EAGAIN)
     error_msg ("error closing the file", strerror (errno));
 
 #ifndef NOFIFO
