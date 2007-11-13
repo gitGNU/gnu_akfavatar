@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.23 2007-11-12 19:37:21 akf Exp $ */
+/* $Id: avatarsay.c,v 2.24 2007-11-13 11:05:57 akf Exp $ */
 
 /* TODO: swscanf is crap! */
 
@@ -882,7 +882,7 @@ check_bom (char *line, int *size)
 
 /* if line ends on \, strip and \n */
 void
-process_line_end (wchar_t * s, int *len)
+process_line_end (wchar_t * s, ssize_t *len)
 {
   /* in rawmode don't change anything */
   if (rawmode)
@@ -1008,9 +1008,12 @@ processfile (const char *fname)
 	{
 	  if (mkfifo (fname, 0600))
 	    error_msg ("error creating fifo", fname);
+	  fd = open (fname, O_RDONLY | O_NONBLOCK);
 	}
+      else
 #endif /* not NOFIFO */
-      fd = open (fname, O_RDONLY | O_NONBLOCK);
+
+	fd = open (fname, O_RDONLY);
     }
 
   if (fd == -1)
@@ -1092,7 +1095,8 @@ processfile (const char *fname)
 
 #ifndef NOFIFO
   if (say_pipe)
-    remove (fname);
+    if (remove (fname) == -1)
+      warning_msg("problem removing FIFO", strerror (errno));
 #endif /* not NOFIFO */
 
   if (avt_get_status () == AVATARERROR)
