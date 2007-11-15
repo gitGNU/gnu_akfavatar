@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.24 2007-11-13 11:05:57 akf Exp $ */
+/* $Id: avatarsay.c,v 2.25 2007-11-15 17:14:29 akf Exp $ */
 
 /* TODO: swscanf is crap! */
 
@@ -35,14 +35,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+
+#ifdef __WIN32__
+#  include <windows.h>
+#  define NOFIFO 1
+#endif
 
 #ifndef NOFIFO
 #  include <sys/stat.h>
 #endif
 
-#ifdef __WIN32__
-#  include <windows.h>
-#endif
 
 #define PRGNAME "avatarsay"
 
@@ -69,6 +72,9 @@ static int ignore_eof = 0;
 
 /* create a fifo for what to say? */
 static int say_pipe = 0;
+
+/* execute file? */
+static int executable = 0;
 
 /* whether to run in a window, or in fullscreen mode */
 /* the mode can be set by -f, --fullscreen or -w, --window */
@@ -400,6 +406,12 @@ checkoptions (int argc, char **argv)
       if (strcmp (argv[i], "--popup") == 0)
 	{
 	  popup = 1;
+	  continue;
+	}
+
+      if (strcmp (argv[i], "-e") == 0)
+	{
+	  executable = 1;
 	  continue;
 	}
 
@@ -882,7 +894,7 @@ check_bom (char *line, int *size)
 
 /* if line ends on \, strip and \n */
 void
-process_line_end (wchar_t * s, ssize_t *len)
+process_line_end (wchar_t * s, ssize_t * len)
 {
   /* in rawmode don't change anything */
   if (rawmode)
@@ -990,6 +1002,84 @@ getwline (int fd, wchar_t * lineptr, size_t n)
   return nchars;
 }
 
+static int
+execute_process (const char *fname)
+{
+  pid_t childpid;
+  int fdpair[2];
+
+  if (pipe (fdpair) == -1)
+    error_msg ("error creating pipe", strerror (errno));
+
+  childpid = fork ();
+
+  if (childpid == -1)
+    error_msg ("error while forking", strerror (errno));
+
+  /* is it the child process? */
+  if (childpid == 0)
+    {
+      /* child closes input part of pipe */
+      close (fdpair[0]);
+
+      /* redirect stdout to pipe */
+      if (dup2 (fdpair[1], STDOUT_FILENO) == -1)
+	error_msg ("error with dup2", strerror (errno));
+
+      /* redirect sterr to pipe */
+      if (dup2 (fdpair[1], STDERR_FILENO) == -1)
+	error_msg ("error with dup2", strerror (errno));
+
+      close (fdpair[1]);
+
+      /* It's a very very dumb terminal */
+      putenv ("TERM=dumb");
+
+      /* execute the command */
+      execlp (fname, fname, NULL);
+
+      /* in case of an error, we can not do much */
+      /* stdout and stderr are broken by now */
+      quit (EXIT_FAILURE);
+    }
+
+  /* parent closes output part of pipe */
+  close (fdpair[1]);
+
+  /* use input part of pipe */
+  return fdpair[0];
+}
+
+/* opens the file */
+static int
+openfile (const char *fname)
+{
+  int fd = -1;
+
+  if (strcmp (fname, "-") == 0)
+    fd = STDIN_FILENO;		/* stdin */
+  else
+#ifndef NOFIFO
+  if (say_pipe)
+    {
+      if (mkfifo (fname, 0600) == -1)
+	error_msg ("mkfifo", fname);
+      fd = open (fname, O_RDONLY | O_NONBLOCK);
+    }
+  else
+#endif /* not NOFIFO */
+  if (executable)
+    fd = execute_process (fname);
+  else
+    fd = open (fname, O_RDONLY);	/* regular file */
+
+  /* error */
+  if (fd < 0)
+    error_msg ("error opening file for reading", strerror (errno));
+
+  return fd;
+}
+
 /* shows content of file / other input */
 static int
 processfile (const char *fname)
@@ -997,27 +1087,9 @@ processfile (const char *fname)
   wchar_t *line = NULL;
   size_t line_size = 0;
   ssize_t nread = 0;
-  int fd = 0;
+  int fd;
 
-  if (strcmp (fname, "-") == 0)
-    fd = 0;			/* stdin */
-  else
-    {
-#ifndef NOFIFO
-      if (say_pipe)
-	{
-	  if (mkfifo (fname, 0600))
-	    error_msg ("error creating fifo", fname);
-	  fd = open (fname, O_RDONLY | O_NONBLOCK);
-	}
-      else
-#endif /* not NOFIFO */
-
-	fd = open (fname, O_RDONLY);
-    }
-
-  if (fd == -1)
-    error_msg ("error opening file for reading", strerror (errno));
+  fd = openfile (fname);
 
   line_size = 1024 * sizeof (wchar_t);
   line = (wchar_t *) malloc (line_size);
@@ -1096,7 +1168,7 @@ processfile (const char *fname)
 #ifndef NOFIFO
   if (say_pipe)
     if (remove (fname) == -1)
-      warning_msg("problem removing FIFO", strerror (errno));
+      warning_msg ("problem removing FIFO", strerror (errno));
 #endif /* not NOFIFO */
 
   if (avt_get_status () == AVATARERROR)
