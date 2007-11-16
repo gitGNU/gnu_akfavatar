@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.20 2007-11-11 15:15:45 akf Exp $ */
+/* $Id: akfavatar.h,v 2.21 2007-11-16 10:55:19 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -121,7 +121,7 @@ extern char *avt_copyright (void);
 /* license information */
 extern char *avt_license (void);
 
-/* 0 = normal; 1 = quit-request; 2 = error */
+/* 0 = normal; 1 = quit-request; -1 = error */
 extern int avt_get_status (void);
 
 /* set status */
@@ -132,7 +132,7 @@ extern char *avt_get_error (void);
 
 /* 
  * set text direction
- * the curser is moved to start of the line
+ * the cursor is moved to start of the line
  * in a text, you might want to call avt_newline after that
  */
 extern void avt_text_direction (int direction);
@@ -210,7 +210,7 @@ extern void avt_register_keyhandler (void *handler);
 
 /* 
  * initialize the avatar system
- * mode is either WINDOW or FULLSCREEN
+ * mode is either WINDOW or FULLSCREEN or FULLSCREENNOSWITCH
  * the original image is freed in this function!
  * the image may be NULL if no avatar should be shown
  */
@@ -272,7 +272,7 @@ extern int avt_say_mb_len (const char *txt, int len);
 /*
  * get string (just one line)
  * the maximum length is LINELENGTH-1
- * size is the size of s in Bytes (not the length)
+ * size is the size of s in bytes (not the length)
  *
  * (I don't use size_t for better compatiblity with other languages)
  */
@@ -408,7 +408,7 @@ extern int avt_get_scroll_mode (void);
  *
  * the coordinates start with 1, 1 
  * in the upper left corner
- * and are independant from the text direction
+ * and are independent from the text direction
  */
 
 /*
