@@ -1,4 +1,4 @@
-/* $Id: akfavatar.css,v 2.2 2007-09-22 11:30:53 akf Exp $ */
+/* $Id: akfavatar.css,v 2.3 2007-11-16 17:21:14 akf Exp $ */
 
 body { margin:1ex 4em }
 dt { font-weight:bold }
@@ -7,7 +7,7 @@ a img { border:none }
 
 @media screen {
   body { background-color:#e0d5c5 }
-  h1, h2, h3, h4, h5, h6, dt, hr { color:#700 }
+  h1, h2, h3, h4, h5, h6, dt, hr { color:#70200F }
   }
 
 @media print {
