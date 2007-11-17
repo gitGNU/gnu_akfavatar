@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.32 2007-11-11 21:49:08 akf Exp $ */
+/* $Id: avatar.c,v 2.33 2007-11-17 15:15:51 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -160,7 +160,7 @@ static SDL_Surface *(*IMG_Load) (const char *file) = NULL;
 static SDL_Surface *(*IMG_Load_RW) (SDL_RWops * src, int freesrc) = NULL;
 
 /* for an external keyboard handler */
-static void (*avt_ext_keyhandler) (int sym, int mod, int unicode) = NULL;
+static avt_keyhandler avt_ext_keyhandler = NULL;
 
 
 static SDL_Surface *screen = NULL, *avt_image = NULL, *avt_character = NULL;
@@ -2237,7 +2237,7 @@ avt_stop_on_esc (int stop)
 }
 
 void
-avt_register_keyhandler (void *handler)
+avt_register_keyhandler (avt_keyhandler handler)
 {
   avt_ext_keyhandler = handler;
 }

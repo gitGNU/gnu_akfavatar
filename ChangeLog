@@ -1,4 +1,7 @@
-2007-11-11  Andreas K. Foerster  <info@akfoerster.de>
+2007-11-17  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_register_keyhandler):
+	use new type avt_keyhandler
 
 	* avatarsay.c:
 	major rewrite -> low level file handling, 

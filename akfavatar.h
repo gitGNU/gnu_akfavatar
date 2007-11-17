@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.21 2007-11-16 10:55:19 akf Exp $ */
+/* $Id: akfavatar.h,v 2.22 2007-11-17 15:15:51 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -109,6 +109,11 @@ typedef void avt_image_t;
  */
 typedef void avt_audio_t;
 
+/*
+ * type for keyhandler
+ * see avt_register_keyhandler
+ */
+typedef void (*avt_keyhandler) (int sym, int mod, int unicode);
 
 /* base fnctions */
 
@@ -206,7 +211,7 @@ extern void avt_set_flip_page_delay (int delay);
 extern void avt_set_delays (int text, int flip_page);
 
 /* register an external keyhandler */
-extern void avt_register_keyhandler (void *handler);
+extern void avt_register_keyhandler (avt_keyhandler handler);
 
 /* 
  * initialize the avatar system
@@ -249,7 +254,7 @@ extern int avt_mb_encoding (const char *encoding);
  * returns number of characters in dest (without the termination zero)
  * dest must be freed by caller with avt_free
  */
-extern int avt_mb_decode (wchar_t **dest, const char *src, const int size);
+extern int avt_mb_decode (wchar_t ** dest, const char *src, const int size);
 
 /* free memory allocated by this library */
 extern void avt_free (void *ptr);
