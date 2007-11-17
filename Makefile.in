@@ -69,11 +69,11 @@ font.lo: font.c ucsfont7x14.c ucsfont4x6.c ucsfont9x18.c
 
 libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo bell.lo font.lo
 	$(CC) -shared \
-	      -Wl,-soname,$(SONAME) -o $(LIBNAME) \
+	      -Wl,-soname,$(SONAME) -o $(LIBNAME) -fpic \
 	      avatar.lo avatar-default.lo avatar-audio.lo bell.lo font.lo \
 	      $(LDFLAGS) $(SDLLDFLAGS)
-	ln -sf $(LIBNAME) $(SONAME)
-	ln -sf $(LIBNAME) libakfavatar.so
+	-ln -sf $(LIBNAME) $(SONAME)
+	-ln -sf $(LIBNAME) libakfavatar.so
 
 example: example.c libakfavatar.so
 	$(CC) $(CFLAGS) -I. -o $@ example.c -L. -lakfavatar $(LDFLAGS)
