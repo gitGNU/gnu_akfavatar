@@ -7745,4 +7745,4 @@ get_font_offset (wchar_t ch)
       case 65533: return 36050;
       default: return DEFAULT_CHAR;
     }
-};
+}

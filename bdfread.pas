@@ -59,7 +59,7 @@ for i := 0 to MaxUsedCode do
     WriteLn('      case ', i, ': return ', transtable[i], ';');
 WriteLn('      default: return DEFAULT_CHAR;');
 WriteLn('    }');
-WriteLn('};')
+WriteLn('}')
 end;
 
 
