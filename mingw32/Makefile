@@ -121,23 +121,20 @@ avatar-default.o: ../avatar-default.c ../gnu-head.c ../gnu-small.c
 avatar.o: ../avatar.c ../akfavatar.h
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -c ../avatar.c
 
-avatar-audio.o: ../avatar-audio.c ../akfavatar.h
+avatar-audio.o: ../avatar-audio.c ../akfavatar.h ../bell.c
 	$(CC) -c $(CFLAGS) $(SDLCFLAGS) -o $@ ../avatar-audio.c
-
-bell.o: ../bell.c
-	$(CC) -c $(CFLAGS) $(SDLCFLAGS) -o $@ ../bell.c
 
 font.o: ../font.c ../ucsfont7x14.c ../ucsfont4x6.c ../ucsfont9x18.c
 	$(CC) -c $(CFLAGS) $(SDLCFLAGS) -o $@ ../font.c
 
 # static library
-libakfavatar.a: avatar.o avatar-default.o avatar-audio.o bell.o font.o
-	$(AR) rcu $@ avatar.o avatar-default.o avatar-audio.o bell.o font.o
+libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o
+	$(AR) rcu $@ avatar.o avatar-default.o avatar-audio.o font.o
 	$(RANLIB) $@
 
-akfavatar.dll: avatar.o avatar-default.o avatar-audio.o bell.o font.o libinfo.o 
+akfavatar.dll: avatar.o avatar-default.o avatar-audio.o font.o libinfo.o 
 	$(CC) -shared -o $@ avatar.o avatar-default.o avatar-audio.o \
-	        bell.o font.o libinfo.o \
+	        font.o libinfo.o \
 		-Wl,-no-undefined,--enable-runtime-pseudo-reloc \
 	        -Wl,--output-def,akfavatar.def \
 	        -Wl,--out-implib,libakfavatar.dll.a \
