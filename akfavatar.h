@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.22 2007-11-17 15:15:51 akf Exp $ */
+/* $Id: akfavatar.h,v 2.23 2007-11-18 10:18:14 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -118,13 +118,13 @@ typedef void (*avt_keyhandler) (int sym, int mod, int unicode);
 /* base fnctions */
 
 /* which version */
-extern char *avt_version (void);
+extern const char *avt_version (void);
 
 /* copyright information */
-extern char *avt_copyright (void);
+extern const char *avt_copyright (void);
 
 /* license information */
-extern char *avt_license (void);
+extern const char *avt_license (void);
 
 /* 0 = normal; 1 = quit-request; -1 = error */
 extern int avt_get_status (void);
