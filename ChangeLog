@@ -1,4 +1,6 @@
-2007-11-17  Andreas K. Foerster  <info@akfoerster.de>
+2007-11-18  Andreas K. Foerster  <info@akfoerster.de>
+
+	* C++ comaptibility improvements
 
 	* akfavatar.h, avatar.c (avt_register_keyhandler):
 	use new type avt_keyhandler

@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.33 2007-11-17 15:15:51 akf Exp $ */
+/* $Id: avatar.c,v 2.34 2007-11-18 09:37:26 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -236,21 +236,22 @@ avt_iconv (avt_iconv_t cd,
 char *
 avt_version (void)
 {
-  static char *version = AVTVERSION;
+  static char *version = (char *) AVTVERSION;
   return version;
 }
 
 char *
 avt_copyright (void)
 {
-  static char *copyright = "Copyright (c) 2007 Andreas K. Foerster";
+  static char *copyright = (char *) "Copyright (c) 2007 Andreas K. Foerster";
   return copyright;
 }
 
 char *
 avt_license (void)
 {
-  static char *license = "License GPLv3+: GNU GPL version 3 or later "
+  static char *license =
+    (char *) "License GPLv3+: GNU GPL version 3 or later "
     "<http://gnu.org/licenses/gpl.html>";
   return license;
 }
@@ -1385,7 +1386,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, const int size)
     avt_mb_encoding (MB_DEFAULT_ENCODING);
 
   inbytesleft = size + rest_bytes;
-  inbuf_start = SDL_malloc (inbytesleft);
+  inbuf_start = (char *) SDL_malloc (inbytesleft);
 
   if (!inbuf_start)
     {
@@ -1413,7 +1414,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, const int size)
   if (dest_size < 8)
     dest_size = 8;
 
-  *dest = SDL_malloc (dest_size);
+  *dest = (wchar_t *) SDL_malloc (dest_size);
 
   if (!*dest)
     {
@@ -1990,8 +1991,12 @@ load_SDL_image (void)
       SDL_image_handle = SDL_LoadObject (SDL_IMAGE_LIB);
       if (SDL_image_handle)
 	{
-	  IMG_Load = SDL_LoadFunction (SDL_image_handle, "IMG_Load");
-	  IMG_Load_RW = SDL_LoadFunction (SDL_image_handle, "IMG_Load_RW");
+	  IMG_Load =
+	    (SDL_Surface * (*)(const char *))
+	    SDL_LoadFunction (SDL_image_handle, "IMG_Load");
+	  IMG_Load_RW =
+	    (SDL_Surface * (*)(SDL_RWops *, int))
+	    SDL_LoadFunction (SDL_image_handle, "IMG_Load_RW");
 	}
     }
 #endif /* _SDL_loadso_h */
@@ -2097,7 +2102,7 @@ avt_show_gimp_image (void *gimp_image)
   SDL_Surface *image;
   gimp_img_t *img;
 
-  img = gimp_image;
+  img = (gimp_img_t *) gimp_image;
 
   if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
     image = SDL_CreateRGBSurfaceFrom (&img->pixel_data,
@@ -2153,7 +2158,7 @@ avt_import_gimp_image (void *gimp_image)
   SDL_Surface *image;
   gimp_img_t *img;
 
-  img = gimp_image;
+  img = (gimp_img_t *) gimp_image;
 
   if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
     image = SDL_CreateRGBSurfaceFrom (&img->pixel_data,

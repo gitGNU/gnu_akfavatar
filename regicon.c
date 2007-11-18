@@ -6,7 +6,7 @@ avt_register_icon (void)
   SDL_Surface *icon;
   SDL_Color color;
 
-  static const char icondata[] = {
+  static char icondata[] = {
     "                                "
     "                                "
     "                                "

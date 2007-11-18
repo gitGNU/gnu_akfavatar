@@ -38,17 +38,14 @@ avatar.o: avatar.c akfavatar.h version.h balloonpointer.c circle.c regicon.c
 avatar-default.o: avatar-default.c gnu-head.c gnu-small.c akfavatar.h
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ avatar-default.c
 
-avatar-audio.o: avatar-audio.c akfavatar.h
+avatar-audio.o: avatar-audio.c akfavatar.h bell.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ avatar-audio.c
-
-bell.o: bell.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ bell.c
 
 font.o: font.c ucsfont7x14.c ucsfont4x6.c ucsfont9x18.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ font.c
 
-libakfavatar.a: avatar.o avatar-default.o avatar-audio.o bell.o font.o
-	$(AR) rcu $@ avatar.o avatar-default.o avatar-audio.o bell.o font.o
+libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o
+	$(AR) rcu $@ avatar.o avatar-default.o avatar-audio.o font.o
 	-$(RANLIB) $@
 
 avatar.lo: avatar.c akfavatar.h version.h balloonpointer.c circle.c regicon.c
@@ -58,19 +55,16 @@ avatar.lo: avatar.c akfavatar.h version.h balloonpointer.c circle.c regicon.c
 avatar-default.lo: avatar-default.c gnu-head.c gnu-small.c akfavatar.h
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fpic -o $@ avatar-default.c
 
-avatar-audio.lo: avatar-audio.c akfavatar.h
+avatar-audio.lo: avatar-audio.c akfavatar.h bell.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fpic -o $@ avatar-audio.c
-
-bell.lo: bell.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fpic -o $@ bell.c
 
 font.lo: font.c ucsfont7x14.c ucsfont4x6.c ucsfont9x18.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fpic -o $@ font.c
 
-libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo bell.lo font.lo
+libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo font.lo
 	$(CC) -shared \
 	      -Wl,-soname,$(SONAME) -o $(LIBNAME) -fpic \
-	      avatar.lo avatar-default.lo avatar-audio.lo bell.lo font.lo \
+	      avatar.lo avatar-default.lo avatar-audio.lo font.lo \
 	      $(LDFLAGS) $(SDLLDFLAGS)
 	-ln -sf $(LIBNAME) $(SONAME)
 	-ln -sf $(LIBNAME) libakfavatar.so
