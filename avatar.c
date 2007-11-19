@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.35 2007-11-18 10:18:14 akf Exp $ */
+/* $Id: avatar.c,v 2.36 2007-11-19 19:46:08 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1535,7 +1535,7 @@ int
 avt_ask (wchar_t * s, const int size)
 {
   wchar_t ch;
-  int len, maxlen;
+  size_t len, maxlen;
 
   /* no textfield? => draw balloon */
   if (textfield.x < 0)
@@ -2347,7 +2347,10 @@ avt_initialize (const char *title, const char *icontitle,
 
   /* don't try to use the mouse 
    * needed for the fbcon driver */
-  putenv ("SDL_NOMOUSE=1");
+  {
+    char tmp[] = "SDL_NOMOUSE=1";
+    putenv (tmp);
+  }
 
   if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
     {

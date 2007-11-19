@@ -1,8 +1,8 @@
 /* This file is in the Public Domain - AKFoerster */
 
 static const struct {
-  unsigned int   width;
-  unsigned int   height;
+  int   width;
+  int   height;
   unsigned char  data[(64 * 120 + 1) * sizeof (unsigned char)];
   } balloonpointer = {
   64, 120,
