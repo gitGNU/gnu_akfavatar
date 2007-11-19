@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.8 2007-11-18 09:37:26 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.9 2007-11-19 21:55:39 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -58,7 +58,7 @@ static avt_audio_t *mybell;
 /* current sound */
 static AudioStruct current_sound;
 static Uint8 *soundpos = NULL;	/* Current play position */
-static Uint32 soundleft = 0;	/* Length of left unplayed wave data */
+static Sint32 soundleft = 0;	/* Length of left unplayed wave data */
 static int loop = 0;
 
 extern int avt_checkevent (void);
