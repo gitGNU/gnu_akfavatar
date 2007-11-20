@@ -18,9 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.25 2007-11-15 17:14:29 akf Exp $ */
-
-/* TODO: swscanf is crap! */
+/* $Id: avatarsay.c,v 2.26 2007-11-20 16:22:30 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -28,6 +26,7 @@
 
 #include "version.h"
 #include "akfavatar.h"
+#include <limits.h>
 #include <wchar.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -36,6 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+#include <locale.h>
 
 #ifdef __WIN32__
 #  include <windows.h>
@@ -56,25 +56,25 @@ static char encoding[80] = "ISO-8859-1";
 
 /* if rawmode is set, then don't interpret any commands or comments */
 /* rawmode can be activated with the options -r or --raw */
-static int rawmode = 0;
+static int rawmode;
 
 /* popup-mode? */
-static int popup = 0;
+static int popup;
 
 /* stop the program? */
-static int stop = 0;
+static int stop;
 
 /* 
  * ignore end of file conditions
  * this should be used, when the input doesn't come from a file
  */
-static int ignore_eof = 0;
+static int ignore_eof;
 
 /* create a fifo for what to say? */
-static int say_pipe = 0;
+static int say_pipe;
 
 /* execute file? */
-static int executable = 0;
+static int executable;
 
 /* whether to run in a window, or in fullscreen mode */
 /* the mode can be set by -f, --fullscreen or -w, --window */
@@ -84,13 +84,13 @@ static int mode = AUTOMODE;
 /* is the avatar initialized? (0|1) */
 /* for delaying the initialization until it is clear that we actually 
    have data to show */
-static int initialized = 0;
+static int initialized;
 
 /* was the file already checked for a bom at the beginning? */
-static int bom_checked = 0;
+static int bom_checked;
 
 /* encoding given on command line */
-static int given_encoding = 0;
+static int given_encoding;
 
 /* play it in an endless loop? (0/1) */
 /* deactivated, when input comes from stdin */
@@ -98,13 +98,13 @@ static int given_encoding = 0;
 static int loop = 1;
 
 /* where to find imagefiles */
-static char datadir[512] = "";
+static char datadir[512];
 
 /* for loading an avt_image */
-static avt_image_t *avt_image = NULL;
+static avt_image_t *avt_image;
 
 /* for loading sound files */
-static avt_audio_t *sound = NULL;
+static avt_audio_t *sound;
 
 
 static void
@@ -478,48 +478,59 @@ initialize (void)
   initialized = 1;
 }
 
+/* fills filepath with datadir and the converted contend of fn */
+static void
+get_data_file (const wchar_t * fn, char filepath[])
+{
+  size_t result, filepath_len;
+
+  strcpy (filepath, datadir);
+
+  if (filepath[0] != '\0')
+    strcat (filepath, "/");
+
+  filepath_len = strlen (filepath);
+
+  /* remove leading whitespace */
+  while (*fn == L' ' || *fn == L'\t')
+    fn++;
+
+  result =
+    wcstombs (&filepath[filepath_len], fn, PATH_MAX - filepath_len - 1);
+
+  if (result == (size_t) (-1))
+    error_msg ("wcstombs", strerror (errno));
+}
+
 static void
 handle_image_command (const wchar_t * s)
 {
-  char filename[255];
-  char file[512];
+  char filepath[PATH_MAX];
 
-  if (swscanf (s, L".image %255s", (wchar_t *) & filename) > 0)
-    {
-      strcpy (file, datadir);
-      if (file[0] != '\0')
-	strcat (file, "/");
-      strncat (file, filename, sizeof (file) - 1 - strlen (datadir));
+  get_data_file (s + 7, filepath);	/* remove ".image " */
 
-      if (!initialized)
-	initialize ();
-      else if (avt_wait (2500))
-	quit (EXIT_SUCCESS);
-      if (!avt_show_image_file (file))
-	if (avt_wait (7000))
-	  quit (EXIT_SUCCESS);
-    }
+  if (!initialized)
+    initialize ();
+  else if (avt_wait (2500))
+    quit (EXIT_SUCCESS);
+  if (!avt_show_image_file (filepath))
+    if (avt_wait (7000))
+      quit (EXIT_SUCCESS);
 }
 
 static void
 handle_avatarimage_command (const wchar_t * s)
 {
-  char filename[255];
-  char file[512];
+  char filepath[PATH_MAX];
 
   /* if already assigned, delete it */
   if (avt_image)
     avt_free_image (avt_image);
 
-  if (swscanf (s, L".avatarimage %255s", (char *) &filename) > 0)
-    {
-      strcpy (file, datadir);
-      if (file[0] != '\0')
-	strcat (file, "/");
-      strncat (file, filename, sizeof (file) - 1 - strlen (datadir));
-      if (!(avt_image = avt_import_image_file (file)))
-	warning_msg ("warning", avt_get_error ());
-    }
+  get_data_file (s + 13, filepath);	/* remove ".avatarimage " */
+
+  if (!(avt_image = avt_import_image_file (filepath)))
+    warning_msg ("warning", avt_get_error ());
 }
 
 static void
@@ -536,8 +547,7 @@ handle_backgoundcolor_command (const wchar_t * s)
 static void
 handle_audio_command (const wchar_t * s)
 {
-  char filename[255];
-  char file[512];
+  char filepath[PATH_MAX];
 
   if (!initialized)
     {
@@ -547,27 +557,23 @@ handle_audio_command (const wchar_t * s)
 	move_in ();
     }
 
-  if (swscanf (s, L".audio %255s", (char *) &filename) > 0)
+  if (sound)
     {
-      if (sound)
-	avt_free_audio (sound);
+      avt_free_audio (sound);
       sound = NULL;
-
-      strcpy (file, datadir);
-      if (file[0] != '\0')
-	strcat (file, "/");
-      strncat (file, filename, sizeof (file) - 1 - strlen (datadir));
-
-      sound = avt_load_wave_file (file);
-      if (!sound)
-	{
-	  notice_msg ("can not load audio file", avt_get_error ());
-	  return;
-	}
-
-      if (avt_play_audio (sound, 0))
-	notice_msg ("can not play audio file", avt_get_error ());
     }
+
+  get_data_file (s + 7, filepath);
+
+  sound = avt_load_wave_file (filepath);
+  if (sound == NULL)
+    {
+      notice_msg ("can not load audio file", avt_get_error ());
+      return;
+    }
+
+  if (avt_play_audio (sound, 0))
+    notice_msg ("can not play audio file", avt_get_error ());
 }
 
 static void
@@ -589,7 +595,7 @@ handle_back_command (const wchar_t * s)
 }
 
 static void
-handle_read_command (const wchar_t * s)
+handle_read_command (void)
 {
   wchar_t line[LINELENGTH];
 
@@ -649,7 +655,9 @@ iscommand (wchar_t * s)
       /* new datadir */
       if (wcsncmp (s, L".datadir ", 9) == 0)
 	{
-	  swscanf (s, L".datadir %255s", (char *) &datadir);
+	  if (wcstombs ((char *) &datadir, s + 9, sizeof (datadir))
+	      == (size_t) (-1))
+	    warning_msg (".datadir", strerror (errno));
 	  return 1;
 	}
 
@@ -663,7 +671,7 @@ iscommand (wchar_t * s)
 
       if (wcsncmp (s, L".encoding ", 10) == 0)
 	{
-	  if (swscanf (s, L".encoding %79s", (char *) &encoding) <= 0)
+	  if (wcstombs (encoding, s + 10, sizeof (encoding)) == (size_t) (-1))
 	    warning_msg ("warning", "cannot read the \".encoding\" line.");
 	  else
 	    set_encoding (encoding);
@@ -769,9 +777,9 @@ iscommand (wchar_t * s)
 	  return 1;
 	}
 
-      if (wcsncmp (s, L".read ", 6) == 0)
+      if (wcscmp (s, L".read") == 0)
 	{
-	  handle_read_command (s);
+	  handle_read_command ();
 	  return 1;
 	}
 
@@ -919,9 +927,8 @@ process_line_end (wchar_t * s, ssize_t * len)
     }
 }
 
-/* on some systems it might be necessary to use wint_t */
 /* @@@ */
-static wchar_t
+static wint_t
 get_character (int fd)
 {
   static wchar_t *wcbuf = NULL;
@@ -931,7 +938,7 @@ get_character (int fd)
 
   if (wcbuf_pos >= wcbuf_len)
     {
-      static char filebuf[128];
+      static char filebuf[BUFSIZ];
       static int filebuf_end = 0;
 
       if (wcbuf)
@@ -975,23 +982,25 @@ static ssize_t
 getwline (int fd, wchar_t * lineptr, size_t n)
 {
   ssize_t nchars, maxchars;
+  wint_t ch;
 
   /* one char reserved for terminator */
   maxchars = (n / sizeof (wchar_t)) - 1;
   nchars = 0;
 
-  *lineptr = get_character (fd);
+  ch = get_character (fd);
+  *lineptr = ch;
   nchars++;
-
-  while (*lineptr != WEOF && *lineptr != L'\n' && nchars <= maxchars)
+  while (ch != WEOF && ch != L'\n' && nchars <= maxchars)
     {
+      ch = get_character (fd);
       lineptr++;
-      *lineptr = get_character (fd);
+      *lineptr = ch;
       nchars++;
     }
 
   /* terminate */
-  if (*lineptr != WEOF)
+  if (ch != WEOF)
     *(lineptr + 1) = L'\0';
   else
     {
@@ -1033,7 +1042,10 @@ execute_process (const char *fname)
       close (fdpair[1]);
 
       /* It's a very very dumb terminal */
-      putenv ("TERM=dumb");
+      {
+	char tmp[] = "TERM=dumb";
+	putenv (tmp);
+      }
 
       /* execute the command */
       execlp (fname, fname, NULL);
@@ -1183,6 +1195,8 @@ processfile (const char *fname)
 int
 main (int argc, char *argv[])
 {
+  setlocale (LC_ALL, "");
+
   if (argc < 2)
     help (argv[0]);
 

@@ -1,6 +1,7 @@
 2007-11-18  Andreas K. Foerster  <info@akfoerster.de>
 
 	* C++ comaptibility improvements
+	(wint_t is used again)
 
 	* akfavatar.h, avatar.c (avt_register_keyhandler):
 	use new type avt_keyhandler
@@ -58,7 +59,8 @@
 	fixed typo
 
 	* avatar.c (avt_drawchar, avt_ask):
-	don't use wint_t for compatiblity reasons (wasn't needed anyway)
+	don't use wint_t for compatiblity reasons 
+	(reintroduced in later versions)
 
 2007-10-16  Andreas K. Foerster  <info@akfoerster.de>
 
