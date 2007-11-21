@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.26 2007-11-20 16:22:30 akf Exp $ */
+/* $Id: avatarsay.c,v 2.27 2007-11-21 13:36:11 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -671,10 +671,14 @@ iscommand (wchar_t * s)
 
       if (wcsncmp (s, L".encoding ", 10) == 0)
 	{
-	  if (wcstombs (encoding, s + 10, sizeof (encoding)) == (size_t) (-1))
+	  if (wcstombs ((char *) &encoding, s + 10, sizeof (encoding))
+	      == (size_t) (-1))
 	    warning_msg ("warning", "cannot read the \".encoding\" line.");
 	  else
-	    set_encoding (encoding);
+	    {
+	      set_encoding (encoding);
+	      /* TODO: BUG: buffer already decoded with old encoding */
+	    }
 
 	  return 1;
 	}
