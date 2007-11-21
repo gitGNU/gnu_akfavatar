@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.27 2007-11-21 13:36:11 akf Exp $ */
+/* $Id: avatarsay.c,v 2.28 2007-11-21 17:44:47 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -46,8 +46,17 @@
 #  include <sys/stat.h>
 #endif
 
-
 #define PRGNAME "avatarsay"
+
+/* size for input buffer - not too small, please */
+/* .encoding must be in first buffer */
+#define INBUFSIZE 10240
+
+/* maximum size for path */
+/* should fit into stack */
+#ifndef PATH_MAX
+#  define PATH_MAX 4096
+#endif
 
 /* encoding of the input files */
 /* supported in SDL: ASCII, ISO-8859-1, UTF-8, UTF-16, UTF-32 */
@@ -86,8 +95,8 @@ static int mode = AUTOMODE;
    have data to show */
 static int initialized;
 
-/* was the file already checked for a bom at the beginning? */
-static int bom_checked;
+/* was the file already checked for an encoding? */
+static int encoding_checked;
 
 /* encoding given on command line */
 static int given_encoding;
@@ -669,19 +678,10 @@ iscommand (wchar_t * s)
 	  return 1;
 	}
 
+      /* the encoding is checked in check_encoding */
+      /* so ignore it here */
       if (wcsncmp (s, L".encoding ", 10) == 0)
-	{
-	  if (wcstombs ((char *) &encoding, s + 10, sizeof (encoding))
-	      == (size_t) (-1))
-	    warning_msg ("warning", "cannot read the \".encoding\" line.");
-	  else
-	    {
-	      set_encoding (encoding);
-	      /* TODO: BUG: buffer already decoded with old encoding */
-	    }
-
-	  return 1;
-	}
+	return 1;
 
       if (wcsncmp (s, L".backgroundcolor ", 17) == 0)
 	{
@@ -815,16 +815,40 @@ iscommand (wchar_t * s)
 
 /* check for byte order mark (BOM) U+FEFF and remove it */
 static void
-check_bom (char *line, int *size)
+check_encoding (char *buf, int *size)
 {
-  bom_checked = 1;
+  char *enc;
+
+  encoding_checked = 1;
+
+  /* check for command .encoding */
+  enc = strstr (buf, ".encoding ");
+
+  /*
+   * if .encoding is found and it is either at the start of the buffer 
+   * or the previous character is a \n then set_encoding
+   * and don't check anything else anymore
+   */
+  if (enc != NULL && (enc == buf || *(enc - 1) == '\n'))
+    {
+      if (sscanf (enc, ".encoding %79s", (char *) &encoding) <= 0)
+	warning_msg ("warning", "cannot read the \".encoding\" line.");
+      else
+	{
+	  set_encoding (encoding);
+	  return;
+	}
+    }
+
+
+  /* check for byte order marks (BOM) */
 
   /* UTF-8 BOM (as set by Windows notepad) */
-  if (line[0] == '\xEF' && line[1] == '\xBB' && line[2] == '\xBF')
+  if (*buf == '\xEF' && *(buf + 1) == '\xBB' && *(buf + 2) == '\xBF')
     {
       strcpy (encoding, "UTF-8");
       set_encoding (encoding);
-      memmove (line, line + 3, *size - 3);
+      memmove (buf, buf + 3, *size - 3);
       *size -= 3;
       return;
     }
@@ -832,71 +856,71 @@ check_bom (char *line, int *size)
   /* check 32 Bit BOMs before 16 Bit ones, to avoid confusion! */
 
   /* UTF-32BE BOM */
-  if (line[0] == '\x00' && line[1] == '\x00'
-      && line[2] == '\xFE' && line[3] == '\xFF')
+  if (*buf == '\x00' && *(buf + 1) == '\x00'
+      && *(buf + 2) == '\xFE' && *(buf + 3) == '\xFF')
     {
       strcpy (encoding, "UTF-32BE");
       set_encoding (encoding);
-      memmove (line, line + 4, *size - 4);
+      memmove (buf, buf + 4, *size - 4);
       *size -= 4;
       return;
     }
 
   /* UTF-32LE BOM */
-  if (line[0] == '\xFF' && line[1] == '\xFE'
-      && line[2] == '\x00' && line[3] == '\x00')
+  if (*buf == '\xFF' && *(buf + 1) == '\xFE'
+      && *(buf + 2) == '\x00' && *(buf + 3) == '\x00')
     {
       strcpy (encoding, "UTF-32LE");
       set_encoding (encoding);
-      memmove (line, line + 4, *size - 4);
+      memmove (buf, buf + 4, *size - 4);
       *size -= 4;
       return;
     }
 
   /* UTF-16BE BOM */
-  if (line[0] == '\xFE' && line[1] == '\xFF')
+  if (*buf == '\xFE' && *(buf + 1) == '\xFF')
     {
       strcpy (encoding, "UTF-16BE");
       set_encoding (encoding);
-      memmove (line, line + 2, *size - 2);
+      memmove (buf, buf + 2, *size - 2);
       *size -= 2;
       return;
     }
 
   /* UTF-16LE BOM */
-  if (line[0] == '\xFF' && line[1] == '\xFE')
+  if (*buf == '\xFF' && *(buf + 1) == '\xFE')
     {
       strcpy (encoding, "UTF-16LE");
       set_encoding (encoding);
-      memmove (line, line + 2, *size - 2);
+      memmove (buf, buf + 2, *size - 2);
       *size -= 2;
       return;
     }
 
   /* other heuristics for Unicode */
 
-  if (line[0] == '\x00' && line[1] == '\x00')
+  if (*buf == '\x00' && *(buf + 1) == '\x00')
     {
       strcpy (encoding, "UTF-32BE");
       set_encoding (encoding);
       return;
     }
 
-  if (line[2] == '\x00' && line[3] == '\x00')
+  if (*(buf + 2) == '\x00' && *(buf + 3) == '\x00')
     {
       strcpy (encoding, "UTF-32LE");
       set_encoding (encoding);
       return;
     }
 
-  if (line[0] == '\x00')
+  if (*buf == '\x00')
     {
       strcpy (encoding, "UTF-16BE");
       set_encoding (encoding);
       return;
     }
 
-  if (line[1] == '\x00')
+  if (*(buf + 1) == '\x00')
     {
       strcpy (encoding, "UTF-16LE");
       set_encoding (encoding);
@@ -942,7 +966,7 @@ get_character (int fd)
 
   if (wcbuf_pos >= wcbuf_len)
     {
-      static char filebuf[BUFSIZ];
+      static char filebuf[INBUFSIZE];
       static int filebuf_end = 0;
 
       if (wcbuf)
@@ -962,10 +986,10 @@ get_character (int fd)
 	}
 
       if (filebuf_end == -1)
-	error_msg ("error closing the file", strerror (errno));
+	error_msg ("error while reading from file", strerror (errno));
 
-      if (!bom_checked && !given_encoding)
-	check_bom (filebuf, &filebuf_end);
+      if (!encoding_checked && !given_encoding)
+	check_encoding (filebuf, &filebuf_end);
 
       wcbuf_len = avt_mb_decode (&wcbuf, (char *) &filebuf, filebuf_end);
       wcbuf_pos = 0;
@@ -1110,7 +1134,7 @@ processfile (const char *fname)
   line_size = 1024 * sizeof (wchar_t);
   line = (wchar_t *) malloc (line_size);
 
-  bom_checked = 0;
+  encoding_checked = 0;
 
   if (!rawmode)
     do				/* skip empty lines at the beginning */
