@@ -1,4 +1,4 @@
-2007-11-18  Andreas K. Foerster  <info@akfoerster.de>
+2007-11-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* C++ comaptibility improvements
 	(wint_t is used again)
@@ -9,6 +9,8 @@
 	* avatarsay.c:
 	major rewrite -> low level file handling, 
 	supports UTF-16/UTF-32 files now, better FIFO handling
+	experimental support for calling external programs
+	uses langinfo.h to get the current encoding
 
 	* akfavatar.h, aavatar.c (avt_update):
 	new function

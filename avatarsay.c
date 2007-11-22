@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.28 2007-11-21 17:44:47 akf Exp $ */
+/* $Id: avatarsay.c,v 2.29 2007-11-22 11:21:58 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -26,7 +26,7 @@
 
 #include "version.h"
 #include "akfavatar.h"
-#include <limits.h>
+#include <limits.h>		/* for PATH_MAX */
 #include <wchar.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -39,10 +39,16 @@
 
 #ifdef __WIN32__
 #  include <windows.h>
-#  define NOFIFO 1
+#  define NO_FIFO 1
+#  define NO_FORK 1
+#  define NO_LANGINFO 1
 #endif
 
-#ifndef NOFIFO
+#ifndef NO_LANGINFO
+#  include <langinfo.h>
+#endif
+
+#ifndef NO_FIFO
 #  include <sys/stat.h>
 #endif
 
@@ -61,7 +67,7 @@
 /* encoding of the input files */
 /* supported in SDL: ASCII, ISO-8859-1, UTF-8, UTF-16, UTF-32 */
 /* ISO-8859-1 is a sane default */
-static char encoding[80] = "ISO-8859-1";
+static char encoding[80];
 
 /* if rawmode is set, then don't interpret any commands or comments */
 /* rawmode can be activated with the options -r or --raw */
@@ -88,7 +94,7 @@ static int executable;
 /* whether to run in a window, or in fullscreen mode */
 /* the mode can be set by -f, --fullscreen or -w, --window */
 /* or with --fullfullscreen or -F */
-static int mode = AUTOMODE;
+static int mode;
 
 /* is the avatar initialized? (0|1) */
 /* for delaying the initialization until it is clear that we actually 
@@ -104,7 +110,7 @@ static int given_encoding;
 /* play it in an endless loop? (0/1) */
 /* deactivated, when input comes from stdin */
 /* can be deactivated by -1, --once */
-static int loop = 1;
+static int loop;
 
 /* where to find imagefiles */
 static char datadir[512];
@@ -197,7 +203,7 @@ help (const char *prgname)
 	" (don't handle any commands)");
   puts (" -i, --ignoreeof         ignore end of file conditions "
 	"(input is not a file)");
-#ifdef NOFIFO
+#ifdef NO_FIFO
   puts (" -s, --saypipe           not supported on this system");
 #else
   puts (" -s, --saypipe           create named pipe for filename");
@@ -287,45 +293,6 @@ set_encoding (const char *encoding)
 }
 
 static void
-check_system_encoding (void)
-{
-  char *s;
-
-  s = getenv ("LC_ALL");
-  if (s == NULL)
-    s = getenv ("LC_CTYPE");
-  if (s == NULL)
-    s = getenv ("LANG");
-  if (s == NULL)
-    return;			/* give up */
-
-  if (strstr (s, "UTF") || strstr (s, "utf"))
-    strcpy (encoding, "UTF-8");
-  else if (strstr (s, "euro"))
-    strcpy (encoding, "ISO-8859-15");
-  else if (strstr (s, "KOI8-R") || strstr (s, "KOI8R"))
-    strcpy (encoding, "KOI8-R");
-  else if (strstr (s, "KOI8-U") || strstr (s, "KOI8U"))
-    strcpy (encoding, "KOI8-U");
-  else if (strstr (s, "KOI8"))
-    strcpy (encoding, "KOI8");
-  else				/* ISO 8859- family */
-    {
-      char *p = strstr (s, "8859-");
-      if (p)
-	{
-	  strcpy (encoding, "ISO-8859-");
-	  p += 5;
-	  /* two digits following? */
-	  if (*(p + 1) >= '0' && *(p + 1) <= '9')
-	    strncat (encoding, p, 2);
-	  else
-	    strncat (encoding, p, 1);
-	}
-    }
-}
-
-static void
 checkoptions (int argc, char **argv)
 {
   int i;
@@ -377,7 +344,7 @@ checkoptions (int argc, char **argv)
 
       if (strcmp (argv[i], "--saypipe") == 0 || strcmp (argv[i], "-s") == 0)
 	{
-#ifdef NOFIFO
+#ifdef NO_FIFO
 	  error_msg ("pipes not supported on this system", NULL);
 #else
 	  say_pipe = 1;
@@ -386,7 +353,7 @@ checkoptions (int argc, char **argv)
 	  /* autodetecting the encoding doesn't work with FIFOs */
 	  given_encoding = 1;
 	  continue;
-#endif /* not NOFIFO */
+#endif /* ! NO_FIFO */
 	}
 
       if (strncmp (argv[i], "--encoding=", 11) == 0)
@@ -1042,6 +1009,7 @@ getwline (int fd, wchar_t * lineptr, size_t n)
 static int
 execute_process (const char *fname)
 {
+#ifndef NO_FORK
   pid_t childpid;
   int fdpair[2];
 
@@ -1088,6 +1056,7 @@ execute_process (const char *fname)
 
   /* use input part of pipe */
   return fdpair[0];
+#endif /* ! NO_FORK */
 }
 
 /* opens the file */
@@ -1099,7 +1068,7 @@ openfile (const char *fname)
   if (strcmp (fname, "-") == 0)
     fd = STDIN_FILENO;		/* stdin */
   else
-#ifndef NOFIFO
+#ifndef NO_FIFO
   if (say_pipe)
     {
       if (mkfifo (fname, 0600) == -1)
@@ -1107,10 +1076,12 @@ openfile (const char *fname)
       fd = open (fname, O_RDONLY | O_NONBLOCK);
     }
   else
-#endif /* not NOFIFO */
+#endif /* ! NO_FIFO */
+#ifndef NO_FORK
   if (executable)
     fd = execute_process (fname);
   else
+#endif /* ! NO_FORK */
     fd = open (fname, O_RDONLY);	/* regular file */
 
   /* error */
@@ -1205,11 +1176,11 @@ processfile (const char *fname)
   if (close (fd) == -1 && errno != EAGAIN)
     error_msg ("error closing the file", strerror (errno));
 
-#ifndef NOFIFO
+#ifndef NO_FIFO
   if (say_pipe)
     if (remove (fname) == -1)
       warning_msg ("problem removing FIFO", strerror (errno));
-#endif /* not NOFIFO */
+#endif /* ! NO_FIFO */
 
   if (avt_get_status () == AVATARERROR)
     {
@@ -1223,13 +1194,22 @@ processfile (const char *fname)
 int
 main (int argc, char *argv[])
 {
+  mode = AUTOMODE;
+  loop = 1;
+  strcpy (encoding, "ISO-8859-1");
+
   setlocale (LC_ALL, "");
 
   if (argc < 2)
     help (argv[0]);
 
   checkenvironment ();
-  check_system_encoding ();
+
+  /* get system encoding */
+#ifndef NO_LANGINFO
+  strncpy (encoding, nl_langinfo (CODESET), sizeof (encoding));
+#endif
+
   checkoptions (argc, argv);
 
   set_encoding (encoding);
