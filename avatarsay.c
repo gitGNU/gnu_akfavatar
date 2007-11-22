@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.29 2007-11-22 11:21:58 akf Exp $ */
+/* $Id: avatarsay.c,v 2.30 2007-11-22 12:18:26 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -39,9 +39,11 @@
 
 #ifdef __WIN32__
 #  include <windows.h>
-#  define NO_FIFO 1
-#  define NO_FORK 1
-#  define NO_LANGINFO 1
+#  ifdef __MINGW32__
+#    define NO_FIFO 1
+#    define NO_FORK 1
+#    define NO_LANGINFO 1
+#  endif
 #endif
 
 #ifndef NO_LANGINFO
