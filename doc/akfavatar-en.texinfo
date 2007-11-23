@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.20 2007-11-12 14:46:36 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.21 2007-11-23 15:31:20 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -625,10 +625,12 @@ installed.  Uncompressed @code{BMP} images are always supported.
 sets the encoding of the text; 
 such as @samp{ISO-8859-1} or @samp{UTF-8}
 
-@strong{Attention}: This command has to be used before the text starts
-(of course).  You may change the encoding inside of the text, if that makes
-sense to you.
+@strong{Attention}: This command has to be used at the beginning of the
+file. You can no longer change the encoding inside of the text (which was 
+possible in previous versions).
 
+This command can only be used with @code{ASCII} compatible encodings,
+such as the @code{ISO-8859}-series or @code{UTF-8}.
 The encodings @code{UTF-16} (@code{UCS2}) and @code{UTF-32} (@code{UCS4}) 
 can not be set with this command.  But these encodings are in most cases
 detected automatically.  (Earlier versions of @command{avatarsay} could not

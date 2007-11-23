@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.13 2007-11-12 14:46:36 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.14 2007-11-23 15:31:20 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -683,10 +683,12 @@ ab, welche Bibliotheken auf dem System installiert sind.  Unkomprimierte
 gibt die Kodierung des Textes an; 
 zum Beispiel @samp{ISO-8859-1} oder @samp{UTF-8}
 
-@strong{Achtung}: Dieser Befehl muss natürlich benutzt werden, bevor der 
-eigentliche Text anfängt.  Man kann die Kodierung aber auch innerhalb des
-Textes verändern, falls das Sinn macht.
+@strong{Achtung}: Dieser Befehl muss ziemlich am Anfang der Datei stehen.  
+Man kann die Kodierung nicht mehr innerhalb des Textes verändern.
+(Das war in früheren Versionen noch möglich.)
 
+Dieser Befehl kann nur bei @code{ASCII}-kompatiblen Kodierungen verwendet
+werden, wie zum Beispiel die @code{ISO-8859}-Familie oder @code{UTF-8}.
 Die Kodierungen @code{UTF-16} (@code{UCS2}) und @code{UTF-32} (@code{UCS4})
 können nicht auf diese Weise definiert werden.  Diese Kodierungen werden 
 in der Regel jedoch automatisch erkannt.  (Ältere Versionen von 
