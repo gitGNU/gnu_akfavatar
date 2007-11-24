@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.30 2007-11-22 12:18:26 akf Exp $ */
+/* $Id: avatarsay.c,v 2.31 2007-11-24 08:06:23 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -36,6 +36,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <locale.h>
+#include <getopt.h>
 
 #ifdef __WIN32__
 #  include <windows.h>
@@ -196,11 +197,11 @@ help (const char *prgname)
 	" (default)");
   puts (" -f, --fullscreen        try to run the program in fullscreen mode");
   puts (" -F, --fullfullscreen    like -f, but use current display-size");
-  puts ("     --encoding=enc      input data is encoded in encoding \"enc\"");
+  puts (" -E, --encoding=enc      input data is encoded in encoding \"enc\"");
   puts (" -l, --latin1            input data is encoded in Latin-1");
   puts (" -u, --utf-8             input data is encoded in UTF-8");
   puts (" -1, --once              run only once (don't loop)");
-  puts ("     --popup             popup, ie. don't move the avatar in");
+  puts (" -p, --popup             popup, ie. don't move the avatar in");
   puts (" -r, --raw               output raw text"
 	" (don't handle any commands)");
   puts (" -i, --ignoreeof         ignore end of file conditions "
@@ -297,55 +298,81 @@ set_encoding (const char *encoding)
 static void
 checkoptions (int argc, char **argv)
 {
-  int i;
-  for (i = 1; i < argc; i++)
+  int c;
+  int option_index = 0;
+
+#ifdef __WIN32__
+  /* stderr doesn't work in windows GUI programs */
+  opterr = 0;
+#endif
+
+  while (1)
     {
-      if (strcmp (argv[i], "--help") == 0 || strcmp (argv[i], "-h") == 0)
-	help (argv[0]);
+      static struct option long_options[] = {
+	{"help", no_argument, 0, 'h'},
+	{"version", no_argument, 0, 'v'},
+	{"fullscreen", no_argument, 0, 'f'},
+	{"fulfullscreen", no_argument, 0, 'F'},
+	{"window", no_argument, 0, 'w'},
+	{"once", no_argument, 0, '1'},
+	{"raw", no_argument, 0, 'r'},
+	{"ignoreeof", no_argument, 0, 'i'},
+	{"saypipe", no_argument, 0, 's'},
+	{"encoding", required_argument, 0, 'E'},
+	{"latin1", no_argument, 0, 'l'},
+	{"utf-8", no_argument, 0, 'u'},
+	{"utf8", no_argument, 0, 'u'},
+	{"u8", no_argument, 0, 'u'},
+	{"popup", no_argument, 0, 'p'},
+	{0, 0, 0, 0}
+      };
 
-      if (strcmp (argv[i], "--version") == 0 || strcmp (argv[i], "-v") == 0)
-	showversion ();
+      c = getopt_long (argc, argv, "hvfFw1risE:lupe",
+		       long_options, &option_index);
 
-      if (strcmp (argv[i], "--fullscreen") == 0
-	  || strcmp (argv[i], "-f") == 0)
+      /* end of the options */
+      if (c == -1)
+	break;
+
+      switch (c)
 	{
+	case 0:
+	  abort ();
+	  break;
+
+	case 'h':
+	  help (argv[0]);
+	  break;
+
+	case 'v':
+	  showversion ();
+	  break;
+
+	case 'f':
 	  mode = FULLSCREEN;
-	  continue;
-	}
+	  break;
 
-      if (strcmp (argv[i], "--fullfullscreen") == 0
-	  || strcmp (argv[i], "-F") == 0)
-	{
+	case 'F':
 	  mode = FULLSCREENNOSWITCH;
-	  continue;
-	}
+	  break;
 
-      if (strcmp (argv[i], "--window") == 0 || strcmp (argv[i], "-w") == 0)
-	{
+	case 'w':
 	  mode = WINDOW;
-	  continue;
-	}
+	  break;
 
-      if (strcmp (argv[i], "--once") == 0 || strcmp (argv[i], "-1") == 0)
-	{
+	case '1':
 	  loop = 0;
-	  continue;
-	}
+	  break;
 
-      if (strcmp (argv[i], "--raw") == 0 || strcmp (argv[i], "-r") == 0)
-	{
+	case 'r':
 	  rawmode = 1;
-	  continue;
-	}
+	  break;
 
-      if (strcmp (argv[i], "--ignoreeof") == 0 || strcmp (argv[i], "-i") == 0)
-	{
+	case 'i':
 	  ignore_eof = 1;
-	  continue;
-	}
+	  break;
 
-      if (strcmp (argv[i], "--saypipe") == 0 || strcmp (argv[i], "-s") == 0)
-	{
+	case 's':
 #ifdef NO_FIFO
 	  error_msg ("pipes not supported on this system", NULL);
 #else
@@ -354,49 +381,46 @@ checkoptions (int argc, char **argv)
 	  ignore_eof = 1;
 	  /* autodetecting the encoding doesn't work with FIFOs */
 	  given_encoding = 1;
-	  continue;
 #endif /* ! NO_FIFO */
-	}
+	  break;
 
-      if (strncmp (argv[i], "--encoding=", 11) == 0)
-	{
-	  sscanf (argv[i], "--encoding=%79s", (char *) &encoding);
+	case 'E':
+	  strncpy (encoding, optarg, sizeof (encoding));
 	  given_encoding = 1;
-	  continue;
-	}
+	  break;
 
-      if (strcmp (argv[i], "--latin1") == 0 || strcmp (argv[i], "-l") == 0)
-	{
+	case 'l':
 	  strcpy (encoding, "ISO-8859-1");
 	  given_encoding = 1;
-	  continue;
-	}
+	  break;
 
-      if (strcmp (argv[i], "--utf-8") == 0 ||
-	  strcmp (argv[i], "--utf8") == 0 ||
-	  strcmp (argv[i], "-u8") == 0 || strcmp (argv[i], "-u") == 0)
-	{
+	case 'u':
 	  strcpy (encoding, "UTF-8");
 	  given_encoding = 1;
-	  continue;
-	}
+	  break;
 
-      if (strcmp (argv[i], "--popup") == 0)
-	{
+	case 'p':
 	  popup = 1;
-	  continue;
-	}
+	  break;
 
-      if (strcmp (argv[i], "-e") == 0)
-	{
+	case 'e':
 	  executable = 1;
-	  continue;
-	}
+	  break;
 
-      /* check for unknown option */
-      if (argv[i][0] == '-' && argv[i][1] != '\0')
-	error_msg ("unknown option", argv[i]);
-    }				/* for */
+	case '?':
+	  /* getopt_long already printed an error message to stderr */
+	  help (argv[0]);
+	  break;
+
+	default:
+	  /* should never happen */
+	  abort ();
+	}
+    }
+
+  /* no input files? -> print help */
+  if (optind >= argc)
+    help (argv[0]);
 }
 
 static void
@@ -1202,9 +1226,6 @@ main (int argc, char *argv[])
 
   setlocale (LC_ALL, "");
 
-  if (argc < 2)
-    help (argv[0]);
-
   checkenvironment ();
 
   /* get system encoding */
@@ -1223,12 +1244,8 @@ main (int argc, char *argv[])
       if (initialized && !popup)
 	move_in ();
 
-      for (i = 1; i < argc; i++)
+      for (i = optind; i < argc; i++)
 	{
-	  /* ignore options here */
-	  if (argv[i][0] == '-' && argv[i][1] != '\0')
-	    continue;
-
 	  if (processfile (argv[i]))
 	    quit (EXIT_SUCCESS);
 
@@ -1246,7 +1263,8 @@ main (int argc, char *argv[])
 	    }
 	}
 
-      move_out ();
+      if (initialized)
+	move_out ();
     }
   while (loop);
 
