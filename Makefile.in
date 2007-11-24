@@ -217,7 +217,7 @@ dist: info txt man distclean
 	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
 	   balloonpointer.c circle.c regicon.c gnu-head.bmp \
 	   avatarsay.c avtman example.c fsdemo-?? \
-	   gnome-akfavatar bdfread.pas human-peasant.bmp \
+	   gnome-akfavatar bdfread.pas \
 	   gnu-small.bmp akfavatar.xpm bin2c.c \
 	   ucsfont7x14.c ucsfont4x6.c ucsfont9x18.c font.c \
 	   bell.wav configure Makefile.in \
@@ -260,7 +260,7 @@ dist-bin: avatarsay multiply multiplizieren
 	   $(BINPKGNAME)/
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS avatarsay $(srcdir)/avtman \
 	   $(srcdir)/fsdemo-?? \
-	   $(srcdir)/gnome-akfavatar $(srcdir)/human-peasant.bmp \
+	   $(srcdir)/gnome-akfavatar \
 	   $(BINPKGNAME)/
 	tar -cvf $(BINPKGNAME).$(SYSTEM).$(ARCH).tar $(BINPKGNAME)/
 	gzip -9 $(BINPKGNAME).$(SYSTEM).$(ARCH).tar
