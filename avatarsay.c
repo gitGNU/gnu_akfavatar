@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.32 2007-11-24 10:15:08 akf Exp $ */
+/* $Id: avatarsay.c,v 2.33 2007-11-24 20:59:05 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -336,42 +336,51 @@ checkoptions (int argc, char **argv)
 
       switch (c)
 	{
+	/* long-option has set a flag, nothing to do here */
 	case 0:
-	  abort ();
 	  break;
 
+        /* --help */
 	case 'h':
 	  help (argv[0]);
 	  break;
 
+        /* --version */
 	case 'v':
 	  showversion ();
 	  break;
 
+        /* --fullscreen */
 	case 'f':
 	  mode = FULLSCREEN;
 	  break;
 
+        /* --fullfullscreen */
 	case 'F':
 	  mode = FULLSCREENNOSWITCH;
 	  break;
 
+        /* --window */
 	case 'w':
 	  mode = WINDOW;
 	  break;
 
+         /* --once */
 	case '1':
 	  loop = 0;
 	  break;
 
+        /* --raw */
 	case 'r':
 	  rawmode = 1;
 	  break;
 
+        /* --ignoreeof */
 	case 'i':
 	  ignore_eof = 1;
 	  break;
 
+        /* --saypipe */
 	case 's':
 #ifdef NO_FIFO
 	  error_msg ("pipes not supported on this system", NULL);
@@ -384,21 +393,25 @@ checkoptions (int argc, char **argv)
 #endif /* ! NO_FIFO */
 	  break;
 
+        /* --encoding */
 	case 'E':
 	  strncpy (encoding, optarg, sizeof (encoding));
 	  given_encoding = 1;
 	  break;
 
+        /* --latin1 */
 	case 'l':
 	  strcpy (encoding, "ISO-8859-1");
 	  given_encoding = 1;
 	  break;
 
+        /* --utf-8, --utf8, --u8 */
 	case 'u':
 	  strcpy (encoding, "UTF-8");
 	  given_encoding = 1;
 	  break;
 
+        /* --popup */
 	case 'p':
 	  popup = 1;
 	  break;
@@ -407,14 +420,16 @@ checkoptions (int argc, char **argv)
 	  executable = 1;
 	  break;
 
+        /* unsupported option */
 	case '?':
 	  /* getopt_long already printed an error message to stderr */
 	  help (argv[0]);
 	  break;
 
+        /* declared option, but not handled here */
+        /* should never happen */
 	default:
-	  /* should never happen */
-	  abort ();
+	  error_msg ("internal error", "option not supported");
 	}
     }
 
