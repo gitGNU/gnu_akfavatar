@@ -1,5 +1,7 @@
 2007-11-22  Andreas K. Foerster  <info@akfoerster.de>
 
+	* image human-peasant.bmp removed
+
 	* C++ comaptibility improvements
 	(wint_t is used again)
 
@@ -11,6 +13,7 @@
 	supports UTF-16/UTF-32 files now, better FIFO handling
 	experimental support for calling external programs
 	uses langinfo.h to get the current encoding
+	uses getopt_long to parse options
 
 	* akfavatar.h, aavatar.c (avt_update):
 	new function
