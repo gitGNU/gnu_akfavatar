@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.31 2007-11-24 08:06:23 akf Exp $ */
+/* $Id: avatarsay.c,v 2.32 2007-11-24 10:15:08 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1064,10 +1064,7 @@ execute_process (const char *fname)
       close (fdpair[1]);
 
       /* It's a very very dumb terminal */
-      {
-	char tmp[] = "TERM=dumb";
-	putenv (tmp);
-      }
+      putenv ("TERM=dumb");
 
       /* execute the command */
       execlp (fname, fname, NULL);

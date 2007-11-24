@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.37 2007-11-23 17:05:59 akf Exp $ */
+/* $Id: avatar.c,v 2.38 2007-11-24 10:15:08 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2347,10 +2347,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   /* don't try to use the mouse 
    * needed for the fbcon driver */
-  {
-    char tmp[] = "SDL_NOMOUSE=1";
-    putenv (tmp);
-  }
+  SDL_putenv ("SDL_NOMOUSE=1");
 
   if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
     {
