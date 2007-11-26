@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.38 2007-11-24 10:15:08 akf Exp $ */
+/* $Id: avatar.c,v 2.39 2007-11-26 21:50:03 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -71,6 +71,8 @@
 #  define SDL_strlen              strlen
 #  undef SDL_memcpy
 #  define SDL_memcpy              memcpy
+#  undef SDL_putenv
+#  define SDL_putenv              putenv        
 #endif /* OLD_SDL */
 
 #ifdef FORCE_ICONV
