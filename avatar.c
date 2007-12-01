@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.39 2007-11-26 21:50:03 akf Exp $ */
+/* $Id: avatar.c,v 2.40 2007-12-01 14:19:24 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -238,23 +238,20 @@ avt_iconv (avt_iconv_t cd,
 const char *
 avt_version (void)
 {
-  static const char *version = AVTVERSION;
-  return version;
+  return AVTVERSION;
 }
 
 const char *
 avt_copyright (void)
 {
-  static const char *copyright = "Copyright (c) 2007 Andreas K. Foerster";
-  return copyright;
+  return "Copyright (c) 2007 Andreas K. Foerster";
 }
 
 const char *
 avt_license (void)
 {
-  static const char *license = "License GPLv3+: GNU GPL version 3 or later "
+  return "License GPLv3+: GNU GPL version 3 or later "
     "<http://gnu.org/licenses/gpl.html>";
-  return license;
 }
 
 int
