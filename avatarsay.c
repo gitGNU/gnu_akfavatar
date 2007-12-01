@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.34 2007-11-29 09:51:31 akf Exp $ */
+/* $Id: avatarsay.c,v 2.35 2007-12-01 14:55:13 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -56,6 +56,7 @@
 #endif
 
 #define PRGNAME "avatarsay"
+#define BUGMAIL "bug-akfavatar@akfoerster.de"
 
 /* size for input buffer - not too small, please */
 /* .encoding must be in first buffer */
@@ -215,7 +216,7 @@ help (const char *prgname)
   puts (" AVATARIMAGE             different image as avatar");
   puts (" AVATARDATADIR           data-directory");
   puts (" LC_ALL, LC_CTYPE, LANG  check for default encoding");
-  puts ("\nReport bugs to <info@akfoerster.de>");
+  puts ("\nReport bugs to <" BUGMAIL ">");
   exit (EXIT_SUCCESS);
 }
 
