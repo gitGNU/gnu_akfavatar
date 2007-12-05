@@ -47,11 +47,15 @@ akfavatar-de.dvi: akfavatar-de.texinfo pasref.txt
 
 pdf: akfavatar-en.pdf akfavatar-de.pdf
 
-akfavatar-en.pdf: akfavatar-en.texinfo pasref.txt
+akfavatar-en.pdf: akfavatar-en.texinfo pasref.txt pdfmeta-en
 	-$(TEXI2DVI) --pdf akfavatar-en.texinfo
+	-pdftk akfavatar-en.pdf update_info pdfmeta-en output tmp.pdf
+	-[ -r tmp.pdf ] && mv tmp.pdf akfavatar-en.pdf
 
-akfavatar-de.pdf: akfavatar-de.texinfo pasref.txt
+akfavatar-de.pdf: akfavatar-de.texinfo pasref.txt pdfmeta-de
 	-$(TEXI2DVI) --pdf akfavatar-de.texinfo
+	-pdftk akfavatar-de.pdf update_info pdfmeta-de output tmp.pdf
+	-[ -r tmp.pdf ] && mv tmp.pdf akfavatar-de.pdf
 
 ps: akfavatar-en.ps akfavatar-de.ps
 
