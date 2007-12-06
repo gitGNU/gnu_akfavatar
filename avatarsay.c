@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.35 2007-12-01 14:55:13 akf Exp $ */
+/* $Id: avatarsay.c,v 2.36 2007-12-06 19:46:44 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -26,7 +26,6 @@
 
 #include "version.h"
 #include "akfavatar.h"
-#include <limits.h>		/* for PATH_MAX */
 #include <wchar.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -34,7 +33,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
 #include <locale.h>
 #include <getopt.h>
 
@@ -183,6 +181,9 @@ showversion (void)
   puts ("There is NO WARRANTY, to the extent permitted by law.");
 
   exit (EXIT_SUCCESS);
+  
+  /* never executed, but kept in the code */
+  puts ("$Id: avatarsay.c,v 2.36 2007-12-06 19:46:44 akf Exp $");
 }
 
 static void
@@ -215,7 +216,6 @@ help (const char *prgname)
   puts ("\nEnvironment variables:");
   puts (" AVATARIMAGE             different image as avatar");
   puts (" AVATARDATADIR           data-directory");
-  puts (" LC_ALL, LC_CTYPE, LANG  check for default encoding");
   puts ("\nReport bugs to <" BUGMAIL ">");
   exit (EXIT_SUCCESS);
 }
@@ -1283,5 +1283,9 @@ main (int argc, char *argv[])
   while (loop);
 
   quit (EXIT_SUCCESS);
+      
+  /* never executed, but kept in the code */
+  puts ("$Id: avatarsay.c,v 2.36 2007-12-06 19:46:44 akf Exp $");
+
   return EXIT_SUCCESS;
 }
