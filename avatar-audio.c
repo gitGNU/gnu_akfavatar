@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.9 2007-11-19 21:55:39 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.10 2007-12-06 10:45:04 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -98,6 +98,8 @@ short_audio_sound (void)
 int
 avt_initialize_audio (void)
 {
+  SDL_SetError ("$Id");
+
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
     return AVATARERROR;
 
