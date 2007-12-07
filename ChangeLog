@@ -1,5 +1,7 @@
-2007-11-22  Andreas K. Foerster  <info@akfoerster.de>
+2007-12-07  Andreas K. Foerster  <info@akfoerster.de>
 
+	* version 0.14.5 released
+	
 	* image human-peasant.bmp removed
 
 	* C++ comaptibility improvements
@@ -12,10 +14,10 @@
 	major rewrite -> low level file handling, 
 	supports UTF-16/UTF-32 files now, better FIFO handling
 	experimental support for calling external programs
-	uses langinfo.h to get the current encoding
+	uses nl_langinfo to get the current encoding
 	uses getopt_long to parse options
 
-	* akfavatar.h, aavatar.c (avt_update):
+	* akfavatar.h, avatar.c (avt_update):
 	new function
 
 	* avatar.c (avt_put_char):
