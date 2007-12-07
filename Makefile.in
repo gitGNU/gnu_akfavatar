@@ -249,19 +249,22 @@ dist: info txt man distclean
 	rm -r $(PKGNAME)/
 
 dist-bin: avatarsay multiply multiplizieren
-	strip avatarsay
 	mkdir $(BINPKGNAME)
-	ln $(LIBNAME) $(SONAME) $(BINPKGNAME)/
+	cp $(LIBNAME) $(BINPKGNAME)/
+	cp avatarsay $(BINPKGNAME)/
+	ln $(SONAME) $(BINPKGNAME)/
 	ln $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/
 	ln $(srcdir)/pascal/?pcavatar $(BINPKGNAME)/
 	-ln multiply $(BINPKGNAME)/
 	-ln multiplizieren $(BINPKGNAME)/
 	ln $(srcdir)/pascal/correct.wav $(srcdir)/pascal/wrong.wav \
 	   $(BINPKGNAME)/
-	ln $(srcdir)/COPYING $(srcdir)/AUTHORS avatarsay $(srcdir)/avtman \
+	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/avtman \
 	   $(srcdir)/fsdemo-?? \
 	   $(srcdir)/gnome-akfavatar \
 	   $(BINPKGNAME)/
+	strip $(BINPKGNAME)/avatarsay
+	strip $(BINPKGNAME)/$(LIBNAME)
 	tar -cvf $(BINPKGNAME).$(SYSTEM).$(ARCH).tar $(BINPKGNAME)/
 	gzip -9 $(BINPKGNAME).$(SYSTEM).$(ARCH).tar
 	rm -r $(BINPKGNAME)/
