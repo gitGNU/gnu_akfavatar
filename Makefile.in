@@ -238,6 +238,7 @@ dist: info txt man distclean
 	   doc/akfavatar-de.texinfo doc/akfavatar-de.info \
 	   doc/akfavatar-de.txt \
 	   doc/akfavatar.css \
+	   doc/pdfmeta-en doc/pdfmeta-de \
 	   $(PKGNAME)/doc/
 	
 	mkdir $(PKGNAME)/mingw32
