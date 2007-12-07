@@ -175,7 +175,8 @@ check:
 
 clean:
 	-rm -f *~
-	-rm -f *.o *.lo 
+	-rm -f *.o *.lo
+	-rm -f *.ppu *.gpi *.gpm
 	-rm -f bin2c
 	-rm -f gnu-head.c gnu-small.c bell.c
 	-rm -f pascal/*.o pascal/*.gpi pascal/*.gpm pascal/*.ppu
@@ -205,11 +206,12 @@ distclean: clean
 maintainerclean: distclean
 
 multiply: $(srcdir)/pascal/multiply.pas
-	-fpcavatar -dRELEASE -FE. -o$@ $(srcdir)/pascal/multiply.pas -k-rpath=.
+	-$(srcdir)/pascal/fpcavatar -dRELEASE -FE. -o$@ \
+	    $(srcdir)/pascal/multiply.pas -k-rpath=.
 
 multiplizieren: $(srcdir)/pascal/multiply.pas
-	-fpcavatar -dRELEASE -ddeutsch -FE. -o$@ $(srcdir)/pascal/multiply.pas \
-	  -k-rpath=.
+	-$(srcdir)/pascal/fpcavatar -dRELEASE -ddeutsch -FE. -o$@ \
+	    $(srcdir)/pascal/multiply.pas -k-rpath=.
 
 dist: info txt man distclean
 	mkdir $(PKGNAME)
