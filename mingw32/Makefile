@@ -28,6 +28,39 @@ avtsayinfo.rc:
 	@{ \
 	echo "AppIcon ICON \"akfavatar.ico\""; \
 	echo; \
+	echo "LANGUAGE 7, 1"; \
+	echo; \
+	echo "1 VERSIONINFO"; \
+	echo "FILEVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0"; \
+	echo "PRODUCTVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0"; \
+	echo "FILEFLAGSMASK 0x3F"; \
+	echo "FILEOS 0x4"; \
+	echo "FILETYPE 0x1"; \
+	echo "BEGIN"; \
+	echo " BLOCK \"StringFileInfo\""; \
+	echo " BEGIN"; \
+	echo "  BLOCK \"040704E4\""; \
+	echo "  BEGIN"; \
+	echo "   VALUE \"CompanyName\", \"AKFoerster\""; \
+	echo "   VALUE \"FileDescription\",";\
+	echo "     \"witziger Text-Betrachter und Skript-Sprache\""; \
+	echo "   VALUE \"FileVersion\", \"$(VERSIONSTR)\""; \
+	echo "   VALUE \"InternalName\", \"avatarsay\""; \
+	echo "   VALUE \"LegalCopyright\","; \
+	echo "     \"Andreas K. F\366rster, GPLv3+\""; \
+	echo "   VALUE \"OriginalFilename\", \"avatarsay.exe\""; \
+	echo "   VALUE \"Comments\", "; \
+	echo "      \"urspr\374nglich f\374r GNU/Linux geschrieben\""; \
+	echo "   VALUE \"ProductName\", \"AKFAvatar\""; \
+	echo "   VALUE \"ProductVersion\", \"$(VERSIONSTR)\""; \
+	echo "  END"; \
+	echo " END"; \
+	echo " BLOCK \"VarFileInfo\""; \
+	echo "  BEGIN"; \
+	echo "   VALUE \"Translation\", 0x407, 1252, 0x0409, 1252"; \
+	echo " END"; \
+	echo "END"; \
+	echo; \
 	echo "LANGUAGE 9, 1"; \
 	echo; \
 	echo "1 VERSIONINFO"; \
@@ -47,7 +80,7 @@ avtsayinfo.rc:
 	echo "   VALUE \"FileVersion\", \"$(VERSIONSTR)\""; \
 	echo "   VALUE \"InternalName\", \"avatarsay\""; \
 	echo "   VALUE \"LegalCopyright\","; \
-	echo "     \"GPLv3+, Andreas K. F\366rster\""; \
+	echo "     \"Andreas K. F\366rster, GPLv3+\""; \
 	echo "   VALUE \"OriginalFilename\", \"avatarsay.exe\""; \
 	echo "   VALUE \"Comments\", \"primarily written for GNU/Linux\""; \
 	echo "   VALUE \"ProductName\", \"AKFAvatar\""; \
@@ -56,12 +89,44 @@ avtsayinfo.rc:
 	echo " END"; \
 	echo " BLOCK \"VarFileInfo\""; \
 	echo "  BEGIN"; \
-	echo "   VALUE \"Translation\", 0x409, 1200"; \
+	echo "   VALUE \"Translation\", 0x409, 1252, 0x0407, 1252"; \
 	echo " END"; \
 	echo "END"; } > $@
 
 libinfo.rc:
 	@{ \
+	echo "LANGUAGE 7, 1"; \
+	echo; \
+	echo "1 VERSIONINFO"; \
+	echo "FILEVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0"; \
+	echo "PRODUCTVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0"; \
+	echo "FILEFLAGSMASK 0x3F"; \
+	echo "FILEOS 0x4"; \
+	echo "FILETYPE 0x2"; \
+	echo "BEGIN"; \
+	echo " BLOCK \"StringFileInfo\""; \
+	echo " BEGIN"; \
+	echo "  BLOCK \"040704E4\""; \
+	echo "  BEGIN"; \
+	echo "   VALUE \"CompanyName\", \"AKFoerster\""; \
+	echo "   VALUE \"FileDescription\", \"AKFAvatar Bibliothek\""; \
+	echo "   VALUE \"FileVersion\", \"$(VERSIONSTR)\""; \
+	echo "   VALUE \"InternalName\", \"akfavatar\""; \
+	echo "   VALUE \"LegalCopyright\","; \
+	echo "     \"Andreas K. F\366rster, GPLv3+\""; \
+	echo "   VALUE \"OriginalFilename\", \"akfavatar.dll\""; \
+	echo "   VALUE \"Comments\", "; \
+	echo "      \"urspr\374nglich f\374r GNU/Linux geschrieben\""; \
+	echo "   VALUE \"ProductName\", \"AKFAvatar\""; \
+	echo "   VALUE \"ProductVersion\", \"$(VERSIONSTR)\""; \
+	echo "  END"; \
+	echo " END"; \
+	echo " BLOCK \"VarFileInfo\""; \
+	echo "  BEGIN"; \
+	echo "   VALUE \"Translation\", 0x407, 1252, 0x0409, 1252"; \
+	echo " END"; \
+	echo "END"; \
+	echo; \
 	echo "LANGUAGE 9, 1"; \
 	echo; \
 	echo "1 VERSIONINFO"; \
@@ -69,7 +134,7 @@ libinfo.rc:
 	echo "PRODUCTVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0"; \
 	echo "FILEFLAGSMASK 0x3F"; \
 	echo "FILEOS 0x4"; \
-	echo "FILETYPE 0x1"; \
+	echo "FILETYPE 0x2"; \
 	echo "BEGIN"; \
 	echo " BLOCK \"StringFileInfo\""; \
 	echo " BEGIN"; \
@@ -80,7 +145,7 @@ libinfo.rc:
 	echo "   VALUE \"FileVersion\", \"$(VERSIONSTR)\""; \
 	echo "   VALUE \"InternalName\", \"akfavatar\""; \
 	echo "   VALUE \"LegalCopyright\","; \
-	echo "     \"GPLv3+, Andreas K. F\366rster\""; \
+	echo "     \"Andreas K. F\366rster, GPLv3+\""; \
 	echo "   VALUE \"OriginalFilename\", \"akfavatar.dll\""; \
 	echo "   VALUE \"Comments\", \"primarily written for GNU/Linux\""; \
 	echo "   VALUE \"ProductName\", \"AKFAvatar\""; \
@@ -89,7 +154,7 @@ libinfo.rc:
 	echo " END"; \
 	echo " BLOCK \"VarFileInfo\""; \
 	echo "  BEGIN"; \
-	echo "   VALUE \"Translation\", 0x409, 1200"; \
+	echo "   VALUE \"Translation\", 0x409, 1252, 0x0407, 1252"; \
 	echo " END"; \
 	echo "END"; } > $@
 
