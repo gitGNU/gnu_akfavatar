@@ -1,3 +1,8 @@
+2007-12-14  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_get_key):
+	new function
+
 2007-12-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.14.5 released

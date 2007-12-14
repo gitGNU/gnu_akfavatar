@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.41 2007-12-06 10:45:04 akf Exp $ */
+/* $Id: avatar.c,v 2.42 2007-12-14 10:39:28 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1510,23 +1510,22 @@ avt_say_mb_len (const char *txt, int len)
   return _avt_STATUS;
 }
 
-static wchar_t
-avt_getchar (void)
+int
+avt_get_key (wchar_t *ch)
 {
   SDL_Event event;
-  wchar_t ch;
 
-  ch = 0;
-  while ((ch <= 0) && (_avt_STATUS == AVATARNORMAL))
+  *ch = 0;
+  while ((*ch <= 0) && (_avt_STATUS == AVATARNORMAL))
     {
       SDL_WaitEvent (&event);
       avt_analyze_event (&event);
 
       if (event.type == SDL_KEYDOWN)
-	ch = (wchar_t) event.key.keysym.unicode;
+	*ch = (wchar_t) event.key.keysym.unicode;
     }
 
-  return ch;
+  return _avt_STATUS;
 }
 
 /* size in Bytes! */
@@ -1566,7 +1565,7 @@ avt_ask (wchar_t * s, const int size)
       avt_drawchar (1);
       avt_showchar ();
 
-      ch = avt_getchar ();
+      avt_get_key (&ch);
       switch (ch)
 	{
 	case 8:
@@ -2355,7 +2354,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.41 2007-12-06 10:45:04 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.42 2007-12-14 10:39:28 akf Exp $");
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
 

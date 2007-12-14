@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.23 2007-11-18 10:18:14 akf Exp $ */
+/* $Id: akfavatar.h,v 2.24 2007-12-14 10:39:28 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -273,6 +273,13 @@ extern int avt_say_mb (const char *txt);
  * and can contain binary zeros
  */
 extern int avt_say_mb_len (const char *txt, int len);
+
+/*
+ * get a character from the keyboard
+ * only for printable characters, not for function keys
+ * (ch is just one character, not a string)
+ */
+extern int avt_get_key (wchar_t *ch);
 
 /*
  * get string (just one line)
