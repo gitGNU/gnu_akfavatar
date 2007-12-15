@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.24 2007-12-14 10:39:28 akf Exp $ */
+/* $Id: akfavatar.h,v 2.25 2007-12-15 09:36:15 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -92,9 +92,8 @@
 
 #ifdef __cplusplus
 /* *INDENT-OFF* */
-extern "C"
-{
- /* *INDENT-ON* */
+extern "C" {
+/* *INDENT-ON* */
 #endif /* __cplusplus */
 
 /* 
@@ -279,7 +278,7 @@ extern int avt_say_mb_len (const char *txt, int len);
  * only for printable characters, not for function keys
  * (ch is just one character, not a string)
  */
-extern int avt_get_key (wchar_t *ch);
+extern int avt_get_key (wchar_t * ch);
 
 /*
  * get string (just one line)
