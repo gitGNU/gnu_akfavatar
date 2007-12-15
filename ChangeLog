@@ -1,4 +1,10 @@
-2007-12-14  Andreas K. Foerster  <info@akfoerster.de>
+2007-12-15  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_wait_button):
+	new function
+
+	* akfavatar.h, avatar.c (avt_wait_key):
+	fix: deleting message
 
 	* akfavatar.h, avatar.c (avt_get_key):
 	new function

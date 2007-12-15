@@ -29,10 +29,14 @@ gnu-head.c: gnu-head.bmp bin2c
 gnu-small.c: gnu-small.bmp bin2c
 	./bin2c avatar_image < gnu-small.bmp > $@
 
+keybtn.c: keybtn.bmp bin2c
+	./bin2c keybtn < keybtn.bmp > $@
+
 bell.c: bell.wav bin2c
 	./bin2c avt_bell_data < bell.wav > $@
 
-avatar.o: avatar.c akfavatar.h version.h balloonpointer.c circle.c regicon.c
+avatar.o: avatar.c akfavatar.h version.h \
+          balloonpointer.c circle.c keybtn.c regicon.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c avatar.c
 
 avatar-default.o: avatar-default.c gnu-head.c gnu-small.c akfavatar.h
@@ -48,7 +52,8 @@ libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o
 	$(AR) rcu $@ avatar.o avatar-default.o avatar-audio.o font.o
 	-$(RANLIB) $@
 
-avatar.lo: avatar.c akfavatar.h version.h balloonpointer.c circle.c regicon.c
+avatar.lo: avatar.c akfavatar.h version.h \
+           balloonpointer.c circle.c keybtn.c regicon.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fpic -o $@ \
 	  avatar.c
 
@@ -178,7 +183,7 @@ clean:
 	-rm -f *.o *.lo
 	-rm -f *.ppu *.gpi *.gpm
 	-rm -f bin2c
-	-rm -f gnu-head.c gnu-small.c bell.c
+	-rm -f gnu-head.c gnu-small.c bell.c keybtn.c
 	-rm -f pascal/*.o pascal/*.gpi pascal/*.gpm pascal/*.ppu
 	-rm -f pascal/link.res pascal/ppas.sh
 	$(MAKE) -C $(srcdir)/mingw32 clean
@@ -217,7 +222,7 @@ dist: info txt man distclean
 	mkdir $(PKGNAME)
 	ln README INSTALL AUTHORS COPYING ChangeLog lrun \
 	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
-	   balloonpointer.c circle.c regicon.c gnu-head.bmp \
+	   balloonpointer.c circle.c regicon.c gnu-head.bmp keybtn.bmp \
 	   avatarsay.c avtman example.c fsdemo-?? \
 	   gnome-akfavatar bdfread.pas \
 	   gnu-small.bmp akfavatar.xpm bin2c.c \

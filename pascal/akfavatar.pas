@@ -178,7 +178,7 @@ function ReadKey: char;
 procedure ClearKeys;
 
 { wait for a key }
-procedure waitkey (const message: string);
+procedure waitkey;
 
 { wait some time }
 { compatible to CRT unit }
@@ -361,8 +361,8 @@ function avt_ask_mb(t: pointer; size: CInteger): CInteger;
 function avt_wait(milliseconds: CInteger): CInteger; 
   libakfavatar 'avt_wait';
 
-function avt_wait_key_mb(message : CString): CInteger; 
-  libakfavatar 'avt_wait_key_mb';
+function avt_wait_button: CInteger; 
+  libakfavatar 'avt_wait_button';
 
 function avt_move_in: CInteger; libakfavatar 'avt_move_in';
 
@@ -787,10 +787,10 @@ if (x1 >= 1) and (x1 <= ScrSize.x) and
   end
 end;
 
-procedure waitkey(const message: string);
+procedure waitkey;
 begin
 if not initialized then initializeAvatar;
-if avt_wait_key_mb(String2CString(message))<>0 then Halt
+if avt_wait_button<>0 then Halt
 end;
 
 procedure checkParameters;
@@ -1112,7 +1112,7 @@ Finalization
       begin
       { wait for key, when balloon is visible }
       if avt_where_x >= 0 then 
-        if avt_wait_key_mb('>>>') = 0 then avt_move_out
+        if avt_wait_button = 0 then avt_move_out
       end;
 
   Quit

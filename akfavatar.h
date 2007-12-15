@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.25 2007-12-15 09:36:15 akf Exp $ */
+/* $Id: akfavatar.h,v 2.26 2007-12-15 20:08:57 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -316,6 +316,9 @@ extern int avt_update (void);
 
 /* wait a while */
 extern int avt_wait (int milliseconds);
+
+/* wait for a keypress while displaying a button */
+int avt_wait_button (void);
 
 /* wait for a keypress */
 extern int avt_wait_key (const wchar_t * message);

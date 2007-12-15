@@ -23,14 +23,16 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.42 2007-12-14 10:39:28 akf Exp $ */
+/* $Id: avatar.c,v 2.43 2007-12-15 20:08:57 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
 #include "version.h"
+
 #include "balloonpointer.c"
 #include "circle.c"
 #include "regicon.c"
+#include "keybtn.c"
 
 #if defined(QVGA)
 #  define FONTWIDTH 4
@@ -72,7 +74,7 @@
 #  undef SDL_memcpy
 #  define SDL_memcpy              memcpy
 #  undef SDL_putenv
-#  define SDL_putenv              putenv        
+#  define SDL_putenv              putenv
 #endif /* OLD_SDL */
 
 #ifdef FORCE_ICONV
@@ -1511,7 +1513,7 @@ avt_say_mb_len (const char *txt, int len)
 }
 
 int
-avt_get_key (wchar_t *ch)
+avt_get_key (wchar_t * ch)
 {
   SDL_Event event;
 
@@ -1847,6 +1849,76 @@ avt_move_out (void)
 }
 
 int
+avt_wait_button (void)
+{
+  SDL_Event event;
+  SDL_Surface *button;
+  SDL_Rect dst;
+  int nokey;
+
+  button = SDL_LoadBMP_RW (SDL_RWFromMem ((void *) keybtn, keybtn_size), 1);
+
+  /* alignment: right bottom */
+  dst.x = window.x + window.w - button->w - AVATAR_MARGIN;
+  dst.y = window.y + window.h - button->h - AVATAR_MARGIN;
+  dst.w = button->w;
+  dst.h = button->h;
+
+  SDL_SetClipRect (screen, &window);
+  SDL_BlitSurface (button, NULL, screen, &dst);
+  SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
+  SDL_FreeSurface (button);
+  button = NULL;
+
+  nokey = 1;
+  while (nokey)
+    {
+      SDL_WaitEvent (&event);
+      switch (event.type)
+	{
+	case SDL_QUIT:
+	  nokey = 0;
+	  _avt_STATUS = AVATARQUIT;
+	  break;
+
+	case SDL_VIDEORESIZE:
+	  dst.x -= window.x;
+	  dst.y -= window.y;
+	  avt_resize (event.resize.w, event.resize.h);
+	  dst.x += window.x;
+	  dst.y += window.y;
+	  break;
+
+	case SDL_KEYDOWN:
+	  nokey = 0;
+	  if (event.key.keysym.sym == SDLK_ESCAPE)
+	    _avt_STATUS = AVATARQUIT;
+	  break;
+
+	case SDL_MOUSEBUTTONDOWN:
+	  nokey = 0;
+	  break;
+
+	default:
+	  break;
+	}
+    }
+
+  /* delete button */
+  SDL_SetClipRect (screen, &window);
+  SDL_FillRect (screen, &dst,
+		SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
+			    backgroundcolor_RGB.g, backgroundcolor_RGB.b));
+  SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
+
+  if (textfield.x >= 0)
+    SDL_SetClipRect (screen, &viewport);
+
+  return _avt_STATUS;
+}
+
+
+int
 avt_wait_key (const wchar_t * message)
 {
   SDL_Event event;
@@ -1938,6 +2010,7 @@ avt_wait_key (const wchar_t * message)
   /* clear message */
   if (*message)
     {
+      SDL_SetClipRect (screen, &window);
       SDL_FillRect (screen, &dst,
 		    SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
 				backgroundcolor_RGB.g,
@@ -2354,7 +2427,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.42 2007-12-14 10:39:28 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.43 2007-12-15 20:08:57 akf Exp $");
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
 

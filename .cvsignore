@@ -7,7 +7,7 @@ example
 bdfread
 libakfavatar.so*
 bin2c
-gnu-head.c gnu-small.c bell.c
+gnu-head.c gnu-small.c bell.c keybtn.c
 *.lo
 a.out
 *.tar.gz *.zip
