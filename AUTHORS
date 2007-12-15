@@ -2,11 +2,9 @@ Avatar library and program avatarsay
 Copyright (c) 2007 Andreas K. Foerster <info@akfoerster.de>
 License GPLv3 or later
 
-akfavatar.xpm, akfavatar.ico
-This icon is put in the Public Domain - Andreas K. Foerster
-
+akfavatar.xpm, akfavatar.ico, keybtn.bmp,
 bell.wav, right.wav, wrong.wav
-These soundfiles are put in the Public Domain - Andreas K. Foerster
+These files are put in the Public Domain - Andreas K. Foerster
 
 gnu-head.bmp, gnu-small.bmp:
 GNU head graphic was drawn by Etienne Suvasa
