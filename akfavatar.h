@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.26 2007-12-15 20:08:57 akf Exp $ */
+/* $Id: akfavatar.h,v 2.27 2007-12-18 09:56:40 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -226,6 +226,12 @@ extern int avt_initialize (const char *title,
  * quit the avatar system
  */
 extern void avt_quit (void);
+
+/*
+ * switch to fullscreen or window mode 
+ * (experimental!)
+ */
+extern void avt_switch_mode (int mode);
 
 /* 
  * prints a L'\0' terminated string in the balloon

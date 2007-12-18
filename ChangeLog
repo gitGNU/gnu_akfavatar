@@ -1,5 +1,11 @@
 2007-12-15  Andreas K. Foerster  <info@akfoerster.de>
 
+	* akfavatar.h, avatar.c (avt_switch_mode):
+	new function
+
+	* avatar.c (avt_toggle_fullscreen):
+	set avt_mode
+
 	* akfavatar.h, avatar.c (avt_wait_button):
 	new function
 
