@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.44 2007-12-18 09:56:41 akf Exp $ */
+/* $Id: avatar.c,v 2.45 2007-12-18 18:07:50 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -626,9 +626,9 @@ avt_toggle_fullscreen (void)
       avt_resize (MINIMALWIDTH, MINIMALHEIGHT);
 
       if ((screenflags & SDL_FULLSCREEN) != 0)
-        avt_mode = FULLSCREEN;
+	avt_mode = FULLSCREEN;
       else
-        avt_mode = WINDOW;
+	avt_mode = WINDOW;
     }
 }
 
@@ -651,7 +651,7 @@ avt_switch_mode (int mode)
 	case WINDOW:
 	  if ((screenflags & SDL_FULLSCREEN) != 0)
 	    {
-	      screenflags &= !SDL_FULLSCREEN;
+	      screenflags &= ~SDL_FULLSCREEN;
 	      avt_resize (MINIMALWIDTH, MINIMALHEIGHT);
 	    }
 	  break;
@@ -2456,7 +2456,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.44 2007-12-18 09:56:41 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.45 2007-12-18 18:07:50 akf Exp $");
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
 
