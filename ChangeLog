@@ -1,4 +1,7 @@
-2007-12-15  Andreas K. Foerster  <info@akfoerster.de>
+2007-12-18  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h:
+	remove keyword "extern" from prototypes (just a cosmetic change)
 
 	* akfavatar.h, avatar.c (avt_switch_mode):
 	new function

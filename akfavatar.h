@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.27 2007-12-18 09:56:40 akf Exp $ */
+/* $Id: akfavatar.h,v 2.28 2007-12-18 10:09:01 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -117,100 +117,100 @@ typedef void (*avt_keyhandler) (int sym, int mod, int unicode);
 /* base fnctions */
 
 /* which version */
-extern const char *avt_version (void);
+const char *avt_version (void);
 
 /* copyright information */
-extern const char *avt_copyright (void);
+const char *avt_copyright (void);
 
 /* license information */
-extern const char *avt_license (void);
+const char *avt_license (void);
 
 /* 0 = normal; 1 = quit-request; -1 = error */
-extern int avt_get_status (void);
+int avt_get_status (void);
 
 /* set status */
-extern void avt_set_status (int status);
+void avt_set_status (int status);
 
 /* get error message */
-extern char *avt_get_error (void);
+char *avt_get_error (void);
 
 /* 
  * set text direction
  * the cursor is moved to start of the line
  * in a text, you might want to call avt_newline after that
  */
-extern void avt_text_direction (int direction);
+void avt_text_direction (int direction);
 
 /* stop, when Esc is pressed? (default: yes) */
-extern void avt_stop_on_esc (int stop);
+void avt_stop_on_esc (int stop);
 
 /*
  * get the default avatar image
  * use this with avt_initialize
  */
-extern avt_image_t *avt_default (void);
+avt_image_t *avt_default (void);
 
 /*
  * RGB gimp_image
  * for importing an avatar
  * also uses avt_make_transparent
  */
-extern avt_image_t *avt_import_gimp_image (void *gimp_image);
+avt_image_t *avt_import_gimp_image (void *gimp_image);
 
 /* 
  * import avatar from image data
  */
-extern avt_image_t *avt_import_image_data (void *img, int imgsize);
+avt_image_t *avt_import_image_data (void *img, int imgsize);
 
 /* 
  * import avatar from file
  */
-extern avt_image_t *avt_import_image_file (const char *file);
+avt_image_t *avt_import_image_file (const char *file);
 
 /* 
  * free avt_image_t images
  * allocated with avt_import_gimp_image or avt_import_imagefile
  * (automatically called in avt_initialize)
  */
-extern void avt_free_image (avt_image_t * image);
+void avt_free_image (avt_image_t * image);
 
 /*
  * make background transparent
  * pixel in the upper left corner is supposed to be the background color
  */
-extern avt_image_t *avt_make_transparent (avt_image_t * image);
+avt_image_t *avt_make_transparent (avt_image_t * image);
 
 /*
  * define the backgroud color
  * values in the range 0x00 .. 0xFF
  * must be called before avt_initialize 
  */
-extern void avt_set_background_color (int red, int green, int blue);
+void avt_set_background_color (int red, int green, int blue);
 
 /*
  * change the text color
  * values in the range 0x00 .. 0xFF
  */
-extern void avt_set_text_color (int red, int green, int blue);
-extern void avt_set_text_background_color (int red, int green, int blue);
+void avt_set_text_color (int red, int green, int blue);
+void avt_set_text_background_color (int red, int green, int blue);
 
 /*
  * delay time for text-writing
  * default: DEFAULT_TEXT_DELAY
  */
-extern void avt_set_text_delay (int delay);
+void avt_set_text_delay (int delay);
 
 /*
  * delay time for page flipping
  * default: DEFAULT_FLIP_PAGE_DELAY
  */
-extern void avt_set_flip_page_delay (int delay);
+void avt_set_flip_page_delay (int delay);
 
 /* don't use this anymore, it is about to be removed */
-extern void avt_set_delays (int text, int flip_page);
+void avt_set_delays (int text, int flip_page);
 
 /* register an external keyhandler */
-extern void avt_register_keyhandler (avt_keyhandler handler);
+void avt_register_keyhandler (avt_keyhandler handler);
 
 /* 
  * initialize the avatar system
@@ -218,20 +218,20 @@ extern void avt_register_keyhandler (avt_keyhandler handler);
  * the original image is freed in this function!
  * the image may be NULL if no avatar should be shown
  */
-extern int avt_initialize (const char *title,
-			   const char *icontitle,
-			   avt_image_t * image, int mode);
+int avt_initialize (const char *title,
+       		    const char *icontitle,
+		    avt_image_t * image, int mode);
 
 /* 
  * quit the avatar system
  */
-extern void avt_quit (void);
+void avt_quit (void);
 
 /*
  * switch to fullscreen or window mode 
  * (experimental!)
  */
-extern void avt_switch_mode (int mode);
+void avt_switch_mode (int mode);
 
 /* 
  * prints a L'\0' terminated string in the balloon
@@ -239,7 +239,7 @@ extern void avt_switch_mode (int mode);
  * if there is no avatar, it is shown (not moved in)
  * interprets control chars
  */
-extern int avt_say (const wchar_t * txt);
+int avt_say (const wchar_t * txt);
 
 /* 
  * writes string with given length in the balloon
@@ -248,10 +248,10 @@ extern int avt_say (const wchar_t * txt);
  * if there is no avatar, it is shown (not moved in)
  * interprets control characters
  */
-extern int avt_say_len (const wchar_t * txt, const int len);
+int avt_say_len (const wchar_t * txt, const int len);
 
 /* set encoding for mb functions */
-extern int avt_mb_encoding (const char *encoding);
+int avt_mb_encoding (const char *encoding);
 
 /* 
  * decode a string into wchar_t
@@ -259,10 +259,10 @@ extern int avt_mb_encoding (const char *encoding);
  * returns number of characters in dest (without the termination zero)
  * dest must be freed by caller with avt_free
  */
-extern int avt_mb_decode (wchar_t ** dest, const char *src, const int size);
+int avt_mb_decode (wchar_t ** dest, const char *src, const int size);
 
 /* free memory allocated by this library */
-extern void avt_free (void *ptr);
+void avt_free (void *ptr);
 
 /*
  * like avt_say,
@@ -270,21 +270,21 @@ extern void avt_free (void *ptr);
  * (see avt_mb_encoding)
  * the text is a 0 terminated C-String
  */
-extern int avt_say_mb (const char *txt);
+int avt_say_mb (const char *txt);
 
 /*
  * the same with a given length
  * the string needn't be terminated then 
  * and can contain binary zeros
  */
-extern int avt_say_mb_len (const char *txt, int len);
+int avt_say_mb_len (const char *txt, int len);
 
 /*
  * get a character from the keyboard
  * only for printable characters, not for function keys
  * (ch is just one character, not a string)
  */
-extern int avt_get_key (wchar_t * ch);
+int avt_get_key (wchar_t * ch);
 
 /*
  * get string (just one line)
@@ -293,7 +293,7 @@ extern int avt_get_key (wchar_t * ch);
  *
  * (I don't use size_t for better compatiblity with other languages)
  */
-extern int avt_ask (wchar_t * s, const int size);
+int avt_ask (wchar_t * s, const int size);
 
 /*
  * like avt_ask,
@@ -302,39 +302,39 @@ extern int avt_ask (wchar_t * s, const int size);
  * for UTF-8 encoding it should have a capacity of 
  * 4 * LINELENGTH Bytes
  */
-extern int avt_ask_mb (char *s, const int size);
+int avt_ask_mb (char *s, const int size);
 
 /*
  * new line
  * same as \n in avt_say
  */
-extern int avt_new_line (void);
+int avt_new_line (void);
 
 /*
  * wait a while and then clear the textfield
  * same as \f in avt_say
  */
-extern int avt_flip_page (void);
+int avt_flip_page (void);
 
 /* update, ie handle events and give some time to other processes */
 /* use this in a longer loop in your program */
-extern int avt_update (void);
+int avt_update (void);
 
 /* wait a while */
-extern int avt_wait (int milliseconds);
+int avt_wait (int milliseconds);
 
 /* wait for a keypress while displaying a button */
 int avt_wait_button (void);
 
 /* wait for a keypress */
-extern int avt_wait_key (const wchar_t * message);
+int avt_wait_key (const wchar_t * message);
 
 /*
  * like avt_waitkey,
  * but converts from a given charset encoding
  * (see avt_mb_encoding)
  */
-extern int avt_wait_key_mb (char *message);
+int avt_wait_key_mb (char *message);
 
 
 /* functions for extended use */
@@ -343,42 +343,42 @@ extern int avt_wait_key_mb (char *message);
  * set a viewport (sub-area of the textarea)
  * upper left corner is 1, 1
  */
-extern void avt_viewport (int x, int y, int width, int height);
+void avt_viewport (int x, int y, int width, int height);
 
 /* show an empty screen with the background color */
-extern void avt_clear_screen (void);
+void avt_clear_screen (void);
 
 /* show just the avatar without the balloon */
-extern void avt_show_avatar (void);
+void avt_show_avatar (void);
 
 /* 
  * load image and show it
  * if SDL_image isn't available then uncompressed BMP is still supported
  * if it succeeds call avt_wait or avt_waitkey 
  */
-extern int avt_show_image_file (const char *file);
+int avt_show_image_file (const char *file);
 
 /*
  * show image from image data
  * if SDL_image isn't available then uncompressed BMP is still supported
  * after that call avt_wait or avt_waitkey
  */
-extern int avt_show_image_data (void *img, int imgsize);
+int avt_show_image_data (void *img, int imgsize);
 
 /*
  * show gimp image
  */
-extern int avt_show_gimp_image (void *gimp_image);
+int avt_show_gimp_image (void *gimp_image);
 
 /*
  * like avt_show_avatar, but the avatar is moved in
  */
-extern int avt_move_in (void);
+int avt_move_in (void);
 
 /*
  * move the avatar out => empty screen
  */
-extern int avt_move_out (void);
+int avt_move_out (void);
 
 /*
  * make a short sound, when audio is initialized
@@ -386,42 +386,42 @@ extern int avt_move_out (void);
  * same as with \a in avt_say
  * the sound is actually not a bell ;-)
  */
-extern void avt_bell (void);
+void avt_bell (void);
 
 /*
  * visual flash of the screen
  */
-extern void avt_flash (void);
+void avt_flash (void);
 
 /* 
  * clears the viewport
  * if there is no balloon yet, it is drawn
  */
-extern void avt_clear (void);
+void avt_clear (void);
 
 /* 
  * clear end of line
  * depending on text direction
  */
-extern void avt_clear_eol (void);
+void avt_clear_eol (void);
 
 /* forward one character position
  * ie. print a space
  */
-extern int avt_forward (void);
+int avt_forward (void);
 
 /*
  * delete last caracter
  */
-extern void avt_backspace (void);
+void avt_backspace (void);
 
 /*
  * set scroll mode
  * 0 = off (page-flipping), 1 = normal
  * (further modes are planned, it is not meant as a boolean)
  */
-extern void avt_set_scroll_mode (int mode);
-extern int avt_get_scroll_mode (void);
+void avt_set_scroll_mode (int mode);
+int avt_get_scroll_mode (void);
 
 /* 
  * handle coordinates
@@ -434,70 +434,70 @@ extern int avt_get_scroll_mode (void);
 /*
  * get position in the viewport
  */
-extern int avt_where_x (void);
-extern int avt_where_y (void);
+int avt_where_x (void);
+int avt_where_y (void);
 
 /* maximum positions (whole text-field) */
-extern int avt_get_max_x (void);
-extern int avt_get_max_y (void);
+int avt_get_max_x (void);
+int avt_get_max_y (void);
 
 /*
  * put cusor to specified coordinates
  */
-extern void avt_move_x (int x);
-extern void avt_move_y (int y);
+void avt_move_x (int x);
+void avt_move_y (int y);
 
 /* 
  * delete num lines, starting from line
  * the rest ist scrolled up
  */
-extern void avt_delete_lines (int line, int num);
+void avt_delete_lines (int line, int num);
 
 /* 
  * insert num lines, starting at line
  * the rest ist scrolled down
  */
-extern void avt_insert_lines (int line, int num);
+void avt_insert_lines (int line, int num);
 
 /***********************************************************************/
 /* audio stuff */
 
 /* must be called AFTER avt_initialize! */
-extern int avt_initialize_audio (void);
+int avt_initialize_audio (void);
 
 /* should be called BEFORE avt_quit */
-extern void avt_quit_audio (void);
+void avt_quit_audio (void);
 
 /* 
  * loads a wave file 
  * supported: PCM, MS-ADPCM, IMA-ADPCM
  */
-extern avt_audio_t *avt_load_wave_file (const char *file);
+avt_audio_t *avt_load_wave_file (const char *file);
 
 /*
  * loads wave data from memory
  * must still be freed with avt_free_audio!
  */
-extern avt_audio_t *avt_load_wave_data (void *data, int datasize);
+avt_audio_t *avt_load_wave_data (void *data, int datasize);
 
 /*
  * frees memory of a loaded sound
  */
-extern void avt_free_audio (avt_audio_t * snd);
+void avt_free_audio (avt_audio_t * snd);
 
 /*
  * plays a sound
  */
-extern int avt_play_audio (avt_audio_t * snd, int doloop);
+int avt_play_audio (avt_audio_t * snd, int doloop);
 
 /*
  * wait until the sound ends
  * this stops a loop, but still plays to the end of the sound
  */
-extern int avt_wait_audio_end (void);
+int avt_wait_audio_end (void);
 
 /* stops audio */
-extern void avt_stop_audio (void);
+void avt_stop_audio (void);
 
 
 #ifdef __cplusplus
