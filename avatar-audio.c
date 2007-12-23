@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.11 2007-12-06 10:46:01 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.12 2007-12-23 14:09:49 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -41,6 +41,8 @@
 #  undef SDL_free
 #  define SDL_free                free
 #endif /* OLD_SDL */
+
+#pragma GCC poison  malloc free strlen memcpy getenv putenv
 
 typedef struct
 {
@@ -98,7 +100,7 @@ short_audio_sound (void)
 int
 avt_initialize_audio (void)
 {
-  SDL_SetError ("$Id: avatar-audio.c,v 2.11 2007-12-06 10:46:01 akf Exp $");
+  SDL_SetError ("$Id: avatar-audio.c,v 2.12 2007-12-23 14:09:49 akf Exp $");
 
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
     return AVATARERROR;
