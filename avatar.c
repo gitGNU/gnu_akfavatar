@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.49 2007-12-23 20:05:22 akf Exp $ */
+/* $Id: avatar.c,v 2.50 2007-12-23 20:26:48 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -155,9 +155,6 @@
 #endif
 
 #ifndef WCHAR_ENCODING
-#  if !defined(__STDC_ISO_10646__) && !defined(__WIN32__)
-#    warning "assuming Unicode for WCHAR_ENCODING, but I'm not sure"
-#  endif /* __STDC_ISO_10646__ */
 #  ifdef WCHAR_MAX
 #    if (WCHAR_MAX <= 65535U)
 #      if (SDL_BYTEORDER == SDL_BIG_ENDIN)
@@ -2464,7 +2461,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.49 2007-12-23 20:05:22 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.50 2007-12-23 20:26:48 akf Exp $");
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
 
