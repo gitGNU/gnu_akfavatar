@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.46 2007-12-23 09:25:28 akf Exp $ */
+/* $Id: avatar.c,v 2.47 2007-12-23 13:07:04 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -143,27 +143,34 @@
 #define ICONV_UNINITIALIZED   (avt_iconv_t)(-1)
 
 /* try to guess WCHAR_ENCODING, 
- * based on __WCHAR_MAX__ if it is available
- * assuming it is in Unicode 
+ * based on WCHAR_MAX or __WCHAR_MAX__ if it is available
+ * note: newer SDL versions include stdint.h if available
  */
+#if !defined(WCHAR_MAX) && defined(__WCHAR_MAX__)
+#  define WCHAR_MAX __WCHAR_MAX__
+#endif
+
 #ifndef WCHAR_ENCODING
-#  ifdef __WCHAR_MAX__
-#    if (__WCHAR_MAX__ <= 65535U)
+#  if !defined(__STDC_ISO_10646__) && !defined(__WIN32__)
+#    warning "assuming Unicode for WCHAR_ENCODING, but I'm not sure"
+#  endif /* __STDC_ISO_10646__ */
+#  ifdef WCHAR_MAX
+#    if (WCHAR_MAX <= 65535U)
 #      if (SDL_BYTEORDER == SDL_BIG_ENDIN)
 #        define WCHAR_ENCODING "UTF-16BE"
 #      else /* SDL_BYTEORDER != SDL_BIG_ENDIN */
 #        define WCHAR_ENCODING "UTF-16LE"
 #      endif /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
-#    else /* (__WCHAR_MAX__ > 65535U) */
+#    else /* (WCHAR_MAX > 65535U) */
 #      if (SDL_BYTEORDER == SDL_BIG_ENDIN)
 #        define WCHAR_ENCODING "UTF-32BE"
 #      else /* SDL_BYTEORDER != SDL_BIG_ENDIN */
 #        define WCHAR_ENCODING "UTF-32LE"
 #      endif /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
-#    endif /* (__WCHAR_MAX__ > 65535U) */
-#  else	/* not __WCHAR_MAX__ */
+#    endif /* (WCHAR_MAX > 65535U) */
+#  else	/* not WCHAR_MAX */
 #   error "please define WCHAR_ENCODING (no autodetection possible)"
-#  endif /* not __WCHAR_MAX__ */
+#  endif /* not WCHAR_MAX */
 #endif /* not WCHAR_ENCODING */
 
 /* 
@@ -2453,7 +2460,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.46 2007-12-23 09:25:28 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.47 2007-12-23 13:07:04 akf Exp $");
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
 
