@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.45 2007-12-18 18:07:50 akf Exp $ */
+/* $Id: avatar.c,v 2.46 2007-12-23 09:25:28 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -141,6 +141,30 @@
 #endif /* not SDL_IMAGE_LIB */
 
 #define ICONV_UNINITIALIZED   (avt_iconv_t)(-1)
+
+/* try to guess WCHAR_ENCODING, 
+ * based on __WCHAR_MAX__ if it is available
+ * assuming it is in Unicode 
+ */
+#ifndef WCHAR_ENCODING
+#  ifdef __WCHAR_MAX__
+#    if (__WCHAR_MAX__ <= 65535U)
+#      if (SDL_BYTEORDER == SDL_BIG_ENDIN)
+#        define WCHAR_ENCODING "UTF-16BE"
+#      else /* SDL_BYTEORDER != SDL_BIG_ENDIN */
+#        define WCHAR_ENCODING "UTF-16LE"
+#      endif /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
+#    else /* (__WCHAR_MAX__ > 65535U) */
+#      if (SDL_BYTEORDER == SDL_BIG_ENDIN)
+#        define WCHAR_ENCODING "UTF-32BE"
+#      else /* SDL_BYTEORDER != SDL_BIG_ENDIN */
+#        define WCHAR_ENCODING "UTF-32LE"
+#      endif /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
+#    endif /* (__WCHAR_MAX__ > 65535U) */
+#  else	/* not __WCHAR_MAX__ */
+#   error "please define WCHAR_ENCODING (no autodetection possible)"
+#  endif /* not __WCHAR_MAX__ */
+#endif /* not WCHAR_ENCODING */
 
 /* 
  * this will be used, when somebody forgets to set the
@@ -1327,33 +1351,6 @@ avt_say_len (const wchar_t * txt, const int len)
 int
 avt_mb_encoding (const char *encoding)
 {
-#ifdef WCHAR_ENCODING
-#  define internal_encoding WCHAR_ENCODING
-#else
-  /* check for possible internal encoding of wchar_t
-     and hope, that name is supported by iconv. */
-
-  char internal_encoding[10];
-
-  /* (all the "if"s are optimized away at compile time
-     so there is no slowdown at all) */
-
-  if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-    {
-      if (sizeof (wchar_t) == 2)
-	SDL_memcpy (internal_encoding, "UTF-16BE", sizeof ("UTF-16BE"));
-      else
-	SDL_memcpy (internal_encoding, "UTF-32BE", sizeof ("UTF-32BE"));
-    }
-  else
-    {
-      if (sizeof (wchar_t) == 2)
-	SDL_memcpy (internal_encoding, "UTF-16LE", sizeof ("UTF-16LE"));
-      else
-	SDL_memcpy (internal_encoding, "UTF-32LE", sizeof ("UTF-32LE"));
-    }
-#endif /* ! WCHAR_ENCODING */
-
   /* output */
 
   /*  if it is already open, close it first */
@@ -1361,9 +1358,9 @@ avt_mb_encoding (const char *encoding)
     avt_iconv_close (output_cd);
 
   /* initialize the conversion framework */
-  output_cd = avt_iconv_open (internal_encoding, encoding);
+  output_cd = avt_iconv_open (WCHAR_ENCODING, encoding);
 
-  /* check if is was successfully initialized */
+  /* check if it was successfully initialized */
   if (output_cd == ICONV_UNINITIALIZED)
     {
       _avt_STATUS = AVATARERROR;
@@ -1378,9 +1375,9 @@ avt_mb_encoding (const char *encoding)
     avt_iconv_close (input_cd);
 
   /* initialize the conversion framework */
-  input_cd = avt_iconv_open (encoding, internal_encoding);
+  input_cd = avt_iconv_open (encoding, WCHAR_ENCODING);
 
-  /* check if is was successfully initialized */
+  /* check if it was successfully initialized */
   if (input_cd == ICONV_UNINITIALIZED)
     {
       _avt_STATUS = AVATARERROR;
@@ -2456,7 +2453,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.45 2007-12-18 18:07:50 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.46 2007-12-23 09:25:28 akf Exp $");
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
 
