@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.29 2007-12-25 16:32:31 akf Exp $ */
+/* $Id: akfavatar.h,v 2.30 2007-12-25 17:31:19 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -467,7 +467,8 @@ int avt_initialize_audio (void);
 
 /* 
  * no longer needed, 
- * is executed automaticall by avt_quit() 
+ * this is executed automatically by avt_quit() 
+ * this function is only there for backward compatiblity
  */
 void avt_quit_audio (void);
 
