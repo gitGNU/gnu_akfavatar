@@ -1,4 +1,10 @@
-2007-12-18  Andreas K. Foerster  <info@akfoerster.de>
+2007-12-25  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_analyze_event):
+	Ctrl + Q also sets AVATARQUIT event
+
+	* avatar.c (avt_mb_encoding):
+	get internal WCHAR_ENCODING purely from preprocessor definitions
 
 	* akfavatar.h:
 	remove keyword "extern" from prototypes (just a cosmetic change)
