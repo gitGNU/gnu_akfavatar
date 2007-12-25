@@ -404,8 +404,6 @@ function avt_initialize_audio: CInteger;
 
 procedure avt_quit; libakfavatar 'avt_quit';
 
-procedure avt_quit_audio; libakfavatar 'avt_quit_audio';
-
 procedure avt_bell; libakfavatar 'avt_bell';
 
 procedure avt_flash; libakfavatar 'avt_flash';
@@ -528,12 +526,8 @@ procedure Quit;
 begin
 RestoreInOut;
 
-{ the order is important! }
 if initialized then 
-  begin
-  avt_quit_audio;
   avt_quit
-  end
 end;
 
 procedure initializeAvatar;

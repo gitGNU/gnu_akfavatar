@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.51 2007-12-25 15:36:30 akf Exp $ */
+/* $Id: avatar.c,v 2.52 2007-12-25 16:32:31 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -234,6 +234,7 @@ static struct pos
 int _avt_STATUS = AVATARNORMAL;
 
 void (*avt_bell_func) (void) = NULL;
+void (*avt_quit_audio_func) (void) = NULL;
 
 /* forward declaration */
 static int avt_pause (void);
@@ -2424,6 +2425,9 @@ avt_get_error (void)
 void
 avt_quit (void)
 {
+  if (avt_quit_audio_func)
+    (*avt_quit_audio_func) ();
+
   if (SDL_image_handle)
     {
 #ifdef _SDL_loadso_h
@@ -2471,7 +2475,8 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.51 2007-12-25 15:36:30 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.52 2007-12-25 16:32:31 akf Exp $");
+  SDL_SetError ("");
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
 

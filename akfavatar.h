@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.28 2007-12-18 10:09:01 akf Exp $ */
+/* $Id: akfavatar.h,v 2.29 2007-12-25 16:32:31 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -465,7 +465,10 @@ void avt_insert_lines (int line, int num);
 /* must be called AFTER avt_initialize! */
 int avt_initialize_audio (void);
 
-/* should be called BEFORE avt_quit */
+/* 
+ * no longer needed, 
+ * is executed automaticall by avt_quit() 
+ */
 void avt_quit_audio (void);
 
 /* 

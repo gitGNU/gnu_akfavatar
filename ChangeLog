@@ -1,5 +1,9 @@
 2007-12-25  Andreas K. Foerster  <info@akfoerster.de>
 
+        * avatar.c (avt_quit)
+          avatar-audio.c (avt_initialize_audio, avt_quit_audio):
+        avt_quit automatically calls avt_quit_audio if appropriete          
+
 	* avatar.c (avt_analyze_event):
 	Ctrl + Q also sets AVATARQUIT event
 

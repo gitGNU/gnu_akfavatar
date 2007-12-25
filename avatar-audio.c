@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.12 2007-12-23 14:09:49 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.13 2007-12-25 16:32:31 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -65,6 +65,7 @@ static int loop = 0;
 
 extern int avt_checkevent (void);
 extern void (*avt_bell_func) (void);
+extern void (*avt_quit_audio_func) (void);
 
 /* this is the callback function */
 void
@@ -100,13 +101,18 @@ short_audio_sound (void)
 int
 avt_initialize_audio (void)
 {
-  SDL_SetError ("$Id: avatar-audio.c,v 2.12 2007-12-23 14:09:49 akf Exp $");
+  SDL_SetError ("$Id: avatar-audio.c,v 2.13 2007-12-25 16:32:31 akf Exp $");
+  SDL_SetError ("");
 
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
-    return AVATARERROR;
+    {
+      SDL_SetError ("error initializing audio");
+      return AVATARERROR;
+    }
 
-  mybell = avt_load_wave_data((void *) &avt_bell_data, avt_bell_data_size);
+  mybell = avt_load_wave_data ((void *) &avt_bell_data, avt_bell_data_size);
   avt_bell_func = short_audio_sound;
+  avt_quit_audio_func = avt_quit_audio;
 
   return _avt_STATUS;
 }
@@ -123,10 +129,10 @@ avt_stop_audio (void)
   current_sound.sound = NULL;
 }
 
-/* should be called BEFORE avt_quit */
 void
 avt_quit_audio (void)
 {
+  avt_quit_audio_func = NULL;
   SDL_CloseAudio ();
   soundpos = NULL;
   soundleft = 0;
@@ -237,7 +243,7 @@ avt_wait_audio_end (void)
   loop = 0;
 
   if (soundleft > 0)
-    {      
+    {
       /* wait while sound is still playing, and there is no event */
       while ((soundleft > 0) && !avt_checkevent ())
 	SDL_Delay (1);		/* give some time to other processes */
