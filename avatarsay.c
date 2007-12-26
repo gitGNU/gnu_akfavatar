@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.37 2007-12-26 14:45:40 akf Exp $ */
+/* $Id: avatarsay.c,v 2.38 2007-12-26 17:00:53 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -109,7 +109,7 @@ static int ignore_eof;
 /* create a fifo for what to say? */
 static int say_pipe;
 
-/* execute file? */
+/* execute file? Option -e */
 static int executable;
 
 /* whether to run in a window, or in fullscreen mode */
@@ -1220,7 +1220,7 @@ execute_process (const char *fname)
 
 /* opens the file */
 static int
-openfile (const char *fname)
+openfile (const char *fname, int execute, int with_pipe)
 {
   int fd = -1;
 
@@ -1231,7 +1231,7 @@ openfile (const char *fname)
     fd = STDIN_FILENO;		/* stdin */
   else
 #ifndef NO_FIFO
-  if (say_pipe)
+  if (with_pipe)
     {
       if (mkfifo (fname, 0600) == -1)
 	error_msg ("mkfifo", fname);
@@ -1240,7 +1240,7 @@ openfile (const char *fname)
   else
 #endif /* ! NO_FIFO */
 #ifndef NO_FORK
-  if (executable)
+  if (execute)
     fd = execute_process (fname);
   else
 #endif /* ! NO_FORK */
@@ -1255,14 +1255,14 @@ openfile (const char *fname)
 
 /* shows content of file / other input */
 static int
-processfile (const char *fname)
+processfile (const char *fname, int execute, int with_pipe)
 {
   wchar_t *line = NULL;
   size_t line_size = 0;
   ssize_t nread = 0;
   int fd;
 
-  fd = openfile (fname);
+  fd = openfile (fname, execute, with_pipe);
 
   line_size = 1024 * sizeof (wchar_t);
   line = (wchar_t *) malloc (line_size);
@@ -1339,7 +1339,7 @@ processfile (const char *fname)
     error_msg ("close", strerror (errno));
 
 #ifndef NO_FIFO
-  if (say_pipe)
+  if (with_pipe)
     if (remove (fname) == -1)
       warning_msg ("remove", strerror (errno));
 #endif /* ! NO_FIFO */
@@ -1355,8 +1355,16 @@ processfile (const char *fname)
 }
 
 static void
-ask_file (void)
+ask_file (int execute)
 {
+#ifdef NO_FORK
+  if (execute)
+    {
+      not_available ();
+      return;
+    }
+#endif
+
   avt_clear ();
   avt_set_text_delay (0);
 
@@ -1380,7 +1388,7 @@ ask_file (void)
     if (filename[0] != '\0')
       {
 	int status;
-	processfile (filename);
+	processfile (filename, execute, 0);
 	stop = 0;		/* ignore stop-request */
 	status = avt_get_status ();
 	if (status == AVATARERROR)
@@ -1401,7 +1409,7 @@ not_available (void)
 {
   avt_clear ();
   avt_bell ();
-  
+
   switch (language)
     {
     case DEUTSCH:
@@ -1468,9 +1476,8 @@ ask_manpage (void)
 
       /* temporary settings */
       set_encoding ("ISO-8859-1");
-      executable = 1;
 
-      processfile (command);
+      processfile (command, 1, 0);
       stop = 0;			/* ignore stop-request */
       status = avt_get_status ();
       if (status == AVATARERROR)
@@ -1483,7 +1490,6 @@ ask_manpage (void)
       /* reset quit-request */
       avt_set_status (AVATARNORMAL);
       set_encoding (default_encoding);
-      executable = 0;
     }
 }
 
@@ -1568,34 +1574,27 @@ menu (void)
 
       switch (ch)
 	{
-	case L'1':
-	  executable = 0;
-	  ask_file ();
+	case L'1':		/* show a demo or textfile */
+	  ask_file (0);
 	  break;
 
-	case L'2':
+	case L'2':		/* show a manpage */
 	  ask_manpage ();
 	  break;
 
-	case L'3':
-#ifdef NO_FORK
-          not_available ();
-#else
-	  executable = 1;
-	  ask_file ();
-	  executable = 0;
-#endif
+	case L'3':		/* show the output of a command */
+	  ask_file (1);
 	  break;
 
-	case L'4':
+	case L'4':		/* website */
 	  open_homepage ();
 	  break;
 
-	case L'5':
+	case L'5':		/* show info about the program */
 	  about_avatarsay ();
 	  break;
 
-	case L'0':
+	case L'0':		/* exit */
 	  move_out ();
 	  quit (EXIT_SUCCESS);
 
@@ -1665,7 +1664,7 @@ main (int argc, char *argv[])
 	{
 	  set_encoding (default_encoding);
 
-	  if (processfile (argv[i]))
+	  if (processfile (argv[i], executable, say_pipe))
 	    quit (EXIT_SUCCESS);
 
 	  if (avt_flip_page ())
@@ -1690,7 +1689,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.37 2007-12-26 14:45:40 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.38 2007-12-26 17:00:53 akf Exp $");
 
   return EXIT_SUCCESS;
 }
