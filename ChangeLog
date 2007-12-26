@@ -1,4 +1,8 @@
-2007-12-25  Andreas K. Foerster  <info@akfoerster.de>
+2007-12-26  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c:
+	program has a main menu now
+	fix: rawmode (fixes bug #21889)
 
         * avatar.c (avt_quit)
           avatar-audio.c (avt_initialize_audio, avt_quit_audio):

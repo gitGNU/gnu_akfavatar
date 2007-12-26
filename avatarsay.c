@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.36 2007-12-06 19:46:44 akf Exp $ */
+/* $Id: avatarsay.c,v 2.37 2007-12-26 14:45:40 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -38,6 +38,7 @@
 
 #ifdef __WIN32__
 #  include <windows.h>
+#  define NO_MANPAGES 1
 #  ifdef __MINGW32__
 #    define NO_FIFO 1
 #    define NO_FORK 1
@@ -54,6 +55,7 @@
 #endif
 
 #define PRGNAME "avatarsay"
+#define HOMEPAGE "http://akfoerster.de/akfavatar/"
 #define BUGMAIL "bug-akfavatar@akfoerster.de"
 
 /* size for input buffer - not too small, please */
@@ -66,10 +68,27 @@
 #  define PATH_MAX 4096
 #endif
 
-/* encoding of the input files */
+static const char *version_info_en =
+  PRGNAME " (AKFAvatar) " AVTVERSION "\n"
+  "Copyright (c) 2007 Andreas K. Foerster\n\n"
+  "License GPLv3+: GNU GPL version 3 or later "
+  "<http://gnu.org/licenses/gpl.html>\n\n"
+  "This is free software: you are free to change and redistribute it.\n"
+  "There is NO WARRANTY, to the extent permitted by law.\n\n"
+  "Please read the manual for instructions.";
+
+static const char *version_info_de =
+  PRGNAME " (AKFAvatar) " AVTVERSION "\n"
+  "Copyright (c) 2007 Andreas K. Foerster\n\n"
+  "Lizenz GPLv3+: GNU GPL Version 3 oder neuer "
+  "<http://gnu.org/licenses/gpl.html>\n\n"
+  "Dies ist Freie Software: Sie dürfen es gemäß der GPL weitergeben und\n"
+  "überarbeiten. Für AKFAavatar besteht KEINERLEI GARANTIE.\n\n"
+  "Bitte lesen Sie die Anleitung für weitere Details.";
+
+/* default encoding - either system encoding or given per parameters */
 /* supported in SDL: ASCII, ISO-8859-1, UTF-8, UTF-16, UTF-32 */
-/* ISO-8859-1 is a sane default */
-static char encoding[80];
+static char default_encoding[80];
 
 /* if rawmode is set, then don't interpret any commands or comments */
 /* rawmode can be activated with the options -r or --raw */
@@ -123,6 +142,15 @@ static avt_image_t *avt_image;
 /* for loading sound files */
 static avt_audio_t *sound;
 
+/* text-buffer */
+static int wcbuf_pos = 0;
+static int wcbuf_len = 0;
+
+/* language (of current locale) */
+enum language_t
+{ ENGLISH, DEUTSCH };
+static enum language_t language;
+
 
 static void
 quit (int exitcode)
@@ -132,7 +160,6 @@ quit (int exitcode)
       if (sound)
 	avt_free_audio (sound);
 
-      avt_quit_audio ();
       avt_quit ();
     }
 
@@ -172,18 +199,18 @@ error_msg (const char *msg1, const char *msg2)
 static void
 showversion (void)
 {
-  puts (PRGNAME " (AKFAvatar) " AVTVERSION);
-  puts ("Copyright (c) 2007 Andreas K. Foerster\n");
-  puts ("License GPLv3+: GNU GPL version 3 or later "
-	"<http://gnu.org/licenses/gpl.html>\n");
-  puts ("This is free software: you are free to change and "
-	"redistribute it.");
-  puts ("There is NO WARRANTY, to the extent permitted by law.");
+  switch (language)
+    {
+    case DEUTSCH:
+      puts (version_info_de);
+      break;
+
+    case ENGLISH:
+    default:
+      puts (version_info_en);
+    }
 
   exit (EXIT_SUCCESS);
-  
-  /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.36 2007-12-06 19:46:44 akf Exp $");
 }
 
 static void
@@ -218,6 +245,35 @@ help (const char *prgname)
   puts (" AVATARDATADIR           data-directory");
   puts ("\nReport bugs to <" BUGMAIL ">");
   exit (EXIT_SUCCESS);
+}
+
+static void
+open_homepage (void)
+{
+  avt_switch_mode (WINDOW);
+  avt_clear ();
+  avt_set_text_delay (0);
+
+  avt_say_mb ("Homepage: " HOMEPAGE "\n");
+  switch (language)
+    {
+    case DEUTSCH:
+      avt_say (L"Versuche es in einem Webbrowser zu öffnen...");
+      break;
+    case ENGLISH:
+    default:
+      avt_say (L"Trying to open it in a webbrowser...");
+    }
+
+  if (getenv ("KDE_FULL_SESSION") != NULL)
+    system ("kfmclient openURL " HOMEPAGE " &");
+  else if (getenv ("GNOME_DESKTOP_SESSION_ID") != NULL)
+    system ("gnome-open " HOMEPAGE " &");
+  else
+    system ("firefox " HOMEPAGE " &");
+
+  avt_wait (4000);
+  quit (EXIT_SUCCESS);
 }
 
 #else /* Windows or ReactOS */
@@ -264,16 +320,18 @@ error_msg (const char *msg1, const char *msg2)
 static void
 showversion (void)
 {
-  char msg[] = PRGNAME " (AKFAvatar) " AVTVERSION "\n"
-    "Copyright \xa9 2007 Andreas K. F\xf6rster\n\n"
-    "License GPLv3+: GNU GPL version 3 or later "
-    "<http://gnu.org/licenses/gpl.html>\n"
-    "This is free software: you are free to change and redistribute it.\n"
-    "There is NO WARRANTY, to the extent permitted by law.\n\n"
-    "Please read the manual for instructions.";
+  switch (language)
+    {
+    case DEUTSCH:
+      MessageBox (NULL, version_info_de, PRGNAME,
+		  MB_OK | MB_ICONINFORMATION | MB_SETFOREGROUND);
+      break;
 
-  MessageBox (NULL, msg, PRGNAME,
-	      MB_OK | MB_ICONINFORMATION | MB_SETFOREGROUND);
+    case ENGLISH:
+    default:
+      MessageBox (NULL, version_info_en, PRGNAME,
+		  MB_OK | MB_ICONINFORMATION | MB_SETFOREGROUND);
+    }
 
   exit (EXIT_SUCCESS);
 }
@@ -287,13 +345,38 @@ help (const char *prgname)
   exit (EXIT_SUCCESS);
 }
 
+static void
+open_homepage (void)
+{
+  avt_switch_mode (WINDOW);
+  avt_clear ();
+  avt_set_text_delay (0);
+
+  avt_say_mb ("Homepage: " HOMEPAGE "\n");
+  switch (language)
+    {
+    case DEUTSCH:
+      avt_say (L"Versuche es in einem Webbrowser zu öffnen...");
+      break;
+
+    case ENGLISH:
+    default:
+      avt_say (L"Trying to open it in a webbrowser...");
+    }
+
+  ShellExecute (NULL, "open", HOMEPAGE, NULL, NULL, SW_SHOWNORMAL);
+
+  avt_wait (4000);
+  quit (EXIT_SUCCESS);
+}
+
 #endif /* Windows or ReactOS */
 
 static void
 set_encoding (const char *encoding)
 {
   if (avt_mb_encoding (encoding))
-    error_msg ("iconv error", avt_get_error ());
+    error_msg ("iconv", avt_get_error ());
 }
 
 static void
@@ -384,7 +467,17 @@ checkoptions (int argc, char **argv)
 	  /* --saypipe */
 	case 's':
 #ifdef NO_FIFO
-	  error_msg ("pipes not supported on this system", NULL);
+	  switch (language)
+	    {
+	    case DEUTSCH:
+	      error_msg ("Pipes werden auf diesem System nicht untarstuetzt",
+			 NULL);
+	      break;
+
+	    case ENGLISH:
+	    default:
+	      error_msg ("pipes not supported on this system", NULL);
+	    }
 #else
 	  say_pipe = 1;
 	  loop = 0;
@@ -396,19 +489,19 @@ checkoptions (int argc, char **argv)
 
 	  /* --encoding */
 	case 'E':
-	  strncpy (encoding, optarg, sizeof (encoding));
+	  strncpy (default_encoding, optarg, sizeof (default_encoding));
 	  given_encoding = 1;
 	  break;
 
 	  /* --latin1 */
 	case 'l':
-	  strcpy (encoding, "ISO-8859-1");
+	  strcpy (default_encoding, "ISO-8859-1");
 	  given_encoding = 1;
 	  break;
 
 	  /* --utf-8, --utf8, --u8 */
 	case 'u':
-	  strcpy (encoding, "UTF-8");
+	  strcpy (default_encoding, "UTF-8");
 	  given_encoding = 1;
 	  break;
 
@@ -431,13 +524,18 @@ checkoptions (int argc, char **argv)
 	  /* declared option, but not handled here */
 	  /* should never happen */
 	default:
-	  error_msg ("internal error", "option not supported");
-	}
-    }
+	  switch (language)
+	    {
+	    case DEUTSCH:
+	      error_msg ("interner Fehler", "Option wird nicht unterstützt");
+	      break;
 
-  /* no input files? -> print help */
-  if (optind >= argc)
-    help (argv[0]);
+	    case ENGLISH:
+	    default:
+	      error_msg ("internal error", "option not supported");
+	    }			/* switch (language) */
+	}			/* switch (c) */
+    }				/* while (1) */
 }
 
 static void
@@ -451,8 +549,17 @@ checkenvironment (void)
 
   e = getenv ("AVATARIMAGE");
   if (e && !avt_image)
-    if (!(avt_image = avt_import_image_file (e)))
-      error_msg ("error while loading the AVATARIMAGE", avt_get_error ());
+    if ((avt_image = avt_import_image_file (e)) == NULL)
+      switch (language)
+	{
+	case DEUTSCH:
+	  error_msg ("Fehler beim Laden des AVATARIMAGE Bildes",
+		     avt_get_error ());
+	  break;
+	case ENGLISH:
+	default:
+	  error_msg ("error while loading the AVATARIMAGE", avt_get_error ());
+	}
 }
 
 static void
@@ -489,15 +596,33 @@ initialize (void)
     avt_image = avt_default ();
 
   if (avt_initialize ("AKFAvatar", "AKFAvatar", avt_image, mode))
-    error_msg ("cannot initialize graphics", avt_get_error ());
+    switch (language)
+      {
+      case DEUTSCH:
+	error_msg ("kann Grafik nicht initialisieren", avt_get_error ());
+	break;
+
+      case ENGLISH:
+      default:
+	error_msg ("cannot initialize graphics", avt_get_error ());
+      }
 
   if (avt_initialize_audio ())
-    notice_msg ("cannot initialize audio", avt_get_error ());
+    switch (language)
+      {
+      case DEUTSCH:
+	error_msg ("kann Audio nicht initialisieren", avt_get_error ());
+	break;
+
+      case ENGLISH:
+      default:
+	error_msg ("cannot initialize audio", avt_get_error ());
+      }
 
   initialized = 1;
 }
 
-/* fills filepath with datadir and the converted contend of fn */
+/* fills filepath with datadir and the converted content of fn */
 static void
 get_data_file (const wchar_t * fn, char filepath[])
 {
@@ -560,7 +685,7 @@ handle_backgoundcolor_command (const wchar_t * s)
   if (swscanf (s, L".backgroundcolor #%2x%2x%2x", &red, &green, &blue) == 3)
     avt_set_background_color (red, green, blue);
   else
-    error_msg ("formatting error for \".backgroundcolor\"", NULL);
+    error_msg (".backgroundcolor", NULL);
 }
 
 static void
@@ -827,37 +952,38 @@ iscommand (wchar_t * s)
 static void
 check_encoding (char *buf, int *size)
 {
-  char *enc;
-
   encoding_checked = 1;
 
-  /* check for command .encoding */
-  enc = strstr (buf, ".encoding ");
+  {
+    char *enc;
+    char temp[80];
 
-  /*
-   * if .encoding is found and it is either at the start of the buffer 
-   * or the previous character is a \n then set_encoding
-   * and don't check anything else anymore
-   */
-  if (enc != NULL && (enc == buf || *(enc - 1) == '\n'))
-    {
-      if (sscanf (enc, ".encoding %79s", (char *) &encoding) <= 0)
-	warning_msg ("warning", "cannot read the \".encoding\" line.");
-      else
-	{
-	  set_encoding (encoding);
-	  return;
-	}
-    }
+    /* check for command .encoding */
+    enc = strstr (buf, ".encoding ");
 
+    /*
+     * if .encoding is found and it is either at the start of the buffer 
+     * or the previous character is a \n then set_encoding
+     * and don't check anything else anymore
+     */
+    if (enc != NULL && (enc == buf || *(enc - 1) == '\n'))
+      {
+	if (sscanf (enc, ".encoding %79s", (char *) &temp) <= 0)
+	  warning_msg (".encoding", NULL);
+	else
+	  {
+	    set_encoding (temp);
+	    return;
+	  }
+      }
+  }
 
   /* check for byte order marks (BOM) */
 
   /* UTF-8 BOM (as set by Windows notepad) */
   if (*buf == '\xEF' && *(buf + 1) == '\xBB' && *(buf + 2) == '\xBF')
     {
-      strcpy (encoding, "UTF-8");
-      set_encoding (encoding);
+      set_encoding ("UTF-8");
       memmove (buf, buf + 3, *size - 3);
       *size -= 3;
       return;
@@ -869,8 +995,7 @@ check_encoding (char *buf, int *size)
   if (*buf == '\x00' && *(buf + 1) == '\x00'
       && *(buf + 2) == '\xFE' && *(buf + 3) == '\xFF')
     {
-      strcpy (encoding, "UTF-32BE");
-      set_encoding (encoding);
+      set_encoding ("UTF-32BE");
       memmove (buf, buf + 4, *size - 4);
       *size -= 4;
       return;
@@ -880,8 +1005,7 @@ check_encoding (char *buf, int *size)
   if (*buf == '\xFF' && *(buf + 1) == '\xFE'
       && *(buf + 2) == '\x00' && *(buf + 3) == '\x00')
     {
-      strcpy (encoding, "UTF-32LE");
-      set_encoding (encoding);
+      set_encoding ("UTF-32LE");
       memmove (buf, buf + 4, *size - 4);
       *size -= 4;
       return;
@@ -890,8 +1014,7 @@ check_encoding (char *buf, int *size)
   /* UTF-16BE BOM */
   if (*buf == '\xFE' && *(buf + 1) == '\xFF')
     {
-      strcpy (encoding, "UTF-16BE");
-      set_encoding (encoding);
+      set_encoding ("UTF-16BE");
       memmove (buf, buf + 2, *size - 2);
       *size -= 2;
       return;
@@ -900,8 +1023,7 @@ check_encoding (char *buf, int *size)
   /* UTF-16LE BOM */
   if (*buf == '\xFF' && *(buf + 1) == '\xFE')
     {
-      strcpy (encoding, "UTF-16LE");
-      set_encoding (encoding);
+      set_encoding ("UTF-16LE");
       memmove (buf, buf + 2, *size - 2);
       *size -= 2;
       return;
@@ -911,29 +1033,25 @@ check_encoding (char *buf, int *size)
 
   if (*buf == '\x00' && *(buf + 1) == '\x00')
     {
-      strcpy (encoding, "UTF-32BE");
-      set_encoding (encoding);
+      set_encoding ("UTF-32BE");
       return;
     }
 
   if (*(buf + 2) == '\x00' && *(buf + 3) == '\x00')
     {
-      strcpy (encoding, "UTF-32LE");
-      set_encoding (encoding);
+      set_encoding ("UTF-32LE");
       return;
     }
 
   if (*buf == '\x00')
     {
-      strcpy (encoding, "UTF-16BE");
-      set_encoding (encoding);
+      set_encoding ("UTF-16BE");
       return;
     }
 
   if (*(buf + 1) == '\x00')
     {
-      strcpy (encoding, "UTF-16LE");
-      set_encoding (encoding);
+      set_encoding ("UTF-16LE");
       return;
     }
 }
@@ -970,8 +1088,6 @@ static wint_t
 get_character (int fd)
 {
   static wchar_t *wcbuf = NULL;
-  static int wcbuf_pos = 0;
-  static int wcbuf_len = 0;
   wchar_t ch;
 
   if (wcbuf_pos >= wcbuf_len)
@@ -1057,12 +1173,12 @@ execute_process (const char *fname)
   int fdpair[2];
 
   if (pipe (fdpair) == -1)
-    error_msg ("error creating pipe", strerror (errno));
+    error_msg ("pipe", strerror (errno));
 
   childpid = fork ();
 
   if (childpid == -1)
-    error_msg ("error while forking", strerror (errno));
+    error_msg ("fork", strerror (errno));
 
   /* is it the child process? */
   if (childpid == 0)
@@ -1070,13 +1186,16 @@ execute_process (const char *fname)
       /* child closes input part of pipe */
       close (fdpair[0]);
 
+      /* close input terminal */
+      close (STDIN_FILENO);
+
       /* redirect stdout to pipe */
       if (dup2 (fdpair[1], STDOUT_FILENO) == -1)
-	error_msg ("error with dup2", strerror (errno));
+	error_msg ("dup2", strerror (errno));
 
       /* redirect sterr to pipe */
       if (dup2 (fdpair[1], STDERR_FILENO) == -1)
-	error_msg ("error with dup2", strerror (errno));
+	error_msg ("dup2", strerror (errno));
 
       close (fdpair[1]);
 
@@ -1084,7 +1203,7 @@ execute_process (const char *fname)
       putenv ("TERM=dumb");
 
       /* execute the command */
-      execlp (fname, fname, NULL);
+      execl ("/bin/sh", "/bin/sh", "-c", fname, (char *) NULL);
 
       /* in case of an error, we can not do much */
       /* stdout and stderr are broken by now */
@@ -1104,6 +1223,9 @@ static int
 openfile (const char *fname)
 {
   int fd = -1;
+
+  /* clear text-buffer */
+  wcbuf_pos = wcbuf_len = 0;
 
   if (strcmp (fname, "-") == 0)
     fd = STDIN_FILENO;		/* stdin */
@@ -1126,7 +1248,7 @@ openfile (const char *fname)
 
   /* error */
   if (fd < 0)
-    error_msg ("error opening file for reading", strerror (errno));
+    error_msg ("open", strerror (errno));
 
   return fd;
 }
@@ -1147,8 +1269,11 @@ processfile (const char *fname)
 
   encoding_checked = 0;
 
+  nread = getwline (fd, line, line_size);
   if (!rawmode)
-    do				/* skip empty lines at the beginning */
+    while (nread != 0
+	   && (wcscmp (line, L"\n") == 0
+	       || wcscmp (line, L"\r\n") == 0 || iscommand (line)) && !stop)
       {
 	nread = getwline (fd, line, line_size);
 
@@ -1161,9 +1286,6 @@ processfile (const char *fname)
 	      stop = 1;
 	  }
       }
-    while (nread != 0
-	   && (wcscmp (line, L"\n") == 0
-	       || wcscmp (line, L"\r\n") == 0 || iscommand (line)) && !stop);
 
   if (!initialized && !stop)
     {
@@ -1214,21 +1336,299 @@ processfile (const char *fname)
     }
 
   if (close (fd) == -1 && errno != EAGAIN)
-    error_msg ("error closing the file", strerror (errno));
+    error_msg ("close", strerror (errno));
 
 #ifndef NO_FIFO
   if (say_pipe)
     if (remove (fname) == -1)
-      warning_msg ("problem removing FIFO", strerror (errno));
+      warning_msg ("remove", strerror (errno));
 #endif /* ! NO_FIFO */
 
   if (avt_get_status () == AVATARERROR)
     {
       stop = 1;
-      warning_msg ("warning", avt_get_error ());
+      warning_msg (avt_get_error (), NULL);
     }
 
+  avt_text_direction (LEFT_TO_RIGHT);
   return stop;
+}
+
+static void
+ask_file (void)
+{
+  avt_clear ();
+  avt_set_text_delay (0);
+
+  /* show directory and prompt */
+  {
+    char dirname[255];
+
+    if (getcwd (dirname, sizeof (dirname)) != NULL)
+      avt_say_mb (dirname);
+    avt_say_mb ("> ");
+  }
+
+  {
+    char filename[255];
+
+    if (avt_ask_mb (filename, sizeof (filename)) != 0)
+      quit (EXIT_SUCCESS);
+
+    avt_clear ();
+    avt_set_text_delay (DEFAULT_TEXT_DELAY);
+    if (filename[0] != '\0')
+      {
+	int status;
+	processfile (filename);
+	stop = 0;		/* ignore stop-request */
+	status = avt_get_status ();
+	if (status == AVATARERROR)
+	  quit (EXIT_FAILURE);	/* warning already printed */
+
+	if (status == AVATARNORMAL)
+	  if (avt_wait_button ())
+	    quit (EXIT_SUCCESS);
+
+	/* reset quit-request */
+	avt_set_status (AVATARNORMAL);
+      }
+  }
+}
+
+static void
+not_available (void)
+{
+  avt_clear ();
+  avt_bell ();
+  
+  switch (language)
+    {
+    case DEUTSCH:
+      avt_say (L"Funktion auf diesem System nicht verfügbar...");
+      break;
+    case ENGLISH:
+    default:
+      avt_say (L"function not available on this system...");
+    }
+
+  if (avt_wait_button () != 0)
+    quit (EXIT_SUCCESS);
+}
+
+static void
+not_yet_implemented (void)
+{
+  avt_clear ();
+  avt_bell ();
+  avt_say_mb (strerror (ENOSYS));
+
+  if (avt_wait_button () != 0)
+    quit (EXIT_SUCCESS);
+}
+
+#ifdef NO_MANPAGES
+
+static void
+ask_manpage (void)
+{
+  not_available ();
+}
+
+#else /* ! NO_MANPAGES */
+
+static void
+ask_manpage (void)
+{
+  char manpage[LINELENGTH];
+
+  avt_clear ();
+  avt_set_text_delay (0);
+
+  avt_say (L"Manpage> ");
+
+  if (avt_ask_mb (manpage, sizeof (manpage)) != 0)
+    quit (EXIT_SUCCESS);
+
+  avt_clear ();
+  avt_set_text_delay (DEFAULT_TEXT_DELAY);
+  if (manpage[0] != '\0')
+    {
+      char command[255];
+      int status;
+
+      /* -T is not supported on FreeBSD */
+      strcpy (command, "man -t ");
+      strcat (command, manpage);
+      strcat (command, " 2>/dev/null");
+
+      /* GROFF assumed! */
+      putenv ("GROFF_TYPESETTER=latin1");
+      putenv ("MANWIDTH=80");
+
+      /* temporary settings */
+      set_encoding ("ISO-8859-1");
+      executable = 1;
+
+      processfile (command);
+      stop = 0;			/* ignore stop-request */
+      status = avt_get_status ();
+      if (status == AVATARERROR)
+	quit (EXIT_FAILURE);	/* warning already printed */
+
+      if (status == AVATARNORMAL)
+	if (avt_wait_button () != 0)
+	  quit (EXIT_SUCCESS);
+
+      /* reset quit-request */
+      avt_set_status (AVATARNORMAL);
+      set_encoding (default_encoding);
+      executable = 0;
+    }
+}
+
+#endif /* NO_MANPAGES */
+
+
+static void
+about_avatarsay (void)
+{
+  avt_clear ();
+  set_encoding ("UTF-8");
+  avt_set_text_delay (0);
+
+  switch (language)
+    {
+    case DEUTSCH:
+      avt_say_mb (version_info_de);
+      break;
+
+    case ENGLISH:
+    default:
+      avt_say_mb (version_info_en);
+    }
+
+  set_encoding (default_encoding);
+  avt_set_text_delay (DEFAULT_TEXT_DELAY);
+
+  if (avt_wait_button () != 0)
+    quit (EXIT_SUCCESS);
+}
+
+static void
+menu (void)
+{
+  wchar_t ch;
+
+  /* avoid pause after moving out */
+  loop = 0;
+
+  if (!initialized && !stop)
+    {
+      initialize ();
+
+      if (!popup)
+	move_in ();
+    }
+
+  set_encoding (default_encoding);
+
+  while (1)
+    {
+      avt_clear ();
+      avt_set_text_delay (0);
+      avt_say (L"AKFAvatar\n");
+      avt_say (L"=========\n\n");
+
+      switch (language)
+	{
+	case DEUTSCH:
+	  avt_say (L"1) ein Demo oder eine Text-Datei anzeigen\n");
+	  avt_say (L"2) eine Hilfeseite (Manpage) anzeigen\n");
+	  avt_say (L"3) zeige die Ausgabe eines Befehls\n");
+	  avt_say (L"4) Homepage des Projektes aufrufen\n");
+	  avt_say (L"5) Programm-Infos\n");
+	  avt_say (L"0) beenden\n");
+	  break;
+
+	case ENGLISH:
+	default:
+	  avt_say (L"1) show a demo or textfile\n");
+	  avt_say (L"2) show a manpage\n");
+	  avt_say (L"3) show the output of a command\n");
+	  avt_say (L"4) website\n");
+	  avt_say (L"5) show info about the program\n");
+	  avt_say (L"0) exit\n");
+	}
+
+      avt_set_text_delay (DEFAULT_TEXT_DELAY);
+
+      if (avt_get_key (&ch))
+	quit (EXIT_SUCCESS);
+
+      switch (ch)
+	{
+	case L'1':
+	  executable = 0;
+	  ask_file ();
+	  break;
+
+	case L'2':
+	  ask_manpage ();
+	  break;
+
+	case L'3':
+#ifdef NO_FORK
+          not_available ();
+#else
+	  executable = 1;
+	  ask_file ();
+	  executable = 0;
+#endif
+	  break;
+
+	case L'4':
+	  open_homepage ();
+	  break;
+
+	case L'5':
+	  about_avatarsay ();
+	  break;
+
+	case L'0':
+	  move_out ();
+	  quit (EXIT_SUCCESS);
+
+	default:
+	  avt_bell ();
+	  break;
+	}
+    }
+}
+
+static void
+init_language_info (void)
+{
+  char *locale_info;
+
+  /* initialize system's default locale */
+  locale_info = setlocale (LC_ALL, "");
+
+  /* we are interested only in the laguage here */
+#ifdef LC_MESSAGES
+  locale_info = setlocale (LC_MESSAGES, NULL);
+#endif
+
+  /* default lagnuage */
+  language = ENGLISH;
+
+  /* for Windows (and possibly others) */
+  if (strncmp (locale_info, "German", 6) == 0)
+    language = DEUTSCH;
+  else if (strncmp (locale_info, "german", 6) == 0)
+    language = DEUTSCH;
+  else if (strncmp (locale_info, "de", 2) == 0)
+    language = DEUTSCH;
 }
 
 int
@@ -1236,21 +1636,24 @@ main (int argc, char *argv[])
 {
   mode = AUTOMODE;
   loop = 1;
-  strcpy (encoding, "ISO-8859-1");
+  strcpy (default_encoding, "ISO-8859-1");
 
-  setlocale (LC_ALL, "");
-
+  init_language_info ();
   checkenvironment ();
 
   /* get system encoding */
 #ifndef NO_LANGINFO
-  strncpy (encoding, nl_langinfo (CODESET), sizeof (encoding));
+  strncpy (default_encoding, nl_langinfo (CODESET),
+	   sizeof (default_encoding));
 #endif
 
   checkoptions (argc, argv);
 
-  set_encoding (encoding);
+  /* no input files? -> menu */
+  if (optind >= argc)
+    menu ();
 
+  /* handle files given as parameters */
   do
     {
       int i;
@@ -1260,6 +1663,8 @@ main (int argc, char *argv[])
 
       for (i = optind; i < argc; i++)
 	{
+	  set_encoding (default_encoding);
+
 	  if (processfile (argv[i]))
 	    quit (EXIT_SUCCESS);
 
@@ -1283,9 +1688,9 @@ main (int argc, char *argv[])
   while (loop);
 
   quit (EXIT_SUCCESS);
-      
+
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.36 2007-12-06 19:46:44 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.37 2007-12-26 14:45:40 akf Exp $");
 
   return EXIT_SUCCESS;
 }
