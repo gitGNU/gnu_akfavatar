@@ -262,7 +262,7 @@ dist-bin: avatarsay.exe multiply.exe multiplizieren.exe
 	cp ../AUTHORS $(BINPKGNAME)/AUTHORS.txt
 	cp ../pascal/correct.wav ../pascal/wrong.wav $(BINPKGNAME)/
 	cp multiply.exe multiplizieren.exe $(BINPKGNAME)/
-	strip $(BINPKGNAME)/*.exe $(BINPKGNAME)/akfavatar.dll
+	strip $(BINPKGNAME)/avatarsay.exe $(BINPKGNAME)/akfavatar.dll
 	todos $(BINPKGNAME)/fsdemo-??
 	todos $(BINPKGNAME)/avtcharset
 	todos $(BINPKGNAME)/*.bat
