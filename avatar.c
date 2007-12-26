@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.52 2007-12-25 16:32:31 akf Exp $ */
+/* $Id: avatar.c,v 2.53 2007-12-26 19:05:20 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1901,6 +1901,7 @@ avt_wait_button (void)
   SDL_Rect dst;
   int nokey;
 
+  /* show button */
   button = SDL_LoadBMP_RW (SDL_RWFromMem ((void *) keybtn, keybtn_size), 1);
 
   /* alignment: right bottom */
@@ -1914,6 +1915,10 @@ avt_wait_button (void)
   SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
   SDL_FreeSurface (button);
   button = NULL;
+  
+  /* show mouse pointer */
+  SDL_WarpMouse (dst.x + dst.w - 5, dst.y + dst.h - 5);
+  SDL_ShowCursor (SDL_ENABLE);
 
   nokey = 1;
   while (nokey)
@@ -1948,6 +1953,9 @@ avt_wait_button (void)
 	  break;
 	}
     }
+
+  /* hide mouse pointer */
+  SDL_ShowCursor (SDL_DISABLE);
 
   /* delete button */
   SDL_SetClipRect (screen, &window);
@@ -2017,6 +2025,10 @@ avt_wait_key (const wchar_t * message)
       SDL_SetColors (avt_character, old_colors, 0, 2);
       cursor = oldcursor;
     }
+  
+  /* show mouse pointer */
+  SDL_WarpMouse (dst.x, dst.y + FONTHEIGHT);
+  SDL_ShowCursor (SDL_ENABLE);
 
   nokey = 1;
   while (nokey)
@@ -2051,6 +2063,9 @@ avt_wait_key (const wchar_t * message)
 	  break;
 	}
     }
+
+  /* hide mouse pointer */
+  SDL_ShowCursor (SDL_DISABLE);
 
   /* clear message */
   if (*message)
@@ -2475,7 +2490,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.52 2007-12-25 16:32:31 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.53 2007-12-26 19:05:20 akf Exp $");
   SDL_SetError ("");
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();

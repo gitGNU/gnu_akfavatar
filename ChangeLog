@@ -1,5 +1,8 @@
 2007-12-26  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatar.c (avt_wait_button, avt_wait_key):
+	show mouse pointer while waiting for a key (or mouse button)	
+
 	* avatarsay.c:
 	program has a main menu now
 	fix: rawmode (fixes bug #21889)
