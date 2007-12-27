@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.53 2007-12-26 19:05:20 akf Exp $ */
+/* $Id: avatar.c,v 2.54 2007-12-27 10:01:38 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -287,6 +287,12 @@ avt_license (void)
 {
   return "License GPLv3+: GNU GPL version 3 or later "
     "<http://gnu.org/licenses/gpl.html>";
+}
+
+int
+avt_initialized (void)
+{
+  return (screen != NULL);
 }
 
 int
@@ -1915,7 +1921,7 @@ avt_wait_button (void)
   SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
   SDL_FreeSurface (button);
   button = NULL;
-  
+
   /* show mouse pointer */
   SDL_WarpMouse (dst.x + dst.w - 5, dst.y + dst.h - 5);
   SDL_ShowCursor (SDL_ENABLE);
@@ -2025,7 +2031,7 @@ avt_wait_key (const wchar_t * message)
       SDL_SetColors (avt_character, old_colors, 0, 2);
       cursor = oldcursor;
     }
-  
+
   /* show mouse pointer */
   SDL_WarpMouse (dst.x, dst.y + FONTHEIGHT);
   SDL_ShowCursor (SDL_ENABLE);
@@ -2490,7 +2496,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.53 2007-12-26 19:05:20 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.54 2007-12-27 10:01:38 akf Exp $");
   SDL_SetError ("");
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();

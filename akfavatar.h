@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.30 2007-12-25 17:31:19 akf Exp $ */
+/* $Id: akfavatar.h,v 2.31 2007-12-27 10:01:38 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -124,6 +124,9 @@ const char *avt_copyright (void);
 
 /* license information */
 const char *avt_license (void);
+
+/* is it initialized? (0 = false, 1 = true) */
+int avt_initialized (void);
 
 /* 0 = normal; 1 = quit-request; -1 = error */
 int avt_get_status (void);

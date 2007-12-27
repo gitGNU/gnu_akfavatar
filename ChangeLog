@@ -1,4 +1,7 @@
-2007-12-26  Andreas K. Foerster  <info@akfoerster.de>
+2007-12-27  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_initialized):
+	new function
 
 	* avatar.c (avt_wait_button, avt_wait_key):
 	show mouse pointer while waiting for a key (or mouse button)	
