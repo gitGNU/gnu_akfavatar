@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.54 2007-12-27 10:01:38 akf Exp $ */
+/* $Id: avatar.c,v 2.55 2007-12-27 13:47:04 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -190,33 +190,32 @@ typedef struct
 } gimp_img_t;
 
 /* for dynamically loading SDL_image (SDL-1.2.6 or better) */
-static int try_to_load_SDL_image = 1;
-static void *SDL_image_handle = NULL;
-static SDL_Surface *(*IMG_Load) (const char *file) = NULL;
-static SDL_Surface *(*IMG_Load_RW) (SDL_RWops * src, int freesrc) = NULL;
+static int tried_to_load_SDL_image;
+static void *SDL_image_handle;
+static SDL_Surface *(*IMG_Load) (const char *file);
+static SDL_Surface *(*IMG_Load_RW) (SDL_RWops * src, int freesrc);
 
 /* for an external keyboard handler */
 static avt_keyhandler avt_ext_keyhandler = NULL;
 
 
-static SDL_Surface *screen = NULL, *avt_image = NULL, *avt_character = NULL;
+static SDL_Surface *screen, *avt_image, *avt_character;
 static Uint32 screenflags;	/* flags for the screen */
 static int avt_mode;		/* whether fullscreen or window or ... */
 static int must_lock;		/* must the screen be locked? */
 static SDL_Rect window;		/* if screen is in fact larger */
-static int avt_visible = 0;
-static int do_stop_on_esc = 1;	/* stop, when Esc is pressed? */
-static int scroll_mode = 1;
-static SDL_Rect textfield = { -1, -1, -1, -1 };
+static int avt_visible;
+static int do_stop_on_esc;	/* stop, when Esc is pressed? */
+static int scroll_mode;
+static SDL_Rect textfield;
 static SDL_Rect viewport;	/* sub-window in textfield */
-static int textdir_rtl = LEFT_TO_RIGHT;
+static int textdir_rtl;
 /* beginning of line - depending on text direction */
 static int linestart;
 static int balloonheight;
 
 /* delay values for printing text and flipping the page */
-static int text_delay = DEFAULT_TEXT_DELAY;
-static int flip_page_delay = DEFAULT_FLIP_PAGE_DELAY;
+static int text_delay, flip_page_delay;
 
 /* color independent from the screen mode */
 static SDL_Color backgroundcolor_RGB = { 0xCC, 0xCC, 0xCC, 0 };
@@ -231,7 +230,7 @@ static struct pos
 } cursor;
 
 /* 0 = normal; 1 = quit-request; -1 = error */
-int _avt_STATUS = AVATARNORMAL;
+int _avt_STATUS = AVATARERROR;
 
 void (*avt_bell_func) (void) = NULL;
 void (*avt_quit_audio_func) (void) = NULL;
@@ -526,11 +525,14 @@ avt_free_screen (void)
 void
 avt_clear_screen (void)
 {
-  avt_free_screen ();
-  SDL_UpdateRect (screen, 0, 0, 0, 0);
+  if (screen)
+    {
+      avt_free_screen ();
+      SDL_UpdateRect (screen, 0, 0, 0, 0);
+    }
 
   /* undefine textfield / viewport */
-  textfield.x = textfield.y = -1;
+  textfield.x = textfield.y = textfield.w = textfield.h = -1;
   viewport = textfield;
   avt_visible = 0;
 }
@@ -544,7 +546,7 @@ avt_text_direction (int direction)
    * if there is already a ballon, 
    * recalculate the linestart and put the cursor in the first position
    */
-  if (textfield.x >= 0)
+  if (screen && textfield.x >= 0)
     {
       linestart =
 	(textdir_rtl) ? viewport.x + viewport.w - FONTWIDTH : viewport.x;
@@ -625,6 +627,9 @@ avt_flash (void)
 {
   SDL_Surface *oldwindowimage;
 
+  if (!screen)
+    return;
+
   oldwindowimage = SDL_CreateRGBSurface (SDL_SWSURFACE, window.w, window.h,
 					 screen->format->BitsPerPixel,
 					 screen->format->Rmask,
@@ -674,7 +679,7 @@ avt_toggle_fullscreen (void)
 void
 avt_switch_mode (int mode)
 {
-  if (mode != avt_mode)
+  if (screen && mode != avt_mode)
     {
       avt_mode = mode;
       switch (mode)
@@ -815,8 +820,12 @@ avt_checkevent (void)
 int
 avt_update (void)
 {
-  SDL_Delay (1);
-  avt_checkevent ();
+  if (screen)
+    {
+      SDL_Delay (1);
+      avt_checkevent ();
+    }
+
   return _avt_STATUS;
 }
 
@@ -825,11 +834,14 @@ avt_wait (int milliseconds)
 {
   Uint32 endtime;
 
-  endtime = SDL_GetTicks () + milliseconds;
+  if (screen)
+    {
+      endtime = SDL_GetTicks () + milliseconds;
 
-  /* loop while time is not reached yet, and there is no event */
-  while ((SDL_GetTicks () < endtime) && !avt_checkevent ())
-    SDL_Delay (1);		/* give some time to other apps */
+      /* loop while time is not reached yet, and there is no event */
+      while ((SDL_GetTicks () < endtime) && !avt_checkevent ())
+	SDL_Delay (1);		/* give some time to other apps */
+    }
 
   return _avt_STATUS;
 }
@@ -837,7 +849,7 @@ avt_wait (int milliseconds)
 int
 avt_where_x (void)
 {
-  if (textfield.x >= 0)
+  if (screen && textfield.x >= 0)
     return ((cursor.x - viewport.x) / FONTWIDTH) + 1;
   else
     return -1;
@@ -846,7 +858,7 @@ avt_where_x (void)
 int
 avt_where_y (void)
 {
-  if (textfield.x >= 0)
+  if (screen && textfield.x >= 0)
     return ((cursor.y - viewport.y) / LINEHEIGHT) + 1;
   else
     return -1;
@@ -855,19 +867,25 @@ avt_where_y (void)
 int
 avt_get_max_x (void)
 {
-  return LINELENGTH;
+  if (screen)
+    return LINELENGTH;
+  else
+    return -1;
 }
 
 int
 avt_get_max_y (void)
 {
-  return (balloonheight - (2 * BALLOON_INNER_MARGIN)) / LINEHEIGHT;
+  if (screen)
+    return (balloonheight - (2 * BALLOON_INNER_MARGIN)) / LINEHEIGHT;
+  else
+    return -1;
 }
 
 void
 avt_move_x (int x)
 {
-  if (textfield.x >= 0)
+  if (screen && textfield.x >= 0)
     {
       if (x < 1)
 	x = 1;
@@ -882,7 +900,7 @@ avt_move_x (int x)
 void
 avt_move_y (int y)
 {
-  if (textfield.x >= 0)
+  if (screen && textfield.x >= 0)
     {
       if (y < 1)
 	y = 1;
@@ -900,7 +918,7 @@ avt_delete_lines (int line, int num)
   SDL_Rect rest, dest, clear;
 
   /* no textfield? do nothing */
-  if (textfield.x < 0)
+  if (!screen || textfield.x < 0)
     return;
 
   /* check if values are sane */
@@ -933,7 +951,7 @@ avt_insert_lines (int line, int num)
   SDL_Rect rest, dest, clear;
 
   /* no textfield? do nothing */
-  if (textfield.x < 0)
+  if (!screen || textfield.x < 0)
     return;
 
   /* check if values are sane */
@@ -963,6 +981,10 @@ avt_insert_lines (int line, int num)
 void
 avt_viewport (int x, int y, int width, int height)
 {
+  /* not initialized? -> do nothing */
+  if (!screen)
+    return;
+
   /* if there's no balloon, draw it */
   if (textfield.x < 0)
     avt_drawballoon ();
@@ -986,6 +1008,10 @@ avt_clear (void)
 {
   SDL_Color color;
 
+  /* not initialized? -> do nothing */
+  if (!screen)
+    return;
+
   /* if there's no balloon, draw it */
   if (textfield.x < 0)
     avt_drawballoon ();
@@ -1005,6 +1031,10 @@ avt_clear_eol (void)
 {
   SDL_Color color;
   SDL_Rect dst;
+
+  /* not initialized? -> do nothing */
+  if (!screen)
+    return;
 
   /* if there's no balloon, draw it */
   if (textfield.x < 0)
@@ -1037,7 +1067,7 @@ int
 avt_flip_page (void)
 {
   /* no textfield? do nothing */
-  if (textfield.x < 0)
+  if (!screen || textfield.x < 0)
     return _avt_STATUS;
 
   /* do nothing when the textfield is already empty */
@@ -1071,7 +1101,7 @@ int
 avt_new_line (void)
 {
   /* no textfield? do nothing */
-  if (textfield.x < 0)
+  if (!screen || textfield.x < 0)
     return _avt_STATUS;
 
   cursor.x = linestart;
@@ -1164,7 +1194,7 @@ int
 avt_forward (void)
 {
   /* no textfield? do nothing */
-  if (textfield.x < 0)
+  if (!screen || textfield.x < 0)
     return _avt_STATUS;
 
   if (textdir_rtl)		/* right to left */
@@ -1229,10 +1259,14 @@ avt_clearchar (void)
 void
 avt_backspace (void)
 {
-  if (cursor.x != linestart)
-    cursor.x = (textdir_rtl) ? cursor.x + FONTWIDTH : cursor.x - FONTWIDTH;
+  if (screen)
+    {
+      if (cursor.x != linestart)
+	cursor.x =
+	  (textdir_rtl) ? cursor.x + FONTWIDTH : cursor.x - FONTWIDTH;
 
-  avt_clearchar ();
+      avt_clearchar ();
+    }
 }
 
 /* 
@@ -1320,8 +1354,11 @@ avt_put_char (const wchar_t ch)
 int
 avt_say (const wchar_t * txt)
 {
-  /* nothing to do, when txt == NULL */
-  if (!txt)
+  if (!screen)
+    return _avt_STATUS;
+
+  /* nothing to do, when there is no text  */
+  if (!txt || !*txt)
     return _avt_STATUS;
 
   /* no textfield? => draw balloon */
@@ -1352,7 +1389,7 @@ avt_say_len (const wchar_t * txt, const int len)
   int i;
 
   /* nothing to do, when txt == NULL */
-  if (!txt)
+  if (!screen || !txt || !*txt)
     return _avt_STATUS;
 
   /* no textfield? => draw balloon */
@@ -1535,12 +1572,15 @@ avt_say_mb (const char *txt)
 {
   wchar_t *wctext;
 
-  avt_mb_decode (&wctext, txt, SDL_strlen (txt) + 1);
-
-  if (wctext)
+  if (screen)
     {
-      avt_say (wctext);
-      SDL_free (wctext);
+      avt_mb_decode (&wctext, txt, SDL_strlen (txt) + 1);
+
+      if (wctext)
+	{
+	  avt_say (wctext);
+	  SDL_free (wctext);
+	}
     }
 
   return _avt_STATUS;
@@ -1552,12 +1592,15 @@ avt_say_mb_len (const char *txt, int len)
   wchar_t *wctext;
   int wclen;
 
-  wclen = avt_mb_decode (&wctext, txt, len);
-
-  if (wctext)
+  if (screen)
     {
-      avt_say_len (wctext, wclen);
-      SDL_free (wctext);
+      wclen = avt_mb_decode (&wctext, txt, len);
+
+      if (wctext)
+	{
+	  avt_say_len (wctext, wclen);
+	  SDL_free (wctext);
+	}
     }
 
   return _avt_STATUS;
@@ -1568,14 +1611,17 @@ avt_get_key (wchar_t * ch)
 {
   SDL_Event event;
 
-  *ch = 0;
-  while ((*ch <= 0) && (_avt_STATUS == AVATARNORMAL))
+  if (screen)
     {
-      SDL_WaitEvent (&event);
-      avt_analyze_event (&event);
+      *ch = 0;
+      while ((*ch <= 0) && (_avt_STATUS == AVATARNORMAL))
+	{
+	  SDL_WaitEvent (&event);
+	  avt_analyze_event (&event);
 
-      if (event.type == SDL_KEYDOWN)
-	*ch = (wchar_t) event.key.keysym.unicode;
+	  if (event.type == SDL_KEYDOWN)
+	    *ch = (wchar_t) event.key.keysym.unicode;
+	}
     }
 
   return _avt_STATUS;
@@ -1587,6 +1633,9 @@ avt_ask (wchar_t * s, const int size)
 {
   wchar_t ch;
   size_t len, maxlen;
+
+  if (!screen)
+    return _avt_STATUS;
 
   /* no textfield? => draw balloon */
   if (textfield.x < 0)
@@ -1678,6 +1727,9 @@ avt_ask_mb (char *s, const int size)
   char *inbuf;
   size_t inbytesleft, outbytesleft;
 
+  if (!screen)
+    return _avt_STATUS;
+
   /* check if encoding was set */
   if (input_cd == ICONV_UNINITIALIZED)
     avt_mb_encoding (MB_DEFAULT_ENCODING);
@@ -1705,6 +1757,9 @@ void
 avt_show_avatar (void)
 {
   SDL_Rect dst;
+
+  if (!screen)
+    return;
 
   /* fill the screen with background color */
   /* (not only the window!) */
@@ -1734,6 +1789,9 @@ avt_show_avatar (void)
 int
 avt_move_in (void)
 {
+  if (!screen)
+    return _avt_STATUS;
+
   /* fill the screen with background color */
   /* (not only the window!) */
   avt_clear_screen ();
@@ -1813,7 +1871,7 @@ avt_move_in (void)
 int
 avt_move_out (void)
 {
-  if (!avt_visible)
+  if (!screen || !avt_visible)
     return _avt_STATUS;
 
   /* needed to remove the balloon */
@@ -1907,6 +1965,9 @@ avt_wait_button (void)
   SDL_Rect dst;
   int nokey;
 
+  if (!screen)
+    return _avt_STATUS;
+
   /* show button */
   button = SDL_LoadBMP_RW (SDL_RWFromMem ((void *) keybtn, keybtn_size), 1);
 
@@ -1984,6 +2045,9 @@ avt_wait_key (const wchar_t * message)
   int nokey;
   SDL_Rect dst;
   struct pos oldcursor;
+
+  if (!screen)
+    return _avt_STATUS;
 
   /* print message (outside of textfield!) */
   if (*message)
@@ -2095,6 +2159,9 @@ avt_wait_key_mb (char *message)
 {
   wchar_t *wcmessage;
 
+  if (!screen)
+    return _avt_STATUS;
+
   avt_mb_decode (&wcmessage, message, SDL_strlen (message) + 1);
 
   if (wcmessage)
@@ -2122,7 +2189,7 @@ load_SDL_image (void)
 {
 /* loadso.h is only available with SDL 1.2.6 or higher */
 #ifdef _SDL_loadso_h
-  if (try_to_load_SDL_image)	/* avoid loading it twice! */
+  if (!tried_to_load_SDL_image)	/* avoid loading it twice! */
     {
       SDL_image_handle = SDL_LoadObject (SDL_IMAGE_LIB);
       if (SDL_image_handle)
@@ -2138,7 +2205,7 @@ load_SDL_image (void)
 #endif /* _SDL_loadso_h */
 
   /* don't try to load it again - even if loading failed */
-  try_to_load_SDL_image = 0;
+  tried_to_load_SDL_image = 1;
 }
 
 static void
@@ -2178,7 +2245,10 @@ avt_show_image_file (const char *file)
 {
   SDL_Surface *image;
 
-  if (try_to_load_SDL_image)
+  if (!screen)
+    return _avt_STATUS;
+
+  if (!tried_to_load_SDL_image)
     load_SDL_image ();
 
   /* try to load image with IMG_Load or SDL_LoadBMP */
@@ -2208,7 +2278,10 @@ avt_show_image_data (void *img, int imgsize)
 {
   SDL_Surface *image;
 
-  if (try_to_load_SDL_image)
+  if (!screen)
+    return _avt_STATUS;
+
+  if (!tried_to_load_SDL_image)
     load_SDL_image ();
 
   /* try to load image with IMG_Load_RW or SDL_LoadBMP_RW */
@@ -2237,6 +2310,9 @@ avt_show_gimp_image (void *gimp_image)
 {
   SDL_Surface *image;
   gimp_img_t *img;
+
+  if (!screen)
+    return _avt_STATUS;
 
   img = (gimp_img_t *) gimp_image;
 
@@ -2273,6 +2349,7 @@ avt_make_transparent (avt_image_t * image)
   if (SDL_MUSTLOCK (img))
     SDL_LockSurface (img);
 
+  /* get color of upper left corner */
   color = getpixel (img, 0, 0);
 
   if (SDL_MUSTLOCK (img))
@@ -2320,7 +2397,7 @@ avt_import_image_data (void *img, int imgsize)
 {
   SDL_Surface *image;
 
-  if (try_to_load_SDL_image)
+  if (!tried_to_load_SDL_image)
     load_SDL_image ();
 
   /* try to load image with IMG_Load_RW or SDL_LoadBMP_RW */
@@ -2345,7 +2422,7 @@ avt_import_image_file (const char *file)
 {
   SDL_Surface *image;
 
-  if (try_to_load_SDL_image)
+  if (!tried_to_load_SDL_image)
     load_SDL_image ();
 
   /* try to load image with IMG_Load or SDL_LoadBMP */
@@ -2362,13 +2439,16 @@ avt_import_image_file (const char *file)
   return (avt_image_t *) image;
 }
 
-/* should be called before avt_initialize */
+/* can and should be called before avt_initialize */
 void
 avt_set_background_color (int red, int green, int blue)
 {
   backgroundcolor_RGB.r = red;
   backgroundcolor_RGB.g = green;
   backgroundcolor_RGB.b = blue;
+
+  if (screen)
+    avt_clear_screen ();
 }
 
 void
@@ -2388,10 +2468,13 @@ avt_set_text_color (int red, int green, int blue)
 {
   SDL_Color color;
 
-  color.r = red;
-  color.g = green;
-  color.b = blue;
-  SDL_SetColors (avt_character, &color, 1, 1);
+  if (avt_character)
+    {
+      color.r = red;
+      color.g = green;
+      color.b = blue;
+      SDL_SetColors (avt_character, &color, 1, 1);
+    }
 }
 
 void
@@ -2399,10 +2482,13 @@ avt_set_text_background_color (int red, int green, int blue)
 {
   SDL_Color color;
 
-  color.r = red;
-  color.g = green;
-  color.b = blue;
-  SDL_SetColors (avt_character, &color, 0, 1);
+  if (avt_character)
+    {
+      color.r = red;
+      color.g = green;
+      color.b = blue;
+      SDL_SetColors (avt_character, &color, 0, 1);
+    }
 }
 
 /* about to be removed */
@@ -2456,7 +2542,7 @@ avt_quit (void)
 #endif /* _SDL_loadso_h */
       SDL_image_handle = NULL;
       IMG_Load = NULL;
-      try_to_load_SDL_image = 1;
+      tried_to_load_SDL_image = 0;	/* try again next time */
     }
 
   /* close conversion descriptors */
@@ -2474,7 +2560,7 @@ avt_quit (void)
   SDL_Quit ();
   screen = NULL;		/* it was freed by SDL_Quit */
   avt_visible = 0;
-  textfield.x = textfield.y = -1;
+  textfield.x = textfield.y = textfield.w = textfield.h = -1;
   viewport = textfield;
 }
 
@@ -2482,8 +2568,23 @@ int
 avt_initialize (const char *title, const char *icontitle,
 		avt_image_t * image, int mode)
 {
+  /* already initialized? */
+  if (screen)
+    {
+      _avt_STATUS = AVATARERROR;
+      return _avt_STATUS;
+    }
+
   avt_mode = mode;
   _avt_STATUS = AVATARNORMAL;
+  do_stop_on_esc = 1;
+  scroll_mode = 1;
+  avt_visible = 0;
+  textfield.x = textfield.y = textfield.w = textfield.h = -1;
+  viewport = textfield;
+  textdir_rtl = LEFT_TO_RIGHT;
+  text_delay = DEFAULT_TEXT_DELAY;
+  flip_page_delay = DEFAULT_FLIP_PAGE_DELAY;
 
   /* don't try to use the mouse 
    * needed for the fbcon driver */
@@ -2496,7 +2597,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.54 2007-12-27 10:01:38 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.55 2007-12-27 13:47:04 akf Exp $");
   SDL_SetError ("");
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();

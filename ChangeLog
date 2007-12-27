@@ -1,5 +1,11 @@
 2007-12-27  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatar.c:
+	more runtime checks
+
+	* akfavatar.h, avatar.c (avt_set_background_color):
+	can be called after initialisation, clears the screen then
+
 	* akfavatar.h, avatar.c (avt_initialized):
 	new function
 
