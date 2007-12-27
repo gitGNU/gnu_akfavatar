@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.55 2007-12-27 13:47:04 akf Exp $ */
+/* $Id: avatar.c,v 2.56 2007-12-27 16:05:15 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -230,7 +230,7 @@ static struct pos
 } cursor;
 
 /* 0 = normal; 1 = quit-request; -1 = error */
-int _avt_STATUS = AVATARERROR;
+int _avt_STATUS;
 
 void (*avt_bell_func) (void) = NULL;
 void (*avt_quit_audio_func) (void) = NULL;
@@ -2336,6 +2336,23 @@ avt_show_gimp_image (void *gimp_image)
   return _avt_STATUS;
 }
 
+static int
+avt_init_SDL (void)
+{
+  /* only if not already initialized */
+  if (SDL_WasInit (SDL_INIT_VIDEO | SDL_INIT_TIMER) == 0)
+    {
+      /* don't try to use the mouse 
+       * needed for the fbcon driver */
+      SDL_putenv ("SDL_NOMOUSE=1");
+
+      if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
+        _avt_STATUS = AVATARERROR;
+    }
+
+  return _avt_STATUS;
+}
+
 /*
  * make background transparent
  * pixel in the upper left corner is supposed to be the background color
@@ -2371,6 +2388,9 @@ avt_import_gimp_image (void *gimp_image)
   SDL_Surface *image;
   gimp_img_t *img;
 
+  if (avt_init_SDL ())
+    return NULL;
+
   img = (gimp_img_t *) gimp_image;
 
   if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
@@ -2397,6 +2417,9 @@ avt_import_image_data (void *img, int imgsize)
 {
   SDL_Surface *image;
 
+  if (avt_init_SDL ())
+    return NULL;
+
   if (!tried_to_load_SDL_image)
     load_SDL_image ();
 
@@ -2421,6 +2444,9 @@ avt_image_t *
 avt_import_image_file (const char *file)
 {
   SDL_Surface *image;
+
+  if (avt_init_SDL ())
+    return NULL;
 
   if (!tried_to_load_SDL_image)
     load_SDL_image ();
@@ -2586,18 +2612,14 @@ avt_initialize (const char *title, const char *icontitle,
   text_delay = DEFAULT_TEXT_DELAY;
   flip_page_delay = DEFAULT_FLIP_PAGE_DELAY;
 
-  /* don't try to use the mouse 
-   * needed for the fbcon driver */
-  SDL_putenv ("SDL_NOMOUSE=1");
-
-  if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
+  if (avt_init_SDL ())
     {
       avt_free_image (image);
       _avt_STATUS = AVATARERROR;
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.55 2007-12-27 13:47:04 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.56 2007-12-27 16:05:15 akf Exp $");
   SDL_SetError ("");
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
