@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.39 2007-12-26 21:05:43 akf Exp $ */
+/* $Id: avatarsay.c,v 2.40 2007-12-27 13:28:56 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1355,6 +1355,37 @@ processfile (const char *fname, int execute, int with_pipe)
 }
 
 static void
+not_available (void)
+{
+  avt_clear ();
+  avt_bell ();
+
+  switch (language)
+    {
+    case DEUTSCH:
+      avt_say (L"Funktion auf diesem System nicht verfügbar...");
+      break;
+    case ENGLISH:
+    default:
+      avt_say (L"function not available on this system...");
+    }
+
+  if (avt_wait_button () != 0)
+    quit (EXIT_SUCCESS);
+}
+
+static void
+not_yet_implemented (void)
+{
+  avt_clear ();
+  avt_bell ();
+  avt_say_mb (strerror (ENOSYS));
+
+  if (avt_wait_button () != 0)
+    quit (EXIT_SUCCESS);
+}
+
+static void
 ask_file (int execute)
 {
 #ifdef NO_FORK
@@ -1402,37 +1433,6 @@ ask_file (int execute)
 	avt_set_status (AVATARNORMAL);
       }
   }
-}
-
-static void
-not_available (void)
-{
-  avt_clear ();
-  avt_bell ();
-
-  switch (language)
-    {
-    case DEUTSCH:
-      avt_say (L"Funktion auf diesem System nicht verfügbar...");
-      break;
-    case ENGLISH:
-    default:
-      avt_say (L"function not available on this system...");
-    }
-
-  if (avt_wait_button () != 0)
-    quit (EXIT_SUCCESS);
-}
-
-static void
-not_yet_implemented (void)
-{
-  avt_clear ();
-  avt_bell ();
-  avt_say_mb (strerror (ENOSYS));
-
-  if (avt_wait_button () != 0)
-    quit (EXIT_SUCCESS);
 }
 
 #ifdef NO_MANPAGES
@@ -1695,7 +1695,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.39 2007-12-26 21:05:43 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.40 2007-12-27 13:28:56 akf Exp $");
 
   return EXIT_SUCCESS;
 }
