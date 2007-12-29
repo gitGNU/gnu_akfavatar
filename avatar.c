@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.58 2007-12-29 14:05:20 akf Exp $ */
+/* $Id: avatar.c,v 2.59 2007-12-29 19:48:32 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -394,8 +394,81 @@ avt_strwidth (const wchar_t * m)
   return l;
 }
 
+/* fills the screen with the background color,
+ * but doesn't update the screen yet 
+ */
 static void
-avt_drawballoon (void)
+avt_free_screen (void)
+{
+  /* switch clipping off */
+  SDL_SetClipRect (screen, NULL);
+  /* fill the whole screen with background color */
+  SDL_FillRect (screen, NULL,
+		SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
+			    backgroundcolor_RGB.g, backgroundcolor_RGB.b));
+}
+
+void
+avt_clear_screen (void)
+{
+  if (screen)
+    {
+      avt_free_screen ();
+      SDL_UpdateRect (screen, 0, 0, 0, 0);
+    }
+
+  /* undefine textfield / viewport */
+  textfield.x = textfield.y = textfield.w = textfield.h = -1;
+  viewport = textfield;
+  avt_visible = 0;
+}
+
+/* draw the avatar image, 
+ * but doesn't update the screen yet
+ */
+static void
+avt_draw_avatar (void)
+{
+  SDL_Rect dst;
+
+  if (screen)
+    {
+      /* fill the screen with background color */
+      /* (not only the window!) */
+      avt_free_screen ();
+
+      SDL_SetClipRect (screen, &window);
+
+      if (avt_image)
+	{
+	  /* left */
+	  dst.x = window.x + AVATAR_MARGIN;
+	  /* bottom */
+	  dst.y = window.y + window.h - avt_image->h - AVATAR_MARGIN;
+	  dst.w = avt_image->w;
+	  dst.h = avt_image->h;
+	  SDL_BlitSurface (avt_image, NULL, screen, &dst);
+	}
+    }
+}
+
+void
+avt_show_avatar (void)
+{
+  if (screen)
+    {
+      avt_draw_avatar ();
+      SDL_UpdateRect (screen, 0, 0, 0, 0);
+
+      /* undefine textfield */
+      textfield.x = textfield.y = textfield.w = textfield.h = -1;
+      viewport = textfield;
+      avt_visible = 1;
+    }
+}
+
+static void
+avt_draw_balloon (void)
 {
   Uint32 ballooncolor, backgroundcolor;
   SDL_Rect dst;
@@ -404,7 +477,7 @@ avt_drawballoon (void)
   int radius;
 
   if (!avt_visible)
-    avt_show_avatar ();
+    avt_draw_avatar ();
 
   backgroundcolor = SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
 				backgroundcolor_RGB.g, backgroundcolor_RGB.b);
@@ -499,6 +572,8 @@ avt_drawballoon (void)
   linestart =
     (textdir_rtl) ? viewport.x + viewport.w - FONTWIDTH : viewport.x;
 
+  avt_visible = 1;
+
   /* cursor at top  */
   cursor.x = linestart;
   cursor.y = viewport.y;
@@ -509,35 +584,6 @@ avt_drawballoon (void)
    */
   SDL_SetClipRect (screen, &viewport);
   SDL_UpdateRect (screen, window.x, window.y, window.w, window.h);
-}
-
-/* fills the screen with the background color,
- * but doesn't update the screen yet 
- */
-static void
-avt_free_screen (void)
-{
-  /* switch clipping off */
-  SDL_SetClipRect (screen, NULL);
-  /* fill the whole screen with background color */
-  SDL_FillRect (screen, NULL,
-		SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
-			    backgroundcolor_RGB.g, backgroundcolor_RGB.b));
-}
-
-void
-avt_clear_screen (void)
-{
-  if (screen)
-    {
-      avt_free_screen ();
-      SDL_UpdateRect (screen, 0, 0, 0, 0);
-    }
-
-  /* undefine textfield / viewport */
-  textfield.x = textfield.y = textfield.w = textfield.h = -1;
-  viewport = textfield;
-  avt_visible = 0;
 }
 
 void
@@ -990,7 +1036,7 @@ avt_viewport (int x, int y, int width, int height)
 
   /* if there's no balloon, draw it */
   if (textfield.x < 0)
-    avt_drawballoon ();
+    avt_draw_balloon ();
 
   viewport.x = textfield.x + ((x - 1) * FONTWIDTH);
   viewport.y = textfield.y + ((y - 1) * LINEHEIGHT);
@@ -1017,7 +1063,7 @@ avt_clear (void)
 
   /* if there's no balloon, draw it */
   if (textfield.x < 0)
-    avt_drawballoon ();
+    avt_draw_balloon ();
 
   /* use background color of characters */
   color = avt_character->format->palette->colors[0];
@@ -1041,7 +1087,7 @@ avt_clear_eol (void)
 
   /* if there's no balloon, draw it */
   if (textfield.x < 0)
-    avt_drawballoon ();
+    avt_draw_balloon ();
 
   /* use background color of characters */
   color = avt_character->format->palette->colors[0];
@@ -1285,7 +1331,7 @@ avt_put_char (const wchar_t ch)
 
   /* no textfield? => draw balloon */
   if (textfield.x < 0)
-    avt_drawballoon ();
+    avt_draw_balloon ();
 
   switch (ch)
     {
@@ -1366,7 +1412,7 @@ avt_say (const wchar_t * txt)
 
   /* no textfield? => draw balloon */
   if (textfield.x < 0)
-    avt_drawballoon ();
+    avt_draw_balloon ();
 
   while (*txt != L'\0')
     {
@@ -1397,7 +1443,7 @@ avt_say_len (const wchar_t * txt, const int len)
 
   /* no textfield? => draw balloon */
   if (textfield.x < 0)
-    avt_drawballoon ();
+    avt_draw_balloon ();
 
   for (i = 0; i < len; i++)
     {
@@ -1642,7 +1688,7 @@ avt_ask (wchar_t * s, const int size)
 
   /* no textfield? => draw balloon */
   if (textfield.x < 0)
-    avt_drawballoon ();
+    avt_draw_balloon ();
 
   /* if the cursor is beyond the end of the viewport,
    * get a new page 
@@ -1754,39 +1800,6 @@ avt_ask_mb (char *s, const int size)
   avt_iconv (input_cd, &inbuf, &inbytesleft, &s, &outbytesleft);
 
   return _avt_STATUS;
-}
-
-void
-avt_show_avatar (void)
-{
-  SDL_Rect dst;
-
-  if (!screen)
-    return;
-
-  /* fill the screen with background color */
-  /* (not only the window!) */
-  avt_free_screen ();
-
-  SDL_SetClipRect (screen, &window);
-
-  if (avt_image)
-    {
-      /* left */
-      dst.x = window.x + AVATAR_MARGIN;
-      /* bottom */
-      dst.y = window.y + window.h - avt_image->h - AVATAR_MARGIN;
-      dst.w = avt_image->w;
-      dst.h = avt_image->h;
-      SDL_BlitSurface (avt_image, NULL, screen, &dst);
-    }
-
-  SDL_UpdateRect (screen, 0, 0, 0, 0);
-
-  /* undefine textfield */
-  textfield.x = textfield.y = textfield.w = textfield.h = -1;
-  viewport = textfield;
-  avt_visible = 1;
 }
 
 int
@@ -2478,7 +2491,12 @@ avt_set_background_color (int red, int green, int blue)
 
   if (screen)
     {
-      if (avt_visible)
+      if (textfield.x >= 0)
+	{
+	  avt_visible = 0;
+	  avt_draw_balloon ();
+	}
+      else if (avt_visible)
 	avt_show_avatar ();
       else
 	avt_clear_screen ();
@@ -2627,7 +2645,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.58 2007-12-29 14:05:20 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.59 2007-12-29 19:48:32 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
