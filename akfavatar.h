@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.32 2007-12-27 13:47:04 akf Exp $ */
+/* $Id: akfavatar.h,v 2.33 2007-12-29 14:05:20 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -187,7 +187,7 @@ avt_image_t *avt_make_transparent (avt_image_t * image);
  * define the backgroud color
  * values in the range 0x00 .. 0xFF
  * can and should be called before avt_initialize
- * if already initialized, it calls avt_clear_screen ();
+ * the balloon is removed, if it was visible before calling this
  */
 void avt_set_background_color (int red, int green, int blue);
 

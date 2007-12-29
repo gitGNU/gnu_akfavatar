@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.57 2007-12-27 17:08:41 akf Exp $ */
+/* $Id: avatar.c,v 2.58 2007-12-29 14:05:20 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -511,6 +511,9 @@ avt_drawballoon (void)
   SDL_UpdateRect (screen, window.x, window.y, window.w, window.h);
 }
 
+/* fills the screen with the background color,
+ * but doesn't update the screen yet 
+ */
 static void
 avt_free_screen (void)
 {
@@ -1781,7 +1784,7 @@ avt_show_avatar (void)
   SDL_UpdateRect (screen, 0, 0, 0, 0);
 
   /* undefine textfield */
-  textfield.x = textfield.y = -1;
+  textfield.x = textfield.y = textfield.w = textfield.h = -1;
   viewport = textfield;
   avt_visible = 1;
 }
@@ -1797,7 +1800,7 @@ avt_move_in (void)
   avt_clear_screen ();
 
   /* undefine textfield */
-  textfield.x = textfield.y = -1;
+  textfield.x = textfield.y = textfield.w = textfield.h = -1;
   viewport = textfield;
 
   if (avt_image)
@@ -2219,7 +2222,7 @@ avt_show_image (avt_image_t * image)
 
   /* set informational variables */
   avt_visible = 0;
-  textfield.x = textfield.y = -1;
+  textfield.x = textfield.y = textfield.w = textfield.h = -1;
   viewport = textfield;
 
   /* center image on screen */
@@ -2347,7 +2350,7 @@ avt_init_SDL (void)
       SDL_putenv ("SDL_NOMOUSE=1");
 
       if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
-        _avt_STATUS = AVATARERROR;
+	_avt_STATUS = AVATARERROR;
     }
 
   return _avt_STATUS;
@@ -2474,7 +2477,12 @@ avt_set_background_color (int red, int green, int blue)
   backgroundcolor_RGB.b = blue;
 
   if (screen)
-    avt_clear_screen ();
+    {
+      if (avt_visible)
+	avt_show_avatar ();
+      else
+	avt_clear_screen ();
+    }
 }
 
 void
@@ -2619,7 +2627,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.57 2007-12-27 17:08:41 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.58 2007-12-29 14:05:20 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();

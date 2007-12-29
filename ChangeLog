@@ -7,7 +7,7 @@
 	more runtime checks
 
 	* akfavatar.h, avatar.c (avt_set_background_color):
-	can be called after initialisation, clears the screen then
+	can be called after initialisation
 
 	* akfavatar.h, avatar.c (avt_initialized):
 	new function
