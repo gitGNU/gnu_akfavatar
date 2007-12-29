@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.40 2007-12-27 13:28:56 akf Exp $ */
+/* $Id: avatarsay.c,v 2.41 2007-12-29 11:28:15 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -96,9 +96,6 @@ static int rawmode;
 
 /* popup-mode? */
 static int popup;
-
-/* stop the program? */
-static int stop;
 
 /* 
  * ignore end of file conditions
@@ -470,7 +467,7 @@ checkoptions (int argc, char **argv)
 	  switch (language)
 	    {
 	    case DEUTSCH:
-	      error_msg ("Pipes werden auf diesem System nicht untarstuetzt",
+	      error_msg ("Pipes werden auf diesem System nicht unterstuetzt",
 			 NULL);
 	      break;
 
@@ -527,7 +524,7 @@ checkoptions (int argc, char **argv)
 	  switch (language)
 	    {
 	    case DEUTSCH:
-	      error_msg ("interner Fehler", "Option wird nicht unterstützt");
+	      error_msg ("interner Fehler", "Option wird nicht unterstuetzt");
 	      break;
 
 	    case ENGLISH:
@@ -774,7 +771,7 @@ strip (wchar_t ** s)
 
 /* handle commads, including comments */
 static int
-iscommand (wchar_t * s)
+iscommand (wchar_t * s, int *stop)
 {
   if (rawmode)
     return 0;
@@ -788,7 +785,7 @@ iscommand (wchar_t * s)
     {
       if (initialized)
 	if (avt_flip_page ())
-	  stop = 1;
+	  *stop = 1;
       return 1;
     }
 
@@ -820,9 +817,7 @@ iscommand (wchar_t * s)
 
       if (wcsncmp (s, L".backgroundcolor ", 17) == 0)
 	{
-	  if (!initialized)
-	    handle_backgoundcolor_command (s);
-
+	  handle_backgoundcolor_command (s);
 	  return 1;
 	}
 
@@ -845,7 +840,7 @@ iscommand (wchar_t * s)
 	{
 	  if (initialized)
 	    if (avt_flip_page ())
-	      stop = 1;
+	      *stop = 1;
 	  return 1;
 	}
 
@@ -863,11 +858,11 @@ iscommand (wchar_t * s)
 	  if (!initialized)
 	    initialize ();
 	  else if (avt_wait (2700))
-	    stop = 1;
+	    *stop = 1;
 
 	  avt_show_avatar ();
 	  if (avt_wait (4000))
-	    stop = 1;
+	    *stop = 1;
 	  return 1;
 	}
 
@@ -890,7 +885,7 @@ iscommand (wchar_t * s)
 	{
 	  if (initialized)
 	    if (avt_wait_audio_end ())
-	      stop = 1;
+	      *stop = 1;
 	  return 1;
 	}
 
@@ -902,7 +897,7 @@ iscommand (wchar_t * s)
 	{
 	  if (initialized)
 	    if (avt_wait (2500))
-	      stop = 1;
+	      *stop = 1;
 	  return 1;
 	}
 
@@ -926,14 +921,14 @@ iscommand (wchar_t * s)
 	{
 	  if (initialized)
 	    avt_move_out ();
-	  stop = 1;
+	  *stop = 1;
 	  return 1;
 	}
 
       if (wcscmp (s, L".stop") == 0)
 	{
 	  /* doesn't matter whether it's initialized */
-	  stop = 1;
+	  *stop = 1;
 	  return 1;
 	}
 
@@ -1104,12 +1099,9 @@ get_character (int fd)
       filebuf_end = read (fd, &filebuf, sizeof (filebuf));
 
       /* no data in FIFO */
-      while (filebuf_end == -1 && errno == EAGAIN && !stop)
-	{
-	  if (avt_update ())
-	    stop = 1;
-	  filebuf_end = read (fd, &filebuf, sizeof (filebuf));
-	}
+      while (filebuf_end == -1 && errno == EAGAIN
+	     && avt_update () == AVATARNORMAL)
+	filebuf_end = read (fd, &filebuf, sizeof (filebuf));
 
       if (filebuf_end == -1)
 	error_msg ("error while reading from file", strerror (errno));
@@ -1233,9 +1225,10 @@ openfile (const char *fname, int execute, int with_pipe)
 #ifndef NO_FIFO
   if (with_pipe)
     {
-      if (mkfifo (fname, 0600) == -1)
-	error_msg ("mkfifo", fname);
-      fd = open (fname, O_RDONLY | O_NONBLOCK);
+      if (mkfifo (fname, 0600) > -1)
+	fd = open (fname, O_RDONLY | O_NONBLOCK);
+      else
+	return -1;
     }
   else
 #endif /* ! NO_FIFO */
@@ -1246,23 +1239,24 @@ openfile (const char *fname, int execute, int with_pipe)
 #endif /* ! NO_FORK */
     fd = open (fname, O_RDONLY);	/* regular file */
 
-  /* error */
-  if (fd < 0)
-    error_msg ("open", strerror (errno));
-
   return fd;
 }
 
 /* shows content of file / other input */
+/* returns -1:file cannot be processed, 0:normal, 1:stop requested */
 static int
-processfile (const char *fname, int execute, int with_pipe)
+process_file (const char *fname, int execute, int with_pipe)
 {
   wchar_t *line = NULL;
   size_t line_size = 0;
   ssize_t nread = 0;
+  int stop = 0;
   int fd;
 
   fd = openfile (fname, execute, with_pipe);
+
+  if (fd < 0)
+    return -1;
 
   line_size = 1024 * sizeof (wchar_t);
   line = (wchar_t *) malloc (line_size);
@@ -1273,7 +1267,8 @@ processfile (const char *fname, int execute, int with_pipe)
   if (!rawmode)
     while (nread != 0
 	   && (wcscmp (line, L"\n") == 0
-	       || wcscmp (line, L"\r\n") == 0 || iscommand (line)) && !stop)
+	       || wcscmp (line, L"\r\n") == 0 || iscommand (line, &stop))
+	   && !stop)
       {
 	nread = getwline (fd, line, line_size);
 
@@ -1321,7 +1316,7 @@ processfile (const char *fname, int execute, int with_pipe)
 	    }
 	}
 
-      if (nread != 0 && !stop && !iscommand (line))
+      if (nread != 0 && !iscommand (line, &stop) && !stop)
 	{
 	  process_line_end (line, &nread);
 	  if (avt_say_len (line, nread))
@@ -1336,7 +1331,7 @@ processfile (const char *fname, int execute, int with_pipe)
     }
 
   if (close (fd) == -1 && errno != EAGAIN)
-    error_msg ("close", strerror (errno));
+    warning_msg ("close", strerror (errno));
 
 #ifndef NO_FIFO
   if (with_pipe)
@@ -1347,7 +1342,7 @@ processfile (const char *fname, int execute, int with_pipe)
   if (avt_get_status () == AVATARERROR)
     {
       stop = 1;
-      warning_msg (avt_get_error (), NULL);
+      warning_msg ("AKFAvatar", avt_get_error ());
     }
 
   avt_text_direction (LEFT_TO_RIGHT);
@@ -1419,8 +1414,8 @@ ask_file (int execute)
     if (filename[0] != '\0')
       {
 	int status;
-	processfile (filename, execute, 0);
-	stop = 0;		/* ignore stop-request */
+	/* ignore file errors */
+	process_file (filename, execute, 0);
 	status = avt_get_status ();
 	if (status == AVATARERROR)
 	  quit (EXIT_FAILURE);	/* warning already printed */
@@ -1477,8 +1472,8 @@ ask_manpage (void)
       /* temporary settings */
       set_encoding ("ISO-8859-1");
 
-      processfile (command, 1, 0);
-      stop = 0;			/* ignore stop-request */
+      /* ignore file errors */
+      process_file (command, 1, 0);
       status = avt_get_status ();
       if (status == AVATARERROR)
 	quit (EXIT_FAILURE);	/* warning already printed */
@@ -1529,7 +1524,7 @@ menu (void)
   /* avoid pause after moving out */
   loop = 0;
 
-  if (!initialized && !stop)
+  if (!initialized)
     {
       initialize ();
 
@@ -1668,9 +1663,14 @@ main (int argc, char *argv[])
 
       for (i = optind; i < argc; i++)
 	{
+	  int status;
+
 	  set_encoding (default_encoding);
 
-	  if (processfile (argv[i], executable, say_pipe))
+	  status = process_file (argv[i], executable, say_pipe);
+	  if (status <= -1)
+	    error_msg ("error opening file", argv[i]);
+	  else if (status == 1)
 	    quit (EXIT_SUCCESS);
 
 	  if (avt_flip_page ())
@@ -1695,7 +1695,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.40 2007-12-27 13:28:56 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.41 2007-12-29 11:28:15 akf Exp $");
 
   return EXIT_SUCCESS;
 }
