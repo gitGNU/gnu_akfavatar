@@ -1,5 +1,5 @@
 {*
- * Pascal binding to the AKFAvatar library
+ * Pascal binding to the AKFAvatar library version 0.15
  * Copyright (c) 2007 Andreas K. Foerster <info@akfoerster.de>
  *
  * Can be used with GNU-Pascal or FreePascal
@@ -129,11 +129,11 @@ procedure AvatarImageFile(FileName: string);
 procedure AvatarImageData(data: pointer; size: LongInt);
 
 { set a different background color (default is grey) }
-{ must be used before any output took place }
+{ should be used before any output took place }
 procedure setBackgroundColor(red, green, blue: byte);
 
 { change pace of text and page flipping }
-procedure setTextDelay(delay:integer);
+procedure setTextDelay(delay: integer);
 procedure setFlipPageDelay(delay: integer);
 
 { change the encoding }
@@ -170,7 +170,7 @@ procedure RestoreInOut;
 {$EndIf}
 
 { keyboard handling }
-{ partly CRT compatible - Latin1 chars so far }
+{ partly CRT compatible - only Latin1 chars so far }
 function KeyPressed: boolean;
 function ReadKey: char;
 
@@ -178,7 +178,7 @@ function ReadKey: char;
 procedure ClearKeys;
 
 { wait for a key }
-procedure waitkey;
+procedure WaitKey;
 
 { wait some time }
 { compatible to CRT unit }
@@ -310,6 +310,8 @@ implementation
   {$EndIf}
 {$EndIf}
 
+{ no real booleans used in the librarys interface }
+type avt_bool_t = CInteger;
 
 type PAvatarImage = pointer;
 
@@ -333,7 +335,7 @@ const KeyboardBufferSize = 40;
 var KeyboardBuffer: array [ 0 .. KeyboardBufferSize-1 ] of char;
 var KeyboardBufferRead, KeyboardBufferWrite: integer;
 
-procedure avt_stop_on_esc (stop: CInteger); libakfavatar 'avt_stop_on_esc';
+procedure avt_stop_on_esc (stop: avt_bool_t); libakfavatar 'avt_stop_on_esc';
 
 function avt_default: PAvatarImage; libakfavatar 'avt_default';
 
@@ -417,7 +419,7 @@ function avt_load_wave_data (Data: Pointer; size: CInteger): PAvatarImage;
 procedure avt_free_audio(snd: pointer); 
   libakfavatar 'avt_free_audio';
 
-function avt_play_audio(snd: pointer; loop: CInteger): CInteger; 
+function avt_play_audio(snd: pointer; loop: avt_bool_t): CInteger; 
   libakfavatar 'avt_play_audio';
 
 function avt_wait_audio_end: CInteger; libakfavatar 'avt_wait_audio_end';

@@ -1,5 +1,9 @@
 2007-12-27  Andreas K. Foerster  <info@akfoerster.de>
 
+	* akfavatar.h:
+	renamed macros to always use the AVT_ prefix
+	new type avt_boolean_t
+
 	* avatar.c (avt_init_SDL):
 	new function
 

@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.41 2007-12-29 11:28:15 akf Exp $ */
+/* $Id: avatarsay.c,v 2.42 2007-12-30 13:33:17 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -92,22 +92,22 @@ static char default_encoding[80];
 
 /* if rawmode is set, then don't interpret any commands or comments */
 /* rawmode can be activated with the options -r or --raw */
-static int rawmode;
+static avt_bool_t rawmode;
 
 /* popup-mode? */
-static int popup;
+static avt_bool_t popup;
 
 /* 
  * ignore end of file conditions
  * this should be used, when the input doesn't come from a file
  */
-static int ignore_eof;
+static avt_bool_t ignore_eof;
 
 /* create a fifo for what to say? */
-static int say_pipe;
+static avt_bool_t say_pipe;
 
 /* execute file? Option -e */
-static int executable;
+static avt_bool_t executable;
 
 /* whether to run in a window, or in fullscreen mode */
 /* the mode can be set by -f, --fullscreen or -w, --window */
@@ -117,18 +117,18 @@ static int mode;
 /* is the avatar initialized? (0|1) */
 /* for delaying the initialization until it is clear that we actually 
    have data to show */
-static int initialized;
+static avt_bool_t initialized;
 
 /* was the file already checked for an encoding? */
-static int encoding_checked;
+static avt_bool_t encoding_checked;
 
 /* encoding given on command line */
-static int given_encoding;
+static avt_bool_t given_encoding;
 
-/* play it in an endless loop? (0/1) */
+/* play it in an endless loop? */
 /* deactivated, when input comes from stdin */
 /* can be deactivated by -1, --once */
-static int loop;
+static avt_bool_t loop;
 
 /* where to find imagefiles */
 static char datadir[512];
@@ -247,7 +247,7 @@ help (const char *prgname)
 static void
 open_homepage (void)
 {
-  avt_switch_mode (WINDOW);
+  avt_switch_mode (AVT_WINDOW);
   avt_clear ();
   avt_set_text_delay (0);
 
@@ -345,7 +345,7 @@ help (const char *prgname)
 static void
 open_homepage (void)
 {
-  avt_switch_mode (WINDOW);
+  avt_switch_mode (AVT_WINDOW);
   avt_clear ();
   avt_set_text_delay (0);
 
@@ -433,32 +433,32 @@ checkoptions (int argc, char **argv)
 
 	  /* --fullscreen */
 	case 'f':
-	  mode = FULLSCREEN;
+	  mode = AVT_FULLSCREEN;
 	  break;
 
 	  /* --fullfullscreen */
 	case 'F':
-	  mode = FULLSCREENNOSWITCH;
+	  mode = AVT_FULLSCREENNOSWITCH;
 	  break;
 
 	  /* --window */
 	case 'w':
-	  mode = WINDOW;
+	  mode = AVT_WINDOW;
 	  break;
 
 	  /* --once */
 	case '1':
-	  loop = 0;
+	  loop = AVT_FALSE;
 	  break;
 
 	  /* --raw */
 	case 'r':
-	  rawmode = 1;
+	  rawmode = AVT_TRUE;
 	  break;
 
 	  /* --ignoreeof */
 	case 'i':
-	  ignore_eof = 1;
+	  ignore_eof = AVT_TRUE;
 	  break;
 
 	  /* --saypipe */
@@ -476,40 +476,40 @@ checkoptions (int argc, char **argv)
 	      error_msg ("pipes not supported on this system", NULL);
 	    }
 #else
-	  say_pipe = 1;
-	  loop = 0;
-	  ignore_eof = 1;
+	  say_pipe = AVT_TRUE;
+	  loop = AVT_FALSE;
+	  ignore_eof = AVT_TRUE;
 	  /* autodetecting the encoding doesn't work with FIFOs */
-	  given_encoding = 1;
+	  given_encoding = AVT_TRUE;
 #endif /* ! NO_FIFO */
 	  break;
 
 	  /* --encoding */
 	case 'E':
 	  strncpy (default_encoding, optarg, sizeof (default_encoding));
-	  given_encoding = 1;
+	  given_encoding = AVT_TRUE;
 	  break;
 
 	  /* --latin1 */
 	case 'l':
 	  strcpy (default_encoding, "ISO-8859-1");
-	  given_encoding = 1;
+	  given_encoding = AVT_TRUE;
 	  break;
 
 	  /* --utf-8, --utf8, --u8 */
 	case 'u':
 	  strcpy (default_encoding, "UTF-8");
-	  given_encoding = 1;
+	  given_encoding = AVT_TRUE;
 	  break;
 
 	  /* --popup */
 	case 'p':
-	  popup = 1;
+	  popup = AVT_TRUE;
 	  break;
 
 	case 'e':
-	  executable = 1;
-	  loop = 0;
+	  executable = AVT_TRUE;
+	  loop = AVT_FALSE;
 	  break;
 
 	  /* unsupported option */
@@ -566,7 +566,7 @@ move_in (void)
     {
       if (avt_move_in ())
 	quit (EXIT_SUCCESS);
-      if (avt_wait (seconds (2.0)))
+      if (avt_wait (2000))
 	quit (EXIT_SUCCESS);
     }
 }
@@ -581,7 +581,7 @@ move_out (void)
 
       /* if running in a loop, wait a while */
       if (loop)
-	if (avt_wait (seconds (5.0)))
+	if (avt_wait (5000))
 	  quit (EXIT_SUCCESS);
     }
 }
@@ -616,7 +616,7 @@ initialize (void)
 	error_msg ("cannot initialize audio", avt_get_error ());
       }
 
-  initialized = 1;
+  initialized = AVT_TRUE;
 }
 
 /* fills filepath with datadir and the converted content of fn */
@@ -713,7 +713,7 @@ handle_audio_command (const wchar_t * s)
       return;
     }
 
-  if (avt_play_audio (sound, 0))
+  if (avt_play_audio (sound, AVT_FALSE))
     notice_msg ("can not play audio file", avt_get_error ());
 }
 
@@ -738,7 +738,7 @@ handle_back_command (const wchar_t * s)
 static void
 handle_read_command (void)
 {
-  wchar_t line[LINELENGTH];
+  wchar_t line[AVT_LINELENGTH];
 
   if (!initialized)
     initialize ();
@@ -770,11 +770,11 @@ strip (wchar_t ** s)
 
 
 /* handle commads, including comments */
-static int
+static avt_bool_t
 iscommand (wchar_t * s, int *stop)
 {
   if (rawmode)
-    return 0;
+    return AVT_FALSE;
 
   /* 
    * a stripline begins with at least 3 dashes
@@ -785,8 +785,8 @@ iscommand (wchar_t * s, int *stop)
     {
       if (initialized)
 	if (avt_flip_page ())
-	  *stop = 1;
-      return 1;
+	  *stop = AVT_TRUE;
+      return AVT_TRUE;
     }
 
   if (s[0] == L'.')
@@ -799,7 +799,7 @@ iscommand (wchar_t * s, int *stop)
 	  if (wcstombs ((char *) &datadir, s + 9, sizeof (datadir))
 	      == (size_t) (-1))
 	    warning_msg (".datadir", strerror (errno));
-	  return 1;
+	  return AVT_TRUE;
 	}
 
       if (wcsncmp (s, L".avatarimage ", 13) == 0)
@@ -807,32 +807,32 @@ iscommand (wchar_t * s, int *stop)
 	  if (!initialized)
 	    handle_avatarimage_command (s);
 
-	  return 1;
+	  return AVT_TRUE;
 	}
 
       /* the encoding is checked in check_encoding */
       /* so ignore it here */
       if (wcsncmp (s, L".encoding ", 10) == 0)
-	return 1;
+	return AVT_TRUE;
 
       if (wcsncmp (s, L".backgroundcolor ", 17) == 0)
 	{
 	  handle_backgoundcolor_command (s);
-	  return 1;
+	  return AVT_TRUE;
 	}
 
       /* default - for most languages */
       if (wcscmp (s, L".left-to-right") == 0)
 	{
-	  avt_text_direction (LEFT_TO_RIGHT);
-	  return 1;
+	  avt_text_direction (AVT_LEFT_TO_RIGHT);
+	  return AVT_TRUE;
 	}
 
       /* currently only hebrew/yiddish supported */
       if (wcscmp (s, L".right-to-left") == 0)
 	{
-	  avt_text_direction (RIGHT_TO_LEFT);
-	  return 1;
+	  avt_text_direction (AVT_RIGHT_TO_LEFT);
+	  return AVT_TRUE;
 	}
 
       /* new page - same as \f or stripline */
@@ -840,8 +840,8 @@ iscommand (wchar_t * s, int *stop)
 	{
 	  if (initialized)
 	    if (avt_flip_page ())
-	      *stop = 1;
-	  return 1;
+	      *stop = AVT_TRUE;
+	  return AVT_TRUE;
 	}
 
       /* clear ballon - don't wait */
@@ -849,7 +849,7 @@ iscommand (wchar_t * s, int *stop)
 	{
 	  if (initialized)
 	    avt_clear ();
-	  return 1;
+	  return AVT_TRUE;
 	}
 
       /* longer intermezzo */
@@ -858,26 +858,26 @@ iscommand (wchar_t * s, int *stop)
 	  if (!initialized)
 	    initialize ();
 	  else if (avt_wait (2700))
-	    *stop = 1;
+	    *stop = AVT_TRUE;
 
 	  avt_show_avatar ();
 	  if (avt_wait (4000))
-	    *stop = 1;
-	  return 1;
+	    *stop = AVT_TRUE;
+	  return AVT_TRUE;
 	}
 
       /* show image */
       if (wcsncmp (s, L".image ", 7) == 0)
 	{
 	  handle_image_command (s);
-	  return 1;
+	  return AVT_TRUE;
 	}
 
       /* play sound */
       if (wcsncmp (s, L".audio ", 7) == 0)
 	{
 	  handle_audio_command (s);
-	  return 1;
+	  return AVT_TRUE;
 	}
 
       /* wait until sound ends */
@@ -885,8 +885,8 @@ iscommand (wchar_t * s, int *stop)
 	{
 	  if (initialized)
 	    if (avt_wait_audio_end ())
-	      *stop = 1;
-	  return 1;
+	      *stop = AVT_TRUE;
+	  return AVT_TRUE;
 	}
 
       /* 
@@ -897,8 +897,8 @@ iscommand (wchar_t * s, int *stop)
 	{
 	  if (initialized)
 	    if (avt_wait (2500))
-	      *stop = 1;
-	  return 1;
+	      *stop = AVT_TRUE;
+	  return AVT_TRUE;
 	}
 
       /* 
@@ -908,46 +908,46 @@ iscommand (wchar_t * s, int *stop)
       if (wcsncmp (s, L".back ", 6) == 0)
 	{
 	  handle_back_command (s);
-	  return 1;
+	  return AVT_TRUE;
 	}
 
       if (wcscmp (s, L".read") == 0)
 	{
 	  handle_read_command ();
-	  return 1;
+	  return AVT_TRUE;
 	}
 
       if (wcscmp (s, L".end") == 0)
 	{
 	  if (initialized)
 	    avt_move_out ();
-	  *stop = 1;
-	  return 1;
+	  *stop = AVT_TRUE;
+	  return AVT_TRUE;
 	}
 
       if (wcscmp (s, L".stop") == 0)
 	{
 	  /* doesn't matter whether it's initialized */
-	  *stop = 1;
-	  return 1;
+	  *stop = AVT_TRUE;
+	  return AVT_TRUE;
 	}
 
       /* silently ignore unknown commands */
-      return 1;
+      return AVT_TRUE;
     }
 
-
+  /* ignore lines starting with a '#' */
   if (s[0] == L'#')
-    return 1;
+    return AVT_TRUE;
 
-  return 0;
+  return AVT_FALSE;
 }
 
 /* check for byte order mark (BOM) U+FEFF and remove it */
 static void
 check_encoding (char *buf, int *size)
 {
-  encoding_checked = 1;
+  encoding_checked = AVT_TRUE;
 
   {
     char *enc;
@@ -1100,7 +1100,7 @@ get_character (int fd)
 
       /* no data in FIFO */
       while (filebuf_end == -1 && errno == EAGAIN
-	     && avt_update () == AVATARNORMAL)
+	     && avt_update () == AVT_NORMAL)
 	filebuf_end = read (fd, &filebuf, sizeof (filebuf));
 
       if (filebuf_end == -1)
@@ -1157,6 +1157,7 @@ getwline (int fd, wchar_t * lineptr, size_t n)
   return nchars;
 }
 
+/* returns file-descriptor for output of the process */
 static int
 execute_process (const char *fname)
 {
@@ -1210,9 +1211,9 @@ execute_process (const char *fname)
 #endif /* ! NO_FORK */
 }
 
-/* opens the file */
+/* opens the file, returns file descriptor or -1 on error */
 static int
-openfile (const char *fname, int execute, int with_pipe)
+openfile (const char *fname, avt_bool_t execute, avt_bool_t with_pipe)
 {
   int fd = -1;
 
@@ -1245,12 +1246,12 @@ openfile (const char *fname, int execute, int with_pipe)
 /* shows content of file / other input */
 /* returns -1:file cannot be processed, 0:normal, 1:stop requested */
 static int
-process_file (const char *fname, int execute, int with_pipe)
+process_file (const char *fname, avt_bool_t execute, avt_bool_t with_pipe)
 {
   wchar_t *line = NULL;
   size_t line_size = 0;
   ssize_t nread = 0;
-  int stop = 0;
+  avt_bool_t stop = AVT_FALSE;
   int fd;
 
   fd = openfile (fname, execute, with_pipe);
@@ -1261,7 +1262,7 @@ process_file (const char *fname, int execute, int with_pipe)
   line_size = 1024 * sizeof (wchar_t);
   line = (wchar_t *) malloc (line_size);
 
-  encoding_checked = 0;
+  encoding_checked = AVT_FALSE;
 
   nread = getwline (fd, line, line_size);
   if (!rawmode)
@@ -1278,7 +1279,7 @@ process_file (const char *fname, int execute, int with_pipe)
 	    wcscpy (line, L"\n");
 	    nread = 1;
 	    if (avt_update ())
-	      stop = 1;
+	      stop = AVT_TRUE;
 	  }
       }
 
@@ -1308,7 +1309,7 @@ process_file (const char *fname, int execute, int with_pipe)
 	    {
 	      if (avt_update ())
 		{
-		  stop = 1;
+		  stop = AVT_TRUE;
 		  break;
 		}
 	      else
@@ -1320,7 +1321,7 @@ process_file (const char *fname, int execute, int with_pipe)
 	{
 	  process_line_end (line, &nread);
 	  if (avt_say_len (line, nread))
-	    stop = 1;
+	    stop = AVT_TRUE;
 	}
     }
 
@@ -1339,14 +1340,14 @@ process_file (const char *fname, int execute, int with_pipe)
       warning_msg ("remove", strerror (errno));
 #endif /* ! NO_FIFO */
 
-  if (avt_get_status () == AVATARERROR)
+  if (avt_get_status () == AVT_ERROR)
     {
-      stop = 1;
+      stop = AVT_TRUE;
       warning_msg ("AKFAvatar", avt_get_error ());
     }
 
-  avt_text_direction (LEFT_TO_RIGHT);
-  return stop;
+  avt_text_direction (AVT_LEFT_TO_RIGHT);
+  return (int) stop;
 }
 
 static void
@@ -1381,7 +1382,7 @@ not_yet_implemented (void)
 }
 
 static void
-ask_file (int execute)
+ask_file (avt_bool_t execute)
 {
 #ifdef NO_FORK
   if (execute)
@@ -1410,22 +1411,22 @@ ask_file (int execute)
       quit (EXIT_SUCCESS);
 
     avt_clear ();
-    avt_set_text_delay (DEFAULT_TEXT_DELAY);
+    avt_set_text_delay (AVT_DEFAULT_TEXT_DELAY);
     if (filename[0] != '\0')
       {
 	int status;
 	/* ignore file errors */
-	process_file (filename, execute, 0);
+	process_file (filename, execute, AVT_FALSE);
 	status = avt_get_status ();
-	if (status == AVATARERROR)
+	if (status == AVT_ERROR)
 	  quit (EXIT_FAILURE);	/* warning already printed */
 
-	if (status == AVATARNORMAL)
+	if (status == AVT_NORMAL)
 	  if (avt_wait_button ())
 	    quit (EXIT_SUCCESS);
 
 	/* reset quit-request */
-	avt_set_status (AVATARNORMAL);
+	avt_set_status (AVT_NORMAL);
       }
   }
 }
@@ -1438,12 +1439,12 @@ ask_manpage (void)
   not_available ();
 }
 
-#else /* ! NO_MANPAGES */
+#else /* not NO_MANPAGES */
 
 static void
 ask_manpage (void)
 {
-  char manpage[LINELENGTH];
+  char manpage[AVT_LINELENGTH];
 
   avt_clear ();
   avt_set_text_delay (0);
@@ -1454,7 +1455,7 @@ ask_manpage (void)
     quit (EXIT_SUCCESS);
 
   avt_clear ();
-  avt_set_text_delay (DEFAULT_TEXT_DELAY);
+  avt_set_text_delay (AVT_DEFAULT_TEXT_DELAY);
   if (manpage[0] != '\0')
     {
       char command[255];
@@ -1475,20 +1476,20 @@ ask_manpage (void)
       /* ignore file errors */
       process_file (command, 1, 0);
       status = avt_get_status ();
-      if (status == AVATARERROR)
+      if (status == AVT_ERROR)
 	quit (EXIT_FAILURE);	/* warning already printed */
 
-      if (status == AVATARNORMAL)
+      if (status == AVT_NORMAL)
 	if (avt_wait_button () != 0)
 	  quit (EXIT_SUCCESS);
 
       /* reset quit-request */
-      avt_set_status (AVATARNORMAL);
+      avt_set_status (AVT_NORMAL);
       set_encoding (default_encoding);
     }
 }
 
-#endif /* NO_MANPAGES */
+#endif /* not NO_MANPAGES */
 
 
 static void
@@ -1510,7 +1511,7 @@ about_avatarsay (void)
     }
 
   set_encoding (default_encoding);
-  avt_set_text_delay (DEFAULT_TEXT_DELAY);
+  avt_set_text_delay (AVT_DEFAULT_TEXT_DELAY);
 
   if (avt_wait_button () != 0)
     quit (EXIT_SUCCESS);
@@ -1522,7 +1523,7 @@ menu (void)
   wchar_t ch;
 
   /* avoid pause after moving out */
-  loop = 0;
+  loop = AVT_FALSE;
 
   if (!initialized)
     {
@@ -1562,7 +1563,7 @@ menu (void)
 	  avt_say (L"0) exit\n");
 	}
 
-      avt_set_text_delay (DEFAULT_TEXT_DELAY);
+      avt_set_text_delay (AVT_DEFAULT_TEXT_DELAY);
 
       if (avt_get_key (&ch))
 	quit (EXIT_SUCCESS);
@@ -1616,7 +1617,7 @@ init_language_info (void)
   /* default lagnuage */
   language = ENGLISH;
 
-  /* for Windows (and possibly others) */
+  /* long names for Windows (and possibly others) */
   if (strncmp (locale_info, "German", 6) == 0)
     language = DEUTSCH;
   else if (strncmp (locale_info, "german", 6) == 0)
@@ -1634,8 +1635,8 @@ init_language_info (void)
 int
 main (int argc, char *argv[])
 {
-  mode = AUTOMODE;
-  loop = 1;
+  mode = AVT_AUTOMODE;
+  loop = AVT_TRUE;
   strcpy (default_encoding, "ISO-8859-1");
 
   init_language_info ();
@@ -1695,7 +1696,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.41 2007-12-29 11:28:15 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.42 2007-12-30 13:33:17 akf Exp $");
 
   return EXIT_SUCCESS;
 }

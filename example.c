@@ -22,15 +22,15 @@ say (wchar_t *msg)
 void
 init (int argc, char *argv[])
 {
-  int mode = AUTOMODE;
+  int mode = AVT_AUTOMODE;
   int i;
 
   for (i = 1; i < argc; i++)
     {
       if (!strcmp (argv[i], "--fullscreen") || !strcmp (argv[i], "-f"))
-	mode = FULLSCREEN;
+	mode = AVT_FULLSCREEN;
       if (!strcmp (argv[i], "--window") || !strcmp (argv[i], "-w"))
-	mode = WINDOW;
+	mode = AVT_WINDOW;
     }
 
   if (avt_initialize ("Avatar", "Avatar", avt_default (), mode))
@@ -77,7 +77,7 @@ main (int argc, char *argv[])
     exit (0);
 
   if (!avt_move_out ())
-    avt_wait (seconds (1));
+    avt_wait (AVT_SECONDS (1));
 
   return 0;
 }

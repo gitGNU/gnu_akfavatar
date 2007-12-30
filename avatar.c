@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.59 2007-12-29 19:48:32 akf Exp $ */
+/* $Id: avatar.c,v 2.60 2007-12-30 13:33:17 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -110,7 +110,7 @@
 #  define MINIMALWIDTH 320
 #  define MINIMALHEIGHT 240
 #  define TOPMARGIN 10
-#  define BALLOONWIDTH LINELENGTH
+#  define BALLOONWIDTH AVT_LINELENGTH
 #  define BALLOON_INNER_MARGIN 10
 #  define AVATAR_MARGIN 5
 #  define MOVE_DELAY 5
@@ -118,7 +118,7 @@
 #  define MINIMALWIDTH 640
 #  define MINIMALHEIGHT 480
 #  define TOPMARGIN 25
-#  define BALLOONWIDTH LINELENGTH
+#  define BALLOONWIDTH AVT_LINELENGTH
 #  define BALLOON_INNER_MARGIN 10
 #  define AVATAR_MARGIN 10
    /* Delay for moving in or out - the higher, the slower */
@@ -127,7 +127,7 @@
 #  define MINIMALWIDTH 800
 #  define MINIMALHEIGHT 600
 #  define TOPMARGIN 25
-#  define BALLOONWIDTH LINELENGTH
+#  define BALLOONWIDTH AVT_LINELENGTH
 #  define BALLOON_INNER_MARGIN 15
 #  define AVATAR_MARGIN 20
    /* Delay for moving in or out - the higher, the slower */
@@ -190,7 +190,7 @@ typedef struct
 } gimp_img_t;
 
 /* for dynamically loading SDL_image (SDL-1.2.6 or better) */
-static int tried_to_load_SDL_image;
+static avt_bool_t tried_to_load_SDL_image;
 static void *SDL_image_handle;
 static SDL_Surface *(*IMG_Load) (const char *file);
 static SDL_Surface *(*IMG_Load_RW) (SDL_RWops * src, int freesrc);
@@ -202,10 +202,10 @@ static avt_keyhandler avt_ext_keyhandler = NULL;
 static SDL_Surface *screen, *avt_image, *avt_character;
 static Uint32 screenflags;	/* flags for the screen */
 static int avt_mode;		/* whether fullscreen or window or ... */
-static int must_lock;		/* must the screen be locked? */
+static avt_bool_t must_lock;	/* must the screen be locked? */
 static SDL_Rect window;		/* if screen is in fact larger */
-static int avt_visible;
-static int do_stop_on_esc;	/* stop, when Esc is pressed? */
+static avt_bool_t avt_visible;
+static avt_bool_t do_stop_on_esc;	/* stop, when Esc is pressed? */
 static int scroll_mode;
 static SDL_Rect textfield;
 static SDL_Rect viewport;	/* sub-window in textfield */
@@ -288,7 +288,7 @@ avt_license (void)
     "<http://gnu.org/licenses/gpl.html>";
 }
 
-int
+avt_bool_t
 avt_initialized (void)
 {
   return (screen != NULL);
@@ -420,7 +420,7 @@ avt_clear_screen (void)
   /* undefine textfield / viewport */
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
   viewport = textfield;
-  avt_visible = 0;
+  avt_visible = AVT_FALSE;
 }
 
 /* draw the avatar image, 
@@ -463,7 +463,7 @@ avt_show_avatar (void)
       /* undefine textfield */
       textfield.x = textfield.y = textfield.w = textfield.h = -1;
       viewport = textfield;
-      avt_visible = 1;
+      avt_visible = AVT_TRUE;
     }
 }
 
@@ -572,7 +572,7 @@ avt_draw_balloon (void)
   linestart =
     (textdir_rtl) ? viewport.x + viewport.w - FONTWIDTH : viewport.x;
 
-  avt_visible = 1;
+  avt_visible = AVT_TRUE;
 
   /* cursor at top  */
   cursor.x = linestart;
@@ -711,7 +711,7 @@ avt_flash (void)
 static void
 avt_toggle_fullscreen (void)
 {
-  if (avt_mode != FULLSCREENNOSWITCH)
+  if (avt_mode != AVT_FULLSCREENNOSWITCH)
     {
       /* toggle bit for fullscreenmode */
       screenflags ^= SDL_FULLSCREEN;
@@ -719,9 +719,9 @@ avt_toggle_fullscreen (void)
       avt_resize (MINIMALWIDTH, MINIMALHEIGHT);
 
       if ((screenflags & SDL_FULLSCREEN) != 0)
-	avt_mode = FULLSCREEN;
+	avt_mode = AVT_FULLSCREEN;
       else
-	avt_mode = WINDOW;
+	avt_mode = AVT_WINDOW;
     }
 }
 
@@ -733,15 +733,15 @@ avt_switch_mode (int mode)
       avt_mode = mode;
       switch (mode)
 	{
-	case FULLSCREENNOSWITCH:
-	case FULLSCREEN:
+	case AVT_FULLSCREENNOSWITCH:
+	case AVT_FULLSCREEN:
 	  if ((screenflags & SDL_FULLSCREEN) == 0)
 	    {
 	      screenflags |= SDL_FULLSCREEN;
 	      avt_resize (MINIMALWIDTH, MINIMALHEIGHT);
 	    }
 	  break;
-	case WINDOW:
+	case AVT_WINDOW:
 	  if ((screenflags & SDL_FULLSCREEN) != 0)
 	    {
 	      screenflags &= ~SDL_FULLSCREEN;
@@ -758,7 +758,7 @@ avt_analyze_event (SDL_Event * event)
   switch (event->type)
     {
     case SDL_QUIT:
-      _avt_STATUS = AVATARQUIT;
+      _avt_STATUS = AVT_QUIT;
       break;
 
     case SDL_VIDEORESIZE:
@@ -783,7 +783,7 @@ avt_analyze_event (SDL_Event * event)
 	case SDLK_ESCAPE:
 	  if (event->key.keysym.sym == SDLK_ESCAPE && do_stop_on_esc)
 	    {
-	      _avt_STATUS = AVATARQUIT;
+	      _avt_STATUS = AVT_QUIT;
 	      break;
 	    }
 
@@ -792,7 +792,7 @@ avt_analyze_event (SDL_Event * event)
 	  if (event->key.keysym.sym == SDLK_q
 	      && (event->key.keysym.mod & KMOD_CTRL))
 	    {
-	      _avt_STATUS = AVATARQUIT;
+	      _avt_STATUS = AVT_QUIT;
 	      break;
 	    }
 
@@ -828,11 +828,11 @@ static int
 avt_pause (void)
 {
   SDL_Event event;
-  int pause;
-  int audio_initialized;
+  avt_bool_t pause;
+  avt_bool_t audio_initialized;
 
-  audio_initialized = SDL_WasInit (SDL_INIT_AUDIO);
-  pause = 1;
+  audio_initialized = (SDL_WasInit (SDL_INIT_AUDIO) != 0);
+  pause = AVT_TRUE;
 
   if (audio_initialized)
     SDL_PauseAudio (pause);
@@ -842,7 +842,7 @@ avt_pause (void)
       if (SDL_WaitEvent (&event))
 	{
 	  if (event.type == SDL_KEYDOWN)
-	    pause = 0;
+	    pause = AVT_FALSE;
 	  avt_analyze_event (&event);
 	}
     }
@@ -917,7 +917,7 @@ int
 avt_get_max_x (void)
 {
   if (screen)
-    return LINELENGTH;
+    return AVT_LINELENGTH;
   else
     return -1;
 }
@@ -1365,10 +1365,10 @@ avt_put_char (const wchar_t ch)
 
       /* LRM/RLM: only supported at the beginning of a line */
     case L'\x200E':		/* LEFT-TO-RIGHT MARK (LRM) */
-      avt_text_direction (LEFT_TO_RIGHT);
+      avt_text_direction (AVT_LEFT_TO_RIGHT);
       break;
     case L'\x200F':		/* RIGHT-TO-LEFT MARK (RLM) */
-      avt_text_direction (RIGHT_TO_LEFT);
+      avt_text_direction (AVT_RIGHT_TO_LEFT);
       break;
 
     case L' ':			/* space */
@@ -1474,7 +1474,7 @@ avt_mb_encoding (const char *encoding)
   /* check if it was successfully initialized */
   if (output_cd == ICONV_UNINITIALIZED)
     {
-      _avt_STATUS = AVATARERROR;
+      _avt_STATUS = AVT_ERROR;
       SDL_SetError ("encoding %s not supported for output", encoding);
       return _avt_STATUS;
     }
@@ -1491,7 +1491,7 @@ avt_mb_encoding (const char *encoding)
   /* check if it was successfully initialized */
   if (input_cd == ICONV_UNINITIALIZED)
     {
-      _avt_STATUS = AVATARERROR;
+      _avt_STATUS = AVT_ERROR;
       SDL_SetError ("encoding %s not supported for input", encoding);
       return _avt_STATUS;
     }
@@ -1527,7 +1527,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, const int size)
 
   if (!inbuf_start)
     {
-      _avt_STATUS = AVATARERROR;
+      _avt_STATUS = AVT_ERROR;
       SDL_SetError ("out of memory");
       *dest = NULL;
       return -1;
@@ -1555,7 +1555,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, const int size)
 
   if (!*dest)
     {
-      _avt_STATUS = AVATARERROR;
+      _avt_STATUS = AVT_ERROR;
       SDL_SetError ("out of memory");
       SDL_free (inbuf_start);
       return -1;
@@ -1587,7 +1587,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, const int size)
     {
       SDL_free (*dest);
       *dest = NULL;
-      _avt_STATUS = AVATARERROR;
+      _avt_STATUS = AVT_ERROR;
       SDL_SetError ("error while converting the encoding");
       return -1;
     }
@@ -1663,7 +1663,7 @@ avt_get_key (wchar_t * ch)
   if (screen)
     {
       *ch = 0;
-      while ((*ch <= 0) && (_avt_STATUS == AVATARNORMAL))
+      while ((*ch <= 0) && (_avt_STATUS == AVT_NORMAL))
 	{
 	  SDL_WaitEvent (&event);
 	  avt_analyze_event (&event);
@@ -1758,7 +1758,7 @@ avt_ask (wchar_t * s, const int size)
 	    (*avt_bell_func) ();
 	}
     }
-  while ((ch != 13) && (_avt_STATUS == AVATARNORMAL));
+  while ((ch != 13) && (_avt_STATUS == AVT_NORMAL));
 
   /* delete cursor */
   cursor.x = (textdir_rtl) ? cursor.x - FONTWIDTH : cursor.x + FONTWIDTH;
@@ -1772,7 +1772,7 @@ avt_ask (wchar_t * s, const int size)
 int
 avt_ask_mb (char *s, const int size)
 {
-  wchar_t ws[LINELENGTH + 1];
+  wchar_t ws[AVT_LINELENGTH + 1];
   char *inbuf;
   size_t inbytesleft, outbytesleft;
 
@@ -1979,7 +1979,7 @@ avt_wait_button (void)
   SDL_Event event;
   SDL_Surface *button;
   SDL_Rect dst;
-  int nokey;
+  avt_bool_t nokey;
 
   if (!screen)
     return _avt_STATUS;
@@ -2003,15 +2003,15 @@ avt_wait_button (void)
   SDL_WarpMouse (dst.x + dst.w - 5, dst.y + dst.h - 5);
   SDL_ShowCursor (SDL_ENABLE);
 
-  nokey = 1;
+  nokey = AVT_TRUE;
   while (nokey)
     {
       SDL_WaitEvent (&event);
       switch (event.type)
 	{
 	case SDL_QUIT:
-	  nokey = 0;
-	  _avt_STATUS = AVATARQUIT;
+	  nokey = AVT_FALSE;
+	  _avt_STATUS = AVT_QUIT;
 	  break;
 
 	case SDL_VIDEORESIZE:
@@ -2023,13 +2023,13 @@ avt_wait_button (void)
 	  break;
 
 	case SDL_KEYDOWN:
-	  nokey = 0;
+	  nokey = AVT_FALSE;
 	  if (event.key.keysym.sym == SDLK_ESCAPE)
-	    _avt_STATUS = AVATARQUIT;
+	    _avt_STATUS = AVT_QUIT;
 	  break;
 
 	case SDL_MOUSEBUTTONDOWN:
-	  nokey = 0;
+	  nokey = AVT_FALSE;
 	  break;
 
 	default:
@@ -2058,7 +2058,7 @@ int
 avt_wait_key (const wchar_t * message)
 {
   SDL_Event event;
-  int nokey;
+  avt_bool_t nokey;
   SDL_Rect dst;
   struct pos oldcursor;
 
@@ -2116,15 +2116,15 @@ avt_wait_key (const wchar_t * message)
   SDL_WarpMouse (dst.x, dst.y + FONTHEIGHT);
   SDL_ShowCursor (SDL_ENABLE);
 
-  nokey = 1;
+  nokey = AVT_TRUE;
   while (nokey)
     {
       SDL_WaitEvent (&event);
       switch (event.type)
 	{
 	case SDL_QUIT:
-	  nokey = 0;
-	  _avt_STATUS = AVATARQUIT;
+	  nokey = AVT_FALSE;
+	  _avt_STATUS = AVT_QUIT;
 	  break;
 
 	case SDL_VIDEORESIZE:
@@ -2136,16 +2136,13 @@ avt_wait_key (const wchar_t * message)
 	  break;
 
 	case SDL_KEYDOWN:
-	  nokey = 0;
+	  nokey = AVT_FALSE;
 	  if (event.key.keysym.sym == SDLK_ESCAPE)
-	    _avt_STATUS = AVATARQUIT;
+	    _avt_STATUS = AVT_QUIT;
 	  break;
 
 	case SDL_MOUSEBUTTONDOWN:
-	  nokey = 0;
-	  break;
-
-	default:
+	  nokey = AVT_FALSE;
 	  break;
 	}
     }
@@ -2221,7 +2218,7 @@ load_SDL_image (void)
 #endif /* _SDL_loadso_h */
 
   /* don't try to load it again - even if loading failed */
-  tried_to_load_SDL_image = 1;
+  tried_to_load_SDL_image = AVT_TRUE;
 }
 
 static void
@@ -2234,7 +2231,7 @@ avt_show_image (avt_image_t * image)
   avt_free_screen ();
 
   /* set informational variables */
-  avt_visible = 0;
+  avt_visible = AVT_FALSE;
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
   viewport = textfield;
 
@@ -2277,7 +2274,7 @@ avt_show_image_file (const char *file)
   if (image == NULL)
     {
       avt_clear ();		/* at least clear the balloon */
-      return AVATARERROR;
+      return AVT_ERROR;
     }
 
   avt_show_image (image);
@@ -2309,7 +2306,7 @@ avt_show_image_data (void *img, int imgsize)
   if (image == NULL)
     {
       avt_clear ();		/* at least clear the balloon */
-      return AVATARERROR;
+      return AVT_ERROR;
     }
 
   avt_show_image (image);
@@ -2344,7 +2341,7 @@ avt_show_gimp_image (void *gimp_image)
 				      0xFF0000, 0);
 
   if (image == NULL)
-    return AVATARERROR;
+    return AVT_ERROR;
 
   avt_show_image (image);
   SDL_FreeSurface (image);
@@ -2363,7 +2360,7 @@ avt_init_SDL (void)
       SDL_putenv ("SDL_NOMOUSE=1");
 
       if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
-	_avt_STATUS = AVATARERROR;
+	_avt_STATUS = AVT_ERROR;
     }
 
   return _avt_STATUS;
@@ -2493,7 +2490,7 @@ avt_set_background_color (int red, int green, int blue)
     {
       if (textfield.x >= 0)
 	{
-	  avt_visible = 0;
+	  avt_visible = AVT_FALSE;
 	  avt_draw_balloon ();
 	}
       else if (avt_visible)
@@ -2504,7 +2501,7 @@ avt_set_background_color (int red, int green, int blue)
 }
 
 void
-avt_stop_on_esc (int stop)
+avt_stop_on_esc (avt_bool_t stop)
 {
   do_stop_on_esc = (stop != 0);
 }
@@ -2594,7 +2591,7 @@ avt_quit (void)
 #endif /* _SDL_loadso_h */
       SDL_image_handle = NULL;
       IMG_Load = NULL;
-      tried_to_load_SDL_image = 0;	/* try again next time */
+      tried_to_load_SDL_image = AVT_FALSE;	/* try again next time */
     }
 
   /* close conversion descriptors */
@@ -2611,7 +2608,7 @@ avt_quit (void)
   avt_bell_func = NULL;
   SDL_Quit ();
   screen = NULL;		/* it was freed by SDL_Quit */
-  avt_visible = 0;
+  avt_visible = AVT_FALSE;
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
   viewport = textfield;
 }
@@ -2623,29 +2620,29 @@ avt_initialize (const char *title, const char *icontitle,
   /* already initialized? */
   if (screen)
     {
-      _avt_STATUS = AVATARERROR;
+      _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
 
   avt_mode = mode;
-  _avt_STATUS = AVATARNORMAL;
-  do_stop_on_esc = 1;
+  _avt_STATUS = AVT_NORMAL;
+  do_stop_on_esc = AVT_TRUE;
   scroll_mode = 1;
-  avt_visible = 0;
+  avt_visible = AVT_FALSE;
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
   viewport = textfield;
-  textdir_rtl = LEFT_TO_RIGHT;
-  text_delay = DEFAULT_TEXT_DELAY;
-  flip_page_delay = DEFAULT_FLIP_PAGE_DELAY;
+  textdir_rtl = AVT_LEFT_TO_RIGHT;
+  text_delay = AVT_DEFAULT_TEXT_DELAY;
+  flip_page_delay = AVT_DEFAULT_FLIP_PAGE_DELAY;
 
   if (avt_init_SDL ())
     {
       avt_free_image (image);
-      _avt_STATUS = AVATARERROR;
+      _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.59 2007-12-29 19:48:32 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.60 2007-12-30 13:33:17 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
@@ -2657,7 +2654,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   /* FIXME: why doesn't that work under Windows? */
 #ifndef __WIN32__
-  if (avt_mode == AUTOMODE)
+  if (avt_mode == AVT_AUTOMODE)
     {
       SDL_Rect **modes;
 
@@ -2674,7 +2671,7 @@ avt_initialize (const char *title, const char *icontitle,
   if (avt_mode >= 1)
     screenflags |= SDL_FULLSCREEN;
 
-  if (avt_mode == FULLSCREENNOSWITCH)
+  if (avt_mode == AVT_FULLSCREENNOSWITCH)
     {
       screen = SDL_SetVideoMode (0, 0, COLORDEPTH, screenflags);
 
@@ -2691,7 +2688,7 @@ avt_initialize (const char *title, const char *icontitle,
   if (screen == NULL)
     {
       avt_free_image (image);
-      _avt_STATUS = AVATARERROR;
+      _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
 
@@ -2699,7 +2696,7 @@ avt_initialize (const char *title, const char *icontitle,
     {
       avt_free_image (image);
       SDL_SetError ("screen too small");
-      _avt_STATUS = AVATARERROR;
+      _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
 
@@ -2727,7 +2724,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   if (!avt_character)
     {
-      _avt_STATUS = AVATARERROR;
+      _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
 
@@ -2759,7 +2756,7 @@ avt_initialize (const char *title, const char *icontitle,
 
       if (!avt_image)
 	{
-	  _avt_STATUS = AVATARERROR;
+	  _avt_STATUS = AVT_ERROR;
 	  return _avt_STATUS;
 	}
     }
@@ -2779,7 +2776,7 @@ avt_initialize (const char *title, const char *icontitle,
       if (balloonheight < (3 * LINEHEIGHT) + (2 * BALLOON_INNER_MARGIN))
 	{
 	  SDL_SetError ("Avatar image too large");
-	  _avt_STATUS = AVATARERROR;
+	  _avt_STATUS = AVT_ERROR;
 	  SDL_FreeSurface (avt_image);
 	  avt_image = NULL;
 	  SDL_Quit ();

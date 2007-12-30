@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.14 2007-12-27 17:08:41 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.15 2007-12-30 13:33:17 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -61,7 +61,7 @@ static avt_audio_t *mybell;
 static AudioStruct current_sound;
 static Uint8 *soundpos = NULL;	/* Current play position */
 static Sint32 soundleft = 0;	/* Length of left unplayed wave data */
-static int loop = 0;
+static avt_bool_t loop = AVT_FALSE;
 
 extern int avt_checkevent (void);
 extern void (*avt_bell_func) (void);
@@ -94,20 +94,20 @@ static void
 short_audio_sound (void)
 {
   if (mybell)
-    avt_play_audio (mybell, 0);
+    avt_play_audio (mybell, AVT_FALSE);
 }
 
 /* must be called AFTER avt_initialize! */
 int
 avt_initialize_audio (void)
 {
-  SDL_SetError ("$Id: avatar-audio.c,v 2.14 2007-12-27 17:08:41 akf Exp $");
+  SDL_SetError ("$Id: avatar-audio.c,v 2.15 2007-12-30 13:33:17 akf Exp $");
   SDL_ClearError ();
 
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
     {
       SDL_SetError ("error initializing audio");
-      return AVATARERROR;
+      return AVT_ERROR;
     }
 
   mybell = avt_load_wave_data ((void *) &avt_bell_data, avt_bell_data_size);
@@ -124,7 +124,7 @@ avt_stop_audio (void)
   SDL_CloseAudio ();
   soundpos = NULL;
   soundleft = 0;
-  loop = 0;
+  loop = AVT_FALSE;
   current_sound.len = 0;
   current_sound.sound = NULL;
 }
@@ -153,7 +153,7 @@ avt_load_wave_file (const char *file)
   if (s == NULL)
     return NULL;
 
-  s->wave = 1;
+  s->wave = AVT_TRUE;
   if (SDL_LoadWAV (file, &s->audiospec, &s->sound, &s->len) == NULL)
     {
       SDL_free (s);
@@ -172,7 +172,7 @@ avt_load_wave_data (void *data, int datasize)
   if (s == NULL)
     return NULL;
 
-  s->wave = 1;
+  s->wave = AVT_TRUE;
   if (SDL_LoadWAV_RW (SDL_RWFromMem (data, datasize), 1,
 		      &s->audiospec, &s->sound, &s->len) == NULL)
     {
@@ -204,7 +204,7 @@ avt_free_audio (avt_audio_t * snd)
 }
 
 int
-avt_play_audio (avt_audio_t * snd, int doloop)
+avt_play_audio (avt_audio_t * snd, avt_bool_t doloop)
 {
   AudioStruct *newsound;
 
@@ -228,7 +228,7 @@ avt_play_audio (avt_audio_t * snd, int doloop)
   loop = (doloop != 0);
 
   if (SDL_OpenAudio (&current_sound.audiospec, NULL) < 0)
-    return AVATARERROR;
+    return AVT_ERROR;
 
   SDL_UnlockAudio ();
   SDL_PauseAudio (0);
@@ -240,7 +240,7 @@ int
 avt_wait_audio_end (void)
 {
   /* end the loop, but wait for end of sound */
-  loop = 0;
+  loop = AVT_FALSE;
 
   if (soundleft > 0)
     {

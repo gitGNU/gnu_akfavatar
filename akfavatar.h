@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.33 2007-12-29 14:05:20 akf Exp $ */
+/* $Id: akfavatar.h,v 2.34 2007-12-30 13:33:17 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -37,64 +37,53 @@
 #include <stddef.h>
 
 /* maximum linelength */
-#define LINELENGTH 80
+#define AVT_LINELENGTH 80
 
 /* for avt_initialize */
-#define AUTOMODE -1
-#define WINDOW 0
-#define FULLSCREENNOSWITCH 2
+#define AVT_AUTOMODE -1
+#define AVT_WINDOW 0
+#define AVT_FULLSCREENNOSWITCH 2
 
-#ifdef NOSWITCH
-#  define FULLSCREEN FULLSCREENNOSWITCH
+#ifdef AVT_NOSWITCH
+#  define AVT_FULLSCREEN AVT_FULLSCREENNOSWITCH
 #else
-#  define FULLSCREEN 1
+#  define AVT_FULLSCREEN 1
 #endif
 
-
 /* for _avt_STATUS */
-#define AVATARNORMAL 0
-#define AVATARQUIT 1
-#define AVATARERROR -1
+#define AVT_NORMAL 0
+#define AVT_QUIT 1
+#define AVT_ERROR -1
+
+/* for boolean expressions */
+#define AVT_TRUE 1
+#define AVT_FALSE 0
 
 /* for avt_set_delays */
-#define DEFAULT_TEXT_DELAY 75
-#define DEFAULT_FLIP_PAGE_DELAY 2700
+#define AVT_DEFAULT_TEXT_DELAY 75
+#define AVT_DEFAULT_FLIP_PAGE_DELAY 2700
 
 /* for avt_text_direction */
-#define LEFT_TO_RIGHT 0
-#define RIGHT_TO_LEFT 1
-
-/* some unicode characters, you might want to use */
-#define DOLLAR L"\x0024"
-#define EURO L"\x20AC"
-#define CENT L"\x00A2"
-#define POUND L"\x00A3"
-#define LIRA L"\x20A4"
-#define YEN L"\x00A5"
-
-#define SMILEY L"\x263A"
-#define FROWNEY L"\x2639"
+#define AVT_LEFT_TO_RIGHT 0
+#define AVT_RIGHT_TO_LEFT 1
 
 /* 
- * put string in quotation marks
+ * example: avt_wait(AVT_SECONDS(2.5)) waits 2.5 seconds 
  */
-#define quote(x) L"“" x L"”"
-
-/*
- * put string in german quotation marks
- */
-#define Zitat(x) L"„" x L"“"
-
-/* 
- * example: avt_wait(seconds(2.5)) waits 2.5 seconds 
- */
-#define seconds(x) (x*1000)
+#define AVT_SECONDS(x) ((x)*1000)
 
 #ifdef __cplusplus
 /* *INDENT-OFF* */
 extern "C" {
 /* *INDENT-ON* */
 #endif /* __cplusplus */
+
+/*
+ * boolean are integers for this library
+ * to make language bindings more easy
+ * (you can use stdbool.h in your program, it's compatible)
+ */
+typedef int avt_bool_t;
 
 /* 
  * general type for avatar images
@@ -125,8 +114,8 @@ const char *avt_copyright (void);
 /* license information */
 const char *avt_license (void);
 
-/* is it initialized? (0 = false, 1 = true) */
-int avt_initialized (void);
+/* is it initialized? */
+avt_bool_t avt_initialized (void);
 
 /* 0 = normal; 1 = quit-request; -1 = error */
 int avt_get_status (void);
@@ -145,7 +134,7 @@ char *avt_get_error (void);
 void avt_text_direction (int direction);
 
 /* stop, when Esc is pressed? (default: yes) */
-void avt_stop_on_esc (int stop);
+void avt_stop_on_esc (avt_bool_t stop);
 
 /*
  * get the default avatar image
@@ -187,7 +176,7 @@ avt_image_t *avt_make_transparent (avt_image_t * image);
  * define the backgroud color
  * values in the range 0x00 .. 0xFF
  * can and should be called before avt_initialize
- * the balloon is removed, if it was visible before calling this
+ * if the balloon is visible, it is cleared
  */
 void avt_set_background_color (int red, int green, int blue);
 
@@ -200,13 +189,13 @@ void avt_set_text_background_color (int red, int green, int blue);
 
 /*
  * delay time for text-writing
- * default: DEFAULT_TEXT_DELAY
+ * default: AVT_DEFAULT_TEXT_DELAY
  */
 void avt_set_text_delay (int delay);
 
 /*
  * delay time for page flipping
- * default: DEFAULT_FLIP_PAGE_DELAY
+ * default: AVT_DEFAULT_FLIP_PAGE_DELAY
  */
 void avt_set_flip_page_delay (int delay);
 
@@ -330,13 +319,13 @@ int avt_wait (int milliseconds);
 /* wait for a keypress while displaying a button */
 int avt_wait_button (void);
 
-/* wait for a keypress */
+/* wait for a keypress (deprecated) */
 int avt_wait_key (const wchar_t * message);
 
 /*
  * like avt_waitkey,
  * but converts from a given charset encoding
- * (see avt_mb_encoding)
+ * (deprecated) 
  */
 int avt_wait_key_mb (char *message);
 
@@ -496,7 +485,7 @@ void avt_free_audio (avt_audio_t * snd);
 /*
  * plays a sound
  */
-int avt_play_audio (avt_audio_t * snd, int doloop);
+int avt_play_audio (avt_audio_t * snd, avt_bool_t doloop);
 
 /*
  * wait until the sound ends
