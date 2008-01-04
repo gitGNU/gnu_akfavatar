@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.43 2008-01-02 13:46:18 akf Exp $ */
+/* $Id: avatarsay.c,v 2.44 2008-01-04 17:17:55 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -533,6 +533,13 @@ checkoptions (int argc, char **argv)
 	    }			/* switch (language) */
 	}			/* switch (c) */
     }				/* while (1) */
+
+  /* some sanity checks */
+  if (say_pipe && executable)
+    error_msg ("error", "-s and -e can not be used together");
+
+  if (say_pipe && argc > optind + 1)
+    error_msg ("error", "only one file argument for -s allowed");
 }
 
 static void
@@ -1161,11 +1168,19 @@ getwline (int fd, wchar_t * lineptr, size_t n)
 static int
 execute_process (const char *fname)
 {
-#ifndef NO_FORK
   pid_t childpid;
-  int fdpair[2];
+  int prg_out_pair[2];
 
-  if (pipe (fdpair) == -1)
+  /* clear text-buffer */
+  wcbuf_pos = wcbuf_len = 0;
+
+#ifdef NO_FORK
+
+  return -1;
+
+#else /* not NO_FORK */
+
+  if (pipe (prg_out_pair) == -1)
     error_msg ("pipe", strerror (errno));
 
   childpid = fork ();
@@ -1176,21 +1191,21 @@ execute_process (const char *fname)
   /* is it the child process? */
   if (childpid == 0)
     {
-      /* child closes input part of pipe */
-      close (fdpair[0]);
+      /* child closes input part of prg_out_pair */
+      close (prg_out_pair[0]);
 
       /* close input terminal */
       close (STDIN_FILENO);
 
       /* redirect stdout to pipe */
-      if (dup2 (fdpair[1], STDOUT_FILENO) == -1)
+      if (dup2 (prg_out_pair[1], STDOUT_FILENO) == -1)
 	error_msg ("dup2", strerror (errno));
 
       /* redirect sterr to pipe */
-      if (dup2 (fdpair[1], STDERR_FILENO) == -1)
+      if (dup2 (prg_out_pair[1], STDERR_FILENO) == -1)
 	error_msg ("dup2", strerror (errno));
 
-      close (fdpair[1]);
+      close (prg_out_pair[1]);
 
       /* It's a very very dumb terminal */
       putenv ("TERM=dumb");
@@ -1202,18 +1217,21 @@ execute_process (const char *fname)
       /* stdout and stderr are broken by now */
       quit (EXIT_FAILURE);
     }
+  else				/* parent process */
+    {
+      /* parent closes output part of prg_out_pair */
+      close (prg_out_pair[1]);
+    }
 
-  /* parent closes output part of pipe */
-  close (fdpair[1]);
-
-  /* use input part of pipe */
-  return fdpair[0];
+/* use input part of prg_out_pair */
+  fcntl (prg_out_pair[0], F_SETFL, O_NONBLOCK);
+  return prg_out_pair[0];
 #endif /* not NO_FORK */
 }
 
 /* opens the file, returns file descriptor or -1 on error */
 static int
-openfile (const char *fname, avt_bool_t execute, avt_bool_t with_pipe)
+openfile (const char *fname)
 {
   int fd = -1;
 
@@ -1222,23 +1240,12 @@ openfile (const char *fname, avt_bool_t execute, avt_bool_t with_pipe)
 
   if (strcmp (fname, "-") == 0)
     fd = STDIN_FILENO;		/* stdin */
-  else
-#ifndef NO_FIFO
-  if (with_pipe)
-    {
-      if (mkfifo (fname, 0600) > -1)
-	fd = open (fname, O_RDONLY | O_NONBLOCK);
-      else
-	return -1;
-    }
-  else
-#endif /* ! NO_FIFO */
-#ifndef NO_FORK
-  if (execute)
-    fd = execute_process (fname);
-  else
-#endif /* ! NO_FORK */
-    fd = open (fname, O_RDONLY);	/* regular file */
+  else  /* regular file */
+#ifdef O_NONBLOCK
+    fd = open (fname, O_RDONLY | O_NONBLOCK);
+#else
+    fd = open (fname, O_RDONLY);
+#endif
 
   return fd;
 }
@@ -1246,18 +1253,12 @@ openfile (const char *fname, avt_bool_t execute, avt_bool_t with_pipe)
 /* shows content of file / other input */
 /* returns -1:file cannot be processed, 0:normal, 1:stop requested */
 static int
-process_file (const char *fname, avt_bool_t execute, avt_bool_t with_pipe)
+process_file (int fd)
 {
   wchar_t *line = NULL;
   size_t line_size = 0;
   ssize_t nread = 0;
   avt_bool_t stop = AVT_FALSE;
-  int fd;
-
-  fd = openfile (fname, execute, with_pipe);
-
-  if (fd < 0)
-    return -1;
 
   line_size = 1024 * sizeof (wchar_t);
   line = (wchar_t *) malloc (line_size);
@@ -1334,12 +1335,6 @@ process_file (const char *fname, avt_bool_t execute, avt_bool_t with_pipe)
   if (close (fd) == -1 && errno != EAGAIN)
     warning_msg ("close", strerror (errno));
 
-#ifndef NO_FIFO
-  if (with_pipe)
-    if (remove (fname) == -1)
-      warning_msg ("remove", strerror (errno));
-#endif /* ! NO_FIFO */
-
   if (avt_get_status () == AVT_ERROR)
     {
       stop = AVT_TRUE;
@@ -1414,9 +1409,15 @@ ask_file (avt_bool_t execute)
     avt_set_text_delay (AVT_DEFAULT_TEXT_DELAY);
     if (filename[0] != '\0')
       {
-	int status;
+	int fd, status;
+
+	if (execute)
+	  fd = execute_process (filename);
+	else
+	  fd = openfile (filename);
+	if (fd > -1)
+	  process_file (fd);
 	/* ignore file errors */
-	process_file (filename, execute, AVT_FALSE);
 	status = avt_get_status ();
 	if (status == AVT_ERROR)
 	  quit (EXIT_FAILURE);	/* warning already printed */
@@ -1459,7 +1460,7 @@ ask_manpage (void)
   if (manpage[0] != '\0')
     {
       char command[255];
-      int status;
+      int fd, status;
 
       /* -T is not supported on FreeBSD */
       strcpy (command, "man -t ");
@@ -1474,7 +1475,9 @@ ask_manpage (void)
       set_encoding ("ISO-8859-1");
 
       /* ignore file errors */
-      process_file (command, AVT_TRUE, AVT_FALSE);
+      fd = execute_process (command);
+      if (fd > -1)
+	process_file (fd);
       status = avt_get_status ();
       if (status == AVT_ERROR)
 	quit (EXIT_FAILURE);	/* warning already printed */
@@ -1664,18 +1667,40 @@ main (int argc, char *argv[])
 
       for (i = optind; i < argc; i++)
 	{
-	  int status;
+	  int fd = -1;
 
 	  set_encoding (default_encoding);
 
-	  status = process_file (argv[i], executable, say_pipe);
-	  if (status <= -1)
-	    error_msg ("error opening file", argv[i]);
-	  else if (status == 1)
-	    quit (EXIT_SUCCESS);
+#ifndef NO_FIFO
+	  if (say_pipe)
+	    {
+	      if (mkfifo (argv[i], 0660) < 0)
+		error_msg ("mkfifo", strerror (errno));
+	    }
+#endif /* not NO_FIFO */
 
-	  if (avt_flip_page ())
-	    quit (EXIT_SUCCESS);
+	  if (executable)
+	    fd = execute_process (argv[i]);
+	  else
+	    fd = openfile (argv[i]);
+
+	  if (fd > -1)
+	    {
+	      int status;
+	      status = process_file (fd);
+
+	      if (say_pipe)
+		if (remove (argv[i]) == -1)
+		  warning_msg ("remove", strerror (errno));
+
+	      if (status <= -1)
+		error_msg ("error opening file", argv[i]);
+	      else if (status == 1)
+		quit (EXIT_SUCCESS);
+
+	      if (avt_flip_page ())
+		quit (EXIT_SUCCESS);
+	    }
 
 	  /* 
 	   * ignore anything past "-" 
@@ -1696,7 +1721,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.43 2008-01-02 13:46:18 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.44 2008-01-04 17:17:55 akf Exp $");
 
   return EXIT_SUCCESS;
 }
