@@ -1,5 +1,7 @@
 2008-01-04  Andreas K. Foerster  <info@akfoerster.de>
+
 	* avatarsay.c:
+	ability to run lineoriented programs (not for Windows)
 	program has a main menu now
 	code cleanups and reorganizations
 	fix: rawmode (fixes bug #21889)

@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.44 2008-01-04 17:17:55 akf Exp $ */
+/* $Id: avatarsay.c,v 2.45 2008-01-05 13:12:04 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -61,6 +61,9 @@
 /* size for input buffer - not too small, please */
 /* .encoding must be in first buffer */
 #define INBUFSIZE 10240
+
+/* for keybuffer (external processes) */
+#define KEY_BUFFER_SIZE 255
 
 /* maximum size for path */
 /* should fit into stack */
@@ -108,6 +111,10 @@ static avt_bool_t say_pipe;
 
 /* execute file? Option -e */
 static avt_bool_t executable;
+static int prg_input;
+
+/* in idle loop? */
+static avt_bool_t idle;
 
 /* whether to run in a window, or in fullscreen mode */
 /* the mode can be set by -f, --fullscreen or -w, --window */
@@ -219,6 +226,13 @@ help (const char *prgname)
   puts ("Options:");
   puts (" -h, --help              show this help");
   puts (" -v, --version           show the version");
+#ifdef NO_FIFO
+  puts (" -e, --exec              not supported on this system");
+  puts (" -s, --saypipe           not supported on this system");
+#else
+  puts (" -e, --exec              execute lineoriented program in balloon");
+  puts (" -s, --saypipe           create named pipe for filename");
+#endif
   puts (" -w, --window            try to run the program in a window"
 	" (default)");
   puts (" -f, --fullscreen        try to run the program in fullscreen mode");
@@ -232,11 +246,6 @@ help (const char *prgname)
 	" (don't handle any commands)");
   puts (" -i, --ignoreeof         ignore end of file conditions "
 	"(input is not a file)");
-#ifdef NO_FIFO
-  puts (" -s, --saypipe           not supported on this system");
-#else
-  puts (" -s, --saypipe           create named pipe for filename");
-#endif
   puts ("\nEnvironment variables:");
   puts (" AVATARIMAGE             different image as avatar");
   puts (" AVATARDATADIR           data-directory");
@@ -405,6 +414,7 @@ checkoptions (int argc, char **argv)
 	{"utf8", no_argument, 0, 'u'},
 	{"u8", no_argument, 0, 'u'},
 	{"popup", no_argument, 0, 'p'},
+	{"exec", no_argument, 0, 'e'},
 	{0, 0, 0, 0}
       };
 
@@ -421,48 +431,39 @@ checkoptions (int argc, char **argv)
 	case 0:
 	  break;
 
-	  /* --help */
-	case 'h':
+	case 'h':		/* --help */
 	  help (argv[0]);
 	  break;
 
-	  /* --version */
-	case 'v':
+	case 'v':		/* --version */
 	  showversion ();
 	  break;
 
-	  /* --fullscreen */
-	case 'f':
+	case 'f':		/* --fullscreen */
 	  mode = AVT_FULLSCREEN;
 	  break;
 
-	  /* --fullfullscreen */
-	case 'F':
+	case 'F':		/* --fullfullscreen */
 	  mode = AVT_FULLSCREENNOSWITCH;
 	  break;
 
-	  /* --window */
-	case 'w':
+	case 'w':		/* --window */
 	  mode = AVT_WINDOW;
 	  break;
 
-	  /* --once */
-	case '1':
+	case '1':		/* --once */
 	  loop = AVT_FALSE;
 	  break;
 
-	  /* --raw */
-	case 'r':
+	case 'r':		/* --raw */
 	  rawmode = AVT_TRUE;
 	  break;
 
-	  /* --ignoreeof */
-	case 'i':
+	case 'i':		/* --ignoreeof */
 	  ignore_eof = AVT_TRUE;
 	  break;
 
-	  /* --saypipe */
-	case 's':
+	case 's':		/* --saypipe */
 #ifdef NO_FIFO
 	  switch (language)
 	    {
@@ -484,36 +485,31 @@ checkoptions (int argc, char **argv)
 #endif /* ! NO_FIFO */
 	  break;
 
-	  /* --encoding */
-	case 'E':
+	case 'E':		/* --encoding */
 	  strncpy (default_encoding, optarg, sizeof (default_encoding));
 	  given_encoding = AVT_TRUE;
 	  break;
 
-	  /* --latin1 */
-	case 'l':
+	case 'l':		/* --latin1 */
 	  strcpy (default_encoding, "ISO-8859-1");
 	  given_encoding = AVT_TRUE;
 	  break;
 
-	  /* --utf-8, --utf8, --u8 */
-	case 'u':
+	case 'u':		/* --utf-8, --utf8, --u8 */
 	  strcpy (default_encoding, "UTF-8");
 	  given_encoding = AVT_TRUE;
 	  break;
 
-	  /* --popup */
-	case 'p':
+	case 'p':		/* --popup */
 	  popup = AVT_TRUE;
 	  break;
 
-	case 'e':
+	case 'e':		/* --exec */
 	  executable = AVT_TRUE;
 	  loop = AVT_FALSE;
 	  break;
 
-	  /* unsupported option */
-	case '?':
+	case '?':		/* unsupported option */
 	  /* getopt_long already printed an error message to stderr */
 	  help (argv[0]);
 	  break;
@@ -1105,10 +1101,15 @@ get_character (int fd)
 
       filebuf_end = read (fd, &filebuf, sizeof (filebuf));
 
-      /* no data in FIFO */
-      while (filebuf_end == -1 && errno == EAGAIN
-	     && avt_update () == AVT_NORMAL)
-	filebuf_end = read (fd, &filebuf, sizeof (filebuf));
+      /* waiting for data */
+      if (filebuf_end == -1 && errno == EAGAIN)
+	{
+	  idle = AVT_TRUE;
+	  while (filebuf_end == -1 && errno == EAGAIN
+		 && avt_update () == AVT_NORMAL)
+	    filebuf_end = read (fd, &filebuf, sizeof (filebuf));
+	  idle = AVT_FALSE;
+	}
 
       if (filebuf_end == -1)
 	error_msg ("error while reading from file", strerror (errno));
@@ -1164,12 +1165,62 @@ getwline (int fd, wchar_t * lineptr, size_t n)
   return nchars;
 }
 
+#ifndef NO_FORK
+void
+prg_keyhandler (int sym, int mod, int unicode)
+{
+  static char key_buffer[KEY_BUFFER_SIZE];
+  static int key_buffer_pos;
+
+  if (idle && prg_input != 0 && unicode != 0)
+    {
+      idle = AVT_FALSE;		/* avoid reentrance */
+      switch (sym)
+	{
+	case 13:		/* Return */
+	  key_buffer[key_buffer_pos] = '\n';
+	  key_buffer_pos++;
+	  write (prg_input, &key_buffer, key_buffer_pos);
+	  avt_new_line ();
+	  key_buffer_pos = 0;
+	  break;
+
+	case 8:		/* Backspace */
+	case 127:		/* Delete */
+	case 276:		/* left arrow */
+	  if (key_buffer_pos > 0)
+	    {
+	      key_buffer_pos--;
+	      avt_backspace ();
+	    }
+	  break;
+
+	default:
+	  /* reserve one char for return */
+	  if (key_buffer_pos < KEY_BUFFER_SIZE - 1)
+	    /* only ASCII or Latin-1 */
+	    if (unicode < 128 ||
+		(strcmp ("ISO-8859-1", default_encoding) == 0
+		 && unicode <= 255))
+	      {
+		wchar_t ch = (wchar_t) unicode;
+		key_buffer[key_buffer_pos] = (char) unicode;
+		key_buffer_pos++;
+		avt_say_len (&ch, 1);
+	      }
+	}			/* switch */
+      idle = AVT_TRUE;
+    }				/* if (idle...) */
+}
+#endif /* not NO_FORK */
+
 /* returns file-descriptor for output of the process */
 static int
 execute_process (const char *fname)
 {
   pid_t childpid;
   int prg_out_pair[2];
+  int prg_in_pair[2];
 
   /* clear text-buffer */
   wcbuf_pos = wcbuf_len = 0;
@@ -1183,6 +1234,9 @@ execute_process (const char *fname)
   if (pipe (prg_out_pair) == -1)
     error_msg ("pipe", strerror (errno));
 
+  if (pipe (prg_in_pair) == -1)
+    error_msg ("pipe", strerror (errno));
+
   childpid = fork ();
 
   if (childpid == -1)
@@ -1191,21 +1245,24 @@ execute_process (const char *fname)
   /* is it the child process? */
   if (childpid == 0)
     {
-      /* child closes input part of prg_out_pair */
+      /* child closes unused pipe ends */
       close (prg_out_pair[0]);
+      close (prg_in_pair[1]);
 
-      /* close input terminal */
-      close (STDIN_FILENO);
+      /* redirect stdin */
+      if (dup2 (prg_in_pair[0], STDIN_FILENO) == -1)
+	error_msg ("dup2", strerror (errno));
 
-      /* redirect stdout to pipe */
+      /* redirect stdout */
       if (dup2 (prg_out_pair[1], STDOUT_FILENO) == -1)
 	error_msg ("dup2", strerror (errno));
 
-      /* redirect sterr to pipe */
+      /* redirect sterr */
       if (dup2 (prg_out_pair[1], STDERR_FILENO) == -1)
 	error_msg ("dup2", strerror (errno));
 
       close (prg_out_pair[1]);
+      close (prg_in_pair[0]);
 
       /* It's a very very dumb terminal */
       putenv ("TERM=dumb");
@@ -1221,7 +1278,11 @@ execute_process (const char *fname)
     {
       /* parent closes output part of prg_out_pair */
       close (prg_out_pair[1]);
+      close (prg_in_pair[0]);
     }
+
+  prg_input = prg_in_pair[1];
+  avt_register_keyhandler (prg_keyhandler);
 
 /* use input part of prg_out_pair */
   fcntl (prg_out_pair[0], F_SETFL, O_NONBLOCK);
@@ -1240,7 +1301,7 @@ openfile (const char *fname)
 
   if (strcmp (fname, "-") == 0)
     fd = STDIN_FILENO;		/* stdin */
-  else  /* regular file */
+  else				/* regular file */
 #ifdef O_NONBLOCK
     fd = open (fname, O_RDONLY | O_NONBLOCK);
 #else
@@ -1265,12 +1326,15 @@ process_file (int fd)
 
   encoding_checked = AVT_FALSE;
 
+  /* 
+   * skip empty lines and handle commands at the beginning 
+   * before initializing the graphics
+   */
   nread = getwline (fd, line, line_size);
   if (!rawmode)
-    while (nread != 0
+    while (nread != 0 && !stop
 	   && (wcscmp (line, L"\n") == 0
-	       || wcscmp (line, L"\r\n") == 0 || iscommand (line, &stop))
-	   && !stop)
+	       || wcscmp (line, L"\r\n") == 0 || iscommand (line, &stop)))
       {
 	nread = getwline (fd, line, line_size);
 
@@ -1284,6 +1348,7 @@ process_file (int fd)
 	  }
       }
 
+  /* initialize the graphics */
   if (!initialized && !stop)
     {
       initialize ();
@@ -1415,8 +1480,17 @@ ask_file (avt_bool_t execute)
 	  fd = execute_process (filename);
 	else
 	  fd = openfile (filename);
+
 	if (fd > -1)
 	  process_file (fd);
+
+	/* unregister keyhandler */
+	if (execute)
+	  {
+	    avt_register_keyhandler (NULL);
+	    prg_input = 0;
+	  }
+
 	/* ignore file errors */
 	status = avt_get_status ();
 	if (status == AVT_ERROR)
@@ -1476,8 +1550,12 @@ ask_manpage (void)
 
       /* ignore file errors */
       fd = execute_process (command);
+      avt_register_keyhandler (NULL);
+      prg_input = 0;
+
       if (fd > -1)
 	process_file (fd);
+
       status = avt_get_status ();
       if (status == AVT_ERROR)
 	quit (EXIT_FAILURE);	/* warning already printed */
@@ -1550,7 +1628,7 @@ menu (void)
 	case DEUTSCH:
 	  avt_say (L"1) ein Demo oder eine Text-Datei anzeigen\n");
 	  avt_say (L"2) eine Hilfeseite (Manpage) anzeigen\n");
-	  avt_say (L"3) zeige die Ausgabe eines Befehls\n");
+	  avt_say (L"3) zeilenorientiertes Programm starten\n");
 	  avt_say (L"4) Homepage des Projektes aufrufen\n");
 	  avt_say (L"5) Programm-Infos\n");
 	  avt_say (L"0) beenden\n");
@@ -1560,7 +1638,7 @@ menu (void)
 	default:
 	  avt_say (L"1) show a demo or textfile\n");
 	  avt_say (L"2) show a manpage\n");
-	  avt_say (L"3) show the output of a command\n");
+	  avt_say (L"3) run a line-oriented program\n");
 	  avt_say (L"4) website\n");
 	  avt_say (L"5) show info about the program\n");
 	  avt_say (L"0) exit\n");
@@ -1689,6 +1767,12 @@ main (int argc, char *argv[])
 	      int status;
 	      status = process_file (fd);
 
+	      if (executable)
+		{
+		  avt_register_keyhandler (NULL);
+		  prg_input = 0;
+		}
+
 	      if (say_pipe)
 		if (remove (argv[i]) == -1)
 		  warning_msg ("remove", strerror (errno));
@@ -1721,7 +1805,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.44 2008-01-04 17:17:55 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.45 2008-01-05 13:12:04 akf Exp $");
 
   return EXIT_SUCCESS;
 }
