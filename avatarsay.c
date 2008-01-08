@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.45 2008-01-05 13:12:04 akf Exp $ */
+/* $Id: avatarsay.c,v 2.46 2008-01-08 15:19:02 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -29,12 +29,14 @@
 #include <wchar.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <stropts.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
 #include <getopt.h>
+#include <termios.h>
 
 #ifdef __WIN32__
 #  include <windows.h>
@@ -99,6 +101,9 @@ static avt_bool_t rawmode;
 
 /* popup-mode? */
 static avt_bool_t popup;
+
+/* default-text delay */
+static int default_delay;
 
 /* 
  * ignore end of file conditions
@@ -227,10 +232,10 @@ help (const char *prgname)
   puts (" -h, --help              show this help");
   puts (" -v, --version           show the version");
 #ifdef NO_FIFO
-  puts (" -e, --exec              not supported on this system");
+  puts (" -e, --execute           not supported on this system");
   puts (" -s, --saypipe           not supported on this system");
 #else
-  puts (" -e, --exec              execute lineoriented program in balloon");
+  puts (" -e, --execute           execute lineoriented program in balloon");
   puts (" -s, --saypipe           create named pipe for filename");
 #endif
   puts (" -w, --window            try to run the program in a window"
@@ -414,11 +419,12 @@ checkoptions (int argc, char **argv)
 	{"utf8", no_argument, 0, 'u'},
 	{"u8", no_argument, 0, 'u'},
 	{"popup", no_argument, 0, 'p'},
-	{"exec", no_argument, 0, 'e'},
+	{"execute", no_argument, 0, 'e'},
+	{"no-delay", no_argument, 0, 'n'},
 	{0, 0, 0, 0}
       };
 
-      c = getopt_long (argc, argv, "hvfFw1risE:lupe",
+      c = getopt_long (argc, argv, "hvfFw1risE:lupen",
 		       long_options, &option_index);
 
       /* end of the options */
@@ -507,6 +513,11 @@ checkoptions (int argc, char **argv)
 	case 'e':		/* --exec */
 	  executable = AVT_TRUE;
 	  loop = AVT_FALSE;
+	  break;
+
+	case 'n':		/* --no-delay */
+	  default_delay = 0;
+	  avt_set_text_delay (0);
 	  break;
 
 	case '?':		/* unsupported option */
@@ -619,6 +630,7 @@ initialize (void)
 	error_msg ("cannot initialize audio", avt_get_error ());
       }
 
+  avt_set_text_delay (default_delay);
   initialized = AVT_TRUE;
 }
 
@@ -1219,8 +1231,9 @@ static int
 execute_process (const char *fname)
 {
   pid_t childpid;
-  int prg_out_pair[2];
-  int prg_in_pair[2];
+  int master, slave;
+  char *terminalname;
+  struct termios settings;
 
   /* clear text-buffer */
   wcbuf_pos = wcbuf_len = 0;
@@ -1231,38 +1244,77 @@ execute_process (const char *fname)
 
 #else /* not NO_FORK */
 
-  if (pipe (prg_out_pair) == -1)
-    error_msg ("pipe", strerror (errno));
+#ifdef __USE_GNU
+  master = getpt ();
+#else
+  master = open ("/dev/ptmx", O_RDWR);
+#endif
 
-  if (pipe (prg_in_pair) == -1)
-    error_msg ("pipe", strerror (errno));
+  if (master < 0)
+    return -1;
 
+  if (grantpt (master) < 0 || unlockpt (master) < 0)
+    {
+      close (master);
+      return -1;
+    }
+
+  terminalname = ptsname (master);
+
+  if (terminalname == NULL)
+    {
+      close (master);
+      return -1;
+    }
+
+  slave = open (terminalname, O_RDWR);
+
+  if (slave < 0)
+    {
+      close (master);
+      return -1;
+    }
+
+  /* for SysV */
+  if (isastream (slave))
+    {
+      if (ioctl (slave, I_PUSH, "ptem") < 0
+	  || ioctl (slave, I_PUSH, "ldterm") < 0)
+	{
+	  close (master);
+	  close (slave);
+	  return -1;
+	}
+    }
+
+  fcntl (slave, F_SETFL, O_NONBLOCK);
+  fcntl (slave, F_SETFL, O_NDELAY);
+
+  /*-------------------------------------------------------- */
   childpid = fork ();
 
   if (childpid == -1)
-    error_msg ("fork", strerror (errno));
+    return -1;
 
   /* is it the child process? */
   if (childpid == 0)
     {
-      /* child closes unused pipe ends */
-      close (prg_out_pair[0]);
-      close (prg_in_pair[1]);
+      /* child closes master */
+      close (master);
 
       /* redirect stdin */
-      if (dup2 (prg_in_pair[0], STDIN_FILENO) == -1)
+      if (dup2 (slave, STDIN_FILENO) == -1)
 	error_msg ("dup2", strerror (errno));
 
       /* redirect stdout */
-      if (dup2 (prg_out_pair[1], STDOUT_FILENO) == -1)
+      if (dup2 (slave, STDOUT_FILENO) == -1)
 	error_msg ("dup2", strerror (errno));
 
       /* redirect sterr */
-      if (dup2 (prg_out_pair[1], STDERR_FILENO) == -1)
+      if (dup2 (slave, STDERR_FILENO) == -1)
 	error_msg ("dup2", strerror (errno));
 
-      close (prg_out_pair[1]);
-      close (prg_in_pair[0]);
+      close (slave);
 
       /* It's a very very dumb terminal */
       putenv ("TERM=dumb");
@@ -1276,17 +1328,37 @@ execute_process (const char *fname)
     }
   else				/* parent process */
     {
-      /* parent closes output part of prg_out_pair */
-      close (prg_out_pair[1]);
-      close (prg_in_pair[0]);
+      /* parent closes slave */
+      close (slave);
     }
 
-  prg_input = prg_in_pair[1];
+  /* settings for master */
+  if (tcgetattr (master, &settings) < 0)
+    {
+      close (master);
+      close (slave);
+      return -1;
+    }
+
+  /* set non-canonical mode */
+  cfmakeraw (&settings);
+  settings.c_cc[VMIN] = 1;
+  settings.c_cc[VTIME] = 0;
+
+  if (tcsetattr (master, TCSANOW, &settings) < 0)
+    {
+      close (master);
+      close (slave);
+      return -1;
+    }
+
+  prg_input = master;
   avt_register_keyhandler (prg_keyhandler);
 
-/* use input part of prg_out_pair */
-  fcntl (prg_out_pair[0], F_SETFL, O_NONBLOCK);
-  return prg_out_pair[0];
+  /* return master */
+  fcntl (master, F_SETFL, O_NONBLOCK);
+  fcntl (master, F_SETFL, O_NDELAY);
+  return master;
 #endif /* not NO_FORK */
 }
 
@@ -1410,6 +1482,43 @@ process_file (int fd)
   return (int) stop;
 }
 
+
+static int
+process_subprogram (int fd)
+{
+  avt_bool_t stop;
+  wint_t ch;
+
+  /* initialize the graphics */
+  if (!initialized)
+    {
+      initialize ();
+
+      if (!popup)
+	move_in ();
+    }
+
+  stop = AVT_FALSE;
+  ch = get_character (fd);
+  while (ch != WEOF && !stop)
+    {
+      wchar_t c = ch;
+
+      stop = avt_say_len (&c, 1);
+      ch = get_character (fd);
+    }
+
+  /* close file descriptor */
+  if (close (fd) == -1 && errno != EAGAIN)
+    warning_msg ("close", strerror (errno));
+
+  /* release keyhandler */
+  avt_register_keyhandler (NULL);
+  prg_input = 0;
+
+  return 0;
+}
+
 static void
 not_available (void)
 {
@@ -1471,24 +1580,22 @@ ask_file (avt_bool_t execute)
       quit (EXIT_SUCCESS);
 
     avt_clear ();
-    avt_set_text_delay (AVT_DEFAULT_TEXT_DELAY);
+    avt_set_text_delay (default_delay);
     if (filename[0] != '\0')
       {
 	int fd, status;
 
 	if (execute)
-	  fd = execute_process (filename);
-	else
-	  fd = openfile (filename);
-
-	if (fd > -1)
-	  process_file (fd);
-
-	/* unregister keyhandler */
-	if (execute)
 	  {
-	    avt_register_keyhandler (NULL);
-	    prg_input = 0;
+	    fd = execute_process (filename);
+	    if (fd > -1)
+	      process_subprogram (fd);
+	  }
+	else			/* not execute */
+	  {
+	    fd = openfile (filename);
+	    if (fd > -1)
+	      process_file (fd);
 	  }
 
 	/* ignore file errors */
@@ -1530,7 +1637,7 @@ ask_manpage (void)
     quit (EXIT_SUCCESS);
 
   avt_clear ();
-  avt_set_text_delay (AVT_DEFAULT_TEXT_DELAY);
+  avt_set_text_delay (default_delay);
   if (manpage[0] != '\0')
     {
       char command[255];
@@ -1592,7 +1699,7 @@ about_avatarsay (void)
     }
 
   set_encoding (default_encoding);
-  avt_set_text_delay (AVT_DEFAULT_TEXT_DELAY);
+  avt_set_text_delay (default_delay);
 
   if (avt_wait_button () != 0)
     quit (EXIT_SUCCESS);
@@ -1644,7 +1751,7 @@ menu (void)
 	  avt_say (L"0) exit\n");
 	}
 
-      avt_set_text_delay (AVT_DEFAULT_TEXT_DELAY);
+      avt_set_text_delay (default_delay);
 
       if (avt_get_key (&ch))
 	quit (EXIT_SUCCESS);
@@ -1652,7 +1759,7 @@ menu (void)
       switch (ch)
 	{
 	case L'1':		/* show a demo or textfile */
-	  ask_file (0);
+	  ask_file (AVT_FALSE);
 	  break;
 
 	case L'2':		/* show a manpage */
@@ -1660,7 +1767,7 @@ menu (void)
 	  break;
 
 	case L'3':		/* show the output of a command */
-	  ask_file (1);
+	  ask_file (AVT_TRUE);
 	  break;
 
 	case L'4':		/* website */
@@ -1718,6 +1825,7 @@ main (int argc, char *argv[])
 {
   mode = AVT_AUTOMODE;
   loop = AVT_TRUE;
+  default_delay = AVT_DEFAULT_TEXT_DELAY;
   strcpy (default_encoding, "ISO-8859-1");
 
   init_language_info ();
@@ -1745,6 +1853,7 @@ main (int argc, char *argv[])
 
       for (i = optind; i < argc; i++)
 	{
+	  int status;
 	  int fd = -1;
 
 	  set_encoding (default_encoding);
@@ -1758,43 +1867,39 @@ main (int argc, char *argv[])
 #endif /* not NO_FIFO */
 
 	  if (executable)
-	    fd = execute_process (argv[i]);
-	  else
-	    fd = openfile (argv[i]);
-
-	  if (fd > -1)
 	    {
-	      int status;
-	      status = process_file (fd);
-
-	      if (executable)
-		{
-		  avt_register_keyhandler (NULL);
-		  prg_input = 0;
-		}
-
-	      if (say_pipe)
-		if (remove (argv[i]) == -1)
-		  warning_msg ("remove", strerror (errno));
-
-	      if (status <= -1)
-		error_msg ("error opening file", argv[i]);
-	      else if (status == 1)
-		quit (EXIT_SUCCESS);
-
-	      if (avt_flip_page ())
-		quit (EXIT_SUCCESS);
+	      fd = execute_process (argv[i]);
+	      if (fd > -1)
+		status = process_subprogram (fd);
+	    }
+	  else			/* not executable */
+	    {
+	      fd = openfile (argv[i]);
+	      if (fd > -1)
+		status = process_file (fd);
 	    }
 
-	  /* 
-	   * ignore anything past "-" 
-	   * and don't loop then (it would break things)
-	   */
-	  if (strcmp (argv[i], "-") == 0)
-	    {
-	      loop = 0;
-	      break;
-	    }
+	  if (say_pipe)
+	    if (remove (argv[i]) == -1)
+	      warning_msg ("remove", strerror (errno));
+
+	  if (status <= -1)
+	    error_msg ("error opening file", argv[i]);
+	  else if (status == 1)
+	    quit (EXIT_SUCCESS);
+
+	  if (avt_flip_page ())
+	    quit (EXIT_SUCCESS);
+	}
+
+      /* 
+       * ignore anything past "-" 
+       * and don't loop then (it would break things)
+       */
+      if (strcmp (argv[i], "-") == 0)
+	{
+	  loop = 0;
+	  break;
 	}
 
       if (initialized)
@@ -1805,7 +1910,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.45 2008-01-05 13:12:04 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.46 2008-01-08 15:19:02 akf Exp $");
 
   return EXIT_SUCCESS;
 }
