@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.60 2007-12-30 13:33:17 akf Exp $ */
+/* $Id: avatar.c,v 2.61 2008-01-08 16:50:42 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1322,11 +1322,14 @@ avt_backspace (void)
  * writes a character to the textfield - 
  * interprets control characters
  */
-static int
-avt_put_char (const wchar_t ch)
+int
+avt_put_character (const wchar_t ch)
 {
+  if (!screen)
+    return _avt_STATUS;
+
   /* nothing to do, when ch == NULL */
-  if (!ch)
+  if (ch == NULL)
     return _avt_STATUS;
 
   /* no textfield? => draw balloon */
@@ -1416,7 +1419,7 @@ avt_say (const wchar_t * txt)
 
   while (*txt != L'\0')
     {
-      avt_put_char (*txt);
+      avt_put_character (*txt);
 
       /* premature break */
       if (_avt_STATUS)
@@ -1447,7 +1450,7 @@ avt_say_len (const wchar_t * txt, const int len)
 
   for (i = 0; i < len; i++)
     {
-      avt_put_char (*txt);
+      avt_put_character (*txt);
 
       /* premature break */
       if (_avt_STATUS)
@@ -2642,7 +2645,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.60 2007-12-30 13:33:17 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.61 2008-01-08 16:50:42 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();

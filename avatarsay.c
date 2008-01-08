@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.46 2008-01-08 15:19:02 akf Exp $ */
+/* $Id: avatarsay.c,v 2.47 2008-01-08 16:50:43 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1218,7 +1218,7 @@ prg_keyhandler (int sym, int mod, int unicode)
 		wchar_t ch = (wchar_t) unicode;
 		key_buffer[key_buffer_pos] = (char) unicode;
 		key_buffer_pos++;
-		avt_say_len (&ch, 1);
+		avt_put_character (ch);
 	      }
 	}			/* switch */
       idle = AVT_TRUE;
@@ -1504,7 +1504,7 @@ process_subprogram (int fd)
     {
       wchar_t c = ch;
 
-      stop = avt_say_len (&c, 1);
+      stop = avt_put_character (c);
       ch = get_character (fd);
     }
 
@@ -1910,7 +1910,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.46 2008-01-08 15:19:02 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.47 2008-01-08 16:50:43 akf Exp $");
 
   return EXIT_SUCCESS;
 }

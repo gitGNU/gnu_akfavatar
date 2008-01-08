@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.34 2007-12-30 13:33:17 akf Exp $ */
+/* $Id: akfavatar.h,v 2.35 2008-01-08 16:50:42 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -104,6 +104,21 @@ typedef void avt_audio_t;
 typedef void (*avt_keyhandler) (int sym, int mod, int unicode);
 
 /* base fnctions */
+
+/* 
+ * initialize the avatar system
+ * mode is either WINDOW or FULLSCREEN or FULLSCREENNOSWITCH
+ * the original image is freed in this function!
+ * the image may be NULL if no avatar should be shown
+ */
+int avt_initialize (const char *title,
+       		    const char *icontitle,
+		    avt_image_t * image, int mode);
+
+/* 
+ * quit the avatar system
+ */
+void avt_quit (void);
 
 /* which version */
 const char *avt_version (void);
@@ -205,21 +220,6 @@ void avt_set_delays (int text, int flip_page);
 /* register an external keyhandler */
 void avt_register_keyhandler (avt_keyhandler handler);
 
-/* 
- * initialize the avatar system
- * mode is either WINDOW or FULLSCREEN or FULLSCREENNOSWITCH
- * the original image is freed in this function!
- * the image may be NULL if no avatar should be shown
- */
-int avt_initialize (const char *title,
-       		    const char *icontitle,
-		    avt_image_t * image, int mode);
-
-/* 
- * quit the avatar system
- */
-void avt_quit (void);
-
 /*
  * switch to fullscreen or window mode 
  * (experimental!)
@@ -242,6 +242,14 @@ int avt_say (const wchar_t * txt);
  * interprets control characters
  */
 int avt_say_len (const wchar_t * txt, const int len);
+
+/*
+ * writes a single character in the balloon
+ * if there is no balloon, it is drawn
+ * if there is no avatar, it is shown (not moved in)
+ * interprets control characters
+ */ 
+int avt_put_character (const wchar_t ch);
 
 /* set encoding for mb functions */
 int avt_mb_encoding (const char *encoding);
