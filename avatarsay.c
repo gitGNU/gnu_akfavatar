@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.47 2008-01-08 16:50:43 akf Exp $ */
+/* $Id: avatarsay.c,v 2.48 2008-01-09 15:24:00 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -37,6 +37,7 @@
 #include <locale.h>
 #include <getopt.h>
 #include <termios.h>
+#include <sys/ioctl.h>
 
 #ifdef __WIN32__
 #  include <windows.h>
@@ -1234,6 +1235,7 @@ execute_process (const char *fname)
   int master, slave;
   char *terminalname;
   struct termios settings;
+  struct winsize size;		/* does this have to be static? */
 
   /* clear text-buffer */
   wcbuf_pos = wcbuf_len = 0;
@@ -1243,6 +1245,15 @@ execute_process (const char *fname)
   return -1;
 
 #else /* not NO_FORK */
+
+  /* must be initialized to get the window size */
+  if (!initialized)
+    {
+      initialize ();
+
+      if (!popup)
+	move_in ();
+    }
 
 #ifdef __USE_GNU
   master = getpt ();
@@ -1258,6 +1269,13 @@ execute_process (const char *fname)
       close (master);
       return -1;
     }
+
+  /* set window size */
+  /* not portable? */
+  size.ws_row = avt_get_max_y ();
+  size.ws_col = avt_get_max_x ();
+  size.ws_xpixel = size.ws_ypixel = 0;
+  ioctl (master, TIOCSWINSZ, &size);
 
   terminalname = ptsname (master);
 
@@ -1286,9 +1304,6 @@ execute_process (const char *fname)
 	  return -1;
 	}
     }
-
-  fcntl (slave, F_SETFL, O_NONBLOCK);
-  fcntl (slave, F_SETFL, O_NDELAY);
 
   /*-------------------------------------------------------- */
   childpid = fork ();
@@ -1333,10 +1348,12 @@ execute_process (const char *fname)
     }
 
   /* settings for master */
+  fcntl (master, F_SETFL, O_NONBLOCK);
+  fcntl (master, F_SETFL, O_NDELAY);
+
   if (tcgetattr (master, &settings) < 0)
     {
       close (master);
-      close (slave);
       return -1;
     }
 
@@ -1348,7 +1365,6 @@ execute_process (const char *fname)
   if (tcsetattr (master, TCSANOW, &settings) < 0)
     {
       close (master);
-      close (slave);
       return -1;
     }
 
@@ -1356,8 +1372,6 @@ execute_process (const char *fname)
   avt_register_keyhandler (prg_keyhandler);
 
   /* return master */
-  fcntl (master, F_SETFL, O_NONBLOCK);
-  fcntl (master, F_SETFL, O_NDELAY);
   return master;
 #endif /* not NO_FORK */
 }
@@ -1910,7 +1924,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.47 2008-01-08 16:50:43 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.48 2008-01-09 15:24:00 akf Exp $");
 
   return EXIT_SUCCESS;
 }
