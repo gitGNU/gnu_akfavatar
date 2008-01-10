@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.49 2008-01-10 16:25:52 akf Exp $ */
+/* $Id: avatarsay.c,v 2.50 2008-01-10 17:58:11 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1254,12 +1254,12 @@ execute_process (const char *fname)
 	move_in ();
     }
 
-#ifdef __USE_GNU
-  master = getpt ();
-#else
-  master = open ("/dev/ptmx", O_RDWR);
-#endif
+  /* as specified in POSIX.1-2001 */
+  master = posix_openpt (O_RDWR);
 
+  /* some older systems: */
+  /* master = open("/dev/ptmx", O_RDWR); */
+  
   if (master < 0)
     return -1;
 
@@ -1911,7 +1911,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.49 2008-01-10 16:25:52 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.50 2008-01-10 17:58:11 akf Exp $");
 
   return EXIT_SUCCESS;
 }
