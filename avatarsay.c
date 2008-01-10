@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.48 2008-01-09 15:24:00 akf Exp $ */
+/* $Id: avatarsay.c,v 2.49 2008-01-10 16:25:52 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -29,7 +29,6 @@
 #include <wchar.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <stropts.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -1293,18 +1292,6 @@ execute_process (const char *fname)
       return -1;
     }
 
-  /* for SysV */
-  if (isastream (slave))
-    {
-      if (ioctl (slave, I_PUSH, "ptem") < 0
-	  || ioctl (slave, I_PUSH, "ldterm") < 0)
-	{
-	  close (master);
-	  close (slave);
-	  return -1;
-	}
-    }
-
   /*-------------------------------------------------------- */
   childpid = fork ();
 
@@ -1867,7 +1854,7 @@ main (int argc, char *argv[])
 
       for (i = optind; i < argc; i++)
 	{
-	  int status;
+	  int status = 0;
 	  int fd = -1;
 
 	  set_encoding (default_encoding);
@@ -1924,7 +1911,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.48 2008-01-09 15:24:00 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.49 2008-01-10 16:25:52 akf Exp $");
 
   return EXIT_SUCCESS;
 }
