@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.61 2008-01-08 16:50:42 akf Exp $ */
+/* $Id: avatar.c,v 2.62 2008-01-10 16:20:45 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1328,8 +1328,8 @@ avt_put_character (const wchar_t ch)
   if (!screen)
     return _avt_STATUS;
 
-  /* nothing to do, when ch == NULL */
-  if (ch == NULL)
+  /* nothing to do, when ch == L'\0' */
+  if (ch == L'\0')
     return _avt_STATUS;
 
   /* no textfield? => draw balloon */
@@ -2645,7 +2645,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.61 2008-01-08 16:50:42 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.62 2008-01-10 16:20:45 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
