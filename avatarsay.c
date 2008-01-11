@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.53 2008-01-11 09:46:29 akf Exp $ */
+/* $Id: avatarsay.c,v 2.54 2008-01-11 15:19:00 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1247,33 +1247,6 @@ execute_process (const char *fname)
       return -1;
     }
 
-  /* settings for master */
-  fcntl (master, F_SETFL, O_NONBLOCK);
-
-  if (tcgetattr (master, &settings) < 0)
-    {
-      close (master);
-      return -1;
-    }
-
-  /* TODO: improve */
-  settings.c_cc[VERASE] = 8;	/* Backspace */
-  settings.c_iflag |= ICRNL;	/* input: cr -> nl */
-  settings.c_lflag |= (ECHO | ECHOE | ECHOK | ICANON);
-
-  if (tcsetattr (master, TCSANOW, &settings) < 0)
-    {
-      close (master);
-      return -1;
-    }
-
-  /* set window size */
-  /* not portable? */
-  size.ws_row = avt_get_max_y ();
-  size.ws_col = avt_get_max_x ();
-  size.ws_xpixel = size.ws_ypixel = 0;
-  ioctl (master, TIOCSWINSZ, &size);
-
   terminalname = ptsname (master);
 
   if (terminalname == NULL)
@@ -1322,7 +1295,7 @@ execute_process (const char *fname)
 
       /* It's a very very dumb terminal */
       putenv ("TERM=dumb");
-      
+
       /* programs can identify avatarsay with this */
       putenv ("AVATARSAY=" AVTVERSION);
 
@@ -1339,6 +1312,32 @@ execute_process (const char *fname)
       close (slave);
     }
 
+  /* terminal settings */
+  if (tcgetattr (master, &settings) < 0)
+    {
+      close (master);
+      return -1;
+    }
+
+  /* TODO: improve */
+  settings.c_cc[VERASE] = 8;	/* Backspace */
+  settings.c_iflag |= ICRNL;	/* input: cr -> nl */
+  settings.c_lflag |= (ECHO | ECHOE | ECHOK | ICANON);
+
+  if (tcsetattr (master, TCSANOW, &settings) < 0)
+    {
+      close (master);
+      return -1;
+    }
+
+  /* set window size */
+  /* not portable? */
+  size.ws_row = avt_get_max_y ();
+  size.ws_col = avt_get_max_x ();
+  size.ws_xpixel = size.ws_ypixel = 0;
+  ioctl (master, TIOCSWINSZ, &size);
+
+  fcntl (master, F_SETFL, O_NONBLOCK);
 
   prg_input = master;
   avt_register_keyhandler (prg_keyhandler);
@@ -1824,7 +1823,14 @@ main (int argc, char *argv[])
 #ifndef NO_LANGINFO
   strncpy (default_encoding, nl_langinfo (CODESET),
 	   sizeof (default_encoding));
-#endif
+
+/* get canonical encoding name for SDL's iconv */
+#  ifndef FORCE_ICONV
+  if (strcmp ("ISO_8859-1", default_encoding) == 0 ||
+      strcmp ("ISO8859-1", default_encoding) == 0)
+    strcpy (default_encoding, "ISO-8859-1");
+#  endif /* not FORCE_ICONV */
+#endif /* not NO_LANGINFO */
 
   checkoptions (argc, argv);
 
@@ -1899,7 +1905,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.53 2008-01-11 09:46:29 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.54 2008-01-11 15:19:00 akf Exp $");
 
   return EXIT_SUCCESS;
 }
