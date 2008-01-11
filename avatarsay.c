@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.52 2008-01-11 06:43:37 akf Exp $ */
+/* $Id: avatarsay.c,v 2.53 2008-01-11 09:46:29 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -35,21 +35,24 @@
 #include <string.h>
 #include <locale.h>
 #include <getopt.h>
-#include <termios.h>
-#include <sys/ioctl.h>
 
 #ifdef __WIN32__
 #  include <windows.h>
 #  define NO_MANPAGES 1
 #  ifdef __MINGW32__
 #    define NO_FIFO 1
-#    define NO_FORK 1
+#    define NO_PTY 1
 #    define NO_LANGINFO 1
 #  endif
 #endif
 
 #ifndef NO_LANGINFO
 #  include <langinfo.h>
+#endif
+
+#ifndef NO_PTY
+#  include <termios.h>
+#  include <sys/ioctl.h>
 #endif
 
 #ifndef NO_FIFO
@@ -1185,7 +1188,7 @@ getwline (int fd, wchar_t * lineptr, size_t n)
   return nchars;
 }
 
-#ifndef NO_FORK
+#ifndef NO_PTY
 void
 prg_keyhandler (int sym, int mod, int unicode)
 {
@@ -1201,12 +1204,16 @@ prg_keyhandler (int sym, int mod, int unicode)
       idle = AVT_TRUE;
     }				/* if (idle...) */
 }
-#endif /* not NO_FORK */
+#endif /* not NO_PTY */
 
 /* returns file-descriptor for output of the process */
 static int
 execute_process (const char *fname)
 {
+#ifdef NO_PTY
+  return -1;
+#else /* not NO_PTY */
+
   pid_t childpid;
   int master, slave;
   char *terminalname;
@@ -1215,12 +1222,6 @@ execute_process (const char *fname)
 
   /* clear text-buffer */
   wcbuf_pos = wcbuf_len = 0;
-
-#ifdef NO_FORK
-
-  return -1;
-
-#else /* not NO_FORK */
 
   /* must be initialized to get the window size */
   if (!initialized)
@@ -1321,6 +1322,9 @@ execute_process (const char *fname)
 
       /* It's a very very dumb terminal */
       putenv ("TERM=dumb");
+      
+      /* programs can identify avatarsay with this */
+      putenv ("AVATARSAY=" AVTVERSION);
 
       /* execute the command */
       execl ("/bin/sh", "/bin/sh", "-c", fname, (char *) NULL);
@@ -1342,7 +1346,7 @@ execute_process (const char *fname)
 
   /* return master */
   return master;
-#endif /* not NO_FORK */
+#endif /* not NO_PTY */
 }
 
 /* opens the file, returns file descriptor or -1 on error */
@@ -1538,7 +1542,7 @@ not_yet_implemented (void)
 static void
 ask_file (avt_bool_t execute)
 {
-#ifdef NO_FORK
+#ifdef NO_PTY
   if (execute)
     {
       not_available ();
@@ -1895,7 +1899,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.52 2008-01-11 06:43:37 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.53 2008-01-11 09:46:29 akf Exp $");
 
   return EXIT_SUCCESS;
 }
