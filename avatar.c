@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.63 2008-01-11 09:47:29 akf Exp $ */
+/* $Id: avatar.c,v 2.64 2008-01-11 18:17:45 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -209,13 +209,15 @@ static avt_bool_t do_stop_on_esc;	/* stop, when Esc is pressed? */
 static int scroll_mode;
 static SDL_Rect textfield;
 static SDL_Rect viewport;	/* sub-window in textfield */
-static int textdir_rtl;
+static int textdir_rtl = AVT_LEFT_TO_RIGHT;
+
 /* beginning of line - depending on text direction */
 static int linestart;
 static int balloonheight;
 
 /* delay values for printing text and flipping the page */
-static int text_delay, flip_page_delay;
+static int text_delay = AVT_DEFAULT_TEXT_DELAY;
+static int flip_page_delay = AVT_DEFAULT_FLIP_PAGE_DELAY;
 
 /* color independent from the screen mode */
 static SDL_Color backgroundcolor_RGB = { 0xCC, 0xCC, 0xCC, 0 };
@@ -2638,9 +2640,6 @@ avt_initialize (const char *title, const char *icontitle,
   avt_visible = AVT_FALSE;
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
   viewport = textfield;
-  textdir_rtl = AVT_LEFT_TO_RIGHT;
-  text_delay = AVT_DEFAULT_TEXT_DELAY;
-  flip_page_delay = AVT_DEFAULT_FLIP_PAGE_DELAY;
 
   if (avt_init_SDL ())
     {
@@ -2649,7 +2648,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.63 2008-01-11 09:47:29 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.64 2008-01-11 18:17:45 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
