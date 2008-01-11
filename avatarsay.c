@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.51 2008-01-11 04:24:07 akf Exp $ */
+/* $Id: avatarsay.c,v 2.52 2008-01-11 06:43:37 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -116,6 +116,7 @@ static avt_bool_t say_pipe;
 
 /* execute file? Option -e */
 static avt_bool_t executable;
+static avt_bool_t read_error_is_eof;
 static int prg_input;
 
 /* in idle loop? */
@@ -1124,13 +1125,20 @@ get_character (int fd)
 	}
 
       if (filebuf_end == -1)
-	error_msg ("error while reading from file", strerror (errno));
+	{
+	  if (read_error_is_eof)
+	    wcbuf_len = -1;
+	  else
+	    error_msg ("error while reading from file", strerror (errno));
+	}
+      else			/* filebuf_end != -1 */
+	{
+	  if (!encoding_checked && !given_encoding)
+	    check_encoding (filebuf, &filebuf_end);
 
-      if (!encoding_checked && !given_encoding)
-	check_encoding (filebuf, &filebuf_end);
-
-      wcbuf_len = avt_mb_decode (&wcbuf, (char *) &filebuf, filebuf_end);
-      wcbuf_pos = 0;
+	  wcbuf_len = avt_mb_decode (&wcbuf, (char *) &filebuf, filebuf_end);
+	  wcbuf_pos = 0;
+	}
     }
 
   if (wcbuf_len < 0)
@@ -1181,46 +1189,15 @@ getwline (int fd, wchar_t * lineptr, size_t n)
 void
 prg_keyhandler (int sym, int mod, int unicode)
 {
-  static char key_buffer[KEY_BUFFER_SIZE];
-  static int key_buffer_pos;
+  char ch;
 
   if (idle && prg_input != 0 && unicode != 0)
     {
       idle = AVT_FALSE;		/* avoid reentrance */
-      switch (sym)
-	{
-	case 13:		/* Return */
-	  key_buffer[key_buffer_pos] = '\n';
-	  key_buffer_pos++;
-	  write (prg_input, &key_buffer, key_buffer_pos);
-	  avt_new_line ();
-	  key_buffer_pos = 0;
-	  break;
 
-	case 8:		/* Backspace */
-	case 127:		/* Delete */
-	case 276:		/* left arrow */
-	  if (key_buffer_pos > 0)
-	    {
-	      key_buffer_pos--;
-	      avt_backspace ();
-	    }
-	  break;
+      ch = (char) unicode;
+      write (prg_input, &ch, 1);
 
-	default:
-	  /* reserve one char for return */
-	  if (key_buffer_pos < KEY_BUFFER_SIZE - 1)
-	    /* only ASCII or Latin-1 */
-	    if (unicode < 128 ||
-		(strcmp ("ISO-8859-1", default_encoding) == 0
-		 && unicode <= 255))
-	      {
-		wchar_t ch = (wchar_t) unicode;
-		key_buffer[key_buffer_pos] = (char) unicode;
-		key_buffer_pos++;
-		avt_put_character (ch);
-	      }
-	}			/* switch */
       idle = AVT_TRUE;
     }				/* if (idle...) */
 }
@@ -1264,6 +1241,26 @@ execute_process (const char *fname)
     return -1;
 
   if (grantpt (master) < 0 || unlockpt (master) < 0)
+    {
+      close (master);
+      return -1;
+    }
+
+  /* settings for master */
+  fcntl (master, F_SETFL, O_NONBLOCK);
+
+  if (tcgetattr (master, &settings) < 0)
+    {
+      close (master);
+      return -1;
+    }
+
+  /* TODO: improve */
+  settings.c_cc[VERASE] = 8;	/* Backspace */
+  settings.c_iflag |= ICRNL;	/* input: cr -> nl */
+  settings.c_lflag |= (ECHO | ECHOE | ECHOK | ICANON);
+
+  if (tcsetattr (master, TCSANOW, &settings) < 0)
     {
       close (master);
       return -1;
@@ -1338,29 +1335,10 @@ execute_process (const char *fname)
       close (slave);
     }
 
-  /* settings for master */
-  fcntl (master, F_SETFL, O_NONBLOCK);
-  fcntl (master, F_SETFL, O_NDELAY);
-
-  if (tcgetattr (master, &settings) < 0)
-    {
-      close (master);
-      return -1;
-    }
-
-  /* set non-canonical mode */
-  cfmakeraw (&settings);
-  settings.c_cc[VMIN] = 1;
-  settings.c_cc[VTIME] = 0;
-
-  if (tcsetattr (master, TCSANOW, &settings) < 0)
-    {
-      close (master);
-      return -1;
-    }
 
   prg_input = master;
   avt_register_keyhandler (prg_keyhandler);
+  read_error_is_eof = AVT_TRUE;
 
   /* return master */
   return master;
@@ -1384,6 +1362,8 @@ openfile (const char *fname)
 #else
     fd = open (fname, O_RDONLY);
 #endif
+
+  read_error_is_eof = AVT_FALSE;
 
   return fd;
 }
@@ -1895,16 +1875,16 @@ main (int argc, char *argv[])
 
 	  if (avt_flip_page ())
 	    quit (EXIT_SUCCESS);
-	}
 
-      /* 
-       * ignore anything past "-" 
-       * and don't loop then (it would break things)
-       */
-      if (strcmp (argv[i], "-") == 0)
-	{
-	  loop = 0;
-	  break;
+	  /* 
+	   * ignore anything past "-" 
+	   * and don't loop then (it would break things)
+	   */
+	  if (strcmp (argv[i], "-") == 0)
+	    {
+	      loop = 0;
+	      break;
+	    }
 	}
 
       if (initialized)
@@ -1915,7 +1895,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.51 2008-01-11 04:24:07 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.52 2008-01-11 06:43:37 akf Exp $");
 
   return EXIT_SUCCESS;
 }
