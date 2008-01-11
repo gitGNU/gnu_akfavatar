@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.62 2008-01-10 16:20:45 akf Exp $ */
+/* $Id: avatar.c,v 2.63 2008-01-11 09:47:29 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1342,6 +1342,10 @@ avt_put_character (const wchar_t ch)
       avt_new_line ();
       break;
 
+    case L'\r':
+      cursor.x = linestart;
+      break;
+
     case L'\f':
     case L'\v':
       avt_flip_page ();
@@ -2645,7 +2649,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.62 2008-01-10 16:20:45 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.63 2008-01-11 09:47:29 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();

@@ -1,4 +1,7 @@
-2008-01-08  Andreas K. Foerster  <info@akfoerster.de>
+2008-01-11  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_put_character):
+	interprets cariage return
 
 	* akfavatar.h, avatar.c (avt_put_character):
 	new function
