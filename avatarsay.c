@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.50 2008-01-10 17:58:11 akf Exp $ */
+/* $Id: avatarsay.c,v 2.51 2008-01-11 04:24:07 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1259,7 +1259,7 @@ execute_process (const char *fname)
 
   /* some older systems: */
   /* master = open("/dev/ptmx", O_RDWR); */
-  
+
   if (master < 0)
     return -1;
 
@@ -1296,7 +1296,11 @@ execute_process (const char *fname)
   childpid = fork ();
 
   if (childpid == -1)
-    return -1;
+    {
+      close (master);
+      close (slave);
+      return -1;
+    }
 
   /* is it the child process? */
   if (childpid == 0)
@@ -1911,7 +1915,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.50 2008-01-10 17:58:11 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.51 2008-01-11 04:24:07 akf Exp $");
 
   return EXIT_SUCCESS;
 }
