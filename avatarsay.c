@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.54 2008-01-11 15:19:00 akf Exp $ */
+/* $Id: avatarsay.c,v 2.55 2008-01-12 12:25:06 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -53,6 +53,7 @@
 #ifndef NO_PTY
 #  include <termios.h>
 #  include <sys/ioctl.h>
+#  include <pwd.h>
 #endif
 
 #ifndef NO_FIFO
@@ -1188,6 +1189,18 @@ getwline (int fd, wchar_t * lineptr, size_t n)
   return nchars;
 }
 
+static char *
+get_user_shell (void)
+{
+  struct passwd *user_data;
+
+  user_data = getpwuid (getuid ());
+  if (!user_data || !user_data->pw_shell)
+    return "/bin/sh";		/* default shell */
+  else
+    return user_data->pw_shell;
+}
+
 #ifndef NO_PTY
 void
 prg_keyhandler (int sym, int mod, int unicode)
@@ -1206,6 +1219,8 @@ prg_keyhandler (int sym, int mod, int unicode)
 }
 #endif /* not NO_PTY */
 
+/* execute a subprocess, visible in the balloon */
+/* if fname == NULL, start a shell */
 /* returns file-descriptor for output of the process */
 static int
 execute_process (const char *fname)
@@ -1295,16 +1310,24 @@ execute_process (const char *fname)
 
       /* It's a very very dumb terminal */
       putenv ("TERM=dumb");
+      
+      /* probably the only pager that actually works here */
+      putenv ("PAGER=more");
 
       /* programs can identify avatarsay with this */
       putenv ("AVATARSAY=" AVTVERSION);
 
-      /* execute the command */
-      execl ("/bin/sh", "/bin/sh", "-c", fname, (char *) NULL);
+      if (fname == NULL)
+	{			/* execute shell */
+	  char *shell = get_user_shell ();
+	  execl (shell, shell, (char *) NULL);
+	}
+      else			/* execute the command */
+	execl ("/bin/sh", "/bin/sh", "-c", fname, (char *) NULL);
 
       /* in case of an error, we can not do much */
       /* stdout and stderr are broken by now */
-      quit (EXIT_FAILURE);
+      _exit (EXIT_FAILURE);
     }
   else				/* parent process */
     {
@@ -1634,7 +1657,6 @@ ask_manpage (void)
       /* -T is not supported on FreeBSD */
       strcpy (command, "man -t ");
       strcat (command, manpage);
-      strcat (command, " 2>/dev/null");
 
       /* GROFF assumed! */
       putenv ("GROFF_TYPESETTER=latin1");
@@ -1723,7 +1745,7 @@ menu (void)
 	case DEUTSCH:
 	  avt_say (L"1) ein Demo oder eine Text-Datei anzeigen\n");
 	  avt_say (L"2) eine Hilfeseite (Manpage) anzeigen\n");
-	  avt_say (L"3) zeilenorientiertes Programm starten\n");
+	  avt_say (L"3) Shell starten\n");
 	  avt_say (L"4) Homepage des Projektes aufrufen\n");
 	  avt_say (L"5) Programm-Infos\n");
 	  avt_say (L"0) beenden\n");
@@ -1733,7 +1755,7 @@ menu (void)
 	default:
 	  avt_say (L"1) show a demo or textfile\n");
 	  avt_say (L"2) show a manpage\n");
-	  avt_say (L"3) run a line-oriented program\n");
+	  avt_say (L"3) run a shell\n");
 	  avt_say (L"4) website\n");
 	  avt_say (L"5) show info about the program\n");
 	  avt_say (L"0) exit\n");
@@ -1754,8 +1776,16 @@ menu (void)
 	  ask_manpage ();
 	  break;
 
-	case L'3':		/* show the output of a command */
-	  ask_file (AVT_TRUE);
+	case L'3':		/* run a shell */
+	  {
+	    int fd;
+
+	    avt_clear ();
+	    avt_set_text_delay (0);
+	    fd = execute_process (NULL);
+	    if (fd > -1)
+	      process_subprogram (fd);
+	  }
 	  break;
 
 	case L'4':		/* website */
@@ -1905,7 +1935,8 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.54 2008-01-11 15:19:00 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.55 2008-01-12 12:25:06 akf Exp $");
 
   return EXIT_SUCCESS;
 }
+
