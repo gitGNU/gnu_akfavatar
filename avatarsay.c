@@ -1,6 +1,6 @@
 /* 
  * avatarsay - show a textfile with libavatar
- * Copyright (c) 2007 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007, 2008 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.58 2008-01-13 16:20:37 akf Exp $ */
+/* $Id: avatarsay.c,v 2.59 2008-01-13 19:13:44 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -79,7 +79,7 @@
 
 static const char *version_info_en =
   PRGNAME " (AKFAvatar) " AVTVERSION "\n"
-  "Copyright (c) 2007 Andreas K. Foerster\n\n"
+  "Copyright (c) 2007, 2008 Andreas K. Foerster\n\n"
   "License GPLv3+: GNU GPL version 3 or later "
   "<http://gnu.org/licenses/gpl.html>\n\n"
   "This is free software: you are free to change and redistribute it.\n"
@@ -88,7 +88,7 @@ static const char *version_info_en =
 
 static const char *version_info_de =
   PRGNAME " (AKFAvatar) " AVTVERSION "\n"
-  "Copyright (c) 2007 Andreas K. Foerster\n\n"
+  "Copyright (c) 2007, 2008 Andreas K. Foerster\n\n"
   "Lizenz GPLv3+: GNU GPL Version 3 oder neuer "
   "<http://gnu.org/licenses/gpl.html>\n\n"
   "Dies ist Freie Software: Sie dürfen es gemäß der GPL weitergeben und\n"
@@ -117,6 +117,9 @@ static avt_bool_t ignore_eof;
 
 /* create a fifo for what to say? */
 static avt_bool_t say_pipe;
+
+/* start the terminal mode? */
+static avt_bool_t terminal_mode;
 
 /* execute file? Option -e */
 static avt_bool_t executable;
@@ -236,11 +239,16 @@ help (const char *prgname)
   puts ("Options:");
   puts (" -h, --help              show this help");
   puts (" -v, --version           show the version");
-#ifdef NO_FIFO
+#ifdef NO_PTY
+  puts (" -t, --terminal          not supported on this system");
   puts (" -e, --execute           not supported on this system");
+#else
+  puts (" -t, --terminal          terminal mode (run a shell in balloon)");
+  puts (" -e, --execute           execute lineoriented program in balloon");
+#endif
+#ifdef NO_FIFO
   puts (" -s, --saypipe           not supported on this system");
 #else
-  puts (" -e, --execute           execute lineoriented program in balloon");
   puts (" -s, --saypipe           create named pipe for filename");
 #endif
   puts (" -w, --window            try to run the program in a window"
@@ -386,6 +394,8 @@ open_homepage (void)
   quit (EXIT_SUCCESS);
 }
 
+#endif /* Windows or ReactOS */
+
 static void
 not_available (void)
 {
@@ -406,8 +416,6 @@ not_available (void)
   if (avt_wait_button () != 0)
     quit (EXIT_SUCCESS);
 }
-
-#endif /* Windows or ReactOS */
 
 static void
 set_encoding (const char *encoding)
@@ -445,12 +453,13 @@ checkoptions (int argc, char **argv)
 	{"utf8", no_argument, 0, 'u'},
 	{"u8", no_argument, 0, 'u'},
 	{"popup", no_argument, 0, 'p'},
+	{"terminal", no_argument, 0, 't'},
 	{"execute", no_argument, 0, 'e'},
 	{"no-delay", no_argument, 0, 'n'},
 	{0, 0, 0, 0}
       };
 
-      c = getopt_long (argc, argv, "hvfFw1risE:lupen",
+      c = getopt_long (argc, argv, "hvfFw1risE:lupten",
 		       long_options, &option_index);
 
       /* end of the options */
@@ -536,7 +545,13 @@ checkoptions (int argc, char **argv)
 	  popup = AVT_TRUE;
 	  break;
 
-	case 'e':		/* --exec */
+	case 't':		/* --terminal */
+	  default_delay = 0;
+	  terminal_mode = AVT_TRUE;
+	  loop = AVT_FALSE;
+	  break;
+
+	case 'e':		/* --execute */
 	  executable = AVT_TRUE;
 	  loop = AVT_FALSE;
 	  break;
@@ -573,6 +588,9 @@ checkoptions (int argc, char **argv)
 
   if (say_pipe && argc > optind + 1)
     error_msg ("error", "only one file argument for -s allowed");
+
+  if (terminal_mode && argc > optind)
+    error_msg ("error", "no files allowed for terminal mode");
 }
 
 static void
@@ -1606,6 +1624,18 @@ process_subprogram (int fd)
 }
 
 static void
+run_shell (void)
+{
+  int fd;
+
+  avt_clear ();
+  avt_set_text_delay (0);
+  fd = execute_process (NULL);
+  if (fd > -1)
+    process_subprogram (fd);
+}
+
+static void
 ask_file (avt_bool_t execute)
 {
 #ifdef NO_PTY
@@ -1800,11 +1830,11 @@ menu (void)
       avt_clear ();
       avt_set_text_color (0x00, 0x00, 0x00);
       avt_set_text_delay (0);
-      
+
       if (avt_get_max_y () > 9)
-        {
-        avt_say (L"AKFAvatar\n");
-        avt_say (L"=========\n\n");
+	{
+	  avt_say (L"AKFAvatar\n");
+	  avt_say (L"=========\n\n");
 	}
 
       switch (language)
@@ -1844,15 +1874,7 @@ menu (void)
 	  break;
 
 	case L'3':		/* run a shell */
-	  {
-	    int fd;
-
-	    avt_clear ();
-	    avt_set_text_delay (0);
-	    fd = execute_process (NULL);
-	    if (fd > -1)
-	      process_subprogram (fd);
-	  }
+	  run_shell ();
 	  break;
 
 	case L'4':		/* website */
@@ -1932,8 +1954,12 @@ main (int argc, char *argv[])
 
   checkoptions (argc, argv);
 
-  /* no input files? -> menu */
-  if (optind >= argc)
+  if (terminal_mode)
+    {
+      run_shell ();
+      quit (EXIT_SUCCESS);
+    }
+  else if (optind >= argc)	/* no input files? -> menu */
     menu ();
 
   /* handle files given as parameters */
@@ -2003,7 +2029,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.58 2008-01-13 16:20:37 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.59 2008-01-13 19:13:44 akf Exp $");
 
   return EXIT_SUCCESS;
 }
