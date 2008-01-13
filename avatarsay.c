@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.57 2008-01-13 11:14:52 akf Exp $ */
+/* $Id: avatarsay.c,v 2.58 2008-01-13 16:20:37 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -384,6 +384,27 @@ open_homepage (void)
 
   avt_wait (4000);
   quit (EXIT_SUCCESS);
+}
+
+static void
+not_available (void)
+{
+  avt_clear ();
+  avt_set_text_delay (default_delay);
+  avt_bell ();
+
+  switch (language)
+    {
+    case DEUTSCH:
+      avt_say (L"Funktion auf diesem System nicht verfügbar...");
+      break;
+    case ENGLISH:
+    default:
+      avt_say (L"function not available on this system...");
+    }
+
+  if (avt_wait_button () != 0)
+    quit (EXIT_SUCCESS);
 }
 
 #endif /* Windows or ReactOS */
@@ -1279,6 +1300,7 @@ static int
 execute_process (const char *fname)
 {
 #ifdef NO_PTY
+  not_available ();
   return -1;
 #else /* not NO_PTY */
 
@@ -1584,37 +1606,6 @@ process_subprogram (int fd)
 }
 
 static void
-not_available (void)
-{
-  avt_clear ();
-  avt_bell ();
-
-  switch (language)
-    {
-    case DEUTSCH:
-      avt_say (L"Funktion auf diesem System nicht verfügbar...");
-      break;
-    case ENGLISH:
-    default:
-      avt_say (L"function not available on this system...");
-    }
-
-  if (avt_wait_button () != 0)
-    quit (EXIT_SUCCESS);
-}
-
-static void
-not_yet_implemented (void)
-{
-  avt_clear ();
-  avt_bell ();
-  avt_say_mb (strerror (ENOSYS));
-
-  if (avt_wait_button () != 0)
-    quit (EXIT_SUCCESS);
-}
-
-static void
 ask_file (avt_bool_t execute)
 {
 #ifdef NO_PTY
@@ -1768,6 +1759,24 @@ about_avatarsay (void)
     quit (EXIT_SUCCESS);
 }
 
+#ifdef NO_MANPAGES
+#  define SAY_MANPAGE(x) \
+        avt_set_text_color (0x88, 0x88, 0x88); \
+        avt_say(x); \
+	avt_set_text_color (0x00, 0x00, 0x00)
+#else
+#  define SAY_MANPAGE(x) avt_say(x)
+#endif
+
+#ifdef NO_PTY
+#  define SAY_SHELL(x) \
+        avt_set_text_color (0x88, 0x88, 0x88); \
+        avt_say(x); \
+	avt_set_text_color (0x00, 0x00, 0x00)
+#else
+#  define SAY_SHELL(x) avt_say(x)
+#endif
+
 static void
 menu (void)
 {
@@ -1789,16 +1798,21 @@ menu (void)
   while (1)
     {
       avt_clear ();
+      avt_set_text_color (0x00, 0x00, 0x00);
       avt_set_text_delay (0);
-      avt_say (L"AKFAvatar\n");
-      avt_say (L"=========\n\n");
+      
+      if (avt_get_max_y () > 9)
+        {
+        avt_say (L"AKFAvatar\n");
+        avt_say (L"=========\n\n");
+	}
 
       switch (language)
 	{
 	case DEUTSCH:
 	  avt_say (L"1) ein Demo oder eine Text-Datei anzeigen\n");
-	  avt_say (L"2) eine Hilfeseite (Manpage) anzeigen\n");
-	  avt_say (L"3) Shell starten\n");
+	  SAY_MANPAGE (L"2) eine Hilfeseite (Manpage) anzeigen\n");
+	  SAY_SHELL (L"3) Shell starten\n");
 	  avt_say (L"4) Homepage des Projektes aufrufen\n");
 	  avt_say (L"5) Programm-Infos\n");
 	  avt_say (L"0) beenden\n");
@@ -1807,8 +1821,8 @@ menu (void)
 	case ENGLISH:
 	default:
 	  avt_say (L"1) show a demo or textfile\n");
-	  avt_say (L"2) show a manpage\n");
-	  avt_say (L"3) run a shell\n");
+	  SAY_MANPAGE (L"2) show a manpage\n");
+	  SAY_SHELL (L"3) run a shell\n");
 	  avt_say (L"4) website\n");
 	  avt_say (L"5) show info about the program\n");
 	  avt_say (L"0) exit\n");
@@ -1989,7 +2003,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.57 2008-01-13 11:14:52 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.58 2008-01-13 16:20:37 akf Exp $");
 
   return EXIT_SUCCESS;
 }
