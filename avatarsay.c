@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.56 2008-01-13 09:27:44 akf Exp $ */
+/* $Id: avatarsay.c,v 2.57 2008-01-13 11:14:52 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1206,21 +1206,65 @@ get_user_shell (void)
 void
 prg_keyhandler (int sym, int mod, int unicode)
 {
-  wchar_t ch;
-  char *mbstring;
-  int mblen;
 
-  if (idle && prg_input > 0 && unicode != 0)
+  if (idle && prg_input > 0)
     {
       idle = AVT_FALSE;		/* avoid reentrance */
 
-      ch = (wchar_t) unicode;
-      mblen = avt_mb_encode (&mbstring, &ch, 1);
-      if (mblen != -1)
+      switch (sym)
 	{
-	  write (prg_input, mbstring, mblen);
-	  avt_free (mbstring);
-	}
+	case 273:		/* up arrow */
+	  write (prg_input, "\033[A", 3);
+	  break;
+
+	case 274:		/* down arrow */
+	  write (prg_input, "\033[B", 3);
+	  break;
+
+	case 275:		/* right arrow */
+	  write (prg_input, "\033[C", 3);
+	  break;
+
+	case 276:		/* left arrow */
+	  write (prg_input, "\033[D", 3);
+	  break;
+
+	case 277:		/* Insert */
+	  write (prg_input, "\033[2~", 4);
+	  break;
+
+	case 278:		/* Home */
+	  write (prg_input, "\033[1~", 4);
+	  break;
+
+	case 279:		/* End */
+	  write (prg_input, "\033[4~", 4);
+	  break;
+
+	case 280:		/* Page up */
+	  write (prg_input, "\033[5~", 4);
+	  break;
+
+	case 281:		/* Page down */
+	  write (prg_input, "\033[6~", 4);
+	  break;
+
+	default:
+	  if (unicode)
+	    {
+	      wchar_t ch;
+	      char *mbstring;
+	      int mblen;
+
+	      ch = (wchar_t) unicode;
+	      mblen = avt_mb_encode (&mbstring, &ch, 1);
+	      if (mblen != -1)
+		{
+		  write (prg_input, mbstring, mblen);
+		  avt_free (mbstring);
+		}
+	    }			/* if (unicode) */
+	}			/* switch */
 
       idle = AVT_TRUE;
     }				/* if (idle...) */
@@ -1945,7 +1989,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.56 2008-01-13 09:27:44 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.57 2008-01-13 11:14:52 akf Exp $");
 
   return EXIT_SUCCESS;
 }
