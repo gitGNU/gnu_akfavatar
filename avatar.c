@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.64 2008-01-11 18:17:45 akf Exp $ */
+/* $Id: avatar.c,v 2.65 2008-01-13 09:27:44 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1618,6 +1618,82 @@ avt_mb_decode (wchar_t ** dest, const char *src, const int size)
   return ((dest_size - outbytesleft) / sizeof (wchar_t));
 }
 
+int
+avt_mb_encode (char ** dest, const wchar_t *src, const int len)
+{
+  char *inbuf_start, *inbuf, *outbuf;
+  size_t dest_size;
+  size_t inbytesleft, outbytesleft;
+  size_t returncode;
+
+  /* check if len is useful */
+  if (len <= 0)
+    {
+      *dest = NULL;
+      return -1;
+    }
+
+  /* check if encoding was set */
+  if (input_cd == ICONV_UNINITIALIZED)
+    avt_mb_encoding (MB_DEFAULT_ENCODING);
+
+  inbytesleft = len * sizeof (wchar_t);
+  inbuf_start = (char *) SDL_malloc (inbytesleft);
+
+  if (!inbuf_start)
+    {
+      _avt_STATUS = AVT_ERROR;
+      SDL_SetError ("out of memory");
+      *dest = NULL;
+      return -1;
+    }
+
+  inbuf = inbuf_start;
+
+  /* copy the text into the buffer */
+  SDL_memcpy (inbuf, src, inbytesleft);
+
+  /* get enough space */
+  /* UTF-8 may need 6 bytes per character */
+  /* +1 for the terminator */
+  dest_size = len * 6 + 1;
+  *dest = (char *) SDL_malloc (dest_size);
+
+  if (!*dest)
+    {
+      _avt_STATUS = AVT_ERROR;
+      SDL_SetError ("out of memory");
+      SDL_free (inbuf_start);
+      return -1;
+    }
+
+  outbuf = *dest;
+  outbytesleft = dest_size;
+
+  /* do the conversion */
+  returncode =
+    avt_iconv (input_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+
+  /* check for fatal errors */
+  if (returncode == AVT_ICONV_ERROR || returncode == AVT_ICONV_E2BIG)
+    {
+      SDL_free (*dest);
+      *dest = NULL;
+      _avt_STATUS = AVT_ERROR;
+      SDL_SetError ("error while converting the encoding");
+      return -1;
+    }
+
+  /* free the inbuf */
+  SDL_free (inbuf_start);
+
+  /* terminate outbuf */
+  if (outbytesleft >= sizeof (char))
+    *outbuf = '\0';
+
+  return (dest_size - outbytesleft);
+}
+
 void
 avt_free (void *ptr)
 {
@@ -2648,7 +2724,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.64 2008-01-11 18:17:45 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.65 2008-01-13 09:27:44 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();

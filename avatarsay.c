@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.55 2008-01-12 12:25:06 akf Exp $ */
+/* $Id: avatarsay.c,v 2.56 2008-01-13 09:27:44 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1189,6 +1189,8 @@ getwline (int fd, wchar_t * lineptr, size_t n)
   return nchars;
 }
 
+#ifndef NO_PTY
+
 static char *
 get_user_shell (void)
 {
@@ -1201,22 +1203,29 @@ get_user_shell (void)
     return user_data->pw_shell;
 }
 
-#ifndef NO_PTY
 void
 prg_keyhandler (int sym, int mod, int unicode)
 {
-  char ch;
+  wchar_t ch;
+  char *mbstring;
+  int mblen;
 
-  if (idle && prg_input != 0 && unicode != 0)
+  if (idle && prg_input > 0 && unicode != 0)
     {
       idle = AVT_FALSE;		/* avoid reentrance */
 
-      ch = (char) unicode;
-      write (prg_input, &ch, 1);
+      ch = (wchar_t) unicode;
+      mblen = avt_mb_encode (&mbstring, &ch, 1);
+      if (mblen != -1)
+	{
+	  write (prg_input, mbstring, mblen);
+	  avt_free (mbstring);
+	}
 
       idle = AVT_TRUE;
     }				/* if (idle...) */
 }
+
 #endif /* not NO_PTY */
 
 /* execute a subprocess, visible in the balloon */
@@ -1310,7 +1319,7 @@ execute_process (const char *fname)
 
       /* It's a very very dumb terminal */
       putenv ("TERM=dumb");
-      
+
       /* probably the only pager that actually works here */
       putenv ("PAGER=more");
 
@@ -1525,7 +1534,7 @@ process_subprogram (int fd)
 
   /* release keyhandler */
   avt_register_keyhandler (NULL);
-  prg_input = 0;
+  prg_input = -1;
 
   return 0;
 }
@@ -1668,7 +1677,7 @@ ask_manpage (void)
       /* ignore file errors */
       fd = execute_process (command);
       avt_register_keyhandler (NULL);
-      prg_input = 0;
+      prg_input = -1;
 
       if (fd > -1)
 	process_file (fd);
@@ -1844,6 +1853,7 @@ main (int argc, char *argv[])
   mode = AVT_AUTOMODE;
   loop = AVT_TRUE;
   default_delay = AVT_DEFAULT_TEXT_DELAY;
+  prg_input = -1;
   strcpy (default_encoding, "ISO-8859-1");
 
   init_language_info ();
@@ -1935,8 +1945,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.55 2008-01-12 12:25:06 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.56 2008-01-13 09:27:44 akf Exp $");
 
   return EXIT_SUCCESS;
 }
-

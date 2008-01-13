@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.35 2008-01-08 16:50:42 akf Exp $ */
+/* $Id: akfavatar.h,v 2.36 2008-01-13 09:27:44 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -261,6 +261,15 @@ int avt_mb_encoding (const char *encoding);
  * dest must be freed by caller with avt_free
  */
 int avt_mb_decode (wchar_t ** dest, const char *src, const int size);
+
+/* 
+ * encode a string from wchar_t
+ * len is the length
+ * returns number of characters in dest (without the termination zero)
+ * dest must be freed by caller with avt_free
+ * (the size of dest may be much more than needed)
+ */
+int avt_mb_encode (char ** dest, const wchar_t *src, const int len);
 
 /* free memory allocated by this library */
 void avt_free (void *ptr);

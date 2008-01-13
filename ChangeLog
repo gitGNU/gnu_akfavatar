@@ -1,10 +1,10 @@
-2008-01-11  Andreas K. Foerster  <info@akfoerster.de>
+2008-01-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_put_character):
 	interprets cariage return
 
-	* akfavatar.h, avatar.c (avt_put_character):
-	new function
+	* akfavatar.h, avatar.c (avt_put_character, avt_mb_encode):
+	new functions
 
 	* avatarsay.c:
 	ability to run lineoriented programs (not for Windows)
