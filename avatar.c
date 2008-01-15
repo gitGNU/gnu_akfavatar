@@ -1,6 +1,6 @@
 /*
  * AKFAvatar library - for giving your programs a graphical Avatar
- * Copyright (c) 2007 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007, 2008 Andreas K. Foerster <info@akfoerster.de>
  *
  * needed: 
  *  SDL1.2 (recommended: SDL1.2.11)
@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.65 2008-01-13 09:27:44 akf Exp $ */
+/* $Id: avatar.c,v 2.66 2008-01-15 08:35:06 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -280,7 +280,7 @@ avt_version (void)
 const char *
 avt_copyright (void)
 {
-  return "Copyright (c) 2007 Andreas K. Foerster";
+  return "Copyright (c) 2008 Andreas K. Foerster";
 }
 
 const char *
@@ -1078,6 +1078,62 @@ avt_clear (void)
 }
 
 void
+avt_clear_up (void)
+{
+  SDL_Color color;
+  SDL_Rect dst;
+
+  /* not initialized? -> do nothing */
+  if (!screen)
+    return;
+
+  /* if there's no balloon, draw it */
+  if (textfield.x < 0)
+    avt_draw_balloon ();
+
+  /* use background color of characters */
+  color = avt_character->format->palette->colors[0];
+
+  dst.x = viewport.x;
+  dst.w = viewport.w;
+  dst.y = viewport.y;		/* + FONTHEIGHT (?) */
+  dst.h = cursor.y;
+
+  SDL_FillRect (screen, &dst,
+		SDL_MapRGB (screen->format, color.r, color.g, color.b));
+
+  SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
+}
+
+void
+avt_clear_down (void)
+{
+  SDL_Color color;
+  SDL_Rect dst;
+
+  /* not initialized? -> do nothing */
+  if (!screen)
+    return;
+
+  /* if there's no balloon, draw it */
+  if (textfield.x < 0)
+    avt_draw_balloon ();
+
+  /* use background color of characters */
+  color = avt_character->format->palette->colors[0];
+
+  dst.x = viewport.x;
+  dst.w = viewport.w;
+  dst.y = cursor.y;
+  dst.h = viewport.y;
+
+  SDL_FillRect (screen, &dst,
+		SDL_MapRGB (screen->format, color.r, color.g, color.b));
+
+  SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
+}
+
+void
 avt_clear_eol (void)
 {
   SDL_Color color;
@@ -1108,6 +1164,71 @@ avt_clear_eol (void)
       dst.h = FONTHEIGHT;
       dst.w = viewport.w - (cursor.x - viewport.x);
     }
+
+  SDL_FillRect (screen, &dst,
+		SDL_MapRGB (screen->format, color.r, color.g, color.b));
+  SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
+}
+
+/* clear beginning of line */
+void
+avt_clear_bol (void)
+{
+  SDL_Color color;
+  SDL_Rect dst;
+
+  /* not initialized? -> do nothing */
+  if (!screen)
+    return;
+
+  /* if there's no balloon, draw it */
+  if (textfield.x < 0)
+    avt_draw_balloon ();
+
+  /* use background color of characters */
+  color = avt_character->format->palette->colors[0];
+
+  if (textdir_rtl)		/* right to left */
+    {
+      dst.x = cursor.x;
+      dst.y = cursor.y;
+      dst.h = FONTHEIGHT;
+      dst.w = viewport.w - (cursor.x - viewport.x);
+    }
+  else				/* left to right */
+    {
+      dst.x = viewport.x;
+      dst.y = cursor.y;
+      dst.h = FONTHEIGHT;
+      dst.w = cursor.x + FONTWIDTH - viewport.x;
+    }
+
+  SDL_FillRect (screen, &dst,
+		SDL_MapRGB (screen->format, color.r, color.g, color.b));
+  SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
+}
+
+void
+avt_clear_line (void)
+{
+  SDL_Color color;
+  SDL_Rect dst;
+
+  /* not initialized? -> do nothing */
+  if (!screen)
+    return;
+
+  /* if there's no balloon, draw it */
+  if (textfield.x < 0)
+    avt_draw_balloon ();
+
+  /* use background color of characters */
+  color = avt_character->format->palette->colors[0];
+
+  dst.x = viewport.x;
+  dst.y = cursor.y;
+  dst.h = FONTHEIGHT;
+  dst.w = viewport.w;
 
   SDL_FillRect (screen, &dst,
 		SDL_MapRGB (screen->format, color.r, color.g, color.b));
@@ -1619,7 +1740,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, const int size)
 }
 
 int
-avt_mb_encode (char ** dest, const wchar_t *src, const int len)
+avt_mb_encode (char **dest, const wchar_t * src, const int len)
 {
   char *inbuf_start, *inbuf, *outbuf;
   size_t dest_size;
@@ -2724,7 +2845,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.65 2008-01-13 09:27:44 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.66 2008-01-15 08:35:06 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();

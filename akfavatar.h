@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.36 2008-01-13 09:27:44 akf Exp $ */
+/* $Id: akfavatar.h,v 2.37 2008-01-15 08:35:06 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -414,6 +414,15 @@ void avt_clear (void);
  * depending on text direction
  */
 void avt_clear_eol (void);
+
+/* 
+ * clear beginning of line
+ * depending on text direction
+ */
+void avt_clear_bol (void);
+
+/* clear line */
+void avt_clear_line (void);
 
 /* forward one character position
  * ie. print a space

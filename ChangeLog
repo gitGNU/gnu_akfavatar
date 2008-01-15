@@ -1,4 +1,8 @@
-2008-01-12  Andreas K. Foerster  <info@akfoerster.de>
+2008-01-15  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_clear_bol, avt_clear_line):
+	(avt_clear_up, avt_clear_down):
+	new functions
 
 	* avatar.c (avt_put_character):
 	interprets cariage return
