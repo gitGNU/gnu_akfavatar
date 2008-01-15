@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.37 2008-01-15 08:35:06 akf Exp $ */
+/* $Id: akfavatar.h,v 2.38 2008-01-15 08:41:16 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -408,6 +408,18 @@ void avt_flash (void);
  * if there is no balloon yet, it is drawn
  */
 void avt_clear (void);
+
+/* 
+ * clears from cursor position down the viewport
+ * if there is no balloon yet, it is drawn
+ */
+void avt_clear_down (void);
+
+/* 
+ * clears from cursor position up the viewport
+ * if there is no balloon yet, it is drawn
+ */
+void avt_clear_up (void);
 
 /* 
  * clear end of line
