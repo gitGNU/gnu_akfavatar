@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.59 2008-01-13 19:13:44 akf Exp $ */
+/* $Id: avatarsay.c,v 2.60 2008-01-15 14:53:59 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1387,17 +1387,20 @@ execute_process (const char *fname)
       /* child closes master */
       close (master);
 
+      /* create a new session */
+      setsid ();
+
       /* redirect stdin */
       if (dup2 (slave, STDIN_FILENO) == -1)
-	error_msg ("dup2", strerror (errno));
+	_exit (EXIT_FAILURE);
 
       /* redirect stdout */
       if (dup2 (slave, STDOUT_FILENO) == -1)
-	error_msg ("dup2", strerror (errno));
+	_exit (EXIT_FAILURE);
 
       /* redirect sterr */
       if (dup2 (slave, STDERR_FILENO) == -1)
-	error_msg ("dup2", strerror (errno));
+	_exit (EXIT_FAILURE);
 
       close (slave);
 
@@ -2029,7 +2032,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.59 2008-01-13 19:13:44 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.60 2008-01-15 14:53:59 akf Exp $");
 
   return EXIT_SUCCESS;
 }
