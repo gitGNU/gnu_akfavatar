@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.60 2008-01-15 14:53:59 akf Exp $ */
+/* $Id: avatarsay.c,v 2.61 2008-01-17 21:14:01 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -162,6 +162,13 @@ static avt_audio_t *sound;
 /* text-buffer */
 static int wcbuf_pos = 0;
 static int wcbuf_len = 0;
+
+/* maximum coordinates (set by "initialize") */
+static int max_x, max_y;
+
+/* colors for terminal mode */
+static int text_color;
+static int text_background_color;
 
 /* language (of current locale) */
 enum language_t
@@ -553,6 +560,7 @@ checkoptions (int argc, char **argv)
 
 	case 'e':		/* --execute */
 	  executable = AVT_TRUE;
+	  default_delay = 0;
 	  loop = AVT_FALSE;
 	  break;
 
@@ -675,6 +683,8 @@ initialize (void)
       }
 
   avt_set_text_delay (default_delay);
+  max_x = avt_get_max_x ();
+  max_y = avt_get_max_y ();
   initialized = AVT_TRUE;
 }
 
@@ -1404,8 +1414,8 @@ execute_process (const char *fname)
 
       close (slave);
 
-      /* It's a very very dumb terminal */
-      putenv ("TERM=dumb");
+      /* still experimental1 */
+      putenv ("TERM=ansi77");
 
       /* probably the only pager that actually works here */
       putenv ("PAGER=more");
@@ -1451,8 +1461,8 @@ execute_process (const char *fname)
 
   /* set window size */
   /* not portable? */
-  size.ws_row = avt_get_max_y ();
-  size.ws_col = avt_get_max_x ();
+  size.ws_row = max_y;
+  size.ws_col = max_x;
   size.ws_xpixel = size.ws_ypixel = 0;
   ioctl (master, TIOCSWINSZ, &size);
 
@@ -1589,6 +1599,523 @@ process_file (int fd)
   return (int) stop;
 }
 
+#ifdef NO_PTY
+
+static void
+run_shell (void)
+{
+  not_available ();
+}
+
+#else /* not NO_PTY */
+
+/* 
+ * returns 2 values of a string like "1;2"
+ */
+static void
+get_2_values (const char *sequence, int *n1, int *n2)
+{
+  char *tail;
+
+  *n1 = strtol (sequence, &tail, 10);
+  *n2 = 0;
+  if (*tail == ';')
+    *n2 = strtol (tail + 1, &tail, 10);
+}
+
+static void
+set_foreground_color (int color)
+{
+  switch (color)
+    {
+    case 0:
+      avt_set_text_color (0x00, 0x00, 0x00);
+      break;
+    case 1:			/* red */
+      avt_set_text_color (0x88, 0x00, 0x00);
+      break;
+    case 2:			/* green */
+      avt_set_text_color (0x00, 0x88, 0x00);
+      break;
+    case 3:			/* brown */
+      avt_set_text_color (0x88, 0x44, 0x22);
+      break;
+    case 4:			/* blue */
+      avt_set_text_color (0x00, 0x00, 0x88);
+      break;
+    case 5:			/* magenta */
+      avt_set_text_color (0x88, 0x00, 0x88);
+      break;
+    case 6:			/* cyan */
+      avt_set_text_color (0x00, 0x88, 0x88);
+      break;
+    case 7:			/* lightgray */
+      avt_set_text_color (0x88, 0x88, 0x88);
+      break;
+    case 8:			/* darkgray */
+      avt_set_text_color (0x55, 0x55, 0x55);
+      break;
+    case 9:			/* lightred */
+      avt_set_text_color (0xFF, 0x00, 0x00);
+      break;
+    case 10:			/* lightgreen */
+      avt_set_text_color (0x00, 0xFF, 0x00);
+      break;
+    case 11:			/* yellow */
+      avt_set_text_color (0xE0, 0xE0, 0x00);
+      break;
+    case 12:			/* lightblue */
+      avt_set_text_color (0x00, 0x00, 0xFF);
+      break;
+    case 13:			/* lightmagenta */
+      avt_set_text_color (0xFF, 0x00, 0xFF);
+      break;
+    case 14:			/* lightcyan */
+      avt_set_text_color (0x00, 0xFF, 0xFF);
+      break;
+    case 15:			/* white */
+      avt_set_text_color (0xFF, 0xFF, 0xFF);
+    }
+}
+
+static void
+set_background_color (int color)
+{
+  switch (color)
+    {
+    case 0:			/* black */
+      avt_set_text_background_color (0x00, 0x00, 0x00);
+      break;
+    case 1:			/* red */
+      avt_set_text_background_color (0x88, 0x00, 0x00);
+      break;
+    case 2:			/* green */
+      avt_set_text_background_color (0x00, 0x88, 0x00);
+      break;
+    case 3:			/* brown */
+      avt_set_text_background_color (0x88, 0x44, 0x22);
+      break;
+    case 4:			/* blue */
+      avt_set_text_background_color (0x00, 0x00, 0x88);
+      break;
+    case 5:			/* magenta */
+      avt_set_text_background_color (0x88, 0x00, 0x88);
+      break;
+    case 6:			/* cyan */
+      avt_set_text_background_color (0x00, 0x88, 0x88);
+      break;
+    case 7:			/* lightgray */
+      avt_set_text_background_color (0x88, 0x88, 0x88);
+      break;
+    case 8:			/* darkgray */
+      avt_set_text_background_color (0x55, 0x55, 0x55);
+      break;
+    case 9:			/* lightred */
+      avt_set_text_background_color (0xFF, 0x00, 0x00);
+      break;
+    case 10:			/* lightgreen */
+      avt_set_text_background_color (0x00, 0xFF, 0x00);
+      break;
+    case 11:			/* yellow */
+      avt_set_text_background_color (0xFF, 0xFF, 0x00);
+      break;
+    case 12:			/* lightblue */
+      avt_set_text_background_color (0x00, 0x00, 0xFF);
+      break;
+    case 13:			/* lighmagenta */
+      avt_set_text_background_color (0xFF, 0x00, 0xFF);
+      break;
+    case 14:			/* lightcyan */
+      avt_set_text_background_color (0x00, 0xFF, 0xFF);
+      break;
+    case 15:			/* white */
+      avt_set_text_background_color (0xFF, 0xFF, 0xFF);
+    }
+}
+
+static void
+ansi_graphic_code (int mode)
+{
+  switch (mode)
+    {
+    case 0:			/* normal */
+      text_color = 0;
+      text_background_color = 0xF;
+      set_foreground_color (text_color);
+      set_background_color (text_background_color);
+      break;
+
+    case 7:			/* invers */
+      set_foreground_color (text_background_color);
+      set_background_color (text_color);
+      break;
+
+    case 27:			/* not invers */
+      set_foreground_color (text_color);
+      set_background_color (text_background_color);
+      break;
+
+    case 8:			/* hidden */
+    case 9:
+      set_foreground_color (text_background_color);
+      break;
+
+    case 28:			/* not hidden */
+      set_foreground_color (text_color);
+      break;
+
+    case 30:
+    case 31:
+    case 32:
+    case 33:
+    case 34:
+    case 35:
+    case 36:
+    case 37:
+      text_color = (mode - 30);
+      set_foreground_color (text_color);
+      break;
+
+    case 39:			/* foreground normal */
+      text_color = 0;
+      set_foreground_color (text_color);
+      break;
+
+    case 40:
+    case 41:
+    case 42:
+    case 43:
+    case 44:
+    case 45:
+    case 46:
+    case 47:
+      text_background_color = (mode - 40);
+      set_background_color (text_background_color);
+      break;
+
+    case 49:			/* background normal */
+      text_background_color = 0xF;
+      set_background_color (text_background_color);
+      break;
+
+    case 90:
+    case 91:
+    case 92:
+    case 93:
+    case 94:
+    case 95:
+    case 96:
+    case 97:
+      text_color = (mode - 90 + 8);
+      set_foreground_color (text_color);
+      break;
+
+    case 100:
+    case 101:
+    case 102:
+    case 103:
+    case 104:
+    case 105:
+    case 106:
+    case 107:
+      text_background_color = (mode - 100 + 8);
+      set_background_color (text_background_color);
+      break;
+    }
+}
+
+#define ESC_UNUPPORTED "unsupported escape sequence"
+#define CSI_UNUPPORTED "unsupported CSI sequence"
+
+/* TODO */
+static void
+escape_sequence (int fd)
+{
+  wchar_t ch;
+  char sequence[80];
+  unsigned int pos;
+  static int saved_cursor_x, saved_cursor_y;
+  static int saved_text_color, saved_text_background_color;
+
+  pos = 0;
+  ch = get_character (fd);
+
+#ifdef DEBUG
+  if (ch != L'[')
+    fprintf (stderr, "ESC %lc\n", ch);
+#endif
+
+  /* ESC [ch] */
+  switch (ch)
+    {
+    case L'7':			/* DECSC */
+      saved_cursor_x = avt_where_x ();
+      saved_cursor_y = avt_where_y ();
+      saved_text_color = text_color;
+      saved_text_background_color = text_background_color;
+      break;
+
+    case L'8':			/* DECRC */
+      avt_move_x (saved_cursor_x);
+      avt_move_y (saved_cursor_y);
+      text_color = saved_text_color;
+      set_foreground_color (text_color);
+      text_background_color = saved_text_background_color;
+      set_background_color (text_background_color);
+      break;
+
+    case L'c':			/* RIS - reset device */
+      avt_viewport (1, 1, max_x, max_y);
+      saved_cursor_x = saved_cursor_y = 0;
+      text_color = saved_text_color = 0;
+      text_background_color = saved_text_background_color = 0xF;
+      ansi_graphic_code (0);
+      avt_clear ();
+      return;
+
+    case L'D':			/* scroll up one line */
+      if (avt_where_y () < max_y)
+	avt_move_y (avt_where_y () + 1);
+      else
+	avt_delete_lines (1, 1);
+      return;
+
+    case L'E':
+      avt_new_line ();
+      return;
+
+    case L'H':
+      avt_move_x (1);
+      avt_move_y (1);
+      return;
+
+    case L'M':			/* RI - scroll down one line */
+      if (avt_where_y () > 1)
+	avt_move_y (avt_where_y () - 1);
+      else
+	avt_insert_lines (1, 1);
+      return;
+
+    default:
+      if (ch != L'[')
+	{
+	  fprintf (stderr, ESC_UNUPPORTED " %lc\n", ch);
+	  return;
+	}
+      break;
+    }
+
+
+  /* Esc [ ... */
+  /* CSI sequence */
+
+  do
+    {
+      ch = get_character (fd);
+      sequence[pos] = (char) ch;
+      pos++;
+    }
+  while (pos < sizeof (sequence) && ch < L'@');
+  sequence[pos] = '\0';
+  pos++;
+
+#ifdef DEBUG
+  fprintf (stderr, "CSI %s\n", sequence);
+#endif
+
+  /* ch has last character in the sequence */
+  switch (ch)
+    {
+    case L'A':			/* CUU */
+      if (sequence[0] == 'A')
+	avt_move_y (avt_where_y () - 1);
+      else
+	avt_move_y (avt_where_y () - strtol (sequence, NULL, 10));
+      break;
+
+    case L'B':			/* CUD */
+      if (sequence[0] == 'B')
+	avt_move_y (avt_where_y () + 1);
+      else
+	avt_move_y (avt_where_y () + strtol (sequence, NULL, 10));
+      break;
+
+    case L'C':			/* CUF */
+      if (sequence[0] == 'C')
+	avt_move_x (avt_where_x () + 1);
+      else
+	avt_move_x (avt_where_x () + strtol (sequence, NULL, 10));
+      break;
+
+    case L'D':			/* CUB */
+      if (sequence[0] == 'D')
+	avt_move_x (avt_where_x () - 1);
+      else
+	avt_move_x (avt_where_x () - strtol (sequence, NULL, 10));
+      break;
+
+    case L'd':			/* VPA */
+      if (sequence[0] == 'd')
+	avt_move_y (1);
+      else
+	avt_move_y (strtol (sequence, NULL, 10));
+      break;
+
+    case L'E':			/* CNL */
+      avt_move_x (1);
+      if (sequence[0] == 'E')
+	avt_move_y (avt_where_y () + 1);
+      else
+	avt_move_y (avt_where_y () + strtol (sequence, NULL, 10));
+      break;
+
+    case L'e':			/* VPR */
+      if (sequence[0] == 'e')
+	avt_move_y (avt_where_y () + 1);
+      else
+	avt_move_y (avt_where_y () + strtol (sequence, NULL, 10));
+      break;
+
+    case L'F':			/* CPL */
+      avt_move_x (1);
+      if (sequence[0] == 'F')
+	avt_move_y (avt_where_y () - 1);
+      else
+	avt_move_y (avt_where_y () - strtol (sequence, NULL, 10));
+      break;
+
+    case L'G':			/* CHA */
+      if (sequence[0] == 'G')
+	avt_move_x (1);
+      else
+	avt_move_x (strtol (sequence, NULL, 10));
+      break;
+
+    case L'H':			/* CUP */
+    case L'f':			/* HVP */
+      if (sequence[0] == 'H' || sequence[0] == 'f')
+	{
+	  avt_move_x (1);
+	  avt_move_y (1);
+	}
+      else
+	{
+	  int n, m;
+	  get_2_values (sequence, &n, &m);
+	  if (n <= 0)
+	    n = 1;
+	  if (m <= 0)
+	    m = 1;
+	  avt_move_y (n);
+	  avt_move_x (m);
+	}
+      break;
+
+    case L'J':			/* ED */
+      if (sequence[0] == '0' || sequence[0] == 'J')
+	avt_clear_down ();
+      else if (sequence[0] == '1')
+	avt_clear_up ();
+      else if (sequence[0] == '2')
+	avt_clear ();
+      break;
+
+    case L'K':			/* EL */
+      if (sequence[0] == '0' || sequence[0] == 'K')
+	avt_clear_eol ();
+      else if (sequence[0] == '1')
+	avt_clear_bol ();
+      else if (sequence[0] == '2')
+	avt_clear_line ();
+      break;
+
+    case L'm':			/* SGR */
+      if (sequence[0] == 'm')
+	ansi_graphic_code (0);
+      else
+	{
+	  char *next;
+
+	  next = &sequence[0];
+	  while (*next >= '0' && *next <= '9')
+	    {
+	      ansi_graphic_code (strtol (next, &next, 10));
+	      if (*next == ';')
+		next++;
+	    }
+	}
+      break;
+
+    case L'L':			/* IL */
+      if (sequence[0] == 'L')
+	avt_insert_lines (avt_where_y (), 1);
+      else
+	avt_insert_lines (avt_where_y (), strtol (sequence, NULL, 10));
+      break;
+
+    case L'M':			/* DL */
+      if (sequence[0] == 'L')
+	avt_delete_lines (avt_where_y (), 1);
+      else
+	avt_delete_lines (avt_where_y (), strtol (sequence, NULL, 10));
+      break;
+
+    case L'n':			/* DSR */
+      if (sequence[0] == '5')
+	write (prg_input, "\033[0n", 4);	/* device okay */
+      /* "\033[3n" for failure */
+      else if (sequence[0] == '6')
+	{
+	  /* report cursor position */
+	  char s[80];
+	  snprintf (s, sizeof (s), "\033[%d;%dR",
+		    avt_where_x (), avt_where_y ());
+	  write (prg_input, s, strlen (s));
+	}
+      /* other values are unknown */
+      break;
+
+    case L'P':			/* DCH - FIXME: unsure */
+      if (sequence[0] == 'P')
+	avt_backspace ();
+      else
+	{
+	  int count, i;
+	  count = strtol (sequence, NULL, 10);
+	  for (i = 1; i < count; i++)
+	    avt_backspace ();
+	}
+      break;
+
+    case L'r':			/* CSR */
+      if (sequence[0] == 'r')
+	avt_viewport (1, 1, max_y, max_y);
+      else
+	{
+	  int n, m;
+	  get_2_values (sequence, &n, &m);
+	  if (n <= 0)
+	    n = 1;
+	  if (m <= 0)
+	    m = 1;
+	  avt_viewport (1, n, max_x, m);
+	}
+      break;
+
+    case L's':			/* SCP */
+      saved_cursor_x = avt_where_x ();
+      saved_cursor_y = avt_where_y ();
+      break;
+
+    case L'u':			/* RCP */
+      avt_move_x (saved_cursor_x);
+      avt_move_y (saved_cursor_y);
+      break;
+
+    default:
+      warning_msg (CSI_UNUPPORTED, sequence);
+    }
+}
 
 static int
 process_subprogram (int fd)
@@ -1605,6 +2132,9 @@ process_subprogram (int fd)
 	move_in ();
     }
 
+  text_color = 0;
+  text_background_color = 0xF;
+
   stop = AVT_FALSE;
   ch = get_character (fd);
   while (ch != WEOF && !stop)
@@ -1613,6 +2143,8 @@ process_subprogram (int fd)
 
       stop = avt_put_character (c);
       ch = get_character (fd);
+      if (ch == L'\033')	/* Esc */
+	escape_sequence (fd);
     }
 
   /* close file descriptor */
@@ -1633,10 +2165,14 @@ run_shell (void)
 
   avt_clear ();
   avt_set_text_delay (0);
+  avt_stop_on_esc (AVT_FALSE);
+  avt_text_direction (AVT_LEFT_TO_RIGHT);
   fd = execute_process (NULL);
   if (fd > -1)
     process_subprogram (fd);
 }
+
+#endif /* not NO_PTY */
 
 static void
 ask_file (avt_bool_t execute)
@@ -1673,6 +2209,7 @@ ask_file (avt_bool_t execute)
       {
 	int fd, status;
 
+#ifndef NO_PTY
 	if (execute)
 	  {
 	    fd = execute_process (filename);
@@ -1680,6 +2217,7 @@ ask_file (avt_bool_t execute)
 	      process_subprogram (fd);
 	  }
 	else			/* not execute */
+#endif /* not NO_PTY */
 	  {
 	    fd = openfile (filename);
 	    if (fd > -1)
@@ -1834,7 +2372,7 @@ menu (void)
       avt_set_text_color (0x00, 0x00, 0x00);
       avt_set_text_delay (0);
 
-      if (avt_get_max_y () > 9)
+      if (max_y > 9)
 	{
 	  avt_say (L"AKFAvatar\n");
 	  avt_say (L"=========\n\n");
@@ -2032,7 +2570,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.60 2008-01-15 14:53:59 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.61 2008-01-17 21:14:01 akf Exp $");
 
   return EXIT_SUCCESS;
 }
