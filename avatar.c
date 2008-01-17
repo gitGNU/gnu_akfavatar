@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.68 2008-01-17 09:56:37 akf Exp $ */
+/* $Id: avatar.c,v 2.69 2008-01-17 12:15:44 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2845,7 +2845,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.68 2008-01-17 09:56:37 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.69 2008-01-17 12:15:44 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
@@ -2994,6 +2994,9 @@ avt_initialize (const char *title, const char *icontitle,
 
   /* needed to get the character of the typed key */
   SDL_EnableUNICODE (1);
+
+  /* key repeat mode */
+  SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
   /* ignore what we don't use */
   SDL_EventState (SDL_MOUSEMOTION, SDL_IGNORE);
