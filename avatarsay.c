@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.61 2008-01-17 21:14:01 akf Exp $ */
+/* $Id: avatarsay.c,v 2.62 2008-01-18 18:37:45 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -165,6 +165,7 @@ static int wcbuf_len = 0;
 
 /* maximum coordinates (set by "initialize") */
 static int max_x, max_y;
+static int region_min_y, region_max_y;
 
 /* colors for terminal mode */
 static int text_color;
@@ -685,6 +686,8 @@ initialize (void)
   avt_set_text_delay (default_delay);
   max_x = avt_get_max_x ();
   max_y = avt_get_max_y ();
+  region_min_y = 1;
+  region_max_y = max_y;
   initialized = AVT_TRUE;
 }
 
@@ -1417,9 +1420,6 @@ execute_process (const char *fname)
       /* still experimental1 */
       putenv ("TERM=ansi77");
 
-      /* probably the only pager that actually works here */
-      putenv ("PAGER=more");
-
       /* programs can identify avatarsay with this */
       putenv ("AVATARSAY=" AVTVERSION);
 
@@ -1865,19 +1865,22 @@ escape_sequence (int fd)
       break;
 
     case L'c':			/* RIS - reset device */
-      avt_viewport (1, 1, max_x, max_y);
-      saved_cursor_x = saved_cursor_y = 0;
+      region_min_y = 1;
+      region_max_y = max_y;
+      avt_viewport (1, region_min_y, max_x, region_max_y);
+      avt_set_origin_mode (AVT_FALSE);
+      saved_cursor_x = saved_cursor_y = 1;
       text_color = saved_text_color = 0;
       text_background_color = saved_text_background_color = 0xF;
       ansi_graphic_code (0);
       avt_clear ();
       return;
 
-    case L'D':			/* scroll up one line */
-      if (avt_where_y () < max_y)
+    case L'D':			/* move down or scroll up one line */
+      if (avt_where_y () < region_max_y)
 	avt_move_y (avt_where_y () + 1);
       else
-	avt_delete_lines (1, 1);
+	avt_delete_lines (region_min_y, 1);
       return;
 
     case L'E':
@@ -1890,10 +1893,10 @@ escape_sequence (int fd)
       return;
 
     case L'M':			/* RI - scroll down one line */
-      if (avt_where_y () > 1)
+      if (avt_where_y () > region_min_y)
 	avt_move_y (avt_where_y () - 1);
       else
-	avt_insert_lines (1, 1);
+	avt_insert_lines (region_min_y, 1);
       return;
 
     default:
@@ -2089,16 +2092,33 @@ escape_sequence (int fd)
 
     case L'r':			/* CSR */
       if (sequence[0] == 'r')
-	avt_viewport (1, 1, max_y, max_y);
+	{
+	  region_min_y = 1;
+	  region_max_y = max_y;
+	  avt_viewport (1, region_min_y, max_x, region_max_y);
+	}
       else
 	{
-	  int n, m;
-	  get_2_values (sequence, &n, &m);
-	  if (n <= 0)
-	    n = 1;
-	  if (m <= 0)
-	    m = 1;
-	  avt_viewport (1, n, max_x, m);
+	  int min, max;
+	  
+	  get_2_values (sequence, &min, &max);
+	  if (min <= 0)
+	    min = 1;
+	  if (max <= 0)
+	    max = 1;
+
+	  avt_viewport (1, min, max_x, max);
+
+	  if (avt_get_origin_mode ())
+	    {
+	      region_min_y = 1;
+	      region_max_y = max - min + 1;
+	    }
+	  else			/* origin_mode not set */
+	    {
+	      region_min_y = min;
+	      region_max_y = max;
+	    }
 	}
       break;
 
@@ -2134,8 +2154,11 @@ process_subprogram (int fd)
 
   text_color = 0;
   text_background_color = 0xF;
-
   stop = AVT_FALSE;
+
+  /* like vt102 */
+  avt_set_origin_mode (AVT_FALSE);
+
   ch = get_character (fd);
   while (ch != WEOF && !stop)
     {
@@ -2570,7 +2593,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.61 2008-01-17 21:14:01 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.62 2008-01-18 18:37:45 akf Exp $");
 
   return EXIT_SUCCESS;
 }

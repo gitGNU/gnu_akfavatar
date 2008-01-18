@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.38 2008-01-15 08:41:16 akf Exp $ */
+/* $Id: akfavatar.h,v 2.39 2008-01-18 18:37:45 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -453,6 +453,14 @@ void avt_backspace (void);
  */
 void avt_set_scroll_mode (int mode);
 int avt_get_scroll_mode (void);
+
+/*
+ * origin mode
+ * AVT_FALSE: origin (1,1) is always the top of the textarea
+ * AVT_TRUE:  origin (1,1) is the top of the viewport
+ */
+void avt_set_origin_mode (avt_bool_t mode);
+avt_bool_t avt_get_origin_mode (void);
 
 /* 
  * handle coordinates

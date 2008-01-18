@@ -1,4 +1,7 @@
-2008-01-17  Andreas K. Foerster  <info@akfoerster.de>
+2008-01-18  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_set_origin_mode, avt_get_origin_mode):
+	new functions
 
 	* avatar.c (avt_initialize):
 	enable key repeat mode

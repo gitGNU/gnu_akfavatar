@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.69 2008-01-17 12:15:44 akf Exp $ */
+/* $Id: avatar.c,v 2.70 2008-01-18 18:37:44 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -209,6 +209,11 @@ static avt_bool_t do_stop_on_esc;	/* stop, when Esc is pressed? */
 static int scroll_mode;
 static SDL_Rect textfield;
 static SDL_Rect viewport;	/* sub-window in textfield */
+
+/* origin mode */
+/* Home: textfield (AVT_FALSE) or viewport (AVT_TRUE) */
+/* avt_initialize sets it to AVT_TRUE for backwards compatibility */
+static avt_bool_t origin_mode;
 static int textdir_rtl = AVT_LEFT_TO_RIGHT;
 
 /* beginning of line - depending on text direction */
@@ -591,6 +596,8 @@ avt_draw_balloon (void)
 void
 avt_text_direction (int direction)
 {
+  SDL_Rect area;
+
   textdir_rtl = direction;
 
   /* 
@@ -599,8 +606,12 @@ avt_text_direction (int direction)
    */
   if (screen && textfield.x >= 0)
     {
-      linestart =
-	(textdir_rtl) ? viewport.x + viewport.w - FONTWIDTH : viewport.x;
+      if (origin_mode)
+	area = viewport;
+      else
+	area = textfield;
+
+      linestart = (textdir_rtl) ? area.x + area.w - FONTWIDTH : area.x;
       cursor.x = linestart;
     }
 }
@@ -673,6 +684,7 @@ avt_bell (void)
     (*avt_bell_func) ();
 }
 
+/* flashes the screen */
 void
 avt_flash (void)
 {
@@ -727,6 +739,7 @@ avt_toggle_fullscreen (void)
     }
 }
 
+/* switch to fullscreen or window mode */
 void
 avt_switch_mode (int mode)
 {
@@ -868,6 +881,7 @@ avt_checkevent (void)
   return _avt_STATUS;
 }
 
+/* checks for events and gives some time to other apps */
 int
 avt_update (void)
 {
@@ -901,7 +915,12 @@ int
 avt_where_x (void)
 {
   if (screen && textfield.x >= 0)
-    return ((cursor.x - viewport.x) / FONTWIDTH) + 1;
+    {
+      if (origin_mode)
+	return ((cursor.x - viewport.x) / FONTWIDTH) + 1;
+      else
+	return ((cursor.x - textfield.x) / FONTWIDTH) + 1;
+    }
   else
     return -1;
 }
@@ -910,11 +929,17 @@ int
 avt_where_y (void)
 {
   if (screen && textfield.x >= 0)
-    return ((cursor.y - viewport.y) / LINEHEIGHT) + 1;
+    {
+      if (origin_mode)
+	return ((cursor.y - viewport.y) / LINEHEIGHT) + 1;
+      else
+	return ((cursor.y - textfield.y) / LINEHEIGHT) + 1;
+    }
   else
     return -1;
 }
 
+/* this always means the full textfield */
 int
 avt_get_max_x (void)
 {
@@ -924,6 +949,7 @@ avt_get_max_x (void)
     return -1;
 }
 
+/* this always means the full textfield */
 int
 avt_get_max_y (void)
 {
@@ -936,30 +962,46 @@ avt_get_max_y (void)
 void
 avt_move_x (int x)
 {
+  SDL_Rect area;
+
   if (screen && textfield.x >= 0)
     {
       if (x < 1)
 	x = 1;
-      cursor.x = (x - 1) * FONTWIDTH + viewport.x;
+
+      if (origin_mode)
+	area = viewport;
+      else
+	area = textfield;
+
+      cursor.x = (x - 1) * FONTWIDTH + area.x;
 
       /* max-pos exeeded? */
-      if (cursor.x > viewport.x + viewport.w - FONTWIDTH)
-	cursor.x = viewport.x + viewport.w - FONTWIDTH;
+      if (cursor.x > area.x + area.w - FONTWIDTH)
+	cursor.x = area.x + area.w - FONTWIDTH;
     }
 }
 
 void
 avt_move_y (int y)
 {
+  SDL_Rect area;
+
   if (screen && textfield.x >= 0)
     {
       if (y < 1)
 	y = 1;
-      cursor.y = (y - 1) * LINEHEIGHT + viewport.y;
+
+      if (origin_mode)
+	area = viewport;
+      else
+	area = textfield;
+
+      cursor.y = (y - 1) * LINEHEIGHT + area.y;
 
       /* max-pos exeeded? */
-      if (cursor.y > viewport.y + viewport.h - LINEHEIGHT)
-	cursor.y = viewport.y + viewport.h - LINEHEIGHT;
+      if (cursor.y > area.y + area.h - LINEHEIGHT)
+	cursor.y = area.y + area.h - LINEHEIGHT;
     }
 }
 
@@ -971,6 +1013,9 @@ avt_delete_lines (int line, int num)
   /* no textfield? do nothing */
   if (!screen || textfield.x < 0)
     return;
+
+  if (!origin_mode)
+    line -= (viewport.y - textfield.y) / LINEHEIGHT;
 
   /* check if values are sane */
   if (line < 1 || num < 1 || line > (viewport.h / LINEHEIGHT))
@@ -1004,6 +1049,9 @@ avt_insert_lines (int line, int num)
   /* no textfield? do nothing */
   if (!screen || textfield.x < 0)
     return;
+
+  if (!origin_mode)
+    line -= (viewport.y - textfield.y) / LINEHEIGHT;
 
   /* check if values are sane */
   if (line < 1 || num < 1 || line > (viewport.h / LINEHEIGHT))
@@ -1055,6 +1103,18 @@ avt_viewport (int x, int y, int width, int height)
 }
 
 void
+avt_set_origin_mode (avt_bool_t mode)
+{
+  origin_mode = (mode != AVT_FALSE);
+}
+
+avt_bool_t
+avt_get_origin_mode (void)
+{
+  return origin_mode;
+}
+
+void
 avt_clear (void)
 {
   SDL_Color color;
@@ -1074,7 +1134,11 @@ avt_clear (void)
 
   SDL_UpdateRect (screen, viewport.x, viewport.y, viewport.w, viewport.h);
   cursor.x = linestart;
-  cursor.y = viewport.y;
+
+  if (origin_mode)
+    cursor.y = viewport.y;
+  else
+    cursor.y = textfield.y;
 }
 
 void
@@ -1256,19 +1320,31 @@ avt_flip_page (void)
   return _avt_STATUS;
 }
 
+/* @@@ */
 static void
 avt_scroll_up (void)
 {
   if (scroll_mode)
     {
-      avt_delete_lines (1, 1);
-      cursor.x = linestart;
-      cursor.y = viewport.y + viewport.h - LINEHEIGHT;
+      if (origin_mode)
+	{
+	  avt_delete_lines (1, 1);
+	  cursor.x = linestart;
+	  cursor.y = viewport.y + viewport.h - LINEHEIGHT;
+	}
+      else
+	{
+	  avt_delete_lines (((viewport.y - textfield.y) / LINEHEIGHT) + 1, 1);
+	  cursor.x = linestart;
+	  cursor.y = textfield.y + textfield.h - LINEHEIGHT;
+	}
+
     }
   else
     avt_flip_page ();
 }
 
+/* @@@ */
 int
 avt_new_line (void)
 {
@@ -1277,13 +1353,14 @@ avt_new_line (void)
     return _avt_STATUS;
 
   cursor.x = linestart;
-  cursor.y += LINEHEIGHT;
 
-  /* if the cursor is beyond the end of the viewport,
-   * get a new page 
+  /* if the cursor is at the last line of the viewport
+   * scroll up
    */
-  if (cursor.y > viewport.y + viewport.h - LINEHEIGHT)
+  if (cursor.y == viewport.y + viewport.h - LINEHEIGHT)
     avt_scroll_up ();
+  else
+    cursor.y += LINEHEIGHT;
 
   return _avt_STATUS;
 }
@@ -1497,6 +1574,7 @@ avt_put_character (const wchar_t ch)
     case L'\x200E':		/* LEFT-TO-RIGHT MARK (LRM) */
       avt_text_direction (AVT_LEFT_TO_RIGHT);
       break;
+
     case L'\x200F':		/* RIGHT-TO-LEFT MARK (RLM) */
       avt_text_direction (AVT_RIGHT_TO_LEFT);
       break;
@@ -2709,7 +2787,7 @@ avt_set_background_color (int red, int green, int blue)
 void
 avt_stop_on_esc (avt_bool_t stop)
 {
-  do_stop_on_esc = (stop != 0);
+  do_stop_on_esc = (stop != AVT_FALSE);
 }
 
 void
@@ -2834,6 +2912,7 @@ avt_initialize (const char *title, const char *icontitle,
   _avt_STATUS = AVT_NORMAL;
   do_stop_on_esc = AVT_TRUE;
   scroll_mode = 1;
+  origin_mode = AVT_TRUE;	/* for backwards compatibility */
   avt_visible = AVT_FALSE;
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
   viewport = textfield;
@@ -2845,7 +2924,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.69 2008-01-17 12:15:44 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.70 2008-01-18 18:37:44 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
