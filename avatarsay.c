@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.62 2008-01-18 18:37:45 akf Exp $ */
+/* $Id: avatarsay.c,v 2.63 2008-01-19 09:15:53 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1829,7 +1829,7 @@ ansi_graphic_code (int mode)
 
 /* TODO */
 static void
-escape_sequence (int fd)
+escape_sequence (int fd, wchar_t last_character)
 {
   wchar_t ch;
   char sequence[80];
@@ -1941,6 +1941,18 @@ escape_sequence (int fd)
 	avt_move_y (avt_where_y () + 1);
       else
 	avt_move_y (avt_where_y () + strtol (sequence, NULL, 10));
+      break;
+
+    case L'b':			/* REP */
+      if (sequence[0] == 'b')
+	avt_put_character (last_character);
+      else
+	{
+	  int count = strtol (sequence, NULL, 10);
+	  int i;
+	  for (i = 0; i < count; i++)
+	    avt_put_character (last_character);
+	}
       break;
 
     case L'C':			/* CUF */
@@ -2100,7 +2112,7 @@ escape_sequence (int fd)
       else
 	{
 	  int min, max;
-	  
+
 	  get_2_values (sequence, &min, &max);
 	  if (min <= 0)
 	    min = 1;
@@ -2142,6 +2154,7 @@ process_subprogram (int fd)
 {
   avt_bool_t stop;
   wint_t ch;
+  wchar_t last_character;
 
   /* initialize the graphics */
   if (!initialized)
@@ -2162,12 +2175,14 @@ process_subprogram (int fd)
   ch = get_character (fd);
   while (ch != WEOF && !stop)
     {
-      wchar_t c = ch;
-
-      stop = avt_put_character (c);
-      ch = get_character (fd);
       if (ch == L'\033')	/* Esc */
-	escape_sequence (fd);
+	escape_sequence (fd, last_character);
+      else
+	{
+	  last_character = (wchar_t) ch;
+	  stop = avt_put_character ((wchar_t) ch);
+	}
+      ch = get_character (fd);
     }
 
   /* close file descriptor */
@@ -2593,7 +2608,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.62 2008-01-18 18:37:45 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.63 2008-01-19 09:15:53 akf Exp $");
 
   return EXIT_SUCCESS;
 }
