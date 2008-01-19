@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.63 2008-01-19 09:15:53 akf Exp $ */
+/* $Id: avatarsay.c,v 2.64 2008-01-19 10:20:20 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1282,23 +1282,26 @@ prg_keyhandler (int sym, int mod, int unicode)
 	  break;
 
 	case 277:		/* Insert */
-	  write (prg_input, "\033[2~", 4);
+	  write (prg_input, "\033[L", 3);
+	  /* write (prg_input, "\033[2~", 4); */ /* linux */
 	  break;
 
 	case 278:		/* Home */
-	  write (prg_input, "\033[1~", 4);
+	  write (prg_input, "\033[H", 3);
+	  /* write (prg_input, "\033[1~", 4); */ /* linux */
 	  break;
 
 	case 279:		/* End */
-	  write (prg_input, "\033[4~", 4);
+	  write (prg_input, "\033[0w", 4);
+	  /* write (prg_input, "\033[4~", 4); */ /* linux */
 	  break;
 
 	case 280:		/* Page up */
-	  write (prg_input, "\033[5~", 4);
+	  write (prg_input, "\033[5~", 4); /* linux */
 	  break;
 
 	case 281:		/* Page down */
-	  write (prg_input, "\033[6~", 4);
+	  write (prg_input, "\033[6~", 4); /* linux */
 	  break;
 
 	default:
@@ -1418,7 +1421,7 @@ execute_process (const char *fname)
       close (slave);
 
       /* still experimental1 */
-      putenv ("TERM=ansi77");
+      putenv ("TERM=ansi");
 
       /* programs can identify avatarsay with this */
       putenv ("AVATARSAY=" AVTVERSION);
@@ -2608,7 +2611,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.63 2008-01-19 09:15:53 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.64 2008-01-19 10:20:20 akf Exp $");
 
   return EXIT_SUCCESS;
 }
