@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.71 2008-01-20 09:41:04 akf Exp $ */
+/* $Id: avatar.c,v 2.72 2008-01-20 18:22:30 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -635,7 +635,10 @@ avt_draw_balloon (void)
   cursor.y = viewport.y;
 
   if (text_cursor_visible)
-    avt_show_text_cursor (AVT_TRUE);
+    {
+      text_cursor_actually_visible = AVT_FALSE;
+      avt_show_text_cursor (AVT_TRUE);
+    }
 
   /* 
    * only allow drawings inside this area from now on 
@@ -3116,7 +3119,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.71 2008-01-20 09:41:04 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.72 2008-01-20 18:22:30 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
