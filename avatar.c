@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.70 2008-01-18 18:37:44 akf Exp $ */
+/* $Id: avatar.c,v 2.71 2008-01-20 09:41:04 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -33,6 +33,8 @@
 #include "circle.c"
 #include "regicon.c"
 #include "keybtn.c"
+
+#define COPYRIGHTYEAR "2008"
 
 #if defined(QVGA)
 #  define FONTWIDTH 4
@@ -200,11 +202,14 @@ static avt_keyhandler avt_ext_keyhandler = NULL;
 
 
 static SDL_Surface *screen, *avt_image, *avt_character;
+static SDL_Surface *avt_text_cursor, *avt_cursor_character;
 static Uint32 screenflags;	/* flags for the screen */
 static int avt_mode;		/* whether fullscreen or window or ... */
 static avt_bool_t must_lock;	/* must the screen be locked? */
 static SDL_Rect window;		/* if screen is in fact larger */
-static avt_bool_t avt_visible;
+static avt_bool_t avt_visible;	/* avatar visible? */
+static avt_bool_t text_cursor_visible;	/* shall the text cursor be visible? */
+static avt_bool_t text_cursor_actually_visible;	/* is it actually visible? */
 static avt_bool_t do_stop_on_esc;	/* stop, when Esc is pressed? */
 static int scroll_mode;
 static SDL_Rect textfield;
@@ -285,7 +290,7 @@ avt_version (void)
 const char *
 avt_copyright (void)
 {
-  return "Copyright (c) 2008 Andreas K. Foerster";
+  return "Copyright (c) " COPYRIGHTYEAR " Andreas K. Foerster";
 }
 
 const char *
@@ -399,6 +404,50 @@ avt_strwidth (const wchar_t * m)
       l++;
     }
   return l;
+}
+
+/* shows or clears the text cursor in the current position */
+/* note: this function is rather time consuming */
+static void
+avt_show_text_cursor (avt_bool_t on)
+{
+  SDL_Rect dst;
+
+  if (on != text_cursor_actually_visible)
+    {
+      dst.x = cursor.x;
+      dst.y = cursor.y;
+      dst.w = FONTWIDTH;
+      dst.h = FONTHEIGHT;
+
+      if (on)
+	{
+	  /* save character under cursor */
+	  SDL_BlitSurface (screen, &dst, avt_cursor_character, NULL);
+
+	  /* show text-cursor */
+	  SDL_BlitSurface (avt_text_cursor, NULL, screen, &dst);
+	  SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
+	}
+      else
+	{
+	  /* restore saved character */
+	  SDL_BlitSurface (avt_cursor_character, NULL, screen, &dst);
+	  SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
+	  text_cursor_actually_visible = AVT_FALSE;
+	}
+
+      text_cursor_actually_visible = on;
+    }
+}
+
+void
+avt_activate_cursor (avt_bool_t on)
+{
+  text_cursor_visible = (on != AVT_FALSE);
+
+  if (screen && textfield.x >= 0)
+    avt_show_text_cursor (text_cursor_visible);
 }
 
 /* fills the screen with the background color,
@@ -585,6 +634,9 @@ avt_draw_balloon (void)
   cursor.x = linestart;
   cursor.y = viewport.y;
 
+  if (text_cursor_visible)
+    avt_show_text_cursor (AVT_TRUE);
+
   /* 
    * only allow drawings inside this area from now on 
    * (only for blitting)
@@ -606,6 +658,9 @@ avt_text_direction (int direction)
    */
   if (screen && textfield.x >= 0)
     {
+      if (text_cursor_visible)
+	avt_show_text_cursor (AVT_FALSE);
+
       if (origin_mode)
 	area = viewport;
       else
@@ -613,6 +668,9 @@ avt_text_direction (int direction)
 
       linestart = (textdir_rtl) ? area.x + area.w - FONTWIDTH : area.x;
       cursor.x = linestart;
+
+      if (text_cursor_visible)
+	avt_show_text_cursor (AVT_TRUE);
     }
 }
 
@@ -969,6 +1027,9 @@ avt_move_x (int x)
       if (x < 1)
 	x = 1;
 
+      if (text_cursor_visible)
+	avt_show_text_cursor (AVT_FALSE);
+
       if (origin_mode)
 	area = viewport;
       else
@@ -979,6 +1040,9 @@ avt_move_x (int x)
       /* max-pos exeeded? */
       if (cursor.x > area.x + area.w - FONTWIDTH)
 	cursor.x = area.x + area.w - FONTWIDTH;
+
+      if (text_cursor_visible)
+	avt_show_text_cursor (AVT_TRUE);
     }
 }
 
@@ -992,6 +1056,9 @@ avt_move_y (int y)
       if (y < 1)
 	y = 1;
 
+      if (text_cursor_visible)
+	avt_show_text_cursor (AVT_FALSE);
+
       if (origin_mode)
 	area = viewport;
       else
@@ -1002,6 +1069,9 @@ avt_move_y (int y)
       /* max-pos exeeded? */
       if (cursor.y > area.y + area.h - LINEHEIGHT)
 	cursor.y = area.y + area.h - LINEHEIGHT;
+
+      if (text_cursor_visible)
+	avt_show_text_cursor (AVT_TRUE);
     }
 }
 
@@ -1021,6 +1091,9 @@ avt_delete_lines (int line, int num)
   if (line < 1 || num < 1 || line > (viewport.h / LINEHEIGHT))
     return;
 
+  if (text_cursor_visible)
+    avt_show_text_cursor (AVT_FALSE);
+
   /* get the rest of the viewport */
   rest.x = viewport.x;
   rest.w = viewport.w;
@@ -1037,6 +1110,9 @@ avt_delete_lines (int line, int num)
   clear.y = viewport.y + viewport.h - (num * LINEHEIGHT);
   SDL_FillRect (screen, &clear,
 		SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF));
+
+  if (text_cursor_visible)
+    avt_show_text_cursor (AVT_TRUE);
 
   SDL_UpdateRect (screen, viewport.x, viewport.y, viewport.w, viewport.h);
 }
@@ -1057,6 +1133,9 @@ avt_insert_lines (int line, int num)
   if (line < 1 || num < 1 || line > (viewport.h / LINEHEIGHT))
     return;
 
+  if (text_cursor_visible)
+    avt_show_text_cursor (AVT_FALSE);
+
   /* get the rest of the viewport */
   rest.x = viewport.x;
   rest.w = viewport.w;
@@ -1073,6 +1152,9 @@ avt_insert_lines (int line, int num)
   clear.h = num * LINEHEIGHT;
   SDL_FillRect (screen, &clear,
 		SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF));
+
+  if (text_cursor_visible)
+    avt_show_text_cursor (AVT_TRUE);
 
   SDL_UpdateRect (screen, viewport.x, viewport.y, viewport.w, viewport.h);
 }
@@ -1099,13 +1181,39 @@ avt_viewport (int x, int y, int width, int height)
   cursor.x = linestart;
   cursor.y = viewport.y;
 
-  SDL_SetClipRect (screen, &viewport);
+  if (origin_mode)
+    SDL_SetClipRect (screen, &viewport);
+  else
+    SDL_SetClipRect (screen, &textfield);
 }
 
 void
 avt_set_origin_mode (avt_bool_t mode)
 {
+  SDL_Rect area;
+
   origin_mode = (mode != AVT_FALSE);
+
+  if (text_cursor_visible && textfield.x >= 0)
+    avt_show_text_cursor (AVT_FALSE);
+
+  if (origin_mode)
+    area = viewport;
+  else
+    area = textfield;
+
+  linestart = (textdir_rtl) ? area.x + area.w - FONTWIDTH : area.x;
+
+  /* cursor to position 1,1 */
+  /* when origin mode is off, then it may be outside the viewport (sic) */
+  cursor.x = linestart;
+  cursor.y = area.y;
+
+  if (text_cursor_visible && textfield.x >= 0)
+    avt_show_text_cursor (AVT_TRUE);
+
+  if (textfield.x >= 0)
+    SDL_SetClipRect (screen, &area);
 }
 
 avt_bool_t
@@ -1132,13 +1240,20 @@ avt_clear (void)
   SDL_FillRect (screen, &viewport,
 		SDL_MapRGB (screen->format, color.r, color.g, color.b));
 
-  SDL_UpdateRect (screen, viewport.x, viewport.y, viewport.w, viewport.h);
   cursor.x = linestart;
 
   if (origin_mode)
     cursor.y = viewport.y;
   else
     cursor.y = textfield.y;
+
+  if (text_cursor_visible)
+    {
+      text_cursor_actually_visible = AVT_FALSE;
+      avt_show_text_cursor (AVT_TRUE);
+    }
+
+  SDL_UpdateRect (screen, viewport.x, viewport.y, viewport.w, viewport.h);
 }
 
 void
@@ -1166,6 +1281,12 @@ avt_clear_up (void)
   SDL_FillRect (screen, &dst,
 		SDL_MapRGB (screen->format, color.r, color.g, color.b));
 
+  if (text_cursor_visible)
+    {
+      text_cursor_actually_visible = AVT_FALSE;
+      avt_show_text_cursor (AVT_TRUE);
+    }
+
   SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
 }
 
@@ -1183,6 +1304,9 @@ avt_clear_down (void)
   if (textfield.x < 0)
     avt_draw_balloon ();
 
+  if (text_cursor_visible)
+    avt_show_text_cursor (AVT_FALSE);
+
   /* use background color of characters */
   color = avt_character->format->palette->colors[0];
 
@@ -1193,6 +1317,12 @@ avt_clear_down (void)
 
   SDL_FillRect (screen, &dst,
 		SDL_MapRGB (screen->format, color.r, color.g, color.b));
+
+  if (text_cursor_visible)
+    {
+      text_cursor_actually_visible = AVT_FALSE;
+      avt_show_text_cursor (AVT_TRUE);
+    }
 
   SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
 }
@@ -1231,6 +1361,13 @@ avt_clear_eol (void)
 
   SDL_FillRect (screen, &dst,
 		SDL_MapRGB (screen->format, color.r, color.g, color.b));
+
+  if (text_cursor_visible)
+    {
+      text_cursor_actually_visible = AVT_FALSE;
+      avt_show_text_cursor (AVT_TRUE);
+    }
+
   SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
 }
 
@@ -1269,6 +1406,13 @@ avt_clear_bol (void)
 
   SDL_FillRect (screen, &dst,
 		SDL_MapRGB (screen->format, color.r, color.g, color.b));
+
+  if (text_cursor_visible)
+    {
+      text_cursor_actually_visible = AVT_FALSE;
+      avt_show_text_cursor (AVT_TRUE);
+    }
+
   SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
 }
 
@@ -1296,6 +1440,13 @@ avt_clear_line (void)
 
   SDL_FillRect (screen, &dst,
 		SDL_MapRGB (screen->format, color.r, color.g, color.b));
+
+  if (text_cursor_visible)
+    {
+      text_cursor_actually_visible = AVT_FALSE;
+      avt_show_text_cursor (AVT_TRUE);
+    }
+
   SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
 }
 
@@ -1326,6 +1477,9 @@ avt_scroll_up (void)
 {
   if (scroll_mode)
     {
+      if (text_cursor_visible)
+	avt_show_text_cursor (AVT_FALSE);
+
       if (origin_mode)
 	{
 	  avt_delete_lines (1, 1);
@@ -1339,9 +1493,24 @@ avt_scroll_up (void)
 	  cursor.y = textfield.y + textfield.h - LINEHEIGHT;
 	}
 
+      if (text_cursor_visible)
+	avt_show_text_cursor (AVT_TRUE);
+
     }
   else
     avt_flip_page ();
+}
+
+static void
+avt_carriage_return (void)
+{
+  if (text_cursor_visible)
+    avt_show_text_cursor (AVT_FALSE);
+
+  cursor.x = linestart;
+
+  if (text_cursor_visible)
+    avt_show_text_cursor (AVT_TRUE);
 }
 
 /* @@@ */
@@ -1352,6 +1521,9 @@ avt_new_line (void)
   if (!screen || textfield.x < 0)
     return _avt_STATUS;
 
+  if (text_cursor_visible)
+    avt_show_text_cursor (AVT_FALSE);
+
   cursor.x = linestart;
 
   /* if the cursor is at the last line of the viewport
@@ -1361,6 +1533,9 @@ avt_new_line (void)
     avt_scroll_up ();
   else
     cursor.y += LINEHEIGHT;
+
+  if (text_cursor_visible)
+    avt_show_text_cursor (AVT_TRUE);
 
   return _avt_STATUS;
 }
@@ -1436,6 +1611,7 @@ static void
 avt_showchar (void)
 {
   SDL_UpdateRect (screen, cursor.x, cursor.y, FONTWIDTH, FONTHEIGHT);
+  text_cursor_actually_visible = AVT_FALSE;
 }
 
 /* advance position - only in the textfield */
@@ -1458,6 +1634,9 @@ avt_forward (void)
       if (cursor.x > viewport.x + viewport.w - FONTWIDTH)
 	avt_new_line ();
     }
+
+  if (text_cursor_visible)
+    avt_show_text_cursor (AVT_TRUE);
 
   return _avt_STATUS;
 }
@@ -1505,16 +1684,25 @@ avt_clearchar (void)
   avt_showchar ();
 }
 
+/* FIXME: some programs use it to go back, without erasing??? */
 void
 avt_backspace (void)
 {
-  if (screen)
+  if (screen && textfield.x >= 0)
     {
       if (cursor.x != linestart)
-	cursor.x =
-	  (textdir_rtl) ? cursor.x + FONTWIDTH : cursor.x - FONTWIDTH;
+	{
+	  if (text_cursor_visible)
+	    avt_show_text_cursor (AVT_FALSE);
+
+	  cursor.x =
+	    (textdir_rtl) ? cursor.x + FONTWIDTH : cursor.x - FONTWIDTH;
+	}
 
       avt_clearchar ();
+
+      if (text_cursor_visible)
+	avt_show_text_cursor (AVT_TRUE);
     }
 }
 
@@ -1543,7 +1731,7 @@ avt_put_character (const wchar_t ch)
       break;
 
     case L'\r':
-      cursor.x = linestart;
+      avt_carriage_return ();
       break;
 
     case L'\f':
@@ -2889,6 +3077,10 @@ avt_quit (void)
   avt_character = NULL;
   SDL_FreeSurface (avt_image);
   avt_image = NULL;
+  SDL_FreeSurface (avt_text_cursor);
+  avt_text_cursor = NULL;
+  SDL_FreeSurface (avt_cursor_character);
+  avt_cursor_character = NULL;
   avt_bell_func = NULL;
   SDL_Quit ();
   screen = NULL;		/* it was freed by SDL_Quit */
@@ -2924,7 +3116,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.70 2008-01-18 18:37:44 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.71 2008-01-20 09:41:04 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
@@ -3024,6 +3216,45 @@ avt_initialize (const char *title, const char *icontitle,
     colors[1].b = 0x00;
     SDL_SetColors (avt_character, colors, 0, 2);
   }
+
+  /* prepare text-mode cursor */
+  avt_text_cursor =
+    SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_SRCALPHA | SDL_RLEACCEL,
+			  FONTWIDTH, FONTHEIGHT, 8, 0, 0, 0, 128);
+
+  if (!avt_text_cursor)
+    {
+      SDL_FreeSurface (avt_character);
+      _avt_STATUS = AVT_ERROR;
+      return _avt_STATUS;
+    }
+
+  /* set color table for character canvas */
+  {
+    SDL_Color color;
+
+    /* colored background */
+    color.r = 0x88;
+    color.g = 0x88;
+    color.b = 0xFF;
+    SDL_SetColors (avt_text_cursor, &color, 0, 1);
+    SDL_SetAlpha (avt_text_cursor, SDL_SRCALPHA | SDL_RLEACCEL, 128);
+  }
+
+  /* reserve space for character under text-mode cursor */
+  avt_cursor_character =
+    SDL_CreateRGBSurface (SDL_SWSURFACE, FONTWIDTH, FONTHEIGHT,
+			  screen->format->BitsPerPixel,
+			  screen->format->Rmask, screen->format->Gmask,
+			  screen->format->Bmask, screen->format->Amask);
+
+  if (!avt_cursor_character)
+    {
+      SDL_FreeSurface (avt_text_cursor);
+      SDL_FreeSurface (avt_character);
+      _avt_STATUS = AVT_ERROR;
+      return _avt_STATUS;
+    }
 
   /* import the avatar image */
   if (image)

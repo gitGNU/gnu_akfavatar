@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.64 2008-01-19 10:20:20 akf Exp $ */
+/* $Id: avatarsay.c,v 2.65 2008-01-20 09:41:04 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2171,6 +2171,8 @@ process_subprogram (int fd)
   text_color = 0;
   text_background_color = 0xF;
   stop = AVT_FALSE;
+  avt_stop_on_esc (AVT_FALSE);
+  avt_activate_cursor (AVT_TRUE);
 
   /* like vt102 */
   avt_set_origin_mode (AVT_FALSE);
@@ -2187,6 +2189,9 @@ process_subprogram (int fd)
 	}
       ch = get_character (fd);
     }
+
+  avt_activate_cursor (AVT_FALSE);
+  avt_stop_on_esc (AVT_TRUE);
 
   /* close file descriptor */
   if (close (fd) == -1 && errno != EAGAIN)
@@ -2206,7 +2211,6 @@ run_shell (void)
 
   avt_clear ();
   avt_set_text_delay (0);
-  avt_stop_on_esc (AVT_FALSE);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
   fd = execute_process (NULL);
   if (fd > -1)
@@ -2611,7 +2615,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.64 2008-01-19 10:20:20 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.65 2008-01-20 09:41:04 akf Exp $");
 
   return EXIT_SUCCESS;
 }

@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.39 2008-01-18 18:37:45 akf Exp $ */
+/* $Id: akfavatar.h,v 2.40 2008-01-20 09:41:04 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -150,6 +150,9 @@ void avt_text_direction (int direction);
 
 /* stop, when Esc is pressed? (default: yes) */
 void avt_stop_on_esc (avt_bool_t stop);
+
+/* activate the text cursor? (default: no) */
+void avt_activate_cursor (avt_bool_t on);
 
 /*
  * get the default avatar image

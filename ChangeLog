@@ -1,4 +1,8 @@
-2008-01-18  Andreas K. Foerster  <info@akfoerster.de>
+2008-01-20  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_activate_cursor):
+	new function
+	support for text-cursor
 
 	* akfavatar.h, avatar.c (avt_set_origin_mode, avt_get_origin_mode):
 	new functions
