@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.66 2008-01-20 13:47:24 akf Exp $ */
+/* $Id: avatarsay.c,v 2.67 2008-01-21 09:39:05 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -63,6 +63,7 @@
 #define PRGNAME "avatarsay"
 #define HOMEPAGE "http://akfoerster.de/akfavatar/"
 #define BUGMAIL "bug-akfavatar@akfoerster.de"
+#define TERM "ansi"
 
 /* size for input buffer - not too small, please */
 /* .encoding must be in first buffer */
@@ -1491,10 +1492,10 @@ execute_process (const char *fname)
       close (slave);
 
       /* still experimental1 */
-      putenv ("TERM=ansi");
+      putenv ("TERM=" TERM);
 
       /* programs can identify avatarsay with this */
-      putenv ("AVATARSAY=" AVTVERSION);
+      putenv ("AKFAVTTERM=" AVTVERSION);
 
       if (fname == NULL)
 	{			/* execute shell */
@@ -2685,7 +2686,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.66 2008-01-20 13:47:24 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.67 2008-01-21 09:39:05 akf Exp $");
 
   return EXIT_SUCCESS;
 }
