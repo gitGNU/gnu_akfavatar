@@ -1,4 +1,8 @@
-2008-01-20  Andreas K. Foerster  <info@akfoerster.de>
+2008-01-29  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (check_config_file):
+	new function
+	config file: /etc/avatarsay
 
 	* akfavatar.h, avatar.c (avt_activate_cursor):
 	new function

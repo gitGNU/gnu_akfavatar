@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.67 2008-01-21 09:39:05 akf Exp $ */
+/* $Id: avatarsay.c,v 2.68 2008-01-29 11:57:09 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -604,6 +604,23 @@ checkoptions (int argc, char **argv)
 }
 
 static void
+use_avatar_image (char *image_file)
+{
+  avt_image = avt_import_image_file (image_file);
+  if (avt_image == NULL)
+    switch (language)
+      {
+      case DEUTSCH:
+	error_msg ("Fehler beim Laden des AVATARIMAGE Bildes",
+		   avt_get_error ());
+	break;
+      case ENGLISH:
+      default:
+	error_msg ("error while loading the AVATARIMAGE", avt_get_error ());
+      }
+}
+
+static void
 checkenvironment (void)
 {
   char *e;
@@ -613,18 +630,8 @@ checkenvironment (void)
     strncpy (datadir, e, sizeof (datadir));
 
   e = getenv ("AVATARIMAGE");
-  if (e && !avt_image)
-    if ((avt_image = avt_import_image_file (e)) == NULL)
-      switch (language)
-	{
-	case DEUTSCH:
-	  error_msg ("Fehler beim Laden des AVATARIMAGE Bildes",
-		     avt_get_error ());
-	  break;
-	case ENGLISH:
-	default:
-	  error_msg ("error while loading the AVATARIMAGE", avt_get_error ());
-	}
+  if (e)
+    use_avatar_image (e);
 }
 
 static void
@@ -2570,6 +2577,7 @@ init_language_info (void)
   language = ENGLISH;
 
   /* long names for Windows (and possibly others) */
+  /* longer names first to avoid coflicts */
   if (strncmp (locale_info, "German", 6) == 0)
     language = DEUTSCH;
   else if (strncmp (locale_info, "german", 6) == 0)
@@ -2584,6 +2592,45 @@ init_language_info (void)
     language = ENGLISH;
 }
 
+/* strip trailing newline, if any */
+static void
+strip_newline (char *s)
+{
+  while (*s)
+    {
+      if (*s == '\n')
+	*s = '\0';
+      s++;
+    }
+}
+
+static void
+check_config_file (const char *f)
+{
+  FILE *cnf;
+  char buf[255];
+  char *s;
+
+  cnf = fopen (f, "r");
+  if (cnf)
+    {
+      s = fgets (buf, sizeof (buf), cnf);
+      while (s)
+	{
+	  strip_newline (s);
+
+	  if (strncmp (s, "AVATARDATADIR=", 14))
+             strncpy (datadir, s + 14, sizeof (datadir));
+
+	  if (strncmp (s, "AVATARIMAGE=", 12) == 0)
+	    use_avatar_image (s + 12);
+
+	  s = fgets (buf, sizeof (buf), cnf);
+	}
+      fclose (cnf);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -2591,10 +2638,11 @@ main (int argc, char *argv[])
   loop = AVT_TRUE;
   default_delay = AVT_DEFAULT_TEXT_DELAY;
   prg_input = -1;
+
+  /* this is just a default setting */
   strcpy (default_encoding, "ISO-8859-1");
 
   init_language_info ();
-  checkenvironment ();
 
   /* get system encoding */
 #ifndef NO_LANGINFO
@@ -2609,6 +2657,8 @@ main (int argc, char *argv[])
 #  endif /* not FORCE_ICONV */
 #endif /* not NO_LANGINFO */
 
+  check_config_file ("/etc/avatarsay");
+  checkenvironment ();
   checkoptions (argc, argv);
 
   if (terminal_mode)
@@ -2686,7 +2736,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.67 2008-01-21 09:39:05 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.68 2008-01-29 11:57:09 akf Exp $");
 
   return EXIT_SUCCESS;
 }
