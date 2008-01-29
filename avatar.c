@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.73 2008-01-22 13:32:05 akf Exp $ */
+/* $Id: avatar.c,v 2.74 2008-01-29 11:55:08 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1648,7 +1648,7 @@ avt_forward (void)
 static void
 avt_nexttab (void)
 {
-  int x, i;
+  int x;
 
   x = avt_where_x ();
 
@@ -3126,7 +3126,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.73 2008-01-22 13:32:05 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.74 2008-01-29 11:55:08 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
