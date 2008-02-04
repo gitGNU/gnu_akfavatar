@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.40 2008-01-20 09:41:04 akf Exp $ */
+/* $Id: akfavatar.h,v 2.41 2008-02-04 18:16:10 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -488,6 +488,9 @@ int avt_get_max_y (void);
  */
 void avt_move_x (int x);
 void avt_move_y (int y);
+
+/* reset tab stops to every eigth column */
+void avt_reset_tab_stops (void);
 
 /* 
  * delete num lines, starting from line

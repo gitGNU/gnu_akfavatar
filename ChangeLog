@@ -1,4 +1,7 @@
-2008-01-29  Andreas K. Foerster  <info@akfoerster.de>
+2008-02-04  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_next_tab, avt_reset_tab_stops):
+	new tab handling
 
 	* avatarsay.c (check_config_file):
 	new function

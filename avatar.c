@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.74 2008-01-29 11:55:08 akf Exp $ */
+/* $Id: avatar.c,v 2.75 2008-02-04 18:16:10 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -214,6 +214,7 @@ static avt_bool_t do_stop_on_esc;	/* stop, when Esc is pressed? */
 static int scroll_mode;
 static SDL_Rect textfield;
 static SDL_Rect viewport;	/* sub-window in textfield */
+static avt_bool_t avt_tab_stops[AVT_LINELENGTH];
 
 /* origin mode */
 /* Home: textfield (AVT_FALSE) or viewport (AVT_TRUE) */
@@ -1644,37 +1645,46 @@ avt_forward (void)
   return _avt_STATUS;
 }
 
+void
+avt_reset_tab_stops (void)
+{
+  int i;
+
+  for (i = 0; i < AVT_LINELENGTH; i++)
+    if (i % 8 == 0)
+      avt_tab_stops[i] = AVT_TRUE;
+    else
+      avt_tab_stops[i] = AVT_FALSE;
+}
+
 /* advance to next tabstop */
 static void
-avt_nexttab (void)
+avt_next_tab (void)
 {
   int x;
+  int i;
 
-  x = avt_where_x ();
+  /* here we count zero based */
+  x = avt_where_x () - 1;
 
-  if (textdir_rtl)
+  if (textdir_rtl)		/* right to left */
     {
-      if (x <= 8)
-        {
-	  avt_new_line ();
-	  return;
+      for (i = x; i >= 0; i--)
+	{
+	  if (avt_tab_stops[i])
+	    break;
 	}
-      else
-        x -= (((viewport.w / FONTWIDTH) - (AVT_LINELENGTH - x + 1)) % 8) + 1;
+      avt_move_x (i);
     }
-  else
+  else				/* left to right */
     {
-      if (x > (viewport.w / FONTWIDTH) - 8)
-        {
-	  avt_new_line ();
-	  return;
+      for (i = x + 1; i < AVT_LINELENGTH; i++)
+	{
+	  if (avt_tab_stops[i])
+	    break;
 	}
-      else
-        x += (((viewport.w / FONTWIDTH) - x) % 8) + 1;
+      avt_move_x (i + 1);
     }
-
-  if (x > 0 && x < AVT_LINELENGTH)
-    avt_move_x (x);
 }
 
 static void
@@ -1750,7 +1760,7 @@ avt_put_character (const wchar_t ch)
       break;
 
     case L'\t':
-      avt_nexttab ();
+      avt_next_tab ();
       break;
 
     case L'\b':
@@ -3126,7 +3136,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.74 2008-01-29 11:55:08 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.75 2008-02-04 18:16:10 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
@@ -3326,6 +3336,9 @@ avt_initialize (const char *title, const char *icontitle,
   /* visual flash for the bell */
   /* when you initialize the audio stuff, you get an audio "bell" */
   avt_bell_func = avt_flash;
+
+  /* initialize tab stops */
+  avt_reset_tab_stops ();
 
   return _avt_STATUS;
 }
