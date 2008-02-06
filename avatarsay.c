@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.68 2008-01-29 11:57:09 akf Exp $ */
+/* $Id: avatarsay.c,v 2.69 2008-02-06 12:07:48 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1968,9 +1968,15 @@ escape_sequence (int fd, wchar_t last_character)
       avt_new_line ();
       return;
 
+/* for some few terminals it's the home function 
     case L'H':
       avt_move_x (1);
       avt_move_y (1);
+      return;
+*/
+
+    case L'H':			/* HTS */
+      avt_set_tab (avt_where_x (), AVT_TRUE);
       return;
 
     case L'M':			/* RI - scroll down one line */
@@ -2078,6 +2084,13 @@ escape_sequence (int fd, wchar_t last_character)
 	avt_move_y (avt_where_y () - 1);
       else
 	avt_move_y (avt_where_y () - strtol (sequence, NULL, 10));
+      break;
+
+    case L'g':			/* TBC */
+      if (sequence[0] == 'g' || sequence[0] == '0')
+	avt_set_tab (avt_where_x (), AVT_FALSE);
+      else			/* TODO: 1-5 are not distinguished here */
+	avt_clear_tab_stops ();
       break;
 
     case L'G':			/* CHA */
@@ -2223,6 +2236,18 @@ escape_sequence (int fd, wchar_t last_character)
     case L'u':			/* RCP */
       avt_move_x (saved_cursor_x);
       avt_move_y (saved_cursor_y);
+      break;
+
+    case L'Z':			/* CBT */
+      if (sequence[0] == 'Z')
+	avt_last_tab ();
+      else
+	{
+	  int i;
+	  int count = strtol (sequence, NULL, 10);
+	  for (i = 0; i < count; i++)
+	    avt_last_tab ();
+	}
       break;
 
     default:
@@ -2620,7 +2645,7 @@ check_config_file (const char *f)
 	  strip_newline (s);
 
 	  if (strncmp (s, "AVATARDATADIR=", 14))
-             strncpy (datadir, s + 14, sizeof (datadir));
+	    strncpy (datadir, s + 14, sizeof (datadir));
 
 	  if (strncmp (s, "AVATARIMAGE=", 12) == 0)
 	    use_avatar_image (s + 12);
@@ -2736,7 +2761,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.68 2008-01-29 11:57:09 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.69 2008-02-06 12:07:48 akf Exp $");
 
   return EXIT_SUCCESS;
 }

@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.75 2008-02-04 18:16:10 akf Exp $ */
+/* $Id: avatar.c,v 2.76 2008-02-06 12:07:47 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -75,6 +75,8 @@
 #  define SDL_strlen              strlen
 #  undef SDL_memcpy
 #  define SDL_memcpy              memcpy
+#  undef SDL_memset
+#  define SDL_memset              memset
 #  undef SDL_putenv
 #  define SDL_putenv              putenv
 #endif /* OLD_SDL */
@@ -1657,8 +1659,20 @@ avt_reset_tab_stops (void)
       avt_tab_stops[i] = AVT_FALSE;
 }
 
+void
+avt_clear_tab_stops (void)
+{
+  SDL_memset (&avt_tab_stops, AVT_FALSE, sizeof (avt_tab_stops));
+}
+
+void
+avt_set_tab (int x, avt_bool_t onoff)
+{
+  avt_tab_stops[x - 1] = onoff;
+}
+
 /* advance to next tabstop */
-static void
+void
 avt_next_tab (void)
 {
   int x;
@@ -1679,6 +1693,36 @@ avt_next_tab (void)
   else				/* left to right */
     {
       for (i = x + 1; i < AVT_LINELENGTH; i++)
+	{
+	  if (avt_tab_stops[i])
+	    break;
+	}
+      avt_move_x (i + 1);
+    }
+}
+
+/* go to last tabstop */
+void
+avt_last_tab (void)
+{
+  int x;
+  int i;
+
+  /* here we count zero based */
+  x = avt_where_x () - 1;
+
+  if (textdir_rtl)		/* right to left */
+    {
+      for (i = x; i < AVT_LINELENGTH; i++)
+	{
+	  if (avt_tab_stops[i])
+	    break;
+	}
+      avt_move_x (i);
+    }
+  else				/* left to right */
+    {
+      for (i = x + 1; i >= 0; i--)
 	{
 	  if (avt_tab_stops[i])
 	    break;
@@ -3136,7 +3180,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.75 2008-02-04 18:16:10 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.76 2008-02-06 12:07:47 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
