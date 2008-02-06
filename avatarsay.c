@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.69 2008-02-06 12:07:48 akf Exp $ */
+/* $Id: avatarsay.c,v 2.70 2008-02-06 12:33:12 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1950,6 +1950,7 @@ escape_sequence (int fd, wchar_t last_character)
       region_max_y = max_y;
       avt_viewport (1, region_min_y, max_x, region_max_y);
       avt_set_origin_mode (AVT_FALSE);
+      avt_reset_tab_stops ();
       saved_cursor_x = saved_cursor_y = 1;
       text_color = saved_text_color = 0;
       text_background_color = saved_text_background_color = 0xF;
@@ -2761,7 +2762,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.69 2008-02-06 12:07:48 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.70 2008-02-06 12:33:12 akf Exp $");
 
   return EXIT_SUCCESS;
 }
