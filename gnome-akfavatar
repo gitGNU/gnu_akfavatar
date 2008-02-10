@@ -37,12 +37,6 @@ case "$LANG" in
        HELPTEXT="info:akfavatar-de"
        WHICHTEXT="Welchen Text mit AKFAvatar anzeigen?"
        FILEEDIT="Weche Datei editieren"
-       PRINTONLY="Dies ist nur für Befehle, die etwas über die"
-       PRINTONLY="$PRINTONLY Standard-Ausgabe oder die"
-       PRINTONLY="$PRINTONLY Standard-Fehlerausgabe ausgeben."
-       PRINTONLY="$PRINTONLY Man kann es nicht für interaktive Programme"
-       PRINTONLY="$PRINTONLY verwenden."
-       WHICHCOMMAND="Die Ausgabe welchen Befehles mit AKFAvatar anzeigen?"
        WHICHMANPAGE="Welche Hilfeseite (Manpage) mit AKFAvatar anzeigen?"
        MANPAGEERROR="Fehler beim Anzeigen der Manpage"
        WHICHAVATARIMAGE="Welches Bild als Avatar verwenden?"
@@ -54,10 +48,10 @@ case "$LANG" in
        NOAVATARSAY="Befehl \"avatarsay\" nicht gefunden"
        KEY="Taste"
        WHATTODO="was machen"
+       RUNTERMINAL="als Terminal verwenden"
        SHOWDEMO="ein Demo oder eine Text-Datei anzeigen"
        EDITDEMO="ein Demo erstellen oder bearbeiten"
        SHOWMANPAGE="eine Hilfeseite (Manpage) anzeigen"
-       SHOWCOMMAND="zeige die Ausgabe eines Befehls"
        CHANGEAVATARIMAGE="ändere das Avatar-Bild"
        FULLSCREENORWINDOW="Vollbild- oder Fenster-Modus"
        SAVESETTINGS="speichere Einstellungen"
@@ -69,10 +63,6 @@ case "$LANG" in
        HELPTEXT="info:akfavatar-en"
        WHICHTEXT="Which text to show with AKFAvatar?"
        FILEEDIT="file to edit"
-       PRINTONLY="This is only for commands which only print text to "
-       PRINTONLY="$PRINTONLY standard output or standard error."
-       PRINTONLY="$PRINTONLY You can not use interactive commands with this."
-       WHICHCOMMAND="The output of which command to show with AKFAvatar?"
        WHICHMANPAGE="Which manpage to show with AKFAvatar?"
        MANPAGEERROR="error showing manpage"
        WHICHAVATARIMAGE="Which image to use as avatar? (cancel for default)"
@@ -83,10 +73,10 @@ case "$LANG" in
        NOAVATARSAY="Command \"avatarsay\" not found"
        KEY="key"
        WHATTODO="what to do"
+       RUNTERMINAL="run as terminal"
        SHOWDEMO="show a demo or textfile"
        EDITDEMO="create or edit a demo"
        SHOWMANPAGE="show a manpage"
-       SHOWCOMMAND="show the output of a command"
        CHANGEAVATARIMAGE="change avatar image"
        FULLSCREENORWINDOW="fullscreen or window mode"
        SAVESETTINGS="save settings"
@@ -102,7 +92,7 @@ run_avatarsay ()
 {
   local MESSAGE
 
-  if [ "$1" = "-" -o -r "$1" ]
+  if [ "$1" = "-" -o "$1" = "--terminal" -o -r "$1" ]
   then
     if MESSAGE=`$AVATARSAY $MODE "$1" 2>&1`
     then
@@ -163,19 +153,6 @@ edit_demo ()
     # $FILE must be the second parameter for zenity_edit
     $AVTEDITOR --encoding=$ENCODING "$FILE" && run_avatarsay "$FILE"
   fi
-}
-
-show_command ()
-{
-  local COMMAND
-  
-  $ZENITY --warning \
-  --text="$PRINTONLY" || return
-
-  COMMAND=`$ZENITY --entry --text="$WHICHCOMMAND"` \
-  && [ -n "$COMMAND" ] \
-  && type $COMMAND > /dev/null 2>&1 \
-  && $COMMAND 2>&1 | run_avatarsay -
 }
 
 show_manpage ()
@@ -273,10 +250,10 @@ while true
 do
   MENU=`$ZENITY --list --title=AKFAvatar --width 355 --height 370 \
        --column "$KEY" --column "$WHATTODO" \
+     T "$RUNTERMINAL" \
      D "$SHOWDEMO" \
      E "$EDITDEMO" \
      M "$SHOWMANPAGE" \
-     C "$SHOWCOMMAND" \
      I "$CHANGEAVATARIMAGE" \
      F "$FULLSCREENORWINDOW" \
      S "$SAVESETTINGS" \
@@ -286,10 +263,10 @@ do
      || exit 0
 
   case $MENU in
+    T) run_avatarsay --terminal ;;
     D) show_demo ;;
     E) edit_demo ;;
     M) show_manpage ;;
-    C) show_command ;;
     I) choose_avatar_image ;;
     F) choose_fullscreen ;;
     S) save_settings ;;
