@@ -17,7 +17,7 @@ BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 	html dvi pdf ps man install-html install-dvi install-pdf install-ps \
 	clean mostlyclean distclean maintainerclean dist
 
-all: libakfavatar.so libakfavatar.a avatarsay avatarsay-d
+all: libakfavatar.so libakfavatar.a libavtcio.a avatarsay avatarsay-d
 
 # don't use $(CC) because it could be a cross-compiler
 bin2c: bin2c.c
@@ -74,6 +74,16 @@ libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo font.lo
 	-ln -sf $(LIBNAME) $(SONAME)
 	-ln -sf $(LIBNAME) libakfavatar.so
 
+avtccio.o: avtccio.c avtcio.h akfavatar.h
+	$(CC) $(CFLAGS) -I. -c -o $@ avtccio.c
+
+avtcwio.o: avtcwio.c avtcio.h akfavatar.h
+	$(CC) $(CFLAGS) -I. -c -o $@ avtcwio.c
+
+libavtcio.a: avtccio.o avtcwio.o
+	$(AR) rcu $@ avtccio.o avtcwio.o
+	-$(RANLIB) $@
+
 example: example.c libakfavatar.so
 	$(CC) $(CFLAGS) -I. -o $@ example.c -L. -lakfavatar $(LDFLAGS)
 
@@ -97,9 +107,11 @@ installdirs:
 
 install: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info install-man
 	$(INSTALL_DATA) $(srcdir)/akfavatar.h $(DESTDIR)$(includedir)
+	$(INSTALL_DATA) $(srcdir)/avtcio.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) $(LIBNAME) $(DESTDIR)$(libdir)
-	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
 	-ln -sf $(LIBNAME) $(DESTDIR)$(libdir)/libakfavatar.so
+	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
+	$(INSTALL_DATA) libavtcio.a $(DESTDIR)$(libdir)
 	-$(LDCONFIG) $(libdir)
 	$(INSTALL_PROGRAM) avatarsay-d $(DESTDIR)$(bindir)/avatarsay
 	$(INSTALL_PROGRAM) $(srcdir)/avtman $(DESTDIR)$(bindir)
@@ -107,9 +119,11 @@ install: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info ins
 
 install-strip: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info install-man
 	$(INSTALL_DATA) $(srcdir)/akfavatar.h $(DESTDIR)$(includedir)
+	$(INSTALL_DATA) $(srcdir)/avtcio.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) -s $(LIBNAME) $(DESTDIR)$(libdir)
-	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
 	-ln -sf $(LIBNAME) $(DESTDIR)$(libdir)/libakfavatar.so
+	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
+	$(INSTALL_DATA) libavtcio.a $(DESTDIR)$(libdir)
 	-$(LDCONFIG) $(libdir)
 	$(INSTALL_PROGRAM) -s avatarsay-d $(DESTDIR)$(bindir)/avatarsay
 	$(INSTALL_PROGRAM) $(srcdir)/avtman $(DESTDIR)$(bindir)
@@ -117,10 +131,12 @@ install-strip: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-in
 
 uninstall: uninstall-info uninstall-man
 	-rm -f $(includedir)/akfavatar.h
+	-rm -f $(includedir)/avtcio.h
 	-rm -f $(libdir)/$(LIBNAME)
 	-rm -f $(libdir)/$(SONAME)
 	-rm -f $(libdir)/libakfavatar.so
 	-rm -f $(libdir)/libakfavatar.a
+	-rm -f $(libdir)/libavtcio.a
 	-rm -f $(bindir)/avatarsay
 	-rm -f $(bindir)/avtman
 	-rm -f $(bindir)/gnome-akfavatar
@@ -222,6 +238,7 @@ dist: info txt man distclean
 	mkdir $(PKGNAME)
 	ln README INSTALL AUTHORS COPYING ChangeLog lrun \
 	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
+	   avtccio.c avtcwio.c avtcio.h \
 	   balloonpointer.c circle.c regicon.c gnu-head.bmp keybtn.bmp \
 	   avatarsay.c avtman example.c fsdemo-?? \
 	   gnome-akfavatar bdfread.pas \

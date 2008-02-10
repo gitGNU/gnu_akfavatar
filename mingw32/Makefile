@@ -7,11 +7,12 @@ CC = $(TARGET)-gcc
 AR = $(TARGET)-ar
 WINDRES = $(TARGET)-windres
 RANLIB = $(TARGET)-ranlib
-CFLAGS = -O2 -DNOFIFO
+CFLAGS = -O2
 LDFLAGS = 
-SDLCFLAGS = -I/usr/$(TARGET)/include/SDL/ \
-         -D_GNU_SOURCE -Dmain=SDL_main
-SDLLDFLAGS = -L/usr/$(TARGET)/lib/ -lmingw32 -lSDLmain -lSDL -mwindows
+
+SDL_CONFIG = /usr/$(TARGET)/bin/sdl-config
+SDLCFLAGS := $(shell $(SDL_CONFIG) --cflags)
+SDLLDFLAGS := $(shell $(SDL_CONFIG) --libs)
 
 # name for binary packages
 BINPKGNAME=akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
@@ -22,7 +23,7 @@ prefix = /usr/$(TARGET)
 libdir = $(prefix)/lib
 includedir = $(prefix)/include
 
-all: akfavatar.dll avatarsay.exe
+all: akfavatar.dll libakfavatar.a avatarsay.exe libavtcio.a
 
 avtsayinfo.rc:
 	@{ \
@@ -209,14 +210,28 @@ akfavatar.dll: avatar.o avatar-default.o avatar-audio.o font.o libinfo.o
 	        -Wl,--out-implib,libakfavatar.dll.a \
 		$(LDFLAGS) $(SDLLDFLAGS)
 
+avtccio.o: ../avtccio.c ../avtcio.h ../akfavatar.h
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ ../avtccio.c
+
+avtcwio.o: ../avtcwio.c ../avtcio.h ../akfavatar.h
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ ../avtcwio.c
+
+libavtcio.a: avtccio.o avtcwio.o
+	$(AR) rcu $@ avtccio.o avtcwio.o
+	-$(RANLIB) $@
+
 install: akfavatar.dll libakfavatar.a
 	install -m 644 ../akfavatar.h $(includedir)
+	install -m 644 ../avtcio.h $(includedir)
 	install -m 644 libakfavatar.a libakfavatar.dll.a $(libdir)
+	install -m 644 libavtcio.a $(libdir)
 	install -m 644 akfavatar.dll $(libdir)
 
 install-strip: akfavatar.dll libakfavatar.a
 	install -m 644 ../akfavatar.h $(includedir)
+	install -m 644 ../avtcio.h $(includedir)
 	install -m 644 libakfavatar.a libakfavatar.dll.a $(libdir)
+	install -m 644 libavtcio.a $(libdir)
 	install -m 644 -s akfavatar.dll $(libdir)
 
 example: example.exe
@@ -246,10 +261,10 @@ distclean: clean
 # don't use them unless you know what you are doing
 
 multiply.exe: ../pascal/multiply.pas
-	fpcwavatar -dRELEASE -FE. -o$@ ../pascal/multiply.pas
+	-fpcwavatar -dRELEASE -o./$@ ../pascal/multiply.pas
 
 multiplizieren.exe: ../pascal/multiply.pas
-	fpcwavatar -dRELEASE -ddeutsch -FE. -o$@ ../pascal/multiply.pas
+	-fpcwavatar -dRELEASE -ddeutsch -o./$@ ../pascal/multiply.pas
 
 dist-bin: avatarsay.exe multiply.exe multiplizieren.exe
 	mkdir $(BINPKGNAME)
@@ -261,7 +276,7 @@ dist-bin: avatarsay.exe multiply.exe multiplizieren.exe
 	cp ../COPYING $(BINPKGNAME)/gpl-3.0.txt
 	cp ../AUTHORS $(BINPKGNAME)/AUTHORS.txt
 	cp ../pascal/correct.wav ../pascal/wrong.wav $(BINPKGNAME)/
-	cp multiply.exe multiplizieren.exe $(BINPKGNAME)/
+	-cp multiply.exe multiplizieren.exe $(BINPKGNAME)/
 	strip $(BINPKGNAME)/avatarsay.exe $(BINPKGNAME)/akfavatar.dll
 	todos $(BINPKGNAME)/fsdemo-??
 	todos $(BINPKGNAME)/avtcharset
