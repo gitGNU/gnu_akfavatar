@@ -156,6 +156,9 @@ uninstall-info:
 	-install-info --remove --info-dir=$(DESTDIR)$(infodir) \
 	  $(DESTDIR)$(infodir)/akfavatar-en.info 
 	-rm -f $(DESTDIR)$(infodir)/akfavatar-en.info
+	-install-info --remove --info-dir=$(DESTDIR)$(infodir) \
+	  $(DESTDIR)$(infodir)/akfavatar-de.info 
+	-rm -f $(DESTDIR)$(infodir)/akfavatar-de.info
 
 install-man:
 	-$(INSTALL_DATA) $(srcdir)/doc/avatarsay.1 $(DESTDIR)$(mandir)/man1
