@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.70 2008-02-06 12:33:12 akf Exp $ */
+/* $Id: avatarsay.c,v 2.71 2008-02-11 12:38:18 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1688,6 +1688,12 @@ run_shell (void)
   not_available ();
 }
 
+static void
+run_info (void)
+{
+  not_available ();
+}
+
 #else /* not NO_PTY */
 
 /* 
@@ -2321,6 +2327,30 @@ run_shell (void)
     process_subprogram (fd);
 }
 
+static void
+run_info (void)
+{
+  int fd;
+
+  avt_clear ();
+  avt_set_text_delay (0);
+  avt_text_direction (AVT_LEFT_TO_RIGHT);
+
+  switch (language)
+    {
+    case DEUTSCH:
+      fd = execute_process ("info akfavatar-de");
+      break;
+
+    case ENGLISH:
+    default:
+      fd = execute_process ("info akfavatar-en");
+    }
+
+  if (fd > -1)
+    process_subprogram (fd);
+}
+
 #endif /* not NO_PTY */
 
 static void
@@ -2530,21 +2560,23 @@ menu (void)
       switch (language)
 	{
 	case DEUTSCH:
-	  avt_say (L"1) ein Demo oder eine Text-Datei anzeigen\n");
-	  SAY_MANPAGE (L"2) eine Hilfeseite (Manpage) anzeigen\n");
-	  SAY_SHELL (L"3) Shell starten\n");
-	  avt_say (L"4) Homepage des Projektes aufrufen\n");
-	  avt_say (L"5) Programm-Infos\n");
+	  SAY_SHELL (L"1) Terminal-Modus\n");
+	  avt_say (L"2) ein Demo oder eine Text-Datei anzeigen\n");
+	  SAY_MANPAGE (L"3) eine Hilfeseite (Manpage) anzeigen\n");
+	  SAY_SHELL (L"4) Anleitung\n");
+	  avt_say (L"5) Homepage des Projektes aufrufen\n");
+	  avt_say (L"6) über avatarsay\n");
 	  avt_say (L"0) beenden\n");
 	  break;
 
 	case ENGLISH:
 	default:
-	  avt_say (L"1) show a demo or textfile\n");
-	  SAY_MANPAGE (L"2) show a manpage\n");
-	  SAY_SHELL (L"3) run a shell\n");
-	  avt_say (L"4) website\n");
-	  avt_say (L"5) show info about the program\n");
+	  SAY_SHELL (L"1) terminal-mode\n");
+	  avt_say (L"2) show a demo or textfile\n");
+	  SAY_MANPAGE (L"3) show a manpage\n");
+	  SAY_SHELL (L"4) documentation\n");
+	  avt_say (L"5) website\n");
+	  avt_say (L"6) about avatarsay\n");
 	  avt_say (L"0) exit\n");
 	}
 
@@ -2555,23 +2587,27 @@ menu (void)
 
       switch (ch)
 	{
-	case L'1':		/* show a demo or textfile */
-	  ask_file (AVT_FALSE);
-	  break;
-
-	case L'2':		/* show a manpage */
-	  ask_manpage ();
-	  break;
-
-	case L'3':		/* run a shell */
+	case L'1':		/* terminal-mode */
 	  run_shell ();
 	  break;
 
-	case L'4':		/* website */
+	case L'2':		/* show a demo or textfile */
+	  ask_file (AVT_FALSE);
+	  break;
+
+	case L'3':		/* show a manpage */
+	  ask_manpage ();
+	  break;
+
+	case L'4':		/* documentation */
+	  run_info ();
+	  break;
+
+	case L'5':		/* website */
 	  open_homepage ();
 	  break;
 
-	case L'5':		/* show info about the program */
+	case L'6':		/* about avatarsay */
 	  about_avatarsay ();
 	  break;
 
@@ -2762,7 +2798,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.70 2008-02-06 12:33:12 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.71 2008-02-11 12:38:18 akf Exp $");
 
   return EXIT_SUCCESS;
 }
