@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.42 2008-02-06 12:07:47 akf Exp $ */
+/* $Id: akfavatar.h,v 2.43 2008-02-12 16:57:22 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -298,6 +298,14 @@ int avt_say_mb_len (const char *txt, int len);
  * (ch is just one character, not a string)
  */
 int avt_get_key (wchar_t * ch);
+
+/*
+ * get a menu-key, or mouseclick
+ * menu_ofset: line, where menu begins
+ * start_code: first character, like L'1' or L'A'
+ */
+int 
+avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code);
 
 /*
  * get string (just one line)

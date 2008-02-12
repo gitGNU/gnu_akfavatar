@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.71 2008-02-11 12:38:18 akf Exp $ */
+/* $Id: avatarsay.c,v 2.72 2008-02-12 16:57:22 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2531,6 +2531,7 @@ static void
 menu (void)
 {
   wchar_t ch;
+  int menu_start, menu_end;
 
   /* avoid pause after moving out */
   loop = AVT_FALSE;
@@ -2557,6 +2558,8 @@ menu (void)
 	  avt_say (L"=========\n\n");
 	}
 
+      menu_start = avt_where_y ();
+      
       switch (language)
 	{
 	case DEUTSCH:
@@ -2566,7 +2569,7 @@ menu (void)
 	  SAY_SHELL (L"4) Anleitung\n");
 	  avt_say (L"5) Homepage des Projektes aufrufen\n");
 	  avt_say (L"6) über avatarsay\n");
-	  avt_say (L"0) beenden\n");
+	  avt_say (L"7) beenden\n");
 	  break;
 
 	case ENGLISH:
@@ -2577,12 +2580,13 @@ menu (void)
 	  SAY_SHELL (L"4) documentation\n");
 	  avt_say (L"5) website\n");
 	  avt_say (L"6) about avatarsay\n");
-	  avt_say (L"0) exit\n");
+	  avt_say (L"7) exit\n");
 	}
 
+      menu_end = avt_where_y () - 1;
       avt_set_text_delay (default_delay);
 
-      if (avt_get_key (&ch))
+      if (avt_get_menu (&ch, menu_start, menu_end, L'1'))
 	quit (EXIT_SUCCESS);
 
       switch (ch)
@@ -2611,7 +2615,7 @@ menu (void)
 	  about_avatarsay ();
 	  break;
 
-	case L'0':		/* exit */
+	case L'7':		/* exit */
 	  move_out ();
 	  quit (EXIT_SUCCESS);
 
@@ -2798,7 +2802,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.71 2008-02-11 12:38:18 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.72 2008-02-12 16:57:22 akf Exp $");
 
   return EXIT_SUCCESS;
 }

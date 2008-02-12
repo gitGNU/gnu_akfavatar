@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.76 2008-02-06 12:07:47 akf Exp $ */
+/* $Id: avatar.c,v 2.77 2008-02-12 16:57:22 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2198,8 +2198,8 @@ avt_get_key (wchar_t * ch)
 
   if (screen)
     {
-      *ch = 0;
-      while ((*ch <= 0) && (_avt_STATUS == AVT_NORMAL))
+      *ch = L'\0';
+      while ((*ch == L'\0') && (_avt_STATUS == AVT_NORMAL))
 	{
 	  SDL_WaitEvent (&event);
 	  avt_analyze_event (&event);
@@ -2207,6 +2207,41 @@ avt_get_key (wchar_t * ch)
 	  if (event.type == SDL_KEYDOWN)
 	    *ch = (wchar_t) event.key.keysym.unicode;
 	}
+    }
+
+  return _avt_STATUS;
+}
+
+int
+avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
+{
+  SDL_Event event;
+
+  if (screen)
+    {
+      SDL_ShowCursor (SDL_ENABLE);
+
+      *ch = L'\0';
+      while ((*ch == L'\0') && (_avt_STATUS == AVT_NORMAL))
+	{
+	  SDL_WaitEvent (&event);
+	  avt_analyze_event (&event);
+
+	  if (event.type == SDL_KEYDOWN)
+	    *ch = (wchar_t) event.key.keysym.unicode;
+	  else if (event.type == SDL_MOUSEBUTTONDOWN)
+	    {
+	      int line_nr;
+	      line_nr = ((event.button.y - textfield.y) / LINEHEIGHT) + 1;
+
+	      if (line_nr >= menu_start && line_nr <= menu_end
+		  && event.button.x >= textfield.x
+		  && event.button.x <= textfield.x + textfield.w)
+		*ch = (wchar_t) (line_nr - menu_start + start_code);
+	    }
+	}
+
+      SDL_ShowCursor (SDL_DISABLE);
     }
 
   return _avt_STATUS;
@@ -3180,7 +3215,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.76 2008-02-06 12:07:47 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.77 2008-02-12 16:57:22 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();

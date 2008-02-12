@@ -1,4 +1,7 @@
-2008-02-06  Andreas K. Foerster  <info@akfoerster.de>
+2008-02-12  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_get_menu):
+	  new function
 
 	* akfavatar.h, avatar.c (avt_next_tab, avt_last_tab)
 	  (avt_clear_tab_stops, avt_set_tab):
