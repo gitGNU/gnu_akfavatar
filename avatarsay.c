@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.72 2008-02-12 16:57:22 akf Exp $ */
+/* $Id: avatarsay.c,v 2.73 2008-02-12 18:06:32 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -280,35 +280,6 @@ help (const char *prgname)
   exit (EXIT_SUCCESS);
 }
 
-static void
-open_homepage (void)
-{
-  avt_switch_mode (AVT_WINDOW);
-  avt_clear ();
-  avt_set_text_delay (0);
-
-  avt_say_mb ("Homepage: " HOMEPAGE "\n");
-  switch (language)
-    {
-    case DEUTSCH:
-      avt_say (L"Versuche es in einem Webbrowser zu öffnen...");
-      break;
-    case ENGLISH:
-    default:
-      avt_say (L"Trying to open it in a webbrowser...");
-    }
-
-  if (getenv ("KDE_FULL_SESSION") != NULL)
-    system ("kfmclient openURL " HOMEPAGE " &");
-  else if (getenv ("GNOME_DESKTOP_SESSION_ID") != NULL)
-    system ("gnome-open " HOMEPAGE " &");
-  else
-    system ("firefox " HOMEPAGE " &");
-
-  avt_wait (4000);
-  quit (EXIT_SUCCESS);
-}
-
 #else /* Windows or ReactOS */
 
 static void
@@ -376,31 +347,6 @@ help (const char *prgname)
 {
   showversion ();
   exit (EXIT_SUCCESS);
-}
-
-static void
-open_homepage (void)
-{
-  avt_switch_mode (AVT_WINDOW);
-  avt_clear ();
-  avt_set_text_delay (0);
-
-  avt_say_mb ("Homepage: " HOMEPAGE "\n");
-  switch (language)
-    {
-    case DEUTSCH:
-      avt_say (L"Versuche es in einem Webbrowser zu öffnen...");
-      break;
-
-    case ENGLISH:
-    default:
-      avt_say (L"Trying to open it in a webbrowser...");
-    }
-
-  ShellExecute (NULL, "open", HOMEPAGE, NULL, NULL, SW_SHOWNORMAL);
-
-  avt_wait (4000);
-  quit (EXIT_SUCCESS);
 }
 
 #endif /* Windows or ReactOS */
@@ -2551,6 +2497,8 @@ menu (void)
       avt_clear ();
       avt_set_text_color (0x00, 0x00, 0x00);
       avt_set_text_delay (0);
+      avt_set_origin_mode (AVT_FALSE);
+      avt_viewport (19, 1, 42, avt_get_max_y ());
 
       if (max_y > 9)
 	{
@@ -2566,10 +2514,9 @@ menu (void)
 	  SAY_SHELL (L"1) Terminal-Modus\n");
 	  avt_say (L"2) ein Demo oder eine Text-Datei anzeigen\n");
 	  SAY_MANPAGE (L"3) eine Hilfeseite (Manpage) anzeigen\n");
-	  SAY_SHELL (L"4) Anleitung\n");
-	  avt_say (L"5) Homepage des Projektes aufrufen\n");
-	  avt_say (L"6) über avatarsay\n");
-	  avt_say (L"7) beenden\n");
+	  SAY_SHELL (L"4) Anleitung (info)\n");
+	  avt_say (L"5) über avatarsay\n");
+	  avt_say (L"6) beenden\n");
 	  break;
 
 	case ENGLISH:
@@ -2577,10 +2524,9 @@ menu (void)
 	  SAY_SHELL (L"1) terminal-mode\n");
 	  avt_say (L"2) show a demo or textfile\n");
 	  SAY_MANPAGE (L"3) show a manpage\n");
-	  SAY_SHELL (L"4) documentation\n");
-	  avt_say (L"5) website\n");
-	  avt_say (L"6) about avatarsay\n");
-	  avt_say (L"7) exit\n");
+	  SAY_SHELL (L"4) documentation (info)\n");
+	  avt_say (L"5) about avatarsay\n");
+	  avt_say (L"6) exit\n");
 	}
 
       menu_end = avt_where_y () - 1;
@@ -2588,6 +2534,8 @@ menu (void)
 
       if (avt_get_menu (&ch, menu_start, menu_end, L'1'))
 	quit (EXIT_SUCCESS);
+
+      avt_viewport (1, 1, avt_get_max_x (), avt_get_max_y ());
 
       switch (ch)
 	{
@@ -2607,15 +2555,11 @@ menu (void)
 	  run_info ();
 	  break;
 
-	case L'5':		/* website */
-	  open_homepage ();
-	  break;
-
-	case L'6':		/* about avatarsay */
+	case L'5':		/* about avatarsay */
 	  about_avatarsay ();
 	  break;
 
-	case L'7':		/* exit */
+	case L'6':		/* exit */
 	  move_out ();
 	  quit (EXIT_SUCCESS);
 
@@ -2802,7 +2746,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.72 2008-02-12 16:57:22 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.73 2008-02-12 18:06:32 akf Exp $");
 
   return EXIT_SUCCESS;
 }
