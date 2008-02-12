@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.77 2008-02-12 16:57:22 akf Exp $ */
+/* $Id: avatar.c,v 2.78 2008-02-12 18:06:02 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2232,11 +2232,18 @@ avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 	  else if (event.type == SDL_MOUSEBUTTONDOWN)
 	    {
 	      int line_nr;
-	      line_nr = ((event.button.y - textfield.y) / LINEHEIGHT) + 1;
+	      SDL_Rect area;
+	      
+	      if (origin_mode)
+	        area = textfield;
+	      else
+	        area = viewport;
+		
+	      line_nr = ((event.button.y - area.y) / LINEHEIGHT) + 1;
 
 	      if (line_nr >= menu_start && line_nr <= menu_end
-		  && event.button.x >= textfield.x
-		  && event.button.x <= textfield.x + textfield.w)
+		  && event.button.x >= area.x
+		  && event.button.x <= area.x + area.w)
 		*ch = (wchar_t) (line_nr - menu_start + start_code);
 	    }
 	}
@@ -3215,7 +3222,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.77 2008-02-12 16:57:22 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.78 2008-02-12 18:06:02 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
