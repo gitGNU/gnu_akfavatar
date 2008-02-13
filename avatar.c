@@ -3,7 +3,7 @@
  * Copyright (c) 2007, 2008 Andreas K. Foerster <info@akfoerster.de>
  *
  * needed: 
- *  SDL1.2 (recommended: SDL1.2.11)
+ *  SDL1.2 (recommended: SDL1.2.11 or later (but not 1.3!))
  * recommended: 
  *  SDL_image1.2
  *
@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.78 2008-02-12 18:06:02 akf Exp $ */
+/* $Id: avatar.c,v 2.79 2008-02-13 19:09:47 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2291,8 +2291,7 @@ avt_ask (wchar_t * s, const int size)
   do
     {
       /* show cursor */
-      avt_drawchar (1);
-      avt_showchar ();
+      avt_show_text_cursor (AVT_TRUE);
 
       avt_get_key (&ch);
       switch (ch)
@@ -2305,9 +2304,7 @@ avt_ask (wchar_t * s, const int size)
 	      s[len] = L'\0';
 
 	      /* delete cursor and one char */
-	      cursor.x =
-		(textdir_rtl) ? cursor.x - FONTWIDTH : cursor.x + FONTWIDTH;
-	      avt_backspace ();
+	      avt_show_text_cursor (AVT_FALSE);
 	      avt_backspace ();
 	    }
 	  else if (avt_bell_func)
@@ -2321,9 +2318,7 @@ avt_ask (wchar_t * s, const int size)
 	  if ((ch >= 32) && (len < maxlen))
 	    {
 	      /* delete cursor */
-	      cursor.x =
-		(textdir_rtl) ? cursor.x - FONTWIDTH : cursor.x + FONTWIDTH;
-	      avt_backspace ();
+	      avt_show_text_cursor (AVT_FALSE);
 	      s[len] = ch;
 	      len++;
 	      s[len] = L'\0';
@@ -3222,7 +3217,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.78 2008-02-12 18:06:02 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.79 2008-02-13 19:09:47 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
