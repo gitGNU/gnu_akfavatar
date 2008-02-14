@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.74 2008-02-14 09:55:14 akf Exp $ */
+/* $Id: avatarsay.c,v 2.75 2008-02-14 11:54:33 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -77,6 +77,9 @@
 #ifndef PATH_MAX
 #  define PATH_MAX 4096
 #endif
+
+/* device attribute (DEC) */
+#define DS "\033[?6c"	/* claim to be a vt102 */
 
 static const char *version_info_en =
   PRGNAME " (AKFAvatar) " AVTVERSION "\n"
@@ -1779,12 +1782,12 @@ ansi_graphic_code (int mode)
       avt_underlined (AVT_FALSE);
       break;
 
-    case 4:                     /* underlined */
-    case 21:                    /* double underlined (ambiguous) */
+    case 4:			/* underlined */
+    case 21:			/* double underlined (ambiguous) */
       avt_underlined (AVT_TRUE);
       break;
 
-    case 24:                    /* not underlined */
+    case 24:			/* not underlined */
       avt_underlined (AVT_FALSE);
       break;
 
@@ -1819,9 +1822,16 @@ ansi_graphic_code (int mode)
       set_foreground_color (text_color);
       break;
 
+    case 38:			/* foreground normal, underlined */
+      text_color = 0;
+      set_foreground_color (text_color);
+      avt_underlined (AVT_TRUE);
+      break;
+
     case 39:			/* foreground normal */
       text_color = 0;
       set_foreground_color (text_color);
+      avt_underlined (AVT_FALSE);
       break;
 
     case 40:
@@ -1953,6 +1963,10 @@ escape_sequence (int fd, wchar_t last_character)
 	avt_insert_lines (region_min_y, 1);
       return;
 
+    case L'Z':			/* DECID */
+      write (prg_input, DS, sizeof (DS) - 1);
+      return;
+
     default:
       if (ch != L'[')
 	{
@@ -2016,6 +2030,10 @@ escape_sequence (int fd, wchar_t last_character)
 	avt_move_x (avt_where_x () + strtol (sequence, NULL, 10));
       break;
 
+    case L'c':                  /* DA */
+      write (prg_input, DS, sizeof (DS) - 1);
+      break;
+      
     case L'D':			/* CUB */
       if (sequence[0] == 'D')
 	avt_move_x (avt_where_x () - 1);
@@ -2053,6 +2071,8 @@ escape_sequence (int fd, wchar_t last_character)
 	avt_move_y (avt_where_y () - strtol (sequence, NULL, 10));
       break;
 
+    /* L'f', HVP: see H */
+    
     case L'g':			/* TBC */
       if (sequence[0] == 'g' || sequence[0] == '0')
 	avt_set_tab (avt_where_x (), AVT_FALSE);
@@ -2524,7 +2544,7 @@ menu (void)
 	}
 
       menu_start = avt_where_y ();
-      
+
       switch (language)
 	{
 	case DEUTSCH:
@@ -2763,7 +2783,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.74 2008-02-14 09:55:14 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.75 2008-02-14 11:54:33 akf Exp $");
 
   return EXIT_SUCCESS;
 }
