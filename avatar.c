@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.79 2008-02-13 19:09:47 akf Exp $ */
+/* $Id: avatar.c,v 2.80 2008-02-14 08:27:24 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -416,6 +416,8 @@ avt_show_text_cursor (avt_bool_t on)
 {
   SDL_Rect dst;
 
+  on = AVT_MAKE_BOOL (on);
+
   if (on != text_cursor_actually_visible)
     {
       dst.x = cursor.x;
@@ -447,7 +449,7 @@ avt_show_text_cursor (avt_bool_t on)
 void
 avt_activate_cursor (avt_bool_t on)
 {
-  text_cursor_visible = (on != AVT_FALSE);
+  text_cursor_visible = AVT_MAKE_BOOL (on);
 
   if (screen && textfield.x >= 0)
     avt_show_text_cursor (text_cursor_visible);
@@ -1198,7 +1200,7 @@ avt_set_origin_mode (avt_bool_t mode)
 {
   SDL_Rect area;
 
-  origin_mode = (mode != AVT_FALSE);
+  origin_mode = AVT_MAKE_BOOL (mode);
 
   if (text_cursor_visible && textfield.x >= 0)
     avt_show_text_cursor (AVT_FALSE);
@@ -1668,7 +1670,7 @@ avt_clear_tab_stops (void)
 void
 avt_set_tab (int x, avt_bool_t onoff)
 {
-  avt_tab_stops[x - 1] = onoff;
+  avt_tab_stops[x - 1] = AVT_MAKE_BOOL (onoff);
 }
 
 /* advance to next tabstop */
@@ -3076,7 +3078,7 @@ avt_set_background_color (int red, int green, int blue)
 void
 avt_stop_on_esc (avt_bool_t stop)
 {
-  do_stop_on_esc = (stop != AVT_FALSE);
+  do_stop_on_esc = AVT_MAKE_BOOL (stop);
 }
 
 void
@@ -3217,7 +3219,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.79 2008-02-13 19:09:47 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.80 2008-02-14 08:27:24 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();

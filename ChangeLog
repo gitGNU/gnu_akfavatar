@@ -1,4 +1,7 @@
-2008-02-12  Andreas K. Foerster  <info@akfoerster.de>
+2008-02-14  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (AVT_MAKE_BOOL):
+	  new makro
 
 	* akfavatar.h, avatar.c (avt_get_menu):
 	  new function
