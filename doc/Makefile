@@ -67,7 +67,7 @@ akfavatar-de.ps: akfavatar-de.dvi
 
 man: avatarsay.1
 
-avatarsay.1:
+avatarsay.1: ../avatarsay.c
 	-help2man --info-page=akfavatar-en -o avatarsay.1 avatarsay
 
 clean:
