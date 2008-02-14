@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.84 2008-02-14 16:15:24 akf Exp $ */
+/* $Id: avatar.c,v 2.85 2008-02-14 20:39:54 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1619,7 +1619,7 @@ avt_drawchar (wchar_t ch)
   int lx, ly;
   SDL_Rect dest;
   Uint8 *p, *dest_line;
-  unsigned char font_line;
+  unsigned char *font_line;
   Uint16 pitch;
 
   /* assert (avt_character->format->BytesPerPixel == 1); */
@@ -1636,7 +1636,7 @@ avt_drawchar (wchar_t ch)
     for (ly = 0; ly < FONTHEIGHT; ly++)
       {
 	for (lx = 0; lx < FONTWIDTH; lx++)
-	  if (font_line & (1 << (7 - lx)))
+	  if (*font_line & (1 << (7 - lx)))
 	    *(dest_line + lx) = 1;
 	font_line++;
 	dest_line += pitch;
@@ -1646,12 +1646,12 @@ avt_drawchar (wchar_t ch)
       {
 	/* ignore last column to avoid overflows */
 	for (lx = 0; lx < FONTWIDTH - 1; lx++)
-	  if (font_line & (1 << (7 - lx)))
+	  if (*font_line & (1 << (7 - lx)))
 	    {
 	      *(dest_line + lx) = 1;
 	      *(dest_line + lx + 1) = 1;
 	    }
-	fontline++;
+	font_line++;
 	dest_line += pitch;
       }
 
@@ -3301,7 +3301,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.84 2008-02-14 16:15:24 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.85 2008-02-14 20:39:54 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
