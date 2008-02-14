@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.76 2008-02-14 12:47:00 akf Exp $ */
+/* $Id: avatarsay.c,v 2.77 2008-02-14 21:08:06 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -87,7 +87,7 @@ static const char *version_info_en =
   PRGNAME " (AKFAvatar) " AVTVERSION "\n"
   "Copyright (c) 2007, 2008 Andreas K. Foerster\n\n"
   "License GPLv3+: GNU GPL version 3 or later "
-  "<http://gnu.org/licenses/gpl.html>\n\n"
+  "<http://gnu.org/licenses/gpl.html>\n"
   "This is free software: you are free to change and redistribute it.\n"
   "There is NO WARRANTY, to the extent permitted by law.\n\n"
   "Please read the manual for instructions.";
@@ -96,7 +96,7 @@ static const char *version_info_de =
   PRGNAME " (AKFAvatar) " AVTVERSION "\n"
   "Copyright (c) 2007, 2008 Andreas K. Foerster\n\n"
   "Lizenz GPLv3+: GNU GPL Version 3 oder neuer "
-  "<http://gnu.org/licenses/gpl.html>\n\n"
+  "<http://gnu.org/licenses/gpl.html>\n"
   "Dies ist Freie Software: Sie dürfen es gemäß der GPL weitergeben und\n"
   "überarbeiten. Für AKFAavatar besteht KEINERLEI GARANTIE.\n\n"
   "Bitte lesen Sie die Anleitung für weitere Details.";
@@ -281,6 +281,8 @@ help (const char *prgname)
   puts ("\nEnvironment variables:");
   puts (" AVATARIMAGE             different image as avatar");
   puts (" AVATARDATADIR           data-directory");
+  puts ("\nHomepage:");
+  puts ("  " HOMEPAGE);
   puts ("\nReport bugs to <" BUGMAIL ">");
   exit (EXIT_SUCCESS);
 }
@@ -2496,6 +2498,8 @@ about_avatarsay (void)
       avt_say_mb (version_info_en);
     }
 
+  avt_say_mb ("\n\nHomepage:  " HOMEPAGE);
+  
   set_encoding (default_encoding);
   avt_set_text_delay (default_delay);
 
@@ -2799,7 +2803,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.76 2008-02-14 12:47:00 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.77 2008-02-14 21:08:06 akf Exp $");
 
   return EXIT_SUCCESS;
 }
