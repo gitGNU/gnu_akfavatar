@@ -1,5 +1,8 @@
 2008-02-14  Andreas K. Foerster  <info@akfoerster.de>
 
+	* akfavatar.h, avatar.c (avt_underlined, avt_get_underlined):
+	  new functions
+
 	* akfavatar.h, avatar.c (AVT_MAKE_BOOL):
 	  new makro
 

@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.80 2008-02-14 08:27:24 akf Exp $ */
+/* $Id: avatar.c,v 2.81 2008-02-14 09:55:14 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -39,14 +39,17 @@
 #if defined(QVGA)
 #  define FONTWIDTH 4
 #  define FONTHEIGHT 6
+#  define UNDERLINE 5
 #  define LINEHEIGHT FONTHEIGHT	/* + something, if you want */
 #elif defined(VGA)
 #  define FONTWIDTH 7
 #  define FONTHEIGHT 14
+#  define UNDERLINE 13
 #  define LINEHEIGHT FONTHEIGHT	/* + something, if you want */
 #else
 #  define FONTWIDTH 9
 #  define FONTHEIGHT 18
+#  define UNDERLINE 15
 #  define LINEHEIGHT FONTHEIGHT	/* + something, if you want */
 #endif
 
@@ -205,6 +208,7 @@ static avt_keyhandler avt_ext_keyhandler = NULL;
 
 static SDL_Surface *screen, *avt_image, *avt_character;
 static SDL_Surface *avt_text_cursor, *avt_cursor_character;
+static avt_bool_t underlined;	/* text underlined? */
 static Uint32 screenflags;	/* flags for the screen */
 static int avt_mode;		/* whether fullscreen or window or ... */
 static avt_bool_t must_lock;	/* must the screen be locked? */
@@ -1575,6 +1579,9 @@ avt_drawchar (wchar_t ch)
 	*(dest_line + lx) = (font_line & (1 << (15 - lx))) ? 1 : 0;
     }
 
+  if (underlined)
+    SDL_memset (p + (UNDERLINE * pitch), 1, FONTWIDTH);
+
   dest.x = cursor.x;
   dest.y = cursor.y;
   SDL_BlitSurface (avt_character, NULL, screen, &dest);
@@ -1606,6 +1613,9 @@ avt_drawchar (wchar_t ch)
       for (lx = 0; lx < FONTWIDTH; lx++)
 	*(dest_line + lx) = (font_line & (1 << (7 - lx))) ? 1 : 0;
     }
+
+  if (underlined)
+    SDL_memset (p + (UNDERLINE * pitch), 1, FONTWIDTH);
 
   dest.x = cursor.x;
   dest.y = cursor.y;
@@ -1834,7 +1844,13 @@ avt_put_character (const wchar_t ch)
       break;
 
     case L' ':			/* space */
-      avt_clearchar ();
+      if (!underlined)
+	avt_clearchar ();
+      else			/* underlined */
+	{
+	  avt_drawchar (' ');
+	  avt_showchar ();
+	}
       avt_forward ();
       /* 
        * no delay for the space char 
@@ -2235,12 +2251,12 @@ avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 	    {
 	      int line_nr;
 	      SDL_Rect area;
-	      
+
 	      if (origin_mode)
-	        area = textfield;
+		area = textfield;
 	      else
-	        area = viewport;
-		
+		area = viewport;
+
 	      line_nr = ((event.button.y - area.y) / LINEHEIGHT) + 1;
 
 	      if (line_nr >= menu_start && line_nr <= menu_end
@@ -3115,6 +3131,18 @@ avt_set_text_background_color (int red, int green, int blue)
     }
 }
 
+void
+avt_underlined (avt_bool_t onoff)
+{
+  underlined = AVT_MAKE_BOOL (onoff);
+}
+
+avt_bool_t
+avt_get_underlined (void)
+{
+  return underlined;
+}
+
 /* about to be removed */
 void
 avt_set_delays (int text, int flip_page)
@@ -3206,6 +3234,7 @@ avt_initialize (const char *title, const char *icontitle,
   avt_mode = mode;
   _avt_STATUS = AVT_NORMAL;
   do_stop_on_esc = AVT_TRUE;
+  underlined = AVT_FALSE;
   scroll_mode = 1;
   origin_mode = AVT_TRUE;	/* for backwards compatibility */
   avt_visible = AVT_FALSE;
@@ -3219,7 +3248,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.80 2008-02-14 08:27:24 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.81 2008-02-14 09:55:14 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();

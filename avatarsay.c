@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.73 2008-02-12 18:06:32 akf Exp $ */
+/* $Id: avatarsay.c,v 2.74 2008-02-14 09:55:14 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1776,6 +1776,16 @@ ansi_graphic_code (int mode)
       text_background_color = 0xF;
       set_foreground_color (text_color);
       set_background_color (text_background_color);
+      avt_underlined (AVT_FALSE);
+      break;
+
+    case 4:                     /* underlined */
+    case 21:                    /* double underlined (ambiguous) */
+      avt_underlined (AVT_TRUE);
+      break;
+
+    case 24:                    /* not underlined */
+      avt_underlined (AVT_FALSE);
       break;
 
     case 7:			/* invers */
@@ -1869,6 +1879,7 @@ escape_sequence (int fd, wchar_t last_character)
   unsigned int pos;
   static int saved_cursor_x, saved_cursor_y;
   static int saved_text_color, saved_text_background_color;
+  static avt_bool_t saved_underline_state;
 
   pos = 0;
   ch = get_character (fd);
@@ -1886,6 +1897,7 @@ escape_sequence (int fd, wchar_t last_character)
       saved_cursor_y = avt_where_y ();
       saved_text_color = text_color;
       saved_text_background_color = text_background_color;
+      saved_underline_state = avt_get_underlined ();
       break;
 
     case L'8':			/* DECRC */
@@ -1895,6 +1907,7 @@ escape_sequence (int fd, wchar_t last_character)
       set_foreground_color (text_color);
       text_background_color = saved_text_background_color;
       set_background_color (text_background_color);
+      avt_underlined (saved_underline_state);
       break;
 
     case L'c':			/* RIS - reset device */
@@ -1907,6 +1920,7 @@ escape_sequence (int fd, wchar_t last_character)
       text_color = saved_text_color = 0;
       text_background_color = saved_text_background_color = 0xF;
       ansi_graphic_code (0);
+      avt_underlined (AVT_FALSE);
       avt_clear ();
       return;
 
@@ -2502,8 +2516,11 @@ menu (void)
 
       if (max_y > 9)
 	{
-	  avt_say (L"AKFAvatar\n");
-	  avt_say (L"=========\n\n");
+	  avt_underlined (AVT_TRUE);
+	  avt_say (L"AKFAvatar");
+	  avt_underlined (AVT_FALSE);
+	  avt_new_line ();
+	  avt_new_line ();
 	}
 
       menu_start = avt_where_y ();
@@ -2746,7 +2763,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.73 2008-02-12 18:06:32 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.74 2008-02-14 09:55:14 akf Exp $");
 
   return EXIT_SUCCESS;
 }
