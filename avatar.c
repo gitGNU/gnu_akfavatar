@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.81 2008-02-14 09:55:14 akf Exp $ */
+/* $Id: avatar.c,v 2.82 2008-02-14 10:28:08 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1566,17 +1566,24 @@ avt_drawchar (wchar_t ch)
   unsigned short font_line;
   Uint16 pitch;
 
+  /* assert (avt_character->format->BytesPerPixel == 1); */
+
   font_offset = get_font_offset (ch);
 
   pitch = avt_character->pitch;
   p = (Uint8 *) avt_character->pixels;
+
+  /* clear all */
+  SDL_memset (p, 0, FONTHEIGHT * pitch);
+
   for (ly = 0; ly < FONTHEIGHT; ly++)
     {
       dest_line = p + (ly * pitch);
       font_line = font[font_offset + ly];
 
       for (lx = 0; lx < FONTWIDTH; lx++)
-	*(dest_line + lx) = (font_line & (1 << (15 - lx))) ? 1 : 0;
+	if (font_line & (1 << (15 - lx)))
+	  *(dest_line + lx) = 1;
     }
 
   if (underlined)
@@ -1601,17 +1608,24 @@ avt_drawchar (wchar_t ch)
   unsigned char font_line;
   Uint16 pitch;
 
+  /* assert (avt_character->format->BytesPerPixel == 1); */
+
   font_offset = get_font_offset (ch);
 
   pitch = avt_character->pitch;
   p = (Uint8 *) avt_character->pixels;
+
+  /* clear all */
+  SDL_memset (p, 0, FONTHEIGHT * pitch);
+
   for (ly = 0; ly < FONTHEIGHT; ly++)
     {
       dest_line = p + (ly * pitch);
       font_line = font[font_offset + ly];
 
       for (lx = 0; lx < FONTWIDTH; lx++)
-	*(dest_line + lx) = (font_line & (1 << (7 - lx))) ? 1 : 0;
+	if (font_line & (1 << (7 - lx)))
+	  *(dest_line + lx) = 1;
     }
 
   if (underlined)
@@ -3248,7 +3262,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.81 2008-02-14 09:55:14 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.82 2008-02-14 10:28:08 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();

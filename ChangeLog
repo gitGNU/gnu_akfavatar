@@ -1,5 +1,8 @@
 2008-02-14  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatar.c (avt_drawchar):
+	  optimized
+
 	* akfavatar.h, avatar.c (avt_underlined, avt_get_underlined):
 	  new functions
 
