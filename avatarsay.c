@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.75 2008-02-14 11:54:33 akf Exp $ */
+/* $Id: avatarsay.c,v 2.76 2008-02-14 12:47:00 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -63,6 +63,8 @@
 #define PRGNAME "avatarsay"
 #define HOMEPAGE "http://akfoerster.de/akfavatar/"
 #define BUGMAIL "bug-akfavatar@akfoerster.de"
+
+/* terminal type */
 #define TERM "ansi"
 
 /* size for input buffer - not too small, please */
@@ -1780,13 +1782,22 @@ ansi_graphic_code (int mode)
       set_foreground_color (text_color);
       set_background_color (text_background_color);
       avt_underlined (AVT_FALSE);
+      avt_bold (AVT_FALSE);
       break;
 
+    case 1:			/* bold */
+      avt_bold (AVT_TRUE);
+      break;
+      
     case 4:			/* underlined */
     case 21:			/* double underlined (ambiguous) */
       avt_underlined (AVT_TRUE);
       break;
 
+    case 22:                    /* normal intensity */
+      avt_bold (AVT_FALSE);
+      break;
+      
     case 24:			/* not underlined */
       avt_underlined (AVT_FALSE);
       break;
@@ -1889,7 +1900,7 @@ escape_sequence (int fd, wchar_t last_character)
   unsigned int pos;
   static int saved_cursor_x, saved_cursor_y;
   static int saved_text_color, saved_text_background_color;
-  static avt_bool_t saved_underline_state;
+  static avt_bool_t saved_underline_state, saved_bold_state;
 
   pos = 0;
   ch = get_character (fd);
@@ -1908,6 +1919,7 @@ escape_sequence (int fd, wchar_t last_character)
       saved_text_color = text_color;
       saved_text_background_color = text_background_color;
       saved_underline_state = avt_get_underlined ();
+      saved_bold_state = avt_get_bold ();
       break;
 
     case L'8':			/* DECRC */
@@ -1918,6 +1930,7 @@ escape_sequence (int fd, wchar_t last_character)
       text_background_color = saved_text_background_color;
       set_background_color (text_background_color);
       avt_underlined (saved_underline_state);
+      avt_bold (saved_bold_state);
       break;
 
     case L'c':			/* RIS - reset device */
@@ -1931,6 +1944,7 @@ escape_sequence (int fd, wchar_t last_character)
       text_background_color = saved_text_background_color = 0xF;
       ansi_graphic_code (0);
       avt_underlined (AVT_FALSE);
+      avt_bold (AVT_FALSE);
       avt_clear ();
       return;
 
@@ -2537,7 +2551,9 @@ menu (void)
       if (max_y > 9)
 	{
 	  avt_underlined (AVT_TRUE);
+	  avt_bold (AVT_TRUE);
 	  avt_say (L"AKFAvatar");
+	  avt_bold (AVT_FALSE);
 	  avt_underlined (AVT_FALSE);
 	  avt_new_line ();
 	  avt_new_line ();
@@ -2783,7 +2799,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.75 2008-02-14 11:54:33 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.76 2008-02-14 12:47:00 akf Exp $");
 
   return EXIT_SUCCESS;
 }

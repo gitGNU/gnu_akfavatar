@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.45 2008-02-14 09:55:14 akf Exp $ */
+/* $Id: akfavatar.h,v 2.46 2008-02-14 12:46:59 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -211,6 +211,12 @@ void avt_underlined (avt_bool_t onoff);
 
 /* get underlined mode */
 avt_bool_t avt_get_underlined (void);
+
+/* set bold mode on or off (not recommended) */
+void avt_bold (avt_bool_t onoff);
+
+/* get bold mode */
+avt_bool_t avt_get_bold (void);
 
 /*
  * delay time for text-writing

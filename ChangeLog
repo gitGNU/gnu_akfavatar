@@ -1,7 +1,10 @@
 2008-02-14  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_drawchar):
-	  optimized
+	  optimized, support for bold and underline
+
+	* akfavatar.h, avatar.c (avt_bold, avt_get_bold):
+	  new functions
 
 	* akfavatar.h, avatar.c (avt_underlined, avt_get_underlined):
 	  new functions
