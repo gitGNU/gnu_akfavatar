@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.77 2008-02-14 21:08:06 akf Exp $ */
+/* $Id: avatarsay.c,v 2.78 2008-02-14 21:58:32 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -87,18 +87,18 @@ static const char *version_info_en =
   PRGNAME " (AKFAvatar) " AVTVERSION "\n"
   "Copyright (c) 2007, 2008 Andreas K. Foerster\n\n"
   "License GPLv3+: GNU GPL version 3 or later "
-  "<http://gnu.org/licenses/gpl.html>\n"
+  "<http://gnu.org/licenses/gpl.html>\n\n"
   "This is free software: you are free to change and redistribute it.\n"
-  "There is NO WARRANTY, to the extent permitted by law.\n\n"
+  "There is NO WARRANTY, to the extent permitted by law.\n"
   "Please read the manual for instructions.";
 
 static const char *version_info_de =
   PRGNAME " (AKFAvatar) " AVTVERSION "\n"
   "Copyright (c) 2007, 2008 Andreas K. Foerster\n\n"
   "Lizenz GPLv3+: GNU GPL Version 3 oder neuer "
-  "<http://gnu.org/licenses/gpl.html>\n"
+  "<http://gnu.org/licenses/gpl.html>\n\n"
   "Dies ist Freie Software: Sie dürfen es gemäß der GPL weitergeben und\n"
-  "überarbeiten. Für AKFAavatar besteht KEINERLEI GARANTIE.\n\n"
+  "überarbeiten. Für AKFAavatar besteht KEINERLEI GARANTIE.\n"
   "Bitte lesen Sie die Anleitung für weitere Details.";
 
 /* default encoding - either system encoding or given per parameters */
@@ -247,8 +247,9 @@ showversion (void)
 static void
 help (const char *prgname)
 {
-  printf ("\nUsage: %s [Options] textfile(s)\n\n", prgname);
-  puts ("A fancy text-viewer and scripting language for making demos.\n");
+  printf ("\nUsage: %s [Options]\n", prgname);
+  printf ("  or:  %s [Options] textfiles\n\n", prgname);
+  puts ("A fancy text-terminal, text-viewer and scripting language for making demos.\n");
   puts ("If textfile is - then read from stdin and don't loop.\n");
   puts ("Options:");
   puts (" -h, --help              show this help");
@@ -258,7 +259,7 @@ help (const char *prgname)
   puts (" -e, --execute           not supported on this system");
 #else
   puts (" -t, --terminal          terminal mode (run a shell in balloon)");
-  puts (" -e, --execute           execute lineoriented program in balloon");
+  puts (" -e, --execute           execute program in balloon");
 #endif
 #ifdef NO_FIFO
   puts (" -s, --saypipe           not supported on this system");
@@ -267,6 +268,7 @@ help (const char *prgname)
 #endif
   puts (" -w, --window            try to run the program in a window"
 	" (default)");
+  puts (" -n, --no-delay          don't delay output of text (default with -t and -e)");
   puts (" -f, --fullscreen        try to run the program in fullscreen mode");
   puts (" -F, --fullfullscreen    like -f, but use current display-size");
   puts (" -E, --encoding=enc      input data is encoded in encoding \"enc\"");
@@ -2803,7 +2805,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.77 2008-02-14 21:08:06 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.78 2008-02-14 21:58:32 akf Exp $");
 
   return EXIT_SUCCESS;
 }
