@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.85 2008-02-14 20:39:54 akf Exp $ */
+/* $Id: avatar.c,v 2.86 2008-02-15 13:03:03 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1088,6 +1088,104 @@ avt_move_y (int y)
       if (text_cursor_visible)
 	avt_show_text_cursor (AVT_TRUE);
     }
+}
+
+void
+avt_insert_spaces (int num)
+{
+  SDL_Rect rest, dest, clear;
+
+  /* no textfield? do nothing */
+  if (!screen || textfield.x < 0)
+    return;
+
+  if (text_cursor_visible)
+    avt_show_text_cursor (AVT_FALSE);
+
+  /* get the rest of the viewport */
+  rest.x = cursor.x;
+  rest.w = viewport.w - (cursor.x - viewport.x) - (num * FONTWIDTH);
+  rest.y = cursor.y;
+  rest.h = LINEHEIGHT;
+
+  dest.x = cursor.x + (num * FONTWIDTH);
+  dest.y = cursor.y;
+  SDL_BlitSurface (screen, &rest, screen, &dest);
+
+  clear.x = cursor.x;
+  clear.y = cursor.y;
+  clear.w = num * FONTWIDTH;
+  clear.h = LINEHEIGHT;
+  SDL_FillRect (screen, &clear,
+		SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF));
+
+  if (text_cursor_visible)
+    avt_show_text_cursor (AVT_TRUE);
+
+  /* update line */
+  SDL_UpdateRect (screen, viewport.x, cursor.y, viewport.w, FONTHEIGHT);
+}
+
+void
+avt_delete_characters (int num)
+{
+  SDL_Rect rest, dest, clear;
+
+  /* no textfield? do nothing */
+  if (!screen || textfield.x < 0)
+    return;
+
+  if (text_cursor_visible)
+    avt_show_text_cursor (AVT_FALSE);
+
+  /* get the rest of the viewport */
+  rest.x = cursor.x + (num * FONTWIDTH);
+  rest.w = viewport.w - (cursor.x - viewport.x) - (num * FONTWIDTH);
+  rest.y = cursor.y;
+  rest.h = LINEHEIGHT;
+
+  dest.x = cursor.x;
+  dest.y = cursor.y;
+  SDL_BlitSurface (screen, &rest, screen, &dest);
+
+  clear.x = viewport.w - (num * FONTWIDTH);
+  clear.y = cursor.y;
+  clear.w = num * FONTWIDTH;
+  clear.h = LINEHEIGHT;
+  SDL_FillRect (screen, &clear,
+		SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF));
+
+  if (text_cursor_visible)
+    avt_show_text_cursor (AVT_TRUE);
+
+  /* update line */
+  SDL_UpdateRect (screen, viewport.x, cursor.y, viewport.w, FONTHEIGHT);
+}
+
+void
+avt_erase_characters (int num)
+{
+  SDL_Rect clear;
+
+  /* no textfield? do nothing */
+  if (!screen || textfield.x < 0)
+    return;
+
+  if (text_cursor_visible)
+    avt_show_text_cursor (AVT_FALSE);
+
+  clear.x = cursor.x;
+  clear.y = cursor.y;
+  clear.w = num * FONTWIDTH;
+  clear.h = LINEHEIGHT;
+  SDL_FillRect (screen, &clear,
+		SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF));
+
+  if (text_cursor_visible)
+    avt_show_text_cursor (AVT_TRUE);
+
+  /* update area */
+  SDL_UpdateRect (screen, clear.x, clear.y, clear.w, clear.h);
 }
 
 void
@@ -3301,7 +3399,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.85 2008-02-14 20:39:54 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.86 2008-02-15 13:03:03 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();

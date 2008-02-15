@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.78 2008-02-14 21:58:32 akf Exp $ */
+/* $Id: avatarsay.c,v 2.79 2008-02-15 13:03:03 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -81,7 +81,7 @@
 #endif
 
 /* device attribute (DEC) */
-#define DS "\033[?6c"	/* claim to be a vt102 */
+#define DS "\033[?6c"		/* claim to be a vt102 */
 
 static const char *version_info_en =
   PRGNAME " (AKFAvatar) " AVTVERSION "\n"
@@ -249,7 +249,8 @@ help (const char *prgname)
 {
   printf ("\nUsage: %s [Options]\n", prgname);
   printf ("  or:  %s [Options] textfiles\n\n", prgname);
-  puts ("A fancy text-terminal, text-viewer and scripting language for making demos.\n");
+  puts
+    ("A fancy text-terminal, text-viewer and scripting language for making demos.\n");
   puts ("If textfile is - then read from stdin and don't loop.\n");
   puts ("Options:");
   puts (" -h, --help              show this help");
@@ -268,7 +269,8 @@ help (const char *prgname)
 #endif
   puts (" -w, --window            try to run the program in a window"
 	" (default)");
-  puts (" -n, --no-delay          don't delay output of text (default with -t and -e)");
+  puts
+    (" -n, --no-delay          don't delay output of text (default with -t and -e)");
   puts (" -f, --fullscreen        try to run the program in fullscreen mode");
   puts (" -F, --fullfullscreen    like -f, but use current display-size");
   puts (" -E, --encoding=enc      input data is encoded in encoding \"enc\"");
@@ -1792,16 +1794,16 @@ ansi_graphic_code (int mode)
     case 1:			/* bold */
       avt_bold (AVT_TRUE);
       break;
-      
+
     case 4:			/* underlined */
     case 21:			/* double underlined (ambiguous) */
       avt_underlined (AVT_TRUE);
       break;
 
-    case 22:                    /* normal intensity */
+    case 22:			/* normal intensity */
       avt_bold (AVT_FALSE);
       break;
-      
+
     case 24:			/* not underlined */
       avt_underlined (AVT_FALSE);
       break;
@@ -2015,11 +2017,25 @@ escape_sequence (int fd, wchar_t last_character)
   /* ch has last character in the sequence */
   switch (ch)
     {
+    case L'@':			/* ICH */
+      if (sequence[0] == '@')
+	avt_insert_spaces (1);
+      else
+	avt_insert_spaces (strtol (sequence, NULL, 10));
+      break;
+
     case L'A':			/* CUU */
       if (sequence[0] == 'A')
 	avt_move_y (avt_where_y () - 1);
       else
 	avt_move_y (avt_where_y () - strtol (sequence, NULL, 10));
+      break;
+
+    case L'a':			/* HPR */
+      if (sequence[0] == 'a')
+	avt_move_x (avt_where_x () + 1);
+      else
+	avt_move_x (avt_where_x () + strtol (sequence, NULL, 10));
       break;
 
     case L'B':			/* CUD */
@@ -2048,10 +2064,10 @@ escape_sequence (int fd, wchar_t last_character)
 	avt_move_x (avt_where_x () + strtol (sequence, NULL, 10));
       break;
 
-    case L'c':                  /* DA */
+    case L'c':			/* DA */
       write (prg_input, DS, sizeof (DS) - 1);
       break;
-      
+
     case L'D':			/* CUB */
       if (sequence[0] == 'D')
 	avt_move_x (avt_where_x () - 1);
@@ -2089,8 +2105,8 @@ escape_sequence (int fd, wchar_t last_character)
 	avt_move_y (avt_where_y () - strtol (sequence, NULL, 10));
       break;
 
-    /* L'f', HVP: see H */
-    
+      /* L'f', HVP: see H */
+
     case L'g':			/* TBC */
       if (sequence[0] == 'g' || sequence[0] == '0')
 	avt_set_tab (avt_where_x (), AVT_FALSE);
@@ -2189,16 +2205,11 @@ escape_sequence (int fd, wchar_t last_character)
       /* other values are unknown */
       break;
 
-    case L'P':			/* DCH - FIXME: unsure */
+    case L'P':			/* DCH */
       if (sequence[0] == 'P')
-	avt_backspace ();
+	avt_delete_characters (1);
       else
-	{
-	  int count, i;
-	  count = strtol (sequence, NULL, 10);
-	  for (i = 1; i < count; i++)
-	    avt_backspace ();
-	}
+	avt_delete_characters (strtol (sequence, NULL, 10));
       break;
 
     case L'r':			/* CSR */
@@ -2243,6 +2254,13 @@ escape_sequence (int fd, wchar_t last_character)
       avt_move_y (saved_cursor_y);
       break;
 
+    case L'X':			/* ECH */
+      if (sequence[0] == 'X')
+	avt_erase_characters (1);
+      else
+	avt_erase_characters (strtol (sequence, NULL, 10));
+      break;
+
     case L'Z':			/* CBT */
       if (sequence[0] == 'Z')
 	avt_last_tab ();
@@ -2253,6 +2271,13 @@ escape_sequence (int fd, wchar_t last_character)
 	  for (i = 0; i < count; i++)
 	    avt_last_tab ();
 	}
+      break;
+
+    case L'`':			/* HPA */
+      if (sequence[0] == '`')
+	avt_move_x (1);
+      else
+	avt_move_x (strtol (sequence, NULL, 10));
       break;
 
     default:
@@ -2501,7 +2526,7 @@ about_avatarsay (void)
     }
 
   avt_say_mb ("\n\nHomepage:  " HOMEPAGE);
-  
+
   set_encoding (default_encoding);
   avt_set_text_delay (default_delay);
 
@@ -2805,7 +2830,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.78 2008-02-14 21:58:32 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.79 2008-02-15 13:03:03 akf Exp $");
 
   return EXIT_SUCCESS;
 }
