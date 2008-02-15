@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.80 2008-02-15 15:48:17 akf Exp $ */
+/* $Id: avatarsay.c,v 2.81 2008-02-15 18:44:14 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2078,6 +2078,17 @@ escape_sequence (int fd, wchar_t last_character)
     case L'c':			/* DA */
       if (sequence[0] == 'c')
 	write (prg_input, DS, sizeof (DS) - 1);
+      else if (sequence[0] == '?')
+	{			/* I have no real infos about that :-( */
+	  if (sequence[1] == '1' && sequence[2] == 'c')
+	    avt_activate_cursor (AVT_FALSE);
+	  else if (sequence[1] == '2' && sequence[2] == 'c')
+	    avt_activate_cursor (AVT_TRUE);
+	  else if (sequence[1] == '0' && sequence[2] == 'c')
+	    avt_activate_cursor (AVT_TRUE);	/* normal? */
+	  else if (sequence[1] == '8' && sequence[2] == 'c')
+	    avt_activate_cursor (AVT_TRUE);	/* very visible */
+	}
       break;
 
     case L'D':			/* CUB */
@@ -2874,7 +2885,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.80 2008-02-15 15:48:17 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.81 2008-02-15 18:44:14 akf Exp $");
 
   return EXIT_SUCCESS;
 }
