@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.47 2008-02-15 13:03:03 akf Exp $ */
+/* $Id: akfavatar.h,v 2.48 2008-02-15 18:42:52 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -480,7 +480,7 @@ void avt_delete_characters (int num);
  * erase num characters from current position
  * don't move the cursor or the rest of the line
  */
-void avt_delete_characters (int num);
+void avt_erase_characters (int num);
 
 /*
  * set scroll mode
