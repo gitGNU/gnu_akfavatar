@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.79 2008-02-15 13:03:03 akf Exp $ */
+/* $Id: avatarsay.c,v 2.80 2008-02-15 15:48:17 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -81,7 +81,7 @@
 #endif
 
 /* device attribute (DEC) */
-#define DS "\033[?6c"		/* claim to be a vt102 */
+#define DS "\033[?1;2c"		/* claim to be a vt100 with advanced video */
 
 static const char *version_info_en =
   PRGNAME " (AKFAvatar) " AVTVERSION "\n"
@@ -176,6 +176,9 @@ static int region_min_y, region_max_y;
 /* colors for terminal mode */
 static int text_color;
 static int text_background_color;
+
+/* character for DEC cursor keys (either [ or O) */
+static char dec_cursor_seq[3];
 
 /* language (of current locale) */
 enum language_t
@@ -1231,19 +1234,23 @@ prg_keyhandler (int sym, int mod, int unicode)
       switch (sym)
 	{
 	case 273:		/* up arrow */
-	  write (prg_input, "\033[A", 3);
+	  dec_cursor_seq[2] = 'A';
+	  write (prg_input, dec_cursor_seq, 3);
 	  break;
 
 	case 274:		/* down arrow */
-	  write (prg_input, "\033[B", 3);
+	  dec_cursor_seq[2] = 'B';
+	  write (prg_input, dec_cursor_seq, 3);
 	  break;
 
 	case 275:		/* right arrow */
-	  write (prg_input, "\033[C", 3);
+	  dec_cursor_seq[2] = 'C';
+	  write (prg_input, dec_cursor_seq, 3);
 	  break;
 
 	case 276:		/* left arrow */
-	  write (prg_input, "\033[D", 3);
+	  dec_cursor_seq[2] = 'D';
+	  write (prg_input, dec_cursor_seq, 3);
 	  break;
 
 	case 277:		/* Insert */
@@ -1378,6 +1385,7 @@ execute_process (const char *fname)
   char *terminalname;
   struct termios settings;
   struct winsize size;		/* does this have to be static? */
+  char *shell = "/bin/sh";
 
   /* clear text-buffer */
   wcbuf_pos = wcbuf_len = 0;
@@ -1390,6 +1398,9 @@ execute_process (const char *fname)
       if (!popup)
 	move_in ();
     }
+
+  if (fname == NULL)
+    shell = get_user_shell ();
 
   /* as specified in POSIX.1-2001 */
   master = posix_openpt (O_RDWR);
@@ -1461,11 +1472,8 @@ execute_process (const char *fname)
       /* programs can identify avatarsay with this */
       putenv ("AKFAVTTERM=" AVTVERSION);
 
-      if (fname == NULL)
-	{			/* execute shell */
-	  char *shell = get_user_shell ();
-	  execl (shell, shell, (char *) NULL);
-	}
+      if (fname == NULL)	/* execute shell */
+	execl (shell, shell, (char *) NULL);
       else			/* execute the command */
 	execl ("/bin/sh", "/bin/sh", "-c", fname, (char *) NULL);
 
@@ -1507,6 +1515,9 @@ execute_process (const char *fname)
   fcntl (master, F_SETFL, O_NONBLOCK);
 
   prg_input = master;
+  dec_cursor_seq[0] = '\033';
+  dec_cursor_seq[1] = '[';
+  dec_cursor_seq[2] = ' ';	/* to be filled later */
   avt_register_keyhandler (prg_keyhandler);
   read_error_is_eof = AVT_TRUE;
 
@@ -2065,7 +2076,8 @@ escape_sequence (int fd, wchar_t last_character)
       break;
 
     case L'c':			/* DA */
-      write (prg_input, DS, sizeof (DS) - 1);
+      if (sequence[0] == 'c')
+	write (prg_input, DS, sizeof (DS) - 1);
       break;
 
     case L'D':			/* CUB */
@@ -2138,6 +2150,38 @@ escape_sequence (int fd, wchar_t last_character)
 	    m = 1;
 	  avt_move_y (n);
 	  avt_move_x (m);
+	}
+      break;
+
+    case L'h':			/* DECSET */
+      if (sequence[0] == '?')
+	{
+	  int val = strtol (&sequence[1], NULL, 10);
+	  switch (val)
+	    {
+	    case 1:
+	      dec_cursor_seq[1] = 'O';
+	      break;
+	    case 25:
+	      avt_activate_cursor (AVT_TRUE);
+	      break;
+	    }
+	}
+      break;
+
+    case L'l':			/* DECRST */
+      if (sequence[0] == '?')
+	{
+	  int val = strtol (&sequence[1], NULL, 10);
+	  switch (val)
+	    {
+	    case 1:
+	      dec_cursor_seq[1] = '[';
+	      break;
+	    case 25:
+	      avt_activate_cursor (AVT_FALSE);
+	      break;
+	    }
 	}
       break;
 
@@ -2830,7 +2874,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.79 2008-02-15 13:03:03 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.80 2008-02-15 15:48:17 akf Exp $");
 
   return EXIT_SUCCESS;
 }
