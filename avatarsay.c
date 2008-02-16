@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.82 2008-02-16 13:14:19 akf Exp $ */
+/* $Id: avatarsay.c,v 2.83 2008-02-16 15:46:13 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1803,16 +1803,22 @@ ansi_graphic_code (int mode)
   switch (mode)
     {
     case 0:			/* normal */
+      avt_underlined (AVT_FALSE);
+      avt_bold (AVT_FALSE);
       text_color = 0;
       text_background_color = 0xF;
       set_foreground_color (text_color);
       set_background_color (text_background_color);
-      avt_underlined (AVT_FALSE);
-      avt_bold (AVT_FALSE);
       break;
 
     case 1:			/* bold */
       avt_bold (AVT_TRUE);
+      /* bold is sometimes assumed to light colors */
+      if (text_color > 0 && text_color < 7)
+        {
+          text_color += 8;
+          set_foreground_color (text_color);
+	}
       break;
 
     case 4:			/* underlined */
@@ -1856,6 +1862,9 @@ ansi_graphic_code (int mode)
     case 36:
     case 37:
       text_color = (mode - 30);
+      /* bold is sometimes assumed to be in light color */
+      if (text_color != 0 && text_color != 7 && avt_get_bold ())
+        text_color += 8;
       set_foreground_color (text_color);
       break;
 
@@ -2894,7 +2903,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.82 2008-02-16 13:14:19 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.83 2008-02-16 15:46:13 akf Exp $");
 
   return EXIT_SUCCESS;
 }
