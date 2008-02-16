@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.84 2008-02-16 17:48:45 akf Exp $ */
+/* $Id: avatarsay.c,v 2.85 2008-02-16 19:34:58 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1258,18 +1258,18 @@ prg_keyhandler (int sym, int mod, int unicode)
 	  break;
 
 	case 277:		/* Insert */
-	  write (prg_input, "\033[L", 3);
-	  /* write (prg_input, "\033[2~", 4); *//* linux */
+	  /* write (prg_input, "\033[L", 3); */
+	  write (prg_input, "\033[2~", 4);	/* linux */
 	  break;
 
 	case 278:		/* Home */
-	  write (prg_input, "\033[H", 3);
-	  /* write (prg_input, "\033[1~", 4); *//* linux */
+	  /* write (prg_input, "\033[H", 3); */
+	  write (prg_input, "\033[1~", 4);	/* linux */
 	  break;
 
 	case 279:		/* End */
-	  write (prg_input, "\033[0w", 4);
-	  /* write (prg_input, "\033[4~", 4); *//* linux */
+	  /* write (prg_input, "\033[0w", 4); */
+	  write (prg_input, "\033[4~", 4);	/* linux */
 	  break;
 
 	case 280:		/* Page up */
@@ -1505,7 +1505,7 @@ execute_process (const char *fname)
 
   /* TODO: improve */
   settings.c_cc[VERASE] = 8;	/* Backspace */
-  settings.c_iflag |= ICRNL;	/* input: cr -> nl */
+  settings.c_iflag &= ~ICRNL;	/* input: not cr -> nl */
   settings.c_lflag |= (ECHO | ECHOE | ECHOK | ICANON);
 
   if (tcsetattr (master, TCSANOW, &settings) < 0)
@@ -1815,9 +1815,9 @@ ansi_graphic_code (int mode)
       avt_bold (AVT_TRUE);
       /* bold is sometimes assumed to light colors */
       if (text_color > 0 && text_color < 7)
-        {
-          text_color += 8;
-          set_foreground_color (text_color);
+	{
+	  text_color += 8;
+	  set_foreground_color (text_color);
 	}
       break;
 
@@ -1864,7 +1864,7 @@ ansi_graphic_code (int mode)
       text_color = (mode - 30);
       /* bold is sometimes assumed to be in light color */
       if (text_color > 0 && text_color < 7 && avt_get_bold ())
-        text_color += 8;
+	text_color += 8;
       set_foreground_color (text_color);
       break;
 
@@ -1992,6 +1992,7 @@ escape_sequence (int fd, wchar_t last_character)
       return;
 
     case L'E':
+      avt_move_x (1);
       avt_new_line ();
       return;
 
@@ -2192,8 +2193,21 @@ escape_sequence (int fd, wchar_t last_character)
 	    case 1:
 	      dec_cursor_seq[1] = 'O';
 	      break;
+	    case 6:
+	      avt_set_origin_mode (AVT_TRUE);
+	      break;
 	    case 25:
 	      avt_activate_cursor (AVT_TRUE);
+	      break;
+	    }
+	}
+      else
+	{
+	  int val = strtol (sequence, NULL, 10);
+	  switch (val)
+	    {
+	    case 20:
+	      avt_newline_mode (AVT_TRUE);
 	      break;
 	    }
 	}
@@ -2208,8 +2222,21 @@ escape_sequence (int fd, wchar_t last_character)
 	    case 1:
 	      dec_cursor_seq[1] = '[';
 	      break;
+	    case 6:
+	      avt_set_origin_mode (AVT_FALSE);
+	      break;
 	    case 25:
 	      avt_activate_cursor (AVT_FALSE);
+	      break;
+	    }
+	}
+      else
+	{
+	  int val = strtol (sequence, NULL, 10);
+	  switch (val)
+	    {
+	    case 20:
+	      avt_newline_mode (AVT_FALSE);
 	      break;
 	    }
 	}
@@ -2258,17 +2285,17 @@ escape_sequence (int fd, wchar_t last_character)
       break;
 
     case L'M':			/* DL */
-      if (sequence[0] == 'L')
+      if (sequence[0] == 'M')
 	avt_delete_lines (avt_where_y (), 1);
       else
 	avt_delete_lines (avt_where_y (), strtol (sequence, NULL, 10));
       break;
 
     case L'n':			/* DSR */
-      if (sequence[0] == '5')
+      if (sequence[0] == '5' && sequence[1] == 'n')
 	write (prg_input, "\033[0n", 4);	/* device okay */
       /* "\033[3n" for failure */
-      else if (sequence[0] == '6')
+      else if (sequence[0] == '6' && sequence[1] == 'n')
 	{
 	  /* report cursor position */
 	  char s[80];
@@ -2906,7 +2933,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.84 2008-02-16 17:48:45 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.85 2008-02-16 19:34:58 akf Exp $");
 
   return EXIT_SUCCESS;
 }
