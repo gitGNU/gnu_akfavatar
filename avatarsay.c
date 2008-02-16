@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.81 2008-02-15 18:44:14 akf Exp $ */
+/* $Id: avatarsay.c,v 2.82 2008-02-16 13:14:19 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -65,7 +65,11 @@
 #define BUGMAIL "bug-akfavatar@akfoerster.de"
 
 /* terminal type */
-#define TERM "ansi"
+/* 
+ * this is not dependent on the system on which it runs,
+ * but the terminal database should have an entry for this
+ */
+#define TERM "linux"
 
 /* size for input buffer - not too small, please */
 /* .encoding must be in first buffer */
@@ -1465,6 +1469,11 @@ execute_process (const char *fname)
 	_exit (EXIT_FAILURE);
 
       close (slave);
+
+      /* set the controling terminal */
+#ifdef TIOCSCTTY
+      ioctl (STDIN_FILENO, TIOCSCTTY, 0);
+#endif
 
       /* still experimental1 */
       putenv ("TERM=" TERM);
@@ -2885,7 +2894,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.81 2008-02-15 18:44:14 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.82 2008-02-16 13:14:19 akf Exp $");
 
   return EXIT_SUCCESS;
 }
