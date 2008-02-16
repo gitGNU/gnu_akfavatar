@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.48 2008-02-15 18:42:52 akf Exp $ */
+/* $Id: akfavatar.h,v 2.49 2008-02-16 17:48:44 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -489,6 +489,9 @@ void avt_erase_characters (int num);
  */
 void avt_set_scroll_mode (int mode);
 int avt_get_scroll_mode (void);
+
+/* set newline mode (default: on) */
+void avt_newline_mode (avt_bool_t mode);
 
 /*
  * origin mode

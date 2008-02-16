@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.83 2008-02-16 15:46:13 akf Exp $ */
+/* $Id: avatarsay.c,v 2.84 2008-02-16 17:48:45 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1863,7 +1863,7 @@ ansi_graphic_code (int mode)
     case 37:
       text_color = (mode - 30);
       /* bold is sometimes assumed to be in light color */
-      if (text_color != 0 && text_color != 7 && avt_get_bold ())
+      if (text_color > 0 && text_color < 7 && avt_get_bold ())
         text_color += 8;
       set_foreground_color (text_color);
       break;
@@ -1972,6 +1972,7 @@ escape_sequence (int fd, wchar_t last_character)
       region_min_y = 1;
       region_max_y = max_y;
       avt_viewport (1, region_min_y, max_x, region_max_y);
+      avt_newline_mode (AVT_FALSE);
       avt_set_origin_mode (AVT_FALSE);
       avt_reset_tab_stops ();
       saved_cursor_x = saved_cursor_y = 1;
@@ -2378,6 +2379,7 @@ process_subprogram (int fd)
   text_background_color = 0xF;
   stop = AVT_FALSE;
   avt_stop_on_esc (AVT_FALSE);
+  avt_newline_mode (AVT_FALSE);
   avt_activate_cursor (AVT_TRUE);
 
   /* like vt102 */
@@ -2650,6 +2652,7 @@ menu (void)
       avt_set_text_color (0x00, 0x00, 0x00);
       avt_set_text_delay (0);
       avt_set_origin_mode (AVT_FALSE);
+      avt_newline_mode (AVT_TRUE);
       avt_viewport (19, 1, 42, avt_get_max_y ());
 
       if (max_y > 9)
@@ -2903,7 +2906,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.83 2008-02-16 15:46:13 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.84 2008-02-16 17:48:45 akf Exp $");
 
   return EXIT_SUCCESS;
 }

@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.86 2008-02-15 13:03:03 akf Exp $ */
+/* $Id: avatar.c,v 2.87 2008-02-16 17:48:44 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -211,6 +211,7 @@ static avt_keyhandler avt_ext_keyhandler = NULL;
 
 static SDL_Surface *screen, *avt_image, *avt_character;
 static SDL_Surface *avt_text_cursor, *avt_cursor_character;
+static avt_bool_t newline_mode;         /* when off, you need an extra CR */
 static avt_bool_t underlined, bold;	/* text underlined, bold? */
 static Uint32 screenflags;	/* flags for the screen */
 static int avt_mode;		/* whether fullscreen or window or ... */
@@ -1301,6 +1302,12 @@ avt_viewport (int x, int y, int width, int height)
 }
 
 void
+avt_newline_mode (avt_bool_t mode)
+{
+  newline_mode = mode;
+}
+
+void
 avt_set_origin_mode (avt_bool_t mode)
 {
   SDL_Rect area;
@@ -1637,7 +1644,8 @@ avt_new_line (void)
   if (text_cursor_visible)
     avt_show_text_cursor (AVT_FALSE);
 
-  cursor.x = linestart;
+  if (newline_mode)
+    cursor.x = linestart;
 
   /* if the cursor is at the last line of the viewport
    * scroll up
@@ -1942,6 +1950,7 @@ avt_put_character (const wchar_t ch)
   switch (ch)
     {
     case L'\n':
+    case L'\v':
       avt_new_line ();
       break;
 
@@ -1950,7 +1959,6 @@ avt_put_character (const wchar_t ch)
       break;
 
     case L'\f':
-    case L'\v':
       avt_flip_page ();
       break;
 
@@ -3387,6 +3395,7 @@ avt_initialize (const char *title, const char *icontitle,
   do_stop_on_esc = AVT_TRUE;
   underlined = AVT_FALSE;
   scroll_mode = 1;
+  newline_mode = AVT_TRUE;
   origin_mode = AVT_TRUE;	/* for backwards compatibility */
   avt_visible = AVT_FALSE;
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
@@ -3399,7 +3408,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.86 2008-02-15 13:03:03 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.87 2008-02-16 17:48:44 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
