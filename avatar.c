@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.89 2008-02-17 12:14:22 akf Exp $ */
+/* $Id: avatar.c,v 2.90 2008-02-17 12:39:55 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -211,6 +211,7 @@ static avt_keyhandler avt_ext_keyhandler = NULL;
 
 static SDL_Surface *screen, *avt_image, *avt_character;
 static SDL_Surface *avt_text_cursor, *avt_cursor_character;
+static Uint32 text_background_color;
 static avt_bool_t newline_mode;	/* when off, you need an extra CR */
 static avt_bool_t underlined, bold;	/* text underlined, bold? */
 static Uint32 screenflags;	/* flags for the screen */
@@ -1117,8 +1118,7 @@ avt_insert_spaces (int num)
   clear.y = cursor.y;
   clear.w = num * FONTWIDTH;
   clear.h = LINEHEIGHT;
-  SDL_FillRect (screen, &clear,
-		SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF));
+  SDL_FillRect (screen, &clear, text_background_color);
 
   if (text_cursor_visible)
     avt_show_text_cursor (AVT_TRUE);
@@ -1153,8 +1153,7 @@ avt_delete_characters (int num)
   clear.y = cursor.y;
   clear.w = num * FONTWIDTH;
   clear.h = LINEHEIGHT;
-  SDL_FillRect (screen, &clear,
-		SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF));
+  SDL_FillRect (screen, &clear, text_background_color);
 
   if (text_cursor_visible)
     avt_show_text_cursor (AVT_TRUE);
@@ -1179,8 +1178,7 @@ avt_erase_characters (int num)
   clear.y = cursor.y;
   clear.w = num * FONTWIDTH;
   clear.h = LINEHEIGHT;
-  SDL_FillRect (screen, &clear,
-		SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF));
+  SDL_FillRect (screen, &clear, text_background_color);
 
   if (text_cursor_visible)
     avt_show_text_cursor (AVT_TRUE);
@@ -1222,8 +1220,7 @@ avt_delete_lines (int line, int num)
   clear.h = num * LINEHEIGHT;
   clear.x = viewport.x;
   clear.y = viewport.y + viewport.h - (num * LINEHEIGHT);
-  SDL_FillRect (screen, &clear,
-		SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF));
+  SDL_FillRect (screen, &clear, text_background_color);
 
   if (text_cursor_visible)
     avt_show_text_cursor (AVT_TRUE);
@@ -1264,8 +1261,7 @@ avt_insert_lines (int line, int num)
   clear.y = viewport.y + ((line - 1) * LINEHEIGHT);
   clear.w = viewport.w;
   clear.h = num * LINEHEIGHT;
-  SDL_FillRect (screen, &clear,
-		SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF));
+  SDL_FillRect (screen, &clear, text_background_color);
 
   if (text_cursor_visible)
     avt_show_text_cursor (AVT_TRUE);
@@ -1351,8 +1347,6 @@ avt_get_origin_mode (void)
 void
 avt_clear (void)
 {
-  SDL_Color color;
-
   /* not initialized? -> do nothing */
   if (!screen)
     return;
@@ -1362,9 +1356,7 @@ avt_clear (void)
     avt_draw_balloon ();
 
   /* use background color of characters */
-  color = avt_character->format->palette->colors[0];
-  SDL_FillRect (screen, &viewport,
-		SDL_MapRGB (screen->format, color.r, color.g, color.b));
+  SDL_FillRect (screen, &viewport, text_background_color);
 
   cursor.x = linestart;
 
@@ -1385,7 +1377,6 @@ avt_clear (void)
 void
 avt_clear_up (void)
 {
-  SDL_Color color;
   SDL_Rect dst;
 
   /* not initialized? -> do nothing */
@@ -1396,16 +1387,12 @@ avt_clear_up (void)
   if (textfield.x < 0)
     avt_draw_balloon ();
 
-  /* use background color of characters */
-  color = avt_character->format->palette->colors[0];
-
   dst.x = viewport.x;
   dst.w = viewport.w;
   dst.y = viewport.y + FONTHEIGHT;
   dst.h = cursor.y;
 
-  SDL_FillRect (screen, &dst,
-		SDL_MapRGB (screen->format, color.r, color.g, color.b));
+  SDL_FillRect (screen, &dst, text_background_color);
 
   if (text_cursor_visible)
     {
@@ -1419,7 +1406,6 @@ avt_clear_up (void)
 void
 avt_clear_down (void)
 {
-  SDL_Color color;
   SDL_Rect dst;
 
   /* not initialized? -> do nothing */
@@ -1433,16 +1419,12 @@ avt_clear_down (void)
   if (text_cursor_visible)
     avt_show_text_cursor (AVT_FALSE);
 
-  /* use background color of characters */
-  color = avt_character->format->palette->colors[0];
-
   dst.x = viewport.x;
   dst.w = viewport.w;
   dst.y = cursor.y;
   dst.h = viewport.h - (cursor.y - viewport.y);
 
-  SDL_FillRect (screen, &dst,
-		SDL_MapRGB (screen->format, color.r, color.g, color.b));
+  SDL_FillRect (screen, &dst, text_background_color);
 
   if (text_cursor_visible)
     {
@@ -1467,9 +1449,6 @@ avt_clear_eol (void)
   if (textfield.x < 0)
     avt_draw_balloon ();
 
-  /* use background color of characters */
-  color = avt_character->format->palette->colors[0];
-
   if (textdir_rtl)		/* right to left */
     {
       dst.x = viewport.x;
@@ -1485,8 +1464,7 @@ avt_clear_eol (void)
       dst.w = viewport.w - (cursor.x - viewport.x);
     }
 
-  SDL_FillRect (screen, &dst,
-		SDL_MapRGB (screen->format, color.r, color.g, color.b));
+  SDL_FillRect (screen, &dst, text_background_color);
 
   if (text_cursor_visible)
     {
@@ -1501,7 +1479,6 @@ avt_clear_eol (void)
 void
 avt_clear_bol (void)
 {
-  SDL_Color color;
   SDL_Rect dst;
 
   /* not initialized? -> do nothing */
@@ -1511,9 +1488,6 @@ avt_clear_bol (void)
   /* if there's no balloon, draw it */
   if (textfield.x < 0)
     avt_draw_balloon ();
-
-  /* use background color of characters */
-  color = avt_character->format->palette->colors[0];
 
   if (textdir_rtl)		/* right to left */
     {
@@ -1530,8 +1504,7 @@ avt_clear_bol (void)
       dst.w = cursor.x + FONTWIDTH - viewport.x;
     }
 
-  SDL_FillRect (screen, &dst,
-		SDL_MapRGB (screen->format, color.r, color.g, color.b));
+  SDL_FillRect (screen, &dst, text_background_color);
 
   if (text_cursor_visible)
     {
@@ -1545,7 +1518,6 @@ avt_clear_bol (void)
 void
 avt_clear_line (void)
 {
-  SDL_Color color;
   SDL_Rect dst;
 
   /* not initialized? -> do nothing */
@@ -1556,16 +1528,12 @@ avt_clear_line (void)
   if (textfield.x < 0)
     avt_draw_balloon ();
 
-  /* use background color of characters */
-  color = avt_character->format->palette->colors[0];
-
   dst.x = viewport.x;
   dst.y = cursor.y;
   dst.h = FONTHEIGHT;
   dst.w = viewport.w;
 
-  SDL_FillRect (screen, &dst,
-		SDL_MapRGB (screen->format, color.r, color.g, color.b));
+  SDL_FillRect (screen, &dst, text_background_color);
 
   if (text_cursor_visible)
     {
@@ -1897,16 +1865,13 @@ static void
 avt_clearchar (void)
 {
   SDL_Rect dst;
-  SDL_Color color;
 
   dst.x = cursor.x;
   dst.y = cursor.y;
   dst.w = FONTWIDTH;
   dst.h = FONTHEIGHT;
 
-  color = avt_character->format->palette->colors[0];
-  SDL_FillRect (screen, &dst,
-		SDL_MapRGB (screen->format, color.r, color.g, color.b));
+  SDL_FillRect (screen, &dst, text_background_color);
   avt_showchar ();
 }
 
@@ -3279,6 +3244,8 @@ avt_set_text_background_color (int red, int green, int blue)
       color.b = blue;
       SDL_SetColors (avt_character, &color, 0, 1);
     }
+
+  text_background_color = SDL_MapRGB (screen->format, red, green, blue);
 }
 
 void
@@ -3411,7 +3378,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.89 2008-02-17 12:14:22 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.90 2008-02-17 12:39:55 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
@@ -3510,6 +3477,7 @@ avt_initialize (const char *title, const char *icontitle,
     colors[1].g = 0x00;
     colors[1].b = 0x00;
     SDL_SetColors (avt_character, colors, 0, 2);
+    text_background_color = SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF);
   }
 
   /* prepare text-mode cursor */
