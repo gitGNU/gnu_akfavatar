@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.87 2008-02-16 17:48:44 akf Exp $ */
+/* $Id: avatar.c,v 2.88 2008-02-17 11:34:04 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -211,7 +211,7 @@ static avt_keyhandler avt_ext_keyhandler = NULL;
 
 static SDL_Surface *screen, *avt_image, *avt_character;
 static SDL_Surface *avt_text_cursor, *avt_cursor_character;
-static avt_bool_t newline_mode;         /* when off, you need an extra CR */
+static avt_bool_t newline_mode;	/* when off, you need an extra CR */
 static avt_bool_t underlined, bold;	/* text underlined, bold? */
 static Uint32 screenflags;	/* flags for the screen */
 static int avt_mode;		/* whether fullscreen or window or ... */
@@ -1600,18 +1600,15 @@ avt_scroll_up (void)
       if (text_cursor_visible)
 	avt_show_text_cursor (AVT_FALSE);
 
+      avt_delete_lines (((viewport.y - textfield.y) / LINEHEIGHT) + 1, 1);
+
       if (origin_mode)
-	{
-	  avt_delete_lines (1, 1);
-	  cursor.x = linestart;
-	  cursor.y = viewport.y + viewport.h - LINEHEIGHT;
-	}
+	cursor.y = viewport.y + viewport.h - LINEHEIGHT;
       else
-	{
-	  avt_delete_lines (((viewport.y - textfield.y) / LINEHEIGHT) + 1, 1);
-	  cursor.x = linestart;
-	  cursor.y = textfield.y + textfield.h - LINEHEIGHT;
-	}
+	cursor.y = textfield.y + textfield.h - LINEHEIGHT;
+
+      if (newline_mode)
+	cursor.x = linestart;
 
       if (text_cursor_visible)
 	avt_show_text_cursor (AVT_TRUE);
@@ -3408,7 +3405,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.87 2008-02-16 17:48:44 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.88 2008-02-17 11:34:04 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
