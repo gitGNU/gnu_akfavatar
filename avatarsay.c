@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.85 2008-02-16 19:34:58 akf Exp $ */
+/* $Id: avatarsay.c,v 2.86 2008-02-17 11:12:55 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2330,7 +2330,9 @@ escape_sequence (int fd, wchar_t last_character)
 	  if (max <= 0)
 	    max = 1;
 
-	  avt_viewport (1, min, max_x, max);
+	  avt_viewport (1, min, 
+	                max_x - 1 + 1, 
+			max - min + 1);
 
 	  if (avt_get_origin_mode ())
 	    {
@@ -2933,7 +2935,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.85 2008-02-16 19:34:58 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.86 2008-02-17 11:12:55 akf Exp $");
 
   return EXIT_SUCCESS;
 }
