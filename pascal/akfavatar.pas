@@ -169,6 +169,11 @@ procedure RestoreInOut;
   procedure page;
 {$EndIf}
 
+{ switch cursor on or off }
+{ extensions compatible to Free Pascal }
+procedure CursorOn;
+procedure CursorOff;
+
 { keyboard handling }
 { partly CRT compatible - only Latin1 chars so far }
 function KeyPressed: boolean;
@@ -209,15 +214,18 @@ procedure TextColor (Color: Byte);
 { compatible to CRT unit, but light colors can be used }
 procedure TextBackground (Color: Byte);
 
-{ set black on white text colors }
+{ set black on white text colors, switch bold and underlined off }
 { name compatible to CRT unit, but the colors differ }
 procedure NormVideo;
 
-{ set high color intensity }
+{ switch bold mode on or off }
+{ this is different from the CRT unit }
+{ be careful, when you combine this with TextColor }
 procedure HighVideo;
-
-{ set low color intensity }
 procedure LowVideo;
+
+{ switch underline mode on or off }
+procedure Underlined (onoff: boolean);
 
 { shows the avatar without the balloon }
 procedure ShowAvatar;
@@ -395,6 +403,13 @@ procedure avt_set_text_color (red, green, blue: CInteger);
 
 procedure avt_set_text_background_color (red, green, blue: CInteger);
   libakfavatar 'avt_set_text_background_color';
+
+procedure avt_bold (onoff: avt_bool_t); libakfavatar 'avt_bold';
+
+procedure avt_underlined (onoff: avt_bool_t); libakfavatar 'avt_underlined';
+
+procedure avt_activate_cursor (onoff: avt_bool_t); 
+  libakfavatar 'avt_activate_cursor';
 
 function initialize(title, icon: CString;
                      image: PAvatarImage;
@@ -650,6 +665,9 @@ end;
 procedure NormVideo;
 begin
 if not initialized then initializeAvatar;
+avt_bold (ord(false));
+avt_underlined (ord(false));
+
 TextAttr := $F0;
 OldTextAttr := TextAttr;
 avt_set_text_color ($00, $00, $00);
@@ -658,14 +676,17 @@ end;
 
 procedure HighVideo;
 begin
-{ set highcolor bit }
-TextColor ((TextAttr and $0F) or $08)
+avt_bold (ord(true))
 end;
 
 procedure LowVideo;
 begin
-{ unset highcolor bit }
-TextColor (TextAttr and $07)
+avt_bold (ord(false))
+end;
+
+procedure Underlined (onoff: boolean);
+begin
+avt_underlined (ord(onoff))
 end;
 
 procedure SetMonochrome (monochrome: Boolean);
@@ -854,6 +875,16 @@ end;
   end;
 
 {$EndIf} { FPC }
+
+procedure CursorOff;
+begin
+avt_activate_cursor (ord(false))
+end;
+
+procedure CursorOn;
+begin
+avt_activate_cursor (ord(true))
+end;
 
 procedure KeyHandler(sym, modifiers, unicode: CInteger); 
 {$IfDef FPC} cdecl; {$EndIf}
