@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.15 2007-12-30 13:33:17 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.16 2008-02-17 19:25:11 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -93,7 +93,8 @@ fill_audio (void *unused, Uint8 * stream, int len)
 static void
 short_audio_sound (void)
 {
-  if (mybell)
+  /* if mybell is loaded and nothing is currently playing */
+  if (mybell && soundleft <= 0)
     avt_play_audio (mybell, AVT_FALSE);
 }
 
@@ -101,7 +102,7 @@ short_audio_sound (void)
 int
 avt_initialize_audio (void)
 {
-  SDL_SetError ("$Id: avatar-audio.c,v 2.15 2007-12-30 13:33:17 akf Exp $");
+  SDL_SetError ("$Id: avatar-audio.c,v 2.16 2008-02-17 19:25:11 akf Exp $");
   SDL_ClearError ();
 
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)

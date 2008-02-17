@@ -1,26 +1,29 @@
 2008-02-17  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatar-audio.c (short_audio_sound):
+	avoid sound to interrupt itself or other sounds
+	
         * avatar.c (text_background_color):
 	new variable
 
 	* avatar.c (avt_drawchar):
-	  optimized, support for bold and underline
+	optimized, support for bold and underline
 
 	* akfavatar.h, avatar.c (avt_bold, avt_get_bold):
-	  new functions
+	new functions
 
 	* akfavatar.h, avatar.c (avt_underlined, avt_get_underlined):
-	  new functions
+	new functions
 
 	* akfavatar.h, avatar.c (AVT_MAKE_BOOL):
-	  new makro
+	new makro
 
 	* akfavatar.h, avatar.c (avt_get_menu):
-	  new function
+	new function
 
 	* akfavatar.h, avatar.c (avt_next_tab, avt_last_tab)
 	  (avt_clear_tab_stops, avt_set_tab):
-	  new functions
+	new functions
 
 	* avatar.c (avt_next_tab, avt_reset_tab_stops):
 	new tab handling
