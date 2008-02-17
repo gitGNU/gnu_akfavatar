@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.90 2008-02-17 12:39:55 akf Exp $ */
+/* $Id: avatar.c,v 2.91 2008-02-17 17:24:19 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1762,13 +1762,21 @@ avt_forward (void)
     {
       cursor.x -= FONTWIDTH;
       if (cursor.x < viewport.x)
-	avt_new_line ();
+        {
+	  if (!newline_mode)
+	    avt_carriage_return ();
+	  avt_new_line ();
+	}
     }
   else				/* left to right */
     {
       cursor.x += FONTWIDTH;
       if (cursor.x > viewport.x + viewport.w - FONTWIDTH)
-	avt_new_line ();
+        {
+	  if (!newline_mode)
+	    avt_carriage_return ();
+	  avt_new_line ();
+	}
     }
 
   if (text_cursor_visible)
@@ -2470,6 +2478,8 @@ avt_ask (wchar_t * s, const int size)
   cursor.x = (textdir_rtl) ? cursor.x - FONTWIDTH : cursor.x + FONTWIDTH;
   avt_backspace ();
 
+  if (!newline_mode)
+    avt_carriage_return ();
   avt_new_line ();
 
   return _avt_STATUS;
@@ -3378,7 +3388,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.90 2008-02-17 12:39:55 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.91 2008-02-17 17:24:19 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
