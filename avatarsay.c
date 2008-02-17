@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.86 2008-02-17 11:12:55 akf Exp $ */
+/* $Id: avatarsay.c,v 2.87 2008-02-17 15:46:37 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1505,7 +1505,7 @@ execute_process (const char *fname)
 
   /* TODO: improve */
   settings.c_cc[VERASE] = 8;	/* Backspace */
-  settings.c_iflag &= ~ICRNL;	/* input: not cr -> nl */
+  settings.c_iflag |= ICRNL;	/* input: cr -> nl */
   settings.c_lflag |= (ECHO | ECHOE | ECHOK | ICANON);
 
   if (tcsetattr (master, TCSANOW, &settings) < 0)
@@ -2935,7 +2935,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.86 2008-02-17 11:12:55 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.87 2008-02-17 15:46:37 akf Exp $");
 
   return EXIT_SUCCESS;
 }
