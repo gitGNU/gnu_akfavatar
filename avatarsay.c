@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.87 2008-02-17 15:46:37 akf Exp $ */
+/* $Id: avatarsay.c,v 2.88 2008-02-17 22:29:49 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -180,6 +180,7 @@ static int region_min_y, region_max_y;
 /* colors for terminal mode */
 static int text_color;
 static int text_background_color;
+static avt_bool_t faint;
 
 /* character for DEC cursor keys (either [ or O) */
 static char dec_cursor_seq[3];
@@ -1690,10 +1691,16 @@ get_2_values (const char *sequence, int *n1, int *n2)
 static void
 set_foreground_color (int color)
 {
+  if (color != 0)
+    faint = AVT_FALSE;
+
   switch (color)
     {
     case 0:
-      avt_set_text_color (0x00, 0x00, 0x00);
+      if (!faint)
+	avt_set_text_color (0x00, 0x00, 0x00);
+      else
+	avt_set_text_color (0x55, 0x55, 0x55);
       break;
     case 1:			/* red */
       avt_set_text_color (0x88, 0x00, 0x00);
@@ -1805,6 +1812,7 @@ ansi_graphic_code (int mode)
     case 0:			/* normal */
       avt_underlined (AVT_FALSE);
       avt_bold (AVT_FALSE);
+      faint = AVT_FALSE;
       text_color = 0;
       text_background_color = 0xF;
       set_foreground_color (text_color);
@@ -1812,6 +1820,7 @@ ansi_graphic_code (int mode)
       break;
 
     case 1:			/* bold */
+      faint = AVT_FALSE;
       avt_bold (AVT_TRUE);
       /* bold is sometimes assumed to light colors */
       if (text_color > 0 && text_color < 7)
@@ -1821,17 +1830,31 @@ ansi_graphic_code (int mode)
 	}
       break;
 
+    case 2:			/* faint */
+      avt_bold (AVT_FALSE);
+      faint = AVT_TRUE;
+      if (text_color == 0)
+	set_foreground_color (text_color);
+      break;
+
     case 4:			/* underlined */
     case 21:			/* double underlined (ambiguous) */
       avt_underlined (AVT_TRUE);
       break;
 
+    case 5:			/* blink */
+      break;
+
     case 22:			/* normal intensity */
       avt_bold (AVT_FALSE);
+      faint = AVT_FALSE;
       break;
 
     case 24:			/* not underlined */
       avt_underlined (AVT_FALSE);
+      break;
+
+    case 25:			/* blink off */
       break;
 
     case 7:			/* invers */
@@ -2330,9 +2353,7 @@ escape_sequence (int fd, wchar_t last_character)
 	  if (max <= 0)
 	    max = 1;
 
-	  avt_viewport (1, min, 
-	                max_x - 1 + 1, 
-			max - min + 1);
+	  avt_viewport (1, min, max_x - 1 + 1, max - min + 1);
 
 	  if (avt_get_origin_mode ())
 	    {
@@ -2383,8 +2404,10 @@ escape_sequence (int fd, wchar_t last_character)
 	avt_move_x (strtol (sequence, NULL, 10));
       break;
 
+#ifdef DEBUG
     default:
       warning_msg (CSI_UNUPPORTED, sequence);
+#endif
     }
 }
 
@@ -2935,7 +2958,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.87 2008-02-17 15:46:37 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.88 2008-02-17 22:29:49 akf Exp $");
 
   return EXIT_SUCCESS;
 }
