@@ -1,5 +1,8 @@
 2008-02-17  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatar.c:
+	no text-delay as default
+
 	* avatar-audio.c (short_audio_sound):
 	avoid sound to interrupt itself or other sounds
 	

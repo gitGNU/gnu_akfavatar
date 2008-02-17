@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.91 2008-02-17 17:24:19 akf Exp $ */
+/* $Id: avatar.c,v 2.92 2008-02-17 22:17:05 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -238,7 +238,7 @@ static int linestart;
 static int balloonheight;
 
 /* delay values for printing text and flipping the page */
-static int text_delay = AVT_DEFAULT_TEXT_DELAY;
+static int text_delay = 0; /* AVT_DEFAULT_TEXT_DELAY */
 static int flip_page_delay = AVT_DEFAULT_FLIP_PAGE_DELAY;
 
 /* color independent from the screen mode */
@@ -3388,7 +3388,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.91 2008-02-17 17:24:19 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.92 2008-02-17 22:17:05 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
