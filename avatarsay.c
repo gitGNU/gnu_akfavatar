@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.88 2008-02-17 22:29:49 akf Exp $ */
+/* $Id: avatarsay.c,v 2.89 2008-02-18 09:32:24 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2216,6 +2216,10 @@ escape_sequence (int fd, wchar_t last_character)
 	    case 1:
 	      dec_cursor_seq[1] = 'O';
 	      break;
+	    case 5:		/* hack: non-standard! */
+	      /* by definition it is reverse video */
+	      avt_flash ();
+	      break;
 	    case 6:
 	      avt_set_origin_mode (AVT_TRUE);
 	      break;
@@ -2244,6 +2248,9 @@ escape_sequence (int fd, wchar_t last_character)
 	    {
 	    case 1:
 	      dec_cursor_seq[1] = '[';
+	      break;
+	    case 5:
+	      /* ignored, see 'h' above */
 	      break;
 	    case 6:
 	      avt_set_origin_mode (AVT_FALSE);
@@ -2958,7 +2965,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.88 2008-02-17 22:29:49 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.89 2008-02-18 09:32:24 akf Exp $");
 
   return EXIT_SUCCESS;
 }
