@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.92 2008-02-17 22:17:05 akf Exp $ */
+/* $Id: avatar.c,v 2.93 2008-02-18 19:28:40 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -238,7 +238,7 @@ static int linestart;
 static int balloonheight;
 
 /* delay values for printing text and flipping the page */
-static int text_delay = 0; /* AVT_DEFAULT_TEXT_DELAY */
+static int text_delay = 0;	/* AVT_DEFAULT_TEXT_DELAY */
 static int flip_page_delay = AVT_DEFAULT_FLIP_PAGE_DELAY;
 
 /* color independent from the screen mode */
@@ -1762,7 +1762,7 @@ avt_forward (void)
     {
       cursor.x -= FONTWIDTH;
       if (cursor.x < viewport.x)
-        {
+	{
 	  if (!newline_mode)
 	    avt_carriage_return ();
 	  avt_new_line ();
@@ -1772,7 +1772,7 @@ avt_forward (void)
     {
       cursor.x += FONTWIDTH;
       if (cursor.x > viewport.x + viewport.w - FONTWIDTH)
-        {
+	{
 	  if (!newline_mode)
 	    avt_carriage_return ();
 	  avt_new_line ();
@@ -2371,22 +2371,24 @@ avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 	  if (event.type == SDL_KEYDOWN)
 	    *ch = (wchar_t) event.key.keysym.unicode;
 	  else if (event.type == SDL_MOUSEBUTTONDOWN)
-	    {
-	      int line_nr;
-	      SDL_Rect area;
+	    /* any of the first trhee buttons, but not the wheel */
+	    if (event.button.button <= 3)
+	      {
+		int line_nr;
+		SDL_Rect area;
 
-	      if (origin_mode)
-		area = textfield;
-	      else
-		area = viewport;
+		if (origin_mode)
+		  area = textfield;
+		else
+		  area = viewport;
 
-	      line_nr = ((event.button.y - area.y) / LINEHEIGHT) + 1;
+		line_nr = ((event.button.y - area.y) / LINEHEIGHT) + 1;
 
-	      if (line_nr >= menu_start && line_nr <= menu_end
-		  && event.button.x >= area.x
-		  && event.button.x <= area.x + area.w)
-		*ch = (wchar_t) (line_nr - menu_start + start_code);
-	    }
+		if (line_nr >= menu_start && line_nr <= menu_end
+		    && event.button.x >= area.x
+		    && event.button.x <= area.x + area.w)
+		  *ch = (wchar_t) (line_nr - menu_start + start_code);
+	      }
 	}
 
       SDL_ShowCursor (SDL_DISABLE);
@@ -2745,7 +2747,9 @@ avt_wait_button (void)
 	  break;
 
 	case SDL_MOUSEBUTTONDOWN:
-	  nokey = AVT_FALSE;
+	 /* ignore the wheel */
+	 if (event.button.button <= 3)
+	    nokey = AVT_FALSE;
 	  break;
 
 	default:
@@ -2858,7 +2862,9 @@ avt_wait_key (const wchar_t * message)
 	  break;
 
 	case SDL_MOUSEBUTTONDOWN:
-	  nokey = AVT_FALSE;
+	  /* ignore the wheel */
+	  if (event.button.button <= 3)
+	    nokey = AVT_FALSE;
 	  break;
 	}
     }
@@ -3388,7 +3394,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.92 2008-02-17 22:17:05 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.93 2008-02-18 19:28:40 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
