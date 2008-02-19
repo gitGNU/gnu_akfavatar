@@ -1,6 +1,6 @@
 2008-02-19  Andreas K. Foerster  <info@akfoerster.de>
 
-	* avatar.c (avt_say, avt_say_len):
+	* avatar.c (avt_say, avt_say_len, backspace_trick):
 	support backspace trick for underlining and bold printing
 
 	* avatar.c:

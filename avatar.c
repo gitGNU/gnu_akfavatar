@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.94 2008-02-19 09:35:43 akf Exp $ */
+/* $Id: avatar.c,v 2.95 2008-02-19 10:00:00 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1997,6 +1997,28 @@ avt_put_character (const wchar_t ch)
   return _avt_STATUS;
 }
 
+static void
+backspace_trick (const wchar_t * txt)
+{
+  /* underline-trick */
+  if (*txt == L'_')
+    {
+      underlined = AVT_TRUE;
+      avt_put_character (*(txt + 2));
+      underlined = AVT_FALSE;
+    }
+  else
+    /* bold-trick */
+  if (*txt == *(txt + 2))
+    {
+      bold = AVT_TRUE;
+      avt_put_character (*(txt + 2));
+      bold = AVT_FALSE;
+    }
+  else				/* else just ignore erased characters */
+    avt_put_character (*(txt + 2));
+}
+
 /* 
  * writes L'\0' terminated string to textfield - 
  * interprets control characters
@@ -2021,28 +2043,8 @@ avt_say (const wchar_t * txt)
 	avt_put_character (*txt);
       else			/* next char is a backspace */
 	{
-	  /* underline-trick */
-	  if (*txt == L'_')
-	    {
-	      underlined = AVT_TRUE;
-	      txt += 2;
-	      avt_put_character (*txt);
-	      underlined = AVT_FALSE;
-	    }
-	  else
-	    /* bold-trick */
-	  if (*txt == *(txt + 2))
-	    {
-	      bold = AVT_TRUE;
-	      txt += 2;
-	      avt_put_character (*txt);
-	      bold = AVT_FALSE;
-	    }
-	  else			/* just ignore erased characters */
-	    {
-	      txt += 2;
-	      avt_put_character (*txt);
-	    }
+	  backspace_trick (txt);
+	  txt += 2;
 	}
 
       /* premature break */
@@ -2078,31 +2080,9 @@ avt_say_len (const wchar_t * txt, const int len)
 	avt_put_character (*txt);
       else			/* next char is a backspace */
 	{
-	  /* underline-trick */
-	  if (*txt == L'_')
-	    {
-	      underlined = AVT_TRUE;
-	      txt += 2;
-	      i += 2;
-	      avt_put_character (*txt);
-	      underlined = AVT_FALSE;
-	    }
-	  else
-	    /* bold-trick */
-	  if (*txt == *(txt + 2))
-	    {
-	      bold = AVT_TRUE;
-	      txt += 2;
-	      i += 2;
-	      avt_put_character (*txt);
-	      bold = AVT_FALSE;
-	    }
-	  else			/* just ignore erased characters */
-	    {
-	      txt += 2;
-	      i += 2;
-	      avt_put_character (*txt);
-	    }
+	  backspace_trick (txt);
+	  txt += 2;
+	  i += 2;
 	}
 
       /* premature break */
@@ -3449,7 +3429,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.94 2008-02-19 09:35:43 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.95 2008-02-19 10:00:00 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
