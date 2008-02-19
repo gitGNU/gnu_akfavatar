@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.93 2008-02-18 19:28:40 akf Exp $ */
+/* $Id: avatar.c,v 2.94 2008-02-19 09:35:43 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2017,7 +2017,33 @@ avt_say (const wchar_t * txt)
 
   while (*txt != L'\0')
     {
-      avt_put_character (*txt);
+      if (*(txt + 1) != L'\b')
+	avt_put_character (*txt);
+      else			/* next char is a backspace */
+	{
+	  /* underline-trick */
+	  if (*txt == L'_')
+	    {
+	      underlined = AVT_TRUE;
+	      txt += 2;
+	      avt_put_character (*txt);
+	      underlined = AVT_FALSE;
+	    }
+	  else
+	    /* bold-trick */
+	  if (*txt == *(txt + 2))
+	    {
+	      bold = AVT_TRUE;
+	      txt += 2;
+	      avt_put_character (*txt);
+	      bold = AVT_FALSE;
+	    }
+	  else			/* just ignore erased characters */
+	    {
+	      txt += 2;
+	      avt_put_character (*txt);
+	    }
+	}
 
       /* premature break */
       if (_avt_STATUS)
@@ -2048,7 +2074,36 @@ avt_say_len (const wchar_t * txt, const int len)
 
   for (i = 0; i < len; i++)
     {
-      avt_put_character (*txt);
+      if (i > len - 2 || *(txt + 1) != L'\b')
+	avt_put_character (*txt);
+      else			/* next char is a backspace */
+	{
+	  /* underline-trick */
+	  if (*txt == L'_')
+	    {
+	      underlined = AVT_TRUE;
+	      txt += 2;
+	      i += 2;
+	      avt_put_character (*txt);
+	      underlined = AVT_FALSE;
+	    }
+	  else
+	    /* bold-trick */
+	  if (*txt == *(txt + 2))
+	    {
+	      bold = AVT_TRUE;
+	      txt += 2;
+	      i += 2;
+	      avt_put_character (*txt);
+	      bold = AVT_FALSE;
+	    }
+	  else			/* just ignore erased characters */
+	    {
+	      txt += 2;
+	      i += 2;
+	      avt_put_character (*txt);
+	    }
+	}
 
       /* premature break */
       if (_avt_STATUS)
@@ -2747,8 +2802,8 @@ avt_wait_button (void)
 	  break;
 
 	case SDL_MOUSEBUTTONDOWN:
-	 /* ignore the wheel */
-	 if (event.button.button <= 3)
+	  /* ignore the wheel */
+	  if (event.button.button <= 3)
 	    nokey = AVT_FALSE;
 	  break;
 
@@ -3394,7 +3449,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.93 2008-02-18 19:28:40 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.94 2008-02-19 09:35:43 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();

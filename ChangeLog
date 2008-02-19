@@ -1,4 +1,7 @@
-2008-02-17  Andreas K. Foerster  <info@akfoerster.de>
+2008-02-19  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_say, avt_say_len):
+	support backspace trick for underlining and bold printing
 
 	* avatar.c:
 	no text-delay as default
