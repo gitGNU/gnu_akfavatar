@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.89 2008-02-18 09:32:24 akf Exp $ */
+/* $Id: avatarsay.c,v 2.90 2008-02-19 08:29:27 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2444,8 +2444,7 @@ process_subprogram (int fd)
   /* like vt102 */
   avt_set_origin_mode (AVT_FALSE);
 
-  ch = get_character (fd);
-  while (ch != WEOF && !stop)
+  while ((ch = get_character (fd)) != WEOF && !stop)
     {
       if (ch == L'\033')	/* Esc */
 	escape_sequence (fd, last_character);
@@ -2454,7 +2453,6 @@ process_subprogram (int fd)
 	  last_character = (wchar_t) ch;
 	  stop = avt_put_character ((wchar_t) ch);
 	}
-      ch = get_character (fd);
     }
 
   avt_activate_cursor (AVT_FALSE);
@@ -2779,7 +2777,8 @@ menu (void)
 	  break;
 
 	case L'6':		/* exit */
-	  move_out ();
+	  if (!popup)
+  	    move_out ();
 	  quit (EXIT_SUCCESS);
 
 	default:
@@ -2957,7 +2956,7 @@ main (int argc, char *argv[])
 	    }
 	}
 
-      if (initialized)
+      if (initialized && !popup)
 	move_out ();
     }
   while (loop);
@@ -2965,7 +2964,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.89 2008-02-18 09:32:24 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.90 2008-02-19 08:29:27 akf Exp $");
 
   return EXIT_SUCCESS;
 }
