@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.50 2008-02-20 08:47:53 akf Exp $ */
+/* $Id: akfavatar.h,v 2.51 2008-02-20 10:42:36 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -242,7 +242,11 @@ void avt_set_delays (int text, int flip_page);
 /* register an external keyhandler */
 void avt_register_keyhandler (avt_keyhandler handler);
 
-/* register an external keyhandler */
+/* register an external mousehandler
+ *
+ * it is only called, when a mouse-button is pressed or released inside
+ * of the balloon. The coordinates are the character positions.
+ */
 void avt_register_mousehandler (avt_mousehandler handler);
 
 /*
