@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.49 2008-02-16 17:48:44 akf Exp $ */
+/* $Id: akfavatar.h,v 2.50 2008-02-20 08:47:53 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -104,6 +104,13 @@ typedef void avt_audio_t;
  */
 typedef void (*avt_keyhandler) (int sym, int mod, int unicode);
 
+/*
+ * type for mousehandler
+ * see avt_register_mousehandler
+ */
+typedef void (*avt_mousehandler) (int button, avt_bool_t pressed,
+				  int x, int y);
+
 /* base fnctions */
 
 /* 
@@ -113,8 +120,7 @@ typedef void (*avt_keyhandler) (int sym, int mod, int unicode);
  * the image may be NULL if no avatar should be shown
  */
 int avt_initialize (const char *title,
-       		    const char *icontitle,
-		    avt_image_t * image, int mode);
+		    const char *icontitle, avt_image_t * image, int mode);
 
 /* 
  * quit the avatar system
@@ -236,6 +242,9 @@ void avt_set_delays (int text, int flip_page);
 /* register an external keyhandler */
 void avt_register_keyhandler (avt_keyhandler handler);
 
+/* register an external keyhandler */
+void avt_register_mousehandler (avt_mousehandler handler);
+
 /*
  * switch to fullscreen or window mode 
  * (experimental!)
@@ -264,7 +273,7 @@ int avt_say_len (const wchar_t * txt, const int len);
  * if there is no balloon, it is drawn
  * if there is no avatar, it is shown (not moved in)
  * interprets control characters
- */ 
+ */
 int avt_put_character (const wchar_t ch);
 
 /* set encoding for mb functions */
@@ -285,7 +294,7 @@ int avt_mb_decode (wchar_t ** dest, const char *src, const int size);
  * dest must be freed by caller with avt_free
  * (the size of dest may be much more than needed)
  */
-int avt_mb_encode (char ** dest, const wchar_t *src, const int len);
+int avt_mb_encode (char **dest, const wchar_t * src, const int len);
 
 /* free memory allocated by this library */
 void avt_free (void *ptr);
@@ -317,7 +326,7 @@ int avt_get_key (wchar_t * ch);
  * menu_ofset: line, where menu begins
  * start_code: first character, like L'1' or L'A'
  */
-int 
+int
 avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code);
 
 /*

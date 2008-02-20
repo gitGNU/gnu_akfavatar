@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.96 2008-02-19 12:00:49 akf Exp $ */
+/* $Id: avatar.c,v 2.97 2008-02-20 08:47:53 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -205,9 +205,9 @@ static void *SDL_image_handle;
 static SDL_Surface *(*IMG_Load) (const char *file);
 static SDL_Surface *(*IMG_Load_RW) (SDL_RWops * src, int freesrc);
 
-/* for an external keyboard handler */
+/* for an external keyboard/mose handlers */
 static avt_keyhandler avt_ext_keyhandler = NULL;
-
+static avt_mousehandler avt_ext_mousehandler = NULL;
 
 static SDL_Surface *screen, *avt_image, *avt_character;
 static SDL_Surface *avt_text_cursor, *avt_cursor_character;
@@ -855,6 +855,21 @@ avt_analyze_event (SDL_Event * event)
       avt_resize (event->resize.w, event->resize.h);
       break;
 
+    case SDL_MOUSEBUTTONUP:
+    case SDL_MOUSEBUTTONDOWN:
+      if (avt_ext_mousehandler)
+	{
+	  int x, y;
+	  x = (event->button.x - textfield.x) / FONTWIDTH + 1;
+	  y = (event->button.y - textfield.y) / LINEHEIGHT + 1;
+
+	  if (x > 0 && x <= AVT_LINELENGTH
+	      && y > 0 && y <= (textfield.h / LINEHEIGHT))
+	    avt_ext_mousehandler (event->button.button,
+				  (event->button.state == SDL_PRESSED), x, y);
+	}
+      break;
+
     case SDL_KEYDOWN:
       switch (event->key.keysym.sym)
 	{
@@ -1438,7 +1453,6 @@ avt_clear_down (void)
 void
 avt_clear_eol (void)
 {
-  SDL_Color color;
   SDL_Rect dst;
 
   /* not initialized? -> do nothing */
@@ -3273,6 +3287,18 @@ avt_register_keyhandler (avt_keyhandler handler)
 }
 
 void
+avt_register_mousehandler (avt_mousehandler handler)
+{
+  avt_ext_mousehandler = handler;
+  
+  /* make mouse visible or invisible */
+  if (handler)
+    SDL_ShowCursor (SDL_ENABLE);
+  else
+    SDL_ShowCursor (SDL_DISABLE);
+}
+
+void
 avt_set_text_color (int red, int green, int blue)
 {
   SDL_Color color;
@@ -3432,7 +3458,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.96 2008-02-19 12:00:49 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.97 2008-02-20 08:47:53 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();

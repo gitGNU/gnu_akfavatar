@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.90 2008-02-19 08:29:27 akf Exp $ */
+/* $Id: avatarsay.c,v 2.91 2008-02-20 08:47:53 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -142,7 +142,7 @@ static avt_bool_t idle;
 /* whether to run in a window, or in fullscreen mode */
 /* the mode can be set by -f, --fullscreen or -w, --window */
 /* or with --fullfullscreen or -F */
-static int mode;
+static int window_mode;
 
 /* is the avatar initialized? (0|1) */
 /* for delaying the initialization until it is clear that we actually 
@@ -455,15 +455,15 @@ checkoptions (int argc, char **argv)
 	  break;
 
 	case 'f':		/* --fullscreen */
-	  mode = AVT_FULLSCREEN;
+	  window_mode = AVT_FULLSCREEN;
 	  break;
 
 	case 'F':		/* --fullfullscreen */
-	  mode = AVT_FULLSCREENNOSWITCH;
+	  window_mode = AVT_FULLSCREENNOSWITCH;
 	  break;
 
 	case 'w':		/* --window */
-	  mode = AVT_WINDOW;
+	  window_mode = AVT_WINDOW;
 	  break;
 
 	case '1':		/* --once */
@@ -632,7 +632,7 @@ initialize (void)
   if (!avt_image)
     avt_image = avt_default ();
 
-  if (avt_initialize ("AKFAvatar", "AKFAvatar", avt_image, mode))
+  if (avt_initialize ("AKFAvatar", "AKFAvatar", avt_image, window_mode))
     switch (language)
       {
       case DEUTSCH:
@@ -1231,7 +1231,6 @@ get_user_shell (void)
 void
 prg_keyhandler (int sym, int mod, int unicode)
 {
-
   if (idle && prg_input > 0)
     {
       idle = AVT_FALSE;		/* avoid reentrance */
@@ -1356,13 +1355,13 @@ prg_keyhandler (int sym, int mod, int unicode)
 	    {
 	      wchar_t ch;
 	      char *mbstring;
-	      int mblen;
+	      int length;
 
 	      ch = (wchar_t) unicode;
-	      mblen = avt_mb_encode (&mbstring, &ch, 1);
-	      if (mblen != -1)
+	      length = avt_mb_encode (&mbstring, &ch, 1);
+	      if (length != -1)
 		{
-		  write (prg_input, mbstring, mblen);
+		  write (prg_input, mbstring, length);
 		  avt_free (mbstring);
 		}
 	    }			/* if (unicode) */
@@ -1370,6 +1369,21 @@ prg_keyhandler (int sym, int mod, int unicode)
 
       idle = AVT_TRUE;
     }				/* if (idle...) */
+}
+
+/* TODO: doesn't work yet */
+void
+prg_mousehandler (int button, avt_bool_t pressed, int x, int y)
+{
+  char code[7];
+
+  /* X10 method */
+  if (pressed)
+    {
+      snprintf (code, sizeof (code), "\033[M%c%c%c",
+		(char) (040 + button), (char) (040 + x), (char) (040 + y));
+      write (prg_input, &code, sizeof (code) - 1);
+    }
 }
 
 #endif /* not NO_PTY */
@@ -1529,6 +1543,8 @@ execute_process (const char *fname)
   dec_cursor_seq[1] = '[';
   dec_cursor_seq[2] = ' ';	/* to be filled later */
   avt_register_keyhandler (prg_keyhandler);
+  /* TODO: doesn't work yet */
+  /* avt_register_mousehandler (prg_mousehandler); */
   read_error_is_eof = AVT_TRUE;
 
   /* return master */
@@ -2223,6 +2239,10 @@ escape_sequence (int fd, wchar_t last_character)
 	    case 6:
 	      avt_set_origin_mode (AVT_TRUE);
 	      break;
+	    case 9:		/* X10 mouse */
+	      /* TODO: doesn't work yet */
+	      /* avt_register_mousehandler (prg_mousehandler); */
+	      break;
 	    case 25:
 	      avt_activate_cursor (AVT_TRUE);
 	      break;
@@ -2254,6 +2274,10 @@ escape_sequence (int fd, wchar_t last_character)
 	      break;
 	    case 6:
 	      avt_set_origin_mode (AVT_FALSE);
+	      break;
+	    case 9:		/* X10 mouse */
+	      /* TODO: doesn't work yet */
+	      /* avt_register_mousehandler (NULL); */
 	      break;
 	    case 25:
 	      avt_activate_cursor (AVT_FALSE);
@@ -2778,7 +2802,7 @@ menu (void)
 
 	case L'6':		/* exit */
 	  if (!popup)
-  	    move_out ();
+	    move_out ();
 	  quit (EXIT_SUCCESS);
 
 	default:
@@ -2862,7 +2886,7 @@ check_config_file (const char *f)
 int
 main (int argc, char *argv[])
 {
-  mode = AVT_AUTOMODE;
+  window_mode = AVT_AUTOMODE;
   loop = AVT_TRUE;
   default_delay = AVT_DEFAULT_TEXT_DELAY;
   prg_input = -1;
@@ -2964,7 +2988,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.90 2008-02-19 08:29:27 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.91 2008-02-20 08:47:53 akf Exp $");
 
   return EXIT_SUCCESS;
 }
