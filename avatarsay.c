@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.91 2008-02-20 08:47:53 akf Exp $ */
+/* $Id: avatarsay.c,v 2.92 2008-02-21 18:39:56 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -134,7 +134,7 @@ static avt_bool_t terminal_mode;
 /* execute file? Option -e */
 static avt_bool_t executable;
 static avt_bool_t read_error_is_eof;
-static int prg_input;
+static int prg_input;		/* file descriptor for program input */
 
 /* in idle loop? */
 static avt_bool_t idle;
@@ -257,6 +257,7 @@ help (const char *prgname)
 {
   printf ("\nUsage: %s [Options]\n", prgname);
   printf ("  or:  %s [Options] textfiles\n\n", prgname);
+  printf ("  or:  %s [Options] --execute program [program options]\n\n", prgname);
   puts
     ("A fancy text-terminal, text-viewer and scripting language for making demos.\n");
   puts ("If textfile is - then read from stdin and don't loop.\n");
@@ -433,7 +434,7 @@ checkoptions (int argc, char **argv)
 	{0, 0, 0, 0}
       };
 
-      c = getopt_long (argc, argv, "hvfFw1risE:lupten",
+      c = getopt_long (argc, argv, "+hvfFw1risE:lupten",
 		       long_options, &option_index);
 
       /* end of the options */
@@ -566,6 +567,9 @@ checkoptions (int argc, char **argv)
 
   if (terminal_mode && argc > optind)
     error_msg ("error", "no files allowed for terminal mode");
+
+  if (executable && argc <= optind)
+    error_msg ("error", "execute needs at least a program name");
 }
 
 static void
@@ -1387,170 +1391,6 @@ prg_mousehandler (int button, avt_bool_t pressed, int x, int y)
 }
 
 #endif /* not NO_PTY */
-
-/* execute a subprocess, visible in the balloon */
-/* if fname == NULL, start a shell */
-/* returns file-descriptor for output of the process */
-static int
-execute_process (const char *fname)
-{
-#ifdef NO_PTY
-  not_available ();
-  return -1;
-#else /* not NO_PTY */
-
-  pid_t childpid;
-  int master, slave;
-  char *terminalname;
-  struct termios settings;
-  struct winsize size;		/* does this have to be static? */
-  char *shell = "/bin/sh";
-
-  /* clear text-buffer */
-  wcbuf_pos = wcbuf_len = 0;
-
-  /* must be initialized to get the window size */
-  if (!initialized)
-    {
-      initialize ();
-
-      if (!popup)
-	move_in ();
-    }
-
-  if (fname == NULL)
-    shell = get_user_shell ();
-
-  /* as specified in POSIX.1-2001 */
-  master = posix_openpt (O_RDWR);
-
-  /* some older systems: */
-  /* master = open("/dev/ptmx", O_RDWR); */
-
-  if (master < 0)
-    return -1;
-
-  if (grantpt (master) < 0 || unlockpt (master) < 0)
-    {
-      close (master);
-      return -1;
-    }
-
-  terminalname = ptsname (master);
-
-  if (terminalname == NULL)
-    {
-      close (master);
-      return -1;
-    }
-
-  slave = open (terminalname, O_RDWR);
-
-  if (slave < 0)
-    {
-      close (master);
-      return -1;
-    }
-
-  /*-------------------------------------------------------- */
-  childpid = fork ();
-
-  if (childpid == -1)
-    {
-      close (master);
-      close (slave);
-      return -1;
-    }
-
-  /* is it the child process? */
-  if (childpid == 0)
-    {
-      /* child closes master */
-      close (master);
-
-      /* create a new session */
-      setsid ();
-
-      /* redirect stdin */
-      if (dup2 (slave, STDIN_FILENO) == -1)
-	_exit (EXIT_FAILURE);
-
-      /* redirect stdout */
-      if (dup2 (slave, STDOUT_FILENO) == -1)
-	_exit (EXIT_FAILURE);
-
-      /* redirect sterr */
-      if (dup2 (slave, STDERR_FILENO) == -1)
-	_exit (EXIT_FAILURE);
-
-      close (slave);
-
-      /* set the controling terminal */
-#ifdef TIOCSCTTY
-      ioctl (STDIN_FILENO, TIOCSCTTY, 0);
-#endif
-
-      /* still experimental1 */
-      putenv ("TERM=" TERM);
-
-      /* programs can identify avatarsay with this */
-      putenv ("AKFAVTTERM=" AVTVERSION);
-
-      if (fname == NULL)	/* execute shell */
-	execl (shell, shell, (char *) NULL);
-      else			/* execute the command */
-	execl ("/bin/sh", "/bin/sh", "-c", fname, (char *) NULL);
-
-      /* in case of an error, we can not do much */
-      /* stdout and stderr are broken by now */
-      _exit (EXIT_FAILURE);
-    }
-  else				/* parent process */
-    {
-      /* parent closes slave */
-      close (slave);
-    }
-
-  /* terminal settings */
-  if (tcgetattr (master, &settings) < 0)
-    {
-      close (master);
-      return -1;
-    }
-
-  /* TODO: improve */
-  settings.c_cc[VERASE] = 8;	/* Backspace */
-  settings.c_iflag |= ICRNL;	/* input: cr -> nl */
-  settings.c_lflag |= (ECHO | ECHOE | ECHOK | ICANON);
-
-  if (tcsetattr (master, TCSANOW, &settings) < 0)
-    {
-      close (master);
-      return -1;
-    }
-
-  /* set window size */
-  /* not portable? */
-  size.ws_row = max_y;
-  size.ws_col = max_x;
-  size.ws_xpixel = size.ws_ypixel = 0;
-  ioctl (master, TIOCSWINSZ, &size);
-
-  fcntl (master, F_SETFL, O_NONBLOCK);
-
-  prg_input = master;
-  dec_cursor_seq[0] = '\033';
-  dec_cursor_seq[1] = '[';
-  dec_cursor_seq[2] = ' ';	/* to be filled later */
-  avt_register_keyhandler (prg_keyhandler);
-  /* TODO: doesn't work yet */
-  /* avt_register_mousehandler (prg_mousehandler); */
-  read_error_is_eof = AVT_TRUE;
-
-  /* return master */
-  return master;
-#endif /* not NO_PTY */
-}
 
 /* opens the file, returns file descriptor or -1 on error */
 static int
@@ -2442,21 +2282,12 @@ escape_sequence (int fd, wchar_t last_character)
     }
 }
 
-static int
+static void
 process_subprogram (int fd)
 {
   avt_bool_t stop;
   wint_t ch;
   wchar_t last_character;
-
-  /* initialize the graphics */
-  if (!initialized)
-    {
-      initialize ();
-
-      if (!popup)
-	move_in ();
-    }
 
   text_color = 0;
   text_background_color = 0xF;
@@ -2489,60 +2320,200 @@ process_subprogram (int fd)
   /* release keyhandler */
   avt_register_keyhandler (NULL);
   prg_input = -1;
+}
+
+/* execute a subprocess, visible in the balloon */
+/* if fname == NULL, start a shell */
+/* returns file-descriptor for output of the process */
+static int
+execute_process (char *const prg_argv[])
+{
+#ifdef NO_PTY
+  not_available ();
+  return -1;
+#else /* not NO_PTY */
+
+  pid_t childpid;
+  int master, slave;
+  char *terminalname;
+  struct termios settings;
+  struct winsize size;		/* does this have to be static? */
+  char *shell = "/bin/sh";
+
+  /* clear text-buffer */
+  wcbuf_pos = wcbuf_len = 0;
+
+  /* must be initialized to get the window size */
+  if (!initialized)
+    {
+      initialize ();
+
+      if (!popup)
+	move_in ();
+    }
+
+  if (prg_argv == NULL)
+    shell = get_user_shell ();
+
+  /* as specified in POSIX.1-2001 */
+  master = posix_openpt (O_RDWR);
+
+  /* some older systems: */
+  /* master = open("/dev/ptmx", O_RDWR); */
+
+  if (master < 0)
+    return -1;
+
+  if (grantpt (master) < 0 || unlockpt (master) < 0)
+    {
+      close (master);
+      return -1;
+    }
+
+  terminalname = ptsname (master);
+
+  if (terminalname == NULL)
+    {
+      close (master);
+      return -1;
+    }
+
+  slave = open (terminalname, O_RDWR);
+
+  if (slave < 0)
+    {
+      close (master);
+      return -1;
+    }
+
+  /*-------------------------------------------------------- */
+  childpid = fork ();
+
+  if (childpid == -1)
+    {
+      close (master);
+      close (slave);
+      return -1;
+    }
+
+  /* is it the child process? */
+  if (childpid == 0)
+    {
+      /* child closes master */
+      close (master);
+
+      /* create a new session */
+      setsid ();
+
+      /* redirect stdin */
+      if (dup2 (slave, STDIN_FILENO) == -1)
+	_exit (EXIT_FAILURE);
+
+      /* redirect stdout */
+      if (dup2 (slave, STDOUT_FILENO) == -1)
+	_exit (EXIT_FAILURE);
+
+      /* redirect sterr */
+      if (dup2 (slave, STDERR_FILENO) == -1)
+	_exit (EXIT_FAILURE);
+
+      close (slave);
+
+      /* set the controling terminal */
+#ifdef TIOCSCTTY
+      ioctl (STDIN_FILENO, TIOCSCTTY, 0);
+#endif
+
+      putenv ("TERM=" TERM);
+
+      /* programs can identify avatarsay with this */
+      putenv ("AKFAVTTERM=" AVTVERSION);
+
+      if (prg_argv == NULL)	/* execute shell */
+	execl (shell, shell, (char *) NULL);
+      else			/* execute the command */
+	execvp (prg_argv[0], prg_argv);
+
+      /* in case of an error, we can not do much */
+      /* stdout and stderr are broken by now */
+      _exit (EXIT_FAILURE);
+    }
+
+  /* parent process */
+  close (slave);
+
+  /* terminal settings */
+  if (tcgetattr (master, &settings) < 0)
+    {
+      close (master);
+      return -1;
+    }
+
+  /* TODO: improve */
+  settings.c_cc[VERASE] = 8;	/* Backspace */
+  settings.c_iflag |= ICRNL;	/* input: cr -> nl */
+  settings.c_lflag |= (ECHO | ECHOE | ECHOK | ICANON);
+
+  if (tcsetattr (master, TCSANOW, &settings) < 0)
+    {
+      close (master);
+      return -1;
+    }
+
+  /* set window size */
+  /* not portable? */
+  size.ws_row = max_y;
+  size.ws_col = max_x;
+  size.ws_xpixel = size.ws_ypixel = 0;
+  ioctl (master, TIOCSWINSZ, &size);
+
+  fcntl (master, F_SETFL, O_NONBLOCK);
+
+  prg_input = master;
+  dec_cursor_seq[0] = '\033';
+  dec_cursor_seq[1] = '[';
+  dec_cursor_seq[2] = ' ';	/* to be filled later */
+  avt_register_keyhandler (prg_keyhandler);
+  /* TODO: doesn't work yet */
+  /* avt_register_mousehandler (prg_mousehandler); */
+  read_error_is_eof = AVT_TRUE;
+
+  /* execute it */
+  process_subprogram (master);
 
   return 0;
+#endif /* not NO_PTY */
 }
 
 static void
 run_shell (void)
 {
-  int fd;
-
   avt_clear ();
   avt_set_text_delay (0);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
-  fd = execute_process (NULL);
-  if (fd > -1)
-    process_subprogram (fd);
+  execute_process (NULL);
 }
 
 static void
 run_info (void)
 {
-  int fd;
+  char *args[] = { "info", "akfavatar-en", NULL };
 
   avt_clear ();
   avt_set_text_delay (0);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
 
-  switch (language)
-    {
-    case DEUTSCH:
-      fd = execute_process ("info akfavatar-de");
-      break;
+  if (language == DEUTSCH)
+    args[1] = "akfavatar-de";
 
-    case ENGLISH:
-    default:
-      fd = execute_process ("info akfavatar-en");
-    }
-
-  if (fd > -1)
-    process_subprogram (fd);
+  execute_process (args);
 }
 
 #endif /* not NO_PTY */
 
 static void
-ask_file (avt_bool_t execute)
+ask_file (void)
 {
-#ifdef NO_PTY
-  if (execute)
-    {
-      not_available ();
-      return;
-    }
-#endif
-
   avt_clear ();
   avt_set_text_delay (0);
 
@@ -2567,20 +2538,9 @@ ask_file (avt_bool_t execute)
       {
 	int fd, status;
 
-#ifndef NO_PTY
-	if (execute)
-	  {
-	    fd = execute_process (filename);
-	    if (fd > -1)
-	      process_subprogram (fd);
-	  }
-	else			/* not execute */
-#endif /* not NO_PTY */
-	  {
-	    fd = openfile (filename);
-	    if (fd > -1)
-	      process_file (fd);
-	  }
+	fd = openfile (filename);
+	if (fd > -1)
+	  process_file (fd);
 
 	/* ignore file errors */
 	status = avt_get_status ();
@@ -2610,7 +2570,8 @@ ask_manpage (void)
 static void
 ask_manpage (void)
 {
-  char manpage[AVT_LINELENGTH];
+  char manpage[AVT_LINELENGTH] = "man";
+  char *argv[] = { "man", "-t", (char *) &manpage, NULL };
 
   avt_clear ();
   avt_set_text_delay (0);
@@ -2624,12 +2585,7 @@ ask_manpage (void)
   avt_set_text_delay (default_delay);
   if (manpage[0] != '\0')
     {
-      char command[255];
-      int fd, status;
-
-      /* -T is not supported on FreeBSD */
-      strcpy (command, "man -t ");
-      strcat (command, manpage);
+      int status;
 
       /* GROFF assumed! */
       putenv ("GROFF_TYPESETTER=latin1");
@@ -2638,13 +2594,11 @@ ask_manpage (void)
       /* temporary settings */
       set_encoding ("ISO-8859-1");
 
-      /* ignore file errors */
-      fd = execute_process (command);
       avt_register_keyhandler (NULL);
       prg_input = -1;
 
-      if (fd > -1)
-	process_file (fd);
+      /* ignore file errors */
+      execute_process (argv);
 
       status = avt_get_status ();
       if (status == AVT_ERROR)
@@ -2785,7 +2739,7 @@ menu (void)
 	  break;
 
 	case L'2':		/* show a demo or textfile */
-	  ask_file (AVT_FALSE);
+	  ask_file ();
 	  break;
 
 	case L'3':		/* show a manpage */
@@ -2918,6 +2872,17 @@ main (int argc, char *argv[])
       run_shell ();
       quit (EXIT_SUCCESS);
     }
+  else if (executable)
+    {
+      execute_process (&argv[optind]);
+
+      if (avt_flip_page ())
+	quit (EXIT_SUCCESS);
+
+      if (initialized && !popup)
+	move_out ();
+      quit (EXIT_SUCCESS);
+    }
   else if (optind >= argc)	/* no input files? -> menu */
     menu ();
 
@@ -2944,12 +2909,6 @@ main (int argc, char *argv[])
 	    }
 #endif /* not NO_FIFO */
 
-	  if (executable)
-	    {
-	      fd = execute_process (argv[i]);
-	      if (fd > -1)
-		status = process_subprogram (fd);
-	    }
 	  else			/* not executable */
 	    {
 	      fd = openfile (argv[i]);
@@ -2988,7 +2947,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.91 2008-02-20 08:47:53 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.92 2008-02-21 18:39:56 akf Exp $");
 
   return EXIT_SUCCESS;
 }
