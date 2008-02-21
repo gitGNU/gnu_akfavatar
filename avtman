@@ -32,9 +32,9 @@ do
   shift
 done
 
-PAGER="$AVATARSAY $AVATAROPTS --raw -"
 MANWIDTH=80
-export PAGER MANWIDTH
+GROFF_TYPESETTER=latin1
+export MANWIDTH GROFF_TYPESETTER
 
 # execute the command
-exec man $MANOPTS
+exec man -t $MANOPTS 2>&1 | $AVATARSAY $AVATAROPTS --raw --enc=ISO-8859-1 -

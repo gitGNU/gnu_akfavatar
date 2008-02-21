@@ -38,7 +38,6 @@ case "$LANG" in
        WHICHTEXT="Welchen Text mit AKFAvatar anzeigen?"
        FILEEDIT="Weche Datei editieren"
        WHICHMANPAGE="Welche Hilfeseite (Manpage) mit AKFAvatar anzeigen?"
-       MANPAGEERROR="Fehler beim Anzeigen der Manpage"
        WHICHAVATARIMAGE="Welches Bild als Avatar verwenden?"
        WHICHAVATARIMAGE="$WHICHAVATARIMAGE (\"Abbruch\" für Vorgabe)"
        DEFAULTAVATARIMAGE="Verwende das Vorgabe-Bild als Avatar"
@@ -64,7 +63,6 @@ case "$LANG" in
        WHICHTEXT="Which text to show with AKFAvatar?"
        FILEEDIT="file to edit"
        WHICHMANPAGE="Which manpage to show with AKFAvatar?"
-       MANPAGEERROR="error showing manpage"
        WHICHAVATARIMAGE="Which image to use as avatar? (cancel for default)"
        DEFAULTAVATARIMAGE="Using the default avatar image"
        FULLSCREENMODE="Run the program in fullscreen mode?"
@@ -162,13 +160,13 @@ show_manpage ()
   if MANPAGE=`$ZENITY --entry --text="$WHICHMANPAGE"`
   then
     (
-    PAGER="$AVATARSAY $MODE --raw -"
     MANWIDTH=80
-    export PAGER MANWIDTH
+    GROFF_TYPESETTER=latin1
+    export MANWIDTH GROFF_TYPESETTER
 
     # execute the command
-    man $MANPAGE 2>/dev/null \
-      || $ZENITY --error --text="$MANPAGEERROR"
+    man -t $MANPAGE 2>&1 \
+      | $AVATARSAY $MODE --raw --encoding=ISO-8859-1 -
     )
   fi
 }
