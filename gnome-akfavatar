@@ -162,10 +162,9 @@ show_manpage ()
   if MANPAGE=`$ZENITY --entry --text="$WHICHMANPAGE"`
   then
     (
-    TERM=dumb
     PAGER="$AVATARSAY $MODE --raw -"
     MANWIDTH=80
-    export PAGER MANWIDTH TERM
+    export PAGER MANWIDTH
 
     # execute the command
     man $MANPAGE 2>/dev/null \

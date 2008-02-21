@@ -32,10 +32,9 @@ do
   shift
 done
 
-TERM=dumb
 PAGER="$AVATARSAY $AVATAROPTS --raw -"
 MANWIDTH=80
-export PAGER MANWIDTH TERM
+export PAGER MANWIDTH
 
 # execute the command
 exec man $MANOPTS
