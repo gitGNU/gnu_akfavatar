@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.94 2008-02-21 19:41:57 akf Exp $ */
+/* $Id: avatarsay.c,v 2.95 2008-02-21 19:56:57 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2598,11 +2598,13 @@ ask_manpage (void)
       /* temporary settings */
       set_encoding ("ISO-8859-1");
 
-      avt_register_keyhandler (NULL);
-      prg_input = -1;
-
       /* ignore file errors */
       fd = execute_process (argv);
+      
+      /* unset keyhandler, set by execute_process */
+      avt_register_keyhandler (NULL);
+      prg_input = -1;
+      
       if (fd > -1)
         process_file (fd);
 
@@ -2956,7 +2958,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.94 2008-02-21 19:41:57 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.95 2008-02-21 19:56:57 akf Exp $");
 
   return EXIT_SUCCESS;
 }
