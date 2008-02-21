@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.92 2008-02-21 18:39:56 akf Exp $ */
+/* $Id: avatarsay.c,v 2.93 2008-02-21 18:49:46 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -256,7 +256,7 @@ static void
 help (const char *prgname)
 {
   printf ("\nUsage: %s [Options]\n", prgname);
-  printf ("  or:  %s [Options] textfiles\n\n", prgname);
+  printf ("  or:  %s [Options] textfiles\n", prgname);
   printf ("  or:  %s [Options] --execute program [program options]\n\n", prgname);
   puts
     ("A fancy text-terminal, text-viewer and scripting language for making demos.\n");
@@ -2947,7 +2947,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.92 2008-02-21 18:39:56 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.93 2008-02-21 18:49:46 akf Exp $");
 
   return EXIT_SUCCESS;
 }
