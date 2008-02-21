@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.93 2008-02-21 18:49:46 akf Exp $ */
+/* $Id: avatarsay.c,v 2.94 2008-02-21 19:41:57 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2478,25 +2478,27 @@ execute_process (char *const prg_argv[])
   /* avt_register_mousehandler (prg_mousehandler); */
   read_error_is_eof = AVT_TRUE;
 
-  /* execute it */
-  process_subprogram (master);
-
-  return 0;
+  return master;
 #endif /* not NO_PTY */
 }
 
 static void
 run_shell (void)
 {
+  int fd;
+
   avt_clear ();
   avt_set_text_delay (0);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
-  execute_process (NULL);
+  fd = execute_process (NULL);
+  if (fd > -1)
+    process_subprogram (fd);
 }
 
 static void
 run_info (void)
 {
+  int fd;
   char *args[] = { "info", "akfavatar-en", NULL };
 
   avt_clear ();
@@ -2506,7 +2508,9 @@ run_info (void)
   if (language == DEUTSCH)
     args[1] = "akfavatar-de";
 
-  execute_process (args);
+  fd = execute_process (args);
+  if (fd > -1)
+    process_subprogram (fd);
 }
 
 #endif /* not NO_PTY */
@@ -2585,7 +2589,7 @@ ask_manpage (void)
   avt_set_text_delay (default_delay);
   if (manpage[0] != '\0')
     {
-      int status;
+      int fd, status;
 
       /* GROFF assumed! */
       putenv ("GROFF_TYPESETTER=latin1");
@@ -2598,7 +2602,9 @@ ask_manpage (void)
       prg_input = -1;
 
       /* ignore file errors */
-      execute_process (argv);
+      fd = execute_process (argv);
+      if (fd > -1)
+        process_file (fd);
 
       status = avt_get_status ();
       if (status == AVT_ERROR)
@@ -2874,7 +2880,10 @@ main (int argc, char *argv[])
     }
   else if (executable)
     {
-      execute_process (&argv[optind]);
+      int fd;
+      fd = execute_process (&argv[optind]);
+      if (fd > -1)
+        process_subprogram (fd);
 
       if (avt_flip_page ())
 	quit (EXIT_SUCCESS);
@@ -2947,7 +2956,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.93 2008-02-21 18:49:46 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.94 2008-02-21 19:41:57 akf Exp $");
 
   return EXIT_SUCCESS;
 }
