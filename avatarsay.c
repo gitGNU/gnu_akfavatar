@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.95 2008-02-21 19:56:57 akf Exp $ */
+/* $Id: avatarsay.c,v 2.96 2008-02-22 16:28:22 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -257,7 +257,8 @@ help (const char *prgname)
 {
   printf ("\nUsage: %s [Options]\n", prgname);
   printf ("  or:  %s [Options] textfiles\n", prgname);
-  printf ("  or:  %s [Options] --execute program [program options]\n\n", prgname);
+  printf ("  or:  %s [Options] --execute program [program options]\n\n",
+	  prgname);
   puts
     ("A fancy text-terminal, text-viewer and scripting language for making demos.\n");
   puts ("If textfile is - then read from stdin and don't loop.\n");
@@ -2600,13 +2601,13 @@ ask_manpage (void)
 
       /* ignore file errors */
       fd = execute_process (argv);
-      
+
       /* unset keyhandler, set by execute_process */
       avt_register_keyhandler (NULL);
       prg_input = -1;
-      
+
       if (fd > -1)
-        process_file (fd);
+	process_file (fd);
 
       status = avt_get_status ();
       if (status == AVT_ERROR)
@@ -2885,7 +2886,7 @@ main (int argc, char *argv[])
       int fd;
       fd = execute_process (&argv[optind]);
       if (fd > -1)
-        process_subprogram (fd);
+	process_subprogram (fd);
 
       if (avt_flip_page ())
 	quit (EXIT_SUCCESS);
@@ -2907,8 +2908,8 @@ main (int argc, char *argv[])
 
       for (i = optind; i < argc; i++)
 	{
-	  int status = 0;
-	  int fd = -1;
+	  int status;
+	  int fd;
 
 	  set_encoding (default_encoding);
 
@@ -2920,20 +2921,21 @@ main (int argc, char *argv[])
 	    }
 #endif /* not NO_FIFO */
 
-	  else			/* not executable */
-	    {
-	      fd = openfile (argv[i]);
-	      if (fd > -1)
-		status = process_file (fd);
-	    }
+	  fd = openfile (argv[i]);
+	  if (fd > -1)
+	    status = process_file (fd);
+	  else
+	    status = -1;
 
+#ifndef NO_FIFO
 	  if (say_pipe)
 	    if (remove (argv[i]) == -1)
 	      warning_msg ("remove", strerror (errno));
+#endif /* not NO_FIFO */
 
 	  if (status <= -1)
 	    error_msg ("error opening file", argv[i]);
-	  else if (status == 1)
+	  else if (status == 1)	/* halt requested */
 	    quit (EXIT_SUCCESS);
 
 	  if (avt_flip_page ())
@@ -2958,7 +2960,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.95 2008-02-21 19:56:57 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.96 2008-02-22 16:28:22 akf Exp $");
 
   return EXIT_SUCCESS;
 }
