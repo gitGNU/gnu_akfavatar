@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.96 2008-02-22 16:28:22 akf Exp $ */
+/* $Id: avatarsay.c,v 2.97 2008-02-22 17:37:28 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2323,6 +2323,8 @@ process_subprogram (int fd)
   prg_input = -1;
 }
 
+#endif /* not NO_PTY */
+
 /* execute a subprocess, visible in the balloon */
 /* if fname == NULL, start a shell */
 /* returns file-descriptor for output of the process */
@@ -2483,6 +2485,7 @@ execute_process (char *const prg_argv[])
 #endif /* not NO_PTY */
 }
 
+#ifndef NO_PTY
 static void
 run_shell (void)
 {
@@ -2960,7 +2963,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.96 2008-02-22 16:28:22 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.97 2008-02-22 17:37:28 akf Exp $");
 
   return EXIT_SUCCESS;
 }
