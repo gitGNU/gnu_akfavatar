@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.99 2008-02-23 07:07:02 akf Exp $ */
+/* $Id: avatarsay.c,v 2.100 2008-02-23 08:56:22 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1400,11 +1400,24 @@ process_file (int fd)
 
   encoding_checked = AVT_FALSE;
 
+  /* get first line */
+  nread = getwline (fd, line, line_size);
+  
+  /* if first line is "@echo off", skip to exit */
+  if (!rawmode && wcsncmp (line, L"@echo off", 9) == 0)
+    {
+      while (nread != 0 && wcsncmp (line, L"exit", 4) != 0)
+        nread = getwline (fd, line, line_size);
+
+      /* get next line */
+      if (nread != 0)
+        nread = getwline (fd, line, line_size);
+     }
+
   /* 
    * skip empty lines and handle commands at the beginning 
    * before initializing the graphics
    */
-  nread = getwline (fd, line, line_size);
   if (!rawmode)
     while (nread != 0 && !stop
 	   && (wcscmp (line, L"\n") == 0
@@ -2913,7 +2926,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.99 2008-02-23 07:07:02 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.100 2008-02-23 08:56:22 akf Exp $");
 
   return EXIT_SUCCESS;
 }
