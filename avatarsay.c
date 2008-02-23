@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.102 2008-02-23 15:07:40 akf Exp $ */
+/* $Id: avatarsay.c,v 2.103 2008-02-23 18:43:38 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -979,21 +979,22 @@ check_encoding (char *buf, int *size)
     /*
      * if .encoding is found and it is either at the start of the buffer 
      * or the previous character is a \n then set_encoding
-     * and don't check anything else anymore
      */
     if (enc != NULL && (enc == buf || *(enc - 1) == '\n'))
       {
 	if (sscanf (enc, ".encoding %79s", (char *) &temp) <= 0)
 	  warning_msg (".encoding", NULL);
 	else
-	  {
-	    set_encoding (temp);
-	    return;
-	  }
+	  set_encoding (temp);
       }
   }
 
   /* check for byte order marks (BOM) */
+
+  /* 
+   * check also when .encoding was found, 
+   * because they have to be removed from the buffer
+   */
 
   /* UTF-8 BOM (as set by Windows notepad) */
   if (*buf == '\xEF' && *(buf + 1) == '\xBB' && *(buf + 2) == '\xBF')
@@ -2918,7 +2919,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.102 2008-02-23 15:07:40 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.103 2008-02-23 18:43:38 akf Exp $");
 
   return EXIT_SUCCESS;
 }

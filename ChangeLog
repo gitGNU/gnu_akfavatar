@@ -1,5 +1,8 @@
 2008-02-23  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatarsay.c (check_encoding):
+	always check for a BOM at the beginning of a file
+
 	* avatarsay.c (process_file):
 	skip lines "@echo off" through "exit" (for Windows/ReactOS)
 
