@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.100 2008-02-23 08:56:22 akf Exp $ */
+/* $Id: avatarsay.c,v 2.101 2008-02-23 14:27:09 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1402,17 +1402,17 @@ process_file (int fd)
 
   /* get first line */
   nread = getwline (fd, line, line_size);
-  
+
   /* if first line is "@echo off", skip to exit */
   if (!rawmode && wcsncmp (line, L"@echo off", 9) == 0)
     {
       while (nread != 0 && wcsncmp (line, L"exit", 4) != 0)
-        nread = getwline (fd, line, line_size);
+	nread = getwline (fd, line, line_size);
 
       /* get next line */
       if (nread != 0)
-        nread = getwline (fd, line, line_size);
-     }
+	nread = getwline (fd, line, line_size);
+    }
 
   /* 
    * skip empty lines and handle commands at the beginning 
@@ -1509,6 +1509,21 @@ static void
 run_info (void)
 {
   not_available ();
+}
+
+static int
+execute_process (char *const prg_argv[])
+{
+  not_available ();
+  return -1;
+}
+
+static void
+menu (void)
+{
+  /* no menu */
+  showversion ();
+  exit (EXIT_SUCCESS);
 }
 
 #else /* not NO_PTY */
@@ -2305,7 +2320,6 @@ process_subprogram (int fd)
   prg_input = -1;
 }
 
-#endif /* not NO_PTY */
 
 /* execute a subprocess, visible in the balloon */
 /* if fname == NULL, start a shell */
@@ -2313,11 +2327,6 @@ process_subprogram (int fd)
 static int
 execute_process (char *const prg_argv[])
 {
-#ifdef NO_PTY
-  not_available ();
-  return -1;
-#else /* not NO_PTY */
-
   pid_t childpid;
   int master, slave;
   char *terminalname;
@@ -2464,10 +2473,8 @@ execute_process (char *const prg_argv[])
   read_error_is_eof = AVT_TRUE;
 
   return master;
-#endif /* not NO_PTY */
 }
 
-#ifndef NO_PTY
 static void
 run_shell (void)
 {
@@ -2498,8 +2505,6 @@ run_info (void)
   if (fd > -1)
     process_subprogram (fd);
 }
-
-#endif /* not NO_PTY */
 
 static void
 ask_file (void)
@@ -2546,6 +2551,7 @@ ask_file (void)
       }
   }
 }
+
 
 #ifdef NO_MANPAGES
 
@@ -2610,6 +2616,7 @@ ask_manpage (void)
 
 #endif /* not NO_MANPAGES */
 
+/* still not NO_PTY */
 
 static void
 about_avatarsay (void)
@@ -2637,24 +2644,6 @@ about_avatarsay (void)
   if (avt_wait_button () != 0)
     quit (EXIT_SUCCESS);
 }
-
-#ifdef NO_MANPAGES
-#  define SAY_MANPAGE(x) \
-        avt_set_text_color (0x88, 0x88, 0x88); \
-        avt_say(x); \
-	avt_set_text_color (0x00, 0x00, 0x00)
-#else
-#  define SAY_MANPAGE(x) avt_say(x)
-#endif
-
-#ifdef NO_PTY
-#  define SAY_SHELL(x) \
-        avt_set_text_color (0x88, 0x88, 0x88); \
-        avt_say(x); \
-	avt_set_text_color (0x00, 0x00, 0x00)
-#else
-#  define SAY_SHELL(x) avt_say(x)
-#endif
 
 static void
 menu (void)
@@ -2700,20 +2689,20 @@ menu (void)
       switch (language)
 	{
 	case DEUTSCH:
-	  SAY_SHELL (L"1) Terminal-Modus\n");
+	  avt_say (L"1) Terminal-Modus\n");
 	  avt_say (L"2) ein Demo oder eine Text-Datei anzeigen\n");
-	  SAY_MANPAGE (L"3) eine Hilfeseite (Manpage) anzeigen\n");
-	  SAY_SHELL (L"4) Anleitung (info)\n");
+	  avt_say (L"3) eine Hilfeseite (Manpage) anzeigen\n");
+	  avt_say (L"4) Anleitung (info)\n");
 	  avt_say (L"5) über avatarsay\n");
 	  avt_say (L"6) beenden\n");
 	  break;
 
 	case ENGLISH:
 	default:
-	  SAY_SHELL (L"1) terminal-mode\n");
+	  avt_say (L"1) terminal-mode\n");
 	  avt_say (L"2) show a demo or textfile\n");
-	  SAY_MANPAGE (L"3) show a manpage\n");
-	  SAY_SHELL (L"4) documentation (info)\n");
+	  avt_say (L"3) show a manpage\n");
+	  avt_say (L"4) documentation (info)\n");
 	  avt_say (L"5) about avatarsay\n");
 	  avt_say (L"6) exit\n");
 	}
@@ -2759,6 +2748,8 @@ menu (void)
 	}
     }
 }
+
+#endif /* not NO_PTY */
 
 static void
 init_language_info (void)
@@ -2926,7 +2917,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.100 2008-02-23 08:56:22 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.101 2008-02-23 14:27:09 akf Exp $");
 
   return EXIT_SUCCESS;
 }
