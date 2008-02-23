@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.101 2008-02-23 14:27:09 akf Exp $ */
+/* $Id: avatarsay.c,v 2.102 2008-02-23 15:07:40 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -88,14 +88,15 @@ static const char *version_info_en =
   "There is NO WARRANTY, to the extent permitted by law.\n"
   "Please read the manual for instructions.";
 
+/* avoid german umlauts here */
 static const char *version_info_de =
   PRGNAME " (AKFAvatar) " AVTVERSION "\n"
   "Copyright (c) 2007, 2008 Andreas K. Foerster\n\n"
   "Lizenz GPLv3+: GNU GPL Version 3 oder neuer "
   "<http://gnu.org/licenses/gpl.html>\n\n"
-  "Dies ist Freie Software: Sie dürfen es gemäß der GPL weitergeben und\n"
-  "überarbeiten. Für AKFAavatar besteht KEINERLEI GARANTIE.\n"
-  "Bitte lesen Sie die Anleitung für weitere Details.";
+  "Dies ist Freie Software: Sie duerfen es gemaess der GPL weitergeben und\n"
+  "bearbeiten. Fuer AKFAvatar besteht KEINERLEI GARANTIE.\n"
+  "Bitte lesen Sie auch die Anleitung.";
 
 /* default encoding - either system encoding or given per parameters */
 /* supported in SDL: ASCII, ISO-8859-1, UTF-8, UTF-16, UTF-32 */
@@ -2917,7 +2918,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.101 2008-02-23 14:27:09 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.102 2008-02-23 15:07:40 akf Exp $");
 
   return EXIT_SUCCESS;
 }
