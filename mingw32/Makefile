@@ -271,15 +271,13 @@ dist-bin: avatarsay.exe multiply.exe multiplizieren.exe
 	cp akfavatar.dll $(BINPKGNAME)/
 	#cp libakfavatar.dll.a $(BINPKGNAME)/
 	#cp ../akfavatar.h akfavatar.def ../pascal/akfavatar.pas $(BINPKGNAME)/
-	cp avatarsay.exe ../fsdemo-?? $(BINPKGNAME)/
+	cp avatarsay.exe $(BINPKGNAME)/
 	cp fsdemo-??.bat $(BINPKGNAME)/
 	cp ../COPYING $(BINPKGNAME)/gpl-3.0.txt
 	cp ../AUTHORS $(BINPKGNAME)/AUTHORS.txt
 	cp ../pascal/correct.wav ../pascal/wrong.wav $(BINPKGNAME)/
 	-cp multiply.exe multiplizieren.exe $(BINPKGNAME)/
 	strip $(BINPKGNAME)/avatarsay.exe $(BINPKGNAME)/akfavatar.dll
-	todos $(BINPKGNAME)/fsdemo-??
-	todos $(BINPKGNAME)/avtcharset
 	todos $(BINPKGNAME)/*.bat
 	todos $(BINPKGNAME)/*.txt
 	-rm -f $(BINPKGNAME).w32.zip
