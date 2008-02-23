@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.97 2008-02-22 17:37:28 akf Exp $ */
+/* $Id: avatarsay.c,v 2.98 2008-02-23 06:10:40 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -40,7 +40,6 @@
 #  include <windows.h>
 #  define NO_MANPAGES 1
 #  ifdef __MINGW32__
-#    define NO_FIFO 1
 #    define NO_PTY 1
 #    define NO_LANGINFO 1
 #  endif
@@ -54,10 +53,6 @@
 #  include <termios.h>
 #  include <sys/ioctl.h>
 #  include <pwd.h>
-#endif
-
-#ifndef NO_FIFO
-#  include <sys/stat.h>
 #endif
 
 #define PRGNAME "avatarsay"
@@ -74,9 +69,6 @@
 /* size for input buffer - not too small, please */
 /* .encoding must be in first buffer */
 #define INBUFSIZE 10240
-
-/* for keybuffer (external processes) */
-#define KEY_BUFFER_SIZE 255
 
 /* maximum size for path */
 /* should fit into stack */
@@ -124,9 +116,6 @@ static int default_delay;
  * this should be used, when the input doesn't come from a file
  */
 static avt_bool_t ignore_eof;
-
-/* create a fifo for what to say? */
-static avt_bool_t say_pipe;
 
 /* start the terminal mode? */
 static avt_bool_t terminal_mode;
@@ -272,15 +261,10 @@ help (const char *prgname)
   puts (" -t, --terminal          terminal mode (run a shell in balloon)");
   puts (" -e, --execute           execute program in balloon");
 #endif
-#ifdef NO_FIFO
-  puts (" -s, --saypipe           not supported on this system");
-#else
-  puts (" -s, --saypipe           create named pipe for filename");
-#endif
   puts (" -w, --window            try to run the program in a window"
 	" (default)");
-  puts
-    (" -n, --no-delay          don't delay output of text (default with -t and -e)");
+  puts (" -n, --no-delay          don't delay output of text"
+        " (default with -t and -e)");
   puts (" -f, --fullscreen        try to run the program in fullscreen mode");
   puts (" -F, --fullfullscreen    like -f, but use current display-size");
   puts (" -E, --encoding=enc      input data is encoded in encoding \"enc\"");
@@ -480,28 +464,6 @@ checkoptions (int argc, char **argv)
 	  ignore_eof = AVT_TRUE;
 	  break;
 
-	case 's':		/* --saypipe */
-#ifdef NO_FIFO
-	  switch (language)
-	    {
-	    case DEUTSCH:
-	      error_msg ("Pipes werden auf diesem System nicht unterstuetzt",
-			 NULL);
-	      break;
-
-	    case ENGLISH:
-	    default:
-	      error_msg ("pipes not supported on this system", NULL);
-	    }
-#else
-	  say_pipe = AVT_TRUE;
-	  loop = AVT_FALSE;
-	  ignore_eof = AVT_TRUE;
-	  /* autodetecting the encoding doesn't work with FIFOs */
-	  given_encoding = AVT_TRUE;
-#endif /* ! NO_FIFO */
-	  break;
-
 	case 'E':		/* --encoding */
 	  strncpy (default_encoding, optarg, sizeof (default_encoding));
 	  given_encoding = AVT_TRUE;
@@ -558,13 +520,6 @@ checkoptions (int argc, char **argv)
 	    }			/* switch (language) */
 	}			/* switch (c) */
     }				/* while (1) */
-
-  /* some sanity checks */
-  if (say_pipe && executable)
-    error_msg ("error", "-s and -e can not be used together");
-
-  if (say_pipe && argc > optind + 1)
-    error_msg ("error", "only one file argument for -s allowed");
 
   if (terminal_mode && argc > optind)
     error_msg ("error", "no files allowed for terminal mode");
@@ -2916,25 +2871,11 @@ main (int argc, char *argv[])
 
 	  set_encoding (default_encoding);
 
-#ifndef NO_FIFO
-	  if (say_pipe)
-	    {
-	      if (mkfifo (argv[i], 0660) < 0)
-		error_msg ("mkfifo", strerror (errno));
-	    }
-#endif /* not NO_FIFO */
-
 	  fd = openfile (argv[i]);
 	  if (fd > -1)
 	    status = process_file (fd);
 	  else
 	    status = -1;
-
-#ifndef NO_FIFO
-	  if (say_pipe)
-	    if (remove (argv[i]) == -1)
-	      warning_msg ("remove", strerror (errno));
-#endif /* not NO_FIFO */
 
 	  if (status <= -1)
 	    error_msg ("error opening file", argv[i]);
@@ -2963,7 +2904,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.97 2008-02-22 17:37:28 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.98 2008-02-23 06:10:40 akf Exp $");
 
   return EXIT_SUCCESS;
 }
