@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.98 2008-02-23 06:10:40 akf Exp $ */
+/* $Id: avatarsay.c,v 2.99 2008-02-23 07:07:02 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -264,7 +264,7 @@ help (const char *prgname)
   puts (" -w, --window            try to run the program in a window"
 	" (default)");
   puts (" -n, --no-delay          don't delay output of text"
-        " (default with -t and -e)");
+	" (default with -t and -e)");
   puts (" -f, --fullscreen        try to run the program in fullscreen mode");
   puts (" -F, --fullfullscreen    like -f, but use current display-size");
   puts (" -E, --encoding=enc      input data is encoded in encoding \"enc\"");
@@ -354,8 +354,6 @@ help (const char *prgname)
   exit (EXIT_SUCCESS);
 }
 
-#endif /* Windows or ReactOS */
-
 static void
 not_available (void)
 {
@@ -376,6 +374,8 @@ not_available (void)
   if (avt_wait_button () != 0)
     quit (EXIT_SUCCESS);
 }
+
+#endif /* Windows or ReactOS */
 
 static void
 set_encoding (const char *encoding)
@@ -526,6 +526,20 @@ checkoptions (int argc, char **argv)
 
   if (executable && argc <= optind)
     error_msg ("error", "execute needs at least a program name");
+
+  /* 
+   * when input file is - the program must not loop
+   * the - can not be combined with filenames
+   */
+  if ((argc == optind + 1) && (strcmp (argv[optind], "-") == 0))
+    loop = 0;
+  else
+    {
+      int i;
+      for (i = optind; i < argc; i++)
+	if (strcmp (argv[i], "-") == 0)
+	  error_msg ("error", "filenames and \"-\" can not be combined");
+    }
 }
 
 static void
@@ -2804,9 +2818,33 @@ check_config_file (const char *f)
     }
 }
 
+static void
+show_file (char *f)
+{
+  int status = -1;
+  int fd;
+
+  set_encoding (default_encoding);
+
+  fd = openfile (f);
+  if (fd > -1)
+    status = process_file (fd);
+
+  if (status < 0)
+    error_msg ("error opening file", f);
+  else if (status == 1)		/* halt requested */
+    quit (EXIT_SUCCESS);
+  else if (status > 1)		/* problem with libakfavatar */
+    quit (EXIT_FAILURE);
+
+  if (avt_flip_page ())
+    quit (EXIT_SUCCESS);
+}
+
 int
 main (int argc, char *argv[])
 {
+  /* initialize variables */
   window_mode = AVT_AUTOMODE;
   loop = AVT_TRUE;
   default_delay = AVT_DEFAULT_TEXT_DELAY;
@@ -2865,36 +2903,7 @@ main (int argc, char *argv[])
 	move_in ();
 
       for (i = optind; i < argc; i++)
-	{
-	  int status;
-	  int fd;
-
-	  set_encoding (default_encoding);
-
-	  fd = openfile (argv[i]);
-	  if (fd > -1)
-	    status = process_file (fd);
-	  else
-	    status = -1;
-
-	  if (status <= -1)
-	    error_msg ("error opening file", argv[i]);
-	  else if (status == 1)	/* halt requested */
-	    quit (EXIT_SUCCESS);
-
-	  if (avt_flip_page ())
-	    quit (EXIT_SUCCESS);
-
-	  /* 
-	   * ignore anything past "-" 
-	   * and don't loop then (it would break things)
-	   */
-	  if (strcmp (argv[i], "-") == 0)
-	    {
-	      loop = 0;
-	      break;
-	    }
-	}
+	show_file (argv[i]);
 
       if (initialized && !popup)
 	move_out ();
@@ -2904,7 +2913,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.98 2008-02-23 06:10:40 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.99 2008-02-23 07:07:02 akf Exp $");
 
   return EXIT_SUCCESS;
 }
