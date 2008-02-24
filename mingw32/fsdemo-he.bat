@@ -1,5 +1,5 @@
 @echo off
-avatarsay %0
+avatarsay --window %0
 exit
 
 # my hebrew isn't good enough. Could anybody please translate the rest.

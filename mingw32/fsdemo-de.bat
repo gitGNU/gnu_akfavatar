@@ -1,5 +1,5 @@
 @echo off
-avatarsay %0
+avatarsay --window %0
 exit
 
 .encoding UTF-8
