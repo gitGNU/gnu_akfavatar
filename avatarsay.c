@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.103 2008-02-23 18:43:38 akf Exp $ */
+/* $Id: avatarsay.c,v 2.104 2008-02-24 11:40:15 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -78,6 +78,8 @@
 
 /* device attribute (DEC) */
 #define DS "\033[?1;2c"		/* claim to be a vt100 with advanced video */
+
+#define BYTE_ORDER_MARK L'\xfeff'
 
 static const char *version_info_en =
   PRGNAME " (AKFAvatar) " AVTVERSION "\n"
@@ -963,7 +965,10 @@ iscommand (wchar_t * s, int *stop)
   return AVT_FALSE;
 }
 
-/* check for byte order mark (BOM) U+FEFF and remove it */
+/* 
+ * check for the command .encoding 
+ * or a byte order mark (BOM) U+FEFF 
+ */
 static void
 check_encoding (char *buf, int *size)
 {
@@ -979,29 +984,26 @@ check_encoding (char *buf, int *size)
     /*
      * if .encoding is found and it is either at the start of the buffer 
      * or the previous character is a \n then set_encoding
+     * and don't check anything else anymore
      */
     if (enc != NULL && (enc == buf || *(enc - 1) == '\n'))
       {
 	if (sscanf (enc, ".encoding %79s", (char *) &temp) <= 0)
 	  warning_msg (".encoding", NULL);
 	else
-	  set_encoding (temp);
+	  {
+	    set_encoding (temp);
+	    return;
+	  }
       }
   }
 
   /* check for byte order marks (BOM) */
 
-  /* 
-   * check also when .encoding was found, 
-   * because they have to be removed from the buffer
-   */
-
   /* UTF-8 BOM (as set by Windows notepad) */
   if (*buf == '\xEF' && *(buf + 1) == '\xBB' && *(buf + 2) == '\xBF')
     {
       set_encoding ("UTF-8");
-      memmove (buf, buf + 3, *size - 3);
-      *size -= 3;
       return;
     }
 
@@ -1012,8 +1014,6 @@ check_encoding (char *buf, int *size)
       && *(buf + 2) == '\xFE' && *(buf + 3) == '\xFF')
     {
       set_encoding ("UTF-32BE");
-      memmove (buf, buf + 4, *size - 4);
-      *size -= 4;
       return;
     }
 
@@ -1022,8 +1022,6 @@ check_encoding (char *buf, int *size)
       && *(buf + 2) == '\x00' && *(buf + 3) == '\x00')
     {
       set_encoding ("UTF-32LE");
-      memmove (buf, buf + 4, *size - 4);
-      *size -= 4;
       return;
     }
 
@@ -1031,8 +1029,6 @@ check_encoding (char *buf, int *size)
   if (*buf == '\xFE' && *(buf + 1) == '\xFF')
     {
       set_encoding ("UTF-16BE");
-      memmove (buf, buf + 2, *size - 2);
-      *size -= 2;
       return;
     }
 
@@ -1040,8 +1036,6 @@ check_encoding (char *buf, int *size)
   if (*buf == '\xFF' && *(buf + 1) == '\xFE')
     {
       set_encoding ("UTF-16LE");
-      memmove (buf, buf + 2, *size - 2);
-      *size -= 2;
       return;
     }
 
@@ -1167,9 +1161,16 @@ getwline (int fd, wchar_t * lineptr, size_t n)
   maxchars = (n / sizeof (wchar_t)) - 1;
   nchars = 0;
 
-  ch = get_character (fd);
+  /* get first character and skip byte order marks */
+  do
+    {
+      ch = get_character (fd);
+    }
+  while (ch == BYTE_ORDER_MARK);
+
   *lineptr = ch;
   nchars++;
+
   while (ch != WEOF && ch != L'\n' && nchars <= maxchars)
     {
       ch = get_character (fd);
@@ -2919,7 +2920,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.103 2008-02-23 18:43:38 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.104 2008-02-24 11:40:15 akf Exp $");
 
   return EXIT_SUCCESS;
 }
