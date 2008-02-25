@@ -1,13 +1,14 @@
-2008-02-23  Andreas K. Foerster  <info@akfoerster.de>
+2008-02-25  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c:
+	support options -b, --nocolor
+	remove options -s, --saypipe
 
 	* avatarsay.c (check_encoding, getwline):
 	don't remove byte order marks, but ignore them while reading
 
 	* avatarsay.c (process_file):
 	skip lines "@echo off" through "exit" (for Windows/ReactOS)
-
-	* avatarsay.c:
-	remove options -s, --saypipe
 
 	* avatar.c (avt_say, avt_say_len, backspace_trick):
 	support backspace trick for underlining and bold printing

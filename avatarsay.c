@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.104 2008-02-24 11:40:15 akf Exp $ */
+/* $Id: avatarsay.c,v 2.105 2008-02-25 12:41:47 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -65,6 +65,7 @@
  * but the terminal database should have an entry for this
  */
 #define TERM "linux"
+#define BWTERM "linux-m"
 
 /* size for input buffer - not too small, please */
 /* .encoding must be in first buffer */
@@ -174,6 +175,9 @@ static int text_color;
 static int text_background_color;
 static avt_bool_t faint;
 
+/* no color (but still bold, underlined, reversed) allowed */
+static avt_bool_t nocolor;
+
 /* character for DEC cursor keys (either [ or O) */
 static char dec_cursor_seq[3];
 
@@ -264,6 +268,7 @@ help (const char *prgname)
   puts (" -t, --terminal          terminal mode (run a shell in balloon)");
   puts (" -e, --execute           execute program in balloon");
 #endif
+  puts (" -b, --nocolor           no color allowed (black and white)");
   puts (" -w, --window            try to run the program in a window"
 	" (default)");
   puts (" -n, --no-delay          don't delay output of text"
@@ -419,10 +424,11 @@ checkoptions (int argc, char **argv)
 	{"terminal", no_argument, 0, 't'},
 	{"execute", no_argument, 0, 'e'},
 	{"no-delay", no_argument, 0, 'n'},
+	{"nocolor", no_argument, 0, 'b'},
 	{0, 0, 0, 0}
       };
 
-      c = getopt_long (argc, argv, "+hvfFw1risE:lupten",
+      c = getopt_long (argc, argv, "+hvfFw1risE:luptenb",
 		       long_options, &option_index);
 
       /* end of the options */
@@ -501,6 +507,10 @@ checkoptions (int argc, char **argv)
 	case 'n':		/* --no-delay */
 	  default_delay = 0;
 	  avt_set_text_delay (0);
+	  break;
+
+	case 'b':		/* --nocolor */
+	  nocolor = AVT_TRUE;
 	  break;
 
 	case '?':		/* unsupported option */
@@ -1741,11 +1751,14 @@ ansi_graphic_code (int mode)
     case 35:
     case 36:
     case 37:
-      text_color = (mode - 30);
-      /* bold is sometimes assumed to be in light color */
-      if (text_color > 0 && text_color < 7 && avt_get_bold ())
-	text_color += 8;
-      set_foreground_color (text_color);
+      if (!nocolor)
+	{
+	  text_color = (mode - 30);
+	  /* bold is sometimes assumed to be in light color */
+	  if (text_color > 0 && text_color < 7 && avt_get_bold ())
+	    text_color += 8;
+	  set_foreground_color (text_color);
+	}
       break;
 
     case 38:			/* foreground normal, underlined */
@@ -1768,8 +1781,11 @@ ansi_graphic_code (int mode)
     case 45:
     case 46:
     case 47:
-      text_background_color = (mode - 40);
-      set_background_color (text_background_color);
+      if (!nocolor)
+	{
+	  text_background_color = (mode - 40);
+	  set_background_color (text_background_color);
+	}
       break;
 
     case 49:			/* background normal */
@@ -1785,8 +1801,11 @@ ansi_graphic_code (int mode)
     case 95:
     case 96:
     case 97:
-      text_color = (mode - 90 + 8);
-      set_foreground_color (text_color);
+      if (!nocolor)
+	{
+	  text_color = (mode - 90 + 8);
+	  set_foreground_color (text_color);
+	}
       break;
 
     case 100:
@@ -1797,8 +1816,11 @@ ansi_graphic_code (int mode)
     case 105:
     case 106:
     case 107:
-      text_background_color = (mode - 100 + 8);
-      set_background_color (text_background_color);
+      if (!nocolor)
+	{
+	  text_background_color = (mode - 100 + 8);
+	  set_background_color (text_background_color);
+	}
       break;
     }
 }
@@ -2421,7 +2443,10 @@ execute_process (char *const prg_argv[])
       ioctl (STDIN_FILENO, TIOCSCTTY, 0);
 #endif
 
-      putenv ("TERM=" TERM);
+      if (nocolor)
+	putenv ("TERM=" BWTERM);
+      else
+	putenv ("TERM=" TERM);
 
       /* programs can identify avatarsay with this */
       putenv ("AKFAVTTERM=" AVTVERSION);
@@ -2920,7 +2945,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.104 2008-02-24 11:40:15 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.105 2008-02-25 12:41:47 akf Exp $");
 
   return EXIT_SUCCESS;
 }
