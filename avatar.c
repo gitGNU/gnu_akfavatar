@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.97 2008-02-20 08:47:53 akf Exp $ */
+/* $Id: avatar.c,v 2.98 2008-02-25 10:28:15 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1164,7 +1164,7 @@ avt_delete_characters (int num)
   dest.y = cursor.y;
   SDL_BlitSurface (screen, &rest, screen, &dest);
 
-  clear.x = viewport.w - (num * FONTWIDTH);
+  clear.x = viewport.x + viewport.w - (num * FONTWIDTH);
   clear.y = cursor.y;
   clear.w = num * FONTWIDTH;
   clear.h = LINEHEIGHT;
@@ -3290,7 +3290,7 @@ void
 avt_register_mousehandler (avt_mousehandler handler)
 {
   avt_ext_mousehandler = handler;
-  
+
   /* make mouse visible or invisible */
   if (handler)
     SDL_ShowCursor (SDL_ENABLE);
@@ -3458,7 +3458,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.97 2008-02-20 08:47:53 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.98 2008-02-25 10:28:15 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
