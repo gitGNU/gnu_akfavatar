@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.21 2007-11-23 15:31:20 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.22 2008-02-25 19:51:08 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -22,12 +22,13 @@ This is the documentation for AKFAvatar
 (version @value{VERSION}, @value{UPDATED}).
 
 @quotation
-AKFAvatar is a fancy text-viewer, scripting language for making demos, 
-and a library for writing programs in C or Pascal.
+AKFAvatar is a fancy terminal-emultator, a text-viewer, scripting language 
+for making demos, and a library for writing programs in C or Pascal.
 
 Homepage: @uref{http://akfoerster.de/akfavatar/}
 
-Copyright @copyright{} 2007 @uref{http://akfoerster.de/, Andreas K. Foerster}
+Copyright @copyright{} 2007, 2008 Andreas K. Foerster,
+@uref{http://akfoerster.de/}
 
 Copying and distribution of this documentation, with or without modification,
 are permitted in any medium without royalty provided the copyright
@@ -37,7 +38,7 @@ notice and this notice are preserved.
 
 @titlepage
 @title AKFAvatar
-@subtitle a fancy text-viewer and much more
+@subtitle a fancy terminal and more
 @author Andreas K. Foerster
 
 @comment The following two commands start the copyright page.
@@ -63,6 +64,8 @@ notice and this notice are preserved.
 * Using gnome-akfavatar:: Using it under GNOME
 * Programming::           Programming with AKFAvatar
 * Pascal reference::      Reference for Pascal
+* C reference::           the C header file @code{akfavatar.h}
+
 * Concept Index::         Index of this documentation
 @end menu
 
@@ -81,8 +84,18 @@ the most simple one to the most complicated for advanced users.
 
 @enumerate
 @item
-The most simple thing is to use he command @command{avatarsay} as a fancy 
-text-viewer, more or less like @command{more} or @command{less}.
+You can use the program @command{avatarsay} as a text-terminal, just like
+@command{xterm}, but being much more fun. In contrast to @command{xterm} 
+it might even run without an x-server.
+(Under Windows this function is not available.)
+
+@item
+You can use it as wrapper for your textmode programs.
+(Under Windows this function is not available.)
+
+@item
+The command @command{avatarsay} can be used as a fancy text-viewer, more 
+or less like @command{more} or @command{less}.
 
 It is not suited for long, complicated texts, but rather for short and 
 funny stuff.
@@ -90,8 +103,7 @@ funny stuff.
 @item 
 But the command @command{avatarsay} can do much more than that.  It can
 be used as a simple scripting language for making demos that you can
-show for example at an information booth or in a shop's window.  It can
-be used for making funny tutorials.
+show for example at an information booth or in a shop's window.
 
 Don't worry, it sounds more complicated, than it is.  I should rather
 say, you can spice up your texts with occasional commands.  Then you can
@@ -102,9 +114,8 @@ The command @command{avatarsay} can also be called from other scripting
 languages and the scripting language can communicate with that program
 through @acronym{FIFO}s.
 
-
 @item  
-Then there is the library @code{libavatar}, which you can use from
+Then there is the library @code{libakfavatar}, which you can use from
 compiling languages.  Currently @w{Free Pascal}, @acronym{GNU}-Pascal
 and C are supported.  Especially the Pascal language is suited for
 beginners to learn how to program.  The library is simple to use, like writing
@@ -116,7 +127,7 @@ command-line programs --- but it's much more fun!
 @section General usage
 @cindex keys
 
-A lot of AKFAvatar applications need no interaction with the user.  They
+Some AKFAvatar applications need no interaction with the user.  They
 are often demos that are meant to run without any interaction.  So it is
 not obvious how to interact with the  program.
 
@@ -305,7 +316,7 @@ installed, use the script @command{lrun} (see above).
 @cindex trouble-shouting
 
 @itemize
-@item Problem: the system can't find the library @file{libavatar.so}
+@item Problem: the system can't find the library @file{libakfavatar.so}
 
 Solution: first try to add @file{/usr/local/lib} or wherever you 
 installed it to the environment variable @code{LD_LIBRARY_PATH}: 
@@ -354,7 +365,7 @@ This chapter explains the various uses of the tool @command{avatarsay}.
 * Different avatar image::     Using a different avatar image
 * Invoking avatarsay::         Command line interface
 * Commands for avatarsay::     Advanced features of @command{avatarsay}
-* Pipes::                      Pipes and @acronym{FIFO}s
+* Pipes::                      Pipes
 @end menu
 
 @node Text-viewer
@@ -550,12 +561,6 @@ output raw text (don't handle any commands or striplines)
 @itemx -i
 ignore end of file conditions; use this when the input is not a file
 
-@item --saypipe @var{filename}
-@itemx -s @var{filename}
-create @dfn{named pipe} for @var{filename}
-
-@xref{Pipes}.
-
 @end table
 
 @subsection Environment variables
@@ -728,7 +733,7 @@ Anything behind the @command{.stop} command is ignored.
 @end table
 
 @node Pipes
-@section Pipes and @acronym{FIFO}s
+@section Pipes
 @cindex other commands, using avatarsay with
 
 @cindex pipes
@@ -749,37 +754,6 @@ You can also see the output of any other command with
 this: @samp{@w{dir | avatarsay -}}.  You could even read this manual this way:
 @samp{@w{makeinfo --plaintext akfavatar.texinfo | avatarsay -}}, 
 although that's probably a bit too long.
-
-@cindex FIFOs
-@cindex named pipe
-Using the command @command{echo} this way to let the avatar say something 
-might be fun, but it's not so funny when the window always opens and closes 
-and the avatar always moves in and out@enddots{}  This is what a @acronym{FIFO}
-is good for.  A @acronym{FIFO} is also called a @dfn{named pipe}, because it
-is a pipe with a name.  To use this the command @command{avatarsay} supports
-the option @option{--saypipe}.  This is only supported on 
-@acronym{POSIX}-compatible systems.  Use it like this:
-@samp{@w{avatarsay --saypipe avatar &}}.  Because of the @code{&} at the end 
-of the line you get back to the shell prompt immediately.  First you might 
-think that nothing happened.  But look into the current directory: there is a 
-new entry named @samp{avatar}.  This is the @dfn{named pipe}.  It is a 
-communication channel to the program.  Now enter this:
-@samp{@w{echo "Hello, anybody there?" > avatar}}.  Now the window opens, the 
-avatar moves in, says the text@dots{} and the window stays open.  Go back to 
-the window with the command line and let the avatar say something else@enddots{}
-That's funny, isn't it?  Of course you can use all the commands as described in
-@ref{Commands for avatarsay}.  For example @samp{@w{echo .clear > avatar}} clears
-the text-area, and then you can let it say something new; for example 
-@samp{@w{df > avatar}}. You can also display an image with the @command{.image} 
-command, or play a sound with the @command{.audio} command.
-
-You might sometimes notice delays. They are intentionally there, because it was
-not primarily meant to be used interactively.
-
-Now enough fun.  Let's stop it@enddots{}  Can you guess how?
-Well you could simply press the close button of the window, but that's boring.
-Why not use this: @samp{@w{echo .end > avatar}}. The avatar moves out of the
-window, the window closes, and also the @dfn{named pipe} is away.
 
 
 @node Using gnome-akfavatar
@@ -978,15 +952,24 @@ color of the text.  You can even set the background color of the
 text with the command @command{TextBackground(@var{color});}, but that
 doesn't look as good as on a text-terminal.
 
-To switch back to the ``normal'' text-color, you should use the 
+Even the variable @code{TextAttr} is fully supported as in the 
+original @code{CRT} unit.  But it is better to avoid the use of that.
+
+The commands @command{HighVideo} and @command{LowVideo} are supported, 
+althogh with a slightly different meaning. @command{HighVideo} switches
+bold font on and @command{LowVideo} switches bold font off.  They do
+not change the color as with the @code{CRT} unit.  Please keep that in 
+mind, when you combine them with calls to @command{TextColor}.
+
+With @command{Underlined(true);} you can switch underlined mod on
+and @command{Underlined(false);} you can switch it off.
+
+To switch back to the ``normal'' text-attributes, you should use the 
 command @command{NormVideo;}.  The ``normal'' text-color is different
 when you use it with AKFAvatar or with the @code{CRT} unit.  So with
 this command you can ensure, that you get the desired result with 
-both.
-
-The commands @command{HighVideo} and @command{LowVideo} are supported
-and even the variable @code{TextAttr} is fully supported as in the 
-original @code{CRT} unit.  But it is better to avoid the use of that.
+both.  @command{NormVideo;} also switches the bold- and the
+underlined-mode off.
 
 The function @command{ReadKey} waits for a key to be pressed and returns
 the code of the pressed key.  To find out, whether a key was pressed without
@@ -1085,6 +1068,14 @@ The following text shows the @code{interface} of the Pascal unit
 @code{akfavatar.pas}:
 
 @verbatiminclude pasref.txt
+
+@node C reference
+@appendix C reference
+@cindex reference for C
+
+The following is the C header file @code{akfavatar.h}:
+
+@verbatiminclude ../akfavatar.h
 
 @node Concept Index
 @unnumbered Index

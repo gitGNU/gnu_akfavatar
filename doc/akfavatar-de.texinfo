@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.14 2007-11-23 15:31:20 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.15 2008-02-25 19:51:07 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -26,13 +26,14 @@ Dies ist die Bedienungsanleitung für AKFAvatar
 (Version @value{VERSION}, @value{UPDATED}).
 
 @quotation
-AKFAvatar ist ein witziger Text-Betrachter, eine Skript-Sprache um Demos zu
-erstellen und eine Programmbibliothek um dafür Programme in C oder Pascal 
-zu schreiben.
+AKFAvatar ist ein witziger Terminal-Emulator, ein Text-Betrachter, eine 
+Skript-Sprache um Demos zu erstellen und eine Programmbibliothek um 
+dafür Programme in C oder Pascal zu schreiben.
 
 Homepage: @uref{http://akfoerster.de/akfavatar/}
 
-Copyright @copyright{} 2007 @uref{http://akfoerster.de/, Andreas K. Förster}
+Copyright @copyright{} 2007, 2008 Andreas K. Förster
+@uref{http://akfoerster.de/}
 
 Vervielfältigung und Verbreitung dieser Anleitung, mit oder ohne Veränderungen,
 sind in jeglicher Form ohne Gebühr erlaubt, solange der Copyright Vermerk
@@ -42,7 +43,7 @@ sowie dieser Hinweis erhalten bleiben.
 
 @titlepage
 @title AKFAvatar
-@subtitle Ein witziger Text-Betrachter und viel mehr
+@subtitle Ein witziges Terminal und mehr
 @author Andreas K. Förster
 
 @c Die folgendern Befehle erzeugen die Copyright Seite.
@@ -68,6 +69,7 @@ sowie dieser Hinweis erhalten bleiben.
 * Verwendung von gnome-akfavatar:: Wie man es unter @acronym{GNOME} verwendet
 * Programmierung::                 Programmierung mit AKFAvatar
 * Pascal Referenz::                Referenz für Pascal
+* C Referenz::                     Die C Header Datei @code{akfavatar.h}
 * Index::                          Index für diese Dokumentation
 @end menu
 
@@ -87,9 +89,18 @@ fortgeschrittene Benutzer.
 
 @enumerate
 @item
-Am einfachsten ist es, den Befehl @command{avatarsay} als witzigen 
-Text-Betrachter zu verwenden, mehr oder weniger wie @command{more} oder
-@command{less}.
+Man kann das Programm @command{avatarsay} als Text-Terminal verwenden, 
+so wie @command{xterm}, nur witziger. Im Gegensatz zu @command{xterm} 
+läuft es eventuell auch ohne einen X-Server.
+(Für Windows steht diese Funktion nicht zur Verfügung.)
+
+@item
+Man kann Textmodus-Programme auch direkt mit @command{avatarsay} öffnen lassen.
+(Für Windows steht diese Funktion nicht zur Verfügung.)
+
+@item
+Der Befehl @command{avatarsay} kann als witziger Text-Betrachter verwendet 
+werden, mehr oder weniger wie @command{more} oder @command{less}.
 
 Das ist nicht gerade für lange und komplizierte Texte geeignet, sondern eher
 für kurze, lustige Sachen.
@@ -97,8 +108,7 @@ für kurze, lustige Sachen.
 @item
 Aber der Befehl @command{avatarsay} kann noch viel mehr.  Er kann als einfache 
 Skript-Sprache verwendet werden, mit der man Demos erstellen kann, die man zum
-Beispiel an Info-Ständen oder in Schaufenstern zeigen kann.  Er kann auch dafür
-verwendet werden, um lustige Übungen zu erstellen.
+Beispiel an Info-Ständen oder in Schaufenstern zeigen kann.
 
 Keine Angst, das klingt viel komplizierter als es ist.  Vielleicht sollte ich
 eher sagen, man kann seine Texte mit gelegentlichen Befehlen aufpeppen.
@@ -111,7 +121,7 @@ aufgerufen werden und die Skript-Sprache kann mit dem Programm über
 @acronym{FIFO}s kommunizieren.
 
 @item
-Dann gibt es da noch die Programmbibliothek @code{libavatar}, die man von
+Dann gibt es da noch die Programmbibliothek @code{libakfavatar}, die man von
 kompilierenden Sprachen aus verwenden kann.  Zur Zeit werden @w{Free Pascal},
 @acronym{GNU}-Pascal und C unterstützt.  Insbesondere die Sprache Pascal
 ist für Anfänger geeignet, die programmieren lernen wollen.  Die Bibliothek ist
@@ -124,7 +134,7 @@ aber wesentlich mehr Spaß!
 @section Allgemeine Verwendung
 @cindex Tasten
 
-Viele AKFAvatar Anwendungen laufen automatisch ab ohne Interaktion mit dem
+Manche AKFAvatar-Anwendungen laufen automatisch ab ohne Interaktion mit dem
 Benutzer. Es handelt sich häufig um Demos, die darauf hin ausgelegt sind ohne
 irgendwelche Eingriffe vom Benutzer zu laufen.  Aus diesem Grund ist es nicht 
 direkt offensichtlich, wie man mit dem laufenden Programm interagieren kann.
@@ -334,7 +344,7 @@ installiert ist, kann man das Skript @command{lrun} verwenden (siehe oben).
 @cindex Problem-Lösungen
 
 @itemize
-@item Problem: Das System kann die Bibliothek @file{libavatar.so} nicht finden.
+@item Problem: Das System kann die Bibliothek @file{libakfavatar.so} nicht finden.
 
 Lösung: zunächst kann man versuchen das Verzeichnis @file{/usr/local/lib}, 
 oder wohin man das auch immer installiert hat, bei der Umgebungs-Variablen 
@@ -390,7 +400,7 @@ Werkzeugs @command{avatarsay}.
 * Anderes Avatar-Bild::        Wie man ein anderes Avatar-Bild verwendet
 * Aufruf von avatarsay::       Die genaue Verwendung von @command{avatarsay}
 * Befehle für avatarsay::      Befehle für das Programm @command{avatarsay}
-* Pipes::                      Pipes und @acronym{FIFO}s
+* Pipes::                      Pipes
 @end menu
 
 @node Text-Betrachter
@@ -605,12 +615,6 @@ den rohen Text ausgeben (keine Befehle oder Trennlinien beachten)
 ignoriere Dateiende Situationen; dies sollte man verwenden, wenn die
 Eingabe nicht von einer Datei stammt
 
-@item --saypipe @var{Dateiname}
-@itemx -s @var{Dateiname}
-erzeuge eine @dfn{Named Pipe} für @var{Dateiname}
-
-@xref{Pipes}.
-
 @end table
 
 @subsection Umgebungsvariablen
@@ -791,7 +795,7 @@ Alles nach dem @command{.stop}-Befehl wird ignoriert.
 @end table
 
 @node Pipes
-@section Pipes und @acronym{FIFO}s
+@section Pipes
 @cindex andere Befehle (avatarsay mit anderen Befehlen benutzen)
 
 @cindex Pipes
@@ -815,43 +819,6 @@ oder das: @samp{@w{dir | avatarsay -}}.  Man könnte sogar diese Anleitung auf
 folgende Weise lesen: @*
 @samp{@w{makeinfo --plaintext akfavatar-de.texinfo | avatarsay -}}, 
 aber das ist wohl etwas zu langatmig.
-
-@cindex FIFOs
-@cindex Named Pipe
-Den Befehl @command{echo} auf diese Weise zu verwenden macht vielleicht Spaß,
-aber es verdirbt den Spaß ein wenig, dass das Fenster immer wieder auf geht 
-und sich schließt und der Avatar ständig rein kommt und raus geht@enddots{}
-Hier kann ein @acronym{FIFO} Abhilfe schaffen.  Ein @acronym{FIFO} wird auch 
-als @dfn{Named Pipe} bezeichnet, denn es ist letztendlich eine Pipe mit einem
-Namen.  Um diese zu verwenden unterstützt der Befehl @command{avatarsay} die
-Option @option{--saypipe}.  Das wird nur auf @acronym{POSIX}-kompatiblen 
-Systemen unterstützt.  Man kann es folgendermaßen verwenden: 
-@samp{@w{avatarsay --saypipe avatar &}}.  Wegen dem @code{&} am Ende der Zeile
-kommt man sofort auf die Eingabe-Aufforderung zurück.  Zunächst sieht es so
-aus, als ob gar nichts passiert wäre.  Wenn man sich aber mal das aktuelle
-Verzeichnis genauer ansieht, stellt man fest, dass sich dort ein neuer Eintrag 
-namens @samp{avatar} befindet.  Das ist die @dfn{Named Pipe}.  Es ist ein
-Kommunikations-Kanal zu dem Programm.  Nun kann man zum Beispiel folgendes 
-eingeben: @samp{@w{echo "Hallo, jemand zuhause?" > avatar}}.  Jetzt öffnet sich
-das Fenster, der Avatar kommt herein, sagt den Text@dots{} und das Fenster 
-bleibt offen.  Nun kann man zurück in das Fenster mit der Eingabeaufforderung
-gehen und den Avatar auf die selbe Weise noch etwas anderes sagen 
-lassen@enddots{}  Das macht doch Spaß, oder?  Natürlich kann man auch all die 
-Befehle verwenden, wie sie in @ref{Befehle für avatarsay} beschrieben sind.
-Zum Beispiel @samp{@w{echo .clear > avatar}} löscht den Text-Bereich, und dann
-kann man den Avatar wieder etwas anderes sagen lassen; zum Beispiel auch
-@samp{@w{df > avatar}}.  Man kann auch ein Bild anzeigen lassen mit dem Befehl
-@command{.image}, oder eine Audio-Datei abspielen lassen mit dem Befehl 
-@command{.audio}.
-
-Manchmal gibt es einige Verzögerungen.  Diese wurden bewusst eingeführt, da es
-nicht primär für den interaktiven Betrieb gedacht war.
-
-Genug Spaß gehabt.  Wir wollen aufhören und das Programm beenden@enddots{}
-Aber wie?  Nun, man könnte einfach den Schließen-Knopf an dem Fenster 
-betätigen, aber das wäre ja langweilig.  Wie wäre es damit:
-@samp{@w{echo .end > avatar}}.  Der Avatar bewegt sich aus dem Fenster heraus,
-das Fenster wird geschlossen, und auch die @dfn{Named Pipe} ist nun fort.
 
 @node Verwendung von gnome-akfavatar
 @chapter Wie man es unter @acronym{GNOME} verwendet
@@ -1068,16 +1035,26 @@ Text-Farbe zu verändern.  Man kann sogar die Hintergrund-Farbe des Textes
 mit dem Befehl @command{TextBackground(@var{color});} verändern.  Aber
 das sieht nicht so gut aus wie auf einem Text-Terminal.
 
-Um zurück auf die ``normale'' Text-Farbe zu schalten, sollte man den
+Sogar die Variable @code{TextAttr} wird vollständig unterstützt wie
+in der originalen @code{CRT}-Unit.  Aber diese Variable sollte nach Möglichkeit 
+vermieden werden.
+
+Die Befehle @command{HighVideo} und @command{LowVideo} werden unterstützt,
+aber etwas anders, als in der @code{CRT}-Unit.  @command{HighVideo} schaltet
+den Fettduck ein und @command{LowVideo} schaltet den Fettdruck wieder aus.
+Diese Befehle verändern nicht die Farbe, wie dies in der @code{CRT}-Unit
+geschieht. Das sollte man im Hinterkopf behalten, wenn man diese Befehle mit
+Aufrufen von @command{TextColor} kombiniert.
+
+Mit @command{Underlined(true);} kann man den Unterstreichen-Modus anschalten
+und mit @command{Underlined(false);} wieder abschalten.
+
+Um zurück auf die ``normale'' Text-Darstellung zu schalten, sollte man den
 Befehl @command{NormVideo;} verwenden.  Die ``normale'' Text-Farbe ist
 bei AKFAvatar eine ganz andere als mit der @code{CRT}-Unit.  Durch
 Verwendung dieses Befehles kann man also sicher gehen, dass man mit
-beidem ein vernünftiges Ergebnis bekommt.
-
-Die Befehle @command{HighVideo} und @command{LowVideo} werden unterstützt
-und sogar die Variable @code{TextAttr} wird vollständig unterstützt wie
-in der originalen @code{CRT}-Unit.  Aber diese Befehle und diese Variable
-sollten nach Möglichkeit vermieden werden.
+beidem ein vernünftiges Ergebnis bekommt. @command{NormVideo;} schaltet
+auch den Fettdruck und das Unterstreichen aus.
 
 Die Funktion @command{ReadKey} wartet auf einen Tastendruck und gibt den
 Code der gedrückten Taste wieder.  Um heraus zu finden ob eine Taste gedrückt
@@ -1189,6 +1166,15 @@ Der folgende Text zeigt das @code{interface} der Pascal-Unit
 @code{akfavatar.pas}:
 
 @verbatiminclude pasref.txt
+
+@node C Referenz
+@appendix C Referenz
+@cindex Referenz für C
+
+Es folgt der Inhalt der C Header Datei @code{akfavatar.h}:
+
+@verbatiminclude ../akfavatar.h
+
 
 @node Index
 @unnumbered Index
