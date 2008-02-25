@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.106 2008-02-25 18:34:42 akf Exp $ */
+/* $Id: avatarsay.c,v 2.107 2008-02-25 19:19:35 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1924,6 +1924,25 @@ escape_sequence (int fd, wchar_t last_character)
       write (prg_input, DS, sizeof (DS) - 1);
       return;
 
+    case L']':			/* Linux specific: (re)set palette */
+      /* not supported, but fetch the right number of chars to be ignored */
+      {
+	wchar_t ch2 = get_character (fd);
+	/* ignore L'R' (reset palette) */
+	if (ch2 == L'P')	/* set palette */
+	  {
+	    /* ignore 7 characters */
+	    get_character (fd);
+	    get_character (fd);
+	    get_character (fd);
+	    get_character (fd);
+	    get_character (fd);
+	    get_character (fd);
+	    get_character (fd);
+	  }
+      }
+      return;
+
     default:
       if (ch != L'[')
 	{
@@ -2959,7 +2978,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.106 2008-02-25 18:34:42 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.107 2008-02-25 19:19:35 akf Exp $");
 
   return EXIT_SUCCESS;
 }
