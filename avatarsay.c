@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.105 2008-02-25 12:41:47 akf Exp $ */
+/* $Id: avatarsay.c,v 2.106 2008-02-25 18:34:42 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -169,6 +169,9 @@ static int wcbuf_len = 0;
 /* maximum coordinates (set by "initialize") */
 static int max_x, max_y;
 static int region_min_y, region_max_y;
+
+/* insert mode (for terminal) */
+static avt_bool_t insert_mode;
 
 /* colors for terminal mode */
 static int text_color;
@@ -1883,6 +1886,7 @@ escape_sequence (int fd, wchar_t last_character)
       ansi_graphic_code (0);
       avt_underlined (AVT_FALSE);
       avt_bold (AVT_FALSE);
+      insert_mode = AVT_FALSE;
       avt_clear ();
       return;
 
@@ -2116,6 +2120,9 @@ escape_sequence (int fd, wchar_t last_character)
 	  int val = strtol (sequence, NULL, 10);
 	  switch (val)
 	    {
+	    case 4:
+	      insert_mode = AVT_TRUE;
+	      break;
 	    case 20:
 	      avt_newline_mode (AVT_TRUE);
 	      break;
@@ -2152,6 +2159,9 @@ escape_sequence (int fd, wchar_t last_character)
 	  int val = strtol (sequence, NULL, 10);
 	  switch (val)
 	    {
+	    case 4:
+	      insert_mode = AVT_FALSE;
+	      break;
 	    case 20:
 	      avt_newline_mode (AVT_FALSE);
 	      break;
@@ -2329,6 +2339,10 @@ process_subprogram (int fd)
       else
 	{
 	  last_character = (wchar_t) ch;
+
+	  if (insert_mode)
+	    avt_insert_spaces (1);
+
 	  stop = avt_put_character ((wchar_t) ch);
 	}
     }
@@ -2945,7 +2959,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.105 2008-02-25 12:41:47 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.106 2008-02-25 18:34:42 akf Exp $");
 
   return EXIT_SUCCESS;
 }
