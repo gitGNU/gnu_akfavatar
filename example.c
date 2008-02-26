@@ -73,7 +73,7 @@ main (int argc, char *argv[])
        L"It is sooo easy to program me...\n\n" 
        L"I am longing for being programmed by you!");
 
-  if (avt_wait_key (L"press any key..."))
+  if (avt_wait_button ())
     exit (0);
 
   if (!avt_move_out ())
