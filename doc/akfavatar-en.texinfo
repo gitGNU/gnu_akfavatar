@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.22 2008-02-25 19:51:08 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.23 2008-02-26 02:10:05 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -508,6 +508,22 @@ show a short summary about the invocation of @command{avatarsay}
 @itemx -v
 show the version of the command
 
+@item --terminal
+@itemx -t
+terminal mode, ie. run a shell in the balloon
+
+@item --execute
+@itemx -x
+@itemx -e
+execute program in the balloon
+
+A program name must be given. Options after the program name are options
+for the executed program.
+
+@item --nocolor
+@itemx -b
+no color for executed programs and the terminal mode
+
 @item --window
 @itemx -w
 try to run the program in a window (default)
@@ -548,10 +564,15 @@ the input data is encoded in @code{UTF-8}
 run only once (don't loop)
 
 @item --popup
+@itemx -p
 popup, ie. don’t move the avatar in
 
 Use this for a fast popup text. 
 Use the command @command{.stop} to also get a fast end.
+
+@item --no-delay
+@itemx -n
+don't delay the text output
 
 @item --raw
 @itemx -r
@@ -579,7 +600,7 @@ the environment variable @code{AVATARIMAGE})
 @item LC_ALL
 @itemx LC_CTYPE
 @itemx LANG
-these variables influence the default encoding
+these variables influence the default encoding and the language
 
 @end table
 

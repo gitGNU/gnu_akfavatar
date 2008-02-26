@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.15 2008-02-25 19:51:07 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.16 2008-02-26 02:10:05 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -560,6 +560,22 @@ zeige eine kurze Zusammenfassung der Aufruf-Optionen
 @itemx -v
 zeige die Version des Befehls an
 
+@item --terminal
+@itemx -t
+Terminal-Modus, dh. eine Shell in der Sprechblase ausführen
+
+@item --execute
+@itemx -x
+@itemx -e
+ein Programm in der Sprechblase ausführen
+
+Es muss ein Programmname angegeben werden. Optionen hinter dem Programmnamen
+gelten für das aufzurufende Programm.
+
+@item --nocolor
+@itemx -b
+keine Farbe für auszuführende Programme und den Terminal-Modus
+
 @item --window
 @itemx -w
 versuche das Programm in einem Fenster zu starten (Vorgabe)
@@ -600,11 +616,16 @@ die Eingabe-Daten sind in @code{UTF-8} kodiert
 nur einmal ablaufen (keine Schleife)
 
 @item --popup
+@itemx -p
 Popup, dh. bewege nicht den Avatar langsam ins Bild
 
 Dies kann man für schnelle Popup-Texte verwenden. 
 Um das Programm auch wieder schnell zu beenden, kann man den Befehl 
 @command{.stop} verwenden.
+
+@item --no-delay
+@itemx -n
+keine Verzögerung bei der Textausgabe
 
 @item --raw
 @itemx -r
@@ -633,7 +654,7 @@ Einfluss auf die Umgebungsvariable @code{AVATARIMAGE})
 @item LC_ALL
 @itemx LC_CTYPE
 @itemx LANG
-diese Variablen beeinflussen die Standard-Kodierung
+diese Variablen beeinflussen die Standard-Kodierung und die Sprache
 
 @end table
 
