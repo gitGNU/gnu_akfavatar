@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.108 2008-02-26 01:37:32 akf Exp $ */
+/* $Id: avatarsay.c,v 2.109 2008-02-26 02:13:30 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -274,8 +274,6 @@ help (const char *prgname)
   puts (" -b, --nocolor           no color allowed (black and white)");
   puts (" -w, --window            try to run the program in a window"
 	" (default)");
-  puts (" -n, --no-delay          don't delay output of text"
-	" (default with -t and -e)");
   puts (" -f, --fullscreen        try to run the program in fullscreen mode");
   puts (" -F, --fullfullscreen    like -f, but use current display-size");
   puts (" -E, --encoding=enc      input data is encoded in encoding \"enc\"");
@@ -285,6 +283,7 @@ help (const char *prgname)
   puts (" -p, --popup             popup, ie. don't move the avatar in");
   puts (" -r, --raw               output raw text"
 	" (don't handle any commands)");
+  puts (" -n, --no-delay          don't delay output of text (textfiles)");
   puts (" -i, --ignoreeof         ignore end of file conditions "
 	"(input is not a file)");
   puts ("\nEnvironment variables:");
@@ -2979,7 +2978,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.108 2008-02-26 01:37:32 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.109 2008-02-26 02:13:30 akf Exp $");
 
   return EXIT_SUCCESS;
 }
