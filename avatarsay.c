@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.107 2008-02-25 19:19:35 akf Exp $ */
+/* $Id: avatarsay.c,v 2.108 2008-02-26 01:37:32 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -266,10 +266,10 @@ help (const char *prgname)
   puts (" -v, --version           show the version");
 #ifdef NO_PTY
   puts (" -t, --terminal          not supported on this system");
-  puts (" -e, --execute           not supported on this system");
+  puts (" -x, -e, --execute       not supported on this system");
 #else
   puts (" -t, --terminal          terminal mode (run a shell in balloon)");
-  puts (" -e, --execute           execute program in balloon");
+  puts (" -x, -e, --execute       execute program in balloon");
 #endif
   puts (" -b, --nocolor           no color allowed (black and white)");
   puts (" -w, --window            try to run the program in a window"
@@ -425,13 +425,13 @@ checkoptions (int argc, char **argv)
 	{"u8", no_argument, 0, 'u'},
 	{"popup", no_argument, 0, 'p'},
 	{"terminal", no_argument, 0, 't'},
-	{"execute", no_argument, 0, 'e'},
+	{"execute", no_argument, 0, 'x'},
 	{"no-delay", no_argument, 0, 'n'},
 	{"nocolor", no_argument, 0, 'b'},
 	{0, 0, 0, 0}
       };
 
-      c = getopt_long (argc, argv, "+hvfFw1risE:luptenb",
+      c = getopt_long (argc, argv, "+hvfFw1risE:luptxenb",
 		       long_options, &option_index);
 
       /* end of the options */
@@ -501,7 +501,8 @@ checkoptions (int argc, char **argv)
 	  loop = AVT_FALSE;
 	  break;
 
-	case 'e':		/* --execute */
+	case 'x':		/* --execute */
+	case 'e':
 	  executable = AVT_TRUE;
 	  default_delay = 0;
 	  loop = AVT_FALSE;
@@ -2978,7 +2979,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.107 2008-02-25 19:19:35 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.108 2008-02-26 01:37:32 akf Exp $");
 
   return EXIT_SUCCESS;
 }
