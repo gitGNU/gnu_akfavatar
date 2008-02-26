@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.109 2008-02-26 02:13:30 akf Exp $ */
+/* $Id: avatarsay.c,v 2.110 2008-02-26 19:08:35 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2344,7 +2344,7 @@ process_subprogram (int fd)
   text_color = 0;
   text_background_color = 0xF;
   stop = AVT_FALSE;
-  avt_stop_on_esc (AVT_FALSE);
+  avt_reserve_single_keys (AVT_TRUE);
   avt_newline_mode (AVT_FALSE);
   avt_activate_cursor (AVT_TRUE);
 
@@ -2367,7 +2367,7 @@ process_subprogram (int fd)
     }
 
   avt_activate_cursor (AVT_FALSE);
-  avt_stop_on_esc (AVT_TRUE);
+  avt_reserve_single_keys (AVT_FALSE);
 
   /* close file descriptor */
   if (close (fd) == -1 && errno != EAGAIN)
@@ -2978,7 +2978,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.109 2008-02-26 02:13:30 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.110 2008-02-26 19:08:35 akf Exp $");
 
   return EXIT_SUCCESS;
 }

@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.51 2008-02-20 10:42:36 akf Exp $ */
+/* $Id: akfavatar.h,v 2.52 2008-02-26 19:08:34 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -155,9 +155,6 @@ char *avt_get_error (void);
  */
 void avt_text_direction (int direction);
 
-/* stop, when Esc is pressed? (default: yes) */
-void avt_stop_on_esc (avt_bool_t stop);
-
 /* activate the text cursor? (default: no) */
 void avt_activate_cursor (avt_bool_t on);
 
@@ -238,6 +235,12 @@ void avt_set_flip_page_delay (int delay);
 
 /* don't use this anymore, it is about to be removed */
 void avt_set_delays (int text, int flip_page);
+
+/* 
+ * reserve single keys (Esc, F11)
+ * use this with avt_register_keyhandler
+ */
+void avt_reserve_single_keys (avt_bool_t onoff);
 
 /* register an external keyhandler */
 void avt_register_keyhandler (avt_keyhandler handler);

@@ -343,7 +343,8 @@ const KeyboardBufferSize = 40;
 var KeyboardBuffer: array [ 0 .. KeyboardBufferSize-1 ] of char;
 var KeyboardBufferRead, KeyboardBufferWrite: integer;
 
-procedure avt_stop_on_esc (stop: avt_bool_t); libakfavatar 'avt_stop_on_esc';
+procedure avt_reserve_single_keys (onoff: avt_bool_t); 
+  libakfavatar 'avt_reserve_single_keys';
 
 function avt_default: PAvatarImage; libakfavatar 'avt_default';
 
@@ -1117,7 +1118,7 @@ Initialization
   avt_mb_encoding(DefaultEncoding);
   avt_set_scroll_mode(1);
   
-  avt_stop_on_esc(ord(false)); { Esc is handled in the KeyHandler }
+  avt_reserve_single_keys(ord(true)); { Esc is handled in the KeyHandler }
   avt_register_keyhandler(@KeyHandler);
 
   { redirect i/o to Avatar }

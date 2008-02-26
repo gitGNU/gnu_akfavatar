@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.98 2008-02-25 10:28:15 akf Exp $ */
+/* $Id: avatar.c,v 2.99 2008-02-26 19:08:35 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -221,7 +221,7 @@ static SDL_Rect window;		/* if screen is in fact larger */
 static avt_bool_t avt_visible;	/* avatar visible? */
 static avt_bool_t text_cursor_visible;	/* shall the text cursor be visible? */
 static avt_bool_t text_cursor_actually_visible;	/* is it actually visible? */
-static avt_bool_t do_stop_on_esc;	/* stop, when Esc is pressed? */
+static avt_bool_t reserve_single_keys;	/* reserve single keys? */
 static int scroll_mode;
 static SDL_Rect textfield;
 static SDL_Rect viewport;	/* sub-window in textfield */
@@ -877,16 +877,18 @@ avt_analyze_event (SDL_Event * event)
 	  avt_pause ();
 	  break;
 
-	case SDLK_F4:
-	case SDLK_F11:
-	  avt_toggle_fullscreen ();
-	  break;
-
 	  /* no "break" default for the following ones: */
 	  /* they may fall through to default: */
 
+	case SDLK_F11:
+	  if (event->key.keysym.sym == SDLK_F11 && !reserve_single_keys)
+	    {
+	      avt_toggle_fullscreen ();
+	      break;
+	    }
+
 	case SDLK_ESCAPE:
-	  if (event->key.keysym.sym == SDLK_ESCAPE && do_stop_on_esc)
+	  if (event->key.keysym.sym == SDLK_ESCAPE && !reserve_single_keys)
 	    {
 	      _avt_STATUS = AVT_QUIT;
 	      break;
@@ -3275,9 +3277,9 @@ avt_set_background_color (int red, int green, int blue)
 }
 
 void
-avt_stop_on_esc (avt_bool_t stop)
+avt_reserve_single_keys (avt_bool_t onoff)
 {
-  do_stop_on_esc = AVT_MAKE_BOOL (stop);
+  reserve_single_keys = AVT_MAKE_BOOL (onoff);
 }
 
 void
@@ -3442,7 +3444,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   avt_mode = mode;
   _avt_STATUS = AVT_NORMAL;
-  do_stop_on_esc = AVT_TRUE;
+  reserve_single_keys = AVT_FALSE;
   underlined = AVT_FALSE;
   scroll_mode = 1;
   newline_mode = AVT_TRUE;
@@ -3458,7 +3460,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.98 2008-02-25 10:28:15 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.99 2008-02-26 19:08:35 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
