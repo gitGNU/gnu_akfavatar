@@ -289,7 +289,7 @@ implementation
 {-----------------------------------------------------------------------}
 
 {$IfDef FPC}
-  uses DOS;
+  uses DOS, Strings;
   
   {$MACRO ON}  
   {$Define libakfavatar:=cdecl; external 'akfavatar' name}
@@ -995,7 +995,7 @@ end;
   if avt_ask_mb (F.BufPtr, F.BufSize) <> 0 then Halt;
 
   F.BufPos := 0;
-  F.BufEnd := Length(F.BufPtr^) + 2;
+  F.BufEnd := strlen(F.BufPtr^) + 2;
 
   { sanity check }
   if F.BufEnd > F.BufSize then RunError (201);
