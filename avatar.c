@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.99 2008-02-26 19:08:35 akf Exp $ */
+/* $Id: avatar.c,v 2.100 2008-02-27 10:48:07 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -3282,6 +3282,13 @@ avt_reserve_single_keys (avt_bool_t onoff)
   reserve_single_keys = AVT_MAKE_BOOL (onoff);
 }
 
+/* just for backward compatiblity */
+void
+avt_stop_on_esc (avt_bool_t on)
+{
+  reserve_single_keys = (on == AVT_FALSE);
+}
+
 void
 avt_register_keyhandler (avt_keyhandler handler)
 {
@@ -3460,7 +3467,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.99 2008-02-26 19:08:35 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.100 2008-02-27 10:48:07 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
