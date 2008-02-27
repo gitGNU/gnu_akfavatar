@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.52 2008-02-26 19:08:34 akf Exp $ */
+/* $Id: akfavatar.h,v 2.53 2008-02-27 10:42:16 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -60,7 +60,7 @@
 #define AVT_FALSE 0
 #define AVT_MAKE_BOOL(x) ((x) != 0)
 
-/* for avt_set_delays */
+/* for avt_set_text_delay and avt_set_flip_page_delay */
 #define AVT_DEFAULT_TEXT_DELAY 75
 #define AVT_DEFAULT_FLIP_PAGE_DELAY 2700
 
