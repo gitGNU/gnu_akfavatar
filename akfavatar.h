@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.55 2008-03-01 18:39:50 akf Exp $ */
+/* $Id: akfavatar.h,v 2.56 2008-03-01 20:50:02 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -208,6 +208,12 @@ void avt_set_background_color (int red, int green, int blue);
  */
 void avt_set_text_color (int red, int green, int blue);
 void avt_set_text_background_color (int red, int green, int blue);
+
+/* set inverse mode on or off */
+void avt_inverse (avt_bool_t onoff);
+
+/* get inverse mode */
+avt_bool_t avt_get_inverse (void);
 
 /* set underlined mode on or off */
 void avt_underlined (avt_bool_t onoff);

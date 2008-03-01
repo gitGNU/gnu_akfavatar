@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.112 2008-03-01 18:39:50 akf Exp $ */
+/* $Id: avatarsay.c,v 2.113 2008-03-01 20:50:03 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1681,6 +1681,7 @@ ansi_graphic_code (int mode)
     {
     case 0:			/* normal */
       avt_underlined (AVT_FALSE);
+      avt_inverse (AVT_FALSE);
       avt_bold (AVT_FALSE);
       faint = AVT_FALSE;
       text_color = 0;
@@ -1727,14 +1728,12 @@ ansi_graphic_code (int mode)
     case 25:			/* blink off */
       break;
 
-    case 7:			/* invers */
-      set_foreground_color (text_background_color);
-      set_background_color (text_color);
+    case 7:			/* inverse */
+      avt_inverse (AVT_TRUE);
       break;
 
-    case 27:			/* not invers */
-      set_foreground_color (text_color);
-      set_background_color (text_background_color);
+    case 27:			/* not inverse */
+      avt_inverse (AVT_FALSE);
       break;
 
     case 8:			/* hidden */
@@ -1882,6 +1881,7 @@ escape_sequence (int fd, wchar_t last_character)
       ansi_graphic_code (0);
       avt_underlined (AVT_FALSE);
       avt_bold (AVT_FALSE);
+      avt_inverse (AVT_FALSE);
       insert_mode = AVT_FALSE;
       avt_clear ();
       avt_save_position ();
@@ -2971,7 +2971,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.112 2008-03-01 18:39:50 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.113 2008-03-01 20:50:03 akf Exp $");
 
   return EXIT_SUCCESS;
 }

@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.103 2008-03-01 18:39:50 akf Exp $ */
+/* $Id: avatar.c,v 2.104 2008-03-01 20:50:02 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -213,7 +213,7 @@ static SDL_Surface *screen, *avt_image, *avt_character;
 static SDL_Surface *avt_text_cursor, *avt_cursor_character;
 static Uint32 text_background_color;
 static avt_bool_t newline_mode;	/* when off, you need an extra CR */
-static avt_bool_t underlined, bold;	/* text underlined, bold? */
+static avt_bool_t underlined, bold, inverse;	/* text underlined, bold? */
 static Uint32 screenflags;	/* flags for the screen */
 static int avt_mode;		/* whether fullscreen or window or ... */
 static avt_bool_t must_lock;	/* must the screen be locked? */
@@ -3395,6 +3395,31 @@ avt_set_text_background_color (int red, int green, int blue)
 }
 
 void
+avt_inverse (avt_bool_t onoff)
+{
+  SDL_Color colors[2];
+
+  onoff = AVT_MAKE_BOOL (onoff);
+
+  if (avt_character && onoff != inverse)
+    {
+      colors[1] = avt_character->format->palette->colors[0];
+      colors[0] = avt_character->format->palette->colors[1];
+      SDL_SetColors (avt_character, &colors[0], 0, 2);
+      text_background_color = SDL_MapRGB (screen->format,
+					  colors[0].r, colors[0].g,
+					  colors[0].b);
+      inverse = onoff;
+    }
+}
+
+avt_bool_t
+avt_get_inverse (void)
+{
+  return inverse;
+}
+
+void
 avt_bold (avt_bool_t onoff)
 {
   bold = AVT_MAKE_BOOL (onoff);
@@ -3524,7 +3549,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.103 2008-03-01 18:39:50 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.104 2008-03-01 20:50:02 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();

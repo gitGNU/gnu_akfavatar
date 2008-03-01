@@ -1,5 +1,8 @@
 2008-03-01  Andreas K. Foerster  <info@akfoerster.de>
 
+	* akfavatar.h, avatar.c (avt_inverse, avt_get_inverse):
+	new functions
+
 	* akfavatar.h, avatar.c (avt_save_position, avt_restore_position):
 	new functions
 
