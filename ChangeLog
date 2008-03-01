@@ -1,4 +1,7 @@
-2008-02-26  Andreas K. Foerster  <info@akfoerster.de>
+2008-03-01  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_move_xy):
+	new function
 
 	* akfavatar.h, avatar.c (avt_reserve_single_keys):
 	new function

@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.53 2008-02-27 10:42:16 akf Exp $ */
+/* $Id: akfavatar.h,v 2.54 2008-03-01 14:26:31 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -540,6 +540,8 @@ int avt_get_max_y (void);
  */
 void avt_move_x (int x);
 void avt_move_y (int y);
+void avt_move_xy (int x, int y);
+
 
 /* go to next or last tab stop */
 void avt_next_tab (void);

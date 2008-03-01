@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.110 2008-02-26 19:08:35 akf Exp $ */
+/* $Id: avatarsay.c,v 2.111 2008-03-01 14:26:31 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1863,8 +1863,7 @@ escape_sequence (int fd, wchar_t last_character)
       break;
 
     case L'8':			/* DECRC */
-      avt_move_x (saved_cursor_x);
-      avt_move_y (saved_cursor_y);
+      avt_move_xy (saved_cursor_x, saved_cursor_y);
       text_color = saved_text_color;
       set_foreground_color (text_color);
       text_background_color = saved_text_background_color;
@@ -2092,10 +2091,7 @@ escape_sequence (int fd, wchar_t last_character)
     case L'H':			/* CUP */
     case L'f':			/* HVP */
       if (sequence[0] == 'H' || sequence[0] == 'f')
-	{
-	  avt_move_x (1);
-	  avt_move_y (1);
-	}
+	avt_move_xy (1, 1);
       else
 	{
 	  int n, m;
@@ -2104,8 +2100,7 @@ escape_sequence (int fd, wchar_t last_character)
 	    n = 1;
 	  if (m <= 0)
 	    m = 1;
-	  avt_move_y (n);
-	  avt_move_x (m);
+	  avt_move_xy (m, n);
 	}
       break;
 
@@ -2297,8 +2292,7 @@ escape_sequence (int fd, wchar_t last_character)
       break;
 
     case L'u':			/* RCP */
-      avt_move_x (saved_cursor_x);
-      avt_move_y (saved_cursor_y);
+      avt_move_xy (saved_cursor_x, saved_cursor_y);
       break;
 
     case L'X':			/* ECH */
@@ -2515,12 +2509,14 @@ execute_process (char *const prg_argv[])
       return -1;
     }
 
+#ifdef TIOCSWINSZ
   /* set window size */
   /* not portable? */
   size.ws_row = max_y;
   size.ws_col = max_x;
   size.ws_xpixel = size.ws_ypixel = 0;
   ioctl (master, TIOCSWINSZ, &size);
+#endif
 
   fcntl (master, F_SETFL, O_NONBLOCK);
 
@@ -2978,7 +2974,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.110 2008-02-26 19:08:35 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.111 2008-03-01 14:26:31 akf Exp $");
 
   return EXIT_SUCCESS;
 }

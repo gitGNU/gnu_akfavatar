@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.100 2008-02-27 10:48:07 akf Exp $ */
+/* $Id: avatar.c,v 2.101 2008-03-01 14:26:31 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1107,6 +1107,13 @@ avt_move_y (int y)
       if (text_cursor_visible)
 	avt_show_text_cursor (AVT_TRUE);
     }
+}
+
+void
+avt_move_xy (int x, int y)
+{
+  avt_move_x (x);
+  avt_move_y (y);
 }
 
 void
@@ -3467,7 +3474,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.100 2008-02-27 10:48:07 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.101 2008-03-01 14:26:31 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
