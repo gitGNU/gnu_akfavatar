@@ -449,8 +449,7 @@ procedure avt_viewport(x, y, width, height: CInteger);
 
 function avt_where_x: CInteger; libakfavatar 'avt_where_x';
 function avt_where_y: CInteger; libakfavatar 'avt_where_y';
-procedure avt_move_x(x: CInteger); libakfavatar 'avt_move_x';
-procedure avt_move_y(x: CInteger); libakfavatar 'avt_move_y';
+procedure avt_move_xy(x, y: CInteger); libakfavatar 'avt_move_xy';
 function avt_get_max_x: CInteger; libakfavatar 'avt_get_max_x'; 
 function avt_get_max_y: CInteger; libakfavatar 'avt_get_max_y'; 
 
@@ -777,8 +776,7 @@ end;
 
 procedure GotoXY (x, y: integer);
 begin
-avt_move_x (x);
-avt_move_y (y)
+avt_move_xy (x, y)
 end;
 
 procedure DelLine;
