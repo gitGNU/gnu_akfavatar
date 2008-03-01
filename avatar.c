@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.102 2008-03-01 18:19:37 akf Exp $ */
+/* $Id: avatar.c,v 2.103 2008-03-01 18:39:50 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -248,10 +248,13 @@ static SDL_Color backgroundcolor_RGB = { 0xCC, 0xCC, 0xCC, 0 };
 static avt_iconv_t output_cd = ICONV_UNINITIALIZED;
 static avt_iconv_t input_cd = ICONV_UNINITIALIZED;
 
-static struct pos
+struct pos
 {
   int x, y;
-} cursor;
+};
+
+static struct pos cursor, saved_position;
+
 
 /* 0 = normal; 1 = quit-request; -1 = error */
 int _avt_STATUS;
@@ -647,6 +650,9 @@ avt_draw_balloon (void)
   /* cursor at top  */
   cursor.x = linestart;
   cursor.y = viewport.y;
+
+  /* reset saved position */
+  saved_position = cursor;
 
   if (text_cursor_visible)
     {
@@ -1146,6 +1152,18 @@ avt_move_xy (int x, int y)
 }
 
 void
+avt_save_position (void)
+{
+  saved_position = cursor;
+}
+
+void
+avt_restore_position (void)
+{
+  cursor = saved_position;
+}
+
+void
 avt_insert_spaces (int num)
 {
   SDL_Rect rest, dest, clear;
@@ -1383,6 +1401,9 @@ avt_set_origin_mode (avt_bool_t mode)
   /* when origin mode is off, then it may be outside the viewport (sic) */
   cursor.x = linestart;
   cursor.y = area.y;
+
+  /* reset saved position */
+  saved_position = cursor;
 
   if (text_cursor_visible && textfield.x >= 0)
     avt_show_text_cursor (AVT_TRUE);
@@ -2112,7 +2133,7 @@ avt_say (const wchar_t * txt)
   return _avt_STATUS;
 }
 
-/* 
+/*
  * writes string with given length to textfield - 
  * interprets control characters
  */
@@ -3503,7 +3524,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.102 2008-03-01 18:19:37 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.103 2008-03-01 18:39:50 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();

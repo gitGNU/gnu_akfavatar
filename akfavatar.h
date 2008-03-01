@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.54 2008-03-01 14:26:31 akf Exp $ */
+/* $Id: akfavatar.h,v 2.55 2008-03-01 18:39:50 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -542,6 +542,9 @@ void avt_move_x (int x);
 void avt_move_y (int y);
 void avt_move_xy (int x, int y);
 
+/* save and restore current cursor position */
+void avt_save_position (void);
+void avt_restore_position (void);
 
 /* go to next or last tab stop */
 void avt_next_tab (void);

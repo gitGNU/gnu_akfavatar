@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.111 2008-03-01 14:26:31 akf Exp $ */
+/* $Id: avatarsay.c,v 2.112 2008-03-01 18:39:50 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1838,7 +1838,6 @@ escape_sequence (int fd, wchar_t last_character)
   wchar_t ch;
   char sequence[80];
   unsigned int pos;
-  static int saved_cursor_x, saved_cursor_y;
   static int saved_text_color, saved_text_background_color;
   static avt_bool_t saved_underline_state, saved_bold_state;
 
@@ -1854,8 +1853,7 @@ escape_sequence (int fd, wchar_t last_character)
   switch (ch)
     {
     case L'7':			/* DECSC */
-      saved_cursor_x = avt_where_x ();
-      saved_cursor_y = avt_where_y ();
+      avt_save_position ();
       saved_text_color = text_color;
       saved_text_background_color = text_background_color;
       saved_underline_state = avt_get_underlined ();
@@ -1863,7 +1861,7 @@ escape_sequence (int fd, wchar_t last_character)
       break;
 
     case L'8':			/* DECRC */
-      avt_move_xy (saved_cursor_x, saved_cursor_y);
+      avt_restore_position ();
       text_color = saved_text_color;
       set_foreground_color (text_color);
       text_background_color = saved_text_background_color;
@@ -1879,7 +1877,6 @@ escape_sequence (int fd, wchar_t last_character)
       avt_newline_mode (AVT_FALSE);
       avt_set_origin_mode (AVT_FALSE);
       avt_reset_tab_stops ();
-      saved_cursor_x = saved_cursor_y = 1;
       text_color = saved_text_color = 0;
       text_background_color = saved_text_background_color = 0xF;
       ansi_graphic_code (0);
@@ -1887,6 +1884,7 @@ escape_sequence (int fd, wchar_t last_character)
       avt_bold (AVT_FALSE);
       insert_mode = AVT_FALSE;
       avt_clear ();
+      avt_save_position ();
       return;
 
     case L'D':			/* move down or scroll up one line */
@@ -2287,12 +2285,11 @@ escape_sequence (int fd, wchar_t last_character)
       break;
 
     case L's':			/* SCP */
-      saved_cursor_x = avt_where_x ();
-      saved_cursor_y = avt_where_y ();
+      avt_save_position ();
       break;
 
     case L'u':			/* RCP */
-      avt_move_xy (saved_cursor_x, saved_cursor_y);
+      avt_restore_position ();
       break;
 
     case L'X':			/* ECH */
@@ -2974,7 +2971,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.111 2008-03-01 14:26:31 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.112 2008-03-01 18:39:50 akf Exp $");
 
   return EXIT_SUCCESS;
 }
