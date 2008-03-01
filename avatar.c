@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.101 2008-03-01 14:26:31 akf Exp $ */
+/* $Id: avatar.c,v 2.102 2008-03-01 18:19:37 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1112,8 +1112,37 @@ avt_move_y (int y)
 void
 avt_move_xy (int x, int y)
 {
-  avt_move_x (x);
-  avt_move_y (y);
+  SDL_Rect area;
+
+  if (screen && textfield.x >= 0)
+    {
+      if (x < 1)
+	x = 1;
+
+      if (y < 1)
+	y = 1;
+
+      if (text_cursor_visible)
+	avt_show_text_cursor (AVT_FALSE);
+
+      if (origin_mode)
+	area = viewport;
+      else
+	area = textfield;
+
+      cursor.x = (x - 1) * FONTWIDTH + area.x;
+      cursor.y = (y - 1) * LINEHEIGHT + area.y;
+
+      /* max-pos exeeded? */
+      if (cursor.x > area.x + area.w - FONTWIDTH)
+	cursor.x = area.x + area.w - FONTWIDTH;
+
+      if (cursor.y > area.y + area.h - LINEHEIGHT)
+	cursor.y = area.y + area.h - LINEHEIGHT;
+
+      if (text_cursor_visible)
+	avt_show_text_cursor (AVT_TRUE);
+    }
 }
 
 void
@@ -3474,7 +3503,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.101 2008-03-01 14:26:31 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.102 2008-03-01 18:19:37 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
