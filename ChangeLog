@@ -1,5 +1,8 @@
 2008-03-02  Andreas K. Foerster  <info@akfoerster.de>
 
+	* akfavatar.h (AKFAVATAR):
+	new macro
+
 	* akfavatar.h, avatar.c (avt_normal_text):
 	new function
 

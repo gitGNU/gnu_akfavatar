@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.57 2008-03-02 11:22:57 akf Exp $ */
+/* $Id: akfavatar.h,v 2.58 2008-03-02 18:00:37 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -35,6 +35,8 @@
 
 /* to get the systems definition of wchar_t */
 #include <stddef.h>
+
+#define AKFAVATAR 1
 
 /* maximum linelength */
 #define AVT_LINELENGTH 80
