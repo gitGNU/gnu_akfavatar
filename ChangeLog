@@ -1,4 +1,7 @@
-2008-03-01  Andreas K. Foerster  <info@akfoerster.de>
+2008-03-02  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_normal_text):
+	new function
 
 	* akfavatar.h, avatar.c (avt_inverse, avt_get_inverse):
 	new functions

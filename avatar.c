@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.104 2008-03-01 20:50:02 akf Exp $ */
+/* $Id: avatar.c,v 2.105 2008-03-02 11:22:57 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -3443,6 +3443,29 @@ avt_get_underlined (void)
   return underlined;
 }
 
+void
+avt_normal_text (void)
+{
+  underlined = bold = inverse = AVT_FALSE;
+
+  /* set color table for character canvas */
+  if (avt_character)
+    {
+      SDL_Color colors[2];
+
+      /* white background */
+      colors[0].r = 0xFF;
+      colors[0].g = 0xFF;
+      colors[0].b = 0xFF;
+      /* black foreground */
+      colors[1].r = 0x00;
+      colors[1].g = 0x00;
+      colors[1].b = 0x00;
+      SDL_SetColors (avt_character, colors, 0, 2);
+      text_background_color = SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF);
+    }
+}
+
 /* about to be removed */
 void
 avt_set_delays (int text, int flip_page)
@@ -3534,7 +3557,6 @@ avt_initialize (const char *title, const char *icontitle,
   avt_mode = mode;
   _avt_STATUS = AVT_NORMAL;
   reserve_single_keys = AVT_FALSE;
-  underlined = AVT_FALSE;
   scroll_mode = 1;
   newline_mode = AVT_TRUE;
   origin_mode = AVT_TRUE;	/* for backwards compatibility */
@@ -3549,7 +3571,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.104 2008-03-01 20:50:02 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.105 2008-03-02 11:22:57 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
@@ -3635,21 +3657,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  /* set color table for character canvas */
-  {
-    SDL_Color colors[2];
-
-    /* white background */
-    colors[0].r = 0xFF;
-    colors[0].g = 0xFF;
-    colors[0].b = 0xFF;
-    /* black foreground */
-    colors[1].r = 0x00;
-    colors[1].g = 0x00;
-    colors[1].b = 0x00;
-    SDL_SetColors (avt_character, colors, 0, 2);
-    text_background_color = SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF);
-  }
+  avt_normal_text ();
 
   /* prepare text-mode cursor */
   avt_text_cursor =

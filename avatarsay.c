@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.113 2008-03-01 20:50:03 akf Exp $ */
+/* $Id: avatarsay.c,v 2.114 2008-03-02 11:22:58 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1680,12 +1680,10 @@ ansi_graphic_code (int mode)
   switch (mode)
     {
     case 0:			/* normal */
-      avt_underlined (AVT_FALSE);
-      avt_inverse (AVT_FALSE);
-      avt_bold (AVT_FALSE);
       faint = AVT_FALSE;
       text_color = 0;
       text_background_color = 0xF;
+      avt_normal_text ();
       set_foreground_color (text_color);
       set_background_color (text_background_color);
       break;
@@ -1879,9 +1877,6 @@ escape_sequence (int fd, wchar_t last_character)
       text_color = saved_text_color = 0;
       text_background_color = saved_text_background_color = 0xF;
       ansi_graphic_code (0);
-      avt_underlined (AVT_FALSE);
-      avt_bold (AVT_FALSE);
-      avt_inverse (AVT_FALSE);
       insert_mode = AVT_FALSE;
       avt_clear ();
       avt_save_position ();
@@ -2971,7 +2966,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.113 2008-03-01 20:50:03 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.114 2008-03-02 11:22:58 akf Exp $");
 
   return EXIT_SUCCESS;
 }

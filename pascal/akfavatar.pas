@@ -409,6 +409,8 @@ procedure avt_bold (onoff: avt_bool_t); libakfavatar 'avt_bold';
 
 procedure avt_underlined (onoff: avt_bool_t); libakfavatar 'avt_underlined';
 
+procedure avt_normal_text; libakfavatar 'avt_normal_text';
+
 procedure avt_activate_cursor (onoff: avt_bool_t); 
   libakfavatar 'avt_activate_cursor';
 
@@ -665,13 +667,10 @@ end;
 procedure NormVideo;
 begin
 if not initialized then initializeAvatar;
-avt_bold (ord(false));
-avt_underlined (ord(false));
 
+avt_normal_text ();
 TextAttr := $F0;
 OldTextAttr := TextAttr;
-avt_set_text_color ($00, $00, $00);
-avt_set_text_background_color ($FF, $FF, $FF)
 end;
 
 procedure HighVideo;
