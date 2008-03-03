@@ -1,4 +1,7 @@
-2008-03-02  Andreas K. Foerster  <info@akfoerster.de>
+2008-03-03  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_button_quit):
+	new function
 
 	* akfavatar.h (AKFAVATAR):
 	new macro

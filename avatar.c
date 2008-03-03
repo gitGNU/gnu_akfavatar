@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.105 2008-03-02 11:22:57 akf Exp $ */
+/* $Id: avatar.c,v 2.106 2008-03-03 10:44:24 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -3543,6 +3543,14 @@ avt_quit (void)
   viewport = textfield;
 }
 
+void
+avt_button_quit (void)
+{
+  avt_wait_button ();
+  avt_move_out ();
+  avt_quit ();
+}
+
 int
 avt_initialize (const char *title, const char *icontitle,
 		avt_image_t * image, int mode)
@@ -3571,7 +3579,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.105 2008-03-02 11:22:57 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.106 2008-03-03 10:44:24 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();

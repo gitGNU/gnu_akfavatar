@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.58 2008-03-02 18:00:37 akf Exp $ */
+/* $Id: akfavatar.h,v 2.59 2008-03-03 10:44:24 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -124,10 +124,17 @@ typedef void (*avt_mousehandler) (int button, avt_bool_t pressed,
 int avt_initialize (const char *title,
 		    const char *icontitle, avt_image_t * image, int mode);
 
-/* 
+/*
  * quit the avatar system
+ * can be used with atexit
  */
 void avt_quit (void);
+
+/*
+ * call avt_wait_button (); avt_move_out (); avt_quit ();
+ * can be used with atexit
+ */
+void avt_button_quit (void);
 
 /* which version */
 const char *avt_version (void);
