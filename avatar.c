@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.106 2008-03-03 10:44:24 akf Exp $ */
+/* $Id: avatar.c,v 2.107 2008-03-05 15:09:53 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -3579,7 +3579,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.106 2008-03-03 10:44:24 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.107 2008-03-05 15:09:53 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
@@ -3736,7 +3736,8 @@ avt_initialize (const char *title, const char *icontitle,
 	(balloonheight - (2 * BALLOON_INNER_MARGIN)) % LINEHEIGHT;
 
       /* check, whether image is too high */
-      if (balloonheight < (3 * LINEHEIGHT) + (2 * BALLOON_INNER_MARGIN))
+      /* at least 10 lines */
+      if (balloonheight < (10 * LINEHEIGHT) + (2 * BALLOON_INNER_MARGIN))
 	{
 	  SDL_SetError ("Avatar image too large");
 	  _avt_STATUS = AVT_ERROR;

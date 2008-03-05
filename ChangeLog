@@ -1,4 +1,7 @@
-2008-03-03  Andreas K. Foerster  <info@akfoerster.de>
+2008-03-05  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_initialize):
+	balloon height must be at least 10 lines
 
 	* akfavatar.h, avatar.c (avt_button_quit):
 	new function
