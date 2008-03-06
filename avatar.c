@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.107 2008-03-05 15:09:53 akf Exp $ */
+/* $Id: avatar.c,v 2.108 2008-03-06 14:22:01 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2468,11 +2468,13 @@ int
 avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 {
   SDL_Event event;
+  wchar_t end_code;
 
   if (screen)
     {
       SDL_ShowCursor (SDL_ENABLE);
 
+      end_code = start_code + (menu_end - menu_start);
       *ch = L'\0';
       while ((*ch == L'\0') && (_avt_STATUS == AVT_NORMAL))
 	{
@@ -2480,7 +2482,13 @@ avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 	  avt_analyze_event (&event);
 
 	  if (event.type == SDL_KEYDOWN)
-	    *ch = (wchar_t) event.key.keysym.unicode;
+	    {
+	      if ((event.key.keysym.unicode >= start_code)
+		  && (event.key.keysym.unicode <= end_code))
+		*ch = (wchar_t) event.key.keysym.unicode;
+	      else
+		avt_bell ();	/* wrong key pressed */
+	    }
 	  else if (event.type == SDL_MOUSEBUTTONDOWN)
 	    /* any of the first trhee buttons, but not the wheel */
 	    if (event.button.button <= 3)
@@ -3579,7 +3587,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.107 2008-03-05 15:09:53 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.108 2008-03-06 14:22:01 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
