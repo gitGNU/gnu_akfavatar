@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.116 2008-03-07 17:58:28 akf Exp $ */
+/* $Id: avatarsay.c,v 2.117 2008-03-07 18:20:27 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -991,6 +991,7 @@ check_encoding (char *buf, int *size)
     char *enc;
     char temp[80];
 
+    /* FIXME: is buf \0 terminated? */
     /* check for command .encoding */
     enc = strstr (buf, ".encoding ");
 
@@ -2328,6 +2329,7 @@ process_subprogram (int fd)
   wchar_t last_character;
 
   text_color = 0;
+  last_character = L'\0';
   text_background_color = 0xF;
   stop = AVT_FALSE;
   avt_reserve_single_keys (AVT_TRUE);
@@ -2960,7 +2962,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.116 2008-03-07 17:58:28 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.117 2008-03-07 18:20:27 akf Exp $");
 
   return EXIT_SUCCESS;
 }
