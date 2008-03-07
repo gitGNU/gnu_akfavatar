@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.115 2008-03-02 14:13:53 akf Exp $ */
+/* $Id: avatarsay.c,v 2.116 2008-03-07 17:58:28 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2555,50 +2555,44 @@ run_info (void)
     process_subprogram (fd);
 }
 
+
+extern int get_file (char *filename);
+
 static void
 ask_file (void)
 {
-  avt_clear ();
-  avt_set_text_delay (0);
+  char filename[256];
 
-  /* show directory and prompt */
-  {
-    char dirname[255];
+  get_file (filename);
+  
+  /* ignore quit-requests */
+  /* (used to get out of the file dialog) */
+  if (avt_get_status () == AVT_QUIT)
+    avt_set_status (AVT_NORMAL);
 
-    if (getcwd (dirname, sizeof (dirname)) != NULL)
-      avt_say_mb (dirname);
-    avt_say_mb ("> ");
-  }
+  if (filename[0] != '\0')
+    {
+      int fd, status;
 
-  {
-    char filename[255];
+      avt_set_text_delay (default_delay);
 
-    if (avt_ask_mb (filename, sizeof (filename)) != 0)
-      quit (EXIT_SUCCESS);
+      fd = openfile (filename);
+      if (fd > -1)
+	process_file (fd);
 
-    avt_clear ();
-    avt_set_text_delay (default_delay);
-    if (filename[0] != '\0')
-      {
-	int fd, status;
+      /* ignore file errors */
+      status = avt_get_status ();
+      if (status == AVT_ERROR)
+	quit (EXIT_FAILURE);	/* warning already printed */
 
-	fd = openfile (filename);
-	if (fd > -1)
-	  process_file (fd);
+      if (status == AVT_NORMAL)
+	if (avt_wait_button ())
+	  quit (EXIT_SUCCESS);
 
-	/* ignore file errors */
-	status = avt_get_status ();
-	if (status == AVT_ERROR)
-	  quit (EXIT_FAILURE);	/* warning already printed */
-
-	if (status == AVT_NORMAL)
-	  if (avt_wait_button ())
-	    quit (EXIT_SUCCESS);
-
-	/* reset quit-request */
-	avt_set_status (AVT_NORMAL);
-      }
-  }
+      /* reset quit-request and encoding */
+      avt_set_status (AVT_NORMAL);
+      set_encoding (default_encoding);
+    }
 }
 
 
@@ -2716,7 +2710,7 @@ menu (void)
   while (1)
     {
       avt_clear ();
-      avt_set_text_color (0x00, 0x00, 0x00);
+      avt_normal_text ();
       avt_set_text_delay (0);
       avt_set_origin_mode (AVT_FALSE);
       avt_newline_mode (AVT_TRUE);
@@ -2966,7 +2960,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.115 2008-03-02 14:13:53 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.116 2008-03-07 17:58:28 akf Exp $");
 
   return EXIT_SUCCESS;
 }

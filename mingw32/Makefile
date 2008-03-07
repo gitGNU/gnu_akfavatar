@@ -187,6 +187,9 @@ libinfo.o: libinfo.rc
 avatar-default.o: ../avatar-default.c ../gnu-head.c ../gnu-small.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ ../avatar-default.c
 
+avtfilechooser.o: ../avtfilechooser.c ../akfavatar.h
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ ../avtfilechooser.c
+
 avatar.o: ../avatar.c ../akfavatar.h ../version.h \
             ../balloonpointer.c ../circle.c ../keybtn.c ../regicon.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -c ../avatar.c
@@ -243,9 +246,9 @@ example.exe: ../example.c akfavatar.dll icon.o
 avatarsay: avatarsay.exe
 
 # uses dynamic lib
-avatarsay.exe: ../avatarsay.c akfavatar.dll avtsayinfo.o
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ ../avatarsay.c avtsayinfo.o \
-		-L. -lakfavatar $(LDFLAGS) $(SDLLDFLAGS)
+avatarsay.exe: ../avatarsay.c avtfilechooser.o akfavatar.dll avtsayinfo.o
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ ../avatarsay.c avtfilechooser.o \
+	avtsayinfo.o -L. -lakfavatar $(LDFLAGS) $(SDLLDFLAGS)
 
 clean:
 	-rm -f *~ *.o *.ppu *.gpi

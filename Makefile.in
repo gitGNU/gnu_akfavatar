@@ -35,6 +35,9 @@ keybtn.c: keybtn.bmp bin2c
 bell.c: bell.wav bin2c
 	./bin2c avt_bell_data < bell.wav > $@
 
+avtfilechooser.o: avtfilechooser.c akfavatar.h
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ avtfilechooser.c
+
 avatar.o: avatar.c akfavatar.h version.h \
           balloonpointer.c circle.c keybtn.c regicon.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c avatar.c
@@ -89,13 +92,14 @@ example: example.c libakfavatar.so
 
 # avatarsay dynamically linked
 # only works, when the library is installed
-avatarsay-d: avatarsay.c libakfavatar.so
-	$(CC) $(CFLAGS) -I. -o $@ avatarsay.c -L. -lakfavatar $(LDFLAGS)
+avatarsay-d: avatarsay.c avtfilechooser.o libakfavatar.so
+	$(CC) $(CFLAGS) -I. -o $@ avatarsay.c avtfilechooser.o \
+	  -L. -lakfavatar $(LDFLAGS)
 
 # avatarsay with statical libakfavatar.a
-avatarsay: avatarsay.c libakfavatar.a
+avatarsay: avatarsay.c avtfilechooser.o libakfavatar.a
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -o $@ avatarsay.c libakfavatar.a \
-	  $(LDFLAGS) $(SDLLDFLAGS)
+	  avtfilechooser.o $(LDFLAGS) $(SDLLDFLAGS)
 
 installdirs:
 	-[ -d $(DESTDIR)$(includedir) ]  || $(INSTALL) -d $(DESTDIR)$(includedir)
