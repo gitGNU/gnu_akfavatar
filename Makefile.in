@@ -245,7 +245,7 @@ dist: info txt man distclean
 	mkdir $(PKGNAME)
 	ln README INSTALL AUTHORS COPYING ChangeLog lrun \
 	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
-	   avtccio.c avtcwio.c avtcio.h \
+	   avtccio.c avtcwio.c avtcio.h avtfilechooser.c \
 	   balloonpointer.c circle.c regicon.c gnu-head.bmp keybtn.bmp \
 	   avatarsay.c avtman example.c fsdemo-?? \
 	   gnome-akfavatar bdfread.pas \
