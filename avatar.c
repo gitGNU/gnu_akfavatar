@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.109 2008-03-07 18:20:27 akf Exp $ */
+/* $Id: avatar.c,v 2.110 2008-03-07 18:58:21 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -156,6 +156,14 @@
 
 #define ICONV_UNINITIALIZED   (avt_iconv_t)(-1)
 
+/* moving target - grrrmpf! */
+/* but compiler warnings about this can be savely ignored */
+#if ((SDL_COMPILEDVERSION) >= 1212)
+#  define SDL_ICONV_INBUF_T const char
+#else
+#  define SDL_ICONV_INBUF_T char
+#endif
+
 /* try to guess WCHAR_ENCODING, 
  * based on WCHAR_MAX or __WCHAR_MAX__ if it is available
  * note: newer SDL versions include stdint.h if available
@@ -269,7 +277,7 @@ static int avt_pause (void);
 #ifdef FORCE_ICONV
 static size_t
 avt_iconv (avt_iconv_t cd,
-	   char **inbuf, size_t * inbytesleft,
+	   SDL_ICONV_INBUF_T **inbuf, size_t * inbytesleft,
 	   char **outbuf, size_t * outbytesleft)
 {
   size_t r;
@@ -2218,7 +2226,8 @@ avt_mb_decode (wchar_t ** dest, const char *src, const int size)
 {
   static char rest_buffer[10];
   static size_t rest_bytes = 0;
-  char *inbuf_start, *inbuf, *outbuf;
+  char *inbuf_start, *outbuf;
+  SDL_ICONV_INBUF_T *inbuf;
   size_t dest_size;
   size_t inbytesleft, outbytesleft;
   size_t returncode;
@@ -2324,7 +2333,8 @@ avt_mb_decode (wchar_t ** dest, const char *src, const int size)
 int
 avt_mb_encode (char **dest, const wchar_t * src, const int len)
 {
-  char *inbuf_start, *inbuf, *outbuf;
+  char *inbuf_start, *outbuf;
+  SDL_ICONV_INBUF_T *inbuf;
   size_t dest_size;
   size_t inbytesleft, outbytesleft;
   size_t returncode;
@@ -2611,7 +2621,7 @@ int
 avt_ask_mb (char *s, const int size)
 {
   wchar_t ws[AVT_LINELENGTH + 1];
-  char *inbuf;
+  SDL_ICONV_INBUF_T *inbuf;
   size_t inbytesleft, outbytesleft;
 
   if (!screen)
@@ -3588,7 +3598,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.109 2008-03-07 18:20:27 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.110 2008-03-07 18:58:21 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
