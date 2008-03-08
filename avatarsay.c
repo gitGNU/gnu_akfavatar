@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.120 2008-03-08 14:45:44 akf Exp $ */
+/* $Id: avatarsay.c,v 2.121 2008-03-08 15:41:23 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2604,6 +2604,7 @@ ask_file (void)
 {
   char filename[256];
 
+  chdir (datadir);
   get_file (filename);
 
   /* ignore quit-requests */
@@ -2894,7 +2895,7 @@ check_config_file (const char *f)
 	{
 	  strip_newline (s);
 
-	  if (strncmp (s, "AVATARDATADIR=", 14))
+	  if (strncmp (s, "AVATARDATADIR=", 14) == 0)
 	    strncpy (datadir, s + 14, sizeof (datadir));
 
 	  if (strncmp (s, "AVATARIMAGE=", 12) == 0)
@@ -2940,6 +2941,10 @@ main (int argc, char *argv[])
 
   /* this is just a default setting */
   strcpy (default_encoding, "ISO-8859-1");
+
+  /* set datadir to home */
+  strncpy (datadir, get_user_home (), sizeof (datadir));
+  datadir[sizeof(datadir) - 1] = '\0';
 
   init_language_info ();
 
@@ -3001,7 +3006,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.120 2008-03-08 14:45:44 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.121 2008-03-08 15:41:23 akf Exp $");
 
   return EXIT_SUCCESS;
 }
