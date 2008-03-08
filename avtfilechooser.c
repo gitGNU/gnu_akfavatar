@@ -92,7 +92,9 @@ start:
   /* entry for parent directory */
   strcpy (entry[idx], "..");
   show_idx (idx);
-  avt_say (L" \x2190 \x2190 \x2190");
+  avt_set_text_background_color (0xdd, 0xdd, 0xdd);
+  avt_say (L" \x2190 \x2190 \x2190 ");
+  avt_normal_text ();
   idx++;
   avt_new_line ();
 
@@ -116,13 +118,15 @@ start:
 	    {
 	      /* restart entry */
 	      show_idx (idx);
-	      avt_say (L" \x2191 \x2191 \x2191");
+	      avt_set_text_background_color (0xdd, 0xdd, 0xdd);
+	      avt_say (L" \x2191 \x2191 \x2191 ");
+	      avt_normal_text ();
 
 	      if (avt_get_menu (&ch, 1, idx + 1, L'a'))
 		break;
 	      filenr = (int) (ch - L'a');
 
-              /* restart */
+	      /* restart */
 	      if (filenr == idx)
 		{
 		  closedir (dir);
@@ -143,7 +147,10 @@ start:
 	    {
 	      /* continue entry */
 	      show_idx (idx);
-	      avt_say (L" \x2193 \x2193 \x2193");
+	      avt_set_text_background_color (0xdd, 0xdd, 0xdd);
+	      avt_say (L" \x2193 \x2193 \x2193 ");
+	      avt_normal_text ();
+
 	      if (avt_get_menu (&ch, 1, max_y, L'a'))
 		break;
 
