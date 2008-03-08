@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.121 2008-03-08 15:41:23 akf Exp $ */
+/* $Id: avatarsay.c,v 2.122 2008-03-08 21:21:20 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1416,6 +1416,22 @@ prg_mousehandler (int button, avt_bool_t pressed, int x, int y)
 
 #endif /* not NO_PTY */
 
+#ifdef __WIN32__
+/* get user's home direcory */
+/* TODO: fix for Windows */
+static char *
+get_user_home (void)
+{
+  char *home;
+
+  home = getenv ("HOME");
+  if (home == NULL)
+    home = "C:\\";
+
+  return home;
+}
+#endif
+
 /* opens the file, returns file descriptor or -1 on error */
 static int
 openfile (const char *fname)
@@ -1551,6 +1567,46 @@ process_file (int fd)
   return (int) stop;
 }
 
+extern int get_file (char *filename);
+
+static void
+ask_file (void)
+{
+  char filename[256];
+
+  chdir (datadir);
+  get_file (filename);
+
+  /* ignore quit-requests */
+  /* (used to get out of the file dialog) */
+  if (avt_get_status () == AVT_QUIT)
+    avt_set_status (AVT_NORMAL);
+
+  if (filename[0] != '\0')
+    {
+      int fd, status;
+
+      avt_set_text_delay (default_delay);
+
+      fd = openfile (filename);
+      if (fd > -1)
+	process_file (fd);
+
+      /* ignore file errors */
+      status = avt_get_status ();
+      if (status == AVT_ERROR)
+	quit (EXIT_FAILURE);	/* warning already printed */
+
+      if (status == AVT_NORMAL)
+	if (avt_wait_button ())
+	  quit (EXIT_SUCCESS);
+
+      /* reset quit-request and encoding */
+      avt_set_status (AVT_NORMAL);
+      set_encoding (default_encoding);
+    }
+}
+
 #ifdef NO_PTY
 
 static void
@@ -1570,14 +1626,6 @@ execute_process (char *const prg_argv[])
 {
   not_available ();
   return -1;
-}
-
-static void
-menu (void)
-{
-  /* no menu */
-  showversion ();
-  exit (EXIT_SUCCESS);
 }
 
 #else /* not NO_PTY */
@@ -1866,7 +1914,6 @@ ansi_graphic_code (int mode)
 #define ESC_UNUPPORTED "unsupported escape sequence"
 #define CSI_UNUPPORTED "unsupported CSI sequence"
 
-/* TODO */
 static void
 escape_sequence (int fd, wchar_t last_character)
 {
@@ -2596,46 +2643,7 @@ run_info (void)
     process_subprogram (fd);
 }
 
-
-extern int get_file (char *filename);
-
-static void
-ask_file (void)
-{
-  char filename[256];
-
-  chdir (datadir);
-  get_file (filename);
-
-  /* ignore quit-requests */
-  /* (used to get out of the file dialog) */
-  if (avt_get_status () == AVT_QUIT)
-    avt_set_status (AVT_NORMAL);
-
-  if (filename[0] != '\0')
-    {
-      int fd, status;
-
-      avt_set_text_delay (default_delay);
-
-      fd = openfile (filename);
-      if (fd > -1)
-	process_file (fd);
-
-      /* ignore file errors */
-      status = avt_get_status ();
-      if (status == AVT_ERROR)
-	quit (EXIT_FAILURE);	/* warning already printed */
-
-      if (status == AVT_NORMAL)
-	if (avt_wait_button ())
-	  quit (EXIT_SUCCESS);
-
-      /* reset quit-request and encoding */
-      avt_set_status (AVT_NORMAL);
-      set_encoding (default_encoding);
-    }
-}
+#endif /* not NO_PTY */
 
 
 #ifdef NO_MANPAGES
@@ -2648,6 +2656,7 @@ ask_manpage (void)
 
 #else /* not NO_MANPAGES */
 
+#ifndef NO_PTY
 static void
 ask_manpage (void)
 {
@@ -2699,9 +2708,8 @@ ask_manpage (void)
     }
 }
 
+#endif /* not NO_PTY */
 #endif /* not NO_MANPAGES */
-
-/* still not NO_PTY */
 
 static void
 about_avatarsay (void)
@@ -2729,6 +2737,24 @@ about_avatarsay (void)
   if (avt_wait_button () != 0)
     quit (EXIT_SUCCESS);
 }
+
+#ifdef NO_MANPAGES
+#  define SAY_MANPAGE(x) \
+     avt_set_text_color (0x88, 0x88, 0x88); \
+     avt_say(x); \
+     avt_set_text_color (0x00, 0x00, 0x00)
+#else
+#  define SAY_MANPAGE(x) avt_say(x)
+#endif
+
+#ifdef NO_PTY
+#  define SAY_SHELL(x) \
+     avt_set_text_color (0x88, 0x88, 0x88); \
+     avt_say(x); \
+     avt_set_text_color (0x00, 0x00, 0x00)
+#else
+#  define SAY_SHELL(x) avt_say(x)
+#endif
 
 static void
 menu (void)
@@ -2758,36 +2784,33 @@ menu (void)
       avt_newline_mode (AVT_TRUE);
       avt_viewport (19, 1, 42, avt_get_max_y ());
 
-      if (max_y > 9)
-	{
-	  avt_underlined (AVT_TRUE);
-	  avt_bold (AVT_TRUE);
-	  avt_say (L"AKFAvatar");
-	  avt_bold (AVT_FALSE);
-	  avt_underlined (AVT_FALSE);
-	  avt_new_line ();
-	  avt_new_line ();
-	}
+      avt_underlined (AVT_TRUE);
+      avt_bold (AVT_TRUE);
+      avt_say (L"AKFAvatar");
+      avt_bold (AVT_FALSE);
+      avt_underlined (AVT_FALSE);
+      avt_new_line ();
+      avt_new_line ();
 
       menu_start = avt_where_y ();
 
       switch (language)
 	{
 	case DEUTSCH:
-	  avt_say (L"1) Terminal-Modus\n");
+	  SAY_SHELL (L"1) Terminal-Modus\n");
 	  avt_say (L"2) ein Demo oder eine Text-Datei anzeigen\n");
-	  avt_say (L"3) eine Hilfeseite (Manpage) anzeigen\n");
-	  avt_say (L"4) Anleitung (info)\n");
+	  SAY_MANPAGE (L"3) eine Hilfeseite (Manpage) anzeigen\n");
+	  SAY_SHELL (L"4) Anleitung (info)\n");
 	  avt_say (L"5) über avatarsay\n");
 	  avt_say (L"6) beenden\n");
 	  break;
 
 	case ENGLISH:
 	default:
-	  avt_say (L"1) terminal-mode\n");
+	  SAY_SHELL (L"1) terminal-mode\n");
 	  avt_say (L"2) show a demo or textfile\n");
-	  avt_say (L"3) show a manpage\n");
-	  avt_say (L"4) documentation (info)\n");
+	  SAY_MANPAGE (L"3) show a manpage\n");
+	  SAY_SHELL (L"4) documentation (info)\n");
 	  avt_say (L"5) about avatarsay\n");
 	  avt_say (L"6) exit\n");
 	}
@@ -2833,8 +2856,6 @@ menu (void)
 	}
     }
 }
-
-#endif /* not NO_PTY */
 
 static void
 init_language_info (void)
@@ -2944,7 +2965,7 @@ main (int argc, char *argv[])
 
   /* set datadir to home */
   strncpy (datadir, get_user_home (), sizeof (datadir));
-  datadir[sizeof(datadir) - 1] = '\0';
+  datadir[sizeof (datadir) - 1] = '\0';
 
   init_language_info ();
 
@@ -2970,6 +2991,7 @@ main (int argc, char *argv[])
       run_shell ();
       quit (EXIT_SUCCESS);
     }
+#ifndef NO_PTY
   else if (executable)
     {
       int fd;
@@ -2984,6 +3006,7 @@ main (int argc, char *argv[])
 	move_out ();
       quit (EXIT_SUCCESS);
     }
+#endif /* not NO_PTY */
   else if (optind >= argc)	/* no input files? -> menu */
     menu ();
 
@@ -3006,7 +3029,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.121 2008-03-08 15:41:23 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.122 2008-03-08 21:21:20 akf Exp $");
 
   return EXIT_SUCCESS;
 }
