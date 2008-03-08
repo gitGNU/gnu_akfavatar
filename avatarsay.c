@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.117 2008-03-07 18:20:27 akf Exp $ */
+/* $Id: avatarsay.c,v 2.118 2008-03-08 11:00:11 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1210,13 +1210,24 @@ getwline (int fd, wchar_t * lineptr, size_t n)
 static char *
 get_user_shell (void)
 {
-  struct passwd *user_data;
+  char *shell;
 
-  user_data = getpwuid (getuid ());
-  if (!user_data || !user_data->pw_shell)
-    return "/bin/sh";		/* default shell */
-  else
-    return user_data->pw_shell;
+  shell = getenv ("SHELL");
+
+  /* when the variable is not set, dig deeper */
+  if (shell == NULL || *shell == '\0')
+    {
+      struct passwd *user_data;
+
+      user_data = getpwuid (getuid ());
+      if (user_data != NULL && user_data->pw_shell != NULL
+	  && *user_data->pw_shell != '\0')
+	shell = user_data->pw_shell;
+      else
+	shell = "/bin/sh";	/* default shell */
+    }
+
+  return shell;
 }
 
 void
@@ -2566,7 +2577,7 @@ ask_file (void)
   char filename[256];
 
   get_file (filename);
-  
+
   /* ignore quit-requests */
   /* (used to get out of the file dialog) */
   if (avt_get_status () == AVT_QUIT)
@@ -2962,7 +2973,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.117 2008-03-07 18:20:27 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.118 2008-03-08 11:00:11 akf Exp $");
 
   return EXIT_SUCCESS;
 }
