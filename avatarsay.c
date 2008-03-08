@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.119 2008-03-08 13:27:17 akf Exp $ */
+/* $Id: avatarsay.c,v 2.120 2008-03-08 14:45:44 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -289,6 +289,10 @@ help (const char *prgname)
   puts ("\nEnvironment variables:");
   puts (" AVATARIMAGE             different image as avatar");
   puts (" AVATARDATADIR           data-directory");
+#ifndef NO_PTY
+  puts (" HOME                    home directory (terminal)");
+  puts (" SHELL                   preferred shell (terminal)");
+#endif
   puts ("\nHomepage:");
   puts ("  " HOMEPAGE);
   puts ("\nReport bugs to <" BUGMAIL ">");
@@ -2997,7 +3001,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.119 2008-03-08 13:27:17 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.120 2008-03-08 14:45:44 akf Exp $");
 
   return EXIT_SUCCESS;
 }
