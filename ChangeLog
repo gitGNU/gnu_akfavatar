@@ -1,5 +1,9 @@
 2008-03-08  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatarsay.c (get_user_home):
+	new function
+	(run_shell): chdir to home directory before starting the shell
+
 	* avatarsay.c (get_user_shell):
 	first search for the environment variable SHELL
 

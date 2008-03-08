@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.118 2008-03-08 11:00:11 akf Exp $ */
+/* $Id: avatarsay.c,v 2.119 2008-03-08 13:27:17 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1228,6 +1228,28 @@ get_user_shell (void)
     }
 
   return shell;
+}
+
+/* get user's home direcory */
+static char *
+get_user_home (void)
+{
+  char *home;
+
+  home = getenv ("HOME");
+
+  /* when the variable is not set, dig deeper */
+  if (home == NULL || *home == '\0')
+    {
+      struct passwd *user_data;
+
+      user_data = getpwuid (getuid ());
+      if (user_data != NULL && user_data->pw_dir != NULL
+	  && *user_data->pw_dir != '\0')
+	home = user_data->pw_dir;
+    }
+
+  return home;
 }
 
 void
@@ -2545,6 +2567,8 @@ run_shell (void)
   avt_clear ();
   avt_set_text_delay (0);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
+  chdir (get_user_home ());
+
   fd = execute_process (NULL);
   if (fd > -1)
     process_subprogram (fd);
@@ -2973,7 +2997,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.118 2008-03-08 11:00:11 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.119 2008-03-08 13:27:17 akf Exp $");
 
   return EXIT_SUCCESS;
 }
