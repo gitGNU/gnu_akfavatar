@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.23 2008-02-26 02:10:05 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.24 2008-03-18 12:24:05 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -339,12 +339,12 @@ Solution: There are different character sets. Try to use the parameters
 AKFAvatar is known to be compilable with FreeBSD 6.2.  To get iconv support,
 install @code{libiconv} and use @samp{./configure --with-iconv}.
 
-@subsubheading Windows / ReactOS
-These systems are just partly supported.  I provide binaries which are build
+@subsubheading Windows
+Windows is just partly supported.  I provide binaries which are build
 with a crosscompiler.  I haven't compiled them directly under Windows yet, so
 you're on your own here.  I'm sorry.
 
-On these systems SDL supports a fallback implementation for iconv.
+For systems like these SDL supports a fallback implementation for iconv.
 The charset Windows-1252 (often called ``ANSI'' but it has nothing to do
 with ANSI) is not fully supported.  That charset is partly compatible
 to the ISO-8859-1 standard, which is supported.  Some characters are
@@ -360,13 +360,104 @@ which is also supported.
 This chapter explains the various uses of the tool @command{avatarsay}.
 
 @menu
-* Text-viewer::                Using @command{avatarsay} as fancy text-viewer.
+* Text-terminal::              Using @command{avatarsay} as fanc text-terminal
+* Text-viewer::                Using @command{avatarsay} as fancy text-viewer
 * Make your text executable::  How to turn your text into a program
 * Different avatar image::     Using a different avatar image
 * Invoking avatarsay::         Command line interface
 * Commands for avatarsay::     Advanced features of @command{avatarsay}
 * Pipes::                      Pipes
 @end menu
+
+@node Text-terminal
+@section Using @command{avatarsay} as fancy text-terminal
+@cindex text-terminal
+
+The program @command{avatarsay} can be used as a fancy text-terminal and as a 
+frontend for textconsole programs on @sc{posix}-compatible systems (not for 
+Windows).
+
+From the main menu you can choose ``terminal-mode'', or you can start 
+@command{avatarsay} with the option @option{--terminal}, or @option{-t} for
+short. This gives you a terminal session with the default shell for your
+system-account. If you don't like colors being used in the balloon, you can use
+the option @option{--nocolor}, or @option{-b} for short.
+
+If you want to use a different shell or starting directory, you can set the
+environment variables @code{SHELL} and @code{HOME} to different values.
+By the way, the program can get the correct values also when these variables 
+are not set.
+
+@subsection frontend for text-console programs
+@cindex frontend
+@cindex wrapper
+@cindex console based programs
+
+You can use @command{avatarsay} as a frontend for text-console programs.
+Use the option @option{--execute}, or @option{-x} for short, followed by the
+name of the program to execute.  You can of course also combine this with the 
+option @option{--nocolor}.  Options after the programs name are passed to
+the executed program.  That means, the order of the options is important.
+
+For example to log in into another machine, using @command{ssh}:
+@example
+avatarsay --execute ssh example.net
+@end example
+
+To write an e-mail with the program @command{mutt}:
+@example
+avatarsay -bx mutt pal@@example.net
+@end example
+
+Write the mail with a mail program on the remote machine:
+@example
+avatarsay -bx ssh -t example.net mutt pal
+@end example
+
+Note: when you use @command{ssh} this way, you have to use the option 
+@option{-t} for @command{ssh}.
+
+Surf the web with @command{lynx}:
+@example
+avatarsay -bx lynx
+@end example
+
+As you can see, you can use it to actually do very weird things with it.
+
+
+@subsection the terminal-type
+
+The program @command{avatarsay} simulates the text-console of the kernel Linux.
+So the environment variable @code{TERM} is set to either @code{linux} or 
+@code{linux-m}.
+
+Because this choice might lead to some confusion, I try to explain, what this 
+does @emph{not} mean: 
+
+@itemize
+@item
+It does @emph{not} mean, that the code is limited to systems, that use Linux as
+kernel.  It was successfully tested on FreeBSD and should run fairly well 
+on other @sc{posix}-compatible systems also.
+
+@item
+It does @emph{not} mean, that the variable @code{TERM} should be changed on 
+other systems.  Leave it as it is.  But the system should have entries for 
+@code{linux} and @code{linux-m} in its terminal database(s).
+
+@item
+It does @emph{not} mean, that I have used code from Linux.  I just read the
+manpage @code{console_codes} and the Terminfo and Termcap entries and some 
+other documents to get information.
+
+@item
+It does @emph{not} mean, that the terminal is not compliant to standards.
+In fact, the console emulation of the kernel Linux is very compatible to
+@code{ANSI X3.64} (@code{ECMA-48}).  But there are things missing and some
+things, like key-codes are extra.  So the value @code{linux} is actually the 
+right one.
+
+@end itemize
 
 @node Text-viewer
 @section Using @command{avatarsay} as fancy text-viewer.
@@ -488,7 +579,8 @@ transparency, independent from the question, whether the image format
 The format for running @command{avatarsay} is:
 
 @example
-avatarsay [@var{options}] @var{textfile}(s)
+avatarsay [@var{options}] [@var{textfile(s)}]
+avatarsay [@var{options}] --execute @var{program} [@var{program options}]
 @end example
 
 @noindent
@@ -601,6 +693,12 @@ the environment variable @code{AVATARIMAGE})
 @itemx LC_CTYPE
 @itemx LANG
 these variables influence the default encoding and the language
+
+@item SHELL
+the shell for the terminal-mode
+
+@item HOME
+the starting directory for the teminal-mode
 
 @end table
 

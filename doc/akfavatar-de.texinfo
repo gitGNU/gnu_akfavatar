@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.16 2008-02-26 02:10:05 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.17 2008-03-18 12:24:05 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -26,24 +26,24 @@ Dies ist die Bedienungsanleitung für AKFAvatar
 (Version @value{VERSION}, @value{UPDATED}).
 
 @quotation
-AKFAvatar ist ein witziger Terminal-Emulator, ein Text-Betrachter, eine 
+AKFAvatar ist ein lustiger Terminal-Emulator, ein Text-Betrachter, eine 
 Skript-Sprache um Demos zu erstellen und eine Programmbibliothek um 
 dafür Programme in C oder Pascal zu schreiben.
 
 Homepage: @uref{http://akfoerster.de/akfavatar/}
 
-Copyright @copyright{} 2007, 2008 Andreas K. Förster
+Copyright @copyright{} 2007, 2008 Andreas K. Förster,
 @uref{http://akfoerster.de/}
 
 Vervielfältigung und Verbreitung dieser Anleitung, mit oder ohne Veränderungen,
-sind in jeglicher Form ohne Gebühr erlaubt, solange der Copyright Vermerk
+sind ohne Gebühr in jeglicher Form erlaubt, solange der Copyright Vermerk
 sowie dieser Hinweis erhalten bleiben.
 @end quotation
 @end copying
 
 @titlepage
 @title AKFAvatar
-@subtitle Ein witziges Terminal und mehr
+@subtitle Ein lustiges Terminal und mehr
 @author Andreas K. Förster
 
 @c Die folgendern Befehle erzeugen die Copyright Seite.
@@ -90,7 +90,7 @@ fortgeschrittene Benutzer.
 @enumerate
 @item
 Man kann das Programm @command{avatarsay} als Text-Terminal verwenden, 
-so wie @command{xterm}, nur witziger. Im Gegensatz zu @command{xterm} 
+so wie @command{xterm}, nur lustiger. Im Gegensatz zu @command{xterm} 
 läuft es eventuell auch ohne einen X-Server.
 (Für Windows steht diese Funktion nicht zur Verfügung.)
 
@@ -99,7 +99,7 @@ Man kann Textmodus-Programme auch direkt mit @command{avatarsay} öffnen lassen.
 (Für Windows steht diese Funktion nicht zur Verfügung.)
 
 @item
-Der Befehl @command{avatarsay} kann als witziger Text-Betrachter verwendet 
+Der Befehl @command{avatarsay} kann als lustiger Text-Betrachter verwendet 
 werden, mehr oder weniger wie @command{more} oder @command{less}.
 
 Das ist nicht gerade für lange und komplizierte Texte geeignet, sondern eher
@@ -297,7 +297,7 @@ sollte man mal @samp{./fsdemo-de} ausprobieren.  Man kann die Datei
 @file{fsdemo-de} in einem Text-Editor öffnen, um sich anzusehen, wie
 man so etwas selber umsetzen kann@enddots{}
 
-Man kann es auch als ein witziges Manpage-Leseprogramm einsetzen.
+Man kann es auch als ein lustiges Manpage-Leseprogramm einsetzen.
 Hierfür gibt man zum Beispiel den Befehl @samp{avtman man} 
 ein@enddots{}
 
@@ -370,13 +370,13 @@ AKFAvatar ist mit FreeBSD 6.2 kompilierbar.  Um iconv-Unterstützung zu
 erhalten, muss man @code{libiconv} installiert haben und
 @samp{./configure --with-iconv} verwenden.
 
-@subsubheading Windows / ReactOS
-Diese Systeme werden nur teilweise unterstützt.  Ich stelle Binärdateien zur
+@subsubheading Windows
+Windows wird nur teilweise unterstützt.  Ich stelle Binärdateien zur
 Verfügung, die mit einem Crosscompiler erstellt wurden.  Da ich es nie
 direkt unter Windows selber kompiliert habe, kann ich dazu wenig sagen.
 Tut mir Leid.
 
-Auf diesen Systemen wird ein @code{iconv}-Ersatz in der SDL verwendet.
+Für solche Systeme wird ein @code{iconv}-Ersatz in der SDL verwendet.
 Der Zeichensatz Windows-1252 (häufig als ``ANSI'' bezeichnet, er hat aber
 nichts mit ANSI zu tun) wird nicht vollständig unterstützt.  Dieser 
 Zeichensatz ist jedoch teilweise kompatibel zu dem Standard ISO-8859-1,
@@ -395,7 +395,8 @@ Dieses Kapitel erklärt die verschiedenen Anwendungsbereiche des
 Werkzeugs @command{avatarsay}.
 
 @menu
-* Text-Betrachter::            Einsatz als witziger Text-Betrachter
+* Text-Terminal::	       Einsatz als lustiges Text-Terminal
+* Text-Betrachter::            Einsatz als lustiger Text-Betrachter
 * Den Text ausführbar machen:: Wie man seinen Text in ein Programm verwandelt
 * Anderes Avatar-Bild::        Wie man ein anderes Avatar-Bild verwendet
 * Aufruf von avatarsay::       Die genaue Verwendung von @command{avatarsay}
@@ -403,13 +404,109 @@ Werkzeugs @command{avatarsay}.
 * Pipes::                      Pipes
 @end menu
 
+@node Text-Terminal
+@section Einsatz von @command{avatarsay} als lustiges Text-Terminal
+@cindex Text-Terminal
+
+Das Programm @command{avatarsay} kann auf @sc{posix}-kompatiblen Systemen 
+(nicht unter Windows) als lustiges Text-Terminal und als ein Frontend für 
+Textkonsolen-Programme verwendet werden.
+
+Man kann im Hauptmenü den Punkt ``Terminal-Modus'' auswählen, oder man kann
+den Befehl @command{avatarsay} mit der Option @option{--terminal}, oder kurz
+@option{-t} aufrufen. Damit bekommt man eine Terminal-Sitzung mit der Shell,
+welche auf dem System für das Benutzerkonto eingerichtet ist. 
+Falls man keine Farben in der Sprechblase mag, kann man außerdem die Option
+@option{--nocolor}, oder kurz @option{-b} verwenden.
+
+Falls man eine andere Shell oder ein anderes Startverzeichnis bevorzugt, kann
+man über die Umgebungsvariablen @code{SHELL}, beziehungsweise @code{HOME} 
+andere Werte einstellen.  Das Programm kommt aber auch damit klar, wenn diese
+Umgebungsvariablen nicht gesetzt sind.
+
+@subsection Als Frontend für Textkonsolen-Programme
+@cindex Frontend
+@cindex Wrapper
+@cindex Textkonsolen-Programme
+@cindex Konsolen-Programme
+
+Man kann @command{avatarsay} als Frontend für Textkonsolen-Programme verwenden.
+Dazu verwende man die Option @option{--execute}, oder kurz @option{-x}, gefolgt
+vom Namen des auszuführenden Programmes.  Man kann dies natürlich auch mit der 
+Option @option{--nocolor} kombinieren.  Optionen, die nach dem Programmnamen
+angegeben werden, werden an das aufgerufene Programm weitergeleitet.  Das
+bedeutet, dass die Reihenfolge der Optionen wichtig ist.
+
+Zum Beispiel, um sich mit Hilfe von @command{ssh} in einen anderen Rechner
+einzuloggen:
+@example
+avatarsay --execute ssh example.net
+@end example
+
+um eine E-Mail mit dem Programm @command{mutt} zu schreiben:
+@example
+avatarsay -bx mutt pal@@example.net
+@end example
+
+um die E-Mail mit einem Mailprogramm auf dem anderen Rechner zu erstellen:
+@example
+avatarsay -bx ssh -t example.net mutt pal
+@end example
+
+Zu beachten: Wenn man @command{ssh} auf diese Weise einsetzt, muss man die 
+Option @option{-t} bei @command{ssh} mit angeben.
+
+um mit dem Programm @command{lynx} im Web zu surfen:
+@example
+avatarsay -bx lynx
+@end example
+
+Wie man sieht, kann man wirklich ziemlich ausgefallene Sachen damit machen.
+
+
+@subsection Der Terminal-Typ
+
+Das Programm @command{avatarsay} simuliert die Text-Konsole des Kernels Linux.
+Darum wird die Umgebungsvariable @code{TERM} entweder auf @code{linux} oder auf 
+@code{linux-m} eingestellt.
+
+Da dieses Verhalten für einige Verwirrungen sorgen könnte, versuche ich hier
+mal zu erklären, was das @emph{nicht} bedeutet:
+
+@itemize
+@item
+Das bedeutet @emph{nicht}, dass das Programm auf Systeme mit dem Kernel Linux
+beschränkt ist.  Es wurde erfolgreich unter FreeBSD getestet und sollte auf 
+vielen anderen @sc{posix}-kompatiblen Systemen ebenfalls ohne weiteres laufen.
+
+@item
+Das bedeutet @emph{nicht}, dass die Umgebungsvariable @code{TERM} auf anderen
+Systemen angepasst werden sollte.  Sie sollte einfach so bleiben, wie sie ist.
+Das System sollte jedoch Einträge für @code{linux} und @code{linux-m} in seiner
+Terminal-Datenbank haben.
+
+@item
+Das bedeutet @emph{nicht}, dass ich Code von Linux verwendet hätte.  Ich habe
+nur die Manpage @code{console_codes} gelesen, sowie die Einträge in 
+Terminfo und Termcap Datenbanken verglichen und einige andere Anleitungen 
+gelesen, um mir Informationen zu beschaffen.
+
+@item
+Das bedeutet @emph{nicht}, dass die Terminal-Emulation nicht Standard-konform 
+wäre.  Tatsächlich ist die Emulation des Kernels Linux sehr kompatibel zum
+Standard @code{ANSI X3.64} (@code{ECMA-48}).  Aber es werden einige Teile 
+weggelassen und andere Sachen hinzugefügt, wie zum Beispiel Tastatur-Codes.
+Darum ist die Einstellung @code{linux} wirklich die richtige.
+
+@end itemize
+
 @node Text-Betrachter
-@section Einsatz von @command{avatarsay} als witziger Text-Betrachter
+@section Einsatz von @command{avatarsay} als lustiger Text-Betrachter
 @cindex Text-Betrachter
 @cindex Betrachter
 @cindex Lese-Software
 
-Das Programm @command{avatarsay} kann als witziger Text-Betrachter
+Das Programm @command{avatarsay} kann als lustiger Text-Betrachter
 verwendet werden.  Wenn man eine Text-Datei hat, sagen wir mal 
 @file{MeinText}, dann kann man sie sich mit dem Befehl 
 @samp{avatarsay MeinText} ansehen.  
@@ -540,7 +637,8 @@ Transparenz unterstützen @emph{würde}.
 Das genaue Aufruf-Format für @command{avatarsay} ist:
 
 @example
-avatarsay [@var{Optionen}] @var{Text-Datei}(en)
+avatarsay [@var{Optionen}] [@var{Text-Datei}(en)]
+avatarsay [@var{Optionen}] --execute @var{Programm} [@var{Programm-Optionen}]
 @end example
 
 @noindent
@@ -655,6 +753,12 @@ Einfluss auf die Umgebungsvariable @code{AVATARIMAGE})
 @itemx LC_CTYPE
 @itemx LANG
 diese Variablen beeinflussen die Standard-Kodierung und die Sprache
+
+@item SHELL
+die bevorzugte Shell für den Terminal-Modus
+
+@item HOME
+das bevorzugte Startverzeichnis für den Terminal-Modus
 
 @end table
 
