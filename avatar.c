@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.110 2008-03-07 18:58:21 akf Exp $ */
+/* $Id: avatar.c,v 2.111 2008-03-18 14:25:02 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -908,10 +908,10 @@ avt_analyze_event (SDL_Event * event)
 	      break;
 	    }
 
-	  /* Ctrl + Q -> Quit */
+	  /* Alt + Q -> Quit */
 	case SDLK_q:
 	  if (event->key.keysym.sym == SDLK_q
-	      && (event->key.keysym.mod & KMOD_CTRL))
+	      && (event->key.keysym.mod & KMOD_LALT))
 	    {
 	      _avt_STATUS = AVT_QUIT;
 	      break;
@@ -3598,7 +3598,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.110 2008-03-07 18:58:21 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.111 2008-03-18 14:25:02 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
