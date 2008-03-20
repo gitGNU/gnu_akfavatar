@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.122 2008-03-08 21:21:20 akf Exp $ */
+/* $Id: avatarsay.c,v 2.123 2008-03-20 18:27:39 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -38,6 +38,7 @@
 
 #ifdef __WIN32__
 #  include <windows.h>
+#  include <shellapi.h>
 #  define NO_MANPAGES 1
 #  ifdef __MINGW32__
 #    define NO_PTY 1
@@ -77,6 +78,11 @@
 #  define PATH_MAX 4096
 #endif
 
+/* is there really no clean way to find the executable? */
+#ifndef PREFIX
+#  define PREFIX "/usr/local/bin"
+#endif
+
 /* device attribute (DEC) */
 #define DS "\033[?1;2c"		/* claim to be a vt100 with advanced video */
 
@@ -100,6 +106,9 @@ static const char *version_info_de =
   "Dies ist Freie Software: Sie duerfen es gemaess der GPL weitergeben und\n"
   "bearbeiten. Fuer AKFAvatar besteht KEINERLEI GARANTIE.\n"
   "Bitte lesen Sie auch die Anleitung.";
+
+/* pointer to program name in argv[0] */
+static const char *program_name;
 
 /* default encoding - either system encoding or given per parameters */
 /* supported in SDL: ASCII, ISO-8859-1, UTF-8, UTF-16, UTF-32 */
@@ -158,6 +167,9 @@ static char datadir[512];
 
 /* for loading an avt_image */
 static avt_image_t *avt_image;
+
+/* name of the image file */
+static char *avt_image_name;
 
 /* for loading sound files */
 static avt_audio_t *sound;
@@ -252,12 +264,12 @@ showversion (void)
 }
 
 static void
-help (const char *prgname)
+help (void)
 {
-  printf ("\nUsage: %s [Options]\n", prgname);
-  printf ("  or:  %s [Options] textfiles\n", prgname);
+  printf ("\nUsage: %s [Options]\n", program_name);
+  printf ("  or:  %s [Options] textfiles\n", program_name);
   printf ("  or:  %s [Options] --execute program [program options]\n\n",
-	  prgname);
+	  program_name);
   puts
     ("A fancy text-terminal, text-viewer and scripting language for making demos.\n");
   puts ("If textfile is - then read from stdin and don't loop.\n");
@@ -299,7 +311,7 @@ help (const char *prgname)
   exit (EXIT_SUCCESS);
 }
 
-#else /* Windows or ReactOS */
+#else /* not Windows or ReactOS */
 
 static void
 warning_msg (const char *msg1, const char *msg2)
@@ -362,7 +374,7 @@ showversion (void)
 /* For Windows users it's not useful to show the options */
 /* But the text refers to the manual */
 static void
-help (const char *prgname)
+help (void)
 {
   showversion ();
   exit (EXIT_SUCCESS);
@@ -389,7 +401,7 @@ not_available (void)
     quit (EXIT_SUCCESS);
 }
 
-#endif /* Windows or ReactOS */
+#endif /* not Windows or ReactOS */
 
 static void
 set_encoding (const char *encoding)
@@ -448,7 +460,7 @@ checkoptions (int argc, char **argv)
 	  break;
 
 	case 'h':		/* --help */
-	  help (argv[0]);
+	  help ();
 	  break;
 
 	case 'v':		/* --version */
@@ -522,7 +534,7 @@ checkoptions (int argc, char **argv)
 
 	case '?':		/* unsupported option */
 	  /* getopt_long already printed an error message to stderr */
-	  help (argv[0]);
+	  help ();
 	  break;
 
 	  /* declared option, but not handled here */
@@ -565,6 +577,16 @@ checkoptions (int argc, char **argv)
 static void
 use_avatar_image (char *image_file)
 {
+  /* clean up old definitions */
+  if (avt_image)
+    free (avt_image);
+
+  if (avt_image_name)
+    free (avt_image_name);
+
+  /* save the name */
+  avt_image_name = strdup (image_file);
+
   avt_image = avt_import_image_file (image_file);
   if (avt_image == NULL)
     switch (language)
@@ -2711,6 +2733,130 @@ ask_manpage (void)
 #endif /* not NO_PTY */
 #endif /* not NO_MANPAGES */
 
+#ifdef __WIN32__
+
+static void
+edit_file (const char *name)
+{
+  ShellExecute (NULL, "open", "notepad.exe", name, NULL /* dir */ ,
+		SW_SHOWMAXIMIZED);
+}
+
+#else /* not Windows or ReactOS */
+
+static void
+edit_file (const char *name)
+{
+  char *editor;
+  char *args[3];
+  int fd;
+
+  editor = getenv ("VISUAL");
+  if (!editor)
+    editor = getenv ("EDITOR");
+  if (!editor)
+    editor = "vi";
+
+  args[0] = editor;
+  args[1] = (char *) name;
+  args[2] = (char *) NULL;
+
+  fd = execute_process (args);
+  if (fd > -1)
+    process_subprogram (fd);
+}
+
+static char *
+get_program_path (void)
+{
+  char *p;
+
+  p = (char *) malloc (strlen (PREFIX) + 1 + strlen (program_name) + 1);
+  strcpy (p, PREFIX);
+  strcat (p, "/");
+  strcat (p, program_name);
+
+  return p;
+}
+
+#endif /* not Windows or ReactOS */
+
+static void
+create_file (const char *filename)
+{
+  FILE *f;
+
+  f = fopen (filename, "wx");
+
+  if (f)
+    {
+#ifndef __WIN32__
+      /* include #! line */
+      {
+	char *p = get_program_path ();
+	fprintf (f, "#! %s\n\n", p);
+	free (p);
+      }
+#endif
+
+      if (default_encoding[0] != '\0')
+	fprintf (f, ".encoding %s\n", default_encoding);
+
+      if (datadir[0] != '\0')
+	fprintf (f, ".datadir %s\n", datadir);
+
+      if (avt_image_name)
+	fprintf (f, ".avatarimage %s\n", avt_image_name);
+
+      fputs ("\n# Text:\n", f);
+
+      fclose (f);
+
+#ifndef __WIN32__
+      /* make file executable */
+      chmod (filename, S_IRUSR | S_IWUSR | S_IXUSR
+	     | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+#endif
+    }
+}
+
+static void
+ask_edit_file (void)
+{
+  char filename[256];
+
+  avt_clear ();
+  avt_set_text_delay (0);
+
+  chdir (datadir);
+
+  /* show directory and prompt (don't trust "datadir") */
+  avt_say_mb (datadir);
+  avt_say_mb ("> ");
+
+  if (avt_ask_mb (filename, sizeof (filename)) != 0)
+    quit (EXIT_SUCCESS);
+
+  if (filename[0] != '\0')
+    {
+      if (access (filename, F_OK) != 0)
+	create_file (filename);
+
+      avt_clear ();
+      switch (language)
+	{
+	case DEUTSCH:
+	  avt_say (L"öffne Datei im editor...");
+	  break;
+
+	case ENGLISH:
+	default:
+	  avt_say (L"opening file in an editor...");
+	}
+      edit_file (filename);
+    }
+}
+
 static void
 about_avatarsay (void)
 {
@@ -2799,20 +2945,22 @@ menu (void)
 	case DEUTSCH:
 	  SAY_SHELL (L"1) Terminal-Modus\n");
 	  avt_say (L"2) ein Demo oder eine Text-Datei anzeigen\n");
-	  SAY_MANPAGE (L"3) eine Hilfeseite (Manpage) anzeigen\n");
-	  SAY_SHELL (L"4) Anleitung (info)\n");
-	  avt_say (L"5) über avatarsay\n");
-	  avt_say (L"6) beenden\n");
+	  avt_say (L"3) ein Demo erstellen oder bearbeiten\n");
+	  SAY_MANPAGE (L"4) eine Hilfeseite (Manpage) anzeigen\n");
+	  SAY_SHELL (L"5) Anleitung (info)\n");
+	  avt_say (L"6) über avatarsay\n");
+	  avt_say (L"7) beenden\n");
 	  break;
 
 	case ENGLISH:
 	default:
 	  SAY_SHELL (L"1) terminal-mode\n");
 	  avt_say (L"2) show a demo or textfile\n");
-	  SAY_MANPAGE (L"3) show a manpage\n");
-	  SAY_SHELL (L"4) documentation (info)\n");
-	  avt_say (L"5) about avatarsay\n");
-	  avt_say (L"6) exit\n");
+	  avt_say (L"3) create or edit a demo\n");
+	  SAY_MANPAGE (L"4) show a manpage\n");
+	  SAY_SHELL (L"5) documentation (info)\n");
+	  avt_say (L"6) about avatarsay\n");
+	  avt_say (L"7) exit\n");
 	}
 
       menu_end = avt_where_y () - 1;
@@ -2833,19 +2981,23 @@ menu (void)
 	  ask_file ();
 	  break;
 
-	case L'3':		/* show a manpage */
+	case L'3':		/* create or edit a demo */
+	  ask_edit_file ();
+	  break;
+
+	case L'4':		/* show a manpage */
 	  ask_manpage ();
 	  break;
 
-	case L'4':		/* documentation */
+	case L'5':		/* documentation */
 	  run_info ();
 	  break;
 
-	case L'5':		/* about avatarsay */
+	case L'6':		/* about avatarsay */
 	  about_avatarsay ();
 	  break;
 
-	case L'6':		/* exit */
+	case L'7':		/* exit */
 	  if (!popup)
 	    move_out ();
 	  quit (EXIT_SUCCESS);
@@ -2951,6 +3103,20 @@ show_file (char *f)
     quit (EXIT_SUCCESS);
 }
 
+static void
+initialize_program_name (const char *argv0)
+{
+#ifdef __WIN32__
+  program_name = strrchr (argv0, '\\');
+#else
+  program_name = strrchr (argv0, '/');
+#endif
+  if (program_name == NULL)	/* no slash */
+    program_name = argv0;
+  else				/* skip slash */
+    program_name++;
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -2959,6 +3125,7 @@ main (int argc, char *argv[])
   loop = AVT_TRUE;
   default_delay = AVT_DEFAULT_TEXT_DELAY;
   prg_input = -1;
+  initialize_program_name (argv[0]);
 
   /* this is just a default setting */
   strcpy (default_encoding, "ISO-8859-1");
@@ -3029,7 +3196,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.122 2008-03-08 21:21:20 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.123 2008-03-20 18:27:39 akf Exp $");
 
   return EXIT_SUCCESS;
 }
