@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.124 2008-03-20 19:47:17 akf Exp $ */
+/* $Id: avatarsay.c,v 2.125 2008-03-20 20:42:56 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1439,8 +1439,8 @@ prg_mousehandler (int button, avt_bool_t pressed, int x, int y)
 #endif /* not NO_PTY */
 
 #ifdef __WIN32__
+
 /* get user's home direcory */
-/* TODO: fix for Windows */
 static char *
 get_user_home (void)
 {
@@ -1454,6 +1454,7 @@ get_user_home (void)
 
   return home;
 }
+
 #endif
 
 /* opens the file, returns file descriptor or -1 on error */
@@ -2742,6 +2743,13 @@ edit_file (const char *name)
 {
   ShellExecute (NULL, "open", "notepad.exe", name, NULL /* dir */ ,
 		SW_SHOWMAXIMIZED);
+
+  /*
+   * program returns immediately,
+   * so leave some time to see the message
+   * (function from WinAPI!)
+   */
+  Sleep (5000);			/* milliseconds */
 }
 
 #else /* not Windows or ReactOS */
@@ -3198,7 +3206,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.124 2008-03-20 19:47:17 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.125 2008-03-20 20:42:56 akf Exp $");
 
   return EXIT_SUCCESS;
 }
