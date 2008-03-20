@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.125 2008-03-20 20:42:56 akf Exp $ */
+/* $Id: avatarsay.c,v 2.126 2008-03-20 21:31:08 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2747,9 +2747,8 @@ edit_file (const char *name)
   /*
    * program returns immediately,
    * so leave some time to see the message
-   * (function from WinAPI!)
    */
-  Sleep (5000);			/* milliseconds */
+  avt_wait (AVT_SECONDS(5));
 }
 
 #else /* not Windows or ReactOS */
@@ -3206,7 +3205,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.125 2008-03-20 20:42:56 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.126 2008-03-20 21:31:08 akf Exp $");
 
   return EXIT_SUCCESS;
 }
