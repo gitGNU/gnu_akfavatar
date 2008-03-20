@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.123 2008-03-20 18:27:39 akf Exp $ */
+/* $Id: avatarsay.c,v 2.124 2008-03-20 19:47:17 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1447,6 +1447,8 @@ get_user_home (void)
   char *home;
 
   home = getenv ("HOME");
+  if (home == NULL)
+    home = getenv ("HOMEPATH");
   if (home == NULL)
     home = "C:\\";
 
@@ -3196,7 +3198,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.123 2008-03-20 18:27:39 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.124 2008-03-20 19:47:17 akf Exp $");
 
   return EXIT_SUCCESS;
 }
