@@ -93,13 +93,14 @@ example: example.c libakfavatar.so
 # avatarsay dynamically linked
 # only works, when the library is installed
 avatarsay-d: avatarsay.c avtfilechooser.o libakfavatar.so
-	$(CC) $(CFLAGS) -I. -o $@ avatarsay.c avtfilechooser.o \
-	  -L. -lakfavatar $(LDFLAGS)
+	$(CC) $(CFLAGS) -DPREFIX=\"$(exec_prefix)\" -I. -o $@ \
+	  avatarsay.c avtfilechooser.o -L. -lakfavatar $(LDFLAGS)
 
 # avatarsay with statical libakfavatar.a
 avatarsay: avatarsay.c avtfilechooser.o libakfavatar.a
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -o $@ avatarsay.c libakfavatar.a \
-	  avtfilechooser.o $(LDFLAGS) $(SDLLDFLAGS)
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -DPREFIX=\"$(exec_prefix)\" \
+	  -I. -o $@ avatarsay.c libakfavatar.a avtfilechooser.o \
+	  $(LDFLAGS) $(SDLLDFLAGS)
 
 installdirs:
 	-[ -d $(DESTDIR)$(includedir) ]  || $(INSTALL) -d $(DESTDIR)$(includedir)
