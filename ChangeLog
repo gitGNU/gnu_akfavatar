@@ -1,7 +1,7 @@
 2008-03-22  Andreas K. Foerster  <info@akfoerster.de>
 
-	* akfavatar.h (AVT_DEPRECATED):
-	new makro used to mark deprecated functions (gcc only)
+	* akfavatar.h (AVT_DEPRECATED, AVT_UNUSED):
+	new makro used to mark deprecated or unused stuff (gcc only)
 
 	* avatarsay.c (get_user_home):
 	new function

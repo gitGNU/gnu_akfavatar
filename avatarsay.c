@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.126 2008-03-20 21:31:08 akf Exp $ */
+/* $Id: avatarsay.c,v 2.127 2008-03-22 09:16:24 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1279,7 +1279,7 @@ get_user_home (void)
 }
 
 void
-prg_keyhandler (int sym, int mod, int unicode)
+prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
 {
   if (idle && prg_input > 0)
     {
@@ -3205,7 +3205,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.126 2008-03-20 21:31:08 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.127 2008-03-22 09:16:24 akf Exp $");
 
   return EXIT_SUCCESS;
 }

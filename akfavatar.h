@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.60 2008-03-22 08:34:03 akf Exp $ */
+/* $Id: akfavatar.h,v 2.61 2008-03-22 09:16:24 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -75,11 +75,16 @@
  */
 #define AVT_SECONDS(x) ((x)*1000)
 
-/* for marking deprecated functions in this header */
+/* 
+ * makros for marking deprecated functions in this header,
+ * or possibly unused parameters
+ */
 #ifdef __GNUC__
 #  define AVT_DEPRECATED __attribute__ ((__deprecated__))
+#  define AVT_UNUSED __attribute__ ((__unused__))
 #else
 #  define AVT_DEPRECATED
+#  define AVT_UNUSED
 #endif /* __GNUC__ */
 
 #ifdef __cplusplus
