@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.59 2008-03-03 10:44:24 akf Exp $ */
+/* $Id: akfavatar.h,v 2.60 2008-03-22 08:34:03 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -74,6 +74,13 @@
  * example: avt_wait(AVT_SECONDS(2.5)) waits 2.5 seconds 
  */
 #define AVT_SECONDS(x) ((x)*1000)
+
+/* for marking deprecated functions in this header */
+#ifdef __GNUC__
+#  define AVT_DEPRECATED __attribute__ ((__deprecated__))
+#else
+#  define AVT_DEPRECATED
+#endif /* __GNUC__ */
 
 #ifdef __cplusplus
 /* *INDENT-OFF* */
@@ -252,7 +259,7 @@ void avt_set_text_delay (int delay);
 void avt_set_flip_page_delay (int delay);
 
 /* don't use this anymore, it is about to be removed */
-void avt_set_delays (int text, int flip_page);
+void avt_set_delays (int text, int flip_page) AVT_DEPRECATED;
 
 /* 
  * reserve single keys (Esc, F11)
@@ -394,15 +401,15 @@ int avt_wait (int milliseconds);
 /* wait for a keypress while displaying a button */
 int avt_wait_button (void);
 
-/* wait for a keypress (deprecated) */
-int avt_wait_key (const wchar_t * message);
+/* wait for a keypress  (deprecated: use avt_wait_button) */
+int avt_wait_key (const wchar_t * message) AVT_DEPRECATED;
 
 /*
  * like avt_waitkey,
  * but converts from a given charset encoding
- * (deprecated) 
+ * (deprecated: use avt_wait_button) 
  */
-int avt_wait_key_mb (char *message);
+int avt_wait_key_mb (char *message) AVT_DEPRECATED;
 
 
 /* functions for extended use */

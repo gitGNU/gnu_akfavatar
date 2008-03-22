@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.111 2008-03-18 14:25:02 akf Exp $ */
+/* $Id: avatar.c,v 2.112 2008-03-22 08:34:03 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2903,7 +2903,7 @@ avt_wait_button (void)
   return _avt_STATUS;
 }
 
-
+/* deprecated: use avt_wait_button */
 int
 avt_wait_key (const wchar_t * message)
 {
@@ -3019,6 +3019,7 @@ avt_wait_key (const wchar_t * message)
   return _avt_STATUS;
 }
 
+/* deprecated: use avt_wait_button */
 int
 avt_wait_key_mb (char *message)
 {
@@ -3598,7 +3599,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.111 2008-03-18 14:25:02 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.112 2008-03-22 08:34:03 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
