@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.61 2008-03-22 09:16:24 akf Exp $ */
+/* $Id: akfavatar.h,v 2.62 2008-03-23 16:01:11 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -271,6 +271,9 @@ void avt_set_delays (int text, int flip_page) AVT_DEPRECATED;
  * use this with avt_register_keyhandler
  */
 void avt_reserve_single_keys (avt_bool_t onoff);
+
+/* just for backward compatiblity, don't use it */
+void avt_stop_on_esc (avt_bool_t on) AVT_DEPRECATED;
 
 /* register an external keyhandler */
 void avt_register_keyhandler (avt_keyhandler handler);
