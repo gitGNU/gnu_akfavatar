@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.24 2008-03-18 12:24:05 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.25 2008-03-24 04:12:10 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -109,11 +109,6 @@ Don't worry, it sounds more complicated, than it is.  I should rather
 say, you can spice up your texts with occasional commands.  Then you can
 set the executable bit on your@dots{} ``text'', and it is executable.
 
-@item
-The command @command{avatarsay} can also be called from other scripting
-languages and the scripting language can communicate with that program
-through @acronym{FIFO}s.
-
 @item  
 Then there is the library @code{libakfavatar}, which you can use from
 compiling languages.  Currently @w{Free Pascal}, @acronym{GNU}-Pascal
@@ -124,51 +119,38 @@ command-line programs --- but it's much more fun!
 @end enumerate
 
 @page
-@section General usage
+@section General usage (keys)
 @cindex keys
 
-Some AKFAvatar applications need no interaction with the user.  They
-are often demos that are meant to run without any interaction.  So it is
-not obvious how to interact with the  program.
-
-@cindex stopping (Esc key)
-In most AKFAvatar programs, you can press the key @key{Esc} at any
-time to stop the program.  When it runs in a window you can also use 
-the close button of your window manager or any other means the window 
-system offers for stopping a program.
+@cindex stopping
+When an AKFAvatar program runs in a window, you can of course use the close 
+button of your window manager for stopping the program.  You can also always 
+stop the program by pressing the key combination @key{Alt}+@key{Q}, for example
+when it runs in fullscreen mode.  Often you can also stop the program by 
+pressing the @key{Esc} key.  But this key might be reserved for other things, 
+for example in the terminal-mode of @command{avatarsay}.
 
 @cindex pausing (Pause key)
-The text is normally displayed in a quite slow pace.  Nevertheless it
-might sometimes be to fast.  If you want to have a closer look at the
-text, you can press the @key{Pause} key at any time.  (There might be a
-small delay in pausing the audio output.)  Press any other key to continue 
-again.
+You can press the @key{Pause} key at any time to pause the running process. 
+Press any other key to continue again.
 
-@c @cindex flush (Space key)
-@c @cindex space key
-@c On the other hand sometimes it might be to slow for you.  Then you can
-@c use the @key{SPACE} bar.@footnote{The @key{SPACE} bar is the long bar at
-@c the bottom of the keyboard, with actually nothing but empty space printed 
-@c on it.}  This displays the whole page of text immediately.  The next page 
-@c starts in the normal pace again.  So you can press the @key{SPACE} bar 
-@c again and again.
-
-@cindex F11
 @cindex switching fullscreen/window
 @cindex toggle fullscreen/window
 @cindex fullscreen mode
 @cindex window mode
-On some systems you can use the @key{F11} key to toggle between the window
-mode and the fullscreen mode.  Alternatively you can also use the key 
-combinations @key{Alt}+@key{Enter} or @key{Crtl}+@key{Alt}+@key{F}.
+On some systems you can use the key combinations @key{Alt}+@key{Enter} or 
+@key{Crtl}+@key{Alt}+@key{F} to toggle between the fullscreen and the window
+mode.  Often you can also simply use the key @key{F11}, but this key might
+be reserved for other things, for example in the terminal-mode of 
+@command{avatarsay}.
 
 @cindex window usage
 When AKFAvatar runs in a window you can resize the window as you wish.  The
 content doesn't get resized, but it is centered on the window.  You cannot
-resize it beyond a minimal size, which is currently 640 to 480.  You can
-of course also maximize the window.  When you minimize the window the 
-program continues to print the text.  So you probably want to press the
-@key{Pause} key before you minimze the window.
+resize it beyond a minimal size.  You can of course also maximize the window.  
+When you minimize the window the program continues to print the text.  
+So you probably want to press the @key{Pause} key before you minimize the 
+window.
 
 @node Installation
 @chapter How to install AKFAvatar
@@ -197,6 +179,13 @@ For example the X-Window-System or a Linux framebuffer-device@enddots{}
 
 @item An ANSI-C Compiler (gcc or others)@*
 @uref{http://gcc.gnu.org/}
+
+@item Entries for ``linux'' and ``linux-m'' in the terminal database.
+
+This is also needed on systems, which don't use the kernel Linux, but not 
+on Windows.  On Debian or derived distributions, you must have the package
+``ncurses-term'' installed.
+
 @end itemize
 
 @subheading Recommended

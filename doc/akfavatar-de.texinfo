@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.17 2008-03-18 12:24:05 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.18 2008-03-24 04:12:10 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -116,11 +116,6 @@ Dann kann man das Ausführungs-Bit bei seiner@dots{} ``Text-Datei'' setzen,
 und schon ist es ausführbar.
 
 @item
-Der Befehl @command{avatarsay} kann auch von anderen Skript-Sprachen aus
-aufgerufen werden und die Skript-Sprache kann mit dem Programm über 
-@acronym{FIFO}s kommunizieren.
-
-@item
 Dann gibt es da noch die Programmbibliothek @code{libakfavatar}, die man von
 kompilierenden Sprachen aus verwenden kann.  Zur Zeit werden @w{Free Pascal},
 @acronym{GNU}-Pascal und C unterstützt.  Insbesondere die Sprache Pascal
@@ -131,54 +126,41 @@ aber wesentlich mehr Spaß!
 @end enumerate
 
 @page
-@section Allgemeine Verwendung
+@section Allgemeine Verwendung (Tasten)
 @cindex Tasten
 
-Manche AKFAvatar-Anwendungen laufen automatisch ab ohne Interaktion mit dem
-Benutzer. Es handelt sich häufig um Demos, die darauf hin ausgelegt sind ohne
-irgendwelche Eingriffe vom Benutzer zu laufen.  Aus diesem Grund ist es nicht 
-direkt offensichtlich, wie man mit dem laufenden Programm interagieren kann.
-
 @cindex Stoppen (Esc-Taste)
-Bei den meisten AKFAvatar-Anwendungen kann man jederzeit die @key{Esc}-Taste
-drücken um das Programm zu stoppen.  Wenn es in einem Fenster läuft, kann man
-natürlich auch einfach den Schließen-Knopf des Fenster-Managers betätigen, oder
-das Programm mit jeder anderen Methode, die der Fenster-Manager bietet,
-beenden.
+Wenn ein AKFAvatar-Programm in einem Fenster läuft, kann man natürlich 
+einfach den Schließen-Knopf des Fenster-Managers betätigen, um es zu beenden.  
+Man kann das Programm aber auch jederzeit mit der Tastenkombination 
+@key{Alt}+@key{Q} abbrechen, zum Beispiel, wenn es im Vollbild-Modus läuft.
+Meistens kann man das Programm auch einfach mit der @key{Esc}-Taste beenden.  
+Diese Taste kann jedoch auch für andere Aufgaben reserviert sein, zum Beispiel 
+im Terminal-Modus von @command{avatarsay}.
 
 @cindex pausieren (Pause-Taste)
-Der Text wird normalerweise in einer recht langsamen Geschwindigkeit angezeigt.
-Dennoch kann das einem manchmal zu schnell sein.  Wenn man einen genaueren
-Blick auf den angezeigten Text werfen will, kann man jederzeit die 
-@key{Pause}-Taste betätigen.  (Es könnte eine kurze Verzögerung beim Pausieren
-der Audio-Ausgabe geben.)  Durch den Druck auf eine andere Taste, kann die
-Pause wieder aufgehoben werden.
+Man kann jederzeit die @key{Pause}-Taste betätigen, um die Programmausführung
+anzuhalten.
+Durch den Druck auf eine andere Taste, kann die Pause wieder aufgehoben werden.
 
-@c @cindex Leertaste
-@c Andererseits kann die Textausgabe auch manchmal als zu langsam empfunden
-@c werden.  Dann kann man die Leertaste@footnote{Die Leertaste ist der lange
-@c Balken unten an der Tastatur} drücken.  Das zeigt eine vollständige Seite
-@c sofort an.  Die nächste Seite beginnt wieder in der normalen Geschwindigkeit.
-@c Man kann aber die Leertaste immer und immer wieder drücken.
-
-@cindex F11
 @cindex umschalten Vollbild/Fenster
 @cindex Vollbild-Modus
 @cindex Fenster-Modus
-Auf manchen Systemen kann man die @key{F11}-Taste verwenden um zwischen
-der Darstellung im Fenster oder der Vollbild-Darstellung hin und her zu 
-schalten.  Alternativ kann man auch die Tastenkombinationen 
-@key{Alt}+@key{Enter} oder @key{Strg}+@key{Alt}+@key{F} verwenden.
+Auf manchen Systemen kann man die Tastenkombinationen @key{Alt}+@key{Enter} 
+oder @key{Strg}+@key{Alt}+@key{F} verwenden um zwischen der Darstellung im 
+Fenster oder der Vollbild-Darstellung hin und her zu schalten.  Häufig kann
+man dazu auch einfach die Taste @key{F11} drücken.  Diese Taste kann 
+jedoch auch für andere Aufgaben reserviert sein, zum Beispiel im Terminal-Modus
+von @command{avatarsay}.
 
 @cindex Fenster Verwendung
 Wenn AKFAvatar in einem Fenster läuft, kann man die Fenstergröße verändern,
 wenn man will.  Die Größe des Inhaltes wird dadurch aber nicht verändert,
 sondern der Inhalt wird lediglich auf dem Fenster zentriert.  Man kann das 
-Fenster nicht unter eine bestimmte Mindestgröße verkleinern.  Diese
-Mindestgröße ist derzeit 640 mal 480 Pixel.  Man kann das Fenster natürlich
-auch maximieren.  Wenn man das Fenster minimiert, läuft das Programm übrigens
-weiter.  Man sollte also vielleicht die @key{Pause}-Taste drücken, bevor man
-das Fenster minimiert.
+Fenster nicht unter eine bestimmte Mindestgröße verkleinern.  Man kann das 
+Fenster natürlich auch maximieren.  Wenn man das Fenster minimiert, läuft 
+das Programm übrigens weiter.  Man sollte also vielleicht die @key{Pause}-Taste
+drücken, bevor man das Fenster minimiert.
 
 @node Installation
 @chapter AKFAvatar installieren
@@ -208,6 +190,12 @@ Zum Beispiel das X-Window-System oder einen Linux Framebuffer@enddots{}
 
 @item Einen ANSI-C Compiler (gcc oder andere)@*
 @uref{http://gcc.gnu.org/}
+
+@item Einträge für ``linux'' und ``linux-m'' in der Terminal-Datenbank.
+
+Dies ist auch auf Systemen erforderlich, welche nicht auf dem Kernel Linux 
+basieren, aber nicht unter Windows.  Unter Debian und davon abgeleiteten 
+Distributionen muss hierfür das Paket ``ncurses-term'' installiert sein.
 @end itemize
 
 @subheading Empfohlen
