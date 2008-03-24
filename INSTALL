@@ -17,6 +17,12 @@ Needed
  * An ANSI-C Compiler (gcc or others)
      http://gcc.gnu.org/
 
+ * Entries for "linux" and "linux-m" in the terminal database.
+
+   This is also needed on systems, which don't use the kernel Linux, but not 
+   on Windows.  On Debian or derived distributions, you must have the package
+   "ncurses-term" installed.
+
 Recommended
 
  * SDL_image
