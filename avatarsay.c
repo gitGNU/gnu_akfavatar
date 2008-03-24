@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.127 2008-03-22 09:16:24 akf Exp $ */
+/* $Id: avatarsay.c,v 2.128 2008-03-24 20:30:12 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -87,6 +87,13 @@
 #define DS "\033[?1;2c"		/* claim to be a vt100 with advanced video */
 
 #define BYTE_ORDER_MARK L'\xfeff'
+
+#define MOO " ___________\n< AKFAvatar >\n -----------\n    " \
+            "    \\   ^__^\n         \\  (oo)\\_____" \
+            "__\n            (__)\\       )\\/\\\n" \
+            "                ||----w |\n                " \
+            "||     ||"
+
 
 static const char *version_info_en =
   PRGNAME " (AKFAvatar) " AVTVERSION "\n"
@@ -415,6 +422,12 @@ checkoptions (int argc, char **argv)
 {
   int c;
   int option_index = 0;
+
+  if (strcmp (argv[1], "moo") == 0)
+    {
+      puts (MOO);
+      exit (EXIT_SUCCESS);
+    }
 
 #ifdef __WIN32__
   /* stderr doesn't work in windows GUI programs */
@@ -2748,7 +2761,7 @@ edit_file (const char *name)
    * program returns immediately,
    * so leave some time to see the message
    */
-  avt_wait (AVT_SECONDS(5));
+  avt_wait (AVT_SECONDS (5));
 }
 
 #else /* not Windows or ReactOS */
@@ -3205,7 +3218,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.127 2008-03-22 09:16:24 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.128 2008-03-24 20:30:12 akf Exp $");
 
   return EXIT_SUCCESS;
 }
