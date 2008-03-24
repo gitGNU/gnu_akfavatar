@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.25 2008-03-24 04:12:10 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.26 2008-03-24 05:24:37 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -335,7 +335,7 @@ you're on your own here.  I'm sorry.
 
 For systems like these SDL supports a fallback implementation for iconv.
 The charset Windows-1252 (often called ``ANSI'' but it has nothing to do
-with ANSI) is not fully supported.  That charset is partly compatible
+with @acronym{ANSI}) is not fully supported.  That charset is partly compatible
 to the ISO-8859-1 standard, which is supported.  Some characters are
 missing then.  If you need these characters, save your text as UTF-8, 
 which is also supported.
@@ -373,7 +373,7 @@ system-account. If you don't like colors being used in the balloon, you can use
 the option @option{--nocolor}, or @option{-b} for short.
 
 If you want to use a different shell or starting directory, you can set the
-environment variables @code{SHELL} and @code{HOME} to different values.
+environment variables @env{SHELL} and @env{HOME} to different values.
 By the way, the program can get the correct values also when these variables 
 are not set.
 
@@ -417,7 +417,7 @@ As you can see, you can use it to actually do very weird things with it.
 @subsection the terminal-type
 
 The program @command{avatarsay} simulates the text-console of the kernel Linux.
-So the environment variable @code{TERM} is set to either @code{linux} or 
+So the environment variable @env{TERM} is set to either @code{linux} or 
 @code{linux-m}.
 
 Because this choice might lead to some confusion, I try to explain, what this 
@@ -430,7 +430,7 @@ kernel.  It was successfully tested on FreeBSD and should run fairly well
 on other @sc{posix}-compatible systems also.
 
 @item
-It does @emph{not} mean, that the variable @code{TERM} should be changed on 
+It does @emph{not} mean, that the variable @env{TERM} should be changed on 
 other systems.  Leave it as it is.  But the system should have entries for 
 @code{linux} and @code{linux-m} in its terminal database(s).
 
