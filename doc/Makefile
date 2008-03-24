@@ -65,6 +65,10 @@ akfavatar-en.ps: akfavatar-en.dvi
 akfavatar-de.ps: akfavatar-de.dvi
 	-dvips -Pwww -o $@ akfavatar-de.dvi
 
+docbook: akfavatar-en.texinfo akfavatar-de.texinfo pasref.txt
+	-$(MAKEINFO) --docbook akfavatar-en.texinfo
+	-$(MAKEINFO) --docbook akfavatar-de.texinfo
+
 man: avatarsay.1
 
 avatarsay.1: ../avatarsay.c
