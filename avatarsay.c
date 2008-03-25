@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.129 2008-03-25 11:38:22 akf Exp $ */
+/* $Id: avatarsay.c,v 2.130 2008-03-25 11:54:47 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1022,7 +1022,7 @@ iscommand (wchar_t * s, int *stop)
  * or a byte order mark (BOM) U+FEFF 
  */
 static void
-check_encoding (char *buf, int *size)
+check_encoding (const char *buf)
 {
   encoding_checked = AVT_TRUE;
 
@@ -1030,7 +1030,7 @@ check_encoding (char *buf, int *size)
     char *enc;
     char temp[80];
 
-    /* FIXME: is buf \0 terminated? */
+    /* buf is \0 terminated */
     /* check for command .encoding */
     enc = strstr (buf, ".encoding ");
 
@@ -1164,7 +1164,8 @@ get_character (int fd)
 	  wcbuf = NULL;
 	}
 
-      filebuf_end = read (fd, &filebuf, sizeof (filebuf));
+      /* reserve one byte for a terminator */
+      filebuf_end = read (fd, &filebuf, sizeof (filebuf) - 1);
 
       /* waiting for data */
       if (filebuf_end == -1 && errno == EAGAIN)
@@ -1172,7 +1173,7 @@ get_character (int fd)
 	  idle = AVT_TRUE;
 	  while (filebuf_end == -1 && errno == EAGAIN
 		 && avt_update () == AVT_NORMAL)
-	    filebuf_end = read (fd, &filebuf, sizeof (filebuf));
+	    filebuf_end = read (fd, &filebuf, sizeof (filebuf) - 1);
 	  idle = AVT_FALSE;
 	}
 
@@ -1186,7 +1187,10 @@ get_character (int fd)
       else			/* filebuf_end != -1 */
 	{
 	  if (!encoding_checked && !given_encoding)
-	    check_encoding (filebuf, &filebuf_end);
+	    {
+	      filebuf[filebuf_end] = '\0';	/* terminate */
+	      check_encoding (filebuf);
+	    }
 
 	  wcbuf_len = avt_mb_decode (&wcbuf, (char *) &filebuf, filebuf_end);
 	  wcbuf_pos = 0;
@@ -3218,7 +3222,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.129 2008-03-25 11:38:22 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.130 2008-03-25 11:54:47 akf Exp $");
 
   return EXIT_SUCCESS;
 }
