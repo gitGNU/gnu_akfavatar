@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.128 2008-03-24 20:30:12 akf Exp $ */
+/* $Id: avatarsay.c,v 2.129 2008-03-25 11:38:22 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -423,12 +423,6 @@ checkoptions (int argc, char **argv)
   int c;
   int option_index = 0;
 
-  if (strcmp (argv[1], "moo") == 0)
-    {
-      puts (MOO);
-      exit (EXIT_SUCCESS);
-    }
-
 #ifdef __WIN32__
   /* stderr doesn't work in windows GUI programs */
   opterr = 0;
@@ -571,6 +565,12 @@ checkoptions (int argc, char **argv)
 
   if (executable && argc <= optind)
     error_msg ("error", "execute needs at least a program name");
+
+  if (argc > optind && strcmp (argv[optind], "moo") == 0)
+    {
+      puts (MOO);
+      exit (EXIT_SUCCESS);
+    }
 
   /* 
    * when input file is - the program must not loop
@@ -3218,7 +3218,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.128 2008-03-24 20:30:12 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.129 2008-03-25 11:38:22 akf Exp $");
 
   return EXIT_SUCCESS;
 }
