@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.26 2008-03-24 05:24:37 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.27 2008-03-25 19:36:05 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -976,8 +976,8 @@ platforms.
 
 Before you ask: Yes, it would have been possible to write the whole thing in 
 Pascal.  But C is more widely spread, and that has its consequences.
-Every modern system comes with a C compiler (except Windows of course) and 
-almost every other language can use libraries written in C.
+Every modern system comes with a C compiler and almost every other language 
+can use libraries written in C.
 
 @menu
 * Pascal::           How to program the avatar in Pascal
@@ -1183,7 +1183,7 @@ The following text shows the @code{interface} of the Pascal unit
 
 The following is the C header file @code{akfavatar.h}:
 
-@verbatiminclude ../akfavatar.h
+@verbatiminclude akfavatar.h
 
 @node Concept Index
 @unnumbered Index

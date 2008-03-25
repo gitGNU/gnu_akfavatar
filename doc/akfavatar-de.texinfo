@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.19 2008-03-24 05:24:37 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.20 2008-03-25 19:36:05 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -1053,14 +1053,14 @@ Wenn man anfangen will programmieren zu lernen, ist Pascal eine sehr gute Wahl
 als Einstiegssprache.  Leider ist Pascal jedoch nicht sehr weit verbreitet.
 Dennoch haben wir mit @uref{http://www.gnu-pascal.de/, GNU-Pascal} und 
 @uref{http://www.freepascal.org/, Free Pascal} zwei sehr gute Freie Software
-Implementierungen zur Verfügung, die auf vielen verschiedene Plattformen 
+Implementierungen zur Verfügung, die auf vielen verschiedenen Plattformen 
 einsetzbar sind.
 
 Es wäre durchaus auch möglich gewesen, das Ganze komplett in Pascal zu 
 schreiben.  Aber C ist viel weiter verbreitet und das hat seine Konsequenzen.
-Jedes moderne System bringt in der Regel bereits einen C-Compiler mit (außer
-Windows natürlich) und fast jede andere Programmiersprache kann Bibliotheken, 
-die in C geschrieben wurden verwenden.
+Jedes moderne System bringt in der Regel bereits einen C-Compiler mit und 
+fast jede andere Programmiersprache kann Bibliotheken, die in C geschrieben 
+wurden verwenden.
 
 @menu
 * Pascal::           Wie man den Avatar in Pascal programmiert
@@ -1286,8 +1286,7 @@ Der folgende Text zeigt das @code{interface} der Pascal-Unit
 
 Es folgt der Inhalt der C Header Datei @code{akfavatar.h}:
 
-@verbatiminclude ../akfavatar.h
-
+@verbatiminclude akfavatar.h
 
 @node Index
 @unnumbered Index
