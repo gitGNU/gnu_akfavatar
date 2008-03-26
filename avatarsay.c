@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.130 2008-03-25 11:54:47 akf Exp $ */
+/* $Id: avatarsay.c,v 2.131 2008-03-26 16:43:15 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -3115,6 +3115,17 @@ show_file (char *f)
   set_encoding (default_encoding);
 
   fd = openfile (f);
+  
+  /* if it can't be opened and there is no slash, try with datadir */
+  if (fd == -1 && strchr(f, '/') == NULL)
+    {
+      char p[PATH_MAX];
+      strcpy (p, datadir);
+      strcat (p, "/");
+      strcat (p, f);
+      fd = openfile (p);
+    }
+
   if (fd > -1)
     status = process_file (fd);
 
@@ -3222,7 +3233,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.130 2008-03-25 11:54:47 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.131 2008-03-26 16:43:15 akf Exp $");
 
   return EXIT_SUCCESS;
 }
