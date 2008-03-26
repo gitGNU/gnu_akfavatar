@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.112 2008-03-22 08:34:03 akf Exp $ */
+/* $Id: avatar.c,v 2.113 2008-03-26 17:34:10 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -277,7 +277,7 @@ static int avt_pause (void);
 #ifdef FORCE_ICONV
 static size_t
 avt_iconv (avt_iconv_t cd,
-	   SDL_ICONV_INBUF_T **inbuf, size_t * inbytesleft,
+	   SDL_ICONV_INBUF_T ** inbuf, size_t * inbytesleft,
 	   char **outbuf, size_t * outbytesleft)
 {
   size_t r;
@@ -3528,7 +3528,10 @@ void
 avt_quit (void)
 {
   if (avt_quit_audio_func)
-    (*avt_quit_audio_func) ();
+    {
+      (*avt_quit_audio_func) ();
+      avt_quit_audio_func = NULL;
+    }
 
   if (SDL_image_handle)
     {
@@ -3599,7 +3602,7 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_SetError ("$Id: avatar.c,v 2.112 2008-03-22 08:34:03 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.113 2008-03-26 17:34:10 akf Exp $");
   SDL_ClearError ();
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
