@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.131 2008-03-26 16:43:15 akf Exp $ */
+/* $Id: avatarsay.c,v 2.132 2008-03-26 17:08:27 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -418,6 +418,71 @@ set_encoding (const char *encoding)
 }
 
 static void
+move_in (void)
+{
+  if (initialized)
+    {
+      if (avt_move_in ())
+	quit (EXIT_SUCCESS);
+      if (avt_wait (2000))
+	quit (EXIT_SUCCESS);
+    }
+}
+
+static void
+move_out (void)
+{
+  if (initialized)
+    {
+      if (avt_move_out ())
+	quit (EXIT_SUCCESS);
+
+      /* if running in a loop, wait a while */
+      if (loop)
+	if (avt_wait (5000))
+	  quit (EXIT_SUCCESS);
+    }
+}
+
+static void
+initialize (void)
+{
+  if (!avt_image)
+    avt_image = avt_default ();
+
+  if (avt_initialize ("AKFAvatar", "AKFAvatar", avt_image, window_mode))
+    switch (language)
+      {
+      case DEUTSCH:
+	error_msg ("kann Grafik nicht initialisieren", avt_get_error ());
+	break;
+
+      case ENGLISH:
+      default:
+	error_msg ("cannot initialize graphics", avt_get_error ());
+      }
+
+  if (avt_initialize_audio ())
+    switch (language)
+      {
+      case DEUTSCH:
+	error_msg ("kann Audio nicht initialisieren", avt_get_error ());
+	break;
+
+      case ENGLISH:
+      default:
+	error_msg ("cannot initialize audio", avt_get_error ());
+      }
+
+  avt_set_text_delay (default_delay);
+  max_x = avt_get_max_x ();
+  max_y = avt_get_max_y ();
+  region_min_y = 1;
+  region_max_y = max_y;
+  initialized = AVT_TRUE;
+}
+
+static void
 checkoptions (int argc, char **argv)
 {
   int c;
@@ -566,10 +631,16 @@ checkoptions (int argc, char **argv)
   if (executable && argc <= optind)
     error_msg ("error", "execute needs at least a program name");
 
-  if (argc > optind && strcmp (argv[optind], "moo") == 0)
+  if (argc > optind
+      && (strcmp (argv[optind], "moo") == 0
+	  || strcmp (argv[optind], "muh") == 0))
     {
-      puts (MOO);
-      exit (EXIT_SUCCESS);
+      initialize ();
+      avt_set_text_delay (0);
+      avt_viewport (26, 3, max_x, max_y);
+      avt_say_mb (MOO);
+      avt_wait_button ();
+      quit (EXIT_SUCCESS);
     }
 
   /* 
@@ -626,71 +697,6 @@ checkenvironment (void)
   e = getenv ("AVATARIMAGE");
   if (e)
     use_avatar_image (e);
-}
-
-static void
-move_in (void)
-{
-  if (initialized)
-    {
-      if (avt_move_in ())
-	quit (EXIT_SUCCESS);
-      if (avt_wait (2000))
-	quit (EXIT_SUCCESS);
-    }
-}
-
-static void
-move_out (void)
-{
-  if (initialized)
-    {
-      if (avt_move_out ())
-	quit (EXIT_SUCCESS);
-
-      /* if running in a loop, wait a while */
-      if (loop)
-	if (avt_wait (5000))
-	  quit (EXIT_SUCCESS);
-    }
-}
-
-static void
-initialize (void)
-{
-  if (!avt_image)
-    avt_image = avt_default ();
-
-  if (avt_initialize ("AKFAvatar", "AKFAvatar", avt_image, window_mode))
-    switch (language)
-      {
-      case DEUTSCH:
-	error_msg ("kann Grafik nicht initialisieren", avt_get_error ());
-	break;
-
-      case ENGLISH:
-      default:
-	error_msg ("cannot initialize graphics", avt_get_error ());
-      }
-
-  if (avt_initialize_audio ())
-    switch (language)
-      {
-      case DEUTSCH:
-	error_msg ("kann Audio nicht initialisieren", avt_get_error ());
-	break;
-
-      case ENGLISH:
-      default:
-	error_msg ("cannot initialize audio", avt_get_error ());
-      }
-
-  avt_set_text_delay (default_delay);
-  max_x = avt_get_max_x ();
-  max_y = avt_get_max_y ();
-  region_min_y = 1;
-  region_max_y = max_y;
-  initialized = AVT_TRUE;
 }
 
 /* fills filepath with datadir and the converted content of fn */
@@ -3115,9 +3121,9 @@ show_file (char *f)
   set_encoding (default_encoding);
 
   fd = openfile (f);
-  
+
   /* if it can't be opened and there is no slash, try with datadir */
-  if (fd == -1 && strchr(f, '/') == NULL)
+  if (fd == -1 && strchr (f, '/') == NULL)
     {
       char p[PATH_MAX];
       strcpy (p, datadir);
@@ -3233,7 +3239,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.131 2008-03-26 16:43:15 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.132 2008-03-26 17:08:27 akf Exp $");
 
   return EXIT_SUCCESS;
 }
