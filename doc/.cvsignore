@@ -3,6 +3,7 @@ version.texi
 *.aux *.cp *.cps *.fn *.ky *.pg *.tp *.vr
 *.log *.toc
 akfavatar-??.info
+akfavatar-??.html
 akfavatar-??.pdf
 akfavatar-??.ps
 akfavatar-??.dvi

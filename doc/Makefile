@@ -29,8 +29,8 @@ akfavatar-de.info: akfavatar-de.texinfo pasref.txt akfavatar.h
 	-$(MAKEINFO) --enable-encoding akfavatar-de.texinfo
 
 html: akfavatar-en.texinfo akfavatar-de.texinfo pasref.txt akfavatar.h
-	-$(MAKEINFO) --html --enable-encoding $(USECSS) akfavatar-en.texinfo
-	-$(MAKEINFO) --html --enable-encoding $(USECSS) akfavatar-de.texinfo
+	-$(MAKEINFO) --html --no-split $(USECSS) akfavatar-en.texinfo
+	-$(MAKEINFO) --html --no-split $(USECSS) akfavatar-de.texinfo
 
 txt: akfavatar-en.txt akfavatar-de.txt
 
@@ -90,11 +90,13 @@ distclean: clean
 	-rm -f version.texi
 	-rm -f pasref.txt
 	-rm -f akfavatar.h
-	-rm -f akfavatar-en.pdf akfavatar-en.ps akfavatar-en.dvi
+	-rm -f akfavatar-en.pdf akfavatar-en.ps akfavatar-en.dvi 
+	-rm -f akfavatar-en.txt akfavatar-en.xml
 	-rm -f akfavatar-de.pdf akfavatar-de.ps akfavatar-de.dvi
+	-rm -f akfavatar-de.txt akfavatar-de.xml
 
 maintainerclean: distclean
-	-rm -f akfavatar-en.info akfavatar-en.txt
-	-rm -f akfavatar-de.info akfavatar-de.txt
+	-rm -f akfavatar-en.info akfavatar-en.html
+	-rm -f akfavatar-de.info akfavatar-de.html
 	-rm -f avatarsay.1
 

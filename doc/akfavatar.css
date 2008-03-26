@@ -6,10 +6,12 @@ a img { border:none }
 @media screen {
   body { background-color:#e0d5c5 }
   h1, h2, h3, h4, h5, h6, dt, hr { color:#70200F }
+  ul { 
+    list-style-image:url(data:image/gif;base64,R0lGODlhCgAKAOMPACkjHDgwJkxDNG5fTIBwVo56Yp2HZ6SPcLGUbryhgcepfdC1jeTCme/LmPzcrf///yH5BAEKAA8ALAAAAAAKAAoAAAQ58Em2VJKzsbaSOZLjaN33MCJjJcVwMFvXDcEAL0h+CMCwdAeDgQYgPFiEAQ8gkCBaAQDTiDkkqY8IADs=)
+    }
   }
 
 @media print {
   a { color:inherit; }
   div.node { display:none }
   }
-
