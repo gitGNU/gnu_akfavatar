@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.132 2008-03-26 17:08:27 akf Exp $ */
+/* $Id: avatarsay.c,v 2.133 2008-03-27 17:04:19 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -87,12 +87,6 @@
 #define DS "\033[?1;2c"		/* claim to be a vt100 with advanced video */
 
 #define BYTE_ORDER_MARK L'\xfeff'
-
-#define MOO " ___________\n< AKFAvatar >\n -----------\n    " \
-            "    \\   ^__^\n         \\  (oo)\\_____" \
-            "__\n            (__)\\       )\\/\\\n" \
-            "                ||----w |\n                " \
-            "||     ||"
 
 
 static const char *version_info_en =
@@ -638,7 +632,10 @@ checkoptions (int argc, char **argv)
       initialize ();
       avt_set_text_delay (0);
       avt_viewport (26, 3, max_x, max_y);
-      avt_say_mb (MOO);
+      avt_say_mb (" ___________\n< AKFAvatar >\n -----------\n    "
+		  "    \\   ^__^\n         \\  (oo)\\_____"
+		  "__\n            (__)\\       )\\/\\\n     "
+		  "           ||----w |\n                ||     ||");
       avt_wait_button ();
       quit (EXIT_SUCCESS);
     }
@@ -3239,7 +3236,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.132 2008-03-26 17:08:27 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.133 2008-03-27 17:04:19 akf Exp $");
 
   return EXIT_SUCCESS;
 }
