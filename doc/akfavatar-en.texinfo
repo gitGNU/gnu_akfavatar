@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.27 2008-03-25 19:36:05 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.28 2008-03-27 18:55:52 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -247,9 +247,10 @@ on which you compile it.
 
 If you want to use it on devices with a small display, use the 
 parameter @option{--enable-size=vga} or @option{--enable-size=qvga} with
-configure.  The value @var{vga} means a size of 640*480 pixels, while 
-@var{qvga} is for very small displays with 320*240 pixels.  The size @var{qvga}
-doesn't look good, it is just barely readable and supports less characters.
+configure.  The value @code{vga} means a size of 640*480 pixels, while 
+@code{qvga} is for very small displays with 320*240 pixels.  The size 
+@code{qvga} doesn't look good, it is just barely readable and supports less 
+characters.
 
 @subheading Testing
 
@@ -301,8 +302,8 @@ to start your own programs.  The program gets dynamically linked, that means it
 needs the installed library.  If you want to test it without the library being 
 installed, use the script @command{lrun} (see above).
 
-@subheading Trouble-shouting
-@cindex trouble-shouting
+@subheading Trouble-shooting
+@cindex trouble-shooting
 
 @itemize
 @item Problem: the system can't find the library @file{libakfavatar.so}
@@ -514,28 +515,28 @@ Maybe you don't like gnus or what you want the avatar to say doesn't
 fit the @acronym{GNU}-project. --- Well, that is just the default avatar. 
 You can exchange it.
 
-There are basically two different methods to exchange the avatar in 
-@command{avatarsay}:
+There are different methods to exchange the avatar for @command{avatarsay}:
 
-@enumerate
-
-@item
 You can change it globally for any use of @command{avatarsay}. 
-This can be done with an environment variable.
-
-@item
-Or you can change it on a text-by-text basis, using a command in the 
-text-file.
-
-@end enumerate
+This can be done either with an environment variable or you can use a 
+system-wide configuration file.
 
 Well, first you might want to try the environment variable.  That is simple.
 The variable is called @env{AVATARIMAGE}.  So with the @code{GNU bash} you 
 can set this variable like this: 
-@samp{export AVATARIMAGE=/home/user/akfavatar/human-peasant.bmp}. 
-Important: You should always use the full path!
+@samp{export AVATARIMAGE=/usr/local/share/pixmaps/myavatar.bmp}. 
+@strong{Important:} You should always use the full path!
 
-Using a command in a text-file is explained in @ref{Commands for avatarsay}.
+If you want to use a configuration file, create a file named
+@file{/etc/avatarsay} and put something like in this example into it:
+
+@example
+AVATARIMAGE=/usr/local/share/pixmaps/myavatar.bmp
+@end example
+
+If you write a text you want to be shown by @command{avatarsay}, you can 
+change the avatar-image on a text-by-text basis, using a command in the 
+text-file.  This is explained in @ref{Commands for avatarsay}.
 
 Which file-formats AKFAvatar supports depends on which libraries you have 
 installed.  Uncompressed @code{BMP} images are always supported.
@@ -615,7 +616,7 @@ try to run the program in fullscreen mode
 
 @item --fullfullscreen
 @itemx -F
-like @var{-f}, but use the current display size
+like @option{-f}, but use the current display size
 
 This option is also useful when there is only a fullscreen mode, but
 switching the screen resolution doesn't work; for example with the
@@ -676,7 +677,7 @@ image file with an avatar with the full path
 
 @item DATADIR
 the directory, where images and audio files are located (has no influence on
-the environment variable @code{AVATARIMAGE})
+the environment variable @env{AVATARIMAGE})
 
 @item LC_ALL
 @itemx LC_CTYPE
@@ -690,6 +691,20 @@ the shell for the terminal-mode
 the starting directory for the teminal-mode
 
 @end table
+
+@subsection Configuration file
+@cindex configuration file for avatarsay
+
+You can also use a configuration file with the name @file{/etc/avatarsay} to 
+set values for @code{AVATARIMAGE} and @code{DATADIR}.
+
+for example:
+@example
+AVATARIMAGE=/usr/local/share/pixmaps/myavatar.bmp
+AVATARDATADIR=/usr/local/share/akfavatar
+@end example
+
+@xref{Different avatar image}
 
 @node Commands for avatarsay
 @section Commands for @command{avatarsay}
@@ -1047,7 +1062,7 @@ position inside the text-area, or use the functions @command{WhereX}
 and @command{WhereY} to find out the current position.
 
 @display
-@emph{Attention:} The width of the display is 80 characters as
+@strong{Attention:} The width of the display is 80 characters as
 with a terminal display, but the height is often much smaller.
 You can find out the dimensions of the text-area with 
 @code{ScreenSize.x} and @code{ScreenSize.y}.  The avatar is shown, when it
@@ -1084,7 +1099,7 @@ the code of the pressed key.  To find out, whether a key was pressed without
 blocking the program, you can use the function @command{KeyPressed}.
 
 @display
-@emph{Attention:} 
+@strong{Attention:} 
 Function keys are not supported yet.  The key @key{Esc} stops the
 program immediately.  If you need the @key{Esc}-key for something
 else, you can set the variable @code{CheckEsc} to @code{false}.

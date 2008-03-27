@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.20 2008-03-25 19:36:05 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.21 2008-03-27 18:55:52 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -264,9 +264,9 @@ man es kompiliert.
 
 Wenn man es auf Geräten mit einer kleinen Anzeige verwenden will, kann man
 den Parameter @option{--enable-size=vga} oder @option{--enable-size=qvga}
-mit configure verwenden.  Der Wert @var{vga} steht dabei für eine Auflösung
-von 640*480 Pixeln, während @var{qvga} für ganz kleine Anzeigen mit 320*240
-Pixeln geeignet ist.  De Größe @var{qvga} ist dabei nicht gerade schön, es 
+mit configure verwenden.  Der Wert @code{vga} steht dabei für eine Auflösung
+von 640*480 Pixeln, während @code{qvga} für ganz kleine Anzeigen mit 320*240
+Pixeln geeignet ist.  De Größe @code{qvga} ist dabei nicht gerade schön, es 
 ist gerade so eben noch lesbar und unterstützt weniger Zeichen.
 
 @subheading Testen
@@ -565,30 +565,30 @@ Aber nicht jeder mag Gnus oder das, was man sagen will entspricht
 nicht dem @acronym{GNU}-Projekt. --- Nun, das ist nur der 
 Vorgabe-Avatar.  Man kann ihn austauschen.
 
-Es gibt grundsätzlich zwei verschiedene Methoden um den Avatar bei
-@command{avatarsay} auszutauschen:
+Es gibt verschiedene Methoden um den Avatar bei @command{avatarsay} 
+auszutauschen:
 
-@enumerate
-
-@item
-Man kann es allgemein einstellen, dass jeder Aufruf von 
-@command{avatarsay} den neuen Avatar verwendet.  Dies wird über
-eine Umgebungsvariable gemacht.
-
-@item
-Oder man kann ihn auf eine Text-für-Text Basis austauschen, indem man 
-einen Befehl in der Text-Datei verwendet.
-
-@end enumerate
+Man kann es allgemein einstellen, dass der Aufruf von @command{avatarsay} 
+immer den neuen Avatar verwendet.  Dies kann man entweder über eine 
+Umgebungsvariable erreichen, oder indem man eine systemweite 
+Konfigurationsdatei erstellt.
 
 Nun, zuerst sollte man die Umgebungsvariable ausprobieren.  Das ist
 einfach.  Die Variable heißt @env{AVATARIMAGE}.  Zum Beispiel mit der
 @code{GNU bash} kann man die Variable folgendermaßen setzen:
-@samp{export AVATARIMAGE=/home/user/akfavatar/human-peasant.bmp}. 
-Wichtig: Man sollte immer den vollständigen Pfad angeben!
+@samp{export AVATARIMAGE=/usr/local/share/pixmaps/meinavatar.bmp}. 
+@strong{Wichtig:} Man sollte immer den vollständigen Pfad angeben!
 
-Wie man einen Befehl in der Text-Datei verwendet, wird in
-@ref{Befehle für avatarsay} erklärt.
+Wenn man eine Konfigurationsdatei verwenden will, erstellt man eine Datei mit 
+dem Namen @file{/etc/avatarsay} und folgendem Inhalt:
+
+@example
+AVATARIMAGE=/usr/local/share/pixmaps/meinavatar.bmp
+@end example
+
+Oder man kann das Bild für den Avatar auf einer Text-für-Text Basis 
+austauschen, indem man einen Befehl in der Text-Datei verwendet.  Das wird in 
+@ref{Befehle für avatarsay} näher erläutert.
 
 Welche Bilddatei-Formate von AKFAvatar unterstützt werden, hängt davon
 ab, welche Bibliotheken auf dem System installiert sind.  Unkomprimierte
@@ -613,7 +613,7 @@ geeignet.  Man kann nämlich in diesem Format niemals einen wirklich
 ``glatten'' Hintergrund bekommen.
 
 Wenn man Bildformate verwenden kann, die Transparenz unterstützen, dann
-sollte man die auch verwenden.  AKFAvatar wird dann nicht in die 
+sollte man dies auch verwenden.  AKFAvatar wird dann nicht in die 
 Transparenz eingreifen.  Es ist jedoch zu beachten, dass der oben
 beschriebene Trick immer angewendet wird, wenn das Bild keine 
 Transparenz @emph{hat}, unabhängig davon, ob das Bildformat 
@@ -672,7 +672,7 @@ versuche das Programm im Vollbild-Modus zu starten
 
 @item --fullfullscreen
 @itemx -F
-wie @var{-f}, aber verwende die aktuelle Bildschirm-Auflösung
+wie @option{-f}, aber verwende die aktuelle Bildschirm-Auflösung
 
 Diese Option ist auch nützlich, wenn es nur einen Vollbild-Modus gibt,
 aber die Bildschirm-Auflösung nicht umgestellt werden kann; zum Beispiel
@@ -750,6 +750,19 @@ das bevorzugte Startverzeichnis für den Terminal-Modus
 
 @end table
 
+@subsection Konfigurationsdatei
+@cindex Konfigurationsdatei für avatarsay
+
+Über eine Konfigurationsdatei namens @file{/etc/avatarsay} kann man ebenfalls
+Werte für @code{AVATARIMAGE} und @code{DATADIR} festlegen.
+
+Beispiel:
+@example
+AVATARIMAGE=/usr/local/share/pixmaps/meinavatar.bmp
+AVATARDATADIR=/usr/local/share/akfavatar
+@end example
+
+Siehe auch @ref{Anderes Avatar-Bild}.
 
 @node Befehle für avatarsay
 @section Befehle für das Programm @command{avatarsay}
@@ -1011,7 +1024,7 @@ Standard-Fehlerausgabe ausgeben.  Es ist nicht für interaktive Programme
 geeignet, oder für Programme, die curses verwenden.
 
 @item change avatar image (ändere das Avatar-Bild)
-lässt einen das Avatar-Bild verändern.  @xref{Anderes Avatar-Bild}.
+lässt einen das Avatar-Bild verändern.  Siehe auch @ref{Anderes Avatar-Bild}.
 Diese Einstellung gilt erstmal nur für die aktuelle Sitzung, es sei denn,
 man verwendet den Menüpunkt @dfn{save settings}.
 
@@ -1128,13 +1141,13 @@ funktioniert, kann man folgendes verwenden:
 AKFAvatar unterstützt die meisten Befehle und Variablen wie die originale
 @code{CRT} Unit.  Zum Beispiel der Befehl @command{ClrScr} löscht den 
 Text-Bereich (nicht den ganzen Bildschirm!), @command{ClrEol} löscht den
-Rest der Zeile.  Man kann den Befehl @command{GotoXY(@var{x}, @var{y});}
+Rest der Zeile.  Man kann den Befehl @command{GotoXY(@code{x}, @code{y});}
 verwenden um an eine bestimmte Stelle innerhalb des Text-Bereiches zu 
 springen.  Die Funktionen @command{WhereX} und @command{WhereY} geben
 Auskunft über die aktuelle Position.
 
 @display
-@emph{Achtung:} Die Breite der Anzeige umfasst 80 Zeichen wie bei einem
+@strong{Achtung:} Die Breite der Anzeige umfasst 80 Zeichen wie bei einem
 Text-Terminal, aber die Höhe ist meist wesentlich geringer.  Man kann die 
 Dimensionen des Text-Bereiches über die Funktion @code{ScreenSize.x} 
 und @code{ScreenSize.y} herausfinden.  Der Avatar wird nun angezeigt, wenn
@@ -1175,7 +1188,7 @@ wurde ohne das Programm zu blockieren, kann man die Funktion
 @command{KeyPressed} verwenden.
 
 @display
-@emph{Achtung:} 
+@strong{Achtung:} 
 Funktionstasten werden noch nicht unterstützt.  Die Taste @key{Esc} 
 beendet das Programm.  Wenn man die @key{Esc}-Taste für etwas anderes
 benötigt, kann man die Variable @code{CheckEsc} auf @code{false} setzen.
