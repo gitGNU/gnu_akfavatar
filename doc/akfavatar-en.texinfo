@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.28 2008-03-27 18:55:52 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.29 2008-03-27 19:54:55 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -704,7 +704,7 @@ AVATARIMAGE=/usr/local/share/pixmaps/myavatar.bmp
 AVATARDATADIR=/usr/local/share/akfavatar
 @end example
 
-@xref{Different avatar image}
+@xref{Different avatar image}.
 
 @node Commands for avatarsay
 @section Commands for @command{avatarsay}
