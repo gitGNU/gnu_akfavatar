@@ -242,7 +242,7 @@ multiplizieren: $(srcdir)/pascal/multiply.pas
 	-$(srcdir)/pascal/fpcavatar -dRELEASE -ddeutsch -FE. -o$@ \
 	    $(srcdir)/pascal/multiply.pas -k-rpath=.
 
-dist: info txt man distclean
+dist: info html man distclean
 	mkdir $(PKGNAME)
 	ln README INSTALL AUTHORS COPYING ChangeLog lrun \
 	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
@@ -264,9 +264,9 @@ dist: info txt man distclean
 	mkdir $(PKGNAME)/doc
 	ln doc/README doc/Makefile doc/avatarsay.1 \
 	   doc/akfavatar-en.texinfo doc/akfavatar-en.info \
-	   doc/akfavatar-en.txt \
+	   doc/akfavatar-en.html \
 	   doc/akfavatar-de.texinfo doc/akfavatar-de.info \
-	   doc/akfavatar-de.txt \
+	   doc/akfavatar-de.html \
 	   doc/akfavatar.css \
 	   doc/pdfmeta-en doc/pdfmeta-de \
 	   $(PKGNAME)/doc/
