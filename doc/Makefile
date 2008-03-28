@@ -28,8 +28,12 @@ akfavatar-en.info: akfavatar-en.texinfo pasref.txt akfavatar.h
 akfavatar-de.info: akfavatar-de.texinfo pasref.txt akfavatar.h
 	-$(MAKEINFO) --enable-encoding akfavatar-de.texinfo
 
-html: akfavatar-en.texinfo akfavatar-de.texinfo pasref.txt akfavatar.h
+html: akfavatar-en.html akfavatar-de.html
+
+akfavatar-en.html: akfavatar-en.texinfo pasref.txt akfavatar.h
 	-$(MAKEINFO) --html --no-split $(USECSS) akfavatar-en.texinfo
+
+akfavatar-de.html: akfavatar-de.texinfo pasref.txt akfavatar.h
 	-$(MAKEINFO) --html --no-split $(USECSS) akfavatar-de.texinfo
 
 txt: akfavatar-en.txt akfavatar-de.txt
