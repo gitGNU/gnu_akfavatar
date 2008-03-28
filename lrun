@@ -1,8 +1,6 @@
 #!/bin/sh
 # this file is in the Public Domain -- AKFoerster
 
-localdir=$(dirname $0)
-
 if [ $# -eq 0 -o "$1" = "--help" -o "$1" = "-h" ]
 then
   echo "usage: ./lrun program"
@@ -10,7 +8,11 @@ then
   exit 0
 fi
 
+localdir=$(dirname $0)
+test "$localdir" = "." && localdir=$(pwd)
+
 PATH=$PATH:$localdir:.
+INFOPATH=$INFOPATH:$localdir:$localdir/doc
 
 if [ -z "$LD_LIBRARY_PATH" ]
 then
@@ -19,6 +21,6 @@ else
   LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$localdir"
 fi
 
-export PATH LD_LIBRARY_PATH
+export PATH INFOPATH LD_LIBRARY_PATH
 
 exec "$@"
