@@ -1,20 +1,25 @@
 AKFAvatar
 
-Homepage: 
-  http://akfoerster.de/akfavatar/
+Homepage: http://akfoerster.de/akfavatar/
 
-AKFAvatar is to write graphical applications, where an avatar speaks text
-in a balloon.  There is a program named "avatarsay", which can be used
-as a fancy text-viewer.  The program "avatarsay" also understands a
-small set of commands and so it can be used as a very simple scripting
-language.  Furthermore you can use it as a library for your own C or
-C++ programs.  And there is a language binding for GNU-Pascal and Free
-Pascal, which is especially easy to use. You can even compile a lot of
-Pascal programs for the avatar with no changes to the source code at
-all.
+AKFAvatar is software mainly for GNU+Linux, where an avatar appears on the
+screen and tells things written in a balloon. First the avatar moves slowly
+in from the right side. Then text is shown in a balloon.
+
+The program avatarsay can be used as a fancy terminal emulator, or as a fancy
+text-reader or manpage-viewer. Furthermore the program supports some basic
+commands, so it can be used as a scripting-language for simple Demos.
+
+You can use the libakfavatar library from your own C programs.
+There is also a rather mature Pascal-binding for GNU-Pascal and Free Pascal.
 
 This package is free software under the GPL version 3 or any later
 version. Details can be found in the file COPYING.
+
+The script "lrun" sets up some environment variables to run the programs
+when the lirary and the documentation is not installed yet.
+For example, use it like this: "./lrun avatarsay"
+
 
 See the file AUTHORS for contributors to this package.
 
