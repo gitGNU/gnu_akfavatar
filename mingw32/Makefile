@@ -270,7 +270,9 @@ multiplizieren.exe: ../pascal/multiply.pas
 	-fpcwavatar -dRELEASE -ddeutsch -o./$@ ../pascal/multiply.pas
 
 dist-bin: avatarsay.exe multiply.exe multiplizieren.exe
+	make -C ../doc html
 	mkdir $(BINPKGNAME)
+	cp ../doc/akfavatar-en.html ../doc/akfavatar-de.html $(BINPKGNAME)/
 	cp akfavatar.dll $(BINPKGNAME)/
 	#cp libakfavatar.dll.a $(BINPKGNAME)/
 	#cp ../akfavatar.h akfavatar.def ../pascal/akfavatar.pas $(BINPKGNAME)/
