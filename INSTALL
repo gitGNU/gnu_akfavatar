@@ -10,6 +10,7 @@ Needed
  * SDL-1.2.x (version 1.2.11 or higher recommended)
      http://libsdl.org/download-1.2.php
    You need the "Runtime Libraries" as well as the "Development Libraries"!
+   The 1.3 series is _not_ backward compatible!
 
    Of course SDL needs a graphical environment to run in.
    For example the X-Window-System or a Linux framebuffer-device...
@@ -106,7 +107,8 @@ the library is not yet installed. It searches the libraries also in the
 script's directory and in the current directory. Use it like this:
 "./lrun example" finds the library in the current directory. Or from
 the Pascal subdirectory "../lrun multiply" will find the library in the
-parent directory.
+parent directory.  Additionally lrun sets a path to the documentation 
+for avatarsay.
 
 
 Installing
