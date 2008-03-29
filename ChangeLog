@@ -1,4 +1,6 @@
-2008-03-22  Andreas K. Foerster  <info@akfoerster.de>
+2008-03-29  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.15.0 released
 
 	* akfavatar.h (AVT_DEPRECATED, AVT_UNUSED):
 	new makro used to mark deprecated or unused stuff (gcc only)
