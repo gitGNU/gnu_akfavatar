@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.21 2008-03-27 18:55:52 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.22 2008-03-29 05:36:17 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -182,6 +182,7 @@ Kurz gesagt: @samp{./configure && make && make install}
 
 @itemize
 @item SDL-1.2.x (Version 1.2.11 oder höher empfohlen)@*
+Die 1.3-Serie ist @emph{nicht} rückwärtskompatibel!@*
 @uref{http://libsdl.org/download-1.2.php}@*
 Man benötigt die ``Runtime Libraries'' sowie die ``Development Libraries''!
 
