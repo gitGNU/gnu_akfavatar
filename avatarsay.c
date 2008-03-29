@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.133 2008-03-27 17:04:19 akf Exp $ */
+/* $Id: avatarsay.c,v 2.134 2008-03-29 06:54:57 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -28,6 +28,7 @@
 #include "akfavatar.h"
 #include <wchar.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <stdio.h>
@@ -3236,7 +3237,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.133 2008-03-27 17:04:19 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.134 2008-03-29 06:54:57 akf Exp $");
 
   return EXIT_SUCCESS;
 }
