@@ -1,7 +1,8 @@
 2008-03-31  Andreas K. Foerster  <info@akfoerster.de>
 
-	*avatarsay.c (check_config_file):
+	* avatarsay.c (check_config_file):
 	keyword BACKGROUNDCOLOR
+	make keywords case insensitive
 
 2008-03-29  Andreas K. Foerster  <info@akfoerster.de>
 

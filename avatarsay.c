@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.135 2008-03-31 13:06:54 akf Exp $ */
+/* $Id: avatarsay.c,v 2.136 2008-03-31 13:36:57 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -3098,13 +3098,13 @@ check_config_file (const char *f)
 	{
 	  strip_newline (s);
 
-	  if (strncmp (s, "AVATARDATADIR=", 14) == 0)
+	  if (strncasecmp (s, "AVATARDATADIR=", 14) == 0)
 	    strncpy (datadir, s + 14, sizeof (datadir));
 
-	  if (strncmp (s, "AVATARIMAGE=", 12) == 0)
+	  if (strncasecmp (s, "AVATARIMAGE=", 12) == 0)
 	    use_avatar_image (s + 12);
 
-	  if (strncmp (s, "BACKGROUNDCOLOR=", 16) == 0)
+	  if (strncasecmp (s, "BACKGROUNDCOLOR=", 16) == 0)
 	    {
 	      unsigned int red, green, blue;
 
@@ -3247,7 +3247,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.135 2008-03-31 13:06:54 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.136 2008-03-31 13:36:57 akf Exp $");
 
   return EXIT_SUCCESS;
 }
