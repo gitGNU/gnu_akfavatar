@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.134 2008-03-29 06:54:57 akf Exp $ */
+/* $Id: avatarsay.c,v 2.135 2008-03-31 13:06:54 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -3104,6 +3104,16 @@ check_config_file (const char *f)
 	  if (strncmp (s, "AVATARIMAGE=", 12) == 0)
 	    use_avatar_image (s + 12);
 
+	  if (strncmp (s, "BACKGROUNDCOLOR=", 16) == 0)
+	    {
+	      unsigned int red, green, blue;
+
+	      if (sscanf (s + 16, "#%2x%2x%2x", &red, &green, &blue) == 3)
+		avt_set_background_color (red, green, blue);
+	      else
+		error_msg (f, "bad background color");
+	    }
+
 	  s = fgets (buf, sizeof (buf), cnf);
 	}
       fclose (cnf);
@@ -3237,7 +3247,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.134 2008-03-29 06:54:57 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.135 2008-03-31 13:06:54 akf Exp $");
 
   return EXIT_SUCCESS;
 }

@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.114 2008-03-27 15:57:35 akf Exp $ */
+/* $Id: avatar.c,v 2.115 2008-03-31 13:06:54 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -3210,7 +3210,7 @@ avt_init_SDL (void)
     {
       /* don't try to use the mouse 
        * needed for the fbcon driver */
-      SDL_putenv ("SDL_NOMOUSE=1");
+      /* SDL_putenv ("SDL_NOMOUSE=1"); */
       SDL_SetError ("94981e6dd48cb9985c7cc1e93a957062");
 
       if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
@@ -3605,7 +3605,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.114 2008-03-27 15:57:35 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.115 2008-03-31 13:06:54 akf Exp $");
 
   /*
    * Initialize the display, accept any format
