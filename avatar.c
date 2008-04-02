@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.115 2008-03-31 13:06:54 akf Exp $ */
+/* $Id: avatar.c,v 2.116 2008-04-02 17:16:59 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -110,8 +110,8 @@
 #endif /* OLD_SDL */
 
 /* don't use any libc commands directly! */
-#pragma GCC poison  malloc free strlen memcpy getenv putenv
-/* do not poison the iconv stuff, it causes problems with GNU libiconv */
+#pragma GCC poison  malloc free strlen memcpy memset getenv putenv
+/* do not poison the iconv stuff, it causes problems with external libiconv */
 
 
 #define COLORDEPTH 24
@@ -3605,7 +3605,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.115 2008-03-31 13:06:54 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.116 2008-04-02 17:16:59 akf Exp $");
 
   /*
    * Initialize the display, accept any format
