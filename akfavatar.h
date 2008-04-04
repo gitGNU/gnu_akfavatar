@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.62 2008-03-23 16:01:11 akf Exp $ */
+/* $Id: akfavatar.h,v 2.63 2008-04-04 11:37:24 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -541,6 +541,9 @@ int avt_get_scroll_mode (void);
 
 /* set newline mode (default: on) */
 void avt_newline_mode (avt_bool_t mode);
+
+/* set auto-margin mode (default: on) */
+void avt_auto_margin (avt_bool_t mode);
 
 /*
  * origin mode

@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.116 2008-04-02 17:16:59 akf Exp $ */
+/* $Id: avatar.c,v 2.117 2008-04-04 11:37:24 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -222,6 +222,7 @@ static SDL_Surface *avt_text_cursor, *avt_cursor_character;
 static Uint32 text_background_color;
 static avt_bool_t newline_mode;	/* when off, you need an extra CR */
 static avt_bool_t underlined, bold, inverse;	/* text underlined, bold? */
+static avt_bool_t auto_margin;	/* automatic new lines? */
 static Uint32 screenflags;	/* flags for the screen */
 static int avt_mode;		/* whether fullscreen or window or ... */
 static avt_bool_t must_lock;	/* must the screen be locked? */
@@ -1389,6 +1390,12 @@ avt_newline_mode (avt_bool_t mode)
 }
 
 void
+avt_auto_margin (avt_bool_t mode)
+{
+  auto_margin = mode;
+}
+
+void
 avt_set_origin_mode (avt_bool_t mode)
 {
   SDL_Rect area;
@@ -1842,7 +1849,7 @@ avt_forward (void)
   if (textdir_rtl)		/* right to left */
     {
       cursor.x -= FONTWIDTH;
-      if (cursor.x < viewport.x)
+      if (auto_margin && cursor.x < viewport.x)
 	{
 	  if (!newline_mode)
 	    avt_carriage_return ();
@@ -1852,7 +1859,7 @@ avt_forward (void)
   else				/* left to right */
     {
       cursor.x += FONTWIDTH;
-      if (cursor.x > viewport.x + viewport.w - FONTWIDTH)
+      if (auto_margin && cursor.x > viewport.x + viewport.w - FONTWIDTH)
 	{
 	  if (!newline_mode)
 	    avt_carriage_return ();
@@ -3591,6 +3598,7 @@ avt_initialize (const char *title, const char *icontitle,
   reserve_single_keys = AVT_FALSE;
   scroll_mode = 1;
   newline_mode = AVT_TRUE;
+  auto_margin = AVT_TRUE;
   origin_mode = AVT_TRUE;	/* for backwards compatibility */
   avt_visible = AVT_FALSE;
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
@@ -3605,7 +3613,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.116 2008-04-02 17:16:59 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.117 2008-04-04 11:37:24 akf Exp $");
 
   /*
    * Initialize the display, accept any format
