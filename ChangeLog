@@ -1,5 +1,9 @@
 2008-04-04  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avtfilechooser.c (get_file):
+	use avt_auto_margin, remove show_name
+	mark directory entries
+
 	* akfavatar.h, avatar.c (avt_auto_margin):
 	new function
 	(avt_forward, avt_initialize): use/set new variable auto_margin

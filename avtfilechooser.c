@@ -43,17 +43,6 @@ show_idx (int idx)
   avt_say_mb (str);
 }
 
-static void
-show_name (const char *name)
-{
-  char str[AVT_LINELENGTH];
-
-  /* -3 (index) */
-  strncpy (str, name, AVT_LINELENGTH - 3);
-  str[AVT_LINELENGTH - 3 - 1] = '\0';
-  avt_say_mb (str);
-}
-
 /* 
  * filechooser
  * lists files in working directory
@@ -66,7 +55,7 @@ get_file (char *filename)
   avt_bool_t single_page;
   DIR *dir;
   struct dirent *d;
-  int max_y;
+  int max_x, max_y;
   int idx;
   int filenr;
   wchar_t ch;
@@ -74,6 +63,7 @@ get_file (char *filename)
 
   avt_set_text_delay (0);
   avt_normal_text ();
+  max_x = avt_get_max_x ();
   max_y = avt_get_max_y ();
 
 start:
@@ -88,6 +78,8 @@ start:
   dir = opendir (".");
   if (dir == NULL)
     return rcode;
+
+  avt_auto_margin (AVT_FALSE);
 
   /* entry for parent directory */
   strcpy (entry[idx], "..");
@@ -172,7 +164,23 @@ start:
 	  /* copy name into entry */
 	  strncpy (entry[idx], d->d_name, sizeof (entry[idx]));
 	  show_idx (idx);
-	  show_name (entry[idx]);
+	  avt_say_mb (entry[idx]);
+
+	  /* is it a directory? */
+#ifdef _DIRENT_HAVE_D_TYPE
+	  if (d->d_type == DT_DIR)	/* faster */
+#else
+	  if (is_directory (d->d_name))
+#endif /* _DIRENT_HAVE_D_TYPE */
+	    {
+	      /* mark as directory */
+	      if (avt_where_x () > max_x)
+		avt_move_x (max_x);
+	      avt_set_text_background_color (0xdd, 0xdd, 0xdd);
+	      avt_say (L"/");
+	      avt_normal_text ();
+	    }
+
 	  idx++;
 	  avt_new_line ();
 	}
@@ -187,6 +195,7 @@ start:
       goto start;
     }
 
+  avt_auto_margin (AVT_TRUE);
   avt_clear ();
 
   return rcode;
