@@ -23,6 +23,26 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+/* entries or marks that are not files */
+#define MARK(S) \
+         avt_set_text_background_color (0xdd, 0xdd, 0xdd); \
+         avt_say (S); avt_normal_text ()
+
+/* three arrows left */
+#define PARENT_DIRECTORY L" \x2190 \x2190 \x2190 "
+
+/* three arrows up */
+#define RESTART L" \x2191 \x2191 \x2191 "
+
+/* three arrows down */
+#define CONTINUE L" \x2193 \x2193 \x2193 "
+
+/* 3 dots */
+#define LONGER L"\x2026"
+
+/* slash */
+#define DIRECTORY L"/"
+
 static avt_bool_t
 is_directory (const char *name)
 {
@@ -84,9 +104,7 @@ start:
   /* entry for parent directory */
   strcpy (entry[idx], "..");
   show_idx (idx);
-  avt_set_text_background_color (0xdd, 0xdd, 0xdd);
-  avt_say (L" \x2190 \x2190 \x2190 ");
-  avt_normal_text ();
+  MARK (PARENT_DIRECTORY);
   idx++;
   avt_new_line ();
 
@@ -110,9 +128,7 @@ start:
 	    {
 	      /* restart entry */
 	      show_idx (idx);
-	      avt_set_text_background_color (0xdd, 0xdd, 0xdd);
-	      avt_say (L" \x2191 \x2191 \x2191 ");
-	      avt_normal_text ();
+	      MARK (RESTART);
 
 	      if (avt_get_menu (&ch, 1, idx + 1, L'a'))
 		break;
@@ -139,9 +155,7 @@ start:
 	    {
 	      /* continue entry */
 	      show_idx (idx);
-	      avt_set_text_background_color (0xdd, 0xdd, 0xdd);
-	      avt_say (L" \x2193 \x2193 \x2193 ");
-	      avt_normal_text ();
+	      MARK (CONTINUE);
 
 	      if (avt_get_menu (&ch, 1, max_y, L'a'))
 		break;
@@ -175,10 +189,19 @@ start:
 	    {
 	      /* mark as directory */
 	      if (avt_where_x () > max_x)
-		avt_move_x (max_x);
-	      avt_set_text_background_color (0xdd, 0xdd, 0xdd);
-	      avt_say (L"/");
-	      avt_normal_text ();
+		{
+		  avt_move_x (max_x - 1);
+		  MARK (LONGER);
+		}
+	      MARK (DIRECTORY);
+	    }
+	  else			/* not directory */
+	    {
+	      if (avt_where_x () > max_x)
+		{
+		  avt_move_x (max_x);
+		  MARK (LONGER);
+		}
 	    }
 
 	  idx++;
