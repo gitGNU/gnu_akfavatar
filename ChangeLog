@@ -1,4 +1,7 @@
-2008-04-08  Andreas K. Foerster  <info@akfoerster.de>
+2008-04-09  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatrsay.c (init_language_info): handle long language names 
+	case-insensitive
 
 	* avtfilechooser.c (MARK, PARENT_DIRECTORY, RESTART, CONTINUE)
 	(LONGER, DIRECTORY): new macros

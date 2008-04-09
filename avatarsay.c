@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.136 2008-03-31 13:36:57 akf Exp $ */
+/* $Id: avatarsay.c,v 2.137 2008-04-09 09:10:10 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -3057,13 +3057,9 @@ init_language_info (void)
 
   /* long names for Windows (and possibly others) */
   /* longer names first to avoid coflicts */
-  if (strncmp (locale_info, "German", 6) == 0)
+  if (strncasecmp (locale_info, "German", 6) == 0)
     language = DEUTSCH;
-  else if (strncmp (locale_info, "german", 6) == 0)
-    language = DEUTSCH;
-  else if (strncmp (locale_info, "English", 7) == 0)
-    language = ENGLISH;
-  else if (strncmp (locale_info, "english", 7) == 0)
+  else if (strncasecmp (locale_info, "English", 7) == 0)
     language = ENGLISH;
   else if (strncmp (locale_info, "de", 2) == 0)
     language = DEUTSCH;
@@ -3247,7 +3243,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.136 2008-03-31 13:36:57 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.137 2008-04-09 09:10:10 akf Exp $");
 
   return EXIT_SUCCESS;
 }
