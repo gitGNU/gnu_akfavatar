@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.117 2008-04-04 11:37:24 akf Exp $ */
+/* $Id: avatar.c,v 2.118 2008-04-14 20:41:53 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1971,7 +1971,6 @@ avt_clearchar (void)
   avt_showchar ();
 }
 
-/* FIXME: some programs use it to go back, without erasing??? */
 void
 avt_backspace (void)
 {
@@ -1985,8 +1984,6 @@ avt_backspace (void)
 	  cursor.x =
 	    (textdir_rtl) ? cursor.x + FONTWIDTH : cursor.x - FONTWIDTH;
 	}
-
-      avt_clearchar ();
 
       if (text_cursor_visible)
 	avt_show_text_cursor (AVT_TRUE);
@@ -2586,6 +2583,7 @@ avt_ask (wchar_t * s, const int size)
 	      /* delete cursor and one char */
 	      avt_show_text_cursor (AVT_FALSE);
 	      avt_backspace ();
+	      avt_clearchar ();
 	    }
 	  else if (avt_bell_func)
 	    (*avt_bell_func) ();
@@ -2616,6 +2614,7 @@ avt_ask (wchar_t * s, const int size)
   /* delete cursor */
   cursor.x = (textdir_rtl) ? cursor.x - FONTWIDTH : cursor.x + FONTWIDTH;
   avt_backspace ();
+  avt_clearchar ();
 
   if (!newline_mode)
     avt_carriage_return ();
@@ -3613,7 +3612,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.117 2008-04-04 11:37:24 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.118 2008-04-14 20:41:53 akf Exp $");
 
   /*
    * Initialize the display, accept any format
