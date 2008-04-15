@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.119 2008-04-15 08:21:46 akf Exp $ */
+/* $Id: avatar.c,v 2.120 2008-04-15 08:28:35 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -460,7 +460,6 @@ avt_show_text_cursor (avt_bool_t on)
 	  /* restore saved character */
 	  SDL_BlitSurface (avt_cursor_character, NULL, screen, &dst);
 	  SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
-	  text_cursor_actually_visible = AVT_FALSE;
 	}
 
       text_cursor_actually_visible = on;
@@ -3610,7 +3609,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.119 2008-04-15 08:21:46 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.120 2008-04-15 08:28:35 akf Exp $");
 
   /*
    * Initialize the display, accept any format
