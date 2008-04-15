@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.118 2008-04-14 20:41:53 akf Exp $ */
+/* $Id: avatar.c,v 2.119 2008-04-15 08:21:46 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2612,9 +2612,7 @@ avt_ask (wchar_t * s, const int size)
   while ((ch != 13) && (_avt_STATUS == AVT_NORMAL));
 
   /* delete cursor */
-  cursor.x = (textdir_rtl) ? cursor.x - FONTWIDTH : cursor.x + FONTWIDTH;
-  avt_backspace ();
-  avt_clearchar ();
+  avt_show_text_cursor (AVT_FALSE);
 
   if (!newline_mode)
     avt_carriage_return ();
@@ -3612,7 +3610,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.118 2008-04-14 20:41:53 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.119 2008-04-15 08:21:46 akf Exp $");
 
   /*
    * Initialize the display, accept any format
