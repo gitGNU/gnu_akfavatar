@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.138 2008-05-17 16:28:21 akf Exp $ */
+/* $Id: avatarsay.c,v 2.139 2008-05-17 18:34:58 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2008,7 +2008,7 @@ escape_sequence (int fd, wchar_t last_character)
       text_color = saved_text_color = 0;
       text_background_color = saved_text_background_color = 0xF;
       ansi_graphic_code (0);
-      avt_text_delay (0);
+      avt_set_text_delay (0);
       insert_mode = AVT_FALSE;
       avt_clear ();
       avt_save_position ();
@@ -3252,7 +3252,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.138 2008-05-17 16:28:21 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.139 2008-05-17 18:34:58 akf Exp $");
 
   return EXIT_SUCCESS;
 }
