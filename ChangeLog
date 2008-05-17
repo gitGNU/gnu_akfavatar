@@ -1,5 +1,11 @@
 2008-05-17  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatarsay.c (process_subprogram):
+	set encoding to default_encoding
+
+	* avatarsay.c (process_subprogram, escape_sequence, CSI_sequence):
+	support for single byte CSI code
+
 	* avatarsay.c (escape_sequence):
 	Extension: CSI ? 56 h  - switch slow-print on (l for off)
 

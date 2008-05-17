@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.139 2008-05-17 18:34:58 akf Exp $ */
+/* $Id: avatarsay.c,v 2.140 2008-05-17 19:54:30 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1960,125 +1960,15 @@ ansi_graphic_code (int mode)
 #define ESC_UNUPPORTED "unsupported escape sequence"
 #define CSI_UNUPPORTED "unsupported CSI sequence"
 
+
+/* Esc [ ... */
+/* CSI */
 static void
-escape_sequence (int fd, wchar_t last_character)
+CSI_sequence (int fd, wchar_t last_character)
 {
   wchar_t ch;
   char sequence[80];
-  unsigned int pos;
-  static int saved_text_color, saved_text_background_color;
-  static avt_bool_t saved_underline_state, saved_bold_state;
-
-  pos = 0;
-  ch = get_character (fd);
-
-#ifdef DEBUG
-  if (ch != L'[')
-    fprintf (stderr, "ESC %lc\n", ch);
-#endif
-
-  /* ESC [ch] */
-  switch (ch)
-    {
-    case L'7':			/* DECSC */
-      avt_save_position ();
-      saved_text_color = text_color;
-      saved_text_background_color = text_background_color;
-      saved_underline_state = avt_get_underlined ();
-      saved_bold_state = avt_get_bold ();
-      break;
-
-    case L'8':			/* DECRC */
-      avt_restore_position ();
-      text_color = saved_text_color;
-      set_foreground_color (text_color);
-      text_background_color = saved_text_background_color;
-      set_background_color (text_background_color);
-      avt_underlined (saved_underline_state);
-      avt_bold (saved_bold_state);
-      break;
-
-    case L'c':			/* RIS - reset device */
-      region_min_y = 1;
-      region_max_y = max_y;
-      avt_viewport (1, region_min_y, max_x, region_max_y);
-      avt_newline_mode (AVT_FALSE);
-      avt_set_origin_mode (AVT_FALSE);
-      avt_reset_tab_stops ();
-      text_color = saved_text_color = 0;
-      text_background_color = saved_text_background_color = 0xF;
-      ansi_graphic_code (0);
-      avt_set_text_delay (0);
-      insert_mode = AVT_FALSE;
-      avt_clear ();
-      avt_save_position ();
-      return;
-
-    case L'D':			/* move down or scroll up one line */
-      if (avt_where_y () < region_max_y)
-	avt_move_y (avt_where_y () + 1);
-      else
-	avt_delete_lines (region_min_y, 1);
-      return;
-
-    case L'E':
-      avt_move_x (1);
-      avt_new_line ();
-      return;
-
-/* for some few terminals it's the home function 
-    case L'H':
-      avt_move_x (1);
-      avt_move_y (1);
-      return;
-*/
-
-    case L'H':			/* HTS */
-      avt_set_tab (avt_where_x (), AVT_TRUE);
-      return;
-
-    case L'M':			/* RI - scroll down one line */
-      if (avt_where_y () > region_min_y)
-	avt_move_y (avt_where_y () - 1);
-      else
-	avt_insert_lines (region_min_y, 1);
-      return;
-
-    case L'Z':			/* DECID */
-      write (prg_input, DS, sizeof (DS) - 1);
-      return;
-
-    case L']':			/* Linux specific: (re)set palette */
-      /* not supported, but fetch the right number of chars to be ignored */
-      {
-	wchar_t ch2 = get_character (fd);
-	/* ignore L'R' (reset palette) */
-	if (ch2 == L'P')	/* set palette */
-	  {
-	    /* ignore 7 characters */
-	    get_character (fd);
-	    get_character (fd);
-	    get_character (fd);
-	    get_character (fd);
-	    get_character (fd);
-	    get_character (fd);
-	    get_character (fd);
-	  }
-      }
-      return;
-
-    default:
-      if (ch != L'[')
-	{
-	  fprintf (stderr, ESC_UNUPPORTED " %lc\n", ch);
-	  return;
-	}
-      break;
-    }
-
-
-  /* Esc [ ... */
-  /* CSI sequence */
+  unsigned int pos = 0;
 
   do
     {
@@ -2461,6 +2351,122 @@ escape_sequence (int fd, wchar_t last_character)
 }
 
 static void
+escape_sequence (int fd, wchar_t last_character)
+{
+  wchar_t ch;
+  static int saved_text_color, saved_text_background_color;
+  static avt_bool_t saved_underline_state, saved_bold_state;
+
+  ch = get_character (fd);
+
+#ifdef DEBUG
+  if (ch != L'[')
+    fprintf (stderr, "ESC %lc\n", ch);
+#endif
+
+  /* ESC [ch] */
+  switch (ch)
+    {
+    case L'7':			/* DECSC */
+      avt_save_position ();
+      saved_text_color = text_color;
+      saved_text_background_color = text_background_color;
+      saved_underline_state = avt_get_underlined ();
+      saved_bold_state = avt_get_bold ();
+      break;
+
+    case L'8':			/* DECRC */
+      avt_restore_position ();
+      text_color = saved_text_color;
+      set_foreground_color (text_color);
+      text_background_color = saved_text_background_color;
+      set_background_color (text_background_color);
+      avt_underlined (saved_underline_state);
+      avt_bold (saved_bold_state);
+      break;
+
+    case L'c':			/* RIS - reset device */
+      region_min_y = 1;
+      region_max_y = max_y;
+      avt_viewport (1, region_min_y, max_x, region_max_y);
+      avt_newline_mode (AVT_FALSE);
+      avt_set_origin_mode (AVT_FALSE);
+      avt_reset_tab_stops ();
+      text_color = saved_text_color = 0;
+      text_background_color = saved_text_background_color = 0xF;
+      ansi_graphic_code (0);
+      avt_set_text_delay (0);
+      insert_mode = AVT_FALSE;
+      avt_clear ();
+      avt_save_position ();
+      return;
+
+    case L'D':			/* move down or scroll up one line */
+      if (avt_where_y () < region_max_y)
+	avt_move_y (avt_where_y () + 1);
+      else
+	avt_delete_lines (region_min_y, 1);
+      return;
+
+    case L'E':
+      avt_move_x (1);
+      avt_new_line ();
+      return;
+
+/* for some few terminals it's the home function 
+    case L'H':
+      avt_move_x (1);
+      avt_move_y (1);
+      return;
+*/
+
+    case L'H':			/* HTS */
+      avt_set_tab (avt_where_x (), AVT_TRUE);
+      return;
+
+    case L'M':			/* RI - scroll down one line */
+      if (avt_where_y () > region_min_y)
+	avt_move_y (avt_where_y () - 1);
+      else
+	avt_insert_lines (region_min_y, 1);
+      return;
+
+    case L'Z':			/* DECID */
+      write (prg_input, DS, sizeof (DS) - 1);
+      return;
+
+    case L']':			/* Linux specific: (re)set palette */
+      /* not supported, but fetch the right number of chars to be ignored */
+      {
+	wchar_t ch2 = get_character (fd);
+	/* ignore L'R' (reset palette) */
+	if (ch2 == L'P')	/* set palette */
+	  {
+	    /* ignore 7 characters */
+	    get_character (fd);
+	    get_character (fd);
+	    get_character (fd);
+	    get_character (fd);
+	    get_character (fd);
+	    get_character (fd);
+	    get_character (fd);
+	  }
+      }
+      return;
+
+    default:
+      if (ch == L'[')
+	CSI_sequence (fd, last_character);
+      else
+	{
+	  fprintf (stderr, ESC_UNUPPORTED " %lc\n", ch);
+	  return;
+	}
+      break;
+    }
+}
+
+static void
 process_subprogram (int fd)
 {
   avt_bool_t stop;
@@ -2474,6 +2480,7 @@ process_subprogram (int fd)
   avt_reserve_single_keys (AVT_TRUE);
   avt_newline_mode (AVT_FALSE);
   avt_activate_cursor (AVT_TRUE);
+  set_encoding (default_encoding);
 
   /* like vt102 */
   avt_set_origin_mode (AVT_FALSE);
@@ -2482,6 +2489,8 @@ process_subprogram (int fd)
     {
       if (ch == L'\033')	/* Esc */
 	escape_sequence (fd, last_character);
+      else if (ch == L'\x9b')	/* CSI */
+	CSI_sequence (fd, last_character);
       else
 	{
 	  last_character = (wchar_t) ch;
@@ -2504,7 +2513,6 @@ process_subprogram (int fd)
   avt_register_keyhandler (NULL);
   prg_input = -1;
 }
-
 
 /* execute a subprocess, visible in the balloon */
 /* if fname == NULL, start a shell */
@@ -3252,7 +3260,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.139 2008-05-17 18:34:58 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.140 2008-05-17 19:54:30 akf Exp $");
 
   return EXIT_SUCCESS;
 }
