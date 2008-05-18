@@ -1,3 +1,8 @@
+2008-05-18  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (escape_sequence):
+	switching to UTF-8 and back to default (ESC % G, ESC % @)
+
 2008-05-17  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (process_subprogram):

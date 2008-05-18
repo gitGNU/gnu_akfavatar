@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.140 2008-05-17 19:54:30 akf Exp $ */
+/* $Id: avatarsay.c,v 2.141 2008-05-18 07:57:33 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2385,6 +2385,18 @@ escape_sequence (int fd, wchar_t last_character)
       avt_bold (saved_bold_state);
       break;
 
+    case L'%':			/* select charset */
+      {
+	wchar_t ch2 = get_character (fd);
+	if (ch2 == L'@')
+	  set_encoding (default_encoding);	/* TODO: should be G0 / G1 */
+	else if (ch2 == L'G' || ch2 == L'8' /* obsolete */ )
+	  set_encoding ("UTF-8");
+	/* else if (ch2 == L'B')
+	   set_encoding ("UTF-1"); *//* does anybody use that? */
+      }
+      break;
+
     case L'c':			/* RIS - reset device */
       region_min_y = 1;
       region_max_y = max_y;
@@ -2396,6 +2408,7 @@ escape_sequence (int fd, wchar_t last_character)
       text_background_color = saved_text_background_color = 0xF;
       ansi_graphic_code (0);
       avt_set_text_delay (0);
+      set_encoding (default_encoding);
       insert_mode = AVT_FALSE;
       avt_clear ();
       avt_save_position ();
@@ -3260,7 +3273,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.140 2008-05-17 19:54:30 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.141 2008-05-18 07:57:33 akf Exp $");
 
   return EXIT_SUCCESS;
 }
