@@ -1,5 +1,8 @@
 2008-05-18  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatarsay.c (process_subprogram, escape_sequence):
+	experimental support for charsets G0 and G1 (linux-compatible)
+
 	* avatarsay.c (escape_sequence, CSI_sequence):
 	CAN or SUB cancel the escape sequence
 

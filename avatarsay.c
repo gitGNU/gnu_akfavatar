@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.143 2008-05-18 08:29:24 akf Exp $ */
+/* $Id: avatarsay.c,v 2.144 2008-05-18 12:17:26 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -194,6 +194,9 @@ static avt_bool_t faint;
 
 /* no color (but still bold, underlined, reversed) allowed */
 static avt_bool_t nocolor;
+
+/* G0 and G1 charset encoding (linux-specific) */
+static const char *G0, *G1;
 
 /* character for DEC cursor keys (either [ or O) */
 static char dec_cursor_seq[3];
@@ -2361,6 +2364,7 @@ escape_sequence (int fd, wchar_t last_character)
   wchar_t ch;
   static int saved_text_color, saved_text_background_color;
   static avt_bool_t saved_underline_state, saved_bold_state;
+  static const char *saved_G0, *saved_G1;
 
   ch = get_character (fd);
 
@@ -2383,6 +2387,8 @@ escape_sequence (int fd, wchar_t last_character)
       saved_text_background_color = text_background_color;
       saved_underline_state = avt_get_underlined ();
       saved_bold_state = avt_get_bold ();
+      saved_G0 = G0;
+      saved_G1 = G1;
       break;
 
     case L'8':			/* DECRC */
@@ -2393,17 +2399,48 @@ escape_sequence (int fd, wchar_t last_character)
       set_background_color (text_background_color);
       avt_underlined (saved_underline_state);
       avt_bold (saved_bold_state);
+      G0 = saved_G0;
+      G1 = saved_G1;
       break;
 
     case L'%':			/* select charset */
       {
 	wchar_t ch2 = get_character (fd);
 	if (ch2 == L'@')
-	  set_encoding (default_encoding);	/* TODO: should be G0 / G1 */
+	  set_encoding (G0);	/* TODO: unsure */
 	else if (ch2 == L'G' || ch2 == L'8' /* obsolete */ )
 	  set_encoding ("UTF-8");
 	/* else if (ch2 == L'B')
 	   set_encoding ("UTF-1"); *//* does anybody use that? */
+      }
+      break;
+
+      /* Note: this is not compatible to ISO 2022! */
+    case L'(':			/* set G0 */
+      {
+	wchar_t ch2 = get_character (fd);
+	if (ch2 == L'B')
+	  G0 = "ISO-8859-1";
+	else if (ch2 == L'0')
+	  G0 = "DEC-MCS";		/* TODO: unsure */
+	else if (ch2 == L'U')
+	  G0 = "IBM437";
+	else if (ch2 == L'K')
+	  G0 = "UTF-8";		/* "user-defined" */
+      }
+      break;
+
+    case L')':			/* set G1 */
+      {
+	wchar_t ch2 = get_character (fd);
+	if (ch2 == L'B')
+	  G1 = "ISO-8859-1";
+	else if (ch2 == L'0')
+	  G1 = "DEC-MCS";		/* TODO: unsure */
+	else if (ch2 == L'U')
+	  G1 = "IBM437";
+	else if (ch2 == L'K')
+	  G1 = "UTF-8";		/* "user-defined" */
       }
       break;
 
@@ -2422,8 +2459,10 @@ escape_sequence (int fd, wchar_t last_character)
       text_background_color = saved_text_background_color = 0xF;
       ansi_graphic_code (0);
       avt_set_text_delay (0);
-      set_encoding (default_encoding);
       insert_mode = AVT_FALSE;
+      G0 = "ISO-8859-1";
+      G1 = "IBM437";
+      set_encoding (default_encoding);	/* not G0! */
       avt_clear ();
       avt_save_position ();
       break;
@@ -2501,7 +2540,9 @@ process_subprogram (int fd)
   avt_reserve_single_keys (AVT_TRUE);
   avt_newline_mode (AVT_FALSE);
   avt_activate_cursor (AVT_TRUE);
-  set_encoding (default_encoding);
+  G0 = "ISO-8859-1";
+  G1 = "IBM437";
+  set_encoding (default_encoding);	/* not G0! */
 
   /* like vt102 */
   avt_set_origin_mode (AVT_FALSE);
@@ -2512,6 +2553,10 @@ process_subprogram (int fd)
 	escape_sequence (fd, last_character);
       else if (ch == L'\x9b')	/* CSI */
 	CSI_sequence (fd, last_character);
+      else if (ch == L'\x0E')	/* SO */
+	set_encoding (G1);
+      else if (ch == L'\x0F')	/* SI */
+	set_encoding (G0);
       else
 	{
 	  last_character = (wchar_t) ch;
@@ -3281,7 +3326,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.143 2008-05-18 08:29:24 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.144 2008-05-18 12:17:26 akf Exp $");
 
   return EXIT_SUCCESS;
 }
