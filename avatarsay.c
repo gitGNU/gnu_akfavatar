@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.142 2008-05-18 08:05:24 akf Exp $ */
+/* $Id: avatarsay.c,v 2.143 2008-05-18 08:29:24 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1973,6 +1973,11 @@ CSI_sequence (int fd, wchar_t last_character)
   do
     {
       ch = get_character (fd);
+
+      /* CAN or SUB cancel the escape-sequence */
+      if (ch == L'\x18' || ch == L'\x1A')
+	return;
+
       sequence[pos] = (char) ch;
       pos++;
     }
@@ -2367,6 +2372,11 @@ escape_sequence (int fd, wchar_t last_character)
   /* ESC [ch] */
   switch (ch)
     {
+    case L'\x18':		/* CAN */
+    case L'\x1A':		/* SUB */
+      /* cancel escape sequence */
+      break;
+
     case L'7':			/* DECSC */
       avt_save_position ();
       saved_text_color = text_color;
@@ -3271,7 +3281,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.142 2008-05-18 08:05:24 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.143 2008-05-18 08:29:24 akf Exp $");
 
   return EXIT_SUCCESS;
 }
