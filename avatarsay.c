@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.144 2008-05-18 12:17:26 akf Exp $ */
+/* $Id: avatarsay.c,v 2.145 2008-05-18 13:33:39 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2421,8 +2421,8 @@ escape_sequence (int fd, wchar_t last_character)
 	wchar_t ch2 = get_character (fd);
 	if (ch2 == L'B')
 	  G0 = "ISO-8859-1";
-	else if (ch2 == L'0')
-	  G0 = "DEC-MCS";		/* TODO: unsure */
+	/* else if (ch2 == L'0')
+	    G0 = "VT100 linedrawing" unsupported */
 	else if (ch2 == L'U')
 	  G0 = "IBM437";
 	else if (ch2 == L'K')
@@ -2435,8 +2435,8 @@ escape_sequence (int fd, wchar_t last_character)
 	wchar_t ch2 = get_character (fd);
 	if (ch2 == L'B')
 	  G1 = "ISO-8859-1";
-	else if (ch2 == L'0')
-	  G1 = "DEC-MCS";		/* TODO: unsure */
+	/* else if (ch2 == L'0')
+	    G1 = "VT100 linedrawing" unsupported */
 	else if (ch2 == L'U')
 	  G1 = "IBM437";
 	else if (ch2 == L'K')
@@ -3326,7 +3326,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.144 2008-05-18 12:17:26 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.145 2008-05-18 13:33:39 akf Exp $");
 
   return EXIT_SUCCESS;
 }
