@@ -1,5 +1,8 @@
 2008-05-18  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatarsay.c (escape_sequence, CSI_sequence):
+	ignore binray zero in datastream (most of the time)
+
 	* avatarsay.c (process_subprogram, escape_sequence):
 	experimental support for charsets G0 and G1 (linux-compatible)
 

@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.145 2008-05-18 13:33:39 akf Exp $ */
+/* $Id: avatarsay.c,v 2.146 2008-05-18 14:04:14 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1975,7 +1975,9 @@ CSI_sequence (int fd, wchar_t last_character)
 
   do
     {
-      ch = get_character (fd);
+      do
+	ch = get_character (fd);
+      while (ch == L'\0');
 
       /* CAN or SUB cancel the escape-sequence */
       if (ch == L'\x18' || ch == L'\x1A')
@@ -2366,7 +2368,9 @@ escape_sequence (int fd, wchar_t last_character)
   static avt_bool_t saved_underline_state, saved_bold_state;
   static const char *saved_G0, *saved_G1;
 
-  ch = get_character (fd);
+  do
+    ch = get_character (fd);
+  while (ch == L'\0');
 
 #ifdef DEBUG
   if (ch != L'[')
@@ -2422,7 +2426,7 @@ escape_sequence (int fd, wchar_t last_character)
 	if (ch2 == L'B')
 	  G0 = "ISO-8859-1";
 	/* else if (ch2 == L'0')
-	    G0 = "VT100 linedrawing" unsupported */
+	   G0 = "VT100 linedrawing" unsupported */
 	else if (ch2 == L'U')
 	  G0 = "IBM437";
 	else if (ch2 == L'K')
@@ -2436,7 +2440,7 @@ escape_sequence (int fd, wchar_t last_character)
 	if (ch2 == L'B')
 	  G1 = "ISO-8859-1";
 	/* else if (ch2 == L'0')
-	    G1 = "VT100 linedrawing" unsupported */
+	   G1 = "VT100 linedrawing" unsupported */
 	else if (ch2 == L'U')
 	  G1 = "IBM437";
 	else if (ch2 == L'K')
@@ -3326,7 +3330,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.145 2008-05-18 13:33:39 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.146 2008-05-18 14:04:14 akf Exp $");
 
   return EXIT_SUCCESS;
 }
