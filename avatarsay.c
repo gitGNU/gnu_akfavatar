@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.141 2008-05-18 07:57:33 akf Exp $ */
+/* $Id: avatarsay.c,v 2.142 2008-05-18 08:05:24 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2397,6 +2397,10 @@ escape_sequence (int fd, wchar_t last_character)
       }
       break;
 
+    case L'[':			/* CSI */
+      CSI_sequence (fd, last_character);
+      break;
+
     case L'c':			/* RIS - reset device */
       region_min_y = 1;
       region_max_y = max_y;
@@ -2412,19 +2416,19 @@ escape_sequence (int fd, wchar_t last_character)
       insert_mode = AVT_FALSE;
       avt_clear ();
       avt_save_position ();
-      return;
+      break;
 
     case L'D':			/* move down or scroll up one line */
       if (avt_where_y () < region_max_y)
 	avt_move_y (avt_where_y () + 1);
       else
 	avt_delete_lines (region_min_y, 1);
-      return;
+      break;
 
     case L'E':
       avt_move_x (1);
       avt_new_line ();
-      return;
+      break;
 
 /* for some few terminals it's the home function 
     case L'H':
@@ -2435,18 +2439,18 @@ escape_sequence (int fd, wchar_t last_character)
 
     case L'H':			/* HTS */
       avt_set_tab (avt_where_x (), AVT_TRUE);
-      return;
+      break;
 
     case L'M':			/* RI - scroll down one line */
       if (avt_where_y () > region_min_y)
 	avt_move_y (avt_where_y () - 1);
       else
 	avt_insert_lines (region_min_y, 1);
-      return;
+      break;
 
     case L'Z':			/* DECID */
       write (prg_input, DS, sizeof (DS) - 1);
-      return;
+      break;
 
     case L']':			/* Linux specific: (re)set palette */
       /* not supported, but fetch the right number of chars to be ignored */
@@ -2465,16 +2469,10 @@ escape_sequence (int fd, wchar_t last_character)
 	    get_character (fd);
 	  }
       }
-      return;
+      break;
 
     default:
-      if (ch == L'[')
-	CSI_sequence (fd, last_character);
-      else
-	{
-	  fprintf (stderr, ESC_UNUPPORTED " %lc\n", ch);
-	  return;
-	}
+      fprintf (stderr, ESC_UNUPPORTED " %lc\n", ch);
       break;
     }
 }
@@ -3273,7 +3271,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.141 2008-05-18 07:57:33 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.142 2008-05-18 08:05:24 akf Exp $");
 
   return EXIT_SUCCESS;
 }
