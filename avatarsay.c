@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.146 2008-05-18 14:04:14 akf Exp $ */
+/* $Id: avatarsay.c,v 2.147 2008-05-18 18:56:40 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -86,6 +86,9 @@
 
 /* device attribute (DEC) */
 #define DS "\033[?1;2c"		/* claim to be a vt100 with advanced video */
+
+/* Vt100 graphics is handled internaly */
+#define VT100 "VT100 graphics"
 
 #define BYTE_ORDER_MARK L'\xfeff'
 
@@ -194,6 +197,9 @@ static avt_bool_t faint;
 
 /* no color (but still bold, underlined, reversed) allowed */
 static avt_bool_t nocolor;
+
+/* use vt100 graphics? */
+static avt_bool_t vt100graphics;
 
 /* G0 and G1 charset encoding (linux-specific) */
 static const char *G0, *G1;
@@ -411,7 +417,11 @@ not_available (void)
 static void
 set_encoding (const char *encoding)
 {
-  if (avt_mb_encoding (encoding))
+  vt100graphics = (strcmp (VT100, encoding) == 0);
+
+  if (vt100graphics)
+    avt_mb_encoding ("US-ASCII");
+  else if (avt_mb_encoding (encoding))
     error_msg ("iconv", avt_get_error ());
 }
 
@@ -2425,8 +2435,8 @@ escape_sequence (int fd, wchar_t last_character)
 	wchar_t ch2 = get_character (fd);
 	if (ch2 == L'B')
 	  G0 = "ISO-8859-1";
-	/* else if (ch2 == L'0')
-	   G0 = "VT100 linedrawing" unsupported */
+	else if (ch2 == L'0')
+	  G0 = VT100;
 	else if (ch2 == L'U')
 	  G0 = "IBM437";
 	else if (ch2 == L'K')
@@ -2439,8 +2449,8 @@ escape_sequence (int fd, wchar_t last_character)
 	wchar_t ch2 = get_character (fd);
 	if (ch2 == L'B')
 	  G1 = "ISO-8859-1";
-	/* else if (ch2 == L'0')
-	   G1 = "VT100 linedrawing" unsupported */
+	else if (ch2 == L'0')
+	  G1 = VT100;
 	else if (ch2 == L'U')
 	  G1 = "IBM437";
 	else if (ch2 == L'K')
@@ -2464,8 +2474,9 @@ escape_sequence (int fd, wchar_t last_character)
       ansi_graphic_code (0);
       avt_set_text_delay (0);
       insert_mode = AVT_FALSE;
+      vt100graphics = AVT_FALSE;
       G0 = "ISO-8859-1";
-      G1 = "IBM437";
+      G1 = VT100;
       set_encoding (default_encoding);	/* not G0! */
       avt_clear ();
       avt_save_position ();
@@ -2536,6 +2547,14 @@ process_subprogram (int fd)
   avt_bool_t stop;
   wint_t ch;
   wchar_t last_character;
+  const wchar_t vt100trans[] = {
+    0x00A0, 0x25C6, 0x2592, 0x2409, 0x240C, 0x240D,
+    0x240A, 0x00B0, 0x00B1, 0x2424, 0x240B,
+    0x2518, 0x2510, 0x250C, 0x2514, 0x253C,
+    0x23BA, 0x23BB, 0x2500, 0x23BC, 0x23BD,
+    0x251C, 0x2524, 0x2534, 0x252C, 0x2502,
+    0x2264, 0x2265, 0x03C0, 0x2260, 0x00A3, 0x00B7
+  };
 
   text_color = 0;
   last_character = L'\0';
@@ -2544,8 +2563,9 @@ process_subprogram (int fd)
   avt_reserve_single_keys (AVT_TRUE);
   avt_newline_mode (AVT_FALSE);
   avt_activate_cursor (AVT_TRUE);
+  vt100graphics = AVT_FALSE;
   G0 = "ISO-8859-1";
-  G1 = "IBM437";
+  G1 = VT100;
   set_encoding (default_encoding);	/* not G0! */
 
   /* like vt102 */
@@ -2563,10 +2583,13 @@ process_subprogram (int fd)
 	set_encoding (G0);
       else
 	{
-	  last_character = (wchar_t) ch;
-
 	  if (insert_mode)
 	    avt_insert_spaces (1);
+
+	  if (vt100graphics && (ch >= 95 && ch <= 126))
+	    ch = vt100trans[ch - 95];
+
+	  last_character = (wchar_t) ch;
 
 	  stop = avt_put_character ((wchar_t) ch);
 	}
@@ -3330,7 +3353,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.146 2008-05-18 14:04:14 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.147 2008-05-18 18:56:40 akf Exp $");
 
   return EXIT_SUCCESS;
 }

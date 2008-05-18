@@ -1,5 +1,8 @@
 2008-05-18  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatarsay.c (set_encoding, escape_sequence, process_subprogram):
+	support for VT100 graphic characters
+
 	* avatarsay.c (escape_sequence, CSI_sequence):
 	ignore binray zero in datastream (most of the time)
 
