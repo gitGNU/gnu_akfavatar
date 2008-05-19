@@ -4,7 +4,7 @@
 	support for VT100 graphic characters
 
 	* avatarsay.c (escape_sequence, CSI_sequence):
-	ignore binray zero in datastream (most of the time)
+	ignore binray zero in datastream
 
 	* avatarsay.c (process_subprogram, escape_sequence):
 	experimental support for charsets G0 and G1 (linux-compatible)

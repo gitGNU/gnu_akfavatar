@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.147 2008-05-18 18:56:40 akf Exp $ */
+/* $Id: avatarsay.c,v 2.148 2008-05-19 12:08:38 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2419,7 +2419,10 @@ escape_sequence (int fd, wchar_t last_character)
 
     case L'%':			/* select charset */
       {
-	wchar_t ch2 = get_character (fd);
+	wchar_t ch2;
+	do
+	  ch2 = get_character (fd);
+	while (ch2 == L'\0');
 	if (ch2 == L'@')
 	  set_encoding (G0);	/* TODO: unsure */
 	else if (ch2 == L'G' || ch2 == L'8' /* obsolete */ )
@@ -2432,7 +2435,10 @@ escape_sequence (int fd, wchar_t last_character)
       /* Note: this is not compatible to ISO 2022! */
     case L'(':			/* set G0 */
       {
-	wchar_t ch2 = get_character (fd);
+	wchar_t ch2;
+	do
+	  ch2 = get_character (fd);
+	while (ch2 == L'\0');
 	if (ch2 == L'B')
 	  G0 = "ISO-8859-1";
 	else if (ch2 == L'0')
@@ -2446,7 +2452,10 @@ escape_sequence (int fd, wchar_t last_character)
 
     case L')':			/* set G1 */
       {
-	wchar_t ch2 = get_character (fd);
+	wchar_t ch2;
+	do
+	  ch2 = get_character (fd);
+	while (ch2 == L'\0');
 	if (ch2 == L'B')
 	  G1 = "ISO-8859-1";
 	else if (ch2 == L'0')
@@ -2519,7 +2528,10 @@ escape_sequence (int fd, wchar_t last_character)
     case L']':			/* Linux specific: (re)set palette */
       /* not supported, but fetch the right number of chars to be ignored */
       {
-	wchar_t ch2 = get_character (fd);
+	wchar_t ch2;
+	do
+	  ch2 = get_character (fd);
+	while (ch2 == L'\0');
 	/* ignore L'R' (reset palette) */
 	if (ch2 == L'P')	/* set palette */
 	  {
@@ -3353,7 +3365,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.147 2008-05-18 18:56:40 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.148 2008-05-19 12:08:38 akf Exp $");
 
   return EXIT_SUCCESS;
 }
