@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.22 2008-03-29 05:36:17 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.23 2008-05-25 14:10:19 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -488,6 +488,21 @@ weggelassen und andere Sachen hinzugefügt, wie zum Beispiel Tastatur-Codes.
 Darum ist die Einstellung @code{linux} wirklich die richtige.
 
 @end itemize
+
+@subsection Erweiterungen
+
+Die Terminal-Emulation von @command{avatarsay} unterstützt die folgenden 
+Erweiterungen, die weder in @code{ANSI X3.64} (@code{ECMA-48}) vorkommen,
+noch von der Terminal-Emulation von Linux unterstützt werden:
+
+@table @code
+@item CSI ? 56 h
+schaltet den Modus für langsame Textausgabe an
+
+@item CSI ? 56 l
+schaltet den Modus für langsame Textausgabe aus (Voreinstellung)
+@end table
+
 
 @node Text-Betrachter
 @section Einsatz von @command{avatarsay} als lustiger Text-Betrachter

@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.30 2008-03-29 05:36:17 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.31 2008-05-25 14:10:19 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -449,6 +449,20 @@ things, like key-codes are extra.  So the value @code{linux} is actually the
 right one.
 
 @end itemize
+
+@subsection extensions 
+
+The terminal-emulation of @command{avatarsay} supports The following 
+extensions, which are not in @code{ANSI X3.64} (@code{ECMA-48})
+and which are not supported by the Linux terminal emulation:
+
+@table @code
+@item CSI ? 56 h
+switches the slowprint-mode on
+
+@item CSI ? 56 l
+switches the slowprint-mode off (default)
+@end table
 
 @node Text-viewer
 @section Using @command{avatarsay} as fancy text-viewer.
