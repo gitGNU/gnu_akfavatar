@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.120 2008-04-15 08:28:35 akf Exp $ */
+/* $Id: avatar.c,v 2.121 2008-05-29 21:21:09 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -212,8 +212,9 @@ static avt_bool_t tried_to_load_SDL_image;
 static void *SDL_image_handle;
 static SDL_Surface *(*IMG_Load) (const char *file);
 static SDL_Surface *(*IMG_Load_RW) (SDL_RWops * src, int freesrc);
+static SDL_Surface *(*IMG_ReadXPMFromArray) (char **xpm);
 
-/* for an external keyboard/mose handlers */
+/* for an external keyboard/mouse handlers */
 static avt_keyhandler avt_ext_keyhandler = NULL;
 static avt_mousehandler avt_ext_mousehandler = NULL;
 
@@ -3069,6 +3070,9 @@ load_SDL_image (void)
 	  IMG_Load_RW =
 	    (SDL_Surface * (*)(SDL_RWops *, int))
 	    SDL_LoadFunction (SDL_image_handle, "IMG_Load_RW");
+	  IMG_ReadXPMFromArray =
+	    (SDL_Surface * (*)(char **))
+	    SDL_LoadFunction (SDL_image_handle, "IMG_ReadXPMFromArray");
 	}
     }
 #endif /* _SDL_loadso_h */
@@ -3171,6 +3175,32 @@ avt_show_image_data (void *img, int imgsize)
   return _avt_STATUS;
 }
 
+int
+avt_show_image_XPM (char **xpm)
+{
+  SDL_Surface *image = NULL;
+
+  if (!screen)
+    return _avt_STATUS;
+
+  if (!tried_to_load_SDL_image)
+    load_SDL_image ();
+
+  if (IMG_Load)
+    image = (*IMG_ReadXPMFromArray) (xpm);
+
+  if (image == NULL)
+    {
+      avt_clear ();		/* at least clear the balloon */
+      return AVT_ERROR;
+    }
+
+  avt_show_image (image);
+  SDL_FreeSurface (image);
+
+  return _avt_STATUS;
+}
+
 /*
  * show gimp image
  */
@@ -3247,6 +3277,21 @@ avt_make_transparent (avt_image_t * image)
 
   return (avt_image_t *) image;
 }
+
+avt_image_t *
+avt_import_XPM (char **xpm)
+{
+  SDL_Surface *image = NULL;
+
+  if (!tried_to_load_SDL_image)
+    load_SDL_image ();
+
+  if (IMG_Load)
+    image = (*IMG_ReadXPMFromArray) (xpm);
+
+  return (avt_image_t *) image;
+}
+
 
 /* 
  * import RGB gimp_image as avatar
@@ -3609,7 +3654,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.120 2008-04-15 08:28:35 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.121 2008-05-29 21:21:09 akf Exp $");
 
   /*
    * Initialize the display, accept any format

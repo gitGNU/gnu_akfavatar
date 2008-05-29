@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.63 2008-04-04 11:37:24 akf Exp $ */
+/* $Id: akfavatar.h,v 2.64 2008-05-29 21:21:09 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -184,6 +184,11 @@ void avt_activate_cursor (avt_bool_t on);
  * use this with avt_initialize
  */
 avt_image_t *avt_default (void);
+
+/*
+ * import an avatar from XPM data
+ */
+avt_image_t *avt_import_XPM (char **xpm);
 
 /*
  * RGB gimp_image
@@ -437,6 +442,7 @@ void avt_show_avatar (void);
 /* 
  * load image and show it
  * if SDL_image isn't available then uncompressed BMP is still supported
+ * on error it returns AVT_ERROR without changing the status
  * if it succeeds call avt_wait or avt_waitkey 
  */
 int avt_show_image_file (const char *file);
@@ -444,12 +450,21 @@ int avt_show_image_file (const char *file);
 /*
  * show image from image data
  * if SDL_image isn't available then uncompressed BMP is still supported
- * after that call avt_wait or avt_waitkey
+ * on error it returns AVT_ERROR without changing the status
+ * if it succeeds call avt_wait or avt_waitkey 
  */
 int avt_show_image_data (void *img, int imgsize);
 
 /*
+ * show image from XPM data
+ * on error it returns AVT_ERROR without changing the status
+ * if it succeeds call avt_wait or avt_waitkey 
+ */
+int avt_show_image_XPM (char **xpm);
+
+/*
  * show gimp image
+ * on error it returns AVT_ERROR without changing the status
  */
 int avt_show_gimp_image (void *gimp_image);
 
