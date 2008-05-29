@@ -1,5 +1,8 @@
 2008-05-29  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatar.c:
+	bundle up SDL_image stuff into one structure
+
 	* akfavatar.h, avatar.c (avt_import_XPM, avt_show_image_XPM):
 	new functions
 	
