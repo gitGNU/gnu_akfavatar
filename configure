@@ -6,7 +6,7 @@
 # This configure script is free software; you have unlimited permission
 # to copy, distribute and modify it.
 #
-# Date of this version: $Date: 2008-05-30 09:41:20 $
+# Date of this version: $Date: 2008-05-30 09:46:39 $
 
 
 # Version and name
@@ -153,7 +153,6 @@ while [ x"$1" != x ] ; do
 	esac
 done
 
-[ "$LINK_SDL_IMAGE" = "yes" ] && CFLAGS="$CFLAGS -DLINK_SDL_IMAGE"
 [ "$SIZE" = "QVGA" ] && CFLAGS="$CFLAGS -DQVGA"
 [ "$SIZE" = "VGA" ] && CFLAGS="$CFLAGS -DVGA"
 
@@ -184,7 +183,11 @@ esac
 SDLCFLAGS=`sdl-config --cflags`
 SDLLDFLAGS=`sdl-config --libs`
 
-[ "$LINK_SDL_IMAGE" = "yes" ] && SDLLDFLAGS="$SDLLDFLAGS -lSDL_image"
+if [ "$LINK_SDL_IMAGE" = "yes" ] 
+then 
+  SDLCFLAGS="$SDLCFLAGS -DLINK_SDL_IMAGE"
+  SDLLDFLAGS="$SDLLDFLAGS -lSDL_image"
+fi
 
 # system specific stuff
 SYSTEM=`uname -s`
