@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.123 2008-05-30 07:47:33 akf Exp $ */
+/* $Id: avatar.c,v 2.124 2008-05-30 13:21:12 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -3610,17 +3610,17 @@ avt_quit (void)
       avt_quit_audio_func = NULL;
     }
 
+#if defined(_SDL_loadso_h) && ! defined(LINK_SDL_IMAGE)
   if (SDL_image.handle)
     {
-#ifdef _SDL_loadso_h
       SDL_UnloadObject (SDL_image.handle);
-#endif /* _SDL_loadso_h */
       SDL_image.handle = NULL;
       SDL_image.IMG_Load = NULL;
       SDL_image.IMG_Load_RW = NULL;
       SDL_image.IMG_ReadXPMFromArray = NULL;
       SDL_image.tried_to_load = AVT_FALSE;	/* try again next time */
     }
+#endif
 
   /* close conversion descriptors */
   if (output_cd != ICONV_UNINITIALIZED)
@@ -3684,7 +3684,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.123 2008-05-30 07:47:33 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.124 2008-05-30 13:21:12 akf Exp $");
 
   /*
    * Initialize the display, accept any format
