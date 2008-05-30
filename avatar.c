@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.122 2008-05-29 21:49:00 akf Exp $ */
+/* $Id: avatar.c,v 2.123 2008-05-30 07:47:33 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -33,6 +33,10 @@
 #include "circle.c"
 #include "regicon.c"
 #include "keybtn.c"
+
+#ifdef LINK_SDL_IMAGE
+#  include "SDL_image.h"
+#endif
 
 #define COPYRIGHTYEAR "2008"
 
@@ -3053,6 +3057,25 @@ avt_free_image (avt_image_t * image)
   SDL_FreeSurface ((SDL_Surface *) image);
 }
 
+#ifdef LINK_SDL_IMAGE
+
+/*
+ * assign functions from linked SDL_image
+ */
+static void
+load_SDL_image (void)
+{
+  SDL_image.handle = NULL;
+  SDL_image.IMG_Load = IMG_Load;
+  SDL_image.IMG_Load_RW = IMG_Load_RW;
+  SDL_image.IMG_ReadXPMFromArray = IMG_ReadXPMFromArray;
+
+  /* don't try to load it again */
+  SDL_image.tried_to_load = AVT_TRUE;
+}
+
+#else /* ! LINK_SDL_IMAGE */
+
 /*
  * try to load the library SDL_image dynamically 
  * (uncompressed BMP files can always be loaded)
@@ -3083,6 +3106,8 @@ load_SDL_image (void)
   /* don't try to load it again - even if loading failed */
   SDL_image.tried_to_load = AVT_TRUE;
 }
+
+#endif /* ! LINK_SDL_IMAGE */
 
 static void
 avt_show_image (avt_image_t * image)
@@ -3659,7 +3684,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.122 2008-05-29 21:49:00 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.123 2008-05-30 07:47:33 akf Exp $");
 
   /*
    * Initialize the display, accept any format
