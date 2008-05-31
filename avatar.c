@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.124 2008-05-30 13:21:12 akf Exp $ */
+/* $Id: avatar.c,v 2.125 2008-05-31 09:53:10 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -148,16 +148,6 @@
 #  define MOVE_DELAY 1.8
 #endif /* !QVGA, !LARGRE */
 
-
-/* for dynamically loading SDL_image */
-#ifndef SDL_IMAGE_LIB
-#  if defined (__WIN32__)
-#    define SDL_IMAGE_LIB "SDL_image.dll"
-#  else	/* not Windows */
-#    define SDL_IMAGE_LIB "libSDL_image-1.2.so.0"
-#  endif /* not Windows */
-#endif /* not SDL_IMAGE_LIB */
-
 #define ICONV_UNINITIALIZED   (avt_iconv_t)(-1)
 
 /* moving target - grrrmpf! */
@@ -210,16 +200,6 @@ typedef struct
   unsigned int bytes_per_pixel;	/* 3:RGB, 4:RGBA */
   unsigned char pixel_data;	/* handle as startpoint */
 } gimp_img_t;
-
-/* for dynamically loading SDL_image (SDL-1.2.6 or better) */
-static struct
-{
-  avt_bool_t tried_to_load;
-  void *handle;
-  SDL_Surface *(*IMG_Load) (const char *file);
-  SDL_Surface *(*IMG_Load_RW) (SDL_RWops * src, int freesrc);
-  SDL_Surface *(*IMG_ReadXPMFromArray) (char **xpm);
-} SDL_image;
 
 /* for an external keyboard/mouse handlers */
 static avt_keyhandler avt_ext_keyhandler = NULL;
@@ -282,6 +262,136 @@ void (*avt_quit_audio_func) (void) = NULL;
 /* forward declaration */
 static int avt_pause (void);
 
+
+/* for dynamically loading SDL_image */
+#ifndef SDL_IMAGE_LIB
+#  if defined (__WIN32__)
+#    define SDL_IMAGE_LIB "SDL_image.dll"
+#  else	/* not Windows */
+#    define SDL_IMAGE_LIB "libSDL_image-1.2.so.0"
+#  endif /* not Windows */
+#endif /* not SDL_IMAGE_LIB */
+
+/* 
+ * object for image-loading
+ * SDL_image can be dynamically loaded (SDL-1.2.6 or better) 
+ */
+static struct
+{
+  avt_bool_t initialized;
+  void *handle;			/* handle for dynamically loaded SDL_image */
+  SDL_Surface *(*file) (const char *file);
+  SDL_Surface *(*rw) (SDL_RWops * src, int freesrc);
+  SDL_Surface *(*xpm) (char **xpm);
+} load_image;
+
+
+#ifdef LINK_SDL_IMAGE
+
+/*
+ * assign functions from linked SDL_image
+ */
+static void
+load_image_initialize (void)
+{
+  if (!load_image.initialized)
+    {
+      load_image.handle = NULL;
+      load_image.file = IMG_Load;
+      load_image.rw = IMG_Load_RW;
+      load_image.xpm = IMG_ReadXPMFromArray;
+
+      load_image.initialized = AVT_TRUE;
+    }
+}
+
+/* speedup */
+#define load_image_init(void) \
+  if (!load_image.initialized) \
+    load_image_initialize()
+
+#define load_image_done(void)	/* empty */
+
+#else /* ! LINK_SDL_IMAGE */
+
+/* helper functions */
+
+static SDL_Surface *
+load_image_bmp (const char *file)
+{
+  /* it's a makro, so I need a wrapper */
+  return SDL_LoadBMP (file);
+}
+
+static SDL_Surface *
+load_image_xpm (char **xpm AVT_UNUSED)
+{
+  SDL_SetError ("You need SDL_image to load XPM images");
+  return NULL;
+}
+
+/*
+ * try to load the library SDL_image dynamically 
+ * (uncompressed BMP files can always be loaded)
+ */
+static void
+load_image_initialize (void)
+{
+  if (!load_image.initialized)	/* avoid loading it twice! */
+    {
+      /* first load defaults from plain SDL */
+      load_image.handle = NULL;
+      load_image.file = load_image_bmp;
+      load_image.rw = SDL_LoadBMP_RW;
+      load_image.xpm = load_image_xpm;
+
+/* loadso.h is only available with SDL 1.2.6 or higher */
+#ifdef _SDL_loadso_h
+      load_image.handle = SDL_LoadObject (SDL_IMAGE_LIB);
+      if (load_image.handle)
+	{
+	  load_image.file =
+	    (SDL_Surface * (*)(const char *))
+	    SDL_LoadFunction (load_image.handle, "IMG_Load");
+	    
+	  load_image.rw =
+	    (SDL_Surface * (*)(SDL_RWops *, int))
+	    SDL_LoadFunction (load_image.handle, "IMG_Load_RW");
+	    
+	  load_image.xpm =
+	    (SDL_Surface * (*)(char **))
+	    SDL_LoadFunction (load_image.handle, "IMG_ReadXPMFromArray");
+	}
+#endif /* _SDL_loadso_h */
+
+      load_image.initialized = AVT_TRUE;
+    }
+}
+
+/* speedup */
+#define load_image_init(void) \
+  if (!load_image.initialized) \
+    load_image_initialize()
+
+#ifndef _SDL_loadso_h
+#  define load_image_done(void)	/* empty */
+#else /* _SDL_loadso_h */
+static void
+load_image_done (void)
+{
+  if (load_image.handle)
+    {
+      SDL_UnloadObject (load_image.handle);
+      load_image.handle = NULL;
+      load_image.file = NULL;
+      load_image.rw = NULL;
+      load_image.xpm = NULL;
+      load_image.initialized = AVT_FALSE;	/* try again next time */
+    }
+}
+#endif /* _SDL_loadso_h */
+
+#endif /* ! LINK_SDL_IMAGE */
 
 #ifdef FORCE_ICONV
 static size_t
@@ -3057,58 +3167,6 @@ avt_free_image (avt_image_t * image)
   SDL_FreeSurface ((SDL_Surface *) image);
 }
 
-#ifdef LINK_SDL_IMAGE
-
-/*
- * assign functions from linked SDL_image
- */
-static void
-load_SDL_image (void)
-{
-  SDL_image.handle = NULL;
-  SDL_image.IMG_Load = IMG_Load;
-  SDL_image.IMG_Load_RW = IMG_Load_RW;
-  SDL_image.IMG_ReadXPMFromArray = IMG_ReadXPMFromArray;
-
-  /* don't try to load it again */
-  SDL_image.tried_to_load = AVT_TRUE;
-}
-
-#else /* ! LINK_SDL_IMAGE */
-
-/*
- * try to load the library SDL_image dynamically 
- * (uncompressed BMP files can always be loaded)
- */
-static void
-load_SDL_image (void)
-{
-/* loadso.h is only available with SDL 1.2.6 or higher */
-#ifdef _SDL_loadso_h
-  if (!SDL_image.tried_to_load)	/* avoid loading it twice! */
-    {
-      SDL_image.handle = SDL_LoadObject (SDL_IMAGE_LIB);
-      if (SDL_image.handle)
-	{
-	  SDL_image.IMG_Load =
-	    (SDL_Surface * (*)(const char *))
-	    SDL_LoadFunction (SDL_image.handle, "IMG_Load");
-	  SDL_image.IMG_Load_RW =
-	    (SDL_Surface * (*)(SDL_RWops *, int))
-	    SDL_LoadFunction (SDL_image.handle, "IMG_Load_RW");
-	  SDL_image.IMG_ReadXPMFromArray =
-	    (SDL_Surface * (*)(char **))
-	    SDL_LoadFunction (SDL_image.handle, "IMG_ReadXPMFromArray");
-	}
-    }
-#endif /* _SDL_loadso_h */
-
-  /* don't try to load it again - even if loading failed */
-  SDL_image.tried_to_load = AVT_TRUE;
-}
-
-#endif /* ! LINK_SDL_IMAGE */
-
 static void
 avt_show_image (avt_image_t * image)
 {
@@ -3149,15 +3207,8 @@ avt_show_image_file (const char *file)
   if (!screen)
     return _avt_STATUS;
 
-  if (!SDL_image.tried_to_load)
-    load_SDL_image ();
-
-  /* try to load image with IMG_Load or SDL_LoadBMP */
-  /* (SDL_LoadBMP isn't a function but a macro) */
-  if (SDL_image.IMG_Load)
-    image = (*SDL_image.IMG_Load) (file);
-  else
-    image = SDL_LoadBMP (file);
+  load_image_init ();
+  image = load_image.file (file);
 
   if (image == NULL)
     {
@@ -3182,14 +3233,8 @@ avt_show_image_data (void *img, int imgsize)
   if (!screen)
     return _avt_STATUS;
 
-  if (!SDL_image.tried_to_load)
-    load_SDL_image ();
-
-  /* try to load image with IMG_Load_RW or SDL_LoadBMP_RW */
-  if (SDL_image.IMG_Load_RW)
-    image = (*SDL_image.IMG_Load_RW) (SDL_RWFromMem (img, imgsize), 1);
-  else
-    image = SDL_LoadBMP_RW (SDL_RWFromMem (img, imgsize), 1);
+  load_image_init ();
+  image = load_image.rw (SDL_RWFromMem (img, imgsize), 1);
 
   if (image == NULL)
     {
@@ -3211,11 +3256,8 @@ avt_show_image_XPM (char **xpm)
   if (!screen)
     return _avt_STATUS;
 
-  if (!SDL_image.tried_to_load)
-    load_SDL_image ();
-
-  if (SDL_image.IMG_ReadXPMFromArray)
-    image = (*SDL_image.IMG_ReadXPMFromArray) (xpm);
+  load_image_init ();
+  image = load_image.xpm (xpm);
 
   if (image == NULL)
     {
@@ -3311,11 +3353,8 @@ avt_import_XPM (char **xpm)
 {
   SDL_Surface *image = NULL;
 
-  if (!SDL_image.tried_to_load)
-    load_SDL_image ();
-
-  if (SDL_image.IMG_ReadXPMFromArray)
-    image = (*SDL_image.IMG_ReadXPMFromArray) (xpm);
+  load_image_init ();
+  image = load_image.xpm (xpm);
 
   return (avt_image_t *) image;
 }
@@ -3363,14 +3402,8 @@ avt_import_image_data (void *img, int imgsize)
   if (avt_init_SDL ())
     return NULL;
 
-  if (!SDL_image.tried_to_load)
-    load_SDL_image ();
-
-  /* try to load image with IMG_Load_RW or SDL_LoadBMP_RW */
-  if (SDL_image.IMG_Load_RW)
-    image = (*SDL_image.IMG_Load_RW) (SDL_RWFromMem (img, imgsize), 1);
-  else
-    image = SDL_LoadBMP_RW (SDL_RWFromMem (img, imgsize), 1);
+  load_image_init ();
+  image = load_image.rw (SDL_RWFromMem (img, imgsize), 1);
 
   /* if it's not yet transparent, make it transparent */
   if (image)
@@ -3391,14 +3424,8 @@ avt_import_image_file (const char *file)
   if (avt_init_SDL ())
     return NULL;
 
-  if (!SDL_image.tried_to_load)
-    load_SDL_image ();
-
-  /* try to load image with IMG_Load or SDL_LoadBMP */
-  if (SDL_image.IMG_Load)
-    image = (*SDL_image.IMG_Load) (file);
-  else
-    image = SDL_LoadBMP (file);
+  load_image_init ();
+  image = load_image.file (file);
 
   /* if it's not yet transparent, make it transparent */
   if (image)
@@ -3610,17 +3637,7 @@ avt_quit (void)
       avt_quit_audio_func = NULL;
     }
 
-#if defined(_SDL_loadso_h) && ! defined(LINK_SDL_IMAGE)
-  if (SDL_image.handle)
-    {
-      SDL_UnloadObject (SDL_image.handle);
-      SDL_image.handle = NULL;
-      SDL_image.IMG_Load = NULL;
-      SDL_image.IMG_Load_RW = NULL;
-      SDL_image.IMG_ReadXPMFromArray = NULL;
-      SDL_image.tried_to_load = AVT_FALSE;	/* try again next time */
-    }
-#endif
+  load_image_done ();
 
   /* close conversion descriptors */
   if (output_cd != ICONV_UNINITIALIZED)
@@ -3684,7 +3701,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.124 2008-05-30 13:21:12 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.125 2008-05-31 09:53:10 akf Exp $");
 
   /*
    * Initialize the display, accept any format

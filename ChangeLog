@@ -1,3 +1,8 @@
+2008-05-31  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c:
+	cleanup: reorganize loading of image-data in a more object oriented way
+
 2008-05-30  Andreas K. Foerster  <info@akfoerster.de>
 
 	* configure:
