@@ -278,7 +278,7 @@ dist: info html man distclean
 	   $(PKGNAME)/mingw32/
 	
 	tar -cvf $(PKGNAME).tar $(PKGNAME)/
-	gzip -9 $(PKGNAME).tar
+	bzip2 $(PKGNAME).tar
 	rm -r $(PKGNAME)/
 
 dist-bin: avatarsay multiply multiplizieren info html
@@ -301,5 +301,5 @@ dist-bin: avatarsay multiply multiplizieren info html
 	strip $(BINPKGNAME)/avatarsay
 	strip $(BINPKGNAME)/$(LIBNAME)
 	tar -cvf $(BINPKGNAME).$(SYSTEM).$(ARCH).tar $(BINPKGNAME)/
-	gzip -9 $(BINPKGNAME).$(SYSTEM).$(ARCH).tar
+	bzip2 $(BINPKGNAME).$(SYSTEM).$(ARCH).tar
 	rm -r $(BINPKGNAME)/

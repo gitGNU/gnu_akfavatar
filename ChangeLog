@@ -1,5 +1,8 @@
 2008-05-31  Andreas K. Foerster  <info@akfoerster.de>
 
+	* Makefile.in:
+	use bzip2 to compress distribution files
+
 	* avatar.c:
 	cleanup: reorganize loading of image-data in a more object oriented way
 
@@ -18,7 +21,7 @@
 
 	* akfavatar.h, avatar.c (avt_import_XPM, avt_show_image_XPM):
 	new functions
-	
+
 2008-05-18  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (set_encoding, escape_sequence, process_subprogram):
