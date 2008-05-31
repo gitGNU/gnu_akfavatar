@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.126 2008-05-31 12:53:34 akf Exp $ */
+/* $Id: avatar.c,v 2.127 2008-05-31 13:02:47 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -42,7 +42,7 @@
  * avt_wait_key_mb uses avt_wait_key. Both are deprecated.
  * So suppress this warning for this file, if possible.
  */
-#if __GNUC__ >= 4
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2)
 #  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
 
@@ -3709,7 +3709,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.126 2008-05-31 12:53:34 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.127 2008-05-31 13:02:47 akf Exp $");
 
   /*
    * Initialize the display, accept any format
