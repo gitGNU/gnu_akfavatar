@@ -1,5 +1,8 @@
 2008-05-31  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatar.c:
+	suppress warning for deprecated function (GCC 4 or later)
+
 	* Makefile.in:
 	use bzip2 to compress distribution files
 
