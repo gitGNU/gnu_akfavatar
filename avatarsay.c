@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.148 2008-05-19 12:08:38 akf Exp $ */
+/* $Id: avatarsay.c,v 2.149 2008-06-01 11:04:33 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1989,6 +1989,13 @@ CSI_sequence (int fd, wchar_t last_character)
 	ch = get_character (fd);
       while (ch == L'\0');
 
+      /* ignore CSI [ + one character */
+      if (pos == 0 && ch == L'[')
+	{
+	  get_character (fd);	/* ignore one char */
+	  return;
+	}
+
       /* CAN or SUB cancel the escape-sequence */
       if (ch == L'\x18' || ch == L'\x1A')
 	return;
@@ -3365,7 +3372,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.148 2008-05-19 12:08:38 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.149 2008-06-01 11:04:33 akf Exp $");
 
   return EXIT_SUCCESS;
 }

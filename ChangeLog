@@ -1,3 +1,8 @@
+2008-06-01  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (CSI_sequence):
+	ignore CSI [ + 1 char
+
 2008-05-31  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c:
