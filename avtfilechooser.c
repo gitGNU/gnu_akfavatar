@@ -28,11 +28,10 @@
          avt_set_text_background_color (0xdd, 0xdd, 0xdd); \
          avt_say (S); avt_normal_text ()
 
-/* three arrows left */
-#define PARENT_DIRECTORY L" \x2190 \x2190 \x2190 "
+#define PARENT_DIRECTORY L" .. "
 
 /* three arrows up */
-#define RESTART L" \x2191 \x2191 \x2191 "
+#define BACK L" \x2191 \x2191 \x2191 "
 
 /* three arrows down */
 #define CONTINUE L" \x2193 \x2193 \x2193 "
@@ -63,6 +62,17 @@ show_idx (int idx)
   avt_say_mb (str);
 }
 
+static void
+new_page (char *dirname)
+{
+  avt_clear ();
+  avt_set_text_background_color (0xdd, 0xdd, 0xdd);
+  avt_say_mb (dirname);
+  avt_clear_eol ();
+  avt_normal_text ();
+  avt_move_xy (1, 2);
+}
+
 /* 
  * filechooser
  * lists files in working directory
@@ -72,34 +82,39 @@ int
 get_file (char *filename)
 {
   int rcode;
-  avt_bool_t single_page;
   DIR *dir;
   struct dirent *d;
-  int max_x, max_y;
+  int max_x, max_idx;
   int idx;
   int filenr;
   wchar_t ch;
+  char dirname[PATH_MAX];
   char entry[100][256];
+  int page_nr;
+  off_t pages[500];
 
   avt_set_text_delay (0);
   avt_normal_text ();
   max_x = avt_get_max_x ();
-  max_y = avt_get_max_y ();
+  max_idx = avt_get_max_y () - 1;
 
 start:
   /* returncode: assume failure as default */
   rcode = -1;
   filenr = -1;
-  filename[0] = '\0';
+  page_nr = 0;
+  *filename = '\0';
   idx = 0;
-  single_page = AVT_TRUE;
-  avt_clear ();
+  getcwd (dirname, sizeof(dirname));
+  
+  avt_auto_margin (AVT_FALSE);
+  new_page (dirname);
 
   dir = opendir (".");
   if (dir == NULL)
     return rcode;
 
-  avt_auto_margin (AVT_FALSE);
+  pages[page_nr] = telldir (dir);
 
   /* entry for parent directory */
   strcpy (entry[idx], "..");
@@ -108,66 +123,70 @@ start:
   idx++;
   avt_new_line ();
 
-  while (filename[0] == '\0')
+  while (!*filename)
     {
+      if (idx == max_idx - 1)
+	pages[page_nr + 1] = telldir (dir);
+
       d = readdir (dir);
 
-      if (d == NULL)		/* end reached */
+      if (!d && !idx)		/* no entries at all */
+	break;
+
+      if (!d || (d && d->d_name[0] != '.'))
 	{
-	  /* no entries? */
-	  if (idx == 0)
-	    break;
-
-	  if (single_page)
+	  /* end reached? */
+	  if (!d || idx == max_idx - 1)
 	    {
-	      if (avt_get_menu (&ch, 1, idx, L'a'))
-		break;
-	      filenr = (int) (ch - L'a');
-	    }
-	  else			/* not single_page */
-	    {
-	      /* restart entry */
-	      show_idx (idx);
-	      MARK (RESTART);
-
-	      if (avt_get_menu (&ch, 1, idx + 1, L'a'))
-		break;
-	      filenr = (int) (ch - L'a');
-
-	      /* restart */
-	      if (filenr == idx)
+	      if (d)		/* continue entry */
 		{
-		  closedir (dir);
-		  goto start;
+		  show_idx (idx);
+		  MARK (CONTINUE);
+		  idx++;
 		}
-	    }
 
-	  if (filenr >= 0)
-	    {
-	      strcpy (filename, entry[filenr]);
-	      rcode = 0;
-	    }
-	}
-      else if (d->d_name[0] != '.')
-	{
-	  /* end of textfield reached? */
-	  if (idx == max_y - 1)
-	    {
-	      /* continue entry */
-	      show_idx (idx);
-	      MARK (CONTINUE);
-
-	      if (avt_get_menu (&ch, 1, max_y, L'a'))
+	      if (avt_get_menu (&ch, 2, idx + 1, L'a'))
 		break;
 
-	      avt_clear ();
-	      single_page = AVT_FALSE;
+	      new_page (dirname);
 	      filenr = (int) (ch - L'a');
 
-	      /* continue? */
-	      if (filenr == idx)
-		idx = 0;
-	      else
+	      if (d && filenr == idx - 1)	/* continue? */
+		{
+		  idx = 0;
+		  page_nr++;
+
+		  entry[idx][0] = '\0';
+		  show_idx (idx);
+		  MARK (BACK);
+		  idx++;
+		  avt_new_line ();
+		}
+	      else if (filenr == 0 && page_nr > 0)	/* back */
+		{
+		  page_nr--;
+		  seekdir (dir, pages[page_nr]);
+
+		  idx = 0;
+
+		  if (page_nr > 0)
+		    {
+		      entry[idx][0] = '\0';
+		      show_idx (idx);
+		      MARK (BACK);
+		    }
+		  else		/* first page */
+		    {
+		      strcpy (entry[idx], "..");
+		      show_idx (idx);
+		      MARK (PARENT_DIRECTORY);
+		    }
+
+                  idx++;
+		  avt_new_line ();
+		  continue;
+		}
+	      else		/* file chosen */
 		{
 		  strcpy (filename, entry[filenr]);
 		  rcode = 0;

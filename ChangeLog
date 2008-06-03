@@ -1,5 +1,8 @@
 2008-06-03  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avtfilechooser.c (get_file):
+	major rewrite
+
 	* avatar.c (avt_get_menu):
 	feedback for mouse-motion in menu
 
