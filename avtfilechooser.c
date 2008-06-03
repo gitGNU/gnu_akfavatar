@@ -42,6 +42,9 @@
 /* slash */
 #define DIRECTORY L"/"
 
+/* how many pages? */
+#define PAGES 500
+
 static avt_bool_t
 is_directory (const char *name)
 {
@@ -91,7 +94,7 @@ get_file (char *filename)
   char dirname[PATH_MAX];
   char entry[100][256];
   int page_nr;
-  off_t pages[500];
+  off_t pages[PAGES];
 
   avt_set_text_delay (0);
   avt_normal_text ();
@@ -105,8 +108,8 @@ start:
   page_nr = 0;
   *filename = '\0';
   idx = 0;
-  getcwd (dirname, sizeof(dirname));
-  
+  getcwd (dirname, sizeof (dirname));
+
   avt_auto_margin (AVT_FALSE);
   new_page (dirname);
 
@@ -155,6 +158,8 @@ start:
 		{
 		  idx = 0;
 		  page_nr++;
+		  if (page_nr > PAGES - 1)
+		    page_nr = PAGES - 1;
 
 		  entry[idx][0] = '\0';
 		  show_idx (idx);
@@ -182,7 +187,7 @@ start:
 		      MARK (PARENT_DIRECTORY);
 		    }
 
-                  idx++;
+		  idx++;
 		  avt_new_line ();
 		  continue;
 		}
