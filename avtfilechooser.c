@@ -59,7 +59,7 @@ show_idx (int idx)
 {
   char str[5];
 
-  snprintf (str, sizeof (str), "%c) ", idx + (int) L'a');
+  snprintf (str, sizeof (str), "%c) ", idx + (int) 'a');
   avt_say_mb (str);
 }
 
