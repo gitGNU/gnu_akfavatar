@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.128 2008-06-03 04:28:48 akf Exp $ */
+/* $Id: avatar.c,v 2.129 2008-06-03 08:38:15 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2631,16 +2631,17 @@ avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 	  SDL_WaitEvent (&event);
 	  avt_analyze_event (&event);
 
-	  if (event.type == SDL_KEYDOWN)
+	  switch (event.type)
 	    {
+	    case SDL_KEYDOWN:
 	      if ((event.key.keysym.unicode >= start_code)
 		  && (event.key.keysym.unicode <= end_code))
 		*ch = (wchar_t) event.key.keysym.unicode;
 	      else
 		avt_bell ();	/* wrong key pressed */
-	    }
-	  else if (event.type == SDL_MOUSEMOTION)
-	    {
+	      break;
+
+	    case SDL_MOUSEMOTION:
 	      if (event.motion.x >= viewport.x
 		  && event.motion.x <= viewport.x + viewport.w
 		  && event.motion.y >= viewport.y
@@ -2649,30 +2650,36 @@ avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 		  line_nr = ((event.motion.y - area.y) / LINEHEIGHT) + 1;
 		  if (line_nr != old_line)
 		    {
+		      /* remove old cursor */
 		      cursor.x = area.x;
 		      cursor.y = area.y + (old_line - 1) * LINEHEIGHT;
 		      avt_show_text_cursor (AVT_FALSE);
-		    }
-		  if (line_nr >= menu_start && line_nr <= menu_end)
-		    {
-		      cursor.x = area.x;
-		      cursor.y = area.y + (line_nr - 1) * LINEHEIGHT;
-		      avt_show_text_cursor (AVT_TRUE);
-		      old_line = line_nr;
+
+		      /* display new cursor */
+		      if (line_nr >= menu_start && line_nr <= menu_end)
+			{
+			  cursor.x = area.x;
+			  cursor.y = area.y + (line_nr - 1) * LINEHEIGHT;
+			  avt_show_text_cursor (AVT_TRUE);
+			  old_line = line_nr;
+			}
 		    }
 		}
-	    }
-	  else if (event.type == SDL_MOUSEBUTTONDOWN)
-	    /* any of the first trhee buttons, but not the wheel */
-	    if (event.button.button <= 3)
-	      {
-		line_nr = ((event.button.y - area.y) / LINEHEIGHT) + 1;
+	      break;
 
-		if (line_nr >= menu_start && line_nr <= menu_end
-		    && event.button.x >= area.x
-		    && event.button.x <= area.x + area.w)
-		  *ch = (wchar_t) (line_nr - menu_start + start_code);
-	      }
+	    case SDL_MOUSEBUTTONDOWN:
+	      /* any of the first trhee buttons, but not the wheel */
+	      if (event.button.button <= 3)
+		{
+		  line_nr = ((event.button.y - area.y) / LINEHEIGHT) + 1;
+
+		  if (line_nr >= menu_start && line_nr <= menu_end
+		      && event.button.x >= area.x
+		      && event.button.x <= area.x + area.w)
+		    *ch = (wchar_t) (line_nr - menu_start + start_code);
+		}
+	      break;
+	    }
 	}
 
       cursor = oldcursor;
@@ -3738,7 +3745,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.128 2008-06-03 04:28:48 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.129 2008-06-03 08:38:15 akf Exp $");
 
   /*
    * Initialize the display, accept any format
