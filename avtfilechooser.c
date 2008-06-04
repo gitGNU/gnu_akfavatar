@@ -128,9 +128,6 @@ start:
 
   while (!*filename)
     {
-      if (idx == max_idx - 1)
-	pages[page_nr + 1] = telldir (dir);
-
       d = readdir (dir);
 
       if (!d && !idx)		/* no entries at all */
@@ -228,8 +225,10 @@ start:
 		}
 	    }
 
-	  idx++;
 	  avt_new_line ();
+	  idx++;
+	  if (idx == max_idx - 1)
+	    pages[page_nr + 1] = telldir (dir);
 	}
     }
 
