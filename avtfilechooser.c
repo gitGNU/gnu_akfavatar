@@ -43,7 +43,7 @@
 #define DIRECTORY L"/"
 
 /* how many pages? */
-#define PAGES 500
+#define MAXPAGES 500
 
 static avt_bool_t
 is_directory (const char *name)
@@ -94,7 +94,7 @@ get_file (char *filename)
   char dirname[PATH_MAX];
   char entry[100][256];
   int page_nr;
-  off_t pages[PAGES];
+  off_t pages[MAXPAGES];
 
   avt_set_text_delay (0);
   avt_normal_text ();
@@ -155,8 +155,8 @@ start:
 		{
 		  idx = 0;
 		  page_nr++;
-		  if (page_nr > PAGES - 1)
-		    page_nr = PAGES - 1;
+		  if (page_nr > MAXPAGES - 1)
+		    page_nr = MAXPAGES - 1;
 
 		  entry[idx][0] = '\0';
 		  show_idx (idx);
@@ -227,7 +227,7 @@ start:
 
 	  avt_new_line ();
 	  idx++;
-	  if (idx == max_idx - 1)
+	  if (idx == max_idx - 1 && page_nr < MAXPAGES - 1)
 	    pages[page_nr + 1] = telldir (dir);
 	}
     }
