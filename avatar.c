@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.130 2008-06-04 08:23:57 akf Exp $ */
+/* $Id: avatar.c,v 2.131 2008-06-04 08:47:40 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2608,7 +2608,7 @@ avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 {
   SDL_Event event;
   wchar_t end_code;
-  SDL_Rect area;
+  SDL_Rect *area;
   struct pos oldcursor;
   int line_nr = 1, old_line = 0;
 
@@ -2617,9 +2617,9 @@ avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
       oldcursor = cursor;
 
       if (origin_mode)
-	area = textfield;
+	area = &textfield;
       else
-	area = viewport;
+	area = &viewport;
 
       SDL_EventState (SDL_MOUSEMOTION, SDL_ENABLE);
       SDL_ShowCursor (SDL_ENABLE);	/* mouse cursor */
@@ -2629,6 +2629,16 @@ avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
       while ((*ch == L'\0') && (_avt_STATUS == AVT_NORMAL))
 	{
 	  SDL_WaitEvent (&event);
+
+	  if (event.type == SDL_VIDEORESIZE && text_cursor_actually_visible)
+	    {
+	      /* remove old cursor */
+	      cursor.x = area->x;
+	      cursor.y = area->y + (old_line - 1) * LINEHEIGHT;
+	      avt_show_text_cursor (AVT_FALSE);
+	      old_line = 0;
+	    }
+
 	  avt_analyze_event (&event);
 
 	  switch (event.type)
@@ -2642,22 +2652,22 @@ avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 	      break;
 
 	    case SDL_MOUSEMOTION:
-	      line_nr = ((event.motion.y - area.y) / LINEHEIGHT) + 1;
+	      line_nr = ((event.motion.y - area->y) / LINEHEIGHT) + 1;
 	      if (line_nr != old_line)
 		{
 		  /* remove old cursor */
 		  if (text_cursor_actually_visible)
 		    {
-		      cursor.x = area.x;
-		      cursor.y = area.y + (old_line - 1) * LINEHEIGHT;
+		      cursor.x = area->x;
+		      cursor.y = area->y + (old_line - 1) * LINEHEIGHT;
 		      avt_show_text_cursor (AVT_FALSE);
 		    }
 
 		  /* display new cursor */
 		  if (line_nr >= menu_start && line_nr <= menu_end)
 		    {
-		      cursor.x = area.x;
-		      cursor.y = area.y + (line_nr - 1) * LINEHEIGHT;
+		      cursor.x = area->x;
+		      cursor.y = area->y + (line_nr - 1) * LINEHEIGHT;
 		      avt_show_text_cursor (AVT_TRUE);
 		    }
 		  old_line = line_nr;
@@ -2668,11 +2678,11 @@ avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 	      /* any of the first trhee buttons, but not the wheel */
 	      if (event.button.button <= 3)
 		{
-		  line_nr = ((event.button.y - area.y) / LINEHEIGHT) + 1;
+		  line_nr = ((event.button.y - area->y) / LINEHEIGHT) + 1;
 
 		  if (line_nr >= menu_start && line_nr <= menu_end
-		      && event.button.x >= area.x
-		      && event.button.x <= area.x + area.w)
+		      && event.button.x >= area->x
+		      && event.button.x <= area->x + area->w)
 		    *ch = (wchar_t) (line_nr - menu_start + start_code);
 		}
 	      break;
@@ -3742,7 +3752,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.130 2008-06-04 08:23:57 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.131 2008-06-04 08:47:40 akf Exp $");
 
   /*
    * Initialize the display, accept any format
