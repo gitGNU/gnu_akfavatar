@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.149 2008-06-01 11:04:33 akf Exp $ */
+/* $Id: avatarsay.c,v 2.150 2008-06-04 17:47:33 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -408,8 +408,8 @@ not_available (void)
       avt_say (L"function not available on this system...");
     }
 
-  if (avt_wait_button () != 0)
-    quit (EXIT_SUCCESS);
+  avt_wait_button ();
+  avt_set_status (AVT_NORMAL);
 }
 
 #endif /* not Windows or ReactOS */
@@ -2844,7 +2844,7 @@ ask_manpage (void)
   avt_say (L"Manpage> ");
 
   if (avt_ask_mb (manpage, sizeof (manpage)) != 0)
-    quit (EXIT_SUCCESS);
+    return;
 
   avt_clear ();
   avt_set_text_delay (default_delay);
@@ -2874,8 +2874,7 @@ ask_manpage (void)
 	quit (EXIT_FAILURE);	/* warning already printed */
 
       if (status == AVT_NORMAL)
-	if (avt_wait_button () != 0)
-	  quit (EXIT_SUCCESS);
+	avt_wait_button ();
 
       /* reset quit-request */
       avt_set_status (AVT_NORMAL);
@@ -2994,7 +2993,7 @@ ask_edit_file (void)
   avt_say_mb ("> ");
 
   if (avt_ask_mb (filename, sizeof (filename)) != 0)
-    quit (EXIT_SUCCESS);
+    return;
 
   if (filename[0] != '\0')
     {
@@ -3039,8 +3038,7 @@ about_avatarsay (void)
   set_encoding (default_encoding);
   avt_set_text_delay (default_delay);
 
-  if (avt_wait_button () != 0)
-    quit (EXIT_SUCCESS);
+  avt_wait_button ();
 }
 
 #ifdef NO_MANPAGES
@@ -3134,6 +3132,7 @@ menu (void)
 	{
 	case L'1':		/* terminal-mode */
 	  run_shell ();
+	  avt_set_status (AVT_NORMAL);
 	  break;
 
 	case L'2':		/* show a demo or textfile */
@@ -3142,18 +3141,22 @@ menu (void)
 
 	case L'3':		/* create or edit a demo */
 	  ask_edit_file ();
+	  avt_set_status (AVT_NORMAL);
 	  break;
 
 	case L'4':		/* show a manpage */
 	  ask_manpage ();
+	  avt_set_status (AVT_NORMAL);
 	  break;
 
 	case L'5':		/* documentation */
 	  run_info ();
+	  avt_set_status (AVT_NORMAL);
 	  break;
 
 	case L'6':		/* about avatarsay */
 	  about_avatarsay ();
+	  avt_set_status (AVT_NORMAL);
 	  break;
 
 	case L'7':		/* exit */
@@ -3342,8 +3345,9 @@ main (int argc, char *argv[])
       if (fd > -1)
 	process_subprogram (fd);
 
-      if (avt_wait_button ())
-	quit (EXIT_SUCCESS);
+      if (avt_get_status () == AVT_NORMAL)
+	if (avt_wait_button ())
+	  quit (EXIT_SUCCESS);
 
       if (initialized && !popup)
 	move_out ();
@@ -3372,7 +3376,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.149 2008-06-01 11:04:33 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.150 2008-06-04 17:47:33 akf Exp $");
 
   return EXIT_SUCCESS;
 }

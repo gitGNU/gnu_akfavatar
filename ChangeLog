@@ -1,4 +1,7 @@
 2008-06-04  Andreas K. Foerster  <info@akfoerster.de>
+	
+	* avatarsay.c:
+	quit-request: return to the main-menu first
 
 	* avtfilechooser.c (get_file): improved
 	* avatar.c (avt_get_menu): improved
