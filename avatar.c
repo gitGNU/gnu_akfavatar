@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.129 2008-06-03 08:38:15 akf Exp $ */
+/* $Id: avatar.c,v 2.130 2008-06-04 08:23:57 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2642,28 +2642,25 @@ avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 	      break;
 
 	    case SDL_MOUSEMOTION:
-	      if (event.motion.x >= viewport.x
-		  && event.motion.x <= viewport.x + viewport.w
-		  && event.motion.y >= viewport.y
-		  && event.motion.y <= viewport.y + viewport.h)
+	      line_nr = ((event.motion.y - area.y) / LINEHEIGHT) + 1;
+	      if (line_nr != old_line)
 		{
-		  line_nr = ((event.motion.y - area.y) / LINEHEIGHT) + 1;
-		  if (line_nr != old_line)
+		  /* remove old cursor */
+		  if (text_cursor_actually_visible)
 		    {
-		      /* remove old cursor */
 		      cursor.x = area.x;
 		      cursor.y = area.y + (old_line - 1) * LINEHEIGHT;
 		      avt_show_text_cursor (AVT_FALSE);
-
-		      /* display new cursor */
-		      if (line_nr >= menu_start && line_nr <= menu_end)
-			{
-			  cursor.x = area.x;
-			  cursor.y = area.y + (line_nr - 1) * LINEHEIGHT;
-			  avt_show_text_cursor (AVT_TRUE);
-			  old_line = line_nr;
-			}
 		    }
+
+		  /* display new cursor */
+		  if (line_nr >= menu_start && line_nr <= menu_end)
+		    {
+		      cursor.x = area.x;
+		      cursor.y = area.y + (line_nr - 1) * LINEHEIGHT;
+		      avt_show_text_cursor (AVT_TRUE);
+		    }
+		  old_line = line_nr;
 		}
 	      break;
 
@@ -3745,7 +3742,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.129 2008-06-03 08:38:15 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.130 2008-06-04 08:23:57 akf Exp $");
 
   /*
    * Initialize the display, accept any format
