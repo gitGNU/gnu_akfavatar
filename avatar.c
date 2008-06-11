@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.131 2008-06-04 08:47:40 akf Exp $ */
+/* $Id: avatar.c,v 2.132 2008-06-11 16:54:44 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -247,7 +247,11 @@ static int text_delay = 0;	/* AVT_DEFAULT_TEXT_DELAY */
 static int flip_page_delay = AVT_DEFAULT_FLIP_PAGE_DELAY;
 
 /* color independent from the screen mode */
-static SDL_Color backgroundcolor_RGB = { 0xCC, 0xCC, 0xCC, 0 };
+/* pale brown */
+static SDL_Color backgroundcolor_RGB = { 0xE0, 0xD5, 0xC5, 0 };
+
+/* grey */
+/* static SDL_Color backgroundcolor_RGB = { 0xCC, 0xCC, 0xCC, 0 }; */
 
 /* conversion descriptors for text input and output */
 static avt_iconv_t output_cd = ICONV_UNINITIALIZED;
@@ -3752,7 +3756,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.131 2008-06-04 08:47:40 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.132 2008-06-11 16:54:44 akf Exp $");
 
   /*
    * Initialize the display, accept any format
