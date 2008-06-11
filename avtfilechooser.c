@@ -45,6 +45,12 @@
 /* how many pages? */
 #define MAXPAGES 500
 
+/* maximum size for path */
+/* should fit into stack */
+#ifndef PATH_MAX
+#  define PATH_MAX 4096
+#endif
+
 static avt_bool_t
 is_directory (const char *name)
 {

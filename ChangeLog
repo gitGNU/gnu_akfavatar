@@ -5,6 +5,9 @@
 	
 	* avatarsay.c (run_info):
 	first search for the info files in ./doc/
+	
+	* avtfilechooser.c:
+	define PATH_MAX, if it's not defined already
 
 2008-06-04  Andreas K. Foerster  <info@akfoerster.de>
 	
