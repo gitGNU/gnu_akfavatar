@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.150 2008-06-04 17:47:33 akf Exp $ */
+/* $Id: avatarsay.c,v 2.151 2008-06-11 17:29:36 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2811,7 +2811,19 @@ run_info (void)
   avt_text_direction (AVT_LEFT_TO_RIGHT);
 
   if (language == DEUTSCH)
-    args[1] = "akfavatar-de";
+    {
+      if (access ("./doc/akfavatar-de.info", R_OK) == 0)
+	args[1] = "--file=./doc/akfavatar-de.info";
+      else
+	args[1] = "akfavatar-de";
+    }
+  else				/* not DEUTSCH */
+    {
+      if (access ("./doc/akfavatar-en.info", R_OK) == 0)
+	args[1] = "--file=./doc/akfavatar-en.info";
+      else
+	args[1] = "akfavatar-en";
+    }
 
   fd = execute_process (args);
   if (fd > -1)
@@ -3376,7 +3388,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.150 2008-06-04 17:47:33 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.151 2008-06-11 17:29:36 akf Exp $");
 
   return EXIT_SUCCESS;
 }

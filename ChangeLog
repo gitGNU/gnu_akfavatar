@@ -2,6 +2,9 @@
 
 	* avatar.c:
 	default background color: pale brown (like the website)
+	
+	* avatarsay.c (run_info):
+	first search for the info files in ./doc/
 
 2008-06-04  Andreas K. Foerster  <info@akfoerster.de>
 	
