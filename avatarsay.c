@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.151 2008-06-11 17:29:36 akf Exp $ */
+/* $Id: avatarsay.c,v 2.152 2008-06-12 07:18:10 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -74,9 +74,11 @@
 #define INBUFSIZE 10240
 
 /* maximum size for path */
-/* should fit into stack */
-#ifndef PATH_MAX
-#  define PATH_MAX 4096
+/* must fit into stack */
+#if defined(PATH_MAX) && PATH_MAX < 4096
+#  define PATH_LENGTH PATH_MAX
+#else
+#  define PATH_LENGTH 4096
 #endif
 
 /* is there really no clean way to find the executable? */
@@ -728,7 +730,7 @@ get_data_file (const wchar_t * fn, char filepath[])
     fn++;
 
   result =
-    wcstombs (&filepath[filepath_len], fn, PATH_MAX - filepath_len - 1);
+    wcstombs (&filepath[filepath_len], fn, PATH_LENGTH - filepath_len - 1);
 
   if (result == (size_t) (-1))
     error_msg ("wcstombs", strerror (errno));
@@ -737,7 +739,7 @@ get_data_file (const wchar_t * fn, char filepath[])
 static void
 handle_image_command (const wchar_t * s)
 {
-  char filepath[PATH_MAX];
+  char filepath[PATH_LENGTH];
 
   get_data_file (s + 7, filepath);	/* remove ".image " */
 
@@ -753,7 +755,7 @@ handle_image_command (const wchar_t * s)
 static void
 handle_avatarimage_command (const wchar_t * s)
 {
-  char filepath[PATH_MAX];
+  char filepath[PATH_LENGTH];
 
   /* if already assigned, delete it */
   if (avt_image)
@@ -779,7 +781,7 @@ handle_backgoundcolor_command (const wchar_t * s)
 static void
 handle_audio_command (const wchar_t * s)
 {
-  char filepath[PATH_MAX];
+  char filepath[PATH_LENGTH];
 
   if (!initialized)
     {
@@ -3273,7 +3275,7 @@ show_file (char *f)
   /* if it can't be opened and there is no slash, try with datadir */
   if (fd == -1 && strchr (f, '/') == NULL)
     {
-      char p[PATH_MAX];
+      char p[PATH_LENGTH];
       strcpy (p, datadir);
       strcat (p, "/");
       strcat (p, f);
@@ -3388,7 +3390,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.151 2008-06-11 17:29:36 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.152 2008-06-12 07:18:10 akf Exp $");
 
   return EXIT_SUCCESS;
 }
