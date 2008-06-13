@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.24 2008-06-13 12:39:39 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.25 2008-06-13 13:10:46 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -491,9 +491,13 @@ Darum ist die Einstellung @code{linux} wirklich die richtige.
 
 @subsection Erweiterungen
 
-Die Terminal-Emulation von @command{avatarsay} unterstützt die folgenden 
+Die Terminal-Emulation von @command{avatarsay} unterstützt 
 Erweiterungen, die weder in @code{ANSI X3.64} (@code{ECMA-48}) vorkommen,
-noch von der Terminal-Emulation von Linux unterstützt werden:
+noch von der Terminal-Emulation von Linux unterstützt werden.
+
+Um diese Erweiterungen in eigenen Programmen zu verwenden, wird empfohlen, 
+zunächst zu überprüfen, ob die Umgebungsvariable @code{AKFAVTTERM} gesetzt 
+ist.
 
 @table @code
 @item CSI ? 56 h

@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.32 2008-06-13 12:39:39 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.33 2008-06-13 13:10:46 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -452,9 +452,12 @@ right one.
 
 @subsection extensions 
 
-The terminal-emulation of @command{avatarsay} supports The following 
+The terminal-emulation of @command{avatarsay} supports 
 extensions, which are not in @code{ANSI X3.64} (@code{ECMA-48})
-and which are not supported by the Linux terminal emulation:
+and which are not supported by the Linux terminal emulation.
+
+To use these extensions in your own program, it is recommended first to check 
+for the existence of the environment variable @code{AKFAVTTERM}.
 
 @table @code
 @item CSI ? 56 h
