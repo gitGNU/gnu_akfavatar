@@ -15,7 +15,7 @@ BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 
 .PHONY: all check doc txt info install install-strip installdirs uninstall \
 	html dvi pdf ps man install-html install-dvi install-pdf install-ps \
-	clean mostlyclean distclean maintainerclean dist
+	clean mostlyclean distclean maintainer-clean maintainerclean dist
 
 all: libakfavatar.so libakfavatar.a libavtcio.a avatarsay avatarsay-d
 
@@ -165,7 +165,7 @@ uninstall-info:
 	  $(DESTDIR)$(infodir)/akfavatar-de.info 
 	-rm -f $(DESTDIR)$(infodir)/akfavatar-de.info
 
-install-man:
+install-man: man
 	-$(INSTALL_DATA) $(srcdir)/doc/avatarsay.1 $(DESTDIR)$(mandir)/man1
 
 uninstall-man:
@@ -232,7 +232,12 @@ distclean: clean
 # the rest is just for the maintainer
 # don't use it unless you know what you are doing
 
-maintainerclean: distclean
+maintainer-clean: distclean
+	@echo 'This command is intended for maintainers to use; it'
+	@echo 'deletes files that may need special tools to rebuild.'
+	$(MAKE) -C $(srcdir)/doc maintainer-clean
+
+maintainerclean: maintainer-clean
 
 multiply: $(srcdir)/pascal/multiply.pas
 	-$(srcdir)/pascal/fpcavatar -dRELEASE -FE. -o$@ \

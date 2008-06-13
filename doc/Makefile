@@ -9,7 +9,7 @@ INSTALL_DATA = $(INSTALL) -m 644
 USECSS = --css-include akfavatar.css
 
 .PHONY: all txt info html dvi pdf ps man \
-	clean mostlyclean distclean maintainerclean
+	clean mostlyclean distclean maintainer-clean maintainerclean
 
 all: txt info html dvi pdf ps
 
@@ -99,8 +99,11 @@ distclean: clean
 	-rm -f akfavatar-de.pdf akfavatar-de.ps akfavatar-de.dvi
 	-rm -f akfavatar-de.txt akfavatar-de.xml
 
-maintainerclean: distclean
+maintainer-clean: distclean
+	@echo 'This command is intended for maintainers to use; it'
+	@echo 'deletes files that may need special tools to rebuild.'
 	-rm -f akfavatar-en.info akfavatar-en.html
 	-rm -f akfavatar-de.info akfavatar-de.html
 	-rm -f avatarsay.1
 
+maintainerclean: maintainer-clean
