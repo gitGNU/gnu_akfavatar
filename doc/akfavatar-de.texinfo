@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.23 2008-05-25 14:10:19 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.24 2008-06-13 12:39:39 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -30,7 +30,7 @@ AKFAvatar ist ein lustiger Terminal-Emulator, ein Text-Betrachter, eine
 Skript-Sprache um Demos zu erstellen und eine Programmbibliothek um 
 dafür Programme in C oder Pascal zu schreiben.
 
-Homepage: @uref{http://akfoerster.de/akfavatar/}
+Homepage: @uref{http://akfavatar.nongnu.org/}
 
 Copyright @copyright{} 2007, 2008 Andreas K. Förster,
 @uref{http://akfoerster.de/}

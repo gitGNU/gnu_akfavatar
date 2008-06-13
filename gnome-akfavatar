@@ -30,10 +30,10 @@ SDL_VIDEO_CENTERED=1
 export SDL_VIDEO_CENTERED
 
 # may be overridden by language specific content
-WWW="http://akfoerster.de/akfavatar/"
+WWW="http://akfavatar.nongnu.org/"
 
 case "$LANG" in
-  de*) WWW="http://akfoerster.de/akfavatar/index.de.html"
+  de*) WWW="http://akfavatar.nongnu.org/akfavatar.de.html"
        HELPTEXT="info:akfavatar-de"
        WHICHTEXT="Welchen Text mit AKFAvatar anzeigen?"
        FILEEDIT="Weche Datei editieren"
@@ -58,7 +58,7 @@ case "$LANG" in
        WEBSITE="Website"
        EXIT="beenden";;
 
-  *)   WWW="http://akfoerster.de/akfavatar/index.en.html"
+  *)   WWW="http://akfavatar.nongnu.org/akfavatar.en.html"
        HELPTEXT="info:akfavatar-en"
        WHICHTEXT="Which text to show with AKFAvatar?"
        FILEEDIT="file to edit"

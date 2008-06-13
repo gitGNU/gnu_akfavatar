@@ -99,18 +99,6 @@ You can also use it as a fancy manpage reader.
 Try "avtman man"...
 
 
-The script lrun
-
-Dynamically linked programs normally need the libraries to be installed
-on the system. The script lrun can be used to start programs, when
-the library is not yet installed. It searches the libraries also in the
-script's directory and in the current directory. Use it like this:
-"./lrun example" finds the library in the current directory. Or from
-the Pascal subdirectory "../lrun multiply" will find the library in the
-parent directory.  Additionally lrun sets a path to the documentation 
-for avatarsay.
-
-
 Installing
 
 On a GNU/Linux system first make sure "/usr/local/lib" is mentioned in

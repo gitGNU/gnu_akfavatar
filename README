@@ -1,6 +1,6 @@
 AKFAvatar
 
-Homepage: http://akfoerster.de/akfavatar/
+Homepage: http://akfavatar.nongnu.org/
 
 AKFAvatar is software mainly for GNU+Linux, where an avatar appears on the
 screen and tells things written in a balloon. First the avatar moves slowly
@@ -15,10 +15,6 @@ There is also a rather mature Pascal-binding for GNU-Pascal and Free Pascal.
 
 This package is free software under the GPL version 3 or any later
 version. Details can be found in the file COPYING.
-
-The script "lrun" sets up some environment variables to run the programs
-when the lirary and the documentation is not installed yet.
-For example, use it like this: "./lrun avatarsay"
 
 
 See the file AUTHORS for contributors to this package.

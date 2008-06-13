@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.31 2008-05-25 14:10:19 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.32 2008-06-13 12:39:39 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -25,7 +25,7 @@ This is the documentation for AKFAvatar
 AKFAvatar is a fancy terminal-emultator, a text-viewer, scripting language 
 for making demos, and a library for writing programs in C or Pascal.
 
-Homepage: @uref{http://akfoerster.de/akfavatar/}
+Homepage: @uref{http://akfavatar.nongnu.org/}
 
 Copyright @copyright{} 2007, 2008 Andreas K. Foerster,
 @uref{http://akfoerster.de/}
