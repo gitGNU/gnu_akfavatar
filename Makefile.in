@@ -268,6 +268,7 @@ dist: info html man distclean
 	
 	mkdir $(PKGNAME)/doc
 	ln doc/README doc/Makefile doc/avatarsay.1 \
+	   doc/akfavatar.h doc/pasref.txt \
 	   doc/akfavatar-en.texinfo doc/akfavatar-en.info \
 	   doc/akfavatar-en.html \
 	   doc/akfavatar-de.texinfo doc/akfavatar-de.info \

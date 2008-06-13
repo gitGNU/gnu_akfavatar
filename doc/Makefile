@@ -92,8 +92,6 @@ distclean: clean
 	-rm -rf akfavatar-en/
 	-rm -rf akfavatar-de/
 	-rm -f version.texi
-	-rm -f pasref.txt
-	-rm -f akfavatar.h
 	-rm -f akfavatar-en.pdf akfavatar-en.ps akfavatar-en.dvi 
 	-rm -f akfavatar-en.txt akfavatar-en.xml
 	-rm -f akfavatar-de.pdf akfavatar-de.ps akfavatar-de.dvi
@@ -102,6 +100,8 @@ distclean: clean
 maintainer-clean: distclean
 	@echo 'This command is intended for maintainers to use; it'
 	@echo 'deletes files that may need special tools to rebuild.'
+	-rm -f akfavatar.h
+	-rm -f pasref.txt
 	-rm -f akfavatar-en.info akfavatar-en.html
 	-rm -f akfavatar-de.info akfavatar-de.html
 	-rm -f avatarsay.1
