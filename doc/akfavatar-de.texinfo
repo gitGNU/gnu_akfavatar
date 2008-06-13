@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.25 2008-06-13 13:10:46 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.26 2008-06-13 13:46:46 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -413,13 +413,16 @@ man über die Umgebungsvariablen @env{SHELL}, beziehungsweise @env{HOME}
 andere Werte einstellen.  Das Programm kommt aber auch damit klar, wenn diese
 Umgebungsvariablen nicht gesetzt sind.
 
-@subsection Als Frontend für Textkonsolen-Programme
+@subsection Als Benutzeroberfläche für Textkonsolen-Programme
 @cindex Frontend
+@cindex Benutzeroberfläche
+@cindex Oberfläche
 @cindex Wrapper
 @cindex Textkonsolen-Programme
 @cindex Konsolen-Programme
 
-Man kann @command{avatarsay} als Frontend für Textkonsolen-Programme verwenden.
+Man kann @command{avatarsay} als Benutzeroberfläche für Textkonsolen-Programme 
+verwenden.
 Dazu verwende man die Option @option{--execute}, oder kurz @option{-x}, gefolgt
 vom Namen des auszuführenden Programmes.  Man kann dies natürlich auch mit der 
 Option @option{--nocolor} kombinieren.  Optionen, die nach dem Programmnamen
@@ -507,6 +510,7 @@ schaltet den Modus für langsame Textausgabe an
 schaltet den Modus für langsame Textausgabe aus (Voreinstellung)
 @end table
 
+Weitere Erweiterungen sind geplant.
 
 @node Text-Betrachter
 @section Einsatz von @command{avatarsay} als lustiger Text-Betrachter

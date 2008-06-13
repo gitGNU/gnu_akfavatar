@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.33 2008-06-13 13:10:46 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.34 2008-06-13 13:46:46 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -351,7 +351,7 @@ which is also supported.
 This chapter explains the various uses of the tool @command{avatarsay}.
 
 @menu
-* Text-terminal::              Using @command{avatarsay} as fanc text-terminal
+* Text-terminal::              Using @command{avatarsay} as fancy text-terminal
 * Text-viewer::                Using @command{avatarsay} as fancy text-viewer
 * Make your text executable::  How to turn your text into a program
 * Different avatar image::     Using a different avatar image
@@ -466,6 +466,8 @@ switches the slowprint-mode on
 @item CSI ? 56 l
 switches the slowprint-mode off (default)
 @end table
+
+further extensions are planned.
 
 @node Text-viewer
 @section Using @command{avatarsay} as fancy text-viewer.
