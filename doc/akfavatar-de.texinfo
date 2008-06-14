@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.26 2008-06-13 13:46:46 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.27 2008-06-14 13:37:28 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -253,9 +253,14 @@ Diese Software (AKFAvatar) versucht den richtigen Namen für die interne
 Kodierung von @code{wchar_t} zu erraten.  Das klappt aber nicht in jedem
 Fall.  Man kann dann diese Information zusammen mit dieser Option angeben,
 und zwar folgendermaßen: @samp{--with-iconv=UCS-4LE}.  Auf vielen Systemen
-kann man mit dem Befelh @command{iconv -l} eine Liste erhalten.  Wenn
+kann man mit dem Befehl @command{iconv -l} eine Liste erhalten.  Wenn
 `WCHAR_T'' oder ``wchar_t'' auf dieser Liste steht, sollte man es damit
 versuchen.
+
+Wenn man weiß, dass SDL_image auf jeden Fall installiert ist, kann man den
+Parameter @option{--enable-link-sdl-image} angeben.  Dadurch wird die 
+Bibliothek direkt mit SDL_image verlinkt, anstatt dass diese zur Laufzeit 
+nachgeladen werden muss.
 
 Um ältere SDL-Versionen auf dem Ziel-Computer zu unterstützen, könnte
 es notwendig sein, den Parameter @option{--with-oldsdl} bei 
@@ -649,12 +654,12 @@ Transparenz unterstützen @emph{würde}.
 Das genaue Aufruf-Format für @command{avatarsay} ist:
 
 @example
-avatarsay [@var{Optionen}] [@var{Text-Datei}(en)]
+avatarsay [@var{Optionen}] [@var{Text-Dateien}]
 avatarsay [@var{Optionen}] --execute @var{Programm} [@var{Programm-Optionen}]
 @end example
 
 @noindent
-Wenn @var{Text-Datei} nur ein @file{-} ist, dann liest das Programm von 
+Wenn @var{Text-Dateien} nur ein @file{-} ist, dann liest das Programm von 
 der Standard-Eingabe (@file{stdin}) und es läuft nicht in einer Schleife.
 
 @need 800
