@@ -11,16 +11,9 @@ fi
 localdir=$(dirname $0)
 test "$localdir" = "." && localdir=$(pwd)
 
-PATH=$PATH:$localdir:.
-INFOPATH=$INFOPATH:$localdir:$localdir/doc
+PATH="${PATH:+$PATH:}$localdir:."
+LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$localdir"
 
-if [ -z "$LD_LIBRARY_PATH" ]
-then
-  LD_LIBRARY_PATH="$localdir"
-else
-  LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$localdir"
-fi
-
-export PATH INFOPATH LD_LIBRARY_PATH
+export PATH LD_LIBRARY_PATH
 
 exec "$@"
