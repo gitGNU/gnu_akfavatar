@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.152 2008-06-12 07:18:10 akf Exp $ */
+/* $Id: avatarsay.c,v 2.153 2008-06-20 19:54:42 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -54,6 +54,7 @@
 #ifndef NO_PTY
 #  include <termios.h>
 #  include <sys/ioctl.h>
+#  include <sys/wait.h>
 #  include <pwd.h>
 #endif
 
@@ -2568,6 +2569,7 @@ process_subprogram (int fd)
   avt_bool_t stop;
   wint_t ch;
   wchar_t last_character;
+  int status;
   const wchar_t vt100trans[] = {
     0x00A0, 0x25C6, 0x2592, 0x2409, 0x240C, 0x240D,
     0x240A, 0x00B0, 0x00B1, 0x2424, 0x240B,
@@ -2623,6 +2625,9 @@ process_subprogram (int fd)
   if (close (fd) == -1 && errno != EAGAIN)
     warning_msg ("close", strerror (errno));
 
+  /* fetch process status, just to prevent zombies */
+  wait (&status);
+  
   /* release keyhandler */
   avt_register_keyhandler (NULL);
   prg_input = -1;
@@ -3390,7 +3395,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.152 2008-06-12 07:18:10 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.153 2008-06-20 19:54:42 akf Exp $");
 
   return EXIT_SUCCESS;
 }
