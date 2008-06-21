@@ -1,3 +1,9 @@
+2008-06-20  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (process_subprogram, ask_manpage):
+	get the exitcode from subprocesses, to avoid zombie processes
+	(fixes bug #23655)
+
 2008-06-17  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lrun: simplified and no INFOPATH anymore
