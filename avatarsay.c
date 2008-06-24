@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.154 2008-06-20 20:37:22 akf Exp $ */
+/* $Id: avatarsay.c,v 2.155 2008-06-24 08:22:18 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2569,7 +2569,6 @@ process_subprogram (int fd)
   avt_bool_t stop;
   wint_t ch;
   wchar_t last_character;
-  int exitcode;
   const wchar_t vt100trans[] = {
     0x00A0, 0x25C6, 0x2592, 0x2409, 0x240C, 0x240D,
     0x240A, 0x00B0, 0x00B1, 0x2424, 0x240B,
@@ -2625,8 +2624,8 @@ process_subprogram (int fd)
   if (close (fd) == -1 && errno != EAGAIN)
     warning_msg ("close", strerror (errno));
 
-  /* fetch process exitcode, just to prevent zombies */
-  wait (&exitcode);
+  /* just to prevent zombies */
+  wait (NULL);
 
   /* release keyhandler */
   avt_register_keyhandler (NULL);
@@ -2856,7 +2855,6 @@ ask_manpage (void)
 {
   char manpage[AVT_LINELENGTH] = "man";
   char *argv[] = { "man", "-t", (char *) &manpage, NULL };
-  int exitcode;
 
   avt_clear ();
   avt_set_text_delay (0);
@@ -2889,8 +2887,8 @@ ask_manpage (void)
       if (fd > -1)
 	process_file (fd);
 
-      /* fetch process exitcode, just to prevent zombies */
-      wait (&exitcode);
+      /* just to prevent zombies */
+      wait (NULL);
 
       status = avt_get_status ();
       if (status == AVT_ERROR)
@@ -3399,7 +3397,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.154 2008-06-20 20:37:22 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.155 2008-06-24 08:22:18 akf Exp $");
 
   return EXIT_SUCCESS;
 }

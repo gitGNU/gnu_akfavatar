@@ -1,6 +1,11 @@
 2008-06-20  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (process_subprogram, ask_manpage):
+	use NULL for wait, since I don't use the value anyway
+
+2008-06-20  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (process_subprogram, ask_manpage):
 	get the exitcode from subprocesses, to avoid zombie processes
 	(fixes bug #23655)
 
