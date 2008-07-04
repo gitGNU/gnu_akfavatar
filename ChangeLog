@@ -1,3 +1,8 @@
+2008-07-04  Andreas K. Foerster  <info@akfoerster.de>
+
+	* ucsfont4x6.c, ucsfont7x14.c, ucsfont7x14B.c, ucsfont9x18.c:
+	font data marked as const
+
 2008-06-20  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (process_subprogram, ask_manpage):

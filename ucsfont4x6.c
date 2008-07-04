@@ -8,7 +8,7 @@
 
 #define DEFAULT_CHAR 0
 
-unsigned char font[] = {
+const unsigned char font[] = {
 /* char0 */
 0xA0,0x00,0xA0,0x00,0xA0,0x00,
 /* space */
