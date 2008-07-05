@@ -74,7 +74,7 @@ if fontstarted
   else
     begin
     WriteLn;
-    WriteLn('unsigned char font[] = {');
+    WriteLn('const unsigned char font[] = {');
     fontstarted := true;
     end;
 
