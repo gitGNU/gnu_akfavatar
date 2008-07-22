@@ -1,6 +1,9 @@
 2008-07-22  Andreas K. Foerster  <info@akfoerster.de>
 
-	* avatar.c (avt_say, avt_say_len):
+	* avatar.c (avt_say_len):
+	allow a string to start with binary zeros
+
+	* avatar.c (avt_say, avt_say_len, avt_put_character):
 	when string is empty then at least check for events
 
 2008-07-04  Andreas K. Foerster  <info@akfoerster.de>
