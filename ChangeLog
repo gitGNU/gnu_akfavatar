@@ -1,3 +1,8 @@
+2008-07-22  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_say, avt_say_len):
+	when string is empty then at least check for events
+
 2008-07-04  Andreas K. Foerster  <info@akfoerster.de>
 
 	* ucsfont4x6.c, ucsfont7x14.c, ucsfont7x14B.c, ucsfont9x18.c:
