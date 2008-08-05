@@ -57,21 +57,21 @@ libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o
 
 avatar.lo: avatar.c akfavatar.h version.h \
            balloonpointer.c circle.c keybtn.c regicon.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fpic -o $@ \
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ \
 	  avatar.c
 
 avatar-default.lo: avatar-default.c gnu-head.c gnu-small.c akfavatar.h
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fpic -o $@ avatar-default.c
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ avatar-default.c
 
 avatar-audio.lo: avatar-audio.c akfavatar.h bell.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fpic -o $@ avatar-audio.c
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ avatar-audio.c
 
 font.lo: font.c ucsfont7x14.c ucsfont4x6.c ucsfont9x18.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fpic -o $@ font.c
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ font.c
 
 libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo font.lo
 	$(CC) -shared \
-	      -Wl,-soname,$(SONAME) -o $(LIBNAME) -fpic \
+	      -Wl,-soname,$(SONAME) -o $(LIBNAME) -fPIC \
 	      avatar.lo avatar-default.lo avatar-audio.lo font.lo \
 	      $(LDFLAGS) $(SDLLDFLAGS)
 	-ln -sf $(LIBNAME) $(SONAME)
