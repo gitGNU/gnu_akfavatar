@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.135 2008-08-06 12:36:58 akf Exp $ */
+/* $Id: avatar.c,v 2.136 2008-08-06 16:10:44 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2611,6 +2611,41 @@ avt_get_key (wchar_t * ch)
   return _avt_STATUS;
 }
 
+static void
+update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
+		 SDL_Surface * plain_menu, SDL_Surface * bar)
+{
+  SDL_Rect s, t;
+
+  if (line_nr != old_line)
+    {
+      if (old_line >= menu_start && old_line <= menu_end)
+	{			/* restore oldline */
+	  s.x = 0;
+	  s.y = (old_line - 1) * LINEHEIGHT;
+	  s.w = viewport.w;
+	  s.h = LINEHEIGHT;
+	  t.x = viewport.x;
+	  t.y = viewport.y + s.y;
+	  t.w = viewport.w;
+	  t.h = LINEHEIGHT;
+	  SDL_BlitSurface (plain_menu, &s, screen, &t);
+	  SDL_UpdateRect (screen, t.x, t.y, t.w, t.h);
+	}
+
+      /* show bar */
+      if (line_nr >= menu_start && line_nr <= menu_end)
+	{
+	  t.x = viewport.x;
+	  t.y = viewport.y + ((line_nr - 1) * LINEHEIGHT);
+	  t.w = viewport.w;
+	  t.h = LINEHEIGHT;
+	  SDL_BlitSurface (bar, NULL, screen, &t);
+	  SDL_UpdateRect (screen, t.x, t.y, t.w, t.h);
+	}
+    }
+}
+
 int
 avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 {
@@ -2667,8 +2702,32 @@ avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 	  switch (event.type)
 	    {
 	    case SDL_KEYDOWN:
-	      if ((event.key.keysym.unicode >= start_code)
-		  && (event.key.keysym.unicode <= end_code))
+	      if (event.key.keysym.sym == SDLK_DOWN && line_nr < menu_end)
+		{
+		  line_nr++;
+		  if (line_nr < menu_start)
+		    line_nr = menu_start;
+		  update_menu_bar (menu_start, menu_end, line_nr, old_line,
+				   plain_menu, bar);
+		  old_line = line_nr;
+		}
+	      else if (event.key.keysym.sym == SDLK_UP
+		       && line_nr > menu_start)
+		{
+		  line_nr--;
+		  if (line_nr > menu_end)
+		    line_nr = menu_end;
+		  update_menu_bar (menu_start, menu_end, line_nr, old_line,
+				   plain_menu, bar);
+		  old_line = line_nr;
+		}
+	      else if ((event.key.keysym.sym == SDLK_RETURN
+			|| event.key.keysym.sym == SDLK_KP_ENTER
+			|| event.key.keysym.sym == SDLK_RIGHT)
+		       && line_nr >= menu_start && line_nr <= menu_end)
+		*ch = (wchar_t) (line_nr - menu_start + start_code);
+	      else if ((event.key.keysym.unicode >= start_code)
+		       && (event.key.keysym.unicode <= end_code))
 		*ch = (wchar_t) event.key.keysym.unicode;
 	      else
 		avt_bell ();	/* wrong key pressed */
@@ -2678,33 +2737,8 @@ avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 	      line_nr = ((event.motion.y - viewport.y) / LINEHEIGHT) + 1;
 	      if (line_nr != old_line)
 		{
-		  if (old_line >= menu_start && old_line <= menu_end)
-		    {		/* restore oldline */
-		      SDL_Rect s, t;
-		      s.x = 0;
-		      s.y = (old_line - 1) * LINEHEIGHT;
-		      s.w = viewport.w;
-		      s.h = LINEHEIGHT;
-		      t.x = viewport.x;
-		      t.y = viewport.y + s.y;
-		      t.w = viewport.w;
-		      t.h = LINEHEIGHT;
-		      SDL_BlitSurface (plain_menu, &s, screen, &t);
-		      SDL_UpdateRect (screen, t.x, t.y, t.w, t.h);
-		    }
-
-		  /* show bar */
-		  if (line_nr >= menu_start && line_nr <= menu_end)
-		    {
-		      SDL_Rect t;
-		      t.x = viewport.x;
-		      t.y = viewport.y + ((line_nr - 1) * LINEHEIGHT);
-		      t.w = viewport.w;
-		      t.h = LINEHEIGHT;
-		      SDL_BlitSurface (bar, NULL, screen, &t);
-		      SDL_UpdateRect (screen, t.x, t.y, t.w, t.h);
-		    }
-
+		  update_menu_bar (menu_start, menu_end, line_nr, old_line,
+				   plain_menu, bar);
 		  old_line = line_nr;
 		}
 	      break;
@@ -3787,7 +3821,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.135 2008-08-06 12:36:58 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.136 2008-08-06 16:10:44 akf Exp $");
 
   /*
    * Initialize the display, accept any format

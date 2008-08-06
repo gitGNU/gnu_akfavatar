@@ -1,10 +1,16 @@
 2008-08-06  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatar.c (update_menu_bar):
+	new function
+
+	* avatar.c (avt_get_menu):
+	support for arrow keys - use right or enter to select
+
 	* avatar.c (avt_get_menu):
 	use a menu-bar
 
 	* avatar.c (cursor_color): 
-        new global variable - used for the cursor and for the menu-bar
+	new global variable - used for the cursor and for the menu-bar
 
 2008-07-22  Andreas K. Foerster  <info@akfoerster.de>
 
