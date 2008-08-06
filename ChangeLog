@@ -1,3 +1,11 @@
+2008-08-06  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_get_menu):
+	use a menu-bar
+
+	* avatar.c (cursor_color): 
+        new global variable - used for the cursor and for the menu-bar
+
 2008-07-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_say_len):

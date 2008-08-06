@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.134 2008-07-22 13:54:48 akf Exp $ */
+/* $Id: avatar.c,v 2.135 2008-08-06 12:36:58 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -252,6 +252,9 @@ static SDL_Color backgroundcolor_RGB = { 0xE0, 0xD5, 0xC5, 0 };
 
 /* grey */
 /* static SDL_Color backgroundcolor_RGB = { 0xCC, 0xCC, 0xCC, 0 }; */
+
+/* color for cursor and menu-bar */
+static SDL_Color cursor_color = { 0xF2, 0x89, 0x19, 0 };
 
 /* conversion descriptors for text input and output */
 static avt_iconv_t output_cd = ICONV_UNINITIALIZED;
@@ -2611,20 +2614,45 @@ avt_get_key (wchar_t * ch)
 int
 avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 {
+  SDL_Surface *plain_menu, *bar;
   SDL_Event event;
   wchar_t end_code;
-  SDL_Rect *area;
-  struct pos oldcursor;
   int line_nr = 1, old_line = 0;
 
   if (screen)
     {
-      oldcursor = cursor;
+      /* get a copy of the viewport */
+      plain_menu = SDL_CreateRGBSurface (SDL_SWSURFACE,
+					 viewport.w, viewport.h,
+					 screen->format->BitsPerPixel,
+					 screen->format->Rmask,
+					 screen->format->Gmask,
+					 screen->format->Bmask,
+					 screen->format->Amask);
 
-      if (origin_mode)
-	area = &textfield;
-      else
-	area = &viewport;
+      if (!plain_menu)
+	{
+	  _avt_STATUS = AVT_ERROR;
+	  return _avt_STATUS;
+	}
+
+      SDL_BlitSurface (screen, &viewport, plain_menu, NULL);
+
+      /* prepare transparent bar */
+      bar = SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_SRCALPHA | SDL_RLEACCEL,
+				  viewport.w, LINEHEIGHT, 8, 0, 0, 0, 128);
+
+      if (!bar)
+	{
+	  SDL_FreeSurface (plain_menu);
+	  _avt_STATUS = AVT_ERROR;
+	  return _avt_STATUS;
+	}
+
+      /* set color for bar and make it transparent */
+      SDL_FillRect (bar, NULL, 0);
+      SDL_SetColors (bar, &cursor_color, 0, 1);
+      SDL_SetAlpha (bar, SDL_SRCALPHA | SDL_RLEACCEL, 128);
 
       SDL_EventState (SDL_MOUSEMOTION, SDL_ENABLE);
       SDL_ShowCursor (SDL_ENABLE);	/* mouse cursor */
@@ -2634,16 +2662,6 @@ avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
       while ((*ch == L'\0') && (_avt_STATUS == AVT_NORMAL))
 	{
 	  SDL_WaitEvent (&event);
-
-	  if (event.type == SDL_VIDEORESIZE && text_cursor_actually_visible)
-	    {
-	      /* remove old cursor */
-	      cursor.x = area->x;
-	      cursor.y = area->y + (old_line - 1) * LINEHEIGHT;
-	      avt_show_text_cursor (AVT_FALSE);
-	      old_line = 0;
-	    }
-
 	  avt_analyze_event (&event);
 
 	  switch (event.type)
@@ -2657,24 +2675,36 @@ avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 	      break;
 
 	    case SDL_MOUSEMOTION:
-	      line_nr = ((event.motion.y - area->y) / LINEHEIGHT) + 1;
+	      line_nr = ((event.motion.y - viewport.y) / LINEHEIGHT) + 1;
 	      if (line_nr != old_line)
 		{
-		  /* remove old cursor */
-		  if (text_cursor_actually_visible)
-		    {
-		      cursor.x = area->x;
-		      cursor.y = area->y + (old_line - 1) * LINEHEIGHT;
-		      avt_show_text_cursor (AVT_FALSE);
+		  if (old_line >= menu_start && old_line <= menu_end)
+		    {		/* restore oldline */
+		      SDL_Rect s, t;
+		      s.x = 0;
+		      s.y = (old_line - 1) * LINEHEIGHT;
+		      s.w = viewport.w;
+		      s.h = LINEHEIGHT;
+		      t.x = viewport.x;
+		      t.y = viewport.y + s.y;
+		      t.w = viewport.w;
+		      t.h = LINEHEIGHT;
+		      SDL_BlitSurface (plain_menu, &s, screen, &t);
+		      SDL_UpdateRect (screen, t.x, t.y, t.w, t.h);
 		    }
 
-		  /* display new cursor */
+		  /* show bar */
 		  if (line_nr >= menu_start && line_nr <= menu_end)
 		    {
-		      cursor.x = area->x;
-		      cursor.y = area->y + (line_nr - 1) * LINEHEIGHT;
-		      avt_show_text_cursor (AVT_TRUE);
+		      SDL_Rect t;
+		      t.x = viewport.x;
+		      t.y = viewport.y + ((line_nr - 1) * LINEHEIGHT);
+		      t.w = viewport.w;
+		      t.h = LINEHEIGHT;
+		      SDL_BlitSurface (bar, NULL, screen, &t);
+		      SDL_UpdateRect (screen, t.x, t.y, t.w, t.h);
 		    }
+
 		  old_line = line_nr;
 		}
 	      break;
@@ -2683,21 +2713,21 @@ avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 	      /* any of the first trhee buttons, but not the wheel */
 	      if (event.button.button <= 3)
 		{
-		  line_nr = ((event.button.y - area->y) / LINEHEIGHT) + 1;
+		  line_nr = ((event.button.y - viewport.y) / LINEHEIGHT) + 1;
 
 		  if (line_nr >= menu_start && line_nr <= menu_end
-		      && event.button.x >= area->x
-		      && event.button.x <= area->x + area->w)
+		      && event.button.x >= viewport.x
+		      && event.button.x <= viewport.x + viewport.w)
 		    *ch = (wchar_t) (line_nr - menu_start + start_code);
 		}
 	      break;
 	    }
 	}
 
-      cursor = oldcursor;
-      avt_show_text_cursor (AVT_FALSE);
       SDL_ShowCursor (SDL_DISABLE);
       SDL_EventState (SDL_MOUSEMOTION, SDL_IGNORE);
+      SDL_FreeSurface (plain_menu);
+      SDL_FreeSurface (bar);
     }
 
   return _avt_STATUS;
@@ -3757,7 +3787,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.134 2008-07-22 13:54:48 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.135 2008-08-06 12:36:58 akf Exp $");
 
   /*
    * Initialize the display, accept any format
@@ -3857,16 +3887,9 @@ avt_initialize (const char *title, const char *icontitle,
     }
 
   /* set color table for character canvas */
-  {
-    SDL_Color color;
-
-    /* colored background */
-    color.r = 0x88;
-    color.g = 0x88;
-    color.b = 0xFF;
-    SDL_SetColors (avt_text_cursor, &color, 0, 1);
-    SDL_SetAlpha (avt_text_cursor, SDL_SRCALPHA | SDL_RLEACCEL, 128);
-  }
+  SDL_FillRect (avt_text_cursor, NULL, 0);
+  SDL_SetColors (avt_text_cursor, &cursor_color, 0, 1);
+  SDL_SetAlpha (avt_text_cursor, SDL_SRCALPHA | SDL_RLEACCEL, 128);
 
   /* reserve space for character under text-mode cursor */
   avt_cursor_character =
