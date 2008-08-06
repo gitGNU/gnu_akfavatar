@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.137 2008-08-06 18:07:25 akf Exp $ */
+/* $Id: avatar.c,v 2.138 2008-08-06 18:32:18 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2733,8 +2733,6 @@ avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 			|| event.key.keysym.sym == SDLK_KP6)
 		       && line_nr >= menu_start && line_nr <= menu_end)
 		*ch = (wchar_t) (line_nr - menu_start + start_code);
-	      else
-		avt_bell ();	/* wrong key pressed */
 	      break;
 
 	    case SDL_MOUSEMOTION:
@@ -3825,7 +3823,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.137 2008-08-06 18:07:25 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.138 2008-08-06 18:32:18 akf Exp $");
 
   /*
    * Initialize the display, accept any format
