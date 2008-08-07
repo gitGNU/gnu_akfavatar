@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.156 2008-08-07 09:40:40 akf Exp $ */
+/* $Id: avatarsay.c,v 2.157 2008-08-07 16:37:56 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2796,7 +2796,6 @@ run_shell (void)
 {
   int fd;
 
-  avt_clear ();
   avt_set_text_delay (0);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
   chdir (get_user_home ());
@@ -3152,6 +3151,7 @@ menu (void)
       switch (ch)
 	{
 	case L'1':		/* terminal-mode */
+          avt_show_avatar (); /* no balloon, while starting up */
 	  run_shell ();
 	  avt_set_status (AVT_NORMAL);
 	  break;
@@ -3397,7 +3397,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.156 2008-08-07 09:40:40 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.157 2008-08-07 16:37:56 akf Exp $");
 
   return EXIT_SUCCESS;
 }

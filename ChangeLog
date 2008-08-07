@@ -1,5 +1,8 @@
 2008-08-07  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatarsay.c (menu, run_shell):
+	hide balloon while starting up the shell
+
 	* avtfilechooser.c (avt_menu):
 	no direct index keys anymore
 
