@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.140 2008-08-07 15:39:12 akf Exp $ */
+/* $Id: avatar.c,v 2.141 2008-08-07 18:50:45 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2760,7 +2760,14 @@ avt_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code,
 	      break;
 
 	    case SDL_MOUSEMOTION:
-	      line_nr = ((event.motion.y - viewport.y) / LINEHEIGHT) + 1;
+	      if (event.motion.x >= viewport.x
+		  && event.motion.x <= viewport.x + viewport.w
+		  && event.motion.y >= viewport.y
+		  && event.motion.y <= viewport.y + viewport.h)
+		line_nr = ((event.motion.y - viewport.y) / LINEHEIGHT) + 1;
+	       else
+		line_nr = 0;
+
 	      if (line_nr != old_line)
 		{
 		  update_menu_bar (menu_start, menu_end, line_nr, old_line,
@@ -3855,7 +3862,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.140 2008-08-07 15:39:12 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.141 2008-08-07 18:50:45 akf Exp $");
 
   /*
    * Initialize the display, accept any format
