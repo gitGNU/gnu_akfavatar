@@ -45,6 +45,10 @@
 /* how many pages? */
 #define MAXPAGES 500
 
+/* internal key-code for menu */
+/* use reserved unicode block, to make sure no keys are assigned to it */
+#define START_CODE 0xE000
+
 static avt_bool_t
 is_directory (const char *name)
 {
@@ -54,15 +58,6 @@ is_directory (const char *name)
     return (avt_bool_t) S_ISDIR (buf.st_mode);
   else
     return AVT_FALSE;
-}
-
-static void
-show_idx (int idx)
-{
-  char str[5];
-
-  snprintf (str, sizeof (str), "%c) ", idx + (int) 'a');
-  avt_say_mb (str);
 }
 
 static void
@@ -121,7 +116,6 @@ start:
 
   /* entry for parent directory */
   strcpy (entry[idx], "..");
-  show_idx (idx);
   MARK (PARENT_DIRECTORY);
   idx++;
   avt_new_line ();
@@ -140,17 +134,16 @@ start:
 	    {
 	      if (d)		/* continue entry */
 		{
-		  show_idx (idx);
 		  MARK (CONTINUE);
 		  idx++;
 		}
 
-	      if (avt_menu (&ch, 2, idx + 1, L'a',
+	      if (avt_menu (&ch, 2, idx + 1, START_CODE,
 			    (page_nr > 0), (d != NULL)))
 		break;
 
 	      new_page (dirname);
-	      filenr = (int) (ch - L'a');
+	      filenr = (int) (ch - START_CODE);
 
 	      if (d && filenr == idx - 1)	/* continue? */
 		{
@@ -160,7 +153,6 @@ start:
 		    page_nr = MAXPAGES - 1;
 
 		  entry[idx][0] = '\0';
-		  show_idx (idx);
 		  MARK (BACK);
 		  idx++;
 		  avt_new_line ();
@@ -175,13 +167,11 @@ start:
 		  if (page_nr > 0)
 		    {
 		      entry[idx][0] = '\0';
-		      show_idx (idx);
 		      MARK (BACK);
 		    }
 		  else		/* first page */
 		    {
 		      strcpy (entry[idx], "..");
-		      show_idx (idx);
 		      MARK (PARENT_DIRECTORY);
 		    }
 
@@ -199,7 +189,6 @@ start:
 
 	  /* copy name into entry */
 	  strncpy (entry[idx], d->d_name, sizeof (entry[idx]));
-	  show_idx (idx);
 	  avt_say_mb (entry[idx]);
 
 	  /* is it a directory? */

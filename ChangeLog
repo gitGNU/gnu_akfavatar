@@ -1,8 +1,12 @@
 2008-08-07  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avtfilechooser.c (avt_menu):
+	no direct index keys anymore
+
 	* avatar.c (avt_menu):
 	new function - replaces avt_get_menu
 	supports continued menus
+        avtfilechooser.c: adapted
 
 2008-08-06  Andreas K. Foerster  <info@akfoerster.de>
 
