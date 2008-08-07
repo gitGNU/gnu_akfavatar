@@ -145,7 +145,8 @@ start:
 		  idx++;
 		}
 
-	      if (avt_get_menu (&ch, 2, idx + 1, L'a'))
+	      if (avt_menu (&ch, 2, idx + 1, L'a',
+			    (page_nr > 0), (d != NULL)))
 		break;
 
 	      new_page (dirname);

@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.155 2008-06-24 08:22:18 akf Exp $ */
+/* $Id: avatarsay.c,v 2.156 2008-08-07 09:40:40 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -3144,7 +3144,7 @@ menu (void)
       menu_end = avt_where_y () - 1;
       avt_set_text_delay (default_delay);
 
-      if (avt_get_menu (&ch, menu_start, menu_end, L'1'))
+      if (avt_menu (&ch, menu_start, menu_end, L'1', AVT_FALSE, AVT_FALSE))
 	quit (EXIT_SUCCESS);
 
       avt_viewport (1, 1, avt_get_max_x (), avt_get_max_y ());
@@ -3397,7 +3397,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.155 2008-06-24 08:22:18 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.156 2008-08-07 09:40:40 akf Exp $");
 
   return EXIT_SUCCESS;
 }

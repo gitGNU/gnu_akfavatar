@@ -1,3 +1,9 @@
+2008-08-07  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_menu):
+	new function - replaces avt_get_menu
+	supports continued menus
+
 2008-08-06  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (update_menu_bar):

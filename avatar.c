@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.138 2008-08-06 18:32:18 akf Exp $ */
+/* $Id: avatar.c,v 2.139 2008-08-07 09:40:40 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2647,7 +2647,8 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
 }
 
 int
-avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
+avt_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code,
+	  avt_bool_t back, avt_bool_t forward)
 {
   SDL_Surface *plain_menu, *bar;
   SDL_Event event;
@@ -2706,26 +2707,36 @@ avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 		  && (event.key.keysym.unicode <= end_code))
 		*ch = (wchar_t) event.key.keysym.unicode;
 	      else if ((event.key.keysym.sym == SDLK_DOWN
-			|| event.key.keysym.sym == SDLK_KP2)
-		       && line_nr < menu_end)
+			|| event.key.keysym.sym == SDLK_KP2))
 		{
-		  line_nr++;
-		  if (line_nr < menu_start)
-		    line_nr = menu_start;
-		  update_menu_bar (menu_start, menu_end, line_nr, old_line,
-				   plain_menu, bar);
-		  old_line = line_nr;
+		  if (line_nr != menu_end)
+		    {
+		      if (line_nr < menu_start || line_nr > menu_end)
+			line_nr = menu_start;
+		      else
+			line_nr++;
+		      update_menu_bar (menu_start, menu_end, line_nr,
+				       old_line, plain_menu, bar);
+		      old_line = line_nr;
+		    }
+		  else if (forward)
+		    *ch = end_code;
 		}
 	      else if ((event.key.keysym.sym == SDLK_UP
-			|| event.key.keysym.sym == SDLK_KP8)
-		       && line_nr > menu_start)
+			|| event.key.keysym.sym == SDLK_KP8))
 		{
-		  line_nr--;
-		  if (line_nr > menu_end)
-		    line_nr = menu_end;
-		  update_menu_bar (menu_start, menu_end, line_nr, old_line,
-				   plain_menu, bar);
-		  old_line = line_nr;
+		  if (line_nr != menu_start)
+		    {
+		      if (line_nr < menu_start || line_nr > menu_end)
+			line_nr = menu_end;
+		      else
+			line_nr--;
+		      update_menu_bar (menu_start, menu_end, line_nr,
+				       old_line, plain_menu, bar);
+		      old_line = line_nr;
+		    }
+		  else if (back)
+		    *ch = start_code;
 		}
 	      else if ((event.key.keysym.sym == SDLK_RETURN
 			|| event.key.keysym.sym == SDLK_KP_ENTER
@@ -2767,6 +2778,14 @@ avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
     }
 
   return _avt_STATUS;
+}
+
+/* just for backward compatibility */
+int
+avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
+{
+  return avt_menu (ch, menu_start, menu_end, start_code,
+		   AVT_FALSE, AVT_FALSE);
 }
 
 /* size in Bytes! */
@@ -3823,7 +3842,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.138 2008-08-06 18:32:18 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.139 2008-08-07 09:40:40 akf Exp $");
 
   /*
    * Initialize the display, accept any format

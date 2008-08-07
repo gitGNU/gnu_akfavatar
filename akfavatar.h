@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.64 2008-05-29 21:21:09 akf Exp $ */
+/* $Id: akfavatar.h,v 2.65 2008-08-07 09:40:40 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -367,12 +367,21 @@ int avt_say_mb_len (const char *txt, int len);
 int avt_get_key (wchar_t * ch);
 
 /*
- * get a menu-key, or mouseclick
- * menu_ofset: line, where menu begins
- * start_code: first character, like L'1' or L'A'
+ * menu
+ * menu_start: line, where menu begins
+ * menu_end:   line, where menu ends
+ * start_code: first character, like L'1' or L'a'
+ *
+ * returns AVT_ERROR and sets _avt_STATUS
+ * when it cannot get enough memory
  */
+int avt_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code,
+	      avt_bool_t back, avt_bool_t forward);
+
+/* for backward compatibility */
 int
-avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code);
+avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
+AVT_DEPRECATED;
 
 /*
  * get string (just one line)
