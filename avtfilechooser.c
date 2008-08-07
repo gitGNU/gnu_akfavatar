@@ -193,7 +193,9 @@ start:
 
 	  /* is it a directory? */
 #ifdef _DIRENT_HAVE_D_TYPE
-	  if (d->d_type == DT_DIR)	/* faster */
+	  /* faster */
+	  if (d->d_type == DT_DIR
+	      || (d->d_type == DT_LNK && is_directory (d->d_name)))
 #else
 	  if (is_directory (d->d_name))
 #endif /* _DIRENT_HAVE_D_TYPE */

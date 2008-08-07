@@ -1,9 +1,12 @@
 2008-08-07  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avtfilechooser.c (get_file):
+	recognize symbolic links pointig to a directory as directory
+
 	* avatarsay.c (menu, run_shell):
 	hide balloon while starting up the shell
 
-	* avtfilechooser.c (avt_menu):
+	* avtfilechooser.c (get_file):
 	no direct index keys anymore
 
 	* avatar.c (avt_menu):
