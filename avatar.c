@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.139 2008-08-07 09:40:40 akf Exp $ */
+/* $Id: avatar.c,v 2.140 2008-08-07 15:39:12 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2654,6 +2654,7 @@ avt_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code,
   SDL_Event event;
   wchar_t end_code;
   int line_nr = 1, old_line = 0;
+  int x, y;
 
   if (screen)
     {
@@ -2694,6 +2695,18 @@ avt_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code,
       SDL_ShowCursor (SDL_ENABLE);	/* mouse cursor */
 
       end_code = start_code + (menu_end - menu_start);
+
+      /* bar in initial mouse position */
+      SDL_GetMouseState (&x, &y);
+      line_nr = ((y - viewport.y) / LINEHEIGHT) + 1;
+      if (x >= viewport.x && x <= (viewport.x + viewport.w)
+	  && line_nr >= menu_start && line_nr <= menu_end)
+	{
+	  update_menu_bar (menu_start, menu_end, line_nr, old_line,
+			   plain_menu, bar);
+	  old_line = line_nr;
+	}
+
       *ch = L'\0';
       while ((*ch == L'\0') && (_avt_STATUS == AVT_NORMAL))
 	{
@@ -3842,7 +3855,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.139 2008-08-07 09:40:40 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.140 2008-08-07 15:39:12 akf Exp $");
 
   /*
    * Initialize the display, accept any format
