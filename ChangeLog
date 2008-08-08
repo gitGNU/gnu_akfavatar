@@ -1,3 +1,9 @@
+2008-08-08  Andreas K. Foerster  <info@akfoerster.de>
+
+	* bdfread.pas, ucsfont4x6.c, ucsfont7x14.c, ucsfont9x18.c,
+	avatar.c (avt_drawchar):
+	optimized font-lookup algorithm
+
 2008-08-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtfilechooser.c (get_file):

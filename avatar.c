@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.141 2008-08-07 18:50:45 akf Exp $ */
+/* $Id: avatar.c,v 2.142 2008-08-08 11:53:19 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1857,19 +1857,18 @@ avt_new_line (void)
 static void
 avt_drawchar (wchar_t ch)
 {
-  extern unsigned short font[];
-  extern size_t get_font_offset (wchar_t ch);
+  extern const unsigned short *get_font_char (wchar_t ch);
+  const unsigned short *font_line;
   int lx, ly;
   SDL_Rect dest;
   Uint8 *p, *dest_line;
-  unsigned short *font_line;
   Uint16 pitch;
 
   /* assert (avt_character->format->BytesPerPixel == 1); */
 
   pitch = avt_character->pitch;
   p = (Uint8 *) avt_character->pixels;
-  font_line = &font[get_font_offset (ch)];
+  font_line = get_font_char (ch);
   dest_line = p;
 
   /* clear all */
@@ -1911,19 +1910,18 @@ avt_drawchar (wchar_t ch)
 static void
 avt_drawchar (wchar_t ch)
 {
-  extern unsigned char font[];
-  extern size_t get_font_offset (wchar_t ch);
+  extern const unsigned char *get_font_char (wchar_t ch);
+  const unsigned char *font_line;
   int lx, ly;
   SDL_Rect dest;
   Uint8 *p, *dest_line;
-  unsigned char *font_line;
   Uint16 pitch;
 
   /* assert (avt_character->format->BytesPerPixel == 1); */
 
   pitch = avt_character->pitch;
   p = (Uint8 *) avt_character->pixels;
-  font_line = &font[get_font_offset (ch)];
+  font_line = get_font_char (ch);
   dest_line = p;
 
   /* clear all */
@@ -3862,7 +3860,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.141 2008-08-07 18:50:45 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.142 2008-08-08 11:53:19 akf Exp $");
 
   /*
    * Initialize the display, accept any format

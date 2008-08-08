@@ -12,6 +12,7 @@ gnu-head.c gnu-small.c bell.c keybtn.c
 a.out
 *.tar.gz *.zip
 *.ppu
+*.bdf
 multiply-bin multiply
 multiplizieren-bin multiplizieren
 misc
