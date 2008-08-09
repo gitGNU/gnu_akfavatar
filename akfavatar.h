@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.65 2008-08-07 09:40:40 akf Exp $ */
+/* $Id: akfavatar.h,v 2.66 2008-08-09 10:26:30 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -295,6 +295,12 @@ void avt_register_mousehandler (avt_mousehandler handler);
  * (experimental!)
  */
 void avt_switch_mode (int mode);
+
+/*
+ * toggle fullscrenn mode
+ * (experimental!)
+ */
+void avt_toggle_fullscreen (void);
 
 /* 
  * prints a L'\0' terminated string in the balloon

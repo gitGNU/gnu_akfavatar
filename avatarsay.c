@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.158 2008-08-09 09:01:45 akf Exp $ */
+/* $Id: avatarsay.c,v 2.159 2008-08-09 10:26:31 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -3134,8 +3134,9 @@ menu (void)
 	  avt_say (L"3) ein Demo erstellen oder bearbeiten\n");
 	  SAY_MANPAGE (L"4) eine Hilfeseite (Manpage) anzeigen\n");
 	  SAY_SHELL (L"5) Anleitung (info)\n");
-	  avt_say (L"6) über avatarsay\n");
-	  avt_say (L"7) beenden\n");
+	  avt_say (L"6) Vollbild-Anzeige umschalten\n");
+	  avt_say (L"7) über avatarsay\n");
+	  avt_say (L"8) beenden"); /* no newline */
 	  break;
 
 	case ENGLISH:
@@ -3145,11 +3146,12 @@ menu (void)
 	  avt_say (L"3) create or edit a demo\n");
 	  SAY_MANPAGE (L"4) show a manpage\n");
 	  SAY_SHELL (L"5) documentation (info)\n");
-	  avt_say (L"6) about avatarsay\n");
-	  avt_say (L"7) exit\n");
+	  avt_say (L"6) toggle fullscreen mode\n");
+	  avt_say (L"7) about avatarsay\n");
+	  avt_say (L"8) exit"); /* no newline */
 	}
 
-      menu_end = avt_where_y () - 1;
+      menu_end = avt_where_y ();
       avt_set_text_delay (default_delay);
 
       if (avt_menu (&ch, menu_start, menu_end, L'1', AVT_FALSE, AVT_FALSE))
@@ -3184,12 +3186,16 @@ menu (void)
 	  avt_set_status (AVT_NORMAL);
 	  break;
 
-	case L'6':		/* about avatarsay */
+	case L'6':		/* toggle fullscreen */
+	  avt_toggle_fullscreen ();
+	  break;
+
+	case L'7':		/* about avatarsay */
 	  about_avatarsay ();
 	  avt_set_status (AVT_NORMAL);
 	  break;
 
-	case L'7':		/* exit */
+	case L'8':		/* exit */
 	  if (!popup)
 	    move_out ();
 	  quit (EXIT_SUCCESS);
@@ -3418,7 +3424,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.158 2008-08-09 09:01:45 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.159 2008-08-09 10:26:31 akf Exp $");
 
   return EXIT_SUCCESS;
 }

@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.142 2008-08-08 11:53:19 akf Exp $ */
+/* $Id: avatar.c,v 2.143 2008-08-09 10:26:31 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -944,7 +944,7 @@ avt_flash (void)
   SDL_UpdateRect (screen, 0, 0, 0, 0);
 }
 
-static void
+void
 avt_toggle_fullscreen (void)
 {
   if (avt_mode != AVT_FULLSCREENNOSWITCH)
@@ -3860,7 +3860,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.142 2008-08-08 11:53:19 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.143 2008-08-09 10:26:31 akf Exp $");
 
   /*
    * Initialize the display, accept any format
