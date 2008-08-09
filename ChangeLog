@@ -1,3 +1,10 @@
+2008-08-09  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (initialize_start_dir):
+	new function
+	(main, quit, run_info): adapted
+	work even harder to find the documentation when it's not installed
+
 2008-08-08  Andreas K. Foerster  <info@akfoerster.de>
 
 	* bdfread.pas, ucsfont4x6.c, ucsfont7x14.c, ucsfont9x18.c,

@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.157 2008-08-07 16:37:56 akf Exp $ */
+/* $Id: avatarsay.c,v 2.158 2008-08-09 09:01:45 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -117,6 +117,9 @@ static const char *version_info_de =
 
 /* pointer to program name in argv[0] */
 static const char *program_name;
+
+/* starting directory (strdup) */
+static char *start_dir;
 
 /* default encoding - either system encoding or given per parameters */
 /* supported in SDL: ASCII, ISO-8859-1, UTF-8, UTF-16, UTF-32 */
@@ -219,6 +222,9 @@ static enum language_t language;
 static void
 quit (int exitcode)
 {
+  if (start_dir)
+     free (start_dir);
+
   if (initialized)
     {
       if (sound)
@@ -2815,6 +2821,9 @@ run_info (void)
   avt_set_text_delay (0);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
 
+  if (start_dir)
+    chdir (start_dir);
+
   if (language == DEUTSCH)
     {
       if (access ("./doc/akfavatar-de.info", R_OK) == 0)
@@ -3317,6 +3326,17 @@ initialize_program_name (const char *argv0)
     program_name++;
 }
 
+static void
+initialize_start_dir (void)
+{
+  char buf[4096];
+  
+  if (getcwd (buf, sizeof(buf)))
+    start_dir = strdup(buf);
+  else
+    start_dir = NULL;
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -3326,6 +3346,7 @@ main (int argc, char *argv[])
   default_delay = AVT_DEFAULT_TEXT_DELAY;
   prg_input = -1;
   initialize_program_name (argv[0]);
+  initialize_start_dir ();
 
   /* this is just a default setting */
   strcpy (default_encoding, "ISO-8859-1");
@@ -3397,7 +3418,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.157 2008-08-07 16:37:56 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.158 2008-08-09 09:01:45 akf Exp $");
 
   return EXIT_SUCCESS;
 }
