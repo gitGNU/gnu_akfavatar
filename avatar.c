@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.143 2008-08-09 10:26:31 akf Exp $ */
+/* $Id: avatar.c,v 2.144 2008-08-10 10:33:40 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2617,18 +2617,17 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
 
   if (line_nr != old_line)
     {
+      /* restore oldline */
       if (old_line >= menu_start && old_line <= menu_end)
-	{			/* restore oldline */
+	{
 	  s.x = 0;
 	  s.y = (old_line - 1) * LINEHEIGHT;
 	  s.w = viewport.w;
 	  s.h = LINEHEIGHT;
 	  t.x = viewport.x;
 	  t.y = viewport.y + s.y;
-	  t.w = viewport.w;
-	  t.h = LINEHEIGHT;
 	  SDL_BlitSurface (plain_menu, &s, screen, &t);
-	  SDL_UpdateRect (screen, t.x, t.y, t.w, t.h);
+	  SDL_UpdateRect (screen, t.x, t.y, viewport.w, LINEHEIGHT);
 	}
 
       /* show bar */
@@ -2636,10 +2635,8 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
 	{
 	  t.x = viewport.x;
 	  t.y = viewport.y + ((line_nr - 1) * LINEHEIGHT);
-	  t.w = viewport.w;
-	  t.h = LINEHEIGHT;
 	  SDL_BlitSurface (bar, NULL, screen, &t);
-	  SDL_UpdateRect (screen, t.x, t.y, t.w, t.h);
+	  SDL_UpdateRect (screen, t.x, t.y, viewport.w, LINEHEIGHT);
 	}
     }
 }
@@ -2763,7 +2760,7 @@ avt_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code,
 		  && event.motion.y >= viewport.y
 		  && event.motion.y <= viewport.y + viewport.h)
 		line_nr = ((event.motion.y - viewport.y) / LINEHEIGHT) + 1;
-	       else
+	      else
 		line_nr = 0;
 
 	      if (line_nr != old_line)
@@ -3860,7 +3857,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.143 2008-08-09 10:26:31 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.144 2008-08-10 10:33:40 akf Exp $");
 
   /*
    * Initialize the display, accept any format
