@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.144 2008-08-10 10:33:40 akf Exp $ */
+/* $Id: avatar.c,v 2.145 2008-08-10 14:36:24 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -223,6 +223,7 @@ static Uint32 screenflags;	/* flags for the screen */
 static int avt_mode;		/* whether fullscreen or window or ... */
 static avt_bool_t must_lock;	/* must the screen be locked? */
 static SDL_Rect window;		/* if screen is in fact larger */
+static SDL_Rect windowmode_size;	/* size of the whole window (screen) */
 static avt_bool_t avt_visible;	/* avatar visible? */
 static avt_bool_t text_cursor_visible;	/* shall the text cursor be visible? */
 static avt_bool_t text_cursor_actually_visible;	/* is it actually visible? */
@@ -895,6 +896,13 @@ avt_resize (int w, int h)
       SDL_SetClipRect (screen, &viewport);
     }
 
+  /* set windowmode_size */
+  if ((screenflags & SDL_FULLSCREEN) == 0)
+    {
+      windowmode_size.w = w;
+      windowmode_size.h = h;
+    }
+
   /* make all changes visible */
   SDL_UpdateRect (screen, 0, 0, 0, 0);
 }
@@ -951,13 +959,17 @@ avt_toggle_fullscreen (void)
     {
       /* toggle bit for fullscreenmode */
       screenflags ^= SDL_FULLSCREEN;
-      /* set the mode with minimal size */
-      avt_resize (MINIMALWIDTH, MINIMALHEIGHT);
 
       if ((screenflags & SDL_FULLSCREEN) != 0)
-	avt_mode = AVT_FULLSCREEN;
+	{
+	  avt_resize (MINIMALWIDTH, MINIMALHEIGHT);
+	  avt_mode = AVT_FULLSCREEN;
+	}
       else
-	avt_mode = AVT_WINDOW;
+	{
+	  avt_resize (windowmode_size.w, windowmode_size.h);
+	  avt_mode = AVT_WINDOW;
+	}
     }
 }
 
@@ -982,7 +994,7 @@ avt_switch_mode (int mode)
 	  if ((screenflags & SDL_FULLSCREEN) != 0)
 	    {
 	      screenflags &= ~SDL_FULLSCREEN;
-	      avt_resize (MINIMALWIDTH, MINIMALHEIGHT);
+	      avt_resize (windowmode_size.w, windowmode_size.h);
 	    }
 	  break;
 	}
@@ -3857,7 +3869,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.144 2008-08-10 10:33:40 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.145 2008-08-10 14:36:24 akf Exp $");
 
   /*
    * Initialize the display, accept any format
@@ -3916,6 +3928,11 @@ avt_initialize (const char *title, const char *icontitle,
 
   /* must the screen be locked? */
   must_lock = SDL_MUSTLOCK (screen);
+
+  /* size of the window (not to be confused with the variable window */
+  windowmode_size.x = windowmode_size.y = 0;	/* unused */
+  windowmode_size.w = screen->w;
+  windowmode_size.h = screen->h;
 
   /* window may be smaller than the screen */
   window.w = MINIMALWIDTH;
