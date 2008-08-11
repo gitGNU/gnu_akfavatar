@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.159 2008-08-09 10:26:31 akf Exp $ */
+/* $Id: avatarsay.c,v 2.160 2008-08-11 21:25:13 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -223,7 +223,7 @@ static void
 quit (int exitcode)
 {
   if (start_dir)
-     free (start_dir);
+    free (start_dir);
 
   if (initialized)
     {
@@ -2595,6 +2595,7 @@ process_subprogram (int fd)
   G0 = "ISO-8859-1";
   G1 = VT100;
   set_encoding (default_encoding);	/* not G0! */
+  encoding_checked = AVT_TRUE;
 
   /* like vt102 */
   avt_set_origin_mode (AVT_FALSE);
@@ -3136,7 +3137,7 @@ menu (void)
 	  SAY_SHELL (L"5) Anleitung (info)\n");
 	  avt_say (L"6) Vollbild-Anzeige umschalten\n");
 	  avt_say (L"7) über avatarsay\n");
-	  avt_say (L"8) beenden"); /* no newline */
+	  avt_say (L"8) beenden");	/* no newline */
 	  break;
 
 	case ENGLISH:
@@ -3148,7 +3149,7 @@ menu (void)
 	  SAY_SHELL (L"5) documentation (info)\n");
 	  avt_say (L"6) toggle fullscreen mode\n");
 	  avt_say (L"7) about avatarsay\n");
-	  avt_say (L"8) exit"); /* no newline */
+	  avt_say (L"8) exit");	/* no newline */
 	}
 
       menu_end = avt_where_y ();
@@ -3162,7 +3163,7 @@ menu (void)
       switch (ch)
 	{
 	case L'1':		/* terminal-mode */
-          avt_show_avatar (); /* no balloon, while starting up */
+	  avt_show_avatar ();	/* no balloon, while starting up */
 	  run_shell ();
 	  avt_set_status (AVT_NORMAL);
 	  break;
@@ -3336,9 +3337,9 @@ static void
 initialize_start_dir (void)
 {
   char buf[4096];
-  
-  if (getcwd (buf, sizeof(buf)))
-    start_dir = strdup(buf);
+
+  if (getcwd (buf, sizeof (buf)))
+    start_dir = strdup (buf);
   else
     start_dir = NULL;
 }
@@ -3424,7 +3425,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.159 2008-08-09 10:26:31 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.160 2008-08-11 21:25:13 akf Exp $");
 
   return EXIT_SUCCESS;
 }

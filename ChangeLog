@@ -1,3 +1,8 @@
+2008-08-11  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (process_subprogram):
+	avoid checking the encoding (fixes bug with short prompts)
+
 2008-08-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (windowmode_size):
