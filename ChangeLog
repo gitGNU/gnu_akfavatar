@@ -1,7 +1,12 @@
-2008-08-11  Andreas K. Foerster  <info@akfoerster.de>
+2008-08-12  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c:
+	restore background-color after playing a demo
 
 	* avatar.c (avt_set_background_color):
 	update the whole screen again after drawing the balloon
+
+2008-08-11  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (execute_process):
 	change settings of terminal before forking

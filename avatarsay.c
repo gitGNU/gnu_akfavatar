@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.161 2008-08-12 08:22:22 akf Exp $ */
+/* $Id: avatarsay.c,v 2.162 2008-08-12 12:14:37 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -95,6 +95,8 @@
 
 #define BYTE_ORDER_MARK L'\xfeff'
 
+#define default_background_color(ignore) \
+       avt_set_background_color (0xE0, 0xD5, 0xC5)
 
 static const char *version_info_en =
   PRGNAME " (AKFAvatar) " AVTVERSION "\n"
@@ -212,6 +214,9 @@ static const char *G0, *G1;
 
 /* character for DEC cursor keys (either [ or O) */
 static char dec_cursor_seq[3];
+
+/* was the background color changed? */
+static avt_bool_t background_color_changed;
 
 /* language (of current locale) */
 enum language_t
@@ -464,6 +469,7 @@ move_out (void)
 static void
 initialize (void)
 {
+  default_background_color ();
   if (!avt_image)
     avt_image = avt_default ();
 
@@ -492,10 +498,13 @@ initialize (void)
       }
 
   avt_set_text_delay (default_delay);
+
+
   max_x = avt_get_max_x ();
   max_y = avt_get_max_y ();
   region_min_y = 1;
   region_max_y = max_y;
+  background_color_changed = AVT_FALSE;
   initialized = AVT_TRUE;
 }
 
@@ -780,7 +789,10 @@ handle_backgoundcolor_command (const wchar_t * s)
   unsigned int red, green, blue;
 
   if (swscanf (s, L".backgroundcolor #%2x%2x%2x", &red, &green, &blue) == 3)
-    avt_set_background_color (red, green, blue);
+    {
+      avt_set_background_color (red, green, blue);
+      background_color_changed = AVT_TRUE;
+    }
   else
     error_msg (".backgroundcolor", NULL);
 }
@@ -3111,7 +3123,11 @@ menu (void)
 
   while (1)
     {
-      avt_clear ();
+      if (background_color_changed)
+	default_background_color ();
+      else
+	avt_clear ();
+
       avt_normal_text ();
       avt_set_text_delay (0);
       avt_set_origin_mode (AVT_FALSE);
@@ -3426,7 +3442,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.161 2008-08-12 08:22:22 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.162 2008-08-12 12:14:37 akf Exp $");
 
   return EXIT_SUCCESS;
 }
