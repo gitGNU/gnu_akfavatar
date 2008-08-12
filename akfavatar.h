@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.66 2008-08-09 10:26:30 akf Exp $ */
+/* $Id: akfavatar.h,v 2.67 2008-08-12 09:11:14 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -291,14 +291,12 @@ void avt_register_keyhandler (avt_keyhandler handler);
 void avt_register_mousehandler (avt_mousehandler handler);
 
 /*
- * switch to fullscreen or window mode 
- * (experimental!)
+ * switch to fullscreen or window mode
  */
 void avt_switch_mode (int mode);
 
 /*
  * toggle fullscrenn mode
- * (experimental!)
  */
 void avt_toggle_fullscreen (void);
 
