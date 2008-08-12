@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.145 2008-08-10 14:36:24 akf Exp $ */
+/* $Id: avatar.c,v 2.146 2008-08-12 10:02:22 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -3617,6 +3617,7 @@ avt_set_background_color (int red, int green, int blue)
 	{
 	  avt_visible = AVT_FALSE;
 	  avt_draw_balloon ();
+	  SDL_UpdateRect (screen, 0, 0, 0, 0);
 	}
       else if (avt_visible)
 	avt_show_avatar ();
@@ -3869,7 +3870,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.145 2008-08-10 14:36:24 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.146 2008-08-12 10:02:22 akf Exp $");
 
   /*
    * Initialize the display, accept any format

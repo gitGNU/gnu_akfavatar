@@ -1,5 +1,8 @@
 2008-08-11  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatar.c (avt_set_background_color):
+	update the whole screen again after drawing the balloon
+
 	* avatarsay.c (execute_process):
 	change settings of terminal before forking
 
