@@ -1,5 +1,8 @@
 2008-08-11  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatarsay.c (execute_process):
+	change settings of terminal before forking
+
 	* avatarsay.c (process_subprogram):
 	avoid checking the encoding (fixes bug with short prompts)
 

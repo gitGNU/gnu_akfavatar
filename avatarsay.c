@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.160 2008-08-11 21:25:13 akf Exp $ */
+/* $Id: avatarsay.c,v 2.161 2008-08-12 08:22:22 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2698,6 +2698,35 @@ execute_process (char *const prg_argv[])
       return -1;
     }
 
+  /* terminal settings */
+  if (tcgetattr (master, &settings) < 0)
+    {
+      close (master);
+      close (slave);
+      return -1;
+    }
+
+  /* TODO: improve */
+  settings.c_cc[VERASE] = 8;	/* Backspace */
+  settings.c_iflag |= ICRNL;	/* input: cr -> nl */
+  settings.c_lflag |= (ECHO | ECHOE | ECHOK | ICANON);
+
+  if (tcsetattr (master, TCSANOW, &settings) < 0)
+    {
+      close (master);
+      close (slave);
+      return -1;
+    }
+
+#ifdef TIOCSWINSZ
+  /* set window size */
+  /* not portable? */
+  size.ws_row = max_y;
+  size.ws_col = max_x;
+  size.ws_xpixel = size.ws_ypixel = 0;
+  ioctl (master, TIOCSWINSZ, &size);
+#endif
+
   /*-------------------------------------------------------- */
   childpid = fork ();
 
@@ -2756,37 +2785,9 @@ execute_process (char *const prg_argv[])
 
   /* parent process */
   close (slave);
-
-  /* terminal settings */
-  if (tcgetattr (master, &settings) < 0)
-    {
-      close (master);
-      return -1;
-    }
-
-  /* TODO: improve */
-  settings.c_cc[VERASE] = 8;	/* Backspace */
-  settings.c_iflag |= ICRNL;	/* input: cr -> nl */
-  settings.c_lflag |= (ECHO | ECHOE | ECHOK | ICANON);
-
-  if (tcsetattr (master, TCSANOW, &settings) < 0)
-    {
-      close (master);
-      return -1;
-    }
-
-#ifdef TIOCSWINSZ
-  /* set window size */
-  /* not portable? */
-  size.ws_row = max_y;
-  size.ws_col = max_x;
-  size.ws_xpixel = size.ws_ypixel = 0;
-  ioctl (master, TIOCSWINSZ, &size);
-#endif
-
   fcntl (master, F_SETFL, O_NONBLOCK);
-
   prg_input = master;
+
   dec_cursor_seq[0] = '\033';
   dec_cursor_seq[1] = '[';
   dec_cursor_seq[2] = ' ';	/* to be filled later */
@@ -3425,7 +3426,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.160 2008-08-11 21:25:13 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.161 2008-08-12 08:22:22 akf Exp $");
 
   return EXIT_SUCCESS;
 }
