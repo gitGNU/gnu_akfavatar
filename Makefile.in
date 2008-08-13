@@ -19,6 +19,9 @@ BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 
 all: libakfavatar.so libakfavatar.a libavtcio.a avatarsay avatarsay-d
 
+Makefile: $(srcdir)/configure $(srcdir)/Makefile.in
+	./config.status
+
 # don't use $(CC) because it could be a cross-compiler
 bin2c: $(srcdir)/bin2c.c
 	cc -o $@ $(srcdir)/bin2c.c
