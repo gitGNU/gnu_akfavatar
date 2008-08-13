@@ -1,7 +1,7 @@
 2008-08-13  Andreas K. Foerster  <info@akfoerster.de>
 
-	* configure:
-	use ${srcdir} in every rule
+	* Makefile.in:
+	use $(srcdir) in every rule
 	(more portable than relying on VPATH and $<)
 
 	* configure:
