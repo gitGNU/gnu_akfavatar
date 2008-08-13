@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.162 2008-08-12 12:14:37 akf Exp $ */
+/* $Id: avatarsay.c,v 2.163 2008-08-13 19:17:01 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -469,7 +469,6 @@ move_out (void)
 static void
 initialize (void)
 {
-  default_background_color ();
   if (!avt_image)
     avt_image = avt_default ();
 
@@ -3394,6 +3393,8 @@ main (int argc, char *argv[])
 #  endif /* not FORCE_ICONV */
 #endif /* not NO_LANGINFO */
 
+  default_background_color ();
+
   check_config_file ("/etc/avatarsay");
   checkenvironment ();
   checkoptions (argc, argv);
@@ -3442,7 +3443,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.162 2008-08-12 12:14:37 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.163 2008-08-13 19:17:01 akf Exp $");
 
   return EXIT_SUCCESS;
 }
