@@ -1,3 +1,9 @@
+2008-08-13  Andreas K. Foerster  <info@akfoerster.de>
+
+	* configure:
+	options get quoted in the generated file config.status 
+	(fixes bug #23781)
+
 2008-08-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c:
