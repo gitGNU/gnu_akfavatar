@@ -20,54 +20,62 @@ BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 all: libakfavatar.so libakfavatar.a libavtcio.a avatarsay avatarsay-d
 
 # don't use $(CC) because it could be a cross-compiler
-bin2c: bin2c.c
-	cc -o $@ bin2c.c
+bin2c: ${srcdir}/bin2c.c
+	cc -o $@ ${srcdir}/bin2c.c
 
-gnu-head.c: gnu-head.bmp bin2c
-	./bin2c avatar_image < gnu-head.bmp > $@
+gnu-head.c: ${srcdir}/gnu-head.bmp bin2c
+	./bin2c avatar_image < ${srcdir}/gnu-head.bmp > $@
 
-gnu-small.c: gnu-small.bmp bin2c
-	./bin2c avatar_image < gnu-small.bmp > $@
+gnu-small.c: ${srcdir}/gnu-small.bmp bin2c
+	./bin2c avatar_image < ${srcdir}/gnu-small.bmp > $@
 
-keybtn.c: keybtn.bmp bin2c
-	./bin2c keybtn < keybtn.bmp > $@
+keybtn.c: ${srcdir}/keybtn.bmp bin2c
+	./bin2c keybtn < ${srcdir}/keybtn.bmp > $@
 
-bell.c: bell.wav bin2c
-	./bin2c avt_bell_data < bell.wav > $@
+bell.c: ${srcdir}/bell.wav bin2c
+	./bin2c avt_bell_data < ${srcdir}/bell.wav > $@
 
-avtfilechooser.o: avtfilechooser.c akfavatar.h
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ avtfilechooser.c
+avtfilechooser.o: ${srcdir}/avtfilechooser.c ${srcdir}/akfavatar.h
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ ${srcdir}/avtfilechooser.c
 
-avatar.o: avatar.c akfavatar.h version.h \
-          balloonpointer.c circle.c keybtn.c regicon.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c avatar.c
+avatar.o: ${srcdir}/avatar.c ${srcdir}/akfavatar.h version.h \
+	  ${srcdir}/balloonpointer.c ${srcdir}/circle.c \
+	  keybtn.c ${srcdir}/regicon.c
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c ${srcdir}/avatar.c
 
-avatar-default.o: avatar-default.c gnu-head.c gnu-small.c akfavatar.h
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ avatar-default.c
+avatar-default.o: ${srcdir}/avatar-default.c gnu-head.c gnu-small.c \
+                  ${srcdir}/akfavatar.h
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ ${srcdir}/avatar-default.c
 
-avatar-audio.o: avatar-audio.c akfavatar.h bell.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ avatar-audio.c
+avatar-audio.o: ${srcdir}/avatar-audio.c ${srcdir}/akfavatar.h bell.c
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ ${srcdir}/avatar-audio.c
 
-font.o: font.c ucsfont7x14.c ucsfont4x6.c ucsfont9x18.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ font.c
+font.o: ${srcdir}/font.c ${srcdir}/ucsfont7x14.c ${srcdir}/ucsfont4x6.c \
+	${srcdir}/ucsfont9x18.c
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ ${srcdir}/font.c
 
 libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o
 	$(AR) rcu $@ avatar.o avatar-default.o avatar-audio.o font.o
 	-$(RANLIB) $@
 
-avatar.lo: avatar.c akfavatar.h version.h \
-           balloonpointer.c circle.c keybtn.c regicon.c
+avatar.lo: ${srcdir}/avatar.c ${srcdir}/akfavatar.h version.h \
+	   ${srcdir}/balloonpointer.c ${srcdir}/circle.c keybtn.c \
+	   ${srcdir}/regicon.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ \
-	  avatar.c
+	  ${srcdir}/avatar.c
 
-avatar-default.lo: avatar-default.c gnu-head.c gnu-small.c akfavatar.h
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ avatar-default.c
+avatar-default.lo: ${srcdir}/avatar-default.c gnu-head.c gnu-small.c \
+	           ${srcdir}/akfavatar.h
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ \
+	  ${srcdir}/avatar-default.c
 
-avatar-audio.lo: avatar-audio.c akfavatar.h bell.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ avatar-audio.c
+avatar-audio.lo: ${srcdir}/avatar-audio.c ${srcdir}/akfavatar.h bell.c
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ \
+	  ${srcdir}/avatar-audio.c
 
-font.lo: font.c ucsfont7x14.c ucsfont4x6.c ucsfont9x18.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ font.c
+font.lo: ${srcdir}/font.c ${srcdir}/ucsfont7x14.c ${srcdir}/ucsfont4x6.c \
+	 ${srcdir}/ucsfont9x18.c
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ ${srcdir}/font.c
 
 libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo font.lo
 	$(CC) -shared \
@@ -77,22 +85,23 @@ libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo font.lo
 	-ln -sf $(LIBNAME) $(SONAME)
 	-ln -sf $(LIBNAME) libakfavatar.so
 
-avtccio.o: avtccio.c avtcio.h akfavatar.h
-	$(CC) $(CFLAGS) -I. -c -o $@ avtccio.c
+avtccio.o: ${srcdir}/avtccio.c ${srcdir}/avtcio.h ${srcdir}/akfavatar.h
+	$(CC) $(CFLAGS) -I. -c -o $@ ${srcdir}/avtccio.c
 
-avtcwio.o: avtcwio.c avtcio.h akfavatar.h
-	$(CC) $(CFLAGS) -I. -c -o $@ avtcwio.c
+avtcwio.o: ${srcdir}/avtcwio.c ${srcdir}/avtcio.h ${srcdir}/akfavatar.h
+	$(CC) $(CFLAGS) -I. -c -o $@ ${srcdir}/avtcwio.c
 
 libavtcio.a: avtccio.o avtcwio.o
 	$(AR) rcu $@ avtccio.o avtcwio.o
 	-$(RANLIB) $@
 
-example: example.c libakfavatar.so
-	$(CC) $(CFLAGS) -I. -o $@ example.c -L. -lakfavatar $(LDFLAGS)
+example: ${srcdir}/example.c libakfavatar.so
+	$(CC) $(CFLAGS) -I. -o $@ ${srcdir}/example.c \
+	  -L. -lakfavatar $(LDFLAGS)
 
-avatarsay.o: avatarsay.c akfavatar.h
+avatarsay.o: ${srcdir}/avatarsay.c ${srcdir}/akfavatar.h
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -DPREFIX=\"$(exec_prefix)\" -I. \
-	  -c -o $@ avatarsay.c
+	  -c -o $@ ${srcdir}/avatarsay.c
 
 # avatarsay dynamically linked
 # only works, when the library is installed
@@ -287,7 +296,7 @@ dist: info html man distclean
 	
 	tar -cvf $(PKGNAME).tar $(PKGNAME)/
 	bzip2 $(PKGNAME).tar
-	rm -r $(PKGNAME)/
+	rm -rf $(PKGNAME)/
 
 dist-bin: avatarsay multiply multiplizieren info html
 	mkdir $(BINPKGNAME)
@@ -310,4 +319,4 @@ dist-bin: avatarsay multiply multiplizieren info html
 	strip $(BINPKGNAME)/$(LIBNAME)
 	tar -cvf $(BINPKGNAME).$(SYSTEM).$(ARCH).tar $(BINPKGNAME)/
 	bzip2 $(BINPKGNAME).$(SYSTEM).$(ARCH).tar
-	rm -r $(BINPKGNAME)/
+	rm -rf $(BINPKGNAME)/

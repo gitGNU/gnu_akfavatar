@@ -1,6 +1,10 @@
 2008-08-13  Andreas K. Foerster  <info@akfoerster.de>
 
 	* configure:
+	use ${srcdir} in every rule
+	(more portable than relying on VPATH and $<)
+
+	* configure:
 	options get quoted in the generated file config.status 
 	(fixes bug #23781)
 
