@@ -236,7 +236,7 @@ distclean: clean
 	-rm -f version.h
 	-rm -f Makefile
 	-rm -f $(srcdir)/pascal/example
-	-rm -f akfavatar-*.tar.gz
+	-rm -f akfavatar-*.tar.gz akfavatar-*.tar.bz2
 	-rm -f multiply-bin multiply
 	-rm -f multiplizieren-bin multiplizieren
 	$(MAKE) -C $(srcdir)/mingw32 distclean
