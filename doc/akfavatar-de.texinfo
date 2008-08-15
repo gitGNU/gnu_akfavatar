@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.27 2008-06-14 13:37:28 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.28 2008-08-15 12:42:27 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -242,9 +242,9 @@ Diese Variante wird für die Installation verwendet.
 @cindex VGA
 @cindex iconv
 
-Auf einigen Systeme muss man den Parameter @option{--with-iconv} bei
-@command{./configure} mit angeben, um vollständige iconv Unterstützung zu
-erhalten (iconv ist ein Zeichenkodierungs-Konverter).  Diese Parameter wird
+Auf einigen Systemen muss man den Parameter @option{--with-iconv} bei
+@command{./configure} mit angeben, um vollständige iconv-Unterstützung zu
+erhalten (iconv ist ein Zeichenkodierungs-Konverter).  Dieser Parameter wird
 nicht benötigt, wenn bereits die SDL so konfiguriert wurde, dass sie ein 
 externes iconv verwendet.  Auf manchen Systemen ist dies jedoch nicht der 
 Fall, obwohl ein iconv existiert (zum Beispiel, weil evtl. verschiedene
@@ -1170,7 +1170,7 @@ funktioniert, kann man folgendes verwenden:
 AKFAvatar unterstützt die meisten Befehle und Variablen wie die originale
 @code{CRT} Unit.  Zum Beispiel der Befehl @command{ClrScr} löscht den 
 Text-Bereich (nicht den ganzen Bildschirm!), @command{ClrEol} löscht den
-Rest der Zeile.  Man kann den Befehl @command{GotoXY(@code{x}, @code{y});}
+Rest der Zeile.  Man kann den Befehl @command{GotoXY(@var{x}, @var{y});}
 verwenden um an eine bestimmte Stelle innerhalb des Text-Bereiches zu 
 springen.  Die Funktionen @command{WhereX} und @command{WhereY} geben
 Auskunft über die aktuelle Position.
