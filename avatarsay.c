@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.164 2008-08-19 09:49:51 akf Exp $ */
+/* $Id: avatarsay.c,v 2.165 2008-08-19 16:54:02 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -148,10 +148,10 @@ static avt_bool_t terminal_mode;
 
 /* execute file? Option -e */
 static avt_bool_t executable;
+static int prg_input;		/* file descriptor for program input */
 static avt_bool_t read_error_is_eof;
 static char *from_archive;	/* archive name or NULL */
 static size_t script_bytes_left;	/* how many bytes may still be read */
-static int prg_input;		/* file descriptor for program input */
 
 /* in idle loop? */
 static avt_bool_t idle;
@@ -185,6 +185,8 @@ static avt_image_t *avt_image;
 
 /* name of the image file */
 static char *avt_image_name;
+static avt_bool_t avatar_changed;
+static avt_bool_t moved_in;
 
 /* for loading sound files */
 static avt_audio_t *sound;
@@ -450,6 +452,7 @@ move_in (void)
 	quit (EXIT_SUCCESS);
       if (avt_wait (2000))
 	quit (EXIT_SUCCESS);
+      moved_in = AVT_TRUE;
     }
 }
 
@@ -466,6 +469,8 @@ move_out (void)
 	if (avt_wait (5000))
 	  quit (EXIT_SUCCESS);
     }
+
+  moved_in = AVT_FALSE;
 }
 
 static void
@@ -506,6 +511,7 @@ initialize (void)
   region_min_y = 1;
   region_max_y = max_y;
   background_color_changed = AVT_FALSE;
+  avatar_changed = AVT_FALSE;
   initialized = AVT_TRUE;
 }
 
@@ -774,6 +780,25 @@ use_avatar_image (char *image_file)
       default:
 	error_msg ("error while loading the AVATARIMAGE", avt_get_error ());
       }
+
+  avatar_changed = AVT_FALSE;
+}
+
+/* restore avatar from avt_image name */
+static void
+restore_avatar_image (void)
+{
+  avt_image_t *img;
+
+  if (avt_image_name)
+    img = avt_import_image_file (avt_image_name);
+  else
+    img = avt_default ();
+
+  if (avt_change_avatar_image (img))
+    error_msg (avt_image_name, "cannot load file");
+
+  avatar_changed = AVT_FALSE;
 }
 
 static void
@@ -902,14 +927,8 @@ handle_avatarimage_command (const wchar_t * s)
 {
   char filepath[PATH_LENGTH];
   void *img;
+  avt_image_t *newavatar = NULL;
   size_t size = 0;
-
-  /* if already assigned, delete it */
-  if (avt_image)
-    {
-      avt_free_image (avt_image);
-      avt_image = NULL;
-    }
 
   get_data_file (s + 13, filepath);	/* remove ".avatarimage " */
 
@@ -917,7 +936,7 @@ handle_avatarimage_command (const wchar_t * s)
     {
       if (get_image_from_archive (filepath, &img, &size))
 	{
-	  if (!(avt_image = avt_import_image_data (img, size)))
+	  if (!(newavatar = avt_import_image_data (img, size)))
 	    warning_msg ("warning", avt_get_error ());
 	  free (img);
 	}
@@ -926,8 +945,24 @@ handle_avatarimage_command (const wchar_t * s)
     }
   else				/* not from_archive */
     {
-      if (!(avt_image = avt_import_image_file (filepath)))
+      if (!(newavatar = avt_import_image_file (filepath)))
 	warning_msg ("warning", avt_get_error ());
+    }
+
+  if (initialized)
+    {
+      if (!popup)
+	if (avt_move_out ())
+	  quit (EXIT_SUCCESS);
+      avt_change_avatar_image (newavatar);
+      avatar_changed = AVT_TRUE;
+      moved_in = AVT_FALSE;
+    }
+  else				/* save for initialize */
+    {
+      if (avt_image)
+	free (avt_image);
+      avt_image = newavatar;
     }
 }
 
@@ -964,7 +999,7 @@ get_sound_from_archive (const char *name)
     {
       buf = malloc (size);
       if (buf != NULL)
-        {
+	{
 	  read (archive_fd, buf, size);
 	  result = avt_load_wave_data (buf, size);
 	  free (buf);
@@ -1100,9 +1135,7 @@ iscommand (wchar_t * s, int *stop)
 
       if (wcsncmp (s, L".avatarimage ", 13) == 0)
 	{
-	  if (!initialized)
-	    handle_avatarimage_command (s);
-
+	  handle_avatarimage_command (s);
 	  return AVT_TRUE;
 	}
 
@@ -1217,6 +1250,7 @@ iscommand (wchar_t * s, int *stop)
 	{
 	  if (initialized)
 	    avt_move_out ();
+	  moved_in = AVT_FALSE;
 	  *stop = AVT_TRUE;
 	  return AVT_TRUE;
 	}
@@ -1791,18 +1825,17 @@ process_script (int fd)
 
   /* initialize the graphics */
   if (!initialized && !stop)
-    {
-      initialize ();
+    initialize ();
 
-      if (!popup)
-	move_in ();
-    }
+  if (!moved_in && !popup && !stop)
+    move_in ();
 
   /* show text */
   if (line && !stop)
     {
       process_line_end (line, &nread);
-      stop = avt_say_len (line, nread);
+      if (avt_say_len (line, nread))
+	stop = AVT_TRUE;
     }
 
   while (!stop && (nread != 0 || ignore_eof))
@@ -1884,16 +1917,36 @@ ask_file (void)
 
       /* ignore file errors */
       status = avt_get_status ();
+
+      if (sound)
+	{
+	  avt_stop_audio ();
+	  avt_free_audio (sound);
+	  sound = NULL;
+	}
+
       if (status == AVT_ERROR)
 	quit (EXIT_FAILURE);	/* warning already printed */
-
-      if (status == AVT_NORMAL)
+      else if (status == AVT_NORMAL)
 	if (avt_wait_button ())
 	  quit (EXIT_SUCCESS);
 
       /* reset quit-request and encoding */
       avt_set_status (AVT_NORMAL);
       set_encoding (default_encoding);
+
+      if (background_color_changed)
+	{
+	  default_background_color ();
+	  background_color_changed = AVT_FALSE;
+	}
+
+      if (avatar_changed)
+	{
+	  restore_avatar_image ();
+	  if (!popup)
+	    move_in ();
+	}
     }
 }
 
@@ -3654,7 +3707,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.164 2008-08-19 09:49:51 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.165 2008-08-19 16:54:02 akf Exp $");
 
   return EXIT_SUCCESS;
 }

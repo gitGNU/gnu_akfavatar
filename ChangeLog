@@ -3,6 +3,9 @@
 	* akfavatar.h, avatar.c (avt_change_avatar_image):
 	new function
 
+	* avatarsay:
+	handle changing the avatar-image in scripts
+
 	* avatarsay.c:
 	support for archive files (ar)
 
