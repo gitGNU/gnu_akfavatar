@@ -1,3 +1,8 @@
+2008-08-19  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c:
+	support for archive files (ar)
+
 2008-08-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.15.2 released

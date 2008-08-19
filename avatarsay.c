@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.163 2008-08-13 19:17:01 akf Exp $ */
+/* $Id: avatarsay.c,v 2.164 2008-08-19 09:49:51 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -72,7 +72,7 @@
 
 /* size for input buffer - not too small, please */
 /* .encoding must be in first buffer */
-#define INBUFSIZE 10240
+#define INBUFSIZE 1024
 
 /* maximum size for path */
 /* must fit into stack */
@@ -149,6 +149,8 @@ static avt_bool_t terminal_mode;
 /* execute file? Option -e */
 static avt_bool_t executable;
 static avt_bool_t read_error_is_eof;
+static char *from_archive;	/* archive name or NULL */
+static size_t script_bytes_left;	/* how many bytes may still be read */
 static int prg_input;		/* file descriptor for program input */
 
 /* in idle loop? */
@@ -686,6 +688,67 @@ checkoptions (int argc, char **argv)
     }
 }
 
+static int
+check_archive_header (int fd)
+{
+  char archive_magic[8];
+
+  read (fd, &archive_magic, 8);
+  return (memcmp ("!<arch>\n", archive_magic, 8) == 0);
+}
+
+/* finds a file in the archive */
+/* the global header must already be skipped */
+/* returns size of the file, or 0 if not found */
+static size_t
+find_archive_entry (int fd, const char *filename)
+{
+  size_t filename_length;
+  size_t skip_size;
+  struct
+  {
+    char name[16];
+    char date[12];
+    char uid[6], gid[6];
+    char mode[8];
+    char size[10];
+    char magic[2];
+  } header;
+
+  filename_length = strlen (filename);
+
+  if (filename_length > 15)
+    error_msg (filename, "filename too long (max. 15)");
+
+  read (fd, &header, sizeof (header));
+
+  /* check magic entry */
+  if (memcmp (&header.magic, "`\n", 2) != 0)
+    error_msg (filename, "broken archive");
+
+  /* check name */
+  while (memcmp (&header.name, filename, filename_length) != 0
+	 || (header.name[filename_length] != ' '
+	     && header.name[filename_length] != '/'))
+    {
+      /* skip block */
+      skip_size = strtoul ((const char *) &header.size, NULL, 10);
+      if (skip_size % 2 != 0)
+	skip_size++;
+      lseek (fd, skip_size, SEEK_CUR);
+
+      /* read next block-header */
+      if (read (fd, &header, sizeof (header)) <= 0)
+	return 0;		/* end reached - not found */
+
+      /* check magic entry */
+      if (memcmp (&header.magic, "`\n", 2) != 0)
+	error_msg (filename, "broken archive");
+    }
+
+  return strtoul ((const char *) &header.size, NULL, 10);
+}
+
 static void
 use_avatar_image (char *image_file)
 {
@@ -733,12 +796,20 @@ get_data_file (const wchar_t * fn, char filepath[])
 {
   size_t result, filepath_len;
 
-  strcpy (filepath, datadir);
+  if (from_archive)
+    {
+      filepath[0] = '\0';
+      filepath_len = 0;
+    }
+  else				/* not from_archive */
+    {
+      strcpy (filepath, datadir);
 
-  if (filepath[0] != '\0')
-    strcat (filepath, "/");
+      if (filepath[0] != '\0')
+	strcat (filepath, "/");
 
-  filepath_len = strlen (filepath);
+      filepath_len = strlen (filepath);
+    }
 
   /* remove leading whitespace */
   while (*fn == L' ' || *fn == L'\t')
@@ -751,6 +822,47 @@ get_data_file (const wchar_t * fn, char filepath[])
     error_msg ("wcstombs", strerror (errno));
 }
 
+/* returns size or 0 on error */
+static size_t
+get_image_from_archive (const char *name, void **buf, size_t * size)
+{
+  int archive_fd;
+
+  *size = 0;
+  if (buf)
+    *buf = NULL;
+  else
+    return 0;
+
+  archive_fd = open (from_archive, O_RDONLY);
+  if (archive_fd < 0)
+    return 0;
+
+  if (check_archive_header (archive_fd))
+    *size = find_archive_entry (archive_fd, name);
+
+  if (*size <= 0)
+    {
+      close (archive_fd);
+      *size = 0;
+      return 0;
+    }
+
+  *buf = malloc (*size);
+  if (*buf == NULL)
+    {
+      close (archive_fd);
+      *size = 0;
+      return 0;
+    }
+
+  read (archive_fd, *buf, *size);
+  close (archive_fd);
+
+  return *size;
+}
+
+/* errors are silently ignored */
 static void
 handle_image_command (const wchar_t * s)
 {
@@ -762,24 +874,61 @@ handle_image_command (const wchar_t * s)
     initialize ();
   else if (avt_wait (2500))
     quit (EXIT_SUCCESS);
-  if (!avt_show_image_file (filepath))
-    if (avt_wait (7000))
-      quit (EXIT_SUCCESS);
+
+  if (from_archive)
+    {
+      void *img;
+      size_t size = 0;
+
+      if (get_image_from_archive (filepath, &img, &size))
+	{
+	  if (!avt_show_image_data (img, size))
+	    avt_wait (7000);
+	  free (img);
+	  if (avt_get_status ())
+	    quit (EXIT_SUCCESS);
+	}
+    }
+  else				/* not from_archive */
+    {
+      if (!avt_show_image_file (filepath))
+	if (avt_wait (7000))
+	  quit (EXIT_SUCCESS);
+    }
 }
 
 static void
 handle_avatarimage_command (const wchar_t * s)
 {
   char filepath[PATH_LENGTH];
+  void *img;
+  size_t size = 0;
 
   /* if already assigned, delete it */
   if (avt_image)
-    avt_free_image (avt_image);
+    {
+      avt_free_image (avt_image);
+      avt_image = NULL;
+    }
 
   get_data_file (s + 13, filepath);	/* remove ".avatarimage " */
 
-  if (!(avt_image = avt_import_image_file (filepath)))
-    warning_msg ("warning", avt_get_error ());
+  if (from_archive)
+    {
+      if (get_image_from_archive (filepath, &img, &size))
+	{
+	  if (!(avt_image = avt_import_image_data (img, size)))
+	    warning_msg ("warning", avt_get_error ());
+	  free (img);
+	}
+      else
+	warning_msg (filepath, "not found in archive");
+    }
+  else				/* not from_archive */
+    {
+      if (!(avt_image = avt_import_image_file (filepath)))
+	warning_msg ("warning", avt_get_error ());
+    }
 }
 
 static void
@@ -795,6 +944,38 @@ handle_backgoundcolor_command (const wchar_t * s)
   else
     error_msg (".backgroundcolor", NULL);
 }
+
+static avt_audio_t *
+get_sound_from_archive (const char *name)
+{
+  int archive_fd;
+  size_t size = 0;
+  void *buf = NULL;
+  avt_audio_t *result = NULL;
+
+  archive_fd = open (from_archive, O_RDONLY);
+  if (archive_fd < 0)
+    return NULL;
+
+  if (check_archive_header (archive_fd))
+    size = find_archive_entry (archive_fd, name);
+
+  if (size > 0)
+    {
+      buf = malloc (size);
+      if (buf != NULL)
+        {
+	  read (archive_fd, buf, size);
+	  result = avt_load_wave_data (buf, size);
+	  free (buf);
+	}
+    }
+
+  close (archive_fd);
+
+  return result;
+}
+
 
 static void
 handle_audio_command (const wchar_t * s)
@@ -817,7 +998,11 @@ handle_audio_command (const wchar_t * s)
 
   get_data_file (s + 7, filepath);
 
-  sound = avt_load_wave_file (filepath);
+  if (from_archive)
+    sound = get_sound_from_archive (filepath);
+  else
+    sound = avt_load_wave_file (filepath);
+
   if (sound == NULL)
     {
       notice_msg ("can not load audio file", avt_get_error ());
@@ -1192,8 +1377,8 @@ get_character (int fd)
 
   if (wcbuf_pos >= wcbuf_len)
     {
-      static char filebuf[INBUFSIZE];
-      static int filebuf_end = 0;
+      char filebuf[INBUFSIZE];
+      ssize_t nread;
 
       if (wcbuf)
 	{
@@ -1202,34 +1387,41 @@ get_character (int fd)
 	}
 
       /* reserve one byte for a terminator */
-      filebuf_end = read (fd, &filebuf, sizeof (filebuf) - 1);
+      if (from_archive && script_bytes_left < sizeof (filebuf) - 1)
+	nread = read (fd, &filebuf, script_bytes_left);
+      else
+	nread = read (fd, &filebuf, sizeof (filebuf) - 1);
+
+      if (nread > 0)
+	script_bytes_left -= nread;
 
       /* waiting for data */
-      if (filebuf_end == -1 && errno == EAGAIN)
+      /* should never happen on an archive */
+      if (nread == -1 && errno == EAGAIN)
 	{
 	  idle = AVT_TRUE;
-	  while (filebuf_end == -1 && errno == EAGAIN
+	  while (nread == -1 && errno == EAGAIN
 		 && avt_update () == AVT_NORMAL)
-	    filebuf_end = read (fd, &filebuf, sizeof (filebuf) - 1);
+	    nread = read (fd, &filebuf, sizeof (filebuf) - 1);
 	  idle = AVT_FALSE;
 	}
 
-      if (filebuf_end == -1)
+      if (nread == -1)
 	{
 	  if (read_error_is_eof)
 	    wcbuf_len = -1;
 	  else
 	    error_msg ("error while reading from file", strerror (errno));
 	}
-      else			/* filebuf_end != -1 */
+      else			/* nread != -1 */
 	{
 	  if (!encoding_checked && !given_encoding)
 	    {
-	      filebuf[filebuf_end] = '\0';	/* terminate */
+	      filebuf[nread] = '\0';	/* terminate */
 	      check_encoding (filebuf);
 	    }
 
-	  wcbuf_len = avt_mb_decode (&wcbuf, (char *) &filebuf, filebuf_end);
+	  wcbuf_len = avt_mb_decode (&wcbuf, (char *) &filebuf, nread);
 	  wcbuf_pos = 0;
 	}
     }
@@ -1513,7 +1705,7 @@ get_user_home (void)
 
 /* opens the file, returns file descriptor or -1 on error */
 static int
-openfile (const char *fname)
+open_script (const char *fname)
 {
   int fd = -1;
 
@@ -1529,6 +1721,19 @@ openfile (const char *fname)
     fd = open (fname, O_RDONLY);
 #endif
 
+  /* check, if it's an archive */
+  if (check_archive_header (fd))
+    {
+      script_bytes_left = find_archive_entry (fd, "script");
+      from_archive = strdup (fname);
+    }
+  else
+    {
+      lseek (fd, 0, SEEK_SET);
+      script_bytes_left = 0;
+      from_archive = NULL;
+    }
+
   read_error_is_eof = AVT_FALSE;
 
   return fd;
@@ -1537,7 +1742,7 @@ openfile (const char *fname)
 /* shows content of file / other input */
 /* returns -1:file cannot be processed, 0:normal, 1:stop requested */
 static int
-process_file (int fd)
+process_script (int fd)
 {
   wchar_t *line = NULL;
   size_t line_size = 0;
@@ -1636,6 +1841,12 @@ process_file (int fd)
   if (close (fd) == -1 && errno != EAGAIN)
     warning_msg ("close", strerror (errno));
 
+  if (from_archive)
+    {
+      free (from_archive);
+      from_archive = NULL;
+    }
+
   if (avt_get_status () == AVT_ERROR)
     {
       stop = AVT_TRUE;
@@ -1667,9 +1878,9 @@ ask_file (void)
 
       avt_set_text_delay (default_delay);
 
-      fd = openfile (filename);
+      fd = open_script (filename);
       if (fd > -1)
-	process_file (fd);
+	process_script (fd);
 
       /* ignore file errors */
       status = avt_get_status ();
@@ -2906,7 +3117,7 @@ ask_manpage (void)
       prg_input = -1;
 
       if (fd > -1)
-	process_file (fd);
+	process_script (fd);
 
       /* just to prevent zombies */
       wait (NULL);
@@ -3302,14 +3513,14 @@ check_config_file (const char *f)
 }
 
 static void
-show_file (char *f)
+run_script (char *f)
 {
   int status = -1;
   int fd;
 
   set_encoding (default_encoding);
 
-  fd = openfile (f);
+  fd = open_script (f);
 
   /* if it can't be opened and there is no slash, try with datadir */
   if (fd == -1 && strchr (f, '/') == NULL)
@@ -3318,11 +3529,11 @@ show_file (char *f)
       strcpy (p, datadir);
       strcat (p, "/");
       strcat (p, f);
-      fd = openfile (p);
+      fd = open_script (p);
     }
 
   if (fd > -1)
-    status = process_file (fd);
+    status = process_script (fd);
 
   if (status < 0)
     error_msg ("error opening file", f);
@@ -3433,7 +3644,7 @@ main (int argc, char *argv[])
 	move_in ();
 
       for (i = optind; i < argc; i++)
-	show_file (argv[i]);
+	run_script (argv[i]);
 
       if (initialized && !popup)
 	move_out ();
@@ -3443,7 +3654,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.163 2008-08-13 19:17:01 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.164 2008-08-19 09:49:51 akf Exp $");
 
   return EXIT_SUCCESS;
 }
