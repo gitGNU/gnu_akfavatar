@@ -1,5 +1,8 @@
 2008-08-19  Andreas K. Foerster  <info@akfoerster.de>
 
+	* akfavatar.h, avatar.c (avt_change_avatar_image):
+	new function
+
 	* avatarsay.c:
 	support for archive files (ar)
 

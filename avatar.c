@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.146 2008-08-12 10:02:22 akf Exp $ */
+/* $Id: avatar.c,v 2.147 2008-08-19 15:15:05 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -3603,6 +3603,67 @@ avt_import_image_file (const char *file)
   return (avt_image_t *) image;
 }
 
+/* change avatar image while running */
+int
+avt_change_avatar_image (avt_image_t * image)
+{
+  if (avt_visible)
+    avt_clear_screen ();
+
+  if (avt_image)
+    {
+      SDL_FreeSurface (avt_image);
+      avt_image = NULL;
+    }
+
+  /* import the avatar image */
+  if (image)
+    {
+      /* convert image to display-format for faster drawing */
+      if (((SDL_Surface *) image)->flags & SDL_SRCALPHA)
+	avt_image = SDL_DisplayFormatAlpha ((SDL_Surface *) image);
+      else
+	avt_image = SDL_DisplayFormat ((SDL_Surface *) image);
+
+      SDL_FreeSurface ((SDL_Surface *) image);
+
+      if (!avt_image)
+	{
+	  _avt_STATUS = AVT_ERROR;
+	  return _avt_STATUS;
+	}
+    }
+
+  /*
+   * recalculate balloonheight from window height, image height,
+   * and AVATAR_MARGIN
+   */
+  if (avt_image)
+    {
+      balloonheight = window.h - avt_image->h - 2 * TOPMARGIN - AVATAR_MARGIN;
+      /* align with LINEHEIGHT */
+      balloonheight -=
+	(balloonheight - (2 * BALLOON_INNER_MARGIN)) % LINEHEIGHT;
+
+      /* check, whether image is too high */
+      /* at least 10 lines */
+      if (balloonheight < (10 * LINEHEIGHT) + (2 * BALLOON_INNER_MARGIN))
+	{
+	  SDL_SetError ("Avatar image too large");
+	  _avt_STATUS = AVT_ERROR;
+	  SDL_FreeSurface (avt_image);
+	  avt_image = NULL;
+	  return _avt_STATUS;
+	}
+    }
+  else				/* no avatar? -> whole screen is the balloon */
+    {
+      balloonheight = window.h - 2 * TOPMARGIN;
+    }
+
+  return _avt_STATUS;
+}
+
 /* can and should be called before avt_initialize */
 void
 avt_set_background_color (int red, int green, int blue)
@@ -3870,7 +3931,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.146 2008-08-12 10:02:22 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.147 2008-08-19 15:15:05 akf Exp $");
 
   /*
    * Initialize the display, accept any format

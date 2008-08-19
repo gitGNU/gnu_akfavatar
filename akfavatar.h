@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.67 2008-08-12 09:11:14 akf Exp $ */
+/* $Id: akfavatar.h,v 2.68 2008-08-19 15:15:03 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -206,6 +206,15 @@ avt_image_t *avt_import_image_data (void *img, int imgsize);
  * import avatar from file
  */
 avt_image_t *avt_import_image_file (const char *file);
+
+/* 
+ * change avatar image while running
+ * if the avatar is visible, the screen gets cleared
+ * the original image is freed in this function!
+ * the image may be NULL if no avatar should be shown
+ * on error AVT_ERROR is set and returned 
+ */
+int avt_change_avatar_image (avt_image_t * image);
 
 /* 
  * free avt_image_t images
