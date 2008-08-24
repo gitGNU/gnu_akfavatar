@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.171 2008-08-24 16:00:32 akf Exp $ */
+/* $Id: avatarsay.c,v 2.172 2008-08-24 16:15:28 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1718,33 +1718,33 @@ open_script (const char *fname)
 
   /* clear text-buffer */
   wcbuf_pos = wcbuf_len = 0;
+  script_bytes_left = 0;
+  from_archive = NULL;
 
   if (strcmp (fname, "-") == 0)
     fd = STDIN_FILENO;		/* stdin */
   else				/* regular file */
+    {
 #ifdef O_NONBLOCK
-    fd = open (fname, O_RDONLY | O_NONBLOCK);
+      fd = open (fname, O_RDONLY | O_NONBLOCK);
 #else
-    fd = open (fname, O_RDONLY);
+      fd = open (fname, O_RDONLY);
 #endif
 
-  /* check, if it's an archive */
-  if (check_archive_header (fd))
-    {
-      script_bytes_left = find_archive_entry (fd, "AKFAvatar");
-      if (script_bytes_left > 0)
-	from_archive = strdup (fname);
-      else
+      /* check, if it's an archive */
+      if (check_archive_header (fd))
 	{
-	  close (fd);
-	  fd = -1;
+	  script_bytes_left = find_archive_entry (fd, "AKFAvatar");
+	  if (script_bytes_left > 0)
+	    from_archive = strdup (fname);
+	  else			/* start-script not found in archive */
+	    {
+	      close (fd);
+	      fd = -1;
+	    }
 	}
-    }
-  else
-    {
-      lseek (fd, 0, SEEK_SET);
-      script_bytes_left = 0;
-      from_archive = NULL;
+      else			/* not an archive */
+	lseek (fd, 0, SEEK_SET);
     }
 
   read_error_is_eof = AVT_FALSE;
@@ -3747,7 +3747,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.171 2008-08-24 16:00:32 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.172 2008-08-24 16:15:28 akf Exp $");
 
   return EXIT_SUCCESS;
 }
