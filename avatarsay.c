@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.170 2008-08-24 15:23:54 akf Exp $ */
+/* $Id: avatarsay.c,v 2.171 2008-08-24 16:00:32 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1761,7 +1761,31 @@ say_line (const wchar_t * line, ssize_t nread)
 
   for (i = 0; i < nread; i++, line++)
     {
-      if (*line == L'_' && !rawmode)
+      if (*(line + 1) == L'\b')
+	{
+	  if (*line == L'_')
+	    {
+	      avt_underlined (AVT_TRUE);
+	      status = avt_put_character (*(line + 2));
+	      avt_underlined (underlined);
+	      i += 2;
+	      line += 2;
+	    }
+	  else if (*line == *(line + 2))
+	    {
+	      avt_bold (AVT_TRUE);
+	      status = avt_put_character (*line);
+	      avt_bold (AVT_FALSE);
+	      i += 2;
+	      line += 2;
+	    }
+	  else
+	    {
+	      i++;
+	      line++;
+	    }
+	}
+      else if (*line == L'_' && !rawmode)
 	{
 	  underlined = ~underlined;
 	  avt_underlined (underlined);
@@ -3723,7 +3747,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.170 2008-08-24 15:23:54 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.171 2008-08-24 16:00:32 akf Exp $");
 
   return EXIT_SUCCESS;
 }

@@ -9,6 +9,9 @@
 	* avatarsay.c (process_new_line):
 	function removed - handled now in say_line
 
+	* avatarsay.c (say_line):
+	handle troff style underlining and bold printing
+
 	* avatarsay.c (process_script):
 	a stripline may start the text (ie. empty lines after that count)
 
