@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.168 2008-08-24 14:51:19 akf Exp $ */
+/* $Id: avatarsay.c,v 2.169 2008-08-24 15:03:19 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1375,33 +1375,6 @@ check_encoding (const char *buf)
     }
 }
 
-/* if line ends on \, strip and \n */
-static void
-process_line_end (wchar_t * s, ssize_t * len)
-{
-  /* in rawmode don't change anything */
-  if (rawmode)
-    return;
-
-  if (*len < 3)
-    return;
-
-  /* strip \\\n at the end */
-  if (*(s + *len - 1) == L'\n' && *(s + *len - 2) == L'\\')
-    {
-      *len -= 2;
-      *(s + *len + 1) = L'\0';
-    }
-
-  /* strip \\\r\n at the end */
-  if (*(s + *len - 1) == L'\n' && *(s + *len - 2) == L'\r'
-      && *(s + *len - 3) == L'\\')
-    {
-      *len -= 3;
-      *(s + *len + 1) = L'\0';
-    }
-}
-
 /* @@@ */
 static wint_t
 get_character (int fd)
@@ -1787,6 +1760,16 @@ say_line (const wchar_t * line, ssize_t nread)
 	  underlined = ~underlined;
 	  avt_underlined (underlined);
 	}
+      else if (*line == L'\\' && *(line + 1) == L'\n')
+	{
+	  i++;
+	  line++;
+	}
+      else if (*line == L'\\' && *(line + 1) == L'\r' && *(line + 2) == L'\n')
+	{
+	  i += 2;
+	  line += 2;
+	}
       else			/* not L'_' */
 	{
 	  status = avt_put_character (*line);
@@ -1862,7 +1845,6 @@ process_script (int fd)
   /* show text */
   if (line && !stop && wcsncmp (line, L"---", 3) != 0)
     {
-      process_line_end (line, &nread);
       if (say_line (line, nread))
 	stop = AVT_TRUE;
     }
@@ -1888,7 +1870,6 @@ process_script (int fd)
 
       if (nread != 0 && !iscommand (line, &stop) && !stop)
 	{
-	  process_line_end (line, &nread);
 	  if (say_line (line, nread))
 	    stop = AVT_TRUE;
 	}
@@ -3736,7 +3717,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.168 2008-08-24 14:51:19 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.169 2008-08-24 15:03:19 akf Exp $");
 
   return EXIT_SUCCESS;
 }
