@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.147 2008-08-19 15:15:05 akf Exp $ */
+/* $Id: avatar.c,v 2.148 2008-08-24 17:22:42 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2224,31 +2224,6 @@ avt_put_character (const wchar_t ch)
   return _avt_STATUS;
 }
 
-static void
-backspace_trick (const wchar_t * txt)
-{
-  if (*txt == L'_')		/* underline-trick */
-    {
-      underlined = AVT_TRUE;
-      avt_put_character (*(txt + 2));
-      underlined = AVT_FALSE;
-    }
-  else if (*(txt + 2) == L'_')	/* underline-trick variant */
-    {
-      underlined = AVT_TRUE;
-      avt_put_character (*txt);
-      underlined = AVT_FALSE;
-    }
-  else if (*txt == *(txt + 2))	/* bold-trick */
-    {
-      bold = AVT_TRUE;
-      avt_put_character (*(txt + 2));
-      bold = AVT_FALSE;
-    }
-  else				/* else just ignore erased characters */
-    avt_put_character (*(txt + 2));
-}
-
 /* 
  * writes L'\0' terminated string to textfield - 
  * interprets control characters
@@ -2269,17 +2244,8 @@ avt_say (const wchar_t * txt)
 
   while (*txt != L'\0')
     {
-      if (*(txt + 1) != L'\b')
-	avt_put_character (*txt);
-      else			/* next char is a backspace */
-	{
-	  backspace_trick (txt);
-	  txt += 2;
-	}
-
-      /* premature break */
-      if (_avt_STATUS)
-	return _avt_STATUS;
+      if (avt_put_character (*txt))
+	break;
 
       txt++;
     }
@@ -2305,22 +2271,10 @@ avt_say_len (const wchar_t * txt, const int len)
   if (textfield.x < 0)
     avt_draw_balloon ();
 
-  for (i = 0; i < len; i++)
+  for (i = 0; i < len; i++, txt++)
     {
-      if (i > len - 2 || *(txt + 1) != L'\b')
-	avt_put_character (*txt);
-      else			/* next char is a backspace */
-	{
-	  backspace_trick (txt);
-	  txt += 2;
-	  i += 2;
-	}
-
-      /* premature break */
-      if (_avt_STATUS)
-	return _avt_STATUS;
-
-      txt++;
+      if (avt_put_character (*txt))
+	break;
     }
 
   return _avt_STATUS;
@@ -3931,7 +3885,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.147 2008-08-19 15:15:05 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.148 2008-08-24 17:22:42 akf Exp $");
 
   /*
    * Initialize the display, accept any format

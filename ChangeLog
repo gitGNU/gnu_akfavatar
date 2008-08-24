@@ -12,6 +12,9 @@
 	* avatarsay.c (say_line):
 	handle troff style underlining and bold printing
 
+	* avatar.c (avt_say, avt_say_len):
+	don't handle backspace tricks here (avatarsay does now)
+
 	* avatarsay.c (process_script):
 	a stripline may start the text (ie. empty lines after that count)
 
