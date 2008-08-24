@@ -1,5 +1,8 @@
 2008-08-24  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatarsay.c (say_line):
+	new function - handles underlining
+
 	* avatarsay.c (process_script):
 	a stripline may start the text (ie. empty lines after that count)
 

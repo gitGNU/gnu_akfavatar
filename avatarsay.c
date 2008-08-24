@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.166 2008-08-24 13:09:18 akf Exp $ */
+/* $Id: avatarsay.c,v 2.167 2008-08-24 14:07:35 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1376,7 +1376,7 @@ check_encoding (const char *buf)
 }
 
 /* if line ends on \, strip and \n */
-void
+static void
 process_line_end (wchar_t * s, ssize_t * len)
 {
   /* in rawmode don't change anything */
@@ -1773,6 +1773,34 @@ open_script (const char *fname)
   return fd;
 }
 
+static int
+say_line (const wchar_t * line, ssize_t nread)
+{
+  ssize_t i;
+  int status = AVT_NORMAL;
+  avt_bool_t underlined = AVT_FALSE;
+
+  for (i = 0; i < nread; i++, line++)
+    {
+      if (*line == L'_')
+	{
+	  underlined = ~underlined;
+	  avt_underlined (underlined);
+	}
+      else			/* not L'_' */
+	{
+	  status = avt_put_character (*line);
+	  if (status)
+	    break;
+	}
+    }
+
+  if (underlined)
+    avt_underlined (AVT_FALSE);
+
+  return status;
+}
+
 /* shows content of file / other input */
 /* returns -1:file cannot be processed, 0:normal, 1:stop requested */
 static int
@@ -1835,7 +1863,7 @@ process_script (int fd)
   if (line && !stop && wcsncmp (line, L"---", 3) != 0)
     {
       process_line_end (line, &nread);
-      if (avt_say_len (line, nread))
+      if (say_line (line, nread))
 	stop = AVT_TRUE;
     }
 
@@ -1861,7 +1889,7 @@ process_script (int fd)
       if (nread != 0 && !iscommand (line, &stop) && !stop)
 	{
 	  process_line_end (line, &nread);
-	  if (avt_say_len (line, nread))
+	  if (say_line (line, nread))
 	    stop = AVT_TRUE;
 	}
     }
@@ -3708,7 +3736,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.166 2008-08-24 13:09:18 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.167 2008-08-24 14:07:35 akf Exp $");
 
   return EXIT_SUCCESS;
 }
