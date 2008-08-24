@@ -1,3 +1,8 @@
+2008-08-24  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (process_script):
+	a stripline may start the text (ie. empty lines after that count)
+
 2008-08-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_change_avatar_image):
