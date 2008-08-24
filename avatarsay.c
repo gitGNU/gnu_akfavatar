@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.169 2008-08-24 15:03:19 akf Exp $ */
+/* $Id: avatarsay.c,v 2.170 2008-08-24 15:23:54 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1731,8 +1731,14 @@ open_script (const char *fname)
   /* check, if it's an archive */
   if (check_archive_header (fd))
     {
-      script_bytes_left = find_archive_entry (fd, "script");
-      from_archive = strdup (fname);
+      script_bytes_left = find_archive_entry (fd, "AKFAvatar");
+      if (script_bytes_left > 0)
+	from_archive = strdup (fname);
+      else
+	{
+	  close (fd);
+	  fd = -1;
+	}
     }
   else
     {
@@ -3717,7 +3723,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.169 2008-08-24 15:03:19 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.170 2008-08-24 15:23:54 akf Exp $");
 
   return EXIT_SUCCESS;
 }

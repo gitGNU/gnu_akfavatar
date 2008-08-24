@@ -1,5 +1,8 @@
 2008-08-24  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatarsay.c (open_script):
+	script name now "AKFAvatar" + proper error handling
+
 	* avatarsay.c (say_line):
 	new function - handles underlining
 
