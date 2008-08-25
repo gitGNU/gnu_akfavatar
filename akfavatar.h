@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.69 2008-08-25 10:36:14 akf Exp $ */
+/* $Id: akfavatar.h,v 2.70 2008-08-25 18:17:31 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -579,7 +579,7 @@ void avt_erase_characters (int num);
 
 /*
  * set scroll mode
- * 0 = off (page-flipping), 1 = normal
+ * -1 = off, 0 = page-flipping, 1 = normal
  * (further modes are planned, it is not meant as a boolean)
  */
 void avt_set_scroll_mode (int mode);

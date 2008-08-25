@@ -1,5 +1,8 @@
 2008-08-25  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatar.c (avt_scroll_up):
+	scrollmode -1 for really doing nothing
+
 	* avatar.c (calculate_balloonmaxheight):
 	new function
 

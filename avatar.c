@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.151 2008-08-25 14:50:27 akf Exp $ */
+/* $Id: avatar.c,v 2.152 2008-08-25 18:17:31 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1827,8 +1827,12 @@ avt_flip_page (void)
 static void
 avt_scroll_up (void)
 {
-  if (scroll_mode)
+  switch (scroll_mode)
     {
+    case -1:
+      /* do nothing */
+      break;
+    case 1:
       if (text_cursor_visible)
 	avt_show_text_cursor (AVT_FALSE);
 
@@ -1844,10 +1848,11 @@ avt_scroll_up (void)
 
       if (text_cursor_visible)
 	avt_show_text_cursor (AVT_TRUE);
-
+      break;
+    case 0:
+      avt_flip_page ();
+      break;
     }
-  else
-    avt_flip_page ();
 }
 
 static void
@@ -3916,7 +3921,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.151 2008-08-25 14:50:27 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.152 2008-08-25 18:17:31 akf Exp $");
 
   /*
    * Initialize the display, accept any format
