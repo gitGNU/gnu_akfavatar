@@ -1,5 +1,8 @@
 2008-08-25  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatar.c (calculate_balloonmaxheight):
+	new function
+
 	* akfavatar.h, avatar.c (avt_set_balloon_width)
 	(avt_set_balloon_height):
 	new functions
