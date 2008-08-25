@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.68 2008-08-19 15:15:03 akf Exp $ */
+/* $Id: akfavatar.h,v 2.69 2008-08-25 10:36:14 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -175,6 +175,15 @@ char *avt_get_error (void);
  * in a text, you might want to call avt_newline after that
  */
 void avt_text_direction (int direction);
+
+/*
+ * set the baloon width and height in number of characters
+ * 0 or less for maximum width
+ * after calling this no balloon is visible
+ * see also avt_get_max_x () and avt_get_max_y ()
+ */
+void avt_set_balloon_width (int width);
+void avt_set_balloon_height (int height);
 
 /* activate the text cursor? (default: no) */
 void avt_activate_cursor (avt_bool_t on);

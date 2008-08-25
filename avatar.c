@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.148 2008-08-24 17:22:42 akf Exp $ */
+/* $Id: avatar.c,v 2.149 2008-08-25 10:36:15 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -132,7 +132,6 @@
 #  define MINIMALWIDTH 320
 #  define MINIMALHEIGHT 240
 #  define TOPMARGIN 10
-#  define BALLOONWIDTH AVT_LINELENGTH
 #  define BALLOON_INNER_MARGIN 10
 #  define AVATAR_MARGIN 5
 #  define MOVE_DELAY 5
@@ -140,7 +139,6 @@
 #  define MINIMALWIDTH 640
 #  define MINIMALHEIGHT 480
 #  define TOPMARGIN 25
-#  define BALLOONWIDTH AVT_LINELENGTH
 #  define BALLOON_INNER_MARGIN 10
 #  define AVATAR_MARGIN 10
    /* Delay for moving in or out - the higher, the slower */
@@ -149,7 +147,6 @@
 #  define MINIMALWIDTH 800
 #  define MINIMALHEIGHT 600
 #  define TOPMARGIN 25
-#  define BALLOONWIDTH AVT_LINELENGTH
 #  define BALLOON_INNER_MARGIN 15
 #  define AVATAR_MARGIN 20
    /* Delay for moving in or out - the higher, the slower */
@@ -241,7 +238,7 @@ static int textdir_rtl = AVT_LEFT_TO_RIGHT;
 
 /* beginning of line - depending on text direction */
 static int linestart;
-static int balloonheight;
+static int balloonheight, balloonwidth;
 
 /* delay values for printing text and flipping the page */
 static int text_delay = 0;	/* AVT_DEFAULT_TEXT_DELAY */
@@ -698,17 +695,17 @@ avt_draw_balloon (void)
 				backgroundcolor_RGB.g, backgroundcolor_RGB.b);
   ballooncolor = SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF);
 
-  textfield.x = window.x + (window.w / 2) - (BALLOONWIDTH * FONTWIDTH / 2);
+  textfield.x = window.x + (window.w / 2) - (balloonwidth * FONTWIDTH / 2);
   textfield.y = window.y + TOPMARGIN + BALLOON_INNER_MARGIN;
-  textfield.w = (BALLOONWIDTH * FONTWIDTH);
-  textfield.h = balloonheight - (2 * BALLOON_INNER_MARGIN);
+  textfield.w = (balloonwidth * FONTWIDTH);
+  textfield.h = (balloonheight * LINEHEIGHT) - (2 * BALLOON_INNER_MARGIN);
   viewport = textfield;
 
   /* somewat lager rectangle */
   dst.x = textfield.x - BALLOON_INNER_MARGIN;
   dst.y = window.y + TOPMARGIN;
-  dst.w = (BALLOONWIDTH * FONTWIDTH) + (2 * BALLOON_INNER_MARGIN);
-  dst.h = balloonheight;
+  dst.w = (balloonwidth * FONTWIDTH) + (2 * BALLOON_INNER_MARGIN);
+  dst.h = (balloonheight * LINEHEIGHT);
 
   /* sanity check */
   if (dst.x < window.x)
@@ -768,7 +765,7 @@ avt_draw_balloon (void)
 	cut_top = balloonpointer.height - (avt_image->h / 2);
 
       xoffs = window.x + avt_image->w + (2 * AVATAR_MARGIN) + 20;
-      yoffs = window.y + balloonheight + TOPMARGIN;
+      yoffs = window.y + (balloonheight * LINEHEIGHT) + TOPMARGIN;
 
       /* only draw the balloonpointer, when it fits */
       if (xoffs + balloonpointer.width < window.x + window.w)
@@ -837,6 +834,41 @@ avt_text_direction (int direction)
       if (text_cursor_visible)
 	avt_show_text_cursor (AVT_TRUE);
     }
+}
+
+void
+avt_set_balloon_width (int width)
+{
+  if (width < AVT_LINELENGTH && width > 0)
+    balloonwidth = width;
+  else
+    balloonwidth = AVT_LINELENGTH;
+
+  /* if balloon is visible, remove it */
+  if (textfield.x >= 0)
+    avt_show_avatar ();
+}
+
+// @@@
+void
+avt_set_balloon_height (int height)
+{
+  int maxheight;
+
+  if (avt_image)
+    maxheight = (window.h - avt_image->h - (2 * TOPMARGIN)
+		 - AVATAR_MARGIN) / LINEHEIGHT;
+  else
+    maxheight = (window.h - (2 * TOPMARGIN)) / LINEHEIGHT;
+
+  if (height > 0 && height < maxheight)
+    balloonheight = height;
+  else
+    balloonheight = maxheight;
+
+  /* if balloon is visible, remove it */
+  if (textfield.x >= 0)
+    avt_show_avatar ();
 }
 
 static void
@@ -1195,7 +1227,7 @@ int
 avt_get_max_x (void)
 {
   if (screen)
-    return AVT_LINELENGTH;
+    return balloonwidth;
   else
     return -1;
 }
@@ -1205,7 +1237,7 @@ int
 avt_get_max_y (void)
 {
   if (screen)
-    return (balloonheight - (2 * BALLOON_INNER_MARGIN)) / LINEHEIGHT;
+    return balloonheight;
   else
     return -1;
 }
@@ -3589,19 +3621,17 @@ avt_change_avatar_image (avt_image_t * image)
     }
 
   /*
-   * recalculate balloonheight from window height, image height,
+   * calculate balloonheight from window height, image height,
    * and AVATAR_MARGIN
    */
   if (avt_image)
     {
-      balloonheight = window.h - avt_image->h - 2 * TOPMARGIN - AVATAR_MARGIN;
-      /* align with LINEHEIGHT */
-      balloonheight -=
-	(balloonheight - (2 * BALLOON_INNER_MARGIN)) % LINEHEIGHT;
+      balloonheight = (window.h - avt_image->h - (2 * TOPMARGIN) -
+		       AVATAR_MARGIN) / LINEHEIGHT;
 
       /* check, whether image is too high */
       /* at least 10 lines */
-      if (balloonheight < (10 * LINEHEIGHT) + (2 * BALLOON_INNER_MARGIN))
+      if (balloonheight < 10)
 	{
 	  SDL_SetError ("Avatar image too large");
 	  _avt_STATUS = AVT_ERROR;
@@ -3611,9 +3641,9 @@ avt_change_avatar_image (avt_image_t * image)
 	}
     }
   else				/* no avatar? -> whole screen is the balloon */
-    {
-      balloonheight = window.h - 2 * TOPMARGIN;
-    }
+    balloonheight = (window.h - (2 * TOPMARGIN)) / LINEHEIGHT;
+
+  balloonwidth = AVT_LINELENGTH;
 
   return _avt_STATUS;
 }
@@ -3885,7 +3915,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.148 2008-08-24 17:22:42 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.149 2008-08-25 10:36:15 akf Exp $");
 
   /*
    * Initialize the display, accept any format
@@ -4033,14 +4063,12 @@ avt_initialize (const char *title, const char *icontitle,
    */
   if (avt_image)
     {
-      balloonheight = window.h - avt_image->h - 2 * TOPMARGIN - AVATAR_MARGIN;
-      /* align with LINEHEIGHT */
-      balloonheight -=
-	(balloonheight - (2 * BALLOON_INNER_MARGIN)) % LINEHEIGHT;
+      balloonheight = (window.h - avt_image->h - 2 * TOPMARGIN -
+		       AVATAR_MARGIN) / LINEHEIGHT;
 
       /* check, whether image is too high */
       /* at least 10 lines */
-      if (balloonheight < (10 * LINEHEIGHT) + (2 * BALLOON_INNER_MARGIN))
+      if (balloonheight < 10)
 	{
 	  SDL_SetError ("Avatar image too large");
 	  _avt_STATUS = AVT_ERROR;
@@ -4053,8 +4081,10 @@ avt_initialize (const char *title, const char *icontitle,
     }
   else				/* no avatar? -> whole screen is the balloon */
     {
-      balloonheight = window.h - 2 * TOPMARGIN;
+      balloonheight = (window.h - (2 * TOPMARGIN)) / LINEHEIGHT;
     }
+
+  balloonwidth = AVT_LINELENGTH;
 
   /* needed to get the character of the typed key */
   SDL_EnableUNICODE (1);

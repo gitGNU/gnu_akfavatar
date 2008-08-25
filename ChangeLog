@@ -1,3 +1,13 @@
+2008-08-25  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_set_balloon_width)
+	(avt_set_balloon_height):
+	new functions
+
+	* avatar.c (avt_draw_balloon, avt_get_max_x, avt_get_max_y)
+	(avt_change_avatar_image, avt_initialize):
+	balloonheight and balloonwidth stored as number of characters
+
 2008-08-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (open_script):
