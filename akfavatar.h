@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.70 2008-08-25 18:17:31 akf Exp $ */
+/* $Id: akfavatar.h,v 2.71 2008-08-25 18:34:59 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -179,7 +179,7 @@ void avt_text_direction (int direction);
 /*
  * set the baloon width and height in number of characters
  * 0 or less for maximum width
- * after calling this no balloon is visible
+ * if it's actually changed, the balloon is removed from the screen
  * see also avt_get_max_x () and avt_get_max_y ()
  */
 void avt_set_balloon_width (int width);
@@ -580,7 +580,6 @@ void avt_erase_characters (int num);
 /*
  * set scroll mode
  * -1 = off, 0 = page-flipping, 1 = normal
- * (further modes are planned, it is not meant as a boolean)
  */
 void avt_set_scroll_mode (int mode);
 int avt_get_scroll_mode (void);

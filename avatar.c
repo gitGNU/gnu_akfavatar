@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.153 2008-08-25 18:23:38 akf Exp $ */
+/* $Id: avatar.c,v 2.154 2008-08-25 18:34:59 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -841,28 +841,33 @@ avt_text_direction (int direction)
 void
 avt_set_balloon_width (int width)
 {
-  if (width < AVT_LINELENGTH && width > 0)
-    balloonwidth = width;
-  else
-    balloonwidth = AVT_LINELENGTH;
+  if (width != balloonwidth)
+    {
+      if (width < AVT_LINELENGTH && width > 0)
+	balloonwidth = width;
+      else
+	balloonwidth = AVT_LINELENGTH;
 
-  /* if balloon is visible, remove it */
-  if (textfield.x >= 0)
-    avt_show_avatar ();
+      /* if balloon is visible, remove it */
+      if (textfield.x >= 0)
+	avt_show_avatar ();
+    }
 }
 
-// @@@
 void
 avt_set_balloon_height (int height)
 {
-  if (height > 0 && height < balloonmaxheight)
-    balloonheight = height;
-  else
-    balloonheight = balloonmaxheight;
+  if (height != balloonheight)
+    {
+      if (height > 0 && height < balloonmaxheight)
+	balloonheight = height;
+      else
+	balloonheight = balloonmaxheight;
 
-  /* if balloon is visible, remove it */
-  if (textfield.x >= 0)
-    avt_show_avatar ();
+      /* if balloon is visible, remove it */
+      if (textfield.x >= 0)
+	avt_show_avatar ();
+    }
 }
 
 static void
@@ -3920,7 +3925,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.153 2008-08-25 18:23:38 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.154 2008-08-25 18:34:59 akf Exp $");
 
   /*
    * Initialize the display, accept any format
