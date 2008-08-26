@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.155 2008-08-26 12:23:31 akf Exp $ */
+/* $Id: avatar.c,v 2.156 2008-08-26 12:33:35 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -844,7 +844,7 @@ avt_set_balloon_width (int width)
   if (width != balloonwidth)
     {
       if (width < AVT_LINELENGTH && width > 0)
-	balloonwidth = width;
+	balloonwidth = (width > 15) ? width : 15;
       else
 	balloonwidth = AVT_LINELENGTH;
 
@@ -3926,7 +3926,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.155 2008-08-26 12:23:31 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.156 2008-08-26 12:33:35 akf Exp $");
 
   /*
    * Initialize the display, accept any format

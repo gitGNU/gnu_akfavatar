@@ -1,3 +1,8 @@
+2008-08-26  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_set_balloon_width):
+	enforce a minimum width
+
 2008-08-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_initialize): scrollmode not reset here
