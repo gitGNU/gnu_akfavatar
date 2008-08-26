@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.154 2008-08-25 18:34:59 akf Exp $ */
+/* $Id: avatar.c,v 2.155 2008-08-26 12:23:31 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1835,7 +1835,8 @@ avt_scroll_up (void)
   switch (scroll_mode)
     {
     case -1:
-      /* do nothing */
+      /* move cursor outside of balloon */
+      cursor.y += LINEHEIGHT;
       break;
     case 1:
       if (text_cursor_visible)
@@ -3925,7 +3926,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.154 2008-08-25 18:34:59 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.155 2008-08-26 12:23:31 akf Exp $");
 
   /*
    * Initialize the display, accept any format
