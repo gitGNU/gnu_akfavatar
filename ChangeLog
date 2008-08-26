@@ -1,5 +1,8 @@
 2008-08-26  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatarsay:
+	new commands: .height, .width, .size, .scrolling
+
 	* avatar.c (avt_set_balloon_width):
 	enforce a minimum width
 

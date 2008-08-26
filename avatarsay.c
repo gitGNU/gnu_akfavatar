@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.172 2008-08-24 16:15:28 akf Exp $ */
+/* $Id: avatarsay.c,v 2.173 2008-08-26 19:08:51 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -925,12 +925,23 @@ handle_image_command (const wchar_t * s)
 static void
 handle_avatarimage_command (const wchar_t * s)
 {
+  static char *oldavatar = NULL;
   char filepath[PATH_LENGTH];
   void *img;
   avt_image_t *newavatar = NULL;
   size_t size = 0;
 
   get_data_file (s + 13, filepath);	/* remove ".avatarimage " */
+
+  if (oldavatar)
+    {
+      if (strcmp (filepath, oldavatar) == 0)
+	return;
+      else
+	free (oldavatar);
+    }
+
+  oldavatar = strdup (filepath);
 
   if (from_archive)
     {
@@ -1053,17 +1064,56 @@ handle_back_command (const wchar_t * s)
 {
   int i, value;
 
-
   if (!initialized)
     return;
 
-  if (swscanf (s, L".back %d", &value) > 0)
+  if (swscanf (s, L".back %i", &value) > 0)
     {
       for (i = 0; i < value; i++)
 	avt_backspace ();
     }
   else
     avt_backspace ();
+}
+
+static void
+handle_height_command (const wchar_t * s)
+{
+  int value;
+
+  if (swscanf (s, L".height %i", &value) > 0)
+    avt_set_balloon_height (value);
+  else
+    avt_set_balloon_height (0);	/* maximum */
+}
+
+static void
+handle_width_command (const wchar_t * s)
+{
+  int value;
+
+  if (swscanf (s, L".width %i", &value) > 0)
+    avt_set_balloon_width (value);
+  else
+    avt_set_balloon_width (0);	/* maximum */
+}
+
+static void
+handle_size_command (const wchar_t * s)
+{
+  int width, height;
+
+  if (swscanf (s, L".size %i , %i", &height, &width) == 2)
+    {
+      avt_set_balloon_height (height);
+      avt_set_balloon_width (width);
+    }
+  else
+    {
+      /* maximum */
+      avt_set_balloon_height (0);
+      avt_set_balloon_width (0);
+    }
 }
 
 static void
@@ -1161,6 +1211,41 @@ iscommand (wchar_t * s, int *stop)
       if (wcscmp (s, L".right-to-left") == 0)
 	{
 	  avt_text_direction (AVT_RIGHT_TO_LEFT);
+	  return AVT_TRUE;
+	}
+
+      /* switch scrolling off */
+      if (wcscmp (s, L".scrolling off") == 0)
+	{
+	  avt_set_scroll_mode (-1);
+	  return AVT_TRUE;
+	}
+
+      /* switch scrolling on */
+      if (wcscmp (s, L".scrolling on") == 0)
+	{
+	  avt_set_scroll_mode (1);
+	  return AVT_TRUE;
+	}
+
+      /* change balloon size */
+      if (wcsncmp (s, L".size ", 6) == 0)
+	{
+	  handle_size_command (s);
+	  return AVT_TRUE;
+	}
+
+      /* change balloonheight */
+      if (wcsncmp (s, L".height ", 8) == 0)
+	{
+	  handle_height_command (s);
+	  return AVT_TRUE;
+	}
+
+      /* change balloonwidth */
+      if (wcsncmp (s, L".width ", 7) == 0)
+	{
+	  handle_width_command (s);
 	  return AVT_TRUE;
 	}
 
@@ -1883,7 +1968,7 @@ process_script (int fd)
     {
       nread = getwline (fd, line, line_size);
 
-      if (ignore_eof)
+      if (ignore_eof && nread == 0)
 	{
 	  /* wait for input */
 	  while (nread == 0)
@@ -3747,7 +3832,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.172 2008-08-24 16:15:28 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.173 2008-08-26 19:08:51 akf Exp $");
 
   return EXIT_SUCCESS;
 }
