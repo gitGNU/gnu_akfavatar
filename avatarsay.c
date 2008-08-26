@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.174 2008-08-26 19:11:28 akf Exp $ */
+/* $Id: avatarsay.c,v 2.175 2008-08-26 20:08:31 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -766,7 +766,6 @@ use_avatar_image (char *image_file)
     free (avt_image_name);
 
   /* save the name */
-  /* FIXME: memory leak, when called from menu */
   avt_image_name = strdup (image_file);
 
   avt_image = avt_import_image_file (image_file);
@@ -942,6 +941,7 @@ handle_avatarimage_command (const wchar_t * s)
 	free (oldavatar);
     }
 
+  /* FIXME: memory leak */
   oldavatar = strdup (filepath);
 
   if (from_archive)
@@ -3833,7 +3833,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.174 2008-08-26 19:11:28 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.175 2008-08-26 20:08:31 akf Exp $");
 
   return EXIT_SUCCESS;
 }
