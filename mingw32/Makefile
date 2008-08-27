@@ -223,6 +223,22 @@ libavtcio.a: avtccio.o avtcwio.o
 	$(AR) rcu $@ avtccio.o avtcwio.o
 	-$(RANLIB) $@
 
+avatarsay.o: ../avatarsay.c
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ ../avatarsay.c
+
+avatarsay: avatarsay.exe
+
+# uses dynamic lib
+avatarsay.exe: avatarsay.o avtfilechooser.o akfavatar.dll avtsayinfo.o
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ avatarsay.o avtfilechooser.o \
+	avtsayinfo.o -L. -lakfavatar $(LDFLAGS) $(SDLLDFLAGS)
+
+example: example.exe
+
+example.exe: ../example.c akfavatar.dll icon.o
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ ../example.c icon.o \
+			-L. -lakfavatar $(LDFLAGS) $(SDLLDFLAGS)
+
 install: akfavatar.dll libakfavatar.a
 	install -m 644 ../akfavatar.h $(includedir)
 	install -m 644 ../avtcio.h $(includedir)
@@ -236,19 +252,6 @@ install-strip: akfavatar.dll libakfavatar.a
 	install -m 644 libakfavatar.a libakfavatar.dll.a $(libdir)
 	install -m 644 libavtcio.a $(libdir)
 	install -m 644 -s akfavatar.dll $(libdir)
-
-example: example.exe
-
-example.exe: ../example.c akfavatar.dll icon.o
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ ../example.c icon.o \
-			-L. -lakfavatar $(LDFLAGS) $(SDLLDFLAGS)
-
-avatarsay: avatarsay.exe
-
-# uses dynamic lib
-avatarsay.exe: ../avatarsay.c avtfilechooser.o akfavatar.dll avtsayinfo.o
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ ../avatarsay.c avtfilechooser.o \
-	avtsayinfo.o -L. -lakfavatar $(LDFLAGS) $(SDLLDFLAGS)
 
 clean:
 	-rm -f *~ *.o *.ppu *.gpi
