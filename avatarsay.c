@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.175 2008-08-26 20:08:31 akf Exp $ */
+/* $Id: avatarsay.c,v 2.176 2008-08-27 19:08:15 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1570,232 +1570,6 @@ getwline (int fd, wchar_t * lineptr, size_t n)
   return nchars;
 }
 
-#ifndef NO_PTY
-
-static char *
-get_user_shell (void)
-{
-  char *shell;
-
-  shell = getenv ("SHELL");
-
-  /* when the variable is not set, dig deeper */
-  if (shell == NULL || *shell == '\0')
-    {
-      struct passwd *user_data;
-
-      user_data = getpwuid (getuid ());
-      if (user_data != NULL && user_data->pw_shell != NULL
-	  && *user_data->pw_shell != '\0')
-	shell = user_data->pw_shell;
-      else
-	shell = "/bin/sh";	/* default shell */
-    }
-
-  return shell;
-}
-
-/* get user's home direcory */
-static char *
-get_user_home (void)
-{
-  char *home;
-
-  home = getenv ("HOME");
-
-  /* when the variable is not set, dig deeper */
-  if (home == NULL || *home == '\0')
-    {
-      struct passwd *user_data;
-
-      user_data = getpwuid (getuid ());
-      if (user_data != NULL && user_data->pw_dir != NULL
-	  && *user_data->pw_dir != '\0')
-	home = user_data->pw_dir;
-    }
-
-  return home;
-}
-
-void
-prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
-{
-  if (idle && prg_input > 0)
-    {
-      idle = AVT_FALSE;		/* avoid reentrance */
-
-      switch (sym)
-	{
-	case 273:		/* up arrow */
-	  dec_cursor_seq[2] = 'A';
-	  write (prg_input, dec_cursor_seq, 3);
-	  break;
-
-	case 274:		/* down arrow */
-	  dec_cursor_seq[2] = 'B';
-	  write (prg_input, dec_cursor_seq, 3);
-	  break;
-
-	case 275:		/* right arrow */
-	  dec_cursor_seq[2] = 'C';
-	  write (prg_input, dec_cursor_seq, 3);
-	  break;
-
-	case 276:		/* left arrow */
-	  dec_cursor_seq[2] = 'D';
-	  write (prg_input, dec_cursor_seq, 3);
-	  break;
-
-	case 277:		/* Insert */
-	  /* write (prg_input, "\033[L", 3); */
-	  write (prg_input, "\033[2~", 4);	/* linux */
-	  break;
-
-	case 278:		/* Home */
-	  /* write (prg_input, "\033[H", 3); */
-	  write (prg_input, "\033[1~", 4);	/* linux */
-	  break;
-
-	case 279:		/* End */
-	  /* write (prg_input, "\033[0w", 4); */
-	  write (prg_input, "\033[4~", 4);	/* linux */
-	  break;
-
-	case 280:		/* Page up */
-	  write (prg_input, "\033[5~", 4);	/* linux */
-	  break;
-
-	case 281:		/* Page down */
-	  write (prg_input, "\033[6~", 4);	/* linux */
-	  break;
-
-	case 282:		/* F1 */
-	  write (prg_input, "\033[[A", 4);	/* linux */
-	  /* write (prg_input, "\033OP", 3); *//* DEC */
-	  break;
-
-	case 283:		/* F2 */
-	  write (prg_input, "\033[[B", 4);	/* linux */
-	  /* write (prg_input, "\033OQ", 3); *//* DEC */
-	  break;
-
-	case 284:		/* F3 */
-	  write (prg_input, "\033[[C", 4);	/* linux */
-	  /* write (prg_input, "\033OR", 3); *//* DEC */
-	  break;
-
-	case 285:		/* F4 */
-	  write (prg_input, "\033[[D", 4);	/* linux */
-	  /* write (prg_input, "\033OS", 3); *//* DEC */
-	  break;
-
-	case 286:		/* F5 */
-	  write (prg_input, "\033[[E", 4);	/* linux */
-	  /* write (prg_input, "\033Ot", 3); *//* DEC */
-	  break;
-
-	case 287:		/* F6 */
-	  write (prg_input, "\033[17~", 5);	/* linux */
-	  /* write (prg_input, "\033Ou", 3); *//* DEC */
-	  break;
-
-	case 288:		/* F7 */
-	  write (prg_input, "\033[[18~", 5);	/* linux */
-	  /* write (prg_input, "\033Ov", 3); *//* DEC */
-	  break;
-
-	case 289:		/* F8 */
-	  write (prg_input, "\033[19~", 5);	/* linux */
-	  /* write (prg_input, "\033Ol", 3); *//* DEC */
-	  break;
-
-	case 290:		/* F9 */
-	  write (prg_input, "\033[20~", 5);	/* linux */
-	  /* write (prg_input, "\033Ow", 3); *//* DEC */
-	  break;
-
-	case 291:		/* F10 */
-	  write (prg_input, "\033[21~", 5);	/* linux */
-	  /* write (prg_input, "\033Ox", 3); *//* DEC */
-	  break;
-
-	case 292:		/* F11 */
-	  write (prg_input, "\033[23~", 5);	/* linux */
-	  break;
-
-	case 293:		/* F12 */
-	  write (prg_input, "\033[24~", 5);	/* linux */
-	  break;
-
-	case 294:		/* F13 */
-	  write (prg_input, "\033[25~", 5);	/* linux */
-	  break;
-
-	case 295:		/* F14 */
-	  write (prg_input, "\033[26~", 5);	/* linux */
-	  break;
-
-	case 296:		/* F15 */
-	  write (prg_input, "\033[27~", 5);	/* linux */
-	  break;
-
-	default:
-	  if (unicode)
-	    {
-	      wchar_t ch;
-	      char *mbstring;
-	      int length;
-
-	      ch = (wchar_t) unicode;
-	      length = avt_mb_encode (&mbstring, &ch, 1);
-	      if (length != -1)
-		{
-		  write (prg_input, mbstring, length);
-		  avt_free (mbstring);
-		}
-	    }			/* if (unicode) */
-	}			/* switch */
-
-      idle = AVT_TRUE;
-    }				/* if (idle...) */
-}
-
-/* TODO: doesn't work yet */
-void
-prg_mousehandler (int button, avt_bool_t pressed, int x, int y)
-{
-  char code[7];
-
-  /* X10 method */
-  if (pressed)
-    {
-      snprintf (code, sizeof (code), "\033[M%c%c%c",
-		(char) (040 + button), (char) (040 + x), (char) (040 + y));
-      write (prg_input, &code, sizeof (code) - 1);
-    }
-}
-
-#endif /* not NO_PTY */
-
-#ifdef __WIN32__
-
-/* get user's home direcory */
-static char *
-get_user_home (void)
-{
-  char *home;
-
-  home = getenv ("HOME");
-  if (home == NULL)
-    home = getenv ("HOMEPATH");
-  if (home == NULL)
-    home = "C:\\";
-
-  return home;
-}
-
-#endif
-
 /* opens the file, returns file descriptor or -1 on error */
 static int
 open_script (const char *fname)
@@ -2078,6 +1852,25 @@ ask_file (void)
 
 #ifdef NO_PTY
 
+#ifdef __WIN32__
+
+/* get user's home direcory */
+static char *
+get_user_home (void)
+{
+  char *home;
+
+  home = getenv ("HOME");
+  if (home == NULL)
+    home = getenv ("HOMEPATH");
+  if (home == NULL)
+    home = "C:\\";
+
+  return home;
+}
+
+#endif /* __WIN32__ */
+
 static void
 run_shell (void)
 {
@@ -2098,6 +1891,209 @@ execute_process (char *const prg_argv[])
 }
 
 #else /* not NO_PTY */
+
+static char *
+get_user_shell (void)
+{
+  char *shell;
+
+  shell = getenv ("SHELL");
+
+  /* when the variable is not set, dig deeper */
+  if (shell == NULL || *shell == '\0')
+    {
+      struct passwd *user_data;
+
+      user_data = getpwuid (getuid ());
+      if (user_data != NULL && user_data->pw_shell != NULL
+	  && *user_data->pw_shell != '\0')
+	shell = user_data->pw_shell;
+      else
+	shell = "/bin/sh";	/* default shell */
+    }
+
+  return shell;
+}
+
+/* get user's home direcory */
+static char *
+get_user_home (void)
+{
+  char *home;
+
+  home = getenv ("HOME");
+
+  /* when the variable is not set, dig deeper */
+  if (home == NULL || *home == '\0')
+    {
+      struct passwd *user_data;
+
+      user_data = getpwuid (getuid ());
+      if (user_data != NULL && user_data->pw_dir != NULL
+	  && *user_data->pw_dir != '\0')
+	home = user_data->pw_dir;
+    }
+
+  return home;
+}
+
+void
+prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
+{
+  if (idle && prg_input > 0)
+    {
+      idle = AVT_FALSE;		/* avoid reentrance */
+
+      switch (sym)
+	{
+	case 273:		/* up arrow */
+	  dec_cursor_seq[2] = 'A';
+	  write (prg_input, dec_cursor_seq, 3);
+	  break;
+
+	case 274:		/* down arrow */
+	  dec_cursor_seq[2] = 'B';
+	  write (prg_input, dec_cursor_seq, 3);
+	  break;
+
+	case 275:		/* right arrow */
+	  dec_cursor_seq[2] = 'C';
+	  write (prg_input, dec_cursor_seq, 3);
+	  break;
+
+	case 276:		/* left arrow */
+	  dec_cursor_seq[2] = 'D';
+	  write (prg_input, dec_cursor_seq, 3);
+	  break;
+
+	case 277:		/* Insert */
+	  /* write (prg_input, "\033[L", 3); */
+	  write (prg_input, "\033[2~", 4);	/* linux */
+	  break;
+
+	case 278:		/* Home */
+	  /* write (prg_input, "\033[H", 3); */
+	  write (prg_input, "\033[1~", 4);	/* linux */
+	  break;
+
+	case 279:		/* End */
+	  /* write (prg_input, "\033[0w", 4); */
+	  write (prg_input, "\033[4~", 4);	/* linux */
+	  break;
+
+	case 280:		/* Page up */
+	  write (prg_input, "\033[5~", 4);	/* linux */
+	  break;
+
+	case 281:		/* Page down */
+	  write (prg_input, "\033[6~", 4);	/* linux */
+	  break;
+
+	case 282:		/* F1 */
+	  write (prg_input, "\033[[A", 4);	/* linux */
+	  /* write (prg_input, "\033OP", 3); *//* DEC */
+	  break;
+
+	case 283:		/* F2 */
+	  write (prg_input, "\033[[B", 4);	/* linux */
+	  /* write (prg_input, "\033OQ", 3); *//* DEC */
+	  break;
+
+	case 284:		/* F3 */
+	  write (prg_input, "\033[[C", 4);	/* linux */
+	  /* write (prg_input, "\033OR", 3); *//* DEC */
+	  break;
+
+	case 285:		/* F4 */
+	  write (prg_input, "\033[[D", 4);	/* linux */
+	  /* write (prg_input, "\033OS", 3); *//* DEC */
+	  break;
+
+	case 286:		/* F5 */
+	  write (prg_input, "\033[[E", 4);	/* linux */
+	  /* write (prg_input, "\033Ot", 3); *//* DEC */
+	  break;
+
+	case 287:		/* F6 */
+	  write (prg_input, "\033[17~", 5);	/* linux */
+	  /* write (prg_input, "\033Ou", 3); *//* DEC */
+	  break;
+
+	case 288:		/* F7 */
+	  write (prg_input, "\033[[18~", 5);	/* linux */
+	  /* write (prg_input, "\033Ov", 3); *//* DEC */
+	  break;
+
+	case 289:		/* F8 */
+	  write (prg_input, "\033[19~", 5);	/* linux */
+	  /* write (prg_input, "\033Ol", 3); *//* DEC */
+	  break;
+
+	case 290:		/* F9 */
+	  write (prg_input, "\033[20~", 5);	/* linux */
+	  /* write (prg_input, "\033Ow", 3); *//* DEC */
+	  break;
+
+	case 291:		/* F10 */
+	  write (prg_input, "\033[21~", 5);	/* linux */
+	  /* write (prg_input, "\033Ox", 3); *//* DEC */
+	  break;
+
+	case 292:		/* F11 */
+	  write (prg_input, "\033[23~", 5);	/* linux */
+	  break;
+
+	case 293:		/* F12 */
+	  write (prg_input, "\033[24~", 5);	/* linux */
+	  break;
+
+	case 294:		/* F13 */
+	  write (prg_input, "\033[25~", 5);	/* linux */
+	  break;
+
+	case 295:		/* F14 */
+	  write (prg_input, "\033[26~", 5);	/* linux */
+	  break;
+
+	case 296:		/* F15 */
+	  write (prg_input, "\033[27~", 5);	/* linux */
+	  break;
+
+	default:
+	  if (unicode)
+	    {
+	      wchar_t ch;
+	      char *mbstring;
+	      int length;
+
+	      ch = (wchar_t) unicode;
+	      length = avt_mb_encode (&mbstring, &ch, 1);
+	      if (length != -1)
+		{
+		  write (prg_input, mbstring, length);
+		  avt_free (mbstring);
+		}
+	    }			/* if (unicode) */
+	}			/* switch */
+
+      idle = AVT_TRUE;
+    }				/* if (idle...) */
+}
+
+/* TODO: doesn't work yet */
+void
+prg_mousehandler (int button, avt_bool_t pressed, int x, int y)
+{
+  char code[7];
+
+  /* X10 method */
+  if (pressed)
+    {
+      snprintf (code, sizeof (code), "\033[M%c%c%c",
+		(char) (040 + button), (char) (040 + x), (char) (040 + y));
+      write (prg_input, &code, sizeof (code) - 1);
+    }
+}
 
 /* 
  * returns 2 values of a string like "1;2"
@@ -3833,7 +3829,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.175 2008-08-26 20:08:31 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.176 2008-08-27 19:08:15 akf Exp $");
 
   return EXIT_SUCCESS;
 }
