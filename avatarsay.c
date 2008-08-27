@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.176 2008-08-27 19:08:15 akf Exp $ */
+/* $Id: avatarsay.c,v 2.177 2008-08-27 19:36:40 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -887,250 +887,6 @@ get_image_from_archive (const char *name, void **buf, size_t * size)
   return *size;
 }
 
-/* errors are silently ignored */
-static void
-handle_image_command (const wchar_t * s)
-{
-  char filepath[PATH_LENGTH];
-
-  get_data_file (s + 7, filepath);	/* remove ".image " */
-
-  if (!initialized)
-    initialize ();
-  else if (avt_wait (2500))
-    quit (EXIT_SUCCESS);
-
-  if (from_archive)
-    {
-      void *img;
-      size_t size = 0;
-
-      if (get_image_from_archive (filepath, &img, &size))
-	{
-	  if (!avt_show_image_data (img, size))
-	    avt_wait (7000);
-	  free (img);
-	  if (avt_get_status ())
-	    quit (EXIT_SUCCESS);
-	}
-    }
-  else				/* not from_archive */
-    {
-      if (!avt_show_image_file (filepath))
-	if (avt_wait (7000))
-	  quit (EXIT_SUCCESS);
-    }
-}
-
-static void
-handle_avatarimage_command (const wchar_t * s)
-{
-  static char *oldavatar = NULL;
-  char filepath[PATH_LENGTH];
-  void *img;
-  avt_image_t *newavatar = NULL;
-  size_t size = 0;
-
-  get_data_file (s + 13, filepath);	/* remove ".avatarimage " */
-
-  if (oldavatar)
-    {
-      if (strcmp (filepath, oldavatar) == 0)
-	return;
-      else
-	free (oldavatar);
-    }
-
-  /* FIXME: memory leak */
-  oldavatar = strdup (filepath);
-
-  if (from_archive)
-    {
-      if (get_image_from_archive (filepath, &img, &size))
-	{
-	  if (!(newavatar = avt_import_image_data (img, size)))
-	    warning_msg ("warning", avt_get_error ());
-	  free (img);
-	}
-      else
-	warning_msg (filepath, "not found in archive");
-    }
-  else				/* not from_archive */
-    {
-      if (!(newavatar = avt_import_image_file (filepath)))
-	warning_msg ("warning", avt_get_error ());
-    }
-
-  if (initialized)
-    {
-      if (!popup)
-	if (avt_move_out ())
-	  quit (EXIT_SUCCESS);
-      avt_change_avatar_image (newavatar);
-      avatar_changed = AVT_TRUE;
-      moved_in = AVT_FALSE;
-    }
-  else				/* save for initialize */
-    {
-      if (avt_image)
-	free (avt_image);
-      avt_image = newavatar;
-    }
-}
-
-static void
-handle_backgoundcolor_command (const wchar_t * s)
-{
-  unsigned int red, green, blue;
-
-  if (swscanf (s, L".backgroundcolor #%2x%2x%2x", &red, &green, &blue) == 3)
-    {
-      avt_set_background_color (red, green, blue);
-      background_color_changed = AVT_TRUE;
-    }
-  else
-    error_msg (".backgroundcolor", NULL);
-}
-
-static avt_audio_t *
-get_sound_from_archive (const char *name)
-{
-  int archive_fd;
-  size_t size = 0;
-  void *buf = NULL;
-  avt_audio_t *result = NULL;
-
-  archive_fd = open (from_archive, O_RDONLY);
-  if (archive_fd < 0)
-    return NULL;
-
-  if (check_archive_header (archive_fd))
-    size = find_archive_entry (archive_fd, name);
-
-  if (size > 0)
-    {
-      buf = malloc (size);
-      if (buf != NULL)
-	{
-	  read (archive_fd, buf, size);
-	  result = avt_load_wave_data (buf, size);
-	  free (buf);
-	}
-    }
-
-  close (archive_fd);
-
-  return result;
-}
-
-
-static void
-handle_audio_command (const wchar_t * s)
-{
-  char filepath[PATH_LENGTH];
-
-  if (!initialized)
-    {
-      initialize ();
-
-      if (!popup)
-	move_in ();
-    }
-
-  if (sound)
-    {
-      avt_free_audio (sound);
-      sound = NULL;
-    }
-
-  get_data_file (s + 7, filepath);
-
-  if (from_archive)
-    sound = get_sound_from_archive (filepath);
-  else
-    sound = avt_load_wave_file (filepath);
-
-  if (sound == NULL)
-    {
-      notice_msg ("can not load audio file", avt_get_error ());
-      return;
-    }
-
-  if (avt_play_audio (sound, AVT_FALSE))
-    notice_msg ("can not play audio file", avt_get_error ());
-}
-
-static void
-handle_back_command (const wchar_t * s)
-{
-  int i, value;
-
-  if (!initialized)
-    return;
-
-  if (swscanf (s, L".back %i", &value) > 0)
-    {
-      for (i = 0; i < value; i++)
-	avt_backspace ();
-    }
-  else
-    avt_backspace ();
-}
-
-static void
-handle_height_command (const wchar_t * s)
-{
-  int value;
-
-  if (swscanf (s, L".height %i", &value) > 0)
-    avt_set_balloon_height (value);
-  else
-    avt_set_balloon_height (0);	/* maximum */
-}
-
-static void
-handle_width_command (const wchar_t * s)
-{
-  int value;
-
-  if (swscanf (s, L".width %i", &value) > 0)
-    avt_set_balloon_width (value);
-  else
-    avt_set_balloon_width (0);	/* maximum */
-}
-
-static void
-handle_size_command (const wchar_t * s)
-{
-  int width, height;
-
-  if (swscanf (s, L".size %i , %i", &height, &width) == 2)
-    {
-      avt_set_balloon_height (height);
-      avt_set_balloon_width (width);
-    }
-  else
-    {
-      /* maximum */
-      avt_set_balloon_height (0);
-      avt_set_balloon_width (0);
-    }
-}
-
-static void
-handle_read_command (void)
-{
-  wchar_t line[AVT_LINELENGTH];
-
-  if (!initialized)
-    initialize ();
-
-  if (avt_ask (line, sizeof (line)))
-    quit (EXIT_SUCCESS);
-
-  /* TODO: not fully implemented yet */
-}
-
 /* removes trailing space, newline, etc. */
 static void
 strip (wchar_t ** s)
@@ -1148,215 +904,6 @@ strip (wchar_t ** s)
     p--;
 
   *(p + 1) = L'\0';
-}
-
-
-/* handle commads, including comments */
-static avt_bool_t
-iscommand (wchar_t * s, int *stop)
-{
-  if (rawmode)
-    return AVT_FALSE;
-
-  /* 
-   * a stripline begins with at least 3 dashes
-   * or it begins with \f 
-   * the rest of the line is ignored
-   */
-  if (wcsncmp (s, L"---", 3) == 0 || s[0] == L'\f')
-    {
-      if (initialized)
-	if (avt_flip_page ())
-	  *stop = AVT_TRUE;
-      return AVT_TRUE;
-    }
-
-  if (s[0] == L'.')
-    {
-      strip (&s);
-
-      /* new datadir */
-      if (wcsncmp (s, L".datadir ", 9) == 0)
-	{
-	  if (wcstombs ((char *) &datadir, s + 9, sizeof (datadir))
-	      == (size_t) (-1))
-	    warning_msg (".datadir", strerror (errno));
-	  return AVT_TRUE;
-	}
-
-      if (wcsncmp (s, L".avatarimage ", 13) == 0)
-	{
-	  handle_avatarimage_command (s);
-	  return AVT_TRUE;
-	}
-
-      /* the encoding is checked in check_encoding */
-      /* so ignore it here */
-      if (wcsncmp (s, L".encoding ", 10) == 0)
-	return AVT_TRUE;
-
-      if (wcsncmp (s, L".backgroundcolor ", 17) == 0)
-	{
-	  handle_backgoundcolor_command (s);
-	  return AVT_TRUE;
-	}
-
-      /* default - for most languages */
-      if (wcscmp (s, L".left-to-right") == 0)
-	{
-	  avt_text_direction (AVT_LEFT_TO_RIGHT);
-	  return AVT_TRUE;
-	}
-
-      /* currently only hebrew/yiddish supported */
-      if (wcscmp (s, L".right-to-left") == 0)
-	{
-	  avt_text_direction (AVT_RIGHT_TO_LEFT);
-	  return AVT_TRUE;
-	}
-
-      /* switch scrolling off */
-      if (wcscmp (s, L".scrolling off") == 0)
-	{
-	  avt_set_scroll_mode (-1);
-	  return AVT_TRUE;
-	}
-
-      /* switch scrolling on */
-      if (wcscmp (s, L".scrolling on") == 0)
-	{
-	  avt_set_scroll_mode (1);
-	  return AVT_TRUE;
-	}
-
-      /* change balloon size */
-      if (wcsncmp (s, L".size ", 6) == 0)
-	{
-	  handle_size_command (s);
-	  return AVT_TRUE;
-	}
-
-      /* change balloonheight */
-      if (wcsncmp (s, L".height ", 8) == 0)
-	{
-	  handle_height_command (s);
-	  return AVT_TRUE;
-	}
-
-      /* change balloonwidth */
-      if (wcsncmp (s, L".width ", 7) == 0)
-	{
-	  handle_width_command (s);
-	  return AVT_TRUE;
-	}
-
-      /* new page - same as \f or stripline */
-      if (wcscmp (s, L".flip") == 0)
-	{
-	  if (initialized)
-	    if (avt_flip_page ())
-	      *stop = AVT_TRUE;
-	  return AVT_TRUE;
-	}
-
-      /* clear ballon - don't wait */
-      if (wcscmp (s, L".clear") == 0)
-	{
-	  if (initialized)
-	    avt_clear ();
-	  return AVT_TRUE;
-	}
-
-      /* longer intermezzo */
-      if (wcscmp (s, L".pause") == 0)
-	{
-	  if (!initialized)
-	    initialize ();
-	  else if (avt_wait (2700))
-	    *stop = AVT_TRUE;
-
-	  avt_show_avatar ();
-	  if (avt_wait (4000))
-	    *stop = AVT_TRUE;
-	  return AVT_TRUE;
-	}
-
-      /* show image */
-      if (wcsncmp (s, L".image ", 7) == 0)
-	{
-	  handle_image_command (s);
-	  return AVT_TRUE;
-	}
-
-      /* play sound */
-      if (wcsncmp (s, L".audio ", 7) == 0)
-	{
-	  handle_audio_command (s);
-	  return AVT_TRUE;
-	}
-
-      /* wait until sound ends */
-      if (wcscmp (s, L".waitaudio") == 0)
-	{
-	  if (initialized)
-	    if (avt_wait_audio_end ())
-	      *stop = AVT_TRUE;
-	  return AVT_TRUE;
-	}
-
-      /* 
-       * pause for effect in a sentence
-       * the previous line should end with a backslash
-       */
-      if (wcscmp (s, L".effectpause") == 0)
-	{
-	  if (initialized)
-	    if (avt_wait (2500))
-	      *stop = AVT_TRUE;
-	  return AVT_TRUE;
-	}
-
-      /* 
-       * move back a number of characters
-       * the previous line has to end with a backslash!
-       */
-      if (wcsncmp (s, L".back ", 6) == 0)
-	{
-	  handle_back_command (s);
-	  return AVT_TRUE;
-	}
-
-      if (wcscmp (s, L".read") == 0)
-	{
-	  handle_read_command ();
-	  return AVT_TRUE;
-	}
-
-      if (wcscmp (s, L".end") == 0)
-	{
-	  if (initialized)
-	    avt_move_out ();
-	  moved_in = AVT_FALSE;
-	  *stop = AVT_TRUE;
-	  return AVT_TRUE;
-	}
-
-      if (wcscmp (s, L".stop") == 0)
-	{
-	  /* doesn't matter whether it's initialized */
-	  *stop = AVT_TRUE;
-	  return AVT_TRUE;
-	}
-
-      /* silently ignore unknown commands */
-      return AVT_TRUE;
-    }
-
-  /* ignore lines starting with a '#' */
-  if (s[0] == L'#')
-    return AVT_TRUE;
-
-  return AVT_FALSE;
 }
 
 /* 
@@ -1568,6 +1115,458 @@ getwline (int fd, wchar_t * lineptr, size_t n)
     }
 
   return nchars;
+}
+
+/* errors are silently ignored */
+static void
+handle_image_command (const wchar_t * s)
+{
+  char filepath[PATH_LENGTH];
+
+  get_data_file (s + 7, filepath);	/* remove ".image " */
+
+  if (!initialized)
+    initialize ();
+  else if (avt_wait (2500))
+    quit (EXIT_SUCCESS);
+
+  if (from_archive)
+    {
+      void *img;
+      size_t size = 0;
+
+      if (get_image_from_archive (filepath, &img, &size))
+	{
+	  if (!avt_show_image_data (img, size))
+	    avt_wait (7000);
+	  free (img);
+	  if (avt_get_status ())
+	    quit (EXIT_SUCCESS);
+	}
+    }
+  else				/* not from_archive */
+    {
+      if (!avt_show_image_file (filepath))
+	if (avt_wait (7000))
+	  quit (EXIT_SUCCESS);
+    }
+}
+
+static void
+handle_avatarimage_command (const wchar_t * s)
+{
+  static char *oldavatar = NULL;
+  char filepath[PATH_LENGTH];
+  void *img;
+  avt_image_t *newavatar = NULL;
+  size_t size = 0;
+
+  get_data_file (s + 13, filepath);	/* remove ".avatarimage " */
+
+  if (oldavatar)
+    {
+      if (strcmp (filepath, oldavatar) == 0)
+	return;
+      else
+	free (oldavatar);
+    }
+
+  /* FIXME: memory leak */
+  oldavatar = strdup (filepath);
+
+  if (from_archive)
+    {
+      if (get_image_from_archive (filepath, &img, &size))
+	{
+	  if (!(newavatar = avt_import_image_data (img, size)))
+	    warning_msg ("warning", avt_get_error ());
+	  free (img);
+	}
+      else
+	warning_msg (filepath, "not found in archive");
+    }
+  else				/* not from_archive */
+    {
+      if (!(newavatar = avt_import_image_file (filepath)))
+	warning_msg ("warning", avt_get_error ());
+    }
+
+  if (initialized)
+    {
+      if (!popup)
+	if (avt_move_out ())
+	  quit (EXIT_SUCCESS);
+      avt_change_avatar_image (newavatar);
+      avatar_changed = AVT_TRUE;
+      moved_in = AVT_FALSE;
+    }
+  else				/* save for initialize */
+    {
+      if (avt_image)
+	free (avt_image);
+      avt_image = newavatar;
+    }
+}
+
+static void
+handle_backgoundcolor_command (const wchar_t * s)
+{
+  unsigned int red, green, blue;
+
+  if (swscanf (s, L".backgroundcolor #%2x%2x%2x", &red, &green, &blue) == 3)
+    {
+      avt_set_background_color (red, green, blue);
+      background_color_changed = AVT_TRUE;
+    }
+  else
+    error_msg (".backgroundcolor", NULL);
+}
+
+static avt_audio_t *
+get_sound_from_archive (const char *name)
+{
+  int archive_fd;
+  size_t size = 0;
+  void *buf = NULL;
+  avt_audio_t *result = NULL;
+
+  archive_fd = open (from_archive, O_RDONLY);
+  if (archive_fd < 0)
+    return NULL;
+
+  if (check_archive_header (archive_fd))
+    size = find_archive_entry (archive_fd, name);
+
+  if (size > 0)
+    {
+      buf = malloc (size);
+      if (buf != NULL)
+	{
+	  read (archive_fd, buf, size);
+	  result = avt_load_wave_data (buf, size);
+	  free (buf);
+	}
+    }
+
+  close (archive_fd);
+
+  return result;
+}
+
+static void
+handle_audio_command (const wchar_t * s)
+{
+  char filepath[PATH_LENGTH];
+
+  if (!initialized)
+    {
+      initialize ();
+
+      if (!popup)
+	move_in ();
+    }
+
+  if (sound)
+    {
+      avt_free_audio (sound);
+      sound = NULL;
+    }
+
+  get_data_file (s + 7, filepath);
+
+  if (from_archive)
+    sound = get_sound_from_archive (filepath);
+  else
+    sound = avt_load_wave_file (filepath);
+
+  if (sound == NULL)
+    {
+      notice_msg ("can not load audio file", avt_get_error ());
+      return;
+    }
+
+  if (avt_play_audio (sound, AVT_FALSE))
+    notice_msg ("can not play audio file", avt_get_error ());
+}
+
+static void
+handle_back_command (const wchar_t * s)
+{
+  int i, value;
+
+  if (!initialized)
+    return;
+
+  if (swscanf (s, L".back %i", &value) > 0)
+    {
+      for (i = 0; i < value; i++)
+	avt_backspace ();
+    }
+  else
+    avt_backspace ();
+}
+
+static void
+handle_height_command (const wchar_t * s)
+{
+  int value;
+
+  if (swscanf (s, L".height %i", &value) > 0)
+    avt_set_balloon_height (value);
+  else
+    avt_set_balloon_height (0);	/* maximum */
+}
+
+static void
+handle_width_command (const wchar_t * s)
+{
+  int value;
+
+  if (swscanf (s, L".width %i", &value) > 0)
+    avt_set_balloon_width (value);
+  else
+    avt_set_balloon_width (0);	/* maximum */
+}
+
+static void
+handle_size_command (const wchar_t * s)
+{
+  int width, height;
+
+  if (swscanf (s, L".size %i , %i", &height, &width) == 2)
+    {
+      avt_set_balloon_height (height);
+      avt_set_balloon_width (width);
+    }
+  else
+    {
+      /* maximum */
+      avt_set_balloon_height (0);
+      avt_set_balloon_width (0);
+    }
+}
+
+static void
+handle_read_command (void)
+{
+  wchar_t line[AVT_LINELENGTH];
+
+  if (!initialized)
+    initialize ();
+
+  if (avt_ask (line, sizeof (line)))
+    quit (EXIT_SUCCESS);
+
+  /* TODO: not fully implemented yet */
+}
+
+
+/* handle commads, including comments */
+static avt_bool_t
+iscommand (wchar_t * s, int *stop)
+{
+  if (rawmode)
+    return AVT_FALSE;
+
+  /* 
+   * a stripline begins with at least 3 dashes
+   * or it begins with \f 
+   * the rest of the line is ignored
+   */
+  if (wcsncmp (s, L"---", 3) == 0 || s[0] == L'\f')
+    {
+      if (initialized)
+	if (avt_flip_page ())
+	  *stop = AVT_TRUE;
+      return AVT_TRUE;
+    }
+
+  if (s[0] == L'.')
+    {
+      strip (&s);
+
+      /* new datadir */
+      if (wcsncmp (s, L".datadir ", 9) == 0)
+	{
+	  if (wcstombs ((char *) &datadir, s + 9, sizeof (datadir))
+	      == (size_t) (-1))
+	    warning_msg (".datadir", strerror (errno));
+	  return AVT_TRUE;
+	}
+
+      if (wcsncmp (s, L".avatarimage ", 13) == 0)
+	{
+	  handle_avatarimage_command (s);
+	  return AVT_TRUE;
+	}
+
+      /* the encoding is checked in check_encoding */
+      /* so ignore it here */
+      if (wcsncmp (s, L".encoding ", 10) == 0)
+	return AVT_TRUE;
+
+      if (wcsncmp (s, L".backgroundcolor ", 17) == 0)
+	{
+	  handle_backgoundcolor_command (s);
+	  return AVT_TRUE;
+	}
+
+      /* default - for most languages */
+      if (wcscmp (s, L".left-to-right") == 0)
+	{
+	  avt_text_direction (AVT_LEFT_TO_RIGHT);
+	  return AVT_TRUE;
+	}
+
+      /* currently only hebrew/yiddish supported */
+      if (wcscmp (s, L".right-to-left") == 0)
+	{
+	  avt_text_direction (AVT_RIGHT_TO_LEFT);
+	  return AVT_TRUE;
+	}
+
+      /* switch scrolling off */
+      if (wcscmp (s, L".scrolling off") == 0)
+	{
+	  avt_set_scroll_mode (-1);
+	  return AVT_TRUE;
+	}
+
+      /* switch scrolling on */
+      if (wcscmp (s, L".scrolling on") == 0)
+	{
+	  avt_set_scroll_mode (1);
+	  return AVT_TRUE;
+	}
+
+      /* change balloon size */
+      if (wcsncmp (s, L".size ", 6) == 0)
+	{
+	  handle_size_command (s);
+	  return AVT_TRUE;
+	}
+
+      /* change balloonheight */
+      if (wcsncmp (s, L".height ", 8) == 0)
+	{
+	  handle_height_command (s);
+	  return AVT_TRUE;
+	}
+
+      /* change balloonwidth */
+      if (wcsncmp (s, L".width ", 7) == 0)
+	{
+	  handle_width_command (s);
+	  return AVT_TRUE;
+	}
+
+      /* new page - same as \f or stripline */
+      if (wcscmp (s, L".flip") == 0)
+	{
+	  if (initialized)
+	    if (avt_flip_page ())
+	      *stop = AVT_TRUE;
+	  return AVT_TRUE;
+	}
+
+      /* clear ballon - don't wait */
+      if (wcscmp (s, L".clear") == 0)
+	{
+	  if (initialized)
+	    avt_clear ();
+	  return AVT_TRUE;
+	}
+
+      /* longer intermezzo */
+      if (wcscmp (s, L".pause") == 0)
+	{
+	  if (!initialized)
+	    initialize ();
+	  else if (avt_wait (2700))
+	    *stop = AVT_TRUE;
+
+	  avt_show_avatar ();
+	  if (avt_wait (4000))
+	    *stop = AVT_TRUE;
+	  return AVT_TRUE;
+	}
+
+      /* show image */
+      if (wcsncmp (s, L".image ", 7) == 0)
+	{
+	  handle_image_command (s);
+	  return AVT_TRUE;
+	}
+
+      /* play sound */
+      if (wcsncmp (s, L".audio ", 7) == 0)
+	{
+	  handle_audio_command (s);
+	  return AVT_TRUE;
+	}
+
+      /* wait until sound ends */
+      if (wcscmp (s, L".waitaudio") == 0)
+	{
+	  if (initialized)
+	    if (avt_wait_audio_end ())
+	      *stop = AVT_TRUE;
+	  return AVT_TRUE;
+	}
+
+      /* 
+       * pause for effect in a sentence
+       * the previous line should end with a backslash
+       */
+      if (wcscmp (s, L".effectpause") == 0)
+	{
+	  if (initialized)
+	    if (avt_wait (2500))
+	      *stop = AVT_TRUE;
+	  return AVT_TRUE;
+	}
+
+      /* 
+       * move back a number of characters
+       * the previous line has to end with a backslash!
+       */
+      if (wcsncmp (s, L".back ", 6) == 0)
+	{
+	  handle_back_command (s);
+	  return AVT_TRUE;
+	}
+
+      if (wcscmp (s, L".read") == 0)
+	{
+	  handle_read_command ();
+	  return AVT_TRUE;
+	}
+
+      if (wcscmp (s, L".end") == 0)
+	{
+	  if (initialized)
+	    avt_move_out ();
+	  moved_in = AVT_FALSE;
+	  *stop = AVT_TRUE;
+	  return AVT_TRUE;
+	}
+
+      if (wcscmp (s, L".stop") == 0)
+	{
+	  /* doesn't matter whether it's initialized */
+	  *stop = AVT_TRUE;
+	  return AVT_TRUE;
+	}
+
+      /* silently ignore unknown commands */
+      return AVT_TRUE;
+    }
+
+  /* ignore lines starting with a '#' */
+  if (s[0] == L'#')
+    return AVT_TRUE;
+
+  return AVT_FALSE;
 }
 
 /* opens the file, returns file descriptor or -1 on error */
@@ -3829,7 +3828,7 @@ main (int argc, char *argv[])
   quit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.176 2008-08-27 19:08:15 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.177 2008-08-27 19:36:40 akf Exp $");
 
   return EXIT_SUCCESS;
 }
