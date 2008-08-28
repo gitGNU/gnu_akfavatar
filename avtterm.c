@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.1 2008-08-28 18:16:23 akf Exp $ */
+/* $Id: avtterm.c,v 2.2 2008-08-28 18:25:25 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1239,6 +1239,7 @@ process_subprogram (int fd)
   avt_reserve_single_keys (AVT_TRUE);
   avt_newline_mode (AVT_FALSE);
   avt_activate_cursor (AVT_TRUE);
+  avt_set_scroll_mode (1);
   vt100graphics = AVT_FALSE;
   G0 = "ISO-8859-1";
   G1 = VT100;
