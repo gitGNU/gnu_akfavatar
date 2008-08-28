@@ -223,15 +223,18 @@ libavtcio.a: avtccio.o avtcwio.o
 	$(AR) rcu $@ avtccio.o avtcwio.o
 	-$(RANLIB) $@
 
-avatarsay.o: ../avatarsay.c
+avatarsay.o: ../avatarsay.c ../akfavatar.h
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ ../avatarsay.c
+
+avtmsg.o: ../avtmsg.c ../avtmsg.h
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ ../avtmsg.c
 
 avatarsay: avatarsay.exe
 
 # uses dynamic lib
-avatarsay.exe: avatarsay.o avtfilechooser.o akfavatar.dll avtsayinfo.o
+avatarsay.exe: avatarsay.o avtfilechooser.o avtmsg.o akfavatar.dll avtsayinfo.o
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ avatarsay.o avtfilechooser.o \
-	avtsayinfo.o -L. -lakfavatar $(LDFLAGS) $(SDLLDFLAGS)
+	  avtmsg.o avtsayinfo.o -L. -lakfavatar $(LDFLAGS) $(SDLLDFLAGS)
 
 example: example.exe
 

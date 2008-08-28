@@ -102,19 +102,27 @@ example: $(srcdir)/example.c libakfavatar.so
 	$(CC) $(CFLAGS) -I. -o $@ $(srcdir)/example.c \
 	  -L. -lakfavatar $(LDFLAGS)
 
-avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h
+avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h $(srcdir)/avtterm.h
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -DPREFIX=\"$(exec_prefix)\" -I. \
 	  -c -o $@ $(srcdir)/avatarsay.c
 
+avtterm.o: $(srcdir)/avtterm.c $(srcdir)/avtterm.h $(srcdir)/akfavatar.h
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -DPREFIX=\"$(exec_prefix)\" -I. \
+	  -c -o $@ $(srcdir)/avtterm.c
+
+avtmsg.o: $(srcdir)/avtmsg.c $(srcdir)/avtmsg.h
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ $(srcdir)/avtmsg.c
+
 # avatarsay dynamically linked
 # only works, when the library is installed
-avatarsay-d: avatarsay.o avtfilechooser.o libakfavatar.so
-	$(CC) -o $@ avatarsay.o avtfilechooser.o -L. -lakfavatar $(LDFLAGS)
+avatarsay-d: avatarsay.o avtfilechooser.o avtterm.o avtmsg.o libakfavatar.so
+	$(CC) -o $@ avatarsay.o avtfilechooser.o avtterm.o avtmsg.o \
+	  -L. -lakfavatar $(LDFLAGS)
 
 # avatarsay with statical libakfavatar.a
-avatarsay: avatarsay.o avtfilechooser.o libakfavatar.a
+avatarsay: avatarsay.o avtfilechooser.o avtterm.o avtmsg.o libakfavatar.a
 	$(CC) -o $@ avatarsay.o libakfavatar.a avtfilechooser.o \
-	  $(LDFLAGS) $(SDLLDFLAGS)
+	  avtterm.o avtmsg.o $(LDFLAGS) $(SDLLDFLAGS)
 
 installdirs:
 	-[ -d $(DESTDIR)$(includedir) ]  || $(INSTALL) -d $(DESTDIR)$(includedir)
