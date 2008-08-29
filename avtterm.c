@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.2 2008-08-28 18:25:25 akf Exp $ */
+/* $Id: avtterm.c,v 2.3 2008-08-29 20:14:30 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -60,7 +60,7 @@
 
 /* default encoding - either system encoding or given per parameters */
 /* supported in SDL: ASCII, ISO-8859-1, UTF-8, UTF-16, UTF-32 */
-extern char default_encoding[80];
+static const char *default_encoding;
 
 static int prg_input;		/* file descriptor for program input */
 
@@ -1298,7 +1298,7 @@ process_subprogram (int fd)
 /* if fname == NULL, start a shell */
 /* returns file-descriptor for output of the process */
 int
-execute_process (char *const prg_argv[])
+execute_process (const char *system_encoding, char *const prg_argv[])
 {
   pid_t childpid;
   int master, slave;
@@ -1310,6 +1310,7 @@ execute_process (char *const prg_argv[])
   /* clear text-buffer */
   wcbuf_pos = wcbuf_len = 0;
 
+  default_encoding = system_encoding;
   max_x = avt_get_max_x ();
   max_y = avt_get_max_y ();
   region_min_y = 1;

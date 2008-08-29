@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.179 2008-08-28 18:25:24 akf Exp $ */
+/* $Id: avatarsay.c,v 2.180 2008-08-29 20:14:30 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1777,7 +1777,7 @@ run_info (void)
 }
 
 static int
-execute_process (char *const prg_argv[])
+execute_process (const char *encoding, char *const prg_argv[])
 {
   not_available ();
   return -1;
@@ -1803,7 +1803,7 @@ run_shell (void)
   avt_text_direction (AVT_LEFT_TO_RIGHT);
   chdir (get_user_home ());
 
-  fd = execute_process (NULL);
+  fd = execute_process (default_encoding, NULL);
   if (fd > -1)
     process_subprogram (fd);
 }
@@ -1836,7 +1836,7 @@ run_info (void)
 	args[1] = "akfavatar-en";
     }
 
-  fd = execute_process (args);
+  fd = execute_process (default_encoding, args);
   if (fd > -1)
     process_subprogram (fd);
 }
@@ -1883,7 +1883,7 @@ ask_manpage (void)
       set_encoding ("ISO-8859-1");
 
       /* ignore file errors */
-      fd = execute_process (argv);
+      fd = execute_process (default_encoding, argv);
 
       /* unset keyhandler, set by execute_process */
       avt_register_keyhandler (NULL);
@@ -1944,7 +1944,7 @@ edit_file (const char *name)
   args[1] = (char *) name;
   args[2] = (char *) NULL;
 
-  fd = execute_process (args);
+  fd = execute_process (default_encoding, args);
   if (fd > -1)
     process_subprogram (fd);
 }
@@ -2405,7 +2405,7 @@ main (int argc, char *argv[])
 	    move_in ();
 	}
 
-      fd = execute_process (&argv[optind]);
+      fd = execute_process (default_encoding, &argv[optind]);
       if (fd > -1)
 	process_subprogram (fd);
 
@@ -2440,7 +2440,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.179 2008-08-28 18:25:24 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.180 2008-08-29 20:14:30 akf Exp $");
 
   return EXIT_SUCCESS;
 }

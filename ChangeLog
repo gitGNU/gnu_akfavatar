@@ -1,3 +1,9 @@
+2008-08-29  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtterm.h (execute_process):
+	using encoding as parameter
+	(avatarsay.c): adapted
+
 2008-08-28  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtmsg.h, avtmsg.c, avtterm.h, avtterm.c:
