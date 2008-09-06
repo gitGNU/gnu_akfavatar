@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.71 2008-08-25 18:34:59 akf Exp $ */
+/* $Id: akfavatar.h,v 2.72 2008-09-06 16:50:07 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -179,9 +179,10 @@ void avt_text_direction (int direction);
 /*
  * set the baloon width and height in number of characters
  * 0 or less for maximum width
- * if it's actually changed, the balloon is removed from the screen
+ * if it's actually changed, the balloon is redrawn and emptied
  * see also avt_get_max_x () and avt_get_max_y ()
  */
+void avt_set_balloon_size (int height, int width);
 void avt_set_balloon_width (int width);
 void avt_set_balloon_height (int height);
 

@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.158 2008-09-06 16:24:15 akf Exp $ */
+/* $Id: avatar.c,v 2.159 2008-09-06 16:50:08 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -880,9 +880,13 @@ avt_set_balloon_width (int width)
       else
 	balloonwidth = AVT_LINELENGTH;
 
-      /* if balloon is visible, remove it */
+      /* if balloon is visible, redraw it */
       if (textfield.x >= 0)
-	avt_show_avatar ();
+        {
+	  /* also redraw the avatar */
+	  avt_visible = AVT_FALSE;
+	  avt_draw_balloon ();
+	}
     }
 }
 
@@ -896,9 +900,38 @@ avt_set_balloon_height (int height)
       else
 	balloonheight = balloonmaxheight;
 
-      /* if balloon is visible, remove it */
+      /* if balloon is visible, redraw it */
       if (textfield.x >= 0)
-	avt_show_avatar ();
+        {
+	  /* also redraw the avatar */
+	  avt_visible = AVT_FALSE;
+	  avt_draw_balloon ();
+	}
+    }
+}
+
+void
+avt_set_balloon_size (int height, int width)
+{
+  if (height != balloonheight || width != balloonwidth)
+    {
+      if (height > 0 && height < balloonmaxheight)
+	balloonheight = height;
+      else
+	balloonheight = balloonmaxheight;
+
+      if (width < AVT_LINELENGTH && width > 0)
+	balloonwidth = (width > 7) ? width : 7;
+      else
+	balloonwidth = AVT_LINELENGTH;
+
+      /* if balloon is visible, redraw it */
+      if (textfield.x >= 0)
+        {
+	  /* also redraw the avatar */
+	  avt_visible = AVT_FALSE;
+	  avt_draw_balloon ();
+	}
     }
 }
 
@@ -3958,7 +3991,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.158 2008-09-06 16:24:15 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.159 2008-09-06 16:50:08 akf Exp $");
 
   /*
    * Initialize the display, accept any format
