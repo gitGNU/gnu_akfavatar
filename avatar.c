@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.156 2008-08-26 12:33:35 akf Exp $ */
+/* $Id: avatar.c,v 2.157 2008-09-06 16:10:20 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -152,6 +152,8 @@
    /* Delay for moving in or out - the higher, the slower */
 #  define MOVE_DELAY 1.8
 #endif /* !QVGA, !LARGRE */
+
+#define BALLOONPOINTER_OFFSET 20
 
 #define ICONV_UNINITIALIZED   (avt_iconv_t)(-1)
 
@@ -695,11 +697,40 @@ avt_draw_balloon (void)
 				backgroundcolor_RGB.g, backgroundcolor_RGB.b);
   ballooncolor = SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF);
 
-  textfield.x = window.x + (window.w / 2) - (balloonwidth * FONTWIDTH / 2);
-  textfield.y = window.y + ((balloonmaxheight - balloonheight) * LINEHEIGHT)
-    + TOPMARGIN + BALLOON_INNER_MARGIN;
   textfield.w = (balloonwidth * FONTWIDTH);
   textfield.h = (balloonheight * LINEHEIGHT);
+
+  textfield.y = window.y + ((balloonmaxheight - balloonheight) * LINEHEIGHT)
+    + TOPMARGIN + BALLOON_INNER_MARGIN;
+
+  /* centered */
+  textfield.x = window.x + (window.w / 2) - (balloonwidth * FONTWIDTH / 2);
+
+  /* align with balloonpointer */
+
+  /* small image */
+  if (textfield.x >
+      window.x + avt_image->w + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET)
+    textfield.x =
+      window.x + avt_image->w + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET;
+  else				/* wide image */
+    {
+      if (textfield.x + textfield.w <
+	  window.x + avt_image->w + (2 * AVATAR_MARGIN)
+	  + BALLOONPOINTER_OFFSET)
+	{
+	  textfield.x =
+	    window.x + avt_image->w + (2 * AVATAR_MARGIN)
+	    + BALLOONPOINTER_OFFSET;
+
+	  /* align with right border */
+	  if (textfield.x > window.x + window.w - (balloonwidth * FONTWIDTH)
+	      - (2 * BALLOON_INNER_MARGIN))
+	    textfield.x = window.x + window.w - (balloonwidth * FONTWIDTH)
+	      - (2 * BALLOON_INNER_MARGIN);
+	}
+    }
+
   viewport = textfield;
 
   /* somewat lager rectangle */
@@ -765,7 +796,8 @@ avt_draw_balloon (void)
       if (balloonpointer.height > (avt_image->h / 2))
 	cut_top = balloonpointer.height - (avt_image->h / 2);
 
-      xoffs = window.x + avt_image->w + (2 * AVATAR_MARGIN) + 20;
+      xoffs =
+	window.x + avt_image->w + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET;
       yoffs = window.y + (balloonmaxheight * LINEHEIGHT)
 	+ (2 * BALLOON_INNER_MARGIN) + TOPMARGIN;
 
@@ -844,7 +876,7 @@ avt_set_balloon_width (int width)
   if (width != balloonwidth)
     {
       if (width < AVT_LINELENGTH && width > 0)
-	balloonwidth = (width > 15) ? width : 15;
+	balloonwidth = (width > 3) ? width : 3;
       else
 	balloonwidth = AVT_LINELENGTH;
 
@@ -3926,7 +3958,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.156 2008-08-26 12:33:35 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.157 2008-09-06 16:10:20 akf Exp $");
 
   /*
    * Initialize the display, accept any format

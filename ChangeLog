@@ -1,3 +1,8 @@
+2008-09-06  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_draw_balloon):
+	more work in alignment of the balloon
+
 2008-08-29  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtterm.h (execute_process):
