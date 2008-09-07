@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.159 2008-09-06 16:50:08 akf Exp $ */
+/* $Id: avatar.c,v 2.160 2008-09-07 12:48:05 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -710,25 +710,19 @@ avt_draw_balloon (void)
 
   /* small image */
   if (textfield.x >
-      window.x + avt_image->w + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET)
-    textfield.x =
-      window.x + avt_image->w + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET;
-  else				/* wide image */
+      window.x + avt_image->w + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET
+      || textfield.x + textfield.w <
+      window.x + avt_image->w + textfield.w + (2 * AVATAR_MARGIN)
+      + BALLOONPOINTER_OFFSET)
     {
-      if (textfield.x + textfield.w <
-	  window.x + avt_image->w + (2 * AVATAR_MARGIN)
-	  + BALLOONPOINTER_OFFSET)
-	{
-	  textfield.x =
-	    window.x + avt_image->w + (2 * AVATAR_MARGIN)
-	    + BALLOONPOINTER_OFFSET;
+      textfield.x =
+	window.x + avt_image->w + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET;
 
-	  /* align with right border */
-	  if (textfield.x > window.x + window.w - (balloonwidth * FONTWIDTH)
-	      - (2 * BALLOON_INNER_MARGIN))
-	    textfield.x = window.x + window.w - (balloonwidth * FONTWIDTH)
-	      - (2 * BALLOON_INNER_MARGIN);
-	}
+      /* align with right window-border */
+      if (textfield.x > window.x + window.w - (balloonwidth * FONTWIDTH)
+	  - (2 * BALLOON_INNER_MARGIN))
+	textfield.x = window.x + window.w - (balloonwidth * FONTWIDTH)
+	  - (2 * BALLOON_INNER_MARGIN);
     }
 
   viewport = textfield;
@@ -802,7 +796,8 @@ avt_draw_balloon (void)
 	+ (2 * BALLOON_INNER_MARGIN) + TOPMARGIN;
 
       /* only draw the balloonpointer, when it fits */
-      if (xoffs + balloonpointer.width < window.x + window.w)
+      if (xoffs + balloonpointer.width + BALLOONPOINTER_OFFSET
+	  + BALLOON_INNER_MARGIN < window.x + window.w)
 	{
 	  for (y = cut_top; y < balloonpointer.height; ++y)
 	    for (x = 0; x < balloonpointer.width; ++x)
@@ -882,7 +877,7 @@ avt_set_balloon_width (int width)
 
       /* if balloon is visible, redraw it */
       if (textfield.x >= 0)
-        {
+	{
 	  /* also redraw the avatar */
 	  avt_visible = AVT_FALSE;
 	  avt_draw_balloon ();
@@ -902,7 +897,7 @@ avt_set_balloon_height (int height)
 
       /* if balloon is visible, redraw it */
       if (textfield.x >= 0)
-        {
+	{
 	  /* also redraw the avatar */
 	  avt_visible = AVT_FALSE;
 	  avt_draw_balloon ();
@@ -927,7 +922,7 @@ avt_set_balloon_size (int height, int width)
 
       /* if balloon is visible, redraw it */
       if (textfield.x >= 0)
-        {
+	{
 	  /* also redraw the avatar */
 	  avt_visible = AVT_FALSE;
 	  avt_draw_balloon ();
@@ -3991,7 +3986,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.159 2008-09-06 16:50:08 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.160 2008-09-07 12:48:05 akf Exp $");
 
   /*
    * Initialize the display, accept any format
