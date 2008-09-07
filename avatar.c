@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.160 2008-09-07 12:48:05 akf Exp $ */
+/* $Id: avatar.c,v 2.161 2008-09-07 15:15:02 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -703,20 +703,24 @@ avt_draw_balloon (void)
   textfield.y = window.y + ((balloonmaxheight - balloonheight) * LINEHEIGHT)
     + TOPMARGIN + BALLOON_INNER_MARGIN;
 
-  /* centered */
+  /* centered as default */
   textfield.x = window.x + (window.w / 2) - (balloonwidth * FONTWIDTH / 2);
 
   /* align with balloonpointer */
-
-  /* small image */
+  /* left border not aligned with balloon pointer? */
   if (textfield.x >
-      window.x + avt_image->w + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET
-      || textfield.x + textfield.w <
-      window.x + avt_image->w + textfield.w + (2 * AVATAR_MARGIN)
-      + BALLOONPOINTER_OFFSET)
+      window.x + avt_image->w + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET)
+    textfield.x =
+      window.x + avt_image->w + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET;
+
+  /* right border not aligned with balloon pointer? */
+  if (textfield.x + textfield.w <
+      window.x + avt_image->w + balloonpointer.width
+      + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET)
     {
       textfield.x =
-	window.x + avt_image->w + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET;
+	window.x + avt_image->w - textfield.w + balloonpointer.width
+	+ (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET;
 
       /* align with right window-border */
       if (textfield.x > window.x + window.w - (balloonwidth * FONTWIDTH)
@@ -3986,7 +3990,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.160 2008-09-07 12:48:05 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.161 2008-09-07 15:15:02 akf Exp $");
 
   /*
    * Initialize the display, accept any format
