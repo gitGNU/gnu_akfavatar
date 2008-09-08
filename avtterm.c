@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.3 2008-08-29 20:14:30 akf Exp $ */
+/* $Id: avtterm.c,v 2.4 2008-09-08 14:15:25 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -635,6 +635,36 @@ ansi_graphic_code (int mode)
     }
 }
 
+/* avoid anything that draws the balloon here */
+static void
+reset_terminal (void)
+{
+  /* clear text-buffer */
+  wcbuf_pos = wcbuf_len = 0;
+
+  region_min_y = 1;
+  region_max_y = max_y;
+  insert_mode = AVT_FALSE;
+
+  avt_reserve_single_keys (AVT_TRUE);
+  avt_newline_mode (AVT_FALSE);
+  avt_activate_cursor (AVT_TRUE);
+  avt_set_scroll_mode (1);
+  vt100graphics = AVT_FALSE;
+  G0 = "ISO-8859-1";
+  G1 = VT100;
+  set_encoding (default_encoding);	/* not G0! */
+
+  /* like vt102 */
+  avt_set_origin_mode (AVT_FALSE);
+
+  avt_reset_tab_stops ();
+  ansi_graphic_code (0);
+  avt_set_text_delay (0);
+  dec_cursor_seq[0] = '\033';
+  dec_cursor_seq[1] = '[';
+}
+
 #define ESC_UNUPPORTED "unsupported escape sequence"
 #define CSI_UNUPPORTED "unsupported CSI sequence"
 
@@ -1144,23 +1174,12 @@ escape_sequence (int fd, wchar_t last_character)
       break;
 
     case L'c':			/* RIS - reset device */
-      region_min_y = 1;
-      region_max_y = max_y;
-      avt_viewport (1, region_min_y, max_x, region_max_y);
-      avt_newline_mode (AVT_FALSE);
-      avt_set_origin_mode (AVT_FALSE);
-      avt_reset_tab_stops ();
-      text_color = saved_text_color = 0;
-      text_background_color = saved_text_background_color = 0xF;
-      ansi_graphic_code (0);
-      avt_set_text_delay (0);
-      insert_mode = AVT_FALSE;
-      vt100graphics = AVT_FALSE;
-      G0 = "ISO-8859-1";
-      G1 = VT100;
-      set_encoding (default_encoding);	/* not G0! */
+      reset_terminal ();
       avt_clear ();
       avt_save_position ();
+      avt_viewport (1, region_min_y, max_x, region_max_y);
+      saved_text_color = text_color;
+      saved_text_background_color = text_background_color;
       break;
 
     case L'D':			/* move down or scroll up one line */
@@ -1232,21 +1251,10 @@ process_subprogram (int fd)
   wint_t ch;
   wchar_t last_character;
 
-  text_color = 0;
   last_character = L'\0';
-  text_background_color = 0xF;
   stop = AVT_FALSE;
-  avt_reserve_single_keys (AVT_TRUE);
-  avt_newline_mode (AVT_FALSE);
-  avt_activate_cursor (AVT_TRUE);
-  avt_set_scroll_mode (1);
-  vt100graphics = AVT_FALSE;
-  G0 = "ISO-8859-1";
-  G1 = VT100;
-  set_encoding (default_encoding);	/* not G0! */
 
-  /* like vt102 */
-  avt_set_origin_mode (AVT_FALSE);
+  reset_terminal ();
 
   while ((ch = get_character (fd)) != WEOF && !stop)
     {
