@@ -1,3 +1,10 @@
+2008-09-08  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (check_auto_margin):
+	new function
+	(avt_forward, avt_put_character): adapted
+	only automatic linebreaks, when there is something printable
+
 2008-09-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_draw_balloon):

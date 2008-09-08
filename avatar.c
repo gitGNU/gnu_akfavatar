@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.161 2008-09-07 15:15:02 akf Exp $ */
+/* $Id: avatar.c,v 2.162 2008-09-08 08:56:50 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1937,7 +1937,6 @@ avt_carriage_return (void)
     avt_show_text_cursor (AVT_TRUE);
 }
 
-/* @@@ */
 int
 avt_new_line (void)
 {
@@ -2089,31 +2088,36 @@ avt_forward (void)
   if (!screen || textfield.x < 0)
     return _avt_STATUS;
 
-  if (textdir_rtl)		/* right to left */
-    {
-      cursor.x -= FONTWIDTH;
-      if (auto_margin && cursor.x < viewport.x)
-	{
-	  if (!newline_mode)
-	    avt_carriage_return ();
-	  avt_new_line ();
-	}
-    }
-  else				/* left to right */
-    {
-      cursor.x += FONTWIDTH;
-      if (auto_margin && cursor.x > viewport.x + viewport.w - FONTWIDTH)
-	{
-	  if (!newline_mode)
-	    avt_carriage_return ();
-	  avt_new_line ();
-	}
-    }
+  cursor.x = (textdir_rtl) ? cursor.x - FONTWIDTH : cursor.x + FONTWIDTH;
 
   if (text_cursor_visible)
     avt_show_text_cursor (AVT_TRUE);
 
   return _avt_STATUS;
+}
+
+/* 
+ * if cursor is horizontally outside of the viewport 
+ *  and the balloon is visible
+ * and auto_margin is activated
+ * then start a new line
+ */
+static void
+check_auto_margin (void)
+{
+  if (screen && textfield.x >= 0 && auto_margin)
+    {
+      if (cursor.x < viewport.x
+	  || cursor.x > viewport.x + viewport.w - FONTWIDTH)
+	{
+	  if (!newline_mode)
+	    avt_carriage_return ();
+	  avt_new_line ();
+	}
+
+      if (text_cursor_visible)
+	avt_show_text_cursor (AVT_TRUE);
+    }
 }
 
 void
@@ -2295,6 +2299,7 @@ avt_put_character (const wchar_t ch)
       break;
 
     case L' ':			/* space */
+      check_auto_margin ();
       if (!underlined)
 	avt_clearchar ();
       else			/* underlined */
@@ -2312,6 +2317,7 @@ avt_put_character (const wchar_t ch)
     default:
       if (ch > 32)
 	{
+	  check_auto_margin ();
 	  avt_drawchar (ch);
 	  avt_showchar ();
 	  if (text_delay)
@@ -3990,7 +3996,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.161 2008-09-07 15:15:02 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.162 2008-09-08 08:56:50 akf Exp $");
 
   /*
    * Initialize the display, accept any format
