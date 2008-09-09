@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.181 2008-09-06 16:50:08 akf Exp $ */
+/* $Id: avatarsay.c,v 2.182 2008-09-09 15:26:28 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1702,6 +1702,7 @@ ask_file (void)
 {
   char filename[256];
 
+  avt_set_balloon_size (0, 0);
   chdir (datadir);
   get_file (filename);
 
@@ -1792,6 +1793,7 @@ run_shell (void)
 	move_in ();
     }
 
+  avt_set_balloon_size (0, 0);
   avt_set_text_delay (0);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
   chdir (get_user_home ());
@@ -1807,6 +1809,7 @@ run_info (void)
   int fd;
   char *args[] = { "info", "akfavatar-en", NULL };
 
+  avt_set_balloon_size (0, 0);
   avt_clear ();
   avt_set_text_delay (0);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
@@ -1854,6 +1857,7 @@ ask_manpage (void)
   char manpage[AVT_LINELENGTH] = "man";
   char *argv[] = { "man", "-t", (char *) &manpage, NULL };
 
+  avt_set_balloon_size (0, 0);
   avt_clear ();
   avt_set_text_delay (0);
 
@@ -1874,6 +1878,9 @@ ask_manpage (void)
 
       /* temporary settings */
       set_encoding ("ISO-8859-1");
+
+      /* clear buffer */
+      wcbuf_pos = wcbuf_len = 0;
 
       /* ignore file errors */
       fd = execute_process (default_encoding, argv);
@@ -2001,6 +2008,7 @@ ask_edit_file (void)
 {
   char filename[256];
 
+  avt_set_balloon_size (0, 0);
   avt_clear ();
   avt_set_text_delay (0);
 
@@ -2036,6 +2044,7 @@ ask_edit_file (void)
 static void
 about_avatarsay (void)
 {
+  avt_set_balloon_size (0, 0);
   avt_clear ();
   set_encoding ("UTF-8");
   avt_set_text_delay (0);
@@ -2098,6 +2107,8 @@ menu (void)
 
   while (1)
     {
+      avt_set_balloon_size (10, 41);
+
       if (background_color_changed)
 	default_background_color ();
       else
@@ -2107,7 +2118,6 @@ menu (void)
       avt_set_text_delay (0);
       avt_set_origin_mode (AVT_FALSE);
       avt_newline_mode (AVT_TRUE);
-      avt_viewport (19, 1, 42, avt_get_max_y ());
 
       avt_underlined (AVT_TRUE);
       avt_bold (AVT_TRUE);
@@ -2149,8 +2159,6 @@ menu (void)
 
       if (avt_menu (&ch, menu_start, menu_end, L'1', AVT_FALSE, AVT_FALSE))
 	exit (EXIT_SUCCESS);
-
-      avt_viewport (1, 1, avt_get_max_x (), avt_get_max_y ());
 
       switch (ch)
 	{
@@ -2433,7 +2441,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.181 2008-09-06 16:50:08 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.182 2008-09-09 15:26:28 akf Exp $");
 
   return EXIT_SUCCESS;
 }
