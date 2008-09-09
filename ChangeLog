@@ -1,5 +1,8 @@
 2008-09-09  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avtterm.c (execute_process, process_subprogram):
+	moved the keyboard initialization to process_subprogram
+
 	* avatarsay.c (menu):
 	different balloon-size, no viewport anymore
 	several other funtions adapted

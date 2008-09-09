@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.4 2008-09-08 14:15:25 akf Exp $ */
+/* $Id: avtterm.c,v 2.5 2008-09-09 23:13:30 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1254,6 +1254,13 @@ process_subprogram (int fd)
   last_character = L'\0';
   stop = AVT_FALSE;
 
+  dec_cursor_seq[0] = '\033';
+  dec_cursor_seq[1] = '[';
+  dec_cursor_seq[2] = ' ';	/* to be filled later */
+  avt_register_keyhandler (prg_keyhandler);
+  /* TODO: doesn't work yet */
+  /* avt_register_mousehandler (prg_mousehandler); */
+
   reset_terminal ();
 
   while ((ch = get_character (fd)) != WEOF && !stop)
@@ -1448,13 +1455,6 @@ execute_process (const char *system_encoding, char *const prg_argv[])
   close (slave);
   fcntl (master, F_SETFL, O_NONBLOCK);
   prg_input = master;
-
-  dec_cursor_seq[0] = '\033';
-  dec_cursor_seq[1] = '[';
-  dec_cursor_seq[2] = ' ';	/* to be filled later */
-  avt_register_keyhandler (prg_keyhandler);
-  /* TODO: doesn't work yet */
-  /* avt_register_mousehandler (prg_mousehandler); */
 
   return master;
 }
