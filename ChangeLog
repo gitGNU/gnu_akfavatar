@@ -1,5 +1,8 @@
 2008-09-10  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatarsay.c:
+	script commands are to be enclosed in square brackets now
+
 	* avatarsay.c (read_error_is_eof):
 	reintroduced global variable
 	(get_character, ask_manpage, open_script): adapted

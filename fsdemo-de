@@ -1,13 +1,13 @@
 #! ./avatarsay
 
-.encoding UTF-8
-.backgroundcolor #BBBB88
+[encoding UTF-8]
+[backgroundcolor #BBBB88]
 
-#.datadir /home/akf/Bilder
+#[datadir /home/akf/Bilder]
 # datadir - wo sich die Medien-Dateien befinden
 # Kann auch über die Umgebungsvariable AVATARDATADIR gesetzt werden
 
-#.avatarimage human-peasant.bmp
+#[avatarimage human-peasant.bmp]
 # avatarimage - welches Bild als Avatar verwendet wwerden soll 
 # muss vor dem auszugebenden Text angegeben werden!
 # Kann auch über die Umgebungsvariable AVATARIMAGE gesetzt werden
@@ -16,8 +16,8 @@
 Bei dem Begriff „Freie Software“ geht es um Freiheit, nicht um den Preis.
 Um dieses Konzept richtig begreifen zu können, sollte man an „frei“ wie in
 „freie Rede“ denken...\
-.effectpause
-.back 3
+[effectpause]
+[back 3]
 , und nicht an „Freibier“.
 
 Bei „Freier Software“ geht es um die Freiheit des Benutzers die Software nach

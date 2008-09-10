@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.186 2008-09-10 14:40:26 akf Exp $ */
+/* $Id: avatarsay.c,v 2.187 2008-09-10 18:44:15 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -224,8 +224,8 @@ static void
 help (void)
 {
   printf ("\nUsage: %s [Options]\n", program_name);
-  printf ("  or:  %s [Options] textfiles\n", program_name);
-  printf ("  or:  %s [Options] --execute program [program options]\n\n",
+  printf ("  or:  %s [Options] [textfiles | demo-files]\n", program_name);
+  printf ("  or:  %s [Options] --execute <program> [program options]\n\n",
 	  program_name);
   puts
     ("A fancy text-terminal, text-viewer and scripting language for making demos.\n");
@@ -743,6 +743,7 @@ static void
 get_data_file (const wchar_t * fn, char filepath[])
 {
   size_t result, filepath_len;
+  char *e;
 
   if (from_archive)
     {
@@ -768,6 +769,10 @@ get_data_file (const wchar_t * fn, char filepath[])
 
   if (result == (size_t) (-1))
     error_msg ("wcstombs", strerror (errno));
+  
+  /* remove ] */
+  if ((e = strchr (filepath, ']')) != NULL)
+    *e = '\0';
 }
 
 /* returns size or 0 on error */
@@ -1044,7 +1049,7 @@ handle_image_command (const wchar_t * s)
 {
   char filepath[PATH_LENGTH];
 
-  get_data_file (s + 7, filepath);	/* remove ".image " */
+  get_data_file (s + 7, filepath);	/* remove "[image " */
 
   if (!initialized)
     initialize ();
@@ -1082,7 +1087,7 @@ handle_avatarimage_command (const wchar_t * s)
   avt_image_t *newavatar = NULL;
   size_t size = 0;
 
-  get_data_file (s + 13, filepath);	/* remove ".avatarimage " */
+  get_data_file (s + 13, filepath);	/* remove "[avatarimage " */
 
   if (oldavatar)
     {
@@ -1134,13 +1139,13 @@ handle_backgoundcolor_command (const wchar_t * s)
 {
   unsigned int red, green, blue;
 
-  if (swscanf (s, L".backgroundcolor #%2x%2x%2x", &red, &green, &blue) == 3)
+  if (swscanf (s, L"[backgroundcolor #%2x%2x%2x ]", &red, &green, &blue) == 3)
     {
       avt_set_background_color (red, green, blue);
       background_color_changed = AVT_TRUE;
     }
   else
-    error_msg (".backgroundcolor", NULL);
+    error_msg ("[backgroundcolor]", NULL);
 }
 
 static avt_audio_t *
@@ -1218,7 +1223,7 @@ handle_back_command (const wchar_t * s)
   if (!initialized)
     return;
 
-  if (swscanf (s, L".back %i", &value) > 0)
+  if (swscanf (s, L"[back %i ]", &value) > 0)
     {
       for (i = 0; i < value; i++)
 	avt_backspace ();
@@ -1232,7 +1237,7 @@ handle_height_command (const wchar_t * s)
 {
   int value;
 
-  if (swscanf (s, L".height %i", &value) > 0)
+  if (swscanf (s, L"[height %i ]", &value) > 0)
     avt_set_balloon_height (value);
   else
     avt_set_balloon_height (0);	/* maximum */
@@ -1243,7 +1248,7 @@ handle_width_command (const wchar_t * s)
 {
   int value;
 
-  if (swscanf (s, L".width %i", &value) > 0)
+  if (swscanf (s, L"[width %i ]", &value) > 0)
     avt_set_balloon_width (value);
   else
     avt_set_balloon_width (0);	/* maximum */
@@ -1254,7 +1259,7 @@ handle_size_command (const wchar_t * s)
 {
   int width, height;
 
-  if (swscanf (s, L".size %i , %i", &height, &width) == 2)
+  if (swscanf (s, L"[size %i , %i ]", &height, &width) == 2)
     avt_set_balloon_size (height, width);
   else
     avt_set_balloon_size (0, 0);	/* maximum */
@@ -1295,20 +1300,20 @@ iscommand (wchar_t * s, int *stop)
       return AVT_TRUE;
     }
 
-  if (s[0] == L'.')
+  if (s[0] == L'[')
     {
       strip (&s);
 
       /* new datadir */
-      if (wcsncmp (s, L".datadir ", 9) == 0)
+      if (wcsncmp (s, L"[datadir ", 9) == 0)
 	{
 	  if (wcstombs ((char *) &datadir, s + 9, sizeof (datadir))
 	      == (size_t) (-1))
-	    warning_msg (".datadir", strerror (errno));
+	    warning_msg ("[datadir]", strerror (errno));
 	  return AVT_TRUE;
 	}
 
-      if (wcsncmp (s, L".avatarimage ", 13) == 0)
+      if (wcsncmp (s, L"[avatarimage ", 13) == 0)
 	{
 	  handle_avatarimage_command (s);
 	  return AVT_TRUE;
@@ -1316,66 +1321,66 @@ iscommand (wchar_t * s, int *stop)
 
       /* the encoding is checked in check_encoding */
       /* so ignore it here */
-      if (wcsncmp (s, L".encoding ", 10) == 0)
+      if (wcsncmp (s, L"[encoding ", 10) == 0)
 	return AVT_TRUE;
 
-      if (wcsncmp (s, L".backgroundcolor ", 17) == 0)
+      if (wcsncmp (s, L"[backgroundcolor ", 17) == 0)
 	{
 	  handle_backgoundcolor_command (s);
 	  return AVT_TRUE;
 	}
 
       /* default - for most languages */
-      if (wcscmp (s, L".left-to-right") == 0)
+      if (wcscmp (s, L"[left-to-right]") == 0)
 	{
 	  avt_text_direction (AVT_LEFT_TO_RIGHT);
 	  return AVT_TRUE;
 	}
 
       /* currently only hebrew/yiddish supported */
-      if (wcscmp (s, L".right-to-left") == 0)
+      if (wcscmp (s, L"[right-to-left]") == 0)
 	{
 	  avt_text_direction (AVT_RIGHT_TO_LEFT);
 	  return AVT_TRUE;
 	}
 
       /* switch scrolling off */
-      if (wcscmp (s, L".scrolling off") == 0)
+      if (wcscmp (s, L"[scrolling off]") == 0)
 	{
 	  avt_set_scroll_mode (-1);
 	  return AVT_TRUE;
 	}
 
       /* switch scrolling on */
-      if (wcscmp (s, L".scrolling on") == 0)
+      if (wcscmp (s, L"[scrolling on]") == 0)
 	{
 	  avt_set_scroll_mode (1);
 	  return AVT_TRUE;
 	}
 
       /* change balloon size */
-      if (wcsncmp (s, L".size ", 6) == 0)
+      if (wcsncmp (s, L"[size ", 6) == 0)
 	{
 	  handle_size_command (s);
 	  return AVT_TRUE;
 	}
 
       /* change balloonheight */
-      if (wcsncmp (s, L".height ", 8) == 0)
+      if (wcsncmp (s, L"[height ", 8) == 0)
 	{
 	  handle_height_command (s);
 	  return AVT_TRUE;
 	}
 
       /* change balloonwidth */
-      if (wcsncmp (s, L".width ", 7) == 0)
+      if (wcsncmp (s, L"[width ", 7) == 0)
 	{
 	  handle_width_command (s);
 	  return AVT_TRUE;
 	}
 
       /* new page - same as \f or stripline */
-      if (wcscmp (s, L".flip") == 0)
+      if (wcscmp (s, L"[flip]") == 0)
 	{
 	  if (initialized)
 	    if (avt_flip_page ())
@@ -1384,7 +1389,7 @@ iscommand (wchar_t * s, int *stop)
 	}
 
       /* clear ballon - don't wait */
-      if (wcscmp (s, L".clear") == 0)
+      if (wcscmp (s, L"[clear]") == 0)
 	{
 	  if (initialized)
 	    avt_clear ();
@@ -1392,7 +1397,7 @@ iscommand (wchar_t * s, int *stop)
 	}
 
       /* longer intermezzo */
-      if (wcscmp (s, L".pause") == 0)
+      if (wcscmp (s, L"[pause]") == 0)
 	{
 	  if (!initialized)
 	    initialize ();
@@ -1406,21 +1411,21 @@ iscommand (wchar_t * s, int *stop)
 	}
 
       /* show image */
-      if (wcsncmp (s, L".image ", 7) == 0)
+      if (wcsncmp (s, L"[image ", 7) == 0)
 	{
 	  handle_image_command (s);
 	  return AVT_TRUE;
 	}
 
       /* play sound */
-      if (wcsncmp (s, L".audio ", 7) == 0)
+      if (wcsncmp (s, L"[audio ", 7) == 0)
 	{
 	  handle_audio_command (s);
 	  return AVT_TRUE;
 	}
 
       /* wait until sound ends */
-      if (wcscmp (s, L".waitaudio") == 0)
+      if (wcscmp (s, L"[waitaudio]") == 0)
 	{
 	  if (initialized)
 	    if (avt_wait_audio_end ())
@@ -1432,7 +1437,7 @@ iscommand (wchar_t * s, int *stop)
        * pause for effect in a sentence
        * the previous line should end with a backslash
        */
-      if (wcscmp (s, L".effectpause") == 0)
+      if (wcscmp (s, L"[effectpause]") == 0)
 	{
 	  if (initialized)
 	    if (avt_wait (2500))
@@ -1444,19 +1449,19 @@ iscommand (wchar_t * s, int *stop)
        * move back a number of characters
        * the previous line has to end with a backslash!
        */
-      if (wcsncmp (s, L".back ", 6) == 0)
+      if (wcsncmp (s, L"[back ", 6) == 0)
 	{
 	  handle_back_command (s);
 	  return AVT_TRUE;
 	}
 
-      if (wcscmp (s, L".read") == 0)
+      if (wcscmp (s, L"[read]") == 0)
 	{
 	  handle_read_command ();
 	  return AVT_TRUE;
 	}
 
-      if (wcscmp (s, L".end") == 0)
+      if (wcscmp (s, L"[end]") == 0)
 	{
 	  if (initialized)
 	    avt_move_out ();
@@ -1465,7 +1470,7 @@ iscommand (wchar_t * s, int *stop)
 	  return AVT_TRUE;
 	}
 
-      if (wcscmp (s, L".stop") == 0)
+      if (wcscmp (s, L"[stop]") == 0)
 	{
 	  /* doesn't matter whether it's initialized */
 	  *stop = AVT_TRUE;
@@ -2449,7 +2454,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.186 2008-09-10 14:40:26 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.187 2008-09-10 18:44:15 akf Exp $");
 
   return EXIT_SUCCESS;
 }
