@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.182 2008-09-09 15:26:28 akf Exp $ */
+/* $Id: avatarsay.c,v 2.183 2008-09-10 09:41:48 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1857,8 +1857,7 @@ ask_manpage (void)
   char manpage[AVT_LINELENGTH] = "man";
   char *argv[] = { "man", "-t", (char *) &manpage, NULL };
 
-  avt_set_balloon_size (0, 0);
-  avt_clear ();
+  avt_set_balloon_size (1, 40);
   avt_set_text_delay (0);
 
   avt_say (L"Manpage> ");
@@ -1866,11 +1865,13 @@ ask_manpage (void)
   if (avt_ask_mb (manpage, sizeof (manpage)) != 0)
     return;
 
-  avt_clear ();
-  avt_set_text_delay (default_delay);
   if (manpage[0] != '\0')
     {
       int fd, status;
+
+      avt_set_balloon_size (0, 0);
+      avt_clear ();
+      avt_set_text_delay (default_delay);
 
       /* GROFF assumed! */
       putenv ("GROFF_TYPESETTER=latin1");
@@ -2008,7 +2009,7 @@ ask_edit_file (void)
 {
   char filename[256];
 
-  avt_set_balloon_size (0, 0);
+  avt_set_balloon_size (1, 0);
   avt_clear ();
   avt_set_text_delay (0);
 
@@ -2026,6 +2027,7 @@ ask_edit_file (void)
       if (access (filename, F_OK) != 0)
 	create_file (filename);
 
+      avt_set_balloon_size (0, 0);
       avt_clear ();
       switch (language)
 	{
@@ -2441,7 +2443,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.182 2008-09-09 15:26:28 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.183 2008-09-10 09:41:48 akf Exp $");
 
   return EXIT_SUCCESS;
 }

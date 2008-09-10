@@ -1,5 +1,8 @@
 2008-09-10  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatarsay.c (ask_manpage, ask_edit_file):
+	smaller textentry fields
+
 	* avatar.c (avt_put_character):
 	check the value of auto_margin before calling check_auto_margin
 
