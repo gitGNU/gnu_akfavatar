@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.184 2008-09-10 09:47:11 akf Exp $ */
+/* $Id: avatarsay.c,v 2.185 2008-09-10 11:19:12 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -134,6 +134,7 @@ static avt_bool_t terminal_mode;
 
 /* execute file? Option -e */
 static avt_bool_t executable;
+static avt_bool_t read_error_is_eof;
 static char *from_archive;	/* archive name or NULL */
 static size_t script_bytes_left;	/* how many bytes may still be read */
 
@@ -967,7 +968,12 @@ get_character (int fd)
 	}
 
       if (nread == -1)
-	error_msg ("error while reading from file", strerror (errno));
+	{
+	  if (read_error_is_eof)
+	    wcbuf_len = -1;
+	  else
+	    error_msg ("error while reading from file", strerror (errno));
+	}
       else			/* nread != -1 */
 	{
 	  if (!encoding_checked && !given_encoding)
@@ -1514,6 +1520,8 @@ open_script (const char *fname)
 	lseek (fd, 0, SEEK_SET);
     }
 
+  read_error_is_eof = AVT_FALSE;
+
   return fd;
 }
 
@@ -1884,6 +1892,7 @@ ask_manpage (void)
       wcbuf_pos = wcbuf_len = 0;
 
       /* ignore file errors */
+      read_error_is_eof = AVT_TRUE;
       fd = execute_process (default_encoding, argv);
 
       if (fd > -1)
@@ -2440,7 +2449,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.184 2008-09-10 09:47:11 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.185 2008-09-10 11:19:12 akf Exp $");
 
   return EXIT_SUCCESS;
 }

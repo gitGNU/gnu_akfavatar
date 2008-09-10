@@ -1,5 +1,9 @@
 2008-09-10  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatarsay.c (read_error_is_eof):
+	reintroduced global variable
+	(get_character, ask_manpage, open_script): adapted
+
 	* avatarsay.c (ask_manpage, ask_edit_file):
 	smaller textentry fields
 
