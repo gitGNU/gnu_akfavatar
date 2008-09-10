@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.187 2008-09-10 18:44:15 akf Exp $ */
+/* $Id: avatarsay.c,v 2.188 2008-09-10 18:49:57 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -59,7 +59,7 @@
 #  define avtterm_nocolor(ignore)	/* empty */
 #endif
 
-#define HOMEPAGE "http://akfoerster.de/akfavatar/"
+#define HOMEPAGE "http://akfavatar.nongnu.org/"
 #define BUGMAIL "bug-akfavatar@akfoerster.de"
 
 /* size for input buffer - not too small, please */
@@ -2454,7 +2454,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.187 2008-09-10 18:44:15 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.188 2008-09-10 18:49:57 akf Exp $");
 
   return EXIT_SUCCESS;
 }
