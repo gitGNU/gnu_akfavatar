@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.162 2008-09-08 08:56:50 akf Exp $ */
+/* $Id: avatar.c,v 2.163 2008-09-10 09:29:45 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2299,7 +2299,8 @@ avt_put_character (const wchar_t ch)
       break;
 
     case L' ':			/* space */
-      check_auto_margin ();
+      if (auto_margin)
+        check_auto_margin ();
       if (!underlined)
 	avt_clearchar ();
       else			/* underlined */
@@ -2317,7 +2318,8 @@ avt_put_character (const wchar_t ch)
     default:
       if (ch > 32)
 	{
-	  check_auto_margin ();
+	  if (auto_margin)
+  	    check_auto_margin ();
 	  avt_drawchar (ch);
 	  avt_showchar ();
 	  if (text_delay)
@@ -3996,7 +3998,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.162 2008-09-08 08:56:50 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.163 2008-09-10 09:29:45 akf Exp $");
 
   /*
    * Initialize the display, accept any format

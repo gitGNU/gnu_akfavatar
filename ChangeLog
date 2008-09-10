@@ -1,3 +1,8 @@
+2008-09-10  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_put_character):
+	check the value of auto_margin before calling check_auto_margin
+
 2008-09-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtterm.c (execute_process, process_subprogram):
