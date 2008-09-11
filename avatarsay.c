@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.189 2008-09-11 07:28:55 akf Exp $ */
+/* $Id: avatarsay.c,v 2.190 2008-09-11 08:33:03 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -862,7 +862,7 @@ strip (wchar_t ** s)
 }
 
 /* 
- * check for the command .encoding 
+ * check for the command [encoding ...]
  * or a byte order mark (BOM) U+FEFF 
  */
 static void
@@ -875,8 +875,8 @@ check_encoding (const char *buf)
     char temp[80];
 
     /* buf is \0 terminated */
-    /* check for command .encoding */
-    enc = strstr (buf, ".encoding ");
+    /* check for command [encoding ...]*/
+    enc = strstr (buf, "[encoding ");
 
     /*
      * if .encoding is found and it is either at the start of the buffer 
@@ -885,8 +885,8 @@ check_encoding (const char *buf)
      */
     if (enc != NULL && (enc == buf || *(enc - 1) == '\n'))
       {
-	if (sscanf (enc, ".encoding %79s", (char *) &temp) <= 0)
-	  warning_msg (".encoding", NULL);
+	if (sscanf (enc, "[ encoding %79s ]", (char *) &temp) <= 0)
+	  warning_msg ("[encoding]", NULL);
 	else
 	  {
 	    set_encoding (temp);
@@ -2481,7 +2481,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.189 2008-09-11 07:28:55 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.190 2008-09-11 08:33:03 akf Exp $");
 
   return EXIT_SUCCESS;
 }
