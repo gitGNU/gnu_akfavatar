@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.190 2008-09-11 08:33:03 akf Exp $ */
+/* $Id: avatarsay.c,v 2.191 2008-09-11 15:35:41 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -651,6 +651,7 @@ find_archive_entry (int fd, const char *filename)
   if (filename_length > 15)
     error_msg (filename, "filename too long (max. 15)");
 
+  lseek (fd, 8, SEEK_SET);	/* go to first entry */
   read (fd, &header, sizeof (header));
 
   /* check magic entry */
@@ -680,6 +681,8 @@ find_archive_entry (int fd, const char *filename)
   return strtoul ((const char *) &header.size, NULL, 10);
 }
 
+static size_t multi_menu (int fd);
+
 /* analyzes first archive member */
 /* the global header must already be skipped */
 /* returns size of the script */
@@ -688,6 +691,7 @@ first_archive_entry (int fd)
 {
   struct ar_member header;
 
+  lseek (fd, 8, SEEK_SET);	/* go to first entry */
   read (fd, &header, sizeof (header));
 
   /* check magic entry */
@@ -700,6 +704,13 @@ first_archive_entry (int fd)
 
   if (memcmp (&header.name, "AKFAvatar-demo", 14) == 0)
     return strtoul ((const char *) &header.size, NULL, 10);
+
+  if (memcmp (&header.name, "AKFAvatar-multi", 15) == 0)
+    {
+      script_bytes_left = strtoul ((const char *) &header.size, NULL, 10);
+      from_archive = "AKFAvatar-multi";	/* anything but NULL */
+      return multi_menu (fd);
+    }
 
   /* no script found */
   return 0;
@@ -875,7 +886,7 @@ check_encoding (const char *buf)
     char temp[80];
 
     /* buf is \0 terminated */
-    /* check for command [encoding ...]*/
+    /* check for command [encoding ...] */
     enc = strstr (buf, "[encoding ");
 
     /*
@@ -1068,6 +1079,121 @@ getwline (int fd, wchar_t * lineptr, size_t n)
     }
 
   return nchars;
+}
+
+/* read a line from AKFAvatar-multi archive file */
+/* return width of title */
+static int
+read_multi_entry (const wchar_t * line, char archive_name[], wchar_t title[])
+{
+  const wchar_t *s;
+  wchar_t *t;
+  char *c;
+  int count;
+
+  /* get archive name */
+  c = archive_name;
+  s = line;
+  count = 0;
+  while (*s != ' ' && *s != '\t' && count < 15)
+    {
+      *c = (char) *s;
+      c++;
+      s++;
+      count++;
+    }
+  *c = '\0';
+
+  /* skip spaces */
+  while (*s == ' ' || *s == '\t')
+    s++;
+
+  /* get title */
+  t = title;
+  count = 0;
+  while (*s && *s != '\r' && *s != '\n' && count < AVT_LINELENGTH)
+    {
+      *t = *s;
+      t++;
+      s++;
+      count++;
+    }
+  *t = '\0';
+
+  return count;
+}
+
+// @@@
+static size_t
+multi_menu (int fd)
+{
+  wchar_t ch;
+  int menu_start;
+  wchar_t line[256];
+  wchar_t title[AVT_LINELENGTH + 1];
+  ssize_t nread;
+  int entry, width, i;
+  char archive_member[10][16];
+  wchar_t entry_title[10][AVT_LINELENGTH + 1];
+
+  /* clear text-buffer */
+  wcbuf_pos = wcbuf_len = 0;
+
+  /* read the title */
+  nread = getwline (fd, title, sizeof (title));
+
+  entry = 0;
+  width = 0;
+  while ((nread = getwline (fd, line, sizeof (line))) > 0)
+    {
+      i = read_multi_entry (line, archive_member[entry], entry_title[entry]);
+      if (i > width)
+	width = i;
+      entry++;
+    }
+
+  if (!initialized)
+    {
+      initialize ();
+
+      if (!popup)
+	move_in ();
+    }
+
+  avt_set_balloon_size (entry + 2, width + 3);
+
+  avt_normal_text ();
+  avt_set_text_delay (0);
+  avt_set_origin_mode (AVT_FALSE);
+  avt_newline_mode (AVT_TRUE);
+  avt_set_scroll_mode (-1);
+
+
+  avt_bold (AVT_TRUE);
+  avt_say (title);
+  avt_bold (AVT_FALSE);
+  avt_new_line ();
+
+  menu_start = avt_where_y ();
+  for (i = 0; i < entry; i++)
+    {
+      avt_put_character ((wchar_t) i + L'1');
+      avt_say (L") ");
+      avt_say (entry_title[i]);
+      avt_new_line ();
+    }
+
+  /* TODO: don't just exit */
+  if (avt_menu (&ch, menu_start, menu_start + entry - 1, L'1',
+		AVT_FALSE, AVT_FALSE))
+    exit (EXIT_SUCCESS);
+
+  /* reset temporarily used values */
+  script_bytes_left = 0;
+  from_archive = NULL;
+  avt_set_text_delay (default_delay);
+
+  return find_archive_entry (fd, archive_member[ch - L'1']);
 }
 
 /* errors are silently ignored */
@@ -2481,7 +2607,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.190 2008-09-11 08:33:03 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.191 2008-09-11 15:35:41 akf Exp $");
 
   return EXIT_SUCCESS;
 }

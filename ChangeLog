@@ -1,6 +1,10 @@
 2008-09-11  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (first_archive_entry):
+	support for multi-part archives
+	(multi_menu, read_multi_entry): new funtions
+
+	* avatarsay.c (first_archive_entry):
 	new funtion - First archive entry must start with AKFAvatar-
 
 2008-09-10  Andreas K. Foerster  <info@akfoerster.de>
