@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.188 2008-09-10 18:49:57 akf Exp $ */
+/* $Id: avatarsay.c,v 2.189 2008-09-11 07:28:55 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -185,6 +185,16 @@ enum language_t
 { ENGLISH, DEUTSCH };
 static enum language_t language;
 
+/* structure of an ar member header */
+struct ar_member
+{
+  char name[16];
+  char date[12];
+  char uid[6], gid[6];
+  char mode[8];
+  char size[10];
+  char magic[2];
+};
 
 static void
 quit (void)
@@ -634,15 +644,7 @@ find_archive_entry (int fd, const char *filename)
 {
   size_t filename_length;
   size_t skip_size;
-  struct
-  {
-    char name[16];
-    char date[12];
-    char uid[6], gid[6];
-    char mode[8];
-    char size[10];
-    char magic[2];
-  } header;
+  struct ar_member header;
 
   filename_length = strlen (filename);
 
@@ -676,6 +678,31 @@ find_archive_entry (int fd, const char *filename)
     }
 
   return strtoul ((const char *) &header.size, NULL, 10);
+}
+
+/* analyzes first archive member */
+/* the global header must already be skipped */
+/* returns size of the script */
+static size_t
+first_archive_entry (int fd)
+{
+  struct ar_member header;
+
+  read (fd, &header, sizeof (header));
+
+  /* check magic entry */
+  if (memcmp (&header.magic, "`\n", 2) != 0)
+    error_msg ("broken archive file", NULL);
+
+  /* check name */
+  if (memcmp (&header.name, "AKFAvatar-", 10) != 0)
+    return 0;			/* not an AKFAvatar archive */
+
+  if (memcmp (&header.name, "AKFAvatar-demo", 14) == 0)
+    return strtoul ((const char *) &header.size, NULL, 10);
+
+  /* no script found */
+  return 0;
 }
 
 static void
@@ -769,7 +796,7 @@ get_data_file (const wchar_t * fn, char filepath[])
 
   if (result == (size_t) (-1))
     error_msg ("wcstombs", strerror (errno));
-  
+
   /* remove ] */
   if ((e = strchr (filepath, ']')) != NULL)
     *e = '\0';
@@ -1512,7 +1539,7 @@ open_script (const char *fname)
       /* check, if it's an archive */
       if (check_archive_header (fd))
 	{
-	  script_bytes_left = find_archive_entry (fd, "AKFAvatar-demo");
+	  script_bytes_left = first_archive_entry (fd);
 	  if (script_bytes_left > 0)
 	    from_archive = strdup (fname);
 	  else			/* start-script not found in archive */
@@ -2454,7 +2481,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.188 2008-09-10 18:49:57 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.189 2008-09-11 07:28:55 akf Exp $");
 
   return EXIT_SUCCESS;
 }
