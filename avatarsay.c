@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.191 2008-09-11 15:35:41 akf Exp $ */
+/* $Id: avatarsay.c,v 2.192 2008-09-11 18:10:19 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1234,24 +1234,12 @@ handle_image_command (const wchar_t * s)
 static void
 handle_avatarimage_command (const wchar_t * s)
 {
-  static char *oldavatar = NULL;
   char filepath[PATH_LENGTH];
   void *img;
   avt_image_t *newavatar = NULL;
   size_t size = 0;
 
   get_data_file (s + 13, filepath);	/* remove "[avatarimage " */
-
-  if (oldavatar)
-    {
-      if (strcmp (filepath, oldavatar) == 0)
-	return;
-      else
-	free (oldavatar);
-    }
-
-  /* FIXME: memory leak */
-  oldavatar = strdup (filepath);
 
   if (from_archive)
     {
@@ -2607,7 +2595,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.191 2008-09-11 15:35:41 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.192 2008-09-11 18:10:19 akf Exp $");
 
   return EXIT_SUCCESS;
 }
