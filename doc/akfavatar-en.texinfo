@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.35 2008-06-14 13:37:28 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.36 2008-09-12 20:11:29 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -469,6 +469,12 @@ switches the slowprint-mode on
 
 @item CSI ? 56 l
 switches the slowprint-mode off (default)
+
+@item CSI 8 ; @var{height} ; @var{width} t
+set the height and width (in characters) of the balloon.
+The value 0 sets the maximum value.
+(This is actually compatible to @command{xterm})
+
 @end table
 
 further extensions are planned.

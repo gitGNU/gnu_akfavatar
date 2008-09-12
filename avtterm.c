@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.5 2008-09-09 23:13:30 akf Exp $ */
+/* $Id: avtterm.c,v 2.6 2008-09-12 20:11:28 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1033,6 +1033,24 @@ CSI_sequence (int fd, wchar_t last_character)
 
     case L's':			/* SCP */
       avt_save_position ();
+      break;
+
+      /* AKFAvatar extension - set balloon size (comp. to xterm) */
+    case L't':
+      if (sequence[0] == '8')
+	{
+	  char *next;
+	  int height = 0, width = 0;
+
+	  next = &sequence[2];
+	  height = strtol (next, &next, 10);
+	  if (*next == ';')
+	    {
+	      next++;
+	      width = strtol (next, &next, 10);
+	    }
+	  avt_set_balloon_size (height, width);
+	}
       break;
 
     case L'u':			/* RCP */

@@ -1,5 +1,8 @@
 2008-09-12  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avtterm.c (CSI_sequence):
+	support for changing the balloon size with an esc-sequence
+
 	* avatarsay.c (get_user_home):
 	for MinGW now uses HOMEDRIVE and HOMEPATH
 	must be freed by the caller now
