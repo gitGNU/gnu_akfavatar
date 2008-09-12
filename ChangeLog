@@ -1,3 +1,11 @@
+2008-09-12  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (get_user_home):
+	for MinGW now uses HOMEDRIVE and HOMEPATH
+	must be freed by the caller now
+	(initialize_datadir): new function
+	(run_shell): adapted
+
 2008-09-11  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (first_archive_entry):

@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.194 2008-09-11 19:59:56 akf Exp $ */
+/* $Id: avatarsay.c,v 2.195 2008-09-12 13:05:15 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -333,19 +333,27 @@ not_available (void)
 
 #ifdef __WIN32__
 
-/* get user's home direcory */
+/* get user's home direcory - Windows */
 char *
 get_user_home (void)
 {
-  char *home;
+  char buf[1024];
+  char *homepath, *homedrive;
 
-  home = getenv ("HOME");
-  if (home == NULL)
-    home = getenv ("HOMEPATH");
-  if (home == NULL)
-    home = "C:\\";
+  homepath = getenv ("HOMEPATH");
+  homedrive = getenv ("HOMEDRIVE");
 
-  return home;
+  if (homedrive && homepath)
+    {
+      strcpy (buf, homedrive);
+      strcat (buf, homepath);
+    }
+  else if (homepath)
+    strcpy (buf, homepath);
+  else
+    strcpy (buf, "C:\\");
+
+  return strdup (buf);
 }
 
 #else /* not __WIN32__ */
@@ -369,7 +377,7 @@ get_user_home (void)
 	home = user_data->pw_dir;
     }
 
-  return home;
+  return strdup (home);
 }
 
 #endif /* not __WIN32__ */
@@ -1582,17 +1590,17 @@ multi_menu (int fd)
     nread = getwline (fd, line, sizeof (line));
 
   wcscpy (title, line);
-  
+
   entry = 0;
   width = 0;
   while ((nread = getwline (fd, line, sizeof (line))) > 0)
     {
       i = read_multi_entry (line, archive_member[entry], entry_title[entry]);
       if (i > 0)
-        {
-          if (i > width)
-  	    width = i;
-          entry++;
+	{
+	  if (i > width)
+	    width = i;
+	  entry++;
 	}
     }
 
@@ -1635,7 +1643,7 @@ multi_menu (int fd)
   script_bytes_left = 0;
   free (from_archive);
   from_archive = NULL;
-  
+
   /* back to normal... */
   avt_clear_screen ();
   avt_set_text_delay (default_delay);
@@ -1952,6 +1960,7 @@ static void
 run_shell (void)
 {
   int fd;
+  char *home;
 
   /* must be initialized to get the window size */
   if (!initialized)
@@ -1965,7 +1974,9 @@ run_shell (void)
   avt_set_balloon_size (0, 0);
   avt_set_text_delay (0);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
-  chdir (get_user_home ());
+  home = get_user_home ();
+  chdir (home);
+  free (home);
 
   fd = execute_process (default_encoding, NULL);
   if (fd > -1)
@@ -2505,6 +2516,17 @@ initialize_program_name (const char *argv0)
 }
 
 static void
+initialize_datadir (void)
+{
+  char *home;
+
+  home = get_user_home ();
+  strncpy (datadir, home, sizeof (datadir));
+  datadir[sizeof (datadir) - 1] = '\0';
+  free (home);
+}
+
+static void
 initialize_start_dir (void)
 {
   char buf[4096];
@@ -2527,13 +2549,11 @@ main (int argc, char *argv[])
   atexit (quit);
   initialize_program_name (argv[0]);
   initialize_start_dir ();
+  initialize_datadir ();
 
   /* this is just a default setting */
   strcpy (default_encoding, "ISO-8859-1");
 
-  /* set datadir to home */
-  strncpy (datadir, get_user_home (), sizeof (datadir));
-  datadir[sizeof (datadir) - 1] = '\0';
 
   init_language_info ();
 
@@ -2610,7 +2630,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.194 2008-09-11 19:59:56 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.195 2008-09-12 13:05:15 akf Exp $");
 
   return EXIT_SUCCESS;
 }
