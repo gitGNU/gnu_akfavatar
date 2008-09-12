@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.6 2008-09-12 20:11:28 akf Exp $ */
+/* $Id: avtterm.c,v 2.7 2008-09-12 20:23:21 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -121,6 +121,22 @@ void
 avtterm_nocolor (avt_bool_t on)
 {
   nocolor = on;
+}
+
+/* resize the balloon */
+static void
+avtterm_size (int height, int width)
+{
+  struct winsize size;
+  
+  avt_set_balloon_size (height, width);
+
+#ifdef TIOCSWINSZ
+  size.ws_row = height;
+  size.ws_col = width;
+  size.ws_xpixel = size.ws_ypixel = 0;
+  ioctl (prg_input, TIOCSWINSZ, &size);
+#endif
 }
 
 /* @@@ */
@@ -1049,7 +1065,7 @@ CSI_sequence (int fd, wchar_t last_character)
 	      next++;
 	      width = strtol (next, &next, 10);
 	    }
-	  avt_set_balloon_size (height, width);
+	  avtterm_size (height, width);
 	}
       break;
 
