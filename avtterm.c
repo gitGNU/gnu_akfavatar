@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.9 2008-09-13 19:39:15 akf Exp $ */
+/* $Id: avtterm.c,v 2.10 2008-09-13 19:49:50 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -125,7 +125,7 @@ avtterm_nocolor (avt_bool_t on)
 
 /* set terminal size */
 static void
-avtterm_size (int height, int width)
+avtterm_size (int fd, int height, int width)
 {
 #ifdef TIOCSWINSZ
   struct winsize size;
@@ -133,7 +133,7 @@ avtterm_size (int height, int width)
   size.ws_row = height;
   size.ws_col = width;
   size.ws_xpixel = size.ws_ypixel = 0;
-  ioctl (prg_input, TIOCSWINSZ, &size);
+  ioctl (fd, TIOCSWINSZ, &size);
 #endif
 }
 
@@ -1070,7 +1070,7 @@ CSI_sequence (int fd, wchar_t last_character)
 	    width = max_x;
 
 	  avt_set_balloon_size (height, width);
-	  avtterm_size (height, width);
+	  avtterm_size (prg_input, height, width);
 	}
       break;
 
@@ -1424,7 +1424,7 @@ execute_process (const char *system_encoding, char *const prg_argv[])
       return -1;
     }
 
-  avtterm_size (max_y, max_x);
+  avtterm_size (master, max_y, max_x);
 
   /*-------------------------------------------------------- */
   childpid = fork ();
