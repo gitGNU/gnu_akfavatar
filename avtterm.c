@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.8 2008-09-13 19:37:41 akf Exp $ */
+/* $Id: avtterm.c,v 2.9 2008-09-13 19:39:15 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1065,9 +1065,9 @@ CSI_sequence (int fd, wchar_t last_character)
 	    }
 
 	  if (!height)
-	    height = avt_get_max_y ();
+	    height = max_y;
 	  if (!width)
-	    width = avt_get_max_x ();
+	    width = max_x;
 
 	  avt_set_balloon_size (height, width);
 	  avtterm_size (height, width);
