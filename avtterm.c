@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.7 2008-09-12 20:23:21 akf Exp $ */
+/* $Id: avtterm.c,v 2.8 2008-09-13 19:37:41 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -123,15 +123,13 @@ avtterm_nocolor (avt_bool_t on)
   nocolor = on;
 }
 
-/* resize the balloon */
+/* set terminal size */
 static void
 avtterm_size (int height, int width)
 {
-  struct winsize size;
-  
-  avt_set_balloon_size (height, width);
-
 #ifdef TIOCSWINSZ
+  struct winsize size;
+
   size.ws_row = height;
   size.ws_col = width;
   size.ws_xpixel = size.ws_ypixel = 0;
@@ -1065,6 +1063,13 @@ CSI_sequence (int fd, wchar_t last_character)
 	      next++;
 	      width = strtol (next, &next, 10);
 	    }
+
+	  if (!height)
+	    height = avt_get_max_y ();
+	  if (!width)
+	    width = avt_get_max_x ();
+
+	  avt_set_balloon_size (height, width);
 	  avtterm_size (height, width);
 	}
       break;
@@ -1353,7 +1358,6 @@ execute_process (const char *system_encoding, char *const prg_argv[])
   int master, slave;
   char *terminalname;
   struct termios settings;
-  struct winsize size;		/* does this have to be static? */
   char *shell = "/bin/sh";
 
   /* clear text-buffer */
@@ -1420,14 +1424,7 @@ execute_process (const char *system_encoding, char *const prg_argv[])
       return -1;
     }
 
-#ifdef TIOCSWINSZ
-  /* set window size */
-  /* not portable? */
-  size.ws_row = max_y;
-  size.ws_col = max_x;
-  size.ws_xpixel = size.ws_ypixel = 0;
-  ioctl (master, TIOCSWINSZ, &size);
-#endif
+  avtterm_size (max_y, max_x);
 
   /*-------------------------------------------------------- */
   childpid = fork ();
