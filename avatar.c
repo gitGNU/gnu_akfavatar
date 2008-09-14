@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.163 2008-09-10 09:29:45 akf Exp $ */
+/* $Id: avatar.c,v 2.164 2008-09-14 12:51:09 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1975,6 +1975,7 @@ avt_drawchar (wchar_t ch)
   SDL_Rect dest;
   Uint8 *p, *dest_line;
   Uint16 pitch;
+  int front;
 
   /* assert (avt_character->format->BytesPerPixel == 1); */
 
@@ -1983,15 +1984,25 @@ avt_drawchar (wchar_t ch)
   font_line = get_font_char (ch);
   dest_line = p;
 
-  /* clear all */
-  SDL_memset (p, 0, FONTHEIGHT * pitch);
+  if (inverse)
+    {
+      /* fill all */
+      SDL_memset (p, 1, FONTHEIGHT * pitch);
+      front = 0;
+    }
+  else
+    {
+      /* clear all */
+      SDL_memset (p, 0, FONTHEIGHT * pitch);
+      front = 1;
+    }
 
   if (!bold || NOT_BOLD)
     for (ly = 0; ly < FONTHEIGHT; ly++)
       {
 	for (lx = 0; lx < FONTWIDTH; lx++)
 	  if (*font_line & (1 << (15 - lx)))
-	    *(dest_line + lx) = 1;
+	    *(dest_line + lx) = front;
 	font_line++;
 	dest_line += pitch;
       }
@@ -2002,15 +2013,15 @@ avt_drawchar (wchar_t ch)
 	for (lx = 0; lx < FONTWIDTH - 1; lx++)
 	  if (*font_line & (1 << (15 - lx)))
 	    {
-	      *(dest_line + lx) = 1;
-	      *(dest_line + lx + 1) = 1;
+	      *(dest_line + lx) = front;
+	      *(dest_line + lx + 1) = front;
 	    }
 	font_line++;
 	dest_line += pitch;
       }
 
   if (underlined)
-    SDL_memset (p + (UNDERLINE * pitch), 1, FONTWIDTH * 1);
+    SDL_memset (p + (UNDERLINE * pitch), front, FONTWIDTH * 1);
 
   dest.x = cursor.x;
   dest.y = cursor.y;
@@ -2028,6 +2039,7 @@ avt_drawchar (wchar_t ch)
   SDL_Rect dest;
   Uint8 *p, *dest_line;
   Uint16 pitch;
+  int front;
 
   /* assert (avt_character->format->BytesPerPixel == 1); */
 
@@ -2036,15 +2048,25 @@ avt_drawchar (wchar_t ch)
   font_line = get_font_char (ch);
   dest_line = p;
 
-  /* clear all */
-  SDL_memset (p, 0, FONTHEIGHT * pitch);
+  if (inverse)
+    {
+      /* fill all */
+      SDL_memset (p, 1, FONTHEIGHT * pitch);
+      front = 0;
+    }
+  else
+    {
+      /* clear all */
+      SDL_memset (p, 0, FONTHEIGHT * pitch);
+      front = 1;
+    }
 
   if (!bold || NOT_BOLD)
     for (ly = 0; ly < FONTHEIGHT; ly++)
       {
 	for (lx = 0; lx < FONTWIDTH; lx++)
 	  if (*font_line & (1 << (7 - lx)))
-	    *(dest_line + lx) = 1;
+	    *(dest_line + lx) = front;
 	font_line++;
 	dest_line += pitch;
       }
@@ -2055,15 +2077,15 @@ avt_drawchar (wchar_t ch)
 	for (lx = 0; lx < FONTWIDTH - 1; lx++)
 	  if (*font_line & (1 << (7 - lx)))
 	    {
-	      *(dest_line + lx) = 1;
-	      *(dest_line + lx + 1) = 1;
+	      *(dest_line + lx) = front;
+	      *(dest_line + lx + 1) = front;
 	    }
 	font_line++;
 	dest_line += pitch;
       }
 
   if (underlined)
-    SDL_memset (p + (UNDERLINE * pitch), 1, FONTWIDTH * 1);
+    SDL_memset (p + (UNDERLINE * pitch), front, FONTWIDTH * 1);
 
   dest.x = cursor.x;
   dest.y = cursor.y;
@@ -2300,10 +2322,10 @@ avt_put_character (const wchar_t ch)
 
     case L' ':			/* space */
       if (auto_margin)
-        check_auto_margin ();
-      if (!underlined)
+	check_auto_margin ();
+      if (!underlined && !inverse)
 	avt_clearchar ();
-      else			/* underlined */
+      else			/* underlined or inverse */
 	{
 	  avt_drawchar (' ');
 	  avt_showchar ();
@@ -2319,7 +2341,7 @@ avt_put_character (const wchar_t ch)
       if (ch > 32)
 	{
 	  if (auto_margin)
-  	    check_auto_margin ();
+	    check_auto_margin ();
 	  avt_drawchar (ch);
 	  avt_showchar ();
 	  if (text_delay)
@@ -3819,20 +3841,7 @@ avt_set_text_background_color (int red, int green, int blue)
 void
 avt_inverse (avt_bool_t onoff)
 {
-  SDL_Color colors[2];
-
-  onoff = AVT_MAKE_BOOL (onoff);
-
-  if (avt_character && onoff != inverse)
-    {
-      colors[1] = avt_character->format->palette->colors[0];
-      colors[0] = avt_character->format->palette->colors[1];
-      SDL_SetColors (avt_character, &colors[0], 0, 2);
-      text_background_color = SDL_MapRGB (screen->format,
-					  colors[0].r, colors[0].g,
-					  colors[0].b);
-      inverse = onoff;
-    }
+  inverse = AVT_MAKE_BOOL (onoff);
 }
 
 avt_bool_t
@@ -3998,7 +4007,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.163 2008-09-10 09:29:45 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.164 2008-09-14 12:51:09 akf Exp $");
 
   /*
    * Initialize the display, accept any format

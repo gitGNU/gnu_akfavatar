@@ -1,5 +1,8 @@
 2008-09-14  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatar.c (avt_inverse, avt_drawchar, avt_put_character):
+	better handling of inverse characters
+
 	* avtterm.c (OSC_sequence):
 	new function - just skip OSC sequences for now
 
