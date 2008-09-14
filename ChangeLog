@@ -1,3 +1,8 @@
+2008-09-14  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtterm.c (OSC_sequence):
+	new function - just skip OSC sequences for now
+
 2008-09-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtterm.c (CSI_sequence):

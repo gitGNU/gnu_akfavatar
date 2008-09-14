@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.10 2008-09-13 19:49:50 akf Exp $ */
+/* $Id: avtterm.c,v 2.11 2008-09-14 12:02:35 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1111,6 +1111,41 @@ CSI_sequence (int fd, wchar_t last_character)
     }
 }
 
+/*
+ * OSC sequences aren't really supported yet,
+ * but we need the code, to successfully ignore that stuff
+ */
+static void
+OSC_sequence (int fd)
+{
+  wchar_t ch, old;
+  int i;
+
+  do
+    ch = get_character (fd);
+  while (ch == L'\0');
+
+  if (ch == L'P')		/* set palette (Linux) */
+    {
+      /* ignore 7 characters */
+      for (i = 0; i < 7; i++)
+	get_character (fd);
+      return;
+    }
+
+  /* ignore L'R' reset palette (Linux) */
+  if (ch == L'R')
+    return;
+
+  /* skip until "\a" or "\x9c" or "\033\\" is found */
+  do
+    {
+      old = ch;
+      ch = get_character (fd);
+    }
+  while (ch != L'\a' && ch != L'\x9c' && (old != L'\033' || ch != L'\\'));
+}
+
 static void
 escape_sequence (int fd, wchar_t last_character)
 {
@@ -1255,26 +1290,9 @@ escape_sequence (int fd, wchar_t last_character)
       write (prg_input, DS, sizeof (DS) - 1);
       break;
 
-    case L']':			/* Linux specific: (re)set palette */
-      /* not supported, but fetch the right number of chars to be ignored */
-      {
-	wchar_t ch2;
-	do
-	  ch2 = get_character (fd);
-	while (ch2 == L'\0');
-	/* ignore L'R' (reset palette) */
-	if (ch2 == L'P')	/* set palette */
-	  {
-	    /* ignore 7 characters */
-	    get_character (fd);
-	    get_character (fd);
-	    get_character (fd);
-	    get_character (fd);
-	    get_character (fd);
-	    get_character (fd);
-	    get_character (fd);
-	  }
-      }
+      /* OSC: Operating System Command */
+    case L']':
+      OSC_sequence (fd);
       break;
 
     default:
@@ -1308,6 +1326,8 @@ process_subprogram (int fd)
 	escape_sequence (fd, last_character);
       else if (ch == L'\x9b')	/* CSI */
 	CSI_sequence (fd, last_character);
+      else if (ch == L'\x9d')   /* OSC */
+        OSC_sequence (fd);
       else if (ch == L'\x0E')	/* SO */
 	set_encoding (G1);
       else if (ch == L'\x0F')	/* SI */
