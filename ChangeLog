@@ -1,5 +1,8 @@
 2008-09-15  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avtterm.c (APC_sequence):
+	new function - prepare to use APC sequences later
+
 	* avatarsay.c (process_script, iscommand):
 	better handling of [end] and [stop] commands
 

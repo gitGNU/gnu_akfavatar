@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.12 2008-09-14 16:49:29 akf Exp $ */
+/* $Id: avtterm.c,v 2.13 2008-09-15 21:47:56 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1111,6 +1111,33 @@ CSI_sequence (int fd, wchar_t last_character)
     }
 }
 
+/* APC: Application Program Command */
+/* APC codes will most probably be used in later versions */
+static void
+APC_sequence (int fd)
+{
+  wchar_t ch, old;
+  wchar_t command[80];
+  int p;
+
+  p = 0;
+  ch = old = L'\0';
+
+  /* skip until "\a" or "\x9c" or "\033\\" is found */
+  while (p < sizeof (command) / sizeof (wchar_t)
+	 && ch != L'\a' && ch != L'\x9c' && (old != L'\033' || ch != L'\\'))
+    {
+      old = ch;
+      ch = get_character (fd);
+      if (ch >= L' ' && ch != L'\x9c' && (old != L'\033' || ch != L'\\'))
+	command[p++] = ch;
+    }
+
+  command[p] = L'\0';
+  
+  /* TODO: actually support APC */
+}
+
 /*
  * OSC sequences aren't really supported yet,
  * but we need the code, to successfully ignore that stuff
@@ -1295,6 +1322,11 @@ escape_sequence (int fd, wchar_t last_character)
       OSC_sequence (fd);
       break;
 
+      /* APC: Application Program Command */
+    case L'_':
+      APC_sequence (fd);
+      break;
+
     default:
       fprintf (stderr, ESC_UNUPPORTED " %lc\n", ch);
       break;
@@ -1321,14 +1353,17 @@ process_subprogram (int fd)
   reset_terminal ();
 
   /* FIXME: \x80 - \x9f may not survive through iconv */
+  /* use the escape sequences instead */
   while ((ch = get_character (fd)) != WEOF && !stop)
     {
       if (ch == L'\033')	/* Esc */
 	escape_sequence (fd, last_character);
       else if (ch == L'\x9b')	/* CSI (may not work) */
 	CSI_sequence (fd, last_character);
-      else if (ch == L'\x9d')   /* OSC (may not work) */
-        OSC_sequence (fd);
+      else if (ch == L'\x9d')	/* OSC (may not work) */
+	OSC_sequence (fd);
+      else if (ch == L'\x9f')	/* APC (may not work) */
+	APC_sequence (fd);
       else if (ch == L'\x0E')	/* SO */
 	set_encoding (G1);
       else if (ch == L'\x0F')	/* SI */
