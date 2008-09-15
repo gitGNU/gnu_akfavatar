@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.200 2008-09-15 19:07:23 akf Exp $ */
+/* $Id: avatarsay.c,v 2.201 2008-09-15 20:13:52 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1104,7 +1104,7 @@ handle_image_command (const wchar_t * s, int *stop)
     initialize ();
   else if (avt_wait (2500))
     {
-      *stop = AVT_TRUE;
+      *stop = 1;
       return;
     }
 
@@ -1119,14 +1119,14 @@ handle_image_command (const wchar_t * s, int *stop)
 	    avt_wait (7000);
 	  free (img);
 	  if (avt_get_status ())
-	    *stop = AVT_TRUE;
+	    *stop = 1;
 	}
     }
   else				/* not from_archive */
     {
       if (!avt_show_image_file (filepath))
 	if (avt_wait (7000))
-	  *stop = AVT_TRUE;
+	  *stop = 1;
     }
 }
 
@@ -1331,7 +1331,7 @@ iscommand (wchar_t * s, int *stop)
     {
       if (initialized)
 	if (avt_flip_page ())
-	  *stop = AVT_TRUE;
+	  *stop = 1;
       return AVT_TRUE;
     }
 
@@ -1419,7 +1419,7 @@ iscommand (wchar_t * s, int *stop)
 	{
 	  if (initialized)
 	    if (avt_flip_page ())
-	      *stop = AVT_TRUE;
+	      *stop = 1;
 	  return AVT_TRUE;
 	}
 
@@ -1437,11 +1437,11 @@ iscommand (wchar_t * s, int *stop)
 	  if (!initialized)
 	    initialize ();
 	  else if (avt_wait (2700))
-	    *stop = AVT_TRUE;
+	    *stop = 1;
 
 	  avt_show_avatar ();
 	  if (avt_wait (4000))
-	    *stop = AVT_TRUE;
+	    *stop = 1;
 	  return AVT_TRUE;
 	}
 
@@ -1464,7 +1464,7 @@ iscommand (wchar_t * s, int *stop)
 	{
 	  if (initialized)
 	    if (avt_wait_audio_end ())
-	      *stop = AVT_TRUE;
+	      *stop = 1;
 	  return AVT_TRUE;
 	}
 
@@ -1476,7 +1476,7 @@ iscommand (wchar_t * s, int *stop)
 	{
 	  if (initialized)
 	    if (avt_wait (2500))
-	      *stop = AVT_TRUE;
+	      *stop = 1;
 	  return AVT_TRUE;
 	}
 
@@ -1501,14 +1501,14 @@ iscommand (wchar_t * s, int *stop)
 	  if (initialized)
 	    avt_move_out ();
 	  moved_in = AVT_FALSE;
-	  *stop = AVT_TRUE;
+	  *stop = 2;
 	  return AVT_TRUE;
 	}
 
       if (wcscmp (s, L"[stop]") == 0)
 	{
 	  /* doesn't matter whether it's initialized */
-	  *stop = AVT_TRUE;
+	  *stop = 2;
 	  return AVT_TRUE;
 	}
 
@@ -1577,7 +1577,7 @@ multi_menu (int fd)
   int entry, width, i;
   char archive_member[10][16];
   wchar_t entry_title[10][AVT_LINELENGTH + 1];
-  avt_bool_t stop = AVT_FALSE;
+  int stop = 0;
 
   /* clear text-buffer */
   wcbuf_pos = wcbuf_len = 0;
@@ -1759,14 +1759,14 @@ say_line (const wchar_t * line, ssize_t nread)
 }
 
 /* shows content of file / other input */
-/* returns -1:file cannot be processed, 0:normal, 1:stop requested */
+/* returns 0:normal, 1:stop requested */
 static int
 process_script (int fd)
 {
   wchar_t *line = NULL;
   size_t line_size = 0;
   ssize_t nread = 0;
-  avt_bool_t stop = AVT_FALSE;
+  int stop = 0; /* 1 = stop requested; 2 = end or stop command */
 
   line_size = 1024 * sizeof (wchar_t);
   line = (wchar_t *) malloc (line_size);
@@ -1806,7 +1806,7 @@ process_script (int fd)
 	    wcscpy (line, L"\n");
 	    nread = 1;
 	    if (avt_update ())
-	      stop = AVT_TRUE;
+	      stop = 1;
 	  }
       }
 
@@ -1821,7 +1821,7 @@ process_script (int fd)
   if (line && !stop && wcsncmp (line, L"---", 3) != 0)
     {
       if (say_line (line, nread))
-	stop = AVT_TRUE;
+	stop = 1;
     }
 
   while (!stop && (nread != 0 || ignore_eof))
@@ -1835,7 +1835,7 @@ process_script (int fd)
 	    {
 	      if (avt_update ())
 		{
-		  stop = AVT_TRUE;
+		  stop = 1;
 		  break;
 		}
 	      else
@@ -1846,7 +1846,7 @@ process_script (int fd)
       if (nread != 0 && !iscommand (line, &stop) && !stop)
 	{
 	  if (say_line (line, nread))
-	    stop = AVT_TRUE;
+	    stop = 1;
 	}
     }
 
@@ -1867,12 +1867,16 @@ process_script (int fd)
 
   if (avt_get_status () == AVT_ERROR)
     {
-      stop = AVT_TRUE;
+      stop = 1;
       warning_msg ("AKFAvatar", avt_get_error ());
     }
 
+  /* end or stop command not of interrest outside here */
+  if (stop >= 2)
+    stop = 0;
+
   avt_text_direction (AVT_LEFT_TO_RIGHT);
-  return (int) stop;
+  return stop;
 }
 
 extern int get_file (char *filename);
@@ -2633,7 +2637,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.200 2008-09-15 19:07:23 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.201 2008-09-15 20:13:52 akf Exp $");
 
   return EXIT_SUCCESS;
 }

@@ -1,5 +1,8 @@
 2008-09-15  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatarsay.c (process_script, iscommand):
+	better handling of [end] and [stop] commands
+
 	* avatarsay.c (handle_avatarimage_command):
 	don't move the avatar out
 
