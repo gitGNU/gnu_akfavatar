@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.198 2008-09-15 17:14:31 akf Exp $ */
+/* $Id: avatarsay.c,v 2.199 2008-09-15 19:03:11 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1647,6 +1647,7 @@ multi_menu (int fd)
 
   /* back to normal... */
   avt_clear_screen ();
+  avt_set_balloon_size (0, 0);
   avt_set_text_delay (default_delay);
 
   return find_archive_entry (fd, archive_member[ch - L'1']);
@@ -2631,7 +2632,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.198 2008-09-15 17:14:31 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.199 2008-09-15 19:03:11 akf Exp $");
 
   return EXIT_SUCCESS;
 }
