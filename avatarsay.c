@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.197 2008-09-14 15:33:13 akf Exp $ */
+/* $Id: avatarsay.c,v 2.198 2008-09-15 17:14:31 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1094,7 +1094,7 @@ getwline (int fd, wchar_t * lineptr, size_t n)
 
 /* errors are silently ignored */
 static void
-handle_image_command (const wchar_t * s)
+handle_image_command (const wchar_t * s, int *stop)
 {
   char filepath[PATH_LENGTH];
 
@@ -1103,7 +1103,10 @@ handle_image_command (const wchar_t * s)
   if (!initialized)
     initialize ();
   else if (avt_wait (2500))
-    exit (EXIT_SUCCESS);
+    {
+      *stop = AVT_TRUE;
+      return;
+    }
 
   if (from_archive)
     {
@@ -1116,14 +1119,14 @@ handle_image_command (const wchar_t * s)
 	    avt_wait (7000);
 	  free (img);
 	  if (avt_get_status ())
-	    exit (EXIT_SUCCESS);
+	    *stop = AVT_TRUE;
 	}
     }
   else				/* not from_archive */
     {
       if (!avt_show_image_file (filepath))
 	if (avt_wait (7000))
-	  exit (EXIT_SUCCESS);
+	  *stop = AVT_TRUE;
     }
 }
 
@@ -1156,9 +1159,6 @@ handle_avatarimage_command (const wchar_t * s)
 
   if (initialized)
     {
-      if (!popup)
-	if (avt_move_out ())
-	  exit (EXIT_SUCCESS);
       avt_change_avatar_image (newavatar);
       avatar_changed = AVT_TRUE;
       moved_in = AVT_FALSE;
@@ -1310,8 +1310,7 @@ handle_read_command (void)
   if (!initialized)
     initialize ();
 
-  if (avt_ask (line, sizeof (line)))
-    exit (EXIT_SUCCESS);
+  avt_ask (line, sizeof (line));
 
   /* TODO: not fully implemented yet */
 }
@@ -1449,7 +1448,7 @@ iscommand (wchar_t * s, int *stop)
       /* show image */
       if (wcsncmp (s, L"[image ", 7) == 0)
 	{
-	  handle_image_command (s);
+	  handle_image_command (s, stop);
 	  return AVT_TRUE;
 	}
 
@@ -2632,7 +2631,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.197 2008-09-14 15:33:13 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.198 2008-09-15 17:14:31 akf Exp $");
 
   return EXIT_SUCCESS;
 }

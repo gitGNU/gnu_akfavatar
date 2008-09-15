@@ -1,3 +1,11 @@
+2008-09-15  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (handle_avatarimage_command):
+	don't move the avatar out
+
+	* avatarsay.c (handle_image_command):
+	just set the variable stop and don't exit
+
 2008-09-14  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_inverse, avt_drawchar, avt_put_character):
