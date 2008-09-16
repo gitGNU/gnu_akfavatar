@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.201 2008-09-15 20:13:52 akf Exp $ */
+/* $Id: avatarsay.c,v 2.202 2008-09-16 18:41:07 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -911,6 +911,11 @@ check_encoding (const char *buf)
 	  warning_msg ("[encoding]", NULL);
 	else
 	  {
+	    char *closing_bracket;
+	    
+	    closing_bracket = strrchr (temp, ']');
+	    if (closing_bracket != NULL)
+	      *closing_bracket = '\0';
 	    set_encoding (temp);
 	    return;
 	  }
@@ -2637,7 +2642,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.201 2008-09-15 20:13:52 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.202 2008-09-16 18:41:07 akf Exp $");
 
   return EXIT_SUCCESS;
 }
