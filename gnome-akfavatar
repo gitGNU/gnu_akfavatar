@@ -139,8 +139,8 @@ edit_demo ()
       {
         echo "#!$AVATARSAY"
         echo
-	echo ".encoding $ENCODING"
-        [ -n "$AVATARIMAGE" ] && echo ".avatarimage $AVATARIMAGE"
+	echo "[encoding $ENCODING]"
+        [ -n "$AVATARIMAGE" ] && echo "[avatarimage $AVATARIMAGE]"
         echo
         echo "# Text:"
         echo
