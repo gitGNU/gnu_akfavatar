@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.37 2008-09-16 10:22:06 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.38 2008-09-16 12:02:13 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -230,7 +230,7 @@ is installed.  This is the variant that gets installed.
 @cindex iconv
 
 On some systems you need the use the parameter @option{--with-iconv} with
-@command{.configure} to get full iconv support (iconv is a charset-encoding
+@command{./configure} to get full iconv support (iconv is a charset-encoding
 converter).  This parameter is not needed, when SDL is already configured to
 use an external iconv.  But in some cases it is not, although an external 
 iconv is available (because maybe there is more than one implementation).
@@ -695,7 +695,7 @@ run only once (don't loop)
 popup, ie. don’t move the avatar in
 
 Use this for a fast popup text. 
-Use the command @command{.stop} to also get a fast end.
+Use the command @command{[stop]} to also get a fast end.
 
 @item --no-delay
 @itemx -n
@@ -755,8 +755,8 @@ AVATARDATADIR=/usr/local/share/akfavatar
 @section Commands for @command{avatarsay}
 @cindex commands for avatarsay
 
-The program @command{avatarsay} understands a small set of commands.
-So you can spice up your ``executable texts'' even further.
+With the program @command{avatarsay} you can also write some simple demos. 
+You don't have to lear a programming language for that.
 
 A line starting with a hash sign (@code{#}, @code{U+0023}) is a 
 @emph{comment}.  Those lines are simply ignored by the program.
@@ -769,12 +769,15 @@ at the very first column and there must be at least three successive
 hypens (@code{U+002D}).  Of course you can use more than three ones.
 
 @need 1000
-A @emph{command} for @command{avatarsay} starts with a dot (@code{U+002E})
-in the very first position of a new line.
+A @emph{command} for an @command{avatarsay}-demo has to be enclosed in 
+square brackets and it must be in the very first position of a new line.
+
+@emph{remark:} Earlier versions of @command{avatarsay} used a different
+style.
 
 @table @command
 
-@item .datadir @var{directory}
+@item [datadir @var{directory}]
 with this command you can set the directory, where images and sound files are
 located
 
@@ -782,10 +785,10 @@ The data directory can also be set with the environment variable
 @env{AVATARDATADIR}.  The command has precedence over the environment
 variable.
 
-@item .avatarimage @var{imagefile}
+@item [avatarimage @var{imagefile}]
 with this command you can use a different image for the avatar.
 
-@strong{Attention}: This command has to be used before the text starts
+@strong{Attention}: This command should be used before the text starts
 
 The avatar image can also be set with the environment variable 
 @env{AVATARIMAGE}.  The command has precedence over the environment
@@ -794,7 +797,7 @@ variable.
 Which file-formats AKFAvatar supports depends on which libraries you have 
 installed.  Uncompressed @code{BMP} images are always supported.
 
-@item .encoding @var{encodingname}
+@item [encoding @var{encodingname}]
 sets the encoding of the text; 
 such as @samp{ISO-8859-1} or @samp{UTF-8}
 
@@ -813,34 +816,55 @@ It depends on your systems @code{iconv} implementation, which encodings
 are supported.  On some systems you can get a list with the command 
 @code{iconv -l}.
 
-@item .backgroundcolor #@var{color-definition}
+@item [scrolling @var{off} | @var{on}]
+switches scrolling off or on.
+
+If you consequently use striplines to structure your text, you might want to
+switch scrolling off, to make the best use of the last line.
+
+@item [backgroundcolor #@var{color-definition}]
 set a different background color
 
 The @var{color-definition} has to be given as six hexadecimal characters;
 with two digits each for @code{red}, @code{green} and @code{blue}. 
-The default value is @samp{#CCCCCC}.
+The default value is @samp{#E0D5C5}.
 
-@strong{Attention}: This command has to be used before the text starts
+@strong{Attention}: This command should used before the text starts
 
-@item .left-to-right
-@itemx .right-to-left
+@item [left-to-right]
+@itemx [right-to-left]
 changes the text direction; this is useful if you have text written in
 Hebrew or Yiddish (Arabic is not supported)
 
 You can only switch the text-direction on a line by line basis.  Different
 text directions inside of one line is not supported.
 
-@item .flip
+@item [size @var{height}, @var{width}]
+set the size of the balloon.
+
+The size cannot exceed the maximum size. The value 0 sets the maximum size.
+
+@item [height @var{height}]
+set the height of the balloon.
+
+The size cannot exceed the maximum size. The value 0 sets the maximum size.
+
+@item [width @var{width}]
+set the width of the balloon.
+
+The size cannot exceed the maximum size. The value 0 sets the maximum size.
+
+@item [flip]
 flip the page; the same effect as with a stripline
 
-@item .clear
-clears the text-area; unlike @command{.flip} it doesn't wait, but clears it 
+@item [clear]
+clears the text-area; unlike @command{[flip]} it doesn't wait, but clears it 
 immediately
 
-@item .pause
+@item [pause]
 a longer pause; the avatar is shown without the balloon for some time
 
-@item .image @var{imagefile}
+@item [image @var{imagefile}]
 shows an image for a while (without the avatar)
 
 The image is centered on the screen.  If the image is larger than the screen,
@@ -852,7 +876,7 @@ The stripline doesn't have any effect then.
 Which file-formats AKFAvatar supports depends on which libraries you have 
 installed.  Uncompressed @code{BMP} images are always supported.
 
-@item .audio @var{audiofile}
+@item [audio @var{audiofile}]
 plays an audio file
 
 The text continues to be shown, so you can play an audio file with the 
@@ -861,27 +885,27 @@ recorded words of the following text.
 Currently only @code{WAV}-files with @code{PCM} or @code{ADPCM} encoding 
 are supported.
 
-@item .waitaudio
+@item [waitaudio]
 wait until the audio output ends
 
 This can be used to synchronize the recorded and the written text to some
 extend.
 
-@item .effectpause
+@item [effectpause]
 short pause while the text stays visible
 
 If you want to make an effect-pause within a line, you can end the previous
 line with a backslash (@code{\}, @code{U+005C}), so the line-ending has no
 effect for the output.
 
-@item .back @var{number}
+@item [back @var{number}]
 delete the last @var{number} of characters
 
 The previous line has to be ended with a backslash (@code{\}, @code{U+005C}).
-You could use this command after an @command{.effectpause}-command for a 
+You could use this command after an @command{[effectpause]}-command for a 
 nice effect.
 
-@item .read
+@item [read]
 reserved for later versions
 
 @item .end
@@ -889,14 +913,14 @@ end of the text
 
 The avatar moves out. 
 
-Anything behind the @command{.end} command is ignored.
+Anything behind the @command{[end]} command is ignored.
 
-@item .stop
+@item [stop]
 stops the output immediately
 
 The avatar is not moved out, but the text ends immediately.
 
-Anything behind the @command{.stop} command is ignored.
+Anything behind the @command{[stop]} command is ignored.
 
 @end table
 
@@ -970,14 +994,16 @@ You get the following menu-items:
 @table @code
 @item show a demo or textfile
 You get a file selection box and you can choose a text-file or a demo,
-which is then opened in @command{avatarsay}. A @dfn{demo} is a text-file, 
-which uses commands for @command{avatarsay} (@pxref{Commands for avatarsay}).
+which is then opened in @command{avatarsay}. A @dfn{demo} is either 
+a text-file, which uses commands for @command{avatarsay} 
+(@pxref{Commands for avatarsay}), or it can also be a package that also
+contains images or audio-files.
 
 @item create or edit a demo
 can be used to create a new demo or edit an existing one. When you enter
 a filename which doesn't exist yet, the file is created with an 
 appropriate @code{#!}-line.  If you chose a different avatar-image before
-invoking this item, a command @command{.avatarimage} is also included in this
+invoking this item, a command @command{[avatarimage]} is also included in this
 file.  The executable bit will be set on the created file.  Note: All this is
 just be done for @emph{new} files, not for files which already existed before.
 
