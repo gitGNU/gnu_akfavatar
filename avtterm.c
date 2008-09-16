@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.14 2008-09-16 07:06:46 akf Exp $ */
+/* $Id: avtterm.c,v 2.15 2008-09-16 07:18:46 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1118,7 +1118,7 @@ APC_sequence (int fd)
 {
   wchar_t ch, old;
   wchar_t command[1024];
-  int p;
+  unsigned int p;
 
   p = 0;
   ch = old = L'\0';
