@@ -23,7 +23,7 @@ prefix = /usr/$(TARGET)
 libdir = $(prefix)/lib
 includedir = $(prefix)/include
 
-all: akfavatar.dll libakfavatar.a avatarsay.exe libavtcio.a
+all: akfavatar.dll libakfavatar.a libavtcio.a avatarsay.exe avatarsay-d.exe
 
 avtsayinfo.rc:
 	@{ \
@@ -232,9 +232,14 @@ avtmsg.o: ../avtmsg.c ../avtmsg.h
 avatarsay: avatarsay.exe
 
 # uses dynamic lib
-avatarsay.exe: avatarsay.o avtfilechooser.o avtmsg.o akfavatar.dll avtsayinfo.o
+avatarsay-d.exe: avatarsay.o avtfilechooser.o avtmsg.o akfavatar.dll avtsayinfo.o
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ avatarsay.o avtfilechooser.o \
 	  avtmsg.o avtsayinfo.o -L. -lakfavatar $(LDFLAGS) $(SDLLDFLAGS)
+
+# uses static lib
+avatarsay.exe: avatarsay.o avtfilechooser.o avtmsg.o libakfavatar.a avtsayinfo.o
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ avatarsay.o avtfilechooser.o \
+	  avtmsg.o avtsayinfo.o libakfavatar.a $(LDFLAGS) $(SDLLDFLAGS)
 
 example: example.exe
 
