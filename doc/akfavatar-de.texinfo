@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.29 2008-09-12 20:11:28 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.30 2008-09-16 10:22:06 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -522,6 +522,21 @@ Der Wert 0 steht für das jeweilige Maximum.
 @end table
 
 Weitere Erweiterungen sind geplant.
+
+@emph{Anmerkungen:}
+``CSI'' (Control Sequence Introducer) kann entweder durch die Steuerzeichen
+@code{ESC} und @code{[} ausgelöst werden, oder in einigen Zeichensätzen durch 
+das einzelne Steuerzeichen @code{9Bhex}. 
+``APC'' (Application Program Command) kann durch die Steuerzeichen 
+@code{ESC} und @code{_} ausgelöst werden, oder in einigen
+Zeichensätzen durch das einzelne Steuerzeichen @code{9Fhex}.
+``ST'' (String Terminator)  kann durch die Steuerzeichen 
+@code{ESC} und @code{\} ausgelöst werden, oder in einigen
+Zeichensätzen durch das einzelne Steuerzeichen @code{9Chex}.
+
+Die Varianten mit @code{ESC} sind vorzuziehen. Insbesondere in UTF-8 
+hat man durch die einzelnen Steuerzeichen keinen Vorteil, da diese auch
+mit 2 Byte kodiert werden müssten.
 
 @node Text-Betrachter
 @section Einsatz von @command{avatarsay} als lustiger Text-Betrachter

@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.36 2008-09-12 20:11:29 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.37 2008-09-16 10:22:06 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -478,6 +478,21 @@ The value 0 sets the maximum value.
 @end table
 
 further extensions are planned.
+
+@emph{Remarks:}
+``CSI'' (Control Sequence Introducer) can be represented with the control
+sequence @code{ESC} followed by @code{[} or in some charsets with the single
+control code @code{9Bhex}.
+``APC'' (Application Program Command) can be represented with the control
+sequence @code{ESC} followed by @code{_}, or in some charsets with the single
+control code @code{9Fhex}.
+``ST'' (String Terminator) can be represented with the control
+sequence @code{ESC} followed by @code{\}, or in some charsets with the single
+control code @code{9Chex}.
+
+The variants with @code{ESC} should be preferred. Especially in UTF-8 there 
+is no advantage in the single control codes, since they also have to be 
+encoded with 2 Bytes.
 
 @node Text-viewer
 @section Using @command{avatarsay} as fancy text-viewer.
