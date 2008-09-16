@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.13 2008-09-15 21:47:56 akf Exp $ */
+/* $Id: avtterm.c,v 2.14 2008-09-16 07:06:46 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1117,14 +1117,14 @@ static void
 APC_sequence (int fd)
 {
   wchar_t ch, old;
-  wchar_t command[80];
+  wchar_t command[1024];
   int p;
 
   p = 0;
   ch = old = L'\0';
 
   /* skip until "\a" or "\x9c" or "\033\\" is found */
-  while (p < sizeof (command) / sizeof (wchar_t)
+  while (p < (sizeof (command) / sizeof (wchar_t))
 	 && ch != L'\a' && ch != L'\x9c' && (old != L'\033' || ch != L'\\'))
     {
       old = ch;
