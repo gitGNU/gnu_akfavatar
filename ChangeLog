@@ -1,3 +1,8 @@
+2008-09-18  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (O_BINARY, O_NONBLOCK):
+	define dummy macros for compatibility between some systems
+
 2008-09-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtterm.c (APC_sequence):

@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.202 2008-09-16 18:41:07 akf Exp $ */
+/* $Id: avatarsay.c,v 2.203 2008-09-18 11:17:48 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -57,6 +57,19 @@
 #  include <pwd.h>
 #else
 #  define avtterm_nocolor(ignore)	/* empty */
+#endif
+
+/*
+ * some weird systems needs O_BINARY, most others not
+ * so I define a dummy value for sane systems
+ */
+#ifndef O_BINARY
+#  define O_BINARY 0
+#endif
+
+/* therefore some weird systems don't know O_NONBLOCK */
+#ifndef O_NONBLOCK
+#  define O_NONBLOCK 0
 #endif
 
 #define HOMEPAGE "http://akfavatar.nongnu.org/"
@@ -836,7 +849,7 @@ get_image_from_archive (const char *name, void **buf, size_t * size)
   else
     return 0;
 
-  archive_fd = open (from_archive, O_RDONLY);
+  archive_fd = open (from_archive, O_RDONLY | O_BINARY);
   if (archive_fd < 0)
     return 0;
 
@@ -1198,7 +1211,7 @@ get_sound_from_archive (const char *name)
   void *buf = NULL;
   avt_audio_t *result = NULL;
 
-  archive_fd = open (from_archive, O_RDONLY);
+  archive_fd = open (from_archive, O_RDONLY | O_BINARY);
   if (archive_fd < 0)
     return NULL;
 
@@ -1674,11 +1687,7 @@ open_script (const char *fname)
     fd = STDIN_FILENO;		/* stdin */
   else				/* regular file */
     {
-#ifdef O_NONBLOCK
-      fd = open (fname, O_RDONLY | O_NONBLOCK);
-#else
-      fd = open (fname, O_RDONLY);
-#endif
+      fd = open (fname, O_RDONLY | O_BINARY | O_NONBLOCK);
 
       /* check, if it's an archive */
       if (check_archive_header (fd))
@@ -2642,7 +2651,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.202 2008-09-16 18:41:07 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.203 2008-09-18 11:17:48 akf Exp $");
 
   return EXIT_SUCCESS;
 }
