@@ -44,7 +44,7 @@ avtsayinfo.rc:
 	echo "  BEGIN"; \
 	echo "   VALUE \"CompanyName\", \"AKFoerster\""; \
 	echo "   VALUE \"FileDescription\",";\
-	echo "     \"lustiger Text-Betrachter und Skript-Sprache\""; \
+	echo "     \"Programm f\374r Demos und lustiger Text-Betrachter\""; \
 	echo "   VALUE \"FileVersion\", \"$(VERSIONSTR)\""; \
 	echo "   VALUE \"InternalName\", \"avatarsay\""; \
 	echo "   VALUE \"LegalCopyright\","; \
@@ -77,7 +77,7 @@ avtsayinfo.rc:
 	echo "  BEGIN"; \
 	echo "   VALUE \"CompanyName\", \"AKFoerster\""; \
 	echo "   VALUE \"FileDescription\",";\
-	echo "     \"fancy text-viewer and scripting language\""; \
+	echo "     \"program for demos and fancy text-viewer\""; \
 	echo "   VALUE \"FileVersion\", \"$(VERSIONSTR)\""; \
 	echo "   VALUE \"InternalName\", \"avatarsay\""; \
 	echo "   VALUE \"LegalCopyright\","; \
