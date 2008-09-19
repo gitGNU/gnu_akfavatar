@@ -1,3 +1,10 @@
+2008-09-19  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (get_data_from_archive): new function 
+	(get_image_from_archive, get_sound_from_archive): removed
+	(handle_image_command, handle_avatarimage_command)
+	(handle_audio_command): adapted
+
 2008-09-18  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (O_BINARY, O_NONBLOCK):

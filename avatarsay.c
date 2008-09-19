@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.203 2008-09-18 11:17:48 akf Exp $ */
+/* $Id: avatarsay.c,v 2.204 2008-09-19 09:29:38 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -660,7 +660,6 @@ check_archive_header (int fd)
 }
 
 /* finds a file in the archive */
-/* the global header must already be skipped */
 /* returns size of the file, or 0 if not found */
 static size_t
 find_archive_entry (int fd, const char *filename)
@@ -738,6 +737,44 @@ first_archive_entry (int fd, const char *fname)
 
   /* no script found */
   return 0;
+}
+
+/* 
+ * read in whole member of a named archive
+ * the buffer is allocated with malloc and must be freed by the caller
+ * returns size or 0 on error 
+ */
+static size_t
+get_data_from_archive (const char *archive, const char *member,
+		       void **buf, size_t * size)
+{
+  int archive_fd;
+
+  if (buf == NULL || size == NULL)
+    return 0;
+
+  *size = 0;
+  *buf = NULL;
+
+  archive_fd = open (archive, O_RDONLY | O_BINARY);
+  if (archive_fd < 0)
+    return 0;
+
+  if (check_archive_header (archive_fd))
+    *size = find_archive_entry (archive_fd, member);
+
+  if (*size > 0)
+    {
+      *buf = (void *) malloc (*size);
+      if (*buf != NULL)
+	read (archive_fd, *buf, *size);
+      else
+        *size = 0;
+    }
+
+  close (archive_fd);
+
+  return *size;
 }
 
 static void
@@ -837,46 +874,6 @@ get_data_file (const wchar_t * fn, char filepath[])
     *e = '\0';
 }
 
-/* returns size or 0 on error */
-static size_t
-get_image_from_archive (const char *name, void **buf, size_t * size)
-{
-  int archive_fd;
-
-  *size = 0;
-  if (buf)
-    *buf = NULL;
-  else
-    return 0;
-
-  archive_fd = open (from_archive, O_RDONLY | O_BINARY);
-  if (archive_fd < 0)
-    return 0;
-
-  if (check_archive_header (archive_fd))
-    *size = find_archive_entry (archive_fd, name);
-
-  if (*size <= 0)
-    {
-      close (archive_fd);
-      *size = 0;
-      return 0;
-    }
-
-  *buf = malloc (*size);
-  if (*buf == NULL)
-    {
-      close (archive_fd);
-      *size = 0;
-      return 0;
-    }
-
-  read (archive_fd, *buf, *size);
-  close (archive_fd);
-
-  return *size;
-}
-
 /* removes trailing space, newline, etc. */
 static void
 strip (wchar_t ** s)
@@ -925,7 +922,7 @@ check_encoding (const char *buf)
 	else
 	  {
 	    char *closing_bracket;
-	    
+
 	    closing_bracket = strrchr (temp, ']');
 	    if (closing_bracket != NULL)
 	      *closing_bracket = '\0';
@@ -1131,7 +1128,7 @@ handle_image_command (const wchar_t * s, int *stop)
       void *img;
       size_t size = 0;
 
-      if (get_image_from_archive (filepath, &img, &size))
+      if (get_data_from_archive (from_archive, filepath, &img, &size))
 	{
 	  if (!avt_show_image_data (img, size))
 	    avt_wait (7000);
@@ -1160,7 +1157,7 @@ handle_avatarimage_command (const wchar_t * s)
 
   if (from_archive)
     {
-      if (get_image_from_archive (filepath, &img, &size))
+      if (get_data_from_archive (from_archive, filepath, &img, &size))
 	{
 	  if (!(newavatar = avt_import_image_data (img, size)))
 	    warning_msg ("warning", avt_get_error ());
@@ -1203,41 +1200,12 @@ handle_backgoundcolor_command (const wchar_t * s)
     error_msg ("[backgroundcolor]", NULL);
 }
 
-static avt_audio_t *
-get_sound_from_archive (const char *name)
-{
-  int archive_fd;
-  size_t size = 0;
-  void *buf = NULL;
-  avt_audio_t *result = NULL;
-
-  archive_fd = open (from_archive, O_RDONLY | O_BINARY);
-  if (archive_fd < 0)
-    return NULL;
-
-  if (check_archive_header (archive_fd))
-    size = find_archive_entry (archive_fd, name);
-
-  if (size > 0)
-    {
-      buf = malloc (size);
-      if (buf != NULL)
-	{
-	  read (archive_fd, buf, size);
-	  result = avt_load_wave_data (buf, size);
-	  free (buf);
-	}
-    }
-
-  close (archive_fd);
-
-  return result;
-}
-
 static void
 handle_audio_command (const wchar_t * s)
 {
   char filepath[PATH_LENGTH];
+  size_t size = 0;
+  void *buf = NULL;
 
   if (!initialized)
     {
@@ -1256,7 +1224,13 @@ handle_audio_command (const wchar_t * s)
   get_data_file (s + 7, filepath);
 
   if (from_archive)
-    sound = get_sound_from_archive (filepath);
+    {
+      if (get_data_from_archive (from_archive, filepath, &buf, &size))
+	{
+	  sound = avt_load_wave_data (buf, size);
+	  free (buf);
+	}
+    }
   else
     sound = avt_load_wave_file (filepath);
 
@@ -1780,7 +1754,8 @@ process_script (int fd)
   wchar_t *line = NULL;
   size_t line_size = 0;
   ssize_t nread = 0;
-  int stop = 0; /* 1 = stop requested; 2 = end or stop command */
+  /* 1 = stop requested; 2 = end or stop command */
+  int stop = 0;
 
   line_size = 1024 * sizeof (wchar_t);
   line = (wchar_t *) malloc (line_size);
@@ -2651,7 +2626,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.203 2008-09-18 11:17:48 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.204 2008-09-19 09:29:38 akf Exp $");
 
   return EXIT_SUCCESS;
 }
