@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.204 2008-09-19 09:29:38 akf Exp $ */
+/* $Id: avatarsay.c,v 2.205 2008-09-19 12:28:20 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -703,15 +703,18 @@ find_archive_entry (int fd, const char *filename)
   return strtoul ((const char *) &header.size, NULL, 10);
 }
 
-static size_t multi_menu (int fd);
-
-/* analyzes first archive member */
-/* the global header must already be skipped */
-/* returns size of the script */
+/* 
+ * finds first archive member
+ * if member is not NULL it will get the name of the member
+ * member must have at least 16 bytes
+ * returns size of first member
+ */
 static size_t
-first_archive_entry (int fd, const char *fname)
+first_archive_member (int fd, char *member)
 {
+  size_t size;
   struct ar_member header;
+  char *end;
 
   lseek (fd, 8, SEEK_SET);	/* go to first entry */
   read (fd, &header, sizeof (header));
@@ -720,23 +723,26 @@ first_archive_entry (int fd, const char *fname)
   if (memcmp (&header.magic, "`\n", 2) != 0)
     error_msg ("broken archive file", NULL);
 
-  /* check name */
-  if (memcmp (&header.name, "AKFAvatar-", 10) != 0)
-    return 0;			/* not an AKFAvatar archive */
+  size = strtoul ((const char *) &header.size, NULL, 10);
 
-  if (memcmp (&header.name, "AKFAvatar-demo", 14) == 0)
-    return strtoul ((const char *) &header.size, NULL, 10);
-
-  if (memcmp (&header.name, "AKFAvatar-multi", 15) == 0)
+  if (member != NULL)
     {
-      /* temporary settings */
-      script_bytes_left = strtoul ((const char *) &header.size, NULL, 10);
-      from_archive = strdup (fname);
-      return multi_menu (fd);
+      memcpy (member, header.name, sizeof (header.name));
+
+      /* find end of the name */
+      /* either terminated by / or by space */
+      end = (char *) memrchr (member, '/', sizeof (header.name));
+
+      if (!end)
+	end = (char *) memrchr (member, ' ', sizeof (header.name));
+
+      if (end)
+	*end = '\0';		/* make it a valid C-string */
+      else
+	*member = '\0';
     }
 
-  /* no script found */
-  return 0;
+  return size;
 }
 
 /* 
@@ -769,7 +775,7 @@ get_data_from_archive (const char *archive, const char *member,
       if (*buf != NULL)
 	read (archive_fd, *buf, *size);
       else
-        *size = 0;
+	*size = 0;
     }
 
   close (archive_fd);
@@ -1569,7 +1575,9 @@ multi_menu (int fd)
   int entry, width, i;
   char archive_member[10][16];
   wchar_t entry_title[10][AVT_LINELENGTH + 1];
-  int stop = 0;
+  int stop;
+
+  stop = 0;
 
   /* clear text-buffer */
   wcbuf_pos = wcbuf_len = 0;
@@ -1596,6 +1604,9 @@ multi_menu (int fd)
 	  entry++;
 	}
     }
+
+  /* temporary script read */
+  script_bytes_left = 0;
 
   if (!initialized)
     {
@@ -1632,11 +1643,6 @@ multi_menu (int fd)
 		AVT_FALSE, AVT_FALSE))
     exit (EXIT_SUCCESS);
 
-  /* reset temporarily used values */
-  script_bytes_left = 0;
-  free (from_archive);
-  from_archive = NULL;
-
   /* back to normal... */
   avt_clear_screen ();
   moved_in = AVT_FALSE;
@@ -1651,6 +1657,7 @@ static int
 open_script (const char *fname)
 {
   int fd = -1;
+  char member_name[17];
 
   /* clear text-buffer */
   wcbuf_pos = wcbuf_len = 0;
@@ -1664,19 +1671,29 @@ open_script (const char *fname)
       fd = open (fname, O_RDONLY | O_BINARY | O_NONBLOCK);
 
       /* check, if it's an archive */
-      if (check_archive_header (fd))
+      if (!check_archive_header (fd))
+	lseek (fd, 0, SEEK_SET);
+      else			/* an archive */
 	{
-	  script_bytes_left = first_archive_entry (fd, fname);
+	  script_bytes_left = first_archive_member (fd, member_name);
+
 	  if (script_bytes_left > 0)
-	    from_archive = strdup (fname);
-	  else			/* start-script not found in archive */
+	    {
+	      if (strcmp (member_name, "AKFAvatar-demo") == 0)
+		from_archive = strdup (fname);
+	      else if (strcmp (member_name, "AKFAvatar-multi") == 0)
+		{
+		  from_archive = strdup (fname);
+		  script_bytes_left = multi_menu (fd);
+		}
+	    }
+
+	  if (script_bytes_left <= 0)
 	    {
 	      close (fd);
 	      fd = -1;
 	    }
 	}
-      else			/* not an archive */
-	lseek (fd, 0, SEEK_SET);
     }
 
   read_error_is_eof = AVT_FALSE;
@@ -2626,7 +2643,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.204 2008-09-19 09:29:38 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.205 2008-09-19 12:28:20 akf Exp $");
 
   return EXIT_SUCCESS;
 }

@@ -5,6 +5,10 @@
 	(handle_image_command, handle_avatarimage_command)
 	(handle_audio_command): adapted
 
+	* avatarsay (first_archive_member): new function
+	(first_archive_entry): removed
+	(open_script, multi_menu): adapted
+
 2008-09-18  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (O_BINARY, O_NONBLOCK):
