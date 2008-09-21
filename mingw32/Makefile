@@ -25,7 +25,7 @@ includedir = $(prefix)/include
 
 all: akfavatar.dll libakfavatar.a libavtcio.a avatarsay.exe avatarsay-d.exe
 
-avtsayinfo.rc:
+avtsayinfo.rc: Makefile
 	@{ \
 	echo "AppIcon ICON \"akfavatar.ico\""; \
 	echo; \
@@ -44,7 +44,7 @@ avtsayinfo.rc:
 	echo "  BEGIN"; \
 	echo "   VALUE \"CompanyName\", \"AKFoerster\""; \
 	echo "   VALUE \"FileDescription\",";\
-	echo "     \"Programm f\374r Demos und lustiger Text-Betrachter\""; \
+	echo "     \"Demo-Programm und lustiger Text-Betrachter\""; \
 	echo "   VALUE \"FileVersion\", \"$(VERSIONSTR)\""; \
 	echo "   VALUE \"InternalName\", \"avatarsay\""; \
 	echo "   VALUE \"LegalCopyright\","; \
@@ -94,7 +94,7 @@ avtsayinfo.rc:
 	echo " END"; \
 	echo "END"; } > $@
 
-libinfo.rc:
+libinfo.rc: Makefile
 	@{ \
 	echo "LANGUAGE 7, 1"; \
 	echo; \
