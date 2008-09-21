@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.206 2008-09-19 12:42:29 akf Exp $ */
+/* $Id: avatarsay.c,v 2.207 2008-09-21 11:38:47 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -324,6 +324,7 @@ help (void)
 static void
 not_available (void)
 {
+  avt_set_balloon_size (3, 45);
   avt_clear ();
   avt_set_text_delay (default_delay);
   avt_bell ();
@@ -331,11 +332,15 @@ not_available (void)
   switch (language)
     {
     case DEUTSCH:
-      avt_say (L"Funktion auf diesem System nicht verfügbar...");
+      avt_say (L"Funktion auf diesem System nicht verfügbar...\n"
+	       L"Vollständige Unterstützung steht zum Beispiel\n"
+	       L"unter GNU/Linux zur Verfügung.");
       break;
+
     case ENGLISH:
     default:
-      avt_say (L"function not available on this system...");
+      avt_say (L"function not available on this system...\n"
+	       L"A fully supported system is for example\nGNU/Linux.");
     }
 
   avt_wait_button ();
@@ -2643,7 +2648,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.206 2008-09-19 12:42:29 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.207 2008-09-21 11:38:47 akf Exp $");
 
   return EXIT_SUCCESS;
 }
