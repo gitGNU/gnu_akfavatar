@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.207 2008-09-21 11:38:47 akf Exp $ */
+/* $Id: avatarsay.c,v 2.208 2008-09-22 12:01:54 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -26,6 +26,7 @@
 
 #include "version.h"
 #include "akfavatar.h"
+#include "arch.h"
 #include "avtmsg.h"
 #include <wchar.h>
 #include <unistd.h>
@@ -197,17 +198,6 @@ static avt_bool_t background_color_changed;
 enum language_t
 { ENGLISH, DEUTSCH };
 static enum language_t language;
-
-/* structure of an ar member header */
-struct ar_member
-{
-  char name[16];
-  char date[12];
-  char uid[6], gid[6];
-  char mode[8];
-  char size[10];
-  char magic[2];
-};
 
 static void
 quit (void)
@@ -655,139 +645,6 @@ checkoptions (int argc, char **argv)
     }
 }
 
-static int
-check_archive_header (int fd)
-{
-  char archive_magic[8];
-
-  read (fd, &archive_magic, 8);
-  return (memcmp ("!<arch>\n", archive_magic, 8) == 0);
-}
-
-/* finds a file in the archive */
-/* returns size of the file, or 0 if not found */
-static size_t
-find_archive_entry (int fd, const char *filename)
-{
-  size_t filename_length;
-  size_t skip_size;
-  struct ar_member header;
-
-  filename_length = strlen (filename);
-
-  if (filename_length > 15)
-    error_msg (filename, "filename too long (max. 15)");
-
-  lseek (fd, 8, SEEK_SET);	/* go to first entry */
-  read (fd, &header, sizeof (header));
-
-  /* check magic entry */
-  if (memcmp (&header.magic, "`\n", 2) != 0)
-    error_msg (filename, "broken archive");
-
-  /* check name */
-  while (memcmp (&header.name, filename, filename_length) != 0
-	 || (header.name[filename_length] != ' '
-	     && header.name[filename_length] != '/'))
-    {
-      /* skip block */
-      skip_size = strtoul ((const char *) &header.size, NULL, 10);
-      if (skip_size % 2 != 0)
-	skip_size++;
-      lseek (fd, skip_size, SEEK_CUR);
-
-      /* read next block-header */
-      if (read (fd, &header, sizeof (header)) <= 0)
-	return 0;		/* end reached - not found */
-
-      /* check magic entry */
-      if (memcmp (&header.magic, "`\n", 2) != 0)
-	error_msg (filename, "broken archive");
-    }
-
-  return strtoul ((const char *) &header.size, NULL, 10);
-}
-
-/* 
- * finds first archive member
- * if member is not NULL it will get the name of the member
- * member must have at least 16 bytes
- * returns size of first member
- */
-static size_t
-first_archive_member (int fd, char *member)
-{
-  size_t size;
-  struct ar_member header;
-  char *end;
-
-  lseek (fd, 8, SEEK_SET);	/* go to first entry */
-  read (fd, &header, sizeof (header));
-
-  /* check magic entry */
-  if (memcmp (&header.magic, "`\n", 2) != 0)
-    error_msg ("broken archive file", NULL);
-
-  size = strtoul ((const char *) &header.size, NULL, 10);
-
-  if (member != NULL)
-    {
-      memcpy (member, header.name, sizeof (header.name));
-
-      /* find end of the name */
-      /* either terminated by / or by space */
-      end = (char *) memchr (member, '/', sizeof (header.name));
-
-      if (!end)
-	end = (char *) memchr (member, ' ', sizeof (header.name));
-
-      if (end)
-	*end = '\0';		/* make it a valid C-string */
-      else
-	*member = '\0';
-    }
-
-  return size;
-}
-
-/* 
- * read in whole member of a named archive
- * the buffer is allocated with malloc and must be freed by the caller
- * returns size or 0 on error 
- */
-static size_t
-get_data_from_archive (const char *archive, const char *member,
-		       void **buf, size_t * size)
-{
-  int archive_fd;
-
-  if (buf == NULL || size == NULL)
-    return 0;
-
-  *size = 0;
-  *buf = NULL;
-
-  archive_fd = open (archive, O_RDONLY | O_BINARY);
-  if (archive_fd < 0)
-    return 0;
-
-  if (check_archive_header (archive_fd))
-    *size = find_archive_entry (archive_fd, member);
-
-  if (*size > 0)
-    {
-      *buf = (void *) malloc (*size);
-      if (*buf != NULL)
-	read (archive_fd, *buf, *size);
-      else
-	*size = 0;
-    }
-
-  close (archive_fd);
-
-  return *size;
-}
-
 static void
 use_avatar_image (char *image_file)
 {
@@ -1139,13 +996,21 @@ handle_image_command (const wchar_t * s, int *stop)
       void *img;
       size_t size = 0;
 
-      if (get_data_from_archive (from_archive, filepath, &img, &size))
+      if (arch_get_data (from_archive, filepath, &img, &size))
 	{
 	  if (!avt_show_image_data (img, size))
 	    avt_wait (7000);
 	  free (img);
 	  if (avt_get_status ())
 	    *stop = 1;
+	}
+      else			/* analyze possible error */
+	{
+	  if (strlen (filepath) > 15)
+	    error_msg (filepath, "names of archive members may not be "
+		       "longer then 15 characters");
+	  else
+	    error_msg (filepath, "not found in archive");
 	}
     }
   else				/* not from_archive */
@@ -1168,14 +1033,20 @@ handle_avatarimage_command (const wchar_t * s)
 
   if (from_archive)
     {
-      if (get_data_from_archive (from_archive, filepath, &img, &size))
+      if (arch_get_data (from_archive, filepath, &img, &size))
 	{
 	  if (!(newavatar = avt_import_image_data (img, size)))
 	    warning_msg ("warning", avt_get_error ());
 	  free (img);
 	}
-      else
-	warning_msg (filepath, "not found in archive");
+      else			/* analyze possible error */
+	{
+	  if (strlen (filepath) > 15)
+	    error_msg (filepath, "names of archive members may not be "
+		       "longer then 15 characters");
+	  else
+	    error_msg (filepath, "not found in archive");
+	}
     }
   else				/* not from_archive */
     {
@@ -1236,13 +1107,21 @@ handle_audio_command (const wchar_t * s)
 
   if (from_archive)
     {
-      if (get_data_from_archive (from_archive, filepath, &buf, &size))
+      if (arch_get_data (from_archive, filepath, &buf, &size))
 	{
 	  sound = avt_load_wave_data (buf, size);
 	  free (buf);
 	}
+      else			/* analyze possible error */
+	{
+	  if (strlen (filepath) > 15)
+	    error_msg (filepath, "names of archive members may not be "
+		       "longer then 15 characters");
+	  else
+	    error_msg (filepath, "not found in archive");
+	}
     }
-  else
+  else /* not from_archive */
     sound = avt_load_wave_file (filepath);
 
   if (sound == NULL)
@@ -1654,7 +1533,7 @@ multi_menu (int fd)
   avt_set_balloon_size (0, 0);
   avt_set_text_delay (default_delay);
 
-  return find_archive_entry (fd, archive_member[ch - L'1']);
+  return arch_find_member (fd, archive_member[ch - L'1']);
 }
 
 /* opens the file, returns file descriptor or -1 on error */
@@ -1676,11 +1555,11 @@ open_script (const char *fname)
       fd = open (fname, O_RDONLY | O_BINARY | O_NONBLOCK);
 
       /* check, if it's an archive */
-      if (!check_archive_header (fd))
+      if (!arch_check_header (fd))
 	lseek (fd, 0, SEEK_SET);
       else			/* an archive */
 	{
-	  script_bytes_left = first_archive_member (fd, member_name);
+	  script_bytes_left = arch_first_member (fd, member_name);
 
 	  if (script_bytes_left > 0)
 	    {
@@ -2648,7 +2527,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.207 2008-09-21 11:38:47 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.208 2008-09-22 12:01:54 akf Exp $");
 
   return EXIT_SUCCESS;
 }

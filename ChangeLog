@@ -1,3 +1,9 @@
+2008-09-22  Andreas K. Foerster  <info@akfoerster.de>
+
+	* arch.h, arch.c: 
+	new files - separated out of avatarsay.c
+	avatarsay.c: adapted
+
 2008-09-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (get_data_from_archive): new function 

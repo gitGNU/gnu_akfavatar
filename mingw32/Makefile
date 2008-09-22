@@ -229,17 +229,24 @@ avatarsay.o: ../avatarsay.c ../akfavatar.h
 avtmsg.o: ../avtmsg.c ../avtmsg.h
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ ../avtmsg.c
 
+arch.o: ../arch.c ../arch.h
+	$(CC) $(CFLAGS) -c -o $@ ../arch.c
+
 avatarsay: avatarsay.exe
 
 # uses dynamic lib
-avatarsay-d.exe: avatarsay.o avtfilechooser.o avtmsg.o akfavatar.dll avtsayinfo.o
+avatarsay-d.exe: avatarsay.o avtfilechooser.o avtmsg.o akfavatar.dll \
+	         arch.o avtsayinfo.o
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ avatarsay.o avtfilechooser.o \
-	  avtmsg.o avtsayinfo.o -L. -lakfavatar $(LDFLAGS) $(SDLLDFLAGS)
+	  avtmsg.o avtsayinfo.o arch.o \
+	  -L. -lakfavatar $(LDFLAGS) $(SDLLDFLAGS)
 
 # uses static lib
-avatarsay.exe: avatarsay.o avtfilechooser.o avtmsg.o libakfavatar.a avtsayinfo.o
+avatarsay.exe: avatarsay.o avtfilechooser.o avtmsg.o libakfavatar.a \
+	       arch.o avtsayinfo.o
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ avatarsay.o avtfilechooser.o \
-	  avtmsg.o avtsayinfo.o libakfavatar.a $(LDFLAGS) $(SDLLDFLAGS)
+	  avtmsg.o avtsayinfo.o arch.o \
+	  libakfavatar.a $(LDFLAGS) $(SDLLDFLAGS)
 
 example: example.exe
 

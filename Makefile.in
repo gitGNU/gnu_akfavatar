@@ -111,17 +111,22 @@ avtterm.o: $(srcdir)/avtterm.c $(srcdir)/avtterm.h $(srcdir)/akfavatar.h
 	  -c -o $@ $(srcdir)/avtterm.c
 
 avtmsg.o: $(srcdir)/avtmsg.c $(srcdir)/avtmsg.h
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ $(srcdir)/avtmsg.c
+	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/avtmsg.c
+
+arch.o: $(srcdir)/arch.c $(srcdir)/arch.h
+	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/arch.c
 
 # avatarsay dynamically linked
 # only works, when the library is installed
-avatarsay-d: avatarsay.o avtfilechooser.o avtterm.o avtmsg.o libakfavatar.so
+avatarsay-d: avatarsay.o avtfilechooser.o arch.o avtterm.o avtmsg.o \
+	     libakfavatar.so
 	$(CC) -o $@ avatarsay.o avtfilechooser.o avtterm.o avtmsg.o \
-	  -L. -lakfavatar $(LDFLAGS)
+	  arch.o -L. -lakfavatar $(LDFLAGS)
 
 # avatarsay with statical libakfavatar.a
-avatarsay: avatarsay.o avtfilechooser.o avtterm.o avtmsg.o libakfavatar.a
-	$(CC) -o $@ avatarsay.o libakfavatar.a avtfilechooser.o \
+avatarsay: avatarsay.o avtfilechooser.o arch.o avtterm.o avtmsg.o \
+	   libakfavatar.a
+	$(CC) -o $@ avatarsay.o arch.o libakfavatar.a avtfilechooser.o \
 	  avtterm.o avtmsg.o $(LDFLAGS) $(SDLLDFLAGS)
 
 installdirs:
