@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.208 2008-09-22 12:01:54 akf Exp $ */
+/* $Id: avatarsay.c,v 2.209 2008-09-22 12:31:49 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -975,6 +975,17 @@ getwline (int fd, wchar_t * lineptr, size_t n)
   return nchars;
 }
 
+/* report failure to get member from archive */
+static void
+archive_failure (const char *name)
+{
+  if (strlen (name) > 15)
+    error_msg (name, "names of archive members may not be "
+	       "longer then 15 characters");
+  else
+    error_msg (name, "not found in archive");
+}
+
 /* errors are silently ignored */
 static void
 handle_image_command (const wchar_t * s, int *stop)
@@ -1004,14 +1015,8 @@ handle_image_command (const wchar_t * s, int *stop)
 	  if (avt_get_status ())
 	    *stop = 1;
 	}
-      else			/* analyze possible error */
-	{
-	  if (strlen (filepath) > 15)
-	    error_msg (filepath, "names of archive members may not be "
-		       "longer then 15 characters");
-	  else
-	    error_msg (filepath, "not found in archive");
-	}
+      else
+	archive_failure (filepath);
     }
   else				/* not from_archive */
     {
@@ -1039,14 +1044,8 @@ handle_avatarimage_command (const wchar_t * s)
 	    warning_msg ("warning", avt_get_error ());
 	  free (img);
 	}
-      else			/* analyze possible error */
-	{
-	  if (strlen (filepath) > 15)
-	    error_msg (filepath, "names of archive members may not be "
-		       "longer then 15 characters");
-	  else
-	    error_msg (filepath, "not found in archive");
-	}
+      else
+	archive_failure (filepath);
     }
   else				/* not from_archive */
     {
@@ -1112,16 +1111,10 @@ handle_audio_command (const wchar_t * s)
 	  sound = avt_load_wave_data (buf, size);
 	  free (buf);
 	}
-      else			/* analyze possible error */
-	{
-	  if (strlen (filepath) > 15)
-	    error_msg (filepath, "names of archive members may not be "
-		       "longer then 15 characters");
-	  else
-	    error_msg (filepath, "not found in archive");
-	}
+      else
+	archive_failure (filepath);
     }
-  else /* not from_archive */
+  else				/* not from_archive */
     sound = avt_load_wave_file (filepath);
 
   if (sound == NULL)
@@ -2527,7 +2520,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.208 2008-09-22 12:01:54 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.209 2008-09-22 12:31:49 akf Exp $");
 
   return EXIT_SUCCESS;
 }
