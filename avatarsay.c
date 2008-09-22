@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.209 2008-09-22 12:31:49 akf Exp $ */
+/* $Id: avatarsay.c,v 2.210 2008-09-22 17:49:32 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -60,15 +60,7 @@
 #  define avtterm_nocolor(ignore)	/* empty */
 #endif
 
-/*
- * some weird systems needs O_BINARY, most others not
- * so I define a dummy value for sane systems
- */
-#ifndef O_BINARY
-#  define O_BINARY 0
-#endif
-
-/* therefore some weird systems don't know O_NONBLOCK */
+/* some systems don't know O_NONBLOCK */
 #ifndef O_NONBLOCK
 #  define O_NONBLOCK 0
 #endif
@@ -1545,11 +1537,11 @@ open_script (const char *fname)
     fd = STDIN_FILENO;		/* stdin */
   else				/* regular file */
     {
-      fd = open (fname, O_RDONLY | O_BINARY | O_NONBLOCK);
+      fd = arch_open (fname);
 
-      /* check, if it's an archive */
-      if (!arch_check_header (fd))
-	lseek (fd, 0, SEEK_SET);
+      /* if it's not an archive, open it as file */
+      if (fd < 0)
+	fd = open (fname, O_RDONLY | O_NONBLOCK);
       else			/* an archive */
 	{
 	  script_bytes_left = arch_first_member (fd, member_name);
@@ -1563,9 +1555,13 @@ open_script (const char *fname)
 		  from_archive = strdup (fname);
 		  script_bytes_left = multi_menu (fd);
 		}
+	      else		/* no known archive content */
+		{
+		  close (fd);
+		  fd = -1;
+		}
 	    }
-
-	  if (script_bytes_left <= 0)
+	  else			/* script_bytes_left <= 0 */
 	    {
 	      close (fd);
 	      fd = -1;
@@ -2520,7 +2516,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.209 2008-09-22 12:31:49 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.210 2008-09-22 17:49:32 akf Exp $");
 
   return EXIT_SUCCESS;
 }

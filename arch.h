@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: arch.h,v 2.1 2008-09-22 12:01:53 akf Exp $ */
+/* $Id: arch.h,v 2.2 2008-09-22 17:49:32 akf Exp $ */
 
 #ifndef ARCH_H
 #define ARCH_H 1
@@ -28,7 +28,11 @@
 #include <string.h>
 #include <fcntl.h>
 
-int arch_check_header (int fd);
+/*
+ * return file descriptor, if it's an archive
+ * or -1 on error
+ */
+int arch_open (const char *archive);
 
 /* 
  * finds a member in the archive 

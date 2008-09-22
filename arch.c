@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: arch.c,v 2.1 2008-09-22 12:01:53 akf Exp $ */
+/* $Id: arch.c,v 2.2 2008-09-22 17:49:32 akf Exp $ */
 
 #include "arch.h"
 
@@ -41,14 +41,31 @@ struct arch_member
   char magic[2];
 };
 
+/*
+ * return file descriptor, if it's an archive
+ * or -1 on error
+ */
 int
-arch_check_header (int fd)
+arch_open (const char *archive)
 {
+  int fd;
   char archive_magic[8];
 
+  fd = open (archive, O_RDONLY | O_BINARY);
+  if (fd < 0)
+    return -1;
+
   read (fd, &archive_magic, 8);
-  return (memcmp ("!<arch>\n", archive_magic, 8) == 0);
+
+  if (memcmp ("!<arch>\n", archive_magic, 8) != 0)
+    {
+      close (fd);
+      fd = -1;
+    }
+
+  return fd;
 }
+
 
 /* finds a member in the archive */
 /* returns size of the file, or 0 if not found or on error */
@@ -143,7 +160,7 @@ arch_first_member (int fd, char *member)
  */
 size_t
 arch_get_data (const char *archive, const char *member,
-  	       void **buf, size_t * size)
+	       void **buf, size_t * size)
 {
   int archive_fd;
 
@@ -153,13 +170,11 @@ arch_get_data (const char *archive, const char *member,
   *size = 0;
   *buf = NULL;
 
-  archive_fd = open (archive, O_RDONLY | O_BINARY);
+  archive_fd = arch_open (archive);
   if (archive_fd < 0)
     return 0;
 
-  if (arch_check_header (archive_fd))
-    *size = arch_find_member (archive_fd, member);
-
+  *size = arch_find_member (archive_fd, member);
   if (*size > 0)
     {
       *buf = (void *) malloc (*size);
