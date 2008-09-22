@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: arch.h,v 2.2 2008-09-22 17:49:32 akf Exp $ */
+/* $Id: arch.h,v 2.3 2008-09-22 18:38:17 akf Exp $ */
 
 #ifndef ARCH_H
 #define ARCH_H 1
@@ -36,13 +36,15 @@ int arch_open (const char *archive);
 
 /* 
  * finds a member in the archive 
+ * and leaves the fileposition at its start
  * the member name may not be longer than 15 characters 
- * returns size of the file, or 0 if not found 
+ * returns size of the member, or 0 if not found 
  */
 size_t arch_find_member (int fd, const char *member);
 
 /* 
  * finds first archive member
+ * and leaves the fileposition at its start
  * if member is not NULL it will get the name of the member
  * member must have at least 16 bytes
  * returns size of first member
