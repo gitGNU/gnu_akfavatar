@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: arch.h,v 2.4 2008-09-22 18:41:44 akf Exp $ */
+/* $Id: arch.h,v 2.5 2008-09-23 09:01:18 akf Exp $ */
 
 #ifndef ARCH_H
 #define ARCH_H 1
@@ -27,10 +27,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <fcntl.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
 
 /*
  * return file descriptor, if it's an archive
@@ -63,9 +59,5 @@ size_t arch_first_member (int fd, char *member);
  */
 size_t arch_get_data (const char *archive, const char *member,
    	              void **buf, size_t * size);
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* ARCH_H */
