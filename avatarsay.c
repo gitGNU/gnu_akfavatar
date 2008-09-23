@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.210 2008-09-22 17:49:32 akf Exp $ */
+/* $Id: avatarsay.c,v 2.211 2008-09-23 09:38:33 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2068,6 +2068,38 @@ create_file (const char *filename)
     }
 }
 
+/* warn if someone tries to edit an archive file */
+static avt_bool_t
+dont_edit_archive (const char *filename)
+{
+  int fd;
+
+  fd = arch_open (filename);
+  if (fd < 0)
+    return AVT_FALSE;
+
+  close (fd);
+  
+  avt_set_balloon_size (1, 35);
+  avt_clear ();
+  avt_set_text_delay (default_delay);
+
+  switch (language)
+    {
+    case DEUTSCH:
+      avt_say (L"Kann keine Archiv-Datei bearbeiten.");
+      break;
+
+    case ENGLISH:
+    default:
+      avt_say (L"Can not edit an archive file.");
+    }
+
+  avt_wait_button ();
+
+  return AVT_TRUE;
+}
+
 static void
 ask_edit_file (void)
 {
@@ -2090,6 +2122,8 @@ ask_edit_file (void)
     {
       if (access (filename, F_OK) != 0)
 	create_file (filename);
+      else if (dont_edit_archive (filename))
+	return;
 
       avt_set_balloon_size (0, 0);
       avt_clear ();
@@ -2516,7 +2550,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.210 2008-09-22 17:49:32 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.211 2008-09-23 09:38:33 akf Exp $");
 
   return EXIT_SUCCESS;
 }
