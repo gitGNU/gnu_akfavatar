@@ -3,6 +3,10 @@
 	* akfavatar.h, avatar.c (avt_credits, avt_credits_mb):
 	new functions
 
+	* avatarsay.c (handle_credits_command):
+	new function
+	(iscommand): adapted
+
 	* avatar.c (avt_drawchar):
 	new parameter: surface
 

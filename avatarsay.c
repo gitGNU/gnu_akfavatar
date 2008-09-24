@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.211 2008-09-23 09:38:33 akf Exp $ */
+/* $Id: avatarsay.c,v 2.212 2008-09-24 13:51:08 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1019,6 +1019,57 @@ handle_image_command (const wchar_t * s, int *stop)
 }
 
 static void
+handle_credits_command (const wchar_t * s, int *stop)
+{
+  char filepath[PATH_LENGTH];
+
+  get_data_file (s + 9, filepath);	/* remove "[credits " */
+
+  if (!initialized)
+    initialize ();
+  else
+    move_out ();
+
+  if (from_archive)
+    {
+      void *text;
+      size_t size = 0;
+
+      if (arch_get_data (from_archive, filepath, &text, &size))
+	{
+	  if (avt_credits_mb ((const char *) text, AVT_TRUE))
+	    *stop = 1;
+	  free (text);
+	}
+      else
+	archive_failure (filepath);
+    }
+  else				/* not from_archive */
+    {
+      char *text;
+      int fd;
+      size_t size = 10240;
+
+      text = (char *) malloc (size);
+
+      if (text != NULL)
+	{
+	  fd = open (filepath, O_RDONLY);
+	  if (fd >= 0)
+	    {
+	      if (read (fd, text, size) > 0)
+		{
+		  if (avt_credits_mb ((const char *) text, AVT_TRUE))
+		    *stop = 1;
+		}
+	      close (fd);
+	    }
+	  free (text);
+	}
+    }
+}
+
+static void
 handle_avatarimage_command (const wchar_t * s)
 {
   char filepath[PATH_LENGTH];
@@ -1360,6 +1411,13 @@ iscommand (wchar_t * s, int *stop)
       if (wcscmp (s, L"[read]") == 0)
 	{
 	  handle_read_command ();
+	  return AVT_TRUE;
+	}
+
+      /* show final credits */
+      if (wcsncmp (s, L"[credits ", 9) == 0)
+	{
+	  handle_credits_command (s, stop);
 	  return AVT_TRUE;
 	}
 
@@ -2079,7 +2137,7 @@ dont_edit_archive (const char *filename)
     return AVT_FALSE;
 
   close (fd);
-  
+
   avt_set_balloon_size (1, 35);
   avt_clear ();
   avt_set_text_delay (default_delay);
@@ -2550,7 +2608,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.211 2008-09-23 09:38:33 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.212 2008-09-24 13:51:08 akf Exp $");
 
   return EXIT_SUCCESS;
 }
