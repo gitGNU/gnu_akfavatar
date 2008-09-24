@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.165 2008-09-24 12:30:22 akf Exp $ */
+/* $Id: avatar.c,v 2.166 2008-09-24 16:34:01 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -3886,7 +3886,7 @@ avt_normal_text (void)
       colors[0].r = colors[0].g = colors[0].b = 0xFF;
       /* black foreground */
       colors[1].r = colors[1].g = colors[1].b = 0x00;
-      
+
       SDL_SetColors (avt_character, colors, 0, 2);
       text_background_color = SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF);
     }
@@ -3930,35 +3930,60 @@ avt_get_error (void)
   return SDL_GetError ();
 }
 
+
+#define CREDITDELAY 50
+
 /* scroll one line up */
 static void
 avt_credits_up (SDL_Surface * credit_screen)
 {
   SDL_Rect rest, clear;
-  int i;
+  Uint32 moved;
+  Uint32 now, next_time;
+  Uint32 pixel, tickinterval;
 
-  for (i = 0; i < LINEHEIGHT; i++)
+  moved = 0;
+  pixel = 1;
+  tickinterval = CREDITDELAY;
+  next_time = SDL_GetTicks () + tickinterval;
+
+  while (moved < LINEHEIGHT)
     {
       /* show screen */
       SDL_BlitSurface (credit_screen, NULL, screen, &window);
       SDL_UpdateRect (screen, window.x, window.y, window.w, window.h);
 
       rest.x = 0;
-      rest.y = 1;		/* one pixel up */
+      rest.y = pixel;		/* one pixel up */
       rest.w = window.w;
-      rest.h = window.h + LINEHEIGHT - 1;
+      rest.h = window.h + LINEHEIGHT - pixel;
       SDL_BlitSurface (credit_screen, &rest, credit_screen, NULL);
 
       clear.x = 0;
-      clear.y = window.h + LINEHEIGHT - 1;
+      clear.y = window.h + LINEHEIGHT - pixel;
       clear.w = window.w;
-      clear.h = 1;
+      clear.h = pixel;
       SDL_FillRect (credit_screen, &clear, 0);
-
-      SDL_Delay (10);
 
       if (avt_checkevent ())
 	return;
+
+      moved += pixel;
+      now = SDL_GetTicks ();
+
+      if (next_time > now)
+	SDL_Delay (next_time - now);
+      else
+	{
+	  /* move more pixels at once and give more time next time */
+	  if (pixel < LINEHEIGHT - moved)
+	    {
+	      pixel++;
+	      tickinterval += CREDITDELAY;
+	    }
+	}
+
+      next_time += tickinterval;
     }
 }
 
@@ -3969,26 +3994,31 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
   SDL_Surface *credit_screen;
   SDL_Color old_backgroundcolor;
   SDL_Color colors[2];
+  SDL_Rect old_window;
   const wchar_t *p;
   int i;
-  int length, xoffs;
+  int length;
 
   if (!screen)
     return _avt_STATUS;
 
-
   /* needed to handle resizing correctly */
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
 
-  /* store old background color */
+  /* store old background color and window */
   old_backgroundcolor = backgroundcolor_RGB;
+  old_window = window;
 
   /* switch clipping off */
   SDL_SetClipRect (screen, NULL);
-  
+
   /* fill the whole screen with black */
   SDL_FillRect (screen, NULL, 0);
   SDL_UpdateRect (screen, 0, 0, 0, 0);
+
+  window.x = (screen->w / 2) - (80 * FONTWIDTH / 2);
+  window.w = 80 * FONTWIDTH;
+  /* horizontal values unchanged */
 
   SDL_SetClipRect (screen, &window);
 
@@ -4011,8 +4041,6 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
   /* cursor at bottom - draws beneath visible part */
   cursor.y = window.h;
 
-  xoffs = (window.w / 2) - (80 * FONTWIDTH / 2);  
-
   /* show text */
   p = text;
   while (*p && _avt_STATUS == AVT_NORMAL)
@@ -4034,7 +4062,7 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
       if (centered)
 	cursor.x = (window.w / 2) - (length * FONTWIDTH / 2);
       else
-	cursor.x = xoffs;
+	cursor.x = 0;
 
       for (i = 0; i < length; i++, cursor.x += FONTWIDTH)
 	avt_drawchar (line[i], credit_screen);
@@ -4044,14 +4072,15 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
     }
 
   /* scroll up until screen is empty */
-  for (i = 0; i < window.h / LINEHEIGHT && _avt_STATUS == AVT_NORMAL; i++)
+  for (i = 0; i <= window.h / LINEHEIGHT && _avt_STATUS == AVT_NORMAL; i++)
     avt_credits_up (credit_screen);
 
   SDL_FreeSurface (credit_screen);
 
   /* restore old background color */
   backgroundcolor_RGB = old_backgroundcolor;
-  
+  window = old_window;
+
   /* back to normal (also sets variables!) */
   avt_clear_screen ();
 
@@ -4149,7 +4178,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.165 2008-09-24 12:30:22 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.166 2008-09-24 16:34:01 akf Exp $");
 
   /*
    * Initialize the display, accept any format
