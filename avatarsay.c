@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.212 2008-09-24 13:51:08 akf Exp $ */
+/* $Id: avatarsay.c,v 2.213 2008-09-24 14:20:42 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -411,11 +411,6 @@ move_out (void)
     {
       if (avt_move_out ())
 	exit (EXIT_SUCCESS);
-
-      /* if running in a loop, wait a while */
-      if (loop)
-	if (avt_wait (5000))
-	  exit (EXIT_SUCCESS);
     }
 
   moved_in = AVT_FALSE;
@@ -2601,14 +2596,21 @@ main (int argc, char *argv[])
 	run_script (argv[i]);
 
       if (initialized && !popup)
-	move_out ();
+	{
+	  move_out ();
+
+	  /* if running in a loop, wait a while */
+	  if (loop)
+	    if (avt_wait (5000))
+	      exit (EXIT_SUCCESS);
+	}
     }
   while (loop);
 
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.212 2008-09-24 13:51:08 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.213 2008-09-24 14:20:42 akf Exp $");
 
   return EXIT_SUCCESS;
 }
