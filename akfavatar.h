@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.72 2008-09-06 16:50:07 akf Exp $ */
+/* $Id: akfavatar.h,v 2.73 2008-09-24 12:30:22 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -509,6 +509,12 @@ int avt_move_in (void);
  * move the avatar out => empty screen
  */
 int avt_move_out (void);
+
+/*
+ * show final credits
+ */
+int avt_credits (const wchar_t *text, avt_bool_t centered);
+int avt_credits_mb (const char *text, avt_bool_t centered);
 
 /*
  * make a short sound, when audio is initialized

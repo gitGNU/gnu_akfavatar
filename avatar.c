@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.164 2008-09-14 12:51:09 akf Exp $ */
+/* $Id: avatar.c,v 2.165 2008-09-24 12:30:22 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1967,7 +1967,7 @@ avt_new_line (void)
 /* avt_drawchar: draws the raw char - with no interpretation */
 #if (FONTWIDTH > 8)
 static void
-avt_drawchar (wchar_t ch)
+avt_drawchar (wchar_t ch, SDL_Surface * surface)
 {
   extern const unsigned short *get_font_char (wchar_t ch);
   const unsigned short *font_line;
@@ -2025,13 +2025,13 @@ avt_drawchar (wchar_t ch)
 
   dest.x = cursor.x;
   dest.y = cursor.y;
-  SDL_BlitSurface (avt_character, NULL, screen, &dest);
+  SDL_BlitSurface (avt_character, NULL, surface, &dest);
 }
 
 #else /* FONTWIDTH <= 8 */
 
 static void
-avt_drawchar (wchar_t ch)
+avt_drawchar (wchar_t ch, SDL_Surface * surface)
 {
   extern const unsigned char *get_font_char (wchar_t ch);
   const unsigned char *font_line;
@@ -2089,7 +2089,7 @@ avt_drawchar (wchar_t ch)
 
   dest.x = cursor.x;
   dest.y = cursor.y;
-  SDL_BlitSurface (avt_character, NULL, screen, &dest);
+  SDL_BlitSurface (avt_character, NULL, surface, &dest);
 }
 
 #endif /* FONTWIDTH <= 8 */
@@ -2327,7 +2327,7 @@ avt_put_character (const wchar_t ch)
 	avt_clearchar ();
       else			/* underlined or inverse */
 	{
-	  avt_drawchar (' ');
+	  avt_drawchar (' ', screen);
 	  avt_showchar ();
 	}
       avt_forward ();
@@ -2342,7 +2342,7 @@ avt_put_character (const wchar_t ch)
 	{
 	  if (auto_margin)
 	    check_auto_margin ();
-	  avt_drawchar (ch);
+	  avt_drawchar (ch, screen);
 	  avt_showchar ();
 	  if (text_delay)
 	    avt_wait (text_delay);
@@ -2970,7 +2970,7 @@ avt_ask (wchar_t * s, const int size)
 	      s[len] = ch;
 	      len++;
 	      s[len] = L'\0';
-	      avt_drawchar (ch);
+	      avt_drawchar (ch, screen);
 	      avt_showchar ();
 	      cursor.x =
 		(textdir_rtl) ? cursor.x - FONTWIDTH : cursor.x + FONTWIDTH;
@@ -3303,9 +3303,7 @@ avt_wait_key (const wchar_t * message)
       /* background-color */
       colors[0] = backgroundcolor_RGB;
       /* black foreground */
-      colors[1].r = 0x00;
-      colors[1].g = 0x00;
-      colors[1].b = 0x00;
+      colors[1].r = colors[1].g = colors[1].b = 0x00;
       SDL_SetColors (avt_character, colors, 0, 2);
 
       /* alignment: right with one letter space to the border */
@@ -3324,7 +3322,7 @@ avt_wait_key (const wchar_t * message)
       m = message;
       while (*m)
 	{
-	  avt_drawchar (*m);
+	  avt_drawchar (*m, screen);
 	  cursor.x += FONTWIDTH;
 	  if (cursor.x > window.x + window.w + FONTWIDTH)
 	    break;
@@ -3885,13 +3883,10 @@ avt_normal_text (void)
       SDL_Color colors[2];
 
       /* white background */
-      colors[0].r = 0xFF;
-      colors[0].g = 0xFF;
-      colors[0].b = 0xFF;
+      colors[0].r = colors[0].g = colors[0].b = 0xFF;
       /* black foreground */
-      colors[1].r = 0x00;
-      colors[1].g = 0x00;
-      colors[1].b = 0x00;
+      colors[1].r = colors[1].g = colors[1].b = 0x00;
+      
       SDL_SetColors (avt_character, colors, 0, 2);
       text_background_color = SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF);
     }
@@ -3933,6 +3928,153 @@ char *
 avt_get_error (void)
 {
   return SDL_GetError ();
+}
+
+/* scroll one line up */
+static void
+avt_credits_up (SDL_Surface * credit_screen)
+{
+  SDL_Rect rest, clear;
+  int i;
+
+  for (i = 0; i < LINEHEIGHT; i++)
+    {
+      /* show screen */
+      SDL_BlitSurface (credit_screen, NULL, screen, &window);
+      SDL_UpdateRect (screen, window.x, window.y, window.w, window.h);
+
+      rest.x = 0;
+      rest.y = 1;		/* one pixel up */
+      rest.w = window.w;
+      rest.h = window.h + LINEHEIGHT - 1;
+      SDL_BlitSurface (credit_screen, &rest, credit_screen, NULL);
+
+      clear.x = 0;
+      clear.y = window.h + LINEHEIGHT - 1;
+      clear.w = window.w;
+      clear.h = 1;
+      SDL_FillRect (credit_screen, &clear, 0);
+
+      SDL_Delay (10);
+
+      if (avt_checkevent ())
+	return;
+    }
+}
+
+int
+avt_credits (const wchar_t * text, avt_bool_t centered)
+{
+  wchar_t line[80];
+  SDL_Surface *credit_screen;
+  SDL_Color old_backgroundcolor;
+  SDL_Color colors[2];
+  const wchar_t *p;
+  int i;
+  int length, xoffs;
+
+  if (!screen)
+    return _avt_STATUS;
+
+
+  /* needed to handle resizing correctly */
+  textfield.x = textfield.y = textfield.w = textfield.h = -1;
+
+  /* store old background color */
+  old_backgroundcolor = backgroundcolor_RGB;
+
+  /* switch clipping off */
+  SDL_SetClipRect (screen, NULL);
+  
+  /* fill the whole screen with black */
+  SDL_FillRect (screen, NULL, 0);
+  SDL_UpdateRect (screen, 0, 0, 0, 0);
+
+  SDL_SetClipRect (screen, &window);
+
+  /* screen is one line larger */
+  credit_screen =
+    SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_RLEACCEL,
+			  window.w, window.h + LINEHEIGHT, 8, 0, 0, 0, 0);
+
+  if (!credit_screen)
+    return AVT_ERROR;
+
+  colors[0].r = colors[0].g = colors[0].b = 0x00;
+  colors[1].r = colors[1].g = colors[1].b = 0xFF;
+  SDL_SetColors (credit_screen, colors, 0, 2);
+  SDL_SetColors (avt_character, colors, 0, 2);
+
+  /* the background-color is used when the window is resized */
+  backgroundcolor_RGB = colors[0];
+
+  /* cursor at bottom - draws beneath visible part */
+  cursor.y = window.h;
+
+  xoffs = (window.w / 2) - (80 * FONTWIDTH / 2);  
+
+  /* show text */
+  p = text;
+  while (*p && _avt_STATUS == AVT_NORMAL)
+    {
+      /* get line */
+      length = 0;
+      while (*p && *p != L'\n')
+	{
+	  if (*p >= L' ' && length < 80)
+	    {
+	      line[length] = *p;
+	      length++;
+	    }
+
+	  p++;
+	}
+
+      /* draw line */
+      if (centered)
+	cursor.x = (window.w / 2) - (length * FONTWIDTH / 2);
+      else
+	cursor.x = xoffs;
+
+      for (i = 0; i < length; i++, cursor.x += FONTWIDTH)
+	avt_drawchar (line[i], credit_screen);
+
+      avt_credits_up (credit_screen);
+      p++;
+    }
+
+  /* scroll up until screen is empty */
+  for (i = 0; i < window.h / LINEHEIGHT && _avt_STATUS == AVT_NORMAL; i++)
+    avt_credits_up (credit_screen);
+
+  SDL_FreeSurface (credit_screen);
+
+  /* restore old background color */
+  backgroundcolor_RGB = old_backgroundcolor;
+  
+  /* back to normal (also sets variables!) */
+  avt_clear_screen ();
+
+  return _avt_STATUS;
+}
+
+int
+avt_credits_mb (const char *txt, avt_bool_t centered)
+{
+  wchar_t *wctext;
+
+  if (screen)
+    {
+      avt_mb_decode (&wctext, txt, SDL_strlen (txt) + 1);
+
+      if (wctext)
+	{
+	  avt_credits (wctext, centered);
+	  SDL_free (wctext);
+	}
+    }
+
+  return _avt_STATUS;
 }
 
 void
@@ -4007,7 +4149,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.164 2008-09-14 12:51:09 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.165 2008-09-24 12:30:22 akf Exp $");
 
   /*
    * Initialize the display, accept any format

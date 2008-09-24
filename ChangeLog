@@ -1,3 +1,11 @@
+2008-09-24  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_credits, avt_credits_mb):
+	new functions
+
+	* avatar.c (avt_drawchar):
+	new parameter: surface
+
 2008-09-23  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (dont_edit_archive):
