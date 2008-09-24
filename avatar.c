@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.167 2008-09-24 16:49:02 akf Exp $ */
+/* $Id: avatar.c,v 2.168 2008-09-24 17:37:08 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -3994,7 +3994,6 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
   SDL_Surface *credit_screen;
   SDL_Color old_backgroundcolor;
   SDL_Color colors[2];
-  SDL_Rect old_window;
   const wchar_t *p;
   int i;
   int length;
@@ -4005,9 +4004,8 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
   /* needed to handle resizing correctly */
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
 
-  /* store old background color and window */
+  /* store old background color */
   old_backgroundcolor = backgroundcolor_RGB;
-  old_window = window;
 
   /* switch clipping off */
   SDL_SetClipRect (screen, NULL);
@@ -4079,7 +4077,11 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
 
   /* restore old background color */
   backgroundcolor_RGB = old_backgroundcolor;
-  window = old_window;
+  
+  window.w = MINIMALWIDTH;
+  window.h = MINIMALHEIGHT;
+  window.x = screen->w > window.w ? (screen->w / 2) - (window.w / 2) : 0;
+  window.y = screen->h > window.h ? (screen->h / 2) - (window.h / 2) : 0;
 
   /* back to normal (also sets variables!) */
   avt_normal_text ();
@@ -4179,7 +4181,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.167 2008-09-24 16:49:02 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.168 2008-09-24 17:37:08 akf Exp $");
 
   /*
    * Initialize the display, accept any format
