@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.213 2008-09-24 14:20:42 akf Exp $ */
+/* $Id: avatarsay.c,v 2.214 2008-09-25 13:49:13 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -983,7 +983,7 @@ handle_image_command (const wchar_t * s, int *stop)
 
   if (!initialized)
     initialize ();
-  else if (avt_wait (2500))
+  else if (avt_wait (AVT_DEFAULT_FLIP_PAGE_DELAY))
     {
       *stop = 1;
       return;
@@ -1023,7 +1023,14 @@ handle_credits_command (const wchar_t * s, int *stop)
   if (!initialized)
     initialize ();
   else
-    move_out ();
+    {
+      if (avt_wait (AVT_DEFAULT_FLIP_PAGE_DELAY))
+	{
+	  *stop = 1;
+	  return;
+	}
+      move_out ();
+    }
 
   if (from_archive)
     {
@@ -1349,7 +1356,7 @@ iscommand (wchar_t * s, int *stop)
 	{
 	  if (!initialized)
 	    initialize ();
-	  else if (avt_wait (2700))
+	  else if (avt_wait (AVT_DEFAULT_FLIP_PAGE_DELAY))
 	    *stop = 1;
 
 	  avt_show_avatar ();
@@ -1388,7 +1395,7 @@ iscommand (wchar_t * s, int *stop)
       if (wcscmp (s, L"[effectpause]") == 0)
 	{
 	  if (initialized)
-	    if (avt_wait (2500))
+	    if (avt_wait (AVT_DEFAULT_FLIP_PAGE_DELAY))
 	      *stop = 1;
 	  return AVT_TRUE;
 	}
@@ -2610,7 +2617,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.213 2008-09-24 14:20:42 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.214 2008-09-25 13:49:13 akf Exp $");
 
   return EXIT_SUCCESS;
 }
