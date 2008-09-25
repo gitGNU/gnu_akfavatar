@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.168 2008-09-24 17:37:08 akf Exp $ */
+/* $Id: avatar.c,v 2.169 2008-09-25 09:31:27 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -3993,7 +3993,6 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
   wchar_t line[80];
   SDL_Surface *credit_screen;
   SDL_Color old_backgroundcolor;
-  SDL_Color colors[2];
   const wchar_t *p;
   int i;
   int length;
@@ -4001,18 +4000,18 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
   if (!screen)
     return _avt_STATUS;
 
-  /* needed to handle resizing correctly */
-  textfield.x = textfield.y = textfield.w = textfield.h = -1;
-
   /* store old background color */
   old_backgroundcolor = backgroundcolor_RGB;
 
-  /* switch clipping off */
-  SDL_SetClipRect (screen, NULL);
+  /* needed to handle resizing correctly */
+  textfield.x = textfield.y = textfield.w = textfield.h = -1;
+  avt_visible = AVT_FALSE;
 
-  /* fill the whole screen with black */
-  SDL_FillRect (screen, NULL, 0);
-  SDL_UpdateRect (screen, 0, 0, 0, 0);
+  /* the background-color is used when the window is resized */
+  /* this implicitly also clears the screen */
+  avt_set_background_color (0, 0, 0);
+  avt_set_text_background_color (0, 0, 0);
+  avt_set_text_color (0xff, 0xff, 0xff);
 
   window.x = (screen->w / 2) - (80 * FONTWIDTH / 2);
   window.w = 80 * FONTWIDTH;
@@ -4020,21 +4019,17 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
 
   SDL_SetClipRect (screen, &window);
 
-  /* screen is one line larger */
+  /* credit_screen is one line larger */
   credit_screen =
     SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_RLEACCEL,
-			  window.w, window.h + LINEHEIGHT, 8, 0, 0, 0, 0);
+			  window.w, window.h + LINEHEIGHT,
+			  screen->format->BitsPerPixel,
+			  screen->format->Rmask,
+			  screen->format->Gmask,
+			  screen->format->Bmask, screen->format->Amask);
 
   if (!credit_screen)
     return AVT_ERROR;
-
-  colors[0].r = colors[0].g = colors[0].b = 0x00;
-  colors[1].r = colors[1].g = colors[1].b = 0xFF;
-  SDL_SetColors (credit_screen, colors, 0, 2);
-  SDL_SetColors (avt_character, colors, 0, 2);
-
-  /* the background-color is used when the window is resized */
-  backgroundcolor_RGB = colors[0];
 
   /* cursor at bottom - draws beneath visible part */
   cursor.y = window.h;
@@ -4077,7 +4072,7 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
 
   /* restore old background color */
   backgroundcolor_RGB = old_backgroundcolor;
-  
+
   window.w = MINIMALWIDTH;
   window.h = MINIMALHEIGHT;
   window.x = screen->w > window.w ? (screen->w / 2) - (window.w / 2) : 0;
@@ -4181,7 +4176,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.168 2008-09-24 17:37:08 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.169 2008-09-25 09:31:27 akf Exp $");
 
   /*
    * Initialize the display, accept any format
