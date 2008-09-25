@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: arch.c,v 2.2 2008-09-22 17:49:32 akf Exp $ */
+/* $Id: arch.c,v 2.3 2008-09-25 15:15:05 akf Exp $ */
 
 #include "arch.h"
 
@@ -156,6 +156,7 @@ arch_first_member (int fd, char *member)
 /* 
  * read in whole member of a named archive
  * the buffer is allocated with malloc and must be freed by the caller
+ * the buffer gets some binary zeros added, so it can be used as string
  * returns size or 0 on error 
  */
 size_t
@@ -177,9 +178,14 @@ arch_get_data (const char *archive, const char *member,
   *size = arch_find_member (archive_fd, member);
   if (*size > 0)
     {
-      *buf = (void *) malloc (*size);
+      /* we add 4 0-Bytes as possible string-terminator */
+      *buf = (void *) malloc (*size + 4);
+      
       if (*buf != NULL)
-	read (archive_fd, *buf, *size);
+        {
+	  read (archive_fd, *buf, *size);
+	  memset (buf + (*size), 0, 4);
+	}
       else
 	*size = 0;
     }

@@ -1,3 +1,8 @@
+2008-09-25  Andreas K. Foerster  <info@akfoerster.de>
+
+	* arch.c (arch_get_data):
+	add 4 bytes zero at the end of the buffer
+	
 2008-09-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (move_out, main):

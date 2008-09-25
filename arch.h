@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: arch.h,v 2.5 2008-09-23 09:01:18 akf Exp $ */
+/* $Id: arch.h,v 2.6 2008-09-25 15:15:06 akf Exp $ */
 
 #ifndef ARCH_H
 #define ARCH_H 1
@@ -55,6 +55,7 @@ size_t arch_first_member (int fd, char *member);
  * read in whole member of a named archive
  * the member name may not be longer than 15 characters 
  * the buffer is allocated with malloc and must be freed by the caller
+ * the buffer gets some binary zeros added, so it can be used as string
  * returns size or 0 on error 
  */
 size_t arch_get_data (const char *archive, const char *member,
