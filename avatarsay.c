@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.216 2008-09-27 14:27:45 akf Exp $ */
+/* $Id: avatarsay.c,v 2.217 2008-09-27 14:35:13 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1037,16 +1037,19 @@ handle_credits_command (const wchar_t * s, int *stop)
       char *text;
       int fd;
       size_t size = 10240;
+      ssize_t nread;
 
-      text = (char *) malloc (size);
+      text = (char *) malloc (size + 1);
 
       if (text != NULL)
 	{
 	  fd = open (filepath, O_RDONLY);
 	  if (fd >= 0)
 	    {
-	      if (read (fd, text, size) > 0)
+	      nread = read (fd, text, size);
+	      if (nread > 0)
 		{
+		  *(text + nread) = '\0';
 		  if (avt_credits_mb ((const char *) text, AVT_TRUE))
 		    *stop = 1;
 		}
@@ -2576,7 +2579,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.216 2008-09-27 14:27:45 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.217 2008-09-27 14:35:13 akf Exp $");
 
   return EXIT_SUCCESS;
 }
