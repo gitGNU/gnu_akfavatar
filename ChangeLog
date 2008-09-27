@@ -1,3 +1,13 @@
+2008-09-27  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (get_data_file, iscommand):
+	command datadir not allowed in scriptfiles anymore
+
+	* avatarsay.c (create_file):
+	adapted to new syntax
+
+	* avatarsay.c (get_program_path): removed
+
 2008-09-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* arch.c (arch_get_data):

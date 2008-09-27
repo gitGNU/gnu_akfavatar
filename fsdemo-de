@@ -1,14 +1,8 @@
-#! ./avatarsay
-
 [encoding UTF-8]
 [backgroundcolor #BBBB88]
 
-#[datadir /home/akf/Bilder]
-# datadir - wo sich die Medien-Dateien befinden
-# Kann auch über die Umgebungsvariable AVATARDATADIR gesetzt werden
-
 #[avatarimage human-peasant.bmp]
-# avatarimage - welches Bild als Avatar verwendet wwerden soll 
+# avatarimage - welches Bild als Avatar verwendet werden soll 
 # muss vor dem auszugebenden Text angegeben werden!
 # Kann auch über die Umgebungsvariable AVATARIMAGE gesetzt werden
 # (mit vollständiger Pfadangabe)

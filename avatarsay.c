@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.215 2008-09-25 21:36:56 akf Exp $ */
+/* $Id: avatarsay.c,v 2.216 2008-09-27 14:27:45 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -693,34 +693,19 @@ checkenvironment (void)
     use_avatar_image (e);
 }
 
-/* fills filepath with datadir and the converted content of fn */
+/* fills filepath with the converted content of fn */
+/* (datadir no longer supported here!) */
 static void
 get_data_file (const wchar_t * fn, char filepath[])
 {
-  size_t result, filepath_len;
+  size_t result;
   char *e;
-
-  if (from_archive)
-    {
-      filepath[0] = '\0';
-      filepath_len = 0;
-    }
-  else				/* not from_archive */
-    {
-      strcpy (filepath, datadir);
-
-      if (filepath[0] != '\0')
-	strcat (filepath, "/");
-
-      filepath_len = strlen (filepath);
-    }
 
   /* remove leading whitespace */
   while (*fn == L' ' || *fn == L'\t')
     fn++;
 
-  result =
-    wcstombs (&filepath[filepath_len], fn, PATH_LENGTH - filepath_len - 1);
+  result = wcstombs (filepath, fn, PATH_LENGTH - 1);
 
   if (result == (size_t) (-1))
     error_msg ("wcstombs", strerror (errno));
@@ -1260,12 +1245,10 @@ iscommand (wchar_t * s, int *stop)
     {
       strip (&s);
 
-      /* new datadir */
+      /* new datadir (deprecated) */
       if (wcsncmp (s, L"[datadir ", 9) == 0)
 	{
-	  if (wcstombs ((char *) &datadir, s + 9, sizeof (datadir))
-	      == (size_t) (-1))
-	    warning_msg ("[datadir]", strerror (errno));
+          warning_msg ("[datadir]", "no longer supported in scripts");
 	  return AVT_TRUE;
 	}
 
@@ -2075,19 +2058,6 @@ edit_file (const char *name)
     process_subprogram (fd);
 }
 
-static char *
-get_program_path (void)
-{
-  char *p;
-
-  p = (char *) malloc (strlen (PREFIX) + 1 + strlen (program_name) + 1);
-  strcpy (p, PREFIX);
-  strcat (p, "/");
-  strcat (p, program_name);
-
-  return p;
-}
-
 #endif /* not Windows or ReactOS */
 
 static void
@@ -2099,23 +2069,11 @@ create_file (const char *filename)
 
   if (f)
     {
-#ifndef __WIN32__
-      /* include #! line */
-      {
-	char *p = get_program_path ();
-	fprintf (f, "#! %s\n\n", p);
-	free (p);
-      }
-#endif
-
       if (default_encoding[0] != '\0')
-	fprintf (f, ".encoding %s\n", default_encoding);
-
-      if (datadir[0] != '\0')
-	fprintf (f, ".datadir %s\n", datadir);
+	fprintf (f, "[encoding %s]\n", default_encoding);
 
       if (avt_image_name)
-	fprintf (f, ".avatarimage %s\n", avt_image_name);
+	fprintf (f, "[avatarimage %s]\n", avt_image_name);
 
       fputs ("\n# Text:\n", f);
 
@@ -2618,7 +2576,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.215 2008-09-25 21:36:56 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.216 2008-09-27 14:27:45 akf Exp $");
 
   return EXIT_SUCCESS;
 }
