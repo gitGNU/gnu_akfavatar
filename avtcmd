@@ -1,5 +1,25 @@
 #!/bin/sh
 
+#########################################################################
+# tool to send commands to avatarsay
+# Copyright (c) 2008 Andreas K. Foerster <info@akfoerster.de>
+#
+# This file is part of AKFAvatar
+#
+# AKFAvatar is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# AKFAvatar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
+#########################################################################
+
 VERSION=1
 
 help()
@@ -15,6 +35,19 @@ Options:
  -h, --help       show this help
  -v, --version    show version information
  -s, --sync       synchronize the working directory with avatarsay
+
+Note: 
+  This is meant for interactive use only. If you write your own 
+  shell-scripts or programs, it is much better to use the 
+  escape-sequences directly.
+
+Examples:
+ avtcmd size 3, 40             sets the size to 3 lines, 40 rows.
+ avtcmd size 0, 0              sets the maximum size again
+ avtcmd -s audio sound1.wav    plays an audio file from the current directory
+ avtcmd -s avatarimage me.png  changes the avatar-image
+
+Report bugs to <bug-akfavatar@akfoerster.de>
 EOF
 
 exit 0
@@ -43,7 +76,7 @@ avatar_command()
 }
 
 case "$1" in
-  -h | --help) help ;;
+  -h | --help | "") help ;;
   -v | --version) version ;;
   -s | --sync) avatar_command datadir `pwd`; shift ;;
 esac
