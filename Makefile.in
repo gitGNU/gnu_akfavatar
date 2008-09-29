@@ -148,6 +148,7 @@ install: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info ins
 	$(INSTALL_PROGRAM) avatarsay-d $(DESTDIR)$(bindir)/avatarsay
 	$(INSTALL_PROGRAM) $(srcdir)/avtman $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/gnome-akfavatar $(DESTDIR)$(bindir)
+	$(INSTALL_PROGRAM) $(srcdir)/avtcmd $(DESTDIR)$(bindir)
 
 install-strip: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info install-man
 	$(INSTALL_DATA) $(srcdir)/akfavatar.h $(DESTDIR)$(includedir)
@@ -160,6 +161,7 @@ install-strip: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-in
 	$(INSTALL_PROGRAM) -s avatarsay-d $(DESTDIR)$(bindir)/avatarsay
 	$(INSTALL_PROGRAM) $(srcdir)/avtman $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/gnome-akfavatar $(DESTDIR)$(bindir)
+	$(INSTALL_PROGRAM) $(srcdir)/avtcmd $(DESTDIR)$(bindir)
 
 uninstall: uninstall-info uninstall-man
 	-rm -f $(includedir)/akfavatar.h
@@ -194,9 +196,11 @@ uninstall-info:
 
 install-man: man
 	-$(INSTALL_DATA) $(srcdir)/doc/avatarsay.1 $(DESTDIR)$(mandir)/man1
+	-$(INSTALL_DATA) $(srcdir)/doc/avtcmd.1 $(DESTDIR)$(mandir)/man1
 
 uninstall-man:
-	-rm -f $(DESTDIR)$(mandir)/man1/avatarsay.1
+	-rm -f $(DESTDIR)$(mandir)/man1/avatarsay.1 
+	-rm -f $(DESTDIR)$(mandir)/man1/avtcmd.1
 
 txt:
 	$(MAKE) -C $(srcdir)/doc txt
@@ -281,7 +285,7 @@ dist: info html man distclean
 	   avtccio.c avtcwio.c avtcio.h avtfilechooser.c \
 	   balloonpointer.c circle.c regicon.c gnu-head.bmp keybtn.bmp \
 	   avatarsay.c avtterm.h avtterm.c avtmsg.h avtmsg.c \
-	   avtman example.c fsdemo-?? \
+	   avtman avtcmd example.c fsdemo-?? \
 	   gnome-akfavatar bdfread.pas \
 	   gnu-small.bmp akfavatar.xpm bin2c.c \
 	   ucsfont7x14.c ucsfont4x6.c ucsfont9x18.c font.c \
@@ -295,7 +299,7 @@ dist: info html man distclean
 	   $(PKGNAME)/pascal/
 	
 	mkdir $(PKGNAME)/doc
-	ln doc/README doc/Makefile doc/avatarsay.1 \
+	ln doc/README doc/Makefile doc/avatarsay.1 doc/avtcmd.1 \
 	   doc/akfavatar.h doc/pasref.txt \
 	   doc/akfavatar-en.texinfo doc/akfavatar-en.info \
 	   doc/akfavatar-en.html \
@@ -329,6 +333,7 @@ dist-bin: avatarsay multiply multiplizieren info html
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/avtman \
 	   $(srcdir)/fsdemo-?? \
 	   $(srcdir)/gnome-akfavatar \
+	   $(srcdir)/avtcmd \
 	   $(BINPKGNAME)/
 	ln $(srcdir)/doc/akfavatar-??.html $(BINPKGNAME)/
 	ln $(srcdir)/doc/akfavatar-??.info $(BINPKGNAME)/

@@ -76,10 +76,13 @@ docbook: akfavatar-en.texinfo akfavatar-de.texinfo pasref.txt akfavatar.h
 	-$(MAKEINFO) --docbook akfavatar-en.texinfo
 	-$(MAKEINFO) --docbook akfavatar-de.texinfo
 
-man: avatarsay.1
+man: avatarsay.1 avtcmd.1
 
 avatarsay.1: ../avatarsay.c
 	-help2man --info-page=akfavatar-en -o avatarsay.1 avatarsay
+
+avtcmd.1: ../avtcmd
+	-help2man --info-page=akfavatar-en -o avtcmd.1 avtcmd
 
 clean:
 	-rm -f *~

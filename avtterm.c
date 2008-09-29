@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.15 2008-09-16 07:18:46 akf Exp $ */
+/* $Id: avtterm.c,v 2.16 2008-09-29 11:49:07 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -105,6 +105,11 @@ static const wchar_t vt100trans[] = {
   0x251C, 0x2524, 0x2534, 0x252C, 0x2502,
   0x2264, 0x2265, 0x03C0, 0x2260, 0x00A3, 0x00B7
 };
+
+/* defined in avatarsay.c */
+/* used in APC_command */
+extern void avatar_command (wchar_t * s, int *stop);
+
 
 static void
 set_encoding (const char *encoding)
@@ -1112,13 +1117,13 @@ CSI_sequence (int fd, wchar_t last_character)
 }
 
 /* APC: Application Program Command */
-/* APC codes will most probably be used in later versions */
 static void
 APC_sequence (int fd)
 {
   wchar_t ch, old;
   wchar_t command[1024];
   unsigned int p;
+  int ignore;
 
   p = 0;
   ch = old = L'\0';
@@ -1135,7 +1140,7 @@ APC_sequence (int fd)
 
   command[p] = L'\0';
   
-  /* TODO: actually support APC */
+  avatar_command (command, &ignore);
 }
 
 /*

@@ -1,0 +1,54 @@
+#!/bin/sh
+
+VERSION=1
+
+help()
+{
+cat <<EOF
+Usage: avtcmd [options] avatarsay-command
+
+The program sends commands to avatarsay (AKFAvatar).
+
+It must be called from avatarsay.
+
+Options:
+ -h, --help       show this help
+ -v, --version    show version information
+ -s, --sync       synchronize the working directory with avatarsay
+EOF
+
+exit 0
+}
+
+version()
+{
+  echo "avtcmd version: $VERSION"
+  if [ -n "$AKFAVTTERM" ]
+  then
+    echo "AKFAvatar version: $AKFAVTTERM"
+  fi
+  
+  exit 0
+}
+
+avatar_command()
+{
+  if [ -n "$AKFAVTTERM" ]
+  then
+    printf "\033_%s\033\\" "$*"
+  else
+    echo "error: must be called from avatarsay" >&2
+    exit 1
+  fi
+}
+
+case "$1" in
+  -h | --help) help ;;
+  -v | --version) version ;;
+  -s | --sync) avatar_command datadir `pwd`; shift ;;
+esac
+
+[ $# -ge 1 ] && avatar_command "$*"
+
+exit 0
+

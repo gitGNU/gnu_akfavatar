@@ -1,3 +1,10 @@
+2008-09-29  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (avatar_command): new function
+	(iscommand): adapted
+	avtterm.c (APC_sequence): use avatar_command
+	avtcmd: new script
+
 2008-09-27  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (get_data_file, iscommand):
