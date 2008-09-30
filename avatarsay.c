@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.219 2008-09-30 16:38:54 akf Exp $ */
+/* $Id: avatarsay.c,v 2.220 2008-09-30 20:27:03 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1111,7 +1111,7 @@ handle_backgoundcolor_command (const wchar_t * s)
 }
 
 static void
-handle_audio_command (const wchar_t * s)
+handle_audio_command (const wchar_t * s, avt_bool_t do_loop)
 {
   char filepath[PATH_LENGTH];
   size_t size = 0;
@@ -1153,7 +1153,7 @@ handle_audio_command (const wchar_t * s)
       return;
     }
 
-  if (avt_play_audio (sound, AVT_FALSE))
+  if (avt_play_audio (sound, do_loop))
     notice_msg ("can not play audio data", avt_get_error ());
 }
 
@@ -1342,7 +1342,14 @@ avatar_command (wchar_t * s, int *stop)
   /* play sound */
   if (wcsncmp (s, L"audio ", 6) == 0)
     {
-      handle_audio_command (s + 6);
+      handle_audio_command (s + 6, AVT_FALSE);
+      return;
+    }
+
+  /* play sound in a loop */
+  if (wcsncmp (s, L"audioloop ", 10) == 0)
+    {
+      handle_audio_command (s + 10, AVT_TRUE);
       return;
     }
 
@@ -2612,7 +2619,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.219 2008-09-30 16:38:54 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.220 2008-09-30 20:27:03 akf Exp $");
 
   return EXIT_SUCCESS;
 }

@@ -5,7 +5,7 @@
 	(menu): stop audio if it's still running
 
 	* avatarsay (avatar_command):
-	new command: stopaudio
+	new commands: audioloop, stopaudio
 
 2008-09-29  Andreas K. Foerster  <info@akfoerster.de>
 
