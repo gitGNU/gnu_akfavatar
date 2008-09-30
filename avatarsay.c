@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.218 2008-09-29 11:49:07 akf Exp $ */
+/* $Id: avatarsay.c,v 2.219 2008-09-30 16:38:54 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1127,6 +1127,7 @@ handle_audio_command (const wchar_t * s)
 
   if (sound)
     {
+      avt_stop_audio ();
       avt_free_audio (sound);
       sound = NULL;
     }
@@ -1148,12 +1149,12 @@ handle_audio_command (const wchar_t * s)
 
   if (sound == NULL)
     {
-      notice_msg ("can not load audio file", avt_get_error ());
+      notice_msg ("can not load audio data", avt_get_error ());
       return;
     }
 
   if (avt_play_audio (sound, AVT_FALSE))
-    notice_msg ("can not play audio file", avt_get_error ());
+    notice_msg ("can not play audio data", avt_get_error ());
 }
 
 static void
@@ -1342,6 +1343,13 @@ avatar_command (wchar_t * s, int *stop)
   if (wcsncmp (s, L"audio ", 6) == 0)
     {
       handle_audio_command (s + 6);
+      return;
+    }
+
+  /* stop sound */
+  if (wcscmp (s, L"stopaudio") == 0)
+    {
+      avt_stop_audio ();
       return;
     }
 
@@ -2345,6 +2353,13 @@ menu (void)
 	  avt_bell ();
 	  break;
 	}
+
+      if (sound)
+	{
+	  avt_stop_audio ();
+	  avt_free_audio (sound);
+	  sound = NULL;
+	}
     }
 }
 
@@ -2597,7 +2612,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.218 2008-09-29 11:49:07 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.219 2008-09-30 16:38:54 akf Exp $");
 
   return EXIT_SUCCESS;
 }

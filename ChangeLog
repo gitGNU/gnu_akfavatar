@@ -1,3 +1,12 @@
+2008-09-30  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay (handle_audio_command):
+	fix: stop audio before freeing it
+	(menu): stop audio if it's still running
+
+	* avatarsay (avatar_command):
+	new command: stopaudio
+
 2008-09-29  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (avatar_command): new function
