@@ -3,6 +3,9 @@
 	* avatarsay (avatar_command):
 	allow "size", "height" and "width" with no parameters
 
+	* avatarsay (avatar_command):
+	new commands: wait, move in, move out
+
 2008-09-30  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay (handle_audio_command):
