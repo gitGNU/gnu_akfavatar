@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.73 2008-09-24 12:30:22 akf Exp $ */
+/* $Id: akfavatar.h,v 2.74 2008-10-01 08:15:22 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -134,7 +134,9 @@ typedef void (*avt_mousehandler) (int button, avt_bool_t pressed,
  * the image may be NULL if no avatar should be shown
  */
 int avt_initialize (const char *title,
-		    const char *icontitle, avt_image_t * image, int mode);
+		    const char *icontitle, 
+		    avt_image_t * image, 
+		    int mode);
 
 /*
  * quit the avatar system
