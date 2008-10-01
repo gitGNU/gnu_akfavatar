@@ -16,21 +16,19 @@ cat <<EOF
 Usage: avtcmd [options] avatarsay-command
 
 The program sends commands to avatarsay (AKFAvatar).
-
 It must be called from avatarsay.
+
+This is meant for interactive use only. If you write your own 
+shell-scripts or programs, it is much better to use the 
+escape-sequences directly.
 
 Options:
  -h, --help       show this help
  -v, --version    show version information
  -s, --sync       synchronize the working directory with avatarsay
 
-Note: 
-  This is meant for interactive use only. If you write your own 
-  shell-scripts or programs, it is much better to use the 
-  escape-sequences directly.
-
 Examples:
- avtcmd size 4, 40             sets the size to 4 lines, 40 rows.
+ avtcmd size 4, 40             sets the size to 4 lines, 40 columns
  avtcmd size                   sets the maximum size again
  avtcmd -s avatarimage me.png  changes the avatar-image
  avtcmd -s audio sound1.wav    plays an audio file from the current directory
