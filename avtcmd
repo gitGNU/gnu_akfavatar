@@ -2,22 +2,10 @@
 
 #########################################################################
 # tool to send commands to avatarsay
-# Copyright (c) 2008 Andreas K. Foerster <info@akfoerster.de>
+# this file is in the public domain --Andreas K. Foerster
 #
-# This file is part of AKFAvatar
-#
-# AKFAvatar is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# AKFAvatar is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, see <http://www.gnu.org/licenses/>.
+# you may use code from this file and put it under any license
+# you wish to use
 #########################################################################
 
 VERSION=1
@@ -42,10 +30,11 @@ Note:
   escape-sequences directly.
 
 Examples:
- avtcmd size 3, 40             sets the size to 3 lines, 40 rows.
- avtcmd size 0, 0              sets the maximum size again
- avtcmd -s audio sound1.wav    plays an audio file from the current directory
+ avtcmd size 4, 40             sets the size to 4 lines, 40 rows.
+ avtcmd size                   sets the maximum size again
  avtcmd -s avatarimage me.png  changes the avatar-image
+ avtcmd -s audio sound1.wav    plays an audio file from the current directory
+ avtcmd stopaudio              stops the audio output
 
 Report bugs to <bug-akfavatar@akfoerster.de>
 EOF
