@@ -79,10 +79,12 @@ docbook: akfavatar-en.texinfo akfavatar-de.texinfo pasref.txt akfavatar.h
 man: avatarsay.1 avtcmd.1
 
 avatarsay.1: ../avatarsay.c
-	-help2man --info-page=akfavatar-en -o avatarsay.1 avatarsay
+	-help2man --info-page=akfavatar-en --source=AKFAvatar \
+	  -o avatarsay.1 avatarsay
 
 avtcmd.1: ../avtcmd
-	-help2man --info-page=akfavatar-en -o avtcmd.1 avtcmd
+	-help2man --info-page=akfavatar-en --source=AKFAvatar \
+	  -o avtcmd.1 ../avtcmd
 
 clean:
 	-rm -f *~
