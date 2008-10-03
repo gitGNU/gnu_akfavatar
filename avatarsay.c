@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.224 2008-10-03 12:32:10 akf Exp $ */
+/* $Id: avatarsay.c,v 2.225 2008-10-03 13:04:33 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1056,6 +1056,23 @@ handle_credits_command (const wchar_t * s, int *stop)
 }
 
 static void
+change_avatar_image (avt_image_t *newavatar)
+{
+  if (initialized)
+    {
+      avt_change_avatar_image (newavatar);
+      avatar_changed = AVT_TRUE;
+      avtterm_update_size ();
+    }
+  else				/* save for initialize @@@ ? */
+    {
+      if (avt_image)
+	free (avt_image);
+      avt_image = newavatar;
+    }
+}
+
+static void
 handle_avatarimage_command (const wchar_t * s)
 {
   char filepath[PATH_LENGTH];
@@ -1081,19 +1098,9 @@ handle_avatarimage_command (const wchar_t * s)
       if (!(newavatar = avt_import_image_file (filepath)))
 	warning_msg ("warning", avt_get_error ());
     }
-
-  if (initialized)
-    {
-      avt_change_avatar_image (newavatar);
-      avatar_changed = AVT_TRUE;
-      moved_in = AVT_FALSE;
-    }
-  else				/* save for initialize */
-    {
-      if (avt_image)
-	free (avt_image);
-      avt_image = newavatar;
-    }
+  
+  if (newavatar)
+    change_avatar_image (newavatar);
 }
 
 static void
@@ -1238,6 +1245,12 @@ avatar_command (wchar_t * s, int *stop)
       char directory[PATH_LENGTH];
       get_data_file (s + 8, directory);
       chdir (directory);
+      return;
+    }
+
+  if (wcscmp (s, L"avatarimage none") == 0)
+    {
+      change_avatar_image (NULL);
       return;
     }
 
@@ -2653,7 +2666,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.224 2008-10-03 12:32:10 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.225 2008-10-03 13:04:33 akf Exp $");
 
   return EXIT_SUCCESS;
 }

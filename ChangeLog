@@ -1,13 +1,19 @@
 2008-10-03  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatarsay.c (change_avatar_image):
+	new function
+	(handle_avatarimage_command): adapted
+	(avatar_command): "avatarimage none"
+
 	* avtterm.h, avtterm.c:
 	renamed functions:
 	execute_process -> avtterm_start
 	process_subprogram -> avtterm_run
+	avtarsay.c: adapted
 	
 	* avtterm.h, avtterm.c (avtterm_update_size):
 	new function
-	avtarsay: adapted
+	avtarsay.c: adapted
 
 	* avatar.c (avt_draw_balloon):
 	fix drawing the balloon with no avatar image
