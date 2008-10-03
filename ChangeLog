@@ -8,6 +8,7 @@
 	new function
 	(handle_avatarimage_command): adapted
 	(avatar_command): "avatarimage none"
+	(avatar_command): avatarimage with no name restores default img
 
 	* avtterm.h, avtterm.c:
 	renamed functions:

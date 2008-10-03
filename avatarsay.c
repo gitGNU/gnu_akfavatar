@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.226 2008-10-03 13:28:19 akf Exp $ */
+/* $Id: avatarsay.c,v 2.227 2008-10-03 15:23:28 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1080,6 +1080,13 @@ handle_avatarimage_command (const wchar_t * s)
   avt_image_t *newavatar = NULL;
   size_t size = 0;
 
+  /* no name? - restore default image */
+  if (s[0] == L'\0')
+    {
+      restore_avatar_image ();
+      return;
+    }
+
   get_data_file (s, filepath);
 
   if (from_archive)
@@ -1254,9 +1261,9 @@ avatar_command (wchar_t * s, int *stop)
       return;
     }
 
-  if (wcsncmp (s, L"avatarimage ", 12) == 0)
+  if (wcsncmp (s, L"avatarimage", 11) == 0)
     {
-      handle_avatarimage_command (s + 12);
+      handle_avatarimage_command (s + 11);
       return;
     }
 
@@ -2667,7 +2674,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.226 2008-10-03 13:28:19 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.227 2008-10-03 15:23:28 akf Exp $");
 
   return EXIT_SUCCESS;
 }
