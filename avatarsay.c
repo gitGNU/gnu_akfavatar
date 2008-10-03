@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.227 2008-10-03 15:23:28 akf Exp $ */
+/* $Id: avatarsay.c,v 2.228 2008-10-03 18:40:30 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1056,7 +1056,7 @@ handle_credits_command (const wchar_t * s, int *stop)
 }
 
 static void
-change_avatar_image (avt_image_t *newavatar)
+change_avatar_image (avt_image_t * newavatar)
 {
   if (initialized)
     {
@@ -1105,7 +1105,7 @@ handle_avatarimage_command (const wchar_t * s)
       if (!(newavatar = avt_import_image_file (filepath)))
 	warning_msg ("warning", avt_get_error ());
     }
-  
+
   if (newavatar)
     change_avatar_image (newavatar);
 }
@@ -1223,7 +1223,7 @@ handle_size_command (const wchar_t * s)
     avt_set_balloon_size (height, width);
   else
     avt_set_balloon_size (0, 0);	/* maximum */
-    
+
   avtterm_update_size ();
 }
 
@@ -1289,6 +1289,20 @@ avatar_command (wchar_t * s, int *stop)
   if (wcscmp (s, L"right-to-left") == 0)
     {
       avt_text_direction (AVT_RIGHT_TO_LEFT);
+      return;
+    }
+
+  /* slow printing on */
+  if (wcscmp (s, L"slow on") == 0)
+    {
+      avt_set_text_delay (AVT_DEFAULT_TEXT_DELAY);
+      return;
+    }
+
+  /* slow printing off */
+  if (wcscmp (s, L"slow off") == 0)
+    {
+      avt_set_text_delay (0);
       return;
     }
 
@@ -2415,7 +2429,7 @@ menu (void)
 	  sound = NULL;
 	}
 
-	
+
       if (avatar_changed)
 	{
 	  restore_avatar_image ();
@@ -2674,7 +2688,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.227 2008-10-03 15:23:28 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.228 2008-10-03 18:40:30 akf Exp $");
 
   return EXIT_SUCCESS;
 }
