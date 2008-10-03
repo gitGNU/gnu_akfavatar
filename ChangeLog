@@ -1,5 +1,9 @@
 2008-10-03  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avtterm.h, avtterm.c (avtterm_update_size):
+	new function
+	avtarsay: adapted
+
 	* avatar.c (avt_draw_balloon):
 	fix drawing the balloon with no avatar image
 

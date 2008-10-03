@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.222 2008-10-01 08:48:07 akf Exp $ */
+/* $Id: avatarsay.c,v 2.223 2008-10-03 12:05:30 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1183,6 +1183,8 @@ handle_height_command (const wchar_t * s)
     avt_set_balloon_height (value);
   else
     avt_set_balloon_height (0);	/* maximum */
+
+  avtterm_update_size ();
 }
 
 static void
@@ -1194,6 +1196,8 @@ handle_width_command (const wchar_t * s)
     avt_set_balloon_width (value);
   else
     avt_set_balloon_width (0);	/* maximum */
+
+  avtterm_update_size ();
 }
 
 static void
@@ -1205,6 +1209,8 @@ handle_size_command (const wchar_t * s)
     avt_set_balloon_size (height, width);
   else
     avt_set_balloon_size (0, 0);	/* maximum */
+    
+  avtterm_update_size ();
 }
 
 static void
@@ -2647,7 +2653,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.222 2008-10-01 08:48:07 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.223 2008-10-03 12:05:30 akf Exp $");
 
   return EXIT_SUCCESS;
 }

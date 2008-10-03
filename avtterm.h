@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.h,v 2.2 2008-08-29 20:14:30 akf Exp $ */
+/* $Id: avtterm.h,v 2.3 2008-10-03 12:05:31 akf Exp $ */
 
 #ifndef AVTTERM_H
 #define AVTTERM_H 1
@@ -31,5 +31,8 @@
 int execute_process (const char *system_encoding, char *const prg_argv[]);
 void process_subprogram (int fd);
 void avtterm_nocolor (avt_bool_t nocolor);
+
+/* update size of textarea */
+void avtterm_update_size (void);
 
 #endif /* AVTTERM_H */

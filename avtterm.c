@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.16 2008-09-29 11:49:07 akf Exp $ */
+/* $Id: avtterm.c,v 2.17 2008-10-03 12:05:30 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -140,6 +140,13 @@ avtterm_size (int fd, int height, int width)
   size.ws_xpixel = size.ws_ypixel = 0;
   ioctl (fd, TIOCSWINSZ, &size);
 #endif
+}
+
+void
+avtterm_update_size (void)
+{
+  if (prg_input > 0)
+    avtterm_size (prg_input, avt_get_max_y (), avt_get_max_x ());
 }
 
 /* @@@ */
