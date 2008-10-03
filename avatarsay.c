@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.225 2008-10-03 13:04:33 akf Exp $ */
+/* $Id: avatarsay.c,v 2.226 2008-10-03 13:28:19 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1936,13 +1936,6 @@ ask_file (void)
 	  default_background_color ();
 	  background_color_changed = AVT_FALSE;
 	}
-
-      if (avatar_changed)
-	{
-	  restore_avatar_image ();
-	  if (!popup)
-	    move_in ();
-	}
     }
 }
 
@@ -2414,6 +2407,14 @@ menu (void)
 	  avt_free_audio (sound);
 	  sound = NULL;
 	}
+
+	
+      if (avatar_changed)
+	{
+	  restore_avatar_image ();
+	  if (!popup)
+	    move_in ();
+	}
     }
 }
 
@@ -2666,7 +2667,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.225 2008-10-03 13:04:33 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.226 2008-10-03 13:28:19 akf Exp $");
 
   return EXIT_SUCCESS;
 }

@@ -1,5 +1,9 @@
 2008-10-03  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatarsay.c (menu):
+	always check if the avatarimage was changed
+	(ask_file): remove the check there
+
 	* avatarsay.c (change_avatar_image):
 	new function
 	(handle_avatarimage_command): adapted
