@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.169 2008-09-25 09:31:27 akf Exp $ */
+/* $Id: avatar.c,v 2.170 2008-10-03 10:54:06 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -707,26 +707,31 @@ avt_draw_balloon (void)
   textfield.x = window.x + (window.w / 2) - (balloonwidth * FONTWIDTH / 2);
 
   /* align with balloonpointer */
-  /* left border not aligned with balloon pointer? */
-  if (textfield.x >
-      window.x + avt_image->w + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET)
-    textfield.x =
-      window.x + avt_image->w + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET;
-
-  /* right border not aligned with balloon pointer? */
-  if (textfield.x + textfield.w <
-      window.x + avt_image->w + balloonpointer.width
-      + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET)
+  if (avt_image)
     {
-      textfield.x =
-	window.x + avt_image->w - textfield.w + balloonpointer.width
-	+ (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET;
+      /* left border not aligned with balloon pointer? */
+      if (textfield.x >
+	  window.x + avt_image->w + (2 * AVATAR_MARGIN) +
+	  BALLOONPOINTER_OFFSET)
+	textfield.x =
+	  window.x + avt_image->w + (2 * AVATAR_MARGIN) +
+	  BALLOONPOINTER_OFFSET;
 
-      /* align with right window-border */
-      if (textfield.x > window.x + window.w - (balloonwidth * FONTWIDTH)
-	  - (2 * BALLOON_INNER_MARGIN))
-	textfield.x = window.x + window.w - (balloonwidth * FONTWIDTH)
-	  - (2 * BALLOON_INNER_MARGIN);
+      /* right border not aligned with balloon pointer? */
+      if (textfield.x + textfield.w <
+	  window.x + avt_image->w + balloonpointer.width
+	  + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET)
+	{
+	  textfield.x =
+	    window.x + avt_image->w - textfield.w + balloonpointer.width
+	    + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET;
+
+	  /* align with right window-border */
+	  if (textfield.x > window.x + window.w - (balloonwidth * FONTWIDTH)
+	      - (2 * BALLOON_INNER_MARGIN))
+	    textfield.x = window.x + window.w - (balloonwidth * FONTWIDTH)
+	      - (2 * BALLOON_INNER_MARGIN);
+	}
     }
 
   viewport = textfield;
@@ -4176,7 +4181,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.169 2008-09-25 09:31:27 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.170 2008-10-03 10:54:06 akf Exp $");
 
   /*
    * Initialize the display, accept any format

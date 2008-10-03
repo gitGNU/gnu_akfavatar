@@ -1,3 +1,8 @@
+2008-10-03  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_draw_balloon):
+	fix drawing the balloon with no avatar image
+
 2008-10-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay (avatar_command):
