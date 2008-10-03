@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.223 2008-10-03 12:05:30 akf Exp $ */
+/* $Id: avatarsay.c,v 2.224 2008-10-03 12:32:10 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1948,7 +1948,7 @@ run_info (void)
 }
 
 static int
-execute_process (const char *encoding, char *const prg_argv[])
+avtterm_start (const char *encoding, char *const prg_argv[])
 {
   not_available ();
   return -1;
@@ -1978,9 +1978,9 @@ run_shell (void)
   chdir (home);
   free (home);
 
-  fd = execute_process (default_encoding, NULL);
+  fd = avtterm_start (default_encoding, NULL);
   if (fd > -1)
-    process_subprogram (fd);
+    avtterm_run (fd);
 }
 
 static void
@@ -2012,9 +2012,9 @@ run_info (void)
 	args[1] = "akfavatar-en";
     }
 
-  fd = execute_process (default_encoding, args);
+  fd = avtterm_start (default_encoding, args);
   if (fd > -1)
-    process_subprogram (fd);
+    avtterm_run (fd);
 }
 
 #endif /* not NO_PTY */
@@ -2065,7 +2065,7 @@ ask_manpage (void)
 
       /* ignore file errors */
       read_error_is_eof = AVT_TRUE;
-      fd = execute_process (default_encoding, argv);
+      fd = avtterm_start (default_encoding, argv);
 
       if (fd > -1)
 	process_script (fd);
@@ -2123,9 +2123,9 @@ edit_file (const char *name)
   args[1] = (char *) name;
   args[2] = (char *) NULL;
 
-  fd = execute_process (default_encoding, args);
+  fd = avtterm_start (default_encoding, args);
   if (fd > -1)
-    process_subprogram (fd);
+    avtterm_run (fd);
 }
 
 #endif /* not Windows or ReactOS */
@@ -2611,9 +2611,9 @@ main (int argc, char *argv[])
 	    move_in ();
 	}
 
-      fd = execute_process (default_encoding, &argv[optind]);
+      fd = avtterm_start (default_encoding, &argv[optind]);
       if (fd > -1)
-	process_subprogram (fd);
+	avtterm_run (fd);
 
       if (avt_get_status () == AVT_NORMAL)
 	if (avt_wait_button ())
@@ -2653,7 +2653,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.223 2008-10-03 12:05:30 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.224 2008-10-03 12:32:10 akf Exp $");
 
   return EXIT_SUCCESS;
 }

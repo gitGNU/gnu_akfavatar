@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.h,v 2.3 2008-10-03 12:05:31 akf Exp $ */
+/* $Id: avtterm.h,v 2.4 2008-10-03 12:32:10 akf Exp $ */
 
 #ifndef AVTTERM_H
 #define AVTTERM_H 1
@@ -28,8 +28,8 @@
 /* execute a subprocess, visible in the balloon */
 /* if fname == NULL, start a shell */
 /* returns file-descriptor for output of the process */
-int execute_process (const char *system_encoding, char *const prg_argv[]);
-void process_subprogram (int fd);
+int avtterm_start (const char *system_encoding, char *const prg_argv[]);
+void avtterm_run (int fd);
 void avtterm_nocolor (avt_bool_t nocolor);
 
 /* update size of textarea */

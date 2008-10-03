@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.17 2008-10-03 12:05:30 akf Exp $ */
+/* $Id: avtterm.c,v 2.18 2008-10-03 12:32:10 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1346,7 +1346,7 @@ escape_sequence (int fd, wchar_t last_character)
 }
 
 void
-process_subprogram (int fd)
+avtterm_run (int fd)
 {
   avt_bool_t stop;
   wint_t ch;
@@ -1420,7 +1420,7 @@ process_subprogram (int fd)
 /* if fname == NULL, start a shell */
 /* returns file-descriptor for output of the process */
 int
-execute_process (const char *system_encoding, char *const prg_argv[])
+avtterm_start (const char *system_encoding, char *const prg_argv[])
 {
   pid_t childpid;
   int master, slave;
