@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.170 2008-10-03 10:54:06 akf Exp $ */
+/* $Id: avatar.c,v 2.171 2008-10-04 09:43:29 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -4151,6 +4151,24 @@ avt_button_quit (void)
   avt_quit ();
 }
 
+void
+avt_set_title_icontitle (const char *title, const char *icontitle)
+{
+  SDL_WM_SetCaption (title, icontitle);
+}
+
+void
+avt_set_title (const char *title)
+{
+  avt_set_title_icontitle (title, NULL);
+}
+
+void
+avt_set_icontitle (const char *icontitle)
+{
+  avt_set_title_icontitle (NULL, icontitle);
+}
+
 int
 avt_initialize (const char *title, const char *icontitle,
 		avt_image_t * image, int mode)
@@ -4179,9 +4197,15 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  SDL_WM_SetCaption (title, icontitle);
+  if (title == NULL)
+    title = "AKFAvatar";
+  
+  if (icontitle == NULL)
+    icontitle = title;
+  
+  avt_set_title_icontitle (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.170 2008-10-03 10:54:06 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.171 2008-10-04 09:43:29 akf Exp $");
 
   /*
    * Initialize the display, accept any format

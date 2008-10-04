@@ -1,3 +1,9 @@
+2008-10-04  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_set_title_icontitle)
+	(avt_set_title, avt_set_icontitle): new functions
+	(avt_initialize): accept NULL for title, icontitle
+
 2008-10-03  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (avatar_command):

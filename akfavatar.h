@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.74 2008-10-01 08:15:22 akf Exp $ */
+/* $Id: akfavatar.h,v 2.75 2008-10-04 09:43:29 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -132,6 +132,7 @@ typedef void (*avt_mousehandler) (int button, avt_bool_t pressed,
  * mode is either WINDOW or FULLSCREEN or FULLSCREENNOSWITCH
  * the original image is freed in this function!
  * the image may be NULL if no avatar should be shown
+ * title and icontitle may also be NULL
  */
 int avt_initialize (const char *title,
 		    const char *icontitle, 
@@ -170,6 +171,15 @@ void avt_set_status (int status);
 
 /* get error message */
 char *avt_get_error (void);
+
+/* 
+ * change the title and/or the icontitle
+ * in newer SDL-versions it is encoded in UTF-8
+ * if possible stick to ASCII for compatibility
+ */
+void avt_set_title_icontitle (const char *title, const char *icontitle);
+void avt_set_title (const char *title);
+void avt_set_icontitle (const char *icontitle);
 
 /* 
  * set text direction

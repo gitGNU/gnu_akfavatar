@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.228 2008-10-03 18:40:30 akf Exp $ */
+/* $Id: avatarsay.c,v 2.229 2008-10-04 09:43:29 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -954,6 +954,26 @@ archive_failure (const char *name)
     error_msg (name, "not found in archive");
 }
 
+static void
+handle_title_command (const wchar_t * s)
+{
+  char newtitle[255];
+
+  /* FIXME: The title in SDL is always UTF-8 encoded,
+     independent from the systems encoding */
+  if (wcstombs (newtitle, s, sizeof (newtitle)) == (size_t) (-1))
+    error_msg ("wcstombs", strerror (errno));
+
+  if (newtitle[0])
+    {
+       char title[300];
+     
+       strcpy (title, "AKFAvatar: ");
+       strcat (title, newtitle);
+       avt_set_title (title);
+    }
+}
+
 /* errors are silently ignored */
 static void
 handle_image_command (const wchar_t * s, int *stop)
@@ -1271,6 +1291,12 @@ avatar_command (wchar_t * s, int *stop)
   /* so ignore it here */
   if (wcsncmp (s, L"encoding ", 9) == 0)
     return;
+
+  if (wcsncmp (s, L"title ", 6) == 0)
+    {
+      handle_title_command (s + 6);
+      return;
+    }
 
   if (wcsncmp (s, L"backgroundcolor ", 16) == 0)
     {
@@ -2429,6 +2455,7 @@ menu (void)
 	  sound = NULL;
 	}
 
+      avt_set_title_icontitle ("AKFAvtar", "AKFAvtar");
 
       if (avatar_changed)
 	{
@@ -2688,7 +2715,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.228 2008-10-03 18:40:30 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.229 2008-10-04 09:43:29 akf Exp $");
 
   return EXIT_SUCCESS;
 }
