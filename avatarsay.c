@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.233 2008-10-04 11:09:04 akf Exp $ */
+/* $Id: avatarsay.c,v 2.234 2008-10-04 11:21:50 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -429,7 +429,7 @@ initialize (void)
   /* 
    * if supposed_title is NULL then "AKFAvatar" is used
    * attention: the icontitle is set to the title, when NULL
-   */ 
+   */
   if (avt_initialize (supposed_title, "AKFAvatar", avt_image, window_mode))
     switch (language)
       {
@@ -981,16 +981,20 @@ handle_title_command (const wchar_t * s)
 
   if (newtitle[0])
     {
-      if (initialized)
-	{
-	  char title[300];
+      char title[300];
 
-	  strcpy (title, "AKFAvatar: ");
-	  strcat (title, newtitle);
-	  avt_set_title (title, NULL);
-	}
-      else			/* not initialized */
-	supposed_title = strdup (newtitle);
+      strcpy (title, "AKFAvatar: ");
+      strcat (title, newtitle);
+
+      if (initialized)
+	avt_set_title (title, NULL);
+      else
+	supposed_title = strdup (title);
+    }
+  else				/* empty */
+    {
+      if (initialized)
+	avt_set_title ("AKFAvatar", "AKFAvatar");
     }
 }
 
@@ -1312,9 +1316,9 @@ avatar_command (wchar_t * s, int *stop)
   if (wcsncmp (s, L"encoding ", 9) == 0)
     return;
 
-  if (wcsncmp (s, L"title ", 6) == 0)
+  if (wcsncmp (s, L"title", 5) == 0)
     {
-      handle_title_command (s + 6);
+      handle_title_command (s + 5);
       return;
     }
 
@@ -2736,7 +2740,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.233 2008-10-04 11:09:04 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.234 2008-10-04 11:21:50 akf Exp $");
 
   return EXIT_SUCCESS;
 }
