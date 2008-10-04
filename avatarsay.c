@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.230 2008-10-04 10:48:30 akf Exp $ */
+/* $Id: avatarsay.c,v 2.231 2008-10-04 11:02:51 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -164,6 +164,10 @@ static avt_bool_t given_encoding;
 /* deactivated, when input comes from stdin */
 /* can be deactivated by -1, --once */
 static avt_bool_t loop;
+
+/* for setting the title */
+/* only used, when the title is set before it is initialized */
+static char *supposed_title;
 
 /* where to find imagefiles */
 static char datadir[512];
@@ -422,7 +426,7 @@ initialize (void)
   if (!avt_image)
     avt_image = avt_default ();
 
-  if (avt_initialize ("AKFAvatar", "AKFAvatar", avt_image, window_mode))
+  if (avt_initialize (supposed_title, NULL, avt_image, window_mode))
     switch (language)
       {
       case DEUTSCH:
@@ -433,6 +437,12 @@ initialize (void)
       default:
 	error_msg ("cannot initialize graphics", avt_get_error ());
       }
+
+  if (supposed_title)
+    {
+      free (supposed_title);
+      supposed_title = NULL;
+    }
 
   if (avt_initialize_audio ())
     switch (language)
@@ -966,11 +976,16 @@ handle_title_command (const wchar_t * s)
 
   if (newtitle[0])
     {
-       char title[300];
-     
-       strcpy (title, "AKFAvatar: ");
-       strcat (title, newtitle);
-       avt_set_title (title, NULL);
+      if (initialized)
+	{
+	  char title[300];
+
+	  strcpy (title, "AKFAvatar: ");
+	  strcat (title, newtitle);
+	  avt_set_title (title, NULL);
+	}
+      else			/* not initialized */
+	supposed_title = strdup (newtitle);
     }
 }
 
@@ -2455,7 +2470,7 @@ menu (void)
 	  sound = NULL;
 	}
 
-      avt_set_title ("AKFAvtar", "AKFAvtar");
+      avt_set_title (NULL, NULL);
 
       if (avatar_changed)
 	{
@@ -2619,6 +2634,7 @@ int
 main (int argc, char *argv[])
 {
   /* initialize variables */
+  supposed_title = NULL;
   window_mode = AVT_AUTOMODE;
   loop = AVT_TRUE;
   default_delay = AVT_DEFAULT_TEXT_DELAY;
@@ -2715,7 +2731,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.230 2008-10-04 10:48:30 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.231 2008-10-04 11:02:51 akf Exp $");
 
   return EXIT_SUCCESS;
 }
