@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.234 2008-10-04 11:21:50 akf Exp $ */
+/* $Id: avatarsay.c,v 2.235 2008-10-04 11:45:16 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -58,6 +58,7 @@
 #  include <pwd.h>
 #else
 #  define avtterm_nocolor(ignore)	/* empty */
+#  define avtterm_update_size(void)	/* empty */
 #endif
 
 /* some systems don't know O_NONBLOCK */
@@ -2740,7 +2741,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.234 2008-10-04 11:21:50 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.235 2008-10-04 11:45:16 akf Exp $");
 
   return EXIT_SUCCESS;
 }
