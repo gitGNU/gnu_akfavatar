@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.229 2008-10-04 09:43:29 akf Exp $ */
+/* $Id: avatarsay.c,v 2.230 2008-10-04 10:48:30 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -970,7 +970,7 @@ handle_title_command (const wchar_t * s)
      
        strcpy (title, "AKFAvatar: ");
        strcat (title, newtitle);
-       avt_set_title (title);
+       avt_set_title (title, NULL);
     }
 }
 
@@ -2455,7 +2455,7 @@ menu (void)
 	  sound = NULL;
 	}
 
-      avt_set_title_icontitle ("AKFAvtar", "AKFAvtar");
+      avt_set_title ("AKFAvtar", "AKFAvtar");
 
       if (avatar_changed)
 	{
@@ -2715,7 +2715,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.229 2008-10-04 09:43:29 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.230 2008-10-04 10:48:30 akf Exp $");
 
   return EXIT_SUCCESS;
 }

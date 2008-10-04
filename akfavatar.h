@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.75 2008-10-04 09:43:29 akf Exp $ */
+/* $Id: akfavatar.h,v 2.76 2008-10-04 10:48:30 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -174,12 +174,11 @@ char *avt_get_error (void);
 
 /* 
  * change the title and/or the icontitle
- * in newer SDL-versions it is encoded in UTF-8
+ * use NULL for the unchanged part
+ * in newer SDL-versions it is to be encoded in UTF-8
  * if possible stick to ASCII for compatibility
  */
-void avt_set_title_icontitle (const char *title, const char *icontitle);
-void avt_set_title (const char *title);
-void avt_set_icontitle (const char *icontitle);
+void avt_set_title (const char *title, const char *icontitle);
 
 /* 
  * set text direction
