@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.235 2008-10-04 11:45:16 akf Exp $ */
+/* $Id: avatarsay.c,v 2.236 2008-10-05 08:28:41 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -974,6 +974,10 @@ static void
 handle_title_command (const wchar_t * s)
 {
   char newtitle[255];
+
+  /* remove leading whitespace */
+  while (*s == L' ' || *s == L'\t')
+    s++;
 
   /* FIXME: The title in SDL is always UTF-8 encoded,
      independent from the systems encoding */
@@ -2741,7 +2745,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.235 2008-10-04 11:45:16 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.236 2008-10-05 08:28:41 akf Exp $");
 
   return EXIT_SUCCESS;
 }

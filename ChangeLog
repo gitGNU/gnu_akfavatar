@@ -1,5 +1,8 @@
 2008-10-05  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatarsay.c (handle_title_command):
+	remove leading whitespace
+
 	* avtterm (escape_sequence, CSI_sequence):
 	hooks for application keypad (not really supported yet)
 
