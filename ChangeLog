@@ -1,3 +1,8 @@
+2008-10-05  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtterm (escape_sequence, CSI_sequence):
+	hooks for application keypad (not really supported yet)
+
 2008-10-04  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_set_title):

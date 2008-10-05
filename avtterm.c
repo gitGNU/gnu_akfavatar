@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.18 2008-10-03 12:32:10 akf Exp $ */
+/* $Id: avtterm.c,v 2.19 2008-10-05 07:52:28 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -91,6 +91,8 @@ static const char *G0, *G1;
 
 /* character for DEC cursor keys (either [ or O) */
 static char dec_cursor_seq[3];
+
+static avt_bool_t application_keypad;
 
 /* text-buffer */
 static wchar_t *wcbuf = NULL;
@@ -225,6 +227,8 @@ get_user_shell (void)
 static void
 prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
 {
+  /* TODO: support application_keypad */
+  
   if (idle && prg_input > 0)
     {
       idle = AVT_FALSE;		/* avoid reentrance */
@@ -894,6 +898,9 @@ CSI_sequence (int fd, wchar_t last_character)
 	      /* text delay, slow-print */
 	      avt_set_text_delay (AVT_DEFAULT_TEXT_DELAY);
 	      break;
+	    case 66:
+	      application_keypad = AVT_TRUE;
+	      break;
 	    }
 	}
       else
@@ -936,6 +943,9 @@ CSI_sequence (int fd, wchar_t last_character)
 	    case 56:		/* AKFAvatar extension */
 	      /* no text delay */
 	      avt_set_text_delay (0);
+	      break;
+	    case 66:
+	      application_keypad = AVT_FALSE;
 	      break;
 	    }
 	}
@@ -1146,7 +1156,7 @@ APC_sequence (int fd)
     }
 
   command[p] = L'\0';
-  
+
   avatar_command (command, &ignore);
 }
 
@@ -1337,6 +1347,14 @@ escape_sequence (int fd, wchar_t last_character)
       /* APC: Application Program Command */
     case L'_':
       APC_sequence (fd);
+      break;
+
+    case L'>':			/* DECPNM */
+      application_keypad = AVT_FALSE;
+      break;
+
+    case L'=':			/* DECPAM */
+      application_keypad = AVT_TRUE;
       break;
 
     default:
