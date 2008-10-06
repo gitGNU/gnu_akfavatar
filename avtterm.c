@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.19 2008-10-05 07:52:28 akf Exp $ */
+/* $Id: avtterm.c,v 2.20 2008-10-06 20:57:32 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -110,7 +110,9 @@ static const wchar_t vt100trans[] = {
 
 /* defined in avatarsay.c */
 /* used in APC_command */
+#ifndef NO_APC
 extern void avatar_command (wchar_t * s, int *stop);
+#endif
 
 
 static void
@@ -1157,7 +1159,9 @@ APC_sequence (int fd)
 
   command[p] = L'\0';
 
+#ifndef NO_APC
   avatar_command (command, &ignore);
+#endif
 }
 
 /*
