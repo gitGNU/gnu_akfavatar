@@ -1,7 +1,9 @@
-2008-10-05  Andreas K. Foerster  <info@akfoerster.de>
+2008-10-07  Andreas K. Foerster  <info@akfoerster.de>
 
-	* avtterm.c (avtterm_start):
+	* avtterm.c (avtterm_run):
 	reject filedescriptors less than zero
+
+	* avtterm.c (avtterm_start): code cleanup
 
 2008-10-05  Andreas K. Foerster  <info@akfoerster.de>
 

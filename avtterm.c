@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.22 2008-10-07 08:08:32 akf Exp $ */
+/* $Id: avtterm.c,v 2.23 2008-10-07 15:48:30 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -230,7 +230,7 @@ static void
 prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
 {
   /* TODO: support application_keypad */
-  
+
   if (idle && prg_input > 0)
     {
       idle = AVT_FALSE;		/* avoid reentrance */
@@ -1537,21 +1537,15 @@ avtterm_start (const char *system_encoding, char *const prg_argv[])
       /* create a new session */
       setsid ();
 
-      /* redirect stdin */
-      if (dup2 (slave, STDIN_FILENO) == -1)
-	_exit (EXIT_FAILURE);
-
-      /* redirect stdout */
-      if (dup2 (slave, STDOUT_FILENO) == -1)
-	_exit (EXIT_FAILURE);
-
-      /* redirect sterr */
-      if (dup2 (slave, STDERR_FILENO) == -1)
+      /* redirect stdin, stdout, stderr to slave */
+      if (dup2 (slave, STDIN_FILENO) < 0
+	  || dup2 (slave, STDOUT_FILENO) < 0
+	  || dup2 (slave, STDERR_FILENO) < 0)
 	_exit (EXIT_FAILURE);
 
       close (slave);
 
-      /* set the controling terminal */
+      /* unset the controling terminal */
 #ifdef TIOCSCTTY
       ioctl (STDIN_FILENO, TIOCSCTTY, 0);
 #endif
