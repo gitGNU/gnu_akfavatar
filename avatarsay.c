@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.236 2008-10-05 08:28:41 akf Exp $ */
+/* $Id: avatarsay.c,v 2.237 2008-10-07 06:35:03 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1295,7 +1295,6 @@ extern void
 avatar_command (wchar_t * s, int *stop)
 {
   /* new datadir */
-  /* TODO: undecided */
   if (wcsncmp (s, L"datadir ", 8) == 0)
     {
       char directory[PATH_LENGTH];
@@ -2745,7 +2744,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.236 2008-10-05 08:28:41 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.237 2008-10-07 06:35:03 akf Exp $");
 
   return EXIT_SUCCESS;
 }
