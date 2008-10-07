@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.38 2008-09-16 12:02:13 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.39 2008-10-07 06:33:56 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -769,24 +769,32 @@ at the very first column and there must be at least three successive
 hypens (@code{U+002D}).  Of course you can use more than three ones.
 
 @need 1000
-A @emph{command} for an @command{avatarsay}-demo has to be enclosed in 
+A @dfn{command} for an @command{avatarsay}-demo has to be enclosed in 
 square brackets and it must be in the very first position of a new line.
 
 @emph{remark:} Earlier versions of @command{avatarsay} used a different
 style.
 
+Most of these commands can also be used from the terminal-emulation.
+From a shell you can use the command @command{avtcmd} to send commands to
+avatarsay. Use it like this: @samp{avtcmd size 5, 40}. 
+You can use the APC escape sequence from you own programs or scripts.
+
 @table @command
 
-@item [datadir @var{directory}]
-with this command you can set the directory, where images and sound files are
-located
+@item datadir @var{directory}
+with this command you can change the directory. This is needed to load images and sound files.
 
 The data directory can also be set with the environment variable 
 @env{AVATARDATADIR}.  The command has precedence over the environment
 variable.
 
-@item [avatarimage @var{imagefile}]
+@item avatarimage @var{imagefile}
 with this command you can use a different image for the avatar.
+
+You can leave the name of the imagefile away to switch back to the default
+avatar again. The special name @code{none} removes the avatarimage. This
+gives you the maximum size for the text-area, but it looks boring.
 
 @strong{Attention}: This command should be used before the text starts
 
@@ -797,8 +805,8 @@ variable.
 Which file-formats AKFAvatar supports depends on which libraries you have 
 installed.  Uncompressed @code{BMP} images are always supported.
 
-@item [encoding @var{encodingname}]
-sets the encoding of the text; 
+@item encoding @var{encodingname}
+just for demos: sets the encoding of the text; 
 such as @samp{ISO-8859-1} or @samp{UTF-8}
 
 @strong{Attention}: This command has to be used at the beginning of the
@@ -816,13 +824,20 @@ It depends on your systems @code{iconv} implementation, which encodings
 are supported.  On some systems you can get a list with the command 
 @code{iconv -l}.
 
-@item [scrolling @var{off} | @var{on}]
+@item title @var{title}
+changes the title of the window. When you use this command without a title 
+name, the title is reset to ``AKFAvatar''.
+
+@item scrolling off | on
 switches scrolling off or on.
 
-If you consequently use striplines to structure your text, you might want to
-switch scrolling off, to make the best use of the last line.
+If you consequently use striplines to structure your demo-text, you might
+want to switch scrolling off, to make the best use of the last line.
 
-@item [backgroundcolor #@var{color-definition}]
+@item slow on | off
+switches the slow-printing mode on or off
+
+@item backgroundcolor #@var{color-definition}
 set a different background color
 
 The @var{color-definition} has to be given as six hexadecimal characters;
@@ -831,41 +846,52 @@ The default value is @samp{#E0D5C5}.
 
 @strong{Attention}: This command should used before the text starts
 
-@item [left-to-right]
-@itemx [right-to-left]
+@item left-to-right
+@itemx right-to-left
 changes the text direction; this is useful if you have text written in
 Hebrew or Yiddish (Arabic is not supported)
 
 You can only switch the text-direction on a line by line basis.  Different
 text directions inside of one line is not supported.
 
-@item [size @var{height}, @var{width}]
+@item size @var{height}, @var{width}
 set the size of the balloon.
 
 The size cannot exceed the maximum size. The value 0 sets the maximum size.
+the command with no values sets the maximum size for the whole balloon.
 
-@item [height @var{height}]
+@item height @var{height}
 set the height of the balloon.
 
-The size cannot exceed the maximum size. The value 0 sets the maximum size.
+The size cannot exceed the maximum size. 
+The value 0 or no value sets the maximum size.
 
-@item [width @var{width}]
+@item width @var{width}
 set the width of the balloon.
 
-The size cannot exceed the maximum size. The value 0 sets the maximum size.
+The size cannot exceed the maximum size. 
+The value 0 or no value sets the maximum size.
 
-@item [flip]
-flip the page; the same effect as with a stripline
+@item flip
+flip the page; the same effect as with a stripline: wait some time and then
+clear the text-area
 
-@item [clear]
-clears the text-area; unlike @command{[flip]} it doesn't wait, but clears it 
+@item clear
+clears the text-area; unlike @command{flip} it doesn't wait, but clears it 
 immediately
 
-@item [pause]
-a longer pause; the avatar is shown without the balloon for some time
+@item move out | in
+moves the avatar out or in
 
-@item [image @var{imagefile}]
-shows an image for a while (without the avatar)
+@item wait @var{millisecods}
+waits a given time, or a default amount of time, when no value is given
+
+@item pause
+a longer pause; waits a while, then the avatar is shown without the 
+balloon for some time
+
+@item image @var{imagefile}
+waits some time and then shows the image for a while without the avatar
 
 The image is centered on the screen.  If the image is larger than the screen,
 the screen is centered on the image.
@@ -876,7 +902,7 @@ The stripline doesn't have any effect then.
 Which file-formats AKFAvatar supports depends on which libraries you have 
 installed.  Uncompressed @code{BMP} images are always supported.
 
-@item [audio @var{audiofile}]
+@item audio @var{audiofile}
 plays an audio file
 
 The text continues to be shown, so you can play an audio file with the 
@@ -885,42 +911,51 @@ recorded words of the following text.
 Currently only @code{WAV}-files with @code{PCM} or @code{ADPCM} encoding 
 are supported.
 
-@item [waitaudio]
-wait until the audio output ends
+@item audioloop @var{audiofile}
+like @command{audio}, but the audio-data is played in an endless loop
+
+@item stopaudio
+stops the audio output immediately
+
+@item waitaudio
+wait until the audio output ends; a loop is ended by this command
 
 This can be used to synchronize the recorded and the written text to some
 extend.
 
-@item [effectpause]
+@item effectpause
 short pause while the text stays visible
 
 If you want to make an effect-pause within a line, you can end the previous
 line with a backslash (@code{\}, @code{U+005C}), so the line-ending has no
 effect for the output.
 
-@item [back @var{number}]
+@item back @var{number}
 delete the last @var{number} of characters
 
 The previous line has to be ended with a backslash (@code{\}, @code{U+005C}).
 You could use this command after an @command{[effectpause]}-command for a 
 nice effect.
 
-@item [read]
+@item read
 reserved for later versions
 
-@item .end
-end of the text
+@item credits @var{textfile}
+shows a textfile as ``final credits''
+
+@item end
+just for demos: end of the text
 
 The avatar moves out. 
 
-Anything behind the @command{[end]} command is ignored.
+Anything behind the @command{end} command is ignored.
 
-@item [stop]
-stops the output immediately
+@item stop
+just for demos: stops the output immediately
 
 The avatar is not moved out, but the text ends immediately.
 
-Anything behind the @command{[stop]} command is ignored.
+Anything behind the @command{stop} command is ignored.
 
 @end table
 

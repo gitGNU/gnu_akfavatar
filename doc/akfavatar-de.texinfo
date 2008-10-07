@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.31 2008-09-16 12:02:13 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.32 2008-10-07 06:33:55 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -831,24 +831,35 @@ Bindestriche (@code{U+002D}) umfassen.  Natürlich kann man auch mehr als
 drei benutzen.
 
 @need 1000
-Eine @emph{Anweisung} für ein @command{avatarsay}-Demo wird in eckige Klammern
+Eine @dfn{Anweisung} für ein @command{avatarsay}-Demo wird in eckige Klammern
 geschrieben und muss in der aller ersten Spalte einer neuen Zeile anfangen.
 
 @emph{Anmerkung:} Frühere Versionen von @command{avatarsay} verwendeten einen
 anderen Schreibstil.
 
+Die meisten dieser Anweisungen können auch über die Terminal-Emulation
+angesprochen werden. Aus der Shell heraus kann der Befehl @command{avtcmd}
+verwendet werden, um Anweisungen an das Programm avatarsay zu schicken.
+Zum Beispiel so: @samp{avtcmd size 5, 40}. Man kann auch die Escpae-Sequenz
+APC aus eigenen Programmen oder Skripten heraus verwenden.
+
 @table @command
 
-@item [datadir @var{Verzeichnis}]
-mit dieser Anweisung kann man das Verzeichnis festlegen, in dem sich Bilder
-und Audio-Dateien befinden
+@item datadir @var{Verzeichnis}
+mit dieser Anweisung kann man das Verzeichnis wechseln. Dies ist notwendig, 
+um Bilder und Audio-Dateien zu laden.
 
 Das Daten-Verzeichnis kann auch mit der Umgebungsvariablen
 @env{AVATARDATADIR} eingestellt werden.  Diese Anweisung hat Vorrang
 vor der Umgebungsvariablen.
 
-@item [avatarimage @var{imagefile}]
+@item avatarimage @var{Bild-Datei}
 mit dieser Anweisung kann man ein anderes Bild für den Avatar festlegen
+
+Man kann den Namen der Bild-Datei weglassen, um zum Vorgabe-Avatar zurück
+zu wechseln. Die Angabe des Wertes @code{none} entfernt den Avatar ganz.
+Dadurch erhält man die maximal mögliche Größe für den Textbereich, aber
+es sieht halt langweilig aus.
 
 @strong{Achtung}: Diese Anweisung sollte benutzt werden, bevor der eigentliche
 Text anfängt.
@@ -860,8 +871,8 @@ Welche Bilddatei-Formate von AKFAvatar unterstützt werden, hängt davon
 ab, welche Bibliotheken auf dem System installiert sind.  Unkomprimierte
 @code{BMP}-Bilder werden immer unterstützt.
 
-@item [encoding @var{Kodierung}]
-gibt die Kodierung des Textes an; 
+@item encoding @var{Kodierung}
+nur für Demos: gibt die Kodierung des Textes an; 
 zum Beispiel @samp{ISO-8859-1} oder @samp{UTF-8}
 
 @strong{Achtung}: Diese Anweisung muss ziemlich am Anfang der Datei stehen.  
@@ -879,14 +890,21 @@ Welche Kodierungen unterstützt werden, hängt von der
 @code{iconv}-Implementierung des Systems ab.  Auf einigen Systemen kann man
 eine Liste mit der Anweisung @code{iconv -l} bekommen.
 
-@item [scrolling @var{off} | @var{on}]
+@item title @var{Titel}
+ändert den Titel des Fensters. Verwendet man die Anweisung ohne Angabe 
+eines Titels, wird der Titel auf ``AKFAvatar'' zurück gesetzt.
+
+@item scrolling off | on
 schaltet das automatisch Text-Scrollen aus oder ein.
 
-Wenn man konsequent Trennlinien verwendet, um seinen Text zu strukturieren,
-sollte man vielleicht das Scrollen ausschalten, um die letzte Zeile optimal
-nutzen zu können.
+Wenn man konsequent Trennlinien verwendet, um seinen Demo-Text zu 
+strukturieren, sollte man vielleicht das Scrollen ausschalten, um die 
+letzte Zeile optimal nutzen zu können.
 
-@item [backgroundcolor #@var{Farb-Definition}]
+@item slow off | on
+schaltet den Langsamschreibmodus aus oder ein.
+
+@item backgroundcolor #@var{Farb-Definition}
 ändert die Hintergrund-Farbe
 
 Die @var{Farb-Definition} muss als sechs stellige Hexadezimalzahl
@@ -896,44 +914,54 @@ angegeben werden, mit jeweils zwei Ziffern für @code{rot},
 @strong{Achtung}: Diese Anweisung sollte benutzt werden, bevor der eigentliche
 Text anfängt.
 
-@item [left-to-right]
-@itemx [right-to-left]
+@item left-to-right
+@itemx right-to-left
 ändert die Text-Richtung; das ist nützlich, wenn man Text in hebräisch 
 oder jiddisch hat (arabisch wird nicht unterstützt)
 
 Man kann die Text-Richtung nur Zeile für Zeile ändern.  Verschiedene
 Text-Richtungen innerhalb einer Zeile werden nicht unterstützt.
 
-@item [size @var{Höhe}, @var{Breite}]
+@item size @var{Höhe}, @var{Breite}
 ändert die Größe der Sprechblase.
 
 Man kann die Größe nicht über eine Maximalgröße hinaus festlegen.
-Der Wert 0 setzt die Maximalgröße.
+Der Wert 0 setzt die jeweilige Maximalgröße. Ohne Angabe von Werten wird
+die Sprechblase insgesamt auf die Maximalgröße gesetzt.
 
-@item [height @var{Höhe}]
+@item height @var{Höhe}
 ändert die Höhe der Sprechblase.
 
 Man kann die Größe nicht über eine Maximalgröße hinaus festlegen.
-Der Wert 0 setzt die Maximalgröße.
+Der Wert 0 oder keine Angabe setzt die Maximalgröße.
 
-@item [width @var{Breite}]
+@item width @var{Breite}
 ändert die Breite der Sprechblase.
 
 Man kann die Größe nicht über eine Maximalgröße hinaus festlegen.
-Der Wert 0 setzt die Maximalgröße.
+Der Wert 0 oder keine Angabe setzt die Maximalgröße.
 
-@item [flip]
-umblättern; der selbe Effekt wie mit einer Trennlinie
+@item flip
+umblättern; der selbe Effekt wie mit einer Trennlinie: kurz warten und dann
+den Text-Bereich löschen
 
-@item [clear]
-löscht den Text-Bereich; im Gegensatz zu @command{[flip]} wird nicht erst
+@item clear
+löscht den Text-Bereich; im Gegensatz zu @command{flip} wird nicht erst
 etwas gewartet, sondern der Text-Bereich wird sofort gelöscht 
 
-@item [pause]
-eine längere Pause; der Avatar wird einige Zeit ohne die Sprechblase angezeigt
+@item move out | in
+bewegt den Avatar aus dem Bild, bzw. wieder hinein
 
-@item [image @var{imagefile}]
-zeigt ein Bild für einige Zeit (ohne den Avatar)
+@item wait @var{Millisekunden}
+wartet die angegebene Zeit, oder eine vorgegebene Zeit bei keiner Angabe
+
+@item pause
+eine längere Pause; wartet erst kurz, dann wird der Avatar einige Zeit
+ohne Sprechblase angezeigt
+
+@item image @var{Bild-Datei}
+wartet einen Augenblick und zeigt dann ein Bild für einige Zeit ohne 
+den Avatar
 
 Das Bild wird auf dem Bildschirm zentriert.  Wenn das Bild größer als der
 Bildschirm ist, wird der Bildschirm auf dem Bild zentriert.
@@ -945,7 +973,7 @@ Welche Bilddatei-Formate von AKFAvatar unterstützt werden, hängt davon
 ab, welche Bibliotheken auf dem System installiert sind.  Unkomprimierte
 @code{BMP}-Bilder werden immer unterstützt.
 
-@item [audio @var{audiofile}]
+@item audio @var{Audio-Datei}
 spielt eine Audio-Datei ab
 
 Der Text wird weiterhin angezeigt. Auf diese Weise kann man eine Audio
@@ -955,13 +983,21 @@ Text auf dem Bildschirm erscheint.
 Derzeit werden nur @code{WAV}-Dateien mit @code{PCM}- oder 
 @code{ADPCM}-Kodierung unterstützt.
 
-@item [waitaudio]
-warte bis die Audio-Ausgabe beendet ist
+@item audioloop @var{Audio-Datei}
+wie @command{audio}, aber die Audio-Datei wird in einer Endlosschleife
+abgespielt
+
+@item stopaudio
+hält die Audio-Ausgabe umgehend an
+
+@item waitaudio
+warte bis die Audio-Ausgabe beendet ist; eine Schleife wird dabei 
+abgeschlossen
 
 Dies kann dafür verwendet werden, um den aufgenommenen Text mit dem
 geschriebenen Text halbwegs zu synchronisieren.
 
-@item [effectpause]
+@item effectpause
 kurze Pause, während der Text sichtbar bleibt
 
 Wenn man eine Kunstpause innerhalb einer Zeile einlegen will, kann man die
@@ -969,7 +1005,7 @@ vorhergehende Zeile mit einem umgekehrten Schrägstrich (@code{\},
 @code{U+005C}) beenden, so dass das Zeilenende keine Auswirkung auf die 
 Ausgabe hat.
 
-@item [back @var{Anzahl}]
+@item back @var{Anzahl}
 löscht die letzten @var{Anzahl} Zeichen
 
 Die vorhergehende Zeile muss mit einem umgekehrten Schrägstrich (@code{\}, 
@@ -977,23 +1013,26 @@ Die vorhergehende Zeile muss mit einem umgekehrten Schrägstrich (@code{\},
 Anweisung @command{[effectpause]} verwenden, um einen schönen Effekt zu
 erzielen.
 
-@item [read]
+@item read
 reserviert für spätere Versionen
 
-@item [end]
-beendet den Text
+@item credits @var{Text-Datei}
+zeigt eine Text-Datei in Form eines Abspanns an
+
+@item end
+nur für Demos: beendet den Text
 
 Der Avatar bewegt sich aus dem Bild. 
 
-Alles nach der @command{[end]}-Anweisung wird ignoriert.
+Alles nach der @command{end}-Anweisung wird ignoriert.
 
-@item [stop]
-stoppt die Ausgabe sofort
+@item stop
+nur für Demos: stoppt die Ausgabe sofort
 
 Der Avatar wird nicht aus dem Bild bewegt, sondern die Textausgabe wird
 sofort beendet.
 
-Alles nach der @command{[stop]}-Anweisung wird ignoriert.
+Alles nach der @command{stop}-Anweisung wird ignoriert.
 
 @end table
 
