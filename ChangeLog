@@ -1,5 +1,10 @@
 2008-10-05  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avtterm.c (avtterm_start):
+	reject filedescriptors less than zero
+
+2008-10-05  Andreas K. Foerster  <info@akfoerster.de>
+
 	* avatarsay.c (handle_title_command):
 	remove leading whitespace
 

@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.21 2008-10-07 06:35:05 akf Exp $ */
+/* $Id: avtterm.c,v 2.22 2008-10-07 08:08:32 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1374,6 +1374,10 @@ avtterm_run (int fd)
   wint_t ch;
   wchar_t last_character;
 
+  /* check, if fd is valid */
+  if (fd < 0)
+    return;
+
   last_character = L'\0';
   stop = AVT_FALSE;
 
@@ -1386,17 +1390,15 @@ avtterm_run (int fd)
 
   reset_terminal ();
 
-  /* FIXME: \x80 - \x9f may not survive through iconv */
-  /* use the escape sequences instead */
   while ((ch = get_character (fd)) != WEOF && !stop)
     {
       if (ch == L'\033')	/* Esc */
 	escape_sequence (fd, last_character);
-      else if (ch == L'\x9b')	/* CSI (may not work) */
+      else if (ch == L'\x9b')	/* CSI */
 	CSI_sequence (fd, last_character);
-      else if (ch == L'\x9d')	/* OSC (may not work) */
+      else if (ch == L'\x9d')	/* OSC */
 	OSC_sequence (fd);
-      else if (ch == L'\x9f')	/* APC (may not work) */
+      else if (ch == L'\x9f')	/* APC */
 	APC_sequence (fd);
       else if (ch == L'\x0E')	/* SO */
 	set_encoding (G1);
