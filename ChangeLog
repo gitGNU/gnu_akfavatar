@@ -1,3 +1,8 @@
+2008-10-09  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (handle_width_command, handle_height_command)
+	(handle_size_command): initialize if needed
+
 2008-10-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtterm.c (avtterm_run):

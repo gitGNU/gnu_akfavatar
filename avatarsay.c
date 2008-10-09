@@ -1,4 +1,4 @@
-/* 
+/*
  * avatarsay - show a textfile with libavatar
  * Copyright (c) 2007, 2008 Andreas K. Foerster <info@akfoerster.de>
  *
@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.237 2008-10-07 06:35:03 akf Exp $ */
+/* $Id: avatarsay.c,v 2.238 2008-10-09 11:19:08 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1242,6 +1242,14 @@ handle_height_command (const wchar_t * s)
 {
   int value;
 
+  if (!initialized)
+    {
+      initialize ();
+
+      if (!popup)
+	move_in ();
+    }
+
   if (swscanf (s, L"%i", &value) > 0)
     avt_set_balloon_height (value);
   else
@@ -1255,6 +1263,14 @@ handle_width_command (const wchar_t * s)
 {
   int value;
 
+  if (!initialized)
+    {
+      initialize ();
+
+      if (!popup)
+	move_in ();
+    }
+
   if (swscanf (s, L"%i", &value) > 0)
     avt_set_balloon_width (value);
   else
@@ -1267,6 +1283,14 @@ static void
 handle_size_command (const wchar_t * s)
 {
   int width, height;
+
+  if (!initialized)
+    {
+      initialize ();
+
+      if (!popup)
+	move_in ();
+    }
 
   if (swscanf (s, L"%i , %i", &height, &width) == 2)
     avt_set_balloon_size (height, width);
@@ -1564,6 +1588,7 @@ iscommand (wchar_t * s, int *stop)
       if (initialized)
 	if (avt_flip_page ())
 	  *stop = 1;
+
       return AVT_TRUE;
     }
 
@@ -1875,9 +1900,9 @@ process_script (int fd)
    * a stripline starts the text
    */
   if (!rawmode)
-    while (nread != 0 && !stop && wcsncmp (line, L"---", 3) != 0
-	   && (wcscmp (line, L"\n") == 0
-	       || wcscmp (line, L"\r\n") == 0 || iscommand (line, &stop)))
+    while (nread != 0 && !initialized && wcsncmp (line, L"---", 3) != 0
+	   && (wcscmp (line, L"\n") == 0 || wcscmp (line, L"\r\n") == 0
+	       || iscommand (line, &stop)) && !stop)
       {
 	nread = getwline (fd, line, line_size);
 
@@ -2744,7 +2769,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.237 2008-10-07 06:35:03 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.238 2008-10-09 11:19:08 akf Exp $");
 
   return EXIT_SUCCESS;
 }
