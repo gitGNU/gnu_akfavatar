@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.238 2008-10-09 11:19:08 akf Exp $ */
+/* $Id: avatarsay.c,v 2.239 2008-10-09 18:39:03 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -726,6 +726,52 @@ get_data_file (const wchar_t * fn, char filepath[])
     error_msg ("wcstombs", strerror (errno));
 }
 
+/* read in a textfile */
+static char *
+read_text_file (const char *f)
+{
+  int fd;
+  char *buf, *nbuf;
+  size_t size, capacity;
+  ssize_t nread;
+
+  buf = NULL;
+  size = capacity = 0;
+  nread = 0;
+
+  fd = open (f, O_RDONLY);
+
+  if (fd > -1)
+    {
+      do
+	{
+	  capacity += 10240;
+	  nbuf = (char *) realloc (buf, capacity + 4);
+	  if (nbuf)
+	    {
+	      buf = nbuf;
+	      nread = read (fd, buf + size, capacity - size);
+	      if (nread > 0)
+		size += nread;
+	    }
+	}
+      while (nread > 0 && nbuf);
+
+      close (fd);
+
+      if (buf)
+	{
+	  /* I terminate with 4 zeros, in case UTF-32 is used */
+	  memset (buf + size, '\0', 4);
+	  nbuf = (char *) realloc (buf, size + 4);
+	  if (nbuf)
+	    buf = nbuf;
+	}
+    }
+
+  return buf;
+}
+
 /* removes trailing space, newline, etc. */
 static void
 strip (wchar_t ** s)
@@ -1079,28 +1125,11 @@ handle_credits_command (const wchar_t * s, int *stop)
   else				/* not from_archive */
     {
       char *text;
-      int fd;
-      size_t size = 10240;
-      ssize_t nread;
 
-      text = (char *) malloc (size + 1);
-
-      if (text != NULL)
-	{
-	  fd = open (filepath, O_RDONLY);
-	  if (fd >= 0)
-	    {
-	      nread = read (fd, text, size);
-	      if (nread > 0)
-		{
-		  *(text + nread) = '\0';
-		  if (avt_credits_mb ((const char *) text, AVT_TRUE))
-		    *stop = 1;
-		}
-	      close (fd);
-	    }
-	  free (text);
-	}
+      text = read_text_file (filepath);
+      if (avt_credits_mb (text, AVT_TRUE))
+	*stop = 1;
+      free (text);
     }
 }
 
@@ -2769,7 +2798,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.238 2008-10-09 11:19:08 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.239 2008-10-09 18:39:03 akf Exp $");
 
   return EXIT_SUCCESS;
 }

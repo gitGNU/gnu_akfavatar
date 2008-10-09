@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: arch.c,v 2.4 2008-09-25 17:20:18 akf Exp $ */
+/* $Id: arch.c,v 2.5 2008-10-09 18:39:03 akf Exp $ */
 
 #include "arch.h"
 
@@ -184,7 +184,7 @@ arch_get_data (const char *archive, const char *member,
       if (*buf != NULL)
         {
 	  read (archive_fd, *buf, *size);
-	  memset (*buf + *size, 0, 4);
+	  memset (*buf + *size, '\0', 4);
 	}
       else
 	*size = 0;
