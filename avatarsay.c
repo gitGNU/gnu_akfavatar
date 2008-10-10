@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.239 2008-10-09 18:39:03 akf Exp $ */
+/* $Id: avatarsay.c,v 2.240 2008-10-10 08:44:33 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -731,7 +731,7 @@ static char *
 read_text_file (const char *f)
 {
   int fd;
-  char *buf, *nbuf;
+  char *buf;
   size_t size, capacity;
   ssize_t nread;
 
@@ -745,22 +745,32 @@ read_text_file (const char *f)
     {
       do
 	{
-	  capacity += 10240;
-	  nbuf = (char *) realloc (buf, capacity + 4);
-	  if (nbuf)
+	  /* do we need more capacity? */
+	  if (size >= capacity)
 	    {
-	      buf = nbuf;
-	      nread = read (fd, buf + size, capacity - size);
-	      if (nread > 0)
-		size += nread;
+	      char *nbuf;
+	      
+	      capacity += BUFSIZ;
+	      nbuf = (char *) realloc (buf, capacity + 4);
+
+	      if (nbuf)
+		buf = nbuf;
+	      else
+	        break;
 	    }
+
+	  nread = read (fd, buf + size, capacity - size);
+	  if (nread > 0)
+	    size += nread;
 	}
-      while (nread > 0 && nbuf);
+      while (nread > 0);
 
       close (fd);
 
       if (buf)
 	{
+	  char *nbuf;
+	  
 	  /* I terminate with 4 zeros, in case UTF-32 is used */
 	  memset (buf + size, '\0', 4);
 	  nbuf = (char *) realloc (buf, size + 4);
@@ -2798,7 +2808,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.239 2008-10-09 18:39:03 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.240 2008-10-10 08:44:33 akf Exp $");
 
   return EXIT_SUCCESS;
 }
