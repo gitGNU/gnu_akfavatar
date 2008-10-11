@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.32 2008-10-07 06:33:55 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.33 2008-10-11 14:02:21 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -507,34 +507,50 @@ ist.
 
 @table @code
 @item CSI ? 56 h
-schaltet den Modus für langsame Textausgabe an
+schaltet den Modus für langsame Textausgabe an (veraltet: besser APC 
+verwenden)
 
 @item CSI ? 56 l
-schaltet den Modus für langsame Textausgabe aus (Voreinstellung)
+schaltet den Modus für langsame Textausgabe aus (veraltet: besser APC 
+verwenden)
 
 @item CSI 8 ; @var{Höhe} ; @var{Breite} t
 ändert die Höhe und Breite der Sprechblase (Anzahl der Zeichen).
 Der Wert 0 steht für das jeweilige Maximum.
-(Dies ist tatsächlich kompatibel mit @command{xterm})
+(Dies ist tatsächlich kompatibel mit dem original @command{xterm})
+
+@item APC @var{Befehl} ST
+sendet einen Befehl an avatarsay. @xref{Anweisungen für avatarsay}.
 
 @end table
 
-Weitere Erweiterungen sind geplant.
+@emph{Erläuterungen:}
 
-@emph{Anmerkungen:}
-``CSI'' (Control Sequence Introducer) kann entweder durch die Steuerzeichen
-@code{ESC} und @code{[} ausgelöst werden, oder in einigen Zeichensätzen durch 
-das einzelne Steuerzeichen @code{9Bhex}. 
-``APC'' (Application Program Command) kann durch die Steuerzeichen 
-@code{ESC} und @code{_} ausgelöst werden, oder in einigen
-Zeichensätzen durch das einzelne Steuerzeichen @code{9Fhex}.
-``ST'' (String Terminator)  kann durch die Steuerzeichen 
-@code{ESC} und @code{\} ausgelöst werden, oder in einigen
-Zeichensätzen durch das einzelne Steuerzeichen @code{9Chex}.
+@table @asis
+
+@item @dfn{ESC} (Escape)
+ist das Steuerzeichen @code{1Bhex}
+
+@item @dfn{CSI} (Control Sequence Introducer)
+kann entweder durch die Steuerzeichen @code{ESC} und @code{[} ausgelöst 
+werden, oder in einigen Zeichensätzen durch das einzelne Steuerzeichen 
+@code{9Bhex}.
+
+@item @dfn{APC} (Application Program Command)
+kann durch die Steuerzeichen @code{ESC} und @code{_} ausgelöst werden, 
+oder in einigen Zeichensätzen durch das einzelne Steuerzeichen 
+@code{9Fhex}.
+
+@item @dfn{ST} (String Terminator)
+kann durch die Steuerzeichen @code{ESC} und @code{\} ausgelöst werden, 
+oder in einigen Zeichensätzen durch das einzelne Steuerzeichen 
+@code{9Chex}.
+
+@end table
 
 Die Varianten mit @code{ESC} sind vorzuziehen. Insbesondere in UTF-8 
 hat man durch die einzelnen Steuerzeichen keinen Vorteil, da diese auch
-mit 2 Byte kodiert werden müssten.
+mit zwei Byte kodiert werden müssen.
 
 @node Text-Betrachter
 @section Einsatz von @command{avatarsay} als lustiger Text-Betrachter

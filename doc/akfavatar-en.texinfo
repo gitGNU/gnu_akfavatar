@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.39 2008-10-07 06:33:56 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.40 2008-10-11 14:02:21 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -465,34 +465,47 @@ for the existence of the environment variable @code{AKFAVTTERM}.
 
 @table @code
 @item CSI ? 56 h
-switches the slowprint-mode on
+switches the slowprint-mode on (deprecated: use APC)
 
 @item CSI ? 56 l
-switches the slowprint-mode off (default)
+switches the slowprint-mode off (deprecated: use APC)
 
 @item CSI 8 ; @var{height} ; @var{width} t
 set the height and width (in characters) of the balloon.
 The value 0 sets the maximum value.
-(This is actually compatible to @command{xterm})
+(This is actually compatible to the original @command{xterm})
+
+@item APC @var{command} ST
+sends a command to avatarsay. @xref{Commands for avatarsay}.
 
 @end table
 
 further extensions are planned.
 
-@emph{Remarks:}
-``CSI'' (Control Sequence Introducer) can be represented with the control
-sequence @code{ESC} followed by @code{[} or in some charsets with the single
-control code @code{9Bhex}.
-``APC'' (Application Program Command) can be represented with the control
-sequence @code{ESC} followed by @code{_}, or in some charsets with the single
-control code @code{9Fhex}.
-``ST'' (String Terminator) can be represented with the control
-sequence @code{ESC} followed by @code{\}, or in some charsets with the single
-control code @code{9Chex}.
+@emph{Explanations:}
+
+@table @asis
+
+@item @dfn{ESC} (Escape)
+is the control code @code{1Bhex}
+
+@item @dfn{CSI} (Control Sequence Introducer)
+can be represented with the control sequence @code{ESC} followed by 
+@code{[} or in some charsets with the single control code @code{9Bhex}.
+
+@item @dfn{APC} (Application Program Command)
+can be represented with the control sequence @code{ESC} followed by @code{_}, 
+or in some charsets with the single control code @code{9Fhex}.
+
+@item @dfn{ST} (String Terminator)
+can be represented with the control sequence @code{ESC} followed by @code{\}, 
+or in some charsets with the single control code @code{9Chex}.
+
+@end table
 
 The variants with @code{ESC} should be preferred. Especially in UTF-8 there 
 is no advantage in the single control codes, since they also have to be 
-encoded with 2 Bytes.
+encoded with two bytes.
 
 @node Text-viewer
 @section Using @command{avatarsay} as fancy text-viewer.
