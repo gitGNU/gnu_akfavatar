@@ -122,10 +122,12 @@ var WindMin, WindMax: word;
 
 { load the Avatar image from a file }
 { should be used before any output took place }
+{ but it can be changed later }
 procedure AvatarImageFile(FileName: string);
 
 { load the Avatar image from memory }
 { should be used before any output took place }
+{ but it can be changed later }
 procedure AvatarImageData(data: pointer; size: LongInt);
 
 { set a different background color }
@@ -394,13 +396,19 @@ function avt_import_gimp_image(gimp_image: PGimpImage): PAvatarImage;
 function avt_import_image_file (FileName: CString): PAvatarImage;
   libakfavatar 'avt_import_image_file';
 
-function avt_import_image_data (Data: Pointer; size: CInteger): PAvatarImage;
+function avt_import_image_data(Data: Pointer; size: CInteger): PAvatarImage;
   libakfavatar 'avt_import_image_data';
+
+function avt_change_avatar_image(image: PAvatarImage): CInteger;
+  libakfavatar 'avt_change_avatar_image';
+
+procedure avt_free_image(image: PAvatarImage);
+  libakfavatar 'avt_free_image';
 
 function avt_show_image_file(FileName: CString): CInteger;
   libakfavatar 'avt_show_image_file';
 
-function avt_show_image_data(Data: pointer; size:CInteger): CInteger;
+function avt_show_image_data(Data: pointer; size: CInteger): CInteger;
   libakfavatar 'avt_show_image_data';
 
 procedure avt_set_background_color (red, green, blue: CInteger);
@@ -438,7 +446,7 @@ procedure avt_flash; libakfavatar 'avt_flash';
 function avt_load_wave_file(f: CString): pointer;
   libakfavatar 'avt_load_wave_file';
 
-function avt_load_wave_data (Data: Pointer; size: CInteger): PAvatarImage;
+function avt_load_wave_data (Data: Pointer; size: CInteger): Pointer;
   libakfavatar 'avt_load_wave_data';
 
 procedure avt_free_audio(snd: pointer); 
@@ -530,16 +538,28 @@ end;
 
 procedure AvatarImageFile(FileName: string);
 begin
-{ when it is already initialized, it's too late }
-if AvatarImage = NIL then
-  AvatarImage := avt_import_image_file (String2CString(FileName))
+if AvatarImage <> NIL then avt_free_image(AvatarImage);
+
+AvatarImage := avt_import_image_file(String2CString(FileName));
+
+if initialized then 
+  begin
+  avt_change_avatar_image(AvatarImage);
+  AvatarImage := NIL
+  end
 end;
 
 procedure AvatarImageData(data: pointer; size: LongInt);
 begin
-{ when it is already initialized, it's too late }
-if AvatarImage = NIL then
-  AvatarImage := avt_import_image_data (data, size)
+if AvatarImage <> NIL then avt_free_image(AvatarImage);
+
+AvatarImage := avt_import_image_data(data, size);
+
+if initialized then
+  begin
+  avt_change_avatar_image(AvatarImage);
+  AvatarImage := NIL
+  end
 end;
 
 procedure RestoreInOut;
@@ -580,6 +600,8 @@ if initialize('AKFAvatar', 'AKFAvatar', AvatarImage,
 if avt_get_status = 1 then Halt; { shouldn't happen here yet }
 
 initialized := true;
+
+AvatarImage := NIL; { it was freed by initialize }
 ScrSize.x := avt_get_max_x;
 ScrSize.y := avt_get_max_y;
 

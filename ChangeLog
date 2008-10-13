@@ -3,6 +3,9 @@
 	* akfavatar.pas (BalloonSize, BalloonHeight, BalloonWidth):
 	new functions
 
+	* akfavatar.pas (AvatarImageFile, AvatarImageData, initializeAvatar):
+	allow changing the avatar while running
+
 2008-10-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (read_text_file): new function
