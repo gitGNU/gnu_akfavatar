@@ -429,9 +429,9 @@ procedure avt_normal_text; libakfavatar 'avt_normal_text';
 procedure avt_activate_cursor (onoff: avt_bool_t); 
   libakfavatar 'avt_activate_cursor';
 
-function initialize(title, icon: CString;
-                     image: PAvatarImage;
-                     mode: CInteger): CInteger;
+function avt_initialize(title, icon: CString;
+                        image: PAvatarImage;
+                        mode: CInteger): CInteger;
   libakfavatar 'avt_initialize';
 
 function avt_initialize_audio: CInteger; 
@@ -589,8 +589,8 @@ procedure initializeAvatar;
 begin
 if AvatarImage = NIL then AvatarImage := avt_default;
 
-if initialize('AKFAvatar', 'AKFAvatar', AvatarImage,
-              ord(fullscreen)) < 0 
+if avt_initialize('AKFAvatar', 'AKFAvatar', AvatarImage,
+                  ord(fullscreen)) < 0 
   then 
     begin
     WriteLn(stderr, 'cannot initialize graphics: ', AvatarGetError);
@@ -842,6 +842,7 @@ end;
 
 procedure BalloonSize(height, width: integer);
 begin
+if not initialized then initializeAvatar;
 avt_set_balloon_size(height, width);
 
 { set the sizes to what we really get, not what was asked for }
@@ -852,6 +853,7 @@ end;
 
 procedure BalloonWidth(width: integer);
 begin
+if not initialized then initializeAvatar;
 avt_set_balloon_width (width);
 ScrSize.x := avt_get_max_x;
 Window(1, 1, ScrSize.x, ScrSize.y);
@@ -859,6 +861,7 @@ end;
 
 procedure BalloonHeight(height: integer);
 begin
+if not initialized then initializeAvatar;
 avt_set_balloon_height (height);
 ScrSize.y := avt_get_max_y;
 Window(1, 1, ScrSize.x, ScrSize.y);
