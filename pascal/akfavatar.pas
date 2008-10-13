@@ -1,6 +1,6 @@
 {*
- * Pascal binding to the AKFAvatar library version 0.15
- * Copyright (c) 2007 Andreas K. Foerster <info@akfoerster.de>
+ * Pascal binding to the AKFAvatar library version 0.16
+ * Copyright (c) 2007, 2008 Andreas K. Foerster <info@akfoerster.de>
  *
  * Can be used with GNU-Pascal or FreePascal
  *
@@ -35,7 +35,7 @@ no support planned for:
 - TextMode, LastMode:
     remove that code, or use $IfDef MSDOS
 - writing to WindMin, WindMax:
-    use Window
+    use the command Window
 }
 
 {$IfDef FPC}
@@ -121,18 +121,19 @@ var
 var WindMin, WindMax: word;
 
 { load the Avatar image from a file }
-{ must be used before any output took place }
+{ should be used before any output took place }
 procedure AvatarImageFile(FileName: string);
 
 { load the Avatar image from memory }
-{ must be used before any output took place }
+{ should be used before any output took place }
 procedure AvatarImageData(data: pointer; size: LongInt);
 
-{ set a different background color (default is grey) }
+{ set a different background color }
 { should be used before any output took place }
 procedure setBackgroundColor(red, green, blue: byte);
 
 { change pace of text and page flipping }
+{ the scale is milliseconds }
 procedure setTextDelay(delay: integer);
 procedure setFlipPageDelay(delay: integer);
 
@@ -146,7 +147,7 @@ procedure setTextDirection(direction: TextDirection);
 { The "Screen" is the textarea }
 { The name is chosen for compatiblity with the CRT unit }
 { This causes the library to be initialized }
-{ The avatar-image and the background color must be set before this }
+{ The avatar-image and the background color should be set before this }
 function ScreenSize: TScreenSize;
 
 { assign text-variable to the avatar }
@@ -271,6 +272,12 @@ function WhereX: integer;
 function WhereY: integer;
 procedure GotoXY(x, y: integer);
 procedure Window(x1, y1, x2, y2: Byte);
+
+{ set the size of the balloon }
+{ the window is reset to the new full size }
+procedure BalloonSize(height, width: integer);
+procedure BalloonWidth(width: integer);
+procedure BalloonHeight(height: integer);
 
 { set/get scroll mode }
 { 0 = off (page-flipping), 1 = normal }
@@ -448,6 +455,15 @@ function avt_get_error: CString; libakfavatar 'avt_get_error';
 
 procedure avt_viewport(x, y, width, height: CInteger); 
   libakfavatar 'avt_viewport';
+
+procedure avt_set_balloon_size(height, width: CInteger);
+  libakfavatar 'avt_set_balloon_size';
+
+procedure avt_set_balloon_width(width: CInteger);
+  libakfavatar 'avt_set_balloon_width';
+
+procedure avt_set_balloon_height(height: CInteger);
+  libakfavatar 'avt_set_balloon_height';
 
 function avt_where_x: CInteger; libakfavatar 'avt_where_x';
 function avt_where_y: CInteger; libakfavatar 'avt_where_y';
@@ -800,6 +816,30 @@ if (x1 >= 1) and (x1 <= ScrSize.x) and
   WindMin := ((y1-1) shl 8) or (x1-1);
   WindMax := ((y2-1) shl 8) or (x2-1)
   end
+end;
+
+procedure BalloonSize(height, width: integer);
+begin
+avt_set_balloon_size(height, width);
+
+{ set the sizes to what we really get, not what was asked for }
+ScrSize.x := avt_get_max_x;
+ScrSize.y := avt_get_max_y;
+Window(1, 1, ScrSize.x, ScrSize.y);
+end;
+
+procedure BalloonWidth(width: integer);
+begin
+avt_set_balloon_width (width);
+ScrSize.x := avt_get_max_x;
+Window(1, 1, ScrSize.x, ScrSize.y);
+end;
+
+procedure BalloonHeight(height: integer);
+begin
+avt_set_balloon_height (height);
+ScrSize.y := avt_get_max_y;
+Window(1, 1, ScrSize.x, ScrSize.y);
 end;
 
 procedure waitkey;

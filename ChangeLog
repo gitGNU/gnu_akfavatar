@@ -1,6 +1,11 @@
+2008-10-13  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.pas (BalloonSize, BalloonHeight, BalloonWidth):
+	new functions
+
 2008-10-09  Andreas K. Foerster  <info@akfoerster.de>
 
-	*avatarsay.c (read_text_file): new function
+	* avatarsay.c (read_text_file): new function
 	(handle_credits_command): use read_text_file
 
 	* avatarsay.c (handle_width_command, handle_height_command)
