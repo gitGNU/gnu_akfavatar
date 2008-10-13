@@ -1,13 +1,12 @@
 {
  * simple multiplication
+ * Copyright (c) 2007, 2008 Andreas K. Foerster <info@akfoerster.de>
  *
  * This example shows how to write programs, that use features
  * of the Avatar library, but can still be compiled without it.
  *
  * use "gpcavatar" or "fpcavatar" to compile it with AKFAvatar
  * or compile it directly with gpc or fpc to get a console program
- *
- * Copyright (c) 2007 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -95,7 +94,12 @@ end;
 procedure AskWhatToExercise;
 var c: char;
 begin
-WriteLn(question);
+{$IfDef AKFAVATAR}
+  BalloonSize (1, 0);
+{$EndIf}
+
+ClrScr;
+Write(question);
 
 repeat
   c := ReadKey
@@ -134,6 +138,10 @@ var a, b, r, e: integer;
 var counter: integer;
 var isCorrect: boolean;
 begin
+{$IfDef AKFAVATAR}
+  BalloonSize (4, 40);
+{$EndIf}
+
 counter := 0;
 
 repeat
@@ -143,7 +151,6 @@ repeat
   r := a * b;
 
   repeat
-    Write('':5); { some space at the beginning }
     Write(counter:3, ') ');
     
     case exercise of
@@ -185,9 +192,6 @@ Begin { main program }
   correctsnd := LoadSoundFile('correct.wav');
   wrongsnd := LoadSoundFile('wrong.wav');
 {$EndIf}
-
-{ This is either defined in AKFAvatar or in CRT }
-ClrScr;
 
 endRequest := false;
 Randomize;
