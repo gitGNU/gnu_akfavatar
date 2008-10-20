@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.241 2008-10-11 06:30:49 akf Exp $ */
+/* $Id: avatarsay.c,v 2.242 2008-10-20 09:15:57 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -749,14 +749,14 @@ read_text_file (const char *f)
 	  if (size >= capacity)
 	    {
 	      char *nbuf;
-	      
+
 	      capacity += BUFSIZ;
 	      nbuf = (char *) realloc (buf, capacity + 4);
 
 	      if (nbuf)
 		buf = nbuf;
 	      else
-	        break;
+		break;
 	    }
 
 	  nread = read (fd, buf + size, capacity - size);
@@ -770,7 +770,7 @@ read_text_file (const char *f)
       if (buf)
 	{
 	  char *nbuf;
-	  
+
 	  /* I terminate with 4 zeros, in case UTF-32 is used */
 	  memset (buf + size, '\0', 4);
 	  nbuf = (char *) realloc (buf, size + 4);
@@ -1928,7 +1928,7 @@ process_script (int fd)
    * a stripline starts the text
    */
   if (!rawmode)
-    while (nread != 0 && !initialized && wcsncmp (line, L"---", 3) != 0
+    while (nread != 0 && wcsncmp (line, L"---", 3) != 0
 	   && (wcscmp (line, L"\n") == 0 || wcscmp (line, L"\r\n") == 0
 	       || iscommand (line, &stop)) && !stop)
       {
@@ -1946,10 +1946,12 @@ process_script (int fd)
 
   /* initialize the graphics */
   if (!initialized && !stop)
-    initialize ();
+    {
+      initialize ();
 
-  if (!moved_in && !popup && !stop)
-    move_in ();
+      if (!popup)
+	move_in ();
+    }
 
   /* show text */
   if (line && !stop && wcsncmp (line, L"---", 3) != 0)
@@ -2797,7 +2799,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.241 2008-10-11 06:30:49 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.242 2008-10-20 09:15:57 akf Exp $");
 
   return EXIT_SUCCESS;
 }
