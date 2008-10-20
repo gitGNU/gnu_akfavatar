@@ -3,6 +3,9 @@
 	* avatarsay (process_script):
 	fix handling of initialisation
 
+	* avatar (avt_draw_balloon):
+	fix: update whole screen
+
 2008-10-13  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.pas (BalloonSize, BalloonHeight, BalloonWidth):

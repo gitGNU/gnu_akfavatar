@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.172 2008-10-04 10:48:30 akf Exp $ */
+/* $Id: avatar.c,v 2.173 2008-10-20 09:44:53 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -837,12 +837,15 @@ avt_draw_balloon (void)
       avt_show_text_cursor (AVT_TRUE);
     }
 
+  /* update everything */
+  /* (there may be leftovers from large images) */
+  SDL_UpdateRect (screen, 0, 0, 0, 0);
+
   /* 
    * only allow drawings inside this area from now on 
    * (only for blitting)
    */
   SDL_SetClipRect (screen, &viewport);
-  SDL_UpdateRect (screen, window.x, window.y, window.w, window.h);
 }
 
 void
@@ -4193,7 +4196,7 @@ avt_initialize (const char *title, const char *icontitle,
   
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.172 2008-10-04 10:48:30 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.173 2008-10-20 09:44:53 akf Exp $");
 
   /*
    * Initialize the display, accept any format
