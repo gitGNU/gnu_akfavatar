@@ -2,6 +2,9 @@
 
 	* avatar.c (avt_draw_balloon):
 	when there is no avatar, put balloon at the top
+	
+	* avatarsay.c (avatar_command):
+	new command: empty
 
 2008-10-22  Andreas K. Foerster  <info@akfoerster.de>
 
