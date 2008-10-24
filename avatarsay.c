@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.244 2008-10-24 06:43:38 akf Exp $ */
+/* $Id: avatarsay.c,v 2.245 2008-10-24 07:04:44 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1487,7 +1487,7 @@ avatar_command (wchar_t * s, int *stop)
   /* move avatar out */
   if (wcscmp (s, L"move out") == 0)
     {
-      if (initialized && moved_in)
+      if (initialized)
 	avt_move_out ();
       return;
     }
@@ -2807,7 +2807,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.244 2008-10-24 06:43:38 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.245 2008-10-24 07:04:44 akf Exp $");
 
   return EXIT_SUCCESS;
 }
