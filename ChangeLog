@@ -1,3 +1,8 @@
+2008-10-24  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_draw_balloon):
+	when there is no avatar, put balloon at the top
+
 2008-10-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (help, checkoptions):

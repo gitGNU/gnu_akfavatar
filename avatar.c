@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.173 2008-10-20 09:44:53 akf Exp $ */
+/* $Id: avatar.c,v 2.174 2008-10-24 06:37:29 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -700,8 +700,11 @@ avt_draw_balloon (void)
   textfield.w = (balloonwidth * FONTWIDTH);
   textfield.h = (balloonheight * LINEHEIGHT);
 
-  textfield.y = window.y + ((balloonmaxheight - balloonheight) * LINEHEIGHT)
-    + TOPMARGIN + BALLOON_INNER_MARGIN;
+  if (avt_image)
+    textfield.y = window.y + ((balloonmaxheight - balloonheight) * LINEHEIGHT)
+      + TOPMARGIN + BALLOON_INNER_MARGIN;
+  else
+    textfield.y = window.y + TOPMARGIN + BALLOON_INNER_MARGIN;
 
   /* centered as default */
   textfield.x = window.x + (window.w / 2) - (balloonwidth * FONTWIDTH / 2);
@@ -4196,7 +4199,7 @@ avt_initialize (const char *title, const char *icontitle,
   
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.173 2008-10-20 09:44:53 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.174 2008-10-24 06:37:29 akf Exp $");
 
   /*
    * Initialize the display, accept any format
