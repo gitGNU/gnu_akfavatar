@@ -23,7 +23,7 @@ prefix = /usr/$(TARGET)
 libdir = $(prefix)/lib
 includedir = $(prefix)/include
 
-all: akfavatar.dll libakfavatar.a libavtcio.a avatarsay.exe avatarsay-d.exe
+all: akfavatar.dll libakfavatar.a libavtcio.a avatarsay.exe
 
 avtsayinfo.rc: Makefile
 	@{ \
@@ -232,7 +232,8 @@ avtmsg.o: ../avtmsg.c ../avtmsg.h
 arch.o: ../arch.c ../arch.h
 	$(CC) $(CFLAGS) -c -o $@ ../arch.c
 
-avatarsay: avatarsay.exe
+avatarsay.exe: avatarsay-d.exe
+	mv avatarsay-d.exe avatarsay.exe
 
 # uses dynamic lib
 avatarsay-d.exe: avatarsay.o avtfilechooser.o avtmsg.o akfavatar.dll \
@@ -242,7 +243,7 @@ avatarsay-d.exe: avatarsay.o avtfilechooser.o avtmsg.o akfavatar.dll \
 	  -L. -lakfavatar $(LDFLAGS) $(SDLLDFLAGS)
 
 # uses static lib
-avatarsay.exe: avatarsay.o avtfilechooser.o avtmsg.o libakfavatar.a \
+avatarsay-s.exe: avatarsay.o avtfilechooser.o avtmsg.o libakfavatar.a \
 	       arch.o avtsayinfo.o
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ avatarsay.o avtfilechooser.o \
 	  avtmsg.o avtsayinfo.o arch.o \
