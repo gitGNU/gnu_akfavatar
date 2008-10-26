@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.23 2008-10-07 15:48:30 akf Exp $ */
+/* $Id: avtterm.c,v 2.24 2008-10-26 11:16:27 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -57,6 +57,10 @@
 
 /* Vt100 graphics is handled internaly */
 #define VT100 "VT100 graphics"
+
+/* hack to get a macro stringified :-( */
+#define XSTR(x) STR(x)
+#define STR(x) #x
 
 /* default encoding - either system encoding or given per parameters */
 /* supported in SDL: ASCII, ISO-8859-1, UTF-8, UTF-16, UTF-32 */
@@ -1556,7 +1560,7 @@ avtterm_start (const char *system_encoding, char *const prg_argv[])
 	putenv ("TERM=" TERM);
 
       /* programs can identify avatarsay with this */
-      putenv ("AKFAVTTERM=" AVTVERSION);
+      putenv ("AKFAVTTERM=" XSTR(AVTVERSIONNR));
 
       if (prg_argv == NULL)	/* execute shell */
 	execl (shell, shell, (char *) NULL);

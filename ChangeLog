@@ -1,3 +1,9 @@
+2008-10-26  Andreas K. Foerster  <info@akfoerster.de>
+
+	* configure (AVTVERSIONNR): new macro 
+	avtterm.c (avtterm_start):
+	use number-only-value for env-var AKFAVTTERM
+
 2008-10-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_draw_balloon):
