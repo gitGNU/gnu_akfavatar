@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: arch.c,v 2.5 2008-10-09 18:39:03 akf Exp $ */
+/* $Id: arch.c,v 2.6 2008-11-03 19:36:31 akf Exp $ */
 
 #include "arch.h"
 
@@ -49,15 +49,16 @@ int
 arch_open (const char *archive)
 {
   int fd;
+  ssize_t nread;
   char archive_magic[8];
 
   fd = open (archive, O_RDONLY | O_BINARY);
   if (fd < 0)
     return -1;
 
-  read (fd, &archive_magic, 8);
+  nread = read (fd, &archive_magic, 8);
 
-  if (memcmp ("!<arch>\n", archive_magic, 8) != 0)
+  if (nread != 8 || memcmp ("!<arch>\n", archive_magic, 8) != 0)
     {
       close (fd);
       fd = -1;
@@ -82,7 +83,8 @@ arch_find_member (int fd, const char *member)
     return 0;
 
   lseek (fd, 8, SEEK_SET);	/* go to first entry */
-  read (fd, &header, sizeof (header));
+  if (read (fd, &header, sizeof (header)) != sizeof (header))
+    return 0;
 
   /* check magic entry */
   if (memcmp (&header.magic, "`\n", 2) != 0)
@@ -125,7 +127,8 @@ arch_first_member (int fd, char *member)
   char *end;
 
   lseek (fd, 8, SEEK_SET);	/* go to first entry */
-  read (fd, &header, sizeof (header));
+  if (read (fd, &header, sizeof (header)) != sizeof (header))
+    return 0;
 
   /* check magic entry */
   if (memcmp (&header.magic, "`\n", 2) != 0)
@@ -180,11 +183,12 @@ arch_get_data (const char *archive, const char *member,
     {
       /* we add 4 0-Bytes as possible string-terminator */
       *buf = (void *) malloc (*size + 4);
-      
+
       if (*buf != NULL)
-        {
-	  read (archive_fd, *buf, *size);
-	  memset (*buf + *size, '\0', 4);
+	{
+	  /* FIXME */
+	  if (read (archive_fd, *buf, *size) > 0)
+	    memset (*buf + *size, '\0', 4);
 	}
       else
 	*size = 0;

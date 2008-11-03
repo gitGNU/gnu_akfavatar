@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.24 2008-10-26 11:16:27 akf Exp $ */
+/* $Id: avtterm.c,v 2.25 2008-11-03 19:36:31 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -231,6 +231,23 @@ get_user_shell (void)
 }
 
 static void
+write_term (const char *buf, size_t count)
+{
+  ssize_t r;
+
+  do
+    {
+      r = write (prg_input, buf, count);
+      if (r > 0)
+	{
+	  count -= r;
+	  buf += r;
+	}
+    }
+  while (r > 0 && count > 0);
+}
+
+static void
 prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
 {
   /* TODO: support application_keypad */
@@ -243,115 +260,115 @@ prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
 	{
 	case 273:		/* up arrow */
 	  dec_cursor_seq[2] = 'A';
-	  write (prg_input, dec_cursor_seq, 3);
+	  write_term (dec_cursor_seq, 3);
 	  break;
 
 	case 274:		/* down arrow */
 	  dec_cursor_seq[2] = 'B';
-	  write (prg_input, dec_cursor_seq, 3);
+	  write_term (dec_cursor_seq, 3);
 	  break;
 
 	case 275:		/* right arrow */
 	  dec_cursor_seq[2] = 'C';
-	  write (prg_input, dec_cursor_seq, 3);
+	  write_term (dec_cursor_seq, 3);
 	  break;
 
 	case 276:		/* left arrow */
 	  dec_cursor_seq[2] = 'D';
-	  write (prg_input, dec_cursor_seq, 3);
+	  write_term (dec_cursor_seq, 3);
 	  break;
 
 	case 277:		/* Insert */
-	  /* write (prg_input, "\033[L", 3); */
-	  write (prg_input, "\033[2~", 4);	/* linux */
+	  /* write_term ("\033[L", 3); */
+	  write_term ("\033[2~", 4);	/* linux */
 	  break;
 
 	case 278:		/* Home */
-	  /* write (prg_input, "\033[H", 3); */
-	  write (prg_input, "\033[1~", 4);	/* linux */
+	  /* write_term ("\033[H", 3); */
+	  write_term ("\033[1~", 4);	/* linux */
 	  break;
 
 	case 279:		/* End */
-	  /* write (prg_input, "\033[0w", 4); */
-	  write (prg_input, "\033[4~", 4);	/* linux */
+	  /* write_term ("\033[0w", 4); */
+	  write_term ("\033[4~", 4);	/* linux */
 	  break;
 
 	case 280:		/* Page up */
-	  write (prg_input, "\033[5~", 4);	/* linux */
+	  write_term ("\033[5~", 4);	/* linux */
 	  break;
 
 	case 281:		/* Page down */
-	  write (prg_input, "\033[6~", 4);	/* linux */
+	  write_term ("\033[6~", 4);	/* linux */
 	  break;
 
 	case 282:		/* F1 */
-	  write (prg_input, "\033[[A", 4);	/* linux */
-	  /* write (prg_input, "\033OP", 3); *//* DEC */
+	  write_term ("\033[[A", 4);	/* linux */
+	  /* write_term ("\033OP", 3); *//* DEC */
 	  break;
 
 	case 283:		/* F2 */
-	  write (prg_input, "\033[[B", 4);	/* linux */
-	  /* write (prg_input, "\033OQ", 3); *//* DEC */
+	  write_term ("\033[[B", 4);	/* linux */
+	  /* write_term ("\033OQ", 3); *//* DEC */
 	  break;
 
 	case 284:		/* F3 */
-	  write (prg_input, "\033[[C", 4);	/* linux */
-	  /* write (prg_input, "\033OR", 3); *//* DEC */
+	  write_term ("\033[[C", 4);	/* linux */
+	  /* write_term ("\033OR", 3); *//* DEC */
 	  break;
 
 	case 285:		/* F4 */
-	  write (prg_input, "\033[[D", 4);	/* linux */
-	  /* write (prg_input, "\033OS", 3); *//* DEC */
+	  write_term ("\033[[D", 4);	/* linux */
+	  /* write_term ("\033OS", 3); *//* DEC */
 	  break;
 
 	case 286:		/* F5 */
-	  write (prg_input, "\033[[E", 4);	/* linux */
-	  /* write (prg_input, "\033Ot", 3); *//* DEC */
+	  write_term ("\033[[E", 4);	/* linux */
+	  /* write_term ("\033Ot", 3); *//* DEC */
 	  break;
 
 	case 287:		/* F6 */
-	  write (prg_input, "\033[17~", 5);	/* linux */
-	  /* write (prg_input, "\033Ou", 3); *//* DEC */
+	  write_term ("\033[17~", 5);	/* linux */
+	  /* write_term ("\033Ou", 3); *//* DEC */
 	  break;
 
 	case 288:		/* F7 */
-	  write (prg_input, "\033[[18~", 5);	/* linux */
-	  /* write (prg_input, "\033Ov", 3); *//* DEC */
+	  write_term ("\033[[18~", 5);	/* linux */
+	  /* write_term ("\033Ov", 3); *//* DEC */
 	  break;
 
 	case 289:		/* F8 */
-	  write (prg_input, "\033[19~", 5);	/* linux */
-	  /* write (prg_input, "\033Ol", 3); *//* DEC */
+	  write_term ("\033[19~", 5);	/* linux */
+	  /* write_term ("\033Ol", 3); *//* DEC */
 	  break;
 
 	case 290:		/* F9 */
-	  write (prg_input, "\033[20~", 5);	/* linux */
-	  /* write (prg_input, "\033Ow", 3); *//* DEC */
+	  write_term ("\033[20~", 5);	/* linux */
+	  /* write_term ("\033Ow", 3); *//* DEC */
 	  break;
 
 	case 291:		/* F10 */
-	  write (prg_input, "\033[21~", 5);	/* linux */
-	  /* write (prg_input, "\033Ox", 3); *//* DEC */
+	  write_term ("\033[21~", 5);	/* linux */
+	  /* write_term ("\033Ox", 3); *//* DEC */
 	  break;
 
 	case 292:		/* F11 */
-	  write (prg_input, "\033[23~", 5);	/* linux */
+	  write_term ("\033[23~", 5);	/* linux */
 	  break;
 
 	case 293:		/* F12 */
-	  write (prg_input, "\033[24~", 5);	/* linux */
+	  write_term ("\033[24~", 5);	/* linux */
 	  break;
 
 	case 294:		/* F13 */
-	  write (prg_input, "\033[25~", 5);	/* linux */
+	  write_term ("\033[25~", 5);	/* linux */
 	  break;
 
 	case 295:		/* F14 */
-	  write (prg_input, "\033[26~", 5);	/* linux */
+	  write_term ("\033[26~", 5);	/* linux */
 	  break;
 
 	case 296:		/* F15 */
-	  write (prg_input, "\033[27~", 5);	/* linux */
+	  write_term ("\033[27~", 5);	/* linux */
 	  break;
 
 	default:
@@ -365,7 +382,7 @@ prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
 	      length = avt_mb_encode (&mbstring, &ch, 1);
 	      if (length != -1)
 		{
-		  write (prg_input, mbstring, length);
+		  write_term (mbstring, length);
 		  avt_free (mbstring);
 		}
 	    }			/* if (unicode) */
@@ -386,7 +403,7 @@ prg_mousehandler (int button, avt_bool_t pressed, int x, int y)
     {
       snprintf (code, sizeof (code), "\033[M%c%c%c",
 		(char) (040 + button), (char) (040 + x), (char) (040 + y));
-      write (prg_input, &code, sizeof (code) - 1);
+      write_term (&code[0], sizeof (code) - 1);
     }
 }
 
@@ -794,7 +811,7 @@ CSI_sequence (int fd, wchar_t last_character)
 
     case L'c':			/* DA */
       if (sequence[0] == 'c')
-	write (prg_input, DS, sizeof (DS) - 1);
+	write_term (DS, sizeof (DS) - 1);
       else if (sequence[0] == '?')
 	{			/* I have no real infos about that :-( */
 	  if (sequence[1] == '1' && sequence[2] == 'c')
@@ -1021,7 +1038,7 @@ CSI_sequence (int fd, wchar_t last_character)
 
     case L'n':			/* DSR */
       if (sequence[0] == '5' && sequence[1] == 'n')
-	write (prg_input, "\033[0n", 4);	/* device okay */
+	write_term ("\033[0n", 4);	/* device okay */
       /* "\033[3n" for failure */
       else if (sequence[0] == '6' && sequence[1] == 'n')
 	{
@@ -1029,7 +1046,7 @@ CSI_sequence (int fd, wchar_t last_character)
 	  char s[80];
 	  snprintf (s, sizeof (s), "\033[%d;%dR",
 		    avt_where_x (), avt_where_y ());
-	  write (prg_input, s, strlen (s));
+	  write_term (s, strlen (s));
 	}
       /* other values are unknown */
       break;
@@ -1344,7 +1361,7 @@ escape_sequence (int fd, wchar_t last_character)
       break;
 
     case L'Z':			/* DECID */
-      write (prg_input, DS, sizeof (DS) - 1);
+      write_term (DS, sizeof (DS) - 1);
       break;
 
       /* OSC: Operating System Command */
@@ -1560,7 +1577,7 @@ avtterm_start (const char *system_encoding, char *const prg_argv[])
 	putenv ("TERM=" TERM);
 
       /* programs can identify avatarsay with this */
-      putenv ("AKFAVTTERM=" XSTR(AVTVERSIONNR));
+      putenv ("AKFAVTTERM=" XSTR (AVTVERSIONNR));
 
       if (prg_argv == NULL)	/* execute shell */
 	execl (shell, shell, (char *) NULL);

@@ -1,3 +1,14 @@
+2008-11-03  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtterm.c (write_term): new function
+	fix warnings
+
+	* avatarsay.c: check value for chdir
+	fix warnings
+
+	* arch.c: always check value for read
+	fix warnings
+
 2008-10-26  Andreas K. Foerster  <info@akfoerster.de>
 
 	* configure (AVTVERSIONNR): new macro 

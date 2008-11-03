@@ -17,11 +17,13 @@
  */
 
 #include "akfavatar.h"
+#include "avtmsg.h"
 #include <stdio.h>
 #include <string.h>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <errno.h>
 
 /* entries or marks that are not files */
 #define MARK(S) \
@@ -103,7 +105,8 @@ start:
   page_nr = 0;
   *filename = '\0';
   idx = 0;
-  getcwd (dirname, sizeof (dirname));
+  if (getcwd (dirname, sizeof (dirname)))
+    warning_msg ("getcwd", strerror (errno));
 
   avt_auto_margin (AVT_FALSE);
   new_page (dirname);
@@ -229,7 +232,8 @@ start:
 
   if (is_directory (filename))
     {
-      chdir (filename);
+      if (chdir (filename))
+	warning_msg (filename, "cannot chdir");
       goto start;
     }
 

@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.245 2008-10-24 07:04:44 akf Exp $ */
+/* $Id: avatarsay.c,v 2.246 2008-11-03 19:36:31 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1361,7 +1361,8 @@ avatar_command (wchar_t * s, int *stop)
     {
       char directory[PATH_LENGTH];
       get_data_file (s + 8, directory);
-      chdir (directory);
+      if (chdir (directory))
+        warning_msg ("chdir", strerror (errno));
       return;
     }
 
@@ -2031,7 +2032,6 @@ ask_file (void)
   char filename[256];
 
   avt_set_balloon_size (0, 0);
-  chdir (datadir);
   get_file (filename);
 
   /* ignore quit-requests */
@@ -2119,7 +2119,8 @@ run_shell (void)
   avt_set_text_delay (0);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
   home = get_user_home ();
-  chdir (home);
+  if (chdir (home))
+    warning_msg ("chdir", strerror (errno));
   free (home);
 
   fd = avtterm_start (default_encoding, NULL);
@@ -2139,7 +2140,8 @@ run_info (void)
   avt_text_direction (AVT_LEFT_TO_RIGHT);
 
   if (start_dir)
-    chdir (start_dir);
+    if (chdir (start_dir))
+        warning_msg ("chdir", strerror (errno));
 
   if (language == DEUTSCH)
     {
@@ -2342,7 +2344,8 @@ ask_edit_file (void)
   avt_clear ();
   avt_set_text_delay (0);
 
-  chdir (datadir);
+  if (chdir (datadir))
+        warning_msg ("chdir", strerror (errno));
 
   /* show directory and prompt (don't trust "datadir") */
   avt_say_mb (datadir);
@@ -2807,7 +2810,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.245 2008-10-24 07:04:44 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.246 2008-11-03 19:36:31 akf Exp $");
 
   return EXIT_SUCCESS;
 }
