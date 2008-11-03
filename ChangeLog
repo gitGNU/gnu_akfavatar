@@ -8,6 +8,9 @@
 
 	* arch.c: always check value for read
 	fix warnings
+	
+	* arch.c (arch_get_data):
+	improved handling of read
 
 2008-10-26  Andreas K. Foerster  <info@akfoerster.de>
 
