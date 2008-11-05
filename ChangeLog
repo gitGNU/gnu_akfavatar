@@ -1,3 +1,8 @@
+2008-11-05  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_credits, avt_credits_up):
+	optimization: just one line in buffer
+
 2008-11-03  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtterm.c (write_term): new function

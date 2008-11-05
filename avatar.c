@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.174 2008-10-24 06:37:29 akf Exp $ */
+/* $Id: avatar.c,v 2.175 2008-11-05 19:06:28 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -3946,9 +3946,9 @@ avt_get_error (void)
 
 /* scroll one line up */
 static void
-avt_credits_up (SDL_Surface * credit_screen)
+avt_credits_up (SDL_Surface * last_line)
 {
-  SDL_Rect rest, clear;
+  SDL_Rect src, dst, line_pos;
   Uint32 moved;
   Uint32 now, next_time;
   Uint32 pixel, tickinterval;
@@ -3958,23 +3958,25 @@ avt_credits_up (SDL_Surface * credit_screen)
   tickinterval = CREDITDELAY;
   next_time = SDL_GetTicks () + tickinterval;
 
-  while (moved < LINEHEIGHT)
+  while (moved <= LINEHEIGHT)
     {
-      /* show screen */
-      SDL_BlitSurface (credit_screen, NULL, screen, &window);
+      /* move screen up */
+      src.x = window.x;
+      src.w = window.w;
+      src.y = window.y + pixel;
+      src.h = window.h - pixel;
+      dst.x = window.x;
+      dst.y = window.y;
+      SDL_BlitSurface (screen, &src, screen, &dst);
+
+      if (last_line)
+	{
+	  line_pos.x = window.x;
+	  line_pos.y = window.y + window.h - moved;
+	  SDL_BlitSurface (last_line, NULL, screen, &line_pos);
+	}
+
       SDL_UpdateRect (screen, window.x, window.y, window.w, window.h);
-
-      rest.x = 0;
-      rest.y = pixel;		/* one pixel up */
-      rest.w = window.w;
-      rest.h = window.h + LINEHEIGHT - pixel;
-      SDL_BlitSurface (credit_screen, &rest, credit_screen, NULL);
-
-      clear.x = 0;
-      clear.y = window.h + LINEHEIGHT - pixel;
-      clear.w = window.w;
-      clear.h = pixel;
-      SDL_FillRect (credit_screen, &clear, 0);
 
       if (avt_checkevent ())
 	return;
@@ -4002,7 +4004,7 @@ int
 avt_credits (const wchar_t * text, avt_bool_t centered)
 {
   wchar_t line[80];
-  SDL_Surface *credit_screen;
+  SDL_Surface *last_line;
   SDL_Color old_backgroundcolor;
   const wchar_t *p;
   int i;
@@ -4030,20 +4032,20 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
 
   SDL_SetClipRect (screen, &window);
 
-  /* credit_screen is one line larger */
-  credit_screen =
+  /* last line added to credits */
+  last_line =
     SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_RLEACCEL,
-			  window.w, window.h + LINEHEIGHT,
+			  window.w, LINEHEIGHT,
 			  screen->format->BitsPerPixel,
 			  screen->format->Rmask,
 			  screen->format->Gmask,
 			  screen->format->Bmask, screen->format->Amask);
 
-  if (!credit_screen)
+  if (!last_line)
     return AVT_ERROR;
 
-  /* cursor at bottom - draws beneath visible part */
-  cursor.y = window.h;
+  /* cursor position for last_line */
+  cursor.y = 0;
 
   /* show text */
   p = text;
@@ -4061,6 +4063,9 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
 
 	  p++;
 	}
+      
+      /* skip line-end */
+      p++;
 
       /* draw line */
       if (centered)
@@ -4068,18 +4073,24 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
       else
 	cursor.x = 0;
 
-      for (i = 0; i < length; i++, cursor.x += FONTWIDTH)
-	avt_drawchar (line[i], credit_screen);
+      /* clear line */
+      SDL_FillRect (last_line, NULL, 0);
 
-      avt_credits_up (credit_screen);
-      p++;
+      /* print on last_line */
+      for (i = 0; i < length; i++, cursor.x += FONTWIDTH)
+	avt_drawchar (line[i], last_line);
+
+      avt_credits_up (last_line);
     }
+
+  /* clear line */
+  SDL_FillRect (last_line, NULL, 0);
 
   /* scroll up until screen is empty */
   for (i = 0; i <= window.h / LINEHEIGHT && _avt_STATUS == AVT_NORMAL; i++)
-    avt_credits_up (credit_screen);
+    avt_credits_up (NULL);
 
-  SDL_FreeSurface (credit_screen);
+  SDL_FreeSurface (last_line);
 
   /* restore old background color */
   backgroundcolor_RGB = old_backgroundcolor;
@@ -4193,13 +4204,13 @@ avt_initialize (const char *title, const char *icontitle,
 
   if (title == NULL)
     title = "AKFAvatar";
-  
+
   if (icontitle == NULL)
     icontitle = title;
-  
+
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.174 2008-10-24 06:37:29 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.175 2008-11-05 19:06:28 akf Exp $");
 
   /*
    * Initialize the display, accept any format
