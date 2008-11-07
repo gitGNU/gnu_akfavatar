@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.176 2008-11-07 08:20:32 akf Exp $ */
+/* $Id: avatar.c,v 2.177 2008-11-07 18:30:58 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -684,8 +684,8 @@ avt_show_avatar (void)
 static void
 avt_draw_balloon (void)
 {
-  Uint32 ballooncolor, backgroundcolor;
-  SDL_Rect dst;
+  Uint32 ballooncolor, shadowcolor, backgroundcolor;
+  SDL_Rect dst, shadow;
   int x, y;
   int xoffs, yoffs;
   int radius;
@@ -693,9 +693,15 @@ avt_draw_balloon (void)
   if (!avt_visible)
     avt_draw_avatar ();
 
+  radius = circle.width / 2;
+
   backgroundcolor = SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
 				backgroundcolor_RGB.g, backgroundcolor_RGB.b);
   ballooncolor = SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF);
+  shadowcolor = SDL_MapRGB (screen->format,
+			    backgroundcolor_RGB.r - 0x22,
+			    backgroundcolor_RGB.g - 0x22,
+			    backgroundcolor_RGB.b - 0x22);
 
   textfield.w = (balloonwidth * FONTWIDTH);
   textfield.h = (balloonheight * LINEHEIGHT);
@@ -754,11 +760,23 @@ avt_draw_balloon (void)
 
   SDL_FillRect (screen, &dst, ballooncolor);
 
+  /* shadow right */
+  shadow.x = dst.x + dst.w;
+  shadow.y = dst.y + radius;
+  shadow.w = 2;
+  shadow.h = dst.h - circle.width;
+  SDL_FillRect (screen, &shadow, shadowcolor);
+
+  /* shadow bottom */
+  shadow.x = dst.x + radius;
+  shadow.y = dst.y + dst.h;
+  shadow.w = dst.w - circle.width;
+  shadow.h = 2;
+  SDL_FillRect (screen, &shadow, shadowcolor);
+
   /* draw corners */
   if (must_lock)
     SDL_LockSurface (screen);
-
-  radius = circle.width / 2;
 
   /* upper left corner */
   xoffs = dst.x;
@@ -784,13 +802,20 @@ avt_draw_balloon (void)
       if (circle.data[circle.width * (y + radius) + x] == 32)
 	putpixel (screen, x + xoffs, y + yoffs, backgroundcolor);
 
-  /* lower right corner */
+  /* lower right corner and shadow */
   xoffs = dst.x + dst.w - radius;
   yoffs = dst.y + dst.h - radius;
-  for (y = 0; y < radius; ++y)
-    for (x = 0; x < radius; ++x)
-      if (circle.data[circle.width * (y + radius) + x + radius] == 32)
-	putpixel (screen, x + xoffs, y + yoffs, backgroundcolor);
+  for (y = 0; y < radius + 2; ++y)
+    for (x = 0; x < radius + 2; ++x)
+      if (x >= radius || y >= radius ||
+	  circle.data[circle.width * (y + radius) + x + radius] == 32)
+	{
+	  if (circle.data[circle.width * (y + radius - 2) + x + radius - 2] !=
+	      32)
+	    putpixel (screen, x + xoffs, y + yoffs, shadowcolor);
+	  else
+	    putpixel (screen, x + xoffs, y + yoffs, backgroundcolor);
+	}
 
   /* draw balloonpointer */
   /* only if there is an avatar image */
@@ -811,11 +836,20 @@ avt_draw_balloon (void)
       if (xoffs + balloonpointer.width + BALLOONPOINTER_OFFSET
 	  + BALLOON_INNER_MARGIN < window.x + window.w)
 	{
-	  for (y = cut_top; y < balloonpointer.height; ++y)
-	    for (x = 0; x < balloonpointer.width; ++x)
-	      if (balloonpointer.data[balloonpointer.width * y + x] != 32)
-		putpixel (screen, x + xoffs, y - cut_top + yoffs,
-			  ballooncolor);
+	  for (y = cut_top; y < balloonpointer.height + 2; ++y)
+	    for (x = 0; x < balloonpointer.width + 2; ++x)
+	      {
+		if (x < balloonpointer.width &&
+		    y < balloonpointer.height &&
+		    balloonpointer.data[balloonpointer.width * y + x] != 32)
+		  putpixel (screen, x + xoffs, y - cut_top + yoffs,
+			    ballooncolor);
+		else if (x > 2 && y > 2 &&
+			 balloonpointer.data[balloonpointer.width * (y - 2)
+					     + x - 2] != 32)
+		  putpixel (screen, x + xoffs, y - cut_top + yoffs,
+			    shadowcolor);
+	      }
 	}
     }
 
@@ -4063,7 +4097,7 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
 
 	  p++;
 	}
-      
+
       /* skip line-end */
       p++;
 
@@ -4086,7 +4120,7 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
   /* show one empty line to avoid streakes */
   SDL_FillRect (last_line, NULL, 0);
   avt_credits_up (last_line);
-  
+
   /* scroll up until screen is empty */
   for (i = 0; i < window.h / LINEHEIGHT && _avt_STATUS == AVT_NORMAL; i++)
     avt_credits_up (NULL);
@@ -4211,7 +4245,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.176 2008-11-07 08:20:32 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.177 2008-11-07 18:30:58 akf Exp $");
 
   /*
    * Initialize the display, accept any format

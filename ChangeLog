@@ -3,6 +3,9 @@
 	* avatar.c (avt_credits):
 	fix: print one last empty line to avoid streaks
 
+	* avatar.c (avt_draw_balloon):
+	balloon drops a shadow
+
 2008-11-05  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_credits, avt_credits_up):
