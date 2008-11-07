@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.175 2008-11-05 19:06:28 akf Exp $ */
+/* $Id: avatar.c,v 2.176 2008-11-07 08:20:32 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -4083,11 +4083,12 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
       avt_credits_up (last_line);
     }
 
-  /* clear line */
+  /* show one empty line to avoid streakes */
   SDL_FillRect (last_line, NULL, 0);
-
+  avt_credits_up (last_line);
+  
   /* scroll up until screen is empty */
-  for (i = 0; i <= window.h / LINEHEIGHT && _avt_STATUS == AVT_NORMAL; i++)
+  for (i = 0; i < window.h / LINEHEIGHT && _avt_STATUS == AVT_NORMAL; i++)
     avt_credits_up (NULL);
 
   SDL_FreeSurface (last_line);
@@ -4210,7 +4211,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.175 2008-11-05 19:06:28 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.176 2008-11-07 08:20:32 akf Exp $");
 
   /*
    * Initialize the display, accept any format
