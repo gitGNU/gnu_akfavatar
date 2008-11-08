@@ -1,3 +1,8 @@
+2008-11-08  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (SHADOWOFFSET):
+	new macro
+
 2008-11-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_credits):

@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.177 2008-11-07 18:30:58 akf Exp $ */
+/* $Id: avatar.c,v 2.178 2008-11-08 15:07:00 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -67,6 +67,8 @@
 #  define LINEHEIGHT FONTHEIGHT	/* + something, if you want */
 #  define NOT_BOLD 0
 #endif
+
+#define SHADOWOFFSET 5
 
 /* 
  * newer vesions of SDL have some fallback implementations
@@ -763,7 +765,7 @@ avt_draw_balloon (void)
   /* shadow right */
   shadow.x = dst.x + dst.w;
   shadow.y = dst.y + radius;
-  shadow.w = 2;
+  shadow.w = SHADOWOFFSET;
   shadow.h = dst.h - circle.width;
   SDL_FillRect (screen, &shadow, shadowcolor);
 
@@ -771,7 +773,7 @@ avt_draw_balloon (void)
   shadow.x = dst.x + radius;
   shadow.y = dst.y + dst.h;
   shadow.w = dst.w - circle.width;
-  shadow.h = 2;
+  shadow.h = SHADOWOFFSET;
   SDL_FillRect (screen, &shadow, shadowcolor);
 
   /* draw corners */
@@ -805,13 +807,13 @@ avt_draw_balloon (void)
   /* lower right corner and shadow */
   xoffs = dst.x + dst.w - radius;
   yoffs = dst.y + dst.h - radius;
-  for (y = 0; y < radius + 2; ++y)
-    for (x = 0; x < radius + 2; ++x)
+  for (y = 0; y < radius + SHADOWOFFSET; ++y)
+    for (x = 0; x < radius + SHADOWOFFSET; ++x)
       if (x >= radius || y >= radius ||
 	  circle.data[circle.width * (y + radius) + x + radius] == 32)
 	{
-	  if (circle.data[circle.width * (y + radius - 2) + x + radius - 2] !=
-	      32)
+	  if (circle.data[circle.width * (y + radius - SHADOWOFFSET)
+			  + x + radius - SHADOWOFFSET] != 32)
 	    putpixel (screen, x + xoffs, y + yoffs, shadowcolor);
 	  else
 	    putpixel (screen, x + xoffs, y + yoffs, backgroundcolor);
@@ -836,17 +838,18 @@ avt_draw_balloon (void)
       if (xoffs + balloonpointer.width + BALLOONPOINTER_OFFSET
 	  + BALLOON_INNER_MARGIN < window.x + window.w)
 	{
-	  for (y = cut_top; y < balloonpointer.height + 2; ++y)
-	    for (x = 0; x < balloonpointer.width + 2; ++x)
+	  for (y = cut_top; y < balloonpointer.height + SHADOWOFFSET; ++y)
+	    for (x = 0; x < balloonpointer.width + SHADOWOFFSET; ++x)
 	      {
 		if (x < balloonpointer.width &&
 		    y < balloonpointer.height &&
 		    balloonpointer.data[balloonpointer.width * y + x] != 32)
 		  putpixel (screen, x + xoffs, y - cut_top + yoffs,
 			    ballooncolor);
-		else if (x > 2 && y > 2 &&
-			 balloonpointer.data[balloonpointer.width * (y - 2)
-					     + x - 2] != 32)
+		else if (x >= SHADOWOFFSET && y >= SHADOWOFFSET &&
+			 balloonpointer.data[balloonpointer.width 
+			                     * (y - SHADOWOFFSET)
+					     + x - SHADOWOFFSET] != 32)
 		  putpixel (screen, x + xoffs, y - cut_top + yoffs,
 			    shadowcolor);
 	      }
@@ -4245,7 +4248,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.177 2008-11-07 18:30:58 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.178 2008-11-08 15:07:00 akf Exp $");
 
   /*
    * Initialize the display, accept any format
