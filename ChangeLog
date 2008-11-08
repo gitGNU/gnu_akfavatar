@@ -3,6 +3,9 @@
 	* avatar.c (SHADOWOFFSET):
 	new macro
 
+	* avatar.c (avt_draw_balloon, avt_draw_balloon2):
+	better approach to draw a shadow
+
 2008-11-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_credits):

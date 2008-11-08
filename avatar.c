@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.178 2008-11-08 15:07:00 akf Exp $ */
+/* $Id: avatar.c,v 2.179 2008-11-08 18:42:15 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -68,7 +68,7 @@
 #  define NOT_BOLD 0
 #endif
 
-#define SHADOWOFFSET 5
+#define SHADOWOFFSET 7
 
 /* 
  * newer vesions of SDL have some fallback implementations
@@ -684,26 +684,129 @@ avt_show_avatar (void)
 }
 
 static void
-avt_draw_balloon (void)
+avt_draw_balloon2 (int offset, Uint32 ballooncolor)
 {
-  Uint32 ballooncolor, shadowcolor, backgroundcolor;
-  SDL_Rect dst, shadow;
+  Uint32 backgroundcolor;
+  SDL_Rect dst;
   int x, y;
   int xoffs, yoffs;
   int radius;
 
-  if (!avt_visible)
-    avt_draw_avatar ();
+  backgroundcolor = SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
+				backgroundcolor_RGB.g, backgroundcolor_RGB.b);
+
+  /* horizontal shape */
+  if (textfield.x > BALLOON_INNER_MARGIN)
+    {
+      dst.x = textfield.x - BALLOON_INNER_MARGIN + offset;
+      dst.w = textfield.w + (2 * BALLOON_INNER_MARGIN);
+    }
+  else
+    {
+      dst.x = textfield.x + offset;
+      dst.w = textfield.w;
+    }
+  dst.y = textfield.y + offset;
+  dst.w = textfield.w + (2 * BALLOON_INNER_MARGIN);
+  dst.h = textfield.h;
+  SDL_FillRect (screen, &dst, ballooncolor);
+
+  /* vertical shape */
+  dst.x = textfield.x + offset;
+  dst.y = textfield.y - BALLOON_INNER_MARGIN + offset;
+  dst.w = textfield.w;
+  dst.h = textfield.h + (2 * BALLOON_INNER_MARGIN);
+  SDL_FillRect (screen, &dst, ballooncolor);
+
+  /* full size */
+  if (textfield.x > BALLOON_INNER_MARGIN)
+    {
+      dst.x = textfield.x - BALLOON_INNER_MARGIN + offset;
+      dst.w = textfield.w + (2 * BALLOON_INNER_MARGIN);
+    }
+  else
+    {
+      dst.x = textfield.x + offset;
+      dst.w = textfield.w;
+    }
+  dst.y = textfield.y - BALLOON_INNER_MARGIN + offset;
+  dst.h = textfield.h + (2 * BALLOON_INNER_MARGIN);
+
+  /* draw corners */
+  if (must_lock)
+    SDL_LockSurface (screen);
 
   radius = circle.width / 2;
 
-  backgroundcolor = SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
-				backgroundcolor_RGB.g, backgroundcolor_RGB.b);
-  ballooncolor = SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF);
-  shadowcolor = SDL_MapRGB (screen->format,
-			    backgroundcolor_RGB.r - 0x22,
-			    backgroundcolor_RGB.g - 0x22,
-			    backgroundcolor_RGB.b - 0x22);
+  /* upper left corner */
+  xoffs = dst.x;
+  yoffs = dst.y;
+  for (y = 0; y < radius; ++y)
+    for (x = 0; x < radius; ++x)
+      if (circle.data[circle.width * y + x] != 32)
+	putpixel (screen, x + xoffs, y + yoffs, ballooncolor);
+
+  /* upper right corner */
+  xoffs = dst.x + dst.w - radius;
+  yoffs = dst.y;
+  for (y = 0; y < radius; ++y)
+    for (x = 0; x < radius; ++x)
+      if (circle.data[circle.width * y + x + radius] != 32)
+	putpixel (screen, x + xoffs, y + yoffs, ballooncolor);
+
+  /* lower left corner */
+  xoffs = dst.x;
+  yoffs = dst.y + dst.h - radius;
+  for (y = 0; y < radius; ++y)
+    for (x = 0; x < radius; ++x)
+      if (circle.data[circle.width * (y + radius) + x] != 32)
+	putpixel (screen, x + xoffs, y + yoffs, ballooncolor);
+
+  /* lower right corner */
+  xoffs = dst.x + dst.w - radius;
+  yoffs = dst.y + dst.h - radius;
+  for (y = 0; y < radius; ++y)
+    for (x = 0; x < radius; ++x)
+      if (circle.data[circle.width * (y + radius) + x + radius] != 32)
+	putpixel (screen, x + xoffs, y + yoffs, ballooncolor);
+
+  /* draw balloonpointer */
+  /* only if there is an avatar image */
+  if (avt_image)
+    {
+      int cut_top = 0;
+
+      /* if the balloonpointer is too large, cut it */
+      if (balloonpointer.height > (avt_image->h / 2))
+	cut_top = balloonpointer.height - (avt_image->h / 2);
+
+      xoffs =
+	window.x + avt_image->w + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET
+	+ offset;
+      yoffs = window.y + (balloonmaxheight * LINEHEIGHT)
+	+ (2 * BALLOON_INNER_MARGIN) + TOPMARGIN + offset;
+
+      /* only draw the balloonpointer, when it fits */
+      if (xoffs + balloonpointer.width + BALLOONPOINTER_OFFSET
+	  + BALLOON_INNER_MARGIN < window.x + window.w)
+	{
+	  for (y = cut_top; y < balloonpointer.height; ++y)
+	    for (x = 0; x < balloonpointer.width; ++x)
+	      if (balloonpointer.data[balloonpointer.width * y + x] != 32)
+		putpixel (screen, x + xoffs, y - cut_top + yoffs,
+			  ballooncolor);
+	}
+    }
+
+  if (must_lock)
+    SDL_UnlockSurface (screen);
+}
+
+static void
+avt_draw_balloon (void)
+{
+  if (!avt_visible)
+    avt_draw_avatar ();
 
   textfield.w = (balloonwidth * FONTWIDTH);
   textfield.h = (balloonheight * LINEHEIGHT);
@@ -747,117 +850,14 @@ avt_draw_balloon (void)
 
   viewport = textfield;
 
-  /* somewat lager rectangle */
-  dst.x = textfield.x - BALLOON_INNER_MARGIN;
-  dst.y = textfield.y - BALLOON_INNER_MARGIN;
-  dst.w = textfield.w + (2 * BALLOON_INNER_MARGIN);
-  dst.h = textfield.h + (2 * BALLOON_INNER_MARGIN);
+  /* fisrst draw shadow */
+  avt_draw_balloon2 (SHADOWOFFSET, SDL_MapRGB (screen->format,
+					       backgroundcolor_RGB.r - 0x20,
+					       backgroundcolor_RGB.g - 0x20,
+					       backgroundcolor_RGB.b - 0x20));
 
-  /* sanity check */
-  if (dst.x < window.x)
-    dst.x = window.x;
-
-  if (dst.w > window.w)
-    dst.w = window.w;
-
-  SDL_FillRect (screen, &dst, ballooncolor);
-
-  /* shadow right */
-  shadow.x = dst.x + dst.w;
-  shadow.y = dst.y + radius;
-  shadow.w = SHADOWOFFSET;
-  shadow.h = dst.h - circle.width;
-  SDL_FillRect (screen, &shadow, shadowcolor);
-
-  /* shadow bottom */
-  shadow.x = dst.x + radius;
-  shadow.y = dst.y + dst.h;
-  shadow.w = dst.w - circle.width;
-  shadow.h = SHADOWOFFSET;
-  SDL_FillRect (screen, &shadow, shadowcolor);
-
-  /* draw corners */
-  if (must_lock)
-    SDL_LockSurface (screen);
-
-  /* upper left corner */
-  xoffs = dst.x;
-  yoffs = dst.y;
-  for (y = 0; y < radius; ++y)
-    for (x = 0; x < radius; ++x)
-      if (circle.data[circle.width * y + x] == 32)
-	putpixel (screen, x + xoffs, y + yoffs, backgroundcolor);
-
-  /* upper right corner */
-  xoffs = dst.x + dst.w - radius;
-  yoffs = dst.y;
-  for (y = 0; y < radius; ++y)
-    for (x = 0; x < radius; ++x)
-      if (circle.data[circle.width * y + x + radius] == 32)
-	putpixel (screen, x + xoffs, y + yoffs, backgroundcolor);
-
-  /* lower left corner */
-  xoffs = dst.x;
-  yoffs = dst.y + dst.h - radius;
-  for (y = 0; y < radius; ++y)
-    for (x = 0; x < radius; ++x)
-      if (circle.data[circle.width * (y + radius) + x] == 32)
-	putpixel (screen, x + xoffs, y + yoffs, backgroundcolor);
-
-  /* lower right corner and shadow */
-  xoffs = dst.x + dst.w - radius;
-  yoffs = dst.y + dst.h - radius;
-  for (y = 0; y < radius + SHADOWOFFSET; ++y)
-    for (x = 0; x < radius + SHADOWOFFSET; ++x)
-      if (x >= radius || y >= radius ||
-	  circle.data[circle.width * (y + radius) + x + radius] == 32)
-	{
-	  if (circle.data[circle.width * (y + radius - SHADOWOFFSET)
-			  + x + radius - SHADOWOFFSET] != 32)
-	    putpixel (screen, x + xoffs, y + yoffs, shadowcolor);
-	  else
-	    putpixel (screen, x + xoffs, y + yoffs, backgroundcolor);
-	}
-
-  /* draw balloonpointer */
-  /* only if there is an avatar image */
-  if (avt_image)
-    {
-      int cut_top = 0;
-
-      /* if the balloonpointer is too large, cut it */
-      if (balloonpointer.height > (avt_image->h / 2))
-	cut_top = balloonpointer.height - (avt_image->h / 2);
-
-      xoffs =
-	window.x + avt_image->w + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET;
-      yoffs = window.y + (balloonmaxheight * LINEHEIGHT)
-	+ (2 * BALLOON_INNER_MARGIN) + TOPMARGIN;
-
-      /* only draw the balloonpointer, when it fits */
-      if (xoffs + balloonpointer.width + BALLOONPOINTER_OFFSET
-	  + BALLOON_INNER_MARGIN < window.x + window.w)
-	{
-	  for (y = cut_top; y < balloonpointer.height + SHADOWOFFSET; ++y)
-	    for (x = 0; x < balloonpointer.width + SHADOWOFFSET; ++x)
-	      {
-		if (x < balloonpointer.width &&
-		    y < balloonpointer.height &&
-		    balloonpointer.data[balloonpointer.width * y + x] != 32)
-		  putpixel (screen, x + xoffs, y - cut_top + yoffs,
-			    ballooncolor);
-		else if (x >= SHADOWOFFSET && y >= SHADOWOFFSET &&
-			 balloonpointer.data[balloonpointer.width 
-			                     * (y - SHADOWOFFSET)
-					     + x - SHADOWOFFSET] != 32)
-		  putpixel (screen, x + xoffs, y - cut_top + yoffs,
-			    shadowcolor);
-	      }
-	}
-    }
-
-  if (must_lock)
-    SDL_UnlockSurface (screen);
+  /* real balloon */
+  avt_draw_balloon2 (0, SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF));
 
   linestart =
     (textdir_rtl) ? viewport.x + viewport.w - FONTWIDTH : viewport.x;
@@ -4248,7 +4248,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.178 2008-11-08 15:07:00 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.179 2008-11-08 18:42:15 akf Exp $");
 
   /*
    * Initialize the display, accept any format
