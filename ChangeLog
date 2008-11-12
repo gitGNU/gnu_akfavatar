@@ -1,3 +1,10 @@
+2008-11-12  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_draw_balloon, avt_draw_balloon2):
+	improved using SDL_BlitSurface
+
+	* avatar.c (putpixel): removed - no longer needed
+
 2008-11-08  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (SHADOWOFFSET):
