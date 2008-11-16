@@ -80,26 +80,59 @@ new_page (char *dirname)
 }
 
 /* ask for drive letter (Windows) */
-static void
-ask_drive (void)
+static int
+ask_drive (int max_idx)
 {
   wchar_t ch;
   char drive[4] = "X:";
+  char drives[26];
+  char d;
+  int i, number;
+  int status;
+
+  status = AVT_NORMAL;
+ 
+  /* what drives are accessible? */
+  number = 0;
+  for (d = 'A'; d <= 'Z'; d++)
+    {
+      drive[0] = d;
+      if (access (drive, F_OK) == 0)
+	{
+	  drives[number] = d;
+	  number++;
+	  if (number == max_idx)
+	    break;
+	}
+    }
 
 ask:
-  avt_set_balloon_size (10, 2 * 8 + 1);
+  avt_set_balloon_size (number, 2 * 8 + 1);
   avt_clear ();
-  avt_say (L"\tA:\n\tB:\n\tC:\n\tD:\n\tE:\n\tF:\n\tG:\n\tH:\n\tI:\n\tJ:");
 
-  if (avt_menu (&ch, 1, 10, L'A', AVT_FALSE, AVT_FALSE) == AVT_NORMAL)
+  /* show drives */
+  for (i = 0; i < number; i++)
     {
-      drive[0] = (char) ch;
+      drive[0] = drives[i];
+      if (i != 0)
+        avt_new_line ();
+      avt_next_tab ();
+      avt_say_mb (drive);
+    }
+  
+  status = avt_menu (&ch, 1, number, START_CODE, AVT_FALSE, AVT_FALSE);
+  
+  if (status == AVT_NORMAL)
+    {
+      drive[0] = drives[ch - START_CODE];
       if (chdir (drive))
 	{
 	  warning_msg (strerror (errno), NULL);
 	  goto ask;
 	}
     }
+  
+  return status;
 }
 
 /* 
@@ -128,7 +161,8 @@ get_file (char *filename)
   max_idx = avt_get_max_y () - 1;
 
   if (DRIVE_LETTERS)
-    ask_drive ();
+    if (ask_drive (max_idx + 1))
+      return -1;
 
   /* set maximum size */
   avt_set_balloon_size (0, 0);
