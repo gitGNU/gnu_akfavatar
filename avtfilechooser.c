@@ -105,7 +105,7 @@ start:
   page_nr = 0;
   *filename = '\0';
   idx = 0;
-  if (getcwd (dirname, sizeof (dirname)))
+  if (!getcwd (dirname, sizeof (dirname)))
     warning_msg ("getcwd", strerror (errno));
 
   avt_auto_margin (AVT_FALSE);
