@@ -91,7 +91,7 @@ ask_drive (int max_idx)
   int status;
 
   status = AVT_NORMAL;
- 
+
   /* what drives are accessible? */
   number = 0;
   for (d = 'A'; d <= 'Z'; d++)
@@ -115,13 +115,13 @@ ask:
     {
       drive[0] = drives[i];
       if (i != 0)
-        avt_new_line ();
+	avt_new_line ();
       avt_next_tab ();
       avt_say_mb (drive);
     }
-  
+
   status = avt_menu (&ch, 1, number, START_CODE, AVT_FALSE, AVT_FALSE);
-  
+
   if (status == AVT_NORMAL)
     {
       drive[0] = drives[ch - START_CODE];
@@ -131,7 +131,7 @@ ask:
 	  goto ask;
 	}
     }
-  
+
   return status;
 }
 
