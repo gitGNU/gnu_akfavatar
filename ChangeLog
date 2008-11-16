@@ -1,3 +1,8 @@
+2008-11-16  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtfilechooser.c (ask_drive):
+	new function (Windows only)
+
 2008-11-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_draw_balloon, avt_draw_balloon2):

@@ -25,6 +25,12 @@
 #include <unistd.h>
 #include <errno.h>
 
+#if defined (__WIN32__)
+#  define DRIVE_LETTERS 1
+#else
+#  define DRIVE_LETTERS 0
+#endif
+
 /* entries or marks that are not files */
 #define MARK(S) \
          avt_set_text_background_color (0xdd, 0xdd, 0xdd); \
@@ -73,6 +79,29 @@ new_page (char *dirname)
   avt_move_xy (1, 2);
 }
 
+/* ask for drive letter (Windows) */
+static void
+ask_drive (void)
+{
+  wchar_t ch;
+  char drive[4] = "X:";
+
+ask:
+  avt_set_balloon_size (10, 2 * 8 + 1);
+  avt_clear ();
+  avt_say (L"\tA:\n\tB:\n\tC:\n\tD:\n\tE:\n\tF:\n\tG:\n\tH:\n\tI:\n\tJ:");
+
+  if (avt_menu (&ch, 1, 10, L'A', AVT_FALSE, AVT_FALSE) == AVT_NORMAL)
+    {
+      drive[0] = (char) ch;
+      if (chdir (drive))
+	{
+	  warning_msg (strerror (errno), NULL);
+	  goto ask;
+	}
+    }
+}
+
 /* 
  * filechooser
  * lists files in working directory
@@ -97,6 +126,12 @@ get_file (char *filename)
   avt_normal_text ();
   max_x = avt_get_max_x ();
   max_idx = avt_get_max_y () - 1;
+
+  if (DRIVE_LETTERS)
+    ask_drive ();
+
+  /* set maximum size */
+  avt_set_balloon_size (0, 0);
 
 start:
   /* returncode: assume failure as default */
