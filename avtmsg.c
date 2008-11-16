@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtmsg.c,v 2.1 2008-08-28 18:16:23 akf Exp $ */
+/* $Id: avtmsg.c,v 2.2 2008-11-16 08:07:14 akf Exp $ */
 
 #include "avtmsg.h"
 #include <stdio.h>
@@ -72,7 +72,8 @@ warning_msg (const char *msg1, const char *msg2)
       strcat (msg, msg2);
     }
 
-  MessageBox (NULL, msg, PRGNAME, MB_OK | MB_ICONWARNING | MB_SETFOREGROUND);
+  MessageBox (GetActiveWindow (), msg, PRGNAME,
+	      MB_OK | MB_ICONWARNING | MB_SETFOREGROUND);
 }
 
 /* ignore unimportant notices on Windows */
@@ -94,9 +95,9 @@ error_msg (const char *msg1, const char *msg2)
       strcat (msg, msg2);
     }
 
-  MessageBox (NULL, msg, PRGNAME, MB_OK | MB_ICONERROR | MB_SETFOREGROUND);
+  MessageBox (GetActiveWindow (), msg, PRGNAME,
+	      MB_OK | MB_ICONERROR | MB_SETFOREGROUND);
   exit (EXIT_FAILURE);
 }
 
 #endif /* Windows or ReactOS */
-
