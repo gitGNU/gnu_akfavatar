@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.25 2008-11-03 19:36:31 akf Exp $ */
+/* $Id: avtterm.c,v 2.26 2008-11-17 18:39:56 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -138,7 +138,7 @@ avtterm_nocolor (avt_bool_t on)
 
 /* set terminal size */
 static void
-avtterm_size (int fd, int height, int width)
+avtterm_size (int fd AVT_UNUSED, int height AVT_UNUSED, int width AVT_UNUSED)
 {
 #ifdef TIOCSWINSZ
   struct winsize size;
