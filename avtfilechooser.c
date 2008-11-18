@@ -29,6 +29,7 @@
 #  define DRIVE_LETTERS 1
 #else
 #  define DRIVE_LETTERS 0
+#  define _chdrive(d) -1	/* not needed */
 #endif
 
 /* entries or marks that are not files */
@@ -86,7 +87,6 @@ ask_drive (int max_idx)
   wchar_t ch;
   char drive[4] = "X:";
   char drives[26];
-  char d;
   int i, number;
   int status;
 
@@ -94,13 +94,13 @@ ask_drive (int max_idx)
 
   /* what drives are accessible? */
   number = 0;
-  for (d = 'A'; d <= 'Z'; d++)
+  for (i = 1; i <= 26; i++)
     {
-      drive[0] = d;
-      if (access (drive, F_OK) == 0)
+      if (!_chdrive (i))
 	{
-	  drives[number] = d;
+	  drives[number] = i + 'A' - 1;
 	  number++;
+	  /* maximum number of entries reached? */
 	  if (number == max_idx)
 	    break;
 	}
