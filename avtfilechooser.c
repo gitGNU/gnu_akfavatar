@@ -86,7 +86,7 @@ ask_drive (int max_idx)
 {
   wchar_t ch;
   char drive[4] = "X:";
-  char drives[26];
+  int drives[26];
   int i, number;
   int status;
 
@@ -98,7 +98,7 @@ ask_drive (int max_idx)
     {
       if (!_chdrive (i))
 	{
-	  drives[number] = i + 'A' - 1;
+	  drives[number] = i;
 	  number++;
 	  /* maximum number of entries reached? */
 	  if (number == max_idx)
@@ -113,7 +113,7 @@ ask:
   /* show drives */
   for (i = 0; i < number; i++)
     {
-      drive[0] = drives[i];
+      drive[0] = drives[i] + 'A' - 1;
       if (i != 0)
 	avt_new_line ();
       avt_next_tab ();
@@ -124,8 +124,7 @@ ask:
 
   if (status == AVT_NORMAL)
     {
-      drive[0] = drives[ch - START_CODE];
-      if (chdir (drive))
+      if (_chdrive (drives[ch - START_CODE]) < 0)
 	{
 	  warning_msg (strerror (errno), NULL);
 	  goto ask;
