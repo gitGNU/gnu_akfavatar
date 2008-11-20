@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.246 2008-11-03 19:36:31 akf Exp $ */
+/* $Id: avatarsay.c,v 2.247 2008-11-20 18:07:19 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1362,7 +1362,7 @@ avatar_command (wchar_t * s, int *stop)
       char directory[PATH_LENGTH];
       get_data_file (s + 8, directory);
       if (chdir (directory))
-        warning_msg ("chdir", strerror (errno));
+	warning_msg ("chdir", strerror (errno));
       return;
     }
 
@@ -1479,12 +1479,12 @@ avatar_command (wchar_t * s, int *stop)
   if (wcscmp (s, L"empty") == 0)
     {
       if (initialized)
-        avt_clear_screen ();
+	avt_clear_screen ();
 
       moved_in = AVT_FALSE;
       return;
     }
- 
+
   /* move avatar out */
   if (wcscmp (s, L"move out") == 0)
     {
@@ -2092,7 +2092,8 @@ run_info (void)
 }
 
 static int
-avtterm_start (const char *encoding, char *const prg_argv[])
+avtterm_start (const char *enc AVT_UNUSED, const char *wd AVT_UNUSED, 
+               char *const p[] AVT_UNUSED)
 {
   not_available ();
   return -1;
@@ -2119,11 +2120,8 @@ run_shell (void)
   avt_set_text_delay (0);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
   home = get_user_home ();
-  if (chdir (home))
-    warning_msg ("chdir", strerror (errno));
+  fd = avtterm_start (default_encoding, home, NULL);
   free (home);
-
-  fd = avtterm_start (default_encoding, NULL);
   if (fd > -1)
     avtterm_run (fd);
 }
@@ -2141,7 +2139,7 @@ run_info (void)
 
   if (start_dir)
     if (chdir (start_dir))
-        warning_msg ("chdir", strerror (errno));
+      warning_msg ("chdir", strerror (errno));
 
   if (language == DEUTSCH)
     {
@@ -2158,7 +2156,7 @@ run_info (void)
 	args[1] = "akfavatar-en";
     }
 
-  fd = avtterm_start (default_encoding, args);
+  fd = avtterm_start (default_encoding, NULL, args);
   if (fd > -1)
     avtterm_run (fd);
 }
@@ -2211,7 +2209,7 @@ ask_manpage (void)
 
       /* ignore file errors */
       read_error_is_eof = AVT_TRUE;
-      fd = avtterm_start (default_encoding, argv);
+      fd = avtterm_start (default_encoding, NULL, argv);
 
       if (fd > -1)
 	process_script (fd);
@@ -2269,7 +2267,7 @@ edit_file (const char *name)
   args[1] = (char *) name;
   args[2] = (char *) NULL;
 
-  fd = avtterm_start (default_encoding, args);
+  fd = avtterm_start (default_encoding, NULL, args);
   if (fd > -1)
     avtterm_run (fd);
 }
@@ -2345,7 +2343,7 @@ ask_edit_file (void)
   avt_set_text_delay (0);
 
   if (chdir (datadir))
-        warning_msg ("chdir", strerror (errno));
+    warning_msg ("chdir", strerror (errno));
 
   /* show directory and prompt (don't trust "datadir") */
   avt_say_mb (datadir);
@@ -2707,6 +2705,8 @@ initialize_start_dir (void)
     start_dir = strdup (buf);
   else
     start_dir = NULL;
+    
+  fprintf (stderr, "start_dir: %s\n\n", start_dir);
 }
 
 int
@@ -2768,7 +2768,7 @@ main (int argc, char *argv[])
 	    move_in ();
 	}
 
-      fd = avtterm_start (default_encoding, &argv[optind]);
+      fd = avtterm_start (default_encoding, NULL, &argv[optind]);
       if (fd > -1)
 	avtterm_run (fd);
 
@@ -2810,7 +2810,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.246 2008-11-03 19:36:31 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.247 2008-11-20 18:07:19 akf Exp $");
 
   return EXIT_SUCCESS;
 }

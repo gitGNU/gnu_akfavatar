@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.h,v 2.5 2008-10-07 08:08:32 akf Exp $ */
+/* $Id: avtterm.h,v 2.6 2008-11-20 18:07:19 akf Exp $ */
 
 #ifndef AVTTERM_H
 #define AVTTERM_H 1
@@ -27,11 +27,12 @@
 
 /*
  * execute a subprocess, visible in the balloon
- * if fname == NULL, start a shell
+ * if prg_argv == NULL, start a shell
  * returns file-descriptor for output of the process
  * or -1 on error 
  */
-int avtterm_start (const char *system_encoding, char *const prg_argv[]);
+int avtterm_start (const char *system_encoding, const char *working_dir,
+		   char *const prg_argv[]);
 
 void avtterm_run (int fd);
 void avtterm_nocolor (avt_bool_t nocolor);

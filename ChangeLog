@@ -1,3 +1,9 @@
+2008-11-20  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtterm.c, avtterm.h (avtterm_start):
+	new parameter: working_dir
+	avatarsay.c: adapted
+
 2008-11-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtfilechooser.c (ask_drive):

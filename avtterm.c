@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.26 2008-11-17 18:39:56 akf Exp $ */
+/* $Id: avtterm.c,v 2.27 2008-11-20 18:07:19 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1465,7 +1465,8 @@ avtterm_run (int fd)
 /* if fname == NULL, start a shell */
 /* returns file-descriptor for output of the process */
 int
-avtterm_start (const char *system_encoding, char *const prg_argv[])
+avtterm_start (const char *system_encoding, const char *working_dir,
+	       char *const prg_argv[])
 {
   pid_t childpid;
   int master, slave;
@@ -1579,10 +1580,17 @@ avtterm_start (const char *system_encoding, char *const prg_argv[])
       /* programs can identify avatarsay with this */
       putenv ("AKFAVTTERM=" XSTR (AVTVERSIONNR));
 
+      if (working_dir)
+	if (chdir (working_dir) < 0)
+	  {
+	    /* ignore */
+	  }
+
       if (prg_argv == NULL)	/* execute shell */
 	execl (shell, shell, (char *) NULL);
       else			/* execute the command */
 	execvp (prg_argv[0], prg_argv);
+
 
       /* in case of an error, we can not do much */
       /* stdout and stderr are broken by now */
