@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.247 2008-11-20 18:07:19 akf Exp $ */
+/* $Id: avatarsay.c,v 2.248 2008-11-21 17:14:22 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -339,10 +339,9 @@ not_available (void)
 #ifdef __WIN32__
 
 /* get user's home direcory - Windows */
-char *
-get_user_home (void)
+void
+get_user_home (char *home_dir, size_t size)
 {
-  char buf[1024];
   char *homepath, *homedrive;
 
   homepath = getenv ("HOMEPATH");
@@ -352,22 +351,26 @@ get_user_home (void)
   if (homedrive && homepath && *(homepath + 1) != ':'
       && *(homepath + 1) != '\\')
     {
-      strcpy (buf, homedrive);
-      strcat (buf, homepath);
+      strncpy (home_dir, homedrive, size);
+      strncat (home_dir, homepath, size - strlen (home_dir) - 1);
     }
   else if (homepath)
-    strcpy (buf, homepath);
-  else
-    strcpy (buf, "C:\\");
-
-  return strdup (buf);
+    {
+      strncpy (home_dir, homepath, size);
+      if (size > 0)
+	home_dir[size - 1] = '\0';
+    }
+  else if (size >= 4)
+    strcpy (home_dir, "C:\\");
+  else				/* worst case */
+    home_dir[0] = '\0';
 }
 
 #else /* not __WIN32__ */
 
 /* get user's home direcory */
-char *
-get_user_home (void)
+void
+get_user_home (char *home_dir, size_t size)
 {
   char *home;
 
@@ -384,7 +387,9 @@ get_user_home (void)
 	home = user_data->pw_dir;
     }
 
-  return strdup (home);
+  strncpy (home_dir, home, size);
+  if (size > 0)
+    home_dir[size - 1] = '\0';
 }
 
 #endif /* not __WIN32__ */
@@ -2092,8 +2097,8 @@ run_info (void)
 }
 
 static int
-avtterm_start (const char *enc AVT_UNUSED, const char *wd AVT_UNUSED, 
-               char *const p[] AVT_UNUSED)
+avtterm_start (const char *enc AVT_UNUSED, const char *wd AVT_UNUSED,
+	       char *const p[]AVT_UNUSED)
 {
   not_available ();
   return -1;
@@ -2105,7 +2110,7 @@ static void
 run_shell (void)
 {
   int fd;
-  char *home;
+  char home[PATH_LENGTH];
 
   /* must be initialized to get the window size */
   if (!initialized)
@@ -2119,9 +2124,8 @@ run_shell (void)
   avt_set_balloon_size (0, 0);
   avt_set_text_delay (0);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
-  home = get_user_home ();
+  get_user_home (home, sizeof (home));
   fd = avtterm_start (default_encoding, home, NULL);
-  free (home);
   if (fd > -1)
     avtterm_run (fd);
 }
@@ -2688,12 +2692,11 @@ initialize_program_name (const char *argv0)
 static void
 initialize_datadir (void)
 {
-  char *home;
+  char home[PATH_LENGTH];
 
-  home = get_user_home ();
+  get_user_home (home, sizeof (home));
   strncpy (datadir, home, sizeof (datadir));
   datadir[sizeof (datadir) - 1] = '\0';
-  free (home);
 }
 
 static void
@@ -2705,7 +2708,7 @@ initialize_start_dir (void)
     start_dir = strdup (buf);
   else
     start_dir = NULL;
-    
+
   fprintf (stderr, "start_dir: %s\n\n", start_dir);
 }
 
@@ -2810,7 +2813,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.247 2008-11-20 18:07:19 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.248 2008-11-21 17:14:22 akf Exp $");
 
   return EXIT_SUCCESS;
 }

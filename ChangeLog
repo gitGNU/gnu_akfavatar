@@ -1,3 +1,9 @@
+2008-11-21  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (get_user_home):
+	work with a preallocated buffer
+	(run_shell, initialize_datadir): adapped
+
 2008-11-20  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtterm.c, avtterm.h (avtterm_start):
