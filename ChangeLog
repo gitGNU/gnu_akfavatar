@@ -1,3 +1,8 @@
+2008-11-22  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (start_shell):
+	new function
+
 2008-11-21  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (get_user_home):
