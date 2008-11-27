@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.249 2008-11-22 10:09:12 akf Exp $ */
+/* $Id: avatarsay.c,v 2.250 2008-11-27 10:16:28 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2716,8 +2716,6 @@ initialize_start_dir (void)
     start_dir = strdup (buf);
   else
     start_dir = NULL;
-
-  fprintf (stderr, "start_dir: %s\n\n", start_dir);
 }
 
 int
@@ -2821,7 +2819,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.249 2008-11-22 10:09:12 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.250 2008-11-27 10:16:28 akf Exp $");
 
   return EXIT_SUCCESS;
 }
