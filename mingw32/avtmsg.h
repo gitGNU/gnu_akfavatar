@@ -18,20 +18,19 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtmsg.h,v 2.2 2008-12-02 11:31:29 akf Exp $ */
+/* $Id: avtmsg.h,v 1.1 2008-12-02 11:34:14 akf Exp $ */
 
 #ifndef AVTMSG_H
 #define AVTMSG_H 1
 
 #define PRGNAME "avatarsay"
 
-#define info_msg(msg) puts (msg)
-
 /* 
  * "warning_msg", "notice_msg" and "error_msg" take 2 message strings
  * the second one may simply be NULL if you don't need it
  */
 
+void info_msg (const char *msg);
 void warning_msg (const char *msg1, const char *msg2);
 void notice_msg (const char *msg1, const char *msg2);
 void error_msg (const char *msg1, const char *msg2);

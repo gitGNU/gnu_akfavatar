@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.250 2008-11-27 10:16:28 akf Exp $ */
+/* $Id: avatarsay.c,v 2.251 2008-12-02 11:31:28 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -211,24 +211,24 @@ quit (void)
     }
 }
 
-#ifndef __WIN32__
-
 static void
 showversion (void)
 {
   switch (language)
     {
     case DEUTSCH:
-      puts (version_info_de);
+      info_msg (version_info_de);
       break;
 
     case ENGLISH:
     default:
-      puts (version_info_en);
+      info_msg (version_info_en);
     }
 
   exit (EXIT_SUCCESS);
 }
+
+#ifndef __WIN32__
 
 static void
 help (void)
@@ -279,25 +279,6 @@ help (void)
 }
 
 #else /* Windows or ReactOS */
-
-static void
-showversion (void)
-{
-  switch (language)
-    {
-    case DEUTSCH:
-      MessageBox (NULL, version_info_de, PRGNAME,
-		  MB_OK | MB_ICONINFORMATION | MB_SETFOREGROUND);
-      break;
-
-    case ENGLISH:
-    default:
-      MessageBox (NULL, version_info_en, PRGNAME,
-		  MB_OK | MB_ICONINFORMATION | MB_SETFOREGROUND);
-    }
-
-  exit (EXIT_SUCCESS);
-}
 
 /* For Windows users it's not useful to show the options */
 /* But the text refers to the manual */
@@ -2819,7 +2800,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.250 2008-11-27 10:16:28 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.251 2008-12-02 11:31:28 akf Exp $");
 
   return EXIT_SUCCESS;
 }

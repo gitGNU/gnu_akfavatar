@@ -1,6 +1,10 @@
 2008-12-02  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtmsg.c: split off the code for mingw
+	
+	* avtmsg.c (info_msg):
+	new macro/function
+	avatarsay.c (showversion): adapted
 
 2008-11-22  Andreas K. Foerster  <info@akfoerster.de>
 
