@@ -18,11 +18,17 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtmsg.c,v 2.3 2008-12-02 10:58:12 akf Exp $ */
+/* $Id: avtmsg.c,v 2.4 2008-12-02 14:10:24 akf Exp $ */
 
 #include "avtmsg.h"
 #include <stdio.h>
 #include <stdlib.h>		/* exit */
+
+void
+info_msg (const char *msg)
+{
+  puts (msg);
+}
 
 /* 
  * "warning_msg", "notice_msg" and "error_msg" take 2 message strings

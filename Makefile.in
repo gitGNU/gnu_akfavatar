@@ -312,6 +312,7 @@ dist: info html man distclean
 	
 	mkdir $(PKGNAME)/mingw32
 	ln mingw32/akfavatar.ico mingw32/icon.rc \
+	   mingw32/avtmsg.c \
 	   mingw32/Makefile mingw32/README \
 	   mingw32/fsdemo-??.bat \
 	   $(PKGNAME)/mingw32/
