@@ -25,13 +25,6 @@
 #include <unistd.h>
 #include <errno.h>
 
-#if defined (__WIN32__)
-#  define DRIVE_LETTERS 1
-#else
-#  define DRIVE_LETTERS 0
-#  define _chdrive(d) -1	/* not needed */
-#endif
-
 /* entries or marks that are not files */
 #define MARK(S) \
          avt_set_text_background_color (0xdd, 0xdd, 0xdd); \
@@ -58,6 +51,12 @@
 /* use reserved unicode block, to make sure no keys are assigned to it */
 #define START_CODE 0xE000
 
+#ifdef __WIN32__
+extern int ask_drive (int max_idx);
+#else
+#  define ask_drive(max_idx) 0
+#endif
+
 static avt_bool_t
 is_directory (const char *name)
 {
@@ -78,60 +77,6 @@ new_page (char *dirname)
   avt_clear_eol ();
   avt_normal_text ();
   avt_move_xy (1, 2);
-}
-
-/* ask for drive letter (Windows) */
-static int
-ask_drive (int max_idx)
-{
-  wchar_t ch;
-  char drive[4] = "X:";
-  int drives[26];
-  int i, number;
-  int status;
-
-  status = AVT_NORMAL;
-
-  /* what drives are accessible? */
-  number = 0;
-  for (i = 1; i <= 26; i++)
-    {
-      if (!_chdrive (i))
-	{
-	  drives[number] = i;
-	  number++;
-	  /* maximum number of entries reached? */
-	  if (number == max_idx)
-	    break;
-	}
-    }
-
-ask:
-  avt_set_balloon_size (number, 2 * 8 + 1);
-  avt_clear ();
-
-  /* show drives */
-  for (i = 0; i < number; i++)
-    {
-      drive[0] = drives[i] + 'A' - 1;
-      if (i != 0)
-	avt_new_line ();
-      avt_next_tab ();
-      avt_say_mb (drive);
-    }
-
-  status = avt_menu (&ch, 1, number, START_CODE, AVT_FALSE, AVT_FALSE);
-
-  if (status == AVT_NORMAL)
-    {
-      if (_chdrive (drives[ch - START_CODE]) < 0)
-	{
-	  warning_msg (strerror (errno), NULL);
-	  goto ask;
-	}
-    }
-
-  return status;
 }
 
 /* 
@@ -159,9 +104,8 @@ get_file (char *filename)
   max_x = avt_get_max_x ();
   max_idx = avt_get_max_y () - 1;
 
-  if (DRIVE_LETTERS)
-    if (ask_drive (max_idx + 1))
-      return -1;
+  if (ask_drive (max_idx + 1))
+    return -1;
 
   /* set maximum size */
   avt_set_balloon_size (0, 0);
