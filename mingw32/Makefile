@@ -226,8 +226,9 @@ libavtcio.a: avtccio.o avtcwio.o
 avatarsay.o: ../avatarsay.c ../akfavatar.h
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ ../avatarsay.c
 
-avtmsg.o: ../avtmsg.c ../avtmsg.h
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ ../avtmsg.c
+# from this directory!
+avtmsg.o: avtmsg.c ../avtmsg.h
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -I.. -o $@ avtmsg.c
 
 arch.o: ../arch.c ../arch.h
 	$(CC) $(CFLAGS) -c -o $@ ../arch.c

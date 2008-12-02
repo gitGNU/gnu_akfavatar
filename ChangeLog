@@ -1,3 +1,7 @@
+2008-12-02  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtmsg.c: split off the code for mingw
+
 2008-11-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (start_shell):

@@ -1,5 +1,5 @@
 /* 
- * avtmsg - message output for avatarsay
+ * avtmsg - message output for avatarsay for windows
  * Copyright (c) 2007, 2008 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
@@ -18,35 +18,50 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtmsg.c,v 2.3 2008-12-02 10:58:12 akf Exp $ */
+/* $Id: avtmsg.c,v 2.1 2008-12-02 10:58:12 akf Exp $ */
 
 #include "avtmsg.h"
-#include <stdio.h>
-#include <stdlib.h>		/* exit */
-
-/* 
- * "warning_msg", "notice_msg" and "error_msg" take 2 message strings
- * the second one may simply be NULL if you don't need it
- */
+#include <windows.h>
+#include <string.h>
+#include <stdlib.h>
 
 void
 warning_msg (const char *msg1, const char *msg2)
 {
+  char msg[1024];
+
+  strcpy (msg, msg1);
+
   if (msg2)
-    fprintf (stderr, PRGNAME ": %s: %s\n", msg1, msg2);
-  else
-    fprintf (stderr, PRGNAME ": %s\n", msg1);
+    {
+      strcat (msg, ": ");
+      strcat (msg, msg2);
+    }
+
+  MessageBox (GetActiveWindow (), msg, PRGNAME,
+	      MB_OK | MB_ICONWARNING | MB_SETFOREGROUND);
 }
 
+/* ignore unimportant notices on Windows */
 void
 notice_msg (const char *msg1, const char *msg2)
 {
-  warning_msg (msg1, msg2);
 }
 
 void
 error_msg (const char *msg1, const char *msg2)
 {
-  warning_msg (msg1, msg2);
+  char msg[1024];
+
+  strcpy (msg, msg1);
+
+  if (msg2)
+    {
+      strcat (msg, ": ");
+      strcat (msg, msg2);
+    }
+
+  MessageBox (GetActiveWindow (), msg, PRGNAME,
+	      MB_OK | MB_ICONERROR | MB_SETFOREGROUND);
   exit (EXIT_FAILURE);
 }
