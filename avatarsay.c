@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.252 2008-12-02 23:04:05 akf Exp $ */
+/* $Id: avatarsay.c,v 2.253 2009-01-03 22:03:57 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1171,19 +1171,11 @@ handle_backgoundcolor_command (const wchar_t * s)
 }
 
 static void
-handle_audio_command (const wchar_t * s, avt_bool_t do_loop)
+handle_loadaudio_command (const wchar_t * s)
 {
   char filepath[PATH_LENGTH];
   size_t size = 0;
   void *buf = NULL;
-
-  if (!initialized)
-    {
-      initialize ();
-
-      if (!popup)
-	move_in ();
-    }
 
   if (sound)
     {
@@ -1212,9 +1204,36 @@ handle_audio_command (const wchar_t * s, avt_bool_t do_loop)
       notice_msg ("can not load audio data", avt_get_error ());
       return;
     }
+}
+
+static void
+handle_playaudio_command (avt_bool_t do_loop)
+{
+  if (!initialized)
+    {
+      initialize ();
+
+      if (!popup)
+	move_in ();
+    }
 
   if (avt_play_audio (sound, do_loop))
     notice_msg ("can not play audio data", avt_get_error ());
+}
+
+static void
+handle_audio_command (const wchar_t * s, avt_bool_t do_loop)
+{
+  if (!initialized)
+    {
+      initialize ();
+
+      if (!popup)
+	move_in ();
+    }
+
+  handle_loadaudio_command (s);
+  handle_playaudio_command (do_loop);
 }
 
 static void
@@ -1492,17 +1511,38 @@ avatar_command (wchar_t * s, int *stop)
       return;
     }
 
-  /* play sound */
+  /* load and play sound */
   if (wcsncmp (s, L"audio ", 6) == 0)
     {
       handle_audio_command (s + 6, AVT_FALSE);
       return;
     }
 
-  /* play sound in a loop */
+  /* load and play sound in a loop */
   if (wcsncmp (s, L"audioloop ", 10) == 0)
     {
       handle_audio_command (s + 10, AVT_TRUE);
+      return;
+    }
+
+  /* load sound */
+  if (wcsncmp (s, L"loadaudio ", 10) == 0)
+    {
+      handle_loadaudio_command (s + 10);
+      return;
+    }
+
+  /* play sound, loaded by loadaudio */
+  if (wcscmp (s, L"playaudio") == 0)
+    {
+      handle_playaudio_command (AVT_FALSE);
+      return;
+    }
+
+  /* play sound in a loop, loaded by loadaudio */
+  if (wcscmp (s, L"playaudioloop") == 0)
+    {
+      handle_playaudio_command (AVT_TRUE);
       return;
     }
 
@@ -2762,7 +2802,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.252 2008-12-02 23:04:05 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.253 2009-01-03 22:03:57 akf Exp $");
 
   return EXIT_SUCCESS;
 }
