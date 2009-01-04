@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.254 2009-01-04 14:23:12 akf Exp $ */
+/* $Id: avatarsay.c,v 2.255 2009-01-04 16:09:09 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1954,12 +1954,11 @@ process_script (int fd)
 
   /* initialize the graphics */
   if (!initialized && !stop)
-    {
-      initialize ();
+    initialize ();
 
-      if (!popup)
-	move_in ();
-    }
+
+  if (!moved_in && !popup)
+    move_in ();
 
   /* show text */
   if (line && !stop && wcsncmp (line, L"---", 3) != 0)
@@ -2042,6 +2041,7 @@ ask_file (void)
       int fd, status;
 
       avt_set_text_delay (default_delay);
+      moved_in = AVT_FALSE;
 
       fd = open_script (filename);
       if (fd > -1)
@@ -2780,9 +2780,6 @@ main (int argc, char *argv[])
     {
       int i;
 
-      if (initialized && !popup)
-	move_in ();
-
       for (i = optind; i < argc; i++)
 	run_script (argv[i]);
 
@@ -2801,7 +2798,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.254 2009-01-04 14:23:12 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.255 2009-01-04 16:09:09 akf Exp $");
 
   return EXIT_SUCCESS;
 }
