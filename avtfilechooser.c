@@ -101,6 +101,12 @@ get_file (char *filename)
 
   avt_set_text_delay (0);
   avt_normal_text ();
+
+  /* don't show the balloon */
+  avt_show_avatar ();
+  /* set maximum size */
+  avt_set_balloon_size (0, 0);
+
   max_x = avt_get_max_x ();
   max_idx = avt_get_max_y () - 1;
 
