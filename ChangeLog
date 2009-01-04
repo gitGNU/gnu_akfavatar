@@ -1,6 +1,6 @@
 2009-01-04  Andreas K. Foerster  <info@akfoerster.de>
 
-	* avatar-audio.c (avt_load_wave_file, avt_load_wave_data):
+	* avatar-audio.c (avt_play_audio):
 	set audio buffer size to lower value for lower latency
 
 2009-01-03  Andreas K. Foerster  <info@akfoerster.de>
