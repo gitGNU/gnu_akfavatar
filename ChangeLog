@@ -12,6 +12,7 @@
 
 	* avatar-audio.c (avt_play_audio):
 	fix: only set soundleft when device could be opened
+	(fixes bug #25263)
 
 2008-12-02  Andreas K. Foerster  <info@akfoerster.de>
 
