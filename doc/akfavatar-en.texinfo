@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.40 2008-10-11 14:02:21 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.41 2009-01-08 14:24:07 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -916,7 +916,7 @@ Which file-formats AKFAvatar supports depends on which libraries you have
 installed.  Uncompressed @code{BMP} images are always supported.
 
 @item audio @var{audiofile}
-plays an audio file
+loads and plays an audio file
 
 The text continues to be shown, so you can play an audio file with the 
 recorded words of the following text.
@@ -926,6 +926,21 @@ are supported.
 
 @item audioloop @var{audiofile}
 like @command{audio}, but the audio-data is played in an endless loop
+
+@item loadaudio @var{audiofile}
+loads an audio file for later playback
+
+Only one single audio file can be loaded at a time. An eventually running 
+audio-output is stopped by this command.
+
+Currently only @code{WAV}-files with @code{PCM} or @code{ADPCM} encoding 
+are supported.
+
+@item playaudio
+plays an audio file loaded by @command{loadaudio}
+
+@item playaudioloop
+plays an audio file loaded by @command{loadaudio} in an endless loop
 
 @item stopaudio
 stops the audio output immediately

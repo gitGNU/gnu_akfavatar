@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.33 2008-10-11 14:02:21 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.34 2009-01-08 14:24:07 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -990,7 +990,7 @@ ab, welche Bibliotheken auf dem System installiert sind.  Unkomprimierte
 @code{BMP}-Bilder werden immer unterstützt.
 
 @item audio @var{Audio-Datei}
-spielt eine Audio-Datei ab
+lädt eine Audio-Datei und spielt sie ab
 
 Der Text wird weiterhin angezeigt. Auf diese Weise kann man eine Audio
 Datei mit dem aufgenommenen Text abspielen, während gleichzeitig der 
@@ -1002,6 +1002,22 @@ Derzeit werden nur @code{WAV}-Dateien mit @code{PCM}- oder
 @item audioloop @var{Audio-Datei}
 wie @command{audio}, aber die Audio-Datei wird in einer Endlosschleife
 abgespielt
+
+@item loadaudio @var{audiofile}
+lädt eine Audio-Datei zum späteren Abspielen
+
+Es kann nur eine Datei gleichzeitig geladen sein. Eine eventuell laufende 
+Audio-Ausgabe wird durch diesen Befehl abgebrochen.
+
+Derzeit werden nur @code{WAV}-Dateien mit @code{PCM}- oder 
+@code{ADPCM}-Kodierung unterstützt.
+
+@item playaudio
+spielt eine Audio-Datei ab, die mit @command{loadaudio} geladen wurde
+
+@item playaudioloop
+spielt eine Audio-Datei, die mit @command{loadaudio} geladen wurde in einer 
+Endlosschleife ab
 
 @item stopaudio
 hält die Audio-Ausgabe umgehend an
