@@ -1,7 +1,7 @@
 /*
  * AKFAvatar - library for showing an avatar who says things in a balloon
  * this part is for the audio-output
- * Copyright (c) 2007 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007, 2008, 2009 Andreas K. Foerster <info@akfoerster.de>
  *
  * needed: 
  *  SDL1.2
@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.22 2009-01-05 12:01:36 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.23 2009-01-10 19:03:11 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -102,7 +102,7 @@ short_audio_sound (void)
 int
 avt_initialize_audio (void)
 {
-  SDL_SetError ("$Id: avatar-audio.c,v 2.22 2009-01-05 12:01:36 akf Exp $");
+  SDL_SetError ("$Id: avatar-audio.c,v 2.23 2009-01-10 19:03:11 akf Exp $");
   SDL_ClearError ();
 
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)

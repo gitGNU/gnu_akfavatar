@@ -1,6 +1,6 @@
 /*
  * AKFAvatar library - for giving your programs a graphical Avatar
- * Copyright (c) 2007, 2008 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007, 2008, 2009 Andreas K. Foerster <info@akfoerster.de>
  *
  * needed: 
  *  SDL1.2 (recommended: SDL1.2.11 or later (but not 1.3!))
@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.180 2008-11-12 12:39:33 akf Exp $ */
+/* $Id: avatar.c,v 2.181 2009-01-10 19:03:12 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -46,7 +46,7 @@
 #  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
 
-#define COPYRIGHTYEAR "2008"
+#define COPYRIGHTYEAR "2009"
 
 #if defined(QVGA)
 #  define FONTWIDTH 4
@@ -4225,7 +4225,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.180 2008-11-12 12:39:33 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.181 2009-01-10 19:03:12 akf Exp $");
 
   /*
    * Initialize the display, accept any format

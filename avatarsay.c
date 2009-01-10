@@ -1,6 +1,6 @@
 /*
  * avatarsay - show a textfile with libavatar
- * Copyright (c) 2007, 2008 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007, 2008, 2009 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.255 2009-01-04 16:09:09 akf Exp $ */
+/* $Id: avatarsay.c,v 2.256 2009-01-10 19:03:12 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -92,7 +92,7 @@
 
 static const char *version_info_en =
   PRGNAME " (AKFAvatar) " AVTVERSION "\n"
-  "Copyright (c) 2007, 2008 Andreas K. Foerster\n\n"
+  "Copyright (c) 2007, 2008, 2009 Andreas K. Foerster\n\n"
   "License GPLv3+: GNU GPL version 3 or later "
   "<http://gnu.org/licenses/gpl.html>\n\n"
   "This is free software: you are free to change and redistribute it.\n"
@@ -102,7 +102,7 @@ static const char *version_info_en =
 /* avoid german umlauts here */
 static const char *version_info_de =
   PRGNAME " (AKFAvatar) " AVTVERSION "\n"
-  "Copyright (c) 2007, 2008 Andreas K. Foerster\n\n"
+  "Copyright (c) 2007, 2008, 2009 Andreas K. Foerster\n\n"
   "Lizenz GPLv3+: GNU GPL Version 3 oder neuer "
   "<http://gnu.org/licenses/gpl.html>\n\n"
   "Dies ist Freie Software: Sie duerfen es gemaess der GPL weitergeben und\n"
@@ -738,25 +738,6 @@ read_text_file (const char *f)
     }
 
   return buf;
-}
-
-/* removes trailing space, newline, etc. */
-static void
-strip (wchar_t ** s)
-{
-  wchar_t *p;
-
-  p = *s;
-
-  /* search end of string */
-  while (*(p + 1) != L'\0')
-    p++;
-
-  /* search for last non-space char */
-  while (*p == L'\n' || *p == L'\r' || *p == L' ' || *p == L'\t')
-    p--;
-
-  *(p + 1) = L'\0';
 }
 
 /* 
@@ -1855,6 +1836,11 @@ say_line (const wchar_t * line, ssize_t nread)
   int status = AVT_NORMAL;
   avt_bool_t underlined = AVT_FALSE;
 
+  /* use a new line, when cursor is not in the home position */
+  /* (no new-line at the end) */
+  if (avt_where_x () > 1 || avt_where_y () > 1)
+    status = avt_new_line ();
+
   for (i = 0; i < nread; i++, line++)
     {
       if (*(line + 1) == L'\b')
@@ -1898,7 +1884,10 @@ say_line (const wchar_t * line, ssize_t nread)
 	}
       else			/* not L'_' */
 	{
-	  status = avt_put_character (*line);
+	  /* filter out \r and \n */
+	  /* new-lines are handled at the beginning */
+	  if (*line != L'\n' && *line != L'\r')
+	    status = avt_put_character (*line);
 	  if (status)
 	    break;
 	}
@@ -1955,7 +1944,6 @@ process_script (int fd)
   /* initialize the graphics */
   if (!initialized && !stop)
     initialize ();
-
 
   if (!moved_in && !popup)
     move_in ();
@@ -2798,7 +2786,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.255 2009-01-04 16:09:09 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.256 2009-01-10 19:03:12 akf Exp $");
 
   return EXIT_SUCCESS;
 }
