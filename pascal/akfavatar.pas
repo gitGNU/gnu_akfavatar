@@ -294,6 +294,7 @@ function AvatarGetError: ShortString;
 procedure SetMonochrome(monochrome: boolean);
 
 { choice for several items }
+{ result is the choice number, starting from 0 }
 { startkey may be #0 }
 function Choice(start_line, end_line: integer; startkey: char;
                 back, fwrd: boolean): integer;
