@@ -44,14 +44,18 @@ const
   b_maximum = 10;
 
 {$IfDef english}
-  const question = 'exercise 1) multiplication or 2) division?';
+  const question = 'What to exercise?';
+  const q_multiplication = 'multication';
+  const q_division = 'division';
   const
     correct = 'correct';
     wrong = 'wrong';
 {$EndIf}
 
 {$IfDef deutsch}
-  const question = '1) multiplizieren oder 2) dividieren '#252'ben?';
+  const question = 'Was '#252'ben?';
+  const q_multiplication = 'multiplizieren';
+  const q_division = 'dividieren';
   const
     correct = 'richtig';
     wrong = 'falsch';
@@ -91,15 +95,32 @@ if code=0
   else askResult := -1 { error }
 end;
 
+{$IfDef AKFAVATAR}
+
+procedure AskWhatToExercise;
+begin
+BalloonSize (3, 40);
+
+ClrScr;
+WriteLn(question);
+WriteLn('1) '+ q_multiplication);
+Write  ('2) '+ q_division);
+if Choice(2, 2+2, '1', false, false) = 0
+  then exercise := multiplication
+  else exercise := division;
+
+ClrScr
+end;
+
+{$Else}
+
 procedure AskWhatToExercise;
 var c: char;
 begin
-{$IfDef AKFAVATAR}
-  BalloonSize (1, 0);
-{$EndIf}
-
 ClrScr;
-Write(question);
+WriteLn(question);
+WriteLn('1) '+ q_multiplication);
+WriteLn('2) '+ q_division);
 
 repeat
   c := ReadKey
@@ -112,6 +133,8 @@ case c of
 
 ClrScr
 end;
+
+{$EndIf}
 
 procedure sayCorrect;
 begin 
