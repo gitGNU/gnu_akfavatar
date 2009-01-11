@@ -47,10 +47,6 @@
 /* how many pages? */
 #define MAXPAGES 500
 
-/* internal key-code for menu */
-/* use reserved unicode block, to make sure no keys are assigned to it */
-#define START_CODE 0xE000
-
 #ifdef __WIN32__
 extern int ask_drive (int max_idx);
 #else
@@ -93,7 +89,6 @@ get_file (char *filename)
   int max_x, max_idx;
   int idx;
   int filenr;
-  wchar_t ch;
   char dirname[4096];
   char entry[100][256];
   int page_nr;
@@ -159,12 +154,11 @@ start:
 		  idx++;
 		}
 
-	      if (avt_menu (&ch, 2, idx + 1, START_CODE,
-			    (page_nr > 0), (d != NULL)))
+	      if (avt_choice
+		  (&filenr, 2, idx + 1, 0, (page_nr > 0), (d != NULL)))
 		break;
 
 	      new_page (dirname);
-	      filenr = (int) (ch - START_CODE);
 
 	      if (d && filenr == idx - 1)	/* continue? */
 		{

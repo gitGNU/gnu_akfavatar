@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.76 2008-10-04 10:48:30 akf Exp $ */
+/* $Id: akfavatar.h,v 2.77 2009-01-11 14:14:52 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -401,18 +401,24 @@ int avt_say_mb_len (const char *txt, int len);
 int avt_get_key (wchar_t * ch);
 
 /*
- * menu
- * menu_start: line, where menu begins
- * menu_end:   line, where menu ends
- * start_code: first character, like L'1' or L'a'
+ * avt_choice
+ * result:        result code, first item is 0
+ * start_line:    line, where choice begins
+ * end_line:      line, where choice ends
+ * key:           first key, like '1' or 'a', 0 for no keys
+ * back, forward: whether first/last entry is a back/forward function
  *
- * returns AVT_ERROR and sets _avt_STATUS
- * when it cannot get enough memory
+ * returns AVT_ERROR and sets _avt_STATUS when it cannot get enough memory
  */
-int avt_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code,
-	      avt_bool_t back, avt_bool_t forward);
+int
+avt_choice (int *result, int start_line, int end_line, int key,
+	    avt_bool_t back, avt_bool_t forward);
 
-/* for backward compatibility */
+/* deprecated, use avt_choice */
+int avt_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code,
+	      avt_bool_t back, avt_bool_t forward) AVT_DEPRECATED;
+
+/* deprecated, use avt_choice */
 int
 avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 AVT_DEPRECATED;

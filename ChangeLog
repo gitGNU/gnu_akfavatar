@@ -1,3 +1,9 @@
+2009-01-11  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_choice):
+	new function, replaces avt_menu (for easier language-bindings)
+	avatarsay.c, avtfilechooser.c, akfavatar.pas: adapted
+
 2009-01-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (say_line):

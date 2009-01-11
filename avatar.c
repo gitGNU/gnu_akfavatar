@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.181 2009-01-10 19:03:12 akf Exp $ */
+/* $Id: avatar.c,v 2.182 2009-01-11 14:14:52 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2764,12 +2764,12 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
 }
 
 int
-avt_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code,
-	  avt_bool_t back, avt_bool_t forward)
+avt_choice (int *result, int start_line, int end_line, int key,
+	    avt_bool_t back, avt_bool_t forward)
 {
   SDL_Surface *plain_menu, *bar;
   SDL_Event event;
-  wchar_t end_code;
+  int last_key;
   int line_nr = 1, old_line = 0;
   int x, y;
 
@@ -2811,21 +2811,24 @@ avt_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code,
       SDL_EventState (SDL_MOUSEMOTION, SDL_ENABLE);
       SDL_ShowCursor (SDL_ENABLE);	/* mouse cursor */
 
-      end_code = start_code + (menu_end - menu_start);
+      if (key)
+        last_key = key + (end_line - start_line);
+     else
+        last_key = 0;
 
       /* bar in initial mouse position */
       SDL_GetMouseState (&x, &y);
       line_nr = ((y - viewport.y) / LINEHEIGHT) + 1;
       if (x >= viewport.x && x <= (viewport.x + viewport.w)
-	  && line_nr >= menu_start && line_nr <= menu_end)
+	  && line_nr >= start_line && line_nr <= end_line)
 	{
-	  update_menu_bar (menu_start, menu_end, line_nr, old_line,
+	  update_menu_bar (start_line, end_line, line_nr, old_line,
 			   plain_menu, bar);
 	  old_line = line_nr;
 	}
 
-      *ch = L'\0';
-      while ((*ch == L'\0') && (_avt_STATUS == AVT_NORMAL))
+      *result = -1;
+      while ((*result == -1) && (_avt_STATUS == AVT_NORMAL))
 	{
 	  SDL_WaitEvent (&event);
 	  avt_analyze_event (&event);
@@ -2833,47 +2836,47 @@ avt_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code,
 	  switch (event.type)
 	    {
 	    case SDL_KEYDOWN:
-	      if ((event.key.keysym.unicode >= start_code)
-		  && (event.key.keysym.unicode <= end_code))
-		*ch = (wchar_t) event.key.keysym.unicode;
+	      if (key && (event.key.keysym.unicode >= key)
+		  && (event.key.keysym.unicode <= last_key))
+		*result = (int) (event.key.keysym.unicode - key);
 	      else if ((event.key.keysym.sym == SDLK_DOWN
 			|| event.key.keysym.sym == SDLK_KP2))
 		{
-		  if (line_nr != menu_end)
+		  if (line_nr != end_line)
 		    {
-		      if (line_nr < menu_start || line_nr > menu_end)
-			line_nr = menu_start;
+		      if (line_nr < start_line || line_nr > end_line)
+			line_nr = start_line;
 		      else
 			line_nr++;
-		      update_menu_bar (menu_start, menu_end, line_nr,
+		      update_menu_bar (start_line, end_line, line_nr,
 				       old_line, plain_menu, bar);
 		      old_line = line_nr;
 		    }
 		  else if (forward)
-		    *ch = end_code;
+		    *result = (end_line - start_line);
 		}
 	      else if ((event.key.keysym.sym == SDLK_UP
 			|| event.key.keysym.sym == SDLK_KP8))
 		{
-		  if (line_nr != menu_start)
+		  if (line_nr != start_line)
 		    {
-		      if (line_nr < menu_start || line_nr > menu_end)
-			line_nr = menu_end;
+		      if (line_nr < start_line || line_nr > end_line)
+			line_nr = end_line;
 		      else
 			line_nr--;
-		      update_menu_bar (menu_start, menu_end, line_nr,
+		      update_menu_bar (start_line, end_line, line_nr,
 				       old_line, plain_menu, bar);
 		      old_line = line_nr;
 		    }
 		  else if (back)
-		    *ch = start_code;
+		    *result = 0;
 		}
 	      else if ((event.key.keysym.sym == SDLK_RETURN
 			|| event.key.keysym.sym == SDLK_KP_ENTER
 			|| event.key.keysym.sym == SDLK_RIGHT
 			|| event.key.keysym.sym == SDLK_KP6)
-		       && line_nr >= menu_start && line_nr <= menu_end)
-		*ch = (wchar_t) (line_nr - menu_start + start_code);
+		       && line_nr >= start_line && line_nr <= end_line)
+		*result = line_nr - start_line;
 	      break;
 
 	    case SDL_MOUSEMOTION:
@@ -2887,7 +2890,7 @@ avt_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code,
 
 	      if (line_nr != old_line)
 		{
-		  update_menu_bar (menu_start, menu_end, line_nr, old_line,
+		  update_menu_bar (start_line, end_line, line_nr, old_line,
 				   plain_menu, bar);
 		  old_line = line_nr;
 		}
@@ -2899,10 +2902,10 @@ avt_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code,
 		{
 		  line_nr = ((event.button.y - viewport.y) / LINEHEIGHT) + 1;
 
-		  if (line_nr >= menu_start && line_nr <= menu_end
+		  if (line_nr >= start_line && line_nr <= end_line
 		      && event.button.x >= viewport.x
 		      && event.button.x <= viewport.x + viewport.w)
-		    *ch = (wchar_t) (line_nr - menu_start + start_code);
+		    *result = line_nr - start_line;
 		}
 	      break;
 	    }
@@ -2917,7 +2920,21 @@ avt_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code,
   return _avt_STATUS;
 }
 
-/* just for backward compatibility */
+/* deprecated - just for backward compatibility */
+int
+avt_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code,
+	  avt_bool_t back, avt_bool_t forward)
+{
+  int status, result;
+  
+  status = avt_choice (&result, menu_start, menu_end, (int) start_code, 
+                       back, forward);
+                       
+  *ch = result + start_code;
+  return status;
+}
+
+/* deprecated - just for backward compatibility */
 int
 avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 {
@@ -4225,7 +4242,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.181 2009-01-10 19:03:12 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.182 2009-01-11 14:14:52 akf Exp $");
 
   /*
    * Initialize the display, accept any format

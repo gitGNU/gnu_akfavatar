@@ -293,6 +293,11 @@ function AvatarGetError: ShortString;
 { compatible with GNU-Pascal's CRT unit }
 procedure SetMonochrome(monochrome: boolean);
 
+{ choice for several items }
+{ startkey may be #0 }
+function Choice(start_line, end_line: integer; startkey: char;
+                back, fwrd: boolean): integer;
+
 implementation
 
 {-----------------------------------------------------------------------}
@@ -496,6 +501,12 @@ procedure avt_set_scroll_mode(mode: CInteger);
 
 function avt_get_scroll_mode: CInteger; 
   libakfavatar 'avt_get_scroll_mode';
+
+
+function avt_choice(var result: CInteger; 
+                    start_line, end_line, key: CInteger;
+                    back, fwrd: avt_bool_t): CInteger; 
+  libakfavatar 'avt_choice';
 
 {$IfNDef __GPC__}
 
@@ -1013,6 +1024,16 @@ function ScreenSize: TScreenSize;
 begin
 if not initialized then initializeAvatar;
 ScreenSize := ScrSize
+end;
+
+function Choice(start_line, end_line: integer; startkey: char;
+                back, fwrd: boolean): integer;
+var result: CInteger;
+begin
+if not initialized then initializeAvatar;
+if avt_choice(result, start_line, end_line, CInteger(startkey), 
+              ord(back), ord(fwrd))<>0 then Halt;
+Choice := result
 end;
 
 { ---------------------------------------------------------------------}
