@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.259 2009-01-12 11:54:50 akf Exp $ */
+/* $Id: avatarsay.c,v 2.260 2009-01-12 19:35:33 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2123,6 +2123,8 @@ run_info (void)
   int fd;
   char *args[] = { "info", "akfavatar-en", NULL };
 
+  /* no avatar -> full size balloon */
+  change_avatar_image (NULL);
   avt_set_balloon_size (0, 0);
   avt_clear ();
   avt_set_text_delay (0);
@@ -2782,7 +2784,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.259 2009-01-12 11:54:50 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.260 2009-01-12 19:35:33 akf Exp $");
 
   return EXIT_SUCCESS;
 }

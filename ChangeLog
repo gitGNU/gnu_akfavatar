@@ -1,5 +1,8 @@
 2009-01-12  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatarsay.c (run_info):
+	show info with no avatar, full-size balloon
+
 	* akfavatar.h, avatar.c (avt_choice):
 	use number of items instead of end_line
 	result starting from 1
