@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.77 2009-01-11 14:14:52 akf Exp $ */
+/* $Id: akfavatar.h,v 2.78 2009-01-12 11:00:53 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -404,14 +404,14 @@ int avt_get_key (wchar_t * ch);
  * avt_choice
  * result:        result code, first item is 0
  * start_line:    line, where choice begins
- * end_line:      line, where choice ends
+ * items:         number of items/lines
  * key:           first key, like '1' or 'a', 0 for no keys
  * back, forward: whether first/last entry is a back/forward function
  *
  * returns AVT_ERROR and sets _avt_STATUS when it cannot get enough memory
  */
 int
-avt_choice (int *result, int start_line, int end_line, int key,
+avt_choice (int *result, int start_line, int items, int key,
 	    avt_bool_t back, avt_bool_t forward);
 
 /* deprecated, use avt_choice */

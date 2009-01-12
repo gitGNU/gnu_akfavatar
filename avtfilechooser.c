@@ -154,8 +154,7 @@ start:
 		  idx++;
 		}
 
-	      if (avt_choice
-		  (&filenr, 2, idx + 1, 0, (page_nr > 0), (d != NULL)))
+	      if (avt_choice (&filenr, 2, idx, 0, (page_nr > 0), (d != NULL)))
 		break;
 
 	      new_page (dirname);

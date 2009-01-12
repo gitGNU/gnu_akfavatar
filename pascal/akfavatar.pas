@@ -296,7 +296,7 @@ procedure SetMonochrome(monochrome: boolean);
 { choice for several items }
 { result is the choice number, starting from 0 }
 { startkey may be #0 }
-function Choice(start_line, end_line: integer; startkey: char;
+function Choice(start_line, items: integer; startkey: char;
                 back, fwrd: boolean): integer;
 
 implementation
@@ -505,7 +505,7 @@ function avt_get_scroll_mode: CInteger;
 
 
 function avt_choice(var result: CInteger; 
-                    start_line, end_line, key: CInteger;
+                    start_line, items, key: CInteger;
                     back, fwrd: avt_bool_t): CInteger; 
   libakfavatar 'avt_choice';
 
@@ -1027,12 +1027,12 @@ if not initialized then initializeAvatar;
 ScreenSize := ScrSize
 end;
 
-function Choice(start_line, end_line: integer; startkey: char;
+function Choice(start_line, items: integer; startkey: char;
                 back, fwrd: boolean): integer;
 var result: CInteger;
 begin
 if not initialized then initializeAvatar;
-if avt_choice(result, start_line, end_line, CInteger(startkey), 
+if avt_choice(result, start_line, items, CInteger(startkey), 
               ord(back), ord(fwrd))<>0 then Halt;
 Choice := result
 end;

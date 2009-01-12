@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.182 2009-01-11 14:14:52 akf Exp $ */
+/* $Id: avatar.c,v 2.183 2009-01-12 11:00:53 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2764,12 +2764,13 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
 }
 
 int
-avt_choice (int *result, int start_line, int end_line, int key,
+avt_choice (int *result, int start_line, int items, int key,
 	    avt_bool_t back, avt_bool_t forward)
 {
   SDL_Surface *plain_menu, *bar;
   SDL_Event event;
   int last_key;
+  int end_line;
   int line_nr = 1, old_line = 0;
   int x, y;
 
@@ -2811,10 +2812,13 @@ avt_choice (int *result, int start_line, int end_line, int key,
       SDL_EventState (SDL_MOUSEMOTION, SDL_ENABLE);
       SDL_ShowCursor (SDL_ENABLE);	/* mouse cursor */
 
+      end_line = start_line + items - 1;
+
       if (key)
-        last_key = key + (end_line - start_line);
-     else
-        last_key = 0;
+	last_key = key + items - 1;
+      else
+	last_key = 0;
+
 
       /* bar in initial mouse position */
       SDL_GetMouseState (&x, &y);
@@ -2853,7 +2857,7 @@ avt_choice (int *result, int start_line, int end_line, int key,
 		      old_line = line_nr;
 		    }
 		  else if (forward)
-		    *result = (end_line - start_line);
+		    *result = items - 1;
 		}
 	      else if ((event.key.keysym.sym == SDLK_UP
 			|| event.key.keysym.sym == SDLK_KP8))
@@ -2926,10 +2930,10 @@ avt_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code,
 	  avt_bool_t back, avt_bool_t forward)
 {
   int status, result;
-  
-  status = avt_choice (&result, menu_start, menu_end, (int) start_code, 
-                       back, forward);
-                       
+
+  status = avt_choice (&result, menu_start, menu_end - menu_start + 1,
+		       (int) start_code, back, forward);
+
   *ch = result + start_code;
   return status;
 }
@@ -4242,7 +4246,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.182 2009-01-11 14:14:52 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.183 2009-01-12 11:00:53 akf Exp $");
 
   /*
    * Initialize the display, accept any format

@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.257 2009-01-11 14:14:52 akf Exp $ */
+/* $Id: avatarsay.c,v 2.258 2009-01-12 11:00:53 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1762,8 +1762,7 @@ multi_menu (int fd)
     }
 
   /* TODO: don't just exit */
-  if (avt_choice (&choice, menu_start, menu_start + entry - 1, '1',
-		AVT_FALSE, AVT_FALSE))
+  if (avt_choice (&choice, menu_start, entry, '1', AVT_FALSE, AVT_FALSE))
     exit (EXIT_SUCCESS);
 
   /* back to normal... */
@@ -2404,7 +2403,7 @@ about_avatarsay (void)
 static void
 menu (void)
 {
-  int choice, menu_start, menu_end;
+  int choice, menu_start;
 
   /* avoid pause after moving out */
   loop = AVT_FALSE;
@@ -2468,10 +2467,9 @@ menu (void)
 	  avt_say (L"8) exit");	/* no newline */
 	}
 
-      menu_end = avt_where_y ();
       avt_set_text_delay (default_delay);
 
-      if (avt_choice (&choice, menu_start, menu_end, '1', AVT_FALSE, AVT_FALSE))
+      if (avt_choice (&choice, menu_start, 8, '1', AVT_FALSE, AVT_FALSE))
 	exit (EXIT_SUCCESS);
 
       switch (choice + '1')
@@ -2784,7 +2782,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.257 2009-01-11 14:14:52 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.258 2009-01-12 11:00:53 akf Exp $");
 
   return EXIT_SUCCESS;
 }
