@@ -105,7 +105,7 @@ ClrScr;
 WriteLn(question);
 WriteLn('1) '+ q_multiplication);
 Write  ('2) '+ q_division);
-case Choice(2, 2, '1', false, false) + 1 of
+case Choice(2, 2, '1', false, false) of
   1: exercise := multiplication;
   2: exercise := division
   end;

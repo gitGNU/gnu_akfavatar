@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.183 2009-01-12 11:00:53 akf Exp $ */
+/* $Id: avatar.c,v 2.184 2009-01-12 11:54:50 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2842,7 +2842,7 @@ avt_choice (int *result, int start_line, int items, int key,
 	    case SDL_KEYDOWN:
 	      if (key && (event.key.keysym.unicode >= key)
 		  && (event.key.keysym.unicode <= last_key))
-		*result = (int) (event.key.keysym.unicode - key);
+		*result = (int) (event.key.keysym.unicode - key + 1);
 	      else if ((event.key.keysym.sym == SDLK_DOWN
 			|| event.key.keysym.sym == SDLK_KP2))
 		{
@@ -2857,7 +2857,7 @@ avt_choice (int *result, int start_line, int items, int key,
 		      old_line = line_nr;
 		    }
 		  else if (forward)
-		    *result = items - 1;
+		    *result = items;
 		}
 	      else if ((event.key.keysym.sym == SDLK_UP
 			|| event.key.keysym.sym == SDLK_KP8))
@@ -2873,14 +2873,14 @@ avt_choice (int *result, int start_line, int items, int key,
 		      old_line = line_nr;
 		    }
 		  else if (back)
-		    *result = 0;
+		    *result = 1;
 		}
 	      else if ((event.key.keysym.sym == SDLK_RETURN
 			|| event.key.keysym.sym == SDLK_KP_ENTER
 			|| event.key.keysym.sym == SDLK_RIGHT
 			|| event.key.keysym.sym == SDLK_KP6)
 		       && line_nr >= start_line && line_nr <= end_line)
-		*result = line_nr - start_line;
+		*result = line_nr - start_line + 1;
 	      break;
 
 	    case SDL_MOUSEMOTION:
@@ -2909,7 +2909,7 @@ avt_choice (int *result, int start_line, int items, int key,
 		  if (line_nr >= start_line && line_nr <= end_line
 		      && event.button.x >= viewport.x
 		      && event.button.x <= viewport.x + viewport.w)
-		    *result = line_nr - start_line;
+		    *result = line_nr - start_line + 1;
 		}
 	      break;
 	    }
@@ -2934,7 +2934,7 @@ avt_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code,
   status = avt_choice (&result, menu_start, menu_end - menu_start + 1,
 		       (int) start_code, back, forward);
 
-  *ch = result + start_code;
+  *ch = result + start_code - 1;
   return status;
 }
 
@@ -4246,7 +4246,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   SDL_WM_SetCaption (title, icontitle);
   avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.183 2009-01-12 11:00:53 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.184 2009-01-12 11:54:50 akf Exp $");
 
   /*
    * Initialize the display, accept any format

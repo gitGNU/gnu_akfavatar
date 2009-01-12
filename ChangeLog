@@ -2,6 +2,7 @@
 
 	* akfavatar.h, avatar.c (avt_choice):
 	use number of items instead of end_line
+	result starting from 1
 	avatarsay.c, avtfilechooser.c, akfavatar.pas: adapted
 
 2009-01-11  Andreas K. Foerster  <info@akfoerster.de>

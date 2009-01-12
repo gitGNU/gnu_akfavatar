@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.258 2009-01-12 11:00:53 akf Exp $ */
+/* $Id: avatarsay.c,v 2.259 2009-01-12 11:54:50 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1771,7 +1771,7 @@ multi_menu (int fd)
   avt_set_balloon_size (0, 0);
   avt_set_text_delay (default_delay);
 
-  return arch_find_member (fd, archive_member[choice]);
+  return arch_find_member (fd, archive_member[choice - 1]);
 }
 
 /* opens the file, returns file descriptor or -1 on error */
@@ -2472,43 +2472,43 @@ menu (void)
       if (avt_choice (&choice, menu_start, 8, '1', AVT_FALSE, AVT_FALSE))
 	exit (EXIT_SUCCESS);
 
-      switch (choice + '1')
+      switch (choice)
 	{
-	case '1':		/* terminal-mode */
+	case 1:		/* terminal-mode */
 	  avt_show_avatar ();	/* no balloon, while starting up */
 	  run_shell ();
 	  avt_set_status (AVT_NORMAL);
 	  break;
 
-	case '2':		/* show a demo or textfile */
+	case 2:		/* show a demo or textfile */
 	  ask_file ();
 	  break;
 
-	case '3':		/* create or edit a demo */
+	case 3:		/* create or edit a demo */
 	  ask_edit_file ();
 	  avt_set_status (AVT_NORMAL);
 	  break;
 
-	case '4':		/* show a manpage */
+	case 4:		/* show a manpage */
 	  ask_manpage ();
 	  avt_set_status (AVT_NORMAL);
 	  break;
 
-	case '5':		/* documentation */
+	case 5:		/* documentation */
 	  run_info ();
 	  avt_set_status (AVT_NORMAL);
 	  break;
 
-	case '6':		/* toggle fullscreen */
+	case 6:		/* toggle fullscreen */
 	  avt_toggle_fullscreen ();
 	  break;
 
-	case '7':		/* about avatarsay */
+	case 7:		/* about avatarsay */
 	  about_avatarsay ();
 	  avt_set_status (AVT_NORMAL);
 	  break;
 
-	case '8':		/* exit */
+	case 8:		/* exit */
 	  if (!popup)
 	    move_out ();
 	  exit (EXIT_SUCCESS);
@@ -2782,7 +2782,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.258 2009-01-12 11:00:53 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.259 2009-01-12 11:54:50 akf Exp $");
 
   return EXIT_SUCCESS;
 }

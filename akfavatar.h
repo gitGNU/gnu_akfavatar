@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.78 2009-01-12 11:00:53 akf Exp $ */
+/* $Id: akfavatar.h,v 2.79 2009-01-12 11:54:50 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -402,7 +402,7 @@ int avt_get_key (wchar_t * ch);
 
 /*
  * avt_choice
- * result:        result code, first item is 0
+ * result:        result code, first item is 1
  * start_line:    line, where choice begins
  * items:         number of items/lines
  * key:           first key, like '1' or 'a', 0 for no keys

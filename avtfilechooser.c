@@ -159,7 +159,7 @@ start:
 
 	      new_page (dirname);
 
-	      if (d && filenr == idx - 1)	/* continue? */
+	      if (d && filenr == idx)	/* continue? */
 		{
 		  idx = 0;
 		  page_nr++;
@@ -171,7 +171,7 @@ start:
 		  idx++;
 		  avt_new_line ();
 		}
-	      else if (filenr == 0 && page_nr > 0)	/* back */
+	      else if (filenr == 1 && page_nr > 0)	/* back */
 		{
 		  page_nr--;
 		  seekdir (dir, pages[page_nr]);
@@ -195,7 +195,7 @@ start:
 		}
 	      else		/* file chosen */
 		{
-		  strcpy (filename, entry[filenr]);
+		  strcpy (filename, entry[filenr - 1]);
 		  rcode = 0;
 		  break;
 		}
