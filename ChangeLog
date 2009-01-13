@@ -1,3 +1,8 @@
+2009-01-13  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (menu, run_info), avtwindows.c (open_document):
+	show manual in webbrowser under Windows
+
 2009-01-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (run_info):

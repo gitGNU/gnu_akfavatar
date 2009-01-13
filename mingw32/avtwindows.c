@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtwindows.c,v 1.2 2009-01-13 10:59:47 akf Exp $ */
+/* $Id: avtwindows.c,v 1.3 2009-01-13 13:26:16 akf Exp $ */
 
 #include "akfavatar.h"
 #include <windows.h>
@@ -42,6 +42,16 @@ edit_file (const char *name)
    * so leave some time to see the message
    */
   avt_wait (AVT_SECONDS (5));
+}
+
+void
+open_document (const char *start_dir, const char *name)
+{
+  /* enforce window mode for the other window to be shown */
+  avt_switch_mode (AVT_WINDOW);
+
+  ShellExecute (GetActiveWindow (), "open", name,
+		NULL, start_dir, SW_SHOWNORMAL);
 }
 
 /* get user's home direcory */

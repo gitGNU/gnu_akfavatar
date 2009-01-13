@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.260 2009-01-12 19:35:33 akf Exp $ */
+/* $Id: avatarsay.c,v 2.261 2009-01-13 13:26:16 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2069,11 +2069,28 @@ run_shell (void)
   not_available ();
 }
 
+#ifdef __WIN32__
+
+static void
+run_info (void)
+{
+  avt_show_avatar ();
+
+  if (language == DEUTSCH)
+    open_document (start_dir, "akfavatar-de.html");
+  else				/* not DEUTSCH */
+    open_document (start_dir, "akfavatar-en.html");
+}
+
+#else /* not Windows and no PTY */
+
 static void
 run_info (void)
 {
   not_available ();
 }
+
+#endif
 
 static int
 avtterm_start (const char *enc AVT_UNUSED, const char *wd AVT_UNUSED,
@@ -2384,22 +2401,27 @@ about_avatarsay (void)
   avt_wait_button ();
 }
 
-#ifdef NO_MANPAGES
-#  define SAY_MANPAGE(x) \
+#define UNACCESSIBLE(x) \
      avt_set_text_color (0x88, 0x88, 0x88); \
      avt_say(x); \
      avt_set_text_color (0x00, 0x00, 0x00)
+
+#ifdef NO_MANPAGES
+#  define SAY_MANPAGE(x) UNACCESSIBLE(x)
 #else
 #  define SAY_MANPAGE(x) avt_say(x)
 #endif
 
 #ifdef NO_PTY
-#  define SAY_SHELL(x) \
-     avt_set_text_color (0x88, 0x88, 0x88); \
-     avt_say(x); \
-     avt_set_text_color (0x00, 0x00, 0x00)
+#  define SAY_SHELL(x) UNACCESSIBLE(x)
+#  ifdef __WIN32__
+#    define SAY_MANUAL(x) avt_say(x)
+#  else
+#  define SAY_MANUAL(x) UNACCESSIBLE(x)
+#  endif
 #else
 #  define SAY_SHELL(x) avt_say(x)
+#  define SAY_MANUAL(x) avt_say(x)
 #endif
 
 static void
@@ -2451,7 +2473,7 @@ menu (void)
 	  avt_say (L"2) ein Demo oder eine Text-Datei anzeigen\n");
 	  avt_say (L"3) ein Demo erstellen oder bearbeiten\n");
 	  SAY_MANPAGE (L"4) eine Hilfeseite (Manpage) anzeigen\n");
-	  SAY_SHELL (L"5) Anleitung (info)\n");
+	  SAY_MANUAL (L"5) Anleitung\n");
 	  avt_say (L"6) Vollbild-Anzeige umschalten\n");
 	  avt_say (L"7) über avatarsay\n");
 	  avt_say (L"8) beenden");	/* no newline */
@@ -2463,7 +2485,7 @@ menu (void)
 	  avt_say (L"2) show a demo or textfile\n");
 	  avt_say (L"3) create or edit a demo\n");
 	  SAY_MANPAGE (L"4) show a manpage\n");
-	  SAY_SHELL (L"5) documentation (info)\n");
+	  SAY_MANUAL (L"5) documentation\n");
 	  avt_say (L"6) toggle fullscreen mode\n");
 	  avt_say (L"7) about avatarsay\n");
 	  avt_say (L"8) exit");	/* no newline */
@@ -2784,7 +2806,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.260 2009-01-12 19:35:33 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.261 2009-01-13 13:26:16 akf Exp $");
 
   return EXIT_SUCCESS;
 }
