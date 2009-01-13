@@ -7,7 +7,7 @@ CC = $(TARGET)-gcc
 AR = $(TARGET)-ar
 WINDRES = $(TARGET)-windres
 RANLIB = $(TARGET)-ranlib
-CFLAGS = -O2
+CFLAGS = -O2 -Wall -Wextra
 LDFLAGS = 
 
 SDL_CONFIG = /usr/$(TARGET)/bin/sdl-config
@@ -234,7 +234,7 @@ arch.o: ../arch.c ../arch.h
 	$(CC) $(CFLAGS) -c -o $@ ../arch.c
 
 avtwindows.o: avtwindows.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ avtwindows.c
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I.. -c -o $@ avtwindows.c
 
 avatarsay.exe: avatarsay-d.exe
 	mv avatarsay-d.exe avatarsay.exe

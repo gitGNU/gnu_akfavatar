@@ -21,8 +21,9 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtmsg.c,v 2.2 2008-12-02 11:31:29 akf Exp $ */
+/* $Id: avtmsg.c,v 2.3 2009-01-13 16:21:58 akf Exp $ */
 
+#include "akfavatar.h"
 #include "avtmsg.h"
 #include <windows.h>
 #include <string.h>
@@ -54,7 +55,7 @@ warning_msg (const char *msg1, const char *msg2)
 
 /* ignore unimportant notices on Windows */
 void
-notice_msg (const char *msg1, const char *msg2)
+notice_msg (const char *msg1 AVT_UNUSED, const char *msg2 AVT_UNUSED)
 {
 }
 

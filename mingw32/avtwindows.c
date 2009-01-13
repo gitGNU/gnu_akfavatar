@@ -22,10 +22,12 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtwindows.c,v 1.3 2009-01-13 13:26:16 akf Exp $ */
+/* $Id: avtwindows.c,v 1.4 2009-01-13 16:21:58 akf Exp $ */
 
 #include "akfavatar.h"
+#include "avtmsg.h"
 #include <windows.h>
+#include <direct.h>		/* for _chdrive */
 #include <stdlib.h>
 #include <string.h>
 
