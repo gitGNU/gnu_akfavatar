@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.261 2009-01-13 13:26:16 akf Exp $ */
+/* $Id: avatarsay.c,v 2.262 2009-01-13 16:11:57 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -41,6 +41,9 @@
 
 #ifdef __WIN32__
 #  define NO_MANPAGES 1
+#  define USE_GET_USER_HOME 1	/* use external get_user_home function */
+#  define USE_OPEN_DOCUMENT 1	/* use external open_document function */
+#  define USE_EDIT_FILE 1	/* use external edit_file function */
 #  ifdef __MINGW32__
 #    define NO_PTY 1
 #    define NO_LANGINFO 1
@@ -316,11 +319,11 @@ not_available (void)
 
 #endif /* not Windows or ReactOS */
 
-#ifdef __WIN32__
+#ifdef USE_GET_USER_HOME
 
 void get_user_home (char *home_dir, size_t size);
 
-#else /* not __WIN32__ */
+#else /* not USE_GET_USER_HOME */
 
 /* get user's home direcory */
 void
@@ -346,7 +349,7 @@ get_user_home (char *home_dir, size_t size)
     home_dir[size - 1] = '\0';
 }
 
-#endif /* not __WIN32__ */
+#endif /* not USE_GET_USER_HOME */
 
 static void
 set_encoding (const char *encoding)
@@ -2069,7 +2072,9 @@ run_shell (void)
   not_available ();
 }
 
-#ifdef __WIN32__
+#ifdef USE_OPEN_DOCUMENT
+
+extern void open_document (const char *start_dir, const char *name);
 
 static void
 run_info (void)
@@ -2082,7 +2087,7 @@ run_info (void)
     open_document (start_dir, "akfavatar-en.html");
 }
 
-#else /* not Windows and no PTY */
+#else /* not USE_OPEN_DOCUMENT and no PTY */
 
 static void
 run_info (void)
@@ -2090,15 +2095,7 @@ run_info (void)
   not_available ();
 }
 
-#endif
-
-static int
-avtterm_start (const char *enc AVT_UNUSED, const char *wd AVT_UNUSED,
-	       char *const p[]AVT_UNUSED)
-{
-  not_available ();
-  return -1;
-}
+#endif /* not USE_OPEN_DOCUMENT */
 
 #else /* not NO_PTY */
 
@@ -2243,11 +2240,11 @@ ask_manpage (void)
 #endif /* not NO_PTY */
 #endif /* not NO_MANPAGES */
 
-#ifdef __WIN32__
+#ifdef USE_EDIT_FILE
 
 extern void edit_file (const char *name);
 
-#else /* not Windows or ReactOS */
+#else /* not USE_EDIT_FILE */
 
 static void
 edit_file (const char *name)
@@ -2271,7 +2268,7 @@ edit_file (const char *name)
     avtterm_run (fd);
 }
 
-#endif /* not Windows or ReactOS */
+#endif /* not USE_EDIT_FILE */
 
 static void
 create_file (const char *filename)
@@ -2414,7 +2411,7 @@ about_avatarsay (void)
 
 #ifdef NO_PTY
 #  define SAY_SHELL(x) UNACCESSIBLE(x)
-#  ifdef __WIN32__
+#  ifdef USE_OPEN_DOCUMENT
 #    define SAY_MANUAL(x) avt_say(x)
 #  else
 #  define SAY_MANUAL(x) UNACCESSIBLE(x)
@@ -2806,7 +2803,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.261 2009-01-13 13:26:16 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.262 2009-01-13 16:11:57 akf Exp $");
 
   return EXIT_SUCCESS;
 }
