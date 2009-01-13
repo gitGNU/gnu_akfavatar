@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.262 2009-01-13 16:11:57 akf Exp $ */
+/* $Id: avatarsay.c,v 2.263 2009-01-13 17:00:29 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -40,7 +40,9 @@
 #include <getopt.h>
 
 #ifdef __WIN32__
+#  define DIR_SEPARATOR '\\'
 #  define NO_MANPAGES 1
+#  define NO_STDERR 1		/* avoid using stderr */
 #  define USE_GET_USER_HOME 1	/* use external get_user_home function */
 #  define USE_OPEN_DOCUMENT 1	/* use external open_document function */
 #  define USE_EDIT_FILE 1	/* use external edit_file function */
@@ -48,6 +50,8 @@
 #    define NO_PTY 1
 #    define NO_LANGINFO 1
 #  endif
+#else /* not __WIN32__ */
+#  define DIR_SEPARATOR '/'
 #endif
 
 #ifndef NO_LANGINFO
@@ -437,7 +441,7 @@ checkoptions (int argc, char **argv)
   int c;
   int option_index = 0;
 
-#ifdef __WIN32__
+#ifdef NO_STDERR
   /* stderr doesn't work in windows GUI programs */
   opterr = 0;
 #endif
@@ -2289,11 +2293,8 @@ create_file (const char *filename)
 
       fclose (f);
 
-#ifndef __WIN32__
       /* make file executable */
-      chmod (filename, S_IRUSR | S_IWUSR | S_IXUSR
-	     | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
-#endif
+      chmod (filename, 0755);
     }
 }
 
@@ -2673,11 +2674,7 @@ run_script (char *f)
 static void
 initialize_program_name (const char *argv0)
 {
-#ifdef __WIN32__
-  program_name = strrchr (argv0, '\\');
-#else
-  program_name = strrchr (argv0, '/');
-#endif
+  program_name = strrchr (argv0, DIR_SEPARATOR);
   if (program_name == NULL)	/* no slash */
     program_name = argv0;
   else				/* skip slash */
@@ -2803,7 +2800,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.262 2009-01-13 16:11:57 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.263 2009-01-13 17:00:29 akf Exp $");
 
   return EXIT_SUCCESS;
 }
