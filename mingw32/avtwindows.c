@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtwindows.c,v 1.4 2009-01-13 16:21:58 akf Exp $ */
+/* $Id: avtwindows.c,v 1.5 2009-01-13 17:07:05 akf Exp $ */
 
 #include "akfavatar.h"
 #include "avtmsg.h"
@@ -36,6 +36,9 @@
 void
 edit_file (const char *name)
 {
+  /* enforce window mode for the other window to be shown */
+  avt_switch_mode (AVT_WINDOW);
+
   ShellExecute (GetActiveWindow (), "open", "notepad.exe", name,
 		NULL /* dir */ , SW_SHOWNORMAL);
 
