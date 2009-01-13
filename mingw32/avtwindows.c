@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtwindows.c,v 1.1 2008-12-02 23:04:42 akf Exp $ */
+/* $Id: avtwindows.c,v 1.2 2009-01-13 10:59:47 akf Exp $ */
 
 #include "akfavatar.h"
 #include <windows.h>
@@ -76,9 +76,9 @@ get_user_home (char *home_dir, size_t size)
 int
 ask_drive (int max_idx)
 {
-  wchar_t ch;
   char drive[4] = "X:";
   int drives[26];
+  int choice;
   int i, number;
   int status;
 
@@ -112,11 +112,11 @@ ask:
       avt_say_mb (drive);
     }
 
-  status = avt_menu (&ch, 1, number, START_CODE, AVT_FALSE, AVT_FALSE);
+  status = avt_choice (&choice, 1, number, 0, AVT_FALSE, AVT_FALSE);
 
   if (status == AVT_NORMAL)
     {
-      if (_chdrive (drives[ch - START_CODE]) < 0)
+      if (_chdrive (drives[choice - 1]) < 0)
 	{
 	  warning_msg (strerror (errno), NULL);
 	  goto ask;
