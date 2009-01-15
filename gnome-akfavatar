@@ -1,8 +1,8 @@
 #!/bin/sh
 
 #########################################################################
-# GNOME frontend for avatarsay using zenity, yelp, gedit
-# Copyright (c) 2007 Andreas K. Foerster <info@akfoerster.de>
+# GNOME frontend for avatarsay using zenity, gedit and info
+# Copyright (c) 2007,2009 Andreas K. Foerster <info@akfoerster.de>
 #
 # This file is part of AKFAvatar
 #
@@ -34,7 +34,7 @@ WWW="http://akfavatar.nongnu.org/"
 
 case "$LANG" in
   de*) WWW="http://akfavatar.nongnu.org/akfavatar.de.html"
-       HELPTEXT="info:akfavatar-de"
+       INFO="akfavatar-de"
        WHICHTEXT="Welchen Text mit AKFAvatar anzeigen?"
        FILEEDIT="Weche Datei editieren"
        WHICHMANPAGE="Welche Hilfeseite (Manpage) mit AKFAvatar anzeigen?"
@@ -59,7 +59,7 @@ case "$LANG" in
        EXIT="beenden";;
 
   *)   WWW="http://akfavatar.nongnu.org/akfavatar.en.html"
-       HELPTEXT="info:akfavatar-en"
+       INFO="akfavatar-en"
        WHICHTEXT="Which text to show with AKFAvatar?"
        FILEEDIT="file to edit"
        WHICHMANPAGE="Which manpage to show with AKFAvatar?"
@@ -98,6 +98,18 @@ run_avatarsay ()
     else
       $ZENITY --error --text="$MESSAGE"
     fi
+  fi
+}
+
+show_help ()
+{
+  local MESSAGE
+
+  if MESSAGE=`$AVATARSAY $MODE --execute info $INFO 2>&1`
+  then
+    [ -n "$MESSAGE" ] && $ZENITY --warning --text="$MESSAGE"
+  else
+      $ZENITY --error --text="$MESSAGE"
   fi
 }
 
@@ -267,7 +279,7 @@ do
     I) choose_avatar_image ;;
     F) choose_fullscreen ;;
     S) save_settings ;;
-    H) yelp "$HELPTEXT" & ;;
+    H) show_help ;;
     W) gnome-open "$WWW" || firefox "$WWW" & ;;
     X) exit 0 ;;
   esac
