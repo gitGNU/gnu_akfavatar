@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.185 2009-01-15 16:31:43 akf Exp $ */
+/* $Id: avatar.c,v 2.186 2009-01-15 21:08:04 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -349,6 +349,7 @@ avt_load_image_xpm (char **xpm AVT_UNUSED)
   SDL_Surface *img;
   SDL_Color color;
   char *p;
+  unsigned int r, g, b;
   int width, height, ncolors, cpp;
   int x, y;
   int i;
@@ -367,7 +368,6 @@ avt_load_image_xpm (char **xpm AVT_UNUSED)
   img = SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_SRCCOLORKEY,
 			      width, height, 8, 0, 0, 0, 0);
 
-  /* silently fail on error */
   if (!img)
     return NULL;
 
@@ -386,9 +386,13 @@ avt_load_image_xpm (char **xpm AVT_UNUSED)
       while (*p != 'c')
 	p++;
 
-      if (sscanf (p, "c #%2x%2x%2x",
-		  (int *) &color.r, (int *) &color.g, (int *) &color.b) == 3)
-	SDL_SetColors (img, &color, xpm[i][0], 1);
+      if (sscanf (p, "c #%2x%2x%2x", &r, &g, &b) == 3)
+	{
+	  color.r = r;
+	  color.g = g;
+	  color.b = b;
+	  SDL_SetColors (img, &color, xpm[i][0], 1);
+	}
       else if (strncmp (p, "c None", 6) == 0)
 	SDL_SetColorKey (img, SDL_SRCCOLORKEY, xpm[i][0]);
     }
@@ -4295,7 +4299,7 @@ avt_initialize (const char *title, const char *icontitle,
     icontitle = title;
 
   SDL_WM_SetCaption (title, icontitle);
-  
+
   /* register icon */
   {
     SDL_Surface *icon;
@@ -4304,7 +4308,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.185 2009-01-15 16:31:43 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.186 2009-01-15 21:08:04 akf Exp $");
 
   /*
    * Initialize the display, accept any format
