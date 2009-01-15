@@ -23,15 +23,16 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.184 2009-01-12 11:54:50 akf Exp $ */
+/* $Id: avatar.c,v 2.185 2009-01-15 16:31:43 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
 #include "version.h"
 
+#include "akfavatar.xpm"
+
 #include "balloonpointer.c"
 #include "circle.c"
-#include "regicon.c"
 #include "keybtn.c"
 
 #ifdef LINK_SDL_IMAGE
@@ -333,17 +334,66 @@ load_image_initialize (void)
 /* helper functions */
 
 static SDL_Surface *
-load_image_bmp (const char *file)
+avt_load_image_bmp (const char *file)
 {
   /* it's a makro, so I need a wrapper */
   return SDL_LoadBMP (file);
 }
 
+/* limited XPM support */
+/* only 1 character per pixel allowed */
+/* SDL_image has better support */
 static SDL_Surface *
-load_image_xpm (char **xpm AVT_UNUSED)
+avt_load_image_xpm (char **xpm AVT_UNUSED)
 {
-  SDL_SetError ("You need SDL_image to load XPM images");
-  return NULL;
+  SDL_Surface *img;
+  SDL_Color color;
+  char *p;
+  int width, height, ncolors, cpp;
+  int x, y;
+  int i;
+
+  sscanf (xpm[0], "%d %d %d %d", &width, &height, &ncolors, &cpp);
+
+  /* check for reasonable values */
+  /* only one byte per pixel supported */
+  if (width < 1 || height < 1 || ncolors < 1 || cpp != 1)
+    {
+      SDL_SetError ("XPM format not fully supported, "
+		    "use SDL_image for better support");
+      return NULL;
+    }
+
+  img = SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_SRCCOLORKEY,
+			      width, height, 8, 0, 0, 0, 0);
+
+  /* silently fail on error */
+  if (!img)
+    return NULL;
+
+  /* copy pixeldata */
+  SDL_LockSurface (img);
+  for (y = 0; y < height; y++)
+    for (x = 0; x < width; x++)
+      *(Uint8 *) (img->pixels + y * img->pitch + x) = xpm[ncolors + 1 + y][x];
+  SDL_UnlockSurface (img);
+
+  /* set colors */
+  for (i = 1; i <= ncolors; i++)
+    {
+      /* scan for color definition */
+      p = &xpm[i][1];
+      while (*p != 'c')
+	p++;
+
+      if (sscanf (p, "c #%2x%2x%2x",
+		  (int *) &color.r, (int *) &color.g, (int *) &color.b) == 3)
+	SDL_SetColors (img, &color, xpm[i][0], 1);
+      else if (strncmp (p, "c None", 6) == 0)
+	SDL_SetColorKey (img, SDL_SRCCOLORKEY, xpm[i][0]);
+    }
+
+  return img;
 }
 
 /*
@@ -357,9 +407,9 @@ load_image_initialize (void)
     {
       /* first load defaults from plain SDL */
       load_image.handle = NULL;
-      load_image.file = load_image_bmp;
+      load_image.file = avt_load_image_bmp;
       load_image.rw = SDL_LoadBMP_RW;
-      load_image.xpm = load_image_xpm;
+      load_image.xpm = avt_load_image_xpm;
 
 /* loadso.h is only available with SDL 1.2.6 or higher */
 #ifdef _SDL_loadso_h
@@ -4245,8 +4295,16 @@ avt_initialize (const char *title, const char *icontitle,
     icontitle = title;
 
   SDL_WM_SetCaption (title, icontitle);
-  avt_register_icon ();
-  SDL_SetError ("$Id: avatar.c,v 2.184 2009-01-12 11:54:50 akf Exp $");
+  
+  /* register icon */
+  {
+    SDL_Surface *icon;
+    icon = avt_load_image_xpm (akfavatar_xpm);
+    SDL_WM_SetIcon (icon, NULL);
+    SDL_FreeSurface (icon);
+  }
+
+  SDL_SetError ("$Id: avatar.c,v 2.185 2009-01-15 16:31:43 akf Exp $");
 
   /*
    * Initialize the display, accept any format

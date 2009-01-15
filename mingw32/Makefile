@@ -191,7 +191,7 @@ avtfilechooser.o: ../avtfilechooser.c ../akfavatar.h
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ ../avtfilechooser.c
 
 avatar.o: ../avatar.c ../akfavatar.h ../version.h \
-            ../balloonpointer.c ../circle.c ../keybtn.c ../regicon.c
+            ../balloonpointer.c ../circle.c ../keybtn.c ../akfavatar.xpm
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -c ../avatar.c
 
 avatar-audio.o: ../avatar-audio.c ../akfavatar.h ../bell.c

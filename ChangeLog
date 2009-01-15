@@ -1,3 +1,8 @@
+2009-01-15  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_load_image_xpm):
+	added limited support for XPM without SDL_image
+
 2009-01-13  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (menu, run_info), avtwindows.c (open_document):
