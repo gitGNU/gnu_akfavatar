@@ -3,6 +3,12 @@
 	* avatar.c (avt_load_image_xpm):
 	added limited support for XPM without SDL_image
 
+	* avatarsay.c (run_info):
+	use internal info image info.xpm
+
+	* avatarsay.c (checkoptions, help):
+	new options: -I, --info
+
 2009-01-13  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (menu, run_info), avtwindows.c (open_document):

@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.264 2009-01-14 10:37:58 akf Exp $ */
+/* $Id: avatarsay.c,v 2.265 2009-01-15 21:14:09 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -38,6 +38,8 @@
 #include <string.h>
 #include <locale.h>
 #include <getopt.h>
+
+#include "info.xpm"
 
 #ifdef __WIN32__
 #  define DIR_SEPARATOR '\\'
@@ -279,6 +281,7 @@ help (void)
   puts (" -n, --no-delay          don't delay output of text (textfiles)");
   puts (" -i, --ignoreeof         ignore end of file conditions "
 	"(input is not a file)");
+  puts (" -I, --info              start with an info-image");
   puts ("\nEnvironment variables:");
   puts (" AVATARIMAGE             different image as avatar");
   puts (" AVATARDATADIR           data-directory");
@@ -397,7 +400,7 @@ initialize (void)
   if (!avt_image)
     avt_image = avt_default ();
 
-  /* 
+  /*
    * if supposed_title is NULL then "AKFAvatar" is used
    * attention: the icontitle is set to the title, when NULL
    */
@@ -460,6 +463,7 @@ checkoptions (int argc, char **argv)
 	{"once", no_argument, 0, '1'},
 	{"raw", no_argument, 0, 'r'},
 	{"ignoreeof", no_argument, 0, 'i'},
+	{"info", no_argument, 0, 'I'},
 	{"saypipe", no_argument, 0, 's'},
 	{"encoding", required_argument, 0, 'E'},
 	{"latin1", no_argument, 0, 'l'},
@@ -474,7 +478,7 @@ checkoptions (int argc, char **argv)
 	{0, 0, 0, 0}
       };
 
-      c = getopt_long (argc, argv, "+hvfFw1risE:luptxnb",
+      c = getopt_long (argc, argv, "+hvfFw1riIsE:luptxnb",
 		       long_options, &option_index);
 
       /* end of the options */
@@ -517,6 +521,10 @@ checkoptions (int argc, char **argv)
 
 	case 'i':		/* --ignoreeof */
 	  ignore_eof = AVT_TRUE;
+	  break;
+
+	case 'I':		/* --info */
+	  avt_image = avt_import_XPM (info_xpm);
 	  break;
 
 	case 'E':		/* --encoding */
@@ -2142,8 +2150,8 @@ run_info (void)
   int fd;
   char *args[] = { "info", "akfavatar-en", NULL };
 
-  /* no avatar -> full size balloon */
-  change_avatar_image (NULL);
+  /* info avatar -> larger balloon */
+  change_avatar_image (avt_import_XPM (info_xpm));
   avt_set_balloon_size (0, 0);
   avt_clear ();
   avt_set_text_delay (0);
@@ -2797,7 +2805,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.264 2009-01-14 10:37:58 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.265 2009-01-15 21:14:09 akf Exp $");
 
   return EXIT_SUCCESS;
 }
