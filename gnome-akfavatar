@@ -105,7 +105,7 @@ show_help ()
 {
   local MESSAGE
 
-  if MESSAGE=`$AVATARSAY $MODE --info --execute info $INFO 2>&1`
+  if MESSAGE=`$AVATARSAY $MODE --popup --info --execute info $INFO 2>&1`
   then
     [ -n "$MESSAGE" ] && $ZENITY --warning --text="$MESSAGE"
   else
