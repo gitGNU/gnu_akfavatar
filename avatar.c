@@ -23,16 +23,15 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.189 2009-01-16 09:00:43 akf Exp $ */
+/* $Id: avatar.c,v 2.190 2009-01-16 11:13:19 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
 #include "version.h"
 
 #include "akfavatar.xpm"
-
-#include "balloonpointer.c"
-#include "circle.c"
+#include "balloonpointer.xpm"
+#include "circle.xpm"
 #include "keybtn.c"
 
 #ifdef LINK_SDL_IMAGE
@@ -223,6 +222,7 @@ static avt_mousehandler avt_ext_mousehandler = NULL;
 
 static SDL_Surface *screen, *avt_image, *avt_character;
 static SDL_Surface *avt_text_cursor, *avt_cursor_character;
+static SDL_Surface *circle, *pointer;
 static Uint32 text_background_color;
 static avt_bool_t newline_mode;	/* when off, you need an extra CR */
 static avt_bool_t underlined, bold, inverse;	/* text underlined, bold? */
@@ -703,8 +703,7 @@ avt_show_avatar (void)
 }
 
 static void
-avt_draw_balloon2 (int offset, Uint32 ballooncolor,
-		   SDL_Surface * i_circle, SDL_Surface * i_pointer)
+avt_draw_balloon2 (int offset, Uint32 ballooncolor)
 {
   SDL_Rect shape;
 
@@ -740,36 +739,36 @@ avt_draw_balloon2 (int offset, Uint32 ballooncolor,
 
     /* prepare circle piece */
     /* the size is always the same */
-    circle_piece.w = circle.width / 2;
-    circle_piece.h = circle.height / 2;
+    circle_piece.w = circle->w / 2;
+    circle_piece.h = circle->h / 2;
 
     /* upper left corner */
     circle_piece.x = 0;
     circle_piece.y = 0;
     corner_pos.x = shape.x;
     corner_pos.y = shape.y;
-    SDL_BlitSurface (i_circle, &circle_piece, screen, &corner_pos);
+    SDL_BlitSurface (circle, &circle_piece, screen, &corner_pos);
 
     /* upper right corner */
-    circle_piece.x = circle.width / 2;
+    circle_piece.x = circle->w / 2;
     circle_piece.y = 0;
     corner_pos.x = shape.x + shape.w - circle_piece.w;
     corner_pos.y = shape.y;
-    SDL_BlitSurface (i_circle, &circle_piece, screen, &corner_pos);
+    SDL_BlitSurface (circle, &circle_piece, screen, &corner_pos);
 
     /* lower left corner */
     circle_piece.x = 0;
-    circle_piece.y = circle.height / 2;
+    circle_piece.y = circle->h / 2;
     corner_pos.x = shape.x;
     corner_pos.y = shape.y + shape.h - circle_piece.h;
-    SDL_BlitSurface (i_circle, &circle_piece, screen, &corner_pos);
+    SDL_BlitSurface (circle, &circle_piece, screen, &corner_pos);
 
     /* lower right corner */
-    circle_piece.x = circle.width / 2;
-    circle_piece.y = circle.height / 2;
+    circle_piece.x = circle->w / 2;
+    circle_piece.y = circle->h / 2;
     corner_pos.x = shape.x + shape.w - circle_piece.w;
     corner_pos.y = shape.y + shape.h - circle_piece.h;
-    SDL_BlitSurface (i_circle, &circle_piece, screen, &corner_pos);
+    SDL_BlitSurface (circle, &circle_piece, screen, &corner_pos);
   }
 
   /* draw balloonpointer */
@@ -779,8 +778,8 @@ avt_draw_balloon2 (int offset, Uint32 ballooncolor,
       SDL_Rect pointer_shape, pointer_pos;
 
       pointer_shape.x = pointer_shape.y = 0;
-      pointer_shape.w = i_pointer->w;
-      pointer_shape.h = i_pointer->h;
+      pointer_shape.w = pointer->w;
+      pointer_shape.h = pointer->h;
 
       /* if the balloonpointer is too large, cut it */
       if (pointer_shape.h > (avt_image->h / 2))
@@ -796,17 +795,15 @@ avt_draw_balloon2 (int offset, Uint32 ballooncolor,
 	+ (2 * BALLOON_INNER_MARGIN) + TOPMARGIN + offset;
 
       /* only draw the balloonpointer, when it fits */
-      if (pointer_pos.x + balloonpointer.width + BALLOONPOINTER_OFFSET
+      if (pointer_pos.x + pointer->w + BALLOONPOINTER_OFFSET
 	  + BALLOON_INNER_MARGIN < window.x + window.w)
-	SDL_BlitSurface (i_pointer, &pointer_shape, screen, &pointer_pos);
+	SDL_BlitSurface (pointer, &pointer_shape, screen, &pointer_pos);
     }
 }
 
 static void
 avt_draw_balloon (void)
 {
-  SDL_Surface *i_circle, *i_pointer;
-
   if (!avt_visible)
     avt_draw_avatar ();
 
@@ -835,11 +832,11 @@ avt_draw_balloon (void)
 
       /* right border not aligned with balloon pointer? */
       if (textfield.x + textfield.w <
-	  window.x + avt_image->w + balloonpointer.width
+	  window.x + avt_image->w + pointer->w
 	  + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET)
 	{
 	  textfield.x =
-	    window.x + avt_image->w - textfield.w + balloonpointer.width
+	    window.x + avt_image->w - textfield.w + pointer->w
 	    + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET;
 
 	  /* align with right window-border */
@@ -852,19 +849,6 @@ avt_draw_balloon (void)
 
   viewport = textfield;
 
-  i_circle = SDL_CreateRGBSurfaceFrom (&circle.data,
-				       circle.width, circle.height, 8,
-				       circle.width, 0, 0, 0, 0);
-
-  i_pointer = SDL_CreateRGBSurfaceFrom (&balloonpointer.data,
-					balloonpointer.width,
-					balloonpointer.height, 8,
-					balloonpointer.width, 0, 0, 0, 0);
-
-  /* set space-char as being transparent */
-  SDL_SetColorKey (i_circle, SDL_SRCCOLORKEY, ' ');
-  SDL_SetColorKey (i_pointer, SDL_SRCCOLORKEY, ' ');
-
   /* shadow color is a little darker than the background color */
   {
     SDL_Color shadow_color;
@@ -872,14 +856,13 @@ avt_draw_balloon (void)
     shadow_color.r = backgroundcolor_RGB.r - 0x20;
     shadow_color.g = backgroundcolor_RGB.g - 0x20;
     shadow_color.b = backgroundcolor_RGB.b - 0x20;
-    SDL_SetColors (i_circle, &shadow_color, '#', 1);
-    SDL_SetColors (i_pointer, &shadow_color, '.', 1);
+    SDL_SetColors (circle, &shadow_color, circle_xpm[2][0], 1);
+    SDL_SetColors (pointer, &shadow_color, balloonpointer_xpm[2][0], 1);
 
     /* first draw shadow */
     avt_draw_balloon2 (SHADOWOFFSET,
 		       SDL_MapRGB (screen->format, shadow_color.r,
-				   shadow_color.g, shadow_color.b),
-		       i_circle, i_pointer);
+				   shadow_color.g, shadow_color.b));
   }
 
 
@@ -888,16 +871,12 @@ avt_draw_balloon (void)
     SDL_Color balloon_color;
 
     balloon_color.r = balloon_color.g = balloon_color.b = 0xFF;
-    SDL_SetColors (i_circle, &balloon_color, '#', 1);
-    SDL_SetColors (i_pointer, &balloon_color, '.', 1);
+    SDL_SetColors (circle, &balloon_color, circle_xpm[2][0], 1);
+    SDL_SetColors (pointer, &balloon_color, balloonpointer_xpm[2][0], 1);
 
     /* real balloon */
-    avt_draw_balloon2 (0, SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF),
-		       i_circle, i_pointer);
+    avt_draw_balloon2 (0, SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF));
   }
-
-  SDL_FreeSurface (i_circle);
-  SDL_FreeSurface (i_pointer);
 
   linestart =
     (textdir_rtl) ? viewport.x + viewport.w - FONTWIDTH : viewport.x;
@@ -4240,6 +4219,10 @@ avt_quit (void)
     avt_iconv_close (input_cd);
   output_cd = input_cd = ICONV_UNINITIALIZED;
 
+  SDL_FreeSurface (circle);
+  circle = NULL;
+  SDL_FreeSurface (pointer);
+  pointer = NULL;
   SDL_FreeSurface (avt_character);
   avt_character = NULL;
   SDL_FreeSurface (avt_image);
@@ -4314,7 +4297,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.189 2009-01-16 09:00:43 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.190 2009-01-16 11:13:19 akf Exp $");
 
   /*
    * Initialize the display, accept any format
@@ -4434,6 +4417,9 @@ avt_initialize (const char *title, const char *icontitle,
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
+
+  circle = avt_load_image_xpm (circle_xpm);
+  pointer = avt_load_image_xpm (balloonpointer_xpm);
 
   /* import the avatar image */
   if (image)

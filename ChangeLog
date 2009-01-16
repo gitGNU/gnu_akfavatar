@@ -1,3 +1,8 @@
+2009-01-16  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c:
+	use circle.xpm, balloonpointer.xpm instead of handwritten code
+
 2009-01-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_load_image_xpm):

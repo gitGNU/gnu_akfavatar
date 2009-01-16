@@ -42,7 +42,7 @@ avtfilechooser.o: $(srcdir)/avtfilechooser.c $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ $(srcdir)/avtfilechooser.c
 
 avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h \
-	  $(srcdir)/balloonpointer.c $(srcdir)/circle.c \
+	  $(srcdir)/balloonpointer.xpm $(srcdir)/circle.xpm \
 	  keybtn.c $(srcdir)/akfavatar.xpm
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c $(srcdir)/avatar.c
 
@@ -62,7 +62,7 @@ libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o
 	-$(RANLIB) $@
 
 avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h \
-	   $(srcdir)/balloonpointer.c $(srcdir)/circle.c keybtn.c \
+	   $(srcdir)/balloonpointer.xpm $(srcdir)/circle.xpm keybtn.c \
 	   $(srcdir)/akfavatar.xpm
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ \
 	  $(srcdir)/avatar.c
@@ -283,7 +283,7 @@ dist: info html man distclean
 	ln README INSTALL AUTHORS COPYING ChangeLog lrun \
 	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
 	   avtccio.c avtcwio.c avtcio.h avtfilechooser.c \
-	   balloonpointer.c circle.c gnu-head.bmp keybtn.bmp \
+	   balloonpointer.xpm circle.xpm gnu-head.bmp keybtn.bmp \
 	   avatarsay.c avtterm.h avtterm.c avtmsg.h avtmsg.c \
 	   arch.h arch.c \
 	   avtman avtcmd example.c fsdemo-?? \
