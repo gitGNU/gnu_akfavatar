@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.187 2009-01-16 00:07:42 akf Exp $ */
+/* $Id: avatar.c,v 2.188 2009-01-16 00:29:55 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -81,6 +81,7 @@
 #endif
 
 #ifdef OLD_SDL
+#  include <stdio.h>
 #  include <stdlib.h>
 #  include <string.h>
 
@@ -100,6 +101,10 @@
 #  define SDL_memset              memset
 #  undef SDL_putenv
 #  define SDL_putenv              putenv
+#  undef SDL_sscanf
+#  define SDL_sscanf              sscanf
+#  undef SDL_strncmp
+#  define SDL_strncmp             strncmp
 #endif /* OLD_SDL */
 
 #ifdef FORCE_ICONV
@@ -4308,7 +4313,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.187 2009-01-16 00:07:42 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.188 2009-01-16 00:29:55 akf Exp $");
 
   /*
    * Initialize the display, accept any format
