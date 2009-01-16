@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.266 2009-01-16 13:57:27 akf Exp $ */
+/* $Id: avatarsay.c,v 2.267 2009-01-16 16:42:15 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -288,6 +288,7 @@ help (void)
 #ifndef NO_PTY
   puts (" HOME                    home directory (terminal)");
   puts (" SHELL                   preferred shell (terminal)");
+  puts (" VISUAL, EDITOR          preferred text-editor (terminal)");
 #endif
   puts ("\nHomepage:");
   puts ("  " HOMEPAGE);
@@ -2805,7 +2806,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.266 2009-01-16 13:57:27 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.267 2009-01-16 16:42:15 akf Exp $");
 
   return EXIT_SUCCESS;
 }
