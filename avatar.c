@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.188 2009-01-16 00:29:55 akf Exp $ */
+/* $Id: avatar.c,v 2.189 2009-01-16 09:00:43 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -81,6 +81,7 @@
 #endif
 
 #ifdef OLD_SDL
+#  warning "compiling for old SDL - using libc directly"
 #  include <stdio.h>
 #  include <stdlib.h>
 #  include <string.h>
@@ -168,9 +169,9 @@
 /* moving target - grrrmpf! */
 /* but compiler warnings about this can be savely ignored */
 #if ((SDL_COMPILEDVERSION) >= 1212)
-#  define SDL_ICONV_INBUF_T const char
+#  define AVT_ICONV_INBUF_T const char
 #else
-#  define SDL_ICONV_INBUF_T char
+#  define AVT_ICONV_INBUF_T char
 #endif
 
 /* try to guess WCHAR_ENCODING, 
@@ -471,7 +472,7 @@ load_image_done (void)
 #ifdef FORCE_ICONV
 static size_t
 avt_iconv (avt_iconv_t cd,
-	   SDL_ICONV_INBUF_T ** inbuf, size_t * inbytesleft,
+	   AVT_ICONV_INBUF_T ** inbuf, size_t * inbytesleft,
 	   char **outbuf, size_t * outbytesleft)
 {
   size_t r;
@@ -2543,7 +2544,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, const int size)
   static char rest_buffer[10];
   static size_t rest_bytes = 0;
   char *inbuf_start, *outbuf;
-  SDL_ICONV_INBUF_T *inbuf;
+  AVT_ICONV_INBUF_T *inbuf;
   size_t dest_size;
   size_t inbytesleft, outbytesleft;
   size_t returncode;
@@ -2574,10 +2575,10 @@ avt_mb_decode (wchar_t ** dest, const char *src, const int size)
 
   /* if there is a rest from last call, put it into the buffer */
   if (rest_bytes > 0)
-    SDL_memcpy (inbuf, &rest_buffer, rest_bytes);
+    SDL_memcpy ((void *) inbuf, &rest_buffer, rest_bytes);
 
   /* copy the text into the buffer */
-  SDL_memcpy (inbuf + rest_bytes, src, size);
+  SDL_memcpy ((void *) (inbuf + rest_bytes), src, size);
   rest_bytes = 0;
 
   /* get enough space */
@@ -2633,7 +2634,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, const int size)
   if (returncode == AVT_ICONV_EINVAL && inbytesleft <= sizeof (rest_buffer))
     {
       rest_bytes = inbytesleft;
-      SDL_memcpy (&rest_buffer, inbuf, rest_bytes);
+      SDL_memcpy ((void *) &rest_buffer, inbuf, rest_bytes);
     }
 
   /* free the inbuf */
@@ -2650,7 +2651,7 @@ int
 avt_mb_encode (char **dest, const wchar_t * src, const int len)
 {
   char *inbuf_start, *outbuf;
-  SDL_ICONV_INBUF_T *inbuf;
+  AVT_ICONV_INBUF_T *inbuf;
   size_t dest_size;
   size_t inbytesleft, outbytesleft;
   size_t returncode;
@@ -2680,7 +2681,7 @@ avt_mb_encode (char **dest, const wchar_t * src, const int len)
   inbuf = inbuf_start;
 
   /* copy the text into the buffer */
-  SDL_memcpy (inbuf, src, inbytesleft);
+  SDL_memcpy ((void *) inbuf, src, inbytesleft);
 
   /* get enough space */
   /* UTF-8 may need 6 bytes per character */
@@ -3100,7 +3101,7 @@ int
 avt_ask_mb (char *s, const int size)
 {
   wchar_t ws[AVT_LINELENGTH + 1];
-  SDL_ICONV_INBUF_T *inbuf;
+  AVT_ICONV_INBUF_T *inbuf;
   size_t inbytesleft, outbytesleft;
 
   if (!screen)
@@ -4313,7 +4314,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.188 2009-01-16 00:29:55 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.189 2009-01-16 09:00:43 akf Exp $");
 
   /*
    * Initialize the display, accept any format
