@@ -1,12 +1,16 @@
+{Language=Turbo} {AnsiC=1} {MainType=int}
+
 {
 program to convert the file bdf files into C code
 Attention: This is only for fixed width fonts!
 
 Author: Andreas K. Foerster <info@akfoerster.de>
 This file is in the public domain
+
+Compilable wit gpc, fpc and p2c
 }
 
-program bdfread (input, output, stderr);
+program bdfread;
 
 const
   MaxCode = $1FFFFF;
@@ -81,7 +85,7 @@ WriteLn('}')
 end;
 
 
-procedure processchar(const charname: string);
+procedure processchar(var charname: string);
 var
   zl: string;
   codepoint: LongInt;
@@ -124,25 +128,25 @@ while zl <> 'ENDCHAR' do
 inc(charoffset)
 end;
 
-procedure GetFontSize(const s: string);
+procedure GetFontSize(var s: string);
 var tmp: string;
-var error, p: integer;
+var err, p: integer;
 begin
 tmp := s;
 Delete(tmp, 1, Length('FONTBOUNDINGBOX '));
 p := pos(' ', tmp);
 tmp := copy(tmp, 1, p-1);
-val(tmp, FontWidth, error);
+val(tmp, FontWidth, err);
 tmp := s;
 Delete(tmp, 1, Length('FONTBOUNDINGBOX '));
 Delete (tmp, 1, pos(' ', tmp));
 p := pos(' ', tmp);
 tmp := copy(tmp, 1, p-1);
-val(tmp, FontHeight, error);
+val(tmp, FontHeight, err);
 end;
 
 procedure processdata;
-var zl, tmp, defchar : string;
+var zl, defchar : string;
 var initialized : boolean;
 begin
 defchar := '';
@@ -172,7 +176,7 @@ While (not EOF(inp)) and (not initialized) do
 
     if pos('STARTCHAR ', zl) = 1 then
       begin
-      if (fontWidth=0) or (FontHeight=0) then RunError;
+      if (fontWidth=0) or (FontHeight=0) then error('error in input data');
       WriteLn;
       WriteLn('#include <stddef.h>');
       WriteLn;

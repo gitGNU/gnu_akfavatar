@@ -3,6 +3,9 @@
 	* avatar.c:
 	use circle.xpm, balloonpointer.xpm instead of handwritten code
 
+	* bdfread.pas:
+	changes to make it usable with p2c
+
 2009-01-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_load_image_xpm):
