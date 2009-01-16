@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.265 2009-01-15 21:14:09 akf Exp $ */
+/* $Id: avatarsay.c,v 2.266 2009-01-16 13:57:27 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2380,7 +2380,7 @@ ask_edit_file (void)
 static void
 about_avatarsay (void)
 {
-  avt_set_balloon_size (0, 0);
+  avt_set_balloon_size (10, 80);
   avt_clear ();
   set_encoding ("UTF-8");
   avt_set_text_delay (0);
@@ -2805,7 +2805,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.265 2009-01-15 21:14:09 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.266 2009-01-16 13:57:27 akf Exp $");
 
   return EXIT_SUCCESS;
 }
