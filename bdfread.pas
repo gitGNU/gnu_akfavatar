@@ -1,4 +1,4 @@
-{Language=Turbo} {AnsiC=1} {MainType=int}
+{Language=Turbo} {Integer16=0} {AnsiC=1} {MainType=int}
 
 {
 program to convert the file bdf files into C code
@@ -19,7 +19,7 @@ const
   DefaultChar = 0;
 
 var 
-  FontHeight, FontWidth: byte;
+  FontHeight, FontWidth: Integer;
   inp: text;
   MaxUsedCode: LongInt;
   fontstarted: boolean; { started definition of the font }
