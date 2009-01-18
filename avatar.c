@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.191 2009-01-18 10:19:31 akf Exp $ */
+/* $Id: avatar.c,v 2.192 2009-01-18 15:55:52 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -84,6 +84,7 @@
 #  include <stdio.h>
 #  include <stdlib.h>
 #  include <string.h>
+#  include <ctype.h>
 
 #  ifndef FORCE_ICONV
 #    define FORCE_ICONV
@@ -105,6 +106,8 @@
 #  define SDL_sscanf              sscanf
 #  undef SDL_strncmp
 #  define SDL_strncmp             strncmp
+#  undef SDL_isspace
+#  define SDL_isspace             isspace
 #endif /* OLD_SDL */
 
 #ifdef FORCE_ICONV
@@ -398,7 +401,7 @@ avt_load_image_xpm (char **xpm)
 
       /* scan for color definition */
       p = &xpm[i][1];		/* skip color-character */
-      while (*p != 'c')
+      while (*p != 'c' || !SDL_isspace (*(p + 1)) || !SDL_isspace (*(p - 1)))
 	p++;
 
       if (SDL_sscanf (p, "c #%2x%2x%2x", &red, &green, &blue) == 3)
@@ -4306,7 +4309,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.191 2009-01-18 10:19:31 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.192 2009-01-18 15:55:52 akf Exp $");
 
   /*
    * Initialize the display, accept any format
