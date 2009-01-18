@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.190 2009-01-16 11:13:19 akf Exp $ */
+/* $Id: avatar.c,v 2.191 2009-01-18 10:19:31 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -347,15 +347,16 @@ avt_load_image_bmp (const char *file)
 }
 
 /* limited XPM support */
-/* only 1 character per pixel allowed */
+/* only 1 character per pixel allowed (up to 90 colors) */
 /* SDL_image has better support */
 static SDL_Surface *
-avt_load_image_xpm (char **xpm AVT_UNUSED)
+avt_load_image_xpm (char **xpm)
 {
   SDL_Surface *img;
   SDL_Color color;
   char *p;
-  unsigned int r, g, b;
+  char color_character;
+  unsigned int red, green, blue;
   int width, height, ncolors, cpp;
   int x, y;
   int i;
@@ -363,8 +364,14 @@ avt_load_image_xpm (char **xpm AVT_UNUSED)
   SDL_sscanf (xpm[0], "%d %d %d %d", &width, &height, &ncolors, &cpp);
 
   /* check for reasonable values */
-  /* only one byte per pixel supported */
-  if (width < 1 || height < 1 || ncolors < 1 || cpp != 1)
+  if (width < 1 || height < 1 || ncolors < 1)
+    {
+      SDL_SetError ("error in XPM data");
+      return NULL;
+    }
+
+  /* only one character per pixel supported */
+  if (cpp != 1)
     {
       SDL_SetError ("XPM format not fully supported, "
 		    "use SDL_image for better support");
@@ -387,20 +394,22 @@ avt_load_image_xpm (char **xpm AVT_UNUSED)
   /* set colors */
   for (i = 1; i <= ncolors; i++)
     {
+      color_character = xpm[i][0];
+
       /* scan for color definition */
-      p = &xpm[i][1];
+      p = &xpm[i][1];		/* skip color-character */
       while (*p != 'c')
 	p++;
 
-      if (SDL_sscanf (p, "c #%2x%2x%2x", &r, &g, &b) == 3)
+      if (SDL_sscanf (p, "c #%2x%2x%2x", &red, &green, &blue) == 3)
 	{
-	  color.r = r;
-	  color.g = g;
-	  color.b = b;
-	  SDL_SetColors (img, &color, xpm[i][0], 1);
+	  color.r = red;
+	  color.g = green;
+	  color.b = blue;
+	  SDL_SetColors (img, &color, color_character, 1);
 	}
       else if (SDL_strncmp (p, "c None", 6) == 0)
-	SDL_SetColorKey (img, SDL_SRCCOLORKEY, xpm[i][0]);
+	SDL_SetColorKey (img, SDL_SRCCOLORKEY, color_character);
     }
 
   return img;
@@ -4297,7 +4306,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.190 2009-01-16 11:13:19 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.191 2009-01-18 10:19:31 akf Exp $");
 
   /*
    * Initialize the display, accept any format
