@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.193 2009-01-19 12:49:44 akf Exp $ */
+/* $Id: avatar.c,v 2.194 2009-01-19 12:58:10 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -187,15 +187,15 @@
 #ifndef WCHAR_ENCODING
 #  ifdef WCHAR_MAX
 #    if (WCHAR_MAX <= 65535U)
-#      if (SDL_BYTEORDER == SDL_BIG_ENDIN)
+#      if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
 #        define WCHAR_ENCODING "UTF-16BE"
-#      else /* SDL_BYTEORDER != SDL_BIG_ENDIN */
+#      else /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
 #        define WCHAR_ENCODING "UTF-16LE"
 #      endif /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
 #    else /* (WCHAR_MAX > 65535U) */
-#      if (SDL_BYTEORDER == SDL_BIG_ENDIN)
+#      if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
 #        define WCHAR_ENCODING "UTF-32BE"
-#      else /* SDL_BYTEORDER != SDL_BIG_ENDIN */
+#      else /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
 #        define WCHAR_ENCODING "UTF-32LE"
 #      endif /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
 #    endif /* (WCHAR_MAX > 65535U) */
@@ -4325,7 +4325,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.193 2009-01-19 12:49:44 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.194 2009-01-19 12:58:10 akf Exp $");
 
   /*
    * Initialize the display, accept any format

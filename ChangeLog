@@ -2,6 +2,9 @@
 
 	* avatar.c (avt_initialize, avt_quit):
 	use a specific mouse-pointer
+	
+	* avatar.c:
+	fix: typo: SDL_BIG_ENDIAN
 
 2009-01-16  Andreas K. Foerster  <info@akfoerster.de>
 
