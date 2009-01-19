@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.267 2009-01-16 16:42:15 akf Exp $ */
+/* $Id: avatarsay.c,v 2.268 2009-01-19 15:43:34 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -102,7 +102,7 @@
 
 static const char *version_info_en =
   PRGNAME " (AKFAvatar) " AVTVERSION "\n"
-  "Copyright (c) 2007, 2008, 2009 Andreas K. Foerster\n\n"
+  "Copyright (c) 2009 Andreas K. Foerster\n\n"
   "License GPLv3+: GNU GPL version 3 or later "
   "<http://gnu.org/licenses/gpl.html>\n\n"
   "This is free software: you are free to change and redistribute it.\n"
@@ -112,7 +112,7 @@ static const char *version_info_en =
 /* avoid german umlauts here */
 static const char *version_info_de =
   PRGNAME " (AKFAvatar) " AVTVERSION "\n"
-  "Copyright (c) 2007, 2008, 2009 Andreas K. Foerster\n\n"
+  "Copyright (c) 2009 Andreas K. Foerster\n\n"
   "Lizenz GPLv3+: GNU GPL Version 3 oder neuer "
   "<http://gnu.org/licenses/gpl.html>\n\n"
   "Dies ist Freie Software: Sie duerfen es gemaess der GPL weitergeben und\n"
@@ -2806,7 +2806,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.267 2009-01-16 16:42:15 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.268 2009-01-19 15:43:34 akf Exp $");
 
   return EXIT_SUCCESS;
 }
