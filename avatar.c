@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.192 2009-01-18 15:55:52 akf Exp $ */
+/* $Id: avatar.c,v 2.193 2009-01-19 12:49:44 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -226,6 +226,7 @@ static avt_mousehandler avt_ext_mousehandler = NULL;
 static SDL_Surface *screen, *avt_image, *avt_character;
 static SDL_Surface *avt_text_cursor, *avt_cursor_character;
 static SDL_Surface *circle, *pointer;
+static SDL_Cursor *mpointer;
 static Uint32 text_background_color;
 static avt_bool_t newline_mode;	/* when off, you need an extra CR */
 static avt_bool_t underlined, bold, inverse;	/* text underlined, bold? */
@@ -311,6 +312,19 @@ static struct
   SDL_Surface *(*xpm) (char **xpm);
 } load_image;
 
+/* mouse-pointer */
+#define mpointer_width 16
+#define mpointer_height 16
+#define mpointer_x_hot 0
+#define mpointer_y_hot 7
+static unsigned char mpointer_bits[] = {
+   0x00, 0x06, 0x00, 0x1a, 0x00, 0x62, 0x01, 0x82, 0x06, 0x0c, 0x18, 0x30, 
+   0x60, 0xc0, 0x81, 0x00, 0x60, 0xc0, 0x18, 0x30, 0x06, 0x0c, 0x01, 0x82, 
+   0x00, 0x62, 0x00, 0x1a, 0x00, 0x06, 0x00, 0x00 };
+static unsigned char mpointer_mask_bits[] = {
+   0x00, 0x06, 0x00, 0x1e, 0x00, 0x7e, 0x01, 0xfe, 0x07, 0xfc, 0x1f, 0xf0, 
+   0x7f, 0xc0, 0xff, 0x00, 0x7f, 0xc0, 0x1f, 0xf0, 0x07, 0xfc, 0x01, 0xfe, 
+   0x00, 0x7e, 0x00, 0x1e, 0x00, 0x06, 0x00, 0x00 };
 
 #ifdef LINK_SDL_IMAGE
 
@@ -4231,6 +4245,8 @@ avt_quit (void)
     avt_iconv_close (input_cd);
   output_cd = input_cd = ICONV_UNINITIALIZED;
 
+  SDL_FreeCursor (mpointer);
+  mpointer = NULL;
   SDL_FreeSurface (circle);
   circle = NULL;
   SDL_FreeSurface (pointer);
@@ -4309,7 +4325,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.192 2009-01-18 15:55:52 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.193 2009-01-19 12:49:44 akf Exp $");
 
   /*
    * Initialize the display, accept any format
@@ -4378,10 +4394,16 @@ avt_initialize (const char *title, const char *icontitle,
   window.y = screen->h > window.h ? (screen->h / 2) - (window.h / 2) : 0;
 
   /*
-   * hide mouse cursor
+   * hide mouse pointer
    * (must be after SDL_SetVideoMode)
    */
   SDL_ShowCursor (SDL_DISABLE);
+
+  /* mouse pointer */
+  mpointer = SDL_CreateCursor (mpointer_bits, mpointer_mask_bits, 
+                                  mpointer_width, mpointer_height,
+                                  mpointer_x_hot, mpointer_y_hot);
+  SDL_SetCursor (mpointer);
 
   /* fill the whole screen with background color */
   avt_clear_screen ();
