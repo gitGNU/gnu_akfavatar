@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.196 2009-01-19 15:50:59 akf Exp $ */
+/* $Id: avatar.c,v 2.197 2009-01-20 17:41:59 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -32,7 +32,7 @@
 #include "akfavatar.xpm"
 #include "balloonpointer.xpm"
 #include "circle.xpm"
-#include "keybtn.c"
+#include "btn-cont.xpm"
 
 #ifdef LINK_SDL_IMAGE
 #  include "SDL_image.h"
@@ -3304,7 +3304,7 @@ avt_wait_button (void)
     return _avt_STATUS;
 
   /* show button */
-  button = SDL_LoadBMP_RW (SDL_RWFromMem ((void *) keybtn, keybtn_size), 1);
+  button = avt_load_image_xpm (btn_cont_xpm);
 
   /* alignment: right bottom */
   dst.x = window.x + window.w - button->w - AVATAR_MARGIN;
@@ -3319,7 +3319,7 @@ avt_wait_button (void)
   button = NULL;
 
   /* show mouse pointer */
-  SDL_WarpMouse (dst.x + dst.w - 5, dst.y + dst.h - 5);
+  SDL_WarpMouse (dst.x + dst.w - 5, dst.y + (dst.h / 2));
   SDL_ShowCursor (SDL_ENABLE);
 
   nokey = AVT_TRUE;
@@ -4326,7 +4326,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.196 2009-01-19 15:50:59 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.197 2009-01-20 17:41:59 akf Exp $");
 
   /*
    * Initialize the display, accept any format

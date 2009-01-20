@@ -178,9 +178,6 @@ libinfo.o: libinfo.rc
 ../gnu-small.c: ../gnu-small.bmp ../bin2c
 	../bin2c avatar_image < ../gnu-small.bmp > $@
 
-../keybtn.c: ../keybtn.bmp ../bin2c
-	../bin2c keybtn < ../keybtn.bmp > $@
-
 ../bell.c: ../bell.wav ../bin2c
 	../bin2c avt_bell_data < ../bell.wav > $@
 
@@ -190,8 +187,8 @@ avatar-default.o: ../avatar-default.c ../gnu-head.c ../gnu-small.c
 avtfilechooser.o: ../avtfilechooser.c ../akfavatar.h
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ ../avtfilechooser.c
 
-avatar.o: ../avatar.c ../akfavatar.h ../version.h \
-            ../keybtn.c ../balloonpointer.xpm ../circle.xpm ../akfavatar.xpm
+avatar.o: ../avatar.c ../akfavatar.h ../version.h ../btn-cont.xpm \
+             ../balloonpointer.xpm ../circle.xpm ../akfavatar.xpm
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -c ../avatar.c
 
 avatar-audio.o: ../avatar-audio.c ../akfavatar.h ../bell.c

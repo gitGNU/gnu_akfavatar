@@ -32,9 +32,6 @@ gnu-head.c: $(srcdir)/gnu-head.bmp bin2c
 gnu-small.c: $(srcdir)/gnu-small.bmp bin2c
 	./bin2c avatar_image < $(srcdir)/gnu-small.bmp > $@
 
-keybtn.c: $(srcdir)/keybtn.bmp bin2c
-	./bin2c keybtn < $(srcdir)/keybtn.bmp > $@
-
 bell.c: $(srcdir)/bell.wav bin2c
 	./bin2c avt_bell_data < $(srcdir)/bell.wav > $@
 
@@ -43,7 +40,7 @@ avtfilechooser.o: $(srcdir)/avtfilechooser.c $(srcdir)/akfavatar.h
 
 avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h \
 	  $(srcdir)/balloonpointer.xpm $(srcdir)/circle.xpm \
-	  keybtn.c $(srcdir)/akfavatar.xpm
+	  $(srcdir)/btn-cont.xpm $(srcdir)/akfavatar.xpm
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c $(srcdir)/avatar.c
 
 avatar-default.o: $(srcdir)/avatar-default.c gnu-head.c gnu-small.c \
@@ -62,8 +59,8 @@ libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o
 	-$(RANLIB) $@
 
 avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h \
-	   $(srcdir)/balloonpointer.xpm $(srcdir)/circle.xpm keybtn.c \
-	   $(srcdir)/akfavatar.xpm
+	   $(srcdir)/balloonpointer.xpm $(srcdir)/circle.xpm \
+	   $(srcdir)/btn-cont.xpm $(srcdir)/akfavatar.xpm
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ \
 	  $(srcdir)/avatar.c
 
@@ -238,7 +235,7 @@ clean:
 	-rm -f *.o *.lo
 	-rm -f *.ppu *.gpi *.gpm
 	-rm -f bin2c
-	-rm -f gnu-head.c gnu-small.c bell.c keybtn.c
+	-rm -f gnu-head.c gnu-small.c bell.c
 	-rm -f pascal/*.o pascal/*.gpi pascal/*.gpm pascal/*.ppu
 	-rm -f pascal/link.res pascal/ppas.sh
 	$(MAKE) -C $(srcdir)/mingw32 clean
@@ -283,7 +280,8 @@ dist: info html man distclean
 	ln README INSTALL AUTHORS COPYING ChangeLog lrun \
 	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
 	   avtccio.c avtcwio.c avtcio.h avtfilechooser.c \
-	   balloonpointer.xpm circle.xpm gnu-head.bmp keybtn.bmp \
+	   balloonpointer.xpm circle.xpm gnu-head.bmp \
+	   btn.xpm btn-cont.xpm btn-no.xpm btn-yes.xpm \
 	   avatarsay.c avtterm.h avtterm.c avtmsg.h avtmsg.c \
 	   arch.h arch.c \
 	   avtman avtcmd example.c fsdemo-?? \

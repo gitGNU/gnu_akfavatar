@@ -1,3 +1,8 @@
+2009-01-20  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_wait_button):
+	new button design
+
 2009-01-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_initialize, avt_quit):
