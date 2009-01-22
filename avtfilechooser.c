@@ -162,7 +162,6 @@ start:
 	      if (avt_choice (&filenr, 2, idx, 0, (page_nr > 0), (d != NULL)))
 		break;
 
-	      new_page (dirname);
 
 	      if (d && filenr == idx)	/* continue? */
 		{
@@ -171,6 +170,7 @@ start:
 		  if (page_nr > MAXPAGES - 1)
 		    page_nr = MAXPAGES - 1;
 
+		  new_page (dirname);
 		  entry[idx][0] = '\0';
 		  MARK (BACK);
 		  idx++;
@@ -183,6 +183,7 @@ start:
 
 		  idx = 0;
 
+		  new_page (dirname);
 		  if (page_nr > 0)
 		    {
 		      entry[idx][0] = '\0';
