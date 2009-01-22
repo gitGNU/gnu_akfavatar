@@ -48,8 +48,12 @@
 #define MAXPAGES 500
 
 #ifdef __WIN32__
+#  define HAS_DRIVE_LETTERS 1
+#  define is_root_dir(x) (x[1] == ':' && x[3] == '\0')
 extern int ask_drive (int max_idx);
 #else
+#  define HAS_DRIVE_LETTERS 0
+#  define is_root_dir(x) (x[1] == '\0')
 #  define ask_drive(max_idx) 0
 #endif
 
@@ -105,8 +109,9 @@ get_file (char *filename)
   max_x = avt_get_max_x ();
   max_idx = avt_get_max_y () - 1;
 
-  if (ask_drive (max_idx + 1))
-    return -1;
+  if (HAS_DRIVE_LETTERS)
+    if (ask_drive (max_idx + 1))
+      return -1;
 
   /* set maximum size */
   avt_set_balloon_size (0, 0);
@@ -240,6 +245,15 @@ start:
 
   if (closedir (dir) == -1)
     rcode = -1;
+
+  /* ask for drive again? */
+  if (HAS_DRIVE_LETTERS && filenr == 1 && is_root_dir (dirname))
+    {
+      if (ask_drive (max_idx + 1))
+	return -1;
+      avt_set_balloon_size (0, 0);
+      goto start;
+    }
 
   if (is_directory (filename))
     {
