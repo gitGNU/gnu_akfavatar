@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtwindows.c,v 1.5 2009-01-13 17:07:05 akf Exp $ */
+/* $Id: avtwindows.c,v 1.6 2009-01-25 18:43:07 akf Exp $ */
 
 #include "akfavatar.h"
 #include "avtmsg.h"
@@ -114,24 +114,30 @@ ask_drive (int max_idx)
     }
 
 ask:
-  avt_set_balloon_size (number, 2 * 8 + 1);
+  avt_set_balloon_size (number + 1, 2 * 8 + 1);
   avt_clear ();
+
+  /* show double arrow up */
+  avt_next_tab ();
+  avt_say (L"\x21D1");
 
   /* show drives */
   for (i = 0; i < number; i++)
     {
       drive[0] = drives[i] + 'A' - 1;
-      if (i != 0)
-	avt_new_line ();
+      avt_new_line ();
       avt_next_tab ();
       avt_say_mb (drive);
     }
 
-  status = avt_choice (&choice, 1, number, 0, AVT_FALSE, AVT_FALSE);
+  status = avt_choice (&choice, 1, number + 1, 0, AVT_FALSE, AVT_FALSE);
+
+  if (choice == 1) /* home selected */
+    status = AVT_QUIT;
 
   if (status == AVT_NORMAL)
     {
-      if (_chdrive (drives[choice - 1]) < 0)
+      if (_chdrive (drives[choice - 1 - 1]) < 0)
 	{
 	  warning_msg (strerror (errno), NULL);
 	  goto ask;

@@ -32,6 +32,9 @@
 
 #define PARENT_DIRECTORY L" .. "
 
+/* House symbol */
+#define HOME L" \x2302 "
+
 /* three arrows up */
 #define BACK L" \x2191 \x2191 \x2191 "
 
@@ -48,11 +51,11 @@
 #define MAXPAGES 500
 
 #ifdef __WIN32__
-#  define HAS_DRIVE_LETTERS 1
+#  define HAS_DRIVE_LETTERS AVT_TRUE
 #  define is_root_dir(x) (x[1] == ':' && x[3] == '\0')
 extern int ask_drive (int max_idx);
 #else
-#  define HAS_DRIVE_LETTERS 0
+#  define HAS_DRIVE_LETTERS AVT_FALSE
 #  define is_root_dir(x) (x[1] == '\0')
 #  define ask_drive(max_idx) 0
 #endif
@@ -135,9 +138,17 @@ start:
 
   pages[page_nr] = telldir (dir);
 
-  /* entry for parent directory */
-  strcpy (entry[idx], "..");
-  MARK (PARENT_DIRECTORY);
+  /* entry for parent directory or home */
+  if (!HAS_DRIVE_LETTERS && is_root_dir (dirname))
+    {
+      strcpy (entry[idx], "");
+      MARK (HOME);
+    }
+  else
+    {
+      strcpy (entry[idx], "..");
+      MARK (PARENT_DIRECTORY);
+    }
   idx++;
   avt_new_line ();
 
@@ -191,8 +202,16 @@ start:
 		    }
 		  else		/* first page */
 		    {
-		      strcpy (entry[idx], "..");
-		      MARK (PARENT_DIRECTORY);
+		      if (!HAS_DRIVE_LETTERS && is_root_dir (dirname))
+			{
+			  strcpy (entry[idx], "");
+			  MARK (HOME);
+			}
+		      else
+			{
+			  strcpy (entry[idx], "..");
+			  MARK (PARENT_DIRECTORY);
+			}
 		    }
 
 		  idx++;
@@ -247,13 +266,21 @@ start:
   if (closedir (dir) == -1)
     rcode = -1;
 
-  /* ask for drive again? */
-  if (HAS_DRIVE_LETTERS && filenr == 1 && is_root_dir (dirname))
+  if (filenr == 1 && is_root_dir (dirname))
     {
-      if (ask_drive (max_idx + 1))
-	return -1;
-      avt_set_balloon_size (0, 0);
-      goto start;
+      *filename = '\0';
+      if (HAS_DRIVE_LETTERS)	/* ask for drive? */
+	{
+	  if (ask_drive (max_idx + 1) == AVT_NORMAL)
+	    {
+	      avt_set_balloon_size (0, 0);
+	      goto start;
+	    }
+	  else
+	    goto quit;
+	}
+      else			/* return to main menu */
+	goto quit;
     }
 
   if (is_directory (filename))
@@ -263,6 +290,7 @@ start:
       goto start;
     }
 
+quit:
   avt_auto_margin (AVT_TRUE);
   avt_clear ();
 
