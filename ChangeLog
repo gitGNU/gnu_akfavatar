@@ -1,3 +1,8 @@
+2009-01-25  Andreas K. Foerster  <info@akfoerster.de>
+
+	* bdfread.pas:
+	fix code for isolated characters (closes bug #25402)
+
 2009-01-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtfilechooser.c (get_file):

@@ -19,7 +19,7 @@ const
   DefaultChar = 0;
 
 var 
-  FontHeight, FontWidth: Integer;
+  FontHeight, FontWidth: Cardinal;
   inp: text;
   MaxUsedCode: LongInt;
   fontstarted: boolean; { started definition of the font }
@@ -70,7 +70,7 @@ for i := 0 to MaxUsedCode do
       else begin
            if blockstart = 0
 	     then WriteLn ('if (ch == ', i, ') return &font[', 
-	                   i * FontHeight, '];')
+	                   transtable[i] * FontHeight, '];')
              else WriteLn ('if (ch >= ',blockstart, ' && ch <= ', i, 
 	                   ') return &font[(ch - ', 
 			   blockstart - transtable[blockstart], 
