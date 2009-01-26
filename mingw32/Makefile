@@ -168,20 +168,21 @@ avtsayinfo.o: avtsayinfo.rc akfavatar.ico
 libinfo.o: libinfo.rc
 	$(WINDRES) -o $@ -i libinfo.rc
 
-# don't use $(CC) becaus it is a cross-compiler
+# don't use $(CC) because it is a cross-compiler
 ../bin2c: ../bin2c.c
 	cc -o $@ ../bin2c.c
+
+# don't use $(CC) because it is a cross-compiler
+../bdfread: ../bdfread.c
+	cc -o $@ ../bdfread.c
 
 ../gnu-head.c: ../gnu-head.bmp ../bin2c
 	../bin2c avatar_image < ../gnu-head.bmp > $@
 
-../gnu-small.c: ../gnu-small.bmp ../bin2c
-	../bin2c avatar_image < ../gnu-small.bmp > $@
-
 ../bell.c: ../bell.wav ../bin2c
 	../bin2c avt_bell_data < ../bell.wav > $@
 
-avatar-default.o: ../avatar-default.c ../gnu-head.c ../gnu-small.c
+avatar-default.o: ../avatar-default.c ../gnu-head.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ ../avatar-default.c
 
 avtfilechooser.o: ../avtfilechooser.c ../akfavatar.h
@@ -194,7 +195,13 @@ avatar.o: ../avatar.c ../akfavatar.h ../version.h ../btn-cont.xpm \
 avatar-audio.o: ../avatar-audio.c ../akfavatar.h ../bell.c
 	$(CC) -c $(CFLAGS) $(SDLCFLAGS) -o $@ ../avatar-audio.c
 
-font.o: ../font.c ../ucsfont7x14.c ../ucsfont4x6.c ../ucsfont9x18.c
+../ucsfont7x14.c: ../7x14.bdf ../bdfread
+	../bdfread ../7x14.bdf > $@
+
+../ucsfont9x18.c: ../9x18.bdf ../bdfread
+	../bdfread ../9x18.bdf > $@
+
+font.o: ../font.c ../ucsfont7x14.c ../ucsfont9x18.c
 	$(CC) -c $(CFLAGS) $(SDLCFLAGS) -o $@ ../font.c
 
 # static library

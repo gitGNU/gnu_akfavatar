@@ -3,6 +3,10 @@
 	* bdfread.c:
 	rewrite bdfread.pas to plain C (with some help from p2c)
 
+	* Makefile.in, configure:
+	generate code for fonts from bdf file using bdfread
+	no longer support qvga
+
 2009-01-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* bdfread.pas:

@@ -22,15 +22,16 @@ all: libakfavatar.so libakfavatar.a libavtcio.a avatarsay avatarsay-d
 Makefile: $(srcdir)/configure $(srcdir)/Makefile.in
 	./config.status
 
-# don't use $(CC) because it could be a cross-compiler
+# local tool: don't use $(CC) because it could be a cross-compiler
 bin2c: $(srcdir)/bin2c.c
 	cc -o $@ $(srcdir)/bin2c.c
 
+# local tool: don't use $(CC) because it could be a cross-compiler
+bdfread: $(srcdir)/bdfread.c
+	cc -o $@ $(srcdir)/bdfread.c
+
 gnu-head.c: $(srcdir)/gnu-head.bmp bin2c
 	./bin2c avatar_image < $(srcdir)/gnu-head.bmp > $@
-
-gnu-small.c: $(srcdir)/gnu-small.bmp bin2c
-	./bin2c avatar_image < $(srcdir)/gnu-small.bmp > $@
 
 bell.c: $(srcdir)/bell.wav bin2c
 	./bin2c avt_bell_data < $(srcdir)/bell.wav > $@
@@ -43,15 +44,19 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h \
 	  $(srcdir)/btn-cont.xpm $(srcdir)/akfavatar.xpm
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c $(srcdir)/avatar.c
 
-avatar-default.o: $(srcdir)/avatar-default.c gnu-head.c gnu-small.c \
-                  $(srcdir)/akfavatar.h
+avatar-default.o: $(srcdir)/avatar-default.c gnu-head.c $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ $(srcdir)/avatar-default.c
 
 avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h bell.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ $(srcdir)/avatar-audio.c
 
-font.o: $(srcdir)/font.c $(srcdir)/ucsfont7x14.c $(srcdir)/ucsfont4x6.c \
-	$(srcdir)/ucsfont9x18.c
+$(srcdir)/ucsfont7x14.c: $(srcdir)/7x14.bdf bdfread
+	./bdfread $(srcdir)/7x14.bdf > $@
+
+$(srcdir)/ucsfont9x18.c: $(srcdir)/9x18.bdf bdfread
+	./bdfread $(srcdir)/9x18.bdf > $@
+
+font.o: $(srcdir)/font.c $(srcdir)/ucsfont7x14.c $(srcdir)/ucsfont9x18.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ $(srcdir)/font.c
 
 libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o
@@ -64,8 +69,7 @@ avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h \
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ \
 	  $(srcdir)/avatar.c
 
-avatar-default.lo: $(srcdir)/avatar-default.c gnu-head.c gnu-small.c \
-	           $(srcdir)/akfavatar.h
+avatar-default.lo: $(srcdir)/avatar-default.c gnu-head.c $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ \
 	  $(srcdir)/avatar-default.c
 
@@ -73,8 +77,7 @@ avatar-audio.lo: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h bell.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ \
 	  $(srcdir)/avatar-audio.c
 
-font.lo: $(srcdir)/font.c $(srcdir)/ucsfont7x14.c $(srcdir)/ucsfont4x6.c \
-	 $(srcdir)/ucsfont9x18.c
+font.lo: $(srcdir)/font.c $(srcdir)/ucsfont7x14.c $(srcdir)/ucsfont9x18.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ $(srcdir)/font.c
 
 libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo font.lo
@@ -235,7 +238,9 @@ clean:
 	-rm -f *.o *.lo
 	-rm -f *.ppu *.gpi *.gpm
 	-rm -f bin2c
-	-rm -f gnu-head.c gnu-small.c bell.c
+	-rm -f bdfread
+	-rm -f gnu-head.c bell.c
+	-rm -f ucsfont9x18.c ucsfont7x14.c
 	-rm -f pascal/*.o pascal/*.gpi pascal/*.gpm pascal/*.ppu
 	-rm -f pascal/link.res pascal/ppas.sh
 	$(MAKE) -C $(srcdir)/mingw32 clean
@@ -286,8 +291,8 @@ dist: info html man distclean
 	   arch.h arch.c \
 	   avtman avtcmd example.c fsdemo-?? \
 	   gnome-akfavatar bdfread.c \
-	   gnu-small.bmp akfavatar.xpm info.xpm bin2c.c \
-	   ucsfont7x14.c ucsfont4x6.c ucsfont9x18.c font.c \
+	   akfavatar.xpm info.xpm bin2c.c \
+	   7x14.bdf 9x18.bdf font.c \
 	   bell.wav configure Makefile.in \
 	   $(PKGNAME)/
 	

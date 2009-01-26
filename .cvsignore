@@ -8,6 +8,7 @@ bdfread
 libakfavatar.so*
 bin2c
 gnu-head.c gnu-small.c bell.c keybtn.c
+ucsfont*.c
 *.lo
 a.out
 *.tar.gz *.tar.bz2 *.zip
