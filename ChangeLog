@@ -1,3 +1,8 @@
+2009-01-26  Andreas K. Foerster  <info@akfoerster.de>
+
+	* bdfread.c:
+	rewrite bdfread.pas to plain C (with some help from p2c)
+
 2009-01-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* bdfread.pas:
