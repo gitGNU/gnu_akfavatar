@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.34 2009-01-08 14:24:07 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.35 2009-01-26 18:30:51 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -236,7 +236,6 @@ wird nur funktionieren, wenn man zuvor die Bibliothek installiert hat.
 Diese Variante wird für die Installation verwendet.
 
 @subsubheading Kompilieren --- Sonderfälle
-@cindex QVGA
 @cindex VGA
 @cindex iconv
 
@@ -267,11 +266,9 @@ man das Programm nur auf dem selben Computer verwenden will, auf dem
 man es kompiliert.
 
 Wenn man es auf Geräten mit einer kleinen Anzeige verwenden will, kann man
-den Parameter @option{--enable-size=vga} oder @option{--enable-size=qvga}
-mit configure verwenden.  Der Wert @code{vga} steht dabei für eine Auflösung
-von 640*480 Pixeln, während @code{qvga} für ganz kleine Anzeigen mit 320*240
-Pixeln geeignet ist.  De Größe @code{qvga} ist dabei nicht gerade schön, es 
-ist gerade so eben noch lesbar und unterstützt weniger Zeichen.
+den Parameter @option{--enable-size=vga} mit configure verwenden.  
+Der Wert @code{vga} steht dabei für eine Auflösung
+von 640*480 Pixeln.
 
 @subheading Testen
 

@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.41 2009-01-08 14:24:07 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.42 2009-01-26 18:30:51 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -225,7 +225,6 @@ You can use this to test and play around with it before you install it.
 is installed.  This is the variant that gets installed.
 
 @subsubheading Compiling --- special cases
-@cindex QVGA
 @cindex VGA
 @cindex iconv
 
@@ -251,11 +250,8 @@ not needed if you just want to run the program on the same machine
 on which you compile it.
 
 If you want to use it on devices with a small display, use the 
-parameter @option{--enable-size=vga} or @option{--enable-size=qvga} with
-configure.  The value @code{vga} means a size of 640*480 pixels, while 
-@code{qvga} is for very small displays with 320*240 pixels.  The size 
-@code{qvga} doesn't look good, it is just barely readable and supports less 
-characters.
+parameter @option{--enable-size=vga} with configure.  
+The value @code{vga} means a size of 640*480 pixels.
 
 @subheading Testing
 
