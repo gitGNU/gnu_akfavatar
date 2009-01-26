@@ -13,7 +13,7 @@ Compilable wit gpc, fpc and p2c
 program bdfread;
 
 const
-  MaxCode = $1FFFFF;
+  MaxCode = $10FFFF;
 
 const 
   DefaultChar = 0;
