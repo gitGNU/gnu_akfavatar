@@ -169,21 +169,21 @@ libinfo.o: libinfo.rc
 	$(WINDRES) -o $@ -i libinfo.rc
 
 # don't use $(CC) because it is a cross-compiler
-../bin2c: ../bin2c.c
+bin2c: ../bin2c.c
 	cc -o $@ ../bin2c.c
 
 # don't use $(CC) because it is a cross-compiler
-../bdfread: ../bdfread.c
+bdfread: ../bdfread.c
 	cc -o $@ ../bdfread.c
 
-../gnu-head.c: ../gnu-head.bmp ../bin2c
-	../bin2c avatar_image < ../gnu-head.bmp > $@
+gnu-head.c: ../gnu-head.bmp bin2c
+	./bin2c avatar_image < ../gnu-head.bmp > $@
 
-../bell.c: ../bell.wav ../bin2c
-	../bin2c avt_bell_data < ../bell.wav > $@
+bell.c: ../bell.wav bin2c
+	./bin2c avt_bell_data < ../bell.wav > $@
 
-avatar-default.o: ../avatar-default.c ../gnu-head.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ ../avatar-default.c
+avatar-default.o: ../avatar-default.c gnu-head.c
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ ../avatar-default.c
 
 avtfilechooser.o: ../avtfilechooser.c ../akfavatar.h
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ ../avtfilechooser.c
@@ -192,17 +192,17 @@ avatar.o: ../avatar.c ../akfavatar.h ../version.h ../btn-cont.xpm \
              ../balloonpointer.xpm ../circle.xpm ../akfavatar.xpm
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -c ../avatar.c
 
-avatar-audio.o: ../avatar-audio.c ../akfavatar.h ../bell.c
-	$(CC) -c $(CFLAGS) $(SDLCFLAGS) -o $@ ../avatar-audio.c
+avatar-audio.o: ../avatar-audio.c ../akfavatar.h bell.c
+	$(CC) -c $(CFLAGS) $(SDLCFLAGS) -I. -o $@ ../avatar-audio.c
 
-../ucsfont7x14.c: ../7x14.bdf ../bdfread
-	../bdfread ../7x14.bdf > $@
+ucsfont7x14.c: ../7x14.bdf bdfread
+	./bdfread ../7x14.bdf > $@
 
-../ucsfont9x18.c: ../9x18.bdf ../bdfread
-	../bdfread ../9x18.bdf > $@
+ucsfont9x18.c: ../9x18.bdf bdfread
+	./bdfread ../9x18.bdf > $@
 
-font.o: ../font.c ../ucsfont7x14.c ../ucsfont9x18.c
-	$(CC) -c $(CFLAGS) $(SDLCFLAGS) -o $@ ../font.c
+font.o: ../font.c ucsfont7x14.c ucsfont9x18.c
+	$(CC) -c $(CFLAGS) $(SDLCFLAGS) -I. -o $@ ../font.c
 
 # static library
 libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o

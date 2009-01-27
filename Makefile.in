@@ -54,13 +54,13 @@ avatar-default.o: $(srcdir)/avatar-default.c gnu-head.c $(srcdir)/akfavatar.h
 avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h bell.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ $(srcdir)/avatar-audio.c
 
-$(srcdir)/ucsfont7x14.c: $(srcdir)/7x14.bdf bdfread
+ucsfont7x14.c: $(srcdir)/7x14.bdf bdfread
 	./bdfread $(srcdir)/7x14.bdf > $@
 
-$(srcdir)/ucsfont9x18.c: $(srcdir)/9x18.bdf bdfread
+ucsfont9x18.c: $(srcdir)/9x18.bdf bdfread
 	./bdfread $(srcdir)/9x18.bdf > $@
 
-font.o: $(srcdir)/font.c $(srcdir)/ucsfont7x14.c $(srcdir)/ucsfont9x18.c
+font.o: $(srcdir)/font.c ucsfont7x14.c ucsfont9x18.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ $(srcdir)/font.c
 
 libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o
@@ -81,7 +81,7 @@ avatar-audio.lo: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h bell.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ \
 	  $(srcdir)/avatar-audio.c
 
-font.lo: $(srcdir)/font.c $(srcdir)/ucsfont7x14.c $(srcdir)/ucsfont9x18.c
+font.lo: $(srcdir)/font.c ucsfont7x14.c ucsfont9x18.c
 	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ $(srcdir)/font.c
 
 libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo font.lo
@@ -174,8 +174,8 @@ install-strip: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-in
 	@echo '*'
 
 install-desktop-menu: $(srcdir)/akfavatar.xpm $(srcdir)/akfoerster-avatarsay.desktop
-	xdg-icon-resource install --size 32 --novendor akfavatar.xpm
-	xdg-desktop-menu install akfoerster-avatarsay.desktop
+	xdg-icon-resource install --size 32 --novendor $(srcdir)/akfavatar.xpm
+	xdg-desktop-menu install $(srcdir)/akfoerster-avatarsay.desktop
 
 uninstall: uninstall-info uninstall-man
 	-rm -f $(includedir)/akfavatar.h
