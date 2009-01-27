@@ -18,6 +18,10 @@ BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 	clean mostlyclean distclean maintainer-clean maintainerclean dist
 
 all: libakfavatar.so libakfavatar.a libavtcio.a avatarsay avatarsay-d
+	@echo '*'
+	@echo '* use "make install" or "make install-strip"'
+	@echo '* with root-privileges to install it.'
+	@echo '*'
 
 Makefile: $(srcdir)/configure $(srcdir)/Makefile.in
 	./config.status
@@ -149,6 +153,9 @@ install: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info ins
 	$(INSTALL_PROGRAM) $(srcdir)/avtman $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/gnome-akfavatar $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/avtcmd $(DESTDIR)$(bindir)
+	@echo '*'
+	@echo '* make install-desktop-menu: to install avatarsay in a desktop menu'
+	@echo '*'
 
 install-strip: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info install-man
 	$(INSTALL_DATA) $(srcdir)/akfavatar.h $(DESTDIR)$(includedir)
@@ -162,6 +169,13 @@ install-strip: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-in
 	$(INSTALL_PROGRAM) $(srcdir)/avtman $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/gnome-akfavatar $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/avtcmd $(DESTDIR)$(bindir)
+	@echo '*'
+	@echo '* use "make install-desktop-menu" to install avatarsay in a desktop menu'
+	@echo '*'
+
+install-desktop-menu: $(srcdir)/akfavatar.xpm $(srcdir)/akfoerster-avatarsay.desktop
+	xdg-icon-resource install --size 32 --novendor akfavatar.xpm
+	xdg-desktop-menu install akfoerster-avatarsay.desktop
 
 uninstall: uninstall-info uninstall-man
 	-rm -f $(includedir)/akfavatar.h
@@ -174,6 +188,8 @@ uninstall: uninstall-info uninstall-man
 	-rm -f $(bindir)/avatarsay
 	-rm -f $(bindir)/avtman
 	-rm -f $(bindir)/gnome-akfavatar
+	-xdg-desktop-menu uninstall akfoerster-avatarsay.desktop
+	-xdg-icon-resource uninstall --size 32 --novendor akfavatar.xpm
 
 info:
 	$(MAKE) -C $(srcdir)/doc info
