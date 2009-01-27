@@ -93,8 +93,8 @@ writetranstable (void)
 			i, transtable[i] * FontHeight);
 	      else
 		printf
-		  ("if (ch >= %u && ch <= %u) return &font[(ch - %u) * %u];\n",
-		   blockstart, i, blockstart - transtable[blockstart],
+		  ("if (ch <= %u && ch >= %u) return &font[(ch - %u) * %u];\n",
+		   i, blockstart, blockstart - transtable[blockstart],
 		   FontHeight);
 	      blockstart = 0;
 	      printf ("  else ");
