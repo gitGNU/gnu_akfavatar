@@ -306,7 +306,7 @@ dist: info html man distclean
 	   avatarsay.c avtterm.h avtterm.c avtmsg.h avtmsg.c \
 	   arch.h arch.c \
 	   avtman avtcmd example.c fsdemo-?? \
-	   gnome-akfavatar bdfread.c \
+	   gnome-akfavatar akfoerster-avatarsay.desktop bdfread.c \
 	   akfavatar.xpm info.xpm bin2c.c \
 	   7x14.bdf 9x18.bdf font.c \
 	   bell.wav configure Makefile.in \
