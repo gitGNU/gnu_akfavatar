@@ -2,6 +2,8 @@
 
 include version
 
+srcdir = ..
+
 TARGET = i586-mingw32msvc
 CC = $(TARGET)-gcc
 AR = $(TARGET)-ar
@@ -22,6 +24,9 @@ VERSIONSTR=$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)
 prefix = /usr/$(TARGET)
 libdir = $(prefix)/lib
 includedir = $(prefix)/include
+
+SHELL = /bin/sh
+.SUFFIXES:
 
 all: akfavatar.dll libakfavatar.a libavtcio.a avatarsay.exe
 
@@ -169,40 +174,41 @@ libinfo.o: libinfo.rc
 	$(WINDRES) -o $@ -i libinfo.rc
 
 # don't use $(CC) because it is a cross-compiler
-bin2c: ../bin2c.c
-	cc -o $@ ../bin2c.c
+bin2c: $(srcdir)/bin2c.c
+	cc -o $@ $(srcdir)/bin2c.c
 
 # don't use $(CC) because it is a cross-compiler
-bdfread: ../bdfread.c
-	cc -o $@ ../bdfread.c
+bdfread: $(srcdir)/bdfread.c
+	cc -o $@ $(srcdir)/bdfread.c
 
-gnu-head.c: ../gnu-head.bmp bin2c
-	./bin2c avatar_image < ../gnu-head.bmp > $@
+gnu-head.c: $(srcdir)/gnu-head.bmp bin2c
+	./bin2c avatar_image < $(srcdir)/gnu-head.bmp > $@
 
-bell.c: ../bell.wav bin2c
-	./bin2c avt_bell_data < ../bell.wav > $@
+bell.c: $(srcdir)/bell.wav bin2c
+	./bin2c avt_bell_data < $(srcdir)/bell.wav > $@
 
-avatar-default.o: ../avatar-default.c gnu-head.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ ../avatar-default.c
+avatar-default.o: $(srcdir)/avatar-default.c gnu-head.c
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ $(srcdir)/avatar-default.c
 
-avtfilechooser.o: ../avtfilechooser.c ../akfavatar.h
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ ../avtfilechooser.c
+avtfilechooser.o: $(srcdir)/avtfilechooser.c $(srcdir)/akfavatar.h
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ $(srcdir)/avtfilechooser.c
 
-avatar.o: ../avatar.c ../akfavatar.h ../version.h ../btn-cont.xpm \
-             ../balloonpointer.xpm ../circle.xpm ../akfavatar.xpm
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -c ../avatar.c
+avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/version.h \
+             $(srcdir)/btn-cont.xpm $(srcdir)/balloonpointer.xpm \
+             $(srcdir)/circle.xpm $(srcdir)/akfavatar.xpm
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -c $(srcdir)/avatar.c
 
-avatar-audio.o: ../avatar-audio.c ../akfavatar.h bell.c
-	$(CC) -c $(CFLAGS) $(SDLCFLAGS) -I. -o $@ ../avatar-audio.c
+avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h bell.c
+	$(CC) -c $(CFLAGS) $(SDLCFLAGS) -I. -o $@ $(srcdir)/avatar-audio.c
 
-ucsfont7x14.c: ../7x14.bdf bdfread
-	./bdfread ../7x14.bdf > $@
+ucsfont7x14.c: $(srcdir)/7x14.bdf bdfread
+	./bdfread $(srcdir)/7x14.bdf > $@
 
-ucsfont9x18.c: ../9x18.bdf bdfread
-	./bdfread ../9x18.bdf > $@
+ucsfont9x18.c: $(srcdir)/9x18.bdf bdfread
+	./bdfread $(srcdir)/9x18.bdf > $@
 
-font.o: ../font.c ucsfont7x14.c ucsfont9x18.c
-	$(CC) -c $(CFLAGS) $(SDLCFLAGS) -I. -o $@ ../font.c
+font.o: $(srcdir)/font.c ucsfont7x14.c ucsfont9x18.c
+	$(CC) -c $(CFLAGS) $(SDLCFLAGS) -I. -o $@ $(srcdir)/font.c
 
 # static library
 libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o
@@ -212,33 +218,41 @@ libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o
 akfavatar.dll: avatar.o avatar-default.o avatar-audio.o font.o libinfo.o 
 	$(CC) -shared -o $@ avatar.o avatar-default.o avatar-audio.o \
 	        font.o libinfo.o \
-		-Wl,-no-undefined,--enable-runtime-pseudo-reloc \
+	        -Wl,-no-undefined,--enable-runtime-pseudo-reloc \
 	        -Wl,--output-def,akfavatar.def \
 	        -Wl,--out-implib,libakfavatar.dll.a \
-		$(LDFLAGS) $(SDLLDFLAGS)
+	        $(LDFLAGS) $(SDLLDFLAGS)
 
-avtccio.o: ../avtccio.c ../avtcio.h ../akfavatar.h
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ ../avtccio.c
+avtccio.o: $(srcdir)/avtccio.c $(srcdir)/avtcio.h $(srcdir)/akfavatar.h
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ $(srcdir)/avtccio.c
 
-avtcwio.o: ../avtcwio.c ../avtcio.h ../akfavatar.h
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ ../avtcwio.c
+avtcwio.o: $(srcdir)/avtcwio.c $(srcdir)/avtcio.h $(srcdir)/akfavatar.h
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ $(srcdir)/avtcwio.c
 
 libavtcio.a: avtccio.o avtcwio.o
 	$(AR) rcu $@ avtccio.o avtcwio.o
 	-$(RANLIB) $@
 
-avatarsay.o: ../avatarsay.c ../akfavatar.h
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ ../avatarsay.c
+avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ $(srcdir)/avatarsay.c
 
-# from this directory!
-avtmsg.o: avtmsg.c ../avtmsg.h
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I.. -c -o $@ avtmsg.c
+# from the mingw32 directory!
+avtmsg.o: $(srcdir)/mingw32/avtmsg.c $(srcdir)/avtmsg.h
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I$(srcdir) -c -o $@ \
+	  $(srcdir)/mingw32/avtmsg.c
 
-arch.o: ../arch.c ../arch.h
-	$(CC) $(CFLAGS) -c -o $@ ../arch.c
+avtwindows.o: $(srcdir)/mingw32/avtwindows.c
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -I$(srcdir) -c -o $@ \
+	  $(srcdir)/mingw32/avtwindows.c
 
-avtwindows.o: avtwindows.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I.. -c -o $@ avtwindows.c
+arch.o: $(srcdir)/arch.c $(srcdir)/arch.h
+	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/arch.c
+
+avatarsay: avatarsay.exe
+
+avatarsay-d: avatarsay-d.exe
+
+avatarsay-s: avatarsay-s.exe
 
 avatarsay.exe: avatarsay-d.exe
 	mv avatarsay-d.exe avatarsay.exe
@@ -259,20 +273,20 @@ avatarsay-s.exe: avatarsay.o avtfilechooser.o avtmsg.o libakfavatar.a \
 
 example: example.exe
 
-example.exe: ../example.c akfavatar.dll icon.o
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ ../example.c icon.o \
+example.exe: $(srcdir)/example.c akfavatar.dll icon.o
+	$(CC) $(CFLAGS) $(SDLCFLAGS) -o $@ $(srcdir)/example.c icon.o \
 			-L. -lakfavatar $(LDFLAGS) $(SDLLDFLAGS)
 
 install: akfavatar.dll libakfavatar.a
-	install -m 644 ../akfavatar.h $(includedir)
-	install -m 644 ../avtcio.h $(includedir)
+	install -m 644 $(srcdir)/akfavatar.h $(includedir)
+	install -m 644 $(srcdir)/avtcio.h $(includedir)
 	install -m 644 libakfavatar.a libakfavatar.dll.a $(libdir)
 	install -m 644 libavtcio.a $(libdir)
 	install -m 644 akfavatar.dll $(libdir)
 
 install-strip: akfavatar.dll libakfavatar.a
-	install -m 644 ../akfavatar.h $(includedir)
-	install -m 644 ../avtcio.h $(includedir)
+	install -m 644 $(srcdir)/akfavatar.h $(includedir)
+	install -m 644 $(srcdir)/avtcio.h $(includedir)
 	install -m 644 libakfavatar.a libakfavatar.dll.a $(libdir)
 	install -m 644 libavtcio.a $(libdir)
 	install -m 644 -s akfavatar.dll $(libdir)
@@ -280,6 +294,10 @@ install-strip: akfavatar.dll libakfavatar.a
 clean:
 	-rm -f *~ *.o *.ppu *.gpi
 	-rm -f libinfo.rc avtsayinfo.rc
+	-rm -f bell.c gnu-head.c
+	-rm -f ucsfont7x14.c ucsfont9x18.c
+	-rm -f bin2c bin2c.exe
+	-rm -f bdfread bdfread.exe
 
 distclean: clean
 	-rm -f *.a *.so *.exe avatarsay-*.zip
@@ -290,24 +308,24 @@ distclean: clean
 # the folowing targets are for the maintainer
 # don't use them unless you know what you are doing
 
-multiply.exe: ../pascal/multiply.pas
-	-fpcwavatar -dRELEASE -o./$@ ../pascal/multiply.pas
+multiply.exe: $(srcdir)/pascal/multiply.pas
+	-fpcwavatar -dRELEASE -o$@ $(srcdir)/pascal/multiply.pas
 
-multiplizieren.exe: ../pascal/multiply.pas
-	-fpcwavatar -dRELEASE -ddeutsch -o./$@ ../pascal/multiply.pas
+multiplizieren.exe: $(srcdir)/pascal/multiply.pas
+	-fpcwavatar -dRELEASE -ddeutsch -o$@ $(srcdir)/pascal/multiply.pas
 
 dist-bin: avatarsay.exe multiply.exe multiplizieren.exe
-	make -C ../doc html
+	make -C $(srcdir)/doc html
 	mkdir $(BINPKGNAME)
-	cp ../doc/akfavatar-en.html ../doc/akfavatar-de.html $(BINPKGNAME)/
+	cp $(srcdir)/doc/akfavatar-en.html $(srcdir)/doc/akfavatar-de.html $(BINPKGNAME)/
 	cp akfavatar.dll $(BINPKGNAME)/
 	#cp libakfavatar.dll.a $(BINPKGNAME)/
-	#cp ../akfavatar.h akfavatar.def ../pascal/akfavatar.pas $(BINPKGNAME)/
-	cp avatarsay.exe ../fsdemo-?? $(BINPKGNAME)/
+	#cp $(srcdir)/akfavatar.h akfavatar.def $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/
+	cp avatarsay.exe $(srcdir)/fsdemo-?? $(BINPKGNAME)/
 	cp fsdemo-??.bat $(BINPKGNAME)/
-	cp ../COPYING $(BINPKGNAME)/gpl-3.0.txt
-	cp ../AUTHORS $(BINPKGNAME)/AUTHORS.txt
-	cp ../pascal/correct.wav ../pascal/wrong.wav $(BINPKGNAME)/
+	cp $(srcdir)/COPYING $(BINPKGNAME)/gpl-3.0.txt
+	cp $(srcdir)/AUTHORS $(BINPKGNAME)/AUTHORS.txt
+	cp $(srcdir)/pascal/correct.wav $(srcdir)/pascal/wrong.wav $(BINPKGNAME)/
 	-cp multiply.exe multiplizieren.exe $(BINPKGNAME)/
 	strip $(BINPKGNAME)/avatarsay.exe $(BINPKGNAME)/akfavatar.dll
 	todos $(BINPKGNAME)/fsdemo-??
