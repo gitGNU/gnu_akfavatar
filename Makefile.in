@@ -41,18 +41,18 @@ bell.c: $(srcdir)/bell.wav bin2c
 	./bin2c avt_bell_data < $(srcdir)/bell.wav > $@
 
 avtfilechooser.o: $(srcdir)/avtfilechooser.c $(srcdir)/akfavatar.h
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -c -o $@ $(srcdir)/avtfilechooser.c
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtfilechooser.c
 
 avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h \
 	  $(srcdir)/balloonpointer.xpm $(srcdir)/circle.xpm \
 	  $(srcdir)/btn-cont.xpm $(srcdir)/akfavatar.xpm
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c $(srcdir)/avatar.c
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c $(srcdir)/avatar.c
 
 avatar-default.o: $(srcdir)/avatar-default.c gnu-head.c $(srcdir)/akfavatar.h
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ $(srcdir)/avatar-default.c
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avatar-default.c
 
 avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h bell.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ $(srcdir)/avatar-audio.c
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avatar-audio.c
 
 ucsfont7x14.c: $(srcdir)/7x14.bdf bdfread
 	./bdfread $(srcdir)/7x14.bdf > $@
@@ -61,7 +61,7 @@ ucsfont9x18.c: $(srcdir)/9x18.bdf bdfread
 	./bdfread $(srcdir)/9x18.bdf > $@
 
 font.o: $(srcdir)/font.c ucsfont7x14.c ucsfont9x18.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -o $@ $(srcdir)/font.c
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/font.c
 
 libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o
 	$(AR) rcu $@ avatar.o avatar-default.o avatar-audio.o font.o
@@ -70,25 +70,25 @@ libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o
 avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h \
 	   $(srcdir)/balloonpointer.xpm $(srcdir)/circle.xpm \
 	   $(srcdir)/btn-cont.xpm $(srcdir)/akfavatar.xpm
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ \
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -fPIC -o $@ \
 	  $(srcdir)/avatar.c
 
 avatar-default.lo: $(srcdir)/avatar-default.c gnu-head.c $(srcdir)/akfavatar.h
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ \
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -fPIC -o $@ \
 	  $(srcdir)/avatar-default.c
 
 avatar-audio.lo: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h bell.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ \
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -fPIC -o $@ \
 	  $(srcdir)/avatar-audio.c
 
 font.lo: $(srcdir)/font.c ucsfont7x14.c ucsfont9x18.c
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -I. -c -fPIC -o $@ $(srcdir)/font.c
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -fPIC -o $@ $(srcdir)/font.c
 
 libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo font.lo
 	$(CC) -shared \
 	      -Wl,-soname,$(SONAME) -o $(LIBNAME) -fPIC \
 	      avatar.lo avatar-default.lo avatar-audio.lo font.lo \
-	      $(LDFLAGS) $(SDLLDFLAGS)
+	      $(SDLLDFLAGS) $(LDFLAGS)
 	-ln -sf $(LIBNAME) $(SONAME)
 	-ln -sf $(LIBNAME) libakfavatar.so
 
@@ -107,11 +107,11 @@ example: $(srcdir)/example.c libakfavatar.so
 	  -L. -lakfavatar $(LDFLAGS)
 
 avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h $(srcdir)/avtterm.h
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -DPREFIX=\"$(exec_prefix)\" -I. \
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -DPREFIX=\"$(exec_prefix)\" -I. \
 	  -c -o $@ $(srcdir)/avatarsay.c
 
 avtterm.o: $(srcdir)/avtterm.c $(srcdir)/avtterm.h $(srcdir)/akfavatar.h
-	$(CC) $(CFLAGS) $(SDLCFLAGS) -DPREFIX=\"$(exec_prefix)\" -I. \
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -DPREFIX=\"$(exec_prefix)\" -I. \
 	  -c -o $@ $(srcdir)/avtterm.c
 
 avtmsg.o: $(srcdir)/avtmsg.c $(srcdir)/avtmsg.h
@@ -131,7 +131,7 @@ avatarsay-d: avatarsay.o avtfilechooser.o arch.o avtterm.o avtmsg.o \
 avatarsay: avatarsay.o avtfilechooser.o arch.o avtterm.o avtmsg.o \
 	   libakfavatar.a
 	$(CC) -o $@ avatarsay.o arch.o libakfavatar.a avtfilechooser.o \
-	  avtterm.o avtmsg.o $(LDFLAGS) $(SDLLDFLAGS)
+	  avtterm.o avtmsg.o $(SDLLDFLAGS) $(LDFLAGS)
 
 installdirs:
 	-[ -d $(DESTDIR)$(includedir) ]  || $(INSTALL) -d $(DESTDIR)$(includedir)
