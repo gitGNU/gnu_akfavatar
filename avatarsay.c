@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.269 2009-01-29 09:33:16 akf Exp $ */
+/* $Id: avatarsay.c,v 2.270 2009-01-29 13:52:16 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1257,8 +1257,8 @@ handle_back_command (const wchar_t * s)
   while (*s != '\0' && !iswspace (*s))
     s++;
 
-  /* skip space */
-  while (*s != '\0' && iswspace(*s))
+  /* skip one space */
+  if (*s != '\0')
     s++;
 
   /* write rest of line */
@@ -2809,7 +2809,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.269 2009-01-29 09:33:16 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.270 2009-01-29 13:52:16 akf Exp $");
 
   return EXIT_SUCCESS;
 }
