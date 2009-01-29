@@ -6,6 +6,9 @@
 	* avatarsay.c (say_line):
 	no backspace before line-ending
 
+	* akfavatar.h, avatar.c (avt_home_position):
+	new function
+
 2009-01-26  Andreas K. Foerster  <info@akfoerster.de>
 
 	* bdfread.c:

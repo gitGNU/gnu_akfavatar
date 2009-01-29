@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.271 2009-01-29 14:07:00 akf Exp $ */
+/* $Id: avatarsay.c,v 2.272 2009-01-29 15:14:16 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1867,8 +1867,7 @@ say_line (const wchar_t * line, ssize_t nread)
 
   /* use a new line, when cursor is not in the home position */
   /* (no new-line at the end) */
-  /* FIXME: doesn't work for right-to-left */
-  if (avt_where_x () > 1 || avt_where_y () > 1)
+  if (!avt_home_position ())
     status = avt_new_line ();
 
   for (i = 0; i < nread; i++, line++)
@@ -2809,7 +2808,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.271 2009-01-29 14:07:00 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.272 2009-01-29 15:14:16 akf Exp $");
 
   return EXIT_SUCCESS;
 }

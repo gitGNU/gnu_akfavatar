@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.79 2009-01-12 11:54:50 akf Exp $ */
+/* $Id: akfavatar.h,v 2.80 2009-01-29 15:14:16 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -635,6 +635,12 @@ avt_bool_t avt_get_origin_mode (void);
  */
 int avt_where_x (void);
 int avt_where_y (void);
+
+/*
+ * is the cursor in the home position? 
+ * (also works for right-to-left writing)
+ */
+avt_bool_t avt_home_position (void);
 
 /* maximum positions (whole text-field) */
 int avt_get_max_x (void);
