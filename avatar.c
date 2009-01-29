@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.197 2009-01-20 17:41:59 akf Exp $ */
+/* $Id: avatar.c,v 2.198 2009-01-29 14:07:00 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1968,7 +1968,6 @@ avt_flip_page (void)
   return _avt_STATUS;
 }
 
-/* @@@ */
 static void
 avt_scroll_up (void)
 {
@@ -4326,14 +4325,13 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.197 2009-01-20 17:41:59 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.198 2009-01-29 14:07:00 akf Exp $");
 
   /*
    * Initialize the display, accept any format
    */
   screenflags = SDL_SWSURFACE | SDL_ANYFORMAT | SDL_RESIZABLE;
 
-  /* FIXME: why doesn't that work under Windows? */
 #ifndef __WIN32__
   if (avt_mode == AVT_AUTOMODE)
     {

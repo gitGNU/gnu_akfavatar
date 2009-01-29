@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.270 2009-01-29 13:52:16 akf Exp $ */
+/* $Id: avatarsay.c,v 2.271 2009-01-29 14:07:00 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -867,7 +867,6 @@ check_encoding (const char *buf)
     }
 }
 
-/* @@@ */
 static wint_t
 get_character (int fd)
 {
@@ -1111,7 +1110,7 @@ change_avatar_image (avt_image_t * newavatar)
       avatar_changed = AVT_TRUE;
       avtterm_update_size ();
     }
-  else				/* save for initialize @@@ ? */
+  else
     {
       if (avt_image)
 	free (avt_image);
@@ -1339,7 +1338,7 @@ handle_read_command (void)
 
   avt_ask (line, sizeof (line));
 
-  /* TODO: not fully implemented yet */
+  /* TODO: handle_read_command not fully implemented yet */
 }
 
 /* handle command */
@@ -1719,7 +1718,7 @@ read_multi_entry (const wchar_t * line, char archive_name[], wchar_t title[])
   return count;
 }
 
-// @@@
+/* TODO: improve multi_menu */
 static size_t
 multi_menu (int fd)
 {
@@ -1793,7 +1792,7 @@ multi_menu (int fd)
       avt_new_line ();
     }
 
-  /* TODO: don't just exit */
+  /* TODO: don't just exit in multi_menu */
   if (avt_choice (&choice, menu_start, entry, '1', AVT_FALSE, AVT_FALSE))
     exit (EXIT_SUCCESS);
 
@@ -1868,6 +1867,7 @@ say_line (const wchar_t * line, ssize_t nread)
 
   /* use a new line, when cursor is not in the home position */
   /* (no new-line at the end) */
+  /* FIXME: doesn't work for right-to-left */
   if (avt_where_x () > 1 || avt_where_y () > 1)
     status = avt_new_line ();
 
@@ -2809,7 +2809,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.270 2009-01-29 13:52:16 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.271 2009-01-29 14:07:00 akf Exp $");
 
   return EXIT_SUCCESS;
 }

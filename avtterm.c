@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.27 2008-11-20 18:07:19 akf Exp $ */
+/* $Id: avtterm.c,v 2.28 2009-01-29 14:07:00 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -157,7 +157,7 @@ avtterm_update_size (void)
     avtterm_size (prg_input, avt_get_max_y (), avt_get_max_x ());
 }
 
-/* @@@ */
+/* TODO: make get_character simpler */
 static wint_t
 get_character (int fd)
 {
@@ -392,7 +392,7 @@ prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
     }				/* if (idle...) */
 }
 
-/* TODO: doesn't work yet */
+/* TODO: prg_mousehandler doesn't work yet */
 static void
 prg_mousehandler (int button, avt_bool_t pressed, int x, int y)
 {
@@ -867,7 +867,7 @@ CSI_sequence (int fd, wchar_t last_character)
     case L'g':			/* TBC */
       if (sequence[0] == 'g' || sequence[0] == '0')
 	avt_set_tab (avt_where_x (), AVT_FALSE);
-      else			/* TODO: 1-5 are not distinguished here */
+      else			/* TODO: TBC 1-5 are not distinguished here */
 	avt_clear_tab_stops ();
       break;
 
@@ -911,7 +911,7 @@ CSI_sequence (int fd, wchar_t last_character)
 	      avt_set_origin_mode (AVT_TRUE);
 	      break;
 	    case 9:		/* X10 mouse */
-	      /* TODO: doesn't work yet */
+	      /* TODO: mouse doesn't work yet */
 	      /* avt_register_mousehandler (prg_mousehandler); */
 	      break;
 	    case 25:
@@ -957,7 +957,7 @@ CSI_sequence (int fd, wchar_t last_character)
 	      avt_set_origin_mode (AVT_FALSE);
 	      break;
 	    case 9:		/* X10 mouse */
-	      /* TODO: doesn't work yet */
+	      /* TODO: mouse doesn't work yet */
 	      /* avt_register_mousehandler (NULL); */
 	      break;
 	    case 25:
@@ -1274,7 +1274,7 @@ escape_sequence (int fd, wchar_t last_character)
 	  ch2 = get_character (fd);
 	while (ch2 == L'\0');
 	if (ch2 == L'@')
-	  set_encoding (G0);	/* TODO: unsure */
+	  set_encoding (G0);	/* unsure */
 	else if (ch2 == L'G' || ch2 == L'8' /* obsolete */ )
 	  set_encoding ("UTF-8");
 	/* else if (ch2 == L'B')
@@ -1406,7 +1406,7 @@ avtterm_run (int fd)
   dec_cursor_seq[1] = '[';
   dec_cursor_seq[2] = ' ';	/* to be filled later */
   avt_register_keyhandler (prg_keyhandler);
-  /* TODO: doesn't work yet */
+  /* TODO: mouse doesn't work yet */
   /* avt_register_mousehandler (prg_mousehandler); */
 
   reset_terminal ();
@@ -1526,7 +1526,6 @@ avtterm_start (const char *system_encoding, const char *working_dir,
       return -1;
     }
 
-  /* TODO: improve */
   settings.c_cc[VERASE] = 8;	/* Backspace */
   settings.c_iflag |= ICRNL;	/* input: cr -> nl */
   settings.c_lflag |= (ECHO | ECHOE | ECHOK | ICANON);
