@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.35 2009-01-26 18:30:51 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.36 2009-01-29 09:33:16 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -1029,18 +1029,11 @@ geschriebenen Text halbwegs zu synchronisieren.
 @item effectpause
 kurze Pause, während der Text sichtbar bleibt
 
-Wenn man eine Kunstpause innerhalb einer Zeile einlegen will, kann man die
-vorhergehende Zeile mit einem umgekehrten Schrägstrich (@code{\}, 
-@code{U+005C}) beenden, so dass das Zeilenende keine Auswirkung auf die 
-Ausgabe hat.
+@item back @var{Anzahl} @var{Text}
+löscht die letzten @var{Anzahl} Zeichen und zeigt den @var{Text}
 
-@item back @var{Anzahl}
-löscht die letzten @var{Anzahl} Zeichen
-
-Die vorhergehende Zeile muss mit einem umgekehrten Schrägstrich (@code{\}, 
-@code{U+005C}) beendet worden sein.  Man kann diese Anweisung nach der
-Anweisung @command{[effectpause]} verwenden, um einen schönen Effekt zu
-erzielen.
+Man kann diese Anweisung nach der Anweisung @command{[effectpause]} verwenden
+um einen schönen Effekt zu erzielen.
 
 @item read
 reserviert für spätere Versionen

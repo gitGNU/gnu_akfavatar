@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.42 2009-01-26 18:30:51 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.43 2009-01-29 09:33:16 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -950,14 +950,9 @@ extend.
 @item effectpause
 short pause while the text stays visible
 
-If you want to make an effect-pause within a line, you can end the previous
-line with a backslash (@code{\}, @code{U+005C}), so the line-ending has no
-effect for the output.
+@item back @var{number} @var{text}
+delete the last @var{number} of characters and print the @var{text}
 
-@item back @var{number}
-delete the last @var{number} of characters
-
-The previous line has to be ended with a backslash (@code{\}, @code{U+005C}).
 You could use this command after an @command{[effectpause]}-command for a 
 nice effect.
 
