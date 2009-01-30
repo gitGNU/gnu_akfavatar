@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.201 2009-01-30 11:16:53 akf Exp $ */
+/* $Id: avatar.c,v 2.202 2009-01-30 11:54:04 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -364,8 +364,7 @@ avt_load_image_xpm (char **xpm)
   char color_character;
   unsigned int red, green, blue;
   int width, height, ncolors, cpp;
-  int x, y;
-  int i;
+  int line, colornr;
 
   SDL_sscanf (xpm[0], "%d %d %d %d", &width, &height, &ncolors, &cpp);
 
@@ -392,18 +391,18 @@ avt_load_image_xpm (char **xpm)
 
   /* copy pixeldata */
   SDL_LockSurface (img);
-  for (y = 0; y < height; y++)
-    for (x = 0; x < width; x++)
-      *(Uint8 *) (img->pixels + y * img->pitch + x) = xpm[ncolors + 1 + y][x];
+  for (line = 0; line < height; line++)
+    SDL_memcpy (img->pixels + (line * img->pitch), xpm[ncolors + 1 + line],
+		width);
   SDL_UnlockSurface (img);
 
   /* set colors */
-  for (i = 1; i <= ncolors; i++)
+  for (colornr = 1; colornr <= ncolors; colornr++)
     {
-      color_character = xpm[i][0];
+      color_character = xpm[colornr][0];
 
       /* scan for color definition */
-      p = &xpm[i][1];		/* skip color-character */
+      p = &xpm[colornr][1];	/* skip color-character */
       while (*p != 'c' || !SDL_isspace (*(p + 1)) || !SDL_isspace (*(p - 1)))
 	p++;
 
@@ -3462,9 +3461,9 @@ avt_wait_key (const wchar_t * message)
 	  break;
 
 	case SDL_VIDEORESIZE:
-	  avt_pre_resize(dst);
+	  avt_pre_resize (dst);
 	  avt_resize (event.resize.w, event.resize.h);
-	  avt_post_resize(dst);
+	  avt_post_resize (dst);
 	  break;
 
 	case SDL_KEYDOWN:
@@ -4455,7 +4454,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.201 2009-01-30 11:16:53 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.202 2009-01-30 11:54:04 akf Exp $");
 
   /*
    * Initialize the display, accept any format
