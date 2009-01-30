@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.199 2009-01-29 15:14:16 akf Exp $ */
+/* $Id: avatar.c,v 2.200 2009-01-30 11:01:00 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -33,10 +33,15 @@
 #include "balloonpointer.xpm"
 #include "circle.xpm"
 #include "btn-cont.xpm"
+#include "btn-yes.xpm"
+#include "btn-no.xpm"
 
 #ifdef LINK_SDL_IMAGE
 #  include "SDL_image.h"
 #endif
+
+#define COPYRIGHTYEAR "2009"
+#define BUTTON_DISTANCE 10
 
 /* 
  * avt_wait_key_mb uses avt_wait_key. Both are deprecated.
@@ -45,8 +50,6 @@
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2)
 #  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
-
-#define COPYRIGHTYEAR "2009"
 
 #if defined(QVGA)
 #  define FONTWIDTH 4
@@ -3516,6 +3519,126 @@ avt_wait_key_mb (char *message)
   return _avt_STATUS;
 }
 
+/* TODO: finisch avt_yes_or_no */
+avt_bool_t
+avt_yes_or_no (void)
+{
+  SDL_Event event;
+  SDL_Surface *yes_button, *no_button;
+  SDL_Rect yes_rect, no_rect, buttons_rect;
+  int result;
+
+  if (!screen)
+    return _avt_STATUS;
+
+  SDL_SetClipRect (screen, &window);
+
+  /* show buttons */
+  yes_button = avt_load_image_xpm (btn_yes_xpm);
+  no_button = avt_load_image_xpm (btn_no_xpm);
+
+  /* alignment: right bottom */
+  no_rect.x = window.x + window.w - no_button->w - AVATAR_MARGIN;
+  no_rect.y = window.y + window.h - no_button->h - AVATAR_MARGIN;
+  no_rect.w = no_button->w;
+  no_rect.h = no_button->h;
+  SDL_BlitSurface (no_button, NULL, screen, &no_rect);
+
+  yes_rect.x = no_rect.x - yes_button->w - BUTTON_DISTANCE;
+  yes_rect.y = no_rect.y;
+  yes_rect.w = yes_button->w;
+  yes_rect.h = yes_button->h;
+  SDL_BlitSurface (yes_button, NULL, screen, &yes_rect);
+
+  SDL_UpdateRect (screen, no_rect.x, no_rect.y, no_rect.w, no_rect.h);
+  SDL_UpdateRect (screen, yes_rect.x, yes_rect.y, yes_rect.w, yes_rect.h);
+
+  SDL_FreeSurface (yes_button);
+  SDL_FreeSurface (no_button);
+  no_button = yes_button = NULL;
+
+  /* show mouse pointer */
+  SDL_ShowCursor (SDL_ENABLE);
+
+  result = -1;			/* no result */
+  while (result < 0)
+    {
+      SDL_WaitEvent (&event);
+      switch (event.type)
+	{
+	case SDL_QUIT:
+	  result = AVT_FALSE;
+	  _avt_STATUS = AVT_QUIT;
+	  break;
+
+	case SDL_VIDEORESIZE:
+	  yes_rect.x -= window.x;
+	  yes_rect.y -= window.y;
+	  no_rect.x -= window.x;
+	  no_rect.y -= window.y;
+	  avt_resize (event.resize.w, event.resize.h);
+	  yes_rect.x += window.x;
+	  yes_rect.y += window.y;
+	  no_rect.x += window.x;
+	  no_rect.y += window.y;
+	  break;
+
+	case SDL_KEYDOWN:
+	  if (event.key.keysym.sym == SDLK_ESCAPE)
+	    {
+	      result = AVT_FALSE;
+	      _avt_STATUS = AVT_QUIT;
+	    }
+	  else if (event.key.keysym.unicode == L'-'
+		   || event.key.keysym.unicode == L'0'
+		   || event.key.keysym.unicode == L'\b')
+	    result = AVT_FALSE;
+	  else if (event.key.keysym.unicode == L'+'
+		   || event.key.keysym.unicode == L'1'
+		   || event.key.keysym.unicode == L'\r')
+	    result = AVT_TRUE;
+	  break;
+
+	case SDL_MOUSEBUTTONDOWN:
+	  /* ignore the wheel */
+	  if (event.button.button <= 3
+	      && event.button.y >= yes_rect.y
+	      && event.button.y <= yes_rect.y + yes_rect.h)
+	    {
+	      if (event.button.x >= yes_rect.x
+		  && event.button.x <= yes_rect.x + yes_rect.w)
+		result = AVT_TRUE;
+	      else
+		if (event.button.x >= no_rect.x
+		    && event.button.x <= no_rect.x + no_rect.w)
+		result = AVT_FALSE;
+	    }
+	  break;
+	}
+    }
+
+  /* hide mouse pointer */
+  SDL_ShowCursor (SDL_DISABLE);
+
+  /* delete buttons */
+  SDL_SetClipRect (screen, &window);
+  buttons_rect.x = yes_rect.x;
+  buttons_rect.y = yes_rect.y;
+  buttons_rect.w = yes_rect.w + no_rect.w + BUTTON_DISTANCE;
+  buttons_rect.h = yes_rect.h;
+  SDL_FillRect (screen, &buttons_rect,
+		SDL_MapRGB (screen->format,
+			    backgroundcolor_RGB.r,
+			    backgroundcolor_RGB.g, backgroundcolor_RGB.b));
+  SDL_UpdateRect (screen, buttons_rect.x, buttons_rect.y,
+		  buttons_rect.w, buttons_rect.h);
+
+  if (textfield.x >= 0)
+    SDL_SetClipRect (screen, &viewport);
+
+  return AVT_MAKE_BOOL (result);
+}
+
 /* free avt_image_t images */
 void
 avt_free_image (avt_image_t * image)
@@ -4334,7 +4457,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.199 2009-01-29 15:14:16 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.200 2009-01-30 11:01:00 akf Exp $");
 
   /*
    * Initialize the display, accept any format

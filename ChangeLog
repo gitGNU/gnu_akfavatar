@@ -1,3 +1,8 @@
+2009-01-30  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_yes_or_no):
+	new function
+
 2009-01-29  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (handle_back_command):

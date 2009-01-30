@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.80 2009-01-29 15:14:16 akf Exp $ */
+/* $Id: akfavatar.h,v 2.81 2009-01-30 11:01:00 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -462,6 +462,17 @@ int avt_wait (int milliseconds);
 
 /* wait for a keypress while displaying a button */
 int avt_wait_button (void);
+
+/*
+ * show yes and no buttons
+ * keys for yes: + 1 Enter
+ * keys for no:  - 0 Backspace
+ *
+ * returns the result
+ * on error or quit request AVT_FALSE is returned and the status is set
+ * you should check the status with avt_get_status()
+ */
+avt_bool_t avt_yes_or_no (void);
 
 /* wait for a keypress  (deprecated: use avt_wait_button) */
 int avt_wait_key (const wchar_t * message) AVT_DEPRECATED;
