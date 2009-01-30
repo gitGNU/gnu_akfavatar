@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.202 2009-01-30 11:54:04 akf Exp $ */
+/* $Id: avatar.c,v 2.203 2009-01-30 12:53:58 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -314,6 +314,11 @@ static struct
   SDL_Surface *(*rw) (SDL_RWops * src, int freesrc);
   SDL_Surface *(*xpm) (char **xpm);
 } load_image;
+
+#define AVT_UPDATE_RECT(rect) \
+  SDL_UpdateRect(screen, rect.x, rect.y, rect.w, rect.h)
+
+#define AVT_UPDATE_ALL(void) SDL_UpdateRect(screen, 0, 0, 0, 0)
 
 #ifdef LINK_SDL_IMAGE
 
@@ -621,13 +626,13 @@ avt_show_text_cursor (avt_bool_t on)
 
 	  /* show text-cursor */
 	  SDL_BlitSurface (avt_text_cursor, NULL, screen, &dst);
-	  SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
+	  AVT_UPDATE_RECT (dst);
 	}
       else
 	{
 	  /* restore saved character */
 	  SDL_BlitSurface (avt_cursor_character, NULL, screen, &dst);
-	  SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
+	  AVT_UPDATE_RECT (dst);
 	}
 
       text_cursor_actually_visible = on;
@@ -663,7 +668,7 @@ avt_clear_screen (void)
   if (screen)
     {
       avt_free_screen ();
-      SDL_UpdateRect (screen, 0, 0, 0, 0);
+      AVT_UPDATE_ALL ();
     }
 
   /* undefine textfield / viewport */
@@ -707,7 +712,7 @@ avt_show_avatar (void)
   if (screen)
     {
       avt_draw_avatar ();
-      SDL_UpdateRect (screen, 0, 0, 0, 0);
+      AVT_UPDATE_ALL ();
 
       /* undefine textfield */
       textfield.x = textfield.y = textfield.w = textfield.h = -1;
@@ -912,7 +917,7 @@ avt_draw_balloon (void)
 
   /* update everything */
   /* (there may be leftovers from large images) */
-  SDL_UpdateRect (screen, 0, 0, 0, 0);
+  AVT_UPDATE_ALL ();
 
   /* 
    * only allow drawings inside this area from now on 
@@ -1083,7 +1088,7 @@ avt_resize (int w, int h)
     }
 
   /* make all changes visible */
-  SDL_UpdateRect (screen, 0, 0, 0, 0);
+  AVT_UPDATE_ALL ();
 }
 
 void
@@ -1115,7 +1120,7 @@ avt_flash (void)
   SDL_SetClipRect (screen, NULL);
   /* fill the whole screen with color */
   SDL_FillRect (screen, NULL, SDL_MapRGB (screen->format, 0xFF, 0xFF, 0x00));
-  SDL_UpdateRect (screen, 0, 0, 0, 0);
+  AVT_UPDATE_ALL ();
   SDL_Delay (150);
 
   /* fill the whole screen with background color */
@@ -1128,7 +1133,7 @@ avt_flash (void)
   SDL_FreeSurface (oldwindowimage);
 
   /* make visible again */
-  SDL_UpdateRect (screen, 0, 0, 0, 0);
+  AVT_UPDATE_ALL ();
 }
 
 void
@@ -1596,7 +1601,7 @@ avt_erase_characters (int num)
     avt_show_text_cursor (AVT_TRUE);
 
   /* update area */
-  SDL_UpdateRect (screen, clear.x, clear.y, clear.w, clear.h);
+  AVT_UPDATE_RECT (clear);
 }
 
 void
@@ -1637,7 +1642,7 @@ avt_delete_lines (int line, int num)
   if (text_cursor_visible)
     avt_show_text_cursor (AVT_TRUE);
 
-  SDL_UpdateRect (screen, viewport.x, viewport.y, viewport.w, viewport.h);
+  AVT_UPDATE_RECT (viewport);
 }
 
 void
@@ -1678,7 +1683,7 @@ avt_insert_lines (int line, int num)
   if (text_cursor_visible)
     avt_show_text_cursor (AVT_TRUE);
 
-  SDL_UpdateRect (screen, viewport.x, viewport.y, viewport.w, viewport.h);
+  AVT_UPDATE_RECT (viewport);
 }
 
 void
@@ -1792,7 +1797,7 @@ avt_clear (void)
       avt_show_text_cursor (AVT_TRUE);
     }
 
-  SDL_UpdateRect (screen, viewport.x, viewport.y, viewport.w, viewport.h);
+  AVT_UPDATE_RECT (viewport);
 }
 
 void
@@ -1821,7 +1826,7 @@ avt_clear_up (void)
       avt_show_text_cursor (AVT_TRUE);
     }
 
-  SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
+  AVT_UPDATE_RECT (dst);
 }
 
 void
@@ -1853,7 +1858,7 @@ avt_clear_down (void)
       avt_show_text_cursor (AVT_TRUE);
     }
 
-  SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
+  AVT_UPDATE_RECT (dst);
 }
 
 void
@@ -1892,7 +1897,7 @@ avt_clear_eol (void)
       avt_show_text_cursor (AVT_TRUE);
     }
 
-  SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
+  AVT_UPDATE_RECT (dst);
 }
 
 /* clear beginning of line */
@@ -1932,7 +1937,7 @@ avt_clear_bol (void)
       avt_show_text_cursor (AVT_TRUE);
     }
 
-  SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
+  AVT_UPDATE_RECT (dst);
 }
 
 void
@@ -1961,7 +1966,7 @@ avt_clear_line (void)
       avt_show_text_cursor (AVT_TRUE);
     }
 
-  SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
+  AVT_UPDATE_RECT (dst);
 }
 
 int
@@ -1978,7 +1983,7 @@ avt_flip_page (void)
   /* the viewport must be updated, 
      if it's not updated letter by letter */
   if (!text_delay)
-    SDL_UpdateRect (screen, viewport.x, viewport.y, viewport.w, viewport.h);
+    AVT_UPDATE_RECT (viewport);
 
   avt_wait (flip_page_delay);
   avt_clear ();
@@ -3330,7 +3335,7 @@ avt_wait_button (void)
 
   SDL_SetClipRect (screen, &window);
   SDL_BlitSurface (button, NULL, screen, &dst);
-  SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
+  AVT_UPDATE_RECT (dst);
   SDL_FreeSurface (button);
   button = NULL;
 
@@ -3380,7 +3385,7 @@ avt_wait_button (void)
   SDL_FillRect (screen, &dst,
 		SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
 			    backgroundcolor_RGB.g, backgroundcolor_RGB.b));
-  SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
+  AVT_UPDATE_RECT (dst);
 
   if (textfield.x >= 0)
     SDL_SetClipRect (screen, &viewport);
@@ -3440,7 +3445,7 @@ avt_wait_key (const wchar_t * message)
 	  m++;
 	}
 
-      SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
+      AVT_UPDATE_RECT (dst);
       SDL_SetColors (avt_character, old_colors, 0, 2);
       cursor = oldcursor;
     }
@@ -3491,7 +3496,7 @@ avt_wait_key (const wchar_t * message)
 		    SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
 				backgroundcolor_RGB.g,
 				backgroundcolor_RGB.b));
-      SDL_UpdateRect (screen, dst.x, dst.y, dst.w, dst.h);
+      AVT_UPDATE_RECT (dst);
     }
 
   if (textfield.x >= 0)
@@ -3520,7 +3525,6 @@ avt_wait_key_mb (char *message)
   return _avt_STATUS;
 }
 
-/* TODO: finisch avt_yes_or_no */
 avt_bool_t
 avt_yes_or_no (void)
 {
@@ -3551,8 +3555,8 @@ avt_yes_or_no (void)
   yes_rect.h = yes_button->h;
   SDL_BlitSurface (yes_button, NULL, screen, &yes_rect);
 
-  SDL_UpdateRect (screen, no_rect.x, no_rect.y, no_rect.w, no_rect.h);
-  SDL_UpdateRect (screen, yes_rect.x, yes_rect.y, yes_rect.w, yes_rect.h);
+  AVT_UPDATE_RECT (no_rect);
+  AVT_UPDATE_RECT (yes_rect);
 
   SDL_FreeSurface (yes_button);
   SDL_FreeSurface (no_button);
@@ -3627,8 +3631,7 @@ avt_yes_or_no (void)
 		SDL_MapRGB (screen->format,
 			    backgroundcolor_RGB.r,
 			    backgroundcolor_RGB.g, backgroundcolor_RGB.b));
-  SDL_UpdateRect (screen, buttons_rect.x, buttons_rect.y,
-		  buttons_rect.w, buttons_rect.h);
+  AVT_UPDATE_RECT (buttons_rect);
 
   if (textfield.x >= 0)
     SDL_SetClipRect (screen, &viewport);
@@ -3667,7 +3670,7 @@ avt_show_image (avt_image_t * image)
    * just the upper left part is shown, as far as it fits
    */
   SDL_BlitSurface (img, NULL, screen, &dst);
-  SDL_UpdateRect (screen, 0, 0, 0, 0);
+  AVT_UPDATE_ALL ();
   SDL_SetClipRect (screen, &window);
 }
 
@@ -3994,7 +3997,7 @@ avt_set_background_color (int red, int green, int blue)
 	{
 	  avt_visible = AVT_FALSE;
 	  avt_draw_balloon ();
-	  SDL_UpdateRect (screen, 0, 0, 0, 0);
+	  AVT_UPDATE_ALL ();
 	}
       else if (avt_visible)
 	avt_show_avatar ();
@@ -4193,7 +4196,7 @@ avt_credits_up (SDL_Surface * last_line)
 	  SDL_BlitSurface (last_line, NULL, screen, &line_pos);
 	}
 
-      SDL_UpdateRect (screen, window.x, window.y, window.w, window.h);
+      AVT_UPDATE_RECT (window);
 
       if (avt_checkevent ())
 	return;
@@ -4454,7 +4457,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.202 2009-01-30 11:54:04 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.203 2009-01-30 12:53:58 akf Exp $");
 
   /*
    * Initialize the display, accept any format
