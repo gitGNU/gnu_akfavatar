@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.200 2009-01-30 11:01:00 akf Exp $ */
+/* $Id: avatar.c,v 2.201 2009-01-30 11:16:53 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -1015,6 +1015,12 @@ avt_set_balloon_size (int height, int width)
 	}
     }
 }
+
+/* rectangles in some functions have to be adjusted */
+#define avt_pre_resize(rect) \
+  do { rect.x -= window.x; rect.y -= window.y; } while(0)
+#define avt_post_resize(rect) \
+  do { rect.x += window.x; rect.y += window.y; } while(0)
 
 static void
 avt_resize (int w, int h)
@@ -3345,11 +3351,9 @@ avt_wait_button (void)
 	  break;
 
 	case SDL_VIDEORESIZE:
-	  dst.x -= window.x;
-	  dst.y -= window.y;
+	  avt_pre_resize (dst);
 	  avt_resize (event.resize.w, event.resize.h);
-	  dst.x += window.x;
-	  dst.y += window.y;
+	  avt_post_resize (dst);
 	  break;
 
 	case SDL_KEYDOWN:
@@ -3458,11 +3462,9 @@ avt_wait_key (const wchar_t * message)
 	  break;
 
 	case SDL_VIDEORESIZE:
-	  dst.x -= window.x;
-	  dst.y -= window.y;
+	  avt_pre_resize(dst);
 	  avt_resize (event.resize.w, event.resize.h);
-	  dst.x += window.x;
-	  dst.y += window.y;
+	  avt_post_resize(dst);
 	  break;
 
 	case SDL_KEYDOWN:
@@ -3572,15 +3574,11 @@ avt_yes_or_no (void)
 	  break;
 
 	case SDL_VIDEORESIZE:
-	  yes_rect.x -= window.x;
-	  yes_rect.y -= window.y;
-	  no_rect.x -= window.x;
-	  no_rect.y -= window.y;
+	  avt_pre_resize (yes_rect);
+	  avt_pre_resize (no_rect);
 	  avt_resize (event.resize.w, event.resize.h);
-	  yes_rect.x += window.x;
-	  yes_rect.y += window.y;
-	  no_rect.x += window.x;
-	  no_rect.y += window.y;
+	  avt_post_resize (yes_rect);
+	  avt_post_resize (no_rect);
 	  break;
 
 	case SDL_KEYDOWN:
@@ -4457,7 +4455,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.200 2009-01-30 11:01:00 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.201 2009-01-30 11:16:53 akf Exp $");
 
   /*
    * Initialize the display, accept any format
