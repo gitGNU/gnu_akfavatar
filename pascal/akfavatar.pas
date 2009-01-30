@@ -275,6 +275,9 @@ function WhereY: integer;
 procedure GotoXY(x, y: integer);
 procedure Window(x1, y1, x2, y2: Byte);
 
+{ whether the cursor is in the home position? }
+function HomePosition: boolean;
+
 { set the size of the balloon }
 { the window is reset to the new full size }
 procedure BalloonSize(height, width: integer);
@@ -292,6 +295,11 @@ function AvatarGetError: ShortString;
 { ignore TextColor TextBackground and so on }
 { compatible with GNU-Pascal's CRT unit }
 procedure SetMonochrome(monochrome: boolean);
+
+{ for yes or no questions }
+{ keys for yes: + 1 Enter }
+{ keys for no:  - 0 Backspace }
+function YesNo: boolean;
 
 { choice for several items }
 { result is the choice number, starting from 1 }
@@ -483,7 +491,8 @@ function avt_where_x: CInteger; libakfavatar 'avt_where_x';
 function avt_where_y: CInteger; libakfavatar 'avt_where_y';
 procedure avt_move_xy(x, y: CInteger); libakfavatar 'avt_move_xy';
 function avt_get_max_x: CInteger; libakfavatar 'avt_get_max_x'; 
-function avt_get_max_y: CInteger; libakfavatar 'avt_get_max_y'; 
+function avt_get_max_y: CInteger; libakfavatar 'avt_get_max_y';
+function avt_home_position: avt_bool_t; libakfavatar 'avt_home_position';
 
 procedure avt_delete_lines(line, num: CInteger);
   libakfavatar 'avt_delete_lines';
@@ -508,6 +517,8 @@ function avt_choice(var result: CInteger;
                     start_line, items, key: CInteger;
                     back, fwrd: avt_bool_t): CInteger; 
   libakfavatar 'avt_choice';
+
+function avt_yes_or_no: avt_bool_t; libakfavatar 'avt_yes_or_no';
 
 {$IfNDef __GPC__}
 
@@ -823,6 +834,11 @@ begin
 WhereY := avt_where_y
 end;
 
+function HomePosition: boolean;
+begin
+HomePosition := (avt_home_position<>0)
+end;
+
 procedure GotoXY (x, y: integer);
 begin
 avt_move_xy (x, y)
@@ -1035,6 +1051,13 @@ if not initialized then initializeAvatar;
 if avt_choice(result, start_line, items, CInteger(startkey), 
               ord(back), ord(fwrd))<>0 then Halt;
 Choice := result
+end;
+
+function YesNo: boolean;
+begin
+if not initialized then initializeAvatar;
+YesNo := (avt_yes_or_no <> 0);
+if avt_get_status<>0 then Halt
 end;
 
 { ---------------------------------------------------------------------}
