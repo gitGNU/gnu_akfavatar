@@ -1,4 +1,4 @@
-{
+{*
  * simple multiplication
  * Copyright (c) 2007, 2008 Andreas K. Foerster <info@akfoerster.de>
  *
@@ -50,6 +50,7 @@ const
   const
     correct = 'correct';
     wrong = 'wrong';
+  const q_continue = 'Do you want to continue?';
 {$EndIf}
 
 {$IfDef deutsch}
@@ -59,6 +60,7 @@ const
   const
     correct = 'richtig';
     wrong = 'falsch';
+  const q_continue = 'Willst du weitermachen?';
 {$EndIf}
 
 {$IfDef AKFAVATAR}
@@ -202,6 +204,18 @@ repeat
 until endRequest
 end;
 
+function AskAgain: boolean;
+begin
+{$IfDef AKFAVATAR}
+  BalloonSize (1, 40);
+{$EndIf}
+ClrScr;
+Write(q_continue);
+
+{$IfDef AKFAVATAR}
+  AskAgain := Decide;
+{$EndIf}
+end;
 
 Begin { main program }
 
@@ -217,11 +231,13 @@ Begin { main program }
   wrongsnd := LoadSoundFile('wrong.wav');
 {$EndIf}
 
-endRequest := false;
-Randomize;
 
-AskWhatToExercise;
-query;
+repeat
+  endRequest := false;
+  Randomize;
+  AskWhatToExercise;
+  query;
+until AskAgain = false;
 
 {$IfDef AKFAVATAR}
   FreeSound(correctsnd);

@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.203 2009-01-30 12:53:58 akf Exp $ */
+/* $Id: avatar.c,v 2.204 2009-01-31 19:46:50 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -3526,7 +3526,7 @@ avt_wait_key_mb (char *message)
 }
 
 avt_bool_t
-avt_yes_or_no (void)
+avt_decide (void)
 {
   SDL_Event event;
   SDL_Surface *yes_button, *no_button;
@@ -3543,17 +3543,17 @@ avt_yes_or_no (void)
   no_button = avt_load_image_xpm (btn_no_xpm);
 
   /* alignment: right bottom */
-  no_rect.x = window.x + window.w - no_button->w - AVATAR_MARGIN;
-  no_rect.y = window.y + window.h - no_button->h - AVATAR_MARGIN;
+  yes_rect.x = window.x + window.w - no_button->w - AVATAR_MARGIN;
+  yes_rect.y = window.y + window.h - no_button->h - AVATAR_MARGIN;
+  yes_rect.w = no_button->w;
+  yes_rect.h = no_button->h;
+  SDL_BlitSurface (yes_button, NULL, screen, &yes_rect);
+
+  no_rect.x = yes_rect.x - no_button->w - BUTTON_DISTANCE;
+  no_rect.y = yes_rect.y;
   no_rect.w = no_button->w;
   no_rect.h = no_button->h;
   SDL_BlitSurface (no_button, NULL, screen, &no_rect);
-
-  yes_rect.x = no_rect.x - yes_button->w - BUTTON_DISTANCE;
-  yes_rect.y = no_rect.y;
-  yes_rect.w = yes_button->w;
-  yes_rect.h = yes_button->h;
-  SDL_BlitSurface (yes_button, NULL, screen, &yes_rect);
 
   AVT_UPDATE_RECT (no_rect);
   AVT_UPDATE_RECT (yes_rect);
@@ -3592,7 +3592,7 @@ avt_yes_or_no (void)
 	    }
 	  else if (event.key.keysym.unicode == L'-'
 		   || event.key.keysym.unicode == L'0'
-		   || event.key.keysym.unicode == L'\b')
+		   || event.key.keysym.sym == SDLK_BACKSPACE)
 	    result = AVT_FALSE;
 	  else if (event.key.keysym.unicode == L'+'
 		   || event.key.keysym.unicode == L'1'
@@ -3601,7 +3601,7 @@ avt_yes_or_no (void)
 	  break;
 
 	case SDL_MOUSEBUTTONDOWN:
-	  /* ignore the wheel */
+	  /* any mouse button, but ignore the wheel */
 	  if (event.button.button <= 3
 	      && event.button.y >= yes_rect.y
 	      && event.button.y <= yes_rect.y + yes_rect.h)
@@ -4457,7 +4457,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.203 2009-01-30 12:53:58 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.204 2009-01-31 19:46:50 akf Exp $");
 
   /*
    * Initialize the display, accept any format

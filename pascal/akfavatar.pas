@@ -296,10 +296,10 @@ function AvatarGetError: ShortString;
 { compatible with GNU-Pascal's CRT unit }
 procedure SetMonochrome(monochrome: boolean);
 
-{ for yes or no questions }
-{ keys for yes: + 1 Enter }
-{ keys for no:  - 0 Backspace }
-function YesNo: boolean;
+{ for positive/negative questions }
+{ keys for positive: + 1 Enter }
+{ keys for negative: - 0 Backspace }
+function Decide: boolean;
 
 { choice for several items }
 { result is the choice number, starting from 1 }
@@ -518,7 +518,7 @@ function avt_choice(var result: CInteger;
                     back, fwrd: avt_bool_t): CInteger; 
   libakfavatar 'avt_choice';
 
-function avt_yes_or_no: avt_bool_t; libakfavatar 'avt_yes_or_no';
+function avt_decide: avt_bool_t; libakfavatar 'avt_decide';
 
 {$IfNDef __GPC__}
 
@@ -1053,10 +1053,10 @@ if avt_choice(result, start_line, items, CInteger(startkey),
 Choice := result
 end;
 
-function YesNo: boolean;
+function Decide: boolean;
 begin
 if not initialized then initializeAvatar;
-YesNo := (avt_yes_or_no <> 0);
+Decide := (avt_decide <> 0);
 if avt_get_status<>0 then Halt
 end;
 
