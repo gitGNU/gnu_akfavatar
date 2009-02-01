@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.204 2009-01-31 19:46:50 akf Exp $ */
+/* $Id: avatar.c,v 2.205 2009-02-01 12:51:01 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -4401,9 +4401,8 @@ avt_set_title (const char *title, const char *icontitle)
   SDL_WM_SetCaption (title, icontitle);
 }
 
-int
-avt_initialize (const char *title, const char *icontitle,
-		avt_image_t * image, int mode)
+static void
+avt_set_mouse_pointer (void)
 {
   Uint8 mpointer_bits[] = {
     0x00, 0x06, 0x00, 0x1a, 0x00, 0x62, 0x01, 0x82, 0x06, 0x0c, 0x18, 0x30,
@@ -4417,6 +4416,15 @@ avt_initialize (const char *title, const char *icontitle,
     0x00, 0x7e, 0x00, 0x1e, 0x00, 0x06, 0x00, 0x00
   };
 
+  mpointer = SDL_CreateCursor (mpointer_bits, mpointer_mask_bits,
+			       16, 16, 0, 7);
+  SDL_SetCursor (mpointer);
+}
+
+int
+avt_initialize (const char *title, const char *icontitle,
+		avt_image_t * image, int mode)
+{
   /* already initialized? */
   if (screen)
     {
@@ -4457,7 +4465,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.204 2009-01-31 19:46:50 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.205 2009-02-01 12:51:01 akf Exp $");
 
   /*
    * Initialize the display, accept any format
@@ -4530,10 +4538,7 @@ avt_initialize (const char *title, const char *icontitle,
    */
   SDL_ShowCursor (SDL_DISABLE);
 
-  /* mouse pointer */
-  mpointer = SDL_CreateCursor (mpointer_bits, mpointer_mask_bits,
-			       16, 16, 0, 7);
-  SDL_SetCursor (mpointer);
+  avt_set_mouse_pointer ();
 
   /* fill the whole screen with background color */
   avt_clear_screen ();
