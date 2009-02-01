@@ -204,16 +204,16 @@ repeat
 until endRequest
 end;
 
-function AskAgain: boolean;
+function WantToContinue: boolean;
 begin
 {$IfDef AKFAVATAR}
   BalloonSize (1, 40);
-{$EndIf}
-ClrScr;
-Write(q_continue);
+  ClrScr;
+  Write(q_continue);
 
-{$IfDef AKFAVATAR}
-  AskAgain := Decide;
+  WantToContinue := Decide;
+{$else}
+  WantToContinue := false;
 {$EndIf}
 end;
 
@@ -231,13 +231,13 @@ Begin { main program }
   wrongsnd := LoadSoundFile('wrong.wav');
 {$EndIf}
 
+Randomize;
 
 repeat
   endRequest := false;
-  Randomize;
   AskWhatToExercise;
   query;
-until AskAgain = false;
+until not WantToContinue;
 
 {$IfDef AKFAVATAR}
   FreeSound(correctsnd);
