@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.206 2009-02-01 16:45:17 akf Exp $ */
+/* $Id: avatar.c,v 2.207 2009-02-01 19:47:45 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -3628,10 +3628,10 @@ avt_decide (void)
 
   /* delete buttons */
   SDL_SetClipRect (screen, &window);
-  buttons_rect.x = yes_rect.x;
-  buttons_rect.y = yes_rect.y;
-  buttons_rect.w = yes_rect.w + no_rect.w + BUTTON_DISTANCE;
-  buttons_rect.h = yes_rect.h;
+  buttons_rect.x = no_rect.x;
+  buttons_rect.y = no_rect.y;
+  buttons_rect.w = no_rect.w + yes_rect.w + BUTTON_DISTANCE;
+  buttons_rect.h = no_rect.h;
   SDL_FillRect (screen, &buttons_rect,
 		SDL_MapRGB (screen->format,
 			    backgroundcolor_RGB.r,
@@ -4470,7 +4470,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.206 2009-02-01 16:45:17 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.207 2009-02-01 19:47:45 akf Exp $");
 
   /*
    * Initialize the display, accept any format
