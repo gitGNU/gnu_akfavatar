@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.205 2009-02-01 12:51:01 akf Exp $ */
+/* $Id: avatar.c,v 2.206 2009-02-01 16:45:17 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -3014,8 +3014,13 @@ avt_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code,
 int
 avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 {
-  return avt_menu (ch, menu_start, menu_end, start_code,
-		   AVT_FALSE, AVT_FALSE);
+  int status, result;
+
+  status = avt_choice (&result, menu_start, menu_end - menu_start + 1,
+		       (int) start_code, AVT_FALSE, AVT_FALSE);
+
+  *ch = result + start_code - 1;
+  return status;
 }
 
 /* size in Bytes! */
@@ -4465,7 +4470,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.205 2009-02-01 12:51:01 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.206 2009-02-01 16:45:17 akf Exp $");
 
   /*
    * Initialize the display, accept any format
