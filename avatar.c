@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.207 2009-02-01 19:47:45 akf Exp $ */
+/* $Id: avatar.c,v 2.208 2009-02-02 10:53:32 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -230,6 +230,7 @@ static SDL_Surface *screen, *avt_image, *avt_character;
 static SDL_Surface *avt_text_cursor, *avt_cursor_character;
 static SDL_Surface *circle, *pointer;
 static SDL_Cursor *mpointer;
+static Uint32 background_color;
 static Uint32 text_background_color;
 static avt_bool_t newline_mode;	/* when off, you need an extra CR */
 static avt_bool_t underlined, bold, inverse;	/* text underlined, bold? */
@@ -657,9 +658,7 @@ avt_free_screen (void)
   /* switch clipping off */
   SDL_SetClipRect (screen, NULL);
   /* fill the whole screen with background color */
-  SDL_FillRect (screen, NULL,
-		SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
-			    backgroundcolor_RGB.g, backgroundcolor_RGB.b));
+  SDL_FillRect (screen, NULL, background_color);
 }
 
 void
@@ -1124,9 +1123,7 @@ avt_flash (void)
   SDL_Delay (150);
 
   /* fill the whole screen with background color */
-  SDL_FillRect (screen, NULL,
-		SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
-			    backgroundcolor_RGB.g, backgroundcolor_RGB.b));
+  SDL_FillRect (screen, NULL, background_color);
   /* restore image */
   SDL_SetClipRect (screen, &window);
   SDL_BlitSurface (oldwindowimage, NULL, screen, &window);
@@ -1154,6 +1151,11 @@ avt_toggle_fullscreen (void)
 	  avt_resize (windowmode_size.w, windowmode_size.h);
 	  avt_mode = AVT_WINDOW;
 	}
+
+      background_color = SDL_MapRGB (screen->format,
+				     backgroundcolor_RGB.r,
+				     backgroundcolor_RGB.g,
+				     backgroundcolor_RGB.b);
     }
 }
 
@@ -1182,6 +1184,11 @@ avt_switch_mode (int mode)
 	    }
 	  break;
 	}
+
+      background_color = SDL_MapRGB (screen->format,
+				     backgroundcolor_RGB.r,
+				     backgroundcolor_RGB.g,
+				     backgroundcolor_RGB.b);
     }
 }
 
@@ -3165,12 +3172,7 @@ avt_move_in (void)
     {
       SDL_Rect dst;
       Uint32 start_time;
-      Uint32 backgroundcolor;
       SDL_Rect mywindow;
-
-      backgroundcolor =
-	SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
-		    backgroundcolor_RGB.g, backgroundcolor_RGB.b);
 
       /*
        * mywindow is like window, 
@@ -3207,7 +3209,7 @@ avt_move_in (void)
 				dst.w + (oldx - dst.x), dst.h);
 
 	      /* delete (not visibly yet) */
-	      SDL_FillRect (screen, &dst, backgroundcolor);
+	      SDL_FillRect (screen, &dst, background_color);
 	    }
 
 	  /* check event */
@@ -3247,13 +3249,8 @@ avt_move_out (void)
     {
       SDL_Rect dst;
       Uint32 start_time;
-      Uint32 backgroundcolor;
       Sint16 start_position;
       SDL_Rect mywindow;
-
-      backgroundcolor =
-	SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
-		    backgroundcolor_RGB.g, backgroundcolor_RGB.b);
 
       /*
        * mywindow is like window, 
@@ -3271,7 +3268,7 @@ avt_move_out (void)
       start_time = SDL_GetTicks ();
 
       /* delete (not visibly yet) */
-      SDL_FillRect (screen, &dst, backgroundcolor);
+      SDL_FillRect (screen, &dst, background_color);
 
       while (dst.x < screen->w)
 	{
@@ -3296,7 +3293,7 @@ avt_move_out (void)
 				dst.w + dst.x - oldx, dst.h);
 
 	      /* delete (not visibly yet) */
-	      SDL_FillRect (screen, &dst, backgroundcolor);
+	      SDL_FillRect (screen, &dst, background_color);
 	    }
 
 	  /* check event */
@@ -3387,9 +3384,7 @@ avt_wait_button (void)
 
   /* delete button */
   SDL_SetClipRect (screen, &window);
-  SDL_FillRect (screen, &dst,
-		SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
-			    backgroundcolor_RGB.g, backgroundcolor_RGB.b));
+  SDL_FillRect (screen, &dst, background_color);
   AVT_UPDATE_RECT (dst);
 
   if (textfield.x >= 0)
@@ -3497,10 +3492,7 @@ avt_wait_key (const wchar_t * message)
   if (*message)
     {
       SDL_SetClipRect (screen, &window);
-      SDL_FillRect (screen, &dst,
-		    SDL_MapRGB (screen->format, backgroundcolor_RGB.r,
-				backgroundcolor_RGB.g,
-				backgroundcolor_RGB.b));
+      SDL_FillRect (screen, &dst, background_color);
       AVT_UPDATE_RECT (dst);
     }
 
@@ -3535,7 +3527,7 @@ avt_decide (void)
 {
   SDL_Event event;
   SDL_Surface *yes_button, *no_button;
-  SDL_Rect yes_rect, no_rect, buttons_rect;
+  SDL_Rect yes_rect, no_rect;
   int result;
 
   if (!screen)
@@ -3548,13 +3540,13 @@ avt_decide (void)
   no_button = avt_load_image_xpm (btn_no_xpm);
 
   /* alignment: right bottom */
-  yes_rect.x = window.x + window.w - no_button->w - AVATAR_MARGIN;
-  yes_rect.y = window.y + window.h - no_button->h - AVATAR_MARGIN;
-  yes_rect.w = no_button->w;
-  yes_rect.h = no_button->h;
+  yes_rect.x = window.x + window.w - yes_button->w - AVATAR_MARGIN;
+  yes_rect.y = window.y + window.h - yes_button->h - AVATAR_MARGIN;
+  yes_rect.w = yes_button->w;
+  yes_rect.h = yes_button->h;
   SDL_BlitSurface (yes_button, NULL, screen, &yes_rect);
 
-  no_rect.x = yes_rect.x - no_button->w - BUTTON_DISTANCE;
+  no_rect.x = yes_rect.x - BUTTON_DISTANCE - no_button->w;
   no_rect.y = yes_rect.y;
   no_rect.w = no_button->w;
   no_rect.h = no_button->h;
@@ -3628,15 +3620,10 @@ avt_decide (void)
 
   /* delete buttons */
   SDL_SetClipRect (screen, &window);
-  buttons_rect.x = no_rect.x;
-  buttons_rect.y = no_rect.y;
-  buttons_rect.w = no_rect.w + yes_rect.w + BUTTON_DISTANCE;
-  buttons_rect.h = no_rect.h;
-  SDL_FillRect (screen, &buttons_rect,
-		SDL_MapRGB (screen->format,
-			    backgroundcolor_RGB.r,
-			    backgroundcolor_RGB.g, backgroundcolor_RGB.b));
-  AVT_UPDATE_RECT (buttons_rect);
+  SDL_FillRect (screen, &no_rect, background_color);
+  SDL_FillRect (screen, &yes_rect, background_color);
+  AVT_UPDATE_RECT (no_rect);
+  AVT_UPDATE_RECT (yes_rect);
 
   if (textfield.x >= 0)
     SDL_SetClipRect (screen, &viewport);
@@ -3998,6 +3985,8 @@ avt_set_background_color (int red, int green, int blue)
 
   if (screen)
     {
+      background_color = SDL_MapRGB (screen->format, red, green, blue);
+
       if (textfield.x >= 0)
 	{
 	  avt_visible = AVT_FALSE;
@@ -4470,7 +4459,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.207 2009-02-01 19:47:45 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.208 2009-02-02 10:53:32 akf Exp $");
 
   /*
    * Initialize the display, accept any format
@@ -4558,6 +4547,10 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
+  background_color = SDL_MapRGB (screen->format,
+				 backgroundcolor_RGB.r,
+				 backgroundcolor_RGB.g,
+				 backgroundcolor_RGB.b);
   avt_normal_text ();
 
   /* prepare text-mode cursor */

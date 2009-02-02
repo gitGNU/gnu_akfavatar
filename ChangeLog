@@ -1,3 +1,8 @@
+2009-02-02  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (background_color):
+	new variable, many functions adapted
+
 2009-01-30  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_decide):
