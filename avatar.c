@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.208 2009-02-02 10:53:32 akf Exp $ */
+/* $Id: avatar.c,v 2.209 2009-02-04 11:30:29 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -3341,8 +3341,10 @@ avt_wait_button (void)
   SDL_FreeSurface (button);
   button = NULL;
 
+  /* prepare for possible resize */
+  avt_pre_resize (dst);
+
   /* show mouse pointer */
-  SDL_WarpMouse (dst.x + dst.w - 5, dst.y + (dst.h / 2));
   SDL_ShowCursor (SDL_ENABLE);
 
   nokey = AVT_TRUE;
@@ -3357,9 +3359,7 @@ avt_wait_button (void)
 	  break;
 
 	case SDL_VIDEORESIZE:
-	  avt_pre_resize (dst);
 	  avt_resize (event.resize.w, event.resize.h);
-	  avt_post_resize (dst);
 	  break;
 
 	case SDL_KEYDOWN:
@@ -3384,6 +3384,7 @@ avt_wait_button (void)
 
   /* delete button */
   SDL_SetClipRect (screen, &window);
+  avt_post_resize (dst);
   SDL_FillRect (screen, &dst, background_color);
   AVT_UPDATE_RECT (dst);
 
@@ -3450,6 +3451,9 @@ avt_wait_key (const wchar_t * message)
       cursor = oldcursor;
     }
 
+  /* prepare for being resized */
+  avt_pre_resize (dst);
+
   /* show mouse pointer */
   SDL_WarpMouse (dst.x, dst.y + FONTHEIGHT);
   SDL_ShowCursor (SDL_ENABLE);
@@ -3466,9 +3470,7 @@ avt_wait_key (const wchar_t * message)
 	  break;
 
 	case SDL_VIDEORESIZE:
-	  avt_pre_resize (dst);
 	  avt_resize (event.resize.w, event.resize.h);
-	  avt_post_resize (dst);
 	  break;
 
 	case SDL_KEYDOWN:
@@ -3492,6 +3494,7 @@ avt_wait_key (const wchar_t * message)
   if (*message)
     {
       SDL_SetClipRect (screen, &window);
+      avt_post_resize (dst);
       SDL_FillRect (screen, &dst, background_color);
       AVT_UPDATE_RECT (dst);
     }
@@ -3559,6 +3562,10 @@ avt_decide (void)
   SDL_FreeSurface (no_button);
   no_button = yes_button = NULL;
 
+  /* prepare for possible resize */
+  avt_pre_resize (yes_rect);
+  avt_pre_resize (no_rect);
+
   /* show mouse pointer */
   SDL_ShowCursor (SDL_ENABLE);
 
@@ -3574,11 +3581,7 @@ avt_decide (void)
 	  break;
 
 	case SDL_VIDEORESIZE:
-	  avt_pre_resize (yes_rect);
-	  avt_pre_resize (no_rect);
 	  avt_resize (event.resize.w, event.resize.h);
-	  avt_post_resize (yes_rect);
-	  avt_post_resize (no_rect);
 	  break;
 
 	case SDL_KEYDOWN:
@@ -3598,17 +3601,18 @@ avt_decide (void)
 	  break;
 
 	case SDL_MOUSEBUTTONDOWN:
+	  /* assume both buttons have the same height */
 	  /* any mouse button, but ignore the wheel */
 	  if (event.button.button <= 3
-	      && event.button.y >= yes_rect.y
-	      && event.button.y <= yes_rect.y + yes_rect.h)
+	      && event.button.y >= yes_rect.y + window.y
+	      && event.button.y <= yes_rect.y + window.y + yes_rect.h)
 	    {
-	      if (event.button.x >= yes_rect.x
-		  && event.button.x <= yes_rect.x + yes_rect.w)
+	      if (event.button.x >= yes_rect.x + window.x
+		  && event.button.x <= yes_rect.x + window.x + yes_rect.w)
 		result = AVT_TRUE;
 	      else
-		if (event.button.x >= no_rect.x
-		    && event.button.x <= no_rect.x + no_rect.w)
+		if (event.button.x >= no_rect.x + window.x
+		    && event.button.x <= no_rect.x + window.x + no_rect.w)
 		result = AVT_FALSE;
 	    }
 	  break;
@@ -3620,6 +3624,8 @@ avt_decide (void)
 
   /* delete buttons */
   SDL_SetClipRect (screen, &window);
+  avt_post_resize (yes_rect);
+  avt_post_resize (no_rect);
   SDL_FillRect (screen, &no_rect, background_color);
   SDL_FillRect (screen, &yes_rect, background_color);
   AVT_UPDATE_RECT (no_rect);
@@ -4459,7 +4465,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.208 2009-02-02 10:53:32 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.209 2009-02-04 11:30:29 akf Exp $");
 
   /*
    * Initialize the display, accept any format
