@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.209 2009-02-04 11:30:29 akf Exp $ */
+/* $Id: avatar.c,v 2.210 2009-02-04 14:49:51 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -3373,10 +3373,10 @@ avt_wait_button (void)
 	  if (event.button.button <= 3)
 	    nokey = AVT_FALSE;
 	  break;
-
-	default:
-	  break;
 	}
+
+      /* do other stuff */
+      avt_analyze_event (&event);
     }
 
   /* hide mouse pointer */
@@ -3485,6 +3485,8 @@ avt_wait_key (const wchar_t * message)
 	    nokey = AVT_FALSE;
 	  break;
 	}
+
+      avt_analyze_event (&event);
     }
 
   /* hide mouse pointer */
@@ -3617,6 +3619,8 @@ avt_decide (void)
 	    }
 	  break;
 	}
+
+      avt_analyze_event (&event);
     }
 
   /* hide mouse pointer */
@@ -4465,7 +4469,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.209 2009-02-04 11:30:29 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.210 2009-02-04 14:49:51 akf Exp $");
 
   /*
    * Initialize the display, accept any format
