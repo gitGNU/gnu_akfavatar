@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.210 2009-02-04 14:49:51 akf Exp $ */
+/* $Id: avatar.c,v 2.211 2009-02-05 21:10:26 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -3358,10 +3358,6 @@ avt_wait_button (void)
 	  _avt_STATUS = AVT_QUIT;
 	  break;
 
-	case SDL_VIDEORESIZE:
-	  avt_resize (event.resize.w, event.resize.h);
-	  break;
-
 	case SDL_KEYDOWN:
 	  nokey = AVT_FALSE;
 	  if (event.key.keysym.sym == SDLK_ESCAPE)
@@ -3580,10 +3576,6 @@ avt_decide (void)
 	case SDL_QUIT:
 	  result = AVT_FALSE;
 	  _avt_STATUS = AVT_QUIT;
-	  break;
-
-	case SDL_VIDEORESIZE:
-	  avt_resize (event.resize.w, event.resize.h);
 	  break;
 
 	case SDL_KEYDOWN:
@@ -4469,7 +4461,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.210 2009-02-04 14:49:51 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.211 2009-02-05 21:10:26 akf Exp $");
 
   /*
    * Initialize the display, accept any format
