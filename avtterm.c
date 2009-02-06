@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.28 2009-01-29 14:07:00 akf Exp $ */
+/* $Id: avtterm.c,v 2.29 2009-02-06 22:47:18 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -112,6 +112,13 @@ static const wchar_t vt100trans[] = {
   0x2264, 0x2265, 0x03C0, 0x2260, 0x00A3, 0x00B7
 };
 
+/* may be defined externally when EXT_AVTTERM_START is defined */
+extern int avtterm_start (const char *system_encoding,
+			  const char *working_dir, char *const prg_argv[]);
+
+/* may be defined externally when EXT_AVTTERM_SIZE is defined */
+extern void avtterm_size (int fd, int height, int width);
+
 /* defined in avatarsay.c */
 /* used in APC_sequence */
 #ifndef NO_APC
@@ -136,8 +143,10 @@ avtterm_nocolor (avt_bool_t on)
   nocolor = on;
 }
 
+#ifndef EXT_AVTTERM_SIZE
+
 /* set terminal size */
-static void
+void
 avtterm_size (int fd AVT_UNUSED, int height AVT_UNUSED, int width AVT_UNUSED)
 {
 #ifdef TIOCSWINSZ
@@ -149,6 +158,8 @@ avtterm_size (int fd AVT_UNUSED, int height AVT_UNUSED, int width AVT_UNUSED)
   ioctl (fd, TIOCSWINSZ, &size);
 #endif
 }
+
+#endif /* not EXT_AVTTERM_SIZE */
 
 void
 avtterm_update_size (void)
@@ -1461,6 +1472,8 @@ avtterm_run (int fd)
     }
 }
 
+#ifndef EXT_AVTTERM_START
+
 /* execute a subprocess, visible in the balloon */
 /* if fname == NULL, start a shell */
 /* returns file-descriptor for output of the process */
@@ -1603,3 +1616,5 @@ avtterm_start (const char *system_encoding, const char *working_dir,
 
   return master;
 }
+
+#endif /* not EXT_AVTTERM_START */
