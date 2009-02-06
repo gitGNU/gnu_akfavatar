@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.36 2009-01-29 09:33:16 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.37 2009-02-06 20:34:51 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -869,10 +869,11 @@ vor der Umgebungsvariablen.
 @item avatarimage @var{Bild-Datei}
 mit dieser Anweisung kann man ein anderes Bild für den Avatar festlegen
 
-Man kann den Namen der Bild-Datei weglassen, um zum Vorgabe-Avatar zurück
-zu wechseln. Die Angabe des Wertes @code{none} entfernt den Avatar ganz.
-Dadurch erhält man die maximal mögliche Größe für den Textbereich, aber
-es sieht halt langweilig aus.
+Man kann den Namen der Bild-Datei weglassen, um zum Vorgabe-Avatar
+zurück zu wechseln. Bei Angabe von @code{info} wird ein kleines
+Info-Symbol als Avatar verwendet. Die Angabe des Wertes @code{none}
+entfernt den Avatar ganz. Dadurch erhält man die maximal mögliche Größe
+für den Textbereich, aber es sieht halt langweilig aus.
 
 @strong{Achtung}: Diese Anweisung sollte benutzt werden, bevor der eigentliche
 Text anfängt.

@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.43 2009-01-29 09:33:16 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.44 2009-02-06 20:34:51 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -802,7 +802,8 @@ variable.
 with this command you can use a different image for the avatar.
 
 You can leave the name of the imagefile away to switch back to the default
-avatar again. The special name @code{none} removes the avatarimage. This
+avatar again. The special name @code{info} uses a small info-icon as
+avatarimage. The special name @code{none} removes the avatarimage. This
 gives you the maximum size for the text-area, but it looks boring.
 
 @strong{Attention}: This command should be used before the text starts
