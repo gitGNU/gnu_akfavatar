@@ -119,9 +119,9 @@ processchar (char *charname)
     {
       putchar ('\n');
       if (FontWidth <= 8)
-	printf ("const unsigned char font[] = {\n");
+	printf ("static const unsigned char font[] = {\n");
       else
-	printf ("const unsigned short font[] = {\n");
+	printf ("static const unsigned short font[] = {\n");
       fontstarted = true;
     }
 
