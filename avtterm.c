@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.29 2009-02-06 22:47:18 akf Exp $ */
+/* $Id: avtterm.c,v 2.30 2009-02-07 21:00:40 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -112,9 +112,14 @@ static const wchar_t vt100trans[] = {
   0x2264, 0x2265, 0x03C0, 0x2260, 0x00A3, 0x00B7
 };
 
-/* may be defined externally when EXT_AVTTERM_START is defined */
-extern int avtterm_start (const char *system_encoding,
-			  const char *working_dir, char *const prg_argv[]);
+/* may be defined externally when EXT_AVTTERM_INITIALIZE is defined */
+/* execute a subprocess, visible in the balloon */
+/* if fname == NULL, start a shell */
+/* sets input_fd to a file-descriptor for the input of the process */
+/* returns file-descriptor for the output of the process or -1 on error */
+extern int avtterm_initialize (int *input_fd, const char *system_encoding,
+			       const char *working_dir,
+			       char *const prg_argv[]);
 
 /* may be defined externally when EXT_AVTTERM_SIZE is defined */
 extern void avtterm_size (int fd, int height, int width);
@@ -1472,14 +1477,19 @@ avtterm_run (int fd)
     }
 }
 
-#ifndef EXT_AVTTERM_START
-
-/* execute a subprocess, visible in the balloon */
-/* if fname == NULL, start a shell */
-/* returns file-descriptor for output of the process */
 int
 avtterm_start (const char *system_encoding, const char *working_dir,
 	       char *const prg_argv[])
+{
+  return
+    avtterm_initialize (&prg_input, system_encoding, working_dir, prg_argv);
+}
+
+#ifndef EXT_AVTTERM_INITIALIZE
+
+int
+avtterm_initialize (int *input_fd, const char *system_encoding,
+		    const char *working_dir, char *const prg_argv[])
 {
   pid_t childpid;
   int master, slave;
@@ -1612,7 +1622,7 @@ avtterm_start (const char *system_encoding, const char *working_dir,
   /* parent process */
   close (slave);
   fcntl (master, F_SETFL, O_NONBLOCK);
-  prg_input = master;
+  *input_fd = master;
 
   return master;
 }
