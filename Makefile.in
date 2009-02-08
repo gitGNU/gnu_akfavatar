@@ -127,8 +127,16 @@ avatarsay-d: avatarsay.o avtfilechooser.o arch.o avtterm.o avtmsg.o \
 	$(CC) -o $@ avatarsay.o avtfilechooser.o avtterm.o avtmsg.o \
 	  arch.o -L. -lakfavatar $(LDFLAGS)
 
-# avatarsay with statical libakfavatar.a
+# avatarsay dynamically linked
+# with special LD_RUN_PATH to find the library in the same directory
 avatarsay: avatarsay.o avtfilechooser.o arch.o avtterm.o avtmsg.o \
+	     libakfavatar.so
+	env LD_RUN_PATH='$$ORIGIN:.' \
+	  $(CC) -o $@ avatarsay.o avtfilechooser.o avtterm.o avtmsg.o \
+	    arch.o -L. -lakfavatar $(LDFLAGS)
+
+# avatarsay with statical libakfavatar.a
+avatarsay-s: avatarsay.o avtfilechooser.o arch.o avtterm.o avtmsg.o \
 	   libakfavatar.a
 	$(CC) -o $@ avatarsay.o arch.o libakfavatar.a avtfilechooser.o \
 	  avtterm.o avtmsg.o $(SDLLDFLAGS) $(LDFLAGS)
@@ -289,12 +297,14 @@ maintainer-clean: distclean
 maintainerclean: maintainer-clean
 
 multiply: $(srcdir)/pascal/multiply.pas
-	-$(srcdir)/pascal/fpcavatar -dRELEASE -FE. -o$@ \
-	    $(srcdir)/pascal/multiply.pas -k-rpath='$$ORIGIN'
+	-env LD_RUN_PATH='$$ORIGIN:.' \
+	  $(srcdir)/pascal/fpcavatar -dRELEASE -FE. -o$@ \
+	    $(srcdir)/pascal/multiply.pas
 
 multiplizieren: $(srcdir)/pascal/multiply.pas
-	-$(srcdir)/pascal/fpcavatar -dRELEASE -ddeutsch -FE. -o$@ \
-	    $(srcdir)/pascal/multiply.pas -k-rpath='$$ORIGIN'
+	-env LD_RUN_PATH='$$ORIGIN:.' \
+	  $(srcdir)/pascal/fpcavatar -dRELEASE -ddeutsch -FE. -o$@ \
+	    $(srcdir)/pascal/multiply.pas
 
 dist: info html man distclean
 	mkdir $(PKGNAME)
