@@ -290,11 +290,11 @@ maintainerclean: maintainer-clean
 
 multiply: $(srcdir)/pascal/multiply.pas
 	-$(srcdir)/pascal/fpcavatar -dRELEASE -FE. -o$@ \
-	    $(srcdir)/pascal/multiply.pas -k-rpath=.
+	    $(srcdir)/pascal/multiply.pas -k-rpath='$$ORIGIN'
 
 multiplizieren: $(srcdir)/pascal/multiply.pas
 	-$(srcdir)/pascal/fpcavatar -dRELEASE -ddeutsch -FE. -o$@ \
-	    $(srcdir)/pascal/multiply.pas -k-rpath=.
+	    $(srcdir)/pascal/multiply.pas -k-rpath='$$ORIGIN'
 
 dist: info html man distclean
 	mkdir $(PKGNAME)
