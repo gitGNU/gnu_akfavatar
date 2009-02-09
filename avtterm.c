@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.30 2009-02-07 21:00:40 akf Exp $ */
+/* $Id: avtterm.c,v 2.31 2009-02-09 19:59:18 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -137,9 +137,19 @@ set_encoding (const char *encoding)
   vt100graphics = (strcmp (VT100, encoding) == 0);
 
   if (vt100graphics)
-    avt_mb_encoding ("US-ASCII");
+    {
+      if (avt_mb_encoding ("US-ASCII"))
+	error_msg ("iconv", avt_get_error ());
+    }
   else if (avt_mb_encoding (encoding))
-    error_msg ("iconv", avt_get_error ());
+    {
+      warning_msg ("iconv", avt_get_error ());
+
+      /* try a fallback */
+      avt_set_status (AVT_NORMAL);
+      if (avt_mb_encoding ("US-ASCII"))
+	error_msg ("iconv", avt_get_error ());
+    }
 }
 
 void

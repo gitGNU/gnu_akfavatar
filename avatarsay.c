@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.273 2009-02-06 20:34:51 akf Exp $ */
+/* $Id: avatarsay.c,v 2.274 2009-02-09 19:59:18 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -368,7 +368,14 @@ static void
 set_encoding (const char *encoding)
 {
   if (avt_mb_encoding (encoding))
-    error_msg ("iconv", avt_get_error ());
+    {
+      warning_msg ("iconv", avt_get_error ());
+
+      /* try a fallback */
+      avt_set_status (AVT_NORMAL);
+      if (avt_mb_encoding ("US-ASCII"))
+	error_msg ("iconv", avt_get_error ());
+    }
 }
 
 static void
@@ -2814,7 +2821,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.273 2009-02-06 20:34:51 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.274 2009-02-09 19:59:18 akf Exp $");
 
   return EXIT_SUCCESS;
 }
