@@ -6,7 +6,7 @@
 # This configure script is free software; you have unlimited permission
 # to copy, distribute and modify it.
 #
-# Date of this version: $Date: 2009-02-09 11:48:21 $
+# Date of this version: $Date: 2009-02-09 19:11:11 $
 
 
 # Version and name
@@ -199,7 +199,8 @@ fi
 SYSTEM=`uname -s`
 case ${SYSTEM} in
   Linux | linux)     SYSTEM="gnu-linux" 
-                     # the token $ORIGIN seems to be specific to GNU/Linux
+                     # the token $ORIGIN seems to be specific to 
+                     # GLibC 2.1 or higher - otherwise ignored
                      LOCAL_RPATH='$$ORIGIN:.'
                      ;;
   FreeBSD | freebsd) SYSTEM="freebsd"
