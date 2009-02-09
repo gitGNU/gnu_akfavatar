@@ -6,7 +6,7 @@
 # This configure script is free software; you have unlimited permission
 # to copy, distribute and modify it.
 #
-# Date of this version: $Date: 2009-01-27 15:42:55 $
+# Date of this version: $Date: 2009-02-09 11:48:21 $
 
 
 # Version and name
@@ -50,6 +50,9 @@ INSTALL='install'
 AR='ar'
 RANLIB='ranlib'
 LDCONFIG='ldconfig'
+LOCAL_RPATH=
+LOCAL_GCC_RPATH=
+LOCAL_FPC_RPATH=
 
 # Loop over all args
 while [ x"$1" != x ] ; do
@@ -195,11 +198,20 @@ fi
 # system specific stuff
 SYSTEM=`uname -s`
 case ${SYSTEM} in
-  Linux | linux)     SYSTEM="gnu-linux" ;;
+  Linux | linux)     SYSTEM="gnu-linux" 
+                     # the token $ORIGIN seems to be specific to GNU/Linux
+                     LOCAL_RPATH='$$ORIGIN:.'
+                     ;;
   FreeBSD | freebsd) SYSTEM="freebsd"
-                     LDFLAGS="${LDFLAGS} -lpthread -Wl,-rpath,/usr/local/lib" 
+                     LDFLAGS="${LDFLAGS} -lpthread -Wl,-rpath,'${libdir}'" 
+                     LOCAL_RPATH="."
                      ;;
 esac
+
+if [ ! x"${LOCAL_RPATH}" = x ] ; then
+  LOCAL_GCC_RPATH="-Wl,-rpath,'$LOCAL_RPATH'"
+  LOCAL_FPC_RPATH="-k-rpath -k'$LOCAL_RPATH'"
+fi
 
 ARCH=`uname -m`
 case ${ARCH} in
@@ -274,6 +286,7 @@ echo "REVISION = ${REVISION}"
 echo "VARIANT = ${VARIANT}"
 echo "LIBNAME = ${LIBNAME}"
 echo "SONAME = ${SONAME}"
+echo "LOCAL_RPATH = ${LOCAL_RPATH}"
 echo "srcdir = ${srcdir}"
 echo "prefix = ${prefix}"
 echo "exec_prefix = ${exec_prefix}"
@@ -351,6 +364,8 @@ SDLCFLAGS = ${SDLCFLAGS}
 SDLLDFLAGS = ${SDLLDFLAGS}
 SYSTEM = ${SYSTEM}
 ARCH = ${ARCH}
+LOCAL_GCC_RPATH = ${LOCAL_GCC_RPATH}
+LOCAL_FPC_RPATH = ${LOCAL_FPC_RPATH}
 
 EOF
 cat ${srcdir}/Makefile.in >> Makefile
