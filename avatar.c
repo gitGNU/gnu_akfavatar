@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.211 2009-02-05 21:10:26 akf Exp $ */
+/* $Id: avatar.c,v 2.212 2009-02-09 16:37:15 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -295,13 +295,13 @@ static int avt_pause (void);
 
 
 /* for dynamically loading SDL_image */
-#ifndef SDL_IMAGE_LIB
+#ifndef AVT_SDL_IMAGE_LIB
 #  if defined (__WIN32__)
-#    define SDL_IMAGE_LIB "SDL_image.dll"
+#    define AVT_SDL_IMAGE_LIB "SDL_image.dll"
 #  else	/* not Windows */
-#    define SDL_IMAGE_LIB "libSDL_image-1.2.so.0"
+#    define AVT_SDL_IMAGE_LIB "libSDL_image-1.2.so.0"
 #  endif /* not Windows */
-#endif /* not SDL_IMAGE_LIB */
+#endif /* not AVT_SDL_IMAGE_LIB */
 
 /* 
  * object for image-loading
@@ -443,7 +443,7 @@ load_image_initialize (void)
 
 /* loadso.h is only available with SDL 1.2.6 or higher */
 #ifdef _SDL_loadso_h
-      load_image.handle = SDL_LoadObject (SDL_IMAGE_LIB);
+      load_image.handle = SDL_LoadObject (AVT_SDL_IMAGE_LIB);
       if (load_image.handle)
 	{
 	  load_image.file =
@@ -4461,7 +4461,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.211 2009-02-05 21:10:26 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.212 2009-02-09 16:37:15 akf Exp $");
 
   /*
    * Initialize the display, accept any format
