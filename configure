@@ -6,7 +6,7 @@
 # This configure script is free software; you have unlimited permission
 # to copy, distribute and modify it.
 #
-# Date of this version: $Date: 2009-02-09 19:11:11 $
+# Date of this version: $Date: 2009-02-10 20:05:58 $
 
 
 # Version and name
@@ -25,6 +25,7 @@ pkgversion=${VERSION}.${SUBVERSION}.${REVISION}${VARIANT}
 srctrigger=akfavatar.h
 SIZE=DEFAULT
 OLDSDL=
+OPENPTY=
 FORCE_ICONV=
 WCHAR_ENCODING=
 LINK_SDL_IMAGE="no"
@@ -46,6 +47,7 @@ CPPFLAGS=
 CFLAGS='-O2 -Wall'
 CXXFLAGS='-O2 -Wall'
 LDFLAGS=
+AVATARSAY_LDFLAGS=
 INSTALL='install'
 AR='ar'
 RANLIB='ranlib'
@@ -85,6 +87,7 @@ while [ x"$1" != x ] ; do
 		echo "  --infodir=DIR         info files directory [${infodir}]"
 		echo "  --mandir=DIR          man pages directory [${mandir}]"
 		echo "  --sysconfdir=DIR      read-only single-machine data directory [${sysconfdir}]"
+		echo "  --with-openpty        use openpty instead of posix_openpt"
 		echo "  --with-oldsdl         support for older SDL versions on target machine"
 		echo "  --with-iconv[=enc]    force use of external iconv (normally not needed)"
 		echo "  --with-sdl-iconv=enc  set encoding for wchar_t when SDL's iconv is used"
@@ -138,6 +141,7 @@ while [ x"$1" != x ] ; do
 	INSTALL=*)  INSTALL=${optarg} ;;
 	LDCONFIG=*) LDCONFIG=${optarg} ;;
 
+        --with-openpty) OPENPTY="yes" ;;
         --with-oldsdl) OLDSDL="yes" ;;
 	--with-sdl-iconv=*) WCHAR_ENCODING=${optarg} ;;
 	--with-sdl-iconv) ;;
@@ -161,6 +165,11 @@ done
 
 [ "$SIZE" = "QVGA" ] && CFLAGS="$CFLAGS -DQVGA"
 [ "$SIZE" = "VGA" ] && CFLAGS="$CFLAGS -DVGA"
+
+if [ "$OPENPTY" = "yes" ]; then
+  CFLAGS="$CFLAGS -DUSE_OPENPTY"
+  AVATARSAY_LDFLAGS="-lutil"
+fi
 
 # old SDL is meant for the target machine 
 # and independant of the systems SDL-Version
@@ -306,6 +315,7 @@ echo "CXXFLAGS = ${CXXFLAGS}"
 echo "LDFLAGS = ${LDFLAGS}"
 echo "SDLCFLAGS = ${SDLCFLAGS}"
 echo "SDLLDFLAGS = ${SDLLDFLAGS}"
+echo "AVATARSAY_LDFLAGS = ${AVATARSAY_LDFLAGS}"
 echo "AR = ${AR}"
 echo "RANLIB = ${RANLIB}"
 echo "INSTALL = ${INSTALL}"
@@ -357,6 +367,7 @@ CPPFLAGS = ${CPPFLAGS}
 CFLAGS = ${CFLAGS}
 CXXFLAGS = ${CXXFLAGS}
 LDFLAGS = ${LDFLAGS}
+AVATARSAY_LDFLAGS = ${AVATARSAY_LDFLAGS}
 AR = ${AR}
 RANLIB = ${RANLIB}
 INSTALL = ${INSTALL}

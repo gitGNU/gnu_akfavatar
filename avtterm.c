@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.31 2009-02-09 19:59:18 akf Exp $ */
+/* $Id: avtterm.c,v 2.32 2009-02-10 20:05:58 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -39,6 +39,10 @@
 #include <sys/ioctl.h>
 #include <sys/wait.h>
 #include <pwd.h>
+
+#ifdef USE_OPENPTY
+#  include <pty.h>
+#endif
 
 /* terminal type */
 /* 
@@ -1520,6 +1524,13 @@ avtterm_initialize (int *input_fd, const char *system_encoding,
   if (prg_argv == NULL)
     shell = get_user_shell ();
 
+#ifdef USE_OPENPTY
+
+  if (openpty (&master, &slave, NULL, NULL, NULL) < 0)
+    return -1;
+
+#else /* not USE_OPENPTY */
+
   /* as specified in POSIX.1-2001 */
   master = posix_openpt (O_RDWR);
 
@@ -1550,6 +1561,8 @@ avtterm_initialize (int *input_fd, const char *system_encoding,
       close (master);
       return -1;
     }
+
+#endif /* not USE_OPENPTY */
 
   /* terminal settings */
   if (tcgetattr (master, &settings) < 0)

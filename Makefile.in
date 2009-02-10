@@ -125,19 +125,20 @@ arch.o: $(srcdir)/arch.c $(srcdir)/arch.h
 avatarsay-d: avatarsay.o avtfilechooser.o arch.o avtterm.o avtmsg.o \
 	     libakfavatar.so
 	$(CC) -o $@ avatarsay.o avtfilechooser.o avtterm.o avtmsg.o \
-	  arch.o -L. -lakfavatar $(LDFLAGS)
+	  arch.o -L. -lakfavatar $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
 # avatarsay dynamically linked, with local rpath if possible
 avatarsay: avatarsay.o avtfilechooser.o arch.o avtterm.o avtmsg.o \
 	     libakfavatar.so
 	  $(CC) -o $@ avatarsay.o avtfilechooser.o avtterm.o avtmsg.o \
-	    arch.o -L. -lakfavatar $(LDFLAGS) $(LOCAL_GCC_RPATH)
+	    arch.o -L. -lakfavatar $(LDFLAGS) $(AVATARSAY_LDFLAGS) \
+	      $(LOCAL_GCC_RPATH)
 
 # avatarsay with statical libakfavatar.a
 avatarsay-s: avatarsay.o avtfilechooser.o arch.o avtterm.o avtmsg.o \
 	   libakfavatar.a
 	$(CC) -o $@ avatarsay.o arch.o libakfavatar.a avtfilechooser.o \
-	  avtterm.o avtmsg.o $(SDLLDFLAGS) $(LDFLAGS)
+	  avtterm.o avtmsg.o $(SDLLDFLAGS) $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
 installdirs:
 	-[ -d $(DESTDIR)$(includedir) ]  || $(INSTALL) -d $(DESTDIR)$(includedir)

@@ -1,3 +1,8 @@
+2009-02-10  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtterm.c (avtterm_initialize):
+	support macro USE_OPENPTY for old/broken systems
+
 2009-02-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (set_encoding), avtterm.c (set_encoding):
