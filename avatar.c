@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.212 2009-02-09 16:37:15 akf Exp $ */
+/* $Id: avatar.c,v 2.213 2009-02-14 16:06:43 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -212,6 +212,15 @@
  * encoding
  */
 #define MB_DEFAULT_ENCODING "UTF-8"
+
+/* only defined in later SDL versions */
+#ifndef SDL_BUTTON_WHEELUP
+#  define SDL_BUTTON_WHEELUP 4
+#endif
+
+#ifndef SDL_BUTTON_WHEELDOWN
+#  define SDL_BUTTON_WHEELDOWN 5
+#endif
 
 /* type for gimp images */
 typedef struct
@@ -2850,8 +2859,7 @@ avt_choice (int *result, int start_line, int items, int key,
   SDL_Event event;
   int last_key;
   int end_line;
-  int line_nr = 1, old_line = 0;
-  int x, y;
+  int line_nr, old_line;
 
   if (screen)
     {
@@ -2898,18 +2906,8 @@ avt_choice (int *result, int start_line, int items, int key,
       else
 	last_key = 0;
 
-
-      /* bar in initial mouse position */
-      SDL_GetMouseState (&x, &y);
-      line_nr = ((y - viewport.y) / LINEHEIGHT) + 1;
-      if (x >= viewport.x && x <= (viewport.x + viewport.w)
-	  && line_nr >= start_line && line_nr <= end_line)
-	{
-	  update_menu_bar (start_line, end_line, line_nr, old_line,
-			   plain_menu, bar);
-	  old_line = line_nr;
-	}
-
+      line_nr = 1;
+      old_line = 0;
       *result = -1;
       while ((*result == -1) && (_avt_STATUS == AVT_NORMAL))
 	{
@@ -2965,11 +2963,10 @@ avt_choice (int *result, int start_line, int items, int key,
 	    case SDL_MOUSEMOTION:
 	      if (event.motion.x >= viewport.x
 		  && event.motion.x <= viewport.x + viewport.w
-		  && event.motion.y >= viewport.y
-		  && event.motion.y <= viewport.y + viewport.h)
+		  && event.motion.y
+		  >= viewport.y + ((start_line - 1) * LINEHEIGHT)
+		  && event.motion.y < viewport.y + (end_line * LINEHEIGHT))
 		line_nr = ((event.motion.y - viewport.y) / LINEHEIGHT) + 1;
-	      else
-		line_nr = 0;
 
 	      if (line_nr != old_line)
 		{
@@ -2983,12 +2980,38 @@ avt_choice (int *result, int start_line, int items, int key,
 	      /* any of the first trhee buttons, but not the wheel */
 	      if (event.button.button <= 3)
 		{
-		  line_nr = ((event.button.y - viewport.y) / LINEHEIGHT) + 1;
-
-		  if (line_nr >= start_line && line_nr <= end_line
-		      && event.button.x >= viewport.x
-		      && event.button.x <= viewport.x + viewport.w)
+		  if (line_nr >= start_line && line_nr <= end_line)
 		    *result = line_nr - start_line + 1;
+		}
+	      else if (event.button.button == SDL_BUTTON_WHEELUP)
+		{
+		  if (line_nr != start_line)
+		    {
+		      if (line_nr < start_line || line_nr > end_line)
+			line_nr = end_line;
+		      else
+			line_nr--;
+		      update_menu_bar (start_line, end_line, line_nr,
+				       old_line, plain_menu, bar);
+		      old_line = line_nr;
+		    }
+		  else if (back)
+		    *result = 1;
+		}
+	      else if (event.button.button == SDL_BUTTON_WHEELDOWN)
+		{
+		  if (line_nr != end_line)
+		    {
+		      if (line_nr < start_line || line_nr > end_line)
+			line_nr = start_line;
+		      else
+			line_nr++;
+		      update_menu_bar (start_line, end_line, line_nr,
+				       old_line, plain_menu, bar);
+		      old_line = line_nr;
+		    }
+		  else if (forward)
+		    *result = items;
 		}
 	      break;
 	    }
@@ -4461,7 +4484,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.212 2009-02-09 16:37:15 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.213 2009-02-14 16:06:43 akf Exp $");
 
   /*
    * Initialize the display, accept any format
