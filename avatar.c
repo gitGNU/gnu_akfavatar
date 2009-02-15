@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.213 2009-02-14 16:06:43 akf Exp $ */
+/* $Id: avatar.c,v 2.214 2009-02-15 20:28:37 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2977,7 +2977,7 @@ avt_choice (int *result, int start_line, int items, int key,
 	      break;
 
 	    case SDL_MOUSEBUTTONDOWN:
-	      /* any of the first trhee buttons, but not the wheel */
+	      /* any of the first three buttons, but not the wheel */
 	      if (event.button.button <= 3)
 		{
 		  if (line_nr >= start_line && line_nr <= end_line)
@@ -4484,7 +4484,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.213 2009-02-14 16:06:43 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.214 2009-02-15 20:28:37 akf Exp $");
 
   /*
    * Initialize the display, accept any format
