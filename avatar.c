@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.214 2009-02-15 20:28:37 akf Exp $ */
+/* $Id: avatar.c,v 2.215 2009-02-17 14:06:12 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -2906,7 +2906,7 @@ avt_choice (int *result, int start_line, int items, int key,
       else
 	last_key = 0;
 
-      line_nr = 1;
+      line_nr = -1;
       old_line = 0;
       *result = -1;
       while ((*result == -1) && (_avt_STATUS == AVT_NORMAL))
@@ -2980,8 +2980,21 @@ avt_choice (int *result, int start_line, int items, int key,
 	      /* any of the first three buttons, but not the wheel */
 	      if (event.button.button <= 3)
 		{
+		  /* if a valid line was chosen */
 		  if (line_nr >= start_line && line_nr <= end_line)
 		    *result = line_nr - start_line + 1;
+		  else
+		    {
+		      /* check if mouse currently points to a valid line */
+		      if (event.button.x >= viewport.x &&
+			  event.button.x <= viewport.x + viewport.w)
+			{
+			  line_nr =
+			    ((event.button.y - viewport.y) / LINEHEIGHT) + 1;
+			  if (line_nr >= start_line && line_nr <= end_line)
+			    *result = line_nr - start_line + 1;
+			}
+		    }
 		}
 	      else if (event.button.button == SDL_BUTTON_WHEELUP)
 		{
@@ -4484,7 +4497,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.214 2009-02-15 20:28:37 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.215 2009-02-17 14:06:12 akf Exp $");
 
   /*
    * Initialize the display, accept any format
