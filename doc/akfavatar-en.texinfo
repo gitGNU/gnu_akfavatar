@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.44 2009-02-06 20:34:51 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.45 2009-02-17 12:35:32 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -358,6 +358,7 @@ This chapter explains the various uses of the tool @command{avatarsay}.
 * Invoking avatarsay::         Command line interface
 * Commands for avatarsay::     Advanced features of @command{avatarsay}
 * Pipes::                      Pipes
+* Archive-files::              Archive-files
 @end menu
 
 @node Text-terminal
@@ -1002,6 +1003,39 @@ this: @samp{@w{dir | avatarsay -}}.  You could even read this manual this way:
 @samp{@w{makeinfo --plaintext akfavatar.texinfo | avatarsay -}}, 
 although that's probably a bit too long.
 
+@node Archive-files
+@section Archive-files
+@cindex archive-files
+
+The program @command{avatarsay} can also read special archive-files. 
+For making your own archive-files you need additional software. Archive-files
+are in the @dfn{AR}-format. You can use for example the @command{ar}-program
+that comes with the ``GNU binutils''. But be careful: there are some 
+requirements and limitations.
+
+Archive files should get the file-extension @file{.avt}.
+
+The very first archive member must be the script for @command{avatarsay} and 
+it must have the name @file{AKFAvatar-demo}. The other archive members can 
+be added in any order you like. 
+
+The names of archive members are limited to 15 characters. 
+GNU @command{ar} and some other @command{ar} implementations have extensions
+to support longer file names, but @command{avatatarsay} cannot read that. 
+On the other hand, I think that 15 characters is more than enough. Note that 
+archive members need not have file-extensions, they are recognized from their
+content. To make sure that filenames get cut at 15 characters you can use the 
+option @option{-f} with GNU @command{ar} or @option{-T} for some other 
+@command{ar} implementations.
+
+An archive-file should have a member with the name @file{info}. So to get
+more information about an archive you can use the command 
+@samp{ar p demo.avt info}. This @file{info}-member can be the same you use
+for the final-credits.
+
+Other programs can recognize archive-files for @command{avatarsay} from the 
+beginning of the file. It always starts with @code{!<arch>\nAKFAvatar}, where
+@code{\n} is one single character with the value 10.
 
 @node Using gnome-akfavatar
 @chapter Using it under @acronym{GNOME}

@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.37 2009-02-06 20:34:51 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.38 2009-02-17 12:35:32 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -391,6 +391,7 @@ Werkzeugs @command{avatarsay}.
 * Aufruf von avatarsay::       Die genaue Verwendung von @command{avatarsay}
 * Anweisungen für avatarsay::  Anweisungen für das Programm @command{avatarsay}
 * Pipes::                      Pipes
+* Archiv-Dateien::             Archiv-Dateien
 @end menu
 
 @node Text-Terminal
@@ -1084,6 +1085,41 @@ oder das: @samp{@w{dir | avatarsay -}}.  Man könnte sogar diese Anleitung auf
 folgende Weise lesen: @*
 @samp{@w{makeinfo --plaintext akfavatar-de.texinfo | avatarsay -}}, 
 aber das ist wohl etwas zu langatmig.
+
+@node Archiv-Dateien
+@section Archiv-Dateien
+@cindex Archiv-Dateien
+
+Das Programm @command{avatarsay} kann auch spezielle Archiv-Dateien lesen.
+Um eigene Archiv-Dateien zu erstellen, benötigt man zusätzliche Software.
+Archiv-Dateien müssen im @dfn{AR}-Format vorliegen. Man kann zum Beispiel
+den @command{ar}-Befehl aus den ``GNU Binutils'' verwenden. Aber Vorsicht:
+es gibt einige zusätzliche Bedingungen und Einschränkungen.
+
+Archiv-Dateien sollten die Datei-Endung @file{.avt} bekommen.
+
+Das aller erste Datei-Mitglied muss das Skript für @command{avatarsay} sein 
+und muss den Namen @file{AKFAvatar-demo} haben. Die wieteren Archiv-Mitglieder
+können in beliebiger Reihenfolge angehängt werden. 
+
+Die Namen der Archiv-Mitglieder ist auf 15 Zeichen beschränkt. GNU @command{ar}
+und einige andere @command{ar}-Implementierungen haben Erweiterungen um längere
+Namen zu unterstützen, aber @command{avatarsay} kann diese nicht lesen. Auf der 
+anderen Seite denke ich, dass 15 Zeichen auch mehr als genug sind. Man beachte,
+das Archiv-Mitglieder keine Datei-Erweiterungen benötigen, sie werden anhand 
+des Inhaltes erkannt. Um sicher zu gehen, dass Dateinamen nicht mehr als 15
+Zeichen enthalten, kann man bei GNU @command{ar} die Option @option{-f} 
+verwenden, oder bei einigen anderen @command{ar}-Implementierungen die
+Option @option{-T}.
+
+Eine Archiv-Datei sollte ein Mitglied mit dem Namen @file{info} enthalten.
+Auf diese Weise kann man Informationen über ein Archiv erhalten, indem man
+@samp{ar p demo.avt info} eingibt. Dieses @file{info}-Mitglied kann das selbe
+sein, das man auch für den Abspann verwendet.
+
+Andere Programme können Archiv-Dateien für @command{avatarsay} an ihrem Anfang
+erkennen. Sie fangen immer mit @code{!<arch>\nAKFAvatar} an, wobei @code{\n}
+für ein einzelnes Zeichen mit dem Wert 10 steht.
 
 @node Verwendung von gnome-akfavatar
 @chapter Wie man es unter @acronym{GNOME} verwendet
