@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.45 2009-02-17 12:35:32 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.46 2009-02-21 09:26:25 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -1017,7 +1017,7 @@ Archive files should get the file-extension @file{.avt}.
 
 The very first archive member must be the script for @command{avatarsay} and 
 it must have the name @file{AKFAvatar-demo}. The other archive members can 
-be added in any order you like. 
+be added in any order you like.
 
 The names of archive members are limited to 15 characters. 
 GNU @command{ar} and some other @command{ar} implementations have extensions
@@ -1026,7 +1026,8 @@ On the other hand, I think that 15 characters is more than enough. Note that
 archive members need not have file-extensions, they are recognized from their
 content. To make sure that filenames get cut at 15 characters you can use the 
 option @option{-f} with GNU @command{ar} or @option{-T} for some other 
-@command{ar} implementations.
+@command{ar} implementations. The TARGA image file format cannot be used in
+archive files.
 
 An archive-file should have a member with the name @file{info}. So to get
 more information about an archive you can use the command 

@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.38 2009-02-17 12:35:32 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.39 2009-02-21 09:26:25 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -1110,7 +1110,8 @@ das Archiv-Mitglieder keine Datei-Erweiterungen benötigen, sie werden anhand
 des Inhaltes erkannt. Um sicher zu gehen, dass Dateinamen nicht mehr als 15
 Zeichen enthalten, kann man bei GNU @command{ar} die Option @option{-f} 
 verwenden, oder bei einigen anderen @command{ar}-Implementierungen die
-Option @option{-T}.
+Option @option{-T}. Das TARGA-Bildformat kann in Archiv-Dateien nicht 
+verwendet werden.
 
 Eine Archiv-Datei sollte ein Mitglied mit dem Namen @file{info} enthalten.
 Auf diese Weise kann man Informationen über ein Archiv erhalten, indem man
