@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: arch.c,v 2.7 2008-11-03 20:18:14 akf Exp $ */
+/* $Id: arch.c,v 2.8 2009-02-21 21:23:11 akf Exp $ */
 
 #include "arch.h"
 
@@ -97,8 +97,7 @@ arch_find_member (int fd, const char *member)
     {
       /* skip block */
       skip_size = strtoul ((const char *) &header.size, NULL, 10);
-      if (skip_size % 2 != 0)
-	skip_size++;
+      skip_size += (skip_size % 2);
       lseek (fd, skip_size, SEEK_CUR);
 
       /* read next block-header */
