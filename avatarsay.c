@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.274 2009-02-09 19:59:18 akf Exp $ */
+/* $Id: avatarsay.c,v 2.275 2009-02-21 17:12:21 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -2165,6 +2165,7 @@ run_info (void)
 {
   int fd;
   char *args[] = { "info", "akfavatar-en", NULL };
+  char *info_encoding;
 
   /* info avatar -> larger balloon */
   change_avatar_image (avt_import_XPM (info_xpm));
@@ -2179,6 +2180,7 @@ run_info (void)
 
   if (language == DEUTSCH)
     {
+      info_encoding = "UTF-8";
       if (access ("./doc/akfavatar-de.info", R_OK) == 0)
 	args[1] = "--file=./doc/akfavatar-de.info";
       else
@@ -2186,13 +2188,14 @@ run_info (void)
     }
   else				/* not DEUTSCH */
     {
+      info_encoding = default_encoding;
       if (access ("./doc/akfavatar-en.info", R_OK) == 0)
 	args[1] = "--file=./doc/akfavatar-en.info";
       else
 	args[1] = "akfavatar-en";
     }
 
-  fd = avtterm_start (default_encoding, NULL, args);
+  fd = avtterm_start (info_encoding, NULL, args);
   if (fd > -1)
     avtterm_run (fd);
 }
@@ -2821,7 +2824,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.274 2009-02-09 19:59:18 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.275 2009-02-21 17:12:21 akf Exp $");
 
   return EXIT_SUCCESS;
 }

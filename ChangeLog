@@ -1,3 +1,8 @@
+2009-02-21  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtarsay.c (run_info):
+	enforce UTF-8 for german info pages
+
 2009-02-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-audio.c (fillaudio):
