@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.46 2009-02-21 09:26:25 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.47 2009-02-23 16:49:34 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -219,9 +219,8 @@ on a lot of systems that is already included
 
 Run @samp{./configure}. If that succeeds run @samp{make} to create the
 binaries.  There are two variants of avatarsay being compiled: 
-1. ``avatarsay'' has been statically linked with the avatar library. 
-You can use this to test and play around with it before you install it. 
-2. ``avatarsay-d'' is dynamically linked and will only work, when the library
+1. ``avatarsay''  is a special compilation, which can be used without 
+installing it. 2. ``avatarsay-d'' will only work, when the library
 is installed.  This is the variant that gets installed.
 
 @subsubheading Compiling --- special cases
@@ -230,7 +229,7 @@ is installed.  This is the variant that gets installed.
 
 On some systems you need the use the parameter @option{--with-iconv} with
 @command{./configure} to get full iconv support (iconv is a charset-encoding
-converter).  This parameter is not needed, when SDL is already configured to
+converter).  This parameter is not needed when SDL is already configured to
 use an external iconv.  But in some cases it is not, although an external 
 iconv is available (because maybe there is more than one implementation).
 This software (AKFAvatar) does an educated guess to get the internal encoding

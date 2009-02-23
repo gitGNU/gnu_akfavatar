@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.39 2009-02-21 09:26:25 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.40 2009-02-23 16:49:34 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -229,11 +229,9 @@ ist auf vielen Systemen bereits integriert
 Zunächst sollte man @samp{./configure} aufrufen.  Wenn das klappt, kann
 man @samp{make} eingeben, um die ausführbaren Programme zu kompilieren.
 Es werden zwei Varianten von avatarsay kompiliert: 1. ``avatarsay'' ist
-statisch mit der Bibliothek verlinkt.  Das kann man verwenden, um das 
-Programm auszuprobieren, ohne dass man erst die Bibliothek installieren 
-muss.  2. ``avatarsay-d'' ist dynamisch mit der Bibliothek verlinkt und
-wird nur funktionieren, wenn man zuvor die Bibliothek installiert hat.
-Diese Variante wird für die Installation verwendet.
+speziell dafür erstellt worden, dass man es auch ohne Installation verwenden
+kann.  2. ``avatarsay-d'' wird nur funktionieren, wenn man zuvor die Bibliothek
+installiert hat.  Diese Variante wird für die Installation verwendet.
 
 @subsubheading Kompilieren --- Sonderfälle
 @cindex VGA
