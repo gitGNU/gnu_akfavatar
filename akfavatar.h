@@ -1,6 +1,6 @@
 /*
  * AKFAvatar library - for giving your programs a graphical Avatar
- * Copyright (c) 2007 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007, 2008, 2009 Andreas K. Foerster <info@akfoerster.de>
  *
  * needed:
  *  SDL1.2 (recommended: SDL1.2.11 or later (but not 1.3!))
@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.82 2009-01-31 19:46:50 akf Exp $ */
+/* $Id: akfavatar.h,v 2.83 2009-02-24 14:09:13 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h

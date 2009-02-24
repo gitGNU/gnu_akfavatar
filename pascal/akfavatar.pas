@@ -1,6 +1,6 @@
 {*
  * Pascal binding to the AKFAvatar library version 0.16
- * Copyright (c) 2007, 2008 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007, 2008, 2009 Andreas K. Foerster <info@akfoerster.de>
  *
  * Can be used with GNU-Pascal or FreePascal
  *
