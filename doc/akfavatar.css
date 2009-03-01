@@ -2,13 +2,17 @@ body { margin:1ex 4em }
 dt { font-weight:bold }
 hr { border-style:solid; border-width:1px }
 a img { border:none }
+.new, .important { font-weight:bold }
+kbd { border:outset thin #000 }
 
 @media screen {
   body { background-color:#e0d5c5 }
   h1, h2, h3, h4, h5, h6, dt, hr { color:#70200F }
   ul { 
-    list-style-image:url(data:image/gif;base64,R0lGODlhCgAKAOMPACkjHDgwJkxDNG5fTIBwVo56Yp2HZ6SPcLGUbryhgcepfdC1jeTCme/LmPzcrf///yH5BAEKAA8ALAAAAAAKAAoAAAQ58Em2VJKzsbaSOZLjaN33MCJjJcVwMFvXDcEAL0h+CMCwdAeDgQYgPFiEAQ8gkCBaAQDTiDkkqY8IADs=)
+   list-style-image:url("data:image/gif;base64,R0lGODlhCgAKAOMPACkjHDgwJkxDNG5fTIBwVo56Yp2HZ6SPcLGUbryhgcepfdC1jeTCme/LmPzcrf///yH5BAEKAA8ALAAAAAAKAAoAAAQ58Em2VJKzsbaSOZLjaN33MCJjJcVwMFvXDcEAL0h+CMCwdAeDgQYgPFiEAQ8gkCBaAQDTiDkkqY8IADs=")
     }
+  .new, .important { color:#a00 }
+  kbd { color:#000; background-color:#ddd }
   }
 
 @media print {
