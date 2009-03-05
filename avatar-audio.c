@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.24 2009-02-15 20:42:56 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.25 2009-03-05 18:46:42 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -106,7 +106,7 @@ short_audio_sound (void)
 int
 avt_initialize_audio (void)
 {
-  SDL_SetError ("$Id: avatar-audio.c,v 2.24 2009-02-15 20:42:56 akf Exp $");
+  SDL_SetError ("$Id: avatar-audio.c,v 2.25 2009-03-05 18:46:42 akf Exp $");
   SDL_ClearError ();
 
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
@@ -184,6 +184,67 @@ avt_load_wave_data (void *data, int datasize)
       SDL_free (s);
       return NULL;
     }
+
+  return (avt_audio_t *) s;
+}
+
+avt_audio_t *
+avt_load_raw_data (void *data, int datasize,
+		   int samplingrate, int bits, avt_bool_t signeddata,
+		   int endianess, int channels)
+{
+  AudioStruct *s;
+
+  /* do we actually have data to process? */
+  if (data == NULL || datasize <= 0)
+    return NULL;
+
+  /* only 8 or 16 Bit with 1 or 2 channels supported */
+  if ((bits != 8 && bits != 16) || channels < 1 || channels > 2)
+    return NULL;
+
+  if (endianess == AVT_ENDIANESS_SYSTEM)
+    {
+      if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+	endianess = AVT_ENDIANESS_BIG;
+      else
+	endianess = AVT_ENDIANESS_LITTLE;
+    }
+
+  /* get memory */
+  s = (AudioStruct *) SDL_malloc (sizeof (AudioStruct));
+  if (s == NULL)
+    return NULL;
+
+  /* copy the audio data */
+  s->sound = (Uint8 *) SDL_malloc (datasize);
+  if (s->sound)
+    SDL_memcpy (s->sound, data, datasize);
+  else
+    {
+      SDL_free (s);
+      return NULL;
+    }
+
+  s->len = datasize;
+  s->wave = AVT_FALSE;
+  s->audiospec.freq = samplingrate;
+  s->audiospec.samples = 1024;
+  s->audiospec.callback = fill_audio;
+  s->audiospec.userdata = NULL;
+
+  if (bits == 8 && signeddata)
+    s->audiospec.format = AUDIO_S8;
+  else if (bits == 8)
+    s->audiospec.format = AUDIO_U8;
+  else if (bits == 16 && signeddata && endianess == AVT_ENDIANESS_BIG)
+    s->audiospec.format = AUDIO_S16MSB;
+  else if (bits == 16 && signeddata)
+    s->audiospec.format = AUDIO_S16LSB;
+  else if (bits == 16 && endianess == AVT_ENDIANESS_BIG)
+    s->audiospec.format = AUDIO_U16MSB;
+  else if (bits == 16)
+    s->audiospec.format = AUDIO_U16LSB;
 
   return (avt_audio_t *) s;
 }

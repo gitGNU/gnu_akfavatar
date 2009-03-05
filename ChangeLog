@@ -1,3 +1,8 @@
+2009-03-05  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_load_raw_data):
+	new function
+
 2009-02-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.16.0 released

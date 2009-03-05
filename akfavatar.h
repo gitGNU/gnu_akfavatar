@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.83 2009-02-24 14:09:13 akf Exp $ */
+/* $Id: akfavatar.h,v 2.84 2009-03-05 18:46:42 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -717,6 +717,25 @@ avt_audio_t *avt_load_wave_file (const char *file);
  * must still be freed with avt_free_audio!
  */
 avt_audio_t *avt_load_wave_data (void *data, int datasize);
+
+#define AVT_ENDIANESS_SYSTEM 0
+#define AVT_ENDIANESS_BIG 1
+#define AVT_ENDIANESS_LITTLE 2
+
+/*
+ * loads raw audio data from memory
+ * the data buffer is copied and can be freed immediately
+ *
+ * datasize is the size in bytes
+ * bits must be 8 or 16
+ * endianess is one of AVT_ENDIANESS... (ignored for 8 bit sounds)
+ * channels is 1 for mono or 2 for stereo
+ *
+ * must be freed with avt_free_audio!
+ */
+avt_audio_t *avt_load_raw_data (void *data, int datasize,
+		   int samplingrate, int bits, avt_bool_t signeddata,
+		   int endianess, int channels);
 
 /*
  * frees memory of a loaded sound
