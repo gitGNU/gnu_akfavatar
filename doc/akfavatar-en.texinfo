@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.48 2009-02-24 14:09:13 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.49 2009-03-05 13:09:01 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -840,9 +840,6 @@ name, the title is reset to ``AKFAvatar''.
 
 @item scrolling off | on
 switches scrolling off or on.
-
-If you consequently use striplines to structure your demo-text, you might
-want to switch scrolling off, to make the best use of the last line.
 
 @item slow on | off
 switches the slow-printing mode on or off

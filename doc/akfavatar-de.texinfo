@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.41 2009-02-24 14:09:13 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.42 2009-03-05 13:09:01 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -909,10 +909,6 @@ eines Titels, wird der Titel auf ``AKFAvatar'' zurück gesetzt.
 
 @item scrolling off | on
 schaltet das automatisch Text-Scrollen aus oder ein.
-
-Wenn man konsequent Trennlinien verwendet, um seinen Demo-Text zu 
-strukturieren, sollte man vielleicht das Scrollen ausschalten, um die 
-letzte Zeile optimal nutzen zu können.
 
 @item slow off | on
 schaltet den Langsamschreibmodus aus oder ein.
