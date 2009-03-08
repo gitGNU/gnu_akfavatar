@@ -262,7 +262,8 @@ procedure PlaySound(snd: pointer; loop: boolean);
 { wait until the end of the audio output }
 procedure WaitSoundEnd;
 
-{ dummy function, full support planned }
+{ play a sound of a given frequency }
+{ Note: not fast, needs a delay(200) at least }
 procedure Sound(frequency: integer);
 
 { stop sound output }
@@ -366,6 +367,20 @@ const KeyboardBufferSize = 40;
 var KeyboardBuffer: array [ 0 .. KeyboardBufferSize-1 ] of char;
 var KeyboardBufferRead, KeyboardBufferWrite: integer;
 
+{ for sound generator }
+const 
+  SampleRate = 44100;
+  BufMax = 4 * Samplerate;
+
+type TRawSoundBuf = array[0..BufMax] of SmallInt;
+
+{ RawSoundBuf is reserved the first time Sound() is called }
+var RawSoundBuf: ^TRawSoundBuf;
+var GenSound: Pointer; { generated sound }
+
+
+{ bindings: }
+
 procedure avt_reserve_single_keys (onoff: avt_bool_t); 
   libakfavatar 'avt_reserve_single_keys';
 
@@ -462,6 +477,12 @@ function avt_load_wave_file(f: CString): pointer;
 
 function avt_load_wave_data (Data: Pointer; size: CInteger): Pointer;
   libakfavatar 'avt_load_wave_data';
+
+function avt_load_raw_data (Data: pointer; size: CInteger;
+                            Samplingrate, Bits: CInteger;
+                            SignedData: avt_bool_t; 
+                            endianess, channels: CInteger): pointer;
+  libakfavatar 'avt_load_raw_data';
 
 procedure avt_free_audio(snd: pointer); 
   libakfavatar 'avt_free_audio';
@@ -603,6 +624,7 @@ end;
 procedure Quit;
 begin
 RestoreInOut;
+if RawSoundBuf<>NIL then Dispose(RawSoundBuf);
 
 if initialized then 
   avt_quit
@@ -944,13 +966,35 @@ begin
 if avt_wait_audio_end<>0 then Halt
 end;
 
-{ dummy function, full support planned }
 procedure Sound(frequency: integer);
-begin end;
+const
+  EndianessSystem = 0;
+  Mono = 1;
+  Volume = 75; { volume in percent }
+  Amplitude = Volume * 32767 div 100;
+var i: LongInt;
+begin
+if RawSoundBuf=NIL then New(RawSoundBuf);
+
+for i := 0 to BufMax do
+  RawSoundBuf^[i] := trunc(Amplitude * sin(2*pi*frequency*i/Samplerate));
+
+if GenSound<>NIL then avt_free_audio(GenSound);
+GenSound := avt_load_raw_data(RawSoundBuf, BufMax, SampleRate, 16, ord(true),
+                              EndianessSystem, Mono);
+
+avt_play_audio(GenSound, ord(true))
+end;
 
 procedure NoSound;
 begin
-avt_stop_audio
+avt_stop_audio;
+
+if GenSound<>NIL then 
+  begin
+  avt_free_audio(GenSound);
+  GenSound := NIL
+  end
 end;
 
 {$IfDef FPC}
@@ -1204,6 +1248,8 @@ Initialization
   isMonochrome := false;
   KeyboardBufferRead := 0;
   KeyboardBufferWrite := 0;
+  RawSoundBuf := NIL;
+  GenSound := NIL;
 
   { these values are not yet known }
   ScrSize.x := -1;
@@ -1241,6 +1287,8 @@ Initialization
 Finalization
 
   { avoid procedures which may call "Halt" again! }
+
+  NoSound;
 
   if initialized and not FastQuit then
     if avt_get_status = 0 then 

@@ -1,3 +1,8 @@
+2009-03-08  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.pas (sound):
+	sound generator (still buggy)
+
 2009-03-05  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_load_raw_data):
