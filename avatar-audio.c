@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.27 2009-03-08 14:27:00 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.28 2009-03-10 15:52:44 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -108,7 +108,7 @@ short_audio_sound (void)
 int
 avt_initialize_audio (void)
 {
-  SDL_SetError ("$Id: avatar-audio.c,v 2.27 2009-03-08 14:27:00 akf Exp $");
+  SDL_SetError ("$Id: avatar-audio.c,v 2.28 2009-03-10 15:52:44 akf Exp $");
   SDL_ClearError ();
 
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
@@ -192,7 +192,7 @@ avt_load_wave_data (void *data, int datasize)
 
 avt_audio_t *
 avt_load_raw_data (void *data, int datasize,
-		   int samplingrate, int bits, avt_bool_t signeddata,
+		   int samplingrate, int bits, avt_bool_t signed_data,
 		   int endianess, int channels)
 {
   AudioStruct *s;
@@ -236,13 +236,13 @@ avt_load_raw_data (void *data, int datasize,
   s->audiospec.callback = fill_audio;
   s->audiospec.userdata = NULL;
 
-  if (bits == 8 && signeddata)
+  if (bits == 8 && signed_data)
     s->audiospec.format = AUDIO_S8;
   else if (bits == 8)
     s->audiospec.format = AUDIO_U8;
-  else if (bits == 16 && signeddata && endianess == AVT_ENDIANESS_BIG)
+  else if (bits == 16 && signed_data && endianess == AVT_ENDIANESS_BIG)
     s->audiospec.format = AUDIO_S16MSB;
-  else if (bits == 16 && signeddata)
+  else if (bits == 16 && signed_data)
     s->audiospec.format = AUDIO_S16LSB;
   else if (bits == 16 && endianess == AVT_ENDIANESS_BIG)
     s->audiospec.format = AUDIO_U16MSB;
