@@ -1,3 +1,14 @@
+2009-03-16  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (read_text_file):
+	made more generic, renamed to read_file
+	(handle_credits_command): adapted
+
+	* avatarsay.c (avatar_command):
+	new commands: rawaudiosettings, rawaudio, loadrawaudio
+	(handle_rawaudiosettings_command, handle_rawaudio_command)
+	(handle_loadrawaudio_command): new functions
+
 2009-03-08  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.pas (sound):

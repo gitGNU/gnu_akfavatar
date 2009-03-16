@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.42 2009-03-05 13:09:01 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.43 2009-03-16 13:32:27 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -982,35 +982,64 @@ Welche Bilddatei-Formate von AKFAvatar unterstützt werden, hängt davon
 ab, welche Bibliotheken auf dem System installiert sind.  Unkomprimierte
 @code{BMP}-Bilder werden immer unterstützt.
 
+@item rawaudiosettings @var{samplingrate} 8|16 signed|unsigned little|big mono|stereo
+Einstellungen für das Laden von rohen Audio-Dateien
+
+Zum Beispiel: @samp{rawaudiosettings 22050 16 signed little mono}
+
 @item audio @var{Audio-Datei}
-lädt eine Audio-Datei und spielt sie ab
+lädt eine Audio-Datei im Wave-Format und spielt sie ab
 
 Der Text wird weiterhin angezeigt. Auf diese Weise kann man eine Audio
 Datei mit dem aufgenommenen Text abspielen, während gleichzeitig der 
 Text auf dem Bildschirm erscheint.
 
-Derzeit werden nur @code{WAV}-Dateien mit @code{PCM}- oder 
-@code{ADPCM}-Kodierung unterstützt.
+Es werden @code{WAV}-Dateien mit @code{PCM}- oder @code{ADPCM}-Kodierung 
+unterstützt.
+
+@item rawaudio @var{audiofile}
+lädt eine rohe Audio-Datei und spielt sie ab
+
+Die Einstellungen werden vom letzten @command{rawaudiosettings}-Befehl
+übernommen.
+
+Der Text wird weiterhin angezeigt. Auf diese Weise kann man eine Audio
+Datei mit dem aufgenommenen Text abspielen, während gleichzeitig der 
+Text auf dem Bildschirm erscheint.
 
 @item audioloop @var{Audio-Datei}
 wie @command{audio}, aber die Audio-Datei wird in einer Endlosschleife
 abgespielt
 
+@item rawaudioloop @var{audiofile}
+wie @command{rawaudio}, aber die Audio-Datei wird in einer Endlosschleife
+abgespielt
+
 @item loadaudio @var{audiofile}
-lädt eine Audio-Datei zum späteren Abspielen
+lädt eine Audio-Datei im Wave-Format zum späteren Abspielen
 
 Es kann nur eine Datei gleichzeitig geladen sein. Eine eventuell laufende 
 Audio-Ausgabe wird durch diesen Befehl abgebrochen.
 
-Derzeit werden nur @code{WAV}-Dateien mit @code{PCM}- oder 
-@code{ADPCM}-Kodierung unterstützt.
+Es werden @code{WAV}-Dateien mit @code{PCM}- oder @code{ADPCM}-Kodierung 
+unterstützt.
+
+@item loadrawaudio @var{audiofile}
+lädt eine rohe Audio-Datei zum späteren Abspielen
+
+Die Einstellungen werden vom letzten @command{rawaudiosettings}-Befehl
+übernommen.
+
+Es kann nur eine Datei gleichzeitig geladen sein. Eine eventuell laufende 
+Audio-Ausgabe wird durch diesen Befehl abgebrochen.
 
 @item playaudio
-spielt eine Audio-Datei ab, die mit @command{loadaudio} geladen wurde
+spielt eine Audio-Datei ab, die mit @command{loadaudio} oder 
+@command{loadrawaudio} geladen wurde
 
 @item playaudioloop
-spielt eine Audio-Datei, die mit @command{loadaudio} geladen wurde in einer 
-Endlosschleife ab
+spielt eine Audio-Datei, die mit @command{loadaudio} oder 
+@command{loadrawaudio} geladen wurde in einer Endlosschleife ab
 
 @item stopaudio
 hält die Audio-Ausgabe umgehend an

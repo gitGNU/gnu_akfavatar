@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.49 2009-03-05 13:09:01 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.50 2009-03-16 13:32:27 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -909,32 +909,55 @@ The stripline doesn't have any effect then.
 Which file-formats AKFAvatar supports depends on which libraries you have 
 installed.  Uncompressed @code{BMP} images are always supported.
 
+@item rawaudiosettings @var{samplingrate} 8|16 signed|unsigned little|big mono|stereo
+settings for loading raw audio files
+
+For example: @samp{rawaudiosettings 22050 16 signed little mono}
+
 @item audio @var{audiofile}
-loads and plays an audio file
+loads and plays an audio file in wave-format
 
 The text continues to be shown, so you can play an audio file with the 
 recorded words of the following text.
 
-Currently only @code{WAV}-files with @code{PCM} or @code{ADPCM} encoding 
-are supported.
+Supported are @code{WAV}-files with @code{PCM} or @code{ADPCM} encoding.
+
+@item rawaudio @var{audiofile}
+loads and plays a raw audio file
+
+The settings are taken from a previous @command{rawaudiosettings} command.
+
+The text continues to be shown, so you can play an audio file with the 
+recorded words of the following text.
 
 @item audioloop @var{audiofile}
 like @command{audio}, but the audio-data is played in an endless loop
 
+@item rawaudioloop @var{audiofile}
+like @command{rawaudio}, but the audio-data is played in an endless loop
+
 @item loadaudio @var{audiofile}
-loads an audio file for later playback
+loads an audio file in wave-format for later playback
 
 Only one single audio file can be loaded at a time. An eventually running 
 audio-output is stopped by this command.
 
-Currently only @code{WAV}-files with @code{PCM} or @code{ADPCM} encoding 
-are supported.
+Supported are @code{WAV}-files with @code{PCM} or @code{ADPCM} encoding.
+
+@item loadrawaudio @var{audiofile}
+loads a raw audio file for later playback
+
+The settings are taken from a previous @command{rawaudiosettings} command.
+
+Only one single audio file can be loaded at a time. An eventually running 
+audio-output is stopped by this command.
 
 @item playaudio
-plays an audio file loaded by @command{loadaudio}
+plays an audio file loaded by @command{loadaudio} or @command{loadrawaudio}
 
 @item playaudioloop
-plays an audio file loaded by @command{loadaudio} in an endless loop
+plays an audio file loaded by @command{loadaudio} or @command{loadrawaudio}
+in an endless loop
 
 @item stopaudio
 stops the audio output immediately

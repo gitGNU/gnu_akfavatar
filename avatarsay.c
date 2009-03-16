@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.275 2009-02-21 17:12:21 akf Exp $ */
+/* $Id: avatarsay.c,v 2.276 2009-03-16 13:32:27 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -100,6 +100,14 @@
 
 #define default_background_color(ignore) \
        avt_set_background_color (0xE0, 0xD5, 0xC5)
+
+/*
+ * some weird systems needs O_BINARY, most others not
+ * so I define a dummy value for sane systems
+ */
+#ifndef O_BINARY
+#  define O_BINARY 0
+#endif
 
 static const char *version_info_en =
   PRGNAME " (AKFAvatar) " AVTVERSION "\n"
@@ -205,6 +213,13 @@ static avt_bool_t background_color_changed;
 enum language_t
 { ENGLISH, DEUTSCH };
 static enum language_t language;
+
+static struct
+{
+  int samplingrate, bits, endianess, channels;
+  avt_bool_t signed_data;
+} raw_audio;
+
 
 /* the following functions may be defined externally */
 /* depending on macros, starting with EXT_ */
@@ -711,9 +726,9 @@ get_data_file (const wchar_t * fn, char filepath[])
     error_msg ("wcstombs", strerror (errno));
 }
 
-/* read in a textfile */
+/* read in a file */
 static char *
-read_text_file (const char *f)
+read_file (const char *f, size_t * data_size, avt_bool_t textmode)
 {
   int fd;
   char *buf;
@@ -724,7 +739,10 @@ read_text_file (const char *f)
   size = capacity = 0;
   nread = 0;
 
-  fd = open (f, O_RDONLY);
+  if (textmode)
+    fd = open (f, O_RDONLY);
+  else
+    fd = open (f, O_RDONLY | O_BINARY);
 
   if (fd > -1)
     {
@@ -736,7 +754,10 @@ read_text_file (const char *f)
 	      char *nbuf;
 
 	      capacity += BUFSIZ;
-	      nbuf = (char *) realloc (buf, capacity + 4);
+	      if (textmode)
+		nbuf = (char *) realloc (buf, capacity + 4);
+	      else
+		nbuf = (char *) realloc (buf, capacity);
 
 	      if (nbuf)
 		buf = nbuf;
@@ -756,13 +777,22 @@ read_text_file (const char *f)
 	{
 	  char *nbuf;
 
-	  /* I terminate with 4 zeros, in case UTF-32 is used */
-	  memset (buf + size, '\0', 4);
-	  nbuf = (char *) realloc (buf, size + 4);
+	  if (textmode)
+	    {
+	      /* I terminate with 4 zeros, in case UTF-32 is used */
+	      memset (buf + size, '\0', 4);
+	      nbuf = (char *) realloc (buf, size + 4);
+	    }
+	  else
+	    nbuf = (char *) realloc (buf, size);
+
 	  if (nbuf)
 	    buf = nbuf;
 	}
     }
+
+  if (data_size)
+    *data_size = size;
 
   return buf;
 }
@@ -1101,7 +1131,7 @@ handle_credits_command (const wchar_t * s, int *stop)
     {
       char *text;
 
-      text = read_text_file (filepath);
+      text = read_file (filepath, NULL, AVT_TRUE);
       if (avt_credits_mb (text, AVT_TRUE))
 	*stop = 1;
       free (text);
@@ -1207,10 +1237,96 @@ handle_loadaudio_command (const wchar_t * s)
     sound = avt_load_wave_file (filepath);
 
   if (sound == NULL)
+    notice_msg ("can not load audio data", avt_get_error ());
+}
+
+static void
+handle_rawaudiosettings_command (const wchar_t * s)
+{
+  int result;
+  char signed_data[30], endianess[30], channels[30];
+
+  result = swscanf (s, L"%d %d %29s %29s %29s",
+		    &raw_audio.samplingrate, &raw_audio.bits,
+		    &signed_data, &endianess, &channels);
+
+  if (result >= 2)
+    if (raw_audio.bits != 8 && raw_audio.bits != 16)
+      warning_msg ("rawaudiosettings", "only 8 or 16 bit supported");
+
+  if (result >= 3)
     {
-      notice_msg ("can not load audio data", avt_get_error ());
-      return;
+      if (strcmp (signed_data, "unsigned") == 0)
+	raw_audio.signed_data = AVT_FALSE;
+      else if (strcmp (signed_data, "signed") == 0)
+	raw_audio.signed_data = AVT_TRUE;
+      else
+	warning_msg ("rawaudiosettings", "either singed or unsigned");
     }
+
+  if (result >= 4)
+    {
+      if (strcmp (endianess, "little") == 0)
+	raw_audio.endianess = AVT_ENDIANESS_LITTLE;
+      else if (strcmp (endianess, "big") == 0)
+	raw_audio.endianess = AVT_ENDIANESS_BIG;
+      else
+	warning_msg ("rawaudiosettings",
+		     "endianess must be either big or little");
+    }
+
+  if (result >= 5)
+    {
+      if (strcmp (channels, "mono") == 0)
+	raw_audio.channels = AVT_MONO;
+      else if (strcmp (channels, "stereo") == 0)
+	raw_audio.channels = AVT_STEREO;
+      else
+	warning_msg ("rawaudiosettings", "must be either mono or stereo");
+    }
+}
+
+static void
+handle_loadrawaudio_command (const wchar_t * s)
+{
+  char filepath[PATH_LENGTH];
+  size_t size = 0;
+  void *buf = NULL;
+
+  if (sound)
+    {
+      avt_stop_audio ();
+      avt_free_audio (sound);
+      sound = NULL;
+    }
+
+  get_data_file (s, filepath);
+
+  if (from_archive)
+    {
+      if (arch_get_data (from_archive, filepath, &buf, &size))
+	{
+	  sound = avt_load_raw_data (buf, size, raw_audio.samplingrate,
+				     raw_audio.bits, raw_audio.signed_data,
+				     raw_audio.endianess, raw_audio.channels);
+	  free (buf);
+	}
+      else
+	archive_failure (filepath);
+    }
+  else				/* not from_archive */
+    {
+      if ((buf = read_file (filepath, &size, AVT_FALSE)) != NULL)
+	{
+	  sound = avt_load_raw_data (buf, size, raw_audio.samplingrate,
+				     raw_audio.bits, raw_audio.signed_data,
+				     raw_audio.endianess, raw_audio.channels);
+	  free (buf);
+	}
+    }
+
+  if (sound == NULL)
+    notice_msg ("can not load raw audio data", avt_get_error ());
 }
 
 static void
@@ -1240,6 +1356,21 @@ handle_audio_command (const wchar_t * s, avt_bool_t do_loop)
     }
 
   handle_loadaudio_command (s);
+  handle_playaudio_command (do_loop);
+}
+
+static void
+handle_rawaudio_command (const wchar_t * s, avt_bool_t do_loop)
+{
+  if (!initialized)
+    {
+      initialize ();
+
+      if (!popup)
+	move_in ();
+    }
+
+  handle_loadrawaudio_command (s);
   handle_playaudio_command (do_loop);
 }
 
@@ -1550,10 +1681,39 @@ avatar_command (wchar_t * s, int *stop)
       return;
     }
 
+  /* rawaudiosettings */
+  /* example: "rawaudiosettings 44100 16 signed little mono" */
+  if (wcsncmp (s, L"rawaudiosettings ", 17) == 0)
+    {
+      handle_rawaudiosettings_command (s + 17);
+      return;
+    }
+
+  /* load and play raw audio */
+  if (wcsncmp (s, L"rawaudio ", 9) == 0)
+    {
+      handle_rawaudio_command (s + 9, AVT_FALSE);
+      return;
+    }
+
+  /* load and play raw audio in a loop */
+  if (wcsncmp (s, L"rawaudioloop ", 13) == 0)
+    {
+      handle_rawaudio_command (s + 13, AVT_TRUE);
+      return;
+    }
+
   /* load sound */
   if (wcsncmp (s, L"loadaudio ", 10) == 0)
     {
       handle_loadaudio_command (s + 10);
+      return;
+    }
+
+  /* load raw sound */
+  if (wcsncmp (s, L"loadrawaudio ", 13) == 0)
+    {
+      handle_loadrawaudio_command (s + 13);
       return;
     }
 
@@ -2734,6 +2894,13 @@ main (int argc, char *argv[])
   window_mode = AVT_AUTOMODE;
   loop = AVT_TRUE;
   default_delay = AVT_DEFAULT_TEXT_DELAY;
+
+  raw_audio.samplingrate = 22050;
+  raw_audio.bits = 16;
+  raw_audio.signed_data = AVT_TRUE;
+  raw_audio.endianess = AVT_ENDIANESS_LITTLE;
+  raw_audio.channels = AVT_MONO;
+
   avtterm_nocolor (AVT_FALSE);
 
   atexit (quit);
@@ -2824,7 +2991,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.275 2009-02-21 17:12:21 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.276 2009-03-16 13:32:27 akf Exp $");
 
   return EXIT_SUCCESS;
 }
