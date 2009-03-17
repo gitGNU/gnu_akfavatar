@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.28 2009-03-10 15:52:44 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.29 2009-03-17 12:19:51 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -108,7 +108,7 @@ short_audio_sound (void)
 int
 avt_initialize_audio (void)
 {
-  SDL_SetError ("$Id: avatar-audio.c,v 2.28 2009-03-10 15:52:44 akf Exp $");
+  SDL_SetError ("$Id: avatar-audio.c,v 2.29 2009-03-17 12:19:51 akf Exp $");
   SDL_ClearError ();
 
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
@@ -201,9 +201,18 @@ avt_load_raw_data (void *data, int datasize,
   if (data == NULL || datasize <= 0)
     return NULL;
 
-  /* only 8 or 16 Bit with 1 or 2 channels supported */
-  if ((bits != 8 && bits != 16) || channels < 1 || channels > 2)
-    return NULL;
+  /* only 8 or 16 bit supported */
+  if (bits != 8 && bits != 16)
+    {
+      SDL_SetError ("only 8 or 16 bit supported");
+      return NULL;
+    }
+
+  if (channels < 1 || channels > 2)
+    {
+      SDL_SetError ("only 1 or 2 channels supported");
+      return NULL;
+    }
 
   if (endianess == AVT_ENDIANESS_SYSTEM)
     {
@@ -216,7 +225,10 @@ avt_load_raw_data (void *data, int datasize,
   /* get memory */
   s = (AudioStruct *) SDL_malloc (sizeof (AudioStruct));
   if (s == NULL)
-    return NULL;
+    {
+      SDL_SetError ("out of memory");
+      return NULL;
+    }
 
   /* copy the audio data */
   s->sound = (Uint8 *) SDL_malloc (datasize);
@@ -225,6 +237,7 @@ avt_load_raw_data (void *data, int datasize,
   else
     {
       SDL_free (s);
+      SDL_SetError ("out of memory");
       return NULL;
     }
 
