@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.276 2009-03-16 13:32:27 akf Exp $ */
+/* $Id: avatarsay.c,v 2.277 2009-03-18 14:59:59 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -218,8 +218,8 @@ static struct
 {
   int samplingrate, bits, endianess, channels;
   avt_bool_t signed_data;
+  avt_bool_t initialized;
 } raw_audio;
-
 
 /* the following functions may be defined externally */
 /* depending on macros, starting with EXT_ */
@@ -1207,6 +1207,38 @@ handle_backgoundcolor_command (const wchar_t * s)
     error_msg ("[backgroundcolor]", NULL);
 }
 
+#define check_wave(buf) \
+  (memcmp ((buf), "RIFF", 4) == 0 \
+    && memcmp ((char *)(buf)+8, "WAVE", 4) == 0)
+
+static avt_bool_t
+check_wave_file (const char *fn)
+{
+  int fd;
+  ssize_t nread, size;
+  char buf[16];
+
+  fd = open (fn, O_RDONLY | O_BINARY);
+  if (fd == -1)
+    {
+      notice_msg (fn, strerror (errno));
+      return AVT_FALSE;
+    }
+
+  nread = size = 0;
+  while (nread != -1 && size < (ssize_t) sizeof (buf))
+    {
+      nread = read (fd, buf + size, sizeof (buf) - size);
+      if (nread > 0)
+	size += nread;
+    }
+
+  if (close (fd))
+    notice_msg (fn, strerror (errno));
+
+  return check_wave (buf);
+}
+
 static void
 handle_loadaudio_command (const wchar_t * s)
 {
@@ -1227,14 +1259,40 @@ handle_loadaudio_command (const wchar_t * s)
     {
       if (arch_get_data (from_archive, filepath, &buf, &size))
 	{
-	  sound = avt_load_wave_data (buf, size);
+	  if (!raw_audio.initialized || check_wave (buf))
+	    sound = avt_load_wave_data (buf, size);
+	  else
+	    sound = avt_load_raw_data (buf, size, raw_audio.samplingrate,
+				       raw_audio.bits, raw_audio.signed_data,
+				       raw_audio.endianess,
+				       raw_audio.channels);
 	  free (buf);
 	}
       else
 	archive_failure (filepath);
     }
   else				/* not from_archive */
-    sound = avt_load_wave_file (filepath);
+    {
+      if (!raw_audio.initialized || check_wave_file (filepath))
+	sound = avt_load_wave_file (filepath);
+      else			/* raw audio file */
+	{
+	  if ((buf = read_file (filepath, &size, AVT_FALSE)) != NULL)
+	    {
+	      sound = avt_load_raw_data (buf, size, raw_audio.samplingrate,
+					 raw_audio.bits,
+					 raw_audio.signed_data,
+					 raw_audio.endianess,
+					 raw_audio.channels);
+	      free (buf);
+	    }
+	  else
+	    {
+	      notice_msg ("can not load audio data", filepath);
+	      return;
+	    }
+	}
+    }
 
   if (sound == NULL)
     notice_msg ("can not load audio data", avt_get_error ());
@@ -1284,49 +1342,8 @@ handle_rawaudiosettings_command (const wchar_t * s)
       else
 	warning_msg ("rawaudiosettings", "must be either mono or stereo");
     }
-}
 
-static void
-handle_loadrawaudio_command (const wchar_t * s)
-{
-  char filepath[PATH_LENGTH];
-  size_t size = 0;
-  void *buf = NULL;
-
-  if (sound)
-    {
-      avt_stop_audio ();
-      avt_free_audio (sound);
-      sound = NULL;
-    }
-
-  get_data_file (s, filepath);
-
-  if (from_archive)
-    {
-      if (arch_get_data (from_archive, filepath, &buf, &size))
-	{
-	  sound = avt_load_raw_data (buf, size, raw_audio.samplingrate,
-				     raw_audio.bits, raw_audio.signed_data,
-				     raw_audio.endianess, raw_audio.channels);
-	  free (buf);
-	}
-      else
-	archive_failure (filepath);
-    }
-  else				/* not from_archive */
-    {
-      if ((buf = read_file (filepath, &size, AVT_FALSE)) != NULL)
-	{
-	  sound = avt_load_raw_data (buf, size, raw_audio.samplingrate,
-				     raw_audio.bits, raw_audio.signed_data,
-				     raw_audio.endianess, raw_audio.channels);
-	  free (buf);
-	}
-    }
-
-  if (sound == NULL)
-    notice_msg ("can not load raw audio data", avt_get_error ());
+  raw_audio.initialized = AVT_TRUE;
 }
 
 static void
@@ -1356,21 +1373,6 @@ handle_audio_command (const wchar_t * s, avt_bool_t do_loop)
     }
 
   handle_loadaudio_command (s);
-  handle_playaudio_command (do_loop);
-}
-
-static void
-handle_rawaudio_command (const wchar_t * s, avt_bool_t do_loop)
-{
-  if (!initialized)
-    {
-      initialize ();
-
-      if (!popup)
-	move_in ();
-    }
-
-  handle_loadrawaudio_command (s);
   handle_playaudio_command (do_loop);
 }
 
@@ -1689,31 +1691,10 @@ avatar_command (wchar_t * s, int *stop)
       return;
     }
 
-  /* load and play raw audio */
-  if (wcsncmp (s, L"rawaudio ", 9) == 0)
-    {
-      handle_rawaudio_command (s + 9, AVT_FALSE);
-      return;
-    }
-
-  /* load and play raw audio in a loop */
-  if (wcsncmp (s, L"rawaudioloop ", 13) == 0)
-    {
-      handle_rawaudio_command (s + 13, AVT_TRUE);
-      return;
-    }
-
   /* load sound */
   if (wcsncmp (s, L"loadaudio ", 10) == 0)
     {
       handle_loadaudio_command (s + 10);
-      return;
-    }
-
-  /* load raw sound */
-  if (wcsncmp (s, L"loadrawaudio ", 13) == 0)
-    {
-      handle_loadrawaudio_command (s + 13);
       return;
     }
 
@@ -2202,11 +2183,10 @@ process_script (int fd)
   return stop;
 }
 
-extern int get_file (char *filename);
-
 static void
 ask_file (void)
 {
+  extern int get_file (char *filename);
   char filename[256];
 
   get_file (filename);
@@ -2222,6 +2202,7 @@ ask_file (void)
 
       avt_set_text_delay (default_delay);
       moved_in = AVT_FALSE;
+      raw_audio.initialized = AVT_FALSE;
 
       fd = open_script (filename);
       if (fd > -1)
@@ -2314,6 +2295,7 @@ run_shell (void)
   avt_set_balloon_size (0, 0);
   avt_set_text_delay (0);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
+  raw_audio.initialized = AVT_FALSE;
 
   fd = start_shell ();
   if (fd > -1)
@@ -2826,6 +2808,7 @@ run_script (char *f)
   int fd;
 
   set_encoding (default_encoding);
+  raw_audio.initialized = AVT_FALSE;
 
   fd = open_script (f);
 
@@ -2895,6 +2878,7 @@ main (int argc, char *argv[])
   loop = AVT_TRUE;
   default_delay = AVT_DEFAULT_TEXT_DELAY;
 
+  raw_audio.initialized = AVT_FALSE;
   raw_audio.samplingrate = 22050;
   raw_audio.bits = 16;
   raw_audio.signed_data = AVT_TRUE;
@@ -2991,7 +2975,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.276 2009-03-16 13:32:27 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.277 2009-03-18 14:59:59 akf Exp $");
 
   return EXIT_SUCCESS;
 }

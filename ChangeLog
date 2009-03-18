@@ -1,3 +1,12 @@
+2009-03-18  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (avatar_command):
+	removed commands: rawaudio, rawaudioloop, loadrawaudio
+	(handle_loadaudio_command): also handles raw audo files now
+	(check_wave): new macro
+	(check_wave_file): new function
+	many other functions also adapted
+
 2009-03-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (read_text_file):
