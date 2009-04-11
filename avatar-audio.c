@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.30 2009-04-11 11:42:56 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.31 2009-04-11 12:42:32 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -70,7 +70,7 @@ extern void (*avt_bell_func) (void);
 extern void (*avt_quit_audio_func) (void);
 
 /* table for decoding mu-law */
-static const signed short mulaw_decode[256] = {
+static const Sint16 mulaw_decode[256] = {
   -32124, -31100, -30076, -29052, -28028, -27004, -25980, -24956, -23932,
   -22908, -21884, -20860, -19836, -18812, -17788, -16764, -15996, -15484,
   -14972, -14460, -13948, -13436, -12924, -12412, -11900, -11388, -10876,
@@ -97,7 +97,7 @@ static const signed short mulaw_decode[256] = {
 };
 
 /* table for decoding A-law */
-static const signed short alaw_decode[256] = {
+static const Sint16 alaw_decode[256] = {
   -5504, -5248, -6016, -5760, -4480, -4224, -4992, -4736, -7552, -7296, -8064,
   -7808, -6528, -6272, -7040, -6784, -2752, -2624, -3008, -2880, -2240,
   -2112, -2496, -2368, -3776, -3648, -4032, -3904, -3264, -3136, -3520,
@@ -162,7 +162,7 @@ short_audio_sound (void)
 int
 avt_initialize_audio (void)
 {
-  SDL_SetError ("$Id: avatar-audio.c,v 2.30 2009-04-11 11:42:56 akf Exp $");
+  SDL_SetError ("$Id: avatar-audio.c,v 2.31 2009-04-11 12:42:32 akf Exp $");
   SDL_ClearError ();
 
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
@@ -338,26 +338,26 @@ avt_load_raw_audio_data (void *data, int data_size,
     case AVT_AUDIO_MULAW:
       {
 	int i;
-	unsigned char *inbuf;
-	signed short *outbuf;
+	Uint8 *in;
+	Sint16 *out;
 
-	inbuf = (unsigned char *) data;
-	outbuf = (signed short *) s->sound;
+	in = (Uint8 *) data;
+	out = (Sint16 *) s->sound;
 	for (i = 0; i < data_size; i++)
-	  *outbuf++ = mulaw_decode[*inbuf++];
+	  *out++ = mulaw_decode[*in++];
 	break;
       }
 
     case AVT_AUDIO_ALAW:
       {
 	int i;
-	unsigned char *inbuf;
-	signed short *outbuf;
+	Uint8 *in;
+	Sint16 *out;
 
-	inbuf = (unsigned char *) data;
-	outbuf = (signed short *) s->sound;
+	in = (Uint8 *) data;
+	out = (Sint16 *) s->sound;
 	for (i = 0; i < data_size; i++)
-	  *outbuf++ = alaw_decode[*inbuf++];
+	  *out++ = alaw_decode[*in++];
 	break;
       }
 
