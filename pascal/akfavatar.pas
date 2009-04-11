@@ -478,11 +478,10 @@ function avt_load_wave_file(f: CString): pointer;
 function avt_load_wave_data (Data: Pointer; size: CInteger): Pointer;
   libakfavatar 'avt_load_wave_data';
 
-function avt_load_raw_data (Data: pointer; size: CInteger;
-                            Samplingrate, Bits: CInteger;
-                            SignedData: avt_bool_t; 
-                            endianess, channels: CInteger): pointer;
-  libakfavatar 'avt_load_raw_data';
+function avt_load_raw_audio_data (Data: pointer; size: CInteger;
+                            Samplingrate, Audio_type, 
+                            channels: CInteger): pointer;
+  libakfavatar 'avt_load_raw_audio_data';
 
 procedure avt_free_audio(snd: pointer); 
   libakfavatar 'avt_free_audio';
@@ -968,7 +967,7 @@ end;
 
 procedure Sound(frequency: integer);
 const
-  EndianessSystem = 0;
+  S16SYS = 8;
   Mono = 1;
   Volume = 75; { volume in percent }
   Amplitude = Volume * 32767 div 100;
@@ -980,8 +979,8 @@ for i := 0 to BufMax do
   RawSoundBuf^[i] := trunc(Amplitude * sin(2*pi*frequency*i/Samplerate));
 
 if GenSound<>NIL then avt_free_audio(GenSound);
-GenSound := avt_load_raw_data(RawSoundBuf, BufMax, SampleRate, 16, ord(true),
-                              EndianessSystem, Mono);
+GenSound := avt_load_raw_audio_data(RawSoundBuf, BufMax, 
+                                    SampleRate, S16SYS, Mono);
 
 avt_play_audio(GenSound, ord(true))
 end;

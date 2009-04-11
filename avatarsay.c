@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.277 2009-03-18 14:59:59 akf Exp $ */
+/* $Id: avatarsay.c,v 2.278 2009-04-11 11:42:56 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -216,9 +216,7 @@ static enum language_t language;
 
 static struct
 {
-  int samplingrate, bits, endianess, channels;
-  avt_bool_t signed_data;
-  avt_bool_t initialized;
+  int type, samplingrate, channels;
 } raw_audio;
 
 /* the following functions may be defined externally */
@@ -1259,13 +1257,12 @@ handle_loadaudio_command (const wchar_t * s)
     {
       if (arch_get_data (from_archive, filepath, &buf, &size))
 	{
-	  if (!raw_audio.initialized || check_wave (buf))
+	  if (raw_audio.type == AVT_AUDIO_UNKNOWN || check_wave (buf))
 	    sound = avt_load_wave_data (buf, size);
 	  else
-	    sound = avt_load_raw_data (buf, size, raw_audio.samplingrate,
-				       raw_audio.bits, raw_audio.signed_data,
-				       raw_audio.endianess,
-				       raw_audio.channels);
+	    sound =
+	      avt_load_raw_audio_data (buf, size, raw_audio.samplingrate,
+				       raw_audio.type, raw_audio.channels);
 	  free (buf);
 	}
       else
@@ -1273,17 +1270,15 @@ handle_loadaudio_command (const wchar_t * s)
     }
   else				/* not from_archive */
     {
-      if (!raw_audio.initialized || check_wave_file (filepath))
+      if (raw_audio.type == AVT_AUDIO_UNKNOWN || check_wave_file (filepath))
 	sound = avt_load_wave_file (filepath);
       else			/* raw audio file */
 	{
 	  if ((buf = read_file (filepath, &size, AVT_FALSE)) != NULL)
 	    {
-	      sound = avt_load_raw_data (buf, size, raw_audio.samplingrate,
-					 raw_audio.bits,
-					 raw_audio.signed_data,
-					 raw_audio.endianess,
-					 raw_audio.channels);
+	      sound =
+		avt_load_raw_audio_data (buf, size, raw_audio.samplingrate,
+					 raw_audio.type, raw_audio.channels);
 	      free (buf);
 	    }
 	  else
@@ -1302,48 +1297,55 @@ static void
 handle_rawaudiosettings_command (const wchar_t * s)
 {
   int result;
-  char signed_data[30], endianess[30], channels[30];
+  char data_type[30], channels[30];
 
-  result = swscanf (s, L"%d %d %29s %29s %29s",
-		    &raw_audio.samplingrate, &raw_audio.bits,
-		    &signed_data, &endianess, &channels);
+  raw_audio.type = AVT_AUDIO_UNKNOWN;
 
-  if (result >= 2)
-    if (raw_audio.bits != 8 && raw_audio.bits != 16)
-      warning_msg ("rawaudiosettings", "only 8 or 16 bit supported");
+  result = swscanf (s, L"%29s %d %29s",
+		    &data_type, &raw_audio.samplingrate, &channels);
 
-  if (result >= 3)
+  if (result != 3)
     {
-      if (strcmp (signed_data, "unsigned") == 0)
-	raw_audio.signed_data = AVT_FALSE;
-      else if (strcmp (signed_data, "signed") == 0)
-	raw_audio.signed_data = AVT_TRUE;
-      else
-	warning_msg ("rawaudiosettings", "either singed or unsigned");
+      warning_msg ("rawaudiosettings",
+		   "warning: one of 'type, rate, channels' missing");
+      return;
     }
 
-  if (result >= 4)
+  /* check type */
+  if (strcasecmp ("u8", data_type) == 0)
+    raw_audio.type = AVT_AUDIO_U8;
+  else if (strcasecmp ("s8", data_type) == 0)
+    raw_audio.type = AVT_AUDIO_S8;
+  else if (strcasecmp ("u16le", data_type) == 0)
+    raw_audio.type = AVT_AUDIO_U16LE;
+  else if (strcasecmp ("u16be", data_type) == 0)
+    raw_audio.type = AVT_AUDIO_U16BE;
+  else if (strcasecmp ("u16sys", data_type) == 0)
+    raw_audio.type = AVT_AUDIO_U16SYS;
+  else if (strcasecmp ("s16le", data_type) == 0)
+    raw_audio.type = AVT_AUDIO_S16LE;
+  else if (strcasecmp ("s16be", data_type) == 0)
+    raw_audio.type = AVT_AUDIO_S16BE;
+  else if (strcasecmp ("s16sys", data_type) == 0)
+    raw_audio.type = AVT_AUDIO_S16SYS;
+  else if (strcasecmp ("mu-law", data_type) == 0
+	   || strcasecmp ("u-law", data_type) == 0)
+    raw_audio.type = AVT_AUDIO_MULAW;
+  else if (strcasecmp ("a-law", data_type) == 0)
+    raw_audio.type = AVT_AUDIO_ALAW;
+  else
     {
-      if (strcmp (endianess, "little") == 0)
-	raw_audio.endianess = AVT_ENDIANESS_LITTLE;
-      else if (strcmp (endianess, "big") == 0)
-	raw_audio.endianess = AVT_ENDIANESS_BIG;
-      else
-	warning_msg ("rawaudiosettings",
-		     "endianess must be either big or little");
+      warning_msg ("rawaudiosettings", "unknown audio type");
+      return;
     }
 
-  if (result >= 5)
-    {
-      if (strcmp (channels, "mono") == 0)
-	raw_audio.channels = AVT_MONO;
-      else if (strcmp (channels, "stereo") == 0)
-	raw_audio.channels = AVT_STEREO;
-      else
-	warning_msg ("rawaudiosettings", "must be either mono or stereo");
-    }
-
-  raw_audio.initialized = AVT_TRUE;
+  /* check channels */
+  if (strcmp (channels, "mono") == 0)
+    raw_audio.channels = AVT_MONO;
+  else if (strcmp (channels, "stereo") == 0)
+    raw_audio.channels = AVT_STEREO;
+  else
+    warning_msg ("rawaudiosettings", "must be either mono or stereo");
 }
 
 static void
@@ -2202,7 +2204,7 @@ ask_file (void)
 
       avt_set_text_delay (default_delay);
       moved_in = AVT_FALSE;
-      raw_audio.initialized = AVT_FALSE;
+      raw_audio.type = AVT_AUDIO_UNKNOWN;
 
       fd = open_script (filename);
       if (fd > -1)
@@ -2295,7 +2297,7 @@ run_shell (void)
   avt_set_balloon_size (0, 0);
   avt_set_text_delay (0);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
-  raw_audio.initialized = AVT_FALSE;
+  raw_audio.type = AVT_AUDIO_UNKNOWN;
 
   fd = start_shell ();
   if (fd > -1)
@@ -2306,7 +2308,9 @@ static void
 run_info (void)
 {
   int fd;
-  char *args[] = { "info", "akfavatar-en", NULL };
+  char *args[] = {
+    "info", "akfavatar-en", NULL
+  };
   char *info_encoding;
 
   /* info avatar -> larger balloon */
@@ -2360,7 +2364,9 @@ static void
 ask_manpage (void)
 {
   char manpage[AVT_LINELENGTH] = "man";
-  char *argv[] = { "man", "-t", (char *) &manpage, NULL };
+  char *argv[] = {
+    "man", "-t", (char *) &manpage, NULL
+  };
 
   avt_set_balloon_size (1, 40);
   avt_set_text_delay (0);
@@ -2808,7 +2814,7 @@ run_script (char *f)
   int fd;
 
   set_encoding (default_encoding);
-  raw_audio.initialized = AVT_FALSE;
+  raw_audio.type = AVT_AUDIO_UNKNOWN;
 
   fd = open_script (f);
 
@@ -2878,11 +2884,8 @@ main (int argc, char *argv[])
   loop = AVT_TRUE;
   default_delay = AVT_DEFAULT_TEXT_DELAY;
 
-  raw_audio.initialized = AVT_FALSE;
+  raw_audio.type = AVT_AUDIO_UNKNOWN;
   raw_audio.samplingrate = 22050;
-  raw_audio.bits = 16;
-  raw_audio.signed_data = AVT_TRUE;
-  raw_audio.endianess = AVT_ENDIANESS_LITTLE;
   raw_audio.channels = AVT_MONO;
 
   avtterm_nocolor (AVT_FALSE);
@@ -2975,7 +2978,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.277 2009-03-18 14:59:59 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.278 2009-04-11 11:42:56 akf Exp $");
 
   return EXIT_SUCCESS;
 }

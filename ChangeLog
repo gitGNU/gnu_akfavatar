@@ -1,3 +1,10 @@
+2009-04-11  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar-audio.c (avt_load_raw_audio_data):
+	new function, replaces avt_load_raw_data
+	support for mu-law and a-law
+	avatarsay.c, akfavatar.pas: adapted
+
 2009-03-18  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (avatar_command):
@@ -25,7 +32,7 @@
 
 2009-03-05  Andreas K. Foerster  <info@akfoerster.de>
 
-	* akfavatar.h, avatar.c (avt_load_raw_data):
+	* akfavatar.h, avatar-audio.c (avt_load_raw_data):
 	new function
 
 2009-02-24  Andreas K. Foerster  <info@akfoerster.de>

@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.85 2009-03-09 14:32:30 akf Exp $ */
+/* $Id: akfavatar.h,v 2.86 2009-04-11 11:42:56 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -718,27 +718,34 @@ avt_audio_t *avt_load_wave_file (const char *file);
  */
 avt_audio_t *avt_load_wave_data (void *data, int datasize);
 
-#define AVT_ENDIANESS_SYSTEM   0
-#define AVT_ENDIANESS_BIG      1
-#define AVT_ENDIANESS_LITTLE   2
+/* values for audio_type */
+#define AVT_AUDIO_UNKNOWN   0  /* doesn't play */
+#define AVT_AUDIO_U8        1  /* unsigned 8 Bit */
+#define AVT_AUDIO_S8        2  /* signed 8 Bit */
+#define AVT_AUDIO_U16LE     3  /* unsigned 16 Bit little endian */
+#define AVT_AUDIO_U16BE     4  /* unsigned 16 Bit big endian */
+#define AVT_AUDIO_U16SYS    5  /* unsigned 16 Bit system's endianess */
+#define AVT_AUDIO_S16LE     6  /* signed 16 Bit little endian */
+#define AVT_AUDIO_S16BE     7  /* signed 16 Bit big endian */
+#define AVT_AUDIO_S16SYS    8  /* signed 16 Bit system's endianess */
+#define AVT_AUDIO_MULAW   100  /* 8 Bit µ-law (mu-law, u-law) */
+#define AVT_AUDIO_ALAW    101  /* 8 Bit A-Law */
 
-#define AVT_MONO               1
-#define AVT_STEREO             2
+/* for channels */
+#define AVT_MONO      1
+#define AVT_STEREO    2
 
 /*
  * loads raw audio data from memory
  * the data buffer is copied and can be freed immediately
  *
- * datasize is the size in bytes
- * bits must be 8 or 16
- * endianess is one of AVT_ENDIANESS... (ignored for 8bit sounds)
+ * audio_type is one of the AVT_AUDIO_* constants
  * channels is AVT_MONO or AVT_STEREO
  *
  * must be freed with avt_free_audio!
  */
-avt_audio_t *avt_load_raw_data (void *data, int datasize,
-		   int samplingrate, int bits, avt_bool_t signed_data,
-		   int endianess, int channels);
+avt_audio_t *avt_load_raw_audio_data (void *data, int data_size,
+		   int samplingrate, int audio_type, int channels);
 
 /*
  * frees memory of a loaded sound
