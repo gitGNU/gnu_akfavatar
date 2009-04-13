@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.278 2009-04-11 11:42:56 akf Exp $ */
+/* $Id: avatarsay.c,v 2.279 2009-04-13 15:45:40 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1205,37 +1205,10 @@ handle_backgoundcolor_command (const wchar_t * s)
     error_msg ("[backgroundcolor]", NULL);
 }
 
-#define check_wave(buf) \
+#define check_audio_head(buf) \
+  (memcmp ((buf), ".snd", 4) || \
   (memcmp ((buf), "RIFF", 4) == 0 \
-    && memcmp ((char *)(buf)+8, "WAVE", 4) == 0)
-
-static avt_bool_t
-check_wave_file (const char *fn)
-{
-  int fd;
-  ssize_t nread, size;
-  char buf[16];
-
-  fd = open (fn, O_RDONLY | O_BINARY);
-  if (fd == -1)
-    {
-      notice_msg (fn, strerror (errno));
-      return AVT_FALSE;
-    }
-
-  nread = size = 0;
-  while (nread != -1 && size < (ssize_t) sizeof (buf))
-    {
-      nread = read (fd, buf + size, sizeof (buf) - size);
-      if (nread > 0)
-	size += nread;
-    }
-
-  if (close (fd))
-    notice_msg (fn, strerror (errno));
-
-  return check_wave (buf);
-}
+    && memcmp ((char *)(buf)+8, "WAVE", 4) == 0))
 
 static void
 handle_loadaudio_command (const wchar_t * s)
@@ -1257,8 +1230,8 @@ handle_loadaudio_command (const wchar_t * s)
     {
       if (arch_get_data (from_archive, filepath, &buf, &size))
 	{
-	  if (raw_audio.type == AVT_AUDIO_UNKNOWN || check_wave (buf))
-	    sound = avt_load_wave_data (buf, size);
+	  if (raw_audio.type == AVT_AUDIO_UNKNOWN || check_audio_head (buf))
+	    sound = avt_load_audio_data (buf, size);
 	  else
 	    sound =
 	      avt_load_raw_audio_data (buf, size, raw_audio.samplingrate,
@@ -1270,9 +1243,8 @@ handle_loadaudio_command (const wchar_t * s)
     }
   else				/* not from_archive */
     {
-      if (raw_audio.type == AVT_AUDIO_UNKNOWN || check_wave_file (filepath))
-	sound = avt_load_wave_file (filepath);
-      else			/* raw audio file */
+      sound = avt_load_audio_file (filepath);
+      if (sound == NULL && raw_audio.type != AVT_AUDIO_UNKNOWN)
 	{
 	  if ((buf = read_file (filepath, &size, AVT_FALSE)) != NULL)
 	    {
@@ -2978,7 +2950,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.278 2009-04-11 11:42:56 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.279 2009-04-13 15:45:40 akf Exp $");
 
   return EXIT_SUCCESS;
 }

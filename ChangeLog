@@ -4,6 +4,10 @@
 	(avt_load_au_file, avt_load_au_data):
 	new functions
 
+	* akfavatar.h, avatar-audio.c (avt_load_audio_RW)
+	(avt_load_audio_file, avt_load_audio_data):
+	new functions
+
 2009-04-11  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar-audio.c (avt_load_raw_audio_data):

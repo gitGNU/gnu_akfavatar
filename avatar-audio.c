@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.32 2009-04-13 11:06:27 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.33 2009-04-13 15:45:40 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -162,7 +162,7 @@ short_audio_sound (void)
 int
 avt_initialize_audio (void)
 {
-  SDL_SetError ("$Id: avatar-audio.c,v 2.32 2009-04-13 11:06:27 akf Exp $");
+  SDL_SetError ("$Id: avatar-audio.c,v 2.33 2009-04-13 15:45:40 akf Exp $");
   SDL_ClearError ();
 
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
@@ -437,6 +437,78 @@ avt_load_au_data (void *data, int datasize)
     }
 
   return (avt_audio_t *) s;
+}
+
+static avt_audio_t *
+avt_load_audio_RW (SDL_RWops * src)
+{
+  int start, type;
+  AudioStruct *s;
+  SDL_AudioSpec *r;
+  char head[16];
+
+  if (src == NULL)
+    return NULL;
+
+  type = 0;
+  start = SDL_RWtell (src);
+  if (SDL_RWread (src, head, sizeof (head), 1))
+    {
+      if (strncmp (&head[0], ".snd", 4) == 0)
+	type = 1;
+      else
+	if (SDL_memcmp (&head[0], "RIFF", 4) == 0
+	    && SDL_memcmp (&head[8], "WAVE", 4) == 0)
+	type = 2;
+      else
+	{
+	  SDL_SetError ("file neither in AU nor WAVE format");
+	  SDL_RWclose (src);
+	  return NULL;
+	}
+    }
+
+  SDL_RWseek (src, start, SEEK_SET);
+
+  s = (AudioStruct *) SDL_malloc (sizeof (AudioStruct));
+  if (s == NULL)
+    return NULL;
+
+  if (type == 1)
+    {
+      s->wave = AVT_FALSE;
+      r = avt_LoadAU_RW (src, 1, &s->audiospec, &s->sound, &s->len);
+    }
+  else if (type == 2)
+    {
+      s->wave = AVT_TRUE;
+      r = SDL_LoadWAV_RW (src, 1, &s->audiospec, &s->sound, &s->len);
+    }
+  else
+    {
+      SDL_SetError ("internal error");
+      return NULL;
+    }
+
+  if (r == NULL)
+    {
+      SDL_free (s);
+      return NULL;
+    }
+
+  return (avt_audio_t *) s;
+}
+
+avt_audio_t *
+avt_load_audio_file (const char *file)
+{
+  return avt_load_audio_RW (SDL_RWFromFile (file, "rb"));
+}
+
+avt_audio_t *
+avt_load_audio_data (void *data, int datasize)
+{
+  return avt_load_audio_RW (SDL_RWFromMem (data, datasize));
 }
 
 avt_audio_t *
