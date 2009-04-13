@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.31 2009-04-11 12:42:32 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.32 2009-04-13 11:06:27 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -162,7 +162,7 @@ short_audio_sound (void)
 int
 avt_initialize_audio (void)
 {
-  SDL_SetError ("$Id: avatar-audio.c,v 2.31 2009-04-11 12:42:32 akf Exp $");
+  SDL_SetError ("$Id: avatar-audio.c,v 2.32 2009-04-13 11:06:27 akf Exp $");
   SDL_ClearError ();
 
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
@@ -244,9 +244,204 @@ avt_load_wave_data (void *data, int datasize)
   return (avt_audio_t *) s;
 }
 
+/* TODO: not yet finished */
+static SDL_AudioSpec *
+avt_LoadAU_RW (SDL_RWops * src, int freesrc,
+	       SDL_AudioSpec * spec, Uint8 ** audio_buf, Uint32 * data_size)
+{
+  Uint32 head_size, read_size, audio_size, encoding, samplingrate, channels;
+  Uint8 *buf;
+  avt_bool_t completed;
+
+  completed = AVT_FALSE;
+  read_size = 0;
+  buf = NULL;
+
+  if (src == NULL || audio_buf == NULL
+      || data_size == NULL || *data_size == 0)
+    goto done;
+
+  *audio_buf = NULL;
+  *data_size = 0;
+
+  /* check magic ".snd" */
+  if (SDL_ReadBE32 (src) != 0x2e736e64)
+    {
+      SDL_SetError ("Data is not an AU audio file"
+		    " (maybe old raw data format?)");
+      goto done;
+    }
+
+  head_size = SDL_ReadBE32 (src);
+  audio_size = SDL_ReadBE32 (src);
+  encoding = SDL_ReadBE32 (src);
+  samplingrate = SDL_ReadBE32 (src);
+  channels = SDL_ReadBE32 (src);
+
+  /* unknown size of audio-data */
+  if (audio_size == 0xffffffff)
+    {
+      SDL_SetError ("AU files with unknown data size not supported yet");
+      goto done;
+    }
+
+  /* skip the rest of the head (comments) */
+  if (head_size > 24)
+    SDL_RWseek (src, head_size - 24, RW_SEEK_CUR);
+
+  buf = (Uint8 *) SDL_malloc (audio_size);
+  if (buf == NULL)
+    {
+      SDL_SetError ("out of memory");
+      goto done;
+    }
+
+  /* read the data into the buf */
+  read_size = SDL_RWread (src, buf, 1, audio_size);
+  if (read_size < audio_size)
+    {
+      SDL_SetError ("read error");
+      goto done;
+    }
+
+  /* note: linear PCM is always assumed to be signed and big endian */
+  switch (encoding)
+    {
+    case 2:			/* 8Bit linear PCM */
+      spec->format = AUDIO_S8;	/* signed! */
+      *audio_buf = buf;
+      *data_size = audio_size;
+      completed = AVT_TRUE;
+      break;
+
+    case 3:			/* 16Bit linear PCM */
+      /* convert to system endianess now, if necessary */
+      if (SDL_BYTEORDER == SDL_LIL_ENDIAN)
+	{
+	  Uint32 i;
+	  Sint16 *bufp;
+
+	  bufp = (Sint16 *) buf;
+	  for (i = 0; i < (audio_size / 2); i++, bufp++)
+	    *bufp = SDL_Swap16 (*bufp);
+	}
+
+      spec->format = AUDIO_S16SYS;
+      *audio_buf = buf;
+      *data_size = audio_size;
+      completed = AVT_TRUE;
+      break;
+
+    case 1:			/* mu-law */
+    case 27:			/* A-law */
+      {
+	Uint32 i;
+	Uint32 out_size;
+	Sint16 *outbuf, *outp;
+	Uint8 *inp;
+
+	/* get larger output buffer */
+	out_size = sizeof (Sint16) * audio_size;
+	outbuf = (Sint16 *) SDL_malloc (out_size);
+	if (outbuf == NULL)
+	  {
+	    SDL_SetError ("out of memory");
+	    goto done;
+	  }
+
+	/* decode */
+	inp = buf;
+	outp = outbuf;
+	if (encoding == 1)	/* mu-law */
+	  {
+	    for (i = 0; i < audio_size; i++)
+	      *outp++ = mulaw_decode[*inp++];
+	  }
+	else			/* A-law */
+	  {
+	    for (i = 0; i < audio_size; i++)
+	      *outp++ = alaw_decode[*inp++];
+	  }
+
+	/* input buffer no longer needed */
+	SDL_free (buf);
+
+	/* assign values */
+	spec->format = AUDIO_S16SYS;
+	*audio_buf = (Uint8 *) outbuf;
+	*data_size = out_size;
+	completed = AVT_TRUE;
+      }
+      break;
+
+    default:
+      SDL_SetError ("unsupported encoding in AU file");
+      goto done;
+    }
+
+  /* settings, which don't depend on the format */
+  if (completed)
+    {
+      spec->freq = samplingrate;
+      spec->channels = channels;
+      spec->samples = 1024;	/* internal buffer */
+      spec->callback = fill_audio;
+      spec->userdata = NULL;
+    }
+
+done:
+  if (src && freesrc)
+    SDL_RWclose (src);
+
+  if (completed)
+    return spec;
+  else
+    return NULL;
+}
+
+avt_audio_t *
+avt_load_au_file (const char *file)
+{
+  AudioStruct *s;
+
+  s = (AudioStruct *) SDL_malloc (sizeof (AudioStruct));
+  if (s == NULL)
+    return NULL;
+
+  s->wave = AVT_FALSE;
+  if (avt_LoadAU_RW (SDL_RWFromFile (file, "rb"), 1,
+		     &s->audiospec, &s->sound, &s->len) == NULL)
+    {
+      SDL_free (s);
+      return NULL;
+    }
+
+  return (avt_audio_t *) s;
+}
+
+avt_audio_t *
+avt_load_au_data (void *data, int datasize)
+{
+  AudioStruct *s;
+
+  s = (AudioStruct *) SDL_malloc (sizeof (AudioStruct));
+  if (s == NULL)
+    return NULL;
+
+  s->wave = AVT_FALSE;
+  if (avt_LoadAU_RW (SDL_RWFromMem (data, datasize), 1,
+		     &s->audiospec, &s->sound, &s->len) == NULL)
+    {
+      SDL_free (s);
+      return NULL;
+    }
+
+  return (avt_audio_t *) s;
+}
+
 avt_audio_t *
 avt_load_raw_audio_data (void *data, int data_size,
-		     int samplingrate, int audio_type, int channels)
+			 int samplingrate, int audio_type, int channels)
 {
   int format;
   int out_size;

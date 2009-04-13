@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.86 2009-04-11 11:42:56 akf Exp $ */
+/* $Id: akfavatar.h,v 2.87 2009-04-13 11:06:27 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -705,6 +705,18 @@ int avt_initialize_audio (void);
  * this function is only there for backward compatiblity
  */
 void avt_quit_audio (void);
+
+/* 
+ * loads an AU file
+ * supported: 8Bit PCM, 16Bit PCM, mu-law, A-law
+ */
+avt_audio_t *avt_load_au_file (const char *file);
+
+/*
+ * loads AU data from memory
+ * must still be freed with avt_free_audio!
+ */
+avt_audio_t *avt_load_au_data (void *data, int datasize);
 
 /* 
  * loads a wave file 
