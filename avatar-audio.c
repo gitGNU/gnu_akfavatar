@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.33 2009-04-13 15:45:40 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.34 2009-04-13 16:22:37 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -40,11 +40,13 @@
 #  define SDL_malloc              malloc
 #  undef SDL_memcpy
 #  define SDL_memcpy              memcpy
+#  undef SDL_memcmp
+#  define SDL_memcmp              memcmp
 #  undef SDL_free
 #  define SDL_free                free
 #endif /* OLD_SDL */
 
-#pragma GCC poison  malloc free strlen memcpy getenv putenv
+#pragma GCC poison  malloc free strlen memcpy memcmp getenv putenv
 
 typedef struct
 {
@@ -162,7 +164,7 @@ short_audio_sound (void)
 int
 avt_initialize_audio (void)
 {
-  SDL_SetError ("$Id: avatar-audio.c,v 2.33 2009-04-13 15:45:40 akf Exp $");
+  SDL_SetError ("$Id: avatar-audio.c,v 2.34 2009-04-13 16:22:37 akf Exp $");
   SDL_ClearError ();
 
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
@@ -406,7 +408,10 @@ avt_load_au_file (const char *file)
 
   s = (AudioStruct *) SDL_malloc (sizeof (AudioStruct));
   if (s == NULL)
-    return NULL;
+    {
+      SDL_SetError ("out of memory");
+      return NULL;
+    }
 
   s->wave = AVT_FALSE;
   if (avt_LoadAU_RW (SDL_RWFromFile (file, "rb"), 1,
@@ -426,7 +431,10 @@ avt_load_au_data (void *data, int datasize)
 
   s = (AudioStruct *) SDL_malloc (sizeof (AudioStruct));
   if (s == NULL)
-    return NULL;
+    {
+      SDL_SetError ("out of memory");
+      return NULL;
+    }
 
   s->wave = AVT_FALSE;
   if (avt_LoadAU_RW (SDL_RWFromMem (data, datasize), 1,
@@ -450,11 +458,12 @@ avt_load_audio_RW (SDL_RWops * src)
   if (src == NULL)
     return NULL;
 
+  r = NULL;
   type = 0;
   start = SDL_RWtell (src);
   if (SDL_RWread (src, head, sizeof (head), 1))
     {
-      if (strncmp (&head[0], ".snd", 4) == 0)
+      if (SDL_memcmp (&head[0], ".snd", 4) == 0)
 	type = 1;
       else
 	if (SDL_memcmp (&head[0], "RIFF", 4) == 0
@@ -472,20 +481,22 @@ avt_load_audio_RW (SDL_RWops * src)
 
   s = (AudioStruct *) SDL_malloc (sizeof (AudioStruct));
   if (s == NULL)
-    return NULL;
-
-  if (type == 1)
     {
+      SDL_SetError ("out of memory");
+      return NULL;
+    }
+
+  switch (type)
+    {
+    case 1:			/* AU */
       s->wave = AVT_FALSE;
       r = avt_LoadAU_RW (src, 1, &s->audiospec, &s->sound, &s->len);
-    }
-  else if (type == 2)
-    {
+
+    case 2:			/* Wave */
       s->wave = AVT_TRUE;
       r = SDL_LoadWAV_RW (src, 1, &s->audiospec, &s->sound, &s->len);
-    }
-  else
-    {
+
+    default:
       SDL_SetError ("internal error");
       return NULL;
     }
