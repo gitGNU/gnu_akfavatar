@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.34 2009-04-13 16:22:37 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.35 2009-04-13 16:38:01 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -164,7 +164,7 @@ short_audio_sound (void)
 int
 avt_initialize_audio (void)
 {
-  SDL_SetError ("$Id: avatar-audio.c,v 2.34 2009-04-13 16:22:37 akf Exp $");
+  SDL_SetError ("$Id: avatar-audio.c,v 2.35 2009-04-13 16:38:01 akf Exp $");
   SDL_ClearError ();
 
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
@@ -491,10 +491,12 @@ avt_load_audio_RW (SDL_RWops * src)
     case 1:			/* AU */
       s->wave = AVT_FALSE;
       r = avt_LoadAU_RW (src, 1, &s->audiospec, &s->sound, &s->len);
+      break;
 
     case 2:			/* Wave */
       s->wave = AVT_TRUE;
       r = SDL_LoadWAV_RW (src, 1, &s->audiospec, &s->sound, &s->len);
+      break;
 
     default:
       SDL_SetError ("internal error");
