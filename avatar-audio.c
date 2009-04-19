@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.36 2009-04-13 18:53:27 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.37 2009-04-19 14:23:20 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -164,7 +164,7 @@ short_audio_sound (void)
 int
 avt_initialize_audio (void)
 {
-  SDL_SetError ("$Id: avatar-audio.c,v 2.36 2009-04-13 18:53:27 akf Exp $");
+  SDL_SetError ("$Id: avatar-audio.c,v 2.37 2009-04-19 14:23:20 akf Exp $");
   SDL_ClearError ();
 
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
@@ -529,6 +529,7 @@ avt_load_raw_audio_data (void *data, int data_size,
 {
   int format;
   int out_size;
+  int i;
   AudioStruct *s;
 
   /* do we actually have data to process? */
@@ -554,24 +555,17 @@ avt_load_raw_audio_data (void *data, int data_size,
       format = AUDIO_S8;
       break;
     case AVT_AUDIO_U16LE:
-      format = AUDIO_U16LSB;
-      break;
     case AVT_AUDIO_U16BE:
-      format = AUDIO_U16MSB;
-      break;
     case AVT_AUDIO_U16SYS:
+      /* endianess will get adjusted while loading */
       format = AUDIO_U16SYS;
       break;
     case AVT_AUDIO_S16LE:
-      format = AUDIO_S16LSB;
-      break;
     case AVT_AUDIO_S16BE:
-      format = AUDIO_S16MSB;
-      break;
     case AVT_AUDIO_S16SYS:
+      /* endianess will get adjusted while loading */
       format = AUDIO_S16SYS;
       break;
-
     case AVT_AUDIO_MULAW:
     case AVT_AUDIO_ALAW:
       /* will be converted to S16SYS */
@@ -585,7 +579,7 @@ avt_load_raw_audio_data (void *data, int data_size,
       return NULL;
     }
 
-  /* get memory */
+  /* get memory for struct */
   s = (AudioStruct *) SDL_malloc (sizeof (AudioStruct));
   if (s == NULL)
     {
@@ -616,7 +610,6 @@ avt_load_raw_audio_data (void *data, int data_size,
     {
     case AVT_AUDIO_MULAW:
       {
-	int i;
 	Uint8 *in;
 	Sint16 *out;
 
@@ -629,7 +622,6 @@ avt_load_raw_audio_data (void *data, int data_size,
 
     case AVT_AUDIO_ALAW:
       {
-	int i;
 	Uint8 *in;
 	Sint16 *out;
 
@@ -639,6 +631,36 @@ avt_load_raw_audio_data (void *data, int data_size,
 	  *out++ = alaw_decode[*in++];
 	break;
       }
+
+    case AVT_AUDIO_U16BE:
+    case AVT_AUDIO_S16BE:
+      if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+	SDL_memcpy (s->sound, data, out_size);
+      else			/* swap bytes */
+	{
+	  Sint16 *in, *out;
+
+	  in = (Sint16 *) data;
+	  out = (Sint16 *) s->sound;
+	  for (i = 0; i < (out_size / 2); i++, in++, out++)
+	    *out = SDL_Swap16 (*in);
+	}
+      break;
+
+    case AVT_AUDIO_U16LE:
+    case AVT_AUDIO_S16LE:
+      if (SDL_BYTEORDER == SDL_LIL_ENDIAN)
+	SDL_memcpy (s->sound, data, out_size);
+      else			/* swap bytes */
+	{
+	  Sint16 *in, *out;
+
+	  in = (Sint16 *) data;
+	  out = (Sint16 *) s->sound;
+	  for (i = 0; i < (out_size / 2); i++, in++, out++)
+	    *out = SDL_Swap16 (*in);
+	}
+      break;
 
     default:			/* linear PCM */
       /* simply copy the audio data */
