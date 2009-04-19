@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-de.texinfo,v 2.44 2009-03-18 14:59:59 akf Exp $
+@comment $Id: akfavatar-de.texinfo,v 2.45 2009-04-19 17:15:11 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-de.info
@@ -982,14 +982,19 @@ Welche Bilddatei-Formate von AKFAvatar unterstützt werden, hängt davon
 ab, welche Bibliotheken auf dem System installiert sind.  Unkomprimierte
 @code{BMP}-Bilder werden immer unterstützt.
 
-@item rawaudiosettings @var{samplingrate} 8|16 signed|unsigned little|big mono|stereo
+@item rawaudiosettings @var{Samplingrate} @var{Kodierung} mono|stereo
 Einstellungen für das Laden von rohen Audio-Dateien
 
-Diese Anweisung wird benötigt um überhaupt rohe Audio-Dateien abspielen 
-zu können. Rohe Audio-Dateien beinhalten PCM-kodierte Audio-Daten ohne
-Einleitung oder ein Container-Format.
+Diese Anweisung wird benötigt um rohe Audio-Dateien abspielen zu können. 
+Rohe Audio-Dateien beinhalten Audio-Daten ohne Einleitung oder ein
+Container-Format. 
+Die @var{Kodierung} kann einer der folgenden Bezeichner sein: @code{u8}, 
+@code{s8}, @code{u16le}, @code{u16be}, @code{u16sys}, @code{s16le}, 
+@code{s16be}, @code{s16sys}, @code{mu-law} | @code{u-law}, @code{A-law}. 
+Zum Beispiel @code{u8} bedeutet @dfn{unsigned 8-Bit lineares PCM} oder 
+@code{s16le} bedeutet @dfn{signed 16-Bit lineares PCM, little endian}.
 
-Zum Beispiel: @samp{rawaudiosettings 22050 16 signed little mono}
+Zum Beispiel: @samp{rawaudiosettings 16000 mu-law mono}
 
 @item audio @var{Audio-Datei}
 lädt eine Audio-Datei und spielt sie ab
@@ -998,7 +1003,9 @@ Der Text wird weiterhin angezeigt. Auf diese Weise kann man eine Audio
 Datei mit dem aufgenommenen Text abspielen, während gleichzeitig der 
 Text auf dem Bildschirm erscheint.
 
-Es werden @code{WAV}-Dateien mit @code{PCM}- oder @code{ADPCM}-Kodierung 
+Es werden @code{AU}-Dateien mit 8- oder 16-Bit linearem PCM oder µ-law oder
+A-law Kodierung unterstützt.
+Außerdem werden @code{WAV}-Dateien mit @code{PCM}- oder @code{ADPCM}-Kodierung 
 unterstützt.
 Nach Verwendung der Anweisung @command{rawaudiosettings} können auch rohe
 Audio-Dateien abgespielt werden.
@@ -1013,10 +1020,12 @@ lädt eine Audio-Datei zum späteren Abspielen
 Es kann nur eine Datei gleichzeitig geladen sein. Eine eventuell laufende 
 Audio-Ausgabe wird durch diesen Befehl abgebrochen.
 
-Es werden @code{WAV}-Dateien mit @code{PCM}- oder @code{ADPCM}-Kodierung 
+Es werden @code{AU}-Dateien mit 8- oder 16-Bit linearem PCM oder µ-law oder
+A-law Kodierung unterstützt.
+Außerdem werden @code{WAV}-Dateien mit @code{PCM}- oder @code{ADPCM}-Kodierung 
 unterstützt.
 Nach Verwendung der Anweisung @command{rawaudiosettings} können auch rohe
-Audio-Dateien geladen werden.
+Audio-Dateien abgespielt werden.
 
 @item playaudio
 spielt eine Audio-Datei ab, die mit @command{loadaudio} geladen wurde

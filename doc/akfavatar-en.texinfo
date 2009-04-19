@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.51 2009-03-18 14:59:59 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.52 2009-04-19 17:15:11 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -909,14 +909,18 @@ The stripline doesn't have any effect then.
 Which file-formats AKFAvatar supports depends on which libraries you have 
 installed.  Uncompressed @code{BMP} images are always supported.
 
-@item rawaudiosettings @var{samplingrate} 8|16 signed|unsigned little|big mono|stereo
+@item rawaudiosettings @var{samplingrate} @var{encoding} mono|stereo
 settings for loading raw audio files
 
 This command is needed before you can play any raw audio files.
-Raw audio files contain PCM encoded audio data with no header or container
-format.
+Raw audio files contain audio data with no header or container format.
+The @var{encoding} can be one of @code{u8}, @code{s8}, @code{u16le},
+@code{u16be}, @code{u16sys}, @code{s16le}, @code{s16be}, @code{s16sys}, 
+@code{mu-law} | @code{u-law}, @code{A-law}. For example @code{u8} means 
+@dfn{unsigned 8-Bit linear PCM} or @code{s16le} means @dfn{signed 16-Bit 
+linear PCM, little endian}.
 
-For example: @samp{rawaudiosettings 22050 16 signed little mono}
+For example: @samp{rawaudiosettings 16000 mu-law mono}
 
 @item audio @var{audiofile}
 loads and plays an audio file
@@ -924,7 +928,10 @@ loads and plays an audio file
 The text continues to be shown, so you can play an audio file with the 
 recorded words of the following text.
 
-Supported are @code{WAV}-files with @code{PCM} or @code{ADPCM} encoding.
+Supported are @code{AU}-files with 8- or 16-Bit linear PCM, µ-law and A-law
+encoding.
+Furthermore supported are @code{WAV}-files with @code{PCM} or @code{ADPCM} 
+encoding.
 After the command @command{rawaudiosettings} is used, it can also play raw
 audio files.
 
@@ -937,8 +944,11 @@ loads an audio file for later playback
 Only one single audio file can be loaded at a time. An eventually running 
 audio-output is stopped by this command.
 
-Supported are @code{WAV}-files with @code{PCM} or @code{ADPCM} encoding.
-After the command @command{rawaudiosettings} is used, it can also load raw
+Supported are @code{AU}-files with 8- or 16-Bit linear PCM, µ-law and A-law
+encoding.
+Furthermore supported are @code{WAV}-files with @code{PCM} or @code{ADPCM} 
+encoding.
+After the command @command{rawaudiosettings} is used, it can also play raw
 audio files.
 
 @item playaudio
