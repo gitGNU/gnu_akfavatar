@@ -1,3 +1,8 @@
+2009-04-30  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-audio.c ():
+	SDL_MixAudio -> SDL_memcpy
+
 2009-04-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-audio.c (avt_load_raw_audio_data):
