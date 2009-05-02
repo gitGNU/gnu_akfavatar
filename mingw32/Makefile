@@ -184,6 +184,11 @@ bdfread: $(srcdir)/bdfread.c
 gnu-head.c: $(srcdir)/gnu-head.bmp bin2c
 	./bin2c avatar_image < $(srcdir)/gnu-head.bmp > $@
 
+# bell.au should be in the sourcecode-distribution
+$(srcdir)/bell.au: $(srcdir)/bell.flac
+	@echo "create headerless old AU file"
+	sox $(srcdir)/bell.flac -t .ul --rate 8000 --channels 1 $@
+
 bell.c: $(srcdir)/bell.au bin2c
 	./bin2c avt_bell_data < $(srcdir)/bell.au > $@
 
