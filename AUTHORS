@@ -2,8 +2,9 @@ Avatar library and program avatarsay
 Copyright (c) 2007, 2008, 2009 Andreas K. Foerster <info@akfoerster.de>
 License GPLv3 or later
 
-akfavatar.xpm, akfavatar.ico, keybtn.bmp,
-bell.wav, right.wav, wrong.wav
+akfavatar.xpm, akfavatar.ico, btn.xpm, btn-no.xpm, btn-yes.xpm, 
+btn-cont.xpm, balloonpointer.xpm, circle.xpm, info.xpm,
+bell.flac, bell.au
 These files are put in the Public Domain - Andreas K. Foerster
 
 gnu-head.bmp, gnu-small.bmp:

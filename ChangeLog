@@ -1,3 +1,8 @@
+2009-05-02  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-audio.c (avt_initialize_audio):
+	bell is now raw 8kHz mu-law audio data
+
 2009-04-30  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-audio.c ():

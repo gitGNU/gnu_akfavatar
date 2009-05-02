@@ -37,8 +37,13 @@ bdfread: $(srcdir)/bdfread.c
 gnu-head.c: $(srcdir)/gnu-head.bmp bin2c
 	./bin2c avatar_image < $(srcdir)/gnu-head.bmp > $@
 
-bell.c: $(srcdir)/bell.wav bin2c
-	./bin2c avt_bell_data < $(srcdir)/bell.wav > $@
+# bell.au should be in the sourcecode-distribution
+$(srcdir)/bell.au: $(srcdir)/bell.flac
+	@echo "create headerless old AU file"
+	sox $(srcdir)/bell.flac -t .ul --rate 8000 $@
+
+bell.c: $(srcdir)/bell.au bin2c
+	./bin2c avt_bell_data < $(srcdir)/bell.au > $@
 
 avtfilechooser.o: $(srcdir)/avtfilechooser.c $(srcdir)/akfavatar.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtfilechooser.c
@@ -292,6 +297,7 @@ distclean: clean
 maintainer-clean: distclean
 	@echo 'This command is intended for maintainers to use; it'
 	@echo 'deletes files that may need special tools to rebuild.'
+	rm -rf $(srcdir)/bell.au
 	$(MAKE) -C $(srcdir)/doc maintainer-clean
 
 maintainerclean: maintainer-clean
@@ -317,7 +323,8 @@ dist: info html man distclean
 	   gnome-akfavatar akfoerster-avatarsay.desktop bdfread.c \
 	   akfavatar.xpm info.xpm bin2c.c \
 	   7x14.bdf 9x18.bdf font.c \
-	   bell.wav configure Makefile.in \
+	   bell.flac bell.au \
+	   configure Makefile.in \
 	   $(PKGNAME)/
 	
 	mkdir $(PKGNAME)/pascal

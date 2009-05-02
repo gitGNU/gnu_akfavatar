@@ -184,8 +184,8 @@ bdfread: $(srcdir)/bdfread.c
 gnu-head.c: $(srcdir)/gnu-head.bmp bin2c
 	./bin2c avatar_image < $(srcdir)/gnu-head.bmp > $@
 
-bell.c: $(srcdir)/bell.wav bin2c
-	./bin2c avt_bell_data < $(srcdir)/bell.wav > $@
+bell.c: $(srcdir)/bell.au bin2c
+	./bin2c avt_bell_data < $(srcdir)/bell.au > $@
 
 avatar-default.o: $(srcdir)/avatar-default.c gnu-head.c
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avatar-default.c
