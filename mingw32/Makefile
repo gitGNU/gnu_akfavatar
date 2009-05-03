@@ -189,7 +189,7 @@ $(srcdir)/bell.au: $(srcdir)/bell.flac
 bell.c: $(srcdir)/bell.au bin2c
 	./bin2c avt_bell_data < $(srcdir)/bell.au > $@
 
-avatar-default.o: $(srcdir)/avatar-default.c gnu-head.xpm
+avatar-default.o: $(srcdir)/avatar-default.c $(srcdir)/gnu-head.xpm
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avatar-default.c
 
 avtfilechooser.o: $(srcdir)/avtfilechooser.c $(srcdir)/akfavatar.h
