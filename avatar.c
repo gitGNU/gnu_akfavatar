@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.216 2009-02-21 17:52:39 akf Exp $ */
+/* $Id: avatar.c,v 2.217 2009-05-03 10:08:01 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -370,7 +370,8 @@ avt_load_image_bmp (const char *file)
 /* limited XPM support */
 /* only 1 character per pixel allowed (up to 90 colors) */
 /* SDL_image has better support */
-static SDL_Surface *
+/* use this for internal stuff! */
+SDL_Surface *
 avt_load_image_xpm (char **xpm)
 {
   SDL_Surface *img;
@@ -4500,7 +4501,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.216 2009-02-21 17:52:39 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.217 2009-05-03 10:08:01 akf Exp $");
 
   /*
    * Initialize the display, accept any format

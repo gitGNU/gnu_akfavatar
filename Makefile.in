@@ -34,9 +34,6 @@ bin2c: $(srcdir)/bin2c.c
 bdfread: $(srcdir)/bdfread.c
 	cc -o $@ $(srcdir)/bdfread.c
 
-gnu-head.c: $(srcdir)/gnu-head.bmp bin2c
-	./bin2c avatar_image < $(srcdir)/gnu-head.bmp > $@
-
 # bell.au should be in the sourcecode-distribution
 $(srcdir)/bell.au: $(srcdir)/bell.flac
 	@echo "create headerless old AU file"
@@ -53,7 +50,7 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h \
 	  $(srcdir)/btn-cont.xpm $(srcdir)/akfavatar.xpm
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c $(srcdir)/avatar.c
 
-avatar-default.o: $(srcdir)/avatar-default.c gnu-head.c $(srcdir)/akfavatar.h
+avatar-default.o: $(srcdir)/avatar-default.c gnu-head.xpm $(srcdir)/akfavatar.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avatar-default.c
 
 avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h bell.c
@@ -78,7 +75,7 @@ avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h \
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -fPIC -o $@ \
 	  $(srcdir)/avatar.c
 
-avatar-default.lo: $(srcdir)/avatar-default.c gnu-head.c $(srcdir)/akfavatar.h
+avatar-default.lo: $(srcdir)/avatar-default.c gnu-head.xpm $(srcdir)/akfavatar.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -fPIC -o $@ \
 	  $(srcdir)/avatar-default.c
 
@@ -267,7 +264,7 @@ clean:
 	-rm -f *.ppu *.gpi *.gpm
 	-rm -f bin2c
 	-rm -f bdfread
-	-rm -f gnu-head.c bell.c
+	-rm -f bell.c
 	-rm -f ucsfont9x18.c ucsfont7x14.c
 	-rm -f pascal/*.o pascal/*.gpi pascal/*.gpm pascal/*.ppu
 	-rm -f pascal/link.res pascal/ppas.sh
@@ -315,7 +312,7 @@ dist: info html man distclean
 	ln README INSTALL AUTHORS COPYING ChangeLog lrun \
 	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
 	   avtccio.c avtcwio.c avtcio.h avtfilechooser.c \
-	   balloonpointer.xpm circle.xpm gnu-head.bmp \
+	   balloonpointer.xpm circle.xpm gnu-head.xpm \
 	   btn.xpm btn-cont.xpm btn-no.xpm btn-yes.xpm \
 	   avatarsay.c avtterm.h avtterm.c avtmsg.h avtmsg.c \
 	   arch.h arch.c \

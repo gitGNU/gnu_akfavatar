@@ -7,7 +7,7 @@ btn-cont.xpm, balloonpointer.xpm, circle.xpm, info.xpm,
 bell.flac, bell.au
 These files are put in the Public Domain - Andreas K. Foerster
 
-gnu-head.bmp, gnu-small.bmp:
+gnu-head.xpm:
 GNU head graphic was drawn by Etienne Suvasa
 coloured version: Joseph W. Reiss 
 Copyright (C) Free Software Foundation

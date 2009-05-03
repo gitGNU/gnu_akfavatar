@@ -181,9 +181,6 @@ bin2c: $(srcdir)/bin2c.c
 bdfread: $(srcdir)/bdfread.c
 	cc -o $@ $(srcdir)/bdfread.c
 
-gnu-head.c: $(srcdir)/gnu-head.bmp bin2c
-	./bin2c avatar_image < $(srcdir)/gnu-head.bmp > $@
-
 # bell.au should be in the sourcecode-distribution
 $(srcdir)/bell.au: $(srcdir)/bell.flac
 	@echo "create headerless old AU file"
@@ -192,7 +189,7 @@ $(srcdir)/bell.au: $(srcdir)/bell.flac
 bell.c: $(srcdir)/bell.au bin2c
 	./bin2c avt_bell_data < $(srcdir)/bell.au > $@
 
-avatar-default.o: $(srcdir)/avatar-default.c gnu-head.c
+avatar-default.o: $(srcdir)/avatar-default.c gnu-head.xpm
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avatar-default.c
 
 avtfilechooser.o: $(srcdir)/avtfilechooser.c $(srcdir)/akfavatar.h
@@ -299,7 +296,7 @@ install-strip: akfavatar.dll libakfavatar.a
 clean:
 	-rm -f *~ *.o *.ppu *.gpi
 	-rm -f libinfo.rc avtsayinfo.rc
-	-rm -f bell.c gnu-head.c
+	-rm -f bell.c
 	-rm -f ucsfont7x14.c ucsfont9x18.c
 	-rm -f bin2c bin2c.exe
 	-rm -f bdfread bdfread.exe
