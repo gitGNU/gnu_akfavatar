@@ -10,6 +10,9 @@
 	* avatar.c (avt_show_image_XPM):
 	use avt_import_XPM
 
+	* avatar-audio.c (avt_LoadAU_RW):
+	support for 24/32Bit linear PCM (degraded)
+
 2009-05-02  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-audio.c (avt_initialize_audio):

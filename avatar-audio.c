@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.41 2009-05-02 14:28:28 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.42 2009-05-03 20:23:06 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -167,7 +167,7 @@ short_audio_sound (void)
 int
 avt_initialize_audio (void)
 {
-  SDL_SetError ("$Id: avatar-audio.c,v 2.41 2009-05-02 14:28:28 akf Exp $");
+  SDL_SetError ("$Id: avatar-audio.c,v 2.42 2009-05-03 20:23:06 akf Exp $");
   SDL_ClearError ();
 
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
@@ -336,6 +336,47 @@ avt_LoadAU_RW (SDL_RWops * src, int freesrc,
       *audio_buf = buf;
       *data_size = audio_size;
       completed = AVT_TRUE;
+      break;
+
+    case 4:			/* 24Bit linear PCM */
+    case 5:			/* 32Bit linear PCM */
+      /* degrade to 16Bit */
+      {
+	Uint32 i;
+	Uint8 BPS;		/* Bytes per Sample */
+	Uint32 out_size;
+	Sint16 *outbuf, *outp;
+	Uint8 *inp;
+
+	/* Bytes per Sample */
+	if (encoding == 4)
+	  BPS = 24 / 8;
+	else if (encoding == 5)
+	  BPS = 32 / 8;
+
+	out_size = audio_size / BPS * sizeof (Sint16);
+	outbuf = (Sint16 *) SDL_malloc (out_size);
+
+	if (outbuf == NULL)
+	  {
+	    SDL_SetError ("out of memory");
+	    goto done;
+	  }
+
+	inp = buf;
+	outp = outbuf;
+	for (i = 0; i < audio_size; i += BPS, inp += BPS, outp++)
+	  *outp = SDL_SwapBE16 (*(Sint16 *) inp);
+
+	/* input buffer no longer needed */
+	SDL_free (buf);
+
+	/* assign values */
+	spec->format = AUDIO_S16SYS;
+	*audio_buf = (Uint8 *) outbuf;
+	*data_size = out_size;
+	completed = AVT_TRUE;
+      }
       break;
 
     case 1:			/* mu-law */
