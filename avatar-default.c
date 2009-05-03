@@ -19,15 +19,13 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-default.c,v 2.4 2009-05-03 10:08:01 akf Exp $ */
+/* $Id: avatar-default.c,v 2.5 2009-05-03 11:03:39 akf Exp $ */
 
 #include "gnu-head.xpm"
 #include "akfavatar.h"
 
-avt_image_t *avt_load_image_xpm (char **xpm);
-
 avt_image_t *
 avt_default (void)
 {
-  return avt_load_image_xpm (gnu_head_xpm);
+  return avt_import_XPM (gnu_head_xpm);
 }

@@ -3,6 +3,13 @@
 	* avatar-default.c (avt_default):
 	use XPM image
 
+	* avatar.c (avt_import_XPM):
+	try to avoid loading SDL_image if possible
+	avatar-default.c (avt_default): use avt_import_XPM
+
+	* avatar.c (avt_show_image_XPM):
+	use avt_import_XPM
+
 2009-05-02  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-audio.c (avt_initialize_audio):

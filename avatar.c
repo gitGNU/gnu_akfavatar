@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.217 2009-05-03 10:08:01 akf Exp $ */
+/* $Id: avatar.c,v 2.218 2009-05-03 11:03:39 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -371,7 +371,7 @@ avt_load_image_bmp (const char *file)
 /* only 1 character per pixel allowed (up to 90 colors) */
 /* SDL_image has better support */
 /* use this for internal stuff! */
-SDL_Surface *
+static SDL_Surface *
 avt_load_image_xpm (char **xpm)
 {
   SDL_Surface *img;
@@ -3761,13 +3761,12 @@ avt_show_image_data (void *img, int imgsize)
 int
 avt_show_image_XPM (char **xpm)
 {
-  SDL_Surface *image = NULL;
+  avt_image_t *image = NULL;
 
   if (!screen)
     return _avt_STATUS;
 
-  load_image_init ();
-  image = load_image.xpm (xpm);
+  image = avt_import_XPM (xpm);
 
   if (image == NULL)
     {
@@ -3776,7 +3775,7 @@ avt_show_image_XPM (char **xpm)
     }
 
   avt_show_image (image);
-  SDL_FreeSurface (image);
+  SDL_FreeSurface ((SDL_Surface *) image);
 
   return _avt_STATUS;
 }
@@ -3864,13 +3863,24 @@ avt_make_transparent (avt_image_t * image)
 avt_image_t *
 avt_import_XPM (char **xpm)
 {
-  SDL_Surface *image = NULL;
+  SDL_Surface *image;
 
   if (avt_init_SDL ())
     return NULL;
 
-  load_image_init ();
-  image = load_image.xpm (xpm);
+  image = NULL;
+
+  /* if load_image isn't intitialized, try the internal loader first */
+  if (!load_image.initialized)
+    image = avt_load_image_xpm (xpm);
+
+  /* if image wasn't loaded yet or loading failed */
+  if (image == NULL)
+    {
+      /* try load_image framework */
+      load_image_init ();
+      image = load_image.xpm (xpm);
+    }
 
   return (avt_image_t *) image;
 }
@@ -4501,7 +4511,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.217 2009-05-03 10:08:01 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.218 2009-05-03 11:03:39 akf Exp $");
 
   /*
    * Initialize the display, accept any format
