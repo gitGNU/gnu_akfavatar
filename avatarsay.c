@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.280 2009-05-04 12:44:12 akf Exp $ */
+/* $Id: avatarsay.c,v 2.281 2009-05-04 19:19:34 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1206,7 +1206,7 @@ handle_backgoundcolor_command (const wchar_t * s)
 }
 
 #define check_audio_head(buf) \
-  (memcmp ((buf), ".snd", 4) || \
+  (memcmp ((buf), ".snd", 4) == 0 || \
   (memcmp ((buf), "RIFF", 4) == 0 \
     && memcmp ((char *)(buf)+8, "WAVE", 4) == 0))
 
@@ -2950,7 +2950,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.280 2009-05-04 12:44:12 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.281 2009-05-04 19:19:34 akf Exp $");
 
   return EXIT_SUCCESS;
 }
