@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.279 2009-04-13 15:45:40 akf Exp $ */
+/* $Id: avatarsay.c,v 2.280 2009-05-04 12:44:12 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1313,9 +1313,9 @@ handle_rawaudiosettings_command (const wchar_t * s)
 
   /* check channels */
   if (strcmp (channels, "mono") == 0)
-    raw_audio.channels = AVT_MONO;
+    raw_audio.channels = AVT_AUDIO_MONO;
   else if (strcmp (channels, "stereo") == 0)
-    raw_audio.channels = AVT_STEREO;
+    raw_audio.channels = AVT_AUDIO_STEREO;
   else
     warning_msg ("rawaudiosettings", "must be either mono or stereo");
 }
@@ -2858,7 +2858,7 @@ main (int argc, char *argv[])
 
   raw_audio.type = AVT_AUDIO_UNKNOWN;
   raw_audio.samplingrate = 22050;
-  raw_audio.channels = AVT_MONO;
+  raw_audio.channels = AVT_AUDIO_MONO;
 
   avtterm_nocolor (AVT_FALSE);
 
@@ -2950,7 +2950,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.279 2009-04-13 15:45:40 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.280 2009-05-04 12:44:12 akf Exp $");
 
   return EXIT_SUCCESS;
 }

@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.88 2009-04-13 15:45:39 akf Exp $ */
+/* $Id: akfavatar.h,v 2.89 2009-05-04 12:44:12 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -757,8 +757,8 @@ avt_audio_t *avt_load_wave_data (void *data, int datasize);
 #define AVT_AUDIO_ALAW    101  /* 8 Bit A-Law */
 
 /* for channels */
-#define AVT_MONO      1
-#define AVT_STEREO    2
+#define AVT_AUDIO_MONO      1
+#define AVT_AUDIO_STEREO    2
 
 /*
  * loads raw audio data from memory
