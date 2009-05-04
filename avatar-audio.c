@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.43 2009-05-04 12:44:12 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.44 2009-05-04 15:58:20 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -167,7 +167,7 @@ short_audio_sound (void)
 int
 avt_initialize_audio (void)
 {
-  SDL_SetError ("$Id: avatar-audio.c,v 2.43 2009-05-04 12:44:12 akf Exp $");
+  SDL_SetError ("$Id: avatar-audio.c,v 2.44 2009-05-04 15:58:20 akf Exp $");
   SDL_ClearError ();
 
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
@@ -313,6 +313,48 @@ avt_LoadAU_RW (SDL_RWops * src, int freesrc,
   /* note: linear PCM is always assumed to be signed and big endian */
   switch (encoding)
     {
+    case 1:			/* mu-law */
+    case 27:			/* A-law */
+      {
+	Uint32 i;
+	Uint32 out_size;
+	Sint16 *outbuf, *outp;
+	Uint8 *inp;
+
+	/* get larger output buffer */
+	out_size = sizeof (Sint16) * audio_size;
+	outbuf = (Sint16 *) SDL_malloc (out_size);
+	if (outbuf == NULL)
+	  {
+	    SDL_SetError ("out of memory");
+	    goto done;
+	  }
+
+	/* decode */
+	inp = buf;
+	outp = outbuf;
+	if (encoding == 1)	/* mu-law */
+	  {
+	    for (i = 0; i < audio_size; i++)
+	      *outp++ = mulaw_decode[*inp++];
+	  }
+	else			/* A-law */
+	  {
+	    for (i = 0; i < audio_size; i++)
+	      *outp++ = alaw_decode[*inp++];
+	  }
+
+	/* input buffer no longer needed */
+	SDL_free (buf);
+
+	/* assign values */
+	spec->format = AUDIO_S16SYS;
+	*audio_buf = (Uint8 *) outbuf;
+	*data_size = out_size;
+	completed = AVT_TRUE;
+      }
+      break;
+
     case 2:			/* 8Bit linear PCM */
       spec->format = AUDIO_S8;	/* signed! */
       *audio_buf = buf;
@@ -351,7 +393,7 @@ avt_LoadAU_RW (SDL_RWops * src, int freesrc,
 	/* Bytes per Sample */
 	if (encoding == 4)
 	  BPS = 24 / 8;
-	else if (encoding == 5)
+	else
 	  BPS = 32 / 8;
 
 	out_size = audio_size / BPS * sizeof (Sint16);
@@ -365,50 +407,8 @@ avt_LoadAU_RW (SDL_RWops * src, int freesrc,
 
 	inp = buf;
 	outp = outbuf;
-	for (i = 0; i < audio_size; i += BPS, inp += BPS, outp++)
+	for (i = 0; i < (audio_size / BPS); i++, outp++, inp += BPS)
 	  *outp = SDL_SwapBE16 (*(Sint16 *) inp);
-
-	/* input buffer no longer needed */
-	SDL_free (buf);
-
-	/* assign values */
-	spec->format = AUDIO_S16SYS;
-	*audio_buf = (Uint8 *) outbuf;
-	*data_size = out_size;
-	completed = AVT_TRUE;
-      }
-      break;
-
-    case 1:			/* mu-law */
-    case 27:			/* A-law */
-      {
-	Uint32 i;
-	Uint32 out_size;
-	Sint16 *outbuf, *outp;
-	Uint8 *inp;
-
-	/* get larger output buffer */
-	out_size = sizeof (Sint16) * audio_size;
-	outbuf = (Sint16 *) SDL_malloc (out_size);
-	if (outbuf == NULL)
-	  {
-	    SDL_SetError ("out of memory");
-	    goto done;
-	  }
-
-	/* decode */
-	inp = buf;
-	outp = outbuf;
-	if (encoding == 1)	/* mu-law */
-	  {
-	    for (i = 0; i < audio_size; i++)
-	      *outp++ = mulaw_decode[*inp++];
-	  }
-	else			/* A-law */
-	  {
-	    for (i = 0; i < audio_size; i++)
-	      *outp++ = alaw_decode[*inp++];
-	  }
 
 	/* input buffer no longer needed */
 	SDL_free (buf);
