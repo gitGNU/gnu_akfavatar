@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.45 2009-05-04 16:05:26 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.46 2009-05-08 11:55:20 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -167,7 +167,7 @@ short_audio_sound (void)
 int
 avt_initialize_audio (void)
 {
-  SDL_SetError ("$Id: avatar-audio.c,v 2.45 2009-05-04 16:05:26 akf Exp $");
+  SDL_SetError ("$Id: avatar-audio.c,v 2.46 2009-05-08 11:55:20 akf Exp $");
   SDL_ClearError ();
 
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
@@ -251,17 +251,38 @@ avt_load_wave_data (void *data, int datasize)
   return (avt_audio_t *) s;
 }
 
+static Uint8 *
+avt_get_RWdata (SDL_RWops * src, Sint32 size)
+{
+  Uint8 *buf;
+
+  buf = (Uint8 *) SDL_malloc (size);
+  if (buf == NULL)
+    SDL_SetError ("out of memory");
+  else
+    {
+      /* read the data into the buf */
+      if (SDL_RWread (src, buf, 1, size) < size)
+	{
+	  SDL_SetError ("read error");
+	  SDL_free (buf);
+	  buf = NULL;
+	}
+    }
+
+  return buf;
+}
+
 /* TODO: not yet finished */
 static SDL_AudioSpec *
 avt_LoadAU_RW (SDL_RWops * src, int freesrc,
 	       SDL_AudioSpec * spec, Uint8 ** audio_buf, Uint32 * data_size)
 {
-  Uint32 head_size, read_size, audio_size, encoding, samplingrate, channels;
+  Uint32 head_size, audio_size, encoding, samplingrate, channels;
   Uint8 *buf;
   avt_bool_t completed;
 
   completed = AVT_FALSE;
-  read_size = 0;
   buf = NULL;
 
   if (!src || !spec || !audio_buf || !data_size)
@@ -295,21 +316,6 @@ avt_LoadAU_RW (SDL_RWops * src, int freesrc,
   if (head_size > 24)
     SDL_RWseek (src, head_size - 24, RW_SEEK_CUR);
 
-  buf = (Uint8 *) SDL_malloc (audio_size);
-  if (buf == NULL)
-    {
-      SDL_SetError ("out of memory");
-      goto done;
-    }
-
-  /* read the data into the buf */
-  read_size = SDL_RWread (src, buf, 1, audio_size);
-  if (read_size < audio_size)
-    {
-      SDL_SetError ("read error");
-      goto done;
-    }
-
   /* note: linear PCM is always assumed to be signed and big endian */
   switch (encoding)
     {
@@ -319,7 +325,7 @@ avt_LoadAU_RW (SDL_RWops * src, int freesrc,
 	Uint32 i;
 	Uint32 out_size;
 	Sint16 *outbuf, *outp;
-	Uint8 *inp;
+	Uint8 value;
 
 	/* get larger output buffer */
 	out_size = sizeof (Sint16) * audio_size;
@@ -331,21 +337,25 @@ avt_LoadAU_RW (SDL_RWops * src, int freesrc,
 	  }
 
 	/* decode */
-	inp = buf;
 	outp = outbuf;
 	if (encoding == 1)	/* mu-law */
 	  {
-	    for (i = 0; i < audio_size; i++)
-	      *outp++ = mulaw_decode[*inp++];
+	    for (i = 0; i < audio_size; i++, outp++)
+	      {
+		if (SDL_RWread (src, &value, sizeof (value), 1) == -1)
+		  break;
+		*outp = mulaw_decode[value];
+	      }
 	  }
 	else			/* A-law */
 	  {
-	    for (i = 0; i < audio_size; i++)
-	      *outp++ = alaw_decode[*inp++];
+	    for (i = 0; i < audio_size; i++, outp++)
+	      {
+		if (SDL_RWread (src, &value, sizeof (value), 1) == -1)
+		  break;
+		*outp = alaw_decode[value];
+	      }
 	  }
-
-	/* input buffer no longer needed */
-	SDL_free (buf);
 
 	/* assign values */
 	spec->format = AUDIO_S16SYS;
@@ -356,28 +366,36 @@ avt_LoadAU_RW (SDL_RWops * src, int freesrc,
       break;
 
     case 2:			/* 8Bit linear PCM */
-      spec->format = AUDIO_S8;	/* signed! */
-      *audio_buf = buf;
-      *data_size = audio_size;
-      completed = AVT_TRUE;
+      buf = avt_get_RWdata (src, audio_size);
+      if (buf)
+	{
+	  spec->format = AUDIO_S8;	/* signed! */
+	  *audio_buf = buf;
+	  *data_size = audio_size;
+	  completed = AVT_TRUE;
+	}
       break;
 
     case 3:			/* 16Bit linear PCM */
-      /* convert to system endianess now, if necessary */
-      if (SDL_BYTEORDER == SDL_LIL_ENDIAN)
+      buf = avt_get_RWdata (src, audio_size);
+      if (buf)
 	{
-	  Uint32 i;
-	  Sint16 *bufp;
+	  /* convert to system endianess now, if necessary */
+	  if (SDL_BYTEORDER == SDL_LIL_ENDIAN)
+	    {
+	      Uint32 i;
+	      Sint16 *bufp;
 
-	  bufp = (Sint16 *) buf;
-	  for (i = 0; i < (audio_size / 2); i++, bufp++)
-	    *bufp = SDL_Swap16 (*bufp);
+	      bufp = (Sint16 *) buf;
+	      for (i = 0; i < (audio_size / 2); i++, bufp++)
+		*bufp = SDL_Swap16 (*bufp);
+	    }
+
+	  spec->format = AUDIO_S16SYS;
+	  *audio_buf = buf;
+	  *data_size = audio_size;
+	  completed = AVT_TRUE;
 	}
-
-      spec->format = AUDIO_S16SYS;
-      *audio_buf = buf;
-      *data_size = audio_size;
-      completed = AVT_TRUE;
       break;
 
     case 4:			/* 24Bit linear PCM */
@@ -389,13 +407,20 @@ avt_LoadAU_RW (SDL_RWops * src, int freesrc,
 	Uint32 out_size;
 	Uint32 samples;
 	Sint16 *outbuf, *outp;
-	Uint8 *inp;
+	Sint16 value, dummy;
+	Uint8 skip;
 
-	/* Bytes per Sample */
+	/* Bytes per Sample and skip value */
 	if (encoding == 4)
-	  BPS = 24 / 8;
+	  {
+	    BPS = 24 / 8;
+	    skip = 1;
+	  }
 	else
-	  BPS = 32 / 8;
+	  {
+	    BPS = 32 / 8;
+	    skip = 2;
+	  }
 
 	samples = audio_size / BPS;
 	out_size = samples * sizeof (Sint16);
@@ -407,13 +432,17 @@ avt_LoadAU_RW (SDL_RWops * src, int freesrc,
 	    goto done;
 	  }
 
-	inp = buf;
 	outp = outbuf;
-	for (i = 0; i < samples; i++, outp++, inp += BPS)
-	  *outp = SDL_SwapBE16 (*(Sint16 *) inp);
+	for (i = 0; i < samples; i++, outp++)
+	  {
+	    if (SDL_RWread (src, &value, sizeof (value), 1) == -1)
+	      break;
+	    *outp = SDL_SwapBE16 (value);
 
-	/* input buffer no longer needed */
-	SDL_free (buf);
+	    /* skip the rest */
+	    if (SDL_RWread (src, &dummy, skip, 1) == -1)
+	      break;
+	  }
 
 	/* assign values */
 	spec->format = AUDIO_S16SYS;

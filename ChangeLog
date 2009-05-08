@@ -1,3 +1,9 @@
+2009-05-08  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-audio.c (avt_LoadAU_RW):
+	rewritten not to waste memory (but may be slower)
+	(avt_get_RWdata): new function
+
 2009-05-03  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-default.c (avt_default):
