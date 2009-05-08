@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.46 2009-05-08 11:55:20 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.47 2009-05-08 12:10:18 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -167,7 +167,7 @@ short_audio_sound (void)
 int
 avt_initialize_audio (void)
 {
-  SDL_SetError ("$Id: avatar-audio.c,v 2.46 2009-05-08 11:55:20 akf Exp $");
+  SDL_SetError ("$Id: avatar-audio.c,v 2.47 2009-05-08 12:10:18 akf Exp $");
   SDL_ClearError ();
 
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
@@ -408,19 +408,12 @@ avt_LoadAU_RW (SDL_RWops * src, int freesrc,
 	Uint32 samples;
 	Sint16 *outbuf, *outp;
 	Sint16 value, dummy;
-	Uint8 skip;
 
 	/* Bytes per Sample and skip value */
 	if (encoding == 4)
-	  {
-	    BPS = 24 / 8;
-	    skip = 1;
-	  }
+	  BPS = 24 / 8;
 	else
-	  {
-	    BPS = 32 / 8;
-	    skip = 2;
-	  }
+	  BPS = 32 / 8;
 
 	samples = audio_size / BPS;
 	out_size = samples * sizeof (Sint16);
@@ -440,7 +433,7 @@ avt_LoadAU_RW (SDL_RWops * src, int freesrc,
 	    *outp = SDL_SwapBE16 (value);
 
 	    /* skip the rest */
-	    if (SDL_RWread (src, &dummy, skip, 1) == -1)
+	    if (SDL_RWread (src, &dummy, BPS - sizeof (value), 1) == -1)
 	      break;
 	  }
 
