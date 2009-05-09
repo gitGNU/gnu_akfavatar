@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.49 2009-05-09 07:23:28 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.50 2009-05-09 17:58:15 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -167,7 +167,7 @@ short_audio_sound (void)
 int
 avt_initialize_audio (void)
 {
-  SDL_SetError ("$Id: avatar-audio.c,v 2.49 2009-05-09 07:23:28 akf Exp $");
+  SDL_SetError ("$Id: avatar-audio.c,v 2.50 2009-05-09 17:58:15 akf Exp $");
   SDL_ClearError ();
 
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
@@ -304,9 +304,20 @@ avt_LoadAU_RW (SDL_RWops * src, int freesrc,
   samplingrate = SDL_ReadBE32 (src);
   channels = SDL_ReadBE32 (src);
 
-  /* skip the rest of the head (comments) */
+  if (channels < 1 || channels > 2)
+    {
+      SDL_SetError ("only 1 or 2 channels supported");
+      goto done;
+    }
+
+  /* skip the rest of the header */
   if (head_size > 24)
     SDL_RWseek (src, head_size - 24, RW_SEEK_CUR);
+
+  /*
+   * Note: A header size of 24 is not standard conformant,
+   * but many programs create such files anyway
+   */
 
   /* size of audio-data not given :-( */
   if (audio_size == 0xffffffff)
@@ -318,7 +329,7 @@ avt_LoadAU_RW (SDL_RWops * src, int freesrc,
       SDL_RWseek (src, data_start, RW_SEEK_SET);
     }
 
-  /* note: linear PCM is always assumed to be signed and big endian */
+  /* Note: linear PCM is always assumed to be signed and big endian */
   switch (encoding)
     {
     case 1:			/* mu-law */

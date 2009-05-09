@@ -3,6 +3,9 @@
 	* avatar-audio.c (avt_LoadAU_RW):
 	try to get the data-size when it's not given in the header
 
+	* avatar-audio.c (avt_LoadAU_RW):
+	check the number of channels
+
 2009-05-08  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-audio.c (avt_LoadAU_RW):
