@@ -8,6 +8,13 @@ SHELL = /bin/sh
 INSTALL_PROGRAM = $(INSTALL) -m 755
 INSTALL_DATA = $(INSTALL) -m 644
 
+SOX = sox
+
+# Soundfile for the bell (\a)
+# may be any format that sox supports
+# should be higher quality; it will be converted into the needed format
+BELL = $(srcdir)/bell.flac 
+
 # names for packages
 PKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)
 BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
@@ -37,7 +44,7 @@ bdfread: $(srcdir)/bdfread.c
 # bell.au should be in the sourcecode-distribution
 $(srcdir)/bell.au: $(srcdir)/bell.flac
 	@echo "create headerless old AU file"
-	sox $(srcdir)/bell.flac --type .ul --channels 1 $@ rate -l 8k
+	$(SOX) $(BELL) --type .ul --channels 1 $@ rate -l 8k
 
 bell.c: $(srcdir)/bell.au bin2c
 	./bin2c avt_bell_data < $(srcdir)/bell.au > $@
