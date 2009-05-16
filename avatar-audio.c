@@ -22,7 +22,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-audio.c,v 2.50 2009-05-09 17:58:15 akf Exp $ */
+/* $Id: avatar-audio.c,v 2.51 2009-05-16 16:07:24 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -167,7 +167,7 @@ short_audio_sound (void)
 int
 avt_initialize_audio (void)
 {
-  SDL_SetError ("$Id: avatar-audio.c,v 2.50 2009-05-09 17:58:15 akf Exp $");
+  SDL_SetError ("$Id: avatar-audio.c,v 2.51 2009-05-16 16:07:24 akf Exp $");
   SDL_ClearError ();
 
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
@@ -559,7 +559,7 @@ avt_load_audio_RW (SDL_RWops * src)
 	}
     }
 
-  SDL_RWseek (src, start, SEEK_SET);
+  SDL_RWseek (src, start, RW_SEEK_SET);
 
   s = (AudioStruct *) SDL_malloc (sizeof (AudioStruct));
   if (s == NULL)
