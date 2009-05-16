@@ -1,3 +1,10 @@
+2009-05-16  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_load_image_xpm_RW, avt_load_image_RW)
+	(avt_load_image_file): new functions
+	(load_image_initialize): use new functions
+	(avt_load_image_bmp): removed
+
 2009-05-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-audio.c (avt_LoadAU_RW):

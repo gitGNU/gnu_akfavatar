@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.218 2009-05-03 11:03:39 akf Exp $ */
+/* $Id: avatar.c,v 2.219 2009-05-16 16:03:08 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -360,13 +360,6 @@ load_image_initialize (void)
 
 /* helper functions */
 
-static SDL_Surface *
-avt_load_image_bmp (const char *file)
-{
-  /* it's a makro, so I need a wrapper */
-  return SDL_LoadBMP (file);
-}
-
 /* limited XPM support */
 /* only 1 character per pixel allowed (up to 90 colors) */
 /* SDL_image has better support */
@@ -381,6 +374,10 @@ avt_load_image_xpm (char **xpm)
   unsigned int red, green, blue;
   int width, height, ncolors, cpp;
   int line, colornr;
+
+  /* check if we actually have data to process */
+  if (!xpm || !*xpm)
+    return NULL;
 
   SDL_sscanf (xpm[0], "%d %d %d %d", &width, &height, &ncolors, &cpp);
 
@@ -436,6 +433,119 @@ avt_load_image_xpm (char **xpm)
   return img;
 }
 
+#define XPM_MAX_LINES 1024
+
+static SDL_Surface *
+avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
+{
+  int start;
+  char head[9];
+  char *xpm[XPM_MAX_LINES];
+  char line[MINIMALWIDTH + 1];
+  int linepos, linenr;
+  SDL_Surface *img;
+  char c;
+  avt_bool_t end;
+
+  end = AVT_FALSE;
+
+  if (!src)
+    return NULL;
+
+  start = SDL_RWtell (src);
+
+  /* check if it has an XPM header */
+  if (SDL_RWread (src, head, sizeof (head), 1) < 1
+      || SDL_memcmp (head, "/* XPM */", 9) != 0)
+    {
+      if (freesrc)
+	SDL_RWclose (src);
+      else
+	SDL_RWseek (src, start, RW_SEEK_SET);
+
+      return NULL;
+    }
+
+  /* initialize xpm */
+  for (linenr = 0; linenr < XPM_MAX_LINES; linenr++)
+    xpm[linenr] = NULL;
+
+  linenr = linepos = 0;
+
+  while (!end)
+    {
+      /* skip to next quote */
+      do
+	{
+	  if (SDL_RWread (src, &c, sizeof (c), 1) < 1)
+	    end = AVT_TRUE;
+	}
+      while (!end && c != '"');
+
+      /* read line */
+      linepos = 0;
+      c = '\0';
+      while (!end && c != '"')
+	{
+	  if (SDL_RWread (src, &c, sizeof (c), 1) < 1)
+	    end = AVT_TRUE;	/* shouldn't happen here */
+
+	  if (linepos <= MINIMALWIDTH && c != '"')
+	    line[linepos++] = c;
+	}
+
+      /* copy line */
+      if (!end)
+	{
+	  line[linepos] = '\0';
+	  xpm[linenr] = SDL_strdup (line);
+	  linenr++;
+	  if (linenr >= XPM_MAX_LINES)
+	    end = AVT_TRUE;
+	}
+    }
+
+  if (freesrc)
+    SDL_RWclose (src);
+
+  img = avt_load_image_xpm (xpm);
+
+  /* free xpm memory */
+  for (linenr = 0; linenr < XPM_MAX_LINES; linenr++)
+    {
+      if (xpm[linenr])
+	SDL_free (xpm[linenr]);
+    }
+
+  return img;
+}
+
+static SDL_Surface *
+avt_load_image_RW (SDL_RWops * src, int freesrc)
+{
+  SDL_Surface *img;
+
+  img = NULL;
+
+  if (src)
+    {
+      if ((img = SDL_LoadBMP_RW (src, 0)) == NULL)
+	img = avt_load_image_xpm_RW (src, 0);
+
+      if (freesrc)
+	SDL_RWclose (src);
+    }
+
+  return img;
+}
+
+
+static SDL_Surface *
+avt_load_image_file (const char *filename)
+{
+  return avt_load_image_RW (SDL_RWFromFile (filename, "rb"), 1);
+}
+
 /*
  * try to load the library SDL_image dynamically 
  * (uncompressed BMP files can always be loaded)
@@ -447,8 +557,8 @@ load_image_initialize (void)
     {
       /* first load defaults from plain SDL */
       load_image.handle = NULL;
-      load_image.file = avt_load_image_bmp;
-      load_image.rw = SDL_LoadBMP_RW;
+      load_image.file = avt_load_image_file;
+      load_image.rw = avt_load_image_RW;
       load_image.xpm = avt_load_image_xpm;
 
 /* loadso.h is only available with SDL 1.2.6 or higher */
@@ -4511,7 +4621,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.218 2009-05-03 11:03:39 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.219 2009-05-16 16:03:08 akf Exp $");
 
   /*
    * Initialize the display, accept any format
