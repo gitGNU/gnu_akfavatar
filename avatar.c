@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.219 2009-05-16 16:03:08 akf Exp $ */
+/* $Id: avatar.c,v 2.220 2009-05-17 07:56:36 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -99,6 +99,8 @@
 #  define SDL_free                free
 #  undef SDL_strlen
 #  define SDL_strlen              strlen
+#  undef SDL_strdup
+#  define SDL_strdup              strdup
 #  undef SDL_memcpy
 #  define SDL_memcpy              memcpy
 #  undef SDL_memset
@@ -136,7 +138,7 @@
 #endif /* OLD_SDL */
 
 /* don't use any libc commands directly! */
-#pragma GCC poison  malloc free strlen memcpy memset getenv putenv
+#pragma GCC poison  malloc free strlen strdup memcpy memset getenv putenv
 /* do not poison the iconv stuff, it causes problems with external libiconv */
 
 
@@ -440,13 +442,14 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
 {
   int start;
   char head[9];
-  char *xpm[XPM_MAX_LINES];
+  char *xpmdata[XPM_MAX_LINES + 1];
   char line[MINIMALWIDTH + 1];
   int linepos, linenr;
   SDL_Surface *img;
   char c;
   avt_bool_t end;
 
+  img = NULL;
   end = AVT_FALSE;
 
   if (!src)
@@ -465,10 +468,6 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
 
       return NULL;
     }
-
-  /* initialize xpm */
-  for (linenr = 0; linenr < XPM_MAX_LINES; linenr++)
-    xpm[linenr] = NULL;
 
   linenr = linepos = 0;
 
@@ -498,24 +497,28 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
       if (!end)
 	{
 	  line[linepos] = '\0';
-	  xpm[linenr] = SDL_strdup (line);
-	  linenr++;
+	  xpmdata[linenr] = SDL_strdup (line);
 	  if (linenr >= XPM_MAX_LINES)
 	    end = AVT_TRUE;
+	  linenr++;
 	}
     }
+
+  /* terminate the array */
+  xpmdata[linenr] = NULL;
 
   if (freesrc)
     SDL_RWclose (src);
 
-  img = avt_load_image_xpm (xpm);
+  if (linenr <= XPM_MAX_LINES)
+    img = avt_load_image_xpm (xpmdata);
+  else
+    SDL_SetError ("XPM image too large");
 
-  /* free xpm memory */
-  for (linenr = 0; linenr < XPM_MAX_LINES; linenr++)
-    {
-      if (xpm[linenr])
-	SDL_free (xpm[linenr]);
-    }
+  /* free xpmdata */
+  linenr = 0;
+  while (linenr <= XPM_MAX_LINES && xpmdata[linenr] != NULL)
+    SDL_free (xpmdata[linenr++]);
 
   return img;
 }
@@ -4621,7 +4624,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.219 2009-05-16 16:03:08 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.220 2009-05-17 07:56:36 akf Exp $");
 
   /*
    * Initialize the display, accept any format
