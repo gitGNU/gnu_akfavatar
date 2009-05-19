@@ -1,3 +1,12 @@
+2009-05-19  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_load_image_xpm):
+	support up to 256 colors
+
+	* avatar.c (avt_change_avatar_image, avt_initialize):
+	use SDL_DisplayFormatAlpha also for images with colorkey
+	(still don't know why, but it fixed a strange problem)
+
 2009-05-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_load_image_xpm_RW, avt_load_image_RW)

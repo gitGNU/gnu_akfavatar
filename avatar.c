@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.220 2009-05-17 07:56:36 akf Exp $ */
+/* $Id: avatar.c,v 2.221 2009-05-19 16:39:25 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -362,9 +362,8 @@ load_image_initialize (void)
 
 /* helper functions */
 
-/* limited XPM support */
-/* only 1 character per pixel allowed (up to 90 colors) */
-/* SDL_image has better support */
+/* XPM support */
+/* up to 256 colors */
 /* use this for internal stuff! */
 static SDL_Surface *
 avt_load_image_xpm (char **xpm)
@@ -372,52 +371,63 @@ avt_load_image_xpm (char **xpm)
   SDL_Surface *img;
   SDL_Color color;
   char *p;
-  char color_character;
   unsigned int red, green, blue;
   int width, height, ncolors, cpp;
   int line, colornr;
+  Uint16 *palette;
+  Sint32 palette_nr;
+
+  palette = NULL;
 
   /* check if we actually have data to process */
   if (!xpm || !*xpm)
     return NULL;
 
-  SDL_sscanf (xpm[0], "%d %d %d %d", &width, &height, &ncolors, &cpp);
-
-  /* check for reasonable values */
-  if (width < 1 || height < 1 || ncolors < 1)
+  if (SDL_sscanf (xpm[0], "%d %d %d %d", &width, &height, &ncolors, &cpp) < 4
+      || width < 1 || height < 1 || ncolors < 1)
     {
       SDL_SetError ("error in XPM data");
       return NULL;
     }
 
-  /* only one character per pixel supported */
-  if (cpp != 1)
+  /* only limited colors supported */
+  if (ncolors > 256 || cpp > 2)
     {
-      SDL_SetError ("XPM format not fully supported, "
-		    "use SDL_image for better support");
+      SDL_SetError ("too many colors for XPM image");
       return NULL;
     }
 
-  img = SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_SRCCOLORKEY,
-			      width, height, 8, 0, 0, 0, 0);
+  img = SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 8, 0, 0, 0, 0);
 
   if (!img)
     return NULL;
 
-  /* copy pixeldata */
-  SDL_LockSurface (img);
-  for (line = 0; line < height; line++)
-    SDL_memcpy (img->pixels + (line * img->pitch), xpm[ncolors + 1 + line],
-		width);
-  SDL_UnlockSurface (img);
+  if (cpp > 1)
+    {
+      palette = (Uint16 *) SDL_malloc (ncolors * sizeof (Uint16));
+      if (!palette)
+	{
+	  SDL_SetError ("out of memory");
+	  SDL_free (img);
+	  return NULL;
+	}
+    }
+
+  palette_nr = 0;
 
   /* set colors */
-  for (colornr = 1; colornr <= ncolors; colornr++)
+  for (colornr = 1; colornr <= ncolors; colornr++, palette_nr++)
     {
-      color_character = xpm[colornr][0];
+      /* if there is only one character per pixel, 
+       * the character is the palette number 
+       */
+      if (cpp == 1)
+	palette_nr = xpm[colornr][0];
+      else			/* store characters in palette */
+	*(palette + palette_nr) = *(Uint16 *) xpm[colornr];
 
       /* scan for color definition */
-      p = &xpm[colornr][1];	/* skip color-character */
+      p = &xpm[colornr][cpp];	/* skip color-characters */
       while (*p != 'c' || !SDL_isspace (*(p + 1)) || !SDL_isspace (*(p - 1)))
 	p++;
 
@@ -426,16 +436,48 @@ avt_load_image_xpm (char **xpm)
 	  color.r = red;
 	  color.g = green;
 	  color.b = blue;
-	  SDL_SetColors (img, &color, color_character, 1);
+	  SDL_SetColors (img, &color, palette_nr, 1);
 	}
       else if (SDL_strncmp (p, "c None", 6) == 0)
-	SDL_SetColorKey (img, SDL_SRCCOLORKEY, color_character);
+	{
+	  SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL, palette_nr);
+	}
     }
+
+  /* copy pixeldata */
+  if (SDL_MUSTLOCK (img))
+    SDL_LockSurface (img);
+  if (cpp == 1)
+    {
+      for (line = 0; line < height; line++)
+	SDL_memcpy ((Uint8 *) img->pixels + (line * img->pitch),
+		    xpm[ncolors + 1 + line], width);
+    }
+  else				/* cpp != 1 */
+    {
+      Uint16 code;
+      int pos;
+
+      for (line = 0; line < height; line++)
+	for (pos = 0; pos < width; pos++)
+	  {
+	    code = *(Uint16 *) (xpm[ncolors + 1 + line] + (pos * cpp));
+	    palette_nr = 0;
+	    while (*(palette + palette_nr) != code && palette_nr < ncolors)
+	      palette_nr++;
+	    *((Uint8 *) img->pixels + (line * img->pitch) + pos) = palette_nr;
+	  }
+    }
+  if (SDL_MUSTLOCK (img))
+    SDL_UnlockSurface (img);
+
+  if (palette)
+    SDL_free (palette);
 
   return img;
 }
 
-#define XPM_MAX_LINES 1024
+#define XPM_MAX_LINES (1 + 256 + MINIMALHEIGHT)
 
 static SDL_Surface *
 avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
@@ -3970,7 +4012,7 @@ avt_make_transparent (avt_image_t * image)
   if (!SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL, color))
     img = NULL;
 
-  return (avt_image_t *) image;
+  return (avt_image_t *) img;
 }
 
 avt_image_t *
@@ -4119,7 +4161,7 @@ avt_change_avatar_image (avt_image_t * image)
   if (image)
     {
       /* convert image to display-format for faster drawing */
-      if (((SDL_Surface *) image)->flags & SDL_SRCALPHA)
+      if (((SDL_Surface *) image)->flags & (SDL_SRCALPHA | SDL_SRCCOLORKEY))
 	avt_image = SDL_DisplayFormatAlpha ((SDL_Surface *) image);
       else
 	avt_image = SDL_DisplayFormat ((SDL_Surface *) image);
@@ -4624,7 +4666,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.220 2009-05-17 07:56:36 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.221 2009-05-19 16:39:25 akf Exp $");
 
   /*
    * Initialize the display, accept any format
@@ -4757,7 +4799,7 @@ avt_initialize (const char *title, const char *icontitle,
   if (image)
     {
       /* convert image to display-format for faster drawing */
-      if (((SDL_Surface *) image)->flags & SDL_SRCALPHA)
+      if (((SDL_Surface *) image)->flags & (SDL_SRCALPHA | SDL_SRCCOLORKEY))
 	avt_image = SDL_DisplayFormatAlpha ((SDL_Surface *) image);
       else
 	avt_image = SDL_DisplayFormat ((SDL_Surface *) image);
