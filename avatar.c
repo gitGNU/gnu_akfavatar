@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.222 2009-05-20 10:56:03 akf Exp $ */
+/* $Id: avatar.c,v 2.223 2009-05-20 11:55:23 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -138,7 +138,7 @@
 #endif /* OLD_SDL */
 
 /* don't use any libc commands directly! */
-#pragma GCC poison  malloc free strlen strdup memcpy memset getenv putenv
+#pragma GCC poison  malloc free strlen memcpy memset getenv putenv
 /* do not poison the iconv stuff, it causes problems with external libiconv */
 
 
@@ -486,7 +486,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
   char head[9];
   char *xpmdata[XPM_MAX_LINES + 1];
   char line[(MINIMALWIDTH * 2) + 1];
-  int linepos, linenr;
+  unsigned int linepos, linenr;
   SDL_Surface *img;
   char c;
   avt_bool_t end;
@@ -4666,7 +4666,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.222 2009-05-20 10:56:03 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.223 2009-05-20 11:55:23 akf Exp $");
 
   /*
    * Initialize the display, accept any format
