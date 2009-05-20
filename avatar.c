@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.221 2009-05-19 16:39:25 akf Exp $ */
+/* $Id: avatar.c,v 2.222 2009-05-20 10:56:03 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -485,7 +485,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
   int start;
   char head[9];
   char *xpmdata[XPM_MAX_LINES + 1];
-  char line[MINIMALWIDTH + 1];
+  char line[(MINIMALWIDTH * 2) + 1];
   int linepos, linenr;
   SDL_Surface *img;
   char c;
@@ -531,7 +531,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
 	  if (SDL_RWread (src, &c, sizeof (c), 1) < 1)
 	    end = AVT_TRUE;	/* shouldn't happen here */
 
-	  if (linepos <= MINIMALWIDTH && c != '"')
+	  if (linepos < (sizeof (line) - 1) && c != '"')
 	    line[linepos++] = c;
 	}
 
@@ -4666,7 +4666,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.221 2009-05-19 16:39:25 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.222 2009-05-20 10:56:03 akf Exp $");
 
   /*
    * Initialize the display, accept any format
