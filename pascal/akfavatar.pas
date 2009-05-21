@@ -1,5 +1,5 @@
 {*
- * Pascal binding to the AKFAvatar library version 0.16
+ * Pascal binding to the AKFAvatar library version 0.16.1
  * Copyright (c) 2007, 2008, 2009 Andreas K. Foerster <info@akfoerster.de>
  *
  * Can be used with GNU-Pascal or FreePascal
@@ -252,8 +252,7 @@ procedure Beep;
 procedure Flash;
 
 { loads Audio File
-  currently only WAV files supported
-  encodings: PCM, MS-ADPCM, IMA-ADPCM }
+  AU or WAV files supported }
 function LoadSoundFile(const FileName: string): pointer;
 function LoadSoundData(data: pointer; size: LongInt): pointer;
 procedure FreeSound(snd: pointer);
@@ -472,11 +471,11 @@ procedure avt_bell; libakfavatar 'avt_bell';
 
 procedure avt_flash; libakfavatar 'avt_flash';
 
-function avt_load_wave_file(f: CString): pointer;
-  libakfavatar 'avt_load_wave_file';
+function avt_load_audio_file(f: CString): pointer;
+  libakfavatar 'avt_load_audio_file';
 
-function avt_load_wave_data (Data: Pointer; size: CInteger): Pointer;
-  libakfavatar 'avt_load_wave_data';
+function avt_load_audio_data (Data: Pointer; size: CInteger): Pointer;
+  libakfavatar 'avt_load_audio_data';
 
 function avt_load_raw_audio_data (Data: pointer; size: CInteger;
                             Samplingrate, Audio_type, 
@@ -932,12 +931,12 @@ end;
 
 function LoadSoundFile(const FileName: string): pointer;
 begin
-LoadSoundFile := avt_load_wave_file(String2CString(FileName))
+LoadSoundFile := avt_load_audio_file(String2CString(FileName))
 end;
 
 function LoadSoundData(data: pointer; size: LongInt): pointer;
 begin
-LoadSoundData := avt_load_wave_data(data, size)
+LoadSoundData := avt_load_audio_data(data, size)
 end;
 
 procedure Beep;
