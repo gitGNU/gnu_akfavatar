@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.89 2009-05-04 12:44:12 akf Exp $ */
+/* $Id: akfavatar.h,v 2.90 2009-05-22 14:01:14 akf Exp $ */
 
 #ifndef _akfavatar_h
 #define _akfavatar_h
@@ -707,8 +707,14 @@ int avt_initialize_audio (void);
 void avt_quit_audio (void);
 
 /*
+ * supported audio formats:
+ * AU:  linear PCM with up to 32Bit, mu-law, A-law
+ * WAV: linear PCM with up to 16Bit, MS-ADPCM, IMA-ADPCM
+ * Both: mono or stereo
+ */
+
+/*
  * loads an audio file in AU or Wave format
- * for supported subtypes see below
  * not for headerless formats
  */
 avt_audio_t *avt_load_audio_file (const char *file);
@@ -719,29 +725,17 @@ avt_audio_t *avt_load_audio_file (const char *file);
  */
 avt_audio_t *avt_load_audio_data (void *data, int datasize);
 
-/*
- * loads an AU file
- * supported: 8Bit PCM, 16Bit PCM, mu-law, A-law
- */
-avt_audio_t *avt_load_au_file (const char *file);
-
-/*
- * loads AU data from memory
- * must still be freed with avt_free_audio!
- */
-avt_audio_t *avt_load_au_data (void *data, int datasize);
-
 /* 
  * loads a wave file 
- * supported: PCM, MS-ADPCM, IMA-ADPCM
+ * deprecated: use avt_load_audio_file
  */
-avt_audio_t *avt_load_wave_file (const char *file);
+avt_audio_t *avt_load_wave_file (const char *file) AVT_DEPRECATED;
 
 /*
  * loads wave data from memory
- * must still be freed with avt_free_audio!
+ * deprecated: use avt_load_audio_file
  */
-avt_audio_t *avt_load_wave_data (void *data, int datasize);
+avt_audio_t *avt_load_wave_data (void *data, int datasize) AVT_DEPRECATED;
 
 /* values for audio_type */
 #define AVT_AUDIO_UNKNOWN   0  /* doesn't play */
