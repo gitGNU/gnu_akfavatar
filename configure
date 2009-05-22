@@ -6,7 +6,7 @@
 # This configure script is free software; you have unlimited permission
 # to copy, distribute and modify it.
 #
-# Date of this version: $Date: 2009-02-24 14:09:13 $
+# Date of this version: $Date: 2009-05-22 18:17:08 $
 
 
 # Version and name
@@ -28,6 +28,7 @@ OLDSDL=
 OPENPTY=
 FORCE_ICONV=
 WCHAR_ENCODING=
+SDL_IMAGE="yes"
 LINK_SDL_IMAGE="no"
 
 # clear some things potentially inherited from environment.
@@ -91,6 +92,7 @@ while [ x"$1" != x ] ; do
 		echo "  --with-oldsdl         support for older SDL versions on target machine"
 		echo "  --with-iconv[=enc]    force use of external iconv (normally not needed)"
 		echo "  --with-sdl-iconv=enc  set encoding for wchar_t when SDL's iconv is used"
+		echo "  --disable-sdl-image   disable support for SDL_image completely"
 		echo "  --enable-link-sdl-image link directly to SDL_image"
 		#echo "  --enable-qvga         compile for small QVGA (320x240) displays"
 		#echo "  --enable-size=qvga    compile for small QVGA (320x240) displays"
@@ -153,6 +155,10 @@ while [ x"$1" != x ] ; do
 	--enable-link-sdl-image=no | \
 	--disable-link-sdl-image | \
 	--disable-link-sdl-image=yes) LINK_SDL_IMAGE="no" ;;
+	--disable-sdl-image | \
+	--disable-sdl-image=yes) SDL_IMAGE="no" ;;
+	--enable-sdl-image | \
+	--enable-sdl-image=yes) SDL_IMAGE="yes" ;;
 	--enable-qvga | --enable-qvga=yes | --enable-size=qvga) SIZE="QVGA" ;;
 	--enable-vga | --enable-vga=yes | --enable-size=vga) SIZE="VGA" ;;
 	
@@ -197,6 +203,12 @@ esac
 
 SDLCFLAGS=`sdl-config --cflags`
 SDLLDFLAGS=`sdl-config --libs`
+
+if [ "$SDL_IMAGE" = "no" ]
+then 
+  SDLCFLAGS="$SDLCFLAGS -DNO_SDL_IMAGE"
+  LINK_SDL_IMAGE="no"
+fi
 
 if [ "$LINK_SDL_IMAGE" = "yes" ] 
 then 

@@ -1,3 +1,8 @@
+2009-05-22  Andreas K. Foerster  <info@akfoerster.de>
+
+	* configure, avatar.c (load_image_initialize):
+	"./configure --disable-sdl-image"
+
 2009-05-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_load_image_xpm):

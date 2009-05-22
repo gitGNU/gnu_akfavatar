@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.223 2009-05-20 11:55:23 akf Exp $ */
+/* $Id: avatar.c,v 2.224 2009-05-22 18:17:08 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -606,6 +606,7 @@ load_image_initialize (void)
       load_image.rw = avt_load_image_RW;
       load_image.xpm = avt_load_image_xpm;
 
+#ifndef NO_SDL_IMAGE
 /* loadso.h is only available with SDL 1.2.6 or higher */
 #ifdef _SDL_loadso_h
       load_image.handle = SDL_LoadObject (AVT_SDL_IMAGE_LIB);
@@ -624,6 +625,7 @@ load_image_initialize (void)
 	    SDL_LoadFunction (load_image.handle, "IMG_ReadXPMFromArray");
 	}
 #endif /* _SDL_loadso_h */
+#endif /* NO_SDL_IMAGE */
 
       load_image.initialized = AVT_TRUE;
     }
@@ -4666,7 +4668,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.223 2009-05-20 11:55:23 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.224 2009-05-22 18:17:08 akf Exp $");
 
   /*
    * Initialize the display, accept any format
