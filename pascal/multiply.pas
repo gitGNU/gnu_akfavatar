@@ -227,8 +227,8 @@ Begin { main program }
   { load the image of the teacher, if there is one }
   AvatarImageFile('teacher.bmp');
   
-  correctsnd := LoadSoundFile('correct.wav');
-  wrongsnd := LoadSoundFile('wrong.wav');
+  correctsnd := LoadSoundFile('positive.au');
+  wrongsnd := LoadSoundFile('negative.au');
 {$EndIf}
 
 Randomize;
