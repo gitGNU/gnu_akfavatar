@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.224 2009-05-22 18:17:08 akf Exp $ */
+/* $Id: avatar.c,v 2.225 2009-05-23 20:50:25 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -109,8 +109,8 @@
 #  define SDL_putenv              putenv
 #  undef SDL_sscanf
 #  define SDL_sscanf              sscanf
-#  undef SDL_strncmp
-#  define SDL_strncmp             strncmp
+#  undef SDL_strncasecmp
+#  define SDL_strncasecmp         strncasecmp
 #  undef SDL_isspace
 #  define SDL_isspace             isspace
 #endif /* OLD_SDL */
@@ -363,7 +363,7 @@ load_image_initialize (void)
 /* helper functions */
 
 /* XPM support */
-/* up to 256 colors */
+/* up to 256 colors or grayscales */
 /* use this for internal stuff! */
 static SDL_Surface *
 avt_load_image_xpm (char **xpm)
@@ -428,19 +428,35 @@ avt_load_image_xpm (char **xpm)
 
       /* scan for color definition */
       p = &xpm[colornr][cpp];	/* skip color-characters */
-      while (*p != 'c' || !SDL_isspace (*(p + 1)) || !SDL_isspace (*(p - 1)))
+      while (*p && (*p != 'c' || !SDL_isspace (*(p + 1))
+		    || !SDL_isspace (*(p - 1))))
 	p++;
 
-      if (SDL_sscanf (p, "c #%2x%2x%2x", &red, &green, &blue) == 3)
+      /* no color found? search for grayscale definition */
+      if (!*p)
 	{
-	  color.r = red;
-	  color.g = green;
-	  color.b = blue;
-	  SDL_SetColors (img, &color, palette_nr, 1);
+	  p = &xpm[colornr][cpp];	/* skip color-characters */
+	  while (*p && (*p != 'g' || !SDL_isspace (*(p + 1))
+			|| !SDL_isspace (*(p - 1))))
+	    p++;
 	}
-      else if (SDL_strncmp (p, "c None", 6) == 0)
+
+      if (*p)
 	{
-	  SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL, palette_nr);
+	  p++;
+
+	  if (SDL_sscanf (p, " #%2x%2x%2x", &red, &green, &blue) == 3)
+	    {
+	      color.r = red;
+	      color.g = green;
+	      color.b = blue;
+	      SDL_SetColors (img, &color, palette_nr, 1);
+	    }
+	  else if (SDL_strncasecmp (p, " None", 6) == 0)
+	    {
+	      SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL,
+			       palette_nr);
+	    }
 	}
     }
 
@@ -4668,7 +4684,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.224 2009-05-22 18:17:08 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.225 2009-05-23 20:50:25 akf Exp $");
 
   /*
    * Initialize the display, accept any format
