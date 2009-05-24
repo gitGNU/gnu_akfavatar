@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.281 2009-05-04 19:19:34 akf Exp $ */
+/* $Id: avatarsay.c,v 2.282 2009-05-24 08:54:45 akf Exp $ */
 
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -1141,7 +1141,12 @@ change_avatar_image (avt_image_t * newavatar)
 {
   if (initialized)
     {
-      avt_change_avatar_image (newavatar);
+      if (avt_change_avatar_image (newavatar) == AVT_ERROR)
+	{
+	  warning_msg ("avatarimage", avt_get_error ());
+	  avt_set_status (AVT_NORMAL);
+	}
+
       avatar_changed = AVT_TRUE;
       avtterm_update_size ();
     }
@@ -2950,7 +2955,7 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 
   /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.281 2009-05-04 19:19:34 akf Exp $");
+  puts ("$Id: avatarsay.c,v 2.282 2009-05-24 08:54:45 akf Exp $");
 
   return EXIT_SUCCESS;
 }

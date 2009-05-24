@@ -1,3 +1,10 @@
+2009-05-24  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (calculate_balloonmaxheight)
+	(avt_change_avatar_image, avt_initialize):
+	avatarsay.c (handle_avatarimage_command):
+	fix handling when avatar-image is too large
+
 2009-05-23  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_load_image_xpm):

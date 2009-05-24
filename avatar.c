@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.225 2009-05-23 20:50:25 akf Exp $ */
+/* $Id: avatar.c,v 2.226 2009-05-24 08:54:45 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -4134,7 +4134,7 @@ avt_import_image_file (const char *file)
   return (avt_image_t *) image;
 }
 
-static void
+static int
 calculate_balloonmaxheight (void)
 {
   if (avt_image)
@@ -4151,15 +4151,16 @@ calculate_balloonmaxheight (void)
 	  _avt_STATUS = AVT_ERROR;
 	  SDL_FreeSurface (avt_image);
 	  avt_image = NULL;
-	  SDL_Quit ();
-	  screen = NULL;
 	}
     }
-  else				/* no avatar? -> whole screen is the balloon */
+
+  if (!avt_image)		/* no avatar? -> whole screen is the balloon */
     {
       balloonmaxheight = (window.h - (2 * TOPMARGIN)
 			  - (2 * BALLOON_INNER_MARGIN)) / LINEHEIGHT;
     }
+
+  return _avt_STATUS;
 }
 
 /* change avatar image while running */
@@ -4194,6 +4195,8 @@ avt_change_avatar_image (avt_image_t * image)
     }
 
   calculate_balloonmaxheight ();
+
+  /* set actual balloon size to the maximum size */
   balloonheight = balloonmaxheight;
   balloonwidth = AVT_LINELENGTH;
 
@@ -4684,7 +4687,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.225 2009-05-23 20:50:25 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.226 2009-05-24 08:54:45 akf Exp $");
 
   /*
    * Initialize the display, accept any format
@@ -4831,7 +4834,9 @@ avt_initialize (const char *title, const char *icontitle,
 	}
     }
 
-  calculate_balloonmaxheight ();
+  if (calculate_balloonmaxheight () != AVT_NORMAL)
+    return _avt_STATUS;
+
   balloonheight = balloonmaxheight;
   balloonwidth = AVT_LINELENGTH;
 
