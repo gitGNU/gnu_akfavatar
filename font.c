@@ -1,6 +1,6 @@
 /*
  * AKFAvatar font import
- * Copyright (c) 2007 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007, 2009 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -18,9 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#if defined(QVGA)
-#  include "ucsfont4x6.c"
-#elif defined(VGA)
+#if defined(VGA)
 #  include "ucsfont7x14.c"
 #else
 #  include "ucsfont9x18.c"

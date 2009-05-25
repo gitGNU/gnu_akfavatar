@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.226 2009-05-24 08:54:45 akf Exp $ */
+/* $Id: avatar.c,v 2.227 2009-05-25 16:13:35 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -51,13 +51,7 @@
 #  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
 
-#if defined(QVGA)
-#  define FONTWIDTH 4
-#  define FONTHEIGHT 6
-#  define UNDERLINE 5
-#  define LINEHEIGHT FONTHEIGHT	/* + something, if you want */
-#  define NOT_BOLD 1
-#elif defined(VGA)
+#if defined(VGA)
 #  define FONTWIDTH 7
 #  define FONTHEIGHT 14
 #  define UNDERLINE 13
@@ -144,14 +138,7 @@
 
 #define COLORDEPTH 24
 
-#if defined(QVGA)
-#  define MINIMALWIDTH 320
-#  define MINIMALHEIGHT 240
-#  define TOPMARGIN 10
-#  define BALLOON_INNER_MARGIN 10
-#  define AVATAR_MARGIN 5
-#  define MOVE_DELAY 5
-#elif defined(VGA)
+#if defined(VGA)
 #  define MINIMALWIDTH 640
 #  define MINIMALHEIGHT 480
 #  define TOPMARGIN 25
@@ -167,7 +154,7 @@
 #  define AVATAR_MARGIN 20
    /* Delay for moving in or out - the higher, the slower */
 #  define MOVE_DELAY 1.8
-#endif /* !QVGA, !LARGRE */
+#endif /* !VGA */
 
 #define BALLOONPOINTER_OFFSET 20
 
@@ -4687,7 +4674,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.226 2009-05-24 08:54:45 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.227 2009-05-25 16:13:35 akf Exp $");
 
   /*
    * Initialize the display, accept any format
