@@ -333,7 +333,8 @@ dist: info html man distclean
 	
 	mkdir $(PKGNAME)/pascal
 	ln pascal/README pascal/akfavatar.pas pascal/example.pas \
-	   pascal/multiply.pas pascal/correct.wav pascal/wrong.wav \
+	   pascal/multiply.pas pascal/positive.au pascal/negative.au \
+	   pascal/neutral.au pascal/teacher.xpm \
 	   pascal/gpcavatar pascal/fpcavatar \
 	   $(PKGNAME)/pascal/
 	
@@ -368,7 +369,8 @@ dist-bin: avatarsay multiply multiplizieren info html
 	ln $(srcdir)/pascal/?pcavatar $(BINPKGNAME)/
 	-ln multiply $(BINPKGNAME)/
 	-ln multiplizieren $(BINPKGNAME)/
-	ln $(srcdir)/pascal/correct.wav $(srcdir)/pascal/wrong.wav \
+	ln $(srcdir)/pascal/positive.au $(srcdir)/pascal/negative.au \
+	   $(srcdir)/pascal/neutral.au $(srcdir)/pascal/teacher.xpm \
 	   $(BINPKGNAME)/
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/avtman \
 	   $(srcdir)/fsdemo-?? \
