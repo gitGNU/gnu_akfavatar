@@ -1,10 +1,10 @@
 /* XPM */
+static char * teacher_xpm[] = {
 
 /* Lehrer Laempel */
 /* A drawing by Wilhelm Busch */
-/* This file is in the Public domain */
+/* This file is in the Public Domain */
 
-static char * teacher_xpm[] = {
 "141 253 16 1",
 " 	c None",
 ".	c #0F0907",
