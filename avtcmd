@@ -28,11 +28,14 @@ Options:
  -s, --sync       synchronize the working directory with avatarsay
 
 Examples:
- avtcmd size 4, 40             sets the size to 4 lines, 40 columns
- avtcmd size                   sets the maximum size again
- avtcmd -s avatarimage me.xpm  changes the avatar-image
- avtcmd -s audio sound1.au     plays an audio file from the current directory
- avtcmd stopaudio              stops the audio output
+ avtcmd size 4, 40                         sets the size to 4 lines, 40 columns
+ avtcmd size                               sets the maximum size again
+ avtcmd -s avatarimage me.xpm              changes the avatar-image
+ avtcmd -s audio sound1.au                 plays an audio file
+                                           from the current directory
+ avtcmd stopaudio                          stops the audio output
+ avtcmd rawaudiosettings mu-law 8000 mono  activate support for 
+                                           headerless AU files
 
 Report bugs to <bug-akfavatar@akfoerster.de>
 EOF
