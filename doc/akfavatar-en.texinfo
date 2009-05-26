@@ -1,5 +1,5 @@
 \input texinfo   @c -*-texinfo-*-
-@comment $Id: akfavatar-en.texinfo,v 2.52 2009-04-19 17:15:11 akf Exp $
+@comment $Id: akfavatar-en.texinfo,v 2.53 2009-05-26 17:51:01 akf Exp $
 
 @comment %**start of header
 @setfilename akfavatar-en.info
@@ -578,14 +578,14 @@ system-wide configuration file.
 Well, first you might want to try the environment variable.  That is simple.
 The variable is called @env{AVATARIMAGE}.  So with the @code{GNU bash} you 
 can set this variable like this: 
-@samp{export AVATARIMAGE=/usr/local/share/pixmaps/myavatar.bmp}. 
+@samp{export AVATARIMAGE=/usr/local/share/pixmaps/myavatar.xpm}. 
 @strong{Important:} You should always use the full path!
 
 If you want to use a configuration file, create a file named
 @file{/etc/avatarsay} and put something like in this example into it:
 
 @example
-AVATARIMAGE=/usr/local/share/pixmaps/myavatar.bmp
+AVATARIMAGE=/usr/local/share/pixmaps/myavatar.xpm
 @end example
 
 If you write a text you want to be shown by @command{avatarsay}, you can 
@@ -593,7 +593,7 @@ change the avatar-image on a text-by-text basis, using a command in the
 text-file.  This is explained in @ref{Commands for avatarsay}.
 
 Which file-formats AKFAvatar supports depends on which libraries you have 
-installed.  Uncompressed @code{BMP} images are always supported.
+installed.
 
 @subsection Transparent avatar background
 @cindex transparency (avatar image)
@@ -754,7 +754,7 @@ set values for @code{AVATARIMAGE} and @code{DATADIR}.
 
 for example:
 @example
-AVATARIMAGE=/usr/local/share/pixmaps/myavatar.bmp
+AVATARIMAGE=/usr/local/share/pixmaps/myavatar.xpm
 AVATARDATADIR=/usr/local/share/akfavatar
 @end example
 
@@ -813,7 +813,7 @@ The avatar image can also be set with the environment variable
 variable.
 
 Which file-formats AKFAvatar supports depends on which libraries you have 
-installed.  Uncompressed @code{BMP} images are always supported.
+installed.
 
 @item encoding @var{encodingname}
 just for demos: sets the encoding of the text; 
@@ -907,7 +907,7 @@ You can use a stripline @emph{after} this command if you wish.
 The stripline doesn't have any effect then.
 
 Which file-formats AKFAvatar supports depends on which libraries you have 
-installed.  Uncompressed @code{BMP} images are always supported.
+installed.
 
 @item rawaudiosettings @var{samplingrate} @var{encoding} mono|stereo
 settings for loading raw audio files
@@ -1294,7 +1294,7 @@ unit.
 You can use a different image for the avatar with the command
 @verbatim
 {$IfDef AKFAVATAR}
-  AvatarImageFile ('/usr/local/share/pixmaps/human-peasant.bmp');
+  AvatarImageFile ('/usr/local/share/pixmaps/teacher.xpm');
 {$EndIf}
 @end verbatim
 @noindent

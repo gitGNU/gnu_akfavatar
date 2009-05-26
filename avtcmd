@@ -30,8 +30,8 @@ Options:
 Examples:
  avtcmd size 4, 40             sets the size to 4 lines, 40 columns
  avtcmd size                   sets the maximum size again
- avtcmd -s avatarimage me.png  changes the avatar-image
- avtcmd -s audio sound1.wav    plays an audio file from the current directory
+ avtcmd -s avatarimage me.xpm  changes the avatar-image
+ avtcmd -s audio sound1.au     plays an audio file from the current directory
  avtcmd stopaudio              stops the audio output
 
 Report bugs to <bug-akfavatar@akfoerster.de>
