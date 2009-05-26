@@ -225,7 +225,7 @@ Begin { main program }
   SetBackgroundColor($BB, $BB, $55);
 
   { load the image of the teacher, if there is one }
-  AvatarImageFile('teacher.bmp');
+  AvatarImageFile('teacher.xpm');
   
   correctsnd := LoadSoundFile('positive.au');
   wrongsnd := LoadSoundFile('negative.au');
