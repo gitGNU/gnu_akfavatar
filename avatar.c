@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.227 2009-05-25 16:13:35 akf Exp $ */
+/* $Id: avatar.c,v 2.228 2009-05-27 13:48:41 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -361,10 +361,10 @@ avt_load_image_xpm (char **xpm)
   unsigned int red, green, blue;
   int width, height, ncolors, cpp;
   int line, colornr;
-  Uint16 *palette;
-  Sint32 palette_nr;
+  Uint16 *codes;
+  Sint32 code_nr;
 
-  palette = NULL;
+  codes = NULL;
 
   /* check if we actually have data to process */
   if (!xpm || !*xpm)
@@ -391,8 +391,8 @@ avt_load_image_xpm (char **xpm)
 
   if (cpp > 1)
     {
-      palette = (Uint16 *) SDL_malloc (ncolors * sizeof (Uint16));
-      if (!palette)
+      codes = (Uint16 *) SDL_malloc (ncolors * sizeof (Uint16));
+      if (!codes)
 	{
 	  SDL_SetError ("out of memory");
 	  SDL_free (img);
@@ -400,18 +400,18 @@ avt_load_image_xpm (char **xpm)
 	}
     }
 
-  palette_nr = 0;
+  code_nr = 0;
 
   /* set colors */
-  for (colornr = 1; colornr <= ncolors; colornr++, palette_nr++)
+  for (colornr = 1; colornr <= ncolors; colornr++, code_nr++)
     {
       /* if there is only one character per pixel, 
        * the character is the palette number 
        */
       if (cpp == 1)
-	palette_nr = xpm[colornr][0];
+	code_nr = xpm[colornr][0];
       else			/* store characters in palette */
-	*(palette + palette_nr) = *(Uint16 *) xpm[colornr];
+	*(codes + code_nr) = *(Uint16 *) xpm[colornr];
 
       /* scan for color definition */
       p = &xpm[colornr][cpp];	/* skip color-characters */
@@ -437,12 +437,11 @@ avt_load_image_xpm (char **xpm)
 	      color.r = red;
 	      color.g = green;
 	      color.b = blue;
-	      SDL_SetColors (img, &color, palette_nr, 1);
+	      SDL_SetColors (img, &color, code_nr, 1);
 	    }
 	  else if (SDL_strncasecmp (p, " None", 6) == 0)
 	    {
-	      SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL,
-			       palette_nr);
+	      SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL, code_nr);
 	    }
 	}
     }
@@ -465,17 +464,17 @@ avt_load_image_xpm (char **xpm)
 	for (pos = 0; pos < width; pos++)
 	  {
 	    code = *(Uint16 *) (xpm[ncolors + 1 + line] + (pos * cpp));
-	    palette_nr = 0;
-	    while (*(palette + palette_nr) != code && palette_nr < ncolors)
-	      palette_nr++;
-	    *((Uint8 *) img->pixels + (line * img->pitch) + pos) = palette_nr;
+	    code_nr = 0;
+	    while (*(codes + code_nr) != code && code_nr < ncolors)
+	      code_nr++;
+	    *((Uint8 *) img->pixels + (line * img->pitch) + pos) = code_nr;
 	  }
     }
   if (SDL_MUSTLOCK (img))
     SDL_UnlockSurface (img);
 
-  if (palette)
-    SDL_free (palette);
+  if (codes)
+    SDL_free (codes);
 
   return img;
 }
@@ -4674,7 +4673,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.227 2009-05-25 16:13:35 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.228 2009-05-27 13:48:41 akf Exp $");
 
   /*
    * Initialize the display, accept any format
