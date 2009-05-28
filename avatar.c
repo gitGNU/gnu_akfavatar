@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.228 2009-05-27 13:48:41 akf Exp $ */
+/* $Id: avatar.c,v 2.229 2009-05-28 09:09:57 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -89,6 +89,8 @@
 
 #  undef SDL_malloc
 #  define SDL_malloc              malloc
+#  undef SDL_calloc
+#  define SDL_calloc              calloc
 #  undef SDL_free
 #  define SDL_free                free
 #  undef SDL_strlen
@@ -132,7 +134,7 @@
 #endif /* OLD_SDL */
 
 /* don't use any libc commands directly! */
-#pragma GCC poison  malloc free strlen memcpy memset getenv putenv
+#pragma GCC poison  malloc calloc free strlen memcpy memset getenv putenv
 /* do not poison the iconv stuff, it causes problems with external libiconv */
 
 
@@ -350,26 +352,27 @@ load_image_initialize (void)
 /* helper functions */
 
 /* XPM support */
-/* up to 256 colors or grayscales */
 /* use this for internal stuff! */
 static SDL_Surface *
 avt_load_image_xpm (char **xpm)
 {
   SDL_Surface *img;
-  SDL_Color color;
-  char *p;
-  unsigned int red, green, blue;
   int width, height, ncolors, cpp;
-  int line, colornr;
-  Uint16 *codes;
-  Sint32 code_nr;
+  int colornr;
+  Uint32 *codes;
+  Uint32 *colors;
+  int code_nr;
 
-  codes = NULL;
+  codes = colors = NULL;
 
   /* check if we actually have data to process */
   if (!xpm || !*xpm)
     return NULL;
 
+  /* read value line
+   * there may be more values in the line, but we just
+   * need the first four
+   */
   if (SDL_sscanf (xpm[0], "%d %d %d %d", &width, &height, &ncolors, &cpp) < 4
       || width < 1 || height < 1 || ncolors < 1)
     {
@@ -377,21 +380,38 @@ avt_load_image_xpm (char **xpm)
       return NULL;
     }
 
-  /* only limited colors supported */
-  if (ncolors > 256 || cpp > 2)
+  /* up to four characters per pixel allowed 
+   * more than enough for truecolor
+   */
+  if (cpp > (int) sizeof (Uint32))
     {
       SDL_SetError ("too many colors for XPM image");
       return NULL;
     }
 
-  img = SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 8, 0, 0, 0, 0);
+  /* create target surface */
+  if (ncolors <= 256)
+    img = SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 8, 0, 0, 0, 0);
+  else
+    {
+      if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+	img = SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 32,
+				    0xFF0000, 0x00FF00, 0x0000FF, 0);
+      else
+	img = SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 32,
+				    0x0000FF, 0x00FF00, 0xFF0000, 0);
+    }
 
   if (!img)
-    return NULL;
+    {
+      SDL_SetError ("out of memory");
+      return NULL;
+    }
 
+  /* get memory for codes table */
   if (cpp > 1)
     {
-      codes = (Uint16 *) SDL_malloc (ncolors * sizeof (Uint16));
+      codes = (Uint32 *) SDL_calloc (ncolors, sizeof (Uint32));
       if (!codes)
 	{
 	  SDL_SetError ("out of memory");
@@ -400,18 +420,47 @@ avt_load_image_xpm (char **xpm)
 	}
     }
 
+  /* get memory for colors table (palette) */
+  /* for <= 256 a table is in img */
+  if (ncolors > 256)
+    {
+      colors = (Uint32 *) SDL_calloc (ncolors, sizeof (Uint32));
+      if (!colors)
+	{
+	  SDL_SetError ("out of memory");
+	  SDL_free (img);
+	  SDL_free (codes);
+	  return NULL;
+	}
+    }
+
   code_nr = 0;
 
-  /* set colors */
+  /* process colors */
   for (colornr = 1; colornr <= ncolors; colornr++, code_nr++)
     {
+      char *p;
+
       /* if there is only one character per pixel, 
        * the character is the palette number 
        */
       if (cpp == 1)
 	code_nr = xpm[colornr][0];
-      else			/* store characters in palette */
-	*(codes + code_nr) = *(Uint16 *) xpm[colornr];
+      else			/* store characters in codes table */
+	{
+	  int i;
+	  Uint32 code;
+
+	  /* convert characters into a 32Bit number */
+	  code = 0;
+	  for (i = 0; i < cpp; i++)
+	    {
+	      code <<= 8;
+	      code |= xpm[colornr][i];
+	    }
+
+	  *(codes + code_nr) = code;
+	}
 
       /* scan for color definition */
       p = &xpm[colornr][cpp];	/* skip color-characters */
@@ -419,7 +468,7 @@ avt_load_image_xpm (char **xpm)
 		    || !SDL_isspace (*(p - 1))))
 	p++;
 
-      /* no color found? search for grayscale definition */
+      /* no color definition found? search for grayscale definition */
       if (!*p)
 	{
 	  p = &xpm[colornr][cpp];	/* skip color-characters */
@@ -430,14 +479,23 @@ avt_load_image_xpm (char **xpm)
 
       if (*p)
 	{
-	  p++;
+	  Uint32 red, green, blue;
 
+	  p++;
 	  if (SDL_sscanf (p, " #%2x%2x%2x", &red, &green, &blue) == 3)
 	    {
-	      color.r = red;
-	      color.g = green;
-	      color.b = blue;
-	      SDL_SetColors (img, &color, code_nr, 1);
+	      if (ncolors <= 256)
+		{
+		  SDL_Color color;
+		  color.r = red;
+		  color.g = green;
+		  color.b = blue;
+
+		  SDL_SetColors (img, &color, code_nr, 1);
+		}
+	      else		/* ncolors > 256 */
+		*(colors + colornr - 1) =
+		  SDL_MapRGB (img->format, red, green, blue);
 	    }
 	  else if (SDL_strncasecmp (p, " None", 6) == 0)
 	    {
@@ -446,29 +504,60 @@ avt_load_image_xpm (char **xpm)
 	}
     }
 
-  /* copy pixeldata */
+  /* process pixeldata */
   if (SDL_MUSTLOCK (img))
     SDL_LockSurface (img);
-  if (cpp == 1)
+  if (cpp == 1)			/* the easiest case */
     {
+      int line;
+
       for (line = 0; line < height; line++)
 	SDL_memcpy ((Uint8 *) img->pixels + (line * img->pitch),
 		    xpm[ncolors + 1 + line], width);
     }
   else				/* cpp != 1 */
     {
-      Uint16 code;
+      Uint32 code;
+      Uint8 *pix;
+      Uint32 *p;
+      int line;
+      int bpp;
       int pos;
+      int i;
+
+      /* Bytes per Pixel of img */
+      bpp = img->format->BytesPerPixel;
 
       for (line = 0; line < height; line++)
-	for (pos = 0; pos < width; pos++)
-	  {
-	    code = *(Uint16 *) (xpm[ncolors + 1 + line] + (pos * cpp));
-	    code_nr = 0;
-	    while (*(codes + code_nr) != code && code_nr < ncolors)
-	      code_nr++;
-	    *((Uint8 *) img->pixels + (line * img->pitch) + pos) = code_nr;
-	  }
+	{
+	  /* point to beginning of the line */
+	  pix = (Uint8 *) img->pixels + (line * img->pitch);
+
+	  for (pos = 0; pos < width; pos++, pix += bpp)
+	    {
+	      /* get code */
+	      code = 0;
+	      for (i = 0; i < cpp; i++)
+		{
+		  code <<= 8;
+		  code |= xpm[ncolors + 1 + line][pos * cpp + i];
+		}
+
+	      /* find code in codes table */
+	      code_nr = 0;
+	      p = codes;
+	      while (*p != code && code_nr < ncolors)
+		{
+		  p++;
+		  code_nr++;
+		}
+
+	      if (ncolors <= 256)
+		*pix = code_nr;
+	      else
+		*(Uint32 *) pix = *(colors + code_nr);
+	    }
+	}
     }
   if (SDL_MUSTLOCK (img))
     SDL_UnlockSurface (img);
@@ -476,10 +565,15 @@ avt_load_image_xpm (char **xpm)
   if (codes)
     SDL_free (codes);
 
+  if (colors)
+    SDL_free (colors);
+
   return img;
 }
 
-#define XPM_MAX_LINES (1 + 256 + MINIMALHEIGHT)
+/* TODO: this eats much too much stack space! */
+/* should be more flexible */
+#define XPM_MAX_LINES 40000
 
 static SDL_Surface *
 avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
@@ -487,7 +581,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
   int start;
   char head[9];
   char *xpmdata[XPM_MAX_LINES + 1];
-  char line[(MINIMALWIDTH * 2) + 1];
+  char line[(MINIMALWIDTH * 4) + 1];
   unsigned int linepos, linenr;
   SDL_Surface *img;
   char c;
@@ -4673,7 +4767,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.228 2009-05-27 13:48:41 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.229 2009-05-28 09:09:57 akf Exp $");
 
   /*
    * Initialize the display, accept any format

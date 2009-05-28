@@ -1,3 +1,8 @@
+2009-05-28  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_load_image_xpm):
+	support for images with more than 256 colors
+
 2009-05-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (calculate_balloonmaxheight)
