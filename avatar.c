@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.229 2009-05-28 09:09:57 akf Exp $ */
+/* $Id: avatar.c,v 2.230 2009-05-28 13:20:13 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -571,18 +571,14 @@ avt_load_image_xpm (char **xpm)
   return img;
 }
 
-/* TODO: this eats much too much stack space! */
-/* should be more flexible */
-#define XPM_MAX_LINES 40000
-
 static SDL_Surface *
 avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
 {
   int start;
   char head[9];
-  char *xpmdata[XPM_MAX_LINES + 1];
+  char **xpm;
   char line[(MINIMALWIDTH * 4) + 1];
-  unsigned int linepos, linenr;
+  unsigned int linepos, linenr, linecount;
   SDL_Surface *img;
   char c;
   avt_bool_t end;
@@ -608,6 +604,9 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
     }
 
   linenr = linepos = 0;
+
+  linecount = 512;		/* can be extended later */
+  xpm = (char **) SDL_malloc (linecount * sizeof (*xpm));
 
   while (!end)
     {
@@ -635,28 +634,33 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
       if (!end)
 	{
 	  line[linepos] = '\0';
-	  xpmdata[linenr] = SDL_strdup (line);
-	  if (linenr >= XPM_MAX_LINES)
-	    end = AVT_TRUE;
+	  xpm[linenr] = SDL_strdup (line);
 	  linenr++;
+	  if (linenr >= linecount)	/* leave one line reserved */
+	    {
+	      linecount += 512;
+	      xpm = (char **) SDL_realloc (xpm, linecount * sizeof (*xpm));
+	      if (!xpm)
+		end = AVT_TRUE;
+	    }
 	}
     }
 
-  /* terminate the array */
-  xpmdata[linenr] = NULL;
+  if (xpm)
+    {
+      /* terminate the array */
+      xpm[linenr] = NULL;
+      img = avt_load_image_xpm (xpm);
+
+      /* free xpm */
+      linenr = 0;
+      while (linenr <= linecount && xpm[linenr] != NULL)
+	SDL_free (xpm[linenr++]);
+      SDL_free (xpm);
+    }
 
   if (freesrc)
     SDL_RWclose (src);
-
-  if (linenr <= XPM_MAX_LINES)
-    img = avt_load_image_xpm (xpmdata);
-  else
-    SDL_SetError ("XPM image too large");
-
-  /* free xpmdata */
-  linenr = 0;
-  while (linenr <= XPM_MAX_LINES && xpmdata[linenr] != NULL)
-    SDL_free (xpmdata[linenr++]);
 
   return img;
 }
@@ -4767,7 +4771,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.229 2009-05-28 09:09:57 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.230 2009-05-28 13:20:13 akf Exp $");
 
   /*
    * Initialize the display, accept any format

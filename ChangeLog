@@ -3,6 +3,9 @@
 	* avatar.c (avt_load_image_xpm):
 	support for images with more than 256 colors
 
+	* avatar.c (avt_load_image_xpm_RW):
+	improve memory handling a little
+
 2009-05-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (calculate_balloonmaxheight)
