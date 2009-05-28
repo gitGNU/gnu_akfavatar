@@ -1,5 +1,15 @@
 /* XPM */
 static char * gnu_head_xpm[] = {
+
+/*
+GNU head graphic was drawn by Etienne Suvasa
+coloured version: Joseph W. Reiss 
+Copyright (C) Free Software Foundation
+either Free Art License or the GNU GPLv2 or later
+http://www.gnu.org/graphics/reiss-gnuhead.html
+modified by Andreas K. Foerster, who claims no Copyright on his modifications
+*/
+
 "259 253 91 1",
 " 	c None",
 ".	c #080203",
