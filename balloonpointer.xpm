@@ -1,5 +1,6 @@
 /* XPM */
 static char * balloonpointer_xpm[] = {
+/* This file is in the Public Domain */
 "64 120 2 1",
 " 	c None",
 ".	c #FFFFFF",

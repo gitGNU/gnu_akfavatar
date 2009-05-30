@@ -1,5 +1,13 @@
 /* XPM */
 static char * akfavatar_xpm[] = {
+
+/*
+Icon for AKFAvatar
+http://akfavatar.nongnu.org/
+by Andreas K. Foerster
+This file is in the Public Domain
+*/
+
 "32 32 3 1",
 " 	c None",
 ".	c #555555",

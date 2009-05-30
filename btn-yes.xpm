@@ -1,5 +1,6 @@
 /* XPM */
 static char * btn_yes_xpm[] = {
+/* This file is in the Public Domain */
 "32 32 7 1",
 " 	c None",
 ".	c #FFF0C2",
