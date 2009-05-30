@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.230 2009-05-28 13:20:13 akf Exp $ */
+/* $Id: avatar.c,v 2.231 2009-05-30 04:44:43 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -95,8 +95,6 @@
 #  define SDL_free                free
 #  undef SDL_strlen
 #  define SDL_strlen              strlen
-#  undef SDL_strdup
-#  define SDL_strdup              strdup
 #  undef SDL_memcpy
 #  define SDL_memcpy              memcpy
 #  undef SDL_memset
@@ -353,6 +351,7 @@ load_image_initialize (void)
 
 /* XPM support */
 /* use this for internal stuff! */
+/* TODO: organize keys in tree-structure */
 static SDL_Surface *
 avt_load_image_xpm (char **xpm)
 {
@@ -577,17 +576,19 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
   int start;
   char head[9];
   char **xpm;
-  char line[(MINIMALWIDTH * 4) + 1];
-  unsigned int linepos, linenr, linecount;
+  char *line;
+  unsigned int linepos, linenr, linecount, linecapacity;
   SDL_Surface *img;
   char c;
-  avt_bool_t end;
-
-  img = NULL;
-  end = AVT_FALSE;
+  avt_bool_t end, error;
 
   if (!src)
     return NULL;
+
+  img = NULL;
+  xpm = NULL;
+  line = NULL;
+  end = error = AVT_FALSE;
 
   start = SDL_RWtell (src);
 
@@ -605,8 +606,21 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
 
   linenr = linepos = 0;
 
+  linecapacity = 100;
+  line = (char *) SDL_malloc (linecapacity);
+  if (!line)
+    {
+      SDL_SetError ("out of memory");
+      return NULL;
+    }
+
   linecount = 512;		/* can be extended later */
   xpm = (char **) SDL_malloc (linecount * sizeof (*xpm));
+  if (!xpm)
+    {
+      SDL_SetError ("out of memory");
+      error = end = AVT_TRUE;
+    }
 
   while (!end)
     {
@@ -624,40 +638,54 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
       while (!end && c != '"')
 	{
 	  if (SDL_RWread (src, &c, sizeof (c), 1) < 1)
-	    end = AVT_TRUE;	/* shouldn't happen here */
+	    error = end = AVT_TRUE;	/* shouldn't happen here */
 
-	  if (linepos < (sizeof (line) - 1) && c != '"')
+	  if (c != '"')
 	    line[linepos++] = c;
+
+	  if (linepos >= linecapacity)
+	    {
+	      linecapacity += 100;
+	      line = (char *) SDL_realloc (line, linecapacity);
+	      if (!line)
+		error = end = AVT_TRUE;
+	    }
 	}
 
       /* copy line */
       if (!end)
 	{
-	  line[linepos] = '\0';
-	  xpm[linenr] = SDL_strdup (line);
+	  line[linepos++] = '\0';
+	  xpm[linenr] = (char *) SDL_malloc (linepos);
+	  SDL_memcpy (xpm[linenr], line, linepos);
 	  linenr++;
 	  if (linenr >= linecount)	/* leave one line reserved */
 	    {
 	      linecount += 512;
 	      xpm = (char **) SDL_realloc (xpm, linecount * sizeof (*xpm));
 	      if (!xpm)
-		end = AVT_TRUE;
+		error = end = AVT_TRUE;
 	    }
 	}
     }
 
+  if (!error)
+    img = avt_load_image_xpm (xpm);
+
+  /* free xpm */
   if (xpm)
     {
-      /* terminate the array */
-      xpm[linenr] = NULL;
-      img = avt_load_image_xpm (xpm);
+      unsigned int i;
 
-      /* free xpm */
-      linenr = 0;
-      while (linenr <= linecount && xpm[linenr] != NULL)
-	SDL_free (xpm[linenr++]);
+      /* linenr points to next (uninitialized) line */
+      for (i = 0; i < linenr; i++)
+	SDL_free (xpm[i]);
+
       SDL_free (xpm);
     }
+
+  if (line)
+    SDL_free (line);
 
   if (freesrc)
     SDL_RWclose (src);
@@ -4771,7 +4799,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.230 2009-05-28 13:20:13 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.231 2009-05-30 04:44:43 akf Exp $");
 
   /*
    * Initialize the display, accept any format
