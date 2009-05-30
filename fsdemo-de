@@ -2,6 +2,8 @@
 
 [encoding UTF-8]
 [backgroundcolor #BBBB88]
+#[datadir /usr/local/share/akfavatar]
+[avatarimage gnu-head.xpm]
 
 [size 5, 43]
 Bei dem Begriff „Freie Software“ geht es um

@@ -4,6 +4,8 @@
 
 [encoding UTF-8]
 [backgroundcolor #BBBB88]
+#[datadir /usr/local/share/akfavatar]
+[avatarimage gnu-head.xpm]
 
 [right-to-left]
 [size 3, 48]

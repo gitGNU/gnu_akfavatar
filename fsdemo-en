@@ -2,6 +2,8 @@
 
 [encoding UTF-8]
 [backgroundcolor #BBBB88]
+#[datadir /usr/local/share/akfavatar]
+[avatarimage gnu-head.xpm]
 
 [size 3, 50]
 “Free software” is a matter of _liberty_, not price.
