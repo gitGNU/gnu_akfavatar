@@ -1,7 +1,15 @@
 akfavatar-??
 version.texi
-*.aux *.cp *.cps *.fn *.ky *.pg *.tp *.vr
-*.log *.toc
+*.aux
+*.cp
+*.cps
+*.fn
+*.ky
+*.pg
+*.tp
+*.vr
+*.log
+*.toc
 akfavatar-??.info
 akfavatar-??.html
 akfavatar-??.pdf
