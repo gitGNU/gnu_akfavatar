@@ -1,3 +1,9 @@
+2009-06-02  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_load_image_xpm):
+	organize XPM code characters in a tree
+	(avt_free_xpm_tree): new function
+
 2009-05-29  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_load_image_xpm_RW):
