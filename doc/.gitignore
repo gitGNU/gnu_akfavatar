@@ -1,0 +1,15 @@
+akfavatar-??
+version.texi
+*.aux *.cp *.cps *.fn *.ky *.pg *.tp *.vr
+*.log *.toc
+akfavatar-??.info
+akfavatar-??.html
+akfavatar-??.pdf
+akfavatar-??.ps
+akfavatar-??.dvi
+akfavatar-??.txt
+akfavatar-??.xml
+avatarsay.1
+avtcmd.1
+pasref.txt
+akfavatar.h

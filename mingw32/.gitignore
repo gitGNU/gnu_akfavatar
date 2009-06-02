@@ -1,0 +1,12 @@
+*.exe *.zip
+libinfo.rc avtsayinfo.rc
+akfavatar.def
+akfavatar.dll
+akfavatar.lib
+libakfavatar.a
+version
+*.ppu *.gpi *.gpm
+bdfread bdfread.exe
+bin2c bin2c.exe
+bell.c gnu-head.c
+ucsfont7x14.c ucsfont9x18.c
