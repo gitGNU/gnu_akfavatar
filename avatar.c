@@ -23,7 +23,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.231 2009-05-30 04:44:43 akf Exp $ */
+/* $Id: avatar.c,v 2.231 2009/05/30 04:44:43 akf Exp $ */
 
 #include "akfavatar.h"
 #include "SDL.h"
@@ -350,19 +350,49 @@ load_image_initialize (void)
 /* helper functions */
 
 /* XPM support */
+
+/* number of printable ASCII codes */
+#define XPM_NR_CODES (126 - 32 + 1)
+
+/* for xpm codes */
+union xpm_codes
+{
+  Uint32 nr;
+  union xpm_codes *next;
+};
+
+static void
+avt_free_xpm_tree (union xpm_codes *tree, int depth, int cpp)
+{
+  int i;
+  union xpm_codes *e;
+
+  if (depth < cpp)
+    {
+      for (i = 0; i < XPM_NR_CODES; i++)
+	{
+	  e = (tree + i)->next;
+	  if (e != NULL)
+	    avt_free_xpm_tree (e, depth + 1, cpp);
+	}
+    }
+
+  SDL_free (tree);
+}
+
 /* use this for internal stuff! */
-/* TODO: organize keys in tree-structure */
 static SDL_Surface *
 avt_load_image_xpm (char **xpm)
 {
   SDL_Surface *img;
   int width, height, ncolors, cpp;
   int colornr;
-  Uint32 *codes;
+  union xpm_codes *codes;
   Uint32 *colors;
   int code_nr;
 
-  codes = colors = NULL;
+  codes = NULL;
+  colors = NULL;
 
   /* check if we actually have data to process */
   if (!xpm || !*xpm)
@@ -376,15 +406,6 @@ avt_load_image_xpm (char **xpm)
       || width < 1 || height < 1 || ncolors < 1)
     {
       SDL_SetError ("error in XPM data");
-      return NULL;
-    }
-
-  /* up to four characters per pixel allowed 
-   * more than enough for truecolor
-   */
-  if (cpp > (int) sizeof (Uint32))
-    {
-      SDL_SetError ("too many colors for XPM image");
       return NULL;
     }
 
@@ -410,7 +431,7 @@ avt_load_image_xpm (char **xpm)
   /* get memory for codes table */
   if (cpp > 1)
     {
-      codes = (Uint32 *) SDL_calloc (ncolors, sizeof (Uint32));
+      codes = (union xpm_codes *) SDL_calloc (XPM_NR_CODES, sizeof (codes));
       if (!codes)
 	{
 	  SDL_SetError ("out of memory");
@@ -438,7 +459,7 @@ avt_load_image_xpm (char **xpm)
   /* process colors */
   for (colornr = 1; colornr <= ncolors; colornr++, code_nr++)
     {
-      char *p;
+      char *p;			/* pointer for scanning through the string */
 
       /* if there is only one character per pixel, 
        * the character is the palette number 
@@ -448,17 +469,25 @@ avt_load_image_xpm (char **xpm)
       else			/* store characters in codes table */
 	{
 	  int i;
-	  Uint32 code;
+	  char c;
+	  union xpm_codes *table;
 
-	  /* convert characters into a 32Bit number */
-	  code = 0;
-	  for (i = 0; i < cpp; i++)
+	  table = codes;
+	  for (i = 0; i < cpp - 1; i++)
 	    {
-	      code <<= 8;
-	      code |= xpm[colornr][i];
+	      c = xpm[colornr][i];
+	      table = (table + (c - 32));
+
+	      if (!table->next)
+		table->next =
+		  (union xpm_codes *) SDL_calloc (XPM_NR_CODES,
+						  sizeof (*codes));
+
+	      table = table->next;
 	    }
 
-	  *(codes + code_nr) = code;
+	  c = xpm[colornr][cpp - 1];
+	  (table + (c - 32))->nr = colornr - 1;
 	}
 
       /* scan for color definition */
@@ -493,8 +522,10 @@ avt_load_image_xpm (char **xpm)
 		  SDL_SetColors (img, &color, code_nr, 1);
 		}
 	      else		/* ncolors > 256 */
-		*(colors + colornr - 1) =
-		  SDL_MapRGB (img->format, red, green, blue);
+		{
+		  *(colors + colornr - 1) =
+		    SDL_MapRGB (img->format, red, green, blue);
+		}
 	    }
 	  else if (SDL_strncasecmp (p, " None", 6) == 0)
 	    {
@@ -516,9 +547,7 @@ avt_load_image_xpm (char **xpm)
     }
   else				/* cpp != 1 */
     {
-      Uint32 code;
       Uint8 *pix;
-      Uint32 *p;
       int line;
       int bpp;
       int pos;
@@ -534,22 +563,19 @@ avt_load_image_xpm (char **xpm)
 
 	  for (pos = 0; pos < width; pos++, pix += bpp)
 	    {
-	      /* get code */
-	      code = 0;
-	      for (i = 0; i < cpp; i++)
-		{
-		  code <<= 8;
-		  code |= xpm[ncolors + 1 + line][pos * cpp + i];
-		}
+	      union xpm_codes *table;
+	      char c;
 
 	      /* find code in codes table */
-	      code_nr = 0;
-	      p = codes;
-	      while (*p != code && code_nr < ncolors)
+	      table = codes;
+	      for (i = 0; i < cpp - 1; i++)
 		{
-		  p++;
-		  code_nr++;
+		  c = xpm[ncolors + 1 + line][pos * cpp + i];
+		  table = (table + (c - 32))->next;
 		}
+
+	      c = xpm[ncolors + 1 + line][pos * cpp + cpp - 1];
+	      code_nr = (table + (c - 32))->nr;
 
 	      if (ncolors <= 256)
 		*pix = code_nr;
@@ -561,11 +587,12 @@ avt_load_image_xpm (char **xpm)
   if (SDL_MUSTLOCK (img))
     SDL_UnlockSurface (img);
 
-  if (codes)
-    SDL_free (codes);
-
   if (colors)
     SDL_free (colors);
+
+  /* clean up codes table */
+  if (codes)
+    avt_free_xpm_tree (codes, 1, cpp);
 
   return img;
 }
@@ -4799,7 +4826,7 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_FreeSurface (icon);
   }
 
-  SDL_SetError ("$Id: avatar.c,v 2.231 2009-05-30 04:44:43 akf Exp $");
+  SDL_SetError ("$Id: avatar.c,v 2.231 2009/05/30 04:44:43 akf Exp $");
 
   /*
    * Initialize the display, accept any format
