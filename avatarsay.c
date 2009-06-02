@@ -18,8 +18,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatarsay.c,v 2.282 2009-05-24 08:54:45 akf Exp $ */
-
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
 #endif
@@ -2951,11 +2949,6 @@ main (int argc, char *argv[])
 	}
     }
   while (loop);
-
-  exit (EXIT_SUCCESS);
-
-  /* never executed, but kept in the code */
-  puts ("$Id: avatarsay.c,v 2.282 2009-05-24 08:54:45 akf Exp $");
 
   return EXIT_SUCCESS;
 }

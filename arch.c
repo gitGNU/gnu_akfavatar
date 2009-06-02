@@ -18,8 +18,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: arch.c,v 2.9 2009-05-22 15:30:34 akf Exp $ */
-
 #include "arch.h"
 
 /*

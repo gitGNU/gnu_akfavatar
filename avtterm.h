@@ -18,8 +18,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.h,v 2.6 2008-11-20 18:07:19 akf Exp $ */
-
 #ifndef AVTTERM_H
 #define AVTTERM_H 1
 

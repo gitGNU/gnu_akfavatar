@@ -23,8 +23,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar.c,v 2.231 2009/05/30 04:44:43 akf Exp $ */
-
 #include "akfavatar.h"
 #include "SDL.h"
 #include "version.h"
@@ -4825,8 +4823,6 @@ avt_initialize (const char *title, const char *icontitle,
     SDL_WM_SetIcon (icon, NULL);
     SDL_FreeSurface (icon);
   }
-
-  SDL_SetError ("$Id: avatar.c,v 2.231 2009/05/30 04:44:43 akf Exp $");
 
   /*
    * Initialize the display, accept any format

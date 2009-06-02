@@ -22,8 +22,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtwindows.c,v 1.6 2009-01-25 18:43:07 akf Exp $ */
-
 #include "akfavatar.h"
 #include "avtmsg.h"
 #include <windows.h>

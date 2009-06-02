@@ -21,8 +21,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtcwio.c,v 2.1 2008-02-10 13:16:51 akf Exp $ */
-
 #ifndef _ISOC99_SOURCE
 #  define _ISOC99_SOURCE
 #endif

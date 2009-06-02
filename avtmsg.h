@@ -18,8 +18,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtmsg.h,v 2.3 2008-12-02 14:10:24 akf Exp $ */
-
 #ifndef AVTMSG_H
 #define AVTMSG_H 1
 

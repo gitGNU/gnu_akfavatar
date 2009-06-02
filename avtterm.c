@@ -18,8 +18,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtterm.c,v 2.32 2009-02-10 20:05:58 akf Exp $ */
-
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
 #endif

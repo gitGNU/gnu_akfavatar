@@ -23,8 +23,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avtcio.h,v 2.1 2008-02-10 13:16:50 akf Exp $ */
-
 #ifndef _AVTCIO_H
 #define _AVTCIO_H
 

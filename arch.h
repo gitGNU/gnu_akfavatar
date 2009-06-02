@@ -18,8 +18,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: arch.h,v 2.6 2008-09-25 15:15:06 akf Exp $ */
-
 #ifndef ARCH_H
 #define ARCH_H 1
 

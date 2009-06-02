@@ -23,8 +23,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: akfavatar.h,v 2.90 2009-05-22 14:01:14 akf Exp $ */
-
 #ifndef _akfavatar_h
 #define _akfavatar_h
 
