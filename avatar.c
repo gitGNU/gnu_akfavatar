@@ -315,9 +315,9 @@ avt_name_to_color (const char *name, int *red, int *green, int *blue)
 	}
       else if (SDL_sscanf (name, " #%1x%1x%1x", &r, &g, &b) == 3)
 	{
-	  *red = r << 4 & r;
-	  *green = g << 4 & g;
-	  *blue = b << 4 & b;
+	  *red = r << 4 | r;
+	  *green = g << 4 | g;
+	  *blue = b << 4 | b;
 	}
     }
   else if (SDL_strncasecmp ("black", name, 5) == 0)
