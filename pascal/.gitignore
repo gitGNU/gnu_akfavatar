@@ -1,4 +1,8 @@
-*.gpi *.gpm *.ppu
+*.gpi
+*.gpm
+*.ppu
 *.exe
 example
-multiply multiplizieren einmaleins
+multiply
+multiplizieren
+einmaleins
