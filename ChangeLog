@@ -6,6 +6,9 @@
 	(avt_name_to_color): new function
 	(avt_load_image_xpm): adapted
 
+	* avatarsay.c (handle_backgroundcolor_command)
+	(check_config_file): use avt_set_background_color_name
+
 2009-06-02  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_load_image_xpm):

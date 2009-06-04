@@ -1195,13 +1195,13 @@ handle_avatarimage_command (const wchar_t * s)
 }
 
 static void
-handle_backgoundcolor_command (const wchar_t * s)
+handle_backgroundcolor_command (const wchar_t * s)
 {
-  unsigned int red, green, blue;
+  char line[80];
 
-  if (swscanf (s, L"#%2x%2x%2x", &red, &green, &blue) == 3)
+  if (wcstombs (line, s, sizeof (line)) != (size_t) (-1))
     {
-      avt_set_background_color (red, green, blue);
+      avt_set_background_color_name (line);
       background_color_changed = AVT_TRUE;
     }
   else
@@ -1504,7 +1504,7 @@ avatar_command (wchar_t * s, int *stop)
 
   if (wcsncmp (s, L"backgroundcolor ", 16) == 0)
     {
-      handle_backgoundcolor_command (s + 16);
+      handle_backgroundcolor_command (s + 16);
       return;
     }
 
@@ -2767,14 +2767,7 @@ check_config_file (const char *f)
 	    use_avatar_image (s + 12);
 
 	  if (strncasecmp (s, "BACKGROUNDCOLOR=", 16) == 0)
-	    {
-	      unsigned int red, green, blue;
-
-	      if (sscanf (s + 16, "#%2x%2x%2x", &red, &green, &blue) == 3)
-		avt_set_background_color (red, green, blue);
-	      else
-		error_msg (f, "bad background color");
-	    }
+	    avt_set_background_color_name (s + 16);
 
 	  s = fgets (buf, sizeof (buf), cnf);
 	}
