@@ -9,6 +9,8 @@
 	* avatarsay.c (handle_backgroundcolor_command)
 	(check_config_file): use avt_set_background_color_name
 
+	* avatar.c (avt_draw_balloon): fix calculation of shadow color
+
 2009-06-02  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_load_image_xpm):

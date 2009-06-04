@@ -1239,9 +1239,13 @@ avt_draw_balloon (void)
   {
     SDL_Color shadow_color;
 
-    shadow_color.r = backgroundcolor_RGB.r - 0x20;
-    shadow_color.g = backgroundcolor_RGB.g - 0x20;
-    shadow_color.b = backgroundcolor_RGB.b - 0x20;
+    shadow_color.r =
+      (backgroundcolor_RGB.r > 0x20) ? backgroundcolor_RGB.r - 0x20 : 0;
+    shadow_color.g =
+      (backgroundcolor_RGB.g > 0x20) ? backgroundcolor_RGB.g - 0x20 : 0;
+    shadow_color.b =
+      (backgroundcolor_RGB.b > 0x20) ? backgroundcolor_RGB.b - 0x20 : 0;
+
     SDL_SetColors (circle, &shadow_color, circle_xpm[2][0], 1);
     SDL_SetColors (pointer, &shadow_color, balloonpointer_xpm[2][0], 1);
 
