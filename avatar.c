@@ -290,6 +290,54 @@ void (*avt_quit_audio_func) (void) = NULL;
 static int avt_pause (void);
 
 
+/* color selector */
+static int
+avt_name_to_color (const char *name, int *red, int *green, int *blue)
+{
+  int status;
+
+  status = 0;
+  *red = *green = *blue = -1;
+
+  /* skip space */
+  while (SDL_isspace (*name))
+    name++;
+
+  if (name[0] == '#')		/* hexadecimal values */
+    {
+      unsigned int r, g, b;
+
+      if (SDL_sscanf (name, " #%2x%2x%2x", &r, &g, &b) == 3)
+	{
+	  *red = r;
+	  *green = g;
+	  *blue = b;
+	}
+      else if (SDL_sscanf (name, " #%1x%1x%1x", &r, &g, &b) == 3)
+	{
+	  *red = r << 4 & r;
+	  *green = g << 4 & g;
+	  *blue = b << 4 & b;
+	}
+    }
+  else if (SDL_strncasecmp ("black", name, 5) == 0)
+    {
+      *red = *green = *blue = 0;
+    }
+  else if (SDL_strncasecmp ("white", name, 5) == 0)
+    {
+      *red = *green = *blue = 255;
+    }
+
+  /* to be continued... */
+
+  else
+    status = -1;
+
+
+  return status;
+}
+
 /* for dynamically loading SDL_image */
 #ifndef AVT_SDL_IMAGE_LIB
 #  if defined (__WIN32__)
@@ -505,10 +553,10 @@ avt_load_image_xpm (char **xpm)
 
       if (*p)
 	{
-	  Uint32 red, green, blue;
+	  int red, green, blue;
 
 	  p++;
-	  if (SDL_sscanf (p, " #%2x%2x%2x", &red, &green, &blue) == 3)
+	  if (avt_name_to_color (p, &red, &green, &blue) == 0)
 	    {
 	      if (ncolors <= 256)
 		{
@@ -4365,6 +4413,16 @@ avt_set_background_color (int red, int green, int blue)
     }
 }
 
+/* can and should be called before avt_initialize */
+void
+avt_set_background_color_name (const char *name)
+{
+  int red, green, blue;
+
+  if (avt_name_to_color (name, &red, &green, &blue) == 0)
+    avt_set_background_color (red, green, blue);
+}
+
 void
 avt_reserve_single_keys (avt_bool_t onoff)
 {
@@ -4411,6 +4469,15 @@ avt_set_text_color (int red, int green, int blue)
 }
 
 void
+avt_set_text_color_name (const char *name)
+{
+  int red, green, blue;
+
+  if (avt_name_to_color (name, &red, &green, &blue) == 0)
+    avt_set_text_color (red, green, blue);
+}
+
+void
 avt_set_text_background_color (int red, int green, int blue)
 {
   SDL_Color color;
@@ -4424,6 +4491,15 @@ avt_set_text_background_color (int red, int green, int blue)
     }
 
   text_background_color = SDL_MapRGB (screen->format, red, green, blue);
+}
+
+void
+avt_set_text_background_color_name (const char *name)
+{
+  int red, green, blue;
+
+  if (avt_name_to_color (name, &red, &green, &blue) == 0)
+    avt_set_text_background_color (red, green, blue);
 }
 
 void

@@ -133,6 +133,7 @@ procedure AvatarImageData(data: pointer; size: LongInt);
 { set a different background color }
 { should be used before any output took place }
 procedure setBackgroundColor(red, green, blue: byte);
+procedure setBackgroundColorName (const Name: string);
 
 { change pace of text and page flipping }
 { the scale is milliseconds }
@@ -442,6 +443,9 @@ function avt_show_image_data(Data: pointer; size: CInteger): CInteger;
 procedure avt_set_background_color (red, green, blue: CInteger);
   libakfavatar 'avt_set_background_color';
 
+procedure avt_set_background_color_name (name: CString);
+  libakfavatar 'avt_set_background_color_name';
+
 procedure avt_set_text_color (red, green, blue: CInteger);
   libakfavatar 'avt_set_text_color';
 
@@ -556,6 +560,11 @@ function avt_decide: avt_bool_t; libakfavatar 'avt_decide';
 procedure setBackgroundColor (red, green, blue: byte);
 begin
 avt_set_background_color(red, green, blue)
+end;
+
+procedure setBackgroundColorName (const Name: string);
+begin
+avt_set_background_color_name (String2CString(name))
 end;
 
 procedure setEncoding(const newEncoding: string);
