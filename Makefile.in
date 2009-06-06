@@ -52,7 +52,7 @@ bell.c: $(srcdir)/bell.au bin2c
 avtfilechooser.o: $(srcdir)/avtfilechooser.c $(srcdir)/akfavatar.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtfilechooser.c
 
-avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h \
+avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h avtcolors.h \
 	  $(srcdir)/balloonpointer.xpm $(srcdir)/circle.xpm \
 	  $(srcdir)/btn-cont.xpm $(srcdir)/akfavatar.xpm
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c $(srcdir)/avatar.c
@@ -76,7 +76,7 @@ libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o
 	$(AR) rcu $@ avatar.o avatar-default.o avatar-audio.o font.o
 	-$(RANLIB) $@
 
-avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h \
+avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h avtcolors.h \
 	   $(srcdir)/balloonpointer.xpm $(srcdir)/circle.xpm \
 	   $(srcdir)/btn-cont.xpm $(srcdir)/akfavatar.xpm
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -fPIC -o $@ \

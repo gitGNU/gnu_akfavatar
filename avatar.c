@@ -26,6 +26,7 @@
 #include "akfavatar.h"
 #include "SDL.h"
 #include "version.h"
+#include "avtcolors.h"
 
 #include "akfavatar.xpm"
 #include "balloonpointer.xpm"
@@ -296,7 +297,7 @@ avt_name_to_color (const char *name, int *red, int *green, int *blue)
 {
   int status;
 
-  status = 0;
+  status = -1;
   *red = *green = *blue = -1;
 
   /* skip space */
@@ -312,28 +313,35 @@ avt_name_to_color (const char *name, int *red, int *green, int *blue)
 	  *red = r;
 	  *green = g;
 	  *blue = b;
+	  status = 0;
 	}
       else if (SDL_sscanf (name, " #%1x%1x%1x", &r, &g, &b) == 3)
 	{
 	  *red = r << 4 | r;
 	  *green = g << 4 | g;
 	  *blue = b << 4 | b;
+	  status = 0;
 	}
     }
-  else if (SDL_strncasecmp ("black", name, 5) == 0)
-    {
-      *red = *green = *blue = 0;
-    }
-  else if (SDL_strncasecmp ("white", name, 5) == 0)
-    {
-      *red = *green = *blue = 255;
-    }
-
-  /* to be continued... */
-
-  else
+  else if (name[0] == '%')	/* HSV values not supported */
     status = -1;
+  else				/* look up color table */
+    {
+      int i;
+      const int numcolors = sizeof (avt_colors) / sizeof (avt_colors[0]);
 
+      for (i = 0; i < numcolors; i++)
+	{
+	  if (SDL_strcmp (avt_colors[i].color_name, name) == 0)
+	    {
+	      *red = avt_colors[i].red;
+	      *green = avt_colors[i].green;
+	      *blue = avt_colors[i].blue;
+	      status = 0;
+	      break;
+	    }
+	}
+    }
 
   return status;
 }
