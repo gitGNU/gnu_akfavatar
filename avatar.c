@@ -102,6 +102,8 @@
 #  define SDL_putenv              putenv
 #  undef SDL_sscanf
 #  define SDL_sscanf              sscanf
+#  undef SDL_strcmp
+#  define SDL_strcmp              strcmp
 #  undef SDL_strncasecmp
 #  define SDL_strncasecmp         strncasecmp
 #  undef SDL_isspace
