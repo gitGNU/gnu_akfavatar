@@ -98,16 +98,18 @@
 #  define SDL_memcpy              memcpy
 #  undef SDL_memset
 #  define SDL_memset              memset
-#  undef SDL_putenv
-#  define SDL_putenv              putenv
-#  undef SDL_sscanf
-#  define SDL_sscanf              sscanf
-#  undef SDL_strcmp
-#  define SDL_strcmp              strcmp
+#  undef SDL_memcmp
+#  define SDL_memcmp              memcmp
+#  undef SDL_strcasecmp
+#  define SDL_strcasecmp          strcasecmp
 #  undef SDL_strncasecmp
 #  define SDL_strncasecmp         strncasecmp
 #  undef SDL_isspace
 #  define SDL_isspace             isspace
+#  undef SDL_putenv
+#  define SDL_putenv              putenv
+#  undef SDL_sscanf
+#  define SDL_sscanf              sscanf
 #endif /* OLD_SDL */
 
 #ifdef FORCE_ICONV
@@ -332,15 +334,14 @@ avt_name_to_color (const char *name, int *red, int *green, int *blue)
       int i;
       const int numcolors = sizeof (avt_colors) / sizeof (avt_colors[0]);
 
-      for (i = 0; i < numcolors; i++)
+      for (i = 0; i < numcolors || status == 0; i++)
 	{
-	  if (SDL_strcmp (avt_colors[i].color_name, name) == 0)
+	  if (SDL_strcasecmp (avt_colors[i].color_name, name) == 0)
 	    {
 	      *red = avt_colors[i].red;
 	      *green = avt_colors[i].green;
 	      *blue = avt_colors[i].blue;
 	      status = 0;
-	      break;
 	    }
 	}
     }
@@ -579,7 +580,7 @@ avt_load_image_xpm (char **xpm)
 	    color_name[color_name_pos++] = *p++;
 	  color_name[color_name_pos] = '\0';
 
-	  if (SDL_strncasecmp (color_name, "None", 4) == 0)
+	  if (SDL_strcasecmp (color_name, "None") == 0)
 	    {
 	      SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL, code_nr);
 	    }
