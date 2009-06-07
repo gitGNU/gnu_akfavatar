@@ -334,7 +334,7 @@ avt_name_to_color (const char *name, int *red, int *green, int *blue)
       int i;
       const int numcolors = sizeof (avt_colors) / sizeof (avt_colors[0]);
 
-      for (i = 0; i < numcolors || status == 0; i++)
+      for (i = 0; i < numcolors && status != 0; i++)
 	{
 	  if (SDL_strcasecmp (avt_colors[i].color_name, name) == 0)
 	    {
