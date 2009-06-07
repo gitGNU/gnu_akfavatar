@@ -564,9 +564,26 @@ avt_load_image_xpm (char **xpm)
       if (*p)
 	{
 	  int red, green, blue;
+	  int color_name_pos;
+	  char color_name[80];
 
+	  /* skip to color name/definition */
 	  p++;
-	  if (avt_name_to_color (p, &red, &green, &blue) == 0)
+	  while (*p && SDL_isspace (*p))
+	    p++;
+
+	  /* copy colorname up to next space */
+	  color_name_pos = 0;
+	  while (*p && !SDL_isspace (*p)
+		 && color_name_pos < (int) sizeof (color_name) - 1)
+	    color_name[color_name_pos++] = *p++;
+	  color_name[color_name_pos] = '\0';
+
+	  if (SDL_strncasecmp (color_name, "None", 4) == 0)
+	    {
+	      SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL, code_nr);
+	    }
+	  else if (avt_name_to_color (color_name, &red, &green, &blue) == 0)
 	    {
 	      if (ncolors <= 256)
 		{
@@ -582,10 +599,6 @@ avt_load_image_xpm (char **xpm)
 		  *(colors + colornr - 1) =
 		    SDL_MapRGB (img->format, red, green, blue);
 		}
-	    }
-	  else if (SDL_strncasecmp (p, " None", 6) == 0)
-	    {
-	      SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL, code_nr);
 	    }
 	}
     }

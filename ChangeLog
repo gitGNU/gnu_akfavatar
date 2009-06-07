@@ -1,3 +1,8 @@
+2009-06-07  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_load_image_xpm):
+	improved support for color names in XPM (only one word names)
+
 2009-06-06  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_name_to_color): support X11 color names
