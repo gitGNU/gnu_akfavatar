@@ -817,7 +817,7 @@ avt_load_image_file (const char *filename)
 
 /*
  * try to load the library SDL_image dynamically 
- * (uncompressed BMP files can always be loaded)
+ * (XPM and uncompressed BMP files can always be loaded)
  */
 static void
 load_image_initialize (void)
@@ -4086,7 +4086,8 @@ avt_show_image (avt_image_t * image)
 
 /* 
  * load image
- * if SDL_image isn't available then uncompressed BMP is still supported
+ * if SDL_image isn't available then
+ * XPM and uncompressed BMP are still supported
  */
 int
 avt_show_image_file (const char *file)

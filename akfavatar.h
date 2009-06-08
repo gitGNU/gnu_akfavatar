@@ -502,7 +502,8 @@ void avt_show_avatar (void);
 
 /* 
  * load image and show it
- * if SDL_image isn't available then uncompressed BMP is still supported
+ * if SDL_image isn't available then
+ * XPM and uncompressed BMP are still supported
  * on error it returns AVT_ERROR without changing the status
  * if it succeeds call avt_wait or avt_waitkey 
  */
@@ -510,7 +511,8 @@ int avt_show_image_file (const char *file);
 
 /*
  * show image from image data
- * if SDL_image isn't available then uncompressed BMP is still supported
+ * if SDL_image isn't available then
+ * XPM and uncompressed BMP are still supported
  * on error it returns AVT_ERROR without changing the status
  * if it succeeds call avt_wait or avt_waitkey 
  */
