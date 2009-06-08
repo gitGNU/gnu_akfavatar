@@ -3,6 +3,10 @@
 	* avatar.c (load_image_initialize, load_image_done)
 	(avt_import_XPM): don't use SDL_image for embedded XPM-data
 
+	* avatar.c (avt_show_image_file, avt_show_image_data)
+	(avt_import_image_data, avt_import_image_file):
+	always try to use the internal XPM-loader first
+
 2009-06-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_load_image_xpm):

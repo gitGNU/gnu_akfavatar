@@ -4089,15 +4089,22 @@ avt_show_image (avt_image_t * image)
  * XPM and uncompressed BMP are still supported
  */
 int
-avt_show_image_file (const char *file)
+avt_show_image_file (const char *filename)
 {
   SDL_Surface *image;
 
   if (!screen)
     return _avt_STATUS;
 
-  load_image_init ();
-  image = load_image.file (file);
+  /* try internal XPM reader first */
+  /* it's better than in SDL_image */
+  image = avt_load_image_xpm_RW (SDL_RWFromFile (filename, "rb"), 1);
+
+  if (image == NULL)
+    {
+      load_image_init ();
+      image = load_image.file (filename);
+    }
 
   if (image == NULL)
     {
@@ -4122,8 +4129,15 @@ avt_show_image_data (void *img, int imgsize)
   if (!screen)
     return _avt_STATUS;
 
-  load_image_init ();
-  image = load_image.rw (SDL_RWFromMem (img, imgsize), 1);
+  /* try internal XPM reader first */
+  /* it's better than in SDL_image */
+  image = avt_load_image_xpm_RW (SDL_RWFromMem (img, imgsize), 1);
+
+  if (image == NULL)
+    {
+      load_image_init ();
+      image = load_image.rw (SDL_RWFromMem (img, imgsize), 1);
+    }
 
   if (image == NULL)
     {
@@ -4291,8 +4305,14 @@ avt_import_image_data (void *img, int imgsize)
   if (avt_init_SDL ())
     return NULL;
 
-  load_image_init ();
-  image = load_image.rw (SDL_RWFromMem (img, imgsize), 1);
+  /* try internal XPM reader first */
+  image = avt_load_image_xpm_RW (SDL_RWFromMem (img, imgsize), 1);
+
+  if (image == NULL)
+    {
+      load_image_init ();
+      image = load_image.rw (SDL_RWFromMem (img, imgsize), 1);
+    }
 
   /* if it's not yet transparent, make it transparent */
   if (image)
@@ -4306,15 +4326,21 @@ avt_import_image_data (void *img, int imgsize)
  * import avatar from file
  */
 avt_image_t *
-avt_import_image_file (const char *file)
+avt_import_image_file (const char *filename)
 {
   SDL_Surface *image;
 
   if (avt_init_SDL ())
     return NULL;
 
-  load_image_init ();
-  image = load_image.file (file);
+  /* try internal XPM reader first */
+  image = avt_load_image_xpm_RW (SDL_RWFromFile (filename, "rb"), 1);
+
+  if (image == NULL)
+    {
+      load_image_init ();
+      image = load_image.file (filename);
+    }
 
   /* if it's not yet transparent, make it transparent */
   if (image)
