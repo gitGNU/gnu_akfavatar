@@ -375,36 +375,6 @@ static struct
 
 #define AVT_UPDATE_ALL(void) SDL_UpdateRect(screen, 0, 0, 0, 0)
 
-#ifdef LINK_SDL_IMAGE
-
-/*
- * assign functions from linked SDL_image
- */
-static void
-load_image_initialize (void)
-{
-  if (!load_image.initialized)
-    {
-      load_image.handle = NULL;
-      load_image.file = IMG_Load;
-      load_image.rw = IMG_Load_RW;
-      load_image.xpm = IMG_ReadXPMFromArray;
-
-      load_image.initialized = AVT_TRUE;
-    }
-}
-
-/* speedup */
-#define load_image_init(void) \
-  if (!load_image.initialized) \
-    load_image_initialize()
-
-#define load_image_done(void)	/* empty */
-
-#else /* ! LINK_SDL_IMAGE */
-
-/* helper functions */
-
 /* XPM support */
 
 /* number of printable ASCII codes */
@@ -788,6 +758,35 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
 
   return img;
 }
+
+#ifdef LINK_SDL_IMAGE
+
+/*
+ * assign functions from linked SDL_image
+ */
+static void
+load_image_initialize (void)
+{
+  if (!load_image.initialized)
+    {
+      load_image.handle = NULL;
+      load_image.file = IMG_Load;
+      load_image.rw = IMG_Load_RW;
+
+      load_image.initialized = AVT_TRUE;
+    }
+}
+
+/* speedup */
+#define load_image_init(void) \
+  if (!load_image.initialized) \
+    load_image_initialize()
+
+#define load_image_done(void)	/* empty */
+
+#else /* ! LINK_SDL_IMAGE */
+
+/* helper functions */
 
 static SDL_Surface *
 avt_load_image_RW (SDL_RWops * src, int freesrc)
