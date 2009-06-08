@@ -368,7 +368,6 @@ static struct
   void *handle;			/* handle for dynamically loaded SDL_image */
   SDL_Surface *(*file) (const char *file);
   SDL_Surface *(*rw) (SDL_RWops * src, int freesrc);
-  SDL_Surface *(*xpm) (char **xpm);
 } load_image;
 
 #define AVT_UPDATE_RECT(rect) \
@@ -829,7 +828,6 @@ load_image_initialize (void)
       load_image.handle = NULL;
       load_image.file = avt_load_image_file;
       load_image.rw = avt_load_image_RW;
-      load_image.xpm = avt_load_image_xpm;
 
 #ifndef NO_SDL_IMAGE
 /* loadso.h is only available with SDL 1.2.6 or higher */
@@ -844,10 +842,6 @@ load_image_initialize (void)
 	  load_image.rw =
 	    (SDL_Surface * (*)(SDL_RWops *, int))
 	    SDL_LoadFunction (load_image.handle, "IMG_Load_RW");
-
-	  load_image.xpm =
-	    (SDL_Surface * (*)(char **))
-	    SDL_LoadFunction (load_image.handle, "IMG_ReadXPMFromArray");
 	}
 #endif /* _SDL_loadso_h */
 #endif /* NO_SDL_IMAGE */
@@ -873,7 +867,6 @@ load_image_done (void)
       load_image.handle = NULL;
       load_image.file = NULL;
       load_image.rw = NULL;
-      load_image.xpm = NULL;
       load_image.initialized = AVT_FALSE;	/* try again next time */
     }
 }
@@ -4249,26 +4242,10 @@ avt_make_transparent (avt_image_t * image)
 avt_image_t *
 avt_import_XPM (char **xpm)
 {
-  SDL_Surface *image;
-
   if (avt_init_SDL ())
     return NULL;
 
-  image = NULL;
-
-  /* if load_image isn't intitialized, try the internal loader first */
-  if (!load_image.initialized)
-    image = avt_load_image_xpm (xpm);
-
-  /* if image wasn't loaded yet or loading failed */
-  if (image == NULL)
-    {
-      /* try load_image framework */
-      load_image_init ();
-      image = load_image.xpm (xpm);
-    }
-
-  return (avt_image_t *) image;
+  return (avt_image_t *) avt_load_image_xpm (xpm);
 }
 
 

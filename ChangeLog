@@ -1,3 +1,8 @@
+2009-06-08  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (load_image_initialize, load_image_done)
+	(avt_import_XPM): don't use SDL_image for embedded XPM-data
+
 2009-06-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_load_image_xpm):
