@@ -419,10 +419,11 @@ avt_load_image_xpm (char **xpm)
 
   codes = NULL;
   colors = NULL;
+  img = NULL;
 
   /* check if we actually have data to process */
   if (!xpm || !*xpm)
-    return NULL;
+    goto done;
 
   /* read value line
    * there may be more values in the line, but we just
@@ -432,7 +433,7 @@ avt_load_image_xpm (char **xpm)
       || width < 1 || height < 1 || ncolors < 1)
     {
       SDL_SetError ("error in XPM data");
-      return NULL;
+      goto done;
     }
 
   /* create target surface */
@@ -451,7 +452,7 @@ avt_load_image_xpm (char **xpm)
   if (!img)
     {
       SDL_SetError ("out of memory");
-      return NULL;
+      goto done;
     }
 
   /* get memory for codes table */
@@ -462,7 +463,8 @@ avt_load_image_xpm (char **xpm)
 	{
 	  SDL_SetError ("out of memory");
 	  SDL_free (img);
-	  return NULL;
+	  img = NULL;
+	  goto done;
 	}
     }
 
@@ -475,8 +477,8 @@ avt_load_image_xpm (char **xpm)
 	{
 	  SDL_SetError ("out of memory");
 	  SDL_free (img);
-	  SDL_free (codes);
-	  return NULL;
+	  img = NULL;
+	  goto done;
 	}
     }
 
@@ -486,6 +488,14 @@ avt_load_image_xpm (char **xpm)
   for (colornr = 1; colornr <= ncolors; colornr++, code_nr++)
     {
       char *p;			/* pointer for scanning through the string */
+
+      if (xpm[colornr] == NULL)
+	{
+	  SDL_SetError ("error in XPM data");
+	  SDL_free (img);
+	  img = NULL;
+	  goto done;
+	}
 
       /* if there is only one character per pixel,
        * the character is the palette number
@@ -498,10 +508,15 @@ avt_load_image_xpm (char **xpm)
 	  char c;
 	  union xpm_codes *table;
 
+	  c = '\0';
 	  table = codes;
 	  for (i = 0; i < cpp - 1; i++)
 	    {
 	      c = xpm[colornr][i];
+
+	      if (c < 32 || c > 126)
+		break;
+
 	      table = (table + (c - 32));
 
 	      if (!table->next)
@@ -512,7 +527,14 @@ avt_load_image_xpm (char **xpm)
 	      table = table->next;
 	    }
 
+	  if (c < 32 || c > 126)
+	    break;
+
 	  c = xpm[colornr][cpp - 1];
+
+	  if (c < 32 || c > 126)
+	    break;
+
 	  (table + (c - 32))->nr = colornr - 1;
 	}
 
@@ -621,16 +643,16 @@ avt_load_image_xpm (char **xpm)
 	      for (i = 0; i < cpp - 1; i++)
 		{
 		  c = xpm[ncolors + 1 + line][pos * cpp + i];
-		  if (c < 32)
+		  if (c < 32 || c > 126)
 		    break;
 		  table = (table + (c - 32))->next;
 		}
 
-	      if (c < 32)
+	      if (c < 32 || c > 126)
 		break;
 
 	      c = xpm[ncolors + 1 + line][pos * cpp + cpp - 1];
-	      if (c < 32)
+	      if (c < 32 || c > 126)
 		break;
 
 	      code_nr = (table + (c - 32))->nr;
@@ -645,6 +667,7 @@ avt_load_image_xpm (char **xpm)
   if (SDL_MUSTLOCK (img))
     SDL_UnlockSurface (img);
 
+done:
   if (colors)
     SDL_free (colors);
 
