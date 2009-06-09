@@ -615,15 +615,24 @@ avt_load_image_xpm (char **xpm)
 	      union xpm_codes *table;
 	      char c;
 
+	      c = '\0';
 	      /* find code in codes table */
 	      table = codes;
 	      for (i = 0; i < cpp - 1; i++)
 		{
 		  c = xpm[ncolors + 1 + line][pos * cpp + i];
+		  if (c < 32)
+		    break;
 		  table = (table + (c - 32))->next;
 		}
 
+	      if (c < 32)
+		break;
+
 	      c = xpm[ncolors + 1 + line][pos * cpp + cpp - 1];
+	      if (c < 32)
+		break;
+
 	      code_nr = (table + (c - 32))->nr;
 
 	      if (ncolors <= 256)
