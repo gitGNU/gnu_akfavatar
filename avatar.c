@@ -487,8 +487,8 @@ avt_load_image_xpm (char **xpm)
     {
       char *p;			/* pointer for scanning through the string */
 
-      /* if there is only one character per pixel, 
-       * the character is the palette number 
+      /* if there is only one character per pixel,
+       * the character is the palette number
        */
       if (cpp == 1)
 	code_nr = xpm[colornr][0];
@@ -581,8 +581,14 @@ avt_load_image_xpm (char **xpm)
       int line;
 
       for (line = 0; line < height; line++)
-	SDL_memcpy ((Uint8 *) img->pixels + (line * img->pitch),
-		    xpm[ncolors + 1 + line], width);
+	{
+	  /* check for premture end of data */
+	  if (xpm[ncolors + 1 + line] == NULL)
+	    break;
+
+	  SDL_memcpy ((Uint8 *) img->pixels + (line * img->pitch),
+		      xpm[ncolors + 1 + line], width);
+	}
     }
   else				/* cpp != 1 */
     {
@@ -599,6 +605,10 @@ avt_load_image_xpm (char **xpm)
 	{
 	  /* point to beginning of the line */
 	  pix = (Uint8 *) img->pixels + (line * img->pitch);
+
+	  /* check for premture end of data */
+	  if (xpm[ncolors + 1 + line] == NULL)
+	    break;
 
 	  for (pos = 0; pos < width; pos++, pix += bpp)
 	    {
@@ -734,6 +744,12 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
 	    }
 	}
     }
+
+  /* last line must be NULL,
+   * so premature end of data can be detected later
+   */
+  if (xpm)
+    xpm[linenr] = NULL;
 
   if (!error)
     img = avt_load_image_xpm (xpm);

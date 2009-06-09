@@ -1,3 +1,8 @@
+2009-06-09  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_load_image_xpm, avt_load_image_xpm_RW):
+	better handling of XPM files with too few lines
+
 2009-06-08  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (load_image_initialize, load_image_done)
