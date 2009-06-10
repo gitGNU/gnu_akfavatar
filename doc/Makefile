@@ -22,44 +22,44 @@ akfavatar.h: ../akfavatar.h
 
 info: akfavatar-en.info akfavatar-de.info
 
-akfavatar-en.info: akfavatar-en.texinfo pasref.txt akfavatar.h
+akfavatar-en.info: akfavatar-en.texinfo pasref.txt akfavatar.h version.texi
 	-$(MAKEINFO) akfavatar-en.texinfo
 
-akfavatar-de.info: akfavatar-de.texinfo pasref.txt akfavatar.h
+akfavatar-de.info: akfavatar-de.texinfo pasref.txt akfavatar.h version.texi
 	-$(MAKEINFO) --enable-encoding akfavatar-de.texinfo
 
 html: akfavatar-en.html akfavatar-de.html
 
-akfavatar-en.html: akfavatar-en.texinfo pasref.txt akfavatar.h
+akfavatar-en.html: akfavatar-en.texinfo pasref.txt akfavatar.h version.texi
 	-$(MAKEINFO) --html --no-split $(USECSS) akfavatar-en.texinfo
 
-akfavatar-de.html: akfavatar-de.texinfo pasref.txt akfavatar.h
+akfavatar-de.html: akfavatar-de.texinfo pasref.txt akfavatar.h version.texi
 	-$(MAKEINFO) --html --no-split $(USECSS) akfavatar-de.texinfo
 
 txt: akfavatar-en.txt akfavatar-de.txt
 
-akfavatar-en.txt: akfavatar-en.texinfo pasref.txt akfavatar.h
+akfavatar-en.txt: akfavatar-en.texinfo pasref.txt akfavatar.h version.texi
 	-$(MAKEINFO) --plaintext -o $@ akfavatar-en.texinfo
 
-akfavatar-de.txt: akfavatar-de.texinfo pasref.txt akfavatar.h
+akfavatar-de.txt: akfavatar-de.texinfo pasref.txt akfavatar.h version.texi
 	-$(MAKEINFO) --enable-encoding --plaintext -o $@ akfavatar-de.texinfo
 
 dvi: akfavatar-en.dvi akfavatar-de.dvi
 
-akfavatar-en.dvi: akfavatar-en.texinfo pasref.txt akfavatar.h
+akfavatar-en.dvi: akfavatar-en.texinfo pasref.txt akfavatar.h version.texi
 	-$(TEXI2DVI) akfavatar-en.texinfo
 
-akfavatar-de.dvi: akfavatar-de.texinfo pasref.txt akfavatar.h
+akfavatar-de.dvi: akfavatar-de.texinfo pasref.txt akfavatar.h version.texi
 	-$(TEXI2DVI) akfavatar-de.texinfo
 
 pdf: akfavatar-en.pdf akfavatar-de.pdf
 
-akfavatar-en.pdf: akfavatar-en.texinfo pasref.txt akfavatar.h pdfmeta-en
+akfavatar-en.pdf: akfavatar-en.texinfo pasref.txt akfavatar.h pdfmeta-en version.texi
 	-$(TEXI2DVI) --pdf akfavatar-en.texinfo
 	-pdftk akfavatar-en.pdf update_info pdfmeta-en output tmp.pdf \
 	   && mv tmp.pdf akfavatar-en.pdf
 
-akfavatar-de.pdf: akfavatar-de.texinfo pasref.txt akfavatar.h pdfmeta-de
+akfavatar-de.pdf: akfavatar-de.texinfo pasref.txt akfavatar.h pdfmeta-de version.texi
 	-$(TEXI2DVI) --pdf akfavatar-de.texinfo
 	-pdftk akfavatar-de.pdf update_info pdfmeta-de output tmp.pdf \
 	   && mv tmp.pdf akfavatar-de.pdf
@@ -72,7 +72,7 @@ akfavatar-en.ps: akfavatar-en.dvi
 akfavatar-de.ps: akfavatar-de.dvi
 	-dvips -Pwww -o $@ akfavatar-de.dvi
 
-docbook: akfavatar-en.texinfo akfavatar-de.texinfo pasref.txt akfavatar.h
+docbook: akfavatar-en.texinfo akfavatar-de.texinfo pasref.txt akfavatar.h version.texi
 	-$(MAKEINFO) --docbook akfavatar-en.texinfo
 	-$(MAKEINFO) --docbook akfavatar-de.texinfo
 
