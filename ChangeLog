@@ -1,3 +1,8 @@
+2009-06-10  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_load_image_xpm):
+	scan for g4 and monochrome in XPM data + further optimizations
+
 2009-06-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_load_image_xpm, avt_load_image_xpm_RW):

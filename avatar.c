@@ -553,6 +553,25 @@ avt_load_image_xpm (char **xpm)
 	    p++;
 	}
 
+      /* no grayscale definition found? search for g4 definition */
+      if (!*p)
+	{
+	  p = &xpm[colornr][cpp];	/* skip color-characters */
+	  while (*p
+		 && (*p != '4' || *(p - 1) != 'g' || !SDL_isspace (*(p + 1))
+		     || !SDL_isspace (*(p - 2))))
+	    p++;
+	}
+
+      /* search for monochrome definition */
+      if (!*p)
+	{
+	  p = &xpm[colornr][cpp];	/* skip color-characters */
+	  while (*p && (*p != 'm' || !SDL_isspace (*(p + 1))
+			|| !SDL_isspace (*(p - 1))))
+	    p++;
+	}
+
       if (*p)
 	{
 	  int red, green, blue;
@@ -615,6 +634,7 @@ avt_load_image_xpm (char **xpm)
   else				/* cpp != 1 */
     {
       Uint8 *pix;
+      char *xpm_line;
       int line;
       int bpp;
       int pos;
@@ -627,9 +647,10 @@ avt_load_image_xpm (char **xpm)
 	{
 	  /* point to beginning of the line */
 	  pix = (Uint8 *) img->pixels + (line * img->pitch);
+	  xpm_line = xpm[ncolors + 1 + line];
 
 	  /* check for premture end of data */
-	  if (xpm[ncolors + 1 + line] == NULL)
+	  if (xpm_line == NULL)
 	    break;
 
 	  for (pos = 0; pos < width; pos++, pix += bpp)
@@ -642,7 +663,7 @@ avt_load_image_xpm (char **xpm)
 	      table = codes;
 	      for (i = 0; i < cpp - 1; i++)
 		{
-		  c = xpm[ncolors + 1 + line][pos * cpp + i];
+		  c = xpm_line[pos * cpp + i];
 		  if (c < 32 || c > 126)
 		    break;
 		  table = (table + (c - 32))->next;
@@ -651,7 +672,7 @@ avt_load_image_xpm (char **xpm)
 	      if (c < 32 || c > 126)
 		break;
 
-	      c = xpm[ncolors + 1 + line][pos * cpp + cpp - 1];
+	      c = xpm_line[pos * cpp + cpp - 1];
 	      if (c < 32 || c > 126)
 		break;
 
