@@ -2775,10 +2775,10 @@ change_directory_of_file (const char *fname)
   directory[PATH_LENGTH - 1] = '\0';
 
   p = strrchr (directory, DIR_SEPARATOR);
-  if (p != NULL)		/* no slash */
+  if (p != NULL)		/* slash found */
     {
       p++;
-      *p = '\0';
+      *p = '\0';		/* terminate after slash */
       if (chdir (directory))
 	warning_msg ("chdir", strerror (errno));
     }
