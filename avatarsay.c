@@ -186,9 +186,6 @@ static avt_bool_t loop;
 /* only used, when the title is set before it is initialized */
 static char *supposed_title;
 
-/* where to find imagefiles */
-static char datadir[512];
-
 /* for loading an avt_image */
 static avt_image_t *avt_image;
 
@@ -296,7 +293,6 @@ help (void)
   puts (" -I, --info              start with an info-image");
   puts ("\nEnvironment variables:");
   puts (" AVATARIMAGE             different image as avatar");
-  puts (" AVATARDATADIR           data-directory");
 #ifndef NO_PTY
   puts (" HOME                    home directory (terminal)");
   puts (" SHELL                   preferred shell (terminal)");
@@ -695,10 +691,6 @@ static void
 checkenvironment (void)
 {
   char *e;
-
-  e = getenv ("AVATARDATADIR");
-  if (e)
-    strncpy (datadir, e, sizeof (datadir));
 
   e = getenv ("AVATARIMAGE");
   if (e)
@@ -2486,11 +2478,11 @@ ask_edit_file (void)
   avt_clear ();
   avt_set_text_delay (0);
 
-  if (chdir (datadir))
+  if (chdir (start_dir))
     warning_msg ("chdir", strerror (errno));
 
-  /* show directory and prompt (don't trust "datadir") */
-  avt_say_mb (datadir);
+  /* show directory and prompt */
+  avt_say_mb (start_dir);
   avt_say_mb ("> ");
 
   if (avt_ask_mb (filename, sizeof (filename)) != 0)
@@ -2760,9 +2752,6 @@ check_config_file (const char *f)
 	{
 	  strip_newline (s);
 
-	  if (strncasecmp (s, "AVATARDATADIR=", 14) == 0)
-	    strncpy (datadir, s + 14, sizeof (datadir));
-
 	  if (strncasecmp (s, "AVATARIMAGE=", 12) == 0)
 	    use_avatar_image (s + 12);
 
@@ -2775,8 +2764,28 @@ check_config_file (const char *f)
     }
 }
 
+/* try to change into directory of the given file */
 static void
-run_script (char *f)
+change_directory_of_file (const char *fname)
+{
+  char *p;
+  char directory[PATH_LENGTH];
+
+  strncpy (directory, fname, PATH_LENGTH);
+  directory[PATH_LENGTH - 1] = '\0';
+
+  p = strrchr (directory, DIR_SEPARATOR);
+  if (p != NULL)		/* no slash */
+    {
+      p++;
+      *p = '\0';
+      if (chdir (directory))
+	warning_msg ("chdir", strerror (errno));
+    }
+}
+
+static void
+run_script (char *fname)
 {
   int status = -1;
   int fd;
@@ -2784,29 +2793,25 @@ run_script (char *f)
   set_encoding (default_encoding);
   raw_audio.type = AVT_AUDIO_UNKNOWN;
 
-  fd = open_script (f);
-
-  /* if it can't be opened and there is no slash, try with datadir */
-  if (fd == -1 && strchr (f, '/') == NULL)
-    {
-      char p[PATH_LENGTH];
-      strcpy (p, datadir);
-      strcat (p, "/");
-      strcat (p, f);
-      fd = open_script (p);
-    }
+  fd = open_script (fname);
 
   if (fd > -1)
-    status = process_script (fd);
+    {
+      change_directory_of_file (fname);
+      status = process_script (fd);
+    }
 
   if (status < 0)
-    error_msg ("error opening file", f);
+    error_msg ("error opening file", fname);
   else if (status == 1)		/* halt requested */
     exit (EXIT_SUCCESS);
   else if (status > 1)		/* problem with libakfavatar */
     exit (EXIT_FAILURE);
 
   avt_set_scroll_mode (1);
+
+  if (chdir (start_dir))
+    warning_msg ("chdir", strerror (errno));
 
   if (avt_flip_page ())
     exit (EXIT_SUCCESS);
@@ -2820,16 +2825,6 @@ initialize_program_name (const char *argv0)
     program_name = argv0;
   else				/* skip slash */
     program_name++;
-}
-
-static void
-initialize_datadir (void)
-{
-  char home[PATH_LENGTH];
-
-  get_user_home (home, sizeof (home));
-  strncpy (datadir, home, sizeof (datadir));
-  datadir[sizeof (datadir) - 1] = '\0';
 }
 
 static void
@@ -2861,7 +2856,6 @@ main (int argc, char *argv[])
   atexit (quit);
   initialize_program_name (argv[0]);
   initialize_start_dir ();
-  initialize_datadir ();
 
   /* this is just a default setting */
   strcpy (default_encoding, "ISO-8859-1");

@@ -5,6 +5,12 @@
 	* avatar.c (avt_credits):
 	fix resetting the background color
 
+	* avatarsay.c:
+	remove concept of "datadir" - use working directory
+
+	* avatarsay.c (change_directory_of_file): new function
+	(run_script): use dir of script as working directory
+
 2009-06-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_load_image_xpm):
