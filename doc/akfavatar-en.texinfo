@@ -197,7 +197,7 @@ There the Runtime Libraries are sufficient@*
 SDL_image in turn needs other libraries:
 libz, libpng, libjpeg, libtiff
 
-Without SDL_image you can only use uncompressed BMP images.
+Without SDL_image you can only use XPM and uncompressed BMP images.
 SDL_image can be installed after the installation of this package.
 
 @item iconv@*
