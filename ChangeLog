@@ -1,3 +1,7 @@
+2009-06-11  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-default.c: neutral avatar image
+
 2009-06-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_load_image_xpm):
