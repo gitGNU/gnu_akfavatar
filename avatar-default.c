@@ -19,8 +19,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: avatar-default.c,v 2.5 2009-05-03 11:03:39 akf Exp $ */
-
 #include "head.xpm"
 #include "akfavatar.h"
 
