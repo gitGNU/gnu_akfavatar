@@ -4848,15 +4848,14 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
 
   SDL_FreeSurface (last_line);
 
-  /* restore old background color */
-  backgroundcolor_RGB = old_backgroundcolor;
-
   window.w = MINIMALWIDTH;
   window.h = MINIMALHEIGHT;
   window.x = screen->w > window.w ? (screen->w / 2) - (window.w / 2) : 0;
   window.y = screen->h > window.h ? (screen->h / 2) - (window.h / 2) : 0;
 
   /* back to normal (also sets variables!) */
+  avt_set_background_color (old_backgroundcolor.r, old_backgroundcolor.g,
+			    old_backgroundcolor.b);
   avt_normal_text ();
   avt_clear_screen ();
 

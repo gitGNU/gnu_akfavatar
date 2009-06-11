@@ -2,6 +2,9 @@
 
 	* avatar-default.c: neutral avatar image
 
+	* avatar.c (avt_credits):
+	fix resetting the background color
+
 2009-06-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_load_image_xpm):
