@@ -319,7 +319,7 @@ dist: info html man distclean
 	ln README INSTALL AUTHORS COPYING ChangeLog lrun \
 	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
 	   avtccio.c avtcwio.c avtcio.h avtfilechooser.c \
-	   balloonpointer.xpm circle.xpm gnu-head.xpm \
+	   balloonpointer.xpm circle.xpm gnu-head.xpm head.xpm \
 	   btn.xpm btn-cont.xpm btn-no.xpm btn-yes.xpm \
 	   avatarsay.c avtterm.h avtterm.c avtmsg.h avtmsg.c \
 	   arch.h arch.c \
