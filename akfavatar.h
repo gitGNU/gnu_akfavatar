@@ -227,6 +227,12 @@ avt_image_t *avt_import_image_data (void *img, int imgsize);
 avt_image_t *avt_import_image_file (const char *file);
 
 /* 
+ * import avatar from stream
+ * the stream is internally casted to (FILE *)
+ */
+avt_image_t *avt_import_image_stream (void *stream);
+
+/* 
  * change avatar image while running
  * if the avatar is visible, the screen gets cleared
  * the original image is freed in this function!
@@ -509,6 +515,16 @@ void avt_show_avatar (void);
  */
 int avt_show_image_file (const char *file);
 
+/* 
+ * load image from stream and show it
+ * the stream is internally casted to (FILE *)
+ * if SDL_image isn't available then
+ * XPM and uncompressed BMP are still supported
+ * on error it returns AVT_ERROR without changing the status
+ * if it succeeds call avt_wait or avt_waitkey 
+ */
+int avt_show_image_stream (void *stream);
+
 /*
  * show image from image data
  * if SDL_image isn't available then
@@ -723,7 +739,14 @@ void avt_quit_audio (void);
 avt_audio_t *avt_load_audio_file (const char *file);
 
 /*
- * loads an audio file in AU or Wave format from memory
+ * loads audio in AU or Wave format from a stream
+ * the stream is internally casted to (FILE *)
+ * not for headerless formats
+ */
+avt_audio_t *avt_load_audio_stream (void *stream);
+
+/*
+ * loads audio in AU or Wave format from memory
  * must still be freed with avt_free_audio!
  */
 avt_audio_t *avt_load_audio_data (void *data, int datasize);

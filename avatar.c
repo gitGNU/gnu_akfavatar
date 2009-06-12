@@ -4187,6 +4187,36 @@ avt_show_image_file (const char *filename)
   return _avt_STATUS;
 }
 
+int
+avt_show_image_stream (void *stream)
+{
+  SDL_Surface *image;
+
+  if (!screen)
+    return _avt_STATUS;
+
+  /* try internal XPM reader first */
+  /* it's better than in SDL_image */
+  image = avt_load_image_xpm_RW (SDL_RWFromFP ((FILE *) stream, 0), 1);
+
+  if (image == NULL)
+    {
+      load_image_init ();
+      image = load_image.rw (SDL_RWFromFP ((FILE *) stream, 0), 1);
+    }
+
+  if (image == NULL)
+    {
+      avt_clear ();		/* at least clear the balloon */
+      return AVT_ERROR;
+    }
+
+  avt_show_image (image);
+  SDL_FreeSurface (image);
+
+  return _avt_STATUS;
+}
+
 /*
  * show image from image data
  */
@@ -4409,6 +4439,31 @@ avt_import_image_file (const char *filename)
     {
       load_image_init ();
       image = load_image.file (filename);
+    }
+
+  /* if it's not yet transparent, make it transparent */
+  if (image)
+    if (!(image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
+      avt_make_transparent (image);
+
+  return (avt_image_t *) image;
+}
+
+avt_image_t *
+avt_import_image_stream (void *stream)
+{
+  SDL_Surface *image;
+
+  if (avt_init_SDL ())
+    return NULL;
+
+  /* try internal XPM reader first */
+  image = avt_load_image_xpm_RW (SDL_RWFromFP ((FILE *) stream, 0), 1);
+
+  if (image == NULL)
+    {
+      load_image_init ();
+      image = load_image.rw (SDL_RWFromFP ((FILE *) stream, 0), 1);
     }
 
   /* if it's not yet transparent, make it transparent */

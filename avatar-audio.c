@@ -599,6 +599,12 @@ avt_load_audio_file (const char *file)
 }
 
 avt_audio_t *
+avt_load_audio_stream (void *stream)
+{
+  return avt_load_audio_RW (SDL_RWFromFP ((FILE*) stream, 0));
+}
+
+avt_audio_t *
 avt_load_audio_data (void *data, int datasize)
 {
   return avt_load_audio_RW (SDL_RWFromMem (data, datasize));
