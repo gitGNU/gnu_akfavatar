@@ -85,7 +85,7 @@ new_page (char *dirname)
   avt_move_xy (1, 2);
 }
 
-#if 0
+#if (HAS_SCANDIR == AVT_TRUE)
 
 static int
 get_directory (struct dirent ***list)
@@ -93,7 +93,7 @@ get_directory (struct dirent ***list)
   return scandir (".", list, NULL, alphasort);
 }
 
-#else
+#else /* not HAS_SCANDIR */
 
 static int
 get_directory (struct dirent ***list)
@@ -104,13 +104,14 @@ get_directory (struct dirent ***list)
   int entries;
   DIR *dir;
 
+  *list = NULL;
   entries = 0;
 
   dir = opendir (".");
   if (dir == NULL)
     return -1;
 
-  mylist = (struct dirent **) malloc (max_entries * sizeof (d));
+  mylist = (struct dirent **) malloc (max_entries * sizeof (struct dirent *));
 
   while ((d = readdir (dir)) != NULL && entries < max_entries)
     {
@@ -167,6 +168,8 @@ get_file (char *filename)
   /* set maximum size */
   avt_set_balloon_size (0, 0);
 
+  namelist = NULL;
+
 start:
   /* returncode: assume failure as default */
   rcode = -1;
@@ -174,7 +177,6 @@ start:
   page_nr = 0;
   entries = 0;
   entry_nr = 0;
-  namelist = NULL;
   *filename = '\0';
   idx = 0;
 
@@ -211,7 +213,7 @@ start:
       else
 	d = NULL;
 
-      if (!d && !idx)		/* no entries at all */
+      if (!idx && !d)		/* no entries at all */
 	break;
 
       if (!d || (d && d->d_name[0] != '.'))
@@ -319,14 +321,16 @@ start:
 	}
     }
 
+  /* free namelist */
   {
     int i;
-
     for (i = 0; i < entries; i++)
       free (namelist[i]);
     free (namelist);
+    namelist = NULL;
   }
 
+  /* back-entry in root_dir */
   if (filenr == 1 && is_root_dir (dirname))
     {
       *filename = '\0';
@@ -344,6 +348,7 @@ start:
 	goto quit;
     }
 
+  /* directory chosen? */
   if (is_directory (filename))
     {
       if (chdir (filename))
