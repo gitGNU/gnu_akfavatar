@@ -74,6 +74,14 @@ is_directory (const char *name)
     return AVT_FALSE;
 }
 
+#ifdef _DIRENT_HAVE_D_TYPE
+#  define is_dirent_directory(d) \
+	    (d->d_type == DT_DIR \
+	      || (d->d_type == DT_LNK && is_directory (d->d_name)))
+#else
+#  define is_dirent_directory(d) (is_directory (d->d_name))
+#endif /* _DIRENT_HAVE_D_TYPE */
+
 static void
 new_page (char *dirname)
 {
@@ -86,13 +94,7 @@ new_page (char *dirname)
 }
 
 #if (HAS_SCANDIR == AVT_TRUE)
-
-static int
-get_directory (struct dirent ***list)
-{
-  return scandir (".", list, NULL, alphasort);
-}
-
+#  define get_directory(list) (scandir (".", list, NULL, alphasort))
 #else /* not HAS_SCANDIR */
 
 static int
@@ -153,7 +155,7 @@ get_file (char *filename)
   int idx;
   int filenr;
   char dirname[4096];
-  char entry[100][256];
+  char *entry[100];
   int page_nr;
   off_t pages[MAXPAGES];
   struct dirent **namelist;
@@ -205,12 +207,12 @@ start:
   /* entry for parent directory or home */
   if (!HAS_DRIVE_LETTERS && is_root_dir (dirname))
     {
-      strcpy (entry[idx], "");
+      entry[idx] = "";
       MARK (HOME);
     }
   else
     {
-      strcpy (entry[idx], "..");
+      entry[idx] = "..";
       MARK (PARENT_DIRECTORY);
     }
   idx++;
@@ -249,7 +251,7 @@ start:
 		    page_nr = MAXPAGES - 1;
 
 		  new_page (dirname);
-		  entry[idx][0] = '\0';
+		  entry[idx] = "";
 		  MARK (BACK);
 		  idx++;
 		  avt_new_line ();
@@ -271,12 +273,12 @@ start:
 		    {
 		      if (!HAS_DRIVE_LETTERS && is_root_dir (dirname))
 			{
-			  strcpy (entry[idx], "");
+			  entry[idx] = "";
 			  MARK (HOME);
 			}
 		      else
 			{
-			  strcpy (entry[idx], "..");
+			  entry[idx] = "..";
 			  MARK (PARENT_DIRECTORY);
 			}
 		    }
@@ -294,17 +296,11 @@ start:
 	    }
 
 	  /* copy name into entry */
-	  strncpy (entry[idx], d->d_name, sizeof (entry[idx]));
+	  entry[idx] = d->d_name;
 	  avt_say_mb (entry[idx]);
 
 	  /* is it a directory? */
-#ifdef _DIRENT_HAVE_D_TYPE
-	  /* faster */
-	  if (d->d_type == DT_DIR
-	      || (d->d_type == DT_LNK && is_directory (d->d_name)))
-#else
-	  if (is_directory (d->d_name))
-#endif /* _DIRENT_HAVE_D_TYPE */
+	  if (is_dirent_directory (d))
 	    {
 	      /* mark as directory */
 	      if (avt_where_x () > max_x)
@@ -332,13 +328,10 @@ start:
     }
 
   /* free namelist */
-  {
-    int i;
-    for (i = 0; i < entries; i++)
-      free (namelist[i]);
-    free (namelist);
-    namelist = NULL;
-  }
+  while (entries--)
+    free (namelist[entries]);
+  free (namelist);
+  namelist = NULL;
 
   /* back-entry in root_dir */
   if (filenr == 1 && is_root_dir (dirname))
