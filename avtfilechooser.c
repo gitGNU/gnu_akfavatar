@@ -19,6 +19,7 @@
 #include "akfavatar.h"
 #include "avtmsg.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
 #include <sys/stat.h>
@@ -52,12 +53,14 @@
 
 #ifdef __WIN32__
 #  define HAS_DRIVE_LETTERS AVT_TRUE
+#  define HAS_SCANDIR AVT_FALSE
 #  define is_root_dir(x) (x[1] == ':' && x[3] == '\0')
 extern int ask_drive (int max_idx);
 #else
 #  define HAS_DRIVE_LETTERS AVT_FALSE
+#  define HAS_SCANDIR AVT_TRUE
 #  define is_root_dir(x) (x[1] == '\0')
-#  define ask_drive(max_idx) 0
+#  define ask_drive(max_idx) 0	/* dummy */
 #endif
 
 static avt_bool_t
@@ -100,6 +103,9 @@ get_file (char *filename)
   char entry[100][256];
   int page_nr;
   off_t pages[MAXPAGES];
+  struct dirent **namelist;
+  int entries;
+  int entry_nr;
 
   avt_set_text_delay (0);
   avt_normal_text ();
@@ -124,19 +130,31 @@ start:
   rcode = -1;
   filenr = -1;
   page_nr = 0;
+  entries = 0;
+  entry_nr = 0;
+  namelist = NULL;
   *filename = '\0';
   idx = 0;
+
   if (!getcwd (dirname, sizeof (dirname)))
     warning_msg ("getcwd", strerror (errno));
 
   avt_auto_margin (AVT_FALSE);
   new_page (dirname);
 
+#if (HAS_SCANDIR)
+  entries = scandir (".", &namelist, NULL, alphasort);
+  if (entries < 0)
+    return rcode;
+
+  pages[page_nr] = entry_nr;
+#else
   dir = opendir (".");
   if (dir == NULL)
     return rcode;
 
   pages[page_nr] = telldir (dir);
+#endif
 
   /* entry for parent directory or home */
   if (!HAS_DRIVE_LETTERS && is_root_dir (dirname))
@@ -154,7 +172,15 @@ start:
 
   while (!*filename)
     {
-      d = readdir (dir);
+      if (HAS_SCANDIR)
+	{
+	  if (entry_nr < entries)
+	    d = namelist[entry_nr++];
+	  else
+	    d = NULL;
+	}
+      else
+	d = readdir (dir);
 
       if (!d && !idx)		/* no entries at all */
 	break;
@@ -190,7 +216,10 @@ start:
 	      else if (filenr == 1 && page_nr > 0)	/* back */
 		{
 		  page_nr--;
-		  seekdir (dir, pages[page_nr]);
+		  if (HAS_SCANDIR)
+		    entry_nr = pages[page_nr];
+		  else
+		    seekdir (dir, pages[page_nr]);
 
 		  idx = 0;
 
@@ -257,14 +286,31 @@ start:
 	    }
 
 	  avt_new_line ();
+
 	  idx++;
 	  if (idx == max_idx - 1 && page_nr < MAXPAGES - 1)
-	    pages[page_nr + 1] = telldir (dir);
+	    {
+	      if (HAS_SCANDIR)
+		pages[page_nr + 1] = entry_nr;
+	      else
+		pages[page_nr + 1] = telldir (dir);
+	    }
 	}
     }
 
-  if (closedir (dir) == -1)
-    rcode = -1;
+  if (HAS_SCANDIR)
+    {
+      int i;
+
+      for (i = 0; i < entries; i++)
+	free (namelist[i]);
+      free (namelist);
+    }
+  else
+    {
+      if (closedir (dir) == -1)
+	rcode = -1;
+    }
 
   if (filenr == 1 && is_root_dir (dirname))
     {

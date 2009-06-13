@@ -2,6 +2,8 @@
 
 	* akfavatar.h, akfavatar.pas: avt_bool_t is a char now!
 
+	* avtfilechooser (get_file): support scandir (not on MinGW)
+
 2009-06-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_import_image_stream)
