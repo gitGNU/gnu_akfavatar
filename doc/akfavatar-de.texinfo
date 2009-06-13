@@ -303,7 +303,7 @@ befindet).
 
 @subheading Installieren
 
-Bei GNU+Linux sollte man zunächst sicher stellen, dass @file{/usr/local/lib}
+Bei GNU/Linux sollte man zunächst sicher stellen, dass @file{/usr/local/lib}
 in der Datei @file{/etc/ld.so.conf} aufgeführt ist; entweder direkt, oder 
 indirekt.  Ebenso sollte man sicher stellen, dass @file{/usr/local/bin} 
 in der @code{PATH} Umgebungsvariablen mit eingetragen ist.
@@ -619,10 +619,8 @@ doppelklicken und er wird ausgeführt.
 @cindex Wechsel des Avatar-Bildes
 @cindex Bild (Avatar)
 
-Bisher haben wir immer ein und denselben Avatar gesehen --- ein Gnu.
-Aber nicht jeder mag Gnus oder das, was man sagen will entspricht
-nicht dem @acronym{GNU}-Projekt. --- Nun, das ist nur der 
-Vorgabe-Avatar.  Man kann ihn austauschen.
+Bisher haben wir immer ein und denselben Avatar gesehen. --- Nun, das ist 
+nur der Vorgabe-Avatar.  Man kann ihn austauschen.
 
 Es gibt verschiedene Methoden um den Avatar bei @command{avatarsay} 
 auszutauschen:
@@ -1087,8 +1085,8 @@ Fenster für die Eingabe-Zeile hat und @command{avatarsay} in einem anderen
 Fenster dargestellt wird.
 
 Man kann zum Beispiel mal folgendes ausprobieren: @*
-@samp{@w{echo "Hallo du. Wie geht's?" | avatarsay -}}.  Das Gnu erscheint und 
-sagt diese Worte.  Man sollte aber vorsichtig mit der Verwendung von 
+@samp{@w{echo "Hallo du. Wie geht's?" | avatarsay -}}.  Der Avatar erscheint 
+und sagt diese Worte.  Man sollte aber vorsichtig mit der Verwendung von 
 Ausrufungszeichen sein, einige Shells haben damit Probleme.
 
 Man kann sich aber auch die Ausgabe von anderen Befehlen mit 

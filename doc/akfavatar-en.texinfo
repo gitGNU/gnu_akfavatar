@@ -563,10 +563,8 @@ you can double-click on your ``text'' and it is executed.
 @cindex change the avatar
 @cindex exchange the avatar
 
-Up to now you have always seen the same avatar --- a gnu.
-Maybe you don't like gnus or what you want the avatar to say doesn't 
-fit the @acronym{GNU}-project. --- Well, that is just the default avatar. 
-You can exchange it.
+Up to now you have always seen the same avatar --- Well, that is just the 
+default avatar.  You can exchange it.
 
 There are different methods to exchange the avatar for @command{avatarsay}:
 
@@ -1010,7 +1008,7 @@ It is best to try these features in a window based environment, where you have
 one window for your command line and @command{avatarsay} opens up in a 
 separate window.
 
-So try this: @samp{@w{echo "Hey pal, what's GNU?" | avatarsay -}}.  The gnu 
+So try this: @samp{@w{echo "Hey pal, what's GNU?" | avatarsay -}}.  The avatar 
 appears and says that words. Be careful with using the exclamation mark 
 though, some shells have problems with that.
 
