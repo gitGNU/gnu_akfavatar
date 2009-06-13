@@ -4411,12 +4411,12 @@ avt_import_image_data (void *img, int imgsize)
     {
       load_image_init ();
       image = load_image.rw (SDL_RWFromMem (img, imgsize), 1);
-    }
 
-  /* if it's not yet transparent, make it transparent */
-  if (image)
-    if (!(image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
-      avt_make_transparent (image);
+      /* if it's not yet transparent, make it transparent */
+      if (image)
+	if (!(image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
+	  avt_make_transparent (image);
+    }
 
   return (avt_image_t *) image;
 }
@@ -4439,12 +4439,12 @@ avt_import_image_file (const char *filename)
     {
       load_image_init ();
       image = load_image.file (filename);
-    }
 
-  /* if it's not yet transparent, make it transparent */
-  if (image)
-    if (!(image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
-      avt_make_transparent (image);
+      /* if it's not yet transparent, make it transparent */
+      if (image)
+	if (!(image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
+	  avt_make_transparent (image);
+    }
 
   return (avt_image_t *) image;
 }
@@ -4464,12 +4464,12 @@ avt_import_image_stream (void *stream)
     {
       load_image_init ();
       image = load_image.rw (SDL_RWFromFP ((FILE *) stream, 0), 1);
-    }
 
-  /* if it's not yet transparent, make it transparent */
-  if (image)
-    if (!(image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
-      avt_make_transparent (image);
+      /* if it's not yet transparent, make it transparent */
+      if (image)
+	if (!(image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
+	  avt_make_transparent (image);
+    }
 
   return (avt_image_t *) image;
 }
