@@ -85,6 +85,49 @@ new_page (char *dirname)
   avt_move_xy (1, 2);
 }
 
+#if 0
+
+static int
+get_directory (struct dirent ***list)
+{
+  return scandir (".", list, NULL, alphasort);
+}
+
+#else
+
+static int
+get_directory (struct dirent ***list)
+{
+  const int max_entries = 1024;
+  struct dirent **mylist;
+  struct dirent *d, *n;
+  int entries;
+  DIR *dir;
+
+  entries = 0;
+
+  dir = opendir (".");
+  if (dir == NULL)
+    return -1;
+
+  mylist = (struct dirent **) malloc (max_entries * sizeof (d));
+
+  while ((d = readdir (dir)) != NULL && entries < max_entries)
+    {
+      n = (struct dirent *) malloc (sizeof (struct dirent));
+      memcpy (n, d, sizeof (struct dirent));
+      mylist[entries++] = n;
+    }
+
+  if (closedir (dir) < 0)
+    warning_msg ("closedir", "error");
+
+  *list = mylist;
+  return entries;
+}
+
+#endif
+
 /* 
  * filechooser
  * lists files in working directory
@@ -94,7 +137,6 @@ int
 get_file (char *filename)
 {
   int rcode;
-  DIR *dir;
   struct dirent *d;
   int max_x, max_idx;
   int idx;
@@ -142,19 +184,11 @@ start:
   avt_auto_margin (AVT_FALSE);
   new_page (dirname);
 
-#if (HAS_SCANDIR)
-  entries = scandir (".", &namelist, NULL, alphasort);
+  entries = get_directory (&namelist);
   if (entries < 0)
     return rcode;
 
   pages[page_nr] = entry_nr;
-#else
-  dir = opendir (".");
-  if (dir == NULL)
-    return rcode;
-
-  pages[page_nr] = telldir (dir);
-#endif
 
   /* entry for parent directory or home */
   if (!HAS_DRIVE_LETTERS && is_root_dir (dirname))
@@ -172,15 +206,10 @@ start:
 
   while (!*filename)
     {
-      if (HAS_SCANDIR)
-	{
-	  if (entry_nr < entries)
-	    d = namelist[entry_nr++];
-	  else
-	    d = NULL;
-	}
+      if (entry_nr < entries)
+	d = namelist[entry_nr++];
       else
-	d = readdir (dir);
+	d = NULL;
 
       if (!d && !idx)		/* no entries at all */
 	break;
@@ -216,10 +245,7 @@ start:
 	      else if (filenr == 1 && page_nr > 0)	/* back */
 		{
 		  page_nr--;
-		  if (HAS_SCANDIR)
-		    entry_nr = pages[page_nr];
-		  else
-		    seekdir (dir, pages[page_nr]);
+		  entry_nr = pages[page_nr];
 
 		  idx = 0;
 
@@ -289,28 +315,17 @@ start:
 
 	  idx++;
 	  if (idx == max_idx - 1 && page_nr < MAXPAGES - 1)
-	    {
-	      if (HAS_SCANDIR)
-		pages[page_nr + 1] = entry_nr;
-	      else
-		pages[page_nr + 1] = telldir (dir);
-	    }
+	    pages[page_nr + 1] = entry_nr;
 	}
     }
 
-  if (HAS_SCANDIR)
-    {
-      int i;
+  {
+    int i;
 
-      for (i = 0; i < entries; i++)
-	free (namelist[i]);
-      free (namelist);
-    }
-  else
-    {
-      if (closedir (dir) == -1)
-	rcode = -1;
-    }
+    for (i = 0; i < entries; i++)
+      free (namelist[i]);
+    free (namelist);
+  }
 
   if (filenr == 1 && is_root_dir (dirname))
     {
