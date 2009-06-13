@@ -343,7 +343,7 @@ implementation
 {$EndIf}
 
 { no real booleans used in the librarys interface }
-type avt_bool_t = CInteger;
+type avt_bool_t = Byte;
 
 type PAvatarImage = pointer;
 

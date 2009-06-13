@@ -1,3 +1,7 @@
+2009-06-13  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, akfavatar.pas: avt_bool_t is a char now!
+
 2009-06-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_import_image_stream)

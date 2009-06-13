@@ -92,11 +92,11 @@ extern "C" {
 #endif /* __cplusplus */
 
 /*
- * boolean are integers for this library
+ * boolean are chars for this library
  * to make language bindings more easy
  * (you can use stdbool.h in your program, it's compatible)
  */
-typedef int avt_bool_t;
+typedef char avt_bool_t;
 
 /* 
  * general type for avatar images
