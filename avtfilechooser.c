@@ -96,6 +96,13 @@ get_directory (struct dirent ***list)
 #else /* not HAS_SCANDIR */
 
 static int
+compare_dirent (const void *a, const void *b)
+{
+  return strcmp ((*(struct dirent **) a)->d_name,
+		 (*(struct dirent **) b)->d_name);
+}
+
+static int
 get_directory (struct dirent ***list)
 {
   const int max_entries = 1024;
@@ -122,6 +129,9 @@ get_directory (struct dirent ***list)
 
   if (closedir (dir) < 0)
     warning_msg ("closedir", "error");
+
+  /* sort */
+  qsort (mylist, entries, sizeof (struct dirent *), compare_dirent);
 
   *list = mylist;
   return entries;

@@ -3,6 +3,7 @@
 	* akfavatar.h, akfavatar.pas: avt_bool_t is a char now!
 
 	* avtfilechooser (get_file): support scandir (not on MinGW)
+	(get_directory, compare_dirent): new functions
 
 2009-06-12  Andreas K. Foerster  <info@akfoerster.de>
 
