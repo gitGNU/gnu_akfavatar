@@ -266,7 +266,7 @@ start:
 		  new_page (dirname);
 		  if (page_nr > 0)
 		    {
-		      entry[idx][0] = '\0';
+		      entry[idx] = "";
 		      MARK (BACK);
 		    }
 		  else		/* first page */
