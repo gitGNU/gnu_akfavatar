@@ -100,7 +100,7 @@ new_page (char *dirname)
 static int
 compare_dirent (const void *a, const void *b)
 {
-  return strcmp ((*(struct dirent **) a)->d_name,
+  return strcoll ((*(struct dirent **) a)->d_name,
 		 (*(struct dirent **) b)->d_name);
 }
 
