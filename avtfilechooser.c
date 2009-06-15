@@ -121,7 +121,7 @@ get_directory (struct dirent ***list)
   entries = 0;
 
   /* TODO: potential portability problem */
-  dirent_size = sizeof (struct_dirent);	/* works for all I have */
+  dirent_size = sizeof (struct dirent);	/* works for all I have */
 
   /*
      dirent_size = offsetof (struct dirent, d_name)
