@@ -125,7 +125,7 @@ get_directory (struct dirent ***list)
 
   /*
      dirent_size = offsetof (struct dirent, d_name)
-       + pathconf (".", _PC_NAME_MAX) + 1;
+     + pathconf (".", _PC_NAME_MAX) + 1;
    */
 
   dir = opendir (".");
@@ -133,23 +133,27 @@ get_directory (struct dirent ***list)
     return -1;
 
   mylist = (struct dirent **) malloc (max_entries * sizeof (struct dirent *));
-  if (!mylist)
-    return -1;
 
-  while ((d = readdir (dir)) != NULL && entries < max_entries)
+  if (mylist)
     {
-      n = (struct dirent *) malloc (dirent_size);
-      if (!n)
-	break;
-      memcpy (n, d, dirent_size);
-      mylist[entries++] = n;
+      while ((d = readdir (dir)) != NULL && entries < max_entries)
+	{
+	  n = (struct dirent *) malloc (dirent_size);
+	  if (!n)
+	    break;
+	  memcpy (n, d, dirent_size);
+	  mylist[entries++] = n;
+	}
+
+      /* sort */
+      qsort (mylist, entries, sizeof (struct dirent *), compare_dirent);
     }
 
   if (closedir (dir) < 0)
     warning_msg ("closedir", strerror (errno));
 
-  /* sort */
-  qsort (mylist, entries, sizeof (struct dirent *), compare_dirent);
+  if (!mylist)
+    return -1;
 
   *list = mylist;
   return entries;
