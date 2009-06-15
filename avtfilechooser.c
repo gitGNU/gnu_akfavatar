@@ -16,6 +16,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#define _BSD_SOURCE
+
 #include "akfavatar.h"
 #include "avtmsg.h"
 #include <stdio.h>
@@ -77,7 +79,8 @@ is_directory (const char *name)
 #ifdef _DIRENT_HAVE_D_TYPE
 #  define is_dirent_directory(d) \
 	    (d->d_type == DT_DIR \
-	      || (d->d_type == DT_LNK && is_directory (d->d_name)))
+	      || ((d->d_type == DT_UNKNOWN || d->d_type == DT_LNK) \
+	             && is_directory (d->d_name)))
 #else
 #  define is_dirent_directory(d) (is_directory (d->d_name))
 #endif /* _DIRENT_HAVE_D_TYPE */
@@ -101,7 +104,7 @@ static int
 compare_dirent (const void *a, const void *b)
 {
   return strcoll ((*(struct dirent **) a)->d_name,
-		 (*(struct dirent **) b)->d_name);
+		  (*(struct dirent **) b)->d_name);
 }
 
 static int
