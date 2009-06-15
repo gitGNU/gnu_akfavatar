@@ -96,7 +96,7 @@ new_page (char *dirname)
   avt_move_xy (1, 2);
 }
 
-#if (HAS_SCANDIR == AVT_TRUE)
+#if (HAS_SCANDIR)
 #  define get_directory(list) (scandir (".", list, NULL, alphasort))
 #else /* not HAS_SCANDIR */
 
@@ -114,26 +114,39 @@ get_directory (struct dirent ***list)
   struct dirent **mylist;
   struct dirent *d, *n;
   int entries;
+  size_t dirent_size;
   DIR *dir;
 
   *list = NULL;
   entries = 0;
+
+  /* TODO: potential portability problem */
+  dirent_size = sizeof (struct_dirent);	/* works for all I have */
+
+  /*
+     dirent_size = offsetof (struct dirent, d_name)
+       + pathconf (".", _PC_NAME_MAX) + 1;
+   */
 
   dir = opendir (".");
   if (dir == NULL)
     return -1;
 
   mylist = (struct dirent **) malloc (max_entries * sizeof (struct dirent *));
+  if (!mylist)
+    return -1;
 
   while ((d = readdir (dir)) != NULL && entries < max_entries)
     {
-      n = (struct dirent *) malloc (sizeof (struct dirent));
-      memcpy (n, d, sizeof (struct dirent));
+      n = (struct dirent *) malloc (dirent_size);
+      if (!n)
+	break;
+      memcpy (n, d, dirent_size);
       mylist[entries++] = n;
     }
 
   if (closedir (dir) < 0)
-    warning_msg ("closedir", "error");
+    warning_msg ("closedir", strerror (errno));
 
   /* sort */
   qsort (mylist, entries, sizeof (struct dirent *), compare_dirent);
