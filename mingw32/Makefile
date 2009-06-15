@@ -7,6 +7,7 @@ srcdir = ..
 TARGET = i586-mingw32msvc
 CC = $(TARGET)-gcc
 AR = $(TARGET)-ar
+STRIP = $(TARGET)-strip
 WINDRES = $(TARGET)-windres
 RANLIB = $(TARGET)-ranlib
 CFLAGS = -O2 -Wall -Wextra
@@ -324,12 +325,14 @@ dist-bin: avatarsay.exe multiply.exe multiplizieren.exe
 	#cp libakfavatar.dll.a $(BINPKGNAME)/
 	#cp $(srcdir)/akfavatar.h akfavatar.def $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/
 	cp avatarsay.exe $(srcdir)/fsdemo-?? $(BINPKGNAME)/
+	cp $(srcdir)/gnu-head.xpm $(BINPKGNAME)/
 	cp fsdemo-??.bat $(BINPKGNAME)/
 	cp $(srcdir)/COPYING $(BINPKGNAME)/gpl-3.0.txt
 	cp $(srcdir)/AUTHORS $(BINPKGNAME)/AUTHORS.txt
-	cp $(srcdir)/pascal/correct.wav $(srcdir)/pascal/wrong.wav $(BINPKGNAME)/
+	cp $(srcdir)/pascal/positive.au $(srcdir)/pascal/negative.au $(BINPKGNAME)/
 	-cp multiply.exe multiplizieren.exe $(BINPKGNAME)/
-	strip $(BINPKGNAME)/avatarsay.exe $(BINPKGNAME)/akfavatar.dll
+	cp $(srcdir)/pascal/teacher.xpm $(BINPKGNAME)/
+	$(STRIP) $(BINPKGNAME)/avatarsay.exe $(BINPKGNAME)/akfavatar.dll
 	todos $(BINPKGNAME)/fsdemo-??
 	todos $(BINPKGNAME)/*.bat
 	todos $(BINPKGNAME)/*.txt
