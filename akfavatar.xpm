@@ -9,9 +9,9 @@ This file is in the Public Domain
 */
 
 "32 32 3 1",
-" 	c None",
-".	c #555555",
-"+	c #FFFFFF",
+" 	g None m None",
+".	g gray33 m black",
+"+	g white m white",
 "                                ",
 "                                ",
 "                                ",

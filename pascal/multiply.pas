@@ -222,7 +222,7 @@ Begin { main program }
 { use IfDef for AKFAVATAR specific commands: }
 {$IfDef AKFAVATAR}
   SetEncoding('ISO-8859-1');
-  SetBackgroundColor($BB, $BB, $55);
+  SetBackgroundColorName('tan');
 
   { load the image of the teacher, if there is one }
   AvatarImageFile('teacher.xpm');

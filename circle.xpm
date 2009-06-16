@@ -3,7 +3,7 @@ static char * circle_xpm[] = {
 /* This file is in the Public Domain */
 "30 30 2 1",
 " 	c None",
-".	c #FFFFFF",
+".	c white",
 "          ..........          ",
 "       ................       ",
 "      ..................      ",
