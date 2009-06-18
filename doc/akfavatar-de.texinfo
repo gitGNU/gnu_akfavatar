@@ -646,17 +646,17 @@ AVATARIMAGE=/usr/local/share/pixmaps/meinavatar.xpm
 @end example
 
 Oder man kann das Bild für den Avatar auf einer Text-für-Text Basis 
-austauschen, indem man eine Aweisung in der Text-Datei verwendet.  Das wird in 
+austauschen, indem man eine Anweisung in der Text-Datei verwendet.  Das wird in 
 @ref{Anweisungen für avatarsay} näher erläutert.
 
 Welche Bilddatei-Formate von AKFAvatar unterstützt werden, hängt davon
-ab, welche Bibliotheken auf dem System installiert sind.
+ab, welche Bibliotheken auf dem System installiert sind (@pxref{Formate}).
 
 @subsection Transparenter Avatar Hintergrund
 @cindex Transparenz (Avatar-Bild)
 
 Das Avatar-Bild sollte natürlich einen transparenten Hintergrund haben.
-Leider unterstützen die meisten Bild-Formate keine Transparenz.  Darum
+Leider unterstützen viele Bild-Formate keine Transparenz.  Darum
 verwendet AKFAvatar einen Trick.  Wenn das Avatar-Bild keine Transparenz
 hat, dann wird der erste Farbwert im Bild genommen, das ist der Farbwert
 in der oberen linken Ecke, und dieser Farbwert wird als transparent 
@@ -670,11 +670,10 @@ Wegen dieser Voraussetzung ist übrigens das @abbr{JPEG}-Format nicht
 geeignet.  Man kann nämlich in diesem Format niemals einen wirklich
 ``glatten'' Hintergrund bekommen.
 
-Wenn man Bildformate verwenden kann, die Transparenz unterstützen, dann
-sollte man dies auch verwenden.  AKFAvatar wird dann nicht in die 
-Transparenz eingreifen.  Es ist jedoch zu beachten, dass der oben
-beschriebene Trick immer angewendet wird, wenn das Bild keine 
-Transparenz @emph{hat}, unabhängig davon, ob das Bildformat 
+Man sollte also möglichst Bild-Formate verwenden, die Transparenz unterstützen.
+AKFAvatar wird dann nicht in die Transparenz eingreifen.  Es ist jedoch zu 
+beachten, dass der oben beschriebene Trick angewendet wird, wenn das Bild
+keine Transparenz @emph{hat}, unabhängig davon, ob das Bildformat 
 Transparenz unterstützen @emph{würde}.
 
 @node Aufruf von avatarsay
@@ -879,7 +878,7 @@ Das Avatar-Bild kann auch mit der Umgebungsvariablen @env{AVATARIMAGE}
 eingestellt werden.  Diese Anweisung hat Vorrang vor der Umgebungsvariablen.
 
 Welche Bilddatei-Formate von AKFAvatar unterstützt werden, hängt davon
-ab, welche Bibliotheken auf dem System installiert sind.
+ab, welche Bibliotheken auf dem System installiert sind (@pxref{Formate}).
 
 @item encoding @var{Kodierung}
 nur für Demos: gibt die Kodierung des Textes an; 
@@ -976,7 +975,7 @@ Man kann eine Trennlinie @emph{nach} dieser Anwesung einfügen, wenn man will.
 Die Trennlinie hat dann keine Auswirkung.
 
 Welche Bilddatei-Formate von AKFAvatar unterstützt werden, hängt davon
-ab, welche Bibliotheken auf dem System installiert sind.
+ab, welche Bibliotheken auf dem System installiert sind (@pxref{Formate}).
 
 @item rawaudiosettings @var{Samplingrate} @var{Kodierung} mono|stereo
 Einstellungen für das Laden von rohen Audio-Dateien
@@ -1269,6 +1268,39 @@ gelb ist @code{#ff0}, violett ist @code{#f0f} und so weiter.  Für dunklere
 Farben wählt man einfach kleinere Werte: @code{#808} ist ein dunkles violett, 
 während @code{#fdf} ein sehr helles violett ist.
 
+@section Bilder
+@cindex Bilder
+
+AKFAvatar unterstützt Bilder im @abbr{XPM}-Format und im unkomprimierten 
+@abbr{BMP-}Format ohne weitere Zusatz-Bibliotheken.
+Das @abbr{XPM}-Format eignet sich besser für Avatar-Bilder, da es Transparez 
+unterstützt.  Für andere Formate muss die Software auf einen schmutzigen Trick
+ausweichen, um eine Art Pseudo-Transparenz zu erreichen
+(@pxref{Anderes Avatar-Bild}).
+@abbr{XPM} eignet sich vor allem auch viel besser für Programmierer, da 
+diese Dateien recht einfach in Code eingefügt werden können, insbesondere in 
+Code von C-kompatiblen Sprachen.  Es gibt jedoch auch einen Nachteil: 
+@abbr{XPM}-Dateien mit sehr vielen Farben können ziemlich groß werden.
+Man sollte dabei also möglichst nur wenige Farben verwenden.  Es gibt jedoch
+keine künstliche Begrenzung.
+
+Wenn man @code{SDL_image} installiert hat, kann man auch einige andere Formate
+verwenden, inklusive @abbr{PNG} und @abbr{JPEG}, falls man auch dafür die
+nötigen Bibliotheken installiert hat.  Man sollte jedoch beachten, dass sich 
+@abbr{JPEG} nicht für Avatar-Bilder eignet (der oben erwähnte 
+``schmutzige Trick'' funktioniert mit @abbr{JPEG} nicht vernünftig).
+
+Sowohl das @abbr{XPM}-Format, als auch das @abbr{BMP}-Format sind
+unkomprimiert.  Bilder in diesen Formaten belegen also einiges an Platz auf
+der Festplatte.  Allerdings sollte Festplattenplatz heutzutage kein so großes
+Problem mehr sein.
+Man beachte außerdem: Wenn man diese Dateien in komprimierte Archiv-Dateien
+zum Weiterverteilen packt, dann macht das überhaupt nichts aus.  Dann werden 
+sie ja komprimiert, während Dateien, die vorher schon komprimiert waren, sich
+kaum weiter komprimieren lassen.  Das gleicht sich gegenseitig aus.
+(Lediglich das @abbr{JPEG}-Format hat hierbei einen Vorteil, da es ein 
+verlustbehaftetes Format ist.)
+
 @node Programmierung
 @chapter Programmierung mit AKFAvatar
 @cindex Programmierung
@@ -1520,6 +1552,8 @@ Es folgt der Inhalt der C Header Datei @code{akfavatar.h}:
 Bei Farbnamen ist die Groß- und Kleinschreibung beliebig. Namen mit einem 
 Leerzeichen dazwischen können nicht immer verwendet werden. Diese Namen können
 aber immer zu einem Wort zusammengeschrieben werden.
+
+Andere Möglichkeiten Farben anzugeben werden in @ref{Formate} erläutert.
 
 Die folgenden Namen für Farben werden unterstützt:
 
