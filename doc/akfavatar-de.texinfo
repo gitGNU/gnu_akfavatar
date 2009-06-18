@@ -11,6 +11,8 @@
 @documentlanguage de
 @documentencoding UTF-8
 
+@comment In Namen für nodes muss man die Umlaute maskieren!
+
 @iftex
   @frenchspacing on
 @end iftex
@@ -62,7 +64,7 @@ sowie dieser Hinweis erhalten bleiben.
 @end ifnottex
 
 @menu
-* Überblick::                      Überblick über AKFAvatar
+* @"Uberblick::                    Überblick über AKFAvatar
 * Installation::		   AKFAvatar installieren
 * Verwendung von avatarsay::       Verwendung des Werkzeugs @command{avatarsay}
 * Verwendung von gnome-akfavatar:: Wie man es unter @acronym{GNOME} verwendet
@@ -75,7 +77,7 @@ sowie dieser Hinweis erhalten bleiben.
 @end menu
 
 
-@node Überblick
+@node @"Uberblick
 @chapter Überblick über AKFAvatar
 @cindex Überblick
 
@@ -383,14 +385,14 @@ Dieses Kapitel erklärt die verschiedenen Anwendungsbereiche des
 Werkzeugs @command{avatarsay}.
 
 @menu
-* Text-Terminal::	       Einsatz als lustiges Text-Terminal
-* Text-Betrachter::            Einsatz als lustiger Text-Betrachter
-* Den Text ausführbar machen:: Wie man seinen Text in ein Programm verwandelt
-* Anderes Avatar-Bild::        Wie man ein anderes Avatar-Bild verwendet
-* Aufruf von avatarsay::       Die genaue Verwendung von @command{avatarsay}
-* Anweisungen für avatarsay::  Anweisungen für das Programm @command{avatarsay}
-* Pipes::                      Pipes
-* Archiv-Dateien::             Archiv-Dateien
+* Text-Terminal::	         Einsatz als lustiges Text-Terminal
+* Text-Betrachter::              Einsatz als lustiger Text-Betrachter
+* Den Text ausf@"uhrbar machen:: Wie man seinen Text in ein Programm verwandelt
+* Anderes Avatar-Bild::          Wie man ein anderes Avatar-Bild verwendet
+* Aufruf von avatarsay::         Die genaue Verwendung von @command{avatarsay}
+* Anweisungen f@"ur avatarsay::  Anweisungen für das Programm @command{avatarsay}
+* Pipes::                        Pipes
+* Archiv-Dateien::               Archiv-Dateien
 @end menu
 
 @node Text-Terminal
@@ -517,7 +519,7 @@ Der Wert 0 steht für das jeweilige Maximum.
 (Dies ist tatsächlich kompatibel mit dem original @command{xterm})
 
 @item APC @var{Befehl} ST
-sendet einen Befehl an avatarsay. @xref{Anweisungen für avatarsay}.
+sendet einen Befehl an avatarsay. @xref{Anweisungen f@"ur avatarsay}.
 
 @end table
 
@@ -585,7 +587,7 @@ kann man auch mehr als drei benutzen.  Wenn @command{avatarsay} auf eine solche
 Trennlinie stößt, wartet es es eine Weile und fängt dann eine neue Seite an.
 
 
-@node Den Text ausführbar machen
+@node Den Text ausf@"uhrbar machen
 @section Wie man seinen Text in ein Programm verwandelt
 @cindex ausführbarer Text
 
@@ -647,7 +649,7 @@ AVATARIMAGE=/usr/local/share/pixmaps/meinavatar.xpm
 
 Oder man kann das Bild für den Avatar auf einer Text-für-Text Basis 
 austauschen, indem man eine Anweisung in der Text-Datei verwendet.  Das wird in 
-@ref{Anweisungen für avatarsay} näher erläutert.
+@ref{Anweisungen f@"ur avatarsay} näher erläutert.
 
 Welche Bilddatei-Formate von AKFAvatar unterstützt werden, hängt davon
 ab, welche Bibliotheken auf dem System installiert sind (@pxref{Formate}).
@@ -821,7 +823,7 @@ AVATARDATADIR=/usr/local/share/akfavatar
 
 Siehe auch @ref{Anderes Avatar-Bild}.
 
-@node Anweisungen für avatarsay
+@node Anweisungen f@"ur avatarsay
 @section Anweisungen für das Programm @command{avatarsay}
 @cindex Anweisungen für avatarsay
 
@@ -1144,7 +1146,7 @@ Funktionen über ein Menü abrufbar sind.
 
 @menu
 * GNOME Voraussetzungen::  Was für @command{gnome-akfavatar} benötigt wird
-* GNOME Hauptmenü::        Das Hauptmenü von @command{gnome-akfavatar}
+* GNOME Hauptmen@"u::      Das Hauptmenü von @command{gnome-akfavatar}
 @end menu
 
 @node GNOME Voraussetzungen
@@ -1170,7 +1172,7 @@ wird, braucht das Paket nicht unbedingt installiert zu werden.  Aber
 die Anleitung muss installiert sein, damit man sie aus 
 @command{gnome-akfavatar} heraus aufrufen kann.
 
-@node GNOME Hauptmenü
+@node GNOME Hauptmen@"u
 @section Das Hauptmenü von @command{gnome-akfavatar}
 @cindex Menü von @command{gnome-akfavatar}
 @cindex Hauptmenü von @command{gnome-akfavatar}
@@ -1186,7 +1188,7 @@ Man bekommt die folgenden Menüpunkte:
 Man bekommt eine Datei-Auswahl-Box mit der man eine Text-Datei oder ein
 Demo auswählen kann, um sie mit @command{avatarsay} anzeigen zu lassen.
 Ein @dfn{Demo} ist entweder eine Text-Datei, die Anweisungen für 
-@command{avatarsay} enthält (@pxref{Anweisungen für avatarsay}),
+@command{avatarsay} enthält (@pxref{Anweisungen f@"ur avatarsay}),
 oder ein Paket, dass auch Bilder und Audio-Dateien enthalten kann. 
 
 @item create or edit a demo (ein Demo erstellen oder bearbeiten)
