@@ -13,6 +13,10 @@ kbd { border:outset thin #000 }
     }
   .new, .important { color:#a00 }
   kbd { color:#000; background-color:#ddd }
+  div.node, div.node a { color:#e0d5c5; background-color:#8b7355; }
+  div.node { text-align:center; padding:0.5ex; 
+             border-style:inset; border-width:medium; border-color:#8b7355 }
+  div.node hr { display:none }
   }
 
 @media print {
