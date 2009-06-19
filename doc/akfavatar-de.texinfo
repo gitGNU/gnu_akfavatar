@@ -13,14 +13,14 @@
 
 @comment In Namen für Nodes muss man die Umlaute maskieren!
 
-@c Regeln für Silbentrennung
-@c keine Wörter mit Umlauten hier!
-@hyphenation{AKFAvatar avatarsay}
-@hyphenation{Pa-ra-me-ter exis-tiert aus-wei-chen be-zeich-nen}
-@hyphenation{Zei-chen}
-
 @iftex
   @frenchspacing on
+
+  @c Regeln für Silbentrennung
+  @c keine Wörter mit Umlauten hier!
+  @hyphenation{AKFAvatar avatarsay}
+  @hyphenation{Pa-ra-me-ter exis-tiert aus-wei-chen be-zeich-nen}
+  @hyphenation{Zei-chen}
 @end iftex
 
 @dircategory Miscellaneous

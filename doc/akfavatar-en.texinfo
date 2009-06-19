@@ -11,8 +11,10 @@
 @documentlanguage en
 @documentencoding US-ASCII
 
+@iftex
 @hyphenation{AKFAvatar avatarsay}
 @hyphenation{pa-ra-me-ter inter-fere}
+@end iftex
 
 @dircategory Miscellaneous
 @direntry
