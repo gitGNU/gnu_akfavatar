@@ -33,9 +33,9 @@ Dies ist die Bedienungsanleitung für AKFAvatar
 (Version @value{VERSION}, @value{UPDATED}).
 
 @quotation
-AKFAvatar ist ein lustiger Terminal-Emulator, ein Text-Betrachter, eine 
-Skript-Sprache um Demos zu erstellen und eine Programmbibliothek um 
-dafür Programme in C oder Pascal zu schreiben.
+AKFAvatar ist eine lustige Benutzeroberfläche für Textkonsolen-Programme, 
+ein Text-Betrachter, eine Skript-Sprache um Demos zu erstellen und eine
+Programmbibliothek um dafür Programme in C oder Pascal zu schreiben.
 
 Homepage: @uref{http://akfavatar.nongnu.org/}
 
@@ -50,7 +50,7 @@ sowie dieser Hinweis erhalten bleiben.
 
 @titlepage
 @title AKFAvatar
-@subtitle Ein lustiges Terminal und mehr
+@subtitle Eine lustige Benutzeroberfläche
 @author Andreas K. Förster
 
 @c Die folgendern Befehle erzeugen die Copyright Seite.
@@ -104,7 +104,8 @@ läuft es eventuell auch ohne einen X-Server.
 (Für Windows steht diese Funktion nicht zur Verfügung.)
 
 @item
-Man kann Textmodus-Programme auch direkt mit @command{avatarsay} öffnen lassen.
+Man kann Textmodus-Programme auch direkt mit @command{avatarsay -x} öffnen
+lassen.
 (Für Windows steht diese Funktion nicht zur Verfügung.)
 
 @item
@@ -125,10 +126,10 @@ eher sagen, man kann seine Texte mit gelegentlichen Anweisungen aufpeppen.
 @item
 Dann gibt es da noch die Programmbibliothek @code{libakfavatar}, die man von
 kompilierenden Sprachen aus verwenden kann.  Zur Zeit werden @w{Free Pascal},
-@acronym{GNU}-Pascal und C unterstützt.  Insbesondere die Sprache Pascal
-ist für Anfänger geeignet, die programmieren lernen wollen.  Die Bibliothek ist
-so einfach zu verwenden, wie Kommandozeilen-Programme zu schreiben --- es macht
-aber wesentlich mehr Spaß!
+@acronym{GNU}-Pascal und C-kompatible Sprachen unterstützt.  Insbesondere die
+Sprache Pascal ist für Anfänger geeignet, die programmieren lernen wollen.
+Die Bibliothek ist so einfach zu verwenden, wie Kommandozeilen-Programme zu
+schreiben --- es macht aber wesentlich mehr Spaß!
 
 @end enumerate
 

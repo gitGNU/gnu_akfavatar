@@ -11,6 +11,9 @@
 @documentlanguage en
 @documentencoding US-ASCII
 
+@hyphenation{AKFAvatar avatarsay}
+@hyphenation{pa-ra-me-ter inter-fere}
+
 @dircategory Miscellaneous
 @direntry
 * AKFAvatar: (akfavatar-en).    A graphical avatar.
@@ -21,8 +24,9 @@ This is the documentation for AKFAvatar
 (version @value{VERSION}, @value{UPDATED}).
 
 @quotation
-AKFAvatar is a fancy terminal-emultator, a text-viewer, scripting language 
-for making demos, and a library for writing programs in C or Pascal.
+AKFAvatar is a fancy user interface for textconsole-programs, a text-viewer,
+a scripting language for making demos, and a library for writing programs in 
+C or Pascal.
 
 Homepage: @uref{http://akfavatar.nongnu.org/}
 
@@ -37,7 +41,7 @@ notice and this notice are preserved.
 
 @titlepage
 @title AKFAvatar
-@subtitle a fancy terminal and more
+@subtitle a fancy user interface
 @author Andreas K. Foerster
 
 @comment The following two commands start the copyright page.
@@ -90,7 +94,7 @@ it might even run without an x-server.
 (Under Windows this function is not available.)
 
 @item
-You can use it as wrapper for your textmode programs.
+You can use it as user interface for your textmode programs.
 (Under Windows this function is not available.)
 
 @item
@@ -112,9 +116,9 @@ set the executable bit on your@dots{} ``text'', and it is executable.
 @item  
 Then there is the library @code{libakfavatar}, which you can use from
 compiling languages.  Currently @w{Free Pascal}, @acronym{GNU}-Pascal
-and C are supported.  Especially the Pascal language is suited for
-beginners to learn how to program.  The library is simple to use, like writing
-command-line programs --- but it's much more fun!
+and C-compatible languages are supported.  Especially the Pascal language is
+suited for beginners to learn how to program.  The library is simple to use,
+like writing command-line programs --- but it's much more fun!
 
 @end enumerate
 
@@ -648,7 +652,6 @@ terminal mode, ie. run a shell in the balloon
 
 @item --execute
 @itemx -x
-@itemx -e
 execute program in the balloon
 
 A program name must be given. Options after the program name are options
@@ -763,7 +766,7 @@ AVATARDATADIR=/usr/local/share/akfavatar
 @cindex commands for avatarsay
 
 With the program @command{avatarsay} you can also write some simple demos. 
-You don't have to lear a programming language for that.
+You don't have to learn a programming language for that.
 
 A line starting with a hash sign (@code{#}, @code{U+0023}) is a 
 @emph{comment}.  Those lines are simply ignored by the program.
