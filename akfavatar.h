@@ -254,6 +254,9 @@ void avt_free_image (avt_image_t * image);
  */
 avt_image_t *avt_make_transparent (avt_image_t * image);
 
+/* get color name of given number, or NULL on error */
+char *avt_get_color_name (int nr);
+
 /*
  * define the background color
  * values in the range 0x00 .. 0xFF
