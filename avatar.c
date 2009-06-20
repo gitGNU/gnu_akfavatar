@@ -296,10 +296,13 @@ static int avt_pause (void);
 
 
 /* color selector */
-static int
+int
 avt_name_to_color (const char *name, int *red, int *green, int *blue)
 {
   int status;
+
+  if (!name || !*name || !red || !green || !blue)
+    return -1;
 
   status = -1;
   *red = *green = *blue = -1;

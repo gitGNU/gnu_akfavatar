@@ -1,3 +1,7 @@
+2009-06-20  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_name_to_color): export function
+
 2009-06-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_get_color_name): new function

@@ -254,6 +254,13 @@ void avt_free_image (avt_image_t * image);
  */
 avt_image_t *avt_make_transparent (avt_image_t * image);
 
+/*
+ * get color values for a given color-name
+ * returns 0 on success or -1 on error
+ */
+int avt_name_to_color (const char *name,
+                       int *red, int *green, int *blue);
+
 /* get color name of given number, or NULL on error */
 char *avt_get_color_name (int nr);
 
