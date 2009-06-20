@@ -124,7 +124,7 @@ static const Sint16 alaw_decode[256] = {
 };
 
 /* this is the callback function */
-void
+static void
 fill_audio (void *userdata AVT_UNUSED, Uint8 * stream, int len)
 {
   /* only play, when there is data left */
@@ -162,7 +162,7 @@ short_audio_sound (void)
 }
 
 /* must be called AFTER avt_initialize! */
-int
+extern int
 avt_initialize_audio (void)
 {
   if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
@@ -181,7 +181,7 @@ avt_initialize_audio (void)
 }
 
 /* stops audio */
-void
+extern void
 avt_stop_audio (void)
 {
   SDL_CloseAudio ();
@@ -192,7 +192,7 @@ avt_stop_audio (void)
   current_sound.sound = NULL;
 }
 
-void
+extern void
 avt_quit_audio (void)
 {
   avt_quit_audio_func = NULL;
@@ -207,7 +207,8 @@ avt_quit_audio (void)
   SDL_QuitSubSystem (SDL_INIT_AUDIO);
 }
 
-avt_audio_t *
+/* deprecated in API */
+extern avt_audio_t *
 avt_load_wave_file (const char *file)
 {
   AudioStruct *s;
@@ -226,7 +227,8 @@ avt_load_wave_file (const char *file)
   return (avt_audio_t *) s;
 }
 
-avt_audio_t *
+/* deprecated in API */
+extern avt_audio_t *
 avt_load_wave_data (void *data, int datasize)
 {
   AudioStruct *s;
@@ -478,55 +480,6 @@ done:
     return NULL;
 }
 
-/* use avt_load_audio_file and avt_load_audio_data instead */
-#if 0 
-static avt_audio_t *
-avt_load_au_file (const char *file)
-{
-  AudioStruct *s;
-
-  s = (AudioStruct *) SDL_malloc (sizeof (AudioStruct));
-  if (s == NULL)
-    {
-      SDL_SetError ("out of memory");
-      return NULL;
-    }
-
-  s->wave = AVT_FALSE;
-  if (avt_LoadAU_RW (SDL_RWFromFile (file, "rb"), 1,
-		     &s->audiospec, &s->sound, &s->len) == NULL)
-    {
-      SDL_free (s);
-      return NULL;
-    }
-
-  return (avt_audio_t *) s;
-}
-
-static avt_audio_t *
-avt_load_au_data (void *data, int datasize)
-{
-  AudioStruct *s;
-
-  s = (AudioStruct *) SDL_malloc (sizeof (AudioStruct));
-  if (s == NULL)
-    {
-      SDL_SetError ("out of memory");
-      return NULL;
-    }
-
-  s->wave = AVT_FALSE;
-  if (avt_LoadAU_RW (SDL_RWFromMem (data, datasize), 1,
-		     &s->audiospec, &s->sound, &s->len) == NULL)
-    {
-      SDL_free (s);
-      return NULL;
-    }
-
-  return (avt_audio_t *) s;
-}
-#endif
-
 static avt_audio_t *
 avt_load_audio_RW (SDL_RWops * src)
 {
@@ -592,25 +545,25 @@ avt_load_audio_RW (SDL_RWops * src)
   return (avt_audio_t *) s;
 }
 
-avt_audio_t *
+extern avt_audio_t *
 avt_load_audio_file (const char *file)
 {
   return avt_load_audio_RW (SDL_RWFromFile (file, "rb"));
 }
 
-avt_audio_t *
+extern avt_audio_t *
 avt_load_audio_stream (void *stream)
 {
   return avt_load_audio_RW (SDL_RWFromFP ((FILE*) stream, 0));
 }
 
-avt_audio_t *
+extern avt_audio_t *
 avt_load_audio_data (void *data, int datasize)
 {
   return avt_load_audio_RW (SDL_RWFromMem (data, datasize));
 }
 
-avt_audio_t *
+extern avt_audio_t *
 avt_load_raw_audio_data (void *data, int data_size,
 			 int samplingrate, int audio_type, int channels)
 {
@@ -757,7 +710,7 @@ avt_load_raw_audio_data (void *data, int data_size,
   return (avt_audio_t *) s;
 }
 
-void
+extern void
 avt_free_audio (avt_audio_t * snd)
 {
   AudioStruct *s;
@@ -777,7 +730,7 @@ avt_free_audio (avt_audio_t * snd)
     }
 }
 
-int
+extern int
 avt_play_audio (avt_audio_t * snd, avt_bool_t doloop)
 {
   AudioStruct *newsound;
@@ -801,7 +754,7 @@ avt_play_audio (avt_audio_t * snd, avt_bool_t doloop)
   /* lower audio buffer size for lower latency */
   current_sound.audiospec.samples = 1024;
 
-  loop = (doloop != 0);
+  loop = AVT_MAKE_BOOL (doloop);
 
   if (SDL_OpenAudio (&current_sound.audiospec, NULL) == 0)
     {
@@ -815,7 +768,7 @@ avt_play_audio (avt_audio_t * snd, avt_bool_t doloop)
     return AVT_ERROR;
 }
 
-int
+extern int
 avt_wait_audio_end (void)
 {
   /* end the loop, but wait for end of sound */

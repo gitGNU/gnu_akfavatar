@@ -22,7 +22,7 @@
 #include "head.xpm"
 #include "akfavatar.h"
 
-avt_image_t *
+extern avt_image_t *
 avt_default (void)
 {
   return avt_import_XPM (head_xpm);
