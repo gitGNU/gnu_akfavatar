@@ -16,11 +16,10 @@
 @iftex
   @frenchspacing on
 
-  @c Regeln für Silbentrennung
-  @c keine Wörter mit Umlauten hier!
-  @hyphenation{AKFAvatar avatarsay}
-  @hyphenation{Pa-ra-me-ter exis-tiert aus-wei-chen be-zeich-nen}
-  @hyphenation{Zei-chen}
+  @comment automatische Silbentrennung ausschalten
+  @tex
+  \global\hyphenpenalty=10000
+  @end tex
 @end iftex
 
 @dircategory Miscellaneous
@@ -539,17 +538,17 @@ ist das Steuerzeichen @code{1Bhex}
 
 @item @dfn{CSI} (Control Sequence Introducer)
 kann entweder durch die Steuerzeichen @code{ESC} und @code{[} ausgelöst 
-werden, oder in einigen Zei@-chen@-sätzen durch das einzelne Steuerzeichen 
+werden, oder in einigen Zeichensätzen durch das einzelne Steuerzeichen 
 @code{9Bhex}.
 
 @item @dfn{APC} (Application Program Command)
 kann durch die Steuerzeichen @code{ESC} und @code{_} ausgelöst werden, 
-oder in einigen Zei@-chen@-sätzen durch das einzelne Steuerzeichen 
+oder in einigen Zeichensätzen durch das einzelne Steuerzeichen 
 @code{9Fhex}.
 
 @item @dfn{ST} (String Terminator)
 kann durch die Steuerzeichen @code{ESC} und @code{\} ausgelöst werden, 
-oder in einigen Zei@-chen@-sätzen durch das einzelne Steuerzeichen 
+oder in einigen Zeichensätzen durch das einzelne Steuerzeichen 
 @code{9Chex}.
 
 @end table
@@ -1478,8 +1477,8 @@ Man kann in seinem Programm festlegen welche Zeichensatz-Kodierung man
 verwendet.  Wenn man noch ein altes System hat, das auf dem Latin-1 
 Zeichensatz basiert, kann man den Befehl 
 @code{@w{setEncoding ('ISO-8859-1');}} einsetzen.  Falls man mit mehreren
-Zei@-chen@-sätzen gleichzeitig hantieren muss, kann man den Befehl auch 
-mehrfach verwenden.  Unterschiedliche Zei@-chen@-sätze können im Text-Bereich
+Zeichensätzen gleichzeitig hantieren muss, kann man den Befehl auch 
+mehrfach verwenden.  Unterschiedliche Zeichensätze können im Text-Bereich
 gleichzeitig dargestellt werden.  (Intern wird ein Unicode-Zeichensatz
 verwendet.)
 
