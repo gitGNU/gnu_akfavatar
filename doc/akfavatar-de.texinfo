@@ -1278,7 +1278,7 @@ während @code{#fdf} ein sehr helles violett ist.
 
 AKFAvatar unterstützt Bilder im @abbr{XPM}-Format und im unkomprimierten 
 @abbr{BMP-}Format ohne weitere Zusatz-Bibliotheken.
-Das @abbr{XPM}-Format eignet sich besser für Avatar-Bilder, da es Transparez 
+Das @abbr{XPM}-Format eignet sich besser für Avatar-Bilder, da es Transparenz 
 unterstützt.  Für andere Formate muss die Software auf einen schmutzigen Trick
 ausweichen, um eine Art Pseudo-Transparenz zu erreichen
 (@pxref{Anderes Avatar-Bild}).
