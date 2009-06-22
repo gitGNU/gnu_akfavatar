@@ -1,12 +1,13 @@
 SHELL = /bin/sh
 LANG = C
 MAKEINFO = makeinfo
+TEXI2HTML = texi2html
 TEXI2DVI = texi2dvi
 INSTALL_PROGRAM = $(INSTALL) -m 755
 INSTALL_DATA = $(INSTALL) -m 644
 
 # comment out if you prefer black on white
-USECSS = --css-include akfavatar.css
+USECSS = --css-include=akfavatar.css
 
 .PHONY: all txt info html dvi pdf ps man \
 	clean mostlyclean distclean maintainer-clean maintainerclean
@@ -30,11 +31,17 @@ akfavatar-de.info: akfavatar-de.texinfo pasref.txt akfavatar.h version.texi
 
 html: akfavatar-en.html akfavatar-de.html
 
+#akfavatar-en.html: akfavatar-en.texinfo pasref.txt akfavatar.h version.texi
+#	-$(MAKEINFO) --html --no-split $(USECSS) akfavatar-en.texinfo
+#
+#akfavatar-de.html: akfavatar-de.texinfo pasref.txt akfavatar.h version.texi
+#	-$(MAKEINFO) --html --no-split $(USECSS) akfavatar-de.texinfo
+
 akfavatar-en.html: akfavatar-en.texinfo pasref.txt akfavatar.h version.texi
-	-$(MAKEINFO) --html --no-split $(USECSS) akfavatar-en.texinfo
+	-$(TEXI2HTML) $(USECSS) akfavatar-en.texinfo
 
 akfavatar-de.html: akfavatar-de.texinfo pasref.txt akfavatar.h version.texi
-	-$(MAKEINFO) --html --no-split $(USECSS) akfavatar-de.texinfo
+	-$(TEXI2HTML) $(USECSS) akfavatar-de.texinfo
 
 txt: akfavatar-en.txt akfavatar-de.txt
 

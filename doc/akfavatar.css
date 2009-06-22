@@ -8,18 +8,11 @@ kbd { border:outset thin #000 }
 @media screen {
   body { background-color:#e0d5c5 }
   h1, h2, h3, h4, h5, h6, dt, hr { color:#70200F }
-  ul { 
+  ul, ul.toc { 
    list-style-image:url("data:image/gif;base64,R0lGODlhCgAKAOMPACkjHDgwJkxDNG5fTIBwVo56Yp2HZ6SPcLGUbryhgcepfdC1jeTCme/LmPzcrf///yH5BAEKAA8ALAAAAAAKAAoAAAQ58Em2VJKzsbaSOZLjaN33MCJjJcVwMFvXDcEAL0h+CMCwdAeDgQYgPFiEAQ8gkCBaAQDTiDkkqY8IADs=")
     }
   .new, .important { color:#a00 }
   kbd { color:#000; background-color:#ddd }
-  div.node, div.node a { color:#e0d5c5; background-color:#8b7355; }
-  div.node { text-align:center; padding:0.5ex; 
-             border-style:inset; border-width:medium; border-color:#8b7355 }
-  div.node hr { display:none }
   }
 
-@media print {
-  a { color:inherit; }
-  div.node { display:none }
-  }
+@media print { a { color:inherit; text-decoration:none } }
