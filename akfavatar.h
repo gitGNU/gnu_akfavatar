@@ -783,7 +783,7 @@ avt_audio_t *avt_load_wave_data (void *data, int datasize) AVT_DEPRECATED;
 #define AVT_AUDIO_S16LE     6  /* signed 16 Bit little endian */
 #define AVT_AUDIO_S16BE     7  /* signed 16 Bit big endian */
 #define AVT_AUDIO_S16SYS    8  /* signed 16 Bit system's endianess */
-#define AVT_AUDIO_MULAW   100  /* 8 Bit µ-law (mu-law, u-law) */
+#define AVT_AUDIO_MULAW   100  /* 8 Bit mu-law (u-law) */
 #define AVT_AUDIO_ALAW    101  /* 8 Bit A-Law */
 
 /* for channels */

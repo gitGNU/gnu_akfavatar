@@ -704,7 +704,7 @@ run only once (don't loop)
 
 @item --popup
 @itemx -p
-popup, ie. don’t move the avatar in
+popup, ie. don't move the avatar in
 
 Use this for a fast popup text. 
 Use the command @command{[stop]} to also get a fast end.
@@ -931,7 +931,7 @@ loads and plays an audio file
 The text continues to be shown, so you can play an audio file with the 
 recorded words of the following text.
 
-Supported are @code{AU}-files with 8- or 16-Bit linear PCM, µ-law and A-law
+Supported are @code{AU}-files with 8- or 16-Bit linear PCM, mu-law and A-law
 encoding.
 Furthermore supported are @code{WAV}-files with @code{PCM} or @code{ADPCM} 
 encoding.
@@ -947,7 +947,7 @@ loads an audio file for later playback
 Only one single audio file can be loaded at a time. An eventually running 
 audio-output is stopped by this command.
 
-Supported are @code{AU}-files with 8- or 16-Bit linear PCM, µ-law and A-law
+Supported are @code{AU}-files with 8- or 16-Bit linear PCM, mu-law and A-law
 encoding.
 Furthermore supported are @code{WAV}-files with @code{PCM} or @code{ADPCM} 
 encoding.
