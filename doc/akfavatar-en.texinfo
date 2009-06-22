@@ -1440,6 +1440,7 @@ Other ways to define colors are described in @ref{Formats}.
 
 The following color names are recognized:
 
+@format
 snow, ghost white, GhostWhite, white smoke, WhiteSmoke, gainsboro,
 floral white, FloralWhite, old lace, OldLace, linen, antique white,
 AntiqueWhite, papaya whip, PapayaWhip, blanched almond, BlanchedAlmond,
@@ -1556,7 +1557,7 @@ grey95, gray96, grey96, gray97, grey97, gray98, grey98, gray99, grey99,
 gray100, grey100, dark grey, DarkGrey, dark gray, DarkGray, dark blue,
 DarkBlue, dark cyan, DarkCyan, dark magenta, DarkMagenta, dark red,
 DarkRed, light green, LightGreen
-
+@end format
 
 @node Concept Index
 @unnumbered Index
