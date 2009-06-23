@@ -931,8 +931,7 @@ loads and plays an audio file
 The text continues to be shown, so you can play an audio file with the 
 recorded words of the following text.
 
-Supported are @code{AU}-files with 8- or 16-Bit linear PCM, mu-law and A-law
-encoding.
+Supported are @code{AU}-files with linear PCM, mu-law and A-law encoding.
 Furthermore supported are @code{WAV}-files with @code{PCM} or @code{ADPCM} 
 encoding.
 After the command @command{rawaudiosettings} is used, it can also play raw
@@ -947,7 +946,7 @@ loads an audio file for later playback
 Only one single audio file can be loaded at a time. An eventually running 
 audio-output is stopped by this command.
 
-Supported are @code{AU}-files with 8- or 16-Bit linear PCM, mu-law and A-law
+Supported are @code{AU}-files with linear PCM, mu-law and A-law
 encoding.
 Furthermore supported are @code{WAV}-files with @code{PCM} or @code{ADPCM} 
 encoding.
@@ -1205,6 +1204,31 @@ distribution, then this doesn't make any difference.  Then these files will
 actually be compressed, while files, that already were compressed, cannot be
 compressed much further.  So that evens out.  (Only the @abbr{JPEG} format 
 has an advantage here, because it is a lossy format.)
+
+@section Audio files
+@cindex audio files
+@cindex sound files
+@cindex recorded audio
+
+Supported are @code{AU}-files with linear @abbr{PCM}, mu-law and A-law encoding.
+Files with 24 or 32 bit linear @abbr{PCM} can be read, but they are only 
+played with a quality of 16 bit.
+
+Also supported is ``raw'' audio data with 8 or 16 bit linear @abbr{PCM} or 
+mu-law or A-law encodings.
+
+If you want to keep your files small, use mu-law or A-law.
+These encodings just use 8 bit per sample, just like 8 bit @abbr{PCM}, but they 
+sound much better.  A good samplingrate for speech recordings would be 
+16000@abbr{Hz}.  If you want to save more space and phone-quality is good 
+enough for you, you can use a samplingrate of 8000@abbr{Hz}.
+
+Furthermore supported are Wave-files with 8 or 16 bit linear @abbr{PCM} or 
+@abbr{ADPCM} encoding.
+
+All these formats can be stored in mono or stereo.  More than two channels 
+are not supported.  Please note that for all of these formats stereo needs
+twice as much space as mono does.
 
 @node Programming
 @chapter Programming with AKFAvatar

@@ -1003,8 +1003,8 @@ Der Text wird weiterhin angezeigt. Auf diese Weise kann man eine Audio
 Datei mit dem aufgenommenen Text abspielen, während gleichzeitig der 
 Text auf dem Bildschirm erscheint.
 
-Es werden @code{AU}-Dateien mit 8- oder 16-Bit linearem PCM oder µ-law oder
-A-law Kodierung unterstützt.
+Es werden @code{AU}-Dateien mit linearem PCM oder mu-law oder A-law Kodierung
+unterstützt.
 Außerdem werden @code{WAV}-Dateien mit @code{PCM}- oder @code{ADPCM}-Kodierung 
 unterstützt.
 Nach Verwendung der Anweisung @command{rawaudiosettings} können auch rohe
@@ -1020,8 +1020,8 @@ lädt eine Audio-Datei zum späteren Abspielen
 Es kann nur eine Datei gleichzeitig geladen sein. Eine eventuell laufende 
 Audio-Ausgabe wird durch diesen Befehl abgebrochen.
 
-Es werden @code{AU}-Dateien mit 8- oder 16-Bit linearem PCM oder µ-law oder
-A-law Kodierung unterstützt.
+Es werden @code{AU}-Dateien mit linearem PCM oder mu-law oder A-law Kodierung
+unterstützt.
 Außerdem werden @code{WAV}-Dateien mit @code{PCM}- oder @code{ADPCM}-Kodierung 
 unterstützt.
 Nach Verwendung der Anweisung @command{rawaudiosettings} können auch rohe
@@ -1305,6 +1305,33 @@ sie ja komprimiert, während Dateien, die vorher schon komprimiert waren, sich
 kaum weiter komprimieren lassen.  Das gleicht sich gegenseitig aus.
 (Lediglich das @abbr{JPEG}-Format hat hierbei einen Vorteil, da es ein 
 verlustbehaftetes Format ist.)
+
+@section Audio-Dateien
+@cindex Audio-Dateien
+@cindex Sound-Dateien
+@cindex Sprachaufnahmen
+@cindex aufgenommene Sprache
+
+Es werden @code{AU}-Dateien mit linearem @abbr{PCM} oder mu-law oder A-law 
+Kodierung unterstützt.  Dateien mit 24- oder 32-Bit linearem @abbr{PCM} können
+gelesen werden, sie werden jedoch nur mit einer Qualität von 16-Bit abgespielt.
+
+Es werden auch ``rohe'' Audio-Daten mit 8- oder 16-Bit linearem @abbr{PCM}, 
+mu-law oder A-law unterstützt.
+
+Wenn man seine Dateien klein halten will, sollte man mu-law oder A-law
+verwenden.  Diese Kodierungen verbrauchen nur 8-Bit pro Sample, genau wie
+8-Bit @abbr{PCM}, aber sie klingen viel besser.  Eine gute Samplingrate für
+Sprachaufnahmen wäre 16000@abbr{Hz}.  Wenn man noch mehr Platz sparen will,
+und Telefon-Qualität gut genug ist, kann man eine Samplingrate von 
+8000@abbr{Hz} nehmen.
+
+Außerdem werden Wave-Dateien mit 8- oder 16-Bit linearem @abbr{PCM}- oder 
+@abbr{ADPCM}-Kodierung unterstützt.
+
+Alle angegebenen Formate können in Mono oder Stereo vorliegen.  Mehr als zwei
+Kanäle werden nicht unterstützt.  Man beachte, dass bei all diesen Formaten
+Stereo-Dateien doppelt so groß sind, wie Mono-Dateien.
 
 @node Programmierung
 @chapter Programmierung mit AKFAvatar
