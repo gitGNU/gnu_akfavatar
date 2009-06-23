@@ -19,11 +19,11 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "head.xpm"
+#include "male_user.xpm"
 #include "akfavatar.h"
 
 extern avt_image_t *
 avt_default (void)
 {
-  return avt_import_XPM (head_xpm);
+  return avt_import_XPM (male_user_xpm);
 }

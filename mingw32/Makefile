@@ -26,6 +26,9 @@ prefix = /usr/$(TARGET)
 libdir = $(prefix)/lib
 includedir = $(prefix)/include
 
+# if you change this, you also have to change the file avatar-default.c
+default_avatar = $(srcdir)/male_user.xpm
+
 SHELL = /bin/sh
 .SUFFIXES:
 
@@ -190,7 +193,7 @@ $(srcdir)/bell.au: $(srcdir)/bell.flac
 bell.c: $(srcdir)/bell.au bin2c
 	./bin2c avt_bell_data < $(srcdir)/bell.au > $@
 
-avatar-default.o: $(srcdir)/avatar-default.c $(srcdir)/gnu-head.xpm
+avatar-default.o: $(srcdir)/avatar-default.c $(default_avatar)
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avatar-default.c
 
 avtfilechooser.o: $(srcdir)/avtfilechooser.c $(srcdir)/akfavatar.h
@@ -332,6 +335,7 @@ dist-bin: avatarsay.exe multiply.exe multiplizieren.exe
 	cp $(srcdir)/pascal/positive.au $(srcdir)/pascal/negative.au $(BINPKGNAME)/
 	-cp multiply.exe multiplizieren.exe $(BINPKGNAME)/
 	cp $(srcdir)/pascal/teacher.xpm $(BINPKGNAME)/
+	cp $(srcdir)/male_user.xpm $(srcdir)/female_user.xpm $(BINPKGNAME)/
 	$(STRIP) $(BINPKGNAME)/avatarsay.exe $(BINPKGNAME)/akfavatar.dll
 	todos $(BINPKGNAME)/fsdemo-??
 	todos $(BINPKGNAME)/*.bat

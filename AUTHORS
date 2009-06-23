@@ -2,15 +2,23 @@ Avatar library and program avatarsay
 Copyright (c) 2007, 2008, 2009 Andreas K. Foerster <info@akfoerster.de>
 License GPLv3 or later
 
+That is the license for the whole package.
+Parts of the package are under other, compatible licenses:
+
 akfavatar.xpm, akfavatar.ico, btn.xpm, btn-no.xpm, btn-yes.xpm, 
 btn-cont.xpm, balloonpointer.xpm, circle.xpm, info.xpm,
 bell.flac, bell.au, positive.au, neutral.au, negative.au:
 These files are put in the Public Domain - Andreas K. Foerster
 
-head.xpm:
+male_user.xpm:
 male user by Aaron Spike
 This file is in the Public Domain
 http://openclipart.org/media/files/acspike/3911
+
+female_user.xpm:
+female user by dagobert83
+This file is in the Public Domain
+http://openclipart.org/media/files/dagobert83/1514
 
 gnu-head.xpm:
 GNU head graphic was drawn by Etienne Suvasa
