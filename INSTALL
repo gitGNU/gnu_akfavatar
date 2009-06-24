@@ -14,7 +14,7 @@ Needed
 
    Of course SDL needs a graphical environment to run in.
    For example the X-Window-System or a Linux framebuffer-device...
-    
+
  * An ANSI-C Compiler (gcc or others)
      http://gcc.gnu.org/
 
@@ -129,11 +129,11 @@ TROUBLESHOOTING
    Solution: first try to add /usr/local/lib or wherever you installed it 
    to the environment variable LD_LIBRARY_PATH: 
    "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib".
-   
+
    As a more permanent solution make sure "/usr/local/lib" is directly or
    indirectly included in the file "/etc/ld.so.conf". Then run the command
    "ldconfig" with root privileges.
- 
+
  * Problem: some characters are not shown correctly with "avatarsay"
    Solution: There are different character sets. Try to use the parameters
    "--utf-8" or "--latin1".
