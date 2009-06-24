@@ -1,3 +1,7 @@
+2009-06-24  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.17.0 released
+
 2009-06-20  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_name_to_color): export function
