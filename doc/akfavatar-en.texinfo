@@ -847,12 +847,17 @@ switches scrolling off or on.
 @item slow on | off
 switches the slow-printing mode on or off
 
-@item backgroundcolor #@var{color-definition}
+@item backgroundcolor @var{color-definition}
 set a different background color
 
-The @var{color-definition} has to be given as six hexadecimal characters;
-with two digits each for @code{red}, @code{green} and @code{blue}. 
-The default value is @samp{#E0D5C5}.
+The @var{color-definition} is explained in @ref{Formats}.
+
+@strong{Attention}: This command should used before the text starts
+
+@item ballooncolor @var{color-definition}
+set a different balloon color
+
+The @var{color-definition} is explained in @ref{Formats}.
 
 @strong{Attention}: This command should used before the text starts
 

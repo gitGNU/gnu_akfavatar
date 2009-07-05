@@ -914,12 +914,20 @@ schaltet das automatisch Text-Scrollen aus oder ein.
 @item slow off | on
 schaltet den Langsamschreibmodus aus oder ein.
 
-@item backgroundcolor #@var{Farb-Definition}
+@item backgroundcolor @var{Farb-Definition}
 ändert die Hintergrund-Farbe
 
-Die @var{Farb-Definition} muss als sechs stellige Hexadezimalzahl
-angegeben werden, mit jeweils zwei Ziffern für @code{rot}, 
-@code{grün} und @code{blau}.  Der Vorgabe-Wert ist @samp{#E0D5C5}.
+Wie die @var{Farb-Definition} angegeben werden kann, ist in @ref{Formate}
+beschrieben.
+
+@strong{Achtung}: Diese Anweisung sollte benutzt werden, bevor der eigentliche
+Text anfängt.
+
+@item ballooncolor @var{Farb-Definition}
+ändert die Farbe der Spprechblase
+
+Wie die @var{Farb-Definition} angegeben werden kann, ist in @ref{Formate}
+beschrieben.
 
 @strong{Achtung}: Diese Anweisung sollte benutzt werden, bevor der eigentliche
 Text anfängt.
