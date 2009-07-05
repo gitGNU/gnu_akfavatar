@@ -1,5 +1,5 @@
 {*
- * Pascal binding to the AKFAvatar library version 0.17.0
+ * Pascal binding to the AKFAvatar library version 0.17.1
  * Copyright (c) 2007, 2008, 2009 Andreas K. Foerster <info@akfoerster.de>
  *
  * Can be used with GNU-Pascal or FreePascal
@@ -82,7 +82,7 @@ const
   LightRed     = 12;
   LightMagenta = 13;
   Yellow       = 14;
-  White        = 15;
+  White        = 15; { as background-color -> balloon-color }
   Blink        = 128; { ignored }
 
 {$IfDef FPC}
@@ -134,6 +134,11 @@ procedure AvatarImageData(data: pointer; size: LongInt);
 { should be used before any output took place }
 procedure setBackgroundColor(red, green, blue: byte);
 procedure setBackgroundColorName (const Name: string);
+
+{ set a different balloon color }
+{ should be used before any output took place }
+procedure setBalloonColor(red, green, blue: byte);
+procedure setBalloonColorName (const Name: string);
 
 { change pace of text and page flipping }
 { the scale is milliseconds }
@@ -446,11 +451,20 @@ procedure avt_set_background_color (red, green, blue: CInteger);
 procedure avt_set_background_color_name (name: CString);
   libakfavatar 'avt_set_background_color_name';
 
+procedure avt_set_balloon_color (red, green, blue: CInteger);
+  libakfavatar 'avt_set_balloon_color';
+
+procedure avt_set_balloon_color_name (name: CString);
+  libakfavatar 'avt_set_balloon_color_name';
+
 procedure avt_set_text_color (red, green, blue: CInteger);
   libakfavatar 'avt_set_text_color';
 
 procedure avt_set_text_background_color (red, green, blue: CInteger);
   libakfavatar 'avt_set_text_background_color';
+
+procedure avt_set_text_background_ballooncolor;
+  libakfavatar 'avt_set_text_background_ballooncolor';
 
 procedure avt_bold (onoff: avt_bool_t); libakfavatar 'avt_bold';
 
@@ -565,6 +579,16 @@ end;
 procedure setBackgroundColorName (const Name: string);
 begin
 avt_set_background_color_name (String2CString(name))
+end;
+
+procedure setBalloonColor (red, green, blue: byte);
+begin
+avt_set_balloon_color(red, green, blue)
+end;
+
+procedure setBalloonColorName (const Name: string);
+begin
+avt_set_balloon_color_name (String2CString(name))
 end;
 
 procedure setEncoding(const newEncoding: string);
@@ -740,7 +764,7 @@ case Color of
   LightRed     : avt_set_text_background_color ($FF, $00, $00); 
   LightMagenta : avt_set_text_background_color ($FF, $00, $FF);
   Yellow       : avt_set_text_background_color ($FF, $FF, $00);
-  White        : avt_set_text_background_color ($FF, $FF, $FF)
+  White        : avt_set_text_background_ballooncolor ()
   end
 end;
 

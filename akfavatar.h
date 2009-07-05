@@ -274,6 +274,15 @@ void avt_set_background_color (int red, int green, int blue);
 void avt_set_background_color_name (const char *name);
 
 /*
+ * define the balloon color
+ * values in the range 0x00 .. 0xFF
+ * can be called before avt_initialize
+ * if the balloon is visible, it is cleared
+ */
+void avt_set_balloon_color (int red, int green, int blue);
+void avt_set_balloon_color_name (const char *name);
+
+/*
  * change the text color
  * values in the range 0x00 .. 0xFF
  */
@@ -281,6 +290,9 @@ void avt_set_text_color (int red, int green, int blue);
 void avt_set_text_color_name (const char *name);
 void avt_set_text_background_color (int red, int green, int blue);
 void avt_set_text_background_color_name (const char *name);
+
+/* set text background to balloon color */
+void avt_set_text_background_ballooncolor (void);
 
 /* set underlined mode on or off */
 void avt_underlined (avt_bool_t onoff);

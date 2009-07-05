@@ -1,4 +1,4 @@
-/* 
+/*
  * avtterm - terminal emulation for AKFAAvatar
  * Copyright (c) 2007, 2008 Andreas K. Foerster <info@akfoerster.de>
  *
@@ -560,8 +560,8 @@ set_background_color (int color)
     case 14:			/* lightcyan */
       avt_set_text_background_color (0x00, 0xFF, 0xFF);
       break;
-    case 15:			/* white */
-      avt_set_text_background_color (0xFF, 0xFF, 0xFF);
+    case 15:			/* ballooncolor */
+      avt_set_text_background_ballooncolor ();
     }
 }
 

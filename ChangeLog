@@ -1,3 +1,13 @@
+2009-07-05  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_set_balloon_color)
+	(avt_set_balloon_color_name, avt_set_text_background_ballooncolor):
+	new functions
+	avatar.c (avt_draw_balloon, avt_normal_text): adapted
+	avtterm.c (set_background_color): adapted (15 = ballooncolor)
+	akfavatar.pas (TextBackground): adapted
+	avatarsay.c (avatar_command): new command "ballooncolor"
+
 2009-06-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.17.0 released

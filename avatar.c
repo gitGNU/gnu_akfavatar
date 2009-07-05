@@ -264,7 +264,11 @@ static int text_delay = 0;	/* AVT_DEFAULT_TEXT_DELAY */
 static int flip_page_delay = AVT_DEFAULT_FLIP_PAGE_DELAY;
 
 /* color independent from the screen mode */
-/* pale brown */
+
+/* floral white */
+static SDL_Color ballooncolor_RGB = { 255, 250, 240, 0 };
+
+/* default (pale brown) */
 static SDL_Color backgroundcolor_RGB = { 0xE0, 0xD5, 0xC5, 0 };
 
 /* grey */
@@ -1355,16 +1359,15 @@ avt_draw_balloon (void)
   }
 
 
-  /* real balloon is white */
+  /* real balloon */
   {
-    SDL_Color balloon_color;
+    SDL_SetColors (circle, &ballooncolor_RGB, circle_xpm[2][0], 1);
+    SDL_SetColors (pointer, &ballooncolor_RGB, balloonpointer_xpm[2][0], 1);
 
-    balloon_color.r = balloon_color.g = balloon_color.b = 0xFF;
-    SDL_SetColors (circle, &balloon_color, circle_xpm[2][0], 1);
-    SDL_SetColors (pointer, &balloon_color, balloonpointer_xpm[2][0], 1);
-
-    /* real balloon */
-    avt_draw_balloon2 (0, SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF));
+    avt_draw_balloon2 (0, SDL_MapRGB (screen->format,
+				      ballooncolor_RGB.r,
+				      ballooncolor_RGB.g,
+				      ballooncolor_RGB.b));
   }
 
   linestart =
@@ -4557,6 +4560,46 @@ avt_change_avatar_image (avt_image_t * image)
   return _avt_STATUS;
 }
 
+extern void
+avt_set_text_background_ballooncolor (void)
+{
+  if (avt_character)
+    SDL_SetColors (avt_character, &ballooncolor_RGB, 0, 1);
+
+  text_background_color = SDL_MapRGB (screen->format, ballooncolor_RGB.r,
+				      ballooncolor_RGB.g, ballooncolor_RGB.b);
+}
+
+/* can and should be called before avt_initialize */
+extern void
+avt_set_balloon_color (int red, int green, int blue)
+{
+  ballooncolor_RGB.r = red;
+  ballooncolor_RGB.g = green;
+  ballooncolor_RGB.b = blue;
+
+  avt_set_text_background_ballooncolor ();
+
+  /* redraw the balloon, if it is visible */
+  if (screen && textfield.x >= 0)
+    {
+      /* assuming avatar not visible enforces drawing everything */
+      avt_visible = AVT_FALSE;
+      avt_draw_balloon ();
+    }
+}
+
+
+/* can and should be called before avt_initialize */
+extern void
+avt_set_balloon_color_name (const char *name)
+{
+  int red, green, blue;
+
+  if (avt_name_to_color (name, &red, &green, &blue) == 0)
+    avt_set_balloon_color (red, green, blue);
+}
+
 /* can and should be called before avt_initialize */
 extern void
 avt_set_background_color (int red, int green, int blue)
@@ -4573,7 +4616,6 @@ avt_set_background_color (int red, int green, int blue)
 	{
 	  avt_visible = AVT_FALSE;
 	  avt_draw_balloon ();
-	  AVT_UPDATE_ALL ();
 	}
       else if (avt_visible)
 	avt_show_avatar ();
@@ -4717,13 +4759,19 @@ avt_normal_text (void)
     {
       SDL_Color colors[2];
 
-      /* white background */
-      colors[0].r = colors[0].g = colors[0].b = 0xFF;
+      /* background -> ballooncolor */
+      colors[0].r = ballooncolor_RGB.r;
+      colors[0].g = ballooncolor_RGB.g;
+      colors[0].b = ballooncolor_RGB.b;
       /* black foreground */
       colors[1].r = colors[1].g = colors[1].b = 0x00;
 
       SDL_SetColors (avt_character, colors, 0, 2);
-      text_background_color = SDL_MapRGB (screen->format, 0xFF, 0xFF, 0xFF);
+
+      text_background_color = SDL_MapRGB (screen->format,
+					  ballooncolor_RGB.r,
+					  ballooncolor_RGB.g,
+					  ballooncolor_RGB.b);
     }
 }
 

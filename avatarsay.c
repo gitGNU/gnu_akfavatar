@@ -1200,6 +1200,19 @@ handle_backgroundcolor_command (const wchar_t * s)
     error_msg ("[backgroundcolor]", NULL);
 }
 
+static void
+handle_ballooncolor_command (const wchar_t * s)
+{
+  char line[80];
+
+  if (wcstombs (line, s, sizeof (line)) != (size_t) (-1))
+    {
+      avt_set_balloon_color_name (line);
+    }
+  else
+    error_msg ("[ballooncolor]", NULL);
+}
+
 #define check_audio_head(buf) \
   (memcmp ((buf), ".snd", 4) == 0 || \
   (memcmp ((buf), "RIFF", 4) == 0 \
@@ -1497,6 +1510,12 @@ avatar_command (wchar_t * s, int *stop)
   if (wcsncmp (s, L"backgroundcolor ", 16) == 0)
     {
       handle_backgroundcolor_command (s + 16);
+      return;
+    }
+
+  if (wcsncmp (s, L"ballooncolor ", 13) == 0)
+    {
+      handle_ballooncolor_command (s + 13);
       return;
     }
 
