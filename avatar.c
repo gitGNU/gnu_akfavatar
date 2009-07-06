@@ -4563,10 +4563,14 @@ extern void
 avt_set_text_background_ballooncolor (void)
 {
   if (avt_character)
-    SDL_SetColors (avt_character, &ballooncolor_RGB, 0, 1);
+    {
+      SDL_SetColors (avt_character, &ballooncolor_RGB, 0, 1);
 
-  text_background_color = SDL_MapRGB (screen->format, ballooncolor_RGB.r,
-				      ballooncolor_RGB.g, ballooncolor_RGB.b);
+      text_background_color = SDL_MapRGB (screen->format,
+					  ballooncolor_RGB.r,
+					  ballooncolor_RGB.g,
+					  ballooncolor_RGB.b);
+    }
 }
 
 /* can and should be called before avt_initialize */
@@ -4577,11 +4581,14 @@ avt_set_balloon_color (int red, int green, int blue)
   ballooncolor_RGB.g = green;
   ballooncolor_RGB.b = blue;
 
-  avt_set_text_background_ballooncolor ();
+  if (screen)
+    {
+      avt_set_text_background_ballooncolor ();
 
-  /* redraw the balloon, if it is visible */
-  if (screen && textfield.x >= 0)
-    avt_draw_balloon ();
+      /* redraw the balloon, if it is visible */
+      if (textfield.x >= 0)
+	avt_draw_balloon ();
+    }
 }
 
 
