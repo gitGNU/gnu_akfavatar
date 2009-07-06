@@ -5,6 +5,9 @@
 
 	* avatarsay.c (avatar_command): new command "textcolor"
 
+	* avtar.c (avt_draw_balloon):
+	when there is no avatar, center the textarea
+
 2009-07-05  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_set_balloon_color)

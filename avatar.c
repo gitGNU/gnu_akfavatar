@@ -1304,8 +1304,8 @@ avt_draw_balloon (void)
   if (avt_image)
     textfield.y = window.y + ((balloonmaxheight - balloonheight) * LINEHEIGHT)
       + TOPMARGIN + BALLOON_INNER_MARGIN;
-  else
-    textfield.y = window.y + TOPMARGIN + BALLOON_INNER_MARGIN;
+  else				/* middle of the window */
+    textfield.y = window.y + (window.h / 2) - (textfield.h / 2);
 
   /* centered as default */
   textfield.x = window.x + (window.w / 2) - (balloonwidth * FONTWIDTH / 2);
