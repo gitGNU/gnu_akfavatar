@@ -1296,6 +1296,8 @@ avt_draw_balloon (void)
   if (!avt_visible)
     avt_draw_avatar ();
 
+  SDL_SetClipRect (screen, &window);
+
   textfield.w = (balloonwidth * FONTWIDTH);
   textfield.h = (balloonheight * LINEHEIGHT);
 
@@ -1441,8 +1443,7 @@ avt_set_balloon_width (int width)
       /* if balloon is visible, redraw it */
       if (textfield.x >= 0)
 	{
-	  /* also redraw the avatar */
-	  avt_visible = AVT_FALSE;
+	  avt_visible = AVT_FALSE;	/* force to redraw everything */
 	  avt_draw_balloon ();
 	}
     }
@@ -1461,8 +1462,7 @@ avt_set_balloon_height (int height)
       /* if balloon is visible, redraw it */
       if (textfield.x >= 0)
 	{
-	  /* also redraw the avatar */
-	  avt_visible = AVT_FALSE;
+	  avt_visible = AVT_FALSE;	/* force to redraw everything */
 	  avt_draw_balloon ();
 	}
     }
@@ -1486,8 +1486,7 @@ avt_set_balloon_size (int height, int width)
       /* if balloon is visible, redraw it */
       if (textfield.x >= 0)
 	{
-	  /* also redraw the avatar */
-	  avt_visible = AVT_FALSE;
+	  avt_visible = AVT_FALSE;	/* force to redraw everything */
 	  avt_draw_balloon ();
 	}
     }
@@ -4582,11 +4581,7 @@ avt_set_balloon_color (int red, int green, int blue)
 
   /* redraw the balloon, if it is visible */
   if (screen && textfield.x >= 0)
-    {
-      /* assuming avatar not visible enforces drawing everything */
-      avt_visible = AVT_FALSE;
-      avt_draw_balloon ();
-    }
+    avt_draw_balloon ();
 }
 
 
@@ -4614,7 +4609,7 @@ avt_set_background_color (int red, int green, int blue)
 
       if (textfield.x >= 0)
 	{
-	  avt_visible = AVT_FALSE;
+	  avt_visible = AVT_FALSE;	/* force to redraw everything */
 	  avt_draw_balloon ();
 	}
       else if (avt_visible)

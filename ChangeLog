@@ -1,3 +1,8 @@
+2009-07-06  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtar.c (avt_draw_balloon): add missing SDL_SetClipRect
+	(avt_set_balloon_color): adapted
+
 2009-07-05  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_set_balloon_color)
