@@ -96,6 +96,9 @@
 
 #define BYTE_ORDER_MARK L'\xfeff'
 
+#define default_balloon_color(ignore) \
+       avt_set_balloon_color (255, 250, 240)
+
 #define default_background_color(ignore) \
        avt_set_background_color (0xE0, 0xD5, 0xC5)
 
@@ -203,6 +206,9 @@ static int wcbuf_len = 0;
 
 /* was the background color changed? */
 static avt_bool_t background_color_changed;
+
+/* was the balloon color changed? */
+static avt_bool_t balloon_color_changed;
 
 /* language (of current locale) */
 enum language_t
@@ -454,6 +460,7 @@ initialize (void)
   avt_set_text_delay (default_delay);
 
   background_color_changed = AVT_FALSE;
+  balloon_color_changed = AVT_FALSE;
   avatar_changed = AVT_FALSE;
   initialized = AVT_TRUE;
 }
@@ -1208,6 +1215,7 @@ handle_ballooncolor_command (const wchar_t * s)
   if (wcstombs (line, s, sizeof (line)) != (size_t) (-1))
     {
       avt_set_balloon_color_name (line);
+      balloon_color_changed = AVT_TRUE;
     }
   else
     error_msg ("[ballooncolor]", NULL);
@@ -2221,6 +2229,12 @@ ask_file (void)
 	  default_background_color ();
 	  background_color_changed = AVT_FALSE;
 	}
+
+      if (balloon_color_changed)
+	{
+	  default_balloon_color ();
+	  balloon_color_changed = AVT_FALSE;
+	}
     }
 }
 
@@ -2603,6 +2617,9 @@ menu (void)
       avt_normal_text ();
       avt_set_balloon_size (10, 41);
 
+      if (balloon_color_changed)
+	default_balloon_color ();
+
       if (background_color_changed)
 	default_background_color ();
       else
@@ -2895,6 +2912,7 @@ main (int argc, char *argv[])
 #  endif /* not FORCE_ICONV */
 #endif /* not NO_LANGINFO */
 
+  default_balloon_color ();
   default_background_color ();
 
   check_config_file ("/etc/avatarsay");
