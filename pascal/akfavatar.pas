@@ -85,6 +85,9 @@ const
   White        = 15; { as background-color -> balloon-color }
   Blink        = 128; { ignored }
 
+{ for TextBackground }
+const BalloonColor = 15;
+
 {$IfDef FPC}
   type LineString = AnsiString;
 {$Else}
