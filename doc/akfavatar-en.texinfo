@@ -861,6 +861,15 @@ The @var{color-definition} is explained in @ref{Formats}.
 
 @strong{Attention}: This command should used before the text starts
 
+@item textcolor @var{color-definition}
+set a different text color
+
+The @var{color-definition} is explained in @ref{Formats}.
+
+@strong{Attention}: The default color for the terminal is not changed by this.
+Be careful when you combine this with terminal codes for changing the 
+text-color.
+
 @item left-to-right
 @itemx right-to-left
 changes the text direction; this is useful if you have text written in

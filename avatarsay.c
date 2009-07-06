@@ -1208,6 +1208,17 @@ handle_backgroundcolor_command (const wchar_t * s)
 }
 
 static void
+handle_textcolor_command (const wchar_t * s)
+{
+  char line[80];
+
+  if (wcstombs (line, s, sizeof (line)) != (size_t) (-1))
+      avt_set_text_color_name (line);
+  else
+    error_msg ("[textcolor]", NULL);
+}
+
+static void
 handle_ballooncolor_command (const wchar_t * s)
 {
   char line[80];
@@ -1518,6 +1529,12 @@ avatar_command (wchar_t * s, int *stop)
   if (wcsncmp (s, L"backgroundcolor ", 16) == 0)
     {
       handle_backgroundcolor_command (s + 16);
+      return;
+    }
+
+  if (wcsncmp (s, L"textcolor ", 10) == 0)
+    {
+      handle_textcolor_command (s + 10);
       return;
     }
 

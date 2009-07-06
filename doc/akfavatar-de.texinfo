@@ -924,13 +924,23 @@ beschrieben.
 Text anfängt.
 
 @item ballooncolor @var{Farb-Definition}
-ändert die Farbe der Spprechblase
+ändert die Farbe der Sprechblase
 
 Wie die @var{Farb-Definition} angegeben werden kann, ist in @ref{Formate}
 beschrieben.
 
 @strong{Achtung}: Diese Anweisung sollte benutzt werden, bevor der eigentliche
 Text anfängt.
+
+@item textcolor @var{Farb-Definition}
+ändert die Text-Farbe
+
+Wie die @var{Farb-Definition} angegeben werden kann, ist in @ref{Formate}
+beschrieben.
+
+@strong{Achtung}: Die Standard-Text-Farbe des Terminals wird dadurch nicht
+verändert.  Vorsicht ist geboten, wenn man das in Verbindung mit Terminal-Codes
+verwendet.
 
 @item left-to-right
 @itemx right-to-left
