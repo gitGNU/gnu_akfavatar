@@ -277,6 +277,7 @@ void avt_set_background_color_name (const char *name);
  * define the balloon color
  * values in the range 0x00 .. 0xFF
  * can be called before avt_initialize
+ * the text-background-color is set to the balloon-color too
  * if the balloon is visible, it is cleared
  */
 void avt_set_balloon_color (int red, int green, int blue);
