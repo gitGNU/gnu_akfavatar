@@ -401,14 +401,14 @@ cat > ${srcdir}/doc/version.texi <<EOF
 
 EOF
 
-if [ -d ${srcdir}/mingw32 ]
+if [ -d ${srcdir}/mingw ]
 then
   {
     echo "VERSION = ${VERSION}"
     echo "SUBVERSION = ${SUBVERSION}"
     echo "REVISION = ${REVISION}"
     echo "VARIANT = ${VARIANT}"
-  } > ${srcdir}/mingw32/version
+  } > ${srcdir}/mingw/version
 fi
 
 echo '*'

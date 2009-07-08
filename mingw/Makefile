@@ -242,14 +242,14 @@ libavtcio.a: avtccio.o avtcwio.o
 avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avatarsay.c
 
-# from the mingw32 directory!
-avtmsg.o: $(srcdir)/mingw32/avtmsg.c $(srcdir)/avtmsg.h
+# from the mingw directory!
+avtmsg.o: $(srcdir)/mingw/avtmsg.c $(srcdir)/avtmsg.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
-	  $(srcdir)/mingw32/avtmsg.c
+	  $(srcdir)/mingw/avtmsg.c
 
-avtwindows.o: $(srcdir)/mingw32/avtwindows.c
+avtwindows.o: $(srcdir)/mingw/avtwindows.c
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
-	  $(srcdir)/mingw32/avtwindows.c
+	  $(srcdir)/mingw/avtwindows.c
 
 arch.o: $(srcdir)/arch.c $(srcdir)/arch.h
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/arch.c

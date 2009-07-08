@@ -25,13 +25,17 @@ BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 
 .PHONY: all check doc txt info install install-strip installdirs uninstall \
 	html dvi pdf ps man install-html install-dvi install-pdf install-ps \
-	clean mostlyclean distclean maintainer-clean maintainerclean dist
+	clean mostlyclean distclean maintainer-clean maintainerclean dist \
+	mingw
 
 all: libakfavatar.so libakfavatar.a libavtcio.a avatarsay avatarsay-d
 	@echo '*'
 	@echo '* use "make install" or "make install-strip"'
 	@echo '* with root-privileges to install it.'
 	@echo '*'
+
+mingw:
+	$(MAKE) -C $(srcdir)/mingw all
 
 Makefile: $(srcdir)/configure $(srcdir)/Makefile.in
 	./config.status
@@ -278,7 +282,7 @@ clean:
 	-rm -f ucsfont9x18.c ucsfont7x14.c
 	-rm -f pascal/*.o pascal/*.gpi pascal/*.gpm pascal/*.ppu
 	-rm -f pascal/link.res pascal/ppas.sh
-	$(MAKE) -C $(srcdir)/mingw32 clean
+	$(MAKE) -C $(srcdir)/mingw clean
 	$(MAKE) -C $(srcdir)/doc clean
 
 mostlyclean: clean
@@ -294,7 +298,7 @@ distclean: clean
 	-rm -f akfavatar-*.tar.gz akfavatar-*.tar.bz2
 	-rm -f multiply-bin multiply
 	-rm -f multiplizieren-bin multiplizieren
-	$(MAKE) -C $(srcdir)/mingw32 distclean
+	$(MAKE) -C $(srcdir)/mingw distclean
 	$(MAKE) -C $(srcdir)/doc distclean
 
 
@@ -353,12 +357,12 @@ dist: info html man distclean
 	   doc/pdfmeta-en doc/pdfmeta-de \
 	   $(PKGNAME)/doc/
 	
-	mkdir $(PKGNAME)/mingw32
-	ln mingw32/akfavatar.ico mingw32/icon.rc \
-	   mingw32/avtmsg.c mingw32/avtwindows.c \
-	   mingw32/Makefile mingw32/README \
-	   mingw32/fsdemo-??.bat \
-	   $(PKGNAME)/mingw32/
+	mkdir $(PKGNAME)/mingw
+	ln mingw/akfavatar.ico mingw/icon.rc \
+	   mingw/avtmsg.c mingw/avtwindows.c \
+	   mingw/Makefile mingw/README \
+	   mingw/fsdemo-??.bat \
+	   $(PKGNAME)/mingw/
 	
 	tar -cvf $(PKGNAME).tar $(PKGNAME)/
 	bzip2 $(PKGNAME).tar
