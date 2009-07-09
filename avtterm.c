@@ -169,10 +169,13 @@ avtterm_size (int fd AVT_UNUSED, int height AVT_UNUSED, int width AVT_UNUSED)
 #ifdef TIOCSWINSZ
   struct winsize size;
 
-  size.ws_row = height;
-  size.ws_col = width;
-  size.ws_xpixel = size.ws_ypixel = 0;
-  ioctl (fd, TIOCSWINSZ, &size);
+  if (height >= 0 && width >= 0)
+    {
+      size.ws_row = height;
+      size.ws_col = width;
+      size.ws_xpixel = size.ws_ypixel = 0;
+      ioctl (fd, TIOCSWINSZ, &size);
+    }
 #endif
 }
 
@@ -182,7 +185,11 @@ void
 avtterm_update_size (void)
 {
   if (prg_input > 0)
-    avtterm_size (prg_input, avt_get_max_y (), avt_get_max_x ());
+    {
+      max_x = avt_get_max_x ();
+      max_y = avt_get_max_y ();
+      avtterm_size (prg_input, max_y, max_x);
+    }
 }
 
 /* TODO: make get_character simpler */
@@ -1137,13 +1144,10 @@ CSI_sequence (int fd, wchar_t last_character)
 	      width = strtol (next, &next, 10);
 	    }
 
-	  if (!height)
-	    height = max_y;
-	  if (!width)
-	    width = max_x;
-
 	  avt_set_balloon_size (height, width);
-	  avtterm_size (prg_input, height, width);
+	  max_x = avt_get_max_x ();
+	  max_y = avt_get_max_y ();
+	  avtterm_size (prg_input, max_y, max_x);
 	}
       break;
 
@@ -1518,6 +1522,10 @@ avtterm_initialize (int *input_fd, const char *system_encoding,
   region_min_y = 1;
   region_max_y = max_y;
   insert_mode = AVT_FALSE;
+
+  /* check if AKFAvatar was initialized */
+  if (max_x < 0 || max_y < 0)
+    return -1;
 
   if (prg_argv == NULL)
     shell = get_user_shell ();
