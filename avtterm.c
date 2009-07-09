@@ -1,6 +1,6 @@
 /*
  * avtterm - terminal emulation for AKFAAvatar
- * Copyright (c) 2007, 2008 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007, 2008, 2009 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -169,13 +169,10 @@ avtterm_size (int fd AVT_UNUSED, int height AVT_UNUSED, int width AVT_UNUSED)
 #ifdef TIOCSWINSZ
   struct winsize size;
 
-  if (height >= 0 && width >= 0)
-    {
-      size.ws_row = height;
-      size.ws_col = width;
-      size.ws_xpixel = size.ws_ypixel = 0;
-      ioctl (fd, TIOCSWINSZ, &size);
-    }
+  size.ws_row = (height > 0) ? height : 0;
+  size.ws_col = (width > 0) ? width : 0;
+  size.ws_xpixel = size.ws_ypixel = 0;
+  ioctl (fd, TIOCSWINSZ, &size);
 #endif
 }
 
@@ -188,7 +185,13 @@ avtterm_update_size (void)
     {
       max_x = avt_get_max_x ();
       max_y = avt_get_max_y ();
+
       avtterm_size (prg_input, max_y, max_x);
+
+      if (region_max_y > max_y)
+	region_max_y = max_y;
+      if (region_min_y > max_y)
+	region_min_y = 1;
     }
 }
 
@@ -1148,6 +1151,10 @@ CSI_sequence (int fd, wchar_t last_character)
 	  max_x = avt_get_max_x ();
 	  max_y = avt_get_max_y ();
 	  avtterm_size (prg_input, max_y, max_x);
+	  if (region_max_y > max_y)
+	    region_max_y = max_y;
+	  if (region_min_y > max_y)
+	    region_min_y = 1;
 	}
       break;
 

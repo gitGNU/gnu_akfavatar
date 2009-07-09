@@ -1,3 +1,9 @@
+2009-07-09  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtter.c (avtterm_size, avtterm_update_size)
+	(CSI_sequence, avtterm_initialize):
+	better handling of max_x, max_y, region_min_y, region_max_y
+
 2009-07-08  Andreas K. Foerster  <info@akfoerster.de>
 
 	* renamed directory "mingw32" to "mingw"
