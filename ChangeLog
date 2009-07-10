@@ -10,6 +10,9 @@
 	optimizations: no need for the vector pages anymore
 	=> no need for MAXPAGES anymore
 
+	* akfavatar.h (AVT_BEGIN_DECLS, AVT_END_DECLS):
+	new macros
+
 2009-07-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtter.c (avtterm_size, avtterm_update_size)

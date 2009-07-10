@@ -86,10 +86,14 @@
 #endif /* __GNUC__ */
 
 #ifdef __cplusplus
-/* *INDENT-OFF* */
-extern "C" {
-/* *INDENT-ON* */
+#  define AVT_BEGIN_DECLS  extern "C" {
+#  define AVT_END_DECLS    }
+#else
+#  define AVT_BEGIN_DECLS
+#  define AVT_END_DECLS
 #endif /* __cplusplus */
+
+AVT_BEGIN_DECLS
 
 /*
  * boolean are chars for this library
@@ -835,8 +839,6 @@ int avt_wait_audio_end (void);
 void avt_stop_audio (void);
 
 
-#ifdef __cplusplus
-/* *INDENT-OFF* */
-}
-#endif /* __cplusplus */
+AVT_END_DECLS
+
 #endif /* _akfavatar_h */

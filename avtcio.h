@@ -30,9 +30,7 @@
 #include <stdarg.h>
 #include <wchar.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+AVT_BEGIN_DECLS
 
 int avt_vprintf (const char *format, va_list ap);
 int avt_printf (const char *format, ...);
@@ -48,7 +46,6 @@ int avt_putws (const wchar_t * s);
 int avt_vwscanf (const wchar_t * format, va_list ap);
 int avt_wscanf (const wchar_t * format, ...);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+AVT_END_DECLS
+
 #endif /* _AVTCIO_H */
