@@ -13,6 +13,8 @@
 	* akfavatar.h (AVT_BEGIN_DECLS, AVT_END_DECLS):
 	new macros
 
+	* akfavatar.h (AVT_API): new macro (for later use)
+
 2009-07-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtter.c (avtterm_size, avtterm_update_size)

@@ -68,12 +68,12 @@
 #define AVT_LEFT_TO_RIGHT 0
 #define AVT_RIGHT_TO_LEFT 1
 
-/* 
+/*
  * example: avt_wait(AVT_SECONDS(2.5)) waits 2.5 seconds 
  */
 #define AVT_SECONDS(x) ((x)*1000)
 
-/* 
+/*
  * makros for marking deprecated functions in this header,
  * or possibly unused parameters
  */
@@ -92,6 +92,9 @@
 #  define AVT_BEGIN_DECLS
 #  define AVT_END_DECLS
 #endif /* __cplusplus */
+
+/* for later use */
+#define AVT_API  extern
 
 AVT_BEGIN_DECLS
 
@@ -136,58 +139,58 @@ typedef void (*avt_mousehandler) (int button, avt_bool_t pressed,
  * the image may be NULL if no avatar should be shown
  * title and icontitle may also be NULL
  */
-int avt_initialize (const char *title,
-		    const char *icontitle, 
-		    avt_image_t * image, 
-		    int mode);
+AVT_API int avt_initialize (const char *title,
+			    const char *icontitle,
+			    avt_image_t * image,
+			    int mode);
 
 /*
  * quit the avatar system
  * can be used with atexit
  */
-void avt_quit (void);
+AVT_API void avt_quit (void);
 
 /*
  * call avt_wait_button (); avt_move_out (); avt_quit ();
  * can be used with atexit
  */
-void avt_button_quit (void);
+AVT_API void avt_button_quit (void);
 
 /* which version */
-const char *avt_version (void);
+AVT_API const char *avt_version (void);
 
 /* copyright information */
-const char *avt_copyright (void);
+AVT_API const char *avt_copyright (void);
 
 /* license information */
-const char *avt_license (void);
+AVT_API const char *avt_license (void);
 
 /* is it initialized? */
-avt_bool_t avt_initialized (void);
+AVT_API avt_bool_t avt_initialized (void);
 
 /* 0 = normal; 1 = quit-request; -1 = error */
-int avt_get_status (void);
+AVT_API int avt_get_status (void);
 
 /* set status */
-void avt_set_status (int status);
+AVT_API void avt_set_status (int status);
 
 /* get error message */
-char *avt_get_error (void);
+AVT_API char *avt_get_error (void);
 
-/* 
+/*
  * change the title and/or the icontitle
  * use NULL for the unchanged part
  * in newer SDL-versions it is to be encoded in UTF-8
  * if possible stick to ASCII for compatibility
  */
-void avt_set_title (const char *title, const char *icontitle);
+AVT_API void avt_set_title (const char *title, const char *icontitle);
 
-/* 
+/*
  * set text direction
  * the cursor is moved to start of the line
  * in a text, you might want to call avt_newline after that
  */
-void avt_text_direction (int direction);
+AVT_API void avt_text_direction (int direction);
 
 /*
  * set the baloon width and height in number of characters
@@ -195,78 +198,78 @@ void avt_text_direction (int direction);
  * if it's actually changed, the balloon is redrawn and emptied
  * see also avt_get_max_x () and avt_get_max_y ()
  */
-void avt_set_balloon_size (int height, int width);
-void avt_set_balloon_width (int width);
-void avt_set_balloon_height (int height);
+AVT_API void avt_set_balloon_size (int height, int width);
+AVT_API void avt_set_balloon_width (int width);
+AVT_API void avt_set_balloon_height (int height);
 
 /* activate the text cursor? (default: no) */
-void avt_activate_cursor (avt_bool_t on);
+AVT_API void avt_activate_cursor (avt_bool_t on);
 
 /*
  * get the default avatar image
  * use this with avt_initialize
  */
-avt_image_t *avt_default (void);
+AVT_API avt_image_t *avt_default (void);
 
 /*
  * import an avatar from XPM data
  */
-avt_image_t *avt_import_XPM (char **xpm);
+AVT_API avt_image_t *avt_import_XPM (char **xpm);
 
 /*
  * RGB gimp_image
  * for importing an avatar
  * also uses avt_make_transparent
  */
-avt_image_t *avt_import_gimp_image (void *gimp_image);
+AVT_API avt_image_t *avt_import_gimp_image (void *gimp_image);
 
-/* 
+/*
  * import avatar from image data
  */
-avt_image_t *avt_import_image_data (void *img, int imgsize);
+AVT_API avt_image_t *avt_import_image_data (void *img, int imgsize);
 
-/* 
+/*
  * import avatar from file
  */
-avt_image_t *avt_import_image_file (const char *file);
+AVT_API avt_image_t *avt_import_image_file (const char *file);
 
-/* 
+/*
  * import avatar from stream
  * the stream is internally casted to (FILE *)
  */
-avt_image_t *avt_import_image_stream (void *stream);
+AVT_API avt_image_t *avt_import_image_stream (void *stream);
 
-/* 
+/*
  * change avatar image while running
  * if the avatar is visible, the screen gets cleared
  * the original image is freed in this function!
  * the image may be NULL if no avatar should be shown
  * on error AVT_ERROR is set and returned 
  */
-int avt_change_avatar_image (avt_image_t * image);
+AVT_API int avt_change_avatar_image (avt_image_t * image);
 
-/* 
+/*
  * free avt_image_t images
  * allocated with avt_import_gimp_image or avt_import_imagefile
  * (automatically called in avt_initialize)
  */
-void avt_free_image (avt_image_t * image);
+AVT_API void avt_free_image (avt_image_t * image);
 
 /*
  * make background transparent
  * pixel in the upper left corner is supposed to be the background color
  */
-avt_image_t *avt_make_transparent (avt_image_t * image);
+AVT_API avt_image_t *avt_make_transparent (avt_image_t * image);
 
 /*
  * get color values for a given color-name
  * returns 0 on success or -1 on error
  */
-int avt_name_to_color (const char *name,
-                       int *red, int *green, int *blue);
+AVT_API int avt_name_to_color (const char *name,
+			       int *red, int *green, int *blue);
 
 /* get color name of given number, or NULL on error */
-char *avt_get_color_name (int nr);
+AVT_API char *avt_get_color_name (int nr);
 
 /*
  * define the background color
@@ -274,8 +277,8 @@ char *avt_get_color_name (int nr);
  * can and should be called before avt_initialize
  * if the balloon is visible, it is cleared
  */
-void avt_set_background_color (int red, int green, int blue);
-void avt_set_background_color_name (const char *name);
+AVT_API void avt_set_background_color (int red, int green, int blue);
+AVT_API void avt_set_background_color_name (const char *name);
 
 /*
  * define the balloon color
@@ -284,102 +287,102 @@ void avt_set_background_color_name (const char *name);
  * the text-background-color is set to the balloon-color too
  * if the balloon is visible, it is cleared
  */
-void avt_set_balloon_color (int red, int green, int blue);
-void avt_set_balloon_color_name (const char *name);
+AVT_API void avt_set_balloon_color (int red, int green, int blue);
+AVT_API void avt_set_balloon_color_name (const char *name);
 
 /*
  * change the text color
  * values in the range 0x00 .. 0xFF
  */
-void avt_set_text_color (int red, int green, int blue);
-void avt_set_text_color_name (const char *name);
-void avt_set_text_background_color (int red, int green, int blue);
-void avt_set_text_background_color_name (const char *name);
+AVT_API void avt_set_text_color (int red, int green, int blue);
+AVT_API void avt_set_text_color_name (const char *name);
+AVT_API void avt_set_text_background_color (int red, int green, int blue);
+AVT_API void avt_set_text_background_color_name (const char *name);
 
 /* set text background to balloon color */
-void avt_set_text_background_ballooncolor (void);
+AVT_API void avt_set_text_background_ballooncolor (void);
 
 /* set underlined mode on or off */
-void avt_underlined (avt_bool_t onoff);
+AVT_API void avt_underlined (avt_bool_t onoff);
 
 /* get underlined mode */
-avt_bool_t avt_get_underlined (void);
+AVT_API avt_bool_t avt_get_underlined (void);
 
 /* set bold mode on or off (not recommended) */
-void avt_bold (avt_bool_t onoff);
+AVT_API void avt_bold (avt_bool_t onoff);
 
 /* get bold mode */
-avt_bool_t avt_get_bold (void);
+AVT_API avt_bool_t avt_get_bold (void);
 
 /* set inverse mode on or off */
-void avt_inverse (avt_bool_t onoff);
+AVT_API void avt_inverse (avt_bool_t onoff);
 
 /* get inverse mode */
-avt_bool_t avt_get_inverse (void);
+AVT_API avt_bool_t avt_get_inverse (void);
 
 /* set default color and switch off bold, underlined, inverse */
-void avt_normal_text (void);
+AVT_API void avt_normal_text (void);
 
 /*
  * delay time for text-writing
  * default: AVT_DEFAULT_TEXT_DELAY
  */
-void avt_set_text_delay (int delay);
+AVT_API void avt_set_text_delay (int delay);
 
 /*
  * delay time for page flipping
  * default: AVT_DEFAULT_FLIP_PAGE_DELAY
  */
-void avt_set_flip_page_delay (int delay);
+AVT_API void avt_set_flip_page_delay (int delay);
 
 /* don't use this anymore, it is about to be removed */
-void avt_set_delays (int text, int flip_page) AVT_DEPRECATED;
+AVT_API void avt_set_delays (int text, int flip_page) AVT_DEPRECATED;
 
-/* 
+/*
  * reserve single keys (Esc, F11)
  * use this with avt_register_keyhandler
  */
-void avt_reserve_single_keys (avt_bool_t onoff);
+AVT_API void avt_reserve_single_keys (avt_bool_t onoff);
 
 /* just for backward compatiblity, don't use it */
-void avt_stop_on_esc (avt_bool_t on) AVT_DEPRECATED;
+AVT_API void avt_stop_on_esc (avt_bool_t on) AVT_DEPRECATED;
 
 /* register an external keyhandler */
-void avt_register_keyhandler (avt_keyhandler handler);
+AVT_API void avt_register_keyhandler (avt_keyhandler handler);
 
 /* register an external mousehandler
  *
  * it is only called, when a mouse-button is pressed or released inside
  * of the balloon. The coordinates are the character positions.
  */
-void avt_register_mousehandler (avt_mousehandler handler);
+AVT_API void avt_register_mousehandler (avt_mousehandler handler);
 
 /*
  * switch to fullscreen or window mode
  */
-void avt_switch_mode (int mode);
+AVT_API void avt_switch_mode (int mode);
 
 /*
  * toggle fullscrenn mode
  */
-void avt_toggle_fullscreen (void);
+AVT_API void avt_toggle_fullscreen (void);
 
-/* 
+/*
  * prints a L'\0' terminated string in the balloon
  * if there is no balloon, it is drawn
  * if there is no avatar, it is shown (not moved in)
  * interprets control chars
  */
-int avt_say (const wchar_t * txt);
+AVT_API int avt_say (const wchar_t * txt);
 
-/* 
+/*
  * writes string with given length in the balloon
  * the string needn't be terminated and can contain binary zeros
  * if there is no balloon, it is drawn
  * if there is no avatar, it is shown (not moved in)
  * interprets control characters
  */
-int avt_say_len (const wchar_t * txt, const int len);
+AVT_API int avt_say_len (const wchar_t * txt, const int len);
 
 /*
  * writes a single character in the balloon
@@ -387,30 +390,30 @@ int avt_say_len (const wchar_t * txt, const int len);
  * if there is no avatar, it is shown (not moved in)
  * interprets control characters
  */
-int avt_put_character (const wchar_t ch);
+AVT_API int avt_put_character (const wchar_t ch);
 
 /* set encoding for mb functions */
-int avt_mb_encoding (const char *encoding);
+AVT_API int avt_mb_encoding (const char *encoding);
 
-/* 
+/*
  * decode a string into wchar_t
  * size in bytes
  * returns number of characters in dest (without the termination zero)
  * dest must be freed by caller with avt_free
  */
-int avt_mb_decode (wchar_t ** dest, const char *src, const int size);
+AVT_API int avt_mb_decode (wchar_t ** dest, const char *src, const int size);
 
-/* 
+/*
  * encode a string from wchar_t
  * len is the length
  * returns number of characters in dest (without the termination zero)
  * dest must be freed by caller with avt_free
  * (the size of dest may be much more than needed)
  */
-int avt_mb_encode (char **dest, const wchar_t * src, const int len);
+AVT_API int avt_mb_encode (char **dest, const wchar_t * src, const int len);
 
 /* free memory allocated by this library */
-void avt_free (void *ptr);
+AVT_API void avt_free (void *ptr);
 
 /*
  * like avt_say,
@@ -418,21 +421,21 @@ void avt_free (void *ptr);
  * (see avt_mb_encoding)
  * the text is a 0 terminated C-String
  */
-int avt_say_mb (const char *txt);
+AVT_API int avt_say_mb (const char *txt);
 
 /*
  * the same with a given length
  * the string needn't be terminated then 
  * and can contain binary zeros
  */
-int avt_say_mb_len (const char *txt, int len);
+AVT_API int avt_say_mb_len (const char *txt, int len);
 
 /*
  * get a character from the keyboard
  * only for printable characters, not for function keys
  * (ch is just one character, not a string)
  */
-int avt_get_key (wchar_t * ch);
+AVT_API int avt_get_key (wchar_t * ch);
 
 /*
  * avt_choice
@@ -444,16 +447,17 @@ int avt_get_key (wchar_t * ch);
  *
  * returns AVT_ERROR and sets _avt_STATUS when it cannot get enough memory
  */
-int
+AVT_API int
 avt_choice (int *result, int start_line, int items, int key,
 	    avt_bool_t back, avt_bool_t forward);
 
 /* deprecated, use avt_choice */
-int avt_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code,
-	      avt_bool_t back, avt_bool_t forward) AVT_DEPRECATED;
+AVT_API int avt_menu (wchar_t * ch, int menu_start, int menu_end, 
+                      wchar_t start_code, avt_bool_t back, 
+                      avt_bool_t forward) AVT_DEPRECATED;
 
 /* deprecated, use avt_choice */
-int
+AVT_API int
 avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
 AVT_DEPRECATED;
 
@@ -464,7 +468,7 @@ AVT_DEPRECATED;
  *
  * (I don't use size_t for better compatiblity with other languages)
  */
-int avt_ask (wchar_t * s, const int size);
+AVT_API int avt_ask (wchar_t * s, const int size);
 
 /*
  * like avt_ask,
@@ -473,29 +477,29 @@ int avt_ask (wchar_t * s, const int size);
  * for UTF-8 encoding it should have a capacity of 
  * 4 * LINELENGTH Bytes
  */
-int avt_ask_mb (char *s, const int size);
+AVT_API int avt_ask_mb (char *s, const int size);
 
 /*
  * new line
  * same as \n in avt_say
  */
-int avt_new_line (void);
+AVT_API int avt_new_line (void);
 
 /*
  * wait a while and then clear the textfield
  * same as \f in avt_say
  */
-int avt_flip_page (void);
+AVT_API int avt_flip_page (void);
 
 /* update, ie handle events and give some time to other processes */
 /* use this in a longer loop in your program */
-int avt_update (void);
+AVT_API int avt_update (void);
 
 /* wait a while */
-int avt_wait (int milliseconds);
+AVT_API int avt_wait (int milliseconds);
 
 /* wait for a keypress while displaying a button */
-int avt_wait_button (void);
+AVT_API int avt_wait_button (void);
 
 /*
  * show positive or negative buttons
@@ -506,43 +510,43 @@ int avt_wait_button (void);
  * on error or quit request AVT_FALSE is returned and the status is set
  * you should check the status with avt_get_status()
  */
-avt_bool_t avt_decide (void);
+AVT_API avt_bool_t avt_decide (void);
 
 /* wait for a keypress  (deprecated: use avt_wait_button) */
-int avt_wait_key (const wchar_t * message) AVT_DEPRECATED;
+AVT_API int avt_wait_key (const wchar_t * message) AVT_DEPRECATED;
 
 /*
  * like avt_waitkey,
  * but converts from a given charset encoding
  * (deprecated: use avt_wait_button) 
  */
-int avt_wait_key_mb (char *message) AVT_DEPRECATED;
+AVT_API int avt_wait_key_mb (char *message) AVT_DEPRECATED;
 
 
 /* functions for extended use */
 
-/* 
+/*
  * set a viewport (sub-area of the textarea)
  * upper left corner is 1, 1
  */
-void avt_viewport (int x, int y, int width, int height);
+AVT_API void avt_viewport (int x, int y, int width, int height);
 
 /* show an empty screen with the background color */
-void avt_clear_screen (void);
+AVT_API void avt_clear_screen (void);
 
 /* show just the avatar without the balloon */
-void avt_show_avatar (void);
+AVT_API void avt_show_avatar (void);
 
-/* 
+/*
  * load image and show it
  * if SDL_image isn't available then
  * XPM and uncompressed BMP are still supported
  * on error it returns AVT_ERROR without changing the status
  * if it succeeds call avt_wait or avt_waitkey 
  */
-int avt_show_image_file (const char *file);
+AVT_API int avt_show_image_file (const char *file);
 
-/* 
+/*
  * load image from stream and show it
  * the stream is internally casted to (FILE *)
  * if SDL_image isn't available then
@@ -550,7 +554,7 @@ int avt_show_image_file (const char *file);
  * on error it returns AVT_ERROR without changing the status
  * if it succeeds call avt_wait or avt_waitkey 
  */
-int avt_show_image_stream (void *stream);
+AVT_API int avt_show_image_stream (void *stream);
 
 /*
  * show image from image data
@@ -559,36 +563,36 @@ int avt_show_image_stream (void *stream);
  * on error it returns AVT_ERROR without changing the status
  * if it succeeds call avt_wait or avt_waitkey 
  */
-int avt_show_image_data (void *img, int imgsize);
+AVT_API int avt_show_image_data (void *img, int imgsize);
 
 /*
  * show image from XPM data
  * on error it returns AVT_ERROR without changing the status
  * if it succeeds call avt_wait or avt_waitkey 
  */
-int avt_show_image_XPM (char **xpm);
+AVT_API int avt_show_image_XPM (char **xpm);
 
 /*
  * show gimp image
  * on error it returns AVT_ERROR without changing the status
  */
-int avt_show_gimp_image (void *gimp_image);
+AVT_API int avt_show_gimp_image (void *gimp_image);
 
 /*
  * like avt_show_avatar, but the avatar is moved in
  */
-int avt_move_in (void);
+AVT_API int avt_move_in (void);
 
 /*
  * move the avatar out => empty screen
  */
-int avt_move_out (void);
+AVT_API int avt_move_out (void);
 
 /*
  * show final credits
  */
-int avt_credits (const wchar_t *text, avt_bool_t centered);
-int avt_credits_mb (const char *text, avt_bool_t centered);
+AVT_API int avt_credits (const wchar_t *text, avt_bool_t centered);
+AVT_API int avt_credits_mb (const char *text, avt_bool_t centered);
 
 /*
  * make a short sound, when audio is initialized
@@ -596,90 +600,89 @@ int avt_credits_mb (const char *text, avt_bool_t centered);
  * same as with \a in avt_say
  * the sound is actually not a bell ;-)
  */
-void avt_bell (void);
+AVT_API void avt_bell (void);
 
 /*
  * visual flash of the screen
  */
-void avt_flash (void);
+AVT_API void avt_flash (void);
 
 /* 
  * clears the viewport
  * if there is no balloon yet, it is drawn
  */
-void avt_clear (void);
+AVT_API void avt_clear (void);
 
-/* 
+/*
  * clears from cursor position down the viewport
  * if there is no balloon yet, it is drawn
  */
-void avt_clear_down (void);
+AVT_API void avt_clear_down (void);
 
-/* 
+/*
  * clears from cursor position up the viewport
  * if there is no balloon yet, it is drawn
  */
-void avt_clear_up (void);
+AVT_API void avt_clear_up (void);
 
-/* 
+/*
  * clear end of line
  * depending on text direction
  */
-void avt_clear_eol (void);
+AVT_API void avt_clear_eol (void);
 
-/* 
+/*
  * clear beginning of line
  * depending on text direction
  */
-void avt_clear_bol (void);
+AVT_API void avt_clear_bol (void);
 
 /* clear line */
-void avt_clear_line (void);
-
-/* forward one character position
- * ie. print a space
- */
-int avt_forward (void);
+AVT_API void avt_clear_line (void);
 
 /*
- * delete last caracter
+ * forward one character position
+ * ie. print a space
  */
-void avt_backspace (void);
+AVT_API int avt_forward (void);
+
+/* delete last caracter */
+AVT_API void avt_backspace (void);
 
 /* insert spaces at current position (move rest of line) */
-void avt_insert_spaces (int num);
+AVT_API void avt_insert_spaces (int num);
 
 /* delete num characters at current position (move rest of line) */
-void avt_delete_characters (int num);
+AVT_API void avt_delete_characters (int num);
 
-/* 
+/*
  * erase num characters from current position
  * don't move the cursor or the rest of the line
  */
-void avt_erase_characters (int num);
+AVT_API void avt_erase_characters (int num);
 
 /*
  * set scroll mode
  * -1 = off, 0 = page-flipping, 1 = normal
  */
-void avt_set_scroll_mode (int mode);
-int avt_get_scroll_mode (void);
+AVT_API void avt_set_scroll_mode (int mode);
+AVT_API int avt_get_scroll_mode (void);
 
 /* set newline mode (default: on) */
-void avt_newline_mode (avt_bool_t mode);
+AVT_API void avt_newline_mode (avt_bool_t mode);
 
 /* set auto-margin mode (default: on) */
-void avt_auto_margin (avt_bool_t mode);
+AVT_API void avt_auto_margin (avt_bool_t mode);
 
 /*
  * origin mode
  * AVT_FALSE: origin (1,1) is always the top of the textarea
  * AVT_TRUE:  origin (1,1) is the top of the viewport
  */
-void avt_set_origin_mode (avt_bool_t mode);
-avt_bool_t avt_get_origin_mode (void);
+AVT_API void avt_set_origin_mode (avt_bool_t mode);
+AVT_API avt_bool_t avt_get_origin_mode (void);
 
-/* 
+/*
  * handle coordinates
  *
  * the coordinates start with 1, 1 
@@ -687,70 +690,66 @@ avt_bool_t avt_get_origin_mode (void);
  * and are independent from the text direction
  */
 
-/*
- * get position in the viewport
- */
-int avt_where_x (void);
-int avt_where_y (void);
+/* get position in the viewport */
+AVT_API int avt_where_x (void);
+AVT_API int avt_where_y (void);
 
 /*
  * is the cursor in the home position? 
  * (also works for right-to-left writing)
  */
-avt_bool_t avt_home_position (void);
+AVT_API avt_bool_t avt_home_position (void);
 
 /* maximum positions (whole text-field) */
-int avt_get_max_x (void);
-int avt_get_max_y (void);
+AVT_API int avt_get_max_x (void);
+AVT_API int avt_get_max_y (void);
 
-/*
- * put cusor to specified coordinates
- */
-void avt_move_x (int x);
-void avt_move_y (int y);
-void avt_move_xy (int x, int y);
+/* put cusor to specified coordinates */
+AVT_API void avt_move_x (int x);
+AVT_API void avt_move_y (int y);
+AVT_API void avt_move_xy (int x, int y);
 
 /* save and restore current cursor position */
-void avt_save_position (void);
-void avt_restore_position (void);
+AVT_API void avt_save_position (void);
+AVT_API void avt_restore_position (void);
 
 /* go to next or last tab stop */
-void avt_next_tab (void);
-void avt_last_tab (void);
+AVT_API void avt_next_tab (void);
+AVT_API void avt_last_tab (void);
 
 /* reset tab stops to every eigth column */
-void avt_reset_tab_stops (void);
+AVT_API void avt_reset_tab_stops (void);
 
 /* clear all tab stops */
-void avt_clear_tab_stops (void);
+AVT_API void avt_clear_tab_stops (void);
 
 /* set or clear a tab in position x */
-void avt_set_tab (int x, avt_bool_t onoff);
+AVT_API void avt_set_tab (int x, avt_bool_t onoff);
 
-/* 
+/*
  * delete num lines, starting from line
  * the rest ist scrolled up
  */
-void avt_delete_lines (int line, int num);
+AVT_API void avt_delete_lines (int line, int num);
 
-/* 
+/*
  * insert num lines, starting at line
  * the rest ist scrolled down
  */
-void avt_insert_lines (int line, int num);
+AVT_API void avt_insert_lines (int line, int num);
 
 /***********************************************************************/
 /* audio stuff */
 
 /* must be called AFTER avt_initialize! */
-int avt_initialize_audio (void);
+AVT_API int avt_initialize_audio (void);
 
-/* 
- * no longer needed, 
- * this is executed automatically by avt_quit() 
+/*
+ * no longer needed,
+ * this is executed automatically by avt_quit()
  * this function is only there for backward compatiblity
  */
-void avt_quit_audio (void);
+AVT_API void avt_quit_audio (void) AVT_DEPRECATED;
 
 /*
  * supported audio formats:
@@ -763,32 +762,33 @@ void avt_quit_audio (void);
  * loads an audio file in AU or Wave format
  * not for headerless formats
  */
-avt_audio_t *avt_load_audio_file (const char *file);
+AVT_API avt_audio_t *avt_load_audio_file (const char *file);
 
 /*
  * loads audio in AU or Wave format from a stream
  * the stream is internally casted to (FILE *)
  * not for headerless formats
  */
-avt_audio_t *avt_load_audio_stream (void *stream);
+AVT_API avt_audio_t *avt_load_audio_stream (void *stream);
 
 /*
  * loads audio in AU or Wave format from memory
  * must still be freed with avt_free_audio!
  */
-avt_audio_t *avt_load_audio_data (void *data, int datasize);
+AVT_API avt_audio_t *avt_load_audio_data (void *data, int datasize);
 
-/* 
+/*
  * loads a wave file 
  * deprecated: use avt_load_audio_file
  */
-avt_audio_t *avt_load_wave_file (const char *file) AVT_DEPRECATED;
+AVT_API avt_audio_t *avt_load_wave_file (const char *file) AVT_DEPRECATED;
 
 /*
  * loads wave data from memory
  * deprecated: use avt_load_audio_file
  */
-avt_audio_t *avt_load_wave_data (void *data, int datasize) AVT_DEPRECATED;
+AVT_API avt_audio_t *avt_load_wave_data (void *data, int datasize) 
+        AVT_DEPRECATED;
 
 /* values for audio_type */
 #define AVT_AUDIO_UNKNOWN   0  /* doesn't play */
@@ -816,27 +816,27 @@ avt_audio_t *avt_load_wave_data (void *data, int datasize) AVT_DEPRECATED;
  *
  * must be freed with avt_free_audio!
  */
-avt_audio_t *avt_load_raw_audio_data (void *data, int data_size,
-		   int samplingrate, int audio_type, int channels);
+AVT_API avt_audio_t *avt_load_raw_audio_data (void *data, int data_size,
+			int samplingrate, int audio_type, int channels);
 
 /*
  * frees memory of a loaded sound
  */
-void avt_free_audio (avt_audio_t * snd);
+AVT_API void avt_free_audio (avt_audio_t * snd);
 
 /*
  * plays a sound
  */
-int avt_play_audio (avt_audio_t * snd, avt_bool_t doloop);
+AVT_API int avt_play_audio (avt_audio_t * snd, avt_bool_t doloop);
 
 /*
  * wait until the sound ends
  * this stops a loop, but still plays to the end of the sound
  */
-int avt_wait_audio_end (void);
+AVT_API int avt_wait_audio_end (void);
 
 /* stops audio */
-void avt_stop_audio (void);
+AVT_API void avt_stop_audio (void);
 
 
 AVT_END_DECLS
