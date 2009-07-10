@@ -3,6 +3,9 @@
 	* avtfilechooser.c [HAS_SCANDIR]:
 	always use my "compare_dirent" instead of "alphasort"
 
+	* avtfilechooser.c (filter): new function
+	(get_directory, get_file): adapted
+
 2009-07-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtter.c (avtterm_size, avtterm_update_size)

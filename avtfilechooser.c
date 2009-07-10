@@ -1,6 +1,6 @@
 /*
  * avtfilechooser - filechooser dialog for AKFAvatar
- * Copyright (c) 2008 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2008, 2009 Andreas K. Foerster <info@akfoerster.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,6 +96,27 @@ new_page (char *dirname)
   avt_move_xy (1, 2);
 }
 
+#ifndef __WIN32__
+
+static int
+filter (const struct dirent *d)
+{
+  /* allow everything, that doesn't start with a dot */
+  return (d != NULL && d->d_name[0] != '.');
+}
+
+#else /* __WIN32__ */
+
+static int
+filter (const struct dirent *d)
+{
+  /* allow everything except "." and ".." */
+  return (d != NULL
+	  && (strcmp (".", d->d_name) != 0 && strcmp ("..", d->d_name) != 0));
+}
+
+#endif /* __WIN32__ */
+
 static int
 compare_dirent (const void *a, const void *b)
 {
@@ -104,7 +125,7 @@ compare_dirent (const void *a, const void *b)
 }
 
 #if (HAS_SCANDIR)
-#  define get_directory(list) (scandir (".", list, NULL, compare_dirent))
+#  define get_directory(list) (scandir (".", list, filter, compare_dirent))
 #else /* not HAS_SCANDIR */
 
 static int
@@ -138,11 +159,14 @@ get_directory (struct dirent ***list)
     {
       while ((d = readdir (dir)) != NULL && entries < max_entries)
 	{
-	  n = (struct dirent *) malloc (dirent_size);
-	  if (!n)
-	    break;
-	  memcpy (n, d, dirent_size);
-	  mylist[entries++] = n;
+	  if (filter (d))
+	    {
+	      n = (struct dirent *) malloc (dirent_size);
+	      if (!n)
+		break;
+	      memcpy (n, d, dirent_size);
+	      mylist[entries++] = n;
+	    }
 	}
 
       /* sort */
@@ -166,7 +190,7 @@ get_directory (struct dirent ***list)
  * lists files in working directory
  * return -1 on error or 0 on success
  */
-int
+extern int
 get_file (char *filename)
 {
   int rcode;
@@ -248,103 +272,100 @@ start:
       if (!idx && !d)		/* no entries at all */
 	break;
 
-      if (!d || (d && d->d_name[0] != '.'))
+      /* end reached? */
+      if (!d || idx == max_idx - 1)
 	{
-	  /* end reached? */
-	  if (!d || idx == max_idx - 1)
+	  if (d)		/* continue entry */
 	    {
-	      if (d)		/* continue entry */
+	      MARK (CONTINUE);
+	      idx++;
+	    }
+
+	  if (avt_choice (&filenr, 2, idx, 0, (page_nr > 0), (d != NULL)))
+	    break;
+
+	  if (d && filenr == idx)	/* continue? */
+	    {
+	      idx = 0;
+	      page_nr++;
+	      if (page_nr > MAXPAGES - 1)
+		page_nr = MAXPAGES - 1;
+
+	      new_page (dirname);
+	      entry[idx] = "";
+	      MARK (BACK);
+	      idx++;
+	      avt_new_line ();
+	    }
+	  else if (filenr == 1 && page_nr > 0)	/* back */
+	    {
+	      page_nr--;
+	      entry_nr = pages[page_nr];
+
+	      idx = 0;
+
+	      new_page (dirname);
+	      if (page_nr > 0)
 		{
-		  MARK (CONTINUE);
-		  idx++;
-		}
-
-	      if (avt_choice (&filenr, 2, idx, 0, (page_nr > 0), (d != NULL)))
-		break;
-
-
-	      if (d && filenr == idx)	/* continue? */
-		{
-		  idx = 0;
-		  page_nr++;
-		  if (page_nr > MAXPAGES - 1)
-		    page_nr = MAXPAGES - 1;
-
-		  new_page (dirname);
 		  entry[idx] = "";
 		  MARK (BACK);
-		  idx++;
-		  avt_new_line ();
 		}
-	      else if (filenr == 1 && page_nr > 0)	/* back */
+	      else		/* first page */
 		{
-		  page_nr--;
-		  entry_nr = pages[page_nr];
-
-		  idx = 0;
-
-		  new_page (dirname);
-		  if (page_nr > 0)
+		  if (!HAS_DRIVE_LETTERS && is_root_dir (dirname))
 		    {
 		      entry[idx] = "";
-		      MARK (BACK);
+		      MARK (HOME);
 		    }
-		  else		/* first page */
+		  else
 		    {
-		      if (!HAS_DRIVE_LETTERS && is_root_dir (dirname))
-			{
-			  entry[idx] = "";
-			  MARK (HOME);
-			}
-		      else
-			{
-			  entry[idx] = "..";
-			  MARK (PARENT_DIRECTORY);
-			}
+		      entry[idx] = "..";
+		      MARK (PARENT_DIRECTORY);
 		    }
+		}
 
-		  idx++;
-		  avt_new_line ();
-		  continue;
-		}
-	      else		/* file chosen */
-		{
-		  strcpy (filename, entry[filenr - 1]);
-		  rcode = 0;
-		  break;
-		}
+	      idx++;
+	      avt_new_line ();
+	      continue;
 	    }
-
-	  /* copy name into entry */
-	  entry[idx] = d->d_name;
-	  avt_say_mb (entry[idx]);
-
-	  /* is it a directory? */
-	  if (is_dirent_directory (d))
+	  else			/* file chosen */
 	    {
-	      /* mark as directory */
-	      if (avt_where_x () > max_x)
-		{
-		  avt_move_x (max_x - 1);
-		  MARK (LONGER);
-		}
-	      MARK (DIRECTORY);
+	      strcpy (filename, entry[filenr - 1]);
+	      rcode = 0;
+	      break;
 	    }
-	  else			/* not directory */
-	    {
-	      if (avt_where_x () > max_x)
-		{
-		  avt_move_x (max_x);
-		  MARK (LONGER);
-		}
-	    }
-
-	  avt_new_line ();
-
-	  idx++;
-	  if (idx == max_idx - 1 && page_nr < MAXPAGES - 1)
-	    pages[page_nr + 1] = entry_nr;
 	}
+
+      /* copy name into entry */
+      entry[idx] = d->d_name;
+      avt_say_mb (entry[idx]);
+
+      /* is it a directory? */
+      if (is_dirent_directory (d))
+	{
+	  /* mark as directory */
+	  if (avt_where_x () > max_x)
+	    {
+	      avt_move_x (max_x - 1);
+	      MARK (LONGER);
+	    }
+	  MARK (DIRECTORY);
+	}
+      else			/* not directory */
+	{
+	  if (avt_where_x () > max_x)
+	    {
+	      avt_move_x (max_x);
+	      MARK (LONGER);
+	    }
+	}
+
+      avt_new_line ();
+
+      idx++;
+      if (idx == max_idx - 1 && page_nr < MAXPAGES - 1)
+	pages[page_nr + 1] = entry_nr;
+
     }
 
   /* free namelist */
