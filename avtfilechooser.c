@@ -50,9 +50,6 @@
 /* slash */
 #define DIRECTORY L"/"
 
-/* how many pages? */
-#define MAXPAGES 500
-
 #ifdef __WIN32__
 #  define HAS_DRIVE_LETTERS AVT_TRUE
 #  define HAS_SCANDIR AVT_FALSE
@@ -193,18 +190,14 @@ get_directory (struct dirent ***list)
 extern int
 get_file (char *filename)
 {
-  int rcode;
+  int rcode;			/* return code */
   struct dirent *d;
-  int max_x, max_idx;
-  int idx;
-  int filenr;
-  char dirname[4096];
-  char *entry[100];
-  int page_nr;
-  off_t pages[MAXPAGES];
   struct dirent **namelist;
-  int entries;
-  int entry_nr;
+  char dirname[4096];
+  int max_x, max_idx, page_entries;
+  int idx, filenr, page_nr;
+  int entries, entry_nr;
+  char *entry[100];  /* entry on screen */
 
   avt_set_text_delay (0);
   avt_normal_text ();
@@ -215,7 +208,8 @@ get_file (char *filename)
   avt_set_balloon_size (0, 0);
 
   max_x = avt_get_max_x ();
-  max_idx = avt_get_max_y () - 1;
+  max_idx = avt_get_max_y () - 1;	/* minus top-line */
+  page_entries = max_idx - 2;	/* minus back and forward entries */
 
   if (HAS_DRIVE_LETTERS)
     if (ask_drive (max_idx + 1))
@@ -245,8 +239,6 @@ start:
   entries = get_directory (&namelist);
   if (entries < 0)
     return rcode;
-
-  pages[page_nr] = entry_nr;
 
   /* entry for parent directory or home */
   if (!HAS_DRIVE_LETTERS && is_root_dir (dirname))
@@ -288,8 +280,6 @@ start:
 	    {
 	      idx = 0;
 	      page_nr++;
-	      if (page_nr > MAXPAGES - 1)
-		page_nr = MAXPAGES - 1;
 
 	      new_page (dirname);
 	      entry[idx] = "";
@@ -299,10 +289,9 @@ start:
 	    }
 	  else if (filenr == 1 && page_nr > 0)	/* back */
 	    {
-	      page_nr--;
-	      entry_nr = pages[page_nr];
-
 	      idx = 0;
+	      page_nr--;
+	      entry_nr = page_nr * page_entries;
 
 	      new_page (dirname);
 	      if (page_nr > 0)
@@ -361,11 +350,7 @@ start:
 	}
 
       avt_new_line ();
-
       idx++;
-      if (idx == max_idx - 1 && page_nr < MAXPAGES - 1)
-	pages[page_nr + 1] = entry_nr;
-
     }
 
   /* free namelist */
