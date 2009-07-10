@@ -96,16 +96,16 @@ new_page (char *dirname)
   avt_move_xy (1, 2);
 }
 
-#if (HAS_SCANDIR)
-#  define get_directory(list) (scandir (".", list, NULL, alphasort))
-#else /* not HAS_SCANDIR */
-
 static int
 compare_dirent (const void *a, const void *b)
 {
   return strcoll ((*(struct dirent **) a)->d_name,
 		  (*(struct dirent **) b)->d_name);
 }
+
+#if (HAS_SCANDIR)
+#  define get_directory(list) (scandir (".", list, NULL, compare_dirent))
+#else /* not HAS_SCANDIR */
 
 static int
 get_directory (struct dirent ***list)

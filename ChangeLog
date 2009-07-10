@@ -1,3 +1,8 @@
+2009-07-10  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtfilechooser.c [HAS_SCANDIR]:
+	always use my "compare_dirent" instead of "alphasort"
+
 2009-07-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtter.c (avtterm_size, avtterm_update_size)
