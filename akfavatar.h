@@ -73,15 +73,17 @@
  */
 #define AVT_SECONDS(x) ((x)*1000)
 
-/*
- * makros for marking deprecated functions in this header,
- * or possibly unused parameters
- */
-#ifdef __GNUC__
+/* macro for marking deprecated functions in this header */
+#if defined (__GNUC__) && ! defined (_AVT_NO_DEPRECATED)
 #  define AVT_DEPRECATED __attribute__ ((__deprecated__))
-#  define AVT_UNUSED __attribute__ ((__unused__))
 #else
 #  define AVT_DEPRECATED
+#endif /* __GNUC__ */
+
+/* macro for marking unused symbols */
+#ifdef __GNUC__
+#  define AVT_UNUSED __attribute__ ((__unused__))
+#else
 #  define AVT_UNUSED
 #endif /* __GNUC__ */
 

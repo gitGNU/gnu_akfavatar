@@ -23,6 +23,9 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+/* don't make functions deprecated for this file */
+#define _AVT_NO_DEPRECATED 1
+
 #include "akfavatar.h"
 #include "SDL.h"
 #include "version.h"
@@ -41,14 +44,6 @@
 
 #define COPYRIGHTYEAR "2009"
 #define BUTTON_DISTANCE 10
-
-/* 
- * avt_wait_key_mb uses avt_wait_key. Both are deprecated.
- * So suppress this warning for this file, if possible.
- */
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2)
-#  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
 
 #if defined(VGA)
 #  define FONTWIDTH 7

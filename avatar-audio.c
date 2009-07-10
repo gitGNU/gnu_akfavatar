@@ -22,6 +22,9 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+/* don't make functions deprecated for this file */
+#define _AVT_NO_DEPRECATED 1
+
 #include "akfavatar.h"
 #include "SDL.h"
 #include "SDL_audio.h"

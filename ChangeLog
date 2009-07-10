@@ -15,6 +15,8 @@
 
 	* akfavatar.h (AVT_API): new macro (for later use)
 
+	* akfavatar.h (AVT_DEPRECATED): improved handling
+
 2009-07-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtter.c (avtterm_size, avtterm_update_size)
