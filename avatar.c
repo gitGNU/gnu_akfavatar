@@ -351,7 +351,7 @@ avt_name_to_color (const char *name, int *red, int *green, int *blue)
   return status;
 }
 
-extern char *
+extern const char *
 avt_get_color_name (int nr)
 {
   const int numcolors = sizeof (avt_colors) / sizeof (avt_colors[0]);

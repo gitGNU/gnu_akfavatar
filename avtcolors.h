@@ -14,7 +14,7 @@ struct avt_color
   Uint8 red;
   Uint8 green;
   Uint8 blue;
-  char *color_name;
+  const char *color_name;
 };
 
 static const struct avt_color avt_colors[] = {

@@ -271,7 +271,7 @@ AVT_API int avt_name_to_color (const char *name,
 			       int *red, int *green, int *blue);
 
 /* get color name of given number, or NULL on error */
-AVT_API char *avt_get_color_name (int nr);
+AVT_API const char *avt_get_color_name (int nr);
 
 /*
  * define the background color

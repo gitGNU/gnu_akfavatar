@@ -17,6 +17,9 @@
 
 	* akfavatar.h (AVT_DEPRECATED): improved handling
 
+	* akfavatar.h, avatar.c (avt_get_color_name):
+	returns const char*
+
 2009-07-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtter.c (avtterm_size, avtterm_update_size)
@@ -1023,7 +1026,7 @@
 
 	* configure:
 	support --enable-link-sdl-image to directly link to SDL_image
-	
+
 	* avatar.c:
 	support LINK_SDL_IMAGE definition
 
@@ -1093,7 +1096,7 @@
 	* version 0.15.0 released
 
 	* akfavatar.h (AVT_DEPRECATED, AVT_UNUSED):
-	new makro used to mark deprecated or unused stuff (gcc only)
+	new macro used to mark deprecated or unused stuff (gcc only)
 
 	* avatarsay.c (get_user_home):
 	new function
@@ -1163,7 +1166,7 @@
 	new functions
 
 	* akfavatar.h, avatar.c (AVT_MAKE_BOOL):
-	new makro
+	new macro
 
 	* akfavatar.h, avatar.c (avt_get_menu):
 	new function
