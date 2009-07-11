@@ -261,7 +261,7 @@ avatarsay-d: avatarsay-d.exe
 avatarsay-s: avatarsay-s.exe
 
 avatarsay.exe: avatarsay-d.exe
-	mv avatarsay-d.exe avatarsay.exe
+	cp avatarsay-d.exe avatarsay.exe
 
 # uses dynamic lib
 avatarsay-d.exe: avatarsay.o avtfilechooser.o avtmsg.o akfavatar.dll \
