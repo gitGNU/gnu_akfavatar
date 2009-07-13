@@ -28,7 +28,7 @@ BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 	clean mostlyclean distclean maintainer-clean maintainerclean dist \
 	mingw
 
-all: libakfavatar.so libakfavatar.a libavtcio.a avatarsay avatarsay-d
+all: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay avatarsay-d
 	@echo '*'
 	@echo '* use "make install" or "make install-strip"'
 	@echo '* with root-privileges to install it.'
@@ -108,19 +108,15 @@ libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo font.lo
 	-ln -sf $(LIBNAME) $(SONAME)
 	-ln -sf $(LIBNAME) libakfavatar.so
 
+example: $(srcdir)/example.c libakfavatar.so
+	$(CC) $(CFLAGS) -I. -o $@ $(srcdir)/example.c \
+	  -L. -lakfavatar $(LDFLAGS) $(LOCAL_GCC_RPATH)
+
 avtccio.o: $(srcdir)/avtccio.c $(srcdir)/avtcio.h $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) -I. -c -o $@ $(srcdir)/avtccio.c
 
 avtcwio.o: $(srcdir)/avtcwio.c $(srcdir)/avtcio.h $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) -I. -c -o $@ $(srcdir)/avtcwio.c
-
-libavtcio.a: avtccio.o avtcwio.o
-	$(AR) rcu $@ avtccio.o avtcwio.o
-	-$(RANLIB) $@
-
-example: $(srcdir)/example.c libakfavatar.so
-	$(CC) $(CFLAGS) -I. -o $@ $(srcdir)/example.c \
-	  -L. -lakfavatar $(LDFLAGS) $(LOCAL_GCC_RPATH)
 
 avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h $(srcdir)/avtterm.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -DPREFIX=\"$(exec_prefix)\" -I. \
@@ -136,25 +132,25 @@ avtmsg.o: $(srcdir)/avtmsg.c $(srcdir)/avtmsg.h
 arch.o: $(srcdir)/arch.c $(srcdir)/arch.h
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/arch.c
 
+libavtaddons.a: avtfilechooser.o avtterm.o arch.o avtccio.o avtcwio.o
+	$(AR) rcu $@ avtfilechooser.o avtterm.o arch.o avtccio.o avtcwio.o
+	-$(RANLIB) $@
+
 # avatarsay dynamically linked
 # only works, when the library is installed
-avatarsay-d: avatarsay.o avtfilechooser.o arch.o avtterm.o avtmsg.o \
-	     libakfavatar.so
-	$(CC) -o $@ avatarsay.o avtfilechooser.o avtterm.o avtmsg.o \
-	  arch.o -L. -lakfavatar $(LDFLAGS) $(AVATARSAY_LDFLAGS)
+avatarsay-d: avatarsay.o avtmsg.o libavtaddons.a libakfavatar.so
+	$(CC) -o $@ avatarsay.o avtmsg.o -L. -lavtaddons -lakfavatar \
+	  $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
 # avatarsay dynamically linked, with local rpath if possible
-avatarsay: avatarsay.o avtfilechooser.o arch.o avtterm.o avtmsg.o \
-	     libakfavatar.so
-	  $(CC) -o $@ avatarsay.o avtfilechooser.o avtterm.o avtmsg.o \
-	    arch.o -L. -lakfavatar $(LDFLAGS) $(AVATARSAY_LDFLAGS) \
-	      $(LOCAL_GCC_RPATH)
+avatarsay: avatarsay.o avtmsg.o libavtaddons.a libakfavatar.so
+	$(CC) -o $@ avatarsay.o avtmsg.o -L. -lavtaddons -lakfavatar \
+	  $(LDFLAGS) $(AVATARSAY_LDFLAGS) $(LOCAL_GCC_RPATH)
 
 # avatarsay with statical libakfavatar.a
-avatarsay-s: avatarsay.o avtfilechooser.o arch.o avtterm.o avtmsg.o \
-	   libakfavatar.a
-	$(CC) -o $@ avatarsay.o arch.o libakfavatar.a avtfilechooser.o \
-	  avtterm.o avtmsg.o $(SDLLDFLAGS) $(LDFLAGS) $(AVATARSAY_LDFLAGS)
+avatarsay-s: avatarsay.o avtmsg.o libavtaddons.a libakfavatar.a
+	$(CC) -o $@ avatarsay.o avtmsg.o -L. -lavtaddons libakfavatar.a \
+	   $(SDLLDFLAGS) $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
 installdirs:
 	-[ -d $(DESTDIR)$(includedir) ]  || $(INSTALL) -d $(DESTDIR)$(includedir)
@@ -288,7 +284,7 @@ clean:
 mostlyclean: clean
 
 distclean: clean
-	-rm -f avatarsay avatarsay-d avatarsay-s 
+	-rm -f avatarsay avatarsay-d avatarsay-s
 	-rm -f example a.out *.a *.so
 	-rm -f $(LIBNAME) $(SONAME)
 	-rm -f config.status

@@ -1,6 +1,6 @@
 /* 
  * avtwindows - windows specific functions for avatarsay
- * Copyright (c) 2007, 2008 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007, 2008, 2009 Andreas K. Foerster <info@akfoerster.de>
  *
  * There is no additional functionality!
  * these functions are almost only replacements for missing POSIX 
@@ -25,7 +25,6 @@
 #include "akfavatar.h"
 #include "avtmsg.h"
 #include <windows.h>
-#include <direct.h>		/* for _chdrive */
 #include <stdlib.h>
 #include <string.h>
 
@@ -83,64 +82,4 @@ get_user_home (char *home_dir, size_t size)
     strcpy (home_dir, "C:\\");
   else				/* worst case */
     home_dir[0] = '\0';
-}
-
-/* ask for drive letter */
-int
-ask_drive (int max_idx)
-{
-  char drive[4] = "X:";
-  int drives[26];
-  int choice;
-  int i, number;
-  int status;
-
-  status = AVT_NORMAL;
-
-  /* what drives are accessible? */
-  number = 0;
-  for (i = 1; i <= 26; i++)
-    {
-      if (!_chdrive (i))
-	{
-	  drives[number] = i;
-	  number++;
-	  /* maximum number of entries reached? */
-	  if (number == max_idx)
-	    break;
-	}
-    }
-
-ask:
-  avt_set_balloon_size (number + 1, 2 * 8 + 1);
-  avt_clear ();
-
-  /* show double arrow up */
-  avt_next_tab ();
-  avt_say (L"\x21D1");
-
-  /* show drives */
-  for (i = 0; i < number; i++)
-    {
-      drive[0] = drives[i] + 'A' - 1;
-      avt_new_line ();
-      avt_next_tab ();
-      avt_say_mb (drive);
-    }
-
-  status = avt_choice (&choice, 1, number + 1, 0, AVT_FALSE, AVT_FALSE);
-
-  if (choice == 1) /* home selected */
-    status = AVT_QUIT;
-
-  if (status == AVT_NORMAL)
-    {
-      if (_chdrive (drives[choice - 1 - 1]) < 0)
-	{
-	  warning_msg (strerror (errno), NULL);
-	  goto ask;
-	}
-    }
-
-  return status;
 }

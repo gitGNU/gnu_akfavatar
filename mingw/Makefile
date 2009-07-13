@@ -32,7 +32,7 @@ default_avatar = $(srcdir)/male_user.xpm
 SHELL = /bin/sh
 .SUFFIXES:
 
-all: akfavatar.dll libakfavatar.a libavtcio.a avatarsay.exe
+all: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe
 
 avtsayinfo.rc: Makefile
 	@{ \
@@ -229,14 +229,25 @@ akfavatar.dll: avatar.o avatar-default.o avatar-audio.o font.o libinfo.o
 	        -Wl,--out-implib,libakfavatar.dll.a \
 	        $(SDLLDFLAGS) $(LDFLAGS)
 
+avtwindows.o: $(srcdir)/mingw/avtwindows.c
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
+	  $(srcdir)/mingw/avtwindows.c
+
+askdrive.o: $(srcdir)/mingw/askdrive.c $(srcdir)/akfavatar.h
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
+	  $(srcdir)/mingw/askdrive.c
+
+arch.o: $(srcdir)/arch.c $(srcdir)/arch.h
+	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/arch.c
+
 avtccio.o: $(srcdir)/avtccio.c $(srcdir)/avtcio.h $(srcdir)/akfavatar.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtccio.c
 
 avtcwio.o: $(srcdir)/avtcwio.c $(srcdir)/avtcio.h $(srcdir)/akfavatar.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtcwio.c
 
-libavtcio.a: avtccio.o avtcwio.o
-	$(AR) rcu $@ avtccio.o avtcwio.o
+libavtaddons.a: avtfilechooser.o askdrive.o arch.o avtccio.o avtcwio.o
+	$(AR) rcu $@ avtfilechooser.o askdrive.o arch.o avtccio.o avtcwio.o
 	-$(RANLIB) $@
 
 avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h
@@ -246,13 +257,6 @@ avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h
 avtmsg.o: $(srcdir)/mingw/avtmsg.c $(srcdir)/avtmsg.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/mingw/avtmsg.c
-
-avtwindows.o: $(srcdir)/mingw/avtwindows.c
-	$(CC) $(SDLCFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
-	  $(srcdir)/mingw/avtwindows.c
-
-arch.o: $(srcdir)/arch.c $(srcdir)/arch.h
-	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/arch.c
 
 avatarsay: avatarsay.exe
 
@@ -264,18 +268,18 @@ avatarsay.exe: avatarsay-d.exe
 	cp avatarsay-d.exe avatarsay.exe
 
 # uses dynamic lib
-avatarsay-d.exe: avatarsay.o avtfilechooser.o avtmsg.o akfavatar.dll \
-	         arch.o avtsayinfo.o avtwindows.o
-	$(CC) $(SDLCFLAGS) $(CFLAGS) -o $@ avatarsay.o avtfilechooser.o \
-	  avtmsg.o avtsayinfo.o arch.o avtwindows.o \
-	  -L. -lakfavatar $(SDLLDFLAGS) $(LDFLAGS)
+avatarsay-d.exe: avatarsay.o avtmsg.o libavtaddons.a akfavatar.dll \
+	         avtwindows.o avtsayinfo.o
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -o $@ avatarsay.o \
+	  avtmsg.o avtwindows.o avtsayinfo.o \
+	  -L. -lavtaddons -lakfavatar $(SDLLDFLAGS) $(LDFLAGS)
 
 # uses static lib
-avatarsay-s.exe: avatarsay.o avtfilechooser.o avtmsg.o libakfavatar.a \
-	       arch.o avtsayinfo.o avtwindows.o
-	$(CC) $(SDLCFLAGS) $(CFLAGS) -o $@ avatarsay.o avtfilechooser.o \
-	  avtmsg.o avtsayinfo.o arch.o avtwindows.o \
-	  libakfavatar.a $(SDLLDFLAGS) $(LDFLAGS)
+avatarsay-s.exe: avatarsay.o avtmsg.o libavtaddons.a libakfavatar.a \
+	       avtwindows.o avtsayinfo.o
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -o $@ avatarsay.o \
+	  avtmsg.o avtwindows.o  avtsayinfo.o\
+	  libavtaddons.a libakfavatar.a $(SDLLDFLAGS) $(LDFLAGS)
 
 example: example.exe
 
