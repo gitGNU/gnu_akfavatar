@@ -246,8 +246,10 @@ avtccio.o: $(srcdir)/avtccio.c $(srcdir)/avtcio.h $(srcdir)/akfavatar.h
 avtcwio.o: $(srcdir)/avtcwio.c $(srcdir)/avtcio.h $(srcdir)/akfavatar.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtcwio.c
 
-libavtaddons.a: avtfilechooser.o askdrive.o arch.o avtccio.o avtcwio.o
-	$(AR) rcu $@ avtfilechooser.o askdrive.o arch.o avtccio.o avtcwio.o
+libavtaddons.a: avtfilechooser.o askdrive.o arch.o \
+                avtccio.o avtcwio.o avtmsg.o
+	$(AR) rcu $@ avtfilechooser.o askdrive.o arch.o \
+	             avtccio.o avtcwio.o avtmsg.o
 	-$(RANLIB) $@
 
 avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h
@@ -255,8 +257,7 @@ avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h
 
 # from the mingw directory!
 avtmsg.o: $(srcdir)/mingw/avtmsg.c $(srcdir)/avtmsg.h
-	$(CC) $(SDLCFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
-	  $(srcdir)/mingw/avtmsg.c
+	$(CC) $(CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/mingw/avtmsg.c
 
 avatarsay: avatarsay.exe
 
@@ -268,17 +269,17 @@ avatarsay.exe: avatarsay-d.exe
 	cp avatarsay-d.exe avatarsay.exe
 
 # uses dynamic lib
-avatarsay-d.exe: avatarsay.o avtmsg.o libavtaddons.a akfavatar.dll \
+avatarsay-d.exe: avatarsay.o libavtaddons.a akfavatar.dll \
 	         avtwindows.o avtsayinfo.o
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -o $@ avatarsay.o \
-	  avtmsg.o avtwindows.o avtsayinfo.o \
+	  avtwindows.o avtsayinfo.o \
 	  -L. -lavtaddons -lakfavatar $(SDLLDFLAGS) $(LDFLAGS)
 
 # uses static lib
-avatarsay-s.exe: avatarsay.o avtmsg.o libavtaddons.a libakfavatar.a \
+avatarsay-s.exe: avatarsay.o libavtaddons.a libakfavatar.a \
 	       avtwindows.o avtsayinfo.o
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -o $@ avatarsay.o \
-	  avtmsg.o avtwindows.o  avtsayinfo.o\
+	  avtwindows.o  avtsayinfo.o \
 	  libavtaddons.a libakfavatar.a $(SDLLDFLAGS) $(LDFLAGS)
 
 example: example.exe

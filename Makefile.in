@@ -132,24 +132,26 @@ avtmsg.o: $(srcdir)/avtmsg.c $(srcdir)/avtmsg.h
 arch.o: $(srcdir)/arch.c $(srcdir)/arch.h
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/arch.c
 
-libavtaddons.a: avtfilechooser.o avtterm.o arch.o avtccio.o avtcwio.o
-	$(AR) rcu $@ avtfilechooser.o avtterm.o arch.o avtccio.o avtcwio.o
+libavtaddons.a: avtfilechooser.o avtterm.o arch.o \
+                avtccio.o avtcwio.o avtmsg.o
+	$(AR) rcu $@ avtfilechooser.o avtterm.o arch.o \
+	             avtccio.o avtcwio.o avtmsg.o
 	-$(RANLIB) $@
 
 # avatarsay dynamically linked
 # only works, when the library is installed
-avatarsay-d: avatarsay.o avtmsg.o libavtaddons.a libakfavatar.so
-	$(CC) -o $@ avatarsay.o avtmsg.o -L. -lavtaddons -lakfavatar \
+avatarsay-d: avatarsay.o libavtaddons.a libakfavatar.so
+	$(CC) -o $@ avatarsay.o -L. -lavtaddons -lakfavatar \
 	  $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
 # avatarsay dynamically linked, with local rpath if possible
-avatarsay: avatarsay.o avtmsg.o libavtaddons.a libakfavatar.so
-	$(CC) -o $@ avatarsay.o avtmsg.o -L. -lavtaddons -lakfavatar \
+avatarsay: avatarsay.o libavtaddons.a libakfavatar.so
+	$(CC) -o $@ avatarsay.o -L. -lavtaddons -lakfavatar \
 	  $(LDFLAGS) $(AVATARSAY_LDFLAGS) $(LOCAL_GCC_RPATH)
 
 # avatarsay with statical libakfavatar.a
-avatarsay-s: avatarsay.o avtmsg.o libavtaddons.a libakfavatar.a
-	$(CC) -o $@ avatarsay.o avtmsg.o -L. -lavtaddons libakfavatar.a \
+avatarsay-s: avatarsay.o libavtaddons.a libakfavatar.a
+	$(CC) -o $@ avatarsay.o -L. -lavtaddons libakfavatar.a \
 	   $(SDLLDFLAGS) $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
 installdirs:
