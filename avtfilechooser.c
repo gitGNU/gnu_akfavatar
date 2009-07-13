@@ -171,7 +171,7 @@ get_directory (struct dirent ***list)
     }
 
   if (closedir (dir) < 0)
-    warning_msg ("closedir", strerror (errno));
+    msg_warning ("closedir", strerror (errno));
 
   if (!mylist)
     return -1;
@@ -188,7 +188,7 @@ get_directory (struct dirent ***list)
  * return -1 on error or 0 on success
  */
 extern int
-get_file (char *filename)
+avtfc_get_file (char *filename)
 {
   int rcode;			/* return code */
   struct dirent *d;
@@ -231,7 +231,7 @@ start:
   idx = 0;
 
   if (!getcwd (dirname, sizeof (dirname)))
-    warning_msg ("getcwd", strerror (errno));
+    msg_warning ("getcwd", strerror (errno));
 
   avt_auto_margin (AVT_FALSE);
   new_page (dirname);
@@ -381,7 +381,7 @@ start:
   if (is_directory (filename))
     {
       if (chdir (filename))
-	warning_msg (filename, "cannot chdir");
+	msg_warning (filename, "cannot chdir");
       goto start;
     }
 

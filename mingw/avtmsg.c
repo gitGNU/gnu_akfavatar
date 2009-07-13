@@ -28,14 +28,14 @@
 #include <stdlib.h>
 
 void
-info_msg (const char *msg)
+msg_info (const char *msg)
 {
   MessageBox (GetActiveWindow (), msg, PRGNAME,
 	      MB_OK | MB_ICONINFORMATION | MB_SETFOREGROUND);
 }
 
 void
-warning_msg (const char *msg1, const char *msg2)
+msg_warning (const char *msg1, const char *msg2)
 {
   char msg[1024];
 
@@ -53,12 +53,12 @@ warning_msg (const char *msg1, const char *msg2)
 
 /* ignore unimportant notices on Windows */
 void
-notice_msg (const char *msg1 AVT_UNUSED, const char *msg2 AVT_UNUSED)
+msg_notice (const char *msg1 AVT_UNUSED, const char *msg2 AVT_UNUSED)
 {
 }
 
 void
-error_msg (const char *msg1, const char *msg2)
+msg_error (const char *msg1, const char *msg2)
 {
   char msg[1024];
 

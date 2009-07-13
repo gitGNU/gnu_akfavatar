@@ -41,12 +41,12 @@ AVT_BEGIN_DECLS
  * before calling them.
  **********************************************************************/
 
-int avt_vprintf (const char *format, va_list ap);
-int avt_printf (const char *format, ...);
-int avt_putchar (int c);
-int avt_puts (const char *s);
-int avt_vscanf (const char *format, va_list ap);
-int avt_scanf (const char *format, ...);
+int avtccio_vprintf (const char *format, va_list ap);
+int avtccio_printf (const char *format, ...);
+int avtccio_putchar (int c);
+int avtccio_puts (const char *s);
+int avtccio_vscanf (const char *format, va_list ap);
+int avtccio_scanf (const char *format, ...);
 
 /**********************************************************************
  * Section: avtcwio
@@ -58,12 +58,12 @@ int avt_scanf (const char *format, ...);
  * before calling them.
  **********************************************************************/
 
-int avt_vwprintf (const wchar_t * format, va_list ap);
-int avt_wprintf (const wchar_t * format, ...);
-wint_t avt_putwchar (wchar_t c);
-int avt_putws (const wchar_t * s);
-int avt_vwscanf (const wchar_t * format, va_list ap);
-int avt_wscanf (const wchar_t * format, ...);
+int avtcwio_vwprintf (const wchar_t * format, va_list ap);
+int avtcwio_wprintf (const wchar_t * format, ...);
+wint_t avtcwio_putwchar (wchar_t c);
+int avtcwio_putws (const wchar_t * s);
+int avtcwio_vwscanf (const wchar_t * format, va_list ap);
+int avtcwio_wscanf (const wchar_t * format, ...);
 
 
 /**********************************************************************
@@ -78,10 +78,10 @@ int avt_wscanf (const wchar_t * format, ...);
  * the second one may simply be NULL if you don't need it
  */
 
-void info_msg(const char *msg);
-void warning_msg (const char *msg1, const char *msg2);
-void notice_msg (const char *msg1, const char *msg2);
-void error_msg (const char *msg1, const char *msg2);
+void msg_info(const char *msg);
+void msg_warning (const char *msg1, const char *msg2);
+void msg_notice (const char *msg1, const char *msg2);
+void msg_error (const char *msg1, const char *msg2);
 
 /**********************************************************************
  * Section: avtfilechooser
@@ -89,7 +89,7 @@ void error_msg (const char *msg1, const char *msg2);
  **********************************************************************/
 
 /* starts in working directory; return -1 on error or 0 on success */
-int get_file (char *filename);
+int avtfc_get_file (char *filename);
 
 /**********************************************************************
  * Section: arch

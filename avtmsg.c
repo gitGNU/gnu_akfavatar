@@ -23,18 +23,18 @@
 #include <stdlib.h>		/* exit */
 
 void
-info_msg (const char *msg)
+msg_info (const char *msg)
 {
   puts (msg);
 }
 
-/* 
- * "warning_msg", "notice_msg" and "error_msg" take 2 message strings
+/*
+ * "msg_warning", "msg_notice" and "msg_error" take 2 message strings
  * the second one may simply be NULL if you don't need it
  */
 
 void
-warning_msg (const char *msg1, const char *msg2)
+msg_warning (const char *msg1, const char *msg2)
 {
   if (msg2)
     fprintf (stderr, PRGNAME ": %s: %s\n", msg1, msg2);
@@ -43,14 +43,14 @@ warning_msg (const char *msg1, const char *msg2)
 }
 
 void
-notice_msg (const char *msg1, const char *msg2)
+msg_notice (const char *msg1, const char *msg2)
 {
-  warning_msg (msg1, msg2);
+  msg_warning (msg1, msg2);
 }
 
 void
-error_msg (const char *msg1, const char *msg2)
+msg_error (const char *msg1, const char *msg2)
 {
-  warning_msg (msg1, msg2);
+  msg_warning (msg1, msg2);
   exit (EXIT_FAILURE);
 }

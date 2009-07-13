@@ -41,8 +41,8 @@
    || defined (__FreeBSD__) || defined (__DragonFly__) \
    || defined (__NetBSD__)  || defined (__OpenBSD__)
 
-int
-avt_vprintf (const char *format, va_list ap)
+extern int
+avtccio_vprintf (const char *format, va_list ap)
 {
   char *strp;
   int n;
@@ -60,8 +60,8 @@ avt_vprintf (const char *format, va_list ap)
 
 #else /* not __USE_GNU */
 
-int
-avt_vprintf (const char *format, va_list ap)
+extern int
+avtccio_vprintf (const char *format, va_list ap)
 {
   char str[AVT_PRINTF_MAXLEN];
   int n;
@@ -82,8 +82,8 @@ avt_vprintf (const char *format, va_list ap)
 
 #endif /* not __USE_GNU */
 
-int
-avt_printf (const char *format, ...)
+extern int
+avtccio_printf (const char *format, ...)
 {
   va_list ap;
   int n;
@@ -95,15 +95,15 @@ avt_printf (const char *format, ...)
   return n;
 }
 
-int
-avt_putchar (int c)
+extern int
+avtccio_putchar (int c)
 {
   avt_say_mb_len ((char *) &c, 1);
   return c;
 }
 
-int
-avt_puts (const char *s)
+extern int
+avtccio_puts (const char *s)
 {
   avt_say_mb (s);
   avt_new_line ();
@@ -112,8 +112,8 @@ avt_puts (const char *s)
   return 1;
 }
 
-int
-avt_vscanf (const char *format, va_list ap)
+extern int
+avtccio_vscanf (const char *format, va_list ap)
 {
   char str[4 * AVT_LINELENGTH];
 
@@ -121,8 +121,8 @@ avt_vscanf (const char *format, va_list ap)
   return vsscanf (str, format, ap);
 }
 
-int
-avt_scanf (const char *format, ...)
+extern int
+avtccio_scanf (const char *format, ...)
 {
   va_list ap;
   int n;

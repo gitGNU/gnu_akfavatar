@@ -246,12 +246,12 @@ showversion (void)
   switch (language)
     {
     case DEUTSCH:
-      info_msg (version_info_de);
+      msg_info (version_info_de);
       break;
 
     case ENGLISH:
     default:
-      info_msg (version_info_en);
+      msg_info (version_info_en);
     }
 
   exit (EXIT_SUCCESS);
@@ -380,12 +380,12 @@ set_encoding (const char *encoding)
 {
   if (avt_mb_encoding (encoding))
     {
-      warning_msg ("iconv", avt_get_error ());
+      msg_warning ("iconv", avt_get_error ());
 
       /* try a fallback */
       avt_set_status (AVT_NORMAL);
       if (avt_mb_encoding ("US-ASCII"))
-	error_msg ("iconv", avt_get_error ());
+	msg_error ("iconv", avt_get_error ());
     }
 }
 
@@ -428,12 +428,12 @@ initialize (void)
     switch (language)
       {
       case DEUTSCH:
-	error_msg ("kann Grafik nicht initialisieren", avt_get_error ());
+	msg_error ("kann Grafik nicht initialisieren", avt_get_error ());
 	break;
 
       case ENGLISH:
       default:
-	error_msg ("cannot initialize graphics", avt_get_error ());
+	msg_error ("cannot initialize graphics", avt_get_error ());
       }
 
   /* we don't need it anymore */
@@ -447,12 +447,12 @@ initialize (void)
     switch (language)
       {
       case DEUTSCH:
-	error_msg ("kann Audio nicht initialisieren", avt_get_error ());
+	msg_error ("kann Audio nicht initialisieren", avt_get_error ());
 	break;
 
       case ENGLISH:
       default:
-	error_msg ("cannot initialize audio", avt_get_error ());
+	msg_error ("cannot initialize audio", avt_get_error ());
       }
 
   avt_set_text_delay (default_delay);
@@ -599,21 +599,21 @@ checkoptions (int argc, char **argv)
 	  switch (language)
 	    {
 	    case DEUTSCH:
-	      error_msg ("interner Fehler", "Option wird nicht unterstuetzt");
+	      msg_error ("interner Fehler", "Option wird nicht unterstuetzt");
 	      break;
 
 	    case ENGLISH:
 	    default:
-	      error_msg ("internal error", "option not supported");
+	      msg_error ("internal error", "option not supported");
 	    }			/* switch (language) */
 	}			/* switch (c) */
     }				/* while (1) */
 
   if (terminal_mode && argc > optind)
-    error_msg ("error", "no files allowed for terminal mode");
+    msg_error ("error", "no files allowed for terminal mode");
 
   if (executable && argc <= optind)
-    error_msg ("error", "execute needs at least a program name");
+    msg_error ("error", "execute needs at least a program name");
 
   if (argc > optind
       && (strcmp (argv[optind], "moo") == 0
@@ -642,7 +642,7 @@ checkoptions (int argc, char **argv)
       int i;
       for (i = optind; i < argc; i++)
 	if (strcmp (argv[i], "-") == 0)
-	  error_msg ("error", "filenames and \"-\" can not be combined");
+	  msg_error ("error", "filenames and \"-\" can not be combined");
     }
 }
 
@@ -664,12 +664,12 @@ use_avatar_image (char *image_file)
     switch (language)
       {
       case DEUTSCH:
-	error_msg ("Fehler beim Laden des AVATARIMAGE Bildes",
+	msg_error ("Fehler beim Laden des AVATARIMAGE Bildes",
 		   avt_get_error ());
 	break;
       case ENGLISH:
       default:
-	error_msg ("error while loading the AVATARIMAGE", avt_get_error ());
+	msg_error ("error while loading the AVATARIMAGE", avt_get_error ());
       }
 
   avatar_changed = AVT_FALSE;
@@ -687,7 +687,7 @@ restore_avatar_image (void)
     img = avt_default ();
 
   if (avt_change_avatar_image (img))
-    error_msg (avt_image_name, "cannot load file");
+    msg_error (avt_image_name, "cannot load file");
 
   avatar_changed = AVT_FALSE;
 }
@@ -716,7 +716,7 @@ get_data_file (const wchar_t * fn, char filepath[])
   result = wcstombs (filepath, fn, PATH_LENGTH - 1);
 
   if (result == (size_t) (-1))
-    error_msg ("wcstombs", strerror (errno));
+    msg_error ("wcstombs", strerror (errno));
 }
 
 /* read in a file */
@@ -815,7 +815,7 @@ check_encoding (const char *buf)
     if (enc != NULL && (enc == buf || *(enc - 1) == '\n'))
       {
 	if (sscanf (enc, "[ encoding %79s ]", (char *) &temp) <= 0)
-	  warning_msg ("[encoding]", NULL);
+	  msg_warning ("[encoding]", NULL);
 	else
 	  {
 	    char *closing_bracket;
@@ -937,7 +937,7 @@ get_character (int fd)
 	  if (read_error_is_eof)
 	    wcbuf_len = -1;
 	  else
-	    error_msg ("error while reading from file", strerror (errno));
+	    msg_error ("error while reading from file", strerror (errno));
 	}
       else			/* nread != -1 */
 	{
@@ -1008,10 +1008,10 @@ static void
 archive_failure (const char *name)
 {
   if (strlen (name) > 15)
-    error_msg (name, "names of archive members may not be "
+    msg_error (name, "names of archive members may not be "
 	       "longer then 15 characters");
   else
-    error_msg (name, "not found in archive");
+    msg_error (name, "not found in archive");
 }
 
 static void
@@ -1026,7 +1026,7 @@ handle_title_command (const wchar_t * s)
   /* FIXME: The title in SDL is always UTF-8 encoded,
      independent from the systems encoding */
   if (wcstombs (newtitle, s, sizeof (newtitle)) == (size_t) (-1))
-    error_msg ("wcstombs", strerror (errno));
+    msg_error ("wcstombs", strerror (errno));
 
   if (newtitle[0])
     {
@@ -1138,7 +1138,7 @@ change_avatar_image (avt_image_t * newavatar)
     {
       if (avt_change_avatar_image (newavatar) == AVT_ERROR)
 	{
-	  warning_msg ("avatarimage", avt_get_error ());
+	  msg_warning ("avatarimage", avt_get_error ());
 	  avt_set_status (AVT_NORMAL);
 	}
 
@@ -1175,7 +1175,7 @@ handle_avatarimage_command (const wchar_t * s)
       if (arch_get_data (from_archive, filepath, &img, &size))
 	{
 	  if (!(newavatar = avt_import_image_data (img, size)))
-	    warning_msg ("warning", avt_get_error ());
+	    msg_warning ("warning", avt_get_error ());
 	  free (img);
 	}
       else
@@ -1184,7 +1184,7 @@ handle_avatarimage_command (const wchar_t * s)
   else				/* not from_archive */
     {
       if (!(newavatar = avt_import_image_file (filepath)))
-	warning_msg ("warning", avt_get_error ());
+	msg_warning ("warning", avt_get_error ());
     }
 
   if (newavatar)
@@ -1202,7 +1202,7 @@ handle_backgroundcolor_command (const wchar_t * s)
       background_color_changed = AVT_TRUE;
     }
   else
-    error_msg ("[backgroundcolor]", NULL);
+    msg_error ("[backgroundcolor]", NULL);
 }
 
 static void
@@ -1213,7 +1213,7 @@ handle_textcolor_command (const wchar_t * s)
   if (wcstombs (line, s, sizeof (line)) != (size_t) (-1))
       avt_set_text_color_name (line);
   else
-    error_msg ("[textcolor]", NULL);
+    msg_error ("[textcolor]", NULL);
 }
 
 static void
@@ -1227,7 +1227,7 @@ handle_ballooncolor_command (const wchar_t * s)
       balloon_color_changed = AVT_TRUE;
     }
   else
-    error_msg ("[ballooncolor]", NULL);
+    msg_error ("[ballooncolor]", NULL);
 }
 
 #define check_audio_head(buf) \
@@ -1280,14 +1280,14 @@ handle_loadaudio_command (const wchar_t * s)
 	    }
 	  else
 	    {
-	      notice_msg ("can not load audio data", filepath);
+	      msg_notice ("can not load audio data", filepath);
 	      return;
 	    }
 	}
     }
 
   if (sound == NULL)
-    notice_msg ("can not load audio data", avt_get_error ());
+    msg_notice ("can not load audio data", avt_get_error ());
 }
 
 static void
@@ -1303,7 +1303,7 @@ handle_rawaudiosettings_command (const wchar_t * s)
 
   if (result != 3)
     {
-      warning_msg ("rawaudiosettings",
+      msg_warning ("rawaudiosettings",
 		   "warning: one of 'type, rate, channels' missing");
       return;
     }
@@ -1332,7 +1332,7 @@ handle_rawaudiosettings_command (const wchar_t * s)
     raw_audio.type = AVT_AUDIO_ALAW;
   else
     {
-      warning_msg ("rawaudiosettings", "unknown audio type");
+      msg_warning ("rawaudiosettings", "unknown audio type");
       return;
     }
 
@@ -1342,7 +1342,7 @@ handle_rawaudiosettings_command (const wchar_t * s)
   else if (strcmp (channels, "stereo") == 0)
     raw_audio.channels = AVT_AUDIO_STEREO;
   else
-    warning_msg ("rawaudiosettings", "must be either mono or stereo");
+    msg_warning ("rawaudiosettings", "must be either mono or stereo");
 }
 
 static void
@@ -1357,7 +1357,7 @@ handle_playaudio_command (avt_bool_t do_loop)
     }
 
   if (avt_play_audio (sound, do_loop))
-    notice_msg ("can not play audio data", avt_get_error ());
+    msg_notice ("can not play audio data", avt_get_error ());
 }
 
 static void
@@ -1491,7 +1491,7 @@ avatar_command (wchar_t * s, int *stop)
       char directory[PATH_LENGTH];
       get_data_file (s + 8, directory);
       if (chdir (directory))
-	warning_msg ("chdir", strerror (errno));
+	msg_warning ("chdir", strerror (errno));
       return;
     }
 
@@ -2172,7 +2172,7 @@ process_script (int fd)
     }
 
   if (close (fd) == -1 && errno != EAGAIN)
-    warning_msg ("close", strerror (errno));
+    msg_warning ("close", strerror (errno));
 
   if (from_archive)
     {
@@ -2183,7 +2183,7 @@ process_script (int fd)
   if (avt_get_status () == AVT_ERROR)
     {
       stop = 1;
-      warning_msg ("AKFAvatar", avt_get_error ());
+      msg_warning ("AKFAvatar", avt_get_error ());
     }
 
   /* end or stop command not of interrest outside here */
@@ -2199,7 +2199,7 @@ ask_file (void)
 {
   char filename[256];
 
-  get_file (filename);
+  avtfc_get_file (filename);
 
   /* ignore quit-requests */
   /* (used to get out of the file dialog) */
@@ -2336,7 +2336,7 @@ run_info (void)
 
   if (start_dir)
     if (chdir (start_dir))
-      warning_msg ("chdir", strerror (errno));
+      msg_warning ("chdir", strerror (errno));
 
   if (language == DEUTSCH)
     {
@@ -2526,7 +2526,7 @@ ask_edit_file (void)
   avt_set_text_delay (0);
 
   if (chdir (start_dir))
-    warning_msg ("chdir", strerror (errno));
+    msg_warning ("chdir", strerror (errno));
 
   /* show directory and prompt */
   avt_say_mb (start_dir);
@@ -2830,7 +2830,7 @@ change_directory_of_file (const char *fname)
       p++;
       *p = '\0';		/* terminate after slash */
       if (chdir (directory))
-	warning_msg ("chdir", strerror (errno));
+	msg_warning ("chdir", strerror (errno));
     }
 }
 
@@ -2852,7 +2852,7 @@ run_script (char *fname)
     }
 
   if (status < 0)
-    error_msg ("error opening file", fname);
+    msg_error ("error opening file", fname);
   else if (status == 1)		/* halt requested */
     exit (EXIT_SUCCESS);
   else if (status > 1)		/* problem with libakfavatar */
@@ -2861,7 +2861,7 @@ run_script (char *fname)
   avt_set_scroll_mode (1);
 
   if (chdir (start_dir))
-    warning_msg ("chdir", strerror (errno));
+    msg_warning ("chdir", strerror (errno));
 
   if (avt_flip_page ())
     exit (EXIT_SUCCESS);

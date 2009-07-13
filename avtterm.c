@@ -140,16 +140,16 @@ set_encoding (const char *encoding)
   if (vt100graphics)
     {
       if (avt_mb_encoding ("US-ASCII"))
-	error_msg ("iconv", avt_get_error ());
+	msg_error ("iconv", avt_get_error ());
     }
   else if (avt_mb_encoding (encoding))
     {
-      warning_msg ("iconv", avt_get_error ());
+      msg_warning ("iconv", avt_get_error ());
 
       /* try a fallback */
       avt_set_status (AVT_NORMAL);
       if (avt_mb_encoding ("US-ASCII"))
-	error_msg ("iconv", avt_get_error ());
+	msg_error ("iconv", avt_get_error ());
     }
 }
 
@@ -1189,7 +1189,7 @@ CSI_sequence (int fd, wchar_t last_character)
 
 #ifdef DEBUG
     default:
-      warning_msg (CSI_UNUPPORTED, sequence);
+      msg_warning (CSI_UNUPPORTED, sequence);
 #endif
     }
 }
@@ -1482,7 +1482,7 @@ avtterm_run (int fd)
 
   /* close file descriptor */
   if (close (fd) == -1 && errno != EAGAIN)
-    warning_msg ("close", strerror (errno));
+    msg_warning ("close", strerror (errno));
 
   /* just to prevent zombies */
   wait (NULL);

@@ -77,7 +77,7 @@ ask:
     {
       if (_chdrive (drives[choice - 1 - 1]) < 0)
 	{
-	  warning_msg (strerror (errno), NULL);
+	  msg_warning (strerror (errno), NULL);
 	  goto ask;
 	}
     }
