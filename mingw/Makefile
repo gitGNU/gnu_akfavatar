@@ -257,7 +257,8 @@ avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h
 
 # from the mingw directory!
 avtmsg.o: $(srcdir)/mingw/avtmsg.c $(srcdir)/avtmsg.h
-	$(CC) $(CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/mingw/avtmsg.c
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
+	  $(srcdir)/mingw/avtmsg.c
 
 avatarsay: avatarsay.exe
 
