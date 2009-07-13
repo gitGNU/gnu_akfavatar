@@ -20,7 +20,7 @@
  */
 
 #include "akfavatar.h"
-#include "avtmsg.h"
+#include "avtaddons.h"
 #include <direct.h>             /* for _chdrive */
 #include <string.h>
 #include <errno.h>

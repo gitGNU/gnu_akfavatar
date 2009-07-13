@@ -19,7 +19,7 @@
 #define _BSD_SOURCE
 
 #include "akfavatar.h"
-#include "avtmsg.h"
+#include "avtaddons.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

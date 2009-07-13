@@ -56,7 +56,8 @@ $(srcdir)/bell.au: $(srcdir)/bell.flac
 bell.c: $(srcdir)/bell.au bin2c
 	./bin2c avt_bell_data < $(srcdir)/bell.au > $@
 
-avtfilechooser.o: $(srcdir)/avtfilechooser.c $(srcdir)/akfavatar.h
+avtfilechooser.o: $(srcdir)/avtfilechooser.c \
+                  $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtfilechooser.c
 
 avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h avtcolors.h \
@@ -112,24 +113,24 @@ example: $(srcdir)/example.c libakfavatar.so
 	$(CC) $(CFLAGS) -I. -o $@ $(srcdir)/example.c \
 	  -L. -lakfavatar $(LDFLAGS) $(LOCAL_GCC_RPATH)
 
-avtccio.o: $(srcdir)/avtccio.c $(srcdir)/avtcio.h $(srcdir)/akfavatar.h
+avtccio.o: $(srcdir)/avtccio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) -I. -c -o $@ $(srcdir)/avtccio.c
 
-avtcwio.o: $(srcdir)/avtcwio.c $(srcdir)/avtcio.h $(srcdir)/akfavatar.h
+avtcwio.o: $(srcdir)/avtcwio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) -I. -c -o $@ $(srcdir)/avtcwio.c
 
-avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h $(srcdir)/avtterm.h
+avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -DPREFIX=\"$(exec_prefix)\" -I. \
 	  -c -o $@ $(srcdir)/avatarsay.c
 
-avtterm.o: $(srcdir)/avtterm.c $(srcdir)/avtterm.h $(srcdir)/akfavatar.h
+avtterm.o: $(srcdir)/avtterm.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -DPREFIX=\"$(exec_prefix)\" -I. \
 	  -c -o $@ $(srcdir)/avtterm.c
 
-avtmsg.o: $(srcdir)/avtmsg.c $(srcdir)/avtmsg.h
+avtmsg.o: $(srcdir)/avtmsg.c $(srcdir)/avtaddons.h
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/avtmsg.c
 
-arch.o: $(srcdir)/arch.c $(srcdir)/arch.h
+arch.o: $(srcdir)/arch.c $(srcdir)/avtaddons.h
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/arch.c
 
 libavtaddons.a: avtfilechooser.o avtterm.o arch.o \
@@ -164,7 +165,7 @@ installdirs:
 
 install: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info install-man
 	$(INSTALL_DATA) $(srcdir)/akfavatar.h $(DESTDIR)$(includedir)
-	$(INSTALL_DATA) $(srcdir)/avtcio.h $(DESTDIR)$(includedir)
+	$(INSTALL_DATA) $(srcdir)/avtaddons.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) $(LIBNAME) $(DESTDIR)$(libdir)
 	-ln -sf $(LIBNAME) $(DESTDIR)$(libdir)/libakfavatar.so
 	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
@@ -180,7 +181,7 @@ install: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info ins
 
 install-strip: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info install-man
 	$(INSTALL_DATA) $(srcdir)/akfavatar.h $(DESTDIR)$(includedir)
-	$(INSTALL_DATA) $(srcdir)/avtcio.h $(DESTDIR)$(includedir)
+	$(INSTALL_DATA) $(srcdir)/avtaddons.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) -s $(LIBNAME) $(DESTDIR)$(libdir)
 	-ln -sf $(LIBNAME) $(DESTDIR)$(libdir)/libakfavatar.so
 	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
@@ -200,7 +201,8 @@ install-desktop-menu: $(srcdir)/akfavatar.xpm $(srcdir)/akfoerster-avatarsay.des
 
 uninstall: uninstall-info uninstall-man
 	-rm -f $(includedir)/akfavatar.h
-	-rm -f $(includedir)/avtcio.h
+	-rm -f $(includedir)/avtaddons.h
+	-rm -f $(includedir)/avtcio.h # from old installations
 	-rm -f $(libdir)/$(LIBNAME)
 	-rm -f $(libdir)/$(SONAME)
 	-rm -f $(libdir)/libakfavatar.so
@@ -324,12 +326,11 @@ dist: info html man distclean
 	mkdir $(PKGNAME)
 	ln README INSTALL AUTHORS COPYING ChangeLog lrun \
 	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
-	   avtccio.c avtcwio.c avtcio.h avtfilechooser.c \
+	   avtccio.c avtcwio.c avtaddons.h avtfilechooser.c \
 	   balloonpointer.xpm circle.xpm gnu-head.xpm \
 	   male_user.xpm female_user.xpm \
 	   btn.xpm btn-cont.xpm btn-no.xpm btn-yes.xpm \
-	   avatarsay.c avtterm.h avtterm.c avtmsg.h avtmsg.c \
-	   arch.h arch.c avtcolors.h \
+	   avatarsay.c avtterm.c avtmsg.c arch.c avtcolors.h \
 	   avtman avtcmd example.c fsdemo-?? \
 	   gnome-akfavatar akfoerster-avatarsay.desktop bdfread.c \
 	   akfavatar.xpm info.xpm bin2c.c \

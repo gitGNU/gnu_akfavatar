@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "avtmsg.h"
+#include "avtaddons.h"
 #include <stdio.h>
 #include <stdlib.h>		/* exit */
 

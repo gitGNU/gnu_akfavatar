@@ -196,7 +196,8 @@ bell.c: $(srcdir)/bell.au bin2c
 avatar-default.o: $(srcdir)/avatar-default.c $(default_avatar)
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avatar-default.c
 
-avtfilechooser.o: $(srcdir)/avtfilechooser.c $(srcdir)/akfavatar.h
+avtfilechooser.o: $(srcdir)/avtfilechooser.c \
+	          $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtfilechooser.c
 
 avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/version.h \
@@ -233,17 +234,18 @@ avtwindows.o: $(srcdir)/mingw/avtwindows.c
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/mingw/avtwindows.c
 
-askdrive.o: $(srcdir)/mingw/askdrive.c $(srcdir)/akfavatar.h
+askdrive.o: $(srcdir)/mingw/askdrive.c \
+	    $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/mingw/askdrive.c
 
-arch.o: $(srcdir)/arch.c $(srcdir)/arch.h
-	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/arch.c
+arch.o: $(srcdir)/arch.c $(srcdir)/avtaddons.h
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/arch.c
 
-avtccio.o: $(srcdir)/avtccio.c $(srcdir)/avtcio.h $(srcdir)/akfavatar.h
+avtccio.o: $(srcdir)/avtccio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtccio.c
 
-avtcwio.o: $(srcdir)/avtcwio.c $(srcdir)/avtcio.h $(srcdir)/akfavatar.h
+avtcwio.o: $(srcdir)/avtcwio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtcwio.c
 
 libavtaddons.a: avtfilechooser.o askdrive.o arch.o \
@@ -256,7 +258,7 @@ avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avatarsay.c
 
 # from the mingw directory!
-avtmsg.o: $(srcdir)/mingw/avtmsg.c $(srcdir)/avtmsg.h
+avtmsg.o: $(srcdir)/mingw/avtmsg.c $(srcdir)/avtaddons.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/mingw/avtmsg.c
 
@@ -291,14 +293,14 @@ example.exe: $(srcdir)/example.c akfavatar.dll icon.o
 
 install: akfavatar.dll libakfavatar.a
 	install -m 644 $(srcdir)/akfavatar.h $(includedir)
-	install -m 644 $(srcdir)/avtcio.h $(includedir)
+	install -m 644 $(srcdir)/avtaddons.h $(includedir)
 	install -m 644 libakfavatar.a libakfavatar.dll.a $(libdir)
 	install -m 644 libavtaddons.a $(libdir)
 	install -m 644 akfavatar.dll $(libdir)
 
 install-strip: akfavatar.dll libakfavatar.a
 	install -m 644 $(srcdir)/akfavatar.h $(includedir)
-	install -m 644 $(srcdir)/avtcio.h $(includedir)
+	install -m 644 $(srcdir)/avtaddons.h $(includedir)
 	install -m 644 libakfavatar.a libakfavatar.dll.a $(libdir)
 	install -m 644 libavtaddons.a $(libdir)
 	install -m 644 -s akfavatar.dll $(libdir)

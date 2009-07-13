@@ -24,8 +24,7 @@
 
 #include "version.h"
 #include "akfavatar.h"
-#include "arch.h"
-#include "avtmsg.h"
+#include "avtaddons.h"
 #include <wchar.h>
 #include <wctype.h>
 #include <unistd.h>
@@ -61,7 +60,6 @@
 #endif
 
 #ifndef NO_PTY
-#  include "avtterm.h"
 #  include <sys/wait.h>
 #  include <pwd.h>
 #else
@@ -2199,7 +2197,6 @@ process_script (int fd)
 static void
 ask_file (void)
 {
-  extern int get_file (char *filename);
   char filename[256];
 
   get_file (filename);

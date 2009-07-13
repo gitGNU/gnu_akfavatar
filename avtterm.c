@@ -22,10 +22,9 @@
 #  define _GNU_SOURCE
 #endif
 
-#include "avtterm.h"
-#include "avtmsg.h"
-#include "version.h"
 #include "akfavatar.h"
+#include "avtaddons.h"
+#include "version.h"
 #include <wchar.h>
 #include <unistd.h>
 #include <fcntl.h>

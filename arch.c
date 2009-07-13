@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "arch.h"
+#include "avtaddons.h"
 
 /*
  * some weird systems needs O_BINARY, most others not

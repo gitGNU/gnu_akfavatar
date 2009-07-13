@@ -23,7 +23,7 @@
  */
 
 #include "akfavatar.h"
-#include "avtmsg.h"
+#include "avtaddons.h"
 #include <windows.h>
 #include <stdlib.h>
 #include <string.h>
