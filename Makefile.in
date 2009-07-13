@@ -168,7 +168,7 @@ install: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info ins
 	$(INSTALL_DATA) $(LIBNAME) $(DESTDIR)$(libdir)
 	-ln -sf $(LIBNAME) $(DESTDIR)$(libdir)/libakfavatar.so
 	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
-	$(INSTALL_DATA) libavtcio.a $(DESTDIR)$(libdir)
+	$(INSTALL_DATA) libavtaddons.a $(DESTDIR)$(libdir)
 	-$(LDCONFIG) $(libdir)
 	$(INSTALL_PROGRAM) avatarsay-d $(DESTDIR)$(bindir)/avatarsay
 	$(INSTALL_PROGRAM) $(srcdir)/avtman $(DESTDIR)$(bindir)
@@ -184,7 +184,7 @@ install-strip: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-in
 	$(INSTALL_DATA) -s $(LIBNAME) $(DESTDIR)$(libdir)
 	-ln -sf $(LIBNAME) $(DESTDIR)$(libdir)/libakfavatar.so
 	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
-	$(INSTALL_DATA) libavtcio.a $(DESTDIR)$(libdir)
+	$(INSTALL_DATA) libavtaddons.a $(DESTDIR)$(libdir)
 	-$(LDCONFIG) $(libdir)
 	$(INSTALL_PROGRAM) -s avatarsay-d $(DESTDIR)$(bindir)/avatarsay
 	$(INSTALL_PROGRAM) $(srcdir)/avtman $(DESTDIR)$(bindir)
@@ -205,7 +205,8 @@ uninstall: uninstall-info uninstall-man
 	-rm -f $(libdir)/$(SONAME)
 	-rm -f $(libdir)/libakfavatar.so
 	-rm -f $(libdir)/libakfavatar.a
-	-rm -f $(libdir)/libavtcio.a
+	-rm -f $(libdir)/libavtaddons.a
+	-rm -f $(libdir)/libavtcio.a # from old installations
 	-rm -f $(bindir)/avatarsay
 	-rm -f $(bindir)/avtman
 	-rm -f $(bindir)/gnome-akfavatar
