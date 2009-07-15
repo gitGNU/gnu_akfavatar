@@ -42,10 +42,8 @@ AVT_BEGIN_DECLS
  * Section: avtccio
  * C-specific functions for input/output
  *
- * the calling program must have used avt_initialize before calling 
- * any of these functions.
- * Some of these functions also require avt_mb_encoding to be used 
- * before calling them.
+ * the calling program must have used avt_initialize and
+ * avt_mb_encoding  before calling any of these functions.
  **********************************************************************/
 
 int avtccio_vprintf (const char *format, va_list ap);
@@ -61,8 +59,6 @@ int avtccio_scanf (const char *format, ...);
  *
  * the calling program must have used avt_initialize before calling 
  * any of these functions.
- * Some of these functions also require avt_mb_encoding to be used 
- * before calling them.
  **********************************************************************/
 
 int avtcwio_vwprintf (const wchar_t * format, va_list ap);
@@ -107,7 +103,7 @@ void msg_error (const char *msg1, const char *msg2);
  * file-chooser for AKFAvatar
  **********************************************************************/
 
-/* starts in working directory; return -1 on error or 0 on success */
+/* starts in working directory; returns 0 on success or -1 on error */
 int avtfc_get_file (char *filename);
 
 /**********************************************************************
@@ -121,7 +117,7 @@ int avtfc_get_file (char *filename);
  */
 int arch_open (const char *archive);
 
-/* 
+/*
  * finds a member in the archive 
  * and leaves the fileposition at its start
  * the member name may not be longer than 15 characters 
@@ -129,7 +125,7 @@ int arch_open (const char *archive);
  */
 size_t arch_find_member (int fd, const char *member);
 
-/* 
+/*
  * finds first archive member
  * and leaves the fileposition at its start
  * if member is not NULL it will get the name of the member
@@ -138,7 +134,7 @@ size_t arch_find_member (int fd, const char *member);
  */
 size_t arch_first_member (int fd, char *member);
 
-/* 
+/*
  * read in whole member of a named archive
  * the member name may not be longer than 15 characters 
  * the buffer is allocated with malloc and must be freed by the caller
@@ -159,7 +155,7 @@ size_t arch_get_data (const char *archive, const char *member,
  * execute a subprocess, visible in the balloon
  * if prg_argv == NULL, start a shell
  * returns file-descriptor for output of the process
- * or -1 on error 
+ * or -1 on error
  */
 int avtterm_start (const char *system_encoding, const char *working_dir,
 		   char *const prg_argv[]);
