@@ -18,6 +18,13 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ * This library is not so strictly handled as the main library.
+ * This library uses the libc directly and can use system-specific
+ * functions.
+ * Not all parts of this library are available on all platforms!
+ */
+
 #ifndef _AVTADDONS_H
 #define _AVTADDONS_H
 
@@ -74,13 +81,25 @@ int avtcwio_wscanf (const wchar_t * format, ...);
 #define PRGNAME "avatarsay"
 
 /*
+ * the output takes place on stderr when this exists
+ * or in message boxes on some other systems
+ */
+
+/*
  * "warning_msg", "notice_msg" and "error_msg" take 2 message strings
  * the second one may simply be NULL if you don't need it
  */
 
+/* info on stdout */
 void msg_info(const char *msg);
+
+/* warning on stderr */
 void msg_warning (const char *msg1, const char *msg2);
+
+/* unimportant notice (might be ignored) */
 void msg_notice (const char *msg1, const char *msg2);
+
+/* error that quits the program */
 void msg_error (const char *msg1, const char *msg2);
 
 /**********************************************************************
@@ -133,6 +152,7 @@ size_t arch_get_data (const char *archive, const char *member,
 /**********************************************************************
  * Section: avtterm
  * terminal emulator for AKFAvatar
+ * (not available for MinGW)
  **********************************************************************/
 
 /*
