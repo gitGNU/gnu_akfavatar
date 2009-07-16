@@ -109,7 +109,7 @@
 #endif
 
 static const char *version_info_en =
-  PRGNAME " (AKFAvatar) " AVTVERSION "\n"
+  "avatarsay (AKFAvatar) " AVTVERSION "\n"
   "Copyright (c) 2009 Andreas K. Foerster\n\n"
   "License GPLv3+: GNU GPL version 3 or later "
   "<http://gnu.org/licenses/gpl.html>\n\n"
@@ -119,7 +119,7 @@ static const char *version_info_en =
 
 /* avoid german umlauts here */
 static const char *version_info_de =
-  PRGNAME " (AKFAvatar) " AVTVERSION "\n"
+  "avatarsay (AKFAvatar) " AVTVERSION "\n"
   "Copyright (c) 2009 Andreas K. Foerster\n\n"
   "Lizenz GPLv3+: GNU GPL Version 3 oder neuer "
   "<http://gnu.org/licenses/gpl.html>\n\n"
@@ -1211,7 +1211,7 @@ handle_textcolor_command (const wchar_t * s)
   char line[80];
 
   if (wcstombs (line, s, sizeof (line)) != (size_t) (-1))
-      avt_set_text_color_name (line);
+    avt_set_text_color_name (line);
   else
     msg_error ("[textcolor]", NULL);
 }
@@ -2875,6 +2875,8 @@ initialize_program_name (const char *argv0)
     program_name = argv0;
   else				/* skip slash */
     program_name++;
+
+  msg_prgname (program_name);
 }
 
 static void

@@ -27,14 +27,22 @@
 #include <string.h>
 #include <stdlib.h>
 
-void
+static const char *prgname = "AKFAvatar";
+
+extern void
+msg_prgname (const char *name)
+{
+  prgname = name;
+}
+
+extern void
 msg_info (const char *msg)
 {
-  MessageBox (GetActiveWindow (), msg, PRGNAME,
+  MessageBox (GetActiveWindow (), msg, prgname,
 	      MB_OK | MB_ICONINFORMATION | MB_SETFOREGROUND);
 }
 
-void
+extern void
 msg_warning (const char *msg1, const char *msg2)
 {
   char msg[1024];
@@ -47,17 +55,17 @@ msg_warning (const char *msg1, const char *msg2)
       strcat (msg, msg2);
     }
 
-  MessageBox (GetActiveWindow (), msg, PRGNAME,
+  MessageBox (GetActiveWindow (), msg, prgname,
 	      MB_OK | MB_ICONWARNING | MB_SETFOREGROUND);
 }
 
 /* ignore unimportant notices on Windows */
-void
+extern void
 msg_notice (const char *msg1 AVT_UNUSED, const char *msg2 AVT_UNUSED)
 {
 }
 
-void
+extern void
 msg_error (const char *msg1, const char *msg2)
 {
   char msg[1024];
@@ -70,7 +78,7 @@ msg_error (const char *msg1, const char *msg2)
       strcat (msg, msg2);
     }
 
-  MessageBox (GetActiveWindow (), msg, PRGNAME,
+  MessageBox (GetActiveWindow (), msg, prgname,
 	      MB_OK | MB_ICONERROR | MB_SETFOREGROUND);
   exit (EXIT_FAILURE);
 }

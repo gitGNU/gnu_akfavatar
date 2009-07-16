@@ -74,17 +74,23 @@ int avtcwio_wscanf (const wchar_t * format, ...);
  * message output for avatarsay
  **********************************************************************/
 
-#define PRGNAME "avatarsay"
-
 /*
  * the output takes place on stderr when this exists
  * or in message boxes on some other systems
  */
 
 /*
+ * these functions are also used by other parts of avtaddons,
+ * so they are most likely included
+ */
+
+/*
  * "warning_msg", "notice_msg" and "error_msg" take 2 message strings
  * the second one may simply be NULL if you don't need it
  */
+
+/* set the name of the programm, default: "AKFAvatar" */
+void msg_prgname (const char *name);
 
 /* info on stdout */
 void msg_info(const char *msg);

@@ -1,6 +1,6 @@
-/* 
- * avtmsg - message output for avatarsay
- * Copyright (c) 2007, 2008 Andreas K. Foerster <info@akfoerster.de>
+/*
+ * avtmsg - message output for AKFAvatar
+ * Copyright (c) 2007, 2008, 2009 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -22,7 +22,15 @@
 #include <stdio.h>
 #include <stdlib.h>		/* exit */
 
-void
+static const char *prgname = "AKFAvatar";
+
+extern void
+msg_prgname (const char *name)
+{
+  prgname = name;
+}
+
+extern void
 msg_info (const char *msg)
 {
   puts (msg);
@@ -33,22 +41,22 @@ msg_info (const char *msg)
  * the second one may simply be NULL if you don't need it
  */
 
-void
+extern void
 msg_warning (const char *msg1, const char *msg2)
 {
   if (msg2)
-    fprintf (stderr, PRGNAME ": %s: %s\n", msg1, msg2);
+    fprintf (stderr, "%s: %s: %s\n", prgname, msg1, msg2);
   else
-    fprintf (stderr, PRGNAME ": %s\n", msg1);
+    fprintf (stderr, "%s: %s\n", prgname, msg1);
 }
 
-void
+extern void
 msg_notice (const char *msg1, const char *msg2)
 {
   msg_warning (msg1, msg2);
 }
 
-void
+extern void
 msg_error (const char *msg1, const char *msg2)
 {
   msg_warning (msg1, msg2);
