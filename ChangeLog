@@ -1,3 +1,10 @@
+2009-07-18  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtaddons.h, avtterm.c (avtterm_register_APC):
+	new function
+	avtterm.c (APC_sequence): adapted
+	avatarsay.c (main, APC_command): adapted
+
 2009-07-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtaddons.h, avtmsg.c (msg_prgname): new function

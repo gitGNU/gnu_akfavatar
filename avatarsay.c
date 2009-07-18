@@ -1481,8 +1481,8 @@ handle_read_command (void)
 }
 
 /* handle command */
-/* also called from avtterm.c */
-extern void
+/* also used for APC_command */
+static void
 avatar_command (wchar_t * s, int *stop)
 {
   /* new datadir */
@@ -1791,6 +1791,13 @@ avatar_command (wchar_t * s, int *stop)
     }
 
   /* silently ignore unknown commands */
+}
+
+static void
+APC_command (wchar_t *s)
+{
+  int ignore;
+  avatar_command (s, &ignore);
 }
 
 /* handle commads, including comments */
@@ -2903,6 +2910,7 @@ main (int argc, char *argv[])
   raw_audio.samplingrate = 22050;
   raw_audio.channels = AVT_AUDIO_MONO;
 
+  avtterm_register_APC (&APC_command);
   avtterm_nocolor (AVT_FALSE);
 
   atexit (quit);
@@ -2911,7 +2919,6 @@ main (int argc, char *argv[])
 
   /* this is just a default setting */
   strcpy (default_encoding, "ISO-8859-1");
-
 
   init_language_info ();
 

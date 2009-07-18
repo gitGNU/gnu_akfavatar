@@ -113,6 +113,9 @@ static const wchar_t vt100trans[] = {
   0x2264, 0x2265, 0x03C0, 0x2260, 0x00A3, 0x00B7
 };
 
+/* handler for APC commands */
+static avtterm_APC_command APC_command_handler;
+
 /* may be defined externally when EXT_AVTTERM_INITIALIZE is defined */
 /* execute a subprocess, visible in the balloon */
 /* if fname == NULL, start a shell */
@@ -124,12 +127,6 @@ extern int avtterm_initialize (int *input_fd, const char *system_encoding,
 
 /* may be defined externally when EXT_AVTTERM_SIZE is defined */
 extern void avtterm_size (int fd, int height, int width);
-
-/* defined in avatarsay.c */
-/* used in APC_sequence */
-#ifndef NO_APC
-extern void avatar_command (wchar_t * s, int *stop);
-#endif
 
 
 static void
@@ -1201,7 +1198,6 @@ APC_sequence (int fd)
   wchar_t ch, old;
   wchar_t command[1024];
   unsigned int p;
-  int ignore;
 
   p = 0;
   ch = old = L'\0';
@@ -1218,9 +1214,8 @@ APC_sequence (int fd)
 
   command[p] = L'\0';
 
-#ifndef NO_APC
-  avatar_command (command, &ignore);
-#endif
+  if (APC_command_handler)
+    (*APC_command_handler) (command);
 }
 
 /*
@@ -1426,7 +1421,13 @@ escape_sequence (int fd, wchar_t last_character)
     }
 }
 
-void
+extern void 
+avtterm_register_APC (avtterm_APC_command command)
+{
+  APC_command_handler = command;
+}
+
+extern void
 avtterm_run (int fd)
 {
   avt_bool_t stop;
@@ -1499,7 +1500,7 @@ avtterm_run (int fd)
     }
 }
 
-int
+extern int
 avtterm_start (const char *system_encoding, const char *working_dir,
 	       char *const prg_argv[])
 {
@@ -1507,9 +1508,10 @@ avtterm_start (const char *system_encoding, const char *working_dir,
     avtterm_initialize (&prg_input, system_encoding, working_dir, prg_argv);
 }
 
+
 #ifndef EXT_AVTTERM_INITIALIZE
 
-int
+extern int
 avtterm_initialize (int *input_fd, const char *system_encoding,
 		    const char *working_dir, char *const prg_argv[])
 {

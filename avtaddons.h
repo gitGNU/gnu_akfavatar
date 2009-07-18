@@ -157,6 +157,11 @@ size_t arch_get_data (const char *archive, const char *member,
  * (not available for MinGW)
  **********************************************************************/
 
+typedef void (*avtterm_APC_command) (wchar_t*);
+
+/* register handler for APC commands */
+void avtterm_register_APC (avtterm_APC_command command);
+
 /*
  * execute a subprocess, visible in the balloon
  * if prg_argv == NULL, start a shell
