@@ -1059,7 +1059,8 @@ handle_image_command (const wchar_t * s, int *stop)
     initialize ();
   else if (avt_wait (AVT_DEFAULT_FLIP_PAGE_DELAY))
     {
-      *stop = 1;
+      if (stop != NULL)
+	*stop = 1;
       return;
     }
 
@@ -1073,7 +1074,7 @@ handle_image_command (const wchar_t * s, int *stop)
 	  if (!avt_show_image_data (img, size))
 	    avt_wait (7000);
 	  free (img);
-	  if (avt_get_status ())
+	  if (avt_get_status () && stop != NULL)
 	    *stop = 1;
 	}
       else
@@ -1082,7 +1083,7 @@ handle_image_command (const wchar_t * s, int *stop)
   else				/* not from_archive */
     {
       if (!avt_show_image_file (filepath))
-	if (avt_wait (7000))
+	if (avt_wait (7000) && stop != NULL)
 	  *stop = 1;
     }
 }
@@ -1100,7 +1101,8 @@ handle_credits_command (const wchar_t * s, int *stop)
     {
       if (avt_wait (AVT_DEFAULT_FLIP_PAGE_DELAY))
 	{
-	  *stop = 1;
+	  if (stop != NULL)
+	    *stop = 1;
 	  return;
 	}
       move_out ();
@@ -1113,7 +1115,7 @@ handle_credits_command (const wchar_t * s, int *stop)
 
       if (arch_get_data (from_archive, filepath, &text, &size))
 	{
-	  if (avt_credits_mb ((const char *) text, AVT_TRUE))
+	  if (avt_credits_mb ((const char *) text, AVT_TRUE) && stop != NULL)
 	    *stop = 1;
 	  free (text);
 	}
@@ -1125,7 +1127,7 @@ handle_credits_command (const wchar_t * s, int *stop)
       char *text;
 
       text = read_file (filepath, NULL, AVT_TRUE);
-      if (avt_credits_mb (text, AVT_TRUE))
+      if (avt_credits_mb (text, AVT_TRUE) && stop != NULL)
 	*stop = 1;
       free (text);
     }
@@ -1610,7 +1612,7 @@ avatar_command (wchar_t * s, int *stop)
   if (wcscmp (s, L"flip") == 0)
     {
       if (initialized)
-	if (avt_flip_page ())
+	if (avt_flip_page () && stop != NULL)
 	  *stop = 1;
       return;
     }
@@ -1664,11 +1666,11 @@ avatar_command (wchar_t * s, int *stop)
     {
       if (!initialized)
 	initialize ();
-      else if (avt_wait (AVT_DEFAULT_FLIP_PAGE_DELAY))
+      else if (avt_wait (AVT_DEFAULT_FLIP_PAGE_DELAY) && stop != NULL)
 	*stop = 1;
 
       avt_show_avatar ();
-      if (avt_wait (4000))
+      if (avt_wait (4000) && stop != NULL)
 	*stop = 1;
       return;
     }
@@ -1734,7 +1736,7 @@ avatar_command (wchar_t * s, int *stop)
   if (wcscmp (s, L"waitaudio") == 0)
     {
       if (initialized)
-	if (avt_wait_audio_end ())
+	if (avt_wait_audio_end () && stop != NULL)
 	  *stop = 1;
       return;
     }
@@ -1746,7 +1748,7 @@ avatar_command (wchar_t * s, int *stop)
   if (wcscmp (s, L"effectpause") == 0)
     {
       if (initialized)
-	if (avt_wait (AVT_DEFAULT_FLIP_PAGE_DELAY))
+	if (avt_wait (AVT_DEFAULT_FLIP_PAGE_DELAY) && stop != NULL)
 	  *stop = 1;
       return;
     }
@@ -1779,25 +1781,27 @@ avatar_command (wchar_t * s, int *stop)
       if (initialized)
 	avt_move_out ();
       moved_in = AVT_FALSE;
-      *stop = 2;
+      if (stop != NULL)
+	*stop = 2;
       return;
     }
 
   if (wcscmp (s, L"stop") == 0)
     {
       /* doesn't matter whether it's initialized */
-      *stop = 2;
+      if (stop != NULL)
+	*stop = 2;
       return;
     }
 
   /* silently ignore unknown commands */
 }
 
+/* to be used with avtterm_register_APC */
 static void
-APC_command (wchar_t *s)
+APC_command (wchar_t * s)
 {
-  int ignore;
-  avatar_command (s, &ignore);
+  avatar_command (s, NULL);
 }
 
 /* handle commads, including comments */
@@ -2910,7 +2914,7 @@ main (int argc, char *argv[])
   raw_audio.samplingrate = 22050;
   raw_audio.channels = AVT_AUDIO_MONO;
 
-  avtterm_register_APC (&APC_command);
+  avtterm_register_APC (APC_command);
   avtterm_nocolor (AVT_FALSE);
 
   atexit (quit);

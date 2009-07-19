@@ -1,3 +1,9 @@
+2009-07-19  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (avatar_command, handle_image_command)
+	(handle_credits_command): allow stop to be NULL
+	(APC_command): use NULL for stop
+
 2009-07-18  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtaddons.h, avtterm.c (avtterm_register_APC):
