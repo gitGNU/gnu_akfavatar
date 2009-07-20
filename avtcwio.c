@@ -32,6 +32,10 @@
 #  define AVT_PRINTF_MAXLEN 1024
 #endif
 
+/* msvcrt has this function in a non-standard way */
+#if defined(__MINGW32__) && !defined(vswprintf)
+#  define vswprintf _vswprintf
+#endif
 
 extern int
 avtcwio_vwprintf (const wchar_t * format, va_list ap)
@@ -39,13 +43,8 @@ avtcwio_vwprintf (const wchar_t * format, va_list ap)
   wchar_t str[AVT_PRINTF_MAXLEN];
   int n;
 
-#ifdef __MINGW32__
-  /* msvcrt has these functions in a non-standard way */
-  n = _vsnwprintf (str, AVT_PRINTF_MAXLEN, format, ap);
-#else
   /* this is conforming to the C99 standard */
   n = vswprintf (str, AVT_PRINTF_MAXLEN, format, ap);
-#endif
 
   if (n > -1)
     avt_say_len (str, n);
@@ -60,7 +59,7 @@ avtcwio_wprintf (const wchar_t * format, ...)
   int n;
 
   va_start (ap, format);
-  n = avt_vwprintf (format, ap);
+  n = avtcwio_vwprintf (format, ap);
   va_end (ap);
 
   return n;
@@ -99,7 +98,7 @@ avtcwio_wscanf (const wchar_t *format, ...)
   int n;
 
   va_start (ap, format);
-  n = avt_vwscanf (format, ap);
+  n = avtcwio_vwscanf (format, ap);
   va_end (ap);
 
   return n;

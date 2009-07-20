@@ -89,7 +89,7 @@ avtccio_printf (const char *format, ...)
   int n;
 
   va_start (ap, format);
-  n = avt_vprintf (format, ap);
+  n = avtccio_vprintf (format, ap);
   va_end (ap);
 
   return n;
@@ -128,7 +128,7 @@ avtccio_scanf (const char *format, ...)
   int n;
 
   va_start (ap, format);
-  n = avt_vscanf (format, ap);
+  n = avtccio_vscanf (format, ap);
   va_end (ap);
 
   return n;
