@@ -65,6 +65,7 @@
 #else
 #  define avtterm_nocolor(ignore)	/* empty */
 #  define avtterm_update_size(void)	/* empty */
+#  define avtterm_register_APC(ignore)	/* empty */
 #endif
 
 /* some systems don't know O_NONBLOCK */
@@ -223,6 +224,9 @@ static struct
 void get_user_home (char *home_dir, size_t size);
 void edit_file (const char *name);
 void open_document (const char *start_dir, const char *name);
+
+/* possibly unused functions */
+static void APC_command (wchar_t * s) AVT_UNUSED;
 
 
 static void
