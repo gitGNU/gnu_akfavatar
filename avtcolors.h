@@ -7,13 +7,11 @@
 #ifndef _AVTCOLORS_H
 #define _AVTCOLORS_H
 
-#include "SDL.h"
-
 struct avt_color
 {
-  Uint8 red;
-  Uint8 green;
-  Uint8 blue;
+  unsigned char red;
+  unsigned char green;
+  unsigned char blue;
   const char *color_name;
 };
 
