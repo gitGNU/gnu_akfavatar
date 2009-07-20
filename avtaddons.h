@@ -159,8 +159,10 @@ size_t arch_get_data (const char *archive, const char *member,
 
 typedef void (*avtterm_APC_command) (wchar_t*);
 
-/* register handler for APC commands */
+/* register handler for APC commands (optional) */
 void avtterm_register_APC (avtterm_APC_command command);
+
+void avtterm_nocolor (avt_bool_t nocolor);
 
 /*
  * execute a subprocess, visible in the balloon
@@ -172,9 +174,11 @@ int avtterm_start (const char *system_encoding, const char *working_dir,
 		   char *const prg_argv[]);
 
 void avtterm_run (int fd);
-void avtterm_nocolor (avt_bool_t nocolor);
 
-/* update size of textarea */
+/*
+ * update size of textarea
+ * call this after you have changed the size of the balloon
+ */
 void avtterm_update_size (void);
 
 #endif /* AVTADDONS_H */
