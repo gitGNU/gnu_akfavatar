@@ -36,8 +36,6 @@
 #include <string.h>
 #include <fcntl.h>
 
-AVT_BEGIN_DECLS
-
 /**********************************************************************
  * Section: avtccio
  * C-specific functions for input/output
@@ -89,7 +87,10 @@ int avtcwio_wscanf (const wchar_t * format, ...);
  * the second one may simply be NULL if you don't need it
  */
 
-/* set the name of the programm, default: "AKFAvatar" */
+/*
+ * set the name of the programm, default: "AKFAvatar"
+ * the string must be kept available - a string literal is okay
+ */
 void msg_prgname (const char *name);
 
 /* info on stdout */
