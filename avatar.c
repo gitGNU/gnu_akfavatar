@@ -3525,6 +3525,194 @@ avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
   return status;
 }
 
+static const char *
+avt_pager_line (const char *tpos)
+{
+  int line_length;
+
+  line_length = 0;
+  while (*(tpos + line_length) && *(tpos + line_length) != '\n')
+    line_length++;
+
+  avt_say_mb_len (tpos, line_length);
+  tpos += line_length;
+
+  /* skip \n */
+  if (*tpos)
+    tpos++;
+
+  return tpos;
+}
+
+static const char *
+avt_pager_screen (const char *tpos)
+{
+  int line_nr;
+
+  SDL_FillRect (screen, &textfield, text_background_color);
+
+  for (line_nr = 0; line_nr < balloonheight; line_nr++)
+    {
+      cursor.x = linestart;
+      cursor.y = line_nr * LINEHEIGHT + textfield.y;
+      tpos = avt_pager_line (tpos);
+    }
+
+  AVT_UPDATE_RECT (textfield);
+
+  return tpos;
+}
+
+static const char *
+avt_pager_lines_back (const char *tpos, const char *start, int lines)
+{
+  if (tpos != start)
+    tpos--;			/* go to last \n */
+
+  lines--;
+
+  while (lines--)
+    {
+      if (*tpos == '\n' && tpos != start)
+	tpos--;			/* go before last \n */
+
+      while (*tpos != '\n' && tpos != start)
+	tpos--;
+    }
+
+  if (tpos != start)
+    tpos++;
+
+  return tpos;
+}
+
+/* FIXME: pager */
+extern int
+avt_pager_mb (const char *txt)
+{
+  const char *tpos;
+  avt_bool_t old_auto_margin, old_reserve_single_keys;
+  SDL_Event event;
+
+  if (!screen)
+    return AVT_ERROR;
+
+  /* do we actually have something to show? */
+  if (!txt || !*txt)
+    return _avt_STATUS;
+
+  if (textfield.x < 0)
+    avt_draw_balloon ();
+  else
+    viewport = textfield;
+
+  old_auto_margin = auto_margin;
+  auto_margin = AVT_FALSE;
+  old_reserve_single_keys = reserve_single_keys;
+  reserve_single_keys = AVT_FALSE;
+
+  if (text_cursor_visible)
+    avt_show_text_cursor (AVT_FALSE);
+
+  avt_set_text_delay (0);
+  avt_normal_text ();
+
+  /* show first screen */
+  tpos = avt_pager_screen (txt);
+
+  while (_avt_STATUS == AVT_NORMAL)
+    {
+      SDL_WaitEvent (&event);
+      avt_analyze_event (&event);
+
+      switch (event.type)
+	{
+	case SDL_MOUSEBUTTONDOWN:
+	  if (event.button.button == SDL_BUTTON_WHEELDOWN)
+	    event.key.keysym.sym = SDLK_DOWN;
+	  else if (event.button.button == SDL_BUTTON_WHEELUP)
+	    event.key.keysym.sym = SDLK_UP;
+	  else
+	    break;
+
+	  /* deliberate fallthrough here */
+
+	case SDL_KEYDOWN:
+	  if (event.key.keysym.sym == SDLK_DOWN
+	      || event.key.keysym.sym == SDLK_KP2)
+	    {
+	      if (*tpos != '\0')
+		{
+		  avt_delete_lines (1, 1);
+		  cursor.x = linestart;
+		  cursor.y = (balloonheight - 1) * LINEHEIGHT + textfield.y;
+		  tpos = avt_pager_line (tpos);
+		}
+	    }
+	  else if (event.key.keysym.sym == SDLK_PAGEDOWN
+		   || event.key.keysym.sym == SDLK_KP3)
+	    {
+	      if (*tpos != '\0')
+		{
+		  tpos = avt_pager_screen (tpos);
+		  if (*tpos == '\0')
+		    {
+		      tpos =
+			avt_pager_lines_back (tpos, txt, balloonheight + 1);
+		      tpos = avt_pager_screen (tpos);
+		    }
+		}
+	    }
+	  else if (event.key.keysym.sym == SDLK_UP
+		   || event.key.keysym.sym == SDLK_KP8)
+	    {
+	      const char *start_line;
+
+	      start_line =
+		avt_pager_lines_back (tpos, txt, balloonheight + 2);
+
+	      if (start_line == txt)
+		tpos = avt_pager_screen (start_line);
+	      else
+		{
+		  avt_insert_lines (1, 1);
+		  cursor.x = linestart;
+		  cursor.y = textfield.y;
+		  avt_pager_line (start_line);
+		  tpos = avt_pager_lines_back (tpos, txt, 2);
+		}
+	    }
+	  else if (event.key.keysym.sym == SDLK_PAGEUP
+		   || event.key.keysym.sym == SDLK_KP9)
+	    {
+	      tpos = avt_pager_lines_back (tpos, txt, 2 * balloonheight + 1);
+	      tpos = avt_pager_screen (tpos);
+	    }
+	  else if (event.key.keysym.sym == SDLK_HOME
+		   || event.key.keysym.sym == SDLK_KP7)
+	    tpos = avt_pager_screen (txt);
+	  else if (event.key.keysym.sym == SDLK_END
+		   || event.key.keysym.sym == SDLK_KP1)
+	    {
+	      while (*tpos != '\0')
+		tpos++;
+	      tpos = avt_pager_lines_back (tpos, txt, balloonheight + 1);
+	      tpos = avt_pager_screen (tpos);
+	    }
+	  break;
+	}
+    }
+
+  /* quit request only quits the pager here */
+  if (_avt_STATUS == AVT_QUIT)
+    _avt_STATUS = AVT_NORMAL;
+
+  auto_margin = old_auto_margin;
+  reserve_single_keys = old_reserve_single_keys;
+
+  return _avt_STATUS;
+}
+
 /* size in Bytes! */
 extern int
 avt_ask (wchar_t * s, const int size)

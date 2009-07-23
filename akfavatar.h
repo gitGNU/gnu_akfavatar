@@ -591,6 +591,11 @@ AVT_API int avt_move_in (void);
 AVT_API int avt_move_out (void);
 
 /*
+ * show longer text with a text-viewer application
+ */
+AVT_API int avt_pager_mb (const char *txt);
+
+/*
  * show final credits
  */
 AVT_API int avt_credits (const wchar_t *text, avt_bool_t centered);

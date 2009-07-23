@@ -1,3 +1,9 @@
+2009-07-23  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_pager_mb): new function
+	avatar.c (avt_pager_line, avt_pager_screen)
+        (avt_pager_lines_back): new functions
+
 2009-07-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (avatar_command, handle_image_command)
