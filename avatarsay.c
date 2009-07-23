@@ -2312,6 +2312,7 @@ run_info (void)
 
   if (txt)
     {
+      change_avatar_image (avt_import_XPM (info_xpm));
       avt_set_balloon_size (0, 0);
       set_encoding ("UTF-8");
       avt_pager_mb (txt);
