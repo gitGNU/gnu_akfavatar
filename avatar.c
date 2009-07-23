@@ -258,6 +258,9 @@ static int balloonheight, balloonmaxheight, balloonwidth;
 static int text_delay = 0;	/* AVT_DEFAULT_TEXT_DELAY */
 static int flip_page_delay = AVT_DEFAULT_FLIP_PAGE_DELAY;
 
+/* holding updates back= */
+static avt_bool_t hold_updates;
+
 /* color independent from the screen mode */
 
 /* floral white */
@@ -384,9 +387,10 @@ static struct
 } load_image;
 
 #define AVT_UPDATE_RECT(rect) \
-  SDL_UpdateRect(screen, rect.x, rect.y, rect.w, rect.h)
+  if (!hold_updates) SDL_UpdateRect(screen, rect.x, rect.y, rect.w, rect.h)
 
-#define AVT_UPDATE_ALL(void) SDL_UpdateRect(screen, 0, 0, 0, 0)
+#define AVT_UPDATE_ALL(void) \
+  if (!hold_updates) SDL_UpdateRect(screen, 0, 0, 0, 0)
 
 /* XPM support */
 
@@ -2670,8 +2674,11 @@ avt_drawchar (wchar_t ch, SDL_Surface * surface)
 static void
 avt_showchar (void)
 {
-  SDL_UpdateRect (screen, cursor.x, cursor.y, FONTWIDTH, FONTHEIGHT);
-  text_cursor_actually_visible = AVT_FALSE;
+  if (!hold_updates)
+    {
+      SDL_UpdateRect (screen, cursor.x, cursor.y, FONTWIDTH, FONTHEIGHT);
+      text_cursor_actually_visible = AVT_FALSE;
+    }
 }
 
 /* advance position - only in the textfield */
@@ -3549,6 +3556,7 @@ avt_pager_screen (const char *tpos)
 {
   int line_nr;
 
+  hold_updates = AVT_TRUE;
   SDL_FillRect (screen, &textfield, text_background_color);
 
   for (line_nr = 0; line_nr < balloonheight; line_nr++)
@@ -3558,6 +3566,7 @@ avt_pager_screen (const char *tpos)
       tpos = avt_pager_line (tpos);
     }
 
+  hold_updates = AVT_FALSE;
   AVT_UPDATE_RECT (textfield);
 
   return tpos;
@@ -3641,10 +3650,13 @@ avt_pager_mb (const char *txt)
 	    {
 	      if (*tpos != '\0')
 		{
+		  hold_updates = AVT_TRUE;
 		  avt_delete_lines (1, 1);
 		  cursor.x = linestart;
 		  cursor.y = (balloonheight - 1) * LINEHEIGHT + textfield.y;
 		  tpos = avt_pager_line (tpos);
+		  hold_updates = AVT_FALSE;
+		  AVT_UPDATE_RECT (textfield);
 		}
 	    }
 	  else if (event.key.keysym.sym == SDLK_PAGEDOWN
@@ -3673,10 +3685,13 @@ avt_pager_mb (const char *txt)
 		tpos = avt_pager_screen (start_line);
 	      else
 		{
+		  hold_updates = AVT_TRUE;
 		  avt_insert_lines (1, 1);
 		  cursor.x = linestart;
 		  cursor.y = textfield.y;
 		  avt_pager_line (start_line);
+		  hold_updates = AVT_FALSE;
+		  AVT_UPDATE_RECT (textfield);
 		  tpos = avt_pager_lines_back (tpos, txt, 2);
 		}
 	    }
