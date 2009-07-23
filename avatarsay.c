@@ -1091,6 +1091,23 @@ handle_image_command (const wchar_t * s, int *stop)
 }
 
 static void
+handle_pager_command (const wchar_t *s)
+{
+  char filepath[PATH_LENGTH];
+  char *txt;
+
+  get_data_file (s, filepath);
+  txt = read_file (filepath, NULL, AVT_TRUE);
+
+  if (txt)
+    {
+      avt_pager_mb (txt);
+      free (txt);
+      avt_clear ();
+    }
+}
+
+static void
 handle_credits_command (const wchar_t * s, int *stop)
 {
   char filepath[PATH_LENGTH];
@@ -1778,6 +1795,13 @@ avatar_command (wchar_t * s, int *stop)
       return;
     }
 
+  /* file viewer - just for terminal */
+  if (wcsncmp (s, L"pager ", 6) == 0)
+    {
+      handle_pager_command (s + 6);
+      return;
+    }
+
   if (wcscmp (s, L"end") == 0)
     {
       if (initialized)
@@ -2276,16 +2300,15 @@ run_shell (void)
 static void
 run_info (void)
 {
-  size_t len;
   char *txt;
 
   if (start_dir)
     if (chdir (start_dir))
       msg_warning ("chdir", strerror (errno));
 
-  txt = read_file ("akfavatar-de.txt", &len, AVT_TRUE);
+  txt = read_file ("akfavatar-de.txt", NULL, AVT_TRUE);
   if (!txt)
-    txt = read_file ("doc/akfavatar-de.txt", &len, AVT_TRUE);
+    txt = read_file ("doc/akfavatar-de.txt", NULL, AVT_TRUE);
 
   if (txt)
     {
