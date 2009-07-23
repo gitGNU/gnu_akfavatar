@@ -3590,7 +3590,7 @@ extern int
 avt_pager_mb (const char *txt)
 {
   const char *tpos;
-  avt_bool_t old_auto_margin, old_reserve_single_keys;
+  avt_bool_t old_auto_margin, old_reserve_single_keys, old_tc;
   SDL_Event event;
 
   if (!screen)
@@ -3605,13 +3605,12 @@ avt_pager_mb (const char *txt)
   else
     viewport = textfield;
 
+  old_tc = text_cursor_visible;
+  text_cursor_visible = AVT_FALSE;
   old_auto_margin = auto_margin;
   auto_margin = AVT_FALSE;
   old_reserve_single_keys = reserve_single_keys;
   reserve_single_keys = AVT_FALSE;
-
-  if (text_cursor_visible)
-    avt_show_text_cursor (AVT_FALSE);
 
   avt_set_text_delay (0);
   avt_normal_text ();
@@ -3708,6 +3707,7 @@ avt_pager_mb (const char *txt)
 
   auto_margin = old_auto_margin;
   reserve_single_keys = old_reserve_single_keys;
+  avt_activate_cursor (old_tc);
 
   return _avt_STATUS;
 }
