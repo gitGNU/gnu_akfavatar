@@ -332,6 +332,7 @@ dist-bin: avatarsay.exe multiply.exe multiplizieren.exe
 	make -C $(srcdir)/doc html
 	mkdir $(BINPKGNAME)
 	cp $(srcdir)/doc/akfavatar-en.html $(srcdir)/doc/akfavatar-de.html $(BINPKGNAME)/
+	cp $(srcdir)/doc/akfavatar-en.txt $(srcdir)/doc/akfavatar-de.txt $(BINPKGNAME)/
 	cp akfavatar.dll $(BINPKGNAME)/
 	#cp libakfavatar.dll.a $(BINPKGNAME)/
 	#cp $(srcdir)/akfavatar.h akfavatar.def $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/
