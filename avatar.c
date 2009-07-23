@@ -389,8 +389,7 @@ static struct
 #define AVT_UPDATE_RECT(rect) \
   if (!hold_updates) SDL_UpdateRect(screen, rect.x, rect.y, rect.w, rect.h)
 
-#define AVT_UPDATE_ALL(void) \
-  if (!hold_updates) SDL_UpdateRect(screen, 0, 0, 0, 0)
+#define AVT_UPDATE_ALL(void) SDL_UpdateRect(screen, 0, 0, 0, 0)
 
 /* XPM support */
 
@@ -2020,7 +2019,8 @@ avt_insert_spaces (int num)
     avt_show_text_cursor (AVT_TRUE);
 
   /* update line */
-  SDL_UpdateRect (screen, viewport.x, cursor.y, viewport.w, FONTHEIGHT);
+  if (!hold_updates)
+    SDL_UpdateRect (screen, viewport.x, cursor.y, viewport.w, FONTHEIGHT);
 }
 
 extern void
@@ -2055,7 +2055,8 @@ avt_delete_characters (int num)
     avt_show_text_cursor (AVT_TRUE);
 
   /* update line */
-  SDL_UpdateRect (screen, viewport.x, cursor.y, viewport.w, FONTHEIGHT);
+  if (!hold_updates)
+    SDL_UpdateRect (screen, viewport.x, cursor.y, viewport.w, FONTHEIGHT);
 }
 
 extern void
