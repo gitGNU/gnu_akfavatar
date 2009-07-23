@@ -1091,7 +1091,7 @@ handle_image_command (const wchar_t * s, int *stop)
 }
 
 static void
-handle_pager_command (const wchar_t *s)
+handle_pager_command (const wchar_t * s)
 {
   char filepath[PATH_LENGTH];
   char *txt;
@@ -2306,9 +2306,18 @@ run_info (void)
     if (chdir (start_dir))
       msg_warning ("chdir", strerror (errno));
 
-  txt = read_file ("akfavatar-de.txt", NULL, AVT_TRUE);
-  if (!txt)
-    txt = read_file ("doc/akfavatar-de.txt", NULL, AVT_TRUE);
+  if (language == DEUTSCH)
+    {
+      txt = read_file ("akfavatar-de.txt", NULL, AVT_TRUE);
+      if (!txt)
+	txt = read_file ("doc/akfavatar-de.txt", NULL, AVT_TRUE);
+    }
+  else				/* not DEUTSCH */
+    {
+      txt = read_file ("akfavatar-en.txt", NULL, AVT_TRUE);
+      if (!txt)
+	txt = read_file ("doc/akfavatar-en.txt", NULL, AVT_TRUE);
+    }
 
   if (txt)
     {
