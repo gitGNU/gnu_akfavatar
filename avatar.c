@@ -3586,7 +3586,6 @@ avt_pager_lines_back (const char *tpos, const char *start, int lines)
   return tpos;
 }
 
-/* FIXME: pager */
 extern int
 avt_pager_mb (const char *txt)
 {
