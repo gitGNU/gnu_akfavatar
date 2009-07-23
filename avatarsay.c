@@ -43,7 +43,6 @@
 #  define DIR_SEPARATOR '\\'
 #  define NO_MANPAGES 1
 #  define HAS_STDERR 0		/* avoid using stderr */
-#  define EXT_OPEN_DOCUMENT 1	/* external open_document function */
 #  define EXT_GET_USER_HOME 1	/* external get_user_home function */
 #  define EXT_EDIT_FILE 1	/* external edit_file function */
 #  ifdef __MINGW32__
@@ -223,10 +222,9 @@ static struct
 /* depending on macros, starting with EXT_ */
 void get_user_home (char *home_dir, size_t size);
 void edit_file (const char *name);
-void open_document (const char *start_dir, const char *name);
 
 /* possibly unused functions */
-static void APC_command (wchar_t * s) AVT_UNUSED;
+AVT_UNUSED static void APC_command (wchar_t * s);
 
 
 static void
@@ -2275,28 +2273,29 @@ run_shell (void)
   not_available ();
 }
 
-#ifdef EXT_OPEN_DOCUMENT
-
 static void
 run_info (void)
 {
-  avt_show_avatar ();
+  size_t len;
+  char *txt;
 
-  if (language == DEUTSCH)
-    open_document (start_dir, "akfavatar-de.html");
-  else				/* not DEUTSCH */
-    open_document (start_dir, "akfavatar-en.html");
+  if (start_dir)
+    if (chdir (start_dir))
+      msg_warning ("chdir", strerror (errno));
+
+  txt = read_file ("akfavatar-de.txt", &len, AVT_TRUE);
+  if (!txt)
+    txt = read_file ("doc/akfavatar-de.txt", &len, AVT_TRUE);
+
+  if (txt)
+    {
+      avt_set_balloon_size (0, 0);
+      set_encoding ("UTF-8");
+      avt_pager_mb (txt);
+      free (txt);
+      set_encoding (default_encoding);
+    }
 }
-
-#else /* not EXT_OPEN_DOCUMENT and no PTY */
-
-static void
-run_info (void)
-{
-  not_available ();
-}
-
-#endif /* not EXT_OPEN_DOCUMENT */
 
 #else /* not NO_PTY */
 
@@ -2613,14 +2612,8 @@ about_avatarsay (void)
 
 #ifdef NO_PTY
 #  define SAY_SHELL(x) UNACCESSIBLE(x)
-#  ifdef EXT_OPEN_DOCUMENT
-#    define SAY_MANUAL(x) avt_say(x)
-#  else
-#  define SAY_MANUAL(x) UNACCESSIBLE(x)
-#  endif
 #else
 #  define SAY_SHELL(x) avt_say(x)
-#  define SAY_MANUAL(x) avt_say(x)
 #endif
 
 static void
@@ -2675,7 +2668,7 @@ menu (void)
 	  avt_say (L"2) ein Demo oder eine Text-Datei anzeigen\n");
 	  avt_say (L"3) ein Demo erstellen oder bearbeiten\n");
 	  SAY_MANPAGE (L"4) eine Hilfeseite (Manpage) anzeigen\n");
-	  SAY_MANUAL (L"5) Anleitung\n");
+	  avt_say (L"5) Anleitung\n");
 	  avt_say (L"6) Vollbild-Anzeige umschalten\n");
 	  avt_say (L"7) über avatarsay\n");
 	  avt_say (L"8) beenden");	/* no newline */
@@ -2687,7 +2680,7 @@ menu (void)
 	  avt_say (L"2) show a demo or textfile\n");
 	  avt_say (L"3) create or edit a demo\n");
 	  SAY_MANPAGE (L"4) show a manpage\n");
-	  SAY_MANUAL (L"5) documentation\n");
+	  avt_say (L"5) documentation\n");
 	  avt_say (L"6) toggle fullscreen mode\n");
 	  avt_say (L"7) about avatarsay\n");
 	  avt_say (L"8) exit");	/* no newline */

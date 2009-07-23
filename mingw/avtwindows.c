@@ -46,16 +46,6 @@ edit_file (const char *name)
   avt_wait (AVT_SECONDS (5));
 }
 
-void
-open_document (const char *start_dir, const char *name)
-{
-  /* enforce window mode for the other window to be shown */
-  avt_switch_mode (AVT_WINDOW);
-
-  ShellExecute (GetActiveWindow (), "open", name,
-		NULL, start_dir, SW_SHOWNORMAL);
-}
-
 /* get user's home direcory */
 void
 get_user_home (char *home_dir, size_t size)
