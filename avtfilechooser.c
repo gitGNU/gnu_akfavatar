@@ -85,6 +85,7 @@ is_directory (const char *name)
 static void
 new_page (char *dirname)
 {
+  avt_lock_updates (AVT_TRUE);
   avt_clear ();
   avt_set_text_background_color (0xdd, 0xdd, 0xdd);
   avt_say_mb (dirname);
@@ -182,9 +183,9 @@ get_directory (struct dirent ***list)
 
 #endif
 
-/* 
+/*
  * filechooser
- * lists files in working directory
+ * coose a file, starting in working directory
  * return -1 on error or 0 on success
  */
 extern int
@@ -197,7 +198,7 @@ avtfc_get_file (char *filename)
   int max_x, max_idx, page_entries;
   int idx, filenr, page_nr;
   int entries, entry_nr;
-  char *entry[100];  /* entry on screen */
+  char *entry[100];		/* entry on screen */
 
   avt_set_text_delay (0);
   avt_normal_text ();
@@ -273,6 +274,7 @@ start:
 	      idx++;
 	    }
 
+	  avt_lock_updates (AVT_FALSE);
 	  if (avt_choice (&filenr, 2, idx, 0, (page_nr > 0), (d != NULL)))
 	    break;
 
@@ -388,6 +390,7 @@ start:
 quit:
   avt_auto_margin (AVT_TRUE);
   avt_clear ();
+  avt_lock_updates (AVT_FALSE);
 
   return rcode;
 }
