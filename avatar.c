@@ -3538,6 +3538,10 @@ avt_lock_updates (avt_bool_t lock)
 {
   hold_updates = AVT_MAKE_BOOL (lock);
 
+  /* side effect: set text_delay to 0 */
+  if (hold_updates)
+    text_delay = 0;
+
   /* if hold_updates is not set update the textfield */
   AVT_UPDATE_RECT (textfield);
 }
@@ -4990,12 +4994,20 @@ avt_set_delays (int text, int flip_page)
 {
   text_delay = text;
   flip_page_delay = flip_page;
+
+  /* eventually switch off updates lock */
+  if (text_delay != 0 && hold_updates)
+    avt_lock_udates (AVT_FALSE);
 }
 
 extern void
 avt_set_text_delay (int delay)
 {
   text_delay = delay;
+
+  /* eventually switch off updates lock */
+  if (text_delay != 0 && hold_updates)
+    avt_lock_udates (AVT_FALSE);
 }
 
 extern void
