@@ -4997,7 +4997,7 @@ avt_set_delays (int text, int flip_page)
 
   /* eventually switch off updates lock */
   if (text_delay != 0 && hold_updates)
-    avt_lock_udates (AVT_FALSE);
+    avt_lock_updates (AVT_FALSE);
 }
 
 extern void
@@ -5007,7 +5007,7 @@ avt_set_text_delay (int delay)
 
   /* eventually switch off updates lock */
   if (text_delay != 0 && hold_updates)
-    avt_lock_udates (AVT_FALSE);
+    avt_lock_updates (AVT_FALSE);
 }
 
 extern void
