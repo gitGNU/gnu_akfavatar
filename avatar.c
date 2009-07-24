@@ -3533,6 +3533,15 @@ avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
   return status;
 }
 
+extern void
+avt_lock_updates (avt_bool_t lock)
+{
+  hold_updates = AVT_MAKE_BOOL (lock);
+
+  /* if hold_updates is not set update the textfield */
+  AVT_UPDATE_RECT (textfield);
+}
+
 static const char *
 avt_pager_line (const char *tpos)
 {
@@ -5091,6 +5100,7 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
   /* needed to handle resizing correctly */
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
   avt_visible = AVT_FALSE;
+  hold_updates = AVT_FALSE;
 
   /* the background-color is used when the window is resized */
   /* this implicitly also clears the screen */

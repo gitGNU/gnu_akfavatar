@@ -370,6 +370,14 @@ AVT_API void avt_switch_mode (int mode);
 AVT_API void avt_toggle_fullscreen (void);
 
 /*
+ * lock or unlock updates
+ * can be used for speedups
+ * when set to AVT_FALSE, the textarea gets updated
+ * use with care!
+ */
+AVT_API void avt_lock_updates (avt_bool_t lock);
+
+/*
  * prints a L'\0' terminated string in the balloon
  * if there is no balloon, it is drawn
  * if there is no avatar, it is shown (not moved in)
