@@ -373,6 +373,7 @@ AVT_API void avt_toggle_fullscreen (void);
  * lock or unlock updates
  * can be used for speedups
  * when set to AVT_FALSE, the textarea gets updated
+ * when set to AVT_TRUE, the text_delay is set to 0
  * use with care!
  */
 AVT_API void avt_lock_updates (avt_bool_t lock);
