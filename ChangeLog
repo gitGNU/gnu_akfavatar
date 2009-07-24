@@ -6,6 +6,9 @@
 	speed up with avt_lock_updates
 	mingw/askdrive.c (ask_drive): also
 
+	* avatarsay.c (about_avatarsay, menu):
+	speed up with avt_lock_updates
+
 2009-07-23  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_pager_mb): new function

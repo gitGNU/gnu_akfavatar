@@ -2609,6 +2609,7 @@ static void
 about_avatarsay (void)
 {
   avt_set_balloon_size (10, 80);
+  avt_lock_updates (AVT_TRUE);
   avt_clear ();
   set_encoding ("UTF-8");
   avt_set_text_delay (0);
@@ -2627,6 +2628,7 @@ about_avatarsay (void)
   avt_say_mb ("\n\nHomepage:  " HOMEPAGE);
 
   set_encoding (default_encoding);
+  avt_lock_updates (AVT_FALSE);
   avt_set_text_delay (default_delay);
 
   avt_wait_button ();
@@ -2681,6 +2683,7 @@ menu (void)
 	avt_clear ();
 
       avt_set_text_delay (0);
+      avt_lock_updates (AVT_TRUE);
       avt_set_origin_mode (AVT_FALSE);
       avt_newline_mode (AVT_TRUE);
 
@@ -2719,6 +2722,7 @@ menu (void)
 	  avt_say (L"8) exit");	/* no newline */
 	}
 
+      avt_lock_updates (AVT_FALSE);
       avt_set_text_delay (default_delay);
 
       if (avt_choice (&choice, menu_start, 8, '1', AVT_FALSE, AVT_FALSE))
