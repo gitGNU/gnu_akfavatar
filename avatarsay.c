@@ -1095,13 +1095,14 @@ handle_pager_command (const wchar_t * s)
 {
   char filepath[PATH_LENGTH];
   char *txt;
+  size_t len;
 
   get_data_file (s, filepath);
-  txt = read_file (filepath, NULL, AVT_TRUE);
+  txt = read_file (filepath, &len, AVT_TRUE);
 
   if (txt)
     {
-      avt_pager_mb (txt);
+      avt_pager_mb_len (txt, len);
       free (txt);
       avt_clear ();
     }
@@ -2301,6 +2302,9 @@ static void
 run_info (void)
 {
   char *txt;
+  size_t len;
+
+  len = 0;
 
   if (start_dir)
     if (chdir (start_dir))
@@ -2308,15 +2312,15 @@ run_info (void)
 
   if (language == DEUTSCH)
     {
-      txt = read_file ("akfavatar-de.txt", NULL, AVT_TRUE);
+      txt = read_file ("akfavatar-de.txt", &len, AVT_TRUE);
       if (!txt)
-	txt = read_file ("doc/akfavatar-de.txt", NULL, AVT_TRUE);
+	txt = read_file ("doc/akfavatar-de.txt", &len, AVT_TRUE);
     }
   else				/* not DEUTSCH */
     {
-      txt = read_file ("akfavatar-en.txt", NULL, AVT_TRUE);
+      txt = read_file ("akfavatar-en.txt", &len, AVT_TRUE);
       if (!txt)
-	txt = read_file ("doc/akfavatar-en.txt", NULL, AVT_TRUE);
+	txt = read_file ("doc/akfavatar-en.txt", &len, AVT_TRUE);
     }
 
   if (txt)
@@ -2324,7 +2328,7 @@ run_info (void)
       change_avatar_image (avt_import_XPM (info_xpm));
       avt_set_balloon_size (0, 0);
       set_encoding ("UTF-8");
-      avt_pager_mb (txt);
+      avt_pager_mb_len (txt, len);
       free (txt);
       set_encoding (default_encoding);
     }
