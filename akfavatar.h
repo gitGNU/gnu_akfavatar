@@ -602,6 +602,7 @@ AVT_API int avt_move_out (void);
 /*
  * show longer text with a text-viewer application
  */
+AVT_API int avt_pager_mb_len (const char *txt, int len);
 AVT_API int avt_pager_mb (const char *txt);
 
 /*

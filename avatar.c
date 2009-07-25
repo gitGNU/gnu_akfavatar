@@ -3546,27 +3546,30 @@ avt_lock_updates (avt_bool_t lock)
   AVT_UPDATE_RECT (textfield);
 }
 
-static const char *
-avt_pager_line (const char *tpos)
+static int
+avt_pager_line (const char *txt, int pos, int len)
 {
+  const char *tpos;
   int line_length;
 
   line_length = 0;
-  while (*(tpos + line_length) && *(tpos + line_length) != '\n')
+  tpos = txt + pos;
+  /* search for newline or end of text */
+  while (pos + line_length < len && *(tpos + line_length) != '\n')
     line_length++;
 
   avt_say_mb_len (tpos, line_length);
-  tpos += line_length;
+  pos += line_length;
 
   /* skip \n */
-  if (*tpos)
-    tpos++;
+  if (pos < len)
+    pos++;
 
-  return tpos;
+  return pos;
 }
 
-static const char *
-avt_pager_screen (const char *tpos)
+static int
+avt_pager_screen (const char *txt, int pos, int len)
 {
   int line_nr;
 
@@ -3577,42 +3580,42 @@ avt_pager_screen (const char *tpos)
     {
       cursor.x = linestart;
       cursor.y = line_nr * LINEHEIGHT + textfield.y;
-      tpos = avt_pager_line (tpos);
+      pos = avt_pager_line (txt, pos, len);
     }
 
   hold_updates = AVT_FALSE;
   AVT_UPDATE_RECT (textfield);
 
-  return tpos;
+  return pos;
 }
 
-static const char *
-avt_pager_lines_back (const char *tpos, const char *start, int lines)
+static int
+avt_pager_lines_back (const char *txt, int pos, int lines)
 {
-  if (tpos != start)
-    tpos--;			/* go to last \n */
+  if (pos > 0)
+    pos--;			/* go to last \n */
 
   lines--;
 
   while (lines--)
     {
-      if (*tpos == '\n' && tpos != start)
-	tpos--;			/* go before last \n */
+      if (pos > 0 && *(txt + pos) == '\n')
+	pos--;			/* go before last \n */
 
-      while (*tpos != '\n' && tpos != start)
-	tpos--;
+      while (pos > 0 && *(txt + pos) != '\n')
+	pos--;
     }
 
-  if (tpos != start)
-    tpos++;
+  if (pos > 0)
+    pos++;
 
-  return tpos;
+  return pos;
 }
 
 extern int
-avt_pager_mb (const char *txt)
+avt_pager_mb_len (const char *txt, int len)
 {
-  const char *tpos;
+  int pos;
   avt_bool_t old_auto_margin, old_reserve_single_keys, old_tc;
   SDL_Event event;
 
@@ -3622,6 +3625,10 @@ avt_pager_mb (const char *txt)
   /* do we actually have something to show? */
   if (!txt || !*txt)
     return _avt_STATUS;
+
+  /* get len if not given */
+  if (len <= 0)
+    len = SDL_strlen (txt);
 
   if (textfield.x < 0)
     avt_draw_balloon ();
@@ -3639,7 +3646,7 @@ avt_pager_mb (const char *txt)
   avt_normal_text ();
 
   /* show first screen */
-  tpos = avt_pager_screen (txt);
+  pos = avt_pager_screen (txt, 0, len);
 
   while (_avt_STATUS == AVT_NORMAL)
     {
@@ -3662,13 +3669,14 @@ avt_pager_mb (const char *txt)
 	  if (event.key.keysym.sym == SDLK_DOWN
 	      || event.key.keysym.sym == SDLK_KP2)
 	    {
-	      if (*tpos != '\0')
+	      /* if it's not the end */
+	      if (pos < len)
 		{
 		  hold_updates = AVT_TRUE;
 		  avt_delete_lines (1, 1);
 		  cursor.x = linestart;
 		  cursor.y = (balloonheight - 1) * LINEHEIGHT + textfield.y;
-		  tpos = avt_pager_line (tpos);
+		  pos = avt_pager_line (txt, pos, len);
 		  hold_updates = AVT_FALSE;
 		  AVT_UPDATE_RECT (textfield);
 		}
@@ -3676,55 +3684,52 @@ avt_pager_mb (const char *txt)
 	  else if (event.key.keysym.sym == SDLK_PAGEDOWN
 		   || event.key.keysym.sym == SDLK_KP3)
 	    {
-	      if (*tpos != '\0')
+	      if (pos < len)
 		{
-		  tpos = avt_pager_screen (tpos);
-		  if (*tpos == '\0')
+		  pos = avt_pager_screen (txt, pos, len);
+		  if (pos >= len)
 		    {
-		      tpos =
-			avt_pager_lines_back (tpos, txt, balloonheight + 1);
-		      tpos = avt_pager_screen (tpos);
+		      pos =
+			avt_pager_lines_back (txt, pos, balloonheight + 1);
+		      pos = avt_pager_screen (txt, pos, len);
 		    }
 		}
 	    }
 	  else if (event.key.keysym.sym == SDLK_UP
 		   || event.key.keysym.sym == SDLK_KP8)
 	    {
-	      const char *start_line;
+	      int start_pos;
 
-	      start_line =
-		avt_pager_lines_back (tpos, txt, balloonheight + 2);
+	      start_pos = avt_pager_lines_back (txt, pos, balloonheight + 2);
 
-	      if (start_line == txt)
-		tpos = avt_pager_screen (start_line);
+	      if (start_pos == 0)
+		pos = avt_pager_screen (txt, 0, len);
 	      else
 		{
 		  hold_updates = AVT_TRUE;
 		  avt_insert_lines (1, 1);
 		  cursor.x = linestart;
 		  cursor.y = textfield.y;
-		  avt_pager_line (start_line);
+		  avt_pager_line (txt, start_pos, len);
 		  hold_updates = AVT_FALSE;
 		  AVT_UPDATE_RECT (textfield);
-		  tpos = avt_pager_lines_back (tpos, txt, 2);
+		  pos = avt_pager_lines_back (txt, pos, 2);
 		}
 	    }
 	  else if (event.key.keysym.sym == SDLK_PAGEUP
 		   || event.key.keysym.sym == SDLK_KP9)
 	    {
-	      tpos = avt_pager_lines_back (tpos, txt, 2 * balloonheight + 1);
-	      tpos = avt_pager_screen (tpos);
+	      pos = avt_pager_lines_back (txt, pos, 2 * balloonheight + 1);
+	      pos = avt_pager_screen (txt, pos, len);
 	    }
 	  else if (event.key.keysym.sym == SDLK_HOME
 		   || event.key.keysym.sym == SDLK_KP7)
-	    tpos = avt_pager_screen (txt);
+	    pos = avt_pager_screen (txt, 0, len);
 	  else if (event.key.keysym.sym == SDLK_END
 		   || event.key.keysym.sym == SDLK_KP1)
 	    {
-	      while (*tpos != '\0')
-		tpos++;
-	      tpos = avt_pager_lines_back (tpos, txt, balloonheight + 1);
-	      tpos = avt_pager_screen (tpos);
+	      pos = avt_pager_lines_back (txt, len, balloonheight + 1);
+	      pos = avt_pager_screen (txt, pos, len);
 	    }
 	  break;
 	}
@@ -3739,6 +3744,12 @@ avt_pager_mb (const char *txt)
   avt_activate_cursor (old_tc);
 
   return _avt_STATUS;
+}
+
+extern int
+avt_pager_mb (const char *txt)
+{
+  return avt_pager_mb_len (txt, 0);
 }
 
 /* size in Bytes! */

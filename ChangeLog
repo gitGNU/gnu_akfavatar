@@ -1,3 +1,9 @@
+2009-07-25  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_pager_mb_len): new function
+	avatar.c (avt_pager_line, avt_pager_screen, avt_pager_lines_back)
+	(avt_pager_mb_len): rewritten
+
 2009-07-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_lock_updates): new function
