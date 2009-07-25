@@ -316,6 +316,11 @@ function Decide: boolean;
 function Choice(start_line, items: integer; startkey: char;
                 back, fwrd: boolean): integer;
 
+{ show a very long text in a pager }
+{ You can navigate with up/down, page up/page down keys,
+  Home and End keys, and even with the mouse-wheel }
+procedure Pager (const txt: string);
+
 implementation
 
 {-----------------------------------------------------------------------}
@@ -557,6 +562,9 @@ function avt_choice(var result: CInteger;
                     start_line, items, key: CInteger;
                     back, fwrd: avt_bool_t): CInteger; 
   libakfavatar 'avt_choice';
+
+procedure avt_pager_mb_len (txt: CString; len: CInteger); 
+  libakfavatar 'avt_pager_mb_len';
 
 function avt_decide: avt_bool_t; libakfavatar 'avt_decide';
 
@@ -870,6 +878,13 @@ result := avt_show_image_data (data, size);
 if result = 1 then Halt; { halt requested }
 
 { ignore failure to show image }
+end;
+
+procedure Pager (const txt: string);
+begin
+{ getting the string-length in pascal is lightweight }
+{ converting to a CString would be more heavy }
+avt_pager_mb_len (addr(txt[1]), length(txt))
 end;
 
 function seconds(s: Real): integer;
