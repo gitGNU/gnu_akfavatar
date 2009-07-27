@@ -112,6 +112,8 @@
 	akfavatar.pas (TextBackground): adapted
 	avatarsay.c (avatar_command): new command "ballooncolor"
 
+------------------------------------------------------------------------
+
 2009-06-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.17.0 released
@@ -340,6 +342,8 @@
 
 	* akfavatar.h, avatar-audio.c (avt_load_raw_data):
 	new function
+
+------------------------------------------------------------------------
 
 2009-02-24  Andreas K. Foerster  <info@akfoerster.de>
 
@@ -914,6 +918,8 @@
 	* avatarsay.c:
 	support for archive files (ar)
 
+------------------------------------------------------------------------
+
 2008-08-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.15.2 released
@@ -1029,6 +1035,8 @@
 2008-06-17  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lrun: simplified and no INFOPATH anymore
+
+------------------------------------------------------------------------
 
 2008-06-15  Andreas K. Foerster  <info@akfoerster.de>
 
@@ -1150,6 +1158,8 @@
 	* avatarsay.c (check_config_file):
 	keyword BACKGROUNDCOLOR
 	make keywords case insensitive
+
+------------------------------------------------------------------------
 
 2008-03-29  Andreas K. Foerster  <info@akfoerster.de>
 
@@ -1317,6 +1327,8 @@
 	* akfavatar.h, avatar.c (avt_get_key):
 	new function
 
+------------------------------------------------------------------------
+
 2007-12-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.14.5 released
@@ -1359,6 +1371,8 @@
 	decode a given size, input string needn't be terminated anymore
 	incomplete sequences are stored for later use (up to 9 bytes)
 
+------------------------------------------------------------------------
+
 2007-10-28  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.14.4 released
@@ -1387,6 +1401,8 @@
 	* avatar.c (avt_drawchar, avt_ask):
 	don't use wint_t for compatiblity reasons 
 	(reintroduced in later versions)
+
+------------------------------------------------------------------------
 
 2007-10-16  Andreas K. Foerster  <info@akfoerster.de>
 
@@ -1417,6 +1433,8 @@
 	* configure, Makefile.in:
 	can be build from a separate build directory
 
+------------------------------------------------------------------------
+
 2007-10-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.14.2 released
@@ -1442,6 +1460,8 @@
 	* avatarsay.c (help, handle_image_command)
 	(handle_avatarimage_command, handle_audio_command):
 	datadir needs no trailing slash anymore
+
+------------------------------------------------------------------------
 
 2007-09-27  Andreas K. Foerster  <info@akfoerster.de>
 
@@ -1508,6 +1528,8 @@
 	* avatar.c (avt_drawchar):
 	fix: font-rendering for QVGA fixed
 
+------------------------------------------------------------------------
+
 2007-09-14  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.14.0 released
@@ -1552,6 +1574,8 @@
 	support for CheckEsc
 	dummys for CheckEof, CheckSnow, DirectVideo
 	dummy for Sound
+
+------------------------------------------------------------------------
 
 2007-08-28  Andreas K. Foerster  <info@akfoerster.de>
 
@@ -1603,6 +1627,8 @@
 	* avatar.pas (initializeAvatar):
 	use "AKFAvatar" as title and icon name
 
+------------------------------------------------------------------------
+
 2007-08-20  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.12 released
@@ -1615,6 +1641,8 @@
 
 	* avatar.h (avt_default): prototype added
 	avatarsay.c: prototype avt_default removed
+
+------------------------------------------------------------------------
 
 2007-08-18  Andreas K. Foerster  <info@akfoerster.de>
 
@@ -1638,6 +1666,8 @@
 
 	* avatarsay.c (iscommand, handle_backgoundcolor_command):
 	new command: .backgroundcolor
+
+------------------------------------------------------------------------
 
 2007-08-11  Andreas K. Foerster  <info@akfoerster.de>
 
@@ -1667,6 +1697,8 @@
 	* configure, avatar.c:
 	support for "./configure --with-oldsdl"
 
+------------------------------------------------------------------------
+
 2007-08-06  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.9 released
@@ -1692,6 +1724,8 @@
 	search for avatarsay in PATH before the current dir
 	reordered the main menu
 
+------------------------------------------------------------------------
+
 2007-07-29  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.8a released
@@ -1702,6 +1736,8 @@
 
 	* avtman, gnome-akfavatar (show_manpage):
 	use Latin1 encoding (workaround: man outputs broken UTF-8 code)
+
+------------------------------------------------------------------------
 
 2007-07-28  Andreas K. Foerster  <info@akfoerster.de>
 
@@ -1739,6 +1775,8 @@
 	* avatar.c (avt_drawchar):
 	fixed font interpretation
 
+------------------------------------------------------------------------
+
 2007-07-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.7 released
@@ -1749,12 +1787,16 @@
 	* avatar.c (avt_initialize, avt_resize):
 	screenflags as global variable
 
+------------------------------------------------------------------------
+
 2007-07-17  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.6 released
 	
 	* avatar.c (avt_set_colors):
 	new function (fixes wrong colors after resizing)
+
+------------------------------------------------------------------------
 
 2007-07-16  Andreas K. Foerster  <info@akfoerster.de>
 
@@ -1774,6 +1816,8 @@
 	
 	* avatar.c, avatar.h (avt_show_image):
 	made static, removed from header
+
+------------------------------------------------------------------------
 
 2007-07-13  Andreas K. Foerster  <info@akfoerster.de>
 
@@ -1824,6 +1868,8 @@
 
 	* Makefile.in: target uninstall,
 	make avatarsay-s as default
+
+------------------------------------------------------------------------
 
 2007-07-01  Andreas K. Foerster  <info@akfoerster.de>
 
