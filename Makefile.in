@@ -37,6 +37,9 @@ all: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay avatarsay-d
 mingw:
 	$(MAKE) -C $(srcdir)/mingw all
 
+dist-mingw:
+	$(MAKE) -C $(srcdir)/mingw dist-bin
+
 Makefile: $(srcdir)/configure $(srcdir)/Makefile.in
 	./config.status
 

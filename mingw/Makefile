@@ -329,7 +329,7 @@ multiplizieren.exe: $(srcdir)/pascal/multiply.pas
 	-fpcwavatar -dRELEASE -ddeutsch -o$@ $(srcdir)/pascal/multiply.pas
 
 dist-bin: avatarsay.exe multiply.exe multiplizieren.exe
-	make -C $(srcdir)/doc html
+	make -C $(srcdir)/doc html txt
 	mkdir $(BINPKGNAME)
 	cp $(srcdir)/doc/akfavatar-en.html $(srcdir)/doc/akfavatar-de.html $(BINPKGNAME)/
 	cp $(srcdir)/doc/akfavatar-en.txt $(srcdir)/doc/akfavatar-de.txt $(BINPKGNAME)/
