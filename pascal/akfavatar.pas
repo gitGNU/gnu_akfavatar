@@ -319,7 +319,8 @@ function Choice(start_line, items: integer; startkey: char;
 { show a very long text in a pager }
 { You can navigate with up/down, page up/page down keys,
   Home and End keys, and even with the mouse-wheel }
-procedure Pager (const txt: string; startline: integer);
+procedure PagerString (const txt: string; startline: integer);
+procedure PagerFile (const filename: string; startline: integer);
 
 implementation
 
@@ -880,11 +881,31 @@ if result = 1 then Halt; { halt requested }
 { ignore failure to show image }
 end;
 
-procedure Pager (const txt: string; startline: integer);
+procedure PagerString (const txt: string; startline: integer);
 begin
+if not initialized then initializeAvatar;
 { getting the string-length in pascal is lightweight }
 { converting to a CString would be more heavy }
 avt_pager_mb (addr(txt[1]), length(txt), startline)
+end;
+
+procedure PagerFile (const filename: string; startline: integer);
+var 
+  f: file;
+  buf: ^char;
+  size, numread: LongInt;
+begin
+if not initialized then initializeAvatar;
+
+assign(f, filename);
+reset(f, 1);
+size := FileSize(f);
+if size > 0 then GetMem (buf, size);
+BlockRead(f, buf^, size, numread);
+close(f);
+
+avt_pager_mb(buf, numread, startline);
+if size > 0 then FreeMem (buf, size)
 end;
 
 function seconds(s: Real): integer;
