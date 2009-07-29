@@ -1102,7 +1102,7 @@ handle_pager_command (const wchar_t * s)
 
   if (txt)
     {
-      avt_pager_mb_len (txt, len);
+      avt_pager_mb_len (txt, len, 0);
       free (txt);
       avt_clear ();
     }
@@ -2328,7 +2328,7 @@ run_info (void)
       change_avatar_image (avt_import_XPM (info_xpm));
       avt_set_balloon_size (0, 0);
       set_encoding ("UTF-8");
-      avt_pager_mb_len (txt, len);
+      avt_pager_mb_len (txt, len, 0);
       free (txt);
       set_encoding (default_encoding);
     }

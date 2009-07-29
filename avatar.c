@@ -3613,7 +3613,7 @@ avt_pager_lines_back (const char *txt, int pos, int lines)
 }
 
 extern int
-avt_pager_mb_len (const char *txt, int len)
+avt_pager_mb_len (const char *txt, int len, int startline)
 {
   int pos;
   avt_bool_t old_auto_margin, old_reserve_single_keys, old_tc;
@@ -3629,6 +3629,26 @@ avt_pager_mb_len (const char *txt, int len)
   /* get len if not given */
   if (len <= 0)
     len = SDL_strlen (txt);
+
+  /* find startline */
+  pos = 0;
+  if (startline > 1)
+    {
+      int nr;
+
+      nr = startline - 1;
+      while (nr > 0 && pos < len)
+	{
+	  while (pos < len && *(txt + pos) != '\n')
+	    pos++;
+	  pos++;
+	  nr--;
+	}
+    }
+
+  /* last screen */
+  if (pos >= len)
+    pos = avt_pager_lines_back (txt, len, balloonheight + 1);
 
   if (textfield.x < 0)
     avt_draw_balloon ();
@@ -3646,7 +3666,14 @@ avt_pager_mb_len (const char *txt, int len)
   avt_normal_text ();
 
   /* show first screen */
-  pos = avt_pager_screen (txt, 0, len);
+  pos = avt_pager_screen (txt, pos, len);
+
+  /* last screen */
+  if (pos >= len)
+    {
+      pos = avt_pager_lines_back (txt, len, balloonheight + 1);
+      pos = avt_pager_screen (txt, pos, len);
+    }
 
   while (_avt_STATUS == AVT_NORMAL)
     {
@@ -3690,7 +3717,7 @@ avt_pager_mb_len (const char *txt, int len)
 		  if (pos >= len)
 		    {
 		      pos =
-			avt_pager_lines_back (txt, pos, balloonheight + 1);
+			avt_pager_lines_back (txt, len, balloonheight + 1);
 		      pos = avt_pager_screen (txt, pos, len);
 		    }
 		}
@@ -3747,9 +3774,9 @@ avt_pager_mb_len (const char *txt, int len)
 }
 
 extern int
-avt_pager_mb (const char *txt)
+avt_pager_mb (const char *txt, int startline)
 {
-  return avt_pager_mb_len (txt, 0);
+  return avt_pager_mb_len (txt, 0, startline);
 }
 
 /* size in Bytes! */

@@ -319,7 +319,7 @@ function Choice(start_line, items: integer; startkey: char;
 { show a very long text in a pager }
 { You can navigate with up/down, page up/page down keys,
   Home and End keys, and even with the mouse-wheel }
-procedure Pager (const txt: string);
+procedure Pager (const txt: string; startline: integer);
 
 implementation
 
@@ -563,7 +563,7 @@ function avt_choice(var result: CInteger;
                     back, fwrd: avt_bool_t): CInteger; 
   libakfavatar 'avt_choice';
 
-procedure avt_pager_mb_len (txt: CString; len: CInteger); 
+procedure avt_pager_mb_len (txt: CString; len, startline: CInteger); 
   libakfavatar 'avt_pager_mb_len';
 
 function avt_decide: avt_bool_t; libakfavatar 'avt_decide';
@@ -880,11 +880,11 @@ if result = 1 then Halt; { halt requested }
 { ignore failure to show image }
 end;
 
-procedure Pager (const txt: string);
+procedure Pager (const txt: string; startline: integer);
 begin
 { getting the string-length in pascal is lightweight }
 { converting to a CString would be more heavy }
-avt_pager_mb_len (addr(txt[1]), length(txt))
+avt_pager_mb_len (addr(txt[1]), length(txt), startline)
 end;
 
 function seconds(s: Real): integer;
