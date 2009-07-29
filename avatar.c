@@ -3613,7 +3613,7 @@ avt_pager_lines_back (const char *txt, int pos, int lines)
 }
 
 extern int
-avt_pager_mb_len (const char *txt, int len, int startline)
+avt_pager_mb (const char *txt, int len, int startline)
 {
   int pos;
   avt_bool_t old_auto_margin, old_reserve_single_keys, old_tc;
@@ -3771,12 +3771,6 @@ avt_pager_mb_len (const char *txt, int len, int startline)
   avt_activate_cursor (old_tc);
 
   return _avt_STATUS;
-}
-
-extern int
-avt_pager_mb (const char *txt, int startline)
-{
-  return avt_pager_mb_len (txt, 0, startline);
 }
 
 /* size in Bytes! */

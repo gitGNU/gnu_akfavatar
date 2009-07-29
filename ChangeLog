@@ -1,8 +1,12 @@
 2009-07-29  Andreas K. Foerster  <info@akfoerster.de>
 
-	* akfavatar.h, avatar.c (avt_pager_mb_len, avt_pager_mb):
+	* akfavatar.h, avatar.c (avt_pager_mb):
+	avt_pager_mb_len is now avt_pager_mb, old name removed
+	avatarsay.c, pascal/akfavatar.pas: adapted
+
+	* akfavatar.h, avatar.c (avt_pager_mb):
 	support for parameter startline
-	pascal/akfavatar.pas: adapted
+	avatarsay.c, pascal/akfavatar.pas: adapted
 
 2009-07-25  Andreas K. Foerster  <info@akfoerster.de>
 

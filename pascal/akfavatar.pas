@@ -563,8 +563,8 @@ function avt_choice(var result: CInteger;
                     back, fwrd: avt_bool_t): CInteger; 
   libakfavatar 'avt_choice';
 
-procedure avt_pager_mb_len (txt: CString; len, startline: CInteger); 
-  libakfavatar 'avt_pager_mb_len';
+procedure avt_pager_mb (txt: CString; len, startline: CInteger); 
+  libakfavatar 'avt_pager_mb';
 
 function avt_decide: avt_bool_t; libakfavatar 'avt_decide';
 
@@ -884,7 +884,7 @@ procedure Pager (const txt: string; startline: integer);
 begin
 { getting the string-length in pascal is lightweight }
 { converting to a CString would be more heavy }
-avt_pager_mb_len (addr(txt[1]), length(txt), startline)
+avt_pager_mb (addr(txt[1]), length(txt), startline)
 end;
 
 function seconds(s: Real): integer;
