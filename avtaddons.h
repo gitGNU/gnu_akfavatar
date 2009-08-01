@@ -165,6 +165,8 @@ void avtterm_register_APC (avtterm_APC_command command);
 
 void avtterm_nocolor (avt_bool_t nocolor);
 
+void avtterm_slowprint (avt_bool_t on);
+
 /*
  * execute a subprocess, visible in the balloon
  * if prg_argv == NULL, start a shell

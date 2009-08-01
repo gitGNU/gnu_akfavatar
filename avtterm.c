@@ -49,8 +49,7 @@
 #define TERM "linux"
 #define BWTERM "linux-m"
 
-/* size for input buffer - not too small, please */
-/* .encoding must be in first buffer */
+/* size for input buffer */
 #define INBUFSIZE 1024
 
 /* device attribute (DEC) */
@@ -74,7 +73,6 @@ static avt_bool_t idle;
 
 /* maximum coordinates */
 static int max_x, max_y;
-
 static int region_min_y, region_max_y;
 
 /* insert mode */
@@ -82,6 +80,8 @@ static avt_bool_t insert_mode;
 
 /* cursor active? */
 static avt_bool_t cursor_active;
+
+static int text_delay;
 
 /* no color (but still bold, underlined, reversed) allowed */
 static avt_bool_t nocolor;
@@ -153,10 +153,21 @@ set_encoding (const char *encoding)
     }
 }
 
-void
+extern void
 avtterm_nocolor (avt_bool_t on)
 {
   nocolor = on;
+}
+
+extern void
+avtterm_slowprint (avt_bool_t on)
+{
+  if (on)
+    text_delay = AVT_DEFAULT_TEXT_DELAY;
+  else
+    text_delay = 0;
+
+  avt_set_text_delay (text_delay);
 }
 
 static void
@@ -169,7 +180,7 @@ activate_cursor (avt_bool_t on)
 #ifndef EXT_AVTTERM_SIZE
 
 /* set terminal size */
-void
+extern void
 avtterm_size (int fd AVT_UNUSED, int height AVT_UNUSED, int width AVT_UNUSED)
 {
 #ifdef TIOCSWINSZ
@@ -184,7 +195,7 @@ avtterm_size (int fd AVT_UNUSED, int height AVT_UNUSED, int width AVT_UNUSED)
 
 #endif /* not EXT_AVTTERM_SIZE */
 
-void
+extern void
 avtterm_update_size (void)
 {
   if (prg_input > 0)
@@ -224,7 +235,8 @@ get_character (int fd)
       /* waiting for data */
       if (nread == -1 && errno == EAGAIN)
 	{
-	  avt_lock_updates (AVT_FALSE);
+	  if (text_delay == 0)
+	    avt_lock_updates (AVT_FALSE);
 	  if (cursor_active)
 	    avt_activate_cursor (AVT_TRUE);
 	  idle = AVT_TRUE;
@@ -234,7 +246,8 @@ get_character (int fd)
 	  idle = AVT_FALSE;
 	  if (cursor_active)
 	    avt_activate_cursor (AVT_FALSE);
-	  avt_lock_updates (AVT_TRUE);
+	  if (text_delay == 0)
+	    avt_lock_updates (AVT_TRUE);
 	}
 
       if (nread == -1)
@@ -763,7 +776,7 @@ reset_terminal (void)
 
   avt_reset_tab_stops ();
   ansi_graphic_code (0);
-  avt_set_text_delay (0);
+  avtterm_slowprint (AVT_FALSE);
   dec_cursor_seq[0] = '\033';
   dec_cursor_seq[1] = '[';
 }
@@ -968,8 +981,7 @@ CSI_sequence (int fd, wchar_t last_character)
 	      activate_cursor (AVT_TRUE);
 	      break;
 	    case 56:		/* AKFAvatar extension */
-	      /* text delay, slow-print */
-	      avt_set_text_delay (AVT_DEFAULT_TEXT_DELAY);
+	      avtterm_slowprint (AVT_TRUE);
 	      break;
 	    case 66:
 	      application_keypad = AVT_TRUE;
@@ -1014,8 +1026,7 @@ CSI_sequence (int fd, wchar_t last_character)
 	      activate_cursor (AVT_FALSE);
 	      break;
 	    case 56:		/* AKFAvatar extension */
-	      /* no text delay */
-	      avt_set_text_delay (0);
+	      avtterm_slowprint (AVT_FALSE);
 	      break;
 	    case 66:
 	      application_keypad = AVT_FALSE;

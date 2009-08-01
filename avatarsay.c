@@ -63,6 +63,7 @@
 #  include <pwd.h>
 #else
 #  define avtterm_nocolor(ignore)	/* empty */
+#  define avtterm_slowprint(ignore)	/* empty */
 #  define avtterm_update_size(void)	/* empty */
 #  define avtterm_register_APC(ignore)	/* empty */
 #endif
@@ -1581,14 +1582,14 @@ avatar_command (wchar_t * s, int *stop)
   /* slow printing on */
   if (wcscmp (s, L"slow on") == 0)
     {
-      avt_set_text_delay (AVT_DEFAULT_TEXT_DELAY);
+      avtterm_slowprint (AVT_TRUE);
       return;
     }
 
   /* slow printing off */
   if (wcscmp (s, L"slow off") == 0)
     {
-      avt_set_text_delay (0);
+      avtterm_slowprint (AVT_FALSE);
       return;
     }
 

@@ -11,6 +11,11 @@
 	All callers of avt_activate_cursor changed to activate_cursor
 	(get_character): lock/unlock updates
 
+	* avtaddon.h, avtterm.c (avtterm_slowprint): new function
+	(get_character, reset_terminal, CSI_sequence): adapted
+	avatarsay.c (avatar_command): adapted
+	enables slowprint mode in terminal again
+
 2009-07-29  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_pager_mb):
