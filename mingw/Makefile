@@ -185,13 +185,13 @@ bin2c: $(srcdir)/bin2c.c
 bdfread: $(srcdir)/bdfread.c
 	cc -o $@ $(srcdir)/bdfread.c
 
-# bell.au should be in the sourcecode-distribution
-$(srcdir)/bell.au: $(srcdir)/bell.flac
+# alert.au should be in the sourcecode-distribution
+$(srcdir)/alert.au: $(srcdir)/alert.flac
 	@echo "create headerless old AU file"
-	sox $(srcdir)/bell.flac -t .ul --rate 8000 --channels 1 $@
+	sox $(srcdir)/alert.flac -t .ul --rate 8000 --channels 1 $@
 
-bell.c: $(srcdir)/bell.au bin2c
-	./bin2c avt_bell_data < $(srcdir)/bell.au > $@
+alert.c: $(srcdir)/alert.au bin2c
+	./bin2c avt_alert_data < $(srcdir)/alert.au > $@
 
 avatar-default.o: $(srcdir)/avatar-default.c $(default_avatar)
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avatar-default.c
@@ -205,7 +205,7 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/version.h \
              $(srcdir)/circle.xpm $(srcdir)/akfavatar.xpm
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c $(srcdir)/avatar.c
 
-avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h bell.c
+avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h alert.c
 	$(CC) -c $(SDLCFLAGS) $(CFLAGS) -I. -o $@ $(srcdir)/avatar-audio.c
 
 ucsfont7x14.c: $(srcdir)/7x14.bdf bdfread
@@ -308,7 +308,7 @@ install-strip: akfavatar.dll libakfavatar.a
 clean:
 	-rm -f *~ *.o *.ppu *.gpi
 	-rm -f libinfo.rc avtsayinfo.rc
-	-rm -f bell.c
+	-rm -f alert.c
 	-rm -f ucsfont7x14.c ucsfont9x18.c
 	-rm -f bin2c bin2c.exe
 	-rm -f bdfread bdfread.exe
