@@ -1,3 +1,8 @@
+2009-08-01  Andreas K. Foerster  <info@akfoerster.de>
+
+	* rename bell.flac into alert.flac
+	avtar-audio.c, avatar.c: adapted
+
 2009-07-29  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_pager_mb):

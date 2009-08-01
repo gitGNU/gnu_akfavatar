@@ -13,10 +13,10 @@ INSTALL_DATA = $(INSTALL) -m 644
 
 SOX = sox
 
-# Soundfile for the bell (\a)
+# Soundfile for the alert (\a)
 # may be any format that sox supports
 # should be higher quality; it will be converted into the needed format
-BELL = $(srcdir)/bell.flac 
+ALERT = $(srcdir)/alert.flac
 
 # names for packages
 PKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)
@@ -51,13 +51,13 @@ bin2c: $(srcdir)/bin2c.c
 bdfread: $(srcdir)/bdfread.c
 	cc -o $@ $(srcdir)/bdfread.c
 
-# bell.au should be in the sourcecode-distribution
-$(srcdir)/bell.au: $(srcdir)/bell.flac
-	@echo "create headerless old AU file"
-	$(SOX) $(BELL) --type .ul --channels 1 $@ rate -l 8k
+# alert.au should be in the sourcecode-distribution
+$(srcdir)/alert.au: $(ALERT)
+	@echo "creating headerless old AU file"
+	$(SOX) $(ALERT) --type .ul --channels 1 $@ rate -l 8k
 
-bell.c: $(srcdir)/bell.au bin2c
-	./bin2c avt_bell_data < $(srcdir)/bell.au > $@
+alert.c: $(srcdir)/alert.au bin2c
+	./bin2c avt_alert_data < $(srcdir)/alert.au > $@
 
 avtfilechooser.o: $(srcdir)/avtfilechooser.c \
                   $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h
@@ -71,7 +71,7 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h avtcolors.h \
 avatar-default.o: $(srcdir)/avatar-default.c $(default_avatar) $(srcdir)/akfavatar.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avatar-default.c
 
-avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h bell.c
+avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h alert.c
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avatar-audio.c
 
 ucsfont7x14.c: $(srcdir)/7x14.bdf bdfread
@@ -97,7 +97,7 @@ avatar-default.lo: $(srcdir)/avatar-default.c $(default_avatar) $(srcdir)/akfava
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -fPIC -o $@ \
 	  $(srcdir)/avatar-default.c
 
-avatar-audio.lo: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h bell.c
+avatar-audio.lo: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h alert.c
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -fPIC -o $@ \
 	  $(srcdir)/avatar-audio.c
 
@@ -282,7 +282,7 @@ clean:
 	-rm -f *.ppu *.gpi *.gpm
 	-rm -f bin2c
 	-rm -f bdfread
-	-rm -f bell.c
+	-rm -f alert.c
 	-rm -f ucsfont9x18.c ucsfont7x14.c
 	-rm -f pascal/*.o pascal/*.gpi pascal/*.gpm pascal/*.ppu
 	-rm -f pascal/link.res pascal/ppas.sh
@@ -312,7 +312,7 @@ distclean: clean
 maintainer-clean: distclean
 	@echo 'This command is intended for maintainers to use; it'
 	@echo 'deletes files that may need special tools to rebuild.'
-	rm -rf $(srcdir)/bell.au
+	rm -rf $(srcdir)/alert.au
 	$(MAKE) -C $(srcdir)/doc maintainer-clean
 
 maintainerclean: maintainer-clean
@@ -338,7 +338,7 @@ dist: info html man distclean
 	   gnome-akfavatar akfoerster-avatarsay.desktop bdfread.c \
 	   akfavatar.xpm info.xpm bin2c.c \
 	   7x14.bdf 9x18.bdf font.c \
-	   bell.flac bell.au \
+	   alert.flac alert.au \
 	   configure Makefile.in \
 	   $(PKGNAME)/
 	

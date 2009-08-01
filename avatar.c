@@ -290,7 +290,7 @@ static struct pos cursor, saved_position;
 /* 0 = normal; 1 = quit-request; -1 = error */
 int _avt_STATUS;
 
-void (*avt_bell_func) (void) = NULL;
+void (*avt_alert_func) (void) = NULL;
 void (*avt_quit_audio_func) (void) = NULL;
 
 /* forward declaration */
@@ -1564,8 +1564,8 @@ avt_resize (int w, int h)
 extern void
 avt_bell (void)
 {
-  if (avt_bell_func)
-    (*avt_bell_func) ();
+  if (avt_alert_func)
+    (*avt_alert_func) ();
 }
 
 /* flashes the screen */
@@ -2881,8 +2881,8 @@ avt_put_character (const wchar_t ch)
       break;
 
     case L'\a':
-      if (avt_bell_func)
-	(*avt_bell_func) ();
+      if (avt_alert_func)
+	(*avt_alert_func) ();
       break;
 
       /* ignore BOM here 
@@ -3828,8 +3828,8 @@ avt_ask (wchar_t * s, const int size)
 	      avt_backspace ();
 	      avt_clearchar ();
 	    }
-	  else if (avt_bell_func)
-	    (*avt_bell_func) ();
+	  else if (avt_alert_func)
+	    (*avt_alert_func) ();
 	  break;
 
 	case 13:
@@ -3848,8 +3848,8 @@ avt_ask (wchar_t * s, const int size)
 	      cursor.x =
 		(textdir_rtl) ? cursor.x - FONTWIDTH : cursor.x + FONTWIDTH;
 	    }
-	  else if (avt_bell_func)
-	    (*avt_bell_func) ();
+	  else if (avt_alert_func)
+	    (*avt_alert_func) ();
 	}
     }
   while ((ch != 13) && (_avt_STATUS == AVT_NORMAL));
@@ -5284,7 +5284,7 @@ avt_quit (void)
   avt_text_cursor = NULL;
   SDL_FreeSurface (avt_cursor_character);
   avt_cursor_character = NULL;
-  avt_bell_func = NULL;
+  avt_alert_func = NULL;
   SDL_Quit ();
   screen = NULL;		/* it was freed by SDL_Quit */
   avt_visible = AVT_FALSE;
@@ -5532,9 +5532,9 @@ avt_initialize (const char *title, const char *icontitle,
   SDL_EventState (SDL_MOUSEBUTTONUP, SDL_IGNORE);
   SDL_EventState (SDL_KEYUP, SDL_IGNORE);
 
-  /* visual flash for the bell */
-  /* when you initialize the audio stuff, you get an audio "bell" */
-  avt_bell_func = avt_flash;
+  /* visual flash for the alert */
+  /* when you initialize the audio stuff, you get an audio alert */
+  avt_alert_func = avt_flash;
 
   /* initialize tab stops */
   avt_reset_tab_stops ();

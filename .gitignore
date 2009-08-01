@@ -16,7 +16,7 @@ bdfread
 libakfavatar.so*
 bin2c
 ucsfont*.c
-bell.c
+alert.c
 *.tar.bz2
 misc
 archives

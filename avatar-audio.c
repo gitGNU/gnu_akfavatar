@@ -29,7 +29,7 @@
 #include "SDL.h"
 #include "SDL_audio.h"
 
-#include "bell.c"
+#include "alert.c"
 
 #ifndef _SDL_stdinc_h
 #  define OLD_SDL 1
@@ -59,8 +59,8 @@ typedef struct
 
 extern int _avt_STATUS;
 
-/* short sound for the "bell" function */
-static avt_audio_t *mybell;
+/* short sound for the "avt_bell" function */
+static avt_audio_t *my_alert;
 
 /* current sound */
 static AudioStruct current_sound;
@@ -69,7 +69,7 @@ static Sint32 soundleft = 0;	/* Length of left unplayed wave data */
 static avt_bool_t loop = AVT_FALSE;
 
 extern int avt_checkevent (void);
-extern void (*avt_bell_func) (void);
+extern void (*avt_alert_func) (void);
 extern void (*avt_quit_audio_func) (void);
 
 /* table for decoding mu-law */
@@ -159,9 +159,9 @@ fill_audio (void *userdata AVT_UNUSED, Uint8 * stream, int len)
 static void
 short_audio_sound (void)
 {
-  /* if mybell is loaded and nothing is currently playing */
-  if (mybell && soundleft <= 0)
-    avt_play_audio (mybell, AVT_FALSE);
+  /* if my_alert is loaded and nothing is currently playing */
+  if (my_alert && soundleft <= 0)
+    avt_play_audio (my_alert, AVT_FALSE);
 }
 
 /* must be called AFTER avt_initialize! */
@@ -174,10 +174,10 @@ avt_initialize_audio (void)
       return AVT_ERROR;
     }
 
-  mybell =
-    avt_load_raw_audio_data ((void *) &avt_bell_data, avt_bell_data_size,
+  my_alert =
+    avt_load_raw_audio_data ((void *) &avt_alert_data, avt_alert_data_size,
 			     8000, AVT_AUDIO_MULAW, AVT_AUDIO_MONO);
-  avt_bell_func = short_audio_sound;
+  avt_alert_func = short_audio_sound;
   avt_quit_audio_func = avt_quit_audio;
 
   return _avt_STATUS;
@@ -204,9 +204,9 @@ avt_quit_audio (void)
   soundleft = 0;
   current_sound.len = 0;
   current_sound.sound = NULL;
-  avt_bell_func = avt_flash;
-  avt_free_audio (mybell);
-  mybell = NULL;
+  avt_alert_func = avt_flash;
+  avt_free_audio (my_alert);
+  my_alert = NULL;
   SDL_QuitSubSystem (SDL_INIT_AUDIO);
 }
 
