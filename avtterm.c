@@ -80,6 +80,9 @@ static int region_min_y, region_max_y;
 /* insert mode */
 static avt_bool_t insert_mode;
 
+/* cursor active? */
+static avt_bool_t cursor_active;
+
 /* no color (but still bold, underlined, reversed) allowed */
 static avt_bool_t nocolor;
 
@@ -156,6 +159,13 @@ avtterm_nocolor (avt_bool_t on)
   nocolor = on;
 }
 
+static void
+activate_cursor (avt_bool_t on)
+{
+  cursor_active = AVT_MAKE_BOOL (on);
+  avt_activate_cursor (cursor_active);
+}
+
 #ifndef EXT_AVTTERM_SIZE
 
 /* set terminal size */
@@ -214,11 +224,17 @@ get_character (int fd)
       /* waiting for data */
       if (nread == -1 && errno == EAGAIN)
 	{
+	  avt_lock_updates (AVT_FALSE);
+	  if (cursor_active)
+	    avt_activate_cursor (AVT_TRUE);
 	  idle = AVT_TRUE;
 	  while (nread == -1 && errno == EAGAIN
 		 && avt_update () == AVT_NORMAL)
 	    nread = read (fd, &filebuf, sizeof (filebuf) - 1);
 	  idle = AVT_FALSE;
+	  if (cursor_active)
+	    avt_activate_cursor (AVT_FALSE);
+	  avt_lock_updates (AVT_TRUE);
 	}
 
       if (nread == -1)
@@ -735,7 +751,7 @@ reset_terminal (void)
 
   avt_reserve_single_keys (AVT_TRUE);
   avt_newline_mode (AVT_FALSE);
-  avt_activate_cursor (AVT_TRUE);
+  activate_cursor (AVT_TRUE);
   avt_set_scroll_mode (1);
   vt100graphics = AVT_FALSE;
   G0 = "ISO-8859-1";
@@ -849,13 +865,13 @@ CSI_sequence (int fd, wchar_t last_character)
       else if (sequence[0] == '?')
 	{			/* I have no real infos about that :-( */
 	  if (sequence[1] == '1' && sequence[2] == 'c')
-	    avt_activate_cursor (AVT_FALSE);
+	    activate_cursor (AVT_FALSE);
 	  else if (sequence[1] == '2' && sequence[2] == 'c')
-	    avt_activate_cursor (AVT_TRUE);
+	    activate_cursor (AVT_TRUE);
 	  else if (sequence[1] == '0' && sequence[2] == 'c')
-	    avt_activate_cursor (AVT_TRUE);	/* normal? */
+	    activate_cursor (AVT_TRUE);	/* normal? */
 	  else if (sequence[1] == '8' && sequence[2] == 'c')
-	    avt_activate_cursor (AVT_TRUE);	/* very visible */
+	    activate_cursor (AVT_TRUE);	/* very visible */
 	}
       break;
 
@@ -949,7 +965,7 @@ CSI_sequence (int fd, wchar_t last_character)
 	      /* avt_register_mousehandler (prg_mousehandler); */
 	      break;
 	    case 25:
-	      avt_activate_cursor (AVT_TRUE);
+	      activate_cursor (AVT_TRUE);
 	      break;
 	    case 56:		/* AKFAvatar extension */
 	      /* text delay, slow-print */
@@ -995,7 +1011,7 @@ CSI_sequence (int fd, wchar_t last_character)
 	      /* avt_register_mousehandler (NULL); */
 	      break;
 	    case 25:
-	      avt_activate_cursor (AVT_FALSE);
+	      activate_cursor (AVT_FALSE);
 	      break;
 	    case 56:		/* AKFAvatar extension */
 	      /* no text delay */
@@ -1421,7 +1437,7 @@ escape_sequence (int fd, wchar_t last_character)
     }
 }
 
-extern void 
+extern void
 avtterm_register_APC (avtterm_APC_command command)
 {
   APC_command_handler = command;
@@ -1449,6 +1465,7 @@ avtterm_run (int fd)
   /* avt_register_mousehandler (prg_mousehandler); */
 
   reset_terminal ();
+  avt_lock_updates (AVT_TRUE);
 
   while ((ch = get_character (fd)) != WEOF && !stop)
     {
@@ -1478,7 +1495,7 @@ avtterm_run (int fd)
 	}
     }
 
-  avt_activate_cursor (AVT_FALSE);
+  activate_cursor (AVT_FALSE);
   avt_reserve_single_keys (AVT_FALSE);
 
   /* close file descriptor */

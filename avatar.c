@@ -258,7 +258,7 @@ static int balloonheight, balloonmaxheight, balloonwidth;
 static int text_delay = 0;	/* AVT_DEFAULT_TEXT_DELAY */
 static int flip_page_delay = AVT_DEFAULT_FLIP_PAGE_DELAY;
 
-/* holding updates back= */
+/* holding updates back? */
 static avt_bool_t hold_updates;
 
 /* color independent from the screen mode */
@@ -1082,7 +1082,7 @@ avt_show_text_cursor (avt_bool_t on)
 
   on = AVT_MAKE_BOOL (on);
 
-  if (on != text_cursor_actually_visible)
+  if (on != text_cursor_actually_visible && !hold_updates)
     {
       dst.x = cursor.x;
       dst.y = cursor.y;
@@ -2480,9 +2480,6 @@ avt_scroll_up (void)
       cursor.y += LINEHEIGHT;
       break;
     case 1:
-      if (text_cursor_visible)
-	avt_show_text_cursor (AVT_FALSE);
-
       avt_delete_lines (((viewport.y - textfield.y) / LINEHEIGHT) + 1, 1);
 
       if (origin_mode)
@@ -2492,9 +2489,6 @@ avt_scroll_up (void)
 
       if (newline_mode)
 	cursor.x = linestart;
-
-      if (text_cursor_visible)
-	avt_show_text_cursor (AVT_TRUE);
       break;
     case 0:
       avt_flip_page ();
