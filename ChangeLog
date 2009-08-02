@@ -3,6 +3,9 @@
 	* avatarsay.c (avatar_command): 
 	reenable the "slow"-command for demos
 
+	* avtterm.c (get_character):
+	new strategy for screen-updates
+
 2009-08-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* rename bell.flac into alert.flac

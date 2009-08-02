@@ -229,14 +229,16 @@ get_character (int fd)
 	  wcbuf = NULL;
 	}
 
+      /* update */
+      if (text_delay == 0)
+	avt_lock_updates (AVT_FALSE);
+
       /* reserve one byte for a terminator */
       nread = read (fd, &filebuf, sizeof (filebuf) - 1);
 
       /* waiting for data */
       if (nread == -1 && errno == EAGAIN)
 	{
-	  if (text_delay == 0)
-	    avt_lock_updates (AVT_FALSE);
 	  if (cursor_active)
 	    avt_activate_cursor (AVT_TRUE);
 	  idle = AVT_TRUE;
@@ -246,8 +248,6 @@ get_character (int fd)
 	  idle = AVT_FALSE;
 	  if (cursor_active)
 	    avt_activate_cursor (AVT_FALSE);
-	  if (text_delay == 0)
-	    avt_lock_updates (AVT_TRUE);
 	}
 
       if (nread == -1)
@@ -257,6 +257,9 @@ get_character (int fd)
 	  wcbuf_len = avt_mb_decode (&wcbuf, (char *) &filebuf, nread);
 	  wcbuf_pos = 0;
 	}
+
+      if (text_delay == 0)
+	avt_lock_updates (AVT_TRUE);
     }
 
   if (wcbuf_len < 0)
