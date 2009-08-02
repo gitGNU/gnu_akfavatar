@@ -1,3 +1,8 @@
+2009-08-02  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (avatar_command): 
+	reenable the "slow"-command for demos
+
 2009-08-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* rename bell.flac into alert.flac

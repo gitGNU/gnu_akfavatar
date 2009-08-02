@@ -1582,6 +1582,9 @@ avatar_command (wchar_t * s, int *stop)
   /* slow printing on */
   if (wcscmp (s, L"slow on") == 0)
     {
+      /* for demos: */
+      avt_set_text_delay (AVT_DEFAULT_TEXT_DELAY);
+      /* for the terminal: */
       avtterm_slowprint (AVT_TRUE);
       return;
     }
@@ -1589,6 +1592,9 @@ avatar_command (wchar_t * s, int *stop)
   /* slow printing off */
   if (wcscmp (s, L"slow off") == 0)
     {
+      /* for demos: */
+      avt_set_text_delay (0);
+      /* for the terminal: */
       avtterm_slowprint (AVT_FALSE);
       return;
     }
