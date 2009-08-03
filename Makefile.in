@@ -363,6 +363,7 @@ dist: info html man distclean
 	mkdir $(PKGNAME)/mingw
 	ln mingw/akfavatar.ico mingw/icon.rc \
 	   mingw/avtmsg.c mingw/avtwindows.c \
+	   mingw/avttermstub.c mingw/askdrive.c \
 	   mingw/Makefile mingw/README \
 	   mingw/fsdemo-??.bat \
 	   $(PKGNAME)/mingw/
