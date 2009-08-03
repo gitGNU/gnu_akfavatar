@@ -239,6 +239,10 @@ askdrive.o: $(srcdir)/mingw/askdrive.c \
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/mingw/askdrive.c
 
+# this is just a dummy stub!
+avttermstub.o: avttermstub.c $(srcdir)/avtaddons.h
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ avttermstub.c
+
 arch.o: $(srcdir)/arch.c $(srcdir)/avtaddons.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/arch.c
 
@@ -248,9 +252,9 @@ avtccio.o: $(srcdir)/avtccio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 avtcwio.o: $(srcdir)/avtcwio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtcwio.c
 
-libavtaddons.a: avtfilechooser.o askdrive.o arch.o \
+libavtaddons.a: avtfilechooser.o askdrive.o arch.o avttermstub.o \
                 avtccio.o avtcwio.o avtmsg.o
-	$(AR) rcu $@ avtfilechooser.o askdrive.o arch.o \
+	$(AR) rcu $@ avtfilechooser.o askdrive.o arch.o avttermstub.o \
 	             avtccio.o avtcwio.o avtmsg.o
 	-$(RANLIB) $@
 

@@ -1,3 +1,8 @@
+2009-08-03  Andreas K. Foerster  <info@akfoerster.de>
+
+	* mingw/avttermstub.c: new file
+	avatarsay.c: adapted
+
 2009-08-02  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (avatar_command): 

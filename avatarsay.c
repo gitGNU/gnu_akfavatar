@@ -61,11 +61,6 @@
 #ifndef NO_PTY
 #  include <sys/wait.h>
 #  include <pwd.h>
-#else
-#  define avtterm_nocolor(ignore)	/* empty */
-#  define avtterm_slowprint(ignore)	/* empty */
-#  define avtterm_update_size(void)	/* empty */
-#  define avtterm_register_APC(ignore)	/* empty */
 #endif
 
 /* some systems don't know O_NONBLOCK */
