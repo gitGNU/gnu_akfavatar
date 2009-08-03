@@ -3,6 +3,9 @@
 	* mingw/avttermstub.c: new file
 	avatarsay.c: adapted
 
+	* avtaddons.h, avtterm.c (avtterm_send): new function
+	was static write_term - all callers adapted
+
 2009-08-02  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (avatar_command): 

@@ -296,8 +296,8 @@ get_user_shell (void)
   return shell;
 }
 
-static void
-write_term (const char *buf, size_t count)
+extern void
+avtterm_send (const char *buf, size_t count)
 {
   ssize_t r;
 
@@ -326,115 +326,115 @@ prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
 	{
 	case 273:		/* up arrow */
 	  dec_cursor_seq[2] = 'A';
-	  write_term (dec_cursor_seq, 3);
+	  avtterm_send (dec_cursor_seq, 3);
 	  break;
 
 	case 274:		/* down arrow */
 	  dec_cursor_seq[2] = 'B';
-	  write_term (dec_cursor_seq, 3);
+	  avtterm_send (dec_cursor_seq, 3);
 	  break;
 
 	case 275:		/* right arrow */
 	  dec_cursor_seq[2] = 'C';
-	  write_term (dec_cursor_seq, 3);
+	  avtterm_send (dec_cursor_seq, 3);
 	  break;
 
 	case 276:		/* left arrow */
 	  dec_cursor_seq[2] = 'D';
-	  write_term (dec_cursor_seq, 3);
+	  avtterm_send (dec_cursor_seq, 3);
 	  break;
 
 	case 277:		/* Insert */
-	  /* write_term ("\033[L", 3); */
-	  write_term ("\033[2~", 4);	/* linux */
+	  /* avtterm_send ("\033[L", 3); */
+	  avtterm_send ("\033[2~", 4);	/* linux */
 	  break;
 
 	case 278:		/* Home */
-	  /* write_term ("\033[H", 3); */
-	  write_term ("\033[1~", 4);	/* linux */
+	  /* avtterm_send ("\033[H", 3); */
+	  avtterm_send ("\033[1~", 4);	/* linux */
 	  break;
 
 	case 279:		/* End */
-	  /* write_term ("\033[0w", 4); */
-	  write_term ("\033[4~", 4);	/* linux */
+	  /* avtterm_send ("\033[0w", 4); */
+	  avtterm_send ("\033[4~", 4);	/* linux */
 	  break;
 
 	case 280:		/* Page up */
-	  write_term ("\033[5~", 4);	/* linux */
+	  avtterm_send ("\033[5~", 4);	/* linux */
 	  break;
 
 	case 281:		/* Page down */
-	  write_term ("\033[6~", 4);	/* linux */
+	  avtterm_send ("\033[6~", 4);	/* linux */
 	  break;
 
 	case 282:		/* F1 */
-	  write_term ("\033[[A", 4);	/* linux */
-	  /* write_term ("\033OP", 3); *//* DEC */
+	  avtterm_send ("\033[[A", 4);	/* linux */
+	  /* avtterm_send ("\033OP", 3); *//* DEC */
 	  break;
 
 	case 283:		/* F2 */
-	  write_term ("\033[[B", 4);	/* linux */
-	  /* write_term ("\033OQ", 3); *//* DEC */
+	  avtterm_send ("\033[[B", 4);	/* linux */
+	  /* avtterm_send ("\033OQ", 3); *//* DEC */
 	  break;
 
 	case 284:		/* F3 */
-	  write_term ("\033[[C", 4);	/* linux */
-	  /* write_term ("\033OR", 3); *//* DEC */
+	  avtterm_send ("\033[[C", 4);	/* linux */
+	  /* avtterm_send ("\033OR", 3); *//* DEC */
 	  break;
 
 	case 285:		/* F4 */
-	  write_term ("\033[[D", 4);	/* linux */
-	  /* write_term ("\033OS", 3); *//* DEC */
+	  avtterm_send ("\033[[D", 4);	/* linux */
+	  /* avtterm_send ("\033OS", 3); *//* DEC */
 	  break;
 
 	case 286:		/* F5 */
-	  write_term ("\033[[E", 4);	/* linux */
-	  /* write_term ("\033Ot", 3); *//* DEC */
+	  avtterm_send ("\033[[E", 4);	/* linux */
+	  /* avtterm_send ("\033Ot", 3); *//* DEC */
 	  break;
 
 	case 287:		/* F6 */
-	  write_term ("\033[17~", 5);	/* linux */
-	  /* write_term ("\033Ou", 3); *//* DEC */
+	  avtterm_send ("\033[17~", 5);	/* linux */
+	  /* avtterm_send ("\033Ou", 3); *//* DEC */
 	  break;
 
 	case 288:		/* F7 */
-	  write_term ("\033[[18~", 5);	/* linux */
-	  /* write_term ("\033Ov", 3); *//* DEC */
+	  avtterm_send ("\033[[18~", 5);	/* linux */
+	  /* avtterm_send ("\033Ov", 3); *//* DEC */
 	  break;
 
 	case 289:		/* F8 */
-	  write_term ("\033[19~", 5);	/* linux */
-	  /* write_term ("\033Ol", 3); *//* DEC */
+	  avtterm_send ("\033[19~", 5);	/* linux */
+	  /* avtterm_send ("\033Ol", 3); *//* DEC */
 	  break;
 
 	case 290:		/* F9 */
-	  write_term ("\033[20~", 5);	/* linux */
-	  /* write_term ("\033Ow", 3); *//* DEC */
+	  avtterm_send ("\033[20~", 5);	/* linux */
+	  /* avtterm_send ("\033Ow", 3); *//* DEC */
 	  break;
 
 	case 291:		/* F10 */
-	  write_term ("\033[21~", 5);	/* linux */
-	  /* write_term ("\033Ox", 3); *//* DEC */
+	  avtterm_send ("\033[21~", 5);	/* linux */
+	  /* avtterm_send ("\033Ox", 3); *//* DEC */
 	  break;
 
 	case 292:		/* F11 */
-	  write_term ("\033[23~", 5);	/* linux */
+	  avtterm_send ("\033[23~", 5);	/* linux */
 	  break;
 
 	case 293:		/* F12 */
-	  write_term ("\033[24~", 5);	/* linux */
+	  avtterm_send ("\033[24~", 5);	/* linux */
 	  break;
 
 	case 294:		/* F13 */
-	  write_term ("\033[25~", 5);	/* linux */
+	  avtterm_send ("\033[25~", 5);	/* linux */
 	  break;
 
 	case 295:		/* F14 */
-	  write_term ("\033[26~", 5);	/* linux */
+	  avtterm_send ("\033[26~", 5);	/* linux */
 	  break;
 
 	case 296:		/* F15 */
-	  write_term ("\033[27~", 5);	/* linux */
+	  avtterm_send ("\033[27~", 5);	/* linux */
 	  break;
 
 	default:
@@ -448,7 +448,7 @@ prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
 	      length = avt_mb_encode (&mbstring, &ch, 1);
 	      if (length != -1)
 		{
-		  write_term (mbstring, length);
+		  avtterm_send (mbstring, length);
 		  avt_free (mbstring);
 		}
 	    }			/* if (unicode) */
@@ -469,7 +469,7 @@ prg_mousehandler (int button, avt_bool_t pressed, int x, int y)
     {
       snprintf (code, sizeof (code), "\033[M%c%c%c",
 		(char) (040 + button), (char) (040 + x), (char) (040 + y));
-      write_term (&code[0], sizeof (code) - 1);
+      avtterm_send (&code[0], sizeof (code) - 1);
     }
 }
 
@@ -877,7 +877,7 @@ CSI_sequence (int fd, wchar_t last_character)
 
     case L'c':			/* DA */
       if (sequence[0] == 'c')
-	write_term (DS, sizeof (DS) - 1);
+	avtterm_send (DS, sizeof (DS) - 1);
       else if (sequence[0] == '?')
 	{			/* I have no real infos about that :-( */
 	  if (sequence[1] == '1' && sequence[2] == 'c')
@@ -1102,7 +1102,7 @@ CSI_sequence (int fd, wchar_t last_character)
 
     case L'n':			/* DSR */
       if (sequence[0] == '5' && sequence[1] == 'n')
-	write_term ("\033[0n", 4);	/* device okay */
+	avtterm_send ("\033[0n", 4);	/* device okay */
       /* "\033[3n" for failure */
       else if (sequence[0] == '6' && sequence[1] == 'n')
 	{
@@ -1110,7 +1110,7 @@ CSI_sequence (int fd, wchar_t last_character)
 	  char s[80];
 	  snprintf (s, sizeof (s), "\033[%d;%dR",
 		    avt_where_x (), avt_where_y ());
-	  write_term (s, strlen (s));
+	  avtterm_send (s, strlen (s));
 	}
       /* other values are unknown */
       break;
@@ -1424,7 +1424,7 @@ escape_sequence (int fd, wchar_t last_character)
       break;
 
     case L'Z':			/* DECID */
-      write_term (DS, sizeof (DS) - 1);
+      avtterm_send (DS, sizeof (DS) - 1);
       break;
 
       /* OSC: Operating System Command */

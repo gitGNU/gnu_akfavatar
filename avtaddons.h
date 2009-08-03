@@ -160,13 +160,6 @@ size_t arch_get_data (const char *archive, const char *member,
 
 typedef void (*avtterm_APC_command) (wchar_t*);
 
-/* register handler for APC commands (optional) */
-void avtterm_register_APC (avtterm_APC_command command);
-
-void avtterm_nocolor (avt_bool_t nocolor);
-
-void avtterm_slowprint (avt_bool_t on);
-
 /*
  * execute a subprocess, visible in the balloon
  * if prg_argv == NULL, start a shell
@@ -177,6 +170,16 @@ int avtterm_start (const char *system_encoding, const char *working_dir,
 		   char *const prg_argv[]);
 
 void avtterm_run (int fd);
+
+/* register handler for APC commands (optional) */
+void avtterm_register_APC (avtterm_APC_command command);
+
+void avtterm_nocolor (avt_bool_t nocolor);
+
+void avtterm_slowprint (avt_bool_t on);
+
+/* send data to stdin of the running program */
+void avtterm_send (const char *buf, size_t count);
 
 /*
  * update size of textarea
