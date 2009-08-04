@@ -1,5 +1,5 @@
 /*
- * avtfilechooser - filechooser dialog for AKFAvatar
+ * filechooser - filechooser dialog for AKFAvatar
  * Copyright (c) 2008, 2009 Andreas K. Foerster <info@akfoerster.de>
  *
  * This program is free software; you can redistribute it and/or modify

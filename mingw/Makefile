@@ -196,9 +196,9 @@ alert.c: $(srcdir)/alert.au bin2c
 avatar-default.o: $(srcdir)/avatar-default.c $(default_avatar)
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avatar-default.c
 
-avtfilechooser.o: $(srcdir)/avtfilechooser.c \
-	          $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h
-	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtfilechooser.c
+filechooser.o: $(srcdir)/filechooser.c \
+                 $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/filechooser.c
 
 avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/version.h \
              $(srcdir)/btn-cont.xpm $(srcdir)/balloonpointer.xpm \
@@ -252,9 +252,9 @@ avtccio.o: $(srcdir)/avtccio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 avtcwio.o: $(srcdir)/avtcwio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtcwio.c
 
-libavtaddons.a: avtfilechooser.o askdrive.o arch.o avttermstub.o \
+libavtaddons.a: filechooser.o askdrive.o arch.o avttermstub.o \
                 avtccio.o avtcwio.o avtmsg.o
-	$(AR) rcu $@ avtfilechooser.o askdrive.o arch.o avttermstub.o \
+	$(AR) rcu $@ filechooser.o askdrive.o arch.o avttermstub.o \
 	             avtccio.o avtcwio.o avtmsg.o
 	-$(RANLIB) $@
 

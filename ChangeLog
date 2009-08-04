@@ -5,6 +5,9 @@
 
 	* avtcwio.c: fix definition of vswprintf for MinGW :-(
 
+	* filecooser.c: renamed from avtfilechooser.c
+	to fit in old style ar files
+
 2009-08-03  Andreas K. Foerster  <info@akfoerster.de>
 
 	* mingw/avttermstub.c: new file
