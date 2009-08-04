@@ -38,7 +38,7 @@
 #endif
 
 extern int
-avtcwio_vwprintf (const wchar_t * format, va_list ap)
+avta_vwprintf (const wchar_t * format, va_list ap)
 {
   wchar_t str[AVT_PRINTF_MAXLEN];
   int n;
@@ -53,27 +53,27 @@ avtcwio_vwprintf (const wchar_t * format, va_list ap)
 }
 
 extern int
-avtcwio_wprintf (const wchar_t * format, ...)
+avta_wprintf (const wchar_t * format, ...)
 {
   va_list ap;
   int n;
 
   va_start (ap, format);
-  n = avtcwio_vwprintf (format, ap);
+  n = avta_vwprintf (format, ap);
   va_end (ap);
 
   return n;
 }
 
 extern wint_t
-avtcwio_putwchar (wchar_t c)
+avta_putwchar (wchar_t c)
 {
   avt_put_character (c);
   return c;
 }
 
-extern int 
-avtcwio_putws (const wchar_t *s)
+extern int
+avta_putws (const wchar_t * s)
 {
   avt_say (s);
   avt_new_line ();
@@ -83,7 +83,7 @@ avtcwio_putws (const wchar_t *s)
 }
 
 extern int
-avtcwio_vwscanf (const wchar_t *format, va_list ap)
+avta_vwscanf (const wchar_t * format, va_list ap)
 {
   wchar_t str[AVT_LINELENGTH];
 
@@ -91,14 +91,14 @@ avtcwio_vwscanf (const wchar_t *format, va_list ap)
   return vswscanf (str, format, ap);
 }
 
-extern int 
-avtcwio_wscanf (const wchar_t *format, ...)
+extern int
+avta_wscanf (const wchar_t * format, ...)
 {
   va_list ap;
   int n;
 
   va_start (ap, format);
-  n = avtcwio_vwscanf (format, ap);
+  n = avta_vwscanf (format, ap);
   va_end (ap);
 
   return n;

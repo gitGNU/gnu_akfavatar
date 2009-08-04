@@ -54,12 +54,12 @@
 #  define HAS_DRIVE_LETTERS AVT_TRUE
 #  define HAS_SCANDIR AVT_FALSE
 #  define is_root_dir(x) (x[1] == ':' && x[3] == '\0')
-extern int ask_drive (int max_idx);
+extern int avta_ask_drive (int max_idx);
 #else
 #  define HAS_DRIVE_LETTERS AVT_FALSE
 #  define HAS_SCANDIR AVT_TRUE
 #  define is_root_dir(x) (x[1] == '\0')
-#  define ask_drive(max_idx) 0	/* dummy */
+#  define avta_ask_drive(max_idx) 0	/* dummy */
 #endif
 
 static avt_bool_t
@@ -172,7 +172,7 @@ get_directory (struct dirent ***list)
     }
 
   if (closedir (dir) < 0)
-    msg_warning ("closedir", strerror (errno));
+    avta_warning ("closedir", strerror (errno));
 
   if (!mylist)
     return -1;
@@ -189,7 +189,7 @@ get_directory (struct dirent ***list)
  * return -1 on error or 0 on success
  */
 extern int
-avtfc_get_file (char *filename)
+avta_get_file (char *filename)
 {
   int rcode;			/* return code */
   struct dirent *d;
@@ -213,7 +213,7 @@ avtfc_get_file (char *filename)
   page_entries = max_idx - 2;	/* minus back and forward entries */
 
   if (HAS_DRIVE_LETTERS)
-    if (ask_drive (max_idx + 1))
+    if (avta_ask_drive (max_idx + 1))
       return -1;
 
   /* set maximum size */
@@ -232,7 +232,7 @@ start:
   idx = 0;
 
   if (!getcwd (dirname, sizeof (dirname)))
-    msg_warning ("getcwd", strerror (errno));
+    avta_warning ("getcwd", strerror (errno));
 
   avt_auto_margin (AVT_FALSE);
   new_page (dirname);
@@ -367,7 +367,7 @@ start:
       *filename = '\0';
       if (HAS_DRIVE_LETTERS)	/* ask for drive? */
 	{
-	  if (ask_drive (max_idx + 1) == AVT_NORMAL)
+	  if (avta_ask_drive (max_idx + 1) == AVT_NORMAL)
 	    {
 	      avt_set_balloon_size (0, 0);
 	      goto start;
@@ -383,7 +383,7 @@ start:
   if (is_directory (filename))
     {
       if (chdir (filename))
-	msg_warning (filename, "cannot chdir");
+	avta_warning (filename, "cannot chdir");
       goto start;
     }
 

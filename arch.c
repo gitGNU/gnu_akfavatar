@@ -29,7 +29,7 @@
 #endif
 
 /* structure of an ar member header */
-struct arch_member
+struct avta_arch_member
 {
   char name[16];
   char date[12];
@@ -44,7 +44,7 @@ struct arch_member
  * or -1 on error
  */
 int
-arch_open (const char *archive)
+avta_arch_open (const char *archive)
 {
   int fd;
   ssize_t nread;
@@ -69,11 +69,11 @@ arch_open (const char *archive)
 /* finds a member in the archive */
 /* returns size of the file, or 0 if not found or on error */
 size_t
-arch_find_member (int fd, const char *member)
+avta_arch_find_member (int fd, const char *member)
 {
   size_t name_length;
   size_t skip_size;
-  struct arch_member header;
+  struct avta_arch_member header;
 
   name_length = strlen (member);
 
@@ -117,10 +117,10 @@ arch_find_member (int fd, const char *member)
  * returns size of first member
  */
 size_t
-arch_first_member (int fd, char *member)
+avta_arch_first_member (int fd, char *member)
 {
   size_t size;
-  struct arch_member header;
+  struct avta_arch_member header;
   char *end;
 
   lseek (fd, 8, SEEK_SET);	/* go to first entry */
@@ -160,7 +160,7 @@ arch_first_member (int fd, char *member)
  * returns size or 0 on error 
  */
 size_t
-arch_get_data (const char *archive, const char *member,
+avta_arch_get_data (const char *archive, const char *member,
 	       void **buf, size_t * size)
 {
   int archive_fd;
@@ -171,11 +171,11 @@ arch_get_data (const char *archive, const char *member,
   *size = 0;
   *buf = NULL;
 
-  archive_fd = arch_open (archive);
+  archive_fd = avta_arch_open (archive);
   if (archive_fd < 0)
     return 0;
 
-  *size = arch_find_member (archive_fd, member);
+  *size = avta_arch_find_member (archive_fd, member);
   if (*size > 0)
     {
       /* we add 4 0-Bytes as possible string-terminator */

@@ -1,6 +1,6 @@
 /* 
  * avtmsg - message output for avatarsay for windows
- * Copyright (c) 2007, 2008 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007, 2008, 2009 Andreas K. Foerster <info@akfoerster.de>
  *
  * stdout/stderr are broken in Windows GUI programs,
  * that is the only reason why I fall back to the Windows API
@@ -30,20 +30,20 @@
 static const char *prgname = "AKFAvatar";
 
 extern void
-msg_prgname (const char *name)
+avta_prgname (const char *name)
 {
   prgname = name;
 }
 
 extern void
-msg_info (const char *msg)
+avta_info (const char *msg)
 {
   MessageBox (GetActiveWindow (), msg, prgname,
 	      MB_OK | MB_ICONINFORMATION | MB_SETFOREGROUND);
 }
 
 extern void
-msg_warning (const char *msg1, const char *msg2)
+avta_warning (const char *msg1, const char *msg2)
 {
   char msg[1024];
 
@@ -61,12 +61,12 @@ msg_warning (const char *msg1, const char *msg2)
 
 /* ignore unimportant notices on Windows */
 extern void
-msg_notice (const char *msg1 AVT_UNUSED, const char *msg2 AVT_UNUSED)
+avta_notice (const char *msg1 AVT_UNUSED, const char *msg2 AVT_UNUSED)
 {
 }
 
 extern void
-msg_error (const char *msg1, const char *msg2)
+avta_error (const char *msg1, const char *msg2)
 {
   char msg[1024];
 

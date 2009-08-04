@@ -117,19 +117,19 @@ static const wchar_t vt100trans[] = {
 };
 
 /* handler for APC commands */
-static avtterm_APC_command APC_command_handler;
+static avta_term_apc_cmd apc_cmd_handler;
 
 /* may be defined externally when EXT_AVTTERM_INITIALIZE is defined */
 /* execute a subprocess, visible in the balloon */
 /* if fname == NULL, start a shell */
 /* sets input_fd to a file-descriptor for the input of the process */
 /* returns file-descriptor for the output of the process or -1 on error */
-extern int avtterm_initialize (int *input_fd, const char *system_encoding,
+extern int avta_term_initialize (int *input_fd, const char *system_encoding,
 			       const char *working_dir,
 			       char *const prg_argv[]);
 
 /* may be defined externally when EXT_AVTTERM_SIZE is defined */
-extern void avtterm_size (int fd, int height, int width);
+extern void avta_term_size (int fd, int height, int width);
 
 
 static void
@@ -140,27 +140,27 @@ set_encoding (const char *encoding)
   if (vt100graphics)
     {
       if (avt_mb_encoding ("US-ASCII"))
-	msg_error ("iconv", avt_get_error ());
+	avta_error ("iconv", avt_get_error ());
     }
   else if (avt_mb_encoding (encoding))
     {
-      msg_warning ("iconv", avt_get_error ());
+      avta_warning ("iconv", avt_get_error ());
 
       /* try a fallback */
       avt_set_status (AVT_NORMAL);
       if (avt_mb_encoding ("US-ASCII"))
-	msg_error ("iconv", avt_get_error ());
+	avta_error ("iconv", avt_get_error ());
     }
 }
 
 extern void
-avtterm_nocolor (avt_bool_t on)
+avta_term_nocolor (avt_bool_t on)
 {
   nocolor = on;
 }
 
 extern void
-avtterm_slowprint (avt_bool_t on)
+avta_term_slowprint (avt_bool_t on)
 {
   if (on)
     text_delay = AVT_DEFAULT_TEXT_DELAY;
@@ -181,7 +181,7 @@ activate_cursor (avt_bool_t on)
 
 /* set terminal size */
 extern void
-avtterm_size (int fd AVT_UNUSED, int height AVT_UNUSED, int width AVT_UNUSED)
+avta_term_size (int fd AVT_UNUSED, int height AVT_UNUSED, int width AVT_UNUSED)
 {
 #ifdef TIOCSWINSZ
   struct winsize size;
@@ -196,14 +196,14 @@ avtterm_size (int fd AVT_UNUSED, int height AVT_UNUSED, int width AVT_UNUSED)
 #endif /* not EXT_AVTTERM_SIZE */
 
 extern void
-avtterm_update_size (void)
+avta_term_update_size (void)
 {
   if (prg_input > 0)
     {
       max_x = avt_get_max_x ();
       max_y = avt_get_max_y ();
 
-      avtterm_size (prg_input, max_y, max_x);
+      avta_term_size (prg_input, max_y, max_x);
 
       if (region_max_y > max_y)
 	region_max_y = max_y;
@@ -297,7 +297,7 @@ get_user_shell (void)
 }
 
 extern void
-avtterm_send (const char *buf, size_t count)
+avta_term_send (const char *buf, size_t count)
 {
   ssize_t r;
 
@@ -326,115 +326,115 @@ prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
 	{
 	case 273:		/* up arrow */
 	  dec_cursor_seq[2] = 'A';
-	  avtterm_send (dec_cursor_seq, 3);
+	  avta_term_send (dec_cursor_seq, 3);
 	  break;
 
 	case 274:		/* down arrow */
 	  dec_cursor_seq[2] = 'B';
-	  avtterm_send (dec_cursor_seq, 3);
+	  avta_term_send (dec_cursor_seq, 3);
 	  break;
 
 	case 275:		/* right arrow */
 	  dec_cursor_seq[2] = 'C';
-	  avtterm_send (dec_cursor_seq, 3);
+	  avta_term_send (dec_cursor_seq, 3);
 	  break;
 
 	case 276:		/* left arrow */
 	  dec_cursor_seq[2] = 'D';
-	  avtterm_send (dec_cursor_seq, 3);
+	  avta_term_send (dec_cursor_seq, 3);
 	  break;
 
 	case 277:		/* Insert */
-	  /* avtterm_send ("\033[L", 3); */
-	  avtterm_send ("\033[2~", 4);	/* linux */
+	  /* avta_term_send ("\033[L", 3); */
+	  avta_term_send ("\033[2~", 4);	/* linux */
 	  break;
 
 	case 278:		/* Home */
-	  /* avtterm_send ("\033[H", 3); */
-	  avtterm_send ("\033[1~", 4);	/* linux */
+	  /* avta_term_send ("\033[H", 3); */
+	  avta_term_send ("\033[1~", 4);	/* linux */
 	  break;
 
 	case 279:		/* End */
-	  /* avtterm_send ("\033[0w", 4); */
-	  avtterm_send ("\033[4~", 4);	/* linux */
+	  /* avta_term_send ("\033[0w", 4); */
+	  avta_term_send ("\033[4~", 4);	/* linux */
 	  break;
 
 	case 280:		/* Page up */
-	  avtterm_send ("\033[5~", 4);	/* linux */
+	  avta_term_send ("\033[5~", 4);	/* linux */
 	  break;
 
 	case 281:		/* Page down */
-	  avtterm_send ("\033[6~", 4);	/* linux */
+	  avta_term_send ("\033[6~", 4);	/* linux */
 	  break;
 
 	case 282:		/* F1 */
-	  avtterm_send ("\033[[A", 4);	/* linux */
-	  /* avtterm_send ("\033OP", 3); *//* DEC */
+	  avta_term_send ("\033[[A", 4);	/* linux */
+	  /* avta_term_send ("\033OP", 3); *//* DEC */
 	  break;
 
 	case 283:		/* F2 */
-	  avtterm_send ("\033[[B", 4);	/* linux */
-	  /* avtterm_send ("\033OQ", 3); *//* DEC */
+	  avta_term_send ("\033[[B", 4);	/* linux */
+	  /* avta_term_send ("\033OQ", 3); *//* DEC */
 	  break;
 
 	case 284:		/* F3 */
-	  avtterm_send ("\033[[C", 4);	/* linux */
-	  /* avtterm_send ("\033OR", 3); *//* DEC */
+	  avta_term_send ("\033[[C", 4);	/* linux */
+	  /* avta_term_send ("\033OR", 3); *//* DEC */
 	  break;
 
 	case 285:		/* F4 */
-	  avtterm_send ("\033[[D", 4);	/* linux */
-	  /* avtterm_send ("\033OS", 3); *//* DEC */
+	  avta_term_send ("\033[[D", 4);	/* linux */
+	  /* avta_term_send ("\033OS", 3); *//* DEC */
 	  break;
 
 	case 286:		/* F5 */
-	  avtterm_send ("\033[[E", 4);	/* linux */
-	  /* avtterm_send ("\033Ot", 3); *//* DEC */
+	  avta_term_send ("\033[[E", 4);	/* linux */
+	  /* avta_term_send ("\033Ot", 3); *//* DEC */
 	  break;
 
 	case 287:		/* F6 */
-	  avtterm_send ("\033[17~", 5);	/* linux */
-	  /* avtterm_send ("\033Ou", 3); *//* DEC */
+	  avta_term_send ("\033[17~", 5);	/* linux */
+	  /* avta_term_send ("\033Ou", 3); *//* DEC */
 	  break;
 
 	case 288:		/* F7 */
-	  avtterm_send ("\033[[18~", 5);	/* linux */
-	  /* avtterm_send ("\033Ov", 3); *//* DEC */
+	  avta_term_send ("\033[[18~", 5);	/* linux */
+	  /* avta_term_send ("\033Ov", 3); *//* DEC */
 	  break;
 
 	case 289:		/* F8 */
-	  avtterm_send ("\033[19~", 5);	/* linux */
-	  /* avtterm_send ("\033Ol", 3); *//* DEC */
+	  avta_term_send ("\033[19~", 5);	/* linux */
+	  /* avta_term_send ("\033Ol", 3); *//* DEC */
 	  break;
 
 	case 290:		/* F9 */
-	  avtterm_send ("\033[20~", 5);	/* linux */
-	  /* avtterm_send ("\033Ow", 3); *//* DEC */
+	  avta_term_send ("\033[20~", 5);	/* linux */
+	  /* avta_term_send ("\033Ow", 3); *//* DEC */
 	  break;
 
 	case 291:		/* F10 */
-	  avtterm_send ("\033[21~", 5);	/* linux */
-	  /* avtterm_send ("\033Ox", 3); *//* DEC */
+	  avta_term_send ("\033[21~", 5);	/* linux */
+	  /* avta_term_send ("\033Ox", 3); *//* DEC */
 	  break;
 
 	case 292:		/* F11 */
-	  avtterm_send ("\033[23~", 5);	/* linux */
+	  avta_term_send ("\033[23~", 5);	/* linux */
 	  break;
 
 	case 293:		/* F12 */
-	  avtterm_send ("\033[24~", 5);	/* linux */
+	  avta_term_send ("\033[24~", 5);	/* linux */
 	  break;
 
 	case 294:		/* F13 */
-	  avtterm_send ("\033[25~", 5);	/* linux */
+	  avta_term_send ("\033[25~", 5);	/* linux */
 	  break;
 
 	case 295:		/* F14 */
-	  avtterm_send ("\033[26~", 5);	/* linux */
+	  avta_term_send ("\033[26~", 5);	/* linux */
 	  break;
 
 	case 296:		/* F15 */
-	  avtterm_send ("\033[27~", 5);	/* linux */
+	  avta_term_send ("\033[27~", 5);	/* linux */
 	  break;
 
 	default:
@@ -448,7 +448,7 @@ prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
 	      length = avt_mb_encode (&mbstring, &ch, 1);
 	      if (length != -1)
 		{
-		  avtterm_send (mbstring, length);
+		  avta_term_send (mbstring, length);
 		  avt_free (mbstring);
 		}
 	    }			/* if (unicode) */
@@ -469,7 +469,7 @@ prg_mousehandler (int button, avt_bool_t pressed, int x, int y)
     {
       snprintf (code, sizeof (code), "\033[M%c%c%c",
 		(char) (040 + button), (char) (040 + x), (char) (040 + y));
-      avtterm_send (&code[0], sizeof (code) - 1);
+      avta_term_send (&code[0], sizeof (code) - 1);
     }
 }
 
@@ -779,7 +779,7 @@ reset_terminal (void)
 
   avt_reset_tab_stops ();
   ansi_graphic_code (0);
-  avtterm_slowprint (AVT_FALSE);
+  avta_term_slowprint (AVT_FALSE);
   dec_cursor_seq[0] = '\033';
   dec_cursor_seq[1] = '[';
 }
@@ -877,7 +877,7 @@ CSI_sequence (int fd, wchar_t last_character)
 
     case L'c':			/* DA */
       if (sequence[0] == 'c')
-	avtterm_send (DS, sizeof (DS) - 1);
+	avta_term_send (DS, sizeof (DS) - 1);
       else if (sequence[0] == '?')
 	{			/* I have no real infos about that :-( */
 	  if (sequence[1] == '1' && sequence[2] == 'c')
@@ -984,7 +984,7 @@ CSI_sequence (int fd, wchar_t last_character)
 	      activate_cursor (AVT_TRUE);
 	      break;
 	    case 56:		/* AKFAvatar extension */
-	      avtterm_slowprint (AVT_TRUE);
+	      avta_term_slowprint (AVT_TRUE);
 	      break;
 	    case 66:
 	      application_keypad = AVT_TRUE;
@@ -1029,7 +1029,7 @@ CSI_sequence (int fd, wchar_t last_character)
 	      activate_cursor (AVT_FALSE);
 	      break;
 	    case 56:		/* AKFAvatar extension */
-	      avtterm_slowprint (AVT_FALSE);
+	      avta_term_slowprint (AVT_FALSE);
 	      break;
 	    case 66:
 	      application_keypad = AVT_FALSE;
@@ -1102,7 +1102,7 @@ CSI_sequence (int fd, wchar_t last_character)
 
     case L'n':			/* DSR */
       if (sequence[0] == '5' && sequence[1] == 'n')
-	avtterm_send ("\033[0n", 4);	/* device okay */
+	avta_term_send ("\033[0n", 4);	/* device okay */
       /* "\033[3n" for failure */
       else if (sequence[0] == '6' && sequence[1] == 'n')
 	{
@@ -1110,7 +1110,7 @@ CSI_sequence (int fd, wchar_t last_character)
 	  char s[80];
 	  snprintf (s, sizeof (s), "\033[%d;%dR",
 		    avt_where_x (), avt_where_y ());
-	  avtterm_send (s, strlen (s));
+	  avta_term_send (s, strlen (s));
 	}
       /* other values are unknown */
       break;
@@ -1176,7 +1176,7 @@ CSI_sequence (int fd, wchar_t last_character)
 	  avt_set_balloon_size (height, width);
 	  max_x = avt_get_max_x ();
 	  max_y = avt_get_max_y ();
-	  avtterm_size (prg_input, max_y, max_x);
+	  avta_term_size (prg_input, max_y, max_x);
 	  if (region_max_y > max_y)
 	    region_max_y = max_y;
 	  if (region_min_y > max_y)
@@ -1216,7 +1216,7 @@ CSI_sequence (int fd, wchar_t last_character)
 
 #ifdef DEBUG
     default:
-      msg_warning (CSI_UNUPPORTED, sequence);
+      avta_warning (CSI_UNUPPORTED, sequence);
 #endif
     }
 }
@@ -1244,8 +1244,8 @@ APC_sequence (int fd)
 
   command[p] = L'\0';
 
-  if (APC_command_handler)
-    (*APC_command_handler) (command);
+  if (apc_cmd_handler)
+    (*apc_cmd_handler) (command);
 }
 
 /*
@@ -1424,7 +1424,7 @@ escape_sequence (int fd, wchar_t last_character)
       break;
 
     case L'Z':			/* DECID */
-      avtterm_send (DS, sizeof (DS) - 1);
+      avta_term_send (DS, sizeof (DS) - 1);
       break;
 
       /* OSC: Operating System Command */
@@ -1452,13 +1452,13 @@ escape_sequence (int fd, wchar_t last_character)
 }
 
 extern void
-avtterm_register_APC (avtterm_APC_command command)
+avta_term_register_apc (avta_term_apc_cmd command)
 {
-  APC_command_handler = command;
+  apc_cmd_handler = command;
 }
 
 extern void
-avtterm_run (int fd)
+avta_term_run (int fd)
 {
   avt_bool_t stop;
   wint_t ch;
@@ -1514,7 +1514,7 @@ avtterm_run (int fd)
 
   /* close file descriptor */
   if (close (fd) == -1 && errno != EAGAIN)
-    msg_warning ("close", strerror (errno));
+    avta_warning ("close", strerror (errno));
 
   /* just to prevent zombies */
   wait (NULL);
@@ -1532,18 +1532,18 @@ avtterm_run (int fd)
 }
 
 extern int
-avtterm_start (const char *system_encoding, const char *working_dir,
+avta_term_start (const char *system_encoding, const char *working_dir,
 	       char *const prg_argv[])
 {
   return
-    avtterm_initialize (&prg_input, system_encoding, working_dir, prg_argv);
+    avta_term_initialize (&prg_input, system_encoding, working_dir, prg_argv);
 }
 
 
 #ifndef EXT_AVTTERM_INITIALIZE
 
 extern int
-avtterm_initialize (int *input_fd, const char *system_encoding,
+avta_term_initialize (int *input_fd, const char *system_encoding,
 		    const char *working_dir, char *const prg_argv[])
 {
   pid_t childpid;
@@ -1628,7 +1628,7 @@ avtterm_initialize (int *input_fd, const char *system_encoding,
       return -1;
     }
 
-  avtterm_size (master, max_y, max_x);
+  avta_term_size (master, max_y, max_x);
 
   /*-------------------------------------------------------- */
   childpid = fork ();

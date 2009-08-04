@@ -25,13 +25,13 @@
 static const char *prgname = "AKFAvatar";
 
 extern void
-msg_prgname (const char *name)
+avta_prgname (const char *name)
 {
   prgname = name;
 }
 
 extern void
-msg_info (const char *msg)
+avta_info (const char *msg)
 {
   puts (msg);
 }
@@ -42,7 +42,7 @@ msg_info (const char *msg)
  */
 
 extern void
-msg_warning (const char *msg1, const char *msg2)
+avta_warning (const char *msg1, const char *msg2)
 {
   if (msg2)
     fprintf (stderr, "%s: %s: %s\n", prgname, msg1, msg2);
@@ -51,14 +51,14 @@ msg_warning (const char *msg1, const char *msg2)
 }
 
 extern void
-msg_notice (const char *msg1, const char *msg2)
+avta_notice (const char *msg1, const char *msg2)
 {
-  msg_warning (msg1, msg2);
+  avta_warning (msg1, msg2);
 }
 
 extern void
-msg_error (const char *msg1, const char *msg2)
+avta_error (const char *msg1, const char *msg2)
 {
-  msg_warning (msg1, msg2);
+  avta_warning (msg1, msg2);
   exit (EXIT_FAILURE);
 }

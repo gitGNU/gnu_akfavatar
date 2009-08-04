@@ -27,7 +27,7 @@
 
 /* ask for drive letter */
 int
-ask_drive (int max_idx)
+avta_ask_drive (int max_idx)
 {
   char drive[4] = "X:";
   int drives[26];
@@ -79,7 +79,7 @@ ask:
     {
       if (_chdrive (drives[choice - 1 - 1]) < 0)
 	{
-	  msg_warning (strerror (errno), NULL);
+	  avta_warning (strerror (errno), NULL);
 	  goto ask;
 	}
     }

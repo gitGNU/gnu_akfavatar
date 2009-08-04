@@ -22,39 +22,39 @@
 #include "avtaddons.h"
 
 extern int
-avtterm_start (const char *system_encoding AVT_UNUSED,
-	       const char *working_dir AVT_UNUSED,
-	       char *const prg_argv[] AVT_UNUSED)
+avta_term_start (const char *system_encoding AVT_UNUSED,
+		 const char *working_dir AVT_UNUSED,
+		 char *const prg_argv[] AVT_UNUSED)
 {
   return -1;
 }
 
 extern void
-avtterm_run (int fd AVT_UNUSED)
+avta_term_run (int fd AVT_UNUSED)
 {
 }
 
 extern void
-avtterm_register_APC (avtterm_APC_command command AVT_UNUSED)
+avta_term_register_apc (avta_term_apc_cmd command AVT_UNUSED)
 {
 }
 
 extern void
-avtterm_nocolor (avt_bool_t nocolor AVT_UNUSED)
+avta_term_nocolor (avt_bool_t nocolor AVT_UNUSED)
 {
 }
 
 extern void
-avtterm_slowprint (avt_bool_t on AVT_UNUSED)
+avta_term_slowprint (avt_bool_t on AVT_UNUSED)
 {
 }
 
 extern void
-avtterm_update_size (void)
+avta_term_update_size (void)
 {
 }
 
 extern void
-avtterm_send (const char *buf AVT_UNUSED, size_t count AVT_UNUSED)
+avta_term_send (const char *buf AVT_UNUSED, size_t count AVT_UNUSED)
 {
 }

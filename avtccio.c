@@ -1,6 +1,6 @@
 /*
  * C-specific functions for AKFAvatar (multibyte characters)
- * Copyright (c) 2007 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007, 2009 Andreas K. Foerster <info@akfoerster.de>
  *
  * the calling program must have used avt_initialize before calling 
  * any of these functions.
@@ -42,7 +42,7 @@
    || defined (__NetBSD__)  || defined (__OpenBSD__)
 
 extern int
-avtccio_vprintf (const char *format, va_list ap)
+avta_vprintf (const char *format, va_list ap)
 {
   char *strp;
   int n;
@@ -61,7 +61,7 @@ avtccio_vprintf (const char *format, va_list ap)
 #else /* not __USE_GNU */
 
 extern int
-avtccio_vprintf (const char *format, va_list ap)
+avta_vprintf (const char *format, va_list ap)
 {
   char str[AVT_PRINTF_MAXLEN];
   int n;
@@ -83,27 +83,27 @@ avtccio_vprintf (const char *format, va_list ap)
 #endif /* not __USE_GNU */
 
 extern int
-avtccio_printf (const char *format, ...)
+avta_printf (const char *format, ...)
 {
   va_list ap;
   int n;
 
   va_start (ap, format);
-  n = avtccio_vprintf (format, ap);
+  n = avta_vprintf (format, ap);
   va_end (ap);
 
   return n;
 }
 
 extern int
-avtccio_putchar (int c)
+avta_putchar (int c)
 {
   avt_say_mb_len ((char *) &c, 1);
   return c;
 }
 
 extern int
-avtccio_puts (const char *s)
+avta_puts (const char *s)
 {
   avt_say_mb (s);
   avt_new_line ();
@@ -113,7 +113,7 @@ avtccio_puts (const char *s)
 }
 
 extern int
-avtccio_vscanf (const char *format, va_list ap)
+avta_vscanf (const char *format, va_list ap)
 {
   char str[4 * AVT_LINELENGTH];
 
@@ -122,13 +122,13 @@ avtccio_vscanf (const char *format, va_list ap)
 }
 
 extern int
-avtccio_scanf (const char *format, ...)
+avta_scanf (const char *format, ...)
 {
   va_list ap;
   int n;
 
   va_start (ap, format);
-  n = avtccio_vscanf (format, ap);
+  n = avta_vscanf (format, ap);
   va_end (ap);
 
   return n;
