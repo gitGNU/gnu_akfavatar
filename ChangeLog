@@ -3,6 +3,8 @@
 	* avtaddons.h: common prefix "avta_"
 	All implementations and callers adapted
 
+	* avtcwio.c: fix definition of vswprintf for MinGW :-(
+
 2009-08-03  Andreas K. Foerster  <info@akfoerster.de>
 
 	* mingw/avttermstub.c: new file

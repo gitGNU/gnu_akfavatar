@@ -33,8 +33,8 @@
 #endif
 
 /* msvcrt has this function in a non-standard way */
-#if defined(__MINGW32__) && !defined(vswprintf)
-#  define vswprintf _vswprintf
+#ifdef __MINGW32__
+#  define vswprintf _vsnwprintf
 #endif
 
 extern int
