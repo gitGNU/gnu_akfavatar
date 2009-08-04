@@ -10,6 +10,9 @@
 
 	* avtaddons.c [AVTADDONS_DLL]: new conditional
 
+	* avtposix.c: new file
+	avtarsay.c, mingw/avtwindows.c: adapted
+
 2009-08-03  Andreas K. Foerster  <info@akfoerster.de>
 
 	* mingw/avttermstub.c: new file

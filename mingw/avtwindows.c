@@ -28,10 +28,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define START_CODE 0xE000
+/* TODO: write integrated editor! */
 
 void
-edit_file (const char *name)
+edit_file (const char *name, const char *encoding AVT_UNUSED)
 {
   /* enforce window mode for the other window to be shown */
   avt_switch_mode (AVT_WINDOW);

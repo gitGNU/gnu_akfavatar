@@ -142,20 +142,23 @@ libavtaddons.a: filechooser.o avtterm.o arch.o \
 	             avtccio.o avtcwio.o avtmsg.o
 	-$(RANLIB) $@
 
+avtposix.o: $(srcdir)/avtposix.c
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtposix.c
+
 # avatarsay dynamically linked
 # only works, when the library is installed
-avatarsay-d: avatarsay.o libavtaddons.a libakfavatar.so
-	$(CC) -o $@ avatarsay.o -L. -lavtaddons -lakfavatar \
+avatarsay-d: avatarsay.o avtposix.o libavtaddons.a libakfavatar.so
+	$(CC) -o $@ avatarsay.o avtposix.o -L. -lavtaddons -lakfavatar \
 	  $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
 # avatarsay dynamically linked, with local rpath if possible
-avatarsay: avatarsay.o libavtaddons.a libakfavatar.so
-	$(CC) -o $@ avatarsay.o -L. -lavtaddons -lakfavatar \
+avatarsay: avatarsay.o avtposix.o libavtaddons.a libakfavatar.so
+	$(CC) -o $@ avatarsay.o avtposix.o -L. -lavtaddons -lakfavatar \
 	  $(LDFLAGS) $(AVATARSAY_LDFLAGS) $(LOCAL_GCC_RPATH)
 
 # avatarsay with statical libakfavatar.a
-avatarsay-s: avatarsay.o libavtaddons.a libakfavatar.a
-	$(CC) -o $@ avatarsay.o -L. -lavtaddons libakfavatar.a \
+avatarsay-s: avatarsay.o avtposix.o libavtaddons.a libakfavatar.a
+	$(CC) -o $@ avatarsay.o avtposix.o -L. -lavtaddons libakfavatar.a \
 	   $(SDLLDFLAGS) $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
 installdirs:
@@ -333,7 +336,7 @@ dist: info html man distclean
 	   balloonpointer.xpm circle.xpm gnu-head.xpm \
 	   male_user.xpm female_user.xpm \
 	   btn.xpm btn-cont.xpm btn-no.xpm btn-yes.xpm \
-	   avatarsay.c avtterm.c avtmsg.c arch.c avtcolors.h \
+	   avatarsay.c avtposix.c avtterm.c avtmsg.c arch.c avtcolors.h \
 	   avtman avtcmd example.c fsdemo-?? \
 	   gnome-akfavatar akfoerster-avatarsay.desktop bdfread.c \
 	   akfavatar.xpm info.xpm bin2c.c \

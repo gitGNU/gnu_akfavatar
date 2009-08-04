@@ -43,8 +43,6 @@
 #  define DIR_SEPARATOR '\\'
 #  define NO_MANPAGES 1
 #  define HAS_STDERR 0		/* avoid using stderr */
-#  define EXT_GET_USER_HOME 1	/* external get_user_home function */
-#  define EXT_EDIT_FILE 1	/* external edit_file function */
 #  ifdef __MINGW32__
 #    define NO_PTY 1
 #    define NO_LANGINFO 1
@@ -60,7 +58,6 @@
 
 #ifndef NO_PTY
 #  include <sys/wait.h>
-#  include <pwd.h>
 #endif
 
 /* some systems don't know O_NONBLOCK */
@@ -214,13 +211,13 @@ static struct
   int type, samplingrate, channels;
 } raw_audio;
 
-/* the following functions may be defined externally */
-/* depending on macros, starting with EXT_ */
-void get_user_home (char *home_dir, size_t size);
-void edit_file (const char *name);
-
-/* possibly unused functions */
-AVT_UNUSED static void APC_command (wchar_t * s);
+/*
+ * the following functions are defined externally,
+ * because they are system specific
+ * see avtposix.c or avtwindows.c
+ */
+extern void get_user_home (char *home_dir, size_t size);
+extern void edit_file (const char *name, const char *encoding);
 
 
 static void
@@ -344,34 +341,6 @@ not_available (void)
 }
 
 #endif /* not Windows or ReactOS */
-
-#ifndef EXT_GET_USER_HOME
-
-/* get user's home direcory */
-void
-get_user_home (char *home_dir, size_t size)
-{
-  char *home;
-
-  home = getenv ("HOME");
-
-  /* when the variable is not set, dig deeper */
-  if (home == NULL || *home == '\0')
-    {
-      struct passwd *user_data;
-
-      user_data = getpwuid (getuid ());
-      if (user_data != NULL && user_data->pw_dir != NULL
-	  && *user_data->pw_dir != '\0')
-	home = user_data->pw_dir;
-    }
-
-  strncpy (home_dir, home, size);
-  if (size > 0)
-    home_dir[size - 1] = '\0';
-}
-
-#endif /* not EXT_GET_USER_HOME */
 
 static void
 set_encoding (const char *encoding)
@@ -2488,32 +2457,6 @@ ask_manpage (void)
 #endif /* not NO_PTY */
 #endif /* not NO_MANPAGES */
 
-#ifndef EXT_EDIT_FILE
-
-void
-edit_file (const char *name)
-{
-  char *editor;
-  char *args[3];
-  int fd;
-
-  editor = getenv ("VISUAL");
-  if (!editor)
-    editor = getenv ("EDITOR");
-  if (!editor)
-    editor = "vi";
-
-  args[0] = editor;
-  args[1] = (char *) name;
-  args[2] = (char *) NULL;
-
-  fd = avta_term_start (default_encoding, NULL, args);
-  if (fd > -1)
-    avta_term_run (fd);
-}
-
-#endif /* not EXT_EDIT_FILE */
-
 static void
 create_file (const char *filename)
 {
@@ -2608,7 +2551,7 @@ ask_edit_file (void)
 	default:
 	  avt_say (L"opening file in an editor...");
 	}
-      edit_file (filename);
+      edit_file (filename, default_encoding);
     }
 }
 
