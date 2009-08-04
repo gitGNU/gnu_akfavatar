@@ -13,6 +13,11 @@
 	* avtposix.c: new file
 	avtarsay.c, mingw/avtwindows.c: adapted
 
+	* avtccio.c [!__USE_GNU] (avta_vprintf):
+	allow unlimited size (needs C99 compliant libc)
+
+	* avtccio.c (avta_putchar): allow characters > 255
+
 2009-08-03  Andreas K. Foerster  <info@akfoerster.de>
 
 	* mingw/avttermstub.c: new file

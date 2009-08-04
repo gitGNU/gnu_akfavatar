@@ -31,10 +31,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef AVT_PRINTF_MAXLEN
-#  define AVT_PRINTF_MAXLEN 1024
-#endif
-
 
 /* vasprintf is a GNU extention and also in BSDs */
 #if defined (__USE_GNU) \
@@ -60,22 +56,38 @@ avta_vprintf (const char *format, va_list ap)
 
 #else /* not __USE_GNU */
 
+/*
+ * this function assumes C99 conforming behaviour of vsnprintf
+ * some old implementations just return -1 when buffer is too small
+ */
+
 extern int
 avta_vprintf (const char *format, va_list ap)
 {
-  char str[AVT_PRINTF_MAXLEN];
+  char *str;
   int n;
 
-  n = vsnprintf (str, AVT_PRINTF_MAXLEN, format, ap);
+  str = (char *) malloc (str, BUFSIZ);
+  if (str)
+    n = vsnprintf (str, BUFSIZ, format, ap);
+  else
+    n = -1;
 
-  if (n > -1)
+  /* do we need more size? */
+  if (n >= BUFSIZ)
+    {
+      str = (char *) realloc (str, n + 1);
+      if (str)
+	n = vsnprintf (str, n, format, ap);
+      else
+	n = -1;
+    }
+
+  if (str && n > -1)
     avt_say_mb_len (str, n);
 
-  /* was string truncated to maximum size?
-   * Then return only the printed chars
-   */
-  if (n >= (int) sizeof (str))
-    n = sizeof (str);
+  if (str)
+    free (str);
 
   return n;
 }
@@ -98,7 +110,9 @@ avta_printf (const char *format, ...)
 extern int
 avta_putchar (int c)
 {
-  avt_say_mb_len ((char *) &c, 1);
+  if (c >= 0)
+    avt_put_character (c);	/* implicit cast to wchar_t */
+
   return c;
 }
 
