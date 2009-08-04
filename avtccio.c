@@ -74,7 +74,7 @@ avta_vprintf (const char *format, va_list ap)
   /* was string truncated to maximum size?
    * Then return only the printed chars
    */
-  if (n >= sizeof (str))
+  if (n >= (int) sizeof (str))
     n = sizeof (str);
 
   return n;
