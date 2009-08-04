@@ -36,6 +36,9 @@
 #include <string.h>
 #include <fcntl.h>
 
+/* for later use */
+#define AVT_ADDON  extern
+
 /**********************************************************************
  * Section: avtccio
  * C-specific functions for input/output
@@ -44,12 +47,12 @@
  * avt_mb_encoding  before calling any of these functions.
  **********************************************************************/
 
-int avtccio_vprintf (const char *format, va_list ap);
-int avtccio_printf (const char *format, ...);
-int avtccio_putchar (int c);
-int avtccio_puts (const char *s);
-int avtccio_vscanf (const char *format, va_list ap);
-int avtccio_scanf (const char *format, ...);
+AVT_ADDON int avtccio_vprintf (const char *format, va_list ap);
+AVT_ADDON int avtccio_printf (const char *format, ...);
+AVT_ADDON int avtccio_putchar (int c);
+AVT_ADDON int avtccio_puts (const char *s);
+AVT_ADDON int avtccio_vscanf (const char *format, va_list ap);
+AVT_ADDON int avtccio_scanf (const char *format, ...);
 
 /**********************************************************************
  * Section: avtcwio
@@ -59,12 +62,12 @@ int avtccio_scanf (const char *format, ...);
  * any of these functions.
  **********************************************************************/
 
-int avtcwio_vwprintf (const wchar_t * format, va_list ap);
-int avtcwio_wprintf (const wchar_t * format, ...);
-wint_t avtcwio_putwchar (wchar_t c);
-int avtcwio_putws (const wchar_t * s);
-int avtcwio_vwscanf (const wchar_t * format, va_list ap);
-int avtcwio_wscanf (const wchar_t * format, ...);
+AVT_ADDON int avtcwio_vwprintf (const wchar_t * format, va_list ap);
+AVT_ADDON int avtcwio_wprintf (const wchar_t * format, ...);
+AVT_ADDON wint_t avtcwio_putwchar (wchar_t c);
+AVT_ADDON int avtcwio_putws (const wchar_t * s);
+AVT_ADDON int avtcwio_vwscanf (const wchar_t * format, va_list ap);
+AVT_ADDON int avtcwio_wscanf (const wchar_t * format, ...);
 
 
 /**********************************************************************
@@ -91,19 +94,19 @@ int avtcwio_wscanf (const wchar_t * format, ...);
  * set the name of the programm, default: "AKFAvatar"
  * the string must be kept available - a string literal is okay
  */
-void msg_prgname (const char *name);
+AVT_ADDON void msg_prgname (const char *name);
 
 /* info on stdout */
-void msg_info(const char *msg);
+AVT_ADDON void msg_info(const char *msg);
 
 /* warning on stderr */
-void msg_warning (const char *msg1, const char *msg2);
+AVT_ADDON void msg_warning (const char *msg1, const char *msg2);
 
 /* unimportant notice (might be ignored) */
-void msg_notice (const char *msg1, const char *msg2);
+AVT_ADDON void msg_notice (const char *msg1, const char *msg2);
 
 /* error that quits the program */
-void msg_error (const char *msg1, const char *msg2);
+AVT_ADDON void msg_error (const char *msg1, const char *msg2);
 
 /**********************************************************************
  * Section: avtfilechooser
@@ -111,7 +114,7 @@ void msg_error (const char *msg1, const char *msg2);
  **********************************************************************/
 
 /* starts in working directory; returns 0 on success or -1 on error */
-int avtfc_get_file (char *filename);
+AVT_ADDON int avtfc_get_file (char *filename);
 
 /**********************************************************************
  * Section: arch
@@ -122,7 +125,7 @@ int avtfc_get_file (char *filename);
  * return file descriptor, if it's an archive
  * or -1 on error
  */
-int arch_open (const char *archive);
+AVT_ADDON int arch_open (const char *archive);
 
 /*
  * finds a member in the archive 
@@ -130,7 +133,7 @@ int arch_open (const char *archive);
  * the member name may not be longer than 15 characters 
  * returns size of the member, or 0 if not found 
  */
-size_t arch_find_member (int fd, const char *member);
+AVT_ADDON size_t arch_find_member (int fd, const char *member);
 
 /*
  * finds first archive member
@@ -139,7 +142,7 @@ size_t arch_find_member (int fd, const char *member);
  * member must have at least 16 bytes
  * returns size of first member
  */
-size_t arch_first_member (int fd, char *member);
+AVT_ADDON size_t arch_first_member (int fd, char *member);
 
 /*
  * read in whole member of a named archive
@@ -148,8 +151,8 @@ size_t arch_first_member (int fd, char *member);
  * the buffer gets some binary zeros added, so it can be used as string
  * returns size or 0 on error 
  */
-size_t arch_get_data (const char *archive, const char *member,
-		      void **buf, size_t * size);
+AVT_ADDON size_t arch_get_data (const char *archive, const char *member,
+				void **buf, size_t * size);
 
 
 /**********************************************************************
@@ -164,27 +167,28 @@ typedef void (*avtterm_APC_command) (wchar_t*);
  * execute a subprocess, visible in the balloon
  * if prg_argv == NULL, start a shell
  * returns file-descriptor for output of the process
- * or -1 on error
+ * or -1 on error (also if not supported at all)
  */
-int avtterm_start (const char *system_encoding, const char *working_dir,
-		   char *const prg_argv[]);
+AVT_ADDON int avtterm_start (const char *system_encoding, 
+			     const char *working_dir,
+			     char *const prg_argv[]);
 
-void avtterm_run (int fd);
+AVT_ADDON void avtterm_run (int fd);
 
 /* register handler for APC commands (optional) */
-void avtterm_register_APC (avtterm_APC_command command);
+AVT_ADDON void avtterm_register_APC (avtterm_APC_command command);
 
-void avtterm_nocolor (avt_bool_t nocolor);
+AVT_ADDON void avtterm_nocolor (avt_bool_t nocolor);
 
-void avtterm_slowprint (avt_bool_t on);
+AVT_ADDON void avtterm_slowprint (avt_bool_t on);
 
 /* send data to stdin of the running program */
-void avtterm_send (const char *buf, size_t count);
+AVT_ADDON void avtterm_send (const char *buf, size_t count);
 
 /*
  * update size of textarea
  * call this after you have changed the size of the balloon
  */
-void avtterm_update_size (void);
+AVT_ADDON void avtterm_update_size (void);
 
 #endif /* AVTADDONS_H */
