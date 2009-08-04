@@ -8,6 +8,8 @@
 	* filecooser.c: renamed from avtfilechooser.c
 	to fit in old style ar files
 
+	* avtaddons.c [AVTADDONS_DLL]: new conditional
+
 2009-08-03  Andreas K. Foerster  <info@akfoerster.de>
 
 	* mingw/avttermstub.c: new file

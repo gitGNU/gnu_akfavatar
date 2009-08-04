@@ -39,6 +39,10 @@
 /* for later use */
 #define AVT_ADDON  extern
 
+#ifdef AVTADDONS_DLL
+  AVT_BEGIN_DECLS
+#endif
+
 /**********************************************************************
  * Section: avtccio
  * C-specific functions for input/output
@@ -187,5 +191,9 @@ AVT_ADDON void avta_term_send (const char *buf, size_t count);
  * call this after you have changed the size of the balloon
  */
 AVT_ADDON void avta_term_update_size (void);
+
+#ifdef AVTADDONS_DLL
+  AVT_END_DECLS
+#endif
 
 #endif /* AVTADDONS_H */
