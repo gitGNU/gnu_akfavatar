@@ -51,12 +51,12 @@
  * avt_mb_encoding  before calling any of these functions.
  **********************************************************************/
 
-AVT_ADDON int avta_vprintf (const char *format, va_list ap);
 AVT_ADDON int avta_printf (const char *format, ...);
 AVT_ADDON int avta_putchar (int c);
 AVT_ADDON int avta_puts (const char *s);
-AVT_ADDON int avta_vscanf (const char *format, va_list ap);
 AVT_ADDON int avta_scanf (const char *format, ...);
+AVT_ADDON int avta_vprintf (const char *format, va_list ap);
+AVT_ADDON int avta_vscanf (const char *format, va_list ap);
 
 /**********************************************************************
  * Section: avtcwio
@@ -66,12 +66,12 @@ AVT_ADDON int avta_scanf (const char *format, ...);
  * any of these functions.
  **********************************************************************/
 
-AVT_ADDON int avta_vwprintf (const wchar_t * format, va_list ap);
-AVT_ADDON int avta_wprintf (const wchar_t * format, ...);
+AVT_ADDON int avta_wprintf (const wchar_t *format, ...);
 AVT_ADDON wint_t avta_putwchar (wchar_t c);
-AVT_ADDON int avta_putws (const wchar_t * s);
-AVT_ADDON int avta_vwscanf (const wchar_t * format, va_list ap);
-AVT_ADDON int avta_wscanf (const wchar_t * format, ...);
+AVT_ADDON int avta_putws (const wchar_t *s);
+AVT_ADDON int avta_wscanf (const wchar_t *format, ...);
+AVT_ADDON int avta_vwprintf (const wchar_t *format, va_list ap);
+AVT_ADDON int avta_vwscanf (const wchar_t *format, va_list ap);
 
 
 /**********************************************************************
@@ -153,7 +153,7 @@ AVT_ADDON size_t avta_arch_first_member (int fd, char *member);
  */
 AVT_ADDON size_t avta_arch_get_data (const char *archive, 
 				     const char *member,
-				     void **buf, size_t * size);
+				     void **buf, size_t *size);
 
 
 /**********************************************************************
