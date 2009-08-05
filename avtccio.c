@@ -107,13 +107,21 @@ avta_printf (const char *format, ...)
   return n;
 }
 
+/*
+ * do not use avt_put_character here,
+ * because it doesn't depend on the chosen encoding!
+ */
 extern int
 avta_putchar (int c)
 {
-  if (c >= 0)
-    avt_put_character (c);	/* implicit cast to wchar_t */
+  unsigned char ch;
 
-  return c;
+  ch = c;
+  if (c >= 0)
+    avt_say_mb_len ((char *) &ch, 1);
+
+  /* return the unsigned char! */
+  return (int) ch;
 }
 
 extern int
