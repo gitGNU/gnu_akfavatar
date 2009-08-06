@@ -1468,6 +1468,13 @@ handle_read_command (void)
   /* TODO: handle_read_command not fully implemented yet */
 }
 
+/* check complete commands */
+#define chk_cmd(s)      (wcscmp(cmd, s) == 0)
+
+/* check commands with parameter(s) */
+/* note: sizeof is calculated at compile-time, not at run-time */
+#define chk_cmd_par(s)  (wcsncmp(cmd, s, sizeof(s)/sizeof(wchar_t)-1) == 0)
+
 /* handle command */
 /* also used for APC_command */
 static void
@@ -1480,15 +1487,15 @@ avatar_command (wchar_t * cmd, int *stop)
 
   /* search cmd_len */
   cmd_len = 0;
-  while (cmd[cmd_len] && cmd[cmd_len] != L' ')
+  while (cmd[cmd_len] && !iswblank (cmd[cmd_len]))
     cmd_len++;
 
-  /* include last space in cmd_len */
-  if (cmd[cmd_len])
+  /* include spaces in cmd_len */
+  while (cmd[cmd_len] && iswblank (cmd[cmd_len]))
     cmd_len++;
 
   /* new datadir */
-  if (wcsncmp (cmd, L"datadir ", cmd_len) == 0)
+  if (chk_cmd_par (L"datadir "))
     {
       char directory[PATH_LENGTH];
       get_data_file (cmd + cmd_len, directory);
@@ -1497,19 +1504,19 @@ avatar_command (wchar_t * cmd, int *stop)
       return;
     }
 
-  if (wcscmp (cmd, L"avatarimage none") == 0)
+  if (chk_cmd (L"avatarimage none"))
     {
       change_avatar_image (NULL);
       return;
     }
 
-  if (wcscmp (cmd, L"avatarimage info") == 0)
+  if (chk_cmd (L"avatarimage info"))
     {
       change_avatar_image (avt_import_XPM (info_xpm));
       return;
     }
 
-  if (wcsncmp (cmd, L"avatarimage ", cmd_len) == 0)
+  if (chk_cmd_par (L"avatarimage "))
     {
       handle_avatarimage_command (cmd + cmd_len);
       return;
@@ -1517,49 +1524,49 @@ avatar_command (wchar_t * cmd, int *stop)
 
   /* the encoding is checked in check_encoding() */
   /* so ignore it here */
-  if (wcsncmp (cmd, L"encoding ", cmd_len) == 0)
+  if (chk_cmd_par (L"encoding "))
     return;
 
-  if (wcsncmp (cmd, L"title ", cmd_len) == 0)
+  if (chk_cmd_par (L"title "))
     {
       handle_title_command (cmd + cmd_len);
       return;
     }
 
-  if (wcsncmp (cmd, L"backgroundcolor ", cmd_len) == 0)
+  if (chk_cmd_par (L"backgroundcolor "))
     {
       handle_backgroundcolor_command (cmd + cmd_len);
       return;
     }
 
-  if (wcsncmp (cmd, L"textcolor ", cmd_len) == 0)
+  if (chk_cmd_par (L"textcolor "))
     {
       handle_textcolor_command (cmd + cmd_len);
       return;
     }
 
-  if (wcsncmp (cmd, L"ballooncolor ", cmd_len) == 0)
+  if (chk_cmd_par (L"ballooncolor "))
     {
       handle_ballooncolor_command (cmd + cmd_len);
       return;
     }
 
   /* default - for most languages */
-  if (wcscmp (cmd, L"left-to-right") == 0)
+  if (chk_cmd (L"left-to-right"))
     {
       avt_text_direction (AVT_LEFT_TO_RIGHT);
       return;
     }
 
   /* currently only hebrew/yiddish supported */
-  if (wcscmp (cmd, L"right-to-left") == 0)
+  if (chk_cmd (L"right-to-left"))
     {
       avt_text_direction (AVT_RIGHT_TO_LEFT);
       return;
     }
 
   /* slow printing on */
-  if (wcscmp (cmd, L"slow on") == 0)
+  if (chk_cmd (L"slow on"))
     {
       /* for demos: */
       avt_set_text_delay (AVT_DEFAULT_TEXT_DELAY);
@@ -1569,7 +1576,7 @@ avatar_command (wchar_t * cmd, int *stop)
     }
 
   /* slow printing off */
-  if (wcscmp (cmd, L"slow off") == 0)
+  if (chk_cmd (L"slow off"))
     {
       /* for demos: */
       avt_set_text_delay (0);
@@ -1579,14 +1586,14 @@ avatar_command (wchar_t * cmd, int *stop)
     }
 
   /* switch scrolling off */
-  if (wcscmp (cmd, L"scrolling off") == 0)
+  if (chk_cmd (L"scrolling off"))
     {
       avt_set_scroll_mode (-1);
       return;
     }
 
   /* switch scrolling on */
-  if (wcscmp (cmd, L"scrolling on") == 0)
+  if (chk_cmd (L"scrolling on"))
     {
       avt_set_scroll_mode (1);
       return;
@@ -1594,28 +1601,28 @@ avatar_command (wchar_t * cmd, int *stop)
 
   /* change balloon size */
   /* no parameters set the maximum size */
-  if (wcsncmp (cmd, L"size ", cmd_len) == 0)
+  if (chk_cmd_par (L"size "))
     {
       handle_size_command (cmd + cmd_len);
       return;
     }
 
   /* change balloonheight */
-  if (wcsncmp (cmd, L"height ", cmd_len) == 0)
+  if (chk_cmd_par (L"height "))
     {
       handle_height_command (cmd + cmd_len);
       return;
     }
 
   /* change balloonwidth */
-  if (wcsncmp (cmd, L"width ", cmd_len) == 0)
+  if (chk_cmd_par (L"width "))
     {
       handle_width_command (cmd + cmd_len);
       return;
     }
 
   /* new page - same as \f or stripline */
-  if (wcscmp (cmd, L"flip") == 0)
+  if (chk_cmd (L"flip"))
     {
       if (initialized)
 	if (avt_flip_page () && stop != NULL)
@@ -1624,14 +1631,14 @@ avatar_command (wchar_t * cmd, int *stop)
     }
 
   /* clear ballon - don't wait */
-  if (wcscmp (cmd, L"clear") == 0)
+  if (chk_cmd (L"clear"))
     {
       if (initialized)
 	avt_clear ();
       return;
     }
 
-  if (wcscmp (cmd, L"empty") == 0)
+  if (chk_cmd (L"empty"))
     {
       if (initialized)
 	avt_clear_screen ();
@@ -1641,7 +1648,7 @@ avatar_command (wchar_t * cmd, int *stop)
     }
 
   /* move avatar out */
-  if (wcscmp (cmd, L"move out") == 0)
+  if (chk_cmd (L"move out"))
     {
       if (initialized)
 	avt_move_out ();
@@ -1649,7 +1656,7 @@ avatar_command (wchar_t * cmd, int *stop)
     }
 
   /* move avatar in */
-  if (wcscmp (cmd, L"move in") == 0)
+  if (chk_cmd (L"move in"))
     {
       if (initialized && !moved_in)
 	avt_move_in ();
@@ -1657,7 +1664,7 @@ avatar_command (wchar_t * cmd, int *stop)
     }
 
   /* wait a while or a given time */
-  if (wcsncmp (cmd, L"wait ", cmd_len) == 0)
+  if (chk_cmd_par (L"wait "))
     {
       int value;
 
@@ -1668,7 +1675,7 @@ avatar_command (wchar_t * cmd, int *stop)
     }
 
   /* longer intermezzo */
-  if (wcscmp (cmd, L"pause") == 0)
+  if (chk_cmd (L"pause"))
     {
       if (!initialized)
 	initialize ();
@@ -1682,64 +1689,64 @@ avatar_command (wchar_t * cmd, int *stop)
     }
 
   /* show image */
-  if (wcsncmp (cmd, L"image ", cmd_len) == 0)
+  if (chk_cmd_par (L"image "))
     {
       handle_image_command (cmd + cmd_len, stop);
       return;
     }
 
   /* load and play sound */
-  if (wcsncmp (cmd, L"audio ", cmd_len) == 0)
+  if (chk_cmd_par (L"audio "))
     {
       handle_audio_command (cmd + cmd_len, AVT_FALSE);
       return;
     }
 
   /* load and play sound in a loop */
-  if (wcsncmp (cmd, L"audioloop ", cmd_len) == 0)
+  if (chk_cmd_par (L"audioloop "))
     {
       handle_audio_command (cmd + cmd_len, AVT_TRUE);
       return;
     }
 
   /* rawaudiosettings */
-  /* example: "rawaudiosettings 44100 16 signed little mono" */
-  if (wcsncmp (cmd, L"rawaudiosettings ", cmd_len) == 0)
+  /* example: "rawaudiosettings s16le 44100 mono" */
+  if (chk_cmd_par (L"rawaudiosettings "))
     {
       handle_rawaudiosettings_command (cmd + cmd_len);
       return;
     }
 
   /* load sound */
-  if (wcsncmp (cmd, L"loadaudio ", cmd_len) == 0)
+  if (chk_cmd_par (L"loadaudio "))
     {
       handle_loadaudio_command (cmd + cmd_len);
       return;
     }
 
   /* play sound, loaded by loadaudio */
-  if (wcscmp (cmd, L"playaudio") == 0)
+  if (chk_cmd (L"playaudio"))
     {
       handle_playaudio_command (AVT_FALSE);
       return;
     }
 
   /* play sound in a loop, loaded by loadaudio */
-  if (wcscmp (cmd, L"playaudioloop") == 0)
+  if (chk_cmd (L"playaudioloop"))
     {
       handle_playaudio_command (AVT_TRUE);
       return;
     }
 
   /* stop sound */
-  if (wcscmp (cmd, L"stopaudio") == 0)
+  if (chk_cmd (L"stopaudio"))
     {
       avt_stop_audio ();
       return;
     }
 
   /* wait until sound ends */
-  if (wcscmp (cmd, L"waitaudio") == 0)
+  if (chk_cmd (L"waitaudio"))
     {
       if (initialized)
 	if (avt_wait_audio_end () && stop != NULL)
@@ -1751,7 +1758,7 @@ avatar_command (wchar_t * cmd, int *stop)
    * pause for effect in a sentence
    * the previous line should end with a backslash
    */
-  if (wcscmp (cmd, L"effectpause") == 0)
+  if (chk_cmd (L"effectpause"))
     {
       if (initialized)
 	if (avt_wait (AVT_DEFAULT_FLIP_PAGE_DELAY) && stop != NULL)
@@ -1763,33 +1770,33 @@ avatar_command (wchar_t * cmd, int *stop)
    * move back a number of characters
    * the previous line has to end with a backslash!
    */
-  if (wcsncmp (cmd, L"back ", cmd_len) == 0)
+  if (chk_cmd_par (L"back "))
     {
       handle_back_command (cmd + cmd_len);
       return;
     }
 
-  if (wcscmp (cmd, L"read") == 0)
+  if (chk_cmd (L"read"))
     {
       handle_read_command ();
       return;
     }
 
   /* show final credits */
-  if (wcsncmp (cmd, L"credits ", cmd_len) == 0)
+  if (chk_cmd_par (L"credits "))
     {
       handle_credits_command (cmd + cmd_len, stop);
       return;
     }
 
   /* file viewer - just for terminal */
-  if (wcsncmp (cmd, L"pager ", cmd_len) == 0)
+  if (chk_cmd_par (L"pager "))
     {
       handle_pager_command (cmd + cmd_len);
       return;
     }
 
-  if (wcscmp (cmd, L"end") == 0)
+  if (chk_cmd (L"end"))
     {
       if (initialized)
 	avt_move_out ();
@@ -1799,7 +1806,7 @@ avatar_command (wchar_t * cmd, int *stop)
       return;
     }
 
-  if (wcscmp (cmd, L"stop") == 0)
+  if (chk_cmd (L"stop"))
     {
       /* doesn't matter whether it's initialized */
       if (stop != NULL)
