@@ -38,6 +38,7 @@ libdir='$(exec_prefix)/lib'
 includedir='$(exec_prefix)/include'
 datadir='$(prefix)/share'
 infodir='$(datadir)/info'
+docdir='$(datadir)/doc/$(pkgname)'
 mandir='$(datadir)/man'
 sysconfdir='$(prefix)/etc'
 CC=
@@ -85,6 +86,7 @@ while [ x"$1" != x ] ; do
 		echo "  --datadir=DIR         base directory for doc and data [${datadir}]"
 		echo "  --infodir=DIR         info files directory [${infodir}]"
 		echo "  --mandir=DIR          man pages directory [${mandir}]"
+		echo "  --docdir=DIR          documentation directory [${docdir}]"
 		echo "  --sysconfdir=DIR      read-only single-machine data directory [${sysconfdir}]"
 		echo "  --with-openpty        use openpty instead of posix_openpt"
 		echo "  --with-oldsdl         support for older SDL versions on target machine"
@@ -123,6 +125,8 @@ while [ x"$1" != x ] ; do
 		datadir=`echo ${optarg} | sed -e 's,/$,,'` ;;
 	--infodir* | --in*)
 		infodir=`echo ${optarg} | sed -e 's,/$,,'` ;;
+	--docdir* | --do*)
+		docdir=`echo ${optarg} | sed -e 's,/$,,'` ;;
 	--mandir* | --ma*)
 		mandir=`echo ${optarg} | sed -e 's,/$,,'` ;;
 	--sysconfdir* | --sy*)
@@ -316,6 +320,7 @@ echo "includedir = ${includedir}"
 echo "datadir = ${datadir}"
 echo "infodir = ${infodir}"
 echo "mandir = ${mandir}"
+echo "docdir = ${docdir}"
 echo "sysconfdir = ${sysconfdir}"
 echo "CC = ${CC}"
 echo "CXX = ${CXX}"
@@ -369,6 +374,7 @@ libdir = ${libdir}
 includedir = ${includedir}
 datadir = ${datadir}
 infodir = ${infodir}
+docdir = ${docdir}
 mandir = ${mandir}
 sysconfdir = ${sysconfdir}
 CC = ${CC}
