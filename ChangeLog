@@ -1,3 +1,7 @@
+2009-08-06  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (avatar_command): improved
+
 2009-08-05  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_pager_mb):
