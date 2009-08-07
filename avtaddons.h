@@ -162,7 +162,7 @@ AVT_ADDON size_t avta_arch_get_data (const char *archive,
  * (not available for MinGW)
  **********************************************************************/
 
-typedef void (*avta_term_apc_cmd) (wchar_t*);
+typedef int (*avta_term_apc_cmd) (wchar_t*);
 
 /*
  * execute a subprocess, visible in the balloon

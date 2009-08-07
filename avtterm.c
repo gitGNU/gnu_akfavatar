@@ -1245,7 +1245,7 @@ APC_sequence (int fd)
   command[p] = L'\0';
 
   if (apc_cmd_handler)
-    (*apc_cmd_handler) (command);
+    (void) (*apc_cmd_handler) (command);
 }
 
 /*

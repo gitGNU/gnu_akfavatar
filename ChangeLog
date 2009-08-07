@@ -1,3 +1,8 @@
+2009-08-07  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtaddons.h: changed the type of avta_term_apc_cmd
+	avtarsay.c (avatar_comman, APC_command): adapted
+
 2009-08-06  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (avatar_command): improved
