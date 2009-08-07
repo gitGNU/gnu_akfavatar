@@ -27,7 +27,7 @@
 #  define _GNU_SOURCE
 #endif
 
-#include "avtcio.h"
+#include "avtaddons.h"
 #include <stdio.h>
 #include <stdlib.h>
 

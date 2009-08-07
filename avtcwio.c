@@ -25,7 +25,7 @@
 #  define _ISOC99_SOURCE
 #endif
 
-#include "avtcio.h"
+#include "avtaddons.h"
 #include <stdio.h>
 
 #ifndef AVT_PRINTF_MAXLEN
