@@ -3,6 +3,8 @@
 	* avtaddons.h: changed the type of avta_term_apc_cmd
 	avtarsay.c (avatar_comman, APC_command): adapted
 
+	* avatar.c (avt_pager_mb): support for keys: Space, f, b
+
 2009-08-06  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (avatar_command): improved

@@ -3703,7 +3703,9 @@ avt_pager_mb (const char *txt, int len, int startline)
 		}
 	    }
 	  else if (event.key.keysym.sym == SDLK_PAGEDOWN
-		   || event.key.keysym.sym == SDLK_KP3)
+		   || event.key.keysym.sym == SDLK_KP3
+		   || event.key.keysym.sym == SDLK_SPACE
+		   || event.key.keysym.sym == SDLK_f)
 	    {
 	      if (pos < len)
 		{
@@ -3738,7 +3740,8 @@ avt_pager_mb (const char *txt, int len, int startline)
 		}
 	    }
 	  else if (event.key.keysym.sym == SDLK_PAGEUP
-		   || event.key.keysym.sym == SDLK_KP9)
+		   || event.key.keysym.sym == SDLK_KP9
+		   || event.key.keysym.sym == SDLK_b)
 	    {
 	      pos = avt_pager_lines_back (txt, pos, 2 * balloonheight + 1);
 	      pos = avt_pager_screen (txt, pos, len);
