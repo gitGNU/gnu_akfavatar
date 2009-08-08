@@ -6,6 +6,9 @@
 	* avtreadfile.c: new file
 	avtaddons.h, avatarsay.c: adapted
 
+	* avtterm.c (get_character): more robust
+	don't rely on errno being unchanged
+
 2009-08-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtaddons.h: changed the type of avta_term_apc_cmd

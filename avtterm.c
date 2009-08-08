@@ -125,8 +125,8 @@ static avta_term_apc_cmd apc_cmd_handler;
 /* sets input_fd to a file-descriptor for the input of the process */
 /* returns file-descriptor for the output of the process or -1 on error */
 extern int avta_term_initialize (int *input_fd, const char *system_encoding,
-			       const char *working_dir,
-			       char *const prg_argv[]);
+				 const char *working_dir,
+				 char *const prg_argv[]);
 
 /* may be defined externally when EXT_AVTTERM_SIZE is defined */
 extern void avta_term_size (int fd, int height, int width);
@@ -181,7 +181,8 @@ activate_cursor (avt_bool_t on)
 
 /* set terminal size */
 extern void
-avta_term_size (int fd AVT_UNUSED, int height AVT_UNUSED, int width AVT_UNUSED)
+avta_term_size (int fd AVT_UNUSED, int height AVT_UNUSED,
+		int width AVT_UNUSED)
 {
 #ifdef TIOCSWINSZ
   struct winsize size;
@@ -242,9 +243,12 @@ get_character (int fd)
 	  if (cursor_active)
 	    avt_activate_cursor (AVT_TRUE);
 	  idle = AVT_TRUE;
+	  do
+	    {
+	      nread = read (fd, &filebuf, sizeof (filebuf) - 1);
+	    }
 	  while (nread == -1 && errno == EAGAIN
-		 && avt_update () == AVT_NORMAL)
-	    nread = read (fd, &filebuf, sizeof (filebuf) - 1);
+		 && avt_update () == AVT_NORMAL);
 	  idle = AVT_FALSE;
 	  if (cursor_active)
 	    avt_activate_cursor (AVT_FALSE);
@@ -1533,7 +1537,7 @@ avta_term_run (int fd)
 
 extern int
 avta_term_start (const char *system_encoding, const char *working_dir,
-	       char *const prg_argv[])
+		 char *const prg_argv[])
 {
   return
     avta_term_initialize (&prg_input, system_encoding, working_dir, prg_argv);
@@ -1544,7 +1548,7 @@ avta_term_start (const char *system_encoding, const char *working_dir,
 
 extern int
 avta_term_initialize (int *input_fd, const char *system_encoding,
-		    const char *working_dir, char *const prg_argv[])
+		      const char *working_dir, char *const prg_argv[])
 {
   pid_t childpid;
   int master, slave;
