@@ -18,6 +18,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#define COPYRIGHT_YEAR "2009"
+
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
 #endif
@@ -92,16 +94,6 @@
 
 #define default_background_color(ignore) \
        avt_set_background_color (0xE0, 0xD5, 0xC5)
-
-/*
- * some weird systems needs O_BINARY, most others not
- * so I define a dummy value for sane systems
- */
-#ifndef O_BINARY
-#  define O_BINARY 0
-#endif
-
-#define COPYRIGHT_YEAR "2009"
 
 /* pointer to program name in argv[0] */
 static const char *program_name;
@@ -686,77 +678,6 @@ get_data_file (const wchar_t * fn, char filepath[])
     avta_error ("wcstombs", strerror (errno));
 }
 
-/* read in a file */
-static char *
-read_file (const char *f, size_t * data_size, avt_bool_t textmode)
-{
-  int fd;
-  char *buf;
-  size_t size, capacity;
-  ssize_t nread;
-
-  buf = NULL;
-  size = capacity = 0;
-  nread = 0;
-
-  if (textmode)
-    fd = open (f, O_RDONLY);
-  else
-    fd = open (f, O_RDONLY | O_BINARY);
-
-  if (fd > -1)
-    {
-      do
-	{
-	  /* do we need more capacity? */
-	  if (size >= capacity)
-	    {
-	      char *nbuf;
-
-	      capacity += BUFSIZ;
-	      if (textmode)
-		nbuf = (char *) realloc (buf, capacity + 4);
-	      else
-		nbuf = (char *) realloc (buf, capacity);
-
-	      if (nbuf)
-		buf = nbuf;
-	      else
-		break;
-	    }
-
-	  nread = read (fd, buf + size, capacity - size);
-	  if (nread > 0)
-	    size += nread;
-	}
-      while (nread > 0);
-
-      close (fd);
-
-      if (buf)
-	{
-	  char *nbuf;
-
-	  if (textmode)
-	    {
-	      /* I terminate with 4 zeros, in case UTF-32 is used */
-	      memset (buf + size, '\0', 4);
-	      nbuf = (char *) realloc (buf, size + 4);
-	    }
-	  else
-	    nbuf = (char *) realloc (buf, size);
-
-	  if (nbuf)
-	    buf = nbuf;
-	}
-    }
-
-  if (data_size)
-    *data_size = size;
-
-  return buf;
-}
-
 /* 
  * check for the command [encoding ...]
  * or a byte order mark (BOM) U+FEFF 
@@ -1063,7 +984,7 @@ handle_pager_command (const wchar_t * s)
   size_t len;
 
   get_data_file (s, filepath);
-  txt = read_file (filepath, &len, AVT_TRUE);
+  txt = avta_read_file (filepath, &len, AVT_TRUE);
 
   if (txt)
     {
@@ -1111,7 +1032,7 @@ handle_credits_command (const wchar_t * s, int *stop)
     {
       char *text;
 
-      text = read_file (filepath, NULL, AVT_TRUE);
+      text = avta_read_file (filepath, NULL, AVT_TRUE);
       if (avt_credits_mb (text, AVT_TRUE) && stop != NULL)
 	*stop = 1;
       free (text);
@@ -1258,7 +1179,7 @@ handle_loadaudio_command (const wchar_t * s)
       sound = avt_load_audio_file (filepath);
       if (sound == NULL && raw_audio.type != AVT_AUDIO_UNKNOWN)
 	{
-	  if ((buf = read_file (filepath, &size, AVT_FALSE)) != NULL)
+	  if ((buf = avta_read_file (filepath, &size, AVT_FALSE)) != NULL)
 	    {
 	      sound =
 		avt_load_raw_audio_data (buf, size, raw_audio.samplingrate,
@@ -2305,15 +2226,15 @@ run_info (void)
 
   if (language == DEUTSCH)
     {
-      txt = read_file ("akfavatar-de.txt", &len, AVT_TRUE);
+      txt = avta_read_file ("akfavatar-de.txt", &len, AVT_TRUE);
       if (!txt)
-	txt = read_file ("doc/akfavatar-de.txt", &len, AVT_TRUE);
+	txt = avta_read_file ("doc/akfavatar-de.txt", &len, AVT_TRUE);
     }
   else				/* not DEUTSCH */
     {
-      txt = read_file ("akfavatar-en.txt", &len, AVT_TRUE);
+      txt = avta_read_file ("akfavatar-en.txt", &len, AVT_TRUE);
       if (!txt)
-	txt = read_file ("doc/akfavatar-en.txt", &len, AVT_TRUE);
+	txt = avta_read_file ("doc/akfavatar-en.txt", &len, AVT_TRUE);
     }
 
   if (txt)
@@ -2624,12 +2545,12 @@ about_avatarsay (void)
 	if (chdir (start_dir))
 	  avta_warning ("chdir", strerror (errno));
 
-      if ((txt = read_file ("/usr/local/share/doc/akfavatar/COPYING",
-			    &size, AVT_TRUE))
-	  || (txt = read_file ("/usr/share/doc/akfavatar/COPYING",
-			       &size, AVT_TRUE))
-	  || (txt = read_file ("./COPYING", &size, AVT_TRUE))
-	  || (txt = read_file ("./gpl-3.0.txt", &size, AVT_TRUE)))
+      if ((txt = avta_read_file ("/usr/local/share/doc/akfavatar/COPYING",
+				 &size, AVT_TRUE))
+	  || (txt = avta_read_file ("/usr/share/doc/akfavatar/COPYING",
+				    &size, AVT_TRUE))
+	  || (txt = avta_read_file ("./COPYING", &size, AVT_TRUE))
+	  || (txt = avta_read_file ("./gpl-3.0.txt", &size, AVT_TRUE)))
 	{
 	  /* encoding already set */
 	  avt_set_balloon_size (0, 0);

@@ -252,10 +252,13 @@ avtccio.o: $(srcdir)/avtccio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 avtcwio.o: $(srcdir)/avtcwio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtcwio.c
 
+avtreadfile.o: $(srcdir)/avtreadfile.c $(srcdir)/avtaddons.h
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtreadfile.c
+
 libavtaddons.a: filechooser.o askdrive.o arch.o avttermstub.o \
-                avtccio.o avtcwio.o avtmsg.o
+                avtccio.o avtcwio.o avtmsg.o avtreadfile.o
 	$(AR) rcu $@ filechooser.o askdrive.o arch.o avttermstub.o \
-	             avtccio.o avtcwio.o avtmsg.o
+	             avtccio.o avtcwio.o avtmsg.o avtreadfile.o
 	-$(RANLIB) $@
 
 avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h

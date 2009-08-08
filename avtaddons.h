@@ -117,6 +117,16 @@ AVT_ADDON void avta_error (const char *msg1, const char *msg2);
 AVT_ADDON int avta_get_file (char *filename);
 
 /**********************************************************************
+ * Section: avtreadfile
+ * for reading a file into a buffer
+ **********************************************************************/
+
+/* the buffer is allocated with malloc and must be freed by the caller */
+/* if data_size is not NULL it will get the size of the buffer in bytes */
+AVT_ADDON char *avta_read_file (const char *file_name, size_t *data_size,
+                                avt_bool_t textmode);
+
+/**********************************************************************
  * Section: arch
  * functions for handling ar archives
  **********************************************************************/

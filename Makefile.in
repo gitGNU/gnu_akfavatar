@@ -122,6 +122,9 @@ avtccio.o: $(srcdir)/avtccio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 avtcwio.o: $(srcdir)/avtcwio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) -I. -c -o $@ $(srcdir)/avtcwio.c
 
+avtreadfile.o: $(srcdir)/avtreadfile.c $(srcdir)/avtaddons.h
+	$(CC) $(CFLAGS) -I. -c -o $@ $(srcdir)/avtreadfile.c
+
 avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -DPREFIX=\"$(exec_prefix)\" -I. \
 	  -c -o $@ $(srcdir)/avatarsay.c
@@ -137,9 +140,9 @@ arch.o: $(srcdir)/arch.c $(srcdir)/avtaddons.h
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/arch.c
 
 libavtaddons.a: filechooser.o avtterm.o arch.o \
-                avtccio.o avtcwio.o avtmsg.o
+                avtccio.o avtcwio.o avtmsg.o avtreadfile.o
 	$(AR) rcu $@ filechooser.o avtterm.o arch.o \
-	             avtccio.o avtcwio.o avtmsg.o
+	             avtccio.o avtcwio.o avtmsg.o avtreadfile.o
 	-$(RANLIB) $@
 
 avtposix.o: $(srcdir)/avtposix.c
@@ -375,7 +378,7 @@ dist: info html man distclean
 	mkdir $(PKGNAME)
 	ln README INSTALL AUTHORS COPYING ChangeLog lrun \
 	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
-	   avtccio.c avtcwio.c avtaddons.h filechooser.c \
+	   avtccio.c avtcwio.c avtaddons.h filechooser.c avtreadfile.c \
 	   balloonpointer.xpm circle.xpm gnu-head.xpm \
 	   male_user.xpm female_user.xpm \
 	   btn.xpm btn-cont.xpm btn-no.xpm btn-yes.xpm \
