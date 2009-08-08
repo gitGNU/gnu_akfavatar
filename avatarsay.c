@@ -29,6 +29,7 @@
 #include "avtaddons.h"
 #include <wchar.h>
 #include <wctype.h>
+#include <sys/stat.h>		/* for chmod */
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
