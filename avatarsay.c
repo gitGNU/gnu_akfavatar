@@ -2637,6 +2637,10 @@ about_avatarsay (void)
 	}
     }
 
+  /* ignore quit-request from avt_decide() */
+  if (avt_get_status () == AVT_QUIT)
+    avt_set_status (AVT_NORMAL);
+
   set_encoding (default_encoding);
   avt_set_text_delay (default_delay);
 }
