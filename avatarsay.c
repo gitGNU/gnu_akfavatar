@@ -69,7 +69,7 @@
 #define BUGMAIL "bug-akfavatar@akfoerster.de"
 
 /* size for input buffer - not too small, please */
-/* .encoding must be in first buffer */
+/* [encoding] must be in first buffer */
 #define INBUFSIZE 1024
 
 /* maximum size for path */
@@ -101,24 +101,7 @@
 #  define O_BINARY 0
 #endif
 
-static const char *version_info_en =
-  "avatarsay (AKFAvatar) " AVTVERSION "\n"
-  "Copyright (c) 2009 Andreas K. Foerster\n\n"
-  "License GPLv3+: GNU GPL version 3 or later "
-  "<http://gnu.org/licenses/gpl.html>\n\n"
-  "This is free software: you are free to change and redistribute it.\n"
-  "There is NO WARRANTY, to the extent permitted by law.\n"
-  "Please read the manual for instructions.";
-
-/* avoid german umlauts here */
-static const char *version_info_de =
-  "avatarsay (AKFAvatar) " AVTVERSION "\n"
-  "Copyright (c) 2009 Andreas K. Foerster\n\n"
-  "Lizenz GPLv3+: GNU GPL Version 3 oder neuer "
-  "<http://gnu.org/licenses/gpl.html>\n\n"
-  "Dies ist Freie Software: Sie duerfen es gemaess der GPL weitergeben und\n"
-  "bearbeiten. Fuer AKFAvatar besteht KEINERLEI GARANTIE.\n"
-  "Bitte lesen Sie auch die Anleitung.";
+#define COPYRIGHT_YEAR "2009"
 
 /* pointer to program name in argv[0] */
 static const char *program_name;
@@ -238,15 +221,31 @@ quit (void)
 static void
 showversion (void)
 {
+  /* note: just one single call to avta_info! might be a message box */
+
   switch (language)
     {
     case DEUTSCH:
-      avta_info (version_info_de);
+      avta_info ("avatarsay (AKFAvatar) " AVTVERSION "\n"
+		 "Copyright (c) " COPYRIGHT_YEAR " Andreas K. Foerster\n\n"
+		 "Lizenz GPLv3+: GNU GPL Version 3 oder neuer "
+		 "<http://gnu.org/licenses/gpl.html>\n\n"
+		 "Dies ist Freie Software: Sie duerfen es gemaess der GPL "
+		 "weitergeben und\n"
+		 "bearbeiten. Fuer AKFAvatar besteht KEINERLEI GARANTIE.\n\n"
+		 "Bitte lesen Sie auch die Anleitung.");
       break;
 
     case ENGLISH:
     default:
-      avta_info (version_info_en);
+      avta_info ("avatarsay (AKFAvatar) " AVTVERSION "\n"
+		 "Copyright (c) " COPYRIGHT_YEAR " Andreas K. Foerster\n\n"
+		 "License GPLv3+: GNU GPL version 3 or later "
+		 "<http://gnu.org/licenses/gpl.html>\n\n"
+		 "This is free software: you are free to change and "
+		 "redistribute it.\n"
+		 "There is NO WARRANTY, to the extent permitted by law.\n\n"
+		 "Please read the manual for instructions.");
     }
 
   exit (EXIT_SUCCESS);
@@ -2586,24 +2585,60 @@ about_avatarsay (void)
   set_encoding ("UTF-8");
   avt_set_text_delay (0);
 
+  avt_say_mb ("avatarsay (AKFAvatar) " AVTVERSION "\n"
+	      "Copyright (c) " COPYRIGHT_YEAR " Andreas K. Förster\n");
+
   switch (language)
     {
     case DEUTSCH:
-      avt_say_mb (version_info_de);
+      avt_say_mb ("Lizenz GPLv3+: GNU GPL Version 3 oder neuer "
+		  "<http://gnu.org/licenses/gpl.html>\n\n"
+		  "Dies ist Freie Software: Sie dürfen es gemäß der GPL "
+		  "weitergeben und\n"
+		  "bearbeiten. Für AKFAvatar besteht KEINERLEI GARANTIE.\n"
+		  "Bitte lesen Sie auch die Anleitung.");
+      avt_say_mb ("\nHomepage:  " HOMEPAGE);
+      avt_say_mb ("\n\nSoll ich jetzt die vollständige Lizenz zeigen?");
       break;
 
     case ENGLISH:
     default:
-      avt_say_mb (version_info_en);
+      avt_say_mb ("License GPLv3+: GNU GPL version 3 or later "
+		  "<http://gnu.org/licenses/gpl.html>\n\n"
+		  "This is free software: you are free to change and "
+		  "redistribute it.\n"
+		  "There is NO WARRANTY, to the extent permitted by law.\n"
+		  "Please read the manual for instructions.");
+      avt_say_mb ("\nHomepage:  " HOMEPAGE);
+      avt_say_mb ("\n\nDo you want me to show you the full license now?");
     }
 
-  avt_say_mb ("\n\nHomepage:  " HOMEPAGE);
+  avt_lock_updates (AVT_FALSE);
+
+  if (avt_decide ())
+    {
+      char *txt;
+      size_t size;
+
+      if (start_dir)
+	if (chdir (start_dir))
+	  avta_warning ("chdir", strerror (errno));
+
+      if ((txt = read_file ("/usr/local/share/doc/akfavatar/COPYING",
+			    &size, AVT_TRUE))
+	  || (txt = read_file ("/usr/share/doc/akfavatar/COPYING",
+			       &size, AVT_TRUE))
+	  || (txt = read_file ("./COPYING", &size, AVT_TRUE))
+	  || (txt = read_file ("./gpl-3.0.txt", &size, AVT_TRUE)))
+	{
+	  /* encoding already set */
+	  avt_set_balloon_size (0, 0);
+	  avt_pager_mb (txt, size, 0);
+	}
+    }
 
   set_encoding (default_encoding);
-  avt_lock_updates (AVT_FALSE);
   avt_set_text_delay (default_delay);
-
-  avt_wait_button ();
 }
 
 #define UNACCESSIBLE(x) \

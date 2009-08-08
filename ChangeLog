@@ -1,3 +1,8 @@
+2009-08-08  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (showversion, about_avatarsay):
+	different implementation, possibility to show license
+
 2009-08-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtaddons.h: changed the type of avta_term_apc_cmd
