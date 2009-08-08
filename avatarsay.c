@@ -29,9 +29,6 @@
 #include "avtaddons.h"
 #include <wchar.h>
 #include <wctype.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
