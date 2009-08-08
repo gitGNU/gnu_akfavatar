@@ -67,7 +67,7 @@ avta_vprintf (const char *format, va_list ap)
   char *str;
   int n;
 
-  str = (char *) malloc (str, BUFSIZ);
+  str = (char *) malloc (BUFSIZ);
   if (str)
     n = vsnprintf (str, BUFSIZ, format, ap);
   else
