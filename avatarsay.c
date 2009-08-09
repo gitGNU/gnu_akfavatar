@@ -1285,11 +1285,27 @@ static void
 handle_back_command (const wchar_t * s)
 {
   int i, value;
+  int pos;
+  char num_str[80];
+  const wchar_t *p;
 
   if (!initialized)
     return;
 
-  if (swscanf (s, L"%i", &value) > 0)
+  /*
+   * note: swscanf cannot be used on some systems, when the string
+   * contains characters, which are not present in the current locale
+   */
+
+  pos = 0;
+  p = s;
+  while (*p != '\0' && !iswspace (*p) && pos < (int) sizeof (num_str))
+    num_str[pos++] = (char) *p++;
+  num_str[pos] = '\0';
+
+  value = atoi (num_str);
+
+  if (value > 0)
     {
       for (i = 0; i < value; i++)
 	avt_backspace ();
