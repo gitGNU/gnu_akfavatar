@@ -3,6 +3,8 @@
 	* avatarsay.c (handle_back_command): fix for some systems
 	don't use swscanf
 
+	* filecooser.c: new macro FILTER_DIRENT_T
+
 2009-08-08  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (showversion, about_avatarsay):

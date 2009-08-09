@@ -96,8 +96,14 @@ new_page (char *dirname)
 
 #ifndef __WIN32__
 
+#ifdef __USE_GNU
+#  define FILTER_DIRENT_T  const struct dirent
+#else
+#  define FILTER_DIRENT_T  struct dirent
+#endif
+
 static int
-filter (const struct dirent *d)
+filter (FILTER_DIRENT_T *d)
 {
   /* allow everything, that doesn't start with a dot */
   return (d != NULL && d->d_name[0] != '.');
