@@ -5,11 +5,11 @@
 # use avatar as reader for manpages
 # probably needs the GNU variant of troff: groff
 
-# emphasized text is printed slower than normal text
-
 # You can set the Avatar-Image with the environment variable
 # AVATARIMAGE
 
+# you may comment out the following line, if you want slowprint mode
+OPT_PAGER="--pager"
 
 # check if ./avatarsay-s exists and is executable
 if [ -x "./avatarsay" ]
@@ -37,4 +37,4 @@ GROFF_TYPESETTER=latin1
 export MANWIDTH GROFF_TYPESETTER
 
 # execute the command
-exec man -t $MANOPTS 2>&1 | $AVATARSAY $AVATAROPTS --raw --enc=ISO-8859-1 -
+exec man -t $MANOPTS 2>&1 | $AVATARSAY $AVATAROPTS $OPT_PAGER -rl -
