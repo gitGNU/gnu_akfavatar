@@ -2041,7 +2041,31 @@ say_line (const wchar_t * line, ssize_t nread)
 
   for (i = 0; i < nread; i++, line++)
     {
-      if (*line == L'_' && !rawmode)
+      if (*(line + 1) == L'\b')
+	{
+	  if (*line == L'_')
+	    {
+	      avt_underlined (AVT_TRUE);
+	      status = avt_put_character (*(line + 2));
+	      avt_underlined (underlined);
+	      i += 2;
+	      line += 2;
+	    }
+	  else if (*line == *(line + 2))
+	    {
+	      avt_bold (AVT_TRUE);
+	      status = avt_put_character (*line);
+	      avt_bold (AVT_FALSE);
+	      i += 2;
+	      line += 2;
+	    }
+	  else
+	    {
+	      i++;
+	      line++;
+	    }
+	}
+      else if (*line == L'_' && !rawmode)
 	{
 	  underlined = ~underlined;
 	  avt_underlined (underlined);
