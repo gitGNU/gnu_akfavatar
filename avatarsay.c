@@ -101,7 +101,7 @@ static char *start_dir;
 
 /* default encoding - either system encoding or given per parameters */
 /* supported in SDL: ASCII, ISO-8859-1, UTF-8, UTF-16, UTF-32 */
-char default_encoding[80];
+static char default_encoding[80];
 
 /* if rawmode is set, then don't interpret any commands or comments */
 /* rawmode can be activated with the options -r or --raw */
@@ -109,6 +109,8 @@ static avt_bool_t rawmode;
 
 /* popup-mode? */
 static avt_bool_t popup;
+
+static avt_bool_t pager_mode;
 
 /* default-text delay */
 static int default_delay;
@@ -448,6 +450,7 @@ checkoptions (int argc, char **argv)
 	{"utf8", no_argument, 0, 'u'},
 	{"u8", no_argument, 0, 'u'},
 	{"popup", no_argument, 0, 'p'},
+	{"pager", no_argument, 0, 'P'},
 	{"terminal", no_argument, 0, 't'},
 	{"execute", no_argument, 0, 'x'},
 	{"no-delay", no_argument, 0, 'n'},
@@ -455,7 +458,7 @@ checkoptions (int argc, char **argv)
 	{0, 0, 0, 0}
       };
 
-      c = getopt_long (argc, argv, "+hvfFw1riIsE:luptxnb",
+      c = getopt_long (argc, argv, "+hvfFw1riIsE:lupPtxnb",
 		       long_options, &option_index);
 
       /* end of the options */
@@ -521,6 +524,11 @@ checkoptions (int argc, char **argv)
 
 	case 'p':		/* --popup */
 	  popup = AVT_TRUE;
+	  break;
+
+	case 'P':		/* --pager */
+	  pager_mode = AVT_TRUE;
+	  loop = AVT_FALSE;
 	  break;
 
 	case 't':		/* --terminal */
@@ -694,7 +702,7 @@ check_encoding (const char *buf)
     enc = strstr (buf, "[encoding ");
 
     /*
-     * if .encoding is found and it is either at the start of the buffer 
+     * if [encoding] is found and it is either at the start of the buffer 
      * or the previous character is a \n then set_encoding
      * and don't check anything else anymore
      */
@@ -780,6 +788,30 @@ check_encoding (const char *buf)
     {
       set_encoding ("UTF-16LE");
       return;
+    }
+}
+
+static void
+run_pager (const char *filename)
+{
+  char *txt;
+  size_t len;
+
+  if (!initialized)
+    initialize ();
+
+  if (!moved_in)
+    move_in ();
+
+  set_encoding (default_encoding);
+
+  txt = avta_read_file (filename, &len, AVT_TRUE);
+
+  if (txt)
+    {
+      check_encoding (txt);
+      avt_pager_mb (txt, len, 0);
+      free (txt);
     }
 }
 
@@ -2967,7 +2999,10 @@ main (int argc, char *argv[])
       int i;
 
       for (i = optind; i < argc; i++)
-	run_script (argv[i]);
+	if (pager_mode)
+	  run_pager (argv[i]);
+	else
+	  run_script (argv[i]);
 
       if (initialized && !popup)
 	{
