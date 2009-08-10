@@ -799,10 +799,12 @@ run_pager (const char *filename)
   size_t len;
 
   if (!initialized)
-    initialize ();
+    {
+      initialize ();
 
-  if (!moved_in)
-    move_in ();
+      if (!popup)
+	move_in ();
+    }
 
   set_encoding (default_encoding);
 
