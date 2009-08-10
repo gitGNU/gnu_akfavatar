@@ -9,6 +9,10 @@
 
 	* avtarsay.c (run_pager): accept "-" as special filename
 
+	* avatar.c (avt_backspace_trick): new function
+	(avt_say, avt_say_len): adapted
+	avatarsay.c (say_line): adapted
+
 2009-08-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (handle_back_command): fix for some systems

@@ -2929,7 +2929,42 @@ avt_put_character (const wchar_t ch)
   return _avt_STATUS;
 }
 
-/* 
+/*
+ * bold can be stored as b\bbo\bol\bld\bd
+ * underlinded as _\bu_\bn_\bd_\be_\br_\bl_\bi_\bn_\be_\bd
+ */
+static int
+avt_backspace_trick (const wchar_t * txt)
+{
+  int r;
+
+  r = 0;
+
+  /* check if all conditions are met */
+  if (!*txt || !*(txt + 1) || !*(txt + 2) || *(txt + 1) != L'\b')
+    r = -1;
+  else
+    {
+      if (*txt == L'_')
+	{
+	  underlined = AVT_TRUE;
+	  if (avt_put_character (*(txt + 2)))
+	    r = -1;
+	  underlined = AVT_FALSE;
+	}
+      else if (*txt == *(txt + 2))
+	{
+	  bold = AVT_TRUE;
+	  if (avt_put_character (*txt))
+	    r = -1;
+	  bold = AVT_FALSE;
+	}
+    }
+
+  return r;
+}
+
+/*
  * writes L'\0' terminated string to textfield - 
  * interprets control characters
  */
@@ -2949,9 +2984,17 @@ avt_say (const wchar_t * txt)
 
   while (*txt != L'\0')
     {
-      if (avt_put_character (*txt))
-	break;
-
+      if (*(txt + 1) == L'\b')
+	{
+	  if (avt_backspace_trick (txt))
+	    break;
+	  txt += 2;
+	}
+      else
+	{
+	  if (avt_put_character (*txt))
+	    break;
+	}
       txt++;
     }
 
@@ -2978,8 +3021,18 @@ avt_say_len (const wchar_t * txt, const int len)
 
   for (i = 0; i < len; i++, txt++)
     {
-      if (avt_put_character (*txt))
-	break;
+      if (*(txt + 1) == L'\b')
+	{
+	  if (avt_backspace_trick (txt))
+	    break;
+	  txt += 2;
+	  i += 2;
+	}
+      else
+	{
+	  if (avt_put_character (*txt))
+	    break;
+	}
     }
 
   return _avt_STATUS;
