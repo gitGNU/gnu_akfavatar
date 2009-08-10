@@ -258,6 +258,7 @@ help (void)
   puts ("Options:");
   puts (" -h, --help              show this help");
   puts (" -v, --version           show the version");
+  puts (" -P, --pager             show given files with the pager");
 #ifdef NO_PTY
   puts (" -t, --terminal          not supported on this system");
   puts (" -x, --execute           not supported on this system");
