@@ -122,6 +122,7 @@ AVT_ADDON int avta_get_file (char *filename);
  **********************************************************************/
 
 /* the buffer is allocated with malloc and must be freed by the caller */
+/* if file_name is NULL, read fron stdin */
 /* if data_size is not NULL it will get the size of the buffer in bytes */
 AVT_ADDON char *avta_read_file (const char *file_name, size_t *data_size,
                                 avt_bool_t textmode);

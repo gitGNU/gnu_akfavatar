@@ -4,6 +4,11 @@
 	(run_pager): new function
 	(main): adapted
 
+	* avtreadfile.c (avta_read_file):
+	when file_name is NULL, read from stdin
+
+	* avtarsay.c (run_pager): accept "-" as special filename
+
 2009-08-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (handle_back_command): fix for some systems

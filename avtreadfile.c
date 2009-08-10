@@ -43,10 +43,19 @@ avta_read_file (const char *f, size_t * data_size, avt_bool_t textmode)
   size = capacity = 0;
   nread = 0;
 
-  if (textmode)
-    fd = open (f, O_RDONLY);
-  else
-    fd = open (f, O_RDONLY | O_BINARY);
+  /* STDIN only for textmode */
+  if (f == NULL && !textmode)
+    return NULL;
+
+  if (f == NULL)
+    fd = STDIN_FILENO;
+  else				/* f != NULL */
+    {
+      if (textmode)
+	fd = open (f, O_RDONLY);
+      else
+	fd = open (f, O_RDONLY | O_BINARY);
+    }
 
   if (fd > -1)
     {
@@ -75,7 +84,8 @@ avta_read_file (const char *f, size_t * data_size, avt_bool_t textmode)
 	}
       while (nread > 0);
 
-      (void) close (fd);
+      if (fd != STDIN_FILENO)
+        (void) close (fd);
 
       if (buf)
 	{

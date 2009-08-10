@@ -793,7 +793,7 @@ check_encoding (const char *buf)
 }
 
 static void
-run_pager (const char *filename)
+run_pager (const char *file_name)
 {
   char *txt;
   size_t len;
@@ -808,7 +808,10 @@ run_pager (const char *filename)
 
   set_encoding (default_encoding);
 
-  txt = avta_read_file (filename, &len, AVT_TRUE);
+  if (strcmp (file_name, "-") == 0)
+    txt = avta_read_file (NULL, &len, AVT_TRUE);
+  else
+    txt = avta_read_file (file_name, &len, AVT_TRUE);
 
   if (txt)
     {
