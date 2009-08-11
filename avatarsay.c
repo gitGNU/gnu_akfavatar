@@ -2417,6 +2417,7 @@ ask_manpage (void)
 
       /* GROFF assumed! */
       putenv ("GROFF_TYPESETTER=latin1");
+      putenv ("GROFF_NO_SGR=1");
       putenv ("MANWIDTH=80");
 
       /* temporary settings */
