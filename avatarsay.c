@@ -56,10 +56,6 @@
 #  include <langinfo.h>
 #endif
 
-#ifndef NO_PTY
-#  include <sys/wait.h>
-#endif
-
 /* some systems don't know O_NONBLOCK */
 #ifndef O_NONBLOCK
 #  define O_NONBLOCK 0
@@ -2390,66 +2386,76 @@ ask_manpage (void)
 
 #else /* not NO_MANPAGES */
 
-#ifndef NO_PTY
 static void
 ask_manpage (void)
 {
   char manpage[AVT_LINELENGTH] = "man";
-  char *argv[] = {
-    "man", "-t", (char *) &manpage, NULL
-  };
 
   avt_set_balloon_size (1, 40);
   avt_set_text_delay (0);
 
   avt_say (L"Manpage> ");
 
-  if (avt_ask_mb (manpage, sizeof (manpage)) != 0)
+  if (avt_ask_mb (manpage, sizeof (manpage)) != AVT_NORMAL)
     return;
+
+  avt_show_avatar ();
 
   if (manpage[0] != '\0')
     {
-      int fd, status;
+      char command[255];
+      int l;
+      char *buf;
+      size_t bsize, len, nread;
+      FILE *f;
 
-      avt_set_balloon_size (0, 0);
-      avt_clear ();
-      avt_set_text_delay (default_delay);
-
-      /* GROFF assumed! */
-      putenv ("GROFF_TYPESETTER=latin1");
+      /* switch off GROFF extensions */
       putenv ("GROFF_NO_SGR=1");
       putenv ("MANWIDTH=80");
 
-      /* temporary settings */
+      l = snprintf (command, sizeof (command),
+		    "man -Tlatin1 %s 2>&1", manpage);
+      if (l < 0 || l >= sizeof (command))
+	return;
+
+      if ((f = popen (command, "r")) == NULL)
+	return;
+
+      bsize = len = 0;
+      buf = NULL;
+
+      do
+	{
+	  if (len >= bsize)
+	    {
+	      char *nbuf;
+	      bsize += 1024;
+	      nbuf = (char *) realloc (buf, bsize);
+
+	      if (nbuf)
+		buf = nbuf;
+	      else
+		break;
+	    }
+
+	  nread = fread (buf + len, 1, bsize - len, f);
+	  if (nread > 0)
+	    len += nread;
+	}
+      while (nread > 0);
+
+      (void) pclose (f);
+
+      avt_set_balloon_size (0, 0);
+
+      /* temporary setting */
       set_encoding ("ISO-8859-1");
-
-      /* clear buffer */
-      wcbuf_pos = wcbuf_len = 0;
-
-      /* ignore file errors */
-      read_error_is_eof = AVT_TRUE;
-      fd = avta_term_start (default_encoding, NULL, argv);
-
-      if (fd > -1)
-	process_script (fd);
-
-      /* just to prevent zombies */
-      wait (NULL);
-
-      status = avt_get_status ();
-      if (status == AVT_ERROR)
-	exit (EXIT_FAILURE);	/* warning already printed */
-
-      if (status == AVT_NORMAL)
-	avt_wait_button ();
-
-      /* reset quit-request */
-      avt_set_status (AVT_NORMAL);
+      avt_pager_mb (buf, len, 0);
+      free (buf);
       set_encoding (default_encoding);
     }
 }
 
-#endif /* not NO_PTY */
 #endif /* not NO_MANPAGES */
 
 static void

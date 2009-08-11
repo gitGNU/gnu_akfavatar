@@ -2,6 +2,8 @@
 
 	* avatarsay.c (ask_manpage): set GROFF_NO_SGR=1
 
+	* avatarsay.c (ask_manpage): use the new pager
+
 2009-08-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtarsay.c (checkoptions): new option --pager (-P)
