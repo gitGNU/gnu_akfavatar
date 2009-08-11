@@ -174,11 +174,12 @@ show_manpage ()
     (
     MANWIDTH=80
     GROFF_TYPESETTER=latin1
-    export MANWIDTH GROFF_TYPESETTER
+    GROFF_NO_SGR=1
+    export MANWIDTH GROFF_TYPESETTER GROFF_NO_SGR
 
     # execute the command
     man -t $MANPAGE 2>&1 \
-      | $AVATARSAY $MODE --raw --encoding=ISO-8859-1 -
+      | $AVATARSAY $MODE --raw --pager --encoding=ISO-8859-1 -
     )
   fi
 }
