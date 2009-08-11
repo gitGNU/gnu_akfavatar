@@ -2934,7 +2934,7 @@ avt_put_character (const wchar_t ch)
  * underlinded as _\bu_\bn_\bd_\be_\br_\bl_\bi_\bn_\be_\bd
  */
 static int
-avt_backspace_trick (const wchar_t * txt)
+avt_overstrike (const wchar_t * txt)
 {
   int r;
 
@@ -2986,7 +2986,7 @@ avt_say (const wchar_t * txt)
     {
       if (*(txt + 1) == L'\b')
 	{
-	  if (avt_backspace_trick (txt))
+	  if (avt_overstrike (txt))
 	    break;
 	  txt += 2;
 	}
@@ -3023,7 +3023,7 @@ avt_say_len (const wchar_t * txt, const int len)
     {
       if (*(txt + 1) == L'\b')
 	{
-	  if (avt_backspace_trick (txt))
+	  if (avt_overstrike (txt))
 	    break;
 	  txt += 2;
 	  i += 2;
