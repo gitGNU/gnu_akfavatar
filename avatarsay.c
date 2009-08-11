@@ -2409,13 +2409,13 @@ ask_manpage (void)
       size_t bsize, len, nread;
       FILE *f;
 
-      /* switch off GROFF extensions */
+      /* assuming GROFF! */
+      putenv ("GROFF_TYPESETTER=latin1");
       putenv ("GROFF_NO_SGR=1");
       putenv ("MANWIDTH=80");
 
-      l = snprintf (command, sizeof (command),
-		    "man -Tlatin1 %s 2>&1", manpage);
-      if (l < 0 || l >= sizeof (command))
+      l = snprintf (command, sizeof (command), "man -t %s 2>&1", manpage);
+      if (l < 0 || l >= (int) sizeof (command))
 	return;
 
       if ((f = popen (command, "r")) == NULL)
