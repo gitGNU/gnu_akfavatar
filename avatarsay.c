@@ -2446,13 +2446,15 @@ ask_manpage (void)
 
       (void) pclose (f);
 
-      avt_set_balloon_size (0, 0);
+      if (len > 0)
+	{
+	  avt_set_balloon_size (0, 0);
+	  set_encoding ("ISO-8859-1");	/* temporary setting */
+	  avt_pager_mb (buf, len, 0);
+	  set_encoding (default_encoding);
+	}
 
-      /* temporary setting */
-      set_encoding ("ISO-8859-1");
-      avt_pager_mb (buf, len, 0);
       free (buf);
-      set_encoding (default_encoding);
     }
 }
 
