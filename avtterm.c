@@ -462,6 +462,26 @@ prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
     }				/* if (idle...) */
 }
 
+/* just handling the mouse wheel */
+static void
+prg_wheelhandler (int button, avt_bool_t pressed,
+		  int x AVT_UNUSED, int y AVT_UNUSED)
+{
+  if (pressed)
+    {
+      if (button == 4)
+	{
+	  dec_cursor_seq[2] = 'A';
+	  avta_term_send (dec_cursor_seq, 3);
+	}
+      else if (button == 5)
+	{
+	  dec_cursor_seq[2] = 'B';
+	  avta_term_send (dec_cursor_seq, 3);
+	}
+    }
+}
+
 /* TODO: prg_mousehandler doesn't work yet */
 static void
 prg_mousehandler (int button, avt_bool_t pressed, int x, int y)
@@ -477,7 +497,7 @@ prg_mousehandler (int button, avt_bool_t pressed, int x, int y)
     }
 }
 
-/* 
+/*
  * returns 2 values of a string like "1;2"
  */
 static void
@@ -1479,6 +1499,7 @@ avta_term_run (int fd)
   dec_cursor_seq[1] = '[';
   dec_cursor_seq[2] = ' ';	/* to be filled later */
   avt_register_keyhandler (prg_keyhandler);
+  avt_register_mousehandler (prg_wheelhandler);
   /* TODO: mouse doesn't work yet */
   /* avt_register_mousehandler (prg_mousehandler); */
 
@@ -1523,7 +1544,8 @@ avta_term_run (int fd)
   /* just to prevent zombies */
   wait (NULL);
 
-  /* release keyhandler */
+  /* release handlers */
+  avt_register_mousehandler (NULL);
   avt_register_keyhandler (NULL);
   prg_input = -1;
 
