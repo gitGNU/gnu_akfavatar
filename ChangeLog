@@ -5,6 +5,9 @@
 	* avtterm.c (prg_wheelhandler): new function
 	(avta_term_run): adapted
 
+	* avatar.c (avt_analyze_event):
+	call ext. mousehandler also when pointer outside of balloon
+
 2009-08-11  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (ask_manpage): set GROFF_NO_SGR=1
