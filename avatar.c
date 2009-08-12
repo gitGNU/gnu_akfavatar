@@ -1684,10 +1684,10 @@ avt_analyze_event (SDL_Event * event)
 	  x = (event->button.x - textfield.x) / FONTWIDTH + 1;
 	  y = (event->button.y - textfield.y) / LINEHEIGHT + 1;
 
-	  /* if x or y is invalid set both to 0 */
+	  /* if x or y is invalid set both to -1 */
 	  if (x < 1 || x > AVT_LINELENGTH
 	      || y < 1 || y > (textfield.h / LINEHEIGHT))
-	    x = y = 0;
+	    x = y = -1;
 
 	  avt_ext_mousehandler (event->button.button,
 				(event->button.state == SDL_PRESSED), x, y);
@@ -4960,6 +4960,15 @@ avt_register_mousehandler (avt_mousehandler handler)
 
   /* make mouse visible or invisible */
   if (handler)
+    SDL_ShowCursor (SDL_ENABLE);
+  else
+    SDL_ShowCursor (SDL_DISABLE);
+}
+
+extern void
+avt_set_mouse_visible (avt_bool_t visible)
+{
+  if (visible)
     SDL_ShowCursor (SDL_ENABLE);
   else
     SDL_ShowCursor (SDL_DISABLE);

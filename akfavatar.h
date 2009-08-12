@@ -354,10 +354,17 @@ AVT_API void avt_register_keyhandler (avt_keyhandler handler);
 
 /* register an external mousehandler
  *
- * it is only called, when a mouse-button is pressed or released inside
- * of the balloon. The coordinates are the character positions.
+ * it is only called, when a mouse-button is pressed or released
+ * The coordinates are the character positions if it's inside of
+ * the balloon or -1, -1 otherwise.
  */
 AVT_API void avt_register_mousehandler (avt_mousehandler handler);
+
+/*
+ * with this you can switch the mouse pointer on or off
+ * use this after avt_register_mousehandler
+ */
+AVT_API void avt_set_mouse_visible (avt_bool_t visible);
 
 /*
  * switch to fullscreen or window mode

@@ -8,6 +8,9 @@
 	* avatar.c (avt_analyze_event):
 	call ext. mousehandler also when pointer outside of balloon
 
+	* akfavatar.h, avatar.c (avt_set_mouse_visible): new function
+	avtterm.c (avta_term_run): adapted
+
 2009-08-11  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (ask_manpage): set GROFF_NO_SGR=1

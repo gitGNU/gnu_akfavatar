@@ -1500,7 +1500,8 @@ avta_term_run (int fd)
   dec_cursor_seq[2] = ' ';	/* to be filled later */
   avt_register_keyhandler (prg_keyhandler);
   avt_register_mousehandler (prg_wheelhandler);
-  /* TODO: mouse doesn't work yet */
+  avt_set_mouse_visible (AVT_FALSE);
+  /* TODO: mouse clicks don't work yet */
   /* avt_register_mousehandler (prg_mousehandler); */
 
   reset_terminal ();
