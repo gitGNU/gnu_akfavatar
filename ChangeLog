@@ -1,3 +1,7 @@
+2009-08-12  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (ask_manpage): show syntax
+
 2009-08-11  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (ask_manpage): set GROFF_NO_SGR=1

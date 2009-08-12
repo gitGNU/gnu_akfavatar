@@ -2391,10 +2391,13 @@ ask_manpage (void)
 {
   char manpage[AVT_LINELENGTH] = "man";
 
-  avt_set_balloon_size (1, 40);
+  avt_set_balloon_size (3, 40);
   avt_set_text_delay (0);
 
-  avt_say (L"Manpage> ");
+  avt_say (L"man [_\bO_\bp_\bt_\bi_\bo_\bn \x2026] "
+           L"[_\bS_\be_\bc_\bt_\bi_\bo_\bn] "
+           L"_\bP_\ba_\bg_\be \x2026\n\n");
+  avt_say (L"man ");
 
   if (avt_ask_mb (manpage, sizeof (manpage)) != AVT_NORMAL)
     return;
@@ -2409,7 +2412,11 @@ ask_manpage (void)
       size_t bsize, len, nread;
       FILE *f;
 
-      /* assuming GROFF! */
+      /*
+       * assuming GROFF!
+       * note: at the time of writing this groff has support for utf-8,
+       * but it's broken.
+       */
       putenv ("GROFF_TYPESETTER=latin1");
       putenv ("GROFF_NO_SGR=1");
       putenv ("MANWIDTH=80");
