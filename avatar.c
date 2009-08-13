@@ -3743,6 +3743,11 @@ avt_pager_mb (const char *txt, int len, int startline)
 	    event.key.keysym.sym = SDLK_DOWN;
 	  else if (event.button.button == SDL_BUTTON_WHEELUP)
 	    event.key.keysym.sym = SDLK_UP;
+	  else if (event.button.button == SDL_BUTTON_MIDDLE)	/* press on wheel */
+	    {
+	      _avt_STATUS = AVT_QUIT;
+	      break;
+	    }
 	  else
 	    break;
 

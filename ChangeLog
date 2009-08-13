@@ -9,6 +9,9 @@
 	* avatar.c (avt_credits):
 	deactivate external key/mouse handlers in credits mode
 
+	* avatar.c (avt_pager_mb):
+	leave the pager by pressing the wheel (middle button)
+
 2009-08-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (ask_manpage): show syntax
