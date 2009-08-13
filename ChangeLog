@@ -1,3 +1,8 @@
+2009-08-13  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtreadfile.c: completely rewritten
+	avtaddons.h, avatarsay.c: adapted
+
 2009-08-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (ask_manpage): show syntax

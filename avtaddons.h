@@ -119,13 +119,29 @@ AVT_ADDON int avta_get_file (char *filename);
 /**********************************************************************
  * Section: avtreadfile
  * for reading a file into a buffer
+ * the buffer is allocated with malloc and must be freed by the caller
  **********************************************************************/
 
-/* the buffer is allocated with malloc and must be freed by the caller */
-/* if file_name is NULL, read fron stdin */
-/* if data_size is not NULL it will get the size of the buffer in bytes */
-AVT_ADDON char *avta_read_file (const char *file_name, size_t *data_size,
-                                avt_bool_t textmode);
+/*
+ * read a text file
+ * if file_name is NULL read from stdin
+ * the string will be termitated by four zero-bytes
+ * returns length of the string without the terminating zeros
+ */
+AVT_ADDON int avta_read_textfile (const char *file_name, char **buffer);
+
+/*
+ * read a data file
+ * returns the size of the buffer in bytes
+ */
+AVT_ADDON int avta_read_datafile (const char *file_name, void **buffer);
+
+/*
+ * get the output of the command (not for interactive programs)
+ * the string will be termitated by four zero-bytes
+ * returns length of the string without the terminating zeros
+ */
+AVT_ADDON int avta_read_command (const char *command, char **buffer);
 
 /**********************************************************************
  * Section: arch

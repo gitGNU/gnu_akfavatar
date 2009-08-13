@@ -792,7 +792,7 @@ static void
 run_pager (const char *file_name)
 {
   char *txt;
-  size_t len;
+  int len;
 
   if (!initialized)
     {
@@ -805,11 +805,11 @@ run_pager (const char *file_name)
   set_encoding (default_encoding);
 
   if (strcmp (file_name, "-") == 0)
-    txt = avta_read_file (NULL, &len, AVT_TRUE);
+    len = avta_read_textfile (NULL, &txt);
   else
-    txt = avta_read_file (file_name, &len, AVT_TRUE);
+    len = avta_read_textfile (file_name, &txt);
 
-  if (txt)
+  if (txt && len > 0)
     {
       check_encoding (txt);
       avt_pager_mb (txt, len, 0);
@@ -1013,12 +1013,12 @@ handle_pager_command (const wchar_t * s)
 {
   char filepath[PATH_LENGTH];
   char *txt;
-  size_t len;
+  int len;
 
   get_data_file (s, filepath);
-  txt = avta_read_file (filepath, &len, AVT_TRUE);
+  len = avta_read_textfile (filepath, &txt);
 
-  if (txt)
+  if (txt && len > 0)
     {
       avt_pager_mb (txt, len, 0);
       free (txt);
@@ -1064,7 +1064,7 @@ handle_credits_command (const wchar_t * s, int *stop)
     {
       char *text;
 
-      text = avta_read_file (filepath, NULL, AVT_TRUE);
+      avta_read_textfile (filepath, &text);
       if (avt_credits_mb (text, AVT_TRUE) && stop != NULL)
 	*stop = 1;
       free (text);
@@ -1211,7 +1211,7 @@ handle_loadaudio_command (const wchar_t * s)
       sound = avt_load_audio_file (filepath);
       if (sound == NULL && raw_audio.type != AVT_AUDIO_UNKNOWN)
 	{
-	  if ((buf = avta_read_file (filepath, &size, AVT_FALSE)) != NULL)
+	  if ((size = avta_read_datafile (filepath, &buf)) != 0)
 	    {
 	      sound =
 		avt_load_raw_audio_data (buf, size, raw_audio.samplingrate,
@@ -2264,7 +2264,7 @@ static void
 run_info (void)
 {
   char *txt;
-  size_t len;
+  int len;
 
   len = 0;
 
@@ -2274,18 +2274,18 @@ run_info (void)
 
   if (language == DEUTSCH)
     {
-      txt = avta_read_file ("akfavatar-de.txt", &len, AVT_TRUE);
-      if (!txt)
-	txt = avta_read_file ("doc/akfavatar-de.txt", &len, AVT_TRUE);
+      len = avta_read_textfile ("akfavatar-de.txt", &txt);
+      if (len <= 0)
+	len = avta_read_textfile ("doc/akfavatar-de.txt", &txt);
     }
   else				/* not DEUTSCH */
     {
-      txt = avta_read_file ("akfavatar-en.txt", &len, AVT_TRUE);
-      if (!txt)
-	txt = avta_read_file ("doc/akfavatar-en.txt", &len, AVT_TRUE);
+      len = avta_read_textfile ("akfavatar-en.txt", &txt);
+      if (len <= 0)
+	txt = avta_read_textfile ("doc/akfavatar-en.txt", &txt);
     }
 
-  if (txt)
+  if (txt && len > 0)
     {
       change_avatar_image (avt_import_XPM (info_xpm));
       avt_set_balloon_size (0, 0);
@@ -2395,8 +2395,7 @@ ask_manpage (void)
   avt_set_text_delay (0);
 
   avt_say (L"man [_\bO_\bp_\bt_\bi_\bo_\bn \x2026] "
-           L"[_\bS_\be_\bc_\bt_\bi_\bo_\bn] "
-           L"_\bP_\ba_\bg_\be \x2026\n\n");
+	   L"[_\bS_\be_\bc_\bt_\bi_\bo_\bn] _\bP_\ba_\bg_\be \x2026\n\n");
   avt_say (L"man ");
 
   if (avt_ask_mb (manpage, sizeof (manpage)) != AVT_NORMAL)
@@ -2407,10 +2406,8 @@ ask_manpage (void)
   if (manpage[0] != '\0')
     {
       char command[255];
-      int l;
-      char *buf;
-      size_t bsize, len, nread;
-      FILE *f;
+      int cmd_len, length;
+      char *txt;
 
       /*
        * assuming GROFF!
@@ -2421,47 +2418,23 @@ ask_manpage (void)
       putenv ("GROFF_NO_SGR=1");
       putenv ("MANWIDTH=80");
 
-      l = snprintf (command, sizeof (command), "man -t %s 2>&1", manpage);
-      if (l < 0 || l >= (int) sizeof (command))
+      cmd_len =
+	snprintf (command, sizeof (command), "man -t %s 2>&1", manpage);
+      if (cmd_len < 0 || cmd_len >= (int) sizeof (command))
 	return;
 
-      if ((f = popen (command, "r")) == NULL)
-	return;
+      length = avta_read_command (command, &txt);
 
-      bsize = len = 0;
-      buf = NULL;
-
-      do
-	{
-	  if (len >= bsize)
-	    {
-	      char *nbuf;
-	      bsize += 1024;
-	      nbuf = (char *) realloc (buf, bsize);
-
-	      if (nbuf)
-		buf = nbuf;
-	      else
-		break;
-	    }
-
-	  nread = fread (buf + len, 1, bsize - len, f);
-	  if (nread > 0)
-	    len += nread;
-	}
-      while (nread > 0);
-
-      (void) pclose (f);
-
-      if (len > 0)
+      if (txt && length > 0)
 	{
 	  avt_set_balloon_size (0, 0);
 	  set_encoding ("ISO-8859-1");	/* temporary setting */
-	  avt_pager_mb (buf, len, 0);
+	  avt_pager_mb (txt, length, 0);
 	  set_encoding (default_encoding);
 	}
 
-      free (buf);
+      if (txt)
+	free (txt);
     }
 }
 
@@ -2607,22 +2580,22 @@ about_avatarsay (void)
   if (avt_decide ())
     {
       char *txt;
-      size_t size;
+      int len;
 
       if (start_dir)
 	if (chdir (start_dir))
 	  avta_warning ("chdir", strerror (errno));
 
-      if ((txt = avta_read_file ("/usr/local/share/doc/akfavatar/COPYING",
-				 &size, AVT_TRUE))
-	  || (txt = avta_read_file ("/usr/share/doc/akfavatar/COPYING",
-				    &size, AVT_TRUE))
-	  || (txt = avta_read_file ("./COPYING", &size, AVT_TRUE))
-	  || (txt = avta_read_file ("./gpl-3.0.txt", &size, AVT_TRUE)))
+      if ((len = avta_read_textfile ("/usr/local/share/doc/akfavatar/COPYING",
+				     &txt) <= 0)
+	  || (len = avta_read_textfile ("/usr/share/doc/akfavatar/COPYING",
+					&txt) <= 0)
+	  || (len = avta_read_textfile ("./COPYING", &txt) <= 0)
+	  || (len = avta_read_textfile ("./gpl-3.0.txt", &txt)) <= 0)
 	{
 	  /* encoding already set */
 	  avt_set_balloon_size (0, 0);
-	  avt_pager_mb (txt, size, 0);
+	  avt_pager_mb (txt, len, 0);
 	}
     }
 
