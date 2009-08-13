@@ -6,6 +6,9 @@
 	* avatar.c (avt_pager_mb):
 	deactivate external key/mouse handlers in pager mode
 
+	* avatar.c (avt_credits):
+	deactivate external key/mouse handlers in credits mode
+
 2009-08-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (ask_manpage): show syntax

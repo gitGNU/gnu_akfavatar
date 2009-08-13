@@ -5203,6 +5203,8 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
   wchar_t line[80];
   SDL_Surface *last_line;
   SDL_Color old_backgroundcolor;
+  avt_keyhandler old_keyhandler;
+  avt_mousehandler old_mousehandler;
   const wchar_t *p;
   int i;
   int length;
@@ -5212,6 +5214,12 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
 
   /* store old background color */
   old_backgroundcolor = backgroundcolor_RGB;
+
+  /* deactivate mous/key- handlers */
+  old_keyhandler = avt_ext_keyhandler;
+  old_mousehandler = avt_ext_mousehandler;
+  avt_ext_keyhandler = NULL;
+  avt_ext_mousehandler = NULL;
 
   /* needed to handle resizing correctly */
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
@@ -5301,6 +5309,9 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
 			    old_backgroundcolor.b);
   avt_normal_text ();
   avt_clear_screen ();
+
+  avt_ext_keyhandler = old_keyhandler;
+  avt_ext_mousehandler = old_mousehandler;
 
   return _avt_STATUS;
 }
