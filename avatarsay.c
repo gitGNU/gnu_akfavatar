@@ -2282,7 +2282,7 @@ run_info (void)
     {
       len = avta_read_textfile ("akfavatar-en.txt", &txt);
       if (len <= 0)
-	txt = avta_read_textfile ("doc/akfavatar-en.txt", &txt);
+	len = avta_read_textfile ("doc/akfavatar-en.txt", &txt);
     }
 
   if (txt && len > 0)
