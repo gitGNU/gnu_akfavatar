@@ -3667,6 +3667,8 @@ avt_pager_mb (const char *txt, int len, int startline)
 {
   int pos;
   avt_bool_t old_auto_margin, old_reserve_single_keys, old_tc;
+  avt_keyhandler old_keyhandler;
+  avt_mousehandler old_mousehandler;
   SDL_Event event;
 
   if (!screen)
@@ -3711,6 +3713,10 @@ avt_pager_mb (const char *txt, int len, int startline)
   auto_margin = AVT_FALSE;
   old_reserve_single_keys = reserve_single_keys;
   reserve_single_keys = AVT_FALSE;
+  old_keyhandler = avt_ext_keyhandler;
+  avt_ext_keyhandler = NULL;
+  old_mousehandler = avt_ext_mousehandler;
+  avt_ext_mousehandler = NULL;
 
   avt_set_text_delay (0);
   avt_normal_text ();
@@ -3823,6 +3829,8 @@ avt_pager_mb (const char *txt, int len, int startline)
 
   auto_margin = old_auto_margin;
   reserve_single_keys = old_reserve_single_keys;
+  avt_ext_keyhandler = old_keyhandler;
+  avt_ext_mousehandler = old_mousehandler;
   avt_activate_cursor (old_tc);
 
   return _avt_STATUS;

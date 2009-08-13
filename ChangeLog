@@ -3,6 +3,9 @@
 	* avtreadfile.c: completely rewritten
 	avtaddons.h, avatarsay.c: adapted
 
+	* avatar.c (avt_pager_mb):
+	deactivate external key/mouse handlers in pager mode
+
 2009-08-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (ask_manpage): show syntax
