@@ -2587,11 +2587,11 @@ about_avatarsay (void)
 	  avta_warning ("chdir", strerror (errno));
 
       if ((len = avta_read_textfile ("/usr/local/share/doc/akfavatar/COPYING",
-				     &txt) <= 0)
+				     &txt)) > 0
 	  || (len = avta_read_textfile ("/usr/share/doc/akfavatar/COPYING",
-					&txt) <= 0)
-	  || (len = avta_read_textfile ("./COPYING", &txt) <= 0)
-	  || (len = avta_read_textfile ("./gpl-3.0.txt", &txt)) <= 0)
+					&txt)) > 0
+	  || (len = avta_read_textfile ("./COPYING", &txt)) > 0
+	  || (len = avta_read_textfile ("./gpl-3.0.txt", &txt)) > 0)
 	{
 	  /* encoding already set */
 	  avt_set_balloon_size (0, 0);
