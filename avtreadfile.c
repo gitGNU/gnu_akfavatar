@@ -45,7 +45,7 @@ read_stream (FILE * f, char **buffer, avt_bool_t terminate)
 	{
 	  char *nbuf;
 
-	  capacity += 1024;
+	  capacity += 10240;
 	  if (terminate)
 	    nbuf = (char *) realloc (buf, capacity + 4);
 	  else
