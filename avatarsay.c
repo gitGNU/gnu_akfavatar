@@ -2596,6 +2596,7 @@ about_avatarsay (void)
 	  /* encoding already set */
 	  avt_set_balloon_size (0, 0);
 	  avt_pager_mb (txt, len, 0);
+	  free (txt);
 	}
     }
 
