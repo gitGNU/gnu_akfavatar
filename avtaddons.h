@@ -126,20 +126,22 @@ AVT_ADDON int avta_get_file (char *filename);
  * read a text file
  * if file_name is NULL read from stdin
  * the string will be termitated by four zero-bytes
- * returns length of the string without the terminating zeros
+ * returns length of the string without the terminating zeros,
+ * or -1 on error
  */
 AVT_ADDON int avta_read_textfile (const char *file_name, char **buffer);
 
 /*
  * read a data file
- * returns the size of the buffer in bytes
+ * returns the size of the buffer in bytes, or -1 on error
  */
 AVT_ADDON int avta_read_datafile (const char *file_name, void **buffer);
 
 /*
  * get the output of the command (not for interactive programs)
  * the string will be termitated by four zero-bytes
- * returns length of the string without the terminating zeros
+ * returns length of the string without the terminating zeros,
+ * or -1 on error
  */
 AVT_ADDON int avta_read_command (const char *command, char **buffer);
 

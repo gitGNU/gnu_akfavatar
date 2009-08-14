@@ -1211,7 +1211,7 @@ handle_loadaudio_command (const wchar_t * s)
       sound = avt_load_audio_file (filepath);
       if (sound == NULL && raw_audio.type != AVT_AUDIO_UNKNOWN)
 	{
-	  if ((size = avta_read_datafile (filepath, &buf)) != 0)
+	  if ((size = avta_read_datafile (filepath, &buf)) > 0)
 	    {
 	      sound =
 		avt_load_raw_audio_data (buf, size, raw_audio.samplingrate,

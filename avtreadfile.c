@@ -35,8 +35,10 @@ read_stream (FILE * f, char **buffer, avt_bool_t terminate)
   ssize_t nread;
 
   *buffer = buf = NULL;
-  size = capacity = 0;
   nread = 0;
+
+  /* size must be 0 here! */
+  size = capacity = 0;
 
   do
     {
@@ -81,6 +83,9 @@ read_stream (FILE * f, char **buffer, avt_bool_t terminate)
 	buf = nbuf;
     }
 
+  if (!buf)
+    size = -1;
+
   *buffer = buf;
   return size;			/* size without terminator */
 }
@@ -93,10 +98,10 @@ avta_read_textfile (const char *file_name, char **buffer)
   int size;
 
   if (!buffer)
-    return 0;
+    return -1;
 
   buf = NULL;
-  size = 0;
+  size = -1;
 
   if (file_name == NULL)
     f = stdin;
@@ -123,10 +128,10 @@ avta_read_datafile (const char *file_name, void **buffer)
   int size;
 
   if (!buffer || !file_name)
-    return 0;
+    return -1;
 
   buf = NULL;
-  size = 0;
+  size = -1;
 
   f = fopen (file_name, "rb");
 
@@ -148,10 +153,10 @@ avta_read_command (const char *command, char **buffer)
   int size;
 
   if (!buffer || !command)
-    return 0;
+    return -1;
 
   buf = NULL;
-  size = 0;
+  size = -1;
 
   f = popen (command, "r");
 
