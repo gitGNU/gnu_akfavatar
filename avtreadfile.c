@@ -169,3 +169,45 @@ avta_read_command (const char *command, char **buffer)
   *buffer = buf;
   return size;
 }
+
+extern int
+avta_pager_file (const char *file_name)
+{
+  char *txt;
+  int len;
+
+  txt = NULL;
+  len = avta_read_textfile (file_name, &txt);
+
+  if (len > 0)
+    avt_pager_mb (txt, len, 0);
+
+  if (txt)
+    free (txt);
+
+  if (len > 0)
+    return 0;			/* okay */
+  else
+    return -1;			/* error */
+}
+
+extern int
+avta_pager_command (const char *command)
+{
+  char *txt;
+  int len;
+
+  txt = NULL;
+  len = avta_read_command (command, &txt);
+
+  if (len > 0)
+    avt_pager_mb (txt, len, 0);
+
+  if (txt)
+    free (txt);
+
+  if (len > 0)
+    return 0;			/* okay */
+  else
+    return -1;			/* error */
+}

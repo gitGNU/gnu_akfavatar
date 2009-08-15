@@ -1012,18 +1012,10 @@ static void
 handle_pager_command (const wchar_t * s)
 {
   char filepath[PATH_LENGTH];
-  char *txt;
-  int len;
 
   get_data_file (s, filepath);
-  len = avta_read_textfile (filepath, &txt);
-
-  if (txt && len > 0)
-    {
-      avt_pager_mb (txt, len, 0);
-      free (txt);
-      avt_clear ();
-    }
+  avta_pager_file (filepath);
+  avt_clear ();
 }
 
 static void
@@ -2263,37 +2255,26 @@ run_shell (void)
 static void
 run_info (void)
 {
-  char *txt;
-  int len;
-
-  len = 0;
-
   if (start_dir)
     if (chdir (start_dir))
       avta_warning ("chdir", strerror (errno));
 
+  change_avatar_image (avt_import_XPM (info_xpm));
+  avt_set_balloon_size (0, 0);
+  set_encoding ("UTF-8");
+
   if (language == DEUTSCH)
     {
-      len = avta_read_textfile ("akfavatar-de.txt", &txt);
-      if (len <= 0)
-	len = avta_read_textfile ("doc/akfavatar-de.txt", &txt);
+      if (avta_pager_file ("akfavatar-de.txt"))
+	avta_pager_file ("doc/akfavatar-de.txt");
     }
   else				/* not DEUTSCH */
     {
-      len = avta_read_textfile ("akfavatar-en.txt", &txt);
-      if (len <= 0)
-	len = avta_read_textfile ("doc/akfavatar-en.txt", &txt);
+      if (avta_pager_file ("akfavatar-en.txt"))
+	avta_pager_file ("doc/akfavatar-en.txt");
     }
 
-  if (txt && len > 0)
-    {
-      change_avatar_image (avt_import_XPM (info_xpm));
-      avt_set_balloon_size (0, 0);
-      set_encoding ("UTF-8");
-      avt_pager_mb (txt, len, 0);
-      free (txt);
-      set_encoding (default_encoding);
-    }
+  set_encoding (default_encoding);
 }
 
 #else /* not NO_PTY */
@@ -2418,8 +2399,8 @@ ask_manpage (void)
       putenv ("GROFF_NO_SGR=1");
       putenv ("MANWIDTH=80");
 
-      cmd_len =
-	snprintf (command, sizeof (command), "man -t %s 2>&1", manpage);
+      cmd_len = snprintf (command, sizeof (command),
+			  "man -t %s 2>&1", manpage);
       if (cmd_len < 0 || cmd_len >= (int) sizeof (command))
 	return;
 
@@ -2579,25 +2560,16 @@ about_avatarsay (void)
 
   if (avt_decide ())
     {
-      char *txt;
-      int len;
-
       if (start_dir)
 	if (chdir (start_dir))
 	  avta_warning ("chdir", strerror (errno));
 
-      if ((len = avta_read_textfile ("/usr/local/share/doc/akfavatar/COPYING",
-				     &txt)) > 0
-	  || (len = avta_read_textfile ("/usr/share/doc/akfavatar/COPYING",
-					&txt)) > 0
-	  || (len = avta_read_textfile ("./COPYING", &txt)) > 0
-	  || (len = avta_read_textfile ("./gpl-3.0.txt", &txt)) > 0)
-	{
-	  /* encoding already set */
-	  avt_set_balloon_size (0, 0);
-	  avt_pager_mb (txt, len, 0);
-	  free (txt);
-	}
+      avt_set_balloon_size (0, 0);
+
+      if (avta_pager_file ("/usr/local/share/doc/akfavatar/COPYING")
+	  && avta_pager_file ("/usr/share/doc/akfavatar/COPYING")
+	  && avta_pager_file ("./COPYING"))
+	avta_pager_file ("./gpl-3.0.txt");
     }
 
   /* ignore quit-request from avt_decide() */

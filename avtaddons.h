@@ -48,7 +48,7 @@
  * C-specific functions for input/output
  *
  * the calling program must have used avt_initialize and
- * avt_mb_encoding  before calling any of these functions.
+ * avt_mb_encoding before calling any of these functions.
  **********************************************************************/
 
 AVT_ADDON int avta_printf (const char *format, ...);
@@ -144,6 +144,19 @@ AVT_ADDON int avta_read_datafile (const char *file_name, void **buffer);
  * or -1 on error
  */
 AVT_ADDON int avta_read_command (const char *command, char **buffer);
+
+/*
+ * run pager on file with current encoding and balloon-size
+ * returns 0 on success or -1 on error
+ */
+AVT_ADDON int avta_pager_file (const char *file_name);
+
+/*
+ * run pager on output of command with current encoding and 
+ * balloon-size
+ * returns 0 on success or -1 on error
+ */
+AVT_ADDON int avta_pager_command (const char *command);
 
 /**********************************************************************
  * Section: arch
