@@ -1,3 +1,7 @@
+2009-08-17  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (ask_manpage): use avta_pager_command
+
 2009-08-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtaddons.h, avtreadfile.c (avta_pager_file)

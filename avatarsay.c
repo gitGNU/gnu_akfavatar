@@ -2387,35 +2387,28 @@ ask_manpage (void)
   if (manpage[0] != '\0')
     {
       char command[255];
-      int cmd_len, length;
-      char *txt;
+      int cmd_len;
 
-      /*
-       * assuming GROFF!
-       * note: at the time of writing this groff has support for utf-8,
-       * but it's broken.
-       */
-      putenv ("GROFF_TYPESETTER=latin1");
-      putenv ("GROFF_NO_SGR=1");
-      putenv ("MANWIDTH=80");
 
       cmd_len = snprintf (command, sizeof (command),
 			  "man -t %s 2>&1", manpage);
-      if (cmd_len < 0 || cmd_len >= (int) sizeof (command))
-	return;
 
-      length = avta_read_command (command, &txt);
-
-      if (txt && length > 0)
+      if (cmd_len > 0 && cmd_len < (int) sizeof (command))
 	{
+	  /*
+	   * assuming GROFF!
+	   * note: at the time of writing groff has support for utf-8,
+	   * but it's broken.
+	   */
+	  putenv ("GROFF_TYPESETTER=latin1");
+	  putenv ("GROFF_NO_SGR=1");
+	  putenv ("MANWIDTH=80");
+
 	  avt_set_balloon_size (0, 0);
-	  set_encoding ("ISO-8859-1");	/* temporary setting */
-	  avt_pager_mb (txt, length, 0);
+	  set_encoding ("ISO-8859-1");
+	  avta_pager_command (command);
 	  set_encoding (default_encoding);
 	}
-
-      if (txt)
-	free (txt);
     }
 }
 
