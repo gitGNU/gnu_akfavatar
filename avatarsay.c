@@ -89,6 +89,22 @@
 #define default_background_color(ignore) \
        avt_set_background_color (0xE0, 0xD5, 0xC5)
 
+#define OPT_RAW		(1 << 0)
+#define OPT_POPUP	(1 << 1)
+#define OPT_PAGER	(1 << 2)
+#define OPT_EXEC	(1 << 3)
+#define OPT_TERMINAL	(1 << 4)
+#define OPT_IGNEOF	(1 << 5)
+#define OPT_ONCE	(1 << 6)
+#define OPT_GIVENENC	(1 << 7)
+
+#define SET_OPT(x) (options |= (x))
+#define UNSET_OPT(x) (options &= ~(x))
+#define OPT(x) (options & (x))
+
+/* options */
+static long int options;
+
 /* pointer to program name in argv[0] */
 static const char *program_name;
 
@@ -99,30 +115,9 @@ static char *start_dir;
 /* supported in SDL: ASCII, ISO-8859-1, UTF-8, UTF-16, UTF-32 */
 static char default_encoding[80];
 
-/* if rawmode is set, then don't interpret any commands or comments */
-/* rawmode can be activated with the options -r or --raw */
-static avt_bool_t rawmode;
-
-/* popup-mode? */
-static avt_bool_t popup;
-
-static avt_bool_t pager_mode;
-
 /* default-text delay */
 static int default_delay;
 
-/* 
- * ignore end of file conditions
- * this should be used, when the input doesn't come from a file
- */
-static avt_bool_t ignore_eof;
-
-/* start the terminal mode? */
-static avt_bool_t terminal_mode;
-
-/* execute file? Option -e */
-static avt_bool_t executable;
-static avt_bool_t read_error_is_eof;
 static char *from_archive;	/* archive name or NULL */
 static size_t script_bytes_left;	/* how many bytes may still be read */
 
@@ -138,14 +133,6 @@ static avt_bool_t initialized;
 
 /* was the file already checked for an encoding? */
 static avt_bool_t encoding_checked;
-
-/* encoding given on command line */
-static avt_bool_t given_encoding;
-
-/* play it in an endless loop? */
-/* deactivated, when input comes from stdin */
-/* can be deactivated by -1, --once */
-static avt_bool_t loop;
 
 /* for setting the title */
 /* only used, when the title is set before it is initialized */
@@ -489,15 +476,15 @@ checkoptions (int argc, char **argv)
 	  break;
 
 	case '1':		/* --once */
-	  loop = AVT_FALSE;
+	  options |= OPT_ONCE;
 	  break;
 
 	case 'r':		/* --raw */
-	  rawmode = AVT_TRUE;
+	  SET_OPT (OPT_RAW);
 	  break;
 
 	case 'i':		/* --ignoreeof */
-	  ignore_eof = AVT_TRUE;
+	  SET_OPT (OPT_IGNEOF);
 	  break;
 
 	case 'I':		/* --info */
@@ -506,38 +493,35 @@ checkoptions (int argc, char **argv)
 
 	case 'E':		/* --encoding */
 	  strncpy (default_encoding, optarg, sizeof (default_encoding));
-	  given_encoding = AVT_TRUE;
+	  SET_OPT (OPT_GIVENENC);
 	  break;
 
 	case 'l':		/* --latin1 */
 	  strcpy (default_encoding, "ISO-8859-1");
-	  given_encoding = AVT_TRUE;
+	  SET_OPT (OPT_GIVENENC);
 	  break;
 
 	case 'u':		/* --utf-8, --utf8, --u8 */
 	  strcpy (default_encoding, "UTF-8");
-	  given_encoding = AVT_TRUE;
+	  SET_OPT (OPT_GIVENENC);
 	  break;
 
 	case 'p':		/* --popup */
-	  popup = AVT_TRUE;
+	  SET_OPT (OPT_POPUP);
 	  break;
 
 	case 'P':		/* --pager */
-	  pager_mode = AVT_TRUE;
-	  loop = AVT_FALSE;
+	  SET_OPT (OPT_PAGER | OPT_ONCE);
 	  break;
 
 	case 't':		/* --terminal */
 	  default_delay = 0;
-	  terminal_mode = AVT_TRUE;
-	  loop = AVT_FALSE;
+	  SET_OPT (OPT_TERMINAL | OPT_ONCE);
 	  break;
 
 	case 'x':		/* --execute */
-	  executable = AVT_TRUE;
 	  default_delay = 0;
-	  loop = AVT_FALSE;
+	  SET_OPT (OPT_EXEC | OPT_ONCE);
 	  break;
 
 	case 'n':		/* --no-delay */
@@ -571,10 +555,10 @@ checkoptions (int argc, char **argv)
 	}			/* switch (c) */
     }				/* while (1) */
 
-  if (terminal_mode && argc > optind)
+  if (OPT (OPT_TERMINAL) && argc > optind)
     avta_error ("error", "no files allowed for terminal mode");
 
-  if (executable && argc <= optind)
+  if (OPT (OPT_EXEC) && argc <= optind)
     avta_error ("error", "execute needs at least a program name");
 
   if (argc > optind
@@ -598,7 +582,7 @@ checkoptions (int argc, char **argv)
    * the - can not be combined with filenames
    */
   if ((argc == optind + 1) && (strcmp (argv[optind], "-") == 0))
-    loop = 0;
+    SET_OPT (OPT_ONCE);
   else
     {
       int i;
@@ -798,7 +782,7 @@ run_pager (const char *file_name)
     {
       initialize ();
 
-      if (!popup)
+      if (!OPT (OPT_POPUP))
 	move_in ();
     }
 
@@ -853,15 +837,10 @@ get_character (int fd)
 	}
 
       if (nread == -1)
-	{
-	  if (read_error_is_eof)
-	    wcbuf_len = -1;
-	  else
-	    avta_error ("error while reading from file", strerror (errno));
-	}
+	avta_error ("error while reading from file", strerror (errno));
       else			/* nread != -1 */
 	{
-	  if (!encoding_checked && !given_encoding)
+	  if (!encoding_checked && !OPT (OPT_GIVENENC))
 	    {
 	      filebuf[nread] = '\0';	/* terminate */
 	      check_encoding (filebuf);
@@ -1284,7 +1263,7 @@ handle_playaudio_command (avt_bool_t do_loop)
     {
       initialize ();
 
-      if (!popup)
+      if (!OPT (OPT_POPUP))
 	move_in ();
     }
 
@@ -1299,7 +1278,7 @@ handle_audio_command (const wchar_t * s, avt_bool_t do_loop)
     {
       initialize ();
 
-      if (!popup)
+      if (!OPT (OPT_POPUP))
 	move_in ();
     }
 
@@ -1361,7 +1340,7 @@ handle_height_command (const wchar_t * s)
     {
       initialize ();
 
-      if (!popup)
+      if (!OPT (OPT_POPUP))
 	move_in ();
     }
 
@@ -1382,7 +1361,7 @@ handle_width_command (const wchar_t * s)
     {
       initialize ();
 
-      if (!popup)
+      if (!OPT (OPT_POPUP))
 	move_in ();
     }
 
@@ -1403,7 +1382,7 @@ handle_size_command (const wchar_t * s)
     {
       initialize ();
 
-      if (!popup)
+      if (!OPT (OPT_POPUP))
 	move_in ();
     }
 
@@ -1791,7 +1770,7 @@ iscommand (wchar_t * s, int *stop)
 {
   wchar_t *p;
 
-  if (rawmode)
+  if (OPT (OPT_RAW))
     return AVT_FALSE;
 
   /* 
@@ -1923,7 +1902,7 @@ multi_menu (int fd)
     {
       initialize ();
 
-      if (!popup)
+      if (!OPT (OPT_POPUP))
 	move_in ();
     }
 
@@ -2010,8 +1989,6 @@ open_script (const char *fname)
 	}
     }
 
-  read_error_is_eof = AVT_FALSE;
-
   return fd;
 }
 
@@ -2053,7 +2030,7 @@ say_line (const wchar_t * line, ssize_t nread)
 	      line++;
 	    }
 	}
-      else if (*line == L'_' && !rawmode)
+      else if (*line == L'_' && !OPT (OPT_RAW))
 	{
 	  underlined = ~underlined;
 	  avt_underlined (underlined);
@@ -2100,15 +2077,15 @@ process_script (int fd)
    * before initializing the graphics
    * a stripline starts the text
    */
-  if (!rawmode)
+  if (!OPT (OPT_RAW))
     while (nread != 0 && wcsncmp (line, L"---", 3) != 0
 	   && (wcscmp (line, L"\n") == 0 || wcscmp (line, L"\r\n") == 0
 	       || iscommand (line, &stop)) && !stop)
       {
 	nread = getwline (fd, line, line_size);
 
-	/* simulate empty lines when ignore_eof is set */
-	if (ignore_eof && nread == 0)
+	/* simulate empty lines when OPT_IGNEOF is set */
+	if (OPT (OPT_IGNEOF) && nread == 0)
 	  {
 	    wcscpy (line, L"\n");
 	    nread = 1;
@@ -2121,7 +2098,7 @@ process_script (int fd)
   if (!initialized && !stop)
     initialize ();
 
-  if (!moved_in && !popup)
+  if (!moved_in && !OPT (OPT_POPUP))
     move_in ();
 
   /* show text */
@@ -2131,11 +2108,11 @@ process_script (int fd)
 	stop = 1;
     }
 
-  while (!stop && (nread != 0 || ignore_eof))
+  while (!stop && (nread != 0 || OPT (OPT_IGNEOF)))
     {
       nread = getwline (fd, line, line_size);
 
-      if (ignore_eof && nread == 0)
+      if (OPT (OPT_IGNEOF) && nread == 0)
 	{
 	  /* wait for input */
 	  while (nread == 0)
@@ -2298,7 +2275,7 @@ run_shell (void)
     {
       initialize ();
 
-      if (!popup)
+      if (!OPT (OPT_POPUP))
 	move_in ();
     }
 
@@ -2596,13 +2573,13 @@ menu (void)
   int choice, menu_start;
 
   /* avoid pause after moving out */
-  loop = AVT_FALSE;
+  SET_OPT (OPT_ONCE);
 
   if (!initialized)
     {
       initialize ();
 
-      if (!popup)
+      if (!OPT (OPT_POPUP))
 	move_in ();
     }
 
@@ -2704,7 +2681,7 @@ menu (void)
 	  break;
 
 	case 8:		/* exit */
-	  if (!popup)
+	  if (!OPT (OPT_POPUP))
 	    move_out ();
 	  exit (EXIT_SUCCESS);
 
@@ -2725,7 +2702,7 @@ menu (void)
       if (avatar_changed)
 	{
 	  restore_avatar_image ();
-	  if (!popup)
+	  if (!OPT (OPT_POPUP))
 	    move_in ();
 	}
     }
@@ -2878,9 +2855,9 @@ int
 main (int argc, char *argv[])
 {
   /* initialize variables */
+  options = 0;
   supposed_title = NULL;
   window_mode = AVT_AUTOMODE;
-  loop = AVT_TRUE;
   default_delay = AVT_DEFAULT_TEXT_DELAY;
 
   raw_audio.type = AVT_AUDIO_UNKNOWN;
@@ -2919,13 +2896,13 @@ main (int argc, char *argv[])
   checkenvironment ();
   checkoptions (argc, argv);
 
-  if (terminal_mode)
+  if (OPT (OPT_TERMINAL))
     {
       run_shell ();
       exit (EXIT_SUCCESS);
     }
 #ifndef NO_PTY
-  else if (executable)
+  else if (OPT (OPT_EXEC))
     {
       int fd;
 
@@ -2934,7 +2911,7 @@ main (int argc, char *argv[])
 	{
 	  initialize ();
 
-	  if (!popup)
+	  if (!OPT (OPT_POPUP))
 	    move_in ();
 	}
 
@@ -2946,7 +2923,7 @@ main (int argc, char *argv[])
 	if (avt_wait_button ())
 	  exit (EXIT_SUCCESS);
 
-      if (initialized && !popup)
+      if (initialized && !OPT (OPT_POPUP))
 	move_out ();
       exit (EXIT_SUCCESS);
     }
@@ -2960,22 +2937,22 @@ main (int argc, char *argv[])
       int i;
 
       for (i = optind; i < argc; i++)
-	if (pager_mode)
+	if (OPT (OPT_PAGER))
 	  run_pager (argv[i]);
 	else
 	  run_script (argv[i]);
 
-      if (initialized && !popup)
+      if (initialized && !OPT (OPT_POPUP))
 	{
 	  move_out ();
 
 	  /* if running in a loop, wait a while */
-	  if (loop)
+	  if (!OPT (OPT_ONCE))
 	    if (avt_wait (5000))
 	      exit (EXIT_SUCCESS);
 	}
     }
-  while (loop);
+  while (!OPT (OPT_ONCE));
 
   return EXIT_SUCCESS;
 }

@@ -5,6 +5,8 @@
 	* avtaddons.h, avtreadfile.c (avta_pager_file)
 	(avta_pager_command): option: startline
 
+	* avatarsay.c: optimization: options
+
 2009-08-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtaddons.h, avtreadfile.c (avta_pager_file)
