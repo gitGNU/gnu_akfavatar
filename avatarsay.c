@@ -226,97 +226,6 @@ showversion (void)
   exit (EXIT_SUCCESS);
 }
 
-#ifndef __WIN32__
-
-static void
-help (void)
-{
-  printf ("\nUsage: %s [Options]\n", program_name);
-  printf ("  or:  %s [Options] [textfiles | demo-files]\n", program_name);
-  printf ("  or:  %s [Options] --execute <program> [program options]\n\n",
-	  program_name);
-  puts
-    ("A fancy text-terminal, text-viewer and scripting language for making demos.\n");
-  puts ("If textfile is - then read from stdin and don't loop.\n");
-  puts ("Options:");
-  puts (" -h, --help              show this help");
-  puts (" -v, --version           show the version");
-  puts (" -P, --pager             show given files with the pager");
-#ifdef NO_PTY
-  puts (" -t, --terminal          not supported on this system");
-  puts (" -x, --execute           not supported on this system");
-#else
-  puts (" -t, --terminal          terminal mode (run a shell in balloon)");
-  puts (" -x, --execute           execute program in balloon");
-#endif
-  puts (" -b, --nocolor           no color allowed (black and white)");
-  puts (" -w, --window            try to run the program in a window"
-	" (default)");
-  puts (" -f, --fullscreen        try to run the program in fullscreen mode");
-  puts (" -F, --fullfullscreen    like -f, but use current display-size");
-  puts (" -E, --encoding=enc      input data is encoded in encoding \"enc\"");
-  puts (" -l, --latin1            input data is encoded in Latin-1");
-  puts (" -u, --utf-8             input data is encoded in UTF-8");
-  puts (" -1, --once              run only once (don't loop)");
-  puts (" -p, --popup             popup, ie. don't move the avatar in");
-  puts (" -r, --raw               output raw text"
-	" (don't handle any commands)");
-  puts (" -n, --no-delay          don't delay output of text (textfiles)");
-  puts (" -i, --ignoreeof         ignore end of file conditions "
-	"(input is not a file)");
-  puts (" -I, --info              start with an info-image");
-  puts ("\nEnvironment variables:");
-  puts (" AVATARIMAGE             different image as avatar");
-#ifndef NO_PTY
-  puts (" HOME                    home directory (terminal)");
-  puts (" SHELL                   preferred shell (terminal)");
-  puts (" VISUAL, EDITOR          preferred text-editor (terminal)");
-#endif
-  puts ("\nHomepage:");
-  puts ("  " HOMEPAGE);
-  puts ("\nReport bugs to <" BUGMAIL ">");
-  exit (EXIT_SUCCESS);
-}
-
-#else /* Windows or ReactOS */
-
-/* For Windows users it's not useful to show the options */
-/* But the text refers to the manual */
-static void
-help (void)
-{
-  showversion ();
-  exit (EXIT_SUCCESS);
-}
-
-static void
-not_available (void)
-{
-  avt_set_balloon_size (3, 45);
-  avt_clear ();
-  avt_set_text_delay (default_delay);
-  avt_bell ();
-
-  switch (language)
-    {
-    case DEUTSCH:
-      avt_say (L"Funktion auf diesem System nicht verfügbar...\n"
-	       L"Vollständige Unterstützung steht zum Beispiel\n"
-	       L"unter GNU/Linux zur Verfügung.");
-      break;
-
-    case ENGLISH:
-    default:
-      avt_say (L"function not available on this system...\n"
-	       L"A fully supported system is for example\nGNU/Linux.");
-    }
-
-  avt_wait_button ();
-  avt_set_status (AVT_NORMAL);
-}
-
-#endif /* not Windows or ReactOS */
-
 static void
 set_encoding (const char *encoding)
 {
@@ -404,6 +313,98 @@ initialize (void)
   avatar_changed = AVT_FALSE;
   initialized = AVT_TRUE;
 }
+
+#ifdef __WIN32__
+
+/* For Windows users it's not useful to show the options */
+/* But the text refers to the manual */
+static void
+help (void)
+{
+  showversion ();
+  exit (EXIT_SUCCESS);
+}
+
+static void
+not_available (void)
+{
+  avt_set_balloon_size (3, 45);
+  avt_clear ();
+  avt_set_text_delay (default_delay);
+  avt_bell ();
+
+  switch (language)
+    {
+    case DEUTSCH:
+      avt_say (L"Funktion auf diesem System nicht verfügbar...\n"
+	       L"Vollständige Unterstützung steht zum Beispiel\n"
+	       L"unter GNU/Linux zur Verfügung.");
+      break;
+
+    case ENGLISH:
+    default:
+      avt_say (L"function not available on this system...\n"
+	       L"A fully supported system is for example\nGNU/Linux.");
+    }
+
+  avt_wait_button ();
+  avt_set_status (AVT_NORMAL);
+}
+
+
+#else /* not Windows or ReactOS */
+
+static void
+help (void)
+{
+  printf ("\nUsage: %s [Options]\n", program_name);
+  printf ("  or:  %s [Options] [textfiles | demo-files]\n", program_name);
+  printf ("  or:  %s [Options] --execute <program> [program options]\n\n",
+	  program_name);
+  puts
+    ("A fancy text-terminal, text-viewer and scripting language for making demos.\n");
+  puts ("If textfile is - then read from stdin and don't loop.\n");
+  puts ("Options:");
+  puts (" -h, --help              show this help");
+  puts (" -v, --version           show the version");
+  puts (" -P, --pager             show given files with the pager");
+#ifdef NO_PTY
+  puts (" -t, --terminal          not supported on this system");
+  puts (" -x, --execute           not supported on this system");
+#else
+  puts (" -t, --terminal          terminal mode (run a shell in balloon)");
+  puts (" -x, --execute           execute program in balloon");
+#endif
+  puts (" -b, --nocolor           no color allowed (black and white)");
+  puts (" -w, --window            try to run the program in a window"
+	" (default)");
+  puts (" -f, --fullscreen        try to run the program in fullscreen mode");
+  puts (" -F, --fullfullscreen    like -f, but use current display-size");
+  puts (" -E, --encoding=enc      input data is encoded in encoding \"enc\"");
+  puts (" -l, --latin1            input data is encoded in Latin-1");
+  puts (" -u, --utf-8             input data is encoded in UTF-8");
+  puts (" -1, --once              run only once (don't loop)");
+  puts (" -p, --popup             popup, ie. don't move the avatar in");
+  puts (" -r, --raw               output raw text"
+	" (don't handle any commands)");
+  puts (" -n, --no-delay          don't delay output of text (textfiles)");
+  puts (" -i, --ignoreeof         ignore end of file conditions "
+	"(input is not a file)");
+  puts (" -I, --info              start with an info-image");
+  puts ("\nEnvironment variables:");
+  puts (" AVATARIMAGE             different image as avatar");
+#ifndef NO_PTY
+  puts (" HOME                    home directory (terminal)");
+  puts (" SHELL                   preferred shell (terminal)");
+  puts (" VISUAL, EDITOR          preferred text-editor (terminal)");
+#endif
+  puts ("\nHomepage:");
+  puts ("  " HOMEPAGE);
+  puts ("\nReport bugs to <" BUGMAIL ">");
+  exit (EXIT_SUCCESS);
+}
+
+#endif /* not Windows or ReactOS */
 
 static void
 checkoptions (int argc, char **argv)

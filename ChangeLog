@@ -9,6 +9,8 @@
 
 	* avatarsay.c (checkoptions): code-cleanup
 
+	* avatarsay.c: reorder: help and checkoptons closer together
+
 2009-08-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtaddons.h, avtreadfile.c (avta_pager_file)
