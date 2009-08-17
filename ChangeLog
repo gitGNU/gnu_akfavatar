@@ -7,6 +7,8 @@
 
 	* avatarsay.c: optimization: options
 
+	* avatarsay.c (checkoptions): code-cleanup
+
 2009-08-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtaddons.h, avtreadfile.c (avta_pager_file)

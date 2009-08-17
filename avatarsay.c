@@ -408,48 +408,40 @@ initialize (void)
 static void
 checkoptions (int argc, char **argv)
 {
-  int c;
-  int option_index = 0;
+  int opt;
+  static struct option long_options[] = {
+    {"help", no_argument, 0, 'h'},
+    {"version", no_argument, 0, 'v'},
+    {"fullscreen", no_argument, 0, 'f'},
+    {"fulfullscreen", no_argument, 0, 'F'},
+    {"window", no_argument, 0, 'w'},
+    {"once", no_argument, 0, '1'},
+    {"raw", no_argument, 0, 'r'},
+    {"ignoreeof", no_argument, 0, 'i'},
+    {"info", no_argument, 0, 'I'},
+    {"saypipe", no_argument, 0, 's'},
+    {"encoding", required_argument, 0, 'E'},
+    {"latin1", no_argument, 0, 'l'},
+    {"utf-8", no_argument, 0, 'u'},
+    {"utf8", no_argument, 0, 'u'},
+    {"u8", no_argument, 0, 'u'},
+    {"popup", no_argument, 0, 'p'},
+    {"pager", no_argument, 0, 'P'},
+    {"terminal", no_argument, 0, 't'},
+    {"execute", no_argument, 0, 'x'},
+    {"no-delay", no_argument, 0, 'n'},
+    {"nocolor", no_argument, 0, 'b'},
+    {0, 0, 0, 0}
+  };
 
   /* stderr doesn't work in windows GUI programs */
   if (!HAS_STDERR)
     opterr = 0;
 
-  while (1)
+  while ((opt = getopt_long (argc, argv, "+hvfFw1riIsE:lupPtxnb",
+			     long_options, NULL)) != -1)
     {
-      static struct option long_options[] = {
-	{"help", no_argument, 0, 'h'},
-	{"version", no_argument, 0, 'v'},
-	{"fullscreen", no_argument, 0, 'f'},
-	{"fulfullscreen", no_argument, 0, 'F'},
-	{"window", no_argument, 0, 'w'},
-	{"once", no_argument, 0, '1'},
-	{"raw", no_argument, 0, 'r'},
-	{"ignoreeof", no_argument, 0, 'i'},
-	{"info", no_argument, 0, 'I'},
-	{"saypipe", no_argument, 0, 's'},
-	{"encoding", required_argument, 0, 'E'},
-	{"latin1", no_argument, 0, 'l'},
-	{"utf-8", no_argument, 0, 'u'},
-	{"utf8", no_argument, 0, 'u'},
-	{"u8", no_argument, 0, 'u'},
-	{"popup", no_argument, 0, 'p'},
-	{"pager", no_argument, 0, 'P'},
-	{"terminal", no_argument, 0, 't'},
-	{"execute", no_argument, 0, 'x'},
-	{"no-delay", no_argument, 0, 'n'},
-	{"nocolor", no_argument, 0, 'b'},
-	{0, 0, 0, 0}
-      };
-
-      c = getopt_long (argc, argv, "+hvfFw1riIsE:lupPtxnb",
-		       long_options, &option_index);
-
-      /* end of the options */
-      if (c == -1)
-	break;
-
-      switch (c)
+      switch (opt)
 	{
 	  /* long-option has set a flag, nothing to do here */
 	case 0:
@@ -552,8 +544,8 @@ checkoptions (int argc, char **argv)
 	    default:
 	      avta_error ("internal error", "option not supported");
 	    }			/* switch (language) */
-	}			/* switch (c) */
-    }				/* while (1) */
+	}			/* switch (opt) */
+    }				/* while (getopt_long...) */
 
   if (OPT (OPT_TERMINAL) && argc > optind)
     avta_error ("error", "no files allowed for terminal mode");
