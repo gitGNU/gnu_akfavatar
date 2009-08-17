@@ -476,7 +476,7 @@ checkoptions (int argc, char **argv)
 	  break;
 
 	case '1':		/* --once */
-	  options |= OPT_ONCE;
+	  SET_OPT (OPT_ONCE);
 	  break;
 
 	case 'r':		/* --raw */
