@@ -322,6 +322,12 @@ function Choice(start_line, items: integer; startkey: char;
 procedure PagerString (const txt: string; startline: integer);
 procedure PagerFile (const filename: string; startline: integer);
 
+{ lock or unlock updates - can be used for speedups }
+{ when true the text_delay is set to 0 }
+{ when false the textarea gets updated }
+{ use with care! }
+procedure LockUpdates(lock: boolean);
+
 implementation
 
 {-----------------------------------------------------------------------}
@@ -568,6 +574,9 @@ procedure avt_pager_mb (txt: CString; len, startline: CInteger);
   libakfavatar 'avt_pager_mb';
 
 function avt_decide: avt_bool_t; libakfavatar 'avt_decide';
+
+procedure avt_lock_updates(lock: avt_bool_t);
+  libakfavatar 'avt_lock_updates';
 
 {$IfNDef __GPC__}
 
@@ -1165,6 +1174,11 @@ if not initialized then initializeAvatar;
 if avt_choice(result, start_line, items, CInteger(startkey), 
               ord(back), ord(fwrd))<>0 then Halt;
 Choice := result
+end;
+
+procedure LockUpdates(lock: boolean);
+begin
+avt_lock_updates(ord(lock))
 end;
 
 function Decide: boolean;
