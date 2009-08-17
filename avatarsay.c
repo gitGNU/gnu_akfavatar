@@ -812,7 +812,7 @@ run_pager (const char *file_name)
   if (txt && len > 0)
     {
       check_encoding (txt);
-      avt_pager_mb (txt, len, 0);
+      avt_pager_mb (txt, len, 1);
       free (txt);
     }
 }
@@ -1014,7 +1014,7 @@ handle_pager_command (const wchar_t * s)
   char filepath[PATH_LENGTH];
 
   get_data_file (s, filepath);
-  avta_pager_file (filepath);
+  avta_pager_file (filepath, 1);
   avt_clear ();
 }
 
@@ -2265,13 +2265,13 @@ run_info (void)
 
   if (language == DEUTSCH)
     {
-      if (avta_pager_file ("akfavatar-de.txt"))
-	avta_pager_file ("doc/akfavatar-de.txt");
+      if (avta_pager_file ("akfavatar-de.txt", 1))
+	avta_pager_file ("doc/akfavatar-de.txt", 1);
     }
   else				/* not DEUTSCH */
     {
-      if (avta_pager_file ("akfavatar-en.txt"))
-	avta_pager_file ("doc/akfavatar-en.txt");
+      if (avta_pager_file ("akfavatar-en.txt", 1))
+	avta_pager_file ("doc/akfavatar-en.txt", 1);
     }
 
   set_encoding (default_encoding);
@@ -2406,7 +2406,7 @@ ask_manpage (void)
 
 	  avt_set_balloon_size (0, 0);
 	  set_encoding ("ISO-8859-1");
-	  avta_pager_command (command);
+	  avta_pager_command (command, 1);
 	  set_encoding (default_encoding);
 	}
     }
@@ -2559,10 +2559,10 @@ about_avatarsay (void)
 
       avt_set_balloon_size (0, 0);
 
-      if (avta_pager_file ("/usr/local/share/doc/akfavatar/COPYING")
-	  && avta_pager_file ("/usr/share/doc/akfavatar/COPYING")
-	  && avta_pager_file ("./COPYING"))
-	avta_pager_file ("./gpl-3.0.txt");
+      if (avta_pager_file ("/usr/local/share/doc/akfavatar/COPYING", 1)
+	  && avta_pager_file ("/usr/share/doc/akfavatar/COPYING", 1)
+	  && avta_pager_file ("./COPYING", 1))
+	avta_pager_file ("./gpl-3.0.txt", 1);
     }
 
   /* ignore quit-request from avt_decide() */

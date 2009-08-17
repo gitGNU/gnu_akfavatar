@@ -2,6 +2,9 @@
 
 	* avatarsay.c (ask_manpage): use avta_pager_command
 
+	* avtaddons.h, avtreadfile.c (avta_pager_file)
+	(avta_pager_command): option: startline
+
 2009-08-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtaddons.h, avtreadfile.c (avta_pager_file)

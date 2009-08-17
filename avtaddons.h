@@ -149,14 +149,14 @@ AVT_ADDON int avta_read_command (const char *command, char **buffer);
  * run pager on file with current encoding and balloon-size
  * returns 0 on success or -1 on error
  */
-AVT_ADDON int avta_pager_file (const char *file_name);
+AVT_ADDON int avta_pager_file (const char *file_name, int startline);
 
 /*
  * run pager on output of command with current encoding and 
  * balloon-size
  * returns 0 on success or -1 on error
  */
-AVT_ADDON int avta_pager_command (const char *command);
+AVT_ADDON int avta_pager_command (const char *command, int startline);
 
 /**********************************************************************
  * Section: arch

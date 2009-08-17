@@ -171,7 +171,7 @@ avta_read_command (const char *command, char **buffer)
 }
 
 extern int
-avta_pager_file (const char *file_name)
+avta_pager_file (const char *file_name, int startline)
 {
   char *txt;
   int len;
@@ -180,7 +180,7 @@ avta_pager_file (const char *file_name)
   len = avta_read_textfile (file_name, &txt);
 
   if (len > 0)
-    avt_pager_mb (txt, len, 0);
+    avt_pager_mb (txt, len, startline);
 
   if (txt)
     free (txt);
@@ -192,7 +192,7 @@ avta_pager_file (const char *file_name)
 }
 
 extern int
-avta_pager_command (const char *command)
+avta_pager_command (const char *command, int startline)
 {
   char *txt;
   int len;
@@ -201,7 +201,7 @@ avta_pager_command (const char *command)
   len = avta_read_command (command, &txt);
 
   if (len > 0)
-    avt_pager_mb (txt, len, 0);
+    avt_pager_mb (txt, len, startline);
 
   if (txt)
     free (txt);
