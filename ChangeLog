@@ -1,3 +1,8 @@
+2009-08-18  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-audio.c (avt_audio_initialized): new variable
+	many functions adapted
+
 2009-08-17  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (ask_manpage): use avta_pager_command

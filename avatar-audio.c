@@ -59,6 +59,8 @@ typedef struct
 
 extern int _avt_STATUS;
 
+static avt_bool_t avt_audio_initialized;
+
 /* short sound for the "avt_bell" function */
 static avt_audio_t *my_alert;
 
@@ -179,6 +181,7 @@ avt_initialize_audio (void)
 			     8000, AVT_AUDIO_MULAW, AVT_AUDIO_MONO);
   avt_alert_func = short_audio_sound;
   avt_quit_audio_func = avt_quit_audio;
+  avt_audio_initialized = AVT_TRUE;
 
   return _avt_STATUS;
 }
@@ -208,6 +211,7 @@ avt_quit_audio (void)
   avt_free_audio (my_alert);
   my_alert = NULL;
   SDL_QuitSubSystem (SDL_INIT_AUDIO);
+  avt_audio_initialized = AVT_FALSE;
 }
 
 /* deprecated in API */
@@ -215,6 +219,9 @@ extern avt_audio_t *
 avt_load_wave_file (const char *file)
 {
   AudioStruct *s;
+
+  if (!avt_audio_initialized)
+    return NULL;
 
   s = (AudioStruct *) SDL_malloc (sizeof (AudioStruct));
   if (s == NULL)
@@ -235,6 +242,9 @@ extern avt_audio_t *
 avt_load_wave_data (void *data, int datasize)
 {
   AudioStruct *s;
+
+  if (!avt_audio_initialized)
+    return NULL;
 
   s = (AudioStruct *) SDL_malloc (sizeof (AudioStruct));
   if (s == NULL)
@@ -551,19 +561,28 @@ avt_load_audio_RW (SDL_RWops * src)
 extern avt_audio_t *
 avt_load_audio_file (const char *file)
 {
-  return avt_load_audio_RW (SDL_RWFromFile (file, "rb"));
+  if (avt_audio_initialized)
+    return avt_load_audio_RW (SDL_RWFromFile (file, "rb"));
+  else
+    return NULL;
 }
 
 extern avt_audio_t *
 avt_load_audio_stream (void *stream)
 {
-  return avt_load_audio_RW (SDL_RWFromFP ((FILE*) stream, 0));
+  if (avt_audio_initialized)
+    return avt_load_audio_RW (SDL_RWFromFP ((FILE *) stream, 0));
+  else
+    return NULL;
 }
 
 extern avt_audio_t *
 avt_load_audio_data (void *data, int datasize)
 {
-  return avt_load_audio_RW (SDL_RWFromMem (data, datasize));
+  if (avt_audio_initialized)
+    return avt_load_audio_RW (SDL_RWFromMem (data, datasize));
+  else
+    return NULL;
 }
 
 extern avt_audio_t *
@@ -574,6 +593,9 @@ avt_load_raw_audio_data (void *data, int data_size,
   int out_size;
   int i;
   AudioStruct *s;
+
+  if (!avt_audio_initialized)
+    return NULL;
 
   /* do we actually have data to process? */
   if (data == NULL || data_size <= 0)
@@ -738,6 +760,9 @@ avt_play_audio (avt_audio_t * snd, avt_bool_t doloop)
 {
   AudioStruct *newsound;
 
+  if (!avt_audio_initialized)
+    return _avt_STATUS;
+
   /* no sound? - just ignore it */
   if (!snd)
     return _avt_STATUS;
@@ -774,6 +799,9 @@ avt_play_audio (avt_audio_t * snd, avt_bool_t doloop)
 extern int
 avt_wait_audio_end (void)
 {
+  if (!avt_audio_initialized)
+    return _avt_STATUS;
+
   /* end the loop, but wait for end of sound */
   loop = AVT_FALSE;
 
