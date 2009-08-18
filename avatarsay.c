@@ -2376,21 +2376,17 @@ ask_manpage (void)
       char command[255];
       int cmd_len;
 
-
+      /*
+       * assuming GROFF!
+       * note: at the time of writing groff has support for utf-8,
+       * but it's broken.
+       */
       cmd_len = snprintf (command, sizeof (command),
-			  "man -t %s 2>&1", manpage);
+			  "env GROFF_TYPESETTER=latin1 GROFF_NO_SGR=1 "
+			  "MANWIDTH=80 man -t %s 2>&1", manpage);
 
       if (cmd_len > 0 && cmd_len < (int) sizeof (command))
 	{
-	  /*
-	   * assuming GROFF!
-	   * note: at the time of writing groff has support for utf-8,
-	   * but it's broken.
-	   */
-	  putenv ("GROFF_TYPESETTER=latin1");
-	  putenv ("GROFF_NO_SGR=1");
-	  putenv ("MANWIDTH=80");
-
 	  avt_set_balloon_size (0, 0);
 	  set_encoding ("ISO-8859-1");
 	  avta_pager_command (command, 1);

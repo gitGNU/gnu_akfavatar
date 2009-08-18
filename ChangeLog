@@ -6,6 +6,9 @@
 	* avatarsay.c: new option: -A, --noaudio
 	many functions adapted
 
+	* avatarsay.c (ask_manpage):
+	don't use putenv, but start the command with env
+
 2009-08-17  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (ask_manpage): use avta_pager_command
