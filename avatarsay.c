@@ -97,10 +97,11 @@
 #define OPT_IGNEOF	(1 << 5)
 #define OPT_ONCE	(1 << 6)
 #define OPT_GIVENENC	(1 << 7)
+#define OPT_NOAUDIO	(1 << 8)
 
 #define SET_OPT(x) (options |= (x))
 #define UNSET_OPT(x) (options &= ~(x))
-#define OPT(x) (options & (x))
+#define OPT(x) ((options & (x)) != 0)
 
 /* options */
 static long int options;
@@ -294,17 +295,20 @@ initialize (void)
       supposed_title = NULL;
     }
 
-  if (avt_initialize_audio ())
-    switch (language)
-      {
-      case DEUTSCH:
-	avta_error ("kann Audio nicht initialisieren", avt_get_error ());
-	break;
+  if (!OPT (OPT_NOAUDIO))
+    {
+      if (avt_initialize_audio ())
+	switch (language)
+	  {
+	  case DEUTSCH:
+	    avta_error ("kann Audio nicht initialisieren", avt_get_error ());
+	    break;
 
-      case ENGLISH:
-      default:
-	avta_error ("cannot initialize audio", avt_get_error ());
-      }
+	  case ENGLISH:
+	  default:
+	    avta_error ("cannot initialize audio", avt_get_error ());
+	  }
+    }
 
   avt_set_text_delay (default_delay);
 
@@ -375,7 +379,8 @@ help (void)
   puts (" -t, --terminal          terminal mode (run a shell in balloon)");
   puts (" -x, --execute           execute program in balloon");
 #endif
-  puts (" -b, --nocolor           no color allowed (black and white)");
+  puts (" -b, --nocolor           no color in balloon (black and white)");
+  puts (" -A, --noaudio           no audio subsystem used");
   puts (" -w, --window            try to run the program in a window"
 	" (default)");
   puts (" -f, --fullscreen        try to run the program in fullscreen mode");
@@ -420,7 +425,6 @@ checkoptions (int argc, char **argv)
     {"raw", no_argument, 0, 'r'},
     {"ignoreeof", no_argument, 0, 'i'},
     {"info", no_argument, 0, 'I'},
-    {"saypipe", no_argument, 0, 's'},
     {"encoding", required_argument, 0, 'E'},
     {"latin1", no_argument, 0, 'l'},
     {"utf-8", no_argument, 0, 'u'},
@@ -432,6 +436,7 @@ checkoptions (int argc, char **argv)
     {"execute", no_argument, 0, 'x'},
     {"no-delay", no_argument, 0, 'n'},
     {"nocolor", no_argument, 0, 'b'},
+    {"noaudio", no_argument, 0, 'A'},
     {0, 0, 0, 0}
   };
 
@@ -439,13 +444,17 @@ checkoptions (int argc, char **argv)
   if (!HAS_STDERR)
     opterr = 0;
 
-  while ((opt = getopt_long (argc, argv, "+hvfFw1riIsE:lupPtxnb",
+  while ((opt = getopt_long (argc, argv, "+AhvfFw1riIE:lupPtxnb",
 			     long_options, NULL)) != -1)
     {
       switch (opt)
 	{
 	  /* long-option has set a flag, nothing to do here */
 	case 0:
+	  break;
+
+	case 'A':
+	  SET_OPT (OPT_NOAUDIO);
 	  break;
 
 	case 'h':		/* --help */
@@ -1146,6 +1155,9 @@ handle_loadaudio_command (const wchar_t * s)
   size_t size = 0;
   void *buf = NULL;
 
+  if (OPT (OPT_NOAUDIO))
+    return;
+
   if (sound)
     {
       avt_stop_audio ();
@@ -1199,6 +1211,8 @@ handle_rawaudiosettings_command (const wchar_t * s)
 {
   int result;
   char data_type[30], channels[30];
+
+  /* this just sets variables, so no check needed */
 
   raw_audio.type = AVT_AUDIO_UNKNOWN;
 
@@ -1260,8 +1274,11 @@ handle_playaudio_command (avt_bool_t do_loop)
 	move_in ();
     }
 
-  if (avt_play_audio (sound, do_loop))
-    avta_notice ("can not play audio data", avt_get_error ());
+  if (!OPT (OPT_NOAUDIO))
+    {
+      if (avt_play_audio (sound, do_loop))
+	avta_notice ("can not play audio data", avt_get_error ());
+    }
 }
 
 static void
