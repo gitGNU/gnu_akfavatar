@@ -87,7 +87,7 @@ man: avatarsay.1 avtcmd.1
 
 avatarsay.1: ../avatarsay.c
 	-help2man --info-page=akfavatar-en --source=AKFAvatar \
-	  -o avatarsay.1 avatarsay
+	  -o avatarsay.1 ../avatarsay
 
 avtcmd.1: ../avtcmd
 	-help2man --info-page=akfavatar-en --source=AKFAvatar \
