@@ -29,6 +29,10 @@
 #include "SDL.h"
 #include "SDL_audio.h"
 
+extern int _avt_STATUS;
+
+#ifndef NO_AUDIO
+
 #include "alert.c"
 
 #ifndef _SDL_stdinc_h
@@ -56,8 +60,6 @@ typedef struct
   Uint32 len;			/* Length of wave data */
   Uint8 wave;			/* wether SDL_FreeWav is needed? */
 } AudioStruct;
-
-extern int _avt_STATUS;
 
 static avt_bool_t avt_audio_initialized;
 
@@ -818,3 +820,97 @@ avt_wait_audio_end (void)
 
   return _avt_STATUS;
 }
+
+#else /* NO_AUDIO */
+
+static void
+no_audio (void)
+{
+  SDL_SetError ("not compiled with audio support");
+}
+
+extern int
+avt_initialize_audio (void)
+{
+  no_audio ();
+  /* do not set _avt_STATUS here */
+  return AVT_ERROR;
+}
+
+extern void
+avt_stop_audio (void)
+{
+  no_audio ();
+}
+
+extern void
+avt_quit_audio (void)
+{
+  no_audio ();
+}
+
+extern avt_audio_t *
+avt_load_audio_file (const char *file AVT_UNUSED)
+{
+  no_audio ();
+  return NULL;
+}
+
+extern avt_audio_t *
+avt_load_wave_file (const char *file AVT_UNUSED)
+{
+  no_audio ();
+  return NULL;
+}
+
+extern avt_audio_t *
+avt_load_audio_stream (void *stream AVT_UNUSED)
+{
+  no_audio ();
+  return NULL;
+}
+
+extern avt_audio_t *
+avt_load_audio_data (void *data AVT_UNUSED, int datasize AVT_UNUSED)
+{
+  no_audio ();
+  return NULL;
+}
+
+extern avt_audio_t *
+avt_load_wave_data (void *data AVT_UNUSED, int datasize AVT_UNUSED)
+{
+  no_audio ();
+  return NULL;
+}
+
+extern avt_audio_t *
+avt_load_raw_audio_data (void *data AVT_UNUSED, int data_size AVT_UNUSED,
+			 int samplingrate AVT_UNUSED,
+			 int audio_type AVT_UNUSED, int channels AVT_UNUSED)
+{
+  no_audio ();
+  return NULL;
+}
+
+extern void
+avt_free_audio (avt_audio_t * snd AVT_UNUSED)
+{
+  no_audio ();
+}
+
+extern int
+avt_wait_audio_end (void)
+{
+  no_audio ();
+  return _avt_STATUS;
+}
+
+extern int
+avt_play_audio (avt_audio_t * snd AVT_UNUSED, avt_bool_t doloop AVT_UNUSED)
+{
+  no_audio ();
+  return _avt_STATUS;
+}
+
+#endif /* NO_AUDIO */

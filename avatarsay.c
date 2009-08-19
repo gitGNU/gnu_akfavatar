@@ -301,12 +301,12 @@ initialize (void)
 	switch (language)
 	  {
 	  case DEUTSCH:
-	    avta_error ("kann Audio nicht initialisieren", avt_get_error ());
+	    avta_notice ("kann Audio nicht initialisieren", avt_get_error ());
 	    break;
 
 	  case ENGLISH:
 	  default:
-	    avta_error ("cannot initialize audio", avt_get_error ());
+	    avta_notice ("cannot initialize audio", avt_get_error ());
 	  }
     }
 

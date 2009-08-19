@@ -1,3 +1,9 @@
+2009-08-19  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-audio.c [NO_AUDIO]:
+	define stubs when no audio support should be compiled in
+	avatarsay.c (initialize): adapted
+
 2009-08-18  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-audio.c (avt_audio_initialized): new variable

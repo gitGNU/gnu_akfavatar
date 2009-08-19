@@ -92,6 +92,7 @@ while [ x"$1" != x ] ; do
 		echo "  --with-oldsdl         support for older SDL versions on target machine"
 		echo "  --with-iconv[=enc]    force use of external iconv (normally not needed)"
 		echo "  --with-sdl-iconv=enc  set encoding for wchar_t when SDL's iconv is used"
+		echo "  --disable-audio       disable audio support"
 		echo "  --disable-sdl-image   disable support for SDL_image completely"
 		echo "  --enable-link-sdl-image link directly to SDL_image"
 		#echo "  --enable-qvga         compile for small QVGA (320x240) displays"
@@ -163,6 +164,9 @@ while [ x"$1" != x ] ; do
 	--enable-sdl-image=yes) SDL_IMAGE="yes" ;;
 	--enable-qvga | --enable-qvga=yes | --enable-size=qvga) SIZE="QVGA" ;;
 	--enable-vga | --enable-vga=yes | --enable-size=vga) SIZE="VGA" ;;
+	--disable-audio | \
+	--enable-audio=no | \
+	--disable-audio=yes) NO_AUDIO="yes" ;;
 	
 	--build=* | --enable-* | --with-* | --*dir=* | *=* | *-*-*) ;;
 	*)
@@ -216,6 +220,11 @@ if [ "$LINK_SDL_IMAGE" = "yes" ]
 then 
   SDLCFLAGS="$SDLCFLAGS -DLINK_SDL_IMAGE"
   SDLLDFLAGS="$SDLLDFLAGS -lSDL_image"
+fi
+
+if [ "$NO_AUDIO" = "yes" ]
+then
+  CFLAGS="$CFLAGS -DNO_AUDIO"
 fi
 
 # system specific stuff
