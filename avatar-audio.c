@@ -178,12 +178,14 @@ avt_initialize_audio (void)
       return AVT_ERROR;
     }
 
+  /* set this before calling anything from this lib */
+  avt_audio_initialized = AVT_TRUE;
+
   my_alert =
     avt_load_raw_audio_data ((void *) &avt_alert_data, avt_alert_data_size,
 			     8000, AVT_AUDIO_MULAW, AVT_AUDIO_MONO);
   avt_alert_func = short_audio_sound;
   avt_quit_audio_func = avt_quit_audio;
-  avt_audio_initialized = AVT_TRUE;
 
   return _avt_STATUS;
 }
