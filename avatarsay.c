@@ -2376,6 +2376,9 @@ ask_manpage (void)
       char command[255];
       int cmd_len;
 
+      /* don't use putenv or setenv here
+       * it'd have side effects when starting terminal later */
+
       /*
        * assuming GROFF!
        * note: at the time of writing groff has support for utf-8,
