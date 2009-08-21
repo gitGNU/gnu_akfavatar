@@ -10,8 +10,8 @@
 # Version and name
 VERSION=0
 SUBVERSION=17
-REVISION=0
-VARIANT="-devel"
+REVISION=1
+#VARIANT="-devel"
 LIBNAME=libakfavatar.so.${VERSION}.${SUBVERSION}.${REVISION}
 SONAME=libakfavatar.so.${VERSION}.${SUBVERSION}
 
