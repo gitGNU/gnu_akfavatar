@@ -358,6 +358,8 @@ distclean: clean
 # the rest is just for the maintainer
 # don't use it unless you know what you are doing
 
+everything: all multiply multiplizieren
+
 maintainer-clean: distclean
 	@echo 'This command is intended for maintainers to use; it'
 	@echo 'deletes files that may need special tools to rebuild.'
