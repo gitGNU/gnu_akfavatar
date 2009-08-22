@@ -5,6 +5,7 @@ a.out
 *.ppu
 Makefile
 config-local
+config-debug
 config.status
 version.h
 avatarsay
