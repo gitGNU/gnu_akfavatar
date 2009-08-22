@@ -85,7 +85,7 @@ docbook: akfavatar-en.texinfo akfavatar-de.texinfo pasref.txt akfavatar.h versio
 
 man: avatarsay.1 avtcmd.1
 
-avatarsay.1: ../avatarsay.c
+avatarsay.1: ../avatarsay.c ../configure
 	-help2man --info-page=akfavatar-en --source=AKFAvatar \
 	  -o avatarsay.1 ../avatarsay
 
