@@ -3,6 +3,9 @@
 	* avttermsys.h, avttermsys.c: new files
 	avtterm.c: system-specific stuff separated out
 
+	* avatar-audio.c:
+	allow loading audio-data before audio is initialized, again
+
 ------------------------------------------------------------------------
 
 2009-08-21  Andreas K. Foerster  <info@akfoerster.de>

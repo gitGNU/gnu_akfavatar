@@ -224,9 +224,6 @@ avt_load_wave_file (const char *file)
 {
   AudioStruct *s;
 
-  if (!avt_audio_initialized)
-    return NULL;
-
   s = (AudioStruct *) SDL_malloc (sizeof (AudioStruct));
   if (s == NULL)
     return NULL;
@@ -246,9 +243,6 @@ extern avt_audio_t *
 avt_load_wave_data (void *data, int datasize)
 {
   AudioStruct *s;
-
-  if (!avt_audio_initialized)
-    return NULL;
 
   s = (AudioStruct *) SDL_malloc (sizeof (AudioStruct));
   if (s == NULL)
@@ -565,28 +559,19 @@ avt_load_audio_RW (SDL_RWops * src)
 extern avt_audio_t *
 avt_load_audio_file (const char *file)
 {
-  if (avt_audio_initialized)
     return avt_load_audio_RW (SDL_RWFromFile (file, "rb"));
-  else
-    return NULL;
 }
 
 extern avt_audio_t *
 avt_load_audio_stream (void *stream)
 {
-  if (avt_audio_initialized)
     return avt_load_audio_RW (SDL_RWFromFP ((FILE *) stream, 0));
-  else
-    return NULL;
 }
 
 extern avt_audio_t *
 avt_load_audio_data (void *data, int datasize)
 {
-  if (avt_audio_initialized)
     return avt_load_audio_RW (SDL_RWFromMem (data, datasize));
-  else
-    return NULL;
 }
 
 extern avt_audio_t *
@@ -597,9 +582,6 @@ avt_load_raw_audio_data (void *data, int data_size,
   int out_size;
   int i;
   AudioStruct *s;
-
-  if (!avt_audio_initialized)
-    return NULL;
 
   /* do we actually have data to process? */
   if (data == NULL || data_size <= 0)
