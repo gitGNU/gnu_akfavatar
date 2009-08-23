@@ -387,7 +387,8 @@ dist: info html man distclean
 	   balloonpointer.xpm circle.xpm gnu-head.xpm \
 	   male_user.xpm female_user.xpm \
 	   btn.xpm btn-cont.xpm btn-no.xpm btn-yes.xpm \
-	   avatarsay.c avtposix.c avtterm.c avtmsg.c arch.c avtcolors.h \
+	   avatarsay.c avtposix.c avtterm.c avttermsys.h avttermsys.c \
+	   avtmsg.c arch.c avtcolors.h \
 	   avtman avtcmd example.c fsdemo-?? \
 	   gnome-akfavatar akfoerster-avatarsay.desktop bdfread.c \
 	   akfavatar.xpm info.xpm bin2c.c \
