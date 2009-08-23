@@ -1,3 +1,8 @@
+2009-08-23  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avttermsys.h, avttermsys.c: new files
+	avtterm.c: system-specific stuff separated out
+
 ------------------------------------------------------------------------
 
 2009-08-21  Andreas K. Foerster  <info@akfoerster.de>

@@ -130,8 +130,11 @@ avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h
 	  -c -o $@ $(srcdir)/avatarsay.c
 
 avtterm.o: $(srcdir)/avtterm.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
-	$(CC) $(SDLCFLAGS) $(CFLAGS) -DPREFIX=\"$(exec_prefix)\" -I. \
-	  -c -o $@ $(srcdir)/avtterm.c
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avtterm.c
+
+avttermsys.o: $(srcdir)/avttermsys.c $(srcdir)/avttermsys.h \
+                $(srcdir)/akfavatar.h $(srcdir)/version.h
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avttermsys.c
 
 avtmsg.o: $(srcdir)/avtmsg.c $(srcdir)/avtaddons.h
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/avtmsg.c
@@ -139,9 +142,9 @@ avtmsg.o: $(srcdir)/avtmsg.c $(srcdir)/avtaddons.h
 arch.o: $(srcdir)/arch.c $(srcdir)/avtaddons.h
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/arch.c
 
-libavtaddons.a: filechooser.o avtterm.o arch.o \
+libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
                 avtccio.o avtcwio.o avtmsg.o avtreadfile.o
-	$(AR) rcu $@ filechooser.o avtterm.o arch.o \
+	$(AR) rcu $@ filechooser.o avtterm.o avttermsys.o arch.o \
 	             avtccio.o avtcwio.o avtmsg.o avtreadfile.o
 	-$(RANLIB) $@
 

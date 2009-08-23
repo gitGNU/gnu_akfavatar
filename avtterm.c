@@ -23,31 +23,13 @@
 #endif
 
 #include "akfavatar.h"
+#include "avttermsys.h"
 #include "avtaddons.h"
-#include "version.h"
 #include <wchar.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <errno.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <termios.h>
-#include <sys/ioctl.h>
 #include <sys/wait.h>
-#include <pwd.h>
-
-#ifdef USE_OPENPTY
-#  include <pty.h>
-#endif
-
-/* terminal type */
-/* 
- * this is not dependent on the system on which it runs,
- * but the terminal database should have an entry for this
- */
-#define TERM "linux"
-#define BWTERM "linux-m"
 
 /* size for input buffer */
 #define INBUFSIZE 1024
@@ -57,10 +39,6 @@
 
 /* Vt100 graphics is handled internaly */
 #define VT100 "VT100 graphics"
-
-/* hack to get a macro stringified :-( */
-#define XSTR(x) STR(x)
-#define STR(x) #x
 
 /* default encoding - either system encoding or given per parameters */
 /* supported in SDL: ASCII, ISO-8859-1, UTF-8, UTF-16, UTF-32 */
@@ -119,19 +97,6 @@ static const wchar_t vt100trans[] = {
 /* handler for APC commands */
 static avta_term_apc_cmd apc_cmd_handler;
 
-/* may be defined externally when EXT_AVTTERM_INITIALIZE is defined */
-/* execute a subprocess, visible in the balloon */
-/* if fname == NULL, start a shell */
-/* sets input_fd to a file-descriptor for the input of the process */
-/* returns file-descriptor for the output of the process or -1 on error */
-extern int avta_term_initialize (int *input_fd, const char *system_encoding,
-				 const char *working_dir,
-				 char *const prg_argv[]);
-
-/* may be defined externally when EXT_AVTTERM_SIZE is defined */
-extern void avta_term_size (int fd, int height, int width);
-
-
 static void
 set_encoding (const char *encoding)
 {
@@ -176,25 +141,6 @@ activate_cursor (avt_bool_t on)
   cursor_active = AVT_MAKE_BOOL (on);
   avt_activate_cursor (cursor_active);
 }
-
-#ifndef EXT_AVTTERM_SIZE
-
-/* set terminal size */
-extern void
-avta_term_size (int fd AVT_UNUSED, int height AVT_UNUSED,
-		int width AVT_UNUSED)
-{
-#ifdef TIOCSWINSZ
-  struct winsize size;
-
-  size.ws_row = (height > 0) ? height : 0;
-  size.ws_col = (width > 0) ? width : 0;
-  size.ws_xpixel = size.ws_ypixel = 0;
-  ioctl (fd, TIOCSWINSZ, &size);
-#endif
-}
-
-#endif /* not EXT_AVTTERM_SIZE */
 
 extern void
 avta_term_update_size (void)
@@ -275,29 +221,6 @@ get_character (int fd)
     }
 
   return ch;
-}
-
-static char *
-get_user_shell (void)
-{
-  char *shell;
-
-  shell = getenv ("SHELL");
-
-  /* when the variable is not set, dig deeper */
-  if (shell == NULL || *shell == '\0')
-    {
-      struct passwd *user_data;
-
-      user_data = getpwuid (getuid ());
-      if (user_data != NULL && user_data->pw_shell != NULL
-	  && *user_data->pw_shell != '\0')
-	shell = user_data->pw_shell;
-      else
-	shell = "/bin/sh";	/* default shell */
-    }
-
-  return shell;
 }
 
 extern void
@@ -1562,27 +1485,10 @@ extern int
 avta_term_start (const char *system_encoding, const char *working_dir,
 		 char *const prg_argv[])
 {
-  return
-    avta_term_initialize (&prg_input, system_encoding, working_dir, prg_argv);
-}
-
-
-#ifndef EXT_AVTTERM_INITIALIZE
-
-extern int
-avta_term_initialize (int *input_fd, const char *system_encoding,
-		      const char *working_dir, char *const prg_argv[])
-{
-  pid_t childpid;
-  int master, slave;
-  char *terminalname;
-  struct termios settings;
-  char *shell = "/bin/sh";
-
   /* clear text-buffer */
   wcbuf_pos = wcbuf_len = 0;
-
   default_encoding = system_encoding;
+
   max_x = avt_get_max_x ();
   max_y = avt_get_max_y ();
   region_min_y = 1;
@@ -1593,133 +1499,7 @@ avta_term_initialize (int *input_fd, const char *system_encoding,
   if (max_x < 0 || max_y < 0)
     return -1;
 
-  if (prg_argv == NULL)
-    shell = get_user_shell ();
-
-#ifdef USE_OPENPTY
-
-  if (openpty (&master, &slave, NULL, NULL, NULL) < 0)
-    return -1;
-
-#else /* not USE_OPENPTY */
-
-  /* as specified in POSIX.1-2001 */
-  master = posix_openpt (O_RDWR);
-
-  /* some older systems: */
-  /* master = open("/dev/ptmx", O_RDWR); */
-
-  if (master < 0)
-    return -1;
-
-  if (grantpt (master) < 0 || unlockpt (master) < 0)
-    {
-      close (master);
-      return -1;
-    }
-
-  terminalname = ptsname (master);
-
-  if (terminalname == NULL)
-    {
-      close (master);
-      return -1;
-    }
-
-  slave = open (terminalname, O_RDWR);
-
-  if (slave < 0)
-    {
-      close (master);
-      return -1;
-    }
-
-#endif /* not USE_OPENPTY */
-
-  /* terminal settings */
-  if (tcgetattr (master, &settings) < 0)
-    {
-      close (master);
-      close (slave);
-      return -1;
-    }
-
-  settings.c_cc[VERASE] = 8;	/* Backspace */
-  settings.c_iflag |= ICRNL;	/* input: cr -> nl */
-  settings.c_lflag |= (ECHO | ECHOE | ECHOK | ICANON);
-
-  if (tcsetattr (master, TCSANOW, &settings) < 0)
-    {
-      close (master);
-      close (slave);
-      return -1;
-    }
-
-  avta_term_size (master, max_y, max_x);
-
-  /*-------------------------------------------------------- */
-  childpid = fork ();
-
-  if (childpid == -1)
-    {
-      close (master);
-      close (slave);
-      return -1;
-    }
-
-  /* is it the child process? */
-  if (childpid == 0)
-    {
-      /* child closes master */
-      close (master);
-
-      /* create a new session */
-      setsid ();
-
-      /* redirect stdin, stdout, stderr to slave */
-      if (dup2 (slave, STDIN_FILENO) < 0
-	  || dup2 (slave, STDOUT_FILENO) < 0
-	  || dup2 (slave, STDERR_FILENO) < 0)
-	_exit (EXIT_FAILURE);
-
-      close (slave);
-
-      /* unset the controling terminal */
-#ifdef TIOCSCTTY
-      ioctl (STDIN_FILENO, TIOCSCTTY, 0);
-#endif
-
-      if (nocolor)
-	putenv ("TERM=" BWTERM);
-      else
-	putenv ("TERM=" TERM);
-
-      /* programs can identify avatarsay with this */
-      putenv ("AKFAVTTERM=" XSTR (AVTVERSIONNR));
-
-      if (working_dir)
-	if (chdir (working_dir) < 0)
-	  {
-	    /* ignore */
-	  }
-
-      if (prg_argv == NULL)	/* execute shell */
-	execl (shell, shell, (char *) NULL);
-      else			/* execute the command */
-	execvp (prg_argv[0], prg_argv);
-
-
-      /* in case of an error, we can not do much */
-      /* stdout and stderr are broken by now */
-      _exit (EXIT_FAILURE);
-    }
-
-  /* parent process */
-  close (slave);
-  fcntl (master, F_SETFL, O_NONBLOCK);
-  *input_fd = master;
-
-  return master;
+  return
+    avta_term_initialize (&prg_input, max_x, max_y, nocolor,
+			  working_dir, prg_argv);
 }
-
-#endif /* not EXT_AVTTERM_START */
