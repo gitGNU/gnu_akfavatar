@@ -427,7 +427,7 @@ dist-bin: avatarsay multiply multiplizieren info html
 	mkdir $(BINPKGNAME)
 	cp $(LIBNAME) $(BINPKGNAME)/
 	cp avatarsay $(BINPKGNAME)/
-	ln $(SONAME) $(BINPKGNAME)/
+	-ln -sf $(LIBNAME) $(BINPKGNAME)/$(SONAME)
 	ln $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/
 	ln $(srcdir)/pascal/?pcavatar $(BINPKGNAME)/
 	ln $(srcdir)/gnu-head.xpm $(BINPKGNAME)/
