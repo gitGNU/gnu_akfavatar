@@ -2508,7 +2508,7 @@ about_avatarsay (void)
   avt_set_text_delay (0);
 
   avt_say_mb ("avatarsay (AKFAvatar) " AVTVERSION "\n"
-	      "Copyright (c) " COPYRIGHT_YEAR " Andreas K. Förster\n");
+	      "Copyright © " COPYRIGHT_YEAR " Andreas K. Förster\n");
 
   switch (language)
     {
