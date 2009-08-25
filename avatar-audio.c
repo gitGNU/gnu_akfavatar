@@ -559,19 +559,19 @@ avt_load_audio_RW (SDL_RWops * src)
 extern avt_audio_t *
 avt_load_audio_file (const char *file)
 {
-    return avt_load_audio_RW (SDL_RWFromFile (file, "rb"));
+  return avt_load_audio_RW (SDL_RWFromFile (file, "rb"));
 }
 
 extern avt_audio_t *
 avt_load_audio_stream (void *stream)
 {
-    return avt_load_audio_RW (SDL_RWFromFP ((FILE *) stream, 0));
+  return avt_load_audio_RW (SDL_RWFromFP ((FILE *) stream, 0));
 }
 
 extern avt_audio_t *
 avt_load_audio_data (void *data, int datasize)
 {
-    return avt_load_audio_RW (SDL_RWFromMem (data, datasize));
+  return avt_load_audio_RW (SDL_RWFromMem (data, datasize));
 }
 
 extern avt_audio_t *
