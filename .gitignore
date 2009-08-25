@@ -19,6 +19,10 @@ bin2c
 ucsfont*.c
 alert.c
 *.tar.bz2
+*.tar.gz
+*.tgz
 misc
 archives
 tests
+*-pak
+*.deb
