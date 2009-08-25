@@ -27,6 +27,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/ioctl.h>
+#include <sys/wait.h>
 
 #ifdef USE_OPENPTY
 #  include <pty.h>
@@ -218,4 +219,14 @@ avta_term_initialize (int *input_fd, int width, int height,
   *input_fd = master;
 
   return master;
+}
+
+extern void
+avta_closeterm (int fd)
+{
+  /* close file descriptor */
+  (void) close (fd);
+
+  /* just to prevent zombies */
+  wait (NULL);
 }

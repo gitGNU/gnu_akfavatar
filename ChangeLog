@@ -1,3 +1,7 @@
+2009-08-25  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avttermsys.h, avttermsys.c (avta_closeterm): new function
+
 2009-08-23  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avttermsys.h, avttermsys.c: new files

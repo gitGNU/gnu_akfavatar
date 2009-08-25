@@ -29,7 +29,6 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/wait.h>
 
 /* size for input buffer */
 #define INBUFSIZE 1024
@@ -1458,15 +1457,10 @@ avta_term_run (int fd)
 	}
     }
 
+  avta_closeterm (fd);
+
   activate_cursor (AVT_FALSE);
   avt_reserve_single_keys (AVT_FALSE);
-
-  /* close file descriptor */
-  if (close (fd) == -1 && errno != EAGAIN)
-    avta_warning ("close", strerror (errno));
-
-  /* just to prevent zombies */
-  wait (NULL);
 
   /* release handlers */
   avt_register_mousehandler (NULL);
