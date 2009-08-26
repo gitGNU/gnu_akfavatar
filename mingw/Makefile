@@ -310,7 +310,8 @@ install-strip: akfavatar.dll libakfavatar.a
 	install -m 644 $(srcdir)/avtaddons.h $(includedir)
 	install -m 644 libakfavatar.a libakfavatar.dll.a $(libdir)
 	install -m 644 libavtaddons.a $(libdir)
-	install -m 644 -s akfavatar.dll $(libdir)
+	install -m 644 akfavatar.dll $(libdir)
+	$(STRIP) $(libdir)/akfavatar.dll
 
 clean:
 	-rm -f *~ *.o *.ppu *.gpi
