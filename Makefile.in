@@ -448,8 +448,8 @@ dist-bin: avatarsay multiply multiplizieren info html
 	   $(BINPKGNAME)/
 	ln $(srcdir)/doc/akfavatar-??.html $(BINPKGNAME)/
 	ln $(srcdir)/doc/akfavatar-??.info $(BINPKGNAME)/
-	strip $(BINPKGNAME)/avatarsay
-	strip $(BINPKGNAME)/$(LIBNAME)
+	#strip $(BINPKGNAME)/avatarsay
+	#strip $(BINPKGNAME)/$(LIBNAME)
 	tar -cvf $(BINPKGNAME).$(SYSTEM).$(ARCH).tar $(BINPKGNAME)/
 	bzip2 $(BINPKGNAME).$(SYSTEM).$(ARCH).tar
 	rm -rf $(BINPKGNAME)/
