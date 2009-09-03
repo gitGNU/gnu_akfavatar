@@ -353,7 +353,7 @@ dist-bin: avatarsay.exe multiply.exe multiplizieren.exe
 	-cp multiply.exe multiplizieren.exe $(BINPKGNAME)/
 	cp $(srcdir)/pascal/teacher.xpm $(BINPKGNAME)/
 	cp $(srcdir)/female_user.xpm $(BINPKGNAME)/
-	$(STRIP) $(BINPKGNAME)/avatarsay.exe $(BINPKGNAME)/akfavatar.dll
+	#$(STRIP) $(BINPKGNAME)/avatarsay.exe $(BINPKGNAME)/akfavatar.dll
 	todos $(BINPKGNAME)/fsdemo-??
 	todos $(BINPKGNAME)/*.bat
 	todos $(BINPKGNAME)/*.txt
