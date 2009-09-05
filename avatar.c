@@ -4515,7 +4515,7 @@ avt_show_image_file (const char *filename)
 }
 
 extern int
-avt_show_image_stream (void *stream)
+avt_show_image_stream (avt_stream *stream)
 {
   SDL_Surface *image;
 
@@ -4777,7 +4777,7 @@ avt_import_image_file (const char *filename)
 }
 
 extern avt_image_t *
-avt_import_image_stream (void *stream)
+avt_import_image_stream (avt_stream *stream)
 {
   SDL_Surface *image;
 

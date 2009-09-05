@@ -563,7 +563,7 @@ avt_load_audio_file (const char *file)
 }
 
 extern avt_audio_t *
-avt_load_audio_stream (void *stream)
+avt_load_audio_stream (avt_stream *stream)
 {
   return avt_load_audio_RW (SDL_RWFromFP ((FILE *) stream, 0));
 }
@@ -848,7 +848,7 @@ avt_load_wave_file (const char *file AVT_UNUSED)
 }
 
 extern avt_audio_t *
-avt_load_audio_stream (void *stream AVT_UNUSED)
+avt_load_audio_stream (avt_stream *stream AVT_UNUSED)
 {
   no_audio ();
   return NULL;

@@ -109,6 +109,9 @@ typedef char avt_bool_t;
 typedef void avt_image_t;
 typedef void avt_audio_t;
 
+/* for streams (use FILE from your programs) */
+typedef void avt_stream;
+
 /*
  * type for keyhandler
  * see avt_register_keyhandler
@@ -186,11 +189,8 @@ AVT_API avt_image_t *avt_import_image_data (void *img, int imgsize);
 /* import avatar from file */
 AVT_API avt_image_t *avt_import_image_file (const char *filename);
 
-/*
- * import avatar from stream
- * the stream is internally casted to (FILE *)
- */
-AVT_API avt_image_t *avt_import_image_stream (void *stream);
+/* import avatar from stream */
+AVT_API avt_image_t *avt_import_image_stream (avt_stream *stream);
 
 /***********************************************************************/
 /* other functions for avatarimages */
@@ -657,10 +657,9 @@ AVT_API int avt_show_image_file (const char *file);
 
 /*
  * load image from stream and show it
- * the stream is internally casted to (FILE *)
  * on error it returns AVT_ERROR without changing the status
  */
-AVT_API int avt_show_image_stream (void *stream);
+AVT_API int avt_show_image_stream (avt_stream *stream);
 
 /*
  * show image from image data
@@ -769,10 +768,9 @@ AVT_API avt_audio_t *avt_load_audio_file (const char *filename);
 
 /*
  * loads audio in AU or Wave format from a stream
- * the stream is internally casted to (FILE *)
  * not for headerless formats
  */
-AVT_API avt_audio_t *avt_load_audio_stream (void *stream);
+AVT_API avt_audio_t *avt_load_audio_stream (avt_stream *stream);
 
 /*
  * loads audio in AU or Wave format from memory
