@@ -6,6 +6,8 @@
 	new deprecated wrappers for backward compatibility
 	avatar-default.c: adapted
 
+	* text2c: new script
+
 2009-09-05  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h: reorganized
