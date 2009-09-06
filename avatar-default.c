@@ -25,5 +25,5 @@
 extern avt_image_t *
 avt_default (void)
 {
-  return avt_import_XPM (male_user_xpm);
+  return avt_import_xpm (male_user_xpm);
 }

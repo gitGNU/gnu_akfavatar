@@ -490,7 +490,7 @@ checkoptions (int argc, char **argv)
 	  break;
 
 	case 'I':		/* --info */
-	  avt_image = avt_import_XPM (info_xpm);
+	  avt_image = avt_import_xpm (info_xpm);
 	  break;
 
 	case 'E':		/* --encoding */
@@ -1461,7 +1461,7 @@ avatar_command (wchar_t * cmd, int *stop)
 
   if (chk_cmd (L"avatarimage info"))
     {
-      change_avatar_image (avt_import_XPM (info_xpm));
+      change_avatar_image (avt_import_xpm (info_xpm));
       return 0;
     }
 
@@ -2246,7 +2246,7 @@ run_info (void)
     if (chdir (start_dir))
       avta_warning ("chdir", strerror (errno));
 
-  change_avatar_image (avt_import_XPM (info_xpm));
+  change_avatar_image (avt_import_xpm (info_xpm));
   avt_set_balloon_size (0, 0);
   set_encoding ("UTF-8");
 
@@ -2309,7 +2309,7 @@ run_info (void)
   char *info_encoding;
 
   /* info avatar -> larger balloon */
-  change_avatar_image (avt_import_XPM (info_xpm));
+  change_avatar_image (avt_import_xpm (info_xpm));
   avt_set_balloon_size (0, 0);
   avt_clear ();
   avt_set_text_delay (0);

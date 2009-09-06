@@ -178,7 +178,7 @@ AVT_API void avt_button_quit (void);
 AVT_API avt_image_t *avt_default (void);
 
 /* import an avatar from XPM data */
-AVT_API avt_image_t *avt_import_XPM (char **xpm);
+AVT_API avt_image_t *avt_import_xpm (char **xpm);
 
 /* RGB gimp_image */
 AVT_API avt_image_t *avt_import_gimp_image (void *gimp_image);
@@ -671,7 +671,7 @@ AVT_API int avt_show_image_data (void *img, int imgsize);
  * show image from XPM data
  * on error it returns AVT_ERROR without changing the status
  */
-AVT_API int avt_show_image_XPM (char **xpm);
+AVT_API int avt_show_image_xpm (char **xpm);
 
 /*
  * show gimp image
@@ -853,6 +853,8 @@ AVT_API int avt_menu (wchar_t *ch, int menu_start, int menu_end,
 AVT_API int
 avt_get_menu (wchar_t *ch, int menu_start, int menu_end, wchar_t start_code)
 AVT_DEPRECATED;
+AVT_API avt_image_t *avt_import_XPM (char **xpm) AVT_DEPRECATED;
+AVT_API int avt_show_image_XPM (char **xpm) AVT_DEPRECATED;
 
 AVT_END_DECLS
 

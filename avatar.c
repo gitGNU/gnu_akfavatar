@@ -4578,14 +4578,14 @@ avt_show_image_data (void *img, int imgsize)
 }
 
 extern int
-avt_show_image_XPM (char **xpm)
+avt_show_image_xpm (char **xpm)
 {
   avt_image_t *image = NULL;
 
   if (!screen)
     return _avt_STATUS;
 
-  image = avt_import_XPM (xpm);
+  image = avt_import_xpm (xpm);
 
   if (image == NULL)
     {
@@ -4597,6 +4597,13 @@ avt_show_image_XPM (char **xpm)
   SDL_FreeSurface ((SDL_Surface *) image);
 
   return _avt_STATUS;
+}
+
+/* deprecated - use avt_show_image_xpm */
+extern int
+avt_show_image_XPM (char **xpm)
+{
+  return avt_show_image_xpm (xpm);
 }
 
 /*
@@ -4680,7 +4687,7 @@ avt_make_transparent (avt_image_t * image)
 }
 
 extern avt_image_t *
-avt_import_XPM (char **xpm)
+avt_import_xpm (char **xpm)
 {
   if (avt_init_SDL ())
     return NULL;
@@ -4688,8 +4695,14 @@ avt_import_XPM (char **xpm)
   return (avt_image_t *) avt_load_image_xpm (xpm);
 }
 
+/* deprecated - use avt_import_xpm */
+extern avt_image_t *
+avt_import_XPM (char **xpm)
+{
+  return avt_import_xpm (xpm);
+}
 
-/* 
+/*
  * import RGB gimp_image as avatar
  * pixel in the upper left corner is supposed to be the background color
  */

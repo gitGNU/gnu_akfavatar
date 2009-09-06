@@ -1,3 +1,11 @@
+2009-09-06  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_import_xpm, avt_show_image_xpm):
+	renamed functions
+	(avt_import_XPM, avt_show_image_XPM):
+	new deprecated wrappers for backward compatibility
+	avatar-default.c: adapted
+
 2009-09-05  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h: reorganized
