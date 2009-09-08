@@ -435,7 +435,7 @@ dist-bin: avatarsay multiply multiplizieren info html
 	ln $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/
 	ln $(srcdir)/pascal/?pcavatar $(BINPKGNAME)/
 	ln $(srcdir)/gnu-head.xpm $(BINPKGNAME)/
-	ln $(srcdir)/female_user.xpm $(BINPKGNAME)/
+	ln $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
 	-ln multiply $(BINPKGNAME)/
 	-ln multiplizieren $(BINPKGNAME)/
 	ln $(srcdir)/pascal/positive.au $(srcdir)/pascal/negative.au \
