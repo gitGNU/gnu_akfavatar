@@ -2594,22 +2594,39 @@ ask_balloon_color ()
 static void
 ask_avatar_image ()
 {
-  char image_name[PATH_LENGTH];
+  char image_name[256];
+  char *directory;
 
   /* TODO: custom filter for avta_get_file */
   avta_get_file (image_name);
 
   if (image_name[0] != '\0')
     {
-      if (avt_image_name)
-	free (avt_image_name);
-
       if (avt_change_avatar_image (avt_import_image_file (image_name)))
-	avta_warning (avt_image_name, "error changing the avatar");
+	avta_warning (image_name, "error changing the avatar");
       else			/* avatar successfully changed */
 	{
-	  /* TODO: make it an absolute path (for saving the setting) */
-	  avt_image_name = strdup (image_name);
+	  /* avta_get_file changes the directory! */
+	  directory = (char *) malloc (PATH_LENGTH);
+	  if (!getcwd (directory, PATH_LENGTH))
+	    avta_warning ("getcwd", strerror (errno));
+
+	  /* save the absolute path in avt_image_name */
+
+	  /* free old name */
+	  if (avt_image_name)
+	    free (avt_image_name);
+
+	  /* get enough memory */
+	  avt_image_name = (char *) malloc (strlen (directory)
+					    + strlen (image_name) + 2);
+
+	  /* copy the elements */
+	  strcpy (avt_image_name, directory);
+	  strcat (avt_image_name, "/");
+	  strcat (avt_image_name, image_name);
+
+	  free (directory);
 	}
     }
 }
