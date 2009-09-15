@@ -288,6 +288,8 @@ initialize (void)
 	avta_error ("cannot initialize graphics", avt_get_error ());
       }
 
+  avt_image = NULL;		/* was freed in avt_initialize */
+
   /* we don't need it anymore */
   if (supposed_title)
     {
