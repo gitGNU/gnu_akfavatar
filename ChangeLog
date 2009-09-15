@@ -1,3 +1,9 @@
+2009-09-15  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (ask_background_color, ask_balloon_color)
+	(ask_avatar_image, settings_submenu): new functions
+	(menu): adapted
+
 2009-09-06  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_import_xpm, avt_show_image_xpm):

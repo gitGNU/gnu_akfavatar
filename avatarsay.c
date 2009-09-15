@@ -139,7 +139,7 @@ static avt_bool_t encoding_checked;
 /* only used, when the title is set before it is initialized */
 static char *supposed_title;
 
-/* for loading an avt_image */
+/* for loading an avt_image - only before it's initialized */
 static avt_image_t *avt_image;
 
 /* name of the image file */
@@ -160,9 +160,10 @@ static avt_bool_t background_color_changed;
 /* was the balloon color changed? */
 static avt_bool_t balloon_color_changed;
 
-/* language (of current locale) */
 enum language_t
 { ENGLISH, DEUTSCH };
+
+/* language (of current locale) */
 static enum language_t language;
 
 static struct
@@ -625,7 +626,7 @@ use_avatar_image (char *image_file)
   avatar_changed = AVT_FALSE;
 }
 
-/* restore avatar from avt_image name */
+/* restore avatar from avt_image_name */
 static void
 restore_avatar_image (void)
 {
@@ -2561,6 +2562,58 @@ about_avatarsay (void)
   avt_set_text_delay (default_delay);
 }
 
+/* TODO: write color-selector */
+static void
+ask_background_color ()
+{
+  char new_bg_color[255];
+
+  avt_set_balloon_size (1, 50);
+  avt_set_text_delay (0);
+
+  avt_say (L"background-color: ");
+
+  if (avt_ask_mb (new_bg_color, sizeof (new_bg_color)) == AVT_NORMAL)
+    avt_set_background_color_name (new_bg_color);
+}
+
+static void
+ask_balloon_color ()
+{
+  char new_bl_color[255];
+
+  avt_set_balloon_size (1, 50);
+  avt_set_text_delay (0);
+
+  avt_say (L"balloon-color: ");
+
+  if (avt_ask_mb (new_bl_color, sizeof (new_bl_color)) == AVT_NORMAL)
+    avt_set_balloon_color_name (new_bl_color);
+}
+
+static void
+ask_avatar_image ()
+{
+  char image_name[PATH_LENGTH];
+
+  /* TODO: custom filter for avta_get_file */
+  avta_get_file (image_name);
+
+  if (image_name[0] != '\0')
+    {
+      if (avt_image_name)
+	free (avt_image_name);
+
+      if (avt_change_avatar_image (avt_import_image_file (image_name)))
+	avta_warning (avt_image_name, "error changing the avatar");
+      else			/* avatar successfully changed */
+	{
+	  /* TODO: make it an absolute path (for saving the setting) */
+	  avt_image_name = strdup (image_name);
+	}
+    }
+}
+
 #define UNACCESSIBLE(x) \
      avt_set_text_color (0x88, 0x88, 0x88); \
      avt_say(x); \
@@ -2577,6 +2630,84 @@ about_avatarsay (void)
 #else
 #  define SAY_SHELL(x) avt_say(x)
 #endif
+
+static void
+settings_submenu (void)
+{
+  int choice, menu_start;
+
+  choice = 0;
+  while (choice != 5)
+    {
+      avt_normal_text ();
+      avt_set_balloon_size (7, 42);
+      avt_clear ();
+
+      avt_set_text_delay (0);
+      avt_lock_updates (AVT_TRUE);
+      avt_set_origin_mode (AVT_FALSE);
+      avt_newline_mode (AVT_TRUE);
+
+      avt_underlined (AVT_TRUE);
+      avt_bold (AVT_TRUE);
+      avt_say (L"AKFAvatar tools");
+      avt_bold (AVT_FALSE);
+      avt_underlined (AVT_FALSE);
+      avt_new_line ();
+      avt_new_line ();
+      menu_start = avt_where_y ();
+
+      switch (language)
+	{
+	case DEUTSCH:
+	  avt_say (L"1) Vollbild-Anzeige umschalten\n");
+	  avt_say (L"2) Das Avatar-Bild auswechseln\n");
+	  avt_say (L"3) eine andere Hintergrund-Farbe auswählen\n");
+	  avt_say (L"4) eine andere Spechblasen-Farbe auswählen\n");
+	  avt_say (L"5) zurück");	/* no newline */
+	  break;
+
+	case ENGLISH:
+	default:
+	  avt_say (L"1) toggle fullscreen mode\n");
+	  avt_say (L"2) exchange the avatar image\n");
+	  avt_say (L"3) select a background color\n");
+	  avt_say (L"3) select a balloon color\n");
+	  avt_say (L"5) back");	/* no newline */
+	}
+
+      avt_lock_updates (AVT_FALSE);
+
+      avt_set_text_delay (default_delay);
+
+      if (avt_choice (&choice, menu_start, 5, '1', AVT_FALSE, AVT_FALSE))
+	{
+	  avt_set_status (AVT_NORMAL);
+	  return;		/* return to main menu */
+	}
+
+      switch (choice)
+	{
+	case 1:		/* toggle fullscreen */
+	  avt_toggle_fullscreen ();
+	  break;
+
+	case 2:
+	  ask_avatar_image ();
+	  break;
+
+	case 3:
+	  ask_background_color ();
+	  break;
+
+	case 4:
+	  ask_balloon_color ();
+	  break;
+	}
+    }
+
+  avt_set_status (AVT_NORMAL);
+}
 
 static void
 menu (void)
@@ -2628,11 +2759,11 @@ menu (void)
 	{
 	case DEUTSCH:
 	  SAY_SHELL (L"1) Terminal-Modus\n");
-	  avt_say (L"2) ein Demo oder eine Text-Datei anzeigen\n");
-	  avt_say (L"3) ein Demo erstellen oder bearbeiten\n");
-	  SAY_MANPAGE (L"4) eine Hilfeseite (Manpage) anzeigen\n");
-	  avt_say (L"5) Anleitung\n");
-	  avt_say (L"6) Vollbild-Anzeige umschalten\n");
+	  avt_say (L"2) ein Demo anzeigen\n");
+	  SAY_MANPAGE (L"3) eine Hilfeseite (Manpage) anzeigen\n");
+	  avt_say (L"4) Einstellungen\n");
+	  avt_say (L"5) ein Demo erstellen oder bearbeiten\n");
+	  avt_say (L"6) Anleitung\n");
 	  avt_say (L"7) über avatarsay\n");
 	  avt_say (L"8) beenden");	/* no newline */
 	  break;
@@ -2640,11 +2771,11 @@ menu (void)
 	case ENGLISH:
 	default:
 	  SAY_SHELL (L"1) terminal-mode\n");
-	  avt_say (L"2) show a demo or textfile\n");
-	  avt_say (L"3) create or edit a demo\n");
-	  SAY_MANPAGE (L"4) show a manpage\n");
-	  avt_say (L"5) documentation\n");
-	  avt_say (L"6) toggle fullscreen mode\n");
+	  avt_say (L"2) show a demo\n");
+	  SAY_MANPAGE (L"3) show a manpage\n");
+	  avt_say (L"4) settings\n");
+	  avt_say (L"5) create or edit a demo\n");
+	  avt_say (L"6) documentation\n");
 	  avt_say (L"7) about avatarsay\n");
 	  avt_say (L"8) exit");	/* no newline */
 	}
@@ -2667,23 +2798,23 @@ menu (void)
 	  ask_file ();
 	  break;
 
-	case 3:		/* create or edit a demo */
-	  ask_edit_file ();
-	  avt_set_status (AVT_NORMAL);
-	  break;
-
-	case 4:		/* show a manpage */
+	case 3:		/* show a manpage */
 	  ask_manpage ();
 	  avt_set_status (AVT_NORMAL);
 	  break;
 
-	case 5:		/* documentation */
-	  run_info ();
+	case 4:		/* tools */
+	  settings_submenu ();
+	  break;
+
+	case 5:		/* create or edit a demo */
+	  ask_edit_file ();
 	  avt_set_status (AVT_NORMAL);
 	  break;
 
-	case 6:		/* toggle fullscreen */
-	  avt_toggle_fullscreen ();
+	case 6:		/* documentation */
+	  run_info ();
+	  avt_set_status (AVT_NORMAL);
 	  break;
 
 	case 7:		/* about avatarsay */
