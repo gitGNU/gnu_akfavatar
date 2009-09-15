@@ -2967,7 +2967,8 @@ run_script (char *fname)
 
   if (fd > -1)
     {
-      change_directory_of_file (fname);
+      if (!from_archive)
+	change_directory_of_file (fname);
       status = process_script (fd);
     }
 

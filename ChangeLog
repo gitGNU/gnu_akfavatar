@@ -4,6 +4,9 @@
 	(ask_avatar_image, settings_submenu): new functions
 	(menu): adapted
 
+	* avatarsay.c (run_script):
+	fix: don't change directory, when reading from archive
+
 2009-09-06  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_import_xpm, avt_show_image_xpm):
