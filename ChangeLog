@@ -1,3 +1,11 @@
+2009-09-16  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c: global variable avt_image removed,
+	global variable avt_image_name renamed to avatar_image
+	(set_avatar_image, load_avatar_image): new functions
+	(use_avatar_image): removed
+	many functions adapted
+
 2009-09-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (ask_background_color, ask_balloon_color)

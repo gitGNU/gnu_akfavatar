@@ -139,11 +139,8 @@ static avt_bool_t encoding_checked;
 /* only used, when the title is set before it is initialized */
 static char *supposed_title;
 
-/* for loading an avt_image - only before it's initialized */
-static avt_image_t *avt_image;
-
 /* name of the image file */
-static char *avt_image_name;
+static char *avatar_image;
 static avt_bool_t avatar_changed;
 static avt_bool_t moved_in;
 
@@ -268,16 +265,61 @@ move_out (void)
 }
 
 static void
+set_avatar_image (char *image_file)
+{
+  if (avatar_image)
+    free (avatar_image);
+
+  /* save the name */
+  avatar_image = strdup (image_file);
+}
+
+static avt_image_t *
+load_avatar_image (char *image_name)
+{
+  avt_image_t *image;
+
+  image = NULL;
+
+  if (!image_name || !*image_name || strcmp ("default", image_name) == 0)
+    image = avt_default ();
+  else if (strcmp ("none", image_name) == 0)
+    image = NULL;
+  else if (strcmp ("info", image_name) == 0)
+    image = avt_import_xpm (info_xpm);
+  else
+    {
+      if (from_archive)
+	{
+	  void *imgdata;
+	  size_t size = 0;
+
+	  if (avta_arch_get_data (from_archive, image_name, &imgdata, &size))
+	    {
+	      if (!(image = avt_import_image_data (imgdata, size)))
+		avta_warning (image_name, avt_get_error ());
+	      free (imgdata);
+	    }
+	  else
+	    avta_warning (image_name,
+			  "could not load avatarimage from archive");
+	}
+      else
+	image = avt_import_image_file (image_name);
+    }
+
+  return image;
+}
+
+static void
 initialize (void)
 {
-  if (!avt_image)
-    avt_image = avt_default ();
-
   /*
    * if supposed_title is NULL then "AKFAvatar" is used
    * attention: the icontitle is set to the title, when NULL
    */
-  if (avt_initialize (supposed_title, "AKFAvatar", avt_image, window_mode))
+  if (avt_initialize (supposed_title, "AKFAvatar",
+		      load_avatar_image (avatar_image), window_mode))
     switch (language)
       {
       case DEUTSCH:
@@ -288,8 +330,6 @@ initialize (void)
       default:
 	avta_error ("cannot initialize graphics", avt_get_error ());
       }
-
-  avt_image = NULL;		/* was freed in avt_initialize */
 
   /* we don't need it anymore */
   if (supposed_title)
@@ -493,7 +533,7 @@ checkoptions (int argc, char **argv)
 	  break;
 
 	case 'I':		/* --info */
-	  avt_image = avt_import_xpm (info_xpm);
+	  set_avatar_image ("info");
 	  break;
 
 	case 'E':		/* --encoding */
@@ -597,48 +637,16 @@ checkoptions (int argc, char **argv)
     }
 }
 
-static void
-use_avatar_image (char *image_file)
-{
-  /* clean up old definitions */
-  if (avt_image)
-    free (avt_image);
-
-  if (avt_image_name)
-    free (avt_image_name);
-
-  /* save the name */
-  avt_image_name = strdup (image_file);
-
-  avt_image = avt_import_image_file (image_file);
-  if (avt_image == NULL)
-    switch (language)
-      {
-      case DEUTSCH:
-	avta_error ("Fehler beim Laden des AVATARIMAGE Bildes",
-		    avt_get_error ());
-	break;
-      case ENGLISH:
-      default:
-	avta_error ("error while loading the AVATARIMAGE", avt_get_error ());
-      }
-
-  avatar_changed = AVT_FALSE;
-}
-
-/* restore avatar from avt_image_name */
+/* restore avatar from avatar_image */
 static void
 restore_avatar_image (void)
 {
   avt_image_t *img;
 
-  if (avt_image_name)
-    img = avt_import_image_file (avt_image_name);
-  else
-    img = avt_default ();
+  img = load_avatar_image (avatar_image);
 
   if (avt_change_avatar_image (img))
-    avta_error (avt_image_name, "cannot load file");
+    avta_error (avatar_image, "cannot load file");
 
   avatar_changed = AVT_FALSE;
 }
@@ -650,7 +658,7 @@ checkenvironment (void)
 
   e = getenv ("AVATARIMAGE");
   if (e)
-    use_avatar_image (e);
+    set_avatar_image (e);
 }
 
 /* fills filepath with the converted content of fn */
@@ -1061,12 +1069,6 @@ change_avatar_image (avt_image_t * newavatar)
       avatar_changed = AVT_TRUE;
       avta_term_update_size ();
     }
-  else
-    {
-      if (avt_image)
-	free (avt_image);
-      avt_image = newavatar;
-    }
 }
 
 static void
@@ -1086,25 +1088,30 @@ handle_avatarimage_command (const wchar_t * s)
 
   get_data_file (s, filepath);
 
-  if (from_archive)
+  if (!initialized)
+    set_avatar_image (filepath);	/* set it as default avatar */
+  else				/* initialized */
     {
-      if (avta_arch_get_data (from_archive, filepath, &img, &size))
+      if (from_archive)
 	{
-	  if (!(newavatar = avt_import_image_data (img, size)))
-	    avta_warning ("warning", avt_get_error ());
-	  free (img);
+	  if (avta_arch_get_data (from_archive, filepath, &img, &size))
+	    {
+	      if (!(newavatar = avt_import_image_data (img, size)))
+		avta_warning ("warning", avt_get_error ());
+	      free (img);
+	    }
+	  else
+	    archive_failure (filepath);
 	}
-      else
-	archive_failure (filepath);
-    }
-  else				/* not from_archive */
-    {
-      if (!(newavatar = avt_import_image_file (filepath)))
-	avta_warning ("warning", avt_get_error ());
-    }
+      else			/* not from_archive */
+	{
+	  if (!(newavatar = avt_import_image_file (filepath)))
+	    avta_warning ("warning", avt_get_error ());
+	}
 
-  if (newavatar)
-    change_avatar_image (newavatar);
+      if (newavatar)
+	change_avatar_image (newavatar);
+    }
 }
 
 static void
@@ -1459,12 +1466,6 @@ avatar_command (wchar_t * cmd, int *stop)
   if (chk_cmd (L"avatarimage none"))
     {
       change_avatar_image (NULL);
-      return 0;
-    }
-
-  if (chk_cmd (L"avatarimage info"))
-    {
-      change_avatar_image (avt_import_xpm (info_xpm));
       return 0;
     }
 
@@ -2415,8 +2416,8 @@ create_file (const char *filename)
       if (default_encoding[0] != '\0')
 	fprintf (f, "[encoding %s]\n", default_encoding);
 
-      if (avt_image_name)
-	fprintf (f, "[avatarimage %s]\n", avt_image_name);
+      if (avatar_image)
+	fprintf (f, "[avatarimage %s]\n", avatar_image);
 
       fputs ("\n# Text:\n", f);
 
@@ -2611,20 +2612,20 @@ ask_avatar_image ()
 	  if (!getcwd (directory, PATH_LENGTH))
 	    avta_warning ("getcwd", strerror (errno));
 
-	  /* save the absolute path in avt_image_name */
+	  /* save the absolute path in avatar_image */
 
 	  /* free old name */
-	  if (avt_image_name)
-	    free (avt_image_name);
+	  if (avatar_image)
+	    free (avatar_image);
 
 	  /* get enough memory */
-	  avt_image_name = (char *) malloc (strlen (directory)
-					    + strlen (image_name) + 2);
+	  avatar_image = (char *) malloc (strlen (directory)
+					  + strlen (image_name) + 2);
 
 	  /* copy the elements */
-	  strcpy (avt_image_name, directory);
-	  strcat (avt_image_name, "/");
-	  strcat (avt_image_name, image_name);
+	  strcpy (avatar_image, directory);
+	  strcat (avatar_image, "/");
+	  strcat (avatar_image, image_name);
 
 	  free (directory);
 	}
@@ -2923,7 +2924,7 @@ check_config_file (const char *f)
 	  strip_newline (s);
 
 	  if (strncasecmp (s, "AVATARIMAGE=", 12) == 0)
-	    use_avatar_image (s + 12);
+	    set_avatar_image (s + 12);
 
 	  if (strncasecmp (s, "BACKGROUNDCOLOR=", 16) == 0)
 	    avt_set_background_color_name (s + 16);
