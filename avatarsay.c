@@ -2505,7 +2505,9 @@ about_avatarsay (void)
 		  "bearbeiten. Für AKFAvatar besteht KEINERLEI GARANTIE.\n"
 		  "Bitte lesen Sie auch die Anleitung.");
       avt_say_mb ("\nHomepage:  " HOMEPAGE);
+      avt_bold (AVT_TRUE);
       avt_say_mb ("\n\nSoll ich jetzt die vollständige Lizenz zeigen?");
+      avt_bold (AVT_FALSE);
       break;
 
     case ENGLISH:
@@ -2517,7 +2519,9 @@ about_avatarsay (void)
 		  "There is NO WARRANTY, to the extent permitted by law.\n"
 		  "Please read the manual for instructions.");
       avt_say_mb ("\nHomepage:  " HOMEPAGE);
+      avt_bold (AVT_TRUE);
       avt_say_mb ("\n\nDo you want me to show you the full license now?");
+      avt_bold (AVT_FALSE);
     }
 
   avt_lock_updates (AVT_FALSE);
@@ -2532,8 +2536,30 @@ about_avatarsay (void)
 
       if (avta_pager_file ("/usr/local/share/doc/akfavatar/COPYING", 1)
 	  && avta_pager_file ("/usr/share/doc/akfavatar/COPYING", 1)
-	  && avta_pager_file ("./COPYING", 1))
-	avta_pager_file ("./gpl-3.0.txt", 1);
+	  && avta_pager_file ("./COPYING", 1)
+	  && avta_pager_file ("./gpl-3.0.txt", 1))
+	{
+	  avt_bell ();
+
+	  switch (language)
+	    {
+	    case DEUTSCH:
+	      avt_bold (AVT_TRUE);
+	      avt_say_mb ("Installationsfehler: ");
+	      avt_bold (AVT_FALSE);
+	      avt_say_mb ("kann Lizenz-Datei nicht finden");
+	      break;
+	    case ENGLISH:
+	    default:
+	      avt_bold (AVT_TRUE);
+	      avt_say_mb ("Installation Error: ");
+	      avt_bold (AVT_FALSE);
+	      avt_say_mb ("cannot find license file");
+	      break;
+	    }
+
+	  avt_wait_button ();
+	}
     }
 
   /* ignore quit-request from avt_decide() */

@@ -6,6 +6,9 @@
 	(use_avatar_image): removed
 	many functions adapted
 
+	* avatarsay.c (about_avatarsay):
+	bold question - error message if license not found
+
 2009-09-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (ask_background_color, ask_balloon_color)
