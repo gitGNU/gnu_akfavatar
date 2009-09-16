@@ -1055,6 +1055,7 @@ handle_credits_command (const wchar_t * s, int *stop)
     }
 }
 
+/* note: the image will be freed */
 static void
 change_avatar_image (avt_image_t * newavatar)
 {
@@ -1075,12 +1076,10 @@ static void
 handle_avatarimage_command (const wchar_t * s)
 {
   char filepath[PATH_LENGTH];
-  void *img;
   avt_image_t *newavatar = NULL;
-  size_t size = 0;
 
   /* no name? - restore default image */
-  if (s[0] == L'\0')
+  if (!*s)
     {
       restore_avatar_image ();
       return;
@@ -1090,28 +1089,9 @@ handle_avatarimage_command (const wchar_t * s)
 
   if (!initialized)
     set_avatar_image (filepath);	/* set it as default avatar */
-  else				/* initialized */
-    {
-      if (from_archive)
-	{
-	  if (avta_arch_get_data (from_archive, filepath, &img, &size))
-	    {
-	      if (!(newavatar = avt_import_image_data (img, size)))
-		avta_warning ("warning", avt_get_error ());
-	      free (img);
-	    }
-	  else
-	    archive_failure (filepath);
-	}
-      else			/* not from_archive */
-	{
-	  if (!(newavatar = avt_import_image_file (filepath)))
-	    avta_warning ("warning", avt_get_error ());
-	}
-
-      if (newavatar)
-	change_avatar_image (newavatar);
-    }
+  else if ((newavatar = load_avatar_image (filepath)) != NULL)
+    change_avatar_image (newavatar);
+  /* note: change_avatar_image frees the memory */
 }
 
 static void
@@ -1463,6 +1443,7 @@ avatar_command (wchar_t * cmd, int *stop)
       return 0;
     }
 
+  /* must be handled separately! */
   if (chk_cmd (L"avatarimage none"))
     {
       change_avatar_image (NULL);
