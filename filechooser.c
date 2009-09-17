@@ -209,7 +209,7 @@ get_directory (struct dirent ***list)
  * return -1 on error or 0 on success
  */
 extern int
-avta_file_selection (char *filename, avta_filter_t filter)
+avta_file_selection (char *filename, int filename_size, avta_filter_t filter)
 {
   int rcode;			/* return code */
   struct dirent *d;
@@ -219,6 +219,9 @@ avta_file_selection (char *filename, avta_filter_t filter)
   int idx, filenr, page_nr;
   int entries, entry_nr;
   char *entry[100];		/* entry on screen */
+
+  if (filename == NULL || filename_size <= 0)
+    return -1;
 
   avt_set_text_delay (0);
   avt_normal_text ();
@@ -345,8 +348,11 @@ start:
 	    }
 	  else			/* file chosen */
 	    {
-	      strcpy (filename, entry[filenr - 1]);
-	      rcode = 0;
+	      if (strlen (entry[filenr - 1]) < (size_t) filename_size)
+		{
+		  strcpy (filename, entry[filenr - 1]);
+		  rcode = 0;
+		}
 	      break;
 	    }
 	}

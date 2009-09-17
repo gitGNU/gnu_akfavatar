@@ -120,10 +120,11 @@ typedef avt_bool_t (*avta_filter_t) (const char *filename);
  * if filter is NULL it shows all files (but no hidden files)
  * returns 0 on success or -1 on error
  */
-AVT_ADDON int avta_file_selection (char *filename, avta_filter_t filter);
+AVT_ADDON int avta_file_selection (char *filename, int filename_size,
+                                   avta_filter_t filter);
 
 /* only for backward compatibility: */
-#define avta_get_file(f)  avta_file_selection(f, NULL)
+#define avta_get_file(f)  avta_file_selection(f, sizeof(f), NULL)
 
 /**********************************************************************
  * Section: avtreadfile
