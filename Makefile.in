@@ -389,7 +389,7 @@ dist: info html man distclean
 	   btn.xpm btn-cont.xpm btn-no.xpm btn-yes.xpm \
 	   avatarsay.c avtposix.c avtterm.c avttermsys.h avttermsys.c \
 	   avtmsg.c arch.c avtcolors.h \
-	   avtman avtcmd example.c fsdemo-?? \
+	   avtman avtcmd example.c fsdemo-??.avt \
 	   gnome-akfavatar akfoerster-avatarsay.desktop bdfread.c \
 	   akfavatar.xpm info.xpm bin2c.c \
 	   7x14.bdf 9x18.bdf font.c \
@@ -420,7 +420,6 @@ dist: info html man distclean
 	   mingw/avtmsg.c mingw/avtwindows.c \
 	   mingw/avttermstub.c mingw/askdrive.c \
 	   mingw/Makefile mingw/README \
-	   mingw/fsdemo-??.bat \
 	   $(PKGNAME)/mingw/
 	
 	tar -cvf $(PKGNAME).tar $(PKGNAME)/
@@ -442,7 +441,7 @@ dist-bin: avatarsay multiply multiplizieren info html
 	   $(srcdir)/pascal/neutral.au $(srcdir)/pascal/teacher.xpm \
 	   $(BINPKGNAME)/
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/avtman \
-	   $(srcdir)/fsdemo-?? \
+	   $(srcdir)/fsdemo-??.avt \
 	   $(srcdir)/gnome-akfavatar \
 	   $(srcdir)/avtcmd \
 	   $(BINPKGNAME)/
