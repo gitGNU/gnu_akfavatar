@@ -6,6 +6,11 @@
 	* avatarsay.c (is_graphic_file): new function
 	(ask_avatar_image): use avta_file_selection
 
+	* avatarsay.c (is_demo_or_text): new function
+	(ask_file): adapted
+	demo scripts/archives should have the extention ".avt" now
+	example demos renamed accordingly
+
 2009-09-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c: global variable avt_image removed,

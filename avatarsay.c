@@ -2158,12 +2158,24 @@ process_script (int fd)
   return stop;
 }
 
+static avt_bool_t
+is_demo_or_text (const char *filename)
+{
+  return (strstr (filename, ".avt") || strstr (filename, ".AVT")
+	  || strstr (filename, ".txt") || strstr (filename, ".TXT")
+	  || strstr (filename, ".text") || strstr (filename, ".TEXT")
+	  || strcasecmp (filename, "README") == 0
+	  || strcasecmp (filename, "COPYING") == 0
+	  || strcasecmp (filename, "INSTALL") == 0
+	  || strcasecmp (filename, "AUTHORS") == 0);
+}
+
 static void
 ask_file (void)
 {
   char filename[256];
 
-  avta_file_selection (filename, sizeof (filename), NULL);
+  avta_file_selection (filename, sizeof (filename), is_demo_or_text);
 
   /* ignore quit-requests */
   /* (used to get out of the file dialog) */
