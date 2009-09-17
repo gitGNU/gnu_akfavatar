@@ -1,10 +1,10 @@
 2009-09-17  Andreas K. Foerster  <info@akfoerster.de>
 
-	* avtaddons.h, filechooser.c (avta_get_file_filter): new function
-	filechooser.c (filter): adapted
+	* avtaddons.h, filechooser.c (avta_file_selection):
+	replaces avta_get_file, allows custom filter
 
 	* avatarsay.c (is_graphic_file): new function
-	(ask_avatar_image): use avta_get_file_filter
+	(ask_avatar_image): use avta_file_selection
 
 2009-09-16  Andreas K. Foerster  <info@akfoerster.de>
 

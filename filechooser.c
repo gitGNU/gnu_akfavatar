@@ -106,7 +106,7 @@ new_page (char *dirname)
 #endif
 
 static int
-filter (FILTER_DIRENT_T * d)
+filter_dirent (FILTER_DIRENT_T * d)
 {
   /* allow nothing that starts with a dot */
   if (d == NULL || d->d_name[0] == '.')
@@ -120,7 +120,7 @@ filter (FILTER_DIRENT_T * d)
 #else /* __WIN32__ */
 
 static int
-filter (const struct dirent *d)
+filter_dirent (const struct dirent *d)
 {
   /* don't allow "." and ".." and apply custom_filter */
   if (d == NULL)
@@ -143,7 +143,7 @@ compare_dirent (const void *a, const void *b)
 }
 
 #if (HAS_SCANDIR)
-#  define get_directory(list) (scandir (".", list, filter, compare_dirent))
+#  define get_directory(list) (scandir (".", list, filter_dirent, compare_dirent))
 #else /* not HAS_SCANDIR */
 
 static int
@@ -177,7 +177,7 @@ get_directory (struct dirent ***list)
     {
       while ((d = readdir (dir)) != NULL && entries < max_entries)
 	{
-	  if (filter (d))
+	  if (filter_dirent (d))
 	    {
 	      n = (struct dirent *) malloc (dirent_size);
 	      if (!n)
@@ -209,7 +209,7 @@ get_directory (struct dirent ***list)
  * return -1 on error or 0 on success
  */
 extern int
-avta_get_file_filter (char *filename, avta_filter_t file_filter)
+avta_file_selection (char *filename, avta_filter_t filter)
 {
   int rcode;			/* return code */
   struct dirent *d;
@@ -232,7 +232,7 @@ avta_get_file_filter (char *filename, avta_filter_t file_filter)
   max_x = avt_get_max_x ();
   max_idx = avt_get_max_y () - 1;	/* minus top-line */
   page_entries = max_idx - 2;	/* minus back and forward entries */
-  custom_filter = file_filter;
+  custom_filter = filter;
 
   if (HAS_DRIVE_LETTERS)
     {
@@ -418,10 +418,4 @@ quit:
   avt_lock_updates (AVT_FALSE);
 
   return rcode;
-}
-
-extern int
-avta_get_file (char *filename)
-{
-  return avta_get_file_filter (filename, NULL);
 }

@@ -2163,7 +2163,7 @@ ask_file (void)
 {
   char filename[256];
 
-  avta_get_file (filename);
+  avta_file_selection (filename, NULL);
 
   /* ignore quit-requests */
   /* (used to get out of the file dialog) */
@@ -2618,7 +2618,7 @@ ask_avatar_image ()
   char image_name[256];
   char *directory;
 
-  avta_get_file_filter (image_name, is_graphic_file);
+  avta_file_selection (image_name, is_graphic_file);
 
   if (image_name[0] != '\0')
     {
@@ -2626,7 +2626,7 @@ ask_avatar_image ()
 	avta_warning (image_name, "error changing the avatar");
       else			/* avatar successfully changed */
 	{
-	  /* avta_get_file changes the directory! */
+	  /* avta_file_selection changes the directory! */
 	  directory = (char *) malloc (PATH_LENGTH);
 	  if (!getcwd (directory, PATH_LENGTH))
 	    avta_warning ("getcwd", strerror (errno));

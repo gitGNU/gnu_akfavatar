@@ -115,11 +115,15 @@ AVT_ADDON void avta_error (const char *msg1, const char *msg2);
 
 typedef avt_bool_t (*avta_filter_t) (const char *filename);
 
-/* starts in working directory; returns 0 on success or -1 on error */
-AVT_ADDON int avta_get_file (char *filename);
+/* file selection
+ * starts in current working directory - changes the working directory
+ * if filter is NULL it shows all files (but no hidden files)
+ * returns 0 on success or -1 on error
+ */
+AVT_ADDON int avta_file_selection (char *filename, avta_filter_t filter);
 
-/* like avta_get_file, but with a filter */
-AVT_ADDON int avta_get_file_filter (char *filename, avta_filter_t);
+/* only for backward compatibility: */
+#define avta_get_file(f)  avta_file_selection(f, NULL)
 
 /**********************************************************************
  * Section: avtreadfile
