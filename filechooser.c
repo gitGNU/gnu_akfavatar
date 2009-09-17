@@ -209,7 +209,7 @@ get_directory (struct dirent ***list)
  * return -1 on error or 0 on success
  */
 extern int
-avta_get_file (char *filename)
+avta_get_file_filter (char *filename, avta_filter_t file_filter)
 {
   int rcode;			/* return code */
   struct dirent *d;
@@ -225,19 +225,23 @@ avta_get_file (char *filename)
 
   /* don't show the balloon */
   avt_show_avatar ();
+
   /* set maximum size */
   avt_set_balloon_size (0, 0);
 
   max_x = avt_get_max_x ();
   max_idx = avt_get_max_y () - 1;	/* minus top-line */
   page_entries = max_idx - 2;	/* minus back and forward entries */
+  custom_filter = file_filter;
 
   if (HAS_DRIVE_LETTERS)
-    if (avta_ask_drive (max_idx + 1))
-      return -1;
+    {
+      if (avta_ask_drive (max_idx + 1))
+	return -1;
 
-  /* set maximum size */
-  avt_set_balloon_size (0, 0);
+      /* set maximum size again */
+      avt_set_balloon_size (0, 0);
+    }
 
   namelist = NULL;
 
@@ -408,6 +412,7 @@ start:
     }
 
 quit:
+  custom_filter = NULL;
   avt_auto_margin (AVT_TRUE);
   avt_clear ();
   avt_lock_updates (AVT_FALSE);
@@ -416,13 +421,7 @@ quit:
 }
 
 extern int
-avta_get_file_filter (char *filename, avta_filter_t file_filter)
+avta_get_file (char *filename)
 {
-  int r;
-
-  custom_filter = file_filter;
-  r = avta_get_file (filename);
-  custom_filter = NULL;
-
-  return r;
+  return avta_get_file_filter (filename, NULL);
 }
