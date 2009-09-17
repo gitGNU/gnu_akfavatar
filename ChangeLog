@@ -3,6 +3,9 @@
 	* avtaddons.h, filechooser.c (avta_get_file_filter): new function
 	filechooser.c (filter): adapted
 
+	* avatarsay.c (is_graphic_file): new function
+	(ask_avatar_image): use avta_get_file_filter
+
 2009-09-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c: global variable avt_image removed,

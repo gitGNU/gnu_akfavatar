@@ -2599,14 +2599,26 @@ ask_balloon_color ()
     avt_set_balloon_color_name (new_bl_color);
 }
 
+static avt_bool_t
+is_graphic_file (const char *filename)
+{
+  /* this list is not complete, not even all supported formats */
+  return (strstr (filename, ".xpm") || strstr (filename, ".XPM")
+	  || strstr (filename, ".bmp") || strstr (filename, ".BMP")
+	  || strstr (filename, ".png") || strstr (filename, ".PNG")
+	  || strstr (filename, ".jpg") || strstr (filename, ".JPG")
+	  || strstr (filename, ".jpeg") || strstr (filename, ".JPEG")
+	  || strstr (filename, ".gif") || strstr (filename, ".GIF")
+	  || strstr (filename, ".pcx") || strstr (filename, ".PCX"));
+}
+
 static void
 ask_avatar_image ()
 {
   char image_name[256];
   char *directory;
 
-  /* TODO: custom filter for avta_get_file */
-  avta_get_file (image_name);
+  avta_get_file_filter (image_name, is_graphic_file);
 
   if (image_name[0] != '\0')
     {
