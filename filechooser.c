@@ -62,6 +62,9 @@ extern int avta_ask_drive (int max_idx);
 #  define avta_ask_drive(max_idx) 0	/* dummy */
 #endif
 
+/* variable for custom filter */
+static avta_filter_t custom_filter = NULL;
+
 static avt_bool_t
 is_directory (const char *name)
 {
@@ -103,10 +106,15 @@ new_page (char *dirname)
 #endif
 
 static int
-filter (FILTER_DIRENT_T *d)
+filter (FILTER_DIRENT_T * d)
 {
-  /* allow everything, that doesn't start with a dot */
-  return (d != NULL && d->d_name[0] != '.');
+  /* allow nothing that starts with a dot */
+  if (d == NULL || d->d_name[0] == '.')
+    return AVT_FALSE;
+  else if (is_dirent_directory (d))
+    return AVT_TRUE;
+  else
+    return (custom_filter == NULL || (*custom_filter) (d->d_name));
 }
 
 #else /* __WIN32__ */
@@ -114,9 +122,15 @@ filter (FILTER_DIRENT_T *d)
 static int
 filter (const struct dirent *d)
 {
-  /* allow everything except "." and ".." */
-  return (d != NULL
-	  && (strcmp (".", d->d_name) != 0 && strcmp ("..", d->d_name) != 0));
+  /* don't allow "." and ".." and apply custom_filter */
+  if (d == NULL)
+    return AVT_FALSE;
+  else if (strcmp (".", d->d_name) == 0 || strcmp ("..", d->d_name) == 0)
+    return AVT_FALSE;
+  else if (is_dirent_directory (d))
+    return AVT_TRUE;
+  else
+    return (custom_filter == NULL || (*custom_filter) (d->d_name));
 }
 
 #endif /* __WIN32__ */
@@ -399,4 +413,16 @@ quit:
   avt_lock_updates (AVT_FALSE);
 
   return rcode;
+}
+
+extern int
+avta_get_file_filter (char *filename, avta_filter_t file_filter)
+{
+  int r;
+
+  custom_filter = file_filter;
+  r = avta_get_file (filename);
+  custom_filter = NULL;
+
+  return r;
 }

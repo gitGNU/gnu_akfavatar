@@ -1,3 +1,8 @@
+2009-09-17  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtaddons.h, filechooser.c (avta_get_file_filter): new function
+	filechooser.c (filter): adapted
+
 2009-09-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c: global variable avt_image removed,

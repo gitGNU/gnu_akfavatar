@@ -113,8 +113,13 @@ AVT_ADDON void avta_error (const char *msg1, const char *msg2);
  * file-chooser for AKFAvatar
  **********************************************************************/
 
+typedef avt_bool_t (*avta_filter_t) (const char *filename);
+
 /* starts in working directory; returns 0 on success or -1 on error */
 AVT_ADDON int avta_get_file (char *filename);
+
+/* like avta_get_file, but with a filter */
+AVT_ADDON int avta_get_file_filter (char *filename, avta_filter_t);
 
 /**********************************************************************
  * Section: avtreadfile
