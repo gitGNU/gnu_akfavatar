@@ -201,6 +201,7 @@ filechooser.o: $(srcdir)/filechooser.c \
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/filechooser.c
 
 avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/version.h \
+             $(srcdir)/btn.xpm $(srcdir)/btn-yes.xpm $(srcdir)/btn-no.xpm \
              $(srcdir)/btn-cont.xpm $(srcdir)/balloonpointer.xpm \
              $(srcdir)/circle.xpm $(srcdir)/akfavatar.xpm
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c $(srcdir)/avatar.c

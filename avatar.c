@@ -34,6 +34,7 @@
 #include "akfavatar.xpm"
 #include "balloonpointer.xpm"
 #include "circle.xpm"
+#include "btn.xpm"
 #include "btn-cont.xpm"
 #include "btn-yes.xpm"
 #include "btn-no.xpm"
@@ -4137,8 +4138,8 @@ avt_wait_button (void)
   if (!screen)
     return _avt_STATUS;
 
-  /* show button */
-  button = avt_load_image_xpm (btn_cont_xpm);
+  /* load button */
+  button = avt_load_image_xpm (btn_xpm);
 
   /* alignment: right bottom */
   dst.x = window.x + window.w - button->w - AVATAR_MARGIN;
@@ -4148,9 +4149,12 @@ avt_wait_button (void)
 
   SDL_SetClipRect (screen, &window);
   SDL_BlitSurface (button, NULL, screen, &dst);
-  AVT_UPDATE_RECT (dst);
+  SDL_FreeSurface (button);
+  button = avt_load_image_xpm (btn_cont_xpm);
+  SDL_BlitSurface (button, NULL, screen, &dst);
   SDL_FreeSurface (button);
   button = NULL;
+  AVT_UPDATE_RECT (dst);
 
   /* prepare for possible resize */
   avt_pre_resize (dst);
@@ -4338,7 +4342,7 @@ extern avt_bool_t
 avt_decide (void)
 {
   SDL_Event event;
-  SDL_Surface *yes_button, *no_button;
+  SDL_Surface *button, *yes_button, *no_button;
   SDL_Rect yes_rect, no_rect;
   int result;
 
@@ -4348,6 +4352,7 @@ avt_decide (void)
   SDL_SetClipRect (screen, &window);
 
   /* show buttons */
+  button = avt_load_image_xpm (btn_xpm);
   yes_button = avt_load_image_xpm (btn_yes_xpm);
   no_button = avt_load_image_xpm (btn_no_xpm);
 
@@ -4356,20 +4361,23 @@ avt_decide (void)
   yes_rect.y = window.y + window.h - yes_button->h - AVATAR_MARGIN;
   yes_rect.w = yes_button->w;
   yes_rect.h = yes_button->h;
+  SDL_BlitSurface (button, NULL, screen, &yes_rect);
   SDL_BlitSurface (yes_button, NULL, screen, &yes_rect);
 
   no_rect.x = yes_rect.x - BUTTON_DISTANCE - no_button->w;
   no_rect.y = yes_rect.y;
   no_rect.w = no_button->w;
   no_rect.h = no_button->h;
+  SDL_BlitSurface (button, NULL, screen, &no_rect);
   SDL_BlitSurface (no_button, NULL, screen, &no_rect);
 
   AVT_UPDATE_RECT (no_rect);
   AVT_UPDATE_RECT (yes_rect);
 
+  SDL_FreeSurface (button);
   SDL_FreeSurface (yes_button);
   SDL_FreeSurface (no_button);
-  no_button = yes_button = NULL;
+  button = no_button = yes_button = NULL;
 
   /* prepare for possible resize */
   avt_pre_resize (yes_rect);

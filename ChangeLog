@@ -1,3 +1,8 @@
+2009-09-18  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_wait_button, avt_decide):
+	buttons are combined of two parts
+
 2009-09-17  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtaddons.h, filechooser.c (avta_file_selection):
