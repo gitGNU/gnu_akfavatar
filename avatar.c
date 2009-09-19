@@ -31,6 +31,11 @@
 #include "version.h"
 #include "avtcolors.h"
 
+/*
+ * loading images
+ * they don't take as much memory as you may think,
+ * the compiler reuses equal lines
+ */
 #include "akfavatar.xpm"
 #include "balloonpointer.xpm"
 #include "circle.xpm"
@@ -4225,10 +4230,6 @@ avt_get_direction (int directions)
   if (!screen)
     return -1;
 
-  /* check if value has only defined directions */
-  if ((directions & ~AVT_DIR_ALL) != 0)
-    return -1;
-
   SDL_SetClipRect (screen, &window);
 
   /* load button images */
@@ -4268,32 +4269,26 @@ avt_get_direction (int directions)
   rect[0].y = rect[1].y = rect[2].y = rect[3].y
     = window.y + window.h - base_button->h - AVATAR_MARGIN;
 
+  /* draw the buttons and free the memory thereafter */
   /* alignment: from right to left */
-  rect[0].x = window.x + window.w - base_button->w - AVATAR_MARGIN;
-  SDL_BlitSurface (base_button, NULL, screen, &rect[0]);
-  SDL_BlitSurface (button[0], NULL, screen, &rect[0]);
-  AVT_UPDATE_RECT (rect[0]);
-
-  for (i = 1; i < button_count; i++)
+  for (i = 0; i < button_count; i++)
     {
-      rect[i].x = rect[i - 1].x - BUTTON_DISTANCE - base_button->w;
+      if (i == 0)
+	rect[0].x = window.x + window.w - base_button->w - AVATAR_MARGIN;
+      else
+	rect[i].x = rect[i - 1].x - BUTTON_DISTANCE - base_button->w;
+
       SDL_BlitSurface (base_button, NULL, screen, &rect[i]);
       SDL_BlitSurface (button[i], NULL, screen, &rect[i]);
       AVT_UPDATE_RECT (rect[i]);
-    }
+      avt_pre_resize (rect[i]);	/* prepare for possible resize */
 
-  SDL_FreeSurface (base_button);
-  base_button = NULL;
-
-  for (i = 0; i < button_count; i++)
-    {
       SDL_FreeSurface (button[i]);
       button[i] = NULL;
     }
 
-  /* prepare for possible resize */
-  for (i = 0; i < button_count; i++)
-    avt_pre_resize (rect[i]);
+  SDL_FreeSurface (base_button);
+  base_button = NULL;
 
   /* show mouse pointer */
   SDL_ShowCursor (SDL_ENABLE);
@@ -4304,17 +4299,11 @@ avt_get_direction (int directions)
 
       switch (event.type)
 	{
-	case SDL_QUIT:
-	  _avt_STATUS = AVT_QUIT;
-	  break;
-
 	case SDL_KEYDOWN:
-	  if (event.key.keysym.sym == SDLK_ESCAPE)
-	    _avt_STATUS = AVT_QUIT;
-	  else if (event.key.keysym.sym == SDLK_UP
-		   || event.key.keysym.sym == SDLK_KP8
-		   || event.key.keysym.sym == SDLK_HOME
-		   || event.key.keysym.sym == SDLK_KP7)
+	  if (event.key.keysym.sym == SDLK_UP
+	      || event.key.keysym.sym == SDLK_KP8
+	      || event.key.keysym.sym == SDLK_HOME
+	      || event.key.keysym.sym == SDLK_KP7)
 	    result = AVT_DIR_UP;
 	  else if (event.key.keysym.sym == SDLK_DOWN
 		   || event.key.keysym.sym == SDLK_KP2
