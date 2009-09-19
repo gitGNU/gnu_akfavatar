@@ -1,3 +1,8 @@
+2009-09-19  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_get_direction): new function
+	pascal/akfavatar.pas: adapted
+
 2009-09-18  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_wait_button, avt_decide):

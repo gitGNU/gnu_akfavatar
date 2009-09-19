@@ -1,8 +1,8 @@
 /* XPM */
-static char * btn_cont_xpm[] = {
+static char * btn_right_xpm[] = {
 "32 32 2 1",
 " 	c None",
-".	c #413A34",
+".	c #605030",
 "                                ",
 "                                ",
 "                                ",

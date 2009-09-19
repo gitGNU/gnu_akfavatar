@@ -35,9 +35,12 @@
 #include "balloonpointer.xpm"
 #include "circle.xpm"
 #include "btn.xpm"
-#include "btn-cont.xpm"
 #include "btn-yes.xpm"
 #include "btn-no.xpm"
+#include "btn-right.xpm"
+#include "btn-left.xpm"
+#include "btn-up.xpm"
+#include "btn-down.xpm"
 
 #ifdef LINK_SDL_IMAGE
 #  include "SDL_image.h"
@@ -4150,7 +4153,7 @@ avt_wait_button (void)
   SDL_SetClipRect (screen, &window);
   SDL_BlitSurface (button, NULL, screen, &dst);
   SDL_FreeSurface (button);
-  button = avt_load_image_xpm (btn_cont_xpm);
+  button = avt_load_image_xpm (btn_right_xpm);
   SDL_BlitSurface (button, NULL, screen, &dst);
   SDL_FreeSurface (button);
   button = NULL;
@@ -4204,6 +4207,167 @@ avt_wait_button (void)
 
   return _avt_STATUS;
 }
+
+extern int
+avt_get_direction (int directions)
+{
+  SDL_Event event;
+  SDL_Surface *base_button;
+  SDL_Surface *button[4];
+  int button_value[4];
+  SDL_Rect rect[4];
+  int i, button_count;
+  int result;
+
+  result = -1;			/* no result */
+  button_count = 0;
+
+  if (!screen)
+    return -1;
+
+  /* check if value has only defined directions */
+  if ((directions & ~AVT_DIR_ALL) != 0)
+    return -1;
+
+  SDL_SetClipRect (screen, &window);
+
+  /* load button images */
+  base_button = avt_load_image_xpm (btn_xpm);
+
+  if (directions & AVT_DIR_RIGHT)
+    {
+      button[button_count] = avt_load_image_xpm (btn_right_xpm);
+      button_value[button_count] = AVT_DIR_RIGHT;
+      button_count++;
+    }
+
+  if (directions & AVT_DIR_UP)
+    {
+      button[button_count] = avt_load_image_xpm (btn_up_xpm);
+      button_value[button_count] = AVT_DIR_UP;
+      button_count++;
+    }
+
+  if (directions & AVT_DIR_DOWN)
+    {
+      button[button_count] = avt_load_image_xpm (btn_down_xpm);
+      button_value[button_count] = AVT_DIR_DOWN;
+      button_count++;
+    }
+
+  if (directions & AVT_DIR_LEFT)
+    {
+      button[button_count] = avt_load_image_xpm (btn_left_xpm);
+      button_value[button_count] = AVT_DIR_LEFT;
+      button_count++;
+    }
+
+  /* common values for rectangles */
+  rect[0].w = rect[1].w = rect[2].w = rect[3].w = base_button->w;
+  rect[0].h = rect[1].h = rect[2].h = rect[3].h = base_button->h;
+  rect[0].y = rect[1].y = rect[2].y = rect[3].y
+    = window.y + window.h - base_button->h - AVATAR_MARGIN;
+
+  /* alignment: from right to left */
+  rect[0].x = window.x + window.w - base_button->w - AVATAR_MARGIN;
+  SDL_BlitSurface (base_button, NULL, screen, &rect[0]);
+  SDL_BlitSurface (button[0], NULL, screen, &rect[0]);
+  AVT_UPDATE_RECT (rect[0]);
+
+  for (i = 1; i < button_count; i++)
+    {
+      rect[i].x = rect[i - 1].x - BUTTON_DISTANCE - base_button->w;
+      SDL_BlitSurface (base_button, NULL, screen, &rect[i]);
+      SDL_BlitSurface (button[i], NULL, screen, &rect[i]);
+      AVT_UPDATE_RECT (rect[i]);
+    }
+
+  SDL_FreeSurface (base_button);
+  base_button = NULL;
+
+  for (i = 0; i < button_count; i++)
+    {
+      SDL_FreeSurface (button[i]);
+      button[i] = NULL;
+    }
+
+  /* prepare for possible resize */
+  for (i = 0; i < button_count; i++)
+    avt_pre_resize (rect[i]);
+
+  /* show mouse pointer */
+  SDL_ShowCursor (SDL_ENABLE);
+
+  while (result < 0 && _avt_STATUS == AVT_NORMAL)
+    {
+      SDL_WaitEvent (&event);
+
+      switch (event.type)
+	{
+	case SDL_QUIT:
+	  _avt_STATUS = AVT_QUIT;
+	  break;
+
+	case SDL_KEYDOWN:
+	  if (event.key.keysym.sym == SDLK_ESCAPE)
+	    _avt_STATUS = AVT_QUIT;
+	  else if (event.key.keysym.sym == SDLK_UP
+		   || event.key.keysym.sym == SDLK_KP8
+		   || event.key.keysym.sym == SDLK_HOME
+		   || event.key.keysym.sym == SDLK_KP7)
+	    result = AVT_DIR_UP;
+	  else if (event.key.keysym.sym == SDLK_DOWN
+		   || event.key.keysym.sym == SDLK_KP2
+		   || event.key.keysym.sym == SDLK_END
+		   || event.key.keysym.sym == SDLK_KP1)
+	    result = AVT_DIR_DOWN;
+	  else if (event.key.keysym.sym == SDLK_LEFT
+		   || event.key.keysym.sym == SDLK_KP4)
+	    result = AVT_DIR_LEFT;
+	  else if (event.key.keysym.sym == SDLK_RIGHT
+		   || event.key.keysym.sym == SDLK_KP6)
+	    result = AVT_DIR_RIGHT;
+
+	  /* limit to requested directions */
+	  if (result >= 0 && (result & ~directions))
+	    result = -1;
+	  break;
+
+	case SDL_MOUSEBUTTONDOWN:
+	  if (event.button.button <= 3
+	      && event.button.y >= rect[0].y + window.y
+	      && event.button.y <= rect[0].y + window.y + rect[0].h)
+	    {
+	      for (i = 0; i < button_count && result < 0; i++)
+		{
+		  if (event.button.x >= rect[i].x + window.x
+		      && event.button.x <= rect[i].x + window.x + rect[i].w)
+		    result = button_value[i];
+		}
+	    }
+	  break;
+	}
+
+      avt_analyze_event (&event);
+    }
+
+  /* hide mouse pointer */
+  SDL_ShowCursor (SDL_DISABLE);
+
+  /* delete buttons */
+  for (i = 0; i < button_count; i++)
+    {
+      avt_post_resize (rect[i]);
+      SDL_FillRect (screen, &rect[i], background_color);
+      AVT_UPDATE_RECT (rect[i]);
+    }
+
+  if (textfield.x >= 0)
+    SDL_SetClipRect (screen, &viewport);
+
+  return result;
+}
+
 
 /* deprecated: use avt_wait_button */
 extern int
@@ -4523,7 +4687,7 @@ avt_show_image_file (const char *filename)
 }
 
 extern int
-avt_show_image_stream (avt_stream *stream)
+avt_show_image_stream (avt_stream * stream)
 {
   SDL_Surface *image;
 
@@ -4798,7 +4962,7 @@ avt_import_image_file (const char *filename)
 }
 
 extern avt_image_t *
-avt_import_image_stream (avt_stream *stream)
+avt_import_image_stream (avt_stream * stream)
 {
   SDL_Surface *image;
 

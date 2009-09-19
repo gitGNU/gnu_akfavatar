@@ -64,9 +64,11 @@ filechooser.o: $(srcdir)/filechooser.c \
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/filechooser.c
 
 avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h avtcolors.h \
-	  $(srcdir)/balloonpointer.xpm $(srcdir)/circle.xpm \
-	  $(srcdir)/btn.xpm $(srcdir)/btn-yes.xpm $(srcdir)/btn-no.xpm \
-	  $(srcdir)/btn-cont.xpm $(srcdir)/akfavatar.xpm
+          $(srcdir)/balloonpointer.xpm $(srcdir)/circle.xpm \
+          $(srcdir)/btn.xpm $(srcdir)/btn-yes.xpm $(srcdir)/btn-no.xpm \
+          $(srcdir)/btn-up.xpm $(srcdir)/btn-down.xpm \
+          $(srcdir)/btn-left.xpm $(srcdir)/btn-right.xpm \
+          $(srcdir)/akfavatar.xpm
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c $(srcdir)/avatar.c
 
 avatar-default.o: $(srcdir)/avatar-default.c $(default_avatar) $(srcdir)/akfavatar.h
@@ -89,11 +91,12 @@ libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o
 	-$(RANLIB) $@
 
 avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h avtcolors.h \
-	   $(srcdir)/balloonpointer.xpm $(srcdir)/circle.xpm \
-	   $(srcdir)/btn.xpm $(srcdir)/btn-yes.xpm $(srcdir)/btn-no.xpm \
-	   $(srcdir)/btn-cont.xpm $(srcdir)/akfavatar.xpm
-	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -fPIC -o $@ \
-	  $(srcdir)/avatar.c
+           $(srcdir)/balloonpointer.xpm $(srcdir)/circle.xpm \
+           $(srcdir)/btn.xpm $(srcdir)/btn-yes.xpm $(srcdir)/btn-no.xpm \
+           $(srcdir)/btn-up.xpm $(srcdir)/btn-down.xpm \
+           $(srcdir)/btn-left.xpm $(srcdir)/btn-right.xpm \
+           $(srcdir)/akfavatar.xpm
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -fPIC -o $@ $(srcdir)/avatar.c
 
 avatar-default.lo: $(srcdir)/avatar-default.c $(default_avatar) $(srcdir)/akfavatar.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -fPIC -o $@ \
@@ -388,7 +391,8 @@ dist: info html man distclean
 	   avtccio.c avtcwio.c avtaddons.h filechooser.c avtreadfile.c \
 	   balloonpointer.xpm circle.xpm gnu-head.xpm \
 	   male_user.xpm female_user.xpm \
-	   btn.xpm btn-cont.xpm btn-no.xpm btn-yes.xpm \
+	   btn.xpm btn-up.xpm btn-down.xpm btn-left.xpm btn-right.xpm \
+	   btn-no.xpm btn-yes.xpm \
 	   avatarsay.c avtposix.c avtterm.c avttermsys.h avttermsys.c \
 	   avtmsg.c arch.c avtcolors.h \
 	   avtman avtcmd example.c fsdemo-??.avt \

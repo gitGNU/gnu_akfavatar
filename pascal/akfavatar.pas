@@ -1,5 +1,5 @@
 {*
- * Pascal binding to the AKFAvatar library version 0.17.1
+ * Pascal binding to the AKFAvatar library version 0.17.2
  * Copyright (c) 2007, 2008, 2009 Andreas K. Foerster <info@akfoerster.de>
  *
  * Can be used with GNU-Pascal or FreePascal
@@ -310,6 +310,24 @@ procedure SetMonochrome(monochrome: boolean);
 { keys for negative: - 0 Backspace }
 function Decide: boolean;
 
+{ get a direction }
+{ example:
+    result := GetDirection(DirBackward or DirForward or DirHome); }
+{ returns one of the Dir* constants or -1 on error }
+function GetDirection(directions: integer): integer;
+
+{ constants for GetDirection }
+const
+  DirLeft     = 1 shl 0;
+  DirDown     = 1 shl 1;
+  DirUp       = 1 shl 2;
+  DirRight    = 1 shl 3;
+  DirAll      = DirLeft or DirDown or DirUp or DirRight;
+  DirBackward = DirLeft;
+  DirForward  = DirRight;
+  DirHome     = DirUp;
+  DirEnd      = DirDown;
+
 { choice for several items }
 { result is the choice number, starting from 1 }
 { startkey may be #0 }
@@ -572,6 +590,9 @@ function avt_choice(var result: CInteger;
 
 procedure avt_pager_mb (txt: CString; len, startline: CInteger); 
   libakfavatar 'avt_pager_mb';
+
+function avt_get_direction(directions: CInteger): CInteger;
+  libakfavatar 'avt_get_direction';
 
 function avt_decide: avt_bool_t; libakfavatar 'avt_decide';
 
@@ -1185,6 +1206,13 @@ function Decide: boolean;
 begin
 if not initialized then initializeAvatar;
 Decide := (avt_decide <> 0);
+if avt_get_status<>0 then Halt
+end;
+
+function GetDirection(directions: integer): integer;
+begin
+if not initialized then initializeAvatar;
+GetDirection := avt_get_direction(directions);
 if avt_get_status<>0 then Halt
 end;
 
