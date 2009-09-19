@@ -201,11 +201,11 @@ filechooser.o: $(srcdir)/filechooser.c \
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/filechooser.c
 
 avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/version.h \
-             $(srcdir)/btn.xpm $(srcdir)/btn-yes.xpm $(srcdir)/btn-no.xpm \
-             $(srcdir)/btn-up.xpm $(srcdir)/btn-down.xpm \
-             $(srcdir)/btn-left.xpm $(srcdir)/btn-right.xpm \
-             $(srcdir)/balloonpointer.xpm \
-             $(srcdir)/circle.xpm $(srcdir)/akfavatar.xpm
+             $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
+             $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
+             $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
+             $(srcdir)/balloonpointer.xbm \
+             $(srcdir)/circle.xbm $(srcdir)/akfavatar.xpm
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c $(srcdir)/avatar.c
 
 avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h alert.c

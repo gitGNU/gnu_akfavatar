@@ -3,6 +3,9 @@
 	* akfavatar.h, avatar.c (avt_get_direction): new function
 	pascal/akfavatar.pas: adapted
 
+	* avatar.c (avt_load_image_xbm_rgb): new function
+	many callers adapted
+
 2009-09-18  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_wait_button, avt_decide):
