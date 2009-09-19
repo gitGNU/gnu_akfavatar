@@ -4281,7 +4281,6 @@ avt_get_direction (int directions)
       SDL_BlitSurface (base_button, NULL, screen, &rect[i]);
       SDL_BlitSurface (button[i], NULL, screen, &rect[i]);
       AVT_UPDATE_RECT (rect[i]);
-      avt_pre_resize (rect[i]);	/* prepare for possible resize */
 
       SDL_FreeSurface (button[i]);
       button[i] = NULL;
@@ -4289,6 +4288,10 @@ avt_get_direction (int directions)
 
   SDL_FreeSurface (base_button);
   base_button = NULL;
+
+  /* prepare for possible resize */
+  for (i = 0; i < button_count; i++)
+      avt_pre_resize (rect[i]);
 
   /* show mouse pointer */
   SDL_ShowCursor (SDL_ENABLE);
