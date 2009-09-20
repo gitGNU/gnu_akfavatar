@@ -180,6 +180,11 @@ AVT_API avt_image_t *avt_default (void);
 /* import an avatar from XPM data */
 AVT_API avt_image_t *avt_import_xpm (char **xpm);
 
+/* import an avatar from XBM data */
+AVT_API avt_image_t *avt_import_xbm (const unsigned char *bits,
+				     int width, int height,
+				     const char *colorname);
+
 /* RGB gimp_image */
 AVT_API avt_image_t *avt_import_gimp_image (void *gimp_image);
 
@@ -672,6 +677,15 @@ AVT_API int avt_show_image_data (void *img, int imgsize);
  * on error it returns AVT_ERROR without changing the status
  */
 AVT_API int avt_show_image_xpm (char **xpm);
+
+/*
+ * show image from XBM data with a given color
+ * the background is transparent
+ * on error it returns AVT_ERROR without changing the status
+ */
+AVT_API int avt_show_image_xbm (const unsigned char *bits,
+				int width, int height,
+				const char *colorname);
 
 /*
  * show gimp image

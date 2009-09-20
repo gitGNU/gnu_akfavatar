@@ -1,3 +1,16 @@
+2009-09-20  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_load_image_xbm):
+	renamed from avt_load_image_xbm_rgb
+	uses named color now
+	all callers changed
+
+	* akfavatar.h, avatar.c (avt_import_xbm, avt_show_image_xbm):
+	new functions
+
+	* avatar.c (avt_show_image_xpm):
+	use avt_load_image_xpm instead of avt_import_xpm
+
 2009-09-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_get_direction): new function

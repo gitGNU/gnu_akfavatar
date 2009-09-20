@@ -2,9 +2,9 @@
  * AKFAvatar library - for giving your programs a graphical Avatar
  * Copyright (c) 2007, 2008, 2009 Andreas K. Foerster <info@akfoerster.de>
  *
- * needed: 
+ * needed:
  *  SDL1.2 (recommended: SDL1.2.11 or later (but not 1.3!))
- * recommended: 
+ * recommended:
  *  SDL_image1.2
  *
  * This file is part of AKFAvatar
@@ -49,6 +49,9 @@
 
 #define COPYRIGHTYEAR "2009"
 #define BUTTON_DISTANCE 10
+
+/* normal color of what's printed on the button */
+#define BUTTON_COLOR "#653"
 
 #if defined(VGA)
 #  define FONTWIDTH 7
@@ -855,14 +858,21 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
  * and a transarent background
  */
 static SDL_Surface *
-avt_load_image_xbm_rgb (unsigned char *bits, int width, int height,
-			int red, int green, int blue)
+avt_load_image_xbm (const unsigned char *bits, int width, int height,
+		    const char *colorname)
 {
   SDL_Surface *img;
   SDL_Color color;
+  int red, green, blue;
   int x, y;
   int bpl;			/* Bytes per line */
   Uint8 *p;
+
+  if (width <= 0 || height <= 0)
+    return NULL;
+
+  if (avt_name_to_color (colorname, &red, &green, &blue) < 0)
+    return NULL;
 
   color.r = red;
   color.g = green;
@@ -887,6 +897,7 @@ avt_load_image_xbm_rgb (unsigned char *bits, int width, int height,
       p = (Uint8 *) img->pixels + (y * img->pitch);
       for (x = 0; x < width; x++, p++)
 	*p = (bits[y * bpl + x / 8] & (1 << (x % 8))) != 0;
+      /* note: I'm using the fact that (x != 0) yields 0 or 1 */
     }
 
   if (SDL_MUSTLOCK (img))
@@ -4204,8 +4215,8 @@ avt_wait_button (void)
   SDL_BlitSurface (button, NULL, screen, &dst);
   SDL_FreeSurface (button);
   button =
-    avt_load_image_xbm_rgb (btn_right_bits, btn_right_width, btn_right_height,
-			    0x60, 0x50, 0x30);
+    avt_load_image_xbm (btn_right_bits, btn_right_width, btn_right_height,
+			BUTTON_COLOR);
   SDL_BlitSurface (button, NULL, screen, &dst);
   SDL_FreeSurface (button);
   button = NULL;
@@ -4285,8 +4296,8 @@ avt_get_direction (int directions)
   if (directions & AVT_DIR_RIGHT)
     {
       button[button_count] =
-	avt_load_image_xbm_rgb (btn_right_bits, btn_right_width,
-				btn_right_height, 0x60, 0x50, 0x30);
+	avt_load_image_xbm (btn_right_bits, btn_right_width,
+			    btn_right_height, BUTTON_COLOR);
       button_value[button_count] = AVT_DIR_RIGHT;
       button_count++;
     }
@@ -4294,8 +4305,8 @@ avt_get_direction (int directions)
   if (directions & AVT_DIR_UP)
     {
       button[button_count] =
-	avt_load_image_xbm_rgb (btn_up_bits, btn_up_width, btn_up_height,
-				0x60, 0x50, 0x30);
+	avt_load_image_xbm (btn_up_bits, btn_up_width, btn_up_height,
+			    BUTTON_COLOR);
       button_value[button_count] = AVT_DIR_UP;
       button_count++;
     }
@@ -4303,8 +4314,8 @@ avt_get_direction (int directions)
   if (directions & AVT_DIR_DOWN)
     {
       button[button_count] =
-	avt_load_image_xbm_rgb (btn_down_bits, btn_down_width,
-				btn_down_height, 0x60, 0x50, 0x30);
+	avt_load_image_xbm (btn_down_bits, btn_down_width,
+			    btn_down_height, BUTTON_COLOR);
       button_value[button_count] = AVT_DIR_DOWN;
       button_count++;
     }
@@ -4312,8 +4323,8 @@ avt_get_direction (int directions)
   if (directions & AVT_DIR_LEFT)
     {
       button[button_count] =
-	avt_load_image_xbm_rgb (btn_left_bits, btn_left_width,
-				btn_left_height, 0x60, 0x50, 0x30);
+	avt_load_image_xbm (btn_left_bits, btn_left_width,
+			    btn_left_height, BUTTON_COLOR);
       button_value[button_count] = AVT_DIR_LEFT;
       button_count++;
     }
@@ -4564,10 +4575,10 @@ avt_decide (void)
 
   /* show buttons */
   button = avt_load_image_xpm (btn_xpm);
-  yes_button = avt_load_image_xbm_rgb (btn_yes_bits, btn_yes_width,
-				       btn_yes_height, 0x00, 0xAA, 0x00);
-  no_button = avt_load_image_xbm_rgb (btn_no_bits, btn_no_width,
-				      btn_no_height, 0xAA, 0x00, 0x00);
+  yes_button = avt_load_image_xbm (btn_yes_bits, btn_yes_width,
+				   btn_yes_height, "#0A0");
+  no_button = avt_load_image_xbm (btn_no_bits, btn_no_width,
+				  btn_no_height, "#A00");
 
   /* alignment: right bottom */
   yes_rect.x = window.x + window.w - yes_button->w - AVATAR_MARGIN;
@@ -4806,7 +4817,7 @@ avt_show_image_xpm (char **xpm)
   if (!screen)
     return _avt_STATUS;
 
-  image = avt_import_xpm (xpm);
+  image = (avt_image_t *) avt_load_image_xpm (xpm);
 
   if (image == NULL)
     {
@@ -4825,6 +4836,29 @@ extern int
 avt_show_image_XPM (char **xpm)
 {
   return avt_show_image_xpm (xpm);
+}
+
+extern int
+avt_show_image_xbm (const unsigned char *bits, int width, int height,
+		    const char *colorname)
+{
+  avt_image_t *image;
+
+  if (!screen)
+    return _avt_STATUS;
+
+  image = (avt_image_t *) avt_load_image_xbm (bits, width, height, colorname);
+
+  if (image == NULL)
+    {
+      avt_clear ();		/* at least clear the balloon */
+      return AVT_ERROR;
+    }
+
+  avt_show_image (image);
+  SDL_FreeSurface ((SDL_Surface *) image);
+
+  return _avt_STATUS;
 }
 
 /*
@@ -4921,6 +4955,16 @@ extern avt_image_t *
 avt_import_XPM (char **xpm)
 {
   return avt_import_xpm (xpm);
+}
+
+extern avt_image_t *
+avt_import_xbm (const unsigned char *bits, int width, int height,
+		const char *colorname)
+{
+  if (avt_init_SDL ())
+    return NULL;
+
+  return (avt_image_t *) avt_load_image_xbm (bits, width, height, colorname);
 }
 
 /*
@@ -5816,10 +5860,11 @@ avt_initialize (const char *title, const char *icontitle,
       return _avt_STATUS;
     }
 
-  circle = avt_load_image_xbm_rgb (circle_bits, circle_width, circle_height,
-				   0xFF, 0xFF, 0xFF);
-  pointer = avt_load_image_xbm_rgb (balloonpointer_bits, balloonpointer_width,
-				    balloonpointer_height, 0xFF, 0xFF, 0xFF);
+  circle =
+    avt_load_image_xbm (circle_bits, circle_width, circle_height, "#FFF");
+  pointer =
+    avt_load_image_xbm (balloonpointer_bits, balloonpointer_width,
+			balloonpointer_height, "#FFF");
 
   /* import the avatar image */
   if (image)
