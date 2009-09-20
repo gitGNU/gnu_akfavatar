@@ -322,11 +322,13 @@ const
   DirDown     = 1 shl 1;
   DirUp       = 1 shl 2;
   DirRight    = 1 shl 3;
-  DirAll      = DirLeft or DirDown or DirUp or DirRight;
+  DirCancel   = 1 shl 4;
+  DirAll      = DirLeft or DirDown or DirUp or DirRight or DirCancel;
   DirBackward = DirLeft;
   DirForward  = DirRight;
   DirHome     = DirUp;
   DirEnd      = DirDown;
+  DirExit     = DirCancel;
 
 { choice for several items }
 { result is the choice number, starting from 1 }

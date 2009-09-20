@@ -42,6 +42,7 @@
 #include "btn_left.xbm"
 #include "btn_up.xbm"
 #include "btn_down.xbm"
+#include "btn_cancel.xbm"
 
 #ifdef LINK_SDL_IMAGE
 #  include "SDL_image.h"
@@ -4276,9 +4277,9 @@ avt_get_direction (int directions)
 {
   SDL_Event event;
   SDL_Surface *base_button;
-  SDL_Surface *button[4];
-  int button_value[4];
-  SDL_Rect rect[4];
+  SDL_Surface *button[5];
+  int button_value[5];
+  SDL_Rect rect[5];
   int i, button_count;
   int result;
 
@@ -4292,6 +4293,15 @@ avt_get_direction (int directions)
 
   /* load button images */
   base_button = avt_load_image_xpm (btn_xpm);
+
+  if (directions & AVT_DIR_CANCEL)
+    {
+      button[button_count] =
+	avt_load_image_xbm (btn_cancel_bits, btn_cancel_width,
+			    btn_cancel_height, BUTTON_COLOR);
+      button_value[button_count] = AVT_DIR_CANCEL;
+      button_count++;
+    }
 
   if (directions & AVT_DIR_RIGHT)
     {
@@ -4330,9 +4340,9 @@ avt_get_direction (int directions)
     }
 
   /* common values for rectangles */
-  rect[0].w = rect[1].w = rect[2].w = rect[3].w = base_button->w;
-  rect[0].h = rect[1].h = rect[2].h = rect[3].h = base_button->h;
-  rect[0].y = rect[1].y = rect[2].y = rect[3].y
+  rect[0].w = rect[1].w = rect[2].w = rect[3].w = rect[4].w = base_button->w;
+  rect[0].h = rect[1].h = rect[2].h = rect[3].h = rect[4].h = base_button->h;
+  rect[0].y = rect[1].y = rect[2].y = rect[3].y = rect[4].y
     = window.y + window.h - base_button->h - AVATAR_MARGIN;
 
   /* draw the buttons and free the memory thereafter */
