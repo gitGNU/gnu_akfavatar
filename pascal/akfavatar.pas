@@ -318,11 +318,11 @@ function Navigate(directions: integer): integer;
 
 { constants for Navigate }
 const
-  DirLeft     = 1 shl 0;
-  DirDown     = 1 shl 1;
-  DirUp       = 1 shl 2;
-  DirRight    = 1 shl 3;
-  DirCancel   = 1 shl 4;
+  DirLeft     =  1;
+  DirDown     =  2;
+  DirUp       =  4;
+  DirRight    =  8;
+  DirCancel   = 16;
   DirAll      = DirLeft or DirDown or DirUp or DirRight or DirCancel;
   DirBackward = DirLeft;
   DirForward  = DirRight;
