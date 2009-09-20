@@ -52,7 +52,7 @@
 #define BUTTON_DISTANCE 10
 
 /* normal color of what's printed on the button */
-#define BUTTON_COLOR "#653"
+#define BUTTON_COLOR  0x66, 0x55, 0x33
 
 #if defined(VGA)
 #  define FONTWIDTH 7
@@ -860,20 +860,13 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
  */
 static SDL_Surface *
 avt_load_image_xbm (const unsigned char *bits, int width, int height,
-		    const char *colorname)
+		    int red, int green, int blue)
 {
   SDL_Surface *img;
   SDL_Color color;
-  int red, green, blue;
   int x, y;
   int bpl;			/* Bytes per line */
   Uint8 *p;
-
-  if (width <= 0 || height <= 0)
-    return NULL;
-
-  if (avt_name_to_color (colorname, &red, &green, &blue) < 0)
-    return NULL;
 
   color.r = red;
   color.g = green;
@@ -4586,9 +4579,9 @@ avt_decide (void)
   /* show buttons */
   button = avt_load_image_xpm (btn_xpm);
   yes_button = avt_load_image_xbm (btn_yes_bits, btn_yes_width,
-				   btn_yes_height, "#0A0");
+				   btn_yes_height, 0, 0xAA, 0);
   no_button = avt_load_image_xbm (btn_no_bits, btn_no_width,
-				  btn_no_height, "#A00");
+				  btn_no_height, 0xAA, 0, 0);
 
   /* alignment: right bottom */
   yes_rect.x = window.x + window.w - yes_button->w - AVATAR_MARGIN;
@@ -4853,11 +4846,22 @@ avt_show_image_xbm (const unsigned char *bits, int width, int height,
 		    const char *colorname)
 {
   avt_image_t *image;
+  int red, green, blue;
 
   if (!screen)
     return _avt_STATUS;
 
-  image = (avt_image_t *) avt_load_image_xbm (bits, width, height, colorname);
+  if (width <= 0 || height <= 0)
+    return AVT_ERROR;
+
+  if (avt_name_to_color (colorname, &red, &green, &blue) < 0)
+    {
+      avt_clear ();		/* at least clear the balloon */
+      return AVT_ERROR;
+    }
+
+  image = (avt_image_t *) avt_load_image_xbm (bits, width, height,
+					      red, green, blue);
 
   if (image == NULL)
     {
@@ -4971,10 +4975,19 @@ extern avt_image_t *
 avt_import_xbm (const unsigned char *bits, int width, int height,
 		const char *colorname)
 {
+  int red, green, blue;
+
+  if (width <= 0 || height <= 0)
+    return NULL;
+
+  if (avt_name_to_color (colorname, &red, &green, &blue) < 0)
+    return NULL;
+
   if (avt_init_SDL ())
     return NULL;
 
-  return (avt_image_t *) avt_load_image_xbm (bits, width, height, colorname);
+  return (avt_image_t *) avt_load_image_xbm (bits, width, height,
+					     red, green, blue);
 }
 
 /*
@@ -5871,10 +5884,11 @@ avt_initialize (const char *title, const char *icontitle,
     }
 
   circle =
-    avt_load_image_xbm (circle_bits, circle_width, circle_height, "#FFF");
+    avt_load_image_xbm (circle_bits, circle_width, circle_height, 255, 255,
+			255);
   pointer =
     avt_load_image_xbm (balloonpointer_bits, balloonpointer_width,
-			balloonpointer_height, "#FFF");
+			balloonpointer_height, 255, 255, 255);
 
   /* import the avatar image */
   if (image)

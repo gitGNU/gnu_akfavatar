@@ -2,7 +2,6 @@
 
 	* avatar.c (avt_load_image_xbm):
 	renamed from avt_load_image_xbm_rgb
-	uses named color now
 	all callers changed
 
 	* akfavatar.h, avatar.c (avt_import_xbm, avt_show_image_xbm):
