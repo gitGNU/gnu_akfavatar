@@ -68,7 +68,7 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h avtcolors.h \
           $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
           $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
           $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
-          $(srcdir)/akfavatar.xpm
+          $(srcdir)/btn_cancel.xbm $(srcdir)/akfavatar.xpm
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c $(srcdir)/avatar.c
 
 avatar-default.o: $(srcdir)/avatar-default.c $(default_avatar) $(srcdir)/akfavatar.h
@@ -95,7 +95,7 @@ avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h avtcolors.h \
            $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
            $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
            $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
-           $(srcdir)/akfavatar.xpm
+           $(srcdir)/btn_cancel.xbm $(srcdir)/akfavatar.xpm
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -fPIC -o $@ $(srcdir)/avatar.c
 
 avatar-default.lo: $(srcdir)/avatar-default.c $(default_avatar) $(srcdir)/akfavatar.h
@@ -392,7 +392,7 @@ dist: info html man distclean
 	   balloonpointer.xbm circle.xbm gnu-head.xpm \
 	   male_user.xpm female_user.xpm \
 	   btn.xpm btn_up.xbm btn_down.xbm btn_left.xbm btn_right.xbm \
-	   btn_no.xbm btn_yes.xbm \
+	   btn_no.xbm btn_yes.xbm btn_cancel.xbm \
 	   avatarsay.c avtposix.c avtterm.c avttermsys.h avttermsys.c \
 	   avtmsg.c arch.c avtcolors.h \
 	   avtman avtcmd example.c fsdemo-??.avt \
