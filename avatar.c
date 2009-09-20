@@ -4273,7 +4273,7 @@ avt_wait_button (void)
 }
 
 extern int
-avt_get_direction (int directions)
+avt_navigate (int directions)
 {
   SDL_Event event;
   SDL_Surface *base_button;

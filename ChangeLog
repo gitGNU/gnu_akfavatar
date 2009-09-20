@@ -11,7 +11,9 @@
 	* avatar.c (avt_show_image_xpm):
 	use avt_load_image_xpm instead of avt_import_xpm
 
-	* avatar.c (avt_get_direction): add support for a cancel button
+	* avatar.c (avt_navigate): renamed from avt_get_direction
+
+	* avatar.c (avt_navigate): add support for a cancel button
 
 2009-09-19  Andreas K. Foerster  <info@akfoerster.de>
 

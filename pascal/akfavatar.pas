@@ -310,13 +310,13 @@ procedure SetMonochrome(monochrome: boolean);
 { keys for negative: - 0 Backspace }
 function Decide: boolean;
 
-{ get a direction }
+{ Navigate }
 { example:
-    result := GetDirection(DirBackward or DirForward or DirHome); }
+    result := Navigate(DirBackward or DirForward or DirHome); }
 { returns one of the Dir* constants or -1 on error }
-function GetDirection(directions: integer): integer;
+function Navigate(directions: integer): integer;
 
-{ constants for GetDirection }
+{ constants for Navigate }
 const
   DirLeft     = 1 shl 0;
   DirDown     = 1 shl 1;
@@ -593,8 +593,8 @@ function avt_choice(var result: CInteger;
 procedure avt_pager_mb (txt: CString; len, startline: CInteger); 
   libakfavatar 'avt_pager_mb';
 
-function avt_get_direction(directions: CInteger): CInteger;
-  libakfavatar 'avt_get_direction';
+function avt_navigate(directions: CInteger): CInteger;
+  libakfavatar 'avt_navigate';
 
 function avt_decide: avt_bool_t; libakfavatar 'avt_decide';
 
@@ -1211,10 +1211,10 @@ Decide := (avt_decide <> 0);
 if avt_get_status<>0 then Halt
 end;
 
-function GetDirection(directions: integer): integer;
+function Navigate(directions: integer): integer;
 begin
 if not initialized then initializeAvatar;
-GetDirection := avt_get_direction(directions);
+Navigate := avt_navigate(directions);
 if avt_get_status<>0 then Halt
 end;
 

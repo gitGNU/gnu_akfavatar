@@ -711,7 +711,7 @@ AVT_API int avt_wait_button (void);
 AVT_API avt_bool_t avt_decide (void);
 
 
-/* symbols for avt_get_direction */
+/* symbols for avt_navigate */
 #define AVT_DIR_LEFT      (1 << 0)
 #define AVT_DIR_DOWN      (1 << 1)
 #define AVT_DIR_UP        (1 << 2)
@@ -727,16 +727,16 @@ AVT_API avt_bool_t avt_decide (void);
 #define AVT_DIR_EXIT      AVT_DIR_CANCEL
 
 /*
- * get a direction
+ * navigate
  * there are buttons to click, or the arrow keys can be used
  *
  * returns one of the AVT_DIR_* values
  * or -1 on error (including quit-request)
  *
  * example:
- *   r = avt_get_direction (AVT_DIR_BACKWARD|AVT_DIR_FORWARD|AVT_DIR_HOME);
+ *   r = avt_navigate (AVT_DIR_BACKWARD | AVT_DIR_FORWARD | AVT_DIR_HOME);
  */
-AVT_API int avt_get_direction (int directions);
+AVT_API int avt_navigate (int directions);
 
 /*
  * avt_choice - use for menus
