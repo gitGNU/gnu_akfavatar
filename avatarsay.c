@@ -2689,7 +2689,7 @@ settings_submenu (void)
   while (choice != 5)
     {
       avt_normal_text ();
-      avt_set_balloon_size (7, 42);
+      avt_set_balloon_size (10, 42);
       avt_clear ();
 
       avt_set_text_delay (0);
@@ -2713,7 +2713,11 @@ settings_submenu (void)
 	  avt_say (L"2) Das Avatar-Bild auswechseln\n");
 	  avt_say (L"3) eine andere Hintergrund-Farbe auswählen\n");
 	  avt_say (L"4) eine andere Spechblasen-Farbe auswählen\n");
-	  avt_say (L"5) zurück");	/* no newline */
+	  avt_say (L"5) zurück");
+	  avt_bold (AVT_TRUE);
+	  avt_say (L"\n\nAchtung: Man kann die Einstellungen noch\n"
+	           L"nicht speichern!");
+	  avt_bold (AVT_FALSE);
 	  break;
 
 	case ENGLISH:
@@ -2721,8 +2725,11 @@ settings_submenu (void)
 	  avt_say (L"1) toggle fullscreen mode\n");
 	  avt_say (L"2) exchange the avatar image\n");
 	  avt_say (L"3) select a background color\n");
-	  avt_say (L"3) select a balloon color\n");
-	  avt_say (L"5) back");	/* no newline */
+	  avt_say (L"4) select a balloon color\n");
+	  avt_say (L"5) back");
+	  avt_bold (AVT_TRUE);
+	  avt_say (L"\n\nAttention:\nYou cannot save the settings, yet!");
+	  avt_bold (AVT_FALSE);
 	}
 
       avt_lock_updates (AVT_FALSE);
