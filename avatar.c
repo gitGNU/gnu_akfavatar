@@ -43,6 +43,8 @@
 #include "btn_up.xbm"
 #include "btn_down.xbm"
 #include "btn_cancel.xbm"
+#include "btn_ff.xbm"
+#include "btn_fb.xbm"
 
 #ifdef LINK_SDL_IMAGE
 #  include "SDL_image.h"
@@ -4265,14 +4267,16 @@ avt_wait_button (void)
   return _avt_STATUS;
 }
 
+#define NAV_BUTTONS 7
+
 extern int
 avt_navigate (int directions)
 {
   SDL_Event event;
   SDL_Surface *base_button;
-  SDL_Surface *button[5];
-  int button_value[5];
-  SDL_Rect rect[5];
+  SDL_Surface *button[NAV_BUTTONS];
+  int button_value[NAV_BUTTONS];
+  SDL_Rect rect[NAV_BUTTONS];
   int i, button_count;
   int result;
 
@@ -4296,12 +4300,22 @@ avt_navigate (int directions)
       button_count++;
     }
 
-  if (directions & AVT_DIR_RIGHT)
+  if (directions & AVT_DIR_FASTFORWARD)
+    {
+      button[button_count] =
+	avt_load_image_xbm (btn_fastforward_bits,
+			    btn_fastforward_width,
+			    btn_fastforward_height, BUTTON_COLOR);
+      button_value[button_count] = AVT_DIR_FASTFORWARD;
+      button_count++;
+    }
+
+  if (directions & AVT_DIR_FORWARD)
     {
       button[button_count] =
 	avt_load_image_xbm (btn_right_bits, btn_right_width,
 			    btn_right_height, BUTTON_COLOR);
-      button_value[button_count] = AVT_DIR_RIGHT;
+      button_value[button_count] = AVT_DIR_FORWARD;
       button_count++;
     }
 
@@ -4323,20 +4337,33 @@ avt_navigate (int directions)
       button_count++;
     }
 
-  if (directions & AVT_DIR_LEFT)
+  if (directions & AVT_DIR_BACKWARD)
     {
       button[button_count] =
 	avt_load_image_xbm (btn_left_bits, btn_left_width,
 			    btn_left_height, BUTTON_COLOR);
-      button_value[button_count] = AVT_DIR_LEFT;
+      button_value[button_count] = AVT_DIR_BACKWARD;
+      button_count++;
+    }
+
+  if (directions & AVT_DIR_FASTBACKWARD)
+    {
+      button[button_count] =
+	avt_load_image_xbm (btn_fastbackward_bits,
+			    btn_fastbackward_width,
+			    btn_fastbackward_height, BUTTON_COLOR);
+      button_value[button_count] = AVT_DIR_FASTBACKWARD;
       button_count++;
     }
 
   /* common values for rectangles */
-  rect[0].w = rect[1].w = rect[2].w = rect[3].w = rect[4].w = base_button->w;
-  rect[0].h = rect[1].h = rect[2].h = rect[3].h = rect[4].h = base_button->h;
-  rect[0].y = rect[1].y = rect[2].y = rect[3].y = rect[4].y
-    = window.y + window.h - base_button->h - AVATAR_MARGIN;
+  for (i = 0; i < NAV_BUTTONS; i++)
+    {
+      rect[i].w = base_button->w;
+      rect[i].h = base_button->h;
+      rect[i].x = 0;		/* changed later */
+      rect[i].y = window.y + window.h - base_button->h - AVATAR_MARGIN;
+    }
 
   /* draw the buttons and free the memory thereafter */
   /* alignment: from right to left */

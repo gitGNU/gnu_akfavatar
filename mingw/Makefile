@@ -204,6 +204,7 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/version.h \
              $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
              $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
              $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
+             $(srcdir)/btn_ff.xbm $(srcdir)/btn_fb.xbm \
              $(srcdir)/balloonpointer.xbm $(srcdir)/circle.xbm \
              $(srcdir)/btn_cancel.xbm $(srcdir)/akfavatar.xpm
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c $(srcdir)/avatar.c

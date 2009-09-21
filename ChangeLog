@@ -1,3 +1,8 @@
+2009-09-21  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_navigate): 
+	add support for fast-forward and fast-backward buttons
+
 2009-09-20  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_load_image_xbm):

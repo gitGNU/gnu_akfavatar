@@ -318,17 +318,24 @@ function Navigate(directions: integer): integer;
 
 { constants for Navigate }
 const
-  DirLeft     =  1;
-  DirDown     =  2;
-  DirUp       =  4;
-  DirRight    =  8;
-  DirCancel   = 16;
-  DirAll      = DirLeft or DirDown or DirUp or DirRight or DirCancel;
-  DirBackward = DirLeft;
-  DirForward  = DirRight;
-  DirHome     = DirUp;
-  DirEnd      = DirDown;
-  DirExit     = DirCancel;
+  DirLeft         =  1;
+  DirDown         =  2;
+  DirUp           =  4;
+  DirRight        =  8;
+  DirCancel       = 16;
+  DirFastForward  = 32;
+  DirFastBackward = 64;
+
+{ usefull aliases }
+const
+  DirBackward     = DirLeft;
+  DirForward      = DirRight;
+  DirHome         = DirUp;
+  DirEnd          = DirDown;
+  DirExit         = DirCancel;
+  DirStop         = DirCancel;
+  DirAll          = DirLeft or DirDown or DirUp or DirRight or DirCancel
+                    or DirFastForward or DirFastBackward;
 
 { choice for several items }
 { result is the choice number, starting from 1 }
