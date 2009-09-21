@@ -725,21 +725,26 @@ AVT_API avt_bool_t avt_decide (void);
 AVT_API int avt_navigate (int directions);
 
 /* symbols for avt_navigate */
-#define AVT_DIR_LEFT          1
-#define AVT_DIR_DOWN          2
-#define AVT_DIR_UP            4
-#define AVT_DIR_RIGHT         8
-#define AVT_DIR_CANCEL       16
-#define AVT_DIR_FASTFORWARD  32
-#define AVT_DIR_FASTBACKWARD 64
-#define AVT_DIR_ALL          (1 | 2 | 4 | 8 | 16 | 32 | 64)
+#define AVT_DIR_LEFT           1
+#define AVT_DIR_DOWN           2
+#define AVT_DIR_UP             4
+#define AVT_DIR_RIGHT          8
+#define AVT_DIR_CANCEL        16
+#define AVT_DIR_FASTFORWARD   32
+#define AVT_DIR_FASTBACKWARD  64
+#define AVT_DIR_PLUS         128
+#define AVT_DIR_MINUS        256
+#define AVT_DIR_ALL          (1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256)
 
+/* usefull aliases */
 #define AVT_DIR_BACKWARD  AVT_DIR_LEFT
 #define AVT_DIR_FORWARD   AVT_DIR_RIGHT
 #define AVT_DIR_HOME      AVT_DIR_UP
 #define AVT_DIR_END       AVT_DIR_DOWN
 #define AVT_DIR_EXIT      AVT_DIR_CANCEL
 #define AVT_DIR_STOP      AVT_DIR_CANCEL
+#define AVT_DIR_ADD       AVT_DIR_PLUS
+#define AVT_DIR_REMOVE    AVT_DIR_MINUS
 
 /*
  * avt_choice - use for menus

@@ -4267,7 +4267,16 @@ avt_wait_button (void)
   return _avt_STATUS;
 }
 
-#define NAV_BUTTONS 7
+/* macros for avt_navigate */
+#define NAV_BUTTONS 9
+
+#define avt_nav_add(sym, bt) \
+  do { if (directions & sym) { \
+    button[button_count] = \
+      avt_load_image_xbm (bt##_bits, bt##_width, bt##_height, \
+                          BUTTON_COLOR); \
+    button_value[button_count] = sym; \
+    button_count++; }} while (0)
 
 extern int
 avt_navigate (int directions)
@@ -4291,70 +4300,17 @@ avt_navigate (int directions)
   /* load button images */
   base_button = avt_load_image_xpm (btn_xpm);
 
-  if (directions & AVT_DIR_CANCEL)
-    {
-      button[button_count] =
-	avt_load_image_xbm (btn_cancel_bits, btn_cancel_width,
-			    btn_cancel_height, BUTTON_COLOR);
-      button_value[button_count] = AVT_DIR_CANCEL;
-      button_count++;
-    }
-
-  if (directions & AVT_DIR_FASTFORWARD)
-    {
-      button[button_count] =
-	avt_load_image_xbm (btn_fastforward_bits,
-			    btn_fastforward_width,
-			    btn_fastforward_height, BUTTON_COLOR);
-      button_value[button_count] = AVT_DIR_FASTFORWARD;
-      button_count++;
-    }
-
-  if (directions & AVT_DIR_FORWARD)
-    {
-      button[button_count] =
-	avt_load_image_xbm (btn_right_bits, btn_right_width,
-			    btn_right_height, BUTTON_COLOR);
-      button_value[button_count] = AVT_DIR_FORWARD;
-      button_count++;
-    }
-
-  if (directions & AVT_DIR_UP)
-    {
-      button[button_count] =
-	avt_load_image_xbm (btn_up_bits, btn_up_width, btn_up_height,
-			    BUTTON_COLOR);
-      button_value[button_count] = AVT_DIR_UP;
-      button_count++;
-    }
-
-  if (directions & AVT_DIR_DOWN)
-    {
-      button[button_count] =
-	avt_load_image_xbm (btn_down_bits, btn_down_width,
-			    btn_down_height, BUTTON_COLOR);
-      button_value[button_count] = AVT_DIR_DOWN;
-      button_count++;
-    }
-
-  if (directions & AVT_DIR_BACKWARD)
-    {
-      button[button_count] =
-	avt_load_image_xbm (btn_left_bits, btn_left_width,
-			    btn_left_height, BUTTON_COLOR);
-      button_value[button_count] = AVT_DIR_BACKWARD;
-      button_count++;
-    }
-
-  if (directions & AVT_DIR_FASTBACKWARD)
-    {
-      button[button_count] =
-	avt_load_image_xbm (btn_fastbackward_bits,
-			    btn_fastbackward_width,
-			    btn_fastbackward_height, BUTTON_COLOR);
-      button_value[button_count] = AVT_DIR_FASTBACKWARD;
-      button_count++;
-    }
+  /* this also influences the order (right to left) */
+  avt_nav_add (AVT_DIR_CANCEL, btn_cancel);
+  avt_nav_add (AVT_DIR_PLUS, btn_yes);
+  avt_nav_add (AVT_DIR_MINUS, btn_no);
+  avt_nav_add (AVT_DIR_FASTFORWARD, btn_fastforward);
+  avt_nav_add (AVT_DIR_RIGHT, btn_right);
+  avt_nav_add (AVT_DIR_UP, btn_up);
+  avt_nav_add (AVT_DIR_DOWN, btn_down);
+  avt_nav_add (AVT_DIR_LEFT, btn_left);
+  avt_nav_add (AVT_DIR_FASTBACKWARD, btn_fastbackward);
+  /* if you want to add more, change NAV_BUTTONS first! */
 
   /* common values for rectangles */
   for (i = 0; i < NAV_BUTTONS; i++)
@@ -4415,6 +4371,10 @@ avt_navigate (int directions)
 	  else if (event.key.keysym.sym == SDLK_RIGHT
 		   || event.key.keysym.sym == SDLK_KP6)
 	    result = AVT_DIR_RIGHT;
+	  else if (event.key.keysym.unicode == L'+')
+	    result = AVT_DIR_PLUS;
+	  else if (event.key.keysym.unicode == L'-')
+	    result = AVT_DIR_MINUS;
 
 	  /* limit to requested directions */
 	  if (result >= 0 && (result & ~directions))
