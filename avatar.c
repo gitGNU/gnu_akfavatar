@@ -4268,10 +4268,16 @@ avt_wait_button (void)
 }
 
 /* macros for avt_navigate */
-#define NAV_BUTTONS 9
+
+/*
+ * maximum number of displayable navigation buttons
+ * (may be lower than number of available buttons,
+ *  but should not be larger)
+ */
+#define NAV_MAX 9
 
 #define avt_nav_add(sym, bt) \
-  do { if (directions & sym) { \
+  do { if ((directions & sym) && button_count < NAV_MAX) { \
     button[button_count] = \
       avt_load_image_xbm (bt##_bits, bt##_width, bt##_height, \
                           BUTTON_COLOR); \
@@ -4283,9 +4289,9 @@ avt_navigate (int directions)
 {
   SDL_Event event;
   SDL_Surface *base_button;
-  SDL_Surface *button[NAV_BUTTONS];
-  int button_value[NAV_BUTTONS];
-  SDL_Rect rect[NAV_BUTTONS];
+  SDL_Surface *button[NAV_MAX];
+  int button_value[NAV_MAX];
+  SDL_Rect rect[NAV_MAX];
   int i, button_count;
   int result;
 
@@ -4310,10 +4316,9 @@ avt_navigate (int directions)
   avt_nav_add (AVT_DIR_DOWN, btn_down);
   avt_nav_add (AVT_DIR_LEFT, btn_left);
   avt_nav_add (AVT_DIR_FASTBACKWARD, btn_fastbackward);
-  /* if you want to add more, change NAV_BUTTONS first! */
 
   /* common values for rectangles */
-  for (i = 0; i < NAV_BUTTONS; i++)
+  for (i = 0; i < NAV_MAX; i++)
     {
       rect[i].w = base_button->w;
       rect[i].h = base_button->h;
