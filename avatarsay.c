@@ -2807,8 +2807,8 @@ menu (void)
       switch (language)
 	{
 	case DEUTSCH:
-	  SAY_SHELL (L"1) Terminal-Modus\n");
-	  avt_say (L"2) ein Demo anzeigen\n");
+	  avt_say (L"1) ein Demo anzeigen\n");
+	  SAY_SHELL (L"2) Terminal-Modus\n");
 	  SAY_MANPAGE (L"3) eine Hilfeseite (Manpage) anzeigen\n");
 	  avt_say (L"4) Einstellungen\n");
 	  avt_say (L"5) ein Demo erstellen oder bearbeiten\n");
@@ -2819,8 +2819,8 @@ menu (void)
 
 	case ENGLISH:
 	default:
-	  SAY_SHELL (L"1) terminal-mode\n");
-	  avt_say (L"2) show a demo\n");
+	  avt_say (L"1) show a demo\n");
+	  SAY_SHELL (L"2) terminal-mode\n");
 	  SAY_MANPAGE (L"3) show a manpage\n");
 	  avt_say (L"4) settings\n");
 	  avt_say (L"5) create or edit a demo\n");
@@ -2837,14 +2837,14 @@ menu (void)
 
       switch (choice)
 	{
-	case 1:		/* terminal-mode */
+	case 1:		/* show a demo or textfile */
+	  ask_file ();
+	  break;
+
+	case 2:		/* terminal-mode */
 	  avt_show_avatar ();	/* no balloon, while starting up */
 	  run_shell ();
 	  avt_set_status (AVT_NORMAL);
-	  break;
-
-	case 2:		/* show a demo or textfile */
-	  ask_file ();
 	  break;
 
 	case 3:		/* show a manpage */
