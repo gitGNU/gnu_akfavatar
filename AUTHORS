@@ -5,11 +5,12 @@ License GPLv3 or later
 That is the license for the whole package.
 Parts of the package are under other, compatible licenses:
 
+These files are put in the Public Domain - Andreas K. Foerster:
 akfavatar.xpm, akfavatar.ico, btn.xpm, btn_no.xbm, btn_yes.xbm,
 btn_right.xbm, btn_left.xbm, btn_up.xbm, btn_down.xbm, btn_cancel.xbm,
-btn_ff.xbm, btn_fb.xbm, balloonpointer.xbm, circle.xbm, info.xpm,
+btn_ff.xbm, btn_fb.xbm, btn_pause.xbm, btn_stop.xbm, btn_help.xbm,
+balloonpointer.xbm, circle.xbm, info.xpm,
 bell.flac, bell.au, positive.au, neutral.au, negative.au:
-These files are put in the Public Domain - Andreas K. Foerster
 
 text2c: Author: Andreas K. Foerster
 This script is free software; you have unlimited permission

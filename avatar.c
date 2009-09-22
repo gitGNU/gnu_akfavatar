@@ -45,6 +45,9 @@
 #include "btn_cancel.xbm"
 #include "btn_ff.xbm"
 #include "btn_fb.xbm"
+#include "btn_stop.xbm"
+#include "btn_pause.xbm"
+#include "btn_help.xbm"
 
 #ifdef LINK_SDL_IMAGE
 #  include "SDL_image.h"
@@ -4274,7 +4277,7 @@ avt_wait_button (void)
  * (may be lower than number of available buttons,
  *  but should not be larger)
  */
-#define NAV_MAX 9
+#define NAV_MAX 12
 
 #define avt_nav_add(sym, bt) \
   do { if ((directions & sym) && button_count < NAV_MAX) { \
@@ -4307,9 +4310,12 @@ avt_navigate (int directions)
   base_button = avt_load_image_xpm (btn_xpm);
 
   /* this also influences the order (right to left) */
+  avt_nav_add (AVT_DIR_HELP, btn_help);
   avt_nav_add (AVT_DIR_CANCEL, btn_cancel);
   avt_nav_add (AVT_DIR_PLUS, btn_yes);
   avt_nav_add (AVT_DIR_MINUS, btn_no);
+  avt_nav_add (AVT_DIR_STOP, btn_stop);
+  avt_nav_add (AVT_DIR_PAUSE, btn_pause);
   avt_nav_add (AVT_DIR_FASTFORWARD, btn_fastforward);
   avt_nav_add (AVT_DIR_RIGHT, btn_right);
   avt_nav_add (AVT_DIR_UP, btn_up);
@@ -4380,6 +4386,15 @@ avt_navigate (int directions)
 	    result = AVT_DIR_PLUS;
 	  else if (event.key.keysym.unicode == L'-')
 	    result = AVT_DIR_MINUS;
+	  else if (event.key.keysym.sym == SDLK_HELP
+		   || event.key.keysym.sym == SDLK_F1)
+	    result = AVT_DIR_HELP;
+	  else if (event.key.keysym.sym == SDLK_PAUSE)
+	    {
+	      result = AVT_DIR_PAUSE;
+	      /* prevent further handling of the Pause-key */
+	      event.key.keysym.sym = SDLK_UNKNOWN;
+	    }
 
 	  /* limit to requested directions */
 	  if (result >= 0 && (result & ~directions))

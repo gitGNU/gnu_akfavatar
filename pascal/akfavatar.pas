@@ -327,6 +327,9 @@ const
   DirFastBackward = 64;
   DirPlus         = 128;
   DirMinus        = 256;
+  DirPause        = 512;
+  DirStop         = 1024;
+  DirHelp         = 2048;
 
 { usefull aliases }
 const
@@ -335,12 +338,11 @@ const
   DirHome         = DirUp;
   DirEnd          = DirDown;
   DirExit         = DirCancel;
-  DirStop         = DirCancel;
   DirAdd          = DirPlus;
   DirRemove       = DirMinus;
   DirAll          = DirLeft or DirDown or DirUp or DirRight or DirCancel
                     or DirFastForward or DirFastBackward 
-                    or DirPlus or DirMinus;
+                    or DirPlus or DirMinus or DirPause or DirStop or DirHelp;
 
 { choice for several items }
 { result is the choice number, starting from 1 }

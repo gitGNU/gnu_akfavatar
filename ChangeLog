@@ -1,3 +1,8 @@
+2009-09-22  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_navigate):
+	add further buttons: stop, pause, help
+
 2009-09-21  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_navigate):

@@ -205,8 +205,10 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/version.h \
              $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
              $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
              $(srcdir)/btn_ff.xbm $(srcdir)/btn_fb.xbm \
+             $(srcdir)/btn_pause.xbm $(srcdir)/btn_stop.xbm \
+             $(srcdir)/btn_help.xbm $(srcdir)/btn_cancel.xbm \
              $(srcdir)/balloonpointer.xbm $(srcdir)/circle.xbm \
-             $(srcdir)/btn_cancel.xbm $(srcdir)/akfavatar.xpm
+             $(srcdir)/akfavatar.xpm
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c $(srcdir)/avatar.c
 
 avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h alert.c

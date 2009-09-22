@@ -734,7 +734,11 @@ AVT_API int avt_navigate (int directions);
 #define AVT_DIR_FASTBACKWARD  64
 #define AVT_DIR_PLUS         128
 #define AVT_DIR_MINUS        256
-#define AVT_DIR_ALL          (1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256)
+#define AVT_DIR_PAUSE        512
+#define AVT_DIR_STOP        1024
+#define AVT_DIR_HELP        2048
+#define AVT_DIR_ALL          (1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 \
+                              | 512 | 1024 | 2048)
 
 /* usefull aliases */
 #define AVT_DIR_BACKWARD  AVT_DIR_LEFT
@@ -742,7 +746,6 @@ AVT_API int avt_navigate (int directions);
 #define AVT_DIR_HOME      AVT_DIR_UP
 #define AVT_DIR_END       AVT_DIR_DOWN
 #define AVT_DIR_EXIT      AVT_DIR_CANCEL
-#define AVT_DIR_STOP      AVT_DIR_CANCEL
 #define AVT_DIR_ADD       AVT_DIR_PLUS
 #define AVT_DIR_REMOVE    AVT_DIR_MINUS
 

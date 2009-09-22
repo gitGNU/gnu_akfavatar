@@ -69,7 +69,9 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h avtcolors.h \
           $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
           $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
           $(srcdir)/btn_ff.xbm $(srcdir)/btn_fb.xbm \
-          $(srcdir)/btn_cancel.xbm $(srcdir)/akfavatar.xpm
+          $(srcdir)/btn_pause.xbm $(srcdir)/btn_stop.xbm \
+          $(srcdir)/btn_help.xbm $(srcdir)/btn_cancel.xbm \
+          $(srcdir)/akfavatar.xpm
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c $(srcdir)/avatar.c
 
 avatar-default.o: $(srcdir)/avatar-default.c $(default_avatar) $(srcdir)/akfavatar.h
@@ -97,7 +99,9 @@ avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h avtcolors.h \
            $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
            $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
            $(srcdir)/btn_ff.xbm $(srcdir)/btn_fb.xbm \
-           $(srcdir)/btn_cancel.xbm $(srcdir)/akfavatar.xpm
+           $(srcdir)/btn_pause.xbm $(srcdir)/btn_stop.xbm \
+           $(srcdir)/btn_help.xbm $(srcdir)/btn_cancel.xbm \
+           $(srcdir)/akfavatar.xpm
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -fPIC -o $@ $(srcdir)/avatar.c
 
 avatar-default.lo: $(srcdir)/avatar-default.c $(default_avatar) $(srcdir)/akfavatar.h
@@ -395,6 +399,7 @@ dist: info html man distclean
 	   male_user.xpm female_user.xpm \
 	   btn.xpm btn_up.xbm btn_down.xbm btn_left.xbm btn_right.xbm \
 	   btn_no.xbm btn_yes.xbm btn_cancel.xbm btn_ff.xbm btn_fb.xbm \
+	   btn_pause.xbm btn_stop.xbm btn_help.xbm \
 	   avatarsay.c avtposix.c avtterm.c avttermsys.h avttermsys.c \
 	   avtmsg.c arch.c avtcolors.h \
 	   avtman avtcmd example.c fsdemo-??.avt \
