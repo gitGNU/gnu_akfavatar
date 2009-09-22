@@ -5876,11 +5876,13 @@ avt_initialize (const char *title, const char *icontitle,
     }
 
   circle =
-    avt_load_image_xbm (circle_bits, circle_width, circle_height, 255, 255,
-			255);
+    avt_load_image_xbm (circle_bits, circle_width, circle_height,
+			ballooncolor_RGB.r, ballooncolor_RGB.g,
+			ballooncolor_RGB.b);
   pointer =
     avt_load_image_xbm (balloonpointer_bits, balloonpointer_width,
-			balloonpointer_height, 255, 255, 255);
+			balloonpointer_height, ballooncolor_RGB.r,
+			ballooncolor_RGB.g, ballooncolor_RGB.b);
 
   /* import the avatar image */
   if (image)
