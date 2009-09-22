@@ -4336,13 +4336,21 @@ avt_navigate (int directions)
   /* alignment: from right to left */
   for (i = 0; i < button_count; i++)
     {
+      SDL_Rect pr_rect;
+
       if (i == 0)
 	rect[0].x = window.x + window.w - base_button->w - AVATAR_MARGIN;
       else
 	rect[i].x = rect[i - 1].x - BUTTON_DISTANCE - base_button->w;
 
       SDL_BlitSurface (base_button, NULL, screen, &rect[i]);
-      SDL_BlitSurface (button[i], NULL, screen, &rect[i]);
+
+      /* print */
+      pr_rect.w = button[i]->w;
+      pr_rect.h = button[i]->h;
+      pr_rect.x = rect[i].x + (base_button->w / 2 - pr_rect.w / 2);
+      pr_rect.y = rect[i].y + (base_button->h / 2 - pr_rect.h / 2);
+      SDL_BlitSurface (button[i], NULL, screen, &pr_rect);
       AVT_UPDATE_RECT (rect[i]);
 
       SDL_FreeSurface (button[i]);

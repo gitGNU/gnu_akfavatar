@@ -3,6 +3,10 @@
 	* avatar.c (avt_navigate):
 	add further buttons: stop, pause, help
 
+	* avatar.c (avt_navigate):
+	center button-prints on button,
+	so bitmaps can be made even smaller
+
 2009-09-21  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_navigate):
