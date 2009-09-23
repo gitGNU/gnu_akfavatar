@@ -1,10 +1,15 @@
+2009-09-23  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_wait_button, avt_decide):
+	center button-inlays on button
+
 2009-09-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_navigate):
 	add further buttons: stop, pause, help
 
 	* avatar.c (avt_navigate):
-	center button-prints on button,
+	center button-inlays on button,
 	so bitmaps can be made even smaller
 
 2009-09-21  Andreas K. Foerster  <info@akfoerster.de>
@@ -262,7 +267,7 @@
 
 2009-08-02  Andreas K. Foerster  <info@akfoerster.de>
 
-	* avatarsay.c (avatar_command): 
+	* avatarsay.c (avatar_command):
 	reenable the "slow"-command for demos
 
 	* avtterm.c (get_character):
@@ -737,7 +742,7 @@
 
 	* avatar.c (avt_initialize, avt_quit):
 	use a specific mouse-pointer
-	
+
 	* avatar.c:
 	fix: typo: SDL_BIG_ENDIAN
 
@@ -805,11 +810,11 @@
 2008-12-02  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtmsg.c: split off the code for mingw
-	
+
 	* avtmsg.c (info_msg):
 	new function
 	avatarsay.c (showversion): adapted
-	
+
 	* mingw/avtwindows.c:
 	new file - separating out windows specific stuff
 	avatarsay.c, avtfilechooser.c: adapted
@@ -874,13 +879,13 @@
 
 	* arch.c: always check value for read
 	fix warnings
-	
+
 	* arch.c (arch_get_data):
 	improved handling of read
 
 2008-10-26  Andreas K. Foerster  <info@akfoerster.de>
 
-	* configure (AVTVERSIONNR): new macro 
+	* configure (AVTVERSIONNR): new macro
 	avtterm.c (avtterm_start):
 	use number-only-value for env-var AKFAVTTERM
 
@@ -888,7 +893,7 @@
 
 	* avatar.c (avt_draw_balloon):
 	when there is no avatar, put balloon at the top
-	
+
 	* avatarsay.c (avatar_command):
 	new command: empty
 
@@ -962,7 +967,7 @@
 	execute_process -> avtterm_start
 	process_subprogram -> avtterm_run
 	avtarsay.c: adapted
-	
+
 	* avtterm.h, avtterm.c (avtterm_update_size):
 	new function
 	avtarsay.c: adapted
@@ -1008,7 +1013,7 @@
 
 	* arch.c (arch_get_data):
 	add 4 bytes zero at the end of the buffer
-	
+
 2008-09-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (move_out, main):
@@ -1031,13 +1036,13 @@
 
 2008-09-22  Andreas K. Foerster  <info@akfoerster.de>
 
-	* arch.h, arch.c: 
+	* arch.h, arch.c:
 	new files - separated out of avatarsay.c
 	avatarsay.c: adapted
 
 2008-09-19  Andreas K. Foerster  <info@akfoerster.de>
 
-	* avatarsay.c (get_data_from_archive): new function 
+	* avatarsay.c (get_data_from_archive): new function
 	(get_image_from_archive, get_sound_from_archive): removed
 	(handle_image_command, handle_avatarimage_command)
 	(handle_audio_command): adapted
@@ -1235,7 +1240,7 @@
 	(more portable than relying on VPATH and $<)
 
 	* configure:
-	options get quoted in the generated file config.status 
+	options get quoted in the generated file config.status
 	(fixes bug #23781)
 
 2008-08-12  Andreas K. Foerster  <info@akfoerster.de>
@@ -1306,7 +1311,7 @@
 	* avatar.c (avt_get_menu):
 	use a menu-bar
 
-	* avatar.c (cursor_color): 
+	* avatar.c (cursor_color):
 	new global variable - used for the cursor and for the menu-bar
 
 2008-07-22  Andreas K. Foerster  <info@akfoerster.de>
@@ -1352,15 +1357,15 @@
 
 	* avatar.c:
 	default background color: pale brown (like the website)
-	
+
 	* avatarsay.c (run_info):
 	first search for the info files in ./doc/
-	
+
 	* avtfilechooser.c:
 	don't use PATH_MAX
 
 2008-06-04  Andreas K. Foerster  <info@akfoerster.de>
-	
+
 	* avatarsay.c:
 	quit-request: return to the main-menu first
 
@@ -1437,11 +1442,11 @@
 
 2008-04-14  Andreas K. Foerster  <info@akfoerster.de>
 
-	* avatar.c (avt_backspace): 
+	* avatar.c (avt_backspace):
 	fix: just go back, don't clear the character
 	(avt_ask): adapted
 
-	* avatarsay.c (init_language_info): handle long language names 
+	* avatarsay.c (init_language_info): handle long language names
 	case-insensitive
 
 	* avtfilechooser.c (MARK, PARENT_DIRECTORY, RESTART, CONTINUE)
@@ -1523,7 +1528,7 @@
 
 	* avatar-audio.c (short_audio_sound):
 	avoid sound to interrupt itself or other sounds
-	
+
         * avatar.c (text_background_color):
 	new variable
 
@@ -1598,11 +1603,11 @@
 	new function
 
 	* avatar.c (avt_wait_button, avt_wait_key):
-	show mouse pointer while waiting for a key (or mouse button)	
+	show mouse pointer while waiting for a key (or mouse button)
 
         * avatar.c (avt_quit)
           avatar-audio.c (avt_initialize_audio, avt_quit_audio):
-        avt_quit automatically calls avt_quit_audio if appropriete          
+        avt_quit automatically calls avt_quit_audio if appropriete
 
 	* avatar.c (avt_analyze_event):
 	Ctrl + Q also sets AVATARQUIT event
@@ -1633,7 +1638,7 @@
 2007-12-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.14.5 released
-	
+
 	* image human-peasant.bmp removed
 
 	* C++ comaptibility improvements
@@ -1643,7 +1648,7 @@
 	use new type avt_keyhandler
 
 	* avatarsay.c:
-	major rewrite -> low level file handling, 
+	major rewrite -> low level file handling,
 	supports UTF-16/UTF-32 files now, better FIFO handling
 	experimental support for calling external programs
 	uses nl_langinfo to get the current encoding
@@ -1657,14 +1662,14 @@
 
 	* akfavatar.pas:
 	use avt_say_mb_len
-	fix fo FPC: for output only the flush function gets defined 
-	
+	fix fo FPC: for output only the flush function gets defined
+
         * akfavatar.h (avt_mb_decode, avt_free):
 	new functions
 
 	* avatar.c (avt_put_char):
 	new function
-	
+
 	* akfavatar.h, avatar.c (avt_say_len, avt_say_mb_len):
 	new functions
 
@@ -1692,7 +1697,7 @@
 
 	* configure, Makefile.in:
 	compatiblity to FreeBSD (pmake)
-	
+
 	* avatar.c (avt_mb_encoding):
 	try to autodetect internal encoding
 
@@ -1700,7 +1705,7 @@
 	fixed typo
 
 	* avatar.c (avt_drawchar, avt_ask):
-	don't use wint_t for compatiblity reasons 
+	don't use wint_t for compatiblity reasons
 	(reintroduced in later versions)
 
 ------------------------------------------------------------------------
@@ -1718,7 +1723,7 @@
 	* font.c, avatar.c:
 	support for 9x18 font with 800x600 resolution
 	640x480 only used, when compiled for symbol "VGA"
-	
+
 	* avatar.c (avt_drawchar):
 	added general support for fixed fontwidth > 8 <= 16
 
@@ -1757,7 +1762,7 @@
 
 	* gnome-akfavatar:
 	open Website from menu
-	
+
 	* avatarsay.c (help, handle_image_command)
 	(handle_avatarimage_command, handle_audio_command):
 	datadir needs no trailing slash anymore
@@ -1774,11 +1779,11 @@
 	* akfavatar.h, avatar.c (avt_set_text_delay, avt_set_flip_page_delay):
 	new functions
 	(avt_set_delays): marked deprecated
-	
+
 	* akfavatar.pas (SetTextDelay, SetFlipPageDelay)
 	new functions
 
-	* akfavatar.pas 
+	* akfavatar.pas
 	(MoveAvatarIn): fix: after initializing the system, the avatar
 	  isn't moved in a second time
 	(MoveAvatarOut): if not initialized, do nothing
@@ -1791,14 +1796,14 @@
 
 	* akfavatar.h, avatar.c (avt_delete_lines, avt_insert_lines):
 	new functions
-	
+
 	* akfavatar.pas (ClearKeys):
 	new procedure
 
 	* avatar.c (avt_say, avt_new_line):
 	fix: new line after the last line make the text scroll or page flip
 	(fixes bug introduced in 0.13.1)
-	
+
 	* avatar.c (avt_say, avt_ask):
 	fix: off-by-one error fixes
 
@@ -1816,16 +1821,16 @@
 
 	* akfavatar.pas (initializeAvatar):
 	always try to initialize the audio system
-	
+
 	* avatar.c (avt_say, avt_ask):
 	support avt_bell
 
 	* avatar-audio.c (avt_initialize_audio, avt_quit_audio):
 	register audio sound with bell function
 	(short_audio_sound): new function
-	
+
 	* separate compilation of the font
-	
+
 	* avatar.c (avt_drawchar):
 	fix: font-rendering for QVGA fixed
 
@@ -1836,7 +1841,7 @@
 	* version 0.14.0 released
 
 	* reorganized creation of binary-packages
-	
+
 	* link directly to SDL on Windows and Mac
 
 2007-09-07  Andreas K. Foerster  <info@akfoerster.de>
@@ -1867,7 +1872,7 @@
 
 	* avatar.c (avt_analyze_event):
 	support for external keyhandler
-	
+
 	* akfavatar.pas:
 	support for writing to TextAttr
 	support for KeyPressed, ReadKey
@@ -1894,7 +1899,7 @@
 	* akfavatar.h, avatar.c (avt_clear_eol):
 	new function
 
-	* akfavatar.h, avatar.c 
+	* akfavatar.h, avatar.c
 	(avt_set_text_color, avt_set_text_background_color):
 	new functions
 
@@ -1921,10 +1926,10 @@
 	* avatar.c (avt_new_line, avt_say, avt_ask):
 	a new line doesn't enforce a new page yet, only actually trying
 	to print something outside the area does
-	
+
 	* gpcavatar, fpcavatar:
 	define the symbol AKFAvatar
-	
+
 	* avatar.pas (initializeAvatar):
 	use "AKFAvatar" as title and icon name
 
@@ -1934,7 +1939,7 @@
 
 	* version 0.12 released
 	migration to Savannah
-	
+
 	* renamed documentation to akfavatar-en.texinfo
 
         * akfavatar.xpm, regicon.c:
@@ -1994,7 +1999,7 @@
 
 	* avatar.c (avt_drawchar):
 	try to fix font drawing again
-	
+
 	* configure, avatar.c:
 	support for "./configure --with-oldsdl"
 
@@ -2046,7 +2051,7 @@
 
 	* avatar.c, avatar.h (avt_version, avt_copyright, avt_license):
 	new functions
-	
+
 	* gnome-akfavatar:
 	new script
 
@@ -2060,7 +2065,7 @@
 	don't try to center the window
 	switch handling of not needed events off
 	support for alpha channel in avatar image
-	
+
 	* avatar.c (avt_drawbaloon):
 	cut balloonpointer if it's too large
 
@@ -2093,7 +2098,7 @@
 2007-07-17  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.6 released
-	
+
 	* avatar.c (avt_set_colors):
 	new function (fixes wrong colors after resizing)
 
@@ -2114,7 +2119,7 @@
 
 	* avatar.c (avt_show_image_data):
 	new function
-	
+
 	* avatar.c, avatar.h (avt_show_image):
 	made static, removed from header
 
@@ -2130,7 +2135,7 @@
 	* avatarsay.c: eliminated some possible buffer-overflows
 
 	* avatarsay.c (iscommand, handle_image_command):
-	(handle_audio_command, handle_back_command, handle_read_command): 
+	(handle_audio_command, handle_back_command, handle_read_command):
 	check for all commands whether the avatar is initialized or not
 
 	* avatarsay.c (iscommand): support for ".encoding"
@@ -2145,24 +2150,24 @@
 	support for -F, --fullfullscreen
 
 	* avatarsay.c (avt_analyze_event):
-	don't toggle fullscreenmode when FULLSCREENNOSWITCH is requested	
+	don't toggle fullscreenmode when FULLSCREENNOSWITCH is requested
 
         * avatarsay.c (avt_initialize, avt_analyze_event, avt_ask)
-	(avt_move_in, avt_move_out, avt_wait_key): 
+	(avt_move_in, avt_move_out, avt_wait_key):
 	support for resizing the window
 	(avt_resize): new function
 
-	* avatarsay.c (avt_initialize): 
+	* avatarsay.c (avt_initialize):
 	renamed variable "mymode" to "screenflags"
 	avt_mode as global variable
 
 	* avatarsay.c (iscommand): support for "stripline"
 	changed: \f as first caracter - rest of line is ignored
 
-	* avatar.c (avt_initialize): don't even try to initialize the 
+	* avatar.c (avt_initialize): don't even try to initialize the
 	mouse with the fbcon driver
 
-	* Makefile.in (install) (install-strip): 
+	* Makefile.in (install) (install-strip):
 	create directories if necessary
 
 	* avtman: uses "./avatarsay-s" when it exists

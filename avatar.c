@@ -75,7 +75,7 @@
 
 #define SHADOWOFFSET 7
 
-/* 
+/*
  * newer vesions of SDL have some fallback implementations
  * for libc functionality - I try to use it, if available
  * This is the fallback for older SDL versions.
@@ -180,7 +180,7 @@
 #  define AVT_ICONV_INBUF_T char
 #endif
 
-/* try to guess WCHAR_ENCODING, 
+/* try to guess WCHAR_ENCODING,
  * based on WCHAR_MAX or __WCHAR_MAX__ if it is available
  * note: newer SDL versions include stdint.h if available
  */
@@ -208,7 +208,7 @@
 #  endif /* not WCHAR_MAX */
 #endif /* not WCHAR_ENCODING */
 
-/* 
+/*
  * this will be used, when somebody forgets to set the
  * encoding
  */
@@ -388,9 +388,9 @@ avt_get_color_name (int nr)
 #  endif /* not Windows */
 #endif /* not AVT_SDL_IMAGE_LIB */
 
-/* 
+/*
  * object for image-loading
- * SDL_image can be dynamically loaded (SDL-1.2.6 or better) 
+ * SDL_image can be dynamically loaded (SDL-1.2.6 or better)
  */
 static struct
 {
@@ -964,7 +964,7 @@ avt_load_image_file (const char *filename)
 }
 
 /*
- * try to load the library SDL_image dynamically 
+ * try to load the library SDL_image dynamically
  * (XPM and uncompressed BMP files can always be loaded)
  */
 static void
@@ -1183,7 +1183,7 @@ avt_activate_cursor (avt_bool_t on)
 }
 
 /* fills the screen with the background color,
- * but doesn't update the screen yet 
+ * but doesn't update the screen yet
  */
 static void
 avt_free_screen (void)
@@ -1209,7 +1209,7 @@ avt_clear_screen (void)
   avt_visible = AVT_FALSE;
 }
 
-/* draw the avatar image, 
+/* draw the avatar image,
  * but doesn't update the screen yet
  */
 static void
@@ -1456,8 +1456,8 @@ avt_draw_balloon (void)
   /* (there may be leftovers from large images) */
   AVT_UPDATE_ALL ();
 
-  /* 
-   * only allow drawings inside this area from now on 
+  /*
+   * only allow drawings inside this area from now on
    * (only for blitting)
    */
   SDL_SetClipRect (screen, &viewport);
@@ -1470,8 +1470,8 @@ avt_text_direction (int direction)
 
   textdir_rtl = direction;
 
-  /* 
-   * if there is already a ballon, 
+  /*
+   * if there is already a ballon,
    * recalculate the linestart and put the cursor in the first position
    */
   if (screen && textfield.x >= 0)
@@ -2527,7 +2527,7 @@ avt_flip_page (void)
   if (cursor.x == linestart && cursor.y == viewport.y)
     return _avt_STATUS;
 
-  /* the viewport must be updated, 
+  /* the viewport must be updated,
      if it's not updated letter by letter */
   if (!text_delay)
     AVT_UPDATE_RECT (viewport);
@@ -2759,8 +2759,8 @@ avt_forward (void)
   return _avt_STATUS;
 }
 
-/* 
- * if cursor is horizontally outside of the viewport 
+/*
+ * if cursor is horizontally outside of the viewport
  *  and the balloon is visible
  * and auto_margin is activated
  * then start a new line
@@ -2900,8 +2900,8 @@ avt_backspace (void)
     }
 }
 
-/* 
- * writes a character to the textfield - 
+/*
+ * writes a character to the textfield -
  * interprets control characters
  */
 extern int
@@ -2946,7 +2946,7 @@ avt_put_character (const wchar_t ch)
 	(*avt_alert_func) ();
       break;
 
-      /* ignore BOM here 
+      /* ignore BOM here
        * must be handled outside of the library
        */
     case L'\xFEFF':
@@ -2972,9 +2972,9 @@ avt_put_character (const wchar_t ch)
 	  avt_showchar ();
 	}
       avt_forward ();
-      /* 
-       * no delay for the space char 
-       * it'd be annoying if you have a sequence of spaces 
+      /*
+       * no delay for the space char
+       * it'd be annoying if you have a sequence of spaces
        */
       break;
 
@@ -3032,7 +3032,7 @@ avt_overstrike (const wchar_t * txt)
 }
 
 /*
- * writes L'\0' terminated string to textfield - 
+ * writes L'\0' terminated string to textfield -
  * interprets control characters
  */
 extern int
@@ -3069,7 +3069,7 @@ avt_say (const wchar_t * txt)
 }
 
 /*
- * writes string with given length to textfield - 
+ * writes string with given length to textfield -
  * interprets control characters
  */
 extern int
@@ -3920,7 +3920,7 @@ avt_ask (wchar_t * s, const int size)
     avt_draw_balloon ();
 
   /* if the cursor is beyond the end of the viewport,
-   * get a new page 
+   * get a new page
    */
   if (cursor.y > viewport.y + viewport.h - LINEHEIGHT)
     avt_flip_page ();
@@ -4050,7 +4050,7 @@ avt_move_in (void)
       SDL_Rect mywindow;
 
       /*
-       * mywindow is like window, 
+       * mywindow is like window,
        * but to the edge of the screen on the right
        */
       mywindow = window;
@@ -4128,7 +4128,7 @@ avt_move_out (void)
       SDL_Rect mywindow;
 
       /*
-       * mywindow is like window, 
+       * mywindow is like window,
        * but to the edge of the screen on the right
        */
       mywindow = window;
@@ -4195,7 +4195,8 @@ avt_wait_button (void)
 {
   SDL_Event event;
   SDL_Surface *button;
-  SDL_Rect dst;
+  SDL_Rect btn_rect, inlay_rect;
+  int radius;
   avt_bool_t nokey;
 
   if (!screen)
@@ -4205,24 +4206,30 @@ avt_wait_button (void)
   button = avt_load_image_xpm (btn_xpm);
 
   /* alignment: right bottom */
-  dst.x = window.x + window.w - button->w - AVATAR_MARGIN;
-  dst.y = window.y + window.h - button->h - AVATAR_MARGIN;
-  dst.w = button->w;
-  dst.h = button->h;
+  btn_rect.x = window.x + window.w - button->w - AVATAR_MARGIN;
+  btn_rect.y = window.y + window.h - button->h - AVATAR_MARGIN;
+  btn_rect.w = button->w;
+  btn_rect.h = button->h;
+  radius = btn_rect.w / 2;
 
   SDL_SetClipRect (screen, &window);
-  SDL_BlitSurface (button, NULL, screen, &dst);
+  SDL_BlitSurface (button, NULL, screen, &btn_rect);
   SDL_FreeSurface (button);
+
   button =
     avt_load_image_xbm (btn_right_bits, btn_right_width, btn_right_height,
 			BUTTON_COLOR);
-  SDL_BlitSurface (button, NULL, screen, &dst);
+  inlay_rect.w = button->w;
+  inlay_rect.h = button->h;
+  inlay_rect.x = btn_rect.x + radius - (inlay_rect.w / 2);
+  inlay_rect.y = btn_rect.y + radius - (inlay_rect.h / 2);
+  SDL_BlitSurface (button, NULL, screen, &inlay_rect);
   SDL_FreeSurface (button);
   button = NULL;
-  AVT_UPDATE_RECT (dst);
+  AVT_UPDATE_RECT (btn_rect);
 
   /* prepare for possible resize */
-  avt_pre_resize (dst);
+  avt_pre_resize (btn_rect);
 
   /* show mouse pointer */
   SDL_ShowCursor (SDL_ENABLE);
@@ -4260,9 +4267,9 @@ avt_wait_button (void)
 
   /* delete button */
   SDL_SetClipRect (screen, &window);
-  avt_post_resize (dst);
-  SDL_FillRect (screen, &dst, background_color);
-  AVT_UPDATE_RECT (dst);
+  avt_post_resize (btn_rect);
+  SDL_FillRect (screen, &btn_rect, background_color);
+  AVT_UPDATE_RECT (btn_rect);
 
   if (textfield.x >= 0)
     SDL_SetClipRect (screen, &viewport);
@@ -4294,8 +4301,8 @@ avt_navigate (int directions)
   SDL_Surface *base_button;
   SDL_Surface *button[NAV_MAX];
   int button_value[NAV_MAX];
-  SDL_Rect rect[NAV_MAX];
-  int i, button_count;
+  SDL_Rect rect[NAV_MAX], inlay_rect;
+  int i, button_count, radius;
   int result;
 
   result = -1;			/* no result */
@@ -4332,12 +4339,12 @@ avt_navigate (int directions)
       rect[i].y = window.y + window.h - base_button->h - AVATAR_MARGIN;
     }
 
+  radius = base_button->w / 2;
+
   /* draw the buttons and free the memory thereafter */
   /* alignment: from right to left */
   for (i = 0; i < button_count; i++)
     {
-      SDL_Rect pr_rect;
-
       if (i == 0)
 	rect[0].x = window.x + window.w - base_button->w - AVATAR_MARGIN;
       else
@@ -4345,12 +4352,12 @@ avt_navigate (int directions)
 
       SDL_BlitSurface (base_button, NULL, screen, &rect[i]);
 
-      /* print */
-      pr_rect.w = button[i]->w;
-      pr_rect.h = button[i]->h;
-      pr_rect.x = rect[i].x + (base_button->w / 2 - pr_rect.w / 2);
-      pr_rect.y = rect[i].y + (base_button->h / 2 - pr_rect.h / 2);
-      SDL_BlitSurface (button[i], NULL, screen, &pr_rect);
+      /* inlay */
+      inlay_rect.w = button[i]->w;
+      inlay_rect.h = button[i]->h;
+      inlay_rect.x = rect[i].x + radius - inlay_rect.w / 2;
+      inlay_rect.y = rect[i].y + radius - inlay_rect.h / 2;
+      SDL_BlitSurface (button[i], NULL, screen, &inlay_rect);
       AVT_UPDATE_RECT (rect[i]);
 
       SDL_FreeSurface (button[i]);
@@ -4582,8 +4589,9 @@ extern avt_bool_t
 avt_decide (void)
 {
   SDL_Event event;
-  SDL_Surface *button, *yes_button, *no_button;
-  SDL_Rect yes_rect, no_rect;
+  SDL_Surface *base_button, *yes_button, *no_button;
+  SDL_Rect yes_rect, no_rect, inlay_rect;
+  int radius;
   int result;
 
   if (!screen)
@@ -4592,34 +4600,44 @@ avt_decide (void)
   SDL_SetClipRect (screen, &window);
 
   /* show buttons */
-  button = avt_load_image_xpm (btn_xpm);
+  base_button = avt_load_image_xpm (btn_xpm);
   yes_button = avt_load_image_xbm (btn_yes_bits, btn_yes_width,
 				   btn_yes_height, 0, 0xAA, 0);
   no_button = avt_load_image_xbm (btn_no_bits, btn_no_width,
 				  btn_no_height, 0xAA, 0, 0);
 
-  /* alignment: right bottom */
-  yes_rect.x = window.x + window.w - yes_button->w - AVATAR_MARGIN;
-  yes_rect.y = window.y + window.h - yes_button->h - AVATAR_MARGIN;
-  yes_rect.w = yes_button->w;
-  yes_rect.h = yes_button->h;
-  SDL_BlitSurface (button, NULL, screen, &yes_rect);
-  SDL_BlitSurface (yes_button, NULL, screen, &yes_rect);
+  radius = base_button->w / 2;
 
-  no_rect.x = yes_rect.x - BUTTON_DISTANCE - no_button->w;
+  /* alignment: right bottom */
+  yes_rect.x = window.x + window.w - base_button->w - AVATAR_MARGIN;
+  yes_rect.y = window.y + window.h - base_button->h - AVATAR_MARGIN;
+  yes_rect.w = base_button->w;
+  yes_rect.h = base_button->h;
+  SDL_BlitSurface (base_button, NULL, screen, &yes_rect);
+  inlay_rect.w = yes_button->w;
+  inlay_rect.h = yes_button->h;
+  inlay_rect.x = yes_rect.x + radius - (inlay_rect.w / 2);
+  inlay_rect.y = yes_rect.y + radius - (inlay_rect.h / 2);
+  SDL_BlitSurface (yes_button, NULL, screen, &inlay_rect);
+
+  no_rect.x = yes_rect.x - BUTTON_DISTANCE - base_button->w;
   no_rect.y = yes_rect.y;
-  no_rect.w = no_button->w;
-  no_rect.h = no_button->h;
-  SDL_BlitSurface (button, NULL, screen, &no_rect);
-  SDL_BlitSurface (no_button, NULL, screen, &no_rect);
+  no_rect.w = base_button->w;
+  no_rect.h = base_button->h;
+  SDL_BlitSurface (base_button, NULL, screen, &no_rect);
+  inlay_rect.w = no_button->w;
+  inlay_rect.h = no_button->h;
+  inlay_rect.x = no_rect.x + radius - (inlay_rect.w / 2);
+  inlay_rect.y = no_rect.y + radius - (inlay_rect.h / 2);
+  SDL_BlitSurface (no_button, NULL, screen, &inlay_rect);
 
   AVT_UPDATE_RECT (no_rect);
   AVT_UPDATE_RECT (yes_rect);
 
-  SDL_FreeSurface (button);
+  SDL_FreeSurface (base_button);
   SDL_FreeSurface (yes_button);
   SDL_FreeSurface (no_button);
-  button = no_button = yes_button = NULL;
+  base_button = no_button = yes_button = NULL;
 
   /* prepare for possible resize */
   avt_pre_resize (yes_rect);
@@ -4729,7 +4747,7 @@ avt_show_image (avt_image_t * image)
   SDL_SetClipRect (screen, &window);
 }
 
-/* 
+/*
  * load image
  * if SDL_image isn't available then
  * XPM and uncompressed BMP are still supported
@@ -4930,7 +4948,7 @@ avt_init_SDL (void)
   /* only if not already initialized */
   if (SDL_WasInit (SDL_INIT_VIDEO | SDL_INIT_TIMER) == 0)
     {
-      /* don't try to use the mouse 
+      /* don't try to use the mouse
        * might be needed for the fbcon driver
        * the mouse still works, it is just not required
        */
@@ -5036,7 +5054,7 @@ avt_import_gimp_image (void *gimp_image)
   return (avt_image_t *) image;
 }
 
-/* 
+/*
  * import avatar from image data
  */
 extern avt_image_t *
@@ -5064,7 +5082,7 @@ avt_import_image_data (void *img, int imgsize)
   return (avt_image_t *) image;
 }
 
-/* 
+/*
  * import avatar from file
  */
 extern avt_image_t *
