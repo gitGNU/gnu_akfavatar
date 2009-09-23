@@ -3,6 +3,10 @@
 	* avatar.c (avt_wait_button, avt_decide):
 	center button-inlays on button
 
+	* akfavatar.h: AVT_NAV_* instead of AVT_DIR_*
+	avatar.c (avt_navigate): adapted
+	pascal/akfavatar.pas: adapted
+
 2009-09-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_navigate):

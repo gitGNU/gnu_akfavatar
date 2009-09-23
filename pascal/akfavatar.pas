@@ -312,37 +312,37 @@ function Decide: boolean;
 
 { Navigate }
 { example:
-    result := Navigate(DirBackward or DirForward or DirHome); }
-{ returns one of the Dir* constants or -1 on error }
-function Navigate(directions: integer): integer;
+    result := Navigate(DirBackward or NavForward or NavHome); }
+{ returns one of the Nav* constants or -1 on error }
+function Navigate(buttons: integer): integer;
 
 { constants for Navigate }
 const
-  DirLeft         =  1;
-  DirDown         =  2;
-  DirUp           =  4;
-  DirRight        =  8;
-  DirCancel       = 16;
-  DirFastForward  = 32;
-  DirFastBackward = 64;
-  DirPlus         = 128;
-  DirMinus        = 256;
-  DirPause        = 512;
-  DirStop         = 1024;
-  DirHelp         = 2048;
+  NavLeft         =  1;
+  NavDown         =  2;
+  NavUp           =  4;
+  NavRight        =  8;
+  NavCancel       = 16;
+  NavFastForward  = 32;
+  NavFastBackward = 64;
+  NavPlus         = 128;
+  NavMinus        = 256;
+  NavPause        = 512;
+  NavStop         = 1024;
+  NavHelp         = 2048;
 
 { usefull aliases }
 const
-  DirBackward     = DirLeft;
-  DirForward      = DirRight;
-  DirHome         = DirUp;
-  DirEnd          = DirDown;
-  DirExit         = DirCancel;
-  DirAdd          = DirPlus;
-  DirRemove       = DirMinus;
-  DirAll          = DirLeft or DirDown or DirUp or DirRight or DirCancel
-                    or DirFastForward or DirFastBackward 
-                    or DirPlus or DirMinus or DirPause or DirStop or DirHelp;
+  NavBackward     = NavLeft;
+  NavForward      = NavRight;
+  NavHome         = NavUp;
+  NavEnd          = NavDown;
+  NavExit         = NavCancel;
+  NavAdd          = NavPlus;
+  NavRemove       = NavMinus;
+  NavAll          = NavLeft or NavDown or NavUp or NavRight or NavCancel
+                    or NavFastForward or NavFastBackward 
+                    or NavPlus or NavMinus or NavPause or NavStop or NavHelp;
 
 { choice for several items }
 { result is the choice number, starting from 1 }
@@ -607,7 +607,7 @@ function avt_choice(var result: CInteger;
 procedure avt_pager_mb (txt: CString; len, startline: CInteger); 
   libakfavatar 'avt_pager_mb';
 
-function avt_navigate(directions: CInteger): CInteger;
+function avt_navigate(buttons: CInteger): CInteger;
   libakfavatar 'avt_navigate';
 
 function avt_decide: avt_bool_t; libakfavatar 'avt_decide';
@@ -1225,10 +1225,10 @@ Decide := (avt_decide <> 0);
 if avt_get_status<>0 then Halt
 end;
 
-function Navigate(directions: integer): integer;
+function Navigate(buttons: integer): integer;
 begin
 if not initialized then initializeAvatar;
-Navigate := avt_navigate(directions);
+Navigate := avt_navigate(buttons);
 if avt_get_status<>0 then Halt
 end;
 

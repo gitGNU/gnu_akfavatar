@@ -4287,7 +4287,7 @@ avt_wait_button (void)
 #define NAV_MAX 12
 
 #define avt_nav_add(sym, bt) \
-  do { if ((directions & sym) && button_count < NAV_MAX) { \
+  do { if ((buttons & sym) && button_count < NAV_MAX) { \
     button[button_count] = \
       avt_load_image_xbm (bt##_bits, bt##_width, bt##_height, \
                           BUTTON_COLOR); \
@@ -4295,7 +4295,7 @@ avt_wait_button (void)
     button_count++; }} while (0)
 
 extern int
-avt_navigate (int directions)
+avt_navigate (int buttons)
 {
   SDL_Event event;
   SDL_Surface *base_button;
@@ -4317,18 +4317,18 @@ avt_navigate (int directions)
   base_button = avt_load_image_xpm (btn_xpm);
 
   /* this also influences the order (right to left) */
-  avt_nav_add (AVT_DIR_HELP, btn_help);
-  avt_nav_add (AVT_DIR_CANCEL, btn_cancel);
-  avt_nav_add (AVT_DIR_PLUS, btn_yes);
-  avt_nav_add (AVT_DIR_MINUS, btn_no);
-  avt_nav_add (AVT_DIR_STOP, btn_stop);
-  avt_nav_add (AVT_DIR_PAUSE, btn_pause);
-  avt_nav_add (AVT_DIR_FASTFORWARD, btn_fastforward);
-  avt_nav_add (AVT_DIR_RIGHT, btn_right);
-  avt_nav_add (AVT_DIR_UP, btn_up);
-  avt_nav_add (AVT_DIR_DOWN, btn_down);
-  avt_nav_add (AVT_DIR_LEFT, btn_left);
-  avt_nav_add (AVT_DIR_FASTBACKWARD, btn_fastbackward);
+  avt_nav_add (AVT_NAV_HELP, btn_help);
+  avt_nav_add (AVT_NAV_CANCEL, btn_cancel);
+  avt_nav_add (AVT_NAV_PLUS, btn_yes);
+  avt_nav_add (AVT_NAV_MINUS, btn_no);
+  avt_nav_add (AVT_NAV_STOP, btn_stop);
+  avt_nav_add (AVT_NAV_PAUSE, btn_pause);
+  avt_nav_add (AVT_NAV_FASTFORWARD, btn_fastforward);
+  avt_nav_add (AVT_NAV_RIGHT, btn_right);
+  avt_nav_add (AVT_NAV_UP, btn_up);
+  avt_nav_add (AVT_NAV_DOWN, btn_down);
+  avt_nav_add (AVT_NAV_LEFT, btn_left);
+  avt_nav_add (AVT_NAV_FASTBACKWARD, btn_fastbackward);
 
   /* common values for rectangles */
   for (i = 0; i < NAV_MAX; i++)
@@ -4385,34 +4385,34 @@ avt_navigate (int directions)
 	      || event.key.keysym.sym == SDLK_KP8
 	      || event.key.keysym.sym == SDLK_HOME
 	      || event.key.keysym.sym == SDLK_KP7)
-	    result = AVT_DIR_UP;
+	    result = AVT_NAV_UP;
 	  else if (event.key.keysym.sym == SDLK_DOWN
 		   || event.key.keysym.sym == SDLK_KP2
 		   || event.key.keysym.sym == SDLK_END
 		   || event.key.keysym.sym == SDLK_KP1)
-	    result = AVT_DIR_DOWN;
+	    result = AVT_NAV_DOWN;
 	  else if (event.key.keysym.sym == SDLK_LEFT
 		   || event.key.keysym.sym == SDLK_KP4)
-	    result = AVT_DIR_LEFT;
+	    result = AVT_NAV_LEFT;
 	  else if (event.key.keysym.sym == SDLK_RIGHT
 		   || event.key.keysym.sym == SDLK_KP6)
-	    result = AVT_DIR_RIGHT;
+	    result = AVT_NAV_RIGHT;
 	  else if (event.key.keysym.unicode == L'+')
-	    result = AVT_DIR_PLUS;
+	    result = AVT_NAV_PLUS;
 	  else if (event.key.keysym.unicode == L'-')
-	    result = AVT_DIR_MINUS;
+	    result = AVT_NAV_MINUS;
 	  else if (event.key.keysym.sym == SDLK_HELP
 		   || event.key.keysym.sym == SDLK_F1)
-	    result = AVT_DIR_HELP;
+	    result = AVT_NAV_HELP;
 	  else if (event.key.keysym.sym == SDLK_PAUSE)
 	    {
-	      result = AVT_DIR_PAUSE;
+	      result = AVT_NAV_PAUSE;
 	      /* prevent further handling of the Pause-key */
 	      event.key.keysym.sym = SDLK_UNKNOWN;
 	    }
 
-	  /* limit to requested directions */
-	  if (result >= 0 && (result & ~directions))
+	  /* limit to requested buttons */
+	  if (result >= 0 && (result & ~buttons))
 	    result = -1;
 	  break;
 

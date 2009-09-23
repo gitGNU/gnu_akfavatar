@@ -716,38 +716,38 @@ AVT_API avt_bool_t avt_decide (void);
  * for simple directions you can use the arrow keys,
  * but not all buttons are usable with the keyboard!
  *
- * returns one of the AVT_DIR_* values
+ * returns one of the AVT_NAV_* values
  * or -1 on error (including quit-request)
  *
  * example:
- *   r = avt_navigate (AVT_DIR_BACKWARD | AVT_DIR_FORWARD | AVT_DIR_HOME);
+ *   r = avt_navigate (AVT_NAV_BACKWARD | AVT_NAV_FORWARD | AVT_NAV_HOME);
  */
-AVT_API int avt_navigate (int directions);
+AVT_API int avt_navigate (int buttons);
 
 /* symbols for avt_navigate */
-#define AVT_DIR_LEFT           1
-#define AVT_DIR_DOWN           2
-#define AVT_DIR_UP             4
-#define AVT_DIR_RIGHT          8
-#define AVT_DIR_CANCEL        16
-#define AVT_DIR_FASTFORWARD   32
-#define AVT_DIR_FASTBACKWARD  64
-#define AVT_DIR_PLUS         128
-#define AVT_DIR_MINUS        256
-#define AVT_DIR_PAUSE        512
-#define AVT_DIR_STOP        1024
-#define AVT_DIR_HELP        2048
-#define AVT_DIR_ALL          (1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 \
+#define AVT_NAV_LEFT           1
+#define AVT_NAV_DOWN           2
+#define AVT_NAV_UP             4
+#define AVT_NAV_RIGHT          8
+#define AVT_NAV_CANCEL        16
+#define AVT_NAV_FASTFORWARD   32
+#define AVT_NAV_FASTBACKWARD  64
+#define AVT_NAV_PLUS         128
+#define AVT_NAV_MINUS        256
+#define AVT_NAV_PAUSE        512
+#define AVT_NAV_STOP        1024
+#define AVT_NAV_HELP        2048
+#define AVT_NAV_ALL          (1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 \
                               | 512 | 1024 | 2048)
 
 /* usefull aliases */
-#define AVT_DIR_BACKWARD  AVT_DIR_LEFT
-#define AVT_DIR_FORWARD   AVT_DIR_RIGHT
-#define AVT_DIR_HOME      AVT_DIR_UP
-#define AVT_DIR_END       AVT_DIR_DOWN
-#define AVT_DIR_EXIT      AVT_DIR_CANCEL
-#define AVT_DIR_ADD       AVT_DIR_PLUS
-#define AVT_DIR_REMOVE    AVT_DIR_MINUS
+#define AVT_NAV_BACKWARD  AVT_NAV_LEFT
+#define AVT_NAV_FORWARD   AVT_NAV_RIGHT
+#define AVT_NAV_HOME      AVT_NAV_UP
+#define AVT_NAV_END       AVT_NAV_DOWN
+#define AVT_NAV_EXIT      AVT_NAV_CANCEL
+#define AVT_NAV_ADD       AVT_NAV_PLUS
+#define AVT_NAV_REMOVE    AVT_NAV_MINUS
 
 /*
  * avt_choice - use for menus
