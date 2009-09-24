@@ -1554,77 +1554,6 @@ avt_set_balloon_size (int height, int width)
     }
 }
 
-/* rectangles in some functions have to be adjusted */
-#define avt_pre_resize(rect) \
-  do { rect.x -= window.x; rect.y -= window.y; } while(0)
-#define avt_post_resize(rect) \
-  do { rect.x += window.x; rect.y += window.y; } while(0)
-
-static void
-avt_resize (int w, int h)
-{
-  SDL_Surface *oldwindowimage;
-  SDL_Rect oldwindow;
-
-  if (w < MINIMALWIDTH)
-    w = MINIMALWIDTH;
-  if (h < MINIMALHEIGHT)
-    h = MINIMALHEIGHT;
-
-  /* save the window */
-  oldwindow = window;
-
-  oldwindowimage = SDL_CreateRGBSurface (SDL_SWSURFACE, window.w, window.h,
-					 screen->format->BitsPerPixel,
-					 screen->format->Rmask,
-					 screen->format->Gmask,
-					 screen->format->Bmask,
-					 screen->format->Amask);
-
-  SDL_BlitSurface (screen, &window, oldwindowimage, NULL);
-
-  /* resize screen */
-  screen = SDL_SetVideoMode (w, h, COLORDEPTH, screenflags);
-
-  avt_free_screen ();
-
-  /* new position of the window on the screen */
-  window.x = screen->w > window.w ? (screen->w / 2) - (window.w / 2) : 0;
-  window.y = screen->h > window.h ? (screen->h / 2) - (window.h / 2) : 0;
-
-  /* restore image */
-  SDL_SetClipRect (screen, &window);
-  SDL_BlitSurface (oldwindowimage, NULL, screen, &window);
-  SDL_FreeSurface (oldwindowimage);
-
-  /* recalculate textfield & viewport positions */
-  if (textfield.x >= 0)
-    {
-      textfield.x = textfield.x - oldwindow.x + window.x;
-      textfield.y = textfield.y - oldwindow.y + window.y;
-
-      viewport.x = viewport.x - oldwindow.x + window.x;
-      viewport.y = viewport.y - oldwindow.y + window.y;
-
-      linestart =
-	(textdir_rtl) ? viewport.x + viewport.w - FONTWIDTH : viewport.x;
-
-      cursor.x = cursor.x - oldwindow.x + window.x;
-      cursor.y = cursor.y - oldwindow.y + window.y;
-      SDL_SetClipRect (screen, &viewport);
-    }
-
-  /* set windowmode_size */
-  if ((screenflags & SDL_FULLSCREEN) == 0)
-    {
-      windowmode_size.w = w;
-      windowmode_size.h = h;
-    }
-
-  /* make all changes visible */
-  AVT_UPDATE_ALL ();
-}
-
 extern void
 avt_bell (void)
 {
@@ -1668,6 +1597,44 @@ avt_flash (void)
   AVT_UPDATE_ALL ();
 }
 
+static void
+avt_change_mode (void)
+{
+  SDL_Surface *oldwindowimage;
+
+  /* save the window */
+  oldwindowimage = SDL_CreateRGBSurface (SDL_SWSURFACE, window.w, window.h,
+					 screen->format->BitsPerPixel,
+					 screen->format->Rmask,
+					 screen->format->Gmask,
+					 screen->format->Bmask,
+					 screen->format->Amask);
+
+  SDL_BlitSurface (screen, &window, oldwindowimage, NULL);
+
+  /* set new mode */
+  screen = SDL_SetVideoMode (windowmode_size.w, windowmode_size.h,
+			     COLORDEPTH, screenflags);
+
+  background_color = SDL_MapRGB (screen->format,
+				 backgroundcolor_RGB.r,
+				 backgroundcolor_RGB.g,
+				 backgroundcolor_RGB.b);
+  avt_free_screen ();
+
+  /* new position of the window on the screen */
+  window.x = screen->w > window.w ? (screen->w / 2) - (window.w / 2) : 0;
+  window.y = screen->h > window.h ? (screen->h / 2) - (window.h / 2) : 0;
+
+  /* restore image */
+  SDL_SetClipRect (screen, &window);
+  SDL_BlitSurface (oldwindowimage, NULL, screen, &window);
+  SDL_FreeSurface (oldwindowimage);
+
+  /* make all changes visible */
+  AVT_UPDATE_ALL ();
+}
+
 extern void
 avt_toggle_fullscreen (void)
 {
@@ -1677,20 +1644,11 @@ avt_toggle_fullscreen (void)
       screenflags ^= SDL_FULLSCREEN;
 
       if ((screenflags & SDL_FULLSCREEN) != 0)
-	{
-	  avt_resize (MINIMALWIDTH, MINIMALHEIGHT);
-	  avt_mode = AVT_FULLSCREEN;
-	}
+	avt_mode = AVT_FULLSCREEN;
       else
-	{
-	  avt_resize (windowmode_size.w, windowmode_size.h);
-	  avt_mode = AVT_WINDOW;
-	}
+	avt_mode = AVT_WINDOW;
 
-      background_color = SDL_MapRGB (screen->format,
-				     backgroundcolor_RGB.r,
-				     backgroundcolor_RGB.g,
-				     backgroundcolor_RGB.b);
+      avt_change_mode ();
     }
 }
 
@@ -1708,22 +1666,17 @@ avt_switch_mode (int mode)
 	  if ((screenflags & SDL_FULLSCREEN) == 0)
 	    {
 	      screenflags |= SDL_FULLSCREEN;
-	      avt_resize (MINIMALWIDTH, MINIMALHEIGHT);
+	      avt_change_mode ();
 	    }
 	  break;
 	case AVT_WINDOW:
 	  if ((screenflags & SDL_FULLSCREEN) != 0)
 	    {
 	      screenflags &= ~SDL_FULLSCREEN;
-	      avt_resize (windowmode_size.w, windowmode_size.h);
+	      avt_change_mode ();
 	    }
 	  break;
 	}
-
-      background_color = SDL_MapRGB (screen->format,
-				     backgroundcolor_RGB.r,
-				     backgroundcolor_RGB.g,
-				     backgroundcolor_RGB.b);
     }
 }
 
@@ -1734,10 +1687,6 @@ avt_analyze_event (SDL_Event * event)
     {
     case SDL_QUIT:
       _avt_STATUS = AVT_QUIT;
-      break;
-
-    case SDL_VIDEORESIZE:
-      avt_resize (event->resize.w, event->resize.h);
       break;
 
     case SDL_MOUSEBUTTONUP:
@@ -3926,7 +3875,6 @@ avt_ask (wchar_t * s, const int size)
     avt_flip_page ();
 
   /* maxlen is the rest of line minus one for the cursor */
-  /* it is not changed when the window is resized */
   if (textdir_rtl)
     maxlen = ((cursor.x - viewport.x) / FONTWIDTH) - 1;
   else
@@ -4091,15 +4039,11 @@ avt_move_in (void)
 	  if (avt_checkevent ())
 	    return _avt_STATUS;
 
-	  /* if window is resized then break */
-	  if (window.x != mywindow.x || window.y != mywindow.y)
-	    break;
-
 	  /* some time for other processes */
 	  SDL_Delay (1);
 	}
 
-      /* final position (even when window was resized) */
+      /* final position */
       avt_show_avatar ();
     }
 
@@ -4175,10 +4119,6 @@ avt_move_out (void)
 	  if (avt_checkevent ())
 	    return _avt_STATUS;
 
-	  /* if window is resized then break */
-	  if (window.x != mywindow.x || window.y != mywindow.y)
-	    break;
-
 	  /* some time for other processes */
 	  SDL_Delay (1);
 	}
@@ -4228,9 +4168,6 @@ avt_wait_button (void)
   button = NULL;
   AVT_UPDATE_RECT (btn_rect);
 
-  /* prepare for possible resize */
-  avt_pre_resize (btn_rect);
-
   /* show mouse pointer */
   SDL_ShowCursor (SDL_ENABLE);
 
@@ -4267,7 +4204,6 @@ avt_wait_button (void)
 
   /* delete button */
   SDL_SetClipRect (screen, &window);
-  avt_post_resize (btn_rect);
   SDL_FillRect (screen, &btn_rect, background_color);
   AVT_UPDATE_RECT (btn_rect);
 
@@ -4384,11 +4320,6 @@ avt_navigate (int buttons)
   /* show all buttons */
   AVT_UPDATE_RECT (buttons_rect);
 
-  /* prepare for possible resize */
-  avt_pre_resize (buttons_rect);
-  for (i = 0; i < button_count; i++)
-    avt_pre_resize (rect[i]);
-
   /* show mouse pointer */
   SDL_ShowCursor (SDL_ENABLE);
 
@@ -4436,13 +4367,13 @@ avt_navigate (int buttons)
 
 	case SDL_MOUSEBUTTONDOWN:
 	  if (event.button.button <= 3
-	      && event.button.y >= rect[0].y + window.y
-	      && event.button.y <= rect[0].y + window.y + rect[0].h)
+	      && event.button.y >= rect[0].y
+	      && event.button.y <= rect[0].y + rect[0].h)
 	    {
 	      for (i = 0; i < button_count && result < 0; i++)
 		{
-		  if (event.button.x >= rect[i].x + window.x
-		      && event.button.x <= rect[i].x + window.x + rect[i].w)
+		  if (event.button.x >= rect[i].x
+		      && event.button.x <= rect[i].x + rect[i].w)
 		    result = button_value[i];
 		}
 	    }
@@ -4456,7 +4387,6 @@ avt_navigate (int buttons)
   SDL_ShowCursor (SDL_DISABLE);
 
   /* restore background */
-  avt_post_resize (buttons_rect);
   SDL_BlitSurface (buttons_area, NULL, screen, &buttons_rect);
   SDL_FreeSurface (buttons_area);
   AVT_UPDATE_RECT (buttons_rect);
@@ -4525,9 +4455,6 @@ avt_wait_key (const wchar_t * message)
       cursor = oldcursor;
     }
 
-  /* prepare for being resized */
-  avt_pre_resize (dst);
-
   /* show mouse pointer */
   SDL_WarpMouse (dst.x, dst.y + FONTHEIGHT);
   SDL_ShowCursor (SDL_ENABLE);
@@ -4541,10 +4468,6 @@ avt_wait_key (const wchar_t * message)
 	case SDL_QUIT:
 	  nokey = AVT_FALSE;
 	  _avt_STATUS = AVT_QUIT;
-	  break;
-
-	case SDL_VIDEORESIZE:
-	  avt_resize (event.resize.w, event.resize.h);
 	  break;
 
 	case SDL_KEYDOWN:
@@ -4570,7 +4493,6 @@ avt_wait_key (const wchar_t * message)
   if (*message)
     {
       SDL_SetClipRect (screen, &window);
-      avt_post_resize (dst);
       SDL_FillRect (screen, &dst, background_color);
       AVT_UPDATE_RECT (dst);
     }
@@ -4655,10 +4577,6 @@ avt_decide (void)
   SDL_FreeSurface (no_button);
   base_button = no_button = yes_button = NULL;
 
-  /* prepare for possible resize */
-  avt_pre_resize (yes_rect);
-  avt_pre_resize (no_rect);
-
   /* show mouse pointer */
   SDL_ShowCursor (SDL_ENABLE);
 
@@ -4693,15 +4611,15 @@ avt_decide (void)
 	  /* assume both buttons have the same height */
 	  /* any mouse button, but ignore the wheel */
 	  if (event.button.button <= 3
-	      && event.button.y >= yes_rect.y + window.y
-	      && event.button.y <= yes_rect.y + window.y + yes_rect.h)
+	      && event.button.y >= yes_rect.y
+	      && event.button.y <= yes_rect.y + yes_rect.h)
 	    {
-	      if (event.button.x >= yes_rect.x + window.x
-		  && event.button.x <= yes_rect.x + window.x + yes_rect.w)
+	      if (event.button.x >= yes_rect.x
+		  && event.button.x <= yes_rect.x + yes_rect.w)
 		result = AVT_TRUE;
 	      else
-		if (event.button.x >= no_rect.x + window.x
-		    && event.button.x <= no_rect.x + window.x + no_rect.w)
+		if (event.button.x >= no_rect.x
+		    && event.button.x <= no_rect.x + no_rect.w)
 		result = AVT_FALSE;
 	    }
 	  break;
@@ -4715,8 +4633,6 @@ avt_decide (void)
 
   /* delete buttons */
   SDL_SetClipRect (screen, &window);
-  avt_post_resize (yes_rect);
-  avt_post_resize (no_rect);
   SDL_FillRect (screen, &no_rect, background_color);
   SDL_FillRect (screen, &yes_rect, background_color);
   AVT_UPDATE_RECT (no_rect);
@@ -5811,7 +5727,7 @@ avt_initialize (const char *title, const char *icontitle,
   /*
    * Initialize the display, accept any format
    */
-  screenflags = SDL_SWSURFACE | SDL_ANYFORMAT | SDL_RESIZABLE;
+  screenflags = SDL_SWSURFACE | SDL_ANYFORMAT;
 
 #ifndef __WIN32__
   if (avt_mode == AVT_AUTOMODE)

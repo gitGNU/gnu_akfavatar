@@ -2,6 +2,10 @@
 
 	* avatar.c (avt_navigate): save/restore buttons background
 
+	* avatar.c (avt_initialize): make window not resizable
+	remove most code for resizing the window
+	(avt_change_mode): new function, was avt_resize
+
 2009-09-23  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_wait_button, avt_decide):
