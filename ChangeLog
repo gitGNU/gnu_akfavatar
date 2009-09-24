@@ -1,5 +1,9 @@
 2009-09-23  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatar.c (avt_navigate): save/restore buttons background
+
+2009-09-23  Andreas K. Foerster  <info@akfoerster.de>
+
 	* avatar.c (avt_wait_button, avt_decide):
 	center button-inlays on button
 

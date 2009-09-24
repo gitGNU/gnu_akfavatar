@@ -4298,10 +4298,10 @@ extern int
 avt_navigate (int buttons)
 {
   SDL_Event event;
-  SDL_Surface *base_button;
+  SDL_Surface *base_button, *buttons_area;
   SDL_Surface *button[NAV_MAX];
   int button_value[NAV_MAX];
-  SDL_Rect rect[NAV_MAX], inlay_rect;
+  SDL_Rect rect[NAV_MAX], buttons_rect, inlay_rect;
   int i, button_count, radius;
   int result;
 
@@ -4330,13 +4330,28 @@ avt_navigate (int buttons)
   avt_nav_add (AVT_NAV_LEFT, btn_left);
   avt_nav_add (AVT_NAV_FASTBACKWARD, btn_fastbackward);
 
-  /* common values for rectangles */
+  /* common button area */
+  buttons_rect.y = window.y + window.h - base_button->h - AVATAR_MARGIN;
+  buttons_rect.x = window.x + window.w - AVATAR_MARGIN
+    - (button_count * (base_button->w + BUTTON_DISTANCE)) + BUTTON_DISTANCE;
+  buttons_rect.h = base_button->h;
+  buttons_rect.w = window.w - AVATAR_MARGIN - buttons_rect.x;
+
+  buttons_area =
+    SDL_CreateRGBSurface (SDL_SWSURFACE, buttons_rect.w, buttons_rect.h,
+			  screen->format->BitsPerPixel,
+			  screen->format->Rmask, screen->format->Gmask,
+			  screen->format->Bmask, screen->format->Amask);
+
+  SDL_BlitSurface (screen, &buttons_rect, buttons_area, NULL);
+
+  /* common values for button rectangles */
   for (i = 0; i < NAV_MAX; i++)
     {
       rect[i].w = base_button->w;
       rect[i].h = base_button->h;
       rect[i].x = 0;		/* changed later */
-      rect[i].y = window.y + window.h - base_button->h - AVATAR_MARGIN;
+      rect[i].y = buttons_rect.y;
     }
 
   radius = base_button->w / 2;
@@ -4358,7 +4373,6 @@ avt_navigate (int buttons)
       inlay_rect.x = rect[i].x + radius - inlay_rect.w / 2;
       inlay_rect.y = rect[i].y + radius - inlay_rect.h / 2;
       SDL_BlitSurface (button[i], NULL, screen, &inlay_rect);
-      AVT_UPDATE_RECT (rect[i]);
 
       SDL_FreeSurface (button[i]);
       button[i] = NULL;
@@ -4367,7 +4381,11 @@ avt_navigate (int buttons)
   SDL_FreeSurface (base_button);
   base_button = NULL;
 
+  /* show all buttons */
+  AVT_UPDATE_RECT (buttons_rect);
+
   /* prepare for possible resize */
+  avt_pre_resize (buttons_rect);
   for (i = 0; i < button_count; i++)
     avt_pre_resize (rect[i]);
 
@@ -4437,13 +4455,11 @@ avt_navigate (int buttons)
   /* hide mouse pointer */
   SDL_ShowCursor (SDL_DISABLE);
 
-  /* delete buttons */
-  for (i = 0; i < button_count; i++)
-    {
-      avt_post_resize (rect[i]);
-      SDL_FillRect (screen, &rect[i], background_color);
-      AVT_UPDATE_RECT (rect[i]);
-    }
+  /* restore background */
+  avt_post_resize (buttons_rect);
+  SDL_BlitSurface (buttons_area, NULL, screen, &buttons_rect);
+  SDL_FreeSurface (buttons_area);
+  AVT_UPDATE_RECT (buttons_rect);
 
   if (textfield.x >= 0)
     SDL_SetClipRect (screen, &viewport);
