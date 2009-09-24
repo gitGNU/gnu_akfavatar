@@ -6,6 +6,8 @@
 	remove most code for resizing the window
 	(avt_change_mode): new function, was avt_resize
 
+	* avatarsay.c (checkoptions): fix --fullfullscreen
+
 2009-09-23  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_wait_button, avt_decide):

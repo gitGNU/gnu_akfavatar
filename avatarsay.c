@@ -462,7 +462,7 @@ checkoptions (int argc, char **argv)
     {"help", no_argument, 0, 'h'},
     {"version", no_argument, 0, 'v'},
     {"fullscreen", no_argument, 0, 'f'},
-    {"fulfullscreen", no_argument, 0, 'F'},
+    {"fullfullscreen", no_argument, 0, 'F'},
     {"window", no_argument, 0, 'w'},
     {"once", no_argument, 0, '1'},
     {"raw", no_argument, 0, 'r'},
