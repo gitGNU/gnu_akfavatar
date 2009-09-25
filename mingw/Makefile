@@ -208,6 +208,7 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/version.h \
              $(srcdir)/btn_pause.xbm $(srcdir)/btn_stop.xbm \
              $(srcdir)/btn_help.xbm $(srcdir)/btn_cancel.xbm \
              $(srcdir)/balloonpointer.xbm $(srcdir)/circle.xbm \
+             $(srcdir)/btn_eject.xbm \
              $(srcdir)/akfavatar.xpm
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c $(srcdir)/avatar.c
 

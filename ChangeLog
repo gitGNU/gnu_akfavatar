@@ -1,3 +1,7 @@
+2009-09-25  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_navigate): add eject button
+
 2009-09-23  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_navigate): save/restore buttons background

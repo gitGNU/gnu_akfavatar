@@ -330,6 +330,7 @@ const
   NavPause        = 512;
   NavStop         = 1024;
   NavHelp         = 2048;
+  NavEject        = 4096;
 
 { usefull aliases }
 const
@@ -342,7 +343,8 @@ const
   NavRemove       = NavMinus;
   NavAll          = NavLeft or NavDown or NavUp or NavRight or NavCancel
                     or NavFastForward or NavFastBackward 
-                    or NavPlus or NavMinus or NavPause or NavStop or NavHelp;
+                    or NavPlus or NavMinus or NavPause or NavStop or NavHelp
+                    or NavEject;
 
 { choice for several items }
 { result is the choice number, starting from 1 }

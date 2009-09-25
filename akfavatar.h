@@ -737,8 +737,7 @@ AVT_API int avt_navigate (int buttons);
 #define AVT_NAV_PAUSE        512
 #define AVT_NAV_STOP        1024
 #define AVT_NAV_HELP        2048
-#define AVT_NAV_ALL          (1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 \
-                              | 512 | 1024 | 2048)
+#define AVT_NAV_EJECT       4096
 
 /* usefull aliases */
 #define AVT_NAV_BACKWARD  AVT_NAV_LEFT
@@ -748,6 +747,8 @@ AVT_API int avt_navigate (int buttons);
 #define AVT_NAV_EXIT      AVT_NAV_CANCEL
 #define AVT_NAV_ADD       AVT_NAV_PLUS
 #define AVT_NAV_REMOVE    AVT_NAV_MINUS
+#define AVT_NAV_ALL       (1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 \
+                           | 512 | 1024 | 2048 | 4096)
 
 /*
  * avt_choice - use for menus
