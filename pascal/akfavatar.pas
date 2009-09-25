@@ -331,11 +331,14 @@ const
   NavStop         = 1024;
   NavHelp         = 2048;
   NavEject        = 4096;
+  NavCircle       = 8192;
 
 { usefull aliases }
 const
   NavBackward     = NavLeft;
   NavForward      = NavRight;
+  NavPlay         = NavRight;
+  NavRecord       = NavCircle;
   NavHome         = NavUp;
   NavEnd          = NavDown;
   NavExit         = NavCancel;
@@ -344,7 +347,7 @@ const
   NavAll          = NavLeft or NavDown or NavUp or NavRight or NavCancel
                     or NavFastForward or NavFastBackward 
                     or NavPlus or NavMinus or NavPause or NavStop or NavHelp
-                    or NavEject;
+                    or NavEject or NavCircle;
 
 { choice for several items }
 { result is the choice number, starting from 1 }

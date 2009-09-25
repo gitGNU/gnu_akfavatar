@@ -49,6 +49,7 @@
 #include "btn_pause.xbm"
 #include "btn_help.xbm"
 #include "btn_eject.xbm"
+#include "btn_circle.xbm"
 
 #ifdef LINK_SDL_IMAGE
 #  include "SDL_image.h"
@@ -4221,7 +4222,7 @@ avt_wait_button (void)
  * (may be lower than number of available buttons,
  *  but should not be larger)
  */
-#define NAV_MAX 13
+#define NAV_MAX 14
 
 #define avt_nav_add(sym, bt) \
   do { if ((buttons & sym) && button_count < NAV_MAX) { \
@@ -4259,6 +4260,7 @@ avt_navigate (int buttons)
   avt_nav_add (AVT_NAV_PLUS, btn_yes);
   avt_nav_add (AVT_NAV_MINUS, btn_no);
   avt_nav_add (AVT_NAV_EJECT, btn_eject);
+  avt_nav_add (AVT_NAV_CIRCLE, btn_circle);
   avt_nav_add (AVT_NAV_STOP, btn_stop);
   avt_nav_add (AVT_NAV_PAUSE, btn_pause);
   avt_nav_add (AVT_NAV_FASTFORWARD, btn_fastforward);

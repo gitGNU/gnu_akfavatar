@@ -71,7 +71,7 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h avtcolors.h \
           $(srcdir)/btn_ff.xbm $(srcdir)/btn_fb.xbm \
           $(srcdir)/btn_pause.xbm $(srcdir)/btn_stop.xbm \
           $(srcdir)/btn_help.xbm $(srcdir)/btn_cancel.xbm \
-          $(srcdir)/btn_eject.xbm \
+          $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm \
           $(srcdir)/akfavatar.xpm
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c $(srcdir)/avatar.c
 
@@ -102,7 +102,7 @@ avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h avtcolors.h \
            $(srcdir)/btn_ff.xbm $(srcdir)/btn_fb.xbm \
            $(srcdir)/btn_pause.xbm $(srcdir)/btn_stop.xbm \
            $(srcdir)/btn_help.xbm $(srcdir)/btn_cancel.xbm \
-           $(srcdir)/btn_eject.xbm \
+           $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm \
            $(srcdir)/akfavatar.xpm
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -fPIC -o $@ $(srcdir)/avatar.c
 
@@ -402,6 +402,7 @@ dist: info html man distclean
 	   btn.xpm btn_up.xbm btn_down.xbm btn_left.xbm btn_right.xbm \
 	   btn_no.xbm btn_yes.xbm btn_cancel.xbm btn_ff.xbm btn_fb.xbm \
 	   btn_pause.xbm btn_stop.xbm btn_help.xbm btn_eject.xbm \
+	   btn_circle.xbm \
 	   avatarsay.c avtposix.c avtterm.c avttermsys.h avttermsys.c \
 	   avtmsg.c arch.c avtcolors.h \
 	   avtman avtcmd example.c fsdemo-??.avt \
