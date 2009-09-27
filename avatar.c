@@ -4371,8 +4371,10 @@ avt_navigate (int buttons)
 
 	case SDL_MOUSEBUTTONDOWN:
 	  if (event.button.button <= 3
-	      && event.button.y >= rect[0].y
-	      && event.button.y <= rect[0].y + rect[0].h)
+	      && event.button.y >= buttons_rect.y
+	      && event.button.y <= buttons_rect.y + buttons_rect.h
+	      && event.button.x >= buttons_rect.x
+	      && event.button.x <= buttons_rect.x + buttons_rect.w)
 	    {
 	      for (i = 0; i < button_count && result < 0; i++)
 		{
