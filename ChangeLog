@@ -2,6 +2,10 @@
 
 	* avatar.c (avt_pager_mb): add close button
 
+	* avatar.c (avt_button_inlay): new function
+	AVT_XBM_INFO: new macro
+	(avt_pager_mb, avt_decide, avt_wait_button): adapted
+
 2009-09-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_navigate): add eject and circle buttons

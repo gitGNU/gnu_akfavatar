@@ -61,6 +61,8 @@
 /* normal color of what's printed on the button */
 #define BUTTON_COLOR  0x66, 0x55, 0x33
 
+#define AVT_XBM_INFO(img)  img##_bits, img##_width, img##_height
+
 #if defined(VGA)
 #  define FONTWIDTH 7
 #  define FONTHEIGHT 14
@@ -3611,6 +3613,24 @@ avt_lock_updates (avt_bool_t lock)
   AVT_UPDATE_RECT (textfield);
 }
 
+static void
+avt_button_inlay (SDL_Rect btn_rect, const unsigned char *bits,
+		  int width, int height, int red, int green, int blue)
+{
+  SDL_Surface *inlay;
+  SDL_Rect inlay_rect;
+  int radius;
+
+  radius = btn_rect.w / 2;
+  inlay = avt_load_image_xbm (bits, width, height, red, green, blue);
+  inlay_rect.w = inlay->w;
+  inlay_rect.h = inlay->h;
+  inlay_rect.x = btn_rect.x + radius - (inlay_rect.w / 2);
+  inlay_rect.y = btn_rect.y + radius - (inlay_rect.h / 2);
+  SDL_BlitSurface (inlay, NULL, screen, &inlay_rect);
+  SDL_FreeSurface (inlay);
+}
+
 static int
 avt_pager_line (const char *txt, int pos, int len)
 {
@@ -3686,9 +3706,8 @@ avt_pager_mb (const char *txt, int len, int startline)
   avt_keyhandler old_keyhandler;
   avt_mousehandler old_mousehandler;
   SDL_Event event;
-  SDL_Surface *button, *inlay;
-  SDL_Rect btn_rect, inlay_rect;
-  int radius;
+  SDL_Surface *button;
+  SDL_Rect btn_rect;
 
   if (!screen)
     return AVT_ERROR;
@@ -3710,21 +3729,9 @@ avt_pager_mb (const char *txt, int len, int startline)
 
   SDL_SetClipRect (screen, &window);
   SDL_BlitSurface (button, NULL, screen, &btn_rect);
+  avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_cancel), BUTTON_COLOR);
   SDL_FreeSurface (button);
   button = NULL;
-
-  /* draw inlay */
-  radius = btn_rect.w / 2;
-  inlay =
-    avt_load_image_xbm (btn_cancel_bits, btn_cancel_width, btn_cancel_height,
-			BUTTON_COLOR);
-  inlay_rect.w = inlay->w;
-  inlay_rect.h = inlay->h;
-  inlay_rect.x = btn_rect.x + radius - (inlay_rect.w / 2);
-  inlay_rect.y = btn_rect.y + radius - (inlay_rect.h / 2);
-  SDL_BlitSurface (inlay, NULL, screen, &inlay_rect);
-  SDL_FreeSurface (inlay);
-  inlay = NULL;
   AVT_UPDATE_RECT (btn_rect);
 
   /* show mouse pointer */
@@ -4188,8 +4195,7 @@ avt_wait_button (void)
 {
   SDL_Event event;
   SDL_Surface *button;
-  SDL_Rect btn_rect, inlay_rect;
-  int radius;
+  SDL_Rect btn_rect;
   avt_bool_t nokey;
 
   if (!screen)
@@ -4203,22 +4209,13 @@ avt_wait_button (void)
   btn_rect.y = window.y + window.h - button->h - AVATAR_MARGIN;
   btn_rect.w = button->w;
   btn_rect.h = button->h;
-  radius = btn_rect.w / 2;
 
   SDL_SetClipRect (screen, &window);
   SDL_BlitSurface (button, NULL, screen, &btn_rect);
   SDL_FreeSurface (button);
-
-  button =
-    avt_load_image_xbm (btn_right_bits, btn_right_width, btn_right_height,
-			BUTTON_COLOR);
-  inlay_rect.w = button->w;
-  inlay_rect.h = button->h;
-  inlay_rect.x = btn_rect.x + radius - (inlay_rect.w / 2);
-  inlay_rect.y = btn_rect.y + radius - (inlay_rect.h / 2);
-  SDL_BlitSurface (button, NULL, screen, &inlay_rect);
-  SDL_FreeSurface (button);
   button = NULL;
+
+  avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_right), BUTTON_COLOR);
   AVT_UPDATE_RECT (btn_rect);
 
   /* show mouse pointer */
@@ -4278,8 +4275,7 @@ avt_wait_button (void)
 #define avt_nav_add(sym, bt) \
   do { if ((buttons & sym) && button_count < NAV_MAX) { \
     button[button_count] = \
-      avt_load_image_xbm (bt##_bits, bt##_width, bt##_height, \
-                          BUTTON_COLOR); \
+      avt_load_image_xbm (AVT_XBM_INFO (bt), BUTTON_COLOR); \
     button_value[button_count] = sym; \
     button_count++; }} while (0)
 
@@ -4584,9 +4580,8 @@ extern avt_bool_t
 avt_decide (void)
 {
   SDL_Event event;
-  SDL_Surface *base_button, *yes_button, *no_button;
-  SDL_Rect yes_rect, no_rect, inlay_rect;
-  int radius;
+  SDL_Surface *base_button;
+  SDL_Rect yes_rect, no_rect;
   int result;
 
   if (!screen)
@@ -4596,12 +4591,6 @@ avt_decide (void)
 
   /* show buttons */
   base_button = avt_load_image_xpm (btn_xpm);
-  yes_button = avt_load_image_xbm (btn_yes_bits, btn_yes_width,
-				   btn_yes_height, 0, 0xAA, 0);
-  no_button = avt_load_image_xbm (btn_no_bits, btn_no_width,
-				  btn_no_height, 0xAA, 0, 0);
-
-  radius = base_button->w / 2;
 
   /* alignment: right bottom */
   yes_rect.x = window.x + window.w - base_button->w - AVATAR_MARGIN;
@@ -4609,30 +4598,20 @@ avt_decide (void)
   yes_rect.w = base_button->w;
   yes_rect.h = base_button->h;
   SDL_BlitSurface (base_button, NULL, screen, &yes_rect);
-  inlay_rect.w = yes_button->w;
-  inlay_rect.h = yes_button->h;
-  inlay_rect.x = yes_rect.x + radius - (inlay_rect.w / 2);
-  inlay_rect.y = yes_rect.y + radius - (inlay_rect.h / 2);
-  SDL_BlitSurface (yes_button, NULL, screen, &inlay_rect);
+  avt_button_inlay (yes_rect, AVT_XBM_INFO (btn_yes), 0, 0xAA, 0);
 
   no_rect.x = yes_rect.x - BUTTON_DISTANCE - base_button->w;
   no_rect.y = yes_rect.y;
   no_rect.w = base_button->w;
   no_rect.h = base_button->h;
   SDL_BlitSurface (base_button, NULL, screen, &no_rect);
-  inlay_rect.w = no_button->w;
-  inlay_rect.h = no_button->h;
-  inlay_rect.x = no_rect.x + radius - (inlay_rect.w / 2);
-  inlay_rect.y = no_rect.y + radius - (inlay_rect.h / 2);
-  SDL_BlitSurface (no_button, NULL, screen, &inlay_rect);
+  avt_button_inlay (no_rect, AVT_XBM_INFO (btn_no), 0xAA, 0, 0);
 
   AVT_UPDATE_RECT (no_rect);
   AVT_UPDATE_RECT (yes_rect);
 
   SDL_FreeSurface (base_button);
-  SDL_FreeSurface (yes_button);
-  SDL_FreeSurface (no_button);
-  base_button = no_button = yes_button = NULL;
+  base_button = NULL;
 
   /* show mouse pointer */
   SDL_ShowCursor (SDL_ENABLE);
@@ -5906,12 +5885,10 @@ avt_initialize (const char *title, const char *icontitle,
     }
 
   circle =
-    avt_load_image_xbm (circle_bits, circle_width, circle_height,
-			ballooncolor_RGB.r, ballooncolor_RGB.g,
-			ballooncolor_RGB.b);
+    avt_load_image_xbm (AVT_XBM_INFO (circle), ballooncolor_RGB.r,
+			ballooncolor_RGB.g, ballooncolor_RGB.b);
   pointer =
-    avt_load_image_xbm (balloonpointer_bits, balloonpointer_width,
-			balloonpointer_height, ballooncolor_RGB.r,
+    avt_load_image_xbm (AVT_XBM_INFO (balloonpointer), ballooncolor_RGB.r,
 			ballooncolor_RGB.g, ballooncolor_RGB.b);
 
   /* import the avatar image */
