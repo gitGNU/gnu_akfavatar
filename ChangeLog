@@ -1,3 +1,7 @@
+2009-09-28  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_pager_mb): add close button
+
 2009-09-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_navigate): add eject and circle buttons

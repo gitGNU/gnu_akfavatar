@@ -3682,9 +3682,13 @@ avt_pager_mb (const char *txt, int len, int startline)
 {
   int pos;
   avt_bool_t old_auto_margin, old_reserve_single_keys, old_tc;
+  avt_bool_t quit;
   avt_keyhandler old_keyhandler;
   avt_mousehandler old_mousehandler;
   SDL_Event event;
+  SDL_Surface *button, *inlay;
+  SDL_Rect btn_rect, inlay_rect;
+  int radius;
 
   if (!screen)
     return AVT_ERROR;
@@ -3692,6 +3696,39 @@ avt_pager_mb (const char *txt, int len, int startline)
   /* do we actually have something to show? */
   if (!txt || !*txt)
     return _avt_STATUS;
+
+  /* show close-button */
+
+  /* load button */
+  button = avt_load_image_xpm (btn_xpm);
+
+  /* alignment: right bottom */
+  btn_rect.x = window.x + window.w - button->w - AVATAR_MARGIN;
+  btn_rect.y = window.y + window.h - button->h - AVATAR_MARGIN;
+  btn_rect.w = button->w;
+  btn_rect.h = button->h;
+
+  SDL_SetClipRect (screen, &window);
+  SDL_BlitSurface (button, NULL, screen, &btn_rect);
+  SDL_FreeSurface (button);
+  button = NULL;
+
+  /* draw inlay */
+  radius = btn_rect.w / 2;
+  inlay =
+    avt_load_image_xbm (btn_cancel_bits, btn_cancel_width, btn_cancel_height,
+			BUTTON_COLOR);
+  inlay_rect.w = inlay->w;
+  inlay_rect.h = inlay->h;
+  inlay_rect.x = btn_rect.x + radius - (inlay_rect.w / 2);
+  inlay_rect.y = btn_rect.y + radius - (inlay_rect.h / 2);
+  SDL_BlitSurface (inlay, NULL, screen, &inlay_rect);
+  SDL_FreeSurface (inlay);
+  inlay = NULL;
+  AVT_UPDATE_RECT (btn_rect);
+
+  /* show mouse pointer */
+  SDL_ShowCursor (SDL_ENABLE);
 
   /* get len if not given */
   if (len <= 0)
@@ -3746,7 +3783,9 @@ avt_pager_mb (const char *txt, int len, int startline)
       pos = avt_pager_screen (txt, pos, len);
     }
 
-  while (_avt_STATUS == AVT_NORMAL)
+  quit = AVT_FALSE;
+
+  while (!quit && _avt_STATUS == AVT_NORMAL)
     {
       SDL_WaitEvent (&event);
       avt_analyze_event (&event);
@@ -3760,7 +3799,16 @@ avt_pager_mb (const char *txt, int len, int startline)
 	    event.key.keysym.sym = SDLK_UP;
 	  else if (event.button.button == SDL_BUTTON_MIDDLE)	/* press on wheel */
 	    {
-	      _avt_STATUS = AVT_QUIT;
+	      quit = AVT_TRUE;
+	      break;
+	    }
+	  else if (event.button.button <= 3
+		   && event.button.y >= btn_rect.y
+		   && event.button.y <= btn_rect.y + btn_rect.h
+		   && event.button.x >= btn_rect.x
+		   && event.button.x <= btn_rect.x + btn_rect.w)
+	    {
+	      quit = AVT_TRUE;
 	      break;
 	    }
 	  else
@@ -3838,7 +3886,7 @@ avt_pager_mb (const char *txt, int len, int startline)
 	      pos = avt_pager_screen (txt, pos, len);
 	    }
 	  else if (event.key.keysym.sym == SDLK_q)
-	    _avt_STATUS = AVT_QUIT;	/* Q with any combination-key quits */
+	    quit = AVT_TRUE;	/* Q with any combination-key quits */
 	  break;
 	}
     }
@@ -3852,6 +3900,9 @@ avt_pager_mb (const char *txt, int len, int startline)
   avt_ext_keyhandler = old_keyhandler;
   avt_ext_mousehandler = old_mousehandler;
   avt_activate_cursor (old_tc);
+
+  /* hide mouse pointer */
+  SDL_ShowCursor (SDL_DISABLE);
 
   return _avt_STATUS;
 }
