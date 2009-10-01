@@ -9,6 +9,9 @@
 	(check_config_file): adapted
 	(ask_background_color, ask_balloon_color): adapted
 
+
+	* avatarsay.c (ask_avatar_image): use correct separator
+
 2009-09-28  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_pager_mb): add close button

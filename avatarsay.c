@@ -2649,14 +2649,13 @@ ask_avatar_image ()
 	  if (avatar_image)
 	    free (avatar_image);
 
-	  /* get enough memory */
+	  /* assign new name */
 	  avatar_image = (char *) malloc (strlen (directory)
 					  + strlen (image_name) + 2);
 
 	  /* copy the elements */
-	  strcpy (avatar_image, directory);
-	  strcat (avatar_image, "/");
-	  strcat (avatar_image, image_name);
+	  sprintf (avatar_image, "%s%c%s", directory, DIR_SEPARATOR,
+		   image_name);
 
 	  free (directory);
 	}
