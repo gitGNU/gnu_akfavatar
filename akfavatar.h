@@ -399,8 +399,11 @@ AVT_API void avt_set_title (const char *title, const char *icontitle);
 /* switch to fullscreen or window mode */
 AVT_API void avt_switch_mode (int mode);
 
-/* toggle fullscrenn mode */
+/* toggle fullscreen mode */
 AVT_API void avt_toggle_fullscreen (void);
+
+/* get mode */
+AVT_API int avt_get_mode (void);
 
 /*
  * set the baloon width and height in number of characters

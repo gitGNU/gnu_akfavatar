@@ -9,8 +9,9 @@
 	(check_config_file): adapted
 	(ask_background_color, ask_balloon_color): adapted
 
-
 	* avatarsay.c (ask_avatar_image): use correct separator
+
+	* akfavatar.h, avatar.c (get_mode): new function
 
 2009-09-28  Andreas K. Foerster  <info@akfoerster.de>
 

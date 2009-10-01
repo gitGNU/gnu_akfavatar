@@ -1684,6 +1684,12 @@ avt_switch_mode (int mode)
     }
 }
 
+extern int
+avt_get_mode (void)
+{
+  return avt_mode;
+}
+
 static void
 avt_analyze_event (SDL_Event * event)
 {
