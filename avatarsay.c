@@ -144,6 +144,8 @@ static char *avatar_image;
 static avt_bool_t avatar_changed;
 static avt_bool_t moved_in;
 
+static char bg_color_name[80], balloon_color_name[80];
+
 /* for loading sound files */
 static avt_audio_t *sound;
 
@@ -175,6 +177,7 @@ static struct
  */
 extern void get_user_home (char *home_dir, size_t size);
 extern void edit_file (const char *name, const char *encoding);
+extern FILE *open_config_file (const char *name, avt_bool_t writing);
 
 
 static void
@@ -2586,29 +2589,26 @@ about_avatarsay (void)
 static void
 ask_background_color ()
 {
-  char new_bg_color[255];
-
   avt_set_balloon_size (1, 50);
   avt_set_text_delay (0);
 
   avt_say (L"background-color: ");
 
-  if (avt_ask_mb (new_bg_color, sizeof (new_bg_color)) == AVT_NORMAL)
-    avt_set_background_color_name (new_bg_color);
+  if (avt_ask_mb (bg_color_name, sizeof (bg_color_name)) == AVT_NORMAL)
+    avt_set_background_color_name (bg_color_name);
 }
 
 static void
 ask_balloon_color ()
 {
-  char new_bl_color[255];
-
   avt_set_balloon_size (1, 50);
   avt_set_text_delay (0);
 
   avt_say (L"balloon-color: ");
 
-  if (avt_ask_mb (new_bl_color, sizeof (new_bl_color)) == AVT_NORMAL)
-    avt_set_balloon_color_name (new_bl_color);
+  if (avt_ask_mb (balloon_color_name,
+		  sizeof (balloon_color_name)) == AVT_NORMAL)
+    avt_set_balloon_color_name (balloon_color_name);
 }
 
 static avt_bool_t
@@ -2663,6 +2663,67 @@ ask_avatar_image ()
     }
 }
 
+static void
+saving_failed (void)
+{
+  avt_set_balloon_size (1, 60);
+  switch (language)
+    {
+    case DEUTSCH:
+      avt_say (L"Einstellungen konnten leider nicht abgespeichert werden");
+      break;
+    case ENGLISH:
+    default:
+      avt_say (L"unfortunately the settings could not be saved");
+      break;
+    }
+  avt_wait_button ();
+}
+
+static void
+successfully_saved (void)
+{
+  avt_set_balloon_size (1, 40);
+  switch (language)
+    {
+    case DEUTSCH:
+      avt_say (L"Einstellungen erfolgreich abgespeichert");
+      break;
+    case ENGLISH:
+    default:
+      avt_say (L"settings successfully saved");
+      break;
+    }
+  avt_wait_button ();
+}
+
+static void
+save_settings (void)
+{
+  FILE *f;
+
+  if (start_dir)
+    if (chdir (start_dir))
+      avta_warning ("chdir", strerror (errno));
+
+  f = open_config_file ("avatarsay", AVT_TRUE);
+  if (!f)
+    saving_failed ();
+  else
+    {
+      if (avatar_image && *avatar_image)
+	fprintf (f, "AVATARIMAGE=%s\n", avatar_image);
+
+      fprintf (f, "BACKGROUNDCOLOR=%s\n", bg_color_name);
+      fprintf (f, "BALLOONCOLOR=%s\n", balloon_color_name);
+
+      if (fclose (f) == -1)
+	saving_failed ();
+      else
+	successfully_saved ();
+    }
+}
+
 #define UNACCESSIBLE(x) \
      avt_set_text_color (0x88, 0x88, 0x88); \
      avt_say(x); \
@@ -2686,10 +2747,10 @@ settings_submenu (void)
   int choice, menu_start;
 
   choice = 0;
-  while (choice != 5)
+  while (choice != 6)
     {
       avt_normal_text ();
-      avt_set_balloon_size (10, 42);
+      avt_set_balloon_size (8, 42);
       avt_clear ();
 
       avt_set_text_delay (0);
@@ -2713,11 +2774,8 @@ settings_submenu (void)
 	  avt_say (L"2) Das Avatar-Bild auswechseln\n");
 	  avt_say (L"3) eine andere Hintergrund-Farbe auswählen\n");
 	  avt_say (L"4) eine andere Spechblasen-Farbe auswählen\n");
-	  avt_say (L"5) zurück");
-	  avt_bold (AVT_TRUE);
-	  avt_say (L"\n\nAchtung: Man kann die Einstellungen noch\n"
-	           L"nicht speichern!");
-	  avt_bold (AVT_FALSE);
+	  avt_say (L"5) Einstallungen speichern\n");
+	  avt_say (L"6) zurück");
 	  break;
 
 	case ENGLISH:
@@ -2726,17 +2784,15 @@ settings_submenu (void)
 	  avt_say (L"2) exchange the avatar image\n");
 	  avt_say (L"3) select a background color\n");
 	  avt_say (L"4) select a balloon color\n");
-	  avt_say (L"5) back");
-	  avt_bold (AVT_TRUE);
-	  avt_say (L"\n\nAttention:\nYou cannot save the settings, yet!");
-	  avt_bold (AVT_FALSE);
+	  avt_say (L"5) save changes\n");
+	  avt_say (L"6) back");
 	}
 
       avt_lock_updates (AVT_FALSE);
 
       avt_set_text_delay (default_delay);
 
-      if (avt_choice (&choice, menu_start, 5, '1', AVT_FALSE, AVT_FALSE))
+      if (avt_choice (&choice, menu_start, 6, '1', AVT_FALSE, AVT_FALSE))
 	{
 	  avt_set_status (AVT_NORMAL);
 	  return;		/* return to main menu */
@@ -2758,6 +2814,10 @@ settings_submenu (void)
 
 	case 4:
 	  ask_balloon_color ();
+	  break;
+
+	case 5:
+	  save_settings ();
 	  break;
 	}
     }
@@ -2947,29 +3007,59 @@ strip_newline (char *s)
 }
 
 static void
+read_config_file (FILE * f)
+{
+  char s[255];
+
+  while (fgets (s, sizeof (s), f) != NULL)
+    {
+      strip_newline (s);
+
+      if (strncasecmp (s, "AVATARIMAGE=", 12) == 0)
+	set_avatar_image (s + 12);
+
+      if (strncasecmp (s, "BACKGROUNDCOLOR=", 16) == 0)
+	{
+	  avt_set_background_color_name (s + 16);
+	  strncpy (bg_color_name, s + 16, sizeof (bg_color_name));
+	  bg_color_name[sizeof (bg_color_name) - 1] = '\0';
+	}
+
+      if (strncasecmp (s, "BALLOONCOLOR=", 13) == 0)
+	{
+	  avt_set_balloon_color_name (s + 13);
+	  strncpy (balloon_color_name, s + 13, sizeof (balloon_color_name));
+	  balloon_color_name[sizeof (balloon_color_name) - 1] = '\0';
+	}
+    }
+}
+
+static void
 check_config_file (const char *f)
 {
   FILE *cnf;
-  char buf[255];
-  char *s;
 
   cnf = fopen (f, "r");
+
   if (cnf)
     {
-      s = fgets (buf, sizeof (buf), cnf);
-      while (s)
-	{
-	  strip_newline (s);
+      read_config_file (cnf);
+      (void) fclose (cnf);
+    }
+}
 
-	  if (strncasecmp (s, "AVATARIMAGE=", 12) == 0)
-	    set_avatar_image (s + 12);
+/* TODO: combine check_local_config with check_config_file */
+static void
+check_local_config (void)
+{
+  FILE *f;
 
-	  if (strncasecmp (s, "BACKGROUNDCOLOR=", 16) == 0)
-	    avt_set_background_color_name (s + 16);
+  f = open_config_file ("avatarsay", AVT_FALSE);
 
-	  s = fgets (buf, sizeof (buf), cnf);
-	}
-      fclose (cnf);
+  if (f)
+    {
+      read_config_file (f);
+      (void) fclose (f);
     }
 }
 
@@ -3090,8 +3180,11 @@ main (int argc, char *argv[])
 
   default_balloon_color ();
   default_background_color ();
+  strcpy (bg_color_name, "default");
+  strcpy (balloon_color_name, "floral white");
 
   check_config_file ("/etc/avatarsay");
+  check_local_config ();
   checkenvironment ();
   checkoptions (argc, argv);
 

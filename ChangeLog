@@ -1,3 +1,14 @@
+2009-10-01  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtposix.c, mingw/avtwindows.c (open_config_file):
+	new functions
+	avatarsay.c (save_settings, successfully_saved, saving_failed):
+	new functions
+	(settings_submenu): adapted
+	(read_config_file, check_local_config): new functions
+	(check_config_file): adapted
+	(ask_background_color, ask_balloon_color): adapted
+
 2009-09-28  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_pager_mb): add close button

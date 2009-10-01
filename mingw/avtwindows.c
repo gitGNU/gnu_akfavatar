@@ -25,6 +25,7 @@
 #include "akfavatar.h"
 #include "avtaddons.h"
 #include <windows.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -72,4 +73,45 @@ get_user_home (char *home_dir, size_t size)
     strcpy (home_dir, "C:\\");
   else				/* worst case */
     home_dir[0] = '\0';
+}
+
+/* Warning: this is basically untested! */
+FILE *
+open_config_file (const char *name, avt_bool_t writing)
+{
+  FILE *f;
+  char *appdata;
+  char path[1024];
+
+  f = NULL;
+
+  appdata = getenv ("APPDATA");
+
+  if (appdata)
+    snprintf (path, sizeof (path), "%s\\akfavatar\\%s.cnf", appdata, name);
+  else				/* use current directory as fallback */
+    snprintf (path, sizeof (path), "%s.cnf", name);
+
+  if (!writing)
+    {
+      f = fopen (path, "r");
+    }
+  else				/* writing */
+    {
+      f = fopen (path, "w");
+
+      /* if that fails, try to create the directory */
+      if (!f && appdata)
+	{
+	  snprintf (path, sizeof (path), "%s\\akfavatar", appdata);
+	  if (mkdir (path) > -1)
+	    {
+	      snprintf (path, sizeof (path), "%s\\akfavatar\\%s.cnf",
+			appdata, name);
+	      f = fopen (path, "w");
+	    }
+	}
+    }
+
+  return f;
 }

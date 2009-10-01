@@ -18,7 +18,9 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "akfavatar.h"
 #include "avtaddons.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
@@ -68,4 +70,61 @@ get_user_home (char *home_dir, size_t size)
   strncpy (home_dir, home, size);
   if (size > 0)
     home_dir[size - 1] = '\0';
+}
+
+FILE *
+open_config_file (const char *name, avt_bool_t writing)
+{
+  FILE *f;
+  char home[1024], path[1024];
+  char *xdg_config_home;
+
+  f = NULL;
+
+  /*
+   * more infor on XDG_CONFIG_HOME on
+   * http://freedesktop.org/wiki/Specifications/basedir-spec
+   */
+  xdg_config_home = getenv ("XDG_CONFIG_HOME");
+  get_user_home (home, sizeof (home));
+
+  if (xdg_config_home)
+    snprintf (path, sizeof (path), "%s/akfavatar/%s", xdg_config_home, name);
+  else
+    snprintf (path, sizeof (path), "%s/.config/akfavatar/%s", home, name);
+
+  if (!writing)
+    {
+      f = fopen (path, "r");
+    }
+  else				/* writing */
+    {
+      f = fopen (path, "w");
+
+      /* if that fails, try to create directories */
+      if (!f)
+	{
+	  if (xdg_config_home)
+	    {
+	      snprintf (path, sizeof (path), "%s/akfavatar", xdg_config_home);
+	      mkdir (path, 0700);
+	      snprintf (path, sizeof (path), "%s/akfavatar/%s",
+			xdg_config_home, name);
+	    }
+	  else
+	    {
+	      snprintf (path, sizeof (path), "%s/.config", home);
+	      mkdir (path, 0700);
+	      snprintf (path, sizeof (path), "%s/.config/akfavatar", home);
+	      mkdir (path, 0700);
+	      snprintf (path, sizeof (path), "%s/.config/akfavatar/%s", home,
+			name);
+	    }
+
+	  /* try again */
+	  f = fopen (path, "w");
+	}
+    }
+
+  return f;
 }
