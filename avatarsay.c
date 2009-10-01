@@ -2705,6 +2705,8 @@ save_settings (void)
     if (chdir (start_dir))
       avta_warning ("chdir", strerror (errno));
 
+  window_mode = avt_get_mode ();
+
   f = open_config_file ("avatarsay", AVT_TRUE);
   if (!f)
     saving_failed ();
@@ -2715,6 +2717,7 @@ save_settings (void)
 
       fprintf (f, "BACKGROUNDCOLOR=%s\n", bg_color_name);
       fprintf (f, "BALLOONCOLOR=%s\n", balloon_color_name);
+      fprintf (f, "MODE=%d\n", window_mode);
 
       if (fclose (f) == -1)
 	saving_failed ();
@@ -3029,6 +3032,11 @@ read_config_file (FILE * f)
 	  avt_set_balloon_color_name (s + 13);
 	  strncpy (balloon_color_name, s + 13, sizeof (balloon_color_name));
 	  balloon_color_name[sizeof (balloon_color_name) - 1] = '\0';
+	}
+
+      if (strncasecmp (s, "MODE=", 5) == 0)
+	{
+	  window_mode = atoi (s + 5);
 	}
     }
 }

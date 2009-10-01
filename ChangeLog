@@ -13,6 +13,9 @@
 
 	* akfavatar.h, avatar.c (get_mode): new function
 
+	* avatarsay.c (save_settings, read_config_file):
+	read/restore window mode in config file
+
 2009-09-28  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_pager_mb): add close button
