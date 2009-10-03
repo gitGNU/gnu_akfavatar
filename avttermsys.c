@@ -41,11 +41,6 @@
 #define TERM "linux"
 #define BWTERM "linux-m"
 
-/* hack to get a macro stringified :-( */
-#define XSTR(x) STR(x)
-#define STR(x) #x
-
-
 /* set terminal size */
 extern void
 avta_term_size (int fd AVT_UNUSED, int height AVT_UNUSED,
@@ -197,7 +192,7 @@ avta_term_initialize (int *input_fd, int width, int height,
 	putenv ("TERM=" TERM);
 
       /* programs can identify avatarsay with this */
-      putenv ("AKFAVTTERM=" XSTR (AVTVERSIONNR));
+      putenv ("AKFAVTTERM=" AVTVERSIONNR);
 
       if (working_dir)
 	(void) chdir (working_dir);

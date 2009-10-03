@@ -354,7 +354,7 @@ cat > version.h << EOF
 /* This file was generated automatically by configure. Do not edit. */
 
 #define AVTVERSION "${VERSION}.${SUBVERSION}.${REVISION}${VARIANT}"
-#define AVTVERSIONNR ${VERSIONNR}
+#define AVTVERSIONNR "${VERSIONNR}"
 EOF
 
 rm -f Makefile
