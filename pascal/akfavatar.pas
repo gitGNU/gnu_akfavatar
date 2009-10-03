@@ -133,6 +133,15 @@ procedure AvatarImageFile(FileName: string);
 { but it can be changed later }
 procedure AvatarImageData(data: pointer; size: LongInt);
 
+{ load the Avatar image from XBM-data }
+{ use the tool xbm2pas to import the data }
+{ should be used before any output took place }
+{ but it can be changed later }
+{ example: 
+  AvatarImageXBM(addr(img_bits), img_width, img_height, 'black'); }
+procedure AvatarImageXBM(bits: pointer; width, height: integer; 
+                         colorname: string);
+
 { set a different background color }
 { should be used before any output took place }
 procedure setBackgroundColor(red, green, blue: byte);
@@ -249,10 +258,16 @@ procedure MoveAvatarOut;
 { loads image
   after that call delay or waitkey 
   the supported image formats depend on your libraries
-  uncompressed BMP is always supported
+  XPM and uncompressed BMP is always supported
 }
 function ShowImageFile(FileName: string): boolean;
 procedure ShowImageData(data: pointer; size: LongInt);
+
+{ use the tool xbm2pas to import the X Bitmap data }
+{ example: 
+  SgowImageXBM(addr(img_bits), img_width, img_height, 'black'); }
+procedure ShowImageXBM(bits: pointer; width, height: integer; 
+                       colorname: string);
 
 { play a short sound as with chr(7) }
 procedure Beep;
@@ -487,6 +502,10 @@ function avt_import_image_file (FileName: CString): PAvatarImage;
 function avt_import_image_data(Data: Pointer; size: CInteger): PAvatarImage;
   libakfavatar 'avt_import_image_data';
 
+function avt_import_xbm(bits: Pointer; width, height: CInteger;
+                        colorname: CString): PAvatarImage;
+  libakfavatar 'avt_import_xbm';
+
 function avt_change_avatar_image(image: PAvatarImage): CInteger;
   libakfavatar 'avt_change_avatar_image';
 
@@ -498,6 +517,10 @@ function avt_show_image_file(FileName: CString): CInteger;
 
 function avt_show_image_data(Data: pointer; size: CInteger): CInteger;
   libakfavatar 'avt_show_image_data';
+
+function avt_show_image_xbm(bits: pointer; widrh, height: CInteger;
+                            colorname: CString): CInteger;
+  libakfavatar 'avt_show_image_xbm';
 
 procedure avt_set_background_color (red, green, blue: CInteger);
   libakfavatar 'avt_set_background_color';
@@ -692,6 +715,21 @@ begin
 if AvatarImage <> NIL then avt_free_image(AvatarImage);
 
 AvatarImage := avt_import_image_data(data, size);
+
+if initialized then
+  begin
+  avt_change_avatar_image(AvatarImage);
+  AvatarImage := NIL
+  end
+end;
+
+procedure AvatarImageXBM(bits: pointer; width, height: integer;
+                         colorname: string);
+begin
+if AvatarImage <> NIL then avt_free_image(AvatarImage);
+
+AvatarImage := avt_import_xbm(bits, width, height, 
+                              String2CString(colorname));
 
 if initialized then
   begin
@@ -927,6 +965,19 @@ begin
 if not initialized then initializeAvatar;
 
 result := avt_show_image_data (data, size);
+if result = 1 then Halt; { halt requested }
+
+{ ignore failure to show image }
+end;
+
+procedure ShowImageXBM(bits: pointer; width, height: integer; 
+                       colorname: string);
+var result : CInteger;
+begin
+if not initialized then initializeAvatar;
+
+result := avt_show_image_xbm (bits, width, height, 
+                              String2CString(colorname));
 if result = 1 then Halt; { halt requested }
 
 { ignore failure to show image }

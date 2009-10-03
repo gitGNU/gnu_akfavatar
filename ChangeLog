@@ -1,3 +1,10 @@
+2009-10-03  Andreas K. Foerster  <info@akfoerster.de>
+
+	* pascal/xbm2pas: new tool
+
+	* pascal/akfavatar.pas (AvatarImageXBM, ShowImageXBM):
+	new functions
+
 2009-10-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtposix.c, mingw/avtwindows.c (open_config_file):

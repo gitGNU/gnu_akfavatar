@@ -1,0 +1,37 @@
+#!/usr/bin/awk -f
+
+# Convert X Bitmaps (XBM) into Pascal-code (new awk)
+#
+# Example-Usage:
+# ./xbm2pas image1.xbm image2.xbm > images.inc
+#
+# Author: Andreas K. Foerster
+# This script is free software; you have unlimited permission
+# to copy, distribute and modify it.
+
+/^#define .+_width/    { width = $3;  print "const " $2 " = " width ";"; }
+/^#define .+_height/   { height = $3; print "const " $2 " = " height ";"; }
+/^#define .+_[xy]_hot/ { print "const " $2 " = " $3 ";"; }
+
+/^static unsigned (char|short) .+_bits\[\] = {/  {
+   if ($3 == "char")  # X11 format
+     {
+       pas_type = "byte";
+       values_per_line = int(width / 8);
+       if (width % 8 != 0) values_per_line++;
+       values = values_per_line * height;
+     }
+   else if ($3 == "short")  # X10 format - deprecated!
+     {
+       pas_type = "word";
+       values_per_line = int(width / 16);
+       if (width % 16 != 0) values_per_line++;
+       values = values_per_line * height;
+     }
+
+   sub(/\[\]/, "", $4);
+
+   print "const " $4 " : array[0.." values-1 "] of " pas_type " = (";
+}
+
+/0x/ { gsub(/0x/, "$"); sub(/};/, ");\n"); print $0; }
