@@ -265,7 +265,7 @@ procedure ShowImageData(data: pointer; size: LongInt);
 
 { use the tool xbm2pas to import the X Bitmap data }
 { example: 
-  SgowImageXBM(addr(img_bits), img_width, img_height, 'black'); }
+  ShowImageXBM(addr(img_bits), img_width, img_height, 'black'); }
 procedure ShowImageXBM(bits: pointer; width, height: integer; 
                        colorname: string);
 
