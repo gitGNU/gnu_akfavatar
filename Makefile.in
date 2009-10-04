@@ -410,13 +410,14 @@ dist: info html man distclean
 	   akfavatar.xpm info.xpm bin2c.c \
 	   7x14.bdf 9x18.bdf font.c \
 	   alert.flac alert.au \
-	   configure Makefile.in \
+	   configure Makefile.in text2c \
 	   $(PKGNAME)/
 	
 	mkdir $(PKGNAME)/pascal
 	ln pascal/README pascal/akfavatar.pas pascal/example.pas \
 	   pascal/multiply.pas pascal/positive.au pascal/negative.au \
 	   pascal/neutral.au pascal/teacher.xpm \
+	   pascal/xpm2pas pascal/xbm2pas \
 	   pascal/gpcavatar pascal/fpcavatar \
 	   $(PKGNAME)/pascal/
 	
