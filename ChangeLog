@@ -1,9 +1,16 @@
+2009-10-04  Andreas K. Foerster  <info@akfoerster.de>
+
+	* pascal/xpm2pas: new tool
+
+	* pascal/akfavatar.pas (AvatarImageXPM, ShowImageXPM):
+	new procedures
+
 2009-10-03  Andreas K. Foerster  <info@akfoerster.de>
 
 	* pascal/xbm2pas: new tool
 
 	* pascal/akfavatar.pas (AvatarImageXBM, ShowImageXBM):
-	new functions
+	new procedures
 
 2009-10-01  Andreas K. Foerster  <info@akfoerster.de>
 

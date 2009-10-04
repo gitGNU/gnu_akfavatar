@@ -133,6 +133,13 @@ procedure AvatarImageFile(FileName: string);
 { but it can be changed later }
 procedure AvatarImageData(data: pointer; size: LongInt);
 
+{ load the Avatar image from XPM-data }
+{ use the tool xpm2pas to import the data }
+{ should be used before any output took place }
+{ but it can be changed later }
+{ example:  AvatarImageXPM(addr(image)); }
+procedure AvatarImageXPM(data: pointer);
+
 { load the Avatar image from XBM-data }
 { use the tool xbm2pas to import the data }
 { should be used before any output took place }
@@ -262,6 +269,10 @@ procedure MoveAvatarOut;
 }
 function ShowImageFile(FileName: string): boolean;
 procedure ShowImageData(data: pointer; size: LongInt);
+
+{ use the tool xpm2pas to import the X Pixmap data }
+{ example: ShowImageXPM(addr(image)); }
+procedure ShowImageXPM(data: pointer);
 
 { use the tool xbm2pas to import the X Bitmap data }
 { example: 
@@ -506,6 +517,9 @@ function avt_import_xbm(bits: Pointer; width, height: CInteger;
                         colorname: CString): PAvatarImage;
   libakfavatar 'avt_import_xbm';
 
+function avt_import_xpm(data: Pointer): PAvatarImage;
+  libakfavatar 'avt_import_xpm';
+
 function avt_change_avatar_image(image: PAvatarImage): CInteger;
   libakfavatar 'avt_change_avatar_image';
 
@@ -521,6 +535,9 @@ function avt_show_image_data(Data: pointer; size: CInteger): CInteger;
 function avt_show_image_xbm(bits: pointer; widrh, height: CInteger;
                             colorname: CString): CInteger;
   libakfavatar 'avt_show_image_xbm';
+
+function avt_show_image_xpm(data: pointer): CInteger;
+  libakfavatar 'avt_show_image_xpm';
 
 procedure avt_set_background_color (red, green, blue: CInteger);
   libakfavatar 'avt_set_background_color';
@@ -715,6 +732,19 @@ begin
 if AvatarImage <> NIL then avt_free_image(AvatarImage);
 
 AvatarImage := avt_import_image_data(data, size);
+
+if initialized then
+  begin
+  avt_change_avatar_image(AvatarImage);
+  AvatarImage := NIL
+  end
+end;
+
+procedure AvatarImageXPM(data: pointer);
+begin
+if AvatarImage <> NIL then avt_free_image(AvatarImage);
+
+AvatarImage := avt_import_xpm(data);
 
 if initialized then
   begin
@@ -965,6 +995,17 @@ begin
 if not initialized then initializeAvatar;
 
 result := avt_show_image_data (data, size);
+if result = 1 then Halt; { halt requested }
+
+{ ignore failure to show image }
+end;
+
+procedure ShowImageXPM(data: pointer);
+var result : CInteger;
+begin
+if not initialized then initializeAvatar;
+
+result := avt_show_image_xpm (data);
 if result = 1 then Halt; { halt requested }
 
 { ignore failure to show image }

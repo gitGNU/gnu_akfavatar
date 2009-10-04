@@ -1,0 +1,37 @@
+#!/usr/bin/awk -f
+
+# Convert X Pixmaps (XPM) into Pascal-code (new awk)
+# (works for me - but don't rely on it!)
+#
+# Example-Usage:
+# ./xpm2pas image1.xpm image2.xpm > images.inc
+#
+# Author: Andreas K. Foerster
+# This script is free software; you have unlimited permission
+# to copy, distribute and modify it.
+
+/\/\* XPM \*\// { $0 = ""; print "{ converted form XPM with xpm2pas }"; }
+
+# preserve other comments
+/\/\*/, /\*\// { gsub (/\/\*/, "{"); gsub (/\*\//, "}"); print; }
+
+/^static char \* ?.*_xpm\[\] = {/ {
+  picname = $4;
+  sub(/\[\]/, "", picname);
+  sub(/_xpm/, "", picname);
+  zl = 0;
+  }
+
+zl == 0 && /"[0-9]+ [0-9]+ [0-9]+ [0-9]+/ {
+  print "";
+  print "const " picname " : array[0.." ($2 + $3) "] of PChar = (";
+  # one less for the 0, but then again one more for the value-line
+  }
+
+/".*"/ {
+  zl++;
+  gsub (/'/, "\\");  # \ is no problem in Pascal, only in C
+  gsub (/"/, "'");
+  sub (/'};/, "');\n");
+  print;
+  }
