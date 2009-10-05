@@ -13,7 +13,7 @@
 /^#define .+_height/   { height = $3; print "const " $2 " = " height ";"; }
 /^#define .+_[xy]_hot/ { print "const " $2 " = " $3 ";"; }
 
-/^static unsigned (char|short) .+_bits\[\] = {/  {
+/^static unsigned (char|short) .+_bits\[\] = \{/  {
    if ($3 == "char")  # X11 format
      {
        pas_type = "byte";
