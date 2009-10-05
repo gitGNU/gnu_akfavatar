@@ -13,15 +13,20 @@
 /^#define .+_height/   { height = $3; print "const " $2 " = " height ";"; }
 /^#define .+_[xy]_hot/ { print "const " $2 " = " $3 ";"; }
 
-/^static unsigned (char|short) .+_bits\[\] = \{/  {
-   if ($3 == "char")  # X11 format
+/(char|short) .+_bits.*/  {
+   if ($2 == "unsigned") { c_type = $3; name = $4; }
+                    else { c_type = $2; name = $3; }
+
+   sub(/\[\]/, "", name);
+
+   if (c_type == "char")  # X11 format
      {
        pas_type = "byte";
        values_per_line = int(width / 8);
        if (width % 8 != 0) values_per_line++;
        values = values_per_line * height;
      }
-   else if ($3 == "short")  # X10 format - deprecated!
+   else if (c_type == "short")  # X10 format - deprecated!
      {
        pas_type = "word";
        values_per_line = int(width / 16);
@@ -29,9 +34,7 @@
        values = values_per_line * height;
      }
 
-   sub(/\[\]/, "", $4);
-
-   print "const " $4 " : array[0.." values-1 "] of " pas_type " = (";
+   print "const " name " : array[0.." values-1 "] of " pas_type " = (";
 }
 
-/0x/ { gsub(/0x/, "$"); sub(/};/, ");\n"); print $0; }
+/0x/ { gsub(/0x/, "$"); sub(/\};/, ");\n"); print $0; }
