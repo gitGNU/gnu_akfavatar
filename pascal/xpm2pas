@@ -15,9 +15,10 @@
 # preserve other comments
 /\/\*/, /\*\// { gsub (/\/\*/, "{"); gsub (/\*\//, "}"); print; }
 
-/^static char \* ?.*_xpm\[\] = {/ {
-  picname = $4;
+/^static char \* ?.*\[\] = {/ {
+  picname = ($4 == "=") ? $3 : $4;
   sub(/\[\]/, "", picname);
+  sub(/\*/, "", picname);
   sub(/_xpm/, "", picname);
   zl = 0;
   }
@@ -35,3 +36,5 @@ zl == 0 && /"[0-9]+ [0-9]+ [0-9]+ [0-9]+/ {
   sub (/'};/, "');\n");
   print;
   }
+
+/^};$/ { print ");\n"; }
