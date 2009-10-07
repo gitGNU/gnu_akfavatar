@@ -392,7 +392,7 @@ multiplizieren: $(srcdir)/pascal/multiply.pas
 	-$(srcdir)/pascal/fpcavatar -dRELEASE -ddeutsch -FE. -o$@ \
 	    $(srcdir)/pascal/multiply.pas $(LOCAL_FPC_RPATH)
 
-dist: info html man distclean
+dist: info html man
 	mkdir $(PKGNAME)
 	ln README INSTALL AUTHORS COPYING ChangeLog lrun \
 	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
@@ -440,8 +440,8 @@ dist: info html man distclean
 	   $(PKGNAME)/mingw/
 	
 	tar -cvf $(PKGNAME).tar $(PKGNAME)/
-	bzip2 $(PKGNAME).tar
 	rm -rf $(PKGNAME)/
+	bzip2 -f $(PKGNAME).tar
 
 dist-bin: avatarsay multiply multiplizieren info html
 	mkdir $(BINPKGNAME)
@@ -467,5 +467,5 @@ dist-bin: avatarsay multiply multiplizieren info html
 	#strip $(BINPKGNAME)/avatarsay
 	#strip $(BINPKGNAME)/$(LIBNAME)
 	tar -cvf $(BINPKGNAME).$(SYSTEM).$(ARCH).tar $(BINPKGNAME)/
-	bzip2 $(BINPKGNAME).$(SYSTEM).$(ARCH).tar
 	rm -rf $(BINPKGNAME)/
+	bzip2 -f $(BINPKGNAME).$(SYSTEM).$(ARCH).tar
