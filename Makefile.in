@@ -11,6 +11,7 @@ SHELL = /bin/sh
 INSTALL_PROGRAM = $(INSTALL) -m 755
 INSTALL_DATA = $(INSTALL) -m 644
 
+AWK = awk
 SOX = sox
 
 # Soundfile for the alert (\a)
@@ -44,10 +45,6 @@ Makefile: $(srcdir)/configure $(srcdir)/Makefile.in
 	./config.status
 
 # local tool: don't use $(CC) because it could be a cross-compiler
-bin2c: $(srcdir)/bin2c.c
-	cc -o $@ $(srcdir)/bin2c.c
-
-# local tool: don't use $(CC) because it could be a cross-compiler
 bdfread: $(srcdir)/bdfread.c
 	cc -o $@ $(srcdir)/bdfread.c
 
@@ -56,8 +53,9 @@ $(srcdir)/alert.au: $(ALERT)
 	@echo "creating headerless old AU file"
 	$(SOX) $(ALERT) --type .ul --channels 1 $@ rate -l 8k
 
-alert.c: $(srcdir)/alert.au bin2c
-	./bin2c avt_alert_data < $(srcdir)/alert.au > $@
+alert.c: $(srcdir)/alert.au
+	od -t x1 $(srcdir)/alert.au \
+	  | $(AWK) -f $(srcdir)/od2c -v name=avt_alert_data > $@
 
 filechooser.o: $(srcdir)/filechooser.c \
                 $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h
@@ -345,7 +343,6 @@ clean:
 	-rm -f *~
 	-rm -f *.o *.lo
 	-rm -f *.ppu *.gpi *.gpm
-	-rm -f bin2c
 	-rm -f bdfread
 	-rm -f alert.c
 	-rm -f ucsfont9x18.c ucsfont7x14.c
@@ -407,7 +404,7 @@ dist: info html man
 	   avtmsg.c arch.c avtcolors.h \
 	   avtman avtcmd example.c fsdemo-??.avt \
 	   gnome-akfavatar akfoerster-avatarsay.desktop bdfread.c \
-	   akfavatar.xpm info.xpm bin2c.c \
+	   akfavatar.xpm info.xpm \
 	   7x14.bdf 9x18.bdf font.c \
 	   alert.flac alert.au \
 	   configure Makefile.in text2c \

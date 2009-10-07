@@ -1,3 +1,7 @@
+2009-10-07  Andreas K. Foerster  <info@akfoerster.de>
+
+	* replaced bin2c.c with my own od2c
+
 2009-10-04  Andreas K. Foerster  <info@akfoerster.de>
 
 	* pascal/xpm2pas: new tool

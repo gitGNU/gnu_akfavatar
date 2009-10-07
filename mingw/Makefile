@@ -10,6 +10,7 @@ AR = $(TARGET)-ar
 STRIP = $(TARGET)-strip
 WINDRES = $(TARGET)-windres
 RANLIB = $(TARGET)-ranlib
+AWK = awk
 CFLAGS = -O2 -Wall -Wextra
 LDFLAGS = 
 
@@ -178,10 +179,6 @@ libinfo.o: libinfo.rc
 	$(WINDRES) -o $@ -i libinfo.rc
 
 # don't use $(CC) because it is a cross-compiler
-bin2c: $(srcdir)/bin2c.c
-	cc -o $@ $(srcdir)/bin2c.c
-
-# don't use $(CC) because it is a cross-compiler
 bdfread: $(srcdir)/bdfread.c
 	cc -o $@ $(srcdir)/bdfread.c
 
@@ -190,8 +187,9 @@ $(srcdir)/alert.au: $(srcdir)/alert.flac
 	@echo "create headerless old AU file"
 	sox $(srcdir)/alert.flac -t .ul --rate 8000 --channels 1 $@
 
-alert.c: $(srcdir)/alert.au bin2c
-	./bin2c avt_alert_data < $(srcdir)/alert.au > $@
+alert.c: $(srcdir)/alert.au
+	od -t x1 $(srcdir)/alert.au \
+	  | $(AWK) -f $(srcdir)/od2c -v name=avt_alert_data > $@
 
 avatar-default.o: $(srcdir)/avatar-default.c $(default_avatar)
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avatar-default.c
@@ -325,7 +323,6 @@ clean:
 	-rm -f libinfo.rc avtsayinfo.rc
 	-rm -f alert.c
 	-rm -f ucsfont7x14.c ucsfont9x18.c
-	-rm -f bin2c bin2c.exe
 	-rm -f bdfread bdfread.exe
 
 distclean: clean
