@@ -9,32 +9,32 @@
 # This script is free software; you have unlimited permission
 # to copy, distribute and modify it.
 
-/^#define .+_width/    { width = $3;  print "const " $2 " = " width ";"; }
-/^#define .+_height/   { height = $3; print "const " $2 " = " height ";"; }
-/^#define .+_[xy]_hot/ { print "const " $2 " = " $3 ";"; }
+/^#define .+_width/    { width = $3;  print "const " $2 " = " width ";" }
+/^#define .+_height/   { height = $3; print "const " $2 " = " height ";" }
+/^#define .+_[xy]_hot/ { print "const " $2 " = " $3 ";" }
 
 /(char|short) .+_bits.*/  {
-   if ($2 == "unsigned") { c_type = $3; name = $4; }
-                    else { c_type = $2; name = $3; }
+   if ($2 == "unsigned") { c_type = $3; name = $4 }
+                    else { c_type = $2; name = $3 }
 
-   sub(/\[\]/, "", name);
+   sub(/\[\]/, "", name)
 
    if (c_type == "char")  # X11 format
      {
-       pas_type = "byte";
-       values_per_line = int(width / 8);
-       if (width % 8 != 0) values_per_line++;
-       values = values_per_line * height;
+       pas_type = "byte"
+       values_per_line = int(width / 8)
+       if (width % 8 != 0) values_per_line++
+       values = values_per_line * height
      }
    else if (c_type == "short")  # X10 format - deprecated!
      {
-       pas_type = "word";
-       values_per_line = int(width / 16);
-       if (width % 16 != 0) values_per_line++;
-       values = values_per_line * height;
+       pas_type = "word"
+       values_per_line = int(width / 16)
+       if (width % 16 != 0) values_per_line++
+       values = values_per_line * height
      }
 
-   print "const " name " : array[0.." values-1 "] of " pas_type " = (";
+   print "const " name " : array[0.." values-1 "] of " pas_type " = ("
 }
 
-/0x/ { gsub(/0x/, "$"); sub(/\};/, ");\n"); print $0; }
+/0x/ { gsub(/0x/, "$"); sub(/\};/, ");\n"); print }
