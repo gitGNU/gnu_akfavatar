@@ -407,7 +407,7 @@ dist: info html man
 	   akfavatar.xpm info.xpm \
 	   7x14.bdf 9x18.bdf font.c \
 	   alert.flac alert.au \
-	   configure Makefile.in text2c \
+	   configure Makefile.in text2c od2c \
 	   $(PKGNAME)/
 	
 	mkdir $(PKGNAME)/pascal
