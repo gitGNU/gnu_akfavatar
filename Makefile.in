@@ -54,8 +54,8 @@ $(srcdir)/alert.au: $(ALERT)
 	$(SOX) $(ALERT) --type .ul --channels 1 $@ rate -l 8k
 
 alert.c: $(srcdir)/alert.au
-	od -t x1 -v $(srcdir)/alert.au \
-	  | $(AWK) -f $(srcdir)/od2c -v name=avt_alert_data > $@
+	$(AWK) -f $(srcdir)/data2c -v name=avt_alert_data \
+	  $(srcdir)/alert.au > $@
 
 filechooser.o: $(srcdir)/filechooser.c \
                 $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h
@@ -407,7 +407,7 @@ dist: info html man
 	   akfavatar.xpm info.xpm \
 	   7x14.bdf 9x18.bdf font.c \
 	   alert.flac alert.au \
-	   configure Makefile.in text2c od2c \
+	   configure Makefile.in text2c data2c \
 	   $(PKGNAME)/
 	
 	mkdir $(PKGNAME)/pascal

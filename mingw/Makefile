@@ -188,8 +188,8 @@ $(srcdir)/alert.au: $(srcdir)/alert.flac
 	sox $(srcdir)/alert.flac -t .ul --rate 8000 --channels 1 $@
 
 alert.c: $(srcdir)/alert.au
-	od -t x1 -v $(srcdir)/alert.au \
-	  | $(AWK) -f $(srcdir)/od2c -v name=avt_alert_data > $@
+	$(AWK) -f $(srcdir)/data2c -v name=avt_alert_data \
+	  $(srcdir)/alert.au > $@
 
 avatar-default.o: $(srcdir)/avatar-default.c $(default_avatar)
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avatar-default.c

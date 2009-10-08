@@ -1,6 +1,6 @@
-2009-10-07  Andreas K. Foerster  <info@akfoerster.de>
+2009-10-08  Andreas K. Foerster  <info@akfoerster.de>
 
-	* replaced bin2c.c with my own od2c
+	* replaced bin2c.c with my own data2c
 
 2009-10-04  Andreas K. Foerster  <info@akfoerster.de>
 
