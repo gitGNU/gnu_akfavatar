@@ -5,9 +5,11 @@
 # Example-Usage:
 # ./xbm2pas image1.xbm image2.xbm > images.inc
 #
-# Author: Andreas K. Foerster
-# This script is free software; you have unlimited permission
-# to copy, distribute and modify it.
+# Copyright (c) 2009 Andreas K. Foerster
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.
 
 /^#define .+_width/    { width = $3;  print "const " $2 " = " width ";" }
 /^#define .+_height/   { height = $3; print "const " $2 " = " height ";" }

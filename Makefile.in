@@ -54,7 +54,7 @@ $(srcdir)/alert.au: $(ALERT)
 	$(SOX) $(ALERT) --type .ul --channels 1 $@ rate -l 8k
 
 alert.c: $(srcdir)/alert.au
-	od -t x1 $(srcdir)/alert.au \
+	od -t x1 -v $(srcdir)/alert.au \
 	  | $(AWK) -f $(srcdir)/od2c -v name=avt_alert_data > $@
 
 filechooser.o: $(srcdir)/filechooser.c \

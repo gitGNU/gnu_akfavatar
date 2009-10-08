@@ -3,11 +3,13 @@
 # Convert output of "od -t x1 <file>" into C-code
 #
 # Example-Usage:
-# od -t x1 audio1.au | ./od2c name=audio1 > audio1.c
+# od -t x1 -v audio1.au | ./od2c name=audio1 > audio1.c
 #
-# Author: Andreas K. Foerster
-# This script is free software; you have unlimited permission
-# to copy, distribute and modify it.
+# Copyright (c) 2009 Andreas K. Foerster
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.
 
 NR == 1 {
   if (name == "") name = "data"

@@ -6,9 +6,11 @@
 # Example-Usage:
 # ./xpm2pas image1.xpm image2.xpm > images.inc
 #
-# Author: Andreas K. Foerster
-# This script is free software; you have unlimited permission
-# to copy, distribute and modify it.
+# Copyright (c) 2009 Andreas K. Foerster
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.
 
 /\/\* XPM \*\// { print "{ converted form XPM with xpm2pas }"; next }
 
