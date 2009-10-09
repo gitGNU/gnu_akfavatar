@@ -394,6 +394,7 @@ dist: info html man
 	ln README INSTALL AUTHORS COPYING ChangeLog lrun \
 	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
 	   avtccio.c avtcwio.c avtaddons.h filechooser.c avtreadfile.c \
+	   colorchooser.c \
 	   balloonpointer.xbm circle.xbm gnu-head.xpm \
 	   male_user.xpm female_user.xpm \
 	   btn.xpm btn_up.xbm btn_down.xbm btn_left.xbm btn_right.xbm \
