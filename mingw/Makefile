@@ -178,10 +178,6 @@ avtsayinfo.o: avtsayinfo.rc akfavatar.ico
 libinfo.o: libinfo.rc
 	$(WINDRES) -o $@ -i libinfo.rc
 
-# don't use $(CC) because it is a cross-compiler
-bdfread: $(srcdir)/bdfread.c
-	cc -o $@ $(srcdir)/bdfread.c
-
 # alert.au should be in the sourcecode-distribution
 $(srcdir)/alert.au: $(srcdir)/alert.flac
 	@echo "create headerless old AU file"
@@ -213,11 +209,11 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/version.h \
 avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h alert.c
 	$(CC) -c $(SDLCFLAGS) $(CFLAGS) -I. -o $@ $(srcdir)/avatar-audio.c
 
-ucsfont7x14.c: $(srcdir)/7x14.bdf bdfread
-	./bdfread $(srcdir)/7x14.bdf > $@
+ucsfont7x14.c: $(srcdir)/7x14.bdf
+	$(AWK) -f $(srcdir)/bdf2c $(srcdir)/7x14.bdf > $@
 
-ucsfont9x18.c: $(srcdir)/9x18.bdf bdfread
-	./bdfread $(srcdir)/9x18.bdf > $@
+ucsfont9x18.c: $(srcdir)/9x18.bdf
+	$(AWK) -f $(srcdir)/bdf2c $(srcdir)/9x18.bdf > $@
 
 font.o: $(srcdir)/font.c ucsfont7x14.c ucsfont9x18.c
 	$(CC) -c $(SDLCFLAGS) $(CFLAGS) -I. -o $@ $(srcdir)/font.c

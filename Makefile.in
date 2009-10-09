@@ -44,10 +44,6 @@ dist-mingw:
 Makefile: $(srcdir)/configure $(srcdir)/Makefile.in
 	./config.status
 
-# local tool: don't use $(CC) because it could be a cross-compiler
-bdfread: $(srcdir)/bdfread.c
-	cc -o $@ $(srcdir)/bdfread.c
-
 # alert.au should be in the sourcecode-distribution
 $(srcdir)/alert.au: $(ALERT)
 	@echo "creating headerless old AU file"
@@ -79,11 +75,11 @@ avatar-default.o: $(srcdir)/avatar-default.c $(default_avatar) $(srcdir)/akfavat
 avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h alert.c
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avatar-audio.c
 
-ucsfont7x14.c: $(srcdir)/7x14.bdf bdfread
-	./bdfread $(srcdir)/7x14.bdf > $@
+ucsfont7x14.c: $(srcdir)/7x14.bdf
+	$(AWK) -f $(srcdir)/bdf2c $(srcdir)/7x14.bdf > $@
 
-ucsfont9x18.c: $(srcdir)/9x18.bdf bdfread
-	./bdfread $(srcdir)/9x18.bdf > $@
+ucsfont9x18.c: $(srcdir)/9x18.bdf
+	$(AWK) -f $(srcdir)/bdf2c $(srcdir)/9x18.bdf > $@
 
 font.o: $(srcdir)/font.c ucsfont7x14.c ucsfont9x18.c
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/font.c
@@ -403,9 +399,9 @@ dist: info html man
 	   avatarsay.c avtposix.c avtterm.c avttermsys.h avttermsys.c \
 	   avtmsg.c arch.c avtcolors.h \
 	   avtman avtcmd example.c fsdemo-??.avt \
-	   gnome-akfavatar akfoerster-avatarsay.desktop bdfread.c \
+	   gnome-akfavatar akfoerster-avatarsay.desktop \
 	   akfavatar.xpm info.xpm \
-	   7x14.bdf 9x18.bdf font.c \
+	   7x14.bdf 9x18.bdf bdf2c font.c \
 	   alert.flac alert.au \
 	   configure Makefile.in text2c data2c \
 	   $(PKGNAME)/

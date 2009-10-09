@@ -1,0 +1,96 @@
+#!/usr/bin/awk -f
+
+# bdf2c - Convert bdf font into C-code
+# only for fixed-width fonts!
+#
+# Copyright (c) 2009 Andreas K. Foerster
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.
+
+BEGIN { width=height=started=default_char=charoffset=maxchar = 0 }
+
+/^FONT / { print "/* " $0 " */" }
+
+/^COPYRIGHT / { print "/* " $0 " */" }
+
+/^CHARS / { print "/* " $0 " */" }
+
+/^DEFAULT_CHAR/ { default_char = $2 }
+
+/^FONTBOUNDINGBOX/ { width = $2; height = $3 }
+
+/^STARTCHAR / {
+  if (started == 0)
+    {
+      print "\n#include <stddef.h>\n\n#define DEFAULT_CHAR " default_char
+      if (width <= 8)
+        print "\nstatic const unsigned char font[] = {"
+      else
+        print "\nstatic const unsigned short font[] = {"
+     started = 1
+    }
+  else print ""
+
+  #print "/* " $2 " */"
+  }
+
+/^ENCODING / {
+  table[$2] = charoffset++
+  if (0+$2 > maxchar) maxchar = 0+$2
+  }
+
+/^BITMAP/, /^ENDCHAR/ {
+  if ($1 !~ /^BITMAP/ && $1 !~ /^ENDCHAR/) printf "0x%s,", $1
+  }
+
+function writetranstable(    i, blockstart)
+{
+  if (width <= 8)
+    print "const unsigned char *"
+  else
+    print "const unsigned short *"
+
+  print "get_font_char (wchar_t ch)"
+  print "{"
+  printf "  "
+
+  blockstart = 0
+
+  # we need the numbers in order
+  for (i = 0; i <= maxchar; i++)
+    {
+      if (i in table && table[i] != default_char)
+        {
+          if ((i+1) in table && table[i+1] == table[i] + 1)
+            {
+              if (blockstart == 0) blockstart = i
+            }
+          else
+            {
+              if (blockstart == 0)
+                printf "if (ch == %#06X) return &font[%u];\n", \
+                       i, (table[i] * height)
+              else
+                {
+                  printf "if (ch <= %#06X && ch >= %#06X)", i, blockstart
+                  printf " return &font[(ch - %u) * %u];\n",
+                         (blockstart-table[blockstart]), height
+                }
+              printf "  else "
+              blockstart = 0
+            }
+        }
+    }
+
+  print "return &font[DEFAULT_CHAR];"
+  print "}"
+}
+
+END {
+  # the additional 0 is just to avoid ending with a comma
+  print "\n0 };\n"
+
+  writetranstable()
+  }
