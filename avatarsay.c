@@ -83,12 +83,6 @@
 
 #define BYTE_ORDER_MARK L'\xfeff'
 
-#define default_balloon_color(ignore) \
-       avt_set_balloon_color (255, 250, 240)
-
-#define default_background_color(ignore) \
-       avt_set_background_color (0xE0, 0xD5, 0xC5)
-
 #define OPT_RAW		(1 << 0)
 #define OPT_POPUP	(1 << 1)
 #define OPT_PAGER	(1 << 2)
@@ -2219,13 +2213,13 @@ ask_file (void)
 
       if (background_color_changed)
 	{
-	  default_background_color ();
+	  avt_set_background_color_name (bg_color_name);
 	  background_color_changed = AVT_FALSE;
 	}
 
       if (balloon_color_changed)
 	{
-	  default_balloon_color ();
+	  avt_set_balloon_color_name (balloon_color_name);
 	  balloon_color_changed = AVT_FALSE;
 	}
     }
@@ -2857,10 +2851,10 @@ menu (void)
       avt_set_balloon_size (10, 41);
 
       if (balloon_color_changed)
-	default_balloon_color ();
+	avt_set_balloon_color_name (balloon_color_name);
 
       if (background_color_changed)
-	default_background_color ();
+	avt_set_background_color_name (bg_color_name);
       else
 	avt_clear ();
 
@@ -3191,10 +3185,10 @@ main (int argc, char *argv[])
 #  endif /* not FORCE_ICONV */
 #endif /* not NO_LANGINFO */
 
-  default_balloon_color ();
-  default_background_color ();
   strcpy (bg_color_name, "default");
   strcpy (balloon_color_name, "floral white");
+  avt_set_background_color_name (bg_color_name);
+  avt_set_balloon_color_name (balloon_color_name);
 
   check_config_file ("/etc/avatarsay");
   check_local_config ();

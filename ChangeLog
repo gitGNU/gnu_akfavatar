@@ -7,6 +7,8 @@
 	avatarsay.c (ask_background_color, ask_balloon_color):
 	adapted
 
+	* avatarsay.c: reset colors to given settings
+
 2009-10-08  Andreas K. Foerster  <info@akfoerster.de>
 
 	* replaced bin2c.c with my own data2c (awk)
