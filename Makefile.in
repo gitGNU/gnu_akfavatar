@@ -57,6 +57,9 @@ filechooser.o: $(srcdir)/filechooser.c \
                 $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/filechooser.c
 
+colorchooser.o: $(srcdir)/colorchooser.c $(srcdir)/akfavatar.h
+	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/colorchooser.c
+
 avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h avtcolors.h \
           $(srcdir)/balloonpointer.xbm $(srcdir)/circle.xbm \
           $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
@@ -150,9 +153,10 @@ arch.o: $(srcdir)/arch.c $(srcdir)/avtaddons.h
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/arch.c
 
 libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
-                avtccio.o avtcwio.o avtmsg.o avtreadfile.o
+                avtccio.o avtcwio.o avtmsg.o avtreadfile.o colorchooser.o
 	$(AR) rcu $@ filechooser.o avtterm.o avttermsys.o arch.o \
-	             avtccio.o avtcwio.o avtmsg.o avtreadfile.o
+	             avtccio.o avtcwio.o avtmsg.o avtreadfile.o \
+	             colorchooser.o
 	-$(RANLIB) $@
 
 avtposix.o: $(srcdir)/avtposix.c

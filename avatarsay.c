@@ -2589,26 +2589,32 @@ about_avatarsay (void)
 static void
 ask_background_color ()
 {
-  avt_set_balloon_size (1, 50);
-  avt_set_text_delay (0);
+  const char *color;
 
-  avt_say (L"background-color: ");
+  color = avta_color_selection ();
 
-  if (avt_ask_mb (bg_color_name, sizeof (bg_color_name)) == AVT_NORMAL)
-    avt_set_background_color_name (bg_color_name);
+
+  if (color)
+    {
+      strncpy (bg_color_name, color, sizeof (bg_color_name));
+      bg_color_name[sizeof (bg_color_name) - 1] = '\0';
+      avt_set_background_color_name (bg_color_name);
+    }
 }
 
 static void
 ask_balloon_color ()
 {
-  avt_set_balloon_size (1, 50);
-  avt_set_text_delay (0);
+  const char *color;
 
-  avt_say (L"balloon-color: ");
+  color = avta_color_selection ();
 
-  if (avt_ask_mb (balloon_color_name,
-		  sizeof (balloon_color_name)) == AVT_NORMAL)
-    avt_set_balloon_color_name (balloon_color_name);
+  if (color)
+    {
+      strncpy (balloon_color_name, color, sizeof (balloon_color_name));
+      balloon_color_name[sizeof (balloon_color_name) - 1] = '\0';
+      avt_set_balloon_color_name (balloon_color_name);
+    }
 }
 
 static avt_bool_t

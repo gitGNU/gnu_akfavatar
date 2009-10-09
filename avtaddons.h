@@ -109,7 +109,14 @@ AVT_ADDON void avta_notice (const char *msg1, const char *msg2);
 AVT_ADDON void avta_error (const char *msg1, const char *msg2);
 
 /**********************************************************************
- * Section: avtfilechooser
+ * Section: colorchooser
+ * file-chooser for AKFAvatar
+ **********************************************************************/
+
+AVT_ADDON const char *avta_color_selection (void);
+
+/**********************************************************************
+ * Section: filechooser
  * file-chooser for AKFAvatar
  **********************************************************************/
 
