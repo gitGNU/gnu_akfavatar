@@ -17,7 +17,6 @@
  */
 
 #include "akfavatar.h"
-#include <stdio.h>
 
 /* House symbol */
 #define HOME L" \x2302 "
@@ -48,7 +47,7 @@ avta_color_selection (void)
   /* set maximum size */
   avt_set_balloon_size (0, 30);
 
-  color = NULL;
+  color = c = NULL;
   max_idx = avt_get_max_y ();
   page_entries = max_idx - 2;	/* minus back and forward entries */
 
