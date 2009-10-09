@@ -16,6 +16,7 @@ NR == 1 {
   if (name == "" && FILENAME != "-") {
     name = FILENAME
     gsub (/\./, "_", name) # replace . with _
+    gsub (/-/, "_", name)  # replace - with _
     }
 
   if (name == "") name = "text"
