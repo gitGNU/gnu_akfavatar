@@ -1,3 +1,7 @@
+2009-10-10  Andreas K. Foerster  <info@akfoerster.de>
+
+	* colorchooser.c (manual_entry): new function
+
 2009-10-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* replaced bdfread.c with bdf2c (awk)
