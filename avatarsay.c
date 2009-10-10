@@ -2614,14 +2614,19 @@ ask_balloon_color ()
 static avt_bool_t
 is_graphic_file (const char *filename)
 {
-  /* this list is not complete, not even all supported formats */
   return (strstr (filename, ".xpm") || strstr (filename, ".XPM")
 	  || strstr (filename, ".bmp") || strstr (filename, ".BMP")
 	  || strstr (filename, ".png") || strstr (filename, ".PNG")
 	  || strstr (filename, ".jpg") || strstr (filename, ".JPG")
 	  || strstr (filename, ".jpeg") || strstr (filename, ".JPEG")
 	  || strstr (filename, ".gif") || strstr (filename, ".GIF")
-	  || strstr (filename, ".pcx") || strstr (filename, ".PCX"));
+	  || strstr (filename, ".tif") || strstr (filename, ".TIF")
+	  || strstr (filename, ".tiff") || strstr (filename, ".TIFF")
+	  || strstr (filename, ".pcx") || strstr (filename, ".PCX")
+	  || strstr (filename, ".ppm") || strstr (filename, ".PPM")
+	  || strstr (filename, ".pbm") || strstr (filename, ".PBM")
+	  || strstr (filename, ".pgm") || strstr (filename, ".PGM")
+	  || strstr (filename, ".lbm") || strstr (filename, ".LBM"));
 }
 
 static void
