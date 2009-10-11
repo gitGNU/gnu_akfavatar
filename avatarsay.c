@@ -358,17 +358,7 @@ initialize (void)
   initialized = AVT_TRUE;
 }
 
-#ifdef __WIN32__
-
-/* For Windows users it's not useful to show the options */
-/* But the text refers to the manual */
-static void
-help (void)
-{
-  showversion ();
-  exit (EXIT_SUCCESS);
-}
-
+#if defined(NO_PTY) || defined(NO_MANPAGES)
 static void
 not_available (void)
 {
@@ -394,7 +384,18 @@ not_available (void)
   avt_wait_button ();
   avt_set_status (AVT_NORMAL);
 }
+#endif
 
+#ifdef __WIN32__
+
+/* For Windows users it's not useful to show the options */
+/* But the text refers to the manual */
+static void
+help (void)
+{
+  showversion ();
+  exit (EXIT_SUCCESS);
+}
 
 #else /* not Windows or ReactOS */
 

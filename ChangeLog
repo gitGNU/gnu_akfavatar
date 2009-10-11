@@ -13,6 +13,8 @@
 
 	* avatarsay.c (menu): move terminal one down again
 
+	* avatarsay.c (not_available): use better conditionals
+
 2009-10-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* colorchooser.c (manual_entry): new function
