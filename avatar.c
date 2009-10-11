@@ -405,7 +405,10 @@ static struct
 } load_image;
 
 #define AVT_UPDATE_RECT(rect) \
-  if (!hold_updates) SDL_UpdateRect(screen, rect.x, rect.y, rect.w, rect.h)
+  SDL_UpdateRect(screen, rect.x, rect.y, rect.w, rect.h)
+
+#define AVT_UPDATE_TRECT(rect) \
+  if (!hold_updates) AVT_UPDATE_RECT(rect)
 
 #define AVT_UPDATE_ALL(void) SDL_UpdateRect(screen, 0, 0, 0, 0)
 
@@ -1164,13 +1167,13 @@ avt_show_text_cursor (avt_bool_t on)
 
 	  /* show text-cursor */
 	  SDL_BlitSurface (avt_text_cursor, NULL, screen, &dst);
-	  AVT_UPDATE_RECT (dst);
+	  AVT_UPDATE_TRECT (dst);
 	}
       else
 	{
 	  /* restore saved character */
 	  SDL_BlitSurface (avt_cursor_character, NULL, screen, &dst);
-	  AVT_UPDATE_RECT (dst);
+	  AVT_UPDATE_TRECT (dst);
 	}
 
       text_cursor_actually_visible = on;
@@ -2107,7 +2110,7 @@ avt_erase_characters (int num)
     avt_show_text_cursor (AVT_TRUE);
 
   /* update area */
-  AVT_UPDATE_RECT (clear);
+  AVT_UPDATE_TRECT (clear);
 }
 
 extern void
@@ -2148,7 +2151,7 @@ avt_delete_lines (int line, int num)
   if (text_cursor_visible)
     avt_show_text_cursor (AVT_TRUE);
 
-  AVT_UPDATE_RECT (viewport);
+  AVT_UPDATE_TRECT (viewport);
 }
 
 extern void
@@ -2189,7 +2192,7 @@ avt_insert_lines (int line, int num)
   if (text_cursor_visible)
     avt_show_text_cursor (AVT_TRUE);
 
-  AVT_UPDATE_RECT (viewport);
+  AVT_UPDATE_TRECT (viewport);
 }
 
 extern void
@@ -2303,7 +2306,7 @@ avt_clear (void)
       avt_show_text_cursor (AVT_TRUE);
     }
 
-  AVT_UPDATE_RECT (viewport);
+  AVT_UPDATE_TRECT (viewport);
 }
 
 extern void
@@ -2332,7 +2335,7 @@ avt_clear_up (void)
       avt_show_text_cursor (AVT_TRUE);
     }
 
-  AVT_UPDATE_RECT (dst);
+  AVT_UPDATE_TRECT (dst);
 }
 
 extern void
@@ -2364,7 +2367,7 @@ avt_clear_down (void)
       avt_show_text_cursor (AVT_TRUE);
     }
 
-  AVT_UPDATE_RECT (dst);
+  AVT_UPDATE_TRECT (dst);
 }
 
 extern void
@@ -2403,7 +2406,7 @@ avt_clear_eol (void)
       avt_show_text_cursor (AVT_TRUE);
     }
 
-  AVT_UPDATE_RECT (dst);
+  AVT_UPDATE_TRECT (dst);
 }
 
 /* clear beginning of line */
@@ -2443,7 +2446,7 @@ avt_clear_bol (void)
       avt_show_text_cursor (AVT_TRUE);
     }
 
-  AVT_UPDATE_RECT (dst);
+  AVT_UPDATE_TRECT (dst);
 }
 
 extern void
@@ -2472,7 +2475,7 @@ avt_clear_line (void)
       avt_show_text_cursor (AVT_TRUE);
     }
 
-  AVT_UPDATE_RECT (dst);
+  AVT_UPDATE_TRECT (dst);
 }
 
 extern int
@@ -2489,7 +2492,7 @@ avt_flip_page (void)
   /* the viewport must be updated,
      if it's not updated letter by letter */
   if (!text_delay)
-    AVT_UPDATE_RECT (viewport);
+    AVT_UPDATE_TRECT (viewport);
 
   avt_wait (flip_page_delay);
   avt_clear ();
@@ -3620,7 +3623,7 @@ avt_lock_updates (avt_bool_t lock)
     text_delay = 0;
 
   /* if hold_updates is not set update the textfield */
-  AVT_UPDATE_RECT (textfield);
+  AVT_UPDATE_TRECT (textfield);
 }
 
 static void
@@ -3679,7 +3682,7 @@ avt_pager_screen (const char *txt, int pos, int len)
     }
 
   hold_updates = AVT_FALSE;
-  AVT_UPDATE_RECT (textfield);
+  AVT_UPDATE_TRECT (textfield);
 
   return pos;
 }
@@ -3846,7 +3849,7 @@ avt_pager_mb (const char *txt, int len, int startline)
 		  cursor.y = (balloonheight - 1) * LINEHEIGHT + textfield.y;
 		  pos = avt_pager_line (txt, pos, len);
 		  hold_updates = AVT_FALSE;
-		  AVT_UPDATE_RECT (textfield);
+		  AVT_UPDATE_TRECT (textfield);
 		}
 	    }
 	  else if (event.key.keysym.sym == SDLK_PAGEDOWN
@@ -3882,7 +3885,7 @@ avt_pager_mb (const char *txt, int len, int startline)
 		  cursor.y = textfield.y;
 		  avt_pager_line (txt, start_pos, len);
 		  hold_updates = AVT_FALSE;
-		  AVT_UPDATE_RECT (textfield);
+		  AVT_UPDATE_TRECT (textfield);
 		  pos = avt_pager_lines_back (txt, pos, 2);
 		}
 	    }
