@@ -3492,6 +3492,10 @@ avt_choice (int *result, int start_line, int items, int key,
 		  else if (back)
 		    *result = 1;
 		}
+	      else if (back && (event.key.keysym.sym == SDLK_PAGEUP))
+		*result = 1;
+	      else if (forward && (event.key.keysym.sym == SDLK_PAGEDOWN))
+		*result = items;
 	      else if ((event.key.keysym.sym == SDLK_RETURN
 			|| event.key.keysym.sym == SDLK_KP_ENTER
 			|| event.key.keysym.sym == SDLK_RIGHT

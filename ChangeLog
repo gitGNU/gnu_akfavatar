@@ -1,3 +1,7 @@
+2009-10-11  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_choice): support PageUp/PageDown keys
+
 2009-10-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* colorchooser.c (manual_entry): new function
