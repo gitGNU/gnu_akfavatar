@@ -8,6 +8,9 @@
 	* avatar.c (avt_pager_mb):
 	fix: remove close-button when done
 
+	* avatar.c (avt_pager_mb):
+	fix: show close-button after drawing the balloon
+
 2009-10-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* colorchooser.c (manual_entry): new function

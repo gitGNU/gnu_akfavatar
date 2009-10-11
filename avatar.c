@@ -3729,24 +3729,6 @@ avt_pager_mb (const char *txt, int len, int startline)
   if (!txt || !*txt)
     return _avt_STATUS;
 
-  /* show close-button */
-
-  /* load button */
-  button = avt_load_image_xpm (btn_xpm);
-
-  /* alignment: right bottom */
-  btn_rect.x = window.x + window.w - button->w - AVATAR_MARGIN;
-  btn_rect.y = window.y + window.h - button->h - AVATAR_MARGIN;
-  btn_rect.w = button->w;
-  btn_rect.h = button->h;
-
-  SDL_SetClipRect (screen, &window);
-  SDL_BlitSurface (button, NULL, screen, &btn_rect);
-  avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_cancel), BUTTON_COLOR);
-  SDL_FreeSurface (button);
-  button = NULL;
-  AVT_UPDATE_RECT (btn_rect);
-
   /* show mouse pointer */
   SDL_ShowCursor (SDL_ENABLE);
 
@@ -3778,6 +3760,24 @@ avt_pager_mb (const char *txt, int len, int startline)
     avt_draw_balloon ();
   else
     viewport = textfield;
+
+  /* show close-button */
+
+  /* load button */
+  button = avt_load_image_xpm (btn_xpm);
+
+  /* alignment: right bottom */
+  btn_rect.x = window.x + window.w - button->w - AVATAR_MARGIN;
+  btn_rect.y = window.y + window.h - button->h - AVATAR_MARGIN;
+  btn_rect.w = button->w;
+  btn_rect.h = button->h;
+
+  SDL_SetClipRect (screen, &window);
+  SDL_BlitSurface (button, NULL, screen, &btn_rect);
+  avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_cancel), BUTTON_COLOR);
+  SDL_FreeSurface (button);
+  button = NULL;
+  AVT_UPDATE_RECT (btn_rect);
 
   old_tc = text_cursor_visible;
   text_cursor_visible = AVT_FALSE;
