@@ -3915,6 +3915,10 @@ avt_pager_mb (const char *txt, int len, int startline)
   if (_avt_STATUS == AVT_QUIT)
     _avt_STATUS = AVT_NORMAL;
 
+  /* remove button */
+  SDL_FillRect (screen, &btn_rect, background_color);
+  AVT_UPDATE_RECT (btn_rect);
+
   auto_margin = old_auto_margin;
   reserve_single_keys = old_reserve_single_keys;
   avt_ext_keyhandler = old_keyhandler;

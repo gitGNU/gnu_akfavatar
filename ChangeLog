@@ -5,6 +5,9 @@
 	* avatar.c (AVT_UPDATE_TRECT): new macro
 	many callers adapted
 
+	* avatar.c (avt_pager_mb):
+	fix: remove close-button when done
+
 2009-10-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* colorchooser.c (manual_entry): new function
