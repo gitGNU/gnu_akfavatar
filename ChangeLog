@@ -11,6 +11,8 @@
 	* avatar.c (avt_pager_mb):
 	fix: show close-button after drawing the balloon
 
+	* avatarsay.c (menu): move terminal one down again
+
 2009-10-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* colorchooser.c (manual_entry): new function
