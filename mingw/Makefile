@@ -1,6 +1,6 @@
 # This file is in the Public Domain - AKFoerster
 
-include version
+include config.mak
 
 srcdir = ..
 
@@ -10,7 +10,6 @@ AR = $(TARGET)-ar
 STRIP = $(TARGET)-strip
 WINDRES = $(TARGET)-windres
 RANLIB = $(TARGET)-ranlib
-AWK = awk
 CFLAGS = -O2 -Wall -Wextra
 LDFLAGS = 
 
@@ -332,7 +331,7 @@ clean:
 distclean: clean
 	-rm -f *.a *.so *.exe avatarsay-*.zip
 	-rm -f akfavatar.def akfavatar.dll akfavatar.lib
-	-rm -f version
+	-rm -f config.mak
 	-rm -f akfavatar*.zip
 
 # the folowing targets are for the maintainer

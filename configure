@@ -55,6 +55,7 @@ LDCONFIG='ldconfig'
 LOCAL_RPATH=
 LOCAL_GCC_RPATH=
 LOCAL_FPC_RPATH=
+AWK='awk'
 
 # Loop over all args
 while [ x"$1" != x ] ; do
@@ -109,6 +110,7 @@ while [ x"$1" != x ] ; do
 		echo "  RANLIB=program        ranlib program to use [${RANLIB}]"
 		echo "  INSTALL=program       install program to use [${INSTALL}]"
 		echo "  LDCONFIG=program      ldconfig program to use [${LDCONFIG}]"
+		echo "  AWK=program           AWK program to use [${AWK}]"
 		echo
 		exit 0 ;;
 	--version | --ve*)
@@ -145,9 +147,10 @@ while [ x"$1" != x ] ; do
 	RANLIB=*)   RANLIB=${optarg} ;;
 	INSTALL=*)  INSTALL=${optarg} ;;
 	LDCONFIG=*) LDCONFIG=${optarg} ;;
+	AWK=*)      AWK=${optarg} ;;
 
-        --with-openpty) OPENPTY="yes" ;;
-        --with-oldsdl) OLDSDL="yes" ;;
+	--with-openpty) OPENPTY="yes" ;;
+	--with-oldsdl) OLDSDL="yes" ;;
 	--with-sdl-iconv=*) WCHAR_ENCODING=${optarg} ;;
 	--with-sdl-iconv) ;;
 	--with-iconv) FORCE_ICONV="yes" ;;
@@ -343,6 +346,7 @@ echo "AVATARSAY_LDFLAGS = ${AVATARSAY_LDFLAGS}"
 echo "AR = ${AR}"
 echo "RANLIB = ${RANLIB}"
 echo "INSTALL = ${INSTALL}"
+echo "AWK = ${AWK}"
 echo "LDCONFIG = ${LDCONFIG}"
 echo "SYSTEM = ${SYSTEM}"
 echo "ARCH = ${ARCH}"
@@ -399,6 +403,7 @@ INSTALL = ${INSTALL}
 LDCONFIG = ${LDCONFIG}
 SDLCFLAGS = ${SDLCFLAGS}
 SDLLDFLAGS = ${SDLLDFLAGS}
+AWK = ${AWK}
 SYSTEM = ${SYSTEM}
 ARCH = ${ARCH}
 LOCAL_GCC_RPATH = ${LOCAL_GCC_RPATH}
@@ -423,7 +428,8 @@ then
     echo "SUBVERSION = ${SUBVERSION}"
     echo "REVISION = ${REVISION}"
     echo "VARIANT = ${VARIANT}"
-  } > ${srcdir}/mingw/version
+    echo "AWK = ${AWK}"
+  } > ${srcdir}/mingw/config.mak
 fi
 
 echo '*'
