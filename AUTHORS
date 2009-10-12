@@ -5,7 +5,7 @@ License GPLv3 or later
 That is the license for the whole package.
 Parts of the package are under other, compatible licenses:
 
-text2c, od2c, xbm2pas, xpm2pas, bdf2c:
+text2c, od2c, xbm2pas, xpm2pas, bdf2c, rgb2c:
 Copyright (c) Andreas K. Foerster
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
