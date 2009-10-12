@@ -29,7 +29,7 @@
 #include "akfavatar.h"
 #include "SDL.h"
 #include "version.h"
-#include "avtcolors.h"
+#include "rgb.h"
 
 /* include images */
 #include "akfavatar.xpm"

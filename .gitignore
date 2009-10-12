@@ -18,6 +18,7 @@ libakfavatar.so*
 bin2c
 ucsfont*.c
 alert.c
+rgb.h
 *.tar.bz2
 *.tar.gz
 *.tgz

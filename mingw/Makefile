@@ -197,7 +197,10 @@ filechooser.o: $(srcdir)/filechooser.c \
 colorchooser.o: $(srcdir)/colorchooser.c $(srcdir)/akfavatar.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/colorchooser.c
 
-avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/version.h \
+rgb.h: $(srcdir)/rgb.txt
+	$(AWK) -f $(srcdir)/rgb2c $(srcdir)/rgb.txt > $@
+
+avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/version.h rgb.h \
              $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
              $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
              $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
@@ -207,7 +210,7 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/version.h \
              $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm \
              $(srcdir)/balloonpointer.xbm $(srcdir)/circle.xbm \
              $(srcdir)/akfavatar.xpm
-	$(CC) $(SDLCFLAGS) $(CFLAGS) -c $(srcdir)/avatar.c
+	$(CC) -I. $(SDLCFLAGS) $(CFLAGS) -c $(srcdir)/avatar.c
 
 avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h alert.c
 	$(CC) -c $(SDLCFLAGS) $(CFLAGS) -I. -o $@ $(srcdir)/avatar-audio.c
@@ -322,6 +325,7 @@ clean:
 	-rm -f *~ *.o *.ppu *.gpi
 	-rm -f libinfo.rc avtsayinfo.rc
 	-rm -f alert.c
+	-rm -f rgb.h
 	-rm -f ucsfont7x14.c ucsfont9x18.c
 	-rm -f bdfread bdfread.exe
 
