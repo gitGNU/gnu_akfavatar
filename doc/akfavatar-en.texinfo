@@ -104,21 +104,17 @@ You can use it as user interface for your textmode programs.
 The command @command{avatarsay} can be used as a fancy text-viewer, more 
 or less like @command{more} or @command{less}.
 
-It is not suited for long, complicated texts, but rather for short and 
-funny stuff.
-
 @item 
 But the command @command{avatarsay} can do much more than that.  It can
 be used as a simple scripting language for making demos that you can
 show for example at an information booth or in a shop's window.
 
 Don't worry, it sounds more complicated, than it is.  I should rather
-say, you can spice up your texts with occasional commands.  Then you can
-set the executable bit on your@dots{} ``text'', and it is executable.
+say, you can spice up your texts with occasional commands.
 
 @item  
 Then there is the library @code{libakfavatar}, which you can use from
-compiling languages.  Currently @w{Free Pascal}, @acronym{GNU}-Pascal
+programming languages.  Currently @w{Free Pascal}, @acronym{GNU}-Pascal
 and C-compatible languages are supported.  Especially the Pascal language is
 suited for beginners to learn how to program.  The library is simple to use,
 like writing command-line programs --- but it's much more fun!
@@ -150,14 +146,6 @@ On some systems you can use the key combinations @key{Alt}+@key{Enter} or
 mode.  Often you can also simply use the key @key{F11}, but this key might
 be reserved for other things, for example in the terminal-mode of 
 @command{avatarsay}.
-
-@cindex window usage
-When AKFAvatar runs in a window you can resize the window as you wish.  The
-content doesn't get resized, but it is centered on the window.  You cannot
-resize it beyond a minimal size.  You can of course also maximize the window.  
-When you minimize the window the program continues to print the text.  
-So you probably want to press the @key{Pause} key before you minimize the 
-window.
 
 @node Installation
 @chapter How to install AKFAvatar
@@ -205,7 +193,7 @@ There the Runtime Libraries are sufficient@*
 SDL_image in turn needs other libraries:
 libz, libpng, libjpeg, libtiff
 
-Without SDL_image you can only use XPM and uncompressed BMP images.
+Without SDL_image you can only use X-Pixmaps (XPM) and uncompressed BMP images.
 SDL_image can be installed after the installation of this package.
 
 @item iconv@*
@@ -262,30 +250,20 @@ The value @code{vga} means a size of 640*480 pixels.
 @subheading Testing
 
 The program @command{avatarsay} is a text reader and a simple scripting
-language.  Try to view this text with that program: @samp{./avatarsay INSTALL}.
+language.  Try to view this text with that program: 
+@samp{./avatarsay --pager INSTALL}.
 
 You can stop @command{avatarsay} any time with the @key{Esc} key.  On some
 systems you can toggle between window and fullscreen mode using the key 
 @key{F11}.  Another useful key is the @key{Pause} key.
 
 There are some example scripts in the package. 
-Try to run @samp{./fsdemo-en} or whatever language you prefer. 
-Open @file{fsdemo-en} in a text-editor to see how to write such 
+Try to run @samp{./fsdemo-en.avt} or whatever language you prefer. 
+Open @file{fsdemo-en.avt} in a text-editor to see how to write such 
 scripts@enddots{}
 
 You can also use it as a fancy manpage reader.
 Try @samp{avtman man}@enddots{}
-
-@subsubheading The script @command{lrun}
-@cindex lrun
-
-Dynamically linked programs normally need the libraries to be installed
-on the system. The script @command{lrun} can be used to start programs, when
-the library is not yet installed.  It searches the libraries also in the
-script's directory and in the current directory.  Use it like this:
-@samp{./lrun example} finds the library in the current directory.  Or from
-the Pascal subdirectory @samp{../lrun multiply} will find the library in the
-parent directory.
 
 @subheading Installing
 
@@ -305,9 +283,7 @@ If you want to uninstall it later, you can use the command
 
 With the command @samp{make example} you can compile the program 
 @file{example.c}.  The file @file{example.c} is an example, which you can use
-to start your own programs.  The program gets dynamically linked, that means it
-needs the installed library.  If you want to test it without the library being 
-installed, use the script @command{lrun} (see above).
+to start your own programs.
 
 @subheading Trouble-shooting
 @cindex trouble-shooting

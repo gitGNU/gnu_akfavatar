@@ -110,9 +110,6 @@ lassen.
 Der Befehl @command{avatarsay} kann als lustiger Text-Betrachter verwendet 
 werden, mehr oder weniger wie @command{more} oder @command{less}.
 
-Das ist nicht gerade für lange und komplizierte Texte geeignet, sondern eher
-für kurze, lustige Sachen.
-
 @item
 Aber der Befehl @command{avatarsay} kann noch viel mehr.  Er kann als einfache 
 Skript-Sprache verwendet werden, mit der man Demos erstellen kann, die man zum
@@ -123,7 +120,7 @@ eher sagen, man kann seine Texte mit gelegentlichen Anweisungen aufpeppen.
 
 @item
 Dann gibt es da noch die Programmbibliothek @code{libakfavatar}, die man von
-kompilierenden Sprachen aus verwenden kann.  Zur Zeit werden @w{Free Pascal},
+Programmiersprachen aus verwenden kann.  Zur Zeit werden @w{Free Pascal},
 @acronym{GNU}-Pascal und C-kompatible Sprachen unterstützt.  Insbesondere die
 Sprache Pascal ist für Anfänger geeignet, die programmieren lernen wollen.
 Die Bibliothek ist so einfach zu verwenden, wie Kommandozeilen-Programme zu
@@ -158,15 +155,6 @@ Fenster oder der Vollbild-Darstellung hin und her zu schalten.  Häufig kann
 man dazu auch einfach die Taste @key{F11} drücken.  Diese Taste kann 
 jedoch auch für andere Aufgaben reserviert sein, zum Beispiel im Terminal-Modus
 von @command{avatarsay}.
-
-@cindex Fenster Verwendung
-Wenn AKFAvatar in einem Fenster läuft, kann man die Fenstergröße verändern,
-wenn man will.  Die Größe des Inhaltes wird dadurch aber nicht verändert,
-sondern der Inhalt wird lediglich auf dem Fenster zentriert.  Man kann das 
-Fenster nicht unter eine bestimmte Mindestgröße verkleinern.  Man kann das 
-Fenster natürlich auch maximieren.  Wenn man das Fenster minimiert, läuft 
-das Programm übrigens weiter.  Man sollte also vielleicht die @key{Pause}-Taste
-drücken, bevor man das Fenster minimiert.
 
 @node Installation
 @chapter AKFAvatar installieren
@@ -214,7 +202,8 @@ Dabei sind die ``Runtime Libraries'' ausreichend@*
 SDL_image benötigt wiederum andere Bibliotheken:
 libz, libpng, libjpeg, libtiff
 
-Ohne SDL_image kann man nur XPM und unkomprimierte BMP Dateien verwenden.
+Ohne SDL_image kann man nur X-Pixmaps (XPM) und unkomprimierte BMP Dateien 
+verwenden.
 SDL_image kann auch nach der Installation dieses Paketes noch 
 nachinstalliert werden.
 
@@ -280,7 +269,8 @@ von 640*480 Pixeln.
 
 Das Programm @command{avatarsay} ist ein Text-Betrachter und eine simple
 Skript-Sprache.  Man kann sich zum Beispiel die Installations-Anleitung
-mit diesem Programm folgendermaßen ansehen: @samp{./avatarsay INSTALL}.
+mit diesem Programm folgendermaßen ansehen:
+@samp{./avatarsay --pager INSTALL}.
 
 Man kann @command{avatarsay} jederzeit mit der Taste @key{Esc} beenden.
 Auf einigen Systemen kann man zwischen dem Vollbild-Modus und dem 
@@ -288,27 +278,13 @@ Fenster-Modus mit der Taste @key{F11} umschalten.  Auch die
 @key{Pause}-Taste ist hier sehr nützlich.
 
 In dem Paket befinden sich ein paar Beispiel-Skripte.  Zum Beispiel
-sollte man mal @samp{./fsdemo-de} ausprobieren.  Man kann die Datei
-@file{fsdemo-de} in einem Text-Editor öffnen, um sich anzusehen, wie
+sollte man mal @samp{./fsdemo-de.avt} ausprobieren.  Man kann die Datei
+@file{fsdemo-de.avt} in einem Text-Editor öffnen, um sich anzusehen, wie
 man so etwas selber umsetzen kann@enddots{}
 
 Man kann es auch als ein lustiges Manpage-Leseprogramm einsetzen.
 Hierfür gibt man zum Beispiel den Befehl @samp{avtman man} 
 ein@enddots{}
-
-@subsubheading Das Skript @command{lrun}
-@cindex lrun
-
-Dynamisch gelinkte Programme setzen normalerweise voraus, dass die
-Bibliotheken auf dem System schon installiert sind.  Das Skript 
-@command{lrun} kann verwendet werden, um Programme zu starten, wenn die
-Bibliothek noch nicht installiert ist.  Es sucht die Bibliotheken auch
-in dem Verzeichnis, in dem es sich selber befindet, sowie im aktuellen 
-Verzeichnis.  Man kann es wie folgt verwenden: @samp{./lrun example}
-findet die Bibliothek im aktuellen Verzeichnis.  Oder beispielsweise
-vom Pascal Unterverzeichnis aus @samp{../lrun multiply} findet die 
-Bibliothek im übergeordneten Verzeichnis (wo sich @command{lrun} selber
-befindet).
 
 @subheading Installieren
 
@@ -330,10 +306,7 @@ den Befehl @samp{make uninstall} verwenden.
 
 Mit dem Befehl @samp{make example} kann man das Programm @file{example.c}
 kompilieren.  Die Datei @file{example.c} ist ein Beispiel, das man als 
-Ausgangspunkt für eigene Programme verwenden kann.  Das Programm wird 
-dynamisch verlinkt, das bedeutet, dass die Bibliothek bereits installiert
-sein muss.  Wenn man es ausprobieren will, ohne dass die Bibliothek 
-installiert ist, kann man das Skript @command{lrun} verwenden (siehe oben).
+Ausgangspunkt für eigene Programme verwenden kann.
 
 @subheading Problem-Lösungen
 @cindex Problem-Lösungen
