@@ -104,7 +104,7 @@ avta_color_selection (void)
 	  if (c)
 	    {
 	      avt_name_to_color (c, &red, &green, &blue);
-	      sprintf (hex, "#%02x%02x%02x", red, green, blue);
+	      sprintf (hex, "#%02X%02X%02X", red, green, blue);
 
 	      /* show colored spaces */
 	      avt_set_text_background_color (red, green, blue);
