@@ -19,6 +19,7 @@
  */
 
 #include "akfavatar.h"
+#include <stdio.h>		/* for sprintf */
 
 /* House symbol */
 #define HOME L" \x2302 "
@@ -61,6 +62,8 @@ extern const char *
 avta_color_selection (void)
 {
   const char *color, *c;
+  char hex[10];
+  int red, green, blue;
   int i;
   int max_idx, items, offset, page_nr;
   int choice;
@@ -70,7 +73,7 @@ avta_color_selection (void)
   avt_lock_updates (AVT_TRUE);
 
   /* set maximum size */
-  avt_set_balloon_size (0, 30);
+  avt_set_balloon_size (0, 35);
 
   color = c = NULL;
   max_idx = avt_get_max_y ();
@@ -100,11 +103,22 @@ avta_color_selection (void)
 	  c = avt_get_color_name (i + (page_nr * (max_idx - offset)));
 	  if (c)
 	    {
-	      avt_set_text_background_color_name (c);
+	      avt_name_to_color (c, &red, &green, &blue);
+	      sprintf (hex, "#%02x%02x%02x", red, green, blue);
+
+	      /* show colored spaces */
+	      avt_set_text_background_color (red, green, blue);
 	      avt_say (L"  ");
 	      avt_set_text_background_ballooncolor ();
 	      avt_forward ();
+
+	      /* show hex value */
+	      avt_say_mb (hex);
+	      avt_say (L": ");
+
+	      /* show name */
 	      avt_say_mb (c);
+
 	      avt_new_line ();
 	      items++;
 	    }
