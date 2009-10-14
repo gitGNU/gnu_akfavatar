@@ -4481,7 +4481,7 @@ avt_navigate (const char *buttons)
 		event.key.keysym.sym = SDLK_UNKNOWN;
 	      }
 	    else if (event.key.keysym.unicode >= 32
-		     && event.key.keysym.unicode < 126)
+		     && event.key.keysym.unicode < 127)
 	      r = event.key.keysym.unicode;
 
 	    /* check if it is one of the requested characters */
