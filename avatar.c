@@ -4303,7 +4303,7 @@ avt_navigate (const char *buttons)
   SDL_Event event;
   SDL_Surface *base_button, *buttons_area;
   SDL_Rect rect[NAV_MAX], buttons_rect;
-  int i, button_count, button_pos, radius;
+  int i, button_count, button_pos;
   int result;
 
   result = AVT_ERROR;		/* no result */
@@ -4323,7 +4323,6 @@ avt_navigate (const char *buttons)
 
   /* load base button image */
   base_button = avt_load_image_xpm (btn_xpm);
-  radius = base_button->w / 2;
 
   /* common button area */
   buttons_rect.y = window.y + window.h - base_button->h - AVATAR_MARGIN;
@@ -4425,7 +4424,10 @@ avt_navigate (const char *buttons)
 	  break;
 
 	default:
-	  /* empty button for compatibility to buttons in later versions */
+	  /*
+	   * empty button allowed
+	   * for compatibility to buttons in later versions
+	   */
 	  break;
 	}
 
@@ -4467,10 +4469,6 @@ avt_navigate (const char *buttons)
 	    else if (event.key.keysym.sym == SDLK_RIGHT
 		     || event.key.keysym.sym == SDLK_KP6)
 	      r = 'r';
-	    else if (event.key.keysym.unicode == L'+')
-	      r = '+';
-	    else if (event.key.keysym.unicode == L'-')
-	      r = '-';
 	    else if (event.key.keysym.sym == SDLK_HELP
 		     || event.key.keysym.sym == SDLK_F1)
 	      r = '?';
