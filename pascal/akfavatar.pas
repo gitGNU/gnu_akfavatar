@@ -337,43 +337,37 @@ procedure SetMonochrome(monochrome: boolean);
 function Decide: boolean;
 
 { Navigate }
-{ example:
-    result := Navigate(DirBackward or NavForward or NavHome); }
-{ returns one of the Nav* constants or -1 on error }
-function Navigate(buttons: integer): integer;
+{
+ navigation bar
+ 
+ buttons is a string with the following characters
+ l: left
+ r: right (play)
+ d: down
+ u: up
+ x: cancel
+ f: (fast)forward
+ b: (fast)backward
+ p: pause
+ s: stop
+ e: eject
+ *: circle (record)
+ +: plus (add)
+ -: minus (remove)
+ ?: help
+ 
+ Pressing a key with one of those characters selects it.
+ For the directions you can also use the arrow keys,
+ The [Pause] key returns 'p'.
+ The [Help] key or [F1] return '?'.
 
-{ constants for Navigate }
-const
-  NavLeft         =  1;
-  NavDown         =  2;
-  NavUp           =  4;
-  NavRight        =  8;
-  NavCancel       = 16;
-  NavFastForward  = 32;
-  NavFastBackward = 64;
-  NavPlus         = 128;
-  NavMinus        = 256;
-  NavPause        = 512;
-  NavStop         = 1024;
-  NavHelp         = 2048;
-  NavEject        = 4096;
-  NavCircle       = 8192;
+ the function returns the letter for the selected option
 
-{ usefull aliases }
-const
-  NavBackward     = NavLeft;
-  NavForward      = NavRight;
-  NavPlay         = NavRight;
-  NavRecord       = NavCircle;
-  NavHome         = NavUp;
-  NavEnd          = NavDown;
-  NavExit         = NavCancel;
-  NavAdd          = NavPlus;
-  NavRemove       = NavMinus;
-  NavAll          = NavLeft or NavDown or NavUp or NavRight or NavCancel
-                    or NavFastForward or NavFastBackward 
-                    or NavPlus or NavMinus or NavPause or NavStop or NavHelp
-                    or NavEject or NavCircle;
+ example:
+   case Navigate('fbx') of ...
+}
+
+function Navigate(buttons: String): char;
 
 { choice for several items }
 { result is the choice number, starting from 1 }
@@ -652,7 +646,7 @@ function avt_choice(var result: CInteger;
 procedure avt_pager_mb (txt: CString; len, startline: CInteger); 
   libakfavatar 'avt_pager_mb';
 
-function avt_navigate(buttons: CInteger): CInteger;
+function avt_navigate(buttons: CString): CInteger;
   libakfavatar 'avt_navigate';
 
 function avt_decide: avt_bool_t; libakfavatar 'avt_decide';
@@ -1322,11 +1316,13 @@ Decide := (avt_decide <> 0);
 if avt_get_status<>0 then Halt
 end;
 
-function Navigate(buttons: integer): integer;
+function Navigate(buttons: String): char;
+var result: CInteger;
 begin
 if not initialized then initializeAvatar;
-Navigate := avt_navigate(buttons);
-if avt_get_status<>0 then Halt
+result := avt_navigate(String2CString(buttons));
+if avt_get_status<>0 then Halt;
+Navigate := chr(result)
 end;
 
 { ---------------------------------------------------------------------}

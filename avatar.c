@@ -4280,59 +4280,50 @@ avt_wait_button (void)
   return _avt_STATUS;
 }
 
-/* macros for avt_navigate */
+/* check if character is in the requested buttons */
+static avt_bool_t
+is_nav_requested (const char *buttons, int ch)
+{
+  while (*buttons)
+    if (ch == (int) *buttons++)
+      return AVT_TRUE;
+
+  return AVT_FALSE;
+}
 
 /*
  * maximum number of displayable navigation buttons
- * (may be lower than number of available buttons,
- *  but should not be larger)
+ * for the smallest resolution
  */
-#define NAV_MAX 14
-
-#define avt_nav_add(sym, bt) \
-  do { if ((buttons & sym) && button_count < NAV_MAX) { \
-    button[button_count] = \
-      avt_load_image_xbm (AVT_XBM_INFO (bt), BUTTON_COLOR); \
-    button_value[button_count] = sym; \
-    button_count++; }} while (0)
+#define NAV_MAX 15
 
 extern int
-avt_navigate (int buttons)
+avt_navigate (const char *buttons)
 {
   SDL_Event event;
   SDL_Surface *base_button, *buttons_area;
-  SDL_Surface *button[NAV_MAX];
-  int button_value[NAV_MAX];
-  SDL_Rect rect[NAV_MAX], buttons_rect, inlay_rect;
-  int i, button_count, radius;
+  SDL_Rect rect[NAV_MAX], buttons_rect;
+  int i, button_count, button_pos, radius;
   int result;
 
-  result = -1;			/* no result */
-  button_count = 0;
+  result = AVT_ERROR;		/* no result */
 
   if (!screen)
-    return -1;
+    return AVT_ERROR;
+
+  button_count = SDL_strlen (buttons);
+
+  if (!buttons || !*buttons || button_count > NAV_MAX)
+    {
+      SDL_SetError ("No or too many buttons for navigation bar");
+      return AVT_ERROR;
+    }
 
   SDL_SetClipRect (screen, &window);
 
-  /* load button images */
+  /* load base button image */
   base_button = avt_load_image_xpm (btn_xpm);
-
-  /* this also influences the order (right to left) */
-  avt_nav_add (AVT_NAV_HELP, btn_help);
-  avt_nav_add (AVT_NAV_CANCEL, btn_cancel);
-  avt_nav_add (AVT_NAV_PLUS, btn_yes);
-  avt_nav_add (AVT_NAV_MINUS, btn_no);
-  avt_nav_add (AVT_NAV_EJECT, btn_eject);
-  avt_nav_add (AVT_NAV_CIRCLE, btn_circle);
-  avt_nav_add (AVT_NAV_STOP, btn_stop);
-  avt_nav_add (AVT_NAV_PAUSE, btn_pause);
-  avt_nav_add (AVT_NAV_FASTFORWARD, btn_fastforward);
-  avt_nav_add (AVT_NAV_RIGHT, btn_right);
-  avt_nav_add (AVT_NAV_UP, btn_up);
-  avt_nav_add (AVT_NAV_DOWN, btn_down);
-  avt_nav_add (AVT_NAV_LEFT, btn_left);
-  avt_nav_add (AVT_NAV_FASTBACKWARD, btn_fastbackward);
+  radius = base_button->w / 2;
 
   /* common button area */
   buttons_rect.y = window.y + window.h - base_button->h - AVATAR_MARGIN;
@@ -4341,6 +4332,14 @@ avt_navigate (int buttons)
   buttons_rect.h = base_button->h;
   buttons_rect.w = window.w - AVATAR_MARGIN - buttons_rect.x;
 
+  /* yet another check, if there are too many buttons */
+  if (buttons_rect.x < 0)
+    {
+       SDL_FreeSurface (base_button);
+       return AVT_ERROR;
+    }
+
+  /* save background for common button area */
   buttons_area =
     SDL_CreateRGBSurface (SDL_SWSURFACE, buttons_rect.w, buttons_rect.h,
 			  screen->format->BitsPerPixel,
@@ -4358,28 +4357,79 @@ avt_navigate (int buttons)
       rect[i].y = buttons_rect.y;
     }
 
-  radius = base_button->w / 2;
+#define avt_nav_inlay(bt) \
+  avt_button_inlay(rect[i],bt##_bits,bt##_width,bt##_height,BUTTON_COLOR)
 
-  /* draw the buttons and free the memory thereafter */
-  /* alignment: from right to left */
+  button_pos = buttons_rect.x;
   for (i = 0; i < button_count; i++)
     {
-      if (i == 0)
-	rect[0].x = window.x + window.w - base_button->w - AVATAR_MARGIN;
-      else
-	rect[i].x = rect[i - 1].x - BUTTON_DISTANCE - base_button->w;
-
+      rect[i].x = button_pos;
       SDL_BlitSurface (base_button, NULL, screen, &rect[i]);
 
-      /* inlay */
-      inlay_rect.w = button[i]->w;
-      inlay_rect.h = button[i]->h;
-      inlay_rect.x = rect[i].x + radius - inlay_rect.w / 2;
-      inlay_rect.y = rect[i].y + radius - inlay_rect.h / 2;
-      SDL_BlitSurface (button[i], NULL, screen, &inlay_rect);
+      switch (buttons[i])
+	{
+	case 'l':
+	  avt_nav_inlay (btn_left);
+	  break;
 
-      SDL_FreeSurface (button[i]);
-      button[i] = NULL;
+	case 'd':
+	  avt_nav_inlay (btn_down);
+	  break;
+
+	case 'u':
+	  avt_nav_inlay (btn_up);
+	  break;
+
+	case 'r':
+	  avt_nav_inlay (btn_right);
+	  break;
+
+	case 'x':
+	  avt_nav_inlay (btn_cancel);
+	  break;
+
+	case 'f':
+	  avt_nav_inlay (btn_fastforward);
+	  break;
+
+	case 'b':
+	  avt_nav_inlay (btn_fastbackward);
+	  break;
+
+	case '+':
+	  avt_nav_inlay (btn_yes);
+	  break;
+
+	case '-':
+	  avt_nav_inlay (btn_no);
+	  break;
+
+	case 'p':
+	  avt_nav_inlay (btn_pause);
+	  break;
+
+	case 's':
+	  avt_nav_inlay (btn_stop);
+	  break;
+
+	case '?':
+	  avt_nav_inlay (btn_help);
+	  break;
+
+	case 'e':
+	  avt_nav_inlay (btn_eject);
+	  break;
+
+	case '*':
+	  avt_nav_inlay (btn_circle);
+	  break;
+
+	default:
+	  /* empty button for compatibility to buttons in later versions */
+	  break;
+	}
+
+      button_pos += base_button->w + BUTTON_DISTANCE;
     }
 
   SDL_FreeSurface (base_button);
@@ -4398,39 +4448,46 @@ avt_navigate (int buttons)
       switch (event.type)
 	{
 	case SDL_KEYDOWN:
-	  if (event.key.keysym.sym == SDLK_UP
-	      || event.key.keysym.sym == SDLK_KP8
-	      || event.key.keysym.sym == SDLK_HOME
-	      || event.key.keysym.sym == SDLK_KP7)
-	    result = AVT_NAV_UP;
-	  else if (event.key.keysym.sym == SDLK_DOWN
-		   || event.key.keysym.sym == SDLK_KP2
-		   || event.key.keysym.sym == SDLK_END
-		   || event.key.keysym.sym == SDLK_KP1)
-	    result = AVT_NAV_DOWN;
-	  else if (event.key.keysym.sym == SDLK_LEFT
-		   || event.key.keysym.sym == SDLK_KP4)
-	    result = AVT_NAV_LEFT;
-	  else if (event.key.keysym.sym == SDLK_RIGHT
-		   || event.key.keysym.sym == SDLK_KP6)
-	    result = AVT_NAV_RIGHT;
-	  else if (event.key.keysym.unicode == L'+')
-	    result = AVT_NAV_PLUS;
-	  else if (event.key.keysym.unicode == L'-')
-	    result = AVT_NAV_MINUS;
-	  else if (event.key.keysym.sym == SDLK_HELP
-		   || event.key.keysym.sym == SDLK_F1)
-	    result = AVT_NAV_HELP;
-	  else if (event.key.keysym.sym == SDLK_PAUSE)
-	    {
-	      result = AVT_NAV_PAUSE;
-	      /* prevent further handling of the Pause-key */
-	      event.key.keysym.sym = SDLK_UNKNOWN;
-	    }
+	  {
+	    int r = AVT_ERROR;
 
-	  /* limit to requested buttons */
-	  if (result >= 0 && (result & ~buttons))
-	    result = -1;
+	    if (event.key.keysym.sym == SDLK_UP
+		|| event.key.keysym.sym == SDLK_KP8
+		|| event.key.keysym.sym == SDLK_HOME
+		|| event.key.keysym.sym == SDLK_KP7)
+	      r = 'u';
+	    else if (event.key.keysym.sym == SDLK_DOWN
+		     || event.key.keysym.sym == SDLK_KP2
+		     || event.key.keysym.sym == SDLK_END
+		     || event.key.keysym.sym == SDLK_KP1)
+	      r = 'd';
+	    else if (event.key.keysym.sym == SDLK_LEFT
+		     || event.key.keysym.sym == SDLK_KP4)
+	      r = 'l';
+	    else if (event.key.keysym.sym == SDLK_RIGHT
+		     || event.key.keysym.sym == SDLK_KP6)
+	      r = 'r';
+	    else if (event.key.keysym.unicode == L'+')
+	      r = '+';
+	    else if (event.key.keysym.unicode == L'-')
+	      r = '-';
+	    else if (event.key.keysym.sym == SDLK_HELP
+		     || event.key.keysym.sym == SDLK_F1)
+	      r = '?';
+	    else if (event.key.keysym.sym == SDLK_PAUSE)
+	      {
+		r = 'p';
+		/* prevent further handling of the Pause-key */
+		event.key.keysym.sym = SDLK_UNKNOWN;
+	      }
+	    else if (event.key.keysym.unicode >= 32
+		     && event.key.keysym.unicode < 126)
+	      r = event.key.keysym.unicode;
+
+	    /* check if it is one of the requested characters */
+	    if (is_nav_requested (buttons, r))
+	      result = r;
+	  }
 	  break;
 
 	case SDL_MOUSEBUTTONDOWN:
@@ -4444,7 +4501,7 @@ avt_navigate (int buttons)
 		{
 		  if (event.button.x >= rect[i].x
 		      && event.button.x <= rect[i].x + rect[i].w)
-		    result = button_value[i];
+		    result = buttons[i];
 		}
 	    }
 	  break;
@@ -4464,9 +4521,11 @@ avt_navigate (int buttons)
   if (textfield.x >= 0)
     SDL_SetClipRect (screen, &viewport);
 
+  if (_avt_STATUS != AVT_NORMAL)
+    result = _avt_STATUS;
+
   return result;
 }
-
 
 /* deprecated: use avt_wait_button */
 extern int
