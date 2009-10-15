@@ -305,11 +305,17 @@ struct pos
 static struct pos cursor, saved_position;
 
 
-/* 0 = normal; 1 = quit-request; -1 = error */
-int _avt_STATUS;
+#if defined(__GNUC__) && !defined(__WIN32__)
+#  define AVT_HIDDEN __attribute__((__visibility__("hidden")))
+#else
+#  define AVT_HIDDEN
+#endif /* __GNUC__ */
 
-void (*avt_alert_func) (void) = NULL;
-void (*avt_quit_audio_func) (void) = NULL;
+/* 0 = normal; 1 = quit-request; -1 = error */
+int _avt_STATUS AVT_HIDDEN;
+
+void (*avt_alert_func) (void) AVT_HIDDEN = NULL;
+void (*avt_quit_audio_func) (void) AVT_HIDDEN = NULL;
 
 /* forward declaration */
 static int avt_pause (void);
@@ -1812,7 +1818,7 @@ avt_pause (void)
 }
 
 /* external: not in the API, but used in avatar-audio */
-int
+int AVT_HIDDEN
 avt_checkevent (void)
 {
   SDL_Event event;

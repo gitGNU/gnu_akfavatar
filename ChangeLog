@@ -2,6 +2,8 @@
 
 	* avatar.c (avt_navigate): support for spacer
 
+	* avatar.c (AVT_HIDDEN): new macro
+
 2009-10-14  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_navigate): rewritten
