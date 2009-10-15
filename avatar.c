@@ -4280,17 +4280,6 @@ avt_wait_button (void)
   return _avt_STATUS;
 }
 
-/* check if character is in the requested buttons */
-static avt_bool_t
-is_nav_requested (const char *buttons, int ch)
-{
-  while (*buttons)
-    if (ch == (int) *buttons++)
-      return AVT_TRUE;
-
-  return AVT_FALSE;
-}
-
 /*
  * maximum number of displayable navigation buttons
  * for the smallest resolution
@@ -4334,8 +4323,8 @@ avt_navigate (const char *buttons)
   /* yet another check, if there are too many buttons */
   if (buttons_rect.x < 0)
     {
-       SDL_FreeSurface (base_button);
-       return AVT_ERROR;
+      SDL_FreeSurface (base_button);
+      return AVT_ERROR;
     }
 
   /* save background for common button area */
@@ -4363,7 +4352,10 @@ avt_navigate (const char *buttons)
   for (i = 0; i < button_count; i++)
     {
       rect[i].x = button_pos;
-      SDL_BlitSurface (base_button, NULL, screen, &rect[i]);
+
+      /* show base button, if it's not a spacer */
+      if (buttons[i] != ' ')
+	SDL_BlitSurface (base_button, NULL, screen, &rect[i]);
 
       switch (buttons[i])
 	{
@@ -4478,13 +4470,17 @@ avt_navigate (const char *buttons)
 		/* prevent further handling of the Pause-key */
 		event.key.keysym.sym = SDLK_UNKNOWN;
 	      }
-	    else if (event.key.keysym.unicode >= 32
+	    else if (event.key.keysym.unicode > 32
 		     && event.key.keysym.unicode < 127)
 	      r = event.key.keysym.unicode;
 
 	    /* check if it is one of the requested characters */
-	    if (is_nav_requested (buttons, r))
-	      result = r;
+	    {
+	      const char *b = buttons;
+	      while (*b)
+		if (r == (int) *b++)
+		  result = r;
+	    }
 	  }
 	  break;
 
@@ -4497,7 +4493,8 @@ avt_navigate (const char *buttons)
 	    {
 	      for (i = 0; i < button_count && result < 0; i++)
 		{
-		  if (event.button.x >= rect[i].x
+		  if (buttons[i] != ' '
+		      && event.button.x >= rect[i].x
 		      && event.button.x <= rect[i].x + rect[i].w)
 		    result = buttons[i];
 		}

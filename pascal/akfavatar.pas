@@ -341,20 +341,21 @@ function Decide: boolean;
  navigation bar
  
  buttons is a string with the following characters
- l: left
- r: right (play)
- d: down
- u: up
- x: cancel
- f: (fast)forward
- b: (fast)backward
- p: pause
- s: stop
- e: eject
- *: circle (record)
- +: plus (add)
- -: minus (remove)
- ?: help
+ 'l': left
+ 'r': right (play)
+ 'd': down
+ 'u': up
+ 'x': cancel
+ 'f': (fast)forward
+ 'b': (fast)backward
+ 'p': pause
+ 's': stop
+ 'e': eject
+ '*': circle (record)
+ '+': plus (add)
+ '-': minus (remove)
+ '?': help
+ ' ': spacer (no button)
  
  Pressing a key with one of those characters selects it.
  For the directions you can also use the arrow keys,
@@ -364,7 +365,7 @@ function Decide: boolean;
  the function returns the letter for the selected option
 
  example:
-   case Navigate('fbx') of ...
+   case Navigate('lxr') of ...
 }
 
 function Navigate(buttons: String): char;

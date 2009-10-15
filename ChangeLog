@@ -1,3 +1,7 @@
+2009-10-15  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_navigate): support for spacer
+
 2009-10-14  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_navigate): rewritten

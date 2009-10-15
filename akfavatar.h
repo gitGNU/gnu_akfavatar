@@ -717,20 +717,21 @@ AVT_API avt_bool_t avt_decide (void);
  * navigation bar
  *
  * buttons is a string with the following characters
- * l: left
- * r: right (play)
- * d: down
- * u: up
- * x: cancel
- * f: (fast)forward
- * b: (fast)backward
- * p: pause
- * s: stop
- * e: eject
- * *: circle (record)
- * +: plus (add)
- * -: minus (remove)
- * ?: help
+ * 'l': left
+ * 'r': right (play)
+ * 'd': down
+ * 'u': up
+ * 'x': cancel
+ * 'f': (fast)forward
+ * 'b': (fast)backward
+ * 'p': pause
+ * 's': stop
+ * 'e': eject
+ * '*': circle (record)
+ * '+': plus (add)
+ * '-': minus (remove)
+ * '?': help
+ * ' ': spacer (no button)
  *
  * Pressing a key with one of those characters selects it.
  * For the directions you can also use the arrow keys,
@@ -741,12 +742,11 @@ AVT_API avt_bool_t avt_decide (void);
  * or AVT_ERROR or AVT_QUIT
  *
  * example:
- *   r = avt_navigate ("fbx");
+ *   r = avt_navigate ("lxr");
  *   if (r < 32) exit (0);
  *   select (r) ...
  */
 AVT_API int avt_navigate (const char *buttons);
-
 
 /*
  * avt_choice - use for menus
