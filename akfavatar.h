@@ -91,8 +91,6 @@
 /* for later use */
 #define AVT_API  extern
 
-AVT_BEGIN_DECLS
-
 /***********************************************************************/
 /* type definitions */
 
@@ -112,18 +110,8 @@ typedef void avt_audio_t;
 /* for streams (use FILE from your programs) */
 typedef void avt_stream;
 
-/*
- * type for keyhandler
- * see avt_register_keyhandler
- */
-typedef void (*avt_keyhandler) (int sym, int mod, int unicode);
+AVT_BEGIN_DECLS
 
-/*
- * type for mousehandler
- * see avt_register_mousehandler
- */
-typedef void (*avt_mousehandler) (int button, avt_bool_t pressed,
-				  int x, int y);
 
 /***********************************************************************/
 /* functions */
@@ -171,7 +159,7 @@ AVT_API void avt_button_quit (void);
 
 /*
  * if SDL_image isn't available then
- * only XPM and uncompressed BMP are supported
+ * only X-Pixmaps (XPM) and uncompressed BMP are supported
  */
 
 /* get the default avatar image */
@@ -783,8 +771,21 @@ AVT_API int avt_credits_mb (const char *text, avt_bool_t centered);
  */
 AVT_API void avt_reserve_single_keys (avt_bool_t onoff);
 
+/*
+ * type for keyhandler
+ * see avt_register_keyhandler
+ */
+typedef void (*avt_keyhandler) (int sym, int mod, int unicode);
+
 /* register an external keyhandler */
 AVT_API void avt_register_keyhandler (avt_keyhandler handler);
+
+/*
+ * type for mousehandler
+ * see avt_register_mousehandler
+ */
+typedef void (*avt_mousehandler) (int button, avt_bool_t pressed,
+				  int x, int y);
 
 /* register an external mousehandler
  *
