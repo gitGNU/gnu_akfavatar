@@ -2768,7 +2768,18 @@ settings_submenu (void)
 
       avt_underlined (AVT_TRUE);
       avt_bold (AVT_TRUE);
-      avt_say (L"AKFAvatar tools");
+
+      switch (language)
+	{
+	case DEUTSCH:
+	  avt_say (L"AKFAvatar Einstellungen");
+	  break;
+	case ENGLISH:
+	default:
+	  avt_say (L"AKFAvatar settings");
+	  break;
+	}
+
       avt_bold (AVT_FALSE);
       avt_underlined (AVT_FALSE);
       avt_new_line ();
