@@ -145,7 +145,7 @@ avtterm.o: $(srcdir)/avtterm.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avtterm.c
 
 avttermsys.o: $(srcdir)/avttermsys.c $(srcdir)/avttermsys.h \
-                $(srcdir)/akfavatar.h $(srcdir)/version.h
+                $(srcdir)/akfavatar.h version.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avttermsys.c
 
 avtmsg.o: $(srcdir)/avtmsg.c $(srcdir)/avtaddons.h
@@ -201,9 +201,9 @@ install: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info ins
 	$(INSTALL_PROGRAM) $(srcdir)/avtman $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/gnome-akfavatar $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/avtcmd $(DESTDIR)$(bindir)
-	$(INSTALL_DATA) README $(DESTDIR)$(docdir)
-	$(INSTALL_DATA) AUTHORS $(DESTDIR)$(docdir)
-	$(INSTALL_DATA) COPYING $(DESTDIR)$(docdir)
+	$(INSTALL_DATA) $(srcdir)/README $(DESTDIR)$(docdir)
+	$(INSTALL_DATA) $(srcdir)/AUTHORS $(DESTDIR)$(docdir)
+	$(INSTALL_DATA) $(srcdir)/COPYING $(DESTDIR)$(docdir)
 	@echo '*'
 	@echo '* make install-desktop-menu: to install avatarsay in a desktop menu'
 	@echo '*'
@@ -220,9 +220,9 @@ install-strip: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-in
 	$(INSTALL_PROGRAM) $(srcdir)/avtman $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/gnome-akfavatar $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/avtcmd $(DESTDIR)$(bindir)
-	$(INSTALL_DATA) README $(DESTDIR)$(docdir)
-	$(INSTALL_DATA) AUTHORS $(DESTDIR)$(docdir)
-	$(INSTALL_DATA) COPYING $(DESTDIR)$(docdir)
+	$(INSTALL_DATA) $(srcdir)/README $(DESTDIR)$(docdir)
+	$(INSTALL_DATA) $(srcdir)/AUTHORS $(DESTDIR)$(docdir)
+	$(INSTALL_DATA) $(srcdir)/COPYING $(DESTDIR)$(docdir)
 	@echo '*'
 	@echo '* use "make install-desktop-menu" to install avatarsay in a desktop menu'
 	@echo '*'
