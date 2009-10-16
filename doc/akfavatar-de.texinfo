@@ -90,9 +90,7 @@ Avatar auf dem Bildschirm erscheint und dem Benutzer Sachen in einer
 Sprechblase mitteilt.  Man kann auch Audio-Aufnahmen abspielen lassen, so dass
 der Benutzer sogar hören kann, was der Avatar sagt.
 
-AKFAvatar kann auf verschiedene Arten eingesetzt werden.  Ich liste sie hier
-kurz auf, angefangen von der einfachsten bis zur kompliziertesten für 
-fortgeschrittene Benutzer.
+AKFAvatar kann auf verschiedene Arten eingesetzt werden.
 
 @enumerate
 @item
@@ -202,8 +200,9 @@ Dabei sind die ``Runtime Libraries'' ausreichend@*
 SDL_image benötigt wiederum andere Bibliotheken:
 libz, libpng, libjpeg, libtiff
 
-Ohne SDL_image kann man nur X-Pixmaps (XPM) und unkomprimierte BMP Dateien 
-verwenden.
+X-Pixmaps (XPM) und unkomprimierte BMP Dateien kann man auch ohne SDL_image
+verwenden. Mit SDL_image stehen viele weitere Dateiformate für Bilder zur
+Verfügung.
 SDL_image kann auch nach der Installation dieses Paketes noch 
 nachinstalliert werden.
 
@@ -1269,7 +1268,7 @@ während @code{#fdf} ein sehr helles violett ist.
 @cindex Bilder
 
 AKFAvatar unterstützt Bilder im @abbr{XPM}-Format und im unkomprimierten 
-@abbr{BMP-}Format ohne weitere Zusatz-Bibliotheken.
+@abbr{BMP}-Format ohne weitere Zusatz-Bibliotheken.
 Das @abbr{XPM}-Format eignet sich besser für Avatar-Bilder, da es Transparenz 
 unterstützt.  Für andere Formate muss die Software auf einen schmutzigen Trick
 ausweichen, um eine Art Pseudo-Transparenz zu erreichen

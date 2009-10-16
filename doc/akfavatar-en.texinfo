@@ -86,8 +86,7 @@ on the screen, and tells things to the user written in a balloon.  There
 can also be recorded audio files, so that the user even can hear, what
 it is saying.
 
-AKFAvatar can be used in several different ways.  I list them here from
-the most simple one to the most complicated for advanced users.
+AKFAvatar can be used in several different ways.
 
 @enumerate
 @item
@@ -193,7 +192,8 @@ There the Runtime Libraries are sufficient@*
 SDL_image in turn needs other libraries:
 libz, libpng, libjpeg, libtiff
 
-Without SDL_image you can only use X-Pixmaps (XPM) and uncompressed BMP images.
+X-Pixmaps (XPM) and uncompressed BMP images can be used without SDL_image.
+With SDL_image you can use lots of other image formats.
 SDL_image can be installed after the installation of this package.
 
 @item iconv@*
