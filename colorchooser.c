@@ -24,8 +24,11 @@
 /* House symbol */
 #define HOME L" \x2302 "
 
-/* Keyboard symbol */
-#define KEYBOARD L" \x2328 "
+/* Keyboard symbol (not int the 7x14 font) */
+/* #define KEYBOARD L" \x2328 " */
+
+/* Manual input */
+#define MANUAL L" > "
 
 /* three arrows up */
 #define BACK L" \x2191 \x2191 \x2191 "
@@ -92,7 +95,7 @@ avta_color_selection (void)
 
       if (page_nr == 0)
 	{
-	  MARK (KEYBOARD);
+	  MARK (MANUAL);
 	  avt_new_line ();
 	  items++;
 	  offset++;
