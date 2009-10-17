@@ -1,7 +1,5 @@
 # This file is in the Public Domain - AKFoerster
 
-include config.mak
-
 srcdir = ..
 
 CC = gcc
