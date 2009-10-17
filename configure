@@ -430,6 +430,30 @@ then
     echo "VARIANT = ${VARIANT}"
     echo "AWK = ${AWK}"
   } > ${srcdir}/mingw/config.mak
+
+  # find executables for crosscompiling
+
+  if [ -x /usr/bin/i586-mingw32msvc-gcc ]
+  then
+    {
+      echo "CC = /usr/bin/i586-mingw32msvc-gcc"
+      echo "AR = /usr/bin/i586-mingw32msvc-ar"
+      echo "STRIP = /usr/bin/i586-mingw32msvc-strip"
+      echo "RANLIB = /usr/bin/i586-mingw32msvc-ranlib"
+      echo "WINDRES = /usr/bin/i586-mingw32msvc-windres"
+    } >> ${srcdir}/mingw/config.mak
+  fi
+
+  if [ -d /usr/i586-mingw32msvc ]
+  then
+    echo "prefix = /usr/i586-mingw32msvc" >> ${srcdir}/mingw/config.mak
+  fi
+
+  if [ -x /usr/i586-mingw32msvc/bin/sdl-config ]
+  then
+    echo "SDL_CONFIG = /usr/i586-mingw32msvc/bin/sdl-config" \
+        >> ${srcdir}/mingw/config.mak
+  fi
 fi
 
 echo '*'

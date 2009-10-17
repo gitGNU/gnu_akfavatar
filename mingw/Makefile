@@ -4,16 +4,23 @@ include config.mak
 
 srcdir = ..
 
-TARGET = i586-mingw32msvc
-CC = $(TARGET)-gcc
-AR = $(TARGET)-ar
-STRIP = $(TARGET)-strip
-WINDRES = $(TARGET)-windres
-RANLIB = $(TARGET)-ranlib
+CC = gcc
+AR = ar
+STRIP = strip
+WINDRES = windres
+RANLIB = ranlib
+SDL_CONFIG = sdl-config
+
 CFLAGS = -O2 -Wall -Wextra
 LDFLAGS = 
 
-SDL_CONFIG = /usr/$(TARGET)/bin/sdl-config
+prefix = /usr/$(TARGET)
+
+include config.mak
+
+libdir = $(prefix)/lib
+includedir = $(prefix)/include
+
 SDLCFLAGS := $(shell $(SDL_CONFIG) --cflags)
 SDLLDFLAGS := $(shell $(SDL_CONFIG) --libs)
 
@@ -21,10 +28,6 @@ SDLLDFLAGS := $(shell $(SDL_CONFIG) --libs)
 BINPKGNAME=akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 
 VERSIONSTR=$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)
-
-prefix = /usr/$(TARGET)
-libdir = $(prefix)/lib
-includedir = $(prefix)/include
 
 # if you change this, you also have to change the file avatar-default.c
 default_avatar = $(srcdir)/male_user.xpm
