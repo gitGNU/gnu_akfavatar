@@ -449,7 +449,11 @@ then
     echo "prefix = /usr/i586-mingw32msvc" >> ${srcdir}/mingw/config.mak
   fi
 
-  if [ -x /usr/i586-mingw32msvc/bin/sdl-config ]
+  if [ -x /usr/local/cross-tools/i386-mingw32/bin/sdl-config ]
+  then
+    echo "SDL_CONFIG = /usr/local/cross-tools/i386-mingw32/bin/sdl-config" \
+        >> ${srcdir}/mingw/config.mak
+  elif [ -x /usr/i586-mingw32msvc/bin/sdl-config ]
   then
     echo "SDL_CONFIG = /usr/i586-mingw32msvc/bin/sdl-config" \
         >> ${srcdir}/mingw/config.mak
