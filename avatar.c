@@ -4333,6 +4333,7 @@ avt_wait_button (void)
   SDL_ShowCursor (SDL_DISABLE);
 
   /* delete button */
+  /* TODO: save/restore background */
   SDL_SetClipRect (screen, &window);
   SDL_FillRect (screen, &btn_rect, background_color);
   AVT_UPDATE_RECT (btn_rect);
@@ -4802,6 +4803,7 @@ avt_decide (void)
   SDL_ShowCursor (SDL_DISABLE);
 
   /* delete buttons */
+  /* TODO: save/restore background */
   SDL_SetClipRect (screen, &window);
   SDL_FillRect (screen, &no_rect, background_color);
   SDL_FillRect (screen, &yes_rect, background_color);
