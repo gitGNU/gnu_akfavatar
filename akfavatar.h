@@ -199,13 +199,6 @@ AVT_API avt_image_t *avt_import_image_stream (avt_stream *stream);
 AVT_API int avt_change_avatar_image (avt_image_t *image);
 
 /*
- * set name for the avatar
- * set to NULL to clear the name
- */
-AVT_API int avt_set_avatar_name (const wchar_t *name);
-AVT_API int avt_set_avatar_name_mb (const char *name);
-
-/*
  * free avt_image_t images
  * (automatically called in avt_initialize and avt_change_avatar_image)
  */
@@ -391,6 +384,13 @@ AVT_API int avt_name_to_color (const char *name,
  * if possible stick to ASCII for compatibility
  */
 AVT_API void avt_set_title (const char *title, const char *icontitle);
+
+/*
+ * set name for the avatar
+ * set to NULL to clear the name
+ */
+AVT_API int avt_set_avatar_name (const wchar_t *name);
+AVT_API int avt_set_avatar_name_mb (const char *name);
 
 /* switch to fullscreen or window mode */
 AVT_API void avt_switch_mode (int mode);
