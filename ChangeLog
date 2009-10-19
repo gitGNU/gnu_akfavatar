@@ -1,3 +1,11 @@
+2009-10-19  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_set_avatar_name, avt_set_avatar_name_mb):
+	new functions
+	avatar.c (avt_show_name): new function
+	avatar.c (avt_draw_avatar, avt_change_avatar_image): adapted
+	pascal/akfavatar.pas: adapted
+
 2009-10-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_navigate): support for spacer

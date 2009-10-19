@@ -244,6 +244,7 @@ static SDL_Surface *screen, *avt_image, *avt_character;
 static SDL_Surface *avt_text_cursor, *avt_cursor_character;
 static SDL_Surface *circle, *pointer;
 static SDL_Cursor *mpointer;
+static wchar_t *avt_name;
 static Uint32 background_color;
 static Uint32 text_background_color;
 static avt_bool_t newline_mode;	/* when off, you need an extra CR */
@@ -319,6 +320,7 @@ void (*avt_quit_audio_func) (void) AVT_HIDDEN = NULL;
 
 /* forward declaration */
 static int avt_pause (void);
+static void avt_drawchar (wchar_t ch, SDL_Surface * surface);
 
 
 /* color selector */
@@ -1222,6 +1224,58 @@ avt_clear_screen (void)
   avt_visible = AVT_FALSE;
 }
 
+#define NAME_PADDING 3
+
+static void
+avt_show_name (void)
+{
+  SDL_Rect dst;
+  SDL_Color old_colors[2], colors[2];
+  wchar_t *p;
+
+  if (screen && avt_image && avt_name)
+    {
+      /* save old character colors */
+      old_colors[0] = avt_character->format->palette->colors[0];
+      old_colors[1] = avt_character->format->palette->colors[1];
+
+      /* tan background */
+      colors[0].r = 210;
+      colors[0].g = 180;
+      colors[0].b = 140;
+
+      /* black foreground */
+      colors[1].r = colors[1].g = colors[1].b = 0;
+
+      SDL_SetColors (avt_character, colors, 0, 2);
+
+      dst.x = window.x + AVATAR_MARGIN + avt_image->w + BUTTON_DISTANCE;
+      dst.y = window.y + window.h - AVATAR_MARGIN - FONTHEIGHT
+	- 2 * NAME_PADDING;
+      dst.w = (avt_strwidth (avt_name) * FONTWIDTH) + 2 * NAME_PADDING;
+      dst.h = FONTHEIGHT + 2 * NAME_PADDING;
+
+      /* draw sign */
+      SDL_FillRect (screen, &dst,
+		    SDL_MapRGB (screen->format,
+				colors[0].r, colors[0].g, colors[0].b));
+
+      /* show name */
+      cursor.x = dst.x + NAME_PADDING;
+      cursor.y = dst.y + NAME_PADDING;
+
+      p = avt_name;
+      while (*p)
+	{
+	  avt_drawchar (*p++, screen);
+	  cursor.x += FONTWIDTH;
+	}
+
+      /* restore old character colors */
+      SDL_SetColors (avt_character, old_colors, 0, 2);
+    }
+}
+
 /* draw the avatar image,
  * but doesn't update the screen yet
  */
@@ -1248,6 +1302,9 @@ avt_draw_avatar (void)
 	  dst.h = avt_image->h;
 	  SDL_BlitSurface (avt_image, NULL, screen, &dst);
 	}
+
+      if (avt_name)
+	avt_show_name ();
     }
 }
 
@@ -5222,6 +5279,12 @@ avt_change_avatar_image (avt_image_t * image)
       avt_image = NULL;
     }
 
+  if (avt_name)
+    {
+      SDL_free (avt_name);
+      avt_name = NULL;
+    }
+
   /* import the avatar image */
   if (image)
     {
@@ -5245,6 +5308,48 @@ avt_change_avatar_image (avt_image_t * image)
   /* set actual balloon size to the maximum size */
   balloonheight = balloonmaxheight;
   balloonwidth = AVT_LINELENGTH;
+
+  return _avt_STATUS;
+}
+
+extern int
+avt_set_avatar_name (const wchar_t * name)
+{
+  int size;
+
+  /* clear old name */
+  if (avt_name)
+    {
+      SDL_free (avt_name);
+      avt_name = NULL;
+    }
+
+  /* copy name */
+  if (name && *name)
+    {
+      size = (avt_strwidth (name) + 1) * sizeof (wchar_t);
+      avt_name = (wchar_t *) SDL_malloc (size);
+      SDL_memcpy (avt_name, name, size);
+    }
+
+  if (avt_visible)
+    avt_show_avatar ();
+
+  return _avt_STATUS;
+}
+
+extern int
+avt_set_avatar_name_mb (const char *name)
+{
+  wchar_t *wcname;
+
+  avt_mb_decode (&wcname, name, SDL_strlen (name) + 1);
+
+  if (wcname)
+    {
+      avt_set_avatar_name (wcname);
+      SDL_free (wcname);
+    }
 
   return _avt_STATUS;
 }

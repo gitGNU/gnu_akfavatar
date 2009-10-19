@@ -149,6 +149,9 @@ procedure AvatarImageXPM(data: pointer);
 procedure AvatarImageXBM(bits: pointer; width, height: integer; 
                          colorname: string);
 
+{ give the avatar a name }
+procedure AvatarName(const Name: string);
+
 { set a different background color }
 { should be used before any output took place }
 procedure setBackgroundColor(red, green, blue: byte);
@@ -521,6 +524,9 @@ function avt_change_avatar_image(image: PAvatarImage): CInteger;
 procedure avt_free_image(image: PAvatarImage);
   libakfavatar 'avt_free_image';
 
+function avt_set_avatar_name_mb (name: CString): CInteger;
+  libakfavatar 'avt_set_avatar_name_mb';
+
 function avt_show_image_file(FileName: CString): CInteger;
   libakfavatar 'avt_show_image_file';
 
@@ -822,6 +828,12 @@ avt_initialize_audio;
 
 NormVideo;
 if avt_move_in<>0 then Halt
+end;
+
+procedure AvatarName(const Name: string);
+begin
+if not initialized then initializeAvatar;
+avt_set_avatar_name_mb (String2CString(Name))
 end;
 
 procedure TextColor (Color: Byte);

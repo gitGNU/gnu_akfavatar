@@ -193,9 +193,17 @@ AVT_API avt_image_t *avt_import_image_stream (avt_stream *stream);
  * if the avatar is visible, the screen gets cleared
  * the original image is freed in this function!
  * the image may be NULL if no avatar should be shown
- * on error AVT_ERROR is set and returned 
+ * on error AVT_ERROR is set and returned
+ * an avatar name is cleared
  */
 AVT_API int avt_change_avatar_image (avt_image_t *image);
+
+/*
+ * set name for the avatar
+ * set to NULL to clear the name
+ */
+AVT_API int avt_set_avatar_name (const wchar_t *name);
+AVT_API int avt_set_avatar_name_mb (const char *name);
 
 /*
  * free avt_image_t images
