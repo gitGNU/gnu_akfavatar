@@ -1457,6 +1457,9 @@ avatar_command (wchar_t * cmd, int *stop)
   if (chk_cmd_par (L"avatarname "))
     {
       avt_set_avatar_name (cmd + cmd_len);
+
+      /* note: reseting the avatar image also clears the name */
+      avatar_changed = AVT_TRUE;
       return 0;
     }
 
@@ -2984,6 +2987,7 @@ menu (void)
 
       if (avatar_changed)
 	{
+	  /* note: reseting the avatar image also clears the name */
 	  restore_avatar_image ();
 	  if (!OPT (OPT_POPUP))
 	    move_in ();
