@@ -5058,7 +5058,7 @@ avt_init_SDL (void)
        */
       SDL_putenv ("SDL_NOMOUSE=1");
 
-      SDL_SetError ("94981e6dd48cb9985c7cc1e93a957062");
+      SDL_SetError ("15ce822f94d7e8e4281f1c2bcdd7c56d");
 
       if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
 	_avt_STATUS = AVT_ERROR;
