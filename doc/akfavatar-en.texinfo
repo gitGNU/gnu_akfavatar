@@ -772,7 +772,8 @@ You can use the APC escape sequence from you own programs or scripts.
 @table @command
 
 @item datadir @var{directory}
-with this command you can change the directory. This is needed to load images and sound files.
+with this command you can change the directory. This is needed to load images
+and sound files.
 
 The data directory can also be set with the environment variable 
 @env{AVATARDATADIR}.  The command has precedence over the environment
@@ -787,6 +788,7 @@ avatarimage. The special name @code{none} removes the avatarimage. This
 gives you the maximum size for the text-area, but it looks boring.
 
 @strong{Attention}: This command should be used before the text starts
+This command also removes the avatar name.
 
 The avatar image can also be set with the environment variable 
 @env{AVATARIMAGE}.  The command has precedence over the environment
@@ -794,6 +796,9 @@ variable.
 
 Which file-formats AKFAvatar supports depends on which libraries you have 
 installed (@pxref{Formats}).
+
+@item avatarname @var{name}
+set a name for the avatar
 
 @item encoding @var{encodingname}
 just for demos: sets the encoding of the text; 
