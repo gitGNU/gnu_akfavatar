@@ -1454,6 +1454,12 @@ avatar_command (wchar_t * cmd, int *stop)
       return 0;
     }
 
+  if (chk_cmd_par (L"avatarname "))
+    {
+      avt_set_avatar_name (cmd + cmd_len);
+      return 0;
+    }
+
   /* the encoding is checked in check_encoding() */
   /* so ignore it here */
   if (chk_cmd_par (L"encoding "))

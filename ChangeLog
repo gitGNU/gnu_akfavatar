@@ -6,6 +6,8 @@
 	avatar.c (avt_draw_avatar, avt_change_avatar_image): adapted
 	pascal/akfavatar.pas: adapted
 
+	* avatarsay.c (avatar_command): new command: avatarname
+
 2009-10-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_navigate): support for spacer
