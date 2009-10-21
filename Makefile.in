@@ -350,9 +350,7 @@ clean:
 	-rm -f rgb.h
 	-rm -f ucsfont9x18.c ucsfont7x14.c
 	-rm -f libinfo.rc avtsayinfo.rc
-	-rm -f *.aux *.cp *.cps *.fn *.ky *.pg *.tp *.vr
-	-rm -f *.log *.toc
-	-rm -f pasref.txt akfavatar-h.txt
+	-rm -fr akfavatar-en.t2d/ akfavatar-de.t2d/
 	-rm -f pascal/*.o pascal/*.gpi pascal/*.gpm pascal/*.ppu
 	-rm -f pascal/link.res pascal/ppas.sh
 
@@ -432,6 +430,7 @@ dist: info html man
 	mkdir $(PKGNAME)/doc
 	ln doc/README doc/Makefile doc/avatarsay.1 doc/avtcmd.1 \
 	   doc/akfavatar-en.texinfo doc/akfavatar-en.info \
+	   doc/pasref.txt \
 	   doc/akfavatar-en.html \
 	   doc/akfavatar-de.texinfo doc/akfavatar-de.info \
 	   doc/akfavatar-de.html \

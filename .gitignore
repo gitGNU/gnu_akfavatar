@@ -33,6 +33,7 @@ tests
 *.def
 *.rc
 version.texi
+*.t2d
 *.aux
 *.cp
 *.cps
