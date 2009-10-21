@@ -1446,7 +1446,7 @@ The following text shows the @code{interface} of the Pascal unit
 
 The following is the C header file @code{akfavatar.h}:
 
-@verbatiminclude akfavatar.h
+@verbatiminclude akfavatar-h.txt
 
 @node Color names
 @appendix Names of colors

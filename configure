@@ -412,8 +412,8 @@ LOCAL_FPC_RPATH = ${LOCAL_FPC_RPATH}
 EOF
 cat ${srcdir}/Makefile.in >> Makefile
 
-rm -f ${srcdir}/doc/version.texi
-cat > ${srcdir}/doc/version.texi <<EOF
+rm -f version.texi
+cat > version.texi <<EOF
 @c This file was generated automatically by configure. Do not edit.
 
 @set VERSION ${VERSION}.${SUBVERSION}.${REVISION}${VARIANT}
@@ -423,13 +423,15 @@ EOF
 
 if [ -d ${srcdir}/mingw ]
 then
+  rm -f config-mingw
   {
+    echo "# This file was generated automatically by configure. Do not edit."
     echo "VERSION = ${VERSION}"
     echo "SUBVERSION = ${SUBVERSION}"
     echo "REVISION = ${REVISION}"
     echo "VARIANT = ${VARIANT}"
     echo "AWK = ${AWK}"
-  } > ${srcdir}/mingw/config.mak
+  } > config-mingw
 
   # find executables for crosscompiling
 
@@ -441,22 +443,22 @@ then
       echo "STRIP = /usr/bin/i586-mingw32msvc-strip"
       echo "RANLIB = /usr/bin/i586-mingw32msvc-ranlib"
       echo "WINDRES = /usr/bin/i586-mingw32msvc-windres"
-    } >> ${srcdir}/mingw/config.mak
+    } >> config-mingw
   fi
 
   if [ -d /usr/i586-mingw32msvc ]
   then
-    echo "prefix = /usr/i586-mingw32msvc" >> ${srcdir}/mingw/config.mak
+    echo "prefix = /usr/i586-mingw32msvc" >> ${srcdir}/config-mingw
   fi
 
   if [ -x /usr/local/cross-tools/i386-mingw32/bin/sdl-config ]
   then
     echo "SDL_CONFIG = /usr/local/cross-tools/i386-mingw32/bin/sdl-config" \
-        >> ${srcdir}/mingw/config.mak
+        >> ${srcdir}/config-mingw
   elif [ -x /usr/i586-mingw32msvc/bin/sdl-config ]
   then
     echo "SDL_CONFIG = /usr/i586-mingw32msvc/bin/sdl-config" \
-        >> ${srcdir}/mingw/config.mak
+        >> config-mingw
   fi
 fi
 

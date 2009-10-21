@@ -4,17 +4,18 @@ srcdir = ..
 
 CC = gcc
 AR = ar
+AWK = awk
 STRIP = strip
 WINDRES = windres
 RANLIB = ranlib
 SDL_CONFIG = sdl-config
 
 CFLAGS = -O2 -Wall -Wextra
-LDFLAGS = 
+LDFLAGS =
 
 prefix = /usr/$(TARGET)
 
-include config.mak
+include config-mingw
 
 libdir = $(prefix)/lib
 includedir = $(prefix)/include
@@ -172,8 +173,8 @@ libinfo.rc: Makefile
 icon.o: icon.rc akfavatar.ico
 	$(WINDRES) -o $@ -i icon.rc
 
-avtsayinfo.o: avtsayinfo.rc akfavatar.ico
-	$(WINDRES) -o $@ -i avtsayinfo.rc
+avtsayinfo.o: avtsayinfo.rc $(srcdir)/mingw/akfavatar.ico
+	$(WINDRES) -I$(srcdir)/mingw -o $@ -i avtsayinfo.rc
 
 libinfo.o: libinfo.rc
 	$(WINDRES) -o $@ -i libinfo.rc
@@ -200,7 +201,7 @@ colorchooser.o: $(srcdir)/colorchooser.c $(srcdir)/akfavatar.h
 rgb.h: $(srcdir)/rgb.txt
 	$(AWK) -f $(srcdir)/rgb2c $(srcdir)/rgb.txt > $@
 
-avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/version.h rgb.h \
+avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h rgb.h \
              $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
              $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
              $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
@@ -247,8 +248,8 @@ askdrive.o: $(srcdir)/mingw/askdrive.c \
 	  $(srcdir)/mingw/askdrive.c
 
 # this is just a dummy stub!
-avttermstub.o: avttermstub.c $(srcdir)/avtaddons.h
-	$(CC) $(SDLCFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ avttermstub.c
+avttermstub.o: $(srcdir)/mingw/avttermstub.c $(srcdir)/avtaddons.h
+	$(CC) $(SDLCFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/mingw/avttermstub.c
 
 arch.o: $(srcdir)/arch.c $(srcdir)/avtaddons.h
 	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/arch.c
@@ -270,7 +271,7 @@ libavtaddons.a: filechooser.o askdrive.o arch.o avttermstub.o \
 	-$(RANLIB) $@
 
 avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h
-	$(CC) $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avatarsay.c
+	$(CC) -I. $(SDLCFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avatarsay.c
 
 # from the mingw directory!
 avtmsg.o: $(srcdir)/mingw/avtmsg.c $(srcdir)/avtaddons.h

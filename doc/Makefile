@@ -1,3 +1,5 @@
+srcdir = ..
+
 SHELL = /bin/sh
 LANG = C
 MAKEINFO = makeinfo
@@ -7,68 +9,74 @@ INSTALL_PROGRAM = $(INSTALL) -m 755
 INSTALL_DATA = $(INSTALL) -m 644
 
 # comment out if you prefer black on white
-USECSS = --css-include=akfavatar.css
+USECSS = --css-include=$(srcdir)/doc/akfavatar.css
 
 .PHONY: all txt info html dvi pdf ps man \
 	clean mostlyclean distclean maintainer-clean maintainerclean
 
 all: txt info html dvi pdf ps
 
-pasref.txt: ../pascal/akfavatar.pas
-	sed -n '/^unit/,/^implementation/p' < ../pascal/akfavatar.pas \
+pasref.txt: $(srcdir)/pascal/akfavatar.pas
+	sed -n '/^unit/,/^implementation/p' $(srcdir)/pascal/akfavatar.pas \
 	  | sed '/^implementation/ d' > $@
 
-akfavatar.h: ../akfavatar.h
-	-cp ../akfavatar.h $@
+info: $(srcdir)/doc/akfavatar-en.info $(srcdir)/doc/akfavatar-de.info
 
-info: akfavatar-en.info akfavatar-de.info
+$(srcdir)/doc/akfavatar-en.info: $(srcdir)/doc/akfavatar-en.texinfo \
+	    pasref.txt akfavatar-h.txt version.texi
+	-$(MAKEINFO) -o $@ $(srcdir)/doc/akfavatar-en.texinfo
 
-akfavatar-en.info: akfavatar-en.texinfo pasref.txt akfavatar.h version.texi
-	-$(MAKEINFO) akfavatar-en.texinfo
+$(srcdir)/doc/akfavatar-de.info: $(srcdir)/doc/akfavatar-de.texinfo \
+	    pasref.txt akfavatar-h.txt version.texi
+	-$(MAKEINFO) -o $@ --enable-encoding $(srcdir)/doc/akfavatar-de.texinfo
 
-akfavatar-de.info: akfavatar-de.texinfo pasref.txt akfavatar.h version.texi
-	-$(MAKEINFO) --enable-encoding akfavatar-de.texinfo
+html: $(srcdir)/doc/akfavatar-en.html $(srcdir)/doc/akfavatar-de.html
 
-html: akfavatar-en.html akfavatar-de.html
+$(srcdir)/doc/akfavatar-en.html: $(srcdir)/doc/akfavatar-en.texinfo \
+	       pasref.txt akfavatar-h.txt version.texi
+	-$(TEXI2HTML) $(USECSS) -I . --output=$@ \
+	      $(srcdir)/doc/akfavatar-en.texinfo
 
-#akfavatar-en.html: akfavatar-en.texinfo pasref.txt akfavatar.h version.texi
-#	-$(MAKEINFO) --html --no-split $(USECSS) akfavatar-en.texinfo
-#
-#akfavatar-de.html: akfavatar-de.texinfo pasref.txt akfavatar.h version.texi
-#	-$(MAKEINFO) --html --no-split $(USECSS) akfavatar-de.texinfo
-
-akfavatar-en.html: akfavatar-en.texinfo pasref.txt akfavatar.h version.texi
-	-$(TEXI2HTML) $(USECSS) akfavatar-en.texinfo
-
-akfavatar-de.html: akfavatar-de.texinfo pasref.txt akfavatar.h version.texi
-	-$(TEXI2HTML) $(USECSS) akfavatar-de.texinfo
+akfavatar-de.html: $(srcdir)/doc/akfavatar-de.texinfo pasref.txt \
+	           akfavatar-h.txt version.texi
+	-$(TEXI2HTML) $(USECSS) -I . --output=$@ \
+	      $(srcdir)/doc/akfavatar-de.texinfo
 
 txt: akfavatar-en.txt akfavatar-de.txt
 
-akfavatar-en.txt: akfavatar-en.texinfo pasref.txt akfavatar.h version.texi
-	-$(MAKEINFO) --plaintext -o $@ akfavatar-en.texinfo
+akfavatar-en.txt: $(srcdir)/doc/akfavatar-en.texinfo pasref.txt \
+	          akfavatar-h.txt version.texi
+	-$(MAKEINFO) --plaintext -o $@ $(srcdir)/doc/akfavatar-en.texinfo
 
-akfavatar-de.txt: akfavatar-de.texinfo pasref.txt akfavatar.h version.texi
-	-$(MAKEINFO) --enable-encoding --plaintext -o $@ akfavatar-de.texinfo
+akfavatar-de.txt: $(srcdir)/doc/akfavatar-de.texinfo pasref.txt \
+	          akfavatar-h.txt version.texi
+	-$(MAKEINFO) --enable-encoding --plaintext -o $@ \
+	             $(srcdir)/doc/akfavatar-de.texinfo
 
 dvi: akfavatar-en.dvi akfavatar-de.dvi
 
-akfavatar-en.dvi: akfavatar-en.texinfo pasref.txt akfavatar.h version.texi
-	-$(TEXI2DVI) akfavatar-en.texinfo
+akfavatar-en.dvi: $(srcdir)/doc/akfavatar-en.texinfo pasref.txt \
+	          akfavatar-h.txt version.texi
+	-$(TEXI2DVI) $(srcdir)/doc/akfavatar-en.texinfo
 
-akfavatar-de.dvi: akfavatar-de.texinfo pasref.txt akfavatar.h version.texi
-	-$(TEXI2DVI) akfavatar-de.texinfo
+akfavatar-de.dvi: $(srcdir)/doc/akfavatar-de.texinfo pasref.txt \
+	          akfavatar-h.txt version.texi
+	-$(TEXI2DVI) $(srcdir)/doc/akfavatar-de.texinfo
 
 pdf: akfavatar-en.pdf akfavatar-de.pdf
 
-akfavatar-en.pdf: akfavatar-en.texinfo pasref.txt akfavatar.h pdfmeta-en version.texi
-	-$(TEXI2DVI) --pdf akfavatar-en.texinfo
-	-pdftk akfavatar-en.pdf update_info pdfmeta-en output tmp.pdf \
+akfavatar-en.pdf: $(srcdir)/doc/akfavatar-en.texinfo pasref.txt \
+	          akfavatar-h.txt $(srcdir)/doc/pdfmeta-en version.texi
+	-$(TEXI2DVI) --pdf $(srcdir)/doc/akfavatar-en.texinfo
+	-pdftk akfavatar-en.pdf update_info $(srcdir)/doc/pdfmeta-en \
+	       output tmp.pdf \
 	   && mv tmp.pdf akfavatar-en.pdf
 
-akfavatar-de.pdf: akfavatar-de.texinfo pasref.txt akfavatar.h pdfmeta-de version.texi
-	-$(TEXI2DVI) --pdf akfavatar-de.texinfo
-	-pdftk akfavatar-de.pdf update_info pdfmeta-de output tmp.pdf \
+akfavatar-de.pdf: $(srcdir)/doc/akfavatar-de.texinfo pasref.txt \
+	          akfavatar-h.txt $(srcdir)/doc/pdfmeta-de version.texi
+	-$(TEXI2DVI) --pdf $(srcdir)/doc/akfavatar-de.texinfo
+	-pdftk akfavatar-de.pdf update_info $(srcdir)/doc/pdfmeta-de \
+	       output tmp.pdf \
 	   && mv tmp.pdf akfavatar-de.pdf
 
 ps: akfavatar-en.ps akfavatar-de.ps
@@ -79,19 +87,24 @@ akfavatar-en.ps: akfavatar-en.dvi
 akfavatar-de.ps: akfavatar-de.dvi
 	-dvips -Pwww -o $@ akfavatar-de.dvi
 
-docbook: akfavatar-en.texinfo akfavatar-de.texinfo pasref.txt akfavatar.h version.texi
-	-$(MAKEINFO) --docbook akfavatar-en.texinfo
-	-$(MAKEINFO) --docbook akfavatar-de.texinfo
+docbook: $(srcdir)/doc/akfavatar-en.texinfo \
+         $(srcdir)/doc/akfavatar-de.texinfo \
+         pasref.txt akfavatar-h.txt version.texi
+	-$(MAKEINFO) -I $(srcdir)/doc --docbook $(srcdir)/doc/akfavatar-en.texinfo
+	-$(MAKEINFO) -I $(srcdir)/doc --docbook $(srcdir)/doc/akfavatar-de.texinfo
 
-man: avatarsay.1 avtcmd.1
+man: $(srcdir)/doc/avatarsay.1 $(srcdir)/doc/avtcmd.1
 
-avatarsay.1: ../avatarsay.c ../configure
+$(srcdir)/doc/avatarsay.1: $(srcdir)/avatarsay.c $(srcdir)/configure
 	-help2man --info-page=akfavatar-en --source=AKFAvatar \
-	  -o avatarsay.1 ../avatarsay
+	  -o $@ avatarsay
 
-avtcmd.1: ../avtcmd
+$(srcdir)/doc/avtcmd.1: $(srcdir)/avtcmd
 	-help2man --info-page=akfavatar-en --source=AKFAvatar \
-	  -o avtcmd.1 ../avtcmd
+	  -o $@ $(srcdir)/avtcmd
+
+akfavatar-h.txt: $(srcdir)/akfavatar.h
+	cp $(srcdir)/akfavatar.h $@
 
 clean:
 	-rm -f *~
@@ -112,7 +125,6 @@ distclean: clean
 maintainer-clean: distclean
 	@echo 'This command is intended for maintainers to use; it'
 	@echo 'deletes files that may need special tools to rebuild.'
-	-rm -f akfavatar.h
 	-rm -f pasref.txt
 	-rm -f akfavatar-en.info akfavatar-en.html
 	-rm -f akfavatar-de.info akfavatar-de.html

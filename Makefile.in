@@ -35,10 +35,10 @@ all: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay avatarsay-d
 	@echo '*'
 
 mingw:
-	$(MAKE) -C $(srcdir)/mingw all
+	$(MAKE) -f $(srcdir)/mingw/Makefile srcdir=$(srcdir) all
 
 dist-mingw:
-	$(MAKE) -C $(srcdir)/mingw dist-bin
+	$(MAKE) -f $(srcdir)/mingw/Makefile srcdir=$(srcdir) dist-bin
 
 Makefile: $(srcdir)/configure $(srcdir)/Makefile.in
 	./config.status
@@ -252,7 +252,7 @@ uninstall: uninstall-info uninstall-man uninstall-txt uninstall-html \
 	-xdg-icon-resource uninstall --size 32 --novendor akfavatar.xpm
 
 info:
-	$(MAKE) -C $(srcdir)/doc info
+	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) info
 
 install-info: info
 	$(INSTALL_DATA) $(srcdir)/doc/akfavatar-en.info $(DESTDIR)$(infodir)
@@ -279,65 +279,65 @@ uninstall-man:
 	-rm -f $(DESTDIR)$(mandir)/man1/avtcmd.1
 
 txt:
-	$(MAKE) -C $(srcdir)/doc txt
+	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) txt
 
 install-txt: txt
-	-$(INSTALL_DATA) $(srcdir)/doc/akfavatar-en.txt $(DESTDIR)$(docdir)
-	-$(INSTALL_DATA) $(srcdir)/doc/akfavatar-de.txt $(DESTDIR)$(docdir)
+	-$(INSTALL_DATA) akfavatar-en.txt $(DESTDIR)$(docdir)
+	-$(INSTALL_DATA) akfavatar-de.txt $(DESTDIR)$(docdir)
 
 uninstall-txt:
 	-rm -f $(DESTDIR)$(docdir)/akfavatar-en.txt
 	-rm -f $(DESTDIR)$(docdir)/akfavatar-de.txt
 
 html:
-	$(MAKE) -C $(srcdir)/doc html
+	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) html
 
 install-html: html
-	-$(INSTALL_DATA) $(srcdir)/doc/akfavatar-en.html $(DESTDIR)$(docdir)
-	-$(INSTALL_DATA) $(srcdir)/doc/akfavatar-de.html $(DESTDIR)$(docdir)
+	-$(INSTALL_DATA) akfavatar-en.html $(DESTDIR)$(docdir)
+	-$(INSTALL_DATA) akfavatar-de.html $(DESTDIR)$(docdir)
 
 uninstall-html:
 	-rm -f $(DESTDIR)$(docdir)/akfavatar-en.html
 	-rm -f $(DESTDIR)$(docdir)/akfavatar-de.html
 
 dvi:
-	$(MAKE) -C $(srcdir)/doc dvi
+	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) dvi
 
 install-dvi: dvi
-	-$(INSTALL_DATA) $(srcdir)/doc/akfavatar-en.dvi $(DESTDIR)$(docdir)
-	-$(INSTALL_DATA) $(srcdir)/doc/akfavatar-de.dvi $(DESTDIR)$(docdir)
+	-$(INSTALL_DATA) akfavatar-en.dvi $(DESTDIR)$(docdir)
+	-$(INSTALL_DATA) akfavatar-de.dvi $(DESTDIR)$(docdir)
 
 uninstall-dvi:
 	-rm -f $(DESTDIR)$(docdir)/akfavatar-en.dvi
 	-rm -f $(DESTDIR)$(docdir)/akfavatar-de.dvi
 
 pdf:
-	$(MAKE) -C $(srcdir)/doc pdf
+	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) pdf
 
 install-pdf: pdf
-	-$(INSTALL_DATA) $(srcdir)/doc/akfavatar-en.pdf $(DESTDIR)$(docdir)
-	-$(INSTALL_DATA) $(srcdir)/doc/akfavatar-de.pdf $(DESTDIR)$(docdir)
+	-$(INSTALL_DATA) akfavatar-en.pdf $(DESTDIR)$(docdir)
+	-$(INSTALL_DATA) akfavatar-de.pdf $(DESTDIR)$(docdir)
 
 uninstall-pdf:
 	-rm -f $(DESTDIR)$(docdir)/akfavatar-en.pdf
 	-rm -f $(DESTDIR)$(docdir)/akfavatar-de.pdf
 
 ps:
-	$(MAKE) -C $(srcdir)/doc ps
+	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) ps
 
 install-ps: ps
-	-$(INSTALL_DATA) $(srcdir)/doc/akfavatar-en.ps $(DESTDIR)$(docdir)
-	-$(INSTALL_DATA) $(srcdir)/doc/akfavatar-de.ps $(DESTDIR)$(docdir)
+	-$(INSTALL_DATA) akfavatar-en.ps $(DESTDIR)$(docdir)
+	-$(INSTALL_DATA) akfavatar-de.ps $(DESTDIR)$(docdir)
 
 uninstall-ps:
 	-rm -f $(DESTDIR)$(docdir)/akfavatar-en.ps
 	-rm -f $(DESTDIR)$(docdir)/akfavatar-de.ps
 
 man:
-	$(MAKE) -C $(srcdir)/doc man
+	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) man
 
 doc:
-	$(MAKE) -C $(srcdir)/doc all
+	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) all
 
 check:
 
@@ -349,10 +349,12 @@ clean:
 	-rm -f alert.c
 	-rm -f rgb.h
 	-rm -f ucsfont9x18.c ucsfont7x14.c
+	-rm -f libinfo.rc avtsayinfo.rc
+	-rm -f *.aux *.cp *.cps *.fn *.ky *.pg *.tp *.vr
+	-rm -f *.log *.toc
+	-rm -f pasref.txt akfavatar-h.txt
 	-rm -f pascal/*.o pascal/*.gpi pascal/*.gpm pascal/*.ppu
 	-rm -f pascal/link.res pascal/ppas.sh
-	$(MAKE) -C $(srcdir)/mingw clean
-	$(MAKE) -C $(srcdir)/doc clean
 
 mostlyclean: clean
 
@@ -362,13 +364,18 @@ distclean: clean
 	-rm -f $(LIBNAME) $(SONAME)
 	-rm -f config.status
 	-rm -f version.h
+	-rm -f version.texi
 	-rm -f Makefile
-	-rm -f $(srcdir)/pascal/example
 	-rm -f akfavatar-*.tar.gz akfavatar-*.tar.bz2
 	-rm -f multiply-bin multiply
 	-rm -f multiplizieren-bin multiplizieren
-	$(MAKE) -C $(srcdir)/mingw distclean
-	$(MAKE) -C $(srcdir)/doc distclean
+	-rm -f akfavatar.def akfavatar.dll akfavatar.lib
+	-rm -f akfavatar-en.pdf akfavatar-en.ps akfavatar-en.dvi
+	-rm -f akfavatar-en.txt akfavatar-en.xml
+	-rm -f akfavatar-de.pdf akfavatar-de.ps akfavatar-de.dvi
+	-rm -f akfavatar-de.txt akfavatar-de.xml
+	-rm -f avatarsay*.exe akfavatar-*.zip
+	-rm -f config-mingw
 
 
 # the rest is just for the maintainer
@@ -424,7 +431,6 @@ dist: info html man
 	
 	mkdir $(PKGNAME)/doc
 	ln doc/README doc/Makefile doc/avatarsay.1 doc/avtcmd.1 \
-	   doc/akfavatar.h doc/pasref.txt \
 	   doc/akfavatar-en.texinfo doc/akfavatar-en.info \
 	   doc/akfavatar-en.html \
 	   doc/akfavatar-de.texinfo doc/akfavatar-de.info \
