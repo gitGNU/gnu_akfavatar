@@ -1,3 +1,9 @@
+2009-10-22  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_load_image_xbm): optimized
+	(avt_draw_balloon2): adapted
+	circle.xpm: adapted (must be multiple of 8)
+
 2009-10-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_set_avatar_name, avt_set_avatar_name_mb):

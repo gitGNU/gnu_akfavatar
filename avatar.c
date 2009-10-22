@@ -884,15 +884,15 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
 {
   SDL_Surface *img;
   SDL_Color color;
-  int x, y;
+  int y;
   int bpl;			/* Bytes per line */
-  Uint8 *p;
+  Uint8 *line;
 
   color.r = red;
   color.g = green;
   color.b = blue;
 
-  img = SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 8, 0, 0, 0, 0);
+  img = SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 1, 0, 0, 0, 0);
 
   if (!img)
     {
@@ -901,17 +901,36 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
     }
 
   /* Bytes per line */
-  bpl = width / 8 + (width % 8 == 0 ? 0 : 1);
+  bpl = (width + 7) / 8;
 
   if (SDL_MUSTLOCK (img))
     SDL_LockSurface (img);
 
+  line = (Uint8 *) img->pixels;
+
   for (y = 0; y < height; y++)
     {
-      p = (Uint8 *) img->pixels + (y * img->pitch);
-      for (x = 0; x < width; x++, p++)
-	*p = (bits[y * bpl + x / 8] & (1 << (x % 8))) != 0;
-      /* note: I'm using the fact that (x != 0) yields 0 or 1 */
+      int byte, bit;
+      Uint8 val, res;
+      Uint8 *p;
+
+      p = line;
+      for (byte = 0; byte < bpl; byte++, p++, bits++)
+	{
+	  val = *bits;
+	  res = 0;
+
+          /* bits must be reversed */
+	  for (bit = 7; bit >= 0; bit--)
+	    {
+	      res |= (val & 1) << bit;
+	      val >>= 1;
+	    }
+
+	  *p = res;
+	}
+
+      line += img->pitch;
     }
 
   if (SDL_MUSTLOCK (img))
@@ -1371,7 +1390,7 @@ avt_draw_balloon2 (int offset, Uint32 ballooncolor)
     SDL_BlitSurface (circle, &circle_piece, screen, &corner_pos);
 
     /* upper right corner */
-    circle_piece.x = circle->w / 2;
+    circle_piece.x = ((circle->w + 7) / 8) / 2;
     circle_piece.y = 0;
     corner_pos.x = shape.x + shape.w - circle_piece.w;
     corner_pos.y = shape.y;
@@ -1385,7 +1404,7 @@ avt_draw_balloon2 (int offset, Uint32 ballooncolor)
     SDL_BlitSurface (circle, &circle_piece, screen, &corner_pos);
 
     /* lower right corner */
-    circle_piece.x = circle->w / 2;
+    circle_piece.x = ((circle->w + 7) / 8) / 2;
     circle_piece.y = circle->h / 2;
     corner_pos.x = shape.x + shape.w - circle_piece.w;
     corner_pos.y = shape.y + shape.h - circle_piece.h;
