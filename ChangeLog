@@ -4,6 +4,9 @@
 	(avt_draw_balloon2): adapted
 	circle.xpm: adapted (must be multiple of 8)
 
+	*avatar.c (avt_draw_balloon2):
+	improve balloon-corners in vga resolution
+
 2009-10-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_set_avatar_name, avt_set_avatar_name_mb):

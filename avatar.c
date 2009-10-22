@@ -1347,31 +1347,31 @@ avt_draw_balloon2 (int offset, Uint32 ballooncolor)
 {
   SDL_Rect shape;
 
+  /* full size */
+  shape.x = textfield.x - BALLOON_INNER_MARGIN + offset;
+  shape.w = textfield.w + (2 * BALLOON_INNER_MARGIN);
+  shape.y = textfield.y - BALLOON_INNER_MARGIN + offset;
+  shape.h = textfield.h + (2 * BALLOON_INNER_MARGIN);
+
   /* horizontal shape */
   {
     SDL_Rect hshape;
-    hshape.x = textfield.x - BALLOON_INNER_MARGIN + offset;
-    hshape.w = textfield.w + (2 * BALLOON_INNER_MARGIN);
-    hshape.y = textfield.y + offset;
-    hshape.h = textfield.h;
+    hshape.x = shape.x;
+    hshape.w = shape.w;
+    hshape.y = shape.y + (circle_height / 2);
+    hshape.h = shape.h - circle_height;
     SDL_FillRect (screen, &hshape, ballooncolor);
   }
 
   /* vertical shape */
   {
     SDL_Rect vshape;
-    vshape.x = textfield.x + offset;
-    vshape.y = textfield.y - BALLOON_INNER_MARGIN + offset;
-    vshape.w = textfield.w;
-    vshape.h = textfield.h + (2 * BALLOON_INNER_MARGIN);
+    vshape.x = shape.x + (circle_width / 2);
+    vshape.w = shape.w - circle_width;
+    vshape.y = shape.y;
+    vshape.h = shape.h;
     SDL_FillRect (screen, &vshape, ballooncolor);
   }
-
-  /* full size */
-  shape.x = textfield.x - BALLOON_INNER_MARGIN + offset;
-  shape.w = textfield.w + (2 * BALLOON_INNER_MARGIN);
-  shape.y = textfield.y - BALLOON_INNER_MARGIN + offset;
-  shape.h = textfield.h + (2 * BALLOON_INNER_MARGIN);
 
   /* draw corners */
   {
@@ -1379,8 +1379,8 @@ avt_draw_balloon2 (int offset, Uint32 ballooncolor)
 
     /* prepare circle piece */
     /* the size is always the same */
-    circle_piece.w = circle->w / 2;
-    circle_piece.h = circle->h / 2;
+    circle_piece.w = circle_width / 2;
+    circle_piece.h = circle_height / 2;
 
     /* upper left corner */
     circle_piece.x = 0;
@@ -1390,7 +1390,7 @@ avt_draw_balloon2 (int offset, Uint32 ballooncolor)
     SDL_BlitSurface (circle, &circle_piece, screen, &corner_pos);
 
     /* upper right corner */
-    circle_piece.x = ((circle->w + 7) / 8) / 2;
+    circle_piece.x = ((circle_width + 7) / 8) / 2;
     circle_piece.y = 0;
     corner_pos.x = shape.x + shape.w - circle_piece.w;
     corner_pos.y = shape.y;
@@ -1398,14 +1398,14 @@ avt_draw_balloon2 (int offset, Uint32 ballooncolor)
 
     /* lower left corner */
     circle_piece.x = 0;
-    circle_piece.y = circle->h / 2;
+    circle_piece.y = circle_height / 2;
     corner_pos.x = shape.x;
     corner_pos.y = shape.y + shape.h - circle_piece.h;
     SDL_BlitSurface (circle, &circle_piece, screen, &corner_pos);
 
     /* lower right corner */
-    circle_piece.x = ((circle->w + 7) / 8) / 2;
-    circle_piece.y = circle->h / 2;
+    circle_piece.x = ((circle_width + 7) / 8) / 2;
+    circle_piece.y = circle_height / 2;
     corner_pos.x = shape.x + shape.w - circle_piece.w;
     corner_pos.y = shape.y + shape.h - circle_piece.h;
     SDL_BlitSurface (circle, &circle_piece, screen, &corner_pos);
