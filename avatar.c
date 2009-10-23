@@ -910,24 +910,25 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
 
   for (y = 0; y < height; y++)
     {
-      int byte, bit;
-      Uint8 val, res;
-      Uint8 *p;
+      int byte;
 
-      p = line;
-      for (byte = 0; byte < bpl; byte++, p++, bits++)
+      for (byte = 0; byte < bpl; byte++)
 	{
+	  Uint8 val, res;
+	  int bit;
+
 	  val = *bits;
 	  res = 0;
 
-          /* bits must be reversed */
+	  /* bits must be reversed */
 	  for (bit = 7; bit >= 0; bit--)
 	    {
 	      res |= (val & 1) << bit;
 	      val >>= 1;
 	    }
 
-	  *p = res;
+	  line[byte] = res;
+	  bits++;
 	}
 
       line += img->pitch;
