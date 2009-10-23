@@ -2654,57 +2654,29 @@ avt_drawchar (wchar_t ch, SDL_Surface * surface)
 {
   extern const unsigned short *get_font_char (wchar_t ch);
   const unsigned short *font_line;
-  int lx, ly;
+  unsigned int y;
   SDL_Rect dest;
-  Uint8 *p, *dest_line;
+  unsigned short *pixels, *p;
   Uint16 pitch;
-  int front;
 
-  /* assert (avt_character->format->BytesPerPixel == 1); */
-
-  pitch = avt_character->pitch;
-  p = (Uint8 *) avt_character->pixels;
+  pitch = avt_character->pitch / sizeof (*p);
+  pixels = p = (unsigned short *) avt_character->pixels;
   font_line = get_font_char (ch);
-  dest_line = p;
 
-  if (inverse)
+  for (y = 0; y < FONTHEIGHT; y++)
     {
-      /* fill all */
-      SDL_memset (p, 1, FONTHEIGHT * pitch);
-      front = 0;
+      /* TODO: needs test on big endian machines */
+      *p = SDL_SwapBE16 (*font_line);
+      if (bold && !NOT_BOLD)
+	*p |= SDL_SwapBE16 (*font_line >> 1);
+      if (inverse)
+	*p = ~*p;
+      font_line++;
+      p += pitch;
     }
-  else
-    {
-      /* clear all */
-      SDL_memset (p, 0, FONTHEIGHT * pitch);
-      front = 1;
-    }
-
-  if (!bold || NOT_BOLD)
-    for (ly = 0; ly < FONTHEIGHT; ly++)
-      {
-	for (lx = 0; lx < FONTWIDTH; lx++)
-	  if (*font_line & (1 << (15 - lx)))
-	    *(dest_line + lx) = front;
-	font_line++;
-	dest_line += pitch;
-      }
-  else				/* bold */
-    for (ly = 0; ly < FONTHEIGHT; ly++)
-      {
-	/* ignore last column to avoid overflows */
-	for (lx = 0; lx < FONTWIDTH - 1; lx++)
-	  if (*font_line & (1 << (15 - lx)))
-	    {
-	      *(dest_line + lx) = front;
-	      *(dest_line + lx + 1) = front;
-	    }
-	font_line++;
-	dest_line += pitch;
-      }
 
   if (underlined)
-    SDL_memset (p + (UNDERLINE * pitch), front, FONTWIDTH * 1);
+    pixels[UNDERLINE * pitch] = (inverse) ? 0x0000 : 0xFFFF;
 
   dest.x = cursor.x;
   dest.y = cursor.y;
@@ -2718,57 +2690,28 @@ avt_drawchar (wchar_t ch, SDL_Surface * surface)
 {
   extern const unsigned char *get_font_char (wchar_t ch);
   const unsigned char *font_line;
-  int lx, ly;
+  int y;
   SDL_Rect dest;
-  Uint8 *p, *dest_line;
+  Uint8 *pixels, *p;
   Uint16 pitch;
-  int front;
-
-  /* assert (avt_character->format->BytesPerPixel == 1); */
 
   pitch = avt_character->pitch;
-  p = (Uint8 *) avt_character->pixels;
+  pixels = p = (Uint8 *) avt_character->pixels;
   font_line = get_font_char (ch);
-  dest_line = p;
 
-  if (inverse)
+  for (y = 0; y < FONTHEIGHT; y++)
     {
-      /* fill all */
-      SDL_memset (p, 1, FONTHEIGHT * pitch);
-      front = 0;
+      *p = *font_line;
+      if (bold && !NOT_BOLD)
+	*p |= (*font_line >> 1);
+      if (inverse)
+	*p = ~*p;
+      font_line++;
+      p += pitch;
     }
-  else
-    {
-      /* clear all */
-      SDL_memset (p, 0, FONTHEIGHT * pitch);
-      front = 1;
-    }
-
-  if (!bold || NOT_BOLD)
-    for (ly = 0; ly < FONTHEIGHT; ly++)
-      {
-	for (lx = 0; lx < FONTWIDTH; lx++)
-	  if (*font_line & (1 << (7 - lx)))
-	    *(dest_line + lx) = front;
-	font_line++;
-	dest_line += pitch;
-      }
-  else				/* bold */
-    for (ly = 0; ly < FONTHEIGHT; ly++)
-      {
-	/* ignore last column to avoid overflows */
-	for (lx = 0; lx < FONTWIDTH - 1; lx++)
-	  if (*font_line & (1 << (7 - lx)))
-	    {
-	      *(dest_line + lx) = front;
-	      *(dest_line + lx + 1) = front;
-	    }
-	font_line++;
-	dest_line += pitch;
-      }
 
   if (underlined)
-    SDL_memset (p + (UNDERLINE * pitch), front, FONTWIDTH * 1);
+    pixels[UNDERLINE * pitch] = (inverse) ? 0x00 : 0xFF;
 
   dest.x = cursor.x;
   dest.y = cursor.y;
@@ -6042,7 +5985,7 @@ avt_initialize (const char *title, const char *icontitle,
 
   /* reserve memory for one character */
   avt_character = SDL_CreateRGBSurface (SDL_SWSURFACE, FONTWIDTH, FONTHEIGHT,
-					8, 0, 0, 0, 0);
+					1, 0, 0, 0, 0);
 
   if (!avt_character)
     {
