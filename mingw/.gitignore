@@ -17,3 +17,5 @@ bin2c.exe
 bell.c
 ucsfont7x14.c
 ucsfont9x18.c
+SDL.dll
+README-SDL.txt
