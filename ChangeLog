@@ -1,3 +1,8 @@
+2009-10-25  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtar.c (avt_pager_line):
+	ignore formfeeds at beginning of line, or treat them like newlines
+
 2009-10-23  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_drawchar): work with 1Bit surface

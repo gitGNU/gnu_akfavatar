@@ -3678,14 +3678,20 @@ avt_pager_line (const char *txt, int pos, int len)
 
   line_length = 0;
   tpos = txt + pos;
+
+  /* skip formfeeds */
+  if (*tpos == '\f')
+    tpos++;
+
   /* search for newline or end of text */
-  while (pos + line_length < len && *(tpos + line_length) != '\n')
+  while (pos + line_length < len && *(tpos + line_length) != '\n'
+	 && *(tpos + line_length) != '\f')
     line_length++;
 
   avt_say_mb_len (tpos, line_length);
   pos += line_length;
 
-  /* skip \n */
+  /* skip \n | \f */
   if (pos < len)
     pos++;
 
