@@ -23,6 +23,7 @@ rgb.h
 *.tar.bz2
 *.tar.gz
 *.tgz
+*.zip
 misc
 archives
 tests
