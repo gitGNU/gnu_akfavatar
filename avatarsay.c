@@ -2166,15 +2166,22 @@ process_script (int fd)
 }
 
 static avt_bool_t
+is_textfile (const char *filename)
+{
+  return (strstr (filename, ".txt") || strstr (filename, ".TXT")
+	  || strstr (filename, ".text") || strstr (filename, ".TEXT")
+	  || strcasecmp (filename, "README") == 0
+	  || strcasecmp (filename, "AUTHORS") == 0
+	  || strcasecmp (filename, "COPYING") == 0
+	  || strcasecmp (filename, "NEWS") == 0
+	  || strcasecmp (filename, "INSTALL") == 0);
+}
+
+static avt_bool_t
 is_demo_or_text (const char *filename)
 {
   return (strstr (filename, ".avt") || strstr (filename, ".AVT")
-	  || strstr (filename, ".txt") || strstr (filename, ".TXT")
-	  || strstr (filename, ".text") || strstr (filename, ".TEXT")
-	  || strcasecmp (filename, "README") == 0
-	  || strcasecmp (filename, "COPYING") == 0
-	  || strcasecmp (filename, "INSTALL") == 0
-	  || strcasecmp (filename, "AUTHORS") == 0);
+	  || is_textfile (filename));
 }
 
 static void
@@ -2182,7 +2189,7 @@ ask_file (void)
 {
   char filename[256];
 
-  avta_file_selection (filename, sizeof (filename), is_demo_or_text);
+  avta_file_selection (filename, sizeof (filename), &is_demo_or_text);
 
   /* ignore quit-requests */
   /* (used to get out of the file dialog) */
@@ -2232,6 +2239,30 @@ ask_file (void)
 	  avt_set_balloon_color_name (balloon_color_name);
 	  balloon_color_changed = AVT_FALSE;
 	}
+    }
+}
+
+static void
+ask_textfile (void)
+{
+  char filename[256];
+
+  avta_file_selection (filename, sizeof (filename), &is_textfile);
+
+  /* ignore quit-requests */
+  /* (used to get out of the file dialog) */
+  if (avt_get_status () == AVT_QUIT)
+    avt_set_status (AVT_NORMAL);
+
+  if (filename[0] != '\0')
+    {
+      avt_set_text_delay (0);
+      avt_set_balloon_size (0, 0);
+
+      avta_pager_file (filename, 1);
+
+      if (avt_get_status () == AVT_QUIT)
+	avt_set_status (AVT_NORMAL);
     }
 }
 
@@ -2522,71 +2553,26 @@ about_avatarsay (void)
 		  "Dies ist Freie Software: Sie dürfen es gemäß der GPL "
 		  "weitergeben und\n"
 		  "bearbeiten. Für AKFAvatar besteht KEINERLEI GARANTIE.\n"
-		  "Bitte lesen Sie auch die Anleitung.");
+		  "Bitte lesen Sie auch die Anleitung.\n");
       avt_say_mb ("\nHomepage:  " HOMEPAGE);
-      avt_bold (AVT_TRUE);
-      avt_say_mb ("\n\nSoll ich jetzt die vollständige Lizenz zeigen?");
-      avt_bold (AVT_FALSE);
       break;
 
     case ENGLISH:
     default:
-      avt_say_mb ("License GPLv3+: GNU GPL version 3 or later "
-		  "<http://gnu.org/licenses/gpl.html>\n\n"
-		  "This is free software: you are free to change and "
-		  "redistribute it.\n"
-		  "There is NO WARRANTY, to the extent permitted by law.\n"
-		  "Please read the manual for instructions.");
+      avt_say_mb
+	("License GPLv3+: GNU GPL version 3 or later "
+	 "<http://gnu.org/licenses/gpl.html>\n\n"
+	 "This is free software: you are free to change and "
+	 "redistribute it.\n"
+	 "There is NO WARRANTY, to the extent permitted by law.\n"
+	 "Please read the manual for instructions.\n");
       avt_say_mb ("\nHomepage:  " HOMEPAGE);
-      avt_bold (AVT_TRUE);
-      avt_say_mb ("\n\nDo you want me to show you the full license now?");
-      avt_bold (AVT_FALSE);
     }
 
   avt_lock_updates (AVT_FALSE);
-
-  if (avt_decide ())
-    {
-      if (start_dir)
-	if (chdir (start_dir))
-	  avta_warning ("chdir", strerror (errno));
-
-      avt_set_balloon_size (0, 0);
-
-      if (avta_pager_file ("/usr/local/share/doc/akfavatar/COPYING", 1)
-	  && avta_pager_file ("/usr/share/doc/akfavatar/COPYING", 1)
-	  && avta_pager_file ("./COPYING", 1)
-	  && avta_pager_file ("./gpl-3.0.txt", 1))
-	{
-	  avt_bell ();
-
-	  switch (language)
-	    {
-	    case DEUTSCH:
-	      avt_bold (AVT_TRUE);
-	      avt_say_mb ("Installationsfehler: ");
-	      avt_bold (AVT_FALSE);
-	      avt_say_mb ("kann Lizenz-Datei nicht finden");
-	      break;
-	    case ENGLISH:
-	    default:
-	      avt_bold (AVT_TRUE);
-	      avt_say_mb ("Installation Error: ");
-	      avt_bold (AVT_FALSE);
-	      avt_say_mb ("cannot find license file");
-	      break;
-	    }
-
-	  avt_wait_button ();
-	}
-    }
-
-  /* ignore quit-request from avt_decide() */
-  if (avt_get_status () == AVT_QUIT)
-    avt_set_status (AVT_NORMAL);
-
   set_encoding (default_encoding);
   avt_set_text_delay (default_delay);
+  avt_wait_button ();
 }
 
 /* TODO: write color-selector */
@@ -2764,7 +2750,7 @@ settings_submenu (void)
   int choice, menu_start;
 
   choice = 0;
-  while (choice != 6)
+  while (1)
     {
       avt_normal_text ();
       avt_set_balloon_size (8, 42);
@@ -2847,6 +2833,144 @@ settings_submenu (void)
 	case 5:
 	  save_settings ();
 	  break;
+
+	case 6:
+	  avt_set_status (AVT_NORMAL);
+	  return;
+	}
+    }
+}
+
+static void
+show_license (void)
+{
+  if (start_dir)
+    if (chdir (start_dir))
+      avta_warning ("chdir", strerror (errno));
+
+  set_encoding ("UTF-8");
+  avt_set_text_delay (0);
+  avt_set_balloon_size (0, 0);
+
+  if (avta_pager_file ("/usr/local/share/doc/akfavatar/COPYING", 1)
+      && avta_pager_file ("/usr/share/doc/akfavatar/COPYING", 1)
+      && avta_pager_file ("./COPYING", 1)
+      && avta_pager_file ("./gpl-3.0.txt", 1))
+    {
+      avt_bell ();
+
+      switch (language)
+	{
+	case DEUTSCH:
+	  avt_bold (AVT_TRUE);
+	  avt_say_mb ("Installationsfehler: ");
+	  avt_bold (AVT_FALSE);
+	  avt_say_mb ("kann Lizenz-Datei nicht finden");
+	  break;
+	case ENGLISH:
+	default:
+	  avt_bold (AVT_TRUE);
+	  avt_say_mb ("Installation Error: ");
+	  avt_bold (AVT_FALSE);
+	  avt_say_mb ("cannot find license file");
+	  break;
+	}
+
+      avt_wait_button ();
+    }
+
+  set_encoding (default_encoding);
+  avt_set_text_delay (default_delay);
+}
+
+static void
+info_submenu (void)
+{
+  int choice, menu_start;
+
+  choice = 0;
+  while (1)
+    {
+      avt_normal_text ();
+      avt_set_balloon_size (6, 42);
+      avt_clear ();
+
+      avt_set_text_delay (0);
+      avt_lock_updates (AVT_TRUE);
+      avt_set_origin_mode (AVT_FALSE);
+      avt_newline_mode (AVT_TRUE);
+
+      avt_underlined (AVT_TRUE);
+      avt_bold (AVT_TRUE);
+
+      switch (language)
+	{
+	case DEUTSCH:
+	  avt_say (L"AKFAvatar Informationen");
+	  break;
+	case ENGLISH:
+	default:
+	  avt_say (L"AKFAvatar informations");
+	  break;
+	}
+
+      avt_bold (AVT_FALSE);
+      avt_underlined (AVT_FALSE);
+      avt_new_line ();
+      avt_new_line ();
+      menu_start = avt_where_y ();
+
+      switch (language)
+	{
+	case DEUTSCH:
+	  avt_say (L"1) über avatarsay\n");
+	  avt_say (L"2) Anleitung\n");
+	  avt_say (L"3) Lizenz (GPLv3)\n");
+	  avt_say (L"4) zurück");
+	  break;
+
+	case ENGLISH:
+	default:
+	  avt_say (L"1) about avatarsay\n");
+	  avt_say (L"2) documentation\n");
+	  avt_say (L"3) License (GPLv3)\n");
+	  avt_say (L"4) back");
+	}
+
+      avt_lock_updates (AVT_FALSE);
+
+      avt_set_text_delay (default_delay);
+
+      if (avt_choice (&choice, menu_start, 4, '1', AVT_FALSE, AVT_FALSE))
+	{
+	  avt_set_status (AVT_NORMAL);
+	  return;		/* return to main menu */
+	}
+
+      switch (choice)
+	{
+	case 1:		/* about avatarsay */
+	  about_avatarsay ();
+	  avt_set_status (AVT_NORMAL);
+	  break;
+
+	case 2:		/* documentation */
+	  run_info ();
+	  avt_set_status (AVT_NORMAL);
+	  restore_avatar_image ();
+	  break;
+
+	case 3:		/* License */
+	  show_license ();
+	  break;
+
+	case 4:		/* back */
+	  avt_set_status (AVT_NORMAL);
+	  return;
+
+	default:
+	  avt_bell ();
+	  break;
 	}
     }
 
@@ -2903,24 +3027,24 @@ menu (void)
 	{
 	case DEUTSCH:
 	  avt_say (L"1) ein Demo anzeigen\n");
-	  SAY_MANPAGE (L"2) eine Hilfeseite (Manpage) anzeigen\n");
-	  SAY_SHELL (L"3) Terminal-Modus\n");
-	  avt_say (L"4) Einstellungen\n");
-	  avt_say (L"5) ein Demo erstellen oder bearbeiten\n");
-	  avt_say (L"6) Anleitung\n");
-	  avt_say (L"7) über avatarsay\n");
+	  avt_say (L"2) eine Text-Datei anzeigen\n");
+	  SAY_MANPAGE (L"3) eine Hilfeseite (Manpage) anzeigen\n");
+	  SAY_SHELL (L"4) Terminal-Modus\n");
+	  avt_say (L"5) Einstellungen\n");
+	  avt_say (L"6) ein Demo erstellen oder bearbeiten\n");
+	  avt_say (L"7) Informationen\n");
 	  avt_say (L"8) beenden");	/* no newline */
 	  break;
 
 	case ENGLISH:
 	default:
 	  avt_say (L"1) show a demo\n");
-	  SAY_MANPAGE (L"2) show a manpage\n");
-	  SAY_SHELL (L"3) terminal-mode\n");
-	  avt_say (L"4) settings\n");
-	  avt_say (L"5) create or edit a demo\n");
-	  avt_say (L"6) documentation\n");
-	  avt_say (L"7) about avatarsay\n");
+	  avt_say (L"2) show a text file\n");
+	  SAY_MANPAGE (L"3) show a manpage\n");
+	  SAY_SHELL (L"4) terminal-mode\n");
+	  avt_say (L"5) settings\n");
+	  avt_say (L"6) create or edit a demo\n");
+	  avt_say (L"7) informations\n");
 	  avt_say (L"8) exit");	/* no newline */
 	}
 
@@ -2936,34 +3060,32 @@ menu (void)
 	  ask_file ();
 	  break;
 
-	case 2:		/* show a manpage */
+	case 3:		/* show a manpage */
 	  ask_manpage ();
 	  avt_set_status (AVT_NORMAL);
 	  break;
 
-	case 3:		/* terminal-mode */
+	case 2:		/* show textfile */
+	  ask_textfile ();
+	  break;
+
+	case 4:		/* terminal-mode */
 	  avt_show_avatar ();	/* no balloon, while starting up */
 	  run_shell ();
 	  avt_set_status (AVT_NORMAL);
 	  break;
 
-	case 4:		/* tools */
+	case 5:		/* tools */
 	  settings_submenu ();
 	  break;
 
-	case 5:		/* create or edit a demo */
+	case 6:		/* create or edit a demo */
 	  ask_edit_file ();
 	  avt_set_status (AVT_NORMAL);
 	  break;
 
-	case 6:		/* documentation */
-	  run_info ();
-	  avt_set_status (AVT_NORMAL);
-	  break;
-
-	case 7:		/* about avatarsay */
-	  about_avatarsay ();
-	  avt_set_status (AVT_NORMAL);
+	case 7:		/* informations */
+	  info_submenu ();
 	  break;
 
 	case 8:		/* exit */
@@ -3187,7 +3309,7 @@ main (int argc, char *argv[])
   raw_audio.samplingrate = 22050;
   raw_audio.channels = AVT_AUDIO_MONO;
 
-  avta_term_register_apc (APC_command);
+  avta_term_register_apc (&APC_command);
   avta_term_nocolor (AVT_FALSE);
 
   atexit (quit);

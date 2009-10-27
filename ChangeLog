@@ -1,3 +1,10 @@
+2009-10-27  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (menu): restructured
+	(is_textfile, ask_textfile, show_license, info_submenu):
+	new functions
+	(about_avatarsay, is_demo_or_text): adapted
+
 2009-10-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtar.c (avt_pager_line):
