@@ -2247,6 +2247,7 @@ ask_textfile (void)
 {
   char filename[256];
 
+  set_encoding (default_encoding);
   avta_file_selection (filename, sizeof (filename), &is_textfile);
 
   /* ignore quit-requests */
