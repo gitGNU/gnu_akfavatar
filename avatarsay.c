@@ -2612,6 +2612,7 @@ static avt_bool_t
 is_graphic_file (const char *filename)
 {
   return (strstr (filename, ".xpm") || strstr (filename, ".XPM")
+	  || strstr (filename, ".xbm") || strstr (filename, ".XBM")
 	  || strstr (filename, ".bmp") || strstr (filename, ".BMP")
 	  || strstr (filename, ".png") || strstr (filename, ".PNG")
 	  || strstr (filename, ".jpg") || strstr (filename, ".JPG")
