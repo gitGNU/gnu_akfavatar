@@ -403,7 +403,7 @@ dist: info html man
 	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
 	   avtccio.c avtcwio.c avtaddons.h filechooser.c avtreadfile.c \
 	   colorchooser.c \
-	   balloonpointer.xbm circle.xbm gnu-head.xpm \
+	   balloonpointer.xbm circle.xbm gnu-head.xpm gnu-head.xbm \
 	   male_user.xpm female_user.xpm \
 	   btn.xpm btn_up.xbm btn_down.xbm btn_left.xbm btn_right.xbm \
 	   btn_no.xbm btn_yes.xbm btn_cancel.xbm btn_ff.xbm btn_fb.xbm \
@@ -456,7 +456,7 @@ dist-bin: avatarsay multiply multiplizieren info html
 	-ln -sf $(LIBNAME) $(BINPKGNAME)/$(SONAME)
 	ln $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/
 	ln $(srcdir)/pascal/?pcavatar $(BINPKGNAME)/
-	ln $(srcdir)/gnu-head.xpm $(BINPKGNAME)/
+	ln $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	ln $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
 	-ln multiply $(BINPKGNAME)/
 	-ln multiplizieren $(BINPKGNAME)/

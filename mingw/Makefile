@@ -354,7 +354,7 @@ dist-bin: avatarsay.exe multiply.exe multiplizieren.exe
 	#cp libakfavatar.dll.a $(BINPKGNAME)/
 	#cp $(srcdir)/akfavatar.h akfavatar.def $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/
 	cp avatarsay.exe $(srcdir)/fsdemo-??.avt $(BINPKGNAME)/
-	cp $(srcdir)/gnu-head.xpm $(BINPKGNAME)/
+	cp $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	cp $(srcdir)/COPYING $(BINPKGNAME)/gpl-3.0.txt
 	cp $(srcdir)/AUTHORS $(BINPKGNAME)/AUTHORS.txt
 	cp $(srcdir)/pascal/positive.au $(srcdir)/pascal/negative.au $(BINPKGNAME)/
