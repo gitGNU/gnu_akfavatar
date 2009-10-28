@@ -60,6 +60,7 @@
 
 /* normal color of what's printed on the button */
 #define BUTTON_COLOR  0x66, 0x55, 0x33
+#define XBM_DEFAULT_COLOR  0x00, 0x00, 0x00
 
 #define AVT_XBM_INFO(img)  img##_bits, img##_width, img##_height
 
@@ -943,6 +944,157 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
   return img;
 }
 
+static SDL_Surface *
+avt_load_image_xbm_RW (SDL_RWops * src, int freesrc,
+		       int red, int green, int blue)
+{
+  unsigned char *bits;
+  int width, height;
+  int start;
+  unsigned int bytes, bmpos;
+  char line[1024];
+  SDL_Surface *img;
+  avt_bool_t end, error;
+
+  if (!src)
+    return NULL;
+
+  img = NULL;
+  bits = NULL;
+  end = error = AVT_FALSE;
+  width = height = bytes = bmpos = 0;
+
+  start = SDL_RWtell (src);
+
+  /* check if it starts with #define */
+  if (SDL_RWread (src, line, 1, sizeof (line) - 1) < 1
+      || SDL_memcmp (line, "#define", 7) != 0)
+    {
+      if (freesrc)
+	SDL_RWclose (src);
+      else
+	SDL_RWseek (src, start, RW_SEEK_SET);
+
+      return NULL;
+    }
+
+  /* make it usable as a string */
+  line[sizeof (line) - 1] = '\0';
+
+  /* search for width and height */
+  {
+    char *p;
+    p = SDL_strstr (line, "_width ");
+    if (p)
+      width = SDL_atoi (p + 7);
+    else
+      error = end = AVT_TRUE;
+
+    p = SDL_strstr (line, "_height ");
+    if (p)
+      height = SDL_atoi (p + 8);
+    else
+      error = end = AVT_TRUE;
+  }
+
+  if (error)
+    goto done;
+
+  if (width && height)
+    {
+      bytes = ((width + 7) / 8) * height;
+      bits = (unsigned char *) SDL_malloc (bytes);
+    }
+
+  /* this catches different errors */
+  if (!bits)
+    {
+      SDL_SetError ("out of memory");
+      error = end = AVT_TRUE;
+    }
+
+  /* search start of bitmap part */
+  if (!end && !error)
+    {
+      char c;
+
+      SDL_RWseek (src, start, RW_SEEK_SET);
+
+      do
+	{
+	  if (SDL_RWread (src, &c, sizeof (c), 1) < 1)
+	    error = end = AVT_TRUE;
+	}
+      while (c != '{' && !error);
+
+      if (error)		/* no '{' found */
+	goto done;
+
+      /* skip newline */
+      SDL_RWread (src, &c, sizeof (c), 1);
+    }
+
+  while (!end && !error)
+    {
+      char c;
+      unsigned int linepos;
+
+      /* read line */
+      linepos = 0;
+      c = '\0';
+      while (!end && linepos < sizeof (line) && c != '\n')
+	{
+	  if (SDL_RWread (src, &c, sizeof (c), 1) < 1)
+	    error = end = AVT_TRUE;
+
+	  if (c != '\n' && c != '}')
+	    line[linepos++] = c;
+
+	  if (c == '}')
+	    end = AVT_TRUE;
+	}
+      line[linepos] = '\0';
+
+      /* parse line */
+      if (line[0] != '\0')
+	{
+	  char *p;
+	  char *endptr;
+	  int byte;
+	  avt_bool_t end_of_line;
+
+	  p = line;
+	  end_of_line = AVT_FALSE;
+	  while (!end_of_line && bmpos < bytes)
+	    {
+	      byte = SDL_strtol (p, &endptr, 16);
+	      if (endptr == p)
+		end_of_line = AVT_TRUE;
+	      else
+		{
+		  bits[bmpos++] = byte;
+		  p = endptr + 1;	/* skip comma */
+		}
+	    }
+	}
+    }
+
+  if (!error)
+    img = avt_load_image_xbm (bits, width, height, red, green, blue);
+
+done:
+  /* free bits */
+  if (bits)
+    SDL_free (bits);
+
+  if (freesrc)
+    SDL_RWclose (src);
+  else if (error)
+    SDL_RWseek (src, start, RW_SEEK_SET);
+
+  return img;
+}
+
 #ifdef LINK_SDL_IMAGE
 
 /*
@@ -981,8 +1133,13 @@ avt_load_image_RW (SDL_RWops * src, int freesrc)
 
   if (src)
     {
-      if ((img = SDL_LoadBMP_RW (src, 0)) == NULL)
+      img = SDL_LoadBMP_RW (src, 0);
+
+      if (img == NULL)
 	img = avt_load_image_xpm_RW (src, 0);
+
+      if (img == NULL)
+	img = avt_load_image_xbm_RW (src, 0, XBM_DEFAULT_COLOR);
 
       if (freesrc)
 	SDL_RWclose (src);
@@ -4838,6 +4995,10 @@ avt_show_image_file (const char *filename)
   image = avt_load_image_xpm_RW (SDL_RWFromFile (filename, "rb"), 1);
 
   if (image == NULL)
+    image = avt_load_image_xbm_RW (SDL_RWFromFile (filename, "rb"), 1,
+				   XBM_DEFAULT_COLOR);
+
+  if (image == NULL)
     {
       load_image_init ();
       image = load_image.file (filename);
@@ -4866,6 +5027,10 @@ avt_show_image_stream (avt_stream * stream)
   /* try internal XPM reader first */
   /* it's better than in SDL_image */
   image = avt_load_image_xpm_RW (SDL_RWFromFP ((FILE *) stream, 0), 1);
+
+  if (image == NULL)
+    image = avt_load_image_xbm_RW (SDL_RWFromFP ((FILE *) stream, 0), 1,
+				   XBM_DEFAULT_COLOR);
 
   if (image == NULL)
     {
@@ -4899,6 +5064,10 @@ avt_show_image_data (void *img, int imgsize)
   /* try internal XPM reader first */
   /* it's better than in SDL_image */
   image = avt_load_image_xpm_RW (SDL_RWFromMem (img, imgsize), 1);
+
+  if (image == NULL)
+    image = avt_load_image_xbm_RW (SDL_RWFromMem (img, imgsize), 1,
+				   XBM_DEFAULT_COLOR);
 
   if (image == NULL)
     {
@@ -5142,6 +5311,10 @@ avt_import_image_data (void *img, int imgsize)
   image = avt_load_image_xpm_RW (SDL_RWFromMem (img, imgsize), 1);
 
   if (image == NULL)
+    avt_load_image_xbm_RW (SDL_RWFromMem (img, imgsize), 1,
+			   XBM_DEFAULT_COLOR);
+
+  if (image == NULL)
     {
       load_image_init ();
       image = load_image.rw (SDL_RWFromMem (img, imgsize), 1);
@@ -5170,6 +5343,10 @@ avt_import_image_file (const char *filename)
   image = avt_load_image_xpm_RW (SDL_RWFromFile (filename, "rb"), 1);
 
   if (image == NULL)
+    avt_load_image_xbm_RW (SDL_RWFromFile (filename, "rb"), 1,
+			   XBM_DEFAULT_COLOR);
+
+  if (image == NULL)
     {
       load_image_init ();
       image = load_image.file (filename);
@@ -5193,6 +5370,10 @@ avt_import_image_stream (avt_stream * stream)
 
   /* try internal XPM reader first */
   image = avt_load_image_xpm_RW (SDL_RWFromFP ((FILE *) stream, 0), 1);
+
+  if (image == NULL)
+    avt_load_image_xbm_RW (SDL_RWFromFP ((FILE *) stream, 0), 1,
+			   XBM_DEFAULT_COLOR);
 
   if (image == NULL)
     {

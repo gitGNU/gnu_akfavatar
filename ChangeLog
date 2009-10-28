@@ -1,3 +1,8 @@
+2009-10-28  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_load_image_xbm_RW): new function
+	many functions adapted
+
 2009-10-27  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (menu): restructured
