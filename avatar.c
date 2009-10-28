@@ -5311,8 +5311,8 @@ avt_import_image_data (void *img, int imgsize)
   image = avt_load_image_xpm_RW (SDL_RWFromMem (img, imgsize), 1);
 
   if (image == NULL)
-    avt_load_image_xbm_RW (SDL_RWFromMem (img, imgsize), 1,
-			   XBM_DEFAULT_COLOR);
+    image = avt_load_image_xbm_RW (SDL_RWFromMem (img, imgsize), 1,
+				   XBM_DEFAULT_COLOR);
 
   if (image == NULL)
     {
@@ -5343,8 +5343,8 @@ avt_import_image_file (const char *filename)
   image = avt_load_image_xpm_RW (SDL_RWFromFile (filename, "rb"), 1);
 
   if (image == NULL)
-    avt_load_image_xbm_RW (SDL_RWFromFile (filename, "rb"), 1,
-			   XBM_DEFAULT_COLOR);
+    image = avt_load_image_xbm_RW (SDL_RWFromFile (filename, "rb"), 1,
+				   XBM_DEFAULT_COLOR);
 
   if (image == NULL)
     {
@@ -5372,8 +5372,8 @@ avt_import_image_stream (avt_stream * stream)
   image = avt_load_image_xpm_RW (SDL_RWFromFP ((FILE *) stream, 0), 1);
 
   if (image == NULL)
-    avt_load_image_xbm_RW (SDL_RWFromFP ((FILE *) stream, 0), 1,
-			   XBM_DEFAULT_COLOR);
+    image = avt_load_image_xbm_RW (SDL_RWFromFP ((FILE *) stream, 0), 1,
+				   XBM_DEFAULT_COLOR);
 
   if (image == NULL)
     {
