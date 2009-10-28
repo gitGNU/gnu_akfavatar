@@ -108,6 +108,12 @@
 #  define SDL_free                free
 #  undef SDL_strlen
 #  define SDL_strlen              strlen
+#  undef SDL_strstr
+#  define SDL_strstr              strstr
+#  undef SDL_atoi
+#  define SDL_atoi                atoi
+#  undef SDL_strtol
+#  define SDL_strtol              strtol
 #  undef SDL_memcpy
 #  define SDL_memcpy              memcpy
 #  undef SDL_memset
@@ -150,6 +156,7 @@
 
 /* don't use any libc commands directly! */
 #pragma GCC poison  malloc calloc free strlen memcpy memset getenv putenv
+#pragma GCC poison  strstr atoi atol strtol
 /* do not poison the iconv stuff, it causes problems with external libiconv */
 
 
