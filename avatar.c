@@ -962,12 +962,14 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc,
   char line[1024];
   SDL_Surface *img;
   avt_bool_t end, error;
+  avt_bool_t X10;
 
   if (!src)
     return NULL;
 
   img = NULL;
   bits = NULL;
+  X10 = AVT_FALSE;
   end = error = AVT_FALSE;
   width = height = bytes = bmpos = 0;
 
@@ -1002,6 +1004,9 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc,
       height = SDL_atoi (p + 8);
     else
       error = end = AVT_TRUE;
+
+    if (SDL_strstr (line, " short ") != NULL)
+      X10 = AVT_TRUE;
   }
 
   if (error)
@@ -1010,7 +1015,8 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc,
   if (width && height)
     {
       bytes = ((width + 7) / 8) * height;
-      bits = (unsigned char *) SDL_malloc (bytes);
+      /* one byte larger for safety with old X10 format */
+      bits = (unsigned char *) SDL_malloc (bytes + 1);
     }
 
   /* this catches different errors */
@@ -1067,19 +1073,29 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc,
 	{
 	  char *p;
 	  char *endptr;
-	  int byte;
+	  long value;
 	  avt_bool_t end_of_line;
 
 	  p = line;
 	  end_of_line = AVT_FALSE;
 	  while (!end_of_line && bmpos < bytes)
 	    {
-	      byte = SDL_strtol (p, &endptr, 16);
+	      value = SDL_strtol (p, &endptr, 0);
 	      if (endptr == p)
 		end_of_line = AVT_TRUE;
 	      else
 		{
-		  bits[bmpos++] = byte;
+		  if (!X10)
+		    bits[bmpos++] = value;
+		  else		/* X10 */
+		    {
+		      unsigned short *v;
+		      /* image is assumed to be in native endianess */
+		      v = (unsigned short *) (bits + bmpos);
+		      *v = value;
+		      bmpos += sizeof (*v);
+		    }
+
 		  p = endptr + 1;	/* skip comma */
 		}
 	    }
