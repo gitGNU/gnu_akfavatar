@@ -192,7 +192,8 @@ There the Runtime Libraries are sufficient@*
 SDL_image in turn needs other libraries:
 libz, libpng, libjpeg, libtiff
 
-X-Pixmaps (XPM) and uncompressed BMP images can be used without SDL_image.
+X-Pixmaps (XPM), X-Bitmaps (XBM) and uncompressed BMP images are always
+supported.  
 With SDL_image you can use lots of other image formats.
 SDL_image can be installed after the installation of this package.
 
@@ -1176,15 +1177,17 @@ black is @code{#000}, white is @code{#fff}, yellow is @code{#ff0}, violet is
 @section Images
 @cindex images
 
-AKFAvatar supports images in the @abbr{XPM} and in the uncompressed 
-@abbr{BMP} format out of the box.
-The @abbr{XPM} format is better suited for avatar-images, because it supports
+AKFAvatar supports images in the X-Pixmap (@abbr{XPM}) format, in the 
+X-Bitmap (@abbr{XBM}) format, and in the uncompressed @abbr{BMP} format out 
+of the box.
+The @abbr{XPM} format is well suited for avatar-images, because it supports
 transparency.  For other formats the software has to do a very dirty hack 
 to achieve some pseudo-transparency (@pxref{Different avatar image}).
-@abbr{XPM} is also much better for programmers, because the files can easily be 
-included in code, especially in code of C compatible languages.  But there 
-is also one drawback: @abbr{XPM} files with lots of colors can get very large.
-So better just use few colors. But there is no arbitrary limit.
+@abbr{XPM} and @abbr{XBM} area also much better for programmers, because the
+files can easily be included in code, especially in code of C compatible
+languages.  
+But there is also one drawback: @abbr{XPM} files with lots of colors can get
+very large.  So better just use few colors. But there is no arbitrary limit.
 
 If you have the library @code{SDL_image} installed, you can use a couple of
 other image formats too, including @abbr{PNG} and @abbr{JPEG}, if you also
@@ -1192,11 +1195,11 @@ have the libraries for them. Note however that @abbr{JPEG} is not suited
 for avatar images (the ``dirty trick'' described above doesn't work with 
 @abbr{JPEG} at all).
 
-Both, the @abbr{XPM} format and the @abbr{BMP} format are not compressed, so
-they occupy some space on the harddisk.  But diskspace should not be a big
-issue nowadays.
+The @abbr{XPM} format, the @abbr{XBM} format and the @abbr{BMP} format are not
+compressed, so they occupy some space on the harddisk.  But diskspace should
+not be a big issue nowadays.
 Note however: when you put them into a compressed archive file for
-distribution, then this doesn't make any difference.  Then these files will
+distribution, then this doesn't make much difference.  Then these files will
 actually be compressed, while files, that already were compressed, cannot be
 compressed much further.  So that evens out.  (Only the @abbr{JPEG} format 
 has an advantage here, because it is a lossy format.)

@@ -158,8 +158,8 @@ AVT_API void avt_button_quit (void);
  */
 
 /*
- * if SDL_image isn't available then
- * only X-Pixmaps (XPM) and uncompressed BMP are supported
+ * X-Pixmaps (XPM), X Bitmaps (XBM) and uncompressed BMP are always supported
+ * other image formats are supported with SDL_image
  */
 
 /* get the default avatar image */
@@ -649,8 +649,8 @@ AVT_API void avt_lock_updates (avt_bool_t lock);
 /* you should call avt_wait or avt_waitkey thereafter */
 
 /*
- * if SDL_image isn't available then
- * only XPM and uncompressed BMP are supported
+ * X-Pixmaps (XPM), X Bitmaps (XBM) and uncompressed BMP are always supported
+ * other image formats are supported with SDL_image
  */
 
 /*

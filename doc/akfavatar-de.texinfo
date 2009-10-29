@@ -200,9 +200,9 @@ Dabei sind die ``Runtime Libraries'' ausreichend@*
 SDL_image benötigt wiederum andere Bibliotheken:
 libz, libpng, libjpeg, libtiff
 
-X-Pixmaps (XPM) und unkomprimierte BMP Dateien kann man auch ohne SDL_image
-verwenden. Mit SDL_image stehen viele weitere Dateiformate für Bilder zur
-Verfügung.
+X-Pixmaps (XPM), X-Bitmaps (XBM) und unkomprimierte BMP Dateien kann man 
+immer verwenden. Mit SDL_image stehen viele weitere Dateiformate für Bilder
+zur Verfügung.
 SDL_image kann auch nach der Installation dieses Paketes noch 
 nachinstalliert werden.
 
@@ -1271,16 +1271,17 @@ während @code{#fdf} ein sehr helles violett ist.
 @section Bilder
 @cindex Bilder
 
-AKFAvatar unterstützt Bilder im @abbr{XPM}-Format und im unkomprimierten 
-@abbr{BMP}-Format ohne weitere Zusatz-Bibliotheken.
-Das @abbr{XPM}-Format eignet sich besser für Avatar-Bilder, da es Transparenz 
-unterstützt.  Für andere Formate muss die Software auf einen schmutzigen Trick
-ausweichen, um eine Art Pseudo-Transparenz zu erreichen
+AKFAvatar unterstützt Bilder im X-Pixmap (@abbr{XPM}) Format, im X-Bitmap (XBM)
+Format und im unkomprimierten @abbr{BMP}-Format ohne weitere 
+Zusatz-Bibliotheken.
+Das @abbr{XPM}-Format eignet sich besonders gut für Avatar-Bilder, da es 
+Transparenz unterstützt.  Für andere Formate muss die Software auf einen
+schmutzigen Trick ausweichen, um eine Art Pseudo-Transparenz zu erreichen
 (@pxref{Anderes Avatar-Bild}).
-@abbr{XPM} eignet sich vor allem auch viel besser für Programmierer, da 
-diese Dateien recht einfach in Code eingefügt werden können, insbesondere in 
-Code von C-kompatiblen Sprachen.  Es gibt jedoch auch einen Nachteil: 
-@abbr{XPM}-Dateien mit sehr vielen Farben können ziemlich groß werden.
+@abbr{XPM} und @abbr{XBM} eignet sich vor allem auch viel besser für
+Programmierer, da diese Dateien recht einfach in Code eingefügt werden können,
+insbesondere in Code von C-kompatiblen Sprachen.  Es gibt jedoch auch einen
+Nachteil: @abbr{XPM}-Dateien mit sehr vielen Farben können ziemlich groß werden.
 Man sollte dabei also möglichst nur wenige Farben verwenden.  Es gibt jedoch
 keine künstliche Begrenzung.
 
@@ -1290,10 +1291,10 @@ nötigen Bibliotheken installiert hat.  Man sollte jedoch beachten, dass sich
 @abbr{JPEG} nicht für Avatar-Bilder eignet (der oben erwähnte 
 ``schmutzige Trick'' funktioniert mit @abbr{JPEG} nicht vernünftig).
 
-Sowohl das @abbr{XPM}-Format, als auch das @abbr{BMP}-Format sind
-unkomprimiert.  Bilder in diesen Formaten belegen also einiges an Platz auf
-der Festplatte.  Allerdings sollte Festplattenplatz heutzutage kein so großes
-Problem mehr sein.
+Sowohl das @abbr{XPM}-Format, das @abbr{XBM}-Format, als auch das 
+@abbr{BMP}-Format sind unkomprimiert.  Bilder in diesen Formaten belegen also
+einiges an Platz auf der Festplatte.  Allerdings sollte Festplattenplatz
+heutzutage kein so großes Problem mehr sein.
 Man beachte außerdem: Wenn man diese Dateien in komprimierte Archiv-Dateien
 zum Weiterverteilen packt, dann macht das überhaupt nichts aus.  Dann werden 
 sie ja komprimiert, während Dateien, die vorher schon komprimiert waren, sich
