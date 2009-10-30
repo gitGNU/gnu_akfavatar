@@ -368,6 +368,12 @@ AVT_API const char *avt_license (void);
 AVT_API const char *avt_get_color_name (int nr);
 
 /*
+ * get the color definition
+ * returns the color name or NULL on error
+ */
+AVT_API const char *avt_get_color (int nr, int *red, int *green, int *blue);
+
+/*
  * get color values for a given color-name
  * returns 0 on success or -1 on error
  */

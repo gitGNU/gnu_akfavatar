@@ -103,10 +103,11 @@ avta_color_selection (void)
 
       for (i = 0; i < max_idx - offset - 1; i++)
 	{
-	  c = avt_get_color_name (i + (page_nr * (max_idx - offset)));
+	  c = avt_get_color (i + (page_nr * (max_idx - offset)),
+			     &red, &green, &blue);
+
 	  if (c)
 	    {
-	      avt_name_to_color (c, &red, &green, &blue);
 	      sprintf (hex, "#%02X%02X%02X", red, green, blue);
 
 	      /* show colored spaces */

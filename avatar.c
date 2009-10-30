@@ -399,6 +399,26 @@ avt_get_color_name (int nr)
     return NULL;
 }
 
+extern const char *
+avt_get_color (int nr, int *red, int *green, int *blue)
+{
+  const int numcolors = sizeof (avt_colors) / sizeof (avt_colors[0]);
+
+  if (nr >= 0 && nr < numcolors)
+    {
+      if (red)
+	*red = avt_colors[nr].red;
+      if (green)
+	*green = avt_colors[nr].green;
+      if (blue)
+	*blue = avt_colors[nr].blue;
+
+      return avt_colors[nr].color_name;
+    }
+  else
+    return NULL;
+}
+
 /* for dynamically loading SDL_image */
 #ifndef AVT_SDL_IMAGE_LIB
 #  if defined (__WIN32__)

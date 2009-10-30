@@ -3,6 +3,9 @@
 	* avtar.c (avt_set_avatar_name_mb):
 	fix: handle NULL or empty string correctly
 
+	* akfavatar.h, avatar.c (avt_get_color): new function
+	colorchooser.c (avta_color_selection): adapted
+
 2009-10-29  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_load_image_xbm_RW):
