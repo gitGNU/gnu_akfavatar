@@ -5518,12 +5518,17 @@ avt_set_avatar_name_mb (const char *name)
 {
   wchar_t *wcname;
 
-  avt_mb_decode (&wcname, name, SDL_strlen (name) + 1);
-
-  if (wcname)
+  if (name == NULL || *name == '\0')
+    avt_set_avatar_name (NULL);
+  else
     {
-      avt_set_avatar_name (wcname);
-      SDL_free (wcname);
+      avt_mb_decode (&wcname, name, SDL_strlen (name) + 1);
+
+      if (wcname)
+	{
+	  avt_set_avatar_name (wcname);
+	  SDL_free (wcname);
+	}
     }
 
   return _avt_STATUS;

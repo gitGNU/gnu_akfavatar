@@ -1,3 +1,8 @@
+2009-10-30  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtar.c (avt_set_avatar_name_mb):
+	fix: handle NULL or empty string correctly
+
 2009-10-29  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_load_image_xbm_RW):
