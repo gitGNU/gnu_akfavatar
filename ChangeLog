@@ -6,6 +6,9 @@
 	(avt_pager_line, avt_pager_screen, avt_pager_lines_back):
 	adapted
 
+	* avatarsay.c (ask_textfile):
+	call check_encoding on the text (for UTF-16/32 texts)
+
 2009-10-30  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtar.c (avt_set_avatar_name_mb):

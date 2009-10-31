@@ -2245,22 +2245,32 @@ ask_file (void)
 static void
 ask_textfile (void)
 {
-  char filename[256];
+  char file_name[256];
 
   set_encoding (default_encoding);
-  avta_file_selection (filename, sizeof (filename), &is_textfile);
+  avta_file_selection (file_name, sizeof (file_name), &is_textfile);
 
   /* ignore quit-requests */
   /* (used to get out of the file dialog) */
   if (avt_get_status () == AVT_QUIT)
     avt_set_status (AVT_NORMAL);
 
-  if (filename[0] != '\0')
+  if (file_name[0] != '\0')
     {
+      char *txt;
+      int len;
+
       avt_set_text_delay (0);
       avt_set_balloon_size (0, 0);
 
-      avta_pager_file (filename, 1);
+      len = avta_read_textfile (file_name, &txt);
+
+      if (txt && len > 0)
+	{
+	  check_encoding (txt);
+	  avt_pager_mb (txt, len, 1);
+	  free (txt);
+	}
 
       if (avt_get_status () == AVT_QUIT)
 	avt_set_status (AVT_NORMAL);
