@@ -177,7 +177,7 @@ avta_pager_file (const char *file_name, int startline)
   int len;
 
   txt = NULL;
-  len = avta_read_textfile (file_name, &txt);
+  len = avta_read_datafile (file_name, (void **) &txt);
 
   if (len > 0)
     avt_pager_mb (txt, len, startline);

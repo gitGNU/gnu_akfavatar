@@ -802,7 +802,8 @@ run_pager (const char *file_name)
   if (strcmp (file_name, "-") == 0)
     len = avta_read_textfile (NULL, &txt);
   else
-    len = avta_read_textfile (file_name, &txt);
+    len = avta_read_datafile (file_name, (void **) &txt);
+  /* reading as textfile may cause problems with UTF-16 on windows */
 
   if (txt && len > 0)
     {
@@ -2263,7 +2264,8 @@ ask_textfile (void)
       avt_set_text_delay (0);
       avt_set_balloon_size (0, 0);
 
-      len = avta_read_textfile (file_name, &txt);
+      /* reading as textfile may cause problems with UTF-16 on windows */
+      len = avta_read_datafile (file_name, (void **) &txt);
 
       if (txt && len > 0)
 	{
