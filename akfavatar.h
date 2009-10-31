@@ -766,10 +766,10 @@ avt_choice (int *result, int start_line, int items, int key,
 
 /*
  * show longer text with a text-viewer application
- * the encoding should be set with avt_mb_encoding
  * if len is 0, assume 0-terminated string
  * startline is only used, when it is greater than 1
  */
+AVT_API int avt_pager (const wchar_t *txt, int len, int startline);
 AVT_API int avt_pager_mb (const char *txt, int len, int startline);
 
 /* show final credits */

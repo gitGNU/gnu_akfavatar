@@ -3871,24 +3871,24 @@ avt_button_inlay (SDL_Rect btn_rect, const unsigned char *bits,
 }
 
 static int
-avt_pager_line (const char *txt, int pos, int len)
+avt_pager_line (const wchar_t * txt, int pos, int len)
 {
-  const char *tpos;
+  const wchar_t *tpos;
   int line_length;
 
   line_length = 0;
   tpos = txt + pos;
 
   /* skip formfeeds */
-  if (*tpos == '\f')
+  if (*tpos == L'\f')
     tpos++;
 
   /* search for newline or end of text */
-  while (pos + line_length < len && *(tpos + line_length) != '\n'
-	 && *(tpos + line_length) != '\f')
+  while (pos + line_length < len && *(tpos + line_length) != L'\n'
+	 && *(tpos + line_length) != L'\f')
     line_length++;
 
-  avt_say_mb_len (tpos, line_length);
+  avt_say_len (tpos, line_length);
   pos += line_length;
 
   /* skip \n | \f */
@@ -3899,7 +3899,7 @@ avt_pager_line (const char *txt, int pos, int len)
 }
 
 static int
-avt_pager_screen (const char *txt, int pos, int len)
+avt_pager_screen (const wchar_t * txt, int pos, int len)
 {
   int line_nr;
 
@@ -3920,7 +3920,7 @@ avt_pager_screen (const char *txt, int pos, int len)
 }
 
 static int
-avt_pager_lines_back (const char *txt, int pos, int lines)
+avt_pager_lines_back (const wchar_t * txt, int pos, int lines)
 {
   if (pos > 0)
     pos--;			/* go to last \n */
@@ -3929,10 +3929,10 @@ avt_pager_lines_back (const char *txt, int pos, int lines)
 
   while (lines--)
     {
-      if (pos > 0 && *(txt + pos) == '\n')
+      if (pos > 0 && *(txt + pos) == L'\n')
 	pos--;			/* go before last \n */
 
-      while (pos > 0 && *(txt + pos) != '\n')
+      while (pos > 0 && *(txt + pos) != L'\n')
 	pos--;
     }
 
@@ -3943,7 +3943,7 @@ avt_pager_lines_back (const char *txt, int pos, int lines)
 }
 
 extern int
-avt_pager_mb (const char *txt, int len, int startline)
+avt_pager (const wchar_t * txt, int len, int startline)
 {
   int pos;
   avt_bool_t old_auto_margin, old_reserve_single_keys, old_tc;
@@ -3966,7 +3966,7 @@ avt_pager_mb (const char *txt, int len, int startline)
 
   /* get len if not given */
   if (len <= 0)
-    len = SDL_strlen (txt);
+    len = avt_strwidth (txt);
 
   /* find startline */
   pos = 0;
@@ -3977,7 +3977,7 @@ avt_pager_mb (const char *txt, int len, int startline)
       nr = startline - 1;
       while (nr > 0 && pos < len)
 	{
-	  while (pos < len && *(txt + pos) != '\n')
+	  while (pos < len && *(txt + pos) != L'\n')
 	    pos++;
 	  pos++;
 	  nr--;
@@ -4159,6 +4159,34 @@ avt_pager_mb (const char *txt, int len, int startline)
 
   /* hide mouse pointer */
   SDL_ShowCursor (SDL_DISABLE);
+
+  return _avt_STATUS;
+}
+
+/*
+ * Note: in the beginning I only had avt_pager_mb
+ * and converted it line by line to save memory.
+ * But that broke with UTF-16 and UTF-32.
+ */
+extern int
+avt_pager_mb (const char *txt, int len, int startline)
+{
+  wchar_t *wctext;
+  int wclen;
+
+  if (screen && txt)
+    {
+      if (len <= 0)
+	len = SDL_strlen (txt);
+
+      wclen = avt_mb_decode (&wctext, txt, len);
+
+      if (wctext)
+	{
+	  avt_pager (wctext, wclen, startline);
+	  SDL_free (wctext);
+	}
+    }
 
   return _avt_STATUS;
 }
