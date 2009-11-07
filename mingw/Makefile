@@ -34,7 +34,7 @@ default_avatar = $(srcdir)/male_user.xpm
 SHELL = /bin/sh
 .SUFFIXES:
 
-all: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe
+all: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe example.exe
 
 avtsayinfo.rc: Makefile
 	@{ \
@@ -170,8 +170,8 @@ libinfo.rc: Makefile
 	echo " END"; \
 	echo "END"; } > $@
 
-icon.o: icon.rc akfavatar.ico
-	$(WINDRES) -o $@ -i icon.rc
+icon.o: $(srcdir)/mingw/icon.rc $(srcdir)/mingw/akfavatar.ico
+	$(WINDRES) -o $@ -i $(srcdir)/mingw/icon.rc
 
 avtsayinfo.o: avtsayinfo.rc $(srcdir)/mingw/akfavatar.ico
 	$(WINDRES) -I$(srcdir)/mingw -o $@ -i avtsayinfo.rc

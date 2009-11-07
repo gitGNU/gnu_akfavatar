@@ -28,7 +28,7 @@ BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 	clean mostlyclean distclean maintainer-clean maintainerclean dist \
 	mingw dist-mingw
 
-all: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay avatarsay-d
+all: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay avatarsay-d example
 	@echo '*'
 	@echo '* use "make install" or "make install-strip"'
 	@echo '* with root-privileges to install it.'
