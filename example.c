@@ -1,83 +1,122 @@
 /*
- * example how to program AKFAvatar in C
- * this file is in the public domain
+ * example to program AKFAvatar in C (can be used as a starting point)
+ * Copyright (c) 2009 ... (enter your name)
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
+
+/* include the akfavatar library functions */
+#include "akfavatar.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
 
-/* the avatar library: */
-#include "akfavatar.h"
-
 
 void
-say (wchar_t *msg)
+initialize (int argc, char *argv[])
 {
-  if (avt_say (msg))
-    exit (0);
-}
-
-void
-init (int argc, char *argv[])
-{
-  int mode = AVT_AUTOMODE;
+  int mode;
   int i;
+
+  /* get the mode */
+  mode = AVT_AUTOMODE;
 
   for (i = 1; i < argc; i++)
     {
-      if (!strcmp (argv[i], "--fullscreen") || !strcmp (argv[i], "-f"))
+      if (!strcmp ("--fullscreen", argv[i]) || !strcmp ("-f", argv[i]))
 	mode = AVT_FULLSCREEN;
-      if (!strcmp (argv[i], "--window") || !strcmp (argv[i], "-w"))
+      if (!strcmp ("--window", argv[i]) || !strcmp ("-w", argv[i]))
 	mode = AVT_WINDOW;
     }
 
-  if (avt_initialize ("Avatar", "Avatar", avt_default (), mode))
+  /* initialize it */
+  if (avt_initialize ("AKFAvatar example program", "AKFAvatar",
+		      avt_default (), mode))
     {
-      fprintf (stderr, "cannot initialize graphics: %s\n",
-	       avt_get_error ());
-      exit (1);
+      fprintf (stderr, "cannot initialize graphics: %s\n", avt_get_error ());
+      exit (EXIT_FAILURE);
     }
 
+  /* clean up when the program exits */
   atexit (avt_quit);
+
+  /* do slow printing */
+  avt_set_text_delay (AVT_DEFAULT_TEXT_DELAY);
 }
 
-/* 
- * for the SDL on the windows platform the main function head 
- * must have exactly this form, see SDL FAQ for windows 
+void
+say (wchar_t * msg)
+{
+  /*
+   * tell the message
+   * and if there is quit-request or a fatal error, stop the program
+   * (note: fatal errors are unlikely after initialization)
+   */
+  if (avt_say (msg))
+    exit (EXIT_SUCCESS);
+}
+
+void
+run_plot (void)
+{
+  wchar_t name[AVT_LINELENGTH];
+  /* AVT_LINELENGTH is the maximum length of one line in a balloon */
+
+  /* set the balloon size: height, width (use 0 for maximum) */
+  avt_set_balloon_size (6, 50);
+
+  if (avt_move_in ())
+    exit (EXIT_SUCCESS);
+
+  /* ask for a name */
+  say (L"What's your name? ");
+  if (avt_ask (name, sizeof (name)))
+    exit (EXIT_SUCCESS);
+
+  /* if no name was given, call him "Mister unknown" ;-) */
+  if (!name[0])
+    wcscpy (name, L"Mister unknown");
+
+  /* clear the balloon */
+  avt_clear ();
+  say (L"Hello ");
+  say (name);
+  say (L",\n\n");
+  say (L"I am the avatar (the incarnation) of your program.\n"
+       L"It is sooo easy to program me...\n\n"
+       L"I am longing for being programmed by you!");
+
+  /* wait for a key, move out and wait some time */
+  if (!avt_wait_button () && !avt_move_out () && !avt_wait (AVT_SECONDS (1)))
+    exit (EXIT_SUCCESS);
+}
+
+/*
+ * For the SDL on the windows platform the main function must have
+ * exactly this form!  It will be replaced with a macro.
+ *
+ * (Windows normally uses a non-standard entry function for graphical
+ * programs, which is not portable at all. This macro makes it portable)
  */
 
 int
 main (int argc, char *argv[])
 {
-  wchar_t s[255];
+  initialize (argc, argv);
+  run_plot ();
 
-  init (argc, argv);
-
-  if (avt_move_in ())
-    exit (0);
-
-  say (L"What's your name? ");
-  if (avt_ask (s, sizeof (s)))
-    exit (0);
-
-  if (s[0] == L'\0')
-    wcscpy (s, L"Mister unknown");
-
-  avt_clear ();
-  say (L"Hello ");
-  say (s);
-  say (L",\n\n");
-  say (L"I am the avatar (the incarnation) of your program.\n"
-       L"It is sooo easy to program me...\n\n" 
-       L"I am longing for being programmed by you!");
-
-  if (avt_wait_button ())
-    exit (0);
-
-  if (!avt_move_out ())
-    avt_wait (AVT_SECONDS (1));
-
-  return 0;
+  return EXIT_SUCCESS;
 }
