@@ -56,6 +56,7 @@
 #define AVT_ERROR -1
 
 /* for boolean expressions */
+/* see avt_bool_t in the type definitions */
 #define AVT_TRUE 1
 #define AVT_FALSE 0
 #define AVT_MAKE_BOOL(x) ((x) != 0)
@@ -96,9 +97,14 @@
 
 /*
  * boolean are chars for this library
- * (you can use stdbool.h in your C program, it's compatible)
+ * use AVT_TRUE or AVT_FALSE as values,
+ * or AVT_MAKE_BOOL(x) to convert values.
+ *
+ * You can use true or false and the type bool from stdbool.h in C
+ * or the equivalent things from C++ - it's all compatible.
+ * I just make my own type for old compilers.
  */
-typedef char avt_bool_t;
+typedef unsigned char avt_bool_t;
 
 /*
  * general types for avatar images and audio data

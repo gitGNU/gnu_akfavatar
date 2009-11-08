@@ -1,3 +1,7 @@
+2009-11-08  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h (avt_bool_t): unsigned char
+
 2009-11-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* example.c: updated and more comments
