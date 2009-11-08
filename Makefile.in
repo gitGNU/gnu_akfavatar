@@ -367,6 +367,7 @@ distclean: clean
 	-rm -f akfavatar-*.tar.gz akfavatar-*.tar.bz2
 	-rm -f multiply-bin multiply
 	-rm -f multiplizieren-bin multiplizieren
+	-rm -f multiplizieren.exe multiply.exe
 	-rm -f akfavatar.def akfavatar.dll akfavatar.lib
 	-rm -f akfavatar-en.pdf akfavatar-en.ps akfavatar-en.dvi
 	-rm -f akfavatar-en.txt akfavatar-en.xml

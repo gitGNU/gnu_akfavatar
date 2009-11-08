@@ -144,6 +144,6 @@ maintainer-clean: distclean
 	-rm -f pasref.txt
 	-rm -f akfavatar-en.info akfavatar-en.html
 	-rm -f akfavatar-de.info akfavatar-de.html
-	-rm -f avatarsay.1
+	-rm -f avatarsay.1 avtcmd.1
 
 maintainerclean: maintainer-clean
