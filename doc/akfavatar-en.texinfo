@@ -193,7 +193,7 @@ SDL_image in turn needs other libraries:
 libz, libpng, libjpeg, libtiff
 
 X-Pixmaps (XPM), X-Bitmaps (XBM) and uncompressed BMP images are always
-supported.  
+supported.
 With SDL_image you can use lots of other image formats.
 SDL_image can be installed after the installation of this package.
 
@@ -244,8 +244,8 @@ necessary to use the parameter @option{--with-oldsdl}.  Note that this is
 not needed if you just want to run the program on the same machine
 on which you compile it.
 
-If you want to use it on devices with a small display, use the 
-parameter @option{--enable-size=vga} with configure.  
+If you want to use it on devices with a small display (eg. netbooks), use
+the parameter @option{--enable-size=vga} with configure.
 The value @code{vga} means a size of 640*480 pixels.
 
 @subheading Testing
@@ -292,9 +292,9 @@ to start your own programs.
 @itemize
 @item Problem: the system can't find the library @file{libakfavatar.so}
 
-Solution: first try to add @file{/usr/local/lib} or wherever you 
-installed it to the environment variable @code{LD_LIBRARY_PATH}: 
-@samp{export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib}.
+Solution: first try to add @file{/usr/local/lib} or wherever you
+installed it to the environment variable @code{LD_LIBRARY_PATH}:
+@samp{export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib}
 
 As a more permanent solution make sure @file{/usr/local/lib} is directly or
 indirectly included in the file @file{/etc/ld.so.conf}. Then run the command

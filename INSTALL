@@ -32,7 +32,8 @@ Recommended
    SDL_image in turn needs other libraries:
    libz, libpng, libjpeg, libtiff
 
-Without SDL_image you can only use XPM and uncompressed BMP images.
+X-Pixmaps (XPM), X-Bitmaps (XBM) and uncompressed BMP images are always
+supported.  With SDL_image you can use lots of other image formats.
 SDL_image can be installed after the installation of this package.
 
  * iconv
@@ -78,14 +79,14 @@ necessary to use the parameter "--with-oldsdl". Note that this is
 not needed if you just want to run the program on the same machine
 on which you compile it.
 
-If you want to use it on devices with a small display, use the 
+If you want to use it on devices with a small display (eg. netbooks), use the
 parameter "--enable-size=vga" with configure. 
 The value "vga" means a size of 640*480 pixels.
 
 Testing
 
 The program "avatarsay" is a text reader and a simple scripting language.
-Try to view this text with that program: "./avatarsay INSTALL".
+Try to view this text with that program: "./avatarsay --pager INSTALL".
 
 You can stop avatarsay any time with the [Esc] key. On some systems you can 
 toggle between window and fullscreen mode using the key [F11]. Another useful
@@ -105,9 +106,9 @@ On a GNU/Linux system first make sure "/usr/local/lib" is mentioned in
 the file "/etc/ld.so.conf"; either directly or indirectly. Also make sure
 that "/usr/local/bin" is in your "PATH" evironment variable.
 
-Now get root privileges and run "make install" to install it in 
-/usr/local. If you are low on disk space, you can instead use  
-"make install-strip". This installs binaries stripped from 
+Now get root privileges and run "make install" to install it in
+/usr/local. If you are low on disk space, you can instead use
+"make install-strip". This installs binaries stripped from
 debugging information.
 
 If you want to uninstall it later, you can use the command 
@@ -118,10 +119,7 @@ SPECIAL TARGETS
 
 With the command "make example" you can compile the program example.c.
 The file "example.c" is an example, which you can use to start your own
-programs. The program gets dynamically linked, that means it needs the
-installed library. If you want to test it without the library being 
-installed, use the script lrun (see above).
-
+programs.
 
 TROUBLESHOOTING
 
@@ -155,4 +153,4 @@ OTHER SYSTEMS
    to the ISO-8859-1 standard, which is supported.  Some characters are
    missing then.  If you need these characters, save your text as UTF-8, 
    which is also supported.
-   
+

@@ -200,7 +200,7 @@ Dabei sind die ``Runtime Libraries'' ausreichend@*
 SDL_image benötigt wiederum andere Bibliotheken:
 libz, libpng, libjpeg, libtiff
 
-X-Pixmaps (XPM), X-Bitmaps (XBM) und unkomprimierte BMP Dateien kann man 
+X-Pixmaps (XPM), X-Bitmaps (XBM) und unkomprimierte BMP Dateien kann man
 immer verwenden. Mit SDL_image stehen viele weitere Dateiformate für Bilder
 zur Verfügung.
 SDL_image kann auch nach der Installation dieses Paketes noch 
@@ -259,10 +259,9 @@ es notwendig sein, den Parameter @option{--with-oldsdl} bei
 man das Programm nur auf dem selben Computer verwenden will, auf dem
 man es kompiliert.
 
-Wenn man es auf Geräten mit einer kleinen Anzeige verwenden will, kann man
-den Parameter @option{--enable-size=vga} mit configure verwenden.  
-Der Wert @code{vga} steht dabei für eine Auflösung
-von 640*480 Pixeln.
+Wenn man es auf Geräten mit einer kleinen Anzeige verwenden will (zB. Netbooks),
+kann man den Parameter @option{--enable-size=vga} mit configure verwenden.
+Der Wert @code{vga} steht dabei für eine Auflösung von 640*480 Pixeln.
 
 @subheading Testen
 
