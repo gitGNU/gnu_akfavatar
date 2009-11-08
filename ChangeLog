@@ -1,4 +1,8 @@
+------------------------------------------------------------------------
+
 2009-11-08  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.18.0 released
 
 	* akfavatar.h (avt_bool_t): unsigned char
 
