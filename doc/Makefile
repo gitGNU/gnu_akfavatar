@@ -40,9 +40,9 @@ $(srcdir)/doc/akfavatar-en.html: $(srcdir)/doc/akfavatar-en.texinfo \
 	      --output=$@ \
 	      $(srcdir)/doc/akfavatar-en.texinfo
 
-akfavatar-de.html: $(srcdir)/doc/akfavatar-de.texinfo \
+$(srcdir)/doc/akfavatar-de.html: $(srcdir)/doc/akfavatar-de.texinfo \
                    $(srcdir)/doc/pasref.txt \
-	           (srcdir)/akfavatar.h version.texi
+	           $(srcdir)/akfavatar.h version.texi
 	-$(TEXI2HTML) $(USECSS) -I . -I $(srcdir) -I $(srcdir)/doc \
 	      --output=$@ \
 	      $(srcdir)/doc/akfavatar-de.texinfo
