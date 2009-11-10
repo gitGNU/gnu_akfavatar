@@ -1,0 +1,56 @@
+CC = gcc
+CFLAGS = -Wall -O2
+LDFLAGS = #-DLUA_USE_APICHECK
+
+LUA_CFLAGS  := $(shell pkg-config lua5.1 --cflags)
+LUA_LDFLAGS := $(shell pkg-config lua5.1 --libs)
+
+SDL_CFLAGS := $(shell sdl-config --cflags)
+SDL_LDFLAGS := $(shell sdl-config --libs)
+
+LIBS = ../libakfavatar.a $(SDL_LDFLAGS)
+
+prefix = /usr/local
+luacdir = $(prefix)/lib/lua/5.1/
+bindir = $(prefix)/bin
+
+INSTALL = install
+
+all: lua-avt.so akfavatar-lua
+
+# package
+lua-avt.so: lua-avt.lo
+	$(CC) $(CFLAGS) -fpic -shared -o $@ lua-avt.lo -L.. -lakfavatar \
+	       $(LDFLAGS)
+# don't use LUA_LDFLAGS!
+
+# standalone program
+akfavatar-lua: akfavatar-lua.o lua-avt.o ../libakfavatar.a
+	$(CC) -o $@ akfavatar-lua.o lua-avt.o $(LDFLAGS) \
+	     $(LIBS) -Wl,-Bstatic $(LUA_LDFLAGS) -Wl,-Bdynamic
+
+lua-avt.o: lua-avt.c
+	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I.. -c -o $@ lua-avt.c
+
+lua-avt.lo: lua-avt.c
+	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I.. -fpic -c -o $@ lua-avt.c
+
+akfavatar-lua.o: akfavatar-lua.c
+	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I.. -c -o $@ akfavatar-lua.c
+
+install: lua-avt.so akfavatar-lua
+	-[ -d $(DESTDIR)$(luacdir) ] || $(INSTALL) -d $(DESTDIR)$(luacdir)
+	$(INSTALL) -m 644 lua-avt.so $(DESTDIR)$(luacdir)
+	$(INSTALL) -m 755 akfavatar-lua $(DESTDIR)$(bindir)
+
+clean:
+	-rm -f *.o
+	-rm -f *.lo
+	-rm -f *.wo
+	-rm -f luac.out
+	-rm -f *~
+
+distclean: clean
+	-rm -f akfavatar-lua
+	-rm -f lua-avt.so
+	-rm -f akfavatar-lua.exe lua-avt.dll

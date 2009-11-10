@@ -1,0 +1,10 @@
+akfavatar-lua
+*.o
+*.lo
+*.wo
+*.so
+*.exe
+*.dll
+*.au
+*.xpm
+!Makefile
