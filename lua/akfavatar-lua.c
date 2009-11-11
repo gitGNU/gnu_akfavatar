@@ -109,6 +109,14 @@ prompt (lua_State * L)
 
       status = avt_ask_mb (buf, sizeof (buf));
 
+      /* if line starts with a "=", replace it with "return" */
+      if (buf[0] == '=')
+        {
+          char *tmp = strdup(buf);
+          snprintf (buf, sizeof (buf), "return %s", &tmp[1]);
+          free (tmp);
+        }
+
       error = luaL_loadbuffer (L, buf, strlen (buf), "line");
 
       if (!error)
