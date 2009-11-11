@@ -16,6 +16,8 @@ multiplizieren
 multiply
 bdfread
 libakfavatar.so*
+lua-avt.so
+akfavatar-lua
 bin2c
 ucsfont*.c
 alert.c
