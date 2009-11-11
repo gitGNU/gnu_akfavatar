@@ -95,6 +95,11 @@ prompt (lua_State * L)
   int error;
   int status;
 
+  /* print infos */
+  avt_say_mb ("AKFAvatar ");
+  avt_say_mb (avt_version ());
+  avt_say_mb (" / " LUA_RELEASE "\n\n");
+
   do
     {
       /* clear stack */
