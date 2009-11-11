@@ -180,6 +180,12 @@ avatarsay-s: avatarsay.o avtposix.o libavtaddons.a libakfavatar.a
 	$(CC) -o $@ avatarsay.o avtposix.o -L. -lavtaddons libakfavatar.a \
 	   $(SDLLDFLAGS) $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
+lua-avt.so:
+	$(MAKE) -f $(srcdir)/lua/Makefile srcdir=$(srcdir) lua-avt.so
+
+akfavatar-lua:
+	$(MAKE) -f $(srcdir)/lua/Makefile srcdir=$(srcdir) akfavatar-lua
+
 installdirs:
 	-[ -d $(DESTDIR)$(includedir) ]  || $(INSTALL) -d $(DESTDIR)$(includedir)
 	-[ -d $(DESTDIR)$(libdir) ]      || $(INSTALL) -d $(DESTDIR)$(libdir)
@@ -353,6 +359,7 @@ clean:
 	-rm -fr akfavatar-en.t2d/ akfavatar-de.t2d/
 	-rm -f pascal/*.o pascal/*.gpi pascal/*.gpm pascal/*.ppu
 	-rm -f pascal/link.res pascal/ppas.sh
+	-$(MAKE) -f $(srcdir)/lua/Makefile clean
 
 mostlyclean: clean
 
@@ -375,6 +382,7 @@ distclean: clean
 	-rm -f akfavatar-de.txt akfavatar-de.xml
 	-rm -f avatarsay*.exe akfavatar-*.zip
 	-rm -f config-mingw
+	-$(MAKE) -f $(srcdir)/lua/Makefile distclean
 
 
 # the rest is just for the maintainer
