@@ -97,16 +97,30 @@ prompt (lua_State * L)
 
   do
     {
+      /* clear stack */
+      lua_settop (L, 0);
+
       avt_say (L"> ");
+
       status = avt_ask_mb (buf, sizeof (buf));
+
       error = luaL_loadbuffer (L, buf, strlen (buf), "line");
-      if (error == 0)
-	lua_pcall (L, 0, 0, 0);
+
+      if (!error)
+	error = lua_pcall (L, 0, LUA_MULTRET, 0);
+
       if (error)
 	{
 	  avt_say_mb (lua_tostring (L, -1));
 	  avt_new_line ();
 	  lua_pop (L, 1);	/* pop error message from the stack */
+	}
+      else if (lua_gettop (L) > 0)	/* values to print? */
+	{
+	  lua_getglobal (L, "print");
+	  lua_insert (L, 1);
+	  if (lua_pcall (L, lua_gettop (L) - 1, 0, 0) != 0)
+	    avt_say_mb (lua_tostring (L, -1));
 	}
     }
   while (status == AVT_NORMAL);
