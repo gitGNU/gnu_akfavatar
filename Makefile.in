@@ -180,10 +180,10 @@ avatarsay-s: avatarsay.o avtposix.o libavtaddons.a libakfavatar.a
 	$(CC) -o $@ avatarsay.o avtposix.o -L. -lavtaddons libakfavatar.a \
 	   $(SDLLDFLAGS) $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
-lua-avt.so:
+lua-avt.so: $(srcdir)/lua/lua-avt.c
 	$(MAKE) -f $(srcdir)/lua/Makefile srcdir=$(srcdir) lua-avt.so
 
-akfavatar-lua:
+akfavatar-lua: $(srcdir)/lua/akfavatar-lua.c
 	$(MAKE) -f $(srcdir)/lua/Makefile srcdir=$(srcdir) akfavatar-lua
 
 installdirs:
