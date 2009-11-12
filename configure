@@ -210,19 +210,19 @@ case ${sdlversion} in
          exit 1 ;;
 esac
 
-SDLCFLAGS=`sdl-config --cflags`
-SDLLDFLAGS=`sdl-config --libs`
+SDL_CFLAGS=`sdl-config --cflags`
+SDL_LDFLAGS=`sdl-config --libs`
 
 if [ "$SDL_IMAGE" = "no" ]
 then 
-  SDLCFLAGS="$SDLCFLAGS -DNO_SDL_IMAGE"
+  SDL_CFLAGS="$SDL_CFLAGS -DNO_SDL_IMAGE"
   LINK_SDL_IMAGE="no"
 fi
 
 if [ "$LINK_SDL_IMAGE" = "yes" ] 
 then 
-  SDLCFLAGS="$SDLCFLAGS -DLINK_SDL_IMAGE"
-  SDLLDFLAGS="$SDLLDFLAGS -lSDL_image"
+  SDL_CFLAGS="$SDL_CFLAGS -DLINK_SDL_IMAGE"
+  SDL_LDFLAGS="$SDL_LDFLAGS -lSDL_image"
 fi
 
 if [ "$NO_AUDIO" = "yes" ]
@@ -340,8 +340,8 @@ echo "CPPFLAGS = ${CPPFLAGS}"
 echo "CFLAGS = ${CFLAGS}"
 #echo "CXXFLAGS = ${CXXFLAGS}"
 echo "LDFLAGS = ${LDFLAGS}"
-echo "SDLCFLAGS = ${SDLCFLAGS}"
-echo "SDLLDFLAGS = ${SDLLDFLAGS}"
+echo "SDL_CFLAGS = ${SDL_CFLAGS}"
+echo "SDL_LDFLAGS = ${SDL_LDFLAGS}"
 echo "AVATARSAY_LDFLAGS = ${AVATARSAY_LDFLAGS}"
 echo "AR = ${AR}"
 echo "RANLIB = ${RANLIB}"
@@ -401,8 +401,8 @@ AR = ${AR}
 RANLIB = ${RANLIB}
 INSTALL = ${INSTALL}
 LDCONFIG = ${LDCONFIG}
-SDLCFLAGS = ${SDLCFLAGS}
-SDLLDFLAGS = ${SDLLDFLAGS}
+SDL_CFLAGS = ${SDL_CFLAGS}
+SDL_LDFLAGS = ${SDL_LDFLAGS}
 AWK = ${AWK}
 SYSTEM = ${SYSTEM}
 ARCH = ${ARCH}
