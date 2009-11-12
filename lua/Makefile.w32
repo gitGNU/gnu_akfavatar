@@ -22,7 +22,7 @@ lua:
 
 # package
 lua-avt.dll: lua-avt.wo
-	$(CC) -O -shared -Wl,-E -o $@ lua-avt.wo \
+	$(CC) -O -shared -o $@ lua-avt.wo \
 	  -lakfavatar $(LDFLAGS) $(LUA_LDFLAGS)
 
 # standalone program
@@ -31,7 +31,7 @@ akfavatar-lua.exe: akfavatar-lua.wo lua-avt.wo
 	    $(LUA_LDFLAGS) $(LDFLAGS) -lakfavatar $(SDL_LDFLAGS)
 
 lua-avt.wo: lua-avt.c
-	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -Wl,-E -c -o $@ lua-avt.c 
+	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -c -o $@ lua-avt.c
 
 akfavatar-lua.wo: akfavatar-lua.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) $(SDL_CFLAGS) -c -o $@ akfavatar-lua.c
