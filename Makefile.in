@@ -28,7 +28,8 @@ BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 	clean mostlyclean distclean maintainer-clean maintainerclean dist \
 	mingw dist-mingw
 
-all: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay avatarsay-d example
+all: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay avatarsay-d \
+	example lua-avt.so akfavatar-lua
 	@echo '*'
 	@echo '* use "make install" or "make install-strip"'
 	@echo '* with root-privileges to install it.'
@@ -181,10 +182,10 @@ avatarsay-s: avatarsay.o avtposix.o libavtaddons.a libakfavatar.a
 	   $(SDLLDFLAGS) $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
 lua-avt.so: $(srcdir)/lua/lua-avt.c
-	$(MAKE) -f $(srcdir)/lua/Makefile srcdir=$(srcdir) lua-avt.so
+	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir=$(srcdir) lua-avt.so
 
 akfavatar-lua: $(srcdir)/lua/akfavatar-lua.c
-	$(MAKE) -f $(srcdir)/lua/Makefile srcdir=$(srcdir) akfavatar-lua
+	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir=$(srcdir) akfavatar-lua
 
 installdirs:
 	-[ -d $(DESTDIR)$(includedir) ]  || $(INSTALL) -d $(DESTDIR)$(includedir)
@@ -427,7 +428,7 @@ dist: info html man
 	   alert.flac alert.au \
 	   configure Makefile.in text2c data2c rgb2c \
 	   $(PKGNAME)/
-	
+
 	mkdir $(PKGNAME)/pascal
 	ln pascal/README pascal/akfavatar.pas pascal/example.pas \
 	   pascal/multiply.pas pascal/positive.au pascal/negative.au \
@@ -436,6 +437,11 @@ dist: info html man
 	   pascal/gpcavatar pascal/fpcavatar \
 	   $(PKGNAME)/pascal/
 	
+	mkdir $(PKGNAME)/lua
+	ln lua/Makefile lua/lua-avt.c lua/akfavatar-lua.c \
+	   lua/multiply.lua \
+	   $(PKGNAME)/lua/
+
 	mkdir $(PKGNAME)/doc
 	ln doc/README doc/Makefile doc/avatarsay.1 doc/avtcmd.1 \
 	   doc/akfavatar-en.texinfo doc/akfavatar-en.info \
@@ -446,14 +452,14 @@ dist: info html man
 	   doc/akfavatar.css \
 	   doc/pdfmeta-en doc/pdfmeta-de \
 	   $(PKGNAME)/doc/
-	
+
 	mkdir $(PKGNAME)/mingw
 	ln mingw/akfavatar.ico mingw/icon.rc \
 	   mingw/avtmsg.c mingw/avtwindows.c \
 	   mingw/avttermstub.c mingw/askdrive.c \
 	   mingw/Makefile mingw/README \
 	   $(PKGNAME)/mingw/
-	
+
 	tar -cvf $(PKGNAME).tar $(PKGNAME)/
 	rm -rf $(PKGNAME)/
 	bzip2 -f $(PKGNAME).tar

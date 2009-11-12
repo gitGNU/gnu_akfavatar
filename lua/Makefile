@@ -5,9 +5,6 @@ LDFLAGS = #-DLUA_USE_APICHECK
 LUA_CFLAGS  := $(shell pkg-config lua5.1 --cflags)
 LUA_LDFLAGS := $(shell pkg-config lua5.1 --libs)
 
-SDL_CFLAGS := $(shell sdl-config --cflags)
-SDL_LDFLAGS := $(shell sdl-config --libs)
-
 srcdir = ..
 
 prefix = /usr/local
