@@ -27,26 +27,27 @@ a_maximum = 9
 b_minimum = 2
 b_maximum = 9
 
--- English
---[[
-question         = "what to exercise?"
-t_multiplication = "multiplication"
-t_division       = "division"
-correct          = "correct"
-wrong            = "wrong"
-continue         = "do you want to continue?"
-]]
-
--- Deutsch
-question         = "Was üben?"
-t_multiplication = "multiplizieren"
-t_division       = "dividiren"
-correct          = "richtig"
-wrong            = "falsch"
-continue         = "Willst du weiter machen?"
-
 multiplicationSign = "·"
 divisionSign       = "÷"
+
+-- get the main language
+language = string.sub(os.setlocale ("", "ctype"), 1, 2)
+
+if language == "de" then -- Deutsch
+  question         = "Was üben?"
+  t_multiplication = "multiplizieren"
+  t_division       = "dividiren"
+  correct          = "richtig"
+  wrong            = "falsch"
+  continue         = "Willst du weiter machen?"
+else -- English
+  question         = "what to exercise?"
+  t_multiplication = "multiplication"
+  t_division       = "division"
+  correct          = "correct"
+  wrong            = "wrong"
+  continue         = "do you want to continue?"
+end
 
 ------------------------------------------------------------------
 
