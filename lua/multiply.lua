@@ -1,5 +1,4 @@
 #!/usr/bin/env lua
--- simple multiplication
 
 --[[
 simple multiplication
@@ -67,8 +66,6 @@ function askResult()
 end
 
 function AskWhatToExercise()
-  local c
-
   avt.set_balloon_size (4, 40)
   avt.clear()
   avt.say(question)
@@ -77,7 +74,7 @@ function AskWhatToExercise()
 
   avt.say(string.format("1) %s\n2) %s", t_multiplication, t_division))
 
-  c = avt.choice(3, 2, "1")
+  local c = avt.choice(3, 2, "1")
 
   if c == 1 then exercise = multiplication
     elseif c == 2 then exercise = division
@@ -89,7 +86,7 @@ end
 
 function sayCorrect()
   avt.play_audio(correctsnd, false)
-  avt.set_text_color ("dark green")
+  avt.set_text_color("dark green")
   avt.say(correct)
   avt.newline()
   avt.normal_text()
@@ -97,7 +94,7 @@ end
 
 function sayWrong()
   avt.play_audio(wrongsnd, false);
-  avt.set_text_color ("dark red")
+  avt.set_text_color("dark red")
   avt.say(wrong)
   avt.newline()
   avt.normal_text()
@@ -118,7 +115,7 @@ function query()
     -- repeat asking the same question until correct
     repeat
       avt.say(string.format("%2d) ", counter))
-    
+
       if exercise == multiplication then
         avt.say(string.format("%d %s %d = ", a, multiplicationSign, b))
         e = askResult()
@@ -139,11 +136,11 @@ end
 
 function WantToContinue()
   if avt.get_status() ~= 0 then return false end
-  
+
   avt.clear()
   avt.say(continue)
 
-  -- an end-request is a negative decision, 
+  -- an end-request is a negative decision,
   -- so we dont' have to check avt.get_status here again
   return avt.decide()
 end
@@ -160,8 +157,8 @@ avt.encoding("UTF-8") -- UTF-8 is the default
 
 avt.move_in()
 
-correctsnd = avt.load_audio_file ("positive.au")
-wrongsnd = avt.load_audio_file ("negative.au")
+correctsnd = avt.load_audio_file("positive.au")
+wrongsnd = avt.load_audio_file("negative.au")
 
 math.randomseed(os.time())
 
@@ -171,9 +168,10 @@ repeat
   query()
 until not WantToContinue()
 
-avt.free_audio (correctsnd)
-avt.free_audio (wrongsnd)
+avt.free_audio(correctsnd)
+avt.free_audio(wrongsnd)
 
 -- Avoid waiting for a keypress
 avt.move_out()
 avt.quit()
+os.exit()
