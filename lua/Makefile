@@ -44,8 +44,8 @@ install: lua-avt.so akfavatar-lua
 	$(INSTALL) -m 755 akfavatar-lua $(DESTDIR)$(bindir)
 
 clean:
-	-rm -f lua-avt.o lua-avt.lo
-	-rm -f akfavatar-lua.o
+	-rm -f lua-avt.o lua-avt.lo lua-avt.wo
+	-rm -f akfavatar-lua.o akfavatar-lua.wo
 	-rm -f luac.out
 	-rm -f *~
 

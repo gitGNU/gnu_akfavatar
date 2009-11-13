@@ -182,10 +182,10 @@ avatarsay-s: avatarsay.o avtposix.o libavtaddons.a libakfavatar.a
 	   $(SDL_LDFLAGS) $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
 lua-avt.so: $(srcdir)/lua/lua-avt.c
-	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir=$(srcdir) lua-avt.so
+	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir="$(srcdir)" lua-avt.so
 
 akfavatar-lua: $(srcdir)/lua/akfavatar-lua.c
-	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir=$(srcdir) akfavatar-lua
+	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir="$(srcdir)" akfavatar-lua
 
 installdirs:
 	-[ -d $(DESTDIR)$(includedir) ]  || $(INSTALL) -d $(DESTDIR)$(includedir)
@@ -211,6 +211,9 @@ install: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info ins
 	$(INSTALL_DATA) $(srcdir)/README $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/AUTHORS $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/COPYING $(DESTDIR)$(docdir)
+	-$(MAKE) -f $(srcdir)/lua/Makefile \
+	    DESTDIR="$(DESTDIR)" bindir="$(bindir)" srcdir="$(srcdir)" \
+	    install
 	@echo '*'
 	@echo '* make install-desktop-menu: to install avatarsay in a desktop menu'
 	@echo '*'
@@ -230,6 +233,9 @@ install-strip: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-in
 	$(INSTALL_DATA) $(srcdir)/README $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/AUTHORS $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/COPYING $(DESTDIR)$(docdir)
+	-$(MAKE) -f $(srcdir)/lua/Makefile \
+	    DESTDIR="$(DESTDIR)" bindir="$(bindir)" srcdir="$(srcdir)" \
+	    install
 	@echo '*'
 	@echo '* use "make install-desktop-menu" to install avatarsay in a desktop menu'
 	@echo '*'
