@@ -23,7 +23,7 @@ lua:
 # package
 lua-avt.dll: lua-avt.wo
 	$(CC) -O -shared -o $@ lua-avt.wo \
-	  -L. -lakfavatar $(LDFLAGS) $(LUA_LDFLAGS)
+	  -L. -lakfavatar $(LDFLAGS) $(LUA_LDFLAGS) -mwindows
 
 # standalone program
 akfavatar-lua.exe: akfavatar-lua.wo lua-avt.wo

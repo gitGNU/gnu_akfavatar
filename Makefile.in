@@ -37,6 +37,7 @@ all: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay avatarsay-d \
 
 mingw:
 	$(MAKE) -f $(srcdir)/mingw/Makefile srcdir=$(srcdir) all
+	$(MAKE) -f $(srcdir)/lua/Makefile.w32 srcdir=$(srcdir) all
 
 dist-mingw:
 	$(MAKE) -f $(srcdir)/mingw/Makefile srcdir=$(srcdir) dist-bin
