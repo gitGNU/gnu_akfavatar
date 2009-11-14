@@ -35,7 +35,7 @@ language = string.sub(os.setlocale ("", "ctype"), 1, 2)
 if language == "de" then -- Deutsch
   question         = "Was üben?"
   t_multiplication = "multiplizieren"
-  t_division       = "dividiren"
+  t_division       = "dividieren"
   correct          = "richtig"
   wrong            = "falsch"
   continue         = "Willst du weiter machen?"
