@@ -72,7 +72,7 @@ function AskWhatToExercise()
   avt.newline()
   avt.newline()
 
-  avt.say(string.format("1) %s\n2) %s", t_multiplication, t_division))
+  avt.say("1) " .. t_multiplication .. "\n2) " .. t_division)
 
   local c = avt.choice(3, 2, "1")
 
@@ -151,7 +151,7 @@ end
 -- A drawing by Wilhelm Busch
 -- This drawing is in the Public Domain
 
-teacher = [[
+teacher = avt.import_image_string [[
 /* XPM */
 static char * teacher_xpm[] = {
 "141 253 16 1",
@@ -431,9 +431,8 @@ static char * teacher_xpm[] = {
 avt.set_background_color("tan")
 avt.set_balloon_color("floral white")
 
-avt.initialize("AKFAvatar: multiply", "multiply",
-               avt.import_image_string(teacher))
-teacher = nil -- can be freed now
+avt.initialize("AKFAvatar: multiply", "multiply", teacher)
+teacher = nil  -- data was freed anyway
 
 avt.initialize_audio()
 avt.encoding("UTF-8") -- UTF-8 is the default
@@ -458,3 +457,4 @@ avt.free_audio(wrongsnd)
 avt.move_out()
 avt.quit()
 os.exit()
+
