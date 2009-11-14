@@ -66,15 +66,14 @@ function askResult()
 end
 
 function AskWhatToExercise()
-  avt.set_balloon_size (4, 40)
+  avt.set_balloon_size (3, 40)
   avt.clear()
   avt.say(question)
-  avt.newline()
   avt.newline()
 
   avt.say("1) " .. t_multiplication .. "\n2) " .. t_division)
 
-  local c = avt.choice(3, 2, "1")
+  local c = avt.choice(2, 2, "1")
 
   if c == 1 then exercise = multiplication
     elseif c == 2 then exercise = division
@@ -85,7 +84,6 @@ function AskWhatToExercise()
 end
 
 function sayCorrect()
-  avt.play_audio(correctsnd, false)
   avt.set_text_color("dark green")
   avt.say(correct)
   avt.newline()
@@ -93,7 +91,6 @@ function sayCorrect()
 end
 
 function sayWrong()
-  avt.play_audio(wrongsnd, false);
   avt.set_text_color("dark red")
   avt.say(wrong)
   avt.newline()
@@ -126,7 +123,7 @@ function query()
         isCorrect = (e == b)
       end
 
-      if not endRequest and (e ~= -1) then
+      if not endRequest then
         answerposition ()
         if isCorrect then sayCorrect() else sayWrong() end
         end
@@ -145,13 +142,14 @@ function WantToContinue()
   return avt.decide()
 end
 
--- teacher
-
--- Lehrer Laempel
+-- avatar-image: teacher
+-- "Lehrer Laempel"
 -- A drawing by Wilhelm Busch
 -- This drawing is in the Public Domain
 
-teacher = avt.import_image_string [[
+-- XPM can contain any of the quote-characters
+-- a long bracket like this is less likely to conflict
+teacher = avt.import_image_string [==[
 /* XPM */
 static char * teacher_xpm[] = {
 "141 253 16 1",
@@ -424,7 +422,7 @@ static char * teacher_xpm[] = {
 "                                                                                                                                             ",
 "                                                                                                                                             ",
 "                                                                                                                                             "};
-]]
+]==]
 
 -- main program
 
@@ -434,13 +432,9 @@ avt.set_balloon_color("floral white")
 avt.initialize("AKFAvatar: multiply", "multiply", teacher)
 teacher = nil  -- data was freed anyway
 
-avt.initialize_audio()
 avt.encoding("UTF-8") -- UTF-8 is the default
 
 avt.move_in()
-
-correctsnd = avt.load_audio_file("positive.au")
-wrongsnd = avt.load_audio_file("negative.au")
 
 math.randomseed(os.time())
 
@@ -449,9 +443,6 @@ repeat
   AskWhatToExercise()
   query()
 until not WantToContinue()
-
-avt.free_audio(correctsnd)
-avt.free_audio(wrongsnd)
 
 -- Avoid waiting for a keypress
 avt.move_out()
