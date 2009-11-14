@@ -176,6 +176,19 @@ lavt_import_image_file (lua_State * L)
   return 1;
 }
 
+/* get avatar-image from string */
+/* to be used with avt.initialize or avt.change_avatar_image */
+static int
+lavt_import_image_string (lua_State * L)
+{
+  char *data;
+  size_t len;
+
+  data = lua_tolstring (L, 1, &len);
+  lua_pushlightuserdata (L, avt_import_image_data (data, len));
+  return 1;
+}
+
 /*
  * change avatar image while running
  * if the avatar is visible, the screen gets cleared
@@ -921,6 +934,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"button_quit", lavt_button_quit},
   {"default", lavt_default},
   {"import_image_file", lavt_import_image_file},
+  {"import_image_string", lavt_import_image_string},
   {"change_avatar_image", lavt_change_avatar_image},
   {"set_avatar_name", lavt_set_avatar_name},
   {"say", lavt_say},
