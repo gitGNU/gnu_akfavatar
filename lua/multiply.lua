@@ -433,6 +433,8 @@ avt.set_balloon_color("floral white")
 
 avt.initialize("AKFAvatar: multiply", "multiply",
                avt.import_image_string(teacher))
+teacher = nil -- can be freed now
+
 avt.initialize_audio()
 avt.encoding("UTF-8") -- UTF-8 is the default
 
