@@ -142,14 +142,15 @@ function WantToContinue()
   return avt.decide()
 end
 
--- avatar-image: teacher
--- "Lehrer Laempel"
--- A drawing by Wilhelm Busch
--- This drawing is in the Public Domain
+function initialize()
+  -- avatar-image: teacher
+  -- "Lehrer Laempel"
+  -- A drawing by Wilhelm Busch
+  -- This drawing is in the Public Domain
 
--- XPM can contain any of the quote-characters
--- a long bracket like this is less likely to conflict
-teacher = avt.import_image_string [==[
+  -- XPM can contain any of the quote-characters
+  -- a long bracket like this is less likely to conflict
+  local avatar = avt.import_image_string [==[
 /* XPM */
 static char * teacher_xpm[] = {
 "141 253 16 1",
@@ -424,19 +425,18 @@ static char * teacher_xpm[] = {
 "                                                                                                                                             "};
 ]==]
 
+  avt.set_background_color("tan")
+  avt.set_balloon_color("floral white")
+  avt.initialize("AKFAvatar: multiply", "multiply", avatar)
+  avt.encoding("UTF-8") -- UTF-8 is the default
+  avt.move_in()
+
+  math.randomseed(os.time())
+end
+
 -- main program
 
-avt.set_background_color("tan")
-avt.set_balloon_color("floral white")
-
-avt.initialize("AKFAvatar: multiply", "multiply", teacher)
-teacher = nil  -- data was freed anyway
-
-avt.encoding("UTF-8") -- UTF-8 is the default
-
-avt.move_in()
-
-math.randomseed(os.time())
+initialize()
 
 repeat
   endRequest = false
