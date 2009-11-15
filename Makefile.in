@@ -185,7 +185,7 @@ avatarsay-s: avatarsay.o avtposix.o libavtaddons.a libakfavatar.a
 lua-avt.so: $(srcdir)/lua/lua-avt.c
 	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir="$(srcdir)" lua-avt.so
 
-akfavatar-lua: $(srcdir)/lua/akfavatar-lua.c
+akfavatar-lua: $(srcdir)/lua/akfavatar-lua.c $(srcdir)/lua/lua-avt.c
 	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir="$(srcdir)" akfavatar-lua
 
 installdirs:

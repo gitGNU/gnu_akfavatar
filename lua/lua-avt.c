@@ -19,6 +19,7 @@
  */
 
 #include "akfavatar.h"
+#include "avtaddons.h"
 
 #include <lua.h>
 #include <lauxlib.h>
@@ -184,7 +185,7 @@ lavt_import_image_string (lua_State * L)
   char *data;
   size_t len;
 
-  data = lua_tolstring (L, 1, &len);
+  data = (char *) lua_tolstring (L, 1, &len);
   lua_pushlightuserdata (L, avt_import_image_data (data, len));
   return 1;
 }
@@ -926,7 +927,25 @@ lavt_viewport (lua_State * L)
   return 0;
 }
 
+/* --------------------------------------------------------- */
+/* avtaddons.h */
+
+static int
+lavt_file_selection (lua_State * L)
+{
+  char filename[256];
+
+  if (avta_file_selection (filename, sizeof (filename), NULL) > -1)
+    lua_pushstring (L, filename);
+  else
+    lua_pushnil (L);
+
+  return 1;
+}
+
+/* --------------------------------------------------------- */
 /* register library functions */
+
 static const struct luaL_reg akfavtlib[] = {
   {"initialize", lavt_initialize},
   {"initialize_audio", lavt_initialize_audio},
@@ -1020,6 +1039,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"wait_audio_end", lavt_wait_audio_end},
   {"stop_audio", lavt_stop_audio},
   {"viewport", lavt_viewport},
+  {"file_selection", lavt_file_selection},
   {NULL, NULL}
 };
 

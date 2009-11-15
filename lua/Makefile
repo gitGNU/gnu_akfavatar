@@ -17,14 +17,15 @@ all: lua-avt.so akfavatar-lua
 
 # package
 lua-avt.so: lua-avt.lo
-	$(CC) $(CFLAGS) -fpic -shared -o $@ lua-avt.lo -L$(srcdir) -lakfavatar \
-	       $(LDFLAGS)
+	$(CC) $(CFLAGS) -fpic -shared -o $@ lua-avt.lo \
+	  -L. -lavtaddons -lakfavatar $(LDFLAGS)
 # don't use LUA_LDFLAGS!
 
 # standalone program
 akfavatar-lua: akfavatar-lua.o lua-avt.o
-	$(CC) -o $@ akfavatar-lua.o lua-avt.o $(LDFLAGS) \
-	     -lakfavatar -Wl,-Bstatic $(LUA_LDFLAGS) -Wl,-Bdynamic
+	$(CC) -o $@ akfavatar-lua.o lua-avt.o \
+	     -L. -lavtaddons -lakfavatar \
+	     -Wl,-Bstatic $(LUA_LDFLAGS) -Wl,-Bdynamic $(LDFLAGS)
 
 lua-avt.o: $(srcdir)/lua/lua-avt.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \

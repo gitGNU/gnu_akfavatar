@@ -23,12 +23,13 @@ lua:
 # package
 lua-avt.dll: lua-avt.wo
 	$(CC) -O -shared -o $@ lua-avt.wo \
-	  -L. -lakfavatar $(LDFLAGS) $(LUA_LDFLAGS) -mwindows
+	  -L. -lavtaddons -lakfavatar $(LDFLAGS) $(LUA_LDFLAGS) -mwindows
 
 # standalone program
 akfavatar-lua.exe: akfavatar-lua.wo lua-avt.wo
 	$(CC) -o $@ akfavatar-lua.wo lua-avt.wo \
-	    $(LUA_LDFLAGS) $(LDFLAGS) -L. -lakfavatar $(SDL_LDFLAGS)
+	    $(LUA_LDFLAGS) -L. -lavtaddons -lakfavatar \
+	    $(SDL_LDFLAGS) $(LDFLAGS)
 
 lua-avt.wo: $(srcdir)/lua/lua-avt.c
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
