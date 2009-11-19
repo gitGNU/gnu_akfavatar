@@ -2802,7 +2802,7 @@ settings_submenu (void)
 	  avt_say (L"2) Das Avatar-Bild auswechseln\n");
 	  avt_say (L"3) eine andere Hintergrund-Farbe auswählen\n");
 	  avt_say (L"4) eine andere Spechblasen-Farbe auswählen\n");
-	  avt_say (L"5) Einstallungen speichern\n");
+	  avt_say (L"5) Einstellungen speichern\n");
 	  avt_say (L"6) zurück");
 	  break;
 
