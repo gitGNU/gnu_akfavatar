@@ -1,6 +1,12 @@
+2009-11-20  Andreas K. Foerster  <info@akfoerster.de>
+
+	* pascal/multiply.pas: include image of teacher
+	pascal/teacher.inc: new file
+
 2009-11-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c, lua/akfavatar-lua.c: new files
+	(further developement not documented until first release)
 
 ------------------------------------------------------------------------
 

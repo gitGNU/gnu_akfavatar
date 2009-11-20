@@ -37,6 +37,9 @@ program multiply;
   uses CRT;
 {$EndIf}
 
+{ include image of the teacher }
+{$I teacher.inc}
+
 const
   a_minimum = 1;
   a_maximum = 10;
@@ -224,9 +227,12 @@ Begin { main program }
   SetEncoding('ISO-8859-1');
   SetBackgroundColorName('tan');
 
-  { load the image of the teacher, if there is one }
-  AvatarImageFile('teacher.xpm');
-  
+  { load the image of the teacher }
+  AvatarImageXPM(Addr(teacher));
+
+  { or use this to load the image from a file: }
+  { AvatarImageFile('teacher.xpm'); }
+
   correctsnd := LoadSoundFile('positive.au');
   wrongsnd := LoadSoundFile('negative.au');
 {$EndIf}
