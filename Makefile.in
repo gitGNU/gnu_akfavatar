@@ -421,7 +421,7 @@ dist: info html man
 	   avtccio.c avtcwio.c avtaddons.h filechooser.c avtreadfile.c \
 	   colorchooser.c \
 	   balloonpointer.xbm circle.xbm gnu-head.xpm gnu-head.xbm \
-	   male_user.xpm female_user.xpm \
+	   male_user.xpm female_user.xpm teacher.xpm \
 	   btn.xpm btn_up.xbm btn_down.xbm btn_left.xbm btn_right.xbm \
 	   btn_no.xbm btn_yes.xbm btn_cancel.xbm btn_ff.xbm btn_fb.xbm \
 	   btn_pause.xbm btn_stop.xbm btn_help.xbm btn_eject.xbm \
@@ -438,7 +438,7 @@ dist: info html man
 
 	mkdir $(PKGNAME)/pascal
 	ln pascal/README pascal/akfavatar.pas pascal/example.pas \
-	   pascal/multiply.pas pascal/teacher.xpm \
+	   pascal/multiply.pas \
 	   pascal/positive.au pascal/negative.au pascal/neutral.au \
 	   pascal/positive.inc pascal/negative.inc \
 	   pascal/xpm2pas pascal/xbm2pas \
@@ -481,10 +481,11 @@ dist-bin: avatarsay multiply multiplizieren info html
 	ln $(srcdir)/pascal/?pcavatar $(BINPKGNAME)/
 	ln $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	ln $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
+	ln $(srcdir)/teacher.xpm $(BINPKGNAME)/
 	-ln multiply $(BINPKGNAME)/
 	-ln multiplizieren $(BINPKGNAME)/
 	ln $(srcdir)/pascal/positive.au $(srcdir)/pascal/negative.au \
-	   $(srcdir)/pascal/neutral.au $(srcdir)/pascal/teacher.xpm \
+	   $(srcdir)/pascal/neutral.au \
 	   $(BINPKGNAME)/
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/avtman \
 	   $(srcdir)/fsdemo-??.avt \
