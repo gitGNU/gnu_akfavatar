@@ -37,8 +37,12 @@ program multiply;
   uses CRT;
 {$EndIf}
 
-{ include image of the teacher }
+{ include image of the teacher (made with xpm2pas) }
 {$I teacher.inc}
+
+{ include sound data (made with bin2obj from FreePascal) }
+{$I positive.inc}
+{$I negative.inc}
 
 const
   a_minimum = 1;
@@ -233,8 +237,8 @@ Begin { main program }
   { or use this to load the image from a file: }
   { AvatarImageFile('teacher.xpm'); }
 
-  correctsnd := LoadSoundFile('positive.au');
-  wrongsnd := LoadSoundFile('negative.au');
+  correctsnd := LoadSoundData(Addr(snd_positive), sizeof(snd_positive));
+  wrongsnd   := LoadSoundData(Addr(snd_negative), sizeof(snd_negative));
 {$EndIf}
 
 Randomize;
@@ -248,7 +252,7 @@ until not WantToContinue;
 {$IfDef AKFAVATAR}
   FreeSound(correctsnd);
   FreeSound(wrongsnd);
-  
+
   { Avoid waiting for a keypress }
   MoveAvatarOut;
 {$EndIf}

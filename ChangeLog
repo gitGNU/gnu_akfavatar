@@ -1,3 +1,8 @@
+2009-11-22  Andreas K. Foerster  <info@akfoerster.de>
+
+	* pascal/multiply.pas: include sounds
+	pascal/negative.inc, pascal/positive.inc: new files
+
 2009-11-20  Andreas K. Foerster  <info@akfoerster.de>
 
 	* pascal/multiply.pas: include image of teacher

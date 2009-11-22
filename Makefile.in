@@ -438,8 +438,9 @@ dist: info html man
 
 	mkdir $(PKGNAME)/pascal
 	ln pascal/README pascal/akfavatar.pas pascal/example.pas \
-	   pascal/multiply.pas pascal/positive.au pascal/negative.au \
-	   pascal/neutral.au pascal/teacher.xpm \
+	   pascal/multiply.pas pascal/teacher.xpm \
+	   pascal/positive.au pascal/negative.au pascal/neutral.au \
+	   pascal/positive.inc pascal/negative.inc \
 	   pascal/xpm2pas pascal/xbm2pas \
 	   pascal/gpcavatar pascal/fpcavatar \
 	   $(PKGNAME)/pascal/
