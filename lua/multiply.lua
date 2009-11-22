@@ -32,7 +32,9 @@ divisionSign       = "÷"
 -- get the main language
 language = string.sub(os.setlocale ("", "ctype"), 1, 2)
 
-if language == "de" then -- Deutsch
+-- Windows starts with "German" in German environments
+-- Most other systems have "de" for German
+if language == "de" or language == "Ge" then -- Deutsch
   question         = "Was üben?"
   t_multiplication = "multiplizieren"
   t_division       = "dividieren"
