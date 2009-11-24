@@ -2,6 +2,9 @@
 
 	* colorchooser.c (avta_color_selection): optimized
 
+	* avatar-audio.c (avt_initialize_audio):
+	read alert sound from sound data with header
+
 2009-11-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* pascal/multiply.pas: include sounds

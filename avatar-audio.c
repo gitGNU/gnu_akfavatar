@@ -182,8 +182,7 @@ avt_initialize_audio (void)
   avt_audio_initialized = AVT_TRUE;
 
   my_alert =
-    avt_load_raw_audio_data ((void *) &avt_alert_data, avt_alert_data_size,
-			     8000, AVT_AUDIO_MULAW, AVT_AUDIO_MONO);
+    avt_load_audio_data ((void *) &avt_alert_data, avt_alert_data_size);
   avt_alert_func = short_audio_sound;
   avt_quit_audio_func = avt_quit_audio;
 
@@ -563,7 +562,7 @@ avt_load_audio_file (const char *file)
 }
 
 extern avt_audio_t *
-avt_load_audio_stream (avt_stream *stream)
+avt_load_audio_stream (avt_stream * stream)
 {
   return avt_load_audio_RW (SDL_RWFromFP ((FILE *) stream, 0));
 }
@@ -848,7 +847,7 @@ avt_load_wave_file (const char *file AVT_UNUSED)
 }
 
 extern avt_audio_t *
-avt_load_audio_stream (avt_stream *stream AVT_UNUSED)
+avt_load_audio_stream (avt_stream * stream AVT_UNUSED)
 {
   no_audio ();
   return NULL;
