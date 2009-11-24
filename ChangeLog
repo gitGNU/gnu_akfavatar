@@ -1,3 +1,7 @@
+2009-11-24  Andreas K. Foerster  <info@akfoerster.de>
+
+	* colorchooser.c (avta_color_selection): optimized
+
 2009-11-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* pascal/multiply.pas: include sounds

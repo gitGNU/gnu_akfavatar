@@ -64,8 +64,8 @@ manual_entry (void)
 extern const char *
 avta_color_selection (void)
 {
-  const char *color, *c;
-  char hex[10];
+  const char *color, *color_name;
+  char desc[AVT_LINELENGTH];
   int red, green, blue;
   int i;
   int max_idx, items, offset, page_nr;
@@ -78,7 +78,7 @@ avta_color_selection (void)
   /* set maximum size */
   avt_set_balloon_size (0, 35);
 
-  color = c = NULL;
+  color = color_name = NULL;
   max_idx = avt_get_max_y ();
 
   page_nr = 0;
@@ -103,39 +103,35 @@ avta_color_selection (void)
 
       for (i = 0; i < max_idx - offset - 1; i++)
 	{
-	  c = avt_get_color (i + (page_nr * (max_idx - offset)),
-			     &red, &green, &blue);
+	  color_name = avt_get_color (i + (page_nr * (max_idx - offset)),
+				      &red, &green, &blue);
 
-	  if (c)
+	  if (color_name)
 	    {
-	      sprintf (hex, "#%02X%02X%02X", red, green, blue);
-
 	      /* show colored spaces */
 	      avt_set_text_background_color (red, green, blue);
 	      avt_say (L"  ");
 	      avt_set_text_background_ballooncolor ();
 	      avt_forward ();
 
-	      /* show hex value */
-	      avt_say_mb (hex);
-	      avt_say (L": ");
+	      snprintf (desc, sizeof (desc), "#%02X%02X%02X: %s\n",
+			red, green, blue, color_name);
 
-	      /* show name */
-	      avt_say_mb (c);
-
-	      avt_new_line ();
+	      /* show description */
+	      avt_say_mb (desc);
 	      items++;
 	    }
 	}
 
-      if (c != NULL)
+      if (color_name != NULL)
 	{
 	  MARK (CONTINUE);
 	  items = max_idx;
 	}
 
       avt_lock_updates (AVT_FALSE);
-      if (avt_choice (&choice, 1, items, 0, (page_nr > 0), (c != NULL)))
+      if (avt_choice (&choice, 1, items, 0,
+		      (page_nr > 0), (color_name != NULL)))
 	break;
       else
 	avt_lock_updates (AVT_TRUE);
@@ -145,7 +141,7 @@ avta_color_selection (void)
       else if (choice == 1)
 	break;			/* home */
       else if (choice == max_idx)
-	page_nr += (c == NULL) ? 0 : 1;	/* page forward */
+	page_nr += (color_name == NULL) ? 0 : 1;	/* page forward */
       else if (page_nr == 0 && choice == 2)
 	{
 	  color = (const char *) manual_entry ();
