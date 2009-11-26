@@ -489,9 +489,6 @@ dist-bin: avatarsay multiply multiplizieren info html
 	ln $(srcdir)/teacher.xpm $(BINPKGNAME)/
 	-ln multiply $(BINPKGNAME)/
 	-ln multiplizieren $(BINPKGNAME)/
-	ln $(srcdir)/pascal/positive.au $(srcdir)/pascal/negative.au \
-	   $(srcdir)/pascal/neutral.au \
-	   $(BINPKGNAME)/
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/avtman \
 	   $(srcdir)/fsdemo-??.avt \
 	   $(srcdir)/gnome-akfavatar \
@@ -499,8 +496,6 @@ dist-bin: avatarsay multiply multiplizieren info html
 	   $(BINPKGNAME)/
 	ln $(srcdir)/doc/akfavatar-??.html $(BINPKGNAME)/
 	ln $(srcdir)/doc/akfavatar-??.info $(BINPKGNAME)/
-	#strip $(BINPKGNAME)/avatarsay
-	#strip $(BINPKGNAME)/$(LIBNAME)
 	tar -cvf $(BINPKGNAME).$(SYSTEM).$(ARCH).tar $(BINPKGNAME)/
 	rm -rf $(BINPKGNAME)/
 	bzip2 -f $(BINPKGNAME).$(SYSTEM).$(ARCH).tar

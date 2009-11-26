@@ -359,11 +359,9 @@ dist-bin: avatarsay.exe multiply.exe multiplizieren.exe
 	cp $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	cp $(srcdir)/COPYING $(BINPKGNAME)/gpl-3.0.txt
 	cp $(srcdir)/AUTHORS $(BINPKGNAME)/AUTHORS.txt
-	cp $(srcdir)/pascal/positive.au $(srcdir)/pascal/negative.au $(BINPKGNAME)/
 	-cp multiply.exe multiplizieren.exe $(BINPKGNAME)/
 	cp $(srcdir)/teacher.xpm $(BINPKGNAME)/
 	cp $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
-	#$(STRIP) $(BINPKGNAME)/avatarsay.exe $(BINPKGNAME)/akfavatar.dll
 	todos $(BINPKGNAME)/fsdemo-??.avt
 	todos $(BINPKGNAME)/*.bat
 	todos $(BINPKGNAME)/*.txt
