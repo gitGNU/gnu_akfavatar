@@ -21,27 +21,27 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 require "lua-avt"
 
 -- edit to your needs:
-a_minimum = 2
-a_maximum = 9
-b_minimum = 2
-b_maximum = 9
+local a_minimum = 2
+local a_maximum = 9
+local b_minimum = 2
+local b_maximum = 9
 
-multiplicationSign = "·"
-divisionSign       = "÷"
+local multiplicationSign = "·"
+local divisionSign       = "÷"
 
 -- get the main language
-language = string.sub(os.setlocale ("", "ctype"), 1, 2)
+local locale = os.setlocale ("", "ctype")
 
--- Windows starts with "German" in German environments
--- Most other systems have "de" for German
-if language == "de" or language == "Ge" then -- Deutsch
+-- the language is at the beginning of the locale
+if string.find(locale, "^de") or string.find(locale, "^German")
+then -- Deutsch (German)
   question         = "Was üben?"
   t_multiplication = "multiplizieren"
   t_division       = "dividieren"
   correct          = "richtig"
   wrong            = "falsch"
   continue         = "Willst du weiter machen?"
-else -- English
+else -- default: English
   question         = "what to exercise?"
   t_multiplication = "multiplication"
   t_division       = "division"
