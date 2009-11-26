@@ -340,10 +340,12 @@ distclean: clean
 # don't use them unless you know what you are doing
 
 multiply.exe: $(srcdir)/pascal/multiply.pas
-	-fpcwavatar -dRELEASE -o$@ $(srcdir)/pascal/multiply.pas
+	-fpcwavatar -dRELEASE -o$@ -Fi$(srcdir)/pascal \
+	  $(srcdir)/pascal/multiply.pas
 
 multiplizieren.exe: $(srcdir)/pascal/multiply.pas
-	-fpcwavatar -dRELEASE -ddeutsch -o$@ $(srcdir)/pascal/multiply.pas
+	-fpcwavatar -dRELEASE -ddeutsch -o$@ -Fi$(srcdir)/pascal \
+	  $(srcdir)/pascal/multiply.pas
 
 dist-bin: avatarsay.exe multiply.exe multiplizieren.exe
 	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) html txt

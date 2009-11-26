@@ -407,10 +407,12 @@ maintainerclean: maintainer-clean
 
 multiply: $(srcdir)/pascal/multiply.pas
 	-$(srcdir)/pascal/fpcavatar -dRELEASE -FE. -o$@ \
+	    -Fi$(srcdir)/pascal \
 	    $(srcdir)/pascal/multiply.pas $(LOCAL_FPC_RPATH)
 
 multiplizieren: $(srcdir)/pascal/multiply.pas
 	-$(srcdir)/pascal/fpcavatar -dRELEASE -ddeutsch -FE. -o$@ \
+	    -Fi$(srcdir)/pascal \
 	    $(srcdir)/pascal/multiply.pas $(LOCAL_FPC_RPATH)
 
 dist: info html man
