@@ -33,7 +33,7 @@ local divisionSign       = "÷"
 local locale = os.setlocale ("", "ctype")
 
 -- the language is at the beginning of the locale
-if string.find(locale, "^de") or string.find(locale, "^German")
+if string.find(locale, "^de") or string.find(locale, "^[Gg]erman")
 then -- Deutsch (German)
   question         = "Was üben?"
   t_multiplication = "multiplizieren"
@@ -449,5 +449,3 @@ until not WantToContinue()
 -- Avoid waiting for a keypress
 avt.move_out()
 avt.quit()
-os.exit()
-
