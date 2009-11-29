@@ -210,7 +210,7 @@ lavt_import_image_string (lua_State * L)
   char *data;
   size_t len;
 
-  data = (char *) lua_tolstring (L, 1, &len);
+  data = (char *) luaL_checklstring (L, 1, &len);
   lua_pushlightuserdata (L, avt_import_image_data (data, len));
   return 1;
 }
@@ -257,6 +257,19 @@ static int
 lavt_show_image_file (lua_State * L)
 {
   lua_pushinteger (L, avt_show_image_file (luaL_checkstring (L, 1)));
+  return 1;
+}
+
+/* get avatar-image from string */
+/* to be used with avt.initialize or avt.change_avatar_image */
+static int
+lavt_show_image_string (lua_State * L)
+{
+  char *data;
+  size_t len;
+
+  data = (char *) luaL_checklstring (L, 1, &len);
+  lua_pushinteger (L, avt_show_image_data (data, len));
   return 1;
 }
 
@@ -909,6 +922,17 @@ lavt_load_audio_file (lua_State * L)
   return 1;
 }
 
+static int
+lavt_load_audio_string (lua_State * L)
+{
+  char *data;
+  size_t len;
+
+  data = (char *) luaL_checklstring (L, 1, &len);
+  lua_pushlightuserdata (L, avt_load_audio_data (data, len));
+  return 1;
+}
+
 /* frees audio data */
 static int
 lavt_free_audio (lua_State * L)
@@ -1118,6 +1142,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"clear_line", lavt_clear_line},
   {"show_avatar", lavt_show_avatar},
   {"show_image_file", lavt_show_image_file},
+  {"show_image_string", lavt_show_image_string},
   {"credits", lavt_credits},
   {"move_in", lavt_move_in},
   {"move_out", lavt_move_out},
@@ -1146,6 +1171,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"delete_lines", lavt_delete_lines},
   {"insert_lines", lavt_insert_lines},
   {"load_audio_file", lavt_load_audio_file},
+  {"load_audio_string", lavt_load_audio_string},
   {"free_audio", lavt_free_audio},
   {"play_audio", lavt_play_audio},
   {"wait_audio_end", lavt_wait_audio_end},
