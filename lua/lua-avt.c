@@ -151,6 +151,31 @@ lavt_get_error (lua_State * L)
   return 1;
 }
 
+/*
+ * get color for a given integer value
+ * returns name, red, gren, blue
+ * or returns nothing on error
+ */
+static int
+lavt_get_color (lua_State * L)
+{
+  const char *name;
+  int red, green, blue;
+
+  name = avt_get_color (luaL_checkinteger (L, 1), &red, &green, &blue);
+
+  if (name)
+    {
+      lua_pushstring (L, name);
+      lua_pushinteger (L, red);
+      lua_pushinteger (L, green);
+      lua_pushinteger (L, blue);
+      return 4;
+    }
+  else
+    return 0;
+}
+
 /* set the used encoding (iconv) */
 /* default is UTF-8 */
 static int
@@ -971,6 +996,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"get_status", lavt_get_status},
   {"set_status", lavt_set_status},
   {"get_error", lavt_get_error},
+  {"get_color", lavt_get_color},
   {"encoding", lavt_encoding},
   {"set_title", lavt_set_title},
   {"set_text_delay", lavt_set_text_delay},
