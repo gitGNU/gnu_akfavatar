@@ -1016,6 +1016,26 @@ lavt_lock_updates (lua_State * L)
   return 0;
 }
 
+static int
+lavt_insert_spaces (lua_State * L)
+{
+  avt_insert_spaces (luaL_checkint (L, 1));
+  return 0;
+}
+
+static int
+lavt_delete_characters (lua_State * L)
+{
+  avt_delete_characters (luaL_checkint (L, 1));
+  return 0;
+}
+
+static int
+lavt_erase_characters (lua_State * L)
+{
+  avt_erase_characters (luaL_checkint (L, 1));
+  return 0;
+}
 
 /* --------------------------------------------------------- */
 /* avtaddons.h */
@@ -1139,6 +1159,9 @@ static const struct luaL_reg akfavtlib[] = {
   {"get_origin_mode", lavt_get_origin_mode},
   {"set_mouse_visible", lavt_set_mouse_visible},
   {"lock_updates", lavt_lock_updates},
+  {"insert_spaces", lavt_insert_spaces},
+  {"delete_characters", lavt_delete_characters},
+  {"erase_characters", lavt_erase_characters},
   {"file_selection", lavt_file_selection},
   {NULL, NULL}
 };
