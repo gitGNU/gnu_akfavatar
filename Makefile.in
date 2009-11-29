@@ -452,7 +452,7 @@ dist: info html man
 	
 	mkdir $(PKGNAME)/lua
 	ln lua/Makefile lua/lua-avt.c lua/akfavatar-lua.c \
-	   lua/multiply.lua \
+	   lua/hello.lua lua/multiply.lua \
 	   $(PKGNAME)/lua/
 
 	mkdir $(PKGNAME)/doc
