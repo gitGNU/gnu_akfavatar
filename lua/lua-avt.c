@@ -215,6 +215,14 @@ lavt_import_image_string (lua_State * L)
   return 1;
 }
 
+/* free image data */
+static int
+lavt_free_image (lua_State * L)
+{
+  avt_free_image ((avt_image_t *) lua_touserdata (L, 1));
+  return 0;
+}
+
 /*
  * change avatar image while running
  * if the avatar is visible, the screen gets cleared
@@ -555,20 +563,20 @@ lavt_get_max_x (lua_State * L)
   return 1;
 }
 
+/* get maximum y position */
+static int
+lavt_get_max_y (lua_State * L)
+{
+  lua_pushinteger (L, avt_get_max_y ());
+  return 1;
+}
+
 /* is the cursor in the home position? */
 /* (also works for right-to-left writing) */
 static int
 lavt_home_position (lua_State * L)
 {
   lua_pushboolean (L, (int) avt_home_position ());
-  return 1;
-}
-
-/* get maximum y position */
-static int
-lavt_get_max_y (lua_State * L)
-{
-  lua_pushinteger (L, avt_get_max_y ());
   return 1;
 }
 
@@ -952,6 +960,63 @@ lavt_viewport (lua_State * L)
   return 0;
 }
 
+static int
+lavt_set_scroll_mode (lua_State * L)
+{
+  avt_set_scroll_mode (lua_tointeger (L, 1));
+  return 0;
+}
+
+static int
+lavt_get_scroll_mode (lua_State * L)
+{
+  lua_pushinteger (L, avt_get_scroll_mode ());
+  return 1;
+}
+
+static int
+lavt_newline_mode (lua_State * L)
+{
+  avt_newline_mode (lua_toboolean (L, 1));
+  return 0;
+}
+
+static int
+lavt_auto_margin (lua_State * L)
+{
+  avt_auto_margin (lua_toboolean (L, 1));
+  return 0;
+}
+
+static int
+lavt_set_origin_mode (lua_State * L)
+{
+  avt_set_origin_mode (lua_toboolean (L, 1));
+  return 0;
+}
+
+static int
+lavt_get_origin_mode (lua_State * L)
+{
+  lua_pushboolean (L, avt_get_origin_mode ());
+  return 1;
+}
+
+static int
+lavt_set_mouse_visible (lua_State * L)
+{
+  avt_set_mouse_visible (lua_toboolean (L, 1));
+  return 0;
+}
+
+static int
+lavt_lock_updates (lua_State * L)
+{
+  avt_lock_updates (lua_toboolean (L, 1));
+  return 0;
+}
+
+
 /* --------------------------------------------------------- */
 /* avtaddons.h */
 
@@ -979,6 +1044,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"default", lavt_default},
   {"import_image_file", lavt_import_image_file},
   {"import_image_string", lavt_import_image_string},
+  {"free_image", lavt_free_image},
   {"change_avatar_image", lavt_change_avatar_image},
   {"set_avatar_name", lavt_set_avatar_name},
   {"say", lavt_say},
@@ -1065,6 +1131,14 @@ static const struct luaL_reg akfavtlib[] = {
   {"wait_audio_end", lavt_wait_audio_end},
   {"stop_audio", lavt_stop_audio},
   {"viewport", lavt_viewport},
+  {"set_scroll_mode", lavt_set_scroll_mode},
+  {"get_scroll_mode", lavt_get_scroll_mode},
+  {"newline_mode", lavt_newline_mode},
+  {"auto_margin", lavt_auto_margin},
+  {"set_origin_mode", lavt_set_origin_mode},
+  {"get_origin_mode", lavt_get_origin_mode},
+  {"set_mouse_visible", lavt_set_mouse_visible},
+  {"lock_updates", lavt_lock_updates},
   {"file_selection", lavt_file_selection},
   {NULL, NULL}
 };
