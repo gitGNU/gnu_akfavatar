@@ -153,7 +153,7 @@ lavt_get_error (lua_State * L)
 
 /*
  * get color for a given integer value
- * returns name, red, gren, blue
+ * returns name, red, green, blue
  * or returns nothing on error
  */
 static int
@@ -837,7 +837,7 @@ lavt_navigate (lua_State * L)
 {
   int r;
 
-  r = avt_navigate (lua_tostring (L, 1));
+  r = avt_navigate (luaL_checkstring (L, 1));
 
   if (r < 32)
     lua_pushinteger (L, r);
