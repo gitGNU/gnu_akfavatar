@@ -73,7 +73,7 @@ function AskWhatToExercise()
   avt.say(question)
   avt.newline()
 
-  avt.say("1) " .. t_multiplication .. "\n2) " .. t_division)
+  avt.say("1) ", t_multiplication, "\n2) ", t_division)
 
   local c = avt.choice(2, 2, "1")
 
@@ -116,11 +116,11 @@ function query()
       avt.say(string.format("%2d) ", counter))
 
       if exercise == multiplication then
-        avt.say(string.format("%d %s %d = ", a, multiplicationSign, b))
+        avt.say(a, " ", multiplicationSign, " ", b, " = ")
         e = askResult()
         isCorrect = (e == r)
       elseif exercise == division then
-        avt.say(string.format("%d %s %d = ", r, divisionSign, a))
+        avt.say(r, " ", divisionSign, " ", a, " = ")
         e = askResult()
         isCorrect = (e == b)
       end
