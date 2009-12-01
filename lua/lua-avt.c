@@ -162,7 +162,7 @@ lavt_get_color (lua_State * L)
   const char *name;
   int red, green, blue;
 
-  name = avt_get_color (luaL_checkinteger (L, 1), &red, &green, &blue);
+  name = avt_get_color (luaL_checkint (L, 1), &red, &green, &blue);
 
   if (name)
     {
@@ -219,6 +219,7 @@ lavt_import_image_string (lua_State * L)
 static int
 lavt_free_image (lua_State * L)
 {
+  luaL_checktype (L, 1, LUA_TLIGHTUSERDATA);
   avt_free_image ((avt_image_t *) lua_touserdata (L, 1));
   return 0;
 }
@@ -286,12 +287,13 @@ lavt_set_title (lua_State * L)
 static int
 lavt_right_to_left (lua_State * L)
 {
+  luaL_checktype (L, 1, LUA_TBOOLEAN);
   avt_text_direction (lua_toboolean (L, 1));
   return 0;
 }
 
 /* set_text_delay */
-/* 0 for no delay,  no value for default delay */
+/* 0 for no delay, no value for default delay */
 static int
 lavt_set_text_delay (lua_State * L)
 {
@@ -300,7 +302,7 @@ lavt_set_text_delay (lua_State * L)
 }
 
 /* set flip-page delay */
-/* 0 for no delay,  no value for default delay */
+/* 0 for no delay, no value for default delay */
 static int
 lavt_set_flip_page_delay (lua_State * L)
 {
@@ -347,6 +349,7 @@ lavt_set_balloon_color (lua_State * L)
 static int
 lavt_activate_cursor (lua_State * L)
 {
+  luaL_checktype (L, 1, LUA_TBOOLEAN);
   avt_activate_cursor (lua_toboolean (L, 1));
   return 0;
 }
@@ -355,6 +358,7 @@ lavt_activate_cursor (lua_State * L)
 static int
 lavt_underlined (lua_State * L)
 {
+  luaL_checktype (L, 1, LUA_TBOOLEAN);
   avt_underlined (lua_toboolean (L, 1));
   return 0;
 }
@@ -371,6 +375,7 @@ lavt_get_underlined (lua_State * L)
 static int
 lavt_bold (lua_State * L)
 {
+  luaL_checktype (L, 1, LUA_TBOOLEAN);
   avt_bold (lua_toboolean (L, 1));
   return 0;
 }
@@ -387,6 +392,7 @@ lavt_get_bold (lua_State * L)
 static int
 lavt_inverse (lua_State * L)
 {
+  luaL_checktype (L, 1, LUA_TBOOLEAN);
   avt_inverse (lua_toboolean (L, 1));
   return 0;
 }
@@ -669,7 +675,9 @@ lavt_clear_tab_stops (lua_State * L)
 static int
 lavt_set_tab (lua_State * L)
 {
-  avt_set_tab (luaL_checkint (L, 1), lua_toboolean (L, 2));
+  luaL_checktype (L, 1, LUA_TNUMBER);
+  luaL_checktype (L, 2, LUA_TBOOLEAN);
+  avt_set_tab (lua_tointeger (L, 1), lua_toboolean (L, 2));
   return 0;
 }
 
@@ -695,7 +703,7 @@ lavt_insert_lines (lua_State * L)
   return 0;
 }
 
-/* wait untill a button is pressed */
+/* wait until a button is pressed */
 static int
 lavt_wait_button (lua_State * L)
 {
@@ -707,6 +715,7 @@ lavt_wait_button (lua_State * L)
 static int
 lavt_reserve_single_keys (lua_State * L)
 {
+  luaL_checktype (L, 1, LUA_TBOOLEAN);
   avt_reserve_single_keys (lua_toboolean (L, 1));
   return 0;
 }
@@ -767,7 +776,7 @@ lavt_wait_sec (lua_State * L)
 }
 
 /* show final credits from file */
-/* 1=filename, 2=centered (true/false) */
+/* 1=filename, 2=centered (true/false/nothing) */
 static int
 lavt_credits (lua_State * L)
 {
@@ -902,7 +911,7 @@ lavt_pager (lua_State * L)
   size_t len;
   int startline;
 
-  s = lua_tolstring (L, 1, &len);
+  s = luaL_checklstring (L, 1, &len);
   startline = lua_tointeger (L, 2);
 
   if (s)
@@ -937,6 +946,7 @@ lavt_load_audio_string (lua_State * L)
 static int
 lavt_free_audio (lua_State * L)
 {
+  luaL_checktype (L, 1, LUA_TLIGHTUSERDATA);
   avt_free_audio (lua_touserdata (L, 1));
   return 0;
 }
@@ -946,6 +956,7 @@ lavt_free_audio (lua_State * L)
 static int
 lavt_play_audio (lua_State * L)
 {
+  luaL_checktype (L, 1, LUA_TLIGHTUSERDATA);
   lua_pushinteger (L, avt_play_audio (lua_touserdata (L, 1),
 				      lua_toboolean (L, 2)));
   return 1;
@@ -987,7 +998,7 @@ lavt_viewport (lua_State * L)
 static int
 lavt_set_scroll_mode (lua_State * L)
 {
-  avt_set_scroll_mode (lua_tointeger (L, 1));
+  avt_set_scroll_mode (luaL_checkint (L, 1));
   return 0;
 }
 
@@ -1001,6 +1012,7 @@ lavt_get_scroll_mode (lua_State * L)
 static int
 lavt_newline_mode (lua_State * L)
 {
+  luaL_checktype (L, 1, LUA_TBOOLEAN);
   avt_newline_mode (lua_toboolean (L, 1));
   return 0;
 }
@@ -1008,6 +1020,7 @@ lavt_newline_mode (lua_State * L)
 static int
 lavt_auto_margin (lua_State * L)
 {
+  luaL_checktype (L, 1, LUA_TBOOLEAN);
   avt_auto_margin (lua_toboolean (L, 1));
   return 0;
 }
@@ -1015,6 +1028,7 @@ lavt_auto_margin (lua_State * L)
 static int
 lavt_set_origin_mode (lua_State * L)
 {
+  luaL_checktype (L, 1, LUA_TBOOLEAN);
   avt_set_origin_mode (lua_toboolean (L, 1));
   return 0;
 }
@@ -1029,6 +1043,7 @@ lavt_get_origin_mode (lua_State * L)
 static int
 lavt_set_mouse_visible (lua_State * L)
 {
+  luaL_checktype (L, 1, LUA_TBOOLEAN);
   avt_set_mouse_visible (lua_toboolean (L, 1));
   return 0;
 }
@@ -1036,6 +1051,7 @@ lavt_set_mouse_visible (lua_State * L)
 static int
 lavt_lock_updates (lua_State * L)
 {
+  luaL_checktype (L, 1, LUA_TBOOLEAN);
   avt_lock_updates (lua_toboolean (L, 1));
   return 0;
 }
