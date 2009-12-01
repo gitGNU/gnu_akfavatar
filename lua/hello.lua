@@ -2,7 +2,7 @@
 
 --[[
 hello world for AKFAvatar
-not the smallest version possible, but still small and clean
+Copyright (c) 2009 Andreas K. Foerster
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,6 +17,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, see <http://www.gnu.org/licenses/>.
 ]]
+
+-- Note: Since this is a trivial example, you don't have to keep my
+-- Copyright notice, but you may replace it with your own.
+
 
 -- this loads the binding to AKFAvatar
 require "lua-avt"
@@ -34,7 +38,7 @@ avt.set_text_delay()
 avt.move_in()
 
 -- set the size of the balloon (optional)
-avt.set_balloon_size(6, 20)
+avt.set_balloon_size(8, 20)
 
 -- say something
 avt.say [[
@@ -43,7 +47,13 @@ Bonjour le monde
 Hallo Welt
 Hej Världen
 Καλημέρα κόσμε
-Здравствуй мир]]
+Здравствуй мир
+]]
+
+avt.newline()
+
+-- avt.say accepts strings and numbers
+avt.say("π≈", math.pi)
 
 -- wait for a button to be pressed
 avt.wait_button()
