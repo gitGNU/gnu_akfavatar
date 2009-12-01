@@ -887,9 +887,13 @@ lavt_choice (lua_State * L)
 static int
 lavt_say (lua_State * L)
 {
+  int status;
   int n, i;
   const char *s;
   size_t len;
+
+  /* set status to some invalid number */
+  status = -42;
 
   n = lua_gettop (L);
 
@@ -897,10 +901,14 @@ lavt_say (lua_State * L)
     {
       s = lua_tolstring (L, i, &len);
       if (s)
-	avt_say_mb_len (s, len);
+	status = avt_say_mb_len (s, len);
     }
 
-  lua_pushinteger (L, avt_get_status ());
+  /* if status wasn't set yet, get it */
+  if (status == -42)
+    status = avt_get_status ();
+
+  lua_pushinteger (L, status);
   return 1;
 }
 
