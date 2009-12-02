@@ -25,7 +25,7 @@ lua-avt.so: lua-avt.lo
 akfavatar-lua: akfavatar-lua.o lua-avt.o
 	$(CC) -o $@ akfavatar-lua.o lua-avt.o \
 	     -L. -lavtaddons -lakfavatar \
-	     -Wl,-Bstatic $(LUA_LDFLAGS) -Wl,-Bdynamic $(LDFLAGS)
+	     $(LUA_LDFLAGS) $(LDFLAGS)
 
 lua-avt.o: $(srcdir)/lua/lua-avt.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
