@@ -152,10 +152,11 @@ main (int argc, char **argv)
   luaL_openlibs (L);
   luaopen_avt (L);
 
-  /* mark 'lua-avt' as loaded, neutralize 'avt.quit()' */
+  /* mark 'lua-avt' as loaded, redefine 'avt.quit()' */
   if (luaL_dostring (L,
 		     "package.loaded['lua-avt']=package.loaded['avt']; "
-		     "avt.quit=function() end"))
+		     "avt.quit = function() "
+		     "avt.set_balloon_size(); avt.set_text_delay(0) end"))
     {
       lua_close (L);
       return 1;
