@@ -1116,6 +1116,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"change_avatar_image", lavt_change_avatar_image},
   {"set_avatar_name", lavt_set_avatar_name},
   {"say", lavt_say},
+  {"write", lavt_say},		/* alias */
   {"ask", lavt_ask},
   {"navigate", lavt_navigate},
   {"decide", lavt_decide},
