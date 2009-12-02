@@ -111,11 +111,11 @@ prompt (lua_State * L)
 
       /* if line starts with a "=", replace it with "return" */
       if (buf[0] == '=')
-        {
-          char *tmp = strdup(buf);
-          snprintf (buf, sizeof (buf), "return %s", &tmp[1]);
-          free (tmp);
-        }
+	{
+	  char *tmp = strdup (buf);
+	  snprintf (buf, sizeof (buf), "return %s", &tmp[1]);
+	  free (tmp);
+	}
 
       error = luaL_loadbuffer (L, buf, strlen (buf), "line");
 
@@ -152,7 +152,10 @@ main (int argc, char **argv)
   luaL_openlibs (L);
   luaopen_avt (L);
 
-  if (luaL_dostring (L, "package.loaded['lua-avt']=package.loaded['avt']"))
+  /* mark 'lua-avt' as loaded, neutralize 'avt.quit()' */
+  if (luaL_dostring (L,
+		     "package.loaded['lua-avt']=package.loaded['avt']; "
+		     "avt.quit=function() end"))
     {
       lua_close (L);
       return 1;
