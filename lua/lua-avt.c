@@ -25,6 +25,8 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
+#include <stdio.h>
+
 /*
  * parameters:
  * 1 title
@@ -153,24 +155,24 @@ lavt_get_error (lua_State * L)
 
 /*
  * get color for a given integer value
- * returns name, red, green, blue
+ * returns name and RGB value as strings
  * or returns nothing on error
  */
 static int
 lavt_get_color (lua_State * L)
 {
   const char *name;
+  char RGB[8];
   int red, green, blue;
 
   name = avt_get_color (luaL_checkint (L, 1), &red, &green, &blue);
 
   if (name)
     {
+      sprintf (RGB, "#%02X%02X%02X", red, green, blue);
       lua_pushstring (L, name);
-      lua_pushinteger (L, red);
-      lua_pushinteger (L, green);
-      lua_pushinteger (L, blue);
-      return 4;
+      lua_pushstring (L, RGB);
+      return 2;
     }
   else
     return 0;
