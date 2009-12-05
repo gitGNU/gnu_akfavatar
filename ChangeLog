@@ -1,3 +1,7 @@
+2009-12-05  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_put_character): ignorable characters
+
 2009-11-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* colorchooser.c (avta_color_selection): optimized

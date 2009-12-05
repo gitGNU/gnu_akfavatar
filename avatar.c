@@ -3149,6 +3149,17 @@ avt_put_character (const wchar_t ch)
       avt_text_direction (AVT_RIGHT_TO_LEFT);
       break;
 
+    /* other ignorable (invisible) characters */
+    case L'\x200B':
+    case L'\x200C':
+    case L'\x200D':
+    case L'\x00AD':
+    case L'\x2060':
+    case L'\x2061':
+    case L'\x2062':
+    case L'\x2063':
+      break;
+
     case L' ':			/* space */
       if (auto_margin)
 	check_auto_margin ();
