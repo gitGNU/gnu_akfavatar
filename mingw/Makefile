@@ -36,139 +36,15 @@ SHELL = /bin/sh
 
 all: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe example.exe
 
-avtsayinfo.rc: Makefile
-	@{ \
-	echo "AppIcon ICON \"akfavatar.ico\""; \
-	echo; \
-	echo "LANGUAGE 7, 1"; \
-	echo; \
-	echo "1 VERSIONINFO"; \
-	echo "FILEVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0"; \
-	echo "PRODUCTVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0"; \
-	echo "FILEFLAGSMASK 0x3F"; \
-	echo "FILEOS 0x4"; \
-	echo "FILETYPE 0x1"; \
-	echo "BEGIN"; \
-	echo " BLOCK \"StringFileInfo\""; \
-	echo " BEGIN"; \
-	echo "  BLOCK \"040704E4\""; \
-	echo "  BEGIN"; \
-	echo "   VALUE \"CompanyName\", \"AKFoerster\""; \
-	echo "   VALUE \"FileDescription\",";\
-	echo "     \"Demo-Programm und lustiger Text-Betrachter\""; \
-	echo "   VALUE \"FileVersion\", \"$(VERSIONSTR)\""; \
-	echo "   VALUE \"InternalName\", \"avatarsay\""; \
-	echo "   VALUE \"LegalCopyright\","; \
-	echo "     \"Andreas K. F\366rster, GPLv3+\""; \
-	echo "   VALUE \"OriginalFilename\", \"avatarsay.exe\""; \
-	echo "   VALUE \"Comments\", "; \
-	echo "      \"urspr\374nglich f\374r GNU/Linux geschrieben\""; \
-	echo "   VALUE \"ProductName\", \"AKFAvatar\""; \
-	echo "   VALUE \"ProductVersion\", \"$(VERSIONSTR)\""; \
-	echo "  END"; \
-	echo " END"; \
-	echo " BLOCK \"VarFileInfo\""; \
-	echo "  BEGIN"; \
-	echo "   VALUE \"Translation\", 0x407, 1252, 0x0409, 1252"; \
-	echo " END"; \
-	echo "END"; \
-	echo; \
-	echo "LANGUAGE 9, 1"; \
-	echo; \
-	echo "1 VERSIONINFO"; \
-	echo "FILEVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0"; \
-	echo "PRODUCTVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0"; \
-	echo "FILEFLAGSMASK 0x3F"; \
-	echo "FILEOS 0x4"; \
-	echo "FILETYPE 0x1"; \
-	echo "BEGIN"; \
-	echo " BLOCK \"StringFileInfo\""; \
-	echo " BEGIN"; \
-	echo "  BLOCK \"040904E4\""; \
-	echo "  BEGIN"; \
-	echo "   VALUE \"CompanyName\", \"AKFoerster\""; \
-	echo "   VALUE \"FileDescription\",";\
-	echo "     \"program for demos and fancy text-viewer\""; \
-	echo "   VALUE \"FileVersion\", \"$(VERSIONSTR)\""; \
-	echo "   VALUE \"InternalName\", \"avatarsay\""; \
-	echo "   VALUE \"LegalCopyright\","; \
-	echo "     \"Andreas K. F\366rster, GPLv3+\""; \
-	echo "   VALUE \"OriginalFilename\", \"avatarsay.exe\""; \
-	echo "   VALUE \"Comments\", \"primarily written for GNU/Linux\""; \
-	echo "   VALUE \"ProductName\", \"AKFAvatar\""; \
-	echo "   VALUE \"ProductVersion\", \"$(VERSIONSTR)\""; \
-	echo "  END"; \
-	echo " END"; \
-	echo " BLOCK \"VarFileInfo\""; \
-	echo "  BEGIN"; \
-	echo "   VALUE \"Translation\", 0x409, 1252, 0x0407, 1252"; \
-	echo " END"; \
-	echo "END"; } > $@
+avtsayinfo.rc: $(srcdir)/mingw/avtsayinfo.in
+	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
+	  -e "s/@REVISION@/$(REVISION)/; s/@VERSIONSTR@/$(VERSIONSTR)/" \
+	  $(srcdir)/mingw/avtsayinfo.in > $@
 
-libinfo.rc: Makefile
-	@{ \
-	echo "LANGUAGE 7, 1"; \
-	echo; \
-	echo "1 VERSIONINFO"; \
-	echo "FILEVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0"; \
-	echo "PRODUCTVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0"; \
-	echo "FILEFLAGSMASK 0x3F"; \
-	echo "FILEOS 0x4"; \
-	echo "FILETYPE 0x2"; \
-	echo "BEGIN"; \
-	echo " BLOCK \"StringFileInfo\""; \
-	echo " BEGIN"; \
-	echo "  BLOCK \"040704E4\""; \
-	echo "  BEGIN"; \
-	echo "   VALUE \"CompanyName\", \"AKFoerster\""; \
-	echo "   VALUE \"FileDescription\", \"AKFAvatar Bibliothek\""; \
-	echo "   VALUE \"FileVersion\", \"$(VERSIONSTR)\""; \
-	echo "   VALUE \"InternalName\", \"akfavatar\""; \
-	echo "   VALUE \"LegalCopyright\","; \
-	echo "     \"Andreas K. F\366rster, GPLv3+\""; \
-	echo "   VALUE \"OriginalFilename\", \"akfavatar.dll\""; \
-	echo "   VALUE \"Comments\", "; \
-	echo "      \"urspr\374nglich f\374r GNU/Linux geschrieben\""; \
-	echo "   VALUE \"ProductName\", \"AKFAvatar\""; \
-	echo "   VALUE \"ProductVersion\", \"$(VERSIONSTR)\""; \
-	echo "  END"; \
-	echo " END"; \
-	echo " BLOCK \"VarFileInfo\""; \
-	echo "  BEGIN"; \
-	echo "   VALUE \"Translation\", 0x407, 1252, 0x0409, 1252"; \
-	echo " END"; \
-	echo "END"; \
-	echo; \
-	echo "LANGUAGE 9, 1"; \
-	echo; \
-	echo "1 VERSIONINFO"; \
-	echo "FILEVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0"; \
-	echo "PRODUCTVERSION $(VERSION), $(SUBVERSION), $(REVISION), 0"; \
-	echo "FILEFLAGSMASK 0x3F"; \
-	echo "FILEOS 0x4"; \
-	echo "FILETYPE 0x2"; \
-	echo "BEGIN"; \
-	echo " BLOCK \"StringFileInfo\""; \
-	echo " BEGIN"; \
-	echo "  BLOCK \"040904E4\""; \
-	echo "  BEGIN"; \
-	echo "   VALUE \"CompanyName\", \"AKFoerster\""; \
-	echo "   VALUE \"FileDescription\", \"AKFAvatar library\""; \
-	echo "   VALUE \"FileVersion\", \"$(VERSIONSTR)\""; \
-	echo "   VALUE \"InternalName\", \"akfavatar\""; \
-	echo "   VALUE \"LegalCopyright\","; \
-	echo "     \"Andreas K. F\366rster, GPLv3+\""; \
-	echo "   VALUE \"OriginalFilename\", \"akfavatar.dll\""; \
-	echo "   VALUE \"Comments\", \"primarily written for GNU/Linux\""; \
-	echo "   VALUE \"ProductName\", \"AKFAvatar\""; \
-	echo "   VALUE \"ProductVersion\", \"$(VERSIONSTR)\""; \
-	echo "  END"; \
-	echo " END"; \
-	echo " BLOCK \"VarFileInfo\""; \
-	echo "  BEGIN"; \
-	echo "   VALUE \"Translation\", 0x409, 1252, 0x0407, 1252"; \
-	echo " END"; \
-	echo "END"; } > $@
+libinfo.rc: $(srcdir)/mingw/libinfo.in
+	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
+	  -e "s/@REVISION@/$(REVISION)/; s/@VERSIONSTR@/$(VERSIONSTR)/" \
+	  $(srcdir)/mingw/libinfo.in > $@
 
 icon.o: $(srcdir)/mingw/icon.rc $(srcdir)/mingw/akfavatar.ico
 	$(WINDRES) -o $@ -i $(srcdir)/mingw/icon.rc
