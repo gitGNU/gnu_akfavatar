@@ -451,7 +451,8 @@ dist: info html man
 	   $(PKGNAME)/pascal/
 	
 	mkdir $(PKGNAME)/lua
-	ln lua/Makefile lua/lua-avt.c lua/akfavatar-lua.c \
+	ln lua/Makefile lua/Makefile.w32 lua/lua-avt.c \
+	   lua/akfavatar-lua.c \
 	   lua/hello.lua lua/multiply.lua \
 	   $(PKGNAME)/lua/
 
@@ -468,6 +469,7 @@ dist: info html man
 
 	mkdir $(PKGNAME)/mingw
 	ln mingw/akfavatar.ico mingw/icon.rc \
+	   mingw/libinfo.in mingw/avtsayinfo.in mingw/lua-avt-rc.in \
 	   mingw/avtmsg.c mingw/avtwindows.c \
 	   mingw/avttermstub.c mingw/askdrive.c \
 	   mingw/Makefile mingw/README \
