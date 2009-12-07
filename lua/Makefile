@@ -48,6 +48,7 @@ clean:
 	-rm -f lua-avt.o lua-avt.lo lua-avt.wo
 	-rm -f akfavatar-lua.o akfavatar-lua.wo
 	-rm -f luac.out
+	-rm -f lua-avt.rc
 	-rm -f *~
 
 distclean: clean

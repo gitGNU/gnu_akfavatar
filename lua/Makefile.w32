@@ -4,6 +4,9 @@ CFLAGS = -Wall -O2
 LDFLAGS =
 AR = $(PLATFORMPREFIX)ar rcu
 RANLIB = $(PLATFORMPREFIX)ranlib
+WINDRES = $(PLATFORMPREFIX)windres
+
+include config-mingw
 
 SDLCONFIG = /usr/i586-mingw32msvc/bin/sdl-config
 SDL_CFLAGS := $(shell $(SDLCONFIG) --cflags)
@@ -15,15 +18,17 @@ LUA_LDFLAGS = -llua51
 
 srcdir = ..
 
+VERSIONSTR=$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)
+
 all: akfavatar-lua.exe lua-avt.dll
 
 lua:
 	make -C $(LUADIR) mingw CC="$(CC)" AR="$(AR)" RANLIB="$(RANLIB)"
 
 # package
-lua-avt.dll: lua-avt.wo
-	$(CC) -O -shared -o $@ lua-avt.wo \
-	  -L. -lavtaddons -lakfavatar $(LDFLAGS) $(LUA_LDFLAGS) -mwindows
+lua-avt.dll: lua-avt.wo lua-avt-rc.o
+	$(CC) -O -shared -o $@ lua-avt.wo lua-avt-rc.o \
+	  -L. -lavtaddons -lakfavatar  $(LDFLAGS) $(LUA_LDFLAGS) -mwindows
 
 # standalone program
 akfavatar-lua.exe: akfavatar-lua.wo lua-avt.wo
@@ -39,11 +44,20 @@ akfavatar-lua.wo: $(srcdir)/lua/akfavatar-lua.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) $(SDL_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/akfavatar-lua.c
 
+lua-avt.rc: $(srcdir)/mingw/lua-avt-rc.in
+	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
+	  -e "s/@REVISION@/$(REVISION)/; s/@VERSIONSTR@/$(VERSIONSTR)/" \
+	  $(srcdir)/mingw/lua-avt-rc.in > $@
+
+lua-avt-rc.o: lua-avt.rc
+	$(WINDRES) -o $@ -i lua-avt.rc
+
 clean:
 	-rm -f *.o
 	-rm -f *.lo
 	-rm -f *.wo
 	-rm -f luac.out
+	-rm -f lua-avt.rc
 	-rm -f *~
 
 distclean: clean
