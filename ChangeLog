@@ -1,3 +1,7 @@
+2009-12-09  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/lua-akfavatar.c: renamed from lua/lua-avt.c
+
 2009-12-05  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_put_character): ignorable characters

@@ -1,6 +1,6 @@
 #!/usr/bin/lua
 
-require "lua-avt"
+require "lua-akfavatar"
 
 avt.initialize("Lua-Test", "Test")
 avt.set_avatar_name("Theora Tester äöü€")

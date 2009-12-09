@@ -13,45 +13,45 @@ bindir = $(prefix)/bin
 
 INSTALL = install
 
-all: lua-avt.so akfavatar-lua
+all: lua-akfavatar.so akfavatar-lua
 
 # package
-lua-avt.so: lua-avt.lo
-	$(CC) $(CFLAGS) -fpic -shared -o $@ lua-avt.lo \
+lua-akfavatar.so: lua-akfavatar.lo
+	$(CC) $(CFLAGS) -fpic -shared -o $@ lua-akfavatar.lo \
 	  -L. -lavtaddons -lakfavatar $(LDFLAGS)
 # don't use LUA_LDFLAGS!
 
 # standalone program
-akfavatar-lua: akfavatar-lua.o lua-avt.o
-	$(CC) -o $@ akfavatar-lua.o lua-avt.o \
+akfavatar-lua: akfavatar-lua.o lua-akfavatar.o
+	$(CC) -o $@ akfavatar-lua.o lua-akfavatar.o \
 	     -L. -lavtaddons -lakfavatar \
 	     $(LUA_LDFLAGS) $(LDFLAGS)
 
-lua-avt.o: $(srcdir)/lua/lua-avt.c
+lua-akfavatar.o: $(srcdir)/lua/lua-akfavatar.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
-	  $(srcdir)/lua/lua-avt.c
+	  $(srcdir)/lua/lua-akfavatar.c
 
-lua-avt.lo: $(srcdir)/lua/lua-avt.c
+lua-akfavatar.lo: $(srcdir)/lua/lua-akfavatar.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -fpic -c -o $@ \
-	  $(srcdir)/lua/lua-avt.c
+	  $(srcdir)/lua/lua-akfavatar.c
 
 akfavatar-lua.o: $(srcdir)/lua/akfavatar-lua.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/akfavatar-lua.c
 
-install: lua-avt.so akfavatar-lua
+install: lua-akfavatar.so akfavatar-lua
 	-[ -d $(DESTDIR)$(luacdir) ] || $(INSTALL) -d $(DESTDIR)$(luacdir)
-	$(INSTALL) -m 644 lua-avt.so $(DESTDIR)$(luacdir)
+	$(INSTALL) -m 644 lua-akfavatar.so $(DESTDIR)$(luacdir)
 	$(INSTALL) -m 755 akfavatar-lua $(DESTDIR)$(bindir)
 
 clean:
-	-rm -f lua-avt.o lua-avt.lo lua-avt.wo
+	-rm -f lua-akfavatar.o lua-akfavatar.lo lua-akfavatar.wo
 	-rm -f akfavatar-lua.o akfavatar-lua.wo
 	-rm -f luac.out
-	-rm -f lua-avt.rc
+	-rm -f lua-akfavatar.rc
 	-rm -f *~
 
 distclean: clean
 	-rm -f akfavatar-lua
-	-rm -f lua-avt.so
-	-rm -f akfavatar-lua.exe lua-avt.dll
+	-rm -f lua-akfavatar.so
+	-rm -f akfavatar-lua.exe lua-akfavatar.dll

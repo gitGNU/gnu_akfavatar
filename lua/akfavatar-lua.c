@@ -150,7 +150,7 @@ main (int argc, char **argv)
   /* initialize Lua */
   L = lua_open ();
   luaL_openlibs (L);
-  luaopen_avt (L);
+  luaopen_akfavatar (L);
 
   /* mark 'lua-avt' as loaded, redefine 'avt.quit()' */
   if (luaL_dostring (L,

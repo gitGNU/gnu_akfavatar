@@ -1220,7 +1220,7 @@ static const struct luaL_reg akfavtlib[] = {
 };
 
 int
-luaopen_avt (lua_State * L)
+luaopen_akfavatar (lua_State * L)
 {
   luaL_register (L, "avt", akfavtlib);
   return 1;

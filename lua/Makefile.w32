@@ -20,46 +20,46 @@ srcdir = ..
 
 VERSIONSTR=$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)
 
-all: akfavatar-lua.exe lua-avt.dll
+all: akfavatar-lua.exe lua-akfavatar.dll
 
 lua:
 	make -C $(LUADIR) mingw CC="$(CC)" AR="$(AR)" RANLIB="$(RANLIB)"
 
 # package
-lua-avt.dll: lua-avt.wo lua-avt-rc.o
-	$(CC) -O -shared -o $@ lua-avt.wo lua-avt-rc.o \
+lua-akfavatar.dll: lua-akfavatar.wo lua-akfavatar-rc.o
+	$(CC) -O -shared -o $@ lua-akfavatar.wo lua-akfavatar-rc.o \
 	  -L. -lavtaddons -lakfavatar  $(LDFLAGS) $(LUA_LDFLAGS) -mwindows
 
 # standalone program
-akfavatar-lua.exe: akfavatar-lua.wo lua-avt.wo
-	$(CC) -o $@ akfavatar-lua.wo lua-avt.wo \
+akfavatar-lua.exe: akfavatar-lua.wo lua-akfavatar.wo
+	$(CC) -o $@ akfavatar-lua.wo lua-akfavatar.wo \
 	    $(LUA_LDFLAGS) -L. -lavtaddons -lakfavatar \
 	    $(SDL_LDFLAGS) $(LDFLAGS)
 
-lua-avt.wo: $(srcdir)/lua/lua-avt.c
+lua-akfavatar.wo: $(srcdir)/lua/lua-akfavatar.c
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
-	  $(srcdir)/lua/lua-avt.c
+	  $(srcdir)/lua/lua-akfavatar.c
 
 akfavatar-lua.wo: $(srcdir)/lua/akfavatar-lua.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) $(SDL_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/akfavatar-lua.c
 
-lua-avt.rc: $(srcdir)/mingw/lua-avt-rc.in
+lua-akfavatar.rc: $(srcdir)/mingw/lua-akfavatar-rc.in
 	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
 	  -e "s/@REVISION@/$(REVISION)/; s/@VERSIONSTR@/$(VERSIONSTR)/" \
-	  $(srcdir)/mingw/lua-avt-rc.in > $@
+	  $(srcdir)/mingw/lua-akfavatar-rc.in > $@
 
-lua-avt-rc.o: lua-avt.rc
-	$(WINDRES) -o $@ -i lua-avt.rc
+lua-akfavatar-rc.o: lua-akfavatar.rc
+	$(WINDRES) -o $@ -i lua-akfavatar.rc
 
 clean:
 	-rm -f *.o
 	-rm -f *.lo
 	-rm -f *.wo
 	-rm -f luac.out
-	-rm -f lua-avt.rc
+	-rm -f lua-akfavatar.rc
 	-rm -f *~
 
 distclean: clean
 	-rm -f akfavatar-lua
-	-rm -f akfavatar-lua.exe lua-avt.dll
+	-rm -f akfavatar-lua.exe lua-akfavatar.dll

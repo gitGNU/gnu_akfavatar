@@ -29,7 +29,7 @@ BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 	mingw dist-mingw
 
 all: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay avatarsay-d \
-	example lua-avt.so akfavatar-lua
+	example lua-akfavatar.so akfavatar-lua
 	@echo '*'
 	@echo '* use "make install" or "make install-strip"'
 	@echo '* with root-privileges to install it.'
@@ -185,10 +185,10 @@ avatarsay-s: avatarsay.o avtposix.o libavtaddons.a libakfavatar.a
 	$(CC) -o $@ avatarsay.o avtposix.o -L. -lavtaddons libakfavatar.a \
 	   $(SDL_LDFLAGS) $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
-lua-avt.so: $(srcdir)/lua/lua-avt.c
-	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir="$(srcdir)" lua-avt.so
+lua-akfavatar.so: $(srcdir)/lua/lua-akfavatar.c
+	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir="$(srcdir)" lua-akfavatar.so
 
-akfavatar-lua: $(srcdir)/lua/akfavatar-lua.c $(srcdir)/lua/lua-avt.c
+akfavatar-lua: $(srcdir)/lua/akfavatar-lua.c $(srcdir)/lua/lua-akfavatar.c
 	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir="$(srcdir)" akfavatar-lua
 
 installdirs:
@@ -451,7 +451,7 @@ dist: info html man
 	   $(PKGNAME)/pascal/
 	
 	mkdir $(PKGNAME)/lua
-	ln lua/Makefile lua/Makefile.w32 lua/lua-avt.c \
+	ln lua/Makefile lua/Makefile.w32 lua/lua-akfavatar.c \
 	   lua/akfavatar-lua.c \
 	   lua/hello.lua lua/multiply.lua \
 	   $(PKGNAME)/lua/
@@ -469,7 +469,7 @@ dist: info html man
 
 	mkdir $(PKGNAME)/mingw
 	ln mingw/akfavatar.ico mingw/icon.rc \
-	   mingw/libinfo.in mingw/avtsayinfo.in mingw/lua-avt-rc.in \
+	   mingw/libinfo.in mingw/avtsayinfo.in mingw/lua-akfavatar-rc.in \
 	   mingw/avtmsg.c mingw/avtwindows.c \
 	   mingw/avttermstub.c mingw/askdrive.c \
 	   mingw/Makefile mingw/README \

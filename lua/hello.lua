@@ -23,7 +23,7 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 
 -- this loads the binding to AKFAvatar
-require "lua-avt"
+require "lua-akfavatar"
 
 -- initialize with default settings
 avt.initialize()

@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, see <http://www.gnu.org/licenses/>.
 ]]
 
-require "lua-avt"
+require "lua-akfavatar"
 
 -- edit to your needs:
 local a_minimum = 2
