@@ -254,7 +254,7 @@ lavt_set_avatar_name (lua_State * L)
 /*
  * load image and show it
  * on error it returns AVT_ERROR without changing the status
- * if it succeeds call avt_wait or avt_waitkey
+ * if it succeeds call avt.wait or avt.waitkey
  */
 static int
 lavt_show_image_file (lua_State * L)
@@ -761,19 +761,11 @@ lavt_update (lua_State * L)
   return 1;
 }
 
-/* wait a given amount of milliseconds */
-static int
-lavt_wait (lua_State * L)
-{
-  lua_pushinteger (L, avt_wait (luaL_checkint (L, 1)));
-  return 1;
-}
-
 /* wait a given amount of seconds (fraction) */
 static int
 lavt_wait_sec (lua_State * L)
 {
-  lua_pushinteger (L, avt_wait ((int) (1000.0 * luaL_checknumber (L, 1))));
+  lua_pushinteger (L, avt_wait ((int) (luaL_checknumber (L, 1) * 1000.0)));
   return 1;
 }
 
@@ -1141,8 +1133,8 @@ static const struct luaL_reg akfavtlib[] = {
   {"right_to_left", lavt_right_to_left},
   {"flip_page", lavt_flip_page},
   {"update", lavt_update},
-  {"wait", lavt_wait},
-  {"wait_sec", lavt_wait_sec},
+  {"wait", lavt_wait_sec},
+  {"wait_sec", lavt_wait_sec},	/* alias */
   {"set_balloon_size", lavt_set_balloon_size},
   {"set_balloon_width", lavt_set_balloon_width},
   {"set_balloon_height", lavt_set_balloon_height},
