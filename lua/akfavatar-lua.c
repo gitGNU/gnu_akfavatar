@@ -28,8 +28,8 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
-/* from lua-avt.c */
-extern int luaopen_avt (lua_State * L);
+/* from lua-akfavatar.c */
+extern int luaopen_akfavatar (lua_State * L);
 
 
 void
