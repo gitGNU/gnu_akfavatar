@@ -152,9 +152,9 @@ main (int argc, char **argv)
   luaL_openlibs (L);
   luaopen_akfavatar (L);
 
-  /* mark 'lua-avt' as loaded, redefine 'avt.quit()' */
+  /* mark 'lua-akfavatar' as loaded, redefine 'avt.quit()' */
   if (luaL_dostring (L,
-		     "package.loaded['lua-avt']=package.loaded['avt']; "
+		     "package.loaded['lua-akfavatar']=package.loaded['avt']; "
 		     "avt.quit = function() "
 		     "avt.set_balloon_size(); avt.set_text_delay(0) end"))
     {
