@@ -2169,20 +2169,38 @@ process_script (int fd)
 static avt_bool_t
 is_textfile (const char *filename)
 {
-  return (strstr (filename, ".txt") || strstr (filename, ".TXT")
-	  || strstr (filename, ".text") || strstr (filename, ".TEXT")
-	  || strcasecmp (filename, "README") == 0
-	  || strcasecmp (filename, "AUTHORS") == 0
-	  || strcasecmp (filename, "COPYING") == 0
-	  || strcasecmp (filename, "NEWS") == 0
-	  || strcasecmp (filename, "INSTALL") == 0);
+  char *ext;
+
+  ext = strrchr (filename, '.');
+
+  if (ext)
+    return (strcasecmp (ext, ".txt") == 0
+	    || (strcasecmp (ext, ".text") == 0));
+  else
+    return (strcasecmp (filename, "README") == 0
+	    || strcasecmp (filename, "AUTHORS") == 0
+	    || strcasecmp (filename, "COPYING") == 0
+	    || strcasecmp (filename, "NEWS") == 0
+	    || strcasecmp (filename, "INSTALL") == 0);
 }
 
 static avt_bool_t
 is_demo_or_text (const char *filename)
 {
-  return (strstr (filename, ".avt") || strstr (filename, ".AVT")
-	  || is_textfile (filename));
+  char *ext;
+
+  ext = strrchr (filename, '.');
+
+  if (ext)
+    return (strcasecmp (ext, ".avt") == 0
+	    || strcasecmp (ext, ".txt") == 0
+	    || (strcasecmp (ext, ".text") == 0));
+  else
+    return (strcasecmp (filename, "README") == 0
+	    || strcasecmp (filename, "AUTHORS") == 0
+	    || strcasecmp (filename, "COPYING") == 0
+	    || strcasecmp (filename, "NEWS") == 0
+	    || strcasecmp (filename, "INSTALL") == 0);
 }
 
 static void
@@ -2623,20 +2641,27 @@ ask_balloon_color ()
 static avt_bool_t
 is_graphic_file (const char *filename)
 {
-  return (strstr (filename, ".xpm") || strstr (filename, ".XPM")
-	  || strstr (filename, ".xbm") || strstr (filename, ".XBM")
-	  || strstr (filename, ".bmp") || strstr (filename, ".BMP")
-	  || strstr (filename, ".png") || strstr (filename, ".PNG")
-	  || strstr (filename, ".jpg") || strstr (filename, ".JPG")
-	  || strstr (filename, ".jpeg") || strstr (filename, ".JPEG")
-	  || strstr (filename, ".gif") || strstr (filename, ".GIF")
-	  || strstr (filename, ".tif") || strstr (filename, ".TIF")
-	  || strstr (filename, ".tiff") || strstr (filename, ".TIFF")
-	  || strstr (filename, ".pcx") || strstr (filename, ".PCX")
-	  || strstr (filename, ".ppm") || strstr (filename, ".PPM")
-	  || strstr (filename, ".pbm") || strstr (filename, ".PBM")
-	  || strstr (filename, ".pgm") || strstr (filename, ".PGM")
-	  || strstr (filename, ".lbm") || strstr (filename, ".LBM"));
+  char *ext;
+
+  ext = strrchr (filename, '.');
+
+  if (!ext)
+    return AVT_FALSE;
+  else
+    return (strcasecmp (ext, ".xpm") == 0
+	    || strcasecmp (ext, ".xbm") == 0
+	    || strcasecmp (ext, ".bmp") == 0
+	    || strcasecmp (ext, ".png") == 0
+	    || strcasecmp (ext, ".jpg") == 0
+	    || strcasecmp (ext, ".jpeg") == 0
+	    || strcasecmp (ext, ".gif") == 0
+	    || strcasecmp (ext, ".tif") == 0
+	    || strcasecmp (ext, ".tiff") == 0
+	    || strcasecmp (ext, ".pcx") == 0
+	    || strcasecmp (ext, ".ppm") == 0
+	    || strcasecmp (ext, ".pbm") == 0
+	    || strcasecmp (ext, ".pgm") == 0
+	    || strcasecmp (ext, ".lbm") == 0);
 }
 
 static void

@@ -1,3 +1,8 @@
+2009-12-12  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (is_textfile, is_demo_or_text, is_graphic_file):
+	better way to check for extension
+
 2009-12-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-akfavatar.c: renamed from lua/lua-avt.c
