@@ -29,7 +29,7 @@ BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 	mingw dist-mingw
 
 all: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay avatarsay-d \
-	example lua-akfavatar.so akfavatar-lua
+	example lua-akfavatar.so lua-avt-starter
 	@echo '*'
 	@echo '* use "make install" or "make install-strip"'
 	@echo '* with root-privileges to install it.'
@@ -188,8 +188,8 @@ avatarsay-s: avatarsay.o avtposix.o libavtaddons.a libakfavatar.a
 lua-akfavatar.so: $(srcdir)/lua/lua-akfavatar.c
 	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir="$(srcdir)" lua-akfavatar.so
 
-akfavatar-lua: $(srcdir)/lua/akfavatar-lua.c $(srcdir)/lua/lua-akfavatar.c
-	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir="$(srcdir)" akfavatar-lua
+lua-avt-starter: $(srcdir)/lua/lua-avt-starter.c $(srcdir)/lua/lua-akfavatar.c
+	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir="$(srcdir)" lua-avt-starter
 
 installdirs:
 	-[ -d $(DESTDIR)$(includedir) ]  || $(INSTALL) -d $(DESTDIR)$(includedir)
@@ -452,7 +452,7 @@ dist: info html man
 	
 	mkdir $(PKGNAME)/lua
 	ln lua/Makefile lua/Makefile.w32 lua/lua-akfavatar.c \
-	   lua/akfavatar-lua.c \
+	   lua/lua-avt-starter.c \
 	   lua/hello.lua lua/multiply.lua \
 	   $(PKGNAME)/lua/
 
@@ -479,18 +479,18 @@ dist: info html man
 	rm -rf $(PKGNAME)/
 	bzip2 -f $(PKGNAME).tar
 
-dist-bin: avatarsay multiply multiplizieren info html
+dist-bin: avatarsay lua-avt-starter lua-akfavatar.so info html
 	mkdir $(BINPKGNAME)
 	cp $(LIBNAME) $(BINPKGNAME)/
 	cp avatarsay $(BINPKGNAME)/
 	-ln -sf $(LIBNAME) $(BINPKGNAME)/$(SONAME)
+	-cp lua-avt-starter lua-akfavatar.so $(BINPKGNAME)/
 	ln $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/
 	ln $(srcdir)/pascal/?pcavatar $(BINPKGNAME)/
 	ln $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	ln $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
 	ln $(srcdir)/teacher.xpm $(BINPKGNAME)/
-	-ln multiply $(BINPKGNAME)/
-	-ln multiplizieren $(BINPKGNAME)/
+	-ln lua/multiply.lua $(BINPKGNAME)/
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/avtman \
 	   $(srcdir)/fsdemo-??.avt \
 	   $(srcdir)/gnome-akfavatar \

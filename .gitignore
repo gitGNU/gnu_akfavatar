@@ -2,6 +2,7 @@ a.out
 *.[oa]
 *~
 *.lo
+*.wo
 *.ppu
 Makefile
 config-local
@@ -16,8 +17,8 @@ multiplizieren
 multiply
 bdfread
 libakfavatar.so*
-lua-avt.so
-akfavatar-lua
+lua-akfavatar.so
+lua-avt-starter
 bin2c
 ucsfont*.c
 alert.au
