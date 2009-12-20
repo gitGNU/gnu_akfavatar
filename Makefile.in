@@ -186,10 +186,12 @@ avatarsay-s: avatarsay.o avtposix.o libavtaddons.a libakfavatar.a
 	   $(SDL_LDFLAGS) $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
 lua-akfavatar.so: $(srcdir)/lua/lua-akfavatar.c
-	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir="$(srcdir)" lua-akfavatar.so
+	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir="$(srcdir)" \
+	CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" lua-akfavatar.so
 
 lua-avt-starter: $(srcdir)/lua/lua-avt-starter.c $(srcdir)/lua/lua-akfavatar.c
-	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir="$(srcdir)" lua-avt-starter
+	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir="$(srcdir)" \
+	CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" lua-avt-starter
 
 installdirs:
 	-[ -d $(DESTDIR)$(includedir) ]  || $(INSTALL) -d $(DESTDIR)$(includedir)
