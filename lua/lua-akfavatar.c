@@ -31,8 +31,9 @@
  * parameters:
  * 1 title
  * 2 icontitle
- * 3 avatar-image (using avt.default() or avt.import_image_file)
- * 4 mode (0=window, 1=fullscreen, 2=fullscreen without switching)
+ * 3 avatar-image (using avt.default() or avt.import_image_file())
+ * 4 mode (avt.auto_mode, avt.window_mode, avt.fullscreen_mode, 
+ *         avt.fullscreennoswitch_mode)
  *
  * no parameter is needed, use as many as you wish, just keep the order
  * you can also use the value "nil" for any of them
@@ -80,9 +81,9 @@ lavt_initialize_audio (lua_State * L)
   return 1;
 }
 
-/* quit the avatar subsystem */
+/* quit the avatar subsystem (closes the window) */
 static int
-lavt_quit (lua_State * L)
+lavt_quit (lua_State * L AVT_UNUSED)
 {
   avt_quit ();
   return 0;
@@ -90,7 +91,7 @@ lavt_quit (lua_State * L)
 
 /* show button, move out and quit */
 static int
-lavt_button_quit (lua_State * L)
+lavt_button_quit (lua_State * L AVT_UNUSED)
 {
   avt_button_quit ();
   return 0;
@@ -129,7 +130,7 @@ lavt_initialized (lua_State * L)
 }
 
 /* returns the status number */
-/* 0=normal, 1=halt requested, -1=fatal error */
+/* avt.status_normal, avt.status_quit, avt.status_error */
 static int
 lavt_get_status (lua_State * L)
 {
@@ -231,7 +232,7 @@ lavt_free_image (lua_State * L)
  * if the avatar is visible, the screen gets cleared
  * the original image is freed in this function!
  * the image may be nil or nothing if no avatar should be shown
- * on error AVT_ERROR is set and returned
+ * on error avt.status_error is set and returned
  */
 static int
 lavt_change_avatar_image (lua_State * L)
@@ -242,7 +243,7 @@ lavt_change_avatar_image (lua_State * L)
 
 /*
  * set the name of the avatar
- * must be after change_avatar_image
+ * must be after avt.change_avatar_image
  */
 static int
 lavt_set_avatar_name (lua_State * L)
@@ -253,7 +254,7 @@ lavt_set_avatar_name (lua_State * L)
 
 /*
  * load image and show it
- * on error it returns AVT_ERROR without changing the status
+ * on error it returns avt.status_error without changing the status
  * if it succeeds call avt.wait or avt.waitkey
  */
 static int
@@ -263,8 +264,10 @@ lavt_show_image_file (lua_State * L)
   return 1;
 }
 
-/* get avatar-image from string */
-/* to be used with avt.initialize or avt.change_avatar_image */
+/* get image from string 
+ * on error it returns avt.status_error without changing the status
+ * if it succeeds call avt.wait or avt.waitkey
+ */
 static int
 lavt_show_image_string (lua_State * L)
 {
@@ -409,7 +412,7 @@ lavt_get_inverse (lua_State * L)
 
 /* reset to normal text mode */
 static int
-lavt_normal_text (lua_State * L)
+lavt_normal_text (lua_State * L AVT_UNUSED)
 {
   avt_normal_text ();
   return 0;
@@ -417,18 +420,18 @@ lavt_normal_text (lua_State * L)
 
 /* clear the whole screen */
 static int
-lavt_clear_screen (lua_State * L)
+lavt_clear_screen (lua_State * L AVT_UNUSED)
 {
   avt_clear_screen ();
   return 0;
 }
 
-/* 
+/*
  * clear the textfield 
  * if there is no balloon yet, it is drawn
  */
 static int
-lavt_clear (lua_State * L)
+lavt_clear (lua_State * L AVT_UNUSED)
 {
   avt_clear ();
   return 0;
@@ -439,7 +442,7 @@ lavt_clear (lua_State * L)
  * if there is no balloon yet, it is drawn
  */
 static int
-lavt_clear_down (lua_State * L)
+lavt_clear_down (lua_State * L AVT_UNUSED)
 {
   avt_clear_down ();
   return 0;
@@ -450,7 +453,7 @@ lavt_clear_down (lua_State * L)
  * depending on text direction
  */
 static int
-lavt_clear_eol (lua_State * L)
+lavt_clear_eol (lua_State * L AVT_UNUSED)
 {
   avt_clear_eol ();
   return 0;
@@ -461,7 +464,7 @@ lavt_clear_eol (lua_State * L)
  * depending on text direction
  */
 static int
-lavt_clear_bol (lua_State * L)
+lavt_clear_bol (lua_State * L AVT_UNUSED)
 {
   avt_clear_bol ();
   return 0;
@@ -469,7 +472,7 @@ lavt_clear_bol (lua_State * L)
 
 /* clear line */
 static int
-lavt_clear_line (lua_State * L)
+lavt_clear_line (lua_State * L AVT_UNUSED)
 {
   avt_clear_line ();
   return 0;
@@ -480,7 +483,7 @@ lavt_clear_line (lua_State * L)
  * if there is no balloon yet, it is drawn
  */
 static int
-lavt_clear_up (lua_State * L)
+lavt_clear_up (lua_State * L AVT_UNUSED)
 {
   avt_clear_up ();
   return 0;
@@ -488,7 +491,7 @@ lavt_clear_up (lua_State * L)
 
 /* show only the avatar */
 static int
-lavt_show_avatar (lua_State * L)
+lavt_show_avatar (lua_State * L AVT_UNUSED)
 {
   avt_show_avatar ();
   return 0;
@@ -514,7 +517,7 @@ lavt_move_out (lua_State * L)
 
 /* bell or flash if sound is not initialized */
 static int
-lavt_bell (lua_State * L)
+lavt_bell (lua_State * L AVT_UNUSED)
 {
   avt_bell ();
   return 0;
@@ -522,7 +525,7 @@ lavt_bell (lua_State * L)
 
 /* flash */
 static int
-lavt_flash (lua_State * L)
+lavt_flash (lua_State * L AVT_UNUSED)
 {
   avt_flash ();
   return 0;
@@ -536,7 +539,7 @@ lavt_set_background_color (lua_State * L)
   return 0;
 }
 
-/* text color (name) */
+/* text color (name | #RRGGBB) */
 static int
 lavt_set_text_color (lua_State * L)
 {
@@ -544,7 +547,7 @@ lavt_set_text_color (lua_State * L)
   return 0;
 }
 
-/* background color of text (name) */
+/* background color of text (name | #RRGGBB) */
 static int
 lavt_set_text_background_color (lua_State * L)
 {
@@ -554,7 +557,7 @@ lavt_set_text_background_color (lua_State * L)
 
 /* set background color of text to ballooncolor */
 static int
-lavt_set_text_background_ballooncolor (lua_State * L)
+lavt_set_text_background_ballooncolor (lua_State * L AVT_UNUSED)
 {
   avt_set_text_background_ballooncolor ();
   return 0;
@@ -627,7 +630,7 @@ lavt_move_xy (lua_State * L)
 
 /* save cursor position */
 static int
-lavt_save_position (lua_State * L)
+lavt_save_position (lua_State * L AVT_UNUSED)
 {
   avt_save_position ();
   return 0;
@@ -635,7 +638,7 @@ lavt_save_position (lua_State * L)
 
 /* restore cursor position */
 static int
-lavt_restore_position (lua_State * L)
+lavt_restore_position (lua_State * L AVT_UNUSED)
 {
   avt_restore_position ();
   return 0;
@@ -643,7 +646,7 @@ lavt_restore_position (lua_State * L)
 
 /* next tab position */
 static int
-lavt_next_tab (lua_State * L)
+lavt_next_tab (lua_State * L AVT_UNUSED)
 {
   avt_next_tab ();
   return 0;
@@ -651,7 +654,7 @@ lavt_next_tab (lua_State * L)
 
 /* last tab position */
 static int
-lavt_last_tab (lua_State * L)
+lavt_last_tab (lua_State * L AVT_UNUSED)
 {
   avt_last_tab ();
   return 0;
@@ -659,7 +662,7 @@ lavt_last_tab (lua_State * L)
 
 /* reset tab stops to every eigth column */
 static int
-lavt_reset_tab_stops (lua_State * L)
+lavt_reset_tab_stops (lua_State * L AVT_UNUSED)
 {
   avt_reset_tab_stops ();
   return 0;
@@ -667,7 +670,7 @@ lavt_reset_tab_stops (lua_State * L)
 
 /* clear all tab stops */
 static int
-lavt_clear_tab_stops (lua_State * L)
+lavt_clear_tab_stops (lua_State * L AVT_UNUSED)
 {
   avt_clear_tab_stops ();
   return 0;
@@ -737,7 +740,7 @@ lavt_get_mode (lua_State * L)
 }
 
 static int
-lavt_toggle_fullscreen (lua_State * L)
+lavt_toggle_fullscreen (lua_State * L AVT_UNUSED)
 {
   avt_toggle_fullscreen ();
   return 0;
@@ -832,7 +835,8 @@ lavt_get_key (lua_State * L)
  * The [Pause] key returns 'p'.
  * The [Help] key or [F1] return '?'.
  *
- * the function returns -1 on error or 1 on quit request
+ * the function returns avt.status_error on error 
+ * or avt.status_quit on quit request
  * otherwise it returns the approriete the character
  */
 static int
@@ -976,7 +980,7 @@ lavt_wait_audio_end (lua_State * L)
 }
 
 static int
-lavt_stop_audio (lua_State * L)
+lavt_stop_audio (lua_State * L AVT_UNUSED)
 {
   avt_stop_audio ();
   return 0;
@@ -991,9 +995,10 @@ lavt_stop_audio (lua_State * L)
 static int
 lavt_viewport (lua_State * L)
 {
-  avt_viewport (luaL_checkinteger (L, 1),
-		luaL_checkinteger (L, 2),
-		luaL_checkinteger (L, 3), luaL_checkinteger (L, 4));
+  avt_viewport (luaL_checkint (L, 1),
+		luaL_checkint (L, 2),
+		luaL_checkint (L, 3), 
+		luaL_checkint (L, 4));
   return 0;
 }
 
@@ -1081,6 +1086,8 @@ lavt_erase_characters (lua_State * L)
 
 /* --------------------------------------------------------- */
 /* avtaddons.h */
+
+/* TODO: filter */
 
 static int
 lavt_file_selection (lua_State * L)
