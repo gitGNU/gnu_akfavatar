@@ -18,10 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* TODO: 
-   - script arguments
-   - options: --version --help -l
-*/
+/* TODO: script arguments */
 
 #include "akfavatar.h"
 #include "avtaddons.h"
@@ -77,8 +74,10 @@ check_options (int argc, char *argv[])
     {
       if (!strcmp (argv[i], "--version") || !strcmp (argv[i], "-v"))
 	version ();
-      if (!strcmp (argv[i], "--help") || !strcmp (argv[i], "-h"))
+      else if (!strcmp (argv[i], "--help") || !strcmp (argv[i], "-h"))
 	help ();
+      else
+	avta_error ("unknown option", argv[i]);
       i++;
     }
 
@@ -105,7 +104,7 @@ is_lua (const char *filename)
 }
 
 static void
-ask_file (lua_State * L)
+ask_file (void)
 {
   char filename[256];
 
@@ -140,9 +139,9 @@ main (int argc, char **argv)
 
   atexit (quit);
 
-  /* mark 'lua-avt' as loaded */
+  /* mark 'lua-akfavatar' as loaded */
   if (luaL_dostring (L, "package.loaded['lua-akfavatar']=true") != 0)
-    return 1;
+    return EXIT_FAILURE;
 
   if (script_index)
     {
@@ -150,7 +149,7 @@ main (int argc, char **argv)
 	avta_error (lua_tostring (L, -1), NULL);
     }
   else
-    ask_file (L);
+    ask_file ();
 
-  return 0;
+  return EXIT_SUCCESS;
 }
