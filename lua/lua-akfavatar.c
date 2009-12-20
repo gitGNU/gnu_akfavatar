@@ -1215,5 +1215,24 @@ int
 luaopen_akfavatar (lua_State * L)
 {
   luaL_register (L, "avt", akfavtlib);
+
+  /* values for window modes */
+  lua_pushinteger (L, AVT_AUTOMODE);
+  lua_setfield (L, -2, "auto_mode");
+  lua_pushinteger (L, AVT_WINDOW);
+  lua_setfield (L, -2, "window_mode");
+  lua_pushinteger (L, AVT_FULLSCREEN);
+  lua_setfield (L, -2, "fullscreen_mode");
+  lua_pushinteger (L, AVT_FULLSCREENNOSWITCH);
+  lua_setfield (L, -2, "fullscreennoswitch_mode");
+
+  /* values for status */
+  lua_pushinteger (L, AVT_NORMAL);
+  lua_setfield (L, -2, "status_normal");
+  lua_pushinteger (L, AVT_QUIT);
+  lua_setfield (L, -2, "status_quit");
+  lua_pushinteger (L, AVT_ERROR);
+  lua_setfield (L, -2, "status_error");
+
   return 1;
 }

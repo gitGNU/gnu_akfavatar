@@ -134,7 +134,7 @@ function query()
 end
 
 function WantToContinue()
-  if avt.get_status() ~= 0 then return false end
+  if avt.get_status() ~= avt.status_normal then return false end
 
   avt.clear()
   avt.say(continue)
@@ -429,7 +429,7 @@ static char * teacher_xpm[] = {
 
   avt.set_background_color("tan")
   avt.set_balloon_color("floral white")
-  avt.initialize("AKFAvatar: multiply", "multiply", avatar)
+  avt.initialize("AKFAvatar: multiply", "multiply", avatar, avt.window_mode)
   avt.encoding("UTF-8") -- UTF-8 is the default
   avt.move_in()
 
