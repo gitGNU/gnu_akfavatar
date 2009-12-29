@@ -92,15 +92,13 @@ check_options (int argc, char *argv[])
 static avt_bool_t
 is_lua (const char *filename)
 {
-  const char *ext;
-
-  /* look at last extension */
-  ext = strrchr (filename, '.');
-
-  if (ext)
-    return (strcasecmp (ext, ".lua") == 0);
+  if (strcasecmp (filename, "luac.out") == 0)
+    return AVT_TRUE;
   else
-    return AVT_FALSE;
+    {
+      const char *ext = strrchr (filename, '.');
+      return (avt_bool_t) (ext && strcasecmp (ext, ".lua") == 0);
+    }
 }
 
 static void
