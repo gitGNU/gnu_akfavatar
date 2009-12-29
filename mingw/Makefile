@@ -232,6 +232,7 @@ dist-bin: avatarsay.exe
 	cp avatarsay.exe $(srcdir)/fsdemo-??.avt $(BINPKGNAME)/
 	-cp lua-avt-starter.exe $(BINPKGNAME)/
 	cp $(srcdir)/lua/multiply.lua $(srcdir)/lua/interactive.lua $(BINPKGNAME)/
+	cp $(srcdir)/lua/hello.lua $(BINPKGNAME)/
 	cp $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	cp $(srcdir)/COPYING $(BINPKGNAME)/gpl-3.0.txt
 	cp $(srcdir)/AUTHORS $(BINPKGNAME)/AUTHORS.txt

@@ -455,7 +455,7 @@ dist: info html man
 	mkdir $(PKGNAME)/lua
 	ln lua/Makefile lua/Makefile.w32 lua/lua-akfavatar.c \
 	   lua/lua-avt-starter.c \
-	   lua/hello.lua lua/multiply.lua \
+	   lua/interactive.lua lua/hello.lua lua/multiply.lua \
 	   $(PKGNAME)/lua/
 
 	mkdir $(PKGNAME)/doc
@@ -492,7 +492,7 @@ dist-bin: avatarsay lua-avt-starter lua-akfavatar.so info html
 	ln $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	ln $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
 	ln $(srcdir)/teacher.xpm $(BINPKGNAME)/
-	-ln lua/multiply.lua $(BINPKGNAME)/
+	-ln lua/interactive.lua lua/multiply.lua lua/hello.lua $(BINPKGNAME)/
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/avtman \
 	   $(srcdir)/fsdemo-??.avt \
 	   $(srcdir)/gnome-akfavatar \
