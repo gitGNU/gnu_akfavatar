@@ -60,8 +60,8 @@ quit (void)
 {
   lua_close (L);
 
-  /* calling that twice should be okay */
-  avt_quit ();
+  if (avt_initialized ())
+    avt_quit ();
 }
 
 static int
