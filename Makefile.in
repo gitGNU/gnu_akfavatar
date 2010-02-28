@@ -372,7 +372,7 @@ clean:
 	-rm -fr akfavatar-en.t2d/ akfavatar-de.t2d/
 	-rm -f pascal/*.o pascal/*.gpi pascal/*.gpm pascal/*.ppu
 	-rm -f pascal/link.res pascal/ppas.sh
-	-$(MAKE) -C $(srcdir)/lua/ clean
+	-$(MAKE) -f $(srcdir)/lua/Makefile clean
 
 mostlyclean: clean
 
@@ -395,7 +395,7 @@ distclean: clean
 	-rm -f akfavatar-de.txt akfavatar-de.xml
 	-rm -f avatarsay*.exe akfavatar-*.zip
 	-rm -f config-mingw
-	-$(MAKE) -C $(srcdir)/lua/ distclean
+	-$(MAKE) -f $(srcdir)/lua/Makefile distclean
 
 
 # the rest is just for the maintainer
