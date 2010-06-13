@@ -20,7 +20,7 @@ srcdir = ..
 
 VERSIONSTR=$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)
 
-all: lua-akfavatar.dll lua-avt-starter.exe
+all: lua-akfavatar.exe lua-akfavatar.dll
 
 lua:
 	make -C $(LUADIR) mingw CC="$(CC)" AR="$(AR)" RANLIB="$(RANLIB)"
@@ -31,8 +31,8 @@ lua-akfavatar.dll: lua-akfavatar.wo lua-akfavatar-rc.o
 	  -L. -lavtaddons -lakfavatar  $(LDFLAGS) $(LUA_LDFLAGS) -mwindows
 
 # starter
-lua-avt-starter.exe: lua-avt-starter.wo lua-akfavatar.wo luaavtstarter-rc.o
-	$(CC) -o $@ lua-avt-starter.wo lua-akfavatar.wo luaavtstarter-rc.o \
+lua-akfavatar.exe: lua-akfavatar-prg.wo lua-akfavatar.wo luaavtstarter-rc.o
+	$(CC) -o $@ lua-akfavatar-prg.wo lua-akfavatar.wo luaavtstarter-rc.o \
 	    -L. -lavtaddons -lakfavatar \
 	    $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS)
 
@@ -40,9 +40,9 @@ lua-akfavatar.wo: $(srcdir)/lua/lua-akfavatar.c
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/lua-akfavatar.c
 
-lua-avt-starter.wo: $(srcdir)/lua/lua-avt-starter.c
+lua-akfavatar-prg.wo: $(srcdir)/lua/lua-akfavatar-prg.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) $(SDL_CFLAGS) -I$(srcdir) -c -o $@ \
-	 $(srcdir)/lua/lua-avt-starter.c
+	 $(srcdir)/lua/lua-akfavatar-prg.c
 
 lua-akfavatar.rc: $(srcdir)/mingw/lua-akfavatar-rc.in
 	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
@@ -69,5 +69,4 @@ clean:
 	-rm -f *~
 
 distclean: clean
-	-rm -f akfavatar-lua
-	-rm -f akfavatar-lua.exe lua-akfavatar.dll
+	-rm -f lua-akfavatar.exe lua-akfavatar.dll
