@@ -230,7 +230,7 @@ dist-bin: avatarsay.exe
 	cp akfavatar-en.txt akfavatar-de.txt $(BINPKGNAME)/
 	cp akfavatar.dll $(BINPKGNAME)/
 	cp avatarsay.exe $(srcdir)/fsdemo-??.avt $(BINPKGNAME)/
-	-cp lua-avt-starter.exe $(BINPKGNAME)/
+	-cp lua-akfavatar.exe $(BINPKGNAME)/
 	cp $(srcdir)/lua/multiply.lua $(srcdir)/lua/interactive.lua $(BINPKGNAME)/
 	cp $(srcdir)/lua/hello.lua $(BINPKGNAME)/
 	cp $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/

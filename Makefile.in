@@ -454,7 +454,7 @@ dist: info html man
 	
 	mkdir $(PKGNAME)/lua
 	ln lua/Makefile lua/Makefile.w32 lua/lua-akfavatar.c \
-	   lua/lua-avt-starter.c \
+	   lua/lua-akfavatar-prg.c \
 	   lua/interactive.lua lua/hello.lua lua/multiply.lua \
 	   $(PKGNAME)/lua/
 
@@ -481,12 +481,12 @@ dist: info html man
 	rm -rf $(PKGNAME)/
 	bzip2 -f $(PKGNAME).tar
 
-dist-bin: avatarsay lua-avt-starter lua-akfavatar.so info html
+dist-bin: avatarsay lua-akfavatar lua-akfavatar.so info html
 	mkdir $(BINPKGNAME)
 	cp $(LIBNAME) $(BINPKGNAME)/
 	cp avatarsay $(BINPKGNAME)/
 	-ln -sf $(LIBNAME) $(BINPKGNAME)/$(SONAME)
-	-cp lua-avt-starter lua-akfavatar.so $(BINPKGNAME)/
+	-cp lua-akfavatar lua-akfavatar.so $(BINPKGNAME)/
 	ln $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/
 	ln $(srcdir)/pascal/?pcavatar $(BINPKGNAME)/
 	ln $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
