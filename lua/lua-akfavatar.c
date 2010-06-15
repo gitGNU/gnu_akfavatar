@@ -1,6 +1,6 @@
 /*
  * Lua 5.1 binding for AKFAvatar
- * Copyright (c) 2008, 2009 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2008, 2009, 2010 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -26,6 +26,7 @@
 #include <lualib.h>
 
 #include <stdio.h>
+#include <stdio.h> /* for exit() */
 
 /*
  * parameters:
@@ -81,6 +82,24 @@ lavt_initialize_audio (lua_State * L)
   return 1;
 }
 
+/* for internal use only */
+static int
+quit (lua_State * L)
+{
+  if (avt_get_status () < 0)
+    {
+      char *error_message = avt_get_error ();
+      avt_quit ();
+      return luaL_error (L, "AKFAvatar error: %s", error_message);
+    }
+  else				/* stop requested */
+    {
+      avt_quit ();
+      /* do not close L here! (done with atexit) */
+      exit (EXIT_SUCCESS);	/* FIXME: unsure - it may be a module */
+    }
+}
+
 /* quit the avatar subsystem (closes the window) */
 static int
 lavt_quit (lua_State * L AVT_UNUSED)
@@ -128,6 +147,8 @@ lavt_initialized (lua_State * L)
   lua_pushboolean (L, (int) avt_initialized ());
   return 1;
 }
+
+/* FIXME: still needed? lavt_get_status, lavt_set_status, lavt_get_error */
 
 /* returns the status number */
 /* avt.status_normal, avt.status_quit, avt.status_error */
@@ -184,8 +205,9 @@ lavt_get_color (lua_State * L)
 static int
 lavt_encoding (lua_State * L)
 {
-  lua_pushinteger (L, avt_mb_encoding (luaL_checkstring (L, 1)));
-  return 1;
+  if (avt_mb_encoding (luaL_checkstring (L, 1)))
+    quit (L);
+  return 0;
 }
 
 /* get the default avatar */
@@ -232,13 +254,13 @@ lavt_free_image (lua_State * L)
  * if the avatar is visible, the screen gets cleared
  * the original image is freed in this function!
  * the image may be nil or nothing if no avatar should be shown
- * on error avt.status_error is set and returned
  */
 static int
 lavt_change_avatar_image (lua_State * L)
 {
-  lua_pushinteger (L, avt_change_avatar_image (lua_touserdata (L, 1)));
-  return 1;
+  if (avt_change_avatar_image (lua_touserdata (L, 1)))
+    quit (L);
+  return 0;
 }
 
 /*
@@ -248,8 +270,9 @@ lavt_change_avatar_image (lua_State * L)
 static int
 lavt_set_avatar_name (lua_State * L)
 {
-  lua_pushinteger (L, avt_set_avatar_name_mb (lua_tostring (L, 1)));
-  return 1;
+  if (avt_set_avatar_name_mb (lua_tostring (L, 1)))
+    quit (L);
+  return 0;
 }
 
 /*
@@ -498,21 +521,21 @@ lavt_show_avatar (lua_State * L AVT_UNUSED)
 }
 
 /* move in */
-/* returns the status */
 static int
 lavt_move_in (lua_State * L)
 {
-  lua_pushinteger (L, avt_move_in ());
-  return 1;
+  if (avt_move_in ())
+    quit (L);
+  return 0;
 }
 
 /* move out */
-/* returns the status */
 static int
 lavt_move_out (lua_State * L)
 {
-  lua_pushinteger (L, avt_move_out ());
-  return 1;
+  if (avt_move_out ())
+    quit (L);
+  return 0;
 }
 
 /* bell or flash if sound is not initialized */
@@ -712,8 +735,9 @@ lavt_insert_lines (lua_State * L)
 static int
 lavt_wait_button (lua_State * L)
 {
-  lua_pushinteger (L, avt_wait_button ());
-  return 1;
+  if (avt_wait_button ())
+    quit (L);
+  return 0;
 }
 
 /* reserve single keys? (true/false) */
@@ -753,23 +777,29 @@ lavt_toggle_fullscreen (lua_State * L AVT_UNUSED)
 static int
 lavt_flip_page (lua_State * L)
 {
-  lua_pushinteger (L, avt_flip_page ());
-  return 1;
+  if (avt_flip_page ())
+    quit (L);
+
+  return 0;
 }
 
 static int
 lavt_update (lua_State * L)
 {
-  lua_pushinteger (L, avt_update ());
-  return 1;
+  if (avt_update ())
+    quit (L);
+
+  return 0;
 }
 
 /* wait a given amount of seconds (fraction) */
 static int
 lavt_wait_sec (lua_State * L)
 {
-  lua_pushinteger (L, avt_wait ((int) (luaL_checknumber (L, 1) * 1000.0)));
-  return 1;
+  if (avt_wait ((int) (luaL_checknumber (L, 1) * 1000.0)))
+    quit (L);
+
+  return 0;
 }
 
 /* show final credits from file */
@@ -777,16 +807,19 @@ lavt_wait_sec (lua_State * L)
 static int
 lavt_credits (lua_State * L)
 {
-  lua_pushinteger (L, avt_credits_mb (luaL_checkstring (L, 1),
-				      lua_toboolean (L, 2)));
-  return 1;
+  if (avt_credits_mb (luaL_checkstring (L, 1), lua_toboolean (L, 2)))
+    quit (L);
+
+  return 0;
 }
 
 static int
 lavt_newline (lua_State * L)
 {
-  lua_pushinteger (L, avt_new_line ());
-  return 1;
+  if (avt_new_line ())
+    quit (L);
+
+  return 0;
 }
 
 static int
@@ -794,7 +827,9 @@ lavt_ask (lua_State * L)
 {
   char buf[4 * AVT_LINELENGTH];
 
-  avt_ask_mb (buf, sizeof (buf));
+  if (avt_ask_mb (buf, sizeof (buf)))
+    quit (L);
+
   lua_pushstring (L, buf);
   return 1;
 }
@@ -805,7 +840,9 @@ lavt_get_key (lua_State * L)
 {
   wchar_t ch;
 
-  avt_get_key (&ch);
+  if (avt_get_key (&ch))
+    quit (L);
+
   lua_pushinteger (L, (lua_Integer) ch);
   return 1;
 }
@@ -835,9 +872,7 @@ lavt_get_key (lua_State * L)
  * The [Pause] key returns 'p'.
  * The [Help] key or [F1] return '?'.
  *
- * the function returns avt.status_error on error 
- * or avt.status_quit on quit request
- * otherwise it returns the approriete the character
+ * it returns the approriete character or a number
  */
 static int
 lavt_navigate (lua_State * L)
@@ -845,6 +880,9 @@ lavt_navigate (lua_State * L)
   int r;
 
   r = avt_navigate (luaL_checkstring (L, 1));
+
+  if (avt_get_status ())
+    quit (L);
 
   if (r < 32)
     lua_pushinteger (L, r);
@@ -855,11 +893,14 @@ lavt_navigate (lua_State * L)
 }
 
 /* make a positive/negative decision */
-/* you should also check avt.getstatus() after this */
 static int
 lavt_decide (lua_State * L)
 {
   lua_pushboolean (L, (int) avt_decide ());
+
+  if (avt_get_status ())
+    quit (L);
+
   return 1;
 }
 
@@ -872,26 +913,23 @@ lavt_choice (lua_State * L)
   /* get string in position 3 */
   c = lua_tostring (L, 3);
 
-  avt_choice (&result,
-	      luaL_checkint (L, 1),
-	      luaL_checkint (L, 2),
-	      (c) ? c[0] : 0, lua_toboolean (L, 4), lua_toboolean (L, 5));
+  if (avt_choice (&result,
+		  luaL_checkint (L, 1),
+		  luaL_checkint (L, 2),
+		  (c) ? c[0] : 0, lua_toboolean (L, 4), lua_toboolean (L, 5)))
+    quit (L);
 
   lua_pushinteger (L, result);
   return 1;
 }
 
-/* expects one or more strings */
+/* expects one or more strings or numbers */
 static int
 lavt_say (lua_State * L)
 {
-  int status;
   int n, i;
   const char *s;
   size_t len;
-
-  /* set status to some invalid number */
-  status = -42;
 
   n = lua_gettop (L);
 
@@ -899,15 +937,13 @@ lavt_say (lua_State * L)
     {
       s = lua_tolstring (L, i, &len);
       if (s)
-	status = avt_say_mb_len (s, len);
+	{
+	  if (avt_say_mb_len (s, len))
+	    quit (L);
+	}
     }
 
-  /* if status wasn't set yet, get it */
-  if (status == -42)
-    status = avt_get_status ();
-
-  lua_pushinteger (L, status);
-  return 1;
+  return 0;
 }
 
 static int
@@ -921,7 +957,10 @@ lavt_pager (lua_State * L)
   startline = lua_tointeger (L, 2);
 
   if (s)
-    avt_pager_mb (s, len, startline);
+    {
+      if (avt_pager_mb (s, len, startline))
+	quit (L);
+    }
 
   return 0;
 }
@@ -963,9 +1002,9 @@ static int
 lavt_play_audio (lua_State * L)
 {
   luaL_checktype (L, 1, LUA_TLIGHTUSERDATA);
-  lua_pushinteger (L, avt_play_audio (lua_touserdata (L, 1),
-				      lua_toboolean (L, 2)));
-  return 1;
+  if (avt_play_audio (lua_touserdata (L, 1), lua_toboolean (L, 2)))
+    quit (L);
+  return 0;
 }
 
 /*
@@ -975,8 +1014,9 @@ lavt_play_audio (lua_State * L)
 static int
 lavt_wait_audio_end (lua_State * L)
 {
-  lua_pushinteger (L, avt_wait_audio_end ());
-  return 1;
+  if (avt_wait_audio_end ())
+    quit (L);
+  return 0;
 }
 
 static int
@@ -997,8 +1037,7 @@ lavt_viewport (lua_State * L)
 {
   avt_viewport (luaL_checkint (L, 1),
 		luaL_checkint (L, 2),
-		luaL_checkint (L, 3), 
-		luaL_checkint (L, 4));
+		luaL_checkint (L, 3), luaL_checkint (L, 4));
   return 0;
 }
 
@@ -1097,7 +1136,10 @@ lavt_file_selection (lua_State * L)
   if (avta_file_selection (filename, sizeof (filename), NULL) > -1)
     lua_pushstring (L, filename);
   else
-    lua_pushnil (L);
+    {
+      lua_pushnil (L);
+      quit (L);
+    }
 
   return 1;
 }
@@ -1149,8 +1191,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"set_background_color", lavt_set_background_color},
   {"set_text_color", lavt_set_text_color},
   {"set_text_background_color", lavt_set_text_background_color},
-  {"set_text_background_ballooncolor",
-   lavt_set_text_background_ballooncolor},
+  {"set_text_background_ballooncolor", lavt_set_text_background_ballooncolor},
   {"activate_cursor", lavt_activate_cursor},
   {"underlined", lavt_underlined},
   {"get_underlined", lavt_get_underlined},
