@@ -14,12 +14,12 @@ BEGIN
   BLOCK "040704E4"
   BEGIN
    VALUE "CompanyName", "AKFoerster"
-   VALUE "FileDescription", "Lua AKFAvatar Starter"
+   VALUE "FileDescription", "Lua-AKFAvatar Starter"
    VALUE "FileVersion", "@VERSIONSTR@"
-   VALUE "InternalName", "lua-avt-starter"
+   VALUE "InternalName", "lua-akfavatar"
    VALUE "LegalCopyright",
      "Andreas K. F\366rster, GPLv3+"
-   VALUE "OriginalFilename", "lua-avt-starter.exe"
+   VALUE "OriginalFilename", "lua-akfavatar.exe"
    VALUE "Comments", 
       "urspr\374nglich f\374r GNU/Linux geschrieben"
    VALUE "ProductName", "AKFAvatar"
@@ -46,12 +46,12 @@ BEGIN
   BLOCK "040904E4"
   BEGIN
    VALUE "CompanyName", "AKFoerster"
-   VALUE "FileDescription", "Lua AKFAvatar Starter"
+   VALUE "FileDescription", "Lua-AKFAvatar Starter"
    VALUE "FileVersion", "@VERSIONSTR@"
-   VALUE "InternalName", "lua-avt-starter"
+   VALUE "InternalName", "lua-akfavatar"
    VALUE "LegalCopyright",
      "Andreas K. F\366rster, GPLv3+"
-   VALUE "OriginalFilename", "lua-avt-starter.exe"
+   VALUE "OriginalFilename", "lua-akfavatar.exe"
    VALUE "Comments", "primarily written for GNU/Linux"
    VALUE "ProductName", "AKFAvatar"
    VALUE "ProductVersion", "@VERSIONSTR@"
