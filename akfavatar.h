@@ -132,7 +132,7 @@ AVT_BEGIN_DECLS
  *
  * mode is either AVT_WINDOW or AVT_FULLSCREEN or AVT_FULLSCREENNOSWITCH.
  * The original image is freed in this function!
- * So you can directly put calls to avt_defauls
+ * So you can directly put calls to avt_default
  * or the avt_import_* functions here.
  * the image may be NULL if no avatar should be shown
  * title and/or icontitle may also be NULL
