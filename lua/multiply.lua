@@ -27,7 +27,7 @@ local b_minimum = 2
 local b_maximum = 9
 
 local multiplicationSign = "·"
-local divisionSign       = "÷"
+local divisionSign       = ":"
 
 -- get the main language
 local locale = os.setlocale ("", "ctype")
@@ -58,7 +58,7 @@ local division = 2
 
 function answerposition()
   -- previous line, column 30
-    avt.move_xy(30, avt.where_y()-1)
+  avt.move_xy(30, avt.where_y()-1)
 end
 
 function askResult()
