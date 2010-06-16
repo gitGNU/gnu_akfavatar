@@ -28,6 +28,24 @@
 #include <stdio.h>
 #include <stdio.h> /* for exit() */
 
+/* for internal use only */
+static int
+quit (lua_State * L)
+{
+  if (avt_get_status () < 0)
+    {
+      char *error_message = avt_get_error ();
+      avt_quit ();
+      return luaL_error (L, "AKFAvatar error: %s", error_message);
+    }
+  else				/* stop requested */
+    {
+      avt_quit ();
+      /* do not close L here! (done with atexit) */
+      exit (EXIT_SUCCESS);
+    }
+}
+
 /*
  * parameters:
  * 1 title
@@ -57,17 +75,20 @@ lavt_initialize (lua_State * L)
   if (!icontitle)
     icontitle = title;
 
-  if (!avt_initialized ())
-    lua_pushinteger (L, avt_initialize (title, icontitle, image, mode));
+  if (!avt_initialized ()) {
+    if (avt_initialize (title, icontitle, image, mode))
+      quit(L);
+    }
   else				/* already initialized */
     {
       avt_set_title (title, icontitle);
       avt_change_avatar_image (image);
       avt_switch_mode (mode);
-      lua_pushinteger (L, avt_get_status ());
+      if (avt_get_status ())
+        quit(L);
     }
 
-  return 1;
+  return 0;
 }
 
 /*
@@ -80,24 +101,6 @@ lavt_initialize_audio (lua_State * L)
 {
   lua_pushinteger (L, avt_initialize_audio ());
   return 1;
-}
-
-/* for internal use only */
-static int
-quit (lua_State * L)
-{
-  if (avt_get_status () < 0)
-    {
-      char *error_message = avt_get_error ();
-      avt_quit ();
-      return luaL_error (L, "AKFAvatar error: %s", error_message);
-    }
-  else				/* stop requested */
-    {
-      avt_quit ();
-      /* do not close L here! (done with atexit) */
-      exit (EXIT_SUCCESS);	/* FIXME: unsure - it may be a module */
-    }
 }
 
 /* quit the avatar subsystem (closes the window) */

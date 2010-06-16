@@ -2,7 +2,7 @@
 
 --[[
 interactive Lua shell for AKFAvatar
-Copyright (c) 2009 Andreas K. Foerster
+Copyright (c) 2009,2010 Andreas K. Foerster
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -32,31 +32,25 @@ print = function(...)
   avt.newline()
 end
 
-say = print -- an alias that fits better
+say = print --> an alias that fits better
 
-if avt.initialize() == avt.status_normal then
-  avt.move_in()
-  avt.say(_VERSION, " / AKFAvatar ", avt.version(), "\n\n")
+avt.initialize()
+avt.move_in()
+avt.say(_VERSION, " / AKFAvatar ", avt.version(), "\n\n")
 
-  repeat
-    avt.say(prompt)
-    cmd = avt.ask()
-    cmd = string.gsub(cmd, "^=", "return ", 1)
-    func, err = loadstring(cmd)
-    if not func
-      then print(err)
-      else
-        local ret = {pcall(func)}
-        success = table.remove(ret, 1)
-        if not success -- error calling the function?
-          then print(ret[1])
-          else if ret[1] then print(unpack(ret)) end
-          end
+repeat
+  avt.say(prompt)
+  cmd = avt.ask()
+  cmd = string.gsub(cmd, "^=", "return ", 1)
+  func, err = loadstring(cmd)
+  if not func
+    then print(err)
+    else
+      local ret = {pcall(func)}
+      success = table.remove(ret, 1)
+      if not success -- error calling the function?
+        then print(ret[1])
+        else if ret[1] then print(unpack(ret)) end
       end
-  until avt.get_status() ~= avt.status_normal
-
-  avt.set_status(avt.status_normal) -- otherwise the avatar wouldn't move out
-  avt.move_out()
-  avt.quit()
-end
-
+  end
+until false
