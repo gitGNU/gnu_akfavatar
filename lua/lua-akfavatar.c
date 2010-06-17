@@ -166,33 +166,6 @@ lavt_initialized (lua_State * L)
   return 1;
 }
 
-/* FIXME: still needed? lavt_get_status, lavt_set_status, lavt_get_error */
-
-/* returns the status number */
-/* avt.status_normal, avt.status_quit, avt.status_error */
-static int
-lavt_get_status (lua_State * L)
-{
-  lua_pushinteger (L, avt_get_status ());
-  return 1;
-}
-
-/* set status (see above) */
-static int
-lavt_set_status (lua_State * L)
-{
-  avt_set_status (luaL_checkint (L, 1));
-  return 0;
-}
-
-/* get error message, when error occured */
-static int
-lavt_get_error (lua_State * L)
-{
-  lua_pushstring (L, avt_get_error ());
-  return 1;
-}
-
 /*
  * get color for a given integer value
  * returns name and RGB value as strings
@@ -1214,9 +1187,6 @@ static const struct luaL_reg akfavtlib[] = {
   {"copyright", lavt_copyright},
   {"license", lavt_license},
   {"initialized", lavt_initialized},
-  {"get_status", lavt_get_status},
-  {"set_status", lavt_set_status},
-  {"get_error", lavt_get_error},
   {"get_color", lavt_get_color},
   {"encoding", lavt_encoding},
   {"set_title", lavt_set_title},
@@ -1316,14 +1286,6 @@ luaopen_akfavatar (lua_State * L)
   lua_setfield (L, -2, "fullscreen_mode");
   lua_pushinteger (L, AVT_FULLSCREENNOSWITCH);
   lua_setfield (L, -2, "fullscreennoswitch_mode");
-
-  /* values for status */
-  lua_pushinteger (L, AVT_NORMAL);
-  lua_setfield (L, -2, "status_normal");
-  lua_pushinteger (L, AVT_QUIT);
-  lua_setfield (L, -2, "status_quit");
-  lua_pushinteger (L, AVT_ERROR);
-  lua_setfield (L, -2, "status_error");
 
   return 1;
 }
