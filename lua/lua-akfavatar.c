@@ -28,6 +28,8 @@
 #include <stdio.h>
 #include <stdio.h> /* for exit() */
 
+static avt_bool_t initialized = AVT_FALSE;
+
 /* for internal use only */
 static int
 quit (lua_State * L)
@@ -45,6 +47,20 @@ quit (lua_State * L)
       exit (EXIT_SUCCESS);
     }
 }
+
+static void
+auto_initialize (lua_State * L)
+{
+  /* it might be initialized outside of this module */
+  if (!avt_initialized ()) {
+    if (avt_initialize (NULL, NULL, avt_default (), AVT_WINDOW))
+        quit(L);
+  }
+
+  initialized = AVT_TRUE;
+}
+
+#define is_initialized(void)  if (!initialized) auto_initialize(L)
 
 /*
  * parameters:
@@ -75,7 +91,7 @@ lavt_initialize (lua_State * L)
   if (!icontitle)
     icontitle = title;
 
-  if (!avt_initialized ()) {
+  if (!initialized && !avt_initialized ()) {
     if (avt_initialize (title, icontitle, image, mode))
       quit(L);
     }
@@ -88,6 +104,7 @@ lavt_initialize (lua_State * L)
         quit(L);
     }
 
+  initialized = AVT_TRUE;
   return 0;
 }
 
@@ -99,6 +116,7 @@ lavt_initialize (lua_State * L)
 static int
 lavt_initialize_audio (lua_State * L)
 {
+  is_initialized ();
   lua_pushinteger (L, avt_initialize_audio ());
   return 1;
 }
@@ -261,6 +279,7 @@ lavt_free_image (lua_State * L)
 static int
 lavt_change_avatar_image (lua_State * L)
 {
+  is_initialized ();
   if (avt_change_avatar_image (lua_touserdata (L, 1)))
     quit (L);
   return 0;
@@ -273,6 +292,7 @@ lavt_change_avatar_image (lua_State * L)
 static int
 lavt_set_avatar_name (lua_State * L)
 {
+  is_initialized ();
   if (avt_set_avatar_name_mb (lua_tostring (L, 1)))
     quit (L);
   return 0;
@@ -286,6 +306,7 @@ lavt_set_avatar_name (lua_State * L)
 static int
 lavt_show_image_file (lua_State * L)
 {
+  is_initialized ();
   lua_pushinteger (L, avt_show_image_file (luaL_checkstring (L, 1)));
   return 1;
 }
@@ -300,6 +321,7 @@ lavt_show_image_string (lua_State * L)
   char *data;
   size_t len;
 
+  is_initialized ();
   data = (char *) luaL_checklstring (L, 1, &len);
   lua_pushinteger (L, avt_show_image_data (data, len));
   return 1;
@@ -346,6 +368,7 @@ lavt_set_flip_page_delay (lua_State * L)
 static int
 lavt_set_balloon_size (lua_State * L)
 {
+  is_initialized ();
   avt_set_balloon_size (lua_tointeger (L, 1), lua_tointeger (L, 2));
   return 0;
 }
@@ -355,6 +378,7 @@ lavt_set_balloon_size (lua_State * L)
 static int
 lavt_set_balloon_width (lua_State * L)
 {
+  is_initialized ();
   avt_set_balloon_width (lua_tointeger (L, 1));
   return 0;
 }
@@ -364,6 +388,7 @@ lavt_set_balloon_width (lua_State * L)
 static int
 lavt_set_balloon_height (lua_State * L)
 {
+  is_initialized ();
   avt_set_balloon_height (lua_tointeger (L, 1));
   return 0;
 }
@@ -372,6 +397,7 @@ lavt_set_balloon_height (lua_State * L)
 static int
 lavt_set_balloon_color (lua_State * L)
 {
+  is_initialized ();
   avt_set_balloon_color_name (luaL_checkstring (L, 1));
   return 0;
 }
@@ -448,6 +474,7 @@ lavt_normal_text (lua_State * L AVT_UNUSED)
 static int
 lavt_clear_screen (lua_State * L AVT_UNUSED)
 {
+  is_initialized ();
   avt_clear_screen ();
   return 0;
 }
@@ -459,6 +486,7 @@ lavt_clear_screen (lua_State * L AVT_UNUSED)
 static int
 lavt_clear (lua_State * L AVT_UNUSED)
 {
+  is_initialized ();
   avt_clear ();
   return 0;
 }
@@ -470,6 +498,7 @@ lavt_clear (lua_State * L AVT_UNUSED)
 static int
 lavt_clear_down (lua_State * L AVT_UNUSED)
 {
+  is_initialized ();
   avt_clear_down ();
   return 0;
 }
@@ -481,6 +510,7 @@ lavt_clear_down (lua_State * L AVT_UNUSED)
 static int
 lavt_clear_eol (lua_State * L AVT_UNUSED)
 {
+  is_initialized ();
   avt_clear_eol ();
   return 0;
 }
@@ -492,6 +522,7 @@ lavt_clear_eol (lua_State * L AVT_UNUSED)
 static int
 lavt_clear_bol (lua_State * L AVT_UNUSED)
 {
+  is_initialized ();
   avt_clear_bol ();
   return 0;
 }
@@ -500,6 +531,7 @@ lavt_clear_bol (lua_State * L AVT_UNUSED)
 static int
 lavt_clear_line (lua_State * L AVT_UNUSED)
 {
+  is_initialized ();
   avt_clear_line ();
   return 0;
 }
@@ -511,6 +543,7 @@ lavt_clear_line (lua_State * L AVT_UNUSED)
 static int
 lavt_clear_up (lua_State * L AVT_UNUSED)
 {
+  is_initialized ();
   avt_clear_up ();
   return 0;
 }
@@ -519,6 +552,7 @@ lavt_clear_up (lua_State * L AVT_UNUSED)
 static int
 lavt_show_avatar (lua_State * L AVT_UNUSED)
 {
+  is_initialized ();
   avt_show_avatar ();
   return 0;
 }
@@ -527,6 +561,7 @@ lavt_show_avatar (lua_State * L AVT_UNUSED)
 static int
 lavt_move_in (lua_State * L)
 {
+  is_initialized ();
   if (avt_move_in ())
     quit (L);
   return 0;
@@ -536,6 +571,7 @@ lavt_move_in (lua_State * L)
 static int
 lavt_move_out (lua_State * L)
 {
+  is_initialized ();
   if (avt_move_out ())
     quit (L);
   return 0;
@@ -545,6 +581,7 @@ lavt_move_out (lua_State * L)
 static int
 lavt_bell (lua_State * L AVT_UNUSED)
 {
+  is_initialized ();
   avt_bell ();
   return 0;
 }
@@ -553,6 +590,7 @@ lavt_bell (lua_State * L AVT_UNUSED)
 static int
 lavt_flash (lua_State * L AVT_UNUSED)
 {
+  is_initialized ();
   avt_flash ();
   return 0;
 }
@@ -634,6 +672,7 @@ lavt_home_position (lua_State * L)
 static int
 lavt_move_x (lua_State * L)
 {
+  is_initialized ();
   avt_move_x (luaL_checkint (L, 1));
   return 0;
 }
@@ -642,6 +681,7 @@ lavt_move_x (lua_State * L)
 static int
 lavt_move_y (lua_State * L)
 {
+  is_initialized ();
   avt_move_y (luaL_checkint (L, 1));
   return 0;
 }
@@ -650,6 +690,7 @@ lavt_move_y (lua_State * L)
 static int
 lavt_move_xy (lua_State * L)
 {
+  is_initialized ();
   avt_move_xy (luaL_checkint (L, 1), luaL_checkint (L, 2));
   return 0;
 }
@@ -658,6 +699,7 @@ lavt_move_xy (lua_State * L)
 static int
 lavt_save_position (lua_State * L AVT_UNUSED)
 {
+  is_initialized ();
   avt_save_position ();
   return 0;
 }
@@ -666,6 +708,7 @@ lavt_save_position (lua_State * L AVT_UNUSED)
 static int
 lavt_restore_position (lua_State * L AVT_UNUSED)
 {
+  is_initialized ();
   avt_restore_position ();
   return 0;
 }
@@ -674,6 +717,7 @@ lavt_restore_position (lua_State * L AVT_UNUSED)
 static int
 lavt_next_tab (lua_State * L AVT_UNUSED)
 {
+  is_initialized ();
   avt_next_tab ();
   return 0;
 }
@@ -682,6 +726,7 @@ lavt_next_tab (lua_State * L AVT_UNUSED)
 static int
 lavt_last_tab (lua_State * L AVT_UNUSED)
 {
+  is_initialized ();
   avt_last_tab ();
   return 0;
 }
@@ -690,6 +735,7 @@ lavt_last_tab (lua_State * L AVT_UNUSED)
 static int
 lavt_reset_tab_stops (lua_State * L AVT_UNUSED)
 {
+  is_initialized ();
   avt_reset_tab_stops ();
   return 0;
 }
@@ -698,6 +744,7 @@ lavt_reset_tab_stops (lua_State * L AVT_UNUSED)
 static int
 lavt_clear_tab_stops (lua_State * L AVT_UNUSED)
 {
+  is_initialized ();
   avt_clear_tab_stops ();
   return 0;
 }
@@ -706,6 +753,7 @@ lavt_clear_tab_stops (lua_State * L AVT_UNUSED)
 static int
 lavt_set_tab (lua_State * L)
 {
+  is_initialized ();
   luaL_checktype (L, 1, LUA_TNUMBER);
   luaL_checktype (L, 2, LUA_TBOOLEAN);
   avt_set_tab (lua_tointeger (L, 1), lua_toboolean (L, 2));
@@ -719,6 +767,7 @@ lavt_set_tab (lua_State * L)
 static int
 lavt_delete_lines (lua_State * L)
 {
+  is_initialized ();
   avt_delete_lines (luaL_checkint (L, 1), luaL_checkint (L, 2));
   return 0;
 }
@@ -730,6 +779,7 @@ lavt_delete_lines (lua_State * L)
 static int
 lavt_insert_lines (lua_State * L)
 {
+  is_initialized ();
   avt_insert_lines (luaL_checkint (L, 1), luaL_checkint (L, 2));
   return 0;
 }
@@ -738,6 +788,7 @@ lavt_insert_lines (lua_State * L)
 static int
 lavt_wait_button (lua_State * L)
 {
+  is_initialized ();
   if (avt_wait_button ())
     quit (L);
   return 0;
@@ -755,6 +806,7 @@ lavt_reserve_single_keys (lua_State * L)
 static int
 lavt_switch_mode (lua_State * L)
 {
+  is_initialized ();
   avt_switch_mode (luaL_checkint (L, 1));
   return 0;
 }
@@ -769,6 +821,7 @@ lavt_get_mode (lua_State * L)
 static int
 lavt_toggle_fullscreen (lua_State * L AVT_UNUSED)
 {
+  is_initialized ();
   avt_toggle_fullscreen ();
   return 0;
 }
@@ -780,6 +833,7 @@ lavt_toggle_fullscreen (lua_State * L AVT_UNUSED)
 static int
 lavt_flip_page (lua_State * L)
 {
+  is_initialized ();
   if (avt_flip_page ())
     quit (L);
 
@@ -789,6 +843,7 @@ lavt_flip_page (lua_State * L)
 static int
 lavt_update (lua_State * L)
 {
+  is_initialized ();
   if (avt_update ())
     quit (L);
 
@@ -799,6 +854,7 @@ lavt_update (lua_State * L)
 static int
 lavt_wait_sec (lua_State * L)
 {
+  is_initialized ();
   if (avt_wait ((int) (luaL_checknumber (L, 1) * 1000.0)))
     quit (L);
 
@@ -810,6 +866,7 @@ lavt_wait_sec (lua_State * L)
 static int
 lavt_credits (lua_State * L)
 {
+  is_initialized ();
   if (avt_credits_mb (luaL_checkstring (L, 1), lua_toboolean (L, 2)))
     quit (L);
 
@@ -819,6 +876,7 @@ lavt_credits (lua_State * L)
 static int
 lavt_newline (lua_State * L)
 {
+  is_initialized ();
   if (avt_new_line ())
     quit (L);
 
@@ -830,6 +888,7 @@ lavt_ask (lua_State * L)
 {
   char buf[4 * AVT_LINELENGTH];
 
+  is_initialized ();
   if (avt_ask_mb (buf, sizeof (buf)))
     quit (L);
 
@@ -843,6 +902,7 @@ lavt_get_key (lua_State * L)
 {
   wchar_t ch;
 
+  is_initialized ();
   if (avt_get_key (&ch))
     quit (L);
 
@@ -882,6 +942,7 @@ lavt_navigate (lua_State * L)
 {
   int r;
 
+  is_initialized ();
   r = avt_navigate (luaL_checkstring (L, 1));
 
   if (avt_get_status ())
@@ -899,6 +960,7 @@ lavt_navigate (lua_State * L)
 static int
 lavt_decide (lua_State * L)
 {
+  is_initialized ();
   lua_pushboolean (L, (int) avt_decide ());
 
   if (avt_get_status ())
@@ -912,6 +974,8 @@ lavt_choice (lua_State * L)
 {
   int result;
   const char *c;
+
+  is_initialized ();
 
   /* get string in position 3 */
   c = lua_tostring (L, 3);
@@ -934,6 +998,7 @@ lavt_say (lua_State * L)
   const char *s;
   size_t len;
 
+  is_initialized ();
   n = lua_gettop (L);
 
   for (i = 1; i <= n; i++)
@@ -956,6 +1021,7 @@ lavt_pager (lua_State * L)
   size_t len;
   int startline;
 
+  is_initialized ();
   s = luaL_checklstring (L, 1, &len);
   startline = lua_tointeger (L, 2);
 
@@ -1108,6 +1174,7 @@ lavt_lock_updates (lua_State * L)
 static int
 lavt_insert_spaces (lua_State * L)
 {
+  is_initialized ();
   avt_insert_spaces (luaL_checkint (L, 1));
   return 0;
 }
@@ -1115,6 +1182,7 @@ lavt_insert_spaces (lua_State * L)
 static int
 lavt_delete_characters (lua_State * L)
 {
+  is_initialized ();
   avt_delete_characters (luaL_checkint (L, 1));
   return 0;
 }
@@ -1122,6 +1190,7 @@ lavt_delete_characters (lua_State * L)
 static int
 lavt_erase_characters (lua_State * L)
 {
+  is_initialized ();
   avt_erase_characters (luaL_checkint (L, 1));
   return 0;
 }
@@ -1136,6 +1205,7 @@ lavt_file_selection (lua_State * L)
 {
   char filename[256];
 
+  is_initialized ();
   if (avta_file_selection (filename, sizeof (filename), NULL) > -1)
     lua_pushstring (L, filename);
   else
