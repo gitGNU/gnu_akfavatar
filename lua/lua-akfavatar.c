@@ -32,7 +32,7 @@
 static int
 quit (lua_State * L)
 {
-  if (avt_get_status () < 0)
+  if (avt_get_status () <= AVT_ERROR)
     {
       char *error_message = avt_get_error ();
       avt_quit ();
