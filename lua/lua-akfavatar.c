@@ -26,9 +26,13 @@
 #include <lualib.h>
 
 #include <stdio.h>
-#include <stdio.h> /* for exit() */
+#include <stdio.h>		/* for exit() */
 
 static avt_bool_t initialized = AVT_FALSE;
+
+/* "check()" checks the returned status code */
+#define check(X)  do { if (X != AVT_NORMAL) quit (L); } while (0)
+#define is_initialized(void)  if (!initialized) auto_initialize(L)
 
 /* for internal use only */
 static int
@@ -52,15 +56,11 @@ static void
 auto_initialize (lua_State * L)
 {
   /* it might be initialized outside of this module */
-  if (!avt_initialized ()) {
-    if (avt_initialize (NULL, NULL, avt_default (), AVT_WINDOW))
-        quit(L);
-  }
+  if (!avt_initialized ())
+    check (avt_initialize (NULL, NULL, avt_default (), AVT_WINDOW));
 
   initialized = AVT_TRUE;
 }
-
-#define is_initialized(void)  if (!initialized) auto_initialize(L)
 
 /*
  * parameters:
@@ -91,17 +91,14 @@ lavt_initialize (lua_State * L)
   if (!icontitle)
     icontitle = title;
 
-  if (!initialized && !avt_initialized ()) {
-    if (avt_initialize (title, icontitle, image, mode))
-      quit(L);
-    }
+  if (!initialized && !avt_initialized ())
+    check (avt_initialize (title, icontitle, image, mode));
   else				/* already initialized */
     {
       avt_set_title (title, icontitle);
       avt_change_avatar_image (image);
       avt_switch_mode (mode);
-      if (avt_get_status ())
-        quit(L);
+      check (avt_get_status ());
     }
 
   initialized = AVT_TRUE;
@@ -226,8 +223,7 @@ lavt_get_color (lua_State * L)
 static int
 lavt_encoding (lua_State * L)
 {
-  if (avt_mb_encoding (luaL_checkstring (L, 1)))
-    quit (L);
+  check (avt_mb_encoding (luaL_checkstring (L, 1)));
   return 0;
 }
 
@@ -280,8 +276,7 @@ static int
 lavt_change_avatar_image (lua_State * L)
 {
   is_initialized ();
-  if (avt_change_avatar_image (lua_touserdata (L, 1)))
-    quit (L);
+  check (avt_change_avatar_image (lua_touserdata (L, 1)));
   return 0;
 }
 
@@ -293,8 +288,7 @@ static int
 lavt_set_avatar_name (lua_State * L)
 {
   is_initialized ();
-  if (avt_set_avatar_name_mb (lua_tostring (L, 1)))
-    quit (L);
+  check (avt_set_avatar_name_mb (lua_tostring (L, 1)));
   return 0;
 }
 
@@ -562,8 +556,7 @@ static int
 lavt_move_in (lua_State * L)
 {
   is_initialized ();
-  if (avt_move_in ())
-    quit (L);
+  check (avt_move_in ());
   return 0;
 }
 
@@ -572,8 +565,7 @@ static int
 lavt_move_out (lua_State * L)
 {
   is_initialized ();
-  if (avt_move_out ())
-    quit (L);
+  check (avt_move_out ());
   return 0;
 }
 
@@ -789,8 +781,7 @@ static int
 lavt_wait_button (lua_State * L)
 {
   is_initialized ();
-  if (avt_wait_button ())
-    quit (L);
+  check (avt_wait_button ());
   return 0;
 }
 
@@ -834,8 +825,7 @@ static int
 lavt_flip_page (lua_State * L)
 {
   is_initialized ();
-  if (avt_flip_page ())
-    quit (L);
+  check (avt_flip_page ());
 
   return 0;
 }
@@ -844,8 +834,7 @@ static int
 lavt_update (lua_State * L)
 {
   is_initialized ();
-  if (avt_update ())
-    quit (L);
+  check (avt_update ());
 
   return 0;
 }
@@ -855,8 +844,7 @@ static int
 lavt_wait_sec (lua_State * L)
 {
   is_initialized ();
-  if (avt_wait ((int) (luaL_checknumber (L, 1) * 1000.0)))
-    quit (L);
+  check (avt_wait ((int) (luaL_checknumber (L, 1) * 1000.0)));
 
   return 0;
 }
@@ -867,8 +855,7 @@ static int
 lavt_credits (lua_State * L)
 {
   is_initialized ();
-  if (avt_credits_mb (luaL_checkstring (L, 1), lua_toboolean (L, 2)))
-    quit (L);
+  check (avt_credits_mb (luaL_checkstring (L, 1), lua_toboolean (L, 2)));
 
   return 0;
 }
@@ -877,8 +864,7 @@ static int
 lavt_newline (lua_State * L)
 {
   is_initialized ();
-  if (avt_new_line ())
-    quit (L);
+  check (avt_new_line ());
 
   return 0;
 }
@@ -889,8 +875,7 @@ lavt_ask (lua_State * L)
   char buf[4 * AVT_LINELENGTH];
 
   is_initialized ();
-  if (avt_ask_mb (buf, sizeof (buf)))
-    quit (L);
+  check (avt_ask_mb (buf, sizeof (buf)));
 
   lua_pushstring (L, buf);
   return 1;
@@ -903,8 +888,7 @@ lavt_get_key (lua_State * L)
   wchar_t ch;
 
   is_initialized ();
-  if (avt_get_key (&ch))
-    quit (L);
+  check (avt_get_key (&ch));
 
   lua_pushinteger (L, (lua_Integer) ch);
   return 1;
@@ -945,8 +929,7 @@ lavt_navigate (lua_State * L)
   is_initialized ();
   r = avt_navigate (luaL_checkstring (L, 1));
 
-  if (avt_get_status ())
-    quit (L);
+  check (avt_get_status ());
 
   if (r < 32)
     lua_pushinteger (L, r);
@@ -962,9 +945,7 @@ lavt_decide (lua_State * L)
 {
   is_initialized ();
   lua_pushboolean (L, (int) avt_decide ());
-
-  if (avt_get_status ())
-    quit (L);
+  check (avt_get_status ());
 
   return 1;
 }
@@ -980,11 +961,11 @@ lavt_choice (lua_State * L)
   /* get string in position 3 */
   c = lua_tostring (L, 3);
 
-  if (avt_choice (&result,
-		  luaL_checkint (L, 1),
-		  luaL_checkint (L, 2),
-		  (c) ? c[0] : 0, lua_toboolean (L, 4), lua_toboolean (L, 5)))
-    quit (L);
+  check (avt_choice (&result,
+		     luaL_checkint (L, 1),
+		     luaL_checkint (L, 2),
+		     (c) ? c[0] : 0,
+		     lua_toboolean (L, 4), lua_toboolean (L, 5)));
 
   lua_pushinteger (L, result);
   return 1;
@@ -1005,10 +986,7 @@ lavt_say (lua_State * L)
     {
       s = lua_tolstring (L, i, &len);
       if (s)
-	{
-	  if (avt_say_mb_len (s, len))
-	    quit (L);
-	}
+	check (avt_say_mb_len (s, len));
     }
 
   return 0;
@@ -1026,10 +1004,7 @@ lavt_pager (lua_State * L)
   startline = lua_tointeger (L, 2);
 
   if (s)
-    {
-      if (avt_pager_mb (s, len, startline))
-	quit (L);
-    }
+    check (avt_pager_mb (s, len, startline));
 
   return 0;
 }
@@ -1071,8 +1046,7 @@ static int
 lavt_play_audio (lua_State * L)
 {
   luaL_checktype (L, 1, LUA_TLIGHTUSERDATA);
-  if (avt_play_audio (lua_touserdata (L, 1), lua_toboolean (L, 2)))
-    quit (L);
+  check (avt_play_audio (lua_touserdata (L, 1), lua_toboolean (L, 2)));
   return 0;
 }
 
@@ -1083,8 +1057,7 @@ lavt_play_audio (lua_State * L)
 static int
 lavt_wait_audio_end (lua_State * L)
 {
-  if (avt_wait_audio_end ())
-    quit (L);
+  check (avt_wait_audio_end ());
   return 0;
 }
 
@@ -1209,10 +1182,7 @@ lavt_file_selection (lua_State * L)
   if (avta_file_selection (filename, sizeof (filename), NULL) > -1)
     lua_pushstring (L, filename);
   else
-    {
-      lua_pushnil (L);
-      quit (L);
-    }
+    quit (L);
 
   return 1;
 }
