@@ -22,7 +22,7 @@ lua-akfavatar.so: lua-akfavatar.lo filechooser.lo avtmsg.lo
 # don't use LUA_LDFLAGS!
 
 # starter
-lua-akfavatar: lua-akfavatar-prg.o lua-akfavatar.o
+lua-akfavatar: lua-akfavatar-prg.o lua-akfavatar.o libavtaddons.a
 	$(CC) -o $@ lua-akfavatar-prg.o lua-akfavatar.o \
 	     -L. -lavtaddons -lakfavatar \
 	     $(LUA_LDFLAGS) $(LDFLAGS)

@@ -185,11 +185,13 @@ avatarsay-s: avatarsay.o avtposix.o libavtaddons.a libakfavatar.a
 	$(CC) -o $@ avatarsay.o avtposix.o -L. -lavtaddons libakfavatar.a \
 	   $(SDL_LDFLAGS) $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
-lua-akfavatar.so: $(srcdir)/lua/lua-akfavatar.c
+lua-akfavatar.so: $(srcdir)/lua/lua-akfavatar.c $(srcdir)/filechooser.c \
+		$(srcdir)/avtmsg.c
 	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir="$(srcdir)" \
 	CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" lua-akfavatar.so
 
-lua-akfavatar: $(srcdir)/lua/lua-akfavatar-prg.c $(srcdir)/lua/lua-akfavatar.c
+lua-akfavatar: $(srcdir)/lua/lua-akfavatar-prg.c $(srcdir)/lua/lua-akfavatar.c \
+		libavtaddons.a
 	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir="$(srcdir)" \
 	CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" lua-akfavatar
 

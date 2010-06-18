@@ -26,12 +26,13 @@ lua:
 	make -C $(LUADIR) mingw CC="$(CC)" AR="$(AR)" RANLIB="$(RANLIB)"
 
 # package
-lua-akfavatar.dll: lua-akfavatar.wo lua-akfavatar-rc.o
+lua-akfavatar.dll: lua-akfavatar.wo lua-akfavatar-rc.o libavtaddons.a
 	$(CC) -O -shared -o $@ lua-akfavatar.wo lua-akfavatar-rc.o \
 	  -L. -lavtaddons -lakfavatar  $(LDFLAGS) $(LUA_LDFLAGS) -mwindows
 
 # starter
-lua-akfavatar.exe: lua-akfavatar-prg.wo lua-akfavatar.wo luaavtstarter-rc.o
+lua-akfavatar.exe: lua-akfavatar-prg.wo lua-akfavatar.wo luaavtstarter-rc.o \
+		libavtaddons.a
 	$(CC) -o $@ lua-akfavatar-prg.wo lua-akfavatar.wo luaavtstarter-rc.o \
 	    -L. -lavtaddons -lakfavatar \
 	    $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS)
