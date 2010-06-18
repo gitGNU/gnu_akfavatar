@@ -236,16 +236,6 @@ avta_file_selection (char *filename, int filename_size, avta_filter_t filter)
   max_idx = avt_get_max_y () - 1;	/* minus top-line */
   page_entries = max_idx - 2;	/* minus back and forward entries */
   custom_filter = filter;
-
-  if (HAS_DRIVE_LETTERS)
-    {
-      if (avta_ask_drive (max_idx + 1))
-	return -1;
-
-      /* set maximum size again */
-      avt_set_balloon_size (0, 0);
-    }
-
   namelist = NULL;
 
 start:
