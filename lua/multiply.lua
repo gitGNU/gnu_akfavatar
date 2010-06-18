@@ -134,13 +134,9 @@ function query()
 end
 
 function WantToContinue()
-  if avt.get_status() ~= avt.status_normal then return false end
-
   avt.clear()
   avt.say(continue)
 
-  -- an end-request is a negative decision,
-  -- so we dont' have to check avt.get_status here again
   return avt.decide()
 end
 
