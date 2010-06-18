@@ -1,3 +1,7 @@
+2010-06-18  Andreas K. Foerster  <info@akfoerster.de>
+
+	* filechooser.c: path can be entered manually
+
 2009-12-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (is_textfile, is_demo_or_text, is_graphic_file):

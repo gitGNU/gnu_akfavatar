@@ -1,6 +1,6 @@
 /*
  * filechooser - filechooser dialog for AKFAvatar
- * Copyright (c) 2008, 2009 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2008, 2009, 2010 Andreas K. Foerster <info@akfoerster.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,10 +28,11 @@
 #include <unistd.h>
 #include <errno.h>
 
+#define marked(void) avt_set_text_background_color (0xdd, 0xdd, 0xdd)
+
 /* entries or marks that are not files */
-#define MARK(S) \
-         avt_set_text_background_color (0xdd, 0xdd, 0xdd); \
-         avt_say (S); avt_normal_text ()
+#define marked_text(S) \
+         marked (); avt_say (S); avt_normal_text ()
 
 #define PARENT_DIRECTORY L" .. "
 
@@ -90,7 +91,7 @@ new_page (char *dirname)
 {
   avt_lock_updates (AVT_TRUE);
   avt_clear ();
-  avt_set_text_background_color (0xdd, 0xdd, 0xdd);
+  marked ();
   avt_say_mb (dirname);
   avt_clear_eol ();
   avt_normal_text ();
@@ -216,7 +217,7 @@ avta_file_selection (char *filename, int filename_size, avta_filter_t filter)
   struct dirent **namelist;
   char dirname[4096];
   int max_x, max_idx, page_entries;
-  int idx, filenr, page_nr;
+  int idx, menu_entry, page_nr;
   int entries, entry_nr;
   char *entry[100];		/* entry on screen */
 
@@ -233,15 +234,15 @@ avta_file_selection (char *filename, int filename_size, avta_filter_t filter)
   avt_set_balloon_size (0, 0);
 
   max_x = avt_get_max_x ();
-  max_idx = avt_get_max_y () - 1;	/* minus top-line */
-  page_entries = max_idx - 2;	/* minus back and forward entries */
+  max_idx = avt_get_max_y ();
+  page_entries = max_idx - 3;	/* minus top-line, back and forward entries */
   custom_filter = filter;
   namelist = NULL;
 
 start:
   /* returncode: assume failure as default */
   rcode = -1;
-  filenr = -1;
+  menu_entry = -1;
   page_nr = 0;
   entries = 0;
   entry_nr = 0;
@@ -253,6 +254,7 @@ start:
 
   avt_auto_margin (AVT_FALSE);
   new_page (dirname);
+  idx++;			/* for the path-line */
 
   entries = get_directory (&namelist);
   if (entries < 0)
@@ -262,12 +264,12 @@ start:
   if (!HAS_DRIVE_LETTERS && is_root_dir (dirname))
     {
       entry[idx] = "";
-      MARK (HOME);
+      marked_text (HOME);
     }
   else
     {
       entry[idx] = "..";
-      MARK (PARENT_DIRECTORY);
+      marked_text (PARENT_DIRECTORY);
     }
   idx++;
   avt_new_line ();
@@ -279,7 +281,7 @@ start:
       else
 	d = NULL;
 
-      if (!idx && !d)		/* no entries at all */
+      if (idx == 1 && !d)	/* no entries at all */
 	break;
 
       /* end reached? */
@@ -287,48 +289,54 @@ start:
 	{
 	  if (d)		/* continue entry */
 	    {
-	      MARK (CONTINUE);
+	      marked_text (CONTINUE);
 	      idx++;
 	    }
 
 	  avt_lock_updates (AVT_FALSE);
-	  if (avt_choice (&filenr, 2, idx, 0, (page_nr > 0), (d != NULL)))
+	  if (avt_choice (&menu_entry, 1, idx, 0, (page_nr > 0), (d != NULL)))
 	    break;
 
-	  if (d && filenr == idx)	/* continue? */
+	  if (menu_entry == 1)	/* path-bar */
+	    {
+	      break;		/* TODO */
+	    }
+	  else if (d && menu_entry == idx)	/* continue? */
 	    {
 	      idx = 0;
 	      page_nr++;
 
 	      new_page (dirname);
+	      idx++;
 	      entry[idx] = "";
-	      MARK (BACK);
+	      marked_text (BACK);
 	      idx++;
 	      avt_new_line ();
 	    }
-	  else if (filenr == 1 && page_nr > 0)	/* back */
+	  else if (page_nr > 0 && menu_entry == 2)	/* back */
 	    {
 	      idx = 0;
 	      page_nr--;
 	      entry_nr = page_nr * page_entries;
 
 	      new_page (dirname);
+	      idx++;
 	      if (page_nr > 0)
 		{
 		  entry[idx] = "";
-		  MARK (BACK);
+		  marked_text (BACK);
 		}
 	      else		/* first page */
 		{
 		  if (!HAS_DRIVE_LETTERS && is_root_dir (dirname))
 		    {
 		      entry[idx] = "";
-		      MARK (HOME);
+		      marked_text (HOME);
 		    }
 		  else
 		    {
 		      entry[idx] = "..";
-		      MARK (PARENT_DIRECTORY);
+		      marked_text (PARENT_DIRECTORY);
 		    }
 		}
 
@@ -338,9 +346,9 @@ start:
 	    }
 	  else			/* file chosen */
 	    {
-	      if (strlen (entry[filenr - 1]) < (size_t) filename_size)
+	      if (strlen (entry[menu_entry - 1]) < (size_t) filename_size)
 		{
-		  strcpy (filename, entry[filenr - 1]);
+		  strcpy (filename, entry[menu_entry - 1]);
 		  rcode = 0;
 		}
 	      break;
@@ -358,16 +366,16 @@ start:
 	  if (avt_where_x () > max_x)
 	    {
 	      avt_move_x (max_x - 1);
-	      MARK (LONGER);
+	      marked_text (LONGER);
 	    }
-	  MARK (DIRECTORY);
+	  marked_text (DIRECTORY);
 	}
       else			/* not directory */
 	{
 	  if (avt_where_x () > max_x)
 	    {
 	      avt_move_x (max_x);
-	      MARK (LONGER);
+	      marked_text (LONGER);
 	    }
 	}
 
@@ -381,8 +389,21 @@ start:
   free (namelist);
   namelist = NULL;
 
+  /* path chosen */
+  if (menu_entry == 1)
+    {
+      avt_move_xy (1, 1);
+      marked ();
+      avt_clear_line ();
+      avt_ask_mb (dirname, sizeof (dirname));
+      avt_normal_text ();
+      if (*dirname && chdir (dirname))
+	avta_warning (dirname, "cannot chdir");
+      goto start;
+    }
+
   /* back-entry in root_dir */
-  if (filenr == 1 && is_root_dir (dirname))
+  if (menu_entry == 2 && is_root_dir (dirname))
     {
       *filename = '\0';
       if (HAS_DRIVE_LETTERS)	/* ask for drive? */
