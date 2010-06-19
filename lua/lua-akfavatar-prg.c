@@ -18,8 +18,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* TODO: script arguments */
-
 #include "akfavatar.h"
 #include "avtaddons.h"
 
@@ -31,7 +29,7 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
-#define PRGNAME "Lua-AKFAvatar-Starter"
+#define PRGNAME "Lua-AKFAvatar"
 
 static lua_State *L;
 
@@ -50,7 +48,7 @@ static void
 help (void)
 {
   puts (PRGNAME);
-  puts ("usage: lua-avt-starter [script]");
+  puts ("usage: lua-akfavatar [script [args]]");
   exit (EXIT_SUCCESS);
 }
 
@@ -119,6 +117,20 @@ ask_file (void)
     }
 }
 
+static void
+get_args (int argc, char *argv[], int script_index)
+{
+  int i;
+  char buf[1024];
+
+  for (i = script_index + 1; i < argc; i++)
+    {
+      snprintf (buf, sizeof (buf), "table.insert(arg, '%s')", argv[i]);
+      if (luaL_dostring (L, buf) != 0)
+	exit (EXIT_FAILURE);
+    }
+}
+
 int
 main (int argc, char **argv)
 {
@@ -137,12 +149,15 @@ main (int argc, char **argv)
 
   atexit (quit);
 
-  /* mark 'lua-akfavatar' as loaded */
-  if (luaL_dostring (L, "package.loaded['lua-akfavatar']=true") != 0)
+  /* mark 'lua-akfavatar' as loaded and initialize arg */
+  if (luaL_dostring (L, "package.loaded['lua-akfavatar']=true; arg={}") != 0)
     return EXIT_FAILURE;
 
   if (script_index)
     {
+      if (script_index + 1 < argc)
+	get_args (argc, argv, script_index);
+
       if (luaL_dofile (L, argv[script_index]) != 0)
 	avta_error (lua_tostring (L, -1), NULL);
     }
