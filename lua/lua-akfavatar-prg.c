@@ -112,6 +112,13 @@ ask_file (void)
 
   if (*filename)
     {
+      /* arg[0] = filename */
+      lua_newtable (L);
+      lua_pushinteger (L, 0);
+      lua_pushstring (L, filename);
+      lua_settable (L, -3);
+      lua_setglobal (L, "arg");
+
       if (luaL_dofile (L, filename) != 0)
 	avta_error (lua_tostring (L, -1), NULL);
     }
@@ -123,12 +130,15 @@ get_args (int argc, char *argv[], int script_index)
   int i;
   char buf[1024];
 
-  for (i = script_index + 1; i < argc; i++)
+  /* create global table "arg" and fill it */
+  lua_newtable (L);
+  for (i = script_index; i < argc; i++)
     {
-      snprintf (buf, sizeof (buf), "table.insert(arg, '%s')", argv[i]);
-      if (luaL_dostring (L, buf) != 0)
-	exit (EXIT_FAILURE);
+      lua_pushinteger (L, i - script_index);
+      lua_pushstring (L, argv[i]);
+      lua_settable (L, -3);
     }
+  lua_setglobal (L, "arg");
 }
 
 int
@@ -149,14 +159,13 @@ main (int argc, char **argv)
 
   atexit (quit);
 
-  /* mark 'lua-akfavatar' as loaded and initialize arg */
-  if (luaL_dostring (L, "package.loaded['lua-akfavatar']=true; arg={}") != 0)
+  /* mark 'lua-akfavatar' as loaded  */
+  if (luaL_dostring (L, "package.loaded['lua-akfavatar']=true") != 0)
     return EXIT_FAILURE;
 
   if (script_index)
     {
-      if (script_index + 1 < argc)
-	get_args (argc, argv, script_index);
+      get_args (argc, argv, script_index);
 
       if (luaL_dofile (L, argv[script_index]) != 0)
 	avta_error (lua_tostring (L, -1), NULL);
