@@ -160,8 +160,13 @@ main (int argc, char **argv)
   atexit (quit);
 
   /* mark 'lua-akfavatar' as loaded  */
-  if (luaL_dostring (L, "package.loaded['lua-akfavatar']=true") != 0)
-    return EXIT_FAILURE;
+  lua_getglobal(L, "package");
+  lua_pushstring(L, "loaded");
+  lua_gettable(L, -2);
+  lua_pushstring (L, "lua-akfavatar");
+  lua_pushboolean (L, AVT_TRUE);
+  lua_settable (L, -3);
+  lua_pop(L, 1);
 
   if (script_index)
     {
