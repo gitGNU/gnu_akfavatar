@@ -87,7 +87,14 @@ is_directory (const char *name)
 #endif /* _DIRENT_HAVE_D_TYPE */
 
 static void
-new_page (char *dirname)
+new_page (void)
+{
+  avt_lock_updates (AVT_TRUE);
+  avt_clear ();
+}
+
+static void
+show_directory (char *dirname)
 {
   avt_lock_updates (AVT_TRUE);
   avt_clear ();
@@ -95,7 +102,7 @@ new_page (char *dirname)
   avt_say_mb (dirname);
   avt_clear_eol ();
   avt_normal_text ();
-  avt_move_xy (1, 2);
+  avt_new_line ();
 }
 
 #ifndef __WIN32__
@@ -235,7 +242,7 @@ avta_file_selection (char *filename, int filename_size, avta_filter_t filter)
 
   max_x = avt_get_max_x ();
   max_idx = avt_get_max_y ();
-  page_entries = max_idx - 3;	/* minus top-line, back and forward entries */
+  page_entries = max_idx - 2;	/* minus back and forward entries */
   custom_filter = filter;
   namelist = NULL;
 
@@ -253,8 +260,8 @@ start:
     avta_warning ("getcwd", strerror (errno));
 
   avt_auto_margin (AVT_FALSE);
-  new_page (dirname);
-  idx++;			/* for the path-line */
+  show_directory (dirname);
+  idx++;			/* for the directory-line */
 
   entries = get_directory (&namelist);
   if (entries < 0)
@@ -297,37 +304,39 @@ start:
 	  if (avt_choice (&menu_entry, 1, idx, 0, (page_nr > 0), (d != NULL)))
 	    break;
 
-	  if (menu_entry == 1)	/* path-bar */
+	  if (page_nr == 0 && menu_entry == 1)	/* path-bar */
 	    {
-	      break;		/* TODO */
+	      break;
 	    }
 	  else if (d && menu_entry == idx)	/* continue? */
 	    {
 	      idx = 0;
 	      page_nr++;
 
-	      new_page (dirname);
-	      idx++;
+	      new_page ();
 	      entry[idx] = "";
 	      marked_text (BACK);
 	      idx++;
 	      avt_new_line ();
 	    }
-	  else if (page_nr > 0 && menu_entry == 2)	/* back */
+	  else if (page_nr > 0 && menu_entry == 1)	/* back */
 	    {
 	      idx = 0;
 	      page_nr--;
 	      entry_nr = page_nr * page_entries;
 
-	      new_page (dirname);
-	      idx++;
+	      new_page ();
 	      if (page_nr > 0)
 		{
+		  entry_nr--;	/* first page had one extra entry */
 		  entry[idx] = "";
 		  marked_text (BACK);
 		}
 	      else		/* first page */
 		{
+		  show_directory (dirname);
+		  idx++;
+
 		  if (!HAS_DRIVE_LETTERS && is_root_dir (dirname))
 		    {
 		      entry[idx] = "";
@@ -390,7 +399,7 @@ start:
   namelist = NULL;
 
   /* path chosen */
-  if (menu_entry == 1)
+  if (page_nr == 0 && menu_entry == 1)
     {
       avt_move_xy (1, 1);
       marked ();
@@ -403,7 +412,7 @@ start:
     }
 
   /* back-entry in root_dir */
-  if (menu_entry == 2 && is_root_dir (dirname))
+  if (page_nr == 0 && menu_entry == 2 && is_root_dir (dirname))
     {
       *filename = '\0';
       if (HAS_DRIVE_LETTERS)	/* ask for drive? */
