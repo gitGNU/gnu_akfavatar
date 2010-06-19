@@ -155,18 +155,16 @@ main (int argc, char **argv)
     avta_error (argv[0], "cannot open Lua: not enough memory");
 
   luaL_openlibs (L);
-  luaopen_akfavatar (L);
-
-  atexit (quit);
+  luaopen_akfavatar (L);	/* leaves address on stack */
 
   /* mark 'lua-akfavatar' as loaded  */
-  lua_getglobal(L, "package");
-  lua_pushstring(L, "loaded");
-  lua_gettable(L, -2);
-  lua_pushstring (L, "lua-akfavatar");
-  lua_pushboolean (L, AVT_TRUE);
-  lua_settable (L, -3);
-  lua_pop(L, 1);
+  lua_getglobal (L, "package");
+  lua_getfield (L, -1, "loaded");
+  lua_pushvalue (L, 1);		/* address of avt */
+  lua_setfield (L, -2, "lua-akfavatar");
+  lua_pop (L, 3);
+
+  atexit (quit);
 
   if (script_index)
     {
