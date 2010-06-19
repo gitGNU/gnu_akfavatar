@@ -63,40 +63,65 @@ auto_initialize (lua_State * L)
 }
 
 /*
- * parameters:
- * 1 title
- * 2 icontitle
- * 3 avatar-image (using avt.default() or avt.import_image_file())
- * 4 mode (avt.auto_mode, avt.window_mode, avt.fullscreen_mode, 
- *         avt.fullscreennoswitch_mode)
+ * expects a table with values for: title, icontitle, avatar, mode
  *
- * no parameter is needed, use as many as you wish, just keep the order
- * you can also use the value "nil" for any of them
+ * title and icontitle should be strings
+ * avatar may be avt.default(), avt.import_image_file(), 
+ *        avt.import_image_string(),
+ *        or the string "none"
+ * mode is one of avt.auto_mode, avt.window_mode, avt.fullscreen_mode, 
+ *      avt.fullscreennoswitch_mode
+ *
+ * No parameter is needed, use them as you wish.
  */
 static int
 lavt_initialize (lua_State * L)
 {
   const char *title, *icontitle;
-  avt_image_t *image;
+  avt_image_t *avatar;
   int mode;
 
-  title = lua_tostring (L, 1);
-  icontitle = lua_tostring (L, 2);
-  image = (avt_image_t *) lua_touserdata (L, 3);
-  mode = lua_tointeger (L, 4);
+  title = icontitle = avatar = NULL;
+  mode = AVT_WINDOW;
 
-  if (!image)
-    image = avt_default ();
+  if (lua_isnone (L, 1))	/* no argument */
+    {
+      avatar = avt_default ();
+    }
+  else				/* has a value */
+    {
+      luaL_checktype (L, 1, LUA_TTABLE);
+      lua_getfield (L, 1, "title");
+      title = lua_tostring (L, -1);
+      lua_pop (L, 1);
+
+      lua_getfield (L, 1, "icontitle");
+      icontitle = lua_tostring (L, -1);
+      lua_pop (L, 1);
+
+      lua_getfield (L, 1, "avatar");
+      if (lua_isuserdata (L, -1))
+	avatar = (avt_image_t *) lua_touserdata (L, -1);
+      else if (lua_isnil (L, -1))
+	avatar = avt_default ();
+      else if (strcasecmp ("none", lua_tostring (L, -1)) == 0)
+	avatar = NULL;
+      lua_pop (L, 1);
+
+      lua_getfield (L, 1, "mode");
+      mode = lua_tointeger (L, -1);
+      lua_pop (L, 1);
+    }
 
   if (!icontitle)
     icontitle = title;
 
   if (!initialized && !avt_initialized ())
-    check (avt_initialize (title, icontitle, image, mode));
+    check (avt_initialize (title, icontitle, avatar, mode));
   else				/* already initialized */
     {
       avt_set_title (title, icontitle);
-      avt_change_avatar_image (image);
+      avt_change_avatar_image (avatar);
       avt_switch_mode (mode);
       check (avt_get_status ());
     }

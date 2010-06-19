@@ -425,7 +425,8 @@ static char * teacher_xpm[] = {
 
   avt.set_background_color("tan")
   avt.set_balloon_color("floral white")
-  avt.initialize("AKFAvatar: multiply", "multiply", avatar, avt.window_mode)
+  avt.initialize{title="AKFAvatar: multiply", icontitle="multiply", 
+                 avatar=avatar, mode=avt.window_mode}
   avt.encoding("UTF-8") -- UTF-8 is the default
   avt.move_in()
 
@@ -445,3 +446,4 @@ until not WantToContinue()
 -- Avoid waiting for a keypress
 avt.move_out()
 avt.quit()
+
