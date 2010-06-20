@@ -26,7 +26,8 @@
 #include <lualib.h>
 
 #include <stdio.h>
-#include <stdio.h>		/* for exit() */
+#include <stdlib.h>		/* for exit() */
+#include <string.h>		/* for strcmp() */
 
 static avt_bool_t initialized = AVT_FALSE;
 
@@ -42,7 +43,7 @@ quit (lua_State * L)
     {
       char *error_message = avt_get_error ();
       avt_quit ();
-      return luaL_error (L, "AKFAvatar error: %s", error_message);
+      return luaL_error (L, "Lua-AKFAvatar error: %s", error_message);
     }
   else				/* stop requested */
     {
@@ -62,13 +63,52 @@ auto_initialize (lua_State * L)
   initialized = AVT_TRUE;
 }
 
+static avt_image_t *
+get_avatar (lua_State * L, int index)
+{
+  if (lua_isnil (L, index))
+    return avt_default ();
+  if (!lua_isstring (L, index))
+    luaL_error (L, "Lua-AKFAvatar error: avatar must be a string or nil");
+  else				/* it is a string */
+    {
+      size_t len;
+      const char *str = lua_tolstring (L, index, &len);
+
+      if (strcmp ("default", str) == 0)
+	return avt_default ();
+      else if (strcmp ("none", str) == 0)
+	return (avt_image_t *) NULL;
+      else
+	{
+	  avt_image_t *image;
+
+	  /* check if it is image data */
+	  image = avt_import_image_data ((void *) str, len);
+
+	  /* if not, could it be a filename? */
+	  if (!image)
+	    image = avt_import_image_file (str);
+
+	  if (image)
+	    return image;
+	  else			/* give up */
+	    {
+	      avt_quit ();
+	      luaL_error (L, "Lua-AKFAvatar error: cannot load avatar-image");
+	    }
+	}
+    }
+}
+
 /*
  * expects a table with values for: title, icontitle, avatar, mode
  *
  * title and icontitle should be strings
- * avatar may be avt.default(), avt.import_image_file(), 
- *        avt.import_image_string(),
- *        or the string "none"
+ *
+ * avatar may be "default, "none", image data in a string,
+ *        or a path to a file
+ *
  * mode is one of avt.auto_mode, avt.window_mode, avt.fullscreen_mode, 
  *      avt.fullscreennoswitch_mode
  *
@@ -88,7 +128,7 @@ lavt_initialize (lua_State * L)
     {
       avatar = avt_default ();
     }
-  else				/* has a value */
+  else				/* has an argument */
     {
       luaL_checktype (L, 1, LUA_TTABLE);
       lua_getfield (L, 1, "title");
@@ -100,12 +140,7 @@ lavt_initialize (lua_State * L)
       lua_pop (L, 1);
 
       lua_getfield (L, 1, "avatar");
-      if (lua_isuserdata (L, -1))
-	avatar = (avt_image_t *) lua_touserdata (L, -1);
-      else if (lua_isnil (L, -1))
-	avatar = avt_default ();
-      else if (strcasecmp ("none", lua_tostring (L, -1)) == 0)
-	avatar = NULL;
+      avatar = get_avatar (L, -1);
       lua_pop (L, 1);
 
       lua_getfield (L, 1, "mode");
@@ -225,56 +260,16 @@ lavt_encoding (lua_State * L)
   return 0;
 }
 
-/* get the default avatar */
-static int
-lavt_default (lua_State * L)
-{
-  lua_pushlightuserdata (L, avt_default ());
-  return 1;
-}
-
-/* get avatar-image from file */
-/* to be used with avt.initialize or avt.change_avatar_image */
-static int
-lavt_import_image_file (lua_State * L)
-{
-  lua_pushlightuserdata (L, avt_import_image_file (luaL_checkstring (L, 1)));
-  return 1;
-}
-
-/* get avatar-image from string */
-/* to be used with avt.initialize or avt.change_avatar_image */
-static int
-lavt_import_image_string (lua_State * L)
-{
-  char *data;
-  size_t len;
-
-  data = (char *) luaL_checklstring (L, 1, &len);
-  lua_pushlightuserdata (L, avt_import_image_data (data, len));
-  return 1;
-}
-
-/* free image data */
-static int
-lavt_free_image (lua_State * L)
-{
-  luaL_checktype (L, 1, LUA_TLIGHTUSERDATA);
-  avt_free_image ((avt_image_t *) lua_touserdata (L, 1));
-  return 0;
-}
-
 /*
  * change avatar image while running
  * if the avatar is visible, the screen gets cleared
- * the original image is freed in this function!
- * the image may be nil or nothing if no avatar should be shown
+ * the image may be given like in avt.initialize
  */
 static int
 lavt_change_avatar_image (lua_State * L)
 {
   is_initialized ();
-  check (avt_change_avatar_image (lua_touserdata (L, 1)));
+  check (avt_change_avatar_image (get_avatar (L, 1)));
   return 0;
 }
 
@@ -292,7 +287,7 @@ lavt_set_avatar_name (lua_State * L)
 
 /*
  * load image and show it
- * on error it returns avt.status_error without changing the status
+ * on error it returns avt.status_error without breaking
  * if it succeeds call avt.wait or avt.waitkey
  */
 static int
@@ -303,8 +298,9 @@ lavt_show_image_file (lua_State * L)
   return 1;
 }
 
-/* get image from string 
- * on error it returns avt.status_error without changing the status
+/*
+ * get image from string
+ * on error it returns avt.status_error without breaking
  * if it succeeds call avt.wait or avt.waitkey
  */
 static int
@@ -1193,10 +1189,6 @@ static const struct luaL_reg akfavtlib[] = {
   {"initialize_audio", lavt_initialize_audio},
   {"quit", lavt_quit},
   {"button_quit", lavt_button_quit},
-  {"default", lavt_default},
-  {"import_image_file", lavt_import_image_file},
-  {"import_image_string", lavt_import_image_string},
-  {"free_image", lavt_free_image},
   {"change_avatar_image", lavt_change_avatar_image},
   {"set_avatar_name", lavt_set_avatar_name},
   {"say", lavt_say},

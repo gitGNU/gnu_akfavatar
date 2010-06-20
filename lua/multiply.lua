@@ -148,7 +148,7 @@ function initialize()
 
   -- XPM can contain any of the quote-characters
   -- a long bracket like this is less likely to conflict
-  local avatar = avt.import_image_string [==[
+  local teacher = [==[
 /* XPM */
 static char * teacher_xpm[] = {
 "141 253 16 1",
@@ -426,7 +426,7 @@ static char * teacher_xpm[] = {
   avt.set_background_color("tan")
   avt.set_balloon_color("floral white")
   avt.initialize{title="AKFAvatar: multiply", icontitle="multiply", 
-                 avatar=avatar, mode=avt.window_mode}
+                 avatar=teacher, mode=avt.window_mode}
   avt.encoding("UTF-8") -- UTF-8 is the default
   avt.move_in()
 
