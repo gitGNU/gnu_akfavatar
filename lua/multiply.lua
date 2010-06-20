@@ -93,6 +93,7 @@ function sayCorrect()
 end
 
 function sayWrong()
+  avt.bell () -- make a sound
   avt.set_text_color("dark red")
   avt.say(wrong)
   avt.newline()
@@ -427,6 +428,7 @@ static char * teacher_xpm[] = {
   avt.set_balloon_color("floral white")
   avt.initialize{title="AKFAvatar: multiply", icontitle="multiply", 
                  avatar=teacher, mode=avt.window_mode}
+  avt.initialize_audio () -- we want sound
   avt.encoding("UTF-8") -- UTF-8 is the default
   avt.move_in()
 
