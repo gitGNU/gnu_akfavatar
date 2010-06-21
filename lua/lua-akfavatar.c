@@ -109,6 +109,8 @@ get_avatar (lua_State * L, int index)
  * avatar may be "default, "none", image data in a string,
  *        or a path to a file
  *
+ * audio may be set to true to activate audio
+ *
  * mode is one of avt.auto_mode, avt.window_mode, avt.fullscreen_mode, 
  *      avt.fullscreennoswitch_mode
  *
@@ -119,6 +121,7 @@ lavt_initialize (lua_State * L)
 {
   const char *title, *icontitle;
   avt_image_t *avatar;
+  avt_bool_t audio;
   int mode;
 
   title = icontitle = avatar = NULL;
@@ -143,6 +146,10 @@ lavt_initialize (lua_State * L)
       avatar = get_avatar (L, -1);
       lua_pop (L, 1);
 
+      lua_getfield (L, 1, "audio");
+      audio = lua_toboolean (L, -1);
+      lua_pop (L, 1);
+
       lua_getfield (L, 1, "mode");
       mode = lua_tointeger (L, -1);
       lua_pop (L, 1);
@@ -152,30 +159,23 @@ lavt_initialize (lua_State * L)
     icontitle = title;
 
   if (!initialized && !avt_initialized ())
-    check (avt_initialize (title, icontitle, avatar, mode));
+    {
+      check (avt_initialize (title, icontitle, avatar, mode));
+      if (audio)
+	check (avt_initialize_audio ());
+    }
   else				/* already initialized */
     {
       avt_set_title (title, icontitle);
       avt_change_avatar_image (avatar);
       avt_switch_mode (mode);
+      if (audio)
+	avt_initialize_audio ();
       check (avt_get_status ());
     }
 
   initialized = AVT_TRUE;
   return 0;
-}
-
-/*
- * initializes the audio system
- * call this directly after avt.initialize()
- * this also affects avt.bell() and printing "\a"
- */
-static int
-lavt_initialize_audio (lua_State * L)
-{
-  is_initialized ();
-  lua_pushinteger (L, avt_initialize_audio ());
-  return 1;
 }
 
 /* quit the avatar subsystem (closes the window) */
@@ -1186,7 +1186,6 @@ lavt_file_selection (lua_State * L)
 
 static const struct luaL_reg akfavtlib[] = {
   {"initialize", lavt_initialize},
-  {"initialize_audio", lavt_initialize_audio},
   {"quit", lavt_quit},
   {"button_quit", lavt_button_quit},
   {"change_avatar_image", lavt_change_avatar_image},
