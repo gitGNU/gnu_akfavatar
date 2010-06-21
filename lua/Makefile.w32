@@ -20,12 +20,12 @@ srcdir = ..
 
 VERSIONSTR=$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)
 
-all: lua-akfavatar.exe lua-akfavatar.dll
+all: lua-akfavatar.exe
 
 lua:
 	make -C $(LUADIR) mingw CC="$(CC)" AR="$(AR)" RANLIB="$(RANLIB)"
 
-# package
+# package -- doesn't really work as such, so don't use!
 lua-akfavatar.dll: lua-akfavatar.wo lua-akfavatar-rc.o libavtaddons.a
 	$(CC) -O -shared -o $@ lua-akfavatar.wo lua-akfavatar-rc.o \
 	  -L. -lavtaddons -lakfavatar  $(LDFLAGS) $(LUA_LDFLAGS) -mwindows

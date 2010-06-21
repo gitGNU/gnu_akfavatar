@@ -29,7 +29,7 @@ BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 	mingw dist-mingw
 
 all: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay avatarsay-d \
-	example lua-akfavatar lua-akfavatar.so
+	example lua-akfavatar
 	@echo '*'
 	@echo '* use "make install" or "make install-strip"'
 	@echo '* with root-privileges to install it.'
@@ -185,6 +185,7 @@ avatarsay-s: avatarsay.o avtposix.o libavtaddons.a libakfavatar.a
 	$(CC) -o $@ avatarsay.o avtposix.o -L. -lavtaddons libakfavatar.a \
 	   $(SDL_LDFLAGS) $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
+# don't use!
 lua-akfavatar.so: $(srcdir)/lua/lua-akfavatar.c $(srcdir)/filechooser.c \
 		$(srcdir)/avtmsg.c
 	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir="$(srcdir)" \

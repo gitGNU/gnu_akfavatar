@@ -49,5 +49,4 @@ avt.pager(manpage:read("*all"))
 manpage:close()
 
 avt.move_out()
-avt.quit()
 

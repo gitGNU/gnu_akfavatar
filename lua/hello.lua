@@ -27,7 +27,7 @@ avt.initialize{title="Hello World", avatar="default", mode=avt.window_mode}
 avt.encoding("UTF-8") --> the strings in this program are in UTF-8
 avt.set_text_delay() --> activate the slowprint mode (optional)
 avt.move_in() --> move the avatar in (optional)
-avt.set_balloon_size(8, 20) --> set the size of the balloon (optional)
+avt.set_balloon_size(7, 20) --> set the size of the balloon (optional)
 
 -- say something:
 avt.say [[
@@ -42,4 +42,3 @@ avt.newline()
 avt.say("π≈", math.pi) --> avt.say accepts strings and numbers
 avt.wait_button() --> wait for a button to be pressed
 avt.move_out() --> move the avatar out (optional)
-avt.quit() --> close the window and clean up

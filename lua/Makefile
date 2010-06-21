@@ -13,9 +13,9 @@ bindir = $(prefix)/bin
 
 INSTALL = install
 
-all: lua-akfavatar lua-akfavatar.so
+all: lua-akfavatar
 
-# package
+# package -- doesn't really work as such, so don't use!
 lua-akfavatar.so: lua-akfavatar.lo filechooser.lo avtmsg.lo
 	$(CC) $(CFLAGS) -fpic -shared -o $@ lua-akfavatar.lo \
 	  filechooser.lo avtmsg.lo -L. -lakfavatar $(LDFLAGS)
@@ -47,8 +47,8 @@ lua-akfavatar.lo: $(srcdir)/lua/lua-akfavatar.c
 	  $(srcdir)/lua/lua-akfavatar.c
 
 install: lua-akfavatar lua-akfavatar.so
-	-[ -d $(DESTDIR)$(luacdir) ] || $(INSTALL) -d $(DESTDIR)$(luacdir)
-	$(INSTALL) -m 644 lua-akfavatar.so $(DESTDIR)$(luacdir)
+#	-[ -d $(DESTDIR)$(luacdir) ] || $(INSTALL) -d $(DESTDIR)$(luacdir)
+#	$(INSTALL) -m 644 lua-akfavatar.so $(DESTDIR)$(luacdir)
 	$(INSTALL) -m 755 lua-akfavatar $(DESTDIR)$(bindir)
 
 clean:

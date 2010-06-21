@@ -444,7 +444,5 @@ repeat
   query()
 until not WantToContinue()
 
--- Avoid waiting for a keypress
 avt.move_out()
-avt.quit()
 

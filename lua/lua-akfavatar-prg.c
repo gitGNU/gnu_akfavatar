@@ -1,6 +1,6 @@
 /*
- * Starter for AKFAvatar programs in Lua
- * Copyright (c) 2009 Andreas K. Foerster <info@akfoerster.de>
+ * Starter for Lua-AKFAvatar programs in Lua
+ * Copyright (c) 2009,2010 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -23,6 +23,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 #include <stdlib.h>
 
 #include <lua.h>
@@ -97,16 +98,31 @@ is_lua (const char *filename)
     }
 }
 
-static void
+static avt_bool_t
 ask_file (void)
 {
   char filename[256];
 
-  if (avt_initialize ("Lua AKFAvatar Starter", "AKFAvatar",
-		      avt_default (), AVT_AUTOMODE))
-    avta_error ("cannot initialize graphics", avt_get_error ());
+  /* initialize / reset settings */
+  avt_set_background_color_name ("default");
+  avt_set_balloon_color_name ("floral white");
 
-  avta_file_selection (filename, sizeof (filename), &is_lua);
+  if (avt_initialized ())
+    {
+      avt_set_title ("Lua-AKFAvatar Starter", "AKFAvatar");
+      avt_change_avatar_image (avt_default ());
+      avt_normal_text ();
+    }
+  else
+    {
+      if (avt_initialize ("Lua-AKFAvatar Starter", "AKFAvatar",
+			  avt_default (), AVT_AUTOMODE))
+	avta_error ("cannot initialize graphics", avt_get_error ());
+    }
+
+  avt_balloon_size (0, 0);
+  if (avta_file_selection (filename, sizeof (filename), &is_lua))
+    return AVT_FALSE;
 
   if (*filename)
     {
@@ -118,8 +134,17 @@ ask_file (void)
       lua_setglobal (L, "arg");
 
       if (luaL_dofile (L, filename) != 0)
-	avta_error (lua_tostring (L, -1), NULL);
+	{
+	  if (lua_isstring (L, -1))
+	    avta_error (lua_tostring (L, -1), NULL);
+	  lua_pop (L, 1);	/* pop message (or the nil) */
+	}
+
+      avt_set_status (AVT_NORMAL);
+      return AVT_TRUE;
     }
+
+  return AVT_FALSE;
 }
 
 static void
@@ -144,8 +169,8 @@ main (int argc, char **argv)
 {
   int script_index;
 
-  avta_prgname (PRGNAME);
   script_index = check_options (argc, argv);
+  avta_prgname (PRGNAME);
 
   /* initialize Lua */
   L = lua_open ();
@@ -169,10 +194,18 @@ main (int argc, char **argv)
       get_args (argc, argv, script_index);
 
       if (luaL_dofile (L, argv[script_index]) != 0)
-	avta_error (lua_tostring (L, -1), NULL);
+	{
+	  avta_error (lua_tostring (L, -1), NULL);
+	  return EXIT_FAILURE;
+	}
     }
-  else
-    ask_file ();
+  else				/* no script at command-line */
+    {
+      while (ask_file ())
+	{
+	  /* oh, nothing */
+	}
+    }
 
   return EXIT_SUCCESS;
 }

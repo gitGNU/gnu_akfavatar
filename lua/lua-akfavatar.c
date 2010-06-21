@@ -1,5 +1,5 @@
 /*
- * Lua 5.1 binding for AKFAvatar
+ * Lua 5.1 binding for AKFAvatar (do not use as module!)
  * Copyright (c) 2008, 2009, 2010 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
@@ -41,15 +41,14 @@ quit (lua_State * L)
 {
   if (avt_get_status () <= AVT_ERROR)
     {
-      char *error_message = avt_get_error ();
-      avt_quit ();
-      return luaL_error (L, "Lua-AKFAvatar error: %s", error_message);
+      return luaL_error (L, "Lua-AKFAvatar error: %s", avt_get_error ());
     }
   else				/* stop requested */
     {
-      avt_quit ();
-      /* do not close L here! (done with atexit) */
-      exit (EXIT_SUCCESS);
+      /* no actual error, so no error message */
+      /* this is handled by the calling program */
+      lua_pushnil (L);
+      return lua_error (L);
     }
 }
 
@@ -94,7 +93,6 @@ get_avatar (lua_State * L, int index)
 	    return image;
 	  else			/* give up */
 	    {
-	      avt_quit ();
 	      luaL_error (L, "Lua-AKFAvatar error: cannot load avatar-image");
 	    }
 	}
@@ -1176,7 +1174,7 @@ lavt_file_selection (lua_State * L)
   if (avta_file_selection (filename, sizeof (filename), NULL) > -1)
     lua_pushstring (L, filename);
   else
-    quit (L);
+    quit (L);			/* TODO: ??? */
 
   return 1;
 }

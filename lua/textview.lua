@@ -28,5 +28,4 @@ if arg[1]
 
 avt.pager(io.read("*all"))
 avt.move_out()
-avt.quit()
 
