@@ -120,7 +120,7 @@ ask_file (void)
 	avta_error ("cannot initialize graphics", avt_get_error ());
     }
 
-  avt_balloon_size (0, 0);
+  avt_set_balloon_size (0, 0);
   if (avta_file_selection (filename, sizeof (filename), &is_lua))
     return AVT_FALSE;
 
