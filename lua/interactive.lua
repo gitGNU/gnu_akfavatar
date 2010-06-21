@@ -1,8 +1,8 @@
-#!/usr/bin/env lua
+#!/usr/bin/env lua-akfavatar
 
 --[[
 interactive Lua shell for AKFAvatar
-Copyright (c) 2009,2010 Andreas K. Foerster
+Copyright (c) 2009,2010 Andreas K. Foerster <info@akfoerster.de>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

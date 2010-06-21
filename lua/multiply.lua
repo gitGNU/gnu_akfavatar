@@ -1,8 +1,8 @@
-#!/usr/bin/env lua
+#!/usr/bin/env lua-akfavatar
 
 --[[
 simple multiplication
-Copyright (c) 2009 Andreas K. Foerster <info@akfoerster.de>
+Copyright (c) 2009,2010 Andreas K. Foerster <info@akfoerster.de>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
