@@ -1,3 +1,11 @@
+2010-06-21  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-audio.c (avt_initialize_audio, avt_quit_audio):
+	make it save to call it repeatedly
+
+	* avatar.c (avt_quit):
+	make it save to call it repeatedly
+
 2010-06-18  Andreas K. Foerster  <info@akfoerster.de>
 
 	* filechooser.c: path can be entered manually

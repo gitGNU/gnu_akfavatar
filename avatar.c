@@ -3149,7 +3149,7 @@ avt_put_character (const wchar_t ch)
       avt_text_direction (AVT_RIGHT_TO_LEFT);
       break;
 
-    /* other ignorable (invisible) characters */
+      /* other ignorable (invisible) characters */
     case L'\x200B':
     case L'\x200C':
     case L'\x200D':
@@ -6081,26 +6081,29 @@ avt_quit (void)
     avt_iconv_close (input_cd);
   output_cd = input_cd = ICONV_UNINITIALIZED;
 
-  SDL_FreeCursor (mpointer);
-  mpointer = NULL;
-  SDL_FreeSurface (circle);
-  circle = NULL;
-  SDL_FreeSurface (pointer);
-  pointer = NULL;
-  SDL_FreeSurface (avt_character);
-  avt_character = NULL;
-  SDL_FreeSurface (avt_image);
-  avt_image = NULL;
-  SDL_FreeSurface (avt_text_cursor);
-  avt_text_cursor = NULL;
-  SDL_FreeSurface (avt_cursor_character);
-  avt_cursor_character = NULL;
-  avt_alert_func = NULL;
-  SDL_Quit ();
-  screen = NULL;		/* it was freed by SDL_Quit */
-  avt_visible = AVT_FALSE;
-  textfield.x = textfield.y = textfield.w = textfield.h = -1;
-  viewport = textfield;
+  if (screen)
+    {
+      SDL_FreeCursor (mpointer);
+      mpointer = NULL;
+      SDL_FreeSurface (circle);
+      circle = NULL;
+      SDL_FreeSurface (pointer);
+      pointer = NULL;
+      SDL_FreeSurface (avt_character);
+      avt_character = NULL;
+      SDL_FreeSurface (avt_image);
+      avt_image = NULL;
+      SDL_FreeSurface (avt_text_cursor);
+      avt_text_cursor = NULL;
+      SDL_FreeSurface (avt_cursor_character);
+      avt_cursor_character = NULL;
+      avt_alert_func = NULL;
+      SDL_Quit ();
+      screen = NULL;		/* it was freed by SDL_Quit */
+      avt_visible = AVT_FALSE;
+      textfield.x = textfield.y = textfield.w = textfield.h = -1;
+      viewport = textfield;
+    }
 }
 
 extern void

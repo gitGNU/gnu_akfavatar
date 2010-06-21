@@ -172,19 +172,22 @@ short_audio_sound (void)
 extern int
 avt_initialize_audio (void)
 {
-  if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
+  if (!avt_audio_initialized)
     {
-      SDL_SetError ("error initializing audio");
-      return AVT_ERROR;
+      if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
+	{
+	  SDL_SetError ("error initializing audio");
+	  return AVT_ERROR;
+	}
+
+      /* set this before calling anything from this lib */
+      avt_audio_initialized = AVT_TRUE;
+
+      my_alert =
+	avt_load_audio_data ((void *) &avt_alert_data, avt_alert_data_size);
+      avt_alert_func = short_audio_sound;
+      avt_quit_audio_func = avt_quit_audio;
     }
-
-  /* set this before calling anything from this lib */
-  avt_audio_initialized = AVT_TRUE;
-
-  my_alert =
-    avt_load_audio_data ((void *) &avt_alert_data, avt_alert_data_size);
-  avt_alert_func = short_audio_sound;
-  avt_quit_audio_func = avt_quit_audio;
 
   return _avt_STATUS;
 }
@@ -204,17 +207,20 @@ avt_stop_audio (void)
 extern void
 avt_quit_audio (void)
 {
-  avt_quit_audio_func = NULL;
-  SDL_CloseAudio ();
-  soundpos = NULL;
-  soundleft = 0;
-  current_sound.len = 0;
-  current_sound.sound = NULL;
-  avt_alert_func = avt_flash;
-  avt_free_audio (my_alert);
-  my_alert = NULL;
-  SDL_QuitSubSystem (SDL_INIT_AUDIO);
-  avt_audio_initialized = AVT_FALSE;
+  if (avt_audio_initialized)
+    {
+      avt_quit_audio_func = NULL;
+      SDL_CloseAudio ();
+      soundpos = NULL;
+      soundleft = 0;
+      current_sound.len = 0;
+      current_sound.sound = NULL;
+      avt_alert_func = avt_flash;
+      avt_free_audio (my_alert);
+      my_alert = NULL;
+      SDL_QuitSubSystem (SDL_INIT_AUDIO);
+      avt_audio_initialized = AVT_FALSE;
+    }
 }
 
 /* deprecated in API */

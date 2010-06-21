@@ -56,10 +56,8 @@ help (void)
 static void
 quit (void)
 {
+  avt_quit ();
   lua_close (L);
-
-  if (avt_initialized ())
-    avt_quit ();
 }
 
 static int
