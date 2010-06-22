@@ -30,6 +30,7 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
+/* keep it short */
 #define PRGNAME "Lua-AKFAvatar"
 
 static lua_State *L;
@@ -86,6 +87,14 @@ check_options (int argc, char *argv[])
   return i;
 }
 
+static void
+initialize (void)
+{
+  if (avt_initialize ("Lua-AKFAvatar", "AKFAvatar",
+		      avt_default (), AVT_AUTOMODE))
+    avta_error ("cannot initialize graphics", avt_get_error ());
+}
+
 static avt_bool_t
 is_lua (const char *filename)
 {
@@ -102,23 +111,6 @@ static avt_bool_t
 ask_file (void)
 {
   char filename[256];
-
-  /* initialize / reset settings */
-  avt_set_background_color_name ("default");
-  avt_set_balloon_color_name ("floral white");
-
-  if (avt_initialized ())
-    {
-      avt_set_title ("Lua-AKFAvatar Starter", "AKFAvatar");
-      avt_change_avatar_image (avt_default ());
-      avt_normal_text ();
-    }
-  else
-    {
-      if (avt_initialize ("Lua-AKFAvatar Starter", "AKFAvatar",
-			  avt_default (), AVT_AUTOMODE))
-	avta_error ("cannot initialize graphics", avt_get_error ());
-    }
 
   avt_set_balloon_size (0, 0);
   if (avta_file_selection (filename, sizeof (filename), &is_lua))
@@ -140,11 +132,50 @@ ask_file (void)
 	  lua_pop (L, 1);	/* pop message (or the nil) */
 	}
 
+      /* reset settings */
       avt_set_status (AVT_NORMAL);
+      avt_set_background_color_name ("default");
+      avt_set_balloon_color_name ("floral white");
+
+      /* script may have called avt.quit() */
+      if (avt_initialized ())
+	{
+	  avt_set_title ("Lua-AKFAvatar Starter", "AKFAvatar");
+	  avt_change_avatar_image (avt_default ());
+	  avt_normal_text ();
+	}
+      else
+	initialize ();
+
       return AVT_TRUE;
     }
 
   return AVT_FALSE;
+}
+
+static void
+start_screen (void)
+{
+  avt_move_in ();
+  avt_set_balloon_size (6, 80);
+  avt_underlined (AVT_TRUE);
+  avt_bold (AVT_TRUE);
+  avt_say_mb (PRGNAME);
+  avt_normal_text ();
+  avt_new_line ();
+  avt_new_line ();
+  avt_say (L"AKFAvatar ");
+  avt_say_mb (avt_version ());
+  avt_say (L", ");
+  avt_say_mb (avt_copyright ());
+  avt_new_line ();
+  avt_say_mb (LUA_RELEASE);
+  avt_say (L", ");
+  avt_say_mb (LUA_COPYRIGHT);
+  avt_new_line ();
+  avt_new_line ();
+  avt_say_mb (avt_license ());
+  avt_wait_button ();
 }
 
 static void
@@ -201,6 +232,8 @@ main (int argc, char **argv)
     }
   else				/* no script at command-line */
     {
+      initialize ();
+      start_screen ();
       while (ask_file ())
 	{
 	  /* oh, nothing */
