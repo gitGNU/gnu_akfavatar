@@ -22,10 +22,15 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 avt.initialize{title="Manpage"}
 avt.encoding("ISO-8859-1")
 
+function underlined(text)
+  return string.gsub(text, ".", "_\b%1")
+end
+
 function ask()
   avt.set_balloon_size(3, 40)
-  avt.say("man [_\bO_\bp_\bt_\bi_\bo_\bn ...] ",
-          "[_\bS_\be_\bc_\bt_\bi_\bo_\bn] _\bP_\ba_\bg_\be ...\n\n",
+  avt.say("man [", underlined("Option"), " ...] ",
+          "[", underlined("Section"), "] ",
+          underlined("Page"), " ...\n\n",
           "man ")
   local answer = avt.ask()
   return answer
