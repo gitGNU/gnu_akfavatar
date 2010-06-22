@@ -16,14 +16,14 @@ INSTALL = install
 all: lua-akfavatar
 
 # package -- doesn't really work as such, so don't use!
-lua-akfavatar.so: lua-akfavatar.lo filechooser.lo avtmsg.lo
-	$(CC) $(CFLAGS) -fpic -shared -o $@ lua-akfavatar.lo \
+lua-akfavatar.so: lua-avt.lo filechooser.lo avtmsg.lo
+	$(CC) $(CFLAGS) -fpic -shared -o $@ lua-avt.lo \
 	  filechooser.lo avtmsg.lo -L. -lakfavatar $(LDFLAGS)
 # don't use LUA_LDFLAGS!
 
 # starter
-lua-akfavatar: lua-akfavatar-prg.o lua-akfavatar.o libavtaddons.a
-	$(CC) -o $@ lua-akfavatar-prg.o lua-akfavatar.o \
+lua-akfavatar: lua-akfavatar-prg.o lua-avt.o libavtaddons.a
+	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o \
 	     -L. -lavtaddons -lakfavatar \
 	     $(LUA_LDFLAGS) $(LDFLAGS)
 
@@ -31,9 +31,9 @@ lua-akfavatar-prg.o: $(srcdir)/lua/lua-akfavatar-prg.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/lua-akfavatar-prg.c
 
-lua-akfavatar.o: $(srcdir)/lua/lua-akfavatar.c
+lua-avt.o: $(srcdir)/lua/lua-avt.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
-	  $(srcdir)/lua/lua-akfavatar.c
+	  $(srcdir)/lua/lua-avt.c
 
 filechooser.lo: $(srcdir)/filechooser.c \
                 $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h
@@ -42,17 +42,17 @@ filechooser.lo: $(srcdir)/filechooser.c \
 avtmsg.lo: $(srcdir)/avtmsg.c $(srcdir)/avtaddons.h
 	$(CC) $(CFLAGS) -fpic -c -o $@ $(srcdir)/avtmsg.c
 
-lua-akfavatar.lo: $(srcdir)/lua/lua-akfavatar.c
+lua-avt.lo: $(srcdir)/lua/lua-avt.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -fpic -c -o $@ \
-	  $(srcdir)/lua/lua-akfavatar.c
+	    $(srcdir)/lua/lua-avt.c
 
-install: lua-akfavatar lua-akfavatar.so
+install: lua-akfavatar
 #	-[ -d $(DESTDIR)$(luacdir) ] || $(INSTALL) -d $(DESTDIR)$(luacdir)
 #	$(INSTALL) -m 644 lua-akfavatar.so $(DESTDIR)$(luacdir)
 	$(INSTALL) -m 755 lua-akfavatar $(DESTDIR)$(bindir)
 
 clean:
-	-rm -f lua-akfavatar.o lua-akfavatar.lo lua-akfavatar.wo
+	-rm -f lua-akfavatar.o lua-avt.lo lua-avt.wo
 	-rm -f lua-akfavatar-prg.o lua-akfavatar-prg.wo
 	-rm -f luac.out
 	-rm -f luaavtstarter.rc

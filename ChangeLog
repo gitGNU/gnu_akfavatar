@@ -1,3 +1,7 @@
+2009-12-09  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/lua-avt.c: renamed back from lua/lua-akfavatar.c
+
 2010-06-21  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-audio.c (avt_initialize_audio, avt_quit_audio):
