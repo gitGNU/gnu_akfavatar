@@ -41,6 +41,7 @@ infodir='$(datadir)/info'
 docdir='$(datadir)/doc/$(pkgname)'
 mandir='$(datadir)/man'
 sysconfdir='$(prefix)/etc'
+hosttype=
 CC=
 CXX=
 CPPFLAGS=
@@ -56,6 +57,7 @@ LOCAL_RPATH=
 LOCAL_GCC_RPATH=
 LOCAL_FPC_RPATH=
 AWK='awk'
+BUILD='default'
 
 # Loop over all args
 while [ x"$1" != x ] ; do
@@ -90,6 +92,7 @@ while [ x"$1" != x ] ; do
 		echo "  --docdir=DIR          documentation directory [${docdir}]"
 		echo "  --sysconfdir=DIR      read-only single-machine data directory [${sysconfdir}]"
 		echo "  --with-openpty        use openpty instead of posix_openpt"
+		echo "  --host=mingw          cross-compile with mingw (experimental)"
 		echo "  --with-oldsdl         support for older SDL versions on target machine"
 		echo "  --with-iconv[=enc]    force use of external iconv (normally not needed)"
 		echo "  --with-sdl-iconv=enc  set encoding for wchar_t when SDL's iconv is used"
@@ -136,6 +139,8 @@ while [ x"$1" != x ] ; do
 		sysconfdir=`echo ${optarg} | sed -e 's,/$,,'` ;;
 	--no-create | --no-c*)
 		no_create=yes ;;
+	--host*)
+		hosttype=`echo ${optarg} | sed -e 's,/$,,'` ;;
 
 	CC=*)       CC=${optarg} ;;
 	CXX=*)      CXX=${optarg} ;;
@@ -242,6 +247,11 @@ case ${SYSTEM} in
                      LDFLAGS="${LDFLAGS} -lpthread -Wl,-rpath,'${libdir}'" 
                      LOCAL_RPATH="."
                      ;;
+  MINGW* | mingw* | windows32* | CYGWIN*)
+                    SYSTEM="mingw"
+                    ARCH="x86"
+                    BUILD="mingw"
+                    ;;
 esac
 
 if [ ! x"${LOCAL_RPATH}" = x ] ; then
@@ -252,6 +262,14 @@ fi
 ARCH=`uname -m`
 case ${ARCH} in
   i?86) ARCH="x86" ;;
+esac
+
+case ${hosttype} in
+  *mingw* | *MINGW*) 
+           SYSTEM="mingw"
+           ARCH="x86"
+           BUILD="mingw"
+           ;;
 esac
 
 # Find the source files, if location was not specified.
@@ -350,6 +368,7 @@ echo "AWK = ${AWK}"
 echo "LDCONFIG = ${LDCONFIG}"
 echo "SYSTEM = ${SYSTEM}"
 echo "ARCH = ${ARCH}"
+echo "BUILD = ${BUILD}"
 
 VERSIONNR=`printf "%02d%02d%02d" ${VERSION} ${SUBVERSION} ${REVISION}`
 rm -f version.h
@@ -408,6 +427,7 @@ SYSTEM = ${SYSTEM}
 ARCH = ${ARCH}
 LOCAL_GCC_RPATH = ${LOCAL_GCC_RPATH}
 LOCAL_FPC_RPATH = ${LOCAL_FPC_RPATH}
+BUILD = ${BUILD}
 
 EOF
 cat ${srcdir}/Makefile.in >> Makefile
@@ -464,6 +484,5 @@ fi
 
 echo '*'
 echo '* OK. Now you can run "make" to build the binaries.'
-echo '* For Windows try "make mingw".'
 echo '*'
 

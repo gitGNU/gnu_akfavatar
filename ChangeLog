@@ -1,6 +1,9 @@
-2009-12-09  Andreas K. Foerster  <info@akfoerster.de>
+2010-06-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c: renamed back from lua/lua-akfavatar.c
+
+	* configure: experimental support for "--host=mingw"
+	Makefile.in: adapted
 
 2010-06-21  Andreas K. Foerster  <info@akfoerster.de>
 
