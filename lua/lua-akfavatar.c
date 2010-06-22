@@ -100,9 +100,9 @@ get_avatar (lua_State * L, int index)
 }
 
 /*
- * expects a table with values for: title, icontitle, avatar, mode
+ * expects a table with values for: title, shortname, avatar, mode
  *
- * title and icontitle should be strings
+ * title and shortname should be strings
  *
  * avatar may be "default, "none", image data in a string,
  *        or a path to a file
@@ -117,12 +117,12 @@ get_avatar (lua_State * L, int index)
 static int
 lavt_initialize (lua_State * L)
 {
-  const char *title, *icontitle;
+  const char *title, *shortname;
   avt_image_t *avatar;
   avt_bool_t audio;
   int mode;
 
-  title = icontitle = avatar = NULL;
+  title = shortname = avatar = NULL;
   mode = AVT_WINDOW;
 
   if (lua_isnone (L, 1))	/* no argument */
@@ -136,8 +136,8 @@ lavt_initialize (lua_State * L)
       title = lua_tostring (L, -1);
       lua_pop (L, 1);
 
-      lua_getfield (L, 1, "icontitle");
-      icontitle = lua_tostring (L, -1);
+      lua_getfield (L, 1, "shortname");
+      shortname = lua_tostring (L, -1);
       lua_pop (L, 1);
 
       lua_getfield (L, 1, "avatar");
@@ -153,18 +153,18 @@ lavt_initialize (lua_State * L)
       lua_pop (L, 1);
     }
 
-  if (!icontitle)
-    icontitle = title;
+  if (!shortname)
+    shortname = title;
 
   if (!initialized && !avt_initialized ())
     {
-      check (avt_initialize (title, icontitle, avatar, mode));
+      check (avt_initialize (title, shortname, avatar, mode));
       if (audio)
 	check (avt_initialize_audio ());
     }
   else				/* already initialized */
     {
-      avt_set_title (title, icontitle);
+      avt_set_title (title, shortname);
       avt_change_avatar_image (avatar);
       avt_switch_mode (mode);
       if (audio)

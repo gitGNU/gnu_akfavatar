@@ -34,7 +34,7 @@ end
 
 say = print --> an alias that fits better
 
-avt.initialize()
+avt.initialize{}
 avt.move_in()
 avt.say(_VERSION, " / AKFAvatar ", avt.version(), "\n\n")
 
