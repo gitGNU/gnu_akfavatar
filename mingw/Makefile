@@ -232,12 +232,15 @@ dist-bin: avatarsay.exe
 	cp avatarsay.exe $(srcdir)/fsdemo-??.avt $(BINPKGNAME)/
 	-cp lua-akfavatar.exe $(BINPKGNAME)/
 	cp $(srcdir)/lua/multiply.lua $(srcdir)/lua/interactive.lua $(BINPKGNAME)/
+	cp $(srcdir)/lua/textview.lua $(BINPKGNAME)/
 	cp $(srcdir)/lua/hello.lua $(BINPKGNAME)/
 	cp $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	cp $(srcdir)/COPYING $(BINPKGNAME)/gpl-3.0.txt
 	cp $(srcdir)/AUTHORS $(BINPKGNAME)/AUTHORS.txt
 	cp $(srcdir)/teacher.xpm $(BINPKGNAME)/
 	cp $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
+	-cp $(srcdir)/misc/SDL.dll $(BINPKGNAME)/
+	-cp $(srcdir)/misc/lua51.dll $(BINPKGNAME)/
 	todos $(BINPKGNAME)/fsdemo-??.avt
 	todos $(BINPKGNAME)/*.bat
 	todos $(BINPKGNAME)/*.txt
