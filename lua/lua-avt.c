@@ -1179,6 +1179,13 @@ lavt_file_selection (lua_State * L)
   return 1;
 }
 
+static int
+lavt_color_selection (lua_State * L)
+{
+  lua_pushstring (L, avta_color_selection ());
+  return 1;
+}
+
 /* --------------------------------------------------------- */
 /* register library functions */
 
@@ -1283,6 +1290,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"delete_characters", lavt_delete_characters},
   {"erase_characters", lavt_erase_characters},
   {"file_selection", lavt_file_selection},
+  {"color_selection", lavt_color_selection},
   {NULL, NULL}
 };
 

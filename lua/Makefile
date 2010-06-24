@@ -16,9 +16,9 @@ INSTALL = install
 all: lua-akfavatar
 
 # package -- doesn't really work as such, so don't use!
-lua-akfavatar.so: lua-avt.lo filechooser.lo avtmsg.lo
+lua-akfavatar.so: lua-avt.lo filechooser.lo colorchooser.lo avtmsg.lo
 	$(CC) $(CFLAGS) -fpic -shared -o $@ lua-avt.lo \
-	  filechooser.lo avtmsg.lo -L. -lakfavatar $(LDFLAGS)
+	  filechooser.lo colorchooser.lo avtmsg.lo -L. -lakfavatar $(LDFLAGS)
 # don't use LUA_LDFLAGS!
 
 # starter
@@ -38,6 +38,10 @@ lua-avt.o: $(srcdir)/lua/lua-avt.c
 filechooser.lo: $(srcdir)/filechooser.c \
                 $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h
 	$(CC) $(CFLAGS) -fpic -c -o $@ $(srcdir)/filechooser.c
+
+colorchooser.lo: $(srcdir)/colorchooser.c \
+                $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h
+	$(CC) $(CFLAGS) -fpic -c -o $@ $(srcdir)/colorchooser.c
 
 avtmsg.lo: $(srcdir)/avtmsg.c $(srcdir)/avtaddons.h
 	$(CC) $(CFLAGS) -fpic -c -o $@ $(srcdir)/avtmsg.c
