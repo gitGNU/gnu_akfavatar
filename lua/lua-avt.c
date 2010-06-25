@@ -68,7 +68,10 @@ get_avatar (lua_State * L, int index)
   if (lua_isnil (L, index))
     return avt_default ();
   if (!lua_isstring (L, index))
-    luaL_error (L, "Lua-AKFAvatar error: avatar must be a string or nil");
+    {
+      luaL_error (L, "Lua-AKFAvatar error: avatar must be a string or nil");
+      return NULL;
+    }
   else				/* it is a string */
     {
       size_t len;
@@ -94,6 +97,7 @@ get_avatar (lua_State * L, int index)
 	  else			/* give up */
 	    {
 	      luaL_error (L, "Lua-AKFAvatar error: cannot load avatar-image");
+	      return NULL;
 	    }
 	}
     }
@@ -122,8 +126,10 @@ lavt_initialize (lua_State * L)
   avt_bool_t audio;
   int mode;
 
-  title = shortname = avatar = NULL;
+  title = shortname = NULL;
+  avatar = NULL;
   mode = AVT_WINDOW;
+  audio = AVT_FALSE;
 
   if (lua_isnone (L, 1))	/* no argument */
     {

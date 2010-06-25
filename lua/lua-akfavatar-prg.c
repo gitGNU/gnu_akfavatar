@@ -182,7 +182,6 @@ static void
 get_args (int argc, char *argv[], int script_index)
 {
   int i;
-  char buf[1024];
 
   /* create global table "arg" and fill it */
   lua_newtable (L);
