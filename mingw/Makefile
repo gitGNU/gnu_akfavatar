@@ -23,6 +23,10 @@ includedir = $(prefix)/include
 SDL_CFLAGS := $(shell $(SDL_CONFIG) --cflags)
 SDL_LDFLAGS := $(shell $(SDL_CONFIG) --libs)
 
+# link with dynamic lib (different names!)
+LUA_CFLAGS =
+LUA_LDFLAGS = -llua51
+
 # name for binary packages
 BINPKGNAME=akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 
@@ -34,7 +38,8 @@ default_avatar = $(srcdir)/male_user.xpm
 SHELL = /bin/sh
 .SUFFIXES:
 
-all: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe example.exe
+all: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe example.exe \
+     lua-akfavatar.exe
 
 avtsayinfo.rc: $(srcdir)/mingw/avtsayinfo.in
 	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
@@ -46,13 +51,13 @@ libinfo.rc: $(srcdir)/mingw/libinfo.in
 	  -e "s/@REVISION@/$(REVISION)/; s/@VERSIONSTR@/$(VERSIONSTR)/" \
 	  $(srcdir)/mingw/libinfo.in > $@
 
-icon.o: $(srcdir)/mingw/icon.rc $(srcdir)/mingw/akfavatar.ico
-	$(WINDRES) -o $@ -i $(srcdir)/mingw/icon.rc
+icon.wo: $(srcdir)/mingw/icon.rc $(srcdir)/mingw/akfavatar.ico
+	 $(WINDRES) -o $@ -i $(srcdir)/mingw/icon.rc
 
-avtsayinfo.o: avtsayinfo.rc $(srcdir)/mingw/akfavatar.ico
+avtsayinfo.wo: avtsayinfo.rc $(srcdir)/mingw/akfavatar.ico
 	$(WINDRES) -I$(srcdir)/mingw -o $@ -i avtsayinfo.rc
 
-libinfo.o: libinfo.rc
+libinfo.wo: libinfo.rc
 	$(WINDRES) -o $@ -i libinfo.rc
 
 # alert.au should be in the sourcecode-distribution
@@ -64,20 +69,20 @@ alert.c: $(srcdir)/alert.au
 	$(AWK) -f $(srcdir)/data2c -v name=avt_alert_data \
 	  $(srcdir)/alert.au > $@
 
-avatar-default.o: $(srcdir)/avatar-default.c $(default_avatar)
+avatar-default.wo: $(srcdir)/avatar-default.c $(default_avatar)
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avatar-default.c
 
-filechooser.o: $(srcdir)/filechooser.c \
+filechooser.wo: $(srcdir)/filechooser.c \
                  $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/filechooser.c
 
-colorchooser.o: $(srcdir)/colorchooser.c $(srcdir)/akfavatar.h
+colorchooser.wo: $(srcdir)/colorchooser.c $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/colorchooser.c
 
 rgb.h: $(srcdir)/rgb.txt
 	$(AWK) -f $(srcdir)/rgb2c $(srcdir)/rgb.txt > $@
 
-avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h rgb.h \
+avatar.wo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h rgb.h \
              $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
              $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
              $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
@@ -87,9 +92,9 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h rgb.h \
              $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm \
              $(srcdir)/balloonpointer.xbm $(srcdir)/circle.xbm \
              $(srcdir)/akfavatar.xpm
-	$(CC) -I. $(SDL_CFLAGS) $(CFLAGS) -c $(srcdir)/avatar.c
+	$(CC) -c -I. $(SDL_CFLAGS) $(CFLAGS) -o $@ $(srcdir)/avatar.c
 
-avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h alert.c
+avatar-audio.wo: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h alert.c
 	$(CC) -c $(SDL_CFLAGS) $(CFLAGS) -I. -o $@ $(srcdir)/avatar-audio.c
 
 ucsfont7x14.c: $(srcdir)/7x14.bdf
@@ -98,59 +103,59 @@ ucsfont7x14.c: $(srcdir)/7x14.bdf
 ucsfont9x18.c: $(srcdir)/9x18.bdf
 	$(AWK) -f $(srcdir)/bdf2c $(srcdir)/9x18.bdf > $@
 
-font.o: $(srcdir)/font.c ucsfont7x14.c ucsfont9x18.c
+font.wo: $(srcdir)/font.c ucsfont7x14.c ucsfont9x18.c
 	$(CC) -c $(SDL_CFLAGS) $(CFLAGS) -I. -o $@ $(srcdir)/font.c
 
 # static library
-libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o
-	$(AR) rcu $@ avatar.o avatar-default.o avatar-audio.o font.o
+libakfavatar.a: avatar.wo avatar-default.wo avatar-audio.wo font.wo
+	$(AR) rcu $@ avatar.wo avatar-default.wo avatar-audio.wo font.wo
 	$(RANLIB) $@
 
-akfavatar.dll: avatar.o avatar-default.o avatar-audio.o font.o libinfo.o 
-	$(CC) -shared -o $@ avatar.o avatar-default.o avatar-audio.o \
-	        font.o libinfo.o \
+akfavatar.dll: avatar.wo avatar-default.wo avatar-audio.wo font.wo libinfo.wo 
+	$(CC) -shared -o $@ avatar.wo avatar-default.wo avatar-audio.wo \
+	        font.wo libinfo.wo \
 	        -Wl,-no-undefined,--enable-runtime-pseudo-reloc \
 	        -Wl,--output-def,akfavatar.def \
 	        -Wl,--out-implib,libakfavatar.dll.a \
 	        $(SDL_LDFLAGS) $(LDFLAGS)
 
-avtwindows.o: $(srcdir)/mingw/avtwindows.c
+avtwindows.wo: $(srcdir)/mingw/avtwindows.c
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/mingw/avtwindows.c
 
-askdrive.o: $(srcdir)/mingw/askdrive.c \
-	    $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
+askdrive.wo: $(srcdir)/mingw/askdrive.c \
+	     $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/mingw/askdrive.c
 
 # this is just a dummy stub!
-avttermstub.o: $(srcdir)/mingw/avttermstub.c $(srcdir)/avtaddons.h
+avttermstub.wo: $(srcdir)/mingw/avttermstub.c $(srcdir)/avtaddons.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/mingw/avttermstub.c
 
-arch.o: $(srcdir)/arch.c $(srcdir)/avtaddons.h
+arch.wo: $(srcdir)/arch.c $(srcdir)/avtaddons.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/arch.c
 
-avtccio.o: $(srcdir)/avtccio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
+avtccio.wo: $(srcdir)/avtccio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtccio.c
 
-avtcwio.o: $(srcdir)/avtcwio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
+avtcwio.wo: $(srcdir)/avtcwio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtcwio.c
 
-avtreadfile.o: $(srcdir)/avtreadfile.c $(srcdir)/avtaddons.h
+avtreadfile.wo: $(srcdir)/avtreadfile.c $(srcdir)/avtaddons.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtreadfile.c
 
-libavtaddons.a: filechooser.o askdrive.o arch.o avttermstub.o \
-                avtccio.o avtcwio.o avtmsg.o avtreadfile.o colorchooser.o
-	$(AR) rcu $@ filechooser.o askdrive.o arch.o avttermstub.o \
-	             avtccio.o avtcwio.o avtmsg.o avtreadfile.o \
-	             colorchooser.o
+libavtaddons.a: filechooser.wo askdrive.wo arch.wo avttermstub.wo \
+                avtccio.wo avtcwio.wo avtmsg.wo avtreadfile.wo colorchooser.wo
+	$(AR) rcu $@ filechooser.wo askdrive.wo arch.wo avttermstub.wo \
+	             avtccio.wo avtcwio.wo avtmsg.wo avtreadfile.wo \
+	             colorchooser.wo
 	-$(RANLIB) $@
 
-avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h
+avatarsay.wo: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h
 	$(CC) -I. $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avatarsay.c
 
 # from the mingw directory!
-avtmsg.o: $(srcdir)/mingw/avtmsg.c $(srcdir)/avtaddons.h
+avtmsg.wo: $(srcdir)/mingw/avtmsg.c $(srcdir)/avtaddons.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/mingw/avtmsg.c
 
@@ -164,24 +169,51 @@ avatarsay.exe: avatarsay-d.exe
 	cp avatarsay-d.exe avatarsay.exe
 
 # uses dynamic lib
-avatarsay-d.exe: avatarsay.o libavtaddons.a akfavatar.dll \
-	         avtwindows.o avtsayinfo.o
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -o $@ avatarsay.o \
-	  avtwindows.o avtsayinfo.o \
+avatarsay-d.exe: avatarsay.wo libavtaddons.a akfavatar.dll \
+	         avtwindows.wo avtsayinfo.wo
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -o $@ avatarsay.wo \
+	  avtwindows.wo avtsayinfo.wo \
 	  -L. -lavtaddons -lakfavatar $(SDL_LDFLAGS) $(LDFLAGS)
 
 # uses static lib
-avatarsay-s.exe: avatarsay.o libavtaddons.a libakfavatar.a \
-	       avtwindows.o avtsayinfo.o
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -o $@ avatarsay.o \
-	  avtwindows.o  avtsayinfo.o \
+avatarsay-s.exe: avatarsay.wo libavtaddons.a libakfavatar.a \
+	       avtwindows.wo avtsayinfo.wo
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -o $@ avatarsay.wo \
+	  avtwindows.wo  avtsayinfo.wo \
 	  libavtaddons.a libakfavatar.a $(SDL_LDFLAGS) $(LDFLAGS)
 
 example: example.exe
 
-example.exe: $(srcdir)/example.c akfavatar.dll icon.o
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -o $@ $(srcdir)/example.c icon.o \
+example.exe: $(srcdir)/example.c akfavatar.dll icon.wo
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -o $@ $(srcdir)/example.c icon.wo \
 			-L. -lakfavatar $(SDL_LDFLAGS) $(LDFLAGS)
+
+lua-akfavatar.exe: lua-akfavatar-prg.wo lua-avt.wo luaavtstarter-rc.wo \
+		libavtaddons.a
+	$(CC) -o $@ lua-akfavatar-prg.wo lua-avt.wo luaavtstarter-rc.wo \
+	    -L. -lavtaddons -lakfavatar \
+	    $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS)
+
+lua-avt.wo: $(srcdir)/lua/lua-avt.c
+	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
+	  $(srcdir)/lua/lua-avt.c
+
+lua-akfavatar-prg.wo: $(srcdir)/lua/lua-akfavatar-prg.c
+	$(CC) $(CFLAGS) $(LUA_CFLAGS) $(SDL_CFLAGS) -I$(srcdir) -c -o $@ \
+	 $(srcdir)/lua/lua-akfavatar-prg.c
+
+lua-akfavatar.rc: $(srcdir)/mingw/lua-akfavatar-rc.in
+	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
+	  -e "s/@REVISION@/$(REVISION)/; s/@VERSIONSTR@/$(VERSIONSTR)/" \
+	  $(srcdir)/mingw/lua-akfavatar-rc.in > $@
+
+luaavtstarter.rc: $(srcdir)/mingw/luaavtstarter-rc.in
+	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
+	  -e "s/@REVISION@/$(REVISION)/; s/@VERSIONSTR@/$(VERSIONSTR)/" \
+	  $(srcdir)/mingw/luaavtstarter-rc.in > $@
+
+luaavtstarter-rc.wo: luaavtstarter.rc $(srcdir)/mingw/akfavatar.ico
+	$(WINDRES) -I $(srcdir)/mingw/ -o $@ -i luaavtstarter.rc
 
 install: akfavatar.dll libakfavatar.a
 	install -m 644 $(srcdir)/akfavatar.h $(includedir)

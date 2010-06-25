@@ -31,7 +31,7 @@ BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 all: $(BUILD)
 
 default: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay avatarsay-d \
-	example lua-akfavatar
+	example lua-akfavatar lua-akfavatar-d
 	@echo '*'
 	@echo '* use "make install" or "make install-strip"'
 	@echo '* with root-privileges to install it.'
@@ -39,9 +39,6 @@ default: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay avatarsay-d \
 
 mingw:
 	$(MAKE) -f $(srcdir)/mingw/Makefile \
-	  srcdir="$(srcdir)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
-	  all
-	$(MAKE) -f $(srcdir)/lua/Makefile.w32 \
 	  srcdir="$(srcdir)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 	  all
 
@@ -187,16 +184,26 @@ avatarsay-s: avatarsay.o avtposix.o libavtaddons.a libakfavatar.a
 	$(CC) -o $@ avatarsay.o avtposix.o -L. -lavtaddons libakfavatar.a \
 	   $(SDL_LDFLAGS) $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
-# don't use!
-lua-akfavatar.so: $(srcdir)/lua/lua-avt.c $(srcdir)/filechooser.c \
-		$(srcdir)/avtmsg.c
-	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir="$(srcdir)" \
-	CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" lua-akfavatar.so
+# lua-akfavatar dynamically linked
+# only works, when the library is installed
+lua-akfavatar-d: lua-akfavatar-prg.o lua-avt.o libavtaddons.a
+	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o \
+	     -L. -lavtaddons -lakfavatar \
+	     $(LUA_LDFLAGS) $(LDFLAGS)
 
-lua-akfavatar: $(srcdir)/lua/lua-akfavatar-prg.c $(srcdir)/lua/lua-avt.c \
-		libavtaddons.a
-	-$(MAKE) -f $(srcdir)/lua/Makefile srcdir="$(srcdir)" \
-	CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" lua-akfavatar
+# avatarsay dynamically linked, with local rpath if possible
+lua-akfavatar: lua-akfavatar-prg.o lua-avt.o libavtaddons.a
+	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o \
+	     -L. -lavtaddons -lakfavatar \
+	     $(LUA_LDFLAGS) $(LDFLAGS) $(LOCAL_GCC_RPATH)
+
+lua-akfavatar-prg.o: $(srcdir)/lua/lua-akfavatar-prg.c
+	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
+	  $(srcdir)/lua/lua-akfavatar-prg.c
+
+lua-avt.o: $(srcdir)/lua/lua-avt.c
+	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
+	  $(srcdir)/lua/lua-avt.c
 
 installdirs:
 	-[ -d $(DESTDIR)$(includedir) ]  || $(INSTALL) -d $(DESTDIR)$(includedir)
@@ -216,6 +223,7 @@ install: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info ins
 	$(INSTALL_DATA) libavtaddons.a $(DESTDIR)$(libdir)
 	-$(LDCONFIG) $(libdir)
 	$(INSTALL_PROGRAM) avatarsay-d $(DESTDIR)$(bindir)/avatarsay
+	$(INSTALL_PROGRAM) lua-akfavatar-d $(DESTDIR)$(bindir)/lua-akfavatar
 	$(INSTALL_PROGRAM) $(srcdir)/avtman $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/gnome-akfavatar $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/avtcmd $(DESTDIR)$(bindir)
@@ -238,6 +246,7 @@ install-strip: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-in
 	$(INSTALL_DATA) libavtaddons.a $(DESTDIR)$(libdir)
 	-$(LDCONFIG) $(libdir)
 	$(INSTALL_PROGRAM) -s avatarsay-d $(DESTDIR)$(bindir)/avatarsay
+	$(INSTALL_PROGRAM) -s lua-akfavatar-d $(DESTDIR)$(bindir)/lua-akfavatar
 	$(INSTALL_PROGRAM) $(srcdir)/avtman $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/gnome-akfavatar $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/avtcmd $(DESTDIR)$(bindir)
@@ -267,6 +276,7 @@ uninstall: uninstall-info uninstall-man uninstall-txt uninstall-html \
 	-rm -f $(libdir)/libavtaddons.a
 	-rm -f $(libdir)/libavtcio.a # from old installations
 	-rm -f $(bindir)/avatarsay
+	-rm -f $(bindir)/lua-akfavatar
 	-rm -f $(bindir)/avtman
 	-rm -f $(bindir)/gnome-akfavatar
 	-rm -f $(docdir)/README
@@ -458,7 +468,7 @@ dist: info html man
 	   $(PKGNAME)/pascal/
 	
 	mkdir $(PKGNAME)/lua
-	ln lua/Makefile lua/Makefile.w32 lua/lua-avt.c \
+	ln lua/Makefile.w32 lua/lua-avt.c \
 	   lua/lua-akfavatar-prg.c \
 	   lua/interactive.lua lua/hello.lua lua/multiply.lua \
 	   lua/man.lua lua/textview.lua \

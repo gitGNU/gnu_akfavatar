@@ -230,6 +230,19 @@ then
   SDL_LDFLAGS="$SDL_LDFLAGS -lSDL_image"
 fi
 
+if pkg-config --exists lua5.1
+then
+  LUA_CFLAGS=`pkg-config lua5.1 --cflags`
+  LUA_LDFLAGS=`pkg-config lua5.1 --libs`
+elif pkg-config --exists lua
+then
+  LUA_CFLAGS=`pkg-config lua --cflags`
+  LUA_LDFLAGS=`pkg-config lua --libs`
+else
+  echo "Lua 5.1 not found" 1>&2
+  exit 1
+fi
+
 if [ "$NO_AUDIO" = "yes" ]
 then
   CFLAGS="$CFLAGS -DNO_AUDIO"
@@ -360,6 +373,8 @@ echo "CFLAGS = ${CFLAGS}"
 echo "LDFLAGS = ${LDFLAGS}"
 echo "SDL_CFLAGS = ${SDL_CFLAGS}"
 echo "SDL_LDFLAGS = ${SDL_LDFLAGS}"
+echo "LUA_CFLAGS = ${LUA_CFLAGS}"
+echo "LUA_LDFLAGS = ${LUA_LDFLAGS}"
 echo "AVATARSAY_LDFLAGS = ${AVATARSAY_LDFLAGS}"
 echo "AR = ${AR}"
 echo "RANLIB = ${RANLIB}"
@@ -422,6 +437,8 @@ INSTALL = ${INSTALL}
 LDCONFIG = ${LDCONFIG}
 SDL_CFLAGS = ${SDL_CFLAGS}
 SDL_LDFLAGS = ${SDL_LDFLAGS}
+LUA_CFLAGS = ${LUA_CFLAGS}
+LUA_LDFLAGS = ${LUA_LDFLAGS}
 AWK = ${AWK}
 SYSTEM = ${SYSTEM}
 ARCH = ${ARCH}
