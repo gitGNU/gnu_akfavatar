@@ -3965,6 +3965,7 @@ avt_pager (const wchar_t * txt, int len, int startline)
   avt_bool_t quit;
   avt_keyhandler old_keyhandler;
   avt_mousehandler old_mousehandler;
+  void (*old_alert_func) (void);
   SDL_Event event;
   SDL_Surface *button;
   SDL_Rect btn_rect;
@@ -4039,6 +4040,10 @@ avt_pager (const wchar_t * txt, int len, int startline)
   avt_ext_keyhandler = NULL;
   old_mousehandler = avt_ext_mousehandler;
   avt_ext_mousehandler = NULL;
+
+  /* temporarily disable the alert function */
+  old_alert_func = avt_alert_func;
+  avt_alert_func = NULL;
 
   avt_set_text_delay (0);
   avt_normal_text ();
@@ -4179,6 +4184,8 @@ avt_pager (const wchar_t * txt, int len, int startline)
 
   /* hide mouse pointer */
   SDL_ShowCursor (SDL_DISABLE);
+
+  avt_alert_func = old_alert_func;
 
   return _avt_STATUS;
 }

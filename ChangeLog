@@ -4,6 +4,8 @@
 
 	* avatar.c (avt_pager): handle clipping
 
+	* avatar.c (avt_pager): disable alert function
+
 2010-06-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c: renamed back from lua/lua-akfavatar.c
