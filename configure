@@ -191,10 +191,50 @@ if [ "$OPENPTY" = "yes" ]; then
   AVATARSAY_LDFLAGS="-lutil"
 fi
 
+# system specific stuff
+SYSTEM=`uname -s`
+case ${SYSTEM} in
+  Linux | linux)     SYSTEM="gnu-linux" 
+                     # the token $ORIGIN seems to be specific to 
+                     # GLibC 2.1 or higher - otherwise ignored
+                     LOCAL_RPATH='$$ORIGIN:.'
+                     ;;
+  FreeBSD | freebsd) SYSTEM="freebsd"
+                     LDFLAGS="${LDFLAGS} -lpthread -Wl,-rpath,'${libdir}'" 
+                     LOCAL_RPATH="."
+                     ;;
+  MINGW* | mingw* | windows32* | CYGWIN*)
+                    SYSTEM="mingw"
+                    ARCH="x86"
+                    BUILD="mingw"
+                    ;;
+esac
+
+ARCH=`uname -m`
+case ${ARCH} in
+  i?86) ARCH="x86" ;;
+esac
+
+case ${hosttype} in
+  *mingw* | *MINGW*) 
+           SYSTEM="mingw"
+           ARCH="x86"
+           BUILD="mingw"
+           ;;
+esac
+
+if [ ! x"${LOCAL_RPATH}" = x ] ; then
+  LOCAL_GCC_RPATH="-Wl,-rpath,'$LOCAL_RPATH'"
+  LOCAL_FPC_RPATH="-k-rpath -k'$LOCAL_RPATH'"
+fi
+
+###################################################################################
+# SDL
+
 # old SDL is meant for the target machine 
 # and independant of the systems SDL-Version
-[ "$OLDSDL" = "yes" ] && CFLAGS="$CFLAGS -DOLD_SDL=1"
-[ "$FORCE_ICONV" = "yes" ] && CFLAGS="$CFLAGS -DFORCE_ICONV=1"
+[ x"$OLDSDL" = x"yes" ] && CFLAGS="$CFLAGS -DOLD_SDL=1"
+[ x"$FORCE_ICONV" = x"yes" ] && CFLAGS="$CFLAGS -DFORCE_ICONV=1"
 [ -n "$WCHAR_ENCODING" ] \
   && CFLAGS="$CFLAGS -DWCHAR_ENCODING=\\\"$WCHAR_ENCODING\\\""
 
@@ -218,72 +258,57 @@ esac
 SDL_CFLAGS=`sdl-config --cflags`
 SDL_LDFLAGS=`sdl-config --libs`
 
-if [ "$SDL_IMAGE" = "no" ]
+if [ x"$SDL_IMAGE" = x"no" ]
 then 
   SDL_CFLAGS="$SDL_CFLAGS -DNO_SDL_IMAGE"
   LINK_SDL_IMAGE="no"
 fi
 
-if [ "$LINK_SDL_IMAGE" = "yes" ] 
+if [ x"$LINK_SDL_IMAGE" = x"yes" ] 
 then 
   SDL_CFLAGS="$SDL_CFLAGS -DLINK_SDL_IMAGE"
   SDL_LDFLAGS="$SDL_LDFLAGS -lSDL_image"
 fi
 
-if pkg-config --exists lua5.1
+########################################################################################
+# Lua
+
+if [ x"$SYSTEM" = x"mingw" ]
+then
+  LUA_CFLAGS=""
+  LUA_LDFLAGS="-llua"
+elif pkg-config --exists lua5.1
 then
   LUA_CFLAGS=`pkg-config lua5.1 --cflags`
   LUA_LDFLAGS=`pkg-config lua5.1 --libs`
 elif pkg-config --exists lua
 then
+  # hope it's the correct version
   LUA_CFLAGS=`pkg-config lua --cflags`
   LUA_LDFLAGS=`pkg-config lua --libs`
+elif [ -r /usr/include/lua5.1/lua.h -a /usr/lib/liblua5.1.so ]
+then
+  LUA_CFLAGS="-I/usr/include/lua5.1"
+  LUA_LDFLAGS="-llua5.1"
+elif [ -r /usr/include/lua.h -a /usr/lib/liblua.a ]
+then
+  LUA_CFLAGS=""
+  LUA_LDFLAGS="-llua"
+elif [ -r /usr/local/include/lua.h -a /usr/local/lib/liblua.a ]
+then
+  LUA_CFLAGS=""
+  LUA_LDFLAGS="-llua"
 else
   echo "Lua 5.1 not found" 1>&2
   exit 1
 fi
 
-if [ "$NO_AUDIO" = "yes" ]
+########################################################################################
+
+if [ x"$NO_AUDIO" = x"yes" ]
 then
   CFLAGS="$CFLAGS -DNO_AUDIO"
 fi
-
-# system specific stuff
-SYSTEM=`uname -s`
-case ${SYSTEM} in
-  Linux | linux)     SYSTEM="gnu-linux" 
-                     # the token $ORIGIN seems to be specific to 
-                     # GLibC 2.1 or higher - otherwise ignored
-                     LOCAL_RPATH='$$ORIGIN:.'
-                     ;;
-  FreeBSD | freebsd) SYSTEM="freebsd"
-                     LDFLAGS="${LDFLAGS} -lpthread -Wl,-rpath,'${libdir}'" 
-                     LOCAL_RPATH="."
-                     ;;
-  MINGW* | mingw* | windows32* | CYGWIN*)
-                    SYSTEM="mingw"
-                    ARCH="x86"
-                    BUILD="mingw"
-                    ;;
-esac
-
-if [ ! x"${LOCAL_RPATH}" = x ] ; then
-  LOCAL_GCC_RPATH="-Wl,-rpath,'$LOCAL_RPATH'"
-  LOCAL_FPC_RPATH="-k-rpath -k'$LOCAL_RPATH'"
-fi
-
-ARCH=`uname -m`
-case ${ARCH} in
-  i?86) ARCH="x86" ;;
-esac
-
-case ${hosttype} in
-  *mingw* | *MINGW*) 
-           SYSTEM="mingw"
-           ARCH="x86"
-           BUILD="mingw"
-           ;;
-esac
 
 # Find the source files, if location was not specified.
 srcdirtext=
