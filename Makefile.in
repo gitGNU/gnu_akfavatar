@@ -230,9 +230,6 @@ install: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info ins
 	$(INSTALL_DATA) $(srcdir)/README $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/AUTHORS $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/COPYING $(DESTDIR)$(docdir)
-	-$(MAKE) -f $(srcdir)/lua/Makefile \
-	    DESTDIR="$(DESTDIR)" bindir="$(bindir)" srcdir="$(srcdir)" \
-	    install
 	@echo '*'
 	@echo '* make install-desktop-menu: to install avatarsay in a desktop menu'
 	@echo '*'
@@ -253,9 +250,6 @@ install-strip: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-in
 	$(INSTALL_DATA) $(srcdir)/README $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/AUTHORS $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/COPYING $(DESTDIR)$(docdir)
-	-$(MAKE) -f $(srcdir)/lua/Makefile \
-	    DESTDIR="$(DESTDIR)" bindir="$(bindir)" srcdir="$(srcdir)" \
-	    install
 	@echo '*'
 	@echo '* use "make install-desktop-menu" to install avatarsay in a desktop menu'
 	@echo '*'
@@ -387,7 +381,6 @@ clean:
 	-rm -fr akfavatar-en.t2d/ akfavatar-de.t2d/
 	-rm -f pascal/*.o pascal/*.gpi pascal/*.gpm pascal/*.ppu
 	-rm -f pascal/link.res pascal/ppas.sh
-	-$(MAKE) -f $(srcdir)/lua/Makefile clean
 
 mostlyclean: clean
 
@@ -410,7 +403,6 @@ distclean: clean
 	-rm -f akfavatar-de.txt akfavatar-de.xml
 	-rm -f avatarsay*.exe akfavatar-*.zip
 	-rm -f config-mingw
-	-$(MAKE) -f $(srcdir)/lua/Makefile distclean
 
 
 # the rest is just for the maintainer
