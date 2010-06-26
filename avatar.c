@@ -1885,6 +1885,10 @@ avt_flash (void)
 
   /* make visible again */
   AVT_UPDATE_ALL ();
+
+  /* restore the clipping */
+  if (textfield.x >= 0)
+    SDL_SetClipRect (screen, &viewport);
 }
 
 static void
@@ -4022,6 +4026,9 @@ avt_pager (const wchar_t * txt, int len, int startline)
   button = NULL;
   AVT_UPDATE_RECT (btn_rect);
 
+  /* limit to viewport (else more problems with binary files */
+  SDL_SetClipRect (screen, &viewport);
+
   old_tc = text_cursor_visible;
   text_cursor_visible = AVT_FALSE;
   old_auto_margin = auto_margin;
@@ -4159,8 +4166,10 @@ avt_pager (const wchar_t * txt, int len, int startline)
     _avt_STATUS = AVT_NORMAL;
 
   /* remove button */
+  SDL_SetClipRect (screen, &window);
   SDL_FillRect (screen, &btn_rect, background_color);
   AVT_UPDATE_RECT (btn_rect);
+  SDL_SetClipRect (screen, &viewport);
 
   auto_margin = old_auto_margin;
   reserve_single_keys = old_reserve_single_keys;

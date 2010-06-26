@@ -1,3 +1,9 @@
+2010-06-26  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_flash): restore clipping
+
+	* avatar.c (avt_pager): handle clipping
+
 2010-06-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c: renamed back from lua/lua-akfavatar.c
