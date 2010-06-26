@@ -276,7 +276,7 @@ fi
 if [ x"$SYSTEM" = x"mingw" ]
 then
   LUA_CFLAGS=""
-  LUA_LDFLAGS="-llua"
+  LUA_LDFLAGS="-llua51"
 elif pkg-config --exists lua5.1
 then
   LUA_CFLAGS=`pkg-config lua5.1 --cflags`
@@ -493,6 +493,8 @@ then
     echo "REVISION = ${REVISION}"
     echo "VARIANT = ${VARIANT}"
     echo "AWK = ${AWK}"
+    echo "LUA_CFLAGS = ${LUA_CFLAGS}"
+    echo "LUA_LDFLAGS = ${LUA_LDFLAGS}"
   } > config-mingw
 
   # find executables for crosscompiling

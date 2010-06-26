@@ -23,10 +23,6 @@ includedir = $(prefix)/include
 SDL_CFLAGS := $(shell $(SDL_CONFIG) --cflags)
 SDL_LDFLAGS := $(shell $(SDL_CONFIG) --libs)
 
-# link with dynamic lib (different names!)
-LUA_CFLAGS =
-LUA_LDFLAGS = -llua51
-
 # name for binary packages
 BINPKGNAME=akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 
