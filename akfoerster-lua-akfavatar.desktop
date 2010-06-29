@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Encoding=UTF-8
+Name=Lua-AKFAvatar
+Comment=Lua-AKFAvatar runtime environment
+Comment[de]=Lua-AKFAvatar Laufzeitumgebung
+Exec=lua-akfavatar %f
+Icon=akfavatar.xpm
+Terminal=false
+Categories=Utility;

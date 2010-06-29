@@ -257,6 +257,7 @@ install-strip: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-in
 install-desktop-menu: $(srcdir)/akfavatar.xpm $(srcdir)/akfoerster-avatarsay.desktop
 	xdg-icon-resource install --size 32 --novendor $(srcdir)/akfavatar.xpm
 	xdg-desktop-menu install $(srcdir)/akfoerster-avatarsay.desktop
+	xdg-desktop-menu install $(srcdir)/akfoerster-lua-akfavatar.desktop
 
 uninstall: uninstall-info uninstall-man uninstall-txt uninstall-html \
            uninstall-dvi uninstall-ps uninstall-pdf
