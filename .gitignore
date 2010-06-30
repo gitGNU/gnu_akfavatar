@@ -8,7 +8,6 @@ Makefile
 config-local
 config-debug
 config.status
-config-mingw
 version.h
 avatarsay
 avatarsay-d
@@ -17,7 +16,6 @@ multiplizieren
 multiply
 bdfread
 libakfavatar.so*
-lua-akfavatar.so
 lua-akfavatar
 lua-avt-starter
 bin2c
@@ -60,3 +58,4 @@ akfavatar-??.xml
 pasref.txt
 akfavatar-h.txt
 build
+*.patch
