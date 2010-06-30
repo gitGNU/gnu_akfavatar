@@ -477,13 +477,13 @@ dist: info html man
 	ln pascal/README pascal/akfavatar.pas pascal/example.pas \
 	   pascal/multiply.pas \
 	   pascal/positive.au pascal/negative.au pascal/neutral.au \
-	   pascal/positive.inc pascal/negative.inc \
+	   pascal/positive.inc pascal/negative.inc pascal/teacher.inc \
 	   pascal/xpm2pas pascal/xbm2pas \
 	   pascal/gpcavatar pascal/fpcavatar \
 	   $(PKGNAME)/pascal/
 	
 	mkdir $(PKGNAME)/lua
-	ln lua/Makefile.w32 lua/lua-avt.c \
+	ln lua/lua-avt.c \
 	   lua/lua-akfavatar-prg.c \
 	   lua/interactive.lua lua/hello.lua lua/multiply.lua \
 	   lua/man.lua lua/textview.lua \
@@ -503,6 +503,7 @@ dist: info html man
 	mkdir $(PKGNAME)/mingw
 	ln mingw/akfavatar.ico mingw/icon.rc \
 	   mingw/libinfo.in mingw/avtsayinfo.in mingw/lua-akfavatar-rc.in \
+	   mingw/luaavtstarter-rc.in \
 	   mingw/avtmsg.c mingw/avtwindows.c \
 	   mingw/avttermstub.c mingw/askdrive.c \
 	   mingw/Makefile mingw/README \

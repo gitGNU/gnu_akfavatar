@@ -5,6 +5,7 @@ a.out
 *.wo
 *.ppu
 Makefile
+config-mingw
 config-local
 config-debug
 config.status
