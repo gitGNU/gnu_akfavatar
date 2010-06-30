@@ -205,6 +205,28 @@ lua-avt.o: $(srcdir)/lua/lua-avt.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/lua-avt.c
 
+# Lua-Module -- should not be used as such, yet (unsolved problem)
+lua-akfavatar.so: lua-avt.lo filechooser.lo colorchooser.lo avtmsg.lo
+	$(CC) -o $@ -shared -fpic lua-avt.lo filechooser.lo colorchooser.lo \
+	     avtmsg.lo -L. -lakfavatar \
+	     $(LUA_LDFLAGS) $(LDFLAGS) $(LOCAL_GCC_RPATH)
+
+lua-avt.lo: $(srcdir)/lua/lua-avt.c
+	  $(CC) $(SDL_CFLAGS) $(CFLAGS) $(LUA_CFLAGS) -I. -c -fpic -o $@ \
+	  $(srcdir)/lua/lua-avt.c
+
+filechooser.lo: $(srcdir)/filechooser.c $(srcdir)/avtaddons.h
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -fpic -o $@ \
+	  $(srcdir)/filechooser.c
+
+colorchooser.lo: $(srcdir)/colorchooser.c $(srcdir)/avtaddons.h
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -fpic -o $@ \
+	  $(srcdir)/colorchooser.c
+
+avtmsg.lo: $(srcdir)/filechooser.c $(srcdir)/avtaddons.h
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -fpic -o $@ \
+	  $(srcdir)/avtmsg.c
+
 installdirs:
 	-[ -d $(DESTDIR)$(includedir) ]  || $(INSTALL) -d $(DESTDIR)$(includedir)
 	-[ -d $(DESTDIR)$(libdir) ]      || $(INSTALL) -d $(DESTDIR)$(libdir)
