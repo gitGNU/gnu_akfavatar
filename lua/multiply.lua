@@ -412,8 +412,8 @@ static char * teacher_xpm[] = {
   avt.set_background_color("tan")
   avt.set_balloon_color("floral white")
   avt.initialize{title="AKFAvatar: multiply", shortname="multiply",
-                 avatar=teacher, audio=true, mode=avt.window_mode}
-  avt.encoding("UTF-8") -- UTF-8 is the default
+                 avatar=teacher, audio=true, encoding="UTF-8", 
+                 mode=avt.window_mode}
   avt.move_in()
 
   math.randomseed(os.time())

@@ -5,8 +5,7 @@
 
 require "lua-akfavatar"
 
-avt.initialize{title="Manpage"}
-avt.encoding("ISO-8859-1")
+avt.initialize{title="Manpage", encoding="ISO-8859-1"}
 
 function underlined(text)
   return string.gsub(text, ".", "_\b%1")

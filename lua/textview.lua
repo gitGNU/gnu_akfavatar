@@ -5,7 +5,7 @@
 
 require "lua-akfavatar"
 
-avt.initialize{title="Text Viewer"}
+avt.initialize{title="Text Viewer", encoding="UTF-8"}
 avt.move_in()
 
 if arg[1]

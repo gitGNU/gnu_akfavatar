@@ -8,8 +8,8 @@
 
 require "lua-akfavatar" --> makes sure Lua-AKFAvatar is used
 
-avt.initialize{title="Hello World", avatar="default", mode=avt.window_mode}
-avt.encoding("UTF-8") --> the strings in this program are in UTF-8
+avt.initialize{title="Hello World", avatar="default", 
+               encoding="UTF-8", mode=avt.window_mode}
 avt.set_text_delay() --> activate the slowprint mode (optional)
 avt.move_in() --> move the avatar in (optional)
 avt.set_balloon_size(7, 20) --> set the size of the balloon (optional)

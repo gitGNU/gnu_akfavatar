@@ -104,7 +104,7 @@ get_avatar (lua_State * L, int index)
 }
 
 /*
- * expects a table with values for: title, shortname, avatar, mode
+ * expects a table with values for: title, shortname, avatar, encoding, mode
  *
  * title and shortname should be strings
  *
@@ -112,6 +112,9 @@ get_avatar (lua_State * L, int index)
  *        or a path to a file
  *
  * audio may be set to true to activate audio
+ *
+ * encoding is the encoding for strings, for example to "ISO-8859-1"
+ *          default is "UTF-8"
  *
  * mode is one of avt.auto_mode, avt.window_mode, avt.fullscreen_mode, 
  *      avt.fullscreennoswitch_mode
@@ -122,12 +125,14 @@ static int
 lavt_initialize (lua_State * L)
 {
   const char *title, *shortname;
+  char *encoding;
   avt_image_t *avatar;
   avt_bool_t audio;
   int mode;
 
   title = shortname = NULL;
   avatar = NULL;
+  encoding = "UTF-8";
   mode = AVT_WINDOW;
   audio = AVT_FALSE;
 
@@ -154,6 +159,10 @@ lavt_initialize (lua_State * L)
       audio = lua_toboolean (L, -1);
       lua_pop (L, 1);
 
+      lua_getfield (L, 1, "encoding");
+      encoding = lua_tostring (L, -1);
+      lua_pop (L, 1);
+
       lua_getfield (L, 1, "mode");
       mode = lua_tointeger (L, -1);
       lua_pop (L, 1);
@@ -167,6 +176,7 @@ lavt_initialize (lua_State * L)
       check (avt_initialize (title, shortname, avatar, mode));
       if (audio)
 	check (avt_initialize_audio ());
+      check (avt_mb_encoding (encoding));
     }
   else				/* already initialized */
     {
@@ -175,7 +185,7 @@ lavt_initialize (lua_State * L)
       avt_switch_mode (mode);
       if (audio)
 	avt_initialize_audio ();
-      check (avt_get_status ());
+      check (avt_mb_encoding (encoding));
     }
 
   initialized = AVT_TRUE;
@@ -255,8 +265,7 @@ lavt_get_color (lua_State * L)
     return 0;
 }
 
-/* set the used encoding (iconv) */
-/* default is UTF-8 */
+/* change the used encoding (iconv) */
 static int
 lavt_encoding (lua_State * L)
 {

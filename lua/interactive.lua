@@ -19,7 +19,7 @@ end
 
 say = print --> an alias that fits better
 
-avt.initialize{}
+avt.initialize{title="Lua-AKFAvatar", encoding="UTF-8", audio=true}
 avt.move_in()
 avt.say(_VERSION, " / AKFAvatar ", avt.version(), "\n\n")
 
