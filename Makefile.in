@@ -240,6 +240,7 @@ install: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info ins
 	$(INSTALL_DATA) $(srcdir)/akfavatar.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) $(srcdir)/avtaddons.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) $(LIBNAME) $(DESTDIR)$(libdir)
+	-ln -sf $(LIBNAME) $(DESTDIR)$(libdir)/$(SONAME)
 	-ln -sf $(LIBNAME) $(DESTDIR)$(libdir)/libakfavatar.so
 	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
 	$(INSTALL_DATA) libavtaddons.a $(DESTDIR)$(libdir)
