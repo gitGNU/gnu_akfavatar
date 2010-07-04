@@ -260,6 +260,7 @@ install-strip: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-in
 	$(INSTALL_DATA) $(srcdir)/akfavatar.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) $(srcdir)/avtaddons.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) -s $(LIBNAME) $(DESTDIR)$(libdir)
+	-ln -sf $(LIBNAME) $(DESTDIR)$(libdir)/$(SONAME)
 	-ln -sf $(LIBNAME) $(DESTDIR)$(libdir)/libakfavatar.so
 	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
 	$(INSTALL_DATA) libavtaddons.a $(DESTDIR)$(libdir)
@@ -300,6 +301,7 @@ uninstall: uninstall-info uninstall-man uninstall-txt uninstall-html \
 	-rm -f $(docdir)/AUTHORS
 	-rm -f $(docdir)/COPYING
 	-xdg-desktop-menu uninstall akfoerster-avatarsay.desktop
+	-xdg-desktop-menu uninstall akfoerster-lua-akfavatar.desktop
 	-xdg-icon-resource uninstall --size 32 --novendor akfavatar.xpm
 
 info:
