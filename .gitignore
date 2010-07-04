@@ -18,6 +18,7 @@ multiply
 bdfread
 libakfavatar.so*
 lua-akfavatar
+lua-akfavatar-d
 lua-avt-starter
 bin2c
 ucsfont*.c

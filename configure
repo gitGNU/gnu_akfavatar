@@ -277,11 +277,15 @@ if [ x"$SYSTEM" = x"mingw" ]
 then
   LUA_CFLAGS=""
   LUA_LDFLAGS="-llua51"
-elif pkg-config --exists lua5.1
+elif pkg-config --exists lua-5.1  # FreeBSD 8.0
+then
+  LUA_CFLAGS=`pkg-config lua-5.1 --cflags`
+  LUA_LDFLAGS=`pkg-config lua-5.1 --libs`
+elif pkg-config --exists lua5.1  # Debian
 then
   LUA_CFLAGS=`pkg-config lua5.1 --cflags`
   LUA_LDFLAGS=`pkg-config lua5.1 --libs`
-elif pkg-config --exists lua
+elif pkg-config --exists lua  # Fedora
 then
   # hope it's the correct version
   LUA_CFLAGS=`pkg-config lua --cflags`
