@@ -160,7 +160,8 @@ lavt_initialize (lua_State * L)
       lua_pop (L, 1);
 
       lua_getfield (L, 1, "encoding");
-      encoding = lua_tostring (L, -1);
+      if (lua_isstring (L, -1))
+	encoding = lua_tostring (L, -1);
       lua_pop (L, 1);
 
       lua_getfield (L, 1, "mode");
