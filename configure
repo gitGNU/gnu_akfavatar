@@ -530,9 +530,9 @@ then
   fi
 fi
 
-# file for pkg-config
+# files for pkg-config
 cat > akfavatar.pc << EOF
-# configuration of AKFAvatar
+# AKFAvatar pkg-config file
 prefix=${prefix}
 exec_prefix=${exec_prefix}
 libdir=${libdir}
@@ -545,6 +545,24 @@ URL: http://akfavatar.nongnu.org/
 Requires.private: sdl >= 1.2.0
 Conflicts:
 Libs: -L\${libdir} -lakfavatar
+Libs.private:
+Cflags: -I\${includedir}
+EOF
+
+cat > avtaddons.pc << EOF
+# AKFAvatar addons pkg-config file
+prefix=${prefix}
+exec_prefix=${exec_prefix}
+libdir=${libdir}
+includedir=${includedir}
+
+Name: AKFAvatar Addons
+Description: static addon lib for AKFAvatar
+Version: ${VERSION}.${SUBVERSION}.${REVISION}
+URL: http://akfavatar.nongnu.org/
+Requires: akfavatar
+Conflicts:
+Libs: -L\${libdir} -lavtaddons
 Libs.private:
 Cflags: -I\${includedir}
 EOF
