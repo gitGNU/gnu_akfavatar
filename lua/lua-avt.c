@@ -165,7 +165,8 @@ lavt_initialize (lua_State * L)
       lua_pop (L, 1);
 
       lua_getfield (L, 1, "mode");
-      mode = lua_tointeger (L, -1);
+      if (lua_isnumber (L, -1))
+	mode = lua_tointeger (L, -1);
       lua_pop (L, 1);
     }
 
