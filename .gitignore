@@ -4,6 +4,7 @@ a.out
 *.lo
 *.wo
 *.ppu
+*.pc
 Makefile
 config-mingw
 config-local
