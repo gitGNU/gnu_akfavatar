@@ -542,7 +542,7 @@ Name: AKFAvatar
 Description: graphical user interface with an avatar
 Version: ${VERSION}.${SUBVERSION}.${REVISION}
 URL: http://akfavatar.nongnu.org/
-Requires: sdl >= 1.2.0
+Requires.private: sdl >= 1.2.0
 Conflicts:
 Libs: -L\${libdir} -lakfavatar
 Libs.private:
