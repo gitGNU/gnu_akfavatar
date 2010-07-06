@@ -412,6 +412,7 @@ mostlyclean: clean
 
 distclean: clean
 	-rm -f avatarsay avatarsay-d avatarsay-s example
+	-rm -f lua-akfavatar lua-akfavatar-d
 	-rm -f example a.out *.a *.so
 	-rm -f $(LIBNAME) $(SONAME)
 	-rm -f config.status
@@ -429,6 +430,7 @@ distclean: clean
 	-rm -f akfavatar-de.txt akfavatar-de.xml
 	-rm -f avatarsay*.exe akfavatar-*.zip
 	-rm -f config-mingw
+	-rm -f akfavatar.pc
 
 
 # the rest is just for the maintainer
