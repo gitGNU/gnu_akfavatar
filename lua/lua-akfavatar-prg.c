@@ -95,6 +95,24 @@ initialize (void)
     avta_error ("cannot initialize graphics", avt_get_error ());
 }
 
+static void
+initialize_lua (void)
+{
+  L = lua_open ();
+  if (L == NULL)
+    avta_error ("cannot open Lua", "not enough memory");
+
+  luaL_openlibs (L);
+  luaopen_akfavatar (L);	/* leaves avt on stack */
+
+  /* mark 'lua-akfavatar' as loaded  */
+  lua_getglobal (L, "package");
+  lua_getfield (L, -1, "loaded");
+  lua_pushvalue (L, 1);		/* table avt */
+  lua_setfield (L, -2, "lua-akfavatar");
+  lua_pop (L, 3);
+}
+
 static avt_bool_t
 is_lua (const char *filename)
 {
@@ -127,27 +145,13 @@ ask_file (void)
 
       if (luaL_dofile (L, filename) != 0)
 	{
+	  /* on a normal quit-request there is nil on the stack */
 	  if (lua_isstring (L, -1))
 	    avta_error (lua_tostring (L, -1), NULL);
 	  lua_pop (L, 1);	/* pop message (or the nil) */
 	}
 
-      /* reset settings */
-      avt_set_status (AVT_NORMAL);
-      avt_set_background_color_name ("default");
-      avt_set_balloon_color_name ("floral white");
-
-      /* script may have called avt.quit() */
-      if (avt_initialized ())
-	{
-	  avt_set_title ("Lua-AKFAvatar Starter", "AKFAvatar");
-	  avt_change_avatar_image (avt_default ());
-	  avt_normal_text ();
-	}
-      else
-	initialize ();
-
-      return AVT_TRUE;
+      return AVT_TRUE;		/* run this again */
     }
 
   return AVT_FALSE;
@@ -203,20 +207,7 @@ main (int argc, char **argv)
   avta_prgname (PRGNAME);
 
   /* initialize Lua */
-  L = lua_open ();
-  if (L == NULL)
-    avta_error (argv[0], "cannot open Lua: not enough memory");
-
-  luaL_openlibs (L);
-  luaopen_akfavatar (L);	/* leaves avt on stack */
-
-  /* mark 'lua-akfavatar' as loaded  */
-  lua_getglobal (L, "package");
-  lua_getfield (L, -1, "loaded");
-  lua_pushvalue (L, 1);		/* table avt */
-  lua_setfield (L, -2, "lua-akfavatar");
-  lua_pop (L, 3);
-
+  initialize_lua ();
   atexit (quit);
 
   if (script_index)
@@ -236,7 +227,24 @@ main (int argc, char **argv)
       start_screen ();
       while (ask_file ())
 	{
-	  /* oh, nothing */
+	  /* reset settings */
+	  avt_set_status (AVT_NORMAL);
+	  avt_set_background_color_name ("default");
+	  avt_set_balloon_color_name ("floral white");
+
+	  /* script may have called avt.quit() */
+	  if (avt_initialized ())
+	    {
+	      avt_set_title ("Lua-AKFAvatar Starter", "AKFAvatar");
+	      avt_change_avatar_image (avt_default ());
+	      avt_normal_text ();
+	    }
+	  else
+	    initialize ();
+
+	  /* restart Lua */
+	  lua_close (L);
+	  initialize_lua ();
 	}
     }
 
