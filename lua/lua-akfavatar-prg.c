@@ -98,7 +98,7 @@ initialize (void)
 static void
 initialize_lua (void)
 {
-  L = lua_open ();
+  L = luaL_newstate ();
   if (L == NULL)
     avta_error ("cannot open Lua", "not enough memory");
 
