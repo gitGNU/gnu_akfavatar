@@ -29,6 +29,8 @@
 #include <stdlib.h>		/* for exit() */
 #include <string.h>		/* for strcmp() */
 
+#include <unistd.h>		/* for chdir(), getcwd() */
+
 static avt_bool_t initialized = AVT_FALSE;
 
 /* "check()" checks the returned status code */
@@ -125,7 +127,7 @@ static int
 lavt_initialize (lua_State * L)
 {
   const char *title, *shortname;
-  char *encoding;
+  const char *encoding;
   avt_image_t *avatar;
   avt_bool_t audio;
   int mode;
@@ -1203,6 +1205,26 @@ lavt_color_selection (lua_State * L)
   return 1;
 }
 
+static int
+lavt_chdir (lua_State * L)
+{
+  chdir (luaL_checkstring (L, 1));
+  return 0;
+}
+
+static int
+lavt_getcwd (lua_State * L)
+{
+  char dir[2048];
+
+  if (getcwd (dir, sizeof (dir)))
+    lua_pushstring (L, dir);
+  else
+    lua_pushnil (L);
+
+  return 1;
+}
+
 /* --------------------------------------------------------- */
 /* register library functions */
 
@@ -1308,6 +1330,9 @@ static const struct luaL_reg akfavtlib[] = {
   {"erase_characters", lavt_erase_characters},
   {"file_selection", lavt_file_selection},
   {"color_selection", lavt_color_selection},
+  {"get_directory", lavt_getcwd},
+  {"set_directory", lavt_chdir},
+  {"chdir", lavt_chdir},
   {NULL, NULL}
 };
 
