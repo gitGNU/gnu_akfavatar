@@ -227,7 +227,7 @@ install-strip: akfavatar.dll libakfavatar.a
 	$(STRIP) $(libdir)/akfavatar.dll
 
 clean:
-	-rm -f *~ *.o *.ppu *.gpi
+	-rm -f *~ *.o *.lo *.wo *.ppu *.gpi
 	-rm -f libinfo.rc avtsayinfo.rc
 	-rm -f alert.c
 	-rm -f rgb.h

@@ -398,12 +398,13 @@ check:
 clean:
 	-rm -f *~
 	-rm -f *.o *.lo
+	-rm -f *.wo
 	-rm -f *.ppu *.gpi *.gpm
 	-rm -f bdfread
 	-rm -f alert.c
 	-rm -f rgb.h
 	-rm -f ucsfont9x18.c ucsfont7x14.c
-	-rm -f libinfo.rc avtsayinfo.rc
+	-rm -f libinfo.rc avtsayinfo.rc luaavtstarter.rc
 	-rm -fr akfavatar-en.t2d/ akfavatar-de.t2d/
 	-rm -f pascal/*.o pascal/*.gpi pascal/*.gpm pascal/*.ppu
 	-rm -f pascal/link.res pascal/ppas.sh
@@ -429,6 +430,7 @@ distclean: clean
 	-rm -f akfavatar-de.pdf akfavatar-de.ps akfavatar-de.dvi
 	-rm -f akfavatar-de.txt akfavatar-de.xml
 	-rm -f avatarsay*.exe akfavatar-*.zip
+	-rm -f lua-akfavatar.exe
 	-rm -f config-mingw
 	-rm -f akfavatar.pc avtaddons.pc
 
