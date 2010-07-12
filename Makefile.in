@@ -30,6 +30,8 @@ BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 
 all: $(BUILD)
 
+dist-bin: $(DISTBIN)
+
 default: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay avatarsay-d \
 	example lua-akfavatar lua-akfavatar-d
 	@echo '*'
@@ -520,12 +522,12 @@ dist: info html man
 	rm -rf $(PKGNAME)/
 	bzip2 -f $(PKGNAME).tar
 
-dist-bin: avatarsay lua-akfavatar lua-akfavatar.so info html
+dist-bin-default: avatarsay lua-akfavatar info html
 	mkdir $(BINPKGNAME)
 	cp $(LIBNAME) $(BINPKGNAME)/
 	cp avatarsay $(BINPKGNAME)/
 	-ln -sf $(LIBNAME) $(BINPKGNAME)/$(SONAME)
-	-cp lua-akfavatar lua-akfavatar.so $(BINPKGNAME)/
+	-cp lua-akfavatar $(BINPKGNAME)/
 	ln $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/
 	ln $(srcdir)/pascal/?pcavatar $(BINPKGNAME)/
 	ln $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/

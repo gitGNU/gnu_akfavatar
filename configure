@@ -58,6 +58,7 @@ LOCAL_GCC_RPATH=
 LOCAL_FPC_RPATH=
 AWK='awk'
 BUILD='default'
+DISTBIN="dist-bin-default"
 
 # Loop over all args
 while [ x"$1" != x ] ; do
@@ -207,6 +208,7 @@ case ${SYSTEM} in
                     SYSTEM="mingw"
                     ARCH="x86"
                     BUILD="mingw"
+                    DISTBIN="dist-mingw"
                     ;;
 esac
 
@@ -221,6 +223,7 @@ case ${hosttype} in
            SYSTEM="mingw"
            ARCH="x86"
            BUILD="mingw"
+           DISTBIN="dist-mingw"
            ;;
 esac
 
@@ -414,6 +417,7 @@ echo "LDCONFIG = ${LDCONFIG}"
 echo "SYSTEM = ${SYSTEM}"
 echo "ARCH = ${ARCH}"
 echo "BUILD = ${BUILD}"
+echo "DISTBIN = ${DISTBIN}"
 
 VERSIONNR=`printf "%02d%02d%02d" ${VERSION} ${SUBVERSION} ${REVISION}`
 rm -f version.h
@@ -475,6 +479,7 @@ ARCH = ${ARCH}
 LOCAL_GCC_RPATH = ${LOCAL_GCC_RPATH}
 LOCAL_FPC_RPATH = ${LOCAL_FPC_RPATH}
 BUILD = ${BUILD}
+DISTBIN = ${DISTBIN}
 
 EOF
 cat ${srcdir}/Makefile.in >> Makefile
