@@ -57,7 +57,7 @@ LOCAL_RPATH=
 LOCAL_GCC_RPATH=
 LOCAL_FPC_RPATH=
 AWK='awk'
-BUILD='default'
+TARGET='default'
 DISTBIN="dist-bin-default"
 
 # Loop over all args
@@ -207,7 +207,7 @@ case ${SYSTEM} in
   MINGW* | mingw* | windows32* | CYGWIN*)
                     SYSTEM="mingw"
                     ARCH="x86"
-                    BUILD="mingw"
+                    TARGET="mingw"
                     DISTBIN="dist-mingw"
                     ;;
 esac
@@ -222,7 +222,7 @@ case ${hosttype} in
   *mingw* | *MINGW*) 
            SYSTEM="mingw"
            ARCH="x86"
-           BUILD="mingw"
+           TARGET="mingw"
            DISTBIN="dist-mingw"
            ;;
 esac
@@ -416,7 +416,7 @@ echo "AWK = ${AWK}"
 echo "LDCONFIG = ${LDCONFIG}"
 echo "SYSTEM = ${SYSTEM}"
 echo "ARCH = ${ARCH}"
-echo "BUILD = ${BUILD}"
+echo "TARGET = ${TARGET}"
 echo "DISTBIN = ${DISTBIN}"
 
 VERSIONNR=`printf "%02d%02d%02d" ${VERSION} ${SUBVERSION} ${REVISION}`
@@ -478,7 +478,7 @@ SYSTEM = ${SYSTEM}
 ARCH = ${ARCH}
 LOCAL_GCC_RPATH = ${LOCAL_GCC_RPATH}
 LOCAL_FPC_RPATH = ${LOCAL_FPC_RPATH}
-BUILD = ${BUILD}
+TARGET = ${TARGET}
 DISTBIN = ${DISTBIN}
 
 EOF

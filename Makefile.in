@@ -28,7 +28,7 @@ BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 	clean mostlyclean distclean maintainer-clean maintainerclean dist \
 	mingw dist-mingw
 
-all: $(BUILD)
+all: $(TARGET)
 
 dist-bin: $(DISTBIN)
 
