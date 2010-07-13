@@ -1179,6 +1179,14 @@ lavt_erase_characters (lua_State * L)
   return 0;
 }
 
+static int
+lavt_backspace (lua_State * L)
+{
+  is_initialized ();
+  avt_backspace ();
+  return 0;
+}
+
 /* --------------------------------------------------------- */
 /* avtaddons.h */
 
@@ -1328,6 +1336,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"insert_spaces", lavt_insert_spaces},
   {"delete_characters", lavt_delete_characters},
   {"erase_characters", lavt_erase_characters},
+  {"backspace", lavt_backspace},
   {"file_selection", lavt_file_selection},
   {"color_selection", lavt_color_selection},
   {"get_directory", lavt_getcwd},
