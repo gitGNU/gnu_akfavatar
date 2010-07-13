@@ -226,7 +226,8 @@ installdirs:
 	-[ -d $(DESTDIR)$(mandir)/man1 ] || $(INSTALL) -d $(DESTDIR)$(mandir)/man1
 	-[ -d $(DESTDIR)$(docdir) ]      || $(INSTALL) -d $(DESTDIR)$(docdir)
 
-install: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info install-man
+install: libakfavatar.so libakfavatar.a avatarsay-bin lua-akfavatar-bin \
+	 installdirs install-info install-man
 	$(INSTALL_DATA) $(srcdir)/akfavatar.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) $(srcdir)/avtaddons.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) $(LIBNAME) $(DESTDIR)$(libdir)
@@ -247,7 +248,8 @@ install: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info ins
 	@echo '* make install-desktop-menu: to install avatarsay in a desktop menu'
 	@echo '*'
 
-install-strip: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info install-man
+install-strip: libakfavatar.so libakfavatar.a avatarsay-bin lua-akfavatar-bin \
+	       installdirs install-info install-man
 	$(INSTALL_DATA) $(srcdir)/akfavatar.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) $(srcdir)/avtaddons.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) -s $(LIBNAME) $(DESTDIR)$(libdir)
