@@ -851,11 +851,12 @@ lavt_update (lua_State * L)
 }
 
 /* wait a given amount of seconds (fraction) */
+#define DEF_WAIT (AVT_DEFAULT_FLIP_PAGE_DELAY / 1000.0)
 static int
 lavt_wait_sec (lua_State * L)
 {
   is_initialized ();
-  check (avt_wait ((int) (luaL_checknumber (L, 1) * 1000.0)));
+  check (avt_wait ((int) (luaL_optnumber (L, 1, DEF_WAIT) * 1000.0)));
 
   return 0;
 }
