@@ -32,7 +32,7 @@ C or Pascal.
 
 Homepage: @uref{http://akfavatar.nongnu.org/}
 
-Copyright @copyright{} 2007, 2008, 2009 Andreas K. Foerster,
+Copyright @copyright{} 2007, 2008, 2009, 2010 Andreas K. Foerster,
 @uref{http://akfoerster.de/}
 
 Copying and distribution of this documentation, with or without modification,
@@ -172,6 +172,9 @@ You need the ``Runtime Libraries'' as well as the ``Development Libraries''!
 Of course SDL needs a graphical environment to run in.
 For example the X-Window-System or a Linux framebuffer-device@enddots{}
 
+@item Lua-5.1.x
+@uref{http://lua.org/}
+
 @item An ANSI-C Compiler (gcc or others)@*
 @uref{http://gcc.gnu.org/}
 
@@ -214,10 +217,8 @@ on a lot of systems that is already included
 @subheading Compiling
 
 Run @samp{./configure}. If that succeeds run @samp{make} to create the
-binaries.  There are two variants of avatarsay being compiled: 
-1. ``avatarsay''  is a special compilation, which can be used without 
-installing it. 2. ``avatarsay-d'' will only work, when the library
-is installed.  This is the variant that gets installed.
+binaries. For Unix systems there are scripts, so you can use it without
+installing.
 
 @subsubheading Compiling --- special cases
 @cindex VGA
@@ -310,8 +311,9 @@ Solution: There are different character sets. Try to use the parameters
 @subheading Other systems
 
 @subsubheading BSD
-AKFAvatar is known to be compilable with FreeBSD 6.2.  To get iconv support,
-install @code{libiconv} and use @samp{./configure --with-iconv}.
+AKFAvatar is known to be compilable with FreeBSD 6.2 and 8.0.  
+To get iconv support, install @code{libiconv} and use 
+@samp{./configure --with-iconv}.
 
 @subsubheading Windows
 Windows is just partly supported.  I provide binaries which are build

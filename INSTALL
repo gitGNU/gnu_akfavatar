@@ -15,6 +15,9 @@ Needed
    Of course SDL needs a graphical environment to run in.
    For example the X-Window-System or a Linux framebuffer-device...
 
+ * Lua-5.1.x
+     http://lua.org/
+
  * An ANSI-C Compiler (gcc or others)
      http://gcc.gnu.org/
 
@@ -50,11 +53,8 @@ INSTALLATION
 
 Compiling
 
-Run "./configure". If that succeeds run "make" to create the binaries. 
-There are two variants of avatarsay being compiled: 1. "avatarsay" is a
-special compilation, which can be used without installing it. 
-2. "avatarsay-d" will only work, when the library is installed. 
-This is the variant that gets installed.
+Run "./configure". If that succeeds run "make" to create the binaries.
+For Unix systems there are scripts, so you can use it without installing.
 
 
 Compiling - special cases

@@ -36,7 +36,7 @@ Programmbibliothek um dafür Programme in C oder Pascal zu schreiben.
 
 Homepage: @uref{http://akfavatar.nongnu.org/}
 
-Copyright @copyright{} 2007, 2008, 2009 Andreas K. Förster,
+Copyright @copyright{} 2007, 2008, 2009, 2010 Andreas K. Förster,
 @uref{http://akfoerster.de/}
 
 Vervielfältigung und Verbreitung dieser Anleitung, mit oder ohne Veränderungen,
@@ -181,6 +181,9 @@ Man benötigt die ``Runtime Libraries'' sowie die ``Development Libraries''!
 Natürlich benötigt SDL eine grafische Umgebung.
 Zum Beispiel das X-Window-System oder einen Linux Framebuffer@enddots{}
 
+@item Lua-5.1.x
+@uref{http://lua.org/}
+
 @item Einen ANSI-C Compiler (gcc oder andere)@*
 @uref{http://gcc.gnu.org/}
 
@@ -224,10 +227,8 @@ ist auf vielen Systemen bereits integriert
 
 Zunächst sollte man @samp{./configure} aufrufen.  Wenn das klappt, kann
 man @samp{make} eingeben, um die ausführbaren Programme zu kompilieren.
-Es werden zwei Varianten von avatarsay kompiliert: 1. ``avatarsay'' ist
-speziell dafür erstellt worden, dass man es auch ohne Installation verwenden
-kann.  2. ``avatarsay-d'' wird nur funktionieren, wenn man zuvor die Bibliothek
-installiert hat.  Diese Variante wird für die Installation verwendet.
+Für Unix-Systeme gibt es Skripte, damit man das auch ohne Installation
+verwenden kann.
 
 @subsubheading Kompilieren --- Sonderfälle
 @cindex VGA
@@ -332,7 +333,7 @@ die Parameter @option{--utf-8} oder @option{--latin1} mit anzugeben.
 @subheading Andere Systeme
 
 @subsubheading BSD
-AKFAvatar ist mit FreeBSD 6.2 kompilierbar.  Um iconv-Unterstützung zu 
+AKFAvatar ist mit FreeBSD 6.2 und 8.0 kompilierbar.  Um iconv-Unterstützung zu
 erhalten, muss man @code{libiconv} installiert haben und
 @samp{./configure --with-iconv} verwenden.
 
