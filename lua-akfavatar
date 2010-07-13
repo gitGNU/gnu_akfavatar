@@ -1,13 +1,6 @@
 #!/bin/sh
 # this file is in the Public Domain -- AKFoerster
 
-if [ $# -eq 0 -o "$1" = "--help" -o "$1" = "-h" ]
-then
-  echo "usage: ./lrun program"
-  echo "lrun runs programs using libraries in lrun's directory"
-  exit 0
-fi
-
 localdir=$(dirname "$0")
 test "$localdir" = "." && localdir=$(pwd)
 
@@ -16,4 +9,4 @@ LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$localdir"
 
 export PATH LD_LIBRARY_PATH
 
-exec "$@"
+exec ./lua-akfavatar-bin "$@"

@@ -32,8 +32,8 @@ all: $(TARGET)
 
 dist-bin: $(DISTBIN)
 
-default: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay avatarsay-d \
-	example lua-akfavatar lua-akfavatar-d
+default: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay-bin \
+	lua-akfavatar-bin
 	@echo '*'
 	@echo '* use "make install" or "make install-strip"'
 	@echo '* with root-privileges to install it.'
@@ -132,7 +132,7 @@ libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo font.lo
 
 example: $(srcdir)/example.c libakfavatar.so
 	$(CC) $(CFLAGS) -I. -o $@ $(srcdir)/example.c \
-	  -L. -lakfavatar $(LDFLAGS) $(LOCAL_GCC_RPATH)
+	  -L. -lakfavatar $(LDFLAGS)
 
 avtccio.o: $(srcdir)/avtccio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) -I. -c -o $@ $(srcdir)/avtccio.c
@@ -171,15 +171,10 @@ avtposix.o: $(srcdir)/avtposix.c
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtposix.c
 
 # avatarsay dynamically linked
-# only works, when the library is installed
-avatarsay-d: avatarsay.o avtposix.o libavtaddons.a libakfavatar.so
+avatarsay-bin: avatarsay.o avtposix.o libavtaddons.a libakfavatar.so
 	$(CC) -o $@ avatarsay.o avtposix.o -L. -lavtaddons -lakfavatar \
 	  $(LDFLAGS) $(AVATARSAY_LDFLAGS)
-
-# avatarsay dynamically linked, with local rpath if possible
-avatarsay: avatarsay.o avtposix.o libavtaddons.a libakfavatar.so
-	$(CC) -o $@ avatarsay.o avtposix.o -L. -lavtaddons -lakfavatar \
-	  $(LDFLAGS) $(AVATARSAY_LDFLAGS) $(LOCAL_GCC_RPATH)
+	test -f ./avatarsay || cp $(srcdir)/avatarsay .
 
 # avatarsay with statical libakfavatar.a
 avatarsay-s: avatarsay.o avtposix.o libavtaddons.a libakfavatar.a
@@ -187,17 +182,11 @@ avatarsay-s: avatarsay.o avtposix.o libavtaddons.a libakfavatar.a
 	   $(SDL_LDFLAGS) $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
 # lua-akfavatar dynamically linked
-# only works, when the library is installed
-lua-akfavatar-d: lua-akfavatar-prg.o lua-avt.o libavtaddons.a
+lua-akfavatar-bin: lua-akfavatar-prg.o lua-avt.o libavtaddons.a
 	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o \
 	     -L. -lavtaddons -lakfavatar \
 	     $(LUA_LDFLAGS) $(LDFLAGS)
-
-# avatarsay dynamically linked, with local rpath if possible
-lua-akfavatar: lua-akfavatar-prg.o lua-avt.o libavtaddons.a
-	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o \
-	     -L. -lavtaddons -lakfavatar \
-	     $(LUA_LDFLAGS) $(LDFLAGS) $(LOCAL_GCC_RPATH)
+	test -f ./lua-akfavatar || cp $(srcdir)/lua-akfavatar .
 
 lua-akfavatar-prg.o: $(srcdir)/lua/lua-akfavatar-prg.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
@@ -210,8 +199,7 @@ lua-avt.o: $(srcdir)/lua/lua-avt.c
 # Lua-Module -- should not be used as such, yet (unsolved problem)
 lua-akfavatar.so: lua-avt.lo filechooser.lo colorchooser.lo avtmsg.lo
 	$(CC) -o $@ -shared -fpic lua-avt.lo filechooser.lo colorchooser.lo \
-	     avtmsg.lo -L. -lakfavatar \
-	     $(LUA_LDFLAGS) $(LDFLAGS) $(LOCAL_GCC_RPATH)
+	     avtmsg.lo -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS)
 
 lua-avt.lo: $(srcdir)/lua/lua-avt.c
 	  $(CC) $(SDL_CFLAGS) $(CFLAGS) $(LUA_CFLAGS) -I. -c -fpic -o $@ \
@@ -247,8 +235,8 @@ install: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-info ins
 	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
 	$(INSTALL_DATA) libavtaddons.a $(DESTDIR)$(libdir)
 	-$(LDCONFIG) $(libdir)
-	$(INSTALL_PROGRAM) avatarsay-d $(DESTDIR)$(bindir)/avatarsay
-	$(INSTALL_PROGRAM) lua-akfavatar-d $(DESTDIR)$(bindir)/lua-akfavatar
+	$(INSTALL_PROGRAM) avatarsay-bin $(DESTDIR)$(bindir)/avatarsay
+	$(INSTALL_PROGRAM) lua-akfavatar-bin $(DESTDIR)$(bindir)/lua-akfavatar
 	$(INSTALL_PROGRAM) $(srcdir)/avtman $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/gnome-akfavatar $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/avtcmd $(DESTDIR)$(bindir)
@@ -268,8 +256,8 @@ install-strip: libakfavatar.so libakfavatar.a avatarsay-d installdirs install-in
 	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
 	$(INSTALL_DATA) libavtaddons.a $(DESTDIR)$(libdir)
 	-$(LDCONFIG) $(libdir)
-	$(INSTALL_PROGRAM) -s avatarsay-d $(DESTDIR)$(bindir)/avatarsay
-	$(INSTALL_PROGRAM) -s lua-akfavatar-d $(DESTDIR)$(bindir)/lua-akfavatar
+	$(INSTALL_PROGRAM) -s avatarsay-bin $(DESTDIR)$(bindir)/avatarsay
+	$(INSTALL_PROGRAM) -s lua-akfavatar-bin $(DESTDIR)$(bindir)/lua-akfavatar
 	$(INSTALL_PROGRAM) $(srcdir)/avtman $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/gnome-akfavatar $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/avtcmd $(DESTDIR)$(bindir)
@@ -414,8 +402,8 @@ clean:
 mostlyclean: clean
 
 distclean: clean
-	-rm -f avatarsay avatarsay-d avatarsay-s example
-	-rm -f lua-akfavatar lua-akfavatar-d
+	-rm -f avatarsay-bin avatarsay-s example
+	-rm -f lua-akfavatar-bin
 	-rm -f example a.out *.a *.so
 	-rm -f $(LIBNAME) $(SONAME)
 	-rm -f config.status
@@ -453,12 +441,12 @@ maintainerclean: maintainer-clean
 multiply: $(srcdir)/pascal/multiply.pas
 	-$(srcdir)/pascal/fpcavatar -dRELEASE -FE. -o$@ \
 	    -Fi$(srcdir)/pascal \
-	    $(srcdir)/pascal/multiply.pas $(LOCAL_FPC_RPATH)
+	    $(srcdir)/pascal/multiply.pas
 
 multiplizieren: $(srcdir)/pascal/multiply.pas
 	-$(srcdir)/pascal/fpcavatar -dRELEASE -ddeutsch -FE. -o$@ \
 	    -Fi$(srcdir)/pascal \
-	    $(srcdir)/pascal/multiply.pas $(LOCAL_FPC_RPATH)
+	    $(srcdir)/pascal/multiply.pas
 
 dist: info html man
 	mkdir $(PKGNAME)
@@ -480,6 +468,7 @@ dist: info html man
 	   7x14.bdf 9x18.bdf bdf2c font.c \
 	   alert.flac alert.au \
 	   configure Makefile.in text2c data2c rgb2c \
+	   avatarsay lua-akfavatar \
 	   $(PKGNAME)/
 
 	mkdir $(PKGNAME)/pascal
@@ -522,12 +511,12 @@ dist: info html man
 	rm -rf $(PKGNAME)/
 	bzip2 -f $(PKGNAME).tar
 
-dist-bin-default: avatarsay lua-akfavatar info html
+dist-bin-default: avatarsay-bin lua-akfavatar-bin info html
 	mkdir $(BINPKGNAME)
 	cp $(LIBNAME) $(BINPKGNAME)/
-	cp avatarsay $(BINPKGNAME)/
+	cp $(srcdir)/avatarsay avatarsay-bin $(BINPKGNAME)/
 	-ln -sf $(LIBNAME) $(BINPKGNAME)/$(SONAME)
-	-cp lua-akfavatar $(BINPKGNAME)/
+	cp $(srcdir)/lua-akfavatar lua-akfavatar-bin $(BINPKGNAME)/
 	ln $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/
 	ln $(srcdir)/pascal/?pcavatar $(BINPKGNAME)/
 	ln $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/

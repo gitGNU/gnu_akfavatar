@@ -34,7 +34,7 @@ default_avatar = $(srcdir)/male_user.xpm
 SHELL = /bin/sh
 .SUFFIXES:
 
-all: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe example.exe \
+all: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe \
      lua-akfavatar.exe
 
 avtsayinfo.rc: $(srcdir)/mingw/avtsayinfo.in
@@ -157,26 +157,14 @@ avtmsg.wo: $(srcdir)/mingw/avtmsg.c $(srcdir)/avtaddons.h
 
 avatarsay: avatarsay.exe
 
-avatarsay-d: avatarsay-d.exe
-
 avatarsay-s: avatarsay-s.exe
 
-avatarsay.exe: avatarsay-d.exe
-	cp avatarsay-d.exe avatarsay.exe
-
 # uses dynamic lib
-avatarsay-d.exe: avatarsay.wo libavtaddons.a akfavatar.dll \
+avatarsay.exe: avatarsay.wo libavtaddons.a akfavatar.dll \
 	         avtwindows.wo avtsayinfo.wo
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -o $@ avatarsay.wo \
 	  avtwindows.wo avtsayinfo.wo \
 	  -L. -lavtaddons -lakfavatar $(SDL_LDFLAGS) $(LDFLAGS)
-
-# uses static lib
-avatarsay-s.exe: avatarsay.wo libavtaddons.a libakfavatar.a \
-	       avtwindows.wo avtsayinfo.wo
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -o $@ avatarsay.wo \
-	  avtwindows.wo  avtsayinfo.wo \
-	  libavtaddons.a libakfavatar.a $(SDL_LDFLAGS) $(LDFLAGS)
 
 example: example.exe
 
@@ -226,19 +214,6 @@ install-strip: akfavatar.dll libakfavatar.a
 	install -m 644 akfavatar.dll $(libdir)
 	$(STRIP) $(libdir)/akfavatar.dll
 
-clean:
-	-rm -f *~ *.o *.lo *.wo *.ppu *.gpi
-	-rm -f libinfo.rc avtsayinfo.rc
-	-rm -f alert.c
-	-rm -f rgb.h
-	-rm -f ucsfont7x14.c ucsfont9x18.c
-	-rm -f bdfread bdfread.exe
-
-distclean: clean
-	-rm -f *.a *.so *.exe avatarsay-*.zip
-	-rm -f akfavatar.def akfavatar.dll akfavatar.lib
-	-rm -f config.mak
-	-rm -f akfavatar*.zip
 
 # the folowing targets are for the maintainer
 # don't use them unless you know what you are doing

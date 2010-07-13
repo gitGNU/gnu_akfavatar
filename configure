@@ -53,9 +53,6 @@ INSTALL='install'
 AR='ar'
 RANLIB='ranlib'
 LDCONFIG='ldconfig'
-LOCAL_RPATH=
-LOCAL_GCC_RPATH=
-LOCAL_FPC_RPATH=
 AWK='awk'
 TARGET='default'
 DISTBIN="dist-bin-default"
@@ -195,14 +192,9 @@ fi
 # system specific stuff
 SYSTEM=`uname -s`
 case ${SYSTEM} in
-  Linux | linux)     SYSTEM="gnu-linux" 
-                     # the token $ORIGIN seems to be specific to 
-                     # GLibC 2.1 or higher - otherwise ignored
-                     LOCAL_RPATH='$$ORIGIN:.'
-                     ;;
+  Linux | linux)     SYSTEM="gnu-linux" ;;
   FreeBSD | freebsd) SYSTEM="freebsd"
                      LDFLAGS="${LDFLAGS} -lpthread -Wl,-rpath,'${libdir}'" 
-                     LOCAL_RPATH="."
                      ;;
   MINGW* | mingw* | windows32* | CYGWIN*)
                     SYSTEM="mingw"
@@ -226,11 +218,6 @@ case ${hosttype} in
            DISTBIN="dist-mingw"
            ;;
 esac
-
-if [ ! x"${LOCAL_RPATH}" = x ] ; then
-  LOCAL_GCC_RPATH="-Wl,-rpath,'$LOCAL_RPATH'"
-  LOCAL_FPC_RPATH="-k-rpath -k'$LOCAL_RPATH'"
-fi
 
 ###################################################################################
 # SDL
@@ -386,7 +373,6 @@ echo "REVISION = ${REVISION}"
 echo "VARIANT = ${VARIANT}"
 echo "LIBNAME = ${LIBNAME}"
 echo "SONAME = ${SONAME}"
-echo "LOCAL_RPATH = ${LOCAL_RPATH}"
 echo "srcdir = ${srcdir}"
 echo "prefix = ${prefix}"
 echo "exec_prefix = ${exec_prefix}"
@@ -476,8 +462,6 @@ LUA_LDFLAGS = ${LUA_LDFLAGS}
 AWK = ${AWK}
 SYSTEM = ${SYSTEM}
 ARCH = ${ARCH}
-LOCAL_GCC_RPATH = ${LOCAL_GCC_RPATH}
-LOCAL_FPC_RPATH = ${LOCAL_FPC_RPATH}
 TARGET = ${TARGET}
 DISTBIN = ${DISTBIN}
 
