@@ -139,7 +139,6 @@ while [ x"$1" != x ] ; do
 		no_create=yes ;;
 	--host*)
 		hosttype=`echo ${optarg} | sed -e 's,/$,,'` ;;
-
 	CC=*)       CC=${optarg} ;;
 	CXX=*)      CXX=${optarg} ;;
 	CPPFLAGS=*) CPPFLAGS=${optarg} ;;
@@ -217,6 +216,12 @@ case ${hosttype} in
            TARGET="mingw"
            DISTBIN="dist-mingw"
            ;;
+  *x86* | *i?86*) # private hack
+           CFLAGS="-m32 $CFLAGS"
+           LDFLAGS="-m32 $LDFLAGS"
+           ARCH="x86"
+           hosttype='x86' # easier for 'if'
+           ;;
 esac
 
 ###################################################################################
@@ -246,8 +251,16 @@ case ${sdlversion} in
          exit 1 ;;
 esac
 
-SDL_CFLAGS=`sdl-config --cflags`
-SDL_LDFLAGS=`sdl-config --libs`
+case ${hosttype} in
+  *x86* | *i?86*)  # private hack
+      SDL_CFLAGS="-I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT"
+      SDL_LDFLAGS="-L/usr/lib32 -lSDL"
+      ;;
+   *)
+      SDL_CFLAGS=`sdl-config --cflags`
+      SDL_LDFLAGS=`sdl-config --libs`
+      ;;
+esac
 
 if [ x"$SDL_IMAGE" = x"no" ]
 then 
@@ -268,6 +281,10 @@ if [ x"$SYSTEM" = x"mingw" ]
 then
   LUA_CFLAGS=""
   LUA_LDFLAGS="-llua51"
+elif [ x"${hosttype}" = x"x86" ] # private hack
+then
+  LUA_CFLAGS="-I/usr/include/lua5.1"
+  LUA_LDFLAGS="-L/usr/lib32 -llua -lm" # static lib!
 elif pkg-config --exists lua-5.1  # FreeBSD 8.0
 then
   LUA_CFLAGS=`pkg-config lua-5.1 --cflags`
