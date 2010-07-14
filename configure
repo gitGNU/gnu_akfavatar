@@ -217,10 +217,16 @@ case ${hosttype} in
            DISTBIN="dist-mingw"
            ;;
   *x86* | *i?86*) # private hack
-           CFLAGS="-m32 $CFLAGS"
-           LDFLAGS="-m32 $LDFLAGS"
-           ARCH="x86"
-           hosttype='x86' # easier for 'if'
+           if [ x"$ARCH" = x"x86" ]
+           then
+             # unset hosttype, not needed
+             hosttype=
+           else
+             CFLAGS="-m32 $CFLAGS"
+             LDFLAGS="-m32 $LDFLAGS"
+             ARCH="x86"
+             hosttype='x86' # easier for 'if'
+           fi
            ;;
 esac
 
