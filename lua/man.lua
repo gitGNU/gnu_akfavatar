@@ -13,10 +13,9 @@ end
 
 function ask()
   avt.set_balloon_size(3, 40)
-  avt.say("man [", underlined("Option"), " ...] ",
-          "[", underlined("Section"), "] ",
-          underlined("Page"), " ...\n\n",
-          "man ")
+  avt.say("man [", underlined("Option"), " ...] [",
+          underlined("Section"), "] ",
+          underlined("Page"), " ...\n\nman ")
   local answer = avt.ask()
   return answer
 end
