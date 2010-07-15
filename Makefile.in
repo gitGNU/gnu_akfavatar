@@ -485,7 +485,7 @@ dist: info html man
 	mkdir $(PKGNAME)/lua
 	ln lua/lua-avt.c \
 	   lua/lua-akfavatar-prg.c \
-	   lua/interactive.lua lua/hello.lua lua/multiply.lua \
+	   lua/interactive_lua.lua lua/hello.lua lua/multiply.lua \
 	   lua/man.lua lua/textview.lua \
 	   $(PKGNAME)/lua/
 
@@ -524,7 +524,7 @@ dist-bin-default: avatarsay-bin lua-akfavatar-bin info html
 	ln $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	ln $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
 	ln $(srcdir)/teacher.xpm $(srcdir)/akfoerster.xpm $(BINPKGNAME)/
-	ln $(srcdir)/lua/interactive.lua $(srcdir)/lua/multiply.lua $(BINPKGNAME)/
+	ln $(srcdir)/lua/interactive_lua.lua $(srcdir)/lua/multiply.lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/hello.lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/man.lua $(srcdir)/lua/textview.lua $(BINPKGNAME)/
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/avtman \
