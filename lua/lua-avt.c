@@ -1191,19 +1191,49 @@ lavt_backspace (lua_State * L)
 /* --------------------------------------------------------- */
 /* avtaddons.h */
 
-/* TODO: filter */
+/* avt.file_selection (filter) */
+
+/* we need to temporarily store the Lua_state :-( */
+static lua_State *tmp_lua_state;
+
+/* call the function at index 1 with the filename */
+static avt_bool_t
+file_filter (const char *filename)
+{
+  avt_bool_t result;
+
+  lua_pushvalue (tmp_lua_state, 1);	/* push func again, to keep it */
+  lua_pushstring (tmp_lua_state, filename);	/* parameter */
+  lua_call (tmp_lua_state, 1, 1);
+  result = lua_toboolean (tmp_lua_state, -1);
+  lua_pop (tmp_lua_state, 1);	/* pop result, leave func on stack */
+
+  return result;
+}
 
 static int
 lavt_file_selection (lua_State * L)
 {
   char filename[256];
+  avta_filter_t filter;
 
   is_initialized ();
-  if (avta_file_selection (filename, sizeof (filename), NULL) > -1)
+
+  if (lua_isnoneornil (L, 1))
+    filter = NULL;
+  else
+    {
+      luaL_checktype (L, 1, LUA_TFUNCTION);
+      tmp_lua_state = L;
+      filter = &file_filter;
+    }
+
+  if (avta_file_selection (filename, sizeof (filename), filter) > -1)
     lua_pushstring (L, filename);
   else
     quit (L);			/* TODO: ??? */
 
+  tmp_lua_state = NULL;
   return 1;
 }
 

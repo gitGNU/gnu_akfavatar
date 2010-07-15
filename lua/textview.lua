@@ -8,9 +8,26 @@ require "lua-akfavatar"
 avt.initialize{title="Text Viewer", encoding="UTF-8"}
 avt.move_in()
 
+-- what files to show with file_selection
+function textfile(n)
+  n = string.lower(n)
+  return string.find(n, "%.txt$")
+         or string.find(n, "%.text$")
+         or string.find(n, "^readme")
+         or string.find(n, "^changelog$")
+         or string.find(n, "^authors$")
+         or string.find(n, "^copying")
+         or string.find(n, "^news$")
+         or string.find(n, "^install$")
+         or string.find(n, "%.lua$")
+         or string.find(n, "%.c$")
+         or string.find(n, "%.cpp$")
+         or string.find(n, "%.pas$")
+end
+
 if arg[1]
   then io.input(arg[1])
-  else io.input(avt.file_selection())
+  else io.input(avt.file_selection(textfile))
   end
 
 avt.pager(io.read("*all"))
