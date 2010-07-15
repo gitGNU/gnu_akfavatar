@@ -1,7 +1,7 @@
 /*
  * AKFAvatar - library for showing an avatar who says things in a balloon
  * This file imports the default avatar image
- * Copyright (c) 2007, 2009 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007, 2009, 2010 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -19,11 +19,11 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "female_user.xpm"
+#include "male_user.xpm"
 #include "akfavatar.h"
 
 extern avt_image_t *
 avt_default (void)
 {
-  return avt_import_xpm (female_user_xpm);
+  return avt_import_xpm (male_user_xpm);
 }
