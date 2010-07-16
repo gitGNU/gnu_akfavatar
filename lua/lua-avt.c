@@ -1231,7 +1231,7 @@ lavt_file_selection (lua_State * L)
   if (avta_file_selection (filename, sizeof (filename), filter) > -1)
     lua_pushstring (L, filename);
   else
-    quit (L);			/* TODO: ??? */
+    lua_pushnil (L);
 
   tmp_lua_state = NULL;
   return 1;
