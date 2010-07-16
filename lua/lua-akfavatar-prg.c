@@ -103,14 +103,14 @@ initialize_lua (void)
     avta_error ("cannot open Lua", "not enough memory");
 
   luaL_openlibs (L);
-  luaopen_akfavatar (L);	/* leaves avt on stack */
 
-  /* mark 'lua-akfavatar' as loaded  */
+  /* register loader function for: require "lua-akfavatar" */
+  /* (users should not be able to leave the require command away) */
   lua_getglobal (L, "package");
-  lua_getfield (L, -1, "loaded");
-  lua_pushvalue (L, 1);		/* table avt */
+  lua_getfield (L, -1, "preload");
+  lua_pushcfunction (L, luaopen_akfavatar);
   lua_setfield (L, -2, "lua-akfavatar");
-  lua_pop (L, 3);
+  lua_pop (L, 2);
 }
 
 static avt_bool_t
