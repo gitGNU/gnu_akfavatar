@@ -25,6 +25,7 @@
 #include <string.h>
 #include <strings.h>
 #include <stdlib.h>
+#include <libgen.h>		/* for dirname */
 
 #include <lua.h>
 #include <lauxlib.h>
@@ -183,6 +184,20 @@ start_screen (void)
 }
 
 static void
+goto_script_directory (char *p)
+{
+  char *path, *dir;
+
+  path = strdup (p);
+  dir = dirname (path);
+
+  if (strcmp (".", dir) != 0)
+    chdir (dir);
+
+  free (path);
+}
+
+static void
 get_args (int argc, char *argv[], int script_index)
 {
   int i;
@@ -212,6 +227,7 @@ main (int argc, char **argv)
 
   if (script_index)
     {
+      goto_script_directory (argv[script_index]);
       get_args (argc, argv, script_index);
 
       if (luaL_dofile (L, argv[script_index]) != 0)
