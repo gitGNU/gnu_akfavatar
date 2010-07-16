@@ -1,3 +1,7 @@
+2010-07-16  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_ask): fix: no sound on quit-request
+
 2010-06-26  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_flash): restore clipping

@@ -4257,7 +4257,9 @@ avt_ask (wchar_t * s, const int size)
       /* show cursor */
       avt_show_text_cursor (AVT_TRUE);
 
-      avt_get_key (&ch);
+      if (avt_get_key (&ch))
+        break;
+
       switch (ch)
 	{
 	case 8:
