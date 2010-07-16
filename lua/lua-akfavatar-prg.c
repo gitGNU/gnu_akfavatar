@@ -206,18 +206,26 @@ goto_script_directory (char *p)
 }
 
 static void
-get_args (int argc, char *argv[], int script_index)
+get_args (int argc, char *argv[], int script_index, char *script_name)
 {
   int i;
 
   /* create global table "arg" and fill it */
   lua_newtable (L);
-  for (i = script_index; i < argc; i++)
+
+  /* script name as arg[0] */
+  lua_pushinteger (L, 0);
+  lua_pushstring (L, script_name);
+  lua_settable (L, -3);
+
+  /* arg[1] ... */
+  for (i = script_index + 1; i < argc; i++)
     {
       lua_pushinteger (L, i - script_index);
       lua_pushstring (L, argv[i]);
       lua_settable (L, -3);
     }
+
   lua_setglobal (L, "arg");
 }
 
@@ -238,7 +246,7 @@ main (int argc, char **argv)
       char *script_name;
 
       script_name = goto_script_directory (argv[script_index]);
-      get_args (argc, argv, script_index);
+      get_args (argc, argv, script_index, script_name);
 
       if (luaL_dofile (L, script_name) != 0)
 	{
