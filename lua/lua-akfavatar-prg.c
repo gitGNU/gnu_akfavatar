@@ -183,10 +183,12 @@ start_screen (void)
   avt_wait_button ();
 }
 
-static void
+/* goto directory of the given path, returns the basename */
+/* the basename must be freed by the caller */
+static char *
 goto_script_directory (char *p)
 {
-  char *path, *dir;
+  char *path, *dir, *name;
 
   path = strdup (p);
   dir = dirname (path);
@@ -195,6 +197,12 @@ goto_script_directory (char *p)
     chdir (dir);
 
   free (path);
+
+  path = strdup (p);
+  name = strdup (basename (path));
+  free (path);
+
+  return name;
 }
 
 static void
@@ -227,15 +235,18 @@ main (int argc, char **argv)
 
   if (script_index)
     {
-      goto_script_directory (argv[script_index]);
+      char *script_name;
+
+      script_name = goto_script_directory (argv[script_index]);
       get_args (argc, argv, script_index);
 
-      if (luaL_dofile (L, argv[script_index]) != 0)
+      if (luaL_dofile (L, script_name) != 0)
 	{
 	  if (lua_isstring (L, -1))
 	    avta_error (lua_tostring (L, -1), NULL);
-	  return EXIT_SUCCESS;	/* errors are catched by avta_error */
 	}
+
+      free (script_name);
     }
   else				/* no script at command-line */
     {
