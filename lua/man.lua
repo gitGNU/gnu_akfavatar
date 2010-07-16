@@ -29,9 +29,9 @@ if arg[1]
   else page = ask()
   end
 
-local manpage = io.popen(
+local manpage = assert(io.popen(
   "env MANWIDTH=80 GROFF_TYPESETTER=latin1 GROFF_NO_SGR=1 man -t "
-  .. page .. " 2>&1")
+  .. page .. " 2>&1"))
 
 avt.set_balloon_size(0, 0)
 avt.pager(manpage:read("*all"))
