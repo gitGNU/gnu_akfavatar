@@ -4,7 +4,7 @@
 	map some function keys to unicode chars in the reserved area
 
 	* avatar.c (avt_ask):
-	support for left and right arrow keys
+	support full line editing
 
 2010-07-16  Andreas K. Foerster  <info@akfoerster.de>
 

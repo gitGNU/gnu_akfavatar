@@ -4237,7 +4237,8 @@ extern int
 avt_ask (wchar_t * s, const int size)
 {
   wchar_t ch;
-  size_t len, maxlen;
+  size_t len, maxlen, pos;
+  avt_bool_t insert_mode;
 
   if (!screen)
     return _avt_STATUS;
@@ -4262,7 +4263,8 @@ avt_ask (wchar_t * s, const int size)
   if (maxlen > size / sizeof (wchar_t))
     maxlen = size / sizeof (wchar_t);
 
-  len = 0;
+  len = pos = 0;
+  insert_mode = AVT_TRUE;
   SDL_memset(s, 0, size);
   ch = L'\0';
 
@@ -4279,35 +4281,95 @@ avt_ask (wchar_t * s, const int size)
 	case AVT_KEY_ENTER:
 	  break;
 
-	case AVT_KEY_BACKSPACE:
-	case AVT_KEY_DELETE:
-	case AVT_KEY_LEFT:
-	  if (len > 0)
-	    {
-	      len--;
+	case AVT_KEY_HOME:
+	  avt_show_text_cursor (AVT_FALSE);
+	  cursor.x -= pos * FONTWIDTH;
+	  pos = 0;
+	  break;
 
-	      /* delete cursor and one char */
+	case AVT_KEY_END:
+	  avt_show_text_cursor (AVT_FALSE);
+	  cursor.x += (len - pos) * FONTWIDTH;
+	  pos = len;
+	  break;
+
+	case AVT_KEY_BACKSPACE:
+	  if (pos > 0)
+	    {
+	      pos--;
 	      avt_show_text_cursor (AVT_FALSE);
 	      avt_backspace ();
-	      avt_clearchar ();
+	      avt_delete_characters (1);
+	      SDL_memmove (&s[pos], &s[pos+1], (len - pos - 1) * sizeof(ch));
+	      len--;
 	    }
 	  else if (avt_alert_func)
 	    (*avt_alert_func) ();
 	  break;
 
-        case AVT_KEY_RIGHT:
-          ch = s[len];
-          /* no break */
+	case AVT_KEY_DELETE:
+	  if (pos < len)
+	    {
+	      avt_show_text_cursor (AVT_FALSE);
+	      avt_delete_characters (1);
+	      SDL_memmove (&s[pos], &s[pos+1], (len - pos - 1) * sizeof(ch));
+	      len--;
+	    }
+	  else if (avt_alert_func)
+	    (*avt_alert_func) ();
+	  break;
+
+	case AVT_KEY_LEFT:
+	  if (pos > 0)
+	    {
+	      pos--;
+	      /* delete cursor */
+	      avt_show_text_cursor (AVT_FALSE);
+	      avt_backspace ();
+	    }
+	  else if (avt_alert_func)
+	    (*avt_alert_func) ();
+	  break;
+
+	case AVT_KEY_RIGHT:
+	  if (pos < len)
+	    {
+	      pos++;
+	      avt_show_text_cursor (AVT_FALSE);
+	      cursor.x += FONTWIDTH;
+	    }
+	  break;
+
+        case AVT_KEY_INSERT:
+          insert_mode = !insert_mode;
+          break;
 
 	default:
 	  /* 0xF000-0xF8FF reserved for function keys */
-	  if ((len < maxlen) && (ch >= 32)
+	  if ((pos < maxlen) && (ch >= 32)
 	      && ((ch < 0xF000) || (ch > 0xF8FF)))
 	    {
 	      /* delete cursor */
 	      avt_show_text_cursor (AVT_FALSE);
-	      s[len] = ch;
-	      len++;
+	      if (insert_mode && pos < len)
+	        {
+	          avt_insert_spaces (1);
+	          /* remove last position */
+	          if (len >= maxlen)
+	            {
+	              cursor.x += (len - pos) * FONTWIDTH;
+	              avt_clearchar ();
+	              cursor.x -= (len - pos) * FONTWIDTH;
+	            }
+
+	          SDL_memmove (&s[pos+1], &s[pos], (len - pos - 1) * sizeof(ch));
+	          if (len < maxlen)
+	            len++;
+	        }
+	      s[pos] = ch;
+	      pos++;
+	      if (pos > len)
+	        len++;
 	      avt_drawchar (ch, screen);
 	      avt_showchar ();
 	      cursor.x =
@@ -4317,7 +4379,7 @@ avt_ask (wchar_t * s, const int size)
 	    (*avt_alert_func) ();
 	}
     }
-  while ((ch != 13) && (_avt_STATUS == AVT_NORMAL));
+  while ((ch != AVT_KEY_ENTER) && (_avt_STATUS == AVT_NORMAL));
 
   s[len] = L'\0';
 
