@@ -3309,6 +3309,81 @@ avt_say_len (const wchar_t * txt, const int len)
 }
 
 extern int
+avt_tell (const wchar_t * txt)
+{
+  int width, height, line_length;
+  const wchar_t *p;
+
+  if (!txt || !*txt)
+    return _avt_STATUS;
+
+  width = 0;
+  height = 1;
+  line_length = 0;
+  p = txt;
+
+  while (*p)
+  {
+    switch (*p)
+      {
+      case L'\n':
+      case L'\v':
+        if (width < line_length)
+          width = line_length;
+        line_length = 0;
+        height++;
+        break;
+
+      case L'\r':
+        if (width < line_length)
+          width = line_length;
+        line_length = 0;
+        break;
+
+      case L'\t':
+        /* FIXME */
+        line_length += 8;
+        break;
+
+      case L'\b':
+        line_length--;
+        break;
+
+      case L'\a':
+      case L'\xFEFF':
+      case L'\x200E':
+      case L'\x200F':
+      case L'\x200B':
+      case L'\x200C':
+      case L'\x200D':
+      case L'\x00AD':
+      case L'\x2060':
+      case L'\x2061':
+      case L'\x2062':
+      case L'\x2063':
+        /* no width */
+        break;
+
+      default:
+        if (*p >= 32)
+          line_length++;
+        break;
+      }
+
+    p++;
+  }
+
+  if (width < line_length)
+    width = line_length;
+
+  avt_set_balloon_size (height, width);
+  avt_clear ();
+  avt_say (txt);
+
+  return _avt_STATUS;
+}
+
+extern int
 avt_mb_encoding (const char *encoding)
 {
   /* output */
@@ -3575,6 +3650,25 @@ avt_say_mb_len (const char *txt, int len)
       if (wctext)
 	{
 	  avt_say_len (wctext, wclen);
+	  SDL_free (wctext);
+	}
+    }
+
+  return _avt_STATUS;
+}
+
+extern int
+avt_tell_mb (const char *txt)
+{
+  wchar_t *wctext;
+
+  if (screen)
+    {
+      avt_mb_decode (&wctext, txt, SDL_strlen (txt) + 1);
+
+      if (wctext)
+	{
+	  avt_tell (wctext);
 	  SDL_free (wctext);
 	}
     }

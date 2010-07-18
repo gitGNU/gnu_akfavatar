@@ -1005,6 +1005,15 @@ lavt_say (lua_State * L)
 }
 
 static int
+lavt_tell (lua_State * L)
+{
+  is_initialized ();
+  check (avt_tell_mb (luaL_checkstring (L, 1)));
+
+  return 0;
+}
+
+static int
 lavt_pager (lua_State * L)
 {
   const char *s;
@@ -1275,6 +1284,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"set_avatar_name", lavt_set_avatar_name},
   {"say", lavt_say},
   {"write", lavt_say},		/* alias */
+  {"tell", lavt_tell},
   {"ask", lavt_ask},
   {"navigate", lavt_navigate},
   {"decide", lavt_decide},

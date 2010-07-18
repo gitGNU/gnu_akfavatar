@@ -180,6 +180,10 @@ procedure setTextDirection(direction: TextDirection);
 { The avatar-image and the background color should be set before this }
 function ScreenSize: TScreenSize;
 
+{ sets the balloon size so that the text fits exactly,
+  and prints the text }
+procedure Tell(const txt: string);
+
 { assign text-variable to the avatar }
 procedure AssignAvatar(var f: text);
 
@@ -479,6 +483,8 @@ procedure avt_set_flip_page_delay (delay: CInteger);
 
 function avt_say_mb_len(t: pointer; size: CInteger): CInteger;
   libakfavatar 'avt_say_mb_len';
+
+function avt_tell_mb(t: pointer): CInteger; libakfavatar 'avt_tell_mb';
 
 procedure avt_clear; libakfavatar 'avt_clear';
 
@@ -834,6 +840,12 @@ procedure AvatarName(const Name: string);
 begin
 if not initialized then initializeAvatar;
 avt_set_avatar_name_mb (String2CString(Name))
+end;
+
+procedure Tell(const txt: string);
+begin
+if not initialized then initializeAvatar;
+avt_tell_mb(String2CString(txt))
 end;
 
 procedure TextColor (Color: Byte);

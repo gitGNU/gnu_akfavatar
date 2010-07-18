@@ -6,6 +6,8 @@
 	* avatar.c (avt_ask):
 	support full line editing
 
+	* avatar.c (avt_tell, avt_tell_mb): new functions
+
 2010-07-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_ask): fix: no sound on quit-request
