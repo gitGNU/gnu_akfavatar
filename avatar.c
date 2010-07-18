@@ -4348,15 +4348,15 @@ avt_ask (wchar_t * s, const int size)
   if (cursor.y > viewport.y + viewport.h - LINEHEIGHT)
     avt_flip_page ();
 
-  /* maxlen is the rest of line minus one for the cursor */
+  /* maxlen is the rest of line */
   if (textdir_rtl)
-    maxlen = ((cursor.x - viewport.x) / FONTWIDTH) - 1;
+    maxlen = (cursor.x - viewport.x) / FONTWIDTH;
   else
-    maxlen = (((viewport.x + viewport.w) - cursor.x) / FONTWIDTH) - 1;
+    maxlen = ((viewport.x + viewport.w) - cursor.x) / FONTWIDTH;
 
   /* does it fit in the buffer size? */
-  if (maxlen > size / sizeof (wchar_t))
-    maxlen = size / sizeof (wchar_t);
+  if (maxlen > size / sizeof (wchar_t) - 1)
+    maxlen = size / sizeof (wchar_t) - 1;
 
   len = pos = 0;
   insert_mode = AVT_TRUE;
@@ -4449,14 +4449,6 @@ avt_ask (wchar_t * s, const int size)
 	      if (insert_mode && pos < len)
 	        {
 	          avt_insert_spaces (1);
-	          /* remove last position */
-	          if (len >= maxlen)
-	            {
-	              cursor.x += (len - pos) * FONTWIDTH;
-	              avt_clearchar ();
-	              cursor.x -= (len - pos) * FONTWIDTH;
-	            }
-
 	          SDL_memmove (&s[pos+1], &s[pos], (len - pos - 1) * sizeof(ch));
 	          if (len < maxlen)
 	            len++;
