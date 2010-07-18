@@ -3606,6 +3606,7 @@ avt_get_key (wchar_t * ch)
 	        case SDLK_RIGHT: *ch = (wchar_t) AVT_KEY_RIGHT; break;
 	        case SDLK_LEFT: *ch = (wchar_t) AVT_KEY_LEFT; break;
 	        case SDLK_INSERT: *ch = (wchar_t) AVT_KEY_INSERT; break;
+	        case SDLK_DELETE: *ch = (wchar_t) AVT_KEY_DELETE; break;
 	        case SDLK_HOME: *ch = (wchar_t) AVT_KEY_HOME; break;
 	        case SDLK_END: *ch = (wchar_t) AVT_KEY_END; break;
 	        case SDLK_PAGEUP: *ch = (wchar_t) AVT_KEY_PAGEUP; break;
