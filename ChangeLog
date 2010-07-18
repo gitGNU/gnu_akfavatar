@@ -1,3 +1,11 @@
+2010-07-18  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_get_key):
+	map some function keys to unicode chars in the reserved area
+
+	* avatar.c (avt_ask):
+	support for left and right arrow keys
+
 2010-07-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_ask): fix: no sound on quit-request

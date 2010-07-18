@@ -69,6 +69,20 @@
 #define AVT_LEFT_TO_RIGHT 0
 #define AVT_RIGHT_TO_LEFT 1
 
+/* for avt_get_key(&k) */
+#define AVT_KEY_ENTER     0x000D
+#define AVT_KEY_BACKSPACE 0x0008
+#define AVT_KEY_DELETE    0x007F
+#define AVT_KEY_UP        0xF000
+#define AVT_KEY_DOWN      0xF001
+#define AVT_KEY_RIGHT     0xF002
+#define AVT_KEY_LEFT      0xF003
+#define AVT_KEY_INSERT    0xF004
+#define AVT_KEY_HOME      0xF005
+#define AVT_KEY_END       0xF006
+#define AVT_KEY_PAGEUP    0xF007
+#define AVT_KEY_PAGEDOWN  0xF008
+
 /*
  * example: avt_wait(AVT_SECONDS(2.5)) waits 2.5 seconds 
  */
@@ -289,7 +303,7 @@ AVT_API int avt_ask (wchar_t *s, const int size);
 
 /*
  * get a character from the keyboard
- * only for printable characters, not for function keys
+ * see AVT_KEY constants for function keys
  * (ch is a pointer to one character, not a string)
  */
 AVT_API int avt_get_key (wchar_t *ch);
