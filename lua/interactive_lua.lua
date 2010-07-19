@@ -35,7 +35,7 @@ repeat
       success = table.remove(ret, 1)
       if not success -- error calling the function?
         then print(ret[1])
-        else if ret[1] then print(unpack(ret)) end
+        else if ret[1]~=nil then print(unpack(ret)) end
       end
   end
 until false
