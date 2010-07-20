@@ -3323,55 +3323,55 @@ avt_tell (const wchar_t * txt)
   p = txt;
 
   while (*p)
-  {
-    switch (*p)
-      {
-      case L'\n':
-      case L'\v':
-        if (width < line_length)
-          width = line_length;
-        line_length = 0;
-        height++;
-        break;
+    {
+      switch (*p)
+	{
+	case L'\n':
+	case L'\v':
+	  if (width < line_length)
+	    width = line_length;
+	  line_length = 0;
+	  height++;
+	  break;
 
-      case L'\r':
-        if (width < line_length)
-          width = line_length;
-        line_length = 0;
-        break;
+	case L'\r':
+	  if (width < line_length)
+	    width = line_length;
+	  line_length = 0;
+	  break;
 
-      case L'\t':
-        /* FIXME */
-        line_length += 8;
-        break;
+	case L'\t':
+	  /* FIXME */
+	  line_length += 8;
+	  break;
 
-      case L'\b':
-        line_length--;
-        break;
+	case L'\b':
+	  line_length--;
+	  break;
 
-      case L'\a':
-      case L'\xFEFF':
-      case L'\x200E':
-      case L'\x200F':
-      case L'\x200B':
-      case L'\x200C':
-      case L'\x200D':
-      case L'\x00AD':
-      case L'\x2060':
-      case L'\x2061':
-      case L'\x2062':
-      case L'\x2063':
-        /* no width */
-        break;
+	case L'\a':
+	case L'\xFEFF':
+	case L'\x200E':
+	case L'\x200F':
+	case L'\x200B':
+	case L'\x200C':
+	case L'\x200D':
+	case L'\x00AD':
+	case L'\x2060':
+	case L'\x2061':
+	case L'\x2062':
+	case L'\x2063':
+	  /* no width */
+	  break;
 
-      default:
-        if (*p >= 32)
-          line_length++;
-        break;
-      }
+	default:
+	  if (*p >= 32)
+	    line_length++;
+	  break;
+	}
 
-    p++;
-  }
+      p++;
+    }
 
   if (width < line_length)
     width = line_length;
@@ -3694,18 +3694,38 @@ avt_get_key (wchar_t * ch)
 	      *ch = (wchar_t) event.key.keysym.unicode;
 	    else
 	      switch (event.key.keysym.sym)
-	        {
-	        case SDLK_UP: *ch = (wchar_t) AVT_KEY_UP; break;
-	        case SDLK_DOWN: *ch = (wchar_t) AVT_KEY_DOWN; break;
-	        case SDLK_RIGHT: *ch = (wchar_t) AVT_KEY_RIGHT; break;
-	        case SDLK_LEFT: *ch = (wchar_t) AVT_KEY_LEFT; break;
-	        case SDLK_INSERT: *ch = (wchar_t) AVT_KEY_INSERT; break;
-	        case SDLK_DELETE: *ch = (wchar_t) AVT_KEY_DELETE; break;
-	        case SDLK_HOME: *ch = (wchar_t) AVT_KEY_HOME; break;
-	        case SDLK_END: *ch = (wchar_t) AVT_KEY_END; break;
-	        case SDLK_PAGEUP: *ch = (wchar_t) AVT_KEY_PAGEUP; break;
-	        case SDLK_PAGEDOWN: *ch = (wchar_t) AVT_KEY_PAGEDOWN; break;
-                }
+		{
+		case SDLK_UP:
+		  *ch = (wchar_t) AVT_KEY_UP;
+		  break;
+		case SDLK_DOWN:
+		  *ch = (wchar_t) AVT_KEY_DOWN;
+		  break;
+		case SDLK_RIGHT:
+		  *ch = (wchar_t) AVT_KEY_RIGHT;
+		  break;
+		case SDLK_LEFT:
+		  *ch = (wchar_t) AVT_KEY_LEFT;
+		  break;
+		case SDLK_INSERT:
+		  *ch = (wchar_t) AVT_KEY_INSERT;
+		  break;
+		case SDLK_DELETE:
+		  *ch = (wchar_t) AVT_KEY_DELETE;
+		  break;
+		case SDLK_HOME:
+		  *ch = (wchar_t) AVT_KEY_HOME;
+		  break;
+		case SDLK_END:
+		  *ch = (wchar_t) AVT_KEY_END;
+		  break;
+		case SDLK_PAGEUP:
+		  *ch = (wchar_t) AVT_KEY_PAGEUP;
+		  break;
+		case SDLK_PAGEDOWN:
+		  *ch = (wchar_t) AVT_KEY_PAGEDOWN;
+		  break;
+		}
 	}
     }
 
@@ -4360,7 +4380,7 @@ avt_ask (wchar_t * s, const int size)
 
   len = pos = 0;
   insert_mode = AVT_TRUE;
-  SDL_memset(s, 0, size);
+  SDL_memset (s, 0, size);
   ch = L'\0';
 
   do
@@ -4369,7 +4389,7 @@ avt_ask (wchar_t * s, const int size)
       avt_show_text_cursor (AVT_TRUE);
 
       if (avt_get_key (&ch) != AVT_NORMAL)
-        break;
+	break;
 
       switch (ch)
 	{
@@ -4395,7 +4415,8 @@ avt_ask (wchar_t * s, const int size)
 	      avt_show_text_cursor (AVT_FALSE);
 	      avt_backspace ();
 	      avt_delete_characters (1);
-	      SDL_memmove (&s[pos], &s[pos+1], (len - pos - 1) * sizeof(ch));
+	      SDL_memmove (&s[pos], &s[pos + 1],
+			   (len - pos - 1) * sizeof (ch));
 	      len--;
 	    }
 	  else if (avt_alert_func)
@@ -4407,7 +4428,8 @@ avt_ask (wchar_t * s, const int size)
 	    {
 	      avt_show_text_cursor (AVT_FALSE);
 	      avt_delete_characters (1);
-	      SDL_memmove (&s[pos], &s[pos+1], (len - pos - 1) * sizeof(ch));
+	      SDL_memmove (&s[pos], &s[pos + 1],
+			   (len - pos - 1) * sizeof (ch));
 	      len--;
 	    }
 	  else if (avt_alert_func)
@@ -4435,9 +4457,9 @@ avt_ask (wchar_t * s, const int size)
 	    }
 	  break;
 
-        case AVT_KEY_INSERT:
-          insert_mode = !insert_mode;
-          break;
+	case AVT_KEY_INSERT:
+	  insert_mode = !insert_mode;
+	  break;
 
 	default:
 	  /* 0xF000-0xF8FF reserved for function keys */
@@ -4447,22 +4469,23 @@ avt_ask (wchar_t * s, const int size)
 	      /* delete cursor */
 	      avt_show_text_cursor (AVT_FALSE);
 	      if (insert_mode && pos < len)
-	        {
-	          avt_insert_spaces (1);
-	          SDL_memmove (&s[pos+1], &s[pos], (len - pos - 1) * sizeof(ch));
-	          if (len < maxlen)
-	            len++;
-	        }
+		{
+		  avt_insert_spaces (1);
+		  SDL_memmove (&s[pos + 1], &s[pos],
+			       (len - pos - 1) * sizeof (ch));
+		  if (len < maxlen)
+		    len++;
+		}
 	      s[pos] = ch;
 	      avt_drawchar (ch, screen);
 	      avt_showchar ();
 	      pos++;
 	      if (pos > len)
-	        len++;
+		len++;
 	      if (pos > maxlen - 1)
-	        pos--;		/* cursor stays where it is */
+		pos--;		/* cursor stays where it is */
 	      else
-	        cursor.x =
+		cursor.x =
 		  (textdir_rtl) ? cursor.x - FONTWIDTH : cursor.x + FONTWIDTH;
 	    }
 	  else if (avt_alert_func)
