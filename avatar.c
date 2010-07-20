@@ -4427,7 +4427,7 @@ avt_ask (wchar_t * s, const int size)
 	  break;
 
 	case AVT_KEY_RIGHT:
-	  if (pos < len)
+	  if (pos < len && pos < maxlen - 1)
 	    {
 	      pos++;
 	      avt_show_text_cursor (AVT_FALSE);
@@ -4454,13 +4454,16 @@ avt_ask (wchar_t * s, const int size)
 	            len++;
 	        }
 	      s[pos] = ch;
+	      avt_drawchar (ch, screen);
+	      avt_showchar ();
 	      pos++;
 	      if (pos > len)
 	        len++;
-	      avt_drawchar (ch, screen);
-	      avt_showchar ();
-	      cursor.x =
-		(textdir_rtl) ? cursor.x - FONTWIDTH : cursor.x + FONTWIDTH;
+	      if (pos > maxlen - 1)
+	        pos--;		/* cursor stays where it is */
+	      else
+	        cursor.x =
+		  (textdir_rtl) ? cursor.x - FONTWIDTH : cursor.x + FONTWIDTH;
 	    }
 	  else if (avt_alert_func)
 	    (*avt_alert_func) ();
