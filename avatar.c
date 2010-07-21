@@ -3689,45 +3689,46 @@ avt_get_key (wchar_t * ch)
 	  SDL_WaitEvent (&event);
 	  avt_analyze_event (&event);
 
-	  if (event.type == SDL_KEYDOWN)
-	    if (event.key.keysym.unicode)
+	  switch (event.key.keysym.sym)
+	    {
+	    case SDLK_UP:
+	      *ch = (wchar_t) AVT_KEY_UP;
+	      break;
+	    case SDLK_DOWN:
+	      *ch = (wchar_t) AVT_KEY_DOWN;
+	      break;
+	    case SDLK_RIGHT:
+	      *ch = (wchar_t) AVT_KEY_RIGHT;
+	      break;
+	    case SDLK_LEFT:
+	      *ch = (wchar_t) AVT_KEY_LEFT;
+	      break;
+	    case SDLK_INSERT:
+	      *ch = (wchar_t) AVT_KEY_INSERT;
+	      break;
+	    case SDLK_DELETE:
+	      *ch = (wchar_t) AVT_KEY_DELETE;
+	      break;
+	    case SDLK_BACKSPACE:
+	      *ch = (wchar_t) AVT_KEY_BACKSPACE;
+	      break;
+	    case SDLK_HOME:
+	      *ch = (wchar_t) AVT_KEY_HOME;
+	      break;
+	    case SDLK_END:
+	      *ch = (wchar_t) AVT_KEY_END;
+	      break;
+	    case SDLK_PAGEUP:
+	      *ch = (wchar_t) AVT_KEY_PAGEUP;
+	      break;
+	    case SDLK_PAGEDOWN:
+	      *ch = (wchar_t) AVT_KEY_PAGEDOWN;
+	      break;
+	    default:
 	      *ch = (wchar_t) event.key.keysym.unicode;
-	    else
-	      switch (event.key.keysym.sym)
-		{
-		case SDLK_UP:
-		  *ch = (wchar_t) AVT_KEY_UP;
-		  break;
-		case SDLK_DOWN:
-		  *ch = (wchar_t) AVT_KEY_DOWN;
-		  break;
-		case SDLK_RIGHT:
-		  *ch = (wchar_t) AVT_KEY_RIGHT;
-		  break;
-		case SDLK_LEFT:
-		  *ch = (wchar_t) AVT_KEY_LEFT;
-		  break;
-		case SDLK_INSERT:
-		  *ch = (wchar_t) AVT_KEY_INSERT;
-		  break;
-		case SDLK_DELETE:
-		  *ch = (wchar_t) AVT_KEY_DELETE;
-		  break;
-		case SDLK_HOME:
-		  *ch = (wchar_t) AVT_KEY_HOME;
-		  break;
-		case SDLK_END:
-		  *ch = (wchar_t) AVT_KEY_END;
-		  break;
-		case SDLK_PAGEUP:
-		  *ch = (wchar_t) AVT_KEY_PAGEUP;
-		  break;
-		case SDLK_PAGEDOWN:
-		  *ch = (wchar_t) AVT_KEY_PAGEDOWN;
-		  break;
-		}
-	}
-    }
+	    }			/* switch */
+	}			/* while */
+    }				/* if (screen) */
 
   return _avt_STATUS;
 }
