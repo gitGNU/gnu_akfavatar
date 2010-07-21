@@ -1,3 +1,7 @@
+2010-07-21  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (bell): new macro
+
 2010-07-18  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_get_key):

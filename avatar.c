@@ -235,6 +235,9 @@
 #  define SDL_BUTTON_WHEELDOWN 5
 #endif
 
+/* shorthand */
+#define bell(void)  if (avt_alert_func) (*avt_alert_func)()
+
 /* type for gimp images */
 typedef struct
 {
@@ -1847,8 +1850,7 @@ avt_set_balloon_size (int height, int width)
 extern void
 avt_bell (void)
 {
-  if (avt_alert_func)
-    (*avt_alert_func) ();
+  bell ();
 }
 
 /* flashes the screen */
@@ -3134,8 +3136,7 @@ avt_put_character (const wchar_t ch)
       break;
 
     case L'\a':
-      if (avt_alert_func)
-	(*avt_alert_func) ();
+      bell ();
       break;
 
       /* ignore BOM here
@@ -4405,8 +4406,16 @@ avt_ask (wchar_t * s, const int size)
 
 	case AVT_KEY_END:
 	  avt_show_text_cursor (AVT_FALSE);
-	  cursor.x += (len - pos) * FONTWIDTH;
-	  pos = len;
+	  if (len < maxlen)
+	    {
+	      cursor.x += (len - pos) * FONTWIDTH;
+	      pos = len;
+	    }
+	  else
+	    {
+	      cursor.x += (maxlen - 1 - pos) * FONTWIDTH;
+	      pos = maxlen - 1;
+	    }
 	  break;
 
 	case AVT_KEY_BACKSPACE:
@@ -4420,8 +4429,8 @@ avt_ask (wchar_t * s, const int size)
 			   (len - pos - 1) * sizeof (ch));
 	      len--;
 	    }
-	  else if (avt_alert_func)
-	    (*avt_alert_func) ();
+	  else
+	    bell ();
 	  break;
 
 	case AVT_KEY_DELETE:
@@ -4433,8 +4442,8 @@ avt_ask (wchar_t * s, const int size)
 			   (len - pos - 1) * sizeof (ch));
 	      len--;
 	    }
-	  else if (avt_alert_func)
-	    (*avt_alert_func) ();
+	  else
+	    bell ();
 	  break;
 
 	case AVT_KEY_LEFT:
@@ -4445,8 +4454,8 @@ avt_ask (wchar_t * s, const int size)
 	      avt_show_text_cursor (AVT_FALSE);
 	      avt_backspace ();
 	    }
-	  else if (avt_alert_func)
-	    (*avt_alert_func) ();
+	  else
+	    bell ();
 	  break;
 
 	case AVT_KEY_RIGHT:
@@ -4456,6 +4465,8 @@ avt_ask (wchar_t * s, const int size)
 	      avt_show_text_cursor (AVT_FALSE);
 	      cursor.x += FONTWIDTH;
 	    }
+	  else
+	    bell ();
 	  break;
 
 	case AVT_KEY_INSERT:
@@ -4484,13 +4495,16 @@ avt_ask (wchar_t * s, const int size)
 	      if (pos > len)
 		len++;
 	      if (pos > maxlen - 1)
-		pos--;		/* cursor stays where it is */
+		{
+		  pos--;	/* cursor stays where it is */
+		  bell ();
+		}
 	      else
 		cursor.x =
 		  (textdir_rtl) ? cursor.x - FONTWIDTH : cursor.x + FONTWIDTH;
 	    }
-	  else if (avt_alert_func)
-	    (*avt_alert_func) ();
+	  else
+	    bell ();
 	}
     }
   while ((ch != AVT_KEY_ENTER) && (_avt_STATUS == AVT_NORMAL));
