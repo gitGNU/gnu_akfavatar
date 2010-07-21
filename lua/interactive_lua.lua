@@ -8,15 +8,7 @@ require "lua-akfavatar"
 local prompt = "> "
 local cmd, func, err, success
 
-print = function(...)
-  local i, v
-  for i,v in ipairs({...}) do
-    if i > 1 then avt.next_tab() end
-    avt.say(tostring(v))
-    end
-  avt.newline()
-end
-
+print = avt.print --> define the print command
 say = print --> an alias that fits better
 
 avt.initialize{title="Lua-AKFAvatar", encoding="UTF-8", audio=true}

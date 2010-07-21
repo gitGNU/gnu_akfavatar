@@ -983,6 +983,7 @@ lavt_choice (lua_State * L)
   return 1;
 }
 
+/* works like "io.write", but writes in the balloon */
 /* expects one or more strings or numbers */
 static int
 lavt_say (lua_State * L)
@@ -1000,6 +1001,40 @@ lavt_say (lua_State * L)
       if (s)
 	check (avt_say_mb_len (s, len));
     }
+
+  return 0;
+}
+
+/* works like "print", but prints in the balloon */
+/* expects one or more strings or numbers */
+static int
+lavt_print (lua_State * L)
+{
+  int n, i;
+  const char *s;
+  size_t len;
+
+  is_initialized ();
+  n = lua_gettop (L);
+  lua_getglobal (L, "tostring");
+
+  for (i = 1; i <= n; i++)
+    {
+      lua_pushvalue (L, -1);	/* function "tostring" */
+      lua_pushvalue (L, i);	/* value */
+      lua_call (L, 1, 1);
+      s = lua_tolstring (L, -1, &len);
+      lua_pop (L, 1);		/* pop result of "tostring" */
+      if (s)
+	{
+	  if (i > 1)
+	    avt_next_tab ();
+	  check (avt_say_mb_len (s, len));
+	}
+    }
+
+  lua_pop (L, 1);		/* pop function */
+  avt_new_line ();
 
   return 0;
 }
@@ -1094,7 +1129,6 @@ lavt_stop_audio (lua_State * L AVT_UNUSED)
  * 1=x, 2=y, 3=width, 4=height
  * upper left corner is 1, 1
  */
-
 static int
 lavt_viewport (lua_State * L)
 {
@@ -1284,6 +1318,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"set_avatar_name", lavt_set_avatar_name},
   {"say", lavt_say},
   {"write", lavt_say},		/* alias */
+  {"print", lavt_print},
   {"tell", lavt_tell},
   {"ask", lavt_ask},
   {"navigate", lavt_navigate},
