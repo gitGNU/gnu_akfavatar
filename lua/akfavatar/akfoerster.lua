@@ -1,6 +1,4 @@
--- this is a module
-
-akfoerster = [==[
+return [==[
 /* XPM */
 static char * akfoerster_xpm[] = {
 

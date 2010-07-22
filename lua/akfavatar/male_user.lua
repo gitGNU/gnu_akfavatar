@@ -1,6 +1,4 @@
--- this is a module
-
-male_user = [==[
+return [==[
 /* XPM */
 static char * male_user_xpm[] = {
 

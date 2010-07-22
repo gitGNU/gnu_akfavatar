@@ -1,6 +1,4 @@
--- this is a module
-
-teacher = [==[
+return [==[
 /* XPM */
 static char * teacher_xpm[] = {
 

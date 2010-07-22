@@ -1,6 +1,4 @@
--- this is a module
-
-gnu_head = [==[
+return [==[
 /* XPM */
 static char * gnu_head_xpm[] = {
 

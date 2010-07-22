@@ -1,6 +1,4 @@
--- this is a module
-
-info_icon = [==[
+return [==[
 /* XPM */
 static char * info_xpm[] = {
 /* This file is in the Public Domain */

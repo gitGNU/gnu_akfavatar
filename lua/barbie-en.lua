@@ -5,8 +5,6 @@
 
 require "lua-akfavatar"
 require "akfavatar.person"
-require "akfavatar.female_user"
-require "akfavatar.male_user"
 
 avt.initialize {title="Ken & Barbie", shortname="Barbie", 
                 encoding="UTF-8", avatar="none"}
@@ -19,7 +17,7 @@ local Ken, Barbie, story --> introducing the local actors
 Ken = person:
   info {
   name = "Ken",
-  image = male_user,
+  image = require "akfavatar.male_user",
   background_color = "sky blue",
   balloon_color = "ghost white"
   }
@@ -27,7 +25,7 @@ Ken = person:
 Barbie = person:
   info {
   name = "Barbie",
-  image = female_user,
+  image = require "akfavatar.female_user",
   background_color = "pink",
   balloon_color = "floral white"
   }

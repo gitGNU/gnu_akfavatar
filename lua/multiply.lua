@@ -4,7 +4,6 @@
 -- License: GPL version 3 or later
 
 require "lua-akfavatar"
-require "akfavatar.teacher"
 
 -- edit to your needs:
 local a_minimum = 2
@@ -130,9 +129,14 @@ end
 function initialize()
   avt.set_background_color("tan")
   avt.set_balloon_color("floral white")
-  avt.initialize{title="AKFAvatar: multiply", shortname="multiply",
-                 avatar=teacher, audio=true, encoding="UTF-8", 
-                 mode=avt.window_mode}
+  avt.initialize {
+    title = "AKFAvatar: multiply",
+    shortname = "multiply",
+    avatar = require "akfavatar.teacher",
+    audio = true,
+    encoding = "UTF-8",
+    mode = avt.window_mode
+    }
   avt.move_in()
 
   math.randomseed(os.time())
