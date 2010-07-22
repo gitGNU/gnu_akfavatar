@@ -289,6 +289,7 @@ uninstall: uninstall-info uninstall-man uninstall-txt uninstall-html \
 	-rm -f $(bindir)/avatarsay
 	-rm -f $(bindir)/lua-akfavatar
 	-rm -f $(bindir)/avtman
+	-rm -f $(bindir)/avtcmd
 	-rm -f $(bindir)/gnome-akfavatar
 	-rm -f $(docdir)/README
 	-rm -f $(docdir)/AUTHORS
@@ -450,7 +451,7 @@ multiplizieren: $(srcdir)/pascal/multiply.pas
 	    -Fi$(srcdir)/pascal \
 	    $(srcdir)/pascal/multiply.pas
 
-dist: info html man
+dist: info html man $(srcdir)/alert.au
 	mkdir $(PKGNAME)
 	ln README INSTALL AUTHORS COPYING ChangeLog lrun \
 	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
