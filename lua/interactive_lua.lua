@@ -8,7 +8,7 @@ require "lua-akfavatar"
 print = avt.print --> define the print command
 say = print --> an alias that fits better
 
-local function process (cmd)
+local function interactive (cmd)
   local function say_line (s) avt.say (s); avt.newline () end
 
   if not cmd then avt.say ("> ") else avt.say (">> ") end
@@ -27,7 +27,7 @@ local function process (cmd)
     then
       -- '<eof>' at the end means the command is incomplete
       if (string.find(err, "'<eof>'$"))
-        then return process (cmd)
+        then return interactive (cmd)
         else say_line (err) --> say error mesage
       end
     else --> complete function
@@ -46,4 +46,4 @@ avt.initialize {title="Lua-AKFAvatar", encoding="UTF-8", audio=true}
 avt.move_in ()
 avt.say(_VERSION, " / AKFAvatar ", avt.version (), "\n\n")
 
-while true do process () end
+while true do interactive () end
