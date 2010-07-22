@@ -483,11 +483,19 @@ dist: info html man
 	   $(PKGNAME)/pascal/
 	
 	mkdir $(PKGNAME)/lua
-	ln lua/lua-avt.c \
-	   lua/lua-akfavatar-prg.c \
+	ln lua/lua-avt.c lua/lua-akfavatar-prg.c \
 	   lua/interactive_lua.lua lua/hello.lua lua/multiply.lua \
 	   lua/man.lua lua/textview.lua \
+	   lua/barbie-en.lua lua/barbie-de.lua \
 	   $(PKGNAME)/lua/
+
+	mkdir $(PKGNAME)/lua/akfavatar
+	ln lua/akfavatar/README lua/akfavatar/LIESMICH \
+	   lua/akfavatar/person.lua lua/akfavatar/info_icon.lua \
+	   lua/akfavatar/female_user.lua lua/akfavatar/male_user.lua \
+	   lua/akfavatar/gnu_head.lua lua/akfavatar/teacher.lua \
+	   lua/akfavatar/akfoerster.lua \
+	   $(PKGNAME)/lua/akfavatar/
 
 	mkdir $(PKGNAME)/doc
 	ln doc/README doc/Makefile doc/avatarsay.1 doc/avtcmd.1 \
@@ -515,6 +523,7 @@ dist: info html man
 
 dist-bin-default: avatarsay-bin lua-akfavatar-bin info html
 	mkdir $(BINPKGNAME)
+	mkdir $(BINPKGNAME)/akfavatar
 	cp $(LIBNAME) $(BINPKGNAME)/
 	cp $(srcdir)/avatarsay avatarsay-bin $(BINPKGNAME)/
 	-ln -sf $(LIBNAME) $(BINPKGNAME)/$(SONAME)
@@ -527,6 +536,7 @@ dist-bin-default: avatarsay-bin lua-akfavatar-bin info html
 	ln $(srcdir)/lua/interactive_lua.lua $(srcdir)/lua/multiply.lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/hello.lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/man.lua $(srcdir)/lua/textview.lua $(BINPKGNAME)/
+	ln $(srcdir)/lua/barbie-en.lua $(srcdir)/lua/barbie-de.lua $(BINPKGNAME)/
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/avtman \
 	   $(srcdir)/fsdemo-??.avt \
 	   $(srcdir)/gnome-akfavatar \
@@ -534,6 +544,15 @@ dist-bin-default: avatarsay-bin lua-akfavatar-bin info html
 	   $(BINPKGNAME)/
 	ln $(srcdir)/doc/akfavatar-??.html $(BINPKGNAME)/
 	ln $(srcdir)/doc/akfavatar-??.info $(BINPKGNAME)/
+	ln $(srcdir)/lua/akfavatar/README $(srcdir)/lua/akfavatar/LIESMICH \
+	   $(srcdir)/lua/akfavatar/person.lua \
+	   $(srcdir)/lua/akfavatar/info_icon.lua \
+	   $(srcdir)/lua/akfavatar/female_user.lua \
+	   $(srcdir)/lua/akfavatar/male_user.lua \
+	   $(srcdir)/lua/akfavatar/gnu_head.lua \
+	   $(srcdir)/lua/akfavatar/teacher.lua \
+	   $(srcdir)/lua/akfavatar/akfoerster.lua \
+	   $(BINPKGNAME)/akfavatar/
 	tar -cvf $(BINPKGNAME).$(SYSTEM).$(ARCH).tar $(BINPKGNAME)/
 	rm -rf $(BINPKGNAME)/
 	bzip2 -f $(BINPKGNAME).$(SYSTEM).$(ARCH).tar

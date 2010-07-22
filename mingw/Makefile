@@ -229,6 +229,7 @@ multiplizieren.exe: $(srcdir)/pascal/multiply.pas
 dist-bin: avatarsay.exe
 	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) html txt
 	mkdir $(BINPKGNAME)
+	mkdir $(BINPKGNAME)/akfavatar
 	cp $(srcdir)/doc/akfavatar-en.html $(srcdir)/doc/akfavatar-de.html $(BINPKGNAME)/
 	cp akfavatar-en.txt akfavatar-de.txt $(BINPKGNAME)/
 	cp akfavatar.dll $(BINPKGNAME)/
@@ -237,6 +238,16 @@ dist-bin: avatarsay.exe
 	cp $(srcdir)/lua/multiply.lua $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/
 	cp $(srcdir)/lua/textview.lua $(BINPKGNAME)/
 	cp $(srcdir)/lua/hello.lua $(BINPKGNAME)/
+	cp $(srcdir)/lua/barbie-en.lua $(srcdir)/lua/barbie-de.lua $(BINPKGNAME)/
+	cp $(srcdir)/lua/akfavatar/README $(BINPKGNAME)/akfavatar/README.txt
+	cp $(srcdir)/lua/akfavatar/LIESMICH $(BINPKGNAME)/akfavatar/LIESMICH.txt
+	cp $(srcdir)/lua/akfavatar/person.lua $(BINPKGNAME)/akfavatar/
+	cp $(srcdir)/lua/akfavatar/female_user.lua $(BINPKGNAME)/akfavatar/
+	cp $(srcdir)/lua/akfavatar/male_user.lua $(BINPKGNAME)/akfavatar/
+	cp $(srcdir)/lua/akfavatar/info_icon.lua $(BINPKGNAME)/akfavatar/
+	cp $(srcdir)/lua/akfavatar/gnu_head.lua $(BINPKGNAME)/akfavatar/
+	cp $(srcdir)/lua/akfavatar/teacher.lua $(BINPKGNAME)/akfavatar/
+	cp $(srcdir)/lua/akfavatar/akfoerster.lua $(BINPKGNAME)/akfavatar/
 	cp $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	cp $(srcdir)/COPYING $(BINPKGNAME)/gpl-3.0.txt
 	cp $(srcdir)/AUTHORS $(BINPKGNAME)/AUTHORS.txt
@@ -248,6 +259,8 @@ dist-bin: avatarsay.exe
 	todos $(BINPKGNAME)/*.bat
 	todos $(BINPKGNAME)/*.txt
 	todos $(BINPKGNAME)/*.lua
+	todos $(BINPKGNAME)/akfavatar/*.lua
+	todos $(BINPKGNAME)/akfavatar/*.txt
 	-rm -f $(BINPKGNAME).w32.zip
 	zip -9vr $(BINPKGNAME).w32.zip $(BINPKGNAME)/
 	rm -r $(BINPKGNAME)/
