@@ -51,7 +51,11 @@ static void
 help (void)
 {
   puts (PRGNAME);
-  puts ("usage: lua-akfavatar [script [args]]");
+  puts ("Usage: lua-akfavatar [script [args]]");
+  puts (" or:   lua-akfavatar --dir=/usr/local/share/akfavatar/lua\n");
+  puts (" --help                    show this help");
+  puts (" --version                 show version");
+  puts (" --dir=<directory>         start in directory (for the filechooser)");
   exit (EXIT_SUCCESS);
 }
 
@@ -75,6 +79,8 @@ check_options (int argc, char *argv[])
 	version ();
       else if (!strcmp (argv[i], "--help") || !strcmp (argv[i], "-h"))
 	help ();
+      else if (!strncmp (argv[i], "--dir=", 6))
+        chdir (argv[i] + 6);
       else
 	avta_error ("unknown option", argv[i]);
       i++;
