@@ -453,69 +453,87 @@ multiplizieren: $(srcdir)/pascal/multiply.pas
 
 dist: info html man $(srcdir)/alert.au
 	mkdir $(PKGNAME)
-	ln README INSTALL AUTHORS COPYING ChangeLog lrun \
-	   avatar.c akfavatar.h avatar-audio.c avatar-default.c \
-	   avtccio.c avtcwio.c avtaddons.h filechooser.c avtreadfile.c \
-	   colorchooser.c \
-	   balloonpointer.xbm circle.xbm gnu-head.xpm gnu-head.xbm \
-	   male_user.xpm female_user.xpm teacher.xpm akfoerster.xpm \
-	   btn.xpm btn_up.xbm btn_down.xbm btn_left.xbm btn_right.xbm \
-	   btn_no.xbm btn_yes.xbm btn_cancel.xbm btn_ff.xbm btn_fb.xbm \
-	   btn_pause.xbm btn_stop.xbm btn_help.xbm btn_eject.xbm \
-	   btn_circle.xbm \
-	   avatarsay.c avtposix.c avtterm.c avttermsys.h avttermsys.c \
-	   avtmsg.c arch.c rgb.txt \
-	   avtman avtcmd example.c fsdemo-??.avt \
-	   gnome-akfavatar akfoerster-avatarsay.desktop \
-	   akfavatar.xpm info.xpm \
-	   7x14.bdf 9x18.bdf bdf2c font.c \
-	   alert.flac alert.au \
-	   configure Makefile.in text2c data2c rgb2c \
-	   avatarsay lua-akfavatar \
+	ln $(srcdir)/README $(srcdir)/INSTALL $(srcdir)/AUTHORS \
+	   $(srcdir)/COPYING $(srcdir)/ChangeLog $(srcdir)/lrun \
+	   $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avatar-audio.c \
+	   $(srcdir)/avatar-default.c $(srcdir)/avtccio.c $(srcdir)/avtcwio.c \
+	   $(srcdir)/avtaddons.h $(srcdir)/filechooser.c \
+	   $(srcdir)/avtreadfile.c $(srcdir)/colorchooser.c \
+	   $(srcdir)/balloonpointer.xbm $(srcdir)/circle.xbm \
+	   $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm \
+	   $(srcdir)/male_user.xpm $(srcdir)/female_user.xpm \
+	   $(srcdir)/teacher.xpm $(srcdir)/akfoerster.xpm \
+	   $(srcdir)/btn.xpm $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
+	   $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
+	   $(srcdir)/btn_no.xbm $(srcdir)/btn_yes.xbm \
+	   $(srcdir)/btn_cancel.xbm $(srcdir)/btn_ff.xbm $(srcdir)/btn_fb.xbm \
+	   $(srcdir)/btn_pause.xbm $(srcdir)/btn_stop.xbm \
+	   $(srcdir)/btn_help.xbm $(srcdir)/btn_eject.xbm \
+	   $(srcdir)/btn_circle.xbm $(srcdir)/avatarsay.c \
+	   $(srcdir)/avtposix.c $(srcdir)/avtterm.c $(srcdir)/avttermsys.h \
+	   $(srcdir)/avttermsys.c $(srcdir)/avtmsg.c $(srcdir)/arch.c \
+	   $(srcdir)/rgb.txt $(srcdir)/avtman $(srcdir)/avtcmd \
+	   $(srcdir)/example.c $(srcdir)/fsdemo-??.avt \
+	   $(srcdir)/gnome-akfavatar $(srcdir)/akfoerster-avatarsay.desktop \
+	   $(srcdir)/akfavatar.xpm $(srcdir)/info.xpm \
+	   $(srcdir)/7x14.bdf $(srcdir)/9x18.bdf $(srcdir)/bdf2c \
+	   $(srcdir)/font.c $(srcdir)/alert.flac $(srcdir)/alert.au \
+	   $(srcdir)/configure $(srcdir)/Makefile.in $(srcdir)/text2c \
+	   $(srcdir)/data2c $(srcdir)/rgb2c \
+	   $(srcdir)/avatarsay $(srcdir)/lua-akfavatar \
 	   $(PKGNAME)/
 
 	mkdir $(PKGNAME)/pascal
-	ln pascal/README pascal/akfavatar.pas pascal/example.pas \
-	   pascal/multiply.pas \
-	   pascal/positive.au pascal/negative.au pascal/neutral.au \
-	   pascal/positive.inc pascal/negative.inc pascal/teacher.inc \
-	   pascal/xpm2pas pascal/xbm2pas \
-	   pascal/gpcavatar pascal/fpcavatar \
+	ln $(srcdir)/pascal/README $(srcdir)/pascal/akfavatar.pas \
+	   $(srcdir)/pascal/example.pas \
+	   $(srcdir)/pascal/multiply.pas \
+	   $(srcdir)/pascal/positive.au $(srcdir)/pascal/negative.au \
+	   $(srcdir)/pascal/neutral.au \
+	   $(srcdir)/pascal/positive.inc $(srcdir)/pascal/negative.inc \
+	   $(srcdir)/pascal/teacher.inc \
+	   $(srcdir)/pascal/xpm2pas $(srcdir)/pascal/xbm2pas \
+	   $(srcdir)/pascal/gpcavatar $(srcdir)/pascal/fpcavatar \
 	   $(PKGNAME)/pascal/
 	
 	mkdir $(PKGNAME)/lua
-	ln lua/lua-avt.c lua/lua-akfavatar-prg.c \
-	   lua/interactive_lua.lua lua/hello.lua lua/multiply.lua \
-	   lua/man.lua lua/textview.lua \
-	   lua/barbie-en.lua lua/barbie-de.lua \
+	ln $(srcdir)/lua/lua-avt.c $(srcdir)/lua/lua-akfavatar-prg.c \
+	   $(srcdir)/lua/interactive_lua.lua $(srcdir)/lua/hello.lua \
+	   $(srcdir)/lua/multiply.lua $(srcdir)/lua/man.lua \
+	   $(srcdir)/lua/textview.lua \
+	   $(srcdir)/lua/barbie-en.lua $(srcdir)/lua/barbie-de.lua \
 	   $(PKGNAME)/lua/
 
 	mkdir $(PKGNAME)/lua/akfavatar
-	ln lua/akfavatar/README lua/akfavatar/LIESMICH \
-	   lua/akfavatar/person.lua lua/akfavatar/info_icon.lua \
-	   lua/akfavatar/female_user.lua lua/akfavatar/male_user.lua \
-	   lua/akfavatar/gnu_head.lua lua/akfavatar/teacher.lua \
-	   lua/akfavatar/akfoerster.lua \
+	ln $(srcdir)/lua/akfavatar/README $(srcdir)/lua/akfavatar/LIESMICH \
+	   $(srcdir)/lua/akfavatar/person.lua \
+	   $(srcdir)/lua/akfavatar/info_icon.lua \
+	   $(srcdir)/lua/akfavatar/female_user.lua \
+	   $(srcdir)/lua/akfavatar/male_user.lua \
+	   $(srcdir)/lua/akfavatar/gnu_head.lua \
+	   $(srcdir)/lua/akfavatar/teacher.lua \
+	   $(srcdir)/lua/akfavatar/akfoerster.lua \
 	   $(PKGNAME)/lua/akfavatar/
 
 	mkdir $(PKGNAME)/doc
-	ln doc/README doc/Makefile doc/avatarsay.1 doc/avtcmd.1 \
-	   doc/akfavatar-en.texinfo doc/akfavatar-en.info \
-	   doc/pasref.txt \
-	   doc/akfavatar-en.html \
-	   doc/akfavatar-de.texinfo doc/akfavatar-de.info \
-	   doc/akfavatar-de.html \
-	   doc/akfavatar.css \
-	   doc/pdfmeta-en doc/pdfmeta-de \
+	ln $(srcdir)/doc/README $(srcdir)/doc/Makefile \
+	   $(srcdir)/doc/avatarsay.1 $(srcdir)/doc/avtcmd.1 \
+	   $(srcdir)/doc/akfavatar-en.texinfo $(srcdir)/doc/akfavatar-en.info \
+	   $(srcdir)/doc/pasref.txt \
+	   $(srcdir)/doc/akfavatar-en.html \
+	   $(srcdir)/doc/akfavatar-de.texinfo $(srcdir)/doc/akfavatar-de.info \
+	   $(srcdir)/doc/akfavatar-de.html \
+	   $(srcdir)/doc/akfavatar.css \
+	   $(srcdir)/doc/pdfmeta-en $(srcdir)/doc/pdfmeta-de \
 	   $(PKGNAME)/doc/
 
 	mkdir $(PKGNAME)/mingw
-	ln mingw/akfavatar.ico mingw/icon.rc \
-	   mingw/libinfo.in mingw/avtsayinfo.in mingw/lua-akfavatar-rc.in \
-	   mingw/luaavtstarter-rc.in \
-	   mingw/avtmsg.c mingw/avtwindows.c \
-	   mingw/avttermstub.c mingw/askdrive.c \
-	   mingw/Makefile mingw/README \
+	ln $(srcdir)/mingw/akfavatar.ico $(srcdir)/mingw/icon.rc \
+	   $(srcdir)/mingw/libinfo.in $(srcdir)/mingw/avtsayinfo.in \
+	   $(srcdir)/mingw/lua-akfavatar-rc.in \
+	   $(srcdir)/mingw/luaavtstarter-rc.in \
+	   $(srcdir)/mingw/avtmsg.c $(srcdir)/mingw/avtwindows.c \
+	   $(srcdir)/mingw/avttermstub.c $(srcdir)/mingw/askdrive.c \
+	   $(srcdir)/mingw/Makefile $(srcdir)/mingw/README \
 	   $(PKGNAME)/mingw/
 
 	tar -cvf $(PKGNAME).tar $(PKGNAME)/
