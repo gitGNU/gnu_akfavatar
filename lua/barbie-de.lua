@@ -14,20 +14,35 @@ avt.initialize {title="Ken & Barbie", shortname="Barbie",
 
 avt.set_text_delay ()
 
-local ken, barbie, story --> Einführung der lokalen Schauspieler
-
 --------------------------------------------------------------------------
-ken = person: new {name="Ken", image=male_user,
-                   background_color="sky blue", balloon_color="ghost white"}
+local Ken, Barbie, Erzaehler --> Einführung der lokalen Schauspieler
 
-barbie = person: new {name="Barbie", image=female_user,
-                      background_color="pink", balloon_color="floral white"}
+Ken = person:
+  info {
+  name = "Ken",
+  image = male_user,
+  background_color = "sky blue",
+  balloon_color = "ghost white"
+  }
 
-story = person: new {image="none", background_color="gray", 
-                     balloon_color="tan"}
+Barbie = person:
+  info {
+  name = "Barbie",
+  image = female_user,
+  background_color = "pink",
+  balloon_color = "floral white"
+  }
+
+Erzaehler = person:
+  info {
+  image = "none",
+  background_color = "gray",
+  balloon_color = "tan"
+  }
 ------------------------------------------------------------------------
 
-story [[
+Erzaehler
+[[
 Dies ist eine Geschichte über Ken und Barbie.
 
 Okay, es ist nur ein kurzes Demo für
@@ -39,44 +54,52 @@ schauen und es nach Belieben anpassen.
 Viel Spaß...
 ]]
 
-ken: comes_in ()
-ken [[
+Ken: comes_in ()
+
+Ken
+[[
 Hallo Barbie!
 Wie geht's dir?
 ]]
 
-barbie "Mir geht es gut, danke!"
+Barbie "Mir geht es gut, danke!"
 
-barbie "Sehe ich heute schön aus?"
+Barbie "Sehe ich heute schön aus?"
 
-if ken: affirms () then
-  ken "Du siehst phantastisch aus!"
-  barbie [[
+if Ken: affirms () then
+  Ken "Du siehst phantastisch aus!"
+
+  Barbie
+  [[
   Oh, danke.
   Du bist so lieb!
   ]]
 
-  barbie "Ken... Ich möchte ein Baby."
-  ken "Okay, auf geht's!"
-  ken: leaves ()
-  barbie: leaves () --> Barbie folgt sofort
-  story [[
+  Barbie "Ken... Ich möchte ein Baby."
+  Ken "Okay, auf geht's!"
+  Ken: leaves ()
+  Barbie: leaves () --> Barbie folgt sofort
+
+  Erzaehler
+  [[
   Der Rest dieser Geschichte bleibt der Phantasie
   des Zuschauers überlassen.
   ]]
 else --> Ken sagt etwas Negatives
-  ken "Nun, du hast schonmal besser ausgesehen."
-  barbie "Oh, du bist so'n Arsch!"
-  barbie: leaves ()
-  ken: waits (4.5)
-  ken "Barbie? ..."
-  ken: waits (3.5)
-  ken "Barbie!!!"
-  ken: waits (3.7)
-  story [[
-    Und so wurden ihre Scheidungsanwälte reich.
+  Ken "Nun, du hast schonmal besser ausgesehen."
+  Barbie "Oh, du bist so'n Arsch!"
+  Barbie: leaves ()
+  Ken: waits (4.5)
+  Ken "Barbie? ..."
+  Ken: waits (3.5)
+  Ken "Barbie!!!"
+  Ken: waits (3.7)
 
-    Happy End! ... für die Anwälte.
-    ]]
-end --> Ende von if avt.decide()
+  Erzaehler
+  [[
+  Und so wurden ihre Scheidungsanwälte reich.
+
+  Happy End! ... für die Anwälte.
+  ]]
+end --> Ende von if Ken: affirms ()
 

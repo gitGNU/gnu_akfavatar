@@ -26,6 +26,8 @@ function P:new(o)
   return o
 end
 
+P.info = P.new --> nicer alias
+
 -- balloon is automatically sized for the text
 function P:__call(text)
   if current_avatar~=self then self:activate() end
