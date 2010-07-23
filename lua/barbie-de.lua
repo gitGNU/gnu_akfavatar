@@ -11,6 +11,7 @@ avt.initialize {title="Ken & Barbie", shortname="Barbie",
                 encoding="UTF-8", avatar="none"}
 
 avt.set_text_delay ()
+avt.wikisyntax (true)
 
 --------------------------------------------------------------------------
 local Ken, Barbie, Erzaehler --> Einführung der lokalen Schauspieler
@@ -41,15 +42,15 @@ Erzaehler = person:
 
 Erzaehler
 [[
-Dies ist eine Geschichte über Ken und Barbie.
+_*Ken und Barbie*_
 
-Okay, es ist nur ein kurzes Demo für
-AKFAvatar. Es soll zeigen, wie man einfach
-Geschichten mit mehr als nur einem Avatar
-schreiben kann. Bitte mal in das Skript
-schauen und es nach Belieben anpassen.
+Dies ist nur ein kurzes Demo für AKFAvatar.
+Es soll zeigen, wie man einfach Geschichten
+mit mehr als nur einem Avatar schreiben kann.
+Bitte mal in das Skript schauen und es nach
+Belieben anpassen.
 
-Viel Spaß...
+*Viel Spaß...*
 ]]
 
 Ken: comes_in ()
@@ -65,7 +66,7 @@ Barbie "Mir geht es gut, danke!"
 Barbie "Sehe ich heute schön aus?"
 
 if Ken: affirms () then
-  Ken "Du siehst phantastisch aus!"
+  Ken "Du siehst _phantastisch_ aus!"
 
   Barbie
   [[
@@ -81,23 +82,23 @@ if Ken: affirms () then
   Erzaehler
   [[
   Der Rest dieser Geschichte bleibt der Phantasie
-  des Zuschauers überlassen.
+  des Zuschauers überlassen...
   ]]
 else --> Ken sagt etwas Negatives
   Ken "Nun, du hast schonmal besser ausgesehen."
-  Barbie "Oh, du bist so'n Arsch!"
+  Barbie "Oh, du bist so'n *Blödmann*!"
   Barbie: leaves ()
   Ken: waits (4.5)
   Ken "Barbie? ..."
   Ken: waits (3.5)
-  Ken "Barbie!!!"
+  Ken "*Barbie!!!*"
   Ken: waits (3.7)
 
   Erzaehler
   [[
   Und so wurden ihre Scheidungsanwälte reich.
 
-  Happy End! ... für die Anwälte.
+  *Happy End!* ... für die Anwälte.
   ]]
 end --> Ende von if Ken: affirms ()
 

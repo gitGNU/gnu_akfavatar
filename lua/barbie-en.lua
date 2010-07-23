@@ -10,6 +10,7 @@ avt.initialize {title="Ken & Barbie", shortname="Barbie",
                 encoding="UTF-8", avatar="none"}
 
 avt.set_text_delay ()
+avt.wikisyntax (true)
 
 --------------------------------------------------------------------------
 local Ken, Barbie, story --> introducing the local actors
@@ -40,15 +41,15 @@ story = person:
 
 story
 [[
-This is a story about Ken and Barbie.
+_*Ken and Barbie*_
 
-Okay, this is just a short demo for
-AKFAvatar. It shows, how you can easily
-write stories with more than just one
-Avatar. You are encouraged to make changes
-to this script as you like.
+This is just a short demo for AKFAvatar.
+It shows, how you can easily write stories
+with more than just one Avatar. You are
+encouraged to make changes to this script
+as you like.
 
-Enjoy...
+*Enjoy...*
 ]]
 
 Ken: comes_in ()
@@ -64,7 +65,7 @@ Barbie "I'm fine. Thank you!"
 Barbie "Do I look beautiful today?"
 
 if Ken: affirms () then
-  Ken "You look sooo gorgeous!"
+  Ken "You look sooo _gorgeous_!"
 
   Barbie
   [[
@@ -84,18 +85,18 @@ if Ken: affirms () then
   ]]
 else --> Ken says something negative
   Ken "Well, you looked better some time."
-  Barbie "Oh, you're such a dork!"
+  Barbie "Oh, you're such a *dork*!"
   Barbie: leaves ()
   Ken: waits (4.5)
   Ken "Barbie? ..."
   Ken: waits (3.5)
-  Ken "Barbie!!!"
+  Ken "*Barbie!!!*"
   Ken: waits (3.7)
 
   story
   [[
   And so their divorce lawyers became rich.
 
-  Happy End! ... for the lawyers.
+  *Happy End!* ... for the lawyers.
   ]]
 end -- end of if Ken: affirms ()
