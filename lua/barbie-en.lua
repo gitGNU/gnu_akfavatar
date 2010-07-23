@@ -10,7 +10,7 @@ avt.initialize {title="Ken & Barbie", shortname="Barbie",
                 encoding="UTF-8", avatar="none"}
 
 avt.set_text_delay ()
-avt.wikisyntax (true)
+avt.markup (true)
 
 --------------------------------------------------------------------------
 local Ken, Barbie, story --> introducing the local actors
@@ -85,7 +85,7 @@ if Ken: affirms () then
   ]]
 else --> Ken says something negative
   Ken "Well, you looked better some time."
-  Barbie "Oh, you're such a *dork*!"
+  Barbie "Oh, you're such an *idiot*!"
   Barbie: leaves ()
   Ken: waits (4.5)
   Ken "Barbie? ..."

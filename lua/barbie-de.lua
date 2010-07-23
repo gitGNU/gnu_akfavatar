@@ -11,7 +11,7 @@ avt.initialize {title="Ken & Barbie", shortname="Barbie",
                 encoding="UTF-8", avatar="none"}
 
 avt.set_text_delay ()
-avt.wikisyntax (true)
+avt.markup (true)
 
 --------------------------------------------------------------------------
 local Ken, Barbie, Erzaehler --> Einführung der lokalen Schauspieler

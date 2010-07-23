@@ -533,12 +533,12 @@ AVT_API avt_bool_t avt_get_inverse (void);
 AVT_API void avt_normal_text (void);
 
 /*
- * switch wikisyntax mode on or off
+ * switch markup mode on or off
  *
- * in wikisyntax mode the character "_" toggles the underlined mode
+ * in markup mode the character "_" toggles the underlined mode
  * and the character "*" toggles the bold mode on or off
  */
-AVT_API void avt_wikisyntax (avt_bool_t onoff);
+AVT_API void avt_markup (avt_bool_t onoff);
 
 /*
  * set scroll mode
