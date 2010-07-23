@@ -269,6 +269,7 @@ static avt_bool_t avt_visible;	/* avatar visible? */
 static avt_bool_t text_cursor_visible;	/* shall the text cursor be visible? */
 static avt_bool_t text_cursor_actually_visible;	/* is it actually visible? */
 static avt_bool_t reserve_single_keys;	/* reserve single keys? */
+static avt_bool_t wikisyntax;	/* wiki-syntax activated? */
 static int scroll_mode = 1;
 static SDL_Rect textfield;
 static SDL_Rect viewport;	/* sub-window in textfield */
@@ -3185,15 +3186,22 @@ avt_put_character (const wchar_t ch)
     default:
       if (ch > 32)
 	{
-	  if (auto_margin)
-	    check_auto_margin ();
-	  avt_drawchar (ch, screen);
-	  avt_showchar ();
-	  if (text_delay)
-	    avt_wait (text_delay);
-	  else
-	    avt_checkevent ();
-	  avt_forward ();
+	  if (wikisyntax && ch == L'_')
+	    underlined = !underlined;
+	  else if (wikisyntax && ch == L'*')
+	    bold = !bold;
+	  else			/* not a wikisyntax character */
+	    {
+	      if (auto_margin)
+		check_auto_margin ();
+	      avt_drawchar (ch, screen);
+	      avt_showchar ();
+	      if (text_delay)
+		avt_wait (text_delay);
+	      else
+		avt_checkevent ();
+	      avt_forward ();
+	    }			/* if not wikisyntax */
 	}			/* if (ch > 32) */
     }				/* switch */
 
@@ -3367,7 +3375,8 @@ avt_tell (const wchar_t * txt)
 
 	default:
 	  if (*p >= 32)
-	    line_length++;
+	    if (!wikisyntax || (*p != L'_' && *p != L'*'))
+	      line_length++;
 	  break;
 	}
 
@@ -6049,6 +6058,12 @@ avt_normal_text (void)
     }
 }
 
+extern void
+avt_wikisyntax (avt_bool_t onoff)
+{
+  wikisyntax = AVT_MAKE_BOOL (onoff);
+}
+
 /* deprecated: use avt_set_text_delay, avt_set_flip_page_delay */
 extern void
 avt_set_delays (int text, int flip_page)
@@ -6387,6 +6402,7 @@ avt_initialize (const char *title, const char *icontitle,
   auto_margin = AVT_TRUE;
   origin_mode = AVT_TRUE;	/* for backwards compatibility */
   avt_visible = AVT_FALSE;
+  wikisyntax = AVT_FALSE;
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
   viewport = textfield;
 

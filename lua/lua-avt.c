@@ -467,6 +467,14 @@ lavt_get_inverse (lua_State * L)
   return 1;
 }
 
+static int
+lavt_wikisyntax (lua_State * L)
+{
+  luaL_checktype (L, 1, LUA_TBOOLEAN);
+  avt_wikisyntax (lua_toboolean (L, 1));
+  return 0;
+}
+
 /* reset to normal text mode */
 static int
 lavt_normal_text (lua_State * L AVT_UNUSED)
@@ -1357,6 +1365,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"inverse", lavt_inverse},
   {"get_inverse", lavt_get_inverse},
   {"normal_text", lavt_normal_text},
+  {"wikisyntax", lavt_wikisyntax},
   {"clear_screen", lavt_clear_screen},
   {"clear", lavt_clear},
   {"clear_up", lavt_clear_up},

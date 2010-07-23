@@ -1,3 +1,8 @@
+2010-07-23  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_wikisyntax): new function
+	(avt_put_character, avt_tell, avt_initialize): adapted
+
 2010-07-21  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (bell): new macro

@@ -250,6 +250,7 @@ procedure TextColor (Color: Byte);
 procedure TextBackground (Color: Byte);
 
 { set black on white text colors, switch bold and underlined off }
+{ the wikisyntax is also deactivated by this }
 { name compatible to CRT unit, but the colors differ }
 procedure NormVideo;
 
@@ -261,6 +262,11 @@ procedure LowVideo;
 
 { switch underline mode on or off }
 procedure Underlined (onoff: boolean);
+
+{ activate wikisyntax }
+{ in wikisyntax the character "_" toggles the underlined mode
+  and "*" toggles the bold mode on or off }
+procedure WikiSyntax (onoff: boolean);
 
 { shows the avatar without the balloon }
 procedure ShowAvatar;
@@ -570,6 +576,8 @@ procedure avt_set_text_background_ballooncolor;
 procedure avt_bold (onoff: avt_bool_t); libakfavatar 'avt_bold';
 
 procedure avt_underlined (onoff: avt_bool_t); libakfavatar 'avt_underlined';
+
+procedure avt_wikisyntax (onoff: avt_bool_t); libakfavatar 'avt_wikisyntax';
 
 procedure avt_normal_text; libakfavatar 'avt_normal_text';
 
@@ -932,6 +940,7 @@ procedure NormVideo;
 begin
 if not initialized then initializeAvatar;
 
+avt_wikisyntax (ord(false));
 avt_normal_text ();
 TextAttr := $F0;
 OldTextAttr := TextAttr;
@@ -950,6 +959,11 @@ end;
 procedure Underlined (onoff: boolean);
 begin
 avt_underlined (ord(onoff))
+end;
+
+procedure WikiSyntax (onoff: boolean);
+begin
+avt_wikisyntax (ord(onoff))
 end;
 
 procedure SetMonochrome (monochrome: Boolean);
