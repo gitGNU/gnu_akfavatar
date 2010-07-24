@@ -2000,7 +2000,6 @@ say_line (const wchar_t * line, ssize_t nread)
 {
   ssize_t i;
   int status = AVT_NORMAL;
-  avt_bool_t underlined = AVT_FALSE;
 
   /* use a new line, when cursor is not in the home position */
   /* (no new-line at the end) */
@@ -2009,48 +2008,13 @@ say_line (const wchar_t * line, ssize_t nread)
 
   for (i = 0; i < nread; i++, line++)
     {
-      if (*(line + 1) == L'\b')
-	{
-	  if (*line == L'_')
-	    {
-	      avt_underlined (AVT_TRUE);
-	      status = avt_put_character (*(line + 2));
-	      avt_underlined (underlined);
-	      i += 2;
-	      line += 2;
-	    }
-	  else if (*line == *(line + 2))
-	    {
-	      avt_bold (AVT_TRUE);
-	      status = avt_put_character (*line);
-	      avt_bold (AVT_FALSE);
-	      i += 2;
-	      line += 2;
-	    }
-	  else
-	    {
-	      i++;
-	      line++;
-	    }
-	}
-      else if (*line == L'_' && !OPT (OPT_RAW))
-	{
-	  underlined = ~underlined;
-	  avt_underlined (underlined);
-	}
-      else			/* not L'_' */
-	{
-	  /* filter out \r and \n */
-	  /* new-lines are handled at the beginning */
-	  if (*line != L'\n' && *line != L'\r')
-	    status = avt_put_character (*line);
-	  if (status)
-	    break;
-	}
+      /* filter out \r and \n */
+      /* new-lines are handled at the beginning */
+      if (*line != L'\n' && *line != L'\r')
+	status = avt_put_character (*line);
+      if (status)
+	break;
     }
-
-  if (underlined)
-    avt_underlined (AVT_FALSE);
 
   return status;
 }
@@ -2103,6 +2067,8 @@ process_script (int fd)
 
   if (!moved_in && !OPT (OPT_POPUP))
     move_in ();
+
+  avt_markup (!OPT (OPT_RAW));
 
   /* show text */
   if (line && !stop && wcsncmp (line, L"---", 3) != 0)

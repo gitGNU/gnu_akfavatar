@@ -1,3 +1,8 @@
+2010-07-24  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatarsay.c (say_line): eliminate outdated code
+	(process_script): use avt_markup
+
 2010-07-23  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_markup): new function
