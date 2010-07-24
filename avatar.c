@@ -6067,6 +6067,8 @@ extern void
 avt_markup (avt_bool_t onoff)
 {
   markup = AVT_MAKE_BOOL (onoff);
+  if (!markup)
+    underlined = bold = AVT_FALSE;
 }
 
 /* deprecated: use avt_set_text_delay, avt_set_flip_page_delay */
