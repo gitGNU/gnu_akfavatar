@@ -528,6 +528,7 @@ dist: info html man $(srcdir)/alert.au
 
 	mkdir $(PKGNAME)/mingw
 	ln $(srcdir)/mingw/akfavatar.ico $(srcdir)/mingw/icon.rc \
+	   $(srcdir)/mingw/lua.ico \
 	   $(srcdir)/mingw/libinfo.in $(srcdir)/mingw/avtsayinfo.in \
 	   $(srcdir)/mingw/lua-akfavatar-rc.in \
 	   $(srcdir)/mingw/luaavtstarter-rc.in \
