@@ -55,7 +55,8 @@ help (void)
   puts (" or:   lua-akfavatar --dir=/usr/local/share/akfavatar/lua\n");
   puts (" --help                    show this help");
   puts (" --version                 show version");
-  puts (" --dir=<directory>         start in directory (for the filechooser)");
+  puts
+    (" --dir=<directory>         start in directory (for the filechooser)");
   exit (EXIT_SUCCESS);
 }
 
@@ -80,7 +81,7 @@ check_options (int argc, char *argv[])
       else if (!strcmp (argv[i], "--help") || !strcmp (argv[i], "-h"))
 	help ();
       else if (!strncmp (argv[i], "--dir=", 6))
-        chdir (argv[i] + 6);
+	chdir (argv[i] + 6);
       else
 	avta_error ("unknown option", argv[i]);
       i++;
@@ -272,6 +273,7 @@ main (int argc, char **argv)
 	  avt_set_status (AVT_NORMAL);
 	  avt_set_background_color_name ("default");
 	  avt_set_balloon_color_name ("floral white");
+	  avt_markup (AVT_FALSE);
 
 	  /* script may have called avt.quit() */
 	  if (avt_initialized ())

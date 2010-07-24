@@ -2129,6 +2129,7 @@ process_script (int fd)
     stop = 0;
 
   avt_text_direction (AVT_LEFT_TO_RIGHT);
+  avt_markup (AVT_FALSE);
   return stop;
 }
 
