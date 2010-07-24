@@ -462,7 +462,7 @@ dist: info html man $(srcdir)/alert.au
 	   $(srcdir)/balloonpointer.xbm $(srcdir)/circle.xbm \
 	   $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm \
 	   $(srcdir)/male_user.xpm $(srcdir)/female_user.xpm \
-	   $(srcdir)/teacher.xpm $(srcdir)/akfoerster.xpm \
+	   $(srcdir)/teacher.xpm $(srcdir)/akfoerster.xpm $(srcdir)/lua.xpm \
 	   $(srcdir)/btn.xpm $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
 	   $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
 	   $(srcdir)/btn_no.xbm $(srcdir)/btn_yes.xbm \
