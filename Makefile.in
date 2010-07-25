@@ -271,7 +271,8 @@ install-strip: libakfavatar.so libakfavatar.a avatarsay-bin lua-akfavatar-bin \
 	@echo '*'
 
 install-desktop-menu: $(srcdir)/akfavatar.xpm $(srcdir)/akfoerster-avatarsay.desktop
-	xdg-icon-resource install --size 32 --novendor $(srcdir)/akfavatar.xpm
+	xdg-icon-resource install --size 32 --novendor $(srcdir)/akfavatar.xpm akfavatar
+	xdg-icon-resource install --size 32 --novendor $(srcdir)/lua.xpm lua
 	xdg-desktop-menu install $(srcdir)/akfoerster-avatarsay.desktop
 	xdg-desktop-menu install $(srcdir)/akfoerster-lua-akfavatar.desktop
 
@@ -297,6 +298,7 @@ uninstall: uninstall-info uninstall-man uninstall-txt uninstall-html \
 	-xdg-desktop-menu uninstall akfoerster-avatarsay.desktop
 	-xdg-desktop-menu uninstall akfoerster-lua-akfavatar.desktop
 	-xdg-icon-resource uninstall --size 32 --novendor akfavatar.xpm
+	-xdg-icon-resource uninstall --size 32 --novendor lua.xpm
 
 info:
 	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) info

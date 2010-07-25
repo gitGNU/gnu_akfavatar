@@ -1,11 +1,10 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Encoding=UTF-8
 Name=AKFAvatar: avatarsay
 Comment=demo program and fancy terminal-emulator
 Comment[de]=Demo-Programm und lustiger Terminal-Emulator
 Exec=avatarsay %f
-Icon=akfavatar.xpm
+Icon=akfavatar
 Terminal=false
 Categories=Utility;
