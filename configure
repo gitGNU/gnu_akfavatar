@@ -11,7 +11,7 @@
 VERSION=0
 SUBVERSION=18
 REVISION=0
-VARIANT="-devel-$(date '+%Y%m%d')"
+VARIANT="-testing-$(date '+%Y%m%d%H')"
 LIBNAME=libakfavatar.so.${VERSION}.${SUBVERSION}.${REVISION}
 SONAME=libakfavatar.so.${VERSION}.${SUBVERSION}
 
