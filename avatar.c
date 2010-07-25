@@ -3373,9 +3373,13 @@ avt_tell (const wchar_t * txt)
 	  /* no width */
 	  break;
 
-	case L'_':
 	case L'*':
 	  if (!markup)
+	    line_length++;
+	  break;
+
+	case L'_':		/* tricky because of overstrike */
+	  if (!markup || *(p + 1) == L'\b')
 	    line_length++;
 	  break;
 
