@@ -1244,7 +1244,7 @@ lavt_backspace (lua_State * L)
 
 /* avt.file_selection (filter) */
 
-/* we need to temporarily store the Lua_state :-( */
+/* we need to temporarily store a pointer to the Lua_state :-( */
 static lua_State *tmp_lua_state;
 
 /* call the function at index 1 with the filename */
