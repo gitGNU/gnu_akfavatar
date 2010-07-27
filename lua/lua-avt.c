@@ -1080,7 +1080,14 @@ lavt_pager (lua_State * L)
 static int
 lavt_load_audio_file (lua_State * L)
 {
-  lua_pushlightuserdata (L, avt_load_audio_file (luaL_checkstring (L, 1)));
+  const char *filename;
+  avt_audio_t **audio;
+
+  filename = luaL_checkstring (L, 1);
+  audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
+  luaL_getmetatable (L, "AKFAvatar.audio");
+  lua_setmetatable (L, -2);
+  *audio = avt_load_audio_file (filename);
   return 1;
 }
 
@@ -1089,9 +1096,13 @@ lavt_load_audio_string (lua_State * L)
 {
   char *data;
   size_t len;
+  avt_audio_t **audio;
 
   data = (char *) luaL_checklstring (L, 1, &len);
-  lua_pushlightuserdata (L, avt_load_audio_data (data, len));
+  audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
+  luaL_getmetatable (L, "AKFAvatar.audio");
+  lua_setmetatable (L, -2);
+  *audio = avt_load_audio_data (data, len);
   return 1;
 }
 
@@ -1099,8 +1110,11 @@ lavt_load_audio_string (lua_State * L)
 static int
 lavt_free_audio (lua_State * L)
 {
-  luaL_checktype (L, 1, LUA_TLIGHTUSERDATA);
-  avt_free_audio (lua_touserdata (L, 1));
+  avt_audio_t **audio;
+
+  audio = luaL_checkudata (L, 1, "AKFAvatar.audio");
+  if (audio)
+    avt_free_audio (*audio);
   return 0;
 }
 
@@ -1109,8 +1123,11 @@ lavt_free_audio (lua_State * L)
 static int
 lavt_play_audio (lua_State * L)
 {
-  luaL_checktype (L, 1, LUA_TLIGHTUSERDATA);
-  check (avt_play_audio (lua_touserdata (L, 1), lua_toboolean (L, 2)));
+  avt_audio_t **audio;
+
+  audio = luaL_checkudata (L, 1, "AKFAvatar.audio");
+  if (audio)
+    check (avt_play_audio (*audio, lua_toboolean (L, 2)));
   return 0;
 }
 
@@ -1433,6 +1450,7 @@ static const struct luaL_reg akfavtlib[] = {
 int
 luaopen_akfavatar (lua_State * L)
 {
+  luaL_newmetatable (L, "AKFAvatar.audio");
   luaL_register (L, "avt", akfavtlib);
 
   /* values for window modes */
