@@ -171,20 +171,30 @@ avtposix.o: $(srcdir)/avtposix.c
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtposix.c
 
 # avatarsay dynamically linked
-avatarsay-bin: avatarsay.o avtposix.o libavtaddons.a libakfavatar.so
-	$(CC) -o $@ avatarsay.o avtposix.o -L. -lavtaddons -lakfavatar \
-	  $(LDFLAGS) $(AVATARSAY_LDFLAGS)
+avatarsay-bin: avatarsay.o avtposix.o libakfavatar.so \
+               arch.o avtterm.o avttermsys.o colorchooser.o filechooser.o \
+               avtreadfile.o avtmsg.o
+	$(CC) -o $@ avatarsay.o avtposix.o \
+	      arch.o avtterm.o avttermsys.o colorchooser.o filechooser.o \
+	      avtreadfile.o avtmsg.o \
+	      -L. -lakfavatar $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 	test -f ./avatarsay || cp $(srcdir)/avatarsay .
 
 # avatarsay with statical libakfavatar.a
-avatarsay-s: avatarsay.o avtposix.o libavtaddons.a libakfavatar.a
-	$(CC) -o $@ avatarsay.o avtposix.o -L. -lavtaddons libakfavatar.a \
+avatarsay-s: avatarsay.o avtposix.o libakfavatar.a \
+             arch.o avtterm.o avttermsys.o colorchooser.o filechooser.o \
+             avtreadfile.o avtmsg.o
+	$(CC) -o $@ avatarsay.o avtposix.o -L. libakfavatar.a \
+	     arch.o avtterm.o avttermsys.o colorchooser.o filechooser.o \
+             avtreadfile.o avtmsg.o \
 	   $(SDL_LDFLAGS) $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
 # lua-akfavatar dynamically linked
-lua-akfavatar-bin: lua-akfavatar-prg.o lua-avt.o libavtaddons.a
+lua-akfavatar-bin: lua-akfavatar-prg.o lua-avt.o \
+                   filechooser.o colorchooser.o avtmsg.o
 	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o \
-	     -L. -lavtaddons -lakfavatar \
+	     filechooser.o colorchooser.o avtmsg.o \
+	     -L. -lakfavatar \
 	     $(LUA_LDFLAGS) $(LDFLAGS)
 	test -f ./lua-akfavatar || cp $(srcdir)/lua-akfavatar .
 

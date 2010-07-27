@@ -160,11 +160,14 @@ avatarsay: avatarsay.exe
 avatarsay-s: avatarsay-s.exe
 
 # uses dynamic lib
-avatarsay.exe: avatarsay.wo libavtaddons.a akfavatar.dll \
-	         avtwindows.wo avtsayinfo.wo
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -o $@ avatarsay.wo \
-	  avtwindows.wo avtsayinfo.wo \
-	  -L. -lavtaddons -lakfavatar $(SDL_LDFLAGS) $(LDFLAGS)
+avatarsay.exe: avatarsay.wo akfavatar.dll \
+	         avtwindows.wo avtsayinfo.wo \
+	         arch.wo avttermstub.wo colorchooser.wo filechooser.wo \
+	         askdrive.wo avtreadfile.wo avtmsg.wo avtsayinfo.wo
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -o $@ avatarsay.wo avtwindows.wo \
+	  arch.wo avttermstub.wo colorchooser.wo filechooser.wo \
+	  askdrive.wo avtreadfile.wo avtmsg.wo avtsayinfo.wo \
+	  -L. -lakfavatar $(SDL_LDFLAGS) $(LDFLAGS)
 
 example: example.exe
 
@@ -173,9 +176,10 @@ example.exe: $(srcdir)/example.c akfavatar.dll icon.wo
 			-L. -lakfavatar $(SDL_LDFLAGS) $(LDFLAGS)
 
 lua-akfavatar.exe: lua-akfavatar-prg.wo lua-avt.wo luaavtstarter-rc.wo \
-		libavtaddons.a
+		filechooser.wo askdrive.wo colorchooser.wo avtmsg.wo
 	$(CC) -o $@ lua-akfavatar-prg.wo lua-avt.wo luaavtstarter-rc.wo \
-	    -L. -lavtaddons -lakfavatar \
+	    filechooser.wo askdrive.wo colorchooser.wo avtmsg.wo \
+	    -L. -lakfavatar \
 	    $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS)
 
 lua-avt.wo: $(srcdir)/lua/lua-avt.c
