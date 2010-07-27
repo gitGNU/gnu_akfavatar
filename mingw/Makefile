@@ -37,12 +37,12 @@ SHELL = /bin/sh
 all: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe \
      lua-akfavatar.exe
 
-avtsayinfo.rc: $(srcdir)/mingw/avtsayinfo.in
+avtsayinfo.rc: $(srcdir)/mingw/avtsayinfo.in config-mingw
 	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
 	  -e "s/@REVISION@/$(REVISION)/; s/@VERSIONSTR@/$(VERSIONSTR)/" \
 	  $(srcdir)/mingw/avtsayinfo.in > $@
 
-libinfo.rc: $(srcdir)/mingw/libinfo.in
+libinfo.rc: $(srcdir)/mingw/libinfo.in config-mingw
 	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
 	  -e "s/@REVISION@/$(REVISION)/; s/@VERSIONSTR@/$(VERSIONSTR)/" \
 	  $(srcdir)/mingw/libinfo.in > $@
@@ -190,12 +190,12 @@ lua-akfavatar-prg.wo: $(srcdir)/lua/lua-akfavatar-prg.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) $(SDL_CFLAGS) -I$(srcdir) -c -o $@ \
 	 $(srcdir)/lua/lua-akfavatar-prg.c
 
-lua-akfavatar.rc: $(srcdir)/mingw/lua-akfavatar-rc.in
+lua-akfavatar.rc: $(srcdir)/mingw/lua-akfavatar-rc.in config-mingw
 	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
 	  -e "s/@REVISION@/$(REVISION)/; s/@VERSIONSTR@/$(VERSIONSTR)/" \
 	  $(srcdir)/mingw/lua-akfavatar-rc.in > $@
 
-luaavtstarter.rc: $(srcdir)/mingw/luaavtstarter-rc.in
+luaavtstarter.rc: $(srcdir)/mingw/luaavtstarter-rc.in config-mingw
 	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
 	  -e "s/@REVISION@/$(REVISION)/; s/@VERSIONSTR@/$(VERSIONSTR)/" \
 	  $(srcdir)/mingw/luaavtstarter-rc.in > $@
