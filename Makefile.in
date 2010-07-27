@@ -254,6 +254,7 @@ install: libakfavatar.so libakfavatar.a avatarsay-bin lua-akfavatar-bin \
 	$(INSTALL_DATA) $(srcdir)/README $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/AUTHORS $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/COPYING $(DESTDIR)$(docdir)
+	$(INSTALL_DATA) $(srcdir)/NEWS $(DESTDIR)$(docdir)
 	@echo '*'
 	@echo '* make install-desktop-menu: to install avatarsay in a desktop menu'
 	@echo '*'
@@ -276,6 +277,7 @@ install-strip: libakfavatar.so libakfavatar.a avatarsay-bin lua-akfavatar-bin \
 	$(INSTALL_DATA) $(srcdir)/README $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/AUTHORS $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/COPYING $(DESTDIR)$(docdir)
+	$(INSTALL_DATA) $(srcdir)/NEWS $(DESTDIR)$(docdir)
 	@echo '*'
 	@echo '* use "make install-desktop-menu" to install avatarsay in a desktop menu'
 	@echo '*'
@@ -305,6 +307,8 @@ uninstall: uninstall-info uninstall-man uninstall-txt uninstall-html \
 	-rm -f $(docdir)/README
 	-rm -f $(docdir)/AUTHORS
 	-rm -f $(docdir)/COPYING
+	-rm -f $(docdir)/NEWS
+
 	-xdg-desktop-menu uninstall akfoerster-avatarsay.desktop
 	-xdg-desktop-menu uninstall akfoerster-lua-akfavatar.desktop
 	-xdg-icon-resource uninstall --size 32 --novendor akfavatar.xpm
@@ -466,6 +470,7 @@ multiplizieren: $(srcdir)/pascal/multiply.pas
 dist: info html man $(srcdir)/alert.au
 	mkdir $(PKGNAME)
 	ln $(srcdir)/README $(srcdir)/INSTALL $(srcdir)/AUTHORS \
+	   $(srcdir)/NEWS \
 	   $(srcdir)/COPYING $(srcdir)/ChangeLog $(srcdir)/lrun \
 	   $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avatar-audio.c \
 	   $(srcdir)/avatar-default.c $(srcdir)/avtccio.c $(srcdir)/avtcwio.c \
@@ -569,7 +574,7 @@ dist-bin-default: avatarsay-bin lua-akfavatar-bin info html
 	ln $(srcdir)/lua/hello.lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/man.lua $(srcdir)/lua/textview.lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/barbie-en.lua $(srcdir)/lua/barbie-de.lua $(BINPKGNAME)/
-	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/avtman \
+	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/NEWS $(srcdir)/avtman \
 	   $(srcdir)/fsdemo-??.avt \
 	   $(srcdir)/gnome-akfavatar \
 	   $(srcdir)/avtcmd \

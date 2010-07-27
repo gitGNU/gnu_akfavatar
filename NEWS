@@ -1,0 +1,14 @@
+* AKFAvatar 0.19.0
+
+  - new program lua-akfavatar
+  - some ignorable Unicode characters are ignored now
+  - pager can handle binary junk better
+  - filechooser: path can be entered manually
+  - filechooser: on windows ask for drive letter only when 
+    going beyond the root directory
+  - ./configure: experimental support for --host=mingw and --host=x86
+  - avt_free_audio(): when that sound is playing, stop it
+
+  API changes:
+   avt_tell, avt_tell_mb: new functions
+   avt_markup: new function

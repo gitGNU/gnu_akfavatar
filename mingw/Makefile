@@ -255,6 +255,7 @@ dist-bin: avatarsay.exe
 	cp $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	cp $(srcdir)/COPYING $(BINPKGNAME)/gpl-3.0.txt
 	cp $(srcdir)/AUTHORS $(BINPKGNAME)/AUTHORS.txt
+	cp $(srcdir)/NEWS $(BINPKGNAME)/NEWS.txt
 	cp $(srcdir)/teacher.xpm $(srcdir)/akfoerster.xpm $(BINPKGNAME)/
 	cp $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
 	-cp $(srcdir)/misc/SDL.dll $(BINPKGNAME)/
