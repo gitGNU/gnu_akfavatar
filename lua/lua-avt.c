@@ -1073,6 +1073,21 @@ lavt_pager (lua_State * L)
   return 0;
 }
 
+/* frees audio data (called by garbage collector) */
+static int
+free_audio (lua_State * L)
+{
+  avt_audio_t **audio;
+
+  /* FIXME: freeing the audio while it's playing is no good */
+
+  audio = luaL_checkudata (L, 1, "AKFAvatar.audio");
+  if (audio)
+    avt_free_audio (*audio);
+
+  return 0;
+}
+
 /*
  * loads an audio file
  * supported: AU and Wave
@@ -1104,18 +1119,6 @@ lavt_load_audio_string (lua_State * L)
   lua_setmetatable (L, -2);
   *audio = avt_load_audio_data (data, len);
   return 1;
-}
-
-/* frees audio data */
-static int
-lavt_free_audio (lua_State * L)
-{
-  avt_audio_t **audio;
-
-  audio = luaL_checkudata (L, 1, "AKFAvatar.audio");
-  if (audio)
-    avt_free_audio (*audio);
-  return 0;
 }
 
 /* plays audio data */
@@ -1422,7 +1425,6 @@ static const struct luaL_reg akfavtlib[] = {
   {"insert_lines", lavt_insert_lines},
   {"load_audio_file", lavt_load_audio_file},
   {"load_audio_string", lavt_load_audio_string},
-  {"free_audio", lavt_free_audio},
   {"play_audio", lavt_play_audio},
   {"wait_audio_end", lavt_wait_audio_end},
   {"stop_audio", lavt_stop_audio},
@@ -1450,7 +1452,6 @@ static const struct luaL_reg akfavtlib[] = {
 int
 luaopen_akfavatar (lua_State * L)
 {
-  luaL_newmetatable (L, "AKFAvatar.audio");
   luaL_register (L, "avt", akfavtlib);
 
   /* values for window modes */
@@ -1462,6 +1463,11 @@ luaopen_akfavatar (lua_State * L)
   lua_setfield (L, -2, "fullscreen_mode");
   lua_pushinteger (L, AVT_FULLSCREENNOSWITCH);
   lua_setfield (L, -2, "fullscreennoswitch_mode");
+
+  luaL_newmetatable (L, "AKFAvatar.audio");
+  lua_pushcfunction (L, free_audio);
+  lua_setfield (L, -2, "__gc");
+  lua_pop (L, 1);		/* pop metatable */
 
   return 1;
 }
