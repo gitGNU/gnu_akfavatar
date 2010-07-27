@@ -1079,8 +1079,6 @@ free_audio (lua_State * L)
 {
   avt_audio_t **audio;
 
-  /* FIXME: freeing the audio while it's playing is no good */
-
   audio = luaL_checkudata (L, 1, "AKFAvatar.audio");
   if (audio)
     avt_free_audio (*audio);

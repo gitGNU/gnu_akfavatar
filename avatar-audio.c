@@ -735,6 +735,10 @@ avt_free_audio (avt_audio_t * snd)
     {
       s = (AudioStruct *) snd;
 
+      /* Is this sound currently playing? Then stop it! */
+      if (soundleft > 0 && current_sound.sound == s->sound)
+	avt_stop_audio ();
+
       /* free the sound data */
       if (s->wave)
 	SDL_FreeWAV (s->sound);

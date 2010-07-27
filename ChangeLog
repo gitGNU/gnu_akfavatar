@@ -1,3 +1,8 @@
+2010-07-27  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-audio.c (avt_free_audio):
+	if the sound is currently playing, stop it immediately!
+
 2010-07-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatarsay.c (say_line): eliminate outdated code
