@@ -70,6 +70,8 @@
 #define AVT_RIGHT_TO_LEFT 1
 
 /* for avt_get_key(&k) */
+/* note: F11 is also used to toggle fullscreen mode! */
+/* note: most keyboards don't have all those keys */
 #define AVT_KEY_ENTER     0x000D
 #define AVT_KEY_BACKSPACE 0x0008
 #define AVT_KEY_DELETE    0x007F
@@ -82,6 +84,23 @@
 #define AVT_KEY_END       0xF006
 #define AVT_KEY_PAGEUP    0xF007
 #define AVT_KEY_PAGEDOWN  0xF008
+#define AVT_KEY_HELP      0xF009
+#define AVT_KEY_MENU      0xF00A
+#define AVT_KEY_F1        0xF0F1
+#define AVT_KEY_F2        0xF0F2
+#define AVT_KEY_F3        0xF0F3
+#define AVT_KEY_F4        0xF0F4
+#define AVT_KEY_F5        0xF0F5
+#define AVT_KEY_F6        0xF0F6
+#define AVT_KEY_F7        0xF0F7
+#define AVT_KEY_F8        0xF0F8
+#define AVT_KEY_F9        0xF0F9
+#define AVT_KEY_F10       0xF0FA
+#define AVT_KEY_F11       0xF0FB
+#define AVT_KEY_F12       0xF0FC
+#define AVT_KEY_F13       0xF0FD
+#define AVT_KEY_F14       0xF0FE
+#define AVT_KEY_F15       0xF0FF
 
 /*
  * example: avt_wait(AVT_SECONDS(2.5)) waits 2.5 seconds 

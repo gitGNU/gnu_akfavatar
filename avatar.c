@@ -3743,6 +3743,32 @@ avt_get_key (wchar_t * ch)
 	    case SDLK_PAGEDOWN:
 	      *ch = (wchar_t) AVT_KEY_PAGEDOWN;
 	      break;
+	    case SDLK_HELP:
+	      *ch = (wchar_t) AVT_KEY_HELP;
+	      break;
+	    case SDLK_MENU:
+	      *ch = (wchar_t) AVT_KEY_MENU;
+	      break;
+	    case SDLK_EURO:
+	      *ch = (wchar_t) 0x20AC;
+	      break;
+	    case SDLK_F1:
+	    case SDLK_F2:
+	    case SDLK_F3:
+	    case SDLK_F4:
+	    case SDLK_F5:
+	    case SDLK_F6:
+	    case SDLK_F7:
+	    case SDLK_F8:
+	    case SDLK_F9:
+	    case SDLK_F10:
+	    case SDLK_F11:
+	    case SDLK_F12:
+	    case SDLK_F13:
+	    case SDLK_F14:
+	    case SDLK_F15:
+              *ch = (wchar_t) (AVT_KEY_F1 + (event.key.keysym.sym - SDLK_F1));
+              break;
 	    default:
 	      *ch = (wchar_t) event.key.keysym.unicode;
 	    }			/* switch */
