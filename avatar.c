@@ -4547,8 +4547,6 @@ avt_ask (wchar_t * s, const int size)
 		cursor.x =
 		  (textdir_rtl) ? cursor.x - FONTWIDTH : cursor.x + FONTWIDTH;
 	    }
-	  else
-	    bell ();
 	}
     }
   while ((ch != AVT_KEY_ENTER) && (_avt_STATUS == AVT_NORMAL));
