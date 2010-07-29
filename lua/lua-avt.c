@@ -1323,7 +1323,7 @@ lavt_chdir (lua_State * L)
 static int
 lavt_getcwd (lua_State * L)
 {
-  char dir[2048];
+  char dir[4096 + 1];
 
   if (getcwd (dir, sizeof (dir)))
     lua_pushstring (L, dir);

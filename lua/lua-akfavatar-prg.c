@@ -138,7 +138,7 @@ static avt_bool_t
 ask_file (void)
 {
   char filename[256];
-  char lua_dir[2048];
+  char lua_dir[4096 + 1];
 
   avt_set_balloon_size (0, 0);
   if (avta_file_selection (filename, sizeof (filename), &is_lua))
