@@ -25,6 +25,7 @@
 #include <string.h>
 #include <strings.h>
 #include <stdlib.h>
+#include <unistd.h>		/* getcwd, chdir */
 #include <libgen.h>		/* for dirname */
 
 #include <lua.h>
@@ -137,6 +138,7 @@ static avt_bool_t
 ask_file (void)
 {
   char filename[256];
+  char lua_dir[2048];
 
   avt_set_balloon_size (0, 0);
   if (avta_file_selection (filename, sizeof (filename), &is_lua))
@@ -144,6 +146,9 @@ ask_file (void)
 
   if (*filename)
     {
+      if (!getcwd (lua_dir, sizeof (lua_dir)))
+	lua_dir[0] = '\0';
+
       /* arg[0] = filename */
       lua_newtable (L);
       lua_pushinteger (L, 0);
@@ -158,6 +163,9 @@ ask_file (void)
 	    avta_error (lua_tostring (L, -1), NULL);
 	  lua_pop (L, 1);	/* pop message (or the nil) */
 	}
+
+      if (lua_dir[0] != '\0')
+	chdir (lua_dir);
 
       return AVT_TRUE;		/* run this again */
     }
