@@ -1462,9 +1462,12 @@ luaopen_akfavatar (lua_State * L)
   lua_pushinteger (L, AVT_FULLSCREENNOSWITCH);
   lua_setfield (L, -2, "fullscreennoswitch_mode");
 
+  /* type for audio data (garbage collection, call as function) */
   luaL_newmetatable (L, "AKFAvatar.audio");
   lua_pushcfunction (L, free_audio);
   lua_setfield (L, -2, "__gc");
+  lua_pushcfunction (L, lavt_play_audio);
+  lua_setfield (L, -2, "__call");
   lua_pop (L, 1);		/* pop metatable */
 
   return 1;
