@@ -517,7 +517,7 @@ dist: info html man $(srcdir)/alert.au
 	   $(srcdir)/lua/interactive_lua.lua $(srcdir)/lua/hello.lua \
 	   $(srcdir)/lua/multiply.lua $(srcdir)/lua/man.lua \
 	   $(srcdir)/lua/textview.lua \
-	   $(srcdir)/lua/barbie-en.lua $(srcdir)/lua/barbie-de.lua \
+	   $(srcdir)/lua/story1-en.lua $(srcdir)/lua/story1-de.lua \
 	   $(PKGNAME)/lua/
 
 	mkdir $(PKGNAME)/lua/akfavatar
@@ -573,7 +573,7 @@ dist-bin-default: avatarsay-bin lua-akfavatar-bin info html
 	ln $(srcdir)/lua/interactive_lua.lua $(srcdir)/lua/multiply.lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/hello.lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/man.lua $(srcdir)/lua/textview.lua $(BINPKGNAME)/
-	ln $(srcdir)/lua/barbie-en.lua $(srcdir)/lua/barbie-de.lua $(BINPKGNAME)/
+	ln $(srcdir)/lua/story1-en.lua $(srcdir)/lua/story1-de.lua $(BINPKGNAME)/
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/NEWS $(srcdir)/avtman \
 	   $(srcdir)/fsdemo-??.avt \
 	   $(srcdir)/gnome-akfavatar \

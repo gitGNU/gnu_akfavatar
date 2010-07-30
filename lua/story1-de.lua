@@ -7,16 +7,15 @@
 require "lua-akfavatar"
 require "akfavatar.person"
 
-avt.initialize {title="Ken & Barbie", shortname="Barbie", 
-                encoding="UTF-8", avatar="none"}
-
-avt.set_text_delay ()
-avt.markup (true)
+-- Übersetzungen von Anweisungen
+person.kommt_herein = person.comes_in
+person.geht_heraus = person.leaves
+person.bestaetigt = person.affirms
+person.wartet = person.waits
 
 --------------------------------------------------------------------------
-local Ken, Barbie, Erzaehler --> Einführung der lokalen Schauspieler
 
-Ken = person:
+Mann = person:
   info {
   name = "Ken",
   image = require "akfavatar.male_user",
@@ -24,7 +23,7 @@ Ken = person:
   balloon_color = "ghost white"
   }
 
-Barbie = person:
+Frau = person:
   info {
   name = "Barbie",
   image = require "akfavatar.female_user",
@@ -38,11 +37,23 @@ Erzaehler = person:
   background_color = "gray",
   balloon_color = "tan"
   }
+
+------------------------------------------------------------------------
+
+avt.initialize {title = Mann.name .. " & " .. Frau.name,
+                shortname = Frau.name,
+                encoding="UTF-8",
+                avatar="none"
+                }
+
+avt.set_text_delay ()
+avt.markup (true)
+
 ------------------------------------------------------------------------
 
 Erzaehler
 [[
-_*Ken und Barbie*_
+_*$Mann und $Frau*_
 
 Dies ist nur ein kurzes Demo für AKFAvatar.
 Es soll zeigen, wie man einfach Geschichten
@@ -53,46 +64,46 @@ Belieben anpassen.
 *Viel Spaß...*
 ]]
 
-Ken: comes_in ()
+Mann: kommt_herein ()
 
-Ken
+Mann
 [[
-Hallo Barbie!
+Hallo $Frau!
 Wie geht's dir?
 ]]
 
-Barbie "Mir geht es gut, danke!"
+Frau "Mir geht es gut, danke!"
 
-Barbie "Sehe ich heute schön aus?"
+Frau "Sehe ich heute schön aus?"
 
-if Ken: affirms () then
-  Ken "Du siehst _phantastisch_ aus!"
+if Mann: bestaetigt () then
+  Mann "Du siehst _phantastisch_ aus!"
 
-  Barbie
+  Frau
   [[
   Oh, danke.
   Du bist so lieb!
   ]]
 
-  Barbie "Ken... Ich möchte ein Baby."
-  Ken "Okay, auf geht's!"
-  Ken: leaves ()
-  Barbie: leaves () --> Barbie folgt sofort
+  Frau "$Mann... Ich möchte ein Baby."
+  Mann "Okay, auf geht's!"
+  Mann: geht_heraus ()
+  Frau: geht_heraus () --> Frau folgt sofort
 
   Erzaehler
   [[
   Der Rest dieser Geschichte bleibt der Phantasie
   des Zuschauers überlassen...
   ]]
-else --> Ken sagt etwas Negatives
-  Ken "Nun, du hast schonmal besser ausgesehen."
-  Barbie "Oh, du bist so'n *Blödmann*!"
-  Barbie: leaves ()
-  Ken: waits (4.5)
-  Ken "Barbie? ..."
-  Ken: waits (3.5)
-  Ken "*Barbie!!!*"
-  Ken: waits (3.7)
+else --> der Mann sagt etwas Negatives
+  Mann "Nun, du hast schonmal besser ausgesehen."
+  Frau "Oh, du bist so'n *Blödmann*!"
+  Frau: geht_heraus ()
+  Mann: wartet (4.5)
+  Mann "$Frau? ..."
+  Mann: wartet (3.5)
+  Mann "*$Frau!!!*"
+  Mann: wartet (3.7)
 
   Erzaehler
   [[
@@ -100,5 +111,5 @@ else --> Ken sagt etwas Negatives
 
   *Happy End!* ... für die Anwälte.
   ]]
-end --> Ende von if Ken: affirms ()
+end --> Ende von if Mann: bestaetigt ()
 

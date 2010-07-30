@@ -242,7 +242,7 @@ dist-bin: avatarsay.exe
 	cp $(srcdir)/lua/multiply.lua $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/
 	cp $(srcdir)/lua/textview.lua $(BINPKGNAME)/
 	cp $(srcdir)/lua/hello.lua $(BINPKGNAME)/
-	cp $(srcdir)/lua/barbie-en.lua $(srcdir)/lua/barbie-de.lua $(BINPKGNAME)/
+	cp $(srcdir)/lua/story1-en.lua $(srcdir)/lua/story1-de.lua $(BINPKGNAME)/
 	cp $(srcdir)/lua/akfavatar/README $(BINPKGNAME)/akfavatar/README.txt
 	cp $(srcdir)/lua/akfavatar/LIESMICH $(BINPKGNAME)/akfavatar/LIESMICH.txt
 	cp $(srcdir)/lua/akfavatar/person.lua $(BINPKGNAME)/akfavatar/

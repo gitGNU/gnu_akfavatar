@@ -10,15 +10,6 @@ person = P --> module name
 
 local current_avatar
 
-local function tell(text)
-  -- remove spurious spaces
-  text = string.gsub(text, "^%s+", "")
-  text = string.gsub(text, "\n[ \t]+", "\n")
-  text = string.gsub(text, "%s+$", "")
-  avt.tell(text)
-  avt.wait()
-end
-
 function P:new(o)
   o = o or {} --> create empty object if none is given
   setmetatable(o, self)
@@ -28,11 +19,22 @@ end
 
 P.info = P.new --> nicer alias
 
+-- replace $person.attribute
+local function expand (s)
+ return (string.gsub(s, "%$(%w+)", function(p) return _G[p]["name"] or _G[p] end))
+end
+
 -- balloon is automatically sized for the text
 function P:__call(...)
   if current_avatar~=self then self:activate() end
   local text = table.concat ({...})
-  if text then tell(text) end
+  if text then
+    -- remove spurious spaces
+    text = string.gsub(text, "^%s*(.-)%s*$", "%1")
+    text = string.gsub(text, "\n[ \t]+", "\n")
+    avt.tell(expand(text))
+    avt.wait()
+  end
 end
 
 function P:activate()
@@ -59,10 +61,10 @@ function P:text_size(height, width)
   avt.set_balloon_size(height, width)
 end
 
--- prepare balloon with specified size
+-- say something without changing the balloon size
 function P:says(...)
   if current_avatar~=self then self:activate() end
-  avt.say(...)
+  avt.say(expand(table.concat ({...})))
 end
 
 function P:asks()
@@ -74,6 +76,8 @@ function P:comes_in()
   if current_avatar~=self then self:activate() end
   avt.move_in()
 end
+
+P.arrives = P.comes_in
 
 function P:leaves()
   if current_avatar~=self then self:activate() end

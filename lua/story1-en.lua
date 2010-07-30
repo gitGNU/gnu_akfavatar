@@ -6,16 +6,8 @@
 require "lua-akfavatar"
 require "akfavatar.person"
 
-avt.initialize {title="Ken & Barbie", shortname="Barbie", 
-                encoding="UTF-8", avatar="none"}
-
-avt.set_text_delay ()
-avt.markup (true)
-
 --------------------------------------------------------------------------
-local Ken, Barbie, story --> introducing the local actors
-
-Ken = person:
+man = person:
   info {
   name = "Ken",
   image = require "akfavatar.male_user",
@@ -23,7 +15,7 @@ Ken = person:
   balloon_color = "ghost white"
   }
 
-Barbie = person:
+woman = person:
   info {
   name = "Barbie",
   image = require "akfavatar.female_user",
@@ -37,11 +29,23 @@ story = person:
   background_color = "gray",
   balloon_color = "tan"
   }
+
+------------------------------------------------------------------------
+
+avt.initialize {title = man.name .. " & " .. woman.name,
+                shortname = woman.name,
+                encoding = "UTF-8",
+                avatar = "none"
+                }
+
+avt.set_text_delay ()
+avt.markup (true)
+
 ------------------------------------------------------------------------
 
 story
 [[
-_*Ken and Barbie*_
+_*$man and $woman*_
 
 This is just a short demo for AKFAvatar.
 It shows, how you can easily write stories
@@ -52,46 +56,46 @@ as you like.
 *Enjoy...*
 ]]
 
-Ken: comes_in ()
+man: arrives ()
 
-Ken
+man
 [[
-Hello Barbie!
+Hello $woman!
 How are you?
 ]]
 
-Barbie "I'm fine. Thank you!"
+woman "I'm fine. Thank you!"
 
-Barbie "Do I look beautiful today?"
+woman "Do I look beautiful today?"
 
-if Ken: affirms () then
-  Ken "You look sooo _gorgeous_!"
+if man: affirms () then
+  man "You look sooo _gorgeous_!"
 
-  Barbie
+  woman
   [[
   Oh, thank you.
   You are so nice!
   ]]
 
-  Barbie "Ken... I want a baby."
-  Ken "Okay, let's do it!"
-  Ken: leaves ()
-  Barbie: leaves () --> Barbie follows immeadiately
+  woman "$man... I want a baby."
+  man "Okay, let's do it!"
+  man: leaves ()
+  woman: leaves () --> woman follows immeadiately
 
   story
   [[
   The rest of this story is left to the
   imagination of the audience.
   ]]
-else --> Ken says something negative
-  Ken "Well, you looked better some time."
-  Barbie "Oh, you're such an *idiot*!"
-  Barbie: leaves ()
-  Ken: waits (4.5)
-  Ken "Barbie? ..."
-  Ken: waits (3.5)
-  Ken "*Barbie!!!*"
-  Ken: waits (3.7)
+else --> man says something negative
+  man "Well, you looked better some time."
+  woman "Oh, you're such an *idiot*!"
+  woman: leaves ()
+  man: waits (4.5)
+  man "$woman? ..."
+  man: waits (3.5)
+  man "*$woman!!!*"
+  man: waits (3.7)
 
   story
   [[
@@ -99,4 +103,4 @@ else --> Ken says something negative
 
   *Happy End!* ... for the lawyers.
   ]]
-end -- end of if Ken: affirms ()
+end -- end of if man: affirms ()
