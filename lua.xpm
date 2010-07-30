@@ -1,5 +1,13 @@
 /* XPM */
 static char * lua_xpm[] = {
+
+/*
+Icon for Lua-AKFAvatar
+http://akfavatar.nongnu.org/
+by Andreas K. Foerster
+This file is in the Public Domain
+*/
+
 "32 32 3 1",
 "       c None m None",
 ".      c gray33 m black",
