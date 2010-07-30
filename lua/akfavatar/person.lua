@@ -1,5 +1,5 @@
 -- this is a module
--- see barbie-en.lua for an example
+-- see story1-en.lua for an example
 
 require "lua-akfavatar"
 
@@ -19,7 +19,7 @@ end
 
 P.info = P.new --> nicer alias
 
--- replace $person.attribute
+-- replace $person with the name
 local function expand (s)
  return (string.gsub(s, "%$(%w+)", function(p) return _G[p]["name"] or _G[p] end))
 end
