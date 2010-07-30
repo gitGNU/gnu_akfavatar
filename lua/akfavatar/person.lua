@@ -29,8 +29,9 @@ end
 P.info = P.new --> nicer alias
 
 -- balloon is automatically sized for the text
-function P:__call(text)
+function P:__call(...)
   if current_avatar~=self then self:activate() end
+  local text = table.concat ({...})
   if text then tell(text) end
 end
 
