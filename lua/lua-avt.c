@@ -1051,6 +1051,7 @@ static int
 lavt_tell (lua_State * L)
 {
   is_initialized ();
+  lua_concat (L, lua_gettop (L));	/* make it one single string */
   check (avt_tell_mb (luaL_checkstring (L, 1)));
 
   return 0;
