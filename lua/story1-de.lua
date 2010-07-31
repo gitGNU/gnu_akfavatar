@@ -4,6 +4,8 @@
 -- mit unterschiedlichen Avataren.
 -- Bitte nach Belieben Änderungen vornehmen.
 
+-- Die eigentliche Geschichte fängt nach der letzten Trennlinie an
+
 require "lua-akfavatar"
 require "akfavatar.person"
 
@@ -40,20 +42,21 @@ Erzaehler = person:
 
 ------------------------------------------------------------------------
 
-avt.initialize {title = Mann.name .. " & " .. Frau.name,
-                shortname = Frau.name,
-                encoding="UTF-8",
-                avatar="none"
-                }
+avt.initialize {
+  title = Frau.name .. " & " .. Mann.name,
+  shortname = Frau.name,
+  encoding = "UTF-8",
+  avatar = "none"
+  }
 
-avt.set_text_delay ()
-avt.markup (true)
+avt.set_text_delay () --> den Langsamschreibmodus aktivieren
+avt.markup (true) --> Verwende "_" für Unterstreichen, "*" für Fettdruck
 
 ------------------------------------------------------------------------
 
 Erzaehler
 [[
-_*$Mann und $Frau*_
+_*$Frau und $Mann*_
 
 Dies ist nur ein kurzes Demo für AKFAvatar.
 Es soll zeigen, wie man einfach Geschichten

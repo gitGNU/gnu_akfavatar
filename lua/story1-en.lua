@@ -3,6 +3,8 @@
 -- this is just an example for Lua-AKFAvatar with different Avatars
 -- you are encouraged to make changes to this script as you like
 
+-- the story itself starts after the last deviding line
+
 require "lua-akfavatar"
 require "akfavatar.person"
 
@@ -32,20 +34,21 @@ story = person:
 
 ------------------------------------------------------------------------
 
-avt.initialize {title = man.name .. " & " .. woman.name,
-                shortname = woman.name,
-                encoding = "UTF-8",
-                avatar = "none"
-                }
+avt.initialize {
+  title = woman.name .. " & " .. man.name,
+  shortname = woman.name,
+  encoding = "UTF-8",
+  avatar = "none"
+  }
 
-avt.set_text_delay ()
-avt.markup (true)
+avt.set_text_delay ()  --> activate the slowprint mode
+avt.markup (true) --> use "_" for underlined text and "*" for bold
 
 ------------------------------------------------------------------------
 
 story
 [[
-_*$man and $woman*_
+_*$woman and $man*_
 
 This is just a short demo for AKFAvatar.
 It shows, how you can easily write stories
