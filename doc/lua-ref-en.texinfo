@@ -1,0 +1,714 @@
+@allowcodebreaks false
+
+This is a reference for the Lua-bindings to AKFAvatar.  It does not describe
+the language Lua. The referece manual for the language Lua can be found
+on the Internet on @uref{http://www.lua.org/manual/5.1/}.
+
+Before you can use the AKFAvatar binding, you have to load it with the command
+@samp{require "lua-akfavatar"}. This creates a table @code{avt}, with which 
+you can access the following functions.  By the way, if you don't like the
+prefix @code{avt}, you could also use something like this:
+@samp{local avatar = require "lua-akfavatar"}, then you can also access the
+functions with the prefix @code{avatar}.
+
+@defun avt.initialize @{title, shortname, avatar, audio, encoding, mode@}
+This function opens the graphical window or switches into the graphical mode.
+It accepts a table as parameter with definitions for the following items:
+
+@table @code
+
+@item title
+Is the title for the window in windowed mode -- default="AKFAvatar".
+
+@item shortname
+Is a shortname (often used for iconized windows) -- default=title.
+
+@item avatar
+Is either "default" or "none" or image data in the string, or a filename
+with the path.
+
+@item audio
+Set this to true if the audio subsystem should be initialized.
+This has also influence on the system "bell".
+
+@item encoding
+Is the encoding for strings, for example to "ISO-8859-1" --
+default="UTF-8".
+
+@item mode
+Is one of @code{avt.auto_mode}, @code{avt.window_mode},
+@code{avt.fullscreen_mode}, or @code{avt.fullscreennoswitch_mode}.
+
+@end table
+
+@strong{Attention:} you have to use curly braces here (it is a table).
+
+No item is needed, the order doesn't matter, use them as you wish.
+
+Examples:
+
+@itemize @bullet
+@item
+@code{avt.initialize@{@}}
+
+@item
+@code{avt.initialize@{tilte="my program", encoding="ISO-8859-1"@}}
+
+@item
+@code{avt.initialize@{tilte="my program", shortname="proram",
+avatar="gnu-head.xpm", audio=true, encoding="UTF-8",
+mode=avt.fullscreen_mode@}}
+@end itemize
+@end defun
+
+@defun avt.initialized ()
+Returns @code{true} if AKFAvatar it is initialized, or else it returns 
+@code{false}.
+@end defun
+
+@defun avt.say (@dots{})
+@defunx avt.write (@dots{})
+Prints text in the balloon.
+
+You can use strings or numbers. It works similar to @command{io.write()},
+but it writes into the balloon instead of the standard output.
+
+Example: @samp{avt.say ("Three apples cost ", 3 * appleprice, " Euros.\n")}.
+@end defun
+
+@defun avt.print (@dots{})
+Prints text in the balloon.
+
+It works similar to @command{print}, but it writes into the balloon instead of
+the standard output.  The difference to @command{avt.say()} is, that the values
+are separated by tabulators in the output and each value is automatically 
+converted with @command{tostring()} and at the end a new line is started.
+
+You can simply replace the print command with this one with
+@samp{print = avt.print}.  (The script @file{interactive_lua.lua} does this.)
+@end defun
+
+@defun avt.tell (@dots{})
+Prints text in the balloon, but before that the size of the balloon is
+adjusted so that the text exactly fits.
+
+Example: @samp{avt.tell ("Three apples cost ", 3 * appleprice, " Euros.")}.
+
+@strong{Attention:} This function still has problems with tabs ("\t") and with binary
+zeros ("\0").
+@end defun
+
+@defun avt.encoding (encoding)
+Change the used encoding.
+@end defun
+
+@defun avt.set_title (title, shortname)
+Change the title and/or the shortname.
+A missing option or @code{nil} leaves it unchanged.
+@end defun
+
+@defun avt.move_in ()
+Moves the avatar in.
+@end defun
+
+@defun avt.move_out ()
+Moves the avatar out.
+@end defun
+
+@defun avt.wait_button ()
+Waits until a button is pressed.
+@end defun
+
+@defun avt.change_avatar_image (image)
+Change the avatar image while running.
+The image is a string like in @command{avt.initialize@{@}}.
+@end defun
+
+@defun avt.set_avatar_name (name)
+Set the name of the avatar.
+This must be used after @command{avt.change_avatar_image()}.
+@end defun
+
+@defun avt.show_image_file (filename)
+Load an image and show it.
+On error it returns @code{avt.status_error} without breaking.
+If it succeeds you should call @command{avt.wait()} or 
+@command{avt.waitkey()}.
+@end defun
+
+@defun avt.show_image_string (image)
+Get an image from a string.
+On error it returns @code{avt.status_error} without breaking.
+If it succeeds ou should call @command{avt.wait()} or 
+@command{avt.waitkey()}.
+@end defun
+
+@defun avt.right_to_left (true | false)
+Activate or deactivate the right to left writing mode.
+@end defun
+
+@defun avt.set_text_delay (delay)
+Activate the slow-print mode. No value for @var{delay} uses a default delay.
+To deactivate the slow-print mode, use the value 0 for @var{delay}.
+@end defun
+
+@defun avt.set_flip_page_delay (delay)
+Set the delay for @command{avt.flip_page()} or "\f".
+Use no value for the default delay, or 0 to set no delay.
+@end defun
+
+@defun avt.set_balloon_size (height, width)
+Set the size of the balloon. No values or values of 0 set the maximum size.
+@end defun
+
+@defun avt.set_balloon_width (width)
+Set the width of the balloon. No value or 0 sets the maximum.
+@end defun
+
+@defun avt.set_balloon_height (height)
+Set the height of the balloon. No value or 0 sets the maximum.
+@end defun
+
+@defun avt.set_balloon_color (color)
+Set the color of the balloon. Colors can either be given as English names
+or as RGB value with 3 or 6 hexadicimal digits.
+
+For example @samp{avt.set_balloon_color ("sky blue")} or
+@samp{avt.set_balloon_color ("#fff")} or 
+@samp{avt.set_balloon_color ("#FFEFDB")}.
+@end defun
+
+@defun avt.set_background_color (color)
+Sets the background color of the window.
+@end defun
+
+@defun avt.set_text_color (color)
+Sets the text color.
+@end defun
+
+@defun avt.set_text_background_color (color)
+Sets the text background color.
+@end defun
+
+@defun avt.set_text_background_ballooncolor ()
+Sets the text background color to the color of the balloon.
+@end defun
+
+@defun avt.get_color (color_number)
+Get a color for a given integer value.
+Returns name and RGB value as strings,
+or returns nothing on error.
+@end defun
+
+@defun avt.activate_cursor (true | false)
+Show the cursor.
+@end defun
+
+@defun avt.underlined (true | false)
+Set the underlined mode.
+@end defun
+
+@defun avt.get_underlined ()
+Returns @code{true} if the underlined mode is active or @code{false}
+otherwise.
+@end defun
+
+@defun avt.bold (true | false)
+Set the bold mode.
+@end defun
+
+@defun avt.get_bold ()
+Returns @code{true} if the bold mode is active or @code{false} otherwise.
+@end defun
+
+@defun avt.inverse (true | false)
+Set the inverse mode.
+@end defun
+
+@defun avt.get_inverse ()
+Returns @code{true} if the inverse mode is active or @code{false} otherwise.
+@end defun
+
+@defun avt.markup (true | false)
+Set the markup mode. In the markup mode the character "_" toggles the
+underlined mode on or off and the character "*" toggles the bold mode
+on or off. Both characters are never displayed in markup mode!
+
+You can always use the overstrike technique, which doesn't reserve any 
+characters, but is harder to use.
+@end defun
+
+@defun avt.normal_text ()
+Resets the text to normal settings.
+@end defun
+
+@defun avt.clear_screen ()
+Clears the whole screen (not just the balloon!).
+@end defun
+
+@defun avt.clear ()
+Clears the textfield or viewport.
+If there is no balloon yet, it is drawn.
+@end defun
+
+@defun avt.clear_down ()
+Clears from cursor position down the viewport.
+If there is no balloon yet, it is drawn.
+@end defun
+
+@defun avt.clear_eol ()
+Clear the end of line (depending on text direction).
+@end defun
+
+@defun avt.clear_bol ()
+Clears the beginning of the line (depending on text direction).
+@end defun
+
+@defun avt.clear_line ()
+Clears the line.
+@end defun
+
+@defun avt.clear_up ()
+Clears from cursor position up the viewport.
+If there is no balloon yet, it is drawn.
+@end defun
+
+@defun avt.show_avatar ()
+Shows only the avatar without any balloon.
+@end defun
+
+@defun avt.bell ()
+Makes a sound or flashes the display if audio is not initialized.
+@end defun
+
+@defun avt.flash ()
+Flashes the display.
+@end defun
+
+@defun avt.where_x ()
+Get the x position of the cursor in the balloon.
+@end defun
+
+@defun avt.where_y ()
+Get the y position of the cursor in the balloon.
+@end defun
+
+@defun avt.max_x ()
+Get the maximum x position of the cursor in the balloon (ie. the width).
+@end defun
+
+@defun avt.max_y ()
+Get the maximum y position of the cursor in the balloon (ie. the height).
+@end defun
+
+@defun avt.home_position ()
+Returns @code{true} if the cursor is in the home position 
+or @code{false} otherwise.
+(This also works for right-to-left writing.)
+@end defun
+
+@defun avt.move_x (x)
+Moves the cursor to the given x position.
+@end defun
+
+@defun avt.move_y (y)
+Moves the cursor to the given y position.
+@end defun
+
+@defun avt.move_xy (x, y)
+Moves the cursor to the given x and y position.
+@end defun
+
+@defun avt.save_position ()
+Save the current cursor position.
+@end defun
+
+@defun avt.restore_position ()
+Restore the last saved cursor position.
+@end defun
+
+@defun avt.next_tab ()
+Moves the cursor to the next tabulator position.
+@end defun
+
+@defun avt.last_tab ()
+Moves the cursor to the previous tabulator position.
+@end defun
+
+@defun avt.reset_tab_stops ()
+Reset tab stops to every eigth column.
+@end defun
+
+@defun avt.clear_tab_stops ()
+Clears all tab stops.
+@end defun
+
+@defun avt.set_tab (x)
+Set or clear tab in position x.
+@end defun
+
+@defun avt.delete_lines (line, number)
+Deletes given number of lines, starting from line; the rest ist scrolled up.
+@end defun
+
+@defun avt.insert_lines (line, number)
+Inserts given number of lines, starting at line; the rest ist scrolled down.
+@end defun
+
+@defun avt.reserve_single_keys (true | false)
+Reserves single keys, such as @key{ESC} or @key{F11}.
+@end defun
+
+@defun avt.switch_mode (mode)
+Swithes the window mode. Use either of @code{avt.auto_mode},
+@code{avt.window_mode}, @code{avt.fullscreen_mode}, or
+@code{avt.fullscreennoswitch_mode}.
+@end defun
+
+@defun avt.get_mode ()
+Returns the window mode (see @command{avt.switch_mode (mode)}).
+@end defun
+
+@defun avt.toggle_fullscreen ()
+Toggles the fullscreen mode on or off.
+@end defun
+
+@defun avt.flip_page ()
+Waits a while and then clears the textfield; same as "\f" in 
+@command{avt.say()}.
+See also @command{avt.set_flip_delay(delay)}.
+@end defun
+
+@defun avt.update ()
+Update everything and take care of events.
+This should be used in a loop, when the program is doing something else.
+@end defun
+
+@defun avt.wait (seconds)
+@defunx avt.wait_sec (seconds)
+Waits a given amount of seconds (may be a fraction).
+@end defun
+
+@defun avt.credits (filename, centered)
+Shows final credits from a given file.
+If the second parameter is true, the every line is centered.
+@end defun
+
+@defun newline ()
+Start a new line. It is the same as "\n" in @command{avt.say()}, but faster.
+@end defun
+
+@defun avt.ask ()
+Waits for the user to enter something. Returns the result as string.
+
+If you need a number, use @samp{nr = tonumber(avt.ask())}, which yields
+@code{nil} if the input was not a number.
+@end defun
+
+@defun avt.get_key ()
+Waits for a key to be pressed and returns the unicode codepoint of the
+character. For some function keys it yields a number from the unicode private
+use section.
+@end defun
+
+@defun avt.navigate (buttons)
+Shows a navigation bar with the given buttons.
+
+For buttons use a string with the following characters:
+
+@table @asis
+
+@item l:
+left
+
+@item r:
+right (play)
+
+@item d:
+down
+
+@item u:
+up
+
+@item x:
+cancel
+
+@item f:
+(fast)forward
+
+@item b:
+(fast)backward
+
+@item p:
+pause
+
+@item s:
+stop
+
+@item e:
+eject
+
+@item *:
+circle (record)
+
+@item +:
+plus (add)
+
+@item -:
+minus (remove)
+
+@item ?:
+help
+
+@item ' ':
+spacer (no button)
+
+@end table
+
+Pressing a key with one of those characters selects it.
+For the directions you can also use the arrow keys,
+The @key{Pause} key returns "p".
+The @key{Help} key or @key{F1} return "?".
+
+It returns the approriete character or a number.
+@end defun
+
+@defun avt.decide ()
+Make a positive or negative decision.
+Returns @code{true} or @code{false}.
+@end defun
+
+@defun avt.choice (start_line, items, key, back, forward)
+This can be used for menus.
+
+@table @asis
+
+@item start_line:
+line, where choice begins
+
+@item items:
+number of items/lines
+
+@item key:
+first key, like '1' or 'a', 0 for no keys
+
+@item back:
+whether first entry is a back function
+
+@item forward:
+whether last entry is a forward function
+
+@end table
+@end defun
+
+@defun avt.pager (text, startline)
+Show a longer text with a text-viewer application.
+
+If the @var{startline} is given and it is greater than 1, then it starts in
+that line.  But you still can scroll back.
+@end defun
+
+@defun avt.load_audio_file (filename)
+Reads Audio data from a file.
+
+supported audio formats:
+
+@table @asis
+
+@item AU:
+linear PCM with up to 32Bit, mu-law, A-law
+
+@item WAV:
+linear PCM with up to 16Bit, MS-ADPCM, IMA-ADPCM
+
+@item Both:
+mono or stereo
+
+@end table
+
+The current implementation can only play sounds with up to 16Bit precision,
+but AU-files with more Bits can be read.
+@end defun
+
+@defun avt.load_audio_string (audio_data)
+Reads Audio data from a string.
+Otherwise the same as @command{avt.load_audio_file()}.
+@end defun
+
+@defun avt.play_audio (audio, loop)
+Plays audio. The audio must have been loaded by 
+@command{avt.load_audio_file()} or @command{avt.load_audio_string()}.
+If @var{loop} is set to @code{true}, then the audio is played in a endless
+loop.
+
+Not more than one sound can be played at the same time.  When you play
+another sound the previous one is stopped.  Use @command{avt.wait_audio_end()}
+to play sounds in a sequence.
+
+The audio can also be played by calling the audio variables like a function.
+To play them in a loop, use @code{true} as the only option.
+
+@strong{Attention:} You should take care that the variable for the sound stays
+in scope while the sound is played.  Otherwise the audio output could stop
+unexpectedly.
+
+@example
+play_audio_file = function (filename)
+  local sound = avt.load_audio_file (filename)
+  sound ()
+  avt.wait_audio_end ()
+  end
+@end example
+
+This function is okay because of the command @command{avt.wait_audio_end()}.
+It would @emph{not} be okay without it!  That might work in most cases,
+but you can not rely on it.
+
+@example
+play_audio_file = function (filename)
+  sound = avt.load_audio_file (filename)
+  sound ()
+  end
+@end example
+
+This function is also okay, because the variable @code{sound} is not local to
+this function.  It is most probably be a global variable. It could also be
+local to the program (ie. the "chunk"), which is also okay.
+@end defun
+
+@defun avt.wait_audio_end ()
+Waits until the audio output ends.
+
+This also stops an audio-loop, but still plays to the end of the current
+sound.
+@end defun
+
+@defun avt.stop_audio ()
+Stops the audio output immediately.
+@end defun
+
+@defun avt.viewport (x, y, width, height)
+Sets a viewport (sub-area of the textarea).
+The upper left corner is at 1, 1.
+@end defun
+
+@defun avt.set_scroll_mode (mode)
+Sets the scroll mode, ie. how it reacts when trying to go beyond the last line.
+The @var{mode} is either -1 for "do nothing" or 0 for page-fipping or 1 for
+scrolling.
+@end defun
+
+@defun avt.get_scroll_mode ()
+Gets the scroll mode (see @command{avt.set_scroll_mode ()}).
+@end defun
+
+@defun avt.newline_mode (true | false)
+When the newline_mode is activated (default) a newline character sets the
+curser at the beginning of a new line. When it is off the cursor goes into
+the next line but stays in the same horizontal position.
+@end defun
+
+@defun avt.auto_margin (true | false)
+Sets the automargin mode, ie. whether to start a new line automatically when
+the text doesn't fit in a line.
+@end defun
+
+@defun avt.set_origin_mode (true | false)
+Sets the origin mode. When the origin mode is on, the coordinates 1, 1 are
+always in the top left of the balloon, even when the viewport does not start
+there. When the origin mode is off, the coorinates 1, 1 are the top left
+of the viewport.
+@end defun
+
+@defun avt.get_origin_mode ()
+Gets the origin mode (see @command{avt.set_origin_mode}).
+@end defun
+
+@defun avt.set_mose_visible (true | false)
+Sets whether the mouse pointer is visible or not.
+
+@emph{Note:} In windowing systems this has only an affect when the mouse
+pointer is inside of the window.
+@end defun
+
+@defun avt.lock_updates (true | false)
+Sets a lock on updates inside of the balloon. This can be used for speedups.
+@end defun
+
+@defun avt.insert_spaces (number)
+Insert @var{number} spaces at the current cursor position. The rest of the
+line is moved.
+@end defun
+
+@defun avt.delete_characters (number)
+Delete @var{number} characters at the current cursor position. The rest of the
+line is moved.
+@end defun
+ 
+@defun avt.erase_characters (number)
+Erase @var{number} of characters. The characters are overwritten with spaces.
+@end defun
+
+@defun avt.backspace ()
+Go back one character. Does nothing if the cursor is at the beginning of the
+line.
+@end defun
+
+@defun avt.get_directory ()
+Returns the current working directory.
+@end defun
+
+@defun avt.set_directory (directory)
+@defunx avt.chdir (directory)
+Sets the working directory to @var{directory}.
+@end defun
+
+@defun avt.file_selection (filter)
+Start a file-chooser in the balloon. It starts in the current working
+directory. When a directory is chosen it changes the working directory to that
+one. At the end it returns the selected filename (which is in the then current
+working directory) or @code{nil} on error.
+
+The @var{filter}, if given, should be a function. It gets a filename as
+parameter. If it returns @code{false} or @code{nil} or nothing then the 
+filename is not shown, otherwise it is shown.
+
+Example: 
+@example
+avt.file_selection (function (n) return string.find (n, "%.te?xt$") end)
+@end example
+
+Of course @var{filter} can also be the name of a previously defined function.
+@end defun
+
+@defun avt.color_selection ()
+Start a color-chooser in the balloon. It returns two strings: first the
+English name for the color and second the hexadicimal RGB definition.
+Both values can be used for selection colors.
+@end defun
+
+@defun avt.version ()
+Returns the version of AKFAvatar as string.
+@end defun
+
+@defun avt.copyright ()
+Eeturns the copyright notice for AKFAvatar as string.
+@end defun
+
+@defun avt.license ()
+Returns the license notice for AKFAvatar as string.
+@end defun
+
+@defun avt.quit ()
+Quit the avatar subsystem (closes the window).
+
+This function is not needed for normal programs. Only use it, if your program
+should continue working without a visible window.
+@end defun
+
+@defun avt.button_quit ()
+Show button, move out and quit.
+
+Again: This function is not needed for normal programs. Only use it, if your
+program should continue working without a visible window.
+@end defun

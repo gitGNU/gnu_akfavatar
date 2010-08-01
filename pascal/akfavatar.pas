@@ -48,8 +48,7 @@ unit akfavatar;
 
 interface
 
-{ length of an output line }
-{ input is one less }
+{ length of an input/output line }
 const LineLength = 80;
 
 { Default encoding of the system }

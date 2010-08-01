@@ -70,6 +70,7 @@ without any warranty.
 * Using gnome-akfavatar:: Using it under GNOME
 * Formats::               About file formats and values
 * Programming::           Programming with AKFAvatar
+* Lua reference::         Reference for Lua
 * Pascal reference::      Reference for Pascal
 * C reference::           the C header file @code{akfavatar.h}
 * Color names::           Names of colors
@@ -1434,6 +1435,14 @@ for 500 milliseconds.  If you prefer the scale in seconds use
 
 A full reference for the Pascal language can be found in 
 @ref{Pascal reference}.
+
+
+@node Lua reference
+@appendix Lua reference
+@cindex Lua reference
+@cindex reference for Lua
+@include lua-ref-en.texinfo
+
 
 @node Pascal reference
 @appendix Pascal reference

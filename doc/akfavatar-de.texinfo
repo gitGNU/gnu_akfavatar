@@ -74,6 +74,7 @@ ohne jegliche Garantie angeboten.
 * Verwendung von gnome-akfavatar:: Wie man es unter @acronym{GNOME} verwendet
 * Formate::                        Dateiformate und andere Angaben
 * Programmierung::                 Programmierung mit AKFAvatar
+* Lua Referenz::                   Referenz für Lua
 * Pascal Referenz::                Referenz für Pascal
 * C Referenz::                     Die C Header Datei @code{akfavatar.h}
 * Farbnamen::                      Namen der Farben
@@ -1553,6 +1554,12 @@ Angabe in Sekunden bevorzugt, kann man folgendes verwenden:
 
 Eine vollständige Übersicht über alle Pascal-Befehle und Funktionen findet
 man in @ref{Pascal Referenz}.
+
+@node Lua Referenz
+@appendix Lua Referenz
+@cindex Lua Referenz
+@cindex Referenz für Lua
+@include lua-ref-en.texinfo
 
 @node Pascal Referenz
 @appendix Pascal Referenz
