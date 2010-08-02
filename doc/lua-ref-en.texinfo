@@ -112,14 +112,14 @@ If you need a number, use @samp{nr = tonumber(avt.ask())}, which yields
 @end defun
 
 @defun avt.set_text_delay (delay)
-Activate the slow-print mode. No value for @var{delay} uses a default delay.
-To deactivate the slow-print mode, use the value 0 for @var{delay}.
+Activate the slow-print mode. With no value for @var{delay} it uses a default
+delay.  To deactivate the slow-print mode, use the value 0 for @var{delay}.
 @end defun
 
 @defun avt.markup (true | false)
 Set the markup mode. In the markup mode the character ``_'' toggles the
 underlined mode on or off and the character ``*'' toggles the bold mode
-on or off. Both characters are never displayed in markup mode!
+on or off.  Both characters are never displayed in markup mode!
 
 You can always use the overstrike technique, which doesn't reserve any 
 characters, but is harder to use.
