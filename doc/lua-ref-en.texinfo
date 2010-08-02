@@ -29,7 +29,7 @@ with the path.
 
 @item audio
 Set this to true if the audio subsystem should be initialized.
-This has also influence on the system ``bell´´.
+This has also influence on the system ``bell''.
 
 @item encoding
 Is the encoding for strings, for example to "ISO-8859-1" --
@@ -502,7 +502,7 @@ This should be used in a loop, when the program is doing something else.
 @defun avt.credits (text, centered)
 Shows final credits.
 
-If the second parameter is @code{true}, the every line is centered.
+If the second parameter is @code{true}, every line is centered.
 @end defun
 
 @defun newline ()
@@ -607,7 +607,7 @@ The upper left corner is at 1, 1.
 
 @defun avt.set_scroll_mode (mode)
 Sets the scroll mode, ie. how it reacts when trying to go beyond the last line.
-The @var{mode} is either -1 for ``do nothing´´ or 0 for page-fipping or 1 for
+The @var{mode} is either -1 for ``do nothing'' or 0 for page-fipping or 1 for
 scrolling.
 @end defun
 
