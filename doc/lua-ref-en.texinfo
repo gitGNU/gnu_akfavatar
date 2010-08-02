@@ -705,7 +705,7 @@ Returns the version of AKFAvatar as string.
 @end defun
 
 @defun avt.copyright ()
-Eeturns the copyright notice for AKFAvatar as string.
+Returns the copyright notice for AKFAvatar as string.
 @end defun
 
 @defun avt.license ()
@@ -725,3 +725,4 @@ Show button, move out and quit.
 Again: This function is not needed for normal programs. Only use it, if your
 program should continue working without a visible window.
 @end defun
+
