@@ -29,7 +29,7 @@ with the path.
 
 @item audio
 Set this to true if the audio subsystem should be initialized.
-This has also influence on the system "bell".
+This has also influence on the system ``bell´´.
 
 @item encoding
 Is the encoding for strings, for example to "ISO-8859-1" --
@@ -100,8 +100,8 @@ adjusted so that the text exactly fits.
 
 Example: @samp{avt.tell ("Three apples cost ", 3 * appleprice, " Euros.")}.
 
-@strong{Attention:} This function still has problems with tabs ("\t") and with binary
-zeros ("\0").
+@strong{Attention:} This function still has problems with tabs ("\t") and with
+binary zeros ("\0").
 @end defun
 
 @defun avt.ask ()
@@ -160,7 +160,7 @@ Moves the avatar out.
 Show a longer text with a text-viewer application.
 
 If the @var{startline} is given and it is greater than 1, then it starts in
-that line.  But you still can scroll back.
+that line.  But you still can scroll back from there.
 @end defun
 
 @defun avt.decide ()
@@ -216,7 +216,7 @@ but AU-files with more Bits can be read.
 @end defun
 
 @defun avt.load_audio_string (audio_data)
-Reads Audio data from a string.
+Reads audio data from a string.
 Otherwise the same as @command{avt.load_audio_file()}.
 @end defun
 
@@ -264,7 +264,7 @@ local to the program (ie. the @dfn{chunk}), which is also okay.
 @defun avt.wait_audio_end ()
 Waits until the audio output ends.
 
-This also stops an audio-loop, but still plays to the end of the current
+This also ends an audio-loop, but still plays to the end of the current
 sound.
 @end defun
 
@@ -367,7 +367,7 @@ Resets the text to normal settings.
 @end defun
 
 @defun avt.clear_screen ()
-Clears the whole screen (not just the balloon!).
+Clears the whole screen or window (not just the balloon!).
 @end defun
 
 @defun avt.clear_down ()
@@ -427,15 +427,15 @@ or @code{false} otherwise.
 @end defun
 
 @defun avt.move_x (x)
-Moves the cursor to the given x position.
+Moves the cursor to the given @var{x} position.
 @end defun
 
 @defun avt.move_y (y)
-Moves the cursor to the given y position.
+Moves the cursor to the given @var{y} position.
 @end defun
 
 @defun avt.move_xy (x, y)
-Moves the cursor to the given x and y position.
+Moves the cursor to the given @var{x} and @var{y} position.
 @end defun
 
 @defun avt.save_position ()
@@ -463,15 +463,17 @@ Clears all tab stops.
 @end defun
 
 @defun avt.set_tab (x)
-Set or clear tab in position x.
+Set or clear tab in position @var{x}.
 @end defun
 
 @defun avt.delete_lines (line, number)
-Deletes given number of lines, starting from line; the rest ist scrolled up.
+Deletes given @var{number} of lines, starting from @var{line};
+the rest ist scrolled up.
 @end defun
 
 @defun avt.insert_lines (line, number)
-Inserts given number of lines, starting at line; the rest ist scrolled down.
+Inserts given @var{number} of lines, starting at @var{line};
+the rest ist scrolled down.
 @end defun
 
 @defun avt.reserve_single_keys (true | false)
@@ -500,7 +502,7 @@ This should be used in a loop, when the program is doing something else.
 @defun avt.credits (text, centered)
 Shows final credits.
 
-If the second parameter is true, the every line is centered.
+If the second parameter is @code{true}, the every line is centered.
 @end defun
 
 @defun newline ()
@@ -605,7 +607,7 @@ The upper left corner is at 1, 1.
 
 @defun avt.set_scroll_mode (mode)
 Sets the scroll mode, ie. how it reacts when trying to go beyond the last line.
-The @var{mode} is either -1 for "do nothing" or 0 for page-fipping or 1 for
+The @var{mode} is either -1 for ``do nothing´´ or 0 for page-fipping or 1 for
 scrolling.
 @end defun
 
@@ -635,7 +637,7 @@ of the viewport.
 Gets the origin mode (see @command{avt.set_origin_mode}).
 @end defun
 
-@defun avt.set_mose_visible (true | false)
+@defun avt.set_mouse_visible (true | false)
 Sets whether the mouse pointer is visible or not.
 
 @emph{Note:} In windowing systems this has only an affect when the mouse
