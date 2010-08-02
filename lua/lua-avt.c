@@ -869,8 +869,8 @@ lavt_wait_sec (lua_State * L)
   return 0;
 }
 
-/* show final credits from file */
-/* 1=filename, 2=centered (true/false/nothing) */
+/* show final credits from a string */
+/* 1=text, 2=centered (true/false/nothing) */
 static int
 lavt_credits (lua_State * L)
 {

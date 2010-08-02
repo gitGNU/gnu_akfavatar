@@ -497,8 +497,9 @@ Update everything and take care of events.
 This should be used in a loop, when the program is doing something else.
 @end defun
 
-@defun avt.credits (filename, centered)
-Shows final credits from a given file.
+@defun avt.credits (text, centered)
+Shows final credits.
+
 If the second parameter is true, the every line is centered.
 @end defun
 
