@@ -1396,7 +1396,7 @@ handle_size_command (const wchar_t * s)
 static void
 handle_read_command (void)
 {
-  wchar_t line[AVT_LINELENGTH];
+  wchar_t line[AVT_LINELENGTH + 1];
 
   if (!initialized)
     initialize ();
@@ -2390,7 +2390,7 @@ ask_manpage (void)
 static void
 ask_manpage (void)
 {
-  char manpage[AVT_LINELENGTH] = "man";
+  char manpage[AVT_LINELENGTH + 1] = "man";
 
   avt_set_balloon_size (3, 40);
   avt_set_text_delay (0);

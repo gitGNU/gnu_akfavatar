@@ -137,7 +137,7 @@ avta_puts (const char *s)
 extern int
 avta_vscanf (const char *format, va_list ap)
 {
-  char str[4 * AVT_LINELENGTH];
+  char str[4 * AVT_LINELENGTH + 1];
 
   avt_ask_mb (str, sizeof (str));
   return vsscanf (str, format, ap);

@@ -85,7 +85,7 @@ avta_putws (const wchar_t * s)
 extern int
 avta_vwscanf (const wchar_t * format, va_list ap)
 {
-  wchar_t str[AVT_LINELENGTH];
+  wchar_t str[AVT_LINELENGTH + 1];
 
   avt_ask (str, sizeof (str));
   return vswscanf (str, format, ap);

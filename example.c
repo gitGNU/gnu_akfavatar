@@ -72,7 +72,7 @@ say (wchar_t * msg)
 void
 run_plot (void)
 {
-  wchar_t name[AVT_LINELENGTH];
+  wchar_t name[AVT_LINELENGTH + 1];
   /* AVT_LINELENGTH is the maximum length of one line in a balloon */
 
   /* set the balloon size: height, width (use 0 for maximum) */

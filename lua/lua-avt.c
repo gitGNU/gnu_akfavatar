@@ -892,7 +892,7 @@ lavt_newline (lua_State * L)
 static int
 lavt_ask (lua_State * L)
 {
-  char buf[4 * AVT_LINELENGTH];
+  char buf[4 * AVT_LINELENGTH + 1];
 
   is_initialized ();
   check (avt_ask_mb (buf, sizeof (buf)));
