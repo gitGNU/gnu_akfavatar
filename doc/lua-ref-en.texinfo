@@ -181,14 +181,14 @@ If no value is given, it waits ``a while''.
 
 @defun avt.show_image_file (filename)
 Load an image and show it.
-On error it returns @code{avt.status_error} without breaking.
+On success it returns @code{true}, or @code{nil} on error.
 If it succeeds you should call @command{avt.wait()} or 
 @command{avt.get_key()}.
 @end defun
 
 @defun avt.show_image_string (image)
 Get an image from a string and show it.
-On error it returns @code{avt.status_error} without breaking.
+On success it returns @code{true}, or @code{nil} on error.
 If it succeeds you should call @command{avt.wait()} or 
 @command{avt.get_key()}.
 @end defun
@@ -697,7 +697,7 @@ Of course @var{filter} can also be the name of a previously defined function.
 @defun avt.color_selection ()
 Start a color-chooser in the balloon. It returns two strings: first the
 English name for the color and second the hexadicimal RGB definition.
-Both values can be used for selection colors.
+Both values can be used for selecting colors.
 @end defun
 
 @defun avt.version ()

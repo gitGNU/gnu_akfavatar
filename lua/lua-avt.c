@@ -304,20 +304,28 @@ lavt_set_avatar_name (lua_State * L)
 
 /*
  * load image and show it
- * on error it returns avt.status_error without breaking
+ * on error it returns nil
  * if it succeeds call avt.wait or avt.waitkey
  */
 static int
 lavt_show_image_file (lua_State * L)
 {
   is_initialized ();
-  lua_pushinteger (L, avt_show_image_file (luaL_checkstring (L, 1)));
-  return 1;
+  if (avt_show_image_file (luaL_checkstring (L, 1)) != AVT_NORMAL)
+    {
+      lua_pushnil (L);
+      return 1;
+    }
+  else
+    {
+      lua_pushboolean (L, AVT_TRUE);
+      return 1;
+    }
 }
 
 /*
  * get image from string
- * on error it returns avt.status_error without breaking
+ * on error it returns nil
  * if it succeeds call avt.wait or avt.waitkey
  */
 static int
@@ -328,8 +336,16 @@ lavt_show_image_string (lua_State * L)
 
   is_initialized ();
   data = (char *) luaL_checklstring (L, 1, &len);
-  lua_pushinteger (L, avt_show_image_data (data, len));
-  return 1;
+  if (avt_show_image_data (data, len) != AVT_NORMAL)
+    {
+      lua_pushnil (L);
+      return 1;
+    }
+  else
+    {
+      lua_pushboolean (L, AVT_TRUE);
+      return 1;
+    }
 }
 
 /* change title and/or icontitle */
