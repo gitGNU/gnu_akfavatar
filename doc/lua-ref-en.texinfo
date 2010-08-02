@@ -59,6 +59,9 @@ Examples:
 avatar="gnu-head.xpm", audio=true, encoding="UTF-8",
 mode=avt.fullscreen_mode@}}
 @end itemize
+
+Many of the following functions implicitly call @samp{avt.initialize@{@}}
+when it is not initialized yet.
 @end defun
 
 @defun avt.initialized ()
@@ -77,15 +80,18 @@ Example: @samp{avt.say ("Three apples cost ", 3 * appleprice, " Euros.\n")}.
 @end defun
 
 @defun avt.print (@dots{})
-Prints text in the balloon.
+Prints text in the balloon.  It works similar to @command{print}, but it writes 
+into the balloon instead of the standard output.
 
-It works similar to @command{print}, but it writes into the balloon instead of
-the standard output.  The difference to @command{avt.say()} is, that the values
+The difference to @command{avt.say()} is, that the values
 are separated by tabulators in the output and each value is automatically 
 converted with @command{tostring()} and at the end a new line is started.
 
 You can simply replace the print command with this one with
 @samp{print = avt.print}.  (The script @file{interactive_lua.lua} does this.)
+
+The function @command{avt.say()} is better suited for programs, while this
+function is better suited for interactive use or debugging.
 @end defun
 
 @defun avt.tell (@dots{})
@@ -98,13 +104,48 @@ Example: @samp{avt.tell ("Three apples cost ", 3 * appleprice, " Euros.")}.
 zeros ("\0").
 @end defun
 
-@defun avt.encoding (encoding)
-Change the used encoding.
+@defun avt.ask ()
+Waits for the user to enter something. Returns the result as string.
+
+If you need a number, use @samp{nr = tonumber(avt.ask())}, which yields
+@code{nil} if the input was not a number.
 @end defun
 
-@defun avt.set_title (title, shortname)
-Change the title and/or the shortname.
-A missing option or @code{nil} leaves it unchanged.
+@defun avt.set_text_delay (delay)
+Activate the slow-print mode. No value for @var{delay} uses a default delay.
+To deactivate the slow-print mode, use the value 0 for @var{delay}.
+@end defun
+
+@defun avt.markup (true | false)
+Set the markup mode. In the markup mode the character ``_'' toggles the
+underlined mode on or off and the character ``*'' toggles the bold mode
+on or off. Both characters are never displayed in markup mode!
+
+You can always use the overstrike technique, which doesn't reserve any 
+characters, but is harder to use.
+@end defun
+
+@defun avt.set_balloon_size (height, width)
+Sets the size of the balloon. No values or values of 0 set the maximum size.
+@end defun
+
+@defun avt.set_balloon_width (width)
+Sets the width of the balloon. No value or 0 sets the maximum.
+@end defun
+
+@defun avt.set_balloon_height (height)
+Sets the height of the balloon. No value or 0 sets the maximum.
+@end defun
+
+@defun avt.clear ()
+Clears the textfield or viewport.
+If there is no balloon yet, it is drawn.
+@end defun
+
+@defun avt.flip_page ()
+Waits a while and then clears the textfield; same as "\f" in
+@command{avt.say()}.
+See also @command{avt.set_flip_delay(delay)}.
 @end defun
 
 @defun avt.move_in ()
@@ -115,8 +156,129 @@ Moves the avatar in.
 Moves the avatar out.
 @end defun
 
+@defun avt.pager (text, startline)
+Show a longer text with a text-viewer application.
+
+If the @var{startline} is given and it is greater than 1, then it starts in
+that line.  But you still can scroll back.
+@end defun
+
+@defun avt.decide ()
+Ask the user to make a positive or negative decision.
+Returns @code{true} or @code{false}.
+@end defun
+
 @defun avt.wait_button ()
 Waits until a button is pressed.
+@end defun
+
+@defun avt.wait (seconds)
+@defunx avt.wait_sec (seconds)
+Waits a given amount of seconds (may be a fraction).
+
+If no value is given, it waits ``a while''.
+@end defun
+
+@defun avt.show_image_file (filename)
+Load an image and show it.
+On error it returns @code{avt.status_error} without breaking.
+If it succeeds you should call @command{avt.wait()} or 
+@command{avt.get_key()}.
+@end defun
+
+@defun avt.show_image_string (image)
+Get an image from a string and show it.
+On error it returns @code{avt.status_error} without breaking.
+If it succeeds you should call @command{avt.wait()} or 
+@command{avt.get_key()}.
+@end defun
+
+@defun avt.load_audio_file (filename)
+Reads audio data from a file.
+
+supported audio formats:
+
+@table @asis
+
+@item AU:
+linear PCM with up to 32Bit, mu-law, A-law
+
+@item WAV:
+linear PCM with up to 16Bit, MS-ADPCM, IMA-ADPCM
+
+@item Both:
+mono or stereo
+
+@end table
+
+The current implementation can only play sounds with up to 16Bit precision,
+but AU-files with more Bits can be read.
+@end defun
+
+@defun avt.load_audio_string (audio_data)
+Reads Audio data from a string.
+Otherwise the same as @command{avt.load_audio_file()}.
+@end defun
+
+@defun avt.play_audio (audio, loop)
+Plays audio. The audio must have been loaded by 
+@command{avt.load_audio_file()} or @command{avt.load_audio_string()}.
+If @var{loop} is set to @code{true}, then the audio is played in a endless
+loop.
+
+Only one sound can be played at the same time.  When you play
+another sound the previous one is stopped.  Use @command{avt.wait_audio_end()}
+to play sounds in a sequence.
+
+The audio can also be played by calling the audio variables like a function.
+To play them in a loop, use @code{true} as the only option.
+
+@strong{Attention:} You should take care that the variable for the sound stays
+in scope while the sound is played.  Otherwise the audio output could stop
+unexpectedly.
+
+@example
+play_audio_file = function (filename)
+  local sound = avt.load_audio_file (filename)
+  sound ()
+  avt.wait_audio_end ()
+  end
+@end example
+
+This function is okay because of the command @command{avt.wait_audio_end()}.
+It would @emph{not} be okay without it!  That might work in most cases,
+but you can not rely on it.
+
+@example
+play_audio_file = function (filename)
+  sound = avt.load_audio_file (filename)
+  sound ()
+  end
+@end example
+
+This function is also okay, because the variable @code{sound} is not local to
+this function.  It is most probably a global variable. It could also be
+local to the program (ie. the @dfn{chunk}), which is also okay.
+@end defun
+
+@defun avt.wait_audio_end ()
+Waits until the audio output ends.
+
+This also stops an audio-loop, but still plays to the end of the current
+sound.
+@end defun
+
+@defun avt.stop_audio ()
+Stops the audio output immediately.
+@end defun
+
+@defun avt.encoding (encoding)
+Change the used text encoding.
+@end defun
+
+@defun avt.set_title (title, shortname)
+Change the title and/or the shortname.
+A missing option or @code{nil} leaves it unchanged.
 @end defun
 
 @defun avt.change_avatar_image (image)
@@ -129,27 +291,8 @@ Set the name of the avatar.
 This must be used after @command{avt.change_avatar_image()}.
 @end defun
 
-@defun avt.show_image_file (filename)
-Load an image and show it.
-On error it returns @code{avt.status_error} without breaking.
-If it succeeds you should call @command{avt.wait()} or 
-@command{avt.waitkey()}.
-@end defun
-
-@defun avt.show_image_string (image)
-Get an image from a string.
-On error it returns @code{avt.status_error} without breaking.
-If it succeeds ou should call @command{avt.wait()} or 
-@command{avt.waitkey()}.
-@end defun
-
 @defun avt.right_to_left (true | false)
 Activate or deactivate the right to left writing mode.
-@end defun
-
-@defun avt.set_text_delay (delay)
-Activate the slow-print mode. No value for @var{delay} uses a default delay.
-To deactivate the slow-print mode, use the value 0 for @var{delay}.
 @end defun
 
 @defun avt.set_flip_page_delay (delay)
@@ -157,29 +300,19 @@ Set the delay for @command{avt.flip_page()} or "\f".
 Use no value for the default delay, or 0 to set no delay.
 @end defun
 
-@defun avt.set_balloon_size (height, width)
-Set the size of the balloon. No values or values of 0 set the maximum size.
-@end defun
+@defun avt.set_background_color (color)
+Sets the background color of the window.
 
-@defun avt.set_balloon_width (width)
-Set the width of the balloon. No value or 0 sets the maximum.
-@end defun
+Colors can either be given as English names or as RGB value with 
+3 or 6 hexadicimal digits.
 
-@defun avt.set_balloon_height (height)
-Set the height of the balloon. No value or 0 sets the maximum.
+For example @samp{avt.set_background_color ("sky blue")} or
+@samp{avt.set_background_color ("#555")} or
+@samp{avt.set_background_color ("#8B4513")}.
 @end defun
 
 @defun avt.set_balloon_color (color)
-Set the color of the balloon. Colors can either be given as English names
-or as RGB value with 3 or 6 hexadicimal digits.
-
-For example @samp{avt.set_balloon_color ("sky blue")} or
-@samp{avt.set_balloon_color ("#fff")} or 
-@samp{avt.set_balloon_color ("#FFEFDB")}.
-@end defun
-
-@defun avt.set_background_color (color)
-Sets the background color of the window.
+Sets the color of the balloon.
 @end defun
 
 @defun avt.set_text_color (color)
@@ -229,26 +362,12 @@ Set the inverse mode.
 Returns @code{true} if the inverse mode is active or @code{false} otherwise.
 @end defun
 
-@defun avt.markup (true | false)
-Set the markup mode. In the markup mode the character "_" toggles the
-underlined mode on or off and the character "*" toggles the bold mode
-on or off. Both characters are never displayed in markup mode!
-
-You can always use the overstrike technique, which doesn't reserve any 
-characters, but is harder to use.
-@end defun
-
 @defun avt.normal_text ()
 Resets the text to normal settings.
 @end defun
 
 @defun avt.clear_screen ()
 Clears the whole screen (not just the balloon!).
-@end defun
-
-@defun avt.clear ()
-Clears the textfield or viewport.
-If there is no balloon yet, it is drawn.
 @end defun
 
 @defun avt.clear_down ()
@@ -373,20 +492,9 @@ Returns the window mode (see @command{avt.switch_mode (mode)}).
 Toggles the fullscreen mode on or off.
 @end defun
 
-@defun avt.flip_page ()
-Waits a while and then clears the textfield; same as "\f" in 
-@command{avt.say()}.
-See also @command{avt.set_flip_delay(delay)}.
-@end defun
-
 @defun avt.update ()
 Update everything and take care of events.
 This should be used in a loop, when the program is doing something else.
-@end defun
-
-@defun avt.wait (seconds)
-@defunx avt.wait_sec (seconds)
-Waits a given amount of seconds (may be a fraction).
 @end defun
 
 @defun avt.credits (filename, centered)
@@ -396,13 +504,6 @@ If the second parameter is true, the every line is centered.
 
 @defun newline ()
 Start a new line. It is the same as "\n" in @command{avt.say()}, but faster.
-@end defun
-
-@defun avt.ask ()
-Waits for the user to enter something. Returns the result as string.
-
-If you need a number, use @samp{nr = tonumber(avt.ask())}, which yields
-@code{nil} if the input was not a number.
 @end defun
 
 @defun avt.get_key ()
@@ -473,11 +574,6 @@ The @key{Help} key or @key{F1} return "?".
 It returns the approriete character or a number.
 @end defun
 
-@defun avt.decide ()
-Make a positive or negative decision.
-Returns @code{true} or @code{false}.
-@end defun
-
 @defun avt.choice (start_line, items, key, back, forward)
 This can be used for menus.
 
@@ -499,92 +595,6 @@ whether first entry is a back function
 whether last entry is a forward function
 
 @end table
-@end defun
-
-@defun avt.pager (text, startline)
-Show a longer text with a text-viewer application.
-
-If the @var{startline} is given and it is greater than 1, then it starts in
-that line.  But you still can scroll back.
-@end defun
-
-@defun avt.load_audio_file (filename)
-Reads Audio data from a file.
-
-supported audio formats:
-
-@table @asis
-
-@item AU:
-linear PCM with up to 32Bit, mu-law, A-law
-
-@item WAV:
-linear PCM with up to 16Bit, MS-ADPCM, IMA-ADPCM
-
-@item Both:
-mono or stereo
-
-@end table
-
-The current implementation can only play sounds with up to 16Bit precision,
-but AU-files with more Bits can be read.
-@end defun
-
-@defun avt.load_audio_string (audio_data)
-Reads Audio data from a string.
-Otherwise the same as @command{avt.load_audio_file()}.
-@end defun
-
-@defun avt.play_audio (audio, loop)
-Plays audio. The audio must have been loaded by 
-@command{avt.load_audio_file()} or @command{avt.load_audio_string()}.
-If @var{loop} is set to @code{true}, then the audio is played in a endless
-loop.
-
-Not more than one sound can be played at the same time.  When you play
-another sound the previous one is stopped.  Use @command{avt.wait_audio_end()}
-to play sounds in a sequence.
-
-The audio can also be played by calling the audio variables like a function.
-To play them in a loop, use @code{true} as the only option.
-
-@strong{Attention:} You should take care that the variable for the sound stays
-in scope while the sound is played.  Otherwise the audio output could stop
-unexpectedly.
-
-@example
-play_audio_file = function (filename)
-  local sound = avt.load_audio_file (filename)
-  sound ()
-  avt.wait_audio_end ()
-  end
-@end example
-
-This function is okay because of the command @command{avt.wait_audio_end()}.
-It would @emph{not} be okay without it!  That might work in most cases,
-but you can not rely on it.
-
-@example
-play_audio_file = function (filename)
-  sound = avt.load_audio_file (filename)
-  sound ()
-  end
-@end example
-
-This function is also okay, because the variable @code{sound} is not local to
-this function.  It is most probably be a global variable. It could also be
-local to the program (ie. the "chunk"), which is also okay.
-@end defun
-
-@defun avt.wait_audio_end ()
-Waits until the audio output ends.
-
-This also stops an audio-loop, but still plays to the end of the current
-sound.
-@end defun
-
-@defun avt.stop_audio ()
-Stops the audio output immediately.
 @end defun
 
 @defun avt.viewport (x, y, width, height)
