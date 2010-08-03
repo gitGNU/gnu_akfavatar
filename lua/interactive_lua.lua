@@ -9,8 +9,6 @@ print = avt.print --> define the print command
 say = print --> an alias that fits better
 
 local function interactive (cmd)
-  local function say_line (s) avt.say (s); avt.newline () end
-
   if not cmd then avt.say ("> ") else avt.say (">> ") end
   local line = avt.ask ()
 
@@ -28,14 +26,14 @@ local function interactive (cmd)
       -- '<eof>' at the end means the command is incomplete
       if (string.find(err, "'<eof>'$"))
         then return interactive (cmd)
-        else say_line (err) --> say error mesage
+        else avt.print (err) --> say error mesage
       end
     else --> complete function
       local ret = {pcall(func)}
       local success = table.remove(ret, 1)
       if not success --> error calling the function?
-        then say_line (ret[1]) --> error msg
-        else if ret[1] ~= nil then say_line (unpack (ret)) end
+        then avt.print (ret[1]) --> error msg
+        else if ret[1] ~= nil then avt.print (unpack (ret)) end
       end
   end
 
