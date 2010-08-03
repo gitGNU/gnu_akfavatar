@@ -720,7 +720,7 @@ AVT_API void avt_lock_updates (avt_bool_t lock);
 
 /***********************************************************************/
 /* showing images without the avatar */
-/* you should call avt_wait or avt_get_key thereafter */
+/* you should call avt_wait or avt_wait_button or avt_get_key thereafter */
 
 /*
  * X-Pixmaps (XPM), X Bitmaps (XBM) and uncompressed BMP are always supported

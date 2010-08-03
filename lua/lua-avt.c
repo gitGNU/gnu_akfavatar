@@ -310,17 +310,12 @@ lavt_set_avatar_name (lua_State * L)
 static int
 lavt_show_image_file (lua_State * L)
 {
+  const char *fn;
+
   is_initialized ();
-  if (avt_show_image_file (luaL_checkstring (L, 1)) != AVT_NORMAL)
-    {
-      lua_pushnil (L);
-      return 1;
-    }
-  else
-    {
-      lua_pushboolean (L, AVT_TRUE);
-      return 1;
-    }
+  fn = luaL_checkstring (L, 1);
+  lua_pushboolean (L, (avt_show_image_file (fn) != AVT_NORMAL));
+  return 1;
 }
 
 /*
@@ -336,16 +331,8 @@ lavt_show_image_string (lua_State * L)
 
   is_initialized ();
   data = (char *) luaL_checklstring (L, 1, &len);
-  if (avt_show_image_data (data, len) != AVT_NORMAL)
-    {
-      lua_pushnil (L);
-      return 1;
-    }
-  else
-    {
-      lua_pushboolean (L, AVT_TRUE);
-      return 1;
-    }
+  lua_pushboolean (L, (avt_show_image_data (data, len) != AVT_NORMAL));
+  return 1;
 }
 
 /* change title and/or icontitle */

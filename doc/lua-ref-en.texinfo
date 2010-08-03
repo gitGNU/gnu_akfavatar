@@ -181,16 +181,15 @@ If no value is given, it waits ``a while''.
 
 @defun avt.show_image_file (filename)
 Load an image and show it.
-On success it returns @code{true}, or @code{nil} on error.
+It returns @code{true} on success, or @code{false} on error.
 If it succeeds you should call @command{avt.wait()} or 
-@command{avt.get_key()}.
+@command{avt.wait_button()} or @command{avt.get_key()}.
 @end defun
 
 @defun avt.show_image_string (image)
 Get an image from a string and show it.
-On success it returns @code{true}, or @code{nil} on error.
 If it succeeds you should call @command{avt.wait()} or 
-@command{avt.get_key()}.
+@command{avt.wait_button()} or @command{avt.get_key()}.
 @end defun
 
 @defun avt.load_audio_file (filename)
