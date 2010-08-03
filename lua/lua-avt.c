@@ -314,7 +314,7 @@ lavt_show_image_file (lua_State * L)
 
   is_initialized ();
   fn = luaL_checkstring (L, 1);
-  lua_pushboolean (L, (avt_show_image_file (fn) != AVT_NORMAL));
+  lua_pushboolean (L, (avt_show_image_file (fn) == AVT_NORMAL));
   return 1;
 }
 
@@ -331,7 +331,7 @@ lavt_show_image_string (lua_State * L)
 
   is_initialized ();
   data = (char *) luaL_checklstring (L, 1, &len);
-  lua_pushboolean (L, (avt_show_image_data (data, len) != AVT_NORMAL));
+  lua_pushboolean (L, (avt_show_image_data (data, len) == AVT_NORMAL));
   return 1;
 }
 
