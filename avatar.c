@@ -3374,18 +3374,26 @@ avt_tell (const wchar_t * txt)
 	  break;
 
 	case L'*':
-	  if (!markup)
-	    line_length++;
-	  break;
+	  if (markup)
+	    break;
+	  /* else fall through */
 
 	case L'_':		/* tricky because of overstrike */
-	  if (!markup || *(p + 1) == L'\b')
-	    line_length++;
-	  break;
+	  if (markup && *(p + 1) != L'\b')
+	    break;
+	  /* else fall through */
 
 	default:
 	  if (*p >= 32)
-	    line_length++;
+	    {
+	      line_length++;
+	      if (auto_margin && line_length > AVT_LINELENGTH)
+		{
+		  width = balloonwidth;
+		  height++;
+		  line_length = 0;
+		}
+	    }
 	  break;
 	}
 
@@ -3767,8 +3775,8 @@ avt_get_key (wchar_t * ch)
 	    case SDLK_F13:
 	    case SDLK_F14:
 	    case SDLK_F15:
-              *ch = (wchar_t) (AVT_KEY_F1 + (event.key.keysym.sym - SDLK_F1));
-              break;
+	      *ch = (wchar_t) (AVT_KEY_F1 + (event.key.keysym.sym - SDLK_F1));
+	      break;
 	    default:
 	      *ch = (wchar_t) event.key.keysym.unicode;
 	    }			/* switch */
