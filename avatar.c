@@ -3389,7 +3389,7 @@ avt_tell (const wchar_t * txt)
 	      line_length++;
 	      if (auto_margin && line_length > AVT_LINELENGTH)
 		{
-		  width = balloonwidth;
+		  width = AVT_LINELENGTH;
 		  height++;
 		  line_length = 0;
 		}
