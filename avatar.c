@@ -3373,13 +3373,15 @@ avt_tell (const wchar_t * txt)
 	  /* no width */
 	  break;
 
-	case L'*':
-	  if (markup)
+	  /* '_' is tricky because of overstrike */
+	  /* must be terefore before '*' */
+	case L'_':
+	  if (markup && *(p + 1) != L'\b')
 	    break;
 	  /* else fall through */
 
-	case L'_':		/* tricky because of overstrike */
-	  if (markup && *(p + 1) != L'\b')
+	case L'*':
+	  if (markup)
 	    break;
 	  /* else fall through */
 
