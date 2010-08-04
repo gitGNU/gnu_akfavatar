@@ -141,10 +141,11 @@ avtreadfile.wo: $(srcdir)/avtreadfile.c $(srcdir)/avtaddons.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtreadfile.c
 
 libavtaddons.a: filechooser.wo askdrive.wo arch.wo avttermstub.wo \
-                avtccio.wo avtcwio.wo avtmsg.wo avtreadfile.wo colorchooser.wo
+                avtccio.wo avtcwio.wo avtmsg.wo avtgrmsg.wo avtreadfile.wo \
+                colorchooser.wo
 	$(AR) rcu $@ filechooser.wo askdrive.wo arch.wo avttermstub.wo \
-	             avtccio.wo avtcwio.wo avtmsg.wo avtreadfile.wo \
-	             colorchooser.wo
+	             avtccio.wo avtcwio.wo avtmsg.wo avtgrmsg.wo \
+	             avtreadfile.wo colorchooser.wo
 	-$(RANLIB) $@
 
 avatarsay.wo: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h
@@ -155,6 +156,10 @@ avtmsg.wo: $(srcdir)/mingw/avtmsg.c $(srcdir)/avtaddons.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/mingw/avtmsg.c
 
+avtgrmsg.wo: $(srcdir)/avtgrmsg.c
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
+	  $(srcdir)/avtgrmsg.c
+
 avatarsay: avatarsay.exe
 
 avatarsay-s: avatarsay-s.exe
@@ -163,10 +168,10 @@ avatarsay-s: avatarsay-s.exe
 avatarsay.exe: avatarsay.wo akfavatar.dll \
 	         avtwindows.wo avtsayinfo.wo \
 	         arch.wo avttermstub.wo colorchooser.wo filechooser.wo \
-	         askdrive.wo avtreadfile.wo avtmsg.wo avtsayinfo.wo
+	         askdrive.wo avtreadfile.wo avtmsg.wo avtgrmsg.wo avtsayinfo.wo
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -o $@ avatarsay.wo avtwindows.wo \
 	  arch.wo avttermstub.wo colorchooser.wo filechooser.wo \
-	  askdrive.wo avtreadfile.wo avtmsg.wo avtsayinfo.wo \
+	  askdrive.wo avtreadfile.wo avtmsg.wo avtgrmsg.wo avtsayinfo.wo \
 	  -L. -lakfavatar $(SDL_LDFLAGS) $(LDFLAGS)
 
 example: example.exe
@@ -176,9 +181,10 @@ example.exe: $(srcdir)/example.c akfavatar.dll icon.wo
 			-L. -lakfavatar $(SDL_LDFLAGS) $(LDFLAGS)
 
 lua-akfavatar.exe: lua-akfavatar-prg.wo lua-avt.wo luaavtstarter-rc.wo \
-		filechooser.wo askdrive.wo colorchooser.wo avtmsg.wo
+		filechooser.wo askdrive.wo colorchooser.wo avtmsg.wo \
+		avtgrmsg.wo
 	$(CC) -o $@ lua-akfavatar-prg.wo lua-avt.wo luaavtstarter-rc.wo \
-	    filechooser.wo askdrive.wo colorchooser.wo avtmsg.wo \
+	    filechooser.wo askdrive.wo colorchooser.wo avtmsg.wo avtgrmsg.wo \
 	    -L. -lakfavatar \
 	    $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS)
 

@@ -1,6 +1,6 @@
 /*
  * avtmsg - message output for AKFAvatar
- * Copyright (c) 2007, 2008, 2009 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007, 2008, 2009, 2010 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -18,6 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "akfavatar.h"
 #include "avtaddons.h"
 #include <stdio.h>
 #include <stdlib.h>		/* exit */
@@ -59,6 +60,12 @@ avta_notice (const char *msg1, const char *msg2)
 extern void
 avta_error (const char *msg1, const char *msg2)
 {
-  avta_warning (msg1, msg2);
+  extern void avta_graphic_error (const char *msg1, const char *msg2);
+
+  if (avt_initialized ())
+    avta_graphic_error (msg1, msg2);
+  else
+    avta_warning (msg1, msg2);
+
   exit (EXIT_FAILURE);
 }

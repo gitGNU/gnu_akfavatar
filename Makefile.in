@@ -157,13 +157,17 @@ avttermsys.o: $(srcdir)/avttermsys.c $(srcdir)/avttermsys.h \
 avtmsg.o: $(srcdir)/avtmsg.c $(srcdir)/avtaddons.h
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/avtmsg.c
 
+avtgrmsg.o: $(srcdir)/avtgrmsg.c
+	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/avtgrmsg.c
+
 arch.o: $(srcdir)/arch.c $(srcdir)/avtaddons.h
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/arch.c
 
 libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
-                avtccio.o avtcwio.o avtmsg.o avtreadfile.o colorchooser.o
+                avtccio.o avtcwio.o avtmsg.o avtgrmsg.o avtreadfile.o \
+                colorchooser.o
 	$(AR) rcu $@ filechooser.o avtterm.o avttermsys.o arch.o \
-	             avtccio.o avtcwio.o avtmsg.o avtreadfile.o \
+	             avtccio.o avtcwio.o avtmsg.o avtgrmsg.o avtreadfile.o \
 	             colorchooser.o
 	-$(RANLIB) $@
 
@@ -173,27 +177,27 @@ avtposix.o: $(srcdir)/avtposix.c
 # avatarsay dynamically linked
 avatarsay-bin: avatarsay.o avtposix.o libakfavatar.so \
                arch.o avtterm.o avttermsys.o colorchooser.o filechooser.o \
-               avtreadfile.o avtmsg.o
+               avtreadfile.o avtmsg.o avtgrmsg.o
 	$(CC) -o $@ avatarsay.o avtposix.o \
 	      arch.o avtterm.o avttermsys.o colorchooser.o filechooser.o \
-	      avtreadfile.o avtmsg.o \
+	      avtreadfile.o avtmsg.o avtgrmsg.o \
 	      -L. -lakfavatar $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 	test -f ./avatarsay || cp $(srcdir)/avatarsay .
 
 # avatarsay with statical libakfavatar.a
 avatarsay-s: avatarsay.o avtposix.o libakfavatar.a \
              arch.o avtterm.o avttermsys.o colorchooser.o filechooser.o \
-             avtreadfile.o avtmsg.o
+             avtreadfile.o avtmsg.o avtgrmsg.o
 	$(CC) -o $@ avatarsay.o avtposix.o -L. libakfavatar.a \
 	     arch.o avtterm.o avttermsys.o colorchooser.o filechooser.o \
-             avtreadfile.o avtmsg.o \
+             avtreadfile.o avtmsg.o avtgrmsg.o \
 	   $(SDL_LDFLAGS) $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
 # lua-akfavatar dynamically linked
 lua-akfavatar-bin: lua-akfavatar-prg.o lua-avt.o \
-                   filechooser.o colorchooser.o avtmsg.o
+                   filechooser.o colorchooser.o avtmsg.o avtgrmsg.o
 	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o \
-	     filechooser.o colorchooser.o avtmsg.o \
+	     filechooser.o colorchooser.o avtmsg.o avtgrmsg.o \
 	     -L. -lakfavatar \
 	     $(LUA_LDFLAGS) $(LDFLAGS)
 	test -f ./lua-akfavatar || cp $(srcdir)/lua-akfavatar .
@@ -207,9 +211,9 @@ lua-avt.o: $(srcdir)/lua/lua-avt.c
 	  $(srcdir)/lua/lua-avt.c
 
 # Lua-Module -- should not be used as such, yet (unsolved problem)
-lua-akfavatar.so: lua-avt.lo filechooser.lo colorchooser.lo avtmsg.lo
+lua-akfavatar.so: lua-avt.lo filechooser.lo colorchooser.lo avtmsg.lo avtgrmsg.lo
 	$(CC) -o $@ -shared -fpic lua-avt.lo filechooser.lo colorchooser.lo \
-	     avtmsg.lo -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS)
+	     avtmsg.lo avtgrmsg.lo -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS)
 
 lua-avt.lo: $(srcdir)/lua/lua-avt.c
 	  $(CC) $(SDL_CFLAGS) $(CFLAGS) $(LUA_CFLAGS) -I. -c -fpic -o $@ \
@@ -488,7 +492,8 @@ dist: info html man $(srcdir)/alert.au
 	   $(srcdir)/btn_help.xbm $(srcdir)/btn_eject.xbm \
 	   $(srcdir)/btn_circle.xbm $(srcdir)/avatarsay.c \
 	   $(srcdir)/avtposix.c $(srcdir)/avtterm.c $(srcdir)/avttermsys.h \
-	   $(srcdir)/avttermsys.c $(srcdir)/avtmsg.c $(srcdir)/arch.c \
+	   $(srcdir)/avttermsys.c $(srcdir)/avtmsg.c $(srcdir)/avtgrmsg.c \
+	   $(srcdir)/arch.c \
 	   $(srcdir)/rgb.txt $(srcdir)/avtman $(srcdir)/avtcmd \
 	   $(srcdir)/example.c $(srcdir)/fsdemo-??.avt \
 	   $(srcdir)/gnome-akfavatar $(srcdir)/akfoerster-avatarsay.desktop \
