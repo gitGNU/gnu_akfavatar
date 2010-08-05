@@ -111,6 +111,10 @@ If you need a number, use @samp{nr = tonumber(avt.ask())}, which yields
 @code{nil} if the input was not a number.
 @end defun
 
+@defun newline ()
+Start a new line. It is the same as "\n" in @command{avt.say()}, but faster.
+@end defun
+
 @defun avt.set_text_delay (delay)
 Activate the slow-print mode. With no value for @var{delay} it uses a default
 delay.  To deactivate the slow-print mode, use the value 0 for @var{delay}.
@@ -179,6 +183,18 @@ Waits a given amount of seconds (may be a fraction).
 If no value is given, it waits ``a while''.
 @end defun
 
+@defun avt.show_avatar ()
+Shows only the avatar without any balloon.
+@end defun
+
+@defun avt.bell ()
+Makes a sound or flashes the display if audio is not initialized.
+@end defun
+
+@defun avt.flash ()
+Flashes the display.
+@end defun
+
 @defun avt.show_image_file (filename)
 Load an image and show it.
 It returns @code{true} on success, or @code{false} on error.
@@ -190,6 +206,39 @@ If it succeeds you should call @command{avt.wait()} or
 Get an image from a string and show it.
 If it succeeds you should call @command{avt.wait()} or 
 @command{avt.wait_button()} or @command{avt.get_key()}.
+@end defun
+
+@defun avt.get_directory ()
+Returns the current working directory.
+@end defun
+
+@defun avt.set_directory (directory)
+@defunx avt.chdir (directory)
+Sets the working directory to @var{directory}.
+@end defun
+
+@defun avt.file_selection (filter)
+Start a file-chooser in the balloon. It starts in the current working
+directory. When a directory is chosen it changes the working directory to that
+one. At the end it returns the selected filename (which is in the then current
+working directory) or @code{nil} on error.
+
+The @var{filter}, if given, should be a function. It gets a filename as
+parameter. If it returns @code{false} or @code{nil} or nothing then the 
+filename is not shown, otherwise it is shown.
+
+Example: 
+@example
+avt.file_selection (function (n) return string.find (n, "%.te?xt$") end)
+@end example
+
+Of course @var{filter} can also be the name of a previously defined function.
+@end defun
+
+@defun avt.color_selection ()
+Start a color-chooser in the balloon. It returns two strings: first the
+English name for the color and second the hexadicimal RGB definition.
+Both values can be used for selecting colors.
 @end defun
 
 @defun avt.load_audio_file (filename)
@@ -330,6 +379,8 @@ Sets the text background color to the color of the balloon.
 Get a color for a given integer value.
 Returns name and RGB value as strings,
 or returns nothing on error.
+
+@strog{Attention:} This function will most probably change.
 @end defun
 
 @defun avt.activate_cursor (true | false)
@@ -389,18 +440,6 @@ Clears the line.
 @defun avt.clear_up ()
 Clears from cursor position up the viewport.
 If there is no balloon yet, it is drawn.
-@end defun
-
-@defun avt.show_avatar ()
-Shows only the avatar without any balloon.
-@end defun
-
-@defun avt.bell ()
-Makes a sound or flashes the display if audio is not initialized.
-@end defun
-
-@defun avt.flash ()
-Flashes the display.
 @end defun
 
 @defun avt.where_x ()
@@ -502,10 +541,6 @@ This should be used in a loop, when the program is doing something else.
 Shows final credits.
 
 If the second parameter is @code{true}, every line is centered.
-@end defun
-
-@defun newline ()
-Start a new line. It is the same as "\n" in @command{avt.say()}, but faster.
 @end defun
 
 @defun avt.get_key ()
@@ -616,7 +651,7 @@ Gets the scroll mode (see @command{avt.set_scroll_mode ()}).
 
 @defun avt.newline_mode (true | false)
 When the newline_mode is activated (default) a newline character sets the
-curser at the beginning of a new line. When it is off the cursor goes into
+cursor at the beginning of a new line. When it is off the cursor goes into
 the next line but stays in the same horizontal position.
 @end defun
 
@@ -664,39 +699,6 @@ Erase @var{number} of characters. The characters are overwritten with spaces.
 @defun avt.backspace ()
 Go back one character. Does nothing if the cursor is at the beginning of the
 line.
-@end defun
-
-@defun avt.get_directory ()
-Returns the current working directory.
-@end defun
-
-@defun avt.set_directory (directory)
-@defunx avt.chdir (directory)
-Sets the working directory to @var{directory}.
-@end defun
-
-@defun avt.file_selection (filter)
-Start a file-chooser in the balloon. It starts in the current working
-directory. When a directory is chosen it changes the working directory to that
-one. At the end it returns the selected filename (which is in the then current
-working directory) or @code{nil} on error.
-
-The @var{filter}, if given, should be a function. It gets a filename as
-parameter. If it returns @code{false} or @code{nil} or nothing then the 
-filename is not shown, otherwise it is shown.
-
-Example: 
-@example
-avt.file_selection (function (n) return string.find (n, "%.te?xt$") end)
-@end example
-
-Of course @var{filter} can also be the name of a previously defined function.
-@end defun
-
-@defun avt.color_selection ()
-Start a color-chooser in the balloon. It returns two strings: first the
-English name for the color and second the hexadicimal RGB definition.
-Both values can be used for selecting colors.
 @end defun
 
 @defun avt.version ()
