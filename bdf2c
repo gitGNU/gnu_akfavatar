@@ -48,11 +48,10 @@ BEGIN { width=height=started=default_char=charoffset=maxchar = 0 }
 function writetranstable(    i, blockstart)
 {
   if (width <= 8)
-    print "const unsigned char *"
+    print "const unsigned char *\nget_font_char (wchar_t ch)"
   else
-    print "const unsigned short *"
+    print "const unsigned short *\nget_font_char2 (wchar_t ch)"
 
-  print "get_font_char (wchar_t ch)"
   print "{"
   printf "  "
 

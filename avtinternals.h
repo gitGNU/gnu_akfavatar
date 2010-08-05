@@ -40,11 +40,8 @@ extern FILE *open_config_file (const char *name, avt_bool_t writing);
 /* mingw/askdrive.c */
 extern int avta_ask_drive (int max_idx);
 
-/* see font.c */
-#if defined(VGA)
+/* font.c */
 extern const unsigned char *get_font_char (wchar_t ch);
-#else
-extern const unsigned short *get_font_char (wchar_t ch);
-#endif
+extern const unsigned short *get_font_char2 (wchar_t ch);
 
 #endif /* AVTINTERNALS_H */

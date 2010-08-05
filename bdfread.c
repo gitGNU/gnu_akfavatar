@@ -69,10 +69,9 @@ writetranstable (void)
 
   putchar ('\n');
   if (FontWidth <= 8)
-    printf ("const unsigned char *\n");
+    printf ("const unsigned char *\nget_font_char (wchar_t ch)");
   else
-    printf ("const unsigned short *\n");
-  printf ("get_font_char (wchar_t ch)\n");
+    printf ("const unsigned short *\nget_font_char2 (wchar_t ch)");
   printf ("{\n");
   printf ("  ");
 
