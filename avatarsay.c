@@ -935,8 +935,7 @@ handle_title_command (const wchar_t * s)
     {
       char title[300];
 
-      strcpy (title, "AKFAvatar: ");
-      strcat (title, newtitle);
+      snprintf (title, sizeof (title), "AKFAvatar: %s", newtitle);
 
       if (initialized)
 	avt_set_title (title, NULL);
