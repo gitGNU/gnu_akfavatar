@@ -380,7 +380,7 @@ Get a color for a given integer value.
 Returns name and RGB value as strings,
 or returns nothing on error.
 
-@strog{Attention:} This function will most probably change.
+@strong{Attention:} This function will most probably change.
 @end defun
 
 @defun avt.activate_cursor (true | false)
