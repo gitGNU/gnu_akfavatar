@@ -20,6 +20,7 @@
 
 #include "akfavatar.h"
 #include "avtaddons.h"
+#include "avtinternals.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -55,7 +56,6 @@
 #  define HAS_DRIVE_LETTERS AVT_TRUE
 #  define HAS_SCANDIR AVT_FALSE
 #  define is_root_dir(x) (x[1] == ':' && x[3] == '\0')
-extern int avta_ask_drive (int max_idx);
 #else
 #  define HAS_DRIVE_LETTERS AVT_FALSE
 #  define HAS_SCANDIR AVT_TRUE

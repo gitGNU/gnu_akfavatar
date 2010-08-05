@@ -58,8 +58,8 @@ alert.c: $(srcdir)/alert.au
 	$(AWK) -f $(srcdir)/data2c -v name=avt_alert_data \
 	  $(srcdir)/alert.au > $@
 
-filechooser.o: $(srcdir)/filechooser.c \
-                $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h
+filechooser.o: $(srcdir)/filechooser.c $(srcdir)/akfavatar.h \
+	       $(srcdir)/avtaddons.h $(srcdir)/avtinternals.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/filechooser.c
 
 colorchooser.o: $(srcdir)/colorchooser.c $(srcdir)/akfavatar.h
@@ -68,7 +68,8 @@ colorchooser.o: $(srcdir)/colorchooser.c $(srcdir)/akfavatar.h
 rgb.h: $(srcdir)/rgb.txt
 	$(AWK) -f $(srcdir)/rgb2c $(srcdir)/rgb.txt > $@
 
-avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h rgb.h \
+avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
+          version.h rgb.h \
           $(srcdir)/balloonpointer.xbm $(srcdir)/circle.xbm \
           $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
           $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
@@ -83,7 +84,8 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h rgb.h \
 avatar-default.o: $(srcdir)/avatar-default.c $(default_avatar) $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avatar-default.c
 
-avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h alert.c
+avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h \
+	        $(srcdir)/avtinternals.h alert.c
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avatar-audio.c
 
 ucsfont7x14.c: $(srcdir)/7x14.bdf
@@ -108,14 +110,15 @@ avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h rgb.h \
            $(srcdir)/btn_pause.xbm $(srcdir)/btn_stop.xbm \
            $(srcdir)/btn_help.xbm $(srcdir)/btn_cancel.xbm \
            $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm \
-           $(srcdir)/akfavatar.xpm
+           $(srcdir)/akfavatar.xpm $(srcdir)/avtinternals.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -fPIC -o $@ $(srcdir)/avatar.c
 
 avatar-default.lo: $(srcdir)/avatar-default.c $(default_avatar) $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -fPIC -o $@ \
 	  $(srcdir)/avatar-default.c
 
-avatar-audio.lo: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h alert.c
+avatar-audio.lo: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h \
+	         $(srcdir)/avtinternals.h alert.c
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -fPIC -o $@ \
 	  $(srcdir)/avatar-audio.c
 
@@ -143,7 +146,8 @@ avtcwio.o: $(srcdir)/avtcwio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 avtreadfile.o: $(srcdir)/avtreadfile.c $(srcdir)/avtaddons.h
 	$(CC) $(CFLAGS) -I. -c -o $@ $(srcdir)/avtreadfile.c
 
-avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h
+avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
+	     $(srcdir)/avtaddons.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -DPREFIX=\"$(exec_prefix)\" -I. \
 	  -c -o $@ $(srcdir)/avatarsay.c
 
@@ -219,7 +223,8 @@ lua-avt.lo: $(srcdir)/lua/lua-avt.c
 	  $(CC) $(SDL_CFLAGS) $(CFLAGS) $(LUA_CFLAGS) -I. -c -fpic -o $@ \
 	  $(srcdir)/lua/lua-avt.c
 
-filechooser.lo: $(srcdir)/filechooser.c $(srcdir)/avtaddons.h
+filechooser.lo: $(srcdir)/filechooser.c $(srcdir)/avtaddons.h \
+                $(srcdir)/avtinternals.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -fpic -o $@ \
 	  $(srcdir)/filechooser.c
 
@@ -227,7 +232,8 @@ colorchooser.lo: $(srcdir)/colorchooser.c $(srcdir)/avtaddons.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -fpic -o $@ \
 	  $(srcdir)/colorchooser.c
 
-avtmsg.lo: $(srcdir)/filechooser.c $(srcdir)/avtaddons.h
+avtmsg.lo: $(srcdir)/filechooser.c $(srcdir)/avtaddons.h \
+           $(srcdir)/avtinternals.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -fpic -o $@ \
 	  $(srcdir)/avtmsg.c
 
@@ -477,6 +483,7 @@ dist: info html man $(srcdir)/alert.au
 	   $(srcdir)/NEWS \
 	   $(srcdir)/COPYING $(srcdir)/ChangeLog $(srcdir)/lrun \
 	   $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avatar-audio.c \
+	   $(srcdir)/avtinternals.h \
 	   $(srcdir)/avatar-default.c $(srcdir)/avtccio.c $(srcdir)/avtcwio.c \
 	   $(srcdir)/avtaddons.h $(srcdir)/filechooser.c \
 	   $(srcdir)/avtreadfile.c $(srcdir)/colorchooser.c \

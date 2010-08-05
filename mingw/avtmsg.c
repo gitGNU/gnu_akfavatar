@@ -22,6 +22,7 @@
  */
 
 #include "akfavatar.h"
+#include "avtinternals.h"
 #include "avtaddons.h"
 #include <windows.h>
 #include <stdio.h>
@@ -71,8 +72,6 @@ avta_notice (const char *msg1 AVT_UNUSED, const char *msg2 AVT_UNUSED)
 extern void
 avta_error (const char *msg1, const char *msg2)
 {
-  extern void avta_graphic_error (const char *msg1, const char *msg2);
-
   if (avt_initialized ())
     avta_graphic_error (msg1, msg2);
   else

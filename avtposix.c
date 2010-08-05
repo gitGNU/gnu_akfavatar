@@ -82,7 +82,7 @@ open_config_file (const char *name, avt_bool_t writing)
   f = NULL;
 
   /*
-   * more infor on XDG_CONFIG_HOME on
+   * more info on XDG_CONFIG_HOME on
    * http://freedesktop.org/wiki/Specifications/basedir-spec
    */
   xdg_config_home = getenv ("XDG_CONFIG_HOME");

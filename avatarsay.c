@@ -27,6 +27,7 @@
 #include "version.h"
 #include "akfavatar.h"
 #include "avtaddons.h"
+#include "avtinternals.h"
 #include <wchar.h>
 #include <wctype.h>
 #include <sys/stat.h>		/* for chmod */
@@ -163,15 +164,6 @@ static struct
 {
   int type, samplingrate, channels;
 } raw_audio;
-
-/*
- * the following functions are defined externally,
- * because they are system specific
- * see avtposix.c or avtwindows.c
- */
-extern void get_user_home (char *home_dir, size_t size);
-extern void edit_file (const char *name, const char *encoding);
-extern FILE *open_config_file (const char *name, avt_bool_t writing);
 
 
 static void

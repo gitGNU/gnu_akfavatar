@@ -27,6 +27,7 @@
 #define _AVT_NO_DEPRECATED 1
 
 #include "akfavatar.h"
+#include "avtinternals.h"
 #include "SDL.h"
 #include "version.h"
 #include "rgb.h"
@@ -2859,7 +2860,6 @@ avt_new_line (void)
 static void
 avt_drawchar (wchar_t ch, SDL_Surface * surface)
 {
-  extern const unsigned short *get_font_char (wchar_t ch);
   const unsigned short *font_line;
   unsigned int y;
   SDL_Rect dest;
@@ -2895,7 +2895,6 @@ avt_drawchar (wchar_t ch, SDL_Surface * surface)
 static void
 avt_drawchar (wchar_t ch, SDL_Surface * surface)
 {
-  extern const unsigned char *get_font_char (wchar_t ch);
   const unsigned char *font_line;
   int y;
   SDL_Rect dest;

@@ -26,10 +26,9 @@
 #define _AVT_NO_DEPRECATED 1
 
 #include "akfavatar.h"
+#include "avtinternals.h"
 #include "SDL.h"
 #include "SDL_audio.h"
-
-extern int _avt_STATUS;
 
 #ifndef NO_AUDIO
 
@@ -71,10 +70,6 @@ static AudioStruct current_sound;
 static Uint8 *soundpos = NULL;	/* Current play position */
 static Sint32 soundleft = 0;	/* Length of left unplayed wave data */
 static avt_bool_t loop = AVT_FALSE;
-
-extern int avt_checkevent (void);
-extern void (*avt_alert_func) (void);
-extern void (*avt_quit_audio_func) (void);
 
 /* table for decoding mu-law */
 static const Sint16 mulaw_decode[256] = {

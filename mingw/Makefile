@@ -68,7 +68,7 @@ alert.c: $(srcdir)/alert.au
 avatar-default.wo: $(srcdir)/avatar-default.c $(default_avatar)
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avatar-default.c
 
-filechooser.wo: $(srcdir)/filechooser.c \
+filechooser.wo: $(srcdir)/filechooser.c $(srcdir)/avtinternals.h \
                  $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/filechooser.c
 
@@ -78,7 +78,8 @@ colorchooser.wo: $(srcdir)/colorchooser.c $(srcdir)/akfavatar.h
 rgb.h: $(srcdir)/rgb.txt
 	$(AWK) -f $(srcdir)/rgb2c $(srcdir)/rgb.txt > $@
 
-avatar.wo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h rgb.h \
+avatar.wo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
+             version.h rgb.h \
              $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
              $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
              $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
@@ -90,7 +91,8 @@ avatar.wo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h rgb.h \
              $(srcdir)/akfavatar.xpm
 	$(CC) -c -I. $(SDL_CFLAGS) $(CFLAGS) -o $@ $(srcdir)/avatar.c
 
-avatar-audio.wo: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h alert.c
+avatar-audio.wo: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h \
+                  $(srcdir)/avtinternals.h alert.c
 	$(CC) -c $(SDL_CFLAGS) $(CFLAGS) -I. -o $@ $(srcdir)/avatar-audio.c
 
 ucsfont7x14.c: $(srcdir)/7x14.bdf
@@ -148,11 +150,12 @@ libavtaddons.a: filechooser.wo askdrive.wo arch.wo avttermstub.wo \
 	             avtreadfile.wo colorchooser.wo
 	-$(RANLIB) $@
 
-avatarsay.wo: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h
+avatarsay.wo: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h \
+              $(srcdir)/avtinternals.h
 	$(CC) -I. $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avatarsay.c
 
 # from the mingw directory!
-avtmsg.wo: $(srcdir)/mingw/avtmsg.c $(srcdir)/avtaddons.h
+avtmsg.wo: $(srcdir)/mingw/avtmsg.c $(srcdir)/avtaddons.h $(srcdir)/avtinternals.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/mingw/avtmsg.c
 
