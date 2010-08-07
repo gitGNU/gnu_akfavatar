@@ -1,3 +1,7 @@
+2010-08-07  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_ask): fix: clear the input field
+
 2010-08-05  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtinternals.h: new file

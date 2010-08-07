@@ -4433,6 +4433,9 @@ avt_ask (wchar_t * s, const int size)
   if (maxlen > size / sizeof (wchar_t) - 1)
     maxlen = size / sizeof (wchar_t) - 1;
 
+  /* clear the input field */
+  avt_erase_characters (maxlen);
+
   len = pos = 0;
   insert_mode = AVT_TRUE;
   SDL_memset (s, 0, size);

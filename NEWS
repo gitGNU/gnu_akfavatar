@@ -2,6 +2,7 @@
 
   - Lua support with program lua-akfavatar
   - text-input has full line-editing features
+  - fix: on text input the input area gets cleared
   - the pager can handle binary junk better
   - filechooser: path can be entered manually
   - filechooser: on windows ask for drive letter only when
