@@ -107,8 +107,18 @@ binary zeros ("\0").
 @defun avt.ask ()
 Waits for the user to enter something. Returns the result as string.
 
-If you need a number, use @samp{nr = tonumber(avt.ask())}, which yields
-@code{nil} if the input was not a number.
+The following example shows how to force the input of a number:
+
+@example
+require "lua-akfavatar"
+avt.say("Enter a number: ")
+avt.save_position()
+repeat
+  avt.restore_position()
+  number = tonumber(avt.ask())
+until number
+avt.say("The number is ", number)
+@end example
 @end defun
 
 @defun newline ()
