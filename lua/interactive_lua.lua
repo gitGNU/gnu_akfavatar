@@ -9,6 +9,7 @@ print = avt.print --> define the print command
 say = print --> an alias that fits better
 
 local function interactive (cmd)
+  if avt.where_x () > 1 then avt.newline () end
   if not cmd then avt.say ("> ") else avt.say (">> ") end
   local line = avt.ask ()
 
