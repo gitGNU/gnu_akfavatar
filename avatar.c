@@ -2391,7 +2391,7 @@ avt_erase_characters (int num)
   if (text_cursor_visible)
     avt_show_text_cursor (AVT_FALSE);
 
-  clear.x = cursor.x;
+  clear.x = (textdir_rtl) ? cursor.x - (num * FONTWIDTH) : cursor.x;
   clear.y = cursor.y;
   clear.w = num * FONTWIDTH;
   clear.h = LINEHEIGHT;
@@ -4408,10 +4408,16 @@ avt_ask (wchar_t * s, const int size)
 {
   wchar_t ch;
   size_t len, maxlen, pos;
+  int old_textdir;
   avt_bool_t insert_mode;
 
   if (!screen)
     return _avt_STATUS;
+
+  /* this function only works with left to right text */
+  /* it would be too hard otherwise */
+  old_textdir = textdir_rtl;
+  textdir_rtl = AVT_LEFT_TO_RIGHT;
 
   /* no textfield? => draw balloon */
   if (textfield.x < 0)
@@ -4508,7 +4514,7 @@ avt_ask (wchar_t * s, const int size)
 	      pos--;
 	      /* delete cursor */
 	      avt_show_text_cursor (AVT_FALSE);
-	      avt_backspace ();
+	      cursor.x -= FONTWIDTH;
 	    }
 	  else
 	    bell ();
@@ -4570,7 +4576,10 @@ avt_ask (wchar_t * s, const int size)
 
   if (!newline_mode)
     avt_carriage_return ();
+
   avt_new_line ();
+
+  textdir_rtl = old_textdir;
 
   return _avt_STATUS;
 }
