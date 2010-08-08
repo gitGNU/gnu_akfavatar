@@ -341,6 +341,9 @@ This must be used after @command{avt.change_avatar_image()}.
 
 @defun avt.right_to_left (true | false)
 Activate or deactivate the right to left writing mode.
+
+@strong{Attention:} This is an experimental feature, that might
+not always work.
 @end defun
 
 @defun avt.set_flip_page_delay (delay)
