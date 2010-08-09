@@ -11,7 +11,7 @@ prefix @code{avt}, you could also use something like this:
 @samp{local avatar = require "lua-akfavatar"}, then you can also access the
 functions with the prefix @code{avatar}.
 
-@defun avt.initialize @{title, shortname, avatar, audio, encoding, mode@}
+@defun avt.initialize ([@{title, shortname, avatar, audio, encoding, mode@}])
 This function opens the graphical window or switches into the graphical mode.
 It accepts a table as parameter with definitions for the following items:
 
@@ -125,7 +125,7 @@ avt.say("The number is ", number)
 Start a new line. It is the same as "\n" in @command{avt.say()}, but faster.
 @end defun
 
-@defun avt.set_text_delay (delay)
+@defun avt.set_text_delay ([delay])
 Activate the slow-print mode. With no value for @var{delay} it uses a default
 delay.  To deactivate the slow-print mode, use the value 0 for @var{delay}.
 @end defun
@@ -139,15 +139,15 @@ You can always use the overstrike technique, which doesn't reserve any
 characters, but is harder to use.
 @end defun
 
-@defun avt.set_balloon_size (height, width)
+@defun avt.set_balloon_size ([height] [, width])
 Sets the size of the balloon. No values or values of 0 set the maximum size.
 @end defun
 
-@defun avt.set_balloon_width (width)
+@defun avt.set_balloon_width ([width])
 Sets the width of the balloon. No value or 0 sets the maximum.
 @end defun
 
-@defun avt.set_balloon_height (height)
+@defun avt.set_balloon_height ([height])
 Sets the height of the balloon. No value or 0 sets the maximum.
 @end defun
 
@@ -170,7 +170,7 @@ Moves the avatar in.
 Moves the avatar out.
 @end defun
 
-@defun avt.pager (text, startline)
+@defun avt.pager (text [, startline])
 Show a longer text with a text-viewer application.
 
 If the @var{startline} is given and it is greater than 1, then it starts in
@@ -186,8 +186,8 @@ Returns @code{true} or @code{false}.
 Waits until a button is pressed.
 @end defun
 
-@defun avt.wait (seconds)
-@defunx avt.wait_sec (seconds)
+@defun avt.wait ([seconds])
+@defunx avt.wait_sec ([seconds])
 Waits a given amount of seconds (may be a fraction).
 
 If no value is given, it waits ``a while''.
@@ -227,7 +227,7 @@ Returns the current working directory.
 Sets the working directory to @var{directory}.
 @end defun
 
-@defun avt.file_selection (filter)
+@defun avt.file_selection ([filter])
 Start a file-chooser in the balloon. It starts in the current working
 directory. When a directory is chosen it changes the working directory to that
 one. At the end it returns the selected filename (which is in the then current
@@ -239,7 +239,7 @@ filename is not shown, otherwise it is shown.
 
 Example: 
 @example
-avt.file_selection (function (n) return string.find (n, "%.te?xt$") end)
+textfile=avt.file_selection(function(n) return string.find(n,"%.te?xt$") end)
 @end example
 
 Of course @var{filter} can also be the name of a previously defined function.
@@ -278,7 +278,7 @@ Reads audio data from a string.
 Otherwise the same as @command{avt.load_audio_file()}.
 @end defun
 
-@defun avt.play_audio (audio, loop)
+@defun avt.play_audio (audio [, loop])
 Plays audio. The audio must have been loaded by 
 @command{avt.load_audio_file()} or @command{avt.load_audio_string()}.
 If @var{loop} is set to @code{true}, then the audio is played in a endless
@@ -334,17 +334,17 @@ Stops the audio output immediately.
 Change the used text encoding.
 @end defun
 
-@defun avt.set_title (title, shortname)
+@defun avt.set_title ([title] [, shortname])
 Change the title and/or the shortname.
 A missing option or @code{nil} leaves it unchanged.
 @end defun
 
-@defun avt.change_avatar_image (image)
+@defun avt.change_avatar_image ([image])
 Change the avatar image while running.
 The image is a string like in @command{avt.initialize@{@}}.
 @end defun
 
-@defun avt.set_avatar_name (name)
+@defun avt.set_avatar_name ([name])
 Set the name of the avatar.
 This must be used after @command{avt.change_avatar_image()}.
 @end defun
@@ -356,7 +356,7 @@ Activate or deactivate the right to left writing mode.
 not always work.
 @end defun
 
-@defun avt.set_flip_page_delay (delay)
+@defun avt.set_flip_page_delay ([delay])
 Set the delay for @command{avt.flip_page()} or "\f".
 Use no value for the default delay, or 0 to set no delay.
 @end defun
@@ -513,7 +513,7 @@ Reset tab stops to every eigth column.
 Clears all tab stops.
 @end defun
 
-@defun avt.set_tab (x)
+@defun avt.set_tab (x, true | false)
 Set or clear tab in position @var{x}.
 @end defun
 
@@ -624,7 +624,7 @@ The @key{Help} key or @key{F1} return "?".
 It returns the approriete character or a number.
 @end defun
 
-@defun avt.choice (start_line, items, key, back, forward)
+@defun avt.choice (start_line, items [, key] [, back] [, forward])
 This can be used for menus.
 
 @table @asis
