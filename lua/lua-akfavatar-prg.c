@@ -125,8 +125,9 @@ initialize_lua (void)
 static avt_bool_t
 is_lua (const char *filename)
 {
-  if (strcasecmp (filename, "luac.out") == 0)
-    return AVT_TRUE;
+  /* never show lua-akfavatar.lua! It's a module */
+  if (strcasecmp (filename, "lua-akfavatar.lua") == 0)
+    return AVT_FALSE;
   else
     {
       const char *ext = strrchr (filename, '.');
