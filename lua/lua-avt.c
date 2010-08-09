@@ -896,8 +896,13 @@ static int
 lavt_ask (lua_State * L)
 {
   char buf[4 * AVT_LINELENGTH + 1];
+  const char *question;
+  size_t len;
 
   is_initialized ();
+  question = lua_tolstring (L, 1, &len);
+  if (question)
+    check (avt_say_mb_len (question, len));
   check (avt_ask_mb (buf, sizeof (buf)));
 
   lua_pushstring (L, buf);

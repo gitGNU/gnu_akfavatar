@@ -104,18 +104,18 @@ Example: @samp{avt.tell ("Three apples cost ", 3 * appleprice, " Euros.")}.
 binary zeros ("\0").
 @end defun
 
-@defun avt.ask ()
-Waits for the user to enter something. Returns the result as string.
+@defun avt.ask ([question])
+Shows the @var{question}, if given,
+and waits for the user to enter something. Returns the result as string.
 
 The following example shows how to force the input of a number:
 
 @example
 require "lua-akfavatar"
-avt.say("Enter a number: ")
 avt.save_position()
 repeat
   avt.restore_position()
-  number = tonumber(avt.ask())
+  number = tonumber(avt.ask("Enter a number: "))
 until number
 avt.say("The number is ", number)
 @end example
