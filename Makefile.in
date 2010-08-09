@@ -526,6 +526,7 @@ dist: info html man $(srcdir)/alert.au
 	
 	mkdir $(PKGNAME)/lua
 	ln $(srcdir)/lua/lua-avt.c $(srcdir)/lua/lua-akfavatar-prg.c \
+	   $(srcdir)/lua/lua-akfavatar.lua \
 	   $(srcdir)/lua/interactive_lua.lua $(srcdir)/lua/hello.lua \
 	   $(srcdir)/lua/multiply.lua $(srcdir)/lua/man.lua \
 	   $(srcdir)/lua/textview.lua \
@@ -582,6 +583,7 @@ dist-bin-default: avatarsay-bin lua-akfavatar-bin info html
 	ln $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	ln $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
 	ln $(srcdir)/teacher.xpm $(srcdir)/akfoerster.xpm $(BINPKGNAME)/
+	ln $(srcdir)/lua/lua-akfavatar.lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/interactive_lua.lua $(srcdir)/lua/multiply.lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/hello.lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/man.lua $(srcdir)/lua/textview.lua $(BINPKGNAME)/
