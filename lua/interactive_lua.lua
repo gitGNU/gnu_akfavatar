@@ -9,15 +9,13 @@ print = avt.print --> define the print command
 say = print --> an alias that fits better
 
 local function interactive (cmd)
-  local line
   if avt.where_x () > 1 then avt.newline () end
-  if not cmd then line = avt.ask ("> ") else line = avt.ask (">> ") end
 
   if not cmd then --> first line
     -- replace = at the beginning with return
-    cmd = string.gsub (line, "^=", "return ", 1)
+    cmd = string.gsub (avt.ask ("> "), "^=", "return ", 1)
   else
-    cmd = cmd .. " " .. line
+    cmd = cmd .. " " .. avt.ask (">> ")
   end
 
   local func, err = loadstring (cmd)
