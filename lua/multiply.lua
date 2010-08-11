@@ -73,6 +73,7 @@ end
 function sayCorrect()
   avt.set_text_color("dark green")
   avt.say(correct)
+  avt.clear_eol()
   avt.newline()
   avt.normal_text()
 end
@@ -81,6 +82,7 @@ function sayWrong()
   avt.bell () -- make a sound
   avt.set_text_color("dark red")
   avt.say(wrong)
+  avt.clear_eol()
   avt.newline()
   avt.normal_text()
 end
@@ -102,11 +104,11 @@ function query()
       avt.say(string.format("%2d) ", counter))
 
       if exercise == multiplication then
-        avt.say(a, " ", multiplicationSign, " ", b, " = ")
+        avt.say(a, multiplicationSign, b, "=")
         e = askResult()
         isCorrect = (e == r)
       elseif exercise == division then
-        avt.say(r, " ", divisionSign, " ", a, " = ")
+        avt.say(r, divisionSign, a, "=")
         e = askResult()
         isCorrect = (e == b)
       end
