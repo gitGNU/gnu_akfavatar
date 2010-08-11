@@ -54,7 +54,7 @@ Makefile: $(srcdir)/configure $(srcdir)/Makefile.in
 $(srcdir)/alert.au: $(ALERT)
 	$(SOX) $(ALERT) --comment "" -e mu-law -c 1 $@ rate -l 8k
 
-alert.c: $(srcdir)/alert.au
+alert.c: $(srcdir)/alert.au $(srcdir)/data2c
 	$(AWK) -f $(srcdir)/data2c -v name=avt_alert_data \
 	  $(srcdir)/alert.au > $@
 
@@ -65,7 +65,7 @@ filechooser.o: $(srcdir)/filechooser.c $(srcdir)/akfavatar.h \
 colorchooser.o: $(srcdir)/colorchooser.c $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/colorchooser.c
 
-rgb.h: $(srcdir)/rgb.txt
+rgb.h: $(srcdir)/rgb.txt $(srcdir)/rgb2c
 	$(AWK) -f $(srcdir)/rgb2c $(srcdir)/rgb.txt > $@
 
 avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
