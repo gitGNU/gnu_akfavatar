@@ -134,8 +134,7 @@ function initialize()
     shortname = "multiply",
     avatar = require "akfavatar.teacher",
     audio = true,
-    encoding = "UTF-8",
-    mode = avt.window_mode
+    encoding = "UTF-8"
     }
   avt.move_in()
 

@@ -135,7 +135,7 @@ lavt_initialize (lua_State * L)
   title = shortname = NULL;
   avatar = NULL;
   encoding = "UTF-8";
-  mode = AVT_WINDOW;
+  mode = AVT_AUTOMODE;
   audio = AVT_FALSE;
 
   if (lua_isnone (L, 1))	/* no argument */
@@ -186,7 +186,8 @@ lavt_initialize (lua_State * L)
     {
       avt_set_title (title, shortname);
       avt_change_avatar_image (avatar);
-      avt_switch_mode (mode);
+      if (mode != AVT_AUTOMODE)
+	avt_switch_mode (mode);
       if (audio)
 	avt_initialize_audio ();
       check (avt_mb_encoding (encoding));

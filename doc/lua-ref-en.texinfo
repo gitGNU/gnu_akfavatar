@@ -36,6 +36,8 @@ default="UTF-8".
 @item mode
 Is one of @code{avt.auto_mode}, @code{avt.window_mode},
 @code{avt.fullscreen_mode}, or @code{avt.fullscreennoswitch_mode}.
+The default is @code{avt.auto_mode} which uses a sensible default, or
+leaves the mode uncanged, if it already was initialized.
 
 @end table
 
