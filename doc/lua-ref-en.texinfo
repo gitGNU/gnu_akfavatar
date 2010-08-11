@@ -1,5 +1,3 @@
-@allowcodebreaks false
-
 This is a reference for the Lua-bindings to AKFAvatar.  It does not describe
 the language Lua. The reference manual for the language Lua can be found
 on the Internet on @uref{http://www.lua.org/manual/5.1/}.
