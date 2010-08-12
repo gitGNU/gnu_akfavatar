@@ -265,13 +265,16 @@ dist-bin: avatarsay.exe
 	cp $(srcdir)/lua/akfavatar/teacher.lua $(BINPKGNAME)/akfavatar/
 	cp $(srcdir)/lua/akfavatar/akfoerster.lua $(BINPKGNAME)/akfavatar/
 	cp $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
-	cp $(srcdir)/COPYING $(BINPKGNAME)/gpl-3.0.txt
 	cp $(srcdir)/AUTHORS $(BINPKGNAME)/AUTHORS.txt
+	cp $(srcdir)/COPYING $(BINPKGNAME)/COPYING.txt
+	cp $(srcdir)/COPYING.LESSER $(BINPKGNAME)/COPYING-LESSER.txt
 	cp $(srcdir)/NEWS $(BINPKGNAME)/NEWS.txt
 	cp $(srcdir)/teacher.xpm $(srcdir)/akfoerster.xpm $(BINPKGNAME)/
 	cp $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
 	-cp $(srcdir)/misc/SDL.dll $(BINPKGNAME)/
+	cp $(srcdir)/README-SDL $(BINPKGNAME)/README-SDL.txt
 	-cp $(srcdir)/misc/lua51.dll $(BINPKGNAME)/
+	cp $(srcdir)/README-Lua $(BINPKGNAME)/README-Lua.txt
 	todos $(BINPKGNAME)/fsdemo-??.avt
 	todos $(BINPKGNAME)/*.bat
 	todos $(BINPKGNAME)/*.txt
