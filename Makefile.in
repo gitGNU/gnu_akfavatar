@@ -39,10 +39,21 @@ default: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay-bin \
 	@echo '* with root-privileges to install it.'
 	@echo '*'
 
+nolua: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay-bin
+	@echo '*'
+	@echo '* use "make install" or "make install-strip"'
+	@echo '* with root-privileges to install it.'
+	@echo '*'
+
 mingw:
 	$(MAKE) -f $(srcdir)/mingw/Makefile \
 	  srcdir="$(srcdir)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 	  all
+
+mingw-nolua:
+	$(MAKE) -f $(srcdir)/mingw/Makefile \
+	  srcdir="$(srcdir)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
+	  nolua
 
 dist-mingw:
 	$(MAKE) -f $(srcdir)/mingw/Makefile srcdir=$(srcdir) dist-bin
@@ -246,7 +257,7 @@ installdirs:
 	-[ -d $(DESTDIR)$(mandir)/man1 ] || $(INSTALL) -d $(DESTDIR)$(mandir)/man1
 	-[ -d $(DESTDIR)$(docdir) ]      || $(INSTALL) -d $(DESTDIR)$(docdir)
 
-install: libakfavatar.so libakfavatar.a avatarsay-bin lua-akfavatar-bin \
+install: libakfavatar.so libakfavatar.a avatarsay-bin \
 	 installdirs install-info install-man
 	$(INSTALL_DATA) $(srcdir)/akfavatar.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) $(srcdir)/avtaddons.h $(DESTDIR)$(includedir)
@@ -257,7 +268,7 @@ install: libakfavatar.so libakfavatar.a avatarsay-bin lua-akfavatar-bin \
 	$(INSTALL_DATA) libavtaddons.a $(DESTDIR)$(libdir)
 	-$(LDCONFIG) $(libdir)
 	$(INSTALL_PROGRAM) avatarsay-bin $(DESTDIR)$(bindir)/avatarsay
-	$(INSTALL_PROGRAM) lua-akfavatar-bin $(DESTDIR)$(bindir)/lua-akfavatar
+	-$(INSTALL_PROGRAM) lua-akfavatar-bin $(DESTDIR)$(bindir)/lua-akfavatar
 	$(INSTALL_PROGRAM) $(srcdir)/avtman $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/gnome-akfavatar $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/avtcmd $(DESTDIR)$(bindir)
@@ -269,7 +280,7 @@ install: libakfavatar.so libakfavatar.a avatarsay-bin lua-akfavatar-bin \
 	@echo '* make install-desktop-menu: to install avatarsay in a desktop menu'
 	@echo '*'
 
-install-strip: libakfavatar.so libakfavatar.a avatarsay-bin lua-akfavatar-bin \
+install-strip: libakfavatar.so libakfavatar.a avatarsay-bin \
 	       installdirs install-info install-man
 	$(INSTALL_DATA) $(srcdir)/akfavatar.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) $(srcdir)/avtaddons.h $(DESTDIR)$(includedir)
@@ -280,7 +291,7 @@ install-strip: libakfavatar.so libakfavatar.a avatarsay-bin lua-akfavatar-bin \
 	$(INSTALL_DATA) libavtaddons.a $(DESTDIR)$(libdir)
 	-$(LDCONFIG) $(libdir)
 	$(INSTALL_PROGRAM) -s avatarsay-bin $(DESTDIR)$(bindir)/avatarsay
-	$(INSTALL_PROGRAM) -s lua-akfavatar-bin $(DESTDIR)$(bindir)/lua-akfavatar
+	-$(INSTALL_PROGRAM) -s lua-akfavatar-bin $(DESTDIR)$(bindir)/lua-akfavatar
 	$(INSTALL_PROGRAM) $(srcdir)/avtman $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/gnome-akfavatar $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/avtcmd $(DESTDIR)$(bindir)
@@ -571,19 +582,19 @@ dist: info html man $(srcdir)/alert.au
 	rm -rf $(PKGNAME)/
 	bzip2 -f $(PKGNAME).tar
 
-dist-bin-default: avatarsay-bin lua-akfavatar-bin info html
+dist-bin-default: avatarsay-bin info html
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/akfavatar
 	cp $(LIBNAME) $(BINPKGNAME)/
 	cp $(srcdir)/avatarsay avatarsay-bin $(BINPKGNAME)/
 	-ln -sf $(LIBNAME) $(BINPKGNAME)/$(SONAME)
-	cp $(srcdir)/lua-akfavatar lua-akfavatar-bin $(BINPKGNAME)/
+	-cp $(srcdir)/lua-akfavatar lua-akfavatar-bin $(BINPKGNAME)/
 	ln $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/
 	ln $(srcdir)/pascal/?pcavatar $(BINPKGNAME)/
 	ln $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	ln $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
 	ln $(srcdir)/teacher.xpm $(srcdir)/akfoerster.xpm $(BINPKGNAME)/
-	ln $(srcdir)/lua/lua-akfavatar.lua $(BINPKGNAME)/
+	-ln $(srcdir)/lua/lua-akfavatar.lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/interactive_lua.lua $(srcdir)/lua/multiply.lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/hello.lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/man.lua $(srcdir)/lua/textview.lua $(BINPKGNAME)/

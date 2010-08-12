@@ -28,6 +28,7 @@ FORCE_ICONV=
 WCHAR_ENCODING=
 SDL_IMAGE="yes"
 LINK_SDL_IMAGE="no"
+NO_LUA="no"
 STATIC_LUA="no"
 
 # clear some things potentially inherited from environment.
@@ -98,6 +99,7 @@ while [ x"$1" != x ] ; do
 		echo "  --with-static-lua     try to link Lua statically"
 		echo "  --disable-audio       disable audio support"
 		echo "  --disable-sdl-image   disable support for SDL_image completely"
+		echo "  --disable-lua         build without Lua"
 		echo "  --enable-link-sdl-image link directly to SDL_image"
 		#echo "  --enable-qvga         compile for small QVGA (320x240) displays"
 		#echo "  --enable-size=qvga    compile for small QVGA (320x240) displays"
@@ -161,6 +163,9 @@ while [ x"$1" != x ] ; do
 	--with-iconv=*) FORCE_ICONV="yes"; WCHAR_ENCODING=${optarg} ;;
 	--with-iconv) FORCE_ICONV="yes" ;;
 	--with-static-lua) STATIC_LUA="yes" ;;
+	--enable-lua=no | \
+	--disable-lua | \
+	--disable-lua=yes) NO_LUA="yes" ;;
 	--enable-link-sdl-image | \
 	--enable-link-sdl-image=yes) LINK_SDL_IMAGE="yes" ;;
 	--enable-link-sdl-image=no | \
@@ -286,6 +291,13 @@ fi
 ########################################################################################
 # Lua
 
+if [ x"$NO_LUA" = x"yes" ]
+then
+  test x"$TARGET" = x"mingw" && TARGET="mingw-nolua" || TARGET="nolua"
+  LUA_CFLAGS=""
+  LUA_LDFLAGS=""
+fi
+
 if [ x"$SYSTEM" = x"mingw" ]
 then
   LUA_CFLAGS=""
@@ -319,8 +331,10 @@ elif [ -r /usr/local/include/lua.h -a /usr/local/lib/liblua.a ]
 then
   LUA_CFLAGS=""
   LUA_LDFLAGS="-llua"
-else
+elif [ x"$NO_LUA" != x"yes" ]
+then
   echo "Lua 5.1 not found" 1>&2
+  echo "use --disable-lua to build without Lua" 1>&2
   exit 1
 fi
 

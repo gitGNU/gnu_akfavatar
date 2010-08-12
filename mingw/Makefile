@@ -37,6 +37,8 @@ SHELL = /bin/sh
 all: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe \
      lua-akfavatar.exe
 
+nolua: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe
+
 avtsayinfo.rc: $(srcdir)/mingw/avtsayinfo.in config-mingw
 	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
 	  -e "s/@REVISION@/$(REVISION)/; s/@VERSIONSTR@/$(VERSIONSTR)/" \
