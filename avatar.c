@@ -6093,7 +6093,7 @@ avt_get_underlined (void)
 extern void
 avt_normal_text (void)
 {
-  underlined = bold = inverse = AVT_FALSE;
+  underlined = bold = inverse = markup = AVT_FALSE;
 
   /* set color table for character canvas */
   if (avt_character)

@@ -549,6 +549,7 @@ AVT_API void avt_inverse (avt_bool_t onoff);
 AVT_API avt_bool_t avt_get_inverse (void);
 
 /* set default color and switch off bold, underlined, inverse */
+/* also switches the markup mode off */
 AVT_API void avt_normal_text (void);
 
 /*
