@@ -275,6 +275,8 @@ dist-bin: avatarsay.exe
 	cp $(srcdir)/README-SDL $(BINPKGNAME)/README-SDL.txt
 	-cp $(srcdir)/misc/lua51.dll $(BINPKGNAME)/
 	cp $(srcdir)/README-Lua $(BINPKGNAME)/README-Lua.txt
+	$(STRIP) --strip-debug $(BINPKGNAME)/*.exe
+	$(STRIP) --strip-debug $(BINPKGNAME)/*.dll
 	todos $(BINPKGNAME)/fsdemo-??.avt
 	todos $(BINPKGNAME)/*.bat
 	todos $(BINPKGNAME)/*.txt
