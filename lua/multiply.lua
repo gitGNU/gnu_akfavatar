@@ -6,10 +6,10 @@
 require "lua-akfavatar"
 
 -- edit to your needs:
-local a_minimum = 2
-local a_maximum = 9
-local b_minimum = 2
-local b_maximum = 9
+local a_minimum = 1
+local a_maximum = 10
+local b_minimum = 1
+local b_maximum = 10
 
 local multiplicationSign = "·"
 local divisionSign       = ":"
@@ -21,18 +21,22 @@ local locale = os.setlocale ("", "ctype")
 if string.find(locale, "^de") or string.find(locale, "^[Gg]erman")
 then -- Deutsch (German)
   question         = "Was üben?"
-  t_multiplication = "multiplizieren"
-  t_division       = "dividieren"
+  t_multiplication = "Multiplizieren (1-10)"
+  t_multiples_of   = "Vielfache von "
+  t_division       = "Teilen (1-10)"
+  t_division_by    = "Teilen durch "
   correct          = "richtig"
   wrong            = "falsch"
   continue         = "Willst du weiter machen?"
 else -- default: English
-  question         = "what to exercise?"
-  t_multiplication = "multiplication"
-  t_division       = "division"
+  question         = "What to exercise?"
+  t_multiplication = "Multiplication (1-10)"
+  t_multiples_of   = "Multiples of "
+  t_division       = "Division (1-10)"
+  t_division_by    = "Division by "
   correct          = "correct"
   wrong            = "wrong"
-  continue         = "do you want to continue?"
+  continue         = "Do you want to continue?"
 end
 
 ------------------------------------------------------------------
@@ -53,17 +57,34 @@ function askResult()
 end
 
 function AskWhatToExercise()
-  avt.set_balloon_size (3, 40)
+  avt.set_balloon_size (5, 40)
   avt.clear()
   avt.say(question)
   avt.newline()
 
-  avt.say("1) ", t_multiplication, "\n2) ", t_division)
+  avt.say("1) ", t_multiplication, 
+          "\n2) ", t_multiples_of, "...",
+          "\n3) ", t_division,
+          "\n4) ", t_division_by, "...")
 
-  local c = avt.choice(2, 2, "1")
+  local c = avt.choice(2, 4, "1")
 
   if c == 1 then exercise = multiplication
-    elseif c == 2 then exercise = division
+    elseif c == 2 then
+      exercise = multiplication
+      repeat
+        avt.clear ()
+        a_minimum = tonumber(avt.ask(t_multiples_of))
+      until a_minimum
+    a_maximum = a_minimum
+    elseif c == 3 then exercise = division
+    elseif c == 4 then
+      exercise = division
+      repeat
+        avt.clear ()
+        a_minimum = tonumber(avt.ask(t_division_by))
+      until a_minimum
+    a_maximum = a_minimum
     else endRequest = true
   end
 
@@ -95,8 +116,19 @@ function query()
 
   while not endRequest do
     counter = counter + 1
-    a = math.random(a_minimum, a_maximum)
-    b = math.random(b_minimum, b_maximum)
+
+    if a_minimum == a_maximum then
+      a = a_minimum
+    else
+      a = math.random(a_minimum, a_maximum)
+    end
+
+    if b_minimum == b_maximum then
+      b = b_minimum
+    else
+      b = math.random(b_minimum, b_maximum)
+    end
+
     r = a * b;
 
     -- repeat asking the same question until correct
