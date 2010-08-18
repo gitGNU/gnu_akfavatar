@@ -57,12 +57,8 @@ function askResult()
 end
 
 function AskWhatToExercise()
-  avt.set_balloon_size (5, 40)
-  avt.clear()
-  avt.say(question)
-  avt.newline()
-
-  avt.say("1) ", t_multiplication, 
+  avt.tell(question,
+          "\n1) ", t_multiplication,
           "\n2) ", t_multiples_of, "...",
           "\n3) ", t_division,
           "\n4) ", t_division_by, "...")
@@ -72,6 +68,7 @@ function AskWhatToExercise()
   if c == 1 then exercise = multiplication
     elseif c == 2 then
       exercise = multiplication
+      avt.set_balloon_size(1, 20)
       repeat
         avt.clear ()
         a_minimum = tonumber(avt.ask(t_multiples_of))
@@ -80,6 +77,7 @@ function AskWhatToExercise()
     elseif c == 3 then exercise = division
     elseif c == 4 then
       exercise = division
+      avt.set_balloon_size(1, 20)
       repeat
         avt.clear ()
         a_minimum = tonumber(avt.ask(t_division_by))
@@ -154,8 +152,7 @@ function query()
 end
 
 function WantToContinue()
-  avt.clear()
-  avt.say(continue)
+  avt.tell(continue)
 
   return avt.decide()
 end
