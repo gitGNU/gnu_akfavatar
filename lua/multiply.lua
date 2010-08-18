@@ -27,7 +27,7 @@ then -- Deutsch (German)
   t_division_by    = "Teilen durch "
   correct          = "richtig"
   wrong            = "falsch"
-  continue         = "Willst du weiter machen?"
+  continue         = "Willst du eine andere Übung machen?"
 else -- default: English
   question         = "What to exercise?"
   t_multiplication = "Multiplication (1-10)"
@@ -36,7 +36,7 @@ else -- default: English
   t_division_by    = "Division by "
   correct          = "correct"
   wrong            = "wrong"
-  continue         = "Do you want to continue?"
+  continue         = "Do you want to take another exercise?"
 end
 
 ------------------------------------------------------------------
