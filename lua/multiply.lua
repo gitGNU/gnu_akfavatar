@@ -40,6 +40,8 @@ else -- default: English
 end
 
 ------------------------------------------------------------------
+local specific_table = nil
+local endRequest = false
 
 -- symbols for the exercise
 local multiplication = 1
@@ -65,25 +67,27 @@ function AskWhatToExercise()
 
   local c = avt.choice(2, 4, "1")
 
-  if c == 1 then exercise = multiplication
-    elseif c == 2 then
-      exercise = multiplication
-      avt.set_balloon_size(1, 20)
-      repeat
-        avt.clear ()
-        a_minimum = tonumber(avt.ask(t_multiples_of))
-      until a_minimum
-    a_maximum = a_minimum
-    elseif c == 3 then exercise = division
-    elseif c == 4 then
-      exercise = division
-      avt.set_balloon_size(1, 20)
-      repeat
-        avt.clear ()
-        a_minimum = tonumber(avt.ask(t_division_by))
-      until a_minimum
-    a_maximum = a_minimum
-    else endRequest = true
+  if c == 1 then
+    exercise = multiplication
+    specific_table = nil
+  elseif c == 2 then
+    exercise = multiplication
+    avt.set_balloon_size(1, 20)
+    repeat
+      avt.clear ()
+      specific_table = tonumber(avt.ask(t_multiples_of))
+    until specific_table
+  elseif c == 3 then
+    exercise = division
+    specific_table = nil
+  elseif c == 4 then
+    exercise = division
+    avt.set_balloon_size(1, 20)
+    repeat
+      avt.clear ()
+      specific_table = tonumber(avt.ask(t_division_by))
+    until specific_table
+  else endRequest = true
   end
 
   avt.clear()
@@ -91,6 +95,7 @@ end
 
 function sayCorrect()
   avt.set_text_color("dark green")
+  answerposition ()
   avt.say(correct)
   avt.clear_eol()
   avt.newline()
@@ -99,6 +104,7 @@ end
 
 function sayWrong()
   avt.bell () -- make a sound
+  answerposition ()
   avt.set_text_color("dark red")
   avt.say(wrong)
   avt.clear_eol()
@@ -115,17 +121,13 @@ function query()
   while not endRequest do
     counter = counter + 1
 
-    if a_minimum == a_maximum then
-      a = a_minimum
+    if specific_table then
+      a = specific_table
     else
       a = math.random(a_minimum, a_maximum)
     end
 
-    if b_minimum == b_maximum then
-      b = b_minimum
-    else
-      b = math.random(b_minimum, b_maximum)
-    end
+    b = math.random(b_minimum, b_maximum)
 
     r = a * b;
 
@@ -144,7 +146,6 @@ function query()
       end
 
       if not endRequest then
-        answerposition ()
         if isCorrect then sayCorrect() else sayWrong() end
         end
   until isCorrect or endRequest
