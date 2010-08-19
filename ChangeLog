@@ -1,3 +1,12 @@
+2010-08-19  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_load_image_xpm, avt_load_image_xbm):
+	handle transparency differently
+
+	* avatar.c (avt_initialize, avt_change_avatar_image):
+	don't add alpha channel to images with color-key transparency
+	(optimization)
+
 2010-08-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtar.c (avt_normal_text): switch markup mode off

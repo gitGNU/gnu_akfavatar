@@ -672,23 +672,32 @@ avt_load_image_xpm (char **xpm)
 	  if (SDL_strcasecmp (color_name, "None") == 0)
 	    {
 	      SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL, code_nr);
-	    }
-	  else if (avt_name_to_color (color_name, &red, &green, &blue) == 0)
-	    {
-	      if (ncolors <= 256)
-		{
-		  SDL_Color color;
-		  color.r = red;
-		  color.g = green;
-		  color.b = blue;
 
-		  SDL_SetColors (img, &color, code_nr, 1);
-		}
-	      else		/* ncolors > 256 */
-		{
-		  *(colors + colornr - 1) =
-		    SDL_MapRGB (img->format, red, green, blue);
-		}
+	      /* some weird color, that hopefully doesn't conflict (#010203) */
+	      red = 1;
+	      green = 2;
+	      blue = 3;
+	    }
+	  else
+	    {
+	      avt_name_to_color (color_name, &red, &green, &blue);
+	      /* no check, because it couldn't do anything usefull anyway */
+	      /* and it shoudn't break on broken image-files */
+	    }
+
+	  if (ncolors <= 256)
+	    {
+	      SDL_Color color;
+	      color.r = red;
+	      color.g = green;
+	      color.b = blue;
+
+	      SDL_SetColors (img, &color, code_nr, 1);
+	    }
+	  else			/* ncolors > 256 */
+	    {
+	      *(colors + colornr - 1) =
+		SDL_MapRGB (img->format, red, green, blue);
 	    }
 	}
     }
@@ -970,8 +979,12 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
   if (SDL_MUSTLOCK (img))
     SDL_UnlockSurface (img);
 
-  SDL_SetColorKey (img, SDL_SRCCOLORKEY, 0);
   SDL_SetColors (img, &color, 1, 1);
+
+  /* make shure it's a different color */
+  color.r++;
+  SDL_SetColors (img, &color, 0, 1);
+  SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL, 0);
 
   return img;
 }
@@ -5819,7 +5832,7 @@ avt_change_avatar_image (avt_image_t * image)
   if (image)
     {
       /* convert image to display-format for faster drawing */
-      if (((SDL_Surface *) image)->flags & (SDL_SRCALPHA | SDL_SRCCOLORKEY))
+      if (((SDL_Surface *) image)->flags & SDL_SRCALPHA)
 	avt_image = SDL_DisplayFormatAlpha ((SDL_Surface *) image);
       else
 	avt_image = SDL_DisplayFormat ((SDL_Surface *) image);
@@ -6623,7 +6636,7 @@ avt_initialize (const char *title, const char *icontitle,
   if (image)
     {
       /* convert image to display-format for faster drawing */
-      if (((SDL_Surface *) image)->flags & (SDL_SRCALPHA | SDL_SRCCOLORKEY))
+      if (((SDL_Surface *) image)->flags & SDL_SRCALPHA)
 	avt_image = SDL_DisplayFormatAlpha ((SDL_Surface *) image);
       else
 	avt_image = SDL_DisplayFormat ((SDL_Surface *) image);
