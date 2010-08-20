@@ -673,10 +673,10 @@ avt_load_image_xpm (char **xpm)
 	    {
 	      SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL, code_nr);
 
-	      /* some weird color, that hopefully doesn't conflict (#010203) */
-	      red = 1;
-	      green = 2;
-	      blue = 3;
+	      /* some weird color, that hopefully doesn't conflict (#1A2A3A) */
+	      red = 0x1A;
+	      green = 0x2A;
+	      blue = 0x3A;
 	    }
 	  else
 	    {
@@ -925,14 +925,10 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
 		    int red, int green, int blue)
 {
   SDL_Surface *img;
-  SDL_Color color;
+  SDL_Color color[2];
   int y;
   int bpl;			/* Bytes per line */
   Uint8 *line;
-
-  color.r = red;
-  color.g = green;
-  color.b = blue;
 
   img = SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 1, 0, 0, 0, 0);
 
@@ -979,11 +975,13 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
   if (SDL_MUSTLOCK (img))
     SDL_UnlockSurface (img);
 
-  SDL_SetColors (img, &color, 1, 1);
-
-  /* make shure it's a different color */
-  color.r++;
-  SDL_SetColors (img, &color, 0, 1);
+  color[0].r = ~red;
+  color[0].g = ~green;
+  color[0].b = ~blue;
+  color[1].r = red;
+  color[1].g = green;
+  color[1].b = blue;
+  SDL_SetColors (img, color, 0, 2);
   SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL, 0);
 
   return img;
