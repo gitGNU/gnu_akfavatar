@@ -494,10 +494,12 @@ avt_load_image_xpm (char **xpm)
   int colornr;
   union xpm_codes *codes;
   Uint32 *colors;
+  SDL_Color *colors256;
   int code_nr;
 
   codes = NULL;
   colors = NULL;
+  colors256 = NULL;
   img = NULL;
 
   /* check if we actually have data to process */
@@ -548,17 +550,25 @@ avt_load_image_xpm (char **xpm)
     }
 
   /* get memory for colors table (palette) */
-  /* for <= 256 a table is in img */
-  if (ncolors > 256)
+  if (ncolors <= 256)
+    colors256 = (SDL_Color *) SDL_calloc (256, sizeof (SDL_Color));
+  else
+    colors = (Uint32 *) SDL_calloc (ncolors, sizeof (Uint32));
+
+  /*
+   * note: for colors256 the colors will be scattered around the palette
+   * so we need a full sized palette
+   *
+   * colors is a different type so we have to call SDL_MapRGB only once
+   * for each color
+   */
+
+  if (!colors && !colors256)
     {
-      colors = (Uint32 *) SDL_calloc (ncolors, sizeof (Uint32));
-      if (!colors)
-	{
-	  SDL_SetError ("out of memory");
-	  SDL_free (img);
-	  img = NULL;
-	  goto done;
-	}
+      SDL_SetError ("out of memory");
+      SDL_free (img);
+      img = NULL;
+      goto done;
     }
 
   code_nr = 0;
@@ -687,12 +697,9 @@ avt_load_image_xpm (char **xpm)
 
 	  if (ncolors <= 256)
 	    {
-	      SDL_Color color;
-	      color.r = red;
-	      color.g = green;
-	      color.b = blue;
-
-	      SDL_SetColors (img, &color, code_nr, 1);
+	      colors256[code_nr].r = red;
+	      colors256[code_nr].g = green;
+	      colors256[code_nr].b = blue;
 	    }
 	  else			/* ncolors > 256 */
 	    {
@@ -700,6 +707,13 @@ avt_load_image_xpm (char **xpm)
 		SDL_MapRGB (img->format, red, green, blue);
 	    }
 	}
+    }
+
+  /* put colormap into the image */
+  if (ncolors <= 256)
+    {
+      SDL_SetPalette (img, SDL_LOGPAL, colors256, 0, 256);
+      SDL_free (colors256);
     }
 
   /* process pixeldata */
@@ -981,7 +995,7 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
   color[1].r = red;
   color[1].g = green;
   color[1].b = blue;
-  SDL_SetColors (img, color, 0, 2);
+  SDL_SetPalette (img, SDL_LOGPAL, color, 0, 2);
   SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL, 0);
 
   return img;
