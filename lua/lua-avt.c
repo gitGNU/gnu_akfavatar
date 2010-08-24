@@ -1323,6 +1323,9 @@ lavt_color_selection (lua_State * L)
   return 1;
 }
 
+/* --------------------------------------------------------- */
+/* system calls */
+
 static int
 lavt_chdir (lua_State * L)
 {
@@ -1340,6 +1343,125 @@ lavt_getcwd (lua_State * L)
   else
     lua_pushnil (L);
 
+  return 1;
+}
+
+/* --------------------------------------------------------- */
+/* high level functions */
+
+/* three arrows up */
+#define BACK L" \x2191 \x2191 \x2191 "
+
+/* three arrows down */
+#define CONTINUE L" \x2193 \x2193 \x2193 "
+
+/* entries or marks that are not colors */
+#define MARK(S) \
+         do { avt_set_text_background_color (0xdd, 0xdd, 0xdd); \
+         avt_say (S); avt_normal_text (); } while(0)
+
+static int
+lavt_long_menu (lua_State * L)
+{
+  long int item_nr;
+  const char *item_desc;
+  int i;
+  int start_line, menu_start;
+  int max_idx, items, page_nr, items_per_page;
+  int choice;
+  size_t len;
+
+  luaL_checktype (L, 1, LUA_TTABLE);
+
+  avt_set_text_delay (0);
+  avt_normal_text ();
+  avt_lock_updates (AVT_TRUE);
+
+  start_line = avt_where_y ();
+  if (start_line < 1)		/* no balloon yet? */
+    start_line = 1;
+
+  max_idx = avt_get_max_y () - start_line + 1;
+
+  item_desc = NULL;
+  items = 0;
+  item_nr = 0;
+  page_nr = 0;
+  items_per_page = max_idx - 2;
+
+  avt_auto_margin (AVT_FALSE);
+
+  while (!item_nr)
+    {
+      avt_move_xy (1, start_line);
+      avt_clear_down ();
+
+      if (page_nr > 0)
+	MARK (BACK);
+
+      items = 1;
+      avt_new_line ();
+
+      for (i = 1; i <= items_per_page; i++)
+	{
+	  lua_rawgeti (L, 1, i + (page_nr * items_per_page));
+	  item_desc = lua_tolstring (L, -1, &len);
+
+	  if (item_desc)
+	    {
+	      avt_say_mb_len (item_desc, len);
+	      avt_new_line ();
+	      items++;
+	    }
+
+	  lua_pop (L, 1);	/* pop item description from stack */
+	  /* from now on item_desc should not be dereferenced */
+
+	  if (!item_desc)
+	    break;
+	}
+
+      /* are there more items? */
+      if (item_desc)
+	{
+	  lua_rawgeti (L, 1, (page_nr + 1) * items_per_page + 1);
+	  item_desc = lua_tolstring (L, -1, &len);
+	  if (item_desc)
+	    {
+	      MARK (CONTINUE);
+	      items = max_idx;
+	    }
+	  lua_pop (L, 1);	/* pop item description from stack */
+	}
+
+      menu_start = start_line;
+      if (page_nr == 0)
+	{
+	  menu_start++;
+	  items--;
+	}
+
+      avt_lock_updates (AVT_FALSE);
+      check (avt_choice (&choice, menu_start, items, 0,
+			 (page_nr > 0), (item_desc != NULL)));
+      avt_lock_updates (AVT_TRUE);
+
+      if (page_nr == 0)
+	choice++;
+
+      if (choice == 1 && page_nr > 0)
+	page_nr--;		/* page back */
+      else if (choice == max_idx)
+	page_nr += (item_desc == NULL) ? 0 : 1;	/* page forward */
+      else
+	item_nr = choice - 1 + (page_nr * items_per_page);
+    }
+
+  avt_auto_margin (AVT_TRUE);
+  avt_clear ();
+  avt_lock_updates (AVT_FALSE);
+
+  lua_pushinteger (L, item_nr);
   return 1;
 }
 
@@ -1454,6 +1576,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"get_directory", lavt_getcwd},
   {"set_directory", lavt_chdir},
   {"chdir", lavt_chdir},
+  {"long_menu", lavt_long_menu},
   {NULL, NULL}
 };
 
