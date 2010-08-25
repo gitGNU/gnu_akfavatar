@@ -1350,15 +1350,20 @@ lavt_getcwd (lua_State * L)
 /* high level functions */
 
 /* three arrows up */
-#define BACK L" \x2191 \x2191 \x2191 "
+#define BACK L"\x2191 \x2191 \x2191"
 
 /* three arrows down */
-#define CONTINUE L" \x2193 \x2193 \x2193 "
+#define CONTINUE L"\x2193 \x2193 \x2193"
 
 /* entries or marks that are not colors */
 #define MARK(S) \
-         do { avt_set_text_background_color (0xdd, 0xdd, 0xdd); \
-         avt_say (S); avt_normal_text (); } while(0)
+         do { \
+           avt_set_text_background_color (0xdd, 0xdd, 0xdd); \
+           avt_clear_line (); \
+           avt_move_x (mid_x-(sizeof(S)/sizeof(wchar_t)-1)/2); \
+           avt_say(S); \
+           avt_normal_text(); \
+         } while(0)
 
 static int
 lavt_long_menu (lua_State * L)
@@ -1369,8 +1374,10 @@ lavt_long_menu (lua_State * L)
   int start_line, menu_start;
   int max_idx, items, page_nr, items_per_page;
   int choice;
+  int mid_x;
   size_t len;
 
+  is_initialized ();
   luaL_checktype (L, 1, LUA_TTABLE);
 
   avt_set_text_delay (0);
@@ -1381,6 +1388,7 @@ lavt_long_menu (lua_State * L)
   if (start_line < 1)		/* no balloon yet? */
     start_line = 1;
 
+  mid_x = avt_get_max_x () / 2;	/* used by MARK() */
   max_idx = avt_get_max_y () - start_line + 1;
 
   item_desc = NULL;
@@ -1398,6 +1406,8 @@ lavt_long_menu (lua_State * L)
 
       if (page_nr > 0)
 	MARK (BACK);
+      else
+	MARK (L"");
 
       items = 1;
       avt_new_line ();
