@@ -35,16 +35,24 @@
 #define marked_text(S) \
          marked (); avt_say (S); avt_normal_text ()
 
+#define marked_line(S) \
+         do { \
+           marked(); avt_clear_line (); \
+           avt_move_x (max_x/2-(sizeof(S)/sizeof(wchar_t)-1)/2); \
+           avt_say(S); \
+           avt_normal_text(); \
+         } while(0)
+
 #define PARENT_DIRECTORY L" .. "
 
 /* House symbol */
 #define HOME L" \x2302 "
 
 /* three arrows up */
-#define BACK L" \x2191 \x2191 \x2191 "
+#define BACK L"\x2191 \x2191 \x2191"
 
 /* three arrows down */
-#define CONTINUE L" \x2193 \x2193 \x2193 "
+#define CONTINUE L"\x2193 \x2193 \x2193"
 
 /* 3 dots */
 #define LONGER L"\x2026"
@@ -296,7 +304,7 @@ start:
 	{
 	  if (d)		/* continue entry */
 	    {
-	      marked_text (CONTINUE);
+	      marked_line (CONTINUE);
 	      idx++;
 	    }
 
@@ -315,7 +323,7 @@ start:
 
 	      new_page ();
 	      entry[idx] = "";
-	      marked_text (BACK);
+	      marked_line (BACK);
 	      idx++;
 	      avt_new_line ();
 	    }
@@ -330,7 +338,7 @@ start:
 		{
 		  entry_nr--;	/* first page had one extra entry */
 		  entry[idx] = "";
-		  marked_text (BACK);
+		  marked_line (BACK);
 		}
 	      else		/* first page */
 		{

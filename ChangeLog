@@ -1,3 +1,8 @@
+2010-08-25  Andreas K. Foerster  <info@akfoerster.de>
+
+	* filechooser.c (marked_line): new macro
+	* colorchooser.c (marked_line): new macro
+
 2010-08-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_load_image_xpm, avt_load_image_xbm):

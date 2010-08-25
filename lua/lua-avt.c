@@ -1355,7 +1355,6 @@ lavt_getcwd (lua_State * L)
 /* three arrows down */
 #define CONTINUE L"\x2193 \x2193 \x2193"
 
-/* entries or marks that are not colors */
 #define MARK(S) \
          do { \
            avt_set_text_background_color (0xdd, 0xdd, 0xdd); \

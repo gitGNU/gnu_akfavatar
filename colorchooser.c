@@ -22,7 +22,7 @@
 #include <stdio.h>		/* for sprintf */
 
 /* House symbol */
-#define HOME L" \x2302 "
+#define HOME L"\x2302"
 
 /* Keyboard symbol (not int the 7x14 font) */
 /* #define KEYBOARD L" \x2328 " */
@@ -31,15 +31,25 @@
 #define MANUAL L" > "
 
 /* three arrows up */
-#define BACK L" \x2191 \x2191 \x2191 "
+#define BACK L"\x2191 \x2191 \x2191"
 
 /* three arrows down */
-#define CONTINUE L" \x2193 \x2193 \x2193 "
+#define CONTINUE L"\x2193 \x2193 \x2193"
 
 /* entries or marks that are not colors */
-#define MARK(S) \
+#define marked_text(S) \
          do { avt_set_text_background_color (0xdd, 0xdd, 0xdd); \
          avt_say (S); avt_normal_text (); } while(0)
+
+#define marked_line(S) \
+         do { \
+           avt_set_text_background_color (0xdd, 0xdd, 0xdd); \
+           avt_clear_line (); \
+           avt_move_x (mid_x-(sizeof(S)/sizeof(wchar_t)-1)/2); \
+           avt_say(S); \
+           avt_normal_text(); \
+         } while(0)
+
 
 static char *
 manual_entry (void)
@@ -68,6 +78,7 @@ avta_color_selection (void)
   char desc[AVT_LINELENGTH];
   int red, green, blue;
   int i;
+  int mid_x;
   int max_idx, items, offset, page_nr;
   int choice;
 
@@ -80,6 +91,7 @@ avta_color_selection (void)
 
   color = color_name = NULL;
   max_idx = avt_get_max_y ();
+  mid_x = avt_get_max_x () / 2;	/* for marked_line() */
 
   page_nr = 0;
 
@@ -89,13 +101,17 @@ avta_color_selection (void)
     {
       avt_clear ();
 
-      MARK ((page_nr > 0) ? BACK : HOME);
+      if (page_nr > 0)
+	marked_line (BACK);
+      else
+	marked_line (HOME);
+
       avt_new_line ();
       items = offset = 1;
 
       if (page_nr == 0)
 	{
-	  MARK (MANUAL);
+	  marked_text (MANUAL);
 	  avt_new_line ();
 	  items++;
 	  offset++;
@@ -125,7 +141,7 @@ avta_color_selection (void)
 
       if (color_name != NULL)
 	{
-	  MARK (CONTINUE);
+	  marked_line (CONTINUE);
 	  items = max_idx;
 	}
 
