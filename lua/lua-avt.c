@@ -1089,7 +1089,7 @@ free_audio (lua_State * L)
 {
   avt_audio_t **audio;
 
-  audio = luaL_checkudata (L, 1, "AKFAvatar.audio");
+  audio = (avt_audio_t **) luaL_checkudata (L, 1, "AKFAvatar.audio");
   if (audio)
     avt_free_audio (*audio);
 
@@ -1136,7 +1136,7 @@ lavt_play_audio (lua_State * L)
 {
   avt_audio_t **audio;
 
-  audio = luaL_checkudata (L, 1, "AKFAvatar.audio");
+  audio = (avt_audio_t **) luaL_checkudata (L, 1, "AKFAvatar.audio");
   if (audio)
     check (avt_play_audio (*audio, lua_toboolean (L, 2)));
   return 0;
