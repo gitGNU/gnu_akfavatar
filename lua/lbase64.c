@@ -2,7 +2,8 @@
 * lbase64.c
 * base64 encoding and decoding for Lua 5.1
 * Luiz Henrique de Figueiredo <lhf@tecgraf.puc-rio.br>
-* 23 Mar 2010 22:22:38
+* modified by Andreas K. Foerster <info@akfoerster.de>
+* 27 Aug 2010 17:10:00
 * This code is hereby placed in the public domain.
 */
 
@@ -12,7 +13,7 @@
 #include "lauxlib.h"
 
 #define MYNAME		"base64"
-#define MYVERSION	MYNAME " library for " LUA_VERSION " / Mar 2010"
+#define MYVERSION	MYNAME " library for " LUA_VERSION " / Aug 2010"
 
 #define uint unsigned int
 
@@ -44,8 +45,14 @@ Lencode (lua_State * L)				/** encode(s) */
   luaL_Buffer b;
   int n;
   luaL_buffinit (L, &b);
-  for (n = l / 3; n--; s += 3)
-    encode (&b, s[0], s[1], s[2], 3);
+  for (n = 0; n < l / 3; n++, s += 3)
+    {
+      if (n && n % 19 == 0)
+	luaL_addchar (&b, '\n');
+      encode (&b, s[0], s[1], s[2], 3);
+    }
+  if (n && n % 19 == 0 && l % 3 != 0)
+    luaL_addchar (&b, '\n');
   switch (l % 3)
     {
     case 1:

@@ -55,5 +55,6 @@ rgb.txt: color table of X11
 lua/lbase64.c:
 base64 encoding and decoding for Lua 5.1
 Luiz Henrique de Figueiredo <lhf@tecgraf.puc-rio.br>
-23 Mar 2010 22:22:38
+modified by Andreas K. Foerster <info@akfoerster.de>
+27 Aug 2010 17:10:00
 This code is hereby placed in the public domain.
