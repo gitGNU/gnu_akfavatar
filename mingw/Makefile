@@ -185,10 +185,12 @@ example.exe: $(srcdir)/example.c akfavatar.dll icon.wo
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -o $@ $(srcdir)/example.c icon.wo \
 			-L. -lakfavatar $(SDL_LDFLAGS) $(LDFLAGS)
 
-lua-akfavatar.exe: lua-akfavatar-prg.wo lua-avt.wo luaavtstarter-rc.wo \
+lua-akfavatar.exe: lua-akfavatar-prg.wo lua-avt.wo lbase64.wo \
+		luaavtstarter-rc.wo \
 		filechooser.wo askdrive.wo colorchooser.wo avtmsg.wo \
 		avtgrmsg.wo
-	$(CC) -o $@ lua-akfavatar-prg.wo lua-avt.wo luaavtstarter-rc.wo \
+	$(CC) -o $@ lua-akfavatar-prg.wo lua-avt.wo lbase64.wo \
+	    luaavtstarter-rc.wo \
 	    filechooser.wo askdrive.wo colorchooser.wo avtmsg.wo avtgrmsg.wo \
 	    -L. -lakfavatar \
 	    $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS)
@@ -196,6 +198,10 @@ lua-akfavatar.exe: lua-akfavatar-prg.wo lua-avt.wo luaavtstarter-rc.wo \
 lua-avt.wo: $(srcdir)/lua/lua-avt.c
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/lua-avt.c
+
+lbase64.wo: $(srcdir)/lua/lbase64.c
+	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
+	  $(srcdir)/lua/lbase64.c
 
 lua-akfavatar-prg.wo: $(srcdir)/lua/lua-akfavatar-prg.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) $(SDL_CFLAGS) -I$(srcdir) -c -o $@ \

@@ -6,6 +6,7 @@ See the file COPYING for details
 That is the license for the whole package.
 Parts of the package are under other, compatible licenses:
 
+
 text2c, od2c, xbm2pas, xpm2pas, bdf2c, rgb2c:
 Copyright (c) Andreas K. Foerster
 Copying and distribution of this file, with or without modification,
@@ -13,15 +14,18 @@ are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.  This file is offered as-is,
 without any warranty.
 
+
 male_user.xpm:
 male user by Aaron Spike
 This file is in the Public Domain
 http://openclipart.org/media/files/acspike/3911
 
+
 female_user.xpm:
 female user by dagobert83
 This file is in the Public Domain
 http://openclipart.org/media/files/dagobert83/1514
+
 
 gnu-head.xbm, gnu-head.xpm:
 GNU head graphic was drawn by Etienne Suvasa
@@ -31,10 +35,12 @@ either Free Art License or the GNU GPLv2 or later
 http://www.gnu.org/graphics/reiss-gnuhead.html
 modified by Andreas K. Foerster, who claims no Copyright on his modifications
 
+
 The fonts 7x14.bdf, 9x18.bdf were fetched from 
 http://www.cl.cam.ac.uk/~mgk25/ucs-fonts.html
 Maintainer: Markus Kuhn
 "Public domain font.  Share and enjoy."
+
 
 configure script adapted from the package "ed-0.5"
 Copyright (C) 2003, 2004, 2005, 2006, 2007 Antonio Diaz Diaz.
@@ -42,4 +48,12 @@ Copyright (C) 2007, 2008, 2009, 2010 Andreas K. Foerster
 This configure script is free software; you have unlimited permission
 to copy, distribute and modify it.
 
+
 rgb.txt: color table of X11
+
+
+lua/lbase64.c:
+base64 encoding and decoding for Lua 5.1
+Luiz Henrique de Figueiredo <lhf@tecgraf.puc-rio.br>
+23 Mar 2010 22:22:38
+This code is hereby placed in the public domain.
