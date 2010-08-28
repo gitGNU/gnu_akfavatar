@@ -2,6 +2,8 @@ This is a reference for the Lua-bindings to AKFAvatar.  It does not describe
 the language Lua. The reference manual for the language Lua can be found
 on the Internet on @uref{http://www.lua.org/manual/5.1/}.
 
+@appendixsec lua-akfavatar
+
 Before you can use the AKFAvatar binding, you have to load it with the command
 @samp{require "lua-akfavatar"}. This creates a table @code{avt}, with which 
 you can access the following functions.  By the way, if you don't like the
@@ -739,4 +741,28 @@ Show button, move out and quit.
 Again: This function is not needed for normal programs. Only use it, if your
 program should continue working without a visible window.
 @end defun
+
+@appendixsec base64
+
+Base64 is a method to represent binary data with only @acronym{ASCII}
+characters.  This can be used for example to embed sound files or images in
+the Lua script as long strings.
+
+To get access to the base64 module, you have to use @samp{require "base64"}.
+
+@strong{Attention:} The image formats XPM and XBM are already in an @acronym{ASCII}
+format and can be embedded directly in a Lua script without further encoding.
+
+@defun base64.encode (binary-string)
+This encodes the binary data in the string with base64. It returns the result
+as string.
+@end defun
+
+@defun base64.decode (base64-string)
+This decodes the base64 encoded string and returns the binary data as a string.
+@end defun
+
+@defvar base64.version
+This variable holds a version string for the base64 module.
+@end defvar
 

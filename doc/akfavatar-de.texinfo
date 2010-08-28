@@ -1560,6 +1560,7 @@ man in @ref{Pascal Referenz}.
 @cindex Lua Referenz
 @cindex Referenz für Lua
 @emph{Dieser Abschnitt muss noch übersetzt werden.}
+
 @include lua-ref-en.texinfo
 
 @node Pascal Referenz
