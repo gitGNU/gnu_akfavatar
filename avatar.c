@@ -4584,7 +4584,7 @@ avt_ask (wchar_t * s, const int size)
 		{
 		  avt_insert_spaces (1);
 		  SDL_memmove (&s[pos + 1], &s[pos],
-			       (len - pos - 1) * sizeof (ch));
+			       (len - pos) * sizeof (ch));
 		  if (len < maxlen)
 		    len++;
 		}
