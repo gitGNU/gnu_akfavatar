@@ -177,20 +177,20 @@ lavt_initialize (lua_State * L)
 
   if (!initialized && !avt_initialized ())
     {
+      check (avt_mb_encoding (encoding));
       check (avt_initialize (title, shortname, avatar, mode));
       if (audio)
 	check (avt_initialize_audio ());
-      check (avt_mb_encoding (encoding));
     }
   else				/* already initialized */
     {
+      check (avt_mb_encoding (encoding));
       avt_set_title (title, shortname);
       avt_change_avatar_image (avatar);
       if (mode != AVT_AUTOMODE)
 	avt_switch_mode (mode);
       if (audio)
 	avt_initialize_audio ();
-      check (avt_mb_encoding (encoding));
     }
 
   initialized = AVT_TRUE;

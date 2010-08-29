@@ -111,6 +111,8 @@
 #  define SDL_strlen              strlen
 #  undef SDL_strstr
 #  define SDL_strstr              strstr
+#  undef SDL_strdup
+#  define SDL_strdup              strdup
 #  undef SDL_atoi
 #  define SDL_atoi                atoi
 #  undef SDL_strtol
@@ -275,6 +277,7 @@ static int scroll_mode = 1;
 static SDL_Rect textfield;
 static SDL_Rect viewport;	/* sub-window in textfield */
 static avt_bool_t avt_tab_stops[AVT_LINELENGTH];
+static char *avt_encoding = NULL;
 
 /* origin mode */
 /* Home: textfield (AVT_FALSE) or viewport (AVT_TRUE) */
@@ -3443,6 +3446,12 @@ avt_tell (const wchar_t * txt)
 extern int
 avt_mb_encoding (const char *encoding)
 {
+  /* store encoding */
+  if (avt_encoding)
+    SDL_free (avt_encoding);
+
+  avt_encoding = SDL_strdup (encoding);
+
   /* output */
 
   /*  if it is already open, close it first */
@@ -6402,6 +6411,9 @@ avt_quit (void)
 
   load_image_done ();
 
+  if (avt_encoding)
+    SDL_free (avt_encoding);
+
   /* close conversion descriptors */
   if (output_cd != ICONV_UNINITIALIZED)
     avt_iconv_close (output_cd);
@@ -6442,11 +6454,48 @@ avt_button_quit (void)
   avt_quit ();
 }
 
+#ifdef OLD_SDL
+
+/* old SDL could only handle ASCII titles */
+
 extern void
-avt_set_title (const char *title, const char *icontitle)
+avt_set_title (const char *title, const char *shortname)
 {
-  SDL_WM_SetCaption (title, icontitle);
+  SDL_WM_SetCaption (title, shortname);
 }
+
+#else /* not OLD_SDL */
+
+extern void
+avt_set_title (const char *title, const char *shortname)
+{
+  /* check if it's already in correct encoding default="UTF-8" */
+  if (!avt_encoding || SDL_strcasecmp ("UTF-8", avt_encoding) == 0)
+    SDL_WM_SetCaption (title, shortname);
+  else				/* convert them to UTF-8 */
+    {
+      char *my_title = NULL;
+      char *my_shortname = NULL;
+
+      if (title && *title)
+	my_title =
+	  SDL_iconv_string ("UTF-8", avt_encoding,
+			    title, SDL_strlen (title) + 1);
+
+      if (shortname && *shortname)
+	my_shortname =
+	  SDL_iconv_string ("UTF-8", avt_encoding,
+			    shortname, SDL_strlen (shortname) + 1);
+
+      SDL_WM_SetCaption (my_title, my_shortname);
+
+      SDL_free (my_title);
+      SDL_free (my_shortname);
+    }
+}
+
+#endif /* not OLD_SDL */
+
 
 static void
 avt_set_mouse_pointer (void)
@@ -6469,7 +6518,7 @@ avt_set_mouse_pointer (void)
 }
 
 extern int
-avt_initialize (const char *title, const char *icontitle,
+avt_initialize (const char *title, const char *shortname,
 		avt_image_t * image, int mode)
 {
   /* already initialized? */
@@ -6500,10 +6549,10 @@ avt_initialize (const char *title, const char *icontitle,
   if (title == NULL)
     title = "AKFAvatar";
 
-  if (icontitle == NULL)
-    icontitle = title;
+  if (shortname == NULL)
+    shortname = title;
 
-  SDL_WM_SetCaption (title, icontitle);
+  avt_set_title (title, shortname);
 
   /* register icon */
   {

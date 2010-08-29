@@ -168,10 +168,11 @@ AVT_BEGIN_DECLS
  * So you can directly put calls to avt_default
  * or the avt_import_* functions here.
  * the image may be NULL if no avatar should be shown
- * title and/or icontitle may also be NULL
+ * title and/or shortname may also be NULL
+ * avt_mb_encoding() may influence title/shortname
  */
 AVT_API int avt_initialize (const char *title,
-			    const char *icontitle,
+			    const char *shortname,
 			    avt_image_t *image,
 			    int mode);
 
@@ -444,12 +445,12 @@ AVT_API int avt_name_to_color (const char *name,
 /* settings */
 
 /*
- * change the title and/or the icontitle
+ * change the title and/or the shortname
  * use NULL for the unchanged part
- * in newer SDL-versions it is to be encoded in UTF-8
+ * in newer SDL-versions it depends on avt_mb_encoding()
  * if possible stick to ASCII for compatibility
  */
-AVT_API void avt_set_title (const char *title, const char *icontitle);
+AVT_API void avt_set_title (const char *title, const char *shortname);
 
 /*
  * set name for the avatar
