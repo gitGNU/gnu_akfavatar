@@ -3,6 +3,9 @@
 	* avatar.c (avt_mb_encoding, avt_set_title, avt_initialize, avt_quit):
 	make the title/shortname depend on avt_mb_encoding
 
+	* avatar.c (avt_initialize):
+	fix: define background_color before clearing the screen
+
 2010-08-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* filechooser.c (marked_line): new macro

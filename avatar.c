@@ -6635,6 +6635,11 @@ avt_initialize (const char *title, const char *shortname,
 
   avt_set_mouse_pointer ();
 
+  background_color = SDL_MapRGB (screen->format,
+				 backgroundcolor_RGB.r,
+				 backgroundcolor_RGB.g,
+				 backgroundcolor_RGB.b);
+
   /* fill the whole screen with background color */
   avt_clear_screen ();
 
@@ -6648,10 +6653,6 @@ avt_initialize (const char *title, const char *shortname,
       return _avt_STATUS;
     }
 
-  background_color = SDL_MapRGB (screen->format,
-				 backgroundcolor_RGB.r,
-				 backgroundcolor_RGB.g,
-				 backgroundcolor_RGB.b);
   avt_normal_text ();
 
   /* prepare text-mode cursor */
