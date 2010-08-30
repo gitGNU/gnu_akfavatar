@@ -4583,10 +4583,15 @@ avt_ask (wchar_t * s, const int size)
 	      if (insert_mode && pos < len)
 		{
 		  avt_insert_spaces (1);
-		  SDL_memmove (&s[pos + 1], &s[pos],
-			       (len - pos) * sizeof (ch));
 		  if (len < maxlen)
-		    len++;
+		    {
+		      SDL_memmove (&s[pos + 1], &s[pos],
+				   (len - pos) * sizeof (ch));
+		      len++;
+		    }
+		  else		/* len >= maxlen */
+		    SDL_memmove (&s[pos + 1], &s[pos],
+				 (len - pos - 1) * sizeof (ch));
 		}
 	      s[pos] = ch;
 	      avt_drawchar (ch, screen);
