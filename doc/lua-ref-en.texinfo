@@ -2,6 +2,8 @@ This is a reference for the Lua-bindings to AKFAvatar.  It does not describe
 the language Lua. The reference manual for the language Lua can be found
 on the Internet on @uref{http://www.lua.org/manual/5.1/}.
 
+There are currently two modules built in: ``lua-akfavatar'' and ``base64''.
+
 @appendixsec lua-akfavatar
 
 Before you can use the AKFAvatar binding, you have to load it with the command
@@ -27,6 +29,8 @@ Is a shortname (often used for iconized windows) -- default=title.
 Is either "default" or "none" or image data in the string, or a filename
 with the path.
 
+See also: @code{base64.decode}
+
 @item audio
 Set this to true if the audio subsystem should be initialized.
 This has also influence on the system ``bell''.
@@ -39,7 +43,7 @@ default="UTF-8".
 Is one of @code{avt.auto_mode}, @code{avt.window_mode},
 @code{avt.fullscreen_mode}, or @code{avt.fullscreennoswitch_mode}.
 The default is @code{avt.auto_mode} which uses a sensible default, or
-leaves the mode uncanged, if it already was initialized.
+leaves the mode unchanged, if it already was initialized.
 
 @end table
 
@@ -120,6 +124,7 @@ repeat
   number = tonumber(avt.ask("Enter a number: "))
 until number
 avt.say("The number is ", number)
+avt.wait_button()
 @end example
 @end defun
 
@@ -218,6 +223,8 @@ If it succeeds you should call @command{avt.wait()} or
 Get an image from a string and show it.
 If it succeeds you should call @command{avt.wait()} or 
 @command{avt.wait_button()} or @command{avt.get_key()}.
+
+See also: @code{base64.decode}
 @end defun
 
 @defun avt.get_directory ()
@@ -278,6 +285,8 @@ but AU-files with more Bits can be read.
 @defun avt.load_audio_string (audio_data)
 Reads audio data from a string.
 Otherwise the same as @command{avt.load_audio_file()}.
+
+See also: @code{base64.decode}
 @end defun
 
 @defun avt.play_audio (audio [, loop])
@@ -344,6 +353,8 @@ A missing option or @code{nil} leaves it unchanged.
 @defun avt.change_avatar_image ([image])
 Change the avatar image while running.
 The image is a string like in @command{avt.initialize@{@}}.
+
+See also: @code{base64.decode}
 @end defun
 
 @defun avt.set_avatar_name ([name])
@@ -395,7 +406,7 @@ Get a color for a given integer value.
 Returns name and RGB value as strings,
 or returns nothing on error.
 
-@strong{Attention:} This function will most probably change.
+@strong{Attention:} This function will probably change.
 @end defun
 
 @defun avt.activate_cursor (true | false)
@@ -750,8 +761,9 @@ the Lua script as long strings.
 
 To get access to the base64 module, you have to use @samp{require "base64"}.
 
-@strong{Attention:} The image formats XPM and XBM are already in an @acronym{ASCII}
-format and can be embedded directly in a Lua script without further encoding.
+@strong{Attention:} The image formats XPM and XBM are already in an 
+@acronym{ASCII} format and can be embedded directly in a Lua script without
+further encoding.
 
 @defun base64.encode (binary-string)
 This encodes the binary data in the string with base64. It returns the result
