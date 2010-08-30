@@ -1,3 +1,8 @@
+2010-08-30  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_put_character, avt_tell):
+	support NEL, LS, PS
+
 2010-08-29  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_mb_encoding, avt_set_title, avt_initialize, avt_quit):

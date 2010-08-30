@@ -3144,6 +3144,9 @@ avt_put_character (const wchar_t ch)
     {
     case L'\n':
     case L'\v':
+    case L'\x0085':		/* NEL: NExt Line */
+    case L'\x2028':		/* LS: Line Separator */
+    case L'\x2029':		/* PS: Paragraph Separator */
       avt_new_line ();
       break;
 
@@ -3364,6 +3367,9 @@ avt_tell (const wchar_t * txt)
 	{
 	case L'\n':
 	case L'\v':
+	case L'\x0085':	/* NEL: NExt Line */
+	case L'\x2028':	/* LS: Line Separator */
+	case L'\x2029':	/* PS: Paragraph Separator */
 	  if (width < line_length)
 	    width = line_length;
 	  line_length = 0;
