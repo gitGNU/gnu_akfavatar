@@ -4,6 +4,8 @@
 -- License: GPL version 3 or later
 
 require "lua-akfavatar"
+require "akfavatar.positive"
+require "akfavatar.negative"
 
 -- edit to your needs:
 local a_minimum = 1
@@ -94,6 +96,7 @@ function AskWhatToExercise()
 end
 
 function sayCorrect()
+  positive ()
   avt.set_text_color("dark green")
   answerposition ()
   avt.say(correct)
@@ -103,7 +106,7 @@ function sayCorrect()
 end
 
 function sayWrong()
-  avt.bell () -- make a sound
+  negative ()
   answerposition ()
   avt.set_text_color("dark red")
   avt.say(wrong)
