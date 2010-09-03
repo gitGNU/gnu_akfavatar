@@ -18,7 +18,10 @@ if arg[1]
 outfile = infile .. ".b64"
 
 i = io.open(infile, "rb") --> binary mode!
+if not i then error('cannot read file "'..infile..'".', 0) end
+
 o = io.open(outfile, "w") --> text mode
+if not o then error('cannot write file "'..outfile..'".', 0) end
 
 o:write(base64.encode(i:read("*all")))
 
