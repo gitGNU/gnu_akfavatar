@@ -6423,7 +6423,10 @@ avt_quit (void)
   load_image_done ();
 
   if (avt_encoding)
-    SDL_free (avt_encoding);
+    {
+      SDL_free (avt_encoding);
+      avt_encoding = NULL;
+    }
 
   /* close conversion descriptors */
   if (output_cd != ICONV_UNINITIALIZED)
