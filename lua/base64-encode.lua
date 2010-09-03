@@ -11,16 +11,16 @@ if arg[1]
   then infile = arg[1]
   else 
     require "lua-akfavatar"
-    avt.initialize{title="Base 64 encoder", shortname="base64", encoding="UTF-8"}
+    avt.initialize{title="Base 64 encoder", shortname="base64"}
     infile = avt.file_selection()
   end
 
 outfile = infile .. ".b64"
 
 i = io.open(infile, "rb") --> binary mode!
-o = io.open(outfile, "w")
+o = io.open(outfile, "w") --> text mode
 
-o:write(base64.encode(i:read("*all")), "\n")
+o:write(base64.encode(i:read("*all")))
 
 i:close()
 o:close()

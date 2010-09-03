@@ -13,7 +13,7 @@
 #include "lauxlib.h"
 
 #define MYNAME		"base64"
-#define MYVERSION	MYNAME " library for " LUA_VERSION " / Aug 2010"
+#define MYVERSION	MYNAME " library for " LUA_VERSION " / Sep 2010"
 
 #define uint unsigned int
 
@@ -39,13 +39,14 @@ encode (luaL_Buffer * b, uint c1, uint c2, uint c3, int n)
 static int
 Lencode (lua_State * L)				/** encode(s) */
 {
-  size_t l;
+  size_t l, triples;
   const unsigned char *s =
     (const unsigned char *) luaL_checklstring (L, 1, &l);
   luaL_Buffer b;
   int n;
   luaL_buffinit (L, &b);
-  for (n = 0; n < l / 3; n++, s += 3)
+  triples = l / 3;
+  for (n = 0; n < triples; n++, s += 3)
     {
       if (n && n % 19 == 0)
 	luaL_addchar (&b, '\n');
@@ -62,6 +63,7 @@ Lencode (lua_State * L)				/** encode(s) */
       encode (&b, s[0], s[1], 0, 2);
       break;
     }
+  luaL_addchar (&b, '\n');
   luaL_pushresult (&b);
   return 1;
 }
