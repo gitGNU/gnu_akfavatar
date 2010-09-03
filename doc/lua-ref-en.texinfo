@@ -238,13 +238,14 @@ Sets the working directory to @var{directory}.
 
 @defun avt.file_selection ([filter])
 Start a file-chooser in the balloon. It starts in the current working
-directory. When a directory is chosen it changes the working directory to that
-one. At the end it returns the selected filename (which is in the then current
+directory.  When a directory is chosen it changes the working directory to that
+one.  At the end it returns the selected filename (which is in the then current
 working directory) or @code{nil} on error.
 
-The @var{filter}, if given, should be a function. It gets a filename as
-parameter. If it returns @code{false} or @code{nil} or nothing then the 
-filename is not shown, otherwise it is shown.
+The @var{filter}, if given, should be a function.  It gets a filename as
+parameter.  The file is always in the current working directory.
+If the filter function returns @code{false} or @code{nil} or
+nothing then the filename is not shown, otherwise it is shown.
 
 Example: 
 @example
@@ -768,6 +769,9 @@ further encoding.
 @defun base64.encode (binary-string)
 This encodes the binary data in the string with base64. It returns the result
 as string.
+
+By the way, on GNU systems there is also a command line tool named
+@command{base64}.  You can also use that to encode data.
 @end defun
 
 @defun base64.decode (base64-string)
