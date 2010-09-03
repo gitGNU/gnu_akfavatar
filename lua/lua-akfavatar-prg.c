@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <unistd.h>		/* getcwd, chdir */
 #include <libgen.h>		/* for dirname */
+#include <locale.h>
 
 #include <lua.h>
 #include <lauxlib.h>
@@ -254,6 +255,8 @@ int
 main (int argc, char **argv)
 {
   int script_index;
+
+  setlocale (LC_ALL, "");
 
   script_index = check_options (argc, argv);
   avta_prgname (PRGNAME);
