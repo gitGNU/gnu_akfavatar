@@ -5,7 +5,7 @@
 
 require "base64"
 
-local infile, outfile
+local i, o, infile, outfile
 
 if arg[1]
   then infile = arg[1]
@@ -17,9 +17,13 @@ if arg[1]
 
 outfile = infile .. ".b64"
 
-io.input(infile)
-io.output(outfile)
-io.write(base64.encode(io.read("*all")))
+i = io.open(infile, "rb") --> binary mode!
+o = io.open(outfile, "w")
+
+o:write(base64.encode(i:read("*all")), "\n")
+
+i:close()
+o:close()
 
 if not arg[1] then
   avt.tell('created file "', outfile, '".')
