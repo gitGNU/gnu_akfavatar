@@ -27,7 +27,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>		/* for exit() */
-#include <string.h>		/* for strcmp() */
+#include <string.h>		/* for strcmp(), strerror() */
+#include <errno.h>
 
 #include <unistd.h>		/* for chdir(), getcwd() */
 
@@ -1336,14 +1337,49 @@ lavt_chdir (lua_State * L)
 static int
 lavt_getcwd (lua_State * L)
 {
-  char dir[4096 + 1];
+  size_t size = 100;
+  int err;
 
-  if (getcwd (dir, sizeof (dir)))
-    lua_pushstring (L, dir);
-  else
-    lua_pushnil (L);
+  /*
+   * this might seem overcomplicated, but there are systems with
+   * no limit on the length of a path name (eg. GNU/HURD)
+   */
 
-  return 1;
+  while (AVT_TRUE)
+    {
+      char *buffer;
+
+      buffer = (char *) malloc (size);
+      if (buffer == NULL)
+	{
+	  err = errno;
+	  lua_pushnil (L);
+	  lua_pushstring (L, strerror (err));	/* does this make sense here? */
+	  return 2;
+	}
+
+      if (getcwd (buffer, size) == buffer)
+	{
+	  lua_pushstring (L, buffer);
+	  free (buffer);
+	  return 1;
+	}
+
+      err = errno;
+
+      free (buffer);
+
+      if (err != ERANGE)
+	{
+	  /* real error */
+	  lua_pushnil (L);
+	  lua_pushstring (L, strerror (err));
+	  return 2;
+	}
+
+      /* try again with a larger buffer */
+      size *= 2;
+    }
 }
 
 /* --------------------------------------------------------- */

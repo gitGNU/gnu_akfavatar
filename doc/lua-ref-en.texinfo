@@ -228,7 +228,8 @@ See also: @code{base64.decode}
 @end defun
 
 @defun avt.get_directory ()
-Returns the current working directory.
+Returns the current working directory.  On error it returns @code{nil} and an
+error message.
 @end defun
 
 @defun avt.set_directory (directory)
