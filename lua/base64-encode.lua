@@ -13,6 +13,7 @@ if arg[1]
     require "lua-akfavatar"
     avt.initialize{title="Base 64 encoder", shortname="base64"}
     infile = avt.file_selection()
+    if not infile then return end
   end
 
 outfile = infile .. ".b64"
