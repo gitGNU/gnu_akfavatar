@@ -8,10 +8,8 @@ require "akfavatar.positive"
 require "akfavatar.negative"
 
 -- edit to your needs:
-local a_minimum = 1
-local a_maximum = 10
-local b_minimum = 1
-local b_maximum = 10
+local random_minimum = 1
+local random_maximum = 10
 
 local multiplicationSign = "·"
 local divisionSign       = ":"
@@ -133,10 +131,10 @@ function query()
     if specific_table then
       a = specific_table
     else
-      a = math.random(a_minimum, a_maximum)
+      a = math.random(random_minimum, random_maximum)
     end
 
-    b = math.random(b_minimum, b_maximum)
+    b = math.random(random_minimum, random_maximum)
 
     r = a * b;
 
