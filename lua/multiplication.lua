@@ -21,7 +21,7 @@ local msg = {}
 -- get the main language
 os.setlocale("", "all")
 msg.language = string.lower(string.match(os.setlocale(nil, "ctype"), "^%a+"))
--- the language is at the beginning of the locale
+
 if msg.language == "de" or msg.language == "german"
 then -- Deutsch (German)
   msg.title          = "Multiplizieren"
