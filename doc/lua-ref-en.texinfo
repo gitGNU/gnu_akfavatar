@@ -683,9 +683,13 @@ cursor at the beginning of a new line. When it is off the cursor goes into
 the next line but stays in the same horizontal position.
 @end defun
 
-@defun avt.auto_margin (true | false)
+@defun avt.set_auto_margin (true | false)
 Sets the automargin mode, ie. whether to start a new line automatically when
 the text doesn't fit in a line.
+@end defun
+
+@defun avt.get_auto_margin ()
+Gets the automargin mode.
 @end defun
 
 @defun avt.set_origin_mode (true | false)
