@@ -572,7 +572,11 @@ AVT_API int avt_get_scroll_mode (void);
 AVT_API void avt_newline_mode (avt_bool_t mode);
 
 /* set auto-margin mode (default: on) */
+AVT_API void avt_set_auto_margin (avt_bool_t mode);
 AVT_API void avt_auto_margin (avt_bool_t mode);
+
+/* get auto-margin mode */
+AVT_API avt_bool_t avt_get_auto_margin (void);
 
 /*
  * origin mode
@@ -992,6 +996,7 @@ avt_get_menu (wchar_t *ch, int menu_start, int menu_end, wchar_t start_code)
 AVT_DEPRECATED;
 AVT_API avt_image_t *avt_import_XPM (char **xpm) AVT_DEPRECATED;
 AVT_API int avt_show_image_XPM (char **xpm) AVT_DEPRECATED;
+AVT_API void avt_auto_margin (avt_bool_t mode) AVT_DEPRECATED;
 
 AVT_END_DECLS
 

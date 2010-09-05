@@ -1,3 +1,10 @@
+2010-09-05  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_set_auto_margin, avt_get_auto_margin):
+	new functions
+	(avt_auto_margin): marked deprecated
+	filechooser.c, colorchooser.c: adapted
+
 2010-08-30  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_put_character, avt_tell):

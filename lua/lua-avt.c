@@ -1198,11 +1198,18 @@ lavt_newline_mode (lua_State * L)
 }
 
 static int
-lavt_auto_margin (lua_State * L)
+lavt_set_auto_margin (lua_State * L)
 {
   luaL_checktype (L, 1, LUA_TBOOLEAN);
-  avt_auto_margin (lua_toboolean (L, 1));
+  avt_set_auto_margin (lua_toboolean (L, 1));
   return 0;
+}
+
+static int
+lavt_get_auto_margin (lua_State * L)
+{
+  lua_pushboolean (L, avt_get_auto_margin ());
+  return 1;
 }
 
 static int
@@ -1409,6 +1416,7 @@ lavt_long_menu (lua_State * L)
   int choice;
   int mid_x;
   size_t len;
+  avt_bool_t old_auto_margin;
 
   is_initialized ();
   luaL_checktype (L, 1, LUA_TTABLE);
@@ -1430,7 +1438,8 @@ lavt_long_menu (lua_State * L)
   page_nr = 0;
   items_per_page = max_idx - 2;
 
-  avt_auto_margin (AVT_FALSE);
+  old_auto_margin = avt_get_auto_margin ();
+  avt_set_auto_margin (AVT_FALSE);
 
   while (!item_nr)
     {
@@ -1500,7 +1509,7 @@ lavt_long_menu (lua_State * L)
 	item_nr = choice - 1 + (page_nr * items_per_page);
     }
 
-  avt_auto_margin (AVT_TRUE);
+  avt_set_auto_margin (old_auto_margin);
   avt_clear ();
   avt_lock_updates (AVT_FALSE);
 
@@ -1605,7 +1614,8 @@ static const struct luaL_reg akfavtlib[] = {
   {"set_scroll_mode", lavt_set_scroll_mode},
   {"get_scroll_mode", lavt_get_scroll_mode},
   {"newline_mode", lavt_newline_mode},
-  {"auto_margin", lavt_auto_margin},
+  {"set_auto_margin", lavt_set_auto_margin},
+  {"get_auto_margin", lavt_get_auto_margin},
   {"set_origin_mode", lavt_set_origin_mode},
   {"get_origin_mode", lavt_get_origin_mode},
   {"set_mouse_visible", lavt_set_mouse_visible},

@@ -81,6 +81,7 @@ avta_color_selection (void)
   int mid_x;
   int max_idx, items, offset, page_nr;
   int choice;
+  avt_bool_t old_auto_margin;
 
   avt_set_text_delay (0);
   avt_normal_text ();
@@ -95,7 +96,8 @@ avta_color_selection (void)
 
   page_nr = 0;
 
-  avt_auto_margin (AVT_FALSE);
+  old_auto_margin = avt_get_auto_margin ();
+  avt_set_auto_margin (AVT_FALSE);
 
   while (!color)
     {
@@ -168,7 +170,7 @@ avta_color_selection (void)
 				    + (page_nr * (max_idx - offset)));
     }
 
-  avt_auto_margin (AVT_TRUE);
+  avt_set_auto_margin (old_auto_margin);
   avt_clear ();
   avt_lock_updates (AVT_FALSE);
 

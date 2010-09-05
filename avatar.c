@@ -2554,10 +2554,23 @@ avt_newline_mode (avt_bool_t mode)
   newline_mode = mode;
 }
 
+/* deprecated - use avt_set_auto_margin */
 extern void
 avt_auto_margin (avt_bool_t mode)
 {
   auto_margin = mode;
+}
+
+extern void
+avt_set_auto_margin (avt_bool_t mode)
+{
+  auto_margin = mode;
+}
+
+extern avt_bool_t
+avt_get_auto_margin (void)
+{
+  return auto_margin;
 }
 
 extern void

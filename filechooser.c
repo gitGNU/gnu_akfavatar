@@ -235,6 +235,7 @@ avta_file_selection (char *filename, int filename_size, avta_filter_t filter)
   int idx, menu_entry, page_nr;
   int entries, entry_nr;
   char *entry[100];		/* entry on screen */
+  avt_bool_t old_auto_margin;
 
   if (filename == NULL || filename_size <= 0)
     return -1;
@@ -254,6 +255,9 @@ avta_file_selection (char *filename, int filename_size, avta_filter_t filter)
   custom_filter = filter;
   namelist = NULL;
 
+  old_auto_margin = avt_get_auto_margin ();
+  avt_set_auto_margin (AVT_FALSE);
+
 start:
   /* returncode: assume failure as default */
   rcode = -1;
@@ -267,7 +271,6 @@ start:
   if (!getcwd (dirname, sizeof (dirname)))
     avta_warning ("getcwd", strerror (errno));
 
-  avt_auto_margin (AVT_FALSE);
   show_directory (dirname);
   idx++;			/* for the directory-line */
 
@@ -447,7 +450,7 @@ start:
 
 quit:
   custom_filter = NULL;
-  avt_auto_margin (AVT_TRUE);
+  avt_set_auto_margin (old_auto_margin);
   avt_clear ();
   avt_lock_updates (AVT_FALSE);
 
