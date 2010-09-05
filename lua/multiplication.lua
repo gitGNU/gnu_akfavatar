@@ -16,13 +16,12 @@ local b_maximum = 10
 local multiplicationSign = "·"
 local divisionSign       = ":"
 
--- get the main language
-local locale = os.setlocale ("", "ctype")
-
 local msg = {}
 
+-- get the main language
+local locale = string.lower(os.setlocale ("", "ctype"))
 -- the language is at the beginning of the locale
-if string.find(locale, "^de") or string.find(locale, "^[Gg]erman")
+if string.find(locale, "^de") or string.find(locale, "^german")
 then -- Deutsch (German)
   msg.title          = "Multiplizieren"
   msg.question       = "Was üben?"
