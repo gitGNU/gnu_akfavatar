@@ -19,9 +19,10 @@ local divisionSign       = ":"
 local msg = {}
 
 -- get the main language
-local locale = string.lower(os.setlocale ("", "ctype"))
+os.setlocale("", "all")
+msg.language = string.lower(string.match(os.setlocale(nil, "ctype"), "^%a+"))
 -- the language is at the beginning of the locale
-if string.find(locale, "^de") or string.find(locale, "^german")
+if msg.language == "de" or msg.language == "german"
 then -- Deutsch (German)
   msg.title          = "Multiplizieren"
   msg.question       = "Was üben?"
