@@ -6,12 +6,12 @@
 -- Note: Since this is a trivial example, you don't have to keep my
 -- Copyright notice, but you may replace it with your own.
 
-require "lua-akfavatar" --> makes sure Lua-AKFAvatar is used
+require "lua-akfavatar" --> gives access to the avt. comands
 
 avt.initialize{title="Hello World", avatar="default", 
                encoding="UTF-8", mode=avt.window_mode}
 avt.set_text_delay() --> activate the slowprint mode (optional)
-avt.move_in() --> move the avatar in (optional)
+
 avt.set_balloon_size(7, 20) --> set the size of the balloon (optional)
 
 -- say something:
@@ -26,4 +26,3 @@ Hej Världen
 avt.newline()
 avt.say("π≈", math.pi) --> avt.say accepts strings and numbers
 avt.wait_button() --> wait for a button to be pressed
-avt.move_out() --> move the avatar out (optional)
