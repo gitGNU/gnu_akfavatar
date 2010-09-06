@@ -9,6 +9,10 @@ print = avt.print --> define the print command
 say = print --> an alias that fits better
 
 local function interactive (cmd)
+  local function show (success, ...)
+    if select ("#", ...) > 0 then avt.print (...) end
+  end
+
   if avt.where_x () > 1 then avt.newline () end
 
   if not cmd then --> first line
@@ -28,12 +32,7 @@ local function interactive (cmd)
         else avt.print (err) --> say error mesage
       end
     else --> complete function
-      local ret = {pcall(func)}
-      local success = table.remove(ret, 1)
-      if not success --> error calling the function?
-        then avt.print (ret[1]) --> error msg
-        else if ret[1] ~= nil then avt.print (unpack (ret)) end
-      end
+      show (pcall(func))
   end
 
   return cmd
