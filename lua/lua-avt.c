@@ -1019,7 +1019,7 @@ lavt_say (lua_State * L)
 
   for (i = 1; i <= n; i++)
     {
-      s = lua_tolstring (L, i, &len);
+      s = luaL_checklstring (L, i, &len);
       if (s)
 	check (avt_say_mb_len (s, len));
     }
