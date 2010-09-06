@@ -192,6 +192,8 @@ lavt_initialize (lua_State * L)
 	avt_switch_mode (mode);
       if (audio)
 	avt_initialize_audio ();
+      else
+        avt_quit_audio ();
     }
 
   initialized = AVT_TRUE;
