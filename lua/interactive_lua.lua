@@ -5,12 +5,13 @@
 
 require "lua-akfavatar"
 
-print = avt.print --> define the print command
+print = avt.print --> redefine the print command
 say = print --> an alias that fits better
 
 local function interactive (cmd)
 
   local function error_message (...)
+    avt.bell ()
     avt.set_text_color ("dark red")
     avt.print (...)
     avt.normal_text ()
@@ -31,7 +32,9 @@ local function interactive (cmd)
     -- replace = at the beginning with return
     cmd = string.gsub (avt.ask ("> "), "^=", "return ", 1)
   else
-    cmd = cmd .. " " .. avt.ask (">> ")
+    local cmd2 = avt.ask (">> ")
+    if cmd2 == "" then return "" end --> empty line cancels command
+    cmd = cmd .. " " .. cmd2
   end
 
   local func, err = loadstring (cmd)
