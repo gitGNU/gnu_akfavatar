@@ -891,6 +891,12 @@ AVT_API void avt_register_mousehandler (avt_mousehandler handler);
 AVT_API int avt_initialize_audio (void);
 
 /*
+ * quit audio system
+ * (automatically called by avt_quit())
+ */
+AVT_API void avt_quit_audio (void);
+
+/*
  * supported audio formats:
  * AU:  linear PCM with up to 32Bit, mu-law, A-law
  * WAV: linear PCM with up to 16Bit, MS-ADPCM, IMA-ADPCM
@@ -983,7 +989,6 @@ AVT_API void avt_set_delays (int text, int flip_page) AVT_DEPRECATED;
 AVT_API void avt_stop_on_esc (avt_bool_t on) AVT_DEPRECATED;
 AVT_API int avt_wait_key (const wchar_t *message) AVT_DEPRECATED;
 AVT_API int avt_wait_key_mb (char *message) AVT_DEPRECATED;
-AVT_API void avt_quit_audio (void) AVT_DEPRECATED;
 AVT_API avt_audio_t *avt_load_wave_file (const char *file) AVT_DEPRECATED;
 AVT_API avt_audio_t *avt_load_wave_data (void *data, int datasize)
         AVT_DEPRECATED;

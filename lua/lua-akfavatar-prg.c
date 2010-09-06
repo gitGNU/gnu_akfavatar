@@ -296,6 +296,7 @@ main (int argc, char **argv)
 	      avt_set_balloon_color_name ("floral white");
 	      avt_markup (AVT_FALSE);
 	      avt_normal_text ();
+	      avt_quit_audio ();
 	      avt_set_title ("Lua-AKFAvatar Starter", "AKFAvatar");
 	      avt_change_avatar_image (avt_default ());
 	    }

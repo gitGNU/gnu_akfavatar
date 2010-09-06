@@ -1,3 +1,7 @@
+2010-09-06  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h (avt_quit_audio): no longer deprecated
+
 2010-09-05  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_set_auto_margin, avt_get_auto_margin):
