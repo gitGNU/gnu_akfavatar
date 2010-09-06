@@ -23,8 +23,8 @@ local msg = {
   correct             = "correct",
   wrong               = "wrong",
   continue            = "Do you want to take another exercise?",
-  multiplication_sign = "·",
-  division_sign       = ":"
+  multiplication_sign = "×",
+  division_sign       = "÷",
 }
 
 -- get the main language
@@ -35,15 +35,17 @@ msg.language = string.lower(string.match(os.setlocale(nil, "ctype"), "^%a+"))
 
 -- Deutsch (German)
 if msg.language == "de" or msg.language == "german" then
-  msg.title          = "Multiplizieren"
-  msg.question       = "Was üben?"
-  msg.multiplication = "Multiplizieren"
-  msg.multiples_of   = "Vielfache von "
-  msg.division       = "Teilen"
-  msg.division_by    = "Teilen durch "
-  msg.correct        = "richtig"
-  msg.wrong          = "falsch"
-  msg.continue       = "Willst du eine andere Übung machen?"
+  msg.title               = "Multiplizieren"
+  msg.question            = "Was üben?"
+  msg.multiplication      = "Multiplizieren"
+  msg.multiples_of        = "Vielfache von "
+  msg.division            = "Teilen"
+  msg.division_by         = "Teilen durch "
+  msg.correct             = "richtig"
+  msg.wrong               = "falsch"
+  msg.continue            = "Willst du eine andere Übung machen?"
+  msg.multiplication_sign = "·"
+  msg.division_sign       = ":"
 end
 
 ------------------------------------------------------------------
