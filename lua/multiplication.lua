@@ -11,36 +11,39 @@ require "akfavatar.negative"
 local random_minimum = 1
 local random_maximum = 10
 
-local multiplicationSign = "·"
-local divisionSign       = ":"
-
-local msg = {}
+-- default language: English -- for translations see below
+local msg = {
+  encoding            = "UTF-8",
+  title               = "Multiply",
+  question            = "What to exercise?",
+  multiplication      = "Multiplication",
+  multiples_of        = "Multiples of ",
+  division            = "Division",
+  division_by         = "Division by ",
+  correct             = "correct",
+  wrong               = "wrong",
+  continue            = "Do you want to take another exercise?",
+  multiplication_sign = "·",
+  division_sign       = ":"
+}
 
 -- get the main language
-os.setlocale("", "all")
+os.setlocale("", "all") --> activate local language settings
 msg.language = string.lower(string.match(os.setlocale(nil, "ctype"), "^%a+"))
 
-if msg.language == "de" or msg.language == "german"
-then -- Deutsch (German)
+-- translations
+
+-- Deutsch (German)
+if msg.language == "de" or msg.language == "german" then
   msg.title          = "Multiplizieren"
   msg.question       = "Was üben?"
-  msg.multiplication = "Multiplizieren (1-10)"
+  msg.multiplication = "Multiplizieren"
   msg.multiples_of   = "Vielfache von "
-  msg.division       = "Teilen (1-10)"
+  msg.division       = "Teilen"
   msg.division_by    = "Teilen durch "
   msg.correct        = "richtig"
   msg.wrong          = "falsch"
   msg.continue       = "Willst du eine andere Übung machen?"
-else -- default: English
-  msg.title          = "Multiply"
-  msg.question       = "What to exercise?"
-  msg.multiplication = "Multiplication (1-10)"
-  msg.multiples_of   = "Multiples of "
-  msg.division       = "Division (1-10)"
-  msg.division_by    = "Division by "
-  msg.correct        = "correct"
-  msg.wrong          = "wrong"
-  msg.continue       = "Do you want to take another exercise?"
 end
 
 ------------------------------------------------------------------
@@ -66,8 +69,10 @@ end
 function AskWhatToExercise()
   avt.tell(msg.question,
           "\n1) ", msg.multiplication,
+          " (", random_minimum, "-", random_maximum, ")",
           "\n2) ", msg.multiples_of, "...",
           "\n3) ", msg.division,
+          " (", random_minimum, "-", random_maximum, ")",
           "\n4) ", msg.division_by, "...")
 
   local c = avt.choice(2, 4, "1")
@@ -143,11 +148,11 @@ function query()
       avt.say(string.format("%2d) ", counter))
 
       if exercise == multiplication then
-        avt.say(a, multiplicationSign, b, "=")
+        avt.say(a, msg.multiplication_sign, b, "=")
         e = askResult()
         isCorrect = (e == r)
       elseif exercise == division then
-        avt.say(r, divisionSign, a, "=")
+        avt.say(r, msg.division_sign, a, "=")
         e = askResult()
         isCorrect = (e == b)
       end
@@ -173,10 +178,11 @@ function initialize()
     shortname = msg.title,
     avatar = require "akfavatar.teacher",
     audio = true,
-    encoding = "UTF-8"
+    encoding = msg.encoding
     }
   avt.move_in()
 
+  -- initialize the random number generator
   math.randomseed(os.time())
 end
 
