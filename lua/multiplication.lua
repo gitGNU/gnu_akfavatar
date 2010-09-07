@@ -11,6 +11,7 @@ require "akfavatar.neutral"
 -- edit to your needs:
 local random_minimum = 1
 local random_maximum = 10
+local maximum_tries = 3
 
 -- default language: English -- for translations see below
 local msg = {
@@ -112,7 +113,7 @@ function sayCorrect()
 end
 
 function sayWrong()
-  negative ()
+  negative()
   answerposition()
   avt.set_text_color("dark red")
   avt.say(msg.wrong)
@@ -147,6 +148,7 @@ end
 function query()
   local counter = 0
   local a, b, c, e
+  local tries
   local isCorrect
 
   avt.set_balloon_size(4, 40)
@@ -164,6 +166,8 @@ function query()
 
     c = a * b  --> this is the secret formula ;-)
 
+    tries = 0
+
     -- repeat asking the same question until correct
     repeat
       if exercise == multiplication then
@@ -179,6 +183,22 @@ function query()
       if not endRequest then
         if isCorrect then sayCorrect() else sayWrong() end
       end
+
+      tries = tries + 1
+      if tries >= maximum_tries then -- help
+        avt.set_text_color("dark red")
+        avt.inverse(true)
+        if exercise == multiplication then
+          avt.say(string.format("%2d) %d%s%d=%d ",
+                counter, a, msg.multiplication_sign, b, c))
+        elseif exercise == division then
+          avt.say(string.format("%2d) %d%s%d=%d ",
+          counter, c, msg.division_sign, a, b))
+        end --> if exercise
+        avt.normal_text()
+        avt.newline()
+        isCorrect = true  --> the teacher is always right ;-)
+      end --> if tries >= maximum_tries
     until isCorrect or endRequest
   end --> while not endRequest
 end
