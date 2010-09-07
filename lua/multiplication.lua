@@ -185,7 +185,7 @@ function query()
       end
 
       tries = tries + 1
-      if tries >= maximum_tries then -- help
+      if tries >= maximum_tries and not isCorrect then -- help
         avt.set_text_color("dark red")
         avt.inverse(true)
         avt.bold(true)
