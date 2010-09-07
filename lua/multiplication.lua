@@ -6,6 +6,7 @@
 require "lua-akfavatar"
 require "akfavatar.positive"
 require "akfavatar.negative"
+require "akfavatar.neutral"
 
 -- edit to your needs:
 local random_minimum = 1
@@ -22,6 +23,7 @@ local msg = {
   division_by         = "Division by ",
   correct             = "correct",
   wrong               = "wrong",
+  unknown             = "???",
   continue            = "Do you want to take another exercise?",
   multiplication_sign = "×",
   division_sign       = "÷",
@@ -62,12 +64,6 @@ function answerposition()
   avt.move_xy(30, avt.where_y()-1)
 end
 
-function askResult()
-  local line = avt.ask()
-  if line == "" then endRequest = true end
-  return tonumber(line)
-end
-
 function AskWhatToExercise()
   avt.tell(msg.question,
           "\n1) ", msg.multiplication,
@@ -106,9 +102,9 @@ function AskWhatToExercise()
 end
 
 function sayCorrect()
-  positive ()
+  positive()
   avt.set_text_color("dark green")
-  answerposition ()
+  answerposition()
   avt.say(msg.correct)
   avt.clear_eol()
   avt.newline()
@@ -117,7 +113,7 @@ end
 
 function sayWrong()
   negative ()
-  answerposition ()
+  answerposition()
   avt.set_text_color("dark red")
   avt.say(msg.wrong)
   avt.clear_eol()
@@ -125,9 +121,32 @@ function sayWrong()
   avt.normal_text()
 end
 
+function sayUnknown()
+  neutral()
+  answerposition()
+  avt.set_text_color("gray30")
+  avt.say(msg.unknown)
+  avt.clear_eol()
+  avt.newline()
+  avt.normal_text()
+end
+
+function askResult(task)
+  local result
+
+  repeat
+    local line = avt.ask(task)
+    if line == "" then endRequest = true end
+    result = tonumber(line)
+    if not result and not endRequest then sayUnknown() end
+  until result or endRequest
+
+  return result
+end
+
 function query()
   local counter = 0
-  local a, b, r, e
+  local a, b, c, e
   local isCorrect
 
   avt.set_balloon_size(4, 40)
@@ -143,27 +162,25 @@ function query()
 
     b = math.random(random_minimum, random_maximum)
 
-    r = a * b;
+    c = a * b  --> this is the secret formula ;-)
 
     -- repeat asking the same question until correct
     repeat
-      avt.say(string.format("%2d) ", counter))
-
       if exercise == multiplication then
-        avt.say(a, msg.multiplication_sign, b, "=")
-        e = askResult()
-        isCorrect = (e == r)
+        e = askResult(string.format("%2d) %d%s%d=",
+                counter, a, msg.multiplication_sign, b))
+        isCorrect = (e == c)
       elseif exercise == division then
-        avt.say(r, msg.division_sign, a, "=")
-        e = askResult()
+        e = askResult(string.format("%2d) %d%s%d=",
+          counter, c, msg.division_sign, a))
         isCorrect = (e == b)
       end
 
       if not endRequest then
         if isCorrect then sayCorrect() else sayWrong() end
-        end
-  until isCorrect or endRequest
-  end -- while
+      end
+    until isCorrect or endRequest
+  end --> while not endRequest
 end
 
 function WantToContinue()
