@@ -188,6 +188,7 @@ function query()
       if tries >= maximum_tries then -- help
         avt.set_text_color("dark red")
         avt.inverse(true)
+        avt.bold(true)
         if exercise == multiplication then
           avt.say(string.format("%2d) %d%s%d=%d ",
                 counter, a, msg.multiplication_sign, b, c))
