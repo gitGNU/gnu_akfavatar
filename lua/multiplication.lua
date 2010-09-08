@@ -55,10 +55,7 @@ end
 local specific_table = nil
 local endRequest = false
 
--- symbols for the exercise
-local multiplication = 1
-local division = 2
-local exercise = multiplication
+local exercise = "multiplication"
 
 function answerposition()
   -- previous line, column 30
@@ -77,20 +74,20 @@ function AskWhatToExercise()
   local c = avt.choice(2, 4, "1")
 
   if c == 1 then
-    exercise = multiplication
+    exercise = "multiplication"
     specific_table = nil
   elseif c == 2 then
-    exercise = multiplication
+    exercise = "multiplication"
     avt.set_balloon_size(1, 20)
     repeat
       avt.clear ()
       specific_table = tonumber(avt.ask(msg.multiples_of))
     until specific_table
   elseif c == 3 then
-    exercise = division
+    exercise = "division"
     specific_table = nil
   elseif c == 4 then
-    exercise = division
+    exercise = "division"
     avt.set_balloon_size(1, 20)
     repeat
       avt.clear ()
@@ -170,11 +167,11 @@ function query()
 
     -- repeat asking the same question until correct
     repeat
-      if exercise == multiplication then
+      if exercise == "multiplication" then
         e = askResult(string.format("%2d) %d%s%d=",
                 counter, a, msg.multiplication_sign, b))
         isCorrect = (e == c)
-      elseif exercise == division then
+      elseif exercise == "division" then
         e = askResult(string.format("%2d) %d%s%d=",
           counter, c, msg.division_sign, a))
         isCorrect = (e == b)
@@ -189,10 +186,10 @@ function query()
         avt.set_text_color("dark red")
         avt.inverse(true)
         avt.bold(true)
-        if exercise == multiplication then
+        if exercise == "multiplication" then
           avt.say(string.format("%2d) %d%s%d=%d ",
                 counter, a, msg.multiplication_sign, b, c))
-        elseif exercise == division then
+        elseif exercise == "division" then
           avt.say(string.format("%2d) %d%s%d=%d ",
           counter, c, msg.division_sign, a, b))
         end --> if exercise
