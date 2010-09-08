@@ -40,9 +40,9 @@ Is the encoding for strings, for example to "ISO-8859-1" --
 default="UTF-8".
 
 @item mode
-Is one of @code{avt.auto_mode}, @code{avt.window_mode},
-@code{avt.fullscreen_mode}, or @code{avt.fullscreennoswitch_mode}.
-The default is @code{avt.auto_mode} which uses a sensible default, or
+Is one of @code{"auto"}, @code{"window"}, @code{"fullscreen"},
+or @code{"fullscreen no switch"}.
+The default is @code{"auto"} which uses a sensible default, or
 leaves the mode unchanged, if it already was initialized.
 
 @end table
@@ -61,9 +61,9 @@ Examples:
 @code{avt.initialize@{tilte="my program", encoding="ISO-8859-1"@}}
 
 @item
-@code{avt.initialize@{tilte="my program", shortname="proram",
+@code{avt.initialize@{tilte="my program", shortname="program",
 avatar="gnu-head.xpm", audio=true, encoding="UTF-8",
-mode=avt.fullscreen_mode@}}
+mode="fullscreen no switch"@}}
 @end itemize
 
 Many of the following functions implicitly call @samp{avt.initialize@{@}}
@@ -547,9 +547,8 @@ Reserves single keys, such as @key{ESC} or @key{F11}.
 @end defun
 
 @defun avt.switch_mode (mode)
-Swithes the window mode. Use either of @code{avt.auto_mode},
-@code{avt.window_mode}, @code{avt.fullscreen_mode}, or
-@code{avt.fullscreennoswitch_mode}.
+Switches the window mode. Use either of @code{"auto"}, @code{"window"},
+@code{"fullscreen"}, or @code{"fullscreen no switch"}.
 @end defun
 
 @defun avt.get_mode ()

@@ -34,6 +34,9 @@
 
 static avt_bool_t initialized = AVT_FALSE;
 
+static const char *const modes[] =
+  { "auto", "window", "fullscreen", "fullscreen no switch", NULL };
+
 /* "check()" checks the returned status code */
 #define check(X)  do { if (X != AVT_NORMAL) quit (L); } while (0)
 #define is_initialized(void)  if (!initialized) auto_initialize(L)
@@ -119,8 +122,7 @@ get_avatar (lua_State * L, int index)
  * encoding is the encoding for strings, for example to "ISO-8859-1"
  *          default is "UTF-8"
  *
- * mode is one of avt.auto_mode, avt.window_mode, avt.fullscreen_mode, 
- *      avt.fullscreennoswitch_mode
+ * mode is one of "auto", "window", "fullscreen", "fullscreen no switch"
  *
  * No parameter is needed, use them as you wish.
  */
@@ -168,9 +170,32 @@ lavt_initialize (lua_State * L)
       lua_pop (L, 1);
 
       lua_getfield (L, 1, "mode");
-      if (lua_isnumber (L, -1))
-	mode = lua_tointeger (L, -1);
-      lua_pop (L, 1);
+      if (!lua_isnoneornil (L, -1))
+	{
+	  const char *mode_name;
+	  mode_name = lua_tostring (L, -1);
+	  if (!mode_name)
+	    luaL_error (L, "bad mode for 'initialize'"
+			" (string expected, got %s)",
+			lua_typename (L, lua_type (L, -1)));
+	  else
+	    {
+	      int i;
+
+	      for (i = 0; modes[i]; i++)
+		if (strcmp (mode_name, modes[i]) == 0)
+		  {
+		    mode = i - 1;
+		    break;
+		  }
+
+	      if (modes[i] == NULL)
+		luaL_error (L, "unknown mode '%s' in 'initialize'",
+			    mode_name);
+	    }
+	}
+
+      lua_pop (L, 1);		/* pop mode */
     }
 
   if (!shortname)
@@ -824,7 +849,7 @@ static int
 lavt_switch_mode (lua_State * L)
 {
   is_initialized ();
-  avt_switch_mode (luaL_checkint (L, 1));
+  avt_switch_mode (luaL_checkoption (L, 1, "auto", modes) - 1);
   return 0;
 }
 
@@ -1641,16 +1666,6 @@ int
 luaopen_akfavatar (lua_State * L)
 {
   luaL_register (L, "avt", akfavtlib);
-
-  /* values for window modes */
-  lua_pushinteger (L, AVT_AUTOMODE);
-  lua_setfield (L, -2, "auto_mode");
-  lua_pushinteger (L, AVT_WINDOW);
-  lua_setfield (L, -2, "window_mode");
-  lua_pushinteger (L, AVT_FULLSCREEN);
-  lua_setfield (L, -2, "fullscreen_mode");
-  lua_pushinteger (L, AVT_FULLSCREENNOSWITCH);
-  lua_setfield (L, -2, "fullscreennoswitch_mode");
 
   /* type for audio data (garbage collection, call as function) */
   luaL_newmetatable (L, "AKFAvatar.audio");
