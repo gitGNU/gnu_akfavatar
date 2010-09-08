@@ -1385,7 +1385,7 @@ lavt_getcwd (lua_State * L)
   while (AVT_TRUE)
     {
       char *buffer;
-      int err;
+      int error_nr;
 
       buffer = (char *) malloc (size);
       if (buffer == NULL)
@@ -1399,15 +1399,15 @@ lavt_getcwd (lua_State * L)
 	  return 1;
 	}
 
-      err = errno;
+      error_nr = errno;
 
       free (buffer);
 
-      if (err != ERANGE)
+      if (error_nr != ERANGE)
 	{
 	  /* unsolvable error */
 	  lua_pushnil (L);
-	  lua_pushstring (L, strerror (err));
+	  lua_pushstring (L, strerror (error_nr));
 	  return 2;
 	}
 
