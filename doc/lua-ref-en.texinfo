@@ -547,8 +547,10 @@ Reserves single keys, such as @key{ESC} or @key{F11}.
 @end defun
 
 @defun avt.switch_mode (mode)
-Switches the window mode. Use either of @code{"auto"}, @code{"window"},
-@code{"fullscreen"}, or @code{"fullscreen no switch"}.
+Switches the window mode. Use either of @code{"window"},
+or @code{"fullscreen"}.
+
+(The modes @code{"auto"} and @code{"fullscreen no switch"} don't work here.)
 @end defun
 
 @defun avt.get_mode ()
