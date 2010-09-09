@@ -546,6 +546,7 @@ dist: info html man $(srcdir)/alert.au
 	   $(srcdir)/lua/multiplication.lua $(srcdir)/lua/man.lua \
 	   $(srcdir)/lua/textview.lua \
 	   $(srcdir)/lua/story1-en.lua $(srcdir)/lua/story1-de.lua \
+	   $(srcdir)/lua/lbase64.c \
 	   $(srcdir)/lua/base64-encode.lua \
 	   $(PKGNAME)/lua/
 
@@ -583,6 +584,7 @@ dist: info html man $(srcdir)/alert.au
 	   $(srcdir)/mingw/luaavtstarter-rc.in \
 	   $(srcdir)/mingw/avtmsg.c $(srcdir)/mingw/avtwindows.c \
 	   $(srcdir)/mingw/avttermstub.c $(srcdir)/mingw/askdrive.c \
+	   $(srcdir)/mingw/win_iconv.c $(srcdir)/mingw/iconv.h \
 	   $(srcdir)/mingw/Makefile $(srcdir)/mingw/README \
 	   $(PKGNAME)/mingw/
 
