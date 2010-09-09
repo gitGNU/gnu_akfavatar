@@ -36,8 +36,8 @@ Set this to true if the audio subsystem should be initialized.
 This has also influence on the system ``bell''.
 
 @item encoding
-Is the encoding for strings, for example to "ISO-8859-1" --
-default="UTF-8".
+Is the encoding for strings, for example to "ISO-8859-1", "UTF-8"
+or "WINDOWS-1252" -- default="UTF-8".
 
 @item mode
 Is one of @code{"auto"}, @code{"window"}, @code{"fullscreen"},

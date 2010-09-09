@@ -6497,7 +6497,10 @@ extern void
 avt_set_title (const char *title, const char *shortname)
 {
   /* check if it's already in correct encoding default="UTF-8" */
-  if (!avt_encoding || SDL_strcasecmp ("UTF-8", avt_encoding) == 0)
+  if (!avt_encoding || SDL_strcasecmp ("UTF-8", avt_encoding) == 0
+      || SDL_strcasecmp ("UTF8", avt_encoding) == 0
+      || SDL_strcasecmp ("CP65001", avt_encoding) == 0)
+
     SDL_WM_SetCaption (title, shortname);
   else				/* convert them to UTF-8 */
     {
