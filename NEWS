@@ -1,11 +1,12 @@
 * AKFAvatar 0.19.0
 
   - Lua support with program lua-akfavatar
-  - ./configure --disable-lua to buld without Lua
+  - use ./configure --disable-lua to buld without Lua
+  - largely improved support for charset-encodings under Windows
   - text-input has full line-editing features
-  - fix: on text input the input area gets cleared
+  - fix: on text-input the input area gets cleared
   - title can have international characters if avt_mb_encoding is
-    called before avt_initialize
+    called before avt_initialize (not relyable)
   - the pager can handle binary junk better
   - filechooser: path can be entered manually
   - filechooser: on windows ask for drive letter only when

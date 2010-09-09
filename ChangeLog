@@ -1,3 +1,8 @@
+2010-09-09  Andreas K. Foerster  <info@akfoerster.de>
+
+	* mingw/iconv.h, mingw/win_iconv.c: new files
+	imported from win_iconv (puplic domain)
+
 2010-09-06  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h (avt_quit_audio): no longer deprecated
