@@ -343,14 +343,10 @@ Windows wird nur teilweise unterstützt.  Ich stelle Binärdateien zur
 Verfügung, die mit einem Crosscompiler erstellt wurden.  Da ich es nie
 direkt unter Windows selber kompiliert habe, kann ich dazu wenig sagen.
 Tut mir Leid.
+Insbesondere die Terminal-Emulation läuft nicht unter Windows.
 
-Für solche Systeme wird ein @code{iconv}-Ersatz in der SDL verwendet.
-Der Zeichensatz Windows-1252 (häufig als ``ANSI'' bezeichnet, er hat aber
-nichts mit @acronym{ANSI} zu tun) wird nicht vollständig unterstützt.  Dieser 
-Zeichensatz ist jedoch teilweise kompatibel zu dem Standard ISO-8859-1,
-welcher unterstützt wird.  Einige Zeichen entsprechen jedoch nicht dem
-Standard.  Falls diese Zeichen unbedingt benötigt werden, kann man den 
-Text als UTF-8 abspeichern, welches ebenfalls unterstützt wird.
+Die Windows-spezifischen Zeichensätze, wie @code{"WINDOWS-1252"},
+auch bekannt als @code{"MS-ANSI"} werden ab Version 0.19.0 unterstützt.
 
 
 @node Verwendung von avatarsay

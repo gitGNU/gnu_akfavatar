@@ -146,11 +146,7 @@ OTHER SYSTEMS
    These systems are just partly supported.  I provide binaries which are
    build with a crosscompiler.  I haven't compiled them directly under 
    Windows yet, so you're on your own here.  I'm sorry.
+   Especially the terminal emulation doesn't work on Windows.
 
-   On these systems SDL supports a fallback implementation for iconv.
-   The charset Windows-1252 (often called "ANSI" but it has nothing to do
-   with ANSI) is not fully supported.  That charset is partly compatible
-   to the ISO-8859-1 standard, which is supported.  Some characters are
-   missing then.  If you need these characters, save your text as UTF-8, 
-   which is also supported.
-
+   The Windows-specific charsets like "WINDOWS-1252", also known as "MS-ANSI"
+   are supported since version 0.19.0.
