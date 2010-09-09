@@ -91,7 +91,8 @@ avatar.wo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
              $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm \
              $(srcdir)/balloonpointer.xbm $(srcdir)/circle.xbm \
              $(srcdir)/akfavatar.xpm
-	$(CC) -c -I. $(SDL_CFLAGS) $(CFLAGS) -o $@ $(srcdir)/avatar.c
+	$(CC) -c -I. -I$(srcdir)/mingw $(SDL_CFLAGS) $(CFLAGS) \
+	    -DFORCE_ICONV=1 -o $@ $(srcdir)/avatar.c
 
 avatar-audio.wo: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h \
                   $(srcdir)/avtinternals.h alert.c
@@ -106,14 +107,20 @@ ucsfont9x18.c: $(srcdir)/9x18.bdf
 font.wo: $(srcdir)/font.c ucsfont7x14.c ucsfont9x18.c
 	$(CC) -c $(SDL_CFLAGS) $(CFLAGS) -I. -o $@ $(srcdir)/font.c
 
+win_iconv.wo: $(srcdir)/mingw/win_iconv.c $(srcdir)/mingw/iconv.h
+	$(CC) -c $(CFLAGS) -I. -o $@ $(srcdir)/mingw/win_iconv.c
+
 # static library
-libakfavatar.a: avatar.wo avatar-default.wo avatar-audio.wo font.wo
-	$(AR) rcu $@ avatar.wo avatar-default.wo avatar-audio.wo font.wo
+libakfavatar.a: avatar.wo avatar-default.wo avatar-audio.wo font.wo \
+	  win_iconv.wo
+	$(AR) rcu $@ avatar.wo avatar-default.wo avatar-audio.wo font.wo \
+	  win_iconv.wo
 	$(RANLIB) $@
 
-akfavatar.dll: avatar.wo avatar-default.wo avatar-audio.wo font.wo libinfo.wo 
+akfavatar.dll: avatar.wo avatar-default.wo avatar-audio.wo font.wo libinfo.wo \
+	  win_iconv.wo
 	$(CC) -shared -o $@ avatar.wo avatar-default.wo avatar-audio.wo \
-	        font.wo libinfo.wo \
+	        font.wo libinfo.wo win_iconv.wo \
 	        -Wl,-no-undefined,--enable-runtime-pseudo-reloc \
 	        -Wl,--output-def,akfavatar.def \
 	        -Wl,--out-implib,libakfavatar.dll.a \

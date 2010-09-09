@@ -58,3 +58,11 @@ Luiz Henrique de Figueiredo <lhf@tecgraf.puc-rio.br>
 modified by Andreas K. Foerster <info@akfoerster.de>
 27 Aug 2010 17:10:00
 This code is hereby placed in the public domain.
+
+
+mingw/win_iconv.c, mingw/iconv.h:
+iconv library implemented with Win32 API.
+This file is placed in the public domain.
+Maintainer: Yukihiro Nakadaira <yukihiro.nakadaira@gmail.com>
+modified by: Tor Lillqvist <tml@iki.fi>
+(taken from GTK+ for Windows)
