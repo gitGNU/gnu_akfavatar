@@ -6507,15 +6507,25 @@ avt_set_title (const char *title, const char *shortname)
       char *my_title = NULL;
       char *my_shortname = NULL;
 
+      /* FIXME: SDL_iconv_string doesn't work with FORCE_ICONV */
+      /* I try it anyway and fall back otherwise */
       if (title && *title)
-	my_title =
-	  SDL_iconv_string ("UTF-8", avt_encoding,
-			    title, SDL_strlen (title) + 1);
+	{
+	  my_title =
+	    SDL_iconv_string ("UTF-8", avt_encoding,
+			      title, SDL_strlen (title) + 1);
+	  if (!my_title)
+	    my_title = SDL_strdup (title);
+	}
 
       if (shortname && *shortname)
-	my_shortname =
-	  SDL_iconv_string ("UTF-8", avt_encoding,
-			    shortname, SDL_strlen (shortname) + 1);
+	{
+	  my_shortname =
+	    SDL_iconv_string ("UTF-8", avt_encoding,
+			      shortname, SDL_strlen (shortname) + 1);
+	  if (!my_shortname)
+	    my_shortname = SDL_strdup (shortname);
+	}
 
       SDL_WM_SetCaption (my_title, my_shortname);
 
