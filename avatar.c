@@ -217,7 +217,7 @@
 #    else /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
 #      define WCHAR_ENCODING "UTF-16LE"
 #    endif /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
-#  else /* (WCHAR_MAX > 65535U) */
+#  else	/* (WCHAR_MAX > 65535U) */
 #    if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
 #      define WCHAR_ENCODING "UTF-32BE"
 #    else /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
