@@ -204,23 +204,27 @@
 #endif
 
 #ifndef WCHAR_ENCODING
-#  ifdef WCHAR_MAX
-#    if (WCHAR_MAX <= 65535U)
-#      if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-#        define WCHAR_ENCODING "UTF-16BE"
-#      else /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
-#        define WCHAR_ENCODING "UTF-16LE"
-#      endif /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
-#    else /* (WCHAR_MAX > 65535U) */
-#      if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-#        define WCHAR_ENCODING "UTF-32BE"
-#      else /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
-#        define WCHAR_ENCODING "UTF-32LE"
-#      endif /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
-#    endif /* (WCHAR_MAX > 65535U) */
-#  else	/* not WCHAR_MAX */
-#   error "please define WCHAR_ENCODING (no autodetection possible)"
-#  endif /* not WCHAR_MAX */
+
+#  ifndef WCHAR_MAX
+#    error "please define WCHAR_ENCODING (no autodetection possible)"
+#  endif
+
+#  if (WCHAR_MAX <= 255)
+#    define WCHAR_ENCODING "ISO-8859-1"
+#  elif (WCHAR_MAX <= 65535U)
+#    if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+#      define WCHAR_ENCODING "UTF-16BE"
+#    else /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
+#      define WCHAR_ENCODING "UTF-16LE"
+#    endif /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
+#  else /* (WCHAR_MAX > 65535U) */
+#    if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+#      define WCHAR_ENCODING "UTF-32BE"
+#    else /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
+#      define WCHAR_ENCODING "UTF-32LE"
+#    endif /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
+#  endif /* (WCHAR_MAX > 65535U) */
+
 #endif /* not WCHAR_ENCODING */
 
 /*
