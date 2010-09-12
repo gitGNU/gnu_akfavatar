@@ -3519,8 +3519,8 @@ avt_mb_decode (wchar_t ** dest, const char *src, const int size)
 {
   static char rest_buffer[10];
   static size_t rest_bytes = 0;
-  char *inbuf_start, *outbuf;
-  AVT_ICONV_INBUF_T *inbuf;
+  char *outbuf;
+  AVT_ICONV_INBUF_T *inbuf, *restbuf;
   size_t dest_size;
   size_t inbytesleft, outbytesleft;
   size_t returncode;
@@ -3536,30 +3536,15 @@ avt_mb_decode (wchar_t ** dest, const char *src, const int size)
   if (output_cd == ICONV_UNINITIALIZED)
     avt_mb_encoding (MB_DEFAULT_ENCODING);
 
-  inbytesleft = size + rest_bytes;
-  inbuf_start = (char *) SDL_malloc (inbytesleft);
-
-  if (!inbuf_start)
-    {
-      _avt_STATUS = AVT_ERROR;
-      SDL_SetError ("out of memory");
-      *dest = NULL;
-      return -1;
-    }
-
-  inbuf = inbuf_start;
-
-  /* if there is a rest from last call, put it into the buffer */
-  if (rest_bytes > 0)
-    SDL_memcpy ((void *) inbuf, &rest_buffer, rest_bytes);
-
-  /* copy the text into the buffer */
-  SDL_memcpy ((void *) (inbuf + rest_bytes), src, size);
-  rest_bytes = 0;
+  inbytesleft = size;
+  inbuf = (AVT_ICONV_INBUF_T *) src;
 
   /* get enough space */
   /* +1 for the terminator */
   dest_size = (inbytesleft + 1) * sizeof (wchar_t);
+
+  if (rest_bytes)
+    dest_size++;
 
   /* minimal string size */
   if (dest_size < 8)
@@ -3571,12 +3556,22 @@ avt_mb_decode (wchar_t ** dest, const char *src, const int size)
     {
       _avt_STATUS = AVT_ERROR;
       SDL_SetError ("out of memory");
-      SDL_free (inbuf_start);
       return -1;
     }
 
   outbuf = (char *) *dest;
   outbytesleft = dest_size;
+  restbuf = (AVT_ICONV_INBUF_T *) rest_buffer;
+
+  /* if there is a rest from last call, try to complete it */
+  /* TODO: needs more testing */
+  while (rest_bytes > 0)
+    {
+      rest_buffer[rest_bytes++] = (char) *inbuf;
+      inbuf++;
+      inbytesleft--;
+      avt_iconv (output_cd, &restbuf, &rest_bytes, &outbuf, &outbytesleft);
+    }
 
   /* do the conversion */
   returncode =
@@ -3612,9 +3607,6 @@ avt_mb_decode (wchar_t ** dest, const char *src, const int size)
       rest_bytes = inbytesleft;
       SDL_memcpy ((void *) &rest_buffer, inbuf, rest_bytes);
     }
-
-  /* free the inbuf */
-  SDL_free (inbuf_start);
 
   /* terminate outbuf */
   if (outbytesleft >= sizeof (wchar_t))

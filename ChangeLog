@@ -1,6 +1,6 @@
 2010-09-12  Andreas K. Foerster  <info@akfoerster.de>
 
-	* avatar.c (avt_mb_decode): optimized
+	* avatar.c (avt_mb_encode, avt_mb_decode): optimized
 
 2010-09-10  Andreas K. Foerster  <info@akfoerster.de>
 
