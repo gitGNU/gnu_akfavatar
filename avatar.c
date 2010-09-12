@@ -3626,7 +3626,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, const int size)
 extern int
 avt_mb_encode (char **dest, const wchar_t * src, const int len)
 {
-  char *inbuf_start, *outbuf;
+  char *outbuf;
   AVT_ICONV_INBUF_T *inbuf;
   size_t dest_size;
   size_t inbytesleft, outbytesleft;
@@ -3644,20 +3644,7 @@ avt_mb_encode (char **dest, const wchar_t * src, const int len)
     avt_mb_encoding (MB_DEFAULT_ENCODING);
 
   inbytesleft = len * sizeof (wchar_t);
-  inbuf_start = (char *) SDL_malloc (inbytesleft);
-
-  if (!inbuf_start)
-    {
-      _avt_STATUS = AVT_ERROR;
-      SDL_SetError ("out of memory");
-      *dest = NULL;
-      return -1;
-    }
-
-  inbuf = inbuf_start;
-
-  /* copy the text into the buffer */
-  SDL_memcpy ((void *) inbuf, src, inbytesleft);
+  inbuf = (AVT_ICONV_INBUF_T *) src;
 
   /* get enough space */
   /* UTF-8 may need 6 bytes per character */
@@ -3669,11 +3656,10 @@ avt_mb_encode (char **dest, const wchar_t * src, const int len)
     {
       _avt_STATUS = AVT_ERROR;
       SDL_SetError ("out of memory");
-      SDL_free (inbuf_start);
       return -1;
     }
 
-  outbuf = *dest;
+  outbuf = (char *) *dest;
   outbytesleft = dest_size;
 
   /* do the conversion */
@@ -3689,9 +3675,6 @@ avt_mb_encode (char **dest, const wchar_t * src, const int len)
       SDL_SetError ("error while converting the encoding");
       return -1;
     }
-
-  /* free the inbuf */
-  SDL_free (inbuf_start);
 
   /* terminate outbuf */
   if (outbytesleft >= sizeof (char))
