@@ -3570,7 +3570,17 @@ avt_mb_decode (wchar_t ** dest, const char *src, const int size)
       rest_buffer[rest_bytes++] = (char) *inbuf;
       inbuf++;
       inbytesleft--;
-      avt_iconv (output_cd, &restbuf, &rest_bytes, &outbuf, &outbytesleft);
+      returncode =
+	avt_iconv (output_cd, &restbuf, &rest_bytes, &outbuf, &outbytesleft);
+
+      if (returncode == AVT_ICONV_EILSEQ)
+	{
+	  *((wchar_t *) outbuf) = L'\xFFFD';
+
+	  outbuf += sizeof (wchar_t);
+	  outbytesleft -= sizeof (wchar_t);
+	  rest_bytes = 0;
+	}
     }
 
   /* do the conversion */
