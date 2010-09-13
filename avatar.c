@@ -3564,7 +3564,6 @@ avt_mb_decode (wchar_t ** dest, const char *src, const int size)
   restbuf = (AVT_ICONV_INBUF_T *) rest_buffer;
 
   /* if there is a rest from last call, try to complete it */
-  /* TODO: needs more testing */
   while (rest_bytes > 0)
     {
       rest_buffer[rest_bytes++] = (char) *inbuf;
@@ -3573,7 +3572,9 @@ avt_mb_decode (wchar_t ** dest, const char *src, const int size)
       returncode =
 	avt_iconv (output_cd, &restbuf, &rest_bytes, &outbuf, &outbytesleft);
 
-      if (returncode == AVT_ICONV_EILSEQ)
+      /* handle any error but AVT_ICONV_EINVAL */
+      if (returncode == AVT_ICONV_EILSEQ || returncode == AVT_ICONV_ERROR
+	  || returncode == AVT_ICONV_E2BIG)
 	{
 	  *((wchar_t *) outbuf) = L'\xFFFD';
 
