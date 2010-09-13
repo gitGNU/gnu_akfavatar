@@ -35,9 +35,9 @@ SHELL = /bin/sh
 .SUFFIXES:
 
 all: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe \
-     lua-akfavatar.exe
+     lua-akfavatar.exe iconv.exe
 
-nolua: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe
+nolua: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe iconv.exe
 
 avtsayinfo.rc: $(srcdir)/mingw/avtsayinfo.in config-mingw
 	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
@@ -107,8 +107,13 @@ ucsfont9x18.c: $(srcdir)/9x18.bdf
 font.wo: $(srcdir)/font.c ucsfont7x14.c ucsfont9x18.c
 	$(CC) -c $(SDL_CFLAGS) $(CFLAGS) -I. -o $@ $(srcdir)/font.c
 
-win_iconv.wo: $(srcdir)/mingw/win_iconv.c $(srcdir)/mingw/iconv.h
-	$(CC) -c $(CFLAGS) -I. -o $@ $(srcdir)/mingw/win_iconv.c
+win_iconv.wo: $(srcdir)/mingw/win_iconv.c
+	$(CC) -c $(CFLAGS) -o $@ $(srcdir)/mingw/win_iconv.c
+
+iconv.exe: $(srcdir)/mingw/win_iconv.c
+	$(CC) -DMAKE_EXE -o $@ $(CFLAGS) $(srcdir)/mingw/win_iconv.c
+
+iconv: iconv.exe
 
 # static library
 libakfavatar.a: avatar.wo avatar-default.wo avatar-audio.wo font.wo \

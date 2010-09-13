@@ -465,6 +465,7 @@ distclean: clean
 	-rm -f akfavatar-de.txt akfavatar-de.xml
 	-rm -f avatarsay*.exe akfavatar-*.zip
 	-rm -f lua-akfavatar.exe
+	-rm -f iconv.exe
 	-rm -f config-mingw
 	-rm -f akfavatar.pc avtaddons.pc
 
