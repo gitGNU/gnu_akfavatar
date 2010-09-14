@@ -508,6 +508,7 @@ dist: info html man $(srcdir)/alert.au
 	   $(srcdir)/male_user.xpm $(srcdir)/female_user.xpm \
 	   $(srcdir)/teacher.xpm $(srcdir)/akfoerster.xpm $(srcdir)/lua.xpm \
 	   $(srcdir)/btn.xpm $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
+	   $(srcdir)/mpointer.xbm $(srcdir)/mpointer_mask.xbm \
 	   $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
 	   $(srcdir)/btn_no.xbm $(srcdir)/btn_yes.xbm \
 	   $(srcdir)/btn_cancel.xbm $(srcdir)/btn_ff.xbm $(srcdir)/btn_fb.xbm \
