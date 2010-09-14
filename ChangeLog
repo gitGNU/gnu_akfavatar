@@ -1,3 +1,9 @@
+2010-09-14  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_set_mouse_pointer):
+	get mouse pointer from normal XBM-data
+	mpointer.xbm, mpointer_mask.xbm: new files
+
 2010-09-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_mb_encode, avt_mb_decode): optimized

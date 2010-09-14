@@ -51,6 +51,8 @@
 #include "btn_help.xbm"
 #include "btn_eject.xbm"
 #include "btn_circle.xbm"
+#include "mpointer.xbm"
+#include "mpointer_mask.xbm"
 
 #ifdef LINK_SDL_IMAGE
 #  include "SDL_image.h"
@@ -6527,23 +6529,37 @@ avt_set_title (const char *title, const char *shortname)
 #endif /* not OLD_SDL */
 
 
+#define reverse_byte(b) \
+  (((b & (1 << 7)) >> 7) | \
+   ((b & (1 << 6)) >> 5) | \
+   ((b & (1 << 5)) >> 3) | \
+   ((b & (1 << 4)) >> 1) | \
+   ((b & (1 << 3)) << 1) | \
+   ((b & (1 << 2)) << 3) | \
+   ((b & (1 << 1)) << 5) | \
+   ((b & (1 << 0)) << 7))
+
+#define xbm_bytes(img) ((img##_width/8)*img##_height)
+
 static void
 avt_set_mouse_pointer (void)
 {
-  Uint8 mpointer_bits[] = {
-    0x00, 0x06, 0x00, 0x1a, 0x00, 0x62, 0x01, 0x82, 0x06, 0x0c, 0x18, 0x30,
-    0x60, 0xc0, 0x81, 0x00, 0x60, 0xc0, 0x18, 0x30, 0x06, 0x0c, 0x01, 0x82,
-    0x00, 0x62, 0x00, 0x1a, 0x00, 0x06, 0x00, 0x00
-  };
+  unsigned char mp[xbm_bytes (mpointer)];
+  unsigned char mp_mask[xbm_bytes (mpointer_mask)];
+  int i;
 
-  Uint8 mpointer_mask_bits[] = {
-    0x00, 0x06, 0x00, 0x1e, 0x00, 0x7e, 0x01, 0xfe, 0x07, 0xfc, 0x1f, 0xf0,
-    0x7f, 0xc0, 0xff, 0x00, 0x7f, 0xc0, 0x1f, 0xf0, 0x07, 0xfc, 0x01, 0xfe,
-    0x00, 0x7e, 0x00, 0x1e, 0x00, 0x06, 0x00, 0x00
-  };
+  /* we need the bytes reversed :-( */
 
-  mpointer = SDL_CreateCursor (mpointer_bits, mpointer_mask_bits,
-			       16, 16, 0, 7);
+  for (i = 0; i < xbm_bytes (mpointer); i++)
+    mp[i] = reverse_byte (mpointer_bits[i]);
+
+  for (i = 0; i < xbm_bytes (mpointer_mask); i++)
+    mp_mask[i] = reverse_byte (mpointer_mask_bits[i]);
+
+  mpointer = SDL_CreateCursor (mp, mp_mask,
+			       mpointer_width, mpointer_height,
+			       mpointer_x_hot, mpointer_y_hot);
+
   SDL_SetCursor (mpointer);
 }
 
