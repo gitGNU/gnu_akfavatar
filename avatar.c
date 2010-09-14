@@ -6530,16 +6530,17 @@ avt_set_title (const char *title, const char *shortname)
 
 
 #define reverse_byte(b) \
-  (((b & (1 << 7)) >> 7) | \
-   ((b & (1 << 6)) >> 5) | \
-   ((b & (1 << 5)) >> 3) | \
-   ((b & (1 << 4)) >> 1) | \
-   ((b & (1 << 3)) << 1) | \
-   ((b & (1 << 2)) << 3) | \
-   ((b & (1 << 1)) << 5) | \
-   ((b & (1 << 0)) << 7))
+  (((b) & 0x80) >> 7 | \
+   ((b) & 0x40) >> 5 | \
+   ((b) & 0x20) >> 3 | \
+   ((b) & 0x10) >> 1 | \
+   ((b) & 0x08) << 1 | \
+   ((b) & 0x04) << 3 | \
+   ((b) & 0x02) << 5 | \
+   ((b) & 0x01) << 7)
 
-#define xbm_bytes(img) ((img##_width/8)*img##_height)
+/* width must be a multiple of 8 */
+#define xbm_bytes(img)  ((img##_width / 8) * img##_height)
 
 static void
 avt_set_mouse_pointer (void)
