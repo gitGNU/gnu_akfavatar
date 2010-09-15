@@ -6552,10 +6552,16 @@ avt_set_mouse_pointer (void)
   /* we need the bytes reversed :-( */
 
   for (i = 0; i < xbm_bytes (mpointer); i++)
-    mp[i] = reverse_byte (mpointer_bits[i]);
+    {
+      register unsigned char b = mpointer_bits[i];
+      mp[i] = reverse_byte (b);
+    }
 
   for (i = 0; i < xbm_bytes (mpointer_mask); i++)
-    mp_mask[i] = reverse_byte (mpointer_mask_bits[i]);
+    {
+      register unsigned char b = mpointer_mask_bits[i];
+      mp_mask[i] = reverse_byte (b);
+    }
 
   mpointer = SDL_CreateCursor (mp, mp_mask,
 			       mpointer_width, mpointer_height,
