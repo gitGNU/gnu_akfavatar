@@ -1,6 +1,6 @@
 /*
  * avtterm - terminal emulation for AKFAAvatar
- * Copyright (c) 2007, 2008, 2009 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007, 2008, 2009, 2010 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
