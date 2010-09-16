@@ -12,16 +12,18 @@ avt.initialize{title="Hello World", avatar="default",
                encoding="UTF-8", mode="window"}
 avt.set_text_delay() --> activate the slowprint mode (optional)
 
-avt.set_balloon_size(8, 20) --> set the size of the balloon (optional)
+avt.set_balloon_size(10, 20) --> set the size of the balloon (optional)
 
 -- say something:
 avt.say [[
-Hello world
-Bonjour le monde
-Hallo Welt
-Hej Världen
-Καλημέρα κόσμε
-Здравствуй мир
+Hello world!
+¡Hola mundo!
+Bonjour le monde!
+Hallo Welt!
+Hej Världen!
+Καλημέρα κόσμε!
+Xin chào thế giới
+Здравствуй мир!
 ]]
 
 avt.newline()
