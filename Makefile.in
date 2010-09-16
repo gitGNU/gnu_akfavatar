@@ -1,5 +1,5 @@
 # Makefile template for AKFAvatar
-# Copyright (C) 2007, 2008, 2009 Andreas K. Foerster
+# Copyright (C) 2007, 2008, 2009, 2010 Andreas K. Foerster
 #
 # This Makefile template is free software; you have unlimited permission
 # to copy, distribute and modify it.
@@ -10,6 +10,9 @@ default_avatar = $(srcdir)/male_user.xpm
 SHELL = /bin/sh
 INSTALL_PROGRAM = $(INSTALL) -m 755
 INSTALL_DATA = $(INSTALL) -m 644
+
+# does not depend on prefix!
+LUA_PATH = /usr/local/share/lua/5.1/
 
 SOX = sox
 
@@ -260,6 +263,8 @@ installdirs:
 	-[ -d $(DESTDIR)$(mandir) ]      || $(INSTALL) -d $(DESTDIR)$(mandir)
 	-[ -d $(DESTDIR)$(mandir)/man1 ] || $(INSTALL) -d $(DESTDIR)$(mandir)/man1
 	-[ -d $(DESTDIR)$(docdir) ]      || $(INSTALL) -d $(DESTDIR)$(docdir)
+	-[ -d $(DESTDIR)$(LUA_PATH)/akfavatar ] \
+	   || $(INSTALL) -d $(DESTDIR)$(LUA_PATH)/akfavatar
 
 install: libakfavatar.so libakfavatar.a avatarsay-bin \
 	 installdirs install-info install-man
@@ -280,6 +285,8 @@ install: libakfavatar.so libakfavatar.a avatarsay-bin \
 	$(INSTALL_DATA) $(srcdir)/AUTHORS $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/COPYING $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/NEWS $(DESTDIR)$(docdir)
+	$(INSTALL_DATA) $(srcdir)/lua/akfavatar/* \
+	  $(DESTDIR)$(LUA_PATH)/akfavatar
 	@echo '*'
 	@echo '* make install-desktop-menu: to install avatarsay in a desktop menu'
 	@echo '*'
