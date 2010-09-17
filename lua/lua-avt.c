@@ -1305,10 +1305,9 @@ lavt_backspace (lua_State * L)
 }
 
 static int
-lavt_set_status (lua_State * L)
+lavt_reset_status (lua_State * L AVT_UNUSED)
 {
-  const char *const stati[] = { "error", "normal", "quit", NULL };
-  avt_set_status (luaL_checkoption (L, 1, "normal", stati) - 1);
+  avt_set_status (AVT_NORMAL);
   return 0;
 }
 
@@ -1661,7 +1660,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"delete_characters", lavt_delete_characters},
   {"erase_characters", lavt_erase_characters},
   {"backspace", lavt_backspace},
-  {"set_status", lavt_set_status},
+  {"reset_status", lavt_reset_status},
   {"file_selection", lavt_file_selection},
   {"color_selection", lavt_color_selection},
   {"get_directory", lavt_getcwd},

@@ -760,16 +760,15 @@ Again: This function is not needed for normal programs. Only use it, if your
 program should continue working without a visible window.
 @end defun
 
-@defun avt.set_status (status)
-Change the internal status of AKFAvatar. The @var{status} can be one of
-"error", "normal", or "quit".
+@defun avt.reset_status ()
+Reset the internal status of AKFAvatar.
 
 You can use this for example after calling another Lua-AKFAvatar script in
 protected mode.
 
 @example
 pcall (dofile, "prg.lua") --> call another script
-avt.set_status ("normal") --> reset the quit request
+avt.reset_status () --> reset the quit request
 @end example
 @end defun
 
