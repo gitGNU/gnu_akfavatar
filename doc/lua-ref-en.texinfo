@@ -760,6 +760,19 @@ Again: This function is not needed for normal programs. Only use it, if your
 program should continue working without a visible window.
 @end defun
 
+@defun avt.set_status (status)
+Change the internal status of AKFAvatar. The @var{status} can be one of
+"error", "normal", or "quit".
+
+You can use this for example after calling another Lua-AKFAvatar script in
+protected mode.
+
+@example
+pcall (dofile, "prg.lua") --> call another script
+avt.set_status ("normal") --> reset the quit request
+@end example
+@end defun
+
 @appendixsec base64
 
 Base64 is a method to represent binary data with only @acronym{ASCII}
