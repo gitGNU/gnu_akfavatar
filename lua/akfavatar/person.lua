@@ -1,3 +1,6 @@
+-- Copyright (c) 2010 Andreas K. Foerster <info@akfoerster.de>
+-- License: GPL version 3 or later
+
 -- this is a module
 -- see story1-en.lua for an example
 
