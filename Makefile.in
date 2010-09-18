@@ -557,6 +557,7 @@ dist: info html man $(srcdir)/alert.au
 	   $(srcdir)/lua/story1-en.lua $(srcdir)/lua/story1-de.lua \
 	   $(srcdir)/lua/lbase64.c \
 	   $(srcdir)/lua/base64-encode.lua \
+	   $(srcdir)/lua/fs-quiz-en.lua $(srcdir)/lua/fs-quiz-de.lua \
 	   $(PKGNAME)/lua/
 
 	mkdir $(PKGNAME)/lua/akfavatar
@@ -571,6 +572,7 @@ dist: info html man $(srcdir)/alert.au
 	   $(srcdir)/lua/akfavatar/positive.lua \
 	   $(srcdir)/lua/akfavatar/negative.lua \
 	   $(srcdir)/lua/akfavatar/neutral.lua \
+	   $(srcdir)/lua/akfavatar/query.lua \
 	   $(PKGNAME)/lua/akfavatar/
 
 	mkdir $(PKGNAME)/doc
@@ -621,6 +623,8 @@ dist-bin-default: avatarsay-bin info html
 	ln $(srcdir)/lua/man.lua $(srcdir)/lua/textview.lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/story1-en.lua $(srcdir)/lua/story1-de.lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/base64-encode.lua $(BINPKGNAME)/
+	ln $(srcdir)/lua/fs-quiz-en.lua $(BINPKGNAME)/
+	ln $(srcdir)/lua/fs-quiz-de.lua $(BINPKGNAME)/
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/NEWS $(srcdir)/avtman \
 	   $(srcdir)/fsdemo-??.avt \
 	   $(srcdir)/gnome-akfavatar \
@@ -639,6 +643,7 @@ dist-bin-default: avatarsay-bin info html
 	   $(srcdir)/lua/akfavatar/positive.lua \
 	   $(srcdir)/lua/akfavatar/negative.lua \
 	   $(srcdir)/lua/akfavatar/neutral.lua \
+	   $(srcdir)/lua/akfavatar/query.lua \
 	   $(BINPKGNAME)/akfavatar/
 	tar -cvf $(BINPKGNAME).$(SYSTEM).$(ARCH).tar $(BINPKGNAME)/
 	rm -rf $(BINPKGNAME)/
