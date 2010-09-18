@@ -1113,6 +1113,30 @@ lavt_pager (lua_State * L)
   return 0;
 }
 
+static int
+lavt_initialize_audio (lua_State * L)
+{
+  if (avt_initialize_audio ())
+    {
+      lua_pushnil (L);
+      lua_pushstring (L, avt_get_error ());
+      return 2;
+    }
+  else
+    {
+      lua_pushboolean (L, AVT_TRUE);
+      return 1;
+    }
+}
+
+/* shut down the audio-system */
+static int
+lavt_quit_audio (lua_State * L AVT_UNUSED)
+{
+  avt_quit_audio ();
+  return 0;
+}
+
 /* frees audio data (called by garbage collector) */
 static int
 free_audio (lua_State * L)
@@ -1641,6 +1665,8 @@ static const struct luaL_reg akfavtlib[] = {
   {"set_tab", lavt_set_tab},
   {"delete_lines", lavt_delete_lines},
   {"insert_lines", lavt_insert_lines},
+  {"initialize_audio", lavt_initialize_audio},
+  {"quit_audio", lavt_quit_audio},
   {"load_audio_file", lavt_load_audio_file},
   {"load_audio_string", lavt_load_audio_string},
   {"play_audio", lavt_play_audio},

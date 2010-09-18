@@ -262,6 +262,23 @@ English name for the color and second the hexadicimal RGB definition.
 Both values can be used for selecting colors.
 @end defun
 
+@defun avt.initialize_audio ()
+Initialize the audio subsystem.
+
+On success it returns @code{true}, on error it returns @code{nil} and
+an error message.
+
+Normally you should initialize it with @code{avt.initialize@{@}}.
+Only use this, if you are sure you need it.
+@end defun
+
+@defun avt.quit_audio ()
+Quit the audio subsystem.
+
+This is not needed in normal programs.
+Only use this, if you are sure you need it.
+@end defun
+
 @defun avt.load_audio_file (filename)
 Reads audio data from a file.
 
