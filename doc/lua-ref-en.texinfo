@@ -15,6 +15,8 @@ functions with the prefix @code{avatar}.
 
 @defun avt.initialize ([@{title, shortname, avatar, audio, encoding, mode@}])
 This function opens the graphical window or switches into the graphical mode.
+If it was already initialized it resets almost everything.
+
 It accepts a table as parameter with definitions for the following items:
 
 @table @code

@@ -73,6 +73,7 @@ get_avatar (lua_State * L, int index)
 {
   if (lua_isnil (L, index))
     return avt_default ();
+
   if (!lua_isstring (L, index))
     {
       luaL_error (L, "Lua-AKFAvatar error: avatar must be a string or nil");
@@ -210,11 +211,18 @@ lavt_initialize (lua_State * L)
     }
   else				/* already initialized */
     {
+      /* reset almost everything */
+      /* not the background color - should be set before initialization */
+      avt_clear_screen ();
+      avt_set_balloon_color_name ("floral white");
+      avt_normal_text ();
       check (avt_mb_encoding (encoding));
       avt_set_title (title, shortname);
-      avt_change_avatar_image (avatar);
+      check (avt_change_avatar_image (avatar));
+
       if (mode != AVT_AUTOMODE)
 	avt_switch_mode (mode);
+
       if (audio)
 	avt_initialize_audio ();
       else
