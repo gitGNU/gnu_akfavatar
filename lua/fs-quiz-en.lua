@@ -11,7 +11,7 @@ avt.initialize {
 
 query {
 
-  -- This is mainly for translations - not needed for English
+  -- This is not really needed for English, but crucial for other languages
   correct = "That's correct.",
   wrong = "Wrong!",
   again = "Try again?",
