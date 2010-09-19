@@ -10,6 +10,14 @@ avt.initialize {
 }
 
 query {
+
+  -- This is mainly for translations - not needed for English
+  correct = "That's correct.",
+  wrong = "Wrong!",
+  again = "Try again?",
+  correction = "The correct answer:",
+
+
   {"In which year was the GNU-project first announced?",
    {1983, 83}},
 

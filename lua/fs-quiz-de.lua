@@ -10,9 +10,13 @@ avt.initialize {
 }
 
 query {
+
+  -- Übersetzungen:
   correct = "Richtig!",
   wrong = "Falsch!",
+  again = "Nochmal versuchen?",
   correction = "Die richtige Antwort lautet:",
+
 
   {"In welchem Jahr wurde das GNU-Projekt erstmalig angekündigt?",
    {1983, 83}},
