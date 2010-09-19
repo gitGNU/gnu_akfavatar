@@ -27,7 +27,8 @@ query {
 
   {"What's the name of the founder of the Free Software movement\n"
    .. "and the GNU project?",
-   {"Richard M. Stallman", "Richard Stallman", "Stallman"}},
+   {"Richard M. Stallman", "Richard Stallman", "Stallman",
+    "Richard Matthew Stallman", "RMS"}},
 
   {"What does “GNU” stand for?",
    {"GNU's not Unix", "GNU is not Unix"}},

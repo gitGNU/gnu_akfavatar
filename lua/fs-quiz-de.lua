@@ -26,7 +26,8 @@ query {
    {1983, 83}},
 
   {"Wie heißt der Gründer der Free Software Bewegung und des GNU-Projektes?",
-   {"Richard M. Stallman", "Richard Stallman", "Stallman"}},
+   {"Richard M. Stallman", "Richard Stallman", "Stallman",
+    "Richard Matthew Stallman", "RMS"}},
 
   {"Wofür steht der Ausdruck „GNU“?",
    {"GNU's not Unix", "GNU is not Unix"}},
@@ -45,4 +46,5 @@ query {
 
   {"Wie heißt der Entwickler des Kernels Linux?",
    {"Linus Torvalds", "Torvalds"}},
+
 }
