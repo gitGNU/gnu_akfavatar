@@ -112,6 +112,15 @@ Example: @samp{avt.tell ("Three apples cost ", 3 * appleprice, " Euros.")}.
 binary zeros ("\0").
 @end defun
 
+@defun avt.put_character (@dots{})
+Displays characters with the Unicode codepoints given as numbers.
+
+This is independent from the chosen encoding.  It can be used to display
+characters, which are not available in the current encoding.
+
+Example: @samp{avt.put_character (0x2642, 0x2661, 0x2640)}
+@end defun
+
 @defun avt.ask ([question])
 Shows the @var{question}, if given,
 and waits for the user to enter something. Returns the result as string.

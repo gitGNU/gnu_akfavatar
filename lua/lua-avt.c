@@ -1105,6 +1105,21 @@ lavt_tell (lua_State * L)
 }
 
 static int
+lavt_put_character (lua_State * L)
+{
+  int n, i;
+
+  is_initialized ();
+
+  n = lua_gettop (L);
+
+  for (i = 1; i <= n; i++)
+    check (avt_put_character ((const wchar_t) luaL_checkinteger (L, i)));
+
+  return 0;
+}
+
+static int
 lavt_pager (lua_State * L)
 {
   const char *s;
@@ -1598,6 +1613,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"write", lavt_say},		/* alias */
   {"print", lavt_print},
   {"tell", lavt_tell},
+  {"put_character", lavt_put_character},
   {"ask", lavt_ask},
   {"navigate", lavt_navigate},
   {"decide", lavt_decide},
