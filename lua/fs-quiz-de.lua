@@ -12,7 +12,7 @@ avt.initialize {
 query {
 
   -- Übersetzungen:
-  correct = "Richtig!",
+  correct = "Das ist richtig.",
   wrong = "Falsch!",
   again = "Nochmal versuchen?",
   correction = "Die richtige Antwort lautet:",

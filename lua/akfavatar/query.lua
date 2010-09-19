@@ -18,10 +18,6 @@ local function correct()
 end
 
 local function wrong(answer)
-  if type(answer) == "table" then
-    answer = table.concat(answer, "\n")
-  end
-
   avt.show_avatar()
   avt.set_balloon_color("#FCC")
   negative()
@@ -30,6 +26,11 @@ local function wrong(answer)
   if avt.decide()
   then return false --> wrong, try again
   else
+    if type(answer) == "table" then
+      answer = "- " .. table.concat(answer, "\n- ")
+    end
+
+    avt.set_balloon_color("floral white")
     avt.tell(msg.correction, "\n", answer)
     avt.wait_button()
     return true --> correct answer shown
@@ -55,8 +56,9 @@ function query(qa)
       avt.show_avatar()
       avt.set_balloon_color("floral white")
       avt.set_balloon_size(4, 80)
-      local answer = string.lower(avt.ask(
-               string.format("%2d) %s\n", i, q[1])))
+      avt.say(string.format("%d) %s", i, q[1]))
+      avt.move_xy(1, 4)
+      local answer = string.lower(avt.ask())
 
       if type(q[2]) == "table" then
         for i2, a in ipairs(q[2]) do
