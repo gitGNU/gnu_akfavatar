@@ -7,8 +7,9 @@ require "lua-akfavatar"
 require "akfavatar.query"
 
 avt.initialize {
-  title="Free Software Quiz", 
+  title="Free Software Quiz",
   avatar=require "akfavatar.gnu_head",
+  encoding="UTF-8",
   audio=true
 }
 
