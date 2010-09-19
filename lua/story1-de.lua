@@ -1,5 +1,8 @@
 #!/usr/bin/env lua-akfavatar
 
+-- Copyright (c) 2010 Andreas K. Foerster <info@akfoerster.de>
+-- License: GPL version 3 or later
+
 -- Dies ist nur ein kleines Beispiel für Lua-AKFAvatar 
 -- mit unterschiedlichen Avataren.
 -- Bitte nach Belieben Änderungen vornehmen.
