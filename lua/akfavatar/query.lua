@@ -18,13 +18,8 @@ local msg = {
 }
 
 function querymessages(m)
-  if m.correct then msg.correct = m.correct end
-  if m.wrong then msg.wrong = m.wrong end
-  if m.again then msg.again = m.again end
-  if m.correction then msg.correction = m.correction end
-  if m.questions then msg.questions = m.questions end
-  if m.correctly_answered then
-    msg.correctly_answered = m.correctly_answered
+  for key, message in pairs(m) do
+    msg[key] = message
   end
 end
 
