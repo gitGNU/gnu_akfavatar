@@ -574,7 +574,8 @@ dist: info html man $(srcdir)/alert.au
 	   $(srcdir)/lua/akfavatar/positive.lua \
 	   $(srcdir)/lua/akfavatar/negative.lua \
 	   $(srcdir)/lua/akfavatar/neutral.lua \
-	   $(srcdir)/lua/akfavatar/querstionary.lua \
+	   $(srcdir)/lua/akfavatar/questionary.lua \
+	   $(srcdir)/lua/akfavatar/Fragebogen.lua \
 	   $(PKGNAME)/lua/akfavatar/
 
 	mkdir $(PKGNAME)/doc
@@ -646,6 +647,7 @@ dist-bin-default: avatarsay-bin info html
 	   $(srcdir)/lua/akfavatar/negative.lua \
 	   $(srcdir)/lua/akfavatar/neutral.lua \
 	   $(srcdir)/lua/akfavatar/questionary.lua \
+	   $(srcdir)/lua/akfavatar/Fragebogen.lua \
 	   $(BINPKGNAME)/akfavatar/
 	tar -cvf $(BINPKGNAME).$(SYSTEM).$(ARCH).tar $(BINPKGNAME)/
 	rm -rf $(BINPKGNAME)/

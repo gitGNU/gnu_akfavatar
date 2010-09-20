@@ -1,34 +1,23 @@
 #!/usr/bin/env lua-akfavatar
 
 -- Copyright (c) 2010 Andreas K. Foerster <info@akfoerster.de>
--- License: GPL version 3 or later
+-- Lizenz: GPL Version 3 oder neuer
 -- mit Ideen von Arne Babenhauserheide
 
+-- Wenn man einen eigenen Fragebogen erstellt, muss man den Namen
+-- im Copyright-Vermerk nicht übernehmen
+
 require "lua-akfavatar"
-require "akfavatar.questionary"
+require "akfavatar.Fragebogen"
 
 avt.initialize {
-  title="Free Software Quiz",
+  title="Freie Software Quiz",
   avatar=require "akfavatar.gnu_head",
   encoding="UTF-8",
   audio=true
 }
 
-
--- Übersetzungen:
-questionarymessages {
-  correct = "Das ist richtig.",
-  wrong = "Falsch!",
-  again = "Nochmal versuchen?",
-  correction = "Die richtige Antwort lautet:",
-  questions = "Fragen",
-  correctly_answered = "davon richtig"
-}
-
--- Für ja/nein Fragen ohne Anführungsstriche
-local ja, nein = true, false
-
-questionary {
+Fragebogen {
 
   {"In welchem Jahr wurde das GNU-Projekt erstmalig angekündigt?",
    1983, 83},

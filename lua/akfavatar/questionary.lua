@@ -123,5 +123,8 @@ function questionary(qa)
   show_results()
 end -- function
 
+--for yes/no questions
+yes, no = true, false
+
 return questionary
 

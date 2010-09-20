@@ -289,7 +289,8 @@ dist-bin: avatarsay.exe
 	cp $(srcdir)/lua/akfavatar/positive.lua $(BINPKGNAME)/akfavatar/
 	cp $(srcdir)/lua/akfavatar/negative.lua $(BINPKGNAME)/akfavatar/
 	cp $(srcdir)/lua/akfavatar/neutral.lua $(BINPKGNAME)/akfavatar/
-	cp $(srcdir)/lua/akfavatar/query.lua $(BINPKGNAME)/akfavatar/
+	cp $(srcdir)/lua/akfavatar/questionary.lua $(BINPKGNAME)/akfavatar/
+	cp $(srcdir)/lua/akfavatar/Fragebogen.lua $(BINPKGNAME)/akfavatar/
 	cp $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	cp $(srcdir)/AUTHORS $(BINPKGNAME)/AUTHORS.txt
 	cp $(srcdir)/COPYING $(BINPKGNAME)/COPYING.txt

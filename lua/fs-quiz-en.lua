@@ -4,6 +4,9 @@
 -- License: GPL version 3 or later
 -- with ideas from Arne Babenhauserheide
 
+-- when you make your own questionaire, you need not keep
+-- the name from the copyright notice
+
 require "lua-akfavatar"
 require "akfavatar.questionary"
 
@@ -14,19 +17,6 @@ avt.initialize {
   audio=true
 }
 
-
--- This is not really needed for English, but crucial for other languages
-questionarymessages {
-  correct = "That's correct.",
-  wrong = "Wrong!",
-  again = "Try again?",
-  correction = "The correct answer:",
-  questions = "Questions",
-  correctly_answered = "correct"
-}
-
--- for yes/no questions - use without quotation marks
-local yes, no = true, false
 
 questionary {
 
