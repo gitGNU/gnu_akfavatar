@@ -17,7 +17,7 @@ local function correct()
   return true --> correct answer
 end
 
-local function wrong(answer)
+local function wrong(q)
   avt.show_avatar()
   avt.set_balloon_color("#FCC")
   negative()
@@ -26,12 +26,8 @@ local function wrong(answer)
   if avt.decide()
   then return false --> wrong, try again
   else
-    if type(answer) == "table" then
-      answer = "- " .. table.concat(answer, "\n- ")
-    end
-
     avt.set_balloon_color("floral white")
-    avt.tell(msg.correction, "\n", answer)
+    avt.tell(msg.correction, "\n- ", table.concat(q, "\n- ", 2))
     avt.wait_button()
     return true --> correct answer shown
   end
@@ -60,22 +56,17 @@ function query(qa)
       avt.move_xy(1, 4)
       local answer = string.lower(avt.ask())
 
-      if type(q[2]) == "table" then
-        for i2, a in ipairs(q[2]) do
-          if answer==string.lower(a) then
-            is_correct = correct()
-            break
-          end -- if answer==
-        end -- for
-        if not is_correct then is_correct = wrong(q[2]) end
-      else -- not a table (string or number allowed)
-        if answer==string.lower(q[2])
-          then is_correct = correct()
-          else is_correct = wrong(q[2])
-        end
-      end -- if type
+      for a=2,#q do --> look through all answers
+        if answer==string.lower(q[a]) then
+          is_correct = correct()
+          break
+        end -- if answer==
+      end -- for
+
+      if not is_correct then is_correct = wrong(q) end
+
   until is_correct --> either correcly answerd, or the answer was shown
   end -- for
-end
+end -- function
 
 return query

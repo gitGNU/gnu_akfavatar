@@ -23,14 +23,14 @@ query {
 
 
   {"In welchem Jahr wurde das GNU-Projekt erstmalig angekündigt?",
-   {1983, 83}},
+   1983, 83},
 
   {"Wie heißt der Gründer der Free Software Bewegung und des GNU-Projektes?",
-   {"Richard M. Stallman", "Richard Stallman", "Stallman",
-    "Richard Matthew Stallman", "RMS"}},
+   "Richard M. Stallman", "Richard Stallman", "Stallman",
+    "Richard Matthew Stallman", "RMS"},
 
   {"Wofür steht der Ausdruck „GNU“?",
-   {"GNU's not Unix", "GNU is not Unix"}},
+   "GNU's not Unix", "GNU is not Unix"},
 
   {"Wofür steht „FSF“?",
    "Free Software Foundation"},
@@ -39,12 +39,12 @@ query {
    "Bash"},
 
   {"Wofür steht „GCC“?",
-   {"GNU Compiler Collection", "GNU C Compiler"}},
+   "GNU Compiler Collection", "GNU C Compiler"},
 
   {"Mit welchem Kernel wird das GNU System meistens verwendet?",
    "Linux"},
 
   {"Wie heißt der Entwickler des Kernels Linux?",
-   {"Linus Torvalds", "Torvalds"}},
+   "Linus Torvalds", "Torvalds"},
 
 }
