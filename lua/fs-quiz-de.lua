@@ -13,14 +13,17 @@ avt.initialize {
   audio=true
 }
 
-query {
 
-  -- Übersetzungen:
+-- Übersetzungen:
+querymessages {
   correct = "Das ist richtig.",
   wrong = "Falsch!",
   again = "Nochmal versuchen?",
-  correction = "Die richtige Antwort lautet:",
+  correction = "Die richtige Antwort lautet:"
+}
 
+
+query {
 
   {"In welchem Jahr wurde das GNU-Projekt erstmalig angekündigt?",
    1983, 83},

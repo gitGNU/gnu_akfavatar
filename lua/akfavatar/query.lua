@@ -5,7 +5,19 @@ require "lua-akfavatar"
 require "akfavatar.positive"
 require "akfavatar.negative"
 
-local msg = {}
+local msg = {
+  correct = "That's correct.",
+  wrong = "Wrong!",
+  again = "Try again?",
+  correction = "The correct answer:"
+}
+
+function querymessages(m)
+  if m.correct then msg.correct = m.correct end
+  if m.wrong then msg.wrong = m.wrong end
+  if m.again then msg.again = m.again end
+  if m.correction then msg.correction = m.correction end
+end
 
 local function correct()
   avt.show_avatar()
@@ -34,11 +46,6 @@ local function wrong(q)
 end
 
 function query(qa)
-  msg.correct = qa.correct or "That's correct."
-  msg.wrong = qa.wrong or "Wrong!"
-  msg.again = qa.again or "Try again?"
-  msg.correction = qa.correction or "The correct answer:"
-
   if not avt.initialized()
   then
     avt.initialize{title="query", audio=true}
