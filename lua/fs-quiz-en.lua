@@ -2,6 +2,7 @@
 
 -- Copyright (c) 2010 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
+-- with ideas from Arne Babenhauserheide
 
 require "lua-akfavatar"
 require "akfavatar.query"
@@ -19,9 +20,13 @@ querymessages {
   correct = "That's correct.",
   wrong = "Wrong!",
   again = "Try again?",
-  correction = "The correct answer:"
+  correction = "The correct answer:",
+  questions = "Questions",
+  correctly_answered = "correct"
 }
 
+-- for yes/no questions - use without quotation marks
+local yes, no = true, false
 
 query {
 
@@ -39,6 +44,16 @@ query {
   {"What does “FSF” stand for?",
    "Free Software Foundation"},
 
+  {"What does “GPL” stand for?",
+   "GNU General Public License", "General Public License"
+   --> Note: "GNU Public License" would be wrong!
+   },
+
+  {"Which of the GNU licenses requires that the source code is made available,\n"
+   .. "when the program is accessed over a network? (Shortname, without version number)",
+   "AGPL"},
+
+
   {"What is the name of the shell of the GNU projekt? (shortname)",
    "Bash"},
 
@@ -50,5 +65,9 @@ query {
 
   {"What is the name of the developer of the kernel Linux?",
    "Linus Torvalds", "Linus B. Torvalds", "Linus Benedict Torvalds", "Torvalds"},
+
+  {"Is it allowed to sell Free Software, that you didn't write your own,\n"
+   .. "for a price?",
+   yes},
 
 }

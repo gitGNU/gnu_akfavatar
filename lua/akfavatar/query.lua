@@ -5,12 +5,16 @@ require "lua-akfavatar"
 require "akfavatar.positive"
 require "akfavatar.negative"
 
+local count = { questions = 0, right = 0 }
+
 -- These messages can be changed with the function querymessages{}
 local msg = {
   correct = "That's correct.",
   wrong = "Wrong!",
   again = "Try again?",
-  correction = "The correct answer:"
+  correction = "The correct answer:",
+  questions = "Questions",
+  correctly_answered = "correct"
 }
 
 function querymessages(m)
@@ -18,6 +22,10 @@ function querymessages(m)
   if m.wrong then msg.wrong = m.wrong end
   if m.again then msg.again = m.again end
   if m.correction then msg.correction = m.correction end
+  if m.questions then msg.questions = m.questions end
+  if m.correctly_answered then
+    msg.correctly_answered = m.correctly_answered
+  end
 end
 
 local function normalize(s)
@@ -26,13 +34,14 @@ local function normalize(s)
 end
 
 local function correct()
+  positive()
+  count.right = count.right + 1
   avt.show_avatar()
   avt.set_balloon_color("#CFC")
-  positive()
   avt.tell(msg.correct)
   avt.wait_button()
 
-  return true --> correct answer
+  return false --> correct answer
 end
 
 local function wrong(q)
@@ -40,46 +49,83 @@ local function wrong(q)
   avt.set_balloon_color("#FCC")
   negative()
   avt.tell(msg.wrong, "\n\n", msg.again)
-
   if avt.decide()
-  then return false --> wrong, try again
+  then return true --> wrong, try again
   else
     avt.set_balloon_color("floral white")
     avt.tell(msg.correction, "\n- ", table.concat(q, "\n- ", 2))
     avt.wait_button()
-    return true --> correct answer shown
+    return false --> correct answer shown
   end
 end
 
+local function ask_boolean(b)
+  if b == avt.decide()
+    then correct()
+    else
+      avt.show_avatar()
+      avt.set_balloon_color("#FCC")
+      negative()
+      avt.tell(msg.wrong)
+      avt.wait_button()
+  end
+
+  return false --> the correct answer is implicitly clear
+end
+
+local function ask_input(q)
+  local again = true
+  local answer = normalize(avt.ask())
+
+  for a=2,#q do --> look through all answers
+    if answer==normalize(q[a]) then
+      again = correct()
+      break
+    end -- if answer==
+  end -- for
+
+  if again then again = wrong(q) end
+  return again
+end
+
+local function show_results()
+  avt.set_balloon_color("floral white")
+  avt.tell(string.format("%s: %d, %s: %d (%d%%)",
+    msg.questions, count.questions,
+    msg.correctly_answered, count.right,
+    count.right * 100 / count.questions))
+  avt.wait_button()
+end
+
 function query(qa)
+  count.questions, count.right = 0, 0
+
   if not avt.initialized()
   then
-    avt.initialize{title="query", audio=true}
+    avt.initialize{title="AKFAvatar: query", audio=true}
   else
     avt.initialize_audio()
   end
 
   for i, q in ipairs(qa) do
-    local is_correct = false
+    local again
+    count.questions = count.questions + 1
+
     repeat
       avt.show_avatar()
       avt.set_balloon_color("floral white")
       avt.set_balloon_size(4, 80)
-      avt.say(string.format("%d) %s", i, q[1]))
+      avt.say(i, ") ", q[1])
       avt.move_xy(1, 4)
-      local answer = normalize(avt.ask())
 
-      for a=2,#q do --> look through all answers
-        if answer==normalize(q[a]) then
-          is_correct = correct()
-          break
-        end -- if answer==
-      end -- for
-
-      if not is_correct then is_correct = wrong(q) end
-
-  until is_correct --> either correcly answerd, or the answer was shown
+      if type(q[2]) == "boolean"
+        then again = ask_boolean(q[2])
+        else again = ask_input(q)
+      end
+    until not again
   end -- for
+
+  show_results()
 end -- function
 
 return query
