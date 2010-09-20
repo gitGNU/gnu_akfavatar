@@ -45,6 +45,6 @@ query {
    "Linux"},
 
   {"Wie heißt der Entwickler des Kernels Linux?",
-   "Linus Torvalds", "Torvalds"},
+   "Linus Torvalds", "Linus B. Torvalds", "Linus Benedict Torvalds", "Torvalds"},
 
 }
