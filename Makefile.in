@@ -310,6 +310,8 @@ install-strip: libakfavatar.so libakfavatar.a avatarsay-bin \
 	$(INSTALL_DATA) $(srcdir)/AUTHORS $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/COPYING $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/NEWS $(DESTDIR)$(docdir)
+	$(INSTALL_DATA) $(srcdir)/lua/akfavatar/* \
+	  $(DESTDIR)$(LUA_PATH)/akfavatar
 	@echo '*'
 	@echo '* use "make install-desktop-menu" to install avatarsay in a desktop menu'
 	@echo '*'
@@ -572,7 +574,7 @@ dist: info html man $(srcdir)/alert.au
 	   $(srcdir)/lua/akfavatar/positive.lua \
 	   $(srcdir)/lua/akfavatar/negative.lua \
 	   $(srcdir)/lua/akfavatar/neutral.lua \
-	   $(srcdir)/lua/akfavatar/query.lua \
+	   $(srcdir)/lua/akfavatar/querstionary.lua \
 	   $(PKGNAME)/lua/akfavatar/
 
 	mkdir $(PKGNAME)/doc
@@ -643,7 +645,7 @@ dist-bin-default: avatarsay-bin info html
 	   $(srcdir)/lua/akfavatar/positive.lua \
 	   $(srcdir)/lua/akfavatar/negative.lua \
 	   $(srcdir)/lua/akfavatar/neutral.lua \
-	   $(srcdir)/lua/akfavatar/query.lua \
+	   $(srcdir)/lua/akfavatar/questionary.lua \
 	   $(BINPKGNAME)/akfavatar/
 	tar -cvf $(BINPKGNAME).$(SYSTEM).$(ARCH).tar $(BINPKGNAME)/
 	rm -rf $(BINPKGNAME)/

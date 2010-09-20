@@ -17,7 +17,7 @@ local msg = {
   correctly_answered = "correct"
 }
 
-function querymessages(m)
+function questionarymessages(m)
   for key, message in pairs(m) do
     msg[key] = message
   end
@@ -40,9 +40,9 @@ local function correct()
 end
 
 local function wrong(q)
+  negative()
   avt.show_avatar()
   avt.set_balloon_color("#FCC")
-  negative()
   avt.tell(msg.wrong, "\n\n", msg.again)
   if avt.decide()
   then return true --> wrong, try again
@@ -72,7 +72,7 @@ local function ask_input(q)
   local again = true
   local answer = normalize(avt.ask())
 
-  for a=2,#q do --> look through all answers
+  for a=2, #q do --> look through all answers
     if answer==normalize(q[a]) then
       again = correct()
       break
@@ -92,7 +92,7 @@ local function show_results()
   avt.wait_button()
 end
 
-function query(qa)
+function questionary(qa)
   count.questions, count.right = 0, 0
 
   if not avt.initialized()
@@ -123,5 +123,5 @@ function query(qa)
   show_results()
 end -- function
 
-return query
+return questionary
 

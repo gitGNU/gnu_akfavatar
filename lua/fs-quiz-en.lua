@@ -5,7 +5,7 @@
 -- with ideas from Arne Babenhauserheide
 
 require "lua-akfavatar"
-require "akfavatar.query"
+require "akfavatar.questionary"
 
 avt.initialize {
   title="Free Software Quiz",
@@ -16,7 +16,7 @@ avt.initialize {
 
 
 -- This is not really needed for English, but crucial for other languages
-querymessages {
+questionarymessages {
   correct = "That's correct.",
   wrong = "Wrong!",
   again = "Try again?",
@@ -28,7 +28,7 @@ querymessages {
 -- for yes/no questions - use without quotation marks
 local yes, no = true, false
 
-query {
+questionary {
 
   {"In which year was the GNU-project first announced?",
    1983, 83},

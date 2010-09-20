@@ -5,7 +5,7 @@
 -- mit Ideen von Arne Babenhauserheide
 
 require "lua-akfavatar"
-require "akfavatar.query"
+require "akfavatar.questionary"
 
 avt.initialize {
   title="Free Software Quiz",
@@ -16,7 +16,7 @@ avt.initialize {
 
 
 -- Übersetzungen:
-querymessages {
+questionarymessages {
   correct = "Das ist richtig.",
   wrong = "Falsch!",
   again = "Nochmal versuchen?",
@@ -28,7 +28,7 @@ querymessages {
 -- Für ja/nein Fragen ohne Anführungsstriche
 local ja, nein = true, false
 
-query {
+questionary {
 
   {"In welchem Jahr wurde das GNU-Projekt erstmalig angekündigt?",
    1983, 83},
