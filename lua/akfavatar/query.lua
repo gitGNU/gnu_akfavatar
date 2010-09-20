@@ -5,6 +5,7 @@ require "lua-akfavatar"
 require "akfavatar.positive"
 require "akfavatar.negative"
 
+-- These messages can be changed with the function querymessages{}
 local msg = {
   correct = "That's correct.",
   wrong = "Wrong!",
@@ -17,6 +18,11 @@ function querymessages(m)
   if m.wrong then msg.wrong = m.wrong end
   if m.again then msg.again = m.again end
   if m.correction then msg.correction = m.correction end
+end
+
+local function normalize(s)
+  -- make lowercase and remove leading and trailing spaces
+  return string.lower(string.gsub(s, "^%s*(.-)%s*$", "%1"))
 end
 
 local function correct()
@@ -61,10 +67,10 @@ function query(qa)
       avt.set_balloon_size(4, 80)
       avt.say(string.format("%d) %s", i, q[1]))
       avt.move_xy(1, 4)
-      local answer = string.lower(avt.ask())
+      local answer = normalize(avt.ask())
 
       for a=2,#q do --> look through all answers
-        if answer==string.lower(q[a]) then
+        if answer==normalize(q[a]) then
           is_correct = correct()
           break
         end -- if answer==
@@ -77,3 +83,4 @@ function query(qa)
 end -- function
 
 return query
+
