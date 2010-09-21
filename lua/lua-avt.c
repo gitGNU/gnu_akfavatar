@@ -1214,8 +1214,14 @@ lavt_play_audio (lua_State * L)
   avt_audio_t **audio;
 
   audio = (avt_audio_t **) luaL_checkudata (L, 1, "AKFAvatar.audio");
+
+  /*
+   * Don't use check() on avt_play_audio
+   * or else it stops, when the audio cannot be played
+   */
   if (audio)
-    check (avt_play_audio (*audio, (avt_bool_t) lua_toboolean (L, 2)));
+    avt_play_audio (*audio, (avt_bool_t) lua_toboolean (L, 2));
+
   return 0;
 }
 

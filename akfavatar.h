@@ -961,6 +961,7 @@ AVT_API void avt_free_audio (avt_audio_t *snd);
 
 /*
  * plays a sound
+ * on error it returns AVT_ERROR without changing the status
  */
 AVT_API int avt_play_audio (avt_audio_t *snd, avt_bool_t doloop);
 
