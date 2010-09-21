@@ -285,6 +285,7 @@ install: libakfavatar.so libakfavatar.a avatarsay-bin \
 	$(INSTALL_DATA) $(srcdir)/AUTHORS $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/COPYING $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/NEWS $(DESTDIR)$(docdir)
+	$(INSTALL_DATA) $(srcdir)/lua/lua-akfavatar.lua $(DESTDIR)$(LUA_PATH)
 	$(INSTALL_DATA) $(srcdir)/lua/akfavatar/* \
 	  $(DESTDIR)$(LUA_PATH)/akfavatar
 	@echo '*'
@@ -310,6 +311,7 @@ install-strip: libakfavatar.so libakfavatar.a avatarsay-bin \
 	$(INSTALL_DATA) $(srcdir)/AUTHORS $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/COPYING $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/NEWS $(DESTDIR)$(docdir)
+	$(INSTALL_DATA) $(srcdir)/lua/lua-akfavatar.lua $(DESTDIR)$(LUA_PATH)
 	$(INSTALL_DATA) $(srcdir)/lua/akfavatar/* \
 	  $(DESTDIR)$(LUA_PATH)/akfavatar
 	@echo '*'
