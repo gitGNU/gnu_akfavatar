@@ -8,8 +8,8 @@
 default_avatar = $(srcdir)/male_user.xpm
 
 SHELL = /bin/sh
-INSTALL_PROGRAM = $(INSTALL) -m 755
-INSTALL_DATA = $(INSTALL) -m 644
+INSTALL_PROGRAM = $(INSTALL) -c -m 755
+INSTALL_DATA = $(INSTALL) -c -m 644
 
 # does not depend on prefix!
 LUA_PATH = /usr/local/share/lua/5.1/
@@ -30,6 +30,21 @@ BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 	html dvi pdf ps man install-html install-dvi install-pdf install-ps \
 	clean mostlyclean distclean maintainer-clean maintainerclean dist \
 	mingw dist-mingw
+
+LUA_MODULES = \
+	  $(srcdir)/lua/akfavatar/README $(srcdir)/lua/akfavatar/LIESMICH \
+	  $(srcdir)/lua/akfavatar/female_user.lua \
+	  $(srcdir)/lua/akfavatar/male_user.lua \
+	  $(srcdir)/lua/akfavatar/teacher.lua \
+	  $(srcdir)/lua/akfavatar/gnu_head.lua \
+	  $(srcdir)/lua/akfavatar/info_icon.lua \
+	  $(srcdir)/lua/akfavatar/akfoerster.lua \
+	  $(srcdir)/lua/akfavatar/positive.lua \
+	  $(srcdir)/lua/akfavatar/negative.lua \
+	  $(srcdir)/lua/akfavatar/neutral.lua \
+	  $(srcdir)/lua/akfavatar/questionary.lua \
+	  $(srcdir)/lua/akfavatar/Fragebogen.lua \
+	  $(srcdir)/lua/akfavatar/person.lua
 
 all: $(TARGET)
 
@@ -286,8 +301,7 @@ install: libakfavatar.so libakfavatar.a avatarsay-bin \
 	$(INSTALL_DATA) $(srcdir)/COPYING $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/NEWS $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/lua/lua-akfavatar.lua $(DESTDIR)$(LUA_PATH)
-	$(INSTALL_DATA) $(srcdir)/lua/akfavatar/* \
-	  $(DESTDIR)$(LUA_PATH)/akfavatar
+	$(INSTALL_DATA) $(LUA_MODULES) $(DESTDIR)$(LUA_PATH)/akfavatar
 	@echo '*'
 	@echo '* make install-desktop-menu: to install avatarsay in a desktop menu'
 	@echo '*'
@@ -312,8 +326,7 @@ install-strip: libakfavatar.so libakfavatar.a avatarsay-bin \
 	$(INSTALL_DATA) $(srcdir)/COPYING $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/NEWS $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/lua/lua-akfavatar.lua $(DESTDIR)$(LUA_PATH)
-	$(INSTALL_DATA) $(srcdir)/lua/akfavatar/* \
-	  $(DESTDIR)$(LUA_PATH)/akfavatar
+	$(INSTALL_DATA) $(LUA_MODULES) $(DESTDIR)$(LUA_PATH)/akfavatar
 	@echo '*'
 	@echo '* use "make install-desktop-menu" to install avatarsay in a desktop menu'
 	@echo '*'
