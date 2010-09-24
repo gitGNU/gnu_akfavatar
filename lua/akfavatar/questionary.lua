@@ -6,9 +6,11 @@ require "akfavatar.positive"
 require "akfavatar.negative"
 
 local count = { questions = 0, right = 0 }
+local questionary_encoding;
 
 -- These messages can be changed with the function querymessages{}
 local msg = {
+  encoding = "US-ASCII",
   correct = "That's correct.",
   wrong = "Wrong!",
   again = "Try again?",
@@ -28,12 +30,22 @@ local function normalize(s)
   return string.lower(string.gsub(s, "^%s*(.-)%s*$", "%1"))
 end
 
+local function msgtell(s)
+  if msg.encoding == questionary_encoding then
+    avt.tell(s)
+  else
+    avt.encoding(msg.encoding)
+    avt.tell(s)
+    avt.encoding(questionary_encoding)
+  end
+end
+
 local function correct()
   positive()
   count.right = count.right + 1
   avt.show_avatar()
   avt.set_balloon_color("#CFC")
-  avt.tell(msg.correct)
+  msgtell(msg.correct)
   avt.wait_button()
 
   return false --> correct answer
@@ -43,12 +55,12 @@ local function wrong(q)
   negative()
   avt.show_avatar()
   avt.set_balloon_color("#FCC")
-  avt.tell(msg.wrong, "\n\n", msg.again)
+  msgtell(msg.wrong .. "\n\n" .. msg.again)
   if avt.decide()
   then return true --> wrong, try again
   else
     avt.set_balloon_color("floral white")
-    avt.tell(msg.correction, "\n- ", table.concat(q, "\n- ", 2))
+    msgtell(msg.correction .. "\n- " .. table.concat(q, "\n- ", 2))
     avt.wait_button()
     return false --> correct answer shown
   end
@@ -61,7 +73,7 @@ local function ask_boolean(b)
       avt.show_avatar()
       avt.set_balloon_color("#FCC")
       negative()
-      avt.tell(msg.wrong)
+      msgtell(msg.wrong)
       avt.wait_button()
   end
 
@@ -85,7 +97,7 @@ end
 
 local function show_results()
   avt.set_balloon_color("floral white")
-  avt.tell(string.format("%s: %d, %s: %d (%d%%)",
+  msgtell(string.format("%s: %d, %s: %d (%d%%)",
     msg.questions, count.questions,
     msg.correctly_answered, count.right,
     count.right * 100 / count.questions))
@@ -101,6 +113,8 @@ function questionary(qa)
   else
     avt.initialize_audio()
   end
+
+  questionary_encoding = avt.get_encoding()
 
   for i, q in ipairs(qa) do
     local again

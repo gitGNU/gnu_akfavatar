@@ -5,6 +5,7 @@
 require "akfavatar.questionary"
 
 questionarymessages {
+  encoding = "UTF-8",
   correct = "Das ist richtig.",
   wrong = "Falsch!",
   again = "Nochmal versuchen?",
