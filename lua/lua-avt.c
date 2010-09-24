@@ -1641,6 +1641,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"initialized", lavt_initialized},
   {"get_color", lavt_get_color},
   {"encoding", lavt_encoding},
+  {"get_encoding", lavt_get_encoding},
   {"set_title", lavt_set_title},
   {"set_text_delay", lavt_set_text_delay},
   {"set_flip_page_delay", lavt_set_flip_page_delay},
