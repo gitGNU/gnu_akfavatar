@@ -168,6 +168,7 @@ procedure setFlipPageDelay(delay: integer);
 
 { change the encoding }
 procedure setEncoding(const newEncoding: string);
+function getEncoding: string;
 
 { change text direction (for hebrew/yiddish texts) }
 { you should start a new line before or after this command }
@@ -498,7 +499,10 @@ procedure avt_clear_eol; libakfavatar 'avt_clear_eol';
 function avt_mb_encoding (encoding: CString): CInteger;
   libakfavatar 'avt_mb_encoding';
 
-function avt_ask_mb(t: pointer; size: CInteger): CInteger; 
+function avt_get_mb_encoding (): CString;
+  libakfavatar 'avt_get_mb_encoding';
+
+function avt_ask_mb(t: pointer; size: CInteger): CInteger;
   libakfavatar 'avt_ask_mb';
 
 function avt_wait(milliseconds: CInteger): CInteger; 
@@ -711,6 +715,11 @@ end;
 procedure setEncoding(const newEncoding: string);
 begin
 avt_mb_encoding(String2CString(newEncoding))
+end;
+
+function getEncoding: string;
+begin
+getEncoding := CString2String (avt_get_mb_encoding)
 end;
 
 procedure setTextDelay(delay: integer);
@@ -1472,7 +1481,7 @@ end;
 
   if avt_ask_mb (addr (InputBuffer), sizeof (InputBuffer)) <> 0 
     then Halt;
-  
+
   i := 0;
   while (InputBuffer [i] <> chr (0)) and (i < size-1) do
     begin

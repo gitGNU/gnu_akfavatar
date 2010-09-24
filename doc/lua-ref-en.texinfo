@@ -375,6 +375,12 @@ Stops the audio output immediately.
 Change the used text encoding.
 @end defun
 
+@defun avt.get_encoding ()
+Gets the currently used encoding.
+
+Returns @code{nil} if none is set yet.
+@end defun
+
 @defun avt.set_title ([title] [, shortname])
 Change the title and/or the shortname.
 A missing option or @code{nil} leaves it unchanged.

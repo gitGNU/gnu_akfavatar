@@ -1,24 +1,24 @@
 * AKFAvatar 0.19.0
 
   - Lua support with program lua-akfavatar
-  - use ./configure --disable-lua to buld without Lua
+  - use ./configure --disable-lua to build without Lua
   - largely improved support for charset-encodings under Windows
   - text-input has full line-editing features
   - fix: on text-input the input area gets cleared
   - title can have international characters if avt_mb_encoding is
-    called before avt_initialize (not relyable)
+    called before avt_initialize (but not relyable)
   - the pager can handle binary junk better
   - filechooser: path can be entered manually
   - filechooser: on windows ask for drive letter only when
     going beyond the root directory
-  - some ignorable Unicode characters are ignored now
+  - some ignorable Unicode characters are ignored now,
+    some more cause a new line
   - ./configure: experimental support for --host=mingw and --host=x86
-    (don't expect it to work out of the box)
+    (but don't expect it to work out of the box)
 
   API changes:
-   - avt_tell(), avt_tell_mb(): new functions
-   - avt_markup(): new function
-   - avt_free_audio(): when that sound is playing, stops it
-   - avt_get_key(): supports some function keys
-   - avt_set_auto_margin, avt_get_auto_margin: new functions
-     avt_auto_margin: marked deprecated
+   - new functions: avt_tell, avt_tell_mb, avt_markup, avt_get_mb_encoding,
+     avt_set_auto_margin, avt_get_auto_margin
+   - avt_auto_margin: marked deprecated, use avt_set_auto_argin instead
+   - avt_free_audio: when the given sound is playing, stops it
+   - avt_get_key: supports some function keys

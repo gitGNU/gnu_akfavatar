@@ -343,6 +343,9 @@ AVT_API int avt_get_key (wchar_t *ch);
 /* set encoding for mb functions */
 AVT_API int avt_mb_encoding (const char *encoding);
 
+/* get the encoding, NULL if none set */
+AVT_API char* avt_get_mb_encoding (void);
+
 /*
  * prints a 0 terminated string in the balloon
  * if there is no balloon, it is drawn

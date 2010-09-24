@@ -1,3 +1,7 @@
+2010-09-24  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_get_mb_encoding): new function
+
 2010-09-14  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_set_mouse_pointer):

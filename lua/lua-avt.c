@@ -314,6 +314,14 @@ lavt_encoding (lua_State * L)
   return 0;
 }
 
+/* get the current encoding (iconv) */
+static int
+lavt_get_encoding (lua_State * L)
+{
+  lua_pushstring (L, avt_get_mb_encoding ());
+  return 1;
+}
+
 /*
  * change avatar image while running
  * if the avatar is visible, the screen gets cleared

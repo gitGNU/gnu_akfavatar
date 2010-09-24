@@ -3514,6 +3514,12 @@ avt_mb_encoding (const char *encoding)
   return _avt_STATUS;
 }
 
+extern char *
+avt_get_mb_encoding (void)
+{
+  return avt_encoding;
+}
+
 /* size in bytes */
 /* dest must be freed by caller */
 extern int
