@@ -3224,7 +3224,6 @@ avt_put_character (const wchar_t ch)
     case L'\x200B':
     case L'\x200C':
     case L'\x200D':
-    case L'\x00AD':
     case L'\x2060':
     case L'\x2061':
     case L'\x2062':
@@ -3433,7 +3432,6 @@ avt_tell (const wchar_t * txt)
 	case L'\x200B':
 	case L'\x200C':
 	case L'\x200D':
-	case L'\x00AD':
 	case L'\x2060':
 	case L'\x2061':
 	case L'\x2062':
