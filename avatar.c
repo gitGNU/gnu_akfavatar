@@ -3167,10 +3167,6 @@ avt_put_character (const wchar_t ch)
   if (!screen)
     return _avt_STATUS;
 
-  /* nothing to do, when ch == L'\0' */
-  if (ch == L'\0')
-    return avt_checkevent ();
-
   /* no textfield? => draw balloon */
   if (textfield.x < 0)
     avt_draw_balloon ();
@@ -3224,10 +3220,6 @@ avt_put_character (const wchar_t ch)
     case L'\x200B':
     case L'\x200C':
     case L'\x200D':
-    case L'\x2060':
-    case L'\x2061':
-    case L'\x2062':
-    case L'\x2063':
       break;
 
     case L' ':			/* space */
@@ -3432,10 +3424,6 @@ avt_tell (const wchar_t * txt)
 	case L'\x200B':
 	case L'\x200C':
 	case L'\x200D':
-	case L'\x2060':
-	case L'\x2061':
-	case L'\x2062':
-	case L'\x2063':
 	  /* no width */
 	  break;
 

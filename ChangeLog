@@ -5,7 +5,8 @@
 
 	* akfavatar.h, avatar.c (avt_printable): new function
 
-	* avatar.c (avt_put_character, avt_tell): print soft-hyphen
+	* avatar.c (avt_put_character, avt_tell):
+	don't ignore U+0000, U+00AD, U+2060 - U+2063
 
 2010-09-24  Andreas K. Foerster  <info@akfoerster.de>
 
