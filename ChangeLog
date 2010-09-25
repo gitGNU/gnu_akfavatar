@@ -3,6 +3,8 @@
 	* bdf2c (font): accept 0, return NULL for unknown chars
 	avatar.c (avt_drawchar): accept NULL from get_font_char
 
+	* akfavatar.h, avatar.c (avt_printable): new function
+
 2010-09-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_get_mb_encoding): new function

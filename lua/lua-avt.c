@@ -1128,6 +1128,14 @@ lavt_put_character (lua_State * L)
 }
 
 static int
+lavt_printable (lua_State * L)
+{
+  lua_pushboolean (L,
+		   (int) avt_printable ((wchar_t) luaL_checkinteger (L, 1)));
+  return 1;
+}
+
+static int
 lavt_pager (lua_State * L)
 {
   const char *s;
@@ -1628,6 +1636,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"print", lavt_print},
   {"tell", lavt_tell},
   {"put_character", lavt_put_character},
+  {"printable", lavt_printable},
   {"ask", lavt_ask},
   {"navigate", lavt_navigate},
   {"decide", lavt_decide},

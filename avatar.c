@@ -2939,6 +2939,12 @@ avt_drawchar (wchar_t ch, SDL_Surface * surface)
   SDL_BlitSurface (avt_character, NULL, surface, &dest);
 }
 
+extern avt_bool_t
+avt_printable (wchar_t ch)
+{
+  return (avt_bool_t) (get_font_char2 (ch) != NULL);
+}
+
 #else /* FONTWIDTH <= 8 */
 
 static void
@@ -2973,6 +2979,12 @@ avt_drawchar (wchar_t ch, SDL_Surface * surface)
   dest.x = cursor.x;
   dest.y = cursor.y;
   SDL_BlitSurface (avt_character, NULL, surface, &dest);
+}
+
+extern avt_bool_t
+avt_printable (wchar_t ch)
+{
+  return (avt_bool_t) (get_font_char (ch) != NULL);
 }
 
 #endif /* FONTWIDTH <= 8 */

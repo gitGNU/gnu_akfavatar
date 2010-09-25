@@ -322,6 +322,12 @@ AVT_API int avt_tell (const wchar_t *txt);
 AVT_API int avt_put_character (const wchar_t ch);
 
 /*
+ * checks whether the given charactrer is printable
+ * returns AVT_FALSE on unknown or control characters
+ */
+AVT_API avt_bool_t avt_printable (wchar_t ch);
+
+/*
  * get string (just one line)
  * the maximum length is LINELENGTH-1
  * size is the size of s in bytes (not the length)
