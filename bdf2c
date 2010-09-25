@@ -60,7 +60,7 @@ function writetranstable(    i, blockstart)
   # we need the numbers in order
   for (i = 0; i <= maxchar; i++)
     {
-      if (i in table && table[i] != default_char)
+      if (i in table)
         {
           if ((i+1) in table && table[i+1] == table[i] + 1)
             {
@@ -83,7 +83,7 @@ function writetranstable(    i, blockstart)
         }
     }
 
-  print "return &font[DEFAULT_CHAR];"
+  print "return NULL;"
   print "}"
 }
 

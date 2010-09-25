@@ -2916,6 +2916,8 @@ avt_drawchar (wchar_t ch, SDL_Surface * surface)
   pitch = avt_character->pitch / sizeof (*p);
   pixels = p = (unsigned short *) avt_character->pixels;
   font_line = get_font_char2 (ch);
+  if (!font_line)
+    font_line = get_font_char2 (0);
 
   for (y = 0; y < FONTHEIGHT; y++)
     {
@@ -2951,6 +2953,8 @@ avt_drawchar (wchar_t ch, SDL_Surface * surface)
   pitch = avt_character->pitch;
   pixels = p = (Uint8 *) avt_character->pixels;
   font_line = get_font_char (ch);
+  if (!font_line)
+    font_line = get_font_char (0);
 
   for (y = 0; y < FONTHEIGHT; y++)
     {

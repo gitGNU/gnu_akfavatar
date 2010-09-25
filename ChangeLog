@@ -1,3 +1,8 @@
+2010-09-25  Andreas K. Foerster  <info@akfoerster.de>
+
+	* bdf2c (font): accept 0, return NULL for unknown chars
+	avatar.c (avt_drawchar): accept NULL from get_font_char
+
 2010-09-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_get_mb_encoding): new function
