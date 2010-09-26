@@ -3240,7 +3240,7 @@ avt_put_character (const wchar_t ch)
       break;
 
     default:
-      if (ch > 32)
+      if (ch > 32 || ch == 0)
 	{
 	  if (markup && ch == L'_')
 	    underlined = !underlined;
