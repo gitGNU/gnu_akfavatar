@@ -3374,9 +3374,9 @@ avt_say_len (const wchar_t * txt, const int len)
 }
 
 extern int
-avt_tell (const wchar_t * txt)
+avt_tell_len (const wchar_t * txt, int len)
 {
-  int width, height, line_length;
+  int width, height, line_length, pos;
   const wchar_t *p;
 
   if (!txt || !*txt)
@@ -3385,9 +3385,10 @@ avt_tell (const wchar_t * txt)
   width = 0;
   height = 1;
   line_length = 0;
+  pos = 1;
   p = txt;
 
-  while (*p)
+  while ((len > 0 && pos <= len) || (len <= 0 && *p))
     {
       switch (*p)
 	{
@@ -3444,7 +3445,7 @@ avt_tell (const wchar_t * txt)
 	  /* else fall through */
 
 	default:
-	  if (*p >= 32)
+	  if (*p >= 32 || *p == 0)
 	    {
 	      line_length++;
 	      if (auto_margin && line_length > AVT_LINELENGTH)
@@ -3458,6 +3459,7 @@ avt_tell (const wchar_t * txt)
 	}
 
       p++;
+      pos++;
     }
 
   if (width < line_length)
@@ -3465,9 +3467,19 @@ avt_tell (const wchar_t * txt)
 
   avt_set_balloon_size (height, width);
   avt_clear ();
-  avt_say (txt);
+
+  if (len > 0)
+    avt_say_len (txt, len);
+  else
+    avt_say (txt);
 
   return _avt_STATUS;
+}
+
+extern int
+avt_tell (const wchar_t * txt)
+{
+  return avt_tell_len (txt, 0);
 }
 
 extern int
@@ -3754,6 +3766,26 @@ avt_tell_mb (const char *txt)
       if (wctext)
 	{
 	  avt_tell (wctext);
+	  SDL_free (wctext);
+	}
+    }
+
+  return _avt_STATUS;
+}
+
+extern int
+avt_tell_mb_len (const char *txt, int len)
+{
+  wchar_t *wctext;
+  int wclen;
+
+  if (screen)
+    {
+      wclen = avt_mb_decode (&wctext, txt, len);
+
+      if (wctext)
+	{
+	  avt_tell_len (wctext, wclen);
 	  SDL_free (wctext);
 	}
     }

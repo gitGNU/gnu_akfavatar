@@ -490,7 +490,8 @@ procedure avt_set_flip_page_delay (delay: CInteger);
 function avt_say_mb_len(t: pointer; size: CInteger): CInteger;
   libakfavatar 'avt_say_mb_len';
 
-function avt_tell_mb(t: pointer): CInteger; libakfavatar 'avt_tell_mb';
+function avt_tell_mb_len(t: pointer; len: CInteger): CInteger;
+  libakfavatar 'avt_tell_mb_len';
 
 procedure avt_clear; libakfavatar 'avt_clear';
 
@@ -861,7 +862,7 @@ end;
 procedure Tell(const txt: string);
 begin
 if not initialized then initializeAvatar;
-avt_tell_mb(String2CString(txt))
+avt_tell_mb_len(String2CString(txt), length(txt))
 end;
 
 procedure TextColor (Color: Byte);

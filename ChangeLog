@@ -1,3 +1,8 @@
+2010-09-26  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_tell_len, avt_tell_mb_len):
+	new functions
+
 2010-09-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* bdf2c (font): accept 0, return NULL for unknown chars

@@ -314,6 +314,17 @@ AVT_API int avt_say_len (const wchar_t *txt, const int len);
 AVT_API int avt_tell (const wchar_t *txt);
 
 /*
+ * sets the balloon size so that the text fits exactly
+ * writes string with given length in the balloon
+ * the string needn't be terminated and can contain binary zeros
+ * if len is <= 0 then it's the same as avt_tell()
+ * if there is no balloon, it is drawn
+ * if there is no avatar, it is shown (not moved in)
+ * interprets control characters including overstrike-text
+ */
+AVT_API int avt_tell_len (const wchar_t *txt, int len);
+
+/*
  * writes a single character in the balloon
  * if there is no balloon, it is drawn
  * if there is no avatar, it is shown (not moved in)
@@ -381,6 +392,13 @@ AVT_API int avt_say_mb_len (const char *txt, int len);
  * (see avt_mb_encoding)
  */
 AVT_API int avt_tell_mb (const char *txt);
+
+/*
+ * the same with a given length
+ * the string needn't be terminated then
+ * and can contain binary zeros
+ */
+AVT_API int avt_tell_mb_len (const char *txt, int len);
 
 /*
  * get string (just one line)

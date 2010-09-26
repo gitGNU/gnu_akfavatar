@@ -1105,9 +1105,15 @@ lavt_print (lua_State * L)
 static int
 lavt_tell (lua_State * L)
 {
+  const char *s;
+  size_t len;
+
   is_initialized ();
   lua_concat (L, lua_gettop (L));	/* make it one single string */
-  check (avt_tell_mb (luaL_checkstring (L, 1)));
+
+  s = luaL_checklstring (L, 1, &len);
+  if (s)
+    check (avt_tell_mb_len (s, len));
 
   return 0;
 }

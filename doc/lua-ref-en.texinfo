@@ -108,8 +108,7 @@ adjusted so that the text exactly fits.
 
 Example: @samp{avt.tell ("Three apples cost ", 3 * appleprice, " Euros.")}.
 
-@strong{Attention:} This function still has problems with tabs ("\t") and with
-binary zeros ("\0").
+@strong{Attention:} This function still has problems with tabs ("\t").
 @end defun
 
 @defun avt.put_character (@dots{})
