@@ -3341,7 +3341,7 @@ avt_say (const wchar_t * txt)
  * interprets control characters
  */
 extern int
-avt_say_len (const wchar_t * txt, const int len)
+avt_say_len (const wchar_t * txt, int len)
 {
   int i;
 
@@ -3537,7 +3537,7 @@ avt_get_mb_encoding (void)
 /* size in bytes */
 /* dest must be freed by caller */
 extern int
-avt_mb_decode (wchar_t ** dest, const char *src, const int size)
+avt_mb_decode (wchar_t ** dest, const char *src, int size)
 {
   static char rest_buffer[10];
   static size_t rest_bytes = 0;
@@ -3649,7 +3649,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, const int size)
 }
 
 extern int
-avt_mb_encode (char **dest, const wchar_t * src, const int len)
+avt_mb_encode (char **dest, const wchar_t * src, int len)
 {
   char *outbuf;
   AVT_ICONV_INBUF_T *inbuf;
@@ -4493,7 +4493,7 @@ avt_pager_mb (const char *txt, int len, int startline)
 
 /* size in Bytes! */
 extern int
-avt_ask (wchar_t * s, const int size)
+avt_ask (wchar_t * s, int size)
 {
   wchar_t ch;
   size_t len, maxlen, pos;
@@ -4679,7 +4679,7 @@ avt_ask (wchar_t * s, const int size)
 }
 
 extern int
-avt_ask_mb (char *s, const int size)
+avt_ask_mb (char *s, int size)
 {
   wchar_t ws[AVT_LINELENGTH + 1];
   AVT_ICONV_INBUF_T *inbuf;

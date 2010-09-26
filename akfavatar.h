@@ -302,7 +302,7 @@ AVT_API int avt_say (const wchar_t *txt);
  * if there is no avatar, it is shown (not moved in)
  * interprets control characters including overstrike-text
  */
-AVT_API int avt_say_len (const wchar_t *txt, const int len);
+AVT_API int avt_say_len (const wchar_t *txt, int len);
 
 /*
  * sets the balloon size so that the text fits exactly
@@ -345,7 +345,7 @@ AVT_API avt_bool_t avt_printable (wchar_t ch);
  *
  * (I don't use size_t for better compatiblity with other languages)
  */
-AVT_API int avt_ask (wchar_t *s, const int size);
+AVT_API int avt_ask (wchar_t *s, int size);
 
 /*
  * get a character from the keyboard
@@ -406,7 +406,7 @@ AVT_API int avt_tell_mb_len (const char *txt, int len);
  *
  * for UTF-8 encoding s should have a capacity of 4 * LINELENGTH Bytes
  */
-AVT_API int avt_ask_mb (char *s, const int size);
+AVT_API int avt_ask_mb (char *s, int size);
 
 /*
  * decode a string into wchar_t
@@ -414,7 +414,7 @@ AVT_API int avt_ask_mb (char *s, const int size);
  * returns number of characters in dest (without the termination zero)
  * dest must be freed by caller with avt_free
  */
-AVT_API int avt_mb_decode (wchar_t **dest, const char *src, const int size);
+AVT_API int avt_mb_decode (wchar_t **dest, const char *src, int size);
 
 /*
  * encode a string from wchar_t
@@ -423,7 +423,7 @@ AVT_API int avt_mb_decode (wchar_t **dest, const char *src, const int size);
  * dest must be freed by caller with avt_free
  * (the size of dest may be much more than needed)
  */
-AVT_API int avt_mb_encode (char **dest, const wchar_t *src, const int len);
+AVT_API int avt_mb_encode (char **dest, const wchar_t *src, int len);
 
 /* free memory allocated by this library */
 AVT_API void avt_free (void *ptr);
