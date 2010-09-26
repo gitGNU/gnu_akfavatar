@@ -820,13 +820,17 @@ program should continue working without a visible window.
 @defun avt.reset_status ()
 Reset the internal status of AKFAvatar.
 
-You can use this for example after calling another Lua-AKFAvatar script in
-protected mode.
+You can use this after calling a function in protected mode.
+So the function is treated like a sub-program.  When you stop the
+sub-program, you don't stop the main program, yet.
 
 @example
-pcall (dofile, "prg.lua") --> call another script
+pcall (subprogram) --> call the function subprogram in protected mode
 avt.reset_status () --> reset the quit request
 @end example
+
+If you want to have the sub-program in a separate file, use
+@samp{pcall (dofile, "subprogram.lua")}.
 @end defun
 
 @appendixsec base64
