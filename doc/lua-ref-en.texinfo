@@ -121,6 +121,14 @@ characters, which are not available in the current encoding.
 Example: @samp{avt.put_character (0x2642, 0x2661, 0x2640)}
 @end defun
 
+@defun avt.printable (codepoint)
+Checks whether the given @var{codepoint} represents a printable Unicode character.
+It returns @code{true} when this is the case or @code{false} if the font doesn't
+have a printable glyph for it (it may be a supported control character).
+This function is independent from the chosen encoding.
+It can be used together with @code{avt.put_character(@dots{})}.
+@end defun
+
 @defun avt.ask ([question])
 Shows the @var{question}, if given,
 and waits for the user to enter something. Returns the result as string.
@@ -695,6 +703,21 @@ whether first entry is a back function
 whether last entry is a forward function
 
 @end table
+@end defun
+
+@defun avt.long_menu (items)
+Shows a long menu with the @var{items}, which should be an array with menu-items.
+
+It returns the number of the selected item.
+
+The menu starts in the line of the current cursor position.  So you could put
+a headline before the menu.
+
+@example
+avt.clear()
+avt.say("Please select your favourite food:\n")
+local item = avt.long_menu @{"Chicken", "Chips", "Pizza", "Spinach"@}
+@end example
 @end defun
 
 @defun avt.viewport (x, y, width, height)
