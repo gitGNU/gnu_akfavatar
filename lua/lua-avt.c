@@ -110,6 +110,36 @@ get_avatar (lua_State * L, int index)
     }
 }
 
+static int
+get_mode (lua_State * L, int index)
+{
+  const char *mode_name;
+  int mode = AVT_AUTOMODE;
+
+  mode_name = lua_tostring (L, index);
+  if (!mode_name)
+    luaL_error (L, "bad mode for 'initialize'"
+		" (string expected, got %s)",
+		lua_typename (L, lua_type (L, -1)));
+  else
+    {
+      int i;
+
+      for (i = 0; modes[i]; i++)
+	if (strcmp (mode_name, modes[i]) == 0)
+	  {
+	    mode = i - 1;
+	    break;
+	  }
+
+      if (modes[i] == NULL)
+	luaL_error (L, "unknown mode '%s' in 'initialize'", mode_name);
+    }
+
+  return mode;
+}
+
+
 /*
  * expects a table with values for: title, shortname, avatar, encoding, mode
  *
@@ -149,55 +179,39 @@ lavt_initialize (lua_State * L)
   else				/* has an argument */
     {
       luaL_checktype (L, 1, LUA_TTABLE);
-      lua_getfield (L, 1, "title");
-      title = lua_tostring (L, -1);
-      lua_pop (L, 1);
 
-      lua_getfield (L, 1, "shortname");
-      shortname = lua_tostring (L, -1);
-      lua_pop (L, 1);
-
-      lua_getfield (L, 1, "avatar");
-      avatar = get_avatar (L, -1);
-      lua_pop (L, 1);
-
-      lua_getfield (L, 1, "audio");
-      audio = (avt_bool_t) lua_toboolean (L, -1);
-      lua_pop (L, 1);
-
-      lua_getfield (L, 1, "encoding");
-      if (lua_isstring (L, -1))
-	encoding = lua_tostring (L, -1);
-      lua_pop (L, 1);
-
-      lua_getfield (L, 1, "mode");
-      if (!lua_isnoneornil (L, -1))
+      lua_pushnil (L);		/* initial dummy key */
+      while (lua_next (L, 1))
 	{
-	  const char *mode_name;
-	  mode_name = lua_tostring (L, -1);
-	  if (!mode_name)
-	    luaL_error (L, "bad mode for 'initialize'"
+	  const char *key;
+
+	  if (lua_type (L, -2) != LUA_TSTRING)
+	    luaL_error (L, "bad key for 'initialize'"
 			" (string expected, got %s)",
-			lua_typename (L, lua_type (L, -1)));
+			lua_typename (L, lua_type (L, -2)));
+
+	  key = lua_tostring (L, -2);	/* known to be a string */
+
+	  if (strcmp ("title", key) == 0)
+	    title = lua_tostring (L, -1);
+	  else if (strcmp ("shortname", key) == 0)
+	    shortname = lua_tostring (L, -1);
+	  else if (strcmp ("avatar", key) == 0)
+	    avatar = get_avatar (L, -1);
+	  else if (strcmp ("audio", key) == 0)
+	    audio = (avt_bool_t) lua_toboolean (L, -1);
+	  else if (strcmp ("encoding", key) == 0)
+	    encoding = lua_tostring (L, -1);
+	  else if (strcmp ("mode", key) == 0)
+	    mode = get_mode (L, -1);
 	  else
-	    {
-	      int i;
+	    luaL_error (L, "unknown key for 'initialize': %s", key);
 
-	      for (i = 0; modes[i]; i++)
-		if (strcmp (mode_name, modes[i]) == 0)
-		  {
-		    mode = i - 1;
-		    break;
-		  }
+	  lua_pop (L, 1);	/* remove value, keep key */
+	}			/* while (lua_next... */
 
-	      if (modes[i] == NULL)
-		luaL_error (L, "unknown mode '%s' in 'initialize'",
-			    mode_name);
-	    }
-	}
-
-      lua_pop (L, 1);		/* pop mode */
-    }
+      lua_pop (L, 1);		/* pop key */
+    }				/* if (lua_isnone...) else */
 
   if (!shortname)
     shortname = title;
