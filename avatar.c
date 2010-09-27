@@ -59,6 +59,7 @@
 #endif
 
 #define COPYRIGHTYEAR "2010"
+
 #define BUTTON_DISTANCE 10
 
 /* normal color of what's printed on the button */
@@ -3162,7 +3163,7 @@ avt_backspace (void)
  * interprets control characters
  */
 extern int
-avt_put_character (const wchar_t ch)
+avt_put_character (wchar_t ch)
 {
   if (!screen)
     return _avt_STATUS;

@@ -26,7 +26,7 @@
 #include <lualib.h>
 
 #include <stdio.h>
-#include <stdlib.h>		/* for exit() */
+#include <stdlib.h>		/* for exit() and wchar_t */
 #include <string.h>		/* for strcmp(), strerror() */
 #include <errno.h>
 
@@ -1128,7 +1128,7 @@ lavt_put_character (lua_State * L)
   n = lua_gettop (L);
 
   for (i = 1; i <= n; i++)
-    check (avt_put_character ((const wchar_t) luaL_checkinteger (L, i)));
+    check (avt_put_character ((wchar_t) luaL_checkinteger (L, i)));
 
   return 0;
 }

@@ -330,7 +330,7 @@ AVT_API int avt_tell_len (const wchar_t *txt, int len);
  * if there is no avatar, it is shown (not moved in)
  * interprets control characters, but not for overstrike-text
  */
-AVT_API int avt_put_character (const wchar_t ch);
+AVT_API int avt_put_character (wchar_t ch);
 
 /*
  * checks whether the given charactrer is printable
