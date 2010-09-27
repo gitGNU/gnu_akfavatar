@@ -77,6 +77,8 @@ end
 local function all_slowprint()
   avt.set_text_delay()
   block(0x0000, 0xFFFF)
+  -- note: Unicode copdepoints can be up to 0x10FFFF,
+  -- but the font in AKFAvatar covers "just" the BMP
 end
 
 local function show_item(item)
