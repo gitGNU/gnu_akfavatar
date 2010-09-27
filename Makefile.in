@@ -622,7 +622,7 @@ dist: info html man $(srcdir)/alert.au
 	rm -rf $(PKGNAME)/
 	bzip2 -f $(PKGNAME).tar
 
-dist-bin-default: avatarsay-bin info html
+dist-bin-default: info html libakfavatar.so avatarsay-bin lua-akfavatar-bin
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/akfavatar
 	cp $(LIBNAME) $(BINPKGNAME)/

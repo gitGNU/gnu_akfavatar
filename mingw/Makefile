@@ -259,7 +259,7 @@ multiplizieren.exe: $(srcdir)/pascal/multiply.pas
 	-fpcwavatar -dRELEASE -ddeutsch -o$@ -Fi$(srcdir)/pascal \
 	  $(srcdir)/pascal/multiply.pas
 
-dist-bin: avatarsay.exe
+dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe
 	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) html txt
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/akfavatar
