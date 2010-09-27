@@ -167,7 +167,7 @@ lavt_initialize (lua_State * L)
   int mode;
 
   title = shortname = NULL;
-  avatar = NULL;
+  avatar = (avt_image_t *) (&avatar);	/* dummy value, not NULL */
   encoding = "UTF-8";
   mode = AVT_AUTOMODE;
   audio = AVT_FALSE;
@@ -215,6 +215,10 @@ lavt_initialize (lua_State * L)
 
   if (!shortname)
     shortname = title;
+
+  /* if avatar was not set */
+  if (avatar == (avt_image_t *) (&avatar))
+    avatar = avt_default ();
 
   if (!initialized && !avt_initialized ())
     {
