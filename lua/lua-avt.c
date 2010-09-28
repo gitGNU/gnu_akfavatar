@@ -32,6 +32,11 @@
 
 #include <unistd.h>		/* for chdir(), getcwd() */
 
+/* MinGW and Wine don't know ENOMSG */
+#ifndef ENOMSG
+#  define ENOMSG EINVAL
+#endif
+
 static avt_bool_t initialized = AVT_FALSE;
 
 static const char *const modes[] =
@@ -76,7 +81,8 @@ get_avatar (lua_State * L, int index)
 
   if (!lua_isstring (L, index))
     {
-      luaL_error (L, "Lua-AKFAvatar error: avatar must be a string or nil");
+      luaL_error (L, "avatar: %s: %s", lua_typename (L, lua_type (L, index)),
+		  strerror (ENOMSG));
       return NULL;
     }
   else				/* it is a string */
@@ -103,7 +109,7 @@ get_avatar (lua_State * L, int index)
 	    return image;
 	  else			/* give up */
 	    {
-	      luaL_error (L, "Lua-AKFAvatar error: cannot load avatar-image");
+	      luaL_error (L, "cannot load avatar-image");
 	      return NULL;
 	    }
 	}
@@ -118,8 +124,7 @@ get_mode (lua_State * L, int index)
 
   mode_name = lua_tostring (L, index);
   if (!mode_name)
-    luaL_error (L, "bad mode for 'initialize'"
-		" (string expected, got %s)",
+    luaL_error (L, "initialize: mode: (string expected, got %s)",
 		lua_typename (L, lua_type (L, -1)));
   else
     {
@@ -133,7 +138,8 @@ get_mode (lua_State * L, int index)
 	  }
 
       if (modes[i] == NULL)
-	luaL_error (L, "unknown mode '%s' in 'initialize'", mode_name);
+	luaL_error (L, "initialize: mode: '%s': %s", mode_name,
+		    strerror (ENOMSG));
     }
 
   return mode;
@@ -186,9 +192,9 @@ lavt_initialize (lua_State * L)
 	  const char *key;
 
 	  if (lua_type (L, -2) != LUA_TSTRING)
-	    luaL_error (L, "bad key for 'initialize'"
-			" (string expected, got %s)",
-			lua_typename (L, lua_type (L, -2)));
+	    luaL_error (L, "initialize: %s: %s",
+			lua_typename (L, lua_type (L, -2)),
+			strerror (ENOMSG));
 
 	  key = lua_tostring (L, -2);	/* known to be a string */
 
@@ -205,7 +211,7 @@ lavt_initialize (lua_State * L)
 	  else if (strcmp ("mode", key) == 0)
 	    mode = get_mode (L, -1);
 	  else
-	    luaL_error (L, "unknown key for 'initialize': %s", key);
+	    luaL_error (L, "initialize: %s: %s", key, strerror (EINVAL));
 
 	  lua_pop (L, 1);	/* remove value, keep key */
 	}			/* while (lua_next... */
