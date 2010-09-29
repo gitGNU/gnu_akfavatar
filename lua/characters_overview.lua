@@ -108,9 +108,7 @@ repeat
   if menu_item == 1 then
     break
   elseif menu_item == 2 then
-    -- treat this function like a subprogram
-    pcall(all_slowprint)
-    avt.reset_status()
+    avt.subprogram(all_slowprint)
   else
     show_item(items[menu_item])
   end
