@@ -52,7 +52,7 @@ quit (lua_State * L)
 {
   if (avt_get_status () <= AVT_ERROR)
     {
-      return luaL_error (L, "Lua-AKFAvatar: %s", avt_get_error ());
+      return luaL_error (L, "%s", avt_get_error ());
     }
   else				/* stop requested */
     {
@@ -1407,8 +1407,16 @@ static int
 lavt_subprogram (lua_State * L)
 {
   if (lua_pcall (L, lua_gettop (L) - 1, LUA_MULTRET, 0) != 0)
-    lua_settop (L, 0);		/* remove error message */
-  avt_set_status (AVT_NORMAL);
+    {
+      if (lua_isnil (L, -1))	/* just a quit-request? */
+	{
+	  lua_settop (L, 0);	/* remove nil */
+	  avt_set_status (AVT_NORMAL);
+	}
+      else
+	lua_error (L);
+    }
+
   return lua_gettop (L);
 }
 

@@ -820,9 +820,9 @@ program should continue working without a visible window.
 Call the function as a subprogram.
 
 On a quit-request (pressing the @key{ESC}-key or the close button of the
-window) it just returns to the main program.  Also errors just cause the
-function to return normally.  On success it returns the results of the
-function, on error it returns nothing.
+window) it just returns to the main program.
+On success it returns the results of the function,
+on a quit-request it returns nothing.  Errors are treated normally.
 
 To call a subprogram from a separate file, use @code{dofile}:
 @samp{avt.subprogram (dofile, "subprogram.lua")}.
