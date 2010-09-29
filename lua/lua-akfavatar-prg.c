@@ -28,6 +28,7 @@
 #include <unistd.h>		/* getcwd, chdir */
 #include <libgen.h>		/* for dirname */
 #include <locale.h>
+#include <errno.h>
 
 #include <lua.h>
 #include <lauxlib.h>
@@ -141,12 +142,85 @@ is_lua (const char *filename)
     }
 }
 
+struct load_file_t
+{
+  FILE *f;
+  char buffer[BUFSIZ];
+};
+
+static const char *
+file_reader (lua_State * L AVT_UNUSED, void *data, size_t * size)
+{
+  struct load_file_t *fd;
+
+  fd = (struct load_file_t *) data;
+
+  *size = fread (fd->buffer, 1, sizeof (fd->buffer), fd->f);
+
+  if (*size > 0)
+    return (const char *) fd->buffer;
+  else
+    return NULL;
+}
+
+static int
+load_file (const char *filename)
+{
+  int status;
+  int c;
+  struct load_file_t fd;
+
+  fd.f = fopen (filename, "r");
+  if (fd.f == NULL)
+    {
+      lua_pushfstring (L, "%s: %s", filename, strerror (errno));
+      return LUA_ERRFILE;
+    }
+
+  /* check beginning and skip things, or reject */
+  c = getc (fd.f);
+
+  /* scan for UTF-8 BOM (workaround for Windows notepad.exe) */
+  if (c == 0xEF && (c = getc (fd.f)) == 0xBB && (c = getc (fd.f)) == 0xBF)
+    c = getc (fd.f);
+
+  if (c == '#')
+    {
+      /*
+       * skip to end of line
+       * '\n' will be pushed back so linenumbers stay correct
+       */
+      while ((c = getc (fd.f)) != EOF && c != '\n');
+    }
+
+  if (c == LUA_SIGNATURE[0])
+    {
+      lua_pushfstring (L, "%s: binary rejected", filename);
+      return LUA_ERRFILE;
+    }
+
+  ungetc (c, fd.f);
+
+  lua_pushfstring (L, "@%s", filename);
+  status = lua_load (L, file_reader, &fd, lua_tostring (L, -1));
+  lua_remove (L, -2);		/* remove the filename */
+
+  if (fclose (fd.f) != 0)
+    {
+      lua_pop (L, 1);		/* pop chunk or previous error msg */
+      lua_pushfstring (L, "%s: %s", filename, strerror (errno));
+      return LUA_ERRFILE;
+    }
+
+  return status;
+}
+
 static int
 dofile (char *filename)
 {
   int r;
 
-  r = luaL_loadfile (L, filename);
+  r = load_file (filename);
 
   if (r == 0)			/* no error, yet */
     r = lua_pcall (L, 0, 0, 0);
