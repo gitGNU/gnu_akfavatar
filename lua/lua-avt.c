@@ -1406,6 +1406,8 @@ lavt_backspace (lua_State * L)
 static int
 lavt_subprogram (lua_State * L)
 {
+  luaL_checktype (L, 1, LUA_TFUNCTION);
+
   if (lua_pcall (L, lua_gettop (L) - 1, LUA_MULTRET, 0) != 0)
     {
       if (lua_isnil (L, -1))	/* just a quit-request? */
