@@ -1410,11 +1410,11 @@ lavt_subprogram (lua_State * L)
     {
       if (lua_isnil (L, -1))	/* just a quit-request? */
 	{
-	  lua_settop (L, 0);	/* remove nil */
 	  avt_set_status (AVT_NORMAL);
+	  return 0;
 	}
       else
-	lua_error (L);
+	return lua_error (L);
     }
 
   return lua_gettop (L);
