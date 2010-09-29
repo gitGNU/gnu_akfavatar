@@ -141,6 +141,19 @@ is_lua (const char *filename)
     }
 }
 
+static int
+dofile (char *filename)
+{
+  int r;
+
+  r = luaL_loadfile (L, filename);
+
+  if (r == 0)			/* no error, yet */
+    r = lua_pcall (L, 0, 0, 0);
+
+  return r;
+}
+
 static avt_bool_t
 ask_file (void)
 {
@@ -163,7 +176,7 @@ ask_file (void)
       lua_settable (L, -3);
       lua_setglobal (L, "arg");
 
-      if (luaL_dofile (L, filename) != 0)
+      if (dofile (filename) != 0)
 	{
 	  /* on a normal quit-request there is nil on the stack */
 	  if (lua_isstring (L, -1))
@@ -272,7 +285,7 @@ main (int argc, char **argv)
       script_name = goto_script_directory (argv[script_index]);
       get_args (argc, argv, script_index, script_name);
 
-      if (luaL_dofile (L, script_name) != 0)
+      if (dofile (script_name) != 0)
 	{
 	  if (lua_isstring (L, -1))
 	    avta_error (lua_tostring (L, -1), NULL);
