@@ -1404,10 +1404,12 @@ lavt_backspace (lua_State * L)
 }
 
 static int
-lavt_reset_status (lua_State * L AVT_UNUSED)
+lavt_subprogram (lua_State * L)
 {
+  if (lua_pcall (L, lua_gettop (L) - 1, LUA_MULTRET, 0) != 0)
+    lua_settop (L, 0);		/* remove error message */
   avt_set_status (AVT_NORMAL);
-  return 0;
+  return lua_gettop (L);
 }
 
 /* --------------------------------------------------------- */
@@ -1764,13 +1766,13 @@ static const struct luaL_reg akfavtlib[] = {
   {"delete_characters", lavt_delete_characters},
   {"erase_characters", lavt_erase_characters},
   {"backspace", lavt_backspace},
-  {"reset_status", lavt_reset_status},
   {"file_selection", lavt_file_selection},
   {"color_selection", lavt_color_selection},
   {"get_directory", lavt_getcwd},
   {"set_directory", lavt_chdir},
   {"chdir", lavt_chdir},
   {"long_menu", lavt_long_menu},
+  {"subprogram", lavt_subprogram},
   {NULL, NULL}
 };
 

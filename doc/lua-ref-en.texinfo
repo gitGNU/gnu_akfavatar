@@ -816,20 +816,16 @@ Again: This function is not needed for normal programs. Only use it, if your
 program should continue working without a visible window.
 @end defun
 
-@defun avt.reset_status ()
-Reset the internal status of AKFAvatar.
+@defun avt.subprogram (function, [arg1, ...])
+Call the function as a subprogram.
 
-You can use this after calling a function in protected mode.
-So the function is treated like a sub-program.  When you stop the
-sub-program, you don't stop the main program, yet.
+On a quit-request (pressing the @key{ESC}-key or the close button of the
+window) it just returns to the main program.  Also errors just cause the
+function to return normally.  On success it returns the results of the
+function, on error it returns nothing.
 
-@example
-pcall (subprogram) --> call the function subprogram in protected mode
-avt.reset_status () --> reset the quit request
-@end example
-
-If you want to have the sub-program in a separate file, use
-@samp{pcall (dofile, "subprogram.lua")}.
+To call a subprogram from a separate file, use @code{dofile}:
+@samp{avt.subprogram (dofile, "subprogram.lua")}.
 @end defun
 
 @appendixsec base64
