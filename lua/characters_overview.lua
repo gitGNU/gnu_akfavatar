@@ -10,7 +10,7 @@ require "lua-akfavatar"
 
 avt.initialize{}
 avt.set_auto_margin(true)
-
+avt.set_scroll_mode(1)
 
 local items = {
   "End",
