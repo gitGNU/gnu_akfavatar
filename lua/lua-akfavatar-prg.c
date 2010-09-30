@@ -157,11 +157,9 @@ load_file (const char *filename)
       return LUA_ERRFILE;
     }
 
-  /* check beginning and skip things, or reject */
-  c = getc (fd.f);
-
   /* scan for UTF-8 BOM (workaround for Windows notepad.exe) */
-  if (c == 0xEF && (c = getc (fd.f)) == 0xBB && (c = getc (fd.f)) == 0xBF)
+  if ((c = getc (fd.f)) == 0xEF && (c = getc (fd.f)) == 0xBB
+      && (c = getc (fd.f)) == 0xBF)
     c = getc (fd.f);
 
   if (c == '#')
@@ -170,7 +168,11 @@ load_file (const char *filename)
        * skip to end of line
        * '\n' will be pushed back so linenumbers stay correct
        */
-      while ((c = getc (fd.f)) != EOF && c != '\n');
+      do
+	{
+	  c = getc (fd.f);
+	}
+      while (c != '\n' && c != EOF);
     }
 
   if (c == LUA_SIGNATURE[0])
@@ -201,18 +203,18 @@ new_dofile (lua_State * L)
 {
   const char *filename;
 
-  filename = luaL_checkstring(L, 1);
+  filename = luaL_checkstring (L, 1);
 
   /* clear the stack */
   lua_settop (L, 0);
 
-  if (load_file(filename) != 0)
+  if (load_file (filename) != 0)
     lua_error (L);
 
   lua_call (L, 0, LUA_MULTRET);
 
   /* only the results are left on the stack */
-  return lua_gettop(L);
+  return lua_gettop (L);
 }
 
 static void
