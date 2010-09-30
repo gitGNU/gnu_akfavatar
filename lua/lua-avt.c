@@ -262,6 +262,7 @@ static int
 lavt_quit (lua_State * L AVT_UNUSED)
 {
   avt_quit ();
+  initialized = AVT_FALSE;
   return 0;
 }
 
