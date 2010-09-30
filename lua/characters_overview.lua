@@ -9,6 +9,7 @@
 require "lua-akfavatar"
 
 avt.initialize{}
+avt.set_auto_margin(true)
 
 
 local items = {
