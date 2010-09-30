@@ -271,6 +271,7 @@ static int
 lavt_button_quit (lua_State * L AVT_UNUSED)
 {
   avt_button_quit ();
+  initialized = AVT_FALSE;
   return 0;
 }
 
