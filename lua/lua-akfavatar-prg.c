@@ -109,26 +109,6 @@ initialize (void)
     avta_error ("cannot initialize graphics", avt_get_error ());
 }
 
-static void
-initialize_lua (void)
-{
-  L = luaL_newstate ();
-  if (L == NULL)
-    avta_error ("cannot open Lua", "not enough memory");
-
-  luaL_openlibs (L);
-
-  /* register loader functions for: "lua-akfavatar" and "base64" */
-  /* (users should not be able to leave the require command away) */
-  lua_getglobal (L, "package");
-  lua_getfield (L, -1, "preload");
-  lua_pushcfunction (L, luaopen_akfavatar);
-  lua_setfield (L, -2, "lua-akfavatar");
-  lua_pushcfunction (L, luaopen_base64);
-  lua_setfield (L, -2, "base64");
-  lua_pop (L, 2);
-}
-
 static avt_bool_t
 is_lua (const char *filename)
 {
@@ -213,6 +193,50 @@ load_file (const char *filename)
     }
 
   return status;
+}
+
+/* dofile with workaround for UTF-8 BOM and rejecting binaries */
+static int
+new_dofile (lua_State * L)
+{
+  const char *filename;
+
+  filename = luaL_checkstring(L, 1);
+
+  /* clear the stack */
+  lua_settop (L, 0);
+
+  if (load_file(filename) != 0)
+    lua_error (L);
+
+  lua_call (L, 0, LUA_MULTRET);
+
+  /* only the results are left on the stack */
+  return lua_gettop(L);
+}
+
+static void
+initialize_lua (void)
+{
+  L = luaL_newstate ();
+  if (L == NULL)
+    avta_error ("cannot open Lua", "not enough memory");
+
+  luaL_openlibs (L);
+
+  /* register loader functions for: "lua-akfavatar" and "base64" */
+  /* (users should not be able to leave the require command away) */
+  lua_getglobal (L, "package");
+  lua_getfield (L, -1, "preload");
+  lua_pushcfunction (L, luaopen_akfavatar);
+  lua_setfield (L, -2, "lua-akfavatar");
+  lua_pushcfunction (L, luaopen_base64);
+  lua_setfield (L, -2, "base64");
+  lua_pop (L, 2);
+
+  /* replace dofile */
+  lua_pushcfunction (L, new_dofile);
+  lua_setglobal (L, "dofile");
 }
 
 static avt_bool_t
