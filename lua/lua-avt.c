@@ -267,15 +267,6 @@ lavt_quit (lua_State * L AVT_UNUSED)
   return 0;
 }
 
-/* show button, move out and quit */
-static int
-lavt_button_quit (lua_State * L AVT_UNUSED)
-{
-  avt_button_quit ();
-  initialized = AVT_FALSE;
-  return 0;
-}
-
 /* returns version string */
 static int
 lavt_version (lua_State * L)
@@ -1704,7 +1695,6 @@ lavt_long_menu (lua_State * L)
 static const struct luaL_reg akfavtlib[] = {
   {"initialize", lavt_initialize},
   {"quit", lavt_quit},
-  {"button_quit", lavt_button_quit},
   {"change_avatar_image", lavt_change_avatar_image},
   {"set_avatar_name", lavt_set_avatar_name},
   {"say", lavt_say},
@@ -1734,7 +1724,6 @@ static const struct luaL_reg akfavtlib[] = {
   {"flip_page", lavt_flip_page},
   {"update", lavt_update},
   {"wait", lavt_wait_sec},
-  {"wait_sec", lavt_wait_sec},	/* alias */
   {"sleep", lavt_sleep},
   {"set_balloon_size", lavt_set_balloon_size},
   {"set_balloon_width", lavt_set_balloon_width},

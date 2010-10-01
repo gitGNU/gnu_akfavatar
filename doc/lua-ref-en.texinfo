@@ -212,7 +212,6 @@ Waits until a button is pressed.
 @end defun
 
 @defun avt.wait ([seconds])
-@defunx avt.wait_sec ([seconds])
 Waits a given amount of seconds (may be a fraction).
 
 If no value is given, it waits ``a while''.
@@ -807,13 +806,6 @@ Quit the avatar subsystem (closes the window).
 
 This function is not needed for normal programs. Only use it, if your program
 should continue working without a visible window.
-@end defun
-
-@defun avt.button_quit ()
-Show button, move out and quit.
-
-Again: This function is not needed for normal programs. Only use it, if your
-program should continue working without a visible window.
 @end defun
 
 @defun avt.subprogram (function, [arg1, ...])
