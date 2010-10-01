@@ -31,6 +31,7 @@
 #include <errno.h>
 
 #include <unistd.h>		/* for chdir(), getcwd() */
+#include <time.h>		/* for time() */
 
 /* MinGW and Wine don't know ENOMSG */
 #ifndef ENOMSG
@@ -943,6 +944,37 @@ lavt_wait_sec (lua_State * L)
   return 0;
 }
 
+/*
+ * sleep a given amount of seconds (integer),
+ * while AKFAvatar is not active
+ * (assuming POSIX environment)
+ */
+static int
+lavt_sleep (lua_State * L)
+{
+  time_t target_time;
+  unsigned int sleep_time;
+
+  sleep_time = (unsigned int) luaL_checkinteger (L, 1);
+  target_time = time (NULL) + sleep_time;
+
+  if (initialized)
+    {
+      avt_quit ();
+      initialized = AVT_FALSE;
+    }
+
+  do
+    {
+      sleep_time = sleep (sleep_time);
+      if (sleep_time > 0)
+	sleep_time--;		/* avoid waiting too long, when interrupted */
+    }
+  while (target_time > time (NULL));
+
+  return 0;
+}
+
 /* show final credits from a string */
 /* 1=text, 2=centered (true/false/nothing) */
 static int
@@ -1703,6 +1735,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"update", lavt_update},
   {"wait", lavt_wait_sec},
   {"wait_sec", lavt_wait_sec},	/* alias */
+  {"sleep", lavt_sleep},
   {"set_balloon_size", lavt_set_balloon_size},
   {"set_balloon_width", lavt_set_balloon_width},
   {"set_balloon_height", lavt_set_balloon_height},
