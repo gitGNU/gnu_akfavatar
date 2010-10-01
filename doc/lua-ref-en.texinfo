@@ -808,14 +808,6 @@ This function is not needed for normal programs. Only use it, if your program
 should continue working without a visible window.
 @end defun
 
-@defun avt.sleep (seconds)
-Quit the avatar subsystem (closes the window) and sleeps for a given time.
-
-The @var{seconds} are interpreted as an integer, ie. it cannot sleep for a
-fraction of a second.  This function can be called repeatedly, if you want
-to wait for a different event.
-@end defun
-
 @defun avt.subprogram (function, [arg1, ...])
 Call the function as a subprogram.
 
