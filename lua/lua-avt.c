@@ -238,8 +238,15 @@ lavt_initialize (lua_State * L)
       /* reset almost everything */
       /* not the background color - should be set before initialization */
       avt_clear_screen ();
+      avt_set_balloon_size (0, 0);
+      avt_newline_mode (AVT_TRUE);
+      avt_set_auto_margin(AVT_TRUE);
+      avt_set_origin_mode(AVT_TRUE);
+      avt_set_scroll_mode(1);
+      avt_reserve_single_keys (AVT_FALSE);
       avt_set_balloon_color_name ("floral white");
       avt_normal_text ();
+
       check (avt_mb_encoding (encoding));
       avt_set_title (title, shortname);
       check (avt_change_avatar_image (avatar));
