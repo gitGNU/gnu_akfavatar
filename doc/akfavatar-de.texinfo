@@ -30,9 +30,8 @@ Dies ist die Bedienungsanleitung für AKFAvatar
 (Version @value{VERSION}, @value{UPDATED}).
 
 @quotation
-AKFAvatar ist eine lustige Benutzeroberfläche für Textkonsolen-Programme, 
-ein Text-Betrachter, eine Skript-Sprache um Demos zu erstellen und eine
-Programmbibliothek um dafür Programme in C oder Pascal zu schreiben.
+AKFAvatar ist eine lustige grafische Benutzeroberfläche für textorientierte
+Anwendungen. 
 
 Homepage: @uref{http://akfavatar.nongnu.org/}
 
@@ -86,48 +85,28 @@ ohne jegliche Garantie angeboten.
 @chapter Überblick über AKFAvatar
 @cindex Überblick
 
-AKFAvatar ist ein graphisches Programm und eine Bibliothek, bei denen ein
-Avatar auf dem Bildschirm erscheint und dem Benutzer Sachen in einer
-Sprechblase mitteilt.  Man kann auch Audio-Aufnahmen abspielen lassen, so dass
-der Benutzer sogar hören kann, was der Avatar sagt.
+AKFAvatar ist eine lustige graphische Benutzeroberfläche für textorientierte 
+Anwendungen, bei der ein Avatar auf dem Bildschirm erscheint und dem Benutzer
+Sachen in einer Sprechblase mitteilt.
+Man kann auch Audio-Aufnahmen abspielen lassen, so dass der Benutzer sogar
+hören kann, was der Avatar sagt.
 
-AKFAvatar kann auf verschiedene Arten eingesetzt werden.
+Anwendungen für AKFAvatar können in Lua geschrieben werden.
+Lua ist eine einfach zu erlernende Skriptsprache.
+Es gibt auch eine Schnittstelle für C-Programme, die ebenfalls für Programme
+in Objective-C oder C++ verwendet werden kann.  Außerdem gibt es Schnittstellen
+für Free Pascal und GNU Pascal.
 
-@enumerate
-@item
-Man kann das Programm @command{avatarsay} als Text-Terminal verwenden, 
-so wie @command{xterm}, nur lustiger. Im Gegensatz zu @command{xterm} 
-läuft es eventuell auch ohne einen X-Server.
-(Für Windows steht diese Funktion nicht zur Verfügung.)
+AKFAvatar bringt bereits etliche fertig verwendbare Anwendungen und Module mit.
+Da gibt es zum Beispiel einen Text-Betrachter, oder ein Modul mit dem man
+Frage/Antwort-Übungen schreiben kann, und es gibt viele weitere Sachen, die
+man damit tun könnte@dots{}
 
-@item
-Man kann Textmodus-Programme auch direkt mit @command{avatarsay -x} öffnen
-lassen.
-(Für Windows steht diese Funktion nicht zur Verfügung.)
+Für @sc{posix}-kompatible Betriebssysteme gibt es auch einen
+Manpage-Betrachter.  Ja, es gibt sogar einen Terminal-Emulator, mit dem man
+viele existierende Terminal-basierte Programme in dieser ausgefallenen
+Oberfläche laufen lassen kann.
 
-@item
-Der Befehl @command{avatarsay} kann als lustiger Text-Betrachter verwendet 
-werden, mehr oder weniger wie @command{more} oder @command{less}.
-
-@item
-Aber der Befehl @command{avatarsay} kann noch viel mehr.  Er kann als einfache 
-Skript-Sprache verwendet werden, mit der man Demos erstellen kann, die man zum
-Beispiel an Info-Ständen oder in Schaufenstern zeigen kann.
-
-Keine Angst, das klingt viel komplizierter als es ist.  Vielleicht sollte ich
-eher sagen, man kann seine Texte mit gelegentlichen Anweisungen aufpeppen.
-
-@item
-Dann gibt es da noch die Programmbibliothek @code{libakfavatar}, die man von
-Programmiersprachen aus verwenden kann.  Zur Zeit werden @w{Free Pascal},
-@acronym{GNU}-Pascal und C-kompatible Sprachen unterstützt.  Insbesondere die
-Sprache Pascal ist für Anfänger geeignet, die programmieren lernen wollen.
-Die Bibliothek ist so einfach zu verwenden, wie Kommandozeilen-Programme zu
-schreiben --- es macht aber wesentlich mehr Spaß!
-
-@end enumerate
-
-@page
 @section Allgemeine Verwendung (Tasten)
 @cindex Tasten
 

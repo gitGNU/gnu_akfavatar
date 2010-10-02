@@ -26,9 +26,7 @@ This is the documentation for AKFAvatar
 (version @value{VERSION}, @value{UPDATED}).
 
 @quotation
-AKFAvatar is a fancy user interface for textconsole-programs, a text-viewer,
-a scripting language for making demos, and a library for writing programs in 
-C or Pascal.
+AKFAvatar is a fancy graphical user interface for text oriented applications.
 
 Homepage: @uref{http://akfavatar.nongnu.org/}
 
@@ -82,46 +80,25 @@ without any warranty.
 @chapter Overview of AKFAvatar
 @cindex overview
 
-AKFAvatar is a graphical program and a library, where an avatar appears
-on the screen, and tells things to the user written in a balloon.  There
-can also be recorded audio files, so that the user even can hear, what
+AKFAvatar is a fancy graphical user interface for text oriented applications,
+where an avatar appears on the screen, and tells things to the user written
+in a balloon.
+There can also be recorded audio files, so that the user even can hear, what
 it is saying.
 
-AKFAvatar can be used in several different ways.
+Applications for AKFAvatar can be written in Lua, an easy to learn scripting
+language.
+It has an interface for C programs, which can also be used for Objective-C or
+C++.  Furthermore there are bindings for Free Pascal and GNU Pascal.
 
-@enumerate
-@item
-You can use the program @command{avatarsay} as a text-terminal, just like
-@command{xterm}, but being much more fun. In contrast to @command{xterm} 
-it might even run without an x-server.
-(Under Windows this function is not available.)
+AKFAvatar already comes with quite a few ready to use applications and modules.
+There is for example a text-viewer, a module to make question-answer exercises
+and there are many more things you could do with it@dots{}
 
-@item
-You can use it as user interface for your textmode programs.
-(Under Windows this function is not available.)
+For @sc{posix}-compatible operating systems there is a manpage viewer, and 
+there is even a terminal emulator.  So you can run many existing terminal based
+programs in this fancy environment.
 
-@item
-The command @command{avatarsay} can be used as a fancy text-viewer, more 
-or less like @command{more} or @command{less}.
-
-@item 
-But the command @command{avatarsay} can do much more than that.  It can
-be used as a simple scripting language for making demos that you can
-show for example at an information booth or in a shop's window.
-
-Don't worry, it sounds more complicated, than it is.  I should rather
-say, you can spice up your texts with occasional commands.
-
-@item  
-Then there is the library @code{libakfavatar}, which you can use from
-programming languages.  Currently @w{Free Pascal}, @acronym{GNU}-Pascal
-and C-compatible languages are supported.  Especially the Pascal language is
-suited for beginners to learn how to program.  The library is simple to use,
-like writing command-line programs --- but it's much more fun!
-
-@end enumerate
-
-@page
 @section General usage (keys)
 @cindex keys
 

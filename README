@@ -2,19 +2,24 @@ AKFAvatar
 
 Homepage: http://akfavatar.nongnu.org/
 
-AKFAvatar is software where an image of an avatar appears on the screen
-and tells things written in a balloon.  First the avatar moves slowly in
-from the right side. Then text is shown in a balloon.
+AKFAvatar is a fancy graphical user interface for text oriented applications,
+where an avatar appears on the screen, and tells things to the user written
+in a balloon.  There can also be recorded audio files, so that the user
+even can hear, what it is saying.
 
-You can use the libakfavatar library for your own C programs.
-There is also a rather mature Pascal-binding for GNU-Pascal and
-Free Pascal.
+Applications for AKFAvatar can be written in Lua, an easy to learn scripting
+language.  It has an interface for C programs, which can also be used for
+Objective-C or C++.  Furthermore there are bindings for Free Pascal and
+GNU Pascal.
 
-The program avatarsay can be used as a fancy user interface for
-textconsole programs, or as a fancy text-reader or manpage-viewer.
-Furthermore the program supports some basic commands, so it can be
-used as a scripting-language for simple demos.
+AKFAvatar already comes with quite a few ready to use applications and modules.
+There is for example a text-viewer, a module to make question-answer exercises
+and there are many more things you could do with it...
 
+For POSIX-compatible operating systems there is a manpage viewer, and 
+there is even a terminal emulator.  So you can run many existing terminal
+based programs in this fancy environment.
+----------------------------------------------------------------------------
 
 This package is free software under the GPL version 3 or any later
 version. Details can be found in the file COPYING.
