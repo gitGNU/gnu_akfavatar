@@ -296,7 +296,7 @@ This is not needed in normal programs.
 Only use this, if you are sure you need it.
 @end defun
 
-@defun avt.load_audio_file (filename)
+@defun avt.load_audio_file ([filename])
 Reads audio data from a file.
 
 supported audio formats:
@@ -315,11 +315,19 @@ mono or stereo
 
 The current implementation can only play sounds with up to 16Bit precision,
 but AU-files with more Bits can be read.
+
+When no @var{filename} is given, or the @var{filename} is @code{nil} or
+an empty string, it returns an empty audio element, ie. you can call its
+methods, it just doesn't play anything.
 @end defun
 
-@defun avt.load_audio_string (audio_data)
+@defun avt.load_audio_string ([audio_data])
 Reads audio data from a string.
 Otherwise the same as @command{avt.load_audio_file()}.
+
+When no @var{audio_data} is given, or the @var{audio_data} is @code{nil} or
+an empty string, it returns an empty audio element, ie. you can call its
+methods, it just doesn't play anything.
 
 See also: @code{base64.decode}
 @end defun

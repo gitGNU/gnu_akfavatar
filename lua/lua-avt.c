@@ -1217,13 +1217,23 @@ static int
 lavt_load_audio_file (lua_State * L)
 {
   const char *filename;
+  size_t len;
   avt_audio_t **audio;
 
-  filename = luaL_checkstring (L, 1);
+  filename = "";
+  len = 0;
+  if (!lua_isnoneornil (L, 1))
+    filename = luaL_checklstring (L, 1, &len);
+
+  /* promblem: the garbage collector doesn't see, how heavy this is */
   audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
+  *audio = NULL;
   luaL_getmetatable (L, AUDIODATA);
   lua_setmetatable (L, -2);
-  *audio = avt_load_audio_file (filename);
+
+  if (len > 0)
+    *audio = avt_load_audio_file (filename);
+
   return 1;
 }
 
@@ -1234,11 +1244,20 @@ lavt_load_audio_string (lua_State * L)
   size_t len;
   avt_audio_t **audio;
 
-  data = (char *) luaL_checklstring (L, 1, &len);
+  data = "";
+  len = 0;
+  if (!lua_isnoneornil (L, 1))
+    data = (char *) luaL_checklstring (L, 1, &len);
+
+  /* promblem: the garbage collector doesn't see, how heavy this is */
   audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
+  *audio = NULL;
   luaL_getmetatable (L, AUDIODATA);
   lua_setmetatable (L, -2);
-  *audio = avt_load_audio_data (data, len);
+
+  if (len > 0)
+    *audio = avt_load_audio_data (data, len);
+
   return 1;
 }
 
