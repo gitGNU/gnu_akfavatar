@@ -37,6 +37,9 @@
 #  define ENOMSG EINVAL
 #endif
 
+/* internal name for audio data */
+#define AUDIODATA   "AKFAvatar-Audio"
+
 static avt_bool_t initialized = AVT_FALSE;
 
 static const char *const modes[] =
@@ -1206,19 +1209,6 @@ lavt_quit_audio (lua_State * L AVT_UNUSED)
   return 0;
 }
 
-/* frees audio data (called by garbage collector) */
-static int
-free_audio (lua_State * L)
-{
-  avt_audio_t **audio;
-
-  audio = (avt_audio_t **) luaL_checkudata (L, 1, "AKFAvatar.audio");
-  if (audio)
-    avt_free_audio (*audio);
-
-  return 0;
-}
-
 /*
  * loads an audio file
  * supported: AU and Wave
@@ -1231,7 +1221,7 @@ lavt_load_audio_file (lua_State * L)
 
   filename = luaL_checkstring (L, 1);
   audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
-  luaL_getmetatable (L, "AKFAvatar.audio");
+  luaL_getmetatable (L, AUDIODATA);
   lua_setmetatable (L, -2);
   *audio = avt_load_audio_file (filename);
   return 1;
@@ -1246,29 +1236,10 @@ lavt_load_audio_string (lua_State * L)
 
   data = (char *) luaL_checklstring (L, 1, &len);
   audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
-  luaL_getmetatable (L, "AKFAvatar.audio");
+  luaL_getmetatable (L, AUDIODATA);
   lua_setmetatable (L, -2);
   *audio = avt_load_audio_data (data, len);
   return 1;
-}
-
-/* plays audio data */
-/* a second parameter set to true plays it in a loop */
-static int
-lavt_play_audio (lua_State * L)
-{
-  avt_audio_t **audio;
-
-  audio = (avt_audio_t **) luaL_checkudata (L, 1, "AKFAvatar.audio");
-
-  /*
-   * Don't use check() on avt_play_audio
-   * or else it stops, when the audio cannot be played
-   */
-  if (audio)
-    avt_play_audio (*audio, (avt_bool_t) lua_toboolean (L, 2));
-
-  return 0;
 }
 
 /*
@@ -1286,6 +1257,50 @@ static int
 lavt_stop_audio (lua_State * L AVT_UNUSED)
 {
   avt_stop_audio ();
+  return 0;
+}
+
+/* plays audio data */
+static int
+laudio_play (lua_State * L)
+{
+  avt_audio_t **audio;
+
+  audio = (avt_audio_t **) luaL_checkudata (L, 1, AUDIODATA);
+
+  if (audio && *audio)
+    avt_play_audio (*audio, AVT_FALSE); /* no check! */
+
+  return 0;
+}
+
+/* plays audio data in a loop */
+static int
+laudio_loop (lua_State * L)
+{
+  avt_audio_t **audio;
+
+  audio = (avt_audio_t **) luaL_checkudata (L, 1, AUDIODATA);
+
+  if (audio && *audio)
+    avt_play_audio (*audio, AVT_TRUE); /* no check! */
+
+  return 0;
+}
+
+/* frees audio data */
+static int
+laudio_free (lua_State * L)
+{
+  avt_audio_t **audio;
+
+  audio = (avt_audio_t **) luaL_checkudata (L, 1, AUDIODATA);
+  if (audio && *audio)
+    {
+      avt_free_audio (*audio);
+      *audio = NULL;
+    }
+
   return 0;
 }
 
@@ -1757,7 +1772,6 @@ static const struct luaL_reg akfavtlib[] = {
   {"quit_audio", lavt_quit_audio},
   {"load_audio_file", lavt_load_audio_file},
   {"load_audio_string", lavt_load_audio_string},
-  {"play_audio", lavt_play_audio},
   {"wait_audio_end", lavt_wait_audio_end},
   {"stop_audio", lavt_stop_audio},
   {"viewport", lavt_viewport},
@@ -1789,12 +1803,20 @@ luaopen_akfavatar (lua_State * L)
 {
   luaL_register (L, "avt", akfavtlib);
 
-  /* type for audio data (garbage collection, call as function) */
-  luaL_newmetatable (L, "AKFAvatar.audio");
-  lua_pushcfunction (L, free_audio);
-  lua_setfield (L, -2, "__gc");
-  lua_pushcfunction (L, lavt_play_audio);
-  lua_setfield (L, -2, "__call");
+  /* type for audio data */
+  luaL_newmetatable (L, AUDIODATA);
+  lua_pushvalue (L, -1);
+  lua_setfield (L, -2, "__index");	/* use metatabe itself for indexing */
+  lua_pushcfunction (L, laudio_free);
+  lua_setfield (L, -2, "__gc");	/* garbage collector */
+  lua_pushcfunction (L, laudio_play);
+  lua_setfield (L, -2, "__call");	/* call as function */
+  lua_pushcfunction (L, laudio_play);
+  lua_setfield (L, -2, "play");	/* audio:play() */
+  lua_pushcfunction (L, laudio_loop);
+  lua_setfield (L, -2, "loop");	/* audio:loop() */
+  lua_pushcfunction (L, laudio_free);
+  lua_setfield (L, -2, "free");	/* audio:free() */
   lua_pop (L, 1);		/* pop metatable */
 
   return 1;
