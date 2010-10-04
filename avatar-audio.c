@@ -210,6 +210,7 @@ avt_quit_audio (void)
       soundleft = 0;
       current_sound.len = 0;
       current_sound.sound = NULL;
+      loop = AVT_FALSE;
       avt_alert_func = avt_flash;
       avt_free_audio (my_alert);
       my_alert = NULL;
@@ -719,6 +720,28 @@ avt_load_raw_audio_data (void *data, int data_size,
     }
 
   return (avt_audio_t *) s;
+}
+
+/* Is this sound currently playing? NULL for any sound */
+extern avt_bool_t
+avt_audio_playing (avt_audio_t * snd)
+{
+  AudioStruct *s;
+
+  s = (AudioStruct *) snd;
+
+  if (snd != NULL)
+    {
+      if ((soundleft > 0 || loop) && current_sound.sound == s->sound)
+	return AVT_TRUE;
+    }
+  else /* no specific sound */
+    {
+      if (soundleft > 0)
+	return AVT_TRUE;
+    }
+
+  return AVT_FALSE;
 }
 
 extern void

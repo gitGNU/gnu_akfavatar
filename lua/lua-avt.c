@@ -1288,7 +1288,7 @@ laudio_play (lua_State * L)
   audio = (avt_audio_t **) luaL_checkudata (L, 1, AUDIODATA);
 
   if (audio && *audio)
-    avt_play_audio (*audio, AVT_FALSE); /* no check! */
+    avt_play_audio (*audio, AVT_FALSE);	/* no check! */
 
   return 0;
 }
@@ -1302,7 +1302,7 @@ laudio_loop (lua_State * L)
   audio = (avt_audio_t **) luaL_checkudata (L, 1, AUDIODATA);
 
   if (audio && *audio)
-    avt_play_audio (*audio, AVT_TRUE); /* no check! */
+    avt_play_audio (*audio, AVT_TRUE);	/* no check! */
 
   return 0;
 }
@@ -1321,6 +1321,23 @@ laudio_free (lua_State * L)
     }
 
   return 0;
+}
+
+/* checks if audio is still playing */
+static int
+laudio_playing (lua_State * L)
+{
+  avt_audio_t **audio;
+
+  if (lua_isnoneornil (L, 1))
+    lua_pushboolean (L, avt_audio_playing (NULL));
+  else
+    {
+      audio = (avt_audio_t **) luaL_checkudata (L, 1, AUDIODATA);
+      lua_pushboolean (L, (audio && *audio && avt_audio_playing (*audio)));
+    }
+
+  return 1;
 }
 
 static int
@@ -1806,6 +1823,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"quit_audio", lavt_quit_audio},
   {"load_audio_file", lavt_load_audio_file},
   {"load_audio_string", lavt_load_audio_string},
+  {"audio_playing", laudio_playing},
   {"wait_audio_end", lavt_wait_audio_end},
   {"stop_audio", lavt_stop_audio},
   {"viewport", lavt_viewport},
@@ -1853,6 +1871,8 @@ luaopen_akfavatar (lua_State * L)
   lua_setfield (L, -2, "loop");	/* audio:loop() */
   lua_pushcfunction (L, laudio_free);
   lua_setfield (L, -2, "free");	/* audio:free() */
+  lua_pushcfunction (L, laudio_playing);
+  lua_setfield (L, -2, "playing");	/* audio:playing() */
   lua_pop (L, 1);		/* pop metatable */
 
   return 1;

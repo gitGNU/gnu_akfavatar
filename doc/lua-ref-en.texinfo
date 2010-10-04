@@ -332,9 +332,26 @@ methods, it just doesn't play anything.
 See also: @code{base64.decode}
 @end defun
 
+@defun avt.audio_playing ([audio_data])
+Checks if the audio is currently playing.  If @var{audio_data} is given and is
+not @code{nil} then it checks, if the specified audio is playing.  This can
+also be checked with @command{audio:playing()}.
+@end defun
+
+@defun avt.wait_audio_end ()
+Waits until the audio output ends.
+
+This also ends an audio-loop, but still plays to the end of the current
+sound.
+@end defun
+
+@defun avt.stop_audio ()
+Stops the audio output immediately.
+@end defun
+
 @defun audio:play ()
 @defunx audio ()
-Plays the audio data. The audio must have been loaded by 
+Plays the @var{audio} data. The @var{audio} must have been loaded by 
 @command{avt.load_audio_file()} or @command{avt.load_audio_string()}.
 
 Only one sound can be played at the same time.  When you play
@@ -362,10 +379,6 @@ but you can not rely on it.
 
 @example
 play_audio_file = function (filename)
-  if sound then
-    sound:free()
-    sound = nil
-  end
   sound = avt.load_audio_file (filename)
   sound:play ()
   end
@@ -377,30 +390,28 @@ local to the program (ie. the @dfn{chunk}), which is also okay.
 @end defun
 
 @defun audio:loop ()
-Plays audio data in a loop.  The audio must have been loaded by 
+Plays @var{audio} data in a loop.  The @var{audio} must have been loaded by
 @command{avt.load_audio_file()} or @command{avt.load_audio_string()}.
 
 You can stop the audio loop with @command{avt.wait_audio_end()} or
 @command{avt.stop_audio ()}.
 @end defun
 
-@defun audio:free ()
-Frees the audio data.
+@defun audio:playing ()
+Checks if this @var{audio} data is currently playing.
+The @var{audio} must have been loaded by @command{avt.load_audio_file()}
+or @command{avt.load_audio_string()}.
 
-It is also freed by the garbage collector, but don't count on it.
+This is the same as @command{avt.audio_playing (audio)}.
+@end defun
+
+@defun audio:free ()
+Frees the @var{audio} data.  If this @var{audio} is currently playing,
+it is stopped.
+
+Audio data is also freed by the garbage collector, but don't count on it.
 Audio data can hog up a lot of memory. Unfortunately the garbage
 collector doesn't see that.
-@end defun
-
-@defun avt.wait_audio_end ()
-Waits until the audio output ends.
-
-This also ends an audio-loop, but still plays to the end of the current
-sound.
-@end defun
-
-@defun avt.stop_audio ()
-Stops the audio output immediately.
 @end defun
 
 @defun avt.encoding (encoding)

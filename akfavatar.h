@@ -1001,6 +1001,13 @@ AVT_API int avt_wait_audio_end (void);
 /* stops audio immediately */
 AVT_API void avt_stop_audio (void);
 
+/*
+ * Is this sound currently playing?
+ * Use NULL for any sound
+ * It might not catch the last buffer, but it's save to free the data then
+ */
+AVT_API avt_bool_t avt_audio_playing (avt_audio_t *snd);
+
 
 /***********************************************************************/
 /* deprecated functions - only for backward comatibility */

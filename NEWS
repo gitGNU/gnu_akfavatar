@@ -18,7 +18,7 @@
   API changes:
    - new functions: avt_tell, avt_tell_len, avt_tell_mb, avt_tell_mb_len,
      avt_markup, avt_get_mb_encoding, avt_set_auto_margin, avt_get_auto_margin,
-     avt_printable
+     avt_printable, avt_audio_playing
    - avt_auto_margin: marked deprecated, use avt_set_auto_argin instead
    - avt_free_audio: when the given sound is playing, stops it
    - avt_get_key: supports some function keys
