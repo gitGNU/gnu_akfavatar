@@ -1323,6 +1323,21 @@ laudio_free (lua_State * L)
   return 0;
 }
 
+static int
+laudio_tostring (lua_State * L)
+{
+  avt_audio_t **audio;
+
+  audio = (avt_audio_t **) luaL_checkudata (L, 1, AUDIODATA);
+
+  if (audio && *audio)
+    lua_pushfstring (L, "AKFAvatar-Audio (%p)", audio);
+  else
+    lua_pushfstring (L, "AKFAvatar-Audio, empty (%p)", audio);
+
+  return 1;
+}
+
 /*
  * set a viewport (sub-area of the textarea)
  * 1=x, 2=y, 3=width, 4=height
@@ -1830,6 +1845,8 @@ luaopen_akfavatar (lua_State * L)
   lua_setfield (L, -2, "__gc");	/* garbage collector */
   lua_pushcfunction (L, laudio_play);
   lua_setfield (L, -2, "__call");	/* call as function */
+  lua_pushcfunction (L, laudio_tostring);
+  lua_setfield (L, -2, "__tostring");
   lua_pushcfunction (L, laudio_play);
   lua_setfield (L, -2, "play");	/* audio:play() */
   lua_pushcfunction (L, laudio_loop);
