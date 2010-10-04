@@ -737,7 +737,7 @@ avt_audio_playing (avt_audio_t * snd)
     }
   else /* no specific sound */
     {
-      if (soundleft > 0)
+      if (soundleft > 0 || loop)
 	return AVT_TRUE;
     }
 
