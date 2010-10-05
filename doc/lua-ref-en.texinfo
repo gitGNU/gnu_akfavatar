@@ -374,11 +374,10 @@ play_audio_file = function (filename)
 @end example
 
 This function is okay because of the command @command{avt.wait_audio_end()}.
-It would @emph{not} be okay without it!  That might work in most cases,
-but you can not rely on it.
 
 @example
 play_audio_file = function (filename)
+  avt.wait_audio_end ()
   sound = avt.load_audio_file (filename)
   sound:play ()
   end
@@ -419,7 +418,7 @@ Change the used text encoding.
 @end defun
 
 @defun avt.get_encoding ()
-Gets the currently used encoding.
+Gets the currently used text encoding.
 
 Returns @code{nil} if none is set yet.
 @end defun

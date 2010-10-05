@@ -1850,6 +1850,17 @@ static const struct luaL_reg akfavtlib[] = {
   {NULL, NULL}
 };
 
+static const struct luaL_reg audiolib[] = {
+  {"play", laudio_play},
+  {"loop", laudio_loop},
+  {"playing", laudio_playing},
+  {"free", laudio_free},
+  {"__gc", laudio_free},
+  {"__call", laudio_play},
+  {"__tostring", laudio_tostring},
+  {NULL, NULL}
+};
+
 int
 luaopen_akfavatar (lua_State * L)
 {
@@ -1859,20 +1870,7 @@ luaopen_akfavatar (lua_State * L)
   luaL_newmetatable (L, AUDIODATA);
   lua_pushvalue (L, -1);
   lua_setfield (L, -2, "__index");	/* use metatabe itself for indexing */
-  lua_pushcfunction (L, laudio_free);
-  lua_setfield (L, -2, "__gc");	/* garbage collector */
-  lua_pushcfunction (L, laudio_play);
-  lua_setfield (L, -2, "__call");	/* call as function */
-  lua_pushcfunction (L, laudio_tostring);
-  lua_setfield (L, -2, "__tostring");
-  lua_pushcfunction (L, laudio_play);
-  lua_setfield (L, -2, "play");	/* audio:play() */
-  lua_pushcfunction (L, laudio_loop);
-  lua_setfield (L, -2, "loop");	/* audio:loop() */
-  lua_pushcfunction (L, laudio_free);
-  lua_setfield (L, -2, "free");	/* audio:free() */
-  lua_pushcfunction (L, laudio_playing);
-  lua_setfield (L, -2, "playing");	/* audio:playing() */
+  luaL_register (L, NULL, audiolib);
   lua_pop (L, 1);		/* pop metatable */
 
   return 1;
