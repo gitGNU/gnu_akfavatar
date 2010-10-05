@@ -1348,9 +1348,9 @@ laudio_tostring (lua_State * L)
   audio = (avt_audio_t **) luaL_checkudata (L, 1, AUDIODATA);
 
   if (audio && *audio)
-    lua_pushfstring (L, "AKFAvatar-Audio (%p)", audio);
+    lua_pushfstring (L, AUDIODATA " (%p)", audio);
   else
-    lua_pushfstring (L, "AKFAvatar-Audio, empty (%p)", audio);
+    lua_pushfstring (L, AUDIODATA ", empty (%p)", audio);
 
   return 1;
 }
