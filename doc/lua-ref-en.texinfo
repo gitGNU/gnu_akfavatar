@@ -2,6 +2,11 @@ This is a reference for the Lua-bindings to AKFAvatar.  It does not describe
 the language Lua. The reference manual for the language Lua can be found
 on the Internet on @uref{http://www.lua.org/manual/5.1/}.
 
+Don't worry, you don't need to understand or even learn everything.
+You can do lots of things with very few commands.  Just pick the parts you
+are interested in and experiment with that.  There are many parts of Lua
+or AKFAvatar, which you will most probably never need.
+
 There are currently two modules built in: ``lua-akfavatar'' and ``base64''.
 
 @appendixsec lua-akfavatar
@@ -410,7 +415,11 @@ it is stopped.
 
 Audio data is also freed by the garbage collector, but don't count on it.
 Audio data can hog up a lot of memory. Unfortunately the garbage
-collector doesn't see that.
+collector doesn't see that, because it is handled outside of Lua.
+However, you could also run the garbage collector manually with using
+@samp{collectgarbage("collect")} from time to time.  Then you don't need
+to call this function.  Just make sure the currently playing sound is still
+assigned to a variable when you do this.
 @end defun
 
 @defun avt.encoding (encoding)
@@ -838,7 +847,7 @@ Returns the license notice for AKFAvatar as string.
 @end defun
 
 @defun avt.quit ()
-Quit the avatar subsystem (closes the window).
+Quit the avatar subsystem (closes the window).  It also quits the audio subsystem.
 
 This function is not needed for normal programs. Only use it, if your program
 should continue working without a visible window.
