@@ -44,7 +44,8 @@ LUA_MODULES = \
 	  $(srcdir)/lua/akfavatar/neutral.lua \
 	  $(srcdir)/lua/akfavatar/questionary.lua \
 	  $(srcdir)/lua/akfavatar/Fragebogen.lua \
-	  $(srcdir)/lua/akfavatar/person.lua
+	  $(srcdir)/lua/akfavatar/person.lua \
+	  $(srcdir)/lua/akfavatar/ar.lua
 
 all: $(TARGET)
 
@@ -592,6 +593,7 @@ dist: info html man $(srcdir)/alert.au
 	   $(srcdir)/lua/akfavatar/neutral.lua \
 	   $(srcdir)/lua/akfavatar/questionary.lua \
 	   $(srcdir)/lua/akfavatar/Fragebogen.lua \
+	   $(srcdir)/lua/akfavatar/ar.lua \
 	   $(PKGNAME)/lua/akfavatar/
 
 	mkdir $(PKGNAME)/doc
@@ -665,6 +667,7 @@ dist-bin-default: info html libakfavatar.so avatarsay-bin lua-akfavatar-bin
 	   $(srcdir)/lua/akfavatar/neutral.lua \
 	   $(srcdir)/lua/akfavatar/questionary.lua \
 	   $(srcdir)/lua/akfavatar/Fragebogen.lua \
+	   $(srcdir)/lua/akfavatar/ar.lua \
 	   $(BINPKGNAME)/akfavatar/
 	tar -cvf $(BINPKGNAME).$(SYSTEM).$(ARCH).tar $(BINPKGNAME)/
 	rm -rf $(BINPKGNAME)/
