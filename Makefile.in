@@ -576,6 +576,7 @@ dist: info html man $(srcdir)/alert.au
 	   $(srcdir)/lua/lbase64.c \
 	   $(srcdir)/lua/base64-encode.lua \
 	   $(srcdir)/lua/characters_overview.lua \
+	   $(srcdir)/lua/avtdemo.lua \
 	   $(srcdir)/lua/fs-quiz-en.lua $(srcdir)/lua/fs-quiz-de.lua \
 	   $(PKGNAME)/lua/
 
@@ -647,6 +648,7 @@ dist-bin-default: info html libakfavatar.so avatarsay-bin lua-akfavatar-bin
 	ln $(srcdir)/lua/characters_overview.lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/fs-quiz-en.lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/fs-quiz-de.lua $(BINPKGNAME)/
+	ln $(srcdir)/lua/avtdemo.lua $(BINPKGNAME)/
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/NEWS $(srcdir)/avtman \
 	   $(srcdir)/fsdemo-??.avt \
 	   $(srcdir)/gnome-akfavatar \
