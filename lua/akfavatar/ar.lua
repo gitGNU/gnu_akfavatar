@@ -24,7 +24,8 @@ ar = {}
 -- open an archive, mode = "r"
 function ar:open(filename, mode)
   local f, msg
-  local obj = { name=filename, mode=mode }
+  local obj = { name=filename, mode=mode, member_size=0 }
+  -- member_size is only > 0 when the member was opened
 
   if mode == "r" or not mode then
     f, msg = io.open(filename, "rb")
@@ -42,55 +43,79 @@ function ar:open(filename, mode)
 
   setmetatable(obj, self)
   self.__index = self
-  obj.f = f
+  obj.file = f
 
   return obj
 end
 
 -- closes archive
 function ar:close()
-  self.f:close()
+  self.file:close()
+  self.file=nil
+  self.name=nil
+  self.mode=nil
+  self.member_size=nil
 end
 
--- get next member - skip is the size of the previous member or 0
-function ar:next(skip)
-  if skip and skip > 0 then self.f:seek("cur", skip+(skip%2)) end
+-- get next member
+-- on success it returns size, name, timestamp, uid, gid, mode
+-- or -1 when the end is reached
+-- on error it returns nil and an error message
+function ar:next()
+  if self.member_size > 0 then --> skip body of current member
+    self.file:seek("cur", self.member_size + (self.member_size % 2))
+    self.member_size = 0
+  end
 
-  local name = self.f:read(16)
+  local name = self.file:read(16)
   if name == nil then --> end reached
-    return 0
+    return -1
   end
 
   name = string.match(name, "^(.-)/?%s*$")
 
-  local timestamp = tonumber(self.f:read(12))
-  local uid = tonumber(self.f:read(6))
-  local gid = tonumber(self.f:read(6))
-  local mode = string.match(self.f:read(8), "%d+")
-  local size = tonumber(self.f:read(10))
+  local timestamp = tonumber(self.file:read(12))
+  local uid = tonumber(self.file:read(6))
+  local gid = tonumber(self.file:read(6))
+  local mode = string.match(self.file:read(8), "%d+")
+  local size = tonumber(self.file:read(10))
+  self.member_size = size
 
-   -- check the magic enty
-  if self.f:read(2) ~= "`\n" then
+   -- check the magic entry
+  if self.file:read(2) ~= "`\n" then
     return nil, self.name .. ": archive broken"
   end
 
   return size, name, timestamp, uid, gid, mode
 end
 
+function ar:rewind()
+  local size, msg = self.file:seek("set", 8) --> skip the header
+  self.member_size = 0
+
+  if size == nil then
+    return nil, msg
+  else
+    return true
+  end
+end
+
 -- seeks a named member
+-- on success it returns size, name, timestamp, uid, gid, mode
+-- on error it returns nil and an error message
 function ar:seek(member)
   local size, name, timestamp, uid, gid, mode
 
-  size, name = self.f:seek("set", 8) --> skip the header
+  size, name = self.file:seek("set", 8)
+  self.member_size = 0
   if size == nil then
     return nil, name
   end
 
-  size = 0
   repeat
-    size, name, timestamp, uid, gid, mode = self:next(size)
+    size, name, timestamp, uid, gid, mode = self:next()
     if size == nil then return nil, name
-    elseif size == 0 then 
+    elseif size == -1 then
       return nil, self.name .. ": " .. member .. ": member not found"
     end
   until name == member
@@ -98,15 +123,32 @@ function ar:seek(member)
   return size, name, timestamp, uid, gid, mode
 end
 
--- gets a named member as string
+-- gets content of a member as string
+-- if no member name is given, it gets the current/next member
+-- on error it returns nil and an error message
 function ar:get(member)
-  local size, n = self:seek(member)
-  if size == nil then
-    return nil, n
+  local size, msg
+
+  if member then
+    size, msg = self:seek(member)
+  else --> no member given
+    if self.member_size > 0 then
+      size = self.member_size
+    else --> no member opened
+      size, msg = self:next()
+      if size == -1 then
+        return nil, self.name .. ": no further members"
+      end
+    end
   end
 
-  local result = self.f:read(size)
-  if size%2~=0 then self.f:seek("cur", 1) end
+  if size == nil then
+    return nil, msg
+  end
+
+  local result = self.file:read(size)
+  if size % 2 ~= 0 then self.file:seek("cur", 1) end
+  self.member_size = 0
 
   return result
 end
