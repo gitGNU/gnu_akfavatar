@@ -26,7 +26,6 @@
 #include <strings.h>
 #include <stdlib.h>
 #include <unistd.h>		/* getcwd, chdir */
-#include <libgen.h>		/* for dirname */
 #include <locale.h>
 #include <errno.h>
 
@@ -305,30 +304,8 @@ start_screen (void)
   avt_wait_button ();
 }
 
-/* goto directory of the given path, returns the basename */
-/* the basename must be freed by the caller */
-static char *
-goto_script_directory (char *p)
-{
-  char *path, *dir, *name;
-
-  path = strdup (p);
-  dir = dirname (path);
-
-  if (strcmp (".", dir) != 0)
-    chdir (dir);
-
-  free (path);
-
-  path = strdup (p);
-  name = strdup (basename (path));
-  free (path);
-
-  return name;
-}
-
 static void
-get_args (int argc, char *argv[], int script_index, char *script_name)
+get_args (int argc, char *argv[], int script_index)
 {
   int i;
 
@@ -337,7 +314,7 @@ get_args (int argc, char *argv[], int script_index, char *script_name)
 
   /* script name as arg[0] */
   lua_pushinteger (L, 0);
-  lua_pushstring (L, script_name);
+  lua_pushstring (L, argv[script_index]);
   lua_settable (L, -3);
 
   /* arg[1] ... */
@@ -367,18 +344,13 @@ main (int argc, char **argv)
 
   if (script_index)
     {
-      char *script_name;
+      get_args (argc, argv, script_index);
 
-      script_name = goto_script_directory (argv[script_index]);
-      get_args (argc, argv, script_index, script_name);
-
-      if (load_file (script_name) != 0 || lua_pcall (L, 0, 0, 0) != 0)
+      if (load_file (argv[script_index]) != 0 || lua_pcall (L, 0, 0, 0) != 0)
 	{
 	  if (lua_isstring (L, -1))
 	    avta_error (lua_tostring (L, -1), NULL);
 	}
-
-      free (script_name);
     }
   else				/* no script at command-line */
     {
