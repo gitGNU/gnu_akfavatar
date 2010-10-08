@@ -77,7 +77,7 @@ function ar:next()
   local timestamp = tonumber(self.file:read(12))
   local uid = tonumber(self.file:read(6))
   local gid = tonumber(self.file:read(6))
-  local mode = string.match(self.file:read(8), "%d+")
+  local mode = tonumber(self.file:read(8), 8) -- given as octal!
   local size = tonumber(self.file:read(10))
   self.member_size = size
 
