@@ -214,19 +214,16 @@ new_loadfile (lua_State * L)
 static int
 new_dofile (lua_State * L)
 {
-  const char *filename;
-
-  filename = luaL_checkstring (L, 1);
-
-  /* keep only the filename in the stack */
+  /* make sure only the filename is in the stack */
   lua_settop (L, 1);
 
-  if (load_file (filename) != 0)
+  if (load_file (luaL_checkstring (L, 1)) != 0)
     lua_error (L);
 
   lua_call (L, 0, LUA_MULTRET);
 
   /* only the filename and the results are left on the stack */
+  /* so "lua_gettop (l) - 1" is the number of results */
   return lua_gettop (L) - 1;
 }
 
