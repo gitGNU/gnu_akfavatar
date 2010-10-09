@@ -294,6 +294,7 @@ dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe
 	cp $(srcdir)/lua/akfavatar/questionary.lua $(BINPKGNAME)/akfavatar/
 	cp $(srcdir)/lua/akfavatar/Fragebogen.lua $(BINPKGNAME)/akfavatar/
 	cp $(srcdir)/lua/akfavatar/ar.lua $(BINPKGNAME)/akfavatar/
+	cp $(srcdir)/lua/akfavatar/avtdemo.lua $(BINPKGNAME)/akfavatar/
 	cp $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	cp $(srcdir)/AUTHORS $(BINPKGNAME)/AUTHORS.txt
 	cp $(srcdir)/COPYING $(BINPKGNAME)/COPYING.txt
