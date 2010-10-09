@@ -21,13 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 require "lua-akfavatar"
 require "akfavatar.ar"
 
-local audio = avt.load_audio_string() --> empty audio infrastructure
-local old_audio = audio
-local initialized = false
-local moved_in = false
-local avatar = "default"
-local title = "AKFAvatar-Demo"
-local archive = false
+local audio, old_audio, initialized, moved_in, avatar, title, archive
 
 local function initialize()
   avt.initialize {title=title, avatar=avatar, audio=true}
@@ -219,6 +213,15 @@ function avtdemo(demofile)
   local empty = true
 
   if not demofile then return end
+
+  -- reset settings
+  audio = avt.load_audio_string()
+  old_audio = audio
+  initialized = false
+  moved_in = false
+  avatar = "default"
+  title = "AKFAvatar-Demo"
+  archive = false
 
   for line in string.gmatch(get_script(demofile), "(.-)\r?\n") do
     if string.find(line, "^%s*#") or 
