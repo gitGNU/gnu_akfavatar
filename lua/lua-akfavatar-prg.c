@@ -196,6 +196,24 @@ load_file (const char *filename)
   return status;
 }
 
+/* loadfile with workaround for UTF-8 BOM and rejecting binaries */
+static int
+new_loadfile (lua_State * L)
+{
+  const char *filename;
+
+  filename = luaL_checkstring (L, 1);
+
+  if (load_file (filename) != 0)
+    {
+      lua_pushnil (L);
+      lua_insert (L, -2);	/* swap last 2 results */
+      return 2;
+    }
+
+  return 1;
+}
+
 /* dofile with workaround for UTF-8 BOM and rejecting binaries */
 static int
 new_dofile (lua_State * L)
@@ -235,7 +253,9 @@ initialize_lua (void)
   lua_setfield (L, -2, "base64");
   lua_pop (L, 2);
 
-  /* replace dofile */
+  /* replace loadfile/dofile */
+  lua_pushcfunction (L, new_loadfile);
+  lua_setglobal (L, "loadfile");
   lua_pushcfunction (L, new_dofile);
   lua_setglobal (L, "dofile");
 }

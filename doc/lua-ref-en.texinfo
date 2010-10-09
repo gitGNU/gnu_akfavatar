@@ -397,6 +397,8 @@ local to the program (ie. the @dfn{chunk}), which is also okay.
 Plays @var{audio} data in a loop.  The @var{audio} must have been loaded by
 @command{avt.load_audio_file()} or @command{avt.load_audio_string()}.
 
+This is for example useful for short pieces of music.
+
 You can stop the audio loop with @command{avt.wait_audio_end()} or
 @command{avt.stop_audio ()}.
 @end defun
