@@ -218,16 +218,16 @@ new_dofile (lua_State * L)
 
   filename = luaL_checkstring (L, 1);
 
-  /* clear the stack */
-  lua_settop (L, 0);
+  /* keep only the filename in the stack */
+  lua_settop (L, 1);
 
   if (load_file (filename) != 0)
     lua_error (L);
 
   lua_call (L, 0, LUA_MULTRET);
 
-  /* only the results are left on the stack */
-  return lua_gettop (L);
+  /* only the filename and the results are left on the stack */
+  return lua_gettop (L) - 1;
 }
 
 static void
