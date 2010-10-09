@@ -200,14 +200,10 @@ load_file (const char *filename)
 static int
 new_loadfile (lua_State * L)
 {
-  const char *filename;
-
-  filename = luaL_checkstring (L, 1);
-
-  if (load_file (filename) != 0)
+  if (load_file (luaL_checkstring (L, 1)) != 0)
     {
       lua_pushnil (L);
-      lua_insert (L, -2);	/* swap last 2 results */
+      lua_insert (L, -2);	/* nil before error message */
       return 2;
     }
 
