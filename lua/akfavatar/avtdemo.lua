@@ -1,5 +1,3 @@
-#!/usr/bin/env lua-akfavatar
-
 --[[-------------------------------------------------------------------
 Moldule for making demos for Lua-AKFAvatar
 Copyright (c) 2010 Andreas K. Foerster <info@akfoerster.de>
