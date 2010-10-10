@@ -153,5 +153,12 @@ function ar:get(member)
   return result
 end
 
+-- runs the member as lua code
+-- if no member name is given, it gets the current/next member
+-- errors are propagated
+function ar:dolua(member)
+  assert(loadstring(assert(self:get(member)), member or self.name))()
+end
+
 return ar
 
