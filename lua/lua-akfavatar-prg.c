@@ -73,6 +73,18 @@ quit (void)
   lua_close (L);
 }
 
+static void
+require (const char *module)
+{
+  lua_getglobal (L, "require");
+  lua_pushstring (L, module);
+  if (lua_pcall (L, 1, 0, 0) != 0)
+    {
+      avta_error (lua_tostring (L, -1), NULL);
+      lua_pop (L, 1);		/* pop message */
+    }
+}
+
 static int
 check_options (int argc, char *argv[])
 {
@@ -108,8 +120,9 @@ initialize (void)
     avta_error ("cannot initialize graphics", avt_get_error ());
 }
 
+/* check if this program can handle the file */
 static avt_bool_t
-is_lua (const char *filename)
+check_filename (const char *filename)
 {
   /* never show lua-akfavatar.lua! It's a module */
   if (strcasecmp (filename, "lua-akfavatar.lua") == 0)
@@ -117,7 +130,9 @@ is_lua (const char *filename)
   else
     {
       const char *ext = strrchr (filename, '.');
-      return (avt_bool_t) (ext && strcasecmp (ext, ".lua") == 0);
+      return (avt_bool_t)
+	(ext && (strcasecmp (".lua", ext) == 0
+		 || strcasecmp (".avt", ext) == 0));
     }
 }
 
@@ -253,14 +268,30 @@ initialize_lua (void)
   lua_setglobal (L, "dofile");
 }
 
+static void
+avtdemo (const char *filename)
+{
+  require ("akfavatar.avtdemo");
+  lua_getglobal (L, "avtdemo");
+  lua_pushstring (L, filename);
+  if (lua_pcall (L, 1, 0, 0) != 0)
+    {
+      /* on a normal quit-request there is nil on the stack */
+      if (lua_isstring (L, -1))
+	avta_error (lua_tostring (L, -1), NULL);
+      lua_pop (L, 1);		/* pop message (or the nil) */
+    }
+}
+
 static avt_bool_t
 ask_file (void)
 {
   char filename[256];
   char lua_dir[4096 + 1];
+  const char *ext;
 
   avt_set_balloon_size (0, 0);
-  if (avta_file_selection (filename, sizeof (filename), &is_lua))
+  if (avta_file_selection (filename, sizeof (filename), &check_filename))
     return AVT_FALSE;
 
   if (*filename)
@@ -268,19 +299,25 @@ ask_file (void)
       if (!getcwd (lua_dir, sizeof (lua_dir)))
 	lua_dir[0] = '\0';
 
-      /* arg[0] = filename */
-      lua_newtable (L);
-      lua_pushinteger (L, 0);
-      lua_pushstring (L, filename);
-      lua_settable (L, -3);
-      lua_setglobal (L, "arg");
-
-      if (load_file (filename) != 0 || lua_pcall (L, 0, 0, 0) != 0)
+      ext = strrchr (filename, '.');
+      if (ext && strcasecmp (".avt", ext) == 0)
+	avtdemo (filename);
+      else			/* assume Lua code */
 	{
-	  /* on a normal quit-request there is nil on the stack */
-	  if (lua_isstring (L, -1))
-	    avta_error (lua_tostring (L, -1), NULL);
-	  lua_pop (L, 1);	/* pop message (or the nil) */
+	  /* arg[0] = filename */
+	  lua_newtable (L);
+	  lua_pushinteger (L, 0);
+	  lua_pushstring (L, filename);
+	  lua_settable (L, -3);
+	  lua_setglobal (L, "arg");
+
+	  if (load_file (filename) != 0 || lua_pcall (L, 0, 0, 0) != 0)
+	    {
+	      /* on a normal quit-request there is nil on the stack */
+	      if (lua_isstring (L, -1))
+		avta_error (lua_tostring (L, -1), NULL);
+	      lua_pop (L, 1);	/* pop message (or the nil) */
+	    }
 	}
 
       if (lua_dir[0] != '\0')
@@ -357,12 +394,21 @@ main (int argc, char **argv)
 
   if (script_index)
     {
-      get_args (argc, argv, script_index);
+      const char *ext;
 
-      if (load_file (argv[script_index]) != 0 || lua_pcall (L, 0, 0, 0) != 0)
+      ext = strrchr (argv[script_index], '.');
+      if (ext && strcasecmp (".avt", ext) == 0)
+	avtdemo (argv[script_index]);
+      else			/* assume Lua code */
 	{
-	  if (lua_isstring (L, -1))
-	    avta_error (lua_tostring (L, -1), NULL);
+	  get_args (argc, argv, script_index);
+
+	  if (load_file (argv[script_index]) != 0
+	      || lua_pcall (L, 0, 0, 0) != 0)
+	    {
+	      if (lua_isstring (L, -1))
+		avta_error (lua_tostring (L, -1), NULL);
+	    }
 	}
     }
   else				/* no script at command-line */
