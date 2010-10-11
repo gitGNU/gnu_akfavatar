@@ -202,6 +202,11 @@ local function get_script(demofile)
     f:seek("set") --> rewind to start
     script = f:read("*all")
     f:close()
+
+    -- eventually change the working directory
+    if string.find(demofile, "[\\/]") then
+      avt.set_directory (string.match(demofile, "^(.+)[\\/]"))
+    end
   end
 
   return script
