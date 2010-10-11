@@ -426,6 +426,7 @@ main (int argc, char **argv)
 	      avt_set_background_color_name ("default");
 	      avt_set_balloon_color_name ("floral white");
 	      avt_markup (AVT_FALSE);
+	      avt_text_direction (AVT_LEFT_TO_RIGHT);
 	      avt_normal_text ();
 	      avt_quit_audio ();
 	      avt_set_title ("Lua-AKFAvatar Starter", "AKFAvatar");
