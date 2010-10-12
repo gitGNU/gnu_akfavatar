@@ -743,10 +743,10 @@ number of items/lines
 first key, like '1' or 'a', 0 for no keys
 
 @item back:
-set to @code{true], when the first entry is a back function
+set to @code{true}, when the first entry is a back function
 
 @item forward:
-set to @code{true], when the last entry is a forward function
+set to @code{true}, when the last entry is a forward function
 
 @end table
 @end defun
