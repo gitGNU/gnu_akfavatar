@@ -1,6 +1,9 @@
 #!/bin/sh
 # this file is in the Public Domain -- AKFoerster
 
+# This script sets up search paths for the uninstalled package
+# It is not meant for installation!
+
 localdir=$(dirname "$0")
 test "$localdir" = "." && localdir=$(pwd)
 
