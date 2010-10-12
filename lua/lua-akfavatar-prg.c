@@ -60,6 +60,7 @@ help (void)
   puts (" or:   lua-akfavatar --dir=/usr/local/share/akfavatar/lua\n");
   puts (" --help                    show this help");
   puts (" --version                 show version");
+  puts (" -l name                   require library 'name'");
   puts
     (" --dir=<directory>         start in directory (for the filechooser)");
   exit (EXIT_SUCCESS);
@@ -76,6 +77,7 @@ quit (void)
 static void
 require (const char *module)
 {
+  fprintf (stderr, "require: '%s'\n", module);
   lua_getglobal (L, "require");
   lua_pushstring (L, module);
   if (lua_pcall (L, 1, 0, 0) != 0)
@@ -85,23 +87,44 @@ require (const char *module)
     }
 }
 
+static void
+handle_require_options (int argc, char *argv[])
+{
+  int i;
+
+  for (i = 1; i < argc && argv[i][0] == '-'; i++)
+    {
+      if (strncmp (argv[i], "-l", 2) == 0)
+	{
+	  if (argv[i][2] != '\0')
+	    require (argv[i] + 2);
+	  else
+	    require (argv[++i]);
+	}
+    }
+}
+
 static int
 check_options (int argc, char *argv[])
 {
   int i;
 
-  i = 1;
-  while (i < argc && argv[i][0] == '-')
+  for (i = 1; i < argc && argv[i][0] == '-'; i++)
     {
-      if (!strcmp (argv[i], "--version") || !strcmp (argv[i], "-v"))
+      if (strcmp (argv[i], "--version") == 0 || strcmp (argv[i], "-v") == 0)
 	version ();
-      else if (!strcmp (argv[i], "--help") || !strcmp (argv[i], "-h"))
+      else if (strcmp (argv[i], "--help") == 0 || strcmp (argv[i], "-h") == 0)
 	help ();
-      else if (!strncmp (argv[i], "--dir=", 6))
+      else if (strncmp (argv[i], "--dir=", 6) == 0)
 	chdir (argv[i] + 6);
+      else if (strncmp (argv[i], "-l", 2) == 0)
+	{
+	  /* ignore -l for now */
+	  if (argv[i][2] == '\0')
+	    i++;
+	}
       else
 	avta_error ("unknown option", argv[i]);
-      i++;
     }
 
   /* no script found? */
@@ -391,6 +414,7 @@ main (int argc, char **argv)
   /* initialize Lua */
   initialize_lua ();
   atexit (quit);
+  handle_require_options (argc, argv);
 
   if (script_index)
     {
@@ -438,6 +462,7 @@ main (int argc, char **argv)
 	  /* restart Lua */
 	  lua_close (L);
 	  initialize_lua ();
+	  handle_require_options (argc, argv);
 	}
     }
 
