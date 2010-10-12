@@ -729,6 +729,7 @@ It returns the approriete character or a number.
 
 @defun avt.choice (start_line, items [, key] [, back] [, forward])
 This can be used for menus.
+It returns the number of the selected item.
 
 @table @asis
 
@@ -742,10 +743,10 @@ number of items/lines
 first key, like '1' or 'a', 0 for no keys
 
 @item back:
-whether first entry is a back function
+set to @code{true], when the first entry is a back function
 
 @item forward:
-whether last entry is a forward function
+set to @code{true], when the last entry is a forward function
 
 @end table
 @end defun
