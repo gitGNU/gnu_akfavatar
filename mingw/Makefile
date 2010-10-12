@@ -276,7 +276,6 @@ dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe
 	cp $(srcdir)/lua/story1-en.lua $(srcdir)/lua/story1-de.lua $(BINPKGNAME)/
 	cp $(srcdir)/lua/fs-quiz-en.lua $(BINPKGNAME)/
 	cp $(srcdir)/lua/fs-quiz-de.lua $(BINPKGNAME)/
-	cp $(srcdir)/lua/avtdemo.lua $(BINPKGNAME)/
 	cp $(srcdir)/lua/base64-encode.lua $(BINPKGNAME)/
 	cp $(srcdir)/lua/characters_overview.lua $(BINPKGNAME)/
 	cp $(srcdir)/lua/akfavatar/README $(BINPKGNAME)/akfavatar/README.txt
