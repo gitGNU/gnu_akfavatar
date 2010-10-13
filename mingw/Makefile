@@ -98,10 +98,10 @@ avatar-audio.wo: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h \
                   $(srcdir)/avtinternals.h alert.c
 	$(CC) -c $(SDL_CFLAGS) $(CFLAGS) -I. -o $@ $(srcdir)/avatar-audio.c
 
-ucsfont7x14.c: $(srcdir)/7x14.bdf
+ucsfont7x14.c: $(srcdir)/7x14.bdf $(srcdir)/bdf2c
 	$(AWK) -f $(srcdir)/bdf2c $(srcdir)/7x14.bdf > $@
 
-ucsfont9x18.c: $(srcdir)/9x18.bdf
+ucsfont9x18.c: $(srcdir)/9x18.bdf $(srcdir)/bdf2c
 	$(AWK) -f $(srcdir)/bdf2c $(srcdir)/9x18.bdf > $@
 
 font.wo: $(srcdir)/font.c ucsfont7x14.c ucsfont9x18.c
