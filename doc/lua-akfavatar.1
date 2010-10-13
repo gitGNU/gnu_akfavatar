@@ -52,22 +52,25 @@ Typically used to load libraries.
 Start in that directory
 
 .SH ENVIRONMENT
-
 .IP LUA_PATH
 searchpath for Lua modules.
+Templates are separated with semicolons.
+A question mark
+.b (?)
+is replaced with the module name.
+A dot in the module name is replaced with the directory separator.
+Two semicolons
+.B (;;)
+add the default path.
+.IP LUA_CPATH
+searchpath for C modules.  Syntax like in
+.IR LUA_PATH .
 
-.SH LICENSE
-Copyright \(co 2010 Andreas K. Foerster
-
-AKFAvatar is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-AKFAvatar is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+.SH AUTHORS
+.IP "AKFAvatar, Lua-AKFAvatar"
+Andreas K. Foerster
+.IP "Lua"
+R. Ierusalimschy, L. H. de Figueiredo, and W. Celes
 
 .SH HOMEPAGE
 http://akfavatar.nongnu.org/
