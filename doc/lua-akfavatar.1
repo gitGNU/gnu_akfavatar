@@ -1,0 +1,82 @@
+.\" Process this file with
+.\" groff -man -Tlatin1 lua-akfavatar.1
+.\"
+.TH "lua-akfavatar" 1 "0.19.0" AKFAvatar
+
+.SH NAME
+lua-akfavatar \- Lua interpreter for the AKFavatar user interface
+
+.SH SYNTAX
+.BI "lua-akfavatar [" options "] [" " script " "[" args "] ]"
+
+.SH DESCRIPTION
+Lua-AKFAvatar is the Lua interpreter for the AKFAvatar user interface.
+It loads and executes Lua scripts in source form (not bytecode).
+Either Lua scripts can be loaded or ".avt" demo files.
+If no
+.I script
+is given, it starts with a file-selector.  The file selector starts in
+the current working directory, or in the directory given with the option
+.IR --directory=dir .
+
+The given
+.I args
+are available to
+.I script
+as strings in a global table named
+.BR arg .
+The
+.I script
+itself is in
+.BR arg[0] ,
+the first argument is
+.B arg[1]
+and so on.
+
+.SH OPTIONS
+.IP "-h | --help"
+print a short help-message
+
+.IP "-v | --version"
+print version information
+
+.TP
+.RI "-l " name
+call
+.BI require(' name ')
+before executing the script.
+Typically used to load libraries.
+
+.TP
+.RI --dir= dir
+Start in that directory
+
+.SH ENVIRONMENT
+
+.IP LUA_PATH
+searchpath for Lua modules.
+
+.SH LICENSE
+Copyright \(co 2010 Andreas K. Foerster
+
+AKFAvatar is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+AKFAvatar is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+.SH HOMEPAGE
+http://akfavatar.nongnu.org/
+
+.SH "SEE ALSO"
+.BR lua (1)
+.BR avatarsay (1)
+.BR avtcmd (1)
+.br
+http://akfavatar.nongnu.org/manual/
+.br
+http://www.lua.org/manual/5.1/

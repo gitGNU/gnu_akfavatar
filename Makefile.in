@@ -387,10 +387,12 @@ uninstall-info:
 install-man: man
 	-$(INSTALL_DATA) $(srcdir)/doc/avatarsay.1 $(DESTDIR)$(mandir)/man1
 	-$(INSTALL_DATA) $(srcdir)/doc/avtcmd.1 $(DESTDIR)$(mandir)/man1
+	-$(INSTALL_DATA) $(srcdir)/doc/lua-akfavatar.1 $(DESTDIR)$(mandir)/man1
 
 uninstall-man:
 	-rm -f $(DESTDIR)$(mandir)/man1/avatarsay.1 
 	-rm -f $(DESTDIR)$(mandir)/man1/avtcmd.1
+	-rm -f $(DESTDIR)$(mandir)/man1/lua-akfavatar.1
 
 txt:
 	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) txt
@@ -601,6 +603,7 @@ dist: info html man $(srcdir)/alert.au
 	mkdir $(PKGNAME)/doc
 	ln $(srcdir)/doc/README $(srcdir)/doc/Makefile \
 	   $(srcdir)/doc/avatarsay.1 $(srcdir)/doc/avtcmd.1 \
+	   $(srcdir)/doc/lua-akfavatar.1 \
 	   $(srcdir)/doc/akfavatar-en.texinfo $(srcdir)/doc/akfavatar-en.info \
 	   $(srcdir)/doc/pasref.txt \
 	   $(srcdir)/doc/akfavatar-en.html \
