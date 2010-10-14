@@ -6,7 +6,7 @@
 .SH NAME
 lua-akfavatar \- Lua interpreter for the AKFavatar user interface
 
-.SH SYNTAX
+.SH SYNOPSIS
 .BI "lua-akfavatar [" options "] [" " script " "[" args "] ]"
 
 .SH DESCRIPTION
@@ -32,6 +32,10 @@ itself is in
 the first argument is
 .B arg[1]
 and so on.
+
+You have to use the command
+.BI "require """ lua-akfavatar """"
+to get access to the AKFAvatar specific functions.
 
 .SH OPTIONS
 .IP "-h | --help"
@@ -65,6 +69,18 @@ add the default path.
 .IP LUA_CPATH
 searchpath for C modules.  Syntax like in
 .IR LUA_PATH .
+
+.SH EXAMPLE
+.EX
+require "lua-akfavatar"
+
+avt.initialize {title="my first program", encoding="UTF-8"}
+
+avt.say("Hello there!\\n")
+user = avt.ask("What's your name? ")
+avt.say("Hello, ", user, ". Nice to meet you!\\n")
+avt.wait_button()
+.EE
 
 .SH AUTHORS
 .IP "AKFAvatar, Lua-AKFAvatar"
