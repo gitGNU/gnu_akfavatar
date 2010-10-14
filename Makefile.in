@@ -659,6 +659,9 @@ dist-bin-default: info html libakfavatar.so avatarsay-bin lua-akfavatar-bin
 	   $(BINPKGNAME)/
 	ln $(srcdir)/doc/akfavatar-??.html $(BINPKGNAME)/
 	ln $(srcdir)/doc/akfavatar-??.info $(BINPKGNAME)/
+	ln $(srcdir)/doc/avatarsay.1 $(BINPKGNAME)/
+	ln $(srcdir)/doc/avtcmd.1 $(BINPKGNAME)/
+	ln $(srcdir)/doc/lua-akfavatar.1 $(BINPKGNAME)/
 	ln $(srcdir)/lua/akfavatar/README $(srcdir)/lua/akfavatar/LIESMICH \
 	   $(srcdir)/lua/akfavatar/person.lua \
 	   $(srcdir)/lua/akfavatar/info_icon.lua \
