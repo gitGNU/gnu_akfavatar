@@ -71,16 +71,17 @@ searchpath for C modules.  Syntax like in
 .IR LUA_PATH .
 
 .SH EXAMPLE
-.EX
 require "lua-akfavatar"
-
+.sp
 avt.initialize {title="my first program", encoding="UTF-8"}
-
+.sp
 avt.say("Hello there!\\n")
+.br
 user = avt.ask("What's your name? ")
+.br
 avt.say("Hello, ", user, ". Nice to meet you!\\n")
+.br
 avt.wait_button()
-.EE
 
 .SH AUTHORS
 .IP "AKFAvatar, Lua-AKFAvatar"
