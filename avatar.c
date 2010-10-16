@@ -2167,7 +2167,7 @@ avt_wait (int milliseconds)
 {
   Uint32 endtime;
 
-  if (screen)
+  if (screen && _avt_STATUS == AVT_NORMAL)
     {
       endtime = SDL_GetTicks () + milliseconds;
 
@@ -3165,7 +3165,7 @@ avt_backspace (void)
 extern int
 avt_put_character (wchar_t ch)
 {
-  if (!screen)
+  if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   /* no textfield? => draw balloon */
@@ -3307,7 +3307,7 @@ avt_overstrike (const wchar_t * txt)
 extern int
 avt_say (const wchar_t * txt)
 {
-  if (!screen)
+  if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   /* nothing to do, when there is no text  */
@@ -3348,7 +3348,7 @@ avt_say_len (const wchar_t * txt, int len)
 
   /* nothing to do, when txt == NULL */
   /* but do allow a text to start with zeros here */
-  if (!screen || !txt)
+  if (!screen || !txt || _avt_STATUS != AVT_NORMAL)
     return avt_checkevent ();
 
   /* no textfield? => draw balloon */
@@ -3380,7 +3380,7 @@ avt_tell_len (const wchar_t * txt, int len)
   int width, height, line_length, pos;
   const wchar_t *p;
 
-  if (!txt || !*txt)
+  if (!txt || !*txt || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   width = 0;
@@ -3721,7 +3721,7 @@ avt_say_mb (const char *txt)
 {
   wchar_t *wctext;
 
-  if (screen)
+  if (screen && _avt_STATUS == AVT_NORMAL)
     {
       avt_mb_decode (&wctext, txt, SDL_strlen (txt) + 1);
 
@@ -3741,7 +3741,7 @@ avt_say_mb_len (const char *txt, int len)
   wchar_t *wctext;
   int wclen;
 
-  if (screen)
+  if (screen && _avt_STATUS == AVT_NORMAL)
     {
       wclen = avt_mb_decode (&wctext, txt, len);
 
@@ -3760,7 +3760,7 @@ avt_tell_mb (const char *txt)
 {
   wchar_t *wctext;
 
-  if (screen)
+  if (screen && _avt_STATUS == AVT_NORMAL)
     {
       avt_mb_decode (&wctext, txt, SDL_strlen (txt) + 1);
 
@@ -3780,7 +3780,7 @@ avt_tell_mb_len (const char *txt, int len)
   wchar_t *wctext;
   int wclen;
 
-  if (screen)
+  if (screen && _avt_STATUS == AVT_NORMAL)
     {
       wclen = avt_mb_decode (&wctext, txt, len);
 
@@ -3919,7 +3919,7 @@ avt_choice (int *result, int start_line, int items, int key,
   int end_line;
   int line_nr, old_line;
 
-  if (screen)
+  if (screen && _avt_STATUS == AVT_NORMAL)
     {
       /* get a copy of the viewport */
       plain_menu = SDL_CreateRGBSurface (SDL_SWSURFACE,
@@ -4248,7 +4248,7 @@ avt_pager (const wchar_t * txt, int len, int startline)
     return AVT_ERROR;
 
   /* do we actually have something to show? */
-  if (!txt || !*txt)
+  if (!txt || !*txt || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   /* show mouse pointer */
@@ -4475,7 +4475,7 @@ avt_pager_mb (const char *txt, int len, int startline)
   wchar_t *wctext;
   int wclen;
 
-  if (screen && txt)
+  if (screen && txt && _avt_STATUS == AVT_NORMAL)
     {
       if (len <= 0)
 	len = SDL_strlen (txt);
@@ -4501,7 +4501,7 @@ avt_ask (wchar_t * s, int size)
   int old_textdir;
   avt_bool_t insert_mode;
 
-  if (!screen)
+  if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   /* this function only works with left to right text */
@@ -4686,7 +4686,7 @@ avt_ask_mb (char *s, int size)
   AVT_ICONV_INBUF_T *inbuf;
   size_t inbytesleft, outbytesleft;
 
-  if (!screen)
+  if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   /* check if encoding was set */
@@ -4715,7 +4715,7 @@ avt_ask_mb (char *s, int size)
 extern int
 avt_move_in (void)
 {
-  if (!screen)
+  if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   /* fill the screen with background color */
@@ -4788,7 +4788,7 @@ avt_move_in (void)
 extern int
 avt_move_out (void)
 {
-  if (!screen || !avt_visible)
+  if (!screen || !avt_visible || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   /* needed to remove the balloon */
@@ -4873,7 +4873,7 @@ avt_wait_button (void)
   SDL_Rect btn_rect;
   avt_bool_t nokey;
 
-  if (!screen)
+  if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   /* load button */
@@ -4956,8 +4956,12 @@ avt_navigate (const char *buttons)
 
   result = AVT_ERROR;		/* no result */
 
+  if (_avt_STATUS != AVT_NORMAL)
+    return _avt_STATUS;
+
   if (!screen)
     return AVT_ERROR;
+
 
   button_count = SDL_strlen (buttons);
 
@@ -5190,7 +5194,7 @@ avt_wait_key (const wchar_t * message)
   SDL_Rect dst;
   struct pos oldcursor;
 
-  if (!screen)
+  if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   /* print message (outside of textfield!) */
@@ -5292,7 +5296,7 @@ avt_wait_key_mb (char *message)
 {
   wchar_t *wcmessage;
 
-  if (!screen)
+  if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   avt_mb_decode (&wcmessage, message, SDL_strlen (message) + 1);
@@ -5314,7 +5318,7 @@ avt_decide (void)
   SDL_Rect yes_rect, no_rect;
   int result;
 
-  if (!screen)
+  if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   SDL_SetClipRect (screen, &window);
@@ -5456,7 +5460,7 @@ avt_show_image_file (const char *filename)
 {
   SDL_Surface *image;
 
-  if (!screen)
+  if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   /* try internal XPM reader first */
@@ -5490,7 +5494,7 @@ avt_show_image_stream (avt_stream * stream)
 {
   SDL_Surface *image;
 
-  if (!screen)
+  if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   /* try internal XPM reader first */
@@ -5527,7 +5531,7 @@ avt_show_image_data (void *img, int imgsize)
 {
   SDL_Surface *image;
 
-  if (!screen)
+  if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   /* try internal XPM reader first */
@@ -5561,7 +5565,7 @@ avt_show_image_xpm (char **xpm)
 {
   avt_image_t *image = NULL;
 
-  if (!screen)
+  if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   image = (avt_image_t *) avt_load_image_xpm (xpm);
@@ -5592,7 +5596,7 @@ avt_show_image_xbm (const unsigned char *bits, int width, int height,
   avt_image_t *image;
   int red, green, blue;
 
-  if (!screen)
+  if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   if (width <= 0 || height <= 0)
@@ -5628,7 +5632,7 @@ avt_show_gimp_image (void *gimp_image)
   SDL_Surface *image;
   gimp_img_t *img;
 
-  if (!screen)
+  if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   img = (gimp_img_t *) gimp_image;
@@ -5891,6 +5895,9 @@ calculate_balloonmaxheight (void)
 extern int
 avt_change_avatar_image (avt_image_t * image)
 {
+  if (_avt_STATUS != AVT_NORMAL)
+    return _avt_STATUS;
+
   if (avt_visible)
     avt_clear_screen ();
 
@@ -6331,7 +6338,7 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
   int i;
   int length;
 
-  if (!screen)
+  if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   /* store old background color */
@@ -6443,7 +6450,7 @@ avt_credits_mb (const char *txt, avt_bool_t centered)
 {
   wchar_t *wctext;
 
-  if (screen)
+  if (screen && _avt_STATUS == AVT_NORMAL)
     {
       avt_mb_decode (&wctext, txt, SDL_strlen (txt) + 1);
 

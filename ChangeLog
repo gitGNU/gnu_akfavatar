@@ -1,3 +1,7 @@
+2010-10-16  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (many functions): check status before doing something
+
 2010-10-04  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_audio_playing): new function
