@@ -355,7 +355,8 @@ ask_file (void)
 static void
 start_screen (void)
 {
-  avt_move_in ();
+  if (avt_move_in () != AVT_NORMAL)
+    exit (EXIT_SUCCESS);
   avt_set_balloon_size (6, 80);
   avt_underlined (AVT_TRUE);
   avt_bold (AVT_TRUE);
@@ -374,7 +375,8 @@ start_screen (void)
   avt_new_line ();
   avt_new_line ();
   avt_say_mb (avt_license ());
-  avt_wait_button ();
+  if (avt_wait_button () != AVT_NORMAL)
+    exit (EXIT_SUCCESS);
 }
 
 static void
