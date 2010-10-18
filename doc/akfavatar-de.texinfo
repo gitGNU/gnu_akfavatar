@@ -69,6 +69,7 @@ ohne jegliche Garantie angeboten.
 @menu
 * Überblick::                      Überblick über AKFAvatar
 * Installation::                   AKFAvatar installieren
+* Aufruf von lua-akfavatar::       Verwendung von @command{lua-akfavatar}
 * Verwendung von avatarsay::       Verwendung des Werkzeugs @command{avatarsay}
 * Verwendung von gnome-akfavatar:: Wie man es unter @acronym{GNOME} verwendet
 * Formate::                        Dateiformate und andere Angaben
@@ -327,6 +328,9 @@ Insbesondere die Terminal-Emulation läuft nicht unter Windows.
 Die Windows-spezifischen Zeichensätze, wie @code{"WINDOWS-1252"},
 auch bekannt als @code{"MS-ANSI"} werden ab Version 0.19.0 unterstützt.
 
+@node Aufruf von lua-akfavatar
+@chapter Aufruf von @command{lua-akfavatar}
+@include lua-akfavatar-de.texinfo
 
 @node Verwendung von avatarsay
 @chapter Verwendung des Werkzeugs @command{avatarsay}

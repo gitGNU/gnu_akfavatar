@@ -1,0 +1,74 @@
+The format for running @command{lua-akfavatar} is:
+
+@example
+lua-akfavatar [@var{options}] [@var{script} [@var{args @dots{}}]]
+@end example
+
+Lua-AKFAvatar is the Lua interpreter for the AKFAvatar user interface.
+It loads and executes Lua scripts in source form (not bytecode).
+Either Lua scripts can be loaded or ``.avt'' demo files.
+If no @var{script} is given, it starts with a file-selector.
+The file-selector starts in the current working directory, or in the
+directory given with the option @option{--dir=@var{directory}}.
+
+The given @var{args} are available to @var{script} as strings in a 
+global table named @code{arg}.
+The @var{script} itself is in @code{arg[0]}, the first argument is
+@code{arg[1]} and so on.
+
+You have to use the command @samp{require "lua-akfavatar"}
+to get access to the AKFAvatar specific functions.
+
+The program @command{lua-akfavatar} supports the following options:
+
+@comment don't use @option here
+@table @code
+@item -h
+@itemx --help
+print a short help-message
+
+@item -v
+@itemx --version
+print version information
+
+@item -l @var{name}
+call @samp{require("@var{name}")} before executing the @var{script}.
+Typically used to load libraries.
+
+@item --dir=@var{directory}
+Start in that @var{directory}
+
+@end table
+
+@subsection Environment variables
+
+@table @code
+@item LUA_PATH
+searchpath for Lua modules.
+Templates are separated with semicolons.
+A question mark @samp{?} is replaced with the module name.
+A dot in the module name is replaced with the directory separator.
+Two semicolons @samp{;;} add the default path.
+
+@item LUA_CPATH
+searchpath for C modules.  Syntax like in @code{LUA_PATH}.
+@end table
+
+@need 1700
+@subsection Example program
+
+@example
+require "lua-akfavatar"
+
+avt.initialize @{title="my first program", encoding="UTF-8"@}
+
+avt.say("Hello there!\n")
+user = avt.ask("What's your name? ")
+avt.say("Hello, ", user, ". Nice to meet you!\n")
+avt.wait_button()
+@end example
+
+See @ref{Lua reference} for a description of all AKFAvatar-specific
+commands.
+The reference manual for the language Lua can be found on the Internet:
+@uref{http://www.lua.org/manual/5.1/}.

@@ -62,17 +62,18 @@ without any warranty.
 @end ifnottex
 
 @menu
-* Overview::              Overview of AKFAvatar
-* Installation::          How to install AKFAvatar
-* Using avatarsay::       Using the tool @command{avatarsay}
-* Using gnome-akfavatar:: Using it under GNOME
-* Formats::               About file formats and values
-* Programming::           Programming with AKFAvatar
-* Lua reference::         Reference for Lua
-* Pascal reference::      Reference for Pascal
-* C reference::           the C header file @code{akfavatar.h}
-* Color names::           Names of colors
-* Concept Index::         Index of this documentation
+* Overview::               Overview of AKFAvatar
+* Installation::           How to install AKFAvatar
+* Invoking lua-akfavatar:: How to use @command{lua-akfavatar}
+* Using avatarsay::        Using the tool @command{avatarsay}
+* Using gnome-akfavatar::  Using it under GNOME
+* Formats::                About file formats and values
+* Programming::            Programming with AKFAvatar
+* Lua reference::          Reference for Lua
+* Pascal reference::       Reference for Pascal
+* C reference::            the C header file @code{akfavatar.h}
+* Color names::            Names of colors
+* Concept Index::          Index of this documentation
 @end menu
 
 
@@ -302,6 +303,9 @@ Especially the terminal emulation doesn't work on Windows.
 The Windows-specific charsets like @code{"WINDOWS-1252"}, also known as
 @code{"MS-ANSI"} are supported since version 0.19.0.
 
+@node Invoking lua-akfavatar
+@chapter Invoking @command{lua-akfavatar}
+@include lua-akfavatar-en.texinfo
 
 @node Using avatarsay
 @chapter Using the tool @command{avatarsay}

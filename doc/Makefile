@@ -24,12 +24,14 @@ info: $(srcdir)/doc/akfavatar-en.info $(srcdir)/doc/akfavatar-de.info
 
 $(srcdir)/doc/akfavatar-en.info: $(srcdir)/doc/akfavatar-en.texinfo \
 	    $(srcdir)/doc/lua-ref-en.texinfo \
+	    $(srcdir)/doc/lua-akfavatar-en.texinfo \
 	    $(srcdir)/doc/pasref.txt $(srcdir)/akfavatar.h version.texi
 	-$(MAKEINFO) -I. -I$(srcdir) -I$(srcdir)/doc -o $@ \
 	  $(srcdir)/doc/akfavatar-en.texinfo
 
 $(srcdir)/doc/akfavatar-de.info: $(srcdir)/doc/akfavatar-de.texinfo \
 	    $(srcdir)/doc/lua-ref-en.texinfo \
+	    $(srcdir)/doc/lua-akfavatar-de.texinfo \
 	    $(srcdir)/doc/pasref.txt $(srcdir)/akfavatar.h version.texi
 	-$(MAKEINFO) -I. -I$(srcdir) -I$(srcdir)/doc -o $@ --enable-encoding \
 	  $(srcdir)/doc/akfavatar-de.texinfo
@@ -38,6 +40,7 @@ html: $(srcdir)/doc/akfavatar-en.html $(srcdir)/doc/akfavatar-de.html
 
 $(srcdir)/doc/akfavatar-en.html: $(srcdir)/doc/akfavatar-en.texinfo \
 	       $(srcdir)/doc/lua-ref-en.texinfo \
+	       $(srcdir)/doc/lua-akfavatar-en.texinfo \
 	       $(srcdir)/doc/pasref.txt $(srcdir)/akfavatar.h version.texi
 	-$(TEXI2HTML) $(USECSS) -I . -I $(srcdir) -I $(srcdir)/doc \
 	      --output=$@ \
@@ -45,6 +48,7 @@ $(srcdir)/doc/akfavatar-en.html: $(srcdir)/doc/akfavatar-en.texinfo \
 
 $(srcdir)/doc/akfavatar-de.html: $(srcdir)/doc/akfavatar-de.texinfo \
 	           $(srcdir)/doc/lua-ref-en.texinfo \
+	          $(srcdir)/doc/lua-akfavatar-de.texinfo \
 	           $(srcdir)/doc/pasref.txt \
 	           $(srcdir)/akfavatar.h version.texi
 	-$(TEXI2HTML) $(USECSS) -I . -I $(srcdir) -I $(srcdir)/doc \
@@ -55,12 +59,14 @@ txt: akfavatar-en.txt akfavatar-de.txt
 
 akfavatar-en.txt: $(srcdir)/doc/akfavatar-en.texinfo \
 	          $(srcdir)/doc/lua-ref-en.texinfo \
+	          $(srcdir)/doc/lua-akfavatar-en.texinfo \
 	          $(srcdir)/doc/pasref.txt \
 	          $(srcdir)/akfavatar.h version.texi
 	-$(MAKEINFO) -I. -I$(srcdir) -I$(srcdir)/doc --plaintext -o $@ \
 	      $(srcdir)/doc/akfavatar-en.texinfo
 
 akfavatar-de.txt: $(srcdir)/doc/akfavatar-de.texinfo \
+	          $(srcdir)/doc/lua-akfavatar-de.texinfo \
 	          $(srcdir)/doc/lua-ref-en.texinfo \
 	          $(srcdir)/doc/pasref.txt \
 	          $(srcdir)/akfavatar.h version.texi
@@ -72,6 +78,7 @@ dvi: akfavatar-en.dvi akfavatar-de.dvi
 
 akfavatar-en.dvi: $(srcdir)/doc/akfavatar-en.texinfo \
 	          $(srcdir)/doc/lua-ref-en.texinfo \
+	          $(srcdir)/doc/lua-akfavatar-en.texinfo \
 	          $(srcdir)/doc/pasref.txt \
 	          $(srcdir)/akfavatar.h version.texi
 	-$(TEXI2DVI) --build=tidy -I . -I $(srcdir) -I $(srcdir)/doc \
@@ -79,6 +86,7 @@ akfavatar-en.dvi: $(srcdir)/doc/akfavatar-en.texinfo \
 
 akfavatar-de.dvi: $(srcdir)/doc/akfavatar-de.texinfo \
 	          $(srcdir)/doc/lua-ref-en.texinfo \
+	          $(srcdir)/doc/lua-akfavatar-de.texinfo \
 	          $(srcdir)/doc/pasref.txt \
 	          $(srcdir)/akfavatar.h version.texi
 	-$(TEXI2DVI) --build=tidy -I . -I $(srcdir) -I $(srcdir)/doc \
@@ -87,6 +95,7 @@ akfavatar-de.dvi: $(srcdir)/doc/akfavatar-de.texinfo \
 pdf: akfavatar-en.pdf akfavatar-de.pdf
 
 akfavatar-en.pdf: $(srcdir)/doc/akfavatar-en.texinfo \
+	          $(srcdir)/doc/lua-akfavatar-en.texinfo \
 	          $(srcdir)/doc/lua-ref-en.texinfo \
 	          $(srcdir)/doc/pasref.txt \
 	          $(srcdir)/akfavatar.h $(srcdir)/doc/pdfmeta-en version.texi
@@ -97,6 +106,7 @@ akfavatar-en.pdf: $(srcdir)/doc/akfavatar-en.texinfo \
 	   && mv tmp.pdf akfavatar-en.pdf
 
 akfavatar-de.pdf: $(srcdir)/doc/akfavatar-de.texinfo \
+	          $(srcdir)/doc/lua-akfavatar-de.texinfo \
 	          $(srcdir)/doc/lua-ref-en.texinfo \
 	          $(srcdir)/doc/pasref.txt \
 	          $(srcdir)/akfavatar.h $(srcdir)/doc/pdfmeta-de version.texi
@@ -116,6 +126,8 @@ akfavatar-de.ps: akfavatar-de.dvi
 
 docbook: $(srcdir)/doc/akfavatar-en.texinfo \
 	 $(srcdir)/doc/akfavatar-de.texinfo \
+	 $(srcdir)/doc/lua-akfavatar-en.texinfo \
+	 $(srcdir)/doc/lua-akfavatar-de.texinfo \
 	 $(srcdir)/doc/pasref.txt $(srcdir)/akfavatar.h version.texi
 	-$(MAKEINFO) -I. -I$(srcdir) -I$(srcdir)/doc --docbook \
 	             $(srcdir)/doc/akfavatar-en.texinfo

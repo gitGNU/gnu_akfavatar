@@ -1,0 +1,79 @@
+Das Programm @command{lua-akfavatar} wird wie folgt aufgerufen:
+
+@example
+lua-akfavatar [@var{Optionen}] [@var{Skript} [@var{Argumente @dots{}}]]
+@end example
+
+Lua-AKFAvatar ist de Lua-Interpreter für die AKFAvatar-Oberfläche.
+Es lädt und führt Lua-Skripte in Quelltext-Form aus (keinen Bytecode).
+Es können entweder Lua-Skripte geladen werden, oder ``.avt''-Demo-Dateien.
+Wird kein @var{Skript} angegeben, wird ein Datei-Auswahldialog gestartet.
+Der Datei-Auswahldialog startet im aktuellen Arbeitsverzeichnis, oder
+in dem Verzeichnis, das durch die Option @option{--dir=@var{Verzeichnis}}
+angegeben wurde.
+
+Die Angegebenen @var{Argumente} sind im @var{Skript} als Strings in
+einer globalen Tabelle namens @code{arg} abrufbar.  Der Name des
+@var{Skript}es selbst ist in @code{arg[0]}, das erste Argument
+ist @code{arg[1]} und so weiter.
+
+Um Zugang zu den AKFAvatar-spezifischen Funktionen zu erhalten,
+muss man erstmal den Befehl @samp{require "lua-akfavatar"}
+aufrufen.
+
+Das Programm @command{lua-akfavatar} unterstützt die folgenden Optionen:
+
+@comment nicht @option verwenden
+@table @code
+@item -h
+@itemx --help
+Zeigt eine kurze Hilfe
+
+@item -v
+@itemx --version
+Zeigt die Version an
+
+@item -l @var{name}
+Ruft @samp{require("@var{name}")} vor dem Aufruf von @var{Skript} auf.
+Dies wird üblicherweise für Bibliotheken (Module) verwendet.
+
+@item --dir=@var{Verzeichnis}
+Startet in dem @var{Verzeichnis}
+
+@end table
+
+@subsection Umgebungsvariablen
+
+@table @code
+@item LUA_PATH
+Suchpfad für Lua Module.
+Schablonen werden durch Semikola voneinander getrennt.
+Ein Fragezeichen @samp{?} wird durch den Modul-Namen ersetzt.
+Ein Punkt innerhalb des Modul-Namens wird durch das Verzeichnis-Trennzeichen
+ersetzt.
+Zwei Semikola @samp{;;} fügen den Standard-Pfad hinzu.
+
+@item LUA_CPATH
+Suchpfad für C Module.
+Syntax wie in @code{LUA_PATH}.
+@end table
+
+@need 1700
+@subsection Beispiel-Programm
+
+@example
+require "lua-akfavatar"
+
+avt.initialize @{title="Mein erstes Programm", encoding="UTF-8"@}
+
+avt.say("Hallo!\n")
+Benutzer = avt.ask("Wie ist denn dein Name? ")
+avt.say("Hallo, ", Benutzer, ".  Schön dich zu sehen!\n")
+avt.wait_button()
+@end example
+
+Die @ref{Lua Referenz} beschreibt alle AKFAvatar-spezifischen
+Befehle.
+Die Referenz-Anleitung für die Sprache Lua findet man im
+Internet unter
+@uref{http://www.lua.org/manual/5.1/}.

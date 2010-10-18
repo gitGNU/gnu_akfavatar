@@ -605,6 +605,9 @@ dist: info html man $(srcdir)/alert.au
 	   $(srcdir)/doc/avatarsay.1 $(srcdir)/doc/avtcmd.1 \
 	   $(srcdir)/doc/lua-akfavatar.1 \
 	   $(srcdir)/doc/akfavatar-en.texinfo $(srcdir)/doc/akfavatar-en.info \
+	   $(srcdir)/doc/lua-akfavatar-en.texinfo \
+	   $(srcdir)/doc/lua-akfavatar-de.texinfo \
+	   $(srcdir)/doc/lua-ref-en.texinfo \
 	   $(srcdir)/doc/pasref.txt \
 	   $(srcdir)/doc/akfavatar-en.html \
 	   $(srcdir)/doc/akfavatar-de.texinfo $(srcdir)/doc/akfavatar-de.info \
