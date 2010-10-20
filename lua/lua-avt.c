@@ -1146,16 +1146,31 @@ lavt_tell (lua_State * L)
 }
 
 static int
-lavt_put_character (lua_State * L)
+lavt_say_unicode (lua_State * L)
 {
   int n, i;
+  const char *s;
+  size_t len;
 
   is_initialized ();
 
   n = lua_gettop (L);
 
   for (i = 1; i <= n; i++)
-    check (avt_put_character ((wchar_t) luaL_checkinteger (L, i)));
+    {
+      /*
+       * lua_isnumber is not suited, because it implicitly tries to
+       * convert strings to numbers
+       */
+      if (lua_type (L, i) == LUA_TNUMBER)
+	check (avt_put_character ((wchar_t) lua_tointeger (L, i)));
+      else
+	{
+	  s = luaL_checklstring (L, i, &len);
+	  if (s)
+	    check (avt_say_mb_len (s, len));
+	}
+    }
 
   return 0;
 }
@@ -1742,7 +1757,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"write", lavt_say},		/* alias */
   {"print", lavt_print},
   {"tell", lavt_tell},
-  {"put_character", lavt_put_character},
+  {"say_unicode", lavt_say_unicode},
   {"printable", lavt_printable},
   {"ask", lavt_ask},
   {"navigate", lavt_navigate},

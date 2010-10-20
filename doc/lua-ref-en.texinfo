@@ -116,13 +116,24 @@ Example: @samp{avt.tell ("Three apples cost ", 3 * appleprice, " Euros.")}.
 @strong{Attention:} This function still has problems with tabs ("\t").
 @end defun
 
-@defun avt.put_character (@dots{})
-Displays characters with the Unicode codepoints given as numbers.
+@defun avt.say_unicode (@dots{})
+Prints text in the balloon.
 
-This is independent from the chosen encoding.  It can be used to display
-characters, which are not available in the current encoding.
+This is very similar to @command{avt.say()}.
+Strings are handled in the same way, but numbers are interpreted as
+Unicode codepoints.
 
-Example: @samp{avt.put_character (0x2642, 0x2661, 0x2640)}
+This can be used to insert characters, which are not available in the
+current string encoding.  Sometimes it is also easier to use.
+
+Example:@*
+@samp{avt.say_unicode ("Three apples cost ", tostring(3 * appleprice),
+0x20AC, ".\n")}.
+
+As you can see, you have to use @command{tostring()} when nummerical expressions
+are to be shown as numbers.
+The number @code{0x20AC} however represents the Euro currency sign.
+(The @samp{0x} introduces hexadecimal numbers.)
 @end defun
 
 @defun avt.printable (codepoint)
@@ -130,7 +141,7 @@ Checks whether the given @var{codepoint} represents a printable Unicode characte
 It returns @code{true} when this is the case or @code{false} if the font doesn't
 have a printable glyph for it (it may be a supported control character).
 This function is independent from the chosen encoding.
-It can be used together with @code{avt.put_character(@dots{})}.
+It can be used together with @code{avt.say_unicode(@dots{})}.
 @end defun
 
 @defun avt.ask ([question])

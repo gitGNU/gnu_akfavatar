@@ -66,7 +66,7 @@ local items = {
 local function block(f, t)
   for i = f, t do
     if avt.printable(i) then
-      avt.put_character(i, 0x0020)
+      avt.say_unicode(i, 0x0020)
     end
   end
 
