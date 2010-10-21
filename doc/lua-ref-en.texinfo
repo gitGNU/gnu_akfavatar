@@ -117,14 +117,15 @@ Example: @samp{avt.tell ("Three apples cost ", 3 * appleprice, " Euros.")}.
 @end defun
 
 @defun avt.say_unicode (@dots{})
-Prints text in the balloon.
+Prints text in the balloon with special support for Unicode characters
 
-This is very similar to @command{avt.say()}.
-Strings are handled in the same way, but numbers are interpreted as
-Unicode codepoints.
+This command is very similar to @command{avt.say()}.
+Strings are handled in the same way, depending on the selected encoding,
+but numbers are interpreted as Unicode codepoints, independent from the
+selected encoding.
 
 This can be used to insert characters, which are not available in the
-current string encoding.  Sometimes it is also easier to use.
+current string encoding.  Sometimes it is also just easier to use.
 
 Example:@*
 @samp{avt.say_unicode ("Three apples cost ", tostring(3 * appleprice),
