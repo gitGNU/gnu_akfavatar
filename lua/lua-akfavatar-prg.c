@@ -77,7 +77,6 @@ quit (void)
 static void
 require (const char *module)
 {
-  fprintf (stderr, "require: '%s'\n", module);
   lua_getglobal (L, "require");
   lua_pushstring (L, module);
   if (lua_pcall (L, 1, 0, 0) != 0)
