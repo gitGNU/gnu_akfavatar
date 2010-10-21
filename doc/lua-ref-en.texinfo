@@ -134,6 +134,9 @@ As you can see, you have to use @command{tostring()} when nummerical expressions
 are to be shown as numbers.
 The number @code{0x20AC} however represents the Euro currency sign.
 (The @samp{0x} introduces hexadecimal numbers.)
+
+By the way, a bunch of unicode numbers are handled much more efficiently than
+strings.
 @end defun
 
 @defun avt.printable (codepoint)
