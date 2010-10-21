@@ -448,6 +448,7 @@ main (int argc, char **argv)
 	  /* script may have called avt.quit() */
 	  if (avt_initialized ())
 	    {
+	      avt_clear_screen ();
 	      avt_set_background_color_name ("default");
 	      avt_set_balloon_color_name ("floral white");
 	      avt_markup (AVT_FALSE);
