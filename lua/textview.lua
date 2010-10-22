@@ -6,7 +6,7 @@
 require "lua-akfavatar"
 
 avt.initialize{title="Text Viewer", encoding="UTF-8"}
-avt.move_in()
+-- avt.move_in()
 
 -- what files to show with file_selection
 function textfile(n)
@@ -38,5 +38,5 @@ if arg[1]
   end
 
 avt.pager(io.read("*all"))
-avt.move_out()
+-- avt.move_out()
 
