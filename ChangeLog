@@ -1,3 +1,7 @@
+2010-10-22  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.19.0 released
+
 2010-10-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (many functions): check status before doing something
