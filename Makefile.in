@@ -638,14 +638,14 @@ dist-bin-default: info html libakfavatar.so avatarsay-bin lua-akfavatar-bin
 	cp $(LIBNAME) $(BINPKGNAME)/
 	cp $(srcdir)/avatarsay avatarsay-bin $(BINPKGNAME)/
 	-ln -sf $(LIBNAME) $(BINPKGNAME)/$(SONAME)
-	-cp $(srcdir)/lua-akfavatar lua-akfavatar-bin $(BINPKGNAME)/
+	cp $(srcdir)/lua-akfavatar lua-akfavatar-bin $(BINPKGNAME)/
 	ln $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/
 	ln $(srcdir)/pascal/?pcavatar $(BINPKGNAME)/
 	ln $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	ln $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
 	ln $(srcdir)/teacher.xpm $(srcdir)/akfoerster.xpm $(BINPKGNAME)/
-	-ln $(srcdir)/lua/lua-akfavatar.lua $(BINPKGNAME)/
-	-ln $(srcdir)/README-Lua $(BINPKGNAME)/
+	ln $(srcdir)/lua/lua-akfavatar.lua $(BINPKGNAME)/
+	ln $(srcdir)/README-Lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/multiplication.lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/hello.lua $(BINPKGNAME)/
