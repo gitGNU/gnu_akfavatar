@@ -1,3 +1,15 @@
+2010-10-26  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c:
+	(avt_char): new type for single unicode char
+	new functions:
+	avt_put_char() replaces avt_put_character()
+	avt_is_printable() replaces avt_printable()
+	avt_key() replaces avt_get_key()
+	many functions adapted
+
+------------------------------------------------------------------------
+
 2010-10-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.19.0 released

@@ -140,6 +140,13 @@
 typedef unsigned char avt_bool_t;
 
 /*
+ * type for single characters
+ * assuming at least 32-bit systems
+ * on Windows wchar_t/wint_t is not large enough for Unicode
+ */
+typedef int avt_char;
+
+/*
  * general types for avatar images and audio data
  * may change in the future!
  */
@@ -285,7 +292,7 @@ AVT_API int avt_update (void);
 AVT_API int avt_wait (int milliseconds);
 
 /***********************************************************************/
-/* say or ask stuff with wchar_t (Unicode: UTF-32) */
+/* say or ask stuff with wchar_t (Unicode) */
 
 /*
  * prints a L'\0' terminated string in the balloon
@@ -330,13 +337,13 @@ AVT_API int avt_tell_len (const wchar_t *txt, int len);
  * if there is no avatar, it is shown (not moved in)
  * interprets control characters, but not for overstrike-text
  */
-AVT_API int avt_put_character (wchar_t ch);
+AVT_API int avt_put_char (avt_char ch);
 
 /*
  * checks whether the given charactrer is printable
  * returns AVT_FALSE on unknown or control characters
  */
-AVT_API avt_bool_t avt_printable (wchar_t ch);
+AVT_API avt_bool_t avt_is_printable (avt_char ch);
 
 /*
  * get string (just one line)
@@ -352,7 +359,7 @@ AVT_API int avt_ask (wchar_t *s, int size);
  * see AVT_KEY constants for function keys
  * (ch is a pointer to one character, not a string)
  */
-AVT_API int avt_get_key (wchar_t *ch);
+AVT_API int avt_key (avt_char *ch);
 
 /***********************************************************************/
 /* say or ask stuff with multy-byte encodings */
@@ -1037,6 +1044,9 @@ AVT_DEPRECATED;
 AVT_API avt_image_t *avt_import_XPM (char **xpm) AVT_DEPRECATED;
 AVT_API int avt_show_image_XPM (char **xpm) AVT_DEPRECATED;
 AVT_API void avt_auto_margin (avt_bool_t mode) AVT_DEPRECATED;
+AVT_API int avt_put_character (wchar_t ch) AVT_DEPRECATED;
+AVT_API avt_bool_t avt_printable (wchar_t ch);
+AVT_API int avt_get_key (wchar_t *ch) AVT_DEPRECATED;
 
 AVT_END_DECLS
 

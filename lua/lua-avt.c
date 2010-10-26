@@ -986,10 +986,10 @@ lavt_ask (lua_State * L)
 static int
 lavt_get_key (lua_State * L)
 {
-  wchar_t ch;
+  avt_char ch;
 
   is_initialized ();
-  check (avt_get_key (&ch));
+  check (avt_key (&ch));
 
   lua_pushinteger (L, (lua_Integer) ch);
   return 1;
@@ -1163,7 +1163,7 @@ lavt_say_unicode (lua_State * L)
        * convert strings to numbers
        */
       if (lua_type (L, i) == LUA_TNUMBER)
-	check (avt_put_character ((wchar_t) lua_tointeger (L, i)));
+	check (avt_put_char ((avt_char) lua_tointeger (L, i)));
       else
 	{
 	  s = luaL_checklstring (L, i, &len);

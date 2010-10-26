@@ -737,7 +737,7 @@ reset_terminal (void)
 /* Esc [ ... */
 /* CSI */
 static void
-CSI_sequence (int fd, wchar_t last_character)
+CSI_sequence (int fd, avt_char last_character)
 {
   wchar_t ch;
   char sequence[80];
@@ -804,13 +804,13 @@ CSI_sequence (int fd, wchar_t last_character)
 
     case L'b':			/* REP */
       if (sequence[0] == 'b')
-	avt_put_character (last_character);
+	avt_put_char (last_character);
       else
 	{
 	  int count = strtol (sequence, NULL, 10);
 	  int i;
 	  for (i = 0; i < count; i++)
-	    avt_put_character (last_character);
+	    avt_put_char (last_character);
 	}
       break;
 
@@ -1230,7 +1230,7 @@ OSC_sequence (int fd)
 }
 
 static void
-escape_sequence (int fd, wchar_t last_character)
+escape_sequence (int fd, avt_char last_character)
 {
   wchar_t ch;
   static int saved_text_color, saved_text_background_color;
@@ -1408,13 +1408,13 @@ avta_term_run (int fd)
 {
   avt_bool_t stop;
   wint_t ch;
-  wchar_t last_character;
+  avt_char last_character;
 
   /* check, if fd is valid */
   if (fd < 0)
     return;
 
-  last_character = L'\0';
+  last_character = 0x0000;
   stop = AVT_FALSE;
 
   dec_cursor_seq[0] = '\033';
@@ -1451,9 +1451,9 @@ avta_term_run (int fd)
 	  if (vt100graphics && (ch >= 95 && ch <= 126))
 	    ch = vt100trans[ch - 95];
 
-	  last_character = (wchar_t) ch;
+	  last_character = (avt_char) ch;
 
-	  stop = avt_put_character ((wchar_t) ch);
+	  stop = avt_put_char ((avt_char) ch);
 	}
     }
 

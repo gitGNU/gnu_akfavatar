@@ -68,7 +68,7 @@ avta_wprintf (const wchar_t * format, ...)
 extern wint_t
 avta_putwchar (wchar_t c)
 {
-  avt_put_character (c);
+  avt_put_char ((avt_char) c);
   return c;
 }
 

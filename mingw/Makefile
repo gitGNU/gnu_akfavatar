@@ -207,7 +207,7 @@ lua-akfavatar.exe: lua-akfavatar-prg.wo lua-avt.wo lbase64.wo \
 	    -L. -lakfavatar \
 	    $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS)
 
-lua-avt.wo: $(srcdir)/lua/lua-avt.c
+lua-avt.wo: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/lua-avt.c
 

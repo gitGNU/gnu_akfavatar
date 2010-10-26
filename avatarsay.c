@@ -1916,7 +1916,7 @@ multi_menu (int fd)
   menu_start = avt_where_y ();
   for (i = 0; i < entry; i++)
     {
-      avt_put_character ((wchar_t) i + L'1');
+      avt_put_char ((avt_char) i + '1');
       avt_say (L") ");
       avt_say (entry_title[i]);
       avt_new_line ();
@@ -2002,7 +2002,7 @@ say_line (const wchar_t * line, ssize_t nread)
       /* filter out \r and \n */
       /* new-lines are handled at the beginning */
       if (*line != L'\n' && *line != L'\r')
-	status = avt_put_character (*line);
+	status = avt_put_char ((avt_char) *line);
       if (status)
 	break;
     }

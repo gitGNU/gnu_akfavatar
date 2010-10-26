@@ -241,7 +241,7 @@ lua-akfavatar-prg.o: $(srcdir)/lua/lua-akfavatar-prg.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/lua-akfavatar-prg.c
 
-lua-avt.o: $(srcdir)/lua/lua-avt.c
+lua-avt.o: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/lua-avt.c
 

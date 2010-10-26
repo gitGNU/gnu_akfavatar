@@ -343,7 +343,7 @@ void (*avt_quit_audio_func) (void) AVT_HIDDEN = NULL;
 
 /* forward declaration */
 static int avt_pause (void);
-static void avt_drawchar (wchar_t ch, SDL_Surface * surface);
+static void avt_drawchar (avt_char ch, SDL_Surface * surface);
 
 
 /* color selector */
@@ -1527,7 +1527,7 @@ avt_show_name (void)
       p = avt_name;
       while (*p)
 	{
-	  avt_drawchar (*p++, screen);
+	  avt_drawchar ((avt_char) *p++, screen);
 	  cursor.x += FONTWIDTH;
 	}
 
@@ -2906,7 +2906,7 @@ avt_new_line (void)
 /* avt_drawchar: draws the raw char - with no interpretation */
 #if (FONTWIDTH > 8)
 static void
-avt_drawchar (wchar_t ch, SDL_Surface * surface)
+avt_drawchar (avt_char ch, SDL_Surface * surface)
 {
   const unsigned short *font_line;
   unsigned int y;
@@ -2916,7 +2916,7 @@ avt_drawchar (wchar_t ch, SDL_Surface * surface)
 
   pitch = avt_character->pitch / sizeof (*p);
   pixels = p = (unsigned short *) avt_character->pixels;
-  font_line = get_font_char2 (ch);
+  font_line = get_font_char2 ((int) ch);
   if (!font_line)
     font_line = get_font_char2 (0);
 
@@ -2941,15 +2941,22 @@ avt_drawchar (wchar_t ch, SDL_Surface * surface)
 }
 
 extern avt_bool_t
+avt_is_printable (avt_char ch)
+{
+  return (avt_bool_t) (get_font_char2 ((int) ch) != NULL);
+}
+
+/* deprecated */
+extern avt_bool_t
 avt_printable (wchar_t ch)
 {
-  return (avt_bool_t) (get_font_char2 (ch) != NULL);
+  return (avt_bool_t) (get_font_char2 ((int) ch) != NULL);
 }
 
 #else /* FONTWIDTH <= 8 */
 
 static void
-avt_drawchar (wchar_t ch, SDL_Surface * surface)
+avt_drawchar (avt_char ch, SDL_Surface * surface)
 {
   const unsigned char *font_line;
   int y;
@@ -2959,7 +2966,7 @@ avt_drawchar (wchar_t ch, SDL_Surface * surface)
 
   pitch = avt_character->pitch;
   pixels = p = (Uint8 *) avt_character->pixels;
-  font_line = get_font_char (ch);
+  font_line = get_font_char ((int) ch);
   if (!font_line)
     font_line = get_font_char (0);
 
@@ -2983,9 +2990,16 @@ avt_drawchar (wchar_t ch, SDL_Surface * surface)
 }
 
 extern avt_bool_t
+avt_is_printable (avt_char ch)
+{
+  return (avt_bool_t) (get_font_char ((int) ch) != NULL);
+}
+
+/* deprecated */
+extern avt_bool_t
 avt_printable (wchar_t ch)
 {
-  return (avt_bool_t) (get_font_char (ch) != NULL);
+  return (avt_bool_t) (get_font_char ((int) ch) != NULL);
 }
 
 #endif /* FONTWIDTH <= 8 */
@@ -3163,7 +3177,7 @@ avt_backspace (void)
  * interprets control characters
  */
 extern int
-avt_put_character (wchar_t ch)
+avt_put_char (avt_char ch)
 {
   if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -3174,63 +3188,63 @@ avt_put_character (wchar_t ch)
 
   switch (ch)
     {
-    case L'\n':
-    case L'\v':
-    case L'\x0085':		/* NEL: NExt Line */
-    case L'\x2028':		/* LS: Line Separator */
-    case L'\x2029':		/* PS: Paragraph Separator */
+    case 0x000A:		/* LF: Line Feed */
+    case 0x000B:		/* VT: Vertical Tab */
+    case 0x0085:		/* NEL: NExt Line */
+    case 0x2028:		/* LS: Line Separator */
+    case 0x2029:		/* PS: Paragraph Separator */
       avt_new_line ();
       break;
 
-    case L'\r':
+    case 0x000D:		/* CR: Carriage Return */
       avt_carriage_return ();
       break;
 
-    case L'\f':
+    case 0x000C:		/* FF: Form Feed */
       avt_flip_page ();
       break;
 
-    case L'\t':
+    case 0x0009:		/* HT: Horizontal Tab */
       avt_next_tab ();
       break;
 
-    case L'\b':
+    case 0x0008:		/* BS: Back Space */
       avt_backspace ();
       break;
 
-    case L'\a':
+    case 0x0007:		/* BEL */
       bell ();
       break;
 
       /* ignore BOM here
        * must be handled outside of the library
        */
-    case L'\xFEFF':
+    case 0xFEFF:
       break;
 
       /* LRM/RLM: only supported at the beginning of a line */
-    case L'\x200E':		/* LEFT-TO-RIGHT MARK (LRM) */
+    case 0x200E:		/* LEFT-TO-RIGHT MARK (LRM) */
       avt_text_direction (AVT_LEFT_TO_RIGHT);
       break;
 
-    case L'\x200F':		/* RIGHT-TO-LEFT MARK (RLM) */
+    case 0x200F:		/* RIGHT-TO-LEFT MARK (RLM) */
       avt_text_direction (AVT_RIGHT_TO_LEFT);
       break;
 
       /* other ignorable (invisible) characters */
-    case L'\x200B':
-    case L'\x200C':
-    case L'\x200D':
+    case 0x200B:
+    case 0x200C:
+    case 0x200D:
       break;
 
-    case L' ':			/* space */
+    case 0x0020:			/* SP: space */
       if (auto_margin)
 	check_auto_margin ();
       if (!underlined && !inverse)
 	avt_clearchar ();
       else			/* underlined or inverse */
 	{
-	  avt_drawchar (' ', screen);
+	  avt_drawchar (0x0020, screen);
 	  avt_showchar ();
 	}
       avt_forward ();
@@ -3241,11 +3255,11 @@ avt_put_character (wchar_t ch)
       break;
 
     default:
-      if (ch > 32 || ch == 0)
+      if (ch > 0x0020 || ch == 0x0000)
 	{
-	  if (markup && ch == L'_')
+	  if (markup && ch == 0x005F) /* '_' */
 	    underlined = !underlined;
-	  else if (markup && ch == L'*')
+	  else if (markup && ch == 0x002A) /* '*' */
 	    bold = !bold;
 	  else			/* not a markup character */
 	    {
@@ -3259,10 +3273,17 @@ avt_put_character (wchar_t ch)
 		avt_checkevent ();
 	      avt_forward ();
 	    }			/* if not markup */
-	}			/* if (ch > 32) */
+	}			/* if (ch > 0x0020) */
     }				/* switch */
 
   return _avt_STATUS;
+}
+
+/* deprecated */
+extern int
+avt_put_character (wchar_t ch)
+{
+  return avt_put_char ((avt_char) ch);
 }
 
 /*
@@ -3284,14 +3305,14 @@ avt_overstrike (const wchar_t * txt)
       if (*txt == L'_')
 	{
 	  underlined = AVT_TRUE;
-	  if (avt_put_character (*(txt + 2)))
+	  if (avt_put_char ((avt_char) *(txt + 2)))
 	    r = -1;
 	  underlined = AVT_FALSE;
 	}
       else if (*txt == *(txt + 2))
 	{
 	  bold = AVT_TRUE;
-	  if (avt_put_character (*txt))
+	  if (avt_put_char ((avt_char) *txt))
 	    r = -1;
 	  bold = AVT_FALSE;
 	}
@@ -3328,7 +3349,7 @@ avt_say (const wchar_t * txt)
 	}
       else
 	{
-	  if (avt_put_character (*txt))
+	  if (avt_put_char ((avt_char) *txt))
 	    break;
 	}
       txt++;
@@ -3366,7 +3387,7 @@ avt_say_len (const wchar_t * txt, int len)
 	}
       else
 	{
-	  if (avt_put_character (*txt))
+	  if (avt_put_char ((avt_char) *txt))
 	    break;
 	}
     }
@@ -3794,15 +3815,27 @@ avt_tell_mb_len (const char *txt, int len)
   return _avt_STATUS;
 }
 
+/* deprecated */
 extern int
 avt_get_key (wchar_t * ch)
+{
+  avt_char c;
+
+  avt_key (&c);
+  *ch = (wchar_t) c;
+
+  return _avt_STATUS;
+}
+
+extern int
+avt_key (avt_char * ch)
 {
   SDL_Event event;
 
   if (screen)
     {
-      *ch = L'\0';
-      while ((*ch == L'\0') && (_avt_STATUS == AVT_NORMAL))
+      *ch = 0;
+      while ((*ch == 0) && (_avt_STATUS == AVT_NORMAL))
 	{
 	  SDL_WaitEvent (&event);
 	  avt_analyze_event (&event);
@@ -3810,46 +3843,46 @@ avt_get_key (wchar_t * ch)
 	  switch (event.key.keysym.sym)
 	    {
 	    case SDLK_UP:
-	      *ch = (wchar_t) AVT_KEY_UP;
+	      *ch = AVT_KEY_UP;
 	      break;
 	    case SDLK_DOWN:
-	      *ch = (wchar_t) AVT_KEY_DOWN;
+	      *ch = AVT_KEY_DOWN;
 	      break;
 	    case SDLK_RIGHT:
-	      *ch = (wchar_t) AVT_KEY_RIGHT;
+	      *ch = AVT_KEY_RIGHT;
 	      break;
 	    case SDLK_LEFT:
-	      *ch = (wchar_t) AVT_KEY_LEFT;
+	      *ch = AVT_KEY_LEFT;
 	      break;
 	    case SDLK_INSERT:
-	      *ch = (wchar_t) AVT_KEY_INSERT;
+	      *ch = AVT_KEY_INSERT;
 	      break;
 	    case SDLK_DELETE:
-	      *ch = (wchar_t) AVT_KEY_DELETE;
+	      *ch = AVT_KEY_DELETE;
 	      break;
 	    case SDLK_BACKSPACE:
-	      *ch = (wchar_t) AVT_KEY_BACKSPACE;
+	      *ch = AVT_KEY_BACKSPACE;
 	      break;
 	    case SDLK_HOME:
-	      *ch = (wchar_t) AVT_KEY_HOME;
+	      *ch = AVT_KEY_HOME;
 	      break;
 	    case SDLK_END:
-	      *ch = (wchar_t) AVT_KEY_END;
+	      *ch = AVT_KEY_END;
 	      break;
 	    case SDLK_PAGEUP:
-	      *ch = (wchar_t) AVT_KEY_PAGEUP;
+	      *ch = AVT_KEY_PAGEUP;
 	      break;
 	    case SDLK_PAGEDOWN:
-	      *ch = (wchar_t) AVT_KEY_PAGEDOWN;
+	      *ch = AVT_KEY_PAGEDOWN;
 	      break;
 	    case SDLK_HELP:
-	      *ch = (wchar_t) AVT_KEY_HELP;
+	      *ch = AVT_KEY_HELP;
 	      break;
 	    case SDLK_MENU:
-	      *ch = (wchar_t) AVT_KEY_MENU;
+	      *ch = AVT_KEY_MENU;
 	      break;
 	    case SDLK_EURO:
-	      *ch = (wchar_t) 0x20AC;
+	      *ch = 0x20AC;
 	      break;
 	    case SDLK_F1:
 	    case SDLK_F2:
@@ -3866,10 +3899,10 @@ avt_get_key (wchar_t * ch)
 	    case SDLK_F13:
 	    case SDLK_F14:
 	    case SDLK_F15:
-	      *ch = (wchar_t) (AVT_KEY_F1 + (event.key.keysym.sym - SDLK_F1));
+	      *ch = AVT_KEY_F1 + (event.key.keysym.sym - SDLK_F1);
 	      break;
 	    default:
-	      *ch = (wchar_t) event.key.keysym.unicode;
+	      *ch = event.key.keysym.unicode;
 	    }			/* switch */
 	}			/* while */
     }				/* if (screen) */
@@ -4535,7 +4568,7 @@ avt_ask (wchar_t * s, int size)
   len = pos = 0;
   insert_mode = AVT_TRUE;
   SDL_memset (s, 0, size);
-  ch = L'\0';
+  ch = 0x0000;
 
   do
     {
@@ -4646,7 +4679,7 @@ avt_ask (wchar_t * s, int size)
 				 (len - pos - 1) * sizeof (ch));
 		}
 	      s[pos] = ch;
-	      avt_drawchar (ch, screen);
+	      avt_drawchar ((avt_char) ch, screen);
 	      avt_showchar ();
 	      pos++;
 	      if (pos > len)
@@ -5230,7 +5263,7 @@ avt_wait_key (const wchar_t * message)
       m = message;
       while (*m)
 	{
-	  avt_drawchar (*m, screen);
+	  avt_drawchar ((avt_char) *m, screen);
 	  cursor.x += FONTWIDTH;
 	  if (cursor.x > window.x + window.w + FONTWIDTH)
 	    break;
@@ -6413,7 +6446,7 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
 
       /* print on last_line */
       for (i = 0; i < length; i++, cursor.x += FONTWIDTH)
-	avt_drawchar (line[i], last_line);
+	avt_drawchar ((avt_char) line[i], last_line);
 
       avt_credits_up (last_line);
     }
