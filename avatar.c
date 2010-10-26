@@ -1527,7 +1527,7 @@ avt_show_name (void)
       p = avt_name;
       while (*p)
 	{
-	  avt_drawchar ((avt_char) *p++, screen);
+	  avt_drawchar ((avt_char) * p++, screen);
 	  cursor.x += FONTWIDTH;
 	}
 
@@ -3237,7 +3237,7 @@ avt_put_char (avt_char ch)
     case 0x200D:
       break;
 
-    case 0x0020:			/* SP: space */
+    case 0x0020:		/* SP: space */
       if (auto_margin)
 	check_auto_margin ();
       if (!underlined && !inverse)
@@ -3257,9 +3257,9 @@ avt_put_char (avt_char ch)
     default:
       if (ch > 0x0020 || ch == 0x0000)
 	{
-	  if (markup && ch == 0x005F) /* '_' */
+	  if (markup && ch == 0x005F)	/* '_' */
 	    underlined = !underlined;
-	  else if (markup && ch == 0x002A) /* '*' */
+	  else if (markup && ch == 0x002A)	/* '*' */
 	    bold = !bold;
 	  else			/* not a markup character */
 	    {
@@ -3305,14 +3305,14 @@ avt_overstrike (const wchar_t * txt)
       if (*txt == L'_')
 	{
 	  underlined = AVT_TRUE;
-	  if (avt_put_char ((avt_char) *(txt + 2)))
+	  if (avt_put_char ((avt_char) * (txt + 2)))
 	    r = -1;
 	  underlined = AVT_FALSE;
 	}
       else if (*txt == *(txt + 2))
 	{
 	  bold = AVT_TRUE;
-	  if (avt_put_char ((avt_char) *txt))
+	  if (avt_put_char ((avt_char) * txt))
 	    r = -1;
 	  bold = AVT_FALSE;
 	}
@@ -3349,7 +3349,7 @@ avt_say (const wchar_t * txt)
 	}
       else
 	{
-	  if (avt_put_char ((avt_char) *txt))
+	  if (avt_put_char ((avt_char) * txt))
 	    break;
 	}
       txt++;
@@ -3387,7 +3387,7 @@ avt_say_len (const wchar_t * txt, int len)
 	}
       else
 	{
-	  if (avt_put_char ((avt_char) *txt))
+	  if (avt_put_char ((avt_char) * txt))
 	    break;
 	}
     }
@@ -5263,7 +5263,7 @@ avt_wait_key (const wchar_t * message)
       m = message;
       while (*m)
 	{
-	  avt_drawchar ((avt_char) *m, screen);
+	  avt_drawchar ((avt_char) * m, screen);
 	  cursor.x += FONTWIDTH;
 	  if (cursor.x > window.x + window.w + FONTWIDTH)
 	    break;
