@@ -140,6 +140,15 @@ By the way, a bunch of unicode numbers are handled much more efficiently than
 strings.
 @end defun
 
+@defun avt.unicode_to_utf8 (@dots{})
+Accepts one or more integers as Unicode codepoints and returns an UTF-8
+encoded string. Invalid codepoints are replaced with a replacement character.
+UTF-16 surrogate pairs are treated as invalid characters each on its own.
+
+This function does not depend on which encoding was set, it @emph{always}
+returns an UTF-8 encoded string.
+@end
+
 @defun avt.printable (codepoint)
 Checks whether the given @var{codepoint} represents a printable Unicode character.
 It returns @code{true} when this is the case or @code{false} if the font doesn't

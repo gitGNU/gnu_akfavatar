@@ -1,3 +1,7 @@
+2010-10-28  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/lua-avt.c (lavt_unicode_to_utf8): new function
+
 2010-10-26  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c:
