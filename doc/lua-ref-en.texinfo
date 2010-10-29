@@ -147,7 +147,7 @@ UTF-16 surrogate pairs are treated as invalid characters each on its own.
 
 This function does not depend on which encoding was set, it @emph{always}
 returns an UTF-8 encoded string.
-@end
+@end defun
 
 @defun avt.printable (codepoint)
 Checks whether the given @var{codepoint} represents a printable Unicode character.
