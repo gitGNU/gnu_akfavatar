@@ -63,20 +63,28 @@ local items = {
 
 
 local function block_list(f, t)
-  local list = "ch│ number │ UTF-8 (Lua) \n" ..
-               "══╪════════╪═════════════"
+  local list = "╔═══╤════════╤══════════════╗\n" ..
+               "║ c │ number │ UTF-8 (Lua)  ║\n" ..
+               "╠═══╪════════╪══════════════╣\n"
   
   for unicode = f, t do
     if avt.printable(unicode) then
       local u8 = avt.unicode_to_utf8(unicode)
-      list = list .. "\n" .. u8 .. string.format(" │ 0x%04X │ ", unicode)
+      local hex = string.format("0x%X", unicode)
+      local u8_esc = ""
       for i=1, string.len(u8) do
-        list = list .. string.format("\\%03d", string.byte(u8, i))
+        u8_esc = u8_esc .. string.format("\\%03d", string.byte(u8, i))
       end
+
+      -- u8 would break in string.format when it is \0
+      list = list .. "║ " .. u8 ..
+             string.format(" │ %-6s │ %-12s ║\n", hex, u8_esc)
     end
   end
 
-  avt.set_balloon_width(25)
+  list = list .. "╚═══╧════════╧══════════════╝\n"
+
+  avt.set_balloon_width(29)
   avt.pager(list)
 end
 
@@ -100,10 +108,9 @@ repeat
   avt.clear()
   menu_item = avt.long_menu (items)
 
-  if menu_item == 1 then
-    break
-  else
+  if menu_item ~= 1 then
     show_item(items[menu_item])
   end
 
 until menu_item == 1
+
