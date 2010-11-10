@@ -1,3 +1,8 @@
+2010-11-10  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtar.c (avt_mb_encode, avt_mb_decode):
+	always assume 4 Bytes per char
+
 2010-10-28  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c (lavt_unicode_to_utf8): new function

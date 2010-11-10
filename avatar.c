@@ -3584,8 +3584,9 @@ avt_mb_decode (wchar_t ** dest, const char *src, int size)
   inbuf = (AVT_ICONV_INBUF_T *) src;
 
   /* get enough space */
+  /* a character may be 4 Bytes also in UTF-16  */
   /* +1 for the terminator */
-  dest_size = (inbytesleft + 1) * sizeof (wchar_t);
+  dest_size = inbytesleft * 4 + sizeof (wchar_t);
 
   if (rest_bytes)
     dest_size++;
@@ -3694,9 +3695,9 @@ avt_mb_encode (char **dest, const wchar_t * src, int len)
   inbuf = (AVT_ICONV_INBUF_T *) src;
 
   /* get enough space */
-  /* UTF-8 may need 6 bytes per character */
+  /* UTF-8 may need 4 bytes per character */
   /* +1 for the terminator */
-  dest_size = len * 6 + 1;
+  dest_size = len * 4 + 1;
   *dest = (char *) SDL_malloc (dest_size);
 
   if (!*dest)
