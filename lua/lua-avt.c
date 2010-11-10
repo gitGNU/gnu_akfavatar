@@ -1,5 +1,5 @@
 /*
- * Lua 5.1 binding for AKFAvatar (do not use as module!)
+ * Lua 5.1 binding for AKFAvatar
  * Copyright (c) 2008, 2009, 2010 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
