@@ -53,7 +53,7 @@ all: $(TARGET)
 dist-bin: $(DISTBIN)
 
 default: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay-bin \
-	lua-akfavatar-bin
+	lua-akfavatar-bin lua-akfavatar.so
 	@echo '*'
 	@echo '* use "make install" or "make install-strip"'
 	@echo '* with root-privileges to install it.'
@@ -249,14 +249,14 @@ lbase64.o: $(srcdir)/lua/lbase64.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/lbase64.c
 
-# Lua-Module -- should not be used as such, yet (unsolved problem)
+# Lua-Module
 lua-akfavatar.so: lua-avt.lo filechooser.lo colorchooser.lo avtmsg.lo avtgrmsg.lo
 	$(CC) -o $@ -shared -fpic lua-avt.lo filechooser.lo colorchooser.lo \
 	     avtmsg.lo avtgrmsg.lo -L. -lakfavatar $(LDFLAGS)
 
 lua-avt.lo: $(srcdir)/lua/lua-avt.c
 	  $(CC) $(SDL_CFLAGS) $(CFLAGS) $(LUA_CFLAGS) -I. -c -fpic -o $@ \
-	  $(srcdir)/lua/lua-avt.c
+	  -DMODULE $(srcdir)/lua/lua-avt.c
 
 filechooser.lo: $(srcdir)/filechooser.c $(srcdir)/avtaddons.h \
                 $(srcdir)/avtinternals.h

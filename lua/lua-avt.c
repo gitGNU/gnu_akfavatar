@@ -1937,6 +1937,19 @@ luaopen_akfavatar (lua_State * L)
 {
   luaL_register (L, "avt", akfavtlib);
 
+#ifdef MODULE
+  /*
+   * use some dummy userdata to register a
+   * cleanup function for the garbage collector
+   */
+  lua_newuserdata (L, 1);
+  lua_newtable (L);		/* create metatable */
+  lua_pushcfunction (L, lavt_quit);	/* function for collector */
+  lua_setfield (L, -2, "__gc");
+  lua_setmetatable (L, -2);	/* set it up as metatable */
+  lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-module_quit");
+#endif
+
   /* type for audio data */
   luaL_newmetatable (L, AUDIODATA);
   lua_pushvalue (L, -1);
