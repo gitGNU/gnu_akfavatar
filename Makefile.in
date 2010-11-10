@@ -252,7 +252,7 @@ lbase64.o: $(srcdir)/lua/lbase64.c
 # Lua-Module -- should not be used as such, yet (unsolved problem)
 lua-akfavatar.so: lua-avt.lo filechooser.lo colorchooser.lo avtmsg.lo avtgrmsg.lo
 	$(CC) -o $@ -shared -fpic lua-avt.lo filechooser.lo colorchooser.lo \
-	     avtmsg.lo avtgrmsg.lo -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS)
+	     avtmsg.lo avtgrmsg.lo -L. -lakfavatar $(LDFLAGS)
 
 lua-avt.lo: $(srcdir)/lua/lua-avt.c
 	  $(CC) $(SDL_CFLAGS) $(CFLAGS) $(LUA_CFLAGS) -I. -c -fpic -o $@ \
@@ -271,6 +271,9 @@ avtmsg.lo: $(srcdir)/filechooser.c $(srcdir)/avtaddons.h \
            $(srcdir)/avtinternals.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -fpic -o $@ \
 	  $(srcdir)/avtmsg.c
+
+avtgrmsg.lo: $(srcdir)/avtgrmsg.c
+	$(CC) $(CFLAGS) -fpic -c -o $@ $(srcdir)/avtgrmsg.c
 
 installdirs:
 	-[ -d $(DESTDIR)$(includedir) ]  || $(INSTALL) -d $(DESTDIR)$(includedir)
