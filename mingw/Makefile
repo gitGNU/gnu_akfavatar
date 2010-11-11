@@ -211,7 +211,7 @@ lua-akfavatar.dll: lua-avt-mod.wo filechooser.wo askdrive.wo colorchooser.wo \
 	           avtmsg.wo avtgrmsg.wo
 	$(CC) -o $@ -shared lua-avt-mod.wo filechooser.wo askdrive.wo \
 	     colorchooser.wo avtmsg.wo avtgrmsg.wo \
-	     -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS)
+	     -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS) -mwindows
 
 base64.dll: lbase64.wo
 	$(CC) -o $@ -shared lbase64.wo $(LUA_LDFLAGS) $(LDFLAGS)
