@@ -35,7 +35,7 @@ SHELL = /bin/sh
 .SUFFIXES:
 
 all: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe \
-     lua-akfavatar.exe iconv.exe
+     lua-akfavatar.exe lua-akfavatar.dll base64.dll iconv.exe
 
 nolua: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe iconv.exe
 
@@ -207,6 +207,15 @@ lua-akfavatar.exe: lua-akfavatar-prg.wo lua-avt.wo lbase64.wo \
 	    -L. -lakfavatar \
 	    $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS)
 
+lua-akfavatar.dll: lua-avt.wo filechooser.wo askdrive.wo colorchooser.wo \
+	           avtmsg.wo avtgrmsg.wo
+	$(CC) -o $@ -shared lua-avt.wo filechooser.wo askdrive.wo \
+	     colorchooser.wo avtmsg.wo avtgrmsg.wo \
+	     -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS)
+
+base64.dll: lbase64.wo
+	$(CC) -o $@ -shared lbase64.wo $(LUA_LDFLAGS) $(LDFLAGS)
+
 lua-avt.wo: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/lua-avt.c
@@ -244,7 +253,7 @@ multiplizieren.exe: $(srcdir)/pascal/multiply.pas
 	-fpcwavatar -dRELEASE -ddeutsch -o$@ -Fi$(srcdir)/pascal \
 	  $(srcdir)/pascal/multiply.pas
 
-dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe
+dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64.dll
 	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) html txt
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/akfavatar
@@ -252,7 +261,9 @@ dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe
 	cp akfavatar-en.txt akfavatar-de.txt $(BINPKGNAME)/
 	cp akfavatar.dll $(BINPKGNAME)/
 	cp avatarsay.exe $(srcdir)/fsdemo-??.avt $(BINPKGNAME)/
-	-cp lua-akfavatar.exe $(BINPKGNAME)/
+	cp lua-akfavatar.exe $(BINPKGNAME)/
+	cp lua-akfavatar.dll $(BINPKGNAME)/
+	cp base64.dll $(BINPKGNAME)/
 	cp $(srcdir)/lua/multiplication.lua $(BINPKGNAME)/
 	cp $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/
 	cp $(srcdir)/lua/textview.lua $(BINPKGNAME)/
@@ -288,7 +299,8 @@ dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe
 	cp $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
 	-cp $(srcdir)/misc/SDL.dll $(BINPKGNAME)/
 	cp $(srcdir)/README-SDL $(BINPKGNAME)/README-SDL.txt
-	-cp $(srcdir)/misc/lua51.dll $(BINPKGNAME)/
+	cp $(srcdir)/misc/lua51.dll $(BINPKGNAME)/
+	cp $(srcdir)/misc/lua.exe $(BINPKGNAME)/
 	cp $(srcdir)/README-Lua $(BINPKGNAME)/README-Lua.txt
 	$(STRIP) --strip-debug $(BINPKGNAME)/*.exe
 	$(STRIP) --strip-debug $(BINPKGNAME)/*.dll
