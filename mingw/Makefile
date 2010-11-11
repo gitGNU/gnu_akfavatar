@@ -232,21 +232,6 @@ luaavtstarter.rc: $(srcdir)/mingw/luaavtstarter-rc.in config-mingw
 luaavtstarter-rc.wo: luaavtstarter.rc $(srcdir)/mingw/akfavatar.ico
 	$(WINDRES) -I $(srcdir)/mingw/ -o $@ -i luaavtstarter.rc
 
-install: akfavatar.dll libakfavatar.a
-	install -m 644 $(srcdir)/akfavatar.h $(includedir)
-	install -m 644 $(srcdir)/avtaddons.h $(includedir)
-	install -m 644 libakfavatar.a libakfavatar.dll.a $(libdir)
-	install -m 644 libavtaddons.a $(libdir)
-	install -m 644 akfavatar.dll $(libdir)
-
-install-strip: akfavatar.dll libakfavatar.a
-	install -m 644 $(srcdir)/akfavatar.h $(includedir)
-	install -m 644 $(srcdir)/avtaddons.h $(includedir)
-	install -m 644 libakfavatar.a libakfavatar.dll.a $(libdir)
-	install -m 644 libavtaddons.a $(libdir)
-	install -m 644 akfavatar.dll $(libdir)
-	$(STRIP) $(libdir)/akfavatar.dll
-
 
 # the folowing targets are for the maintainer
 # don't use them unless you know what you are doing
