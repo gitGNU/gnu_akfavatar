@@ -651,13 +651,15 @@ dist: info html man $(srcdir)/alert.au
 	rm -rf $(PKGNAME)/
 	bzip2 -f $(PKGNAME).tar
 
-dist-bin-default: info html libakfavatar.so avatarsay-bin lua-akfavatar-bin
+dist-bin-default: info html libakfavatar.so avatarsay-bin lua-akfavatar-bin \
+	          lua-akfavatar.so base64.so
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/akfavatar
 	cp $(LIBNAME) $(BINPKGNAME)/
 	cp $(srcdir)/avatarsay avatarsay-bin $(BINPKGNAME)/
 	-ln -sf $(LIBNAME) $(BINPKGNAME)/$(SONAME)
 	cp $(srcdir)/lua-akfavatar lua-akfavatar-bin $(BINPKGNAME)/
+	cp lua-akfavatar.so base64.so $(BINPKGNAME)/
 	ln $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/
 	ln $(srcdir)/pascal/?pcavatar $(BINPKGNAME)/
 	ln $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
