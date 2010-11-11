@@ -54,7 +54,7 @@ all: $(TARGET)
 dist-bin: $(DISTBIN)
 
 default: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay-bin \
-	lua-akfavatar-bin lua-akfavatar.so
+	lua-akfavatar-bin lua-akfavatar.so base64.so
 	@echo '*'
 	@echo '* use "make install" or "make install-strip"'
 	@echo '* with root-privileges to install it.'
@@ -250,10 +250,17 @@ lbase64.o: $(srcdir)/lua/lbase64.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/lbase64.c
 
-# Lua-Module
+# Lua-Modules
 lua-akfavatar.so: lua-avt.lo filechooser.lo colorchooser.lo avtmsg.lo avtgrmsg.lo
 	$(CC) -o $@ -shared -fpic lua-avt.lo filechooser.lo colorchooser.lo \
 	     avtmsg.lo avtgrmsg.lo -L. -lakfavatar $(LDFLAGS)
+
+base64.so: lbase64.lo
+	$(CC) -o $@ -shared -fpic lbase64.lo $(LDFLAGS)
+
+lbase64.lo: $(srcdir)/lua/lbase64.c
+	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -fpic -c -o $@ \
+	  $(srcdir)/lua/lbase64.c
 
 lua-avt.lo: $(srcdir)/lua/lua-avt.c
 	  $(CC) $(SDL_CFLAGS) $(CFLAGS) $(LUA_CFLAGS) -I. -c -fpic -o $@ \
@@ -310,6 +317,7 @@ install: libakfavatar.so libakfavatar.a avatarsay-bin \
 	$(INSTALL_DATA) $(srcdir)/NEWS $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(LUA_MODULES) $(DESTDIR)$(LUA_PATH)/akfavatar
 	-$(INSTALL_DATA) lua-akfavatar.so $(DESTDIR)$(LUA_CPATH)
+	-$(INSTALL_DATA) base64.so $(DESTDIR)$(LUA_CPATH)
 	-rm -rf $(DESTDIR)$(LUA_PATH)/lua-akfavatar.lua
 	@echo '*'
 	@echo '* make install-desktop-menu: to install avatarsay in a desktop menu'
@@ -336,6 +344,7 @@ install-strip: libakfavatar.so libakfavatar.a avatarsay-bin \
 	$(INSTALL_DATA) $(srcdir)/NEWS $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(LUA_MODULES) $(DESTDIR)$(LUA_PATH)/akfavatar
 	-$(INSTALL_DATA) -s lua-akfavatar.so $(DESTDIR)$(LUA_CPATH)
+	-$(INSTALL_DATA) -s base64.so $(DESTDIR)$(LUA_CPATH)
 	-rm -rf $(DESTDIR)$(LUA_PATH)/lua-akfavatar.lua
 	@echo '*'
 	@echo '* use "make install-desktop-menu" to install avatarsay in a desktop menu'
