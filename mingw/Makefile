@@ -268,7 +268,6 @@ dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe
 	cp akfavatar.dll $(BINPKGNAME)/
 	cp avatarsay.exe $(srcdir)/fsdemo-??.avt $(BINPKGNAME)/
 	-cp lua-akfavatar.exe $(BINPKGNAME)/
-	cp $(srcdir)/lua/lua-akfavatar.lua $(BINPKGNAME)/
 	cp $(srcdir)/lua/multiplication.lua $(BINPKGNAME)/
 	cp $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/
 	cp $(srcdir)/lua/textview.lua $(BINPKGNAME)/
