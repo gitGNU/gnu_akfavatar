@@ -318,7 +318,7 @@ install: libakfavatar.so libakfavatar.a avatarsay-bin \
 	$(INSTALL_DATA) $(LUA_MODULES) $(DESTDIR)$(LUA_PATH)/akfavatar
 	-$(INSTALL_DATA) lua-akfavatar.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) base64.so $(DESTDIR)$(LUA_CPATH)
-	-rm -rf $(DESTDIR)$(LUA_PATH)/lua-akfavatar.lua
+	-rm -f $(DESTDIR)$(LUA_PATH)/lua-akfavatar.lua
 	@echo '*'
 	@echo '* make install-desktop-menu: to install avatarsay in a desktop menu'
 	@echo '*'
@@ -345,7 +345,7 @@ install-strip: libakfavatar.so libakfavatar.a avatarsay-bin \
 	$(INSTALL_DATA) $(LUA_MODULES) $(DESTDIR)$(LUA_PATH)/akfavatar
 	-$(INSTALL_DATA) -s lua-akfavatar.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) -s base64.so $(DESTDIR)$(LUA_CPATH)
-	-rm -rf $(DESTDIR)$(LUA_PATH)/lua-akfavatar.lua
+	-rm -f $(DESTDIR)$(LUA_PATH)/lua-akfavatar.lua
 	@echo '*'
 	@echo '* use "make install-desktop-menu" to install avatarsay in a desktop menu'
 	@echo '*'
@@ -376,6 +376,8 @@ uninstall: uninstall-info uninstall-man uninstall-txt uninstall-html \
 	-rm -f $(docdir)/AUTHORS
 	-rm -f $(docdir)/COPYING
 	-rm -f $(docdir)/NEWS
+	-rm -f $(LUA_CPATH)/lua-akfavatar.so
+	-rm -f $(LUA_CPATH)/base64.so
 
 	-xdg-desktop-menu uninstall akfoerster-avatarsay.desktop
 	-xdg-desktop-menu uninstall akfoerster-lua-akfavatar.desktop
