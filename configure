@@ -305,7 +305,7 @@ then
 elif [ x"${hosttype}" = x"x86" ] # private hack
 then
   LUA_CFLAGS="-I/usr/include/lua5.1"
-  LUA_LDFLAGS="-L/usr/lib32 -llua -lm" # static lib!
+  LUA_LDFLAGS="-L/usr/lib32 -llua -lm -Wl,-E" # static lib!
 elif pkg-config --exists lua-5.1  # FreeBSD 8.0
 then
   LUA_CFLAGS=`pkg-config lua-5.1 --cflags`
@@ -326,11 +326,11 @@ then
 elif [ -r /usr/include/lua.h -a /usr/lib/liblua.a ]
 then
   LUA_CFLAGS=""
-  LUA_LDFLAGS="-llua"
+  LUA_LDFLAGS="-llua -lm -Wl,-E"
 elif [ -r /usr/local/include/lua.h -a /usr/local/lib/liblua.a ]
 then
   LUA_CFLAGS=""
-  LUA_LDFLAGS="-llua"
+  LUA_LDFLAGS="-llua -lm -Wl,-E"
 elif [ x"$NO_LUA" != x"yes" ]
 then
   echo "Lua 5.1 not found" 1>&2
@@ -342,16 +342,16 @@ if [ x"$STATIC_LUA" = x"yes" -a x"${hosttype}" != x"x86" ]
 then
   if [ -r /usr/lib/liblua5.1.a ]
   then
-    LUA_LDFLAGS="/usr/lib/liblua5.1.a -lm"
+    LUA_LDFLAGS="/usr/lib/liblua5.1.a -lm -Wl,-E"
   elif [ -r /usr/lib/liblua-5.1.a ]
   then
-    LUA_LDFLAGS="/usr/lib/liblua-5.1.a -lm"
+    LUA_LDFLAGS="/usr/lib/liblua-5.1.a -lm -Wl,-E"
   elif [ -r /usr/lib/liblua.a ]
   then
-    LUA_LDFLAGS="/usr/lib/liblua.a -lm"
+    LUA_LDFLAGS="/usr/lib/liblua.a -lm -Wl,-E"
   elif [ -r /usr/local/lib/liblua.a ]
   then
-    LUA_LDFLAGS="/usr/local/lib/liblua.a -lm"
+    LUA_LDFLAGS="/usr/local/lib/liblua.a -lm -Wl,-E"
   else
     echo "static Lua not found" 1>&2
     exit 1
