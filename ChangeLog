@@ -1,3 +1,9 @@
+2010-11-12  Andreas K. Foerster  <info@akfoerster.de>
+
+	* configure:
+	eventually export all symbols for lua-akfavatar-bin
+	(needed to load binary modules)
+
 2010-11-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtar.c (avt_mb_encode, avt_mb_decode):
