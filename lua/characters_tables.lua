@@ -64,14 +64,15 @@ local items = {
 
 
 local function block_list(f, t)
-  local list = "╔═══╤════════╤══════════════╤══════════════╗\n" ..
-               "║ c │ number │  UTF-8 (C)   │ UTF-8 (Lua)  ║\n" ..
-               "╠═══╪════════╪══════════════╪══════════════╣\n"
+  local list = "╔═══╤════════╤══════════╤══════════════╤══════════════╗\n" ..
+               "║ c │ number │ XML/HTML │  UTF-8 (C)   │ UTF-8 (Lua)  ║\n" ..
+               "╠═══╪════════╪══════════╪══════════════╪══════════════╣\n"
   
   for unicode = f, t do
     if avt.printable(unicode) then
       local u8 = utf8.char(unicode)
       local hex = string.format("0x%X", unicode)
+      local xml = string.format("&#x%X;", unicode)
 
       local u8_lua = ""
       for i=1, string.len(u8) do
@@ -85,14 +86,14 @@ local function block_list(f, t)
 
       -- u8 would break in string.format when it is \0
       list = list .. "║ " .. u8 ..
-             string.format(" │ %-6s │ %-12s │ %-12s ║\n", 
-                            hex, u8_c, u8_lua)
+             string.format(" │ %-6s │ %-8s │ %-12s │ %-12s ║\n", 
+                            hex, xml, u8_c, u8_lua)
     end
   end
 
-  list = list .. "╚═══╧════════╧══════════════╧══════════════╝\n"
+  list = list .. "╚═══╧════════╧══════════╧══════════════╧══════════════╝\n"
 
-  avt.set_balloon_width(44)
+  avt.set_balloon_width(55)
   avt.pager(list)
 end
 
