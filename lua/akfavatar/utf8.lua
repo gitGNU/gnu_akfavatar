@@ -87,6 +87,9 @@ function u8.reverse (s)
   return r
 end
 
+-- string.rep works flawlessly with UTF-8, too
+u8.rep = string.rep
+
 -- Byte Order Mark
 -- not really needed for UTF8, but sometimes used as signature
 u8.bom = "\239\187\191"  --> = u8.char(0xFEFF)
