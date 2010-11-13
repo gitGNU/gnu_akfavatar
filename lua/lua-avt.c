@@ -1184,61 +1184,6 @@ lavt_printable (lua_State * L)
 }
 
 static int
-lavt_unicode_to_utf8 (lua_State * L)
-{
-  int nr, i;
-  luaL_Buffer buffer;
-  avt_char c;
-
-  is_initialized ();
-
-  nr = lua_gettop (L);
-
-  luaL_buffinit (L, &buffer);
-
-  for (i = 1; i <= nr; i++)
-    {
-      c = (avt_char) luaL_checkinteger (L, i);
-
-      /*
-       * first check for invalid codes
-       * UTF-16 surrugates are also invalid in UTF-8
-       * they must be treated outside of this function
-       */
-      if (c < 0 || c > 0x10FFFF || (c >= 0xD800 && c <= 0xDFFF))
-	{
-	  luaL_addstring (&buffer, "\xEF\xBF\xBD");
-	}
-      else if (c <= 0x7F)
-	{
-	  luaL_addchar (&buffer, (char) c);
-	}
-      else if (c <= 0x7FF)
-	{
-	  luaL_addchar (&buffer, (char) (0xC0 | (c >> 6)));
-	  luaL_addchar (&buffer, (char) (0x80 | (c & 0x3F)));
-	}
-      else if (c <= 0xFFFF)
-	{
-	  luaL_addchar (&buffer, (char) (0xE0 | (c >> 12)));
-	  luaL_addchar (&buffer, (char) (0x80 | ((c >> 6) & 0x3F)));
-	  luaL_addchar (&buffer, (char) (0x80 | (c & 0x3F)));
-	}
-      else
-	{
-	  luaL_addchar (&buffer, (char) (0xF0 | (c >> 18)));
-	  luaL_addchar (&buffer, (char) (0x80 | ((c >> 12) & 0x3F)));
-	  luaL_addchar (&buffer, (char) (0x80 | ((c >> 6) & 0x3F)));
-	  luaL_addchar (&buffer, (char) (0x80 | (c & 0x3F)));
-	}
-    }
-
-  luaL_pushresult (&buffer);
-
-  return 1;
-}
-
-static int
 lavt_pager (lua_State * L)
 {
   const char *s;
@@ -1813,7 +1758,6 @@ static const struct luaL_reg akfavtlib[] = {
   {"print", lavt_print},
   {"tell", lavt_tell},
   {"say_unicode", lavt_say_unicode},
-  {"unicode_to_utf8", lavt_unicode_to_utf8},
   {"printable", lavt_printable},
   {"ask", lavt_ask},
   {"navigate", lavt_navigate},

@@ -7,6 +7,7 @@
 -- note: the version for lower resolutions has less characters!
 
 require "lua-akfavatar"
+require "akfavatar.utf8"
 
 avt.initialize{}
 
@@ -69,7 +70,7 @@ local function block_list(f, t)
   
   for unicode = f, t do
     if avt.printable(unicode) then
-      local u8 = avt.unicode_to_utf8(unicode)
+      local u8 = utf8.char(unicode)
       local hex = string.format("0x%X", unicode)
 
       local u8_lua = ""
