@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 local u8 = {}
 utf8 = u8
 
+
 -- counts number of characters in an UTF-8 encoded string
 -- control characters and invisible characters are included, too
 function u8.len (s)
@@ -32,6 +33,7 @@ function u8.len (s)
 
   return len
 end
+
 
 -- like string.char but accepts higher numbers 
 -- and returns an UTF-8 encoded string
@@ -87,11 +89,25 @@ function u8.reverse (s)
   return r
 end
 
+
 -- string.rep works flawlessly with UTF-8, too
 u8.rep = string.rep
+
+
+-- replaces nummerical XML-entities with UTF8-characters
+-- named entities or tags are not changed
+function u8.xml (s)
+  s = string.gsub(s, "&#x(%x+);",
+    function (c) return u8.char(tonumber(c, 16)) end)
+  s = string.gsub(s, "&#(%d+);",
+    function (c) return u8.char(tonumber(c, 10)) end)
+  return s
+end
+
 
 -- Byte Order Mark
 -- not really needed for UTF8, but sometimes used as signature
 u8.bom = "\239\187\191"  --> = u8.char(0xFEFF)
+
 
 return u8
