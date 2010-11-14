@@ -72,18 +72,19 @@ function u8.characters (s)
 
   return function ()
    local b = string.byte(s, pos)
-   if b == nil then return nil
-   elseif b <= 0x7F then --> ASCII
-     pos = pos +1
-     return string.char(b)
-   else --> multibyte character
-   local ch = ""
-   repeat
-     ch = ch .. string.char(b)
-     pos = pos + 1
-     b = string.byte(s, pos)
-   until b == nil or b < 128 or b > 191
-   return ch
+   if b then
+     if b <= 0x7F then --> ASCII
+       pos = pos + 1
+       return string.char(b)
+     else --> multibyte character
+     local ch = ""
+     repeat
+       ch = ch .. string.char(b)
+       pos = pos + 1
+       b = string.byte(s, pos)
+     until b == nil or b < 128 or b > 191
+     return ch
+     end
    end
  end
 end
