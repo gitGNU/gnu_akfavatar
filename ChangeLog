@@ -1,6 +1,7 @@
 2010-11-14  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar/utf8.lua (utf8.characters): new function
+	* lua/akfavatar/utf8.lua (utf8.codepoint): new function
 
 2010-11-13  Andreas K. Foerster  <info@akfoerster.de>
 

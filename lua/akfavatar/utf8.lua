@@ -65,6 +65,25 @@ function u8.char (...)
 end
 
 
+-- return the codepoint of the given character (first character)
+function u8.codepoint (c)
+  local b1, b2, b3, b4 = string.byte(c, 1, 4)
+  if not b1 then return nil
+  elseif b1 <= 0x7F then --> ASCII
+    return b1
+  elseif b1 <= 0xDF then --> 2 Byte sequence
+    return (b1 - 0xC0) * 0x40 + (b2 - 0x80)
+  elseif b1 <= 0xEF then --> 3 Byte sequence
+    return (b1 - 0xE0) * 0x1000 + (b2 - 0x80) * 0x40 + (b3 - 0x80)
+  elseif b1 <= 0xF4 then --> 4 Byte sequence
+    return (b1 - 0xF0) * 0x40000 + (b2 - 0x80) * 0x1000
+           + (b3 - 0x80) * 0x40 + (b4 - 0x80)
+  else --> invalid
+    return nil
+  end
+end
+
+
 -- iterator returning the characters of an UTF-8 string
 -- a character may be a single or multi-byte string
 function u8.characters (s)
