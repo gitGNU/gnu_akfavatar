@@ -1,3 +1,7 @@
+2010-11-14  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/akfavatar/utf8.lua (utf8.characters): new function
+
 2010-11-13  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c (lavt_unicode_to_utf8): function removed

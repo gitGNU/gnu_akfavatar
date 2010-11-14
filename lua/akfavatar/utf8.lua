@@ -64,6 +64,31 @@ function u8.char (...)
   return r
 end
 
+
+-- iterator returning the characters of an UTF-8 string
+-- a character may be a single or multi-byte string
+function u8.characters (s)
+	local pos = 1
+
+	return function ()
+		 local b = string.byte(s, pos)
+		 if b == nil then return nil
+		 elseif b <= 0x7F then --> ASCII
+		   pos = pos +1
+		   return string.char(b)
+		 else --> multibyte character
+		   local ch = ""
+		   repeat
+		     ch = ch .. string.char(b)
+		     pos = pos + 1
+		     b = string.byte(s, pos)
+		   until b == nil or b < 128 or b > 191
+		   return ch
+		 end
+	       end
+end
+
+
 -- like string.reverse, but for UTF-8 encoded strings
 function u8.reverse (s)
   local r = ""
