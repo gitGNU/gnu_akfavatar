@@ -333,6 +333,43 @@ lavt_get_color (lua_State * L)
     return 0;
 }
 
+/* internal function used in lavt_colors() */
+static int
+lavt_color_iteration (lua_State * L)
+{
+  const char *name;
+  char RGB[8];
+  int red, green, blue;
+  int nr = lua_tointeger (L, 2) + 1;
+
+  name = avt_get_color (nr, &red, &green, &blue);
+
+  if (name)
+    {
+      sprintf (RGB, "#%02X%02X%02X", red, green, blue);
+      lua_pushinteger (L, nr);
+      lua_pushstring (L, name);
+      lua_pushstring (L, RGB);
+      return 3;
+    }
+  else
+    return 0;
+}
+
+/*
+ * iterator function for colors
+ * example:
+ *   for i,name,rgb in avt.colors() do print(i, rgb, name) end
+ */
+static int
+lavt_colors (lua_State * L)
+{
+  lua_pushcfunction (L, lavt_color_iteration);
+  lua_pushnil (L);		/* no state */
+  lua_pushinteger (L, -1);	/* first color - 1 */
+  return 3;
+}
+
 /* change the used encoding (iconv) */
 static int
 lavt_encoding (lua_State * L)
@@ -1771,6 +1808,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"license", lavt_license},
   {"initialized", lavt_initialized},
   {"get_color", lavt_get_color},
+  {"colors", lavt_colors},
   {"encoding", lavt_encoding},
   {"get_encoding", lavt_get_encoding},
   {"set_title", lavt_set_title},
