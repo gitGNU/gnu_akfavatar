@@ -52,7 +52,7 @@ local function interactive (cmd)
 end
 
 avt.initialize {title="Lua-AKFAvatar", encoding="UTF-8", audio=true}
-avt.move_in ()
+-- avt.move_in ()
 avt.underlined(true)
 avt.say(_VERSION, " / AKFAvatar ", avt.version (), "\n\n")
 avt.normal_text ()
