@@ -46,6 +46,7 @@ LUA_MODULES = \
 	  $(srcdir)/lua/akfavatar/questionary.lua \
 	  $(srcdir)/lua/akfavatar/Fragebogen.lua \
 	  $(srcdir)/lua/akfavatar/person.lua \
+	  $(srcdir)/lua/akfavatar/utf8.lua \
 	  $(srcdir)/lua/akfavatar/ar.lua \
 	  $(srcdir)/lua/akfavatar/avtdemo.lua
 
