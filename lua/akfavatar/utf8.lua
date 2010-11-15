@@ -66,6 +66,7 @@ end
 
 
 -- return the codepoint of the given character (first character)
+-- returns nil on error (but that's not a real validity check)
 function u8.codepoint (c)
   local b1, b2, b3, b4 = string.byte(c, 1, 4)
   if not b1 then return nil
@@ -154,5 +155,58 @@ end
 -- not really needed for UTF8, but sometimes used as signature
 u8.bom = "\239\187\191"  --> = u8.char(0xFEFF)
 
+
+-- check, if s starts with a UTF8-BOM
+function u8.check_bom (s)
+  if string.find(s, "^\239\187\191") then return true else return false end
+end
+
+
+-- check if s is a UTF-8 string
+-- there are loopholes, it's just for checking if it is UTF-8 or not
+-- note: plain ASCII is also valid UTF-8
+function u8.check (s)
+  local b1, b2, b3, b4, b5
+
+  -- s2 is one or more multibyte characters
+  for s2 in string.gmatch (s, "[\128-\255]+") do
+    local start = 1
+
+    repeat
+	    b1, b2, b3, b4, b5 = string.byte(s2, start, start + 4)
+
+	    -- b1 must be a start byte
+	    if b1 < 0xC2 or b1 > 0xF4 then return false
+
+	    -- check 2 byte sequence
+	    elseif (b1 >= 0xC2 and b1 <= 0xDF)
+	       and (b2 == nil or b2 < 0x80 or b2 > 0xBF
+	         or (b3 ~= nil and b3 >= 0x80 and b3 <= 0xBF)) then return false
+
+	    -- check 3 byte sequence
+	    elseif (b1 >= 0xE0 and b1 <= 0xEF)
+	       and (b2 == nil or b2 < 0x80 or b2 > 0xBF
+	         or b3 == nil or b3 < 0x80 or b3 > 0xBF
+	         or (b4 ~= nil and b4 >= 0x80 and b4 <= 0xBF)) then return false
+
+	    -- check 4 byte sequence
+	    elseif (b1 >= 0xF0 and b1 <= 0xF4)
+	       and (b2 == nil or b2 < 0x80 or b2 > 0xBF
+	         or b3 == nil or b3 < 0x80 or b3 > 0xBF
+	         or b4 == nil or b4 < 0x80 or b4 > 0xBF
+	         or (b5 ~= nil and b5 >= 0x80 and b5 <= 0xBF)) then  return false
+	    end
+
+	    -- check for another character
+	  if b1 >= 0xC2 and b1 <= 0xDF and b3 ~= nil then start = start + 2
+	  elseif b1 >= 0xE0 and b1 <= 0xEF and b4 ~= nil then start = start + 3
+	    elseif b1 >= 0xF0 and b1 <= 0xF4 and b5 ~= nil then start = start + 4
+	    else start = 0 end
+
+    until start == 0
+  end
+
+  return true --> nothing invalid found
+end
 
 return u8
