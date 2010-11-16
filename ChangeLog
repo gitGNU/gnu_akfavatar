@@ -7,6 +7,8 @@
 
 	* lua/lua-akfavatar-prg (main): reset more settings
 
+	* lua/akfavatar-term.c, lua/terminal.lua: new files
+
 2010-11-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar/utf8.lua (utf8.check_bom, utf8.check):
