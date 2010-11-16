@@ -49,13 +49,16 @@ static int
 lterm_run (lua_State * L)
 {
   int fd;
-  const char *encoding = lua_tostring (L, 1);
+  char encoding[255];
   const char *working_dir = lua_tostring (L, 2);	/* NULL is okay */
 
-  if (!encoding || !*encoding)
-    encoding = strdup(avt_get_mb_encoding());
+  if (lua_isstring (L, 1))
+    strncpy (encoding, lua_tostring (L, 1), sizeof (encoding));
+  else
+    strncpy (encoding, avt_get_mb_encoding (), sizeof (encoding));
 
-  fprintf (stderr, "encoding: %s\n", encoding);
+  encoding[sizeof (encoding) - 1] = '\0';
+
   fd = avta_term_start (encoding, working_dir, NULL);
   if (fd != -1)
     avta_term_run (fd);
