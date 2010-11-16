@@ -5,6 +5,8 @@
 	* lua/akfavatar/utf8.lua (utf8.check_unicode): new function
 	(lua/textview.lua): try to detect text encoding
 
+	* lua/lua-akfavatar-prg (main): reset more settings
+
 2010-11-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar/utf8.lua (utf8.check_bom, utf8.check):

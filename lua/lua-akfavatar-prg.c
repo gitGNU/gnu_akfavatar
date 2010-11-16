@@ -449,6 +449,11 @@ main (int argc, char **argv)
 	  if (avt_initialized ())
 	    {
 	      avt_clear_screen ();
+	      avt_newline_mode (AVT_TRUE);
+	      avt_set_auto_margin (AVT_TRUE);
+	      avt_set_origin_mode (AVT_TRUE);
+	      avt_set_scroll_mode (1);
+	      avt_reserve_single_keys (AVT_FALSE);
 	      avt_set_background_color_name ("default");
 	      avt_set_balloon_color_name ("floral white");
 	      avt_markup (AVT_FALSE);
