@@ -698,6 +698,7 @@ dist-bin-default: info html libakfavatar.so avatarsay-bin lua-akfavatar-bin \
 	ln $(srcdir)/lua/characters_tables.lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/fs-quiz-en.lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/fs-quiz-de.lua $(BINPKGNAME)/
+	ln $(srcdir)/lua/terminal.lua $(BINPKGNAME)/
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/NEWS $(srcdir)/avtman \
 	   $(srcdir)/fsdemo-??.avt \
 	   $(srcdir)/gnome-akfavatar \
