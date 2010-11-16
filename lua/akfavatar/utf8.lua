@@ -35,31 +35,31 @@ function u8.len (s)
 end
 
 
--- like string.char but accepts higher numbers 
+-- like string.char but accepts higher numbers
 -- and returns an UTF-8 encoded string
 function u8.char (...)
-	local r = ""
+  local r = ""
 
-	for i,c in ipairs(arg) do
-	  if c < 0 or c > 0x10FFFF 
-	      or (c >= 0xD800 and c <= 0xDFFF) then
-	    r = r .. "\239\191\189" --> inverted question mark
-	  elseif c <= 0x7F then
-	    r = r .. string.char (c)
-	  elseif c <= 0x7FF then
-	    r = r .. string.char (0xC0 + math.floor(c/0x40),
-	                          0x80 + c%0x40)
-	  elseif c <= 0xFFFF then
-	    r = r .. string.char (0xE0 + math.floor(c/0x1000),
-	                          0x80 + math.floor(c/0x40)%0x40,
-	                          0x80 + c%0x40)
-	  else --> c > 0xFFFF and c <= 0x10FFFF
-	    r = r .. string.char (0xF0 + math.floor(c/0x40000),
-	                          0x80 + math.floor(c/0x1000)%0x40,
-	                          0x80 + math.floor(c/0x40)%0x40,
-	                          0x80 + c%0x40)
-	  end
-	end
+  for i,c in ipairs(arg) do
+    if c < 0 or c > 0x10FFFF
+        or (c >= 0xD800 and c <= 0xDFFF) then
+      r = r .. "\239\191\189" --> inverted question mark
+    elseif c <= 0x7F then
+      r = r .. string.char (c)
+    elseif c <= 0x7FF then
+      r = r .. string.char (0xC0 + math.floor(c/0x40),
+                            0x80 + c%0x40)
+    elseif c <= 0xFFFF then
+      r = r .. string.char (0xE0 + math.floor(c/0x1000),
+                            0x80 + math.floor(c/0x40)%0x40,
+                            0x80 + c%0x40)
+    else --> c > 0xFFFF and c <= 0x10FFFF
+      r = r .. string.char (0xF0 + math.floor(c/0x40000),
+                            0x80 + math.floor(c/0x1000)%0x40,
+                            0x80 + math.floor(c/0x40)%0x40,
+                            0x80 + c%0x40)
+    end
+  end
 
   return r
 end
