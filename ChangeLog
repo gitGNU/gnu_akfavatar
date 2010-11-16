@@ -2,6 +2,9 @@
 
 	* lua/akfavatar/utf8.lua (utf8.check): limit for checks
 
+	* lua/akfavatar/utf8.lua (utf8.check_unicode): new function
+	(lua/textview.lua): try to detect text encoding
+
 2010-11-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar/utf8.lua (utf8.check_bom, utf8.check):

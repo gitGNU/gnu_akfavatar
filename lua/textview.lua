@@ -4,9 +4,11 @@
 -- License: GPL version 3 or later
 
 require "lua-akfavatar"
+require "akfavatar.utf8"
 
-avt.initialize{title="Text Viewer", encoding="UTF-8"}
--- avt.move_in()
+local default_encoding = "UTF-8"
+
+avt.initialize{title="Text Viewer", encoding=default_encoding}
 
 -- what files to show with file_selection
 function textfile(n)
@@ -37,6 +39,11 @@ if arg[1]
   else io.input(avt.file_selection(textfile))
   end
 
-avt.pager(io.read("*all"))
--- avt.move_out()
+local text = io.read("*all")
 
+-- note: WINDOWS-1252 is a superset of ISO-8859-1
+local text_encoding = utf8.check_unicode(text, "WINDOWS-1252")
+
+if text_encoding ~= default_encoding then avt.encoding(text_encoding) end
+
+avt.pager(text)

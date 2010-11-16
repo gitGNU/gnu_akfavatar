@@ -214,4 +214,26 @@ function u8.check (s)
   return true --> nothing invalid found
 end
 
+-- checks text for unicode encodings
+-- returns either of "UTF-8", "UTF-16BE", UTF-16LE", "UTF-32BE", "UTF-32LE"
+-- or the fallback (or nil if fallback is not given)
+function u8.check_unicode (s, fallback)
+  if s == nil then return fallback
+  -- first check for Byte Order Marks (U+FEFF)
+  elseif string.find(s, "^\239\187\191") then return "UTF-8"
+  elseif string.find(s, "^%z%z\254\255") then return "UTF-32BE"
+  elseif string.find(s, "^\255\254%z%z") then return "UTF-32LE"
+  elseif string.find(s, "^\254\255") then return "UTF-16BE"
+  elseif string.find(s, "^\255\254") then return "UTF-16LE"
+  -- no BOM, check for UTF-8
+  elseif u8.check(s) then return "UTF-8"
+  -- check for binary zeros - unreliable guesswork
+  elseif string.find(s, "^%z%z") then return "UTF-32BE"
+  elseif string.find(s, "^..%z%z") then return "UTF-32LE"
+  elseif string.find(s, "^%z") then return "UTF-16BE"
+  elseif string.find(s, "^...%z") then return "UTF-16LE"
+  else return fallback
+  end
+end
+
 return u8
