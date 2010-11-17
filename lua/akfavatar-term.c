@@ -20,6 +20,7 @@
 
 #include "akfavatar.h"
 #include "avtaddons.h"
+#include <langinfo.h>
 
 #include <lua.h>
 #include <lauxlib.h>
@@ -42,21 +43,18 @@ quit (lua_State * L)
 }
 
 /*
- * 1) encoding is the system encoding to be used
- * 2) working directory (may be nil)
+ * options
+ * 1) working directory (may be nil or none)
  */
 static int
 lterm_run (lua_State * L)
 {
   int fd;
-  char encoding[255];
-  const char *working_dir = lua_tostring (L, 2);	/* NULL is okay */
+  char encoding[256];
+  const char *working_dir = lua_tostring (L, 1);	/* NULL is okay */
 
-  if (lua_isstring (L, 1))
-    strncpy (encoding, lua_tostring (L, 1), sizeof (encoding));
-  else
-    strncpy (encoding, avt_get_mb_encoding (), sizeof (encoding));
-
+  /* conforming to SUSv2, POSIX.1-2001 */
+  strncpy(encoding, nl_langinfo (CODESET), sizeof (encoding));
   encoding[sizeof (encoding) - 1] = '\0';
 
   fd = avta_term_start (encoding, working_dir, NULL);
