@@ -12,4 +12,4 @@ avt.initialize {
   encoding = "UTF-8",
   mode = "window"}
 
-term.run ()
+term.execute ()

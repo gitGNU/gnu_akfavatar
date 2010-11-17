@@ -1,5 +1,6 @@
 /*
  * AKFAvatar Terminal emulation for Lua 5.1
+ * ATTENTION: this is work in progress, ie. not finished yet
  * Copyright (c) 2010 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
@@ -46,15 +47,17 @@ quit (lua_State * L)
 }
 
 /*
- * options
- * 1) working directory (may be nil or none)
+ * ececute program in terminal
+ * accepts a program and its parameters as separate arguments
+ * if no arguments are given, it starts the default shlell
  */
 static int
-lterm_run (lua_State * L)
+lterm_execute (lua_State * L)
 {
   int fd;
+  int n, i;
   char encoding[256];
-  const char *working_dir = lua_tostring (L, 1);	/* NULL is okay */
+  const char *argv[256];
 
 #ifdef NO_LANGINFO
   /* get encoding from AKFAvatar settings */
@@ -67,7 +70,24 @@ lterm_run (lua_State * L)
 
   encoding[sizeof (encoding) - 1] = '\0';	/* enforce termination */
 
-  fd = avta_term_start (encoding, working_dir, NULL);
+  n = lua_gettop (L);		/* number of options */
+
+  if (n >= 1)
+    {
+      if (n > 255)
+	n = 255;
+
+      for (i = 0; i < n; i++)
+	argv[i] = luaL_checkstring (L, i + 1);
+      argv[n] = NULL;
+
+      fd = avta_term_start (encoding, NULL, (char **) argv);
+    }
+  else				/* start shell */
+    fd = avta_term_start (encoding, NULL, NULL);
+
+  avt_clear ();
+
   if (fd != -1)
     avta_term_run (fd);
 
@@ -78,7 +98,7 @@ lterm_run (lua_State * L)
 }
 
 static const struct luaL_reg termlib[] = {
-  {"run", lterm_run},
+  {"execute", lterm_execute},
   {NULL, NULL}
 };
 
