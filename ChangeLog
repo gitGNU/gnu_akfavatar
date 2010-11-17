@@ -1,3 +1,7 @@
+2010-11-17  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtterm.c (avta_term_run): fix: unlock updates
+
 2010-11-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar/utf8.lua (utf8.check): limit for checks
