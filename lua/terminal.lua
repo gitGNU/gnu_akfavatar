@@ -7,9 +7,14 @@ require "lua-akfavatar"
 require "akfavatar-term"
 
 avt.initialize {
-  title = "Terminal",
+  title = "AKFAvatar Terminal",
+  shortname = "Terminal",
   avatar = "default",  -- use "none" for most space
-  encoding = "UTF-8",
-  mode = "window"}
+  encoding = "UTF-8"
+  }
 
-term.execute ()
+if arg[1] then
+  term.execute(unpack(arg))
+else
+  term.execute() --> execute a shell
+end
