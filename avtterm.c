@@ -1461,6 +1461,7 @@ avta_term_run (int fd)
 
   activate_cursor (AVT_FALSE);
   avt_reserve_single_keys (AVT_FALSE);
+  avt_newline_mode (AVT_TRUE);
   avt_lock_updates (AVT_FALSE);
 
   /* release handlers */

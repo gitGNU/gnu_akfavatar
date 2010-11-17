@@ -1,7 +1,7 @@
 2010-11-17  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtterm.c (avta_term_run):
-	fix: unlock updates
+	fix: unlock updates, reset newline mode
 
 	* avtaddons.h, avtterm.c (avta_term_initialize):
 	changed definition
