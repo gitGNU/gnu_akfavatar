@@ -24,7 +24,7 @@
 extern int
 avta_term_start (const char *system_encoding AVT_UNUSED,
 		 const char *working_dir AVT_UNUSED,
-		 char *const prg_argv[] AVT_UNUSED)
+		 char *prg_argv[] AVT_UNUSED)
 {
   return -1;
 }
