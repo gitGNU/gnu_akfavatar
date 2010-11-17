@@ -82,7 +82,7 @@ get_user_shell (void)
 extern int
 avta_term_initialize (int *input_fd, int width, int height,
 		      avt_bool_t monochrome, const char *working_dir,
-		      char *const prg_argv[])
+		      char *prg_argv[])
 {
   pid_t childpid;
   int master, slave;
@@ -200,7 +200,7 @@ avta_term_initialize (int *input_fd, int width, int height,
       if (prg_argv == NULL)	/* execute shell */
 	execl (shell, shell, (char *) NULL);
       else			/* execute the command */
-	execvp (prg_argv[0], prg_argv);
+	execvp (prg_argv[0], (char *const *) prg_argv);
 
 
       /* in case of an error, we can not do much */

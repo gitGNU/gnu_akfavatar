@@ -33,7 +33,7 @@
 extern int avta_term_initialize (int *input_fd, int width, int height,
 				 avt_bool_t monochrome,
 				 const char *working_dir,
-				 char *const prg_argv[]);
+				 char *prg_argv[]);
 
 /* tell the terminal the new size of the balloon */
 /* (this may be a dummy function) */

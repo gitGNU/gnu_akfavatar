@@ -231,7 +231,7 @@ typedef int (*avta_term_apc_cmd) (wchar_t*);
  */
 AVT_ADDON int avta_term_start (const char *system_encoding, 
 			       const char *working_dir,
-			       char *const prg_argv[]);
+			       char *prg_argv[]);
 
 AVT_ADDON void avta_term_run (int fd);
 

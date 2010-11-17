@@ -1478,7 +1478,7 @@ avta_term_run (int fd)
 
 extern int
 avta_term_start (const char *system_encoding, const char *working_dir,
-		 char *const prg_argv[])
+		 char *prg_argv[])
 {
   /* clear text-buffer */
   wcbuf_pos = wcbuf_len = 0;

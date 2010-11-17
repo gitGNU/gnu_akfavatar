@@ -1,6 +1,12 @@
 2010-11-17  Andreas K. Foerster  <info@akfoerster.de>
 
-	* avtterm.c (avta_term_run): fix: unlock updates
+	* avtterm.c (avta_term_run):
+	fix: unlock updates
+
+	* avtaddons.h, avtterm.c (avta_term_initialize):
+	changed definition
+	avttermsys.h, avttermsys.c (avta_term_initialize): dito
+	avatarsay.c: adapted
 
 2010-11-16  Andreas K. Foerster  <info@akfoerster.de>
 
