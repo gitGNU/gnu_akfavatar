@@ -13,7 +13,7 @@ avt.initialize {
   encoding = "UTF-8"
   }
 
--- term.nocolor(true)
+term.color(true)
 
 if arg[1] then
   term.execute(unpack(arg))
