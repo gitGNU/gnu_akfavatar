@@ -22,6 +22,9 @@
 #include "akfavatar.h"
 #include "avtaddons.h"
 
+#include <stdlib.h>
+#include <string.h>
+
 #ifndef NO_LANGINFO
 #  include <langinfo.h>
 #endif
@@ -29,6 +32,8 @@
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
+
+static char *startdir = NULL;
 
 static int
 quit (lua_State * L)
@@ -57,7 +62,7 @@ lterm_execute (lua_State * L)
   int fd;
   int n, i;
   char encoding[256];
-  const char *argv[256];
+  char *argv[256];
 
 #ifdef NO_LANGINFO
   /* get encoding from AKFAvatar settings */
@@ -78,18 +83,22 @@ lterm_execute (lua_State * L)
   if (n >= 1)			/* start program */
     {
       for (i = 0; i < n; i++)
-	argv[i] = luaL_checkstring (L, i + 1);
+	argv[i] = (char *) luaL_checkstring (L, i + 1);
       argv[n] = NULL;
 
-      fd = avta_term_start (encoding, NULL, (char **) argv);
+      fd = avta_term_start (encoding, startdir, argv);
     }
   else				/* start shell */
-    fd = avta_term_start (encoding, NULL, NULL);
-
-  avt_clear ();
+    fd = avta_term_start (encoding, startdir, NULL);
 
   if (fd != -1)
     avta_term_run (fd);
+
+  if (startdir)
+    {
+      free (startdir);
+      startdir = NULL;
+    }
 
   if (avt_get_status () != AVT_NORMAL)
     quit (L);
@@ -97,7 +106,27 @@ lterm_execute (lua_State * L)
   return 0;
 }
 
+/*
+ * set the start directory for the next execute command
+ * none or nil as attribute cancels the directory
+ */
+static int
+lterm_startdir (lua_State * L)
+{
+  if (startdir)
+    {
+      free (startdir);
+      startdir = NULL;
+    }
+
+  if (!lua_isnoneornil (L, 1))
+    startdir = strdup (luaL_checkstring (L, 1));
+
+  return 0;
+}
+
 static const struct luaL_reg termlib[] = {
+  {"startdir", lterm_startdir},
   {"execute", lterm_execute},
   {NULL, NULL}
 };
