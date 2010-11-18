@@ -235,18 +235,25 @@ AVT_ADDON int avta_term_start (const char *system_encoding,
 
 AVT_ADDON void avta_term_run (int fd);
 
+AVT_ADDON void avta_term_nocolor (avt_bool_t nocolor);
+
+
 /* register handler for APC commands (optional) */
 AVT_ADDON void avta_term_register_apc (avta_term_apc_cmd command);
 
-AVT_ADDON void avta_term_nocolor (avt_bool_t nocolor);
+/*
+ * the following functions are only meant to be called
+ * from the APC handler
+ */
 
+/* APC: (de)activate slowprint mode */
 AVT_ADDON void avta_term_slowprint (avt_bool_t on);
 
-/* send data to stdin of the running program */
+/* APC: send data to stdin of the running program */
 AVT_ADDON void avta_term_send (const char *buf, size_t count);
 
 /*
- * update size of textarea
+ * APC: update size of textarea
  * call this after you have changed the size of the balloon
  */
 AVT_ADDON void avta_term_update_size (void);
