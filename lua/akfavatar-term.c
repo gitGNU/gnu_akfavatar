@@ -125,8 +125,18 @@ lterm_startdir (lua_State * L)
   return 0;
 }
 
+static int
+lterm_nocolor (lua_State * L)
+{
+  luaL_checktype (L, 1, LUA_TBOOLEAN);
+  avta_term_nocolor (lua_toboolean (L, 1));
+
+  return 0;
+}
+
 static const struct luaL_reg termlib[] = {
   {"startdir", lterm_startdir},
+  {"nocolor", lterm_nocolor},
   {"execute", lterm_execute},
   {NULL, NULL}
 };
