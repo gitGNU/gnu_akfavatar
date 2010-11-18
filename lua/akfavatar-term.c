@@ -129,7 +129,7 @@ static int
 lterm_nocolor (lua_State * L)
 {
   luaL_checktype (L, 1, LUA_TBOOLEAN);
-  avta_term_nocolor (lua_toboolean (L, 1));
+  avta_term_nocolor ((avt_bool_t) lua_toboolean (L, 1));
 
   return 0;
 }
