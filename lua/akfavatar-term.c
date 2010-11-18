@@ -72,11 +72,11 @@ lterm_execute (lua_State * L)
 
   n = lua_gettop (L);		/* number of options */
 
-  if (n >= 1)
-    {
-      if (n > 255)
-	n = 255;
+  if (n > 255)
+    luaL_error (L, "execute: too many arguments");
 
+  if (n >= 1)			/* start program */
+    {
       for (i = 0; i < n; i++)
 	argv[i] = luaL_checkstring (L, i + 1);
       argv[n] = NULL;
