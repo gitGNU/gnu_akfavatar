@@ -293,12 +293,6 @@ textfile=avt.file_selection(function(n) return string.find(n,"%.te?xt$") end)
 Of course @var{filter} can also be the name of a previously defined function.
 @end defun
 
-@defun avt.color_selection ()
-Start a color-chooser in the balloon. It returns two strings: first the
-English name for the color and second the hexadicimal RGB definition.
-Both values can be used for selecting colors.
-@end defun
-
 @defun avt.initialize_audio ()
 Initialize the audio subsystem.
 
@@ -507,11 +501,42 @@ Sets the text background color to the color of the balloon.
 
 @defun avt.get_color (color_number)
 Get a color for a given integer value.
-Returns name and RGB value as strings,
-or returns nothing on error.
 
-@strong{Attention:} This function will probably change.
+AKFAvatar has an internal palette with color names to use.
+With this function you can scan through that list.
+It returns the name and RGB value as strings,
+or it returns nothing on error.
 @end defun
+
+@defun avt.colors ()
+Iterator for internal color names.
+
+AKFAvatar has an internal palette with color names to use.
+With this function you can scan through that list with a generic 
+@code{for} loop.
+
+@example
+require "lua-akfavatar"
+for nr, name, rgb in avt.colors() do
+  avt.normal_text()
+  avt.newline()
+  avt.say(string.format("%3d) %5s, %-25s", nr, rgb, name))
+  avt.set_text_background_color(name)
+  avt.clear_eol()
+  avt.wait(0.7)
+end
+avt.wait_button()
+@end example
+
+If you don't need the @code{rgb} value, you can leave that variable away.
+@end defun
+
+@defun avt.color_selection ()
+Start a color-chooser in the balloon. It returns two strings: first the
+English name for the color and second the hexadicimal RGB definition.
+Both values can be used for selecting colors.
+@end defun
+
 
 @defun avt.activate_cursor (true | false)
 Show the cursor.
