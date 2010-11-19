@@ -138,6 +138,27 @@ lterm_color (lua_State * L)
   return 0;
 }
 
+static int
+APC_command (wchar_t * command)
+{
+  char cmd[1024];		/* just ASCII! */
+  unsigned int p;
+
+  /* get ASCII from command */
+  p = 0;
+  while (*command && p < sizeof (cmd) - 1)
+    {
+      if (*command <= L'\x7F')
+	cmd[p++] = (char) *command;
+    }
+
+  cmd[p] = '\0';
+
+  /* ... */
+
+  return 0;
+}
+
 static const struct luaL_reg termlib[] = {
   {"startdir", lterm_startdir},
   {"color", lterm_color},
