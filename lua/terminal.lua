@@ -10,7 +10,8 @@ avt.initialize {
   title = "AKFAvatar Terminal",
   shortname = "Terminal",
   avatar = "default",  -- use "none" for most space
-  encoding = "UTF-8"
+  audio = true, -- for the bell ("\a")
+  mode = "auto"
   }
 
 term.color(true)
