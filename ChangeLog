@@ -1,3 +1,8 @@
+2010-11-19  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/akfavatar/utf8.lua (utf8.bold, utf8.underlined):
+	new functions
+
 2010-11-17  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtterm.c (avta_term_run):

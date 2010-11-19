@@ -150,6 +150,16 @@ function u8.xml (s)
   return s
 end
 
+-- returns the string undelined (overstrike technique)
+function u8.underlined (s)
+  return (string.gsub(s, "[^\128-\191]", "_\b%1"))
+end
+
+-- returns the string in boldface (overstrike technique)
+function u8.bold (s)
+  return (string.gsub(s, "[\32-\127\194-\244][\128-\191]*", "%1\b%1"))
+end
+
 
 -- Byte Order Mark
 -- not really needed for UTF8, but sometimes used as signature
