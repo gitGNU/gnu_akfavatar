@@ -64,6 +64,9 @@ lterm_execute (lua_State * L)
   char encoding[256];
   char *argv[256];
 
+  if (!avt_initialized ())
+    luaL_error (L, "execute: AKFAvatar not initialized");
+
 #ifdef NO_LANGINFO
   /* get encoding from AKFAvatar settings */
   strncpy (encoding, avt_get_mb_encoding (), sizeof (encoding));
@@ -77,6 +80,7 @@ lterm_execute (lua_State * L)
 
   n = lua_gettop (L);		/* number of options */
 
+  /* number of arguments is already limited in Lua, but I want to be save */
   if (n > 255)
     luaL_error (L, "execute: too many arguments");
 
@@ -129,7 +133,7 @@ static int
 lterm_color (lua_State * L)
 {
   luaL_checktype (L, 1, LUA_TBOOLEAN);
-  avta_term_nocolor ((avt_bool_t) !lua_toboolean (L, 1));
+  avta_term_nocolor ((avt_bool_t) ! lua_toboolean (L, 1));
 
   return 0;
 }
