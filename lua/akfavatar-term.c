@@ -61,7 +61,7 @@ lterm_execute (lua_State * L)
 {
   int fd;
   int n, i;
-  char encoding[256];
+  char encoding[80];
   char *argv[256];
 
   if (!avt_initialized ())
