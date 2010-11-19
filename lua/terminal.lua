@@ -15,9 +15,5 @@ avt.initialize {
   }
 
 term.color(true)
-
-if arg[1] then
-  term.execute(unpack(arg))
-else
-  term.execute() --> execute a shell
-end
+term.homedir()
+term.execute(unpack(arg))

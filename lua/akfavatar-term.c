@@ -25,6 +25,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <sys/types.h>
+#include <pwd.h>
+
 #ifndef NO_LANGINFO
 #  include <langinfo.h>
 #endif
@@ -130,6 +133,34 @@ lterm_startdir (lua_State * L)
 }
 
 static int
+lterm_homedir (lua_State * L AVT_UNUSED)
+{
+  char *home;
+
+  home = getenv ("HOME");
+
+  /* when the variable is not set, dig deeper */
+  if (home == NULL || *home == '\0')
+    {
+      struct passwd *user_data;
+      user_data = getpwuid (getuid ());	/* POSIX.1-2001 */
+      if (user_data != NULL && user_data->pw_dir != NULL
+	  && *user_data->pw_dir != '\0')
+	home = user_data->pw_dir;
+    }
+
+  if (home)
+    {
+      if (startdir)
+	free (startdir);
+
+      startdir = strdup (home);
+    }
+
+  return 0;
+}
+
+static int
 lterm_color (lua_State * L)
 {
   luaL_checktype (L, 1, LUA_TBOOLEAN);
@@ -138,6 +169,7 @@ lterm_color (lua_State * L)
   return 0;
 }
 
+#if 0
 static int
 APC_command (wchar_t * command)
 {
@@ -158,9 +190,11 @@ APC_command (wchar_t * command)
 
   return 0;
 }
+#endif
 
 static const struct luaL_reg termlib[] = {
   {"startdir", lterm_startdir},
+  {"homedir", lterm_homedir},
   {"color", lterm_color},
   {"execute", lterm_execute},
   {NULL, NULL}
