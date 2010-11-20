@@ -24,9 +24,10 @@ utf8 = u8
 -- control characters and invisible characters are included, too
 function u8.len (s)
   local len = 0
+  local b
 
   for i=1,#s do
-    local b = string.byte(s, i)
+    b = string.byte(s, i)
     -- count any byte except follow-up bytes
     if b<128 or b>191 then len = len + 1 end
   end
@@ -150,7 +151,7 @@ function u8.xml (s)
   return s
 end
 
--- returns the string undelined (overstrike technique)
+-- returns the string underlined (overstrike technique)
 function u8.underlined (s)
   return (string.gsub(s, "[^\128-\191]", "_\b%1"))
 end
