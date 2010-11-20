@@ -231,9 +231,9 @@ avatarsay-s: avatarsay.o avtposix.o libakfavatar.a \
 	   $(SDL_LDFLAGS) $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
 # lua-akfavatar dynamically linked
-lua-akfavatar-bin: lua-akfavatar-prg.o lua-avt.o lbase64.o \
+lua-akfavatar-bin: lua-akfavatar-prg.o lua-avt.o \
                    filechooser.o colorchooser.o avtmsg.o avtgrmsg.o
-	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o lbase64.o \
+	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o \
 	     filechooser.o colorchooser.o avtmsg.o avtgrmsg.o \
 	     -L. -lakfavatar \
 	     $(LUA_LDFLAGS) $(LDFLAGS)
@@ -246,10 +246,6 @@ lua-akfavatar-prg.o: $(srcdir)/lua/lua-akfavatar-prg.c
 lua-avt.o: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/lua-avt.c
-
-lbase64.o: $(srcdir)/lua/lbase64.c
-	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
-	  $(srcdir)/lua/lbase64.c
 
 # Lua-Modules
 lua-akfavatar.so: lua-avt.lo filechooser.lo colorchooser.lo avtmsg.lo avtgrmsg.lo

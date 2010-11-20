@@ -197,12 +197,10 @@ example.exe: $(srcdir)/example.c akfavatar.dll icon.wo
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -o $@ $(srcdir)/example.c icon.wo \
 			-L. -lakfavatar $(SDL_LDFLAGS) $(LDFLAGS)
 
-lua-akfavatar.exe: lua-akfavatar-prg.wo lua-avt.wo lbase64.wo \
-		luaavtstarter-rc.wo \
+lua-akfavatar.exe: lua-akfavatar-prg.wo lua-avt.wo luaavtstarter-rc.wo \
 		filechooser.wo askdrive.wo colorchooser.wo avtmsg.wo \
 		avtgrmsg.wo
-	$(CC) -o $@ lua-akfavatar-prg.wo lua-avt.wo lbase64.wo \
-	    luaavtstarter-rc.wo \
+	$(CC) -o $@ lua-akfavatar-prg.wo lua-avt.wo luaavtstarter-rc.wo \
 	    filechooser.wo askdrive.wo colorchooser.wo avtmsg.wo avtgrmsg.wo \
 	    -L. -lakfavatar \
 	    $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS)

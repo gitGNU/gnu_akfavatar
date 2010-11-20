@@ -7,14 +7,12 @@ You can do lots of things with very few commands.  Just pick the parts you
 are interested in and experiment with that.  There are many parts of Lua
 or AKFAvatar, which you will most probably never need.
 
-There are currently two modules built in: ``lua-akfavatar'' and ``base64''.
-
 @appendixsec lua-akfavatar
 
-Before you can use the AKFAvatar binding, you have to load it with the command
-@samp{require "lua-akfavatar"}. This creates a table @code{avt}, with which 
-you can access the following functions.  By the way, if you don't like the
-prefix @code{avt}, you could also use something like this:
+Before you can use the AKFAvatar binding, you have to load or activate it with
+the command @samp{require "lua-akfavatar"}. This creates a table @code{avt},
+with which you can access the following functions.  By the way, if you don't
+like the prefix @code{avt}, you could also use something like this:
 @samp{local avatar = require "lua-akfavatar"}, then you can also access the
 functions with the prefix @code{avatar}.
 

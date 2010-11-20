@@ -41,9 +41,6 @@ static lua_State *L;
 /* from lua-avt.c */
 extern int luaopen_akfavatar (lua_State * L);
 
-/* from lbase64.c */
-extern int luaopen_base64 (lua_State * L);
-
 static void
 version (void)
 {
@@ -273,14 +270,12 @@ initialize_lua (void)
 
   luaL_openlibs (L);
 
-  /* register loader functions for: "lua-akfavatar" and "base64" */
+  /* register loader functions for: "lua-akfavatar" */
   /* (users should not be able to leave the require command away) */
   lua_getglobal (L, "package");
   lua_getfield (L, -1, "preload");
   lua_pushcfunction (L, luaopen_akfavatar);
   lua_setfield (L, -2, "lua-akfavatar");
-  lua_pushcfunction (L, luaopen_base64);
-  lua_setfield (L, -2, "base64");
   lua_pop (L, 2);
 
   /* replace loadfile/dofile */

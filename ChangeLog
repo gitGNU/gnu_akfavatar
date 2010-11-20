@@ -3,6 +3,9 @@
 	* lua/akfavatar/utf8.lua (u8.check_unicode):
 	no fallback
 
+	* lua/lua-akfavatar-prg.c:
+	don't include the base64 lib (available as module now)
+
 2010-11-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar/utf8.lua (utf8.bold, utf8.underlined):
