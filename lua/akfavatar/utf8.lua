@@ -226,9 +226,9 @@ end
 
 -- checks text for unicode encodings
 -- returns either of "UTF-8", "UTF-16BE", UTF-16LE", "UTF-32BE", "UTF-32LE"
--- or the fallback (or nil if fallback is not given)
-function u8.check_unicode (s, fallback)
-  if s == nil then return fallback
+-- or nil if it cannot be detected
+function u8.check_unicode (s)
+  if s == nil then return nil
   -- first check for Byte Order Marks (U+FEFF)
   elseif string.find(s, "^\239\187\191") then return "UTF-8"
   elseif string.find(s, "^%z%z\254\255") then return "UTF-32BE"
@@ -242,7 +242,7 @@ function u8.check_unicode (s, fallback)
   elseif string.find(s, "^..%z%z") then return "UTF-32LE"
   elseif string.find(s, "^%z") then return "UTF-16BE"
   elseif string.find(s, "^...%z") then return "UTF-16LE"
-  else return fallback
+  else return nil
   end
 end
 
