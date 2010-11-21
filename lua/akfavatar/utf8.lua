@@ -36,6 +36,59 @@ function u8.len (s)
 end
 
 
+-- like string.sub, but for UTF-8 strings
+function u8.sub (s, startchar, endchar)
+  local pos, char, startpos, endpos, b
+
+  assert(startchar, "sub: must have 2 or 3 arguments")
+  endchar = endchar or -1
+
+  pos = 0
+  char = 0
+  startpos = 0
+  endpos = 0
+
+  if startchar == 0 then startchar = 1 end
+  if endchar == 0 then endchar = -1 end
+
+  -- handle negative values (-1 for endchar is a special case)
+  if startchar < 0 or endchar < -1 then
+    local len = u8.len(s)
+    if startchar < 0 then startchar = startchar + len + 1 end
+    if endchar < -1 then endchar = endchar + len + 1 end
+  end
+
+  if endchar == -1 then endpos = #s
+  elseif startchar > endchar then return "" end
+
+  repeat
+    pos = pos + 1
+    b = string.byte(s, pos)
+
+    if b and (b<128 or b>191) then --> startbyte of new char
+      char = char + 1
+
+      if startchar == char then
+        startpos = pos
+        if endpos ~= 0 then break end  --> we have it all
+      end
+
+      -- for endchar I go 1 char further to get all bytes of previous char
+      if endchar == char - 1 then
+        endpos = pos - 1
+        break --> we have it all
+      end
+    end
+
+  until not b
+
+  if startpos == 0 then return "" end
+  if endpos == 0 then endpos = #s end
+
+  return string.sub(s, startpos, endpos)
+end
+
+
 -- like string.char but accepts higher numbers
 -- and returns an UTF-8 encoded string
 function u8.char (...)

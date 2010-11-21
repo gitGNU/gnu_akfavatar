@@ -1,6 +1,10 @@
+2010-11-21  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/akfavatar/utf8.lua (utf8.sub): new function
+
 2010-11-20  Andreas K. Foerster  <info@akfoerster.de>
 
-	* lua/akfavatar/utf8.lua (u8.check_unicode):
+	* lua/akfavatar/utf8.lua (utf8.check_unicode):
 	no fallback
 
 	* lua/lua-akfavatar-prg.c:
