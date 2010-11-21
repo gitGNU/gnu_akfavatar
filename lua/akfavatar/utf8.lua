@@ -66,6 +66,13 @@ function u8.sub (s, startchar, endchar)
     b = string.byte(s, pos)
 
     if b and (b<128 or b>191) then --> startbyte of new char
+
+      -- for endchar I go 1 char further to get all bytes of previous char
+      if endchar == char then --> endchar was previous char
+        endpos = pos - 1
+        break --> we have it all
+      end
+
       char = char + 1
 
       if startchar == char then
@@ -73,11 +80,6 @@ function u8.sub (s, startchar, endchar)
         if endpos ~= 0 then break end  --> we have it all
       end
 
-      -- for endchar I go 1 char further to get all bytes of previous char
-      if endchar == char - 1 then
-        endpos = pos - 1
-        break --> we have it all
-      end
     end
 
   until not b
