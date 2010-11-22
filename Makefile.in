@@ -393,6 +393,7 @@ uninstall: uninstall-info uninstall-man uninstall-txt uninstall-html \
 	-rm -f $(docdir)/NEWS
 	-rm -f $(LUA_CPATH)/lua-akfavatar.so
 	-rm -f $(LUA_CPATH)/base64.so
+	-rm -f $(LUA_CPATH)/akfavatar-term.so
 
 	-xdg-desktop-menu uninstall akfoerster-avatarsay.desktop
 	-xdg-desktop-menu uninstall akfoerster-lua-akfavatar.desktop
