@@ -306,8 +306,8 @@ dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64
 	cp $(srcdir)/misc/lua51.dll $(BINPKGNAME)/
 	cp $(srcdir)/misc/lua.exe $(BINPKGNAME)/
 	cp $(srcdir)/README-Lua $(BINPKGNAME)/README-Lua.txt
-	$(STRIP) --strip-debug $(BINPKGNAME)/*.exe
-	$(STRIP) --strip-debug $(BINPKGNAME)/*.dll
+	$(STRIP) $(BINPKGNAME)/*.exe
+	$(STRIP) $(BINPKGNAME)/*.dll
 	todos $(BINPKGNAME)/fsdemo-??.avt
 	todos $(BINPKGNAME)/*.bat
 	todos $(BINPKGNAME)/*.txt
