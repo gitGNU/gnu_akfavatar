@@ -1,3 +1,8 @@
+2010-11-23  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_mb_encoding):
+	check if new encoding is actually different
+
 2010-11-21  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar/utf8.lua (utf8.sub): new function

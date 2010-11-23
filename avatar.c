@@ -3507,6 +3507,13 @@ avt_tell (const wchar_t * txt)
 extern int
 avt_mb_encoding (const char *encoding)
 {
+  /*
+   * check if it is the result of avt_get_mb_encoding()
+   * or the same encoding
+   */
+  if (encoding == avt_encoding || SDL_strcmp (encoding, avt_encoding) == 0)
+    return _avt_STATUS;
+
   /* store encoding */
   if (avt_encoding)
     SDL_free (avt_encoding);
