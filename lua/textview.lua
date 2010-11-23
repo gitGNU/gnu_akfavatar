@@ -42,8 +42,5 @@ if arg[1]
 local text = io.read("*all")
 
 -- note: WINDOWS-1252 is a superset of ISO-8859-1
-local text_encoding = utf8.check_unicode(text) or "WINDOWS-1252"
-
-if text_encoding ~= default_encoding then avt.encoding(text_encoding) end
-
+avt.encoding(utf8.check_unicode(text) or "WINDOWS-1252")
 avt.pager(text)
