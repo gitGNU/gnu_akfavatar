@@ -140,6 +140,27 @@ function u8.codepoint (c)
   end
 end
 
+-- like string.byte
+-- better use utf8.codepoint, if appropriate
+function u8.codepoints (s, startchar, endchar)
+  startchar = startchar or 1
+  endchar = endchar or startchar
+
+  if startchar == 1 and endchar == 1 then
+    return u8.codepoint(s)
+  end
+
+  local results = {}
+  local charnr = 0
+
+  for c in u8.characters (s) do
+    charnr = charnr + 1
+    if charnr >= startchar then table.insert(results, u8.codepoint (c)) end
+    if charnr >= endchar then break end
+  end
+
+  return unpack(results)
+end
 
 -- iterator returning the characters of an UTF-8 string
 -- a character may be a single or multi-byte string
