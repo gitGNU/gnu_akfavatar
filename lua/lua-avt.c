@@ -1277,7 +1277,7 @@ lavt_load_audio_file (lua_State * L)
   if (!lua_isnoneornil (L, 1))
     filename = luaL_checklstring (L, 1, &len);
 
-  /* promblem: the garbage collector doesn't see, how heavy this is */
+  /* problem: the garbage collector doesn't see, how heavy this is */
   audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
   *audio = NULL;
   luaL_getmetatable (L, AUDIODATA);
@@ -1301,7 +1301,7 @@ lavt_load_audio_string (lua_State * L)
   if (!lua_isnoneornil (L, 1))
     data = (char *) luaL_checklstring (L, 1, &len);
 
-  /* promblem: the garbage collector doesn't see, how heavy this is */
+  /* problem: the garbage collector doesn't see, how heavy this is */
   audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
   *audio = NULL;
   luaL_getmetatable (L, AUDIODATA);
