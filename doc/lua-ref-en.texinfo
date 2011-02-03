@@ -331,6 +331,9 @@ but AU-files with more Bits can be read.
 When no @var{filename} is given, or the @var{filename} is @code{nil} or
 an empty string, it returns an empty audio element, ie. you can call its
 methods, it just doesn't play anything.
+
+On error it returns @code{nil} and an error message.
+(Note: in version 0.19.0 it also returned an empty audio element then.)
 @end defun
 
 @defun avt.load_audio_string ([audio_data])
@@ -340,6 +343,9 @@ Otherwise the same as @command{avt.load_audio_file()}.
 When no @var{audio_data} is given, or the @var{audio_data} is @code{nil} or
 an empty string, it returns an empty audio element, ie. you can call its
 methods, it just doesn't play anything.
+
+On error it returns @code{nil} and an error message.
+(Note: in version 0.19.0 it also returned an empty audio element then.)
 
 See also: @code{base64.decode}
 @end defun

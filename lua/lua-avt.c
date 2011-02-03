@@ -1270,21 +1270,34 @@ lavt_load_audio_file (lua_State * L)
 {
   const char *filename;
   size_t len;
+  avt_audio_t *audio_data;
   avt_audio_t **audio;
 
   filename = "";
+  audio_data = NULL;
   len = 0;
+
   if (!lua_isnoneornil (L, 1))
     filename = luaL_checklstring (L, 1, &len);
 
+  /* if filename is not none or nil or "" */
+  if (len > 0)
+    {
+      audio_data = avt_load_audio_file (filename);
+
+      if (!audio_data)
+	{
+	  lua_pushnil (L);
+	  lua_pushstring (L, avt_get_error ());
+	  return 2;
+	}
+    }
+
   /* problem: the garbage collector doesn't see, how heavy this is */
   audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
-  *audio = NULL;
+  *audio = audio_data;		/* audio_data may be NULL */
   luaL_getmetatable (L, AUDIODATA);
   lua_setmetatable (L, -2);
-
-  if (len > 0)
-    *audio = avt_load_audio_file (filename);
 
   return 1;
 }
@@ -1294,21 +1307,34 @@ lavt_load_audio_string (lua_State * L)
 {
   char *data;
   size_t len;
+  avt_audio_t *audio_data;
   avt_audio_t **audio;
 
   data = "";
+  audio_data = NULL;
   len = 0;
+
   if (!lua_isnoneornil (L, 1))
     data = (char *) luaL_checklstring (L, 1, &len);
 
+  /* if string is not none or nil or "" */
+  if (len > 0)
+    {
+      audio_data = avt_load_audio_data (data, len);
+
+      if (!audio_data)
+	{
+	  lua_pushnil (L);
+	  lua_pushstring (L, avt_get_error ());
+	  return 2;
+	}
+    }
+
   /* problem: the garbage collector doesn't see, how heavy this is */
   audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
-  *audio = NULL;
+  *audio = audio_data;		/* audio_data may be NULL */
   luaL_getmetatable (L, AUDIODATA);
   lua_setmetatable (L, -2);
-
-  if (len > 0)
-    *audio = avt_load_audio_data (data, len);
 
   return 1;
 }

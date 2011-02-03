@@ -1,3 +1,8 @@
+2011-02-03  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/lua-avt.c (lavt_load_audio_file, lavt_load_audio_string):
+	on error return nil and an error message
+
 2010-11-26  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar/utf8.lua (utf8.codepoints): new function
