@@ -516,10 +516,16 @@ avt_load_audio_RW (SDL_RWops * src)
 	type = 2;
       else
 	{
-	  SDL_SetError ("file neither in AU nor WAVE format");
+	  SDL_SetError ("audio data neither in AU nor WAVE format");
 	  SDL_RWclose (src);
 	  return NULL;
 	}
+    }
+  else
+    {
+      SDL_SetError ("cannot read head of audio data");
+      SDL_RWclose (src);
+      return NULL;
     }
 
   SDL_RWseek (src, start, RW_SEEK_SET);
@@ -735,7 +741,7 @@ avt_audio_playing (avt_audio_t * snd)
       if ((soundleft > 0 || loop) && current_sound.sound == s->sound)
 	return AVT_TRUE;
     }
-  else /* no specific sound */
+  else				/* no specific sound */
     {
       if (soundleft > 0 || loop)
 	return AVT_TRUE;
