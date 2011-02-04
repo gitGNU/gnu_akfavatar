@@ -35,7 +35,8 @@ SHELL = /bin/sh
 .SUFFIXES:
 
 all: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe \
-     lua-akfavatar.exe lua-akfavatar.dll base64.dll iconv.exe
+     lua-akfavatar.exe lua-akfavatar.dll base64.dll avt-vorbis.dll \
+     iconv.exe
 
 nolua: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe iconv.exe
 
@@ -231,6 +232,20 @@ lua-akfavatar-prg.wo: $(srcdir)/lua/lua-akfavatar-prg.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) $(SDL_CFLAGS) -I$(srcdir) -c -o $@ \
 	 $(srcdir)/lua/lua-akfavatar-prg.c
 
+avt-vorbis.dll: avt-vorbis.wo stb_vorbis.wo
+	$(CC) -o $@ -shared avt-vorbis.wo stb_vorbis.wo \
+	   -L. -lavtaddons -lakfavatar \
+	   $(LUA_LDFLAGS) $(LDFLAGS)
+
+avt-vorbis.wo: $(srcdir)/lua/avt-vorbis.c $(srcdir)/stb_vorbis.c
+	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
+	  $(srcdir)/lua/avt-vorbis.c
+
+stb_vorbis.wo: $(srcdir)/stb_vorbis.c
+	$(CC) $(CFLAGS) -I$(srcdir) \
+	  -DSTB_VORBIS_NO_PUSHDATA_API -DSTB_VORBIS_MAX_CHANNELS=2 \
+	  -c -o $@ $(srcdir)/stb_vorbis.c
+
 lua-akfavatar.rc: $(srcdir)/mingw/lua-akfavatar-rc.in config-mingw
 	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
 	  -e "s/@REVISION@/$(REVISION)/; s/@VERSIONSTR@/$(VERSIONSTR)/" \
@@ -256,7 +271,7 @@ multiplizieren.exe: $(srcdir)/pascal/multiply.pas
 	-fpcwavatar -dRELEASE -ddeutsch -o$@ -Fi$(srcdir)/pascal \
 	  $(srcdir)/pascal/multiply.pas
 
-dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64.dll
+dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64.dll avt-vorbis.dll
 	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) html txt
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/akfavatar
@@ -267,6 +282,7 @@ dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64
 	cp lua-akfavatar.exe $(BINPKGNAME)/
 	cp lua-akfavatar.dll $(BINPKGNAME)/
 	cp base64.dll $(BINPKGNAME)/
+	cp avt-vorbis.dll $(BINPKGNAME)/
 	cp $(srcdir)/lua/multiplication.lua $(BINPKGNAME)/
 	cp $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/
 	cp $(srcdir)/lua/textview.lua $(BINPKGNAME)/

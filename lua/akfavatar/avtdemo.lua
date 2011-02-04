@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 require "lua-akfavatar"
 require "akfavatar.ar"
+pcall(require, "avt-vorbis")
 
 local audio, old_audio, initialized, moved_in, avatar, title, archive
 
@@ -61,11 +62,23 @@ local function load_audio(name)
     old_audio:free()
     old_audio = audio --> keep, it might still be playing!
     if archive then
-      audio = avt.load_audio_string(archive:get(name))
-    else
-      audio = avt.load_audio_file(name)
+      local data = archive:get(name)
+      if vorbis then
+        audio = avt.load_audio_string(data) or vorbis.load_string(data)
+                or avt.load_audio_string()
+      else
+        audio = avt.load_audio_string(data) or avt.load_audio_string()
+      end
+    else --> not an archive
+      if vorbis then
+        audio = avt.load_audio_file(name) or vorbis.load_file(name)
+                or avt.load_audio_string()
+      else
+        audio = avt.load_audio_file(name) or avt.load_audio_string()
+      end
     end
 end
+
 
 local function show_image(name)
   if not initialized then initialize() else avt.wait() end

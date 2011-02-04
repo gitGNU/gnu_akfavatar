@@ -52,6 +52,16 @@ to copy, distribute and modify it.
 rgb.txt: color table of X11
 
 
+stb_vorbis.c: Ogg Vorbis I audio decoder
+Written in April 2007 by Sean Barrett, sponsored by RAD Game Tools.
+Placed in the public domain April 2007 by the author: no copyright is
+claimed, and you may use it for any purpose you like.
+No warranty for any purpose is expressed or implied by the author (nor
+by RAD Game Tools). Report bugs and send enhancements to the author.
+Get the latest version and other information at:
+http://nothings.org/stb_vorbis/
+
+
 lua/lbase64.c:
 base64 encoding and decoding for Lua 5.1
 Luiz Henrique de Figueiredo <lhf@tecgraf.puc-rio.br>
