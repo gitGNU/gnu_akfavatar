@@ -161,18 +161,6 @@ lvorbis_load_string (lua_State * L)
   return 1;
 }
 
-static void
-require (lua_State * L, const char *module)
-{
-  lua_getglobal (L, "require");
-  lua_pushstring (L, module);
-  if (lua_pcall (L, 1, 0, 0) != 0)
-    {
-      avta_error (lua_tostring (L, -1), NULL);
-      lua_pop (L, 1);		/* pop message */
-    }
-}
-
 static const struct luaL_reg vorbislib[] = {
   {"load_file", lvorbis_load_file},
   {"load_string", lvorbis_load_string},
@@ -182,7 +170,11 @@ static const struct luaL_reg vorbislib[] = {
 int
 luaopen_vorbis (lua_State * L)
 {
-  require (L, "lua-akfavatar");	/* to get definition for audio data */
+  /* require "lua-akfavatar" to get definition for audio data */
+  lua_getglobal (L, "require");
+  lua_pushliteral (L, "lua-akfavatar");
+  lua_call (L, 1, 0);
+
   luaL_register (L, "vorbis", vorbislib);
   return 1;
 }

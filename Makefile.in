@@ -253,9 +253,9 @@ lua-akfavatar.so: lua-avt.lo filechooser.lo colorchooser.lo avtmsg.lo avtgrmsg.l
 	$(CC) -o $@ -shared -fpic lua-avt.lo filechooser.lo colorchooser.lo \
 	     avtmsg.lo avtgrmsg.lo -L. -lakfavatar $(LDFLAGS)
 
-avt-vorbis.so: avt-vorbis.lo stb_vorbis.lo avtmsg.lo avtgrmsg.lo
+avt-vorbis.so: avt-vorbis.lo stb_vorbis.lo
 	$(CC) -o $@ -shared -fpic avt-vorbis.lo stb_vorbis.lo \
-	  avtmsg.lo avtgrmsg.lo -L. -lakfavatar -lm $(LDFLAGS)
+	  -L. -lakfavatar -lm $(LDFLAGS)
 
 avt-vorbis.lo: $(srcdir)/lua/avt-vorbis.c $(srcdir)/stb_vorbis.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -fpic -c -o $@ \

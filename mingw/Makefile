@@ -233,8 +233,7 @@ lua-akfavatar-prg.wo: $(srcdir)/lua/lua-akfavatar-prg.c
 	 $(srcdir)/lua/lua-akfavatar-prg.c
 
 avt-vorbis.dll: avt-vorbis.wo stb_vorbis.wo
-	$(CC) -o $@ -shared avt-vorbis.wo stb_vorbis.wo \
-	   -L. -lavtaddons -lakfavatar \
+	$(CC) -o $@ -shared avt-vorbis.wo stb_vorbis.wo -L. -lakfavatar \
 	   $(LUA_LDFLAGS) $(LDFLAGS)
 
 avt-vorbis.wo: $(srcdir)/lua/avt-vorbis.c $(srcdir)/stb_vorbis.c
