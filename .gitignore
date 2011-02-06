@@ -59,3 +59,7 @@ pasref.txt
 akfavatar-h.txt
 build
 *.patch
+akfavatar-term.so
+avt-vorbis.so
+base64.so
+lua-akfavatar.so
