@@ -1,6 +1,6 @@
 /*
  * AKFAvatar library - for giving your programs a graphical Avatar
- * Copyright (c) 2007, 2008, 2009, 2010 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Andreas K. Foerster <info@akfoerster.de>
  *
  * needed:
  *  SDL1.2 (recommended: SDL1.2.11 or later (but not 1.3!))
@@ -983,10 +983,20 @@ AVT_API avt_audio_t *avt_load_audio_data (void *data, int datasize);
  * audio_type is one of the AVT_AUDIO_* constants
  * channels is AVT_MONO or AVT_STEREO
  *
- * must be freed with avt_free_audio!
+ * you can use avt_add_raw_audio_data to add data later
+ * then you can start with a data_size of zero here
+ *
+ * must be freed with avt_free_audio! (even if empty)
  */
 AVT_API avt_audio_t *avt_load_raw_audio_data (void *data, int data_size,
 			int samplingrate, int audio_type, int channels);
+
+/*
+ * add raw audio data to an audio type
+ * the audio type must have been created with avt_load_raw_audio_data
+ * data should be a larger buffer
+ */
+AVT_API int avt_add_raw_audio_data (avt_audio_t *snd, void *data, int data_size);
 
 /*
  * frees memory of a loaded sound

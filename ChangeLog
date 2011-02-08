@@ -1,3 +1,9 @@
+2011-02-08  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar-audio.c (avt_add_raw_audio_data): new function
+	avatar-audio.c (avt_load_raw_audio_data): adapted
+	lua/avt-vorbis.c (load_vorbis): adapted
+
 2011-02-04  Andreas K. Foerster  <info@akfoerster.de>
 
 	* stb_vorbis.c, lua/avt-vorbis.c: new files

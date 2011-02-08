@@ -57,6 +57,7 @@ typedef struct
   SDL_AudioSpec audiospec;
   Uint8 *sound;			/* Pointer to sound data */
   Uint32 len;			/* Length of wave data */
+  int audio_type;		/* Type of raw data */
   Uint8 wave;			/* wether SDL_FreeWav is needed? */
 } AudioStruct;
 
@@ -230,6 +231,7 @@ avt_load_wave_file (const char *file)
     return NULL;
 
   s->wave = AVT_TRUE;
+  s->audio_type = AVT_AUDIO_UNKNOWN;
   if (SDL_LoadWAV (file, &s->audiospec, &s->sound, &s->len) == NULL)
     {
       SDL_free (s);
@@ -250,6 +252,7 @@ avt_load_wave_data (void *data, int datasize)
     return NULL;
 
   s->wave = AVT_TRUE;
+  s->audio_type = AVT_AUDIO_UNKNOWN;
   if (SDL_LoadWAV_RW (SDL_RWFromMem (data, datasize), 1,
 		      &s->audiospec, &s->sound, &s->len) == NULL)
     {
@@ -537,6 +540,8 @@ avt_load_audio_RW (SDL_RWops * src)
       return NULL;
     }
 
+  s->audio_type = AVT_AUDIO_UNKNOWN;
+
   switch (type)
     {
     case 1:			/* AU */
@@ -581,18 +586,116 @@ avt_load_audio_data (void *data, int datasize)
   return avt_load_audio_RW (SDL_RWFromMem (data, datasize));
 }
 
+extern int
+avt_add_raw_audio_data (avt_audio_t * snd, void *data, int data_size)
+{
+  AudioStruct *s;
+  void *new_sound;
+  int i, old_size, new_size, out_size;
+
+  if (_avt_STATUS != AVT_NORMAL || snd == NULL || data == NULL
+      || data_size <= 0)
+    return avt_checkevent ();
+
+  s = (AudioStruct *) snd;
+
+  /* audio structure must have been created with avt_load_raw_audio_data */
+  if (s->audio_type == AVT_AUDIO_UNKNOWN)
+    {
+      SDL_SetError ("unknown audio format");
+      return AVT_ERROR;
+    }
+
+  old_size = s->len;
+  out_size = data_size;
+
+  if (s->audio_type == AVT_AUDIO_MULAW || s->audio_type == AVT_AUDIO_ALAW)
+    out_size *= 2;		/* one byte becomes 2 bytes */
+
+  new_size = old_size + out_size;
+
+  /* get more memory for output buffer */
+  new_sound = SDL_realloc (s->sound, new_size);
+  if (new_sound == NULL)
+    {
+      SDL_SetError ("out of memory");
+      return AVT_ERROR;
+    }
+
+  s->sound = (Uint8 *) new_sound;
+  s->len = new_size;
+
+  /* convert or copy the data */
+  switch (s->audio_type)
+    {
+    case AVT_AUDIO_MULAW:
+      {
+	Uint8 *in;
+	Sint16 *out;
+
+	in = (Uint8 *) data;
+	out = (Sint16 *) (s->sound + old_size);
+	for (i = 0; i < data_size; i++)
+	  *out++ = mulaw_decode[*in++];
+	break;
+      }
+
+    case AVT_AUDIO_ALAW:
+      {
+	Uint8 *in;
+	Sint16 *out;
+
+	in = (Uint8 *) data;
+	out = (Sint16 *) (s->sound + old_size);
+	for (i = 0; i < data_size; i++)
+	  *out++ = alaw_decode[*in++];
+	break;
+      }
+
+    case AVT_AUDIO_U16BE:
+    case AVT_AUDIO_S16BE:
+      if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+	SDL_memcpy (s->sound + old_size, data, out_size);
+      else			/* swap bytes */
+	{
+	  Sint16 *in, *out;
+
+	  in = (Sint16 *) data;
+	  out = (Sint16 *) (s->sound + old_size);
+	  for (i = 0; i < (out_size / 2); i++, in++, out++)
+	    *out = SDL_Swap16 (*in);
+	}
+      break;
+
+    case AVT_AUDIO_U16LE:
+    case AVT_AUDIO_S16LE:
+      if (SDL_BYTEORDER == SDL_LIL_ENDIAN)
+	SDL_memcpy (s->sound + old_size, data, out_size);
+      else			/* swap bytes */
+	{
+	  Sint16 *in, *out;
+
+	  in = (Sint16 *) data;
+	  out = (Sint16 *) (s->sound + old_size);
+	  for (i = 0; i < (out_size / 2); i++, in++, out++)
+	    *out = SDL_Swap16 (*in);
+	}
+      break;
+
+    default:			/* linear PCM */
+      /* simply copy the audio data */
+      SDL_memcpy (s->sound + old_size, data, out_size);
+    }
+
+  return avt_checkevent ();
+}
+
 extern avt_audio_t *
 avt_load_raw_audio_data (void *data, int data_size,
 			 int samplingrate, int audio_type, int channels)
 {
   int format;
-  int out_size;
-  int i;
   AudioStruct *s;
-
-  /* do we actually have data to process? */
-  if (data == NULL || data_size <= 0)
-    return NULL;
 
   if (channels < 1 || channels > 2)
     {
@@ -600,8 +703,11 @@ avt_load_raw_audio_data (void *data, int data_size,
       return NULL;
     }
 
-  /* first assume the data is copied unchanged */
-  out_size = data_size;
+  /* use NULL, if we have nothing to add, yet */
+  if (data_size <= 0)
+    data = NULL;
+  else if (data == NULL)
+    data_size = 0;
 
   /* convert audio_type into SDL format number */
   switch (audio_type)
@@ -628,8 +734,6 @@ avt_load_raw_audio_data (void *data, int data_size,
     case AVT_AUDIO_ALAW:
       /* will be converted to S16SYS */
       format = AUDIO_S16SYS;
-      /* need twice as much memory then */
-      out_size = 2 * data_size;
       break;
 
     default:
@@ -645,16 +749,9 @@ avt_load_raw_audio_data (void *data, int data_size,
       return NULL;
     }
 
-  /* get memory for output buffer */
-  s->sound = (Uint8 *) SDL_malloc (out_size);
-  if (s->sound == NULL)
-    {
-      SDL_free (s);
-      SDL_SetError ("out of memory");
-      return NULL;
-    }
-
-  s->len = out_size;
+  s->sound = NULL;
+  s->len = 0;
+  s->audio_type = audio_type;
   s->wave = AVT_FALSE;
   s->audiospec.format = format;
   s->audiospec.freq = samplingrate;
@@ -663,69 +760,15 @@ avt_load_raw_audio_data (void *data, int data_size,
   s->audiospec.callback = fill_audio;
   s->audiospec.userdata = NULL;
 
-  /* convert or copy the data */
-  switch (audio_type)
+  if (data_size <= 0
+      || avt_add_raw_audio_data ((avt_audio_t *) s, data,
+				 data_size) == AVT_NORMAL)
+    return (avt_audio_t *) s;
+  else
     {
-    case AVT_AUDIO_MULAW:
-      {
-	Uint8 *in;
-	Sint16 *out;
-
-	in = (Uint8 *) data;
-	out = (Sint16 *) s->sound;
-	for (i = 0; i < data_size; i++)
-	  *out++ = mulaw_decode[*in++];
-	break;
-      }
-
-    case AVT_AUDIO_ALAW:
-      {
-	Uint8 *in;
-	Sint16 *out;
-
-	in = (Uint8 *) data;
-	out = (Sint16 *) s->sound;
-	for (i = 0; i < data_size; i++)
-	  *out++ = alaw_decode[*in++];
-	break;
-      }
-
-    case AVT_AUDIO_U16BE:
-    case AVT_AUDIO_S16BE:
-      if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-	SDL_memcpy (s->sound, data, out_size);
-      else			/* swap bytes */
-	{
-	  Sint16 *in, *out;
-
-	  in = (Sint16 *) data;
-	  out = (Sint16 *) s->sound;
-	  for (i = 0; i < (out_size / 2); i++, in++, out++)
-	    *out = SDL_Swap16 (*in);
-	}
-      break;
-
-    case AVT_AUDIO_U16LE:
-    case AVT_AUDIO_S16LE:
-      if (SDL_BYTEORDER == SDL_LIL_ENDIAN)
-	SDL_memcpy (s->sound, data, out_size);
-      else			/* swap bytes */
-	{
-	  Sint16 *in, *out;
-
-	  in = (Sint16 *) data;
-	  out = (Sint16 *) s->sound;
-	  for (i = 0; i < (out_size / 2); i++, in++, out++)
-	    *out = SDL_Swap16 (*in);
-	}
-      break;
-
-    default:			/* linear PCM */
-      /* simply copy the audio data */
-      SDL_memcpy (s->sound, data, out_size);
+      SDL_free (s);
+      return NULL;
     }
-
-  return (avt_audio_t *) s;
 }
 
 /* Is this sound currently playing? NULL for any sound */

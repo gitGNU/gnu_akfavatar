@@ -47,12 +47,15 @@ load_vorbis (stb_vorbis * vorbis)
   info = stb_vorbis_get_info (vorbis);
 
   limit = info.channels * 4096;
+  total = info.channels * (1024 * 1024);
   offset = data_len = 0;
-  total = limit;
 
   data = (short *) malloc (total * sizeof (*data));
   if (data == NULL)
     return NULL;
+
+  audio = avt_load_raw_audio_data (NULL, 0, info.sample_rate,
+				   AVT_AUDIO_S16SYS, info.channels);
 
   while ((n = stb_vorbis_get_frame_short_interleaved (vorbis,
 						      info.channels,
@@ -62,29 +65,32 @@ load_vorbis (stb_vorbis * vorbis)
       data_len += n;
       offset += n * info.channels;
 
-      /* need for more memory? */
+      /* buffer full? */
       if (offset + limit > total)
 	{
-	  short *data2;
-	  total *= 2;
-	  data2 = (short *) realloc (data, total * sizeof (*data));
-	  if (data2 == NULL)
+	  if (avt_add_raw_audio_data (audio, data,
+				      data_len * sizeof (*data) *
+				      info.channels) != AVT_NORMAL)
 	    {
 	      free (data);
+	      avt_free_audio (audio);
 	      return NULL;
 	    }
 
-	  data = data2;
+	  offset = data_len = 0;
 	}
     }
 
-  audio = avt_load_raw_audio_data ((void *) data,
-				   data_len * sizeof (*data) * info.channels,
-				   info.sample_rate, AVT_AUDIO_S16SYS,
-				   info.channels);
+  if (data_len > 0 && avt_add_raw_audio_data (audio, data,
+					      data_len * sizeof (*data) *
+					      info.channels) != AVT_NORMAL)
+    {
+      free (data);
+      avt_free_audio (audio);
+      return NULL;
+    }
 
   free (data);
-
   return audio;
 }
 
