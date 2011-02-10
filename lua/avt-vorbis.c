@@ -47,7 +47,7 @@ load_vorbis (stb_vorbis * vorbis)
   info = stb_vorbis_get_info (vorbis);
 
   limit = info.channels * 4096;
-  total = info.channels * (1024 * 1024);
+  total = 1024 * 1024;
   offset = data_len = 0;
 
   data = (short *) malloc (total * sizeof (*data));
