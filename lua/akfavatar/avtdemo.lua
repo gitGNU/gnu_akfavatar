@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 require "lua-akfavatar"
 require "akfavatar.ar"
-pcall(require, "avt-vorbis")
+pcall(require, "akfavatar-vorbis")
 
 local audio, old_audio, initialized, moved_in, avatar, title, archive
 
