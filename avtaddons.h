@@ -1,6 +1,6 @@
 /*
  * different addons for AKFAvatar
- * Copyright (c) 2007, 2008, 2009, 2010 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -175,6 +175,16 @@ AVT_ADDON int avta_pager_file (const char *file_name, int startline);
  */
 AVT_ADDON int avta_pager_command (const char *command, int startline);
 
+
+/**********************************************************************
+ * Section: avtvorbis
+ * Ogg Vorbis support for AKFAvatar based on stb_vorbis
+ **********************************************************************/
+
+AVT_ADDON avt_audio_t *avta_load_vorbis_file (char *filename);
+AVT_ADDON avt_audio_t *avta_load_vorbis_data (void *data, int datasize);
+
+
 /**********************************************************************
  * Section: arch
  * functions for handling ar archives
@@ -257,6 +267,7 @@ AVT_ADDON void avta_term_send (const char *buf, size_t count);
  * call this after you have changed the size of the balloon
  */
 AVT_ADDON void avta_term_update_size (void);
+
 
 #ifdef AVTADDONS_DLL
   AVT_END_DECLS

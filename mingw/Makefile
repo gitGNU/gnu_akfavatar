@@ -35,7 +35,7 @@ SHELL = /bin/sh
 .SUFFIXES:
 
 all: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe \
-     lua-akfavatar.exe lua-akfavatar.dll base64.dll avt-vorbis.dll \
+     lua-akfavatar.exe lua-akfavatar.dll base64.dll akfavatar-vorbis.dll \
      iconv.exe
 
 nolua: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe iconv.exe
@@ -159,10 +159,10 @@ avtreadfile.wo: $(srcdir)/avtreadfile.c $(srcdir)/avtaddons.h
 
 libavtaddons.a: filechooser.wo askdrive.wo arch.wo avttermstub.wo \
                 avtccio.wo avtcwio.wo avtmsg.wo avtgrmsg.wo avtreadfile.wo \
-                colorchooser.wo
+                colorchooser.wo avtvorbis.wo stb_vorbis.wo
 	$(AR) rcu $@ filechooser.wo askdrive.wo arch.wo avttermstub.wo \
 	             avtccio.wo avtcwio.wo avtmsg.wo avtgrmsg.wo \
-	             avtreadfile.wo colorchooser.wo
+	             avtreadfile.wo colorchooser.wo avtvorbis.wo stb_vorbis.wo
 	-$(RANLIB) $@
 
 avatarsay.wo: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h \
@@ -232,13 +232,16 @@ lua-akfavatar-prg.wo: $(srcdir)/lua/lua-akfavatar-prg.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) $(SDL_CFLAGS) -I$(srcdir) -c -o $@ \
 	 $(srcdir)/lua/lua-akfavatar-prg.c
 
-avt-vorbis.dll: avt-vorbis.wo stb_vorbis.wo
-	$(CC) -o $@ -shared avt-vorbis.wo stb_vorbis.wo -L. -lakfavatar \
-	   $(LUA_LDFLAGS) $(LDFLAGS)
+akfavatar-vorbis.dll: akfavatar-vorbis.wo avtvorbis.wo stb_vorbis.wo
+	$(CC) -o $@ -shared akfavatar-vorbis.wo avtvorbis.wo stb_vorbis.wo \
+	  -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS)
 
-avt-vorbis.wo: $(srcdir)/lua/avt-vorbis.c $(srcdir)/stb_vorbis.c
+avtvorbis.wo: $(srcdir)/avtvorbis.c $(srcdir)/avtaddons.h $(srcdir)/stb_vorbis.c
+	$(CC) $(CFLAGS) $(SDL_CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/avtvorbis.c
+
+akfavatar-vorbis.wo: $(srcdir)/lua/akfavatar-vorbis.c $(srcdir)/stb_vorbis.c
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
-	  $(srcdir)/lua/avt-vorbis.c
+	  $(srcdir)/lua/akfavatar-vorbis.c
 
 stb_vorbis.wo: $(srcdir)/stb_vorbis.c
 	$(CC) $(CFLAGS) -I$(srcdir) \
@@ -270,7 +273,7 @@ multiplizieren.exe: $(srcdir)/pascal/multiply.pas
 	-fpcwavatar -dRELEASE -ddeutsch -o$@ -Fi$(srcdir)/pascal \
 	  $(srcdir)/pascal/multiply.pas
 
-dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64.dll avt-vorbis.dll
+dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64.dll akfavatar-vorbis.dll
 	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) html txt
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/akfavatar
@@ -281,7 +284,7 @@ dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64
 	cp lua-akfavatar.exe $(BINPKGNAME)/
 	cp lua-akfavatar.dll $(BINPKGNAME)/
 	cp base64.dll $(BINPKGNAME)/
-	cp avt-vorbis.dll $(BINPKGNAME)/
+	cp akfavatar-vorbis.dll $(BINPKGNAME)/
 	cp $(srcdir)/lua/multiplication.lua $(BINPKGNAME)/
 	cp $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/
 	cp $(srcdir)/lua/textview.lua $(BINPKGNAME)/

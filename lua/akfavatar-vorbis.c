@@ -35,85 +35,16 @@
 /* internal name for audio data */
 #define AUDIODATA   "AKFAvatar-Audio"
 
-/* partly taken from stb_vorbis.c */
-static avt_audio_t *
-load_vorbis (stb_vorbis * vorbis)
-{
-  int data_len, offset, total, limit, n;
-  stb_vorbis_info info;
-  short *data;
-  avt_audio_t *audio;
-
-  info = stb_vorbis_get_info (vorbis);
-
-  limit = info.channels * 4096;
-  total = 1024 * 1024;
-  offset = data_len = 0;
-
-  data = (short *) malloc (total * sizeof (*data));
-  if (data == NULL)
-    return NULL;
-
-  audio = avt_load_raw_audio_data (NULL, 0, info.sample_rate,
-				   AVT_AUDIO_S16SYS, info.channels);
-
-  while ((n = stb_vorbis_get_frame_short_interleaved (vorbis,
-						      info.channels,
-						      data + offset,
-						      total - offset)) != 0)
-    {
-      data_len += n;
-      offset += n * info.channels;
-
-      /* buffer full? */
-      if (offset + limit > total)
-	{
-	  if (avt_add_raw_audio_data (audio, data,
-				      data_len * sizeof (*data) *
-				      info.channels) != AVT_NORMAL)
-	    {
-	      free (data);
-	      avt_free_audio (audio);
-	      return NULL;
-	    }
-
-	  offset = data_len = 0;
-	}
-    }
-
-  if (data_len > 0 && avt_add_raw_audio_data (audio, data,
-					      data_len * sizeof (*data) *
-					      info.channels) != AVT_NORMAL)
-    {
-      free (data);
-      avt_free_audio (audio);
-      return NULL;
-    }
-
-  free (data);
-  return audio;
-}
-
 static int
 lvorbis_load_file (lua_State * L)
 {
-  int error;
   char *filename;
-  stb_vorbis *vorbis;
   avt_audio_t *audio_data;
   avt_audio_t **audio;
 
   filename = (char *) luaL_checkstring (L, 1);
 
-  vorbis = stb_vorbis_open_filename (filename, &error, NULL);
-  if (vorbis == NULL)
-    {
-      lua_pushnil (L);
-      return 1;
-    }
-
-  audio_data = load_vorbis (vorbis);
-  stb_vorbis_close (vorbis);
+  audio_data = avta_load_vorbis_file (filename);
 
   if (audio_data == NULL)
     {
@@ -133,24 +64,14 @@ lvorbis_load_file (lua_State * L)
 static int
 lvorbis_load_string (lua_State * L)
 {
-  int error;
   size_t len;
-  unsigned char *vorbis_data;
-  stb_vorbis *vorbis;
+  void *vorbis_data;
   avt_audio_t *audio_data;
   avt_audio_t **audio;
 
-  vorbis_data = (unsigned char *) luaL_checklstring (L, 1, &len);
+  vorbis_data = (void *) luaL_checklstring (L, 1, &len);
 
-  vorbis = stb_vorbis_open_memory (vorbis_data, (int) len, &error, NULL);
-  if (vorbis == NULL)
-    {
-      lua_pushnil (L);
-      return 1;
-    }
-
-  audio_data = load_vorbis (vorbis);
-  stb_vorbis_close (vorbis);
+  audio_data = avta_load_vorbis_data (vorbis_data, (int) len);
 
   if (audio_data == NULL)
     {
