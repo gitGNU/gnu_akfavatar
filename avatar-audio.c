@@ -52,14 +52,14 @@
 
 #pragma GCC poison  malloc free strlen memcpy memcmp getenv putenv
 
-typedef struct
+struct avt_audio_t
 {
   SDL_AudioSpec audiospec;
   Uint8 *sound;			/* Pointer to sound data */
   Uint32 len;			/* Length of wave data */
   int audio_type;		/* Type of raw data */
   Uint8 wave;			/* wether SDL_FreeWav is needed? */
-} AudioStruct;
+};
 
 static avt_bool_t avt_audio_initialized;
 
@@ -67,7 +67,7 @@ static avt_bool_t avt_audio_initialized;
 static avt_audio_t *my_alert;
 
 /* current sound */
-static AudioStruct current_sound;
+static struct avt_audio_t current_sound;
 static Uint8 *soundpos = NULL;	/* Current play position */
 static Sint32 soundleft = 0;	/* Length of left unplayed wave data */
 static avt_bool_t loop = AVT_FALSE;
@@ -224,30 +224,30 @@ avt_quit_audio (void)
 extern avt_audio_t *
 avt_load_wave_file (const char *file)
 {
-  AudioStruct *s;
+  struct avt_audio_t *snd;
 
-  s = (AudioStruct *) SDL_malloc (sizeof (AudioStruct));
-  if (s == NULL)
+  snd = (struct avt_audio_t *) SDL_malloc (sizeof (struct avt_audio_t));
+  if (snd == NULL)
     return NULL;
 
-  s->wave = AVT_TRUE;
-  s->audio_type = AVT_AUDIO_UNKNOWN;
-  if (SDL_LoadWAV (file, &s->audiospec, &s->sound, &s->len) == NULL)
+  snd->wave = AVT_TRUE;
+  snd->audio_type = AVT_AUDIO_UNKNOWN;
+  if (SDL_LoadWAV (file, &snd->audiospec, &snd->sound, &snd->len) == NULL)
     {
-      SDL_free (s);
+      SDL_free (snd);
       return NULL;
     }
 
-  return (avt_audio_t *) s;
+  return snd;
 }
 
 /* deprecated in API */
 extern avt_audio_t *
 avt_load_wave_data (void *data, int datasize)
 {
-  AudioStruct *s;
+  struct avt_audio_t *s;
 
-  s = (AudioStruct *) SDL_malloc (sizeof (AudioStruct));
+  s = (struct avt_audio_t *) SDL_malloc (sizeof (struct avt_audio_t));
   if (s == NULL)
     return NULL;
 
@@ -260,7 +260,7 @@ avt_load_wave_data (void *data, int datasize)
       return NULL;
     }
 
-  return (avt_audio_t *) s;
+  return s;
 }
 
 static Uint8 *
@@ -499,7 +499,7 @@ static avt_audio_t *
 avt_load_audio_RW (SDL_RWops * src)
 {
   int start, type;
-  AudioStruct *s;
+  struct avt_audio_t *s;
   SDL_AudioSpec *r;
   char head[16];
 
@@ -533,7 +533,7 @@ avt_load_audio_RW (SDL_RWops * src)
 
   SDL_RWseek (src, start, RW_SEEK_SET);
 
-  s = (AudioStruct *) SDL_malloc (sizeof (AudioStruct));
+  s = (struct avt_audio_t *) SDL_malloc (sizeof (struct avt_audio_t));
   if (s == NULL)
     {
       SDL_SetError ("out of memory");
@@ -565,7 +565,7 @@ avt_load_audio_RW (SDL_RWops * src)
       return NULL;
     }
 
-  return (avt_audio_t *) s;
+  return s;
 }
 
 extern avt_audio_t *
@@ -589,7 +589,6 @@ avt_load_audio_data (void *data, int datasize)
 extern int
 avt_add_raw_audio_data (avt_audio_t * snd, void *data, int data_size)
 {
-  AudioStruct *s;
   void *new_sound;
   int i, old_size, new_size, out_size;
 
@@ -597,36 +596,34 @@ avt_add_raw_audio_data (avt_audio_t * snd, void *data, int data_size)
       || data_size <= 0)
     return avt_checkevent ();
 
-  s = (AudioStruct *) snd;
-
   /* audio structure must have been created with avt_load_raw_audio_data */
-  if (s->audio_type == AVT_AUDIO_UNKNOWN)
+  if (snd->audio_type == AVT_AUDIO_UNKNOWN)
     {
       SDL_SetError ("unknown audio format");
       return AVT_ERROR;
     }
 
-  old_size = s->len;
+  old_size = snd->len;
   out_size = data_size;
 
-  if (s->audio_type == AVT_AUDIO_MULAW || s->audio_type == AVT_AUDIO_ALAW)
+  if (snd->audio_type == AVT_AUDIO_MULAW || snd->audio_type == AVT_AUDIO_ALAW)
     out_size *= 2;		/* one byte becomes 2 bytes */
 
   new_size = old_size + out_size;
 
   /* get more memory for output buffer */
-  new_sound = SDL_realloc (s->sound, new_size);
+  new_sound = SDL_realloc (snd->sound, new_size);
   if (new_sound == NULL)
     {
       SDL_SetError ("out of memory");
       return AVT_ERROR;
     }
 
-  s->sound = (Uint8 *) new_sound;
-  s->len = new_size;
+  snd->sound = (Uint8 *) new_sound;
+  snd->len = new_size;
 
   /* convert or copy the data */
-  switch (s->audio_type)
+  switch (snd->audio_type)
     {
     case AVT_AUDIO_MULAW:
       {
@@ -634,7 +631,7 @@ avt_add_raw_audio_data (avt_audio_t * snd, void *data, int data_size)
 	Sint16 *out;
 
 	in = (Uint8 *) data;
-	out = (Sint16 *) (s->sound + old_size);
+	out = (Sint16 *) (snd->sound + old_size);
 	for (i = 0; i < data_size; i++)
 	  *out++ = mulaw_decode[*in++];
 	break;
@@ -646,7 +643,7 @@ avt_add_raw_audio_data (avt_audio_t * snd, void *data, int data_size)
 	Sint16 *out;
 
 	in = (Uint8 *) data;
-	out = (Sint16 *) (s->sound + old_size);
+	out = (Sint16 *) (snd->sound + old_size);
 	for (i = 0; i < data_size; i++)
 	  *out++ = alaw_decode[*in++];
 	break;
@@ -655,13 +652,13 @@ avt_add_raw_audio_data (avt_audio_t * snd, void *data, int data_size)
     case AVT_AUDIO_U16BE:
     case AVT_AUDIO_S16BE:
       if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-	SDL_memcpy (s->sound + old_size, data, out_size);
+	SDL_memcpy (snd->sound + old_size, data, out_size);
       else			/* swap bytes */
 	{
 	  Sint16 *in, *out;
 
 	  in = (Sint16 *) data;
-	  out = (Sint16 *) (s->sound + old_size);
+	  out = (Sint16 *) (snd->sound + old_size);
 	  for (i = 0; i < (out_size / 2); i++, in++, out++)
 	    *out = SDL_Swap16 (*in);
 	}
@@ -670,13 +667,13 @@ avt_add_raw_audio_data (avt_audio_t * snd, void *data, int data_size)
     case AVT_AUDIO_U16LE:
     case AVT_AUDIO_S16LE:
       if (SDL_BYTEORDER == SDL_LIL_ENDIAN)
-	SDL_memcpy (s->sound + old_size, data, out_size);
+	SDL_memcpy (snd->sound + old_size, data, out_size);
       else			/* swap bytes */
 	{
 	  Sint16 *in, *out;
 
 	  in = (Sint16 *) data;
-	  out = (Sint16 *) (s->sound + old_size);
+	  out = (Sint16 *) (snd->sound + old_size);
 	  for (i = 0; i < (out_size / 2); i++, in++, out++)
 	    *out = SDL_Swap16 (*in);
 	}
@@ -684,7 +681,7 @@ avt_add_raw_audio_data (avt_audio_t * snd, void *data, int data_size)
 
     default:			/* linear PCM */
       /* simply copy the audio data */
-      SDL_memcpy (s->sound + old_size, data, out_size);
+      SDL_memcpy (snd->sound + old_size, data, out_size);
     }
 
   return avt_checkevent ();
@@ -695,7 +692,7 @@ avt_load_raw_audio_data (void *data, int data_size,
 			 int samplingrate, int audio_type, int channels)
 {
   int format;
-  AudioStruct *s;
+  struct avt_audio_t *s;
 
   if (channels < 1 || channels > 2)
     {
@@ -742,7 +739,7 @@ avt_load_raw_audio_data (void *data, int data_size,
     }
 
   /* get memory for struct */
-  s = (AudioStruct *) SDL_malloc (sizeof (AudioStruct));
+  s = (struct avt_audio_t *) SDL_malloc (sizeof (struct avt_audio_t));
   if (s == NULL)
     {
       SDL_SetError ("out of memory");
@@ -761,9 +758,8 @@ avt_load_raw_audio_data (void *data, int data_size,
   s->audiospec.userdata = NULL;
 
   if (data_size <= 0
-      || avt_add_raw_audio_data ((avt_audio_t *) s, data,
-				 data_size) == AVT_NORMAL)
-    return (avt_audio_t *) s;
+      || avt_add_raw_audio_data (s, data, data_size) == AVT_NORMAL)
+    return s;
   else
     {
       SDL_free (s);
@@ -775,13 +771,9 @@ avt_load_raw_audio_data (void *data, int data_size,
 extern avt_bool_t
 avt_audio_playing (avt_audio_t * snd)
 {
-  AudioStruct *s;
-
-  s = (AudioStruct *) snd;
-
   if (snd != NULL)
     {
-      if ((soundleft > 0 || loop) && current_sound.sound == s->sound)
+      if ((soundleft > 0 || loop) && current_sound.sound == snd->sound)
 	return AVT_TRUE;
     }
   else				/* no specific sound */
@@ -796,32 +788,26 @@ avt_audio_playing (avt_audio_t * snd)
 extern void
 avt_free_audio (avt_audio_t * snd)
 {
-  AudioStruct *s;
-
   if (snd)
     {
-      s = (AudioStruct *) snd;
-
       /* Is this sound currently playing? Then stop it! */
-      if (soundleft > 0 && current_sound.sound == s->sound)
+      if (soundleft > 0 && current_sound.sound == snd->sound)
 	avt_stop_audio ();
 
       /* free the sound data */
-      if (s->wave)
-	SDL_FreeWAV (s->sound);
+      if (snd->wave)
+	SDL_FreeWAV (snd->sound);
       else
-	SDL_free (s->sound);
+	SDL_free (snd->sound);
 
       /* free the rest */
-      SDL_free (s);
+      SDL_free (snd);
     }
 }
 
 extern int
 avt_play_audio (avt_audio_t * snd, avt_bool_t doloop)
 {
-  AudioStruct *newsound;
-
   if (!avt_audio_initialized)
     return _avt_STATUS;
 
@@ -829,16 +815,14 @@ avt_play_audio (avt_audio_t * snd, avt_bool_t doloop)
   if (!snd)
     return _avt_STATUS;
 
-  newsound = (AudioStruct *) snd;
-
   /* close audio, in case it is left open */
   SDL_CloseAudio ();
   SDL_LockAudio ();
 
   /* load sound */
-  current_sound.sound = newsound->sound;
-  current_sound.len = newsound->len;
-  current_sound.audiospec = newsound->audiospec;
+  current_sound.sound = snd->sound;
+  current_sound.len = snd->len;
+  current_sound.audiospec = snd->audiospec;
   current_sound.audiospec.callback = fill_audio;
 
   /* lower audio buffer size for lower latency */

@@ -151,7 +151,7 @@ typedef int avt_char;
  * may change in the future!
  */
 typedef void avt_image_t;
-typedef void avt_audio_t;
+typedef struct avt_audio_t avt_audio_t;
 
 /* for streams (use FILE from your programs) */
 typedef void avt_stream;

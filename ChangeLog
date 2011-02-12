@@ -5,6 +5,8 @@
 	avtvorbis.c: new file
 	renamed lua/avt-vorbis.c -> lua/akfavatar-vorbis.c
 
+	* akfavatar.h, avatar-audio.c: change definition of avt_audio_t
+
 2011-02-08  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar-audio.c (avt_add_raw_audio_data): new function
