@@ -5461,14 +5461,13 @@ avt_decide (void)
 extern void
 avt_free_image (avt_image_t * image)
 {
-  SDL_FreeSurface ((SDL_Surface *) image);
+  SDL_FreeSurface (image);
 }
 
 static void
 avt_show_image (avt_image_t * image)
 {
   SDL_Rect dst;
-  SDL_Surface *img = (SDL_Surface *) image;
 
   /* clear the screen */
   avt_free_screen ();
@@ -5479,15 +5478,15 @@ avt_show_image (avt_image_t * image)
   viewport = textfield;
 
   /* center image on screen */
-  dst.x = (screen->w / 2) - (img->w / 2);
-  dst.y = (screen->h / 2) - (img->h / 2);
-  dst.w = img->w;
-  dst.h = img->h;
+  dst.x = (screen->w / 2) - (image->w / 2);
+  dst.y = (screen->h / 2) - (image->h / 2);
+  dst.w = image->w;
+  dst.h = image->h;
 
   /* if image is larger than the window,
    * just the upper left part is shown, as far as it fits
    */
-  SDL_BlitSurface (img, NULL, screen, &dst);
+  SDL_BlitSurface (image, NULL, screen, &dst);
   AVT_UPDATE_ALL ();
   SDL_SetClipRect (screen, &window);
 }
@@ -5605,12 +5604,12 @@ avt_show_image_data (void *img, int imgsize)
 extern int
 avt_show_image_xpm (char **xpm)
 {
-  avt_image_t *image = NULL;
+  SDL_Surface *image = NULL;
 
   if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  image = (avt_image_t *) avt_load_image_xpm (xpm);
+  image = avt_load_image_xpm (xpm);
 
   if (image == NULL)
     {
@@ -5619,7 +5618,7 @@ avt_show_image_xpm (char **xpm)
     }
 
   avt_show_image (image);
-  SDL_FreeSurface ((SDL_Surface *) image);
+  SDL_FreeSurface (image);
 
   return _avt_STATUS;
 }
@@ -5635,7 +5634,7 @@ extern int
 avt_show_image_xbm (const unsigned char *bits, int width, int height,
 		    const char *colorname)
 {
-  avt_image_t *image;
+  SDL_Surface *image;
   int red, green, blue;
 
   if (!screen || _avt_STATUS != AVT_NORMAL)
@@ -5650,8 +5649,7 @@ avt_show_image_xbm (const unsigned char *bits, int width, int height,
       return AVT_ERROR;
     }
 
-  image = (avt_image_t *) avt_load_image_xbm (bits, width, height,
-					      red, green, blue);
+  image = avt_load_image_xbm (bits, width, height, red, green, blue);
 
   if (image == NULL)
     {
@@ -5660,7 +5658,7 @@ avt_show_image_xbm (const unsigned char *bits, int width, int height,
     }
 
   avt_show_image (image);
-  SDL_FreeSurface ((SDL_Surface *) image);
+  SDL_FreeSurface (image);
 
   return _avt_STATUS;
 }
@@ -5728,21 +5726,20 @@ extern avt_image_t *
 avt_make_transparent (avt_image_t * image)
 {
   Uint32 color;
-  SDL_Surface *img = (SDL_Surface *) image;
 
-  if (SDL_MUSTLOCK (img))
-    SDL_LockSurface (img);
+  if (SDL_MUSTLOCK (image))
+    SDL_LockSurface (image);
 
   /* get color of upper left corner */
-  color = getpixel (img, 0, 0);
+  color = getpixel (image, 0, 0);
 
-  if (SDL_MUSTLOCK (img))
-    SDL_UnlockSurface (img);
+  if (SDL_MUSTLOCK (image))
+    SDL_UnlockSurface (image);
 
-  if (!SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL, color))
-    img = NULL;
+  if (!SDL_SetColorKey (image, SDL_SRCCOLORKEY | SDL_RLEACCEL, color))
+    image = NULL;
 
-  return (avt_image_t *) img;
+  return image;
 }
 
 extern avt_image_t *
@@ -5751,7 +5748,7 @@ avt_import_xpm (char **xpm)
   if (avt_init_SDL ())
     return NULL;
 
-  return (avt_image_t *) avt_load_image_xpm (xpm);
+  return avt_load_image_xpm (xpm);
 }
 
 /* deprecated - use avt_import_xpm */
@@ -5776,8 +5773,7 @@ avt_import_xbm (const unsigned char *bits, int width, int height,
   if (avt_init_SDL ())
     return NULL;
 
-  return (avt_image_t *) avt_load_image_xbm (bits, width, height,
-					     red, green, blue);
+  return avt_load_image_xbm (bits, width, height, red, green, blue);
 }
 
 /*
@@ -5808,7 +5804,7 @@ avt_import_gimp_image (void *gimp_image)
 
   avt_make_transparent (image);
 
-  return (avt_image_t *) image;
+  return image;
 }
 
 /*
@@ -5840,7 +5836,7 @@ avt_import_image_data (void *img, int imgsize)
 	  avt_make_transparent (image);
     }
 
-  return (avt_image_t *) image;
+  return image;
 }
 
 /*
@@ -5872,7 +5868,7 @@ avt_import_image_file (const char *filename)
 	  avt_make_transparent (image);
     }
 
-  return (avt_image_t *) image;
+  return image;
 }
 
 extern avt_image_t *
@@ -5901,7 +5897,7 @@ avt_import_image_stream (avt_stream * stream)
 	  avt_make_transparent (image);
     }
 
-  return (avt_image_t *) image;
+  return image;
 }
 
 static int
@@ -5959,12 +5955,12 @@ avt_change_avatar_image (avt_image_t * image)
   if (image)
     {
       /* convert image to display-format for faster drawing */
-      if (((SDL_Surface *) image)->flags & SDL_SRCALPHA)
-	avt_image = SDL_DisplayFormatAlpha ((SDL_Surface *) image);
+      if (image->flags & SDL_SRCALPHA)
+	avt_image = SDL_DisplayFormatAlpha (image);
       else
-	avt_image = SDL_DisplayFormat ((SDL_Surface *) image);
+	avt_image = SDL_DisplayFormat (image);
 
-      SDL_FreeSurface ((SDL_Surface *) image);
+      SDL_FreeSurface (image);
 
       if (!avt_image)
 	{
@@ -6841,10 +6837,10 @@ avt_initialize (const char *title, const char *shortname,
   if (image)
     {
       /* convert image to display-format for faster drawing */
-      if (((SDL_Surface *) image)->flags & SDL_SRCALPHA)
-	avt_image = SDL_DisplayFormatAlpha ((SDL_Surface *) image);
+      if (image->flags & SDL_SRCALPHA)
+	avt_image = SDL_DisplayFormatAlpha (image);
       else
-	avt_image = SDL_DisplayFormat ((SDL_Surface *) image);
+	avt_image = SDL_DisplayFormat (image);
 
       avt_free_image (image);
 

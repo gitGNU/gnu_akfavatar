@@ -148,9 +148,8 @@ typedef int avt_char;
 
 /*
  * general types for avatar images and audio data
- * may change in the future!
  */
-typedef void avt_image_t;
+typedef struct SDL_Surface avt_image_t;
 typedef struct avt_audio_t avt_audio_t;
 
 /* for streams (use FILE from your programs) */
