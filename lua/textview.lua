@@ -6,9 +6,11 @@
 require "lua-akfavatar"
 require "akfavatar.utf8"
 
-local default_encoding = "UTF-8"
-
-avt.initialize{title="Text Viewer", encoding=default_encoding}
+avt.initialize{
+  title = "Text Viewer",
+  avatar = "default",
+  encoding = "UTF-8"
+  }
 
 -- what files to show with file_selection
 function textfile(n)
@@ -42,5 +44,6 @@ if arg[1]
 local text = io.read("*all")
 
 -- note: WINDOWS-1252 is a superset of ISO-8859-1
+-- you should not use WINDOWS-1252 for your own texts, though!
 avt.encoding(utf8.check_unicode(text) or "WINDOWS-1252")
 avt.pager(text)
