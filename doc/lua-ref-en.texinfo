@@ -270,6 +270,12 @@ error message.
 @defun avt.set_directory (directory)
 @defunx avt.chdir (directory)
 Sets the working directory to @var{directory}.
+If @var{directory} is @code{nil} nothing or an empty string, it does nothing.
+
+Example:
+@example
+avt.set_directory(os.getenv("HOME") or os.getenv("USERPROFILE"))
+@end example
 @end defun
 
 @defun avt.file_selection ([filter])
@@ -283,7 +289,7 @@ parameter.  The file is always in the current working directory.
 If the filter function returns @code{false} or @code{nil} or
 nothing then the filename is not shown, otherwise it is shown.
 
-Example: 
+Example:
 @example
 textfile=avt.file_selection(function(n) return string.find(n,"%.te?xt$") end)
 @end example

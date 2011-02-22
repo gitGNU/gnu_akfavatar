@@ -1103,8 +1103,7 @@ lavt_choice (lua_State * L)
 		     luaL_checkint (L, 1),
 		     luaL_checkint (L, 2),
 		     (c) ? c[0] : 0,
-		     to_avt_bool_t (L, 4),
-		     to_avt_bool_t (L, 5)));
+		     to_avt_bool_t (L, 4), to_avt_bool_t (L, 5)));
 
   lua_pushinteger (L, result);
   return 1;
@@ -1630,8 +1629,14 @@ lavt_color_selection (lua_State * L)
 static int
 lavt_chdir (lua_State * L)
 {
-  /* chdir() conforms to POSIX.1-2001 */
-  chdir (luaL_checkstring (L, 1));
+  const char *path;
+
+  /* nil or empty string is acceptable */
+  path = lua_tostring (L, 1);
+
+  if (path && *path)
+    chdir (path);	/* chdir() conforms to POSIX.1-2001 */
+
   return 0;
 }
 

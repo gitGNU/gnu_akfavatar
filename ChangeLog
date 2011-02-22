@@ -8,6 +8,9 @@
 	new function, new macro
 	many functions adapted
 
+	* lua/lua-avt.c (lavt_chdir => avt.set_directory):
+	nil or an empty sting is accepted and does nothing
+
 2011-02-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtaddons.h (avta_load_vorbis_file, avta_load_vorbis_data):
