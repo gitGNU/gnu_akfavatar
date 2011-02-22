@@ -316,6 +316,9 @@ procedure Sound(frequency: integer);
 { stop sound output }
 procedure NoSound;
 
+{ pause or resume Sound }
+procedure PauseSound(pause: boolean);
+
 { handle coordinates (inside the balloon) }
 { compatible to CRT unit }
 function WhereX: integer;
@@ -622,6 +625,8 @@ function avt_play_audio(snd: pointer; loop: avt_bool_t): CInteger;
 function avt_wait_audio_end: CInteger; libakfavatar 'avt_wait_audio_end';
 
 procedure avt_stop_audio; libakfavatar 'avt_stop_audio';
+
+procedure avt_pause_audio (pause: avt_bool_t); libakfavatar 'avt_pause_audio';
 
 function avt_get_error: CString; libakfavatar 'avt_get_error';
 
@@ -1250,6 +1255,11 @@ if GenSound<>NIL then
   avt_free_audio(GenSound);
   GenSound := NIL
   end
+end;
+
+procedure PauseSound(pause: boolean);
+begin
+avt_pause_audio (ord(pause))
 end;
 
 {$IfDef FPC}

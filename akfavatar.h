@@ -1017,6 +1017,9 @@ AVT_API int avt_wait_audio_end (void);
 /* stops audio immediately */
 AVT_API void avt_stop_audio (void);
 
+/* pause/resume audio */
+AVT_API void avt_pause_audio (avt_bool_t pause);
+
 /*
  * Is this sound currently playing?
  * Use NULL for any sound

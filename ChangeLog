@@ -1,3 +1,9 @@
+2011-02-22  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar-audio.c (avt_pause_audio): new function
+	lua/lua-avt.c (lavt_pause_audio => avt.pause_audio): new function
+	pascal/akfavatar.pas (PauseSound): new function
+
 2011-02-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtaddons.h (avta_load_vorbis_file, avta_load_vorbis_data):

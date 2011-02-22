@@ -865,6 +865,12 @@ avt_wait_audio_end (void)
   return _avt_STATUS;
 }
 
+extern void
+avt_pause_audio (avt_bool_t pause)
+{
+  SDL_PauseAudio((int) pause);
+}
+
 #else /* NO_AUDIO */
 
 static void
@@ -955,6 +961,12 @@ avt_play_audio (avt_audio_t * snd AVT_UNUSED, avt_bool_t doloop AVT_UNUSED)
 {
   no_audio ();
   return _avt_STATUS;
+}
+
+extern void
+avt_pause_audio (avt_bool_t pause)
+{
+  no_audio ();
 }
 
 #endif /* NO_AUDIO */

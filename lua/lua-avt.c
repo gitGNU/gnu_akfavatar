@@ -1357,6 +1357,14 @@ lavt_stop_audio (lua_State * L AVT_UNUSED)
   return 0;
 }
 
+static int
+lavt_pause_audio (lua_State * L)
+{
+  luaL_checktype (L, 1, LUA_TBOOLEAN);
+  avt_pause_audio ((avt_bool_t) lua_toboolean (L, 1));
+  return 0;
+}
+
 /* plays audio data */
 static int
 laudio_play (lua_State * L)
@@ -1905,6 +1913,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"audio_playing", laudio_playing},
   {"wait_audio_end", lavt_wait_audio_end},
   {"stop_audio", lavt_stop_audio},
+  {"pause_audio", lavt_pause_audio},
   {"viewport", lavt_viewport},
   {"set_scroll_mode", lavt_set_scroll_mode},
   {"get_scroll_mode", lavt_get_scroll_mode},

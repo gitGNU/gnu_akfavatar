@@ -367,6 +367,10 @@ sound.
 Stops the audio output immediately.
 @end defun
 
+@defun avt.pause_audio (true | false)
+pause (@code{true}) or resume (@code{false}) the audio output
+@end defun
+
 @defun audio:play ()
 @defunx audio ()
 Plays the @var{audio} data. The @var{audio} must have been loaded by 
