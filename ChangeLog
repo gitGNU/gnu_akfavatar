@@ -4,6 +4,10 @@
 	lua/lua-avt.c (lavt_pause_audio => avt.pause_audio): new function
 	pascal/akfavatar.pas (PauseSound): new function
 
+	* lua/lua-avt.c (check_avt_bool_t)[to_avt_bool_t]:
+	new function, new macro
+	many functions adapted
+
 2011-02-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtaddons.h (avta_load_vorbis_file, avta_load_vorbis_data):

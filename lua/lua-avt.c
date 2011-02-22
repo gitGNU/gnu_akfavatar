@@ -46,7 +46,7 @@ static const char *const modes[] =
   { "auto", "window", "fullscreen", "fullscreen no switch", NULL };
 
 /* "check()" checks the returned status code */
-#define check(X)  do { if (X != AVT_NORMAL) quit (L); } while (0)
+#define check(X)  do { if ((X) != AVT_NORMAL) quit (L); } while (0)
 #define is_initialized(void)  if (!initialized) auto_initialize(L)
 
 /* for internal use only */
@@ -65,6 +65,16 @@ quit (lua_State * L)
       return lua_error (L);
     }
 }
+
+/* check if it's a boolean */
+static avt_bool_t
+check_avt_bool_t (lua_State * L, int index)
+{
+  luaL_checktype (L, index, LUA_TBOOLEAN);
+  return (avt_bool_t) lua_toboolean (L, index);
+}
+
+#define to_avt_bool_t(L, index)  ((avt_bool_t) lua_toboolean ((L), (index)))
 
 static void
 auto_initialize (lua_State * L)
@@ -208,7 +218,7 @@ lavt_initialize (lua_State * L)
 	  else if (strcmp ("avatar", key) == 0)
 	    avatar = get_avatar (L, -1);
 	  else if (strcmp ("audio", key) == 0)
-	    audio = (avt_bool_t) lua_toboolean (L, -1);
+	    audio = to_avt_bool_t (L, -1);
 	  else if (strcmp ("encoding", key) == 0)
 	    encoding = lua_tostring (L, -1);
 	  else if (strcmp ("mode", key) == 0)
@@ -457,8 +467,7 @@ lavt_set_title (lua_State * L)
 static int
 lavt_right_to_left (lua_State * L)
 {
-  luaL_checktype (L, 1, LUA_TBOOLEAN);
-  avt_text_direction ((int) lua_toboolean (L, 1));
+  avt_text_direction ((int) check_avt_bool_t (L, 1));
   return 0;
 }
 
@@ -523,8 +532,7 @@ lavt_set_balloon_color (lua_State * L)
 static int
 lavt_activate_cursor (lua_State * L)
 {
-  luaL_checktype (L, 1, LUA_TBOOLEAN);
-  avt_activate_cursor ((avt_bool_t) lua_toboolean (L, 1));
+  avt_activate_cursor (check_avt_bool_t (L, 1));
   return 0;
 }
 
@@ -532,8 +540,7 @@ lavt_activate_cursor (lua_State * L)
 static int
 lavt_underlined (lua_State * L)
 {
-  luaL_checktype (L, 1, LUA_TBOOLEAN);
-  avt_underlined ((avt_bool_t) lua_toboolean (L, 1));
+  avt_underlined (check_avt_bool_t (L, 1));
   return 0;
 }
 
@@ -549,8 +556,7 @@ lavt_get_underlined (lua_State * L)
 static int
 lavt_bold (lua_State * L)
 {
-  luaL_checktype (L, 1, LUA_TBOOLEAN);
-  avt_bold ((avt_bool_t) lua_toboolean (L, 1));
+  avt_bold (check_avt_bool_t (L, 1));
   return 0;
 }
 
@@ -566,8 +572,7 @@ lavt_get_bold (lua_State * L)
 static int
 lavt_inverse (lua_State * L)
 {
-  luaL_checktype (L, 1, LUA_TBOOLEAN);
-  avt_inverse ((avt_bool_t) lua_toboolean (L, 1));
+  avt_inverse (check_avt_bool_t (L, 1));
   return 0;
 }
 
@@ -582,8 +587,7 @@ lavt_get_inverse (lua_State * L)
 static int
 lavt_markup (lua_State * L)
 {
-  luaL_checktype (L, 1, LUA_TBOOLEAN);
-  avt_markup ((avt_bool_t) lua_toboolean (L, 1));
+  avt_markup (check_avt_bool_t (L, 1));
   return 0;
 }
 
@@ -877,9 +881,7 @@ static int
 lavt_set_tab (lua_State * L)
 {
   is_initialized ();
-  luaL_checktype (L, 1, LUA_TNUMBER);
-  luaL_checktype (L, 2, LUA_TBOOLEAN);
-  avt_set_tab (lua_tointeger (L, 1), (avt_bool_t) lua_toboolean (L, 2));
+  avt_set_tab (luaL_checkint (L, 1), check_avt_bool_t (L, 2));
   return 0;
 }
 
@@ -920,8 +922,7 @@ lavt_wait_button (lua_State * L)
 static int
 lavt_reserve_single_keys (lua_State * L)
 {
-  luaL_checktype (L, 1, LUA_TBOOLEAN);
-  avt_reserve_single_keys ((avt_bool_t) lua_toboolean (L, 1));
+  avt_reserve_single_keys (check_avt_bool_t (L, 1));
   return 0;
 }
 
@@ -987,8 +988,7 @@ static int
 lavt_credits (lua_State * L)
 {
   is_initialized ();
-  check (avt_credits_mb (luaL_checkstring (L, 1),
-			 (avt_bool_t) lua_toboolean (L, 2)));
+  check (avt_credits_mb (luaL_checkstring (L, 1), to_avt_bool_t (L, 2)));
 
   return 0;
 }
@@ -1103,8 +1103,8 @@ lavt_choice (lua_State * L)
 		     luaL_checkint (L, 1),
 		     luaL_checkint (L, 2),
 		     (c) ? c[0] : 0,
-		     (avt_bool_t) lua_toboolean (L, 4),
-		     (avt_bool_t) lua_toboolean (L, 5)));
+		     to_avt_bool_t (L, 4),
+		     to_avt_bool_t (L, 5)));
 
   lua_pushinteger (L, result);
   return 1;
@@ -1360,8 +1360,7 @@ lavt_stop_audio (lua_State * L AVT_UNUSED)
 static int
 lavt_pause_audio (lua_State * L)
 {
-  luaL_checktype (L, 1, LUA_TBOOLEAN);
-  avt_pause_audio ((avt_bool_t) lua_toboolean (L, 1));
+  avt_pause_audio (check_avt_bool_t (L, 1));
   return 0;
 }
 
@@ -1472,16 +1471,14 @@ lavt_get_scroll_mode (lua_State * L)
 static int
 lavt_newline_mode (lua_State * L)
 {
-  luaL_checktype (L, 1, LUA_TBOOLEAN);
-  avt_newline_mode ((avt_bool_t) lua_toboolean (L, 1));
+  avt_newline_mode (check_avt_bool_t (L, 1));
   return 0;
 }
 
 static int
 lavt_set_auto_margin (lua_State * L)
 {
-  luaL_checktype (L, 1, LUA_TBOOLEAN);
-  avt_set_auto_margin ((avt_bool_t) lua_toboolean (L, 1));
+  avt_set_auto_margin (check_avt_bool_t (L, 1));
   return 0;
 }
 
@@ -1495,8 +1492,7 @@ lavt_get_auto_margin (lua_State * L)
 static int
 lavt_set_origin_mode (lua_State * L)
 {
-  luaL_checktype (L, 1, LUA_TBOOLEAN);
-  avt_set_origin_mode ((avt_bool_t) lua_toboolean (L, 1));
+  avt_set_origin_mode (check_avt_bool_t (L, 1));
   return 0;
 }
 
@@ -1510,16 +1506,14 @@ lavt_get_origin_mode (lua_State * L)
 static int
 lavt_set_mouse_visible (lua_State * L)
 {
-  luaL_checktype (L, 1, LUA_TBOOLEAN);
-  avt_set_mouse_visible ((avt_bool_t) lua_toboolean (L, 1));
+  avt_set_mouse_visible (check_avt_bool_t (L, 1));
   return 0;
 }
 
 static int
 lavt_lock_updates (lua_State * L)
 {
-  luaL_checktype (L, 1, LUA_TBOOLEAN);
-  avt_lock_updates ((avt_bool_t) lua_toboolean (L, 1));
+  avt_lock_updates (check_avt_bool_t (L, 1));
   return 0;
 }
 
@@ -1591,7 +1585,7 @@ file_filter (const char *filename)
   lua_pushvalue (tmp_lua_state, 1);	/* push func again, to keep it */
   lua_pushstring (tmp_lua_state, filename);	/* parameter */
   lua_call (tmp_lua_state, 1, 1);
-  result = (avt_bool_t) lua_toboolean (tmp_lua_state, -1);
+  result = to_avt_bool_t (tmp_lua_state, -1);
   lua_pop (tmp_lua_state, 1);	/* pop result, leave func on stack */
 
   return result;
