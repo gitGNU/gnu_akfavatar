@@ -943,6 +943,13 @@ avt_load_raw_audio_data (void *data AVT_UNUSED, int data_size AVT_UNUSED,
   return NULL;
 }
 
+extern int
+avt_add_raw_audio_data (avt_audio_t * snd, void *data, int data_size)
+{
+  no_audio ();
+  return AVT_ERROR;
+}
+
 extern void
 avt_free_audio (avt_audio_t * snd AVT_UNUSED)
 {
@@ -967,6 +974,13 @@ extern void
 avt_pause_audio (avt_bool_t pause)
 {
   no_audio ();
+}
+
+extern avt_bool_t
+avt_audio_playing (avt_audio_t * snd AVT_UNUSED)
+{
+  no_audio ();
+  return AVT_FALSE;
 }
 
 #endif /* NO_AUDIO */
