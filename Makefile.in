@@ -204,6 +204,7 @@ arch.o: $(srcdir)/arch.c $(srcdir)/avtaddons.h
 avtvorbis.o: $(srcdir)/avtvorbis.c $(srcdir)/avtaddons.h $(srcdir)/stb_vorbis.c
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/avtvorbis.c
 
+# Note: SDL supports only 2 channels
 stb_vorbis.o: $(srcdir)/stb_vorbis.c
 	$(CC) $(CFLAGS) -c -o $@ \
 	  -DSTB_VORBIS_NO_PUSHDATA_API -DSTB_VORBIS_MAX_CHANNELS=2 \
@@ -272,6 +273,7 @@ akfavatar-vorbis.lo: $(srcdir)/lua/akfavatar-vorbis.c $(srcdir)/stb_vorbis.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -fpic -c -o $@ \
 	  $(srcdir)/lua/akfavatar-vorbis.c
 
+# Note: SDL supports only 2 channels
 stb_vorbis.lo: $(srcdir)/stb_vorbis.c
 	$(CC) $(CFLAGS) \
 	  -DSTB_VORBIS_NO_PUSHDATA_API -DSTB_VORBIS_MAX_CHANNELS=2 \

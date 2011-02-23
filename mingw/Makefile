@@ -243,6 +243,7 @@ akfavatar-vorbis.wo: $(srcdir)/lua/akfavatar-vorbis.c $(srcdir)/stb_vorbis.c
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/akfavatar-vorbis.c
 
+# Note: SDL supports only 2 channels
 stb_vorbis.wo: $(srcdir)/stb_vorbis.c
 	$(CC) $(CFLAGS) -I$(srcdir) \
 	  -DSTB_VORBIS_NO_PUSHDATA_API -DSTB_VORBIS_MAX_CHANNELS=2 \
