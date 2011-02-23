@@ -1,6 +1,6 @@
 {*
  * Pascal binding to the AKFAvatar library version 0.17.2
- * Copyright (c) 2007, 2008, 2009 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007, 2008, 2009, 2011 Andreas K. Foerster <info@akfoerster.de>
  *
  * Can be used with GNU-Pascal or FreePascal
  *
@@ -305,6 +305,27 @@ function LoadSoundFile(const FileName: string): pointer;
 function LoadSoundData(data: pointer; size: LongInt): pointer;
 procedure FreeSound(snd: pointer);
 procedure PlaySound(snd: pointer; loop: boolean);
+
+{ for importing raw sound data }
+
+{ constants for audio_type }
+const
+  AVT_AUDIO_UNKNOWN = 0;
+  AVT_AUDIO_U8      = 1;  { unsigned 8 Bit }
+  AVT_AUDIO_S8      = 2;  { signed 8 Bit }
+  AVT_AUDIO_U16LE   = 3;  { unsigned 16 Bit little endian }
+  AVT_AUDIO_U16BE   = 4;  { unsigned 16 Bit big endian }
+  AVT_AUDIO_U16SYS  = 5;  { unsigned 16 Bit system's endianess }
+  AVT_AUDIO_S16LE   = 6;  { signed 16 Bit little endian }
+  AVT_AUDIO_S16BE   = 7;  { signed 16 Bit big endian }
+  AVT_AUDIO_S16SYS  = 8;  { signed 16 Bit system's endianess }
+  AVT_AUDIO_MULAW   = 100;  { 8 Bit mu-law (u-law) }
+  AVT_AUDIO_ALAW    = 101;  { 8 Bit A-Law }
+
+function LoadRawSoundData(data:pointer; size: LongInt;
+           samplingrate, audio_type, channels: integer): pointer;
+procedure AddRawSoundData(sound: pointer; data: pointer; size: LongInt);
+
 
 { wait until the end of the audio output }
 procedure WaitSoundEnd;
@@ -612,9 +633,14 @@ function avt_load_audio_data (Data: Pointer; size: CInteger): Pointer;
   libakfavatar 'avt_load_audio_data';
 
 function avt_load_raw_audio_data (Data: pointer; size: CInteger;
-                            Samplingrate, Audio_type, 
+                            Samplingrate, Audio_type,
                             channels: CInteger): pointer;
   libakfavatar 'avt_load_raw_audio_data';
+
+function avt_add_raw_audio_data (Sound: pointer;
+                                 Data: pointer;
+                                 size: CInteger): CInteger
+  libakfavatar 'avt_add_raw_audio_data';
 
 procedure avt_free_audio(snd: pointer); 
   libakfavatar 'avt_free_audio';
@@ -1199,6 +1225,19 @@ end;
 function LoadSoundData(data: pointer; size: LongInt): pointer;
 begin
 LoadSoundData := avt_load_audio_data(data, size)
+end;
+
+function LoadRawSoundData(data:pointer; size: LongInt;
+           samplingrate, audio_type, channels: integer): pointer;
+begin
+LoadRawSoundData := avt_load_raw_audio_data (data, size, samplingrate,
+                     audio_type, channels)
+end;
+
+procedure AddRawSoundData(sound: pointer; data: pointer; size: LongInt);
+begin
+{ ignore error code }
+avt_add_raw_audio_data (sound, data, size)
 end;
 
 procedure Beep;
