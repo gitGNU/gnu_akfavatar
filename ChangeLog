@@ -1,3 +1,7 @@
+2011-02-24  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/akfavatar/utf8.lua (utf8.ncr): renamed from utf8.xml
+
 2011-02-23  Andreas K. Foerster  <info@akfoerster.de>
 
 	* pascal/akfavatar.pas (LoadRawSoundData, AddRawSoundData):

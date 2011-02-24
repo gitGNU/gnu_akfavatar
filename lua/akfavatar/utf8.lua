@@ -217,9 +217,10 @@ end
 u8.rep = string.rep
 
 
--- replaces nummerical XML-entities with UTF8-characters
--- named entities or tags are not changed
-function u8.xml (s)
+-- replaces numeric character references (NCR) with UTF-8 characters
+-- example: "&#8364;" (decimal) or "&#x20AC;" (hexadecimal) for Euro sign
+-- named entities are not supported here
+function u8.ncr (s)
   s = string.gsub(s, "&#[xX](%x+);",
     function (c) return u8.char(tonumber(c, 16)) end)
   s = string.gsub(s, "&#(%d+);",
