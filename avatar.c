@@ -4996,15 +4996,16 @@ avt_navigate (const char *buttons)
   SDL_Rect rect[NAV_MAX], buttons_rect;
   int i, button_count, button_pos;
   int result;
+  avt_bool_t has_stop_button;
 
   result = AVT_ERROR;		/* no result */
+  has_stop_button = AVT_FALSE;
 
   if (_avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   if (!screen)
     return AVT_ERROR;
-
 
   button_count = SDL_strlen (buttons);
 
@@ -5107,6 +5108,7 @@ avt_navigate (const char *buttons)
 
 	case 's':
 	  avt_nav_inlay (btn_stop);
+	  has_stop_button = AVT_TRUE;
 	  break;
 
 	case '?':
@@ -5147,6 +5149,12 @@ avt_navigate (const char *buttons)
 
       switch (event.type)
 	{
+	/* end of audio triggers stop key */
+	case SDL_USEREVENT:
+	  if (has_stop_button && event.user.code == AVT_AUDIO_ENDED)
+	    result = 's';
+	  break;
+
 	case SDL_KEYDOWN:
 	  {
 	    int r = AVT_ERROR;

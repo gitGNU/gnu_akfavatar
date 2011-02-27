@@ -4,6 +4,8 @@
 	send an user-event when sound has ended
 	avtinternals.h, avatar.c (avt_analyze_event): made extern
 
+	* avatar.c (avt_navigate): end of sound triggers stop key
+
 2011-02-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar/utf8.lua (utf8.ncr): renamed from utf8.xml

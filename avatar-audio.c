@@ -38,8 +38,6 @@
 #  define OLD_SDL 1
 #endif
 
-#define AVT_AUDIO_ENDED 1
-
 #ifdef OLD_SDL
 #  include <stdlib.h>
 #  undef SDL_malloc

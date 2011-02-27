@@ -24,6 +24,8 @@
 #include "SDL.h"
 #include <stdio.h>		/* FILE */
 
+#define AVT_AUDIO_ENDED 1
+
 /* avatar.c */
 extern int _avt_STATUS;
 extern void avt_analyze_event (SDL_Event * event);
