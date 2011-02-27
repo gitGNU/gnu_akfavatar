@@ -277,42 +277,43 @@ multiplizieren.exe: $(srcdir)/pascal/multiply.pas
 dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64.dll akfavatar-vorbis.dll
 	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) html txt
 	mkdir $(BINPKGNAME)
-	mkdir $(BINPKGNAME)/akfavatar
+	mkdir $(BINPKGNAME)/lua
+	mkdir $(BINPKGNAME)/lua/akfavatar
 	cp $(srcdir)/doc/akfavatar-en.html $(srcdir)/doc/akfavatar-de.html $(BINPKGNAME)/
 	cp akfavatar-en.txt akfavatar-de.txt $(BINPKGNAME)/
 	cp akfavatar.dll $(BINPKGNAME)/
 	cp avatarsay.exe $(srcdir)/fsdemo-??.avt $(BINPKGNAME)/
 	cp lua-akfavatar.exe $(BINPKGNAME)/
-	cp lua-akfavatar.dll $(BINPKGNAME)/
-	cp base64.dll $(BINPKGNAME)/
-	cp akfavatar-vorbis.dll $(BINPKGNAME)/
-	cp $(srcdir)/lua/multiplication.lua $(BINPKGNAME)/
-	cp $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/
-	cp $(srcdir)/lua/textview.lua $(BINPKGNAME)/
-	cp $(srcdir)/lua/hello.lua $(BINPKGNAME)/
-	cp $(srcdir)/lua/story1-en.lua $(srcdir)/lua/story1-de.lua $(BINPKGNAME)/
-	cp $(srcdir)/lua/fs-quiz-en.lua $(BINPKGNAME)/
-	cp $(srcdir)/lua/fs-quiz-de.lua $(BINPKGNAME)/
-	cp $(srcdir)/lua/base64-encode.lua $(BINPKGNAME)/
-	cp $(srcdir)/lua/characters_overview.lua $(BINPKGNAME)/
-	cp $(srcdir)/lua/characters_tables.lua $(BINPKGNAME)/
-	cp $(srcdir)/lua/akfavatar/README $(BINPKGNAME)/akfavatar/README.txt
-	cp $(srcdir)/lua/akfavatar/LIESMICH $(BINPKGNAME)/akfavatar/LIESMICH.txt
-	cp $(srcdir)/lua/akfavatar/utf8.lua $(BINPKGNAME)/akfavatar/
-	cp $(srcdir)/lua/akfavatar/person.lua $(BINPKGNAME)/akfavatar/
-	cp $(srcdir)/lua/akfavatar/female_user.lua $(BINPKGNAME)/akfavatar/
-	cp $(srcdir)/lua/akfavatar/male_user.lua $(BINPKGNAME)/akfavatar/
-	cp $(srcdir)/lua/akfavatar/info_icon.lua $(BINPKGNAME)/akfavatar/
-	cp $(srcdir)/lua/akfavatar/gnu_head.lua $(BINPKGNAME)/akfavatar/
-	cp $(srcdir)/lua/akfavatar/teacher.lua $(BINPKGNAME)/akfavatar/
-	cp $(srcdir)/lua/akfavatar/akfoerster.lua $(BINPKGNAME)/akfavatar/
-	cp $(srcdir)/lua/akfavatar/positive.lua $(BINPKGNAME)/akfavatar/
-	cp $(srcdir)/lua/akfavatar/negative.lua $(BINPKGNAME)/akfavatar/
-	cp $(srcdir)/lua/akfavatar/neutral.lua $(BINPKGNAME)/akfavatar/
-	cp $(srcdir)/lua/akfavatar/questionary.lua $(BINPKGNAME)/akfavatar/
-	cp $(srcdir)/lua/akfavatar/Fragebogen.lua $(BINPKGNAME)/akfavatar/
-	cp $(srcdir)/lua/akfavatar/ar.lua $(BINPKGNAME)/akfavatar/
-	cp $(srcdir)/lua/akfavatar/avtdemo.lua $(BINPKGNAME)/akfavatar/
+	cp lua-akfavatar.dll $(BINPKGNAME)/lua/
+	cp base64.dll $(BINPKGNAME)/lua/
+	cp akfavatar-vorbis.dll $(BINPKGNAME)/lua/
+	cp $(srcdir)/lua/multiplication.lua $(BINPKGNAME)/lua/
+	cp $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/lua/
+	cp $(srcdir)/lua/textview.lua $(BINPKGNAME)/lua/
+	cp $(srcdir)/lua/hello.lua $(BINPKGNAME)/lua/
+	cp $(srcdir)/lua/story1-en.lua $(srcdir)/lua/story1-de.lua $(BINPKGNAME)/lua/
+	cp $(srcdir)/lua/fs-quiz-en.lua $(BINPKGNAME)/lua/
+	cp $(srcdir)/lua/fs-quiz-de.lua $(BINPKGNAME)/lua/
+	cp $(srcdir)/lua/base64-encode.lua $(BINPKGNAME)/lua/
+	cp $(srcdir)/lua/characters_overview.lua $(BINPKGNAME)/lua/
+	cp $(srcdir)/lua/characters_tables.lua $(BINPKGNAME)/lua/
+	cp $(srcdir)/lua/akfavatar/README $(BINPKGNAME)/lua/akfavatar/README.txt
+	cp $(srcdir)/lua/akfavatar/LIESMICH $(BINPKGNAME)/lua/akfavatar/LIESMICH.txt
+	cp $(srcdir)/lua/akfavatar/utf8.lua $(BINPKGNAME)/lua/akfavatar/
+	cp $(srcdir)/lua/akfavatar/person.lua $(BINPKGNAME)/lua/akfavatar/
+	cp $(srcdir)/lua/akfavatar/female_user.lua $(BINPKGNAME)/lua/akfavatar/
+	cp $(srcdir)/lua/akfavatar/male_user.lua $(BINPKGNAME)/lua/akfavatar/
+	cp $(srcdir)/lua/akfavatar/info_icon.lua $(BINPKGNAME)/lua/akfavatar/
+	cp $(srcdir)/lua/akfavatar/gnu_head.lua $(BINPKGNAME)/lua/akfavatar/
+	cp $(srcdir)/lua/akfavatar/teacher.lua $(BINPKGNAME)/lua/akfavatar/
+	cp $(srcdir)/lua/akfavatar/akfoerster.lua $(BINPKGNAME)/lua/akfavatar/
+	cp $(srcdir)/lua/akfavatar/positive.lua $(BINPKGNAME)/lua/akfavatar/
+	cp $(srcdir)/lua/akfavatar/negative.lua $(BINPKGNAME)/lua/akfavatar/
+	cp $(srcdir)/lua/akfavatar/neutral.lua $(BINPKGNAME)/lua/akfavatar/
+	cp $(srcdir)/lua/akfavatar/questionary.lua $(BINPKGNAME)/lua/akfavatar/
+	cp $(srcdir)/lua/akfavatar/Fragebogen.lua $(BINPKGNAME)/lua/akfavatar/
+	cp $(srcdir)/lua/akfavatar/ar.lua $(BINPKGNAME)/lua/akfavatar/
+	cp $(srcdir)/lua/akfavatar/avtdemo.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	cp $(srcdir)/AUTHORS $(BINPKGNAME)/AUTHORS.txt
 	cp $(srcdir)/COPYING $(BINPKGNAME)/COPYING.txt
@@ -327,12 +328,13 @@ dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64
 	cp $(srcdir)/README-Lua $(BINPKGNAME)/README-Lua.txt
 	$(STRIP) $(BINPKGNAME)/*.exe
 	$(STRIP) $(BINPKGNAME)/*.dll
+	$(STRIP) $(BINPKGNAME)/lua/*.dll
 	todos $(BINPKGNAME)/fsdemo-??.avt
 	todos $(BINPKGNAME)/*.bat
 	todos $(BINPKGNAME)/*.txt
-	todos $(BINPKGNAME)/*.lua
-	todos $(BINPKGNAME)/akfavatar/*.lua
-	todos $(BINPKGNAME)/akfavatar/*.txt
+	todos $(BINPKGNAME)/lua/*.lua
+	todos $(BINPKGNAME)/lua/akfavatar/*.lua
+	todos $(BINPKGNAME)/lua/akfavatar/*.txt
 	-rm -f $(BINPKGNAME).w32.zip
 	zip -9vr $(BINPKGNAME).w32.zip $(BINPKGNAME)/
 	rm -r $(BINPKGNAME)/

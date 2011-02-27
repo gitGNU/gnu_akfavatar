@@ -704,30 +704,31 @@ dist: info html man $(srcdir)/alert.au
 dist-bin-default: info html libakfavatar.so avatarsay-bin lua-akfavatar-bin \
 	          lua-akfavatar.so base64.so akfavatar-term.so
 	mkdir $(BINPKGNAME)
-	mkdir $(BINPKGNAME)/akfavatar
+	mkdir $(BINPKGNAME)/lua
+	mkdir $(BINPKGNAME)/lua/akfavatar
 	cp $(LIBNAME) $(BINPKGNAME)/
 	cp $(srcdir)/avatarsay avatarsay-bin $(BINPKGNAME)/
 	-ln -sf $(LIBNAME) $(BINPKGNAME)/$(SONAME)
 	cp $(srcdir)/lua-akfavatar lua-akfavatar-bin $(BINPKGNAME)/
-	cp lua-akfavatar.so base64.so akfavatar-vorbis.so $(BINPKGNAME)/
-	cp akfavatar-term.so $(BINPKGNAME)/
+	cp lua-akfavatar.so base64.so akfavatar-vorbis.so $(BINPKGNAME)/lua/
+	cp akfavatar-term.so $(BINPKGNAME)/lua/
 	ln $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/
 	ln $(srcdir)/pascal/?pcavatar $(BINPKGNAME)/
 	ln $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	ln $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
 	ln $(srcdir)/teacher.xpm $(srcdir)/akfoerster.xpm $(BINPKGNAME)/
 	ln $(srcdir)/README-Lua $(BINPKGNAME)/
-	ln $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/
-	ln $(srcdir)/lua/multiplication.lua $(BINPKGNAME)/
-	ln $(srcdir)/lua/hello.lua $(BINPKGNAME)/
-	ln $(srcdir)/lua/man.lua $(srcdir)/lua/textview.lua $(BINPKGNAME)/
-	ln $(srcdir)/lua/story1-en.lua $(srcdir)/lua/story1-de.lua $(BINPKGNAME)/
-	ln $(srcdir)/lua/base64-encode.lua $(BINPKGNAME)/
-	ln $(srcdir)/lua/characters_overview.lua $(BINPKGNAME)/
-	ln $(srcdir)/lua/characters_tables.lua $(BINPKGNAME)/
-	ln $(srcdir)/lua/fs-quiz-en.lua $(BINPKGNAME)/
-	ln $(srcdir)/lua/fs-quiz-de.lua $(BINPKGNAME)/
-	ln $(srcdir)/lua/terminal.lua $(BINPKGNAME)/
+	ln $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/lua/
+	ln $(srcdir)/lua/multiplication.lua $(BINPKGNAME)/lua/
+	ln $(srcdir)/lua/hello.lua $(BINPKGNAME)/lua/
+	ln $(srcdir)/lua/man.lua $(srcdir)/lua/textview.lua $(BINPKGNAME)/lua/
+	ln $(srcdir)/lua/story1-en.lua $(srcdir)/lua/story1-de.lua $(BINPKGNAME)/lua/
+	ln $(srcdir)/lua/base64-encode.lua $(BINPKGNAME)/lua/
+	ln $(srcdir)/lua/characters_overview.lua $(BINPKGNAME)/lua/
+	ln $(srcdir)/lua/characters_tables.lua $(BINPKGNAME)/lua/
+	ln $(srcdir)/lua/fs-quiz-en.lua $(BINPKGNAME)/lua/
+	ln $(srcdir)/lua/fs-quiz-de.lua $(BINPKGNAME)/lua/
+	ln $(srcdir)/lua/terminal.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/NEWS $(srcdir)/avtman \
 	   $(srcdir)/fsdemo-??.avt \
 	   $(srcdir)/gnome-akfavatar \
@@ -754,7 +755,7 @@ dist-bin-default: info html libakfavatar.so avatarsay-bin lua-akfavatar-bin \
 	   $(srcdir)/lua/akfavatar/Fragebogen.lua \
 	   $(srcdir)/lua/akfavatar/ar.lua \
 	   $(srcdir)/lua/akfavatar/avtdemo.lua \
-	   $(BINPKGNAME)/akfavatar/
+	   $(BINPKGNAME)/lua/akfavatar/
 	tar -cvf $(BINPKGNAME).$(SYSTEM).$(ARCH).tar $(BINPKGNAME)/
 	rm -rf $(BINPKGNAME)/
 	bzip2 -f $(BINPKGNAME).$(SYSTEM).$(ARCH).tar

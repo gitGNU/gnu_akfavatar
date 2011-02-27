@@ -9,12 +9,12 @@ test "$localdir" = "." && localdir=$(pwd)
 
 # for finding Lua modules
 # the ;; at the end adds the default path
-LUA_PATH="$localdir/?.lua;$localdir/lua/?.lua;;"
+LUA_PATH="$localdir/lua/?.lua;;"
 export LUA_PATH
 
 # for finding Lua binary modules
 # the ;; at the end adds the default path
-LUA_CPATH="$localdir/?.so;;"
+LUA_CPATH="$localdir/?.so;$localdir/lua/?.so;;"
 export LUA_CPATH
 
 # On HP-UX change LD_LIBRARY_PATH to SHLIB_PATH
@@ -23,4 +23,4 @@ export LUA_CPATH
 LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$localdir"
 export LD_LIBRARY_PATH
 
-exec $localdir/lua-akfavatar-bin "$@"
+exec "$localdir/lua-akfavatar-bin" "$@"
