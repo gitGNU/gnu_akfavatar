@@ -2019,7 +2019,8 @@ avt_get_mode (void)
   return avt_mode;
 }
 
-static void
+/* external: not in the API, but used in avatar-audio */
+void AVT_HIDDEN
 avt_analyze_event (SDL_Event * event)
 {
   switch (event->type)

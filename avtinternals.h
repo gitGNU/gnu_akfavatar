@@ -21,10 +21,12 @@
 #ifndef _AVTINTERNALS_H
 #define _AVTINTERNALS_H
 
+#include "SDL.h"
 #include <stdio.h>		/* FILE */
 
 /* avatar.c */
 extern int _avt_STATUS;
+extern void avt_analyze_event (SDL_Event * event);
 extern int avt_checkevent (void);
 extern void (*avt_alert_func) (void);
 extern void (*avt_quit_audio_func) (void);

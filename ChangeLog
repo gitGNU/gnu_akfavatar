@@ -1,3 +1,9 @@
+2011-02-27  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-audio.c (fill_audio, avt_wait_audio_end):
+	send an user-event when sound has ended
+	avtinternals.h, avatar.c (avt_analyze_event): made extern
+
 2011-02-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar/utf8.lua (utf8.ncr): renamed from utf8.xml

@@ -38,6 +38,8 @@
 #  define OLD_SDL 1
 #endif
 
+#define AVT_AUDIO_ENDED 1
+
 #ifdef OLD_SDL
 #  include <stdlib.h>
 #  undef SDL_malloc
@@ -139,9 +141,15 @@ fill_audio (void *userdata AVT_UNUSED, Uint8 * stream, int len)
 	  soundpos = current_sound.sound;
 	  soundleft = current_sound.len;
 	}
-      else
+      else			/* no more data */
 	{
-	  SDL_PauseAudio (1);	/* be quiet */
+	  SDL_Event event;
+
+	  SDL_PauseAudio (1);	/* shut up */
+	  event.type = SDL_USEREVENT;
+	  event.user.code = AVT_AUDIO_ENDED;
+	  event.user.data1 = event.user.data2 = NULL;
+	  SDL_PushEvent (&event);
 	  return;
 	}
     }
@@ -845,21 +853,24 @@ avt_play_audio (avt_audio_t * snd, avt_bool_t doloop)
 extern int
 avt_wait_audio_end (void)
 {
-  if (!avt_audio_initialized)
+  SDL_Event event;
+  avt_bool_t audio_playing;
+
+  if (!avt_audio_initialized || soundleft <= 0)
     return _avt_STATUS;
+
+  audio_playing = (soundleft > 0);
 
   /* end the loop, but wait for end of sound */
   loop = AVT_FALSE;
 
-  if (soundleft > 0 && !avt_checkevent ())
+  while (audio_playing && _avt_STATUS == AVT_NORMAL)
     {
-      /* wait while sound is still playing, and there is no event */
-      while ((soundleft > 0) && !avt_checkevent ())
-	SDL_Delay (10);		/* give some time to other processes */
-
-      /* wait for last buffer + somewhat extra to be sure */
-      SDL_Delay (((current_sound.audiospec.samples * 1000)
-		  / current_sound.audiospec.freq) + 100);
+      if (SDL_WaitEvent (&event)
+	  && event.type == SDL_USEREVENT
+	  && event.user.code == AVT_AUDIO_ENDED)
+	audio_playing = AVT_FALSE;
+      avt_analyze_event (&event);
     }
 
   return _avt_STATUS;
@@ -868,7 +879,7 @@ avt_wait_audio_end (void)
 extern void
 avt_pause_audio (avt_bool_t pause)
 {
-  SDL_PauseAudio((int) pause);
+  SDL_PauseAudio ((int) pause);
 }
 
 #else /* NO_AUDIO */
