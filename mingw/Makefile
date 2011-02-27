@@ -288,9 +288,9 @@ dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64
 	cp $(srcdir)/avtaddons.h $(BINPKGNAME)/include/
 	cp avatarsay.exe $(srcdir)/fsdemo-??.avt $(BINPKGNAME)/
 	cp lua-akfavatar.exe $(BINPKGNAME)/
-	cp lua-akfavatar.dll $(BINPKGNAME)/lua/
-	cp base64.dll $(BINPKGNAME)/lua/
-	cp akfavatar-vorbis.dll $(BINPKGNAME)/lua/
+	cp lua-akfavatar.dll $(BINPKGNAME)/
+	cp base64.dll $(BINPKGNAME)/
+	cp akfavatar-vorbis.dll $(BINPKGNAME)/
 	cp $(srcdir)/lua/multiplication.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/textview.lua $(BINPKGNAME)/lua/
@@ -332,7 +332,6 @@ dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64
 	cp $(srcdir)/README-Lua $(BINPKGNAME)/README-Lua.txt
 	$(STRIP) $(BINPKGNAME)/*.exe
 	$(STRIP) $(BINPKGNAME)/*.dll
-	$(STRIP) $(BINPKGNAME)/lua/*.dll
 	todos $(BINPKGNAME)/fsdemo-??.avt
 	todos $(BINPKGNAME)/*.bat
 	todos $(BINPKGNAME)/*.txt
