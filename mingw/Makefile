@@ -279,9 +279,13 @@ dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/lua
 	mkdir $(BINPKGNAME)/lua/akfavatar
+	mkdir $(BINPKGNAME)/include
 	cp $(srcdir)/doc/akfavatar-en.html $(srcdir)/doc/akfavatar-de.html $(BINPKGNAME)/
 	cp akfavatar-en.txt akfavatar-de.txt $(BINPKGNAME)/
 	cp akfavatar.dll $(BINPKGNAME)/
+	cp libavtaddons.a $(BINPKGNAME)/
+	cp $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/include/
+	cp $(srcdir)/avtaddons.h $(BINPKGNAME)/include/
 	cp avatarsay.exe $(srcdir)/fsdemo-??.avt $(BINPKGNAME)/
 	cp lua-akfavatar.exe $(BINPKGNAME)/
 	cp lua-akfavatar.dll $(BINPKGNAME)/lua/
@@ -335,6 +339,7 @@ dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64
 	todos $(BINPKGNAME)/lua/*.lua
 	todos $(BINPKGNAME)/lua/akfavatar/*.lua
 	todos $(BINPKGNAME)/lua/akfavatar/*.txt
+	todos $(BINPKGNAME)/include/*
 	-rm -f $(BINPKGNAME).w32.zip
 	zip -9vr $(BINPKGNAME).w32.zip $(BINPKGNAME)/
 	rm -r $(BINPKGNAME)/

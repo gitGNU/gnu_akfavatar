@@ -706,13 +706,16 @@ dist-bin-default: info html libakfavatar.so avatarsay-bin lua-akfavatar-bin \
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/lua
 	mkdir $(BINPKGNAME)/lua/akfavatar
+	mkdir $(BINPKGNAME)/include
 	cp $(LIBNAME) $(BINPKGNAME)/
 	cp $(srcdir)/avatarsay avatarsay-bin $(BINPKGNAME)/
 	-ln -sf $(LIBNAME) $(BINPKGNAME)/$(SONAME)
 	cp $(srcdir)/lua-akfavatar lua-akfavatar-bin $(BINPKGNAME)/
+	cp libavtaddons.a $(BINPKGNAME)/
 	cp lua-akfavatar.so base64.so akfavatar-vorbis.so $(BINPKGNAME)/lua/
 	cp akfavatar-term.so $(BINPKGNAME)/lua/
-	ln $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/
+	ln $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/include/
+	ln $(srcdir)/avtaddons.h $(BINPKGNAME)/include/
 	ln $(srcdir)/pascal/?pcavatar $(BINPKGNAME)/
 	ln $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	ln $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
