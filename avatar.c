@@ -4994,12 +4994,11 @@ avt_navigate (const char *buttons)
   SDL_Event event;
   SDL_Surface *base_button, *buttons_area;
   SDL_Rect rect[NAV_MAX], buttons_rect;
-  int i, button_count, button_pos;
+  int i, button_count, button_pos, audio_end_button;
   int result;
-  avt_bool_t has_stop_button;
 
   result = AVT_ERROR;		/* no result */
-  has_stop_button = AVT_FALSE;
+  audio_end_button = 0;		/* none */
 
   if (_avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -5086,8 +5085,14 @@ avt_navigate (const char *buttons)
 	  avt_nav_inlay (btn_cancel);
 	  break;
 
+	case 's':
+	  avt_nav_inlay (btn_stop);
+	  audio_end_button = 's';
+	  break;
+
 	case 'f':
 	  avt_nav_inlay (btn_fastforward);
+	  audio_end_button = 'f';
 	  break;
 
 	case 'b':
@@ -5104,11 +5109,6 @@ avt_navigate (const char *buttons)
 
 	case 'p':
 	  avt_nav_inlay (btn_pause);
-	  break;
-
-	case 's':
-	  avt_nav_inlay (btn_stop);
-	  has_stop_button = AVT_TRUE;
 	  break;
 
 	case '?':
@@ -5149,10 +5149,10 @@ avt_navigate (const char *buttons)
 
       switch (event.type)
 	{
-	/* end of audio triggers stop key */
+	  /* end of audio triggers stop key */
 	case SDL_USEREVENT:
-	  if (has_stop_button && event.user.code == AVT_AUDIO_ENDED)
-	    result = 's';
+	  if (event.user.code == AVT_AUDIO_ENDED && audio_end_button)
+	    result = audio_end_button;
 	  break;
 
 	case SDL_KEYDOWN:

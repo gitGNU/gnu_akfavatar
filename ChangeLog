@@ -4,7 +4,8 @@
 	send an user-event when sound has ended
 	avtinternals.h, avatar.c (avt_analyze_event): made extern
 
-	* avatar.c (avt_navigate): end of sound triggers stop key
+	* avatar.c (avt_navigate):
+	end of sound triggers stop or fastforward key, if present
 
 2011-02-24  Andreas K. Foerster  <info@akfoerster.de>
 
