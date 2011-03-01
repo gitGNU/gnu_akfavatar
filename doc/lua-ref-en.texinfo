@@ -278,6 +278,17 @@ avt.set_directory(os.getenv("HOME") or os.getenv("USERPROFILE"))
 @end example
 @end defun
 
+@defun avt.directory_entries ([directory])
+Get a list of directory entries of the given @var(directory) or the current directory
+if none is given.
+
+On success it returns a table (an array) and the number of entries.
+On error it returns @code{nil}.
+
+The list contains normal files, including hidden files, subdirectories
+and any other type of entry.  It does not contain @samp{.} and @samp{..}.
+@end defun
+
 @defun avt.file_selection ([filter])
 Start a file-chooser in the balloon. It starts in the current working
 directory.  When a directory is chosen it changes the working directory to that

@@ -1,3 +1,8 @@
+2011-03-01  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/lua-avt.c (lavt_directory_entries => avt.directory_entries):
+	new function
+
 2011-02-27  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-audio.c (fill_audio, avt_wait_audio_end):

@@ -31,6 +31,7 @@
 #include <errno.h>
 
 #include <unistd.h>		/* for chdir(), getcwd() */
+#include <dirent.h>		/* opendir, readdir, closedir */
 
 /* MinGW and Wine don't know ENOMSG */
 #ifndef ENOMSG
@@ -1635,7 +1636,7 @@ lavt_chdir (lua_State * L)
   path = lua_tostring (L, 1);
 
   if (path && *path)
-    chdir (path);	/* chdir() conforms to POSIX.1-2001 */
+    chdir (path);		/* chdir() conforms to POSIX.1-2001 */
 
   return 0;
 }
@@ -1815,6 +1816,46 @@ lavt_long_menu (lua_State * L)
   return 1;
 }
 
+/*
+ * optionally accepts directory name (defaults on current directory)
+ * returns table with directory entries (except "." and "..")
+ * and number of entries
+ * returns nil on error
+ */
+static int
+lavt_directory_entries (lua_State * L)
+{
+  DIR *dir;
+  struct dirent *d;
+  int nr;
+
+  /* conforming to POSIX.1-2001 */
+
+  if ((dir = opendir (luaL_optstring (L, 1, "."))) == NULL)
+    {
+      lua_pushnil (L);
+      return 1;
+    }
+
+  lua_newtable (L);
+  nr = 0;
+
+  while ((d = readdir (dir)) != NULL)
+    {
+      if (strcmp (".", d->d_name) != 0 && strcmp ("..", d->d_name) != 0)
+	{
+	  lua_pushstring (L, d->d_name);
+	  lua_rawseti (L, -2, ++nr);
+	}
+    }
+
+  closedir (dir);
+
+  lua_pushinteger (L, nr);	/* number of entries */
+
+  return 2;
+}
+
 /* --------------------------------------------------------- */
 /* register library functions */
 
@@ -1932,6 +1973,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"get_directory", lavt_getcwd},
   {"set_directory", lavt_chdir},
   {"chdir", lavt_chdir},
+  {"directory_entries", lavt_directory_entries},
   {"long_menu", lavt_long_menu},
   {"subprogram", lavt_subprogram},
   {NULL, NULL}
