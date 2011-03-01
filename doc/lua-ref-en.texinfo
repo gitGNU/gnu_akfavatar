@@ -283,7 +283,7 @@ Get a list of directory entries of the given @var(directory) or the current dire
 if none is given.
 
 On success it returns a table (an array) and the number of entries.
-On error it returns @code{nil}.
+On error it returns @code{nil} and an error message.
 
 The list contains normal files, including hidden files, subdirectories
 and any other type of entry.  It does not contain @samp{.} and @samp{..}.

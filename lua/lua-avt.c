@@ -1833,8 +1833,10 @@ lavt_directory_entries (lua_State * L)
 
   if ((dir = opendir (luaL_optstring (L, 1, "."))) == NULL)
     {
+      int err = errno;
       lua_pushnil (L);
-      return 1;
+      lua_pushstring (L, strerror (err));
+      return 2;
     }
 
   lua_newtable (L);
