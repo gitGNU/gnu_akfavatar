@@ -1861,11 +1861,7 @@ lavt_directory_entries (lua_State * L)
   return 2;
 }
 
-/* S_ISLNK / S_ISSOCK not on all systems, although they are in POSIX.1-2001 */
-#ifndef S_ISLNK
-#define S_ISLNK(x) 0
-#endif
-
+/* S_ISSOCK not on all systems, although in POSIX.1-2001 */
 #ifndef S_ISSOCK
 #define S_ISSOCK(x) 0
 #endif
@@ -1895,8 +1891,6 @@ lavt_entry_type (lua_State * L)
     lua_pushliteral (L, "block device");
   else if (S_ISFIFO (st.st_mode))
     lua_pushliteral (L, "fifo");
-  else if (S_ISLNK (st.st_mode))
-    lua_pushliteral (L, "symlink");
   else if (S_ISSOCK (st.st_mode))
     lua_pushliteral (L, "socket");
   else
