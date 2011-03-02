@@ -3,7 +3,7 @@
 	* lua/lua-avt.c (lavt_entry_type => avt.entry_type):
 	new function
 
-	* lua-akfavatar-prg.c: can display *.txt files (UTF-8 only)
+	* lua-akfavatar-prg.c: can display *.about files (UTF-8)
 
 2011-03-01  Andreas K. Foerster  <info@akfoerster.de>
 
