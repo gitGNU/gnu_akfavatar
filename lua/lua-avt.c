@@ -33,6 +33,9 @@
 #include <unistd.h>		/* for chdir(), getcwd() */
 #include <dirent.h>		/* opendir, readdir, closedir */
 
+#include <sys/types.h>
+#include <sys/stat.h>
+
 /* MinGW and Wine don't know ENOMSG */
 #ifndef ENOMSG
 #  define ENOMSG EINVAL
@@ -1858,6 +1861,52 @@ lavt_directory_entries (lua_State * L)
   return 2;
 }
 
+/* S_ISLNK / S_ISSOCK not on all systems, although they are in POSIX.1-2001 */
+#ifndef S_ISLNK
+#define S_ISLNK(x) 0
+#endif
+
+#ifndef S_ISSOCK
+#define S_ISSOCK(x) 0
+#endif
+
+static int
+lavt_entry_type (lua_State * L)
+{
+  struct stat st;
+
+  /* conforming to POSIX.1-2001 */
+
+  if (stat (luaL_checkstring (L, 1), &st) == -1)
+    {
+      int err = errno;
+      lua_pushnil (L);
+      lua_pushstring (L, strerror (err));
+      return 2;
+    }
+
+  if (S_ISREG (st.st_mode))
+    lua_pushliteral (L, "file");
+  else if (S_ISDIR (st.st_mode))
+    lua_pushliteral (L, "directory");
+  else if (S_ISCHR (st.st_mode))
+    lua_pushliteral (L, "character device");
+  else if (S_ISBLK (st.st_mode))
+    lua_pushliteral (L, "block device");
+  else if (S_ISFIFO (st.st_mode))
+    lua_pushliteral (L, "fifo");
+  else if (S_ISLNK (st.st_mode))
+    lua_pushliteral (L, "symlink");
+  else if (S_ISSOCK (st.st_mode))
+    lua_pushliteral (L, "socket");
+  else
+    lua_pushliteral (L, "unknown");
+
+  lua_pushinteger (L, st.st_size);
+
+  return 2;
+}
+
 /* --------------------------------------------------------- */
 /* register library functions */
 
@@ -1976,6 +2025,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"set_directory", lavt_chdir},
   {"chdir", lavt_chdir},
   {"directory_entries", lavt_directory_entries},
+  {"entry_type", lavt_entry_type},
   {"long_menu", lavt_long_menu},
   {"subprogram", lavt_subprogram},
   {NULL, NULL}

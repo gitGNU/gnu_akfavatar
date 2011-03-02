@@ -289,6 +289,17 @@ The list contains normal files, including hidden files, subdirectories
 and any other type of entry.  It does not contain @samp{.} and @samp{..}.
 @end defun
 
+@defun avt.entry_type (entry)
+Get the type of a directory entry and its size.
+
+On success it returns the type of the directory entry as string and the size as 
+number.
+The type can be one of "file", "directory", "character device", "block device",
+"fifo", "symlink", "socket" or "unknown".
+
+On error it returns @code{nil} and an error message.
+@end defun
+
 @defun avt.file_selection ([filter])
 Start a file-chooser in the balloon. It starts in the current working
 directory.  When a directory is chosen it changes the working directory to that
