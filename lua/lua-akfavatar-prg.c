@@ -134,6 +134,7 @@ check_options (int argc, char *argv[])
 static void
 initialize (void)
 {
+  avt_mb_encoding ("UTF-8");
   if (avt_initialize ("Lua-AKFAvatar", "AKFAvatar",
 		      avt_default (), AVT_AUTOMODE))
     avta_error ("cannot initialize graphics", avt_get_error ());
@@ -151,7 +152,8 @@ check_filename (const char *filename)
       const char *ext = strrchr (filename, '.');
       return (avt_bool_t)
 	(ext && (strcasecmp (".lua", ext) == 0
-		 || strcasecmp (".avt", ext) == 0));
+		 || strcasecmp (".avt", ext) == 0
+		 || strcasecmp (".txt", ext) == 0));
     }
 }
 
@@ -300,6 +302,14 @@ avtdemo (const char *filename)
     }
 }
 
+static void
+show_text (const char *filename)
+{
+  avt_set_balloon_size (0, 0);
+  /* text file must be UTF-8 encoded (or plain ASCII) */
+  avta_pager_file (filename, 1);
+}
+
 static avt_bool_t
 ask_file (void)
 {
@@ -319,6 +329,8 @@ ask_file (void)
       ext = strrchr (filename, '.');
       if (ext && strcasecmp (".avt", ext) == 0)
 	avtdemo (filename);
+      else if (ext && strcasecmp (".txt", ext) == 0)
+	show_text (filename);
       else			/* assume Lua code */
 	{
 	  /* arg[0] = filename */

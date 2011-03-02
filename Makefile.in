@@ -241,9 +241,9 @@ avatarsay-s: avatarsay.o avtposix.o libakfavatar.a \
 	   $(SDL_LDFLAGS) $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
 # lua-akfavatar dynamically linked
-lua-akfavatar-bin: lua-akfavatar-prg.o lua-avt.o \
+lua-akfavatar-bin: lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
                    filechooser.o colorchooser.o avtmsg.o avtgrmsg.o
-	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o \
+	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
 	     filechooser.o colorchooser.o avtmsg.o avtgrmsg.o \
 	     -L. -lakfavatar \
 	     $(LUA_LDFLAGS) $(LDFLAGS)
