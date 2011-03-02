@@ -1,6 +1,6 @@
 /*
  * AKFAvatar library - for giving your programs a graphical Avatar
- * Copyright (c) 2007, 2008, 2009, 2010 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Andreas K. Foerster <info@akfoerster.de>
  *
  * needed:
  *  SDL1.2 (recommended: SDL1.2.11 or later (but not 1.3!))
@@ -58,7 +58,7 @@
 #  include "SDL_image.h"
 #endif
 
-#define COPYRIGHTYEAR "2010"
+#define COPYRIGHTYEAR "2011"
 
 #define BUTTON_DISTANCE 10
 
