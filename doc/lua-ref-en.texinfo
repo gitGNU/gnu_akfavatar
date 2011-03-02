@@ -279,7 +279,7 @@ avt.set_directory(os.getenv("HOME") or os.getenv("USERPROFILE"))
 @end defun
 
 @defun avt.directory_entries ([directory])
-Get a list of directory entries of the given @var(directory) or the current directory
+Get a list of directory entries of the given @var{directory} or the current directory
 if none is given.
 
 On success it returns a table (an array) and the number of entries.
