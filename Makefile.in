@@ -233,7 +233,6 @@ avatarsay-bin: avatarsay.o avtposix.o libakfavatar.so \
 	      arch.o avtterm.o avttermsys.o colorchooser.o filechooser.o \
 	      avtreadfile.o avtmsg.o avtgrmsg.o \
 	      -L. -lakfavatar $(LDFLAGS) $(AVATARSAY_LDFLAGS)
-	test -f ./avatarsay || cp $(srcdir)/avatarsay .
 
 # avatarsay with statical libakfavatar.a
 avatarsay-s: avatarsay.o avtposix.o libakfavatar.a \
