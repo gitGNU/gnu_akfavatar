@@ -58,15 +58,15 @@ all: $(TARGET)
 
 dist-bin: $(DISTBIN)
 
-default: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay-bin \
-	lua-akfavatar-bin lua-akfavatar.so base64.so akfavatar-term.so \
+default: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay \
+	lua-akfavatar lua-akfavatar.so base64.so akfavatar-term.so \
 	akfavatar-vorbis.so
 	@echo '*'
 	@echo '* use "make install" or "make install-strip"'
 	@echo '* with root-privileges to install it.'
 	@echo '*'
 
-nolua: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay-bin
+nolua: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay
 	@echo '*'
 	@echo '* use "make install" or "make install-strip"'
 	@echo '* with root-privileges to install it.'
@@ -197,7 +197,7 @@ avttermsys.o: $(srcdir)/avttermsys.c $(srcdir)/avttermsys.h \
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avttermsys.c
 
 avtmsg.o: $(srcdir)/avtmsg.c $(srcdir)/avtaddons.h
-	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/avtmsg.c
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtmsg.c
 
 avtgrmsg.o: $(srcdir)/avtgrmsg.c
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/avtgrmsg.c
@@ -244,6 +244,9 @@ avatarsay-s: avatarsay.o avtposix.o libakfavatar.a \
              avtreadfile.o avtmsg.o avtgrmsg.o \
 	   $(SDL_LDFLAGS) $(LDFLAGS) $(AVATARSAY_LDFLAGS)
 
+avatarsay: $(srcdir)/avatarsay.sh avatarsay-bin
+	install -m 755 $(srcdir)/avatarsay.sh $@
+
 # lua-akfavatar dynamically linked
 lua-akfavatar-bin: lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
                    filechooser.o colorchooser.o avtmsg.o avtgrmsg.o
@@ -251,7 +254,9 @@ lua-akfavatar-bin: lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
 	     filechooser.o colorchooser.o avtmsg.o avtgrmsg.o \
 	     -L. -lakfavatar \
 	     $(LUA_LDFLAGS) $(LDFLAGS)
-	test -f ./lua-akfavatar || cp $(srcdir)/lua-akfavatar .
+
+lua-akfavatar: $(srcdir)/lua-akfavatar.sh lua-akfavatar-bin
+	install -m 755 $(srcdir)/lua-akfavatar.sh $@
 
 lua-akfavatar-prg.o: $(srcdir)/lua/lua-akfavatar-prg.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
@@ -543,8 +548,8 @@ clean:
 mostlyclean: clean
 
 distclean: clean
-	-rm -f avatarsay-bin avatarsay-s example
-	-rm -f lua-akfavatar-bin
+	-rm -f avatarsay avatarsay-bin avatarsay-s example
+	-rm -f lua-akfavatar lua-akfavatar-bin
 	-rm -f example a.out *.a *.so
 	-rm -f $(LIBNAME) $(SONAME)
 	-rm -f config.status

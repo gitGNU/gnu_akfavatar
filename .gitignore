@@ -11,12 +11,14 @@ config-local
 config-debug
 config.status
 version.h
+avatarsay
 avatarsay-bin
 example
 multiplizieren
 multiply
 bdfread
 libakfavatar.so*
+lua-akfavatar
 lua-akfavatar-bin
 bin2c
 ucsfont*.c
