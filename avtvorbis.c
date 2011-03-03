@@ -28,6 +28,12 @@
 #define STB_VORBIS_NO_PUSHDATA_API 1
 #include "stb_vorbis.c"
 
+/*
+ * SDL-1.2 doesn't support more than 2 channels
+ * but you may want to set this to AVT_AUDIO_MONO to save memory
+ */
+#define MAX_CHANNELS  AVT_AUDIO_STEREO
+
 static avt_audio_t *
 load_vorbis (stb_vorbis * vorbis)
 {
@@ -45,6 +51,9 @@ load_vorbis (stb_vorbis * vorbis)
   data = (short *) malloc (total * sizeof (*data));
   if (data == NULL)
     return NULL;
+
+  if (info.channels > MAX_CHANNELS)
+    info.channels = MAX_CHANNELS;
 
   audio = avt_load_raw_audio_data (NULL, 0, info.sample_rate,
 				   AVT_AUDIO_S16SYS, info.channels);
