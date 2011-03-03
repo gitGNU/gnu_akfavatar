@@ -17,7 +17,7 @@ prefix = /usr/$(TARGET)
 
 # Ogg Vorbis files with how many channels should be supported?
 # output is limited to 2 channels, but this value may be higher
-vorbis_max_channels = 2
+vorbis_max_channels = 6
 
 include config-mingw
 

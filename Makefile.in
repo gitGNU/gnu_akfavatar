@@ -6,7 +6,7 @@
 
 # Ogg Vorbis files with how many channels should be supported?
 # output is limited to 2 channels, but this value may be higher
-vorbis_max_channels = 2
+vorbis_max_channels = 6
 
 # if you change this, you also have to change the file avatar-default.c
 default_avatar = $(srcdir)/male_user.xpm
