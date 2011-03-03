@@ -15,6 +15,10 @@ LDFLAGS =
 
 prefix = /usr/$(TARGET)
 
+# Ogg Vorbis files with how many channels should be supported?
+# output is limited to 2 channels, but this value may be higher
+vorbis_max_channels = 2
+
 include config-mingw
 
 libdir = $(prefix)/lib
@@ -244,10 +248,10 @@ akfavatar-vorbis.wo: $(srcdir)/lua/akfavatar-vorbis.c $(srcdir)/stb_vorbis.c
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/akfavatar-vorbis.c
 
-# Note: SDL supports only 2 channels
 stb_vorbis.wo: $(srcdir)/stb_vorbis.c
 	$(CC) $(CFLAGS) -I$(srcdir) \
-	  -DSTB_VORBIS_NO_PUSHDATA_API -DSTB_VORBIS_MAX_CHANNELS=2 \
+	  -DSTB_VORBIS_NO_PUSHDATA_API \
+	  -DSTB_VORBIS_MAX_CHANNELS=$(vorbis_max_channels) \
 	  -c -o $@ $(srcdir)/stb_vorbis.c
 
 lua-akfavatar.rc: $(srcdir)/mingw/lua-akfavatar-rc.in config-mingw
