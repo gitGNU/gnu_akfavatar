@@ -43,6 +43,7 @@ LUA_MODULES = \
 	  $(srcdir)/lua/akfavatar/teacher.lua \
 	  $(srcdir)/lua/akfavatar/gnu_head.lua \
 	  $(srcdir)/lua/akfavatar/info_icon.lua \
+	  $(srcdir)/lua/akfavatar/skull1.lua \
 	  $(srcdir)/lua/akfavatar/akfoerster.lua \
 	  $(srcdir)/lua/akfavatar/positive.lua \
 	  $(srcdir)/lua/akfavatar/negative.lua \
@@ -608,6 +609,7 @@ dist: info html man $(srcdir)/alert.au
 	   $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm \
 	   $(srcdir)/male_user.xpm $(srcdir)/female_user.xpm \
 	   $(srcdir)/teacher.xpm $(srcdir)/akfoerster.xpm $(srcdir)/lua.xpm \
+	   $(srcdir)/skull1.xpm \
 	   $(srcdir)/btn.xpm $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
 	   $(srcdir)/mpointer.xbm $(srcdir)/mpointer_mask.xbm \
 	   $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
@@ -628,7 +630,7 @@ dist: info html man $(srcdir)/alert.au
 	   $(srcdir)/font.c $(srcdir)/alert.flac $(srcdir)/alert.au \
 	   $(srcdir)/configure $(srcdir)/Makefile.in $(srcdir)/text2c \
 	   $(srcdir)/data2c $(srcdir)/rgb2c \
-	   $(srcdir)/avatarsay $(srcdir)/lua-akfavatar \
+	   $(srcdir)/avatarsay.sh $(srcdir)/lua-akfavatar.sh \
 	   $(PKGNAME)/
 
 	mkdir $(PKGNAME)/pascal
@@ -666,6 +668,7 @@ dist: info html man $(srcdir)/alert.au
 	   $(srcdir)/lua/akfavatar/female_user.lua \
 	   $(srcdir)/lua/akfavatar/male_user.lua \
 	   $(srcdir)/lua/akfavatar/gnu_head.lua \
+	   $(srcdir)/lua/akfavatar/skull1.lua \
 	   $(srcdir)/lua/akfavatar/teacher.lua \
 	   $(srcdir)/lua/akfavatar/akfoerster.lua \
 	   $(srcdir)/lua/akfavatar/positive.lua \
@@ -716,9 +719,9 @@ dist-bin-default: info html libakfavatar.so avatarsay-bin lua-akfavatar-bin \
 	mkdir $(BINPKGNAME)/lua/akfavatar
 	mkdir $(BINPKGNAME)/include
 	cp $(LIBNAME) $(BINPKGNAME)/
-	cp $(srcdir)/avatarsay avatarsay-bin $(BINPKGNAME)/
+	cp avatarsay avatarsay-bin $(BINPKGNAME)/
 	-ln -sf $(LIBNAME) $(BINPKGNAME)/$(SONAME)
-	cp $(srcdir)/lua-akfavatar lua-akfavatar-bin $(BINPKGNAME)/
+	cp lua-akfavatar lua-akfavatar-bin $(BINPKGNAME)/
 	cp libavtaddons.a $(BINPKGNAME)/
 	cp lua-akfavatar.so base64.so akfavatar-vorbis.so $(BINPKGNAME)/lua/
 	cp akfavatar-term.so $(BINPKGNAME)/lua/
@@ -728,6 +731,7 @@ dist-bin-default: info html libakfavatar.so avatarsay-bin lua-akfavatar-bin \
 	ln $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	ln $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
 	ln $(srcdir)/teacher.xpm $(srcdir)/akfoerster.xpm $(BINPKGNAME)/
+	ln $(srcdir)/skull1.xpm $(BINPKGNAME)/
 	ln $(srcdir)/README-Lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/multiplication.lua $(BINPKGNAME)/lua/
@@ -757,6 +761,7 @@ dist-bin-default: info html libakfavatar.so avatarsay-bin lua-akfavatar-bin \
 	   $(srcdir)/lua/akfavatar/female_user.lua \
 	   $(srcdir)/lua/akfavatar/male_user.lua \
 	   $(srcdir)/lua/akfavatar/gnu_head.lua \
+	   $(srcdir)/lua/akfavatar/skull1.lua \
 	   $(srcdir)/lua/akfavatar/teacher.lua \
 	   $(srcdir)/lua/akfavatar/akfoerster.lua \
 	   $(srcdir)/lua/akfavatar/positive.lua \
