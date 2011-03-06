@@ -682,8 +682,8 @@ dist: info html man $(srcdir)/alert.au
 
 	mkdir $(PKGNAME)/doc
 	ln $(srcdir)/doc/README $(srcdir)/doc/Makefile \
-	   $(srcdir)/doc/avatarsay.man $(srcdir)/doc/avtcmd.1 \
-	   $(srcdir)/doc/lua-akfavatar.1 \
+	   $(srcdir)/doc/avatarsay.1 $(srcdir)/doc/avtcmd.1 \
+	   $(srcdir)/doc/lua-akfavatar.man \
 	   $(srcdir)/doc/akfavatar-en.texinfo $(srcdir)/doc/akfavatar-en.info \
 	   $(srcdir)/doc/lua-akfavatar-en.texinfo \
 	   $(srcdir)/doc/lua-akfavatar-de.texinfo \
