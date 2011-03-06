@@ -1,6 +1,27 @@
 .\" Process this file with
 .\" groff -man -Tutf8 lua-akfavatar.reference.man
 .\"
+.
+.\" Macros .EX .EE taken from groff an-ext.tmac
+.\" Copyright (C) 2007, 2009 Free Software Foundation, Inc.
+.\" You may freely use, modify and/or distribute this file.
+.
+.\" Start example.
+.de EX
+.  nr mE \\n(.f
+.  nf
+.  nh
+.  ft CW
+..
+.
+.
+.\" End example.
+.de EE
+.  ft \\n(mE
+.  fi
+.  hy \\n(HY
+..
+.
 .TH "Lua-AKFAvatar reference" 3 2011-03-06 AKFAvatar
 .
 .SH NAME
@@ -74,7 +95,7 @@ you have to use curly braces here (it is a table).
 No item is needed, the order doesn't matter, use them as you wish.
 .IP
 .B Examples:
-.nf
+.EX
 avt.initialize{}
 
 avt.initialize{tilte="my program", encoding="ISO-8859-1"}
@@ -86,7 +107,7 @@ avt.initialize{
   audio=true,
   encoding="UTF-8",
   mode="fullscreen no switch"}
-.fi
+.EE
 .IP
 Many of the following functions implicitly call
 .B avt.initialize{}
@@ -110,9 +131,9 @@ You can use strings or numbers. It works similar to
 but it writes into the balloon instead of the standard output.
 .IP
 .B Example:
-.nf
+.EX
 avt.say ("Three apples cost ", 3 * appleprice, " Euros.\\n").
-.fi
+.EE
 .PP
 .TP
 .BI "avt.print (" ... )
@@ -143,9 +164,9 @@ Prints text in the balloon, but before that the size of the
 balloon is adjusted so that the text exactly fits.
 .IP
 .B Example:
-.nf
+.EX
 avt.tell ("Three apples cost ", 3 * appleprice, " Euros.").
-.fi
+.EE
 .IP
 .B Attention:
 This function still has problems with tabs ("\\t").
@@ -165,9 +186,9 @@ the current string encoding.  Sometimes it is also just easier to
 use.
 .IP
 .B Example:
-.nf
+.EX
 avt.say_unicode ("Three apples cost ", tostring(3 * appleprice), 0x20AC, ".\\n").
-.fi
+.EE
 .IP
 As you can see, you have to use 
 .B tostring()
@@ -203,7 +224,7 @@ if given, and waits for the user to enter something. Returns the result as strin
 .IP
 The following example shows how to force the input of a number:
 .IP
-.nf
+.EX
 require "lua-akfavatar"
 avt.save_position()
 repeat
@@ -212,7 +233,7 @@ repeat
 until number
 avt.say("The number is ", number)
 avt.wait_button()
-.fi
+.EE
 .PP
 .TP
 .BI "avt.newline ()"
@@ -339,9 +360,9 @@ Sets the working directory to
 nothing or an empty string, it does nothing.
 .IP
 .B Example:
-.nf
+.EX
 avt.set_directory(os.getenv("HOME") or os.getenv("USERPROFILE"))
-.fi
+.EE
 .PP
 .TP
 .BI "avt.directory_entries (" [directory] )
@@ -389,12 +410,12 @@ If the filter function returns
 or nothing then the filename is not shown, otherwise it is shown.
 .IP
 .B Example:
-.nf
+.EX
  textfile = avt.file_selection(
     function(n)
       return string.find(n,"%.te?xt$")
     end)
-.fi
+.EE
 .IP
 Of course
 .I filter
@@ -521,25 +542,25 @@ You should take care that the variable for the sound
 stays in scope while the sound is played.
 Otherwise the audio output could stop unexpectedly.
 .IP
-.nf
+.EX
 play_audio_file = function (filename)
   local sound = avt.load_audio_file (filename)
   sound:play ()
   avt.wait_audio_end ()
   sound:free()
 end
-.fi
+.EE
 .IP
 This function is okay because of the command
 .BR avt.wait_audio_end() .
 .IP
-.nf
+.EX
 play_audio_file = function (filename)
   avt.wait_audio_end ()
   sound = avt.load_audio_file (filename)
   sound:play ()
 end
-.fi
+.EE
 .IP
 This function is also okay, because the variable
 .I sound
@@ -687,7 +708,7 @@ With this function you can scan through that list with a generic
 .B for
 loop.
 .IP
-.nf
+.EX
 require "lua-akfavatar"
 for nr, name, rgb in avt.colors() do
   avt.normal_text()
@@ -698,7 +719,7 @@ for nr, name, rgb in avt.colors() do
   avt.wait(0.7)
 end
 avt.wait_button()
-.fi
+.EE
 .IP
 If you don't need the
 .I rgb
@@ -980,7 +1001,7 @@ It returns the number of the selected item.
 The menu starts in the line of the current cursor position.
 So you could put a headline before the menu.
 .IP
-.nf
+.EX
 avt.clear()
 avt.say("Please select your favourite food:\\n")
 local item = avt.long_menu {
@@ -988,7 +1009,7 @@ local item = avt.long_menu {
   "Chips",
   "Pizza",
   "Spinach"}
-.fi
+.EE
 .PP
 .TP
 .BI "avt.viewport (" "x, y, width, height" )
@@ -1106,9 +1127,9 @@ nothing.  Errors are treated normally.
 .IP
 To call a subprogram from a separate file, use
 .BR dofile :
-.nf
+.EX
 avt.subprogram (dofile, "subprogram.lua")
-.fi
+.EE
 .PP
 .SH "SEE ALSO"
 .BR lua-akfavatar (1)
