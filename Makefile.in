@@ -339,6 +339,7 @@ installdirs:
 	-[ -d $(DESTDIR)$(infodir) ]     || $(INSTALL) -d $(DESTDIR)$(infodir)
 	-[ -d $(DESTDIR)$(mandir) ]      || $(INSTALL) -d $(DESTDIR)$(mandir)
 	-[ -d $(DESTDIR)$(mandir)/man1 ] || $(INSTALL) -d $(DESTDIR)$(mandir)/man1
+	-[ -d $(DESTDIR)$(mandir)/man3 ] || $(INSTALL) -d $(DESTDIR)$(mandir)/man3
 	-[ -d $(DESTDIR)$(docdir) ]      || $(INSTALL) -d $(DESTDIR)$(docdir)
 	-[ -d $(DESTDIR)$(LUA_PATH)/akfavatar ] \
 	   || $(INSTALL) -d $(DESTDIR)$(LUA_PATH)/akfavatar
@@ -462,11 +463,14 @@ install-man: man
 	-$(INSTALL_DATA) $(srcdir)/doc/avatarsay.1 $(DESTDIR)$(mandir)/man1
 	-$(INSTALL_DATA) $(srcdir)/doc/avtcmd.1 $(DESTDIR)$(mandir)/man1
 	-$(INSTALL_DATA) $(srcdir)/doc/lua-akfavatar.man $(DESTDIR)$(mandir)/man1/lua-akfavatar.1
+	-$(INSTALL_DATA) $(srcdir)/doc/lua-akfavatar-reference.man \
+	                 $(DESTDIR)$(mandir)/man3/lua-akfavatar-reference.3
 
 uninstall-man:
 	-rm -f $(DESTDIR)$(mandir)/man1/avatarsay.1 
 	-rm -f $(DESTDIR)$(mandir)/man1/avtcmd.1
 	-rm -f $(DESTDIR)$(mandir)/man1/lua-akfavatar.1
+	-rm -f $(DESTDIR)$(mandir)/man3/lua-akfavatar-reference.3
 
 txt:
 	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) txt
@@ -684,6 +688,7 @@ dist: info html man $(srcdir)/alert.au
 	ln $(srcdir)/doc/README $(srcdir)/doc/Makefile \
 	   $(srcdir)/doc/avatarsay.1 $(srcdir)/doc/avtcmd.1 \
 	   $(srcdir)/doc/lua-akfavatar.man \
+	   $(srcdir)/doc/lua-akfavatar-reference.man \
 	   $(srcdir)/doc/akfavatar-en.texinfo $(srcdir)/doc/akfavatar-en.info \
 	   $(srcdir)/doc/lua-akfavatar-en.texinfo \
 	   $(srcdir)/doc/lua-akfavatar-de.texinfo \
@@ -754,6 +759,7 @@ dist-bin-default: info html libakfavatar.so avatarsay-bin lua-akfavatar-bin \
 	ln $(srcdir)/doc/avatarsay.1 $(BINPKGNAME)/
 	ln $(srcdir)/doc/avtcmd.1 $(BINPKGNAME)/
 	ln $(srcdir)/doc/lua-akfavatar.man $(BINPKGNAME)/
+	ln $(srcdir)/doc/lua-akfavatar-reference.man $(BINPKGNAME)/
 	ln $(srcdir)/lua/akfavatar/README $(srcdir)/lua/akfavatar/LIESMICH \
 	   $(srcdir)/lua/akfavatar/utf8.lua \
 	   $(srcdir)/lua/akfavatar/person.lua \
