@@ -2,6 +2,8 @@
 
 	* doc/lua-akfavatar-reference.man: new file
 
+	* stb_vorbis.c: make it compile on FreeBSD
+
 2011-03-03  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtvorbis.c [MAX_CHANNELS]: new macro
