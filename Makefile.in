@@ -461,7 +461,7 @@ uninstall-info:
 install-man: man
 	-$(INSTALL_DATA) $(srcdir)/doc/avatarsay.1 $(DESTDIR)$(mandir)/man1
 	-$(INSTALL_DATA) $(srcdir)/doc/avtcmd.1 $(DESTDIR)$(mandir)/man1
-	-$(INSTALL_DATA) $(srcdir)/doc/lua-akfavatar.1 $(DESTDIR)$(mandir)/man1
+	-$(INSTALL_DATA) $(srcdir)/doc/lua-akfavatar.man $(DESTDIR)$(mandir)/man1/lua-akfavatar.1
 
 uninstall-man:
 	-rm -f $(DESTDIR)$(mandir)/man1/avatarsay.1 
@@ -682,7 +682,7 @@ dist: info html man $(srcdir)/alert.au
 
 	mkdir $(PKGNAME)/doc
 	ln $(srcdir)/doc/README $(srcdir)/doc/Makefile \
-	   $(srcdir)/doc/avatarsay.1 $(srcdir)/doc/avtcmd.1 \
+	   $(srcdir)/doc/avatarsay.man $(srcdir)/doc/avtcmd.1 \
 	   $(srcdir)/doc/lua-akfavatar.1 \
 	   $(srcdir)/doc/akfavatar-en.texinfo $(srcdir)/doc/akfavatar-en.info \
 	   $(srcdir)/doc/lua-akfavatar-en.texinfo \
@@ -753,7 +753,7 @@ dist-bin-default: info html libakfavatar.so avatarsay-bin lua-akfavatar-bin \
 	ln $(srcdir)/doc/akfavatar-??.info $(BINPKGNAME)/
 	ln $(srcdir)/doc/avatarsay.1 $(BINPKGNAME)/
 	ln $(srcdir)/doc/avtcmd.1 $(BINPKGNAME)/
-	ln $(srcdir)/doc/lua-akfavatar.1 $(BINPKGNAME)/
+	ln $(srcdir)/doc/lua-akfavatar.man $(BINPKGNAME)/
 	ln $(srcdir)/lua/akfavatar/README $(srcdir)/lua/akfavatar/LIESMICH \
 	   $(srcdir)/lua/akfavatar/utf8.lua \
 	   $(srcdir)/lua/akfavatar/person.lua \
