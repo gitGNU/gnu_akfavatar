@@ -2,13 +2,13 @@
 .\" groff -man -Tutf8 lua-akfavatar.1
 .\"
 .TH "lua-akfavatar" 1 "0.19.0" AKFAvatar
-
+.
 .SH NAME
 lua-akfavatar \- Lua interpreter for the AKFavatar user interface
-
+.
 .SH SYNOPSIS
 .BI "lua-akfavatar [" options "] [" " script " "[" args "] ]"
-
+.
 .SH DESCRIPTION
 Lua-AKFAvatar is the Lua interpreter for the AKFAvatar user interface.
 It loads and executes Lua scripts in source form (not bytecode).
@@ -18,7 +18,7 @@ If no
 is given, it starts with a file-selector.  The file-selector starts in
 the current working directory, or in the directory given with the option
 .IR --dir=directory .
-
+.PP
 The given
 .I args
 are available to
@@ -32,29 +32,34 @@ itself is in
 the first argument is
 .B arg[1]
 and so on.
-
+.PP
 You have to use the command
 .BI "require """ lua-akfavatar """"
 to get access to the AKFAvatar specific functions.
-
+.PP
+With the file-selector you can also see documentation files
+with the file extension
+.RI """" .about """."
+These can be simple text files encoded in UTF-8 or plain ASCII.
+They can use the "overstriking" technique for bold or underlined text.
+You can for example use the text-setting system "nroff" (part of "troff"
+or "groff") to generate such files.
+.
 .SH OPTIONS
 .IP "-h | --help"
 print a short help-message
-
 .IP "-v | --version"
 print version information
-
 .TP
 .RI "-l " name
 call
 .BI require(' name ')
 before executing the script.
 Typically used to load libraries.
-
 .TP
 .RI --dir= dir
 Start in that directory
-
+.
 .SH ENVIRONMENT
 .IP LUA_PATH
 searchpath for Lua modules.
@@ -69,32 +74,29 @@ add the default path.
 .IP LUA_CPATH
 searchpath for C modules.  Syntax like in
 .IR LUA_PATH .
-
+.
 .SH EXAMPLE
+.nf
 require "lua-akfavatar"
-.sp
 avt.initialize {title="my first program", encoding="UTF-8"}
-.sp
 avt.say("Hello there!\\n")
-.br
 user = avt.ask("What's your name? ")
-.br
 avt.say("Hello, ", user, ". Nice to meet you!\\n")
-.br
 avt.wait_button()
-
+.fi
+.
 .SH AUTHORS
 .IP "AKFAvatar, Lua-AKFAvatar"
 Andreas K. Foerster
 .IP "Lua"
 R. Ierusalimschy, L. H. de Figueiredo, and W. Celes
-
+.
 .SH HOMEPAGE
 http://akfavatar.nongnu.org/
-
+.
 .SH "SEE ALSO"
 .BR lua (1)
 .br
-http://akfavatar.nongnu.org/manual/
+.B http://akfavatar.nongnu.org/manual/
 .br
-http://www.lua.org/manual/5.1/
+.B http://www.lua.org/manual/5.1/
