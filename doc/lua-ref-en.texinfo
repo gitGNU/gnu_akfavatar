@@ -164,7 +164,7 @@ avt.wait_button()
 @end example
 @end defun
 
-@defun newline ()
+@defun avt.newline ()
 Start a new line. It is the same as "\n" in @command{avt.say()}, but faster.
 @end defun
 
@@ -697,12 +697,12 @@ Set or clear tab in position @var{x}.
 
 @defun avt.delete_lines (line, number)
 Deletes given @var{number} of lines, starting from @var{line};
-the rest ist scrolled up.
+the rest is scrolled up.
 @end defun
 
 @defun avt.insert_lines (line, number)
 Inserts given @var{number} of lines, starting at @var{line};
-the rest ist scrolled down.
+the rest is scrolled down.
 @end defun
 
 @defun avt.reserve_single_keys (true | false)
