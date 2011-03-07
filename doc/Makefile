@@ -5,6 +5,7 @@ LANG = C
 MAKEINFO = makeinfo
 TEXI2HTML = texi2html
 TEXI2DVI = texi2dvi
+PS2PDF = ps2pdf
 INSTALL_PROGRAM = $(INSTALL) -m 755
 INSTALL_DATA = $(INSTALL) -m 644
 
@@ -92,7 +93,8 @@ akfavatar-de.dvi: $(srcdir)/doc/akfavatar-de.texinfo \
 	-$(TEXI2DVI) --build=tidy -I . -I $(srcdir) -I $(srcdir)/doc \
 	             $(srcdir)/doc/akfavatar-de.texinfo
 
-pdf: akfavatar-en.pdf akfavatar-de.pdf
+pdf: akfavatar-en.pdf akfavatar-de.pdf \
+     lua-akfavatar.pdf lua-akfavatar-reference.pdf
 
 akfavatar-en.pdf: $(srcdir)/doc/akfavatar-en.texinfo \
 	          $(srcdir)/doc/lua-akfavatar-en.texinfo \
@@ -116,13 +118,25 @@ akfavatar-de.pdf: $(srcdir)/doc/akfavatar-de.texinfo \
 	       output tmp.pdf \
 	   && mv tmp.pdf akfavatar-de.pdf
 
-ps: akfavatar-en.ps akfavatar-de.ps
+lua-akfavatar.pdf: lua-akfavatar.ps
+	-$(PS2PDF) lua-akfavatar.ps $@
+
+lua-akfavatar-reference.pdf: lua-akfavatar-reference.ps
+	-$(PS2PDF) lua-akfavatar-reference.ps $@
+
+ps: akfavatar-en.ps akfavatar-de.ps lua-akfavatar-reference.ps lua-akfavatar.ps
 
 akfavatar-en.ps: akfavatar-en.dvi
 	-dvips -Pwww -o $@ akfavatar-en.dvi
 
 akfavatar-de.ps: akfavatar-de.dvi
 	-dvips -Pwww -o $@ akfavatar-de.dvi
+
+lua-akfavatar-reference.ps: $(srcdir)/doc/lua-akfavatar-reference.man
+	-groff -man -Tps $(srcdir)/doc/lua-akfavatar-reference.man > $@
+
+lua-akfavatar.ps: $(srcdir)/doc/lua-akfavatar.man
+	-groff -man -Tps $(srcdir)/doc/lua-akfavatar.man > $@
 
 docbook: $(srcdir)/doc/akfavatar-en.texinfo \
 	 $(srcdir)/doc/akfavatar-de.texinfo \
