@@ -320,8 +320,8 @@ dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64
 	-cp $(srcdir)/lua-akfavatar-reference.en.about $(BINPKGNAME)/
 	-cp lua-akfavatar.en.pdf $(BINPKGNAME)/
 	-cp lua-akfavatar-reference.en.pdf $(BINPKGNAME)/
-	cp $(srcdir)/lua/akfavatar/README $(BINPKGNAME)/lua/akfavatar/README.txt
-	cp $(srcdir)/lua/akfavatar/LIESMICH $(BINPKGNAME)/lua/akfavatar/LIESMICH.txt
+	cp $(srcdir)/lua/akfavatar/dir.en.about $(BINPKGNAME)/lua/akfavatar/
+	cp $(srcdir)/lua/akfavatar/dir.de.about $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/utf8.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/person.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/female_user.lua $(BINPKGNAME)/lua/akfavatar/
