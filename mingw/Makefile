@@ -290,7 +290,7 @@ multiplizieren.exe: $(srcdir)/pascal/multiply.pas
 	  $(srcdir)/pascal/multiply.pas
 
 dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64.dll akfavatar-vorbis.dll about
-	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) html txt
+	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) html txt pdf
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/lua
 	mkdir $(BINPKGNAME)/lua/akfavatar
@@ -318,6 +318,8 @@ dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64
 	cp $(srcdir)/lua/characters_tables.lua $(BINPKGNAME)/lua/
 	-cp $(srcdir)/lua-akfavatar.about $(BINPKGNAME)/
 	-cp $(srcdir)/lua-akfavatar-reference.about $(BINPKGNAME)/
+	-cp lua-akfavatar.pdf $(BINPKGNAME)/
+	-cp lua-akfavatar-reference.pdf $(BINPKGNAME)/
 	cp $(srcdir)/lua/akfavatar/README $(BINPKGNAME)/lua/akfavatar/README.txt
 	cp $(srcdir)/lua/akfavatar/LIESMICH $(BINPKGNAME)/lua/akfavatar/LIESMICH.txt
 	cp $(srcdir)/lua/akfavatar/utf8.lua $(BINPKGNAME)/lua/akfavatar/

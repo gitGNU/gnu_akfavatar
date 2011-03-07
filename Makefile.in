@@ -732,7 +732,7 @@ dist: info html man about $(srcdir)/alert.au
 	rm -rf $(PKGNAME)/
 	bzip2 -f $(PKGNAME).tar
 
-dist-bin-default: info html about libakfavatar.so avatarsay-bin \
+dist-bin-default: info html about pdf libakfavatar.so avatarsay-bin \
 	          lua-akfavatar-bin \
 	          lua-akfavatar.so base64.so akfavatar-term.so
 	mkdir $(BINPKGNAME)
@@ -767,6 +767,8 @@ dist-bin-default: info html about libakfavatar.so avatarsay-bin \
 	ln $(srcdir)/lua/terminal.lua $(BINPKGNAME)/lua/
 	-ln $(srcdir)/lua-akfavatar.about $(BINPKGNAME)/
 	-ln $(srcdir)/lua-akfavatar-reference.about $(BINPKGNAME)/
+	-ln lua-akfavatar.pdf $(BINPKGNAME)/
+	-ln lua-akfavatar-reference.pdf $(BINPKGNAME)/
 
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/NEWS $(srcdir)/avtman \
 	   $(srcdir)/fsdemo-??.avt \
