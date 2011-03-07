@@ -65,8 +65,12 @@ read_stream (FILE * f, char **buffer, avt_bool_t terminate)
     }
   while (nread > 0);
 
-  /* make buffer smaller if possible and eventually add terminator */
-  if (buf)
+  if (size <= 0)		/* empty file? */
+    {
+      free (buf);
+      buf = NULL;
+    }
+  else				/* make buffer smaller if possible and eventually add terminator */
     {
       char *nbuf;
 
