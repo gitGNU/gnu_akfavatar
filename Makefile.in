@@ -533,14 +533,14 @@ man:
 doc: about
 	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) all
 
-about: $(srcdir)/lua/lua-akfavatar.about \
-       $(srcdir)/lua/lua-akfavatar-reference.about
+about: $(srcdir)/lua-akfavatar.about \
+       $(srcdir)/lua-akfavatar-reference.about
 
-$(srcdir)/lua/lua-akfavatar.about: $(srcdir)/doc/lua-akfavatar.man
+$(srcdir)/lua-akfavatar.about: $(srcdir)/doc/lua-akfavatar.man
 	-nroff -c -man -Tutf8 $(srcdir)/doc/lua-akfavatar.man > $@
 
-$(srcdir)/lua/lua-akfavatar-reference.about: \
-  $(srcdir)/doc/lua-akfavatar-reference.man
+$(srcdir)/lua-akfavatar-reference.about: \
+     $(srcdir)/doc/lua-akfavatar-reference.man
 	-nroff -c -man -Tutf8 \
 	  $(srcdir)/doc/lua-akfavatar-reference.man > $@
 
@@ -596,8 +596,8 @@ maintainer-clean: distclean
 	@echo 'This command is intended for maintainers to use; it'
 	@echo 'deletes files that may need special tools to rebuild.'
 	rm -f $(srcdir)/alert.au
-	rm -f $(srcdir)/lua/lua-akfavatar.about
-	rm -f $(srcdir)/lua/lua-akfavatar-reference.about
+	rm -f $(srcdir)/lua-akfavatar.about
+	rm -f $(srcdir)/lua-akfavatar-reference.about
 	$(MAKE) -C $(srcdir)/doc maintainer-clean
 
 maintainerclean: maintainer-clean
@@ -648,6 +648,8 @@ dist: info html man about $(srcdir)/alert.au
 	   $(srcdir)/configure $(srcdir)/Makefile.in $(srcdir)/text2c \
 	   $(srcdir)/data2c $(srcdir)/rgb2c \
 	   $(srcdir)/avatarsay.sh $(srcdir)/lua-akfavatar.sh \
+	   $(srcdir)/lua-akfavatar.about \
+	   $(srcdir)/lua-akfavatar-reference.about \
 	   $(PKGNAME)/
 
 	mkdir $(PKGNAME)/pascal
@@ -675,8 +677,6 @@ dist: info html man about $(srcdir)/alert.au
 	   $(srcdir)/lua/fs-quiz-en.lua $(srcdir)/lua/fs-quiz-de.lua \
 	   $(srcdir)/lua/akfavatar-term.c $(srcdir)/lua/terminal.lua \
 	   $(srcdir)/lua/akfavatar-vorbis.c \
-	   $(srcdir)/lua/lua-akfavatar.about \
-	   $(srcdir)/lua/lua-akfavatar-reference.about \
 	   $(PKGNAME)/lua/
 
 	mkdir $(PKGNAME)/lua/akfavatar
@@ -765,8 +765,8 @@ dist-bin-default: info html about libakfavatar.so avatarsay-bin \
 	ln $(srcdir)/lua/fs-quiz-en.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/fs-quiz-de.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/terminal.lua $(BINPKGNAME)/lua/
-	-ln $(srcdir)/lua/lua-akfavatar.about $(BINPKGNAME)/lua/
-	-ln $(srcdir)/lua/lua-akfavatar-reference.about $(BINPKGNAME)/lua/
+	-ln $(srcdir)/lua-akfavatar.about $(BINPKGNAME)/
+	-ln $(srcdir)/lua-akfavatar-reference.about $(BINPKGNAME)/
 
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/NEWS $(srcdir)/avtman \
 	   $(srcdir)/fsdemo-??.avt \

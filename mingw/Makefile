@@ -267,13 +267,13 @@ luaavtstarter.rc: $(srcdir)/mingw/luaavtstarter-rc.in config-mingw
 luaavtstarter-rc.wo: luaavtstarter.rc $(srcdir)/mingw/akfavatar.ico
 	$(WINDRES) -I $(srcdir)/mingw/ -o $@ -i luaavtstarter.rc
 
-about: $(srcdir)/lua/lua-akfavatar.about \
-       $(srcdir)/lua/lua-akfavatar-reference.about
+about: $(srcdir)/lua-akfavatar.about \
+       $(srcdir)/lua-akfavatar-reference.about
 
-$(srcdir)/lua/lua-akfavatar.about: $(srcdir)/doc/lua-akfavatar.man
+$(srcdir)/lua-akfavatar.about: $(srcdir)/doc/lua-akfavatar.man
 	-nroff -c -man -Tutf8 $(srcdir)/doc/lua-akfavatar.man > $@
 
-$(srcdir)/lua/lua-akfavatar-reference.about: \
+$(srcdir)/lua-akfavatar-reference.about: \
   $(srcdir)/doc/lua-akfavatar-reference.man
 	-nroff -c -man -Tutf8 \
 	  $(srcdir)/doc/lua-akfavatar-reference.man > $@
@@ -316,8 +316,8 @@ dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64
 	cp $(srcdir)/lua/base64-encode.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/characters_overview.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/characters_tables.lua $(BINPKGNAME)/lua/
-	-cp $(srcdir)/lua/lua-akfavatar.about $(BINPKGNAME)/lua/
-	-cp $(srcdir)/lua/lua-akfavatar-reference.about $(BINPKGNAME)/lua/
+	-cp $(srcdir)/lua-akfavatar.about $(BINPKGNAME)/
+	-cp $(srcdir)/lua-akfavatar-reference.about $(BINPKGNAME)/
 	cp $(srcdir)/lua/akfavatar/README $(BINPKGNAME)/lua/akfavatar/README.txt
 	cp $(srcdir)/lua/akfavatar/LIESMICH $(BINPKGNAME)/lua/akfavatar/LIESMICH.txt
 	cp $(srcdir)/lua/akfavatar/utf8.lua $(BINPKGNAME)/lua/akfavatar/
