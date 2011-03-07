@@ -17,7 +17,7 @@ prefix = /usr/$(TARGET)
 
 # Ogg Vorbis files with how many channels should be supported?
 # output is limited to 2 channels, but this value may be higher
-vorbis_max_channels = 6
+vorbis_max_channels = 8
 
 include config-mingw
 
@@ -40,7 +40,7 @@ SHELL = /bin/sh
 
 all: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe \
      lua-akfavatar.exe lua-akfavatar.dll base64.dll akfavatar-vorbis.dll \
-     iconv.exe
+     iconv.exe about
 
 nolua: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe iconv.exe
 
@@ -267,6 +267,16 @@ luaavtstarter.rc: $(srcdir)/mingw/luaavtstarter-rc.in config-mingw
 luaavtstarter-rc.wo: luaavtstarter.rc $(srcdir)/mingw/akfavatar.ico
 	$(WINDRES) -I $(srcdir)/mingw/ -o $@ -i luaavtstarter.rc
 
+about: $(srcdir)/lua/lua-akfavatar.about \
+       $(srcdir)/lua/lua-akfavatar-reference.about
+
+$(srcdir)/lua/lua-akfavatar.about: $(srcdir)/doc/lua-akfavatar.man
+	-nroff -c -man -Tutf8 $(srcdir)/doc/lua-akfavatar.man > $@
+
+$(srcdir)/lua/lua-akfavatar-reference.about: \
+  $(srcdir)/doc/lua-akfavatar-reference.man
+	-nroff -c -man -Tutf8 \
+	  $(srcdir)/doc/lua-akfavatar-reference.man > $@
 
 # the folowing targets are for the maintainer
 # don't use them unless you know what you are doing
@@ -279,7 +289,7 @@ multiplizieren.exe: $(srcdir)/pascal/multiply.pas
 	-fpcwavatar -dRELEASE -ddeutsch -o$@ -Fi$(srcdir)/pascal \
 	  $(srcdir)/pascal/multiply.pas
 
-dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64.dll akfavatar-vorbis.dll
+dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64.dll akfavatar-vorbis.dll about
 	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) html txt
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/lua
@@ -306,6 +316,8 @@ dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64
 	cp $(srcdir)/lua/base64-encode.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/characters_overview.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/characters_tables.lua $(BINPKGNAME)/lua/
+	-cp $(srcdir)/lua/lua-akfavatar.about $(BINPKGNAME)/lua/
+	-cp $(srcdir)/lua/lua-akfavatar-reference.about $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/akfavatar/README $(BINPKGNAME)/lua/akfavatar/README.txt
 	cp $(srcdir)/lua/akfavatar/LIESMICH $(BINPKGNAME)/lua/akfavatar/LIESMICH.txt
 	cp $(srcdir)/lua/akfavatar/utf8.lua $(BINPKGNAME)/lua/akfavatar/

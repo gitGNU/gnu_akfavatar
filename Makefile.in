@@ -6,7 +6,7 @@
 
 # Ogg Vorbis files with how many channels should be supported?
 # output is limited to 2 channels, but this value may be higher
-vorbis_max_channels = 6
+vorbis_max_channels = 8
 
 # if you change this, you also have to change the file avatar-default.c
 default_avatar = $(srcdir)/male_user.xpm
@@ -34,7 +34,7 @@ BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
 .PHONY: all check doc txt info install install-strip installdirs uninstall \
 	html dvi pdf ps man install-html install-dvi install-pdf install-ps \
 	clean mostlyclean distclean maintainer-clean maintainerclean dist \
-	mingw dist-mingw
+	mingw dist-mingw about
 
 LUA_MODULES = \
 	  $(srcdir)/lua/akfavatar/README $(srcdir)/lua/akfavatar/LIESMICH \
@@ -61,7 +61,7 @@ dist-bin: $(DISTBIN)
 
 default: libakfavatar.so libakfavatar.a libavtaddons.a avatarsay \
 	lua-akfavatar lua-akfavatar.so base64.so akfavatar-term.so \
-	akfavatar-vorbis.so
+	akfavatar-vorbis.so about
 	@echo '*'
 	@echo '* use "make install" or "make install-strip"'
 	@echo '* with root-privileges to install it.'
@@ -530,8 +530,19 @@ uninstall-ps:
 man:
 	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) man
 
-doc:
+doc: about
 	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) all
+
+about: $(srcdir)/lua/lua-akfavatar.about \
+       $(srcdir)/lua/lua-akfavatar-reference.about
+
+$(srcdir)/lua/lua-akfavatar.about: $(srcdir)/doc/lua-akfavatar.man
+	-nroff -c -man -Tutf8 $(srcdir)/doc/lua-akfavatar.man > $@
+
+$(srcdir)/lua/lua-akfavatar-reference.about: \
+  $(srcdir)/doc/lua-akfavatar-reference.man
+	-nroff -c -man -Tutf8 \
+	  $(srcdir)/doc/lua-akfavatar-reference.man > $@
 
 check:
 
@@ -585,6 +596,8 @@ maintainer-clean: distclean
 	@echo 'This command is intended for maintainers to use; it'
 	@echo 'deletes files that may need special tools to rebuild.'
 	rm -f $(srcdir)/alert.au
+	rm -f $(srcdir)/lua/lua-akfavatar.about
+	rm -f $(srcdir)/lua/lua-akfavatar-reference.about
 	$(MAKE) -C $(srcdir)/doc maintainer-clean
 
 maintainerclean: maintainer-clean
@@ -599,7 +612,7 @@ multiplizieren: $(srcdir)/pascal/multiply.pas
 	    -Fi$(srcdir)/pascal \
 	    $(srcdir)/pascal/multiply.pas
 
-dist: info html man $(srcdir)/alert.au
+dist: info html man about $(srcdir)/alert.au
 	mkdir $(PKGNAME)
 	ln $(srcdir)/README $(srcdir)/INSTALL $(srcdir)/AUTHORS \
 	   $(srcdir)/NEWS \
@@ -662,6 +675,8 @@ dist: info html man $(srcdir)/alert.au
 	   $(srcdir)/lua/fs-quiz-en.lua $(srcdir)/lua/fs-quiz-de.lua \
 	   $(srcdir)/lua/akfavatar-term.c $(srcdir)/lua/terminal.lua \
 	   $(srcdir)/lua/akfavatar-vorbis.c \
+	   $(srcdir)/lua/lua-akfavatar.about \
+	   $(srcdir)/lua/lua-akfavatar-reference.about \
 	   $(PKGNAME)/lua/
 
 	mkdir $(PKGNAME)/lua/akfavatar
@@ -717,7 +732,8 @@ dist: info html man $(srcdir)/alert.au
 	rm -rf $(PKGNAME)/
 	bzip2 -f $(PKGNAME).tar
 
-dist-bin-default: info html libakfavatar.so avatarsay-bin lua-akfavatar-bin \
+dist-bin-default: info html about libakfavatar.so avatarsay-bin \
+	          lua-akfavatar-bin \
 	          lua-akfavatar.so base64.so akfavatar-term.so
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/lua
@@ -749,6 +765,9 @@ dist-bin-default: info html libakfavatar.so avatarsay-bin lua-akfavatar-bin \
 	ln $(srcdir)/lua/fs-quiz-en.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/fs-quiz-de.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/terminal.lua $(BINPKGNAME)/lua/
+	-ln $(srcdir)/lua/lua-akfavatar.about $(BINPKGNAME)/lua/
+	-ln $(srcdir)/lua/lua-akfavatar-reference.about $(BINPKGNAME)/lua/
+
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/NEWS $(srcdir)/avtman \
 	   $(srcdir)/fsdemo-??.avt \
 	   $(srcdir)/gnome-akfavatar \
