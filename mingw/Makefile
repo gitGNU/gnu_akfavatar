@@ -267,16 +267,16 @@ luaavtstarter.rc: $(srcdir)/mingw/luaavtstarter-rc.in config-mingw
 luaavtstarter-rc.wo: luaavtstarter.rc $(srcdir)/mingw/akfavatar.ico
 	$(WINDRES) -I $(srcdir)/mingw/ -o $@ -i luaavtstarter.rc
 
-about: $(srcdir)/lua-akfavatar.about \
-       $(srcdir)/lua-akfavatar-reference.about
+about: $(srcdir)/lua-akfavatar.en.about \
+       $(srcdir)/lua-akfavatar-reference.en.about
 
-$(srcdir)/lua-akfavatar.about: $(srcdir)/doc/lua-akfavatar.man
-	-nroff -c -man -Tutf8 $(srcdir)/doc/lua-akfavatar.man > $@
+$(srcdir)/lua-akfavatar.en.about: $(srcdir)/doc/lua-akfavatar.en.man
+	-nroff -c -man -Tutf8 $(srcdir)/doc/lua-akfavatar.en.man > $@
 
-$(srcdir)/lua-akfavatar-reference.about: \
-  $(srcdir)/doc/lua-akfavatar-reference.man
+$(srcdir)/lua-akfavatar-reference.en.about: \
+  $(srcdir)/doc/lua-akfavatar-reference.en.man
 	-nroff -c -man -Tutf8 \
-	  $(srcdir)/doc/lua-akfavatar-reference.man > $@
+	  $(srcdir)/doc/lua-akfavatar-reference.en.man > $@
 
 # the folowing targets are for the maintainer
 # don't use them unless you know what you are doing
@@ -316,10 +316,10 @@ dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64
 	cp $(srcdir)/lua/base64-encode.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/characters_overview.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/characters_tables.lua $(BINPKGNAME)/lua/
-	-cp $(srcdir)/lua-akfavatar.about $(BINPKGNAME)/
-	-cp $(srcdir)/lua-akfavatar-reference.about $(BINPKGNAME)/
-	-cp lua-akfavatar.pdf $(BINPKGNAME)/
-	-cp lua-akfavatar-reference.pdf $(BINPKGNAME)/
+	-cp $(srcdir)/lua-akfavatar.en.about $(BINPKGNAME)/
+	-cp $(srcdir)/lua-akfavatar-reference.en.about $(BINPKGNAME)/
+	-cp lua-akfavatar.en.pdf $(BINPKGNAME)/
+	-cp lua-akfavatar-reference.en.pdf $(BINPKGNAME)/
 	cp $(srcdir)/lua/akfavatar/README $(BINPKGNAME)/lua/akfavatar/README.txt
 	cp $(srcdir)/lua/akfavatar/LIESMICH $(BINPKGNAME)/lua/akfavatar/LIESMICH.txt
 	cp $(srcdir)/lua/akfavatar/utf8.lua $(BINPKGNAME)/lua/akfavatar/

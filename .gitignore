@@ -20,8 +20,8 @@ bdfread
 libakfavatar.so*
 lua-akfavatar
 lua-akfavatar-bin
-lua-akfavatar.about
-lua-akfavatar-reference.about
+lua-akfavatar.en.about
+lua-akfavatar-reference.en.about
 bin2c
 ucsfont*.c
 alert.au

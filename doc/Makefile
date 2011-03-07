@@ -94,7 +94,7 @@ akfavatar-de.dvi: $(srcdir)/doc/akfavatar-de.texinfo \
 	             $(srcdir)/doc/akfavatar-de.texinfo
 
 pdf: akfavatar-en.pdf akfavatar-de.pdf \
-     lua-akfavatar.pdf lua-akfavatar-reference.pdf
+     lua-akfavatar.en.pdf lua-akfavatar-reference.en.pdf
 
 akfavatar-en.pdf: $(srcdir)/doc/akfavatar-en.texinfo \
 	          $(srcdir)/doc/lua-akfavatar-en.texinfo \
@@ -118,13 +118,13 @@ akfavatar-de.pdf: $(srcdir)/doc/akfavatar-de.texinfo \
 	       output tmp.pdf \
 	   && mv tmp.pdf akfavatar-de.pdf
 
-lua-akfavatar.pdf: lua-akfavatar.ps
-	-$(PS2PDF) lua-akfavatar.ps $@
+lua-akfavatar.en.pdf: lua-akfavatar.en.ps
+	-$(PS2PDF) lua-akfavatar.en.ps $@
 
-lua-akfavatar-reference.pdf: lua-akfavatar-reference.ps
-	-$(PS2PDF) lua-akfavatar-reference.ps $@
+lua-akfavatar-reference.en.pdf: lua-akfavatar-reference.en.ps
+	-$(PS2PDF) lua-akfavatar-reference.en.ps $@
 
-ps: akfavatar-en.ps akfavatar-de.ps lua-akfavatar-reference.ps lua-akfavatar.ps
+ps: akfavatar-en.ps akfavatar-de.ps lua-akfavatar-reference.en.ps lua-akfavatar.en.ps
 
 akfavatar-en.ps: akfavatar-en.dvi
 	-dvips -Pwww -o $@ akfavatar-en.dvi
@@ -132,11 +132,11 @@ akfavatar-en.ps: akfavatar-en.dvi
 akfavatar-de.ps: akfavatar-de.dvi
 	-dvips -Pwww -o $@ akfavatar-de.dvi
 
-lua-akfavatar-reference.ps: $(srcdir)/doc/lua-akfavatar-reference.man
-	-groff -man -Tps $(srcdir)/doc/lua-akfavatar-reference.man > $@
+lua-akfavatar-reference.en.ps: $(srcdir)/doc/lua-akfavatar-reference.en.man
+	-groff -man -Tps $(srcdir)/doc/lua-akfavatar-reference.en.man > $@
 
-lua-akfavatar.ps: $(srcdir)/doc/lua-akfavatar.man
-	-groff -man -Tps $(srcdir)/doc/lua-akfavatar.man > $@
+lua-akfavatar.en.ps: $(srcdir)/doc/lua-akfavatar.en.man
+	-groff -man -Tps $(srcdir)/doc/lua-akfavatar.en.man > $@
 
 docbook: $(srcdir)/doc/akfavatar-en.texinfo \
 	 $(srcdir)/doc/akfavatar-de.texinfo \
