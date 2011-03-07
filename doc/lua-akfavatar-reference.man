@@ -187,7 +187,9 @@ use.
 .IP
 .B Example:
 .EX
-avt.say_unicode ("Three apples cost ", tostring(3 * appleprice), 0x20AC, ".\\n").
+avt.say_unicode ("Three apples cost ",
+                 tostring(3 * appleprice), 0x20AC,
+                 ".\\n").
 .EE
 .IP
 As you can see, you have to use 
@@ -198,7 +200,7 @@ The number
 however represents the Euro currency sign.
 (The `0x' introduces hexadecimal numbers.)
 .IP
-By the way, a bunch of unicode numbers are handled much more efficiently 
+By the way, a bunch of unicode numbers are handled much more efficiently
 than strings.
 .PP
 .TP
@@ -220,7 +222,8 @@ It can be used together with
 .BI "avt.ask (" [question] )
 Shows the
 .IR question ,
-if given, and waits for the user to enter something. Returns the result as string.
+if given, and waits for the user to enter something.
+Returns the result as string.
 .IP
 The following example shows how to force the input of a number:
 .IP
@@ -714,7 +717,7 @@ for nr, name, rgb in avt.colors() do
   avt.normal_text()
   avt.newline()
   avt.say(string.format("%3d) %5s, %-25s", nr, rgb, name))
-  avt.set_text_background_color(name) -- you can use either name or rgb here
+  avt.set_text_background_color(name) -- either name or rgb
   avt.clear_eol()
   avt.wait(0.7)
 end
