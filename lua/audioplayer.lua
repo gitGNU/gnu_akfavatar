@@ -14,7 +14,7 @@ require "akfavatar-vorbis"
 
 -- downloader application
 -- url is appended, data should be dumped to stdout
-local downloader = "curl --silent"
+local downloader = "curl --silent --location"
 
 
 avt.initialize{
@@ -72,6 +72,7 @@ local function play_single(filename) --> play a single file
   end
 
   audio:play()
+  collectgarbage("collect")
 
   repeat
     button = avt.navigate("ps")
@@ -164,6 +165,7 @@ local function play_list(list) --> plays a list of files (but no playlists)
     if not audio then return end
 
     audio:play()
+    collectgarbage("collect")
 
     repeat
       button = avt.navigate("bpsf")
