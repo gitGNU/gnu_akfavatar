@@ -12,6 +12,11 @@ Supported playlist formats: M3U, PLS
 require "lua-akfavatar"
 require "akfavatar-vorbis"
 
+-- downloader application
+-- url is appended, data should be dumped to stdout
+local downloader = "curl --silent"
+
+
 avt.initialize{
   title    = "Audio-Player",
   avatar   = require "akfavatar.skull1",
@@ -19,9 +24,46 @@ avt.initialize{
   audio    = true
   }
 
+-- open URL with the tool "curl"
+-- returns file handle
+local function open_url(url)
+  return assert(io.popen(downloader .. " " .. url, "r"))
+end
+
+local function get_url(url) -- might not work on Windows
+  local f = open_url(url)
+  local data = f:read("*all")
+  f:close()
+  return data
+end
+
+-- replace file-URL with normal filename and remove \r
+local function handle_list_entry(s)
+  s = string.gsub(s, "\r", "")
+  s = string.gsub(s, "^file://localhost/(%a:.*)$", "%1") -- Windows
+  s = string.gsub(s, "^file:///(%a:.*)$", "%1") -- Windows
+  s = string.gsub(s, "^file://localhost/", "/")
+  s = string.gsub(s, "^file:///", "/")
+  return s
+end
+
+local function load_audio(url)
+  local audio
+
+  if string.find(url, "^https?://") or string.find(url, "^s?ftps?://") then
+    local data = get_url(url)
+    audio = avt.load_audio_string(data) or vorbis.load_string(data)
+  else
+    url = handle_list_entry(url)
+    audio = avt.load_audio_file(url) or vorbis.load_file(url)
+  end
+
+  return audio
+end
+
 local function play_single(filename) --> play a single file
   local button
-  local audio = avt.load_audio_file(filename) or vorbis.load_file(filename)
+  local audio = load_audio(filename)
 
   if not audio then
     avt.tell(filename, ":\nunsupported audio file")
@@ -44,15 +86,6 @@ local function play_single(filename) --> play a single file
   audio:free()
 end -- play_single
 
--- replace file-URL with normal filename and remove \r
-local function handle_list_entry(s)
-  s = string.gsub(s, "\r", "")
-  s = string.gsub(s, "^file://localhost/(%a:.*)$", "%1") -- Windows
-  s = string.gsub(s, "^file:///(%a:.*)$", "%1") -- Windows
-  s = string.gsub(s, "^file://localhost/", "/")
-  s = string.gsub(s, "^file:///", "/")
-  return s
-end
 
 -- splits a filename into the name and the directory
 -- problem: doesn't work on URLs
@@ -61,13 +94,17 @@ local function basename(filename)
   return name, dir
 end
 
-local function m3u(filename) --> M3U Playlist
+local function m3u(url) --> M3U Playlist
   local list = {}
-  local name, dir = basename(filename)
+  local file
 
-  if dir then avt.set_directory(dir) end --> list may contain relative paths
-
-  local file = assert(io.open(name))
+  if string.find(url, "^https?://") or string.find(url, "^s?ftps?://") then
+    file = open_url(url)
+  else --> local file
+    local name, dir = basename(url)
+    if dir then avt.set_directory(dir) end --> list may contain relative paths
+    file = assert(io.open(name))
+  end
 
   for line in file:lines() do
     if not string.find(line, "^%s*#") then 
@@ -81,11 +118,15 @@ end
 
 local function pls(filename) --> PLS ShoutCast Playlist
   local list = {}
-  local name, dir = basename(filename)
+  local file
 
-  if dir then avt.set_directory(dir) end --> list may contain relative paths
-
-  local file = assert(io.open(name))
+  if string.find(url, "^https?://") or string.find(url, "^s?ftps?://") then
+    file = open_url(url)
+  else --> local file
+    local name, dir = basename(url)
+    if dir then avt.set_directory(dir) end --> list may contain relative paths
+    file = assert(io.open(name))
+  end
 
   if not string.match(file:read("*line"), "^%[playlist%]%s*$") then
     file:close()
@@ -115,7 +156,7 @@ local function play_list(list) --> plays a list of files (but no playlists)
       filename = list[number]
       if not filename then break end
       if audio then audio:free() end
-      audio = avt.load_audio_file(filename) or vorbis.load_file(filename)
+      audio = load_audio(filename)
       -- remove unplayable entries
       if not audio then table.remove(list, number) end
     until audio or not list[number]

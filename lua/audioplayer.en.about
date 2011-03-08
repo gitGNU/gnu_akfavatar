@@ -7,3 +7,6 @@ This program can be used interactively, or files can be given as arguments.
 
 When you select "play all..." or use several files as arguments, then 
 Playlists are ignored.  Playlists also cannot refer to other Playlists.
+
+Network adresses may be supported, when you have the tool "curl" installed in
+your PATH.  But this doesn't work on all platforms.
