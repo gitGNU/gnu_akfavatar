@@ -668,7 +668,7 @@ dist: info html man about $(srcdir)/alert.au
 	mkdir $(PKGNAME)/lua
 	ln $(srcdir)/lua/lua-avt.c $(srcdir)/lua/lua-akfavatar-prg.c \
 	   $(srcdir)/lua/interactive_lua.lua $(srcdir)/lua/hello.lua \
-	   $(srcdir)/lua/audioplayer.lua $(srcdir)/lua/audioplayer.about \
+	   $(srcdir)/lua/audioplayer.lua $(srcdir)/lua/audioplayer.en.about \
 	   $(srcdir)/lua/multiplication.lua $(srcdir)/lua/man.lua \
 	   $(srcdir)/lua/textview.lua \
 	   $(srcdir)/lua/story1-en.lua $(srcdir)/lua/story1-de.lua \
@@ -758,7 +758,7 @@ dist-bin-default: info html about pdf libakfavatar.so avatarsay-bin \
 	ln $(srcdir)/skull1.xpm $(BINPKGNAME)/
 	ln $(srcdir)/README-Lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/lua/
-	ln $(srcdir)/lua/audioplayer.lua $(srcdir)/lua/audioplayer.about $(BINPKGNAME)/lua/
+	ln $(srcdir)/lua/audioplayer.lua $(srcdir)/lua/audioplayer.en.about $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/multiplication.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/hello.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/man.lua $(srcdir)/lua/textview.lua $(BINPKGNAME)/lua/
