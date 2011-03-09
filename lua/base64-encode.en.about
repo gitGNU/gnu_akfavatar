@@ -1,0 +1,13 @@
+base64-encode
+
+Base 64 is a method to encode binary data with printable ASCII characters.
+
+For Lua-AKFAvatar this can be used to embed binary data like sounds or images
+in Lua scripts.  See the file "akfavatar/positive.lua" as an example.
+
+The image formats XPM and XBM are already plain ASCII, so they don't need to be
+encoded.
+
+For more information see:
+http://en.wikipedia.org/wiki/Base64
+

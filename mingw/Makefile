@@ -315,6 +315,7 @@ dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64
 	cp $(srcdir)/lua/fs-quiz-en.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/fs-quiz-de.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/base64-encode.lua $(BINPKGNAME)/lua/
+	cp $(srcdir)/lua/base64-encode.en.about $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/characters_overview.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/characters_tables.lua $(BINPKGNAME)/lua/
 	-cp $(srcdir)/lua-akfavatar.en.about $(BINPKGNAME)/
