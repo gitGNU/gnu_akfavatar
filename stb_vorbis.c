@@ -528,7 +528,7 @@ enum STBVorbisError
 #include <string.h>
 #include <assert.h>
 #include <math.h>
-#if !(defined(__APPLE__) || defined(MACOSX) || defined(macintosh) || defined(Macintosh) || defined(__FreeBSD__))
+#if defined(_WIN32) || defined(WIN32)
 #include <malloc.h>
 #endif
 #else
