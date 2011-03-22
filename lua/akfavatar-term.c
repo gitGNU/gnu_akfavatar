@@ -175,6 +175,53 @@ lterm_color (lua_State * L)
   return 0;
 }
 
+/* send string to stdin of process (APC), add "\r" for return */
+static int
+lterm_send (lua_State * L)
+{
+  size_t len;
+  const char *buf;
+
+  if (!term_L)
+    return
+      luaL_error (L, "send: only for Application Program Commands (APC)");
+
+  buf = luaL_checklstring (L, 1, &len);
+  avta_term_send (buf, len);
+
+  return 0;
+}
+
+/*
+ * lets the user decide
+ * sends string 1 or 2 if given to stdin of process
+ */
+static int
+lterm_decide (lua_State * L)
+{
+  size_t len;
+  const char *buf;
+
+  if (!term_L)
+    return
+      luaL_error (L, "decide: only for Application Program Commands (APC)");
+
+  if (avt_decide ())
+    buf = lua_tolstring (L, 1, &len);
+  else
+    buf = lua_tolstring (L, 2, &len);
+
+  if (buf)
+    avta_term_send (buf, len);
+
+  return 0;
+}
+
+/*
+ * Application Program Commands (APC)
+ * in this case Lua commands
+ * only ASCII, up to 1024 chars
+ */
 static int
 APC_command (wchar_t * command)
 {
@@ -209,6 +256,8 @@ static const struct luaL_reg termlib[] = {
   {"homedir", lterm_homedir},
   {"color", lterm_color},
   {"execute", lterm_execute},
+  {"send", lterm_send},
+  {"decide", lterm_decide},
   {NULL, NULL}
 };
 
