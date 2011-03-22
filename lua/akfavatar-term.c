@@ -37,6 +37,7 @@
 #include <lualib.h>
 
 static char *startdir = NULL;
+static lua_State *term_L;	/* lua_State of the running terminal */
 
 static int
 quit (lua_State * L)
@@ -57,7 +58,7 @@ quit (lua_State * L)
 /*
  * ececute program in terminal
  * accepts a program and its parameters as separate arguments
- * if no arguments are given, it starts the default shlell
+ * if no arguments are given, it starts the default shell
  */
 static int
 lterm_execute (lua_State * L)
@@ -98,8 +99,13 @@ lterm_execute (lua_State * L)
   else				/* start shell */
     fd = avta_term_start (encoding, startdir, NULL);
 
+
   if (fd != -1)
-    avta_term_run (fd);
+    {
+      term_L = L;
+      avta_term_run (fd);
+      term_L = NULL;
+    }
 
   if (startdir)
     {
@@ -169,28 +175,34 @@ lterm_color (lua_State * L)
   return 0;
 }
 
-#if 0
 static int
 APC_command (wchar_t * command)
 {
   char cmd[1024];		/* just ASCII! */
   unsigned int p;
 
+  if (!term_L)
+    return -1;
+
   /* get ASCII from command */
   p = 0;
   while (*command && p < sizeof (cmd) - 1)
     {
-      if (*command <= L'\x7F')
+      if (*command <= L'\x7F')	/* ASCII? */
 	cmd[p++] = (char) *command;
+      command++;
     }
 
   cmd[p] = '\0';
 
-  /* ... */
+  if (luaL_loadstring (term_L, cmd) != 0)
+    avta_error (lua_tostring (term_L, -1), NULL);
+
+  lua_call (term_L, 0, 0);
+  avta_term_update_size ();	/* in case the size changed */
 
   return 0;
 }
-#endif
 
 static const struct luaL_reg termlib[] = {
   {"startdir", lterm_startdir},
@@ -203,6 +215,8 @@ static const struct luaL_reg termlib[] = {
 int
 luaopen_term (lua_State * L)
 {
+  term_L = NULL;
   luaL_register (L, "term", termlib);
+  avta_term_register_apc (APC_command);
   return 1;
 }

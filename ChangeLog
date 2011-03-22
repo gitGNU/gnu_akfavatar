@@ -4,6 +4,9 @@
 
 	* avtgrmsg.c (avta_graphic_error): fix: unlock updates
 
+	* lua/akfavatar-term.c (lterm_execute, APC_command, luaopen_term):
+	register APC command handler for Lua commands
+
 2011-03-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtreadfile.c (read_stream): fix reading empty files
