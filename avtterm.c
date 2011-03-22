@@ -146,15 +146,21 @@ avta_term_update_size (void)
 {
   if (prg_input > 0)
     {
-      max_x = avt_get_max_x ();
-      max_y = avt_get_max_y ();
+      int new_max_x = avt_get_max_x ();
+      int new_max_y = avt_get_max_y ();
 
-      avta_term_size (prg_input, max_y, max_x);
+      if (new_max_x != max_x || new_max_y != max_y)
+	{
+	  max_x = new_max_x;
+	  max_y = new_max_y;
 
-      if (region_max_y > max_y)
-	region_max_y = max_y;
-      if (region_min_y > max_y)
-	region_min_y = 1;
+	  avta_term_size (prg_input, max_y, max_x);
+
+	  if (region_max_y > max_y)
+	    region_max_y = max_y;
+	  if (region_min_y > max_y)
+	    region_min_y = 1;
+	}
     }
 }
 

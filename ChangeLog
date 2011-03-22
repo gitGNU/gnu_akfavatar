@@ -7,6 +7,8 @@
 	* lua/akfavatar-term.c (lterm_execute, APC_command, luaopen_term):
 	register APC command handler for Lua commands
 
+	* avtterm.c (avta_term_update_size): first check if size changed at all
+
 2011-03-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtreadfile.c (read_stream): fix reading empty files
