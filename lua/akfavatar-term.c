@@ -196,7 +196,7 @@ APC_command (wchar_t * command)
   cmd[p] = '\0';
 
   if (luaL_loadstring (term_L, cmd) != 0)
-    avta_error (lua_tostring (term_L, -1), NULL);
+    return lua_error (term_L);
 
   lua_call (term_L, 0, 0);
   avta_term_update_size ();	/* in case the size changed */
