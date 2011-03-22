@@ -9,6 +9,8 @@
 
 	* avtterm.c (avta_term_update_size): first check if size changed at all
 
+	* avtterm.c (avta_term_send): check file-handle
+
 2011-03-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtreadfile.c (read_stream): fix reading empty files

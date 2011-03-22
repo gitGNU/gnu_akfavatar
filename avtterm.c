@@ -233,6 +233,9 @@ avta_term_send (const char *buf, size_t count)
 {
   ssize_t r;
 
+  if (prg_input <= 0)
+    return;
+
   do
     {
       r = write (prg_input, buf, count);
