@@ -38,6 +38,7 @@ avta_graphic_error (const char *msg1, const char *msg2)
   avt_set_auto_margin (AVT_TRUE);
   avt_set_scroll_mode (-1);
   avt_set_text_delay (0);
+  avt_lock_updates (AVT_FALSE);
   avt_bell ();
   avt_tell_mb (msg);
   avt_wait_button ();

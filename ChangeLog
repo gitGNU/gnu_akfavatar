@@ -2,6 +2,8 @@
 
 	* lua/akfavatar/avtdemo.lua (wait, do_wait): new function/variable
 
+	* avtgrmsg.c (avta_graphic_error): fix: unlock updates
+
 2011-03-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtreadfile.c (read_stream): fix reading empty files
