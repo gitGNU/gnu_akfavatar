@@ -20,13 +20,20 @@ require "lua-akfavatar"
 require "akfavatar.ar"
 pcall(require, "akfavatar-vorbis")
 
-local audio, old_audio, initialized, moved_in, avatar, title, archive
+local audio, old_audio, initialized, moved_in, avatar, title, archive, do_wait
 
 local function initialize()
   avt.initialize {title=title, avatar=avatar, audio=true}
   avt.set_text_delay()
   avt.markup(true)
   initialized = true
+end
+
+local function wait()
+  if do_wait then
+    avt.wait()
+    do_wait = false
+    end
 end
 
 local function avatar_image(name)
@@ -43,12 +50,13 @@ local function move(move_in)
   if not initialized then initialize() end
   if move_in then avt.move_in() else avt.move_out() end
   moved_in = move_in
+  do_wait = false
 end
 
 local function credits(name)
   if not initialized then initialize() end
-  avt.wait()
-  
+  wait()
+
   if archive then
     avt.credits(assert(archive:get(name)), true)
   else
@@ -81,7 +89,7 @@ end
 
 
 local function show_image(name)
-  if not initialized then initialize() else avt.wait() end
+  if not initialized then initialize() else wait() end
 
   if archive then
     avt.show_image_string(archive:get(name))
@@ -90,6 +98,7 @@ local function show_image(name)
   end
 
   avt.wait(7)
+  do_wait = false
 end
 
 local function command(cmd)
@@ -105,18 +114,21 @@ local function command(cmd)
   elseif "flip"==c then
     if not moved_in then move(true) end
     avt.flip_page()
+    do_wait = false
   elseif "clear"==c then
     if not moved_in then move(true) end
     avt.clear()
   elseif "wait"==c then
     if not initialized then initialize() end
     if a=="" then avt.wait() else avt.wait(a) end
+    do_wait = false
   elseif "effectpause"==c then
     if not moved_in then move(true) end
     avt.wait(2.7)
   elseif "pause"==c then
     if not moved_in then move(true) end
     avt.wait(2.7); avt_show_avatar(); avt.wait(4)
+    do_wait = false
   elseif "image"==c then
     show_image(a)
   elseif "rawaudiosettings"==c then
@@ -188,6 +200,7 @@ local function command(cmd)
   elseif "end"==c then
     if not initialized then initialize() end
      avt.wait(); avt.move_out(); avt.wait()
+     do_wait = false
      return true
   else
     error("unknown command: " .. cmd)
@@ -238,6 +251,7 @@ function avtdemo(demofile)
   avatar = "default"
   title = "AKFAvatar-Demo"
   archive = false
+  do_wait = false
 
   for line in string.gmatch(get_script(demofile), "(.-)\r?\n") do
     if string.find(line, "^%s*#") or 
@@ -253,6 +267,7 @@ function avtdemo(demofile)
       if not empty then avt.newline() end
       avt.say(line)
       empty = false
+      do_wait = true
     end
   end
 
