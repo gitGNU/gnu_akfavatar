@@ -7,6 +7,8 @@
 
 	* lua/akfavatar-term.c (APC_command): convert cmd to current encoding
 
+	* lua/akfavatar-term.en.about: preliminary documentation
+
 2011-03-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar/avtdemo.lua (wait, do_wait): new function/variable

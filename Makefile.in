@@ -681,6 +681,7 @@ dist: info html man about $(srcdir)/alert.au
 	   $(srcdir)/lua/characters_tables.lua \
 	   $(srcdir)/lua/fs-quiz-en.lua $(srcdir)/lua/fs-quiz-de.lua \
 	   $(srcdir)/lua/akfavatar-term.c $(srcdir)/lua/terminal.lua \
+	   $(srcdir)/lua/akfavatar-term.en.about \
 	   $(srcdir)/lua/akfavatar-vorbis.c \
 	   $(PKGNAME)/lua/
 
@@ -752,6 +753,7 @@ dist-bin-default: info html about pdf libakfavatar.so avatarsay-bin \
 	cp libavtaddons.a $(BINPKGNAME)/
 	cp lua-akfavatar.so base64.so akfavatar-vorbis.so $(BINPKGNAME)/lua/
 	cp akfavatar-term.so $(BINPKGNAME)/lua/
+	ln $(srcdir)/lua/akfavatar-term.en.about $(BINPKGNAME)/lua/
 	ln $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/include/
 	ln $(srcdir)/avtaddons.h $(BINPKGNAME)/include/
 	ln $(srcdir)/pascal/?pcavatar $(BINPKGNAME)/
