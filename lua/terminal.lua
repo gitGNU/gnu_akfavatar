@@ -14,6 +14,11 @@ avt.initialize {
   mode = "auto"
   }
 
+-- guest programs can check this variable to see
+-- if and what APC commands are accessible
+term.setenv("APC", _VERSION .. ", lua-akfavatar")
+
 term.color(true)
 term.homedir()
 term.execute(unpack(arg))
+term.unsetenv("APC")

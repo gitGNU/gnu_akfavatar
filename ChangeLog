@@ -1,3 +1,8 @@
+2011-03-24  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/akfavatar-term.c (lterm_setenv, lterm_unsetenv): new functions
+	lua/terminal.lua: adapted
+
 2011-03-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar/avtdemo.lua (wait, do_wait): new function/variable

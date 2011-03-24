@@ -167,6 +167,22 @@ lterm_homedir (lua_State * L AVT_UNUSED)
 }
 
 static int
+lterm_setenv (lua_State * L)
+{
+  setenv (luaL_checkstring (L, 1), luaL_checkstring (L, 2), AVT_TRUE);
+
+  return 0;
+}
+
+static int
+lterm_unsetenv (lua_State * L)
+{
+  unsetenv (luaL_checkstring (L, 1));
+
+  return 0;
+}
+
+static int
 lterm_color (lua_State * L)
 {
   luaL_checktype (L, 1, LUA_TBOOLEAN);
@@ -255,6 +271,8 @@ static const struct luaL_reg termlib[] = {
   {"startdir", lterm_startdir},
   {"homedir", lterm_homedir},
   {"color", lterm_color},
+  {"setenv", lterm_setenv},
+  {"unsetenv", lterm_unsetenv},
   {"execute", lterm_execute},
   {"send", lterm_send},
   {"decide", lterm_decide},
