@@ -24,6 +24,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
 
 #include <sys/types.h>
 #include <pwd.h>
@@ -71,11 +72,14 @@ lterm_execute (lua_State * L)
   if (!avt_initialized ())
     luaL_error (L, "execute: AKFAvatar not initialized");
 
+  /* set all locale settings */
+  setlocale (LC_ALL, "");
+
 #ifdef NO_LANGINFO
   /* get encoding from AKFAvatar settings */
   strncpy (encoding, avt_get_mb_encoding (), sizeof (encoding));
 #else
-  /* get encoding from system settings */
+  /* get encoding from system settings, needs LC_CTYPE to be set correctly */
   /* conforming to SUSv2, POSIX.1-2001 */
   strncpy (encoding, nl_langinfo (CODESET), sizeof (encoding));
 #endif
