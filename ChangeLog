@@ -5,6 +5,8 @@
 
 	* lua/akfavatar-term.c (lterm_execute): setlocale
 
+	* lua/akfavatar-term.c (APC_command): convert cmd to current encoding
+
 2011-03-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar/avtdemo.lua (wait, do_wait): new function/variable

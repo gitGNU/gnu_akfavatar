@@ -24,6 +24,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <wchar.h>
 #include <locale.h>
 
 #include <sys/types.h>
@@ -240,33 +241,28 @@ lterm_decide (lua_State * L)
 /*
  * Application Program Commands (APC)
  * in this case Lua commands
- * only ASCII, up to 1024 chars
+ * up to 1024 chars
  */
 static int
 APC_command (wchar_t * command)
 {
-  char cmd[1024];		/* just ASCII! */
-  unsigned int p;
+  char *mbstring;
 
   if (!term_L)
     return -1;
 
-  /* get ASCII from command */
-  p = 0;
-  while (*command && p < sizeof (cmd) - 1)
+  /* get mbstring from command (in current encoding) */
+  if (avt_mb_encode (&mbstring, command, wcslen (command)) > -1)
     {
-      if (*command <= L'\x7F')	/* ASCII? */
-	cmd[p++] = (char) *command;
-      command++;
+      int ret = luaL_loadstring (term_L, mbstring);
+      free (mbstring);
+
+      if (ret != 0)
+	return lua_error (term_L);
+
+      lua_call (term_L, 0, 0);
+      avta_term_update_size ();	/* in case the size changed */
     }
-
-  cmd[p] = '\0';
-
-  if (luaL_loadstring (term_L, cmd) != 0)
-    return lua_error (term_L);
-
-  lua_call (term_L, 0, 0);
-  avta_term_update_size ();	/* in case the size changed */
 
   return 0;
 }
