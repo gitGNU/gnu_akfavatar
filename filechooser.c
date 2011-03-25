@@ -235,7 +235,7 @@ avta_file_selection (char *filename, int filename_size, avta_filter_t filter)
   int idx, menu_entry, page_nr;
   int entries, entry_nr;
   char *entry[100];		/* entry on screen */
-  avt_bool_t old_auto_margin;
+  avt_bool_t old_auto_margin, old_newline_mode;
 
   if (filename == NULL || filename_size <= 0)
     return -1;
@@ -257,6 +257,8 @@ avta_file_selection (char *filename, int filename_size, avta_filter_t filter)
 
   old_auto_margin = avt_get_auto_margin ();
   avt_set_auto_margin (AVT_FALSE);
+  old_newline_mode = avt_get_newline_mode ();
+  avt_newline_mode (AVT_TRUE);
 
 start:
   /* returncode: assume failure as default */
@@ -451,6 +453,7 @@ start:
 quit:
   custom_filter = NULL;
   avt_set_auto_margin (old_auto_margin);
+  avt_newline_mode (old_newline_mode);
   avt_clear ();
   avt_lock_updates (AVT_FALSE);
 

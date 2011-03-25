@@ -1718,7 +1718,7 @@ lavt_long_menu (lua_State * L)
   int choice;
   int mid_x;
   size_t len;
-  avt_bool_t old_auto_margin;
+  avt_bool_t old_auto_margin, old_newline_mode;
 
   is_initialized ();
   luaL_checktype (L, 1, LUA_TTABLE);
@@ -1742,6 +1742,8 @@ lavt_long_menu (lua_State * L)
 
   old_auto_margin = avt_get_auto_margin ();
   avt_set_auto_margin (AVT_FALSE);
+  old_newline_mode = avt_get_newline_mode ();
+  avt_newline_mode (AVT_TRUE);
 
   while (!item_nr)
     {
@@ -1812,6 +1814,7 @@ lavt_long_menu (lua_State * L)
     }
 
   avt_set_auto_margin (old_auto_margin);
+  avt_newline_mode (old_newline_mode);
   avt_clear ();
   avt_lock_updates (AVT_FALSE);
 

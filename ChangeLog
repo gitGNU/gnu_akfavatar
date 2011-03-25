@@ -1,3 +1,11 @@
+2011-03-25  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_get_newline_mode): new function
+
+	* filechooser.c (avta_file_selection): activate the newline mode
+
+	* lua/lua-avt.c (lavt_long_menu): activate the newline mode
+
 2011-03-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar-term.c (lterm_setenv, lterm_unsetenv): new functions

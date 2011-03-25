@@ -604,6 +604,9 @@ AVT_API int avt_get_scroll_mode (void);
 /* set newline mode (default: on) */
 AVT_API void avt_newline_mode (avt_bool_t mode);
 
+/* get newline mode */
+AVT_API avt_bool_t avt_get_newline_mode (void);
+
 /* set auto-margin mode (default: on) */
 AVT_API void avt_set_auto_margin (avt_bool_t mode);
 AVT_API void avt_auto_margin (avt_bool_t mode);
