@@ -38,11 +38,11 @@ default_avatar = $(srcdir)/male_user.xpm
 SHELL = /bin/sh
 .SUFFIXES:
 
-all: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe \
+all: akfavatar.dll libakfavatar.a libavtaddons.a \
      lua-akfavatar.exe lua-akfavatar.dll base64.dll akfavatar-vorbis.dll \
      iconv.exe about
 
-nolua: akfavatar.dll libakfavatar.a libavtaddons.a avatarsay.exe iconv.exe
+nolua: akfavatar.dll libakfavatar.a libavtaddons.a iconv.exe
 
 avtsayinfo.rc: $(srcdir)/mingw/avtsayinfo.in config-mingw
 	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
@@ -169,10 +169,6 @@ libavtaddons.a: filechooser.wo askdrive.wo arch.wo avttermstub.wo \
 	             avtreadfile.wo colorchooser.wo avtvorbis.wo stb_vorbis.wo
 	-$(RANLIB) $@
 
-avatarsay.wo: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h \
-              $(srcdir)/avtinternals.h
-	$(CC) -I. $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avatarsay.c
-
 # from the mingw directory!
 avtmsg.wo: $(srcdir)/mingw/avtmsg.c $(srcdir)/avtaddons.h $(srcdir)/avtinternals.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
@@ -181,6 +177,10 @@ avtmsg.wo: $(srcdir)/mingw/avtmsg.c $(srcdir)/avtaddons.h $(srcdir)/avtinternals
 avtgrmsg.wo: $(srcdir)/avtgrmsg.c
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/avtgrmsg.c
+
+avatarsay.wo: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h \
+              $(srcdir)/avtinternals.h
+	$(CC) -I. $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avatarsay.c
 
 avatarsay: avatarsay.exe
 
@@ -289,7 +289,7 @@ multiplizieren.exe: $(srcdir)/pascal/multiply.pas
 	-fpcwavatar -dRELEASE -ddeutsch -o$@ -Fi$(srcdir)/pascal \
 	  $(srcdir)/pascal/multiply.pas
 
-dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64.dll akfavatar-vorbis.dll about
+dist-bin: akfavatar.dll lua-akfavatar.exe lua-akfavatar.dll base64.dll akfavatar-vorbis.dll about
 	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) html txt pdf
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/lua
@@ -301,7 +301,7 @@ dist-bin: akfavatar.dll avatarsay.exe lua-akfavatar.exe lua-akfavatar.dll base64
 	cp libavtaddons.a $(BINPKGNAME)/
 	cp $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/include/
 	cp $(srcdir)/avtaddons.h $(BINPKGNAME)/include/
-	cp avatarsay.exe $(srcdir)/fsdemo-??.avt $(BINPKGNAME)/
+	cp $(srcdir)/fsdemo-??.avt $(BINPKGNAME)/
 	cp lua-akfavatar.exe $(BINPKGNAME)/
 	cp lua-akfavatar.dll $(BINPKGNAME)/
 	cp base64.dll $(BINPKGNAME)/
