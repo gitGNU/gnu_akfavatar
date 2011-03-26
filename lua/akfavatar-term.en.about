@@ -1,7 +1,8 @@
 Module akfavatar-term
 
 This module can be used to execute common terminal based programs inside of
-AKFAvatar.  The terminal emulation emulates a Linux textconsole.
+AKFAvatar.  The terminal emulation emulates a Linux textconsole (not only on
+Linux based systems).
 
 It can also be used to write specific programs for AKFAvatar in otherwise
 unsupported languages.  There are some facilities with which the hosting
@@ -53,7 +54,7 @@ term.unsetenv (variable)
 
 
 
-term.execute ([program] [,arguments])
+term.execute ([program [,arguments]])
     Executes the given program with the given arguments in the
     terminal emulation.  If no program is given it starts the
     default shell.
@@ -95,11 +96,11 @@ APC interface
         }
 
     The commands can be Lua function calls, especially the "avt." commands
-    defined by "lua-akfavatar".  Up to 1024 characters can be sent.  So it is
-    not suited to send complicated code from the guest program.  However the
-    hosting script, that is the Lua script that calls the guest program, can
-    define its own global functions, which are then also accessible with the
-    APC interface.
+    defined by "lua-akfavatar" (see the "lua-akfavatar-reference").
+    Up to 1024 characters can be sent.  So it is not suited to send complicated
+    code from the guest program.  However the hosting script, that is the Lua
+    script that calls the guest program, can define its own global functions,
+    which are then also accessible with the APC interface.
 
     As a convention the host script should define an environment variable named
     "APC", which decribes the accessible commands.
