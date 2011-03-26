@@ -1,0 +1,1143 @@
+.\" Process this file with
+.\" groff -man -Tutf8 lua-akfavatar.reference.man
+.\"
+.
+.\" Macros .EX .EE taken from groff an-ext.tmac
+.\" Copyright (C) 2007, 2009 Free Software Foundation, Inc.
+.\" You may freely use, modify and/or distribute this file.
+.
+.\" Start example.
+.de EX
+.  nr mE \\n(.f
+.  nf
+.  nh
+.  ft CW
+..
+.
+.
+.\" End example.
+.de EE
+.  ft \\n(mE
+.  fi
+.  hy \\n(HY
+..
+.
+.TH "Lua-AKFAvatar reference" 3 2011-03-06 AKFAvatar
+.
+.SH NAME
+Lua-AKFAvatar reference \- AKFAvatar specific functions for Lua
+.
+.SH DESCRIPTION
+This is a reference for the Lua-bindings to AKFAvatar.  It does not
+describe the language Lua. The reference manual for the language Lua
+can be found on the Internet on 
+.BR http://www.lua.org/manual/5.1/ .
+.PP
+Don't worry, you don't need to understand or even learn everything.
+You can do lots of things with very few commands.  Just pick the parts
+you are interested in and experiment with that.  There are many parts
+of Lua or AKFAvatar, which you will most probably never need.
+.PP
+.TP
+.B "require ""lua-akfavatar"""
+Before you can use the AKFAvatar binding, you have to load or activate
+it with the command 
+.BR "require ""lua-akfavatar""" .
+This creates a table 
+.IR avt ,
+with which you can access the following functions.  By the way,
+if you don't like the prefix
+.IR avt ,
+you could also use something like this:
+.BR "local avatar = require ""lua-akfavatar""" ,
+then you can also access the functions with the prefix
+.IR avatar .
+.PP
+.TP
+.BI "avt.initialize ({" "title, shortname, avatar, audio, encoding, mode" "})"
+This function opens the graphical window or switches into the
+graphical mode.  If it was already initialized it resets almost
+everything.
+.IP
+It accepts a table as parameter with definitions for the following items:
+.RS
+.TP
+.I title
+Is the title for the window in windowed mode - default="AKFAvatar".
+.TP
+.I shortname
+Is a shortname (often used for iconized windows) - default=title.
+.TP
+.I avatar
+Is either "default" or "none" or image data in the string, or 
+a filename with the path.
+.IP
+See also:
+.B base64.decode
+.TP
+.I audio
+Set this to true if the audio subsystem should be initialized.
+This has also influence on the system "bell".
+.TP
+.I encoding
+Is the encoding for strings, for example to "ISO-8859-1", "UTF-8" or
+"WINDOWS-1252" - default="UTF-8".
+.TP
+.I mode
+Is one of "auto", "window", "fullscreen", or "fullscreen no switch".
+The default is "auto" which uses a sensible default,
+or leaves the mode unchanged, if it already was initialized.
+.RE
+.IP
+.B Attention:
+you have to use curly braces here (it is a table).
+.IP
+No item is needed, the order doesn't matter, use them as you wish.
+.IP
+.B Examples:
+.EX
+avt.initialize{}
+
+avt.initialize{tilte="my program", encoding="ISO-8859-1"}
+
+avt.initialize{
+  tilte="my program",
+  shortname="program",
+  avatar="gnu-head.xpm",
+  audio=true,
+  encoding="UTF-8",
+  mode="fullscreen no switch"}
+.EE
+.IP
+Many of the following functions implicitly call
+.B avt.initialize{}
+when it is not initialized yet.
+.PP
+.TP
+.BI "avt.initialized ()"
+Returns
+.I true
+if AKFAvatar it is initialized, or else it returns
+.IR false .
+.PP
+.TP
+.BI "avt.say (" ... )
+.TQ
+.BI "avt.write (" ... )
+Prints text in the balloon.
+.IP
+You can use strings or numbers. It works similar to
+.BR io.write() ,
+but it writes into the balloon instead of the standard output.
+.IP
+.B Example:
+.EX
+avt.say ("Three apples cost ", 3 * appleprice, " Euros.\\n").
+.EE
+.PP
+.TP
+.BI "avt.print (" ... )
+Prints text in the balloon.
+It works similar to
+.BR print ,
+but it writes into the balloon instead of the standard output.
+.IP
+The difference to
+.B avt.say()
+is, that the values are separated by tabulators in the output and 
+each value is automatically converted with 
+.B tostring()
+and at the end a new line is started.
+.IP
+You can simply replace the print command with this one with
+.BR "print = avt.print" .
+(The script `interactive_lua.lua' does this.)
+.IP
+The function
+.B avt.say()
+is better suited for programs, while this  function is better suited 
+for interactive use or debugging.
+.PP
+.TP
+.BI "avt.tell (" ... )
+Prints text in the balloon, but before that the size of the
+balloon is adjusted so that the text exactly fits.
+.IP
+.B Example:
+.EX
+avt.tell ("Three apples cost ", 3 * appleprice, " Euros.").
+.EE
+.IP
+.B Attention:
+This function still has problems with tabs ("\\t").
+.PP
+.TP
+.BI "avt.say_unicode (" ... )
+Prints text in the balloon with special support for Unicode characters.
+.IP
+This command is very similar to
+.BR avt.say() .
+Strings are handled in the same way, depending on the selected encoding,
+but numbers are interpreted as Unicode codepoints, independent from the
+selected encoding.
+.IP
+This can be used to insert characters, which are not available in
+the current string encoding.  Sometimes it is also just easier to
+use.
+.IP
+.B Example:
+.EX
+avt.say_unicode ("Three apples cost ",
+                 tostring(3 * appleprice), 0x20AC,
+                 ".\\n").
+.EE
+.IP
+As you can see, you have to use 
+.B tostring()
+when nummerical expressions are to be shown as numbers.  
+The number
+.I 0x20AC
+however represents the Euro currency sign.
+(The `0x' introduces hexadecimal numbers.)
+.IP
+By the way, a bunch of unicode numbers are handled much more efficiently
+than strings.
+.PP
+.TP
+.BI "avt.printable (" codepoint )
+Checks whether the given
+.I codepoint
+represents a printable Unicode character.
+It returns 
+.I true
+when this is the case or
+.I false
+if the font doesn't have a printable glyph for it (it may be a
+supported control character).
+This function is independent from the chosen encoding.
+It can be used together with
+.BR "avt.say_unicode(...)" .
+.PP
+.TP
+.BI "avt.ask (" [question] )
+Shows the
+.IR question ,
+if given, and waits for the user to enter something.
+Returns the result as string.
+.IP
+The following example shows how to force the input of a number:
+.IP
+.EX
+require "lua-akfavatar"
+avt.save_position()
+repeat
+  avt.restore_position()
+  number = tonumber(avt.ask("Enter a number: "))
+until number
+avt.say("The number is ", number)
+avt.wait_button()
+.EE
+.PP
+.TP
+.BI "avt.newline ()"
+Start a new line. It is the same as "\\n" in
+.BR avt.say() ,
+but faster.
+.PP
+.TP
+.BI "avt.set_text_delay (" [delay] )
+Activate the slow-print mode. With no value for
+.I delay
+it uses a default delay.
+To deactivate the slow-print mode, use the value 0 for
+.IR delay .
+.PP
+.TP
+.BI "avt.markup (" true | false )
+Set the markup mode. In the markup mode the character "_" toggles
+the underlined mode on or off and the character "*" toggles the
+bold mode on or off.  Both characters are never displayed in
+markup mode!
+.IP
+You can always use the overstrike technique, which doesn't reserve
+any characters, but is harder to use.
+.PP
+.TP
+.BI "avt.set_balloon_size (" "[height] [, width]" )
+Sets the size of the balloon. No values or values of 0 set the maximum size.
+.PP
+.TP
+.BI "avt.set_balloon_width (" [width] )
+Sets the width of the balloon. No value or 0 sets the maximum.
+.PP
+.TP
+.BI "avt.set_balloon_height (" [height] )
+Sets the height of the balloon. No value or 0 sets the maximum.
+.PP
+.TP
+.BI "avt.clear ()"
+Clears the textfield or viewport.
+If there is no balloon yet, it is drawn.
+.PP
+.TP
+.BI "avt.flip_page ()"
+Waits a while and then clears the textfield; same as "\\f" in
+.BR avt.say() .
+See also
+.BR avt.set_flip_delay(delay) .
+.PP
+.TP
+.BI "avt.move_in ()"
+Moves the avatar in.
+.PP
+.TP
+.BI "avt.move_out ()"
+Moves the avatar out.
+.PP
+.TP
+.BI "avt.pager (" "text [,startline]" )
+Show a longer text with a text-viewer application.
+.IP
+If the
+.I startline
+is given and it is greater than 1, then it starts
+in that line.  But you still can scroll back from there.
+.PP
+.TP
+.BI "avt.decide ()"
+Ask the user to make a positive or negative decision.  Returns
+.IR true " or " false .
+.PP
+.TP
+.BI "avt.wait_button ()"
+Waits until a button is pressed.
+.PP
+.TP
+.BI "avt.wait (" [seconds] )
+Waits a given amount of seconds (may be a fraction).
+.IP
+If no value is given, it waits "a while".
+.PP
+.TP
+.BI "avt.show_avatar ()"
+Shows only the avatar without any balloon.
+.PP
+.TP
+.BI "avt.bell ()"
+Makes a sound or flashes the display if audio is not initialized.
+.PP
+.TP
+.BI "avt.flash ()"
+Flashes the display.
+.PP
+.TP
+.BI "avt.show_image_file (" filename )
+Load an image and show it.
+It returns
+.IR true " on success, or " false " on error."
+If it succeeds you should call
+.BR avt.wait() " or " avt.wait_button() " or " avt.get_key() .
+.PP
+.TP
+.BI "avt.show_image_string (" image )
+Get an image from a string and show it.  If it succeeds you should call
+.BR avt.wait() " or " avt.wait_button() " or " avt.get_key() .
+.IP
+See also:
+.B base64.decode()
+.PP
+.TP
+.BI "avt.get_directory ()"
+Returns the current working directory.
+On error it returns
+.I nil
+and an error message.
+.PP
+.TP
+.BI "avt.set_directory (" directory )
+.TQ
+.BI "avt.chdir (" directory )
+Sets the working directory to
+.IR directory .
+.RI "If " directory " is " nil ,
+nothing or an empty string, it does nothing.
+.IP
+.B Example:
+.EX
+avt.set_directory(os.getenv("HOME") or os.getenv("USERPROFILE"))
+.EE
+.PP
+.TP
+.BI "avt.directory_entries (" [directory] )
+Get a list of directory entries of the given
+.I directory
+or the current directory if none is given.
+.IP
+On success it returns a table (an array) and the number of entries.
+On error it returns
+.I nil
+and an error message.
+.IP
+The list contains normal files, including hidden files,
+subdirectories and any other type of entry.
+It does not contain "." or "..".
+.PP
+.TP
+.BI "avt.entry_type (" entry )
+Get the type of a directory entry and its size.
+.IP
+On success it returns the type of the directory entry as string
+and the size as number.  The type can be one of "file",
+"directory", "character device", "block device", "fifo", "socket"
+or "unknown".
+.IP
+On error it returns
+.I nil
+and an error message.
+.PP
+.TP
+.BI "avt.file_selection (" [filter] )
+Start a file-chooser in the balloon. It starts in the current
+working directory.  When a directory is chosen it changes the
+working directory to that one.  At the end it returns the selected
+filename (which is in the then current working directory) or
+.I nil
+on error.
+.IP
+The
+.IR filter ,
+if given, should be a function.  It gets a filename as
+parameter.  The file is always in the current working directory.
+If the filter function returns 
+.IR false " or " nil
+or nothing then the filename is not shown, otherwise it is shown.
+.IP
+.B Example:
+.EX
+ textfile = avt.file_selection(
+    function(n)
+      return string.find(n,"%.te?xt$")
+    end)
+.EE
+.IP
+Of course
+.I filter
+can also be the name of a previously defined function.
+.PP
+.TP
+.BI "avt.initialize_audio ()"
+Initialize the audio subsystem.
+.IP
+On success it returns 
+.IR true ,
+on error it returns
+.I nil
+and an error message.
+.IP
+Normally you should initialize it with
+.BR avt.initialize{} .
+Only use this, if you are sure you need it.
+.PP
+.TP
+.BI "avt.quit_audio ()"
+Quit the audio subsystem.
+.IP
+This is not needed in normal programs.
+Only use this, if you are sure you need it.
+.PP
+.TP
+.BI "avt.load_audio_file (" [filename] )
+Reads audio data from a file.
+.IP
+supported audio formats:
+.RS
+.IP AU:
+linear PCM with up to 32Bit, mu-law, A-law
+.IP WAV:
+linear PCM with up to 16Bit, MS-ADPCM, IMA-ADPCM
+.IP Both:
+mono or stereo
+.RE
+.IP
+The current implementation can only play sounds with up to 16Bit
+precision, but AU-files with more Bits can be read.
+.IP
+When no
+.I filename
+is given, or the
+.IR filename " is " nil
+or an empty string, it returns an empty audio element, 
+ie. you can call its methods, it just doesn't play anything.
+.IP
+On error it returns 
+.I nil
+and an error message.
+(Note: in version 0.19.0 it also returned an empty audio element then.)
+.PP
+.TP
+.BI "avt.load_audio_string (" [audio_data] )
+Reads audio data from a string.  Otherwise the same as
+.BR avt.load_audio_file() .
+.IP
+When no 
+.I audio_data
+is given, or the 
+.IR audio_data " is " nil
+or an empty string, it returns an empty audio element, 
+ie. you can call its methods, it just doesn't play anything.
+.IP
+On error it returns 
+.I nil
+and an error message.
+(Note: in version 0.19.0 it also returned an empty audio element then.)
+.IP
+See also:
+.B base64.decode
+.PP
+.TP
+.BI "avt.audio_playing (" [audio_data] )
+Checks if the audio is currently playing.
+If
+.I audio_data
+is given and is not 
+.I nil
+then it checks, if the specified audio is playing.
+This can also be checked with
+.BR audio:playing() .
+.PP
+.TP
+.BI "avt.wait_audio_end ()"
+Waits until the audio output ends.
+.IP
+This also ends an audio-loop, but still plays to the end of the
+current sound.
+.PP
+.TP
+.BI "avt.stop_audio ()"
+Stops the audio output immediately.
+.PP
+.TP
+.BI "avt.pause_audio (" true | false )
+.RI "pause (" true ") or resume (" false ") the audio output"
+.PP
+.TP
+.BI "audio:play ()"
+.TQ
+.BI "audio ()"
+Plays the
+.I audio
+data.
+The
+.I audio
+must have been loaded by
+.BR avt.load_audio_file() " or " avt.load_audio_string() .
+.IP
+Only one sound can be played at the same time.
+When you play another sound the previous one is stopped.
+Use
+.B avt.wait_audio_end()
+to play sounds in a sequence.
+.IP
+The audio can also be played by calling the audio variables like a function.
+.IP
+.B Attention:
+You should take care that the variable for the sound
+stays in scope while the sound is played.
+Otherwise the audio output could stop unexpectedly.
+.IP
+.EX
+play_audio_file = function (filename)
+  local sound = avt.load_audio_file (filename)
+  sound:play ()
+  avt.wait_audio_end ()
+  sound:free()
+end
+.EE
+.IP
+This function is okay because of the command
+.BR avt.wait_audio_end() .
+.IP
+.EX
+play_audio_file = function (filename)
+  avt.wait_audio_end ()
+  sound = avt.load_audio_file (filename)
+  sound:play ()
+end
+.EE
+.IP
+This function is also okay, because the variable
+.I sound
+is not local to this function.
+It is most probably a global variable.
+It could also be local to the program (ie. the "chunk"), which is also okay.
+.PP
+.TP
+.BI "audio:loop ()"
+Plays
+.I audio
+data in a loop.  The 
+.I audio
+must have been loaded by
+.BR avt.load_audio_file() " or " avt.load_audio_string() .
+.IP
+This is for example useful for short pieces of music.
+.IP
+You can stop the audio loop with 
+.BR avt.wait_audio_end() " or " avt.stop_audio () .
+.PP
+.TP
+.BI "audio:playing ()"
+Checks if this
+.I audio
+data is currently playing.  The
+.I audio
+must have been loaded by 
+.BR avt.load_audio_file() " or " avt.load_audio_string() .
+.IP
+This is the same as 
+.BR "avt.audio_playing (audio)" .
+.PP
+.TP
+.BI "audio:free ()"
+Frees the
+.I audio
+data.  If this 
+.I audio
+is currently playing, it is stopped.
+.IP
+Audio data is also freed by the garbage collector, but don't count
+on it.  Audio data can hog up a lot of memory. Unfortunately the
+garbage collector doesn't see that, because it is handled outside
+of Lua.  However, you could also run the garbage collector
+manually with using
+.B "collectgarbage(""collect"")"
+from time to time.
+Then you don't need to call this function.
+Just make sure the currently playing sound is still assigned 
+to a variable when you do this.
+.PP
+.TP
+.BI "avt.encoding (" encoding )
+Change the used text encoding.
+.PP
+.TP
+.BI "avt.get_encoding ()"
+Gets the currently used text encoding.
+.IP
+Returns
+.I nil
+if none is set yet.
+.PP
+.TP
+.BI "avt.set_title (" "[title] [,shortname]" )
+Change the title and/or the shortname.
+A missing option or
+.I nil
+leaves it unchanged.
+.PP
+.TP
+.BI "avt.change_avatar_image (" [image] )
+Change the avatar image while running.
+The image is a string like in
+.BR avt.initialize{} .
+.IP
+See also:
+.B base64.decode
+.PP
+.TP
+.BI "avt.set_avatar_name (" [name] )
+Set the name of the avatar.  This must be used after
+.BR avt.change_avatar_image() .
+.PP
+.TP
+.BI "avt.right_to_left (" true | false )
+Activate or deactivate the right to left writing mode.
+.IP
+.B Attention:
+This is an experimental feature, that might not always work.
+.PP
+.TP
+.BI "avt.set_flip_page_delay (" [delay] )
+Set the delay for 
+.B avt.flip_page()
+or "\\f".
+Use no value for the default delay, or 0 to set no delay.
+.PP
+.TP
+.BI "avt.set_background_color (" color )
+Sets the background color of the window.
+.IP
+Colors can either be given as English names or as RGB value with 3
+or 6 hexadicimal digits.
+.IP
+For example 
+.B "avt.set_background_color(""sky blue"")"
+or
+.B "avt.set_background_color(""#555"")"
+or
+.BR "avt.set_background_color(""#8B4513"")" .
+.PP
+.TP
+.BI "avt.set_balloon_color (" color )
+Sets the color of the balloon.
+.PP
+.TP
+.BI "avt.set_text_color (" color )
+Sets the text color.
+.PP
+.TP
+.BI "avt.set_text_background_color (" color )
+Sets the text background color.
+.PP
+.TP
+.BI "avt.set_text_background_ballooncolor ()"
+Sets the text background color to the color of the balloon.
+.PP
+.TP
+.BI "avt.get_color (" color_number )
+Get a color for a given integer value.
+.IP
+AKFAvatar has an internal palette with color names to use.
+With this function you can scan through that list.
+It returns the name and RGB value as strings, or it returns
+nothing on error.
+.PP
+.TP
+.BI "avt.colors ()"
+Iterator for internal color names.
+.IP
+AKFAvatar has an internal palette with color names to use.
+With this function you can scan through that list with a generic
+.B for
+loop.
+.IP
+.EX
+require "lua-akfavatar"
+for nr, name, rgb in avt.colors() do
+  avt.normal_text()
+  avt.newline()
+  avt.say(string.format("%3d) %5s, %-25s", nr, rgb, name))
+  avt.set_text_background_color(name) -- either name or rgb
+  avt.clear_eol()
+  avt.wait(0.7)
+end
+avt.wait_button()
+.EE
+.IP
+If you don't need the
+.I rgb
+value, you can leave that variable away.
+.PP
+.TP
+.BI "avt.color_selection ()"
+Start a color-chooser in the balloon. It returns two strings:
+first the English name for the color and second the hexadicimal
+RGB definition.  Both values can be used for selecting colors.
+.PP
+.TP
+.BI "avt.activate_cursor (" true | false )
+Show the cursor.
+.PP
+.TP
+.BI "avt.underlined (" true | false )
+Set the underlined mode.
+.PP
+.TP
+.BI "avt.get_underlined ()"
+Returns 
+.I true
+if the underlined mode is active or
+.I false
+otherwise.
+.PP
+.TP
+.BI "avt.bold (" true | false )
+Set the bold mode.
+.PP
+.TP
+.BI "avt.get_bold ()"
+Returns 
+.I true
+if the bold mode is active or 
+.I false
+otherwise.
+.PP
+.TP
+.BI "avt.inverse (" true | false )
+Set the inverse mode.
+.PP
+.TP
+.BI "avt.get_inverse ()"
+Returns
+.I true
+if the inverse mode is active or
+.I false
+otherwise.
+.PP
+.TP
+.BI "avt.normal_text ()"
+Resets the text to normal settings.
+.PP
+.TP
+.BI "avt.clear_screen ()"
+Clears the whole screen or window (not just the balloon!).
+.PP
+.TP
+.BI "avt.clear_down ()"
+Clears from cursor position down the viewport.
+If there is no balloon yet, it is drawn.
+.PP
+.TP
+.BI "avt.clear_eol ()"
+Clear the end of line (depending on text direction).
+.PP
+.TP
+.BI "avt.clear_bol ()"
+Clears the beginning of the line (depending on text direction).
+.PP
+.TP
+.BI "avt.clear_line ()"
+Clears the line.
+.PP
+.TP
+.BI "avt.clear_up ()"
+Clears from cursor position up the viewport.
+If there is no balloon yet, it is drawn.
+.PP
+.TP
+.BI "avt.where_x ()"
+Get the x position of the cursor in the balloon.
+.PP
+.TP
+.BI "avt.where_y ()"
+Get the y position of the cursor in the balloon.
+.PP
+.TP
+.BI "avt.max_x ()"
+Get the maximum x position of the cursor in the balloon (ie. the width).
+.PP
+.TP
+.BI "avt.max_y ()"
+Get the maximum y position of the cursor in the balloon (ie. the height).
+.PP
+.TP
+.BI "avt.home_position ()"
+Returns
+.I true
+if the cursor is in the home position or
+.I false
+otherwise.  (This also works for right-to-left writing.)
+.PP
+.TP
+.BI "avt.move_x (" x )
+Moves the cursor to the given X position.
+.PP
+.TP
+.BI "avt.move_y ("y )
+Moves the cursor to the given Y position.
+.PP
+.TP
+.BI "avt.move_xy (" "x, y" )
+Moves the cursor to the given
+.IR x " and " y " position."
+.PP
+.TP
+.BI "avt.save_position ()"
+Save the current cursor position.
+.PP
+.TP
+.BI "avt.restore_position ()"
+Restore the last saved cursor position.
+.PP
+.TP
+.BI "avt.next_tab ()"
+Moves the cursor to the next tabulator position.
+.PP
+.TP
+.BI "avt.last_tab ()"
+Moves the cursor to the previous tabulator position.
+.PP
+.TP
+.BI "avt.reset_tab_stops ()"
+Reset tab stops to every eigth column.
+.PP
+.TP
+.BI "avt.clear_tab_stops ()"
+Clears all tab stops.
+.PP
+.TP
+.BI "avt.set_tab (" "x, true" | false )
+Set or clear tab in position
+.IR x .
+.PP
+.TP
+.BI "avt.delete_lines (" "line, number" )
+Deletes given
+.I number
+of lines, starting from
+.IR line ;
+the rest is scrolled up.
+.PP
+.TP
+.BI "avt.insert_lines (" "line, number" )
+Inserts given
+.I number
+of lines, starting at
+.IR line ;
+the rest is scrolled down.
+.PP
+.TP
+.BI "avt.reserve_single_keys (" true | false )
+Reserves single keys, such as <ESC> or <F11>.
+.PP
+.TP
+.BI "avt.switch_mode (" mode )
+Switches the window mode. Use either of 
+.IR """window""" ", or " """fullscreen""" .
+.IP
+(The modes
+.IR """auto""" " and  " """fullscreen no switch"""
+don't work here.)
+.PP
+.TP
+.BI "avt.get_mode ()"
+Returns the window mode (see 
+.BR "avt.switch_mode (mode)" ).
+.PP
+.TP
+.BI "avt.toggle_fullscreen ()"
+Toggles the fullscreen mode on or off.
+.PP
+.TP
+.BI "avt.update ()"
+Update everything and take care of events.
+This should be used in a loop, when the program is doing something else.
+.PP
+.TP
+.BI "avt.credits (" "text, centered" )
+Shows final credits.
+.IP
+If the second parameter is
+.IR true ,
+every line is centered.
+.PP
+.TP
+.BI "avt.get_key ()"
+Waits for a key to be pressed and returns the unicode codepoint of
+the character. For some function keys it yields a number from the
+unicode private use section.
+.PP
+.TP
+.BI "avt.navigate (" buttons )
+Shows a navigation bar with the given buttons.
+.IP
+For buttons use a string with the following characters:
+.IP
+.RS
+.IP "l:"
+left
+.IP "r:"
+right (play)
+.IP "d:"
+down
+.IP "u:"
+up
+.IP "x:"
+cancel
+.IP "f:"
+(fast)forward
+.IP "b:"
+(fast)backward
+.IP "p:"
+pause
+.IP "s:"
+stop
+.IP "e:"
+eject
+.IP "*:"
+circle (record)
+.IP "+:"
+plus (add)
+.IP "-:"
+minus (remove)
+.IP "?:"
+help
+.IP "' ':"
+spacer (no button)
+.RE
+.IP
+Pressing a key with one of those characters selects it.  For the
+directions you can also use the arrow keys, The <Pause> key
+returns "p".  The <Help> key or <F1> return "?".
+.IP
+It returns the approriete character or a number.
+.PP
+.TP
+.BI "avt.choice (" "start_line, items [, key] [, back] [,forward]" )
+This can be used for menus.  It returns the number of the selected item.
+.IP
+.RS
+.IP start_line:
+line, where choice begins
+.IP items:
+number of items/lines
+.IP key:
+first key, like "1" or "a", 0 for no keys
+.IP back:
+set to 
+.IR true ,
+when the first entry is a back function
+.IP forward:
+set to 
+.IR true ,
+when the last entry is a forward function
+.RE
+.PP
+.TP
+.BI "avt.long_menu (" items )
+Shows a long menu with the
+.IR items ,
+which should be an array with menu-items.
+.IP
+It returns the number of the selected item.
+.IP
+The menu starts in the line of the current cursor position.
+So you could put a headline before the menu.
+.IP
+.EX
+avt.clear()
+avt.say("Please select your favourite food:\\n")
+local item = avt.long_menu {
+  "Chicken",
+  "Chips",
+  "Pizza",
+  "Spinach"}
+.EE
+.PP
+.TP
+.BI "avt.viewport (" "x, y, width, height" )
+Sets a viewport (sub-area of the textarea).
+The upper left corner is at 1, 1.
+.PP
+.TP
+.BI "avt.set_scroll_mode (" mode )
+Sets the scroll mode, ie. how it reacts when trying to go beyond
+the last line.  The 
+.I mode
+is either -1 for "do nothing" or 0 for page-fipping or 1 for scrolling.
+.PP
+.TP
+.BI "avt.get_scroll_mode ()"
+Gets the scroll mode (see 
+.BR "avt.set_scroll_mode ()" ")."
+.PP
+.TP
+.BI "avt.newline_mode (" true | false )
+When the newline_mode is activated (default) a newline character
+sets the cursor at the beginning of a new line. When it is off the
+cursor goes into the next line but stays in the same horizontal
+position.
+.PP
+.TP
+.BI "avt.set_auto_margin (" true | false )
+Sets the automargin mode, ie. whether to start a new line
+automatically when the text doesn't fit in a line.
+.PP
+.TP
+.BI "avt.get_auto_margin ()"
+Gets the automargin mode.
+.PP
+.TP
+.BI "avt.set_origin_mode (" true | false )
+Sets the origin mode. When the origin mode is on, the coordinates
+1, 1 are always in the top left of the balloon, even when the
+viewport does not start there. When the origin mode is off, the
+coorinates 1, 1 are the top left of the viewport.
+.PP
+.TP
+.BI "avt.get_origin_mode ()"
+Gets the origin mode (see
+.BR "avt.set_origin_mode" ")."
+.PP
+.TP
+.BI "avt.set_mouse_visible (" true | false )
+Sets whether the mouse pointer is visible or not.
+.IP
+.B Note:
+In windowing systems this has only an affect when the mouse
+pointer is inside of the window.
+.PP
+.TP
+.BI "avt.lock_updates (" true | false )
+Sets a lock on updates inside of the balloon.
+This can be used for speedups.
+.PP
+.TP
+.BI "avt.insert_spaces (" number )
+Insert
+.I number
+spaces at the current cursor position.
+The rest of the line is moved.
+.PP
+.TP
+.BI "avt.delete_characters (" number )
+Delete
+.I number
+characters at the current cursor position.
+The rest of the line is moved.
+.PP
+.TP
+.BI "avt.erase_characters (" number )
+Erase
+.I number
+of characters.
+The characters are overwritten with spaces.
+.PP
+.TP
+.BI "avt.backspace ()"
+Go back one character.
+Does nothing if the cursor is at the beginning of the line.
+.PP
+.TP
+.BI "avt.version ()"
+Returns the version of AKFAvatar as string.
+.PP
+.TP
+.BI "avt.copyright ()"
+Returns the copyright notice for AKFAvatar as string.
+.PP
+.TP
+.BI "avt.license ()"
+ Returns the license notice for AKFAvatar as string.
+.PP
+.TP
+.BI "avt.quit ()"
+Quit the avatar subsystem (closes the window).
+It also quits the audio subsystem.
+.IP
+This function is not needed for normal programs.
+Only use it, if your program should continue working without
+a visible window.
+.PP
+.TP
+.BI "avt.subprogram (" "function, [arg1, ...]" )
+Call the function as a subprogram.
+.IP
+On a quit-request (pressing the <ESC>-key or the close button of
+the window) it just returns to the main program.  On success it
+returns the results of the function, on a quit-request it returns
+nothing.  Errors are treated normally.
+.IP
+To call a subprogram from a separate file, use
+.BR dofile :
+.EX
+avt.subprogram (dofile, "subprogram.lua")
+.EE
+.PP
+.SH "SEE ALSO"
+.BR lua-akfavatar (1)
+.BR lua (1)
+.br
+.B http://akfavatar.nongnu.org/manual/
+.br
+.B http://www.lua.org/manual/5.1/
