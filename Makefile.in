@@ -358,7 +358,6 @@ install: libakfavatar.so libakfavatar.a installdirs install-info install-man
 	-$(LDCONFIG) $(libdir)
 	-$(INSTALL_PROGRAM) lua-akfavatar-bin $(DESTDIR)$(bindir)/lua-akfavatar
 	$(INSTALL_PROGRAM) $(srcdir)/avtman $(DESTDIR)$(bindir)
-	$(INSTALL_PROGRAM) $(srcdir)/gnome-akfavatar $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/avtcmd $(DESTDIR)$(bindir)
 	$(INSTALL_DATA) $(srcdir)/README $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/AUTHORS $(DESTDIR)$(docdir)
@@ -385,7 +384,6 @@ install-strip: libakfavatar.so libakfavatar.a installdirs install-info install-m
 	-$(LDCONFIG) $(libdir)
 	-$(INSTALL_PROGRAM) -s lua-akfavatar-bin $(DESTDIR)$(bindir)/lua-akfavatar
 	$(INSTALL_PROGRAM) $(srcdir)/avtman $(DESTDIR)$(bindir)
-	$(INSTALL_PROGRAM) $(srcdir)/gnome-akfavatar $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/avtcmd $(DESTDIR)$(bindir)
 	$(INSTALL_DATA) $(srcdir)/README $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/AUTHORS $(DESTDIR)$(docdir)
@@ -776,7 +774,6 @@ dist-bin-default: info html about pdf libakfavatar.so lua-akfavatar-bin \
 
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/NEWS $(srcdir)/avtman \
 	   $(srcdir)/fsdemo-??.avt \
-	   $(srcdir)/gnome-akfavatar \
 	   $(srcdir)/avtcmd \
 	   $(BINPKGNAME)/
 	ln $(srcdir)/doc/akfavatar-??.html $(BINPKGNAME)/
