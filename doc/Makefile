@@ -18,7 +18,6 @@ lua-akfavatar-reference.en.html: $(srcdir)/doc/lua-akfavatar-reference.en.man
 lua-akfavatar.en.html: $(srcdir)/doc/lua-akfavatar.en.man
 	-groff -man -Thtml $(srcdir)/doc/lua-akfavatar.en.man > $@
 
-
 txt: lua-akfavatar-reference.en.txt lua-akfavatar.en.txt
 
 lua-akfavatar-reference.en.txt: $(srcdir)/doc/lua-akfavatar-reference.en.man
