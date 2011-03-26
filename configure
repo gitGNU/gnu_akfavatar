@@ -528,15 +528,6 @@ DISTBIN = ${DISTBIN}
 EOF
 cat ${srcdir}/Makefile.in >> Makefile
 
-rm -f version.texi
-cat > version.texi <<EOF
-@c This file was generated automatically by configure. Do not edit.
-
-@set VERSION ${VERSION}.${SUBVERSION}.${REVISION}${VARIANT}
-@set UPDATED $(date +%Y-%m-%d)
-
-EOF
-
 if [ -d ${srcdir}/mingw ]
 then
   rm -f config-mingw
