@@ -65,8 +65,7 @@ libinfo.wo: libinfo.rc
 
 # alert.au should be in the sourcecode-distribution
 $(srcdir)/alert.au: $(srcdir)/alert.flac
-	@echo "create headerless old AU file"
-	sox $(srcdir)/alert.flac -t .ul --rate 8000 --channels 1 $@
+	sox $(srcdir)/alert.flac --comment "" -e mu-law -c 1 $@ rate 8k
 
 alert.c: $(srcdir)/alert.au
 	$(AWK) -f $(srcdir)/data2c -v name=avt_alert_data \

@@ -92,7 +92,7 @@ Makefile: $(srcdir)/configure $(srcdir)/Makefile.in
 
 # alert.au should be in the sourcecode-distribution
 $(srcdir)/alert.au: $(ALERT)
-	$(SOX) $(ALERT) --comment "" -e mu-law -c 1 $@ rate -l 8k
+	$(SOX) $(ALERT) --comment "" -e mu-law -c 1 $@ rate 8k
 
 alert.c: $(srcdir)/alert.au $(srcdir)/data2c
 	$(AWK) -f $(srcdir)/data2c -v name=avt_alert_data \
