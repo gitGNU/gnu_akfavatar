@@ -438,29 +438,16 @@ info:
 	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) info
 
 install-info: info
-	$(INSTALL_DATA) $(srcdir)/doc/akfavatar-en.info $(DESTDIR)$(infodir)
-	$(INSTALL_DATA) $(srcdir)/doc/akfavatar-de.info $(DESTDIR)$(infodir)
-	-install-info --info-dir=$(DESTDIR)$(infodir) \
-	   $(DESTDIR)$(infodir)/akfavatar-en.info 
-	-install-info --info-dir=$(DESTDIR)$(infodir) \
-	   $(DESTDIR)$(infodir)/akfavatar-de.info 
 
 uninstall-info:
-	-install-info --remove --info-dir=$(DESTDIR)$(infodir) \
-	  $(DESTDIR)$(infodir)/akfavatar-en.info 
-	-rm -f $(DESTDIR)$(infodir)/akfavatar-en.info
-	-install-info --remove --info-dir=$(DESTDIR)$(infodir) \
-	  $(DESTDIR)$(infodir)/akfavatar-de.info 
-	-rm -f $(DESTDIR)$(infodir)/akfavatar-de.info
 
 install-man: man
-	-$(INSTALL_DATA) $(srcdir)/doc/avtcmd.1 $(DESTDIR)$(mandir)/man1
 	-$(INSTALL_DATA) $(srcdir)/doc/lua-akfavatar.en.man $(DESTDIR)$(mandir)/man1/lua-akfavatar.1
 	-$(INSTALL_DATA) $(srcdir)/doc/lua-akfavatar-reference.en.man \
 	                 $(DESTDIR)$(mandir)/man3/lua-akfavatar-reference.3
 
 uninstall-man:
-	-rm -f $(DESTDIR)$(mandir)/man1/avatarsay.1 
+	-rm -f $(DESTDIR)$(mandir)/man1/avatarsay.1
 	-rm -f $(DESTDIR)$(mandir)/man1/avtcmd.1
 	-rm -f $(DESTDIR)$(mandir)/man1/lua-akfavatar.1
 	-rm -f $(DESTDIR)$(mandir)/man3/lua-akfavatar-reference.3
@@ -469,56 +456,36 @@ txt:
 	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) txt
 
 install-txt: txt
-	-$(INSTALL_DATA) akfavatar-en.txt $(DESTDIR)$(docdir)
-	-$(INSTALL_DATA) akfavatar-de.txt $(DESTDIR)$(docdir)
 
 uninstall-txt:
-	-rm -f $(DESTDIR)$(docdir)/akfavatar-en.txt
-	-rm -f $(DESTDIR)$(docdir)/akfavatar-de.txt
 
 html:
 	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) html
 
 install-html: html
-	-$(INSTALL_DATA) akfavatar-en.html $(DESTDIR)$(docdir)
-	-$(INSTALL_DATA) akfavatar-de.html $(DESTDIR)$(docdir)
 
 uninstall-html:
-	-rm -f $(DESTDIR)$(docdir)/akfavatar-en.html
-	-rm -f $(DESTDIR)$(docdir)/akfavatar-de.html
 
 dvi:
 	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) dvi
 
 install-dvi: dvi
-	-$(INSTALL_DATA) akfavatar-en.dvi $(DESTDIR)$(docdir)
-	-$(INSTALL_DATA) akfavatar-de.dvi $(DESTDIR)$(docdir)
 
 uninstall-dvi:
-	-rm -f $(DESTDIR)$(docdir)/akfavatar-en.dvi
-	-rm -f $(DESTDIR)$(docdir)/akfavatar-de.dvi
 
 pdf:
 	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) pdf
 
 install-pdf: pdf
-	-$(INSTALL_DATA) akfavatar-en.pdf $(DESTDIR)$(docdir)
-	-$(INSTALL_DATA) akfavatar-de.pdf $(DESTDIR)$(docdir)
 
 uninstall-pdf:
-	-rm -f $(DESTDIR)$(docdir)/akfavatar-en.pdf
-	-rm -f $(DESTDIR)$(docdir)/akfavatar-de.pdf
 
 ps:
 	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) ps
 
 install-ps: ps
-	-$(INSTALL_DATA) akfavatar-en.ps $(DESTDIR)$(docdir)
-	-$(INSTALL_DATA) akfavatar-de.ps $(DESTDIR)$(docdir)
 
 uninstall-ps:
-	-rm -f $(DESTDIR)$(docdir)/akfavatar-en.ps
-	-rm -f $(DESTDIR)$(docdir)/akfavatar-de.ps
 
 man:
 	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) man
@@ -607,7 +574,7 @@ multiplizieren: $(srcdir)/pascal/multiply.pas
 	    -Fi$(srcdir)/pascal \
 	    $(srcdir)/pascal/multiply.pas
 
-dist: info html man about $(srcdir)/alert.au
+dist: about $(srcdir)/alert.au
 	mkdir $(PKGNAME)
 	ln $(srcdir)/README $(srcdir)/INSTALL $(srcdir)/AUTHORS \
 	   $(srcdir)/NEWS \
@@ -700,20 +667,8 @@ dist: info html man about $(srcdir)/alert.au
 	   $(PKGNAME)/lua/akfavatar/
 
 	mkdir $(PKGNAME)/doc
-	ln $(srcdir)/doc/README $(srcdir)/doc/Makefile \
-	   $(srcdir)/doc/avtcmd.1 \
-	   $(srcdir)/doc/lua-akfavatar.en.man \
+	ln $(srcdir)/doc/lua-akfavatar.en.man \
 	   $(srcdir)/doc/lua-akfavatar-reference.en.man \
-	   $(srcdir)/doc/akfavatar-en.texinfo $(srcdir)/doc/akfavatar-en.info \
-	   $(srcdir)/doc/lua-akfavatar-en.texinfo \
-	   $(srcdir)/doc/lua-akfavatar-de.texinfo \
-	   $(srcdir)/doc/lua-ref-en.texinfo \
-	   $(srcdir)/doc/pasref.txt \
-	   $(srcdir)/doc/akfavatar-en.html \
-	   $(srcdir)/doc/akfavatar-de.texinfo $(srcdir)/doc/akfavatar-de.info \
-	   $(srcdir)/doc/akfavatar-de.html \
-	   $(srcdir)/doc/akfavatar.css \
-	   $(srcdir)/doc/pdfmeta-en $(srcdir)/doc/pdfmeta-de \
 	   $(PKGNAME)/doc/
 
 	mkdir $(PKGNAME)/mingw
@@ -732,7 +687,7 @@ dist: info html man about $(srcdir)/alert.au
 	rm -rf $(PKGNAME)/
 	bzip2 -f $(PKGNAME).tar
 
-dist-bin-default: info html about pdf libakfavatar.so lua-akfavatar-bin \
+dist-bin-default: about pdf libakfavatar.so lua-akfavatar-bin \
 	          lua-akfavatar.so base64.so akfavatar-term.so
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/lua
@@ -776,9 +731,6 @@ dist-bin-default: info html about pdf libakfavatar.so lua-akfavatar-bin \
 	   $(srcdir)/fsdemo-??.avt \
 	   $(srcdir)/avtcmd \
 	   $(BINPKGNAME)/
-	ln $(srcdir)/doc/akfavatar-??.html $(BINPKGNAME)/
-	ln $(srcdir)/doc/akfavatar-??.info $(BINPKGNAME)/
-	ln $(srcdir)/doc/avtcmd.1 $(BINPKGNAME)/
 	ln $(srcdir)/doc/lua-akfavatar.en.man $(BINPKGNAME)/
 	ln $(srcdir)/doc/lua-akfavatar-reference.en.man $(BINPKGNAME)/
 	ln $(srcdir)/lua/akfavatar/dir.en.about \

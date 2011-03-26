@@ -289,13 +289,11 @@ multiplizieren.exe: $(srcdir)/pascal/multiply.pas
 	  $(srcdir)/pascal/multiply.pas
 
 dist-bin: akfavatar.dll lua-akfavatar.exe lua-akfavatar.dll base64.dll akfavatar-vorbis.dll about
-	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) html txt pdf
+	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) pdf
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/lua
 	mkdir $(BINPKGNAME)/lua/akfavatar
 	mkdir $(BINPKGNAME)/include
-	cp $(srcdir)/doc/akfavatar-en.html $(srcdir)/doc/akfavatar-de.html $(BINPKGNAME)/
-	cp akfavatar-en.txt akfavatar-de.txt $(BINPKGNAME)/
 	cp akfavatar.dll $(BINPKGNAME)/
 	cp libavtaddons.a $(BINPKGNAME)/
 	cp $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/include/
@@ -320,8 +318,8 @@ dist-bin: akfavatar.dll lua-akfavatar.exe lua-akfavatar.dll base64.dll akfavatar
 	cp $(srcdir)/lua/characters_tables.lua $(BINPKGNAME)/lua/
 	-cp $(srcdir)/lua-akfavatar.en.about $(BINPKGNAME)/
 	-cp $(srcdir)/lua-akfavatar-reference.en.about $(BINPKGNAME)/
-	-cp lua-akfavatar.en.pdf $(BINPKGNAME)/
-	-cp lua-akfavatar-reference.en.pdf $(BINPKGNAME)/
+	cp lua-akfavatar.en.pdf $(BINPKGNAME)/
+	cp lua-akfavatar-reference.en.pdf $(BINPKGNAME)/
 	cp $(srcdir)/lua/akfavatar/dir.en.about $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/dir.de.about $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/utf8.lua $(BINPKGNAME)/lua/akfavatar/
