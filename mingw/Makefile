@@ -288,7 +288,9 @@ multiplizieren.exe: $(srcdir)/pascal/multiply.pas
 	-fpcwavatar -dRELEASE -ddeutsch -o$@ -Fi$(srcdir)/pascal \
 	  $(srcdir)/pascal/multiply.pas
 
-dist-bin: akfavatar.dll lua-akfavatar.exe lua-akfavatar.dll base64.dll akfavatar-vorbis.dll about
+dist-bin: akfavatar.dll lua-akfavatar.exe lua-akfavatar.dll base64.dll \
+	  akfavatar-vorbis.dll about \
+	  $(srcdir)/misc/lua51.dll $(srcdir)/misc/SDL.dll
 	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" pdf
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/lua
@@ -300,7 +302,6 @@ dist-bin: akfavatar.dll lua-akfavatar.exe lua-akfavatar.dll base64.dll akfavatar
 	cp $(srcdir)/avtaddons.h $(BINPKGNAME)/include/
 	cp $(srcdir)/fsdemo-??.avt $(BINPKGNAME)/
 	cp lua-akfavatar.exe $(BINPKGNAME)/
-	cp lua-akfavatar.dll $(BINPKGNAME)/
 	cp base64.dll $(BINPKGNAME)/
 	cp akfavatar-vorbis.dll $(BINPKGNAME)/
 	cp $(srcdir)/lua/multiplication.lua $(BINPKGNAME)/lua/
@@ -346,10 +347,9 @@ dist-bin: akfavatar.dll lua-akfavatar.exe lua-akfavatar.dll base64.dll akfavatar
 	cp $(srcdir)/teacher.xpm $(srcdir)/akfoerster.xpm $(BINPKGNAME)/
 	cp $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
 	cp $(srcdir)/skull1.xpm $(BINPKGNAME)/
-	-cp $(srcdir)/misc/SDL.dll $(BINPKGNAME)/
+	cp $(srcdir)/misc/SDL.dll $(BINPKGNAME)/
 	cp $(srcdir)/README-SDL $(BINPKGNAME)/README-SDL.txt
 	cp $(srcdir)/misc/lua51.dll $(BINPKGNAME)/
-	cp $(srcdir)/misc/lua.exe $(BINPKGNAME)/
 	cp $(srcdir)/README-Lua $(BINPKGNAME)/README-Lua.txt
 	$(STRIP) $(BINPKGNAME)/*.exe
 	$(STRIP) $(BINPKGNAME)/*.dll
