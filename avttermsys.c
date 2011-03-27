@@ -1,6 +1,6 @@
 /*
  * avttermsys - system specific functions for terminal emulation
- * Copyright (c) 2007, 2008, 2009, 2010 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -190,9 +190,6 @@ avta_term_initialize (int *input_fd, int width, int height,
 	putenv ("TERM=" BWTERM);
       else
 	putenv ("TERM=" TERM);
-
-      /* programs can identify avatarsay with this */
-      putenv ("AKFAVTTERM=" AVTVERSIONNR);
 
       if (working_dir)
 	(void) chdir (working_dir);

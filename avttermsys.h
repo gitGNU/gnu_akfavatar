@@ -1,6 +1,6 @@
 /*
  * avttermsys - system specific functions for terminal emulation
- * Copyright (c) 2009, 2010 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2009, 2010, 2011 Andreas K. Foerster <info@akfoerster.de>
  *
  * These functions are only for internal use, they are not part of the API!
  *

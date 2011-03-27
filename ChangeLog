@@ -1,3 +1,10 @@
+2011-03-27  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avttermsys.c (avta_term_initialize):
+	don't define environment variable AKFAVTTERM anymore
+
+	* avtcmd: adapted to lua-akfavatar
+
 2011-03-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_get_newline_mode): new function
