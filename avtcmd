@@ -1,41 +1,34 @@
 #!/bin/sh
 
 #########################################################################
-# tool to send commands to avatarsay
+# tool to send commands to an APC interface
 # this file is in the public domain --Andreas K. Foerster
 #
 # you may use code from this file and put it under any license
 # you wish to use
 #########################################################################
 
-VERSION=1
+VERSION=2
 
 help()
 {
 cat <<EOF
-Usage: avtcmd [options] avatarsay-command
+Usage: avtcmd [options] 'command'
 
-The program sends commands to avatarsay (AKFAvatar).
-It must be called from avatarsay.
+The program sends commands to an APC interface.
+(APC = Application Program Command)
+The environment variable APC must be set.
 
-This is meant for interactive use only. If you write your own 
-shell-scripts or programs, it is much better to use the 
+This is meant for interactive use only. If you write your own
+shell-scripts or programs, it is much better to use the
 escape-sequences directly.
 
 Options:
  -h, --help       show this help
  -v, --version    show version information
- -s, --sync       synchronize the working directory with avatarsay
+ -s, --sync       synchronize the working directory with lua-akfavatar
 
 Examples:
- avtcmd size 4, 40                         sets the size to 4 lines, 40 columns
- avtcmd size                               sets the maximum size again
- avtcmd -s avatarimage me.xpm              changes the avatar-image
- avtcmd -s audio sound1.au                 plays an audio file
-                                           from the current directory
- avtcmd stopaudio                          stops the audio output
- avtcmd rawaudiosettings mu-law 8000 mono  activate support for 
-                                           headerless AU files
 
 Report bugs to <bug-akfavatar@akfoerster.de>
 EOF
@@ -54,13 +47,13 @@ version()
   exit 0
 }
 
-avatar_command()
+apc()
 {
-  if [ -n "$AKFAVTTERM" ]
+  if [ -n "$APC" ]
   then
     printf "\033_%s\033\\" "$*"
   else
-    echo "error: must be called from avatarsay" >&2
+    echo "error: environment variable APC not set" >&2
     exit 1
   fi
 }
@@ -68,10 +61,10 @@ avatar_command()
 case "$1" in
   -h | --help | "") help ;;
   -v | --version) version ;;
-  -s | --sync) avatar_command datadir `pwd`; shift ;;
+  -s | --sync) apc "avt.set_directory('$(pwd)')"; shift ;;
 esac
 
-[ $# -ge 1 ] && avatar_command "$*"
+[ $# -ge 1 ] && apc "$*"
 
 exit 0
 
