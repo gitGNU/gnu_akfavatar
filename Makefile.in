@@ -435,7 +435,7 @@ uninstall: uninstall-info uninstall-man uninstall-txt uninstall-html \
 	-xdg-icon-resource uninstall --size 32 --novendor lua.xpm
 
 info:
-	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) info
+	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" info
 
 install-info: info
 
@@ -453,45 +453,45 @@ uninstall-man:
 	-rm -f $(DESTDIR)$(mandir)/man3/lua-akfavatar-reference.3
 
 txt:
-	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) txt
+	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" txt
 
 install-txt: txt
 
 uninstall-txt:
 
 html:
-	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) html
+	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" html
 
 install-html: html
 
 uninstall-html:
 
 dvi:
-	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) dvi
+	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" dvi
 
 install-dvi: dvi
 
 uninstall-dvi:
 
 pdf:
-	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) pdf
+	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" pdf
 
 install-pdf: pdf
 
 uninstall-pdf:
 
 ps:
-	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) ps
+	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" ps
 
 install-ps: ps
 
 uninstall-ps:
 
 man:
-	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) man
+	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" man
 
 doc: about
-	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) all
+	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" all
 
 about: $(srcdir)/lua-akfavatar.en.about \
        $(srcdir)/lua-akfavatar-reference.en.about

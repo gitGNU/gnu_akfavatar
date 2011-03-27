@@ -289,7 +289,7 @@ multiplizieren.exe: $(srcdir)/pascal/multiply.pas
 	  $(srcdir)/pascal/multiply.pas
 
 dist-bin: akfavatar.dll lua-akfavatar.exe lua-akfavatar.dll base64.dll akfavatar-vorbis.dll about
-	$(MAKE) -f $(srcdir)/doc/Makefile srcdir=$(srcdir) pdf
+	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" pdf
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/lua
 	mkdir $(BINPKGNAME)/lua/akfavatar
