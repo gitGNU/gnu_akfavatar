@@ -599,7 +599,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/btn_circle.xbm \
 	   $(srcdir)/avtposix.c $(srcdir)/avtterm.c $(srcdir)/avttermsys.h \
 	   $(srcdir)/avttermsys.c $(srcdir)/avtmsg.c $(srcdir)/avtgrmsg.c \
-	   $(srcdir)/stb_vorbis.c \
+	   $(srcdir)/stb_vorbis.c $(srcdir)/avtvorbis.c \
 	   $(srcdir)/arch.c \
 	   $(srcdir)/rgb.txt $(srcdir)/avtman $(srcdir)/avtcmd \
 	   $(srcdir)/example.c $(srcdir)/fsdemo-??.avt \
@@ -667,7 +667,8 @@ dist: about $(srcdir)/alert.au
 	   $(PKGNAME)/lua/akfavatar/
 
 	mkdir $(PKGNAME)/doc
-	ln $(srcdir)/doc/lua-akfavatar.en.man \
+	ln $(srcdir)/doc/Makefile \
+	   $(srcdir)/doc/lua-akfavatar.en.man \
 	   $(srcdir)/doc/lua-akfavatar-reference.en.man \
 	   $(PKGNAME)/doc/
 
