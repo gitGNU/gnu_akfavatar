@@ -357,7 +357,6 @@ install: libakfavatar.so libakfavatar.a installdirs install-info install-man
 	$(INSTALL_DATA) libavtaddons.a $(DESTDIR)$(libdir)
 	-$(LDCONFIG) $(libdir)
 	-$(INSTALL_PROGRAM) lua-akfavatar-bin $(DESTDIR)$(bindir)/lua-akfavatar
-	$(INSTALL_PROGRAM) $(srcdir)/avtman $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/avtcmd $(DESTDIR)$(bindir)
 	$(INSTALL_DATA) $(srcdir)/README $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/AUTHORS $(DESTDIR)$(docdir)
@@ -383,7 +382,6 @@ install-strip: libakfavatar.so libakfavatar.a installdirs install-info install-m
 	$(INSTALL_DATA) libavtaddons.a $(DESTDIR)$(libdir)
 	-$(LDCONFIG) $(libdir)
 	-$(INSTALL_PROGRAM) -s lua-akfavatar-bin $(DESTDIR)$(bindir)/lua-akfavatar
-	$(INSTALL_PROGRAM) $(srcdir)/avtman $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) $(srcdir)/avtcmd $(DESTDIR)$(bindir)
 	$(INSTALL_DATA) $(srcdir)/README $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/AUTHORS $(DESTDIR)$(docdir)
@@ -601,7 +599,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/avttermsys.c $(srcdir)/avtmsg.c $(srcdir)/avtgrmsg.c \
 	   $(srcdir)/stb_vorbis.c $(srcdir)/avtvorbis.c \
 	   $(srcdir)/arch.c \
-	   $(srcdir)/rgb.txt $(srcdir)/avtman $(srcdir)/avtcmd \
+	   $(srcdir)/rgb.txt $(srcdir)/avtcmd \
 	   $(srcdir)/example.c $(srcdir)/fsdemo-??.avt \
 	   $(srcdir)/akfavatar.xpm $(srcdir)/info.xpm \
 	   $(srcdir)/7x14.bdf $(srcdir)/9x18.bdf $(srcdir)/bdf2c \
@@ -728,7 +726,7 @@ dist-bin-default: about pdf libakfavatar.so lua-akfavatar-bin \
 	-ln lua-akfavatar.en.pdf $(BINPKGNAME)/
 	-ln lua-akfavatar-reference.en.pdf $(BINPKGNAME)/
 
-	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/NEWS $(srcdir)/avtman \
+	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/NEWS \
 	   $(srcdir)/fsdemo-??.avt \
 	   $(srcdir)/avtcmd \
 	   $(BINPKGNAME)/
