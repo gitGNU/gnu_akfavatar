@@ -119,14 +119,14 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
           $(srcdir)/btn_help.xbm $(srcdir)/btn_cancel.xbm \
           $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm \
           $(srcdir)/akfavatar.xpm
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c $(srcdir)/avatar.c
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c $(srcdir)/avatar.c
 
 avatar-default.o: $(srcdir)/avatar-default.c $(default_avatar) $(srcdir)/akfavatar.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avatar-default.c
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/avatar-default.c
 
 avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h \
 	        $(srcdir)/avtinternals.h alert.c
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avatar-audio.c
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c -o $@ $(srcdir)/avatar-audio.c
 
 ucsfont7x14.c: $(srcdir)/7x14.bdf $(srcdir)/bdf2c
 	$(AWK) -f $(srcdir)/bdf2c $(srcdir)/7x14.bdf > $@
@@ -135,7 +135,7 @@ ucsfont9x18.c: $(srcdir)/9x18.bdf $(srcdir)/bdf2c
 	$(AWK) -f $(srcdir)/bdf2c $(srcdir)/9x18.bdf > $@
 
 font.o: $(srcdir)/font.c ucsfont7x14.c ucsfont9x18.c
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/font.c
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c -o $@ $(srcdir)/font.c
 
 libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o
 	$(AR) rcu $@ avatar.o avatar-default.o avatar-audio.o font.o
@@ -151,19 +151,19 @@ avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h rgb.h \
            $(srcdir)/btn_help.xbm $(srcdir)/btn_cancel.xbm \
            $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm \
            $(srcdir)/akfavatar.xpm $(srcdir)/avtinternals.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -fPIC -o $@ $(srcdir)/avatar.c
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c -fPIC -o $@ $(srcdir)/avatar.c
 
 avatar-default.lo: $(srcdir)/avatar-default.c $(default_avatar) $(srcdir)/akfavatar.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -fPIC -o $@ \
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -fPIC -o $@ \
 	  $(srcdir)/avatar-default.c
 
 avatar-audio.lo: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h \
 	         $(srcdir)/avtinternals.h alert.c
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -fPIC -o $@ \
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c -fPIC -o $@ \
 	  $(srcdir)/avatar-audio.c
 
 font.lo: $(srcdir)/font.c ucsfont7x14.c ucsfont9x18.c
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -fPIC -o $@ $(srcdir)/font.c
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c -fPIC -o $@ $(srcdir)/font.c
 
 libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo font.lo
 	$(CC) -shared \
@@ -174,24 +174,24 @@ libakfavatar.so: avatar.lo avatar-default.lo avatar-audio.lo font.lo
 	-ln -sf $(LIBNAME) libakfavatar.so
 
 example: $(srcdir)/example.c libakfavatar.so
-	$(CC) $(CFLAGS) -I. -o $@ $(srcdir)/example.c \
+	$(CC) $(CFLAGS) -I$(srcdir) -o $@ $(srcdir)/example.c \
 	  -L. -lakfavatar $(LDFLAGS)
 
 avtccio.o: $(srcdir)/avtccio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
-	$(CC) $(CFLAGS) -I. -c -o $@ $(srcdir)/avtccio.c
+	$(CC) $(CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/avtccio.c
 
 avtcwio.o: $(srcdir)/avtcwio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
-	$(CC) $(CFLAGS) -I. -c -o $@ $(srcdir)/avtcwio.c
+	$(CC) $(CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/avtcwio.c
 
 avtreadfile.o: $(srcdir)/avtreadfile.c $(srcdir)/avtaddons.h
-	$(CC) $(CFLAGS) -I. -c -o $@ $(srcdir)/avtreadfile.c
+	$(CC) $(CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/avtreadfile.c
 
 avtterm.o: $(srcdir)/avtterm.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avtterm.c
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/avtterm.c
 
 avttermsys.o: $(srcdir)/avttermsys.c $(srcdir)/avttermsys.h \
                 $(srcdir)/akfavatar.h version.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avttermsys.c
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c -o $@ $(srcdir)/avttermsys.c
 
 avtmsg.o: $(srcdir)/avtmsg.c $(srcdir)/avtaddons.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtmsg.c
@@ -224,7 +224,7 @@ avtposix.o: $(srcdir)/avtposix.c
 
 avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
 	     $(srcdir)/avtaddons.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -DPREFIX=\"$(exec_prefix)\" -I. \
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -DPREFIX=\"$(exec_prefix)\" -I$(srcdir) -I. \
 	  -c -o $@ $(srcdir)/avatarsay.c
 
 # avatarsay dynamically linked

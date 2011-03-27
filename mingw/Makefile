@@ -72,7 +72,7 @@ alert.c: $(srcdir)/alert.au
 	  $(srcdir)/alert.au > $@
 
 avatar-default.wo: $(srcdir)/avatar-default.c $(default_avatar)
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I. -c -o $@ $(srcdir)/avatar-default.c
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c -o $@ $(srcdir)/avatar-default.c
 
 filechooser.wo: $(srcdir)/filechooser.c $(srcdir)/avtinternals.h \
                  $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h
@@ -95,12 +95,12 @@ avatar.wo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
              $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm \
              $(srcdir)/balloonpointer.xbm $(srcdir)/circle.xbm \
              $(srcdir)/akfavatar.xpm
-	$(CC) -c -I. -I$(srcdir)/mingw $(SDL_CFLAGS) $(CFLAGS) \
+	$(CC) -c -I$(srcdir) -I. -I$(srcdir)/mingw $(SDL_CFLAGS) $(CFLAGS) \
 	    -DFORCE_ICONV=1 -o $@ $(srcdir)/avatar.c
 
 avatar-audio.wo: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h \
                   $(srcdir)/avtinternals.h alert.c
-	$(CC) -c $(SDL_CFLAGS) $(CFLAGS) -I. -o $@ $(srcdir)/avatar-audio.c
+	$(CC) -c $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -o $@ $(srcdir)/avatar-audio.c
 
 ucsfont7x14.c: $(srcdir)/7x14.bdf $(srcdir)/bdf2c
 	$(AWK) -f $(srcdir)/bdf2c $(srcdir)/7x14.bdf > $@
@@ -179,7 +179,7 @@ avtgrmsg.wo: $(srcdir)/avtgrmsg.c
 
 avatarsay.wo: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h \
               $(srcdir)/avtinternals.h
-	$(CC) -I. $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avatarsay.c
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c -o $@ $(srcdir)/avatarsay.c
 
 avatarsay: avatarsay.exe
 
@@ -264,7 +264,7 @@ luaavtstarter.rc: $(srcdir)/mingw/luaavtstarter-rc.in config-mingw
 	  $(srcdir)/mingw/luaavtstarter-rc.in > $@
 
 luaavtstarter-rc.wo: luaavtstarter.rc $(srcdir)/mingw/akfavatar.ico
-	$(WINDRES) -I $(srcdir)/mingw/ -o $@ -i luaavtstarter.rc
+	$(WINDRES) -I$(srcdir)/mingw/ -o $@ -i luaavtstarter.rc
 
 about: $(srcdir)/lua-akfavatar.en.about \
        $(srcdir)/lua-akfavatar-reference.en.about
