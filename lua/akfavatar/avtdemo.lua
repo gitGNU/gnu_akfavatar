@@ -153,7 +153,7 @@ local function command(cmd)
     if a=="" then avt.wait() else avt.wait(a) end
     do_wait = false
   elseif "effectpause"==c then
-    error("command no longer supported: effectpause")
+    -- ignore - for backward compatibility
   elseif "pause"==c then
     if not moved_in then move(true) end
     avt.wait(2.7); avt_show_avatar(); avt.wait(4)
@@ -212,7 +212,9 @@ local function command(cmd)
   elseif "slow"==c then
      avt.set_text_delay(a~="off")
   elseif "back"==c then
-    error("command no longer supported: back")
+    -- just for backward compatibility!
+    local value, line = string.match(a, "^(%d+)%s+(.+)$")
+    if txt then txt = string.sub(txt, 1, -value-1) .. line end
   elseif "right-to-left"==c then
     avt.right_to_left(true)
   elseif "left-to-right"==c then
