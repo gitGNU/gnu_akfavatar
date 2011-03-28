@@ -1,3 +1,17 @@
+* AKFAvatar 0.20.0
+
+  - The program avatarsay was removed
+    all it could do can be done with lua-akfavatar now
+  - documentation now consists of manpages and textfiles
+    wich can be displayed in lua-akfavatar directly
+  - making demos became simpler again,
+    there is no need to specify the balloon-size anymore,
+    but therefore effectpause/back don't work anymore
+  - new lua modules available for better UTF-8 support,
+    terminal-emulation and the Ogg Vorbis audio format
+  - the terminal-emulation has a different, enhanced APC interface
+
+
 * AKFAvatar 0.19.0
 
   - Lua support with program lua-akfavatar
