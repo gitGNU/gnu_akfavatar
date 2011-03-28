@@ -15,6 +15,10 @@ LDFLAGS =
 
 prefix = /usr/$(TARGET)
 
+# for make dist-bin
+lua_dll = $(srcdir)/misc/lua51.dll
+sdl_dll = $(srcdir)/misc/SDL.dll
+
 # Ogg Vorbis files with how many channels should be supported?
 # output is limited to 2 channels, but this value may be higher
 vorbis_max_channels = 8
@@ -290,7 +294,7 @@ multiplizieren.exe: $(srcdir)/pascal/multiply.pas
 
 dist-bin: akfavatar.dll lua-akfavatar.exe lua-akfavatar.dll base64.dll \
 	  akfavatar-vorbis.dll about \
-	  $(srcdir)/misc/lua51.dll $(srcdir)/misc/SDL.dll
+	  $(lua_dll) $(sdl_dll)
 	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" pdf
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/lua
@@ -347,9 +351,9 @@ dist-bin: akfavatar.dll lua-akfavatar.exe lua-akfavatar.dll base64.dll \
 	cp $(srcdir)/teacher.xpm $(srcdir)/akfoerster.xpm $(BINPKGNAME)/
 	cp $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
 	cp $(srcdir)/skull1.xpm $(BINPKGNAME)/
-	cp $(srcdir)/misc/SDL.dll $(BINPKGNAME)/
+	cp $(sdl_dll) $(BINPKGNAME)/
 	cp $(srcdir)/README-SDL $(BINPKGNAME)/README-SDL.txt
-	cp $(srcdir)/misc/lua51.dll $(BINPKGNAME)/
+	cp $(lua_dll) $(BINPKGNAME)/
 	cp $(srcdir)/README-Lua $(BINPKGNAME)/README-Lua.txt
 	$(STRIP) $(BINPKGNAME)/*.exe
 	$(STRIP) $(BINPKGNAME)/*.dll
