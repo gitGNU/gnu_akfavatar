@@ -2,6 +2,8 @@
 
 	* lua/akfavatar/avtdemo:
 	commands avatarname, ballooncolor, textcolor improved
+	commands size, width, height no longer needed (ignored)
+	commands effectpause, back no longer supported
 
 2011-03-27  Andreas K. Foerster  <info@akfoerster.de>
 

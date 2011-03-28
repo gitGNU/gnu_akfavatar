@@ -21,7 +21,7 @@ require "akfavatar.ar"
 pcall(require, "akfavatar-vorbis")
 
 local audio, old_audio, initialized, moved_in, avatar, avatarname
-local ballooncolor, textcolor, title, archive, do_wait
+local ballooncolor, textcolor, title, archive, do_wait, txt
 
 local function initialize()
   avt.initialize {title=title, avatar=avatar, audio=true}
@@ -72,9 +72,19 @@ local function move(move_in)
   do_wait = false
 end
 
+local function show_text()
+  wait()
+  if txt then
+    if not moved_in then move(true) end
+    avt.tell(txt)
+    txt = nil
+    do_wait = true
+  end
+end
+
 local function credits(name)
   if not initialized then initialize() end
-  wait()
+  show_text()
 
   if archive then
     avt.credits(assert(archive:get(name)), true)
@@ -108,7 +118,8 @@ end
 
 
 local function show_image(name)
-  if not initialized then initialize() else wait() end
+  if not initialized then initialize() end
+  show_text()
 
   if archive then
     avt.show_image_string(archive:get(name))
@@ -142,8 +153,7 @@ local function command(cmd)
     if a=="" then avt.wait() else avt.wait(a) end
     do_wait = false
   elseif "effectpause"==c then
-    if not moved_in then move(true) end
-    avt.wait(2.7)
+    error("command no longer supported: effectpause")
   elseif "pause"==c then
     if not moved_in then move(true) end
     avt.wait(2.7); avt_show_avatar(); avt.wait(4)
@@ -151,8 +161,8 @@ local function command(cmd)
   elseif "image"==c then
     show_image(a)
   elseif "rawaudiosettings"==c then
-    local rate,encoding,channels=string.match(a, "^(%d+)%s+(%S+)%s+(%S+)$")
-    -- TODO
+    --local rate,encoding,channels=string.match(a, "^(%d+)%s+(%S+)%s+(%S+)$")
+    error("command no longer supported: rawaudiosettings")
   elseif "audio"==c then
     if not initialized then initialize() end
     load_audio(a)
@@ -173,18 +183,16 @@ local function command(cmd)
     if not initialized then initialize() end
     avt.stop_audio()
   elseif "waitaudio"==c then
+    show_text()
     avt.wait_audio_end()
   elseif "move"==c then
     move("in"==a)
   elseif "size"==c then
-    if not moved_in then move(true) end
-    avt.set_balloon_size(string.match(a, "^(%d+)%s*,%s*(%d+)$"))
+    -- ignore - for backward compatibility
   elseif "height"==c then
-    if not moved_in then move(true) end
-    avt.set_balloon_height(a)
+    -- ignore - for backward compatibility
   elseif "width"==c then
-    if not moved_in then move(true) end
-    avt.set_balloon_width(a)
+    -- ignore - for backward compatibility
   elseif "encoding"==c then
     avt.encoding(a)
   elseif "backgroundcolor"==c then
@@ -204,10 +212,7 @@ local function command(cmd)
   elseif "slow"==c then
      avt.set_text_delay(a~="off")
   elseif "back"==c then
-    if not initialized then initialize() end
-    local value, line = string.match(a, "^(%d+)%s+(.+)$")
-    for i=1,value do avt.backspace() end
-    avt.say(line)
+    error("command no longer supported: back")
   elseif "right-to-left"==c then
     avt.right_to_left(true)
   elseif "left-to-right"==c then
@@ -258,8 +263,6 @@ local function get_script(demofile)
 end
 
 function avtdemo(demofile)
-  local empty = true
-
   if not demofile then return end
 
   -- reset settings
@@ -273,20 +276,17 @@ function avtdemo(demofile)
   do_wait = false
 
   for line in string.gmatch(get_script(demofile), "(.-)\r?\n") do
-    if string.find(line, "^%s*#") or 
+    if string.find(line, "^%s*#") or
        (not initialized and string.find(line, "^%s*$")) then
       -- ignore
     elseif string.find(line, "^%-%-%-") then
-      if moved_in then avt.flip_page() else move(true) end
-      empty = true
+      if not moved_in then move(true) end
+      show_text()
     elseif string.find(line, "^%[") then
       if command(line) then break end
     else -- not a comment nor a command
-      if not moved_in then move(true) end
-      if not empty then avt.newline() end
-      avt.say(line)
-      empty = false
-      do_wait = true
+      if not initialized then initialize() end
+      if txt then txt = txt .. "\n" .. line else txt = line end
     end
   end
 
@@ -295,7 +295,8 @@ function avtdemo(demofile)
     archive = false
   end
 
-  avt.wait(2.7)
+  show_text()
+  wait()
   avt.move_out()
 end
 

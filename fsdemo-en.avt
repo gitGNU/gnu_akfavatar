@@ -1,27 +1,21 @@
-#! ./avatarsay
+#!/usr/bin/env lua-akfavatar
 
 [encoding UTF-8]
 [backgroundcolor dark khaki]
 #[datadir /usr/local/share/akfavatar]
 [avatarimage gnu-head.xpm]
 
-[size 3, 50]
 “Free software” is a matter of _liberty_, not price.
 To understand the concept, you should think of
-“free” as in “free speech”...
-[effectpause]
-[back 4 ,” not as in “free beer.”]
+“free” as in “free speech,” not as in “free beer.”
 -----------------------------------------------------------------------
-[size 3, 47]
 Free software is a matter of the users' freedom
 to run, copy, distribute, study, change and 
 improve the software.
 -----------------------------------------------------------------------
-[size 2, 51]
 More precisely, it refers to four kinds of freedom,
 for the users of the software:
 -----------------------------------------------------------------------
-[size 10, 56]
 0. The freedom _to run_ the program, _for any purpose._
 1. The freedom _to study_ how the program works, and 
    adapt it to your needs.
@@ -33,13 +27,11 @@ for the users of the software:
    community benefits.
    Access to the source code is a precondition for this.
 -----------------------------------------------------------------------
-[size 5, 52]
 The concept of these 4 freedoms (0-3) were developed
 by Richard Stallman.
 
 To set a good example he started to write a 
 completely free operating system.
 -----------------------------------------------------------------------
-[size 2, 41]
 Today Linux based GNU systems are used by
 millions of people around the world.

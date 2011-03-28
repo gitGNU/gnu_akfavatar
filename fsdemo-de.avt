@@ -1,31 +1,25 @@
-#! ./avatarsay
+#!/usr/bin/env lua-akfavatar
 
 [encoding UTF-8]
 [backgroundcolor dark khaki]
 #[datadir /usr/local/share/akfavatar]
 [avatarimage gnu-head.xpm]
 
-[size 5, 43]
 Bei dem Begriff „Freie Software“ geht es um
 _Freiheit_, nicht um den Preis.
 Um dieses Konzept richtig begreifen zu 
 können, sollte man an „frei“ wie in „freie
-Rede“ denken...
-[effectpause]
-[back 3 , und nicht an „Freibier“.]
+Rede“ denken, und nicht an „Freibier“.
 -----------------------------------------------------------------------
-[size 4, 59]
 Bei „Freier Software“ geht es um die Freiheit des Benutzers
 die Software nach Belieben zu benutzen, zu kopieren, weiter
 zu geben, die Software zu studieren, sowie Änderungen und
 Verbesserungen an der Software vornehmen zu können.
 -----------------------------------------------------------------------
-[size 3, 57]
 Genauer gesagt, bezieht sich der Begriff „Freie Software“
 auf vier Arten von Freiheit, die der Benutzer der 
 Software hat:
 -----------------------------------------------------------------------
-[size 10, 66]
 0. Die Freiheit, das Programm _für jeden Zweck zu benutzen_.
 1. Die Freiheit, _zu verstehen_, wie das Programm funktioniert und
    wie man es für seine Ansprüche anpassen kann.
@@ -37,7 +31,6 @@ Software hat:
    Gemeinschaft davon profitieren kann. 
    Der Zugang zum Quellcode ist dafür Voraussetzung.
 -----------------------------------------------------------------------
-[size 6, 41]
 Diese 4 Freiheiten (0-3) wurden so von 
 Richard Stallman entworfen.
 
@@ -45,6 +38,5 @@ Um mit gutem Beispiel voran zu gehen, hat
 er angefangen, ein vollständig freies 
 Betriebssystem zu entwickeln.
 -----------------------------------------------------------------------
-[size 2, 43]
 Heute werden Linux basierte GNU Systeme von
 vielen Millionen Anwendern benutzt.
