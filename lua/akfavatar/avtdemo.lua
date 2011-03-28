@@ -1,6 +1,6 @@
 --[[-------------------------------------------------------------------
 Moldule for making demos for Lua-AKFAvatar
-Copyright (c) 2010 Andreas K. Foerster <info@akfoerster.de>
+Copyright (c) 2010,2011 Andreas K. Foerster <info@akfoerster.de>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,11 +21,13 @@ require "akfavatar.ar"
 pcall(require, "akfavatar-vorbis")
 
 local audio, old_audio, initialized, moved_in, avatar, avatarname
-local title, archive, do_wait
+local ballooncolor, textcolor, title, archive, do_wait
 
 local function initialize()
   avt.initialize {title=title, avatar=avatar, audio=true}
   if avatarname then avt.set_avatar_name(avatarname) end
+  if ballooncolor then avt.set_balloon_color(ballooncolor) end
+  if textcolor then avt.set_text_color(textcolor) end
   avt.set_text_delay()
   avt.markup(true)
   initialized = true
@@ -48,9 +50,19 @@ local function avatar_image(name)
   if initialized then avt.change_avatar_image(avatar) end
 end
 
-local function avatar_name(name)
+local function set_avatar_name(name)
   avatarname = name
   if initialized then avt.set_avatar_name(avatarname) end
+end
+
+local function set_balloon_color(name)
+  ballooncolor = name
+  if initialized then avt.set_balloon_color(ballooncolor) end
+end
+
+local function set_text_color(name)
+  textcolor = name
+  if initialized then avt.set_text_color(textcolor) end
 end
 
 local function move(move_in)
@@ -178,13 +190,13 @@ local function command(cmd)
   elseif "backgroundcolor"==c then
      avt.set_background_color(a)
   elseif "ballooncolor"==c then
-     avt.set_balloon_color(a)
+     set_balloon_color(a)
   elseif "textcolor"==c then
-     avt.set_text_color(a)
+     set_text_color(a)
   elseif "avatarimage"==c then
      avatar_image(a)
   elseif "avatarname"==c then
-     avatar_name(a)
+     set_avatar_name(a)
   elseif "scrolling"==c then
      if "on"==a then avt.set_scroll_mode(1)
      elseif "off"==a then avt.set_scroll_mode(-1)

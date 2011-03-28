@@ -1,6 +1,7 @@
 2011-03-28  Andreas K. Foerster  <info@akfoerster.de>
 
-	* lua/akfavatar/avtdemo: command [avatarname ...] improved
+	* lua/akfavatar/avtdemo:
+	commands avatarname, ballooncolor, textcolor improved
 
 2011-03-27  Andreas K. Foerster  <info@akfoerster.de>
 
