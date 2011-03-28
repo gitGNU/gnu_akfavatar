@@ -20,10 +20,12 @@ require "lua-akfavatar"
 require "akfavatar.ar"
 pcall(require, "akfavatar-vorbis")
 
-local audio, old_audio, initialized, moved_in, avatar, title, archive, do_wait
+local audio, old_audio, initialized, moved_in, avatar, avatarname
+local title, archive, do_wait
 
 local function initialize()
   avt.initialize {title=title, avatar=avatar, audio=true}
+  if avatarname then avt.set_avatar_name(avatarname) end
   avt.set_text_delay()
   avt.markup(true)
   initialized = true
@@ -44,6 +46,11 @@ local function avatar_image(name)
   end
 
   if initialized then avt.change_avatar_image(avatar) end
+end
+
+local function avatar_name(name)
+  avatarname = name
+  if initialized then avt.set_avatar_name(avatarname) end
 end
 
 local function move(move_in)
@@ -177,7 +184,7 @@ local function command(cmd)
   elseif "avatarimage"==c then
      avatar_image(a)
   elseif "avatarname"==c then
-     avt.set_avatar_name(a)
+     avatar_name(a)
   elseif "scrolling"==c then
      if "on"==a then avt.set_scroll_mode(1)
      elseif "off"==a then avt.set_scroll_mode(-1)

@@ -1,3 +1,7 @@
+2011-03-28  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/akfavatar/avtdemo: command [avatarname ...] improved
+
 2011-03-27  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avttermsys.c (avta_term_initialize):
