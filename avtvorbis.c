@@ -147,7 +147,7 @@ avta_load_vorbis_data (void *data, int datasize)
   /* check content, must be plain vorbis with no other streams */
   if (!data || datasize <= 0
       || memcmp ("OggS", data, 4) != 0
-      || memcmp ("vorbis", data + 0x1D, 6) != 0)
+      || memcmp ("vorbis", ((char *) data) + 0x1D, 6) != 0)
     return NULL;
 
   vorbis =
