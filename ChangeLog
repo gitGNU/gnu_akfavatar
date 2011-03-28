@@ -5,6 +5,9 @@
 	commands size, width, height no longer needed (ignored)
 	commands effectpause, back no longer supported
 
+	* avtvorbis.c (avta_load_vorbis_file, avta_load_vorbis_data):
+	first check if it's really plain Ogg Vorbis
+
 2011-03-27  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avttermsys.c (avta_term_initialize):

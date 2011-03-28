@@ -98,19 +98,41 @@ load_vorbis (stb_vorbis * vorbis)
 extern avt_audio_t *
 avta_load_vorbis_file (char *filename)
 {
+  FILE *f;
   int error;
   stb_vorbis *vorbis;
   avt_audio_t *audio_data;
+  char buf[80];
 
   if (!filename || !*filename)
     return NULL;
 
-  vorbis = stb_vorbis_open_filename (filename, &error, NULL);
-  if (vorbis == NULL)
+  f = fopen (filename, "rb");
+
+  if (!f)
     return NULL;
+
+  /* check content, must be plain vorbis with no other streams */
+  if (fread (&buf, sizeof (buf), 1, f) < 1
+      || memcmp ("OggS", buf, 4) != 0
+      || memcmp ("vorbis", buf + 0x1D, 6) != 0)
+    {
+      fclose (f);
+      return NULL;
+    }
+
+  fseek (f, 0, SEEK_SET);
+  vorbis = stb_vorbis_open_file (f, AVT_FALSE, &error, NULL);
+
+  if (!vorbis)
+    {
+      fclose (f);
+      return NULL;
+    }
 
   audio_data = load_vorbis (vorbis);
   stb_vorbis_close (vorbis);
+  fclose (f);
 
   return audio_data;
 }
@@ -122,10 +144,14 @@ avta_load_vorbis_data (void *data, int datasize)
   stb_vorbis *vorbis;
   avt_audio_t *audio_data;
 
-  if (!data || datasize <= 0)
+  /* check content, must be plain vorbis with no other streams */
+  if (!data || datasize <= 0
+      || memcmp ("OggS", data, 4) != 0
+      || memcmp ("vorbis", data + 0x1D, 6) != 0)
     return NULL;
 
-  vorbis = stb_vorbis_open_memory ((unsigned char *) data, datasize, &error, NULL);
+  vorbis =
+    stb_vorbis_open_memory ((unsigned char *) data, datasize, &error, NULL);
   if (vorbis == NULL)
     return NULL;
 
