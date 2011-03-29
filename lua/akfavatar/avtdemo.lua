@@ -284,6 +284,7 @@ function avtdemo(demofile)
     elseif string.find(line, "^%-%-%-") then
       if not moved_in then move(true) end
       show_text()
+      wait()
     elseif string.find(line, "^%[") then
       if command(line) then break end
     else -- not a comment nor a command
