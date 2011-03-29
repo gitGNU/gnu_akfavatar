@@ -33,10 +33,10 @@ local function initialize()
   initialized = true
 end
 
-local function wait()
+local function wait(s)
   if do_wait then
     avt.wait_audio_end()
-    avt.wait()
+    avt.wait(s)
     do_wait = false
     end
 end
@@ -66,13 +66,6 @@ local function set_text_color(name)
   if initialized then avt.set_text_color(textcolor) end
 end
 
-local function move(move_in)
-  if not initialized then initialize() end
-  if move_in then avt.move_in() else avt.move_out() end
-  moved_in = move_in
-  do_wait = false
-end
-
 local function show_text()
   wait()
   if txt then
@@ -83,9 +76,24 @@ local function show_text()
   end
 end
 
+local function move(move_in)
+  if not initialized then initialize() end
+
+  if move_in then
+    avt.move_in()
+  else
+    show_text()
+    wait()
+    avt.move_out()
+  end
+
+  moved_in = move_in
+end
+
 local function credits(name)
   if not initialized then initialize() end
   show_text()
+  wait()
 
   if archive then
     avt.credits(assert(archive:get(name)), true)
@@ -152,13 +160,15 @@ local function command(cmd)
     avt.clear()
   elseif "wait"==c then
     if not initialized then initialize() end
-    if a=="" then avt.wait() else avt.wait(a) end
-    do_wait = false
+    show_text()
+    do_wait = true
+    if a=="" then wait() else wait(tonumber(a)) end
   elseif "effectpause"==c then
     -- ignore - for backward compatibility
   elseif "pause"==c then
     if not moved_in then move(true) end
-    avt.wait(2.7); avt_show_avatar(); avt.wait(4)
+    show_text()
+    wait(2.7); avt_show_avatar(); avt.wait(4)
     do_wait = false
   elseif "image"==c then
     show_image(a)
