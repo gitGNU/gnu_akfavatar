@@ -115,7 +115,7 @@ avta_load_vorbis_file (char *filename)
   /* check content, must be plain vorbis with no other streams */
   if (fread (&buf, sizeof (buf), 1, f) < 1
       || memcmp ("OggS", buf, 4) != 0
-      || memcmp ("\x01vorbis", buf + 28, 6) != 0)
+      || memcmp ("\x01vorbis", buf + 28, 7) != 0)
     {
       fclose (f);
       return NULL;
@@ -147,7 +147,7 @@ avta_load_vorbis_data (void *data, int datasize)
   /* check content, must be plain vorbis with no other streams */
   if (!data || datasize <= 0
       || memcmp ("OggS", data, 4) != 0
-      || memcmp ("\x01vorbis", ((char *) data) + 28, 6) != 0)
+      || memcmp ("\x01vorbis", ((char *) data) + 28, 7) != 0)
     return NULL;
 
   vorbis =
