@@ -35,6 +35,7 @@ end
 
 local function wait()
   if do_wait then
+    avt.wait_audio_end()
     avt.wait()
     do_wait = false
     end
@@ -120,6 +121,7 @@ end
 local function show_image(name)
   if not initialized then initialize() end
   show_text()
+  wait()
 
   if archive then
     avt.show_image_string(archive:get(name))
