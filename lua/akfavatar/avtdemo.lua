@@ -69,7 +69,10 @@ end
 local function show_text()
   wait()
   if txt then
-    if not moved_in then move(true) end
+    if not moved_in then
+      avt.move_in() -- move not defined, yet
+      moved_in = true
+    end
     avt.tell(txt)
     txt = nil
     do_wait = true
@@ -178,6 +181,7 @@ local function command(cmd)
   elseif "audio"==c then
     if not initialized then initialize() end
     load_audio(a)
+    avt.wait_audio_end()
     audio:play()
   elseif "audioloop"==c then
     if not initialized then initialize() end
@@ -187,10 +191,12 @@ local function command(cmd)
     load_audio(a) -- deprecated
   elseif "playaudio"==c then
     if not initialized then initialize() end
-    audio:play()  -- deprecated
-  elseif "playaudioloop"==c then
+    avt.wait_audio_end()
+    audio:play()
+  elseif "playaudioloop"==c then  -- deprecated
     if not initialized then initialize() end
-    audio:loop() -- deprecated
+    avt.wait_audio_end()
+    audio:loop()
   elseif "stopaudio"==c then
     if not initialized then initialize() end
     avt.stop_audio()
