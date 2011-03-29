@@ -172,13 +172,13 @@ local function command(cmd)
     load_audio(a)
     audio:loop()
   elseif "loadaudio"==c then
-    load_audio(a)
+    load_audio(a) -- deprecated
   elseif "playaudio"==c then
     if not initialized then initialize() end
-    audio:play()
+    audio:play()  -- deprecated
   elseif "playaudioloop"==c then
     if not initialized then initialize() end
-    audio:loop()
+    audio:loop() -- deprecated
   elseif "stopaudio"==c then
     if not initialized then initialize() end
     avt.stop_audio()
