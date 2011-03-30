@@ -459,13 +459,13 @@ When no
 .I filename
 is given, or the
 .IR filename " is " nil
-or an empty string, it returns an empty audio element, 
+or an empty string, it returns a silent audio element, 
 ie. you can call its methods, it just doesn't play anything.
 .IP
 On error it returns 
 .I nil
 and an error message.
-(Note: in version 0.19.0 it also returned an empty audio element then.)
+(Note: in version 0.19.0 it also returned a silent audio element then.)
 .PP
 .TP
 .BI "avt.load_audio_string (" [audio_data] )
@@ -482,16 +482,28 @@ When no
 .I audio_data
 is given, or the 
 .IR audio_data " is " nil
-or an empty string, it returns an empty audio element, 
+or an empty string, it returns a silent audio element,
 ie. you can call its methods, it just doesn't play anything.
 .IP
 On error it returns 
 .I nil
 and an error message.
-(Note: in version 0.19.0 it also returned an empty audio element then.)
+(Note: in version 0.19.0 it also returned a silent audio element then.)
 .IP
 See also:
 .B base64.decode
+.PP
+.TP
+.B avt.silent ()
+Returns a silent audio element, ie. you can call its methods,
+it just doesn't play anything.
+.IP
+.B Example:
+.EX
+audio = avt.load_audio_file(filename) or avt.silent()
+.EE
+.IP
+In this example you get a silent sound when the file could not be read.
 .PP
 .TP
 .BI "avt.audio_playing (" [audio_data] )
@@ -612,7 +624,7 @@ manually with using
 .B "collectgarbage(""collect"")"
 from time to time.
 Then you don't need to call this function.
-Just make sure the currently playing sound is still assigned 
+Just make sure the currently playing sound is still assigned
 to a variable when you do this.
 .PP
 .TP

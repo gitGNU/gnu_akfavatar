@@ -7,6 +7,8 @@
 	* lua/lua-avt.c (avt.load_base_audio_file, avt.load_base_audio_string):
 	new functions
 
+	* lua/lua-avt.c (lavt_silent => avt.silent): new function
+
 2011-03-28  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar/avtdemo:

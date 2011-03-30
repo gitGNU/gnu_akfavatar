@@ -1264,6 +1264,31 @@ lavt_quit_audio (lua_State * L AVT_UNUSED)
   return 0;
 }
 
+/* problem: the garbage collector doesn't see, how heavy this is */
+static void
+make_audio_element (lua_State * L, avt_audio_t *data)
+{
+  avt_audio_t **audio;
+
+  audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
+  *audio = data;
+  luaL_getmetatable (L, AUDIODATA);
+  lua_setmetatable (L, -2);
+}
+
+/*
+ * get a silent audio structure
+ *
+ * this function is dedicated to the song
+ * "sounds of silence" by Simon & Garfunkel
+ */
+static int
+lavt_silent (lua_State * L)
+{
+  make_audio_element (L, NULL);
+  return 1;
+}
+
 /*
  * loads an audio file
  * supported: AU and Wave
@@ -1274,7 +1299,6 @@ lavt_load_audio_file (lua_State * L)
   const char *filename;
   size_t len;
   avt_audio_t *audio_data;
-  avt_audio_t **audio;
 
   filename = "";
   audio_data = NULL;
@@ -1296,12 +1320,7 @@ lavt_load_audio_file (lua_State * L)
 	}
     }
 
-  /* problem: the garbage collector doesn't see, how heavy this is */
-  audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
-  *audio = audio_data;		/* audio_data may be NULL */
-  luaL_getmetatable (L, AUDIODATA);
-  lua_setmetatable (L, -2);
-
+  make_audio_element (L, audio_data);
   return 1;
 }
 
@@ -1311,7 +1330,6 @@ lavt_load_audio_string (lua_State * L)
   char *data;
   size_t len;
   avt_audio_t *audio_data;
-  avt_audio_t **audio;
 
   data = "";
   audio_data = NULL;
@@ -1333,12 +1351,7 @@ lavt_load_audio_string (lua_State * L)
 	}
     }
 
-  /* problem: the garbage collector doesn't see, how heavy this is */
-  audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
-  *audio = audio_data;		/* audio_data may be NULL */
-  luaL_getmetatable (L, AUDIODATA);
-  lua_setmetatable (L, -2);
-
+  make_audio_element (L, audio_data);
   return 1;
 }
 
@@ -2000,6 +2013,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"load_base_audio_file", lavt_load_audio_file},
   {"load_audio_string", lavt_load_audio_string},
   {"load_base_audio_string", lavt_load_audio_string},
+  {"silent", lavt_silent},
   {"audio_playing", laudio_playing},
   {"wait_audio_end", lavt_wait_audio_end},
   {"stop_audio", lavt_stop_audio},
