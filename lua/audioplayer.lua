@@ -51,11 +51,9 @@ local function load_audio(url)
   local audio
 
   if string.find(url, "^https?://") or string.find(url, "^s?ftps?://") then
-    local data = get_url(url)
-    audio = avt.load_audio_string(data) or vorbis.load_string(data)
+    audio = avt.load_audio_string(get_url(url))
   else
-    url = handle_list_entry(url)
-    audio = avt.load_audio_file(url) or vorbis.load_file(url)
+    audio = avt.load_audio_file(handle_list_entry(url))
   end
 
   return audio

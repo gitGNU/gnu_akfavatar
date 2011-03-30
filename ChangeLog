@@ -1,3 +1,9 @@
+2011-03-30  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/akfavatar-vorbis.c:
+	redefines avt.load_audio_file and avt.load_audio_string
+	lua/audioplayer.lua, lua/akfavatar/avtdemo.lua: adapted
+
 2011-03-28  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar/avtdemo:

@@ -88,6 +88,90 @@ lvorbis_load_string (lua_State * L)
   return 1;
 }
 
+static int
+lvorbis_load_file_chain (lua_State * L)
+{
+  avt_audio_t *audio_data;
+  avt_audio_t **audio;
+
+  audio_data = NULL;
+
+  if (!lua_isnoneornil (L, 1))
+    {
+      char *filename;
+      filename = (char *) luaL_checkstring (L, 1);
+
+      audio_data = avta_load_vorbis_file (filename);
+
+      if (!audio_data)
+	{
+	  lua_getfield (L, LUA_REGISTRYINDEX,
+			"AVTVORBIS-old_load_audio_file");
+	  lua_pushvalue (L, 1);	/* push filename */
+
+	  if (lua_pcall (L, 1, 1, 0) != 0)
+	    {
+	      lua_pushnil (L);	/* return nil on error */
+	      lua_pushliteral (L, "unsupported audio format");
+	      return 2;
+	    }
+
+	  return 1;
+	}
+    }
+
+  /* create audio structure */
+  audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
+  *audio = audio_data;
+  luaL_getmetatable (L, AUDIODATA);
+  lua_setmetatable (L, -2);
+
+  return 1;
+}
+
+static int
+lvorbis_load_string_chain (lua_State * L)
+{
+  avt_audio_t *audio_data;
+  avt_audio_t **audio;
+
+  audio_data = NULL;
+
+  if (!lua_isnoneornil (L, 1))
+    {
+      size_t len;
+      void *vorbis_data;
+
+      vorbis_data = (void *) luaL_checklstring (L, 1, &len);
+      audio_data = avta_load_vorbis_data (vorbis_data, (int) len);
+
+      if (!audio_data)		/* call old avt.load_audio_string */
+	{
+	  lua_getfield (L, LUA_REGISTRYINDEX,
+			"AVTVORBIS-old_load_audio_string");
+	  lua_pushvalue (L, 1);	/* push audio data */
+
+	  if (lua_pcall (L, 1, 1, 0) != 0)
+	    {
+	      lua_pushnil (L);	/* return nil on error */
+	      lua_pushliteral (L, "unsupported audio format");
+	      return 2;
+	    }
+
+	  return 1;
+	}
+    }
+
+  /* create audio structure with loaded audio_data */
+  audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
+  *audio = audio_data;
+  luaL_getmetatable (L, AUDIODATA);
+  lua_setmetatable (L, -2);
+
+  return 1;
+}
+
+
 static const struct luaL_reg vorbislib[] = {
   {"load_file", lvorbis_load_file},
   {"load_string", lvorbis_load_string},
@@ -97,11 +181,27 @@ static const struct luaL_reg vorbislib[] = {
 int
 luaopen_vorbis (lua_State * L)
 {
-  /* require "lua-akfavatar" to get definition for audio data */
+  /* require "lua-akfavatar" */
   lua_getglobal (L, "require");
   lua_pushliteral (L, "lua-akfavatar");
   lua_call (L, 1, 0);
 
+  /* save old avt.load_audio_file and avt.load_audio_string for chain loader */
+  lua_getglobal (L, "avt");
+  lua_getfield (L, -1, "load_audio_file");
+  lua_setfield (L, LUA_REGISTRYINDEX, "AVTVORBIS-old_load_audio_file");
+  lua_getfield (L, -1, "load_audio_string");
+  lua_setfield (L, LUA_REGISTRYINDEX, "AVTVORBIS-old_load_audio_string");
+
+  /* redefine avt.load_audio_file and avt.load_audio_string */
+  lua_pushcfunction (L, lvorbis_load_file_chain);
+  lua_setfield (L, -2, "load_audio_file");
+  lua_pushcfunction (L, lvorbis_load_string_chain);
+  lua_setfield (L, -2, "load_audio_string");
+
+  lua_pop (L, 1);		/* pop avt */
+
   luaL_register (L, "vorbis", vorbislib);
+
   return 1;
 }

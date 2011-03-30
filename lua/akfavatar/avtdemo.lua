@@ -111,20 +111,9 @@ local function load_audio(name)
     old_audio:free()
     old_audio = audio --> keep, it might still be playing!
     if archive then
-      local data = archive:get(name)
-      if vorbis then
-        audio = avt.load_audio_string(data) or vorbis.load_string(data)
-                or avt.load_audio_string()
-      else
-        audio = avt.load_audio_string(data) or avt.load_audio_string()
-      end
+      audio = avt.load_audio_string(archive:get(name)) or avt.load_audio_string()
     else --> not an archive
-      if vorbis then
-        audio = avt.load_audio_file(name) or vorbis.load_file(name)
-                or avt.load_audio_string()
-      else
-        audio = avt.load_audio_file(name) or avt.load_audio_string()
-      end
+      audio = avt.load_audio_file(name) or avt.load_audio_string()
     end
 end
 
