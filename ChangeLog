@@ -4,6 +4,9 @@
 	redefines avt.load_audio_file and avt.load_audio_string
 	lua/audioplayer.lua, lua/akfavatar/avtdemo.lua: adapted
 
+	* lua/lua-avt.c (avt.load_base_audio_file, avt.load_base_audio_string):
+	new functions
+
 2011-03-28  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar/avtdemo:

@@ -447,20 +447,13 @@ Only use this, if you are sure you need it.
 .PP
 .TP
 .BI "avt.load_audio_file (" [filename] )
+.TQ
+.BI "avt.load_base_audio_file (" [filename] )
 Reads audio data from a file.
 .IP
-supported audio formats:
-.RS
-.IP AU:
-linear PCM with up to 32Bit, mu-law, A-law
-.IP WAV:
-linear PCM with up to 16Bit, MS-ADPCM, IMA-ADPCM
-.IP Both:
-mono or stereo
-.RE
-.IP
-The current implementation can only play sounds with up to 16Bit
-precision, but AU-files with more Bits can be read.
+Audio files in WAV or AU format are always supported.
+Other Lua modules may add support for other audio formats to
+.IR avt.load_audio_file .
 .IP
 When no
 .I filename
@@ -476,8 +469,14 @@ and an error message.
 .PP
 .TP
 .BI "avt.load_audio_string (" [audio_data] )
+.TQ
+.BI "avt.load_base_audio_string (" [audio_data] )
 Reads audio data from a string.  Otherwise the same as
 .BR avt.load_audio_file() .
+.IP
+Audio data in WAV or AU format are always supported.
+Other Lua modules may add support for other audio formats to
+.IR avt.load_audio_string .
 .IP
 When no 
 .I audio_data
