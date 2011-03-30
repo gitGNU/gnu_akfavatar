@@ -111,9 +111,9 @@ local function load_audio(name)
     old_audio:free()
     old_audio = audio --> keep, it might still be playing!
     if archive then
-      audio = avt.load_audio_string(archive:get(name)) or avt.load_audio_string()
+      audio = avt.load_audio_string(archive:get(name)) or avt.silent()
     else --> not an archive
-      audio = avt.load_audio_file(name) or avt.load_audio_string()
+      audio = avt.load_audio_file(name) or avt.silent()
     end
 end
 
@@ -275,7 +275,7 @@ function avtdemo(demofile)
   if not demofile then return end
 
   -- reset settings
-  audio = avt.load_audio_string()
+  audio = avt.silent()
   old_audio = audio
   initialized = false
   moved_in = false
