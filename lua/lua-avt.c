@@ -1456,7 +1456,7 @@ laudio_tostring (lua_State * L)
   if (audio && *audio)
     lua_pushfstring (L, AUDIODATA " (%p)", audio);
   else
-    lua_pushfstring (L, AUDIODATA ", empty (%p)", audio);
+    lua_pushfstring (L, AUDIODATA ", silent (%p)", audio);
 
   return 1;
 }
