@@ -1266,14 +1266,19 @@ lavt_quit_audio (lua_State * L AVT_UNUSED)
 
 /* problem: the garbage collector doesn't see, how heavy this is */
 static void
-make_audio_element (lua_State * L, avt_audio_t *data)
+make_audio_element (lua_State * L, avt_audio_t * data)
 {
   avt_audio_t **audio;
 
-  audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
-  *audio = data;
-  luaL_getmetatable (L, AUDIODATA);
-  lua_setmetatable (L, -2);
+  if (data)
+    {
+      audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
+      *audio = data;
+      luaL_getmetatable (L, AUDIODATA);
+      lua_setmetatable (L, -2);
+    }
+  else
+    lua_getfield (L, LUA_REGISTRYINDEX, "AKFAvatar-silence");
 }
 
 /*
@@ -2058,6 +2063,8 @@ static const struct luaL_reg audiolib[] = {
 int
 luaopen_akfavatar (lua_State * L)
 {
+  avt_audio_t **audio;
+
   luaL_register (L, "avt", akfavtlib);
 
 #ifdef MODULE
@@ -2079,6 +2086,13 @@ luaopen_akfavatar (lua_State * L)
   lua_setfield (L, -2, "__index");	/* use metatabe itself for indexing */
   luaL_register (L, NULL, audiolib);
   lua_pop (L, 1);		/* pop metatable */
+
+  /* create a reusable silent sound */
+  audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
+  *audio = NULL;
+  luaL_getmetatable (L, AUDIODATA);
+  lua_setmetatable (L, -2);
+  lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-silence");
 
   return 1;
 }

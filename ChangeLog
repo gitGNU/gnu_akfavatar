@@ -1,3 +1,8 @@
+2011-03-31  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/lua-avt.c (luaopen_akfavatar): create a reusable silent sound
+	(make_audio_element): reuse silence
+
 2011-03-30  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar-vorbis.c:
