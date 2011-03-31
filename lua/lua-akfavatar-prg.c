@@ -307,6 +307,7 @@ show_text (const char *filename)
 {
   avt_change_avatar_image (NULL);	/* no avatar */
   avt_set_balloon_size (0, 0);
+  avt_set_balloon_color_name("tan");
   /* text file must be UTF-8 encoded (or plain ASCII) */
   avta_pager_file (filename, 1);
 }
