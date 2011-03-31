@@ -1285,12 +1285,12 @@ make_audio_element (lua_State * L, avt_audio_t * data)
  * get a silent audio structure
  *
  * this function is dedicated to the song
- * "sounds of silence" by Simon & Garfunkel
+ * "Sound of Silence" by Simon & Garfunkel
  */
 static int
 lavt_silent (lua_State * L)
 {
-  make_audio_element (L, NULL);
+  lua_getfield (L, LUA_REGISTRYINDEX, "AKFAvatar-silence");
   return 1;
 }
 
