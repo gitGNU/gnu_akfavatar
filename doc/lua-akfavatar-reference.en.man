@@ -38,6 +38,7 @@ You can do lots of things with very few commands.  Just pick the parts
 you are interested in and experiment with that.  There are many parts
 of Lua or AKFAvatar, which you will most probably never need.
 .PP
+.SS Basic functionality
 .TP
 .B "require ""lua-akfavatar"""
 Before you can use the AKFAvatar binding, you have to load or activate
@@ -253,16 +254,6 @@ To deactivate the slow-print mode, use the value 0 for
 .IR delay .
 .PP
 .TP
-.BI "avt.markup (" true | false )
-Set the markup mode. In the markup mode the character "_" toggles
-the underlined mode on or off and the character "*" toggles the
-bold mode on or off.  Both characters are never displayed in
-markup mode!
-.IP
-You can always use the overstrike technique, which doesn't reserve
-any characters, but is harder to use.
-.PP
-.TP
 .BI "avt.set_balloon_size (" "[height] [, width]" )
 Sets the size of the balloon. No values or values of 0 set the maximum size.
 .PP
@@ -293,6 +284,20 @@ Moves the avatar in.
 .TP
 .BI "avt.move_out ()"
 Moves the avatar out.
+.PP
+.TP
+.BI "avt.change_avatar_image (" [image] )
+Change the avatar image while running.
+The image is a string like in
+.BR avt.initialize{} .
+.IP
+See also:
+.B base64.decode
+.PP
+.TP
+.BI "avt.set_avatar_name (" [name] )
+Set the name of the avatar.  This must be used after
+.BR avt.change_avatar_image() .
 .PP
 .TP
 .BI "avt.pager (" "text [,startline]" )
@@ -346,6 +351,338 @@ Get an image from a string and show it.  If it succeeds you should call
 See also:
 .B base64.decode()
 .PP
+.SS Text style
+.TP
+.BI "avt.markup (" true | false )
+Set the markup mode. In the markup mode the character "_" toggles
+the underlined mode on or off and the character "*" toggles the
+bold mode on or off.  Both characters are never displayed in
+markup mode!
+.IP
+You can always use the overstrike technique, which doesn't reserve
+any characters, but is harder to use.
+.PP
+.TP
+.BI "avt.underlined (" true | false )
+Set the underlined mode.
+.PP
+.TP
+.BI "avt.get_underlined ()"
+Returns 
+.I true
+if the underlined mode is active or
+.I false
+otherwise.
+.PP
+.TP
+.BI "avt.bold (" true | false )
+Set the bold mode.
+.PP
+.TP
+.BI "avt.get_bold ()"
+Returns 
+.I true
+if the bold mode is active or 
+.I false
+otherwise.
+.PP
+.TP
+.BI "avt.inverse (" true | false )
+Set the inverse mode.
+.PP
+.TP
+.BI "avt.get_inverse ()"
+Returns
+.I true
+if the inverse mode is active or
+.I false
+otherwise.
+.PP
+.TP
+.BI "avt.normal_text ()"
+Resets the text to normal settings.
+.PP
+.SS Colors
+.TP
+.BI "avt.set_background_color (" color )
+Sets the background color of the window.
+.IP
+Colors can either be given as English names or as RGB value with 3
+or 6 hexadicimal digits.
+.IP
+.B Examples
+.EX
+avt.set_background_color("sky blue")
+avt.set_background_color("#555")
+avt.set_background_color("#8B4513")
+.EE
+.PP
+.TP
+.BI "avt.set_balloon_color (" color )
+Sets the color of the balloon.
+.PP
+.TP
+.BI "avt.set_text_color (" color )
+Sets the text color.
+.PP
+.TP
+.BI "avt.set_text_background_color (" color )
+Sets the text background color.
+.PP
+.TP
+.BI "avt.set_text_background_ballooncolor ()"
+Sets the text background color to the color of the balloon.
+.PP
+.TP
+.BI "avt.get_color (" color_number )
+Get a color for a given integer value.
+.IP
+AKFAvatar has an internal palette with color names to use.
+With this function you can scan through that list.
+It returns the name and RGB value as strings, or it returns
+nothing on error.
+.PP
+.TP
+.BI "avt.colors ()"
+Iterator for internal color names.
+.IP
+AKFAvatar has an internal palette with color names to use.
+With this function you can scan through that list with a generic
+.B for
+loop.
+.IP
+.EX
+require "lua-akfavatar"
+for nr, name, rgb in avt.colors() do
+  avt.normal_text()
+  avt.newline()
+  avt.say(string.format("%3d) %5s, %-25s", nr, rgb, name))
+  avt.set_text_background_color(name) -- either name or rgb
+  avt.clear_eol()
+  avt.wait(0.7)
+end
+avt.wait_button()
+.EE
+.IP
+If you don't need the
+.I rgb
+value, you can leave that variable away.
+.PP
+.TP
+.BI "avt.color_selection ()"
+Start a color-chooser in the balloon. It returns two strings:
+first the English name for the color and second the hexadicimal
+RGB definition.  Both values can be used for selecting colors.
+.PP
+.SS Audio Output
+.TP
+.BI "avt.initialize_audio ()"
+Initialize the audio subsystem.
+.IP
+On success it returns 
+.IR true ,
+on error it returns
+.I nil
+and an error message.
+.IP
+Normally you should initialize it with
+.BR avt.initialize{} .
+Only use this, if you are sure you need it.
+.PP
+.TP
+.BI "avt.quit_audio ()"
+Quit the audio subsystem.
+.IP
+This is not needed in normal programs.
+Only use this, if you are sure you need it.
+.PP
+.TP
+.BI "avt.load_audio_file (" [filename] )
+.TQ
+.BI "avt.load_base_audio_file (" [filename] )
+Reads audio data from a file.
+.IP
+Audio files in WAV or AU format are always supported.
+Other Lua modules may add support for other audio formats to
+.I avt.load_audio_file
+(for example the module
+.IR akfavatar-vorbis ).
+.IP
+When no
+.I filename
+is given, or the
+.IR filename " is " nil
+or an empty string, it returns a silent audio element, 
+ie. you can call its methods, it just doesn't play anything.
+.IP
+On error it returns 
+.I nil
+and an error message.
+(Note: in version 0.19.0 it also returned a silent audio element then.)
+.PP
+.TP
+.BI "avt.load_audio_string (" [audio_data] )
+.TQ
+.BI "avt.load_base_audio_string (" [audio_data] )
+Reads audio data from a string.  Otherwise the same as
+.BR avt.load_audio_file() .
+.IP
+Audio data in WAV or AU format are always supported.
+Other Lua modules may add support for other audio formats to
+.I avt.load_audio_string
+(for example the module
+.IR akfavatar-vorbis ).
+.IP
+When no 
+.I audio_data
+is given, or the 
+.IR audio_data " is " nil
+or an empty string, it returns a silent audio element,
+ie. you can call its methods, it just doesn't play anything.
+.IP
+On error it returns 
+.I nil
+and an error message.
+(Note: in version 0.19.0 it also returned a silent audio element then.)
+.IP
+See also:
+.B base64.decode
+.PP
+.TP
+.B avt.silent ()
+Returns a silent audio element, ie. you can call its methods,
+it just doesn't play anything.
+.IP
+.B Example:
+.EX
+audio = avt.load_audio_file(filename) or avt.silent()
+.EE
+.IP
+In this example you get a silent sound when the file could not be read.
+.PP
+.TP
+.BI "avt.audio_playing (" [audio_data] )
+Checks if the audio is currently playing.
+If
+.I audio_data
+is given and is not 
+.I nil
+then it checks, if the specified audio is playing.
+This can also be checked with
+.IB audio ":playing()" .
+.PP
+.TP
+.BI "avt.wait_audio_end ()"
+Waits until the audio output ends.
+.IP
+This also ends an audio-loop, but still plays to the end of the
+current sound.
+.PP
+.TP
+.BI "avt.stop_audio ()"
+Stops the audio output immediately.
+.PP
+.TP
+.BI "avt.pause_audio (" true | false )
+.RI "pause (" true ") or resume (" false ") the audio output"
+.PP
+.TP
+.IB audio ":play ()"
+.TQ
+.IB audio "()"
+Plays the
+.I audio
+data.
+The
+.I audio
+must have been loaded by
+.BR avt.load_audio_file() " or " avt.load_audio_string() .
+.IP
+Only one sound can be played at the same time.
+When you play another sound the previous one is stopped.
+Use
+.B avt.wait_audio_end()
+to play sounds in a sequence.
+.IP
+The audio can also be played by calling the audio variables like a function.
+.IP
+.B Attention:
+You should take care that the variable for the sound
+stays in scope while the sound is played.
+Otherwise the audio output could stop unexpectedly.
+.IP
+.EX
+play_audio_file = function (filename)
+  local sound = avt.load_audio_file (filename)
+  sound:play ()
+  avt.wait_audio_end ()
+  sound:free()
+end
+.EE
+.IP
+This function is okay because of the command
+.BR avt.wait_audio_end() .
+.IP
+.EX
+play_audio_file = function (filename)
+  avt.wait_audio_end ()
+  sound = avt.load_audio_file (filename)
+  sound:play ()
+end
+.EE
+.IP
+This function is also okay, because the variable
+.I sound
+is not local to this function.
+It is most probably a global variable.
+It could also be local to the program (ie. the "chunk"), which is also okay.
+.PP
+.TP
+.IB audio ":loop ()"
+Plays
+.I audio
+data in a loop.  The 
+.I audio
+must have been loaded by
+.BR avt.load_audio_file() " or " avt.load_audio_string() .
+.IP
+This is for example useful for short pieces of music.
+.IP
+You can stop the audio loop with 
+.BR avt.wait_audio_end() " or " avt.stop_audio () .
+.PP
+.TP
+.IB audio ":playing ()"
+Checks if this
+.I audio
+data is currently playing.  The
+.I audio
+must have been loaded by 
+.BR avt.load_audio_file() " or " avt.load_audio_string() .
+.IP
+This is the same as 
+.BR "avt.audio_playing (audio)" .
+.PP
+.TP
+.IB audio ":free ()"
+Frees the
+.I audio
+data.  If this 
+.I audio
+is currently playing, it is stopped.
+.IP
+Audio data is also freed by the garbage collector, but don't count
+on it.  Audio data can hog up a lot of memory. Unfortunately the
+garbage collector doesn't see that, because it is handled outside
+of Lua.  However, you could also run the garbage collector
+manually with using
+.B "collectgarbage(""collect"")"
+from time to time.
+Then you don't need to call this function.
+Just make sure the currently playing sound is still assigned
+to a variable when you do this.
+.PP
+.SS File-System
 .TP
 .BI "avt.get_directory ()"
 Returns the current working directory.
@@ -424,209 +761,7 @@ Of course
 .I filter
 can also be the name of a previously defined function.
 .PP
-.TP
-.BI "avt.initialize_audio ()"
-Initialize the audio subsystem.
-.IP
-On success it returns 
-.IR true ,
-on error it returns
-.I nil
-and an error message.
-.IP
-Normally you should initialize it with
-.BR avt.initialize{} .
-Only use this, if you are sure you need it.
-.PP
-.TP
-.BI "avt.quit_audio ()"
-Quit the audio subsystem.
-.IP
-This is not needed in normal programs.
-Only use this, if you are sure you need it.
-.PP
-.TP
-.BI "avt.load_audio_file (" [filename] )
-.TQ
-.BI "avt.load_base_audio_file (" [filename] )
-Reads audio data from a file.
-.IP
-Audio files in WAV or AU format are always supported.
-Other Lua modules may add support for other audio formats to
-.IR avt.load_audio_file .
-.IP
-When no
-.I filename
-is given, or the
-.IR filename " is " nil
-or an empty string, it returns a silent audio element, 
-ie. you can call its methods, it just doesn't play anything.
-.IP
-On error it returns 
-.I nil
-and an error message.
-(Note: in version 0.19.0 it also returned a silent audio element then.)
-.PP
-.TP
-.BI "avt.load_audio_string (" [audio_data] )
-.TQ
-.BI "avt.load_base_audio_string (" [audio_data] )
-Reads audio data from a string.  Otherwise the same as
-.BR avt.load_audio_file() .
-.IP
-Audio data in WAV or AU format are always supported.
-Other Lua modules may add support for other audio formats to
-.IR avt.load_audio_string .
-.IP
-When no 
-.I audio_data
-is given, or the 
-.IR audio_data " is " nil
-or an empty string, it returns a silent audio element,
-ie. you can call its methods, it just doesn't play anything.
-.IP
-On error it returns 
-.I nil
-and an error message.
-(Note: in version 0.19.0 it also returned a silent audio element then.)
-.IP
-See also:
-.B base64.decode
-.PP
-.TP
-.B avt.silent ()
-Returns a silent audio element, ie. you can call its methods,
-it just doesn't play anything.
-.IP
-.B Example:
-.EX
-audio = avt.load_audio_file(filename) or avt.silent()
-.EE
-.IP
-In this example you get a silent sound when the file could not be read.
-.PP
-.TP
-.BI "avt.audio_playing (" [audio_data] )
-Checks if the audio is currently playing.
-If
-.I audio_data
-is given and is not 
-.I nil
-then it checks, if the specified audio is playing.
-This can also be checked with
-.BR audio:playing() .
-.PP
-.TP
-.BI "avt.wait_audio_end ()"
-Waits until the audio output ends.
-.IP
-This also ends an audio-loop, but still plays to the end of the
-current sound.
-.PP
-.TP
-.BI "avt.stop_audio ()"
-Stops the audio output immediately.
-.PP
-.TP
-.BI "avt.pause_audio (" true | false )
-.RI "pause (" true ") or resume (" false ") the audio output"
-.PP
-.TP
-.BI "audio:play ()"
-.TQ
-.BI "audio ()"
-Plays the
-.I audio
-data.
-The
-.I audio
-must have been loaded by
-.BR avt.load_audio_file() " or " avt.load_audio_string() .
-.IP
-Only one sound can be played at the same time.
-When you play another sound the previous one is stopped.
-Use
-.B avt.wait_audio_end()
-to play sounds in a sequence.
-.IP
-The audio can also be played by calling the audio variables like a function.
-.IP
-.B Attention:
-You should take care that the variable for the sound
-stays in scope while the sound is played.
-Otherwise the audio output could stop unexpectedly.
-.IP
-.EX
-play_audio_file = function (filename)
-  local sound = avt.load_audio_file (filename)
-  sound:play ()
-  avt.wait_audio_end ()
-  sound:free()
-end
-.EE
-.IP
-This function is okay because of the command
-.BR avt.wait_audio_end() .
-.IP
-.EX
-play_audio_file = function (filename)
-  avt.wait_audio_end ()
-  sound = avt.load_audio_file (filename)
-  sound:play ()
-end
-.EE
-.IP
-This function is also okay, because the variable
-.I sound
-is not local to this function.
-It is most probably a global variable.
-It could also be local to the program (ie. the "chunk"), which is also okay.
-.PP
-.TP
-.BI "audio:loop ()"
-Plays
-.I audio
-data in a loop.  The 
-.I audio
-must have been loaded by
-.BR avt.load_audio_file() " or " avt.load_audio_string() .
-.IP
-This is for example useful for short pieces of music.
-.IP
-You can stop the audio loop with 
-.BR avt.wait_audio_end() " or " avt.stop_audio () .
-.PP
-.TP
-.BI "audio:playing ()"
-Checks if this
-.I audio
-data is currently playing.  The
-.I audio
-must have been loaded by 
-.BR avt.load_audio_file() " or " avt.load_audio_string() .
-.IP
-This is the same as 
-.BR "avt.audio_playing (audio)" .
-.PP
-.TP
-.BI "audio:free ()"
-Frees the
-.I audio
-data.  If this 
-.I audio
-is currently playing, it is stopped.
-.IP
-Audio data is also freed by the garbage collector, but don't count
-on it.  Audio data can hog up a lot of memory. Unfortunately the
-garbage collector doesn't see that, because it is handled outside
-of Lua.  However, you could also run the garbage collector
-manually with using
-.B "collectgarbage(""collect"")"
-from time to time.
-Then you don't need to call this function.
-Just make sure the currently playing sound is still assigned
-to a variable when you do this.
-.PP
+.SS Miscellaneous
 .TP
 .BI "avt.encoding (" encoding )
 Change the used text encoding.
@@ -647,20 +782,6 @@ A missing option or
 leaves it unchanged.
 .PP
 .TP
-.BI "avt.change_avatar_image (" [image] )
-Change the avatar image while running.
-The image is a string like in
-.BR avt.initialize{} .
-.IP
-See also:
-.B base64.decode
-.PP
-.TP
-.BI "avt.set_avatar_name (" [name] )
-Set the name of the avatar.  This must be used after
-.BR avt.change_avatar_image() .
-.PP
-.TP
 .BI "avt.right_to_left (" true | false )
 Activate or deactivate the right to left writing mode.
 .IP
@@ -675,119 +796,8 @@ or "\\f".
 Use no value for the default delay, or 0 to set no delay.
 .PP
 .TP
-.BI "avt.set_background_color (" color )
-Sets the background color of the window.
-.IP
-Colors can either be given as English names or as RGB value with 3
-or 6 hexadicimal digits.
-.IP
-For example 
-.B "avt.set_background_color(""sky blue"")"
-or
-.B "avt.set_background_color(""#555"")"
-or
-.BR "avt.set_background_color(""#8B4513"")" .
-.PP
-.TP
-.BI "avt.set_balloon_color (" color )
-Sets the color of the balloon.
-.PP
-.TP
-.BI "avt.set_text_color (" color )
-Sets the text color.
-.PP
-.TP
-.BI "avt.set_text_background_color (" color )
-Sets the text background color.
-.PP
-.TP
-.BI "avt.set_text_background_ballooncolor ()"
-Sets the text background color to the color of the balloon.
-.PP
-.TP
-.BI "avt.get_color (" color_number )
-Get a color for a given integer value.
-.IP
-AKFAvatar has an internal palette with color names to use.
-With this function you can scan through that list.
-It returns the name and RGB value as strings, or it returns
-nothing on error.
-.PP
-.TP
-.BI "avt.colors ()"
-Iterator for internal color names.
-.IP
-AKFAvatar has an internal palette with color names to use.
-With this function you can scan through that list with a generic
-.B for
-loop.
-.IP
-.EX
-require "lua-akfavatar"
-for nr, name, rgb in avt.colors() do
-  avt.normal_text()
-  avt.newline()
-  avt.say(string.format("%3d) %5s, %-25s", nr, rgb, name))
-  avt.set_text_background_color(name) -- either name or rgb
-  avt.clear_eol()
-  avt.wait(0.7)
-end
-avt.wait_button()
-.EE
-.IP
-If you don't need the
-.I rgb
-value, you can leave that variable away.
-.PP
-.TP
-.BI "avt.color_selection ()"
-Start a color-chooser in the balloon. It returns two strings:
-first the English name for the color and second the hexadicimal
-RGB definition.  Both values can be used for selecting colors.
-.PP
-.TP
 .BI "avt.activate_cursor (" true | false )
 Show the cursor.
-.PP
-.TP
-.BI "avt.underlined (" true | false )
-Set the underlined mode.
-.PP
-.TP
-.BI "avt.get_underlined ()"
-Returns 
-.I true
-if the underlined mode is active or
-.I false
-otherwise.
-.PP
-.TP
-.BI "avt.bold (" true | false )
-Set the bold mode.
-.PP
-.TP
-.BI "avt.get_bold ()"
-Returns 
-.I true
-if the bold mode is active or 
-.I false
-otherwise.
-.PP
-.TP
-.BI "avt.inverse (" true | false )
-Set the inverse mode.
-.PP
-.TP
-.BI "avt.get_inverse ()"
-Returns
-.I true
-if the inverse mode is active or
-.I false
-otherwise.
-.PP
-.TP
-.BI "avt.normal_text ()"
-Resets the text to normal settings.
 .PP
 .TP
 .BI "avt.clear_screen ()"
