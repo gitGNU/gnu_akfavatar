@@ -153,7 +153,8 @@ check_filename (const char *filename)
       return (avt_bool_t)
 	(ext && (strcasecmp (".lua", ext) == 0
 		 || strcasecmp (".avt", ext) == 0
-		 || strcasecmp (".about", ext) == 0));
+		 || strcasecmp (".about", ext) == 0
+		 || strcasecmp (".h", ext) == 0));
     }
 }
 
@@ -307,7 +308,7 @@ show_text (const char *filename)
 {
   avt_change_avatar_image (NULL);	/* no avatar */
   avt_set_balloon_size (0, 0);
-  avt_set_balloon_color_name("tan");
+  avt_set_balloon_color_name ("tan");
   /* text file must be UTF-8 encoded (or plain ASCII) */
   avta_pager_file (filename, 1);
 }
@@ -331,7 +332,8 @@ ask_file (void)
       ext = strrchr (filename, '.');
       if (ext && strcasecmp (".avt", ext) == 0)
 	avtdemo (filename);
-      else if (ext && strcasecmp (".about", ext) == 0)
+      else if (ext && (strcasecmp (".about", ext) == 0
+		       || strcasecmp (".h", ext) == 0))
 	show_text (filename);
       else			/* assume Lua code */
 	{
