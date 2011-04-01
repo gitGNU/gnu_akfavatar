@@ -4341,6 +4341,8 @@ avt_pager (const wchar_t * txt, int len, int startline)
   /* alignment: right bottom */
   btn_rect.x = window.x + window.w - button->w - AVATAR_MARGIN;
   btn_rect.y = window.y + window.h - button->h - AVATAR_MARGIN;
+  if (btn_rect.y < textfield.y + textfield.h)	/* shouldn't be clipped */
+    btn_rect.y = textfield.y + textfield.h;
   btn_rect.w = button->w;
   btn_rect.h = button->h;
 
