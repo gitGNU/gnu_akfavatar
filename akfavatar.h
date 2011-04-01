@@ -853,6 +853,10 @@ AVT_API avt_bool_t avt_decide (void);
  * the function returns the letter for the selected option
  * or AVT_ERROR or AVT_QUIT
  *
+ * If audio output ends while this function is active, it automatically
+ * pushes either 's' (stop) or 'f' (forward).  If both are given, then
+ * the rightmost.
+ *
  * example:
  *   r = avt_navigate ("lxr");
  *   if (r < 32) exit (0);

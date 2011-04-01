@@ -988,10 +988,14 @@ spacer (no button)
 .RE
 .IP
 Pressing a key with one of those characters selects it.  For the
-directions you can also use the arrow keys, The <Pause> key
+directions you can also use the arrow keys.  The <Pause> key
 returns "p".  The <Help> key or <F1> return "?".
 .IP
 It returns the approriete character or a number.
+.IP
+If audio output ends while this function is active, it automatically
+pushes either 's' (stop) or 'f' (forward).
+If both are given, then the rightmost of them.
 .PP
 .TP
 .BI "avt.choice(" "start_line, items [, key] [, back] [,forward]" )
@@ -1159,6 +1163,6 @@ avt.subprogram(dofile, "subprogram.lua")
 .BR lua-akfavatar (1)
 .BR lua (1)
 .br
-.B http://akfavatar.nongnu.org/manual/
-.br
 .B http://www.lua.org/manual/5.1/
+.br
+.B http://akfavatar.nongnu.org/manual/
