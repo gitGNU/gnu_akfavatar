@@ -50,8 +50,8 @@ and further libraries are installed.
 For audio the formats
 .BR AU " and " WAV
 are always supported.
-WAV files may be encoded as PCM, IMA-ADPCM or MS-ADPCM.
 AU files may be encoded as PCM, \(*m-law or A-law.
+WAV files may be encoded as PCM, IMA-ADPCM or MS-ADPCM.
 There is also a Lua module named
 .BR akfavatar-vorbis ,
 which adds support for Ogg Vorbis audio files.
@@ -865,6 +865,10 @@ or "unknown".
 On error it returns
 .I nil
 and an error message.
+.IP
+Symbolic links are followed.
+That means, you get the type of the resulting entry.
+Broken links are treated like not existing entries.
 .PP
 .SS Miscellaneous
 .TP
