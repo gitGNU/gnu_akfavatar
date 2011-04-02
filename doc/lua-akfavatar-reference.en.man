@@ -22,21 +22,39 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar reference" 3 2011-04-01 AKFAvatar
+.TH "Lua-AKFAvatar reference" 3 2011-04-02 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar reference \- AKFAvatar specific functions for Lua
 .
 .SH DESCRIPTION
-This is a reference for the Lua-bindings to AKFAvatar.  It does not
-describe the language Lua. The reference manual for the language Lua
-can be found on the Internet on 
+This is a reference for the Lua-bindings to AKFAvatar.
+It does not describe the language Lua.
+The reference manual for the language Lua can be found on the Internet on
 .BR http://www.lua.org/manual/5.1/ .
 .PP
 Don't worry, you don't need to understand or even learn everything.
-You can do lots of things with very few commands.  Just pick the parts
-you are interested in and experiment with that.  There are many parts
-of Lua or AKFAvatar, which you will most probably never need.
+You can do lots of things with very few commands.
+Just pick the parts you are interested in and experiment with that.
+There are many parts of Lua or AKFAvatar which you will most probably
+never need.
+.PP
+.SS File formats
+For images the formats 
+.BR XPM ", " XBM " and uncompressed " BMP
+are always supported.
+More formats may be supported if
+.B SDL_image
+and further libraries are installed.
+.PP
+For audio the formats
+.BR AU " and " WAV
+are always supported.
+WAV files may be encoded as PCM, IMA-ADPCM or MS-ADPCM.
+AU files may be encoded as PCM, \(*m-law or A-law.
+There is also a Lua module named
+.BR akfavatar-vorbis ,
+which adds support for Ogg Vorbis audio files.
 .PP
 .SS Basic functionality
 .TP
@@ -72,9 +90,6 @@ Is a shortname (often used for iconized windows) - default=title.
 .I avatar
 Is either "default" or "none" or image data in the string, or 
 a filename with the path.
-.IP
-See also:
-.B base64.decode
 .TP
 .I audio
 Set this to true if the audio subsystem should be initialized.
@@ -220,26 +235,6 @@ It can be used together with
 .BR "avt.say_unicode(...)" .
 .PP
 .TP
-.BI "avt.ask(" [question] )
-Shows the
-.IR question ,
-if given, and waits for the user to enter something.
-Returns the result as string.
-.IP
-The following example shows how to force the input of a number:
-.IP
-.EX
-require "lua-akfavatar"
-avt.save_position()
-repeat
-  avt.restore_position()
-  number = tonumber(avt.ask("Enter a number: "))
-until number
-avt.say("The number is ", number)
-avt.wait_button()
-.EE
-.PP
-.TP
 .BI "avt.newline()"
 Start a new line. It is the same as "\\n" in
 .BR avt.say() ,
@@ -290,9 +285,6 @@ Moves the avatar out.
 Change the avatar image while running.
 The image is a string like in
 .BR avt.initialize{} .
-.IP
-See also:
-.B base64.decode
 .PP
 .TP
 .BI "avt.set_avatar_name(" [name] )
@@ -307,15 +299,6 @@ If the
 .I startline
 is given and it is greater than 1, then it starts
 in that line.  But you still can scroll back from there.
-.PP
-.TP
-.BI "avt.decide()"
-Ask the user to make a positive or negative decision.  Returns
-.IR true " or " false .
-.PP
-.TP
-.BI "avt.wait_button()"
-Waits until a button is pressed.
 .PP
 .TP
 .BI "avt.wait(" [seconds] )
@@ -347,9 +330,6 @@ If it succeeds you should call
 .BI "avt.show_image_string(" image )
 Get an image from a string and show it.  If it succeeds you should call
 .BR avt.wait() " or " avt.wait_button() " or " avt.get_key() .
-.IP
-See also:
-.B base64.decode()
 .PP
 .SS Text style
 .TP
@@ -468,42 +448,176 @@ If you don't need the
 .I rgb
 value, you can leave that variable away.
 .PP
+.SS Interaction
+.TP
+.BI "avt.wait_button()"
+Waits until a button is pressed.
+.PP
+.TP
+.BI "avt.decide()"
+Ask the user to make a positive or negative decision.  Returns
+.IR true " or " false .
+.PP
+.TP
+.BI "avt.ask(" [question] )
+Shows the
+.IR question ,
+if given, and waits for the user to enter something.
+Returns the result as string.
+.IP
+The following example shows how to force the input of a number:
+.IP
+.EX
+require "lua-akfavatar"
+avt.save_position()
+repeat
+  avt.restore_position()
+  number = tonumber(avt.ask("Enter a number: "))
+until number
+avt.say("The number is ", number)
+avt.wait_button()
+.EE
+.PP
+.TP
+.BI "avt.file_selection(" [filter] )
+Start a file-chooser in the balloon. It starts in the current
+working directory.  When a directory is chosen it changes the
+working directory to that one.  At the end it returns the selected
+filename (which is in the then current working directory) or
+.I nil
+on error.
+.IP
+The
+.IR filter ,
+if given, should be a function.  It gets a filename as
+parameter.  The file is always in the current working directory.
+If the filter function returns 
+.IR false " or " nil
+or nothing then the filename is not shown, otherwise it is shown.
+.IP
+.B Example:
+.EX
+ textfile = avt.file_selection(
+    function(n)
+      return string.find(n,"%.te?xt$")
+    end)
+.EE
+.IP
+Of course
+.I filter
+can also be the name of a previously defined function.
+.PP
 .TP
 .BI "avt.color_selection()"
 Start a color-chooser in the balloon. It returns two strings:
 first the English name for the color and second the hexadicimal
 RGB definition.  Both values can be used for selecting colors.
 .PP
-.SS Audio Output
 .TP
-.BI "avt.initialize_audio()"
-Initialize the audio subsystem.
+.BI "avt.get_key()"
+Waits for a key to be pressed and returns the unicode codepoint of
+the character. For some function keys it yields a number from the
+unicode private use section.
+.PP
+.TP
+.BI "avt.navigate(" buttons )
+Shows a navigation bar with the given buttons.
 .IP
-On success it returns 
+For buttons use a string with the following characters:
+.IP
+.RS
+.IP "l:"
+left
+.IP "r:"
+right (play)
+.IP "d:"
+down
+.IP "u:"
+up
+.IP "x:"
+cancel
+.IP "f:"
+(fast)forward
+.IP "b:"
+(fast)backward
+.IP "p:"
+pause
+.IP "s:"
+stop
+.IP "e:"
+eject
+.IP "*:"
+circle (record)
+.IP "+:"
+plus (add)
+.IP "-:"
+minus (remove)
+.IP "?:"
+help
+.IP "' ':"
+spacer (no button)
+.RE
+.IP
+Pressing a key with one of those characters selects it.  For the
+directions you can also use the arrow keys.  The <Pause> key
+returns "p".  The <Help> key or <F1> return "?".
+.IP
+It returns the approriete character or a number.
+.IP
+If audio output ends while this function is active, it automatically
+pushes either 's' (stop) or 'f' (forward).
+If both are given, then the rightmost of them.
+.PP
+.TP
+.BI "avt.long_menu(" items )
+Shows a long menu with the
+.IR items ,
+which should be an array with menu-items.
+.IP
+It returns the number of the selected item.
+.IP
+The menu starts in the line of the current cursor position.
+So you could put a headline before the menu.
+.IP
+.EX
+avt.clear()
+avt.say("Please select your favourite food:\\n")
+local item = avt.long_menu {
+  "Chicken",
+  "Chips",
+  "Pizza",
+  "Spinach"}
+.EE
+.PP
+.TP
+.BI "avt.choice(" "start_line, items [, key] [, back] [,forward]" )
+This can be used for menus.  It returns the number of the selected item.
+.IP
+.RS
+.IP start_line:
+line, where choice begins
+.IP items:
+number of items/lines
+.IP key:
+first key, like "1" or "a", 0 for no keys
+.IP back:
+set to 
 .IR true ,
-on error it returns
-.I nil
-and an error message.
-.IP
-Normally you should initialize it with
-.BR avt.initialize{} .
-Only use this, if you are sure you need it.
+when the first entry is a back function
+.IP forward:
+set to 
+.IR true ,
+when the last entry is a forward function
+.RE
 .PP
-.TP
-.BI "avt.quit_audio()"
-Quit the audio subsystem.
-.IP
-This is not needed in normal programs.
-Only use this, if you are sure you need it.
-.PP
+.SS Audio Output
 .TP
 .BI "avt.load_audio_file(" [filename] )
 .TQ
 .BI "avt.load_base_audio_file(" [filename] )
 Reads audio data from a file.
 .IP
-Audio files in WAV or AU format are always supported.
-Other Lua modules may add support for other audio formats to
+Lua modules may add support for more audio formats to
 .B "avt.load_audio_file()"
 (for example the module
 .BR akfavatar-vorbis ).
@@ -527,8 +641,7 @@ and an error message.
 Reads audio data from a string.  Otherwise the same as
 .BR avt.load_audio_file() .
 .IP
-Audio data in WAV or AU format are always supported.
-Other Lua modules may add support for other audio formats to
+Lua modules may add support for more audio formats to
 .B "avt.load_audio_string()"
 (for example the module
 .BR akfavatar-vorbis ).
@@ -544,9 +657,6 @@ On error it returns
 .I nil
 and an error message.
 (Note: in version 0.19.0 it also returned a silent audio element then.)
-.IP
-See also:
-.B base64.decode
 .PP
 .TP
 .B avt.silent()
@@ -682,6 +792,30 @@ Then you don't need to call this function.
 Just make sure the currently playing sound is still assigned
 to a variable when you do this.
 .PP
+.TP
+.BI "avt.initialize_audio()"
+Initialize the audio subsystem.
+.IP
+On success it returns 
+.IR true ,
+on error it returns
+.I nil
+and an error message.
+.IP
+Normally you should initialize it with
+.BR avt.initialize{} .
+Only use this, if you are sure you need it.
+.PP
+.TP
+.BI "avt.quit_audio()"
+Quit the audio subsystem.
+.IP
+This is not needed in normal programs.
+Only use this, if you are sure you need it.
+.IP
+On some systems it may be necessary to shut down the audio system before
+you launch another program with audio output.
+.PP
 .SS File-System
 .TP
 .BI "avt.get_directory()"
@@ -731,35 +865,6 @@ or "unknown".
 On error it returns
 .I nil
 and an error message.
-.PP
-.TP
-.BI "avt.file_selection(" [filter] )
-Start a file-chooser in the balloon. It starts in the current
-working directory.  When a directory is chosen it changes the
-working directory to that one.  At the end it returns the selected
-filename (which is in the then current working directory) or
-.I nil
-on error.
-.IP
-The
-.IR filter ,
-if given, should be a function.  It gets a filename as
-parameter.  The file is always in the current working directory.
-If the filter function returns 
-.IR false " or " nil
-or nothing then the filename is not shown, otherwise it is shown.
-.IP
-.B Example:
-.EX
- textfile = avt.file_selection(
-    function(n)
-      return string.find(n,"%.te?xt$")
-    end)
-.EE
-.IP
-Of course
-.I filter
-can also be the name of a previously defined function.
 .PP
 .SS Miscellaneous
 .TP
@@ -941,103 +1046,6 @@ Shows final credits.
 If the second parameter is
 .IR true ,
 every line is centered.
-.PP
-.TP
-.BI "avt.get_key()"
-Waits for a key to be pressed and returns the unicode codepoint of
-the character. For some function keys it yields a number from the
-unicode private use section.
-.PP
-.TP
-.BI "avt.navigate(" buttons )
-Shows a navigation bar with the given buttons.
-.IP
-For buttons use a string with the following characters:
-.IP
-.RS
-.IP "l:"
-left
-.IP "r:"
-right (play)
-.IP "d:"
-down
-.IP "u:"
-up
-.IP "x:"
-cancel
-.IP "f:"
-(fast)forward
-.IP "b:"
-(fast)backward
-.IP "p:"
-pause
-.IP "s:"
-stop
-.IP "e:"
-eject
-.IP "*:"
-circle (record)
-.IP "+:"
-plus (add)
-.IP "-:"
-minus (remove)
-.IP "?:"
-help
-.IP "' ':"
-spacer (no button)
-.RE
-.IP
-Pressing a key with one of those characters selects it.  For the
-directions you can also use the arrow keys.  The <Pause> key
-returns "p".  The <Help> key or <F1> return "?".
-.IP
-It returns the approriete character or a number.
-.IP
-If audio output ends while this function is active, it automatically
-pushes either 's' (stop) or 'f' (forward).
-If both are given, then the rightmost of them.
-.PP
-.TP
-.BI "avt.choice(" "start_line, items [, key] [, back] [,forward]" )
-This can be used for menus.  It returns the number of the selected item.
-.IP
-.RS
-.IP start_line:
-line, where choice begins
-.IP items:
-number of items/lines
-.IP key:
-first key, like "1" or "a", 0 for no keys
-.IP back:
-set to 
-.IR true ,
-when the first entry is a back function
-.IP forward:
-set to 
-.IR true ,
-when the last entry is a forward function
-.RE
-.PP
-.TP
-.BI "avt.long_menu(" items )
-Shows a long menu with the
-.IR items ,
-which should be an array with menu-items.
-.IP
-It returns the number of the selected item.
-.IP
-The menu starts in the line of the current cursor position.
-So you could put a headline before the menu.
-.IP
-.EX
-avt.clear()
-avt.say("Please select your favourite food:\\n")
-local item = avt.long_menu {
-  "Chicken",
-  "Chips",
-  "Pizza",
-  "Spinach"}
-.EE
 .PP
 .TP
 .BI "avt.viewport(" "x, y, width, height" )
