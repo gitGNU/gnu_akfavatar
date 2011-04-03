@@ -44,7 +44,6 @@ LUA_MODULES = \
 	  $(srcdir)/lua/akfavatar/teacher.lua \
 	  $(srcdir)/lua/akfavatar/gnu_head.lua \
 	  $(srcdir)/lua/akfavatar/info_icon.lua \
-	  $(srcdir)/lua/akfavatar/skull1.lua \
 	  $(srcdir)/lua/akfavatar/akfoerster.lua \
 	  $(srcdir)/lua/akfavatar/positive.lua \
 	  $(srcdir)/lua/akfavatar/negative.lua \
@@ -586,7 +585,6 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm \
 	   $(srcdir)/male_user.xpm $(srcdir)/female_user.xpm \
 	   $(srcdir)/teacher.xpm $(srcdir)/akfoerster.xpm $(srcdir)/lua.xpm \
-	   $(srcdir)/skull1.xpm \
 	   $(srcdir)/btn.xpm $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
 	   $(srcdir)/mpointer.xbm $(srcdir)/mpointer_mask.xbm \
 	   $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
@@ -653,7 +651,6 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/lua/akfavatar/female_user.lua \
 	   $(srcdir)/lua/akfavatar/male_user.lua \
 	   $(srcdir)/lua/akfavatar/gnu_head.lua \
-	   $(srcdir)/lua/akfavatar/skull1.lua \
 	   $(srcdir)/lua/akfavatar/teacher.lua \
 	   $(srcdir)/lua/akfavatar/akfoerster.lua \
 	   $(srcdir)/lua/akfavatar/positive.lua \
@@ -706,7 +703,6 @@ dist-bin-default: about pdf libakfavatar.so lua-akfavatar-bin \
 	ln $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	ln $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
 	ln $(srcdir)/teacher.xpm $(srcdir)/akfoerster.xpm $(BINPKGNAME)/
-	ln $(srcdir)/skull1.xpm $(BINPKGNAME)/
 	ln $(srcdir)/README-Lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/interactive_lua.en.about $(BINPKGNAME)/lua/
@@ -742,7 +738,6 @@ dist-bin-default: about pdf libakfavatar.so lua-akfavatar-bin \
 	   $(srcdir)/lua/akfavatar/female_user.lua \
 	   $(srcdir)/lua/akfavatar/male_user.lua \
 	   $(srcdir)/lua/akfavatar/gnu_head.lua \
-	   $(srcdir)/lua/akfavatar/skull1.lua \
 	   $(srcdir)/lua/akfavatar/teacher.lua \
 	   $(srcdir)/lua/akfavatar/akfoerster.lua \
 	   $(srcdir)/lua/akfavatar/positive.lua \

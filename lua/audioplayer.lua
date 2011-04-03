@@ -19,7 +19,7 @@ local downloader = "curl --silent --location"
 
 avt.initialize{
   title    = "Audio-Player",
-  avatar   = require "akfavatar.skull1",
+  avatar   = "default",
   encoding = "UTF-8",
   audio    = true
   }
