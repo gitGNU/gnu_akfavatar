@@ -367,7 +367,7 @@ start_screen (void)
 {
   if (avt_move_in () != AVT_NORMAL)
     exit (EXIT_SUCCESS);
-  avt_set_balloon_size (6, 80);
+  avt_set_balloon_size (8, 80);
   avt_underlined (AVT_TRUE);
   avt_bold (AVT_TRUE);
   avt_say_mb (PRGNAME);
@@ -385,6 +385,17 @@ start_screen (void)
   avt_new_line ();
   avt_new_line ();
   avt_say_mb (avt_license ());
+  avt_new_line ();
+  avt_new_line ();
+  avt_bold(AVT_TRUE);
+  avt_say_mb ("F11");
+  avt_bold(AVT_FALSE);
+  avt_say_mb (": Fullscreen, ");
+  avt_bold(AVT_TRUE);
+  avt_say_mb ("Esc");
+  avt_bold(AVT_FALSE);
+  avt_say_mb (": end/back");
+
   if (avt_wait_button () != AVT_NORMAL)
     exit (EXIT_SUCCESS);
 }

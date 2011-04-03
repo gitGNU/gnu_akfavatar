@@ -3,6 +3,9 @@
 	* avatar-audio.c (playing): new variable
 	many functions adapted (simplified)
 
+	* lua/lua-akfavatar-prg.c (start_screen):
+	explain [F11] and [Esc]
+
 2011-04-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_pager):
