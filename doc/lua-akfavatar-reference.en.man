@@ -249,17 +249,6 @@ To deactivate the slow-print mode, use the value 0 for
 .IR delay .
 .PP
 .TP
-.BI "avt.set_balloon_size(" "[height] [, width]" )
-Sets the size of the balloon. No values or values of 0 set the maximum size.
-.PP
-.TP
-.BI "avt.set_balloon_width(" [width] )
-Sets the width of the balloon. No value or 0 sets the maximum.
-.PP
-.TP
-.BI "avt.set_balloon_height(" [height] )
-Sets the height of the balloon. No value or 0 sets the maximum.
-.PP
 .TP
 .BI "avt.clear()"
 Clears the textfield or viewport.
@@ -330,6 +319,127 @@ If it succeeds you should call
 .BI "avt.show_image_string(" image )
 Get an image from a string and show it.  If it succeeds you should call
 .BR avt.wait() " or " avt.wait_button() " or " avt.get_key() .
+.PP
+.SS Sizes and positions
+.TP
+.BI "avt.set_balloon_size(" "[height] [, width]" )
+Sets the size of the balloon. No values or values of 0 set the maximum size.
+.PP
+.TP
+.BI "avt.set_balloon_width(" [width] )
+Sets the width of the balloon. No value or 0 sets the maximum.
+.PP
+.TP
+.BI "avt.set_balloon_height(" [height] )
+Sets the height of the balloon. No value or 0 sets the maximum.
+.PP
+.TP
+.BI "avt.max_x()"
+Get the maximum x position of the cursor in the balloon (ie. the width).
+.PP
+.TP
+.BI "avt.max_y()"
+Get the maximum y position of the cursor in the balloon (ie. the height).
+.PP
+.TP
+.BI "avt.where_x()"
+Get the x position of the cursor in the balloon.
+.PP
+.TP
+.BI "avt.where_y()"
+Get the y position of the cursor in the balloon.
+.PP
+.TP
+.BI "avt.home_position()"
+Returns
+.I true
+if the cursor is in the home position or
+.I false
+otherwise.  (This also works for right-to-left writing.)
+.PP
+.TP
+.BI "avt.move_x(" x )
+Moves the cursor to the given X position.
+.PP
+.TP
+.BI "avt.move_y("y )
+Moves the cursor to the given Y position.
+.PP
+.TP
+.BI "avt.move_xy(" "x, y" )
+Moves the cursor to the given
+.IR x " and " y " position."
+.PP
+.TP
+.BI "avt.save_position()"
+Save the current cursor position.
+.PP
+.TP
+.BI "avt.restore_position()"
+Restore the last saved cursor position.
+.PP
+.TP
+.BI "avt.next_tab()"
+Moves the cursor to the next tabulator position.
+.PP
+.TP
+.BI "avt.last_tab()"
+Moves the cursor to the previous tabulator position.
+.PP
+.TP
+.BI "avt.reset_tab_stops()"
+Reset tab stops to every eigth column.
+.PP
+.TP
+.BI "avt.clear_tab_stops()"
+Clears all tab stops.
+.PP
+.TP
+.BI "avt.set_tab(" "x, true" | false )
+Set or clear tab in position
+.IR x .
+.PP
+.TP
+.BI "avt.delete_lines(" "line, number" )
+Deletes given
+.I number
+of lines, starting from
+.IR line ;
+the rest is scrolled up.
+.PP
+.TP
+.BI "avt.insert_lines(" "line, number" )
+Inserts given
+.I number
+of lines, starting at
+.IR line ;
+the rest is scrolled down.
+.PP
+.TP
+.BI "avt.insert_spaces(" number )
+Insert
+.I number
+spaces at the current cursor position.
+The rest of the line is moved.
+.PP
+.TP
+.BI "avt.delete_characters(" number )
+Delete
+.I number
+characters at the current cursor position.
+The rest of the line is moved.
+.PP
+.TP
+.BI "avt.erase_characters(" number )
+Erase
+.I number
+of characters.
+The characters are overwritten with spaces.
+.PP
+.TP
+.BI "avt.backspace()"
+Go back one character.
+Does nothing if the cursor is at the beginning of the line.
 .PP
 .SS Text style
 .TP
@@ -935,88 +1045,6 @@ Clears from cursor position up the viewport.
 If there is no balloon yet, it is drawn.
 .PP
 .TP
-.BI "avt.where_x()"
-Get the x position of the cursor in the balloon.
-.PP
-.TP
-.BI "avt.where_y()"
-Get the y position of the cursor in the balloon.
-.PP
-.TP
-.BI "avt.max_x()"
-Get the maximum x position of the cursor in the balloon (ie. the width).
-.PP
-.TP
-.BI "avt.max_y()"
-Get the maximum y position of the cursor in the balloon (ie. the height).
-.PP
-.TP
-.BI "avt.home_position()"
-Returns
-.I true
-if the cursor is in the home position or
-.I false
-otherwise.  (This also works for right-to-left writing.)
-.PP
-.TP
-.BI "avt.move_x(" x )
-Moves the cursor to the given X position.
-.PP
-.TP
-.BI "avt.move_y("y )
-Moves the cursor to the given Y position.
-.PP
-.TP
-.BI "avt.move_xy(" "x, y" )
-Moves the cursor to the given
-.IR x " and " y " position."
-.PP
-.TP
-.BI "avt.save_position()"
-Save the current cursor position.
-.PP
-.TP
-.BI "avt.restore_position()"
-Restore the last saved cursor position.
-.PP
-.TP
-.BI "avt.next_tab()"
-Moves the cursor to the next tabulator position.
-.PP
-.TP
-.BI "avt.last_tab()"
-Moves the cursor to the previous tabulator position.
-.PP
-.TP
-.BI "avt.reset_tab_stops()"
-Reset tab stops to every eigth column.
-.PP
-.TP
-.BI "avt.clear_tab_stops()"
-Clears all tab stops.
-.PP
-.TP
-.BI "avt.set_tab(" "x, true" | false )
-Set or clear tab in position
-.IR x .
-.PP
-.TP
-.BI "avt.delete_lines(" "line, number" )
-Deletes given
-.I number
-of lines, starting from
-.IR line ;
-the rest is scrolled up.
-.PP
-.TP
-.BI "avt.insert_lines(" "line, number" )
-Inserts given
-.I number
-of lines, starting at
-.IR line ;
-the rest is scrolled down.
-.PP
-.TP
 .BI "avt.reserve_single_keys(" true | false )
 Reserves single keys, such as <ESC> or <F11>.
 .PP
@@ -1108,32 +1136,6 @@ pointer is inside of the window.
 .BI "avt.lock_updates(" true | false )
 Sets a lock on updates inside of the balloon.
 This can be used for speedups.
-.PP
-.TP
-.BI "avt.insert_spaces(" number )
-Insert
-.I number
-spaces at the current cursor position.
-The rest of the line is moved.
-.PP
-.TP
-.BI "avt.delete_characters(" number )
-Delete
-.I number
-characters at the current cursor position.
-The rest of the line is moved.
-.PP
-.TP
-.BI "avt.erase_characters(" number )
-Erase
-.I number
-of characters.
-The characters are overwritten with spaces.
-.PP
-.TP
-.BI "avt.backspace()"
-Go back one character.
-Does nothing if the cursor is at the beginning of the line.
 .PP
 .TP
 .BI "avt.version()"
