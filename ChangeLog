@@ -1,3 +1,8 @@
+2011-04-03  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-audio.c (playing): new variable
+	many functions adapted (simplified)
+
 2011-04-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_pager):
