@@ -328,6 +328,7 @@ dist-bin: akfavatar.dll lua-akfavatar.exe lua-akfavatar.dll base64.dll \
 	cp $(srcdir)/lua/akfavatar/dir.en.about $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/dir.de.about $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/utf8.lua $(BINPKGNAME)/lua/akfavatar/
+	cp $(srcdir)/lua/akfavatar/utf8.en.about $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/person.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/female_user.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/male_user.lua $(BINPKGNAME)/lua/akfavatar/

@@ -647,6 +647,7 @@ dist: about $(srcdir)/alert.au
 	ln $(srcdir)/lua/akfavatar/dir.en.about \
 	   $(srcdir)/lua/akfavatar/dir.de.about \
 	   $(srcdir)/lua/akfavatar/utf8.lua \
+	   $(srcdir)/lua/akfavatar/utf8.en.about \
 	   $(srcdir)/lua/akfavatar/person.lua \
 	   $(srcdir)/lua/akfavatar/info_icon.lua \
 	   $(srcdir)/lua/akfavatar/female_user.lua \
@@ -735,6 +736,7 @@ dist-bin-default: about pdf libakfavatar.so lua-akfavatar-bin \
 	ln $(srcdir)/lua/akfavatar/dir.en.about \
 	   $(srcdir)/lua/akfavatar/dir.de.about \
 	   $(srcdir)/lua/akfavatar/utf8.lua \
+	   $(srcdir)/lua/akfavatar/utf8.en.about \
 	   $(srcdir)/lua/akfavatar/person.lua \
 	   $(srcdir)/lua/akfavatar/info_icon.lua \
 	   $(srcdir)/lua/akfavatar/female_user.lua \
