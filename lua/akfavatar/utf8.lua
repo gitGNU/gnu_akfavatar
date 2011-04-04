@@ -220,12 +220,27 @@ u8.rep = string.rep
 -- replaces numeric character references (NCR) with UTF-8 characters
 -- example: "&#8364;" (decimal) or "&#x20AC;" (hexadecimal) for Euro sign
 -- named entities are not supported here
-function u8.ncr (s)
+function u8.from_ncr (s)
   s = string.gsub(s, "&#[xX](%x+);",
     function (c) return u8.char(tonumber(c, 16)) end)
   s = string.gsub(s, "&#(%d+);",
     function (c) return u8.char(tonumber(c, 10)) end)
   return s
+end
+
+
+function u8.to_ncr (s)
+  local r = ""
+
+  for c in u8.characters(s) do
+    if string.byte(c) <= 127 then
+      r = r .. c
+    else
+      r = string.format("%s&#x%X;", r, u8.codepoint(c))
+    end
+  end
+
+  return r
 end
 
 -- returns the string underlined (overstrike technique)

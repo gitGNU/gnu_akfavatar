@@ -3,6 +3,9 @@
 	* lua/akfavatar/utf8.lua (utf8.to_latin1, utf8.from_latin1):
 	new functions
 
+	* lua/akfavatar/utf8.lua (utf8.to_ncr): new function
+	  (utf8.from_ncr): renamed from utf8.ncr
+
 2011-04-03  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-audio.c (playing): new variable

@@ -57,11 +57,6 @@ utf8.rep(string, n)
   It's simply an alias for string.rep().
 
 
-utf8.ncr(string)
-  Replaces numeric character references (NCR) with UTF-8 characters.
-  For example "&#8364;" (decimal) or "&#x20AC;" (hexadecimal) for the Euro sign.
-
-
 utf8.underlined (string)
   Returns the string underlined (overstrike technique).
 
@@ -89,6 +84,16 @@ utf8.check_unicode(string)
   Checks text for unicode encodings.
   Returns either of "UTF-8", "UTF-16BE", UTF-16LE", "UTF-32BE", "UTF-32LE"
   or nil if it cannot be detected.
+
+
+utf8.from_ncr(string)
+  Replaces numeric character references (NCR) with UTF-8 characters.
+  For example "&#8364;" (decimal) or "&#x20AC;" (hexadecimal) for "€".
+
+
+utf8.to_ncr(string)
+  Replaces non-ASCII characters with numeric character references.
+  The result is a plain ASCII string, but encoded.
 
 
 utf8.from_latin1(string)
