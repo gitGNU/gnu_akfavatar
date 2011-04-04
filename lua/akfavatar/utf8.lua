@@ -324,4 +324,31 @@ function u8.check_unicode (s)
   end
 end
 
+
+function u8.from_latin1 (s)
+  local r = ""
+
+  for i = 1, #s do
+    r = r .. u8.char(string.byte(s, i))
+  end
+
+ return r
+end
+
+
+function u8.to_latin1 (s, replacement)
+  local r = ""
+
+  for c in u8.characters(s) do
+    local value = u8.codepoint(c)
+    if value <= 255 then
+      r = r .. string.char(value)
+    elseif replacement then
+      r = r .. replacement
+    end
+  end
+
+  return r
+end
+
 return u8

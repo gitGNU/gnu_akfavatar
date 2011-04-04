@@ -89,3 +89,13 @@ utf8.check_unicode(string)
   Checks text for unicode encodings.
   Returns either of "UTF-8", "UTF-16BE", UTF-16LE", "UTF-32BE", "UTF-32LE"
   or nil if it cannot be detected.
+
+
+utf8.from_latin1(string)
+  Converts a string from Latin1 (ISO-8859-1) to UTF-8.
+
+
+utf8.to_latin1(string [,replacement])
+  Converts an UTF-8 string into Latin1 (ISO-8859-1).
+  Characters which cannot be converted are replaced with the replacement string
+  if given, or they are ignored.
