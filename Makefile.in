@@ -206,6 +206,7 @@ avtvorbis.o: $(srcdir)/avtvorbis.c $(srcdir)/avtaddons.h $(srcdir)/stb_vorbis.c
 
 stb_vorbis.o: $(srcdir)/stb_vorbis.c
 	$(CC) $(CFLAGS) -c -o $@ \
+	  -D_GNU_SOURCE=1 \
 	  -DSTB_VORBIS_NO_PUSHDATA_API \
 	  -DSTB_VORBIS_MAX_CHANNELS=$(vorbis_max_channels) \
 	  $(srcdir)/stb_vorbis.c
@@ -284,6 +285,7 @@ akfavatar-vorbis.lo: $(srcdir)/lua/akfavatar-vorbis.c $(srcdir)/stb_vorbis.c
 
 stb_vorbis.lo: $(srcdir)/stb_vorbis.c
 	$(CC) $(CFLAGS) \
+	  -D_GNU_SOURCE=1 \
 	  -DSTB_VORBIS_NO_PUSHDATA_API \
 	  -DSTB_VORBIS_MAX_CHANNELS=$(vorbis_max_channels) \
 	  -fpic -c -o $@ $(srcdir)/stb_vorbis.c
