@@ -233,7 +233,7 @@ function u8.to_ncr (s)
   local r = ""
 
   for c in u8.characters(s) do
-    if string.byte(c) <= 127 then
+    if string.byte(c) <= 127 and c ~= "&" and c ~= "<" and c ~= ">" then
       r = r .. c
     else
       r = string.format("%s&#x%X;", r, u8.codepoint(c))
