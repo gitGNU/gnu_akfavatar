@@ -97,10 +97,13 @@ utf8.to_ncr(string)
 
 
 utf8.from_latin1(string)
-  Converts a string from Latin1 (ISO-8859-1) to UTF-8.
+  Converts a string from Latin-1 (ISO-8859-1) to UTF-8.
 
 
 utf8.to_latin1(string [,replacement])
-  Converts an UTF-8 string into Latin1 (ISO-8859-1).
+  Converts an UTF-8 string into Latin-1 (ISO-8859-1).
   Characters which cannot be converted are replaced with the replacement string
   if given, or they are ignored.
+
+  This function is inefficient and you most probably lose characters.
+  So try to avoid it!

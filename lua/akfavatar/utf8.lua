@@ -344,7 +344,13 @@ function u8.from_latin1 (s)
   local r = ""
 
   for i = 1, #s do
-    r = r .. u8.char(string.byte(s, i))
+    local b = string.byte(s, i)
+    if b <= 0x7F then
+      r = r .. string.char(b)
+    else
+      r = r .. string.char(0xC0 + math.floor(b / 0x40),
+                           0x80 + b % 0x40)
+    end
   end
 
  return r
