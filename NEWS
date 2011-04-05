@@ -2,14 +2,38 @@
 
   - The program avatarsay was removed
     all it could do can be done with lua-akfavatar now
+  - writing *.avt demos became a lot easier
   - documentation now consists of manpages and textfiles
     wich can be displayed in lua-akfavatar directly
   - making demos became simpler again,
     there is no need to specify the balloon-size anymore,
     but therefore effectpause/back don't work anymore
+  - lua-akfavatar can be compiled as module
   - new lua modules available for better UTF-8 support,
     terminal-emulation and the Ogg Vorbis audio format
   - the terminal-emulation has a different, enhanced APC interface
+
+  C-API changes:
+    - Changed definition of avt_image_t and avt_audio_t
+    - New type avt_char:
+        avt_put_char() replaces avt_put_character()
+        avt_is_printable() replaces avt_printable()
+        avt_key() replaces avt_get_key()
+    - new functions: avt_add_raw_audio_data, avt_pause_audio,
+      avt_get_newline_mode, avt_ticks
+    - avtaddons.h: new functions: avta_load_vorbis_file, avta_load_vorbis_data
+    - modified behaviour:
+      - avt.navigate: reacts when sound ends
+
+  Lua-API changes:
+    - new functions:
+      avt.colors, avt.pause_audio, avt.directory_entries, avt.entry_type,
+      avt.silent, avt.load_base_audio_file, avt.load_base_audio_string,
+      avt.ticks
+    - modified behaviour:
+      - avt.load_audio_file, avt.load_audio_string:
+        return nil on error, can be enhanced
+      - avt.navigate: reacts when sound ends
 
 
 * AKFAvatar 0.19.0
