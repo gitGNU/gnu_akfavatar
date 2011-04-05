@@ -290,6 +290,9 @@ AVT_API int avt_update (void);
 /* wait a while */
 AVT_API int avt_wait (int milliseconds);
 
+/* counter, which is increased every millisecond */
+AVT_API unsigned int avt_ticks (void);
+
 /***********************************************************************/
 /* say or ask stuff with wchar_t (Unicode) */
 

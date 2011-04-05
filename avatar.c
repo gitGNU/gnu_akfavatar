@@ -2180,6 +2180,12 @@ avt_wait (int milliseconds)
   return _avt_STATUS;
 }
 
+extern unsigned int
+avt_ticks (void)
+{
+  return (unsigned int) SDL_GetTicks ();
+}
+
 extern int
 avt_where_x (void)
 {

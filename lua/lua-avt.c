@@ -986,6 +986,14 @@ lavt_wait_sec (lua_State * L)
   return 0;
 }
 
+static int
+lavt_ticks (lua_State * L)
+{
+  /* a Lua number may be larger than a Lua integer */
+  lua_pushnumber (L, avt_ticks ());
+  return 1;
+}
+
 /* show final credits from a string */
 /* 1=text, 2=centered (true/false/nothing) */
 static int
@@ -1958,6 +1966,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"flip_page", lavt_flip_page},
   {"update", lavt_update},
   {"wait", lavt_wait_sec},
+  {"ticks", lavt_ticks},
   {"set_balloon_size", lavt_set_balloon_size},
   {"set_balloon_width", lavt_set_balloon_width},
   {"set_balloon_height", lavt_set_balloon_height},
