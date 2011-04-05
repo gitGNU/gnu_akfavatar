@@ -2168,7 +2168,7 @@ avt_wait (int milliseconds)
 {
   Uint32 endtime;
 
-  if (screen && _avt_STATUS == AVT_NORMAL)
+  if (screen && milliseconds > 0 && _avt_STATUS == AVT_NORMAL)
     {
       endtime = SDL_GetTicks () + milliseconds;
 

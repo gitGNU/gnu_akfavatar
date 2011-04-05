@@ -3,6 +3,8 @@
 	* akfavatar.h, avatar.c (avt_ticks): new function
 	lua/lua-avt.c (lavt_ticks => avt.ticks): new function
 
+	* avatar.c (avt_wait): check if time is > 0
+
 2011-04-04  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar/utf8.lua (utf8.to_latin1, utf8.from_latin1):
