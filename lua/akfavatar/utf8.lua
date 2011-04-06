@@ -341,35 +341,26 @@ end
 
 
 function u8.from_latin1 (s)
-  local r = ""
-
-  for i = 1, #s do
-    local b = string.byte(s, i)
-    if b <= 0x7F then
-      r = r .. string.char(b)
-    else
-      r = r .. string.char(0xC0 + math.floor(b / 0x40),
-                           0x80 + b % 0x40)
-    end
-  end
-
- return r
+  return (string.gsub(s, "[\128-\255]",
+            function (c)
+              local b = string.byte(c, i)
+              return string.char(0xC0 + math.floor(b / 0x40),
+                                 0x80 + b % 0x40)
+            end))
 end
 
 
 function u8.to_latin1 (s, replacement)
-  local r = ""
-
-  for c in u8.characters(s) do
-    local value = u8.codepoint(c)
-    if value <= 255 then
-      r = r .. string.char(value)
-    elseif replacement then
-      r = r .. replacement
-    end
-  end
-
-  return r
+  replacement = replacement or ""
+  return (string.gsub(s, "[\192-\244][\128-\191]+",
+            function (c)
+              local value = u8.codepoint(c)
+              if value <= 255 then
+                return string.char(value)
+              else
+                return replacement
+              end
+            end))
 end
 
 return u8
