@@ -23,15 +23,8 @@ utf8 = u8
 -- counts number of characters in an UTF-8 encoded string
 -- control characters and invisible characters are included, too
 function u8.len (s)
-  local len = 0
-  local b
-
-  for i=1,#s do
-    b = string.byte(s, i)
-    -- count any byte except follow-up bytes
-    if b<128 or b>191 then len = len + 1 end
-  end
-
+  -- count anything, but follow-up bytes
+  local _, len = string.gsub(s, "[^\128-\191]", "")
   return len
 end
 
