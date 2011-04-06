@@ -230,23 +230,21 @@ end
 
 
 function u8.to_ncr (s)
-  local r = ""
-
-  for c in u8.characters(s) do
-    if string.byte(c) <= 127 and c ~= "&" and c ~= "<" and c ~= ">" then
-      r = r .. c
-    else
-      r = string.format("%s&#x%X;", r, u8.codepoint(c))
-    end
+  local function char_to_ncr (c)
+    return string.format("&#x%X;", u8.codepoint(c))
   end
 
-  return r
+  s = string.gsub(s, "[&<>]", char_to_ncr)
+  s = string.gsub(s, "[\192-\244][\128-\191]+", char_to_ncr)
+  return s
 end
+
 
 -- returns the string underlined (overstrike technique)
 function u8.underlined (s)
   return (string.gsub(s, "[^\128-\191]", "_\b%1"))
 end
+
 
 -- returns the string in boldface (overstrike technique)
 function u8.bold (s)
