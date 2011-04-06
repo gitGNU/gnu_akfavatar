@@ -19,9 +19,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 local u8 = {}
 utf8 = u8
 
+-- local variables for speedup
+local string = string
+local floor = math.floor
+
 
 -- counts number of characters in an UTF-8 encoded string
--- control characters and invisible characters are included, too
 function u8.len (s)
   -- count anything, but follow-up bytes
   local _, len = string.gsub(s, "[^\128-\191]", "")
@@ -96,16 +99,16 @@ function u8.char (...)
     elseif c <= 0x7F then
       r = r .. string.char (c)
     elseif c <= 0x7FF then
-      r = r .. string.char (0xC0 + math.floor(c/0x40),
+      r = r .. string.char (0xC0 + floor(c/0x40),
                             0x80 + c%0x40)
     elseif c <= 0xFFFF then
-      r = r .. string.char (0xE0 + math.floor(c/0x1000),
-                            0x80 + math.floor(c/0x40)%0x40,
+      r = r .. string.char (0xE0 + floor(c/0x1000),
+                            0x80 + floor(c/0x40)%0x40,
                             0x80 + c%0x40)
     else --> c > 0xFFFF and c <= 0x10FFFF
-      r = r .. string.char (0xF0 + math.floor(c/0x40000),
-                            0x80 + math.floor(c/0x1000)%0x40,
-                            0x80 + math.floor(c/0x40)%0x40,
+      r = r .. string.char (0xF0 + floor(c/0x40000),
+                            0x80 + floor(c/0x1000)%0x40,
+                            0x80 + floor(c/0x40)%0x40,
                             0x80 + c%0x40)
     end
   end
@@ -335,7 +338,7 @@ function u8.from_latin1 (s)
   return (string.gsub(s, "[\128-\255]",
             function (c)
               local b = string.byte(c, i)
-              return string.char(0xC0 + math.floor(b / 0x40),
+              return string.char(0xC0 + floor(b / 0x40),
                                  0x80 + b % 0x40)
             end))
 end

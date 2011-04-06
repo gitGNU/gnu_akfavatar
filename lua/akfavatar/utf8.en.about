@@ -104,6 +104,3 @@ utf8.to_latin1(string [,replacement])
   Converts an UTF-8 string into Latin-1 (ISO-8859-1).
   Characters which cannot be converted are replaced with the replacement string
   if given, or they are ignored.
-
-  This function is inefficient and you most probably lose characters.
-  So try to avoid it!
