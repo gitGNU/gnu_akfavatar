@@ -178,6 +178,7 @@ local function command(cmd)
     if not initialized then initialize() end
     load_audio(a)
     wait()
+    avt.wait_audio_end()
     audio:play()
   elseif "audioloop"==c then
     if not initialized then initialize() end
