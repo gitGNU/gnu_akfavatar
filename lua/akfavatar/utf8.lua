@@ -167,13 +167,9 @@ end
 
 -- like string.reverse, but for UTF-8 encoded strings
 function u8.reverse (s)
-  local r = ""
-
-  for c in string.gmatch(s, "[^\128-\191][\128-\191]*") do
-    r = c .. r
-  end
-
-  return r
+  -- first reverse multi-byte characters, then all
+  s = string.gsub(s, "[\192-\244][\128-\191]+", string.reverse)
+  return string.reverse(s)
 end
 
 
