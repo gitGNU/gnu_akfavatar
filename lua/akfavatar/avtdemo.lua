@@ -20,8 +20,14 @@ require "lua-akfavatar"
 require "akfavatar.ar"
 pcall(require, "akfavatar-vorbis")
 
+-- wait times in milliseconds
+local text_wait = 2700
+local image_wait = 7000
+
+local avt = avt
+
 local audio, old_audio, initialized, moved_in, avatar, avatarname
-local ballooncolor, textcolor, title, archive, do_wait, txt
+local ballooncolor, textcolor, title, archive, target_time, txt
 
 local function initialize()
   avt.initialize {title=title, avatar=avatar, audio=true}
@@ -33,11 +39,11 @@ local function initialize()
   initialized = true
 end
 
-local function wait(s)
-  if do_wait then
+local function wait()
+  if target_time > 0 then
     avt.wait_audio_end()
-    avt.wait(s)
-    do_wait = false
+    avt.wait((target_time - avt.ticks()) / 1000)
+    target_time = 0
     end
 end
 
@@ -67,15 +73,16 @@ local function set_text_color(name)
 end
 
 local function show_text()
-  wait()
   if txt then
+    wait()
     if not moved_in then
       avt.move_in() -- move not defined, yet
       moved_in = true
     end
     avt.tell(txt)
     txt = nil
-    do_wait = true
+    avt.wait_audio_end()
+    target_time = avt.ticks() + text_wait
   end
 end
 
@@ -83,6 +90,7 @@ local function move(move_in)
   if not initialized then initialize() end
 
   if move_in then
+    wait()
     avt.move_in()
   else
     show_text()
@@ -117,7 +125,6 @@ local function load_audio(name)
     end
 end
 
-
 local function show_image(name)
   if not initialized then initialize() end
   show_text()
@@ -129,8 +136,8 @@ local function show_image(name)
     avt.show_image_file(name);
   end
 
-  avt.wait(7)
-  do_wait = false
+  avt.wait_audio_end()
+  target_time = avt.ticks() + image_wait
 end
 
 local function command(cmd)
@@ -146,22 +153,22 @@ local function command(cmd)
   elseif "flip"==c then
     if not moved_in then move(true) end
     avt.flip_page()
-    do_wait = false
+    target_time = 0
   elseif "clear"==c then
     if not moved_in then move(true) end
     avt.clear()
   elseif "wait"==c then
     if not initialized then initialize() end
     show_text()
-    do_wait = true
-    if a=="" then wait() else wait(tonumber(a)) end
+    if a=="" then a = 2.7 end
+    target_time = avt.ticks() + (1000 * tonumber(a))
   elseif "effectpause"==c then
     -- ignore - for backward compatibility
   elseif "pause"==c then
     if not moved_in then move(true) end
     show_text()
-    wait(2.7); avt_show_avatar(); avt.wait(4)
-    do_wait = false
+    wait(); avt_show_avatar(); avt.wait(4)
+    target_time = 0
   elseif "image"==c then
     show_image(a)
   elseif "rawaudiosettings"==c then
@@ -170,21 +177,22 @@ local function command(cmd)
   elseif "audio"==c then
     if not initialized then initialize() end
     load_audio(a)
-    avt.wait_audio_end()
+    wait()
     audio:play()
   elseif "audioloop"==c then
     if not initialized then initialize() end
     load_audio(a)
+    wait()
     audio:loop()
   elseif "loadaudio"==c then
     load_audio(a) -- deprecated
   elseif "playaudio"==c then
     if not initialized then initialize() end
-    avt.wait_audio_end()
+    wait()
     audio:play()
   elseif "playaudioloop"==c then  -- deprecated
     if not initialized then initialize() end
-    avt.wait_audio_end()
+    wait()
     audio:loop()
   elseif "stopaudio"==c then
     if not initialized then initialize() end
@@ -233,7 +241,7 @@ local function command(cmd)
   elseif "end"==c then
     if not initialized then initialize() end
      avt.wait(); avt.move_out(); avt.wait()
-     do_wait = false
+     target_time = 0
      return true
   else
     error("unknown command: " .. cmd)
@@ -282,7 +290,7 @@ function avtdemo(demofile)
   avatar = "default"
   title = "AKFAvatar-Demo"
   archive = false
-  do_wait = false
+  target_time = 0
 
   for line in string.gmatch(get_script(demofile), "(.-)\r?\n") do
     if string.find(line, "^%s*#") or
@@ -291,7 +299,6 @@ function avtdemo(demofile)
     elseif string.find(line, "^%-%-%-") then
       if not moved_in then move(true) end
       show_text()
-      wait()
     elseif string.find(line, "^%[") then
       if command(line) then break end
     else -- not a comment nor a command
