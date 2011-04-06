@@ -168,24 +168,10 @@ end
 -- like string.reverse, but for UTF-8 encoded strings
 function u8.reverse (s)
   local r = ""
-  local i = 1
-  local len = #s
 
-  repeat
-    local b = string.byte(s, i)
-    if b < 128 then  --> ASCII
-      r = string.char(b) .. r
-      i = i + 1
-    else --> multibyte character
-      local ch = ""
-      repeat
-        ch = ch .. string.char(b)
-        i = i + 1
-        b = string.byte(s, i)
-      until b == nil or b < 128 or b > 191
-      r = ch .. r
-    end
-  until i > len
+  for c in string.gmatch(s, "[^\128-\191][\128-\191]*") do
+    r = c .. r
+  end
 
   return r
 end
