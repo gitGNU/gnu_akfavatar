@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 require "lua-akfavatar"
 require "akfavatar.ar"
-pcall(require, "akfavatar-vorbis")
+avt.optional "akfavatar-vorbis"
 
 -- wait times in milliseconds
 local text_wait = 2700

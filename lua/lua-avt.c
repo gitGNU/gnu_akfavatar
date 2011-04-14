@@ -1930,6 +1930,18 @@ lavt_entry_type (lua_State * L)
   return 2;
 }
 
+static int
+lavt_optional (lua_State * L)
+{
+  luaL_checktype (L, 1, LUA_TSTRING);
+  lua_getglobal (L, "require");
+  lua_pushvalue (L, 1);
+  if (lua_pcall (L, 1, 1, 0) != 0)
+    lua_pushnil (L);		/* return nil on error */
+
+  return 1;
+}
+
 /* --------------------------------------------------------- */
 /* register library functions */
 
@@ -2055,6 +2067,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"entry_type", lavt_entry_type},
   {"long_menu", lavt_long_menu},
   {"subprogram", lavt_subprogram},
+  {"optional", lavt_optional},
   {NULL, NULL}
 };
 

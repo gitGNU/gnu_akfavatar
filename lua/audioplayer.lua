@@ -10,7 +10,7 @@ Supported playlist formats: M3U, PLS
 --]]--------------------------------------------------------------------
 
 require "lua-akfavatar"
-require "akfavatar-vorbis"
+avt.optional "akfavatar-vorbis"
 
 -- downloader application
 -- url is appended, data should be dumped to stdout
@@ -206,7 +206,7 @@ end
 
 local function supported_file(n)
   n = string.lower(n)
-  return string.find(n, "%.ogg$") --> no .oga or .ogv!
+  return (vorbis and string.find(n, "%.ogg$"))
          or string.find(n, "%.au$")
          or string.find(n, "%.wav$")
          or string.find(n, "%.m3u$")
