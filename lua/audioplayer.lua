@@ -37,6 +37,13 @@ local function get_url(url) -- might not work on Windows
   return data
 end
 
+local function show_cover(dir)
+  dir = dir or ""
+  if not avt.show_image_file(dir.."cover.xpm") then
+    avt.show_avatar()
+  end
+end
+
 -- replace file-URL with normal filename and remove \r
 local function handle_list_entry(s)
   s = string.gsub(s, "\r", "")
@@ -69,6 +76,7 @@ local function play_single(filename) --> play a single file
     return
   end
 
+  show_cover(string.match(filename, "^(.-)[^\\/]+$"))
   audio:play()
   collectgarbage("collect")
 
@@ -84,7 +92,6 @@ local function play_single(filename) --> play a single file
   avt.stop_audio()
   audio:free()
 end -- play_single
-
 
 -- splits a filename into the name and the directory
 -- problem: doesn't work on URLs
@@ -153,6 +160,8 @@ local function play_list(list) --> plays a list of files (but no playlists)
   -- just one entry?
   if not list[2] then return play_single(list[1]) end
 
+  show_cover()
+
   while list[number] and button ~= "s" do
 
     repeat -- get entry
@@ -191,8 +200,6 @@ end -- play_list
 
 local function play(e) --> play file or list
   local t = type(e)
-
-  avt.show_avatar()
 
   if "table" == t then
     play_list(e)

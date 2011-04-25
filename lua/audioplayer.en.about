@@ -13,3 +13,8 @@ playlists are ignored.  Playlists also cannot refer to other playlists.
 Network addresses may be supported, when you have the tool "curl" installed in
 your PATH.  But this doesn't work on all platforms.
 
+If the directory with the files has a file named "cover.xpm" this image is shown
+while playing the files.  If you use a playlist with paths or URLs, then the
+file has to be in the same directory as the playlist.  This image is never
+fetched from a network.
+
