@@ -147,7 +147,11 @@ local function play_list(list) --> plays a list of files (but no playlists)
   local filename, audio, button
   local number = 1
 
+  -- no list?
   if not list then return end
+
+  -- just one entry?
+  if not list[2] then return play_single(list[1]) end
 
   while list[number] and button ~= "s" do
 
@@ -266,7 +270,6 @@ local function play_select()
     end
   until not name
 end
-
 
 if arg[2] then
   play(arg) -- more than one file
