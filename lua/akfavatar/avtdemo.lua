@@ -288,8 +288,9 @@ function avtdemo(demofile)
   old_audio = audio
   initialized = false
   moved_in = false
-  txt = ""
+  txt = nil
   avatar = "default"
+  avatarname = nil
   title = "AKFAvatar-Demo"
   archive = false
   target_time = 0
@@ -317,6 +318,18 @@ function avtdemo(demofile)
   show_text()
   wait()
   avt.move_out()
+
+  -- eventually free some memory
+  txt = nil
+  avatar = nil
+  avatarname = nil
+  title = nil
+  archive = false
+  target_time = 0
+  audio:free()
+  old_audio:free()
+  audio = nil
+  old_audio = nil
 end
 
 return avtdemo
