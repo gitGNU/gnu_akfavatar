@@ -288,6 +288,7 @@ function avtdemo(demofile)
   old_audio = audio
   initialized = false
   moved_in = false
+  txt = ""
   avatar = "default"
   title = "AKFAvatar-Demo"
   archive = false
