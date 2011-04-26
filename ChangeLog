@@ -1,3 +1,7 @@
+2011-04-27  Andreas K. Foerster  <info@akfoerster.de>
+
+	* audio1.xpm, lua/akfavatar/audio1.lua: new files
+
 2011-04-26  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_show_image_file, avt_show_image_stream)

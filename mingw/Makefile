@@ -334,6 +334,7 @@ dist-bin: akfavatar.dll lua-akfavatar.exe lua-akfavatar.dll base64.dll \
 	cp $(srcdir)/lua/akfavatar/female_user.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/male_user.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/info_icon.lua $(BINPKGNAME)/lua/akfavatar/
+	cp $(srcdir)/lua/akfavatar/audio1.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/gnu_head.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/teacher.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/akfoerster.lua $(BINPKGNAME)/lua/akfavatar/
@@ -351,6 +352,7 @@ dist-bin: akfavatar.dll lua-akfavatar.exe lua-akfavatar.dll base64.dll \
 	cp $(srcdir)/NEWS $(BINPKGNAME)/NEWS.txt
 	cp $(srcdir)/teacher.xpm $(srcdir)/akfoerster.xpm $(BINPKGNAME)/
 	cp $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
+	cp $(srcdir)/audio1.xpm $(BINPKGNAME)/
 	cp $(sdl_dll) $(BINPKGNAME)/
 	cp $(srcdir)/README-SDL $(BINPKGNAME)/README-SDL.txt
 	cp $(lua_dll) $(BINPKGNAME)/

@@ -9,8 +9,9 @@ Supported audio formats: Ogg Vorbis, Wave, AU
 Supported playlist formats: M3U, PLS
 --]]--------------------------------------------------------------------
 
-require "lua-akfavatar"
-avt.optional "akfavatar-vorbis"
+local avt = require "lua-akfavatar"
+local default_cover = require "akfavatar.audio1"
+local vorbis = avt.optional "akfavatar-vorbis"
 
 -- downloader application
 -- url is appended, data should be dumped to stdout
@@ -40,7 +41,7 @@ end
 local function show_cover(dir)
   dir = dir or ""
   if not avt.show_image_file(dir.."cover.xpm") then
-    avt.show_avatar()
+    avt.show_image_string(default_cover)
   end
 end
 
