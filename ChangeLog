@@ -1,3 +1,10 @@
+2011-04-26  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_show_image_file, avt_show_image_stream)
+	(avt_show_image_data, avt_show_image_xpm, avt_show_image_xbm)
+	(avt_show_gimp_image):
+	fix: on error clear the screen, not the balloon
+
 2011-04-14  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c (lavt_optional => avt.optional): new function

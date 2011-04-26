@@ -5544,7 +5544,7 @@ avt_show_image_file (const char *filename)
 
   if (image == NULL)
     {
-      avt_clear ();		/* at least clear the balloon */
+      avt_clear_screen ();	/* at least clear the screen */
       return AVT_ERROR;
     }
 
@@ -5578,7 +5578,7 @@ avt_show_image_stream (avt_stream * stream)
 
   if (image == NULL)
     {
-      avt_clear ();		/* at least clear the balloon */
+      avt_clear_screen ();	/* at least clear the screen */
       return AVT_ERROR;
     }
 
@@ -5615,7 +5615,7 @@ avt_show_image_data (void *img, int imgsize)
 
   if (image == NULL)
     {
-      avt_clear ();		/* at least clear the balloon */
+      avt_clear_screen ();	/* at least clear the screen */
       return AVT_ERROR;
     }
 
@@ -5637,7 +5637,7 @@ avt_show_image_xpm (char **xpm)
 
   if (image == NULL)
     {
-      avt_clear ();		/* at least clear the balloon */
+      avt_clear_screen ();	/* at least clear the screen */
       return AVT_ERROR;
     }
 
@@ -5677,7 +5677,7 @@ avt_show_image_xbm (const unsigned char *bits, int width, int height,
 
   if (image == NULL)
     {
-      avt_clear ();		/* at least clear the balloon */
+      avt_clear_screen ();	/* at least clear the screen */
       return AVT_ERROR;
     }
 
@@ -5713,7 +5713,10 @@ avt_show_gimp_image (void *gimp_image)
 				      0xFF0000, 0);
 
   if (image == NULL)
-    return AVT_ERROR;
+    {
+      avt_clear_screen ();	/* at least clear the screen */
+      return AVT_ERROR;
+    }
 
   avt_show_image (image);
   SDL_FreeSurface (image);
