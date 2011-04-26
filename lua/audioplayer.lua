@@ -109,7 +109,7 @@ local function m3u(url) --> M3U Playlist
     file = open_url(url)
   else --> local file
     local name, dir = basename(url)
-    if dir then avt.set_directory(dir) end --> list may contain relative paths
+    avt.set_directory(dir) --> list may contain relative paths
     file = assert(io.open(name))
   end
 
@@ -131,7 +131,7 @@ local function pls(filename) --> PLS ShoutCast Playlist
     file = open_url(url)
   else --> local file
     local name, dir = basename(url)
-    if dir then avt.set_directory(dir) end --> list may contain relative paths
+    avt.set_directory(dir) --> list may contain relative paths
     file = assert(io.open(name))
   end
 
