@@ -1733,6 +1733,7 @@ lavt_getcwd (lua_State * L)
            avt_normal_text(); \
          } while(0)
 
+
 static int
 lavt_long_menu (lua_State * L)
 {
@@ -1787,7 +1788,14 @@ lavt_long_menu (lua_State * L)
       for (i = 1; i <= items_per_page; i++)
 	{
 	  lua_rawgeti (L, 1, i + (page_nr * items_per_page));
-	  item_desc = lua_tolstring (L, -1, &len);
+	  if (lua_istable (L, -1))
+	    {
+	      lua_rawgeti (L, -1, 1);
+	      item_desc = lua_tolstring (L, -1, &len);
+	      lua_pop (L, 1);	/* pop value */
+	    }
+	  else			/* only string given */
+	    item_desc = lua_tolstring (L, -1, &len);
 
 	  if (item_desc)
 	    {
@@ -1796,7 +1804,7 @@ lavt_long_menu (lua_State * L)
 	      items++;
 	    }
 
-	  lua_pop (L, 1);	/* pop item description from stack */
+	  lua_pop (L, 1);	/* pop item from stack */
 	  /* from now on item_desc should not be dereferenced */
 
 	  if (!item_desc)
@@ -1807,8 +1815,7 @@ lavt_long_menu (lua_State * L)
       if (item_desc)
 	{
 	  lua_rawgeti (L, 1, (page_nr + 1) * items_per_page + 1);
-	  item_desc = lua_tolstring (L, -1, &len);
-	  if (item_desc)
+	  if (!lua_isnil (L, -1))
 	    {
 	      MARK (CONTINUE);
 	      items = max_idx;
@@ -1844,8 +1851,36 @@ lavt_long_menu (lua_State * L)
   avt_clear ();
   avt_lock_updates (AVT_FALSE);
 
-  lua_pushinteger (L, item_nr);
-  return 1;
+  /* check item_nr */
+  lua_rawgeti (L, 1, item_nr);
+  if (lua_istable (L, -1))
+    {
+      int item, nresults, table;
+
+      table = lua_gettop (L);
+      item = 2;			/* skip title */
+      nresults = 0;
+
+      while (1)
+	{
+	  lua_rawgeti (L, table, item++);
+
+	  if (!lua_isnil (L, -1))
+	    nresults++;
+	  else
+	    {
+	      lua_pop (L, 1);	/* pop nil */
+	      break;
+	    }
+	}
+
+      return nresults;
+    }
+  else				/* not a table */
+    {
+      lua_pushinteger (L, item_nr);
+      return 1;
+    }
 }
 
 /*
