@@ -40,7 +40,7 @@ end
 
 local function show_cover(dir)
   dir = dir or ""
-  if not avt.show_image_file(dir.."cover.xpm") then
+  if not avt.show_image_file(dir.."cover") then
     avt.show_image_string(default_cover)
   end
 end
