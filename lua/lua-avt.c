@@ -1735,7 +1735,7 @@ lavt_getcwd (lua_State * L)
 
 
 static int
-lavt_long_menu (lua_State * L)
+lavt_menu (lua_State * L)
 {
   long int item_nr;
   const char *item_desc;
@@ -1746,6 +1746,7 @@ lavt_long_menu (lua_State * L)
   int mid_x;
   size_t len;
   avt_bool_t old_auto_margin, old_newline_mode;
+  avt_bool_t small;
 
   is_initialized ();
   luaL_checktype (L, 1, LUA_TTABLE);
@@ -1761,11 +1762,16 @@ lavt_long_menu (lua_State * L)
   mid_x = avt_get_max_x () / 2;	/* used by MARK() */
   max_idx = avt_get_max_y () - start_line + 1;
 
+  /* check, if it's a short menu */
+  lua_rawgeti (L, 1, max_idx + 1);
+  small = (avt_bool_t) lua_isnil (L, -1);
+  lua_pop (L, 1);
+
   item_desc = NULL;
   items = 0;
   item_nr = 0;
   page_nr = 0;
-  items_per_page = max_idx - 2;
+  items_per_page = small ? max_idx : max_idx - 2;
 
   old_auto_margin = avt_get_auto_margin ();
   avt_set_auto_margin (AVT_FALSE);
@@ -1777,13 +1783,17 @@ lavt_long_menu (lua_State * L)
       avt_move_xy (1, start_line);
       avt_clear_down ();
 
-      if (page_nr > 0)
-	MARK (BACK);
-      else
-	MARK (L"");
+      items = 0;
 
-      items = 1;
-      avt_new_line ();
+      if (!small)
+	{
+	  if (page_nr > 0)
+	    MARK (BACK);
+	  else
+	    MARK (L"");
+
+	  items = 1;
+	}
 
       for (i = 1; i <= items_per_page; i++)
 	{
@@ -1799,8 +1809,9 @@ lavt_long_menu (lua_State * L)
 
 	  if (item_desc)
 	    {
+	      if (!small || i > 1)
+		avt_new_line ();
 	      avt_say_mb_len (item_desc, len);
-	      avt_new_line ();
 	      items++;
 	    }
 
@@ -1817,6 +1828,7 @@ lavt_long_menu (lua_State * L)
 	  lua_rawgeti (L, 1, (page_nr + 1) * items_per_page + 1);
 	  if (!lua_isnil (L, -1))
 	    {
+	      avt_new_line ();
 	      MARK (CONTINUE);
 	      items = max_idx;
 	    }
@@ -1824,7 +1836,7 @@ lavt_long_menu (lua_State * L)
 	}
 
       menu_start = start_line;
-      if (page_nr == 0)
+      if (!small && page_nr == 0)
 	{
 	  menu_start++;
 	  items--;
@@ -1832,15 +1844,15 @@ lavt_long_menu (lua_State * L)
 
       avt_lock_updates (AVT_FALSE);
       check (avt_choice (&choice, menu_start, items, 0,
-			 (page_nr > 0), (item_desc != NULL)));
+			 (page_nr > 0), (!small && item_desc != NULL)));
       avt_lock_updates (AVT_TRUE);
 
       if (page_nr == 0)
 	choice++;
 
-      if (choice == 1 && page_nr > 0)
+      if (!small && choice == 1 && page_nr > 0)
 	page_nr--;		/* page back */
-      else if (choice == max_idx)
+      else if (!small && choice == max_idx)
 	page_nr += (item_desc == NULL) ? 0 : 1;	/* page forward */
       else
 	item_nr = choice - 1 + (page_nr * items_per_page);
@@ -2100,7 +2112,8 @@ static const struct luaL_reg akfavtlib[] = {
   {"chdir", lavt_chdir},
   {"directory_entries", lavt_directory_entries},
   {"entry_type", lavt_entry_type},
-  {"long_menu", lavt_long_menu},
+  {"menu", lavt_menu},
+  {"long_menu", lavt_menu},
   {"subprogram", lavt_subprogram},
   {"optional", lavt_optional},
   {NULL, NULL}

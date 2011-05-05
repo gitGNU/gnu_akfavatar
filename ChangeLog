@@ -1,3 +1,9 @@
+2011-05-05  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/lua-avt.c (lavt_long_menu):
+	allow short menues, renamed to lavt_menu
+	Lua function avt.menu as alias for avt.long_menu
+
 2011-04-29  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c (lavt_long_menu): support for stacked tables
