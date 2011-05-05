@@ -684,12 +684,20 @@ pushes either 's' (stop) or 'f' (forward).
 If both are given, then the rightmost of them.
 .PP
 .TP
+.BI "avt.menu(" items )
+.TQ
 .BI "avt.long_menu(" items )
-Shows a long menu with the
-.IR items ,
-which should be an array with menu-items.
+Shows a menu with the
+.IR items .
+The
+.I items
+can be either an array with strings.
+Then It returns the number of the selected item.
 .IP
-It returns the number of the selected item.
+Or
+.I items
+can be again arrays starting with a string, followed by one or more results.
+The results can be of any valid Lua type, including functions.
 .IP
 The menu starts in the line of the current cursor position.
 So you could put a headline before the menu.
@@ -706,7 +714,10 @@ local item = avt.long_menu {
 .PP
 .TP
 .BI "avt.choice(" "start_line, items [, key] [, back] [,forward]" )
-This can be used for menus.  It returns the number of the selected item.
+This can be used for menus.
+It is a more basic function than
+.BR avt.menu() .
+It returns the number of the selected item.
 .IP
 .RS
 .IP start_line:
