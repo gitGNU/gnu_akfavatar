@@ -842,36 +842,12 @@ to play sounds in a sequence.
 .IP
 The audio can also be played by calling the audio variables like a function.
 .IP
-.B Attention:
-You should take care that the variable for the sound
-stays in scope while the sound is played.
-Otherwise the audio output could stop unexpectedly.
-.IP
 .EX
 play_audio_file = function (filename)
   local sound = avt.load_audio_file(filename)
   sound:play()
-  avt.wait_audio_end()
-  sound:free()
 end
 .EE
-.IP
-This function is okay because of the command
-.BR avt.wait_audio_end() .
-.IP
-.EX
-play_audio_file = function (filename)
-  avt.wait_audio_end()
-  sound = avt.load_audio_file(filename)
-  sound:play()
-end
-.EE
-.IP
-This function is also okay, because the variable
-.I sound
-is not local to this function.
-It is most probably a global variable.
-It could also be local to the program (ie. the "chunk"), which is also okay.
 .PP
 .TP
 .IB audio ":loop()"
@@ -903,7 +879,8 @@ This is the same as
 .IB audio ":free()"
 Frees the
 .I audio
-data.  If this 
+data.
+If this 
 .I audio
 is currently playing, it is stopped.
 .IP
@@ -915,8 +892,6 @@ manually with using
 .BI "collectgarbage(" """collect""" ")"
 from time to time.
 Then you don't need to call this function.
-Just make sure the currently playing sound is still assigned
-to a variable when you do this.
 .PP
 .TP
 .BI "avt.initialize_audio()"
@@ -938,9 +913,6 @@ Quit the audio subsystem.
 .IP
 This is not needed in normal programs.
 Only use this, if you are sure you need it.
-.IP
-On some systems it may be necessary to shut down the audio system before
-you launch another program with audio output.
 .PP
 .SS File-System
 .TP

@@ -1264,11 +1264,19 @@ lavt_initialize_audio (lua_State * L)
     }
 }
 
+/* the current sound may be garbage collected again */
+#define audio_not_playing(L) \
+  do { \
+    lua_pushnil(L); \
+    lua_setfield(L, LUA_REGISTRYINDEX, "AKFAvatar-current-sound"); \
+    } while(0)
+
 /* shut down the audio-system */
 static int
-lavt_quit_audio (lua_State * L AVT_UNUSED)
+lavt_quit_audio (lua_State * L)
 {
   avt_quit_audio ();
+  audio_not_playing (L);
   return 0;
 }
 
@@ -1376,6 +1384,7 @@ static int
 lavt_wait_audio_end (lua_State * L)
 {
   check (avt_wait_audio_end ());
+  audio_not_playing (L);
   return 0;
 }
 
@@ -1383,6 +1392,7 @@ static int
 lavt_stop_audio (lua_State * L AVT_UNUSED)
 {
   avt_stop_audio ();
+  audio_not_playing (L);
   return 0;
 }
 
@@ -1404,6 +1414,10 @@ laudio_play (lua_State * L)
   if (audio && *audio)
     avt_play_audio (*audio, AVT_FALSE);	/* no check! */
 
+  /* store reference to audio, so it isn't garbage collected while playing */
+  lua_pushvalue (L, 1);
+  lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-current-sound");
+
   return 0;
 }
 
@@ -1417,6 +1431,10 @@ laudio_loop (lua_State * L)
 
   if (audio && *audio)
     avt_play_audio (*audio, AVT_TRUE);	/* no check! */
+
+  /* store reference to audio, so it isn't garbage collected while playing */
+  lua_pushvalue (L, 1);
+  lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-current-sound");
 
   return 0;
 }

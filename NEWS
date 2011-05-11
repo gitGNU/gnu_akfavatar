@@ -33,6 +33,7 @@
     - modified behaviour:
       - avt.load_audio_file, avt.load_audio_string:
         return nil on error, can be enhanced
+      - playing sounds are protected from the garbage collector
       - avt.navigate: reacts when sound ends
 
 
