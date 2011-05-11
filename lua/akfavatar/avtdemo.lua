@@ -26,7 +26,7 @@ local image_wait = 7000
 
 local avt = avt
 
-local audio, old_audio, initialized, moved_in, avatar, avatarname
+local audio, initialized, moved_in, avatar, avatarname
 local ballooncolor, textcolor, title, archive, target_time, txt
 
 local function initialize()
@@ -116,8 +116,6 @@ local function credits(name)
 end
 
 local function load_audio(name)
-    old_audio:free()
-    old_audio = audio --> keep, it might still be playing!
     if archive then
       audio = avt.load_audio_string(archive:get(name)) or avt.silent()
     else --> not an archive
@@ -285,7 +283,6 @@ function avtdemo(demofile)
 
   -- reset settings
   audio = avt.silent()
-  old_audio = audio
   initialized = false
   moved_in = false
   txt = nil
@@ -327,9 +324,7 @@ function avtdemo(demofile)
   archive = false
   target_time = 0
   audio:free()
-  old_audio:free()
   audio = nil
-  old_audio = nil
 end
 
 return avtdemo
