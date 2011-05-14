@@ -279,7 +279,9 @@ local function play_select()
   until not name
 end
 
-if arg[2] then
+if AUDIO then
+  play(AUDIO) -- global AUDIO may be a string or an array
+elseif arg[2] then
   play(arg) -- more than one file
 elseif arg[1] then
   play(arg[1]) -- single file
