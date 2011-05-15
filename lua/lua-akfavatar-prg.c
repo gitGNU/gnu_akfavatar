@@ -140,6 +140,25 @@ initialize (void)
     avta_error ("cannot initialize graphics", avt_get_error ());
 }
 
+static void
+reset (void)
+{
+  avt_clear_screen ();
+  avt_newline_mode (AVT_TRUE);
+  avt_set_auto_margin (AVT_TRUE);
+  avt_set_origin_mode (AVT_TRUE);
+  avt_set_scroll_mode (1);
+  avt_reserve_single_keys (AVT_FALSE);
+  avt_set_background_color_name ("default");
+  avt_set_balloon_color_name ("floral white");
+  avt_markup (AVT_FALSE);
+  avt_text_direction (AVT_LEFT_TO_RIGHT);
+  avt_normal_text ();
+  avt_quit_audio ();
+  avt_set_title ("Lua-AKFAvatar Starter", "AKFAvatar");
+  avt_change_avatar_image (avt_default ());
+}
+
 /* check if this program can handle the file */
 static avt_bool_t
 check_filename (const char *filename)
@@ -387,13 +406,13 @@ start_screen (void)
   avt_say_mb (avt_license ());
   avt_new_line ();
   avt_new_line ();
-  avt_bold(AVT_TRUE);
+  avt_bold (AVT_TRUE);
   avt_say_mb ("F11");
-  avt_bold(AVT_FALSE);
+  avt_bold (AVT_FALSE);
   avt_say_mb (": Fullscreen, ");
-  avt_bold(AVT_TRUE);
+  avt_bold (AVT_TRUE);
   avt_say_mb ("Esc");
-  avt_bold(AVT_FALSE);
+  avt_bold (AVT_FALSE);
   avt_say_mb (": end/back");
 
   if (avt_wait_button () != AVT_NORMAL)
@@ -469,22 +488,7 @@ main (int argc, char **argv)
 
 	  /* script may have called avt.quit() */
 	  if (avt_initialized ())
-	    {
-	      avt_clear_screen ();
-	      avt_newline_mode (AVT_TRUE);
-	      avt_set_auto_margin (AVT_TRUE);
-	      avt_set_origin_mode (AVT_TRUE);
-	      avt_set_scroll_mode (1);
-	      avt_reserve_single_keys (AVT_FALSE);
-	      avt_set_background_color_name ("default");
-	      avt_set_balloon_color_name ("floral white");
-	      avt_markup (AVT_FALSE);
-	      avt_text_direction (AVT_LEFT_TO_RIGHT);
-	      avt_normal_text ();
-	      avt_quit_audio ();
-	      avt_set_title ("Lua-AKFAvatar Starter", "AKFAvatar");
-	      avt_change_avatar_image (avt_default ());
-	    }
+	    reset ();
 	  else
 	    initialize ();
 
