@@ -916,6 +916,11 @@ Only use this, if you are sure you need it.
 .PP
 .SS File-System
 .TP
+.BI "avt.dirsep"
+This variable contains the systems directory separator;
+either "/" or "\\".
+.PP
+.TP
 .BI "avt.get_directory()"
 Returns the current working directory.
 On error it returns

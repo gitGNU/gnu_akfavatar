@@ -2155,6 +2155,10 @@ luaopen_akfavatar (lua_State * L)
 
   luaL_register (L, "avt", akfavtlib);
 
+  /* variables */
+  lua_pushliteral (L, LUA_DIRSEP);
+  lua_setfield (L, -2, "dirsep");
+
 #ifdef MODULE
   /*
    * use some dummy userdata to register a
