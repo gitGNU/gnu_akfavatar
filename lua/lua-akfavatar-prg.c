@@ -172,8 +172,7 @@ check_filename (const char *filename)
       return (avt_bool_t)
 	(ext && (strcasecmp (".lua", ext) == 0
 		 || strcasecmp (".avt", ext) == 0
-		 || strcasecmp (".about", ext) == 0
-		 || strcasecmp (".h", ext) == 0));
+		 || strcasecmp (".about", ext) == 0));
     }
 }
 
@@ -351,8 +350,7 @@ ask_file (void)
       ext = strrchr (filename, '.');
       if (ext && strcasecmp (".avt", ext) == 0)
 	avtdemo (filename);
-      else if (ext && (strcasecmp (".about", ext) == 0
-		       || strcasecmp (".h", ext) == 0))
+      else if (ext && strcasecmp (".about", ext) == 0)
 	show_text (filename);
       else			/* assume Lua code */
 	{

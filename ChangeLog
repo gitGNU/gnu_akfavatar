@@ -1,3 +1,8 @@
+2011-05-18  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/lua-akfavatar-prg.c:
+	don't show header files directly (use about-files)
+
 2011-05-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c (avt.dirsep): new variable
