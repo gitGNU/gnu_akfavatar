@@ -304,6 +304,8 @@ dist-bin: akfavatar.dll lua-akfavatar.exe lua-akfavatar.dll base64.dll \
 	cp libavtaddons.a $(BINPKGNAME)/
 	cp $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/include/
 	cp $(srcdir)/avtaddons.h $(BINPKGNAME)/include/
+	-cp $(srcdir)/akfavatar.h.about $(BINPKGNAME)/include/
+	-cp $(srcdir)/avtaddons.h.about $(BINPKGNAME)/include/
 	cp $(srcdir)/fsdemo-??.avt $(BINPKGNAME)/
 	cp lua-akfavatar.exe $(BINPKGNAME)/
 	cp lua/base64.en.about $(BINPKGNAME)/

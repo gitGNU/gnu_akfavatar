@@ -621,6 +621,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/lua-akfavatar.sh \
 	   $(srcdir)/lua-akfavatar.en.about \
 	   $(srcdir)/lua-akfavatar-reference.en.about \
+	   $(srcdir)/akfavatar.h.about $(srcdir)/avtaddons.h.about \
 	   $(PKGNAME)/
 
 	mkdir $(PKGNAME)/pascal
@@ -716,6 +717,8 @@ dist-bin-default: about pdf libakfavatar.so lua-akfavatar-bin \
 	ln $(srcdir)/lua/akfavatar-term.en.about $(BINPKGNAME)/lua/
 	ln $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/include/
 	ln $(srcdir)/avtaddons.h $(BINPKGNAME)/include/
+	-ln $(srcdir)/akfavatar.h.about $(BINPKGNAME)/include/
+	-ln $(srcdir)/avtaddons.h.about $(BINPKGNAME)/include/
 	ln $(srcdir)/pascal/?pcavatar $(BINPKGNAME)/
 	ln $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	ln $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
