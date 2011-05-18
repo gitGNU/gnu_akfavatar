@@ -22,6 +22,8 @@ lua-akfavatar
 lua-akfavatar-bin
 lua-akfavatar.en.about
 lua-akfavatar-reference.en.about
+akfavatar.h.about
+avtaddons.h.about
 bin2c
 ucsfont*.c
 alert.au

@@ -20,6 +20,7 @@ LUA_PATH = /usr/local/share/lua/5.1/
 LUA_CPATH = /usr/local/lib/lua/5.1/
 
 SOX = sox
+ENSCRIPT = enscript
 
 # Soundfile for the alert (\a)
 # may be any format that sox supports
@@ -436,7 +437,7 @@ uninstall: uninstall-info uninstall-man uninstall-txt uninstall-html \
 	-xdg-icon-resource uninstall --size 32 --novendor lua.xpm
 
 info:
-	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" info
+	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" srcdir="$(srcdir)" info
 
 install-info: info
 
@@ -454,48 +455,50 @@ uninstall-man:
 	-rm -f $(DESTDIR)$(mandir)/man3/lua-akfavatar-reference.3
 
 txt:
-	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" txt
+	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" srcdir="$(srcdir)" txt
 
 install-txt: txt
 
 uninstall-txt:
 
 html:
-	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" html
+	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" srcdir="$(srcdir)" html
 
 install-html: html
 
 uninstall-html:
 
 dvi:
-	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" dvi
+	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" srcdir="$(srcdir)" dvi
 
 install-dvi: dvi
 
 uninstall-dvi:
 
 pdf:
-	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" pdf
+	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" srcdir="$(srcdir)" pdf
 
 install-pdf: pdf
 
 uninstall-pdf:
 
 ps:
-	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" ps
+	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" srcdir="$(srcdir)" ps
 
 install-ps: ps
 
 uninstall-ps:
 
 man:
-	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" man
+	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" srcdir="$(srcdir)" man
 
 doc: about
-	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" all
+	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" srcdir="$(srcdir)" all
 
 about: $(srcdir)/lua-akfavatar.en.about \
-       $(srcdir)/lua-akfavatar-reference.en.about
+       $(srcdir)/lua-akfavatar-reference.en.about \
+       $(srcdir)/akfavatar.h.about \
+       $(srcdir)/avtaddons.h.about
 
 $(srcdir)/lua-akfavatar.en.about: $(srcdir)/doc/lua-akfavatar.en.man
 	-nroff -c -man -Tutf8 $(srcdir)/doc/lua-akfavatar.en.man > $@
@@ -504,6 +507,12 @@ $(srcdir)/lua-akfavatar-reference.en.about: \
      $(srcdir)/doc/lua-akfavatar-reference.en.man
 	-nroff -c -man -Tutf8 \
 	  $(srcdir)/doc/lua-akfavatar-reference.en.man > $@
+
+$(srcdir)/akfavatar.h.about: $(srcdir)/akfavatar.h
+	-$(ENSCRIPT) -takfavatar.h -E -woverstrike -p$@ $(srcdir)/akfavatar.h
+
+$(srcdir)/avtaddons.h.about: $(srcdir)/avtaddons.h
+	-$(ENSCRIPT) -tavtaddons.h -E -woverstrike -p$@ $(srcdir)/avtaddons.h
 
 check:
 
