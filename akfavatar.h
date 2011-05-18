@@ -806,10 +806,11 @@ AVT_API int avt_show_image_xbm (const unsigned char *bits,
 				const char *colorname);
 
 /*
- * show gimp image
- * on error it returns AVT_ERROR without changing the status
+ * show raw image
+ * only 3 or 4 Bytes per pixel supported (RGB or RGBA)
  */
-AVT_API int avt_show_gimp_image (void *gimp_image);
+AVT_API int avt_show_raw_image (void *image_data, int width, int height,
+				int bytes_per_pixel);
 
 /***********************************************************************/
 /* high-level functions */
@@ -1068,6 +1069,7 @@ AVT_API void avt_auto_margin (avt_bool_t mode) AVT_DEPRECATED;
 AVT_API int avt_put_character (wchar_t ch) AVT_DEPRECATED;
 AVT_API avt_bool_t avt_printable (wchar_t ch);
 AVT_API int avt_get_key (wchar_t *ch) AVT_DEPRECATED;
+AVT_API int avt_show_gimp_image (void *gimp_image) AVT_DEPRECATED;
 
 AVT_END_DECLS
 

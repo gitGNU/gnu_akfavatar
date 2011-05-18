@@ -20,10 +20,11 @@
         avt_is_printable() replaces avt_printable()
         avt_key() replaces avt_get_key()
     - new functions: avt_add_raw_audio_data, avt_pause_audio,
-      avt_get_newline_mode, avt_ticks
+      avt_get_newline_mode, avt_ticks, avt_show_raw_image
     - avtaddons.h: new functions: avta_load_vorbis_file, avta_load_vorbis_data
     - modified behaviour:
       - avt.navigate: reacts when sound ends
+    - deprecated: avt_show_gimp_image - use avt_show_raw_image
 
   Lua-API changes:
     - new functions:

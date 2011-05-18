@@ -3,6 +3,9 @@
 	* lua/lua-akfavatar-prg.c:
 	don't show header files directly (use about-files)
 
+	* akfavatar.h, avatar.c (avt_show_raw_image): new function
+	(avt_show_gimp_image): adapted - marked deprecated
+
 2011-05-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c (avt.dirsep): new variable

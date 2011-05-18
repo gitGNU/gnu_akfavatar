@@ -5688,29 +5688,50 @@ avt_show_image_xbm (const unsigned char *bits, int width, int height,
 }
 
 /*
- * show gimp image
+ * show raw image
+ * only 3 or 4 Bytes per pixel supported (RGB or RGBA)
  */
 extern int
-avt_show_gimp_image (void *gimp_image)
+avt_show_raw_image (void *image_data, int width, int height,
+		    int bytes_per_pixel)
 {
   SDL_Surface *image;
-  gimp_img_t *img;
 
-  if (!screen || _avt_STATUS != AVT_NORMAL)
+  if (!screen || _avt_STATUS != AVT_NORMAL || !image_data)
     return _avt_STATUS;
 
-  img = (gimp_img_t *) gimp_image;
+  if (bytes_per_pixel < 3 || bytes_per_pixel > 4)
+    {
+      _avt_STATUS = AVT_ERROR;
+      SDL_SetError ("wrong number of bytes_per_pixel for raw image");
+      return _avt_STATUS;
+    }
 
+  /* the wrong endianess can be optimized away while compiling */
   if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-    image = SDL_CreateRGBSurfaceFrom (&img->pixel_data,
-				      img->width, img->height, 3 * 8,
-				      img->width * 3, 0xFF0000, 0x00FF00,
-				      0x0000FF, 0);
-  else
-    image = SDL_CreateRGBSurfaceFrom (&img->pixel_data,
-				      img->width, img->height, 3 * 8,
-				      img->width * 3, 0x0000FF, 0x00FF00,
-				      0xFF0000, 0);
+    {
+      if (bytes_per_pixel == 3)
+	image = SDL_CreateRGBSurfaceFrom (image_data, width, height,
+					  3 * 8, 3 * width,
+					  0xFF0000, 0x00FF00, 0x0000FF, 0);
+      else if (bytes_per_pixel == 4)
+	image = SDL_CreateRGBSurfaceFrom (image_data, width, height,
+					  4 * 8, 4 * width,
+					  0xFF000000, 0x00FF0000, 0x0000FF00,
+					  0x000000FF);
+    }
+  else				/* little endian */
+    {
+      if (bytes_per_pixel == 3)
+	image = SDL_CreateRGBSurfaceFrom (image_data, width, height,
+					  3 * 8, 3 * width,
+					  0x0000FF, 0x00FF00, 0xFF0000, 0);
+      else if (bytes_per_pixel == 4)
+	image = SDL_CreateRGBSurfaceFrom (image_data, width, height,
+					  4 * 8, 4 * width,
+					  0x000000FF, 0x0000FF00, 0x00FF0000,
+					  0xFF000000);
+    }
 
   if (image == NULL)
     {
@@ -5720,6 +5741,24 @@ avt_show_gimp_image (void *gimp_image)
 
   avt_show_image (image);
   SDL_FreeSurface (image);
+
+  return _avt_STATUS;
+}
+
+/*
+ * deprecated - use avt_show_raw_image
+ */
+extern int
+avt_show_gimp_image (void *gimp_image)
+{
+  gimp_img_t *img;
+
+  if (!screen || _avt_STATUS != AVT_NORMAL)
+    return _avt_STATUS;
+
+  img = (gimp_img_t *) gimp_image;
+
+  avt_show_raw_image (&img->pixel_data, img->width, img->height, 3);
 
   return _avt_STATUS;
 }
