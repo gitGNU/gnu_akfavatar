@@ -6,6 +6,9 @@
 	* akfavatar.h, avatar.c (avt_show_raw_image): new function
 	(avt_show_gimp_image): adapted - marked deprecated
 
+	* akfavatar.h, avatar.c (avt_get_background_color)
+	(avt_image_max_width, avt_image_max_height): new functions
+
 2011-05-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c (avt.dirsep): new variable

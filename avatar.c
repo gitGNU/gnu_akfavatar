@@ -5687,6 +5687,18 @@ avt_show_image_xbm (const unsigned char *bits, int width, int height,
   return _avt_STATUS;
 }
 
+extern int
+avt_image_max_width (void)
+{
+  return screen->w;
+}
+
+extern int
+avt_image_max_height (void)
+{
+  return screen->h;
+}
+
 /*
  * show raw image
  * only 3 or 4 Bytes per pixel supported (RGB or RGBA)
@@ -6166,6 +6178,17 @@ avt_set_background_color_name (const char *name)
 
   if (avt_name_to_color (name, &red, &green, &blue) == 0)
     avt_set_background_color (red, green, blue);
+}
+
+extern void
+avt_get_background_color (int *red, int *green, int *blue)
+{
+  if (red && green && blue)
+    {
+      *red = backgroundcolor_RGB.r;
+      *green = backgroundcolor_RGB.g;
+      *blue = backgroundcolor_RGB.b;
+    }
 }
 
 extern void

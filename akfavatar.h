@@ -525,6 +525,7 @@ AVT_API void avt_activate_cursor (avt_bool_t on);
  */
 AVT_API void avt_set_background_color (int red, int green, int blue);
 AVT_API void avt_set_background_color_name (const char *name);
+AVT_API void avt_get_background_color (int *red, int *green, int *blue);
 
 /*
  * define the balloon color
@@ -771,6 +772,9 @@ AVT_API void avt_lock_updates (avt_bool_t lock);
  * X-Pixmaps (XPM), X Bitmaps (XBM) and uncompressed BMP are always supported
  * other image formats are supported with SDL_image
  */
+
+AVT_API int avt_image_max_width (void);
+AVT_API int avt_image_max_height (void);
 
 /*
  * load image file and show it
