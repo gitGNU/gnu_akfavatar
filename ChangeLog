@@ -1,3 +1,7 @@
+2011-05-19  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/akfavatar-canvas.c: new file
+
 2011-05-18  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-akfavatar-prg.c:
