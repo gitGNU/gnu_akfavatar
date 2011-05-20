@@ -30,6 +30,7 @@
 #define BPP 3
 
 #define CANVASDATA "AKFAvatar-canvas"
+#define get_canvas()  ((canvas *) luaL_checkudata (L, 1, CANVASDATA))
 
 /* force value to be in range */
 #define RANGE(v, min, max)  ((v) < (min) ? (min) : (v) > (max) ? (max) : (v))
@@ -84,6 +85,7 @@ clear_canvas (canvas * c)
     }
 }
 
+/* local c, width, height = canvas.new([width, height]) */
 static int
 lcanvas_new (lua_State * L)
 {
@@ -111,13 +113,16 @@ lcanvas_new (lua_State * L)
 
   clear_canvas (c);
 
-  return 1;
+  lua_pushinteger (L, width);
+  lua_pushinteger (L, height);
+
+  return 3;
 }
 
 static int
 lcanvas_clear (lua_State * L)
 {
-  clear_canvas ((canvas *) luaL_checkudata (L, 1, CANVASDATA));
+  clear_canvas (get_canvas ());
   return 0;
 }
 
@@ -132,7 +137,7 @@ lcanvas_color (lua_State * L)
   name = luaL_checkstring (L, 2);
   if (avt_name_to_color (name, &red, &green, &blue) == AVT_NORMAL)
     {
-      c = (canvas *) luaL_checkudata (L, 1, CANVASDATA);
+      c = get_canvas ();
       c->r = (unsigned char) red;
       c->g = (unsigned char) green;
       c->b = (unsigned char) blue;
@@ -147,7 +152,7 @@ lcanvas_moveto (lua_State * L)
 {
   canvas *c;
 
-  c = (canvas *) luaL_checkudata (L, 1, CANVASDATA);
+  c = get_canvas ();
 
   /* a pen outside the field is allowed! */
   penpos (c, luaL_checkint (L, 2), luaL_checkint (L, 3));
@@ -290,7 +295,7 @@ lcanvas_lineto (lua_State * L)
   canvas *c;
   double x1, y1, x2, y2;
 
-  c = (canvas *) luaL_checkudata (L, 1, CANVASDATA);
+  c = get_canvas ();
   x1 = (double) c->penx;
   y1 = (double) c->peny;
   x2 = luaL_checknumber (L, 2);
@@ -321,7 +326,7 @@ lcanvas_putpixel (lua_State * L)
   canvas *c;
   int x, y;
 
-  c = (canvas *) luaL_checkudata (L, 1, CANVASDATA);
+  c = get_canvas ();
   x = luaL_optint (L, 2, c->penx);
   y = luaL_optint (L, 3, c->peny);
 
@@ -341,7 +346,7 @@ lcanvas_bar (lua_State * L)
   unsigned char r, g, b;
   unsigned char *p;
 
-  c = (canvas *) luaL_checkudata (L, 1, CANVASDATA);
+  c = get_canvas ();
 
   x1 = RANGE (luaL_checkint (L, 2), 1, c->width);
   y1 = RANGE (luaL_checkint (L, 3), 1, c->height);
@@ -374,7 +379,7 @@ lcanvas_rectangle (lua_State * L)
   canvas *c;
   double x1, y1, x2, y2;
 
-  c = (canvas *) luaL_checkudata (L, 1, CANVASDATA);
+  c = get_canvas ();
 
   x1 = luaL_checknumber (L, 2);
   y1 = luaL_checknumber (L, 3);
@@ -392,7 +397,7 @@ lcanvas_rectangle (lua_State * L)
 static int
 lcanvas_show (lua_State * L)
 {
-  canvas *c = (canvas *) luaL_checkudata (L, 1, CANVASDATA);
+  canvas *c = get_canvas ();
   avt_show_raw_image (&c->data, c->width, c->height, BPP);
 
   return 0;
@@ -401,7 +406,7 @@ lcanvas_show (lua_State * L)
 static int
 lcanvas_width (lua_State * L)
 {
-  canvas *c = (canvas *) luaL_checkudata (L, 1, CANVASDATA);
+  canvas *c = get_canvas ();
   lua_pushinteger (L, c->width);
 
   return 1;
@@ -410,7 +415,7 @@ lcanvas_width (lua_State * L)
 static int
 lcanvas_height (lua_State * L)
 {
-  canvas *c = (canvas *) luaL_checkudata (L, 1, CANVASDATA);
+  canvas *c = get_canvas ();
   lua_pushinteger (L, c->height);
 
   return 1;
@@ -448,4 +453,3 @@ luaopen_canvas (lua_State * L)
 
   return 1;
 }
-
