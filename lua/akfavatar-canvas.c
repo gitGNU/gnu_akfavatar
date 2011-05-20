@@ -284,6 +284,41 @@ sloped_line (canvas * c, double x1, double x2, double y1, double y2)
     }
 }
 
+static void
+line (canvas *c, double x1, double x2, double y1, double y2)
+{
+  if (x1 == x2 && y1 == y2)	/* one pixel */
+    {
+      if (visible (c, x1, y1))
+	putpixel (c, x1, y1);
+    }
+  else if (x1 == x2)
+    vertical_line (c, x1, y1, y2);
+  else if (y1 == y2)
+    horizontal_line (c, x1, x2, y1);
+  else
+    sloped_line (c, x1, x2, y1, y2);
+}
+
+/* c:line (x1, y1, x2, y2) */
+static int
+lcanvas_line (lua_State * L)
+{
+  canvas *c;
+  double x1, y1, x2, y2;
+
+  c = get_canvas ();
+  x1 = luaL_checknumber (L, 2);
+  y1 = luaL_checknumber (L, 3);
+  x2 = luaL_checknumber (L, 4);
+  y2 = luaL_checknumber (L, 5);
+
+  line (c, x1, x2, y1, y2);
+  penpos (c, x2, y2);
+
+  return 0;
+}
+
 /* c:lineto (x, y) */
 static int
 lcanvas_lineto (lua_State * L)
@@ -297,20 +332,8 @@ lcanvas_lineto (lua_State * L)
   x2 = luaL_checknumber (L, 2);
   y2 = luaL_checknumber (L, 3);
 
-  /* a pen outside the field is allowed here! */
+  line (c, x1, x2, y1, y2);
   penpos (c, x2, y2);
-
-  if (x1 == x2 && y1 == y2)	/* one pixel */
-    {
-      if (visible (c, x1, y1))
-	putpixel (c, x1, y1);
-    }
-  else if (x1 == x2)
-    vertical_line (c, x1, y1, y2);
-  else if (y1 == y2)
-    horizontal_line (c, x1, x2, y1);
-  else
-    sloped_line (c, x1, x2, y1, y2);
 
   return 0;
 }
@@ -421,6 +444,7 @@ static const struct luaL_reg canvaslib[] = {
 static const struct luaL_reg canvaslib_methods[] = {
   {"clear", lcanvas_clear},
   {"color", lcanvas_color},
+  {"line", lcanvas_line},
   {"moveto", lcanvas_moveto},
   {"lineto", lcanvas_lineto},
   {"putpixel", lcanvas_putpixel},
