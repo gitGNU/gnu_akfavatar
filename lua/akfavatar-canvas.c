@@ -150,12 +150,8 @@ lcanvas_color (lua_State * L)
 static int
 lcanvas_moveto (lua_State * L)
 {
-  canvas *c;
-
-  c = get_canvas ();
-
   /* a pen outside the field is allowed! */
-  penpos (c, luaL_checkint (L, 2), luaL_checkint (L, 3));
+  penpos (get_canvas (), luaL_checkint (L, 2), luaL_checkint (L, 3));
 
   return 0;
 }
@@ -406,18 +402,14 @@ lcanvas_show (lua_State * L)
 static int
 lcanvas_width (lua_State * L)
 {
-  canvas *c = get_canvas ();
-  lua_pushinteger (L, c->width);
-
+  lua_pushinteger (L, get_canvas ()->width);
   return 1;
 }
 
 static int
 lcanvas_height (lua_State * L)
 {
-  canvas *c = get_canvas ();
-  lua_pushinteger (L, c->height);
-
+  lua_pushinteger (L, get_canvas ()->height);
   return 1;
 }
 
