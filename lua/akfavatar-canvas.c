@@ -341,7 +341,7 @@ lcanvas_lineto (lua_State * L)
   x2 = luaL_checknumber (L, 2);
   y2 = luaL_checknumber (L, 3);
 
-  line (c, (double) c->penx, (double) c->peny, y1, y2);
+  line (c, (double) c->penx, (double) c->peny, x2, y2);
   penpos (c, x2, y2);
 
   return 0;
