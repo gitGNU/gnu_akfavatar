@@ -664,6 +664,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/lua/akfavatar-term.c $(srcdir)/lua/terminal.lua \
 	   $(srcdir)/lua/akfavatar-term.en.about \
 	   $(srcdir)/lua/akfavatar-vorbis.c \
+	   $(srcdir)/lua/akfavatar-canvas.en.about \
 	   $(srcdir)/lua/akfavatar-canvas.c \
 	   $(PKGNAME)/lua/
 
@@ -727,6 +728,7 @@ dist-bin-default: about pdf libakfavatar.so lua-akfavatar-bin \
 	cp akfavatar-term.so $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/base64.en.about $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/akfavatar-term.en.about $(BINPKGNAME)/lua/
+	ln $(srcdir)/lua/akfavatar-canvas.en.about $(BINPKGNAME)/lua/
 	ln $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/include/
 	ln $(srcdir)/avtaddons.h $(BINPKGNAME)/include/
 	-ln $(srcdir)/akfavatar.h.about $(BINPKGNAME)/include/

@@ -1,0 +1,50 @@
+Module "akfavatar-canvas"
+
+Note: Coordinates start with 1, 1 in the upper left corner.
+
+canvas.new ([width, height])
+    Creates a new canvas.
+    When width and height are not given it uses the whole window/screen.
+    The pen is centered and the drawing color is set to black.
+
+    Retuns the canvas, the width and the height.
+
+    Example usage:
+    local c, width, height = canvas.new()
+
+c:width()
+    Returns the width of the canvas c.
+
+c:height()
+    Returns the height of the canvas c.
+
+c:clear()
+    Clears the canvas c, ie. fills the canvas with the background color.
+
+c:color(colorname)
+    Sets the drawing color.
+
+c:putpixel([x, y])
+    Puts a pixel at the given coordinates or at the current pen position.
+    The pen position is not changed.
+
+c:moveto(x, y)
+    Move the pen to x, y without drawing.
+
+c:lineto(x, y)
+    Draws a line from the current pen position to these coordinates.
+    The pen is moved to the new coordinates.
+
+c:line(x1, y1, x2, y2)
+    Draws a line from x1, y1 to x2, y2.
+    The pen is left at x2, y2
+
+c:bar(x, y, width, height)
+    Draws a solid bar with x, y as the upper left corner.
+
+c:rectangle(x, y, width, height)
+    Draws rectangle with x, y as the upper left corner.
+
+c:show()
+    Shows the canvas as image.
+
