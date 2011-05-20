@@ -61,6 +61,7 @@ typedef struct canvas
   unsigned char data[1];
 } canvas;
 
+
 static void
 clear_canvas (canvas * c)
 {
@@ -84,6 +85,7 @@ clear_canvas (canvas * c)
       *p++ = b;
     }
 }
+
 
 /* local c, width, height = canvas.new([width, height]) */
 static int
@@ -119,12 +121,14 @@ lcanvas_new (lua_State * L)
   return 3;
 }
 
+
 static int
 lcanvas_clear (lua_State * L)
 {
   clear_canvas (get_canvas ());
   return 0;
 }
+
 
 /* c:color(colorname) */
 static int
@@ -146,6 +150,7 @@ lcanvas_color (lua_State * L)
   return 0;
 }
 
+
 /* c:moveto (x, y) */
 static int
 lcanvas_moveto (lua_State * L)
@@ -155,6 +160,7 @@ lcanvas_moveto (lua_State * L)
 
   return 0;
 }
+
 
 static void
 vertical_line (canvas * c, double x, double y1, double y2)
@@ -175,6 +181,7 @@ vertical_line (canvas * c, double x, double y1, double y2)
 	  putpixel (c, x, y);
     }
 }
+
 
 static void
 horizontal_line (canvas * c, double x1, double x2, double y)
@@ -209,6 +216,7 @@ horizontal_line (canvas * c, double x1, double x2, double y)
 	}
     }
 }
+
 
 /* TODO: optimize */
 static void
@@ -284,8 +292,9 @@ sloped_line (canvas * c, double x1, double x2, double y1, double y2)
     }
 }
 
+
 static void
-line (canvas *c, double x1, double x2, double y1, double y2)
+line (canvas * c, double x1, double x2, double y1, double y2)
 {
   if (x1 == x2 && y1 == y2)	/* one pixel */
     {
@@ -299,6 +308,7 @@ line (canvas *c, double x1, double x2, double y1, double y2)
   else
     sloped_line (c, x1, x2, y1, y2);
 }
+
 
 /* c:line (x1, y1, x2, y2) */
 static int
@@ -319,24 +329,24 @@ lcanvas_line (lua_State * L)
   return 0;
 }
 
+
 /* c:lineto (x, y) */
 static int
 lcanvas_lineto (lua_State * L)
 {
   canvas *c;
-  double x1, y1, x2, y2;
+  double x2, y2;
 
   c = get_canvas ();
-  x1 = (double) c->penx;
-  y1 = (double) c->peny;
   x2 = luaL_checknumber (L, 2);
   y2 = luaL_checknumber (L, 3);
 
-  line (c, x1, x2, y1, y2);
+  line (c, (double) c->penx, (double) c->peny, y1, y2);
   penpos (c, x2, y2);
 
   return 0;
 }
+
 
 /* c:putpixel ([x, y]) */
 static int
@@ -354,6 +364,7 @@ lcanvas_putpixel (lua_State * L)
 
   return 0;
 }
+
 
 /* b:bar (x, y, width, height) */
 static int
@@ -391,6 +402,7 @@ lcanvas_bar (lua_State * L)
   return 0;
 }
 
+
 /* b:rctangle (x, y, width, height) */
 static int
 lcanvas_rectangle (lua_State * L)
@@ -413,6 +425,7 @@ lcanvas_rectangle (lua_State * L)
   return 0;
 }
 
+
 static int
 lcanvas_show (lua_State * L)
 {
@@ -422,12 +435,14 @@ lcanvas_show (lua_State * L)
   return 0;
 }
 
+
 static int
 lcanvas_width (lua_State * L)
 {
   lua_pushinteger (L, get_canvas ()->width);
   return 1;
 }
+
 
 static int
 lcanvas_height (lua_State * L)
@@ -436,10 +451,12 @@ lcanvas_height (lua_State * L)
   return 1;
 }
 
+
 static const struct luaL_reg canvaslib[] = {
   {"new", lcanvas_new},
   {NULL, NULL}
 };
+
 
 static const struct luaL_reg canvaslib_methods[] = {
   {"clear", lcanvas_clear},
@@ -455,6 +472,7 @@ static const struct luaL_reg canvaslib_methods[] = {
   {"height", lcanvas_height},
   {NULL, NULL}
 };
+
 
 int
 luaopen_canvas (lua_State * L)
