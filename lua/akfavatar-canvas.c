@@ -170,7 +170,7 @@ vertical_line (canvas * c, double x, double y1, double y2)
 
   if (visible_x (c, x))
     {
-      if (y1 > y2) /* swap */
+      if (y1 > y2)		/* swap */
 	{
 	  double ty = y1;
 	  y1 = y2;
@@ -198,7 +198,7 @@ horizontal_line (canvas * c, double x1, double x2, double y)
 
   if (visible_y (c, y))
     {
-      if (x1 > x2) /* swap */
+      if (x1 > x2)		/* swap */
 	{
 	  double tx = x1;
 	  x1 = x2;
@@ -301,7 +301,7 @@ sloped_line (canvas * c, double x1, double x2, double y1, double y2)
 
 
 static void
-line (canvas * c, double x1, double x2, double y1, double y2)
+line (canvas * c, double x1, double y1, double x2, double y2)
 {
   if (x1 == x2 && y1 == y2)	/* one pixel */
     {
@@ -330,7 +330,7 @@ lcanvas_line (lua_State * L)
   x2 = luaL_checknumber (L, 4);
   y2 = luaL_checknumber (L, 5);
 
-  line (c, x1, x2, y1, y2);
+  line (c, x1, y1, x2, y2);
   penpos (c, x2, y2);
 
   return 0;
