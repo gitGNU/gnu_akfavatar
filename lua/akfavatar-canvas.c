@@ -253,17 +253,12 @@ sloped_line (canvas * c, double x1, double x2, double y1, double y2)
 	}
 
       dy = y2 - y1;
-
-      x = x1;
-      y = y1;
-
       delta_y = dy / dx;
 
-      for (; x <= x2; x++)
+      for (x = x1, y = y1; x <= x2; x++, y += delta_y)
 	{
 	  if (visible (c, x, y))
 	    putpixel (c, x, y);
-	  y += delta_y;
 	}
     }
   else				/* y steps 1 */
@@ -284,17 +279,12 @@ sloped_line (canvas * c, double x1, double x2, double y1, double y2)
 	}
 
       dx = x2 - x1;
-
-      x = x1;
-      y = y1;
-
       delta_x = dx / dy;
 
-      for (; y <= y2; y++)
+      for (y = y1, x = x1; y <= y2; y++, x += delta_x)
 	{
 	  if (visible (c, x, y))
 	    putpixel (c, x, y);
-	  x += delta_x;
 	}
     }
 }
