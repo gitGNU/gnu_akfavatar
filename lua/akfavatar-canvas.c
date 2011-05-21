@@ -19,8 +19,6 @@
  */
 
 #include "akfavatar.h"
-#include <stdlib.h>
-#include <string.h>		/* memset */
 
 #include <lua.h>
 #include <lauxlib.h>
@@ -212,8 +210,10 @@ lcanvas_thickness (lua_State * L)
 static int
 lcanvas_moveto (lua_State * L)
 {
+  canvas *c = get_canvas ();
+
   /* a pen outside the field is allowed! */
-  penpos (get_canvas (), luaL_checkint (L, 2), luaL_checkint (L, 3));
+  penpos (c, luaL_checkint (L, 2), luaL_checkint (L, 3));
 
   return 0;
 }
@@ -258,8 +258,6 @@ horizontal_line (canvas * c, double x1, double x2, double y)
 {
   double x;
   int width;
-  unsigned char *p;
-  unsigned char r, g, b;
 
   if (visible_y (c, y))
     {
@@ -281,6 +279,9 @@ horizontal_line (canvas * c, double x1, double x2, double y)
 	}
       else
 	{
+	  unsigned char *p;
+	  unsigned char r, g, b;
+
 	  r = c->r;
 	  g = c->g;
 	  b = c->b;
@@ -403,10 +404,10 @@ sloped_line (canvas * c, double x1, double x2, double y1, double y2)
 static void
 line (canvas * c, double x1, double y1, double x2, double y2)
 {
-  if (x1 == x2 && y1 == y2)	/* one pixel */
+  if (x1 == x2 && y1 == y2)	/* one dot */
     {
       if (visible (c, x1, y1))
-	putpixel (c, x1, y1);
+	putdot (c, x1, y1);
     }
   else if (x1 == x2)
     vertical_line (c, x1, y1, y2);
@@ -485,10 +486,13 @@ lcanvas_putdot (lua_State * L)
   y = luaL_optint (L, 3, c->peny);
 
   /* macros evaluate the values more than once! */
-  if (c->thickness > 0)
-    putdot (c, x, y);
-  else if (visible (c, x, y))
-    putpixel (c, x, y);
+  if (visible (c, x, y))
+    {
+      if (c->thickness > 0)
+	putdot (c, x, y);
+      else
+	putpixel (c, x, y);
+    }
 
   return 0;
 }
