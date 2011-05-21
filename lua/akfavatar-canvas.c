@@ -166,15 +166,20 @@ static void
 vertical_line (canvas * c, double x, double y1, double y2)
 {
   double y;
+  int height;
 
   if (visible_x (c, x))
     {
-      if (y1 > y2)
+      if (y1 > y2) /* swap */
 	{
-	  double y = y1;
+	  double ty = y1;
 	  y1 = y2;
-	  y2 = y;
+	  y2 = ty;
 	}
+
+      height = c->height;
+      y1 = RANGE (y1, 1, height);
+      y2 = RANGE (y2, 1, height);
 
       for (y = y1; y <= y2; y++)
 	if (visible_y (c, y))
@@ -187,26 +192,28 @@ static void
 horizontal_line (canvas * c, double x1, double x2, double y)
 {
   double x;
+  int width;
   unsigned char *p;
   unsigned char r, g, b;
 
   if (visible_y (c, y))
     {
-      if (x1 > x2)
+      if (x1 > x2) /* swap */
 	{
-	  double x = x1;
+	  double tx = x1;
 	  x1 = x2;
-	  x2 = x;
+	  x2 = tx;
 	}
 
-      x1 = RANGE (x1, 1, c->width);
-      x2 = RANGE (x2, 1, c->width);
+      width = c->width;
+      x1 = RANGE (x1, 1, width);
+      x2 = RANGE (x2, 1, width);
 
       r = c->r;
       g = c->g;
       b = c->b;
 
-      p = c->data + (((int) y - 1) * c->width * BPP) + (((int) x1 - 1) * BPP);
+      p = c->data + (((int) y - 1) * width * BPP) + (((int) x1 - 1) * BPP);
 
       for (x = x1 - 1; x < x2; x++)
 	{
