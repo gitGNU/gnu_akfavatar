@@ -5,7 +5,7 @@ Note: Coordinates start with 1, 1 in the upper left corner.
 canvas.new ([width, height])
     Creates a new canvas.
     When width and height are not given it uses the whole window/screen.
-    The pen is centered and the drawing color is set to black.
+    A thin black pen is chosen and the position is centered.
 
     Retuns the canvas, the width and the height.
 
@@ -24,8 +24,16 @@ c:clear()
 c:color(colorname)
     Sets the drawing color.
 
+c:thickness(value)
+    Sets the thickness of the pen.  The value 1 is the thinnest.
+
 c:putpixel([x, y])
     Puts a pixel at the given coordinates or at the current pen position.
+    The pen position is not changed.
+
+c:putdot([x, y])
+    Puts a dot at the given coordinates or at the current pen position.
+    If the pen thin, it's the same as c:putpixel.
     The pen position is not changed.
 
 c:moveto(x, y)
@@ -37,13 +45,15 @@ c:lineto(x, y)
 
 c:line(x1, y1, x2, y2)
     Draws a line from x1, y1 to x2, y2.
-    The pen is left at x2, y2
+    The pen is set to x2, y2.
 
 c:bar(x, y, width, height)
     Draws a solid bar with x, y as the upper left corner.
+    The pen position is not changed.
 
 c:rectangle(x, y, width, height)
     Draws rectangle with x, y as the upper left corner.
+    The pen position is not changed.
 
 c:show()
     Shows the canvas as image.

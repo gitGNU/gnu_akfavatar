@@ -57,6 +57,7 @@ typedef struct canvas
 {
   int width, height;
   int penx, peny;		/* position of pen */
+  int thickness;		/* thickness of pen */
   unsigned char r, g, b;	/* current color */
   unsigned char data[1];
 } canvas;
@@ -87,6 +88,48 @@ clear_canvas (canvas * c)
 }
 
 
+static void
+bar (canvas * c, int x1, int y1, int x2, int y2)
+{
+  int x, y, width, height;
+  unsigned char r, g, b;
+  unsigned char *data, *p;
+
+  width = c->width;
+  height = c->height;
+  data = c->data;
+  r = (unsigned char) c->r;
+  g = (unsigned char) c->g;
+  b = (unsigned char) c->b;
+
+  /* sanitize values */
+  x1 = RANGE (x1, 1, width);
+  y1 = RANGE (y1, 1, height);
+  x2 = RANGE (x2, 1, width);
+  y2 = RANGE (y2, 1, height);
+
+
+  for (y = y1 - 1; y < y2; y++)
+    {
+      p = data + (y * width * BPP) + ((x1 - 1) * BPP);
+
+      for (x = x1 - 1; x < x2; x++)
+	{
+	  *p++ = r;
+	  *p++ = g;
+	  *p++ = b;
+	}
+    }
+}
+
+
+#define putdot(c, x, y) \
+  do { \
+    int s = (c)->thickness; \
+    bar ((c), ((int) (x))-s, ((int)(y))-s, ((int)(x))+s, ((int)(y))+s); \
+  } while(0)
+
+
 /* local c, width, height = canvas.new([width, height]) */
 static int
 lcanvas_new (lua_State * L)
@@ -112,6 +155,7 @@ lcanvas_new (lua_State * L)
 
   /* pen in center */
   penpos (c, width / 2, height / 2);
+  c->thickness = 1 - 1;
 
   clear_canvas (c);
 
@@ -151,6 +195,19 @@ lcanvas_color (lua_State * L)
 }
 
 
+/* c:thickness(size) */
+static int
+lcanvas_thickness (lua_State * L)
+{
+  int s;
+
+  s = luaL_checkint (L, 2) - 1;
+  get_canvas ()->thickness = (s < 0) ? 0 : s;
+
+  return 0;
+}
+
+
 /* c:moveto (x, y) */
 static int
 lcanvas_moveto (lua_State * L)
@@ -181,9 +238,17 @@ vertical_line (canvas * c, double x, double y1, double y2)
       y1 = RANGE (y1, 1, height);
       y2 = RANGE (y2, 1, height);
 
-      for (y = y1; y <= y2; y++)
-	if (visible_y (c, y))
-	  putpixel (c, x, y);
+      if (c->thickness > 0)
+	{
+	  for (y = y1; y <= y2; y++)
+	    putdot (c, x, y);
+	}
+      else
+	{
+	  for (y = y1; y <= y2; y++)
+	    if (visible_y (c, y))
+	      putpixel (c, x, y);
+	}
     }
 }
 
@@ -209,17 +274,26 @@ horizontal_line (canvas * c, double x1, double x2, double y)
       x1 = RANGE (x1, 1, width);
       x2 = RANGE (x2, 1, width);
 
-      r = c->r;
-      g = c->g;
-      b = c->b;
-
-      p = c->data + (((int) y - 1) * width * BPP) + (((int) x1 - 1) * BPP);
-
-      for (x = x1 - 1; x < x2; x++)
+      if (c->thickness > 0)
 	{
-	  *p++ = r;
-	  *p++ = g;
-	  *p++ = b;
+	  for (x = x1; x <= x2; x++)
+	    putdot (c, (int) x, (int) y);
+	}
+      else
+	{
+	  r = c->r;
+	  g = c->g;
+	  b = c->b;
+
+	  p =
+	    c->data + (((int) y - 1) * width * BPP) + (((int) x1 - 1) * BPP);
+
+	  for (x = x1 - 1; x < x2; x++)
+	    {
+	      *p++ = r;
+	      *p++ = g;
+	      *p++ = b;
+	    }
 	}
     }
 }
@@ -257,18 +331,26 @@ sloped_line (canvas * c, double x1, double x2, double y1, double y2)
 
       /* sanitize range of x */
       if (x1 < 1)
-        {
-          y1 += delta_y * (1 - x1);
-          x1 = 1;
-        }
+	{
+	  y1 += delta_y * (1 - x1);
+	  x1 = 1;
+	}
 
       if (x2 > c->width)
-        x2 = c->width;
+	x2 = c->width;
 
-      for (x = x1, y = y1; x <= x2; x++, y += delta_y)
+      if (c->thickness > 0)
 	{
-	  if (visible_y (c, y))
-	    putpixel (c, x, y);
+	  for (x = x1, y = y1; x <= x2; x++, y += delta_y)
+	    putdot (c, x, y);
+	}
+      else
+	{
+	  for (x = x1, y = y1; x <= x2; x++, y += delta_y)
+	    {
+	      if (visible_y (c, y))
+		putpixel (c, x, y);
+	    }
 	}
     }
   else				/* y steps 1 */
@@ -293,19 +375,26 @@ sloped_line (canvas * c, double x1, double x2, double y1, double y2)
 
       /* sanitize range of y */
       if (y1 < 1)
-        {
-          x1 += delta_x * (1 - y1);
-          y1 = 1;
-        }
+	{
+	  x1 += delta_x * (1 - y1);
+	  y1 = 1;
+	}
 
       if (y2 > c->height)
-        y2 = c->height;
+	y2 = c->height;
 
-
-      for (y = y1, x = x1; y <= y2; y++, x += delta_x)
+      if (c->thickness > 0)
 	{
-	  if (visible_x (c, x))
-	    putpixel (c, x, y);
+	  for (y = y1, x = x1; y <= y2; y++, x += delta_x)
+	    putdot (c, x, y);
+	}
+      else
+	{
+	  for (y = y1, x = x1; y <= y2; y++, x += delta_x)
+	    {
+	      if (visible_x (c, x))
+		putpixel (c, x, y);
+	    }
 	}
     }
 }
@@ -384,44 +473,48 @@ lcanvas_putpixel (lua_State * L)
 }
 
 
-/* b:bar (x, y, width, height) */
+/* c:putdot ([x, y]) */
 static int
-lcanvas_bar (lua_State * L)
+lcanvas_putdot (lua_State * L)
 {
   canvas *c;
-  int x1, y1, x2, y2;
   int x, y;
-  unsigned char r, g, b;
-  unsigned char *p;
 
   c = get_canvas ();
+  x = luaL_optint (L, 2, c->penx);
+  y = luaL_optint (L, 3, c->peny);
 
-  x1 = RANGE (luaL_checkint (L, 2), 1, c->width);
-  y1 = RANGE (luaL_checkint (L, 3), 1, c->height);
-  x2 = RANGE (x1 - 1 + luaL_checkint (L, 4), 1, c->width);
-  y2 = RANGE (y1 - 1 + luaL_checkint (L, 5), 1, c->height);
-
-  r = c->r;
-  g = c->g;
-  b = c->b;
-
-  for (y = y1 - 1; y < y2; y++)
-    {
-      p = c->data + (y * c->width * BPP) + ((x1 - 1) * BPP);
-
-      for (x = x1 - 1; x < x2; x++)
-	{
-	  *p++ = r;
-	  *p++ = g;
-	  *p++ = b;
-	}
-    }
+  /* macros evaluate the values more than once! */
+  if (c->thickness > 0)
+    putdot (c, x, y);
+  else if (visible (c, x, y))
+    putpixel (c, x, y);
 
   return 0;
 }
 
 
-/* b:rctangle (x, y, width, height) */
+/* c:bar (x, y, width, height) */
+static int
+lcanvas_bar (lua_State * L)
+{
+  canvas *c;
+  int x1, y1, x2, y2;
+
+  c = get_canvas ();
+
+  x1 = luaL_checkint (L, 2);
+  y1 = luaL_checkint (L, 3);
+  x2 = x1 + luaL_checkint (L, 4) - 1;
+  y2 = y1 + luaL_checkint (L, 5) - 1;
+
+  bar (c, x1, y1, x2, y2);
+
+  return 0;
+}
+
+
+/* c:rectangle (x, y, width, height) */
 static int
 lcanvas_rectangle (lua_State * L)
 {
@@ -479,10 +572,12 @@ static const struct luaL_reg canvaslib[] = {
 static const struct luaL_reg canvaslib_methods[] = {
   {"clear", lcanvas_clear},
   {"color", lcanvas_color},
+  {"thickness", lcanvas_thickness},
   {"line", lcanvas_line},
   {"moveto", lcanvas_moveto},
   {"lineto", lcanvas_lineto},
   {"putpixel", lcanvas_putpixel},
+  {"putdot", lcanvas_putdot},
   {"bar", lcanvas_bar},
   {"rectangle", lcanvas_rectangle},
   {"show", lcanvas_show},
