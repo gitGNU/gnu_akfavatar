@@ -1,16 +1,28 @@
 #!/usr/bin/env lua-akfavatar
 
+--[[-------------------------------------------------------------------
+Function Plotter for AKFAvatar
+Copyright (c) 2011 Andreas K. Foerster <info@akfoerster.de>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--]]-------------------------------------------------------------------
+
 require "lua-akfavatar"
 require "akfavatar-canvas"
 
 -- scale means: so many pixels for the value 1
 local scale = 40
-
-avt.initialize {
-  title = "Function Plotter",
-  avatar = require "akfavatar.teacher",
-  encoding = "UTF-8"
-  }
 
 deg = math.deg
 rad = math.rad
@@ -27,6 +39,15 @@ cosh = math.cosh
 tan = math.tan
 tanh = math.tanh
 atan = math.atan
+
+-- add your own functions and constants here
+
+-------------------------------------------------------------------------------
+avt.initialize {
+  title = "Function Plotter",
+  avatar = require "akfavatar.teacher",
+  encoding = "UTF-8"
+  }
 
 local c, width, height = canvas.new()
 local halfwidth, halfheight = width/2, height/2
