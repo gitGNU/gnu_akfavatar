@@ -206,6 +206,19 @@ lcanvas_thickness (lua_State * L)
 }
 
 
+/* x, y = c:pen_position () */
+static int
+lcanvas_pen_position (lua_State * L)
+{
+  canvas *c = get_canvas ();
+
+  lua_pushinteger (L, c->penx);
+  lua_pushinteger (L, c->peny);
+
+  return 2;
+}
+
+
 /* c:moveto (x, y) */
 static int
 lcanvas_moveto (lua_State * L)
@@ -214,6 +227,30 @@ lcanvas_moveto (lua_State * L)
 
   /* a pen outside the field is allowed! */
   penpos (c, luaL_checkint (L, 2), luaL_checkint (L, 3));
+
+  return 0;
+}
+
+
+/* c:moverel (x, y) */
+static int
+lcanvas_moverel (lua_State * L)
+{
+  canvas *c = get_canvas ();
+
+  penpos (c, c->penx + luaL_checkint (L, 2), c->peny + luaL_checkint (L, 3));
+
+  return 0;
+}
+
+
+/* c:center (x, y) */
+static int
+lcanvas_center (lua_State * L)
+{
+  canvas *c = get_canvas ();
+
+  penpos (c, c->width / 2, c->height / 2);
 
   return 0;
 }
@@ -456,6 +493,26 @@ lcanvas_lineto (lua_State * L)
 }
 
 
+/* c:linerel (x, y) */
+static int
+lcanvas_linerel (lua_State * L)
+{
+  canvas *c;
+  int x1, y1, x2, y2;
+
+  c = get_canvas ();
+  x1 = c->penx;
+  y1 = c->peny;
+  x2 = x1 + luaL_checknumber (L, 2);
+  y2 = y1 + luaL_checknumber (L, 3);
+
+  line (c, (double) x1, (double) y1, (double) x2, (double) y2);
+  penpos (c, x2, y2);
+
+  return 0;
+}
+
+
 /* c:putpixel ([x, y]) */
 static int
 lcanvas_putpixel (lua_State * L)
@@ -577,10 +634,14 @@ static const struct luaL_reg canvaslib_methods[] = {
   {"clear", lcanvas_clear},
   {"color", lcanvas_color},
   {"thickness", lcanvas_thickness},
-  {"line", lcanvas_line},
-  {"moveto", lcanvas_moveto},
-  {"lineto", lcanvas_lineto},
   {"putpixel", lcanvas_putpixel},
+  {"line", lcanvas_line},
+  {"pen_position", lcanvas_pen_position},
+  {"center", lcanvas_center},
+  {"moveto", lcanvas_moveto},
+  {"moverel", lcanvas_moverel},
+  {"lineto", lcanvas_lineto},
+  {"linerel", lcanvas_linerel},
   {"putdot", lcanvas_putdot},
   {"bar", lcanvas_bar},
   {"rectangle", lcanvas_rectangle},

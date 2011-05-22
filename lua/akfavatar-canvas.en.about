@@ -1,60 +1,110 @@
 Module "akfavatar-canvas"
 
-Note: Coordinates start with 1, 1 in the upper left corner.
+Notes:
+- Coordinates start with 1, 1 in the upper left corner.
+- The pen size, color and position are set for each canvas.
+
 
 canvas.new ([width, height])
     Creates a new canvas.
     When width and height are not given it uses the whole window/screen.
     A thin black pen is chosen and the position is centered.
 
-    Retuns the canvas, the width and the height.
+    Retuns the canvas, the width and the height (ie. three values).
 
-    Example usage:
-    local c, width, height = canvas.new()
+    Use it either like this:
+      local c, width, height = canvas.new()
+
+    Or use it like that:
+      local width, height = 100, 100
+      local c = canvas.new(width, height)
+
+
+c:show()
+    Shows the canvas as image after drawing.
+
+    Hint: You can show intermediate images, continue drawing, wait a while
+    and then show the next step and so on.  This makes a nice animation.
+    But don't make the steps too small, or it will be painfull on slow devices.
+
 
 c:width()
     Returns the width of the canvas c.
 
+
 c:height()
     Returns the height of the canvas c.
 
-c:clear()
-    Clears the canvas c, ie. fills the canvas with the background color.
 
 c:color(colorname)
     Sets the drawing color.
 
+
 c:thickness(value)
     Sets the thickness of the pen.  The value 1 is the thinnest.
+
+
+c:clear()
+    Clears the canvas c, ie. fills the canvas with the background color.
+    The pen position is not changed.
+
 
 c:putpixel([x, y])
     Puts a pixel at the given coordinates or at the current pen position.
     The pen position is not changed.
+
 
 c:putdot([x, y])
     Puts a dot at the given coordinates or at the current pen position.
     If the pen thin, it's the same as c:putpixel.
     The pen position is not changed.
 
+
+c:pen_position()
+    Returns the x and y position of the pen (ie. returns two values).
+
+
+c:center()
+    Sets the pen to the center of the canvas.
+
+
 c:moveto(x, y)
     Move the pen to x, y without drawing.
 
+
+c:moverel(x, y)
+    Move the pen without drawing relative to its current position.
+    A positive x value moves it to the right,
+    a negative x value moves it to the left.
+    A positive y value moves it down,
+    a negative y value moves it up.
+
+
 c:lineto(x, y)
-    Draws a line from the current pen position to these coordinates.
+    Draws a line from the current pen position to these absolute coordinates.
     The pen is moved to the new coordinates.
+
+
+c:linerel(x, y)
+    Draws a line relative to its current pen position.
+    A positive x value draws to the right,
+    a negative x value draws to the left.
+    A positive y value draws down,
+    a negative y value draws up.
+    The pen is moved to the new position.
+
 
 c:line(x1, y1, x2, y2)
     Draws a line from x1, y1 to x2, y2.
     The pen is set to x2, y2.
 
+
 c:bar(x, y, width, height)
     Draws a solid bar with x, y as the upper left corner.
     The pen position is not changed.
 
+
 c:rectangle(x, y, width, height)
     Draws rectangle with x, y as the upper left corner.
     The pen position is not changed.
-
-c:show()
-    Shows the canvas as image.
 
