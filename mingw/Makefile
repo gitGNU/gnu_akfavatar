@@ -335,6 +335,7 @@ dist-bin: akfavatar.dll lua-akfavatar.exe lua-akfavatar.dll base64.dll \
 	cp $(srcdir)/lua/base64-encode.en.about $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/characters_overview.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/characters_tables.lua $(BINPKGNAME)/lua/
+	cp $(srcdir)/lua/colors_overview.lua $(BINPKGNAME)/lua/
 	-cp $(srcdir)/lua-akfavatar.en.about $(BINPKGNAME)/
 	-cp $(srcdir)/lua-akfavatar-reference.en.about $(BINPKGNAME)/
 	cp lua-akfavatar.en.pdf $(BINPKGNAME)/

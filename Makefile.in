@@ -661,6 +661,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/lua/base64-encode.lua \
 	   $(srcdir)/lua/characters_overview.lua \
 	   $(srcdir)/lua/characters_tables.lua \
+	   $(srcdir)/lua/colors_overview.lua \
 	   $(srcdir)/lua/fs-quiz-en.lua $(srcdir)/lua/fs-quiz-de.lua \
 	   $(srcdir)/lua/akfavatar-term.c $(srcdir)/lua/terminal.lua \
 	   $(srcdir)/lua/akfavatar-term.en.about \
@@ -752,6 +753,7 @@ dist-bin-default: about pdf libakfavatar.so lua-akfavatar-bin \
 	ln $(srcdir)/lua/base64-encode.en.about $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/characters_overview.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/characters_tables.lua $(BINPKGNAME)/lua/
+	ln $(srcdir)/lua/colors_overview.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/fs-quiz-en.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/fs-quiz-de.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/terminal.lua $(BINPKGNAME)/lua/
