@@ -134,12 +134,14 @@ local function plot(f)
     c:thickness(2)
     c:color "royal blue"  --> don't tell my old teacher what pen I use ;-)
 
-    local old_y = math.huge --> something offscreen
+    local old_value = lx(0)
+    c:moveto(0, py(old_value)) --> offscreen
 
     for x=1,width do
-      local y = py(f(lx(x)))
+      local value = f(lx(x))
+      local y = py(value)
 
-      if math.abs(old_y - y) < height --> FIXME
+      if value*old_value > 0 and math.abs(old_value - value) < 1000
         then c:lineto (x, y)
         else c:moveto (x, y) --> don't draw huge jumps
       end
@@ -150,7 +152,7 @@ local function plot(f)
         avt.wait(0.2)
       end
 
-      old_y = y
+      old_value = value
     end
 
     c:show() --> show final result
