@@ -52,51 +52,62 @@ avt.initialize {
 local c, width, height = canvas.new()
 local halfwidth, halfheight = width/2, height/2
 
-local function px(x) -- physical x
+local function px(x, scale) -- physical x
   return x * scale + halfwidth
 end
 
-local function lx (x) -- logical x
+local function lx (x, scale) -- logical x
   return (x - halfwidth) / scale
 end
 
-local function py (y) -- physical y
+local function py (y, scale) -- physical y
   return y * -scale + halfheight
 end
 
-local function ly (y) -- logical y
+local function ly (y, scale) -- logical y
   return -(y - halfheight) / scale
 end
 
-local function cross()
+local function cross(scale)
   local s = 5 --> size of the marks
+  local step
+
+  if scale > 10 then
+    step = 1
+  elseif scale > 1 then
+    step = 10
+  else
+    step = 0
+  end
 
   c:thickness(1)
   c:color "black"
+  c:clear()
 
   c:line (1, halfheight, width, halfheight)
   c:line (halfwidth, 1, halfwidth, height)
 
-  for x = 1, lx(width) do
-    c:line (px(x), halfheight - s,
-            px(x), halfheight + s)
-  end
+  if step > 0 then
+    for x = step, lx(width, scale), step do
+      c:line (px(x, scale), halfheight - s,
+              px(x, scale), halfheight + s)
+    end
 
-  for x = -1, lx(1), -1 do
-    c:line (px(x), halfheight - s,
-            px(x), halfheight + s)
-  end
+    for x = -step, lx(1, scale), -step do
+      c:line (px(x, scale), halfheight - s,
+              px(x, scale), halfheight + s)
+    end
 
-  for y = 1, ly(1) do
-    c:line (halfwidth - s, py(y),
-            halfwidth + s, py(y))
-  end
+    for y = step, ly(1, scale), step do
+      c:line (halfwidth - s, py(y, scale),
+              halfwidth + s, py(y, scale))
+    end
 
-  for y = -1, ly(height), -1 do
-    c:line (halfwidth - s, py(y),
-            halfwidth + s, py(y))
+    for y = -step, ly(height, scale), -step do
+      c:line (halfwidth - s, py(y, scale),
+              halfwidth + s, py(y, scale))
+    end
   end
-
 end
 
 local function function_error()
@@ -104,33 +115,43 @@ local function function_error()
 end
 
 local function plot(f)
-  cross()
+  local choice
+  local animate = true
+  local scale = scale
 
-  c:thickness(2)
-  c:color "royal blue"  --> don't tell my old teacher what pen I use ;-)
+  repeat
+    cross(scale)
 
-  local old_y = math.huge --> something offscreen
+    c:thickness(2)
+    c:color "royal blue"  --> don't tell my old teacher what pen I use ;-)
 
-  for x=1,width do
-    local y = py(f(lx(x)))
+    local old_y = math.huge --> something offscreen
 
-    if math.abs(old_y - y) < height
-      then c:lineto (x, y)
-      else c:moveto (x, y) --> don't draw huge jumps
+    for x=1,width do
+      local y = py(f(lx(x, scale)), scale)
+
+      if math.abs(old_y - y) < height
+        then c:lineto (x, y)
+        else c:moveto (x, y) --> don't draw huge jumps
+      end
+
+      -- show each time we reach a full value and it's visible
+      if animate and x % scale == 0 and y >= 1 and y <= height then
+        c:show()
+        avt.wait(0.2)
+      end
+
+      old_y = y
     end
 
-    -- show each time we reach a full value and it's visible
-    -- if you don't like animations, just remove this part
-    if x % scale == 0 and y >= 1 and y <= height then 
-      c:show()
-      avt.wait(0.2)
+    c:show() --> show final result
+    animate = false --> only animate the first time
+
+    choice = avt.navigate "+-x"
+    if "+"==choice then scale = scale * 1.5
+    elseif "-"==choice then scale = scale / 1.5
     end
-
-    old_y = y
-  end
-
-  c:show() -- show final result
-  avt.wait_button()
+  until "x"==choice
 end
 
 local function plot_string(s)
