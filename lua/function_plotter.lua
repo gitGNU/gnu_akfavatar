@@ -112,11 +112,8 @@ local function plot(f)
   local old_y = math.huge --> something offscreen
 
   for x=1,width do
-    local okay, y = pcall(f, lx(x))
+    local y = py(f(lx(x)))
 
-    if not okay or type(y)~="number" then function_error() end
-
-    y = py(y)
     if math.abs(old_y - y) < height
       then c:lineto (x, y)
       else c:moveto (x, y) --> don't draw huge jumps
@@ -139,6 +136,9 @@ end
 local function plot_string(s)
   local fs = loadstring("function f(x) return "..s.." end")
   if fs and pcall(fs) then
+    -- check if it produces a number
+    local okay, v = pcall(f, 1)
+    if not okay or type(v)~="number" then function_error() end
     plot(f)
   else
     function_error()
