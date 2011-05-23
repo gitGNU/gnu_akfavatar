@@ -50,22 +50,22 @@ avt.initialize {
   }
 
 local c, width, height = canvas.new()
-local halfwidth, halfheight = width/2, height/2
+local xoffset, yoffset = width/2, height/2
 
 local function px(x, scale) -- physical x
-  return x * scale + halfwidth
+  return x * scale + xoffset
 end
 
 local function lx (x, scale) -- logical x
-  return (x - halfwidth) / scale
+  return (x - xoffset) / scale
 end
 
 local function py (y, scale) -- physical y
-  return y * -scale + halfheight
+  return y * -scale + yoffset
 end
 
 local function ly (y, scale) -- logical y
-  return -(y - halfheight) / scale
+  return -(y - yoffset) / scale
 end
 
 local function cross(scale)
@@ -84,28 +84,28 @@ local function cross(scale)
   c:color "black"
   c:clear()
 
-  c:line (1, halfheight, width, halfheight)
-  c:line (halfwidth, 1, halfwidth, height)
+  c:line (1, yoffset, width, yoffset)
+  c:line (xoffset, 1, xoffset, height)
 
   if step > 0 then
     for x = step, lx(width, scale), step do
-      c:line (px(x, scale), halfheight - s,
-              px(x, scale), halfheight + s)
+      c:line (px(x, scale), yoffset - s,
+              px(x, scale), yoffset + s)
     end
 
     for x = -step, lx(1, scale), -step do
-      c:line (px(x, scale), halfheight - s,
-              px(x, scale), halfheight + s)
+      c:line (px(x, scale), yoffset - s,
+              px(x, scale), yoffset + s)
     end
 
     for y = step, ly(1, scale), step do
-      c:line (halfwidth - s, py(y, scale),
-              halfwidth + s, py(y, scale))
+      c:line (xoffset - s, py(y, scale),
+              xoffset + s, py(y, scale))
     end
 
     for y = -step, ly(height, scale), -step do
-      c:line (halfwidth - s, py(y, scale),
-              halfwidth + s, py(y, scale))
+      c:line (xoffset - s, py(y, scale),
+              xoffset + s, py(y, scale))
     end
   end
 end
@@ -130,7 +130,7 @@ local function plot(f)
     for x=1,width do
       local y = py(f(lx(x, scale)), scale)
 
-      if math.abs(old_y - y) < height
+      if math.abs(old_y - y) < height --> FIXME
         then c:lineto (x, y)
         else c:moveto (x, y) --> don't draw huge jumps
       end
@@ -148,8 +148,8 @@ local function plot(f)
     animate = false --> only animate the first time
 
     choice = avt.navigate "+-x"
-    if "+"==choice then scale = scale * 1.5
-    elseif "-"==choice then scale = scale / 1.5
+    if "+"==choice then scale = scale * 1.25
+    elseif "-"==choice then scale = scale / 1.25
     end
   until "x"==choice
 end
