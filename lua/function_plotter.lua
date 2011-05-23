@@ -22,7 +22,8 @@ require "lua-akfavatar"
 require "akfavatar-canvas"
 
 -- scale means: so many pixels for the value 1
-local scale = 40
+default_scale = 40
+
 
 deg = math.deg
 rad = math.rad
@@ -51,24 +52,25 @@ avt.initialize {
 
 local c, width, height = canvas.new()
 local xoffset, yoffset = width/2, height/2
+local scale = default_scale
 
-local function px(x, scale) -- physical x
+local function px(x) -- physical x
   return x * scale + xoffset
 end
 
-local function lx (x, scale) -- logical x
+local function lx (x) -- logical x
   return (x - xoffset) / scale
 end
 
-local function py (y, scale) -- physical y
+local function py (y) -- physical y
   return y * -scale + yoffset
 end
 
-local function ly (y, scale) -- logical y
+local function ly (y) -- logical y
   return -(y - yoffset) / scale
 end
 
-local function cross(scale)
+local function cross()
   local s = 5 --> size of the marks
   local step
 
@@ -88,24 +90,24 @@ local function cross(scale)
   c:line (xoffset, 1, xoffset, height)
 
   if step > 0 then
-    for x = step, lx(width, scale), step do
-      c:line (px(x, scale), yoffset - s,
-              px(x, scale), yoffset + s)
+    for x = step, lx(width), step do
+      c:line (px(x), yoffset - s,
+              px(x), yoffset + s)
     end
 
-    for x = -step, lx(1, scale), -step do
-      c:line (px(x, scale), yoffset - s,
-              px(x, scale), yoffset + s)
+    for x = -step, lx(1), -step do
+      c:line (px(x), yoffset - s,
+              px(x), yoffset + s)
     end
 
-    for y = step, ly(1, scale), step do
-      c:line (xoffset - s, py(y, scale),
-              xoffset + s, py(y, scale))
+    for y = step, ly(1), step do
+      c:line (xoffset - s, py(y),
+              xoffset + s, py(y))
     end
 
-    for y = -step, ly(height, scale), -step do
-      c:line (xoffset - s, py(y, scale),
-              xoffset + s, py(y, scale))
+    for y = -step, ly(height), -step do
+      c:line (xoffset - s, py(y),
+              xoffset + s, py(y))
     end
   end
 end
@@ -114,13 +116,20 @@ local function function_error()
   error("The function was not in a correct notation", 0)
 end
 
+local function reset()
+  xoffset = width/2
+  yoffset = height/2
+  scale = default_scale
+end
+
 local function plot(f)
   local choice
   local animate = true
-  local scale = scale
+
+  reset()
 
   repeat
-    cross(scale)
+    cross()
 
     c:thickness(2)
     c:color "royal blue"  --> don't tell my old teacher what pen I use ;-)
@@ -128,7 +137,7 @@ local function plot(f)
     local old_y = math.huge --> something offscreen
 
     for x=1,width do
-      local y = py(f(lx(x, scale)), scale)
+      local y = py(f(lx(x)))
 
       if math.abs(old_y - y) < height --> FIXME
         then c:lineto (x, y)
@@ -147,9 +156,14 @@ local function plot(f)
     c:show() --> show final result
     animate = false --> only animate the first time
 
-    choice = avt.navigate "+-x"
+    choice = avt.navigate "+-udlrsx"
     if "+"==choice then scale = scale * 1.25
     elseif "-"==choice then scale = scale / 1.25
+    elseif "l"==choice then xoffset = xoffset + width/4
+    elseif "r"==choice then xoffset = xoffset - width/4
+    elseif "u"==choice then yoffset = yoffset + height/4
+    elseif "d"==choice then yoffset = yoffset - height/4
+    elseif "s"==choice then reset()
     end
   until "x"==choice
 end
