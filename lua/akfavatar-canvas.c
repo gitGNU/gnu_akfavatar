@@ -20,12 +20,16 @@
 
 #include "akfavatar.h"
 
+#include <math.h>
+
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
 
 /* Bytes per pixel (3=RGB) */
 #define BPP 3
+
+#define PI  3.14159265358979323846
 
 #define CANVASDATA "AKFAvatar-canvas"
 #define get_canvas()  ((canvas *) luaL_checkudata (L, 1, CANVASDATA))
@@ -597,6 +601,44 @@ lcanvas_rectangle (lua_State * L)
   return 0;
 }
 
+/* c:circle (xcenter, ycenter, radius [,startangle] [,endangle]) */
+static int
+lcanvas_circle (lua_State * L)
+{
+  canvas *c;
+  double xcenter, ycenter, radius, startangle, endangle;
+  double x, y;
+  int i;
+
+  c = get_canvas ();
+
+  xcenter = luaL_checknumber (L, 2);
+  ycenter = luaL_checknumber (L, 3);
+  radius = luaL_checknumber (L, 4);
+  startangle = luaL_optnumber (L, 5, 0);
+  endangle = luaL_optnumber (L, 6, 360);
+
+  penpos (c, xcenter, ycenter);
+
+  while (startangle > endangle)
+    endangle += 360;
+
+  x = xcenter + radius * sin (2 * PI * startangle / 360);
+  y = ycenter - radius * cos (2 * PI * startangle / 360);
+
+  for (i = startangle; i <= endangle; i++)
+    {
+      double newx, newy;
+      newx = xcenter + radius * sin (2 * PI * i / 360);
+      newy = ycenter - radius * cos (2 * PI * i / 360);
+      line (c, x, y, newx, newy);
+      x = newx;
+      y = newy;
+    }
+
+  return 0;
+}
+
 
 static int
 lcanvas_show (lua_State * L)
@@ -645,6 +687,7 @@ static const struct luaL_reg canvaslib_methods[] = {
   {"putdot", lcanvas_putdot},
   {"bar", lcanvas_bar},
   {"rectangle", lcanvas_rectangle},
+  {"circle", lcanvas_circle},
   {"show", lcanvas_show},
   {"width", lcanvas_width},
   {"height", lcanvas_height},

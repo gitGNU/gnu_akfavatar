@@ -108,3 +108,10 @@ c:rectangle(x, y, width, height)
     Draws rectangle with x, y as the upper left corner.
     The pen position is not changed.
 
+
+c:circle(x, y, radius [,startangle, endangle])
+    Draws a circle with x, y as the center with the given radius.
+    The pen is put to the center of the circle (ie. to the given x, y)
+
+    You can draw a part of the circle by giving the startangle and endangle
+    in degree.  The circle is drawn clockwise.
