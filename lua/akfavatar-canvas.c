@@ -607,8 +607,7 @@ lcanvas_circle (lua_State * L)
 {
   canvas *c;
   double xcenter, ycenter, radius, startangle, endangle;
-  double x, y;
-  int i;
+  double x, y, i;
 
   c = get_canvas ();
 
