@@ -134,7 +134,7 @@ local function plot(f)
     c:thickness(2)
     c:color "royal blue"  --> don't tell my old teacher what pen I use ;-)
 
-    local old_value = lx(0)
+    local old_value = f(lx(0))
     c:moveto(0, py(old_value)) --> offscreen
 
     for x=1,width do
