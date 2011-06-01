@@ -326,6 +326,7 @@ dist-bin: akfavatar.dll lua-akfavatar.exe lua-akfavatar.dll base64.dll \
 	cp $(srcdir)/lua/interactive_lua.en.about $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/audioplayer.lua $(srcdir)/lua/audioplayer.en.about $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/function_plotter.lua $(srcdir)/lua/function_plotter.en.about $(BINPKGNAME)/lua/
+	cp $(srcdir)/lua/clock.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/textview.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/hello.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/story1-en.lua $(srcdir)/lua/story1-de.lua $(BINPKGNAME)/lua/
