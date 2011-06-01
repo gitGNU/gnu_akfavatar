@@ -141,9 +141,11 @@ local function plot(f)
       local value = f(lx(x))
       local y = py(value)
 
-      if value*old_value >= 0 and math.abs(old_value - value) < 100
+      if value*old_value > 0 or math.abs(old_value - value) < 10
         then c:lineto (x, y)
-        else c:moveto (x, y) --> don't draw huge jumps
+        else -- jump with changed sign
+          c:lineto (x-1, py(old_value*math.huge))
+          c:line (x, py(value*math.huge), x, y)
       end
 
       -- show each time we reach a full value and it's visible
