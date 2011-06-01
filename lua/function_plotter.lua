@@ -141,7 +141,7 @@ local function plot(f)
       local value = f(lx(x))
       local y = py(value)
 
-      if value*old_value > 0 and math.abs(old_value - value) < 1000
+      if value*old_value >= 0 and math.abs(old_value - value) < 100
         then c:lineto (x, y)
         else c:moveto (x, y) --> don't draw huge jumps
       end
