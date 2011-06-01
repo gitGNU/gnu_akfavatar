@@ -313,7 +313,7 @@ avttermsys.lo: $(srcdir)/avttermsys.c $(srcdir)/avttermsys.h \
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -fpic -c -o $@ $(srcdir)/avttermsys.c
 
 akfavatar-canvas.so: akfavatar-canvas.lo
-	$(CC) -o $@ -shared -fpic akfavatar-canvas.lo -L. -lakfavatar $(LDFLAGS)
+	$(CC) -o $@ -shared -fpic akfavatar-canvas.lo -L. -lakfavatar -lm $(LDFLAGS)
 
 akfavatar-canvas.lo: $(srcdir)/lua/akfavatar-canvas.c
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -fpic -o $@ \

@@ -259,7 +259,7 @@ stb_vorbis.wo: $(srcdir)/stb_vorbis.c
 
 akfavatar-canvas.dll: akfavatar-canvas.wo
 	$(CC) -o $@ -shared akfavatar-canvas.wo \
-	   -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS)
+	   -L. -lakfavatar -lm $(LUA_LDFLAGS) $(LDFLAGS)
 
 akfavatar-canvas.wo: $(srcdir)/lua/akfavatar-canvas.c
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
