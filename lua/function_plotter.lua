@@ -141,7 +141,10 @@ local function plot(f)
       local value = f(lx(x))
       local y = py(value)
 
-      if value*old_value >= 0 or math.abs(old_value - value) < 10
+      -- an invalid number (NaN) is not equal to itself
+      if old_value ~= old_value then
+        c:moveto (x, y)
+      elseif value*old_value >= 0 or math.abs(old_value - value) < 10
         then c:lineto (x, y)
         else -- jump with changed sign => assume infinity
           if old_value < 0 then
