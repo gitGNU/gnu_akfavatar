@@ -70,4 +70,4 @@ local c = canvas.new()
 c:color "saddle brown"
 clock(c)
 c:show()
-avt.wait_button()
+avt.wait(5.0)
