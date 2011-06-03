@@ -300,9 +300,7 @@ multiplizieren.exe: $(srcdir)/pascal/multiply.pas
 	-fpcwavatar -dRELEASE -ddeutsch -o$@ -Fi$(srcdir)/pascal \
 	  $(srcdir)/pascal/multiply.pas
 
-dist-bin: akfavatar.dll lua-akfavatar.exe lua-akfavatar.dll base64.dll \
-	  akfavatar-vorbis.dll about \
-	  $(lua_dll) $(sdl_dll)
+dist-bin: all $(lua_dll) $(sdl_dll)
 	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" srcdir="$(srcdir)" pdf
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/lua
