@@ -2992,6 +2992,18 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
 
 #endif /* FONTWIDTH <= 8 */
 
+extern int
+avt_get_font_height (void)
+{
+  return FONTHEIGHT;
+}
+
+extern int
+avt_get_font_width (void)
+{
+  return FONTWIDTH;
+}
+
 extern avt_bool_t
 avt_is_printable (avt_char ch)
 {

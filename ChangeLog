@@ -6,6 +6,9 @@
 	* bdf2c, avtinternals.h, akfavatar.h, avatar.c (avt_drawchar):
 	get_font_char(int) in main API, returns void*
 
+	* akfavatar.h, avatar.c (avt_get_font_height, avt_get_font_width):
+	new functions
+
 2011-05-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar-canvas.c: new file

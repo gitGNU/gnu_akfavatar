@@ -11,6 +11,7 @@
   - lua-akfavatar can be compiled as module
   - new lua modules available for better UTF-8 support,
     terminal-emulation and the Ogg Vorbis audio format
+    and a canvas for drawing images
   - the terminal-emulation has a different, enhanced APC interface
 
   C-API changes:
@@ -21,7 +22,8 @@
         avt_key() replaces avt_get_key()
     - new functions: avt_add_raw_audio_data, avt_pause_audio,
       avt_get_newline_mode, avt_ticks, avt_show_raw_image,
-      avt_get_background_color, avt_image_max_width, avt_image_max_height
+      avt_get_background_color, avt_image_max_width, avt_image_max_height,
+      avt_get_font_height, avt_get_font_width, get_font_char
     - avtaddons.h: new functions: avta_load_vorbis_file, avta_load_vorbis_data
     - modified behaviour:
       - avt.navigate: reacts when sound ends
