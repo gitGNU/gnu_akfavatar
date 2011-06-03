@@ -1,0 +1,38 @@
+Funktions-Plotter
+
+Man kann eine Funktion für die Variable x angeben, die dann gezeichnet wird.
+Als Beispiel könnte man „(x/5)^3“ eingeben.
+
+Man kann folgende Operatoren verwenden:
++	Plus (Addition)
+-	Minus (Substraktion)
+*	Mal (Multipliktion)
+/	Geteilt (Division)
+^	Hoch (Zum Beispiel „x^3“ für x³)
+%	Modulo (Der Rest einer Division)
+
+Für Dezimalbrüche muss man die amerikanische Schreibweise mit einem
+Dezimalpunkt verwenden, zum Beispiel „0.5“; kein Komma!
+Die Zahl π kann als „pi“ geschrieben werden.
+
+Man kann folgende Funktionen verwenden:
+sqrt(x)		Quadratwurzel (√x)
+exp(x)		e^x
+log(x)		Natürlicher Logarithmus
+log10(x)	Basis-10 Logarithmus
+deg(x)		In Grad umwandeln (x im Bogenmaß)
+rad(x)		Ins Bogenmaß umwandeln (x in Grad)
+sin(x)		Sinus (x im Bogenmaß)
+sinh(x)		Sinus Hyperbolicus (x im Bogenmaß)
+asin(x)		Arkussinus (x im Bogenmaß)
+cos(x)		Kosinus (x im Bogenmaß)
+cosh(x)		Kosinus Hyperbolicus (x im Bogenmaß)
+acos(x)		Arkuskosinus (x im Bogenmaß)
+tan(x)		Tangens (x im Bogenmaß)
+tanh(x)		Tangens Hyperbolicus (x im Bogenmaß)
+atan(x)		Arkustangens (x im Bogenmaß)
+
+ACHTUNG: Der Ausdruck für diese Funktionen muss immer in Klammern stehen!
+
+Wenn man häufig spezielle Funktionen oder Konstanten benötigt, kann man sie
+einfach im Skript hinzufügen.

@@ -652,6 +652,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/lua/hello.lua \
 	   $(srcdir)/lua/audioplayer.lua $(srcdir)/lua/audioplayer.en.about \
 	   $(srcdir)/lua/function_plotter.lua $(srcdir)/lua/function_plotter.en.about \
+	   $(srcdir)/lua/function_plotter.de.about \
 	   $(srcdir)/lua/clock.lua \
 	   $(srcdir)/lua/multiplication.lua $(srcdir)/lua/man.lua \
 	   $(srcdir)/lua/textview.lua \
@@ -744,6 +745,7 @@ dist-bin-default: all pdf
 	ln $(srcdir)/lua/interactive_lua.en.about $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/audioplayer.lua $(srcdir)/lua/audioplayer.en.about $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/function_plotter.lua $(srcdir)/lua/function_plotter.en.about $(BINPKGNAME)/lua/
+	ln $(srcdir)/lua/function_plotter.de.about $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/clock.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/multiplication.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/hello.lua $(BINPKGNAME)/lua/
