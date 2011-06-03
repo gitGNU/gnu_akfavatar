@@ -3,7 +3,7 @@
 # bdf2c - Convert bdf font into C-code
 # only for fixed-width fonts!
 #
-# Copyright (c) 2009 Andreas K. Foerster
+# Copyright (c) 2009, 2011 Andreas K. Foerster
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
 # notice and this notice are preserved.  This file is offered as-is,
@@ -47,10 +47,7 @@ BEGIN { width=height=started=default_char=charoffset=maxchar = 0 }
 
 function writetranstable(    i, blockstart)
 {
-  if (width <= 8)
-    print "const unsigned char *\nget_font_char (int ch)"
-  else
-    print "const unsigned short *\nget_font_char2 (int ch)"
+  print "void *\nget_font_char (int ch)"
 
   print "{"
   printf "  "
@@ -69,12 +66,12 @@ function writetranstable(    i, blockstart)
           else
             {
               if (blockstart == 0)
-                printf "if (ch == %#06X) return &font[%u];\n", \
+                printf "if (ch == %#06X) return (void*) &font[%u];\n", \
                        i, (table[i] * height)
               else
                 {
                   printf "if (ch <= %#06X && ch >= %#06X)", i, blockstart
-                  printf " return &font[(ch - %u) * %u];\n",
+                  printf " return (void*) &font[(ch-%u)*%u];\n",
                          (blockstart-table[blockstart]), height
                 }
               printf "  else "

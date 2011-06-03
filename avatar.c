@@ -2930,9 +2930,9 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
 
   pitch = avt_character->pitch / sizeof (*p);
   pixels = p = (unsigned short *) avt_character->pixels;
-  font_line = get_font_char2 ((int) ch);
+  font_line = (const unsigned short *) get_font_char ((int) ch);
   if (!font_line)
-    font_line = get_font_char2 (0);
+    font_line = (const unsigned short *) get_font_char (0);
 
   for (y = 0; y < FONTHEIGHT; y++)
     {
@@ -2954,19 +2954,6 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
   SDL_BlitSurface (avt_character, NULL, surface, &dest);
 }
 
-extern avt_bool_t
-avt_is_printable (avt_char ch)
-{
-  return (avt_bool_t) (get_font_char2 ((int) ch) != NULL);
-}
-
-/* deprecated */
-extern avt_bool_t
-avt_printable (wchar_t ch)
-{
-  return (avt_bool_t) (get_font_char2 ((int) ch) != NULL);
-}
-
 #else /* FONTWIDTH <= 8 */
 
 static void
@@ -2980,9 +2967,9 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
 
   pitch = avt_character->pitch;
   pixels = p = (Uint8 *) avt_character->pixels;
-  font_line = get_font_char ((int) ch);
+  font_line = (const unsigned char *) get_font_char ((int) ch);
   if (!font_line)
-    font_line = get_font_char (0);
+    font_line = (const unsigned char *) get_font_char (0);
 
   for (y = 0; y < FONTHEIGHT; y++)
     {
@@ -3003,6 +2990,8 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
   SDL_BlitSurface (avt_character, NULL, surface, &dest);
 }
 
+#endif /* FONTWIDTH <= 8 */
+
 extern avt_bool_t
 avt_is_printable (avt_char ch)
 {
@@ -3015,8 +3004,6 @@ avt_printable (wchar_t ch)
 {
   return (avt_bool_t) (get_font_char ((int) ch) != NULL);
 }
-
-#endif /* FONTWIDTH <= 8 */
 
 /* make current char visible */
 static void

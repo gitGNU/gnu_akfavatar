@@ -931,6 +931,12 @@ typedef void (*avt_mousehandler) (int button, avt_bool_t pressed,
  */
 AVT_API void avt_register_mousehandler (avt_mousehandler handler);
 
+/*
+ * returns pointer to character definition of given codepoint
+ * either defined as unsigned char or unsigned short,
+ * depending on the fonts width
+ */
+AVT_API void *get_font_char (int ch);
 
 /***********************************************************************/
 /* audio stuff */
