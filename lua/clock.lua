@@ -4,9 +4,6 @@
 Clock for AKFAvatar
 Copyright (c) 2011 Andreas K. Foerster <info@akfoerster.de>
 
-ATTENTION: it just shows the time when the program was started,
-it isn't updated thereafter
-
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
