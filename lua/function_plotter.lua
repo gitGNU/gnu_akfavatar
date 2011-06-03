@@ -37,6 +37,7 @@ sinh = math.sinh
 asin = math.asin
 cos = math.cos
 cosh = math.cosh
+acos = math.acos
 tan = math.tan
 tanh = math.tanh
 atan = math.atan
