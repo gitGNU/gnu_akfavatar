@@ -314,17 +314,16 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	-cp $(srcdir)/avtaddons.h.about $(BINPKGNAME)/include/
 	cp $(srcdir)/fsdemo-??.avt $(BINPKGNAME)/
 	cp lua-akfavatar.exe $(BINPKGNAME)/
-	cp lua/base64.en.about $(BINPKGNAME)/
+	cp $(srcdir)/lua/base64.??.about $(BINPKGNAME)/
 	cp base64.dll $(BINPKGNAME)/
 	cp akfavatar-vorbis.dll $(BINPKGNAME)/
-	cp $(srcdir)/lua/akfavatar-canvas.en.about $(BINPKGNAME)/
+	cp $(srcdir)/lua/akfavatar-canvas.??.about $(BINPKGNAME)/
 	cp akfavatar-canvas.dll $(BINPKGNAME)/
 	cp $(srcdir)/lua/multiplication.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/lua/
-	cp $(srcdir)/lua/interactive_lua.en.about $(BINPKGNAME)/lua/
-	cp $(srcdir)/lua/audioplayer.lua $(srcdir)/lua/audioplayer.en.about $(BINPKGNAME)/lua/
-	cp $(srcdir)/lua/function_plotter.lua $(srcdir)/lua/function_plotter.en.about $(BINPKGNAME)/lua/
-	cp $(srcdir)/lua/function_plotter.de.about $(BINPKGNAME)/lua/
+	cp $(srcdir)/lua/interactive_lua.??.about $(BINPKGNAME)/lua/
+	cp $(srcdir)/lua/audioplayer.lua $(srcdir)/lua/audioplayer.??.about $(BINPKGNAME)/lua/
+	cp $(srcdir)/lua/function_plotter.lua $(srcdir)/lua/function_plotter.??.about $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/clock.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/textview.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/hello.lua $(BINPKGNAME)/lua/
@@ -332,7 +331,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(srcdir)/lua/fs-quiz-en.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/fs-quiz-de.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/base64-encode.lua $(BINPKGNAME)/lua/
-	cp $(srcdir)/lua/base64-encode.en.about $(BINPKGNAME)/lua/
+	cp $(srcdir)/lua/base64-encode.??.about $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/characters_overview.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/characters_tables.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/colors_overview.lua $(BINPKGNAME)/lua/
@@ -340,10 +339,9 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	-cp $(srcdir)/lua-akfavatar-reference.en.about $(BINPKGNAME)/
 	cp lua-akfavatar.en.pdf $(BINPKGNAME)/
 	cp lua-akfavatar-reference.en.pdf $(BINPKGNAME)/
-	cp $(srcdir)/lua/akfavatar/dir.en.about $(BINPKGNAME)/lua/akfavatar/
-	cp $(srcdir)/lua/akfavatar/dir.de.about $(BINPKGNAME)/lua/akfavatar/
+	cp $(srcdir)/lua/akfavatar/dir.??.about $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/utf8.lua $(BINPKGNAME)/lua/akfavatar/
-	cp $(srcdir)/lua/akfavatar/utf8.en.about $(BINPKGNAME)/lua/akfavatar/
+	cp $(srcdir)/lua/akfavatar/utf8.??.about $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/person.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/female_user.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/male_user.lua $(BINPKGNAME)/lua/akfavatar/
