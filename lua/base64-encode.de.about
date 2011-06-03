@@ -1,0 +1,15 @@
+Base64-Kodierer
+
+Base 64 ist eine Methode um binäre Daten mit druckbaren ASCII-Zeichen zu
+kodieren.
+
+Für Lua-AKFAvatar kann das verwendet werden, um binäre Daten, wie Klänge oder
+Bilder in Lua-Skripte einzubetten. Als Beispiel kann man sich mal die Datei
+„akfavatar/positive.lua“ ansehen.
+
+Die Datei-Formate XPM und XBM sind bereits reines ASCII, darum brauchen die
+nicht extra nochmal kodiert werden.
+
+Weitere Informationen zu Base-64 findet man im Internet unter:
+http://de.wikipedia.org/wiki/Base64
+
