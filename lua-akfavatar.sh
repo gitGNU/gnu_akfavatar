@@ -4,8 +4,9 @@
 # This script sets up search paths for the uninstalled package
 # It is not meant for installation!
 
+PWD=$(pwd)
 localdir=$(dirname "$0")
-test "$localdir" = "." && localdir=$(pwd)
+test "$localdir" = "." && localdir=$PWD || localdir="$PWD/$localdir"
 
 # for finding Lua modules
 # the ;; at the end adds the default path
