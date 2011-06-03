@@ -5013,7 +5013,7 @@ avt_navigate (const char *buttons)
   int result;
 
   result = AVT_ERROR;		/* no result */
-  audio_end_button = 0;		/* none */
+  audio_end_button = AVT_FALSE;	/* none */
 
   if (_avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -5102,12 +5102,13 @@ avt_navigate (const char *buttons)
 
 	case 's':
 	  avt_nav_inlay (btn_stop);
-	  audio_end_button = 's';
+	  if (!audio_end_button)	/* 'f' has precedence */
+	    audio_end_button = 's';
 	  break;
 
 	case 'f':
 	  avt_nav_inlay (btn_fastforward);
-	  audio_end_button = 'f';
+	  audio_end_button = 'f';	/* this has precedence */
 	  break;
 
 	case 'b':

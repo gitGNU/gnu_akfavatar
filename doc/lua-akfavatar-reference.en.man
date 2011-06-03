@@ -680,8 +680,8 @@ returns "p".  The <Help> key or <F1> return "?".
 It returns the approriete character or a number.
 .IP
 If audio output ends while this function is active, it automatically
-pushes either 's' (stop) or 'f' (forward).
-If both are given, then the rightmost of them.
+pushes either 'f' (forward) or 's' (stop).
+If both are given, 'f' (forward) has precedence.
 .PP
 .TP
 .BI "avt.menu(" items )

@@ -1,3 +1,8 @@
+2011-06-03  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_navigate):
+	on audio end push 'f' over 's', no matter how they are arranged
+
 2011-05-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar-canvas.c: new file
