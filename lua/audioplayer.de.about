@@ -1,0 +1,26 @@
+Audio-Abspieler für AKFAvatar ♫
+
+Unterstützte Audio-Formate: Ogg Vorbis, Wave, AU
+Unterstützte Playlisten-Formate: M3U, PLS
+
+Dieses Programm kann entweder interaktiv verwendet werden, oder Dateien können
+als Parameter übergeben werden.
+
+Wenn man es von einem anderen Lua-Programm mit dofile() aufrufen will,
+kann man die globale Variable AUDIO verwenden. Diese sollte entweder eine
+Zeichenkette, oder eine Tabelle mit Zeichenketten enthalten.
+
+Ogg Vorbis wird nur unterstützt, wenn das Modul „akfavatar-vorbis“ verfügbar
+ist.
+
+Wenn man „play all...“ auswählt, oder mehrere Dateien als Parameter übergibt,
+dann werden Playlisten ignoriert.  Playlisten können auch nicht auf andere
+Playlisten verweisen.
+
+Netzwerk-Adressen werden unterstützt, wenn das Programm „curl“ im PATH
+installiert ist.  Aber das funktioniert nicht auf allen Systemen.
+
+Wenn in dem Verzeichnis mit den Dateien eine Bild-Datei namens „cover“ liegt,
+wird dieses Bild bei der Wiedergabe angezeigt.  Wenn man eine Playliste mit
+relativen Pfaden oder URLs verwendet, dann muss das Bild im selben Verzeichnis
+wie die Playliste liegen.  Das Bild wird auf keinen Fall vom Netz geladen.
