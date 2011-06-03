@@ -665,6 +665,53 @@ lcanvas_height (lua_State * L)
 }
 
 
+/* TODO */
+static void
+lcanvas_putbigchar (canvas * c, int x, int y, int fontheight, int ch)
+{
+  const unsigned short *font_line;
+  font_line = (const unsigned short *) get_font_char (ch);
+  if (!font_line)
+    font_line = (const unsigned short *) get_font_char (0);
+/* TODO */
+}
+
+/* TODO */
+/* c:text (string [,x ,y]) */
+static int
+lcanvas_text (lua_State * L)
+{
+  canvas *c;
+  const char *s;
+  size_t len;
+  int x, y;
+  int fontwidth, fontheight;
+  unsigned char r, g, b;
+  unsigned int i;
+
+  c = get_canvas ();
+  s = luaL_checklstring (L, 2, &len);
+  x = luaL_optint (L, 3, c->penx);
+  y = luaL_optint (L, 4, c->peny);
+
+  fontwidth = avt_get_font_width ();
+  fontheight = avt_get_font_height ();
+
+  r = c->r;
+  g = c->g;
+  b = c->b;
+
+  for (i = 0; i < len; i++)
+    {
+      lcanvas_putbigchar (c, x, y, fontheight, (int) *s);
+      x += fontwidth;
+      s++;
+    }
+
+  return 0;
+}
+
+
 static const struct luaL_reg canvaslib[] = {
   {"new", lcanvas_new},
   {NULL, NULL}
@@ -687,6 +734,7 @@ static const struct luaL_reg canvaslib_methods[] = {
   {"bar", lcanvas_bar},
   {"rectangle", lcanvas_rectangle},
   {"circle", lcanvas_circle},
+  {"text", lcanvas_text},
   {"show", lcanvas_show},
   {"width", lcanvas_width},
   {"height", lcanvas_height},
