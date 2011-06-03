@@ -70,25 +70,59 @@ local function ly (y) -- logical y
   return -(y - yoffset) / scale
 end
 
-local function cross()
+local function drawgrid(step)
+  c:thickness(1)
+
+  if 1 == step then
+    c:color "grey75" -- light for 1's
+  elseif 10 == step then
+    c:color "grey55" -- darker for 10's
+  else
+    return
+  end
+
+  for x = step, lx(width), step do
+    c:line (px(x), 1, px(x), height)
+  end
+
+  for x = -step, lx(1), -step do
+    c:line (px(x), 1, px(x), height)
+  end
+
+  for y = step, ly(1), step do
+    c:line (1, py(y), width, py(y))
+  end
+
+  for y = -step, ly(height), -step do
+    c:line (1, py(y), width, py(y))
+  end
+end
+
+local function grid()
   local s = 5 --> size of the marks
   local step
 
+  c:thickness(1)
+  c:clear()
+
   if scale > 10 then
     step = 1
+    drawgrid(1)
+    drawgrid(10)
   elseif scale > 1 then
     step = 10
+    drawgrid(10)
   else
     step = 0
   end
 
-  c:thickness(1)
   c:color "black"
-  c:clear()
 
+  -- cross
   c:line (1, yoffset, width, yoffset)
   c:line (xoffset, 1, xoffset, height)
 
+  -- ticks
   if step > 0 then
     for x = step, lx(width), step do
       c:line (px(x), yoffset - s,
@@ -129,7 +163,7 @@ local function plot(f)
   reset()
 
   repeat
-    cross()
+    grid()
 
     c:thickness(2)
     c:color "royal blue"  --> don't tell my old teacher what pen I use ;-)
