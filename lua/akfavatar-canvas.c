@@ -21,6 +21,7 @@
 #include "akfavatar.h"
 
 #include <math.h>
+#include <string.h>
 
 #include <lua.h>
 #include <lauxlib.h>
@@ -54,6 +55,12 @@
     *p++=(c)->r; *p++=(c)->g; *p++=(c)->b; \
   } while(0)
 
+#define HA_LEFT 0
+#define HA_CENTER 1
+#define HA_RIGHT 2
+#define VA_TOP 0
+#define VA_CENTER 1
+#define VA_BOTTOM 2
 
 typedef struct canvas
 {
@@ -61,6 +68,7 @@ typedef struct canvas
   int penx, peny;		/* position of pen */
   int thickness;		/* thickness of pen */
   unsigned char r, g, b;	/* current color */
+  int htextalign, vtextalign;	/* alignment for text */
   unsigned char data[1];
 } canvas;
 
@@ -158,6 +166,9 @@ lcanvas_new (lua_State * L)
   /* pen in center */
   penpos (c, width / 2, height / 2);
   c->thickness = 1 - 1;
+
+  c->htextalign = HA_CENTER;
+  c->vtextalign = VA_CENTER;
 
   clear_canvas (c);
 
@@ -679,7 +690,6 @@ lcanvas_font_size (lua_State * L)
 }
 
 
-/* TODO */
 /* c:text (string [,x ,y]) */
 static int
 lcanvas_text (lua_State * L)
@@ -699,16 +709,44 @@ lcanvas_text (lua_State * L)
 
   avt_get_font_size (&fontwidth, &fontheight);
 
-  /* outside visible area? (cannot show partly) */
-  if (y < 1 || y > c->height - fontheight || x > c->width - fontwidth)
+  switch (c->vtextalign)
+    {
+    case VA_TOP:
+      break;
+
+    case VA_CENTER:
+      y -= fontheight / 2;
+      break;
+
+    case VA_BOTTOM:
+      y -= fontheight;
+      break;
+    }
+
+  /* vertically outside visible area? (cannot show partly) */
+  if (y < 1 || y > c->height - fontheight)
     return 0;
 
   wclen = avt_mb_decode (&wctext, s, (int) len);
   if (!wctext)
     return 0;
 
-  /* is at least a tail visible? */
-  if (wclen <= 0 || x + (wclen * fontwidth) < 1)
+  switch (c->htextalign)
+    {
+    case HA_LEFT:
+      break;
+
+    case HA_CENTER:
+      x -= wclen * fontwidth / 2;
+      break;
+
+    case HA_RIGHT:
+      x -= wclen * fontwidth;
+      break;
+    }
+
+  /* horizontally outside visible area? (cannot show partly) */
+  if (wclen <= 0 || x > c->width - fontwidth || x + (wclen * fontwidth) < 1)
     {
       avt_free (wctext);
       return 0;
@@ -776,6 +814,41 @@ lcanvas_text (lua_State * L)
 }
 
 
+/* c:textalign (horizontal, vertical) */
+static int
+lcanvas_textalign (lua_State * L)
+{
+  canvas *c;
+  const char *ha, *va;
+
+  c = get_canvas ();
+  ha = luaL_optstring (L, 2, "center");
+  va = luaL_optstring (L, 3, "center");
+
+  if (strcmp ("left", ha) == 0)
+    c->htextalign = HA_LEFT;
+  else if (strcmp ("center", ha) == 0)
+    c->htextalign = HA_CENTER;
+  else if (strcmp ("right", ha) == 0)
+    c->htextalign = HA_RIGHT;
+  else
+    luaL_error (L, "\"%s\" unsupported,\n"
+		"expected either of \"left\", \"center\", \"right\"", ha);
+
+  if (strcmp ("top", va) == 0)
+    c->vtextalign = VA_TOP;
+  else if (strcmp ("center", va) == 0)
+    c->vtextalign = VA_CENTER;
+  else if (strcmp ("bottom", va) == 0)
+    c->vtextalign = VA_BOTTOM;
+  else
+    luaL_error (L, "\"%s\" unsupported,\n"
+		"expected either of \"top\", \"center\", \"bottom\"", va);
+
+  return 0;
+}
+
+
 static const struct luaL_reg canvaslib[] = {
   {"new", lcanvas_new},
   {NULL, NULL}
@@ -799,6 +872,7 @@ static const struct luaL_reg canvaslib_methods[] = {
   {"rectangle", lcanvas_rectangle},
   {"circle", lcanvas_circle},
   {"text", lcanvas_text},
+  {"textalign", lcanvas_textalign},
   {"font_size", lcanvas_font_size},
   {"show", lcanvas_show},
   {"width", lcanvas_width},
