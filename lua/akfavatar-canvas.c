@@ -666,7 +666,7 @@ lcanvas_height (lua_State * L)
 
 
 static int
-lcanvas_text_size (lua_State * L)
+lcanvas_font_size (lua_State * L)
 {
   int fontwidth, fontheight;
 
@@ -799,7 +799,7 @@ static const struct luaL_reg canvaslib_methods[] = {
   {"rectangle", lcanvas_rectangle},
   {"circle", lcanvas_circle},
   {"text", lcanvas_text},
-  {"text_size", lcanvas_text_size},
+  {"font_size", lcanvas_font_size},
   {"show", lcanvas_show},
   {"width", lcanvas_width},
   {"height", lcanvas_height},
