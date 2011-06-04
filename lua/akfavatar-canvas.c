@@ -1,5 +1,5 @@
 /*
- * AKFAvatar simple canvas
+ * AKFAvatar canvas
  * Copyright (c) 2011 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
@@ -666,17 +666,6 @@ lcanvas_height (lua_State * L)
 
 
 /* TODO */
-static void
-lcanvas_putbigchar (canvas * c, int x, int y, int fontheight, int ch)
-{
-  const unsigned short *font_line;
-  font_line = (const unsigned short *) get_font_char (ch);
-  if (!font_line)
-    font_line = (const unsigned short *) get_font_char (0);
-/* TODO */
-}
-
-/* TODO */
 /* c:text (string [,x ,y]) */
 static int
 lcanvas_text (lua_State * L)
@@ -684,10 +673,10 @@ lcanvas_text (lua_State * L)
   canvas *c;
   const char *s;
   size_t len;
+  wchar_t *wctext, *wc;
+  int wclen, i;
   int x, y;
   int fontwidth, fontheight;
-  unsigned char r, g, b;
-  unsigned int i;
 
   c = get_canvas ();
   s = luaL_checklstring (L, 2, &len);
@@ -697,16 +686,71 @@ lcanvas_text (lua_State * L)
   fontwidth = avt_get_font_width ();
   fontheight = avt_get_font_height ();
 
-  r = c->r;
-  g = c->g;
-  b = c->b;
+  /* vertically outside visible area? (cannot show partly) */
+  if (y < 1 || y > c->height - fontheight)
+    return 0;
 
-  for (i = 0; i < len; i++)
+  wclen = avt_mb_decode (&wctext, s, (int) len);
+  if (!wctext)
+    return 0;
+
+  wc = wctext;
+
+  /* crop text as neccessary */
+  if (x < 1)
     {
-      lcanvas_putbigchar (c, x, y, fontheight, (int) *s);
-      x += fontwidth;
-      s++;
+      int pixels = fontwidth - x;
+      int crop = pixels / fontwidth;
+      wc += crop;
+      wclen -= crop;
+      x = fontwidth - (pixels % fontwidth);
     }
+
+  if (wclen > (c->width - x) / fontwidth)
+    wclen = (c->width - x) / fontwidth;
+
+  if (fontwidth > 8)		/* 2 bytes per character */
+    {
+      for (i = 0; i < wclen; i++, wc++, x += fontwidth)
+	{
+	  const unsigned short *font_line;
+	  int lx, ly;
+
+	  font_line = (const unsigned short *) get_font_char ((int) *wc);
+	  if (!font_line)
+	    font_line = (const unsigned short *) get_font_char (0);
+
+	  for (ly = 0; ly < fontheight; ly++)
+	    {
+	      for (lx = 0; lx < fontwidth; lx++)
+		if (*font_line & (1 << (15 - lx)))
+		  putpixel (c, x + lx, y + ly);
+	      font_line++;
+	    }
+	}
+    }
+  else				/* fontwidth <= 8 */
+    {
+      for (i = 0; i < wclen; i++, wc++, x += fontwidth)
+	{
+	  const unsigned char *font_line;
+	  int lx, ly;
+
+	  font_line = (const unsigned char *) get_font_char ((int) *wc);
+	  if (!font_line)
+	    font_line = (const unsigned char *) get_font_char (0);
+
+	  for (ly = 0; ly < fontheight; ly++)
+	    {
+	      for (lx = 0; lx < fontwidth; lx++)
+		if (*font_line & (1 << (7 - lx)))
+		  putpixel (c, x + lx, y + ly);
+	      font_line++;
+	    }
+	}
+    }
+
+  avt_free (wctext);
 
   return 0;
 }
