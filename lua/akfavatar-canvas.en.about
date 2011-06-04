@@ -115,3 +115,40 @@ c:circle(x, y, radius [,startangle, endangle])
 
     You can draw a part of the circle by giving the startangle and endangle
     in degree.  The circle is drawn clockwise.
+
+
+c:text(text [, x, y])
+    Prints a text aligned to the given position or the pen position.
+
+    By default the text is centered to the position.  But you can change this
+    with c:textalign().
+
+    The encoding is used from the AKFAvatar settings.  However no other of
+    those settings are taken into account.  The color is the drawing color for
+    the canvas.  There is currently no easy way to make boldface, underlined or
+    inverted text.
+
+    You can use all printable characters, but control characters are not
+    supported, even not a newline.
+
+    The pen position is not changed.
+
+
+c:textalign([horizontal] [, vertical])
+    Sets the textalignment for c:text().
+
+    The horizontal alignment can be one of "left", "center" or "right".  The
+    default is "center".
+
+    The vertical alignment can be one of "top", "center" or "bottom".  The
+    default is "center".
+
+    The alignment means, where the given point is, eg. when you tell it to be
+    "left"-aligned, the fixed point is on the left, but the text runs to the
+    right.
+
+
+c:font_size()
+    Returns the width and the hight of the font, ie. one character.
+    It is a fixed-width font, each character has the same width.
+
