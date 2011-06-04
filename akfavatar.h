@@ -942,8 +942,7 @@ AVT_API void *get_font_char (int ch);
  * get height and width of a character
  * the font is a fixed width font
  */
-AVT_API int avt_get_font_height (void);
-AVT_API int avt_get_font_width (void);
+AVT_API void avt_get_font_size (int *width, int *height);
 
 /***********************************************************************/
 /* audio stuff */

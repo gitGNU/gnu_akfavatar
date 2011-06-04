@@ -683,8 +683,7 @@ lcanvas_text (lua_State * L)
   x = luaL_optint (L, 3, c->penx);
   y = luaL_optint (L, 4, c->peny);
 
-  fontwidth = avt_get_font_width ();
-  fontheight = avt_get_font_height ();
+  avt_get_font_size (&fontwidth, &fontheight);
 
   /* outside visible area? (cannot show partly) */
   if (y < 1 || y > c->height - fontheight || x > c->width - fontwidth)
