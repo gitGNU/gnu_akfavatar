@@ -665,6 +665,20 @@ lcanvas_height (lua_State * L)
 }
 
 
+static int
+lcanvas_text_size (lua_State * L)
+{
+  int fontwidth, fontheight;
+
+  avt_get_font_size (&fontwidth, &fontheight);
+
+  lua_pushinteger (L, fontwidth);
+  lua_pushinteger (L, fontheight);
+
+  return 2;
+}
+
+
 /* TODO */
 /* c:text (string [,x ,y]) */
 static int
@@ -785,6 +799,7 @@ static const struct luaL_reg canvaslib_methods[] = {
   {"rectangle", lcanvas_rectangle},
   {"circle", lcanvas_circle},
   {"text", lcanvas_text},
+  {"text_size", lcanvas_text_size},
   {"show", lcanvas_show},
   {"width", lcanvas_width},
   {"height", lcanvas_height},
