@@ -686,13 +686,20 @@ lcanvas_text (lua_State * L)
   fontwidth = avt_get_font_width ();
   fontheight = avt_get_font_height ();
 
-  /* vertically outside visible area? (cannot show partly) */
-  if (y < 1 || y > c->height - fontheight)
+  /* outside visible area? (cannot show partly) */
+  if (y < 1 || y > c->height - fontheight || x > c->width - fontwidth)
     return 0;
 
   wclen = avt_mb_decode (&wctext, s, (int) len);
   if (!wctext)
     return 0;
+
+  /* is at least a tail visible? */
+  if (wclen <= 0 || x + (wclen * fontwidth) < 1)
+    {
+      avt_free (wctext);
+      return 0;
+    }
 
   wc = wctext;
 
