@@ -18,6 +18,9 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+
+/* ATTENTION: coordinates are 1-based externally, but internally 0-based */
+
 #include "akfavatar.h"
 
 #include <math.h>
@@ -38,8 +41,8 @@
 /* force value to be in range */
 #define RANGE(v, min, max)  ((v) < (min) ? (min) : (v) > (max) ? (max) : (v))
 
-#define visible_x(c, x)  ((int) (x) >= 1 && (int) (x) <= (c)->width)
-#define visible_y(c, y)  ((int) (y) >= 1 && (int) (y) <= (c)->height)
+#define visible_x(c, x)  ((int) (x) >= 0 && (int) (x) < (c)->width)
+#define visible_y(c, y)  ((int) (y) >= 0 && (int) (y) < (c)->height)
 #define visible(c, x, y)  (visible_x(c, x) && visible_y(c, y))
 
 #define abs(x)  ((x) > 0 ? (x) : -(x))
@@ -51,7 +54,7 @@
 #define putpixel(c, x, y) \
   do { \
     unsigned char *p = \
-      (c)->data+(((int)(y)-1)*(c)->width*BPP)+(((int)(x)-1)*BPP); \
+      (c)->data+(((int)(y))*(c)->width*BPP)+(((int)(x))*BPP); \
     *p++=(c)->r; *p++=(c)->g; *p++=(c)->b; \
   } while(0)
 
@@ -113,17 +116,17 @@ bar (canvas * c, int x1, int y1, int x2, int y2)
   b = (unsigned char) c->b;
 
   /* sanitize values */
-  x1 = RANGE (x1, 1, width);
-  y1 = RANGE (y1, 1, height);
-  x2 = RANGE (x2, 1, width);
-  y2 = RANGE (y2, 1, height);
+  x1 = RANGE (x1, 0, width - 1);
+  y1 = RANGE (y1, 0, height - 1);
+  x2 = RANGE (x2, 0, width - 1);
+  y2 = RANGE (y2, 0, height - 1);
 
 
-  for (y = y1 - 1; y < y2; y++)
+  for (y = y1; y < y2; y++)
     {
       p = data + (y * width * BPP) + ((x1 - 1) * BPP);
 
-      for (x = x1 - 1; x < x2; x++)
+      for (x = x1; x < x2; x++)
 	{
 	  *p++ = r;
 	  *p++ = g;
@@ -227,8 +230,8 @@ lcanvas_pen_position (lua_State * L)
 {
   canvas *c = get_canvas ();
 
-  lua_pushinteger (L, c->penx);
-  lua_pushinteger (L, c->peny);
+  lua_pushinteger (L, c->penx + 1);
+  lua_pushinteger (L, c->peny + 1);
 
   return 2;
 }
@@ -241,7 +244,7 @@ lcanvas_moveto (lua_State * L)
   canvas *c = get_canvas ();
 
   /* a pen outside the field is allowed! */
-  penpos (c, luaL_checkint (L, 2), luaL_checkint (L, 3));
+  penpos (c, luaL_checkint (L, 2) - 1, luaL_checkint (L, 3) - 1);
 
   return 0;
 }
@@ -287,8 +290,8 @@ vertical_line (canvas * c, double x, double y1, double y2)
 	}
 
       height = c->height;
-      y1 = RANGE (y1, 1, height);
-      y2 = RANGE (y2, 1, height);
+      y1 = RANGE (y1, 0, height - 1);
+      y2 = RANGE (y2, 0, height - 1);
 
       if (c->thickness > 0)
 	{
@@ -321,8 +324,8 @@ horizontal_line (canvas * c, double x1, double x2, double y)
 	}
 
       width = c->width;
-      x1 = RANGE (x1, 1, width);
-      x2 = RANGE (x2, 1, width);
+      x1 = RANGE (x1, 0, width - 1);
+      x2 = RANGE (x2, 0, width - 1);
 
       if (c->thickness > 0)
 	{
@@ -338,10 +341,9 @@ horizontal_line (canvas * c, double x1, double x2, double y)
 	  g = c->g;
 	  b = c->b;
 
-	  p =
-	    c->data + (((int) y - 1) * width * BPP) + (((int) x1 - 1) * BPP);
+	  p = c->data + (((int) y) * width * BPP) + (((int) x1) * BPP);
 
-	  for (x = x1 - 1; x < x2; x++)
+	  for (x = x1; x < x2; x++)
 	    {
 	      *p++ = r;
 	      *p++ = g;
@@ -383,14 +385,14 @@ sloped_line (canvas * c, double x1, double x2, double y1, double y2)
       delta_y = dy / dx;
 
       /* sanitize range of x */
-      if (x1 < 1)
+      if (x1 < 0)
 	{
-	  y1 += delta_y * (1 - x1);
-	  x1 = 1;
+	  y1 += delta_y * (0 - x1);
+	  x1 = 0;
 	}
 
-      if (x2 > c->width)
-	x2 = c->width;
+      if (x2 >= c->width)
+	x2 = c->width - 1;
 
       if (c->thickness > 0)
 	{
@@ -427,14 +429,14 @@ sloped_line (canvas * c, double x1, double x2, double y1, double y2)
       delta_x = dx / dy;
 
       /* sanitize range of y */
-      if (y1 < 1)
+      if (y1 < 0)
 	{
-	  x1 += delta_x * (1 - y1);
-	  y1 = 1;
+	  x1 += delta_x * (0 - y1);
+	  y1 = 0;
 	}
 
-      if (y2 > c->height)
-	y2 = c->height;
+      if (y2 >= c->height)
+	y2 = c->height - 1;
 
       if (c->thickness > 0)
 	{
@@ -478,10 +480,10 @@ lcanvas_line (lua_State * L)
   double x1, y1, x2, y2;
 
   c = get_canvas ();
-  x1 = luaL_checknumber (L, 2);
-  y1 = luaL_checknumber (L, 3);
-  x2 = luaL_checknumber (L, 4);
-  y2 = luaL_checknumber (L, 5);
+  x1 = luaL_checknumber (L, 2) - 1;
+  y1 = luaL_checknumber (L, 3) - 1;
+  x2 = luaL_checknumber (L, 4) - 1;
+  y2 = luaL_checknumber (L, 5) - 1;
 
   line (c, x1, y1, x2, y2);
   penpos (c, x2, y2);
@@ -498,8 +500,8 @@ lcanvas_lineto (lua_State * L)
   double x2, y2;
 
   c = get_canvas ();
-  x2 = luaL_checknumber (L, 2);
-  y2 = luaL_checknumber (L, 3);
+  x2 = luaL_checknumber (L, 2) - 1;
+  y2 = luaL_checknumber (L, 3) - 1;
 
   line (c, (double) c->penx, (double) c->peny, x2, y2);
   penpos (c, x2, y2);
@@ -513,15 +515,15 @@ static int
 lcanvas_linerel (lua_State * L)
 {
   canvas *c;
-  int x1, y1, x2, y2;
+  double x1, y1, x2, y2;
 
   c = get_canvas ();
-  x1 = c->penx;
-  y1 = c->peny;
+  x1 = (double) c->penx;
+  y1 = (double) c->peny;
   x2 = x1 + luaL_checknumber (L, 2);
   y2 = y1 + luaL_checknumber (L, 3);
 
-  line (c, (double) x1, (double) y1, (double) x2, (double) y2);
+  line (c, x1, y1, x2, y2);
   penpos (c, x2, y2);
 
   return 0;
@@ -536,8 +538,8 @@ lcanvas_putpixel (lua_State * L)
   int x, y;
 
   c = get_canvas ();
-  x = luaL_optint (L, 2, c->penx);
-  y = luaL_optint (L, 3, c->peny);
+  x = luaL_optint (L, 2, c->penx + 1) - 1;
+  y = luaL_optint (L, 3, c->peny + 1) - 1;
 
   if (visible (c, x, y))
     putpixel (c, x, y);
@@ -554,8 +556,8 @@ lcanvas_putdot (lua_State * L)
   int x, y;
 
   c = get_canvas ();
-  x = luaL_optint (L, 2, c->penx);
-  y = luaL_optint (L, 3, c->peny);
+  x = luaL_optint (L, 2, c->penx + 1) - 1;
+  y = luaL_optint (L, 3, c->peny + 1) - 1;
 
   /* macros evaluate the values more than once! */
   if (visible (c, x, y))
@@ -579,8 +581,8 @@ lcanvas_bar (lua_State * L)
 
   c = get_canvas ();
 
-  x1 = luaL_checkint (L, 2);
-  y1 = luaL_checkint (L, 3);
+  x1 = luaL_checkint (L, 2) - 1;
+  y1 = luaL_checkint (L, 3) - 1;
   x2 = x1 + luaL_checkint (L, 4) - 1;
   y2 = y1 + luaL_checkint (L, 5) - 1;
 
@@ -599,8 +601,8 @@ lcanvas_rectangle (lua_State * L)
 
   c = get_canvas ();
 
-  x1 = luaL_checknumber (L, 2);
-  y1 = luaL_checknumber (L, 3);
+  x1 = luaL_checknumber (L, 2) - 1;
+  y1 = luaL_checknumber (L, 3) - 1;
   x2 = x1 + luaL_checknumber (L, 4) - 1;
   y2 = y1 + luaL_checknumber (L, 5) - 1;
 
@@ -622,8 +624,8 @@ lcanvas_circle (lua_State * L)
 
   c = get_canvas ();
 
-  xcenter = luaL_checknumber (L, 2);
-  ycenter = luaL_checknumber (L, 3);
+  xcenter = luaL_checknumber (L, 2) - 1;
+  ycenter = luaL_checknumber (L, 3) - 1;
   radius = luaL_checknumber (L, 4);
   startangle = luaL_optnumber (L, 5, 0);
   endangle = luaL_optnumber (L, 6, 360);
@@ -704,8 +706,8 @@ lcanvas_text (lua_State * L)
 
   c = get_canvas ();
   s = luaL_checklstring (L, 2, &len);
-  x = luaL_optint (L, 3, c->penx);
-  y = luaL_optint (L, 4, c->peny);
+  x = luaL_optint (L, 3, c->penx + 1) - 1;
+  y = luaL_optint (L, 4, c->peny + 1) - 1;
 
   avt_get_font_size (&fontwidth, &fontheight);
 
@@ -724,7 +726,7 @@ lcanvas_text (lua_State * L)
     }
 
   /* vertically outside visible area? (cannot show partly) */
-  if (y < 1 || y > c->height - fontheight)
+  if (y < 0 || y >= c->height - fontheight)
     return 0;
 
   wclen = avt_mb_decode (&wctext, s, (int) len);
@@ -746,7 +748,7 @@ lcanvas_text (lua_State * L)
     }
 
   /* horizontally outside visible area? (cannot show partly) */
-  if (wclen <= 0 || x > c->width - fontwidth || x + (wclen * fontwidth) < 1)
+  if (wclen <= 0 || x >= c->width - fontwidth || x + (wclen * fontwidth) < 0)
     {
       avt_free (wctext);
       return 0;
@@ -755,9 +757,9 @@ lcanvas_text (lua_State * L)
   wc = wctext;
 
   /* crop text as neccessary */
-  if (x < 1)
+  if (x < 0)
     {
-      int pixels = fontwidth - x;
+      int pixels = fontwidth - x + 1;
       int crop = pixels / fontwidth;
       wc += crop;
       wclen -= crop;
