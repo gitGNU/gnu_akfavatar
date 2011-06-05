@@ -281,16 +281,16 @@ lcanvas_center (lua_State * L)
 
 
 static void
-vertical_line (canvas * c, double x, double y1, double y2)
+vertical_line (canvas * c, int x, int y1, int y2)
 {
-  double y;
+  int y;
   int height;
 
   if (visible_x (c, x))
     {
       if (y1 > y2)		/* swap */
 	{
-	  double ty = y1;
+	  int ty = y1;
 	  y1 = y2;
 	  y2 = ty;
 	}
@@ -316,16 +316,16 @@ vertical_line (canvas * c, double x, double y1, double y2)
 
 
 static void
-horizontal_line (canvas * c, double x1, double x2, double y)
+horizontal_line (canvas * c, int x1, int x2, int y)
 {
-  double x;
+  int x;
   int width;
 
   if (visible_y (c, y))
     {
       if (x1 > x2)		/* swap */
 	{
-	  double tx = x1;
+	  int tx = x1;
 	  x1 = x2;
 	  x2 = tx;
 	}
@@ -337,7 +337,7 @@ horizontal_line (canvas * c, double x1, double x2, double y)
       if (c->thickness > 0)
 	{
 	  for (x = x1; x <= x2; x++)
-	    putdot (c, (int) x, (int) y);
+	    putdot (c, x, y);
 	}
       else
 	{
@@ -348,7 +348,7 @@ horizontal_line (canvas * c, double x1, double x2, double y)
 	  g = c->g;
 	  b = c->b;
 
-	  p = c->data + (((int) y) * width * BPP) + (((int) x1) * BPP);
+	  p = c->data + (y * width * BPP) + (x1 * BPP);
 
 	  for (x = x1; x <= x2; x++)
 	    {
@@ -394,7 +394,7 @@ sloped_line (canvas * c, double x1, double x2, double y1, double y2)
       /* sanitize range of x */
       if (x1 < 0)
 	{
-	  y1 += delta_y * (0 - x1);
+	  y1 -= delta_y * x1;
 	  x1 = 0;
 	}
 
@@ -439,7 +439,7 @@ sloped_line (canvas * c, double x1, double x2, double y1, double y2)
       /* sanitize range of y */
       if (y1 < 0)
 	{
-	  x1 += delta_x * (0 - y1);
+	  x1 -= delta_x * y1;
 	  y1 = 0;
 	}
 
@@ -465,7 +465,7 @@ sloped_line (canvas * c, double x1, double x2, double y1, double y2)
 
 
 static void
-line (canvas * c, double x1, double y1, double x2, double y2)
+line (canvas * c, int x1, int y1, int x2, int y2)
 {
   if (x1 == x2 && y1 == y2)	/* one dot */
     {
@@ -486,13 +486,13 @@ static int
 lcanvas_line (lua_State * L)
 {
   canvas *c;
-  double x1, y1, x2, y2;
+  int x1, y1, x2, y2;
 
   c = get_canvas ();
-  x1 = luaL_checknumber (L, 2) - 1;
-  y1 = luaL_checknumber (L, 3) - 1;
-  x2 = luaL_checknumber (L, 4) - 1;
-  y2 = luaL_checknumber (L, 5) - 1;
+  x1 = luaL_checkint (L, 2) - 1;
+  y1 = luaL_checkint (L, 3) - 1;
+  x2 = luaL_checkint (L, 4) - 1;
+  y2 = luaL_checkint (L, 5) - 1;
 
   line (c, x1, y1, x2, y2);
   penpos (c, x2, y2);
@@ -506,13 +506,13 @@ static int
 lcanvas_lineto (lua_State * L)
 {
   canvas *c;
-  double x2, y2;
+  int x2, y2;
 
   c = get_canvas ();
-  x2 = luaL_checknumber (L, 2) - 1;
-  y2 = luaL_checknumber (L, 3) - 1;
+  x2 = luaL_checkint (L, 2) - 1;
+  y2 = luaL_checkint (L, 3) - 1;
 
-  line (c, (double) c->penx, (double) c->peny, x2, y2);
+  line (c, c->penx, c->peny, x2, y2);
   penpos (c, x2, y2);
 
   return 0;
@@ -524,13 +524,13 @@ static int
 lcanvas_linerel (lua_State * L)
 {
   canvas *c;
-  double x1, y1, x2, y2;
+  int x1, y1, x2, y2;
 
   c = get_canvas ();
-  x1 = (double) c->penx;
-  y1 = (double) c->peny;
-  x2 = x1 + luaL_checknumber (L, 2);
-  y2 = y1 + luaL_checknumber (L, 3);
+  x1 = c->penx;
+  y1 = c->peny;
+  x2 = x1 + luaL_checkint (L, 2);
+  y2 = y1 + luaL_checkint (L, 3);
 
   line (c, x1, y1, x2, y2);
   penpos (c, x2, y2);
@@ -606,14 +606,14 @@ static int
 lcanvas_rectangle (lua_State * L)
 {
   canvas *c;
-  double x1, y1, x2, y2;
+  int x1, y1, x2, y2;
 
   c = get_canvas ();
 
-  x1 = luaL_checknumber (L, 2) - 1;
-  y1 = luaL_checknumber (L, 3) - 1;
-  x2 = luaL_checknumber (L, 4) - 1;
-  y2 = luaL_checknumber (L, 5) - 1;
+  x1 = luaL_checkint (L, 2) - 1;
+  y1 = luaL_checkint (L, 3) - 1;
+  x2 = luaL_checkint (L, 4) - 1;
+  y2 = luaL_checkint (L, 5) - 1;
 
   horizontal_line (c, x1, x2, y1);
   vertical_line (c, x2, y1, y2);
