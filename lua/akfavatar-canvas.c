@@ -24,7 +24,6 @@
 #include "akfavatar.h"
 
 #include <math.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include <lua.h>
@@ -369,8 +368,8 @@ sloped_line (canvas * c, double x1, double x2, double y1, double y2)
   double x, y;
   double dx, dy;
 
-  dx = abs (x2 - x1);
-  dy = abs (y2 - y1);
+  dx = fabs (x2 - x1);
+  dy = fabs (y2 - y1);
 
   if (dx > dy)			/* x steps 1 */
     {
