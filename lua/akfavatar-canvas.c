@@ -119,9 +119,9 @@ bar (canvas * c, int x1, int y1, int x2, int y2)
   width = c->width;
   height = c->height;
   data = c->data;
-  r = (unsigned char) c->r;
-  g = (unsigned char) c->g;
-  b = (unsigned char) c->b;
+  r = c->r;
+  g = c->g;
+  b = c->b;
 
   /* sanitize values */
   x1 = RANGE (x1, 0, width - 1);
@@ -130,11 +130,11 @@ bar (canvas * c, int x1, int y1, int x2, int y2)
   y2 = RANGE (y2, 0, height - 1);
 
 
-  for (y = y1; y < y2; y++)
+  for (y = y1; y <= y2; y++)
     {
-      p = data + (y * width * BPP) + ((x1 - 1) * BPP);
+      p = data + (y * width * BPP) + (x1 * BPP);
 
-      for (x = x1; x < x2; x++)
+      for (x = x1; x <= x2; x++)
 	{
 	  *p++ = r;
 	  *p++ = g;
@@ -226,7 +226,7 @@ lcanvas_thickness (lua_State * L)
   int s;
 
   s = luaL_checkint (L, 2) - 1;
-  get_canvas ()->thickness = (s < 0) ? 0 : s;
+  get_canvas ()->thickness = (s > 0) ? s : 0;
 
   return 0;
 }
@@ -352,7 +352,7 @@ horizontal_line (canvas * c, double x1, double x2, double y)
 
 	  p = c->data + (((int) y) * width * BPP) + (((int) x1) * BPP);
 
-	  for (x = x1; x < x2; x++)
+	  for (x = x1; x <= x2; x++)
 	    {
 	      *p++ = r;
 	      *p++ = g;
