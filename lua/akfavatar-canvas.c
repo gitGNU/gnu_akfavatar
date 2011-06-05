@@ -55,7 +55,15 @@
   do { \
     unsigned char *p = \
       (c)->data+(((int)(y))*(c)->width*BPP)+(((int)(x))*BPP); \
-    *p++=(c)->r; *p++=(c)->g; *p++=(c)->b; \
+    *p++=(c)->r; *p++=(c)->g; *p=(c)->b; \
+  } while(0)
+
+/* fast putpixel with rgb (faster), no check */
+#define putpixelrgb(c, x, y, r, g, b) \
+  do { \
+    unsigned char *p = \
+      (c)->data+(((int)(y))*(c)->width*BPP)+(((int)(x))*BPP); \
+    *p++=(r); *p++=(g); *p=(b); \
   } while(0)
 
 #define HA_LEFT 0
@@ -300,9 +308,10 @@ vertical_line (canvas * c, double x, double y1, double y2)
 	}
       else
 	{
+	  unsigned char r = c->r, g = c->g, b = c->b;
 	  for (y = y1; y <= y2; y++)
 	    if (visible_y (c, y))
-	      putpixel (c, x, y);
+	      putpixelrgb (c, x, y, r, g, b);
 	}
     }
 }
@@ -401,10 +410,11 @@ sloped_line (canvas * c, double x1, double x2, double y1, double y2)
 	}
       else
 	{
+	  unsigned char r = c->r, g = c->g, b = c->b;
 	  for (x = x1, y = y1; x <= x2; x++, y += delta_y)
 	    {
 	      if (visible_y (c, y))
-		putpixel (c, x, y);
+		putpixelrgb (c, x, y, r, g, b);
 	    }
 	}
     }
@@ -447,8 +457,9 @@ sloped_line (canvas * c, double x1, double x2, double y1, double y2)
 	{
 	  for (y = y1, x = x1; y <= y2; y++, x += delta_x)
 	    {
+	      unsigned char r = c->r, g = c->g, b = c->b;
 	      if (visible_x (c, x))
-		putpixel (c, x, y);
+		putpixelrgb (c, x, y, r, g, b);
 	    }
 	}
     }
@@ -782,9 +793,10 @@ lcanvas_text (lua_State * L)
 
 	  for (ly = 0; ly < fontheight; ly++)
 	    {
+	      unsigned char r = c->r, g = c->g, b = c->b;
 	      for (lx = 0; lx < fontwidth; lx++)
 		if (*font_line & (1 << (15 - lx)))
-		  putpixel (c, x + lx, y + ly);
+		  putpixelrgb (c, x + lx, y + ly, r, g, b);
 	      font_line++;
 	    }
 	}
@@ -802,9 +814,10 @@ lcanvas_text (lua_State * L)
 
 	  for (ly = 0; ly < fontheight; ly++)
 	    {
+	      unsigned char r = c->r, g = c->g, b = c->b;
 	      for (lx = 0; lx < fontwidth; lx++)
 		if (*font_line & (1 << (7 - lx)))
-		  putpixel (c, x + lx, y + ly);
+		  putpixelrgb (c, x + lx, y + ly, r, g, b);
 	      font_line++;
 	    }
 	}
