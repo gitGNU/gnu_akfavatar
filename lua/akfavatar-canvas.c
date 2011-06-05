@@ -175,7 +175,7 @@ lcanvas_new (lua_State * L)
   c->r = c->g = c->b = 0;
 
   /* pen in center */
-  penpos (c, width / 2, height / 2);
+  penpos (c, width / 2 - 1, height / 2 - 1);
   c->thickness = 1 - 1;
 
   c->htextalign = HA_CENTER;
@@ -276,7 +276,7 @@ lcanvas_center (lua_State * L)
 {
   canvas *c = get_canvas ();
 
-  penpos (c, c->width / 2, c->height / 2);
+  penpos (c, c->width / 2 - 1, c->height / 2 - 1);
 
   return 0;
 }
