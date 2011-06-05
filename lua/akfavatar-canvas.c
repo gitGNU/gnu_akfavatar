@@ -455,9 +455,9 @@ sloped_line (canvas * c, double x1, double x2, double y1, double y2)
 	}
       else
 	{
+	  unsigned char r = c->r, g = c->g, b = c->b;
 	  for (y = y1, x = x1; y <= y2; y++, x += delta_x)
 	    {
-	      unsigned char r = c->r, g = c->g, b = c->b;
 	      if (visible_x (c, x))
 		putpixelrgb (c, x, y, r, g, b);
 	    }
@@ -782,6 +782,8 @@ lcanvas_text (lua_State * L)
 
   if (fontwidth > 8)		/* 2 bytes per character */
     {
+      unsigned char r = c->r, g = c->g, b = c->b;
+
       for (i = 0; i < wclen; i++, wc++, x += fontwidth)
 	{
 	  const unsigned short *font_line;
@@ -793,7 +795,6 @@ lcanvas_text (lua_State * L)
 
 	  for (ly = 0; ly < fontheight; ly++)
 	    {
-	      unsigned char r = c->r, g = c->g, b = c->b;
 	      for (lx = 0; lx < fontwidth; lx++)
 		if (*font_line & (1 << (15 - lx)))
 		  putpixelrgb (c, x + lx, y + ly, r, g, b);
@@ -803,6 +804,8 @@ lcanvas_text (lua_State * L)
     }
   else				/* fontwidth <= 8 */
     {
+      unsigned char r = c->r, g = c->g, b = c->b;
+
       for (i = 0; i < wclen; i++, wc++, x += fontwidth)
 	{
 	  const unsigned char *font_line;
@@ -814,7 +817,6 @@ lcanvas_text (lua_State * L)
 
 	  for (ly = 0; ly < fontheight; ly++)
 	    {
-	      unsigned char r = c->r, g = c->g, b = c->b;
 	      for (lx = 0; lx < fontwidth; lx++)
 		if (*font_line & (1 << (7 - lx)))
 		  putpixelrgb (c, x + lx, y + ly, r, g, b);
