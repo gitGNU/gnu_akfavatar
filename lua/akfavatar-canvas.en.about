@@ -99,13 +99,15 @@ c:line(x1, y1, x2, y2)
     The pen is set to x2, y2.
 
 
-c:bar(x, y, width, height)
-    Draws a solid bar with x, y as the upper left corner.
+c:bar(x1, y1, x2, y2)
+    Draws a solid bar with x1, y2 as the upper left corner
+    and x2, y2 as the lower right corner.
     The pen position is not changed.
 
 
-c:rectangle(x, y, width, height)
-    Draws rectangle with x, y as the upper left corner.
+c:rectangle(x1, y1, x2, y2)
+    Draws rectangle with x1, y2 as the upper left corner
+    and x2, y2 as the lower right corner.
     The pen position is not changed.
 
 

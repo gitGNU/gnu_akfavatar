@@ -583,7 +583,7 @@ lcanvas_putdot (lua_State * L)
 }
 
 
-/* c:bar (x, y, width, height) */
+/* c:bar (x1, y1, x2, y2) */
 static int
 lcanvas_bar (lua_State * L)
 {
@@ -594,8 +594,8 @@ lcanvas_bar (lua_State * L)
 
   x1 = luaL_checkint (L, 2) - 1;
   y1 = luaL_checkint (L, 3) - 1;
-  x2 = x1 + luaL_checkint (L, 4) - 1;
-  y2 = y1 + luaL_checkint (L, 5) - 1;
+  x2 = luaL_checkint (L, 4) - 1;
+  y2 = luaL_checkint (L, 5) - 1;
 
   bar (c, x1, y1, x2, y2);
 
@@ -603,7 +603,7 @@ lcanvas_bar (lua_State * L)
 }
 
 
-/* c:rectangle (x, y, width, height) */
+/* c:rectangle (x1, y1, x2, y2) */
 static int
 lcanvas_rectangle (lua_State * L)
 {
@@ -614,8 +614,8 @@ lcanvas_rectangle (lua_State * L)
 
   x1 = luaL_checknumber (L, 2) - 1;
   y1 = luaL_checknumber (L, 3) - 1;
-  x2 = x1 + luaL_checknumber (L, 4) - 1;
-  y2 = y1 + luaL_checknumber (L, 5) - 1;
+  x2 = luaL_checknumber (L, 4) - 1;
+  y2 = luaL_checknumber (L, 5) - 1;
 
   horizontal_line (c, x1, x2, y1);
   vertical_line (c, x2, y1, y2);
