@@ -227,14 +227,15 @@ local function plot_string(s)
   end
 end
 
-local funcstring = arg[1]
-if not funcstring then
-  avt.set_balloon_height(2)
-  avt.say "Enter the function:\n"
-  funcstring = avt.ask "f(x)="
+if arg[1] then
+  plot_string(arg[1])
+else
+  repeat
+    avt.set_balloon_height(2)
+    avt.say "Enter the function:\n"
+    local funcstring = avt.ask "f(x)="
+    if funcstring~="" then plot_string(funcstring) end
+  until funcstring == ""
 end
 
-if funcstring and funcstring ~= "" then
-  plot_string(funcstring)
-end
 
