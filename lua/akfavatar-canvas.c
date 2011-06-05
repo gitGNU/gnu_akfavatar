@@ -24,6 +24,7 @@
 #include "akfavatar.h"
 
 #include <math.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include <lua.h>
@@ -44,8 +45,6 @@
 #define visible_x(c, x)  ((int) (x) >= 0 && (int) (x) < (c)->width)
 #define visible_y(c, y)  ((int) (y) >= 0 && (int) (y) < (c)->height)
 #define visible(c, x, y)  (visible_x(c, x) && visible_y(c, y))
-
-#define abs(x)  ((x) > 0 ? (x) : -(x))
 
 /* set pen position */
 #define penpos(c, x, y)  (c)->penx = (int) (x); (c)->peny = (int) (y)
