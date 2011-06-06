@@ -11,7 +11,8 @@ You can use the following operators:
 ^	exponentation (for example use “x^3” for x³)
 %	modulo (the rest of a division)
 
-For fractions use the american style decimal dot, like “0.5”.
+For fractions you can use either a point or a comma as decimal mark.
+So “0.5” or "0,5" is the same.  You cannot use a thousands separator.
 The number π can be written as “pi”.
 
 You can use the following functions:

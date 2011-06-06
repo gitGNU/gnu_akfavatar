@@ -11,9 +11,9 @@ Man kann folgende Operatoren verwenden:
 ^	Hoch (Zum Beispiel „x^3“ für x³)
 %	Modulo (Der Rest einer Division)
 
-Für Dezimalbrüche muss man die amerikanische Schreibweise mit einem
-Dezimalpunkt verwenden, zum Beispiel „0.5“; kein Komma!
-Die Zahl π kann als „pi“ geschrieben werden.
+Gleitkommazahlen kann man wahlweise mit einem Komma, oder einem Punkt schreiben.
+Zum Beispiel „0,5“ oder „0.5“ sind das selbe.  Tausender-Trennzeichen kann man
+jedoch nicht verwenden.  Die Zahl π kann als „pi“ geschrieben werden.
 
 Man kann folgende Funktionen verwenden:
 sqrt(x)		Quadratwurzel (√x)
