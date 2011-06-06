@@ -18,8 +18,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --]]-------------------------------------------------------------------
 
-require "lua-akfavatar"
-require "akfavatar-canvas"
+-- how many units to show on the x axis at the default scale
+x_units = 2 * 10
+
+-- zoom factor
+zoom = 1.25
+
 
 deg = math.deg
 rad = math.rad
@@ -41,6 +45,9 @@ atan = math.atan
 -- add your own functions and constants here
 
 -------------------------------------------------------------------------------
+require "lua-akfavatar"
+require "akfavatar-canvas"
+
 avt.initialize {
   title = "Function Plotter",
   avatar = require "akfavatar.teacher",
@@ -49,8 +56,7 @@ avt.initialize {
 
 local c, width, height = canvas.new()
 local xoffset, yoffset = width/2, height/2
-local default_scale = width / (2 * 10) -- 10 units on each side
-local scale = default_scale
+local scale = width / x_units
 
 local function px(x) -- physical x
   return x * scale + xoffset
@@ -151,12 +157,13 @@ end
 local function reset()
   xoffset = width/2
   yoffset = height/2
-  scale = default_scale
+  scale = width / x_units
 end
 
 local function plot(f)
   local choice
   local animate = true
+  local zoom = zoom
 
   reset()
 
@@ -201,8 +208,8 @@ local function plot(f)
     animate = false --> only animate the first time
 
     choice = avt.navigate "+-udlrsx"
-    if "+"==choice then scale = scale * 1.25
-    elseif "-"==choice then scale = scale / 1.25
+    if "+"==choice then scale = scale * zoom
+    elseif "-"==choice then scale = scale / zoom
     elseif "l"==choice then xoffset = xoffset + width/4
     elseif "r"==choice then xoffset = xoffset - width/4
     elseif "u"==choice then yoffset = yoffset + height/4
