@@ -21,10 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 require "lua-akfavatar"
 require "akfavatar-canvas"
 
--- scale means: so many pixels for the value 1
-default_scale = 40
-
-
 deg = math.deg
 rad = math.rad
 sqrt = math.sqrt
@@ -53,6 +49,7 @@ avt.initialize {
 
 local c, width, height = canvas.new()
 local xoffset, yoffset = width/2, height/2
+local default_scale = width / (2 * 10) -- 10 units on each side
 local scale = default_scale
 
 local function px(x) -- physical x
