@@ -24,6 +24,9 @@ x_units = 2 * 10
 -- zoom factor
 zoom = 1.25
 
+-- animation when drawing the first time? (true or false)
+animation = true
+
 
 deg = math.deg
 rad = math.rad
@@ -62,15 +65,15 @@ local function px(x) -- physical x
   return x * scale + xoffset
 end
 
-local function lx (x) -- logical x
+local function lx(x) -- logical x
   return (x - xoffset) / scale
 end
 
-local function py (y) -- physical y
+local function py(y) -- physical y
   return y * -scale + yoffset
 end
 
-local function ly (y) -- logical y
+local function ly(y) -- logical y
   return -(y - yoffset) / scale
 end
 
@@ -162,8 +165,8 @@ end
 
 local function plot(f)
   local choice
-  local animate = true
-  local zoom = zoom
+  local animate = animation
+  local zoom_factor = zoom
 
   reset()
 
@@ -208,8 +211,8 @@ local function plot(f)
     animate = false --> only animate the first time
 
     choice = avt.navigate "+-udlrsx"
-    if "+"==choice then scale = scale * zoom
-    elseif "-"==choice then scale = scale / zoom
+    if "+"==choice then scale = scale * zoom_factor
+    elseif "-"==choice then scale = scale / zoom_factor
     elseif "l"==choice then xoffset = xoffset + width/4
     elseif "r"==choice then xoffset = xoffset - width/4
     elseif "u"==choice then yoffset = yoffset + height/4
@@ -241,5 +244,3 @@ else
     if funcstring~="" then plot_string(funcstring) end
   until funcstring == ""
 end
-
-
