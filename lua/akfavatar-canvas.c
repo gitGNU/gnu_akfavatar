@@ -24,6 +24,7 @@
 #include "akfavatar.h"
 
 #include <math.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include <lua.h>
@@ -363,13 +364,12 @@ horizontal_line (canvas * c, int x1, int x2, int y)
 
 /* TODO: optimize */
 static void
-sloped_line (canvas * c, double x1, double x2, double y1, double y2)
+sloped_line (canvas * c, int x1, int x2, int y1, int y2)
 {
-  double x, y;
-  double dx, dy;
+  int dx, dy;
 
-  dx = fabs (x2 - x1);
-  dy = fabs (y2 - y1);
+  dx = abs (x2 - x1);
+  dy = abs (y2 - y1);
 
   if (dx > dy)			/* x steps 1 */
     {
@@ -389,7 +389,7 @@ sloped_line (canvas * c, double x1, double x2, double y1, double y2)
 	}
 
       dy = y2 - y1;
-      delta_y = dy / dx;
+      delta_y = (double) dy / (double) dx;
 
       /* sanitize range of x */
       if (x1 < 0)
@@ -403,12 +403,18 @@ sloped_line (canvas * c, double x1, double x2, double y1, double y2)
 
       if (c->thickness > 0)
 	{
+	  int x;
+	  double y;
+
 	  for (x = x1, y = y1; x <= x2; x++, y += delta_y)
 	    putdot (c, x, y);
 	}
       else
 	{
+	  int x;
+	  double y;
 	  unsigned char r = c->r, g = c->g, b = c->b;
+
 	  for (x = x1, y = y1; x <= x2; x++, y += delta_y)
 	    {
 	      if (visible_y (c, y))
@@ -434,7 +440,7 @@ sloped_line (canvas * c, double x1, double x2, double y1, double y2)
 	}
 
       dx = x2 - x1;
-      delta_x = dx / dy;
+      delta_x = (double) dx / (double) dy;
 
       /* sanitize range of y */
       if (y1 < 0)
@@ -448,12 +454,18 @@ sloped_line (canvas * c, double x1, double x2, double y1, double y2)
 
       if (c->thickness > 0)
 	{
+	  int y;
+	  double x;
+
 	  for (y = y1, x = x1; y <= y2; y++, x += delta_x)
 	    putdot (c, x, y);
 	}
       else
 	{
+	  int y;
+	  double x;
 	  unsigned char r = c->r, g = c->g, b = c->b;
+
 	  for (y = y1, x = x1; y <= y2; y++, x += delta_x)
 	    {
 	      if (visible_x (c, x))
