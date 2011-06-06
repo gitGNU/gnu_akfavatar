@@ -154,7 +154,8 @@ local function grid()
 end
 
 local function function_error()
-  error("The function was not in a correct notation", 0)
+  avt.tell("The function was not\nin a correct notation!")
+  avt.wait_button()
 end
 
 local function reset()
@@ -228,10 +229,13 @@ local function plot_string(s)
   if fs and pcall(fs) then
     -- check if it produces a number
     local okay, v = pcall(f, 1)
-    if not okay or type(v)~="number" then function_error() end
-    plot(f)
+    if okay and type(v)=="number" then
+      plot(f)
+    else
+      return function_error()
+    end
   else
-    function_error()
+    return function_error()
   end
 end
 
@@ -239,7 +243,7 @@ if arg[1] then
   plot_string(arg[1])
 else
   repeat
-    avt.set_balloon_height(2)
+    avt.set_balloon_size(2, 0)
     avt.say "Enter the function:\n"
     local funcstring = avt.ask "f(x)="
     if funcstring~="" then plot_string(funcstring) end
