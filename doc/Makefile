@@ -1,5 +1,6 @@
 VPATH = ..
 srcdir= ..
+builddir := $(shell pwd)
 SHELL = /bin/sh
 ROFF = groff
 PS2PDF = ps2pdf
@@ -51,18 +52,13 @@ $(srcdir)/doc/pasref.txt: $(srcdir)/pascal/akfavatar.pas
 	sed -n '/^unit/,/^implementation/p' $(srcdir)/pascal/akfavatar.pas \
 	  | sed '/^implementation/ d' > $@
 
-# enscript lists the directory, so we need a copy
-akfavatar.h: $(srcdir)/akfavatar.h
-	cp $(srcdir)/akfavatar.h $@
+akfavatar.h.ps: $(srcdir)/akfavatar.h
+	-(cd $(srcdir); \
+	  $(ENSCRIPT) -E --color -wPostScript -p$(builddir)/$@ akfavatar.h; )
 
-avtaddons.h: $(srcdir)/avtaddons.h
-	cp $(srcdir)/avtaddons.h $@
-
-akfavatar.h.ps: akfavatar.h
-	-$(ENSCRIPT) -E --color -wPostScript -p$@ akfavatar.h
-
-avtaddons.h.ps: avtaddons.h
-	-$(ENSCRIPT) -E --color -wPostScript -p$@ avtaddons.h
+avtaddons.h.ps: $(srcdir)/avtaddons.h
+	-(cd $(srcdir); \
+	  $(ENSCRIPT) -E --color -wPostScript -p$(builddir)/$@ avtaddons.h; )
 
 akfavatar.h.pdf: akfavatar.h.ps
 	$(PS2PDF) akfavatar.h.ps $@
@@ -70,11 +66,13 @@ akfavatar.h.pdf: akfavatar.h.ps
 avtaddons.h.pdf: avtaddons.h.ps
 	$(PS2PDF) avtaddons.h.ps $@
 
-akfavatar.h.html: akfavatar.h
-	-$(ENSCRIPT) -takfavatar.h -E --color -whtml -p$(builddir)/$@ akfavatar.h
+akfavatar.h.html: $(srcdir)/akfavatar.h
+	-(cd $(srcdir); \
+	  $(ENSCRIPT) -takfavatar.h -E --color -whtml -p$(builddir)/$@ akfavatar.h; )
 
-avtaddons.h.html: avtaddons.h
-	-$(ENSCRIPT) -tavtaddons.h -E --color -whtml -p$(builddir)/$@ avtaddons.h
+avtaddons.h.html: $(srcdir)/avtaddons.h
+	-(cd $(srcdir); \
+	  $(ENSCRIPT) -tavtaddons.h -E --color -whtml -p$(builddir)/$@ avtaddons.h; )
 
 clean:
 	-rm -f *~
