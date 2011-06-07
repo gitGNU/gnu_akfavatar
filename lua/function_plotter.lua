@@ -27,6 +27,9 @@ zoom = 1.25
 -- animation when drawing the first time? (true or false)
 animation = true
 
+-- allow comma as decimal mark? (true or false)
+-- when set to true, you cannot use functions with more than one argument
+comma = true
 
 deg = math.deg
 rad = math.rad
@@ -224,7 +227,10 @@ local function plot(f)
 end
 
 local function plot_string(s)
-  s = string.gsub(s, ",", ".") --> many countries use a comma as decimal mark
+  if comma then
+    s = string.gsub(s, ",", ".") --> many countries use a comma as decimal mark
+  end
+
   local fs = loadstring("function f(x) return "..s.." end")
   if fs and pcall(fs) then
     -- check if it produces a number
