@@ -162,12 +162,12 @@ local function function_error()
 end
 
 local function reset()
-  xoffset = width/2
-  yoffset = height/2
+  xoffset = width / 2
+  yoffset = height / 2
   scale = width / x_units
 end
 
-local function plot(f)
+local function plot(f, fstr)
   local choice
   local animate = animation
   local zoom_factor = zoom
@@ -211,6 +211,10 @@ local function plot(f)
       old_value = value
     end
 
+    c:color "black"
+    c:textalign("left", "top")
+    c:text(fstr, 1, 1)
+
     c:show() --> show final result
     animate = false --> only animate the first time
 
@@ -236,7 +240,7 @@ local function plot_string(s)
     -- check if it produces a number
     local okay, v = pcall(f, 1)
     if okay and type(v)=="number" then
-      plot(f)
+      plot(f, "f(x)="..s)
     else
       return function_error()
     end
