@@ -247,6 +247,23 @@ lcanvas_rgb (lua_State * L)
 }
 
 
+/* c:eraser() */
+static int
+lcanvas_eraser (lua_State * L)
+{
+  canvas *c;
+  int red, green, blue;
+
+  c = get_canvas ();
+  avt_get_background_color (&red, &green, &blue);
+  c->r = (unsigned char) red;
+  c->g = (unsigned char) green;
+  c->b = (unsigned char) blue;
+
+  return 0;
+}
+
+
 /* c:thickness(size) */
 static int
 lcanvas_thickness (lua_State * L)
@@ -915,6 +932,7 @@ static const struct luaL_reg canvaslib_methods[] = {
   {"clear", lcanvas_clear},
   {"color", lcanvas_color},
   {"rgb", lcanvas_rgb},
+  {"eraser", lcanvas_eraser},
   {"thickness", lcanvas_thickness},
   {"putpixel", lcanvas_putpixel},
   {"line", lcanvas_line},

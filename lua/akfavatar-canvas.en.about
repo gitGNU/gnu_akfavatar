@@ -48,6 +48,10 @@ c:rgb(red, green, blue)
     This method is faster than using c:color().
 
 
+c:eraser()
+    Sets the drawing color to the background color.
+
+
 c:thickness(value)
     Sets the thickness of the pen.  The value 1 is the thinnest.
 
