@@ -213,7 +213,7 @@ local function plot(f, fstr)
 
     c:color "black"
     c:textalign("left", "top")
-    c:text(fstr, 1, 1)
+    c:text(fstr, 4, 4)
 
     c:show() --> show final result
     animate = false --> only animate the first time
