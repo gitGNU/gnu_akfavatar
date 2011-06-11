@@ -892,31 +892,12 @@ static int
 lcanvas_textalign (lua_State * L)
 {
   canvas *c;
-  const char *ha, *va;
+  const char *const hoptions[] = { "left", "center", "right", NULL };
+  const char *const voptions[] = { "top", "center", "bottom", NULL };
 
   c = get_canvas ();
-  ha = luaL_optstring (L, 2, "center");
-  va = luaL_optstring (L, 3, "center");
-
-  if (strcmp ("left", ha) == 0)
-    c->htextalign = HA_LEFT;
-  else if (strcmp ("center", ha) == 0)
-    c->htextalign = HA_CENTER;
-  else if (strcmp ("right", ha) == 0)
-    c->htextalign = HA_RIGHT;
-  else
-    luaL_error (L, "\"%s\" unsupported,\n"
-		"expected either of \"left\", \"center\", \"right\"", ha);
-
-  if (strcmp ("top", va) == 0)
-    c->vtextalign = VA_TOP;
-  else if (strcmp ("center", va) == 0)
-    c->vtextalign = VA_CENTER;
-  else if (strcmp ("bottom", va) == 0)
-    c->vtextalign = VA_BOTTOM;
-  else
-    luaL_error (L, "\"%s\" unsupported,\n"
-		"expected either of \"top\", \"center\", \"bottom\"", va);
+  c->htextalign = luaL_checkoption (L, 2, "center", hoptions);
+  c->vtextalign = luaL_checkoption (L, 3, "center", voptions);
 
   return 0;
 }
