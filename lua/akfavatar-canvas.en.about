@@ -38,6 +38,14 @@ c:height()
 
 c:color(colorname)
     Sets the drawing color.
+    The color can be either a defined color name,
+    or a hexadecimal representation, like for example "#FFFF00".
+
+
+c:rgb(red, green, blue)
+    Sets the drawing color from RGB values.
+    The values must be in the range from 0 to 255 inclusive.
+    This method is faster than using c:color().
 
 
 c:thickness(value)

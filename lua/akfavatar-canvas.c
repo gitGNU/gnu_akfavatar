@@ -218,6 +218,35 @@ lcanvas_color (lua_State * L)
 }
 
 
+/* c:rgb(red, green, blue) */
+static int
+lcanvas_rgb (lua_State * L)
+{
+  canvas *c;
+  int red, green, blue;
+
+  red = luaL_checkint (L, 2);
+  green = luaL_checkint (L, 3);
+  blue = luaL_checkint (L, 4);
+
+  luaL_argcheck (L, red > 0 && red < 256,
+		 2, "value between 0 and 255 expected");
+
+  luaL_argcheck (L, green > 0 && green < 256,
+		 3, "value between 0 and 255 expected");
+
+  luaL_argcheck (L, blue > 0 && blue < 256,
+		 4, "value between 0 and 255 expected");
+
+  c = get_canvas ();
+  c->r = (unsigned char) red;
+  c->g = (unsigned char) green;
+  c->b = (unsigned char) blue;
+
+  return 0;
+}
+
+
 /* c:thickness(size) */
 static int
 lcanvas_thickness (lua_State * L)
@@ -885,6 +914,7 @@ static const struct luaL_reg canvaslib[] = {
 static const struct luaL_reg canvaslib_methods[] = {
   {"clear", lcanvas_clear},
   {"color", lcanvas_color},
+  {"rgb", lcanvas_rgb},
   {"thickness", lcanvas_thickness},
   {"putpixel", lcanvas_putpixel},
   {"line", lcanvas_line},
