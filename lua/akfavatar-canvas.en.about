@@ -166,3 +166,8 @@ c:font_size()
     Returns the width and the hight of the font, ie. one character.
     It is a fixed-width font, each character has the same width.
 
+
+c:copy(canvas, xoffset, yoffset)
+    Copies a small canvas on canvas c at the given offsets.
+    The previous content is overwritten (no transparency supported).
+

@@ -903,6 +903,50 @@ lcanvas_textalign (lua_State * L)
 }
 
 
+/* c:copy(canvas, xoffset, yoffset) */
+static int
+lcanvas_copy (lua_State * L)
+{
+  canvas *c, *sc;
+  int xoffset, yoffset, y;
+  int lines, bytes;
+
+  c = get_canvas (L);
+  sc = (canvas *) luaL_checkudata (L, 2, CANVASDATA);
+
+  if (c == sc)
+    return luaL_error (L, "cannot copy canvas onto itself");
+
+  xoffset = luaL_checkint (L, 3) - 1;
+  yoffset = luaL_checkint (L, 4) - 1;
+
+  /* offsets must be in range */
+  luaL_argcheck (L, xoffset >= 0 && xoffset < c->width, 3,
+		 "value out of range");
+  luaL_argcheck (L, yoffset >= 0 && yoffset < c->height, 4,
+		 "value out of range");
+
+  /* how many lines to copy? */
+  if (c->height > sc->height + yoffset)
+    lines = sc->height;
+  else
+    lines = c->height - yoffset;
+
+  /* how many bytes per line? */
+  if (c->width > sc->width + xoffset)
+    bytes = sc->width * BPP;
+  else
+    bytes = (c->width - xoffset) * BPP;
+
+  for (y = 0; y < lines; y++)
+    memcpy ((void *) (c->data + ((y + yoffset) * c->width * BPP)
+		      + xoffset * BPP),
+	    (void *) (sc->data + y * sc->width * BPP), bytes);
+
+  return 0;
+}
+
+
 static const struct luaL_reg canvaslib[] = {
   {"new", lcanvas_new},
   {NULL, NULL}
@@ -933,6 +977,7 @@ static const struct luaL_reg canvaslib_methods[] = {
   {"show", lcanvas_show},
   {"width", lcanvas_width},
   {"height", lcanvas_height},
+  {"copy", lcanvas_copy},
   {NULL, NULL}
 };
 
