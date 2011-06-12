@@ -37,7 +37,7 @@
 #define PI  3.14159265358979323846
 
 #define CANVASDATA "AKFAvatar-canvas"
-#define get_canvas()  ((canvas *) luaL_checkudata (L, 1, CANVASDATA))
+#define get_canvas(L)  ((canvas *) luaL_checkudata (L, 1, CANVASDATA))
 
 /* force value to be in range */
 #define RANGE(v, min, max)  ((v) < (min) ? (min) : (v) > (max) ? (max) : (v))
@@ -49,21 +49,16 @@
 /* set pen position */
 #define penpos(c, x, y)  (c)->penx = (int) (x); (c)->peny = (int) (y)
 
-/* fast putpixel, no check */
-#define putpixel(c, x, y) \
+/* fast putpixel with rgb, no check */
+#define putpixelrgb(c, x, y, width, r, g, b) \
   do { \
     unsigned char *p = \
-      (c)->data+(((int)(y))*(c)->width*BPP)+(((int)(x))*BPP); \
-    *p++=(c)->r; *p++=(c)->g; *p=(c)->b; \
-  } while(0)
-
-/* fast putpixel with rgb (faster), no check */
-#define putpixelrgb(c, x, y, r, g, b) \
-  do { \
-    unsigned char *p = \
-      (c)->data+(((int)(y))*(c)->width*BPP)+(((int)(x))*BPP); \
+      (c)->data+(((int)(y))*(width)*BPP)+(((int)(x))*BPP); \
     *p++=(r); *p++=(g); *p=(b); \
   } while(0)
+
+/* fast putpixel, no check */
+#define putpixel(c, x, y)  putpixelrgb (c, x, y, (c)->width, (c)->r, (c)->g, (c)->b)
 
 #define HA_LEFT 0
 #define HA_CENTER 1
@@ -192,7 +187,7 @@ lcanvas_new (lua_State * L)
 static int
 lcanvas_clear (lua_State * L)
 {
-  clear_canvas (get_canvas ());
+  clear_canvas (get_canvas (L));
   return 0;
 }
 
@@ -208,7 +203,7 @@ lcanvas_color (lua_State * L)
   name = luaL_checkstring (L, 2);
   if (avt_name_to_color (name, &red, &green, &blue) == AVT_NORMAL)
     {
-      c = get_canvas ();
+      c = get_canvas (L);
       c->r = (unsigned char) red;
       c->g = (unsigned char) green;
       c->b = (unsigned char) blue;
@@ -238,7 +233,7 @@ lcanvas_rgb (lua_State * L)
   luaL_argcheck (L, blue > 0 && blue < 256,
 		 4, "value between 0 and 255 expected");
 
-  c = get_canvas ();
+  c = get_canvas (L);
   c->r = (unsigned char) red;
   c->g = (unsigned char) green;
   c->b = (unsigned char) blue;
@@ -254,7 +249,7 @@ lcanvas_eraser (lua_State * L)
   canvas *c;
   int red, green, blue;
 
-  c = get_canvas ();
+  c = get_canvas (L);
   avt_get_background_color (&red, &green, &blue);
   c->r = (unsigned char) red;
   c->g = (unsigned char) green;
@@ -271,7 +266,7 @@ lcanvas_thickness (lua_State * L)
   int s;
 
   s = luaL_checkint (L, 2) - 1;
-  get_canvas ()->thickness = (s > 0) ? s : 0;
+  get_canvas (L)->thickness = (s > 0) ? s : 0;
 
   return 0;
 }
@@ -281,7 +276,7 @@ lcanvas_thickness (lua_State * L)
 static int
 lcanvas_pen_position (lua_State * L)
 {
-  canvas *c = get_canvas ();
+  canvas *c = get_canvas (L);
 
   lua_pushinteger (L, c->penx + 1);
   lua_pushinteger (L, c->peny + 1);
@@ -294,7 +289,7 @@ lcanvas_pen_position (lua_State * L)
 static int
 lcanvas_moveto (lua_State * L)
 {
-  canvas *c = get_canvas ();
+  canvas *c = get_canvas (L);
 
   /* a pen outside the field is allowed! */
   penpos (c, luaL_checkint (L, 2) - 1, luaL_checkint (L, 3) - 1);
@@ -307,7 +302,7 @@ lcanvas_moveto (lua_State * L)
 static int
 lcanvas_moverel (lua_State * L)
 {
-  canvas *c = get_canvas ();
+  canvas *c = get_canvas (L);
 
   penpos (c, c->penx + luaL_checkint (L, 2), c->peny + luaL_checkint (L, 3));
 
@@ -319,7 +314,7 @@ lcanvas_moverel (lua_State * L)
 static int
 lcanvas_center (lua_State * L)
 {
-  canvas *c = get_canvas ();
+  canvas *c = get_canvas (L);
 
   penpos (c, c->width / 2 - 1, c->height / 2 - 1);
 
@@ -354,9 +349,10 @@ vertical_line (canvas * c, int x, int y1, int y2)
       else
 	{
 	  unsigned char r = c->r, g = c->g, b = c->b;
+	  int width = c->width;
 	  for (y = y1; y <= y2; y++)
 	    if (visible_y (c, y))
-	      putpixelrgb (c, x, y, r, g, b);
+	      putpixelrgb (c, x, y, width, r, g, b);
 	}
     }
 }
@@ -460,11 +456,12 @@ sloped_line (canvas * c, int x1, int x2, int y1, int y2)
 	  int x;
 	  double y;
 	  unsigned char r = c->r, g = c->g, b = c->b;
+	  int width = c->width;
 
 	  for (x = x1, y = y1; x <= x2; x++, y += delta_y)
 	    {
 	      if (visible_y (c, y))
-		putpixelrgb (c, x, y, r, g, b);
+		putpixelrgb (c, x, y, width, r, g, b);
 	    }
 	}
     }
@@ -511,11 +508,12 @@ sloped_line (canvas * c, int x1, int x2, int y1, int y2)
 	  int y;
 	  double x;
 	  unsigned char r = c->r, g = c->g, b = c->b;
+	  int width = c->width;
 
 	  for (y = y1, x = x1; y <= y2; y++, x += delta_x)
 	    {
 	      if (visible_x (c, x))
-		putpixelrgb (c, x, y, r, g, b);
+		putpixelrgb (c, x, y, width, r, g, b);
 	    }
 	}
     }
@@ -546,7 +544,7 @@ lcanvas_line (lua_State * L)
   canvas *c;
   int x1, y1, x2, y2;
 
-  c = get_canvas ();
+  c = get_canvas (L);
   x1 = luaL_checkint (L, 2) - 1;
   y1 = luaL_checkint (L, 3) - 1;
   x2 = luaL_checkint (L, 4) - 1;
@@ -566,7 +564,7 @@ lcanvas_lineto (lua_State * L)
   canvas *c;
   int x2, y2;
 
-  c = get_canvas ();
+  c = get_canvas (L);
   x2 = luaL_checkint (L, 2) - 1;
   y2 = luaL_checkint (L, 3) - 1;
 
@@ -584,7 +582,7 @@ lcanvas_linerel (lua_State * L)
   canvas *c;
   int x1, y1, x2, y2;
 
-  c = get_canvas ();
+  c = get_canvas (L);
   x1 = c->penx;
   y1 = c->peny;
   x2 = x1 + luaL_checkint (L, 2);
@@ -604,7 +602,7 @@ lcanvas_putpixel (lua_State * L)
   canvas *c;
   int x, y;
 
-  c = get_canvas ();
+  c = get_canvas (L);
   x = luaL_optint (L, 2, c->penx + 1) - 1;
   y = luaL_optint (L, 3, c->peny + 1) - 1;
 
@@ -622,7 +620,7 @@ lcanvas_putdot (lua_State * L)
   canvas *c;
   int x, y;
 
-  c = get_canvas ();
+  c = get_canvas (L);
   x = luaL_optint (L, 2, c->penx + 1) - 1;
   y = luaL_optint (L, 3, c->peny + 1) - 1;
 
@@ -646,7 +644,7 @@ lcanvas_bar (lua_State * L)
   canvas *c;
   int x1, y1, x2, y2;
 
-  c = get_canvas ();
+  c = get_canvas (L);
 
   x1 = luaL_checkint (L, 2) - 1;
   y1 = luaL_checkint (L, 3) - 1;
@@ -666,7 +664,7 @@ lcanvas_rectangle (lua_State * L)
   canvas *c;
   int x1, y1, x2, y2;
 
-  c = get_canvas ();
+  c = get_canvas (L);
 
   x1 = luaL_checkint (L, 2) - 1;
   y1 = luaL_checkint (L, 3) - 1;
@@ -689,7 +687,7 @@ lcanvas_circle (lua_State * L)
   double xcenter, ycenter, radius, startangle, endangle;
   double x, y, i;
 
-  c = get_canvas ();
+  c = get_canvas (L);
 
   xcenter = luaL_checknumber (L, 2) - 1;
   ycenter = luaL_checknumber (L, 3) - 1;
@@ -722,7 +720,7 @@ lcanvas_circle (lua_State * L)
 static int
 lcanvas_show (lua_State * L)
 {
-  canvas *c = get_canvas ();
+  canvas *c = get_canvas (L);
   avt_show_raw_image (&c->data, c->width, c->height, BPP);
 
   return 0;
@@ -732,7 +730,7 @@ lcanvas_show (lua_State * L)
 static int
 lcanvas_width (lua_State * L)
 {
-  lua_pushinteger (L, get_canvas ()->width);
+  lua_pushinteger (L, get_canvas (L)->width);
   return 1;
 }
 
@@ -740,7 +738,7 @@ lcanvas_width (lua_State * L)
 static int
 lcanvas_height (lua_State * L)
 {
-  lua_pushinteger (L, get_canvas ()->height);
+  lua_pushinteger (L, get_canvas (L)->height);
   return 1;
 }
 
@@ -771,7 +769,7 @@ lcanvas_text (lua_State * L)
   int x, y;
   int fontwidth, fontheight;
 
-  c = get_canvas ();
+  c = get_canvas (L);
   s = luaL_checklstring (L, 2, &len);
   x = luaL_optint (L, 3, c->penx + 1) - 1;
   y = luaL_optint (L, 4, c->peny + 1) - 1;
@@ -839,6 +837,7 @@ lcanvas_text (lua_State * L)
   if (fontwidth > 8)		/* 2 bytes per character */
     {
       unsigned char r = c->r, g = c->g, b = c->b;
+      int width = c->width;
 
       for (i = 0; i < wclen; i++, wc++, x += fontwidth)
 	{
@@ -853,7 +852,7 @@ lcanvas_text (lua_State * L)
 	    {
 	      for (lx = 0; lx < fontwidth; lx++)
 		if (*font_line & (1 << (15 - lx)))
-		  putpixelrgb (c, x + lx, y + ly, r, g, b);
+		  putpixelrgb (c, x + lx, y + ly, width, r, g, b);
 	      font_line++;
 	    }
 	}
@@ -861,6 +860,7 @@ lcanvas_text (lua_State * L)
   else				/* fontwidth <= 8 */
     {
       unsigned char r = c->r, g = c->g, b = c->b;
+      int width = c->width;
 
       for (i = 0; i < wclen; i++, wc++, x += fontwidth)
 	{
@@ -875,7 +875,7 @@ lcanvas_text (lua_State * L)
 	    {
 	      for (lx = 0; lx < fontwidth; lx++)
 		if (*font_line & (1 << (7 - lx)))
-		  putpixelrgb (c, x + lx, y + ly, r, g, b);
+		  putpixelrgb (c, x + lx, y + ly, width, r, g, b);
 	      font_line++;
 	    }
 	}
@@ -895,7 +895,7 @@ lcanvas_textalign (lua_State * L)
   const char *const hoptions[] = { "left", "center", "right", NULL };
   const char *const voptions[] = { "top", "center", "bottom", NULL };
 
-  c = get_canvas ();
+  c = get_canvas (L);
   c->htextalign = luaL_checkoption (L, 2, "center", hoptions);
   c->vtextalign = luaL_checkoption (L, 3, "center", voptions);
 
