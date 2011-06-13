@@ -130,8 +130,6 @@
 #  define SDL_strcasecmp          strcasecmp
 #  undef SDL_strncasecmp
 #  define SDL_strncasecmp         strncasecmp
-#  undef SDL_isspace
-#  define SDL_isspace             isspace
 #  undef SDL_putenv
 #  define SDL_putenv              putenv
 #  undef SDL_sscanf
@@ -248,6 +246,9 @@
 /* shorthand */
 #define bell(void)  if (avt_alert_func) (*avt_alert_func)()
 
+#define avt_isblank(c)  ((c) == ' ' || (c) == '\t')
+
+
 /* type for gimp images */
 typedef struct
 {
@@ -359,7 +360,7 @@ avt_name_to_color (const char *name, int *red, int *green, int *blue)
   *red = *green = *blue = -1;
 
   /* skip space */
-  while (SDL_isspace (*name))
+  while (avt_isblank (*name))
     name++;
 
   if (name[0] == '#')		/* hexadecimal values */
@@ -639,16 +640,16 @@ avt_load_image_xpm (char **xpm)
 
       /* scan for color definition */
       p = &xpm[colornr][cpp];	/* skip color-characters */
-      while (*p && (*p != 'c' || !SDL_isspace (*(p + 1))
-		    || !SDL_isspace (*(p - 1))))
+      while (*p && (*p != 'c' || !avt_isblank (*(p + 1))
+		    || !avt_isblank (*(p - 1))))
 	p++;
 
       /* no color definition found? search for grayscale definition */
       if (!*p)
 	{
 	  p = &xpm[colornr][cpp];	/* skip color-characters */
-	  while (*p && (*p != 'g' || !SDL_isspace (*(p + 1))
-			|| !SDL_isspace (*(p - 1))))
+	  while (*p && (*p != 'g' || !avt_isblank (*(p + 1))
+			|| !avt_isblank (*(p - 1))))
 	    p++;
 	}
 
@@ -657,8 +658,8 @@ avt_load_image_xpm (char **xpm)
 	{
 	  p = &xpm[colornr][cpp];	/* skip color-characters */
 	  while (*p
-		 && (*p != '4' || *(p - 1) != 'g' || !SDL_isspace (*(p + 1))
-		     || !SDL_isspace (*(p - 2))))
+		 && (*p != '4' || *(p - 1) != 'g' || !avt_isblank (*(p + 1))
+		     || !avt_isblank (*(p - 2))))
 	    p++;
 	}
 
@@ -666,8 +667,8 @@ avt_load_image_xpm (char **xpm)
       if (!*p)
 	{
 	  p = &xpm[colornr][cpp];	/* skip color-characters */
-	  while (*p && (*p != 'm' || !SDL_isspace (*(p + 1))
-			|| !SDL_isspace (*(p - 1))))
+	  while (*p && (*p != 'm' || !avt_isblank (*(p + 1))
+			|| !avt_isblank (*(p - 1))))
 	    p++;
 	}
 
@@ -679,12 +680,12 @@ avt_load_image_xpm (char **xpm)
 
 	  /* skip to color name/definition */
 	  p++;
-	  while (*p && SDL_isspace (*p))
+	  while (*p && avt_isblank (*p))
 	    p++;
 
 	  /* copy colorname up to next space */
 	  color_name_pos = 0;
-	  while (*p && !SDL_isspace (*p)
+	  while (*p && !avt_isblank (*p)
 		 && color_name_pos < (int) sizeof (color_name) - 1)
 	    color_name[color_name_pos++] = *p++;
 	  color_name[color_name_pos] = '\0';
