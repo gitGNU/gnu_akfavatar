@@ -910,6 +910,9 @@ lcanvas_copy (lua_State * L)
   canvas *c, *sc;
   int xoffset, yoffset, y;
   int lines, bytes;
+  int xstart, show_width;	/* for horizontal cropping */
+  int source_width, target_width, source_height, target_height;
+  unsigned char *source, *target;
 
   c = get_canvas (L);
   sc = (canvas *) luaL_checkudata (L, 2, CANVASDATA);
@@ -920,28 +923,51 @@ lcanvas_copy (lua_State * L)
   xoffset = luaL_checkint (L, 3) - 1;
   yoffset = luaL_checkint (L, 4) - 1;
 
-  /* offsets must be in range */
-  luaL_argcheck (L, xoffset >= 0 && xoffset < c->width, 3,
-		 "value out of range");
-  luaL_argcheck (L, yoffset >= 0 && yoffset < c->height, 4,
-		 "value out of range");
+  source = sc->data;
+  target = c->data;
+  source_width = sc->width;
+  target_width = c->width;
+  source_height = sc->height;
+  target_height = c->height;
+  xstart = 0;
+  show_width = source_width;
+
+  /* which line to start with? */
+  if (yoffset < 0)
+    {
+      source += abs (yoffset) * source_width * BPP;
+      source_height -= abs (yoffset);
+      yoffset = 0;
+    }
 
   /* how many lines to copy? */
-  if (c->height > sc->height + yoffset)
-    lines = sc->height;
+  if (target_height > source_height + yoffset)
+    lines = source_height;
   else
-    lines = c->height - yoffset;
+    lines = target_height - yoffset;
+
+  if (lines <= 0)
+    return 0;			/* nothing to copy */
+
+  if (xoffset < 0)
+    {
+      xstart = abs (xoffset) * BPP;
+      show_width -= abs (xoffset);
+      xoffset = 0;
+    }
 
   /* how many bytes per line? */
-  if (c->width > sc->width + xoffset)
-    bytes = sc->width * BPP;
+  if (target_width > show_width + xoffset)
+    bytes = show_width * BPP;
   else
-    bytes = (c->width - xoffset) * BPP;
+    bytes = (target_width - xoffset) * BPP;
+
+  if (bytes <= 0)
+    return 0;			/* nothing to copy */
 
   for (y = 0; y < lines; y++)
-    memcpy ((void *) (c->data + ((y + yoffset) * c->width * BPP)
-		      + xoffset * BPP),
-	    (void *) (sc->data + y * sc->width * BPP), bytes);
+    memcpy (target + ((y + yoffset) * target_width * BPP) + xoffset * BPP,
+	    source + y * source_width * BPP + xstart, bytes);
 
   return 0;
 }

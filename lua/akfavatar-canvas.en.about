@@ -167,7 +167,7 @@ c:font_size()
     It is a fixed-width font, each character has the same width.
 
 
-c:copy(canvas, xoffset, yoffset)
-    Copies a small canvas on canvas c at the given offsets.
+c:copy(canvas, x, y)
+    Copies a small canvas onto canvas c at the given position (upper-left corner).
     The previous content is overwritten (no transparency supported).
 
