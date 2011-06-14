@@ -1,0 +1,45 @@
+Lua interaktiv mit AKFAvatar verwenden.
+
+Man kann es zum Beispiel als Taschenrechner verwenden.  Wenn man eine Zeile mit
+einem Gleichheitszeichen („=“) einleitet, wird das Ergebnis des folgenden
+Ausdrucks angezeigt. Zum Beisiel, wenn man „=10/4“ eingibt, gibt er „2,5“ aus.
+
+Zu beachten ist, dass das Dezimalzeichen, welches angezeigt wird, abhängig von
+den Sprach-Einstellungen ist.  Wenn man jedoch einen Dezimalbruch eingeben will,
+muss man die amerikanische Notation mit einem Dezimal-Punkt verwenden!
+
+Man kann seine eigenen Variablen definieren.  Zum Beispiel ein Megabyte ist
+2^20 Bytes.  Man kann also „MB=2^20“ eingeben, und dann kann man das in eigenen
+Berechnungen verwenden. Wenn man wissen will, wieviel 5 Megabytes in Bytes sind,
+kann man „=5*MB“ eingeben, das Ergebnis ist dann „5242880”. Man mus auch darauf
+achten, dass bei Lua die Groß-/Klein-Schreibung wichtig ist. Das bedeutet, dass
+„MB“ und „mb“ unterschiedliche Variablen sind.
+
+Die Möglichkeit Zeilen mit einem Gleichheitszeichen einzuleiten ist eine
+besondere Eigenschaft des interaktiven Programmes. Es kann nicht in Skripten
+verwendet werden.
+
+Die normale Eingabeaufforderung ist ein „>“. Wenn man jedoch eine
+unvollständinge Zeile eingibt, bekommt man eine andere Eingabeaufforderung,
+nämlich „>>“. Dann kann man seine Eingabe fortsetzen. Wenn man versehentlich bei
+dieser Eingabeaufforderung landet, kann man einfach <Enter> drücken. Das
+verwirft die vorherige Eingabe.
+
+Man kann auch seine eigenen Funktionen definieren. Zum Beispiel:
+  > function Kreisflaeche(radius)
+  >> return radius^2 * math.pi
+  >> end
+  > =3 * Kreisflaeche(5)
+  235.61944901923
+
+Man kann jeden Lua-Befehl verwenden, einschließlich AKFAvatar-Befehlen. Zum
+Beispiel kann man dem Avatar einen Namen geben:
+  > avt.set_avatar_name("Hugo")
+
+Oder, wenn man überhaupt keinen Avatar haben will:
+  > avt.change_avatar_image("none")
+
+Um einen weiblichen Avatar zu bekommen:
+  > avt.change_avatar_image(require "akfavatar.female_user")
+
+Man kann so viel mehr damit machen...  Einfach mal rumprobieren... ☺
