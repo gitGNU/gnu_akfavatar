@@ -721,7 +721,21 @@ static int
 lcanvas_show (lua_State * L)
 {
   canvas *c = get_canvas (L);
-  avt_show_raw_image (&c->data, c->width, c->height, BPP);
+  int status;
+
+  status = avt_show_raw_image (&c->data, c->width, c->height, BPP);
+
+  if (status <= AVT_ERROR)
+    {
+      return luaL_error (L, "%s", avt_get_error ());
+    }
+  else if (status == AVT_QUIT)
+    {
+      /* no actual error, so no error message */
+      /* this is handled by the calling program */
+      lua_pushnil (L);
+      return lua_error (L);
+    }
 
   return 0;
 }
