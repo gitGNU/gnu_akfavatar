@@ -96,7 +96,7 @@ http://akfavatar.nongnu.org/
 .
 .SH "SEE ALSO"
 .BR lua (1)
-.BR lua-akfavatar-reference (3)
+.BR lua-akfavatar-ref (3)
 .br
 .B http://akfavatar.nongnu.org/manual/
 .br

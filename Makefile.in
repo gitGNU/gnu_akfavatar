@@ -453,14 +453,14 @@ uninstall-info:
 
 install-man: man
 	-$(INSTALL_DATA) $(srcdir)/doc/lua-akfavatar.en.man $(DESTDIR)$(mandir)/man1/lua-akfavatar.1
-	-$(INSTALL_DATA) $(srcdir)/doc/lua-akfavatar-reference.en.man \
-	                 $(DESTDIR)$(mandir)/man3/lua-akfavatar-reference.3
+	-$(INSTALL_DATA) $(srcdir)/doc/lua-akfavatar-ref.en.man \
+	                 $(DESTDIR)$(mandir)/man3/lua-akfavatar-ref.3
 
 uninstall-man:
 	-rm -f $(DESTDIR)$(mandir)/man1/avatarsay.1
 	-rm -f $(DESTDIR)$(mandir)/man1/avtcmd.1
 	-rm -f $(DESTDIR)$(mandir)/man1/lua-akfavatar.1
-	-rm -f $(DESTDIR)$(mandir)/man3/lua-akfavatar-reference.3
+	-rm -f $(DESTDIR)$(mandir)/man3/lua-akfavatar-ref.3
 
 txt:
 	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" srcdir="$(srcdir)" txt
@@ -504,17 +504,17 @@ doc: about
 	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" srcdir="$(srcdir)" all
 
 about: $(srcdir)/lua-akfavatar.en.about \
-       $(srcdir)/lua-akfavatar-reference.en.about \
+       $(srcdir)/lua-akfavatar-ref.en.about \
        $(srcdir)/akfavatar.h.about \
        $(srcdir)/avtaddons.h.about
 
 $(srcdir)/lua-akfavatar.en.about: $(srcdir)/doc/lua-akfavatar.en.man
 	-nroff -c -man -Tutf8 $(srcdir)/doc/lua-akfavatar.en.man > $@
 
-$(srcdir)/lua-akfavatar-reference.en.about: \
-     $(srcdir)/doc/lua-akfavatar-reference.en.man
+$(srcdir)/lua-akfavatar-ref.en.about: \
+     $(srcdir)/doc/lua-akfavatar-ref.en.man
 	-nroff -c -man -Tutf8 \
-	  $(srcdir)/doc/lua-akfavatar-reference.en.man > $@
+	  $(srcdir)/doc/lua-akfavatar-ref.en.man > $@
 
 $(srcdir)/akfavatar.h.about: $(srcdir)/akfavatar.h
 	-$(ENSCRIPT) -takfavatar.h -E -woverstrike -p$@ $(srcdir)/akfavatar.h
@@ -577,7 +577,7 @@ maintainer-clean: distclean
 	@echo 'deletes files that may need special tools to rebuild.'
 	rm -f $(srcdir)/alert.au
 	rm -f $(srcdir)/lua-akfavatar.en.about
-	rm -f $(srcdir)/lua-akfavatar-reference.en.about
+	rm -f $(srcdir)/lua-akfavatar-ref.en.about
 	$(MAKE) -C $(srcdir)/doc maintainer-clean
 
 maintainerclean: maintainer-clean
@@ -628,7 +628,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/data2c $(srcdir)/rgb2c \
 	   $(srcdir)/lua-akfavatar.sh \
 	   $(srcdir)/lua-akfavatar.en.about \
-	   $(srcdir)/lua-akfavatar-reference.en.about \
+	   $(srcdir)/lua-akfavatar-ref.en.about \
 	   $(srcdir)/akfavatar.h.about $(srcdir)/avtaddons.h.about \
 	   $(PKGNAME)/
 
@@ -694,7 +694,7 @@ dist: about $(srcdir)/alert.au
 	mkdir $(PKGNAME)/doc
 	ln $(srcdir)/doc/Makefile \
 	   $(srcdir)/doc/lua-akfavatar.en.man \
-	   $(srcdir)/doc/lua-akfavatar-reference.en.man \
+	   $(srcdir)/doc/lua-akfavatar-ref.en.man \
 	   $(PKGNAME)/doc/
 
 	mkdir $(PKGNAME)/mingw
@@ -756,16 +756,16 @@ dist-bin-default: all pdf
 	ln $(srcdir)/lua/fs-quiz-de.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/terminal.lua $(BINPKGNAME)/lua/
 	-ln $(srcdir)/lua-akfavatar.en.about $(BINPKGNAME)/
-	-ln $(srcdir)/lua-akfavatar-reference.en.about $(BINPKGNAME)/
+	-ln $(srcdir)/lua-akfavatar-ref.en.about $(BINPKGNAME)/
 	-ln lua-akfavatar.en.pdf $(BINPKGNAME)/
-	-ln lua-akfavatar-reference.en.pdf $(BINPKGNAME)/
+	-ln lua-akfavatar-ref.en.pdf $(BINPKGNAME)/
 
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/NEWS \
 	   $(srcdir)/fsdemo-??.avt \
 	   $(srcdir)/avtcmd \
 	   $(BINPKGNAME)/
 	ln $(srcdir)/doc/lua-akfavatar.en.man $(BINPKGNAME)/
-	ln $(srcdir)/doc/lua-akfavatar-reference.en.man $(BINPKGNAME)/
+	ln $(srcdir)/doc/lua-akfavatar-ref.en.man $(BINPKGNAME)/
 	ln $(srcdir)/lua/akfavatar/dir.??.about \
 	   $(srcdir)/lua/akfavatar/utf8.lua \
 	   $(srcdir)/lua/akfavatar/utf8.??.about \
