@@ -14,6 +14,9 @@ avt.initialize {
   avatar = "none"
   }
 
-avt.set_background_color(avt.color_selection())
-avt.clear_screen()
-avt.wait_button()
+local color = avt.color_selection()
+if color then
+  avt.set_background_color(color)
+  avt.clear_screen()
+  avt.wait_button()
+end
