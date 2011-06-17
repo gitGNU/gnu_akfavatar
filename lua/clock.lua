@@ -69,6 +69,7 @@ end
 
 local c = canvas.new()
 c:color "saddle brown"
+os.setlocale("", "time") --> for the formatting of the date
 clock(c)
 c:show()
 avt.wait(5.0)
