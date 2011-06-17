@@ -26,13 +26,17 @@ avt.initialize {
   avatar = "none",
   }
 
-local function clock(c, time)
-  time = time or os.date("*t")
+local function clock(c, timestamp)
+  timestamp = timestamp or os.time()
 
+  local time = os.date("*t", timestamp)
   local width, height = c:width(), c:height()
   local xcenter, ycenter = width/2, height/2
   local radius = math.min(width, height) / 2 - 10
   local v
+
+  c:textalign("center", "center")
+  c:text(os.date("%x", timestamp), xcenter, height * 3/4)
 
   -- show hour points
   c:thickness(7)
