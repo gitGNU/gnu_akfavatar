@@ -24,6 +24,7 @@
 #include "akfavatar.h"
 
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -613,6 +614,63 @@ lcanvas_putpixel (lua_State * L)
 }
 
 
+/* c:getpixel ([x, y]) */
+static int
+lcanvas_getpixel (lua_State * L)
+{
+  canvas *c;
+  int x, y;
+
+  c = get_canvas (L);
+  x = luaL_optint (L, 2, c->penx + 1) - 1;
+  y = luaL_optint (L, 3, c->peny + 1) - 1;
+
+  if (visible (c, x, y))
+    {
+      char color[8];
+      unsigned char *p = c->data + (y * c->width * BPP) + x * BPP;
+      sprintf (color, "#%02X%02X%02X", (unsigned int) *p,
+	       (unsigned int) *(p + 1), (unsigned int) *(p + 2));
+      lua_pushstring (L, color);
+      return 1;
+    }
+  else				/* outside */
+    {
+      lua_pushnil (L);
+      lua_pushliteral (L, "outside of canvas");
+      return 2;
+    }
+}
+
+
+/* c:getpixelrgb ([x, y]) */
+static int
+lcanvas_getpixelrgb (lua_State * L)
+{
+  canvas *c;
+  int x, y;
+
+  c = get_canvas (L);
+  x = luaL_optint (L, 2, c->penx + 1) - 1;
+  y = luaL_optint (L, 3, c->peny + 1) - 1;
+
+  if (visible (c, x, y))
+    {
+      unsigned char *p = c->data + (y * c->width * BPP) + x * BPP;
+      lua_pushinteger (L, (int) *p);	/* red */
+      lua_pushinteger (L, (int) *(p + 1));	/* green */
+      lua_pushinteger (L, (int) *(p + 2));	/* blue */
+      return 3;
+    }
+  else				/* outside */
+    {
+      lua_pushnil (L);
+      lua_pushliteral (L, "outside of canvas");
+      return 2;
+    }
+}
+
+
 /* c:putdot ([x, y]) */
 static int
 lcanvas_putdot (lua_State * L)
@@ -1000,6 +1058,8 @@ static const struct luaL_reg canvaslib_methods[] = {
   {"eraser", lcanvas_eraser},
   {"thickness", lcanvas_thickness},
   {"putpixel", lcanvas_putpixel},
+  {"getpixel", lcanvas_getpixel},
+  {"getpixelrgb", lcanvas_getpixelrgb},
   {"line", lcanvas_line},
   {"pen_position", lcanvas_pen_position},
   {"center", lcanvas_center},

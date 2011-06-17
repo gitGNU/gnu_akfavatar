@@ -66,6 +66,20 @@ c:putpixel([x, y])
     The pen position is not changed.
 
 
+c:getpixel([x, y])
+    Gets the pixel color at the given coordinates or at the current pen position.
+    The color is returned as string in the hexadicimal RGB notation.
+    On error it returns nil and an error message.
+    The pen position is not changed.
+
+
+c:getpixelrgb([x, y])
+    Gets the pixel color at the given coordinates or at the current pen position.
+    Returns three integers for red, green and blue, in the range of 0-255.
+    On error it returns nil and an error message.
+    The pen position is not changed.
+
+
 c:putdot([x, y])
     Puts a dot at the given coordinates or at the current pen position.
     If the pen thin, it's the same as c:putpixel.
