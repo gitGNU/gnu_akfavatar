@@ -26,50 +26,53 @@ avt.initialize {
   avatar = "none",
   }
 
-local function clock(c, timestamp)
+local function clock(c, show_date, timestamp)
   timestamp = timestamp or os.time()
 
   local time = os.date("*t", timestamp)
   local width, height = c:width(), c:height()
   local xcenter, ycenter = width/2, height/2
   local radius = math.min(width, height) / 2 - 10
-  local v
+  local pi2 = math.pi * 2
+  local value
 
-  c:textalign("center", "center")
-  c:text(os.date("%x", timestamp), xcenter, height * 3/4)
+  if show_date then
+    c:textalign("center", "center")
+    c:text(os.date("%x", timestamp), xcenter, height * 3/4)
+  end
 
   -- show hour points
   c:thickness(7)
   for i=1,12 do
-    c:putdot(xcenter + radius * math.sin(2*math.pi*i/12),
-             ycenter - radius * math.cos(2*math.pi*i/12))
+    c:putdot(xcenter + radius * math.sin(pi2*i/12),
+             ycenter - radius * math.cos(pi2*i/12))
   end
 
   -- show minute points
   c:thickness(2)
   for i=1,60 do
-    c:putdot(xcenter + radius * math.sin(2*math.pi*i/60),
-             ycenter - radius * math.cos(2*math.pi*i/60))
+    c:putdot(xcenter + radius * math.sin(pi2*i/60),
+             ycenter - radius * math.cos(pi2*i/60))
   end
 
   -- hours pointer
-  v = 2 * math.pi * ((time.hour % 12) * 5 + time.min / 12) / 60
+  value = pi2 * ((time.hour % 12) * 5 + time.min / 12) / 60
   c:thickness(5)
-  c:line (xcenter, ycenter, 
-          xcenter + (radius/2) * math.sin(v),
-          ycenter - (radius/2) * math.cos(v))
+  c:line (xcenter, ycenter,
+          xcenter + (radius/2) * math.sin(value),
+          ycenter - (radius/2) * math.cos(value))
 
   -- minutes pointer
-  v = 2 * math.pi * time.min / 60
+  value = pi2 * time.min / 60
   c:thickness(3)
-  c:line (xcenter, ycenter, 
-          xcenter + (radius - 12) * math.sin(v),
-          ycenter - (radius - 12) * math.cos(v))
+  c:line (xcenter, ycenter,
+          xcenter + (radius - 12) * math.sin(value),
+          ycenter - (radius - 12) * math.cos(value))
 end
 
 local c = canvas.new()
 c:color "saddle brown"
 os.setlocale("", "time") --> for the formatting of the date
-clock(c)
+clock(c, true)
 c:show()
 avt.wait(5.0)
