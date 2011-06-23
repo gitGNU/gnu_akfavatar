@@ -1045,6 +1045,26 @@ lcanvas_copy (lua_State * L)
 }
 
 
+static int
+lcanvas_duplicate (lua_State * L)
+{
+  size_t nbytes;
+  canvas *c, *c2;
+
+  c = get_canvas (L);
+
+  nbytes =
+    sizeof (canvas) - sizeof (unsigned char) + (c->width * c->height * BPP);
+
+  c2 = (canvas *) lua_newuserdata (L, nbytes);
+  luaL_getmetatable (L, CANVASDATA);
+  lua_setmetatable (L, -2);
+  memcpy (c2, c, nbytes);
+
+  return 1;
+}
+
+
 static const struct luaL_reg canvaslib[] = {
   {"new", lcanvas_new},
   {NULL, NULL}
@@ -1078,6 +1098,7 @@ static const struct luaL_reg canvaslib_methods[] = {
   {"width", lcanvas_width},
   {"height", lcanvas_height},
   {"copy", lcanvas_copy},
+  {"duplicate", lcanvas_duplicate},
   {NULL, NULL}
 };
 
