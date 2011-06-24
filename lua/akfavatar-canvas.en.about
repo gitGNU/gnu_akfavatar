@@ -182,10 +182,14 @@ c:font_size()
 
 
 c:copy(canvas, x, y)
-    Copies a small canvas onto canvas c at the given position (upper-left corner).
+    Copies a small canvas onto canvas c at the given position
+    (upper-left corner).
     The previous content is overwritten (no transparency supported).
 
 
 c:duplicate()
     Returns an exact duplicate (a copy) of the canvas c.
     The canvas-specific settings are copied, too.
+
+    You can use this for example to create a fixed background and then draw the
+    individual foregrounds on duplicates.
