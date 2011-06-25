@@ -20,6 +20,7 @@ LUA_PATH = /usr/local/share/lua/5.1/
 LUA_CPATH = /usr/local/lib/lua/5.1/
 
 SOX = sox
+ROFF = groff
 ENSCRIPT = enscript
 
 # Soundfile for the alert (\a)
@@ -505,16 +506,22 @@ doc: about
 
 about: $(srcdir)/lua-akfavatar.en.about \
        $(srcdir)/lua-akfavatar-ref.en.about \
+       $(srcdir)/lua-akfavatar-ref.de.about \
        $(srcdir)/akfavatar.h.about \
        $(srcdir)/avtaddons.h.about
 
 $(srcdir)/lua-akfavatar.en.about: $(srcdir)/doc/lua-akfavatar.en.man
-	-nroff -c -man -Tutf8 $(srcdir)/doc/lua-akfavatar.en.man > $@
+	-$(ROFF) -c -man -Tutf8 $(srcdir)/doc/lua-akfavatar.en.man > $@
 
 $(srcdir)/lua-akfavatar-ref.en.about: \
      $(srcdir)/doc/lua-akfavatar-ref.en.man
-	-nroff -c -man -Tutf8 \
+	-$(ROFF) -c -Kutf8 -man -Tutf8 \
 	  $(srcdir)/doc/lua-akfavatar-ref.en.man > $@
+
+$(srcdir)/lua-akfavatar-ref.de.about: \
+     $(srcdir)/doc/lua-akfavatar-ref.de.man
+	-$(ROFF) -c -Kutf8 -man -Tutf8 \
+	  $(srcdir)/doc/lua-akfavatar-ref.de.man > $@
 
 $(srcdir)/akfavatar.h.about: $(srcdir)/akfavatar.h
 	-$(ENSCRIPT) -takfavatar.h -E -woverstrike -p$@ $(srcdir)/akfavatar.h
@@ -578,6 +585,7 @@ maintainer-clean: distclean
 	rm -f $(srcdir)/alert.au
 	rm -f $(srcdir)/lua-akfavatar.en.about
 	rm -f $(srcdir)/lua-akfavatar-ref.en.about
+	rm -f $(srcdir)/lua-akfavatar-ref.de.about
 	$(MAKE) -C $(srcdir)/doc maintainer-clean
 
 maintainerclean: maintainer-clean
@@ -628,7 +636,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/data2c $(srcdir)/rgb2c \
 	   $(srcdir)/lua-akfavatar.sh \
 	   $(srcdir)/lua-akfavatar.en.about \
-	   $(srcdir)/lua-akfavatar-ref.en.about \
+	   $(srcdir)/lua-akfavatar-ref.en.about $(srcdir)/lua-akfavatar-ref.de.about \
 	   $(srcdir)/akfavatar.h.about $(srcdir)/avtaddons.h.about \
 	   $(PKGNAME)/
 
@@ -695,6 +703,7 @@ dist: about $(srcdir)/alert.au
 	ln $(srcdir)/doc/Makefile \
 	   $(srcdir)/doc/lua-akfavatar.en.man \
 	   $(srcdir)/doc/lua-akfavatar-ref.en.man \
+	   $(srcdir)/doc/lua-akfavatar-ref.de.man \
 	   $(PKGNAME)/doc/
 
 	mkdir $(PKGNAME)/mingw
@@ -757,8 +766,10 @@ dist-bin-default: all pdf
 	ln $(srcdir)/lua/terminal.lua $(BINPKGNAME)/lua/
 	-ln $(srcdir)/lua-akfavatar.en.about $(BINPKGNAME)/
 	-ln $(srcdir)/lua-akfavatar-ref.en.about $(BINPKGNAME)/
+	-ln $(srcdir)/lua-akfavatar-ref.de.about $(BINPKGNAME)/
 	-ln lua-akfavatar.en.pdf $(BINPKGNAME)/
 	-ln lua-akfavatar-ref.en.pdf $(BINPKGNAME)/
+	-ln lua-akfavatar-ref.de.pdf $(BINPKGNAME)/
 
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/NEWS \
 	   $(srcdir)/fsdemo-??.avt \
@@ -766,6 +777,7 @@ dist-bin-default: all pdf
 	   $(BINPKGNAME)/
 	ln $(srcdir)/doc/lua-akfavatar.en.man $(BINPKGNAME)/
 	ln $(srcdir)/doc/lua-akfavatar-ref.en.man $(BINPKGNAME)/
+	ln $(srcdir)/doc/lua-akfavatar-ref.de.man $(BINPKGNAME)/
 	ln $(srcdir)/lua/akfavatar/dir.??.about \
 	   $(srcdir)/lua/akfavatar/utf8.lua \
 	   $(srcdir)/lua/akfavatar/utf8.??.about \

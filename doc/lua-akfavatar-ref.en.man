@@ -106,7 +106,8 @@ or leaves the mode unchanged, if it already was initialized.
 .RE
 .IP
 .B Attention:
-you have to use curly braces here (it is a table).
+You have to use curly braces here (it is a table).
+But you can leave the round brackets away.
 .IP
 No item is needed, the order doesn't matter, use them as you wish.
 .IP
@@ -324,6 +325,31 @@ If it succeeds you should call
 .BI "avt.show_image_string(" image )
 Get an image from a string and show it.  If it succeeds you should call
 .BR avt.wait() " or " avt.wait_button() " or " avt.get_key() .
+.PP
+.TP
+.BI "avt.subprogram(" "function, [arg1, ...]" )
+Call the function as a subprogram.
+.IP
+On a quit-request (pressing the <ESC>-key or the close button of
+the window) it just returns to the main program.
+.IP
+On success it returns the results of the function, on a 
+quit-request it returns nothing.  Errors are treated normally.
+.IP
+To call a subprogram from a separate file, use
+.BR dofile :
+.EX
+avt.subprogram(dofile, "subprogram.lua")
+.EE
+.PP
+.TP
+.BI "avt.optional(" modname )
+Loads a module like
+.BR require ,
+but the module is not required, but optional.
+That means, it is not an error, when it cannot be loaded.
+.IP
+Lua-AKFAvatar need not be initialized to use this function.
 .PP
 .SS Sizes and positions
 .TP
@@ -1150,30 +1176,6 @@ It also quits the audio subsystem.
 This function is not needed for normal programs.
 Only use it, if your program should continue working without
 a visible window.
-.PP
-.TP
-.BI "avt.subprogram(" "function, [arg1, ...]" )
-Call the function as a subprogram.
-.IP
-On a quit-request (pressing the <ESC>-key or the close button of
-the window) it just returns to the main program.  On success it
-returns the results of the function, on a quit-request it returns
-nothing.  Errors are treated normally.
-.IP
-To call a subprogram from a separate file, use
-.BR dofile :
-.EX
-avt.subprogram(dofile, "subprogram.lua")
-.EE
-.PP
-.TP
-.BI "avt.optional(" modname )
-Loads a module like
-.BR require ,
-but the module is not required, but optional.
-That means, it is not an error, when it cannot be loaded.
-.IP
-Lua-AKFAvatar need not be initialized to use this function.
 .PP
 .SH "SEE ALSO"
 .BR lua-akfavatar (1)

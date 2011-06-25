@@ -1,0 +1,1276 @@
+.\" Process this file with
+.\" groff -man -Tutf8 lua-akfavatar-reference.de.man
+.\"
+.
+.\" Macros .EX .EE taken from groff an-ext.tmac
+.\" Copyright (C) 2007, 2009 Free Software Foundation, Inc.
+.\" You may freely use, modify and/or distribute this file.
+.
+.\" Start example.
+.de EX
+.  nr mE \\n(.f
+.  nf
+.  nh
+.  ft CW
+..
+.
+.
+.\" End example.
+.de EE
+.  ft \\n(mE
+.  fi
+.  hy \\n(HY
+..
+.
+.TH "Lua-AKFAvatar Referenz" 3 2011-06-25 AKFAvatar
+.
+.SH NAME
+Lua-AKFAvatar Referenz \- AKFAvatar spezifische Funktionen für Lua
+.
+.SH BESCHREIBUNG
+Dies ist eine Referenz für die Lua-Anbindung für AKFAvatar.
+Sie beschreibt nicht die Sprache Lua.
+Eine Referenz-Anleitung für die Sprache Lua findet man im Internet unter
+.BR http://lua.coders-online.net/ .
+.PP
+Keine Angst. Man muss nicht alles gleich verstehen oder gar lernen.
+Man kann schon eine ganze Menge mit nur ganz wenigen Befehlen anfangen.
+Einfach mal die Teile heraussuchen, die einen interessieren und damit
+herumexperimentieren.
+Es gibt viele Aspekte von Lua oder AKFAvatar, die man wahrscheinlich nie
+benötigt.
+.PP
+.SS Datei-Formate
+Für Bilder werden die Formate
+.BR XPM ", " XBM " und unkomprimiertes " BMP
+auf jeden Fall unterstützt.
+Wietere Formate werden unterstützt, wenn
+.B SDL_image
+und weitere Bibliotheken installiert sind.
+.PP
+Für Audio werden die Formate
+.BR AU " und " WAV
+auf jeden Fall unterstützt.
+AU-Dateien können als PCM, \(*m-law oder A-law kodiert sein.
+WAV-Dateien können als PCM, IMA-ADPCM oder MS-ADPCM kodiert sein.
+Es gibt auch ein Lua-Modul namens
+.BR akfavatar-vorbis ,
+welches Unterstützung für Ogg Vorbis Audio-Dateien hinzufügt.
+.PP
+.SS Grundfunktionalität
+.TP
+.B "require ""lua-akfavatar"""
+Bevor man die AKFAvatar-Anbindung verwenden kann, muss man sie mit der
+Anweisung
+.B "require ""lua-akfavatar"""
+laden, bzw. aktivieren.
+Dadurch wird die Tabelle
+.I avt
+erstellt, über die man die folgenden Funktionen abrufen kann.
+Wenn man das Prefix
+.I avt
+nicht mag, kann man auch folgendes machen:
+.BR "local avatar = require ""lua-akfavatar""" .
+Dann kann man das auch über das Prefix
+.I avatar
+aufrufen.
+.PP
+.TP
+.BI "avt.initialize({" "title, shortname, avatar, audio, encoding, mode" "})"
+Diese Funktion öffnet das grafische Fenster oder wechselt in den Grafikmodus.
+.IP
+Sie erwartet eine Tabelle als Parameter mit Definitionen für die folgenden
+Einträge:
+.RS
+.TP
+.I title
+Ist der Titel des Fensters im Fenstermodus - Vorgabe="AKFAvatar".
+.TP
+.I shortname
+Ist ein Kurzname (häufig für minimalisierte Fenster verwendet) - Vorgabe=title.
+.TP
+.I avatar
+Ist entweder "default" oder "none" oder die Bild-Daten als String,
+oder ein Dateiname mit Pfadangebe.
+.TP
+.I audio
+Kann man auf
+.I true
+setzen, damit das Audio-Untersystem initialisiert wird.
+Das hat auch Auswirkungen auf den System-Klang ("\\a").
+.TP
+.I encoding
+Ist die Kodierung für Strings. Zum Beispiel "ISO-8859-1", "UTF-8" oder
+"WINDOWS-1252" - Vorgabe="UTF-8".
+.TP
+.I mode
+Ist eines von "auto", "window", "fullscreen", oder "fullscreen no switch".
+Die Vorgabe ist "auto", die einen brauchbare Vorgabe verwendet, oder die
+Einstellung unverändert lässt, wenn es bereits initialisiert war.
+.RE
+.IP
+.B Achtung:
+Man muss hier geschweifte Klammern verwenden (es ist eine Tabelle).
+Die runden Klammern kann man weg lassen.
+.IP
+Kein Eintrag ist erforderlich, die Reihenfolge ist beliebig, man kann
+sie nach Belieben einsetzen.
+.IP
+.B Beispiele:
+.EX
+avt.initialize{}
+
+avt.initialize{tilte="Mein Programm", encoding="ISO-8859-1"}
+
+avt.initialize{
+  tilte="Mein Programm",
+  shortname="Programm",
+  avatar="gnu-head.xpm",
+  audio=true,
+  encoding="UTF-8",
+  mode="fullscreen no switch"}
+.EE
+.IP
+Viele der folgenden Funktionen rufen automatisch
+.B avt.initialize{}
+auf, wenn es noch nicht initialisiert ist.
+.PP
+.TP
+.BI "avt.initialized()"
+Gibt
+.I true
+zurück, wenn AKFAvatar bereits initialisiert ist, ansonsten
+gibt es
+.I false
+zurück.
+.PP
+.TP
+.BI "avt.say(" ... )
+.TQ
+.BI "avt.write(" ... )
+Schreibt Text in der Sprechblase.
+.IP
+Man kann Strings oder Zahlen verwenden.
+Es funktioniert so ähnlich wie
+.BR io.write() ,
+aber es schreibt halt in die Sprechblase anstatt auf die
+Standardausgabe.
+.IP
+.B Beispiel:
+.EX
+avt.say("Drei Äpfel kosten ", 3 * Apfelpreis, " Euro.\\n").
+.EE
+.PP
+.TP
+.BI "avt.print(" ... )
+Schreibt Text in der Sprechblase.
+Es funktioniert so ähnlich wie
+.BR print ,
+aber es schreibt halt in die Sprechblase anstatt auf die
+Standardausgabe.
+.IP
+Der Unterschied zu
+.B avt.say()
+ist, dass die Werte in der Ausgabe durch Tabulatoren getrennt werden
+und jeder Wert automatisch durch
+.B tostring()
+umgewandelt wird. Außerdem wird die Zeile durch einen Zeilenumbruch
+abgeschlossen.
+.IP
+Mann kann einfach den print-Befehl mit diesem Befehl ersetzen:
+.BR "print = avt.print" .
+(Das Skript `interactive_lua.lua' macht das so.)
+.IP
+Die Funktion
+.B avt.say()
+eignet sich besser für Programme, während diese Funktion besser für
+die interaktive Verwendung ud für's Debuggen geeignet ist.
+.PP
+.TP
+.BI "avt.tell(" ... )
+Schreibt Text in der Sprechblase, aber zuvor wird die Größe der
+Sprechblase angepasst, so dass der Text exakt reinpasst.
+.IP
+.B Beispiel:
+.EX
+avt.tell("Drei Äpfel kosten ", 3 * Apfelpreis, " Euro.").
+.EE
+.IP
+.B Achtung:
+Diese Funktion hat noch immer Probleme mit Tabulatoren ("\\t").
+.PP
+.TP
+.BI "avt.say_unicode(" ... )
+Schreibt Text in der Sprechblase mit spezieller Unterstützung für 
+Unicoode-Zeichen.
+.IP
+Dieser Befehl ist ähnlich wie
+.BR avt.say() .
+Strings werden auf die selbe Weise behandelt, abhängig von der eingestellten
+Kodierung, aber Zahlen werden als Unicode-Codepoint interpretiert,
+unabhängig von der eingestellten Kodierung.
+.IP
+Man kann das verwenden, um Zeichen zu verwenden, die in der eingestellten
+Kodierung nicht zur Verfügung stehen.
+Manchmal ist es aber auch einfach nur einfacher.
+.IP
+.B Beispiel:
+.EX
+avt.say_unicode("Drei Äpfel kosten ",
+                tostring(3 * appleprice), 0x20AC,
+                ".\\n").
+.EE
+.IP
+Wie man hier sieht, muss man
+.B tostring()
+verwenden, wenn nummerische Angaben als solche angezeigt werden sollen.
+Die Zahl
+.I 0x20AC
+hingegen repräsentiert hier das Euro-Währungszeichen.
+(Das `0x' leitet hexadezimale Zahlen ein.)
+.IP
+Übrigens werden eine Gruppe von Unicode-Zahlen effektiver verarbeitet,
+als Strings.
+.PP
+.TP
+.BI "avt.printable(" Codepoint )
+Überprüft ob der angegebene
+.I Codepoint
+ein druckbares Unicode-Zeichen darstellt.
+Es gibt
+.I true
+zurück, wenn das der Fall ist, oder
+.IR false ,
+wenn die Schriftart kein druckbares Zeichen dafür hat
+(es kann trotzdem ein unterstütztes Steuerzeichen sein).
+Diese Funktion ist unabhängig von der eingestellten Kodierung.
+Sie kann zusammen mit
+.B "avt.say_unicode(...)"
+eingesetzt werden.
+.PP
+.TP
+.BI "avt.newline()"
+Beginne eine neue Zeile.
+Das selbe, wie "\\n" in
+.BR avt.say() ,
+aber schneller.
+.PP
+.TP
+.BI "avt.set_text_delay(" [Verzögerung] )
+Aktiviere den Langsamschreibmodus.
+Wenn
+.I Verzögerung
+nicht angegeben ist, wird ein Vorgabewert verwendet.
+Um den Langsamschreibmodus zu daktivieren, kann man den Wert
+0 für die
+.I Verzögerung
+verwenden.
+.PP
+.TP
+.TP
+.BI "avt.clear()"
+Löscht das Text-Feld oder den Bereich.
+Wenn noch keine Sprechblase angezeigt wird, wird diese hierdurch gezeichnet.
+.PP
+.TP
+.BI "avt.flip_page()"
+Wartet eine Weile und löscht dann das Text-Feld.
+Dasselbe wird durch "\\f" in
+.B avt.say()
+erreicht.
+Siehe auch
+.BR avt.set_flip_delay(delay) .
+.PP
+.TP
+.BI "avt.move_in()"
+Bewegt den Avatar herein.
+.PP
+.TP
+.BI "avt.move_out()"
+Bewegt den Avatar heraus.
+.PP
+.TP
+.BI "avt.change_avatar_image(" [Bild] )
+Ändert das Avatar-Bild, während das Programm läuft.
+Das
+.I Bild
+ist ein String, wie in
+.BR avt.initialize{} .
+.PP
+.TP
+.BI "avt.set_avatar_name(" [Name] )
+Setzt den Namen für den Avatar.
+Dies muss nach der Verwendung von
+.B avt.change_avatar_image()
+geschehen.
+.PP
+.TP
+.BI "avt.pager(" "Text [,Anfangszeile]" )
+Zeigt einen längeren Text in einer Textbetrachter-Anwendung.
+.IP
+Wenn die
+.I Anfangszeile
+angegeben und größer als 1 ist, dann fängt er in der Zeile an.
+Man kann von da aus aber immer noch zurück scrollen.
+.PP
+.TP
+.BI "avt.wait(" [Sekunden] )
+Wartet eine angegebene Zeit an Sekunden (kann ein Dezeimalbruch sein).
+.IP
+Wenn kein Wert angegeben ist, wartet er eine gewisse Zeit.
+.PP
+.TP
+.BI "avt.ticks()"
+Gibt einen Wert zurück, der jede Millisekunde erhöht wird.
+Das kann für Zeitsteuerung verwendet werden.
+.PP
+.TP
+.BI "avt.show_avatar()"
+Zeigt nur den Avatar ohne Sprechblase.
+.PP
+.TP
+.BI "avt.bell()"
+Gibt einen Ton aus, oder die Anzeige blinkt, wenn die Audio-Ausgabe nicht
+initialisiert ist.
+.PP
+.TP
+.BI "avt.flash()"
+Die Anzeige blinkt einmal.
+.PP
+.TP
+.BI "avt.show_image_file(" Dateiname )
+Lädt ein Bild und zeigt es an.
+Bei Erfolg wird
+.IR true " zurückgegeben, oder " false " im Fehlerfall."
+Bei Erfolg sollte eines von
+.BR avt.wait() " oder " avt.wait_button() " oder " avt.get_key()
+aufgerufen werden.
+.PP
+.TP
+.BI "avt.show_image_string(" Bild )
+Zeigt ein Bild von Bilddaten in einem String an.
+Bei Erfolg sollte eines von
+.BR avt.wait() " oder " avt.wait_button() " oder " avt.get_key()
+aufgerufen werden.
+.PP
+.TP
+.BI "avt.subprogram(" "function, [arg1, ...]" )
+Ruft die Funktion als Unterprogramm auf.
+.IP
+Bei einer Beendigungsanfrage (dh. wenn man die <Esc>-Taste drückt,
+oder den Schließ-Knopf des Fensters) kehrt es nur zum Hauptprogramm
+zurück.
+.IP
+Bei Erfolg werden die Ergebnisse der Funktion zurückgegeben.
+Bei einer Beendigungsanfrage wird nichts zurückgegeben.
+.IP
+Um ein Unterprogramm aus einer separaten Datei zu starten,
+kann man
+.B dofile
+verwenden.
+.EX
+avt.subprogram(dofile, "unterprogramm.lua")
+.EE
+.PP
+.TP
+.BI "avt.optional(" modname )
+Lädt ein Modul wie
+.BR require ,
+aber das Modul wird nicht benötigt, sondern optional.
+Das heißt, es ist kein Fehler, wenn das Modul nicht geladen
+werden kann.
+.IP
+Lua-AKFAvatar braucht nicht initialisiert sein, um diese
+Funktion zu verwenden.
+.PP
+.SS Größen und Positionen
+.TP
+.BI "avt.set_balloon_size(" "[Höhe] [, Breite]" )
+Legt die Größe der Sprechblase fest.
+Wenn keine Werte angegeben sind, oder der Wert 0 verwendet wird,
+wird die maximale Größe verwendet.
+.PP
+.TP
+.BI "avt.set_balloon_width(" [Breite] )
+Legt die Breite der Sprechblase fest.
+Ohne Wert, oder bei dem Wert 0 wird das Maximum verwendet.
+.PP
+.TP
+.BI "avt.set_balloon_height(" [Höhe] )
+Legt die Höhe der Sprechblase fest.
+Ohne Wert, oder bei dem Wert 0 wird das Maximum verwendet.
+.PP
+.TP
+.BI "avt.max_x()"
+Ermittelt die maximale x-Postion des Cursors in der Sprechblase
+(also die Breite).
+.PP
+.TP
+.BI "avt.max_y()"
+Ermittelt die maximale y-Postion des Cursors in der Sprechblase
+(also die Höhe).
+.PP
+.TP
+.BI "avt.where_x()"
+Ermittelt die x-Position des Cursors in der Sprechblase.
+.PP
+.TP
+.BI "avt.where_y()"
+Ermittelt die y-Position des Cursors in der Sprechblase.
+.PP
+.TP
+.BI "avt.home_position()"
+Gibt
+.I true
+zurück, wenn sich der Cursor auf der Startposition befindet,
+oder
+.IR false ,
+wenn nicht.
+(Das funktioniert auch für rechts-nach-links-Schreibung.)
+.PP
+.TP
+.BI "avt.move_x(" x )
+Setzt den Curser auf die angegebene X-Position.
+.PP
+.TP
+.BI "avt.move_y("y )
+Setzt den Curser auf die angegebene Y-Position.
+.PP
+.TP
+.BI "avt.move_xy(" "x, y" )
+Setzt den Curser auf die angegebene
+.IR X " und " Y " Position."
+.PP
+.TP
+.BI "avt.save_position()"
+Speichert die aktuelle Cursor-Position.
+.PP
+.TP
+.BI "avt.restore_position()"
+Stellt eine zuvor gespeicherte Cursor-Postion wieder her.
+.PP
+.TP
+.BI "avt.next_tab()"
+Setzt den Cursor auf die nächste Tabulator-Position.
+.PP
+.TP
+.BI "avt.last_tab()"
+Setzt den Cursor auf die vorhergehende Tabulator-Position.
+.PP
+.TP
+.BI "avt.reset_tab_stops()"
+Setzt die Tabulator-Positionen zurück auf jede achte Spalte.
+.PP
+.TP
+.BI "avt.clear_tab_stops()"
+Löscht alle Tabulator-Postionen
+.PP
+.TP
+.BI "avt.set_tab(" "x, true" | false )
+Setzt oder löscht einen Tabulator an der angegebenen Position
+.IR x .
+.PP
+.TP
+.BI "avt.delete_lines(" "Zeile, Anzahl" )
+Löscht die angegebene
+.I Anzahl
+an Zeilen, angefangen bei
+.IR Zeile ;
+der Rest wird hochgescrollt.
+.PP
+.TP
+.BI "avt.insert_lines(" "Zeile, Anzahl" )
+Fügt die angegebene
+.I Anzahl
+an Zeilen ein, angefangen bei
+.IR Zeile ;
+der Rest wird runtergescrollt.
+.PP
+.TP
+.BI "avt.insert_spaces(" Anzahl )
+Fügt
+.I Anzahl
+an Leerzeichen bei der jetzigen Postion ein.
+Der Rest der Zeile wird weiter gerückt.
+.PP
+.TP
+.BI "avt.delete_characters(" Anzahl )
+Löscht
+.I Anzahl
+an Zeichen an der jetzigen Cursor-Position.
+Der Rest der Zeile wird zurück gerückt.
+.PP
+.TP
+.BI "avt.erase_characters(" Anzahl )
+Löscht
+.I Anzahl
+an Zeichen.
+Die Zeichen werden mit Leerzeichen überschrieben.
+.PP
+.TP
+.BI "avt.backspace()"
+Geht ein Zeichen zurück.
+Wenn der Cursor am anfang der Zeile ist, passiert nichts.
+.PP
+.SS Text-Stil
+.TP
+.BI "avt.markup(" true | false )
+Setzt den Auszeichnungs-Modus. Im Auszeichnungs-Modus schalte das
+Zeichen "_" das Unterstreichen ein oder aus und das Zeichen "*"
+schaltet den Fettdruck-Modus ein oder aus.
+Die beiden Zeichen werden im Auszeichnungs-Modus niemals angezeigt!
+.IP
+Man kann immer die Overstrike-Technik verwenden, die keine Zeichen
+reserviert.
+Aber die ist schwerer zu benutzen.
+.PP
+.TP
+.BI "avt.underlined(" true | false )
+Schaltet das Unterstreichen ein oder aus.
+.PP
+.TP
+.BI "avt.get_underlined()"
+Gibt
+.I true
+zurück, wenn Unterstreichen eingeschaltet ist, oder
+.IR false ,
+wenn nicht.
+.PP
+.TP
+.BI "avt.bold(" true | false )
+Schaltet den Fettdruck an oder aus.
+.PP
+.TP
+.BI "avt.get_bold()"
+Gibt
+.I true
+zurück, wenn Fettdruck eingeschaltet ist, oder
+.IR false ,
+wenn nicht.
+.PP
+.TP
+.BI "avt.inverse(" true | false )
+Schaltet die invertierte Darstellung an oder aus.
+.PP
+.TP
+.BI "avt.get_inverse()"
+Gibt
+.I true
+zurück, wenn die invertierte Darstellung eingeschaltet ist, oder
+.IR false ,
+wenn nicht.
+.PP
+.TP
+.BI "avt.normal_text()"
+Setzt normale Einstellungen für Text zurück.
+.PP
+.SS Farben
+.TP
+.BI "avt.set_background_color(" Farbe )
+Setzt die Hintergrundfarbe für den Bildschirm.
+.IP
+Farben können entweder über ihren englischen Namen angegeben werden,
+oder als RGB-Angabe mit 3 oder 6 hexadezimalen Ziffern.
+.IP
+.B Beispiele:
+.EX
+avt.set_background_color("sky blue")
+avt.set_background_color("#555")
+avt.set_background_color("#8B4513")
+.EE
+.PP
+.TP
+.BI "avt.set_balloon_color(" Farbe )
+Setzt die Farbe der Sprechblase.
+.PP
+.TP
+.BI "avt.set_text_color(" Farbe )
+Setzt die Farbe des Textes.
+.PP
+.TP
+.BI "avt.set_text_background_color(" Farbe )
+Setzt die Hintergrundfarbe des Textes.
+.PP
+.TP
+.BI "avt.set_text_background_ballooncolor()"
+Setzt die Hintergrundfarbe des Textes auf die Farbe der Sprechblase.
+.PP
+.TP
+.BI "avt.get_color(" Farbnummer )
+Hole die Farbdefinition für die angegebene Farbnummer.
+.IP
+AKFAvatar hat eine interne Palette mit englischsprachigen
+Farbnamen, die man verwenden kann.
+Mit dieser Funktion kann man diese Liste durchgehen.
+Sie gibt den Namen und die RGB-Definition als String zurück,
+oder es gibt nichts zurück, wenn die Farbnummer nicht existiert.
+.PP
+.TP
+.BI "avt.colors()"
+Iterator für interne Farbnamen.
+.IP
+AKFAvatar hat eine interne Palette mit englischsprachigen
+Farbnamen, die man verwenden kann.
+Mit dieser Funktion kann man diese Liste mit einer
+allgemeinen
+.BR for "-Schleife durchgehen."
+.IP
+.EX
+require "lua-akfavatar"
+for nr, name, rgb in avt.colors() do
+  avt.normal_text()
+  avt.newline()
+  avt.say(string.format("%3d) %5s, %-25s", nr, rgb, name))
+  avt.set_text_background_color(name) -- name oder rgb
+  avt.clear_eol()
+  avt.wait(0.7)
+end
+avt.wait_button()
+.EE
+.IP
+Wenn man den
+.IR rgb "-Wert"
+nicht benötigt, kann man die Variable weglassen.
+.PP
+.SS Interaktion
+.TP
+.BI "avt.wait_button()"
+Wartet bis ein Knopf gedrückt wird.
+.PP
+.TP
+.BI "avt.decide()"
+Fragt den Benutzer nach einer positiven oder negativen Antwort.
+Gibt etweder
+.IR true " oder " false " zurück."
+.PP
+.TP
+.BI "avt.ask(" [Frage] )
+Zeigt die
+.IR Frage ,
+falls angegeben, und wartet bis der Benutzer etwas eingibt.
+Gibt das Eingegebene als String zurück.
+.IP
+Das folgende Beispiel zeigt, wie man die Eingabe einer Zahl erzwingt:
+.IP
+.EX
+require "lua-akfavatar"
+avt.save_position()
+repeat
+  avt.restore_position()
+  Zahl = tonumber(avt.ask("Gib eine Zahl ein: "))
+until Zahl
+avt.say("Die Zahl ist ", Zahl)
+avt.wait_button()
+.EE
+.PP
+.TP
+.BI "avt.file_selection(" [Filter] )
+Startet einen Dateiauswahl-Dialog in der Sprechblase.
+Am Anfang zeigt er das aktuelle Arbeitsverzeichnis an.
+Wenn ein Verzeichnis ausgewählt wird, wird das zum Arbeitsverzeichnis.
+Wenn eine Datei ausgewählt wird, wird der Dateiname zurückgegeben
+(die sich dann im dann aktuellen Arbeitsverzeichnis befindet),
+oder im Fehlerfall wird 
+.I nil
+zurückgegeben.
+.IP
+Der
+.IR Filter ,
+falls angegeben, sollte eine Funktion sein.
+Sie bekommt einen Dateinamen als Parameter.
+Die Datei befindet sich immer im aktuellen Arbeitsverzeichnis.
+Wenn die Filter-Funktion
+.IR false " oder " nil
+oder nichts zurückgibt, dann wird die Datei nicht angezeigt,
+ansonsten wird sie angezeigt.
+.IP
+.B Beispiel:
+.EX
+ Textdatei = avt.file_selection(
+    function(n)
+      return string.find(n,"%.te?xt$")
+    end)
+.EE
+.IP
+Natürlich kann für
+.I Filter
+auch einfach der Name einer zuvor definierten Funktion
+angegeben werden.
+.PP
+.TP
+.BI "avt.color_selection()"
+Startet einen Farbauswahl-Dialog in der Sprechblase.
+Es werden zwei Strings zurückgegeben: erstens der englische Name
+für die Farbe und zweitens die hexadezimale RGB-Definition.
+Beide Werte können für die Farbauswahl verwendet werden.
+.PP
+.TP
+.BI "avt.get_key()"
+Wartet auf einen Tastendruck und gibt den Unicode Codepoint des
+Zeichens zurück.
+Für einige Funktionstasten werden Werte aus einem Unicode-Bereich
+für den privaten Gebrauch zurückgegeben.
+.PP
+.TP
+.BI "avt.navigate(" buttons )
+Zeigt eine Navigationsleiste mit den angegebenen Knöpfen.
+.IP
+Für die Knöpfe kann man in einem String die folgenden Zeichen
+verwenden:
+.IP
+.RS
+.IP "l:"
+links
+.IP "r:"
+rechts (abspielen)
+.IP "d:"
+runter
+.IP "u:"
+hoch
+.IP "x:"
+abbrechen
+.IP "f:"
+(schnell)vorwärts
+.IP "b:"
+(schnell)rückwärts
+.IP "p:"
+Pause
+.IP "s:"
+Stop
+.IP "e:"
+Auswurf
+.IP "*:"
+Kreis (Aufnahme)
+.IP "+:"
+Plus (hinzufügen)
+.IP "-:"
+Minus (entfernen)
+.IP "?:"
+Hilfe
+.IP "' ':"
+Platzhalter (kein Knopf)
+.RE
+.IP
+Eine Taste mit einem dieser Zeichen zu drücken wählt diesen aus.
+Für die Richtungen kann man auch die Pfeiltasten verwenden.
+Die <Pause>-Taste gibt "p" zurück.
+Die <Hilfe>-Taste oder <F1> geben "?" zurück.
+.IP
+Es wird das entsprechende Zeichen zurückgegeben oder eine Zahl.
+.IP
+Wenn eine Audio-Ausgabe endet, während diese Funktion aktiv ist, wird
+automatisch entweder "f" (vorwärts) oder "s" (Stop) ausgewählt.
+Falls beides vorhanden ist, hat "f" Vorrang.
+.PP
+.TP
+.BI "avt.menu(" Menüpunkte )
+.TQ
+.BI "avt.long_menu(" Menüpunkte )
+Zeigt ein Menü mit den angegebenen 
+.IR Menüpunkte "n."
+Die
+.I Menüpunkte
+können zum Einen ein Array mit Strings sein.
+Dann wird die Nummer (Position) des ausgewählten Menüpunktes
+zurückgegeben.
+.IP
+Oder
+.I Menüpunkte
+können eine Array mit weiteren Arrays sein.
+Die inneren Arrays müssen dann mit einem String anfangen, gefolgt von
+einem oder mehreren Egebnissen.
+Die Ergebnisse können jeder beliebige Lua-Typ sein, einschließlich
+Funktionen.
+.IP
+Das Menü fängt in der Zeile der aktuellen Cursor-Position an.
+Dadurch kann man eine Überschrift vor das Menü setzen.
+.IP
+.EX
+avt.clear()
+avt.say("Bitte das Liebligsessen auswählen:\\n")
+local Menuepunt = avt.long_menu {
+  "Chicken",
+  "Chips",
+  "Pizza",
+  "Spinach"}
+.EE
+.PP
+.TP
+.BI "avt.choice(" "Anfanszeile, Einträge [, Taste] [, zurück] [, vorwärts]" )
+Diese Funktion kann für Menüs verwendet werden.
+Es ist eine grundlegendere Funktion, als
+.BR avt.menu() .
+Es gibt die Nummer den ausgewählten Menüpunktes zurück.
+.IP
+.RS
+.IP Anfangszeile:
+die Zeile, in der die Auswahl beginnt
+.IP Einträge:
+Anzahl der Einträge (Zeilen)
+.IP Taste:
+Anfangstaste, wie "1" oder "a", 0 für keine Tastenunterstützung
+.IP zurück:
+auf
+.I true
+zu setzen, wenn der erste Eintrag eine zurück-Funktion hat
+.IP vorwärts:
+auf
+.I true
+zu setzen, wenn der letzte Eintrag eine weiter-Funktion hat
+.RE
+.PP
+.SS Audio-Ausgabe
+.TP
+.BI "avt.load_audio_file(" [Dateiname] )
+.TQ
+.BI "avt.load_base_audio_file(" [Dateiname] )
+Liest Audio-Daten von einer Datei ein.
+.IP
+Lua-Module können Unterstützung für weitere Audio-Formate zu
+.B "avt.load_audio_file()"
+hinzufügen.
+(Das tut zum Beispiel das Modul
+.BR akfavatar-vorbis ).
+.IP
+Wenn kein
+.I Dateiname
+angegeben ist, oder der
+.IR Dateiname " ist " nil
+oder ein leerer String, wird ein Audio-Element mit Stille zurückgegeben,
+das heißt, man kann die Methoden aufrufen, aber es wird kein Klang ausgegeben.
+.IP
+Bei Fehlern wird
+.I nil
+und eine Fehlermelung zurückgegeben.
+(Anmerkung: in Version 0.19.0 wurde dann auch eine Stille zurückgegeben.)
+.PP
+.TP
+.BI "avt.load_audio_string(" [Audiodaten] )
+.TQ
+.BI "avt.load_base_audio_string(" [Audiodaten] )
+Liest Audiodaten aus einem String.
+Ansonsten das selbe, wie
+.BR avt.load_audio_file() .
+.IP
+Lua-Module können Unterstützung für weitere Audio-Formate zu
+.B "avt.load_audio_string()"
+hinzufügen.
+(Das tut zum Beispiel das Modul
+.BR akfavatar-vorbis ).
+.IP
+Wenn keine
+.I Audiodaten
+angegeben sind, oder
+.IR Audiodaten " ist " nil
+oder ein leerer String, wird ein Audio-Element mit Stille zurückgegeben,
+das heißt, man kann die Methoden aufrufen, aber es wird kein Klang ausgegeben.
+.IP
+Bei Fehlern wird
+.I nil
+und eine Fehlermelung zurückgegeben.
+(Anmerkung: in Version 0.19.0 wurde dann auch eine Stille zurückgegeben.)
+.PP
+.TP
+.B avt.silent()
+Gibt ein stilles Audio-Element zurück,
+das heißt, man kann die Methoden aufrufen, aber es wird kein Klang ausgegeben.
+.IP
+.B Beispiel:
+.EX
+audio = avt.load_audio_file(Dateiname) or avt.silent()
+.EE
+.IP
+In diesem Beispiel bekommt man einen stillen Klang, wenn die Datei nicht
+gelesen werden konnte.
+.PP
+.TP
+.BI "avt.audio_playing(" [Audiodaten] )
+Überprüft, ob Audiodaten gerade abgespielt werden.
+Wenn
+.I Audiodaten
+angegeben ist und nicht
+.I nil
+ist, dann wird überprüft, ob die angegebenen Audiodaten abgespielt werden.
+Das kann man übrigens auch mit
+.IB audio ":playing()"
+überprüfen.
+.PP
+.TP
+.BI "avt.wait_audio_end()"
+Wartet, bis die Audio-Ausgabe beendet ist.
+.IP
+Daurch wird auch eine Audio-Schleife beendet, aber es spielt halt
+noch bis zum Ende des aktuellen Klanges.
+.PP
+.TP
+.BI "avt.stop_audio()"
+Stoppt die Audio-Ausgabe sofort.
+.PP
+.TP
+.BI "avt.pause_audio(" true | false )
+Die Audio-Ausgabe wird
+.RI "pausiert (" true ") oder weiter gespielt (" false ")"
+.PP
+.TP
+.IB audio ":play()"
+.TQ
+.IB audio "()"
+Spielt die Audiodaten
+.I audio
+ab.
+Die Audiodaten
+.I audio
+müssen mit
+.BR avt.load_audio_file() " oder " avt.load_audio_string()
+geladen worden sein.
+.IP
+Es kann nur ein Klang gleichzeitig abgespielt werden.
+Wenn man einen anderen Klang abspielt, wird der vorherige
+dadurch abgebrochen.
+Man kann
+.B avt.wait_audio_end()
+verwenden, um Klänge nacheinander abzuspielen.
+.IP
+Man kann den Klang auch abspielen, indem man die Audio-Variable
+wie eine Funktion aufruft.
+.IP
+.EX
+abspielen = function (Dateiname)
+  local Klang = avt.load_audio_file(Dateiname)
+  Klang:play()
+end
+.EE
+.PP
+.TP
+.IB audio ":loop()"
+Spielt die Audiodaten
+.I audio
+in einer Schleife ab.
+Die Audiodaten
+.I audio
+müssen mit
+.BR avt.load_audio_file() " oder " avt.load_audio_string()
+geladen worden sein.
+.IP
+Das ist zum Beispiel für eine kurze Musik-Sequenz nützlich.
+.IP
+Man kann die Audio-Schleife mit
+.BR avt.wait_audio_end() " oder " avt.stop_audio()
+beenden.
+.PP
+.TP
+.IB audio ":playing()"
+Überprüft, ob diese
+.IR audio -Daten
+gerade abgespielt werden.
+Die Audiodaten
+.I audio
+müssen mit
+.BR avt.load_audio_file() " oder " avt.load_audio_string()
+geladen worden sein.
+.IP
+Diese Funktion ist identisch mit 
+.BR "avt.audio_playing(audio)" .
+.PP
+.TP
+.IB audio ":free()"
+Gibt die
+.IR audio -Daten
+frei.
+Falls diese
+.IR audio -Daten
+gerade abgespielt werden, wird die Audio-Ausgabe abgebrochen.
+.IP
+Audiodaten werden auch vom Garbage Collector freigegeben.
+Man sollte sich aber nicht darauf verlassen.
+Audiodaten können eine ganze Menge Speicher verbrauchen.
+Leider bekommt der Garbage Collector davon nichts mit, weil die
+Audiodaten außerhalb von Lua abgelegt werden.
+Andererseits kann man den Garbage Collector auch von Hand starten,
+indem man ab und zu
+.BI "collectgarbage(" """collect""" ")"
+aufruft.
+Dann braucht man diese Funktion nicht nochmal extra aufrufen.
+.PP
+.TP
+.BI "avt.initialize_audio()"
+Initialisiert das Audio-Untersystem.
+.IP
+Bei Erfolg gibt es
+.I true
+zurück, im Fehlerfall gibt es
+.I nil
+und eine Fehlermeldung zurück.
+.IP
+Normallerweise sollte das Audio-System mit
+.B avt.initialize{}
+initialisiert werden.
+Diese Funktion sollte nur verwendet werden, wenn man weiß, was man tut.
+.PP
+.TP
+.BI "avt.quit_audio()"
+Das Audio-Untersystem beenden.
+.IP
+Das ist bei normalen Programmen nicht nötig.
+Diese Funktion sollte nur verwendet werden, wenn man weiß, was man tut.
+.PP
+.SS Dateisystem
+.TP
+.BI "avt.dirsep"
+Diese Variable enthält das Verzeichnis-Ternnzeichen des Systems;
+entweder "/" oder "\\".
+.PP
+.TP
+.BI "avt.get_directory()"
+Gibt das aktuelle Arbeitsverzeichnis zurück.
+Im Fehlerfall wird
+.I nil
+und eine Fehlermeldung zurückgegeben.
+.PP
+.TP
+.BI "avt.set_directory(" directory )
+.TQ
+.BI "avt.chdir(" Verzeichnis )
+Setzt das Arbeitsverzeichnis auf
+.IR Verzeichnis .
+.RI "Wenn " Verzeichnis " " nil
+ist, ein Leerstring oder nicht angegeben ist, wird nichts ausgeführt.
+.IP
+.B Beispiel:
+.EX
+avt.set_directory(os.getenv("HOME") or os.getenv("USERPROFILE"))
+.EE
+.PP
+.TP
+.BI "avt.directory_entries(" [Verzeichnis] )
+Hole eine Liste von Verzeichniseinträgen vom angegebenen
+.I Verzeichnis
+oder dem aktuellen Arbeitsverzeichnis, wenn keins angegeben ist.
+.IP
+Bei Erfolg gibt es ein Array mit den Verzeichniseinträgen zurück
+und die Anzahl der Einträge.
+Im Fehlerfall wird
+.I nil
+und eine Fehlermeldung zurückgegeben.
+.IP
+Die Liste enthält sowohl normale Dateinamen, einschließlich
+verstecken Dateien, Unterverzeichnisse und andere Arten von Einträgen.
+Die Einträge "." oder ".." sind nicht mit drin.
+.PP
+.TP
+.BI "avt.entry_type(" Eintrag )
+Ermittle die Art eines Verzeichniseintrags und seine Größe.
+.IP
+Bei Erfolg gibt es die Art des Verzeichniseintrags als String
+zurück und die Größe als Zahl.
+Die Art ist eins von "file", "directory", "character device", 
+"block device", "fifo", "socket" oder "unknown".
+.IP
+Im Fehlerfall wird
+.I nil
+und eine Fehlermeldung zurückgegeben.
+.IP
+Symbolische Links werden ausgewertet.
+Das bedeutet, man bekommt die Art des resultierenden Eintrags.
+Kaputte Links werden wie nicht existierende Einträge behandelt.
+.PP
+.SS Verschiedenes
+.TP
+.BI "avt.encoding(" encoding )
+Ändert die Text-Kodierung.
+.PP
+.TP
+.BI "avt.get_encoding()"
+Fragt die Text-Kodierung ab.
+.IP
+Wenn noch keine gesetzt worden ist, wird
+.I nil
+zurückgegeben.
+.PP
+.TP
+.BI "avt.set_title(" "[title] [,shortname]" )
+Ändert den Titel und/oder den Kurznamen.
+Wenn eine Angabe fehlt, oder
+.I nil
+ist, bleibt der entsprechende Eintrag unverändert.
+.PP
+.TP
+.BI "avt.right_to_left(" true | false )
+Aktiviert, oder deaktiviert den rechts-nach-links-Schreibmodus.
+.IP
+.B Achtung:
+Dies ist noch experimentell und funktioniert nur eingeschränkt.
+.PP
+.TP
+.BI "avt.set_flip_page_delay(" [delay] )
+Setzt eine Verzögerung für
+.B avt.flip_page()
+oder "\\f".
+Ohne Angabe eines Wertes wird auf die Vorgabe zurückgesetzt.
+Der Wert 0 schaltet die Verzögerung ganz aus.
+.PP
+.TP
+.BI "avt.activate_cursor(" true | false )
+Legt fest, ob der Cursor angezeigt wird, oder nicht.
+.PP
+.TP
+.BI "avt.clear_screen()"
+Löscht den gesamten Bildschirm, bzw. das Fenster
+(nicht nur die Sprechblase!).
+.PP
+.TP
+.BI "avt.clear_down()"
+Löscht von der Cursor-Postition nach unten im Anzeigebereich.
+Wenn noch keine Sprechblase angezeigt wird, wird sie gezeichnet.
+.PP
+.TP
+.BI "avt.clear_eol()"
+Löscht das Ende der Zeile (abhängig von der Text-Richtung).
+.PP
+.TP
+.BI "avt.clear_bol()"
+Löscht den Anfang der Zeile (abhängig von der Text-Richtung).
+.PP
+.TP
+.BI "avt.clear_line()"
+Löscht die Zeile.
+.PP
+.TP
+.BI "avt.clear_up()"
+Löscht von der Cursor-Postition nach oben im Anzeigebereich.
+Wenn noch keine Sprechblase angezeigt wird, wird sie gezeichnet.
+.PP
+.TP
+.BI "avt.reserve_single_keys(" true | false )
+Reserviert Einzeltasten, wie <ESC> oder <F11>.
+.PP
+.TP
+.BI "avt.switch_mode(" mode )
+Ändert den Fenster-Modus.
+Man kann es entwerder auf
+.IR """window""" ", oder " """fullscreen"""
+setzen.
+.IP
+(Die Modi 
+.IR """auto""" " und  " """fullscreen no switch"""
+funktionieren hiermit nicht.)
+.PP
+.TP
+.BI "avt.get_mode()"
+Gibt den Fenster-Modus zurück
+(siehe
+.BR "avt.switch_mode (mode)" ).
+.PP
+.TP
+.BI "avt.toggle_fullscreen()"
+Schaltet den Vollbild-Modus ein oder aus.
+.PP
+.TP
+.BI "avt.update()"
+Aktualisiert alles und reagiert auf Ereignisse.
+Dies sollte innehalb von Schleifen ausgeführt werden, während das
+Programm mit anderem beschäftigt ist.
+.PP
+.TP
+.BI "avt.credits(" "text, centered" )
+Zeigt einen Abspann.
+.IP
+Wenn der zweite Parameter
+.I true
+ist, wird jede Zeile zentriert.
+.PP
+.TP
+.BI "avt.viewport(" "x, y, width, height" )
+Setzt einen Anzeigebereich (einen Unterbereich des Textbereiches).
+Die obere linke Ecke hat die Koordinaten 1, 1.
+.PP
+.TP
+.BI "avt.set_scroll_mode(" Modus )
+Setzt den Rollmodus, dh. wie er reagiert, wenn man hinter der
+letzten Zeile weiter schreibt.
+Der
+.I Modus
+ist entweder -1 für "nichts tun" oder 0 für "Seite umblättern"
+oder 1 für "hochrollen".
+.PP
+.TP
+.BI "avt.get_scroll_mode()"
+Gibt den Rollmodus zurück
+(siehe
+.BR "avt.set_scroll_mode()" ")."
+.PP
+.TP
+.BI "avt.newline_mode(" true | false )
+Wenn der Neue-Zeile-Modus aktiviert ist (Vorgabe), dann setzt ein
+Zeilenvorschub-Zeichen den Cursor an den Anfang einer neuen Zeile.
+Wenn er aus ist, geht der Cursor in die nächste Zeile, bleibt aber
+in der selben horizontalen Position.
+.PP
+.TP
+.BI "avt.set_auto_margin(" true | false )
+Setzt den Modus für automatischen Zeilenumbruch, dh. ob
+eine neue Zeile angefangen werden soll, wenn der Text nicht
+in eine Zeile passt.
+.PP
+.TP
+.BI "avt.get_auto_margin()"
+Gibt den Modus für automatischen Zeilenumbruch zurück.
+.PP
+.TP
+.BI "avt.set_origin_mode(" true | false )
+Setzt den Ursprungs-Modus.
+Wenn der Ursprungs-Modus eingeschaltet ist, sind die Koordinaten
+1, 1 immer oben links in der Sprechblase, auch dann, wenn der
+Anzeigebereich (viewport) nicht dort beginnt.
+Wenn der Ursprungs-Modus ausgeschaltet ist, sind die Koordinaten
+1, 1 oben links im Anzeigebereich (viewport).
+.PP
+.TP
+.BI "avt.get_origin_mode()"
+Gibt den Ursprings-Modus zurück
+(siehe
+.BR "avt.set_origin_mode" ")."
+.PP
+.TP
+.BI "avt.set_mouse_visible(" true | false )
+Legt fest, ob der Mauszeiger sichtbar sein soll, oder nicht.
+.IP
+.B Anmerkung:
+Wenn die Anwendung in einem Fenster läuft, gilt das nur,
+wenn sich der Mauszeiger innerhalb des Fensters befindet.
+.PP
+.TP
+.BI "avt.lock_updates(" true | false )
+Blockiert Aktualisierungen innerhalb der Sprechblase.
+Das kann man verwenden um die Geschwindigkeit zu erhöhen.
+.PP
+.TP
+.BI "avt.version()"
+Gibt die Version von AKFAvatar als String zurück.
+.PP
+.TP
+.BI "avt.copyright()"
+Gibt die Copyright-Meldung für AKFAvatar als String zurück.
+.PP
+.TP
+.BI "avt.license()"
+Gibt die Lizenz-Meldung für AKFAvatar als String zurück.
+.PP
+.TP
+.BI "avt.quit()"
+Beendet das AKFAvatar Untersystem (schließt das Fenster).
+Das Audio-Untersystem wird ebenfalls beendet.
+.IP
+Diese Funktion wird nicht in normalen Programmen benötigt.
+Man sollte sie nur verwenden, wenn das Programm ohne sichbares
+Fenster weiter laufen soll.
+.PP
+.SH "SEE ALSO"
+.BR lua-akfavatar (1)
+.BR lua (1)
+.br
+.B http://lua.coders-online.net/
+.br
+.B http://www.lua.org/manual/5.1/
+.br
+.B http://akfavatar.nongnu.org/manual/

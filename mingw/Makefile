@@ -23,6 +23,8 @@ sdl_dll = $(srcdir)/misc/SDL.dll
 # output is limited to 2 channels, but this value may be higher
 vorbis_max_channels = 8
 
+ROFF = groff
+
 include config-mingw
 
 libdir = $(prefix)/lib
@@ -279,15 +281,21 @@ luaavtstarter-rc.wo: luaavtstarter.rc $(srcdir)/mingw/akfavatar.ico
 	$(WINDRES) -I$(srcdir)/mingw/ -o $@ -i luaavtstarter.rc
 
 about: $(srcdir)/lua-akfavatar.en.about \
-       $(srcdir)/lua-akfavatar-ref.en.about
+       $(srcdir)/lua-akfavatar-ref.en.about \
+       $(srcdir)/lua-akfavatar-ref.de.about
 
 $(srcdir)/lua-akfavatar.en.about: $(srcdir)/doc/lua-akfavatar.en.man
-	-nroff -c -man -Tutf8 $(srcdir)/doc/lua-akfavatar.en.man > $@
+	-$(ROFF) -c -man -Kutf8 -Tutf8 $(srcdir)/doc/lua-akfavatar.en.man > $@
 
 $(srcdir)/lua-akfavatar-ref.en.about: \
   $(srcdir)/doc/lua-akfavatar-ref.en.man
-	-nroff -c -man -Tutf8 \
+	-$(ROFF) -c -man -Kutf8 -Tutf8 \
 	  $(srcdir)/doc/lua-akfavatar-ref.en.man > $@
+
+$(srcdir)/lua-akfavatar-ref.de.about: \
+  $(srcdir)/doc/lua-akfavatar-ref.de.man
+	-$(ROFF) -c -man -Kutf8 -Tutf8 \
+	  $(srcdir)/doc/lua-akfavatar-ref.de.man > $@
 
 # the folowing targets are for the maintainer
 # don't use them unless you know what you are doing
@@ -337,8 +345,10 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(srcdir)/lua/colors_overview.lua $(BINPKGNAME)/lua/
 	-cp $(srcdir)/lua-akfavatar.en.about $(BINPKGNAME)/
 	-cp $(srcdir)/lua-akfavatar-ref.en.about $(BINPKGNAME)/
+	-cp $(srcdir)/lua-akfavatar-ref.de.about $(BINPKGNAME)/
 	cp lua-akfavatar.en.pdf $(BINPKGNAME)/
 	cp lua-akfavatar-ref.en.pdf $(BINPKGNAME)/
+	cp lua-akfavatar-ref.de.pdf $(BINPKGNAME)/
 	cp $(srcdir)/lua/akfavatar/dir.??.about $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/utf8.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/utf8.??.about $(BINPKGNAME)/lua/akfavatar/
