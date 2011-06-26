@@ -26,8 +26,14 @@ avt.initialize {
   avatar = "none",
   }
 
+local oldtime = -1
+
 local function clock(c, show_date, timestamp)
   timestamp = timestamp or os.time()
+
+  -- timestamp changes every second
+  if timestamp == oldtime then return end
+  oldtime = timestamp
 
   local time = os.date("*t", timestamp)
   local width, height = c:width(), c:height()
@@ -35,6 +41,8 @@ local function clock(c, show_date, timestamp)
   local radius = math.min(width, height) / 2 - 10
   local pi2 = math.pi * 2
   local value
+
+  c:clear()
 
   if show_date then
     c:textalign("center", "center")
@@ -68,11 +76,22 @@ local function clock(c, show_date, timestamp)
   c:line (xcenter, ycenter,
           xcenter + (radius - 12) * math.sin(value),
           ycenter - (radius - 12) * math.cos(value))
+
+  -- seconds pointer
+  value = pi2 * time.sec / 60
+  c:thickness(1)
+  c:line (xcenter, ycenter,
+          xcenter + (radius - 12) * math.sin(value),
+          ycenter - (radius - 12) * math.cos(value))
+
+  c:show()
 end
 
 local c = canvas.new()
 c:color "saddle brown"
 os.setlocale("", "time") --> for the formatting of the date
-clock(c, true)
-c:show()
-avt.wait(5.0)
+
+while true do
+  clock(c, true)
+  avt.wait(0.01)
+end
