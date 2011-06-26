@@ -38,7 +38,17 @@
 #define PI  3.14159265358979323846
 
 #define CANVASDATA "AKFAvatar-canvas"
-#define get_canvas(L,idx)  ((canvas *) luaL_checkudata (L, idx, CANVASDATA))
+
+#define get_canvas(L,idx) \
+   ((canvas *) luaL_checkudata ((L), (idx), CANVASDATA))
+
+#define canvas_bytes(width, height) \
+  sizeof(canvas)-sizeof(unsigned char)+(width)*(height)*BPP
+
+#define new_canvas(L, nbytes) \
+  (canvas *) lua_newuserdata ((L), (nbytes)); \
+  luaL_getmetatable ((L), CANVASDATA); \
+  lua_setmetatable ((L), -2)
 
 /* force value to be in range */
 #define RANGE(v, min, max)  ((v) < (min) ? (min) : (v) > (max) ? (max) : (v))
@@ -59,7 +69,8 @@
   } while(0)
 
 /* fast putpixel, no check */
-#define putpixel(c, x, y)  putpixelrgb (c, x, y, (c)->width, (c)->r, (c)->g, (c)->b)
+#define putpixel(c, x, y) \
+  putpixelrgb ((c), (x), (y), (c)->width, (c)->r, (c)->g, (c)->b)
 
 #define HA_LEFT 0
 #define HA_CENTER 1
@@ -151,18 +162,12 @@ static int
 lcanvas_new (lua_State * L)
 {
   int width, height;
-  size_t nbytes;
   canvas *c;
 
   width = luaL_optint (L, 1, avt_image_max_width ());
   height = luaL_optint (L, 2, avt_image_max_height ());
 
-  nbytes = sizeof (canvas) - sizeof (unsigned char) + (width * height * BPP);
-
-  c = (canvas *) lua_newuserdata (L, nbytes);
-  luaL_getmetatable (L, CANVASDATA);
-  lua_setmetatable (L, -2);
-
+  c = new_canvas (L, canvas_bytes (width, height));
   c->width = width;
   c->height = height;
 
@@ -1046,6 +1051,74 @@ lcanvas_put (lua_State * L)
 }
 
 
+/* c:get(canvas, x1, y1, x2, y2) */
+static int
+lcanvas_get (lua_State * L)
+{
+  canvas *c, *c2;
+  int x1, y1, x2, y2;
+  int source_width, target_width, source_height, target_height;
+  int bytes, y;
+  unsigned char *source, *target;
+
+  c = get_canvas (L, 1);
+
+  x1 = luaL_checkint (L, 2) - 1;
+  y1 = luaL_checkint (L, 3) - 1;
+  x2 = luaL_checkint (L, 4) - 1;
+  y2 = luaL_checkint (L, 5) - 1;
+
+  source_width = c->width;
+  source_height = c->height;
+
+  luaL_argcheck (L, x1 >= 0 && x1 < source_width, 2, "value out of range");
+  luaL_argcheck (L, y1 >= 0 && y1 < source_height, 3, "value out of range");
+  luaL_argcheck (L, x2 >= 0 && x2 < source_width, 4, "value out of range");
+  luaL_argcheck (L, y2 >= 0 && y2 < source_height, 5, "value out of range");
+
+  if (x1 > x2)			/* swap */
+    {
+      int tx = x1;
+      x1 = x2;
+      x2 = tx;
+    }
+
+  if (y1 > y2)			/* swap */
+    {
+      int ty = y1;
+      y1 = y2;
+      y2 = ty;
+    }
+
+  target_width = x2 - x1 + 1;
+  target_height = y2 - y1 + 1;
+
+  c2 = new_canvas (L, canvas_bytes (target_width, target_height));
+  c2->width = target_width;
+  c2->height = target_height;
+  c2->r = c->r;
+  c2->g = c->g;
+  c2->b = c->b;
+
+  /* pen in center */
+  penpos (c2, target_width / 2 - 1, target_height / 2 - 1);
+  c2->thickness = c->thickness;
+
+  c2->htextalign = c->htextalign;
+  c2->vtextalign = c->vtextalign;
+
+  source = c->data + y1 * source_width * BPP;
+  target = c2->data;
+  bytes = target_width * BPP;
+
+  for (y = 0; y < target_height; y++)
+    memcpy (target + (y * target_width * BPP),
+	    source + y * source_width * BPP + x1 * BPP, bytes);
+
+  return 1;
+}
+
+
 static int
 lcanvas_duplicate (lua_State * L)
 {
@@ -1053,13 +1126,8 @@ lcanvas_duplicate (lua_State * L)
   canvas *c, *c2;
 
   c = get_canvas (L, 1);
-
-  nbytes =
-    sizeof (canvas) - sizeof (unsigned char) + (c->width * c->height * BPP);
-
-  c2 = (canvas *) lua_newuserdata (L, nbytes);
-  luaL_getmetatable (L, CANVASDATA);
-  lua_setmetatable (L, -2);
+  nbytes = canvas_bytes (c->width, c->height);
+  c2 = new_canvas (L, nbytes);
   memcpy (c2, c, nbytes);
 
   return 1;
@@ -1099,6 +1167,7 @@ static const struct luaL_reg canvaslib_methods[] = {
   {"width", lcanvas_width},
   {"height", lcanvas_height},
   {"put", lcanvas_put},
+  {"get", lcanvas_get},
   {"duplicate", lcanvas_duplicate},
   {NULL, NULL}
 };

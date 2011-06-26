@@ -186,9 +186,16 @@ c:put(canvas, x, y)
     The previous content is overwritten (no transparency supported).
 
 
+c:get(x1, y1, x2, y2)
+    Returns an area of the canvas c as a new canvas.
+    Most settings are copied, exept the size and the pen position.
+    All values must be in range.
+
+
 c:duplicate()
     Returns an exact duplicate (a copy) of the canvas c.
     The canvas-specific settings are copied, too.
+    This is faster than using c:get().
 
     You can use this for example to create a fixed background and then draw the
     individual foregrounds on duplicates.
