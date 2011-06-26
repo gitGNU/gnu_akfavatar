@@ -1051,7 +1051,7 @@ lcanvas_put (lua_State * L)
 }
 
 
-/* c:get(canvas, x1, y1, x2, y2) */
+/* c:get(x1, y1, x2, y2) */
 static int
 lcanvas_get (lua_State * L)
 {
