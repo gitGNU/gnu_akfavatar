@@ -787,7 +787,9 @@ lcanvas_show (lua_State * L)
   int status;
 
   c = get_canvas (L, 1);
-  status = avt_show_raw_image (&c->data, c->width, c->height, BPP);
+  avt_show_raw_image (&c->data, c->width, c->height, BPP);
+
+  status = avt_update();
 
   if (status <= AVT_ERROR)
     {
