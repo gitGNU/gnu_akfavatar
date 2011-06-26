@@ -806,6 +806,19 @@ lcanvas_show (lua_State * L)
 
 
 static int
+lcanvas_size (lua_State * L)
+{
+  canvas *c;
+
+  c = get_canvas (L, 1);
+  lua_pushinteger (L, c->width);
+  lua_pushinteger (L, c->height);
+
+  return 2;
+}
+
+
+static int
 lcanvas_width (lua_State * L)
 {
   lua_pushinteger (L, get_canvas (L, 1)->width);
@@ -1164,6 +1177,7 @@ static const struct luaL_reg canvaslib_methods[] = {
   {"textalign", lcanvas_textalign},
   {"font_size", lcanvas_font_size},
   {"show", lcanvas_show},
+  {"size", lcanvas_size},
   {"width", lcanvas_width},
   {"height", lcanvas_height},
   {"put", lcanvas_put},

@@ -28,6 +28,10 @@ c:show()
     But don't make the steps too small, or it will be painfull on slow devices.
 
 
+c:size()
+    Returns the width and the height of the canvas c.
+
+
 c:width()
     Returns the width of the canvas c.
 
