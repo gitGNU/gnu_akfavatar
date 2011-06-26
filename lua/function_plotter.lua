@@ -167,15 +167,32 @@ local function reset()
   scale = width / x_units
 end
 
+local function textplate(s)
+  local fwidth, fheight = c:font_size()
+  local p, pwidth, pheight = canvas.new((#s*fwidth)+8, fheight+8)
+
+  p:color "gold"
+  p:bar(1, 1, pwidth, pheight)
+  p:center()
+  p:textalign("center", "center")
+  p:color "black"
+  p:text(s)
+
+  return p
+end
+
 local function plot(f, fstr)
   local choice
   local animate = animation
   local zoom_factor = zoom
+  local functionplate = textplate(fstr)
 
   reset()
 
   repeat
     grid()
+
+    if animate then c:put(functionplate, 4, 4) end
 
     c:thickness(2)
     c:color "royal blue"  --> don't tell my old teacher what pen I use ;-)
@@ -211,9 +228,7 @@ local function plot(f, fstr)
       old_value = value
     end
 
-    c:color "black"
-    c:textalign("left", "top")
-    c:text(fstr, 4, 4)
+    c:put(functionplate, 4, 4)
 
     c:show() --> show final result
     animate = false --> only animate the first time
