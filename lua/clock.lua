@@ -94,5 +94,5 @@ os.setlocale("", "time") --> for the formatting of the date
 
 while true do
   clock(c, true)
-  avt.wait(0.01)
+  avt.wait(0.1)
 end
