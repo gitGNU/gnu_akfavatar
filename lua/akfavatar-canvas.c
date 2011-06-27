@@ -191,6 +191,16 @@ lcanvas_new (lua_State * L)
 
 
 static int
+lcanvas_maxsize (lua_State * L)
+{
+  lua_pushinteger (L, avt_image_max_width ());
+  lua_pushinteger (L, avt_image_max_height ());
+
+  return 2;
+}
+
+
+static int
 lcanvas_clear (lua_State * L)
 {
   clear_canvas (get_canvas (L, 1));
@@ -1151,6 +1161,7 @@ lcanvas_duplicate (lua_State * L)
 
 static const struct luaL_reg canvaslib[] = {
   {"new", lcanvas_new},
+  {"maxsize", lcanvas_maxsize},
   {NULL, NULL}
 };
 

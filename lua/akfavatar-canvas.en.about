@@ -5,19 +5,19 @@ Notes:
 - The pen size, color and position are set for each canvas.
 
 
-canvas.new ([width, height])
+canvas.new([width, height])
     Creates a new canvas.
     When width and height are not given it uses the whole window/screen.
     A thin black pen is chosen and the position is centered.
 
     Retuns the canvas, the width and the height (ie. three values).
 
-    Use it either like this:
+    Use it like this:
       local c, width, height = canvas.new()
 
-    Or use it like that:
-      local width, height = 100, 100
-      local c = canvas.new(width, height)
+
+canvas.maxsize()
+    Returns the maximum width and height for a canvas
 
 
 c:show()

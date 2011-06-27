@@ -87,7 +87,8 @@ local function clock(c, show_date, timestamp)
   c:show()
 end
 
-local c = canvas.new()
+local s = math.min(canvas.maxsize())
+local c = canvas.new(s, s)
 c:color "saddle brown"
 os.setlocale("", "time") --> for the formatting of the date
 
