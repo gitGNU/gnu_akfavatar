@@ -180,6 +180,7 @@ c:textalign([horizontal] [, vertical])
     right.
 
 
+canvas.font_size()
 c:font_size()
     Returns the width and the hight of the font, ie. one character.
     It is a fixed-width font, each character has the same width.

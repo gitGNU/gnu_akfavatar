@@ -1162,6 +1162,7 @@ lcanvas_duplicate (lua_State * L)
 static const struct luaL_reg canvaslib[] = {
   {"new", lcanvas_new},
   {"maxsize", lcanvas_maxsize},
+  {"font_size", lcanvas_font_size},
   {NULL, NULL}
 };
 
