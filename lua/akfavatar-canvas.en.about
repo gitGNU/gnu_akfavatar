@@ -16,8 +16,8 @@ canvas.new([width, height])
       local c, width, height = canvas.new()
 
 
-canvas.maxsize()
-    Returns the maximum width and height for a canvas
+canvas.fullsize()
+    Returns the width and height for a canvas so that it fills the whole window.
 
 
 c:show()
