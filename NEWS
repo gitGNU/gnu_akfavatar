@@ -11,7 +11,7 @@
   - lua-akfavatar can be compiled as module
   - new lua modules available for better UTF-8 support,
     terminal-emulation and the Ogg Vorbis audio format
-    and a canvas for drawing images
+    and a graphic module for drawing images
   - the terminal-emulation has a different, enhanced APC interface
 
   C-API changes:
