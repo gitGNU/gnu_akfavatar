@@ -6,7 +6,13 @@
 
 PWD="$(pwd)"
 localdir=$(dirname "$0")
-test "$localdir" = "." && localdir="$PWD" || localdir="$PWD/$localdir"
+
+if [ "$localdir" = "." ]
+then localdir="$PWD"
+else if [ -d "$PWD/$localdir" ] # relative?
+then localdir="$PWD/$localdir" # make absolute
+fi
+fi
 
 # On HP-UX change LD_LIBRARY_PATH to SHLIB_PATH
 # On AIX change LD_LIBRARY_PATH to LIBPATH
