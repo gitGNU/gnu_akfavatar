@@ -52,7 +52,7 @@ atan = math.atan
 
 -------------------------------------------------------------------------------
 require "lua-akfavatar"
-require "akfavatar-canvas"
+require "akfavatar-graphic"
 
 avt.initialize {
   title = "Function Plotter",
@@ -60,7 +60,7 @@ avt.initialize {
   encoding = "UTF-8"
   }
 
-local c, width, height = canvas.new()
+local c, width, height = graphic.new()
 local xoffset, yoffset = width/2, height/2
 local scale = width / x_units
 
@@ -169,7 +169,7 @@ end
 
 local function textplate(s)
   local fwidth, fheight = c:font_size()
-  local p, pwidth, pheight = canvas.new((#s*fwidth)+8, fheight+8)
+  local p, pwidth, pheight = graphic.new((#s*fwidth)+8, fheight+8)
 
   p:color "gold"
   p:bar(1, 1, pwidth, pheight)

@@ -1,108 +1,108 @@
-Module "akfavatar-canvas"
+Module "akfavatar-graphic"
 
 Notes:
 - Coordinates start with 1, 1 in the upper left corner.
-- The pen size, color and position are set for each canvas.
+- The pen size, position and color are set for each graphic.
 
 
-canvas.new([width, height])
-    Creates a new canvas.
+graphic.new([width, height])
+    Creates a new graphic (a canvas).
     When width and height are not given it uses the whole window/screen.
     A thin black pen is chosen and the position is centered.
 
-    Retuns the canvas, the width and the height (ie. three values).
+    Retuns the graphic, the width and the height (ie. three values).
 
     Use it like this:
-      local c, width, height = canvas.new()
+      local g, width, height = graphic.new()
 
 
-canvas.fullsize()
-    Returns the width and height for a canvas so that it fills the whole window.
+graphic.fullsize()
+    Returns the width and height for a graphic so that it fills the whole window.
 
 
-c:show()
-    Shows the canvas as image after drawing.
+g:show()
+    Shows the graphic as image after drawing.
 
     Hint: You can show intermediate images, continue drawing, wait a while
     and then show the next step and so on.  This makes a nice animation.
     But don't make the steps too small, or it will be painfull on slow devices.
 
 
-c:size()
-    Returns the width and the height of the canvas c.
+g:size()
+    Returns the width and the height of the graphic g.
 
 
-c:width()
-    Returns the width of the canvas c.
+g:width()
+    Returns the width of the graphic g.
 
 
-c:height()
-    Returns the height of the canvas c.
+g:height()
+    Returns the height of the graphic g.
 
 
-c:color(colorname)
+g:color(colorname)
     Sets the drawing color.
     The color can be either a defined color name,
     or a hexadecimal representation, like for example "#FFFF00".
 
 
-c:rgb(red, green, blue)
+g:rgb(red, green, blue)
     Sets the drawing color from RGB values.
     The values must be in the range from 0 to 255 inclusive.
-    This method is faster than using c:color().
+    This method is faster than using g:color().
 
 
-c:eraser()
+g:eraser()
     Sets the drawing color to the background color.
 
 
-c:thickness(value)
+g:thickness(value)
     Sets the thickness of the pen.  The value 1 is the thinnest.
 
 
-c:clear()
-    Clears the canvas c, ie. fills the canvas with the background color.
+g:clear()
+    Clears the graphic g, ie. fills the graphic with the background color.
     The pen position is not changed.
 
 
-c:putpixel([x, y])
+g:putpixel([x, y])
     Puts a pixel at the given coordinates or at the current pen position.
     The pen position is not changed.
 
 
-c:getpixel([x, y])
+g:getpixel([x, y])
     Gets the pixel color at the given coordinates or at the current pen position.
     The color is returned as string in the hexadicimal RGB notation.
     On error it returns nil and an error message.
     The pen position is not changed.
 
 
-c:getpixelrgb([x, y])
+g:getpixelrgb([x, y])
     Gets the pixel color at the given coordinates or at the current pen position.
     Returns three integers for red, green and blue, in the range of 0-255.
     On error it returns nil and an error message.
     The pen position is not changed.
 
 
-c:putdot([x, y])
+g:putdot([x, y])
     Puts a dot at the given coordinates or at the current pen position.
-    If the pen thin, it's the same as c:putpixel.
+    If the pen thin, it's the same as g:putpixel.
     The pen position is not changed.
 
 
-c:pen_position()
+g:pen_position()
     Returns the x and y position of the pen (ie. returns two values).
 
 
-c:center()
-    Sets the pen to the center of the canvas.
+g:center()
+    Sets the pen to the center of the graphic.
 
 
-c:moveto(x, y)
+g:moveto(x, y)
     Move the pen to x, y without drawing.
 
 
-c:moverel(x, y)
+g:moverel(x, y)
     Move the pen without drawing relative to its current position.
     A positive x value moves it to the right,
     a negative x value moves it to the left.
@@ -110,12 +110,12 @@ c:moverel(x, y)
     a negative y value moves it up.
 
 
-c:lineto(x, y)
+g:lineto(x, y)
     Draws a line from the current pen position to these absolute coordinates.
     The pen is moved to the new coordinates.
 
 
-c:linerel(x, y)
+g:linerel(x, y)
     Draws a line relative to its current pen position.
     A positive x value draws to the right,
     a negative x value draws to the left.
@@ -124,24 +124,24 @@ c:linerel(x, y)
     The pen is moved to the new position.
 
 
-c:line(x1, y1, x2, y2)
+g:line(x1, y1, x2, y2)
     Draws a line from x1, y1 to x2, y2.
     The pen is set to x2, y2.
 
 
-c:bar(x1, y1, x2, y2)
+g:bar(x1, y1, x2, y2)
     Draws a solid bar with x1, y2 as the upper left corner
     and x2, y2 as the lower right corner.
     The pen position is not changed.
 
 
-c:rectangle(x1, y1, x2, y2)
+g:rectangle(x1, y1, x2, y2)
     Draws rectangle with x1, y2 as the upper left corner
     and x2, y2 as the lower right corner.
     The pen position is not changed.
 
 
-c:circle(x, y, radius [,startangle, endangle])
+g:circle(x, y, radius [,startangle, endangle])
     Draws a circle with x, y as the center with the given radius.
     The pen is put to the center of the circle (ie. to the given x, y)
 
@@ -149,15 +149,15 @@ c:circle(x, y, radius [,startangle, endangle])
     in degree.  The circle is drawn clockwise.
 
 
-c:text(text [, x, y])
+g:text(text [, x, y])
     Prints a text aligned to the given position or the pen position.
 
     By default the text is centered to the position.  But you can change this
-    with c:textalign().
+    with g:textalign().
 
     The encoding is used from the AKFAvatar settings.  However no other of
     those settings are taken into account.  The color is the drawing color for
-    the canvas.  There is currently no easy way to make boldface, underlined or
+    the graphic.  There is currently no easy way to make boldface, underlined or
     inverted text.
 
     You can use all printable characters, but control characters are not
@@ -166,8 +166,8 @@ c:text(text [, x, y])
     The pen position is not changed.
 
 
-c:textalign([horizontal] [, vertical])
-    Sets the textalignment for c:text().
+g:textalign([horizontal] [, vertical])
+    Sets the textalignment for g:text().
 
     The horizontal alignment can be one of "left", "center" or "right".  The
     default is "center".
@@ -180,27 +180,27 @@ c:textalign([horizontal] [, vertical])
     right.
 
 
-canvas.font_size()
-c:font_size()
+graphic.font_size()
+g:font_size()
     Returns the width and the hight of the font, ie. one character.
     It is a fixed-width font, each character has the same width.
 
 
-c:put(canvas, x, y)
-    Puts a small canvas onto canvas c at the given position (upper-left corner).
+g:put(graphic, x, y)
+    Puts a small graphic onto graphic g at the given position (upper-left corner).
     The previous content is overwritten (no transparency supported).
 
 
-c:get(x1, y1, x2, y2)
-    Returns an area of the canvas c as a new canvas.
+g:get(x1, y1, x2, y2)
+    Returns an area of the graphic g as a new graphic.
     Most settings are copied, exept the size and the pen position.
     All values must be in range.
 
 
-c:duplicate()
-    Returns an exact duplicate (a copy) of the canvas c.
-    The canvas-specific settings are copied, too.
-    This is faster than using c:get().
+g:duplicate()
+    Returns an exact duplicate (a copy) of the graphic g.
+    The graphic-specific settings are copied, too.
+    This is faster than using g:get().
 
     You can use this for example to create a fixed background and then draw the
     individual foregrounds on duplicates.

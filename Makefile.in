@@ -64,7 +64,7 @@ dist-bin: $(DISTBIN)
 
 default: libakfavatar.so libakfavatar.a libavtaddons.a \
 	lua-akfavatar lua-akfavatar.so base64.so akfavatar-term.so \
-	akfavatar-vorbis.so akfavatar-canvas.so about
+	akfavatar-vorbis.so akfavatar-graphic.so about
 	@echo '*'
 	@echo '* use "make install" or "make install-strip"'
 	@echo '* with root-privileges to install it.'
@@ -312,12 +312,12 @@ avttermsys.lo: $(srcdir)/avttermsys.c $(srcdir)/avttermsys.h \
 	        $(srcdir)/akfavatar.h version.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -fpic -c -o $@ $(srcdir)/avttermsys.c
 
-akfavatar-canvas.so: akfavatar-canvas.lo
-	$(CC) -o $@ -shared -fpic akfavatar-canvas.lo -L. -lakfavatar -lm $(LDFLAGS)
+akfavatar-graphic.so: akfavatar-graphic.lo
+	$(CC) -o $@ -shared -fpic akfavatar-graphic.lo -L. -lakfavatar -lm $(LDFLAGS)
 
-akfavatar-canvas.lo: $(srcdir)/lua/akfavatar-canvas.c
+akfavatar-graphic.lo: $(srcdir)/lua/akfavatar-graphic.c
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -fpic -o $@ \
-	  $(srcdir)/lua/akfavatar-canvas.c
+	  $(srcdir)/lua/akfavatar-graphic.c
 
 lbase64.lo: $(srcdir)/lua/lbase64.c
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -fpic -c -o $@ \
@@ -378,7 +378,7 @@ install: libakfavatar.so libakfavatar.a installdirs install-info install-man
 	-$(INSTALL_DATA) base64.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) akfavatar-vorbis.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) akfavatar-term.so $(DESTDIR)$(LUA_CPATH)
-	-$(INSTALL_DATA) akfavatar-canvas.so $(DESTDIR)$(LUA_CPATH)
+	-$(INSTALL_DATA) akfavatar-graphic.so $(DESTDIR)$(LUA_CPATH)
 	-rm -f $(DESTDIR)$(LUA_PATH)/lua-akfavatar.lua
 	@echo '*'
 	@echo '* make install-desktop-menu: to install lua-akfavatar in a desktop menu'
@@ -404,7 +404,7 @@ install-strip: libakfavatar.so libakfavatar.a installdirs install-info install-m
 	-$(INSTALL_DATA) -s base64.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) -s akfavatar-vorbis.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) -s akfavatar-term.so $(DESTDIR)$(LUA_CPATH)
-	-$(INSTALL_DATA) -s akfavatar-canvas.so $(DESTDIR)$(LUA_CPATH)
+	-$(INSTALL_DATA) -s akfavatar-graphic.so $(DESTDIR)$(LUA_CPATH)
 	-rm -f $(DESTDIR)$(LUA_PATH)/lua-akfavatar.lua
 	@echo '*'
 	@echo '* use "make install-desktop-menu" to install lua-akfavatar in a desktop menu'
@@ -674,8 +674,8 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/lua/akfavatar-term.c $(srcdir)/lua/terminal.lua \
 	   $(srcdir)/lua/akfavatar-term.??.about \
 	   $(srcdir)/lua/akfavatar-vorbis.c \
-	   $(srcdir)/lua/akfavatar-canvas.??.about \
-	   $(srcdir)/lua/akfavatar-canvas.c \
+	   $(srcdir)/lua/akfavatar-graphic.??.about \
+	   $(srcdir)/lua/akfavatar-graphic.c \
 	   $(PKGNAME)/lua/
 
 	mkdir $(PKGNAME)/lua/akfavatar
@@ -732,11 +732,11 @@ dist-bin-default: all pdf
 	cp lua-akfavatar lua-akfavatar-bin $(BINPKGNAME)/
 	cp libavtaddons.a $(BINPKGNAME)/
 	cp lua-akfavatar.so base64.so akfavatar-vorbis.so $(BINPKGNAME)/lua/
-	cp akfavatar-canvas.so $(BINPKGNAME)/lua/
+	cp akfavatar-graphic.so $(BINPKGNAME)/lua/
 	cp akfavatar-term.so $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/base64.??.about $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/akfavatar-term.??.about $(BINPKGNAME)/lua/
-	ln $(srcdir)/lua/akfavatar-canvas.??.about $(BINPKGNAME)/lua/
+	ln $(srcdir)/lua/akfavatar-graphic.??.about $(BINPKGNAME)/lua/
 	ln $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/include/
 	ln $(srcdir)/avtaddons.h $(BINPKGNAME)/include/
 	-ln $(srcdir)/akfavatar.h.about $(BINPKGNAME)/include/

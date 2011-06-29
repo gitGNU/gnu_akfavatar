@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --]]-------------------------------------------------------------------
 
 require "lua-akfavatar"
-require "akfavatar-canvas"
+require "akfavatar-graphic"
 
 avt.initialize {
   title = "Clock",
@@ -87,8 +87,8 @@ local function clock(c, show_date, timestamp)
   c:show()
 end
 
-local s = math.min(canvas.fullsize())
-local c = canvas.new(s, s)
+local s = math.min(graphic.fullsize())
+local c = graphic.new(s, s)
 c:color "saddle brown"
 os.setlocale("", "time") --> for the formatting of the date
 

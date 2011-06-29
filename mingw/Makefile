@@ -46,7 +46,7 @@ SHELL = /bin/sh
 
 all: akfavatar.dll libakfavatar.a libavtaddons.a \
      lua-akfavatar.exe lua-akfavatar.dll base64.dll akfavatar-vorbis.dll \
-     akfavatar-canvas.dll iconv.exe about
+     akfavatar-graphic.dll iconv.exe about
 
 nolua: akfavatar.dll libakfavatar.a libavtaddons.a iconv.exe
 
@@ -259,13 +259,13 @@ stb_vorbis.wo: $(srcdir)/stb_vorbis.c
 	  -DSTB_VORBIS_MAX_CHANNELS=$(vorbis_max_channels) \
 	  -c -o $@ $(srcdir)/stb_vorbis.c
 
-akfavatar-canvas.dll: akfavatar-canvas.wo
-	$(CC) -o $@ -shared akfavatar-canvas.wo \
+akfavatar-graphic.dll: akfavatar-graphic.wo
+	$(CC) -o $@ -shared akfavatar-graphic.wo \
 	   -L. -lakfavatar -lm $(LUA_LDFLAGS) $(LDFLAGS)
 
-akfavatar-canvas.wo: $(srcdir)/lua/akfavatar-canvas.c
+akfavatar-graphic.wo: $(srcdir)/lua/akfavatar-graphic.c
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
-	  $(srcdir)/lua/akfavatar-canvas.c
+	  $(srcdir)/lua/akfavatar-graphic.c
 
 lua-akfavatar.rc: $(srcdir)/mingw/lua-akfavatar-rc.in config-mingw
 	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
@@ -325,8 +325,8 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(srcdir)/lua/base64.??.about $(BINPKGNAME)/
 	cp base64.dll $(BINPKGNAME)/
 	cp akfavatar-vorbis.dll $(BINPKGNAME)/
-	cp $(srcdir)/lua/akfavatar-canvas.??.about $(BINPKGNAME)/
-	cp akfavatar-canvas.dll $(BINPKGNAME)/
+	cp $(srcdir)/lua/akfavatar-graphic.??.about $(BINPKGNAME)/
+	cp akfavatar-graphic.dll $(BINPKGNAME)/
 	cp $(srcdir)/lua/multiplication.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/interactive_lua.??.about $(BINPKGNAME)/lua/
