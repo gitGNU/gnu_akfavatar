@@ -28,7 +28,7 @@ avt.initialize {
 
 local oldtime = -1
 
-local function clock(c, show_date, timestamp)
+local function clock(gr, show_date, timestamp)
   timestamp = timestamp or os.time()
 
   -- timestamp changes every second
@@ -36,63 +36,63 @@ local function clock(c, show_date, timestamp)
   oldtime = timestamp
 
   local time = os.date("*t", timestamp)
-  local width, height = c:width(), c:height()
+  local width, height = gr:width(), gr:height()
   local xcenter, ycenter = width/2, height/2
   local radius = math.min(width, height) / 2 - 10
   local pi2 = math.pi * 2
   local value
 
-  c:clear()
+  gr:clear()
 
   if show_date then
-    c:textalign("center", "center")
-    c:text(os.date("%x", timestamp), xcenter, height * 3/4)
+    gr:textalign("center", "center")
+    gr:text(os.date("%x", timestamp), xcenter, height * 3/4)
   end
 
   -- show hour points
-  c:thickness(7)
+  gr:thickness(7)
   for i=1,12 do
-    c:putdot(xcenter + radius * math.sin(pi2*i/12),
+    gr:putdot(xcenter + radius * math.sin(pi2*i/12),
              ycenter - radius * math.cos(pi2*i/12))
   end
 
   -- show minute points
-  c:thickness(2)
+  gr:thickness(2)
   for i=1,60 do
-    c:putdot(xcenter + radius * math.sin(pi2*i/60),
+    gr:putdot(xcenter + radius * math.sin(pi2*i/60),
              ycenter - radius * math.cos(pi2*i/60))
   end
 
   -- hours pointer
   value = pi2 * ((time.hour % 12) * 5 + time.min / 12) / 60
-  c:thickness(5)
-  c:line (xcenter, ycenter,
+  gr:thickness(5)
+  gr:line (xcenter, ycenter,
           xcenter + (radius/2) * math.sin(value),
           ycenter - (radius/2) * math.cos(value))
 
   -- minutes pointer
   value = pi2 * time.min / 60
-  c:thickness(3)
-  c:line (xcenter, ycenter,
+  gr:thickness(3)
+  gr:line (xcenter, ycenter,
           xcenter + (radius - 12) * math.sin(value),
           ycenter - (radius - 12) * math.cos(value))
 
   -- seconds pointer
   value = pi2 * time.sec / 60
-  c:thickness(1)
-  c:line (xcenter, ycenter,
+  gr:thickness(1)
+  gr:line (xcenter, ycenter,
           xcenter + (radius - 12) * math.sin(value),
           ycenter - (radius - 12) * math.cos(value))
 
-  c:show()
+  gr:show()
 end
 
 local s = math.min(graphic.fullsize())
-local c = graphic.new(s, s)
-c:color "saddle brown"
+local gr = graphic.new(s, s)
+gr:color "saddle brown"
 os.setlocale("", "time") --> for the formatting of the date
 
 while true do
-  clock(c, true)
+  clock(gr, true)
   avt.wait(0.1)
 end

@@ -53,24 +53,24 @@
 /* force value to be in range */
 #define RANGE(v, min, max)  ((v) < (min) ? (min) : (v) > (max) ? (max) : (v))
 
-#define visible_x(c, x)  ((int) (x) >= 0 && (int) (x) < (c)->width)
-#define visible_y(c, y)  ((int) (y) >= 0 && (int) (y) < (c)->height)
-#define visible(c, x, y)  (visible_x(c, x) && visible_y(c, y))
+#define visible_x(gr, x)  ((int) (x) >= 0 && (int) (x) < (gr)->width)
+#define visible_y(gr, y)  ((int) (y) >= 0 && (int) (y) < (gr)->height)
+#define visible(gr, x, y)  (visible_x(gr, x) && visible_y(gr, y))
 
 /* set pen position */
-#define penpos(c, x, y)  (c)->penx = (int) (x); (c)->peny = (int) (y)
+#define penpos(gr, x, y)  (gr)->penx = (int) (x); (gr)->peny = (int) (y)
 
 /* fast putpixel with rgb, no check */
-#define putpixelrgb(c, x, y, width, r, g, b) \
+#define putpixelrgb(gr, x, y, width, r, g, b) \
   do { \
     unsigned char *p = \
-      (c)->data+(((int)(y))*(width)*BPP)+(((int)(x))*BPP); \
+      (gr)->data+(((int)(y))*(width)*BPP)+(((int)(x))*BPP); \
     *p++=(r); *p++=(g); *p=(b); \
   } while(0)
 
 /* fast putpixel, no check */
-#define putpixel(c, x, y) \
-  putpixelrgb ((c), (x), (y), (c)->width, (c)->r, (c)->g, (c)->b)
+#define putpixel(gr, x, y) \
+  putpixelrgb ((gr), (x), (y), (gr)->width, (gr)->r, (gr)->g, (gr)->b)
 
 #define HA_LEFT 0
 #define HA_CENTER 1
@@ -91,7 +91,7 @@ typedef struct graphic
 
 
 static void
-clear_graphic (graphic * c)
+clear_graphic (graphic * gr)
 {
   unsigned char *p;
   int red, green, blue;
@@ -103,8 +103,8 @@ clear_graphic (graphic * c)
   g = (unsigned char) green;
   b = (unsigned char) blue;
 
-  pixels = c->width * c->height;
-  p = c->data;
+  pixels = gr->width * gr->height;
+  p = gr->data;
 
   for (i = 0; i < pixels; i++)
     {
@@ -116,18 +116,18 @@ clear_graphic (graphic * c)
 
 
 static void
-bar (graphic * c, int x1, int y1, int x2, int y2)
+bar (graphic * gr, int x1, int y1, int x2, int y2)
 {
   int x, y, width, height;
   unsigned char r, g, b;
   unsigned char *data, *p;
 
-  width = c->width;
-  height = c->height;
-  data = c->data;
-  r = c->r;
-  g = c->g;
-  b = c->b;
+  width = gr->width;
+  height = gr->height;
+  data = gr->data;
+  r = gr->r;
+  g = gr->g;
+  b = gr->b;
 
   /* sanitize values */
   x1 = RANGE (x1, 0, width - 1);
@@ -150,38 +150,38 @@ bar (graphic * c, int x1, int y1, int x2, int y2)
 }
 
 
-#define putdot(c, x, y) \
+#define putdot(gr, x, y) \
   do { \
-    int s = (c)->thickness; \
-    bar ((c), ((int) (x))-s, ((int)(y))-s, ((int)(x))+s, ((int)(y))+s); \
+    int s = (gr)->thickness; \
+    bar ((gr), ((int) (x))-s, ((int)(y))-s, ((int)(x))+s, ((int)(y))+s); \
   } while(0)
 
 
-/* local c, width, height = graphic.new([width, height]) */
+/* local gr, width, height = graphic.new([width, height]) */
 static int
 lgraphic_new (lua_State * L)
 {
   int width, height;
-  graphic *c;
+  graphic *gr;
 
   width = luaL_optint (L, 1, avt_image_max_width ());
   height = luaL_optint (L, 2, avt_image_max_height ());
 
-  c = new_graphic (L, graphic_bytes (width, height));
-  c->width = width;
-  c->height = height;
+  gr = new_graphic (L, graphic_bytes (width, height));
+  gr->width = width;
+  gr->height = height;
 
   /* black color */
-  c->r = c->g = c->b = 0;
+  gr->r = gr->g = gr->b = 0;
 
   /* pen in center */
-  penpos (c, width / 2 - 1, height / 2 - 1);
-  c->thickness = 1 - 1;
+  penpos (gr, width / 2 - 1, height / 2 - 1);
+  gr->thickness = 1 - 1;
 
-  c->htextalign = HA_CENTER;
-  c->vtextalign = VA_CENTER;
+  gr->htextalign = HA_CENTER;
+  gr->vtextalign = VA_CENTER;
 
-  clear_graphic (c);
+  clear_graphic (gr);
 
   lua_pushinteger (L, width);
   lua_pushinteger (L, height);
@@ -208,32 +208,32 @@ lgraphic_clear (lua_State * L)
 }
 
 
-/* c:color(colorname) */
+/* gr:color(colorname) */
 static int
 lgraphic_color (lua_State * L)
 {
-  graphic *c;
+  graphic *gr;
   int red, green, blue;
   const char *name;
 
   name = luaL_checkstring (L, 2);
   if (avt_name_to_color (name, &red, &green, &blue) == AVT_NORMAL)
     {
-      c = get_graphic (L, 1);
-      c->r = (unsigned char) red;
-      c->g = (unsigned char) green;
-      c->b = (unsigned char) blue;
+      gr = get_graphic (L, 1);
+      gr->r = (unsigned char) red;
+      gr->g = (unsigned char) green;
+      gr->b = (unsigned char) blue;
     }
 
   return 0;
 }
 
 
-/* c:rgb(red, green, blue) */
+/* gr:rgb(red, green, blue) */
 static int
 lgraphic_rgb (lua_State * L)
 {
-  graphic *c;
+  graphic *gr;
   int red, green, blue;
 
   red = luaL_checkint (L, 2);
@@ -249,33 +249,33 @@ lgraphic_rgb (lua_State * L)
   luaL_argcheck (L, blue > 0 && blue < 256,
 		 4, "value between 0 and 255 expected");
 
-  c = get_graphic (L, 1);
-  c->r = (unsigned char) red;
-  c->g = (unsigned char) green;
-  c->b = (unsigned char) blue;
+  gr = get_graphic (L, 1);
+  gr->r = (unsigned char) red;
+  gr->g = (unsigned char) green;
+  gr->b = (unsigned char) blue;
 
   return 0;
 }
 
 
-/* c:eraser() */
+/* gr:eraser() */
 static int
 lgraphic_eraser (lua_State * L)
 {
-  graphic *c;
+  graphic *gr;
   int red, green, blue;
 
-  c = get_graphic (L, 1);
+  gr = get_graphic (L, 1);
   avt_get_background_color (&red, &green, &blue);
-  c->r = (unsigned char) red;
-  c->g = (unsigned char) green;
-  c->b = (unsigned char) blue;
+  gr->r = (unsigned char) red;
+  gr->g = (unsigned char) green;
+  gr->b = (unsigned char) blue;
 
   return 0;
 }
 
 
-/* c:thickness(size) */
+/* gr:thickness(size) */
 static int
 lgraphic_thickness (lua_State * L)
 {
@@ -288,63 +288,63 @@ lgraphic_thickness (lua_State * L)
 }
 
 
-/* x, y = c:pen_position () */
+/* x, y = gr:pen_position () */
 static int
 lgraphic_pen_position (lua_State * L)
 {
-  graphic *c = get_graphic (L, 1);
+  graphic *gr = get_graphic (L, 1);
 
-  lua_pushinteger (L, c->penx + 1);
-  lua_pushinteger (L, c->peny + 1);
+  lua_pushinteger (L, gr->penx + 1);
+  lua_pushinteger (L, gr->peny + 1);
 
   return 2;
 }
 
 
-/* c:moveto (x, y) */
+/* gr:moveto (x, y) */
 static int
 lgraphic_moveto (lua_State * L)
 {
-  graphic *c = get_graphic (L, 1);
+  graphic *gr = get_graphic (L, 1);
 
   /* a pen outside the field is allowed! */
-  penpos (c, luaL_checkint (L, 2) - 1, luaL_checkint (L, 3) - 1);
+  penpos (gr, luaL_checkint (L, 2) - 1, luaL_checkint (L, 3) - 1);
 
   return 0;
 }
 
 
-/* c:moverel (x, y) */
+/* gr:moverel (x, y) */
 static int
 lgraphic_moverel (lua_State * L)
 {
-  graphic *c = get_graphic (L, 1);
+  graphic *gr = get_graphic (L, 1);
 
-  penpos (c, c->penx + luaL_checkint (L, 2), c->peny + luaL_checkint (L, 3));
+  penpos (gr, gr->penx + luaL_checkint (L, 2), gr->peny + luaL_checkint (L, 3));
 
   return 0;
 }
 
 
-/* c:center (x, y) */
+/* gr:center (x, y) */
 static int
 lgraphic_center (lua_State * L)
 {
-  graphic *c = get_graphic (L, 1);
+  graphic *gr = get_graphic (L, 1);
 
-  penpos (c, c->width / 2 - 1, c->height / 2 - 1);
+  penpos (gr, gr->width / 2 - 1, gr->height / 2 - 1);
 
   return 0;
 }
 
 
 static void
-vertical_line (graphic * c, int x, int y1, int y2)
+vertical_line (graphic * gr, int x, int y1, int y2)
 {
   int y;
   int height;
 
-  if (visible_x (c, x))
+  if (visible_x (gr, x))
     {
       if (y1 > y2)		/* swap */
 	{
@@ -353,34 +353,34 @@ vertical_line (graphic * c, int x, int y1, int y2)
 	  y2 = ty;
 	}
 
-      height = c->height;
+      height = gr->height;
       y1 = RANGE (y1, 0, height - 1);
       y2 = RANGE (y2, 0, height - 1);
 
-      if (c->thickness > 0)
+      if (gr->thickness > 0)
 	{
 	  for (y = y1; y <= y2; y++)
-	    putdot (c, x, y);
+	    putdot (gr, x, y);
 	}
       else
 	{
-	  unsigned char r = c->r, g = c->g, b = c->b;
-	  int width = c->width;
+	  unsigned char r = gr->r, g = gr->g, b = gr->b;
+	  int width = gr->width;
 	  for (y = y1; y <= y2; y++)
-	    if (visible_y (c, y))
-	      putpixelrgb (c, x, y, width, r, g, b);
+	    if (visible_y (gr, y))
+	      putpixelrgb (gr, x, y, width, r, g, b);
 	}
     }
 }
 
 
 static void
-horizontal_line (graphic * c, int x1, int x2, int y)
+horizontal_line (graphic * gr, int x1, int x2, int y)
 {
   int x;
   int width;
 
-  if (visible_y (c, y))
+  if (visible_y (gr, y))
     {
       if (x1 > x2)		/* swap */
 	{
@@ -389,25 +389,25 @@ horizontal_line (graphic * c, int x1, int x2, int y)
 	  x2 = tx;
 	}
 
-      width = c->width;
+      width = gr->width;
       x1 = RANGE (x1, 0, width - 1);
       x2 = RANGE (x2, 0, width - 1);
 
-      if (c->thickness > 0)
+      if (gr->thickness > 0)
 	{
 	  for (x = x1; x <= x2; x++)
-	    putdot (c, x, y);
+	    putdot (gr, x, y);
 	}
       else
 	{
 	  unsigned char *p;
 	  unsigned char r, g, b;
 
-	  r = c->r;
-	  g = c->g;
-	  b = c->b;
+	  r = gr->r;
+	  g = gr->g;
+	  b = gr->b;
 
-	  p = c->data + (y * width * BPP) + (x1 * BPP);
+	  p = gr->data + (y * width * BPP) + (x1 * BPP);
 
 	  for (x = x1; x <= x2; x++)
 	    {
@@ -422,7 +422,7 @@ horizontal_line (graphic * c, int x1, int x2, int y)
 
 /* TODO: optimize */
 static void
-sloped_line (graphic * c, int x1, int x2, int y1, int y2)
+sloped_line (graphic * gr, int x1, int x2, int y1, int y2)
 {
   int dx, dy;
 
@@ -456,28 +456,28 @@ sloped_line (graphic * c, int x1, int x2, int y1, int y2)
 	  x1 = 0;
 	}
 
-      if (x2 >= c->width)
-	x2 = c->width - 1;
+      if (x2 >= gr->width)
+	x2 = gr->width - 1;
 
-      if (c->thickness > 0)
+      if (gr->thickness > 0)
 	{
 	  int x;
 	  double y;
 
 	  for (x = x1, y = y1; x <= x2; x++, y += delta_y)
-	    putdot (c, x, y);
+	    putdot (gr, x, y);
 	}
       else
 	{
 	  int x;
 	  double y;
-	  unsigned char r = c->r, g = c->g, b = c->b;
-	  int width = c->width;
+	  unsigned char r = gr->r, g = gr->g, b = gr->b;
+	  int width = gr->width;
 
 	  for (x = x1, y = y1; x <= x2; x++, y += delta_y)
 	    {
-	      if (visible_y (c, y))
-		putpixelrgb (c, x, y, width, r, g, b);
+	      if (visible_y (gr, y))
+		putpixelrgb (gr, x, y, width, r, g, b);
 	    }
 	}
     }
@@ -508,28 +508,28 @@ sloped_line (graphic * c, int x1, int x2, int y1, int y2)
 	  y1 = 0;
 	}
 
-      if (y2 >= c->height)
-	y2 = c->height - 1;
+      if (y2 >= gr->height)
+	y2 = gr->height - 1;
 
-      if (c->thickness > 0)
+      if (gr->thickness > 0)
 	{
 	  int y;
 	  double x;
 
 	  for (y = y1, x = x1; y <= y2; y++, x += delta_x)
-	    putdot (c, x, y);
+	    putdot (gr, x, y);
 	}
       else
 	{
 	  int y;
 	  double x;
-	  unsigned char r = c->r, g = c->g, b = c->b;
-	  int width = c->width;
+	  unsigned char r = gr->r, g = gr->g, b = gr->b;
+	  int width = gr->width;
 
 	  for (y = y1, x = x1; y <= y2; y++, x += delta_x)
 	    {
-	      if (visible_x (c, x))
-		putpixelrgb (c, x, y, width, r, g, b);
+	      if (visible_x (gr, x))
+		putpixelrgb (gr, x, y, width, r, g, b);
 	    }
 	}
     }
@@ -537,113 +537,113 @@ sloped_line (graphic * c, int x1, int x2, int y1, int y2)
 
 
 static void
-line (graphic * c, int x1, int y1, int x2, int y2)
+line (graphic * gr, int x1, int y1, int x2, int y2)
 {
   if (x1 == x2 && y1 == y2)	/* one dot */
     {
-      if (visible (c, x1, y1))
-	putdot (c, x1, y1);
+      if (visible (gr, x1, y1))
+	putdot (gr, x1, y1);
     }
   else if (x1 == x2)
-    vertical_line (c, x1, y1, y2);
+    vertical_line (gr, x1, y1, y2);
   else if (y1 == y2)
-    horizontal_line (c, x1, x2, y1);
+    horizontal_line (gr, x1, x2, y1);
   else
-    sloped_line (c, x1, x2, y1, y2);
+    sloped_line (gr, x1, x2, y1, y2);
 }
 
 
-/* c:line (x1, y1, x2, y2) */
+/* gr:line (x1, y1, x2, y2) */
 static int
 lgraphic_line (lua_State * L)
 {
-  graphic *c;
+  graphic *gr;
   int x1, y1, x2, y2;
 
-  c = get_graphic (L, 1);
+  gr = get_graphic (L, 1);
   x1 = luaL_checkint (L, 2) - 1;
   y1 = luaL_checkint (L, 3) - 1;
   x2 = luaL_checkint (L, 4) - 1;
   y2 = luaL_checkint (L, 5) - 1;
 
-  line (c, x1, y1, x2, y2);
-  penpos (c, x2, y2);
+  line (gr, x1, y1, x2, y2);
+  penpos (gr, x2, y2);
 
   return 0;
 }
 
 
-/* c:lineto (x, y) */
+/* gr:lineto (x, y) */
 static int
 lgraphic_lineto (lua_State * L)
 {
-  graphic *c;
+  graphic *gr;
   int x2, y2;
 
-  c = get_graphic (L, 1);
+  gr = get_graphic (L, 1);
   x2 = luaL_checkint (L, 2) - 1;
   y2 = luaL_checkint (L, 3) - 1;
 
-  line (c, c->penx, c->peny, x2, y2);
-  penpos (c, x2, y2);
+  line (gr, gr->penx, gr->peny, x2, y2);
+  penpos (gr, x2, y2);
 
   return 0;
 }
 
 
-/* c:linerel (x, y) */
+/* gr:linerel (x, y) */
 static int
 lgraphic_linerel (lua_State * L)
 {
-  graphic *c;
+  graphic *gr;
   int x1, y1, x2, y2;
 
-  c = get_graphic (L, 1);
-  x1 = c->penx;
-  y1 = c->peny;
+  gr = get_graphic (L, 1);
+  x1 = gr->penx;
+  y1 = gr->peny;
   x2 = x1 + luaL_checkint (L, 2);
   y2 = y1 + luaL_checkint (L, 3);
 
-  line (c, x1, y1, x2, y2);
-  penpos (c, x2, y2);
+  line (gr, x1, y1, x2, y2);
+  penpos (gr, x2, y2);
 
   return 0;
 }
 
 
-/* c:putpixel ([x, y]) */
+/* gr:putpixel ([x, y]) */
 static int
 lgraphic_putpixel (lua_State * L)
 {
-  graphic *c;
+  graphic *gr;
   int x, y;
 
-  c = get_graphic (L, 1);
-  x = luaL_optint (L, 2, c->penx + 1) - 1;
-  y = luaL_optint (L, 3, c->peny + 1) - 1;
+  gr = get_graphic (L, 1);
+  x = luaL_optint (L, 2, gr->penx + 1) - 1;
+  y = luaL_optint (L, 3, gr->peny + 1) - 1;
 
-  if (visible (c, x, y))
-    putpixel (c, x, y);
+  if (visible (gr, x, y))
+    putpixel (gr, x, y);
 
   return 0;
 }
 
 
-/* c:getpixel ([x, y]) */
+/* gr:getpixel ([x, y]) */
 static int
 lgraphic_getpixel (lua_State * L)
 {
-  graphic *c;
+  graphic *gr;
   int x, y;
 
-  c = get_graphic (L, 1);
-  x = luaL_optint (L, 2, c->penx + 1) - 1;
-  y = luaL_optint (L, 3, c->peny + 1) - 1;
+  gr = get_graphic (L, 1);
+  x = luaL_optint (L, 2, gr->penx + 1) - 1;
+  y = luaL_optint (L, 3, gr->peny + 1) - 1;
 
-  if (visible (c, x, y))
+  if (visible (gr, x, y))
     {
       char color[8];
-      unsigned char *p = c->data + (y * c->width * BPP) + x * BPP;
+      unsigned char *p = gr->data + (y * gr->width * BPP) + x * BPP;
       sprintf (color, "#%02X%02X%02X", (unsigned int) *p,
 	       (unsigned int) *(p + 1), (unsigned int) *(p + 2));
       lua_pushstring (L, color);
@@ -658,20 +658,20 @@ lgraphic_getpixel (lua_State * L)
 }
 
 
-/* c:getpixelrgb ([x, y]) */
+/* gr:getpixelrgb ([x, y]) */
 static int
 lgraphic_getpixelrgb (lua_State * L)
 {
-  graphic *c;
+  graphic *gr;
   int x, y;
 
-  c = get_graphic (L, 1);
-  x = luaL_optint (L, 2, c->penx + 1) - 1;
-  y = luaL_optint (L, 3, c->peny + 1) - 1;
+  gr = get_graphic (L, 1);
+  x = luaL_optint (L, 2, gr->penx + 1) - 1;
+  y = luaL_optint (L, 3, gr->peny + 1) - 1;
 
-  if (visible (c, x, y))
+  if (visible (gr, x, y))
     {
-      unsigned char *p = c->data + (y * c->width * BPP) + x * BPP;
+      unsigned char *p = gr->data + (y * gr->width * BPP) + x * BPP;
       lua_pushinteger (L, (int) *p);	/* red */
       lua_pushinteger (L, (int) *(p + 1));	/* green */
       lua_pushinteger (L, (int) *(p + 2));	/* blue */
@@ -686,81 +686,81 @@ lgraphic_getpixelrgb (lua_State * L)
 }
 
 
-/* c:putdot ([x, y]) */
+/* gr:putdot ([x, y]) */
 static int
 lgraphic_putdot (lua_State * L)
 {
-  graphic *c;
+  graphic *gr;
   int x, y;
 
-  c = get_graphic (L, 1);
-  x = luaL_optint (L, 2, c->penx + 1) - 1;
-  y = luaL_optint (L, 3, c->peny + 1) - 1;
+  gr = get_graphic (L, 1);
+  x = luaL_optint (L, 2, gr->penx + 1) - 1;
+  y = luaL_optint (L, 3, gr->peny + 1) - 1;
 
   /* macros evaluate the values more than once! */
-  if (visible (c, x, y))
+  if (visible (gr, x, y))
     {
-      if (c->thickness > 0)
-	putdot (c, x, y);
+      if (gr->thickness > 0)
+	putdot (gr, x, y);
       else
-	putpixel (c, x, y);
+	putpixel (gr, x, y);
     }
 
   return 0;
 }
 
 
-/* c:bar (x1, y1, x2, y2) */
+/* gr:bar (x1, y1, x2, y2) */
 static int
 lgraphic_bar (lua_State * L)
 {
-  graphic *c;
+  graphic *gr;
   int x1, y1, x2, y2;
 
-  c = get_graphic (L, 1);
+  gr = get_graphic (L, 1);
 
   x1 = luaL_checkint (L, 2) - 1;
   y1 = luaL_checkint (L, 3) - 1;
   x2 = luaL_checkint (L, 4) - 1;
   y2 = luaL_checkint (L, 5) - 1;
 
-  bar (c, x1, y1, x2, y2);
+  bar (gr, x1, y1, x2, y2);
 
   return 0;
 }
 
 
-/* c:rectangle (x1, y1, x2, y2) */
+/* gr:rectangle (x1, y1, x2, y2) */
 static int
 lgraphic_rectangle (lua_State * L)
 {
-  graphic *c;
+  graphic *gr;
   int x1, y1, x2, y2;
 
-  c = get_graphic (L, 1);
+  gr = get_graphic (L, 1);
 
   x1 = luaL_checkint (L, 2) - 1;
   y1 = luaL_checkint (L, 3) - 1;
   x2 = luaL_checkint (L, 4) - 1;
   y2 = luaL_checkint (L, 5) - 1;
 
-  horizontal_line (c, x1, x2, y1);
-  vertical_line (c, x2, y1, y2);
-  horizontal_line (c, x2, x1, y2);
-  vertical_line (c, x1, y2, y1);
+  horizontal_line (gr, x1, x2, y1);
+  vertical_line (gr, x2, y1, y2);
+  horizontal_line (gr, x2, x1, y2);
+  vertical_line (gr, x1, y2, y1);
 
   return 0;
 }
 
-/* c:circle (xcenter, ycenter, radius [,startangle] [,endangle]) */
+/* gr:circle (xcenter, ycenter, radius [,startangle] [,endangle]) */
 static int
 lgraphic_circle (lua_State * L)
 {
-  graphic *c;
+  graphic *gr;
   double xcenter, ycenter, radius, startangle, endangle;
   double x, y, i;
 
-  c = get_graphic (L, 1);
+  gr = get_graphic (L, 1);
 
   xcenter = luaL_checknumber (L, 2) - 1;
   ycenter = luaL_checknumber (L, 3) - 1;
@@ -768,7 +768,7 @@ lgraphic_circle (lua_State * L)
   startangle = luaL_optnumber (L, 5, 0);
   endangle = luaL_optnumber (L, 6, 360);
 
-  penpos (c, xcenter, ycenter);
+  penpos (gr, xcenter, ycenter);
 
   while (startangle > endangle)
     endangle += 360;
@@ -781,7 +781,7 @@ lgraphic_circle (lua_State * L)
       double newx, newy;
       newx = xcenter + radius * sin (2 * PI * i / 360);
       newy = ycenter - radius * cos (2 * PI * i / 360);
-      line (c, x, y, newx, newy);
+      line (gr, x, y, newx, newy);
       x = newx;
       y = newy;
     }
@@ -793,11 +793,11 @@ lgraphic_circle (lua_State * L)
 static int
 lgraphic_show (lua_State * L)
 {
-  graphic *c;
+  graphic *gr;
   int status;
 
-  c = get_graphic (L, 1);
-  avt_show_raw_image (&c->data, c->width, c->height, BPP);
+  gr = get_graphic (L, 1);
+  avt_show_raw_image (&gr->data, gr->width, gr->height, BPP);
 
   status = avt_update();
 
@@ -820,11 +820,11 @@ lgraphic_show (lua_State * L)
 static int
 lgraphic_size (lua_State * L)
 {
-  graphic *c;
+  graphic *gr;
 
-  c = get_graphic (L, 1);
-  lua_pushinteger (L, c->width);
-  lua_pushinteger (L, c->height);
+  gr = get_graphic (L, 1);
+  lua_pushinteger (L, gr->width);
+  lua_pushinteger (L, gr->height);
 
   return 2;
 }
@@ -860,11 +860,11 @@ lgraphic_font_size (lua_State * L)
 }
 
 
-/* c:text (string [,x ,y]) */
+/* gr:text (string [,x ,y]) */
 static int
 lgraphic_text (lua_State * L)
 {
-  graphic *c;
+  graphic *gr;
   const char *s;
   size_t len;
   wchar_t *wctext, *wc;
@@ -872,14 +872,14 @@ lgraphic_text (lua_State * L)
   int x, y;
   int fontwidth, fontheight;
 
-  c = get_graphic (L, 1);
+  gr = get_graphic (L, 1);
   s = luaL_checklstring (L, 2, &len);
-  x = luaL_optint (L, 3, c->penx + 1) - 1;
-  y = luaL_optint (L, 4, c->peny + 1) - 1;
+  x = luaL_optint (L, 3, gr->penx + 1) - 1;
+  y = luaL_optint (L, 4, gr->peny + 1) - 1;
 
   avt_get_font_size (&fontwidth, &fontheight);
 
-  switch (c->vtextalign)
+  switch (gr->vtextalign)
     {
     case VA_TOP:
       break;
@@ -894,14 +894,14 @@ lgraphic_text (lua_State * L)
     }
 
   /* vertically outside visible area? (cannot show partly) */
-  if (y < 0 || y >= c->height - fontheight)
+  if (y < 0 || y >= gr->height - fontheight)
     return 0;
 
   wclen = avt_mb_decode (&wctext, s, (int) len);
   if (!wctext)
     return 0;
 
-  switch (c->htextalign)
+  switch (gr->htextalign)
     {
     case HA_LEFT:
       break;
@@ -916,7 +916,7 @@ lgraphic_text (lua_State * L)
     }
 
   /* horizontally outside visible area? (cannot show partly) */
-  if (wclen <= 0 || x >= c->width - fontwidth || x + (wclen * fontwidth) < 0)
+  if (wclen <= 0 || x >= gr->width - fontwidth || x + (wclen * fontwidth) < 0)
     {
       avt_free (wctext);
       return 0;
@@ -934,13 +934,13 @@ lgraphic_text (lua_State * L)
       x = fontwidth - (pixels % fontwidth);
     }
 
-  if (wclen > (c->width - x) / fontwidth)
-    wclen = (c->width - x) / fontwidth;
+  if (wclen > (gr->width - x) / fontwidth)
+    wclen = (gr->width - x) / fontwidth;
 
   if (fontwidth > 8)		/* 2 bytes per character */
     {
-      unsigned char r = c->r, g = c->g, b = c->b;
-      int width = c->width;
+      unsigned char r = gr->r, g = gr->g, b = gr->b;
+      int width = gr->width;
 
       for (i = 0; i < wclen; i++, wc++, x += fontwidth)
 	{
@@ -955,15 +955,15 @@ lgraphic_text (lua_State * L)
 	    {
 	      for (lx = 0; lx < fontwidth; lx++)
 		if (*font_line & (1 << (15 - lx)))
-		  putpixelrgb (c, x + lx, y + ly, width, r, g, b);
+		  putpixelrgb (gr, x + lx, y + ly, width, r, g, b);
 	      font_line++;
 	    }
 	}
     }
   else				/* fontwidth <= 8 */
     {
-      unsigned char r = c->r, g = c->g, b = c->b;
-      int width = c->width;
+      unsigned char r = gr->r, g = gr->g, b = gr->b;
+      int width = gr->width;
 
       for (i = 0; i < wclen; i++, wc++, x += fontwidth)
 	{
@@ -978,7 +978,7 @@ lgraphic_text (lua_State * L)
 	    {
 	      for (lx = 0; lx < fontwidth; lx++)
 		if (*font_line & (1 << (7 - lx)))
-		  putpixelrgb (c, x + lx, y + ly, width, r, g, b);
+		  putpixelrgb (gr, x + lx, y + ly, width, r, g, b);
 	      font_line++;
 	    }
 	}
@@ -990,48 +990,48 @@ lgraphic_text (lua_State * L)
 }
 
 
-/* c:textalign (horizontal, vertical) */
+/* gr:textalign (horizontal, vertical) */
 static int
 lgraphic_textalign (lua_State * L)
 {
-  graphic *c;
+  graphic *gr;
   const char *const hoptions[] = { "left", "center", "right", NULL };
   const char *const voptions[] = { "top", "center", "bottom", NULL };
 
-  c = get_graphic (L, 1);
-  c->htextalign = luaL_checkoption (L, 2, "center", hoptions);
-  c->vtextalign = luaL_checkoption (L, 3, "center", voptions);
+  gr = get_graphic (L, 1);
+  gr->htextalign = luaL_checkoption (L, 2, "center", hoptions);
+  gr->vtextalign = luaL_checkoption (L, 3, "center", voptions);
 
   return 0;
 }
 
 
-/* c:put(graphic, xoffset, yoffset) */
+/* gr:put(graphic, xoffset, yoffset) */
 static int
 lgraphic_put (lua_State * L)
 {
-  graphic *c, *c2;
+  graphic *gr, *gr2;
   int xoffset, yoffset, y;
   int lines, bytes;
   int xstart, show_width;	/* for horizontal cropping */
   int source_width, target_width, source_height, target_height;
   unsigned char *source, *target;
 
-  c = get_graphic (L, 1);
-  c2 = get_graphic (L, 2);
+  gr = get_graphic (L, 1);
+  gr2 = get_graphic (L, 2);
 
-  if (c == c2)
+  if (gr == gr2)
     return luaL_error (L, "cannot put a graphic onto itself");
 
   xoffset = luaL_checkint (L, 3) - 1;
   yoffset = luaL_checkint (L, 4) - 1;
 
-  source = c2->data;
-  target = c->data;
-  source_width = c2->width;
-  target_width = c->width;
-  source_height = c2->height;
-  target_height = c->height;
+  source = gr2->data;
+  target = gr->data;
+  source_width = gr2->width;
+  target_width = gr->width;
+  source_height = gr2->height;
+  target_height = gr->height;
   xstart = 0;
   show_width = source_width;
 
@@ -1076,25 +1076,25 @@ lgraphic_put (lua_State * L)
 }
 
 
-/* c:get(x1, y1, x2, y2) */
+/* gr:get(x1, y1, x2, y2) */
 static int
 lgraphic_get (lua_State * L)
 {
-  graphic *c, *c2;
+  graphic *gr, *gr2;
   int x1, y1, x2, y2;
   int source_width, target_width, source_height, target_height;
   int bytes, y;
   unsigned char *source, *target;
 
-  c = get_graphic (L, 1);
+  gr = get_graphic (L, 1);
 
   x1 = luaL_checkint (L, 2) - 1;
   y1 = luaL_checkint (L, 3) - 1;
   x2 = luaL_checkint (L, 4) - 1;
   y2 = luaL_checkint (L, 5) - 1;
 
-  source_width = c->width;
-  source_height = c->height;
+  source_width = gr->width;
+  source_height = gr->height;
 
   luaL_argcheck (L, x1 >= 0 && x1 < source_width, 2, "value out of range");
   luaL_argcheck (L, y1 >= 0 && y1 < source_height, 3, "value out of range");
@@ -1118,22 +1118,22 @@ lgraphic_get (lua_State * L)
   target_width = x2 - x1 + 1;
   target_height = y2 - y1 + 1;
 
-  c2 = new_graphic (L, graphic_bytes (target_width, target_height));
-  c2->width = target_width;
-  c2->height = target_height;
-  c2->r = c->r;
-  c2->g = c->g;
-  c2->b = c->b;
+  gr2 = new_graphic (L, graphic_bytes (target_width, target_height));
+  gr2->width = target_width;
+  gr2->height = target_height;
+  gr2->r = gr->r;
+  gr2->g = gr->g;
+  gr2->b = gr->b;
 
   /* pen in center */
-  penpos (c2, target_width / 2 - 1, target_height / 2 - 1);
-  c2->thickness = c->thickness;
+  penpos (gr2, target_width / 2 - 1, target_height / 2 - 1);
+  gr2->thickness = gr->thickness;
 
-  c2->htextalign = c->htextalign;
-  c2->vtextalign = c->vtextalign;
+  gr2->htextalign = gr->htextalign;
+  gr2->vtextalign = gr->vtextalign;
 
-  source = c->data + y1 * source_width * BPP;
-  target = c2->data;
+  source = gr->data + y1 * source_width * BPP;
+  target = gr2->data;
   bytes = target_width * BPP;
 
   for (y = 0; y < target_height; y++)
@@ -1148,12 +1148,12 @@ static int
 lgraphic_duplicate (lua_State * L)
 {
   size_t nbytes;
-  graphic *c, *c2;
+  graphic *gr, *gr2;
 
-  c = get_graphic (L, 1);
-  nbytes = graphic_bytes (c->width, c->height);
-  c2 = new_graphic (L, nbytes);
-  memcpy (c2, c, nbytes);
+  gr = get_graphic (L, 1);
+  nbytes = graphic_bytes (gr->width, gr->height);
+  gr2 = new_graphic (L, nbytes);
+  memcpy (gr2, gr, nbytes);
 
   return 1;
 }

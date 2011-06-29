@@ -60,7 +60,7 @@ avt.initialize {
   encoding = "UTF-8"
   }
 
-local c, width, height = graphic.new()
+local gr, width, height = graphic.new()
 local xoffset, yoffset = width/2, height/2
 local scale = width / x_units
 
@@ -81,30 +81,30 @@ local function ly(y) -- logical y
 end
 
 local function drawgrid(step)
-  c:thickness(1)
+  gr:thickness(1)
 
   if 1 == step then
-    c:color "grey75" -- light for 1's
+    gr:color "grey75" -- light for 1's
   elseif 10 == step then
-    c:color "grey55" -- darker for 10's
+    gr:color "grey55" -- darker for 10's
   else
     return
   end
 
   for x = step, lx(width), step do
-    c:line (px(x), 1, px(x), height)
+    gr:line (px(x), 1, px(x), height)
   end
 
   for x = -step, lx(1), -step do
-    c:line (px(x), 1, px(x), height)
+    gr:line (px(x), 1, px(x), height)
   end
 
   for y = step, ly(1), step do
-    c:line (1, py(y), width, py(y))
+    gr:line (1, py(y), width, py(y))
   end
 
   for y = -step, ly(height), -step do
-    c:line (1, py(y), width, py(y))
+    gr:line (1, py(y), width, py(y))
   end
 end
 
@@ -112,8 +112,8 @@ local function grid()
   local s = 5 --> size of the marks
   local step
 
-  c:thickness(1)
-  c:clear()
+  gr:thickness(1)
+  gr:clear()
 
   if scale > 10 then
     step = 1
@@ -126,31 +126,31 @@ local function grid()
     step = 0
   end
 
-  c:color "black"
+  gr:color "black"
 
   -- cross
-  c:line (1, yoffset, width, yoffset)
-  c:line (xoffset, 1, xoffset, height)
+  gr:line (1, yoffset, width, yoffset)
+  gr:line (xoffset, 1, xoffset, height)
 
   -- ticks
   if step > 0 then
     for x = step, lx(width), step do
-      c:line (px(x), yoffset - s,
+      gr:line (px(x), yoffset - s,
               px(x), yoffset + s)
     end
 
     for x = -step, lx(1), -step do
-      c:line (px(x), yoffset - s,
+      gr:line (px(x), yoffset - s,
               px(x), yoffset + s)
     end
 
     for y = step, ly(1), step do
-      c:line (xoffset - s, py(y),
+      gr:line (xoffset - s, py(y),
               xoffset + s, py(y))
     end
 
     for y = -step, ly(height), -step do
-      c:line (xoffset - s, py(y),
+      gr:line (xoffset - s, py(y),
               xoffset + s, py(y))
     end
   end
@@ -168,7 +168,7 @@ local function reset()
 end
 
 local function textplate(s)
-  local fwidth, fheight = c:font_size()
+  local fwidth, fheight = gr:font_size()
   local p, pwidth, pheight = graphic.new((#s*fwidth)+8, fheight+8)
 
   p:color "gold"
@@ -192,13 +192,13 @@ local function plot(f, fstr)
   repeat
     grid()
 
-    if animate then c:put(functionplate, 4, 4) end
+    if animate then gr:put(functionplate, 4, 4) end
 
-    c:thickness(2)
-    c:color "royal blue"  --> don't tell my old teacher what pen I use ;-)
+    gr:thickness(2)
+    gr:color "royal blue"  --> don't tell my old teacher what pen I use ;-)
 
     local old_value = f(lx(0))
-    c:moveto(0, py(old_value)) --> offscreen
+    gr:moveto(0, py(old_value)) --> offscreen
 
     for x=1,width do
       local value = f(lx(x))
@@ -206,31 +206,31 @@ local function plot(f, fstr)
 
       -- an invalid number (NaN) is not equal to itself
       if old_value ~= old_value then
-        c:moveto (x, y)
+        gr:moveto (x, y)
       elseif value*old_value >= 0 or math.abs(old_value - value) < 10
-        then c:lineto (x, y)
+        then gr:lineto (x, y)
         else -- jump with changed sign => assume infinity
           if old_value < 0 then
-            c:lineto (x-1, height)
-            c:line (x, 0, x, y)
+            gr:lineto (x-1, height)
+            gr:line (x, 0, x, y)
           else
-            c:lineto (x-1, 0)
-            c:line (x, height, x, y)
+            gr:lineto (x-1, 0)
+            gr:line (x, height, x, y)
           end
       end
 
       -- show each time we reach a full value and it's visible
       if animate and x % scale == 0 and y >= 1 and y <= height then
-        c:show()
+        gr:show()
         avt.wait(0.2)
       end
 
       old_value = value
     end
 
-    c:put(functionplate, 4, 4)
+    gr:put(functionplate, 4, 4)
 
-    c:show() --> show final result
+    gr:show() --> show final result
     animate = false --> only animate the first time
 
     choice = avt.navigate "+-udlrsx"

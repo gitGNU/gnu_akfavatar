@@ -13,14 +13,14 @@ graphic.new([width, height])
     Retuns the graphic, the width and the height (ie. three values).
 
     Use it like this:
-      local g, width, height = graphic.new()
+      local gr, width, height = graphic.new()
 
 
 graphic.fullsize()
     Returns the width and height for a graphic so that it fills the whole window.
 
 
-g:show()
+gr:show()
     Shows the graphic as image after drawing.
 
     Hint: You can show intermediate images, continue drawing, wait a while
@@ -28,81 +28,81 @@ g:show()
     But don't make the steps too small, or it will be painfull on slow devices.
 
 
-g:size()
-    Returns the width and the height of the graphic g.
+gr:size()
+    Returns the width and the height of the graphic gr.
 
 
-g:width()
-    Returns the width of the graphic g.
+gr:width()
+    Returns the width of the graphic gr.
 
 
-g:height()
-    Returns the height of the graphic g.
+gr:height()
+    Returns the height of the graphic gr.
 
 
-g:color(colorname)
+gr:color(colorname)
     Sets the drawing color.
     The color can be either a defined color name,
     or a hexadecimal representation, like for example "#FFFF00".
 
 
-g:rgb(red, green, blue)
+gr:rgb(red, green, blue)
     Sets the drawing color from RGB values.
     The values must be in the range from 0 to 255 inclusive.
-    This method is faster than using g:color().
+    This method is faster than using gr:color().
 
 
-g:eraser()
+gr:eraser()
     Sets the drawing color to the background color.
 
 
-g:thickness(value)
+gr:thickness(value)
     Sets the thickness of the pen.  The value 1 is the thinnest.
 
 
-g:clear()
-    Clears the graphic g, ie. fills the graphic with the background color.
+gr:clear()
+    Clears the graphic gr, ie. fills the graphic with the background color.
     The pen position is not changed.
 
 
-g:putpixel([x, y])
+gr:putpixel([x, y])
     Puts a pixel at the given coordinates or at the current pen position.
     The pen position is not changed.
 
 
-g:getpixel([x, y])
+gr:getpixel([x, y])
     Gets the pixel color at the given coordinates or at the current pen position.
     The color is returned as string in the hexadicimal RGB notation.
     On error it returns nil and an error message.
     The pen position is not changed.
 
 
-g:getpixelrgb([x, y])
+gr:getpixelrgb([x, y])
     Gets the pixel color at the given coordinates or at the current pen position.
     Returns three integers for red, green and blue, in the range of 0-255.
     On error it returns nil and an error message.
     The pen position is not changed.
 
 
-g:putdot([x, y])
+gr:putdot([x, y])
     Puts a dot at the given coordinates or at the current pen position.
-    If the pen thin, it's the same as g:putpixel.
+    If the pen thin, it's the same as gr:putpixel.
     The pen position is not changed.
 
 
-g:pen_position()
+gr:pen_position()
     Returns the x and y position of the pen (ie. returns two values).
 
 
-g:center()
+gr:center()
     Sets the pen to the center of the graphic.
 
 
-g:moveto(x, y)
+gr:moveto(x, y)
     Move the pen to x, y without drawing.
 
 
-g:moverel(x, y)
+gr:moverel(x, y)
     Move the pen without drawing relative to its current position.
     A positive x value moves it to the right,
     a negative x value moves it to the left.
@@ -110,12 +110,12 @@ g:moverel(x, y)
     a negative y value moves it up.
 
 
-g:lineto(x, y)
+gr:lineto(x, y)
     Draws a line from the current pen position to these absolute coordinates.
     The pen is moved to the new coordinates.
 
 
-g:linerel(x, y)
+gr:linerel(x, y)
     Draws a line relative to its current pen position.
     A positive x value draws to the right,
     a negative x value draws to the left.
@@ -124,24 +124,24 @@ g:linerel(x, y)
     The pen is moved to the new position.
 
 
-g:line(x1, y1, x2, y2)
+gr:line(x1, y1, x2, y2)
     Draws a line from x1, y1 to x2, y2.
     The pen is set to x2, y2.
 
 
-g:bar(x1, y1, x2, y2)
+gr:bar(x1, y1, x2, y2)
     Draws a solid bar with x1, y2 as the upper left corner
     and x2, y2 as the lower right corner.
     The pen position is not changed.
 
 
-g:rectangle(x1, y1, x2, y2)
+gr:rectangle(x1, y1, x2, y2)
     Draws rectangle with x1, y2 as the upper left corner
     and x2, y2 as the lower right corner.
     The pen position is not changed.
 
 
-g:circle(x, y, radius [,startangle, endangle])
+gr:circle(x, y, radius [,startangle, endangle])
     Draws a circle with x, y as the center with the given radius.
     The pen is put to the center of the circle (ie. to the given x, y)
 
@@ -149,11 +149,11 @@ g:circle(x, y, radius [,startangle, endangle])
     in degree.  The circle is drawn clockwise.
 
 
-g:text(text [, x, y])
+gr:text(text [, x, y])
     Prints a text aligned to the given position or the pen position.
 
     By default the text is centered to the position.  But you can change this
-    with g:textalign().
+    with gr:textalign().
 
     The encoding is used from the AKFAvatar settings.  However no other of
     those settings are taken into account.  The color is the drawing color for
@@ -166,8 +166,8 @@ g:text(text [, x, y])
     The pen position is not changed.
 
 
-g:textalign([horizontal] [, vertical])
-    Sets the textalignment for g:text().
+gr:textalign([horizontal] [, vertical])
+    Sets the textalignment for gr:text().
 
     The horizontal alignment can be one of "left", "center" or "right".  The
     default is "center".
@@ -181,26 +181,26 @@ g:textalign([horizontal] [, vertical])
 
 
 graphic.font_size()
-g:font_size()
+gr:font_size()
     Returns the width and the hight of the font, ie. one character.
     It is a fixed-width font, each character has the same width.
 
 
-g:put(graphic, x, y)
-    Puts a small graphic onto graphic g at the given position (upper-left corner).
+gr:put(graphic, x, y)
+    Puts a small graphic onto graphic gr at the given position (upper-left corner).
     The previous content is overwritten (no transparency supported).
 
 
-g:get(x1, y1, x2, y2)
-    Returns an area of the graphic g as a new graphic.
+gr:get(x1, y1, x2, y2)
+    Returns an area of the graphic gr as a new graphic.
     Most settings are copied, exept the size and the pen position.
     All values must be in range.
 
 
-g:duplicate()
-    Returns an exact duplicate (a copy) of the graphic g.
+gr:duplicate()
+    Returns an exact duplicate (a copy) of the graphic gr.
     The graphic-specific settings are copied, too.
-    This is faster than using g:get().
+    This is faster than using gr:get().
 
     You can use this for example to create a fixed background and then draw the
     individual foregrounds on duplicates.
