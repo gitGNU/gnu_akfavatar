@@ -63,7 +63,7 @@ gr:thickness(value)
 
 gr:clear()
     Clears the graphic gr, ie. fills the graphic with the background color.
-    The pen is put in the center, heading to the top.
+    The pen position is not changed.
 
 
 gr:putpixel([x, y])

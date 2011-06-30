@@ -216,9 +216,6 @@ lgraphic_clear (lua_State * L)
   gr = get_graphic (L, 1);
   clear_graphic (gr);
 
-  penpos (gr, gr->width / 2 - 1, gr->height / 2 - 1);
-  gr->heading = 0.0;
-
   return 0;
 }
 
