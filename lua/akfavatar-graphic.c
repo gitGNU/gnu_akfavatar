@@ -42,7 +42,7 @@
 
 #define GRAPHICDATA "AKFAvatar-graphic"
 
-#define get_graphic(L,idx) \
+#define get_graphic(L, idx) \
    ((graphic *) luaL_checkudata ((L), (idx), GRAPHICDATA))
 
 #define graphic_bytes(width, height) \
@@ -56,12 +56,18 @@
 /* force value to be in range */
 #define RANGE(v, min, max)  ((v) < (min) ? (min) : (v) > (max) ? (max) : (v))
 
-#define visible_x(gr, x)  ((int) (x) >= 0 && (int) (x) < (gr)->width)
-#define visible_y(gr, y)  ((int) (y) >= 0 && (int) (y) < (gr)->height)
+#define visible_x(gr, x)  ((x) >= 0 && (x) < (gr)->width)
+#define visible_y(gr, y)  ((y) >= 0 && (y) < (gr)->height)
 #define visible(gr, x, y)  (visible_x(gr, x) && visible_y(gr, y))
 
 /* set pen position */
-#define penpos(gr, x, y)  (gr)->penx = (int) (x); (gr)->peny = (int) (y)
+#define penpos(gr, x, y)  (gr)->penx = (x); (gr)->peny = (y)
+#define center(gr) \
+  do { \
+    (gr)->penx = ((double) (gr)->width) / 2.0 - 1.0; \
+    (gr)->peny = ((double) (gr)->height) / 2.0 - 1.0; \
+  } while(0)
+
 
 /* fast putpixel with rgb, no check */
 #define putpixelrgb(gr, x, y, width, r, g, b) \
@@ -85,7 +91,7 @@
 typedef struct graphic
 {
   int width, height;
-  int penx, peny;		/* position of pen */
+  double penx, peny;		/* position of pen */
   int thickness;		/* thickness of pen */
   double heading;		/* heading of the turtle */
   avt_bool_t draw;		/* pen down */
@@ -180,7 +186,7 @@ lgraphic_new (lua_State * L)
   gr->r = gr->g = gr->b = 0;
 
   /* pen in center */
-  penpos (gr, width / 2 - 1, height / 2 - 1);
+  center (gr);
   gr->thickness = 1 - 1;
 
   gr->htextalign = HA_CENTER;
@@ -306,8 +312,8 @@ lgraphic_pen_position (lua_State * L)
 {
   graphic *gr = get_graphic (L, 1);
 
-  lua_pushinteger (L, gr->penx + 1);
-  lua_pushinteger (L, gr->peny + 1);
+  lua_pushnumber (L, gr->penx + 1.0);
+  lua_pushnumber (L, gr->peny + 1.0);
 
   return 2;
 }
@@ -320,7 +326,7 @@ lgraphic_moveto (lua_State * L)
   graphic *gr = get_graphic (L, 1);
 
   /* a pen outside the field is allowed! */
-  penpos (gr, luaL_checkint (L, 2) - 1, luaL_checkint (L, 3) - 1);
+  penpos (gr, luaL_checknumber (L, 2) - 1.0, luaL_checknumber (L, 3) - 1.0);
 
   return 0;
 }
@@ -332,8 +338,9 @@ lgraphic_moverel (lua_State * L)
 {
   graphic *gr = get_graphic (L, 1);
 
-  penpos (gr, gr->penx + luaL_checkint (L, 2),
-	  gr->peny + luaL_checkint (L, 3));
+  penpos (gr,
+	  gr->penx + luaL_checknumber (L, 2),
+	  gr->peny + luaL_checknumber (L, 3));
 
   return 0;
 }
@@ -346,7 +353,7 @@ lgraphic_center (lua_State * L)
 {
   graphic *gr = get_graphic (L, 1);
 
-  penpos (gr, gr->width / 2 - 1, gr->height / 2 - 1);
+  center (gr);
   gr->heading = 0.0;
 
   return 0;
@@ -573,15 +580,15 @@ static int
 lgraphic_line (lua_State * L)
 {
   graphic *gr;
-  int x1, y1, x2, y2;
+  double x1, y1, x2, y2;
 
   gr = get_graphic (L, 1);
-  x1 = luaL_checkint (L, 2) - 1;
-  y1 = luaL_checkint (L, 3) - 1;
-  x2 = luaL_checkint (L, 4) - 1;
-  y2 = luaL_checkint (L, 5) - 1;
+  x1 = luaL_checknumber (L, 2) - 1.0;
+  y1 = luaL_checknumber (L, 3) - 1.0;
+  x2 = luaL_checknumber (L, 4) - 1.0;
+  y2 = luaL_checknumber (L, 5) - 1.0;
 
-  line (gr, x1, y1, x2, y2);
+  line (gr, (int) x1, (int) y1, (int) x2, (int) y2);
   penpos (gr, x2, y2);
 
   return 0;
@@ -593,13 +600,13 @@ static int
 lgraphic_lineto (lua_State * L)
 {
   graphic *gr;
-  int x2, y2;
+  double x2, y2;
 
   gr = get_graphic (L, 1);
-  x2 = luaL_checkint (L, 2) - 1;
-  y2 = luaL_checkint (L, 3) - 1;
+  x2 = luaL_checknumber (L, 2) - 1.0;
+  y2 = luaL_checknumber (L, 3) - 1.0;
 
-  line (gr, gr->penx, gr->peny, x2, y2);
+  line (gr, (int) gr->penx, (int) gr->peny, (int) x2, (int) y2);
   penpos (gr, x2, y2);
 
   return 0;
@@ -611,15 +618,15 @@ static int
 lgraphic_linerel (lua_State * L)
 {
   graphic *gr;
-  int x1, y1, x2, y2;
+  double x1, y1, x2, y2;
 
   gr = get_graphic (L, 1);
   x1 = gr->penx;
   y1 = gr->peny;
-  x2 = x1 + luaL_checkint (L, 2);
-  y2 = y1 + luaL_checkint (L, 3);
+  x2 = x1 + luaL_checknumber (L, 2);
+  y2 = y1 + luaL_checknumber (L, 3);
 
-  line (gr, x1, y1, x2, y2);
+  line (gr, (int) x1, (int) y1, (int) x2, (int) y2);
   penpos (gr, x2, y2);
 
   return 0;
@@ -681,8 +688,8 @@ lgraphic_getpixelrgb (lua_State * L)
   int x, y;
 
   gr = get_graphic (L, 1);
-  x = luaL_optint (L, 2, gr->penx + 1) - 1;
-  y = luaL_optint (L, 3, gr->peny + 1) - 1;
+  x = luaL_optint (L, 2, (int) gr->penx + 1) - 1;
+  y = luaL_optint (L, 3, (int) gr->peny + 1) - 1;
 
   if (visible (gr, x, y))
     {
@@ -709,8 +716,8 @@ lgraphic_putdot (lua_State * L)
   int x, y;
 
   gr = get_graphic (L, 1);
-  x = luaL_optint (L, 2, gr->penx + 1) - 1;
-  y = luaL_optint (L, 3, gr->peny + 1) - 1;
+  x = luaL_optint (L, 2, (int) gr->penx + 1) - 1;
+  y = luaL_optint (L, 3, (int) gr->peny + 1) - 1;
 
   /* macros evaluate the values more than once! */
   if (visible (gr, x, y))
@@ -777,8 +784,8 @@ lgraphic_circle (lua_State * L)
 
   gr = get_graphic (L, 1);
 
-  xcenter = luaL_checknumber (L, 2) - 1;
-  ycenter = luaL_checknumber (L, 3) - 1;
+  xcenter = luaL_checknumber (L, 2) - 1.0;
+  ycenter = luaL_checknumber (L, 3) - 1.0;
   radius = luaL_checknumber (L, 4);
   startangle = luaL_optnumber (L, 5, 0);
   endangle = luaL_optnumber (L, 6, 360);
@@ -788,15 +795,15 @@ lgraphic_circle (lua_State * L)
   while (startangle > endangle)
     endangle += 360;
 
-  x = xcenter + radius * sin (RAD(startangle));
-  y = ycenter - radius * cos (RAD(startangle));
+  x = xcenter + radius * sin (RAD (startangle));
+  y = ycenter - radius * cos (RAD (startangle));
 
   for (i = startangle; i <= endangle; i++)
     {
       double newx, newy;
-      newx = xcenter + radius * sin (RAD(i));
-      newy = ycenter - radius * cos (RAD(i));
-      line (gr, x, y, newx, newy);
+      newx = xcenter + radius * sin (RAD (i));
+      newy = ycenter - radius * cos (RAD (i));
+      line (gr, (int) x, (int) y, (int) newx, (int) newy);
       x = newx;
       y = newy;
     }
@@ -889,8 +896,8 @@ lgraphic_text (lua_State * L)
 
   gr = get_graphic (L, 1);
   s = luaL_checklstring (L, 2, &len);
-  x = luaL_optint (L, 3, gr->penx + 1) - 1;
-  y = luaL_optint (L, 4, gr->peny + 1) - 1;
+  x = luaL_optint (L, 3, (int) gr->penx + 1) - 1;
+  y = luaL_optint (L, 4, (int) gr->peny + 1) - 1;
 
   avt_get_font_size (&fontwidth, &fontheight);
 
@@ -1117,7 +1124,7 @@ static int
 lgraphic_forward (lua_State * L)
 {
   graphic *gr;
-  int penx, peny, x, y;
+  double penx, peny, x, y;
   double steps, value;
 
   gr = get_graphic (L, 1);
@@ -1125,13 +1132,13 @@ lgraphic_forward (lua_State * L)
 
   penx = gr->penx;
   peny = gr->peny;
-  value = RAD(gr->heading);
+  value = RAD (gr->heading);
 
   x = penx + steps * sin (value);
   y = peny - steps * cos (value);
 
   if (gr->draw)
-    line (gr, penx, peny, x, y);
+    line (gr, (int) penx, (int) peny, (int) x, (int) y);
 
   penpos (gr, x, y);
 
@@ -1144,7 +1151,7 @@ static int
 lgraphic_back (lua_State * L)
 {
   graphic *gr;
-  int penx, peny, x, y;
+  double penx, peny, x, y;
   double steps, value;
 
   gr = get_graphic (L, 1);
@@ -1152,13 +1159,13 @@ lgraphic_back (lua_State * L)
 
   penx = gr->penx;
   peny = gr->peny;
-  value = RAD(gr->heading);
+  value = RAD (gr->heading);
 
   x = penx - steps * sin (value);
   y = peny + steps * cos (value);
 
   if (gr->draw)
-    line (gr, penx, peny, x, y);
+    line (gr, (int) penx, (int) peny, (int) x, (int) y);
 
   penpos (gr, x, y);
 
