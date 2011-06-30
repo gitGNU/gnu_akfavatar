@@ -8,7 +8,8 @@ Notes:
 graphic.new([width, height])
     Creates a new graphic (a canvas).
     When width and height are not given it uses the whole window/screen.
-    A thin black pen is chosen and the position is centered.
+    A thin black pen is chosen and the position is centered, heading to
+    the top, drawing.
 
     Retuns the graphic, the width and the height (ie. three values).
 
@@ -62,7 +63,7 @@ gr:thickness(value)
 
 gr:clear()
     Clears the graphic gr, ie. fills the graphic with the background color.
-    The pen position is not changed.
+    The pen is put in the center, heading to the top.
 
 
 gr:putpixel([x, y])
@@ -95,7 +96,8 @@ gr:pen_position()
 
 
 gr:center()
-    Sets the pen to the center of the graphic.
+gr:home()
+    Sets the pen to the center of the graphic, heading to the top.
 
 
 gr:moveto(x, y)
@@ -193,7 +195,8 @@ gr:put(graphic, x, y)
 
 gr:get(x1, y1, x2, y2)
     Returns an area of the graphic gr as a new graphic.
-    Most settings are copied, exept the size and the pen position.
+    Most settings are copied, exept the size and the pen settings.
+    The pen is put in the center, heading to the top.
     All values must be in range.
 
 
@@ -204,3 +207,45 @@ gr:duplicate()
 
     You can use this for example to create a fixed background and then draw the
     individual foregrounds on duplicates.
+
+
+Turtle graphics
+===============
+
+gr:heading(heading)
+    Sets the heading for the turtle.  The value must be given in degree and the
+    turtle turns clockwise. The value 0 means, it's heading to the top,
+    90 means it heads to the right.
+
+
+gr:get_heading()
+    Returns the heading of the turtle (see gr:heading()).
+
+
+gr:right(degree)
+    Turn the turtle clockwise by the specified angle in degree.
+
+
+gr:left(degree)
+    Turn the turtle counterclockwise by the specified angle in degree.
+
+
+gr:draw(true|fase)
+    Put the pen in the draw position (true) or in the idle position (false).
+    This is only relevatn for the methods gr:froward() and gr:back()
+    (see below).
+
+
+gr:forward(steps)
+    Move the turtle forward in the direction it is heading.
+    It draws a line if the pen is in the draw position (gr:draw(true)).
+
+
+gr:back(steps)
+    Move the turtle back in the opposite direction it is heading.
+    The turtle is not turned around.
+    It draws a line if the pen is in the draw position (gr:draw(true)).
+
+
+gr:home()
+    Sets the pen to the center of the graphic, heading to the top.

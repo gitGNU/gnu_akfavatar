@@ -37,6 +37,9 @@
 
 #define PI  3.14159265358979323846
 
+/* convert degree to radians */
+#define RAD(x)  ((x) * PI / 180.0)
+
 #define GRAPHICDATA "AKFAvatar-graphic"
 
 #define get_graphic(L,idx) \
@@ -84,6 +87,8 @@ typedef struct graphic
   int width, height;
   int penx, peny;		/* position of pen */
   int thickness;		/* thickness of pen */
+  double heading;		/* heading of the turtle */
+  avt_bool_t draw;		/* pen down */
   unsigned char r, g, b;	/* current color */
   int htextalign, vtextalign;	/* alignment for text */
   unsigned char data[1];
@@ -181,6 +186,9 @@ lgraphic_new (lua_State * L)
   gr->htextalign = HA_CENTER;
   gr->vtextalign = VA_CENTER;
 
+  gr->draw = AVT_TRUE;
+  gr->heading = 0.0;
+
   clear_graphic (gr);
 
   lua_pushinteger (L, width);
@@ -203,7 +211,14 @@ lgraphic_fullsize (lua_State * L)
 static int
 lgraphic_clear (lua_State * L)
 {
-  clear_graphic (get_graphic (L, 1));
+  graphic *gr;
+
+  gr = get_graphic (L, 1);
+  clear_graphic (gr);
+
+  penpos (gr, gr->width / 2 - 1, gr->height / 2 - 1);
+  gr->heading = 0.0;
+
   return 0;
 }
 
@@ -320,19 +335,22 @@ lgraphic_moverel (lua_State * L)
 {
   graphic *gr = get_graphic (L, 1);
 
-  penpos (gr, gr->penx + luaL_checkint (L, 2), gr->peny + luaL_checkint (L, 3));
+  penpos (gr, gr->penx + luaL_checkint (L, 2),
+	  gr->peny + luaL_checkint (L, 3));
 
   return 0;
 }
 
 
-/* gr:center (x, y) */
+/* gr:center () */
+/* gr:home () */
 static int
 lgraphic_center (lua_State * L)
 {
   graphic *gr = get_graphic (L, 1);
 
   penpos (gr, gr->width / 2 - 1, gr->height / 2 - 1);
+  gr->heading = 0.0;
 
   return 0;
 }
@@ -773,14 +791,14 @@ lgraphic_circle (lua_State * L)
   while (startangle > endangle)
     endangle += 360;
 
-  x = xcenter + radius * sin (2 * PI * startangle / 360);
-  y = ycenter - radius * cos (2 * PI * startangle / 360);
+  x = xcenter + radius * sin (RAD(startangle));
+  y = ycenter - radius * cos (RAD(startangle));
 
   for (i = startangle; i <= endangle; i++)
     {
       double newx, newy;
-      newx = xcenter + radius * sin (2 * PI * i / 360);
-      newy = ycenter - radius * cos (2 * PI * i / 360);
+      newx = xcenter + radius * sin (RAD(i));
+      newy = ycenter - radius * cos (RAD(i));
       line (gr, x, y, newx, newy);
       x = newx;
       y = newy;
@@ -799,7 +817,7 @@ lgraphic_show (lua_State * L)
   gr = get_graphic (L, 1);
   avt_show_raw_image (&gr->data, gr->width, gr->height, BPP);
 
-  status = avt_update();
+  status = avt_update ();
 
   if (status <= AVT_ERROR)
     {
@@ -1005,6 +1023,151 @@ lgraphic_textalign (lua_State * L)
   return 0;
 }
 
+/* gr:heading(degree) */
+static int
+lgraphic_heading (lua_State * L)
+{
+  graphic *gr;
+  double degree;
+
+  gr = get_graphic (L, 1);
+  degree = (double) luaL_checknumber (L, 2);
+
+  while (degree < 0.0)
+    degree += 360.0;
+
+  while (degree > 360.0)
+    degree -= 360.0;
+
+  gr->heading = degree;
+
+  return 0;
+}
+
+
+/* degree = gr:get_heading() */
+static int
+lgraphic_get_heading (lua_State * L)
+{
+  graphic *gr;
+
+  gr = get_graphic (L, 1);
+  lua_pushnumber (L, (lua_Number) gr->heading);
+
+  return 1;
+}
+
+
+/* gr:right(degree) */
+static int
+lgraphic_right (lua_State * L)
+{
+  graphic *gr;
+  double degree, heading;
+
+  gr = get_graphic (L, 1);
+  degree = (double) luaL_checknumber (L, 2);
+
+  heading = gr->heading + degree;
+
+  while (heading > 360.0)
+    heading -= 360.0;
+
+  gr->heading = heading;
+
+  return 0;
+}
+
+
+/* gr:left(degree) */
+static int
+lgraphic_left (lua_State * L)
+{
+  graphic *gr;
+  double degree, heading;
+
+  gr = get_graphic (L, 1);
+  degree = (double) luaL_checknumber (L, 2);
+
+  heading = gr->heading - degree;
+
+  while (heading < 0.0)
+    heading += 360.0;
+
+  gr->heading = heading;
+
+  return 0;
+}
+
+
+/* gr:draw(true|false) */
+static int
+lgraphic_draw (lua_State * L)
+{
+  graphic *gr;
+
+  gr = get_graphic (L, 1);
+  luaL_checktype (L, 2, LUA_TBOOLEAN);
+
+  gr->draw = (avt_bool_t) lua_toboolean (L, 2);
+
+  return 0;
+}
+
+
+/* gr:forward(steps) */
+static int
+lgraphic_forward (lua_State * L)
+{
+  graphic *gr;
+  int penx, peny, x, y;
+  double steps, value;
+
+  gr = get_graphic (L, 1);
+  steps = (double) luaL_checknumber (L, 2);
+
+  penx = gr->penx;
+  peny = gr->peny;
+  value = RAD(gr->heading);
+
+  x = penx + steps * sin (value);
+  y = peny - steps * cos (value);
+
+  if (gr->draw)
+    line (gr, penx, peny, x, y);
+
+  penpos (gr, x, y);
+
+  return 0;
+}
+
+
+/* gr:back(steps) */
+static int
+lgraphic_back (lua_State * L)
+{
+  graphic *gr;
+  int penx, peny, x, y;
+  double steps, value;
+
+  gr = get_graphic (L, 1);
+  steps = (double) luaL_checknumber (L, 2);
+
+  penx = gr->penx;
+  peny = gr->peny;
+  value = RAD(gr->heading);
+
+  x = penx - steps * sin (value);
+  y = peny + steps * cos (value);
+
+  if (gr->draw)
+    line (gr, penx, peny, x, y);
+
+  penpos (gr, x, y);
+
+  return 0;
+}
+
 
 /* gr:put(graphic, xoffset, yoffset) */
 static int
@@ -1131,6 +1294,8 @@ lgraphic_get (lua_State * L)
 
   gr2->htextalign = gr->htextalign;
   gr2->vtextalign = gr->vtextalign;
+  gr2->draw = AVT_TRUE;
+  gr2->heading = 0.0;
 
   source = gr->data + y1 * source_width * BPP;
   target = gr2->data;
@@ -1179,6 +1344,7 @@ static const struct luaL_reg graphiclib_methods[] = {
   {"line", lgraphic_line},
   {"pen_position", lgraphic_pen_position},
   {"center", lgraphic_center},
+  {"home", lgraphic_center},
   {"moveto", lgraphic_moveto},
   {"moverel", lgraphic_moverel},
   {"lineto", lgraphic_lineto},
@@ -1197,6 +1363,13 @@ static const struct luaL_reg graphiclib_methods[] = {
   {"put", lgraphic_put},
   {"get", lgraphic_get},
   {"duplicate", lgraphic_duplicate},
+  {"heading", lgraphic_heading},
+  {"get_heading", lgraphic_get_heading},
+  {"right", lgraphic_right},
+  {"left", lgraphic_left},
+  {"draw", lgraphic_draw},
+  {"forward", lgraphic_forward},
+  {"back", lgraphic_back},
   {NULL, NULL}
 };
 
