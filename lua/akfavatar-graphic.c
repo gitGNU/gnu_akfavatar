@@ -1330,6 +1330,34 @@ lgraphic_duplicate (lua_State * L)
 }
 
 
+static int
+lgraphic_export_ppm (lua_State * L)
+{
+  graphic *gr;
+  const char *fname;
+  FILE *f;
+
+  if (BPP != 3)
+    return luaL_error (L, "internal error");
+
+  gr = get_graphic (L, 1);
+  fname = luaL_checkstring (L, 2);
+
+  f = fopen (fname, "wb");
+
+  if (!f)
+    return luaL_error (L, "cannot open file \"%s\" for writing", fname);
+
+  fprintf (f, "P6\n%d %d\n255\n", gr->width, gr->height);
+  fwrite (gr->data, 1, gr->height * gr->width * BPP, f);
+
+  if (fclose (f) != 0)
+    return luaL_error (L, "error writing file \"%s\"", fname);
+
+  return 0;
+}
+
+
 static const struct luaL_reg graphiclib[] = {
   {"new", lgraphic_new},
   {"fullsize", lgraphic_fullsize},
@@ -1377,6 +1405,7 @@ static const struct luaL_reg graphiclib_methods[] = {
   {"draw", lgraphic_draw},
   {"forward", lgraphic_forward},
   {"back", lgraphic_back},
+  {"export_ppm", lgraphic_export_ppm},
   {NULL, NULL}
 };
 

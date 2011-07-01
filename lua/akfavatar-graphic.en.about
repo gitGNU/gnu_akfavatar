@@ -212,6 +212,10 @@ gr:duplicate()
     individual foregrounds on duplicates.
 
 
+gr:export_ppm(filename)
+    Exports the graphic as Portable Pixmap (PPM) file.
+
+
 Turtle graphics
 ===============
 
