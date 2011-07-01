@@ -258,13 +258,13 @@ lgraphic_rgb (lua_State * L)
   green = luaL_checkint (L, 3);
   blue = luaL_checkint (L, 4);
 
-  luaL_argcheck (L, red > 0 && red < 256,
+  luaL_argcheck (L, red >= 0 && red <= 255,
 		 2, "value between 0 and 255 expected");
 
-  luaL_argcheck (L, green > 0 && green < 256,
+  luaL_argcheck (L, green >= 0 && green <= 255,
 		 3, "value between 0 and 255 expected");
 
-  luaL_argcheck (L, blue > 0 && blue < 256,
+  luaL_argcheck (L, blue >= 0 && blue <= 255,
 		 4, "value between 0 and 255 expected");
 
   gr = get_graphic (L, 1);
@@ -774,9 +774,9 @@ lgraphic_rectangle (lua_State * L)
   return 0;
 }
 
-/* gr:circle (xcenter, ycenter, radius [,startangle] [,endangle]) */
+/* gr:arc (xcenter, ycenter, radius [,startangle] [,endangle]) */
 static int
-lgraphic_circle (lua_State * L)
+lgraphic_arc (lua_State * L)
 {
   graphic *gr;
   double xcenter, ycenter, radius, startangle, endangle;
@@ -1356,7 +1356,8 @@ static const struct luaL_reg graphiclib_methods[] = {
   {"putdot", lgraphic_putdot},
   {"bar", lgraphic_bar},
   {"rectangle", lgraphic_rectangle},
-  {"circle", lgraphic_circle},
+  {"arc", lgraphic_arc},
+  {"circle", lgraphic_arc},
   {"text", lgraphic_text},
   {"textalign", lgraphic_textalign},
   {"font_size", lgraphic_font_size},

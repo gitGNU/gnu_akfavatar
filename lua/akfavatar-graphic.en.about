@@ -1,8 +1,10 @@
 Module "akfavatar-graphic"
 
+To use this module load it with require "akfavatar-graphic".
+
 Notes:
 - Coordinates start with 1, 1 in the upper left corner.
-- The pen size, position and color are set for each graphic.
+- The pen size, position, heading and color are set for each graphic.
 
 
 graphic.new([width, height])
@@ -143,12 +145,13 @@ gr:rectangle(x1, y1, x2, y2)
     The pen position is not changed.
 
 
+gr:arc(x, y, radius [,startangle, endangle])
 gr:circle(x, y, radius [,startangle, endangle])
     Draws a circle with x, y as the center with the given radius.
     The pen is put to the center of the circle (ie. to the given x, y)
 
-    You can draw a part of the circle by giving the startangle and endangle
-    in degree.  The circle is drawn clockwise.
+    You can draw a part of the circle (an arc) by giving the startangle and
+    endangle in degree.  The arc is drawn clockwise.
 
 
 gr:text(text [, x, y])
