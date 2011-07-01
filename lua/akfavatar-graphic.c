@@ -442,14 +442,13 @@ horizontal_line (graphic * gr, int x1, int x2, int y)
 }
 
 
-/* TODO: optimize */
 static void
-sloped_line (graphic * gr, int x1, int x2, int y1, int y2)
+sloped_line (graphic * gr, double x1, double x2, double y1, double y2)
 {
-  int dx, dy;
+  double dx, dy;
 
-  dx = abs (x2 - x1);
-  dy = abs (y2 - y1);
+  dx = fabs (x2 - x1);
+  dy = fabs (y2 - y1);
 
   if (dx > dy)			/* x steps 1 */
     {
@@ -469,30 +468,28 @@ sloped_line (graphic * gr, int x1, int x2, int y1, int y2)
 	}
 
       dy = y2 - y1;
-      delta_y = (double) dy / (double) dx;
+      delta_y = dy / dx;
 
       /* sanitize range of x */
-      if (x1 < 0)
+      if (x1 < 0.0)
 	{
 	  y1 -= delta_y * x1;
-	  x1 = 0;
+	  x1 = 0.0;
 	}
 
       if (x2 >= gr->width)
-	x2 = gr->width - 1;
+	x2 = gr->width - 1.0;
 
       if (gr->thickness > 0)
 	{
-	  int x;
-	  double y;
+	  double x, y;
 
 	  for (x = x1, y = y1; x <= x2; x++, y += delta_y)
 	    putdot (gr, x, y);
 	}
       else
 	{
-	  int x;
-	  double y;
+	  double x, y;
 	  unsigned char r = gr->r, g = gr->g, b = gr->b;
 	  int width = gr->width;
 
@@ -521,30 +518,28 @@ sloped_line (graphic * gr, int x1, int x2, int y1, int y2)
 	}
 
       dx = x2 - x1;
-      delta_x = (double) dx / (double) dy;
+      delta_x = dx / dy;
 
       /* sanitize range of y */
-      if (y1 < 0)
+      if (y1 < 0.0)
 	{
 	  x1 -= delta_x * y1;
-	  y1 = 0;
+	  y1 = 0.0;
 	}
 
       if (y2 >= gr->height)
-	y2 = gr->height - 1;
+	y2 = gr->height - 1.0;
 
       if (gr->thickness > 0)
 	{
-	  int y;
-	  double x;
+	  double x, y;
 
 	  for (y = y1, x = x1; y <= y2; y++, x += delta_x)
 	    putdot (gr, x, y);
 	}
       else
 	{
-	  int y;
-	  double x;
+	  double x, y;
 	  unsigned char r = gr->r, g = gr->g, b = gr->b;
 	  int width = gr->width;
 
@@ -559,17 +554,24 @@ sloped_line (graphic * gr, int x1, int x2, int y1, int y2)
 
 
 static void
-line (graphic * gr, int x1, int y1, int x2, int y2)
+line (graphic * gr, double x1, double y1, double x2, double y2)
 {
-  if (x1 == x2 && y1 == y2)	/* one dot */
+  int ix1, iy1, ix2, iy2;
+
+  ix1 = (int) x1;
+  iy1 = (int) y1;
+  ix2 = (int) x2;
+  iy2 = (int) y2;
+
+  if (ix1 == ix2 && iy1 == iy2)	/* one dot */
     {
-      if (visible (gr, x1, y1))
-	putdot (gr, x1, y1);
+      if (visible (gr, ix1, iy1))
+	putdot (gr, ix1, iy1);
     }
-  else if (x1 == x2)
-    vertical_line (gr, x1, y1, y2);
-  else if (y1 == y2)
-    horizontal_line (gr, x1, x2, y1);
+  else if (ix1 == ix2)
+    vertical_line (gr, ix1, iy1, iy2);
+  else if (iy1 == iy2)
+    horizontal_line (gr, ix1, ix2, iy1);
   else
     sloped_line (gr, x1, x2, y1, y2);
 }
@@ -588,7 +590,7 @@ lgraphic_line (lua_State * L)
   x2 = luaL_checknumber (L, 4) - 1.0;
   y2 = luaL_checknumber (L, 5) - 1.0;
 
-  line (gr, (int) x1, (int) y1, (int) x2, (int) y2);
+  line (gr, x1, y1, x2, y2);
   penpos (gr, x2, y2);
 
   return 0;
@@ -606,7 +608,7 @@ lgraphic_lineto (lua_State * L)
   x2 = luaL_checknumber (L, 2) - 1.0;
   y2 = luaL_checknumber (L, 3) - 1.0;
 
-  line (gr, (int) gr->penx, (int) gr->peny, (int) x2, (int) y2);
+  line (gr, gr->penx, gr->peny, x2, y2);
   penpos (gr, x2, y2);
 
   return 0;
@@ -626,7 +628,7 @@ lgraphic_linerel (lua_State * L)
   x2 = x1 + luaL_checknumber (L, 2);
   y2 = y1 + luaL_checknumber (L, 3);
 
-  line (gr, (int) x1, (int) y1, (int) x2, (int) y2);
+  line (gr, x1, y1, x2, y2);
   penpos (gr, x2, y2);
 
   return 0;
@@ -803,7 +805,7 @@ lgraphic_arc (lua_State * L)
       double newx, newy;
       newx = xcenter + radius * sin (RAD (i));
       newy = ycenter - radius * cos (RAD (i));
-      line (gr, (int) x, (int) y, (int) newx, (int) newy);
+      line (gr, x, y, newx, newy);
       x = newx;
       y = newy;
     }
@@ -1138,7 +1140,7 @@ lgraphic_forward (lua_State * L)
   y = peny - steps * cos (value);
 
   if (gr->draw)
-    line (gr, (int) penx, (int) peny, (int) x, (int) y);
+    line (gr, penx, peny, x, y);
 
   penpos (gr, x, y);
 
@@ -1165,7 +1167,7 @@ lgraphic_back (lua_State * L)
   y = peny + steps * cos (value);
 
   if (gr->draw)
-    line (gr, (int) penx, (int) peny, (int) x, (int) y);
+    line (gr, penx, peny, x, y);
 
   penpos (gr, x, y);
 
