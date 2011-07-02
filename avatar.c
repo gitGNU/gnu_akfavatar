@@ -6261,9 +6261,9 @@ avt_set_text_background_color (int red, int green, int blue)
       color.g = green;
       color.b = blue;
       SDL_SetColors (avt_character, &color, 0, 1);
-    }
 
-  text_background_color = SDL_MapRGB (screen->format, red, green, blue);
+      text_background_color = SDL_MapRGB (screen->format, red, green, blue);
+    }
 }
 
 extern void

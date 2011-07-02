@@ -1,3 +1,7 @@
+2011-07-02  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_set_text_background_color): fix
+
 2011-06-13  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_isblank): new macro
