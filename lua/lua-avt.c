@@ -2200,7 +2200,6 @@ luaopen_akfavatar (lua_State * L)
   lua_setfield (L, -2, "__gc");
   lua_setmetatable (L, -2);	/* set it up as metatable */
   lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-module_quit");
-  lua_pop (L, 1);
 
   return 1;
 }
