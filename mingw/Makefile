@@ -216,9 +216,9 @@ lua-akfavatar.exe: lua-akfavatar-prg.wo lua-avt.wo luaavtstarter-rc.wo \
 	    -L. -lakfavatar \
 	    $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS)
 
-lua-akfavatar.dll: lua-avt-mod.wo filechooser.wo askdrive.wo colorchooser.wo \
+lua-akfavatar.dll: lua-avt.wo filechooser.wo askdrive.wo colorchooser.wo \
 	           avtmsg.wo avtgrmsg.wo
-	$(CC) -o $@ -shared lua-avt-mod.wo filechooser.wo askdrive.wo \
+	$(CC) -o $@ -shared lua-avt.wo filechooser.wo askdrive.wo \
 	     colorchooser.wo avtmsg.wo avtgrmsg.wo \
 	     -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS) -mwindows
 
@@ -226,11 +226,6 @@ base64.dll: lbase64.wo
 	$(CC) -o $@ -shared lbase64.wo $(LUA_LDFLAGS) $(LDFLAGS)
 
 lua-avt.wo: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h
-	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
-	  $(srcdir)/lua/lua-avt.c
-
-# for the module
-lua-avt-mod.wo: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/lua-avt.c
 
