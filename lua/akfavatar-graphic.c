@@ -46,7 +46,7 @@
    ((graphic *) luaL_checkudata ((L), (idx), GRAPHICDATA))
 
 #define graphic_bytes(width, height) \
-  sizeof(graphic)-sizeof(unsigned char)+(width)*(height)*BPP
+  sizeof(graphic)-sizeof(uchar)+(width)*(height)*BPP
 
 #define new_graphic(L, nbytes) \
   (graphic *) lua_newuserdata ((L), (nbytes)); \
@@ -72,7 +72,7 @@
 /* fast putpixel with rgb, no check */
 #define putpixelrgb(gr, x, y, width, r, g, b) \
   do { \
-    unsigned char *p = \
+    uchar *p = \
       (gr)->data+(((int)(y))*(width)*BPP)+(((int)(x))*BPP); \
     *p++=(r); *p++=(g); *p=(b); \
   } while(0)
@@ -88,6 +88,8 @@
 #define VA_CENTER 1
 #define VA_BOTTOM 2
 
+typedef unsigned char uchar;
+
 typedef struct graphic
 {
   int width, height;
@@ -95,24 +97,17 @@ typedef struct graphic
   int thickness;		/* thickness of pen */
   double heading;		/* heading of the turtle */
   avt_bool_t draw;		/* pen down */
-  unsigned char r, g, b;	/* current color */
+  uchar r, g, b;		/* current color */
   int htextalign, vtextalign;	/* alignment for text */
-  unsigned char data[1];
+  uchar data[1];
 } graphic;
 
 
 static void
-clear_graphic (graphic * gr)
+fill_graphic (graphic * gr, uchar r, uchar g, uchar b)
 {
-  unsigned char *p;
-  int red, green, blue;
-  unsigned char r, g, b;
+  uchar *p;
   size_t i, pixels;
-
-  avt_get_background_color (&red, &green, &blue);
-  r = (unsigned char) red;
-  g = (unsigned char) green;
-  b = (unsigned char) blue;
 
   pixels = gr->width * gr->height;
   p = gr->data;
@@ -130,8 +125,8 @@ static void
 bar (graphic * gr, int x1, int y1, int x2, int y2)
 {
   int x, y, width, height;
-  unsigned char r, g, b;
-  unsigned char *data, *p;
+  uchar r, g, b;
+  uchar *data, *p;
 
   width = gr->width;
   height = gr->height;
@@ -173,6 +168,7 @@ static int
 lgraphic_new (lua_State * L)
 {
   int width, height;
+  int red, green, blue;
   graphic *gr;
 
   width = luaL_optint (L, 1, avt_image_max_width ());
@@ -195,7 +191,8 @@ lgraphic_new (lua_State * L)
   gr->draw = AVT_TRUE;
   gr->heading = 0.0;
 
-  clear_graphic (gr);
+  avt_get_background_color (&red, &green, &blue);
+  fill_graphic (gr, red, green, blue);
 
   lua_pushinteger (L, width);
   lua_pushinteger (L, height);
@@ -218,9 +215,17 @@ static int
 lgraphic_clear (lua_State * L)
 {
   graphic *gr;
+  int red, green, blue;
+  const char *color_name;
 
   gr = get_graphic (L, 1);
-  clear_graphic (gr);
+  color_name = lua_tostring (L, 2);
+
+  if (color_name == NULL
+      || avt_name_to_color (color_name, &red, &green, &blue) != AVT_NORMAL)
+    avt_get_background_color (&red, &green, &blue);
+
+  fill_graphic (gr, red, green, blue);
 
   return 0;
 }
@@ -238,9 +243,9 @@ lgraphic_color (lua_State * L)
   if (avt_name_to_color (name, &red, &green, &blue) == AVT_NORMAL)
     {
       gr = get_graphic (L, 1);
-      gr->r = (unsigned char) red;
-      gr->g = (unsigned char) green;
-      gr->b = (unsigned char) blue;
+      gr->r = (uchar) red;
+      gr->g = (uchar) green;
+      gr->b = (uchar) blue;
     }
 
   return 0;
@@ -268,9 +273,9 @@ lgraphic_rgb (lua_State * L)
 		 4, "value between 0 and 255 expected");
 
   gr = get_graphic (L, 1);
-  gr->r = (unsigned char) red;
-  gr->g = (unsigned char) green;
-  gr->b = (unsigned char) blue;
+  gr->r = (uchar) red;
+  gr->g = (uchar) green;
+  gr->b = (uchar) blue;
 
   return 0;
 }
@@ -285,9 +290,9 @@ lgraphic_eraser (lua_State * L)
 
   gr = get_graphic (L, 1);
   avt_get_background_color (&red, &green, &blue);
-  gr->r = (unsigned char) red;
-  gr->g = (unsigned char) green;
-  gr->b = (unsigned char) blue;
+  gr->r = (uchar) red;
+  gr->g = (uchar) green;
+  gr->b = (uchar) blue;
 
   return 0;
 }
@@ -386,7 +391,7 @@ vertical_line (graphic * gr, int x, int y1, int y2)
 	}
       else
 	{
-	  unsigned char r = gr->r, g = gr->g, b = gr->b;
+	  uchar r = gr->r, g = gr->g, b = gr->b;
 	  int width = gr->width;
 	  for (y = y1; y <= y2; y++)
 	    if (visible_y (gr, y))
@@ -422,8 +427,8 @@ horizontal_line (graphic * gr, int x1, int x2, int y)
 	}
       else
 	{
-	  unsigned char *p;
-	  unsigned char r, g, b;
+	  uchar *p;
+	  uchar r, g, b;
 
 	  r = gr->r;
 	  g = gr->g;
@@ -490,7 +495,7 @@ sloped_line (graphic * gr, double x1, double x2, double y1, double y2)
       else
 	{
 	  double x, y;
-	  unsigned char r = gr->r, g = gr->g, b = gr->b;
+	  uchar r = gr->r, g = gr->g, b = gr->b;
 	  int width = gr->width;
 
 	  for (x = x1, y = y1; x <= x2; x++, y += delta_y)
@@ -540,7 +545,7 @@ sloped_line (graphic * gr, double x1, double x2, double y1, double y2)
       else
 	{
 	  double x, y;
-	  unsigned char r = gr->r, g = gr->g, b = gr->b;
+	  uchar r = gr->r, g = gr->g, b = gr->b;
 	  int width = gr->width;
 
 	  for (y = y1, x = x1; y <= y2; y++, x += delta_x)
@@ -667,7 +672,7 @@ lgraphic_getpixel (lua_State * L)
   if (visible (gr, x, y))
     {
       char color[8];
-      unsigned char *p = gr->data + (y * gr->width * BPP) + x * BPP;
+      uchar *p = gr->data + (y * gr->width * BPP) + x * BPP;
       sprintf (color, "#%02X%02X%02X", (unsigned int) *p,
 	       (unsigned int) *(p + 1), (unsigned int) *(p + 2));
       lua_pushstring (L, color);
@@ -695,7 +700,7 @@ lgraphic_getpixelrgb (lua_State * L)
 
   if (visible (gr, x, y))
     {
-      unsigned char *p = gr->data + (y * gr->width * BPP) + x * BPP;
+      uchar *p = gr->data + (y * gr->width * BPP) + x * BPP;
       lua_pushinteger (L, (int) *p);	/* red */
       lua_pushinteger (L, (int) *(p + 1));	/* green */
       lua_pushinteger (L, (int) *(p + 2));	/* blue */
@@ -963,7 +968,7 @@ lgraphic_text (lua_State * L)
 
   if (fontwidth > 8)		/* 2 bytes per character */
     {
-      unsigned char r = gr->r, g = gr->g, b = gr->b;
+      uchar r = gr->r, g = gr->g, b = gr->b;
       int width = gr->width;
 
       for (i = 0; i < wclen; i++, wc++, x += fontwidth)
@@ -986,17 +991,17 @@ lgraphic_text (lua_State * L)
     }
   else				/* fontwidth <= 8 */
     {
-      unsigned char r = gr->r, g = gr->g, b = gr->b;
+      uchar r = gr->r, g = gr->g, b = gr->b;
       int width = gr->width;
 
       for (i = 0; i < wclen; i++, wc++, x += fontwidth)
 	{
-	  const unsigned char *font_line;
+	  const uchar *font_line;
 	  int lx, ly;
 
-	  font_line = (const unsigned char *) get_font_char ((int) *wc);
+	  font_line = (const uchar *) get_font_char ((int) *wc);
 	  if (!font_line)
-	    font_line = (const unsigned char *) get_font_char (0);
+	    font_line = (const uchar *) get_font_char (0);
 
 	  for (ly = 0; ly < fontheight; ly++)
 	    {
@@ -1184,7 +1189,7 @@ lgraphic_put (lua_State * L)
   int lines, bytes;
   int xstart, show_width;	/* for horizontal cropping */
   int source_width, target_width, source_height, target_height;
-  unsigned char *source, *target;
+  uchar *source, *target;
 
   gr = get_graphic (L, 1);
   gr2 = get_graphic (L, 2);
@@ -1253,7 +1258,7 @@ lgraphic_get (lua_State * L)
   int x1, y1, x2, y2;
   int source_width, target_width, source_height, target_height;
   int bytes, y;
-  unsigned char *source, *target;
+  uchar *source, *target;
 
   gr = get_graphic (L, 1);
 

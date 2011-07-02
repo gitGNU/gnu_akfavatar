@@ -63,8 +63,10 @@ gr:thickness(value)
     Sets the thickness of the pen.  The value 1 is the thinnest.
 
 
-gr:clear()
-    Clears the graphic gr, ie. fills the graphic with the background color.
+gr:clear([colorname])
+    Fills the graphic with the given color.
+    It uses the background color for AKFAvatar if no color is given or if the
+    colorname is invalid.
     The pen position is not changed.
 
 
