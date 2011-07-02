@@ -2177,7 +2177,6 @@ luaopen_akfavatar_embedded (lua_State * L)
   luaL_getmetatable (L, AUDIODATA);
   lua_setmetatable (L, -2);
   lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-silence");
-  lua_pop (L, 1);
 
   return 1;
 }
