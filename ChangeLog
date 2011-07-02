@@ -2,6 +2,9 @@
 
 	* avatar.c (avt_set_text_background_color): fix
 
+	* lua/lua-avt.c (luaopen_akfavatar_embedded): new function
+	lua/lua-akfavatar-prg.c (initialize_lua): adapted
+
 2011-06-13  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_isblank): new macro

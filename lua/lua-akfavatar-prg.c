@@ -38,8 +38,6 @@
 
 static lua_State *L;
 
-/* from lua-avt.c */
-extern int luaopen_akfavatar (lua_State * L);
 
 static void
 version (void)
@@ -285,6 +283,9 @@ new_dofile (lua_State * L)
 static void
 initialize_lua (void)
 {
+  /* from lua-avt.c */
+  extern int luaopen_akfavatar_embedded (lua_State * L);
+
   L = luaL_newstate ();
   if (L == NULL)
     avta_error ("cannot open Lua", "not enough memory");
@@ -295,7 +296,7 @@ initialize_lua (void)
   /* (users should not be able to leave the require command away) */
   lua_getglobal (L, "package");
   lua_getfield (L, -1, "preload");
-  lua_pushcfunction (L, luaopen_akfavatar);
+  lua_pushcfunction (L, luaopen_akfavatar_embedded);
   lua_setfield (L, -2, "lua-akfavatar");
   lua_pop (L, 2);
 

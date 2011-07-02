@@ -2148,8 +2148,13 @@ static const struct luaL_reg audiolib[] = {
   {NULL, NULL}
 };
 
+/*
+ * use this as entry point when embedding this in
+ * an AKFAvatar application
+ * uses no auto-cleanup when lua is closed
+ */
 int
-luaopen_akfavatar (lua_State * L)
+luaopen_akfavatar_embedded (lua_State * L)
 {
   avt_audio_t **audio;
 
@@ -2158,19 +2163,6 @@ luaopen_akfavatar (lua_State * L)
   /* variables */
   lua_pushliteral (L, LUA_DIRSEP);
   lua_setfield (L, -2, "dirsep");
-
-#ifdef MODULE
-  /*
-   * use some dummy userdata to register a
-   * cleanup function for the garbage collector
-   */
-  lua_newuserdata (L, 1);
-  lua_newtable (L);		/* create metatable */
-  lua_pushcfunction (L, lavt_quit);	/* function for collector */
-  lua_setfield (L, -2, "__gc");
-  lua_setmetatable (L, -2);	/* set it up as metatable */
-  lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-module_quit");
-#endif
 
   /* type for audio data */
   luaL_newmetatable (L, AUDIODATA);
@@ -2185,6 +2177,31 @@ luaopen_akfavatar (lua_State * L)
   luaL_getmetatable (L, AUDIODATA);
   lua_setmetatable (L, -2);
   lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-silence");
+  lua_pop (L, 1);
+
+  return 1;
+}
+
+/*
+ * entry point when calling it as module
+ * automatically closes AKFAvatar when Lua is closed
+ */
+int
+luaopen_akfavatar (lua_State * L)
+{
+  luaopen_akfavatar_embedded(L);
+
+  /*
+   * use some dummy userdata to register a
+   * cleanup function for the garbage collector
+   */
+  lua_newuserdata (L, 1);
+  lua_newtable (L);		/* create metatable */
+  lua_pushcfunction (L, lavt_quit);	/* function for collector */
+  lua_setfield (L, -2, "__gc");
+  lua_setmetatable (L, -2);	/* set it up as metatable */
+  lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-module_quit");
+  lua_pop (L, 1);
 
   return 1;
 }

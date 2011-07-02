@@ -232,7 +232,7 @@ lua-avt.wo: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h
 # for the module
 lua-avt-mod.wo: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
-	  -DMODULE $(srcdir)/lua/lua-avt.c
+	  $(srcdir)/lua/lua-avt.c
 
 lbase64.wo: $(srcdir)/lua/lbase64.c
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \

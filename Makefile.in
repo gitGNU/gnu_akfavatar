@@ -325,7 +325,7 @@ lbase64.lo: $(srcdir)/lua/lbase64.c
 
 lua-avt.lo: $(srcdir)/lua/lua-avt.c
 	  $(CC) $(SDL_CFLAGS) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -fpic -o $@ \
-	  -DMODULE $(srcdir)/lua/lua-avt.c
+	  $(srcdir)/lua/lua-avt.c
 
 filechooser.lo: $(srcdir)/filechooser.c $(srcdir)/avtaddons.h \
                 $(srcdir)/avtinternals.h
