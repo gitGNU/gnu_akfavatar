@@ -55,7 +55,6 @@ local function clock(gr, show_date, timestamp)
 
   -- show minute points
   gr:thickness(2)
-  gr:draw(false) --> don't draw while moving
   for i=1,60 do
     gr:home()
     gr:heading(i * 360/60)
