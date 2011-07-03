@@ -4,6 +4,7 @@ To use this module load it with require "akfavatar-graphic".
 
 Notes:
 - Coordinates start with 1, 1 in the upper left corner.
+- It can also be used in the style of turtle graphic.
 - The pen size, position, heading and color are set for each graphic.
 
 
@@ -11,7 +12,7 @@ graphic.new([width, height])
     Creates a new graphic (a canvas).
     When width and height are not given it uses the whole window/screen.
     A thin black pen is chosen and the position is centered, heading to
-    the top, drawing.
+    the top.
 
     Retuns the graphic, the width and the height (ie. three values).
 
