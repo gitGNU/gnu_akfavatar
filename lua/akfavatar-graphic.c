@@ -781,7 +781,7 @@ lgraphic_rectangle (lua_State * L)
   return 0;
 }
 
-/* gr:arc (xcenter, ycenter, radius [,startangle] [,endangle]) */
+/* gr:arc (radius [,angle1] [,angle2]) */
 static int
 lgraphic_arc (lua_State * L)
 {
@@ -791,16 +791,29 @@ lgraphic_arc (lua_State * L)
 
   gr = get_graphic (L, 1);
 
-  xcenter = luaL_checknumber (L, 2) - 1.0;
-  ycenter = luaL_checknumber (L, 3) - 1.0;
-  radius = luaL_checknumber (L, 4);
-  startangle = luaL_optnumber (L, 5, 0);
-  endangle = luaL_optnumber (L, 6, 360);
+  radius = luaL_checknumber (L, 2);
 
-  penpos (gr, xcenter, ycenter);
+  if (lua_isnoneornil (L, 3))	/* no angles given */
+    {
+      startangle = 0;
+      endangle = 360;		/* full circle */
+    }
+  else if (lua_isnoneornil (L, 4))	/* one angle given */
+    {
+      startangle = gr->heading;
+      endangle = luaL_checknumber (L, 3);
+    }
+  else				/* two angles given */
+    {
+      startangle = luaL_checknumber (L, 3);
+      endangle = luaL_checknumber (L, 4);
+    }
 
   while (startangle > endangle)
     endangle += 360;
+
+  xcenter = gr->penx;
+  ycenter = gr->peny;
 
   x = xcenter + radius * sin (RAD (startangle));
   y = ycenter - radius * cos (RAD (startangle));

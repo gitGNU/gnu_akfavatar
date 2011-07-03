@@ -148,13 +148,15 @@ gr:rectangle(x1, y1, x2, y2)
     The pen position is not changed.
 
 
-gr:arc(x, y, radius [,startangle, endangle])
-gr:circle(x, y, radius [,startangle, endangle])
-    Draws a circle with x, y as the center with the given radius.
-    The pen is put to the center of the circle (ie. to the given x, y)
+gr:arc(radius [,angle1] [,angle2])
+gr:circle(radius [,angle1] [,angle2])
+    Draws a circle or an arc with the given radius.
+    The pen position is the center.
 
-    You can draw a part of the circle (an arc) by giving the startangle and
-    endangle in degree.  The arc is drawn clockwise.
+    You can draw a part of the circle (an arc) by giving one or two angles
+    in degree.  If two angles are given, then it draws clockwise from the first
+    angle to the second.  If just one angle is given, it uses the heading as
+    start-angle (see below under turtle graphics).
 
 
 gr:text(text [, x, y])
