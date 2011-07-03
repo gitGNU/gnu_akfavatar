@@ -35,10 +35,12 @@
 /* Bytes per pixel (3=RGB) */
 #define BPP 3
 
-#define PI  3.14159265358979323846
+#ifndef M_PI
+#define M_PI  3.14159265358979323846
+#endif
 
 /* convert degree to radians */
-#define RAD(x)  ((x) * PI / 180.0)
+#define RAD(x)  ((x) * M_PI / 180.0)
 
 #define GRAPHICDATA "AKFAvatar-graphic"
 
