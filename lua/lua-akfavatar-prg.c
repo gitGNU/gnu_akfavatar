@@ -485,15 +485,17 @@ main (int argc, char **argv)
 	  /* reset settings */
 	  avt_set_status (AVT_NORMAL);
 
+	  /* restart Lua */
+	  lua_close (L);
+	  initialize_lua ();
+
 	  /* script may have called avt.quit() */
+	  /* also closing Lua may have accidently closed AKFAvatar */
 	  if (avt_initialized ())
 	    reset ();
 	  else
 	    initialize ();
 
-	  /* restart Lua */
-	  lua_close (L);
-	  initialize_lua ();
 	  handle_require_options (argc, argv);
 	}
     }
