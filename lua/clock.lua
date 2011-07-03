@@ -31,58 +31,67 @@ local oldtime = -1
 local function clock(gr, show_date, timestamp)
   timestamp = timestamp or os.time()
 
+  -- only draw when timestamp changes
   -- timestamp changes every second
   if timestamp == oldtime then return end
   oldtime = timestamp
 
   local time = os.date("*t", timestamp)
   local width, height = gr:width(), gr:height()
-  local xcenter, ycenter = width/2, height/2
   local radius = math.min(width, height) / 2 - 10
-  local pi2 = math.pi * 2
-  local value
 
   gr:clear()
 
   if show_date then
+    gr:draw(false)
+    gr:home()
+    gr:back(height / 4)
     gr:textalign("center", "center")
-    gr:text(os.date("%x", timestamp), xcenter, height * 3/4)
+    gr:text(os.date("%x", timestamp))
+  end
+
+  -- draw dots
+  gr:draw(false)
+
+  -- show minute points
+  gr:thickness(2)
+  gr:draw(false) --> don't draw while moving
+  for i=1,60 do
+    gr:home()
+    gr:heading(i * 360/60)
+    gr:forward(radius)
+    gr:putdot()
   end
 
   -- show hour points
   gr:thickness(7)
   for i=1,12 do
-    gr:putdot(xcenter + radius * math.sin(pi2*i/12),
-             ycenter - radius * math.cos(pi2*i/12))
+    gr:home()
+    gr:heading(i * 360/12)
+    gr:forward(radius)
+    gr:putdot()
   end
 
-  -- show minute points
-  gr:thickness(2)
-  for i=1,60 do
-    gr:putdot(xcenter + radius * math.sin(pi2*i/60),
-             ycenter - radius * math.cos(pi2*i/60))
-  end
+  -- draw pointers
+  gr:draw(true)
 
   -- hours pointer
-  value = pi2 * ((time.hour % 12) * 5 + time.min / 12) / 60
-  gr:thickness(5)
-  gr:line (xcenter, ycenter,
-          xcenter + (radius/2) * math.sin(value),
-          ycenter - (radius/2) * math.cos(value))
+  gr:home()
+  gr:heading((time.hour*60/12 + time.min/12) * 360/60)
+  gr:thickness(6)
+  gr:forward(radius/2)
 
   -- minutes pointer
-  value = pi2 * time.min / 60
+  gr:home()
+  gr:heading(time.min * 360/60)
   gr:thickness(3)
-  gr:line (xcenter, ycenter,
-          xcenter + (radius - 12) * math.sin(value),
-          ycenter - (radius - 12) * math.cos(value))
+  gr:forward(radius-12)
 
   -- seconds pointer
-  value = pi2 * time.sec / 60
+  gr:home()
+  gr:heading(time.sec * 360/60)
   gr:thickness(1)
-  gr:line (xcenter, ycenter,
-          xcenter + (radius - 12) * math.sin(value),
-          ycenter - (radius - 12) * math.cos(value))
+  gr:forward(radius-12)
 
   gr:show()
 end
@@ -92,6 +101,7 @@ local gr = graphic.new(s, s)
 gr:color "saddle brown"
 os.setlocale("", "time") --> for the formatting of the date
 
+-- close with <Esc>-key or the close-button of the window
 while true do
   clock(gr, true)
   avt.wait(0.1)
