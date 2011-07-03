@@ -37,7 +37,7 @@ local function clock(gr, show_date, timestamp)
   oldtime = timestamp
 
   local time = os.date("*t", timestamp)
-  local width, height = gr:width(), gr:height()
+  local width, height = gr:size()
   local radius = math.min(width, height) / 2 - 10
 
   gr:clear()
