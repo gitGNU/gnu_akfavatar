@@ -239,21 +239,12 @@ gr:left(degree)
     Turn the turtle counterclockwise by the specified angle in degree.
 
 
-gr:draw(true|fase)
-    Put the pen in the draw position (true) or in the idle position (false).
-    This is only relevatn for the methods gr:froward() and gr:back()
-    (see below).
+gr:draw(steps)
+    Draw a line in the direction the turtle is heading.
 
 
-gr:forward(steps)
-    Move the turtle forward in the direction it is heading.
-    It draws a line if the pen is in the draw position (gr:draw(true)).
-
-
-gr:back(steps)
-    Move the turtle back in the opposite direction it is heading.
-    The turtle is not turned around.
-    It draws a line if the pen is in the draw position (gr:draw(true)).
+gr:move(steps)
+    Move the turtle in the direction it is heading without drawing.
 
 
 gr:home()

@@ -43,22 +43,19 @@ local function clock(gr, show_date, timestamp)
   gr:clear()
 
   if show_date then
-    gr:draw(false)
     gr:home()
-    gr:back(height / 4)
+    gr:heading(180)
+    gr:move(height / 4)
     gr:textalign("center", "center")
     gr:text(os.date("%x", timestamp))
   end
-
-  -- draw dots
-  gr:draw(false)
 
   -- show minute points
   gr:thickness(2)
   for i=1,60 do
     gr:home()
     gr:heading(i * 360/60)
-    gr:forward(radius)
+    gr:move(radius)
     gr:putdot()
   end
 
@@ -67,30 +64,27 @@ local function clock(gr, show_date, timestamp)
   for i=1,12 do
     gr:home()
     gr:heading(i * 360/12)
-    gr:forward(radius)
+    gr:move(radius)
     gr:putdot()
   end
-
-  -- draw pointers
-  gr:draw(true)
 
   -- hours pointer
   gr:home()
   gr:heading((time.hour*60/12 + time.min/12) * 360/60)
   gr:thickness(6)
-  gr:forward(radius/2)
+  gr:draw(radius/2)
 
   -- minutes pointer
   gr:home()
   gr:heading(time.min * 360/60)
   gr:thickness(3)
-  gr:forward(radius-12)
+  gr:draw(radius-12)
 
   -- seconds pointer
   gr:home()
   gr:heading(time.sec * 360/60)
   gr:thickness(1)
-  gr:forward(radius-12)
+  gr:draw(radius-12)
 
   gr:show()
 end

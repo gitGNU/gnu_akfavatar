@@ -95,12 +95,11 @@ typedef unsigned char uchar;
 typedef struct graphic
 {
   int width, height;
-  double penx, peny;		/* position of pen */
   int thickness;		/* thickness of pen */
-  double heading;		/* heading of the turtle */
-  avt_bool_t draw;		/* pen down */
-  uchar r, g, b;		/* current color */
   int htextalign, vtextalign;	/* alignment for text */
+  double penx, peny;		/* position of pen */
+  double heading;		/* heading of the turtle */
+  uchar r, g, b;		/* current color */
   uchar data[1];
 } graphic;
 
@@ -190,7 +189,6 @@ lgraphic_new (lua_State * L)
   gr->htextalign = HA_CENTER;
   gr->vtextalign = VA_CENTER;
 
-  gr->draw = AVT_TRUE;
   gr->heading = 0.0;
 
   avt_get_background_color (&red, &green, &blue);
@@ -1113,24 +1111,9 @@ lgraphic_left (lua_State * L)
 }
 
 
-/* gr:draw(true|false) */
+/* gr:draw(steps) */
 static int
 lgraphic_draw (lua_State * L)
-{
-  graphic *gr;
-
-  gr = get_graphic (L, 1);
-  luaL_checktype (L, 2, LUA_TBOOLEAN);
-
-  gr->draw = (avt_bool_t) lua_toboolean (L, 2);
-
-  return 0;
-}
-
-
-/* gr:forward(steps) */
-static int
-lgraphic_forward (lua_State * L)
 {
   graphic *gr;
   double penx, peny, x, y;
@@ -1146,37 +1129,25 @@ lgraphic_forward (lua_State * L)
   x = penx + steps * sin (value);
   y = peny - steps * cos (value);
 
-  if (gr->draw)
-    line (gr, penx, peny, x, y);
-
+  line (gr, penx, peny, x, y);
   penpos (gr, x, y);
 
   return 0;
 }
 
 
-/* gr:back(steps) */
+/* gr:move(steps) */
 static int
-lgraphic_back (lua_State * L)
+lgraphic_move (lua_State * L)
 {
   graphic *gr;
-  double penx, peny, x, y;
   double steps, value;
 
   gr = get_graphic (L, 1);
   steps = (double) luaL_checknumber (L, 2);
 
-  penx = gr->penx;
-  peny = gr->peny;
   value = RAD (gr->heading);
-
-  x = penx - steps * sin (value);
-  y = peny + steps * cos (value);
-
-  if (gr->draw)
-    line (gr, penx, peny, x, y);
-
-  penpos (gr, x, y);
+  penpos (gr, gr->penx + steps * sin (value), gr->peny - steps * cos (value));
 
   return 0;
 }
@@ -1307,7 +1278,6 @@ lgraphic_get (lua_State * L)
 
   gr2->htextalign = gr->htextalign;
   gr2->vtextalign = gr->vtextalign;
-  gr2->draw = AVT_TRUE;
   gr2->heading = 0.0;
 
   source = gr->data + y1 * source_width * BPP;
@@ -1410,8 +1380,7 @@ static const struct luaL_reg graphiclib_methods[] = {
   {"right", lgraphic_right},
   {"left", lgraphic_left},
   {"draw", lgraphic_draw},
-  {"forward", lgraphic_forward},
-  {"back", lgraphic_back},
+  {"move", lgraphic_move},
   {"export_ppm", lgraphic_export_ppm},
   {NULL, NULL}
 };
