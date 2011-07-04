@@ -70,7 +70,7 @@
 #define AVT_RIGHT_TO_LEFT 1
 
 /* for avt_get_key(&k) */
-/* note: F11 is also used to toggle fullscreen mode! */
+/* note: F11 is normally used to toggle fullscreen mode! */
 /* note: most keyboards don't have all those keys */
 #define AVT_KEY_ENTER     0x000D
 #define AVT_KEY_BACKSPACE 0x0008
@@ -96,7 +96,7 @@
 #define AVT_KEY_F8        0xF0F8
 #define AVT_KEY_F9        0xF0F9
 #define AVT_KEY_F10       0xF0FA
-#define AVT_KEY_F11       0xF0FB
+#define AVT_KEY_F11       0xF0FB  /* only if single keys are reserved */
 #define AVT_KEY_F12       0xF0FC
 #define AVT_KEY_F13       0xF0FD
 #define AVT_KEY_F14       0xF0FE

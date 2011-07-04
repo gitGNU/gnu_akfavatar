@@ -3912,12 +3912,15 @@ avt_key (avt_char * ch)
 	    case SDLK_F8:
 	    case SDLK_F9:
 	    case SDLK_F10:
-	    case SDLK_F11:
 	    case SDLK_F12:
 	    case SDLK_F13:
 	    case SDLK_F14:
 	    case SDLK_F15:
 	      *ch = AVT_KEY_F1 + (event.key.keysym.sym - SDLK_F1);
+	      break;
+	    case SDLK_F11:
+	      if (reserve_single_keys)
+		*ch = AVT_KEY_F11;
 	      break;
 	    default:
 	      *ch = event.key.keysym.unicode;
@@ -4961,9 +4964,8 @@ avt_wait_button (void)
 	  break;
 
 	case SDL_KEYDOWN:
-	  nokey = AVT_FALSE;
-	  if (event.key.keysym.sym == SDLK_ESCAPE)
-	    _avt_STATUS = AVT_QUIT;
+	  if (SDLK_F11 != event.key.keysym.sym || reserve_single_keys)
+	    nokey = AVT_FALSE;
 	  break;
 
 	case SDL_MOUSEBUTTONDOWN:
