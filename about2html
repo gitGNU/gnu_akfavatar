@@ -1,0 +1,38 @@
+#!/usr/bin/awk -f
+
+# Convert about-file into HTML-code
+# only text - no bolds or italics - overstrike is removed
+#
+# Example-Usage:
+# ./about2html audioplayer.en.about > audioplayer.en.html
+#
+# Copyright (c) 2011 Andreas K. Foerster
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.
+
+NR == 1 {
+  name = FILENAME
+  sub(/^.*[\\\/]/, "", name) # strip path
+
+  print "<!DOCTYPE html>\n"
+  print "<html>\n<head>"
+  print "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"
+  print "<title>" name "</title>"
+  print "</head>\n\n<body>\n"
+  print "<pre>"
+}
+
+{
+  gsub(/.\b/, "") # remove overstrike
+  gsub(/&/, "\&amp;")
+  gsub(/</, "\&lt;")
+  gsub(/>/, "\&gt;")
+  print
+}
+
+END {
+  print "</pre>\n"
+  print "</body>\n</html>"
+}
