@@ -633,7 +633,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/7x14.bdf $(srcdir)/9x18.bdf $(srcdir)/bdf2c \
 	   $(srcdir)/font.c $(srcdir)/alert.flac $(srcdir)/alert.au \
 	   $(srcdir)/configure $(srcdir)/Makefile.in $(srcdir)/text2c \
-	   $(srcdir)/data2c $(srcdir)/rgb2c \
+	   $(srcdir)/data2c $(srcdir)/rgb2c $(srcdir)/about2html \
 	   $(srcdir)/lua-akfavatar.sh \
 	   $(srcdir)/lua-akfavatar.en.about \
 	   $(srcdir)/lua-akfavatar-ref.en.about $(srcdir)/lua-akfavatar-ref.de.about \
