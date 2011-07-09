@@ -718,9 +718,9 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/mingw/Makefile $(srcdir)/mingw/README \
 	   $(PKGNAME)/mingw/
 
-	tar -cvf $(PKGNAME).tar $(PKGNAME)/
+	tar -cvf $(PKGNAME).src.tar $(PKGNAME)/
 	rm -rf $(PKGNAME)/
-	bzip2 -f $(PKGNAME).tar
+	bzip2 -f $(PKGNAME).src.tar
 
 dist-bin-default: all pdf
 	mkdir $(BINPKGNAME)
