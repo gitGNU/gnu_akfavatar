@@ -192,7 +192,7 @@ gr:textalign([horizontal] [, vertical])
 
 graphic.font_size()
 gr:font_size()
-    Returns the width and the hight of the font, ie. one character.
+    Returns the width and the height of the font, ie. one character.
     It is a fixed-width font, each character has the same width.
 
 
@@ -223,6 +223,10 @@ gr:export_ppm(filename)
 
 Turtle graphics
 ===============
+
+To understand turtle graphics think of a turtle that carries a pen. You can
+control the turtle by tellig her in which direction to turn and how far to move.
+
 
 gr:heading(heading)
     Sets the heading for the turtle.  The value must be given in degree and the
