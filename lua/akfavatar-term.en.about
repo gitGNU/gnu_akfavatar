@@ -17,8 +17,7 @@ require "akfavatar-term"
     This loads the module for the terminal emulation.
 
 
-
-term.startdir ([directory])
+term.startdir([directory])
     Sets the start directory for the next term.execute() command.
     If no directory is given, it clears the previous setting.
 
@@ -26,8 +25,7 @@ term.startdir ([directory])
     The working directory of the host and the guest program are independent!
 
 
-
-term.homedir ()
+term.homedir()
     Set the start directory for the next term.execute() command to the users
     home directory.
 
@@ -35,47 +33,25 @@ term.homedir ()
     The working directory of the host and the guest program are independent!
 
 
-
-term.color (true|false)
+term.color(true|false)
     Switches the color support on or off.
     The terminal type with color is "linux", without color it is "linux-m".
 
 
-
-term.setenv (variable, value)
+term.setenv(variable, value)
     Sets the given environment variable to the given value.
     This also affects programs started with os.execute() or io.popen().
 
 
-
-term.unsetenv (variable)
+term.unsetenv(variable)
     Unsets (clears) the given environment variable.
     This also affects programs started with os.execute() or io.popen().
 
 
-
-term.execute ([program [,arguments]])
+term.execute([program [,arguments]])
     Executes the given program with the given arguments in the
     terminal emulation.  If no program is given it starts the
     default shell.
-
-
-
-term.send (string)
-    Send a string to the guest program, as if it is typed from the keyboard.
-    This can only be used from the APC interface (see below).
-    If the guest program is line-oriented, the string should be closed
-    with a "\r" (for return).
-
-
-
-term.decide (string1 [,string2])
-    Present plus/minus buttons and depending on that choice send string1 or
-    string2 to the guest program, as if it is typed from the keyboard.
-    This can only be used from the APC interface (see below).
-    If the guest program is line-oriented, both strings should be given and
-    they should be closed with "\r" (for return).
-
 
 
 APC interface
@@ -96,7 +72,7 @@ APC interface
         }
 
     The commands can be Lua function calls, especially the "avt." commands
-    defined by "lua-akfavatar" (see the "lua-akfavatar-reference").
+    defined by "lua-akfavatar" (see the "lua-akfavatar-ref").
     Up to 1024 characters can be sent.  So it is not suited to send complicated
     code from the guest program.  However the hosting script, that is the Lua
     script that calls the guest program, can define its own global functions,
@@ -107,4 +83,19 @@ APC interface
 
     For example:
       term.setenv("APC", _VERSION .. ", lua-akfavatar")
+
+
+term.send(string)
+    Send a string to the guest program, as if it is typed from the keyboard.
+    This can only be used from the APC interface (see above).
+    If the guest program is line-oriented, the string should be closed
+    with a "\r" (for return).
+
+
+term.decide(string1 [,string2])
+    Present plus/minus buttons and depending on that choice send string1 or
+    string2 to the guest program, as if it is typed from the keyboard.
+    This can only be used from the APC interface (see above).
+    If the guest program is line-oriented, both strings should be given and
+    they should be closed with "\r" (for return).
 
