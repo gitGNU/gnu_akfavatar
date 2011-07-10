@@ -239,7 +239,7 @@ gr:export_ppm(filename)
 Turtle-Grafik
 =============
 
-Um Turtle-Grafik ("Schildkröten-Grafik", manchmal auch "Igel-Grafik" genannt) zu
+Um Turtle-Grafik („Schildkröten-Grafik“, manchmal auch „Igel-Grafik“ genannt) zu
 verstehen, muss man sich eine Schildkröte verstellen, die einen Stift trägt.
 Man kann der Schildkröte dann Befehle erteilen in welche Richtung sie sich drehen
 soll und wie weit sie sich zu bewegen hat.
