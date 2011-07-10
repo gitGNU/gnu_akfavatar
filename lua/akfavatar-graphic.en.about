@@ -137,13 +137,13 @@ gr:line(x1, y1, x2, y2)
 
 
 gr:bar(x1, y1, x2, y2)
-    Draws a solid bar with x1, y2 as the upper left corner
+    Draws a solid bar with x1, y1 as the upper left corner
     and x2, y2 as the lower right corner.
     The pen position is not changed.
 
 
 gr:rectangle(x1, y1, x2, y2)
-    Draws rectangle with x1, y2 as the upper left corner
+    Draws rectangle with x1, y1 as the upper left corner
     and x2, y2 as the lower right corner.
     The pen position is not changed.
 
