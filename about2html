@@ -21,7 +21,7 @@ NR == 1 {
   print "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"
   print "<title>" name "</title>"
   print "</head>\n\n<body>\n"
-  print "<pre>"
+  print "<pre style='width:80ex; margin-left:auto; margin-right:auto;'>"
 }
 
 {
