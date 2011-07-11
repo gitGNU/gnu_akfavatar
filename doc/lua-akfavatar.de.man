@@ -96,7 +96,7 @@ avt.say("Hallo, ", Benutzer, ". Schön dich zu sehen!\\n")
 avt.wait_button()
 .fi
 .
-.SH AUTHORS
+.SH AUTOREN
 .IP "AKFAvatar, Lua-AKFAvatar"
 Andreas K. Förster
 .IP "Lua"
