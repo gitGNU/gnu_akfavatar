@@ -1,16 +1,17 @@
 .\" Process this file with
 .\" groff -man -Tutf8 lua-akfavatar.1
 .\"
-.TH "lua-akfavatar" 1 2011-04-01 AKFAvatar
+.TH "lua-akfavatar" 1 2011-07-11 AKFAvatar
 .
 .SH NAME
-lua-akfavatar \- Lua interpreter for the AKFavatar user interface
+lua-akfavatar \- Lua interpreter for the AKFAvatar user interface
 .
 .SH SYNOPSIS
 .BI "lua-akfavatar [" options "] [" " script " "[" args "] ]"
 .
 .SH DESCRIPTION
-Lua-AKFAvatar is the Lua interpreter for the AKFAvatar user interface.
+The program Lua-AKFAvatar is the Lua interpreter for the AKFAvatar
+user interface.
 It loads and executes Lua scripts in source form (not bytecode).
 Either Lua scripts can be loaded or ".avt" demo files.
 If no
@@ -42,8 +43,8 @@ with the file extension
 .RI """" .about """."
 These can be simple text files encoded in UTF-8 or plain ASCII.
 They can use the "overstriking" technique for bold or underlined text.
-You can for example use the text-setting system "nroff" (part of "troff"
-or "groff") to generate such files.
+You can for example use the text-setting system "groff" to generate
+such files.
 .
 .SH OPTIONS
 .IP "-h | --help"
@@ -65,7 +66,7 @@ Start in that directory
 searchpath for Lua modules.
 Templates are separated with semicolons.
 A question mark
-.b (?)
+.RB ( ? )
 is replaced with the module name.
 A dot in the module name is replaced with the directory separator.
 Two semicolons
@@ -97,7 +98,7 @@ http://akfavatar.nongnu.org/
 .SH "SEE ALSO"
 .BR lua (1)
 .BR lua-akfavatar-ref (3)
+.PP
+http://akfavatar.nongnu.org/manual/
 .br
-.B http://akfavatar.nongnu.org/manual/
-.br
-.B http://www.lua.org/manual/5.1/
+http://www.lua.org/manual/5.1/

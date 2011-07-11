@@ -16,19 +16,22 @@ all: txt info html ps pdf
 
 info:
 
-html: lua-akfavatar.en.html akfavatar.h.html avtaddons.h.html \
+html: lua-akfavatar.en.html lua-akfavatar.de.html \
+      akfavatar.h.html avtaddons.h.html \
       lua-akfavatar-ref.en.html lua-akfavatar-ref.de.html
 
 txt: lua-akfavatar-ref.en.txt lua-akfavatar-ref.de.txt \
-     lua-akfavatar.en.txt
+     lua-akfavatar.en.txt lua-akfavatar.de.txt
 
-pdf: lua-akfavatar.en.pdf akfavatar.h.pdf avtaddons.h.pdf \
+pdf: lua-akfavatar.en.pdf lua-akfavatar.de.pdf \
+     akfavatar.h.pdf avtaddons.h.pdf \
      lua-akfavatar-ref.en.pdf lua-akfavatar-ref.de.pdf
 
-ps: lua-akfavatar.en.ps akfavatar.h.ps avtaddons.h.ps \
+ps: lua-akfavatar.en.ps lua-akfavatar.de.ps \
+    akfavatar.h.ps avtaddons.h.ps \
     lua-akfavatar-ref.en.ps lua-akfavatar-ref.de.ps
 
-dvi: lua-akfavatar.en.dvi \
+dvi: lua-akfavatar.en.dvi lua-akfavatar.de.dvi \
      lua-akfavatar-ref.en.dvi lua-akfavatar-ref.de.dvi
 
 docbook:

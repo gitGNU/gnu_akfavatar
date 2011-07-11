@@ -276,11 +276,15 @@ luaavtstarter-rc.wo: luaavtstarter.rc $(srcdir)/mingw/akfavatar.ico
 	$(WINDRES) -I$(srcdir)/mingw/ -o $@ -i luaavtstarter.rc
 
 about: $(srcdir)/lua-akfavatar.en.about \
+       $(srcdir)/lua-akfavatar.de.about \
        $(srcdir)/lua-akfavatar-ref.en.about \
        $(srcdir)/lua-akfavatar-ref.de.about
 
 $(srcdir)/lua-akfavatar.en.about: $(srcdir)/doc/lua-akfavatar.en.man
 	-$(ROFF) -c -man -Kutf8 -Tutf8 $(srcdir)/doc/lua-akfavatar.en.man > $@
+
+$(srcdir)/lua-akfavatar.de.about: $(srcdir)/doc/lua-akfavatar.de.man
+	-$(ROFF) -c -man -Kutf8 -Tutf8 $(srcdir)/doc/lua-akfavatar.de.man > $@
 
 $(srcdir)/lua-akfavatar-ref.en.about: \
   $(srcdir)/doc/lua-akfavatar-ref.en.man
@@ -339,9 +343,11 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(srcdir)/lua/characters_tables.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/colors_overview.lua $(BINPKGNAME)/lua/
 	-cp $(srcdir)/lua-akfavatar.en.about $(BINPKGNAME)/
+	-cp $(srcdir)/lua-akfavatar.de.about $(BINPKGNAME)/
 	-cp $(srcdir)/lua-akfavatar-ref.en.about $(BINPKGNAME)/
 	-cp $(srcdir)/lua-akfavatar-ref.de.about $(BINPKGNAME)/
 	cp lua-akfavatar.en.pdf $(BINPKGNAME)/
+	cp lua-akfavatar.de.pdf $(BINPKGNAME)/
 	cp lua-akfavatar-ref.en.pdf $(BINPKGNAME)/
 	cp lua-akfavatar-ref.de.pdf $(BINPKGNAME)/
 	cp $(srcdir)/lua/akfavatar/dir.??.about $(BINPKGNAME)/lua/akfavatar/
