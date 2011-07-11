@@ -351,7 +351,9 @@ installdirs:
 	-[ -d $(DESTDIR)$(infodir) ]     || $(INSTALL) -d $(DESTDIR)$(infodir)
 	-[ -d $(DESTDIR)$(mandir) ]      || $(INSTALL) -d $(DESTDIR)$(mandir)
 	-[ -d $(DESTDIR)$(mandir)/man1 ] || $(INSTALL) -d $(DESTDIR)$(mandir)/man1
+	-[ -d $(DESTDIR)$(mandir)/de/man1 ] || $(INSTALL) -d $(DESTDIR)$(mandir)/de/man1
 	-[ -d $(DESTDIR)$(mandir)/man3 ] || $(INSTALL) -d $(DESTDIR)$(mandir)/man3
+	-[ -d $(DESTDIR)$(mandir)/de/man3 ] || $(INSTALL) -d $(DESTDIR)$(mandir)/de/man3
 	-[ -d $(DESTDIR)$(docdir) ]      || $(INSTALL) -d $(DESTDIR)$(docdir)
 	-[ -d $(DESTDIR)$(LUA_PATH)/akfavatar ] \
 	   || $(INSTALL) -d $(DESTDIR)$(LUA_PATH)/akfavatar
@@ -456,12 +458,15 @@ install-man: man
 	-$(INSTALL_DATA) $(srcdir)/doc/lua-akfavatar.en.man $(DESTDIR)$(mandir)/man1/lua-akfavatar.1
 	-$(INSTALL_DATA) $(srcdir)/doc/lua-akfavatar-ref.en.man \
 	                 $(DESTDIR)$(mandir)/man3/lua-akfavatar-ref.3
+	-$(INSTALL_DATA) $(srcdir)/doc/lua-akfavatar-ref.de.man \
+	                 $(DESTDIR)$(mandir)/de/man3/lua-akfavatar-ref.3
 
 uninstall-man:
 	-rm -f $(DESTDIR)$(mandir)/man1/avatarsay.1
 	-rm -f $(DESTDIR)$(mandir)/man1/avtcmd.1
 	-rm -f $(DESTDIR)$(mandir)/man1/lua-akfavatar.1
 	-rm -f $(DESTDIR)$(mandir)/man3/lua-akfavatar-ref.3
+	-rm -f $(DESTDIR)$(mandir)/de/man3/lua-akfavatar-ref.3
 
 txt:
 	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" srcdir="$(srcdir)" txt
