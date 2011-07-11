@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 #include <lua.h>
 #include <lauxlib.h>
@@ -1328,7 +1329,7 @@ lgraphic_export_ppm (lua_State * L)
   FILE *f;
 
   if (BPP != 3)
-    return luaL_error (L, "internal error");
+    return luaL_error (L, "%s", strerror(ENOSYS));
 
   gr = get_graphic (L, 1);
   fname = luaL_checkstring (L, 2);
@@ -1336,13 +1337,13 @@ lgraphic_export_ppm (lua_State * L)
   f = fopen (fname, "wb");
 
   if (!f)
-    return luaL_error (L, "cannot open file \"%s\" for writing", fname);
+    return luaL_error (L, "\"%s\": %s", fname, strerror(errno));
 
   fprintf (f, "P6\n%d %d\n255\n", gr->width, gr->height);
   fwrite (gr->data, 1, gr->height * gr->width * BPP, f);
 
   if (fclose (f) != 0)
-    return luaL_error (L, "error writing file \"%s\"", fname);
+    return luaL_error (L, "\"%s\": %s", fname, strerror(errno));
 
   return 0;
 }
