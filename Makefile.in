@@ -522,7 +522,7 @@ $(srcdir)/lua-akfavatar.en.about: $(srcdir)/doc/lua-akfavatar.en.man
 	-$(ROFF) -c -man -Tutf8 $(srcdir)/doc/lua-akfavatar.en.man > $@
 
 $(srcdir)/lua-akfavatar.de.about: $(srcdir)/doc/lua-akfavatar.de.man
-	-$(ROFF) -c -man -Tutf8 $(srcdir)/doc/lua-akfavatar.de.man > $@
+	-$(ROFF) -c -Kutf8 -man -Tutf8 $(srcdir)/doc/lua-akfavatar.de.man > $@
 
 $(srcdir)/lua-akfavatar-ref.en.about: \
      $(srcdir)/doc/lua-akfavatar-ref.en.man
