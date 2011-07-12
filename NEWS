@@ -2,12 +2,12 @@
 
   - The program avatarsay was removed
     all it could do can be done with lua-akfavatar now
-  - writing *.avt demos became a lot easier
   - documentation now consists of manpages and textfiles
     wich can be displayed in lua-akfavatar directly
   - making demos became simpler again,
     there is no need to specify the balloon-size anymore,
-    but therefore effectpause/back don't work anymore
+    but therefore effectpause/back doesn't work anymore.
+    (And it's not documented, yet. - see example files.)
   - lua-akfavatar can be compiled as module
   - new lua modules available for better UTF-8 support,
     terminal-emulation and the Ogg Vorbis audio format
