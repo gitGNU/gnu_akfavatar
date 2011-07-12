@@ -441,6 +441,7 @@ uninstall: uninstall-info uninstall-man uninstall-txt uninstall-html \
 	-rm -f $(LUA_CPATH)/base64.so
 	-rm -f $(LUA_CPATH)/akfavatar-vorbis.so
 	-rm -f $(LUA_CPATH)/akfavatar-term.so
+	-rm -f $(LUA_CPATH)/akfavatar-graphic.so
 
 	-xdg-desktop-menu uninstall akfoerster-avatarsay.desktop
 	-xdg-desktop-menu uninstall akfoerster-lua-akfavatar.desktop
@@ -467,6 +468,7 @@ uninstall-man:
 	-rm -f $(DESTDIR)$(mandir)/man1/avatarsay.1
 	-rm -f $(DESTDIR)$(mandir)/man1/avtcmd.1
 	-rm -f $(DESTDIR)$(mandir)/man1/lua-akfavatar.1
+	-rm -f $(DESTDIR)$(mandir)/de/man1/lua-akfavatar.1
 	-rm -f $(DESTDIR)$(mandir)/man3/lua-akfavatar-ref.3
 	-rm -f $(DESTDIR)$(mandir)/de/man3/lua-akfavatar-ref.3
 
