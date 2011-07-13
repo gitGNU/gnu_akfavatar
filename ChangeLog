@@ -1,3 +1,7 @@
+2011-07-13  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_ask): use avt_char; check if character is printable
+
 2011-07-04  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_wait_button, avt_key):

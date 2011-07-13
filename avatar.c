@@ -4552,7 +4552,7 @@ avt_pager_mb (const char *txt, int len, int startline)
 extern int
 avt_ask (wchar_t * s, int size)
 {
-  wchar_t ch;
+  avt_char ch;
   size_t len, maxlen, pos;
   int old_textdir;
   avt_bool_t insert_mode;
@@ -4591,14 +4591,14 @@ avt_ask (wchar_t * s, int size)
   len = pos = 0;
   insert_mode = AVT_TRUE;
   SDL_memset (s, 0, size);
-  ch = 0x0000;
+  ch = 0;
 
   do
     {
       /* show cursor */
       avt_show_text_cursor (AVT_TRUE);
 
-      if (avt_get_key (&ch) != AVT_NORMAL)
+      if (avt_key (&ch) != AVT_NORMAL)
 	break;
 
       switch (ch)
@@ -4634,7 +4634,7 @@ avt_ask (wchar_t * s, int size)
 	      avt_backspace ();
 	      avt_delete_characters (1);
 	      SDL_memmove (&s[pos], &s[pos + 1],
-			   (len - pos - 1) * sizeof (ch));
+			   (len - pos - 1) * sizeof (wchar_t));
 	      len--;
 	    }
 	  else
@@ -4647,7 +4647,7 @@ avt_ask (wchar_t * s, int size)
 	      avt_show_text_cursor (AVT_FALSE);
 	      avt_delete_characters (1);
 	      SDL_memmove (&s[pos], &s[pos + 1],
-			   (len - pos - 1) * sizeof (ch));
+			   (len - pos - 1) * sizeof (wchar_t));
 	      len--;
 	    }
 	  else
@@ -4682,9 +4682,7 @@ avt_ask (wchar_t * s, int size)
 	  break;
 
 	default:
-	  /* 0xF000-0xF8FF reserved for function keys */
-	  if ((pos < maxlen) && (ch >= 32)
-	      && ((ch < 0xF000) || (ch > 0xF8FF)))
+	  if (pos < maxlen && ch >= 32 && get_font_char(ch) != NULL)
 	    {
 	      /* delete cursor */
 	      avt_show_text_cursor (AVT_FALSE);
@@ -4694,15 +4692,15 @@ avt_ask (wchar_t * s, int size)
 		  if (len < maxlen)
 		    {
 		      SDL_memmove (&s[pos + 1], &s[pos],
-				   (len - pos) * sizeof (ch));
+				   (len - pos) * sizeof (wchar_t));
 		      len++;
 		    }
 		  else		/* len >= maxlen */
 		    SDL_memmove (&s[pos + 1], &s[pos],
-				 (len - pos - 1) * sizeof (ch));
+				 (len - pos - 1) * sizeof (wchar_t));
 		}
-	      s[pos] = ch;
-	      avt_drawchar ((avt_char) ch, screen);
+	      s[pos] = (wchar_t) ch;
+	      avt_drawchar (ch, screen);
 	      avt_showchar ();
 	      pos++;
 	      if (pos > len)
