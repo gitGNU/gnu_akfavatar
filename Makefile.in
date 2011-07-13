@@ -54,7 +54,6 @@ LUA_MODULES = \
 	  $(srcdir)/lua/akfavatar/Fragebogen.lua \
 	  $(srcdir)/lua/akfavatar/person.lua \
 	  $(srcdir)/lua/akfavatar/utf8.lua \
-	  $(srcdir)/lua/akfavatar/utf8.??.about \
 	  $(srcdir)/lua/akfavatar/ar.lua \
 	  $(srcdir)/lua/akfavatar/avtdemo.lua
 
@@ -513,25 +512,25 @@ man:
 doc: about
 	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" srcdir="$(srcdir)" all
 
-about: $(srcdir)/lua-akfavatar.en.about \
-       $(srcdir)/lua-akfavatar.de.about \
-       $(srcdir)/lua-akfavatar-ref.en.about \
-       $(srcdir)/lua-akfavatar-ref.de.about \
+about: $(srcdir)/lua/documentation/lua-akfavatar.en.about \
+       $(srcdir)/lua/documentation/lua-akfavatar.de.about \
+       $(srcdir)/lua/documentation/lua-akfavatar-ref.en.about \
+       $(srcdir)/lua/documentation/lua-akfavatar-ref.de.about \
        $(srcdir)/akfavatar.h.about \
        $(srcdir)/avtaddons.h.about
 
-$(srcdir)/lua-akfavatar.en.about: $(srcdir)/doc/lua-akfavatar.en.man
+$(srcdir)/lua/documentation/lua-akfavatar.en.about: $(srcdir)/doc/lua-akfavatar.en.man
 	-$(ROFF) -c -man -Tutf8 $(srcdir)/doc/lua-akfavatar.en.man > $@
 
-$(srcdir)/lua-akfavatar.de.about: $(srcdir)/doc/lua-akfavatar.de.man
+$(srcdir)/lua/documentation/lua-akfavatar.de.about: $(srcdir)/doc/lua-akfavatar.de.man
 	-$(ROFF) -c -Kutf8 -man -Tutf8 $(srcdir)/doc/lua-akfavatar.de.man > $@
 
-$(srcdir)/lua-akfavatar-ref.en.about: \
+$(srcdir)/lua/documentation/lua-akfavatar-ref.en.about: \
      $(srcdir)/doc/lua-akfavatar-ref.en.man
 	-$(ROFF) -c -Kutf8 -man -Tutf8 \
 	  $(srcdir)/doc/lua-akfavatar-ref.en.man > $@
 
-$(srcdir)/lua-akfavatar-ref.de.about: \
+$(srcdir)/lua/documentation/lua-akfavatar-ref.de.about: \
      $(srcdir)/doc/lua-akfavatar-ref.de.man
 	-$(ROFF) -c -Kutf8 -man -Tutf8 \
 	  $(srcdir)/doc/lua-akfavatar-ref.de.man > $@
@@ -596,10 +595,10 @@ maintainer-clean: distclean
 	@echo 'This command is intended for maintainers to use; it'
 	@echo 'deletes files that may need special tools to rebuild.'
 	rm -f $(srcdir)/alert.au
-	rm -f $(srcdir)/lua-akfavatar.en.about
-	rm -f $(srcdir)/lua-akfavatar.de.about
-	rm -f $(srcdir)/lua-akfavatar-ref.en.about
-	rm -f $(srcdir)/lua-akfavatar-ref.de.about
+	rm -f $(srcdir)/lua/documentation/lua-akfavatar.en.about
+	rm -f $(srcdir)/lua/documentation/lua-akfavatar.de.about
+	rm -f $(srcdir)/lua/documentation/lua-akfavatar-ref.en.about
+	rm -f $(srcdir)/lua/documentation/lua-akfavatar-ref.de.about
 	$(MAKE) -C $(srcdir)/doc maintainer-clean
 
 maintainerclean: maintainer-clean
@@ -669,33 +668,40 @@ dist: about $(srcdir)/alert.au
 	mkdir $(PKGNAME)/lua
 	ln $(srcdir)/lua/lua-avt.c $(srcdir)/lua/lua-akfavatar-prg.c \
 	   $(srcdir)/lua/interactive_lua.lua \
-	   $(srcdir)/lua/interactive_lua.??.about \
 	   $(srcdir)/lua/hello.lua \
-	   $(srcdir)/lua/audioplayer.lua $(srcdir)/lua/audioplayer.??.about \
-	   $(srcdir)/lua/function_plotter.lua $(srcdir)/lua/function_plotter.??.about \
+	   $(srcdir)/lua/audioplayer.lua \
+	   $(srcdir)/lua/function_plotter.lua \
 	   $(srcdir)/lua/clock.lua \
 	   $(srcdir)/lua/multiplication.lua $(srcdir)/lua/man.lua \
 	   $(srcdir)/lua/textview.lua \
 	   $(srcdir)/lua/story1-en.lua $(srcdir)/lua/story1-de.lua \
-	   $(srcdir)/lua/base64.??.about \
 	   $(srcdir)/lua/lbase64.c \
-	   $(srcdir)/lua/base64-encode.??.about \
 	   $(srcdir)/lua/base64-encode.lua \
 	   $(srcdir)/lua/characters_overview.lua \
 	   $(srcdir)/lua/characters_tables.lua \
 	   $(srcdir)/lua/colors_overview.lua \
 	   $(srcdir)/lua/fs-quiz-en.lua $(srcdir)/lua/fs-quiz-de.lua \
 	   $(srcdir)/lua/akfavatar-term.c $(srcdir)/lua/terminal.lua \
-	   $(srcdir)/lua/akfavatar-term.??.about \
 	   $(srcdir)/lua/akfavatar-vorbis.c \
-	   $(srcdir)/lua/akfavatar-graphic.??.about \
 	   $(srcdir)/lua/akfavatar-graphic.c \
 	   $(PKGNAME)/lua/
+
+	mkdir $(PKGNAME)/lua/documentation
+	ln $(srcdir)/lua/documentation/lua-akfavatar.??.about \
+	   $(srcdir)/lua/documentation/lua-akfavatar-ref.??.about \
+	   $(srcdir)/lua/documentation/interactive_lua.??.about \
+	   $(srcdir)/lua/documentation/audioplayer.??.about \
+	   $(srcdir)/lua/documentation/function_plotter.??.about \
+	   $(srcdir)/lua/documentation/base64.??.about \
+	   $(srcdir)/lua/documentation/base64-encode.??.about \
+	   $(srcdir)/lua/documentation/akfavatar-term.??.about \
+	   $(srcdir)/lua/documentation/akfavatar-graphic.??.about \
+	   $(srcdir)/lua/documentation/utf8.??.about \
+	   $(PKGNAME)/lua/documentation/
 
 	mkdir $(PKGNAME)/lua/akfavatar
 	ln $(srcdir)/lua/akfavatar/dir.??.about \
 	   $(srcdir)/lua/akfavatar/utf8.lua \
-	   $(srcdir)/lua/akfavatar/utf8.??.about \
 	   $(srcdir)/lua/akfavatar/person.lua \
 	   $(srcdir)/lua/akfavatar/info_icon.lua \
 	   $(srcdir)/lua/akfavatar/audio1.lua \
@@ -740,6 +746,7 @@ dist: about $(srcdir)/alert.au
 dist-bin-default: all pdf
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/lua
+	mkdir $(BINPKGNAME)/lua/documentation
 	mkdir $(BINPKGNAME)/lua/akfavatar
 	mkdir $(BINPKGNAME)/include
 	cp $(LIBNAME) $(BINPKGNAME)/
@@ -749,9 +756,6 @@ dist-bin-default: all pdf
 	cp lua-akfavatar.so base64.so akfavatar-vorbis.so $(BINPKGNAME)/lua/
 	cp akfavatar-graphic.so $(BINPKGNAME)/lua/
 	cp akfavatar-term.so $(BINPKGNAME)/lua/
-	ln $(srcdir)/lua/base64.??.about $(BINPKGNAME)/lua/
-	ln $(srcdir)/lua/akfavatar-term.??.about $(BINPKGNAME)/lua/
-	ln $(srcdir)/lua/akfavatar-graphic.??.about $(BINPKGNAME)/lua/
 	ln $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/include/
 	ln $(srcdir)/avtaddons.h $(BINPKGNAME)/include/
 	-ln $(srcdir)/akfavatar.h.about $(BINPKGNAME)/include/
@@ -763,26 +767,32 @@ dist-bin-default: all pdf
 	ln $(srcdir)/audio1.xpm $(BINPKGNAME)/
 	ln $(srcdir)/README-Lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/lua/
-	ln $(srcdir)/lua/interactive_lua.??.about $(BINPKGNAME)/lua/
-	ln $(srcdir)/lua/audioplayer.lua $(srcdir)/lua/audioplayer.??.about $(BINPKGNAME)/lua/
-	ln $(srcdir)/lua/function_plotter.lua $(srcdir)/lua/function_plotter.??.about $(BINPKGNAME)/lua/
+	ln $(srcdir)/lua/audioplayer.lua $(BINPKGNAME)/lua/
+	ln $(srcdir)/lua/function_plotter.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/clock.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/multiplication.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/hello.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/man.lua $(srcdir)/lua/textview.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/story1-en.lua $(srcdir)/lua/story1-de.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/base64-encode.lua $(BINPKGNAME)/lua/
-	ln $(srcdir)/lua/base64-encode.??.about $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/characters_overview.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/characters_tables.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/colors_overview.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/fs-quiz-en.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/fs-quiz-de.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/terminal.lua $(BINPKGNAME)/lua/
-	-ln $(srcdir)/lua-akfavatar.en.about $(BINPKGNAME)/
-	-ln $(srcdir)/lua-akfavatar.de.about $(BINPKGNAME)/
-	-ln $(srcdir)/lua-akfavatar-ref.en.about $(BINPKGNAME)/
-	-ln $(srcdir)/lua-akfavatar-ref.de.about $(BINPKGNAME)/
+	ln $(srcdir)/lua/documentation/base64.??.about $(BINPKGNAME)/lua/documentation/
+	ln $(srcdir)/lua/documentation/base64-encode.??.about $(BINPKGNAME)/lua/documentation/
+	ln $(srcdir)/lua/documentation/akfavatar-term.??.about $(BINPKGNAME)/lua/documentation/
+	ln $(srcdir)/lua/documentation/akfavatar-graphic.??.about $(BINPKGNAME)/lua/documentation/
+	ln $(srcdir)/lua/documentation/utf8.??.about $(BINPKGNAME)/lua/documentation/
+	ln $(srcdir)/lua/documentation/interactive_lua.??.about $(BINPKGNAME)/lua/documentation/
+	ln $(srcdir)/lua/documentation/audioplayer.??.about $(BINPKGNAME)/lua/documentation/
+	ln $(srcdir)/lua/documentation/function_plotter.??.about $(BINPKGNAME)/lua/documentation/
+	-ln $(srcdir)/lua/documentation/lua-akfavatar.en.about $(BINPKGNAME)/lua/documentation/
+	-ln $(srcdir)/lua/documentation/lua-akfavatar.de.about $(BINPKGNAME)/lua/documentation/
+	-ln $(srcdir)/lua/documentation/lua-akfavatar-ref.en.about $(BINPKGNAME)/lua/documentation/
+	-ln $(srcdir)/lua/documentation/lua-akfavatar-ref.de.about $(BINPKGNAME)/lua/documentation/
 	-ln lua-akfavatar.en.pdf $(BINPKGNAME)/
 	-ln lua-akfavatar.de.pdf $(BINPKGNAME)/
 	-ln lua-akfavatar-ref.en.pdf $(BINPKGNAME)/
@@ -798,7 +808,6 @@ dist-bin-default: all pdf
 	ln $(srcdir)/doc/lua-akfavatar-ref.de.man $(BINPKGNAME)/
 	ln $(srcdir)/lua/akfavatar/dir.??.about \
 	   $(srcdir)/lua/akfavatar/utf8.lua \
-	   $(srcdir)/lua/akfavatar/utf8.??.about \
 	   $(srcdir)/lua/akfavatar/person.lua \
 	   $(srcdir)/lua/akfavatar/info_icon.lua \
 	   $(srcdir)/lua/akfavatar/audio1.lua \
