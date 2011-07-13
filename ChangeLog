@@ -2,6 +2,8 @@
 
 	* avatar.c (avt_ask): use avt_char; check if character is printable
 
+	* avatar.c (avt_key): check if it's really a key
+
 2011-07-04  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_wait_button, avt_key):

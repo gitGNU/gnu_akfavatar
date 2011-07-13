@@ -3858,73 +3858,76 @@ avt_key (avt_char * ch)
 	  SDL_WaitEvent (&event);
 	  avt_analyze_event (&event);
 
-	  switch (event.key.keysym.sym)
+	  if (SDL_KEYDOWN == event.type)
 	    {
-	    case SDLK_UP:
-	      *ch = AVT_KEY_UP;
-	      break;
-	    case SDLK_DOWN:
-	      *ch = AVT_KEY_DOWN;
-	      break;
-	    case SDLK_RIGHT:
-	      *ch = AVT_KEY_RIGHT;
-	      break;
-	    case SDLK_LEFT:
-	      *ch = AVT_KEY_LEFT;
-	      break;
-	    case SDLK_INSERT:
-	      *ch = AVT_KEY_INSERT;
-	      break;
-	    case SDLK_DELETE:
-	      *ch = AVT_KEY_DELETE;
-	      break;
-	    case SDLK_BACKSPACE:
-	      *ch = AVT_KEY_BACKSPACE;
-	      break;
-	    case SDLK_HOME:
-	      *ch = AVT_KEY_HOME;
-	      break;
-	    case SDLK_END:
-	      *ch = AVT_KEY_END;
-	      break;
-	    case SDLK_PAGEUP:
-	      *ch = AVT_KEY_PAGEUP;
-	      break;
-	    case SDLK_PAGEDOWN:
-	      *ch = AVT_KEY_PAGEDOWN;
-	      break;
-	    case SDLK_HELP:
-	      *ch = AVT_KEY_HELP;
-	      break;
-	    case SDLK_MENU:
-	      *ch = AVT_KEY_MENU;
-	      break;
-	    case SDLK_EURO:
-	      *ch = 0x20AC;
-	      break;
-	    case SDLK_F1:
-	    case SDLK_F2:
-	    case SDLK_F3:
-	    case SDLK_F4:
-	    case SDLK_F5:
-	    case SDLK_F6:
-	    case SDLK_F7:
-	    case SDLK_F8:
-	    case SDLK_F9:
-	    case SDLK_F10:
-	    case SDLK_F12:
-	    case SDLK_F13:
-	    case SDLK_F14:
-	    case SDLK_F15:
-	      *ch = AVT_KEY_F1 + (event.key.keysym.sym - SDLK_F1);
-	      break;
-	    case SDLK_F11:
-	      if (reserve_single_keys)
-		*ch = AVT_KEY_F11;
-	      break;
-	    default:
-	      *ch = event.key.keysym.unicode;
-	    }			/* switch */
+	      switch (event.key.keysym.sym)
+		{
+		case SDLK_UP:
+		  *ch = AVT_KEY_UP;
+		  break;
+		case SDLK_DOWN:
+		  *ch = AVT_KEY_DOWN;
+		  break;
+		case SDLK_RIGHT:
+		  *ch = AVT_KEY_RIGHT;
+		  break;
+		case SDLK_LEFT:
+		  *ch = AVT_KEY_LEFT;
+		  break;
+		case SDLK_INSERT:
+		  *ch = AVT_KEY_INSERT;
+		  break;
+		case SDLK_DELETE:
+		  *ch = AVT_KEY_DELETE;
+		  break;
+		case SDLK_BACKSPACE:
+		  *ch = AVT_KEY_BACKSPACE;
+		  break;
+		case SDLK_HOME:
+		  *ch = AVT_KEY_HOME;
+		  break;
+		case SDLK_END:
+		  *ch = AVT_KEY_END;
+		  break;
+		case SDLK_PAGEUP:
+		  *ch = AVT_KEY_PAGEUP;
+		  break;
+		case SDLK_PAGEDOWN:
+		  *ch = AVT_KEY_PAGEDOWN;
+		  break;
+		case SDLK_HELP:
+		  *ch = AVT_KEY_HELP;
+		  break;
+		case SDLK_MENU:
+		  *ch = AVT_KEY_MENU;
+		  break;
+		case SDLK_EURO:
+		  *ch = 0x20AC;
+		  break;
+		case SDLK_F1:
+		case SDLK_F2:
+		case SDLK_F3:
+		case SDLK_F4:
+		case SDLK_F5:
+		case SDLK_F6:
+		case SDLK_F7:
+		case SDLK_F8:
+		case SDLK_F9:
+		case SDLK_F10:
+		case SDLK_F12:
+		case SDLK_F13:
+		case SDLK_F14:
+		case SDLK_F15:
+		  *ch = AVT_KEY_F1 + (event.key.keysym.sym - SDLK_F1);
+		  break;
+		case SDLK_F11:
+		  if (reserve_single_keys)
+		    *ch = AVT_KEY_F11;
+		  break;
+		default:
+		  *ch = event.key.keysym.unicode;
+		}		/* switch */
+	    }			/* if (event.type) */
 	}			/* while */
     }				/* if (screen) */
 
@@ -4682,7 +4685,7 @@ avt_ask (wchar_t * s, int size)
 	  break;
 
 	default:
-	  if (pos < maxlen && ch >= 32 && get_font_char(ch) != NULL)
+	  if (pos < maxlen && ch >= 32 && get_font_char (ch) != NULL)
 	    {
 	      /* delete cursor */
 	      avt_show_text_cursor (AVT_FALSE);
