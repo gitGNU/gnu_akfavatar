@@ -43,7 +43,8 @@
            avt_normal_text(); \
          } while(0)
 
-#define PARENT_DIRECTORY L" .. "
+/* double arrow up */
+#define PARENT_DIRECTORY L" \x21D1 "
 
 /* House symbol */
 #define HOME L" \x2302 "
