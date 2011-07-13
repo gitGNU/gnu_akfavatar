@@ -20,8 +20,8 @@ bdfread
 libakfavatar.so*
 lua-akfavatar
 lua-akfavatar-bin
-lua-akfavatar.??.about
-lua-akfavatar-ref.??.about
+lua-akfavatar.about
+lua-akfavatar-ref.about
 akfavatar.h.about
 avtaddons.h.about
 bin2c

@@ -275,23 +275,23 @@ luaavtstarter.rc: $(srcdir)/mingw/luaavtstarter-rc.in config-mingw
 luaavtstarter-rc.wo: luaavtstarter.rc $(srcdir)/mingw/akfavatar.ico
 	$(WINDRES) -I$(srcdir)/mingw/ -o $@ -i luaavtstarter.rc
 
-about: $(srcdir)/lua/documentation/lua-akfavatar.en.about \
-       $(srcdir)/lua/documentation/lua-akfavatar.de.about \
-       $(srcdir)/lua/documentation/lua-akfavatar-ref.en.about \
-       $(srcdir)/lua/documentation/lua-akfavatar-ref.de.about
+about: $(srcdir)/lua/documentation/English/lua-akfavatar.about \
+       $(srcdir)/lua/documentation/Deutsch/lua-akfavatar.about \
+       $(srcdir)/lua/documentation/English/lua-akfavatar-ref.about \
+       $(srcdir)/lua/documentation/Deutsch/lua-akfavatar-ref.about
 
-$(srcdir)/lua/documentation/lua-akfavatar.en.about: $(srcdir)/doc/lua-akfavatar.en.man
+$(srcdir)/lua/documentation/English/lua-akfavatar.about: $(srcdir)/doc/lua-akfavatar.en.man
 	-$(ROFF) -c -man -Kutf8 -Tutf8 $(srcdir)/doc/lua-akfavatar.en.man > $@
 
-$(srcdir)/lua/documentation/lua-akfavatar.de.about: $(srcdir)/doc/lua-akfavatar.de.man
+$(srcdir)/lua/documentation/Deutsch/lua-akfavatar.about: $(srcdir)/doc/lua-akfavatar.de.man
 	-$(ROFF) -c -man -Kutf8 -Tutf8 $(srcdir)/doc/lua-akfavatar.de.man > $@
 
-$(srcdir)/lua/documentation/lua-akfavatar-ref.en.about: \
+$(srcdir)/lua/documentation/English/lua-akfavatar-ref.about: \
   $(srcdir)/doc/lua-akfavatar-ref.en.man
 	-$(ROFF) -c -man -Kutf8 -Tutf8 \
 	  $(srcdir)/doc/lua-akfavatar-ref.en.man > $@
 
-$(srcdir)/lua/documentation/lua-akfavatar-ref.de.about: \
+$(srcdir)/lua/documentation/Deutsch/lua-akfavatar-ref.about: \
   $(srcdir)/doc/lua-akfavatar-ref.de.man
 	-$(ROFF) -c -man -Kutf8 -Tutf8 \
 	  $(srcdir)/doc/lua-akfavatar-ref.de.man > $@
@@ -312,6 +312,8 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/lua
 	mkdir $(BINPKGNAME)/lua/documentation
+	mkdir $(BINPKGNAME)/lua/documentation/English
+	mkdir $(BINPKGNAME)/lua/documentation/Deutsch
 	mkdir $(BINPKGNAME)/lua/akfavatar
 	mkdir $(BINPKGNAME)/include
 	cp akfavatar.dll $(BINPKGNAME)/
@@ -322,18 +324,13 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	-cp $(srcdir)/avtaddons.h.about $(BINPKGNAME)/include/
 	cp $(srcdir)/fsdemo-??.avt $(BINPKGNAME)/
 	cp lua-akfavatar.exe $(BINPKGNAME)/
-	cp $(srcdir)/lua/documentation/base64.??.about $(BINPKGNAME)/lua/documentation/
 	cp base64.dll $(BINPKGNAME)/
 	cp akfavatar-vorbis.dll $(BINPKGNAME)/
-	cp $(srcdir)/lua/documentation/akfavatar-graphic.??.about $(BINPKGNAME)/lua/documentation/
 	cp akfavatar-graphic.dll $(BINPKGNAME)/
 	cp $(srcdir)/lua/multiplication.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/lua/
-	cp $(srcdir)/lua/documentation/interactive_lua.??.about $(BINPKGNAME)/lua/documentation/
 	cp $(srcdir)/lua/audioplayer.lua $(BINPKGNAME)/lua/
-	cp $(srcdir)/lua/documentation/audioplayer.??.about $(BINPKGNAME)/lua/documentation/
 	cp $(srcdir)/lua/function_plotter.lua $(BINPKGNAME)/lua/
-	cp $(srcdir)/lua/documentation/function_plotter.??.about $(BINPKGNAME)/lua/documentation/
 	cp $(srcdir)/lua/clock.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/textview.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/hello.lua $(BINPKGNAME)/lua/
@@ -341,19 +338,33 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(srcdir)/lua/fs-quiz-en.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/fs-quiz-de.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/base64-encode.lua $(BINPKGNAME)/lua/
-	cp $(srcdir)/lua/documentation/base64-encode.??.about $(BINPKGNAME)/lua/documentation/
 	cp $(srcdir)/lua/characters_overview.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/characters_tables.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/colors_overview.lua $(BINPKGNAME)/lua/
-	-cp $(srcdir)/lua/documentation/lua-akfavatar.??.about $(BINPKGNAME)/lua/documentation/
-	-cp $(srcdir)/lua/documentation/lua-akfavatar-ref.??.about $(BINPKGNAME)/lua/documentation/
+	cp $(srcdir)/lua/documentation/English/base64.about $(BINPKGNAME)/lua/documentation/English/
+	cp $(srcdir)/lua/documentation/English/akfavatar-graphic.about $(BINPKGNAME)/lua/documentation/English/
+	cp $(srcdir)/lua/documentation/English/interactive_lua.about $(BINPKGNAME)/lua/documentation/English/
+	cp $(srcdir)/lua/documentation/English/audioplayer.about $(BINPKGNAME)/lua/documentation/English/
+	cp $(srcdir)/lua/documentation/English/function_plotter.about $(BINPKGNAME)/lua/documentation/English/
+	cp $(srcdir)/lua/documentation/English/base64-encode.about $(BINPKGNAME)/lua/documentation/English/
+	cp $(srcdir)/lua/documentation/English/utf8.about $(BINPKGNAME)/lua/documentation/English/
+	-cp $(srcdir)/lua/documentation/English/lua-akfavatar.about $(BINPKGNAME)/lua/documentation/English/
+	-cp $(srcdir)/lua/documentation/English/lua-akfavatar-ref.about $(BINPKGNAME)/lua/documentation/English/
+	cp $(srcdir)/lua/documentation/Deutsch/base64.about $(BINPKGNAME)/lua/documentation/Deutsch/
+	cp $(srcdir)/lua/documentation/Deutsch/akfavatar-graphic.about $(BINPKGNAME)/lua/documentation/Deutsch/
+	cp $(srcdir)/lua/documentation/Deutsch/interactive_lua.about $(BINPKGNAME)/lua/documentation/Deutsch/
+	cp $(srcdir)/lua/documentation/Deutsch/audioplayer.about $(BINPKGNAME)/lua/documentation/Deutsch/
+	cp $(srcdir)/lua/documentation/Deutsch/function_plotter.about $(BINPKGNAME)/lua/documentation/Deutsch/
+	cp $(srcdir)/lua/documentation/Deutsch/base64-encode.about $(BINPKGNAME)/lua/documentation/Deutsch/
+	cp $(srcdir)/lua/documentation/Deutsch/utf8.about $(BINPKGNAME)/lua/documentation/Deutsch/
+	-cp $(srcdir)/lua/documentation/Deutsch/lua-akfavatar.about $(BINPKGNAME)/lua/documentation/Deutsch/
+	-cp $(srcdir)/lua/documentation/Deutsch/lua-akfavatar-ref.about $(BINPKGNAME)/lua/documentation/Deutsch/
 	cp lua-akfavatar.en.pdf $(BINPKGNAME)/
 	cp lua-akfavatar.de.pdf $(BINPKGNAME)/
 	cp lua-akfavatar-ref.en.pdf $(BINPKGNAME)/
 	cp lua-akfavatar-ref.de.pdf $(BINPKGNAME)/
 	cp $(srcdir)/lua/akfavatar/dir.??.about $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/utf8.lua $(BINPKGNAME)/lua/akfavatar/
-	cp $(srcdir)/lua/documentation/utf8.??.about $(BINPKGNAME)/lua/documentation/
 	cp $(srcdir)/lua/akfavatar/person.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/female_user.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/male_user.lua $(BINPKGNAME)/lua/akfavatar/
