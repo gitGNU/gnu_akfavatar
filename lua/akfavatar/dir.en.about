@@ -1,4 +1,2 @@
 This directory contains modules for Lua-AKFAvatar.
-It should be either in a subdirectory of your lua-scripts named akfavatar/,
-or you can install it on your system under 
-/usr/local/share/lua/5.1/akfavatar/
+Modules cannot be executed directly.

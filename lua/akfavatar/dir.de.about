@@ -1,5 +1,2 @@
 Dieses Verzeichnis enthält Module für AKFAvatar.
-Es sollte entweder ein Unterverzeichnis von den Lua-Skripten
-sein, mit dem Namen akfavatar/,
-oder man kann es fest im System installieren under dem Namen
-/usr/local/share/lua/5.1/akfavatar/
+Module können nicht direkt ausgeführt werden.
