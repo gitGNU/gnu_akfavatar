@@ -523,16 +523,16 @@ $(srcdir)/lua/documentation/English/lua-akfavatar.about: $(srcdir)/doc/lua-akfav
 	-$(ROFF) -c -man -Tutf8 $(srcdir)/doc/lua-akfavatar.en.man > $@
 
 $(srcdir)/lua/documentation/Deutsch/lua-akfavatar.about: $(srcdir)/doc/lua-akfavatar.de.man
-	-$(ROFF) -c -Kutf8 -man -Tutf8 $(srcdir)/doc/lua-akfavatar.de.man > $@
+	-$(ROFF) -c -man -Tutf8 $(srcdir)/doc/lua-akfavatar.de.man > $@
 
 $(srcdir)/lua/documentation/English/lua-akfavatar-ref.about: \
      $(srcdir)/doc/lua-akfavatar-ref.en.man
-	-$(ROFF) -c -Kutf8 -man -Tutf8 \
+	-$(ROFF) -c -man -Tutf8 \
 	  $(srcdir)/doc/lua-akfavatar-ref.en.man > $@
 
 $(srcdir)/lua/documentation/Deutsch/lua-akfavatar-ref.about: \
      $(srcdir)/doc/lua-akfavatar-ref.de.man
-	-$(ROFF) -c -Kutf8 -man -Tutf8 \
+	-$(ROFF) -c -man -Tutf8 \
 	  $(srcdir)/doc/lua-akfavatar-ref.de.man > $@
 
 $(srcdir)/akfavatar.h.about: $(srcdir)/akfavatar.h

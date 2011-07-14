@@ -39,19 +39,19 @@ docbook:
 man:
 
 .man.html:
-	-$(ROFF) -man -Kutf8 -Thtml $< >$@
+	-$(ROFF) -man -Thtml $< >$@
 
 .man.txt:
-	-$(ROFF) -man -Kutf8 -Tutf8 $< | col -bx >$@
+	-$(ROFF) -man -Tutf8 $< | col -bx >$@
 
 .man.pdf:
-	-$(ROFF) -man -Kutf8 -Tps $< | $(PS2PDF) - $@
+	-$(ROFF) -man -Tps $< | $(PS2PDF) - $@
 
 .man.ps:
-	-$(ROFF) -man -Kutf8 -Tps $< >$@
+	-$(ROFF) -man -Tps $< >$@
 
 .man.dvi:
-	-$(ROFF) -man -Kutf8 -Tdvi $< >$@
+	-$(ROFF) -man -Tdvi $< >$@
 
 $(srcdir)/doc/pasref.txt: $(srcdir)/pascal/akfavatar.pas
 	sed -n '/^unit/,/^implementation/p' $(srcdir)/pascal/akfavatar.pas \

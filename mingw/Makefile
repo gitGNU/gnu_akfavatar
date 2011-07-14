@@ -281,19 +281,19 @@ about: $(srcdir)/lua/documentation/English/lua-akfavatar.about \
        $(srcdir)/lua/documentation/Deutsch/lua-akfavatar-ref.about
 
 $(srcdir)/lua/documentation/English/lua-akfavatar.about: $(srcdir)/doc/lua-akfavatar.en.man
-	-$(ROFF) -c -man -Kutf8 -Tutf8 $(srcdir)/doc/lua-akfavatar.en.man > $@
+	-$(ROFF) -c -man -Tutf8 $(srcdir)/doc/lua-akfavatar.en.man > $@
 
 $(srcdir)/lua/documentation/Deutsch/lua-akfavatar.about: $(srcdir)/doc/lua-akfavatar.de.man
-	-$(ROFF) -c -man -Kutf8 -Tutf8 $(srcdir)/doc/lua-akfavatar.de.man > $@
+	-$(ROFF) -c -man -Tutf8 $(srcdir)/doc/lua-akfavatar.de.man > $@
 
 $(srcdir)/lua/documentation/English/lua-akfavatar-ref.about: \
   $(srcdir)/doc/lua-akfavatar-ref.en.man
-	-$(ROFF) -c -man -Kutf8 -Tutf8 \
+	-$(ROFF) -c -man -Tutf8 \
 	  $(srcdir)/doc/lua-akfavatar-ref.en.man > $@
 
 $(srcdir)/lua/documentation/Deutsch/lua-akfavatar-ref.about: \
   $(srcdir)/doc/lua-akfavatar-ref.de.man
-	-$(ROFF) -c -man -Kutf8 -Tutf8 \
+	-$(ROFF) -c -man -Tutf8 \
 	  $(srcdir)/doc/lua-akfavatar-ref.de.man > $@
 
 # the folowing targets are for the maintainer

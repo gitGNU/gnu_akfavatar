@@ -4,21 +4,21 @@
 .TH "lua-akfavatar" 1 2011-07-11 AKFAvatar
 .
 .SH NAME
-lua-akfavatar \- Lua interpreter fÃ¼r die AKFAvatar-BenutzeroberflÃ¤che
+lua-akfavatar \- Lua interpreter für die AKFAvatar-Benutzeroberfläche
 .
 .SH SYNTAX
 .BI "lua-akfavatar [" Optionen "] [" " Skript " "[" Argumente "] ]"
 .
 .SH BESCHREIBUNG
-Das Programm Lua-AKFAvatar ist der Lua Interpreter fÃ¼r die 
-AKFAvatar-BenutzeroberflÃ¤che.
-Es lÃ¤dt und fÃ¼hrt Lua-Skripte in Form von Quellcode aus
+Das Programm Lua-AKFAvatar ist der Lua Interpreter für die 
+AKFAvatar-Benutzeroberfläche.
+Es lädt und führt Lua-Skripte in Form von Quellcode aus
 (kein Bytecode).
-Es kÃ¶nnen entweder Lua-Skripte geladen werden oder ".avt"-Demo-Dateien.
+Es können entweder Lua-Skripte geladen werden oder ".avt"-Demo-Dateien.
 Wenn kein
 .I Skript
 angegeben ist, wird ein Dateiauswahl-Dialog angezeigt.
-Der Dateiauswahl-Dialog fÃ¤ngt entweder im aktuellen Arbeitsverzeichnis an,
+Der Dateiauswahl-Dialog fängt entweder im aktuellen Arbeitsverzeichnis an,
 oder in dem Verzeichnis, das mit der Option
 .I --dir=Verzeichnis
 angegeben wurde.
@@ -29,7 +29,7 @@ sind im
 .I Skript
 als Strings in der globalen Tabelle namens
 .B arg
-verfÃ¼gbar.
+verfügbar.
 Der Name des
 .IR Skript es
 selber befindet sich in
@@ -47,10 +47,10 @@ Mit dem Dateiauswahl-Dialog kann man auch Anleitungen
 mit der Dateiendung
 .RI """" .about """"
 sehen.
-Das kÃ¶nnen einfache Textdateien sein, die in UTF-8 oder reinem ASCII
+Das können einfache Textdateien sein, die in UTF-8 oder reinem ASCII
 kodiert sind.
 Man kann auch die "overstrike"-Technik verwenden, um Text fett oder
-unterstrichen darstellen zu kÃ¶nnen.
+unterstrichen darstellen zu können.
 Man kann zum Beispiel das Textsatzsystem "groff" verwenden, um solche
 Dateien zu erstellen.
 .
@@ -63,15 +63,15 @@ zeigt die Version an
 .RI "-l " Name
 ruft
 .BI require(' name ')
-auf, bevor das Skript ausgefÃ¼hrt wird.
-Das wird Ã¼blicherweise verwendet, um Bibliotheken zu laden.
+auf, bevor das Skript ausgeführt wird.
+Das wird üblicherweise verwendet, um Bibliotheken zu laden.
 .TP
 .RI --dir= Verzeichnis
 fange in dem Verzeichnis an
 .
 .SH UMGEBUNG
 .IP LUA_PATH
-Suchpfad fÃ¼r Lua-Module.
+Suchpfad für Lua-Module.
 Die Suchmuster werden durch Semikola getrennt.
 Ein Fragezeichen
 .RB ( ? )
@@ -80,9 +80,9 @@ Ein Punkt im Modul-Namen wird durch das Verzeichnis-Trennzeichen
 des Systems ersetzt.
 Zwei Semikola
 .RB ( ;; )
-fÃ¼gen den Standard-Pfad hinzu.
+fügen den Standard-Pfad hinzu.
 .IP LUA_CPATH
-Suchpfad fÃ¼r C-Module.
+Suchpfad für C-Module.
 Die Syntax ist die selbe, wie bei
 .IR LUA_PATH .
 .
@@ -91,14 +91,14 @@ Die Syntax ist die selbe, wie bei
 require "lua-akfavatar"
 avt.initialize {title="Mein erstes Programm", encoding="UTF-8"}
 avt.say("Hallo du!\\n")
-Benutzer = avt.ask("Wie heiÃŸt du denn? ")
-avt.say("Hallo, ", Benutzer, ". SchÃ¶n dich zu sehen!\\n")
+Benutzer = avt.ask("Wie heißt du denn? ")
+avt.say("Hallo, ", Benutzer, ". Schön dich zu sehen!\\n")
 avt.wait_button()
 .fi
 .
 .SH AUTOREN
 .IP "AKFAvatar, Lua-AKFAvatar"
-Andreas K. FÃ¶rster
+Andreas K. Förster
 .IP "Lua"
 R. Ierusalimschy, L. H. de Figueiredo, and W. Celes
 .
