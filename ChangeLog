@@ -1,3 +1,7 @@
+2011-07-14  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.20.0 released
+
 2011-07-13  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_ask): use avt_char; check if character is printable

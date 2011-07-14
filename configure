@@ -9,9 +9,9 @@
 
 # Version and name
 VERSION=0
-SUBVERSION=19
+SUBVERSION=20
 REVISION=0
-VARIANT="-testing-$(date '+%Y%m%d')"
+#VARIANT="-testing-$(date '+%Y%m%d')"
 LIBNAME=libakfavatar.so.${VERSION}.${SUBVERSION}.${REVISION}
 SONAME=libakfavatar.so.${VERSION}.${SUBVERSION}
 
