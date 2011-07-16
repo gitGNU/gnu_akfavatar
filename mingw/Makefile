@@ -175,11 +175,12 @@ libavtaddons.a: filechooser.wo askdrive.wo arch.wo avttermstub.wo \
 	-$(RANLIB) $@
 
 # from the mingw directory!
-avtmsg.wo: $(srcdir)/mingw/avtmsg.c $(srcdir)/avtaddons.h $(srcdir)/avtinternals.h
+avtmsg.wo: $(srcdir)/mingw/avtmsg.c $(srcdir)/avtaddons.h \
+	   $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/mingw/avtmsg.c
 
-avtgrmsg.wo: $(srcdir)/avtgrmsg.c
+avtgrmsg.wo: $(srcdir)/avtgrmsg.c $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/avtgrmsg.c
 
@@ -233,7 +234,7 @@ lbase64.wo: $(srcdir)/lua/lbase64.c
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/lbase64.c
 
-lua-akfavatar-prg.wo: $(srcdir)/lua/lua-akfavatar-prg.c
+lua-akfavatar-prg.wo: $(srcdir)/lua/lua-akfavatar-prg.c $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) $(SDL_CFLAGS) -I$(srcdir) -c -o $@ \
 	 $(srcdir)/lua/lua-akfavatar-prg.c
 
@@ -241,10 +242,12 @@ akfavatar-vorbis.dll: akfavatar-vorbis.wo avtvorbis.wo stb_vorbis.wo
 	$(CC) -o $@ -shared akfavatar-vorbis.wo avtvorbis.wo stb_vorbis.wo \
 	  -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS)
 
-avtvorbis.wo: $(srcdir)/avtvorbis.c $(srcdir)/avtaddons.h $(srcdir)/stb_vorbis.c
+avtvorbis.wo: $(srcdir)/avtvorbis.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h \
+	      $(srcdir)/stb_vorbis.c
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/avtvorbis.c
 
-akfavatar-vorbis.wo: $(srcdir)/lua/akfavatar-vorbis.c $(srcdir)/stb_vorbis.c
+akfavatar-vorbis.wo: $(srcdir)/lua/akfavatar-vorbis.c $(srcdir)/akfavatar.h \
+	             $(srcdir)/stb_vorbis.c
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/akfavatar-vorbis.c
 
@@ -258,7 +261,7 @@ akfavatar-graphic.dll: akfavatar-graphic.wo
 	$(CC) -o $@ -shared akfavatar-graphic.wo \
 	   -L. -lakfavatar -lm $(LUA_LDFLAGS) $(LDFLAGS)
 
-akfavatar-graphic.wo: $(srcdir)/lua/akfavatar-graphic.c
+akfavatar-graphic.wo: $(srcdir)/lua/akfavatar-graphic.c $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/akfavatar-graphic.c
 
