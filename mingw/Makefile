@@ -141,7 +141,7 @@ akfavatar.dll: avatar.wo avatar-default.wo avatar-audio.wo font.wo libinfo.wo \
 	        -Wl,--out-implib,libakfavatar.dll.a \
 	        $(SDL_LDFLAGS) $(LDFLAGS)
 
-avtwindows.wo: $(srcdir)/mingw/avtwindows.c
+avtwindows.wo: $(srcdir)/mingw/avtwindows.c $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/mingw/avtwindows.c
 
@@ -151,10 +151,10 @@ askdrive.wo: $(srcdir)/mingw/askdrive.c \
 	  $(srcdir)/mingw/askdrive.c
 
 # this is just a dummy stub!
-avttermstub.wo: $(srcdir)/mingw/avttermstub.c $(srcdir)/avtaddons.h
+avttermstub.wo: $(srcdir)/mingw/avttermstub.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/mingw/avttermstub.c
 
-arch.wo: $(srcdir)/arch.c $(srcdir)/avtaddons.h
+arch.wo: $(srcdir)/arch.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/arch.c
 
 avtccio.wo: $(srcdir)/avtccio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
@@ -163,7 +163,7 @@ avtccio.wo: $(srcdir)/avtccio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 avtcwio.wo: $(srcdir)/avtcwio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtcwio.c
 
-avtreadfile.wo: $(srcdir)/avtreadfile.c $(srcdir)/avtaddons.h
+avtreadfile.wo: $(srcdir)/avtreadfile.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtreadfile.c
 
 libavtaddons.a: filechooser.wo askdrive.wo arch.wo avttermstub.wo \

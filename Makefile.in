@@ -184,7 +184,7 @@ avtccio.o: $(srcdir)/avtccio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 avtcwio.o: $(srcdir)/avtcwio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/avtcwio.c
 
-avtreadfile.o: $(srcdir)/avtreadfile.c $(srcdir)/avtaddons.h
+avtreadfile.o: $(srcdir)/avtreadfile.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/avtreadfile.c
 
 avtterm.o: $(srcdir)/avtterm.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
@@ -194,7 +194,7 @@ avttermsys.o: $(srcdir)/avttermsys.c $(srcdir)/avttermsys.h \
                 $(srcdir)/akfavatar.h version.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c -o $@ $(srcdir)/avttermsys.c
 
-avtmsg.o: $(srcdir)/avtmsg.c $(srcdir)/avtaddons.h
+avtmsg.o: $(srcdir)/avtmsg.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtmsg.c
 
 avtgrmsg.o: $(srcdir)/avtgrmsg.c $(srcdir)/akfavatar.h
@@ -222,7 +222,7 @@ libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
 	             colorchooser.o avtvorbis.o stb_vorbis.o
 	-$(RANLIB) $@
 
-avtposix.o: $(srcdir)/avtposix.c
+avtposix.o: $(srcdir)/avtposix.c $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtposix.c
 
 avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
@@ -262,7 +262,7 @@ lua-akfavatar-bin: lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
 lua-akfavatar: $(srcdir)/lua-akfavatar.sh lua-akfavatar-bin
 	install -m 755 $(srcdir)/lua-akfavatar.sh $@
 
-lua-akfavatar-prg.o: $(srcdir)/lua/lua-akfavatar-prg.c
+lua-akfavatar-prg.o: $(srcdir)/lua/lua-akfavatar-prg.c $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/lua-akfavatar-prg.c
 
@@ -343,7 +343,7 @@ avtmsg.lo: $(srcdir)/filechooser.c $(srcdir)/avtaddons.h \
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -fpic -o $@ \
 	  $(srcdir)/avtmsg.c
 
-avtgrmsg.lo: $(srcdir)/avtgrmsg.c
+avtgrmsg.lo: $(srcdir)/avtgrmsg.c $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) -fpic -c -o $@ $(srcdir)/avtgrmsg.c
 
 installdirs:
