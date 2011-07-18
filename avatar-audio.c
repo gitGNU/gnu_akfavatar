@@ -230,49 +230,6 @@ avt_quit_audio (void)
     }
 }
 
-/* deprecated in API */
-extern avt_audio_t *
-avt_load_wave_file (const char *file)
-{
-  struct avt_audio_t *snd;
-
-  snd = (struct avt_audio_t *) SDL_malloc (sizeof (struct avt_audio_t));
-  if (snd == NULL)
-    return NULL;
-
-  snd->wave = AVT_TRUE;
-  snd->audio_type = AVT_AUDIO_UNKNOWN;
-  if (SDL_LoadWAV (file, &snd->audiospec, &snd->sound, &snd->len) == NULL)
-    {
-      SDL_free (snd);
-      return NULL;
-    }
-
-  return snd;
-}
-
-/* deprecated in API */
-extern avt_audio_t *
-avt_load_wave_data (void *data, int datasize)
-{
-  struct avt_audio_t *s;
-
-  s = (struct avt_audio_t *) SDL_malloc (sizeof (struct avt_audio_t));
-  if (s == NULL)
-    return NULL;
-
-  s->wave = AVT_TRUE;
-  s->audio_type = AVT_AUDIO_UNKNOWN;
-  if (SDL_LoadWAV_RW (SDL_RWFromMem (data, datasize), 1,
-		      &s->audiospec, &s->sound, &s->len) == NULL)
-    {
-      SDL_free (s);
-      return NULL;
-    }
-
-  return s;
-}
-
 static Uint8 *
 avt_get_RWdata (SDL_RWops * src, Sint32 size)
 {

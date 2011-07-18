@@ -1,3 +1,10 @@
+2011-07-18  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c, avatar-audio.c:
+	remove all deprecated functions
+
+------------------------------------------------------------------------
+
 2011-07-14  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.20.0 released

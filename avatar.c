@@ -2576,13 +2576,6 @@ avt_get_newline_mode (void)
   return newline_mode;
 }
 
-/* deprecated - use avt_set_auto_margin */
-extern void
-avt_auto_margin (avt_bool_t mode)
-{
-  auto_margin = mode;
-}
-
 extern void
 avt_set_auto_margin (avt_bool_t mode)
 {
@@ -3006,13 +2999,6 @@ avt_is_printable (avt_char ch)
   return (avt_bool_t) (get_font_char ((int) ch) != NULL);
 }
 
-/* deprecated */
-extern avt_bool_t
-avt_printable (wchar_t ch)
-{
-  return (avt_bool_t) (get_font_char ((int) ch) != NULL);
-}
-
 /* make current char visible */
 static void
 avt_showchar (void)
@@ -3286,13 +3272,6 @@ avt_put_char (avt_char ch)
     }				/* switch */
 
   return _avt_STATUS;
-}
-
-/* deprecated */
-extern int
-avt_put_character (wchar_t ch)
-{
-  return avt_put_char ((avt_char) ch);
 }
 
 /*
@@ -3833,18 +3812,6 @@ avt_tell_mb_len (const char *txt, int len)
   return _avt_STATUS;
 }
 
-/* deprecated */
-extern int
-avt_get_key (wchar_t * ch)
-{
-  avt_char c;
-
-  avt_key (&c);
-  *ch = (wchar_t) c;
-
-  return _avt_STATUS;
-}
-
 extern int
 avt_key (avt_char * ch)
 {
@@ -4156,33 +4123,6 @@ avt_choice (int *result, int start_line, int items, int key,
     }
 
   return _avt_STATUS;
-}
-
-/* deprecated - just for backward compatibility */
-extern int
-avt_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code,
-	  avt_bool_t back, avt_bool_t forward)
-{
-  int status, result;
-
-  status = avt_choice (&result, menu_start, menu_end - menu_start + 1,
-		       (int) start_code, back, forward);
-
-  *ch = result + start_code - 1;
-  return status;
-}
-
-/* deprecated - just for backward compatibility */
-extern int
-avt_get_menu (wchar_t * ch, int menu_start, int menu_end, wchar_t start_code)
-{
-  int status, result;
-
-  status = avt_choice (&result, menu_start, menu_end - menu_start + 1,
-		       (int) start_code, AVT_FALSE, AVT_FALSE);
-
-  *ch = result + start_code - 1;
-  return status;
 }
 
 extern void
@@ -5250,131 +5190,6 @@ avt_navigate (const char *buttons)
   return result;
 }
 
-/* deprecated: use avt_wait_button */
-extern int
-avt_wait_key (const wchar_t * message)
-{
-  SDL_Event event;
-  avt_bool_t nokey;
-  SDL_Rect dst;
-  struct pos oldcursor;
-
-  if (!screen || _avt_STATUS != AVT_NORMAL)
-    return _avt_STATUS;
-
-  /* print message (outside of textfield!) */
-  if (*message)
-    {
-      const wchar_t *m;
-      SDL_Color colors[2], old_colors[2];
-
-      SDL_SetClipRect (screen, &window);
-
-      old_colors[0] = avt_character->format->palette->colors[0];
-      old_colors[1] = avt_character->format->palette->colors[1];
-
-      /* background-color */
-      colors[0] = backgroundcolor_RGB;
-      /* black foreground */
-      colors[1].r = colors[1].g = colors[1].b = 0x00;
-      SDL_SetColors (avt_character, colors, 0, 2);
-
-      /* alignment: right with one letter space to the border */
-      dst.x =
-	window.x + window.w - (avt_strwidth (message) * FONTWIDTH) -
-	FONTWIDTH;
-      dst.y = window.y + window.h - AVATAR_MARGIN - LINEHEIGHT;
-      dst.w = window.x + window.w - dst.x;
-      dst.h = FONTHEIGHT;
-
-      oldcursor = cursor;
-      cursor.x = dst.x;
-      cursor.y = dst.y;
-
-      /* message is also needed later in this function */
-      m = message;
-      while (*m)
-	{
-	  avt_drawchar ((avt_char) * m, screen);
-	  cursor.x += FONTWIDTH;
-	  if (cursor.x > window.x + window.w + FONTWIDTH)
-	    break;
-	  m++;
-	}
-
-      AVT_UPDATE_RECT (dst);
-      SDL_SetColors (avt_character, old_colors, 0, 2);
-      cursor = oldcursor;
-    }
-
-  /* show mouse pointer */
-  SDL_WarpMouse (dst.x, dst.y + FONTHEIGHT);
-  SDL_ShowCursor (SDL_ENABLE);
-
-  nokey = AVT_TRUE;
-  while (nokey)
-    {
-      SDL_WaitEvent (&event);
-      switch (event.type)
-	{
-	case SDL_QUIT:
-	  nokey = AVT_FALSE;
-	  _avt_STATUS = AVT_QUIT;
-	  break;
-
-	case SDL_KEYDOWN:
-	  nokey = AVT_FALSE;
-	  if (event.key.keysym.sym == SDLK_ESCAPE)
-	    _avt_STATUS = AVT_QUIT;
-	  break;
-
-	case SDL_MOUSEBUTTONDOWN:
-	  /* ignore the wheel */
-	  if (event.button.button <= 3)
-	    nokey = AVT_FALSE;
-	  break;
-	}
-
-      avt_analyze_event (&event);
-    }
-
-  /* hide mouse pointer */
-  SDL_ShowCursor (SDL_DISABLE);
-
-  /* clear message */
-  if (*message)
-    {
-      SDL_SetClipRect (screen, &window);
-      SDL_FillRect (screen, &dst, background_color);
-      AVT_UPDATE_RECT (dst);
-    }
-
-  if (textfield.x >= 0)
-    SDL_SetClipRect (screen, &viewport);
-
-  return _avt_STATUS;
-}
-
-/* deprecated: use avt_wait_button */
-extern int
-avt_wait_key_mb (char *message)
-{
-  wchar_t *wcmessage;
-
-  if (!screen || _avt_STATUS != AVT_NORMAL)
-    return _avt_STATUS;
-
-  avt_mb_decode (&wcmessage, message, SDL_strlen (message) + 1);
-
-  if (wcmessage)
-    {
-      avt_wait_key (wcmessage);
-      SDL_free (wcmessage);
-    }
-
-  return _avt_STATUS;
-}
-
 extern avt_bool_t
 avt_decide (void)
 {
@@ -5646,13 +5461,6 @@ avt_show_image_xpm (char **xpm)
   return _avt_STATUS;
 }
 
-/* deprecated - use avt_show_image_xpm */
-extern int
-avt_show_image_XPM (char **xpm)
-{
-  return avt_show_image_xpm (xpm);
-}
-
 extern int
 avt_show_image_xbm (const unsigned char *bits, int width, int height,
 		    const char *colorname)
@@ -5756,24 +5564,6 @@ avt_show_raw_image (void *image_data, int width, int height,
   return _avt_STATUS;
 }
 
-/*
- * deprecated - use avt_show_raw_image
- */
-extern int
-avt_show_gimp_image (void *gimp_image)
-{
-  gimp_img_t *img;
-
-  if (!screen || _avt_STATUS != AVT_NORMAL)
-    return _avt_STATUS;
-
-  img = (gimp_img_t *) gimp_image;
-
-  avt_show_raw_image (&img->pixel_data, img->width, img->height, 3);
-
-  return _avt_STATUS;
-}
-
 static int
 avt_init_SDL (void)
 {
@@ -5826,13 +5616,6 @@ avt_import_xpm (char **xpm)
     return NULL;
 
   return avt_load_image_xpm (xpm);
-}
-
-/* deprecated - use avt_import_xpm */
-extern avt_image_t *
-avt_import_XPM (char **xpm)
-{
-  return avt_import_xpm (xpm);
 }
 
 extern avt_image_t *
@@ -6196,13 +5979,6 @@ avt_reserve_single_keys (avt_bool_t onoff)
   reserve_single_keys = AVT_MAKE_BOOL (onoff);
 }
 
-/* just for backward compatiblity */
-extern void
-avt_stop_on_esc (avt_bool_t on)
-{
-  reserve_single_keys = (on == AVT_FALSE);
-}
-
 extern void
 avt_register_keyhandler (avt_keyhandler handler)
 {
@@ -6345,18 +6121,6 @@ avt_markup (avt_bool_t onoff)
 {
   markup = AVT_MAKE_BOOL (onoff);
   underlined = bold = AVT_FALSE;
-}
-
-/* deprecated: use avt_set_text_delay, avt_set_flip_page_delay */
-extern void
-avt_set_delays (int text, int flip_page)
-{
-  text_delay = text;
-  flip_page_delay = flip_page;
-
-  /* eventually switch off updates lock */
-  if (text_delay != 0 && hold_updates)
-    avt_lock_updates (AVT_FALSE);
 }
 
 extern void

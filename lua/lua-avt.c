@@ -1227,7 +1227,8 @@ static int
 lavt_printable (lua_State * L)
 {
   lua_pushboolean (L,
-		   (int) avt_printable ((wchar_t) luaL_checkinteger (L, 1)));
+		   (int) avt_is_printable ((avt_char)
+					   luaL_checkinteger (L, 1)));
   return 1;
 }
 
@@ -2188,7 +2189,7 @@ luaopen_akfavatar_embedded (lua_State * L)
 int
 luaopen_akfavatar (lua_State * L)
 {
-  luaopen_akfavatar_embedded(L);
+  luaopen_akfavatar_embedded (L);
 
   /*
    * use some dummy userdata to register a

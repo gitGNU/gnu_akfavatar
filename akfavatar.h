@@ -1065,28 +1065,6 @@ AVT_API avt_bool_t avt_audio_playing (avt_audio_t *snd);
 #  define AVT_DEPRECATED
 #endif /* __GNUC__ */
 
-AVT_API void avt_set_delays (int text, int flip_page) AVT_DEPRECATED;
-AVT_API void avt_stop_on_esc (avt_bool_t on) AVT_DEPRECATED;
-AVT_API int avt_wait_key (const wchar_t *message) AVT_DEPRECATED;
-AVT_API int avt_wait_key_mb (char *message) AVT_DEPRECATED;
-AVT_API avt_audio_t *avt_load_wave_file (const char *file) AVT_DEPRECATED;
-AVT_API avt_audio_t *avt_load_wave_data (void *data, int datasize)
-        AVT_DEPRECATED;
-
-AVT_API int avt_menu (wchar_t *ch, int menu_start, int menu_end,
-                      wchar_t start_code, avt_bool_t back,
-                      avt_bool_t forward) AVT_DEPRECATED;
-AVT_API int
-avt_get_menu (wchar_t *ch, int menu_start, int menu_end, wchar_t start_code)
-AVT_DEPRECATED;
-AVT_API avt_image_t *avt_import_XPM (char **xpm) AVT_DEPRECATED;
-AVT_API int avt_show_image_XPM (char **xpm) AVT_DEPRECATED;
-AVT_API void avt_auto_margin (avt_bool_t mode) AVT_DEPRECATED;
-AVT_API int avt_put_character (wchar_t ch) AVT_DEPRECATED;
-AVT_API avt_bool_t avt_printable (wchar_t ch);
-AVT_API int avt_get_key (wchar_t *ch) AVT_DEPRECATED;
-AVT_API int avt_show_gimp_image (void *gimp_image) AVT_DEPRECATED;
-
 AVT_END_DECLS
 
 #endif /* _akfavatar_h */
