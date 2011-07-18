@@ -7,6 +7,10 @@
 	all callers adapted
 	pascal/akfavatar.pas adapted
 
+	* avatar.c (avt_iconv, avt_mb_decode, avt_mb_encode):
+	use in more standardized way,
+	make SDL_iconv the exception rather than the rule
+
 ------------------------------------------------------------------------
 
 2011-07-14  Andreas K. Foerster  <info@akfoerster.de>

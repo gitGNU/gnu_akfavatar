@@ -31,6 +31,7 @@
 #include "SDL.h"
 #include "version.h"
 #include "rgb.h"
+#include <errno.h>
 
 /* include images */
 #include "akfavatar.xpm"
@@ -100,10 +101,6 @@
 #  include <string.h>
 #  include <ctype.h>
 
-#  ifndef FORCE_ICONV
-#    define FORCE_ICONV
-#  endif
-
 #  undef SDL_malloc
 #  define SDL_malloc              malloc
 #  undef SDL_calloc
@@ -136,27 +133,18 @@
 #  define SDL_sscanf              sscanf
 #endif /* OLD_SDL */
 
-#ifdef FORCE_ICONV
+#ifndef USE_SDL_ICONV
 #  include <iconv.h>
-#  include <errno.h>
-#  define AVT_ICONV_ERROR         (size_t)(-1)
-#  define AVT_ICONV_E2BIG         (size_t)(-2)
-#  define AVT_ICONV_EILSEQ        (size_t)(-3)
-#  define AVT_ICONV_EINVAL        (size_t)(-4)
 #  define avt_iconv_t             iconv_t
 #  define avt_iconv_open          iconv_open
 #  define avt_iconv_close         iconv_close
-   /* avt_iconv implemented below */
-#else
-#  define AVT_ICONV_ERROR         SDL_ICONV_ERROR
-#  define AVT_ICONV_E2BIG         SDL_ICONV_E2BIG
-#  define AVT_ICONV_EILSEQ        SDL_ICONV_EILSEQ
-#  define AVT_ICONV_EINVAL        SDL_ICONV_EINVAL
+#  define avt_iconv               iconv
+#else /* USE_SDL_ICONV */
 #  define avt_iconv_t             SDL_iconv_t
 #  define avt_iconv_open          SDL_iconv_open
 #  define avt_iconv_close         SDL_iconv_close
-#  define avt_iconv               SDL_iconv
-#endif /* OLD_SDL */
+   /* avt_iconv implemented below */
+#endif /* USE_SDL_ICONV */
 
 /* don't use any libc commands directly! */
 #pragma GCC poison  malloc calloc free strlen memcpy memset getenv putenv
@@ -187,14 +175,6 @@
 #define BALLOONPOINTER_OFFSET 20
 
 #define ICONV_UNINITIALIZED   (avt_iconv_t)(-1)
-
-/* moving target - grrrmpf! */
-/* but compiler warnings about this can be savely ignored */
-#if ((SDL_COMPILEDVERSION) >= 1212)
-#  define AVT_ICONV_INBUF_T const char
-#else
-#  define AVT_ICONV_INBUF_T char
-#endif
 
 /* try to guess WCHAR_ENCODING,
  * based on WCHAR_MAX or __WCHAR_MAX__ if it is available
@@ -280,7 +260,7 @@ static bool avt_visible;	/* avatar visible? */
 static bool text_cursor_visible;	/* shall the text cursor be visible? */
 static bool text_cursor_actually_visible;	/* is it actually visible? */
 static bool reserve_single_keys;	/* reserve single keys? */
-static bool markup;	/* markup-syntax activated? */
+static bool markup;		/* markup-syntax activated? */
 static int scroll_mode = 1;
 static SDL_Rect textfield;
 static SDL_Rect viewport;	/* sub-window in textfield */
@@ -1298,34 +1278,40 @@ load_image_done (void)
 
 #endif /* ! LINK_SDL_IMAGE */
 
-#ifdef FORCE_ICONV
+#ifdef USE_SDL_ICONV
 static size_t
 avt_iconv (avt_iconv_t cd,
-	   AVT_ICONV_INBUF_T ** inbuf, size_t * inbytesleft,
+	   char **inbuf, size_t * inbytesleft,
 	   char **outbuf, size_t * outbytesleft)
 {
   size_t r;
 
-  r = iconv (cd, inbuf, inbytesleft, outbuf, outbytesleft);
+  r = SDL_iconv (cd, inbuf, inbytesleft, outbuf, outbytesleft);
 
-  if (r == (size_t) (-1))
+  if (r == SDL_ICONV_E2BIG)
     {
-      switch (errno)
-	{
-	case E2BIG:
-	  return AVT_ICONV_E2BIG;
-	case EILSEQ:
-	  return AVT_ICONV_EILSEQ;
-	case EINVAL:
-	  return AVT_ICONV_EINVAL;
-	default:
-	  return AVT_ICONV_ERROR;
-	}
+      errno = E2BIG;
+      r = (size_t) (-1);
+    }
+  else if (r == SDL_ICONV_EILSEQ)
+    {
+      errno = EILSEQ;
+      r = (size_t) (-1);
+    }
+  else if (r == SDL_ICONV_EINVAL)
+    {
+      errno = EINVAL;
+      r = (size_t) (-1);
+    }
+  else if (r == SDL_ICONV_ERROR)
+    {
+      errno = EBADMSG;		/* ??? */
+      r = (size_t) (-1);
     }
 
   return r;
 }
-#endif /* FORCE_ICONV */
+#endif /* USE_SDL_ICONV */
 
 
 extern const char *
@@ -3560,7 +3546,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, int size)
   static char rest_buffer[10];
   static size_t rest_bytes = 0;
   char *outbuf;
-  AVT_ICONV_INBUF_T *inbuf, *restbuf;
+  char *inbuf, *restbuf;
   size_t dest_size;
   size_t inbytesleft, outbytesleft;
   size_t returncode;
@@ -3577,7 +3563,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, int size)
     avt_mb_encoding (MB_DEFAULT_ENCODING);
 
   inbytesleft = size;
-  inbuf = (AVT_ICONV_INBUF_T *) src;
+  inbuf = (char *) src;
 
   /* get enough space */
   /* a character may be 4 Bytes also in UTF-16  */
@@ -3602,7 +3588,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, int size)
 
   outbuf = (char *) *dest;
   outbytesleft = dest_size;
-  restbuf = (AVT_ICONV_INBUF_T *) rest_buffer;
+  restbuf = (char *) rest_buffer;
 
   /* if there is a rest from last call, try to complete it */
   while (rest_bytes > 0)
@@ -3614,8 +3600,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, int size)
 	avt_iconv (output_cd, &restbuf, &rest_bytes, &outbuf, &outbytesleft);
 
       /* handle any error but AVT_ICONV_EINVAL */
-      if (returncode == AVT_ICONV_EILSEQ || returncode == AVT_ICONV_ERROR
-	  || returncode == AVT_ICONV_E2BIG)
+      if (returncode == (size_t) (-1) && errno != EINVAL)
 	{
 	  *((wchar_t *) outbuf) = L'\xFFFD';
 
@@ -3630,7 +3615,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, int size)
     avt_iconv (output_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
 
   /* handle invalid characters */
-  while (returncode == AVT_ICONV_EILSEQ)
+  while (returncode == (size_t) (-1) && errno == EILSEQ)
     {
       inbuf++;
       inbytesleft--;
@@ -3644,7 +3629,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, int size)
     }
 
   /* check for fatal errors */
-  if (returncode == AVT_ICONV_ERROR || returncode == AVT_ICONV_E2BIG)
+  if (returncode == (size_t) (-1) && errno != EINVAL)
     {
       SDL_free (*dest);
       *dest = NULL;
@@ -3654,7 +3639,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, int size)
     }
 
   /* check for incomplete sequences and put them into the rest_buffer */
-  if (returncode == AVT_ICONV_EINVAL && inbytesleft <= sizeof (rest_buffer))
+  if (returncode == (size_t) (-1) && errno == EINVAL && inbytesleft <= sizeof (rest_buffer))
     {
       rest_bytes = inbytesleft;
       SDL_memcpy ((void *) &rest_buffer, inbuf, rest_bytes);
@@ -3671,7 +3656,7 @@ extern int
 avt_mb_encode (char **dest, const wchar_t * src, int len)
 {
   char *outbuf;
-  AVT_ICONV_INBUF_T *inbuf;
+  char *inbuf;
   size_t dest_size;
   size_t inbytesleft, outbytesleft;
   size_t returncode;
@@ -3688,7 +3673,7 @@ avt_mb_encode (char **dest, const wchar_t * src, int len)
     avt_mb_encoding (MB_DEFAULT_ENCODING);
 
   inbytesleft = len * sizeof (wchar_t);
-  inbuf = (AVT_ICONV_INBUF_T *) src;
+  inbuf = (char *) src;
 
   /* get enough space */
   /* UTF-8 may need 4 bytes per character */
@@ -3711,7 +3696,7 @@ avt_mb_encode (char **dest, const wchar_t * src, int len)
     avt_iconv (input_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
 
   /* check for fatal errors */
-  if (returncode == AVT_ICONV_ERROR || returncode == AVT_ICONV_E2BIG)
+  if (returncode == (size_t) (-1) && errno == E2BIG)
     {
       SDL_free (*dest);
       *dest = NULL;
@@ -4680,7 +4665,7 @@ extern int
 avt_ask_mb (char *s, int size)
 {
   wchar_t ws[AVT_LINELENGTH + 1];
-  AVT_ICONV_INBUF_T *inbuf;
+  char *inbuf;
   size_t inbytesleft, outbytesleft;
 
   if (!screen || _avt_STATUS != AVT_NORMAL)
@@ -6524,7 +6509,7 @@ avt_initialize (const char *title, const char *shortname,
   reserve_single_keys = false;
   newline_mode = true;
   auto_margin = true;
-  origin_mode = true;	/* for backwards compatibility */
+  origin_mode = true;		/* for backwards compatibility */
   avt_visible = false;
   markup = false;
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
