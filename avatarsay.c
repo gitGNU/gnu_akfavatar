@@ -125,10 +125,10 @@ static int window_mode;
 /* is the avatar initialized? (0|1) */
 /* for delaying the initialization until it is clear that we actually 
    have data to show */
-static avt_bool_t initialized;
+static bool initialized;
 
 /* was the file already checked for an encoding? */
-static avt_bool_t encoding_checked;
+static bool encoding_checked;
 
 /* for setting the title */
 /* only used, when the title is set before it is initialized */
@@ -136,8 +136,8 @@ static char *supposed_title;
 
 /* name of the image file */
 static char *avatar_image;
-static avt_bool_t avatar_changed;
-static avt_bool_t moved_in;
+static bool avatar_changed;
+static bool moved_in;
 
 static char bg_color_name[80], balloon_color_name[80];
 
@@ -149,10 +149,10 @@ static int wcbuf_pos = 0;
 static int wcbuf_len = 0;
 
 /* was the background color changed? */
-static avt_bool_t background_color_changed;
+static bool background_color_changed;
 
 /* was the balloon color changed? */
-static avt_bool_t balloon_color_changed;
+static bool balloon_color_changed;
 
 enum language_t
 { ENGLISH, DEUTSCH };
@@ -237,7 +237,7 @@ move_in (void)
 	exit (EXIT_SUCCESS);
       if (avt_wait (2000))
 	exit (EXIT_SUCCESS);
-      moved_in = AVT_TRUE;
+      moved_in = true;
     }
 }
 
@@ -250,7 +250,7 @@ move_out (void)
 	exit (EXIT_SUCCESS);
     }
 
-  moved_in = AVT_FALSE;
+  moved_in = false;
 }
 
 static void
@@ -344,10 +344,10 @@ initialize (void)
 
   avt_set_text_delay (default_delay);
 
-  background_color_changed = AVT_FALSE;
-  balloon_color_changed = AVT_FALSE;
-  avatar_changed = AVT_FALSE;
-  initialized = AVT_TRUE;
+  background_color_changed = false;
+  balloon_color_changed = false;
+  avatar_changed = false;
+  initialized = true;
 }
 
 #if defined(NO_PTY) || defined(NO_MANPAGES)
@@ -565,7 +565,7 @@ checkoptions (int argc, char **argv)
 	  break;
 
 	case 'b':		/* --nocolor */
-	  avta_term_nocolor (AVT_TRUE);
+	  avta_term_nocolor (true);
 	  break;
 
 	case '?':		/* unsupported option */
@@ -638,7 +638,7 @@ restore_avatar_image (void)
   if (avt_change_avatar_image (img))
     avta_error (avatar_image, "cannot load file");
 
-  avatar_changed = AVT_FALSE;
+  avatar_changed = false;
 }
 
 static void
@@ -675,7 +675,7 @@ get_data_file (const wchar_t * fn, char filepath[])
 static void
 check_encoding (const char *buf)
 {
-  encoding_checked = AVT_TRUE;
+  encoding_checked = true;
 
   {
     char *enc;
@@ -1027,7 +1027,7 @@ handle_credits_command (const wchar_t * s, int *stop)
 
       if (avta_arch_get_data (from_archive, filepath, &text, &size))
 	{
-	  if (avt_credits_mb ((const char *) text, AVT_TRUE) && stop != NULL)
+	  if (avt_credits_mb ((const char *) text, true) && stop != NULL)
 	    *stop = 1;
 	  free (text);
 	}
@@ -1039,7 +1039,7 @@ handle_credits_command (const wchar_t * s, int *stop)
       char *text;
 
       avta_read_textfile (filepath, &text);
-      if (avt_credits_mb (text, AVT_TRUE) && stop != NULL)
+      if (avt_credits_mb (text, true) && stop != NULL)
 	*stop = 1;
       free (text);
     }
@@ -1057,7 +1057,7 @@ change_avatar_image (avt_image_t * newavatar)
 	  avt_set_status (AVT_NORMAL);
 	}
 
-      avatar_changed = AVT_TRUE;
+      avatar_changed = true;
       avta_term_update_size ();
     }
 }
@@ -1092,7 +1092,7 @@ handle_backgroundcolor_command (const wchar_t * s)
   if (wcstombs (line, s, sizeof (line)) != (size_t) (-1))
     {
       avt_set_background_color_name (line);
-      background_color_changed = AVT_TRUE;
+      background_color_changed = true;
     }
   else
     avta_error ("[backgroundcolor]", NULL);
@@ -1117,7 +1117,7 @@ handle_ballooncolor_command (const wchar_t * s)
   if (wcstombs (line, s, sizeof (line)) != (size_t) (-1))
     {
       avt_set_balloon_color_name (line);
-      balloon_color_changed = AVT_TRUE;
+      balloon_color_changed = true;
     }
   else
     avta_error ("[ballooncolor]", NULL);
@@ -1244,7 +1244,7 @@ handle_rawaudiosettings_command (const wchar_t * s)
 }
 
 static void
-handle_playaudio_command (avt_bool_t do_loop)
+handle_playaudio_command (bool do_loop)
 {
   if (!initialized)
     {
@@ -1262,7 +1262,7 @@ handle_playaudio_command (avt_bool_t do_loop)
 }
 
 static void
-handle_audio_command (const wchar_t * s, avt_bool_t do_loop)
+handle_audio_command (const wchar_t * s, bool do_loop)
 {
   if (!initialized)
     {
@@ -1451,7 +1451,7 @@ avatar_command (wchar_t * cmd, int *stop)
       avt_set_avatar_name (cmd + cmd_len);
 
       /* note: reseting the avatar image also clears the name */
-      avatar_changed = AVT_TRUE;
+      avatar_changed = true;
       return 0;
     }
 
@@ -1504,7 +1504,7 @@ avatar_command (wchar_t * cmd, int *stop)
       /* for demos: */
       avt_set_text_delay (AVT_DEFAULT_TEXT_DELAY);
       /* for the terminal: */
-      avta_term_slowprint (AVT_TRUE);
+      avta_term_slowprint (true);
       return 0;
     }
 
@@ -1514,7 +1514,7 @@ avatar_command (wchar_t * cmd, int *stop)
       /* for demos: */
       avt_set_text_delay (0);
       /* for the terminal: */
-      avta_term_slowprint (AVT_FALSE);
+      avta_term_slowprint (false);
       return 0;
     }
 
@@ -1576,7 +1576,7 @@ avatar_command (wchar_t * cmd, int *stop)
       if (initialized)
 	avt_clear_screen ();
 
-      moved_in = AVT_FALSE;
+      moved_in = false;
       return 0;
     }
 
@@ -1632,14 +1632,14 @@ avatar_command (wchar_t * cmd, int *stop)
   /* load and play sound */
   if (chk_cmd_par (L"audio "))
     {
-      handle_audio_command (cmd + cmd_len, AVT_FALSE);
+      handle_audio_command (cmd + cmd_len, false);
       return 0;
     }
 
   /* load and play sound in a loop */
   if (chk_cmd_par (L"audioloop "))
     {
-      handle_audio_command (cmd + cmd_len, AVT_TRUE);
+      handle_audio_command (cmd + cmd_len, true);
       return 0;
     }
 
@@ -1661,14 +1661,14 @@ avatar_command (wchar_t * cmd, int *stop)
   /* play sound, loaded by loadaudio */
   if (chk_cmd (L"playaudio"))
     {
-      handle_playaudio_command (AVT_FALSE);
+      handle_playaudio_command (false);
       return 0;
     }
 
   /* play sound in a loop, loaded by loadaudio */
   if (chk_cmd (L"playaudioloop"))
     {
-      handle_playaudio_command (AVT_TRUE);
+      handle_playaudio_command (true);
       return 0;
     }
 
@@ -1734,7 +1734,7 @@ avatar_command (wchar_t * cmd, int *stop)
     {
       if (initialized)
 	avt_move_out ();
-      moved_in = AVT_FALSE;
+      moved_in = false;
       if (stop != NULL)
 	*stop = 2;
       return 0;
@@ -1759,13 +1759,13 @@ APC_command (wchar_t * s)
 }
 
 /* handle commads, including comments */
-static avt_bool_t
+static bool
 iscommand (wchar_t * s, int *stop)
 {
   wchar_t *p;
 
   if (OPT (OPT_RAW))
-    return AVT_FALSE;
+    return false;
 
   /* 
    * a stripline begins with at least 3 dashes
@@ -1778,12 +1778,12 @@ iscommand (wchar_t * s, int *stop)
 	if (avt_flip_page ())
 	  *stop = 1;
 
-      return AVT_TRUE;
+      return true;
     }
 
   /* ignore lines starting with a '#' */
   if (s[0] == L'#')
-    return AVT_TRUE;
+    return true;
 
   if (s[0] == L'[')
     {
@@ -1799,10 +1799,10 @@ iscommand (wchar_t * s, int *stop)
 	*p = L'\0';
 
       avatar_command (s, stop);
-      return AVT_TRUE;
+      return true;
     }
 
-  return AVT_FALSE;
+  return false;
 }
 
 
@@ -1904,13 +1904,13 @@ multi_menu (int fd)
 
   avt_normal_text ();
   avt_set_text_delay (0);
-  avt_set_origin_mode (AVT_FALSE);
-  avt_newline_mode (AVT_TRUE);
+  avt_set_origin_mode (false);
+  avt_newline_mode (true);
   avt_set_scroll_mode (-1);
 
-  avt_bold (AVT_TRUE);
+  avt_bold (true);
   avt_say (title);
-  avt_bold (AVT_FALSE);
+  avt_bold (false);
   avt_new_line ();
 
   menu_start = avt_where_y ();
@@ -1923,12 +1923,12 @@ multi_menu (int fd)
     }
 
   /* TODO: don't just exit in multi_menu */
-  if (avt_choice (&choice, menu_start, entry, '1', AVT_FALSE, AVT_FALSE))
+  if (avt_choice (&choice, menu_start, entry, '1', false, false))
     exit (EXIT_SUCCESS);
 
   /* back to normal... */
   avt_clear_screen ();
-  moved_in = AVT_FALSE;
+  moved_in = false;
   avt_set_balloon_size (0, 0);
   avt_set_text_delay (default_delay);
 
@@ -2024,7 +2024,7 @@ process_script (int fd)
   line_size = 1024 * sizeof (wchar_t);
   line = (wchar_t *) malloc (line_size);
 
-  encoding_checked = AVT_FALSE;
+  encoding_checked = false;
   avt_set_scroll_mode (1);
 
   /* get first line */
@@ -2120,11 +2120,11 @@ process_script (int fd)
     stop = 0;
 
   avt_text_direction (AVT_LEFT_TO_RIGHT);
-  avt_markup (AVT_FALSE);
+  avt_markup (false);
   return stop;
 }
 
-static avt_bool_t
+static bool
 is_textfile (const char *filename)
 {
   char *ext;
@@ -2142,7 +2142,7 @@ is_textfile (const char *filename)
 	    || strcasecmp (filename, "INSTALL") == 0);
 }
 
-static avt_bool_t
+static bool
 is_demo_or_text (const char *filename)
 {
   char *ext;
@@ -2178,7 +2178,7 @@ ask_file (void)
       int fd, status;
 
       avt_set_text_delay (default_delay);
-      moved_in = AVT_FALSE;
+      moved_in = false;
       raw_audio.type = AVT_AUDIO_UNKNOWN;
 
       fd = open_script (filename);
@@ -2208,13 +2208,13 @@ ask_file (void)
       if (background_color_changed)
 	{
 	  avt_set_background_color_name (bg_color_name);
-	  background_color_changed = AVT_FALSE;
+	  background_color_changed = false;
 	}
 
       if (balloon_color_changed)
 	{
 	  avt_set_balloon_color_name (balloon_color_name);
-	  balloon_color_changed = AVT_FALSE;
+	  balloon_color_changed = false;
 	}
     }
 }
@@ -2449,14 +2449,14 @@ create_file (const char *filename)
 }
 
 /* warn if someone tries to edit an archive file */
-static avt_bool_t
+static bool
 dont_edit_archive (const char *filename)
 {
   int fd;
 
   fd = avta_arch_open (filename);
   if (fd < 0)
-    return AVT_FALSE;
+    return false;
 
   close (fd);
 
@@ -2477,7 +2477,7 @@ dont_edit_archive (const char *filename)
 
   avt_wait_button ();
 
-  return AVT_TRUE;
+  return true;
 }
 
 static void
@@ -2526,7 +2526,7 @@ static void
 about_avatarsay (void)
 {
   avt_set_balloon_size (10, 80);
-  avt_lock_updates (AVT_TRUE);
+  avt_lock_updates (true);
   avt_clear ();
   set_encoding ("UTF-8");
   avt_set_text_delay (0);
@@ -2558,7 +2558,7 @@ about_avatarsay (void)
       avt_say_mb ("\nHomepage:  " HOMEPAGE);
     }
 
-  avt_lock_updates (AVT_FALSE);
+  avt_lock_updates (false);
   set_encoding (default_encoding);
   avt_set_text_delay (default_delay);
   avt_wait_button ();
@@ -2596,7 +2596,7 @@ ask_balloon_color ()
     }
 }
 
-static avt_bool_t
+static bool
 is_graphic_file (const char *filename)
 {
   char *ext;
@@ -2604,7 +2604,7 @@ is_graphic_file (const char *filename)
   ext = strrchr (filename, '.');
 
   if (!ext)
-    return AVT_FALSE;
+    return false;
   else
     return (strcasecmp (ext, ".xpm") == 0
 	    || strcasecmp (ext, ".xbm") == 0
@@ -2705,7 +2705,7 @@ save_settings (void)
 
   window_mode = avt_get_mode ();
 
-  f = open_config_file ("avatarsay", AVT_TRUE);
+  f = open_config_file ("avatarsay", true);
   if (!f)
     saving_failed ();
   else
@@ -2754,12 +2754,12 @@ settings_submenu (void)
       avt_clear ();
 
       avt_set_text_delay (0);
-      avt_lock_updates (AVT_TRUE);
-      avt_set_origin_mode (AVT_FALSE);
-      avt_newline_mode (AVT_TRUE);
+      avt_lock_updates (true);
+      avt_set_origin_mode (false);
+      avt_newline_mode (true);
 
-      avt_underlined (AVT_TRUE);
-      avt_bold (AVT_TRUE);
+      avt_underlined (true);
+      avt_bold (true);
 
       switch (language)
 	{
@@ -2772,8 +2772,8 @@ settings_submenu (void)
 	  break;
 	}
 
-      avt_bold (AVT_FALSE);
-      avt_underlined (AVT_FALSE);
+      avt_bold (false);
+      avt_underlined (false);
       avt_new_line ();
       avt_new_line ();
       menu_start = avt_where_y ();
@@ -2799,11 +2799,11 @@ settings_submenu (void)
 	  avt_say (L"6) back");
 	}
 
-      avt_lock_updates (AVT_FALSE);
+      avt_lock_updates (false);
 
       avt_set_text_delay (default_delay);
 
-      if (avt_choice (&choice, menu_start, 6, '1', AVT_FALSE, AVT_FALSE))
+      if (avt_choice (&choice, menu_start, 6, '1', false, false))
 	{
 	  avt_set_status (AVT_NORMAL);
 	  return;		/* return to main menu */
@@ -2859,16 +2859,16 @@ show_license (void)
       switch (language)
 	{
 	case DEUTSCH:
-	  avt_bold (AVT_TRUE);
+	  avt_bold (true);
 	  avt_say_mb ("Installationsfehler: ");
-	  avt_bold (AVT_FALSE);
+	  avt_bold (false);
 	  avt_say_mb ("kann Lizenz-Datei nicht finden");
 	  break;
 	case ENGLISH:
 	default:
-	  avt_bold (AVT_TRUE);
+	  avt_bold (true);
 	  avt_say_mb ("Installation Error: ");
-	  avt_bold (AVT_FALSE);
+	  avt_bold (false);
 	  avt_say_mb ("cannot find license file");
 	  break;
 	}
@@ -2893,12 +2893,12 @@ info_submenu (void)
       avt_clear ();
 
       avt_set_text_delay (0);
-      avt_lock_updates (AVT_TRUE);
-      avt_set_origin_mode (AVT_FALSE);
-      avt_newline_mode (AVT_TRUE);
+      avt_lock_updates (true);
+      avt_set_origin_mode (false);
+      avt_newline_mode (true);
 
-      avt_underlined (AVT_TRUE);
-      avt_bold (AVT_TRUE);
+      avt_underlined (true);
+      avt_bold (true);
 
       switch (language)
 	{
@@ -2911,8 +2911,8 @@ info_submenu (void)
 	  break;
 	}
 
-      avt_bold (AVT_FALSE);
-      avt_underlined (AVT_FALSE);
+      avt_bold (false);
+      avt_underlined (false);
       avt_new_line ();
       avt_new_line ();
       menu_start = avt_where_y ();
@@ -2934,11 +2934,11 @@ info_submenu (void)
 	  avt_say (L"4) back");
 	}
 
-      avt_lock_updates (AVT_FALSE);
+      avt_lock_updates (false);
 
       avt_set_text_delay (default_delay);
 
-      if (avt_choice (&choice, menu_start, 4, '1', AVT_FALSE, AVT_FALSE))
+      if (avt_choice (&choice, menu_start, 4, '1', false, false))
 	{
 	  avt_set_status (AVT_NORMAL);
 	  return;		/* return to main menu */
@@ -3006,15 +3006,15 @@ menu (void)
 	avt_clear ();
 
       avt_set_text_delay (0);
-      avt_lock_updates (AVT_TRUE);
-      avt_set_origin_mode (AVT_FALSE);
-      avt_newline_mode (AVT_TRUE);
+      avt_lock_updates (true);
+      avt_set_origin_mode (false);
+      avt_newline_mode (true);
 
-      avt_underlined (AVT_TRUE);
-      avt_bold (AVT_TRUE);
+      avt_underlined (true);
+      avt_bold (true);
       avt_say (L"AKFAvatar");
-      avt_bold (AVT_FALSE);
-      avt_underlined (AVT_FALSE);
+      avt_bold (false);
+      avt_underlined (false);
       avt_new_line ();
       avt_new_line ();
 
@@ -3045,10 +3045,10 @@ menu (void)
 	  avt_say (L"8) exit");	/* no newline */
 	}
 
-      avt_lock_updates (AVT_FALSE);
+      avt_lock_updates (false);
       avt_set_text_delay (default_delay);
 
-      if (avt_choice (&choice, menu_start, 8, '1', AVT_FALSE, AVT_FALSE))
+      if (avt_choice (&choice, menu_start, 8, '1', false, false))
 	exit (EXIT_SUCCESS);
 
       switch (choice)
@@ -3207,7 +3207,7 @@ check_local_config (void)
 {
   FILE *f;
 
-  f = open_config_file ("avatarsay", AVT_FALSE);
+  f = open_config_file ("avatarsay", false);
 
   if (f)
     {
@@ -3307,7 +3307,7 @@ main (int argc, char *argv[])
   raw_audio.channels = AVT_AUDIO_MONO;
 
   avta_term_register_apc (&APC_command);
-  avta_term_nocolor (AVT_FALSE);
+  avta_term_nocolor (false);
 
   atexit (quit);
   initialize_program_name (argv[0]);

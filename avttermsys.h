@@ -20,8 +20,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-
-#include "akfavatar.h"		/* for avt_bool_t */
+#include "akfavatar.h"
 
 /*
  * execute a subprocess, visible in the balloon
@@ -31,7 +30,7 @@
  * both file-descriptors can be the same
  */
 extern int avta_term_initialize (int *input_fd, int width, int height,
-				 avt_bool_t monochrome,
+				 bool monochrome,
 				 const char *working_dir,
 				 char *prg_argv[]);
 

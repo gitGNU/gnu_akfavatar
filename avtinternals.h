@@ -21,6 +21,7 @@
 #ifndef _AVTINTERNALS_H
 #define _AVTINTERNALS_H
 
+#include "akfavatar.h"
 #include "SDL.h"
 #include <stdio.h>		/* FILE */
 
@@ -39,7 +40,7 @@ extern void avta_graphic_error (const char *msg1, const char *msg2);
 /* avtposix.c / avtwindows.c */
 extern void get_user_home (char *home_dir, size_t size);
 extern void edit_file (const char *name, const char *encoding);
-extern FILE *open_config_file (const char *name, avt_bool_t writing);
+extern FILE *open_config_file (const char *name, bool writing);
 
 /* mingw/askdrive.c */
 extern int avta_ask_drive (int max_idx);

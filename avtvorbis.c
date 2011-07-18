@@ -122,7 +122,7 @@ avta_load_vorbis_file (char *filename)
     }
 
   fseek (f, 0, SEEK_SET);
-  vorbis = stb_vorbis_open_file (f, AVT_FALSE, &error, NULL);
+  vorbis = stb_vorbis_open_file (f, 0, &error, NULL);
 
   if (!vorbis)
     {

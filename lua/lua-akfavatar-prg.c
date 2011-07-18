@@ -142,14 +142,14 @@ static void
 reset (void)
 {
   avt_clear_screen ();
-  avt_newline_mode (AVT_TRUE);
-  avt_set_auto_margin (AVT_TRUE);
-  avt_set_origin_mode (AVT_TRUE);
+  avt_newline_mode (true);
+  avt_set_auto_margin (true);
+  avt_set_origin_mode (true);
   avt_set_scroll_mode (1);
-  avt_reserve_single_keys (AVT_FALSE);
+  avt_reserve_single_keys (false);
   avt_set_background_color_name ("default");
   avt_set_balloon_color_name ("floral white");
-  avt_markup (AVT_FALSE);
+  avt_markup (false);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
   avt_normal_text ();
   avt_quit_audio ();
@@ -158,16 +158,16 @@ reset (void)
 }
 
 /* check if this program can handle the file */
-static avt_bool_t
+static bool
 check_filename (const char *filename)
 {
   /* never show lua-akfavatar.lua! It's a module */
   if (strcasecmp (filename, "lua-akfavatar.lua") == 0)
-    return AVT_FALSE;
+    return false;
   else
     {
       const char *ext = strrchr (filename, '.');
-      return (avt_bool_t)
+      return (bool)
 	(ext && (strcasecmp (".lua", ext) == 0
 		 || strcasecmp (".avt", ext) == 0
 		 || strcasecmp (".about", ext) == 0));
@@ -332,7 +332,7 @@ show_text (const char *filename)
   avta_pager_file (filename, 1);
 }
 
-static avt_bool_t
+static bool
 ask_file (void)
 {
   char filename[256];
@@ -341,7 +341,7 @@ ask_file (void)
 
   avt_set_balloon_size (0, 0);
   if (avta_file_selection (filename, sizeof (filename), &check_filename))
-    return AVT_FALSE;
+    return false;
 
   if (*filename)
     {
@@ -374,10 +374,10 @@ ask_file (void)
       if (lua_dir[0] != '\0')
 	chdir (lua_dir);
 
-      return AVT_TRUE;		/* run this again */
+      return true;		/* run this again */
     }
 
-  return AVT_FALSE;
+  return false;
 }
 
 static void
@@ -386,8 +386,8 @@ start_screen (void)
   if (avt_move_in () != AVT_NORMAL)
     exit (EXIT_SUCCESS);
   avt_set_balloon_size (8, 80);
-  avt_underlined (AVT_TRUE);
-  avt_bold (AVT_TRUE);
+  avt_underlined (true);
+  avt_bold (true);
   avt_say_mb (PRGNAME);
   avt_normal_text ();
   avt_new_line ();
@@ -405,13 +405,13 @@ start_screen (void)
   avt_say_mb (avt_license ());
   avt_new_line ();
   avt_new_line ();
-  avt_bold (AVT_TRUE);
+  avt_bold (true);
   avt_say_mb ("F11");
-  avt_bold (AVT_FALSE);
+  avt_bold (false);
   avt_say_mb (": Fullscreen, ");
-  avt_bold (AVT_TRUE);
+  avt_bold (true);
   avt_say_mb ("Esc");
-  avt_bold (AVT_FALSE);
+  avt_bold (false);
   avt_say_mb (": end/back");
 
   if (avt_wait_button () != AVT_NORMAL)

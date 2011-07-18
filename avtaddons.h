@@ -120,7 +120,7 @@ AVT_ADDON const char *avta_color_selection (void);
  * file-chooser for AKFAvatar
  **********************************************************************/
 
-typedef avt_bool_t (*avta_filter_t) (const char *filename);
+typedef bool (*avta_filter_t) (const char *filename);
 
 /* file selection
  * starts in current working directory - changes the working directory
@@ -245,7 +245,7 @@ AVT_ADDON int avta_term_start (const char *system_encoding,
 
 AVT_ADDON void avta_term_run (int fd);
 
-AVT_ADDON void avta_term_nocolor (avt_bool_t nocolor);
+AVT_ADDON void avta_term_nocolor (bool nocolor);
 
 
 /* register handler for APC commands (optional) */
@@ -257,7 +257,7 @@ AVT_ADDON void avta_term_register_apc (avta_term_apc_cmd command);
  */
 
 /* APC: (de)activate slowprint mode */
-AVT_ADDON void avta_term_slowprint (avt_bool_t on);
+AVT_ADDON void avta_term_slowprint (bool on);
 
 /* APC: send data to stdin of the running program */
 AVT_ADDON void avta_term_send (const char *buf, size_t count);

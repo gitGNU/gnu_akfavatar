@@ -81,7 +81,7 @@ get_user_shell (void)
 
 extern int
 avta_term_initialize (int *input_fd, int width, int height,
-		      avt_bool_t monochrome, const char *working_dir,
+		      bool monochrome, const char *working_dir,
 		      char *prg_argv[])
 {
   pid_t childpid;

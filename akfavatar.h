@@ -34,6 +34,10 @@
 /* to get the systems definition of wchar_t */
 #include <stddef.h>
 
+#ifndef __cplusplus
+#include <stdbool.h>
+#endif
+
 #define AKFAVATAR 1
 
 /* maximum linelength */
@@ -55,10 +59,6 @@
 #define AVT_QUIT 1
 #define AVT_ERROR -1
 
-/* for boolean expressions */
-/* see avt_bool_t in the type definitions */
-#define AVT_TRUE 1
-#define AVT_FALSE 0
 #define AVT_MAKE_BOOL(x) ((x) != 0)
 
 /* for avt_set_text_delay and avt_set_flip_page_delay */
@@ -127,17 +127,6 @@
 
 /***********************************************************************/
 /* type definitions */
-
-/*
- * boolean are chars for this library
- * use AVT_TRUE or AVT_FALSE as values,
- * or AVT_MAKE_BOOL(x) to convert values.
- *
- * You can use true or false and the type bool from stdbool.h in C
- * or the equivalent things from C++ - it's all compatible.
- * I just make my own type for old compilers.
- */
-typedef unsigned char avt_bool_t;
 
 /*
  * type for single characters
@@ -343,9 +332,9 @@ AVT_API int avt_put_char (avt_char ch);
 
 /*
  * checks whether the given charactrer is printable
- * returns AVT_FALSE on unknown or control characters
+ * returns false on unknown or control characters
  */
-AVT_API avt_bool_t avt_is_printable (avt_char ch);
+AVT_API bool avt_is_printable (avt_char ch);
 
 /*
  * get string (just one line)
@@ -441,7 +430,7 @@ AVT_API void avt_free (void *ptr);
 /* informational stuff */
 
 /* is it initialized? */
-AVT_API avt_bool_t avt_initialized (void);
+AVT_API bool avt_initialized (void);
 
 /* 0 = normal; 1 = quit-request; -1 = error */
 AVT_API int avt_get_status (void);
@@ -515,7 +504,7 @@ AVT_API void avt_set_balloon_width (int width);
 AVT_API void avt_set_balloon_height (int height);
 
 /* activate the text cursor? (default: no) */
-AVT_API void avt_activate_cursor (avt_bool_t on);
+AVT_API void avt_activate_cursor (bool on);
 
 /*
  * define the background color
@@ -569,22 +558,22 @@ AVT_API void avt_set_text_delay (int delay);
 AVT_API void avt_set_flip_page_delay (int delay);
 
 /* set underlined mode on or off */
-AVT_API void avt_underlined (avt_bool_t onoff);
+AVT_API void avt_underlined (bool onoff);
 
 /* get underlined mode */
-AVT_API avt_bool_t avt_get_underlined (void);
+AVT_API bool avt_get_underlined (void);
 
 /* set bold mode on or off (not recommended) */
-AVT_API void avt_bold (avt_bool_t onoff);
+AVT_API void avt_bold (bool onoff);
 
 /* get bold mode */
-AVT_API avt_bool_t avt_get_bold (void);
+AVT_API bool avt_get_bold (void);
 
 /* set inverse mode on or off */
-AVT_API void avt_inverse (avt_bool_t onoff);
+AVT_API void avt_inverse (bool onoff);
 
 /* get inverse mode */
-AVT_API avt_bool_t avt_get_inverse (void);
+AVT_API bool avt_get_inverse (void);
 
 /* set default color and switch off bold, underlined, inverse */
 /* also switches the markup mode off */
@@ -596,7 +585,7 @@ AVT_API void avt_normal_text (void);
  * in markup mode the character "_" toggles the underlined mode
  * and the character "*" toggles the bold mode on or off
  */
-AVT_API void avt_markup (avt_bool_t onoff);
+AVT_API void avt_markup (bool onoff);
 
 /*
  * set scroll mode
@@ -606,31 +595,31 @@ AVT_API void avt_set_scroll_mode (int mode);
 AVT_API int avt_get_scroll_mode (void);
 
 /* set newline mode (default: on) */
-AVT_API void avt_newline_mode (avt_bool_t mode);
+AVT_API void avt_newline_mode (bool mode);
 
 /* get newline mode */
-AVT_API avt_bool_t avt_get_newline_mode (void);
+AVT_API bool avt_get_newline_mode (void);
 
 /* set auto-margin mode (default: on) */
-AVT_API void avt_set_auto_margin (avt_bool_t mode);
-AVT_API void avt_auto_margin (avt_bool_t mode);
+AVT_API void avt_set_auto_margin (bool mode);
+AVT_API void avt_auto_margin (bool mode);
 
 /* get auto-margin mode */
-AVT_API avt_bool_t avt_get_auto_margin (void);
+AVT_API bool avt_get_auto_margin (void);
 
 /*
  * origin mode
- * AVT_FALSE: origin (1,1) is always the top of the textarea
- * AVT_TRUE:  origin (1,1) is the top of the viewport
+ * false: origin (1,1) is always the top of the textarea
+ * true:  origin (1,1) is the top of the viewport
  */
-AVT_API void avt_set_origin_mode (avt_bool_t mode);
-AVT_API avt_bool_t avt_get_origin_mode (void);
+AVT_API void avt_set_origin_mode (bool mode);
+AVT_API bool avt_get_origin_mode (void);
 
 /*
  * with this you can switch the mouse pointer on or off
  * use this after avt_register_mousehandler
  */
-AVT_API void avt_set_mouse_visible (avt_bool_t visible);
+AVT_API void avt_set_mouse_visible (bool visible);
 
 
 /***********************************************************************/
@@ -649,7 +638,7 @@ AVT_API int avt_where_y (void);
  * is the cursor in the home position?
  * (also works for right-to-left writing)
  */
-AVT_API avt_bool_t avt_home_position (void);
+AVT_API bool avt_home_position (void);
 
 /* maximum positions (whole text-field) */
 AVT_API int avt_get_max_x (void);
@@ -741,7 +730,7 @@ AVT_API void avt_reset_tab_stops (void);
 AVT_API void avt_clear_tab_stops (void);
 
 /* set or clear a tab in position x */
-AVT_API void avt_set_tab (int x, avt_bool_t onoff);
+AVT_API void avt_set_tab (int x, bool onoff);
 
 /*
  * delete num lines, starting from line
@@ -758,11 +747,11 @@ AVT_API void avt_insert_lines (int line, int num);
 /*
  * lock or unlock updates of the balloon-content
  * can be used for speedups
- * when set to AVT_FALSE, the textarea gets updated
- * when set to AVT_TRUE, the text_delay is set to 0
+ * when set to false, the textarea gets updated
+ * when set to true, the text_delay is set to 0
  * use with care!
  */
-AVT_API void avt_lock_updates (avt_bool_t lock);
+AVT_API void avt_lock_updates (bool lock);
 
 /***********************************************************************/
 /* showing images without the avatar */
@@ -828,10 +817,10 @@ AVT_API int avt_wait_button (void);
  * keys for negative: - 0 Backspace
  *
  * returns the result as boolean
- * on error or quit request AVT_FALSE is returned and the status is set
+ * on error or quit request false is returned and the status is set
  * you should check the status with avt_get_status()
  */
-AVT_API avt_bool_t avt_decide (void);
+AVT_API bool avt_decide (void);
 
 /*
  * navigation bar
@@ -884,7 +873,7 @@ AVT_API int avt_navigate (const char *buttons);
  */
 AVT_API int
 avt_choice (int *result, int start_line, int items, int key,
-	    avt_bool_t back, avt_bool_t forward);
+	    bool back, bool forward);
 
 /*
  * show longer text with a text-viewer application
@@ -895,8 +884,8 @@ AVT_API int avt_pager (const wchar_t *txt, int len, int startline);
 AVT_API int avt_pager_mb (const char *txt, int len, int startline);
 
 /* show final credits */
-AVT_API int avt_credits (const wchar_t *text, avt_bool_t centered);
-AVT_API int avt_credits_mb (const char *text, avt_bool_t centered);
+AVT_API int avt_credits (const wchar_t *text, bool centered);
+AVT_API int avt_credits_mb (const char *text, bool centered);
 
 /***********************************************************************/
 /* plumbing */
@@ -905,7 +894,7 @@ AVT_API int avt_credits_mb (const char *text, avt_bool_t centered);
  * reserve single keys (Esc, F11)
  * use this with avt_register_keyhandler
  */
-AVT_API void avt_reserve_single_keys (avt_bool_t onoff);
+AVT_API void avt_reserve_single_keys (bool onoff);
 
 /*
  * type for keyhandler
@@ -920,7 +909,7 @@ AVT_API void avt_register_keyhandler (avt_keyhandler handler);
  * type for mousehandler
  * see avt_register_mousehandler
  */
-typedef void (*avt_mousehandler) (int button, avt_bool_t pressed,
+typedef void (*avt_mousehandler) (int button, bool pressed,
 				  int x, int y);
 
 /* register an external mousehandler
@@ -1033,7 +1022,7 @@ AVT_API void avt_free_audio (avt_audio_t *snd);
  * plays a sound
  * on error it returns AVT_ERROR without changing the status
  */
-AVT_API int avt_play_audio (avt_audio_t *snd, avt_bool_t doloop);
+AVT_API int avt_play_audio (avt_audio_t *snd, bool doloop);
 
 /*
  * wait until the sound ends
@@ -1045,13 +1034,13 @@ AVT_API int avt_wait_audio_end (void);
 AVT_API void avt_stop_audio (void);
 
 /* pause/resume audio */
-AVT_API void avt_pause_audio (avt_bool_t pause);
+AVT_API void avt_pause_audio (bool pause);
 
 /*
  * Is this sound currently playing?
  * Use NULL for any sound
  */
-AVT_API avt_bool_t avt_audio_playing (avt_audio_t *snd);
+AVT_API bool avt_audio_playing (avt_audio_t *snd);
 
 
 /***********************************************************************/
@@ -1059,11 +1048,13 @@ AVT_API avt_bool_t avt_audio_playing (avt_audio_t *snd);
 /* don't use them for new programs! */
 
 /* macro for marking deprecated functions in this header */
-#if defined (__GNUC__) && ! defined (_AVT_NO_DEPRECATED)
+#if defined (__GNUC__) && !defined (_AVT_NO_DEPRECATED)
 #  define AVT_DEPRECATED  __attribute__ ((__deprecated__))
 #else
 #  define AVT_DEPRECATED
 #endif /* __GNUC__ */
+
+/* currently none */
 
 AVT_END_DECLS
 

@@ -59,7 +59,7 @@ manual_entry (void)
 
   avt_set_balloon_height (1);
   avt_say (L"> ");
-  avt_lock_updates (AVT_FALSE);
+  avt_lock_updates (false);
 
   if (avt_ask_mb (manual_color, sizeof (manual_color)) != AVT_NORMAL)
     return NULL;
@@ -81,11 +81,11 @@ avta_color_selection (void)
   int mid_x;
   int max_idx, items, offset, page_nr;
   int choice;
-  avt_bool_t old_auto_margin;
+  bool old_auto_margin;
 
   avt_set_text_delay (0);
   avt_normal_text ();
-  avt_lock_updates (AVT_TRUE);
+  avt_lock_updates (true);
 
   /* set maximum size */
   avt_set_balloon_size (0, 35);
@@ -97,7 +97,7 @@ avta_color_selection (void)
   page_nr = 0;
 
   old_auto_margin = avt_get_auto_margin ();
-  avt_set_auto_margin (AVT_FALSE);
+  avt_set_auto_margin (false);
 
   while (!color)
     {
@@ -147,12 +147,12 @@ avta_color_selection (void)
 	  items = max_idx;
 	}
 
-      avt_lock_updates (AVT_FALSE);
+      avt_lock_updates (false);
       if (avt_choice (&choice, 1, items, 0,
 		      (page_nr > 0), (color_name != NULL)))
 	break;
       else
-	avt_lock_updates (AVT_TRUE);
+	avt_lock_updates (true);
 
       if (choice == 1 && page_nr > 0)
 	page_nr--;		/* page back */
@@ -172,7 +172,7 @@ avta_color_selection (void)
 
   avt_set_auto_margin (old_auto_margin);
   avt_clear ();
-  avt_lock_updates (AVT_FALSE);
+  avt_lock_updates (false);
 
   return color;
 }

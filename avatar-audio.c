@@ -61,7 +61,7 @@ struct avt_audio_t
   Uint8 wave;			/* wether SDL_FreeWav is needed? */
 };
 
-static avt_bool_t avt_audio_initialized;
+static bool avt_audio_initialized;
 
 /* short sound for the "avt_bell" function */
 static avt_audio_t *my_alert;
@@ -70,8 +70,8 @@ static avt_audio_t *my_alert;
 static struct avt_audio_t current_sound;
 static Uint8 *soundpos = NULL;	/* Current play position */
 static Sint32 soundleft = 0;	/* Length of left unplayed wave data */
-static avt_bool_t loop = AVT_FALSE;
-static avt_bool_t playing = AVT_FALSE;
+static bool loop = false;
+static bool playing = false;
 
 /* table for decoding mu-law */
 static const Sint16 mulaw_decode[256] = {
@@ -145,7 +145,7 @@ fill_audio (void *userdata AVT_UNUSED, Uint8 * stream, int len)
 	  SDL_Event event;
 
 	  SDL_PauseAudio (1);	/* shut up */
-	  playing = AVT_FALSE;
+	  playing = false;
 	  event.type = SDL_USEREVENT;
 	  event.user.code = AVT_AUDIO_ENDED;
 	  event.user.data1 = event.user.data2 = NULL;
@@ -169,7 +169,7 @@ short_audio_sound (void)
 {
   /* if my_alert is loaded and nothing is currently playing */
   if (my_alert && !playing)
-    avt_play_audio (my_alert, AVT_FALSE);
+    avt_play_audio (my_alert, false);
 }
 
 /* must be called AFTER avt_initialize! */
@@ -185,7 +185,7 @@ avt_initialize_audio (void)
 	}
 
       /* set this before calling anything from this lib */
-      avt_audio_initialized = AVT_TRUE;
+      avt_audio_initialized = true;
 
       my_alert =
 	avt_load_audio_data ((void *) &avt_alert_data, avt_alert_data_size);
@@ -201,10 +201,10 @@ extern void
 avt_stop_audio (void)
 {
   SDL_CloseAudio ();
-  playing = AVT_FALSE;
+  playing = false;
   soundpos = NULL;
   soundleft = 0;
-  loop = AVT_FALSE;
+  loop = false;
   current_sound.len = 0;
   current_sound.sound = NULL;
 }
@@ -220,13 +220,13 @@ avt_quit_audio (void)
       soundleft = 0;
       current_sound.len = 0;
       current_sound.sound = NULL;
-      loop = AVT_FALSE;
-      playing = AVT_FALSE;
+      loop = false;
+      playing = false;
       avt_alert_func = avt_flash;
       avt_free_audio (my_alert);
       my_alert = NULL;
       SDL_QuitSubSystem (SDL_INIT_AUDIO);
-      avt_audio_initialized = AVT_FALSE;
+      avt_audio_initialized = false;
     }
 }
 
@@ -258,9 +258,9 @@ avt_LoadAU_RW (SDL_RWops * src, int freesrc,
 {
   Uint32 head_size, audio_size, encoding, samplingrate, channels;
   Uint8 *buf;
-  avt_bool_t completed;
+  bool completed;
 
-  completed = AVT_FALSE;
+  completed = false;
   buf = NULL;
 
   if (!src || !spec || !audio_buf || !data_size)
@@ -353,7 +353,7 @@ avt_LoadAU_RW (SDL_RWops * src, int freesrc,
 	spec->format = AUDIO_S16SYS;
 	*audio_buf = (Uint8 *) outbuf;
 	*data_size = out_size;
-	completed = AVT_TRUE;
+	completed = true;
       }
       break;
 
@@ -364,7 +364,7 @@ avt_LoadAU_RW (SDL_RWops * src, int freesrc,
 	  spec->format = AUDIO_S8;	/* signed! */
 	  *audio_buf = buf;
 	  *data_size = audio_size;
-	  completed = AVT_TRUE;
+	  completed = true;
 	}
       break;
 
@@ -386,7 +386,7 @@ avt_LoadAU_RW (SDL_RWops * src, int freesrc,
 	  spec->format = AUDIO_S16SYS;
 	  *audio_buf = buf;
 	  *data_size = audio_size;
-	  completed = AVT_TRUE;
+	  completed = true;
 	}
       break;
 
@@ -433,7 +433,7 @@ avt_LoadAU_RW (SDL_RWops * src, int freesrc,
 	spec->format = AUDIO_S16SYS;
 	*audio_buf = (Uint8 *) outbuf;
 	*data_size = out_size;
-	completed = AVT_TRUE;
+	completed = true;
       }
       break;
 
@@ -512,12 +512,12 @@ avt_load_audio_RW (SDL_RWops * src)
   switch (type)
     {
     case 1:			/* AU */
-      s->wave = AVT_FALSE;
+      s->wave = false;
       r = avt_LoadAU_RW (src, 1, &s->audiospec, &s->sound, &s->len);
       break;
 
     case 2:			/* Wave */
-      s->wave = AVT_TRUE;
+      s->wave = true;
       r = SDL_LoadWAV_RW (src, 1, &s->audiospec, &s->sound, &s->len);
       break;
 
@@ -716,7 +716,7 @@ avt_load_raw_audio_data (void *data, int data_size,
   s->sound = NULL;
   s->len = 0;
   s->audio_type = audio_type;
-  s->wave = AVT_FALSE;
+  s->wave = false;
   s->audiospec.format = format;
   s->audiospec.freq = samplingrate;
   s->audiospec.channels = channels;
@@ -735,11 +735,11 @@ avt_load_raw_audio_data (void *data, int data_size,
 }
 
 /* Is this sound currently playing? NULL for any sound */
-extern avt_bool_t
+extern bool
 avt_audio_playing (avt_audio_t * snd)
 {
   if (snd && snd->sound != current_sound.sound)
-    return AVT_FALSE;		/* not same sound */
+    return false;		/* not same sound */
 
   return playing;
 }
@@ -765,7 +765,7 @@ avt_free_audio (avt_audio_t * snd)
 }
 
 extern int
-avt_play_audio (avt_audio_t * snd, avt_bool_t doloop)
+avt_play_audio (avt_audio_t * snd, bool doloop)
 {
   if (!avt_audio_initialized)
     return _avt_STATUS;
@@ -794,7 +794,7 @@ avt_play_audio (avt_audio_t * snd, avt_bool_t doloop)
       soundpos = current_sound.sound;
       soundleft = current_sound.len;
       SDL_UnlockAudio ();
-      playing = AVT_TRUE;
+      playing = true;
       SDL_PauseAudio (0);
       return _avt_STATUS;
     }
@@ -811,7 +811,7 @@ avt_wait_audio_end (void)
     return _avt_STATUS;
 
   /* end the loop, but wait for end of sound */
-  loop = AVT_FALSE;
+  loop = false;
 
   while (playing && _avt_STATUS == AVT_NORMAL)
     {
@@ -823,7 +823,7 @@ avt_wait_audio_end (void)
 }
 
 extern void
-avt_pause_audio (avt_bool_t pause)
+avt_pause_audio (bool pause)
 {
   SDL_PauseAudio ((int) pause);
 }
@@ -921,23 +921,23 @@ avt_wait_audio_end (void)
 }
 
 extern int
-avt_play_audio (avt_audio_t * snd AVT_UNUSED, avt_bool_t doloop AVT_UNUSED)
+avt_play_audio (avt_audio_t * snd AVT_UNUSED, bool doloop AVT_UNUSED)
 {
   no_audio ();
   return _avt_STATUS;
 }
 
 extern void
-avt_pause_audio (avt_bool_t pause)
+avt_pause_audio (bool pause)
 {
   no_audio ();
 }
 
-extern avt_bool_t
+extern bool
 avt_audio_playing (avt_audio_t * snd AVT_UNUSED)
 {
   no_audio ();
-  return AVT_FALSE;
+  return false;
 }
 
 #endif /* NO_AUDIO */

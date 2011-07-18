@@ -35,10 +35,10 @@ avta_graphic_error (const char *msg1, const char *msg2)
   avt_change_avatar_image (NULL);
   avt_set_balloon_color (0xFF, 0xAA, 0xAA);
   avt_normal_text ();
-  avt_set_auto_margin (AVT_TRUE);
+  avt_set_auto_margin (true);
   avt_set_scroll_mode (-1);
   avt_set_text_delay (0);
-  avt_lock_updates (AVT_FALSE);
+  avt_lock_updates (false);
   avt_bell ();
   avt_tell_mb (msg);
   avt_wait_button ();

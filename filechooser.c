@@ -62,12 +62,12 @@
 #define DIRECTORY L"/"
 
 #ifdef __WIN32__
-#  define HAS_DRIVE_LETTERS AVT_TRUE
-#  define HAS_SCANDIR AVT_FALSE
+#  define HAS_DRIVE_LETTERS true
+#  define HAS_SCANDIR false
 #  define is_root_dir(x) (x[1] == ':' && x[3] == '\0')
 #else
-#  define HAS_DRIVE_LETTERS AVT_FALSE
-#  define HAS_SCANDIR AVT_TRUE
+#  define HAS_DRIVE_LETTERS false
+#  define HAS_SCANDIR true
 #  define is_root_dir(x) (x[1] == '\0')
 #  define avta_ask_drive(max_idx) 0	/* dummy */
 #endif
@@ -75,15 +75,15 @@
 /* variable for custom filter */
 static avta_filter_t custom_filter = NULL;
 
-static avt_bool_t
+static bool
 is_directory (const char *name)
 {
   struct stat buf;
 
   if (stat (name, &buf) > -1)
-    return (avt_bool_t) S_ISDIR (buf.st_mode);
+    return (bool) S_ISDIR (buf.st_mode);
   else
-    return AVT_FALSE;
+    return false;
 }
 
 #ifdef _DIRENT_HAVE_D_TYPE
@@ -98,14 +98,14 @@ is_directory (const char *name)
 static void
 new_page (void)
 {
-  avt_lock_updates (AVT_TRUE);
+  avt_lock_updates (true);
   avt_clear ();
 }
 
 static void
 show_directory (char *dirname)
 {
-  avt_lock_updates (AVT_TRUE);
+  avt_lock_updates (true);
   avt_clear ();
   marked ();
   avt_say_mb (dirname);
@@ -127,9 +127,9 @@ filter_dirent (FILTER_DIRENT_T * d)
 {
   /* allow nothing that starts with a dot */
   if (d == NULL || d->d_name[0] == '.')
-    return AVT_FALSE;
+    return false;
   else if (is_dirent_directory (d))
-    return AVT_TRUE;
+    return true;
   else
     return (custom_filter == NULL || (*custom_filter) (d->d_name));
 }
@@ -141,11 +141,11 @@ filter_dirent (const struct dirent *d)
 {
   /* don't allow "." and ".." and apply custom_filter */
   if (d == NULL)
-    return AVT_FALSE;
+    return false;
   else if (strcmp (".", d->d_name) == 0 || strcmp ("..", d->d_name) == 0)
-    return AVT_FALSE;
+    return false;
   else if (is_dirent_directory (d))
-    return AVT_TRUE;
+    return true;
   else
     return (custom_filter == NULL || (*custom_filter) (d->d_name));
 }
@@ -236,7 +236,7 @@ avta_file_selection (char *filename, int filename_size, avta_filter_t filter)
   int idx, menu_entry, page_nr;
   int entries, entry_nr;
   char *entry[100];		/* entry on screen */
-  avt_bool_t old_auto_margin, old_newline_mode;
+  bool old_auto_margin, old_newline_mode;
 
   if (filename == NULL || filename_size <= 0)
     return -1;
@@ -257,9 +257,9 @@ avta_file_selection (char *filename, int filename_size, avta_filter_t filter)
   namelist = NULL;
 
   old_auto_margin = avt_get_auto_margin ();
-  avt_set_auto_margin (AVT_FALSE);
+  avt_set_auto_margin (false);
   old_newline_mode = avt_get_newline_mode ();
-  avt_newline_mode (AVT_TRUE);
+  avt_newline_mode (true);
 
 start:
   /* returncode: assume failure as default */
@@ -314,7 +314,7 @@ start:
 	      idx++;
 	    }
 
-	  avt_lock_updates (AVT_FALSE);
+	  avt_lock_updates (false);
 	  if (avt_choice (&menu_entry, 1, idx, 0, (page_nr > 0), (d != NULL)))
 	    break;
 
@@ -456,7 +456,7 @@ quit:
   avt_set_auto_margin (old_auto_margin);
   avt_newline_mode (old_newline_mode);
   avt_clear ();
-  avt_lock_updates (AVT_FALSE);
+  avt_lock_updates (false);
 
   return rcode;
 }

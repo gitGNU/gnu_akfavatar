@@ -3,6 +3,10 @@
 	* akfavatar.h, avatar.c, avatar-audio.c:
 	remove all deprecated functions
 
+	* akfavatar.h: use stdbool.h instead of avt_bool_t
+	all callers adapted
+	pascal/akfavatar.pas adapted
+
 ------------------------------------------------------------------------
 
 2011-07-14  Andreas K. Foerster  <info@akfoerster.de>

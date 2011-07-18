@@ -73,7 +73,7 @@ get_user_home (char *home_dir, size_t size)
 }
 
 FILE *
-open_config_file (const char *name, avt_bool_t writing)
+open_config_file (const char *name, bool writing)
 {
   FILE *f;
   char home[1024], path[1024];

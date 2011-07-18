@@ -40,12 +40,12 @@ avta_term_register_apc (avta_term_apc_cmd command AVT_UNUSED)
 }
 
 extern void
-avta_term_nocolor (avt_bool_t nocolor AVT_UNUSED)
+avta_term_nocolor (bool nocolor AVT_UNUSED)
 {
 }
 
 extern void
-avta_term_slowprint (avt_bool_t on AVT_UNUSED)
+avta_term_slowprint (bool on AVT_UNUSED)
 {
 }
 

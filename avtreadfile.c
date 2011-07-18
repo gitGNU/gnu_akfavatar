@@ -28,7 +28,7 @@
 #include <stdio.h>
 
 static int
-read_stream (FILE * f, char **buffer, avt_bool_t terminate)
+read_stream (FILE * f, char **buffer, bool terminate)
 {
   char *buf;
   int size, capacity;
@@ -114,7 +114,7 @@ avta_read_textfile (const char *file_name, char **buffer)
 
   if (f)
     {
-      size = read_stream (f, &buf, AVT_TRUE);
+      size = read_stream (f, &buf, true);
 
       if (f != stdin)
 	(void) fclose (f);
@@ -141,7 +141,7 @@ avta_read_datafile (const char *file_name, void **buffer)
 
   if (f)
     {
-      size = read_stream (f, &buf, AVT_FALSE);
+      size = read_stream (f, &buf, false);
       (void) fclose (f);
     }
 
@@ -166,7 +166,7 @@ avta_read_command (const char *command, char **buffer)
 
   if (f)
     {
-      size = read_stream (f, &buf, AVT_TRUE);
+      size = read_stream (f, &buf, true);
       (void) pclose (f);
     }
 

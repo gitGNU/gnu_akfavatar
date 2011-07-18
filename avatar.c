@@ -269,28 +269,28 @@ static SDL_Cursor *mpointer;
 static wchar_t *avt_name;
 static Uint32 background_color;
 static Uint32 text_background_color;
-static avt_bool_t newline_mode;	/* when off, you need an extra CR */
-static avt_bool_t underlined, bold, inverse;	/* text underlined, bold? */
-static avt_bool_t auto_margin;	/* automatic new lines? */
+static bool newline_mode;	/* when off, you need an extra CR */
+static bool underlined, bold, inverse;	/* text underlined, bold? */
+static bool auto_margin;	/* automatic new lines? */
 static Uint32 screenflags;	/* flags for the screen */
 static int avt_mode;		/* whether fullscreen or window or ... */
 static SDL_Rect window;		/* if screen is in fact larger */
 static SDL_Rect windowmode_size;	/* size of the whole window (screen) */
-static avt_bool_t avt_visible;	/* avatar visible? */
-static avt_bool_t text_cursor_visible;	/* shall the text cursor be visible? */
-static avt_bool_t text_cursor_actually_visible;	/* is it actually visible? */
-static avt_bool_t reserve_single_keys;	/* reserve single keys? */
-static avt_bool_t markup;	/* markup-syntax activated? */
+static bool avt_visible;	/* avatar visible? */
+static bool text_cursor_visible;	/* shall the text cursor be visible? */
+static bool text_cursor_actually_visible;	/* is it actually visible? */
+static bool reserve_single_keys;	/* reserve single keys? */
+static bool markup;	/* markup-syntax activated? */
 static int scroll_mode = 1;
 static SDL_Rect textfield;
 static SDL_Rect viewport;	/* sub-window in textfield */
-static avt_bool_t avt_tab_stops[AVT_LINELENGTH];
+static bool avt_tab_stops[AVT_LINELENGTH];
 static char *avt_encoding = NULL;
 
 /* origin mode */
-/* Home: textfield (AVT_FALSE) or viewport (AVT_TRUE) */
-/* avt_initialize sets it to AVT_TRUE for backwards compatibility */
-static avt_bool_t origin_mode;
+/* Home: textfield (false) or viewport (true) */
+/* avt_initialize sets it to true for backwards compatibility */
+static bool origin_mode;
 static int textdir_rtl = AVT_LEFT_TO_RIGHT;
 
 /* beginning of line - depending on text direction */
@@ -302,7 +302,7 @@ static int text_delay = 0;	/* AVT_DEFAULT_TEXT_DELAY */
 static int flip_page_delay = AVT_DEFAULT_FLIP_PAGE_DELAY;
 
 /* holding updates back? */
-static avt_bool_t hold_updates;
+static bool hold_updates;
 
 /* color independent from the screen mode */
 
@@ -450,7 +450,7 @@ avt_get_color (int nr, int *red, int *green, int *blue)
  */
 static struct
 {
-  avt_bool_t initialized;
+  bool initialized;
   void *handle;			/* handle for dynamically loaded SDL_image */
   SDL_Surface *(*file) (const char *file);
   SDL_Surface *(*rw) (SDL_RWops * src, int freesrc);
@@ -822,7 +822,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
   unsigned int linepos, linenr, linecount, linecapacity;
   SDL_Surface *img;
   char c;
-  avt_bool_t end, error;
+  bool end, error;
 
   if (!src)
     return NULL;
@@ -830,7 +830,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
   img = NULL;
   xpm = NULL;
   line = NULL;
-  end = error = AVT_FALSE;
+  end = error = false;
 
   start = SDL_RWtell (src);
 
@@ -861,7 +861,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
   if (!xpm)
     {
       SDL_SetError ("out of memory");
-      error = end = AVT_TRUE;
+      error = end = true;
     }
 
   while (!end)
@@ -870,7 +870,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
       do
 	{
 	  if (SDL_RWread (src, &c, sizeof (c), 1) < 1)
-	    end = AVT_TRUE;
+	    end = true;
 	}
       while (!end && c != '"');
 
@@ -880,7 +880,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
       while (!end && c != '"')
 	{
 	  if (SDL_RWread (src, &c, sizeof (c), 1) < 1)
-	    error = end = AVT_TRUE;	/* shouldn't happen here */
+	    error = end = true;	/* shouldn't happen here */
 
 	  if (c != '"')
 	    line[linepos++] = c;
@@ -890,7 +890,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
 	      linecapacity += 100;
 	      line = (char *) SDL_realloc (line, linecapacity);
 	      if (!line)
-		error = end = AVT_TRUE;
+		error = end = true;
 	    }
 	}
 
@@ -906,7 +906,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
 	      linecount += 512;
 	      xpm = (char **) SDL_realloc (xpm, linecount * sizeof (*xpm));
 	      if (!xpm)
-		error = end = AVT_TRUE;
+		error = end = true;
 	    }
 	}
     }
@@ -1022,16 +1022,16 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc,
   unsigned int bytes, bmpos;
   char line[1024];
   SDL_Surface *img;
-  avt_bool_t end, error;
-  avt_bool_t X10;
+  bool end, error;
+  bool X10;
 
   if (!src)
     return NULL;
 
   img = NULL;
   bits = NULL;
-  X10 = AVT_FALSE;
-  end = error = AVT_FALSE;
+  X10 = false;
+  end = error = false;
   width = height = bytes = bmpos = 0;
 
   start = SDL_RWtell (src);
@@ -1058,16 +1058,16 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc,
     if (p)
       width = SDL_atoi (p + 7);
     else
-      error = end = AVT_TRUE;
+      error = end = true;
 
     p = SDL_strstr (line, "_height ");
     if (p)
       height = SDL_atoi (p + 8);
     else
-      error = end = AVT_TRUE;
+      error = end = true;
 
     if (SDL_strstr (line, " short ") != NULL)
-      X10 = AVT_TRUE;
+      X10 = true;
   }
 
   if (error)
@@ -1084,7 +1084,7 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc,
   if (!bits)
     {
       SDL_SetError ("out of memory");
-      error = end = AVT_TRUE;
+      error = end = true;
     }
 
   /* search start of bitmap part */
@@ -1097,7 +1097,7 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc,
       do
 	{
 	  if (SDL_RWread (src, &c, sizeof (c), 1) < 1)
-	    error = end = AVT_TRUE;
+	    error = end = true;
 	}
       while (c != '{' && !error);
 
@@ -1119,13 +1119,13 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc,
       while (!end && linepos < sizeof (line) && c != '\n')
 	{
 	  if (SDL_RWread (src, &c, sizeof (c), 1) < 1)
-	    error = end = AVT_TRUE;
+	    error = end = true;
 
 	  if (c != '\n' && c != '}')
 	    line[linepos++] = c;
 
 	  if (c == '}')
-	    end = AVT_TRUE;
+	    end = true;
 	}
       line[linepos] = '\0';
 
@@ -1135,15 +1135,15 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc,
 	  char *p;
 	  char *endptr;
 	  long value;
-	  avt_bool_t end_of_line;
+	  bool end_of_line;
 
 	  p = line;
-	  end_of_line = AVT_FALSE;
+	  end_of_line = false;
 	  while (!end_of_line && bmpos < bytes)
 	    {
 	      value = SDL_strtol (p, &endptr, 0);
 	      if (endptr == p)
-		end_of_line = AVT_TRUE;
+		end_of_line = true;
 	      else
 		{
 		  if (!X10)
@@ -1193,7 +1193,7 @@ load_image_initialize (void)
       load_image.file = IMG_Load;
       load_image.rw = IMG_Load_RW;
 
-      load_image.initialized = AVT_TRUE;
+      load_image.initialized = true;
     }
 }
 
@@ -1270,7 +1270,7 @@ load_image_initialize (void)
 #endif /* _SDL_loadso_h */
 #endif /* NO_SDL_IMAGE */
 
-      load_image.initialized = AVT_TRUE;
+      load_image.initialized = true;
     }
 }
 
@@ -1291,7 +1291,7 @@ load_image_done (void)
       load_image.handle = NULL;
       load_image.file = NULL;
       load_image.rw = NULL;
-      load_image.initialized = AVT_FALSE;	/* try again next time */
+      load_image.initialized = false;	/* try again next time */
     }
 }
 #endif /* _SDL_loadso_h */
@@ -1347,7 +1347,7 @@ avt_license (void)
     "<http://gnu.org/licenses/gpl.html>";
 }
 
-extern avt_bool_t
+extern bool
 avt_initialized (void)
 {
   return (screen != NULL);
@@ -1416,7 +1416,7 @@ avt_strwidth (const wchar_t * m)
 /* shows or clears the text cursor in the current position */
 /* note: this function is rather time consuming */
 static void
-avt_show_text_cursor (avt_bool_t on)
+avt_show_text_cursor (bool on)
 {
   SDL_Rect dst;
 
@@ -1450,7 +1450,7 @@ avt_show_text_cursor (avt_bool_t on)
 }
 
 extern void
-avt_activate_cursor (avt_bool_t on)
+avt_activate_cursor (bool on)
 {
   text_cursor_visible = AVT_MAKE_BOOL (on);
 
@@ -1482,7 +1482,7 @@ avt_clear_screen (void)
   /* undefine textfield / viewport */
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
   viewport = textfield;
-  avt_visible = AVT_FALSE;
+  avt_visible = false;
 }
 
 #define NAME_PADDING 3
@@ -1580,7 +1580,7 @@ avt_show_avatar (void)
       /* undefine textfield */
       textfield.x = textfield.y = textfield.w = textfield.h = -1;
       viewport = textfield;
-      avt_visible = AVT_TRUE;
+      avt_visible = true;
     }
 }
 
@@ -1768,7 +1768,7 @@ avt_draw_balloon (void)
   linestart =
     (textdir_rtl) ? viewport.x + viewport.w - FONTWIDTH : viewport.x;
 
-  avt_visible = AVT_TRUE;
+  avt_visible = true;
 
   /* cursor at top  */
   cursor.x = linestart;
@@ -1779,8 +1779,8 @@ avt_draw_balloon (void)
 
   if (text_cursor_visible)
     {
-      text_cursor_actually_visible = AVT_FALSE;
-      avt_show_text_cursor (AVT_TRUE);
+      text_cursor_actually_visible = false;
+      avt_show_text_cursor (true);
     }
 
   /* update everything */
@@ -1808,7 +1808,7 @@ avt_text_direction (int direction)
   if (screen && textfield.x >= 0)
     {
       if (text_cursor_visible)
-	avt_show_text_cursor (AVT_FALSE);
+	avt_show_text_cursor (false);
 
       if (origin_mode)
 	area = viewport;
@@ -1819,7 +1819,7 @@ avt_text_direction (int direction)
       cursor.x = linestart;
 
       if (text_cursor_visible)
-	avt_show_text_cursor (AVT_TRUE);
+	avt_show_text_cursor (true);
     }
 }
 
@@ -1836,7 +1836,7 @@ avt_set_balloon_width (int width)
       /* if balloon is visible, redraw it */
       if (textfield.x >= 0)
 	{
-	  avt_visible = AVT_FALSE;	/* force to redraw everything */
+	  avt_visible = false;	/* force to redraw everything */
 	  avt_draw_balloon ();
 	}
     }
@@ -1855,7 +1855,7 @@ avt_set_balloon_height (int height)
       /* if balloon is visible, redraw it */
       if (textfield.x >= 0)
 	{
-	  avt_visible = AVT_FALSE;	/* force to redraw everything */
+	  avt_visible = false;	/* force to redraw everything */
 	  avt_draw_balloon ();
 	}
     }
@@ -1879,7 +1879,7 @@ avt_set_balloon_size (int height, int width)
       /* if balloon is visible, redraw it */
       if (textfield.x >= 0)
 	{
-	  avt_visible = AVT_FALSE;	/* force to redraw everything */
+	  avt_visible = false;	/* force to redraw everything */
 	  avt_draw_balloon ();
 	}
     }
@@ -2113,11 +2113,11 @@ static int
 avt_pause (void)
 {
   SDL_Event event;
-  avt_bool_t pause;
-  avt_bool_t audio_initialized;
+  bool pause;
+  bool audio_initialized;
 
   audio_initialized = (SDL_WasInit (SDL_INIT_AUDIO) != 0);
-  pause = AVT_TRUE;
+  pause = true;
 
   if (audio_initialized)
     SDL_PauseAudio (pause);
@@ -2127,7 +2127,7 @@ avt_pause (void)
       if (SDL_WaitEvent (&event))
 	{
 	  if (event.type == SDL_KEYDOWN)
-	    pause = AVT_FALSE;
+	    pause = false;
 	  avt_analyze_event (&event);
 	}
     }
@@ -2215,11 +2215,11 @@ avt_where_y (void)
     return -1;
 }
 
-extern avt_bool_t
+extern bool
 avt_home_position (void)
 {
   if (!screen || textfield.x < 0)
-    return AVT_TRUE;		/* about to be set to home position */
+    return true;		/* about to be set to home position */
   else
     return (cursor.y == viewport.y && cursor.x == linestart);
 }
@@ -2255,7 +2255,7 @@ avt_move_x (int x)
 	x = 1;
 
       if (text_cursor_visible)
-	avt_show_text_cursor (AVT_FALSE);
+	avt_show_text_cursor (false);
 
       if (origin_mode)
 	area = viewport;
@@ -2269,7 +2269,7 @@ avt_move_x (int x)
 	cursor.x = area.x + area.w - FONTWIDTH;
 
       if (text_cursor_visible)
-	avt_show_text_cursor (AVT_TRUE);
+	avt_show_text_cursor (true);
     }
 }
 
@@ -2284,7 +2284,7 @@ avt_move_y (int y)
 	y = 1;
 
       if (text_cursor_visible)
-	avt_show_text_cursor (AVT_FALSE);
+	avt_show_text_cursor (false);
 
       if (origin_mode)
 	area = viewport;
@@ -2298,7 +2298,7 @@ avt_move_y (int y)
 	cursor.y = area.y + area.h - LINEHEIGHT;
 
       if (text_cursor_visible)
-	avt_show_text_cursor (AVT_TRUE);
+	avt_show_text_cursor (true);
     }
 }
 
@@ -2316,7 +2316,7 @@ avt_move_xy (int x, int y)
 	y = 1;
 
       if (text_cursor_visible)
-	avt_show_text_cursor (AVT_FALSE);
+	avt_show_text_cursor (false);
 
       if (origin_mode)
 	area = viewport;
@@ -2334,7 +2334,7 @@ avt_move_xy (int x, int y)
 	cursor.y = area.y + area.h - LINEHEIGHT;
 
       if (text_cursor_visible)
-	avt_show_text_cursor (AVT_TRUE);
+	avt_show_text_cursor (true);
     }
 }
 
@@ -2360,7 +2360,7 @@ avt_insert_spaces (int num)
     return;
 
   if (text_cursor_visible)
-    avt_show_text_cursor (AVT_FALSE);
+    avt_show_text_cursor (false);
 
   /* get the rest of the viewport */
   rest.x = cursor.x;
@@ -2379,7 +2379,7 @@ avt_insert_spaces (int num)
   SDL_FillRect (screen, &clear, text_background_color);
 
   if (text_cursor_visible)
-    avt_show_text_cursor (AVT_TRUE);
+    avt_show_text_cursor (true);
 
   /* update line */
   if (!hold_updates)
@@ -2396,7 +2396,7 @@ avt_delete_characters (int num)
     return;
 
   if (text_cursor_visible)
-    avt_show_text_cursor (AVT_FALSE);
+    avt_show_text_cursor (false);
 
   /* get the rest of the viewport */
   rest.x = cursor.x + (num * FONTWIDTH);
@@ -2415,7 +2415,7 @@ avt_delete_characters (int num)
   SDL_FillRect (screen, &clear, text_background_color);
 
   if (text_cursor_visible)
-    avt_show_text_cursor (AVT_TRUE);
+    avt_show_text_cursor (true);
 
   /* update line */
   if (!hold_updates)
@@ -2432,7 +2432,7 @@ avt_erase_characters (int num)
     return;
 
   if (text_cursor_visible)
-    avt_show_text_cursor (AVT_FALSE);
+    avt_show_text_cursor (false);
 
   clear.x = (textdir_rtl) ? cursor.x - (num * FONTWIDTH) : cursor.x;
   clear.y = cursor.y;
@@ -2441,7 +2441,7 @@ avt_erase_characters (int num)
   SDL_FillRect (screen, &clear, text_background_color);
 
   if (text_cursor_visible)
-    avt_show_text_cursor (AVT_TRUE);
+    avt_show_text_cursor (true);
 
   /* update area */
   AVT_UPDATE_TRECT (clear);
@@ -2464,7 +2464,7 @@ avt_delete_lines (int line, int num)
     return;
 
   if (text_cursor_visible)
-    avt_show_text_cursor (AVT_FALSE);
+    avt_show_text_cursor (false);
 
   /* get the rest of the viewport */
   rest.x = viewport.x;
@@ -2483,7 +2483,7 @@ avt_delete_lines (int line, int num)
   SDL_FillRect (screen, &clear, text_background_color);
 
   if (text_cursor_visible)
-    avt_show_text_cursor (AVT_TRUE);
+    avt_show_text_cursor (true);
 
   AVT_UPDATE_TRECT (viewport);
 }
@@ -2505,7 +2505,7 @@ avt_insert_lines (int line, int num)
     return;
 
   if (text_cursor_visible)
-    avt_show_text_cursor (AVT_FALSE);
+    avt_show_text_cursor (false);
 
   /* get the rest of the viewport */
   rest.x = viewport.x;
@@ -2524,7 +2524,7 @@ avt_insert_lines (int line, int num)
   SDL_FillRect (screen, &clear, text_background_color);
 
   if (text_cursor_visible)
-    avt_show_text_cursor (AVT_TRUE);
+    avt_show_text_cursor (true);
 
   AVT_UPDATE_TRECT (viewport);
 }
@@ -2541,7 +2541,7 @@ avt_viewport (int x, int y, int width, int height)
     avt_draw_balloon ();
 
   if (text_cursor_visible)
-    avt_show_text_cursor (AVT_FALSE);
+    avt_show_text_cursor (false);
 
   viewport.x = textfield.x + ((x - 1) * FONTWIDTH);
   viewport.y = textfield.y + ((y - 1) * LINEHEIGHT);
@@ -2555,7 +2555,7 @@ avt_viewport (int x, int y, int width, int height)
   cursor.y = viewport.y;
 
   if (text_cursor_visible)
-    avt_show_text_cursor (AVT_TRUE);
+    avt_show_text_cursor (true);
 
   if (origin_mode)
     SDL_SetClipRect (screen, &viewport);
@@ -2564,39 +2564,39 @@ avt_viewport (int x, int y, int width, int height)
 }
 
 extern void
-avt_newline_mode (avt_bool_t mode)
+avt_newline_mode (bool mode)
 {
   newline_mode = mode;
 }
 
 
-extern avt_bool_t
+extern bool
 avt_get_newline_mode (void)
 {
   return newline_mode;
 }
 
 extern void
-avt_set_auto_margin (avt_bool_t mode)
+avt_set_auto_margin (bool mode)
 {
   auto_margin = mode;
 }
 
-extern avt_bool_t
+extern bool
 avt_get_auto_margin (void)
 {
   return auto_margin;
 }
 
 extern void
-avt_set_origin_mode (avt_bool_t mode)
+avt_set_origin_mode (bool mode)
 {
   SDL_Rect area;
 
   origin_mode = AVT_MAKE_BOOL (mode);
 
   if (text_cursor_visible && textfield.x >= 0)
-    avt_show_text_cursor (AVT_FALSE);
+    avt_show_text_cursor (false);
 
   if (origin_mode)
     area = viewport;
@@ -2614,13 +2614,13 @@ avt_set_origin_mode (avt_bool_t mode)
   saved_position = cursor;
 
   if (text_cursor_visible && textfield.x >= 0)
-    avt_show_text_cursor (AVT_TRUE);
+    avt_show_text_cursor (true);
 
   if (textfield.x >= 0)
     SDL_SetClipRect (screen, &area);
 }
 
-extern avt_bool_t
+extern bool
 avt_get_origin_mode (void)
 {
   return origin_mode;
@@ -2649,8 +2649,8 @@ avt_clear (void)
 
   if (text_cursor_visible)
     {
-      text_cursor_actually_visible = AVT_FALSE;
-      avt_show_text_cursor (AVT_TRUE);
+      text_cursor_actually_visible = false;
+      avt_show_text_cursor (true);
     }
 
   AVT_UPDATE_TRECT (viewport);
@@ -2678,8 +2678,8 @@ avt_clear_up (void)
 
   if (text_cursor_visible)
     {
-      text_cursor_actually_visible = AVT_FALSE;
-      avt_show_text_cursor (AVT_TRUE);
+      text_cursor_actually_visible = false;
+      avt_show_text_cursor (true);
     }
 
   AVT_UPDATE_TRECT (dst);
@@ -2699,7 +2699,7 @@ avt_clear_down (void)
     avt_draw_balloon ();
 
   if (text_cursor_visible)
-    avt_show_text_cursor (AVT_FALSE);
+    avt_show_text_cursor (false);
 
   dst.x = viewport.x;
   dst.w = viewport.w;
@@ -2710,8 +2710,8 @@ avt_clear_down (void)
 
   if (text_cursor_visible)
     {
-      text_cursor_actually_visible = AVT_FALSE;
-      avt_show_text_cursor (AVT_TRUE);
+      text_cursor_actually_visible = false;
+      avt_show_text_cursor (true);
     }
 
   AVT_UPDATE_TRECT (dst);
@@ -2749,8 +2749,8 @@ avt_clear_eol (void)
 
   if (text_cursor_visible)
     {
-      text_cursor_actually_visible = AVT_FALSE;
-      avt_show_text_cursor (AVT_TRUE);
+      text_cursor_actually_visible = false;
+      avt_show_text_cursor (true);
     }
 
   AVT_UPDATE_TRECT (dst);
@@ -2789,8 +2789,8 @@ avt_clear_bol (void)
 
   if (text_cursor_visible)
     {
-      text_cursor_actually_visible = AVT_FALSE;
-      avt_show_text_cursor (AVT_TRUE);
+      text_cursor_actually_visible = false;
+      avt_show_text_cursor (true);
     }
 
   AVT_UPDATE_TRECT (dst);
@@ -2818,8 +2818,8 @@ avt_clear_line (void)
 
   if (text_cursor_visible)
     {
-      text_cursor_actually_visible = AVT_FALSE;
-      avt_show_text_cursor (AVT_TRUE);
+      text_cursor_actually_visible = false;
+      avt_show_text_cursor (true);
     }
 
   AVT_UPDATE_TRECT (dst);
@@ -2876,12 +2876,12 @@ static void
 avt_carriage_return (void)
 {
   if (text_cursor_visible)
-    avt_show_text_cursor (AVT_FALSE);
+    avt_show_text_cursor (false);
 
   cursor.x = linestart;
 
   if (text_cursor_visible)
-    avt_show_text_cursor (AVT_TRUE);
+    avt_show_text_cursor (true);
 }
 
 extern int
@@ -2892,7 +2892,7 @@ avt_new_line (void)
     return _avt_STATUS;
 
   if (text_cursor_visible)
-    avt_show_text_cursor (AVT_FALSE);
+    avt_show_text_cursor (false);
 
   if (newline_mode)
     cursor.x = linestart;
@@ -2906,7 +2906,7 @@ avt_new_line (void)
     cursor.y += LINEHEIGHT;
 
   if (text_cursor_visible)
-    avt_show_text_cursor (AVT_TRUE);
+    avt_show_text_cursor (true);
 
   return _avt_STATUS;
 }
@@ -2993,10 +2993,10 @@ avt_get_font_size (int *width, int *height)
   *height = FONTHEIGHT;
 }
 
-extern avt_bool_t
+extern bool
 avt_is_printable (avt_char ch)
 {
-  return (avt_bool_t) (get_font_char ((int) ch) != NULL);
+  return (bool) (get_font_char ((int) ch) != NULL);
 }
 
 /* make current char visible */
@@ -3006,7 +3006,7 @@ avt_showchar (void)
   if (!hold_updates)
     {
       SDL_UpdateRect (screen, cursor.x, cursor.y, FONTWIDTH, FONTHEIGHT);
-      text_cursor_actually_visible = AVT_FALSE;
+      text_cursor_actually_visible = false;
     }
 }
 
@@ -3021,7 +3021,7 @@ avt_forward (void)
   cursor.x = (textdir_rtl) ? cursor.x - FONTWIDTH : cursor.x + FONTWIDTH;
 
   if (text_cursor_visible)
-    avt_show_text_cursor (AVT_TRUE);
+    avt_show_text_cursor (true);
 
   return _avt_STATUS;
 }
@@ -3046,7 +3046,7 @@ check_auto_margin (void)
 	}
 
       if (text_cursor_visible)
-	avt_show_text_cursor (AVT_TRUE);
+	avt_show_text_cursor (true);
     }
 }
 
@@ -3057,19 +3057,19 @@ avt_reset_tab_stops (void)
 
   for (i = 0; i < AVT_LINELENGTH; i++)
     if (i % 8 == 0)
-      avt_tab_stops[i] = AVT_TRUE;
+      avt_tab_stops[i] = true;
     else
-      avt_tab_stops[i] = AVT_FALSE;
+      avt_tab_stops[i] = false;
 }
 
 extern void
 avt_clear_tab_stops (void)
 {
-  SDL_memset (&avt_tab_stops, AVT_FALSE, sizeof (avt_tab_stops));
+  SDL_memset (&avt_tab_stops, false, sizeof (avt_tab_stops));
 }
 
 extern void
-avt_set_tab (int x, avt_bool_t onoff)
+avt_set_tab (int x, bool onoff)
 {
   avt_tab_stops[x - 1] = AVT_MAKE_BOOL (onoff);
 }
@@ -3156,14 +3156,14 @@ avt_backspace (void)
       if (cursor.x != linestart)
 	{
 	  if (text_cursor_visible)
-	    avt_show_text_cursor (AVT_FALSE);
+	    avt_show_text_cursor (false);
 
 	  cursor.x =
 	    (textdir_rtl) ? cursor.x + FONTWIDTH : cursor.x - FONTWIDTH;
 	}
 
       if (text_cursor_visible)
-	avt_show_text_cursor (AVT_TRUE);
+	avt_show_text_cursor (true);
     }
 }
 
@@ -3292,17 +3292,17 @@ avt_overstrike (const wchar_t * txt)
     {
       if (*txt == L'_')
 	{
-	  underlined = AVT_TRUE;
+	  underlined = true;
 	  if (avt_put_char ((avt_char) * (txt + 2)))
 	    r = -1;
-	  underlined = AVT_FALSE;
+	  underlined = false;
 	}
       else if (*txt == *(txt + 2))
 	{
-	  bold = AVT_TRUE;
+	  bold = true;
 	  if (avt_put_char ((avt_char) * txt))
 	    r = -1;
-	  bold = AVT_FALSE;
+	  bold = false;
 	}
     }
 
@@ -3935,7 +3935,7 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
 
 extern int
 avt_choice (int *result, int start_line, int items, int key,
-	    avt_bool_t back, avt_bool_t forward)
+	    bool back, bool forward)
 {
   SDL_Surface *plain_menu, *bar;
   SDL_Event event;
@@ -4126,7 +4126,7 @@ avt_choice (int *result, int start_line, int items, int key,
 }
 
 extern void
-avt_lock_updates (avt_bool_t lock)
+avt_lock_updates (bool lock)
 {
   hold_updates = AVT_MAKE_BOOL (lock);
 
@@ -4189,7 +4189,7 @@ avt_pager_screen (const wchar_t * txt, int pos, int len)
 {
   int line_nr;
 
-  hold_updates = AVT_TRUE;
+  hold_updates = true;
   SDL_FillRect (screen, &textfield, text_background_color);
 
   for (line_nr = 0; line_nr < balloonheight; line_nr++)
@@ -4199,7 +4199,7 @@ avt_pager_screen (const wchar_t * txt, int pos, int len)
       pos = avt_pager_line (txt, pos, len);
     }
 
-  hold_updates = AVT_FALSE;
+  hold_updates = false;
   AVT_UPDATE_TRECT (textfield);
 
   return pos;
@@ -4232,8 +4232,8 @@ extern int
 avt_pager (const wchar_t * txt, int len, int startline)
 {
   int pos;
-  avt_bool_t old_auto_margin, old_reserve_single_keys, old_tc;
-  avt_bool_t quit;
+  bool old_auto_margin, old_reserve_single_keys, old_tc;
+  bool quit;
   avt_keyhandler old_keyhandler;
   avt_mousehandler old_mousehandler;
   void (*old_alert_func) (void);
@@ -4304,11 +4304,11 @@ avt_pager (const wchar_t * txt, int len, int startline)
   SDL_SetClipRect (screen, &viewport);
 
   old_tc = text_cursor_visible;
-  text_cursor_visible = AVT_FALSE;
+  text_cursor_visible = false;
   old_auto_margin = auto_margin;
-  auto_margin = AVT_FALSE;
+  auto_margin = false;
   old_reserve_single_keys = reserve_single_keys;
-  reserve_single_keys = AVT_FALSE;
+  reserve_single_keys = false;
   old_keyhandler = avt_ext_keyhandler;
   avt_ext_keyhandler = NULL;
   old_mousehandler = avt_ext_mousehandler;
@@ -4331,7 +4331,7 @@ avt_pager (const wchar_t * txt, int len, int startline)
       pos = avt_pager_screen (txt, pos, len);
     }
 
-  quit = AVT_FALSE;
+  quit = false;
 
   while (!quit && _avt_STATUS == AVT_NORMAL)
     {
@@ -4347,7 +4347,7 @@ avt_pager (const wchar_t * txt, int len, int startline)
 	    event.key.keysym.sym = SDLK_UP;
 	  else if (event.button.button == SDL_BUTTON_MIDDLE)	/* press on wheel */
 	    {
-	      quit = AVT_TRUE;
+	      quit = true;
 	      break;
 	    }
 	  else if (event.button.button <= 3
@@ -4356,7 +4356,7 @@ avt_pager (const wchar_t * txt, int len, int startline)
 		   && event.button.x >= btn_rect.x
 		   && event.button.x <= btn_rect.x + btn_rect.w)
 	    {
-	      quit = AVT_TRUE;
+	      quit = true;
 	      break;
 	    }
 	  else
@@ -4371,12 +4371,12 @@ avt_pager (const wchar_t * txt, int len, int startline)
 	      /* if it's not the end */
 	      if (pos < len)
 		{
-		  hold_updates = AVT_TRUE;
+		  hold_updates = true;
 		  avt_delete_lines (1, 1);
 		  cursor.x = linestart;
 		  cursor.y = (balloonheight - 1) * LINEHEIGHT + textfield.y;
 		  pos = avt_pager_line (txt, pos, len);
-		  hold_updates = AVT_FALSE;
+		  hold_updates = false;
 		  AVT_UPDATE_TRECT (textfield);
 		}
 	    }
@@ -4407,12 +4407,12 @@ avt_pager (const wchar_t * txt, int len, int startline)
 		pos = avt_pager_screen (txt, 0, len);
 	      else
 		{
-		  hold_updates = AVT_TRUE;
+		  hold_updates = true;
 		  avt_insert_lines (1, 1);
 		  cursor.x = linestart;
 		  cursor.y = textfield.y;
 		  avt_pager_line (txt, start_pos, len);
-		  hold_updates = AVT_FALSE;
+		  hold_updates = false;
 		  AVT_UPDATE_TRECT (textfield);
 		  pos = avt_pager_lines_back (txt, pos, 2);
 		}
@@ -4434,7 +4434,7 @@ avt_pager (const wchar_t * txt, int len, int startline)
 	      pos = avt_pager_screen (txt, pos, len);
 	    }
 	  else if (event.key.keysym.sym == SDLK_q)
-	    quit = AVT_TRUE;	/* Q with any combination-key quits */
+	    quit = true;	/* Q with any combination-key quits */
 	  break;
 	}
     }
@@ -4498,7 +4498,7 @@ avt_ask (wchar_t * s, int size)
   avt_char ch;
   size_t len, maxlen, pos;
   int old_textdir;
-  avt_bool_t insert_mode;
+  bool insert_mode;
 
   if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -4532,14 +4532,14 @@ avt_ask (wchar_t * s, int size)
   avt_erase_characters (maxlen);
 
   len = pos = 0;
-  insert_mode = AVT_TRUE;
+  insert_mode = true;
   SDL_memset (s, 0, size);
   ch = 0;
 
   do
     {
       /* show cursor */
-      avt_show_text_cursor (AVT_TRUE);
+      avt_show_text_cursor (true);
 
       if (avt_key (&ch) != AVT_NORMAL)
 	break;
@@ -4550,13 +4550,13 @@ avt_ask (wchar_t * s, int size)
 	  break;
 
 	case AVT_KEY_HOME:
-	  avt_show_text_cursor (AVT_FALSE);
+	  avt_show_text_cursor (false);
 	  cursor.x -= pos * FONTWIDTH;
 	  pos = 0;
 	  break;
 
 	case AVT_KEY_END:
-	  avt_show_text_cursor (AVT_FALSE);
+	  avt_show_text_cursor (false);
 	  if (len < maxlen)
 	    {
 	      cursor.x += (len - pos) * FONTWIDTH;
@@ -4573,7 +4573,7 @@ avt_ask (wchar_t * s, int size)
 	  if (pos > 0)
 	    {
 	      pos--;
-	      avt_show_text_cursor (AVT_FALSE);
+	      avt_show_text_cursor (false);
 	      avt_backspace ();
 	      avt_delete_characters (1);
 	      SDL_memmove (&s[pos], &s[pos + 1],
@@ -4587,7 +4587,7 @@ avt_ask (wchar_t * s, int size)
 	case AVT_KEY_DELETE:
 	  if (pos < len)
 	    {
-	      avt_show_text_cursor (AVT_FALSE);
+	      avt_show_text_cursor (false);
 	      avt_delete_characters (1);
 	      SDL_memmove (&s[pos], &s[pos + 1],
 			   (len - pos - 1) * sizeof (wchar_t));
@@ -4602,7 +4602,7 @@ avt_ask (wchar_t * s, int size)
 	    {
 	      pos--;
 	      /* delete cursor */
-	      avt_show_text_cursor (AVT_FALSE);
+	      avt_show_text_cursor (false);
 	      cursor.x -= FONTWIDTH;
 	    }
 	  else
@@ -4613,7 +4613,7 @@ avt_ask (wchar_t * s, int size)
 	  if (pos < len && pos < maxlen - 1)
 	    {
 	      pos++;
-	      avt_show_text_cursor (AVT_FALSE);
+	      avt_show_text_cursor (false);
 	      cursor.x += FONTWIDTH;
 	    }
 	  else
@@ -4628,7 +4628,7 @@ avt_ask (wchar_t * s, int size)
 	  if (pos < maxlen && ch >= 32 && get_font_char (ch) != NULL)
 	    {
 	      /* delete cursor */
-	      avt_show_text_cursor (AVT_FALSE);
+	      avt_show_text_cursor (false);
 	      if (insert_mode && pos < len)
 		{
 		  avt_insert_spaces (1);
@@ -4664,7 +4664,7 @@ avt_ask (wchar_t * s, int size)
   s[len] = L'\0';
 
   /* delete cursor */
-  avt_show_text_cursor (AVT_FALSE);
+  avt_show_text_cursor (false);
 
   if (!newline_mode)
     avt_carriage_return ();
@@ -4868,7 +4868,7 @@ avt_wait_button (void)
   SDL_Event event;
   SDL_Surface *button;
   SDL_Rect btn_rect;
-  avt_bool_t nokey;
+  bool nokey;
 
   if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -4893,26 +4893,26 @@ avt_wait_button (void)
   /* show mouse pointer */
   SDL_ShowCursor (SDL_ENABLE);
 
-  nokey = AVT_TRUE;
+  nokey = true;
   while (nokey)
     {
       SDL_WaitEvent (&event);
       switch (event.type)
 	{
 	case SDL_QUIT:
-	  nokey = AVT_FALSE;
+	  nokey = false;
 	  _avt_STATUS = AVT_QUIT;
 	  break;
 
 	case SDL_KEYDOWN:
 	  if (SDLK_F11 != event.key.keysym.sym || reserve_single_keys)
-	    nokey = AVT_FALSE;
+	    nokey = false;
 	  break;
 
 	case SDL_MOUSEBUTTONDOWN:
 	  /* ignore the wheel */
 	  if (event.button.button <= 3)
-	    nokey = AVT_FALSE;
+	    nokey = false;
 	  break;
 	}
 
@@ -4951,7 +4951,7 @@ avt_navigate (const char *buttons)
   int result;
 
   result = AVT_ERROR;		/* no result */
-  audio_end_button = AVT_FALSE;	/* none */
+  audio_end_button = false;	/* none */
 
   if (_avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -5190,7 +5190,7 @@ avt_navigate (const char *buttons)
   return result;
 }
 
-extern avt_bool_t
+extern bool
 avt_decide (void)
 {
   SDL_Event event;
@@ -5237,24 +5237,24 @@ avt_decide (void)
       switch (event.type)
 	{
 	case SDL_QUIT:
-	  result = AVT_FALSE;
+	  result = false;
 	  _avt_STATUS = AVT_QUIT;
 	  break;
 
 	case SDL_KEYDOWN:
 	  if (event.key.keysym.sym == SDLK_ESCAPE)
 	    {
-	      result = AVT_FALSE;
+	      result = false;
 	      _avt_STATUS = AVT_QUIT;
 	    }
 	  else if (event.key.keysym.unicode == L'-'
 		   || event.key.keysym.unicode == L'0'
 		   || event.key.keysym.sym == SDLK_BACKSPACE)
-	    result = AVT_FALSE;
+	    result = false;
 	  else if (event.key.keysym.unicode == L'+'
 		   || event.key.keysym.unicode == L'1'
 		   || event.key.keysym.unicode == L'\r')
-	    result = AVT_TRUE;
+	    result = true;
 	  break;
 
 	case SDL_MOUSEBUTTONDOWN:
@@ -5266,11 +5266,11 @@ avt_decide (void)
 	    {
 	      if (event.button.x >= yes_rect.x
 		  && event.button.x <= yes_rect.x + yes_rect.w)
-		result = AVT_TRUE;
+		result = true;
 	      else
 		if (event.button.x >= no_rect.x
 		    && event.button.x <= no_rect.x + no_rect.w)
-		result = AVT_FALSE;
+		result = false;
 	    }
 	  break;
 	}
@@ -5311,7 +5311,7 @@ avt_show_image (avt_image_t * image)
   avt_free_screen ();
 
   /* set informational variables */
-  avt_visible = AVT_FALSE;
+  avt_visible = false;
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
   viewport = textfield;
 
@@ -5942,7 +5942,7 @@ avt_set_background_color (int red, int green, int blue)
 
       if (textfield.x >= 0)
 	{
-	  avt_visible = AVT_FALSE;	/* force to redraw everything */
+	  avt_visible = false;	/* force to redraw everything */
 	  avt_draw_balloon ();
 	}
       else if (avt_visible)
@@ -5974,7 +5974,7 @@ avt_get_background_color (int *red, int *green, int *blue)
 }
 
 extern void
-avt_reserve_single_keys (avt_bool_t onoff)
+avt_reserve_single_keys (bool onoff)
 {
   reserve_single_keys = AVT_MAKE_BOOL (onoff);
 }
@@ -5998,7 +5998,7 @@ avt_register_mousehandler (avt_mousehandler handler)
 }
 
 extern void
-avt_set_mouse_visible (avt_bool_t visible)
+avt_set_mouse_visible (bool visible)
 {
   if (visible)
     SDL_ShowCursor (SDL_ENABLE);
@@ -6055,36 +6055,36 @@ avt_set_text_background_color_name (const char *name)
 }
 
 extern void
-avt_inverse (avt_bool_t onoff)
+avt_inverse (bool onoff)
 {
   inverse = AVT_MAKE_BOOL (onoff);
 }
 
-extern avt_bool_t
+extern bool
 avt_get_inverse (void)
 {
   return inverse;
 }
 
 extern void
-avt_bold (avt_bool_t onoff)
+avt_bold (bool onoff)
 {
   bold = AVT_MAKE_BOOL (onoff);
 }
 
-extern avt_bool_t
+extern bool
 avt_get_bold (void)
 {
   return bold;
 }
 
 extern void
-avt_underlined (avt_bool_t onoff)
+avt_underlined (bool onoff)
 {
   underlined = AVT_MAKE_BOOL (onoff);
 }
 
-extern avt_bool_t
+extern bool
 avt_get_underlined (void)
 {
   return underlined;
@@ -6093,7 +6093,7 @@ avt_get_underlined (void)
 extern void
 avt_normal_text (void)
 {
-  underlined = bold = inverse = markup = AVT_FALSE;
+  underlined = bold = inverse = markup = false;
 
   /* set color table for character canvas */
   if (avt_character)
@@ -6117,10 +6117,10 @@ avt_normal_text (void)
 }
 
 extern void
-avt_markup (avt_bool_t onoff)
+avt_markup (bool onoff)
 {
   markup = AVT_MAKE_BOOL (onoff);
-  underlined = bold = AVT_FALSE;
+  underlined = bold = false;
 }
 
 extern void
@@ -6130,7 +6130,7 @@ avt_set_text_delay (int delay)
 
   /* eventually switch off updates lock */
   if (text_delay != 0 && hold_updates)
-    avt_lock_updates (AVT_FALSE);
+    avt_lock_updates (false);
 }
 
 extern void
@@ -6217,7 +6217,7 @@ avt_credits_up (SDL_Surface * last_line)
 }
 
 extern int
-avt_credits (const wchar_t * text, avt_bool_t centered)
+avt_credits (const wchar_t * text, bool centered)
 {
   wchar_t line[80];
   SDL_Surface *last_line;
@@ -6242,8 +6242,8 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
 
   /* needed to handle resizing correctly */
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
-  avt_visible = AVT_FALSE;
-  hold_updates = AVT_FALSE;
+  avt_visible = false;
+  hold_updates = false;
 
   /* the background-color is used when the window is resized */
   /* this implicitly also clears the screen */
@@ -6336,7 +6336,7 @@ avt_credits (const wchar_t * text, avt_bool_t centered)
 }
 
 extern int
-avt_credits_mb (const char *txt, avt_bool_t centered)
+avt_credits_mb (const char *txt, bool centered)
 {
   wchar_t *wctext;
 
@@ -6397,7 +6397,7 @@ avt_quit (void)
       avt_alert_func = NULL;
       SDL_Quit ();
       screen = NULL;		/* it was freed by SDL_Quit */
-      avt_visible = AVT_FALSE;
+      avt_visible = false;
       textfield.x = textfield.y = textfield.w = textfield.h = -1;
       viewport = textfield;
     }
@@ -6521,12 +6521,12 @@ avt_initialize (const char *title, const char *shortname,
 
   avt_mode = mode;
   _avt_STATUS = AVT_NORMAL;
-  reserve_single_keys = AVT_FALSE;
-  newline_mode = AVT_TRUE;
-  auto_margin = AVT_TRUE;
-  origin_mode = AVT_TRUE;	/* for backwards compatibility */
-  avt_visible = AVT_FALSE;
-  markup = AVT_FALSE;
+  reserve_single_keys = false;
+  newline_mode = true;
+  auto_margin = true;
+  origin_mode = true;	/* for backwards compatibility */
+  avt_visible = false;
+  markup = false;
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
   viewport = textfield;
 

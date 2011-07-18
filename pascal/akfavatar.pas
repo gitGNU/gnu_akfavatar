@@ -459,9 +459,6 @@ implementation
   {$EndIf}
 {$EndIf}
 
-{ no real booleans used in the librarys interface }
-type avt_bool_t = Byte;
-
 type PAvatarImage = pointer;
 
 type 
@@ -498,7 +495,7 @@ var GenSound: Pointer; { generated sound }
 
 { bindings: }
 
-procedure avt_reserve_single_keys (onoff: avt_bool_t); 
+procedure avt_reserve_single_keys (onoff: Boolean); 
   libakfavatar 'avt_reserve_single_keys';
 
 function avt_default: PAvatarImage; libakfavatar 'avt_default';
@@ -601,15 +598,15 @@ procedure avt_set_text_background_color (red, green, blue: CInteger);
 procedure avt_set_text_background_ballooncolor;
   libakfavatar 'avt_set_text_background_ballooncolor';
 
-procedure avt_bold (onoff: avt_bool_t); libakfavatar 'avt_bold';
+procedure avt_bold (onoff: Boolean); libakfavatar 'avt_bold';
 
-procedure avt_underlined (onoff: avt_bool_t); libakfavatar 'avt_underlined';
+procedure avt_underlined (onoff: Boolean); libakfavatar 'avt_underlined';
 
-procedure avt_markup (onoff: avt_bool_t); libakfavatar 'avt_markup';
+procedure avt_markup (onoff: Boolean); libakfavatar 'avt_markup';
 
 procedure avt_normal_text; libakfavatar 'avt_normal_text';
 
-procedure avt_activate_cursor (onoff: avt_bool_t); 
+procedure avt_activate_cursor (onoff: Boolean); 
   libakfavatar 'avt_activate_cursor';
 
 function avt_initialize(title, icon: CString;
@@ -645,14 +642,14 @@ function avt_add_raw_audio_data (Sound: pointer;
 procedure avt_free_audio(snd: pointer); 
   libakfavatar 'avt_free_audio';
 
-function avt_play_audio(snd: pointer; loop: avt_bool_t): CInteger; 
+function avt_play_audio(snd: pointer; loop: Boolean): CInteger; 
   libakfavatar 'avt_play_audio';
 
 function avt_wait_audio_end: CInteger; libakfavatar 'avt_wait_audio_end';
 
 procedure avt_stop_audio; libakfavatar 'avt_stop_audio';
 
-procedure avt_pause_audio (pause: avt_bool_t); libakfavatar 'avt_pause_audio';
+procedure avt_pause_audio (pause: Boolean); libakfavatar 'avt_pause_audio';
 
 function avt_get_error: CString; libakfavatar 'avt_get_error';
 
@@ -673,7 +670,7 @@ function avt_where_y: CInteger; libakfavatar 'avt_where_y';
 procedure avt_move_xy(x, y: CInteger); libakfavatar 'avt_move_xy';
 function avt_get_max_x: CInteger; libakfavatar 'avt_get_max_x'; 
 function avt_get_max_y: CInteger; libakfavatar 'avt_get_max_y';
-function avt_home_position: avt_bool_t; libakfavatar 'avt_home_position';
+function avt_home_position: Boolean; libakfavatar 'avt_home_position';
 
 procedure avt_delete_lines(line, num: CInteger);
   libakfavatar 'avt_delete_lines';
@@ -696,7 +693,7 @@ function avt_get_scroll_mode: CInteger;
 
 function avt_choice(var result: CInteger; 
                     start_line, items, key: CInteger;
-                    back, fwrd: avt_bool_t): CInteger; 
+                    back, fwrd: Boolean): CInteger; 
   libakfavatar 'avt_choice';
 
 procedure avt_pager_mb (txt: CString; len, startline: CInteger); 
@@ -705,9 +702,9 @@ procedure avt_pager_mb (txt: CString; len, startline: CInteger);
 function avt_navigate(buttons: CString): CInteger;
   libakfavatar 'avt_navigate';
 
-function avt_decide: avt_bool_t; libakfavatar 'avt_decide';
+function avt_decide: Boolean; libakfavatar 'avt_decide';
 
-procedure avt_lock_updates(lock: avt_bool_t);
+procedure avt_lock_updates(lock: Boolean);
   libakfavatar 'avt_lock_updates';
 
 {$IfNDef __GPC__}
@@ -980,7 +977,7 @@ procedure NormVideo;
 begin
 if not initialized then initializeAvatar;
 
-avt_markup (ord(false));
+avt_markup (false);
 avt_normal_text ();
 TextAttr := $F0;
 OldTextAttr := TextAttr;
@@ -988,22 +985,22 @@ end;
 
 procedure HighVideo;
 begin
-avt_bold (ord(true))
+avt_bold (true)
 end;
 
 procedure LowVideo;
 begin
-avt_bold (ord(false))
+avt_bold (false)
 end;
 
 procedure Underlined (onoff: boolean);
 begin
-avt_underlined (ord(onoff))
+avt_underlined (onoff)
 end;
 
 procedure MarkUp (onoff: boolean);
 begin
-avt_markup (ord(onoff))
+avt_markup (onoff)
 end;
 
 procedure SetMonochrome (monochrome: Boolean);
@@ -1144,7 +1141,7 @@ end;
 
 function HomePosition: boolean;
 begin
-HomePosition := (avt_home_position<>0)
+HomePosition := avt_home_position
 end;
 
 procedure GotoXY (x, y: integer);
@@ -1257,7 +1254,7 @@ end;
 
 procedure PlaySound(snd: pointer; loop: boolean);
 begin
-avt_play_audio(snd, ord(loop))
+avt_play_audio(snd, loop)
 end;
 
 procedure WaitSoundEnd;
@@ -1282,7 +1279,7 @@ if GenSound<>NIL then avt_free_audio(GenSound);
 GenSound := avt_load_raw_audio_data(RawSoundBuf, BufMax, 
                                     SampleRate, S16SYS, Mono);
 
-avt_play_audio(GenSound, ord(true))
+avt_play_audio(GenSound, true)
 end;
 
 procedure NoSound;
@@ -1298,7 +1295,7 @@ end;
 
 procedure PauseSound(pause: boolean);
 begin
-avt_pause_audio (ord(pause))
+avt_pause_audio (pause)
 end;
 
 {$IfDef FPC}
@@ -1317,12 +1314,12 @@ end;
 
 procedure CursorOff;
 begin
-avt_activate_cursor (ord(false))
+avt_activate_cursor (false)
 end;
 
 procedure CursorOn;
 begin
-avt_activate_cursor (ord(true))
+avt_activate_cursor (true)
 end;
 
 procedure KeyHandler(sym, modifiers, unicode: CInteger); 
@@ -1397,19 +1394,19 @@ var result: CInteger;
 begin
 if not initialized then initializeAvatar;
 if avt_choice(result, start_line, items, CInteger(startkey), 
-              ord(back), ord(fwrd))<>0 then Halt;
+              back, fwrd)<>0 then Halt;
 Choice := result
 end;
 
 procedure LockUpdates(lock: boolean);
 begin
-avt_lock_updates(ord(lock))
+avt_lock_updates(lock)
 end;
 
 function Decide: boolean;
 begin
 if not initialized then initializeAvatar;
-Decide := (avt_decide <> 0);
+Decide := avt_decide;
 if avt_get_status<>0 then Halt
 end;
 
@@ -1589,7 +1586,7 @@ Initialization
   avt_mb_encoding(DefaultEncoding);
   avt_set_scroll_mode(1);
   
-  avt_reserve_single_keys(ord(true)); { Esc is handled in the KeyHandler }
+  avt_reserve_single_keys(true); { Esc is handled in the KeyHandler }
   avt_register_keyhandler(@KeyHandler);
 
   { redirect i/o to Avatar }

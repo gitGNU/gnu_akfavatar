@@ -46,30 +46,30 @@ static const char *default_encoding;
 static int prg_input;		/* file descriptor for program input */
 
 /* in idle loop? */
-static avt_bool_t idle;
+static bool idle;
 
 /* maximum coordinates */
 static int max_x, max_y;
 static int region_min_y, region_max_y;
 
 /* insert mode */
-static avt_bool_t insert_mode;
+static bool insert_mode;
 
 /* cursor active? */
-static avt_bool_t cursor_active;
+static bool cursor_active;
 
 static int text_delay;
 
 /* no color (but still bold, underlined, reversed) allowed */
-static avt_bool_t nocolor;
+static bool nocolor;
 
 /* colors for terminal mode */
 static int text_color;
 static int text_background_color;
-static avt_bool_t faint;
+static bool faint;
 
 /* use vt100 graphics? */
-static avt_bool_t vt100graphics;
+static bool vt100graphics;
 
 /* G0 and G1 charset encoding (linux-specific) */
 static const char *G0, *G1;
@@ -77,7 +77,7 @@ static const char *G0, *G1;
 /* character for DEC cursor keys (either [ or O) */
 static char dec_cursor_seq[3];
 
-static avt_bool_t application_keypad;
+static bool application_keypad;
 
 /* text-buffer */
 static wchar_t *wcbuf = NULL;
@@ -118,13 +118,13 @@ set_encoding (const char *encoding)
 }
 
 extern void
-avta_term_nocolor (avt_bool_t on)
+avta_term_nocolor (bool on)
 {
   nocolor = on;
 }
 
 extern void
-avta_term_slowprint (avt_bool_t on)
+avta_term_slowprint (bool on)
 {
   if (on)
     text_delay = AVT_DEFAULT_TEXT_DELAY;
@@ -135,7 +135,7 @@ avta_term_slowprint (avt_bool_t on)
 }
 
 static void
-activate_cursor (avt_bool_t on)
+activate_cursor (bool on)
 {
   cursor_active = AVT_MAKE_BOOL (on);
   avt_activate_cursor (cursor_active);
@@ -183,7 +183,7 @@ get_character (int fd)
 
       /* update */
       if (text_delay == 0)
-	avt_lock_updates (AVT_FALSE);
+	avt_lock_updates (false);
 
       /* reserve one byte for a terminator */
       nread = read (fd, &filebuf, sizeof (filebuf) - 1);
@@ -192,17 +192,17 @@ get_character (int fd)
       if (nread == -1 && errno == EAGAIN)
 	{
 	  if (cursor_active)
-	    avt_activate_cursor (AVT_TRUE);
-	  idle = AVT_TRUE;
+	    avt_activate_cursor (true);
+	  idle = true;
 	  do
 	    {
 	      nread = read (fd, &filebuf, sizeof (filebuf) - 1);
 	    }
 	  while (nread == -1 && errno == EAGAIN
 		 && avt_update () == AVT_NORMAL);
-	  idle = AVT_FALSE;
+	  idle = false;
 	  if (cursor_active)
-	    avt_activate_cursor (AVT_FALSE);
+	    avt_activate_cursor (false);
 	}
 
       if (nread == -1)
@@ -214,7 +214,7 @@ get_character (int fd)
 	}
 
       if (text_delay == 0)
-	avt_lock_updates (AVT_TRUE);
+	avt_lock_updates (true);
     }
 
   if (wcbuf_len < 0)
@@ -255,7 +255,7 @@ prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
 
   if (idle && prg_input > 0)
     {
-      idle = AVT_FALSE;		/* avoid reentrance */
+      idle = false;		/* avoid reentrance */
 
       switch (sym)
 	{
@@ -389,13 +389,13 @@ prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
 	    }			/* if (unicode) */
 	}			/* switch */
 
-      idle = AVT_TRUE;
+      idle = true;
     }				/* if (idle...) */
 }
 
 /* just handling the mouse wheel */
 static void
-prg_wheelhandler (int button, avt_bool_t pressed,
+prg_wheelhandler (int button, bool pressed,
 		  int x AVT_UNUSED, int y AVT_UNUSED)
 {
   if (pressed)
@@ -415,7 +415,7 @@ prg_wheelhandler (int button, avt_bool_t pressed,
 
 /* TODO: prg_mousehandler doesn't work yet */
 static void
-prg_mousehandler (int button, avt_bool_t pressed, int x, int y)
+prg_mousehandler (int button, bool pressed, int x, int y)
 {
   char code[7];
 
@@ -446,7 +446,7 @@ static void
 set_foreground_color (int color)
 {
   if (color != 0)
-    faint = AVT_FALSE;
+    faint = false;
 
   switch (color)
     {
@@ -564,7 +564,7 @@ ansi_graphic_code (int mode)
   switch (mode)
     {
     case 0:			/* normal */
-      faint = AVT_FALSE;
+      faint = false;
       text_color = 0;
       text_background_color = 0xF;
       avt_normal_text ();
@@ -573,8 +573,8 @@ ansi_graphic_code (int mode)
       break;
 
     case 1:			/* bold */
-      faint = AVT_FALSE;
-      avt_bold (AVT_TRUE);
+      faint = false;
+      avt_bold (true);
       /* bold is sometimes assumed to light colors */
       if (text_color > 0 && text_color < 7)
 	{
@@ -584,38 +584,38 @@ ansi_graphic_code (int mode)
       break;
 
     case 2:			/* faint */
-      avt_bold (AVT_FALSE);
-      faint = AVT_TRUE;
+      avt_bold (false);
+      faint = true;
       if (text_color == 0)
 	set_foreground_color (text_color);
       break;
 
     case 4:			/* underlined */
     case 21:			/* double underlined (ambiguous) */
-      avt_underlined (AVT_TRUE);
+      avt_underlined (true);
       break;
 
     case 5:			/* blink */
       break;
 
     case 22:			/* normal intensity */
-      avt_bold (AVT_FALSE);
-      faint = AVT_FALSE;
+      avt_bold (false);
+      faint = false;
       break;
 
     case 24:			/* not underlined */
-      avt_underlined (AVT_FALSE);
+      avt_underlined (false);
       break;
 
     case 25:			/* blink off */
       break;
 
     case 7:			/* inverse */
-      avt_inverse (AVT_TRUE);
+      avt_inverse (true);
       break;
 
     case 27:			/* not inverse */
-      avt_inverse (AVT_FALSE);
+      avt_inverse (false);
       break;
 
     case 8:			/* hidden */
@@ -648,13 +648,13 @@ ansi_graphic_code (int mode)
     case 38:			/* foreground normal, underlined */
       text_color = 0;
       set_foreground_color (text_color);
-      avt_underlined (AVT_TRUE);
+      avt_underlined (true);
       break;
 
     case 39:			/* foreground normal */
       text_color = 0;
       set_foreground_color (text_color);
-      avt_underlined (AVT_FALSE);
+      avt_underlined (false);
       break;
 
     case 40:
@@ -718,23 +718,23 @@ reset_terminal (void)
 
   region_min_y = 1;
   region_max_y = max_y;
-  insert_mode = AVT_FALSE;
+  insert_mode = false;
 
-  avt_reserve_single_keys (AVT_TRUE);
-  avt_newline_mode (AVT_FALSE);
-  activate_cursor (AVT_TRUE);
+  avt_reserve_single_keys (true);
+  avt_newline_mode (false);
+  activate_cursor (true);
   avt_set_scroll_mode (1);
-  vt100graphics = AVT_FALSE;
+  vt100graphics = false;
   G0 = "ISO-8859-1";
   G1 = VT100;
   set_encoding (default_encoding);	/* not G0! */
 
   /* like vt102 */
-  avt_set_origin_mode (AVT_FALSE);
+  avt_set_origin_mode (false);
 
   avt_reset_tab_stops ();
   ansi_graphic_code (0);
-  avta_term_slowprint (AVT_FALSE);
+  avta_term_slowprint (false);
   dec_cursor_seq[0] = '\033';
   dec_cursor_seq[1] = '[';
 }
@@ -836,13 +836,13 @@ CSI_sequence (int fd, avt_char last_character)
       else if (sequence[0] == '?')
 	{			/* I have no real infos about that :-( */
 	  if (sequence[1] == '1' && sequence[2] == 'c')
-	    activate_cursor (AVT_FALSE);
+	    activate_cursor (false);
 	  else if (sequence[1] == '2' && sequence[2] == 'c')
-	    activate_cursor (AVT_TRUE);
+	    activate_cursor (true);
 	  else if (sequence[1] == '0' && sequence[2] == 'c')
-	    activate_cursor (AVT_TRUE);	/* normal? */
+	    activate_cursor (true);	/* normal? */
 	  else if (sequence[1] == '8' && sequence[2] == 'c')
-	    activate_cursor (AVT_TRUE);	/* very visible */
+	    activate_cursor (true);	/* very visible */
 	}
       break;
 
@@ -887,7 +887,7 @@ CSI_sequence (int fd, avt_char last_character)
 
     case L'g':			/* TBC */
       if (sequence[0] == 'g' || sequence[0] == '0')
-	avt_set_tab (avt_where_x (), AVT_FALSE);
+	avt_set_tab (avt_where_x (), false);
       else			/* TODO: TBC 1-5 are not distinguished here */
 	avt_clear_tab_stops ();
       break;
@@ -929,20 +929,20 @@ CSI_sequence (int fd, avt_char last_character)
 	      avt_flash ();
 	      break;
 	    case 6:
-	      avt_set_origin_mode (AVT_TRUE);
+	      avt_set_origin_mode (true);
 	      break;
 	    case 9:		/* X10 mouse */
 	      /* TODO: mouse doesn't work yet */
 	      /* avt_register_mousehandler (prg_mousehandler); */
 	      break;
 	    case 25:
-	      activate_cursor (AVT_TRUE);
+	      activate_cursor (true);
 	      break;
 	    case 56:		/* AKFAvatar extension */
-	      avta_term_slowprint (AVT_TRUE);
+	      avta_term_slowprint (true);
 	      break;
 	    case 66:
-	      application_keypad = AVT_TRUE;
+	      application_keypad = true;
 	      break;
 	    }
 	}
@@ -952,10 +952,10 @@ CSI_sequence (int fd, avt_char last_character)
 	  switch (val)
 	    {
 	    case 4:
-	      insert_mode = AVT_TRUE;
+	      insert_mode = true;
 	      break;
 	    case 20:
-	      avt_newline_mode (AVT_TRUE);
+	      avt_newline_mode (true);
 	      break;
 	    }
 	}
@@ -974,20 +974,20 @@ CSI_sequence (int fd, avt_char last_character)
 	      /* ignored, see 'h' above */
 	      break;
 	    case 6:
-	      avt_set_origin_mode (AVT_FALSE);
+	      avt_set_origin_mode (false);
 	      break;
 	    case 9:		/* X10 mouse */
 	      /* TODO: mouse doesn't work yet */
 	      /* avt_register_mousehandler (NULL); */
 	      break;
 	    case 25:
-	      activate_cursor (AVT_FALSE);
+	      activate_cursor (false);
 	      break;
 	    case 56:		/* AKFAvatar extension */
-	      avta_term_slowprint (AVT_FALSE);
+	      avta_term_slowprint (false);
 	      break;
 	    case 66:
-	      application_keypad = AVT_FALSE;
+	      application_keypad = false;
 	      break;
 	    }
 	}
@@ -997,10 +997,10 @@ CSI_sequence (int fd, avt_char last_character)
 	  switch (val)
 	    {
 	    case 4:
-	      insert_mode = AVT_FALSE;
+	      insert_mode = false;
 	      break;
 	    case 20:
-	      avt_newline_mode (AVT_FALSE);
+	      avt_newline_mode (false);
 	      break;
 	    }
 	}
@@ -1243,7 +1243,7 @@ escape_sequence (int fd, avt_char last_character)
 {
   wchar_t ch;
   static int saved_text_color, saved_text_background_color;
-  static avt_bool_t saved_underline_state, saved_bold_state;
+  static bool saved_underline_state, saved_bold_state;
   static const char *saved_G0, *saved_G1;
 
   do
@@ -1368,7 +1368,7 @@ escape_sequence (int fd, avt_char last_character)
 */
 
     case L'H':			/* HTS */
-      avt_set_tab (avt_where_x (), AVT_TRUE);
+      avt_set_tab (avt_where_x (), true);
       break;
 
     case L'M':			/* RI - scroll down one line */
@@ -1393,11 +1393,11 @@ escape_sequence (int fd, avt_char last_character)
       break;
 
     case L'>':			/* DECPNM */
-      application_keypad = AVT_FALSE;
+      application_keypad = false;
       break;
 
     case L'=':			/* DECPAM */
-      application_keypad = AVT_TRUE;
+      application_keypad = true;
       break;
 
     default:
@@ -1415,7 +1415,7 @@ avta_term_register_apc (avta_term_apc_cmd command)
 extern void
 avta_term_run (int fd)
 {
-  avt_bool_t stop;
+  bool stop;
   wint_t ch;
   avt_char last_character;
 
@@ -1424,19 +1424,19 @@ avta_term_run (int fd)
     return;
 
   last_character = 0x0000;
-  stop = AVT_FALSE;
+  stop = false;
 
   dec_cursor_seq[0] = '\033';
   dec_cursor_seq[1] = '[';
   dec_cursor_seq[2] = ' ';	/* to be filled later */
   avt_register_keyhandler (prg_keyhandler);
   avt_register_mousehandler (prg_wheelhandler);
-  avt_set_mouse_visible (AVT_FALSE);
+  avt_set_mouse_visible (false);
   /* TODO: mouse clicks don't work yet */
   /* avt_register_mousehandler (prg_mousehandler); */
 
   reset_terminal ();
-  avt_lock_updates (AVT_TRUE);
+  avt_lock_updates (true);
 
   while ((ch = get_character (fd)) != WEOF && !stop)
     {
@@ -1468,10 +1468,10 @@ avta_term_run (int fd)
 
   avta_closeterm (fd);
 
-  activate_cursor (AVT_FALSE);
-  avt_reserve_single_keys (AVT_FALSE);
-  avt_newline_mode (AVT_TRUE);
-  avt_lock_updates (AVT_FALSE);
+  activate_cursor (false);
+  avt_reserve_single_keys (false);
+  avt_newline_mode (true);
+  avt_lock_updates (false);
 
   /* release handlers */
   avt_register_mousehandler (NULL);
@@ -1498,7 +1498,7 @@ avta_term_start (const char *system_encoding, const char *working_dir,
   max_y = avt_get_max_y ();
   region_min_y = 1;
   region_max_y = max_y;
-  insert_mode = AVT_FALSE;
+  insert_mode = false;
 
   /* check if AKFAvatar was initialized */
   if (max_x < 0 || max_y < 0)

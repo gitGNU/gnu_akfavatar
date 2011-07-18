@@ -53,7 +53,7 @@ avta_ask_drive (int max_idx)
 
 ask:
   avt_set_balloon_size (number + 1, 2 * 8 + 1);
-  avt_lock_updates (AVT_TRUE);
+  avt_lock_updates (true);
   avt_clear ();
 
   /* show double arrow up */
@@ -69,8 +69,8 @@ ask:
       avt_say_mb (drive);
     }
 
-  avt_lock_updates (AVT_FALSE);
-  status = avt_choice (&choice, 1, number + 1, 0, AVT_FALSE, AVT_FALSE);
+  avt_lock_updates (false);
+  status = avt_choice (&choice, 1, number + 1, 0, false, false);
 
   if (choice == 1) /* home selected */
     status = AVT_QUIT;

@@ -3,6 +3,7 @@
 
   C-API changes:
     - all deprecated functions removed (told you so)
+    - use stdbool.h - no longer avt_bool_t, AVT_TRUE, AVT_FALSE
 
 
 * AKFAvatar 0.20.0

@@ -174,7 +174,7 @@ lterm_homedir (lua_State * L AVT_UNUSED)
 static int
 lterm_setenv (lua_State * L)
 {
-  setenv (luaL_checkstring (L, 1), luaL_checkstring (L, 2), AVT_TRUE);
+  setenv (luaL_checkstring (L, 1), luaL_checkstring (L, 2), 1);
 
   return 0;
 }
@@ -191,7 +191,7 @@ static int
 lterm_color (lua_State * L)
 {
   luaL_checktype (L, 1, LUA_TBOOLEAN);
-  avta_term_nocolor ((avt_bool_t) ! lua_toboolean (L, 1));
+  avta_term_nocolor (!lua_toboolean (L, 1));
 
   return 0;
 }
