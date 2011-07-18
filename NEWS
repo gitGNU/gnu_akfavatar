@@ -1,3 +1,10 @@
+
+* AKFAvatar-testing
+
+  C-API changes:
+    - all deprecated functions removed (told you so)
+
+
 * AKFAvatar 0.20.0
 
   - The program avatarsay was removed
