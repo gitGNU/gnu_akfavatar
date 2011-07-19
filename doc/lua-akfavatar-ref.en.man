@@ -1013,6 +1013,18 @@ Returns
 if none is set yet.
 .PP
 .TP
+.BI "avt.recode (" "string, fromcode [,tocode]" )
+Recode the given string, which is encoded as
+.I fromcode
+to a string encoded as
+.I tocode
+or the current text encoding, if not given.
+.IP
+Returns the recoded string or
+.I nil
+on error.
+.PP
+.TP
 .BI "avt.set_title(" "[title] [,shortname]" )
 Change the title and/or the shortname.
 A missing option or

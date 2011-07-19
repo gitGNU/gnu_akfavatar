@@ -1088,6 +1088,19 @@ Wenn noch keine gesetzt worden ist, wird
 zurückgegeben.
 .PP
 .TP
+.BI "avt.recode (" "String, Quellkodierung [,Zielkodierung]" )
+Konvertiert den angegebenen String, der in
+.I Quellkodierung
+kodiert ist, in einen String der in
+.I Zielkodierung
+kodiert ist, oder in die aktuell gesetzte Kodierung,
+falls nicht angegeben.
+.IP
+Gibt den kodierten String zurück, oder
+.IR nil ,
+falls er nicht umkodiert werden konnte.
+.PP
+.TP
 .BI "avt.set_title(" "[title] [,shortname]" )
 Ändert den Titel und/oder den Kurznamen.
 Wenn eine Angabe fehlt, oder

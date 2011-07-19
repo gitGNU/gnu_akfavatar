@@ -400,6 +400,32 @@ lavt_get_encoding (lua_State * L)
   return 1;
 }
 
+/* recode from one given encoding to another */
+/* avt.recode (string, fromcode [,tocode]) */
+static int
+lavt_recode (lua_State * L)
+{
+  const char *fromcode, *tocode;
+  char *string, *result;
+  size_t len;
+
+  string = (char *) luaL_checklstring (L, 1, &len);
+  fromcode = luaL_checkstring (L, 2);
+  tocode = lua_tostring (L, 3);	/* optional */
+
+  result = avt_recode (tocode, fromcode, string, (int) len);
+
+  if (result)
+    {
+      lua_pushstring (L, result);
+      avt_free (result);
+    }
+  else
+    lua_pushnil (L);
+
+  return 1;
+}
+
 /*
  * change avatar image while running
  * if the avatar is visible, the screen gets cleared
@@ -1112,10 +1138,8 @@ lavt_choice (lua_State * L)
   c = lua_tostring (L, 3);
 
   check (avt_choice (&result,
-		     luaL_checkint (L, 1),
-		     luaL_checkint (L, 2),
-		     (c) ? c[0] : 0,
-		     to_bool (L, 4), to_bool (L, 5)));
+		     luaL_checkint (L, 1), luaL_checkint (L, 2),
+		     (c) ? c[0] : 0, to_bool (L, 4), to_bool (L, 5)));
 
   lua_pushinteger (L, result);
   return 1;
@@ -2037,6 +2061,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"colors", lavt_colors},
   {"encoding", lavt_encoding},
   {"get_encoding", lavt_get_encoding},
+  {"recode", lavt_recode},
   {"set_title", lavt_set_title},
   {"set_text_delay", lavt_set_text_delay},
   {"set_flip_page_delay", lavt_set_flip_page_delay},
