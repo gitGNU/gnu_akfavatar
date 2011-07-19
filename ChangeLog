@@ -1,3 +1,8 @@
+2011-07-19  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_recode): new function
+	(avt_set_title): adapted
+
 2011-07-18  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c, avatar-audio.c:

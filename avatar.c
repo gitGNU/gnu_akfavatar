@@ -3714,6 +3714,106 @@ avt_mb_encode (char **dest, const wchar_t * src, int len)
   return (dest_size - outbytesleft);
 }
 
+/* The result must be freed by the caller */
+extern char *
+avt_recode (const char *tocode, const char *fromcode, const char *string,
+	    int size)
+{
+  avt_iconv_t cd;
+  char *dest, *outbuf, *inbuf;
+  size_t dest_size;
+  size_t inbytesleft, outbytesleft;
+  size_t returncode;
+
+  /* check if size is useful */
+  if (size <= 0)
+    return NULL;
+
+  /* NULL as code means the encoding, which was set */
+
+  if (!tocode || !*tocode)
+    tocode = avt_encoding;
+
+  if (!fromcode || !*fromcode)
+    fromcode = avt_encoding;
+
+  /* is tocode and fromcode the same in the end? */
+  if (SDL_strcasecmp (tocode, fromcode) == 0)
+    return SDL_strdup (string);	/* just make a copy */
+
+  cd = avt_iconv_open (tocode, fromcode);
+  if (cd == (avt_iconv_t) (-1))
+    return NULL;
+
+  inbuf = (char *) string;
+  inbytesleft = size;
+
+  /* get enough space */
+  dest_size = size + 4;
+  dest = (char *) SDL_malloc (dest_size);
+
+  if (dest == NULL)
+    {
+      avt_iconv_close (cd);
+      return NULL;
+    }
+
+  /*
+   * I reserve 4 Bytes for the terminator,
+   * in case of using UTF-32
+   */
+
+  outbuf = dest;
+  outbytesleft = dest_size - 4;	/* reserve 4 Bytes for terminator */
+
+  /* do the conversion */
+  while (inbytesleft > 0)
+    {
+      returncode =
+	avt_iconv (cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+
+      /* check for fatal errors */
+      if (returncode == (size_t) (-1))
+	switch (errno)
+	  {
+	  case E2BIG:		/* needs more memory */
+	    {
+	      ptrdiff_t old_size = outbuf - dest;
+
+	      dest_size *= 2;
+	      dest = (char *) SDL_realloc (dest, dest_size);
+	      if (dest == NULL)
+		{
+		  avt_iconv_close (cd);
+		  return NULL;
+		}
+
+	      outbuf = dest + old_size;
+	      outbytesleft = dest_size - old_size - 4;
+	      /* reserve 4 bytes for terminator again */
+	    }
+	    break;
+
+	  case EILSEQ:
+	    inbuf++;		/* jump over invalid chars bytewise */
+	    inbytesleft--;
+	    break;
+
+	  case EINVAL:		/* incomplete sequence */
+	  default:
+	    inbytesleft = 0;	/* cannot continue */
+	    break;
+	  }
+    }
+
+  avt_iconv_close (cd);
+
+  /* terminate outbuf (4 Bytes were reserved) */
+  SDL_memset (outbuf, 0, 4);
+
+  return dest;
+}
+
 extern void
 avt_free (void *ptr)
 {
@@ -6424,13 +6524,10 @@ avt_set_title (const char *title, const char *shortname)
       char *my_title = NULL;
       char *my_shortname = NULL;
 
-      /* FIXME: SDL_iconv_string doesn't work with FORCE_ICONV */
-      /* I try it anyway and fall back otherwise */
       if (title && *title)
 	{
 	  my_title =
-	    SDL_iconv_string ("UTF-8", avt_encoding,
-			      title, SDL_strlen (title) + 1);
+	    avt_recode ("UTF-8", avt_encoding, title, SDL_strlen (title));
 	  if (!my_title)
 	    my_title = SDL_strdup (title);
 	}
@@ -6438,8 +6535,8 @@ avt_set_title (const char *title, const char *shortname)
       if (shortname && *shortname)
 	{
 	  my_shortname =
-	    SDL_iconv_string ("UTF-8", avt_encoding,
-			      shortname, SDL_strlen (shortname) + 1);
+	    avt_recode ("UTF-8", avt_encoding, shortname,
+			SDL_strlen (shortname));
 	  if (!my_shortname)
 	    my_shortname = SDL_strdup (shortname);
 	}

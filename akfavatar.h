@@ -411,6 +411,7 @@ AVT_API int avt_ask_mb (char *s, int size);
  * size in bytes
  * returns number of characters in dest (without the termination zero)
  * dest must be freed by caller with avt_free
+ * incomplete multibyte sequences can be completed the next turn
  */
 AVT_API int avt_mb_decode (wchar_t **dest, const char *src, int size);
 
@@ -422,6 +423,17 @@ AVT_API int avt_mb_decode (wchar_t **dest, const char *src, int size);
  * (the size of dest may be much more than needed)
  */
 AVT_API int avt_mb_encode (char **dest, const wchar_t *src, int len);
+
+/*
+ * recode string in string
+ * if either tocode or fromcode is NULL, it uses the current mb_encoding
+ * the string src must not have incomplete characters at the end
+ *
+ * returns NULL on error or the recoded string, which must
+ * be freed with avt_free
+ */
+AVT_API char *avt_recode(const char *tocode, const char *fromcode,
+                         const char *string, int size);
 
 /* free memory allocated by this library */
 AVT_API void avt_free (void *ptr);
