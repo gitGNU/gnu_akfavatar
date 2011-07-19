@@ -431,9 +431,11 @@ AVT_API int avt_mb_encode (char **dest, const wchar_t *src, int len);
  *
  * returns NULL on error or the recoded string, which must
  * be freed with avt_free
+ * when result_size is not NULL it gets the size of the result
  */
 AVT_API char *avt_recode(const char *tocode, const char *fromcode,
-                         const char *string, int size);
+                         const char *string, int string_size,
+                         int *result_size);
 
 /* free memory allocated by this library */
 AVT_API void avt_free (void *ptr);

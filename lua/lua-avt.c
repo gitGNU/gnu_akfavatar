@@ -408,16 +408,17 @@ lavt_recode (lua_State * L)
   const char *fromcode, *tocode;
   char *string, *result;
   size_t len;
+  int result_size;
 
   string = (char *) luaL_checklstring (L, 1, &len);
   fromcode = luaL_checkstring (L, 2);
   tocode = lua_tostring (L, 3);	/* optional */
 
-  result = avt_recode (tocode, fromcode, string, (int) len);
+  result = avt_recode (tocode, fromcode, string, (int) len, &result_size);
 
   if (result)
     {
-      lua_pushstring (L, result);
+      lua_pushlstring (L, result, (size_t) result_size);
       avt_free (result);
     }
   else

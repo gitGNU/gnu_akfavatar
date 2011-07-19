@@ -3717,7 +3717,7 @@ avt_mb_encode (char **dest, const wchar_t * src, int len)
 /* The result must be freed by the caller */
 extern char *
 avt_recode (const char *tocode, const char *fromcode, const char *string,
-	    int size)
+	    int string_size, int *result_size)
 {
   avt_iconv_t cd;
   char *dest, *outbuf, *inbuf;
@@ -3726,30 +3726,36 @@ avt_recode (const char *tocode, const char *fromcode, const char *string,
   size_t returncode;
 
   /* check if size is useful */
-  if (size <= 0)
+  if (string_size <= 0)
     return NULL;
 
   /* NULL as code means the encoding, which was set */
 
   if (!tocode || !*tocode)
-    tocode = avt_encoding;
+    {
+      if (avt_encoding)
+	tocode = avt_encoding;
+      else
+	tocode = "UTF-8";
+    }
 
   if (!fromcode || !*fromcode)
-    fromcode = avt_encoding;
-
-  /* is tocode and fromcode the same in the end? */
-  if (SDL_strcasecmp (tocode, fromcode) == 0)
-    return SDL_strdup (string);	/* just make a copy */
+    {
+      if (avt_encoding)
+	fromcode = avt_encoding;
+      else
+	fromcode = "UTF-8";
+    }
 
   cd = avt_iconv_open (tocode, fromcode);
   if (cd == (avt_iconv_t) (-1))
     return NULL;
 
   inbuf = (char *) string;
-  inbytesleft = size;
+  inbytesleft = string_size;
 
   /* get enough space */
-  dest_size = size + 4;
+  dest_size = string_size + 4;
   dest = (char *) SDL_malloc (dest_size);
 
   if (dest == NULL)
@@ -3810,6 +3816,9 @@ avt_recode (const char *tocode, const char *fromcode, const char *string,
 
   /* terminate outbuf (4 Bytes were reserved) */
   SDL_memset (outbuf, 0, 4);
+
+  if (result_size)
+    *result_size = (int) (dest_size - 4 - outbytesleft);
 
   return dest;
 }
@@ -6527,7 +6536,8 @@ avt_set_title (const char *title, const char *shortname)
       if (title && *title)
 	{
 	  my_title =
-	    avt_recode ("UTF-8", avt_encoding, title, SDL_strlen (title));
+	    avt_recode ("UTF-8", avt_encoding, title, SDL_strlen (title),
+			NULL);
 	  if (!my_title)
 	    my_title = SDL_strdup (title);
 	}
@@ -6536,7 +6546,7 @@ avt_set_title (const char *title, const char *shortname)
 	{
 	  my_shortname =
 	    avt_recode ("UTF-8", avt_encoding, shortname,
-			SDL_strlen (shortname));
+			SDL_strlen (shortname), NULL);
 	  if (!my_shortname)
 	    my_shortname = SDL_strdup (shortname);
 	}
