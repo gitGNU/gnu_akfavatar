@@ -3599,8 +3599,9 @@ avt_mb_decode (wchar_t ** dest, const char *src, int size)
       returncode =
 	avt_iconv (output_cd, &restbuf, &rest_bytes, &outbuf, &outbytesleft);
 
-      /* handle any error but AVT_ICONV_EINVAL */
-      if (returncode == (size_t) (-1) && errno != EINVAL)
+      if (returncode != (size_t) (-1))
+	rest_bytes = 0;
+      else if (errno != EINVAL)
 	{
 	  *((wchar_t *) outbuf) = L'\xFFFD';
 
@@ -3639,7 +3640,8 @@ avt_mb_decode (wchar_t ** dest, const char *src, int size)
     }
 
   /* check for incomplete sequences and put them into the rest_buffer */
-  if (returncode == (size_t) (-1) && errno == EINVAL && inbytesleft <= sizeof (rest_buffer))
+  if (returncode == (size_t) (-1) && errno == EINVAL
+      && inbytesleft <= sizeof (rest_buffer))
     {
       rest_bytes = inbytesleft;
       SDL_memcpy ((void *) &rest_buffer, inbuf, rest_bytes);
