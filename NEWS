@@ -3,7 +3,13 @@
 
   C-API changes:
     - all deprecated functions removed (told you so)
-    - use stdbool.h - no longer avt_bool_t, AVT_TRUE, AVT_FALSE
+    - Code refactoring:
+      - use stdbool.h - no longer avt_bool_t, AVT_TRUE, AVT_FALSE
+      - an external iconv implementation is now the default
+    - new functions: avt_recode
+
+  Lua-API changes:
+    - new functions: avt.recode
 
 
 * AKFAvatar 0.20.0
