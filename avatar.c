@@ -3737,20 +3737,14 @@ avt_recode (const char *tocode, const char *fromcode, const char *string,
   /* NULL as code means the encoding, which was set */
 
   if (!tocode || !*tocode)
-    {
-      if (avt_encoding)
-	tocode = avt_encoding;
-      else
-	tocode = "UTF-8";
-    }
+    tocode = avt_encoding;
 
   if (!fromcode || !*fromcode)
-    {
-      if (avt_encoding)
-	fromcode = avt_encoding;
-      else
-	fromcode = "UTF-8";
-    }
+    fromcode = avt_encoding;
+
+  /* if no encoding was set yet, fail */
+  if (!tocode || !fromcode)
+    return NULL;
 
   cd = avt_iconv_open (tocode, fromcode);
   if (cd == (avt_iconv_t) (-1))
