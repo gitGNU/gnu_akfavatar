@@ -3725,6 +3725,9 @@ avt_recode (const char *tocode, const char *fromcode, const char *string,
   size_t inbytesleft, outbytesleft;
   size_t returncode;
 
+  if (result_size)
+    *result_size = 0;
+
   /* check if size is useful */
   if (string_size <= 0)
     return NULL;
