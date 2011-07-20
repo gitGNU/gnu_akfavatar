@@ -1288,25 +1288,27 @@ avt_iconv (avt_iconv_t cd,
 
   r = SDL_iconv (cd, inbuf, inbytesleft, outbuf, outbytesleft);
 
-  if (r == SDL_ICONV_E2BIG)
+  switch (r)
     {
+    case SDL_ICONV_E2BIG:
       errno = E2BIG;
       r = (size_t) (-1);
-    }
-  else if (r == SDL_ICONV_EILSEQ)
-    {
+      break;
+
+    case SDL_ICONV_EILSEQ:
       errno = EILSEQ;
       r = (size_t) (-1);
-    }
-  else if (r == SDL_ICONV_EINVAL)
-    {
+      break;
+
+    case SDL_ICONV_EINVAL:
       errno = EINVAL;
       r = (size_t) (-1);
-    }
-  else if (r == SDL_ICONV_ERROR)
-    {
+      break;
+
+    case SDL_ICONV_ERROR:
       errno = EBADMSG;		/* ??? */
       r = (size_t) (-1);
+      break;
     }
 
   return r;
