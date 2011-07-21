@@ -411,8 +411,14 @@ lavt_recode (lua_State * L)
   int result_size;
 
   string = (char *) luaL_checklstring (L, 1, &len);
-  fromcode = luaL_checkstring (L, 2);
+  fromcode = lua_tostring (L, 2);	/* may be nil */
   tocode = lua_tostring (L, 3);	/* optional */
+
+  if (!fromcode && !tocode)
+    {
+      lua_pushnil (L);
+      return 1;
+    }
 
   result = avt_recode (tocode, fromcode, string, (int) len, &result_size);
 

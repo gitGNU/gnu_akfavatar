@@ -1093,8 +1093,13 @@ Konvertiert den angegebenen String, der in
 .I Quellkodierung
 kodiert ist, in einen String der in
 .I Zielkodierung
-kodiert ist, oder in die aktuell gesetzte Kodierung,
-falls nicht angegeben.
+kodiert ist.
+Wenn nur eine Kodierung angegeben ist, kovertiert es in die 
+aktuell gesetzte Kodierung.
+Falls man von der aktuellen Kodierung in etwas anderes kovertieren will,
+kann man
+.IR nil " für die " Quellkodierung
+angeben.
 .IP
 Gibt den kodierten String zurück, oder
 .IR nil ,

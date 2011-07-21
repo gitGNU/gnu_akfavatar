@@ -1017,8 +1017,12 @@ if none is set yet.
 Recode the given string, which is encoded as
 .I fromcode
 to a string encoded as
-.I tocode
-or the current text encoding, if not given.
+.IR tocode .
+When you give just one encoding, it encodes into the
+currently set text encoding.
+If you want to encode from the current encoding to something
+else, then use
+.IR nil " for " fromcode .
 .IP
 Returns the recoded string or
 .I nil
