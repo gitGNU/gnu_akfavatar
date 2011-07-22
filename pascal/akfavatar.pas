@@ -1,5 +1,5 @@
 {*
- * Pascal binding to the AKFAvatar library version 0.17.2
+ * Pascal binding to the AKFAvatar library version 0.21.0
  * Copyright (c) 2007, 2008, 2009, 2011 Andreas K. Foerster <info@akfoerster.de>
  *
  * Can be used with GNU-Pascal or FreePascal
@@ -431,12 +431,12 @@ implementation
 
 {$IfDef FPC}
   uses DOS, Strings;
-  
+
   {$MACRO ON}  
   {$Define libakfavatar:=cdecl; external 'akfavatar' name}
 {$EndIf}
 
-{$IfDef __GPC__} 
+{$IfDef __GPC__}
   uses GPC;
 
   {$IfNDef NoLink}
@@ -451,6 +451,7 @@ implementation
   type 
     CInteger = LongInt;
     CString = PChar;
+    CBoolean = Boolean;
 {$EndIf}
 
 {$IfDef __GPC__}
@@ -495,7 +496,7 @@ var GenSound: Pointer; { generated sound }
 
 { bindings: }
 
-procedure avt_reserve_single_keys (onoff: Boolean); 
+procedure avt_reserve_single_keys (onoff: CBoolean); 
   libakfavatar 'avt_reserve_single_keys';
 
 function avt_default: PAvatarImage; libakfavatar 'avt_default';
@@ -598,15 +599,15 @@ procedure avt_set_text_background_color (red, green, blue: CInteger);
 procedure avt_set_text_background_ballooncolor;
   libakfavatar 'avt_set_text_background_ballooncolor';
 
-procedure avt_bold (onoff: Boolean); libakfavatar 'avt_bold';
+procedure avt_bold (onoff: CBoolean); libakfavatar 'avt_bold';
 
-procedure avt_underlined (onoff: Boolean); libakfavatar 'avt_underlined';
+procedure avt_underlined (onoff: CBoolean); libakfavatar 'avt_underlined';
 
-procedure avt_markup (onoff: Boolean); libakfavatar 'avt_markup';
+procedure avt_markup (onoff: CBoolean); libakfavatar 'avt_markup';
 
 procedure avt_normal_text; libakfavatar 'avt_normal_text';
 
-procedure avt_activate_cursor (onoff: Boolean); 
+procedure avt_activate_cursor (onoff: CBoolean); 
   libakfavatar 'avt_activate_cursor';
 
 function avt_initialize(title, icon: CString;
@@ -636,20 +637,20 @@ function avt_load_raw_audio_data (Data: pointer; size: CInteger;
 
 function avt_add_raw_audio_data (Sound: pointer;
                                  Data: pointer;
-                                 size: CInteger): CInteger
+                                 size: CInteger): CInteger;
   libakfavatar 'avt_add_raw_audio_data';
 
 procedure avt_free_audio(snd: pointer); 
   libakfavatar 'avt_free_audio';
 
-function avt_play_audio(snd: pointer; loop: Boolean): CInteger; 
+function avt_play_audio(snd: pointer; loop: CBoolean): CInteger; 
   libakfavatar 'avt_play_audio';
 
 function avt_wait_audio_end: CInteger; libakfavatar 'avt_wait_audio_end';
 
 procedure avt_stop_audio; libakfavatar 'avt_stop_audio';
 
-procedure avt_pause_audio (pause: Boolean); libakfavatar 'avt_pause_audio';
+procedure avt_pause_audio (pause: CBoolean); libakfavatar 'avt_pause_audio';
 
 function avt_get_error: CString; libakfavatar 'avt_get_error';
 
@@ -670,7 +671,7 @@ function avt_where_y: CInteger; libakfavatar 'avt_where_y';
 procedure avt_move_xy(x, y: CInteger); libakfavatar 'avt_move_xy';
 function avt_get_max_x: CInteger; libakfavatar 'avt_get_max_x'; 
 function avt_get_max_y: CInteger; libakfavatar 'avt_get_max_y';
-function avt_home_position: Boolean; libakfavatar 'avt_home_position';
+function avt_home_position: CBoolean; libakfavatar 'avt_home_position';
 
 procedure avt_delete_lines(line, num: CInteger);
   libakfavatar 'avt_delete_lines';
@@ -693,7 +694,7 @@ function avt_get_scroll_mode: CInteger;
 
 function avt_choice(var result: CInteger; 
                     start_line, items, key: CInteger;
-                    back, fwrd: Boolean): CInteger; 
+                    back, fwrd: CBoolean): CInteger; 
   libakfavatar 'avt_choice';
 
 procedure avt_pager_mb (txt: CString; len, startline: CInteger); 
@@ -702,9 +703,9 @@ procedure avt_pager_mb (txt: CString; len, startline: CInteger);
 function avt_navigate(buttons: CString): CInteger;
   libakfavatar 'avt_navigate';
 
-function avt_decide: Boolean; libakfavatar 'avt_decide';
+function avt_decide: CBoolean; libakfavatar 'avt_decide';
 
-procedure avt_lock_updates(lock: Boolean);
+procedure avt_lock_updates(lock: CBoolean);
   libakfavatar 'avt_lock_updates';
 
 {$IfNDef __GPC__}
