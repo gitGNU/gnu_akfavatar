@@ -890,7 +890,7 @@ if ScrSize.x-1 >= $FF
 avt_initialize_audio;
 
 NormVideo;
-avt_move_in
+avt_move_in { do not call Halt here }
 end;
 
 procedure AvatarName(const Name: string);
@@ -1463,6 +1463,7 @@ end;
 
 { ---------------------------------------------------------------------}
 { Input/output handling }
+{ do not call Halt }
 
 procedure AssignCrt (var f: text);
 begin
