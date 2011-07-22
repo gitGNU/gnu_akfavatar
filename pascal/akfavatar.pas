@@ -155,6 +155,7 @@ procedure AvatarName(const Name: string);
 { should be used before any output took place }
 procedure setBackgroundColor(red, green, blue: byte);
 procedure setBackgroundColorName (const Name: string);
+procedure getBackgroundColor(var red, green, blue: byte);
 
 { set a different balloon color }
 { should be used before any output took place }
@@ -286,6 +287,10 @@ procedure ShowImageData(data: pointer; size: LongInt);
 { show image from raw data }
 { BytesPerPixel may be 3 for RGB, or 4 for RGBA }
 procedure ShowRawImage(Data: Pointer; width, height, BytesPerPixel: Integer);
+
+{ maximum size for ShowRawImage }
+function ImageMaxWidth: Integer;
+function ImageMaxHeight: Integer;
 
 { use the tool xpm2pas to import the X Pixmap data }
 { example: ShowImageXPM(addr(image)); }
@@ -575,6 +580,12 @@ function avt_show_image_xpm(data: pointer): CInteger;
 function avt_show_raw_image(Data: pointer; Width, Height, BPP: CInteger): CInteger;
   libakfavatar 'avt_show_raw_image';
 
+function avt_image_max_width: CInteger; libakfavatar 'avt_image_max_width';
+function avt_image_max_height: CInteger; libakfavatar 'avt_image_max_height';
+
+procedure avt_get_background_color(var red, green, blue: CInteger);
+  libakfavatar 'avt_get_background_color';
+
 procedure avt_set_background_color (red, green, blue: CInteger);
   libakfavatar 'avt_set_background_color';
 
@@ -692,7 +703,7 @@ function avt_get_scroll_mode: CInteger;
   libakfavatar 'avt_get_scroll_mode';
 
 
-function avt_choice(var result: CInteger; 
+function avt_choice(var result: CInteger;
                     start_line, items, key: CInteger;
                     back, fwrd: CBoolean): CInteger; 
   libakfavatar 'avt_choice';
@@ -1099,6 +1110,25 @@ procedure ShowRawImage(Data: Pointer; width, height, BytesPerPixel: Integer);
 begin
 if not initialized then initializeAvatar;
 if avt_show_raw_image(Data, width, height, BytesPerPixel)<>0 then Halt
+end;
+
+function ImageMaxWidth: Integer;
+begin
+ImageMaxWidth := avt_image_max_width
+end;
+
+function ImageMaxHeight: Integer;
+begin
+ImageMaxHeight := avt_image_max_height
+end;
+
+procedure getBackgroundColor(var red, green, blue: byte);
+var r, g, b: CInteger;
+begin
+avt_get_background_color (r, g, b);
+red := r;
+green := g;
+blue := b
 end;
 
 procedure PagerString (const txt: string; startline: integer);

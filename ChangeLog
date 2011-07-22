@@ -1,6 +1,7 @@
 2011-07-22  Andreas K. Foerster  <info@akfoerster.de>
 
-	* pascal/akfavatar.pas (Playing, ShowRawImage):
+	* pascal/akfavatar.pas (Playing, ShowRawImage)
+	(ImageMaxWidth, ImageMaxHeight, getBackgroundColor):
 	new functions
 
 2011-07-19  Andreas K. Foerster  <info@akfoerster.de>
