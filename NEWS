@@ -11,6 +11,11 @@
   Lua-API changes:
     - new functions: avt.recode
 
+  Pascal-API changes:
+    - should be more robust now
+    - new functions: Playing, ShowRawImage, ImageMaxWidth, ImageMaxHeight,
+      getBackgroundColor
+
 
 * AKFAvatar 0.20.0
 

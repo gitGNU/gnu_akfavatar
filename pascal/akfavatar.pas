@@ -890,7 +890,7 @@ if ScrSize.x-1 >= $FF
 avt_initialize_audio;
 
 NormVideo;
-if avt_move_in<>0 then Halt
+avt_move_in
 end;
 
 procedure AvatarName(const Name: string);
@@ -1490,9 +1490,10 @@ end;
 
     if TextAttr<>OldTextAttr then UpdateTextAttr;
 
-    if avt_say_mb_len (F.BufPtr, F.BufPos) <> 0 then Halt;
+    avt_say_mb_len (F.BufPtr, F.BufPos);
     F.BufPos := 0; { everything read }
     end;
+
   fpc_io_write := 0
   end;
 
@@ -1501,7 +1502,7 @@ end;
   if not initialized then initializeAvatar;
   if TextAttr<>OldTextAttr then UpdateTextAttr;
 
-  if avt_ask_mb (F.BufPtr, F.BufSize) <> 0 then Halt;
+  avt_ask_mb (F.BufPtr, F.BufSize);
 
   F.BufPos := 0;
   F.BufEnd := strlen(F.BufPtr^) + 2;
@@ -1553,10 +1554,10 @@ end;
     begin
     if not initialized then initializeAvatar;
     if TextAttr<>OldTextAttr then UpdateTextAttr;
-    
-    if avt_say_mb_len (Addr(Buffer), size) <> 0 then Halt
+
+    avt_say_mb_len (Addr(Buffer), size)
     end;
-  
+
   gpc_io_write := size
   end;
 
@@ -1568,8 +1569,7 @@ end;
   if not initialized then initializeAvatar;
   if TextAttr<>OldTextAttr then UpdateTextAttr;
 
-  if avt_ask_mb (addr (InputBuffer), sizeof (InputBuffer)) <> 0 
-    then Halt;
+  avt_ask_mb (addr (InputBuffer), sizeof (InputBuffer));
 
   i := 0;
   while (InputBuffer [i] <> chr (0)) and (i < size-1) do

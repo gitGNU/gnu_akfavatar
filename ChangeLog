@@ -4,6 +4,9 @@
 	(ImageMaxWidth, ImageMaxHeight, getBackgroundColor):
 	new functions
 
+	* pascal/akfavatar.pas:
+	fix: never call Halt in IO-functions or initialization
+
 2011-07-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_recode): new function
