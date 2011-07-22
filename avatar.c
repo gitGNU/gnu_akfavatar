@@ -31,7 +31,6 @@
 #include "SDL.h"
 #include "version.h"
 #include "rgb.h"
-#include <errno.h>
 
 /* include images */
 #include "akfavatar.xpm"
@@ -133,13 +132,17 @@
 #  define SDL_sscanf              sscanf
 #endif /* OLD_SDL */
 
+/* Note errno is only used for iconv and may not be the external errno! */
+
 #ifndef USE_SDL_ICONV
+#  include <errno.h>
 #  include <iconv.h>
 #  define avt_iconv_t             iconv_t
 #  define avt_iconv_open          iconv_open
 #  define avt_iconv_close         iconv_close
 #  define avt_iconv               iconv
 #else /* USE_SDL_ICONV */
+static int errno;
 #  define avt_iconv_t             SDL_iconv_t
 #  define avt_iconv_open          SDL_iconv_open
 #  define avt_iconv_close         SDL_iconv_close
