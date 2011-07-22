@@ -1,3 +1,8 @@
+2011-07-22  Andreas K. Foerster  <info@akfoerster.de>
+
+	* pascal/akfavatar.pas (Playing, ShowRawImage):
+	new functions
+
 2011-07-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_recode): new function

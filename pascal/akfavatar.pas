@@ -283,6 +283,10 @@ procedure MoveAvatarOut;
 function ShowImageFile(FileName: string): boolean;
 procedure ShowImageData(data: pointer; size: LongInt);
 
+{ show image from raw data }
+{ BytesPerPixel may be 3 for RGB, or 4 for RGBA }
+procedure ShowRawImage(Data: Pointer; width, height, BytesPerPixel: Integer);
+
 { use the tool xpm2pas to import the X Pixmap data }
 { example: ShowImageXPM(addr(image)); }
 procedure ShowImageXPM(data: pointer);
@@ -305,6 +309,7 @@ function LoadSoundFile(const FileName: string): pointer;
 function LoadSoundData(data: pointer; size: LongInt): pointer;
 procedure FreeSound(snd: pointer);
 procedure PlaySound(snd: pointer; loop: boolean);
+function Playing(snd: pointer): boolean;
 
 { for importing raw sound data }
 
@@ -567,6 +572,9 @@ function avt_show_image_xbm(bits: pointer; widrh, height: CInteger;
 function avt_show_image_xpm(data: pointer): CInteger;
   libakfavatar 'avt_show_image_xpm';
 
+function avt_show_raw_image(Data: pointer; Width, Height, BPP: CInteger): CInteger;
+  libakfavatar 'avt_show_raw_image';
+
 procedure avt_set_background_color (red, green, blue: CInteger);
   libakfavatar 'avt_set_background_color';
 
@@ -628,6 +636,9 @@ function avt_add_raw_audio_data (Sound: pointer;
                                  Data: pointer;
                                  size: CInteger): CInteger;
   libakfavatar 'avt_add_raw_audio_data';
+
+function avt_audio_playing(snd: pointer): CBoolean;
+  libakfavatar 'avt_audio_playing';
 
 procedure avt_free_audio(snd: pointer); 
   libakfavatar 'avt_free_audio';
@@ -1084,6 +1095,12 @@ if result = 1 then Halt; { halt requested }
 { ignore failure to show image }
 end;
 
+procedure ShowRawImage(Data: Pointer; width, height, BytesPerPixel: Integer);
+begin
+if not initialized then initializeAvatar;
+if avt_show_raw_image(Data, width, height, BytesPerPixel)<>0 then Halt
+end;
+
 procedure PagerString (const txt: string; startline: integer);
 begin
 if not initialized then initializeAvatar;
@@ -1225,6 +1242,11 @@ procedure AddRawSoundData(sound: pointer; data: pointer; size: LongInt);
 begin
 { ignore error code }
 avt_add_raw_audio_data (sound, data, size)
+end;
+
+function Playing(snd: pointer): boolean;
+begin
+Playing := avt_audio_playing(snd)
 end;
 
 procedure Beep;
