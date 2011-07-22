@@ -25,7 +25,7 @@ CRT compatiblity
 
 supported: 
 ClrScr, ClrEol, GotoXY, WhereX, WhereY, Delay, TextColor, TextBackground,
-NormVideo, HighVideo, LowVideo, TextAttr, NoSound, (ReadKey), KeyPressed, 
+NormVideo, HighVideo, LowVideo, TextAttr, NoSound, (ReadKey), KeyPressed,
 Window, DelLine, InsLine, AssignCrt, ScreenSize, CheckBreak
 
 dummies for:
@@ -462,14 +462,6 @@ implementation
 
 type PAvatarImage = pointer;
 
-type 
-  PGimpImage = ^TGimpImage;
-  TGimpImage = 
-    record
-    width, height, bytes_per_pixel : CInteger;
-    pixel_data : char; { startpoint }
-    end;
-
 var OldTextAttr : byte;
 var FastQuit : boolean;
 var isMonochrome : boolean;
@@ -539,9 +531,6 @@ function avt_move_in: CInteger; libakfavatar 'avt_move_in';
 function avt_move_out: CInteger; libakfavatar 'avt_move_out';
 
 procedure avt_show_avatar; libakfavatar 'avt_show_avatar';
-
-function avt_import_gimp_image(gimp_image: PGimpImage): PAvatarImage;
-   libakfavatar 'avt_import_gimp_image';
 
 function avt_import_image_file (FileName: CString): PAvatarImage;
   libakfavatar 'avt_import_image_file';
