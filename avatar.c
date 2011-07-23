@@ -3328,7 +3328,14 @@ avt_say (const wchar_t * txt)
 	}
       else
 	{
-	  if (avt_put_char ((avt_char) * txt))
+	  avt_char c = (avt_char) * txt;
+	  if (0xD800 <= *txt && *txt <= 0xDBFF)	/* UTF-16 high surrogate */
+	    {
+	      c = ((*txt & 0x3FF) << 10) + (*(txt + 1) & 0x3FF) + 0x10000;
+	      txt++;
+	    }
+
+	  if (avt_put_char (c))
 	    break;
 	}
       txt++;
@@ -3366,7 +3373,15 @@ avt_say_len (const wchar_t * txt, int len)
 	}
       else
 	{
-	  if (avt_put_char ((avt_char) * txt))
+	  avt_char c = (avt_char) * txt;
+	  if (0xD800 <= *txt && *txt <= 0xDBFF)	/* UTF-16 high surrogate */
+	    {
+	      c = ((*txt & 0x3FF) << 10) + (*(txt + 1) & 0x3FF) + 0x10000;
+	      txt++;
+	      i++;
+	    }
+
+	  if (avt_put_char (c))
 	    break;
 	}
     }
@@ -3446,7 +3461,7 @@ avt_tell_len (const wchar_t * txt, int len)
 	  /* else fall through */
 
 	default:
-	  if (*p >= 32 || *p == 0)
+	  if ((*p >= 32 || *p == 0) && (*p < 0xD800 || *p > 0xDBFF))
 	    {
 	      line_length++;
 	      if (auto_margin && line_length > AVT_LINELENGTH)

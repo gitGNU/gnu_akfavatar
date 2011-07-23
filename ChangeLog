@@ -4,6 +4,9 @@
 	make them more consistent
 	callers adapted
 
+	* avatar.c (avt_say, avt_say_len, avt_tell_len):
+	support for UTF-16 surrogates
+
 2011-07-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* pascal/akfavatar.pas (Playing, ShowRawImage)
