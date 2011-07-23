@@ -3563,7 +3563,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, int src_size)
 
   /* check if size is useful */
   if (!src || src_size <= 0)
-      return -1;
+    return -1;
 
   /* check if encoding was set */
   if (output_cd == ICONV_UNINITIALIZED)
@@ -3587,11 +3587,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, int src_size)
   *dest = (wchar_t *) SDL_malloc (dest_size);
 
   if (!*dest)
-    {
-      _avt_STATUS = AVT_ERROR;
-      SDL_SetError ("out of memory");
-      return -1;
-    }
+    return -1;
 
   outbuf = (char *) *dest;
   outbytesleft = dest_size;
@@ -3641,8 +3637,6 @@ avt_mb_decode (wchar_t ** dest, const char *src, int src_size)
     {
       SDL_free (*dest);
       *dest = NULL;
-      _avt_STATUS = AVT_ERROR;
-      SDL_SetError ("error while converting the encoding");
       return -1;
     }
 
@@ -3677,7 +3671,7 @@ avt_mb_encode (char **dest, const wchar_t * src, int len)
 
   /* check if len is useful */
   if (!src || len <= 0)
-      return -1;
+    return -1;
 
   /* check if encoding was set */
   if (input_cd == ICONV_UNINITIALIZED)
@@ -3693,11 +3687,7 @@ avt_mb_encode (char **dest, const wchar_t * src, int len)
   *dest = (char *) SDL_malloc (dest_size);
 
   if (!*dest)
-    {
-      _avt_STATUS = AVT_ERROR;
-      SDL_SetError ("out of memory");
-      return -1;
-    }
+    return -1;
 
   outbuf = (char *) *dest;
   outbytesleft = dest_size;
@@ -3711,8 +3701,6 @@ avt_mb_encode (char **dest, const wchar_t * src, int len)
     {
       SDL_free (*dest);
       *dest = NULL;
-      _avt_STATUS = AVT_ERROR;
-      SDL_SetError ("error while converting the encoding");
       return -1;
     }
 
