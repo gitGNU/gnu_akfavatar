@@ -420,15 +420,15 @@ lavt_recode (lua_State * L)
       return 1;
     }
 
-  result = avt_recode (tocode, fromcode, string, (int) len, &result_size);
+  result_size = avt_recode (tocode, fromcode, &result, string, (int) len);
 
-  if (result)
+  if (result_size < 0)
+    lua_pushnil (L);
+  else
     {
       lua_pushlstring (L, result, (size_t) result_size);
       avt_free (result);
     }
-  else
-    lua_pushnil (L);
 
   return 1;
 }

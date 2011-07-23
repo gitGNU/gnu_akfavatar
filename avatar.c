@@ -3546,7 +3546,7 @@ avt_get_mb_encoding (void)
 /* size in bytes */
 /* dest must be freed by caller */
 extern int
-avt_mb_decode (wchar_t ** dest, const char *src, int size)
+avt_mb_decode (wchar_t ** dest, const char *src, int src_size)
 {
   static char rest_buffer[10];
   static size_t rest_bytes = 0;
@@ -3556,24 +3556,26 @@ avt_mb_decode (wchar_t ** dest, const char *src, int size)
   size_t inbytesleft, outbytesleft;
   size_t returncode;
 
+  if (!dest)
+    return -1;
+
+  *dest = NULL;
+
   /* check if size is useful */
-  if (size <= 0)
-    {
-      *dest = NULL;
+  if (!src || src_size <= 0)
       return -1;
-    }
 
   /* check if encoding was set */
   if (output_cd == ICONV_UNINITIALIZED)
     avt_mb_encoding (MB_DEFAULT_ENCODING);
 
-  inbytesleft = size;
+  inbytesleft = src_size;
   inbuf = (char *) src;
 
   /* get enough space */
   /* a character may be 4 Bytes also in UTF-16  */
   /* +1 for the terminator */
-  dest_size = inbytesleft * 4 + sizeof (wchar_t);
+  dest_size = src_size * 4 + sizeof (wchar_t);
 
   if (rest_bytes)
     dest_size++;
@@ -3668,12 +3670,14 @@ avt_mb_encode (char **dest, const wchar_t * src, int len)
   size_t inbytesleft, outbytesleft;
   size_t returncode;
 
+  if (!dest)
+    return -1;
+
+  *dest = NULL;
+
   /* check if len is useful */
-  if (len <= 0)
-    {
-      *dest = NULL;
+  if (!src || len <= 0)
       return -1;
-    }
 
   /* check if encoding was set */
   if (input_cd == ICONV_UNINITIALIZED)
@@ -3719,23 +3723,25 @@ avt_mb_encode (char **dest, const wchar_t * src, int len)
   return (dest_size - outbytesleft);
 }
 
-/* The result must be freed by the caller */
-extern char *
-avt_recode (const char *tocode, const char *fromcode, const char *string,
-	    int string_size, int *result_size)
+/* dest must be freed by the caller */
+extern int
+avt_recode (const char *tocode, const char *fromcode,
+	    char **dest, const char *src, int src_size)
 {
   avt_iconv_t cd;
-  char *dest, *outbuf, *inbuf;
+  char *outbuf, *inbuf;
   size_t dest_size;
   size_t inbytesleft, outbytesleft;
   size_t returncode;
 
-  if (result_size)
-    *result_size = 0;
+  if (!dest)
+    return -1;
+
+  *dest = NULL;
 
   /* check if size is useful */
-  if (string_size <= 0)
-    return NULL;
+  if (!src || src_size <= 0)
+    return -1;
 
   /* NULL as code means the encoding, which was set */
 
@@ -3747,31 +3753,31 @@ avt_recode (const char *tocode, const char *fromcode, const char *string,
 
   /* if no encoding was set yet, fail */
   if (!tocode || !fromcode)
-    return NULL;
+    return -1;
 
   cd = avt_iconv_open (tocode, fromcode);
   if (cd == (avt_iconv_t) (-1))
-    return NULL;
+    return -1;
 
-  inbuf = (char *) string;
-  inbytesleft = string_size;
-
-  /* get enough space */
-  dest_size = string_size + 4;
-  dest = (char *) SDL_malloc (dest_size);
-
-  if (dest == NULL)
-    {
-      avt_iconv_close (cd);
-      return NULL;
-    }
+  inbuf = (char *) src;
+  inbytesleft = src_size;
 
   /*
    * I reserve 4 Bytes for the terminator,
    * in case of using UTF-32
    */
 
-  outbuf = dest;
+  /* guess it's the same size */
+  dest_size = src_size + 4;
+  *dest = (char *) SDL_malloc (dest_size);
+
+  if (*dest == NULL)
+    {
+      avt_iconv_close (cd);
+      return -1;
+    }
+
+  outbuf = *dest;
   outbytesleft = dest_size - 4;	/* reserve 4 Bytes for terminator */
 
   /* do the conversion */
@@ -3786,17 +3792,17 @@ avt_recode (const char *tocode, const char *fromcode, const char *string,
 	  {
 	  case E2BIG:		/* needs more memory */
 	    {
-	      ptrdiff_t old_size = outbuf - dest;
+	      ptrdiff_t old_size = outbuf - *dest;
 
 	      dest_size *= 2;
-	      dest = (char *) SDL_realloc (dest, dest_size);
-	      if (dest == NULL)
+	      *dest = (char *) SDL_realloc (*dest, dest_size);
+	      if (*dest == NULL)
 		{
 		  avt_iconv_close (cd);
-		  return NULL;
+		  return -1;
 		}
 
-	      outbuf = dest + old_size;
+	      outbuf = *dest + old_size;
 	      outbytesleft = dest_size - old_size - 4;
 	      /* reserve 4 bytes for terminator again */
 	    }
@@ -3819,10 +3825,7 @@ avt_recode (const char *tocode, const char *fromcode, const char *string,
   /* terminate outbuf (4 Bytes were reserved) */
   SDL_memset (outbuf, 0, 4);
 
-  if (result_size)
-    *result_size = (int) (dest_size - 4 - outbytesleft);
-
-  return dest;
+  return (int) (dest_size - 4 - outbytesleft);
 }
 
 extern void
@@ -6537,19 +6540,16 @@ avt_set_title (const char *title, const char *shortname)
 
       if (title && *title)
 	{
-	  my_title =
-	    avt_recode ("UTF-8", avt_encoding, title, SDL_strlen (title),
-			NULL);
-	  if (!my_title)
+	  if (avt_recode ("UTF-8", avt_encoding,
+			  &my_title, title, SDL_strlen (title)) < 0)
 	    my_title = SDL_strdup (title);
 	}
 
       if (shortname && *shortname)
 	{
-	  my_shortname =
-	    avt_recode ("UTF-8", avt_encoding, shortname,
-			SDL_strlen (shortname), NULL);
-	  if (!my_shortname)
+	  if (avt_recode ("UTF-8", avt_encoding,
+			  &my_shortname, shortname,
+			  SDL_strlen (shortname)) < 0)
 	    my_shortname = SDL_strdup (shortname);
 	}
 

@@ -1,3 +1,9 @@
+2011-07-23  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_recode, avt_mb_decode, avt_mb_encode):
+	make them more consistent
+	callers adapted
+
 2011-07-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* pascal/akfavatar.pas (Playing, ShowRawImage)
