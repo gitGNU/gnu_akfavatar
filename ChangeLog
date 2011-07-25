@@ -4,6 +4,8 @@
 	do the charset conversion directly in avt_say_mb_len
 	=> optimization: far less mallocs
 
+	* avatar.c (avt_tell_mb): call avt_tell_mb_len
+
 2011-07-23  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_recode, avt_mb_decode, avt_mb_encode):
