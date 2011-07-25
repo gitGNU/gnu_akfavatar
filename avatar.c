@@ -3841,18 +3841,8 @@ avt_free (void *ptr)
 extern int
 avt_say_mb (const char *txt)
 {
-  wchar_t *wctext;
-
   if (screen && _avt_STATUS == AVT_NORMAL)
-    {
-      avt_mb_decode (&wctext, txt, SDL_strlen (txt) + 1);
-
-      if (wctext)
-	{
-	  avt_say (wctext);
-	  SDL_free (wctext);
-	}
-    }
+    avt_say_mb_len (txt, SDL_strlen (txt));
 
   return _avt_STATUS;
 }
@@ -3860,22 +3850,88 @@ avt_say_mb (const char *txt)
 extern int
 avt_say_mb_len (const char *txt, int len)
 {
-  wchar_t *wctext;
-  int wclen;
+  wchar_t wctext[AVT_LINELENGTH];
+  char *inbuf, *outbuf;
+  size_t inbytesleft, outbytesleft, nconv;
+  int err;
 
-  if (screen && _avt_STATUS == AVT_NORMAL)
+  static char rest_buffer[10];
+  static size_t rest_bytes = 0;
+
+  if (!screen || _avt_STATUS != AVT_NORMAL)
+    return _avt_STATUS;
+
+  /* check if encoding was set */
+  if (output_cd == ICONV_UNINITIALIZED)
+    avt_mb_encoding (MB_DEFAULT_ENCODING);
+
+  if (len > 0)
+    inbytesleft = (size_t) len;
+  else
+    inbytesleft = SDL_strlen (txt);
+
+  inbuf = (char *) txt;
+
+  /* if there is a rest from last call, try to complete it */
+  while (rest_bytes > 0 && rest_bytes < sizeof (rest_buffer))
     {
-      wclen = avt_mb_decode (&wctext, txt, len);
+      outbuf = (char *) wctext;
+      outbytesleft = sizeof (wctext);
 
-      if (wctext)
+      rest_buffer[rest_bytes] = (char) *inbuf;
+      rest_bytes++;
+      inbuf++;
+      inbytesleft--;
+
+      nconv = avt_iconv (output_cd, (char **) &rest_buffer, &rest_bytes,
+			 &outbuf, &outbytesleft);
+      err = errno;
+
+      avt_say_len (wctext,
+		   (sizeof (wctext) - outbytesleft) / sizeof (wchar_t));
+
+      if (nconv != (size_t) (-1))	/* no error */
+	rest_bytes = 0;
+      else if (err != EINVAL)	/* any error, but incomplete sequence */
 	{
-	  avt_say_len (wctext, wclen);
-	  SDL_free (wctext);
+	  avt_put_char (0xFFFD);	/* broken character */
+	  rest_bytes = 0;
+	}
+    }
+
+  /* convert and display the text */
+  while (inbytesleft > 0)
+    {
+      outbuf = (char *) wctext;
+      outbytesleft = sizeof (wctext);
+
+      nconv =
+	avt_iconv (output_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+      err = errno;
+
+      avt_say_len (wctext,
+		   (sizeof (wctext) - outbytesleft) / sizeof (wchar_t));
+
+      if (nconv == (size_t) (-1))
+	{
+	  if (err == EILSEQ)	/* broken character */
+	    {
+	      avt_put_char (0xFFFD);
+	      inbuf++;
+	      inbytesleft--;
+	    }
+	  else if (err == EINVAL)	/* incomplete sequence */
+	    {
+	      rest_bytes = inbytesleft;
+	      SDL_memcpy (&rest_buffer, inbuf, rest_bytes);
+	      inbytesleft = 0;
+	    }
 	}
     }
 
   return _avt_STATUS;
 }
+
 
 extern int
 avt_tell_mb (const char *txt)
