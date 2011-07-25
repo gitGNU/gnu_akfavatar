@@ -5,6 +5,9 @@
  * has the same API and ABI as GNU libiconv, the Makefile.
  *
  * --Tor Lillqvist <tml@iki.fi>, January 2008
+ *
+ * changed parameter **inbuf from const char to char
+ * -- AKFoerster, July 2011
  */
 
 #ifndef ICONV_H_INCLUDED
@@ -18,7 +21,7 @@ extern "C" {
 typedef void* iconv_t;
 iconv_t iconv_open(const char *tocode, const char *fromcode);
 int iconv_close(iconv_t cd);
-size_t iconv(iconv_t cd, const char **inbuf, size_t *inbytesleft, char **outbuf, size_t *outbytesleft);
+size_t iconv(iconv_t cd, char **inbuf, size_t *inbytesleft, char **outbuf, size_t *outbytesleft);
 #ifdef __cplusplus
 }
 #endif
