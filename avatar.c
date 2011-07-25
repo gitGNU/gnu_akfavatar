@@ -3932,26 +3932,10 @@ avt_say_mb_len (const char *txt, int len)
   return _avt_STATUS;
 }
 
-
-extern int
-avt_tell_mb (const char *txt)
-{
-  wchar_t *wctext;
-
-  if (screen && _avt_STATUS == AVT_NORMAL)
-    {
-      avt_mb_decode (&wctext, txt, SDL_strlen (txt) + 1);
-
-      if (wctext)
-	{
-	  avt_tell (wctext);
-	  SDL_free (wctext);
-	}
-    }
-
-  return _avt_STATUS;
-}
-
+/*
+ * for avt_tell_mb_len  we must convert the whole text
+ * or else analyzing it would be too complicated
+ */
 extern int
 avt_tell_mb_len (const char *txt, int len)
 {
@@ -3968,6 +3952,15 @@ avt_tell_mb_len (const char *txt, int len)
 	  SDL_free (wctext);
 	}
     }
+
+  return _avt_STATUS;
+}
+
+extern int
+avt_tell_mb (const char *txt)
+{
+  if (screen && _avt_STATUS == AVT_NORMAL)
+    avt_tell_mb_len (txt, SDL_strlen (txt));
 
   return _avt_STATUS;
 }
