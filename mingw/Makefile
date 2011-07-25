@@ -102,7 +102,7 @@ avatar.wo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
              $(srcdir)/balloonpointer.xbm $(srcdir)/circle.xbm \
              $(srcdir)/akfavatar.xpm
 	$(CC) -c -I$(srcdir) -I. -I$(srcdir)/mingw $(SDL_CFLAGS) $(CFLAGS) \
-	    -DFORCE_ICONV=1 -o $@ $(srcdir)/avatar.c
+	    -o $@ $(srcdir)/avatar.c
 
 avatar-audio.wo: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h \
                   $(srcdir)/avtinternals.h alert.c
