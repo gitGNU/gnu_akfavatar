@@ -1,5 +1,11 @@
 2011-07-25  Andreas K. Foerster  <info@akfoerster.de>
 
+	* configure:
+	fix config-mingw
+	search lua in /usr/local/cross-tools/i386-mingw32/
+
+2011-07-25  Andreas K. Foerster  <info@akfoerster.de>
+
 	* avatar.c (avt_say_mb_len, avt_say_mb):
 	do the charset conversion directly in avt_say_mb_len
 	=> optimization: far less mallocs
