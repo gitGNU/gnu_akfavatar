@@ -3875,29 +3875,34 @@ avt_say_mb_len (const char *txt, int len)
   /* if there is a rest from last call, try to complete it */
   while (rest_bytes > 0 && rest_bytes < sizeof (rest_buffer))
     {
+      char *rest_buf = (char *) rest_buffer;
+      size_t rest_bytes_left = rest_bytes;
       outbuf = (char *) wctext;
       outbytesleft = sizeof (wctext);
 
-      rest_buffer[rest_bytes] = (char) *inbuf;
+      rest_buffer[rest_bytes] = *inbuf;
       rest_bytes++;
       inbuf++;
       inbytesleft--;
 
-      nconv = avt_iconv (output_cd, (char **) &rest_buffer, &rest_bytes,
+      nconv = avt_iconv (output_cd, &rest_buf, &rest_bytes_left,
 			 &outbuf, &outbytesleft);
       err = errno;
 
-      avt_say_len (wctext,
-		   (sizeof (wctext) - outbytesleft) / sizeof (wchar_t));
-
       if (nconv != (size_t) (-1))	/* no error */
-	rest_bytes = 0;
+	{
+	  avt_say_len (wctext,
+		       (sizeof (wctext) - outbytesleft) / sizeof (wchar_t));
+	  rest_bytes = 0;
+	}
       else if (err != EINVAL)	/* any error, but incomplete sequence */
 	{
 	  avt_put_char (0xFFFD);	/* broken character */
 	  rest_bytes = 0;
 	}
     }
+
+  rest_bytes = 0;
 
   /* convert and display the text */
   while (inbytesleft > 0)
