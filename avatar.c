@@ -3609,7 +3609,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, int src_size)
   restbuf = (char *) rest_buffer;
 
   /* if there is a rest from last call, try to complete it */
-  while (rest_bytes > 0)
+  while (rest_bytes > 0 && inbytesleft > 0)
     {
       rest_buffer[rest_bytes++] = (char) *inbuf;
       inbuf++;
