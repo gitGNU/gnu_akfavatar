@@ -310,6 +310,7 @@ then
   LUA_LDFLAGS="-llua -lm -Wl,-E" # static lib!
 elif [ x"$STATIC_LUA" = x"yes" ]
 then
+  LUA_CFLAGS="-I/usr/local/include/lua5.1"
   if [ -a -r /usr/lib/liblua5.1.a ]
   then
     LUA_LDFLAGS="/usr/lib/liblua5.1.a -lm -Wl,-E"
