@@ -3873,10 +3873,12 @@ avt_say_mb_len (const char *txt, int len)
   inbuf = (char *) txt;
 
   /* if there is a rest from last call, try to complete it */
-  while (rest_bytes > 0 && rest_bytes < sizeof (rest_buffer))
+  while (rest_bytes > 0 && rest_bytes < sizeof (rest_buffer)
+	 && inbytesleft > 0)
     {
-      char *rest_buf = (char *) rest_buffer;
-      size_t rest_bytes_left = rest_bytes;
+      char *rest_buf;
+      size_t rest_bytes_left;
+
       outbuf = (char *) wctext;
       outbytesleft = sizeof (wctext);
 
@@ -3885,8 +3887,12 @@ avt_say_mb_len (const char *txt, int len)
       inbuf++;
       inbytesleft--;
 
-      nconv = avt_iconv (output_cd, &rest_buf, &rest_bytes_left,
-			 &outbuf, &outbytesleft);
+      rest_buf = (char *) rest_buffer;
+      rest_bytes_left = rest_bytes;
+
+      nconv =
+	avt_iconv (output_cd, &rest_buf, &rest_bytes_left, &outbuf,
+		   &outbytesleft);
       err = errno;
 
       if (nconv != (size_t) (-1))	/* no error */
@@ -3901,8 +3907,6 @@ avt_say_mb_len (const char *txt, int len)
 	  rest_bytes = 0;
 	}
     }
-
-  rest_bytes = 0;
 
   /* convert and display the text */
   while (inbytesleft > 0)
