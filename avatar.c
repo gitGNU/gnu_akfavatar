@@ -3559,25 +3559,20 @@ avt_get_mb_encoding (void)
 }
 
 /* size in bytes */
-/* dest must be freed by caller */
+/* returns length (number of characters) */
 extern int
-avt_mb_decode (wchar_t ** dest, const char *src, int src_size)
+avt_mb_decode_buffer (wchar_t * dest, int dest_size,
+		      const char *src, int src_size)
 {
   static char rest_buffer[10];
   static size_t rest_bytes = 0;
   char *outbuf;
   char *inbuf, *restbuf;
-  size_t dest_size;
   size_t inbytesleft, outbytesleft;
   size_t returncode;
 
-  if (!dest)
-    return -1;
-
-  *dest = NULL;
-
-  /* check if size is useful */
-  if (!src || src_size <= 0)
+  /* check if sizes are useful */
+  if (!dest || dest_size <= 0 || !src || src_size <= 0)
     return -1;
 
   /* check if encoding was set */
@@ -3587,25 +3582,9 @@ avt_mb_decode (wchar_t ** dest, const char *src, int src_size)
   inbytesleft = src_size;
   inbuf = (char *) src;
 
-  /* get enough space */
-  /* a character may be 4 Bytes also in UTF-16  */
-  /* +1 for the terminator */
-  dest_size = src_size * 4 + sizeof (wchar_t);
-
-  if (rest_bytes)
-    dest_size++;
-
-  /* minimal string size */
-  if (dest_size < 8)
-    dest_size = 8;
-
-  *dest = (wchar_t *) SDL_malloc (dest_size);
-
-  if (!*dest)
-    return -1;
-
-  outbuf = (char *) *dest;
   outbytesleft = dest_size;
+  outbuf = (char *) dest;
+
   restbuf = (char *) rest_buffer;
 
   /* if there is a rest from last call, try to complete it */
@@ -3649,11 +3628,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, int src_size)
 
   /* check for fatal errors */
   if (returncode == (size_t) (-1) && errno != EINVAL)
-    {
-      SDL_free (*dest);
-      *dest = NULL;
-      return -1;
-    }
+    return -1;
 
   /* check for incomplete sequences and put them into the rest_buffer */
   if (returncode == (size_t) (-1) && errno == EINVAL
@@ -3668,6 +3643,48 @@ avt_mb_decode (wchar_t ** dest, const char *src, int src_size)
     *((wchar_t *) outbuf) = L'\0';
 
   return ((dest_size - outbytesleft) / sizeof (wchar_t));
+}
+
+/* size in bytes */
+/* dest must be freed by caller */
+extern int
+avt_mb_decode (wchar_t ** dest, const char *src, int src_size)
+{
+  size_t dest_size;
+  int length;
+
+  if (!dest)
+    return -1;
+
+  *dest = NULL;
+
+  if (!src || src_size <= 0)
+    return -1;
+
+  /* get enough space */
+  /* a character may be 4 Bytes, also in UTF-16  */
+  /* plus the terminator */
+  dest_size = src_size * 4 + sizeof (wchar_t);
+
+  /* minimal string size */
+  if (dest_size < 8)
+    dest_size = 8;
+
+  *dest = (wchar_t *) SDL_malloc (dest_size);
+
+  if (!*dest)
+    return -1;
+
+  length = avt_mb_decode_buffer (*dest, dest_size, src, src_size);
+
+  if (length <= 0)
+    {
+      SDL_free (*dest);
+      *dest = NULL;
+      return -1;
+    }
+
+  return length;
 }
 
 extern int

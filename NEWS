@@ -6,7 +6,7 @@
     - Code refactoring:
       - use stdbool.h - no longer avt_bool_t, AVT_TRUE, AVT_FALSE
       - an external iconv implementation is now the default
-    - new functions: avt_recode
+    - new functions: avt_recode, avt_mb_decode_buffer
 
   Lua-API changes:
     - new functions: avt.recode
