@@ -367,16 +367,14 @@ prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
 	  if (unicode)
 	    {
 	      wchar_t ch;
-	      char *mbstring;
+	      char mbstring[8];
 	      int length;
 
 	      ch = (wchar_t) unicode;
-	      length = avt_mb_encode (&mbstring, &ch, 1);
-	      if (length != -1)
-		{
-		  avta_term_send (mbstring, length);
-		  avt_free (mbstring);
-		}
+	      length =
+		avt_mb_encode_buffer (mbstring, sizeof (mbstring), &ch, 1);
+	      if (length > 0)
+		avta_term_send (mbstring, length);
 	    }			/* if (unicode) */
 	}			/* switch */
 
