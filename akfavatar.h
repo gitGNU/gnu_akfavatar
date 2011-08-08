@@ -438,6 +438,17 @@ AVT_API int avt_mb_decode_buffer (wchar_t *dest, int dest_size,
 AVT_API int avt_mb_encode (char **dest, const wchar_t *src, int len);
 
 /*
+ * encode a string from wchar_t with a given buffer
+ * len is the length
+ * returns the size of dest (without the termination zero)
+ * or -1 on error
+ * dest should have enough space
+ * (in UTF-8 a character can have up to 4 bytes)
+ */
+AVT_API int avt_mb_encode_buffer (char *dest, int dest_size,
+                                  const wchar_t * src, int len);
+
+/*
  * recode string in string
  * if either tocode or fromcode is NULL, it uses the current mb_encoding
  * the string src must not have incomplete characters at the end

@@ -1,7 +1,8 @@
 2011-07-09  Andreas K. Foerster  <info@akfoerster.de>
 
-	* akfavatar.h, avatar.c (avt_mb_decode_buffer): new function
-	(avt_mb_decode): adapted
+	* akfavatar.h, avatar.c (avt_mb_decode_buffer, avt_mb_encode_buffer):
+	new functions
+	(avt_mb_decode, avt_mb_encode): adapted
 
 2011-07-08  Andreas K. Foerster  <info@akfoerster.de>
 

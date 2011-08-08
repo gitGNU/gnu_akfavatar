@@ -3688,13 +3688,47 @@ avt_mb_decode (wchar_t ** dest, const char *src, int src_size)
 }
 
 extern int
-avt_mb_encode (char **dest, const wchar_t * src, int len)
+avt_mb_encode_buffer (char *dest, int dest_size, const wchar_t * src, int len)
 {
   char *outbuf;
   char *inbuf;
-  size_t dest_size;
   size_t inbytesleft, outbytesleft;
   size_t returncode;
+
+  /* check if sizes are useful */
+  if (!dest || dest_size <= 0 || !src || len <= 0)
+    return -1;
+
+  /* check if encoding was set */
+  if (input_cd == ICONV_UNINITIALIZED)
+    avt_mb_encoding (MB_DEFAULT_ENCODING);
+
+  inbytesleft = len * sizeof (wchar_t);
+  inbuf = (char *) src;
+
+  outbytesleft = dest_size;
+  outbuf = (char *) dest;
+
+  /* do the conversion */
+  returncode =
+    avt_iconv (input_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+
+  /* check for fatal errors */
+  if (returncode == (size_t) (-1))
+    return -1;
+
+  /* terminate outbuf */
+  if (outbytesleft >= sizeof (char))
+    *outbuf = '\0';
+
+  return (dest_size - outbytesleft);
+}
+
+extern int
+avt_mb_encode (char **dest, const wchar_t * src, int len)
+{
+  size_t dest_size;
+  int size;
 
   if (!dest)
     return -1;
@@ -3705,13 +3739,6 @@ avt_mb_encode (char **dest, const wchar_t * src, int len)
   if (!src || len <= 0)
     return -1;
 
-  /* check if encoding was set */
-  if (input_cd == ICONV_UNINITIALIZED)
-    avt_mb_encoding (MB_DEFAULT_ENCODING);
-
-  inbytesleft = len * sizeof (wchar_t);
-  inbuf = (char *) src;
-
   /* get enough space */
   /* UTF-8 may need 4 bytes per character */
   /* +1 for the terminator */
@@ -3721,26 +3748,16 @@ avt_mb_encode (char **dest, const wchar_t * src, int len)
   if (!*dest)
     return -1;
 
-  outbuf = (char *) *dest;
-  outbytesleft = dest_size;
+  size = avt_mb_encode_buffer (*dest, dest_size, src, len);
 
-  /* do the conversion */
-  returncode =
-    avt_iconv (input_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
-
-  /* check for fatal errors */
-  if (returncode == (size_t) (-1) && errno == E2BIG)
+  if (size <= 0)
     {
       SDL_free (*dest);
       *dest = NULL;
       return -1;
     }
 
-  /* terminate outbuf */
-  if (outbytesleft >= sizeof (char))
-    *outbuf = '\0';
-
-  return (dest_size - outbytesleft);
+  return size;
 }
 
 /* dest must be freed by the caller */
