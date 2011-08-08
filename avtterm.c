@@ -80,7 +80,7 @@ static char dec_cursor_seq[3];
 static bool application_keypad;
 
 /* text-buffer */
-static wchar_t *wcbuf = NULL;
+static wchar_t wcbuf[INBUFSIZE + 1];
 static int wcbuf_pos = 0;
 static int wcbuf_len = 0;
 
@@ -164,7 +164,6 @@ avta_term_update_size (void)
     }
 }
 
-/* TODO: make get_character simpler */
 static wint_t
 get_character (int fd)
 {
@@ -174,12 +173,6 @@ get_character (int fd)
     {
       char filebuf[INBUFSIZE];
       ssize_t nread;
-
-      if (wcbuf)
-	{
-	  avt_free (wcbuf);
-	  wcbuf = NULL;
-	}
 
       /* update */
       if (text_delay == 0)
@@ -209,7 +202,8 @@ get_character (int fd)
 	wcbuf_len = -1;
       else			/* nread != -1 */
 	{
-	  wcbuf_len = avt_mb_decode (&wcbuf, (char *) &filebuf, nread);
+	  wcbuf_len = avt_mb_decode_buffer (wcbuf, sizeof (wcbuf),
+					    (const char *) &filebuf, nread);
 	  wcbuf_pos = 0;
 	}
 
@@ -220,10 +214,7 @@ get_character (int fd)
   if (wcbuf_len < 0)
     ch = WEOF;
   else
-    {
-      ch = *(wcbuf + wcbuf_pos);
-      wcbuf_pos++;
-    }
+    ch = wcbuf[wcbuf_pos++];
 
   return ch;
 }
@@ -1477,13 +1468,6 @@ avta_term_run (int fd)
   avt_register_mousehandler (NULL);
   avt_register_keyhandler (NULL);
   prg_input = -1;
-
-  /* release wcbuf */
-  if (wcbuf)
-    {
-      avt_free (wcbuf);
-      wcbuf = NULL;
-    }
 }
 
 extern int

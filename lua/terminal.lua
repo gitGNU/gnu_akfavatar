@@ -9,7 +9,7 @@ require "akfavatar-term"
 avt.initialize {
   title = "AKFAvatar Terminal",
   shortname = "Terminal",
-  avatar = "default",  -- use "none" for most space
+  avatar = "none",
   audio = true, -- for the bell ("\a")
   mode = "auto"
   }

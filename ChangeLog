@@ -1,10 +1,14 @@
-2011-07-09  Andreas K. Foerster  <info@akfoerster.de>
+2011-08-08  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_mb_decode_buffer, avt_mb_encode_buffer):
 	new functions
 	(avt_mb_decode, avt_mb_encode): adapted
 
-2011-07-08  Andreas K. Foerster  <info@akfoerster.de>
+	* avtterm.c: optimization: use static buffer
+
+	* lua/terminal.lua: no avatar
+
+2011-08-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_say_mb_len, avt_decode): fixes
 
