@@ -74,7 +74,7 @@ static bool vt100graphics;
 /* G0 and G1 charset encoding (linux-specific) */
 static const char *G0, *G1;
 
-/* sequence for DEC cursor keys (either [ or O) */
+/* sequence for DEC cursor keys (either Esc[A or EscOA) */
 static char dec_cursor_seq[3];
 
 static bool application_keypad;
@@ -245,6 +245,9 @@ avta_term_send (const char *buf, size_t count)
   while (r > 0 && count > 0);
 }
 
+#define send_cursor_seq(c)  \
+  do { dec_cursor_seq[2]=c; avta_term_send(dec_cursor_seq, 3); } while(0)
+
 static void
 prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
 {
@@ -257,23 +260,19 @@ prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
       switch (sym)
 	{
 	case 273:		/* up arrow */
-	  dec_cursor_seq[2] = 'A';
-	  avta_term_send (dec_cursor_seq, 3);
+	  send_cursor_seq ('A');
 	  break;
 
 	case 274:		/* down arrow */
-	  dec_cursor_seq[2] = 'B';
-	  avta_term_send (dec_cursor_seq, 3);
+	  send_cursor_seq ('B');
 	  break;
 
 	case 275:		/* right arrow */
-	  dec_cursor_seq[2] = 'C';
-	  avta_term_send (dec_cursor_seq, 3);
+	  send_cursor_seq ('C');
 	  break;
 
 	case 276:		/* left arrow */
-	  dec_cursor_seq[2] = 'D';
-	  avta_term_send (dec_cursor_seq, 3);
+	  send_cursor_seq ('D');
 	  break;
 
 	case 277:		/* Insert */
@@ -396,15 +395,9 @@ prg_wheelhandler (int button, bool pressed,
   if (pressed)
     {
       if (button == 4)
-	{
-	  dec_cursor_seq[2] = 'A';
-	  avta_term_send (dec_cursor_seq, 3);
-	}
+	send_cursor_seq ('A');
       else if (button == 5)
-	{
-	  dec_cursor_seq[2] = 'B';
-	  avta_term_send (dec_cursor_seq, 3);
-	}
+	send_cursor_seq ('B');
     }
 }
 
