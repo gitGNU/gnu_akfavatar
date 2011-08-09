@@ -40,7 +40,6 @@
 #define VT100 "VT100 graphics"
 
 /* default encoding - either system encoding or given per parameters */
-/* supported in SDL: ASCII, ISO-8859-1, UTF-8, UTF-16, UTF-32 */
 static const char *default_encoding;
 
 static int prg_input;		/* file descriptor for program input */
@@ -230,19 +229,19 @@ avta_term_send (const char *buf, size_t count)
 {
   ssize_t r;
 
-  if (prg_input <= 0)
-    return;
-
-  do
+  if (prg_input > 0)
     {
-      r = write (prg_input, buf, count);
-      if (r > 0)
+      do
 	{
-	  count -= r;
-	  buf += r;
+	  r = write (prg_input, buf, count);
+	  if (r > 0)
+	    {
+	      count -= r;
+	      buf += r;
+	    }
 	}
+      while (r > 0 && count > 0);
     }
-  while (r > 0 && count > 0);
 }
 
 #define send_cursor_seq(c)  \
@@ -387,9 +386,9 @@ prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
     }				/* if (idle...) */
 }
 
-/* just handling the mouse wheel */
+/* TODO: just mouse wheel supported */
 static void
-prg_wheelhandler (int button, bool pressed,
+prg_mousehandler (int button, bool pressed,
 		  int x AVT_UNUSED, int y AVT_UNUSED)
 {
   if (pressed)
@@ -398,21 +397,16 @@ prg_wheelhandler (int button, bool pressed,
 	send_cursor_seq ('A');
       else if (button == 5)
 	send_cursor_seq ('B');
-    }
-}
+      /*
+         else
+         {
+         char code[7];
 
-/* TODO: prg_mousehandler doesn't work yet */
-static void
-prg_mousehandler (int button, bool pressed, int x, int y)
-{
-  char code[7];
-
-  /* X10 method */
-  if (pressed)
-    {
-      snprintf (code, sizeof (code), "\033[M%c%c%c",
-		(char) (040 + button), (char) (040 + x), (char) (040 + y));
-      avta_term_send (&code[0], sizeof (code) - 1);
+         snprintf (code, sizeof (code), "\033[M%c%c%c",
+         (char) (040 + button),
+         (char) (040 + x), (char) (040 + y));
+         avta_term_send (&code[0], sizeof (code) - 1);
+         } */
     }
 }
 
@@ -584,6 +578,7 @@ ansi_graphic_code (int mode)
       break;
 
     case 5:			/* blink */
+      /* unsupported */
       break;
 
     case 22:			/* normal intensity */
@@ -596,6 +591,7 @@ ansi_graphic_code (int mode)
       break;
 
     case 25:			/* blink off */
+      /* unsupported */
       break;
 
     case 7:			/* inverse */
@@ -1414,10 +1410,8 @@ avta_term_run (int fd)
   dec_cursor_seq[1] = '[';
   dec_cursor_seq[2] = ' ';	/* to be filled later */
   avt_register_keyhandler (prg_keyhandler);
-  avt_register_mousehandler (prg_wheelhandler);
-  avt_set_mouse_visible (false);
-  /* TODO: mouse clicks don't work yet */
-  /* avt_register_mousehandler (prg_mousehandler); */
+  avt_register_mousehandler (prg_mousehandler);
+  avt_set_mouse_visible (false);	/* TODO: just wheel supported */
 
   reset_terminal ();
   avt_lock_updates (true);
