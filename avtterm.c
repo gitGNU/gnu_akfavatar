@@ -74,15 +74,10 @@ static bool vt100graphics;
 /* G0 and G1 charset encoding (linux-specific) */
 static const char *G0, *G1;
 
-/* character for DEC cursor keys (either [ or O) */
+/* sequence for DEC cursor keys (either [ or O) */
 static char dec_cursor_seq[3];
 
 static bool application_keypad;
-
-/* text-buffer */
-static wchar_t wcbuf[INBUFSIZE + 1];
-static int wcbuf_pos = 0;
-static int wcbuf_len = 0;
 
 static const wchar_t vt100trans[] = {
   0x00A0, 0x25C6, 0x2592, 0x2409, 0x240C, 0x240D,
@@ -164,12 +159,23 @@ avta_term_update_size (void)
     }
 }
 
+#define clear_textbuffer(void)  get_character(-1)
+
 static wint_t
 get_character (int fd)
 {
+  static wchar_t textbuffer[INBUFSIZE];
+  static int textbuffer_pos = 0;
+  static int textbuffer_len = 0;
   wchar_t ch;
 
-  if (wcbuf_pos >= wcbuf_len)
+  if (fd == -1)			/* clear textbuffer */
+    {
+      textbuffer_pos = textbuffer_len = 0;
+      return WEOF;
+    }
+
+  if (textbuffer_pos >= textbuffer_len)
     {
       char filebuf[INBUFSIZE];
       ssize_t nread;
@@ -178,8 +184,7 @@ get_character (int fd)
       if (text_delay == 0)
 	avt_lock_updates (false);
 
-      /* reserve one byte for a terminator */
-      nread = read (fd, &filebuf, sizeof (filebuf) - 1);
+      nread = read (fd, &filebuf, sizeof (filebuf));
 
       /* waiting for data */
       if (nread == -1 && errno == EAGAIN)
@@ -189,7 +194,7 @@ get_character (int fd)
 	  idle = true;
 	  do
 	    {
-	      nread = read (fd, &filebuf, sizeof (filebuf) - 1);
+	      nread = read (fd, &filebuf, sizeof (filebuf));
 	    }
 	  while (nread == -1 && errno == EAGAIN
 		 && avt_update () == AVT_NORMAL);
@@ -199,22 +204,23 @@ get_character (int fd)
 	}
 
       if (nread == -1)
-	wcbuf_len = -1;
+	textbuffer_len = -1;
       else			/* nread != -1 */
 	{
-	  wcbuf_len = avt_mb_decode_buffer (wcbuf, sizeof (wcbuf),
-					    (const char *) &filebuf, nread);
-	  wcbuf_pos = 0;
+	  textbuffer_len =
+	    avt_mb_decode_buffer (textbuffer, sizeof (textbuffer),
+				  (const char *) &filebuf, nread);
+	  textbuffer_pos = 0;
 	}
 
       if (text_delay == 0)
 	avt_lock_updates (true);
     }
 
-  if (wcbuf_len < 0)
+  if (textbuffer_len < 0)
     ch = WEOF;
   else
-    ch = wcbuf[wcbuf_pos++];
+    ch = textbuffer[textbuffer_pos++];
 
   return ch;
 }
@@ -702,8 +708,7 @@ ansi_graphic_code (int mode)
 static void
 reset_terminal (void)
 {
-  /* clear text-buffer */
-  wcbuf_pos = wcbuf_len = 0;
+  clear_textbuffer ();
 
   region_min_y = 1;
   region_max_y = max_y;
@@ -727,9 +732,6 @@ reset_terminal (void)
   dec_cursor_seq[0] = '\033';
   dec_cursor_seq[1] = '[';
 }
-
-#define ESC_UNUPPORTED "unsupported escape sequence"
-#define CSI_UNUPPORTED "unsupported CSI sequence"
 
 
 /* Esc [ ... */
@@ -1160,7 +1162,7 @@ CSI_sequence (int fd, avt_char last_character)
 
 #ifdef DEBUG
     default:
-      avta_warning (CSI_UNUPPORTED, sequence);
+      avta_warning ("unsupported CSI sequence", sequence);
 #endif
     }
 }
@@ -1390,7 +1392,7 @@ escape_sequence (int fd, avt_char last_character)
       break;
 
     default:
-      fprintf (stderr, ESC_UNUPPORTED " %lc\n", ch);
+      fprintf (stderr, "unsupported escape sequence %lc\n", ch);
       break;
     }
 }
@@ -1472,8 +1474,7 @@ extern int
 avta_term_start (const char *system_encoding, const char *working_dir,
 		 char *prg_argv[])
 {
-  /* clear text-buffer */
-  wcbuf_pos = wcbuf_len = 0;
+  clear_textbuffer ();
   default_encoding = system_encoding;
 
   max_x = avt_get_max_x ();
