@@ -222,7 +222,6 @@ get_character (int fd)
 	ch = WEOF;
       else
 	ch = textbuffer[textbuffer_pos++];
-
     }
   while (ch == L'\0');
 
