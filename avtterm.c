@@ -174,52 +174,57 @@ get_character (int fd)
       return WEOF;
     }
 
-  if (textbuffer_pos >= textbuffer_len)
+  do
     {
-      char filebuf[INBUFSIZE];
-      ssize_t nread;
-
-      /* update */
-      if (text_delay == 0)
-	avt_lock_updates (false);
-
-      nread = read (fd, &filebuf, sizeof (filebuf));
-
-      /* waiting for data */
-      if (nread == -1 && errno == EAGAIN)
+      if (textbuffer_pos >= textbuffer_len)
 	{
-	  if (cursor_active)
-	    avt_activate_cursor (true);
-	  idle = true;
-	  do
+	  char filebuf[INBUFSIZE];
+	  ssize_t nread;
+
+	  /* update */
+	  if (text_delay == 0)
+	    avt_lock_updates (false);
+
+	  nread = read (fd, &filebuf, sizeof (filebuf));
+
+	  /* waiting for data */
+	  if (nread == -1 && errno == EAGAIN)
 	    {
-	      nread = read (fd, &filebuf, sizeof (filebuf));
+	      if (cursor_active)
+		avt_activate_cursor (true);
+	      idle = true;
+	      do
+		{
+		  nread = read (fd, &filebuf, sizeof (filebuf));
+		}
+	      while (nread == -1 && errno == EAGAIN
+		     && avt_update () == AVT_NORMAL);
+	      idle = false;
+	      if (cursor_active)
+		avt_activate_cursor (false);
 	    }
-	  while (nread == -1 && errno == EAGAIN
-		 && avt_update () == AVT_NORMAL);
-	  idle = false;
-	  if (cursor_active)
-	    avt_activate_cursor (false);
+
+	  if (nread == -1)
+	    textbuffer_len = -1;
+	  else			/* nread != -1 */
+	    {
+	      textbuffer_len =
+		avt_mb_decode_buffer (textbuffer, sizeof (textbuffer),
+				      (const char *) &filebuf, nread);
+	      textbuffer_pos = 0;
+	    }
+
+	  if (text_delay == 0)
+	    avt_lock_updates (true);
 	}
 
-      if (nread == -1)
-	textbuffer_len = -1;
-      else			/* nread != -1 */
-	{
-	  textbuffer_len =
-	    avt_mb_decode_buffer (textbuffer, sizeof (textbuffer),
-				  (const char *) &filebuf, nread);
-	  textbuffer_pos = 0;
-	}
+      if (textbuffer_len < 0)
+	ch = WEOF;
+      else
+	ch = textbuffer[textbuffer_pos++];
 
-      if (text_delay == 0)
-	avt_lock_updates (true);
     }
-
-  if (textbuffer_len < 0)
-    ch = WEOF;
-  else
-    ch = textbuffer[textbuffer_pos++];
+  while (ch == L'\0');
 
   return ch;
 }
@@ -734,9 +739,7 @@ CSI_sequence (int fd, avt_char last_character)
 
   do
     {
-      do
-	ch = get_character (fd);
-      while (ch == L'\0');
+      ch = get_character (fd);
 
       /* ignore CSI [ + one character */
       if (pos == 0 && ch == L'[')
@@ -1193,9 +1196,7 @@ OSC_sequence (int fd)
   wchar_t ch, old;
   int i;
 
-  do
-    ch = get_character (fd);
-  while (ch == L'\0');
+  ch = get_character (fd);
 
   if (ch == L'P')		/* set palette (Linux) */
     {
@@ -1226,9 +1227,7 @@ escape_sequence (int fd, avt_char last_character)
   static bool saved_underline_state, saved_bold_state;
   static const char *saved_G0, *saved_G1;
 
-  do
-    ch = get_character (fd);
-  while (ch == L'\0');
+  ch = get_character (fd);
 
 #ifdef DEBUG
   if (ch != L'[')
@@ -1268,9 +1267,8 @@ escape_sequence (int fd, avt_char last_character)
     case L'%':			/* select charset */
       {
 	wchar_t ch2;
-	do
-	  ch2 = get_character (fd);
-	while (ch2 == L'\0');
+
+	ch2 = get_character (fd);
 	if (ch2 == L'@')
 	  set_encoding (G0);	/* unsure */
 	else if (ch2 == L'G' || ch2 == L'8' /* obsolete */ )
@@ -1284,9 +1282,8 @@ escape_sequence (int fd, avt_char last_character)
     case L'(':			/* set G0 */
       {
 	wchar_t ch2;
-	do
-	  ch2 = get_character (fd);
-	while (ch2 == L'\0');
+
+	ch2 = get_character (fd);
 	if (ch2 == L'B')
 	  G0 = "ISO-8859-1";
 	else if (ch2 == L'0')
@@ -1301,9 +1298,8 @@ escape_sequence (int fd, avt_char last_character)
     case L')':			/* set G1 */
       {
 	wchar_t ch2;
-	do
-	  ch2 = get_character (fd);
-	while (ch2 == L'\0');
+
+	ch2 = get_character (fd);
 	if (ch2 == L'B')
 	  G1 = "ISO-8859-1";
 	else if (ch2 == L'0')
