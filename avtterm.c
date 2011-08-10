@@ -768,6 +768,15 @@ reset_terminal (void)
   dec_cursor_seq[1] = '[';
 }
 
+/* full reset - eventually draws the balloon */
+static void
+full_reset (void)
+{
+  reset_terminal ();
+  avt_viewport (1, region_min_y, max_x, region_max_y);
+  avt_clear ();
+  avt_save_position ();
+}
 
 /* Esc [ ... */
 /* CSI */
@@ -972,6 +981,10 @@ CSI_sequence (int fd, avt_char last_character)
 	    case 66:
 	      application_keypad = true;
 	      break;
+	    case 47:		/* Use Alternate Screen Buffer */
+	      /* Workaround - no Alternate Screen Buffer supported */
+	      full_reset ();
+	      break;
 	    }
 	}
       else
@@ -1017,6 +1030,10 @@ CSI_sequence (int fd, avt_char last_character)
 	      break;
 	    case 66:
 	      application_keypad = false;
+	      break;
+	    case 47:		/* Use Alternate Screen Buffer */
+	      /* Workaround - no Alternate Screen Buffer supported */
+	      full_reset ();
 	      break;
 	    }
 	}
@@ -1362,10 +1379,7 @@ escape_sequence (int fd, avt_char last_character)
       break;
 
     case L'c':			/* RIS - reset device */
-      reset_terminal ();
-      avt_clear ();
-      avt_save_position ();
-      avt_viewport (1, region_min_y, max_x, region_max_y);
+      full_reset ();
       saved_text_color = text_color;
       saved_text_background_color = text_background_color;
       break;

@@ -8,6 +8,8 @@
 
 	* avatar.c (avt_initialize): don't ignore mouse button releases
 
+	* avtterm.c: workaround: reset instead switching alternate-screens
+
 2011-08-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtterm.c: refactoring
