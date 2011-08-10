@@ -949,87 +949,44 @@ CSI_sequence (int fd, avt_char last_character)
       break;
 
     case L'h':			/* DECSET */
-      if (sequence[0] == '?')
-	{
-	  int val = strtol (&sequence[1], NULL, 10);
-	  switch (val)
-	    {
-	    case 1:
-	      dec_cursor_seq[1] = 'O';
-	      break;
-	    case 5:		/* hack: non-standard! */
-	      /* by definition it is reverse video */
-	      avt_flash ();
-	      break;
-	    case 6:
-	      avt_set_origin_mode (true);
-	      break;
-	    case 9:		/* X10 mouse */
-	      mouse_mode = 1;
-	      avt_set_mouse_visible (true);
-	      break;
-	    case 1000:		/* X11 mouse */
-	      mouse_mode = 2;
-	      avt_set_mouse_visible (true);
-	      break;
-	    case 25:
-	      activate_cursor (true);
-	      break;
-	    case 56:		/* AKFAvatar extension */
-	      avta_term_slowprint (true);
-	      break;
-	    case 66:
-	      application_keypad = true;
-	      break;
-	    case 47:		/* Use Alternate Screen Buffer */
-	      /* Workaround - no Alternate Screen Buffer supported */
-	      full_reset ();
-	      break;
-	    }
-	}
-      else
-	{
-	  int val = strtol (sequence, NULL, 10);
-	  switch (val)
-	    {
-	    case 4:
-	      insert_mode = true;
-	      break;
-	    case 20:
-	      avt_newline_mode (true);
-	      break;
-	    }
-	}
-      break;
-
     case L'l':			/* DECRST */
       if (sequence[0] == '?')
 	{
 	  int val = strtol (&sequence[1], NULL, 10);
+	  bool on = (ch == L'h');
+
 	  switch (val)
 	    {
 	    case 1:
-	      dec_cursor_seq[1] = '[';
+	      dec_cursor_seq[1] = on ? 'O' : '[';
 	      break;
-	    case 5:
-	      /* ignored, see 'h' above */
+	    case 5:		/* hack: non-standard! */
+	      /* by definition it is reverse video */
+	      if (on)
+		avt_flash ();
 	      break;
 	    case 6:
-	      avt_set_origin_mode (false);
+	      avt_set_origin_mode (on);
+	      break;
+	    case 7:
+	      avt_set_auto_margin (on);
 	      break;
 	    case 9:		/* X10 mouse */
+	      mouse_mode = on ? 1 : 0;
+	      avt_set_mouse_visible (on);
+	      break;
 	    case 1000:		/* X11 mouse */
-	      mouse_mode = 0;
-	      avt_set_mouse_visible (false);
+	      mouse_mode = on ? 2 : 0;
+	      avt_set_mouse_visible (on);
 	      break;
 	    case 25:
-	      activate_cursor (false);
+	      activate_cursor (on);
 	      break;
 	    case 56:		/* AKFAvatar extension */
-	      avta_term_slowprint (false);
+	      avta_term_slowprint (on);
 	      break;
 	    case 66:
-	      application_keypad = false;
+	      application_keypad = on;
 	      break;
 	    case 47:		/* Use Alternate Screen Buffer */
 	      /* Workaround - no Alternate Screen Buffer supported */
@@ -1040,13 +997,15 @@ CSI_sequence (int fd, avt_char last_character)
       else
 	{
 	  int val = strtol (sequence, NULL, 10);
+	  bool on = (ch == L'h');
+
 	  switch (val)
 	    {
 	    case 4:
-	      insert_mode = false;
+	      insert_mode = on;
 	      break;
 	    case 20:
-	      avt_newline_mode (false);
+	      avt_newline_mode (on);
 	      break;
 	    }
 	}
