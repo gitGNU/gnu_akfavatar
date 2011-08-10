@@ -33,8 +33,12 @@
 /* size for input buffer */
 #define INBUFSIZE 1024
 
+#define ESC  "\033"
+#define CSI  ESC "["
+
 /* device attribute (DEC) */
-#define DS "\033[?1;2c"		/* claim to be a vt100 with advanced video */
+/* claim to be a vt100 with advanced video */
+#define DS  CSI "?1;2c"
 
 /* Vt100 graphics is handled internaly */
 #define VT100 "VT100 graphics"
@@ -279,96 +283,96 @@ prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
 	  break;
 
 	case 277:		/* Insert */
-	  /* avta_term_send_literal ("\033[L"); */
-	  avta_term_send_literal ("\033[2~");	/* linux */
+	  /* avta_term_send_literal (CSI "L"); */
+	  avta_term_send_literal (CSI "2~");	/* linux */
 	  break;
 
 	case 278:		/* Home */
-	  /* avta_term_send_literal ("\033[H"); */
-	  avta_term_send_literal ("\033[1~");	/* linux */
+	  /* avta_term_send_literal (CSI "H"); */
+	  avta_term_send_literal (CSI "1~");	/* linux */
 	  break;
 
 	case 279:		/* End */
-	  /* avta_term_send_literal ("\033[0w"); */
-	  avta_term_send_literal ("\033[4~");	/* linux */
+	  /* avta_term_send_literal (CSI "0w"); */
+	  avta_term_send_literal (CSI "4~");	/* linux */
 	  break;
 
 	case 280:		/* Page up */
-	  avta_term_send_literal ("\033[5~");	/* linux */
+	  avta_term_send_literal (CSI "5~");	/* linux */
 	  break;
 
 	case 281:		/* Page down */
-	  avta_term_send_literal ("\033[6~");	/* linux */
+	  avta_term_send_literal (CSI "6~");	/* linux */
 	  break;
 
 	case 282:		/* F1 */
-	  avta_term_send_literal ("\033[[A");	/* linux */
-	  /* avta_term_send_literal ("\033OP"); *//* DEC */
+	  avta_term_send_literal (CSI "[A");	/* linux */
+	  /* avta_term_send_literal (ESC "OP"); *//* DEC */
 	  break;
 
 	case 283:		/* F2 */
-	  avta_term_send_literal ("\033[[B");	/* linux */
-	  /* avta_term_send_literal ("\033OQ"); *//* DEC */
+	  avta_term_send_literal (CSI "[B");	/* linux */
+	  /* avta_term_send_literal (ESC "OQ"); *//* DEC */
 	  break;
 
 	case 284:		/* F3 */
-	  avta_term_send_literal ("\033[[C");	/* linux */
-	  /* avta_term_send_literal ("\033OR"); *//* DEC */
+	  avta_term_send_literal (CSI "[C");	/* linux */
+	  /* avta_term_send_literal (ESC "OR"); *//* DEC */
 	  break;
 
 	case 285:		/* F4 */
-	  avta_term_send_literal ("\033[[D");	/* linux */
-	  /* avta_term_send_literal ("\033OS"); *//* DEC */
+	  avta_term_send_literal (CSI "[D");	/* linux */
+	  /* avta_term_send_literal (ESC "OS"); *//* DEC */
 	  break;
 
 	case 286:		/* F5 */
-	  avta_term_send_literal ("\033[[E");	/* linux */
-	  /* avta_term_send ("\033Ot", 3); *//* DEC */
+	  avta_term_send_literal (CSI "[E");	/* linux */
+	  /* avta_term_send (ESC "Ot", 3); *//* DEC */
 	  break;
 
 	case 287:		/* F6 */
-	  avta_term_send_literal ("\033[17~");	/* linux */
-	  /* avta_term_send_literal ("\033Ou"); *//* DEC */
+	  avta_term_send_literal (CSI "17~");	/* linux */
+	  /* avta_term_send_literal (ESC "Ou"); *//* DEC */
 	  break;
 
 	case 288:		/* F7 */
-	  avta_term_send_literal ("\033[[18~");	/* linux */
-	  /* avta_term_send_literal ("\033Ov"); *//* DEC */
+	  avta_term_send_literal (CSI "18~");	/* linux */
+	  /* avta_term_send_literal (ESC "Ov"); *//* DEC */
 	  break;
 
 	case 289:		/* F8 */
-	  avta_term_send_literal ("\033[19~");	/* linux */
-	  /* avta_term_send_literal ("\033Ol"); *//* DEC */
+	  avta_term_send_literal (CSI "19~");	/* linux */
+	  /* avta_term_send_literal (ESC "Ol"); *//* DEC */
 	  break;
 
 	case 290:		/* F9 */
-	  avta_term_send_literal ("\033[20~");	/* linux */
-	  /* avta_term_send_literal ("\033Ow"); *//* DEC */
+	  avta_term_send_literal (CSI "20~");	/* linux */
+	  /* avta_term_send_literal (ESC "Ow"); *//* DEC */
 	  break;
 
 	case 291:		/* F10 */
-	  avta_term_send_literal ("\033[21~");	/* linux */
-	  /* avta_term_send_literal ("\033Ox"); *//* DEC */
+	  avta_term_send_literal (CSI "21~");	/* linux */
+	  /* avta_term_send_literal (ESC "Ox"); *//* DEC */
 	  break;
 
 	case 292:		/* F11 */
-	  avta_term_send_literal ("\033[23~");	/* linux */
+	  avta_term_send_literal (CSI "23~");	/* linux */
 	  break;
 
 	case 293:		/* F12 */
-	  avta_term_send_literal ("\033[24~");	/* linux */
+	  avta_term_send_literal (CSI "24~");	/* linux */
 	  break;
 
 	case 294:		/* F13 */
-	  avta_term_send_literal ("\033[25~");	/* linux */
+	  avta_term_send_literal (CSI "25~");	/* linux */
 	  break;
 
 	case 295:		/* F14 */
-	  avta_term_send_literal ("\033[26~");	/* linux */
+	  avta_term_send_literal (CSI "26~");	/* linux */
 	  break;
 
 	case 296:		/* F15 */
-	  avta_term_send_literal ("\033[27~");	/* linux */
+	  avta_term_send_literal (CSI "27~");	/* linux */
 	  break;
 
 	default:
@@ -406,7 +410,7 @@ prg_mousehandler (int button, bool pressed,
          {
          char code[7];
 
-         snprintf (code, sizeof (code), "\033[M%c%c%c",
+         snprintf (code, sizeof (code), CSI "M%c%c%c",
          (char) (040 + button),
          (char) (040 + x), (char) (040 + y));
          avta_term_send (&code[0], sizeof (code) - 1);
@@ -1039,13 +1043,13 @@ CSI_sequence (int fd, avt_char last_character)
 
     case L'n':			/* DSR */
       if (sequence[0] == '5' && sequence[1] == 'n')
-	avta_term_send_literal ("\033[0n");	/* device okay */
-      /* "\033[3n" for failure */
+	avta_term_send_literal (CSI "0n");	/* device okay */
+      /* CSI "3n" for failure */
       else if (sequence[0] == '6' && sequence[1] == 'n')
 	{
 	  /* report cursor position */
 	  char s[80];
-	  snprintf (s, sizeof (s), "\033[%d;%dR",
+	  snprintf (s, sizeof (s), CSI "%d;%dR",
 		    avt_where_x (), avt_where_y ());
 	  avta_term_send (s, strlen (s));
 	}

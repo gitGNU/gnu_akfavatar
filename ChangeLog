@@ -2,6 +2,8 @@
 
 	* avtaddons.h, avtterm.c (avta_term_send_literal): new macro
 
+	* avtterm.c: fix key F7, more refactoring
+
 2011-08-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtterm.c: refactoring
