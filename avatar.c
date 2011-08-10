@@ -6908,7 +6908,6 @@ avt_initialize (const char *title, const char *shortname,
 
   /* ignore what we don't use */
   SDL_EventState (SDL_MOUSEMOTION, SDL_IGNORE);
-  SDL_EventState (SDL_MOUSEBUTTONUP, SDL_IGNORE);
   SDL_EventState (SDL_KEYUP, SDL_IGNORE);
 
   /* visual flash for the alert */
