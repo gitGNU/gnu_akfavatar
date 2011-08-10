@@ -25,6 +25,7 @@
 #include "akfavatar.h"
 #include "avttermsys.h"
 #include "avtaddons.h"
+#include "SDL_keysym.h"
 #include <wchar.h>
 #include <errno.h>
 #include <stdio.h>
@@ -312,99 +313,99 @@ prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
 
       switch (sym)
 	{
-	case 273:		/* up arrow */
+	case SDLK_UP:
 	  send_cursor_seq ('A');
 	  break;
 
-	case 274:		/* down arrow */
+	case SDLK_DOWN:
 	  send_cursor_seq ('B');
 	  break;
 
-	case 275:		/* right arrow */
+	case SDLK_RIGHT:
 	  send_cursor_seq ('C');
 	  break;
 
-	case 276:		/* left arrow */
+	case SDLK_LEFT:
 	  send_cursor_seq ('D');
 	  break;
 
-	case 277:		/* Insert */
+	case SDLK_INSERT:
 	  avta_term_send_literal (KEY_INSERT);
 	  break;
 
-	case 278:		/* Home */
+	case SDLK_HOME:
 	  avta_term_send_literal (KEY_HOME);
 	  break;
 
-	case 279:		/* End */
+	case SDLK_END:
 	  avta_term_send_literal (KEY_END);
 	  break;
 
-	case 280:		/* Page up */
+	case SDLK_PAGEUP:
 	  avta_term_send_literal (KEY_PAGEUP);
 	  break;
 
-	case 281:		/* Page down */
+	case SDLK_PAGEDOWN:
 	  avta_term_send_literal (KEY_PAGEDOWN);
 	  break;
 
-	case 282:		/* F1 */
+	case SDLK_F1:
 	  avta_term_send_literal (KEY_F1);
 	  break;
 
-	case 283:		/* F2 */
+	case SDLK_F2:
 	  avta_term_send_literal (KEY_F1);
 	  break;
 
-	case 284:		/* F3 */
+	case SDLK_F3:
 	  avta_term_send_literal (KEY_F3);
 	  break;
 
-	case 285:		/* F4 */
+	case SDLK_F4:
 	  avta_term_send_literal (KEY_F4);
 	  break;
 
-	case 286:		/* F5 */
+	case SDLK_F5:
 	  avta_term_send_literal (KEY_F5);
 	  break;
 
-	case 287:		/* F6 */
+	case SDLK_F6:
 	  avta_term_send_literal (KEY_F6);
 	  break;
 
-	case 288:		/* F7 */
+	case SDLK_F7:
 	  avta_term_send_literal (KEY_F7);
 	  break;
 
-	case 289:		/* F8 */
+	case SDLK_F8:
 	  avta_term_send_literal (KEY_F8);
 	  break;
 
-	case 290:		/* F9 */
+	case SDLK_F9:
 	  avta_term_send_literal (KEY_F9);
 	  break;
 
-	case 291:		/* F10 */
+	case SDLK_F10:
 	  avta_term_send_literal (KEY_F10);
 	  break;
 
-	case 292:		/* F11 */
+	case SDLK_F11:
 	  avta_term_send_literal (KEY_F11);
 	  break;
 
-	case 293:		/* F12 */
+	case SDLK_F12:
 	  avta_term_send_literal (KEY_F12);
 	  break;
 
-	case 294:		/* F13 */
+	case SDLK_F13:
 	  avta_term_send_literal (KEY_F13);
 	  break;
 
-	case 295:		/* F14 */
+	case SDLK_F14:
 	  avta_term_send_literal (KEY_F14);
 	  break;
 
-	case 296:		/* F15 */
+	case SDLK_F15:
 	  avta_term_send_literal (KEY_F15);
 	  break;
 
