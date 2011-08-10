@@ -751,6 +751,7 @@ reset_terminal (void)
 
   avt_reserve_single_keys (true);
   avt_newline_mode (false);
+  avt_set_auto_margin (true);
   activate_cursor (true);
   avt_set_scroll_mode (1);
   vt100graphics = false;
