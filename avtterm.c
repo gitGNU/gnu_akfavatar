@@ -127,6 +127,9 @@ static const char *G0, *G1;
 /* sequence for DEC cursor keys (either Esc[A or EscOA) */
 static char dec_cursor_seq[3];
 
+/* mode for mouse: 0: no mouse, 1: X10, 2: X11 */
+static int mouse_mode;
+
 static bool application_keypad;
 
 static const wchar_t vt100trans[] = {
@@ -428,27 +431,28 @@ prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
     }				/* if (idle...) */
 }
 
-/* TODO: just mouse wheel supported */
+/* mouse wheel simulates cursor keys */
+/* TODO: clicking works only for xterm */
 static void
-prg_mousehandler (int button, bool pressed,
-		  int x AVT_UNUSED, int y AVT_UNUSED)
+prg_mousehandler (int button, bool pressed, int x, int y)
 {
-  if (pressed)
+  if (pressed && button == 4)	/* wheel up */
+    send_cursor_seq ('A');	/* cursor key up */
+  else if (pressed && button == 5)	/* wheel down */
+    send_cursor_seq ('B');	/* cursor key down */
+  else if (button <= 3 && ((mouse_mode == 1 && pressed) || mouse_mode == 2))
     {
-      if (button == 4)
-	send_cursor_seq ('A');
-      else if (button == 5)
-	send_cursor_seq ('B');
-      /*
-         else
-         {
-         char code[7];
+      char code[7];
+      int b;
 
-         snprintf (code, sizeof (code), CSI "M%c%c%c",
-         (char) (040 + button),
-         (char) (040 + x), (char) (040 + y));
-         avta_term_send (&code[0], sizeof (code) - 1);
-         } */
+      if (mouse_mode == 2 && !pressed)
+	b = 3;			/* button released */
+      else
+	b = button - 1;
+
+      snprintf (code, sizeof (code), CSI "M%c%c%c",
+		(char) (040 + b), (char) (040 + x), (char) (040 + y));
+      avta_term_send (&code[0], sizeof (code) - 1);
     }
 }
 
@@ -952,8 +956,12 @@ CSI_sequence (int fd, avt_char last_character)
 	      avt_set_origin_mode (true);
 	      break;
 	    case 9:		/* X10 mouse */
-	      /* TODO: mouse doesn't work yet */
-	      /* avt_register_mousehandler (prg_mousehandler); */
+	      mouse_mode = 1;
+	      avt_set_mouse_visible (true);
+	      break;
+	    case 1000:		/* X11 mouse */
+	      mouse_mode = 2;
+	      avt_set_mouse_visible (true);
 	      break;
 	    case 25:
 	      activate_cursor (true);
@@ -997,8 +1005,9 @@ CSI_sequence (int fd, avt_char last_character)
 	      avt_set_origin_mode (false);
 	      break;
 	    case 9:		/* X10 mouse */
-	      /* TODO: mouse doesn't work yet */
-	      /* avt_register_mousehandler (NULL); */
+	    case 1000:		/* X11 mouse */
+	      mouse_mode = 0;
+	      avt_set_mouse_visible (false);
 	      break;
 	    case 25:
 	      activate_cursor (false);

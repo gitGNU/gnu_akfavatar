@@ -4,6 +4,8 @@
 
 	* avtterm.c: fix key F7, more refactoring
 
+	* avtterm.c: code for mouse support (not working yet)
+
 2011-08-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtterm.c: refactoring
