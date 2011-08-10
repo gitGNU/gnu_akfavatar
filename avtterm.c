@@ -43,6 +43,52 @@
 /* Vt100 graphics is handled internaly */
 #define VT100 "VT100 graphics"
 
+#define TERM_LINUX 1
+
+#ifdef TERM_LINUX
+#define KEY_HOME      CSI "1~"
+#define KEY_INSERT    CSI "2~"
+#define KEY_END       CSI "4~"
+#define KEY_PAGEUP    CSI "5~"
+#define KEY_PAGEDOWN  CSI "6~"
+#define KEY_F1        CSI "[A"
+#define KEY_F2        CSI "[B"
+#define KEY_F3        CSI "[C"
+#define KEY_F4        CSI "[D"
+#define KEY_F5        CSI "[E"
+#define KEY_F6        CSI "17~"
+#define KEY_F7        CSI "18~"
+#define KEY_F8        CSI "19~"
+#define KEY_F9        CSI "20~"
+#define KEY_F10       CSI "21~"
+#define KEY_F11       CSI "23~"
+#define KEY_F12       CSI "24~"
+#define KEY_F13       CSI "25~"
+#define KEY_F14       CSI "26~"
+#define KEY_F15       CSI "27~"
+#else /* DEC compatible (unsure) */
+#define KEY_HOME      CSI "H"
+#define KEY_INSERT    CSI "L"
+#define KEY_END       CSI "0w"
+#define KEY_PAGEUP    CSI "5~"
+#define KEY_PAGEDOWN  CSI "6~"
+#define KEY_F1        ESC "OP"
+#define KEY_F2        ESC "OQ"
+#define KEY_F3        ESC "OR"
+#define KEY_F4        ESC "OS"
+#define KEY_F5        ESC "Ot"
+#define KEY_F6        ESC "Ou"
+#define KEY_F7        ESC "Ov"
+#define KEY_F8        ESC "Ol"
+#define KEY_F9        ESC "Ow"
+#define KEY_F10       ESC "Ox"
+#define KEY_F11       CSI "23~"
+#define KEY_F12       CSI "24~"
+#define KEY_F13       CSI "25~"
+#define KEY_F14       CSI "26~"
+#define KEY_F15       CSI "27~"
+#endif
+
 /* default encoding - either system encoding or given per parameters */
 static const char *default_encoding;
 
@@ -283,96 +329,83 @@ prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
 	  break;
 
 	case 277:		/* Insert */
-	  /* avta_term_send_literal (CSI "L"); */
-	  avta_term_send_literal (CSI "2~");	/* linux */
+	  avta_term_send_literal (KEY_INSERT);
 	  break;
 
 	case 278:		/* Home */
-	  /* avta_term_send_literal (CSI "H"); */
-	  avta_term_send_literal (CSI "1~");	/* linux */
+	  avta_term_send_literal (KEY_HOME);
 	  break;
 
 	case 279:		/* End */
-	  /* avta_term_send_literal (CSI "0w"); */
-	  avta_term_send_literal (CSI "4~");	/* linux */
+	  avta_term_send_literal (KEY_END);
 	  break;
 
 	case 280:		/* Page up */
-	  avta_term_send_literal (CSI "5~");	/* linux */
+	  avta_term_send_literal (KEY_PAGEUP);
 	  break;
 
 	case 281:		/* Page down */
-	  avta_term_send_literal (CSI "6~");	/* linux */
+	  avta_term_send_literal (KEY_PAGEDOWN);
 	  break;
 
 	case 282:		/* F1 */
-	  avta_term_send_literal (CSI "[A");	/* linux */
-	  /* avta_term_send_literal (ESC "OP"); *//* DEC */
+	  avta_term_send_literal (KEY_F1);
 	  break;
 
 	case 283:		/* F2 */
-	  avta_term_send_literal (CSI "[B");	/* linux */
-	  /* avta_term_send_literal (ESC "OQ"); *//* DEC */
+	  avta_term_send_literal (KEY_F1);
 	  break;
 
 	case 284:		/* F3 */
-	  avta_term_send_literal (CSI "[C");	/* linux */
-	  /* avta_term_send_literal (ESC "OR"); *//* DEC */
+	  avta_term_send_literal (KEY_F3);
 	  break;
 
 	case 285:		/* F4 */
-	  avta_term_send_literal (CSI "[D");	/* linux */
-	  /* avta_term_send_literal (ESC "OS"); *//* DEC */
+	  avta_term_send_literal (KEY_F4);
 	  break;
 
 	case 286:		/* F5 */
-	  avta_term_send_literal (CSI "[E");	/* linux */
-	  /* avta_term_send (ESC "Ot", 3); *//* DEC */
+	  avta_term_send_literal (KEY_F5);
 	  break;
 
 	case 287:		/* F6 */
-	  avta_term_send_literal (CSI "17~");	/* linux */
-	  /* avta_term_send_literal (ESC "Ou"); *//* DEC */
+	  avta_term_send_literal (KEY_F6);
 	  break;
 
 	case 288:		/* F7 */
-	  avta_term_send_literal (CSI "18~");	/* linux */
-	  /* avta_term_send_literal (ESC "Ov"); *//* DEC */
+	  avta_term_send_literal (KEY_F7);
 	  break;
 
 	case 289:		/* F8 */
-	  avta_term_send_literal (CSI "19~");	/* linux */
-	  /* avta_term_send_literal (ESC "Ol"); *//* DEC */
+	  avta_term_send_literal (KEY_F8);
 	  break;
 
 	case 290:		/* F9 */
-	  avta_term_send_literal (CSI "20~");	/* linux */
-	  /* avta_term_send_literal (ESC "Ow"); *//* DEC */
+	  avta_term_send_literal (KEY_F9);
 	  break;
 
 	case 291:		/* F10 */
-	  avta_term_send_literal (CSI "21~");	/* linux */
-	  /* avta_term_send_literal (ESC "Ox"); *//* DEC */
+	  avta_term_send_literal (KEY_F10);
 	  break;
 
 	case 292:		/* F11 */
-	  avta_term_send_literal (CSI "23~");	/* linux */
+	  avta_term_send_literal (KEY_F11);
 	  break;
 
 	case 293:		/* F12 */
-	  avta_term_send_literal (CSI "24~");	/* linux */
+	  avta_term_send_literal (KEY_F12);
 	  break;
 
 	case 294:		/* F13 */
-	  avta_term_send_literal (CSI "25~");	/* linux */
+	  avta_term_send_literal (KEY_F13);
 	  break;
 
 	case 295:		/* F14 */
-	  avta_term_send_literal (CSI "26~");	/* linux */
+	  avta_term_send_literal (KEY_F14);
 	  break;
 
 	case 296:		/* F15 */
-	  avta_term_send_literal (CSI "27~");	/* linux */
+	  avta_term_send_literal (KEY_F15);
 	  break;
 
 	default:
