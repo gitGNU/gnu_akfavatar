@@ -279,96 +279,96 @@ prg_keyhandler (int sym, int mod AVT_UNUSED, int unicode)
 	  break;
 
 	case 277:		/* Insert */
-	  /* avta_term_send ("\033[L", 3); */
-	  avta_term_send ("\033[2~", 4);	/* linux */
+	  /* avta_term_send_literal ("\033[L"); */
+	  avta_term_send_literal ("\033[2~");	/* linux */
 	  break;
 
 	case 278:		/* Home */
-	  /* avta_term_send ("\033[H", 3); */
-	  avta_term_send ("\033[1~", 4);	/* linux */
+	  /* avta_term_send_literal ("\033[H"); */
+	  avta_term_send_literal ("\033[1~");	/* linux */
 	  break;
 
 	case 279:		/* End */
-	  /* avta_term_send ("\033[0w", 4); */
-	  avta_term_send ("\033[4~", 4);	/* linux */
+	  /* avta_term_send_literal ("\033[0w"); */
+	  avta_term_send_literal ("\033[4~");	/* linux */
 	  break;
 
 	case 280:		/* Page up */
-	  avta_term_send ("\033[5~", 4);	/* linux */
+	  avta_term_send_literal ("\033[5~");	/* linux */
 	  break;
 
 	case 281:		/* Page down */
-	  avta_term_send ("\033[6~", 4);	/* linux */
+	  avta_term_send_literal ("\033[6~");	/* linux */
 	  break;
 
 	case 282:		/* F1 */
-	  avta_term_send ("\033[[A", 4);	/* linux */
-	  /* avta_term_send ("\033OP", 3); *//* DEC */
+	  avta_term_send_literal ("\033[[A");	/* linux */
+	  /* avta_term_send_literal ("\033OP"); *//* DEC */
 	  break;
 
 	case 283:		/* F2 */
-	  avta_term_send ("\033[[B", 4);	/* linux */
-	  /* avta_term_send ("\033OQ", 3); *//* DEC */
+	  avta_term_send_literal ("\033[[B");	/* linux */
+	  /* avta_term_send_literal ("\033OQ"); *//* DEC */
 	  break;
 
 	case 284:		/* F3 */
-	  avta_term_send ("\033[[C", 4);	/* linux */
-	  /* avta_term_send ("\033OR", 3); *//* DEC */
+	  avta_term_send_literal ("\033[[C");	/* linux */
+	  /* avta_term_send_literal ("\033OR"); *//* DEC */
 	  break;
 
 	case 285:		/* F4 */
-	  avta_term_send ("\033[[D", 4);	/* linux */
-	  /* avta_term_send ("\033OS", 3); *//* DEC */
+	  avta_term_send_literal ("\033[[D");	/* linux */
+	  /* avta_term_send_literal ("\033OS"); *//* DEC */
 	  break;
 
 	case 286:		/* F5 */
-	  avta_term_send ("\033[[E", 4);	/* linux */
+	  avta_term_send_literal ("\033[[E");	/* linux */
 	  /* avta_term_send ("\033Ot", 3); *//* DEC */
 	  break;
 
 	case 287:		/* F6 */
-	  avta_term_send ("\033[17~", 5);	/* linux */
-	  /* avta_term_send ("\033Ou", 3); *//* DEC */
+	  avta_term_send_literal ("\033[17~");	/* linux */
+	  /* avta_term_send_literal ("\033Ou"); *//* DEC */
 	  break;
 
 	case 288:		/* F7 */
-	  avta_term_send ("\033[[18~", 5);	/* linux */
-	  /* avta_term_send ("\033Ov", 3); *//* DEC */
+	  avta_term_send_literal ("\033[[18~");	/* linux */
+	  /* avta_term_send_literal ("\033Ov"); *//* DEC */
 	  break;
 
 	case 289:		/* F8 */
-	  avta_term_send ("\033[19~", 5);	/* linux */
-	  /* avta_term_send ("\033Ol", 3); *//* DEC */
+	  avta_term_send_literal ("\033[19~");	/* linux */
+	  /* avta_term_send_literal ("\033Ol"); *//* DEC */
 	  break;
 
 	case 290:		/* F9 */
-	  avta_term_send ("\033[20~", 5);	/* linux */
-	  /* avta_term_send ("\033Ow", 3); *//* DEC */
+	  avta_term_send_literal ("\033[20~");	/* linux */
+	  /* avta_term_send_literal ("\033Ow"); *//* DEC */
 	  break;
 
 	case 291:		/* F10 */
-	  avta_term_send ("\033[21~", 5);	/* linux */
-	  /* avta_term_send ("\033Ox", 3); *//* DEC */
+	  avta_term_send_literal ("\033[21~");	/* linux */
+	  /* avta_term_send_literal ("\033Ox"); *//* DEC */
 	  break;
 
 	case 292:		/* F11 */
-	  avta_term_send ("\033[23~", 5);	/* linux */
+	  avta_term_send_literal ("\033[23~");	/* linux */
 	  break;
 
 	case 293:		/* F12 */
-	  avta_term_send ("\033[24~", 5);	/* linux */
+	  avta_term_send_literal ("\033[24~");	/* linux */
 	  break;
 
 	case 294:		/* F13 */
-	  avta_term_send ("\033[25~", 5);	/* linux */
+	  avta_term_send_literal ("\033[25~");	/* linux */
 	  break;
 
 	case 295:		/* F14 */
-	  avta_term_send ("\033[26~", 5);	/* linux */
+	  avta_term_send_literal ("\033[26~");	/* linux */
 	  break;
 
 	case 296:		/* F15 */
-	  avta_term_send ("\033[27~", 5);	/* linux */
+	  avta_term_send_literal ("\033[27~");	/* linux */
 	  break;
 
 	default:
@@ -814,7 +814,7 @@ CSI_sequence (int fd, avt_char last_character)
 
     case L'c':			/* DA */
       if (sequence[0] == 'c')
-	avta_term_send (DS, sizeof (DS) - 1);
+	avta_term_send_literal (DS);
       else if (sequence[0] == '?')
 	{			/* I have no real infos about that :-( */
 	  if (sequence[1] == '1' && sequence[2] == 'c')
@@ -1039,7 +1039,7 @@ CSI_sequence (int fd, avt_char last_character)
 
     case L'n':			/* DSR */
       if (sequence[0] == '5' && sequence[1] == 'n')
-	avta_term_send ("\033[0n", 4);	/* device okay */
+	avta_term_send_literal ("\033[0n");	/* device okay */
       /* "\033[3n" for failure */
       else if (sequence[0] == '6' && sequence[1] == 'n')
 	{
@@ -1354,7 +1354,7 @@ escape_sequence (int fd, avt_char last_character)
       break;
 
     case L'Z':			/* DECID */
-      avta_term_send (DS, sizeof (DS) - 1);
+      avta_term_send_literal (DS);
       break;
 
       /* OSC: Operating System Command */

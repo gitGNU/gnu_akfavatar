@@ -262,6 +262,9 @@ AVT_ADDON void avta_term_slowprint (bool on);
 /* APC: send data to stdin of the running program */
 AVT_ADDON void avta_term_send (const char *buf, size_t count);
 
+/* APC: send string literal to stdin of the running program */
+#define avta_term_send_literal(l)  avta_term_send("" l, sizeof(l)-1)
+
 /*
  * APC: update size of textarea
  * call this after you have changed the size of the balloon
