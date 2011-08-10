@@ -1436,9 +1436,11 @@ escape_sequence (int fd, avt_char last_character)
       application_keypad = true;
       break;
 
+#ifdef DEBUG
     default:
       fprintf (stderr, "unsupported escape sequence %lc\n", ch);
       break;
+#endif
     }
 }
 
