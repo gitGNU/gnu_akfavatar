@@ -1283,6 +1283,21 @@ Diese Funktion wird nicht in normalen Programmen benötigt.
 Man sollte sie nur verwenden, wenn das Programm ohne sichbares
 Fenster weiter laufen soll.
 .PP
+.TP
+.BI "avt.launch(" "Programm [,Argumente]" )
+Beendet AKFAvatar und führt das angegebene 
+.I Programm
+aus.
+Es können bis zu 10
+.I Argumente
+übergeben werden.
+Diese Funktion kehrt niemals zurück.
+Entweder das Programm läuft, oder es wird ein fataler Fehler angezeigt.
+.IP
+Wenn man Fehler mit
+.B pcall
+abfangen will, muss man danach AKFAvatar neu initialisieren...
+.PP
 .SH "SEE ALSO"
 .BR lua-akfavatar (1)
 .BR lua (1)

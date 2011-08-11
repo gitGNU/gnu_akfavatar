@@ -9,7 +9,7 @@
     - new functions: avt_recode, avt_mb_decode_buffer, avt_mb_encode_buffer
 
   Lua-API changes:
-    - new functions: avt.recode
+    - new functions: avt.recode, avt.launch
 
   Pascal-API changes:
     - should be more robust now

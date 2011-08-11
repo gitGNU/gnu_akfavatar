@@ -30,7 +30,7 @@
 #include <string.h>		/* for strcmp(), strerror() */
 #include <errno.h>
 
-#include <unistd.h>		/* for chdir(), getcwd() */
+#include <unistd.h>		/* for chdir(), getcwd(), execlp */
 #include <dirent.h>		/* opendir, readdir, closedir */
 
 #include <sys/types.h>
@@ -1765,6 +1765,28 @@ lavt_getcwd (lua_State * L)
     }
 }
 
+static int
+lavt_launch (lua_State * L)
+{
+  const char *prg;
+
+  prg = luaL_checkstring (L, 1);
+
+  avt_quit ();			/* close window / graphic mode */
+  initialized = false;
+
+  /* don't close lua state - might be needed in case of error */
+
+  execlp (prg, prg,
+	  lua_tostring (L, 2), lua_tostring (L, 3),
+	  lua_tostring (L, 4), lua_tostring (L, 5),
+	  lua_tostring (L, 6), lua_tostring (L, 7),
+	  lua_tostring (L, 8), lua_tostring (L, 9),
+	  lua_tostring (L, 10), lua_tostring (L, 11), NULL);
+
+  return luaL_error (L, "%s: %s", prg, strerror (errno));
+}
+
 /* --------------------------------------------------------- */
 /* high level functions */
 
@@ -2163,6 +2185,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"chdir", lavt_chdir},
   {"directory_entries", lavt_directory_entries},
   {"entry_type", lavt_entry_type},
+  {"launch", lavt_launch},
   {"menu", lavt_menu},
   {"long_menu", lavt_menu},
   {"subprogram", lavt_subprogram},

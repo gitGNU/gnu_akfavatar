@@ -1192,6 +1192,21 @@ It also quits the audio subsystem.
 This function is not needed for normal programs.
 Only use it, if your program should continue working without
 a visible window.
+.TP
+.BI "avt.launch(" "program [,arguments]" )
+Quit AKFAvatar and launch the given
+.IR program .
+Up to 10
+.I arguments
+can be given.
+This function never returns.
+Either the
+.I program
+runs, or a fatal error is shown.
+.IP
+If you want to catch the error with
+.BR pcall ,
+you have to initialize AKFAvatar again...
 .PP
 .SH "SEE ALSO"
 .BR lua-akfavatar (1)
