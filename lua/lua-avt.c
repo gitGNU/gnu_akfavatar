@@ -1768,23 +1768,33 @@ lavt_getcwd (lua_State * L)
 static int
 lavt_launch (lua_State * L)
 {
-  const char *prg;
+  char *argv[256];
+  int i, n;
 
-  prg = luaL_checkstring (L, 1);
+  /* program must be given */
+  argv[0] = (char *) luaL_checkstring (L, 1);
+
+  n = lua_gettop (L);		/* number of options */
+
+  /* number of arguments is already limited in Lua, but I want to be save */
+  if (n > 255)
+    luaL_error (L, "launch: %s", strerror (E2BIG));
+
+  /* collect arguments */
+  for (i = 1; i < n; i++)
+    argv[i] = (char *) lua_tostring (L, i + 1);
+  argv[n] = NULL;
 
   avt_quit ();			/* close window / graphic mode */
   initialized = false;
 
   /* don't close lua state - might be needed in case of error */
 
-  execlp (prg, prg,
-	  lua_tostring (L, 2), lua_tostring (L, 3),
-	  lua_tostring (L, 4), lua_tostring (L, 5),
-	  lua_tostring (L, 6), lua_tostring (L, 7),
-	  lua_tostring (L, 8), lua_tostring (L, 9),
-	  lua_tostring (L, 10), lua_tostring (L, 11), NULL);
+  /* conforming to POSIX.1-2001 */
+  execvp (argv[0], argv);
 
-  return luaL_error (L, "%s: %s", prg, strerror (errno));
+  /* execvp only returns in case of an error */
+  return luaL_error (L, "%s: %s", argv[0], strerror (errno));
 }
 
 /* --------------------------------------------------------- */

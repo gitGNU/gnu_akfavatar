@@ -1284,13 +1284,10 @@ Man sollte sie nur verwenden, wenn das Programm ohne sichbares
 Fenster weiter laufen soll.
 .PP
 .TP
-.BI "avt.launch(" "Programm [,Argumente]" )
+.BI "avt.launch(" "Programm [,Argumente ...]" )
 Beendet AKFAvatar und führt das angegebene 
 .I Programm
 aus.
-Es können bis zu 10
-.I Argumente
-übergeben werden.
 Diese Funktion kehrt niemals zurück.
 Entweder das Programm läuft, oder es wird ein fataler Fehler angezeigt.
 .IP
