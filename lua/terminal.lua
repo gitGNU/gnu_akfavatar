@@ -1,6 +1,6 @@
 #!/usr/bin/env lua-akfavatar
 
--- Copyright (c) 2010 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2010,2011 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
 require "lua-akfavatar"
@@ -9,10 +9,16 @@ require "akfavatar-term"
 avt.initialize {
   title = "AKFAvatar Terminal",
   shortname = "Terminal",
-  avatar = "none",
-  audio = true, -- for the bell ("\a")
+  avatar = "none", --> an avatar would be okay, but limits the size
+  audio = true, --> for the bell ("\a")
   mode = "auto"
   }
+
+-- 25x80 is a traditional default, but other sizes are okay
+avt.set_balloon_size(25, 80)
+
+-- you could define global functions, which would be
+-- accessible for the APC interface
 
 -- guest programs can check this variable to see
 -- if and what APC commands are accessible
