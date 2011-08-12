@@ -2,8 +2,9 @@
 
 	* avatar.c: smaller SHADOWOFFSET
 
-	* avatar.c (avt_mb_encode_buffer):
-	make sure there is room for a terminator, ignore errors
+	* avatar.c (avt_mb_decode_buffer, avt_mb_encode_buffer):
+	make sure there is room for a terminator
+	no error if buffer is too small - just put in as much as fits
 
 2011-08-11  Andreas K. Foerster  <info@akfoerster.de>
 

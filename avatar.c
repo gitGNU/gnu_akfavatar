@@ -3582,7 +3582,8 @@ avt_mb_decode_buffer (wchar_t * dest, int dest_size,
   inbytesleft = src_size;
   inbuf = (char *) src;
 
-  outbytesleft = dest_size;
+  /* leave room for terminator */
+  outbytesleft = dest_size - sizeof (wchar_t);
   outbuf = (char *) dest;
 
   restbuf = (char *) rest_buffer;
@@ -3590,7 +3591,7 @@ avt_mb_decode_buffer (wchar_t * dest, int dest_size,
   /* if there is a rest from last call, try to complete it */
   while (rest_bytes > 0 && inbytesleft > 0)
     {
-      rest_buffer[rest_bytes++] = (char) *inbuf;
+      rest_buffer[rest_bytes++] = *inbuf;
       inbuf++;
       inbytesleft--;
       returncode =
@@ -3626,10 +3627,6 @@ avt_mb_decode_buffer (wchar_t * dest, int dest_size,
 	avt_iconv (output_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
     }
 
-  /* check for fatal errors */
-  if (returncode == (size_t) (-1) && errno != EINVAL)
-    return -1;
-
   /* check for incomplete sequences and put them into the rest_buffer */
   if (returncode == (size_t) (-1) && errno == EINVAL
       && inbytesleft <= sizeof (rest_buffer))
@@ -3638,11 +3635,12 @@ avt_mb_decode_buffer (wchar_t * dest, int dest_size,
       SDL_memcpy ((void *) &rest_buffer, inbuf, rest_bytes);
     }
 
-  /* terminate outbuf */
-  if (outbytesleft >= sizeof (wchar_t))
-    *((wchar_t *) outbuf) = L'\0';
+  /* ignore E2BIG - just put in as much as fits */
 
-  return ((dest_size - outbytesleft) / sizeof (wchar_t));
+  /* terminate outbuf */
+  *((wchar_t *) outbuf) = L'\0';
+
+  return ((dest_size - sizeof (wchar_t) - outbytesleft) / sizeof (wchar_t));
 }
 
 /* size in bytes */
@@ -3716,7 +3714,7 @@ avt_mb_encode_buffer (char *dest, int dest_size, const wchar_t * src, int len)
   /* terminate outbuf */
   *outbuf = '\0';
 
-  return (dest_size - outbytesleft);
+  return (dest_size - sizeof (char) - outbytesleft);
 }
 
 extern int
