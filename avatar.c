@@ -82,7 +82,7 @@
 #  define NOT_BOLD 0
 #endif
 
-#define SHADOWOFFSET 7
+#define SHADOWOFFSET 5
 
 /*
  * newer vesions of SDL have some fallback implementations
