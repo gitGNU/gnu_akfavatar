@@ -3693,7 +3693,6 @@ avt_mb_encode_buffer (char *dest, int dest_size, const wchar_t * src, int len)
   char *outbuf;
   char *inbuf;
   size_t inbytesleft, outbytesleft;
-  size_t returncode;
 
   /* check if sizes are useful */
   if (!dest || dest_size <= 0 || !src || len <= 0)
@@ -3706,20 +3705,16 @@ avt_mb_encode_buffer (char *dest, int dest_size, const wchar_t * src, int len)
   inbytesleft = len * sizeof (wchar_t);
   inbuf = (char *) src;
 
-  outbytesleft = dest_size;
-  outbuf = (char *) dest;
+  /* leave room for terminator */
+  outbytesleft = dest_size - sizeof (char);
+  outbuf = dest;
 
   /* do the conversion */
-  returncode =
-    avt_iconv (input_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
-
-  /* check for fatal errors */
-  if (returncode == (size_t) (-1))
-    return -1;
+  (void) avt_iconv (input_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+  /* ignore errors */
 
   /* terminate outbuf */
-  if (outbytesleft >= sizeof (char))
-    *outbuf = '\0';
+  *outbuf = '\0';
 
   return (dest_size - outbytesleft);
 }

@@ -2,6 +2,9 @@
 
 	* avatar.c: smaller SHADOWOFFSET
 
+	* avatar.c (avt_mb_encode_buffer):
+	make sure there is room for a terminator, ignore errors
+
 2011-08-11  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c (lavt_launch => avt.launch): new function
