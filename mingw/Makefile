@@ -71,7 +71,7 @@ libinfo.wo: libinfo.rc
 
 # alert.au should be in the sourcecode-distribution
 $(srcdir)/alert.au: $(srcdir)/alert.flac
-	sox $(srcdir)/alert.flac --comment "" -e mu-law -c 1 $@ rate 8k
+	sox $(srcdir)/alert.flac --comment "" -e mu-law -c 1 $@ rate 16k
 
 alert.c: $(srcdir)/alert.au
 	$(AWK) -f $(srcdir)/data2c -v name=avt_alert_data \
