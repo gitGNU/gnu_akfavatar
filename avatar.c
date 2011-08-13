@@ -6871,24 +6871,9 @@ avt_initialize (const char *title, const char *shortname,
 
   /* import the avatar image */
   if (image)
-    {
-      /* convert image to display-format for faster drawing */
-      if (image->flags & SDL_SRCALPHA)
-	avt_image = SDL_DisplayFormatAlpha (image);
-      else
-	avt_image = SDL_DisplayFormat (image);
-
-      avt_free_image (image);
-
-      if (!avt_image)
-	{
-	  _avt_STATUS = AVT_ERROR;
-	  return _avt_STATUS;
-	}
-    }
-
-  if (calculate_balloonmaxheight () != AVT_NORMAL)
-    return _avt_STATUS;
+    avt_change_avatar_image (image);
+  else
+    calculate_balloonmaxheight ();
 
   balloonheight = balloonmaxheight;
   balloonwidth = AVT_LINELENGTH;

@@ -1,3 +1,7 @@
+2011-08-13  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_initialize): just call avt_change_avatar_image
+
 2011-08-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c: smaller SHADOWOFFSET
