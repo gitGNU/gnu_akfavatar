@@ -5952,33 +5952,28 @@ avt_import_image_stream (avt_stream * stream)
 static int
 calculate_balloonmaxheight (void)
 {
-  if (avt_image)
-    {
-      balloonmaxheight = (window.h - avt_image->h - (2 * TOPMARGIN)
-			  - (2 * BALLOON_INNER_MARGIN)
-			  - AVATAR_MARGIN) / LINEHEIGHT;
+  int avatar_height;
 
-      /* check, whether image is too high */
-      /* at least 10 lines */
-      if (balloonmaxheight < 10)
-	{
-	  SDL_SetError ("Avatar image too large");
-	  _avt_STATUS = AVT_ERROR;
-	  SDL_FreeSurface (avt_image);
-	  avt_image = NULL;
-	}
-    }
+  avatar_height = avt_image ? avt_image->h + AVATAR_MARGIN : 0;
 
-  if (!avt_image)		/* no avatar? -> whole screen is the balloon */
+  balloonmaxheight = (window.h - avatar_height - (2 * TOPMARGIN)
+		      - (2 * BALLOON_INNER_MARGIN)) / LINEHEIGHT;
+
+  /* check, whether image is too high */
+  /* at least 10 lines */
+  if (balloonmaxheight < 10)
     {
-      balloonmaxheight = (window.h - (2 * TOPMARGIN)
-			  - (2 * BALLOON_INNER_MARGIN)) / LINEHEIGHT;
+      SDL_SetError ("Avatar image too large");
+      _avt_STATUS = AVT_ERROR;
+      SDL_FreeSurface (avt_image);
+      avt_image = NULL;
     }
 
   return _avt_STATUS;
 }
 
-/* change avatar image while running */
+/* change avatar image and (re)calculate balloon size */
+/* also called from avt_initialize */
 extern int
 avt_change_avatar_image (avt_image_t * image)
 {
@@ -6818,6 +6813,10 @@ avt_initialize (const char *title, const char *shortname,
   /* fill the whole screen with background color */
   avt_clear_screen ();
 
+  /* import the avatar image and calculate balloon size */
+  if (avt_change_avatar_image (image) != AVT_NORMAL)
+    return _avt_STATUS;
+
   /* reserve memory for one character */
   avt_character = SDL_CreateRGBSurface (SDL_SWSURFACE, FONTWIDTH, FONTHEIGHT,
 					1, 0, 0, 0, 0);
@@ -6868,15 +6867,6 @@ avt_initialize (const char *title, const char *shortname,
   pointer =
     avt_load_image_xbm (AVT_XBM_INFO (balloonpointer), ballooncolor_RGB.r,
 			ballooncolor_RGB.g, ballooncolor_RGB.b);
-
-  /* import the avatar image */
-  if (image)
-    avt_change_avatar_image (image);
-  else
-    calculate_balloonmaxheight ();
-
-  balloonheight = balloonmaxheight;
-  balloonwidth = AVT_LINELENGTH;
 
   /* needed to get the character of the typed key */
   SDL_EnableUNICODE (1);
