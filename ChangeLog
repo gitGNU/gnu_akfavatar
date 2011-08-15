@@ -3,6 +3,9 @@
 	* avatar.c (avt_recode_buffer): new function
 	(avt_set_title): adapted
 
+	* lua/akfavatar/lang.lua: new module
+	lua/multiplication.lua: adapted
+
 2011-08-14  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_initialize, calculate_balloonmaxheight):

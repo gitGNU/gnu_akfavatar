@@ -1,9 +1,10 @@
 #!/usr/bin/env lua-akfavatar
 
--- Copyright (c) 2009,2010 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2009,2010,2011 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
 require "lua-akfavatar"
+require "akfavatar.lang"
 require "akfavatar.positive"
 require "akfavatar.negative"
 require "akfavatar.neutral"
@@ -13,45 +14,44 @@ local random_minimum = 1
 local random_maximum = 10
 local maximum_tries = 3
 
--- default language: English -- for translations see below
-local msg = {
-  encoding            = "UTF-8",
-  title               = "Multiply",
-  question            = "What to exercise?",
-  multiplication      = "Multiplication",
-  multiples_of        = "Multiples of ",
-  division            = "Division",
-  division_by         = "Division by ",
-  correct             = "correct",
-  wrong               = "wrong",
-  unknown             = "???",
-  continue            = "Do you want to take another exercise?",
-  multiplication_sign = "×",
-  division_sign       = "÷",
+lang.translations {
+
+  ["Multiply"] = {
+    de="Multiplizieren" },
+
+  ["What to exercise?"] = {
+    de="Was üben?" },
+
+  ["Multiplication"] = {
+    de="Multiplizieren" },
+
+  ["Multiples of "] = {
+    de="Vielfache von " },
+
+  ["Division"] = {
+    de="Teilen" },
+
+  ["Division by "] = {
+    de="Teilen durch " },
+
+  ["correct"] = {
+    de="richtig" },
+
+  ["wrong"] = {
+    de="falsch" },
+
+  ["Do you want to take another exercise?"] = {
+    de="Willst du eine andere Übung machen?" },
+
+  ["×"] = {
+    de="·" },
+
+  ["÷"] = {
+    de=":" }
 }
 
--- get the main language
-os.setlocale("", "all") --> activate local language settings
-msg.language = string.lower(string.match(os.setlocale(nil, "ctype"), "^%a+"))
-
--- translations
-
--- Deutsch (German)
-if msg.language == "de" or msg.language == "german" then
-  msg.title               = "Multiplizieren"
-  msg.question            = "Was üben?"
-  msg.multiplication      = "Multiplizieren"
-  msg.multiples_of        = "Vielfache von "
-  msg.division            = "Teilen"
-  msg.division_by         = "Teilen durch "
-  msg.correct             = "richtig"
-  msg.wrong               = "falsch"
-  msg.continue            = "Willst du eine andere Übung machen?"
-  msg.multiplication_sign = "·"
-  msg.division_sign       = ":"
-end
-
 ------------------------------------------------------------------
+local L = lang.translate  -- abbreviation
 local specific_table = nil
 local endRequest = false
 
@@ -63,13 +63,13 @@ function answerposition()
 end
 
 function AskWhatToExercise()
-  avt.tell(msg.question,
-          "\n1) ", msg.multiplication,
+  avt.tell(L"What to exercise?",
+          "\n1) ", L"Multiplication",
           " (", random_minimum, "-", random_maximum, ")",
-          "\n2) ", msg.multiples_of, "...",
-          "\n3) ", msg.division,
+          "\n2) ", L"Multiples of " , "...",
+          "\n3) ", L"Division",
           " (", random_minimum, "-", random_maximum, ")",
-          "\n4) ", msg.division_by, "...")
+          "\n4) ", L"Division by ", "...")
 
   local c = avt.choice(2, 4, "1")
 
@@ -81,7 +81,7 @@ function AskWhatToExercise()
     avt.set_balloon_size(1, 20)
     repeat
       avt.clear ()
-      specific_table = tonumber(avt.ask(msg.multiples_of))
+      specific_table = tonumber(avt.ask(L"Multiples of "))
     until specific_table
   elseif c == 3 then
     exercise = "division"
@@ -91,7 +91,7 @@ function AskWhatToExercise()
     avt.set_balloon_size(1, 20)
     repeat
       avt.clear ()
-      specific_table = tonumber(avt.ask(msg.division_by))
+      specific_table = tonumber(avt.ask(L"Division by "))
     until specific_table
   else endRequest = true
   end
@@ -103,7 +103,7 @@ function sayCorrect()
   positive()
   avt.set_text_color("dark green")
   answerposition()
-  avt.say(msg.correct)
+  lang.say("correct")
   avt.clear_eol()
   avt.newline()
   avt.normal_text()
@@ -113,7 +113,7 @@ function sayWrong()
   negative()
   answerposition()
   avt.set_text_color("dark red")
-  avt.say(msg.wrong)
+  lang.say("wrong")
   avt.clear_eol()
   avt.newline()
   avt.normal_text()
@@ -168,12 +168,10 @@ function query()
     -- repeat asking the same question until correct
     repeat
       if exercise == "multiplication" then
-        e = askResult(string.format("%2d) %d%s%d=",
-                counter, a, msg.multiplication_sign, b))
+        e = askResult(string.format("%2d) %d%s%d=", counter, a, L"×", b))
         isCorrect = (e == c)
       elseif exercise == "division" then
-        e = askResult(string.format("%2d) %d%s%d=",
-          counter, c, msg.division_sign, a))
+        e = askResult(string.format("%2d) %d%s%d=", counter, c, L"÷", a))
         isCorrect = (e == b)
       end
 
@@ -187,11 +185,9 @@ function query()
         avt.inverse(true)
         avt.bold(true)
         if exercise == "multiplication" then
-          avt.say(string.format("%2d) %d%s%d=%d ",
-                counter, a, msg.multiplication_sign, b, c))
+          avt.say(lang.format("%2d) %d%s%d=%d", counter, a, L"×", b, c))
         elseif exercise == "division" then
-          avt.say(string.format("%2d) %d%s%d=%d ",
-          counter, c, msg.division_sign, a, b))
+          avt.say(string.format("%2d) %d%s%d=%d ", counter, c, L"÷", a, b))
         end --> if exercise
         avt.normal_text()
         avt.newline()
@@ -202,7 +198,7 @@ function query()
 end
 
 function WantToContinue()
-  avt.tell(msg.continue)
+  lang.tell("Do you want to take another exercise?")
 
   return avt.decide()
 end
@@ -211,11 +207,11 @@ function initialize()
   avt.set_background_color("tan")
   avt.set_balloon_color("floral white")
   avt.initialize {
-    title = "AKFAvatar: " .. msg.title,
-    shortname = msg.title,
+    title = "AKFAvatar: " .. L"Multiply",
+    shortname = L"Multiply",
     avatar = require "akfavatar.teacher",
     audio = true,
-    encoding = msg.encoding
+    encoding = "UTF-8"
     }
   avt.move_in()
 
