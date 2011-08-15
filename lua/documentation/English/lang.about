@@ -1,0 +1,78 @@
+Lua module for translations
+
+This module was written for AKFAvatar, but doesn't depend on it.
+
+require "akfavatar.lang"
+  This loads the module.  The language of the system should get detected
+  automatically when the module is loaded.
+
+
+lang.getlanguage()
+  Detect the language code.  The language code is a two-letter abbreviation
+  according to ISO 639-1.
+
+
+lang.use(language)
+  Use that language instead.  This is most useful for testing, or if you know
+  a better way to get the language code.
+
+
+lang.translations {...}
+  Define the translations (see example below).
+
+
+lang.translate(s)
+  Returns the translated string.  If the translation is not available, then it
+  retruns the string unmodified.
+
+  It is useful to define a local alias for it named L:
+    local L = lang.translate;
+  Then you can simply prepend your string literals with this: L"Hello"
+
+
+EXAMPLE:
+--------------------------------------------------------------------------------
+require "akfavatar.lang";
+
+lang.translations {
+
+  ["Hello world!"] = {
+    ru="Здравствуй мир!",
+    el="Καλημέρα κόσμε!",
+    es="¡Hola mundo!",
+    fr="Bonjour le monde!",
+    de="Hallo Welt!",
+    sv="Hej Världen!",
+    },
+
+  ["That's live!"] = {
+    de="So ist das Leben!",
+    fr="C'est la vie!" },
+};
+
+-- lang.use("ru");
+
+local L = lang.translate;
+
+print(L"Hello world!");
+print(L"That's live!");
+--------------------------------------------------------------------------------
+
+HINTS:
+
+This module does not care about character encodings.  One good approach is,
+when you can use "UTF-8" for everything.  Another approach is to make the
+encoding itself a translatable string and to use "US-ASCII" for English.
+
+Although it is not required, but you should use English as the default language.
+
+If the language can't be automatically detected on your system, you can
+set the environment variable LANG so that it starts with the required two-letter
+code.  The language code needed is a two-letter abbreviation according to
+ISO 639-1.
+
+If you have text with variables in it, it is not a good approach to split the
+text into parts.  It is better to define a format string for string.format().
+
+The translatable string must match exactly.  Please keep in mind that when you
+change the strings in the program you also have to change the table!

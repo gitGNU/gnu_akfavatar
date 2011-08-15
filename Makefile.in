@@ -700,6 +700,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/lua/documentation/English/akfavatar-term.about \
 	   $(srcdir)/lua/documentation/English/akfavatar-graphic.about \
 	   $(srcdir)/lua/documentation/English/utf8.about \
+	   $(srcdir)/lua/documentation/English/lang.about \
 	   $(PKGNAME)/lua/documentation/English/
 
 	mkdir $(PKGNAME)/lua/documentation/Deutsch
@@ -713,6 +714,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/lua/documentation/Deutsch/akfavatar-term.about \
 	   $(srcdir)/lua/documentation/Deutsch/akfavatar-graphic.about \
 	   $(srcdir)/lua/documentation/Deutsch/utf8.about \
+	   $(srcdir)/lua/documentation/Deutsch/lang.about \
 	   $(PKGNAME)/lua/documentation/Deutsch/
 
 	mkdir $(PKGNAME)/lua/akfavatar
@@ -805,6 +807,7 @@ dist-bin-default: all pdf
 	ln $(srcdir)/lua/documentation/English/akfavatar-term.about $(BINPKGNAME)/lua/documentation/English/
 	ln $(srcdir)/lua/documentation/English/akfavatar-graphic.about $(BINPKGNAME)/lua/documentation/English/
 	ln $(srcdir)/lua/documentation/English/utf8.about $(BINPKGNAME)/lua/documentation/English/
+	ln $(srcdir)/lua/documentation/English/lang.about $(BINPKGNAME)/lua/documentation/English/
 	ln $(srcdir)/lua/documentation/English/interactive_lua.about $(BINPKGNAME)/lua/documentation/English/
 	ln $(srcdir)/lua/documentation/English/audioplayer.about $(BINPKGNAME)/lua/documentation/English/
 	ln $(srcdir)/lua/documentation/English/function_plotter.about $(BINPKGNAME)/lua/documentation/English/
@@ -815,6 +818,7 @@ dist-bin-default: all pdf
 	ln $(srcdir)/lua/documentation/Deutsch/akfavatar-term.about $(BINPKGNAME)/lua/documentation/Deutsch/
 	ln $(srcdir)/lua/documentation/Deutsch/akfavatar-graphic.about $(BINPKGNAME)/lua/documentation/Deutsch/
 	ln $(srcdir)/lua/documentation/Deutsch/utf8.about $(BINPKGNAME)/lua/documentation/Deutsch/
+	ln $(srcdir)/lua/documentation/Deutsch/lang.about $(BINPKGNAME)/lua/documentation/Deutsch/
 	ln $(srcdir)/lua/documentation/Deutsch/interactive_lua.about $(BINPKGNAME)/lua/documentation/Deutsch/
 	ln $(srcdir)/lua/documentation/Deutsch/audioplayer.about $(BINPKGNAME)/lua/documentation/Deutsch/
 	ln $(srcdir)/lua/documentation/Deutsch/function_plotter.about $(BINPKGNAME)/lua/documentation/Deutsch/
