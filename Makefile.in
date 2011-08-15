@@ -47,6 +47,7 @@ LUA_MODULES = \
 	  $(srcdir)/lua/akfavatar/info_icon.lua \
 	  $(srcdir)/lua/akfavatar/audio1.lua \
 	  $(srcdir)/lua/akfavatar/akfoerster.lua \
+	  $(srcdir)/lua/akfavatar/lang.lua \
 	  $(srcdir)/lua/akfavatar/positive.lua \
 	  $(srcdir)/lua/akfavatar/negative.lua \
 	  $(srcdir)/lua/akfavatar/neutral.lua \
@@ -717,6 +718,7 @@ dist: about $(srcdir)/alert.au
 	mkdir $(PKGNAME)/lua/akfavatar
 	ln $(srcdir)/lua/akfavatar/dir.??.about \
 	   $(srcdir)/lua/akfavatar/utf8.lua \
+	   $(srcdir)/lua/akfavatar/lang.lua \
 	   $(srcdir)/lua/akfavatar/person.lua \
 	   $(srcdir)/lua/akfavatar/info_icon.lua \
 	   $(srcdir)/lua/akfavatar/audio1.lua \
@@ -833,6 +835,7 @@ dist-bin-default: all pdf
 	ln $(srcdir)/doc/lua-akfavatar-ref.de.man $(BINPKGNAME)/
 	ln $(srcdir)/lua/akfavatar/dir.??.about \
 	   $(srcdir)/lua/akfavatar/utf8.lua \
+	   $(srcdir)/lua/akfavatar/lang.lua \
 	   $(srcdir)/lua/akfavatar/person.lua \
 	   $(srcdir)/lua/akfavatar/info_icon.lua \
 	   $(srcdir)/lua/akfavatar/audio1.lua \

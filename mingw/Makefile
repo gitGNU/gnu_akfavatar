@@ -368,6 +368,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp lua-akfavatar-ref.de.pdf $(BINPKGNAME)/
 	cp $(srcdir)/lua/akfavatar/dir.??.about $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/utf8.lua $(BINPKGNAME)/lua/akfavatar/
+	cp $(srcdir)/lua/akfavatar/lang.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/person.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/female_user.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/male_user.lua $(BINPKGNAME)/lua/akfavatar/
