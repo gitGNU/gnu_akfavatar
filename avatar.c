@@ -3753,6 +3753,68 @@ avt_mb_encode (char **dest, const wchar_t * src, int len)
   return size;
 }
 
+extern int
+avt_recode_buffer (const char *tocode, const char *fromcode,
+		   char *dest, int dest_size, const char *src, int src_size)
+{
+  avt_iconv_t cd;
+  char *outbuf, *inbuf;
+  size_t inbytesleft, outbytesleft;
+  size_t returncode;
+
+  /* check if sizes are useful */
+  if (!dest || dest_size <= 0 || !src || src_size <= 0)
+    return -1;
+
+  /* NULL as code means the encoding, which was set */
+
+  if (!tocode || !*tocode)
+    tocode = avt_encoding;
+
+  if (!fromcode || !*fromcode)
+    fromcode = avt_encoding;
+
+  /* if no encoding was set yet, fail */
+  if (!tocode || !fromcode)
+    return -1;
+
+  cd = avt_iconv_open (tocode, fromcode);
+  if (cd == (avt_iconv_t) (-1))
+    return -1;
+
+  inbuf = (char *) src;
+  inbytesleft = src_size;
+
+  /*
+   * I reserve 4 Bytes for the terminator,
+   * in case of using UTF-32
+   */
+  outbytesleft = dest_size - 4;
+  outbuf = dest;
+
+  /* do the conversion */
+  returncode =
+    avt_iconv (output_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+
+  /* jump over invalid characters */
+  while (returncode == (size_t) (-1) && errno == EILSEQ)
+    {
+      inbuf++;
+      inbytesleft--;
+      returncode =
+	avt_iconv (output_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+    }
+
+  /* ignore E2BIG - just put in as much as fits */
+
+  avt_iconv_close (cd);
+
+  /* terminate outbuf (4 Bytes were reserved) */
+  SDL_memset (outbuf, 0, 4);
+
+  return (int) (dest_size - 4 - outbytesleft);
+}
+
 /* dest must be freed by the caller */
 extern int
 avt_recode (const char *tocode, const char *fromcode,
@@ -6618,28 +6680,32 @@ avt_set_title (const char *title, const char *shortname)
     SDL_WM_SetCaption (title, shortname);
   else				/* convert them to UTF-8 */
     {
-      char *my_title = NULL;
-      char *my_shortname = NULL;
+      char my_title[260];
+      char my_shortname[84];
 
       if (title && *title)
 	{
-	  if (avt_recode ("UTF-8", avt_encoding,
-			  &my_title, title, SDL_strlen (title)) < 0)
-	    my_title = SDL_strdup (title);
+	  if (avt_recode_buffer ("UTF-8", avt_encoding,
+				 my_title, sizeof (my_title),
+				 title, SDL_strlen (title)) < 0)
+	    {
+	      SDL_memcpy (my_title, title, sizeof (my_title));
+	      my_title[sizeof (my_title) - 1] = '\0';
+	    }
 	}
 
       if (shortname && *shortname)
 	{
-	  if (avt_recode ("UTF-8", avt_encoding,
-			  &my_shortname, shortname,
-			  SDL_strlen (shortname)) < 0)
-	    my_shortname = SDL_strdup (shortname);
+	  if (avt_recode_buffer ("UTF-8", avt_encoding,
+				 my_shortname, sizeof (my_shortname),
+				 shortname, SDL_strlen (shortname)) < 0)
+	    {
+	      SDL_memcpy (my_shortname, shortname, sizeof (my_shortname));
+	      my_shortname[sizeof (my_shortname) - 1] = '\0';
+	    }
 	}
 
       SDL_WM_SetCaption (my_title, my_shortname);
-
-      SDL_free (my_title);
-      SDL_free (my_shortname);
     }
 }
 

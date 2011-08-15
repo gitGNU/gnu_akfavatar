@@ -406,6 +406,9 @@ AVT_API int avt_tell_mb_len (const char *txt, int len);
  */
 AVT_API int avt_ask_mb (char *s, int size);
 
+/***********************************************************************/
+/* convert text encodings */
+
 /*
  * decode a string into wchar_t
  * size in bytes
@@ -417,11 +420,12 @@ AVT_API int avt_ask_mb (char *s, int size);
 AVT_API int avt_mb_decode (wchar_t **dest, const char *src, int src_size);
 
 /*
- * decode a string into wchar_t with a given buffer
+ * decode a string into wchar_t with a fixed buffer
  * sizes in bytes
  * returns number of characters in dest (without the termination zero)
  * or -1 on error
  * incomplete multibyte sequences can be completed the next turn
+ * dest gets as much as fits
  * dest should have a size of (src + 1) * 4
  */
 AVT_API int avt_mb_decode_buffer (wchar_t *dest, int dest_size,
@@ -438,18 +442,18 @@ AVT_API int avt_mb_decode_buffer (wchar_t *dest, int dest_size,
 AVT_API int avt_mb_encode (char **dest, const wchar_t *src, int len);
 
 /*
- * encode a string from wchar_t with a given buffer
+ * encode a string from wchar_t with a fixed buffer
  * len is the length
  * returns the size of dest (without the termination zero)
  * or -1 on error
- * dest should have enough space
+ * dest gets as much as fits
  * (in UTF-8 a character can have up to 4 bytes)
  */
 AVT_API int avt_mb_encode_buffer (char *dest, int dest_size,
                                   const wchar_t * src, int len);
 
 /*
- * recode string in string
+ * recode string
  * if either tocode or fromcode is NULL, it uses the current mb_encoding
  * the string src must not have incomplete characters at the end
  *
@@ -457,8 +461,19 @@ AVT_API int avt_mb_encode_buffer (char *dest, int dest_size,
  * or -1 on error
  * dest must be freed with avt_free
  */
-AVT_API int avt_recode(const char *tocode, const char *fromcode,
-                       char **dest, const char *src, int src_size);
+AVT_API int avt_recode (const char *tocode, const char *fromcode,
+                        char **dest, const char *src, int src_size);
+
+/*
+ * recode a string with a fixed buffer
+ *
+ * returns the size of dest (without the termination zeros)
+ * or -1 on error
+ * dest gets as much as fits
+ * 4 Bytes in the dest buffer are reserved for a terminator
+ */
+AVT_API int avt_recode_buffer (const char *tocode, const char *fromcode,
+		char *dest, int dest_size, const char *src, int src_size);
 
 /* free memory allocated by this library */
 AVT_API void avt_free (void *ptr);
