@@ -108,7 +108,8 @@ end
 
 
 function l.translate (s)
-  return translations[s][language] or s
+  local tr = translations[s]
+  return (tr and tr[language]) or s
 end
 
 
