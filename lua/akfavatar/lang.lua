@@ -93,7 +93,7 @@ function l.getlanguage()
 end
 
 
-local translations
+local translations = {}
 local language = l.getlanguage()
 
 
