@@ -103,7 +103,7 @@ function sayCorrect()
   positive()
   avt.set_text_color("dark green")
   answerposition()
-  lang.say("correct")
+  avt.say(L"correct")
   avt.clear_eol()
   avt.newline()
   avt.normal_text()
@@ -113,7 +113,7 @@ function sayWrong()
   negative()
   answerposition()
   avt.set_text_color("dark red")
-  lang.say("wrong")
+  avt.say(L"wrong")
   avt.clear_eol()
   avt.newline()
   avt.normal_text()
@@ -185,7 +185,7 @@ function query()
         avt.inverse(true)
         avt.bold(true)
         if exercise == "multiplication" then
-          avt.say(lang.format("%2d) %d%s%d=%d", counter, a, L"×", b, c))
+          avt.say(string.format("%2d) %d%s%d=%d", counter, a, L"×", b, c))
         elseif exercise == "division" then
           avt.say(string.format("%2d) %d%s%d=%d ", counter, c, L"÷", a, b))
         end --> if exercise
@@ -198,7 +198,7 @@ function query()
 end
 
 function WantToContinue()
-  lang.tell("Do you want to take another exercise?")
+  avt.tell(L"Do you want to take another exercise?")
 
   return avt.decide()
 end

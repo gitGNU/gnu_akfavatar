@@ -2,6 +2,8 @@
 Lua module for translations
 Copyright (c) 2011 Andreas K. Foerster <info@akfoerster.de>
 
+This module was written for AKFAvatar, but doesn't depend on it.
+
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -21,24 +23,20 @@ Usage:
   lang.getlanguage()		detect language code
   lang.use("de")		use that language
   lang.translations {}		define the translations (see example)
-
   lang.translate(s)		returns the translated string
-  lang.format(formatstr, ...)	like string.format()
-  lang.say(s)			like avt.say()
-  lang.tell(s)			like avt.tell()
-
 
 Example:
 
   lang.translations {
-    ["That's live!"] = { de="So ist das Leben!", fr="C'est la vie!" },
+    ["That's live!"] = {
+      de="So ist das Leben!",
+      fr="C'est la vie!" },
   }
 
-  lang.tell "That's live!"
+  local L = lang.translate
+  print(L"That's live!")
 
 --]]
-
-require "lua-akfavatar"
 
 local l = {}
 lang = l
@@ -54,7 +52,7 @@ function l.getlanguage()
 
   -- some systems use English names (sigh)
   -- the list is incomplete... (sigh)
-  if locale == "C" or locale == "POSIX" then language = "en" -- really unknown
+  if locale == "C" or locale == "POSIX" then language = "en" -- assumption
   elseif find(locale, "^English") then language = "en"
   elseif find(locale, "^Irish") then language = "ga"
   elseif find(locale, "^German") then language = "de"
@@ -111,32 +109,6 @@ end
 
 function l.translate (s)
   return translations[s][language] or s
-end
-
-
-function l.format(formatstr, ...)
-  local tr = translations[formatstr]
-  return string.format((tr and tr[language]) or formatstr, ...)
-end
-
-
-function l.say(...)
-  for i,s in ipairs{...} do
-    local tr = translations[s]
-    avt.say((tr and tr[language]) or s)
-  end
-end
-
-
-function l.tell (...)
-  local str = ""
-
-  for i,s in ipairs{...} do
-    local tr = translations[s]
-    str = str .. ((tr and tr[language]) or s)
-  end
-
-  avt.tell (str)
 end
 
 
