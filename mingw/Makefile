@@ -398,8 +398,8 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(srcdir)/README-SDL $(BINPKGNAME)/README-SDL.txt
 	cp $(lua_dll) $(BINPKGNAME)/
 	cp $(srcdir)/README-Lua $(BINPKGNAME)/README-Lua.txt
-	$(STRIP) $(BINPKGNAME)/*.exe
-	$(STRIP) $(BINPKGNAME)/*.dll
+	$(STRIP) -d $(BINPKGNAME)/*.exe
+	$(STRIP) -d $(BINPKGNAME)/*.dll
 	todos $(BINPKGNAME)/fsdemo-??.avt
 	todos $(BINPKGNAME)/*.bat
 	todos $(BINPKGNAME)/*.txt
