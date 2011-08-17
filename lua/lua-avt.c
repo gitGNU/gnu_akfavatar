@@ -141,8 +141,8 @@ get_mode (lua_State * L, int index)
 
   mode_name = lua_tostring (L, index);
   if (!mode_name)
-    luaL_error (L, "initialize: mode: (string expected, got %s)",
-		lua_typename (L, lua_type (L, -1)));
+    return luaL_error (L, "initialize: mode: (string expected, got %s)",
+		       lua_typename (L, lua_type (L, -1)));
   else
     {
       int i;
@@ -155,8 +155,8 @@ get_mode (lua_State * L, int index)
 	  }
 
       if (modes[i] == NULL)
-	luaL_error (L, "initialize: mode: '%s': %s", mode_name,
-		    strerror (ENOMSG));
+	return luaL_error (L, "initialize: mode: '%s': %s", mode_name,
+			   strerror (ENOMSG));
     }
 
   return mode;
@@ -209,9 +209,9 @@ lavt_initialize (lua_State * L)
 	  const char *key;
 
 	  if (lua_type (L, -2) != LUA_TSTRING)
-	    luaL_error (L, "initialize: %s: %s",
-			lua_typename (L, lua_type (L, -2)),
-			strerror (ENOMSG));
+	    return luaL_error (L, "initialize: %s: %s",
+			       lua_typename (L, lua_type (L, -2)),
+			       strerror (ENOMSG));
 
 	  key = lua_tostring (L, -2);	/* known to be a string */
 
@@ -228,7 +228,8 @@ lavt_initialize (lua_State * L)
 	  else if (strcmp ("mode", key) == 0)
 	    mode = get_mode (L, -1);
 	  else
-	    luaL_error (L, "initialize: %s: %s", key, strerror (EINVAL));
+	    return luaL_error (L, "initialize: %s: %s", key,
+			       strerror (EINVAL));
 
 	  lua_pop (L, 1);	/* remove value, keep key */
 	}			/* while (lua_next... */
@@ -1738,7 +1739,7 @@ lavt_getcwd (lua_State * L)
 
       buffer = (char *) malloc (size);
       if (buffer == NULL)
-	avta_error ("Lua-AKFAvatar", strerror (errno));
+	return luaL_error (L, "%s", strerror (errno));
 
       /* getcwd() conforms to POSIX.1-2001 */
       if (getcwd (buffer, size) == buffer)
@@ -1778,7 +1779,7 @@ lavt_launch (lua_State * L)
 
   /* number of arguments is already limited in Lua, but I want to be save */
   if (n > 255)
-    luaL_error (L, "launch: %s", strerror (E2BIG));
+    return luaL_error (L, "launch: %s", strerror (E2BIG));
 
   /* collect arguments */
   for (i = 1; i < n; i++)
@@ -1788,13 +1789,13 @@ lavt_launch (lua_State * L)
   avt_quit ();			/* close window / graphic mode */
   initialized = false;
 
-  /* don't close lua state - might be needed in case of error */
+  /* don't close lua state - it is still needed */
 
   /* conforming to POSIX.1-2001 */
   execvp (argv[0], argv);
 
   /* execvp only returns in case of an error */
-  return luaL_error (L, "%s: %s", argv[0], strerror (errno));
+  return luaL_error (L, "launch: %s: %s", argv[0], strerror (errno));
 }
 
 /* --------------------------------------------------------- */
