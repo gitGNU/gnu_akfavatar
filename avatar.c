@@ -4040,6 +4040,9 @@ avt_tell_mb_len (const char *txt, int len)
   wchar_t *wctext;
   int wclen;
 
+ if (len <= 0)
+    len = SDL_strlen (txt);
+
   if (screen && _avt_STATUS == AVT_NORMAL)
     {
       wclen = avt_mb_decode (&wctext, txt, len);
