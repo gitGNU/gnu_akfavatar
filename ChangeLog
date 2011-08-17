@@ -2,6 +2,14 @@
 
 	* avatar.c (avt_tell_mb_len): check if len<=0
 
+	* lua/lua-avt.c (lavt_load_audio_file, lavt_load_audio_string):
+	force full garbage collection
+
+	* lua/akfavatar-vorbis.c (collect_garbage): new function
+	(lvorbis_load_file, lvorbis_load_string)
+	(lvorbis_load_file_chain, lvorbis_load_string_chain):
+	force full garbage collection
+
 2011-08-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_recode_buffer): new function

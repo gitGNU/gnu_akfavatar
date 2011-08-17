@@ -34,6 +34,18 @@
 /* internal name for audio data */
 #define AUDIODATA   "AKFAvatar-Audio"
 
+static void
+collect_garbage (lua_State * L)
+{
+  if (!avt_audio_playing (NULL))
+    {
+      lua_pushnil (L);
+      lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-current-sound");
+    }
+
+  lua_gc (L, LUA_GCCOLLECT, 0);
+}
+
 static int
 lvorbis_load_file (lua_State * L)
 {
@@ -41,6 +53,7 @@ lvorbis_load_file (lua_State * L)
   avt_audio_t *audio_data;
   avt_audio_t **audio;
 
+  collect_garbage (L);
   filename = (char *) luaL_checkstring (L, 1);
 
   audio_data = avta_load_vorbis_file (filename);
@@ -68,6 +81,7 @@ lvorbis_load_string (lua_State * L)
   avt_audio_t *audio_data;
   avt_audio_t **audio;
 
+  collect_garbage (L);
   vorbis_data = (void *) luaL_checklstring (L, 1, &len);
 
   audio_data = avta_load_vorbis_data (vorbis_data, (int) len);
@@ -119,6 +133,8 @@ lvorbis_load_file_chain (lua_State * L)
 	}
     }
 
+  collect_garbage (L);
+
   /* create audio structure */
   audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
   *audio = audio_data;
@@ -160,6 +176,8 @@ lvorbis_load_string_chain (lua_State * L)
 	  return 1;
 	}
     }
+
+  collect_garbage (L);
 
   /* create audio structure with loaded audio_data */
   audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));

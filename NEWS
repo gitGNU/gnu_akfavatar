@@ -2,7 +2,8 @@
 * AKFAvatar-testing
 
   - terminal emulation optimized, some new codes supported
-  - new sound for bell
+  - new sound for the bell
+  - in Lua loading a sound now always invokes the garbage collector
 
   C-API changes:
     - all deprecated functions removed (told you so)

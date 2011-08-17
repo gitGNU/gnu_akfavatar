@@ -1313,7 +1313,6 @@ lavt_quit_audio (lua_State * L)
   return 0;
 }
 
-/* problem: the garbage collector doesn't see, how heavy this is */
 static void
 make_audio_element (lua_State * L, avt_audio_t * data)
 {
@@ -1364,6 +1363,12 @@ lavt_load_audio_file (lua_State * L)
   /* if filename is not none or nil or "" */
   if (len > 0)
     {
+      if (!avt_audio_playing(NULL))
+        audio_not_playing (L);
+
+      /* full garbage collection */
+      lua_gc (L, LUA_GCCOLLECT, 0);
+
       audio_data = avt_load_audio_file (filename);
 
       if (!audio_data)
@@ -1395,6 +1400,12 @@ lavt_load_audio_string (lua_State * L)
   /* if string is not none or nil or "" */
   if (len > 0)
     {
+      if (!avt_audio_playing(NULL))
+        audio_not_playing (L);
+
+      /* full garbage collection */
+      lua_gc (L, LUA_GCCOLLECT, 0);
+
       audio_data = avt_load_audio_data (data, len);
 
       if (!audio_data)

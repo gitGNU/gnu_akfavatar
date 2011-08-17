@@ -899,7 +899,7 @@ Das kann man übrigens auch mit
 .BI "avt.wait_audio_end()"
 Wartet, bis die Audio-Ausgabe beendet ist.
 .IP
-Daurch wird auch eine Audio-Schleife beendet, aber es spielt halt
+Dadurch wird auch eine Audio-Schleife beendet, aber es spielt halt
 noch bis zum Ende des aktuellen Klanges.
 .PP
 .TP
@@ -982,15 +982,6 @@ Falls diese
 gerade abgespielt werden, wird die Audio-Ausgabe abgebrochen.
 .IP
 Audiodaten werden auch vom Garbage Collector freigegeben.
-Man sollte sich aber nicht darauf verlassen.
-Audiodaten können eine ganze Menge Speicher verbrauchen.
-Leider bekommt der Garbage Collector davon nichts mit, weil die
-Audiodaten außerhalb von Lua abgelegt werden.
-Andererseits kann man den Garbage Collector auch von Hand starten,
-indem man ab und zu
-.BI "collectgarbage(" """collect""" ")"
-aufruft.
-Dann braucht man diese Funktion nicht nochmal extra aufrufen.
 .PP
 .TP
 .BI "avt.initialize_audio()"

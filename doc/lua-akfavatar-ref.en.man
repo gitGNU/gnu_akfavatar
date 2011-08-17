@@ -910,14 +910,7 @@ If this
 .I audio
 is currently playing, it is stopped.
 .IP
-Audio data is also freed by the garbage collector, but don't count
-on it.  Audio data can hog up a lot of memory. Unfortunately the
-garbage collector doesn't see that, because it is handled outside
-of Lua.  However, you could also run the garbage collector
-manually with using
-.BI "collectgarbage(" """collect""" ")"
-from time to time.
-Then you don't need to call this function.
+Audio data is also freed by the garbage collector.
 .PP
 .TP
 .BI "avt.initialize_audio()"
