@@ -42,7 +42,6 @@ end
 local function wait()
   if target_time > 0 then
     avt.wait_audio_end()
-    collectgarbage("collect")
     avt.wait((target_time - avt.ticks()) / 1000)
     target_time = 0
     end

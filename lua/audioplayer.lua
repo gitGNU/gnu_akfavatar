@@ -79,7 +79,6 @@ local function play_single(filename) --> play a single file
 
   show_cover(string.match(filename, "^(.-)[^\\/]+$"))
   audio:play()
-  collectgarbage("collect")
 
   repeat
     button = avt.navigate("ps")
@@ -177,7 +176,6 @@ local function play_list(list) --> plays a list of files (but no playlists)
     if not audio then return end
 
     audio:play()
-    collectgarbage("collect")
 
     repeat
       button = avt.navigate("bpsf")

@@ -10,6 +10,9 @@
 	(lvorbis_load_file_chain, lvorbis_load_string_chain):
 	force full garbage collection
 
+	* lua/audioplayer.lua, lua/akfavatar/avtdemo.lua:
+	don't call the garbage collector
+
 2011-08-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_recode_buffer): new function
