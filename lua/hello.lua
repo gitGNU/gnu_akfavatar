@@ -8,8 +8,13 @@
 
 require "lua-akfavatar" --> gives access to the avt. comands
 
-avt.initialize{title="Hello World", avatar="default", 
-               encoding="UTF-8", mode="window"}
+avt.initialize {
+  title="Hello World",
+  avatar="default",
+  encoding="UTF-8",
+  mode="auto"
+  }
+
 avt.set_text_delay() --> activate the slowprint mode (optional)
 
 avt.set_balloon_size(10, 20) --> set the size of the balloon (optional)
