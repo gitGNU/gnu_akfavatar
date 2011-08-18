@@ -1,3 +1,7 @@
+2011-08-18  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/lua-akfavatar-prg.c (script_error): new function
+
 2011-08-17  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_tell_mb_len): check if len<=0

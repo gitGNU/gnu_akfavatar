@@ -332,6 +332,23 @@ show_text (const char *filename)
   avta_pager_file (filename, 1);
 }
 
+/* error in script */
+static void
+script_error (const char *msg)
+{
+  avt_set_status (AVT_NORMAL);
+  avt_change_avatar_image (NULL);
+  avt_set_balloon_color (0xFF, 0xAA, 0xAA);
+  avt_normal_text ();
+  avt_set_auto_margin (true);
+  avt_set_scroll_mode (-1);
+  avt_set_text_delay (0);
+  avt_lock_updates (false);
+  avt_bell ();
+  avt_tell_mb (msg);
+  avt_wait_button ();
+}
+
 static bool
 ask_file (void)
 {
@@ -366,7 +383,7 @@ ask_file (void)
 	    {
 	      /* on a normal quit-request there is nil on the stack */
 	      if (lua_isstring (L, -1))
-		avta_error (lua_tostring (L, -1), NULL);
+		script_error (lua_tostring (L, -1));
 	      lua_pop (L, 1);	/* pop message (or the nil) */
 	    }
 	}

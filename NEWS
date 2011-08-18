@@ -1,6 +1,8 @@
 
 * AKFAvatar-testing
 
+  - if a script is started from the filechooser an error in the script
+    doesn't stop the whole program
   - terminal emulation optimized, some new codes supported
   - new sound for the bell
   - in Lua loading a sound now always invokes the garbage collector
