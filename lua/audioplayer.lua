@@ -235,7 +235,7 @@ local function play_select()
   repeat
     local audio_files = {}
     local menu = {
-      [1] = "* parent directory",
+      [1] = "\226\135\145", -- up
       [2] = "* play all..."
       }
 
