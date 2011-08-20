@@ -41,6 +41,9 @@ VERSIONSTR=$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)
 # if you change this, you also have to change the file avatar-default.c
 default_avatar = $(srcdir)/male_user.xpm
 
+# convert from Unix newlines to DOS/Windows newlines
+u2d = sed -i -e 's/$$/\r/'
+
 SHELL = /bin/sh
 .SUFFIXES:
 
@@ -400,14 +403,14 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(srcdir)/README-Lua $(BINPKGNAME)/README-Lua.txt
 	$(STRIP) -d $(BINPKGNAME)/*.exe
 	$(STRIP) -d $(BINPKGNAME)/*.dll
-	todos $(BINPKGNAME)/fsdemo-??.avt
-	todos $(BINPKGNAME)/*.txt
-	todos $(BINPKGNAME)/lua/*.lua
-	todos $(BINPKGNAME)/lua/akfavatar/*.lua
-	todos $(BINPKGNAME)/lua/akfavatar/*.txt
-	todos $(BINPKGNAME)/lua/documentation/English/*.about
-	todos $(BINPKGNAME)/lua/documentation/Deutsch/*.about
-	todos $(BINPKGNAME)/include/*
+	$(u2d) $(BINPKGNAME)/fsdemo-??.avt
+	$(u2d) $(BINPKGNAME)/*.txt
+	$(u2d) $(BINPKGNAME)/lua/*.lua
+	$(u2d) $(BINPKGNAME)/lua/akfavatar/*.lua
+	$(u2d) $(BINPKGNAME)/lua/akfavatar/*.about
+	$(u2d) $(BINPKGNAME)/lua/documentation/English/*.about
+	$(u2d) $(BINPKGNAME)/lua/documentation/Deutsch/*.about
+	$(u2d) $(BINPKGNAME)/include/*
 	-rm -f $(BINPKGNAME).w32.zip
 	zip -9vr $(BINPKGNAME).w32.zip $(BINPKGNAME)/
 	rm -r $(BINPKGNAME)/
