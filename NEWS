@@ -1,5 +1,5 @@
 
-* AKFAvatar-testing
+* AKFAvatar 0.21.0
 
   - if a script is started from the filechooser an error in the script
     doesn't stop the whole program
@@ -16,6 +16,7 @@
       avt_mb_encode_buffer
 
   Lua-API changes:
+    - new module "akfavatar.lang": for multilingual applications
     - new functions: avt.recode, avt.launch
 
   Pascal-API changes:
