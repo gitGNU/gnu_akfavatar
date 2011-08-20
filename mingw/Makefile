@@ -401,11 +401,12 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	$(STRIP) -d $(BINPKGNAME)/*.exe
 	$(STRIP) -d $(BINPKGNAME)/*.dll
 	todos $(BINPKGNAME)/fsdemo-??.avt
-	todos $(BINPKGNAME)/*.bat
 	todos $(BINPKGNAME)/*.txt
 	todos $(BINPKGNAME)/lua/*.lua
 	todos $(BINPKGNAME)/lua/akfavatar/*.lua
 	todos $(BINPKGNAME)/lua/akfavatar/*.txt
+	todos $(BINPKGNAME)/lua/documentation/English/*.about
+	todos $(BINPKGNAME)/lua/documentation/Deutsch/*.about
 	todos $(BINPKGNAME)/include/*
 	-rm -f $(BINPKGNAME).w32.zip
 	zip -9vr $(BINPKGNAME).w32.zip $(BINPKGNAME)/
