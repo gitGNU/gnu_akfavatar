@@ -1,3 +1,7 @@
+2011-08-20  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.21.0 released
+
 2011-08-18  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-akfavatar-prg.c (script_error): new function
