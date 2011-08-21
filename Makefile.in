@@ -555,8 +555,8 @@ clean:
 	-rm -f bdfread
 	-rm -f alert.c
 	-rm -f rgb.h
+	-rm -f rc-info.h
 	-rm -f ucsfont9x18.c ucsfont7x14.c
-	-rm -f libinfo.rc avtsayinfo.rc luaavtstarter.rc
 	-rm -fr akfavatar-en.t2d/ akfavatar-de.t2d/
 	-rm -f pascal/*.o pascal/*.gpi pascal/*.gpm pascal/*.ppu
 	-rm -f pascal/link.res pascal/ppas.sh
@@ -749,11 +749,11 @@ dist: about $(srcdir)/alert.au
 	mkdir $(PKGNAME)/mingw
 	ln $(srcdir)/mingw/akfavatar.ico $(srcdir)/mingw/icon.rc \
 	   $(srcdir)/mingw/lua.ico \
-	   $(srcdir)/mingw/libinfo.in $(srcdir)/mingw/avtsayinfo.in \
-	   $(srcdir)/mingw/lua-akfavatar-rc.in \
-	   $(srcdir)/mingw/luaavtstarter-rc.in \
-	   $(srcdir)/mingw/akfavatar-graphic-rc.in \
-	   $(srcdir)/mingw/akfavatar-vorbis-rc.in \
+	   $(srcdir)/mingw/akfavatar-dll.rc $(srcdir)/mingw/avatarsay.rc \
+	   $(srcdir)/mingw/lua-akfavatar-dll.rc \
+	   $(srcdir)/mingw/lua-akfavatar-prg.rc \
+	   $(srcdir)/mingw/akfavatar-graphic.rc \
+	   $(srcdir)/mingw/akfavatar-vorbis.rc \
 	   $(srcdir)/mingw/avtmsg.c $(srcdir)/mingw/avtwindows.c \
 	   $(srcdir)/mingw/avttermstub.c $(srcdir)/mingw/askdrive.c \
 	   $(srcdir)/mingw/win_iconv.c $(srcdir)/mingw/iconv.h \

@@ -41,7 +41,6 @@ tests
 *.dll
 *.exe
 *.def
-*.rc
 version.texi
 *.t2d
 *.aux
