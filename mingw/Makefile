@@ -257,9 +257,19 @@ lua-akfavatar-prg.wo: $(srcdir)/lua/lua-akfavatar-prg.c $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) $(SDL_CFLAGS) -I$(srcdir) -c -o $@ \
 	 $(srcdir)/lua/lua-akfavatar-prg.c
 
-akfavatar-vorbis.dll: akfavatar-vorbis.wo avtvorbis.wo stb_vorbis.wo
+akfavatar-vorbis.dll: akfavatar-vorbis.wo avtvorbis.wo stb_vorbis.wo \
+	             akfavatar-vorbis-info.wo
 	$(CC) -o $@ -shared akfavatar-vorbis.wo avtvorbis.wo stb_vorbis.wo \
+	  akfavatar-vorbis-info.wo \
 	  -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS)
+
+akfavatar-vorbis.rc: $(srcdir)/mingw/akfavatar-vorbis-rc.in config-mingw
+	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
+	  -e "s/@REVISION@/$(REVISION)/; s/@VERSIONSTR@/$(VERSIONSTR)/" \
+	  $(srcdir)/mingw/akfavatar-vorbis-rc.in > $@
+
+akfavatar-vorbis-info.wo: akfavatar-vorbis.rc
+	$(WINDRES) -o $@ -i akfavatar-vorbis.rc
 
 avtvorbis.wo: $(srcdir)/avtvorbis.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h \
 	      $(srcdir)/stb_vorbis.c

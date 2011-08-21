@@ -753,6 +753,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/mingw/lua-akfavatar-rc.in \
 	   $(srcdir)/mingw/luaavtstarter-rc.in \
 	   $(srcdir)/mingw/akfavatar-graphic-rc.in \
+	   $(srcdir)/mingw/akfavatar-vorbis-rc.in \
 	   $(srcdir)/mingw/avtmsg.c $(srcdir)/mingw/avtwindows.c \
 	   $(srcdir)/mingw/avttermstub.c $(srcdir)/mingw/askdrive.c \
 	   $(srcdir)/mingw/win_iconv.c $(srcdir)/mingw/iconv.h \
