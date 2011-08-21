@@ -555,7 +555,6 @@ clean:
 	-rm -f bdfread
 	-rm -f alert.c
 	-rm -f rgb.h
-	-rm -f rc-info.h
 	-rm -f ucsfont9x18.c ucsfont7x14.c
 	-rm -fr akfavatar-en.t2d/ akfavatar-de.t2d/
 	-rm -f pascal/*.o pascal/*.gpi pascal/*.gpm pascal/*.ppu

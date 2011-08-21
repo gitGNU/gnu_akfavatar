@@ -11,7 +11,6 @@ config-local
 config-debug
 config.status
 version.h
-rc-info.h
 avatarsay
 avatarsay-bin
 example

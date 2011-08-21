@@ -53,12 +53,6 @@ all: akfavatar.dll libakfavatar.a libavtaddons.a \
 
 nolua: akfavatar.dll libakfavatar.a libavtaddons.a iconv.exe
 
-rc-info.h: config-mingw
-	@echo "#define RC_VERSION $(VERSION)" >$@
-	@echo "#define RC_SUBVERSION $(SUBVERSION)" >>$@
-	@echo "#define RC_REVISION $(REVISION)" >>$@
-	@echo "#define RC_VERSIONSTR \"$(VERSIONSTR)\"" >>$@
-
 icon.wo: $(srcdir)/mingw/icon.rc $(srcdir)/mingw/akfavatar.ico
 	 $(WINDRES) -o $@ -i $(srcdir)/mingw/icon.rc
 
@@ -134,7 +128,7 @@ akfavatar.dll: avatar.wo avatar-default.wo avatar-audio.wo font.wo libinfo.wo \
 	        -Wl,--out-implib,libakfavatar.dll.a \
 	        $(SDL_LDFLAGS) $(LDFLAGS)
 
-libinfo.wo: $(srcdir)/mingw/akfavatar-dll.rc rc-info.h
+libinfo.wo: $(srcdir)/mingw/akfavatar-dll.rc version.h
 	$(WINDRES) -I. -o $@ -i $(srcdir)/mingw/akfavatar-dll.rc
 
 avtwindows.wo: $(srcdir)/mingw/avtwindows.c $(srcdir)/akfavatar.h
@@ -199,7 +193,7 @@ avatarsay.exe: avatarsay.wo akfavatar.dll \
 	  askdrive.wo avtreadfile.wo avtmsg.wo avtgrmsg.wo \
 	  avatarsay-info.wo -L. -lakfavatar $(SDL_LDFLAGS) $(LDFLAGS)
 
-avatarsay-info.wo: $(srcdir)/mingw/avatarsay.rc rc-info.h \
+avatarsay-info.wo: $(srcdir)/mingw/avatarsay.rc version.h \
 	   $(srcdir)/mingw/akfavatar.ico
 	$(WINDRES) -I. -o $@ -i $(srcdir)/mingw/avatarsay.rc
 
@@ -218,7 +212,7 @@ lua-akfavatar.exe: lua-akfavatar-prg.wo lua-avt.wo lua-akfavatar-prg-info.wo \
 	    -L. -lakfavatar \
 	    $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS)
 
-lua-akfavatar-prg-info.wo: $(srcdir)/mingw/lua-akfavatar-prg.rc rc-info.h \
+lua-akfavatar-prg-info.wo: $(srcdir)/mingw/lua-akfavatar-prg.rc version.h \
 	    $(srcdir)/mingw/akfavatar.ico
 	$(WINDRES) -I. -o $@ -i $(srcdir)/mingw/lua-akfavatar-prg.rc
 
@@ -228,7 +222,7 @@ lua-akfavatar.dll: lua-avt.wo filechooser.wo askdrive.wo colorchooser.wo \
 	     colorchooser.wo avtmsg.wo avtgrmsg.wo lua-akfavatar-dll-info.wo \
 	     -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS) -mwindows
 
-lua-akfavatar-dll-info.wo: $(srcdir)/mingw/lua-akfavatar-dll.rc rc-info.h \
+lua-akfavatar-dll-info.wo: $(srcdir)/mingw/lua-akfavatar-dll.rc version.h \
 	       $(srcdir)/mingw/akfavatar.ico
 	$(WINDRES) -I. -o $@ -i $(srcdir)/mingw/lua-akfavatar-dll.rc
 
@@ -253,7 +247,7 @@ akfavatar-vorbis.dll: akfavatar-vorbis.wo avtvorbis.wo stb_vorbis.wo \
 	  akfavatar-vorbis-info.wo \
 	  -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS)
 
-akfavatar-vorbis-info.wo: $(srcdir)/mingw/akfavatar-vorbis.rc rc-info.h
+akfavatar-vorbis-info.wo: $(srcdir)/mingw/akfavatar-vorbis.rc version.h
 	$(WINDRES) -I. -o $@ -i $(srcdir)/mingw/akfavatar-vorbis.rc
 
 avtvorbis.wo: $(srcdir)/avtvorbis.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h \
@@ -279,7 +273,7 @@ akfavatar-graphic.wo: $(srcdir)/lua/akfavatar-graphic.c $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/akfavatar-graphic.c
 
-akfavatar-graphic-info.wo: $(srcdir)/mingw/akfavatar-graphic.rc rc-info.h
+akfavatar-graphic-info.wo: $(srcdir)/mingw/akfavatar-graphic.rc version.h
 	$(WINDRES) -I. -o $@ -i $(srcdir)/mingw/akfavatar-graphic.rc
 
 about: $(srcdir)/lua/documentation/English/lua-akfavatar.about \

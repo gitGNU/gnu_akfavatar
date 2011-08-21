@@ -1,10 +1,10 @@
-#include "rc-info.h"
+#include "version.h"
 
 LANGUAGE 7, 1
 
 1 VERSIONINFO
-FILEVERSION RC_VERSION, RC_SUBVERSION, RC_REVISION, 0
-PRODUCTVERSION RC_VERSION, RC_SUBVERSION, RC_REVISION, 0
+FILEVERSION AVTVERSION, AVTSUBVERSION, AVTREVISION, 0
+PRODUCTVERSION AVTVERSION, AVTSUBVERSION, AVTREVISION, 0
 FILEFLAGSMASK 0x3F
 FILEOS 0x4
 FILETYPE 0x2
@@ -15,7 +15,7 @@ BEGIN
   BEGIN
    VALUE "CompanyName", "AKFoerster"
    VALUE "FileDescription", "AKFAvatar Anbindung f\374r Lua51"
-   VALUE "FileVersion", RC_VERSIONSTR
+   VALUE "FileVersion", AVTVERSIONSTR
    VALUE "InternalName", "lua-akfavatar"
    VALUE "LegalCopyright",
      "Andreas K. F\366rster, GPLv3+"
@@ -23,7 +23,7 @@ BEGIN
    VALUE "Comments", 
       "urspr\374nglich f\374r GNU/Linux geschrieben"
    VALUE "ProductName", "AKFAvatar"
-   VALUE "ProductVersion", RC_VERSIONSTR
+   VALUE "ProductVersion", AVTVERSIONSTR
   END
  END
  BLOCK "VarFileInfo"
@@ -35,8 +35,8 @@ END
 LANGUAGE 9, 1
 
 1 VERSIONINFO
-FILEVERSION RC_VERSION, RC_SUBVERSION, RC_REVISION, 0
-PRODUCTVERSION RC_VERSION, RC_SUBVERSION, RC_REVISION, 0
+FILEVERSION AVTVERSION, AVTSUBVERSION, AVTREVISION, 0
+PRODUCTVERSION AVTVERSION, AVTSUBVERSION, AVTREVISION, 0
 FILEFLAGSMASK 0x3F
 FILEOS 0x4
 FILETYPE 0x2
@@ -47,14 +47,14 @@ BEGIN
   BEGIN
    VALUE "CompanyName", "AKFoerster"
    VALUE "FileDescription", "AKFAvatar binding for Lua51"
-   VALUE "FileVersion", RC_VERSIONSTR
+   VALUE "FileVersion", AVTVERSIONSTR
    VALUE "InternalName", "lua-akfavatar"
    VALUE "LegalCopyright",
      "Andreas K. F\366rster, GPLv3+"
    VALUE "OriginalFilename", "lua-akfavatar.dll"
    VALUE "Comments", "primarily written for GNU/Linux"
    VALUE "ProductName", "AKFAvatar"
-   VALUE "ProductVersion", RC_VERSIONSTR
+   VALUE "ProductVersion", AVTVERSIONSTR
   END
  END
  BLOCK "VarFileInfo"
