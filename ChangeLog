@@ -3,6 +3,10 @@
 	* configure: rename macros
 	avatar.c, avatarsay.c: adapted
 
+	* avatar.c: don't hide mouse, unless requested
+	lua/akfavatar/avtdemo.lua (avtdemo): hide/show mouse
+	lua-akfavatar-prg.c (reset): make mouse visible
+
 2011-08-20  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.21.0 released

@@ -4233,7 +4233,6 @@ avt_choice (int *result, int start_line, int items, int key,
       SDL_SetAlpha (bar, SDL_SRCALPHA | SDL_RLEACCEL, 128);
 
       SDL_EventState (SDL_MOUSEMOTION, SDL_ENABLE);
-      SDL_ShowCursor (SDL_ENABLE);	/* mouse cursor */
 
       end_line = start_line + items - 1;
 
@@ -4370,7 +4369,6 @@ avt_choice (int *result, int start_line, int items, int key,
 	    }
 	}
 
-      SDL_ShowCursor (SDL_DISABLE);
       SDL_EventState (SDL_MOUSEMOTION, SDL_IGNORE);
       SDL_FreeSurface (plain_menu);
       SDL_FreeSurface (bar);
@@ -4501,9 +4499,6 @@ avt_pager (const wchar_t * txt, int len, int startline)
   /* do we actually have something to show? */
   if (!txt || !*txt || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
-
-  /* show mouse pointer */
-  SDL_ShowCursor (SDL_ENABLE);
 
   /* get len if not given */
   if (len <= 0)
@@ -4708,9 +4703,6 @@ avt_pager (const wchar_t * txt, int len, int startline)
   avt_ext_keyhandler = old_keyhandler;
   avt_ext_mousehandler = old_mousehandler;
   avt_activate_cursor (old_tc);
-
-  /* hide mouse pointer */
-  SDL_ShowCursor (SDL_DISABLE);
 
   avt_alert_func = old_alert_func;
 
@@ -5144,9 +5136,6 @@ avt_wait_button (void)
   avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_right), BUTTON_COLOR);
   AVT_UPDATE_RECT (btn_rect);
 
-  /* show mouse pointer */
-  SDL_ShowCursor (SDL_ENABLE);
-
   nokey = true;
   while (nokey)
     {
@@ -5173,9 +5162,6 @@ avt_wait_button (void)
       /* do other stuff */
       avt_analyze_event (&event);
     }
-
-  /* hide mouse pointer */
-  SDL_ShowCursor (SDL_DISABLE);
 
   /* delete button */
   /* TODO: save/restore background */
@@ -5348,9 +5334,6 @@ avt_navigate (const char *buttons)
   /* show all buttons */
   AVT_UPDATE_RECT (buttons_rect);
 
-  /* show mouse pointer */
-  SDL_ShowCursor (SDL_ENABLE);
-
   while (result < 0 && _avt_STATUS == AVT_NORMAL)
     {
       SDL_WaitEvent (&event);
@@ -5427,9 +5410,6 @@ avt_navigate (const char *buttons)
       avt_analyze_event (&event);
     }
 
-  /* hide mouse pointer */
-  SDL_ShowCursor (SDL_DISABLE);
-
   /* restore background */
   SDL_BlitSurface (buttons_area, NULL, screen, &buttons_rect);
   SDL_FreeSurface (buttons_area);
@@ -5481,9 +5461,6 @@ avt_decide (void)
   SDL_FreeSurface (base_button);
   base_button = NULL;
 
-  /* show mouse pointer */
-  SDL_ShowCursor (SDL_ENABLE);
-
   result = -1;			/* no result */
   while (result < 0)
     {
@@ -5531,9 +5508,6 @@ avt_decide (void)
 
       avt_analyze_event (&event);
     }
-
-  /* hide mouse pointer */
-  SDL_ShowCursor (SDL_DISABLE);
 
   /* delete buttons */
   /* TODO: save/restore background */
@@ -6238,12 +6212,6 @@ extern void
 avt_register_mousehandler (avt_mousehandler handler)
 {
   avt_ext_mousehandler = handler;
-
-  /* make mouse visible or invisible */
-  if (handler)
-    SDL_ShowCursor (SDL_ENABLE);
-  else
-    SDL_ShowCursor (SDL_DISABLE);
 }
 
 extern void
@@ -6865,12 +6833,6 @@ avt_initialize (const char *title, const char *shortname,
   window.h = MINIMALHEIGHT;
   window.x = screen->w > window.w ? (screen->w / 2) - (window.w / 2) : 0;
   window.y = screen->h > window.h ? (screen->h / 2) - (window.h / 2) : 0;
-
-  /*
-   * hide mouse pointer
-   * (must be after SDL_SetVideoMode)
-   */
-  SDL_ShowCursor (SDL_DISABLE);
 
   avt_set_mouse_pointer ();
 

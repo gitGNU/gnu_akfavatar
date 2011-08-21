@@ -292,6 +292,8 @@ function avtdemo(demofile)
   archive = false
   target_time = 0
 
+  avt.set_mouse_visible(false)
+
   for line in string.gmatch(get_script(demofile), "(.-)\r?\n") do
     if string.find(line, "^%s*#") or
        (not initialized and string.find(line, "^%s*$")) then
@@ -315,6 +317,7 @@ function avtdemo(demofile)
   show_text()
   wait()
   avt.move_out()
+  avt.set_mouse_visible(true)
 
   -- eventually free some memory
   txt = nil

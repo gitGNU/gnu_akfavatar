@@ -155,6 +155,7 @@ reset (void)
   avt_quit_audio ();
   avt_set_title ("Lua-AKFAvatar Starter", "AKFAvatar");
   avt_change_avatar_image (avt_default ());
+  avt_set_mouse_visible (true);
 }
 
 /* check if this program can handle the file */
