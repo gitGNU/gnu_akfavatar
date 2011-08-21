@@ -473,7 +473,10 @@ cat > version.h << EOF
 /* version information */
 /* This file was generated automatically by configure. Do not edit. */
 
-#define AVTVERSION "${VERSION}.${SUBVERSION}.${REVISION}${VARIANT}"
+#define AVTVERSION ${VERSION}
+#define AVTSUBVERSION ${SUBVERSION}
+#define AVTREVISION ${REVISION}
+#define AVTVERSIONSTR "${VERSION}.${SUBVERSION}.${REVISION}${VARIANT}"
 #define AVTVERSIONNR "${VERSIONNR}"
 EOF
 

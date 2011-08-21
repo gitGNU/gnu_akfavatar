@@ -189,7 +189,7 @@ showversion (void)
   switch (language)
     {
     case DEUTSCH:
-      avta_info ("avatarsay (AKFAvatar) " AVTVERSION "\n"
+      avta_info ("avatarsay (AKFAvatar) " AVTVERSIONSTR "\n"
 		 "Copyright (c) " COPYRIGHT_YEAR " Andreas K. Foerster\n\n"
 		 "Lizenz GPLv3+: GNU GPL Version 3 oder neuer "
 		 "<http://gnu.org/licenses/gpl.html>\n\n"
@@ -201,7 +201,7 @@ showversion (void)
 
     case ENGLISH:
     default:
-      avta_info ("avatarsay (AKFAvatar) " AVTVERSION "\n"
+      avta_info ("avatarsay (AKFAvatar) " AVTVERSIONSTR "\n"
 		 "Copyright (c) " COPYRIGHT_YEAR " Andreas K. Foerster\n\n"
 		 "License GPLv3+: GNU GPL version 3 or later "
 		 "<http://gnu.org/licenses/gpl.html>\n\n"
@@ -2531,7 +2531,7 @@ about_avatarsay (void)
   set_encoding ("UTF-8");
   avt_set_text_delay (0);
 
-  avt_say_mb ("avatarsay (AKFAvatar) " AVTVERSION "\n"
+  avt_say_mb ("avatarsay (AKFAvatar) " AVTVERSIONSTR "\n"
 	      "Copyright © " COPYRIGHT_YEAR " Andreas K. Förster\n");
 
   switch (language)

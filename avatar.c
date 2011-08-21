@@ -1322,7 +1322,7 @@ avt_iconv (avt_iconv_t cd,
 extern const char *
 avt_version (void)
 {
-  return AVTVERSION;
+  return AVTVERSIONSTR;
 }
 
 extern const char *
