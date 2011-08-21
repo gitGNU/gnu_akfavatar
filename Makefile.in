@@ -568,6 +568,7 @@ distclean: clean
 	-rm -f example
 	-rm -f lua-akfavatar lua-akfavatar-bin
 	-rm -f example a.out *.a *.so
+	-rm -f *.dll
 	-rm -f $(LIBNAME) $(SONAME)
 	-rm -f config.status
 	-rm -f version.h
