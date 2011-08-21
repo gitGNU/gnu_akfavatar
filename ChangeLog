@@ -7,6 +7,9 @@
 	lua/akfavatar/avtdemo.lua (avtdemo): hide/show mouse
 	lua-akfavatar-prg.c (reset): make mouse visible
 
+	* avatar.c (avt_say_len):
+	fix: when checking for \b, make sure it's not past the end
+
 2011-08-20  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.21.0 released

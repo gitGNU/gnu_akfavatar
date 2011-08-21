@@ -3364,7 +3364,7 @@ avt_say_len (const wchar_t * txt, int len)
 
   for (i = 0; i < len; i++, txt++)
     {
-      if (*(txt + 1) == L'\b')
+      if (*(txt + 1) == L'\b' && i < len - 1)
 	{
 	  if (avt_overstrike (txt))
 	    break;
@@ -4040,7 +4040,7 @@ avt_tell_mb_len (const char *txt, int len)
   wchar_t *wctext;
   int wclen;
 
- if (len <= 0)
+  if (len <= 0)
     len = SDL_strlen (txt);
 
   if (screen && _avt_STATUS == AVT_NORMAL)
