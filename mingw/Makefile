@@ -53,24 +53,8 @@ all: akfavatar.dll libakfavatar.a libavtaddons.a \
 
 nolua: akfavatar.dll libakfavatar.a libavtaddons.a iconv.exe
 
-avtsayinfo.rc: $(srcdir)/mingw/avtsayinfo.in config-mingw
-	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
-	  -e "s/@REVISION@/$(REVISION)/; s/@VERSIONSTR@/$(VERSIONSTR)/" \
-	  $(srcdir)/mingw/avtsayinfo.in > $@
-
-libinfo.rc: $(srcdir)/mingw/libinfo.in config-mingw
-	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
-	  -e "s/@REVISION@/$(REVISION)/; s/@VERSIONSTR@/$(VERSIONSTR)/" \
-	  $(srcdir)/mingw/libinfo.in > $@
-
 icon.wo: $(srcdir)/mingw/icon.rc $(srcdir)/mingw/akfavatar.ico
 	 $(WINDRES) -o $@ -i $(srcdir)/mingw/icon.rc
-
-avtsayinfo.wo: avtsayinfo.rc $(srcdir)/mingw/akfavatar.ico
-	$(WINDRES) -I$(srcdir)/mingw -o $@ -i avtsayinfo.rc
-
-libinfo.wo: libinfo.rc
-	$(WINDRES) -o $@ -i libinfo.rc
 
 # alert.au should be in the sourcecode-distribution
 $(srcdir)/alert.au: $(srcdir)/alert.flac
@@ -144,6 +128,14 @@ akfavatar.dll: avatar.wo avatar-default.wo avatar-audio.wo font.wo libinfo.wo \
 	        -Wl,--out-implib,libakfavatar.dll.a \
 	        $(SDL_LDFLAGS) $(LDFLAGS)
 
+libinfo.rc: $(srcdir)/mingw/libinfo.in config-mingw
+	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
+	  -e "s/@REVISION@/$(REVISION)/; s/@VERSIONSTR@/$(VERSIONSTR)/" \
+	  $(srcdir)/mingw/libinfo.in > $@
+
+libinfo.wo: libinfo.rc
+	$(WINDRES) -o $@ -i libinfo.rc
+
 avtwindows.wo: $(srcdir)/mingw/avtwindows.c $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/mingw/avtwindows.c
@@ -205,6 +197,14 @@ avatarsay.exe: avatarsay.wo akfavatar.dll \
 	  askdrive.wo avtreadfile.wo avtmsg.wo avtgrmsg.wo avtsayinfo.wo \
 	  -L. -lakfavatar $(SDL_LDFLAGS) $(LDFLAGS)
 
+avtsayinfo.rc: $(srcdir)/mingw/avtsayinfo.in config-mingw
+	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
+	  -e "s/@REVISION@/$(REVISION)/; s/@VERSIONSTR@/$(VERSIONSTR)/" \
+	  $(srcdir)/mingw/avtsayinfo.in > $@
+
+avtsayinfo.wo: avtsayinfo.rc $(srcdir)/mingw/akfavatar.ico
+	$(WINDRES) -I$(srcdir)/mingw -o $@ -i avtsayinfo.rc
+
 example: example.exe
 
 example.exe: $(srcdir)/example.c akfavatar.dll icon.wo
@@ -220,11 +220,27 @@ lua-akfavatar.exe: lua-akfavatar-prg.wo lua-avt.wo luaavtstarter-rc.wo \
 	    -L. -lakfavatar \
 	    $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS)
 
+luaavtstarter.rc: $(srcdir)/mingw/luaavtstarter-rc.in config-mingw
+	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
+	  -e "s/@REVISION@/$(REVISION)/; s/@VERSIONSTR@/$(VERSIONSTR)/" \
+	  $(srcdir)/mingw/luaavtstarter-rc.in > $@
+
+luaavtstarter-rc.wo: luaavtstarter.rc $(srcdir)/mingw/akfavatar.ico
+	$(WINDRES) -I$(srcdir)/mingw/ -o $@ -i luaavtstarter.rc
+
 lua-akfavatar.dll: lua-avt.wo filechooser.wo askdrive.wo colorchooser.wo \
-	           avtmsg.wo avtgrmsg.wo
+	           avtmsg.wo avtgrmsg.wo lua-akfavatar-info.wo
 	$(CC) -o $@ -shared lua-avt.wo filechooser.wo askdrive.wo \
-	     colorchooser.wo avtmsg.wo avtgrmsg.wo \
+	     colorchooser.wo avtmsg.wo avtgrmsg.wo lua-akfavatar-info.wo \
 	     -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS) -mwindows
+
+lua-akfavatar.rc: $(srcdir)/mingw/lua-akfavatar-rc.in config-mingw
+	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
+	  -e "s/@REVISION@/$(REVISION)/; s/@VERSIONSTR@/$(VERSIONSTR)/" \
+	  $(srcdir)/mingw/lua-akfavatar-rc.in > $@
+
+lua-akfavatar-info.wo: lua-akfavatar.rc $(srcdir)/mingw/akfavatar.ico
+	$(WINDRES) -I$(srcdir)/mingw/ -o $@ -i lua-akfavatar.rc
 
 base64.dll: lbase64.wo
 	$(CC) -o $@ -shared lbase64.wo $(LUA_LDFLAGS) $(LDFLAGS)
@@ -260,26 +276,21 @@ stb_vorbis.wo: $(srcdir)/stb_vorbis.c
 	  -DSTB_VORBIS_MAX_CHANNELS=$(vorbis_max_channels) \
 	  -c -o $@ $(srcdir)/stb_vorbis.c
 
-akfavatar-graphic.dll: akfavatar-graphic.wo
-	$(CC) -o $@ -shared akfavatar-graphic.wo \
+akfavatar-graphic.dll: akfavatar-graphic.wo akfavatar-graphic-info.wo
+	$(CC) -o $@ -shared akfavatar-graphic.wo akfavatar-graphic-info.wo \
 	   -L. -lakfavatar -lm $(LUA_LDFLAGS) $(LDFLAGS)
 
 akfavatar-graphic.wo: $(srcdir)/lua/akfavatar-graphic.c $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/akfavatar-graphic.c
 
-lua-akfavatar.rc: $(srcdir)/mingw/lua-akfavatar-rc.in config-mingw
+akfavatar-graphic.rc: $(srcdir)/mingw/akfavatar-graphic-rc.in config-mingw
 	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
 	  -e "s/@REVISION@/$(REVISION)/; s/@VERSIONSTR@/$(VERSIONSTR)/" \
-	  $(srcdir)/mingw/lua-akfavatar-rc.in > $@
+	  $(srcdir)/mingw/akfavatar-graphic-rc.in > $@
 
-luaavtstarter.rc: $(srcdir)/mingw/luaavtstarter-rc.in config-mingw
-	sed -e "s/@VERSION@/$(VERSION)/; s/@SUBVERSION@/$(SUBVERSION)/" \
-	  -e "s/@REVISION@/$(REVISION)/; s/@VERSIONSTR@/$(VERSIONSTR)/" \
-	  $(srcdir)/mingw/luaavtstarter-rc.in > $@
-
-luaavtstarter-rc.wo: luaavtstarter.rc $(srcdir)/mingw/akfavatar.ico
-	$(WINDRES) -I$(srcdir)/mingw/ -o $@ -i luaavtstarter.rc
+akfavatar-graphic-info.wo: akfavatar-graphic.rc
+	$(WINDRES) -o $@ -i akfavatar-graphic.rc
 
 about: $(srcdir)/lua/documentation/English/lua-akfavatar.about \
        $(srcdir)/lua/documentation/Deutsch/lua-akfavatar.about \
