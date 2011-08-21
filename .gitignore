@@ -66,6 +66,7 @@ akfavatar-h.txt
 build
 *.patch
 akfavatar-term.so
-avt-vorbis.so
+akfavatar-graphic.so
+akfavatar-vorbis.so
 base64.so
 lua-akfavatar.so
