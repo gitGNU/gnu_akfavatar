@@ -61,7 +61,7 @@ print(L"That's live!");
 
 TIPPS:
 
-Diese Modul kümmert sich nicht um die Zeichensatz-Kodierung. Ein guter Ansatz
+Dieses Modul kümmert sich nicht um die Zeichensatz-Kodierung. Ein guter Ansatz
 ist, wenn man "UTF-8" für alles verwenden kann. Ein anderer Ansatz wäre es,
 die Kodierung selbst zu einem übersetzbaren String zu machen, wobei man
 "US-ASCII" für Englisch verwenden sollte.
