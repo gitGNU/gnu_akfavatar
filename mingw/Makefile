@@ -34,9 +34,7 @@ SDL_CFLAGS := $(shell $(SDL_CONFIG) --cflags)
 SDL_LDFLAGS := $(shell $(SDL_CONFIG) --libs)
 
 # name for binary packages
-BINPKGNAME=akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
-
-VERSIONSTR=$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)
+BINPKGNAME=$(pkgname)-$(pkgversion).bin
 
 # if you change this, you also have to change the file avatar-default.c
 default_avatar = $(srcdir)/male_user.xpm

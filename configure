@@ -11,7 +11,8 @@
 VERSION=0
 SUBVERSION=21
 REVISION=0
-VARIANT="-testing-$(date '+%Y%m%d')"
+BUILD=1 # set to 0 for official releases
+VARIANT="-testing"
 LIBNAME=libakfavatar.so.${VERSION}.${SUBVERSION}.${REVISION}
 SONAME=libakfavatar.so.${VERSION}.${SUBVERSION}
 
@@ -19,7 +20,6 @@ invocation_name=$0
 args=
 no_create=
 pkgname=akfavatar
-pkgversion=${VERSION}.${SUBVERSION}.${REVISION}${VARIANT}
 srctrigger=avatar.c
 SIZE=DEFAULT
 OLDSDL=
@@ -30,6 +30,11 @@ SDL_IMAGE="yes"
 LINK_SDL_IMAGE="no"
 NO_LUA="no"
 STATIC_LUA="no"
+
+if [ ${BUILD} -gt 0 ]
+then pkgversion="${VERSION}.${SUBVERSION}.${REVISION}${VARIANT}-${BUILD}"
+else pkgversion="${VERSION}.${SUBVERSION}.${REVISION}${VARIANT}"
+fi
 
 # clear some things potentially inherited from environment.
 srcdir=
@@ -432,6 +437,7 @@ echo "creating Makefile"
 echo "VERSION = ${VERSION}"
 echo "SUBVERSION = ${SUBVERSION}"
 echo "REVISION = ${REVISION}"
+echo "BUILD = ${BUILD}"
 echo "VARIANT = ${VARIANT}"
 echo "LIBNAME = ${LIBNAME}"
 echo "SONAME = ${SONAME}"
@@ -468,6 +474,9 @@ echo "TARGET = ${TARGET}"
 echo "DISTBIN = ${DISTBIN}"
 
 VERSIONNR=`printf "%02d%02d%02d" ${VERSION} ${SUBVERSION} ${REVISION}`
+AVTVERSIONSTR="${VERSION}.${SUBVERSION}.${REVISION}${VARIANT}"
+test ${BUILD} -gt 0 && AVTVERSIONSTR="${AVTVERSIONSTR} (build ${BUILD})"
+
 rm -f version.h
 cat > version.h << EOF
 /* version information */
@@ -476,7 +485,8 @@ cat > version.h << EOF
 #define AVTVERSION ${VERSION}
 #define AVTSUBVERSION ${SUBVERSION}
 #define AVTREVISION ${REVISION}
-#define AVTVERSIONSTR "${VERSION}.${SUBVERSION}.${REVISION}${VARIANT}"
+#define AVTBUILD ${BUILD}
+#define AVTVERSIONSTR "${AVTVERSIONSTR}"
 #define AVTVERSIONNR "${VERSIONNR}"
 EOF
 
@@ -493,6 +503,7 @@ cat > Makefile << EOF
 VERSION = ${VERSION}
 SUBVERSION = ${SUBVERSION}
 REVISION = ${REVISION}
+BUILD = ${BUILD}
 VARIANT = ${VARIANT}
 LIBNAME = ${LIBNAME}
 SONAME = ${SONAME}
@@ -541,7 +552,10 @@ then
     echo "VERSION = ${VERSION}"
     echo "SUBVERSION = ${SUBVERSION}"
     echo "REVISION = ${REVISION}"
+    echo "BUILD = ${BUILD}"
     echo "VARIANT = ${VARIANT}"
+    echo "pkgname = ${pkgname}"
+    echo "pkgversion = ${pkgversion}"
     echo "AWK = ${AWK}"
     echo "LUA_CFLAGS = ${LUA_CFLAGS}"
     echo "LUA_LDFLAGS = ${LUA_LDFLAGS}"

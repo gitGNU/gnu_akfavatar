@@ -29,8 +29,8 @@ ENSCRIPT = enscript
 ALERT = $(srcdir)/alert.flac
 
 # names for packages
-PKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT)
-BINPKGNAME = akfavatar-$(VERSION).$(SUBVERSION).$(REVISION)$(VARIANT).bin
+PKGNAME = $(pkgname)-$(pkgversion)
+BINPKGNAME = $(pkgname)-$(pkgversion).bin
 
 
 .PHONY: all check doc txt info install install-strip installdirs uninstall \
