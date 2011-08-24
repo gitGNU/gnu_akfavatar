@@ -217,7 +217,7 @@ avta_term_update_size (void)
 static wint_t
 get_character (int fd)
 {
-  static wchar_t textbuffer[INBUFSIZE];
+  static wchar_t textbuffer[INBUFSIZE + 1];	/* +1 for terminator */
   static int textbuffer_pos = 0;
   static int textbuffer_len = 0;
   wchar_t ch;

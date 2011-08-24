@@ -446,7 +446,7 @@ AVT_API int avt_mb_encode (char **dest, const wchar_t *src, int len);
  * len is the length
  * returns the size of dest (without the termination zero)
  * or -1 on error
- * dest gets as much as fits
+ * dest gets as much as fits (terminator reserved)
  * (in UTF-8 a character can have up to 4 bytes)
  */
 AVT_API int avt_mb_encode_buffer (char *dest, int dest_size,
