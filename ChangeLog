@@ -1,3 +1,7 @@
+2011-08-25  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/terminal.lua: little computer as avatar
+
 2011-08-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtterm.c (get_character): fix: buffersize + 1 for terminator
