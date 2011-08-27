@@ -1,3 +1,18 @@
+* AKFAvatar testing
+
+  This is mainly a bugfix release, only few changes
+
+  - fixes two bugs where characters were lost
+    (one was because a buffer was too small, but there was
+    no buffer overflow, so it was harmless)
+  - the mouse pointer is not hidden by default anymore
+    this caused problems on some systems
+  - in the binary packages are no developer files anymore
+    Lua developing is still possible, but C or Pascal developers
+    should install from the source package
+  - terminal.lua defines a small computer as avatar
+  - Windows: binary Lua modules have version infos as metadata
+    (only those which depend on AKFAvatar)
 
 * AKFAvatar 0.21.0
 
