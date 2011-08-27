@@ -314,13 +314,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	mkdir $(BINPKGNAME)/lua/documentation/English
 	mkdir $(BINPKGNAME)/lua/documentation/Deutsch
 	mkdir $(BINPKGNAME)/lua/akfavatar
-	mkdir $(BINPKGNAME)/include
 	cp akfavatar.dll $(BINPKGNAME)/
-	cp libavtaddons.a $(BINPKGNAME)/
-	cp $(srcdir)/akfavatar.h $(srcdir)/pascal/akfavatar.pas $(BINPKGNAME)/include/
-	cp $(srcdir)/avtaddons.h $(BINPKGNAME)/include/
-	-cp $(srcdir)/akfavatar.h.about $(BINPKGNAME)/include/
-	-cp $(srcdir)/avtaddons.h.about $(BINPKGNAME)/include/
 	cp $(srcdir)/fsdemo-??.avt $(BINPKGNAME)/
 	cp lua-akfavatar.exe $(BINPKGNAME)/
 	cp base64.dll $(BINPKGNAME)/
@@ -403,7 +397,6 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	$(u2d) $(BINPKGNAME)/lua/akfavatar/*.about
 	$(u2d) $(BINPKGNAME)/lua/documentation/English/*.about
 	$(u2d) $(BINPKGNAME)/lua/documentation/Deutsch/*.about
-	$(u2d) $(BINPKGNAME)/include/*
 	-rm -f $(BINPKGNAME).w32.zip
 	zip -9vr $(BINPKGNAME).w32.zip $(BINPKGNAME)/
 	rm -r $(BINPKGNAME)/
