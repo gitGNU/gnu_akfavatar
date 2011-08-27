@@ -14,7 +14,7 @@ BEGIN
   BLOCK "040704E4"
   BEGIN
    VALUE "CompanyName", "AKFoerster"
-   VALUE "FileDescription", "Lua-AKFAvatar Modul f\374r Ogg Vorbis"
+   VALUE "FileDescription", "Ogg Vorbis Modul f\374r Lua-AKFAvatar"
    VALUE "FileVersion", AVTVERSIONSTR
    VALUE "InternalName", "akfavatar-vorbis"
    VALUE "LegalCopyright",
@@ -46,7 +46,7 @@ BEGIN
   BLOCK "040904E4"
   BEGIN
    VALUE "CompanyName", "AKFoerster"
-   VALUE "FileDescription", "Lua-AKFAvatar Module for Ogg Vorbis"
+   VALUE "FileDescription", "Ogg Vorbis Module for Lua-AKFAvatar"
    VALUE "FileVersion", AVTVERSIONSTR
    VALUE "InternalName", "akfavatar-vorbis"
    VALUE "LegalCopyright",

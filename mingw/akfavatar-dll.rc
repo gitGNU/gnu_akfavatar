@@ -1,7 +1,5 @@
 #include "version.h"
 
-DllIcon ICON "akfavatar.ico"
-
 LANGUAGE 7, 1
 
 1 VERSIONINFO

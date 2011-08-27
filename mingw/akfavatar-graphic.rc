@@ -14,7 +14,7 @@ BEGIN
   BLOCK "040704E4"
   BEGIN
    VALUE "CompanyName", "AKFoerster"
-   VALUE "FileDescription", "Lua-AKFAvatar Grafik-Modul"
+   VALUE "FileDescription", "Grafik-Modul f\374r Lua-AKFAvatar"
    VALUE "FileVersion", AVTVERSIONSTR
    VALUE "InternalName", "akfavatar-graphic"
    VALUE "LegalCopyright",
@@ -46,7 +46,7 @@ BEGIN
   BLOCK "040904E4"
   BEGIN
    VALUE "CompanyName", "AKFoerster"
-   VALUE "FileDescription", "Lua-AKFAvatar Graphic Module"
+   VALUE "FileDescription", "Graphic Module for Lua-AKFAvatar"
    VALUE "FileVersion", AVTVERSIONSTR
    VALUE "InternalName", "akfavatar-graphic"
    VALUE "LegalCopyright",
