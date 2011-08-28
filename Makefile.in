@@ -777,7 +777,6 @@ dist-bin-default: all pdf
 	cp lua-akfavatar.so base64.so akfavatar-vorbis.so $(BINPKGNAME)/lua/
 	cp akfavatar-graphic.so $(BINPKGNAME)/lua/
 	cp akfavatar-term.so $(BINPKGNAME)/lua/
-	ln $(srcdir)/pascal/?pcavatar $(BINPKGNAME)/
 	ln $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
 	ln $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
 	ln $(srcdir)/teacher.xpm $(srcdir)/akfoerster.xpm $(BINPKGNAME)/
