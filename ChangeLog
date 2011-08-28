@@ -1,3 +1,7 @@
+2011-08-28  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.21.1 released
+
 2011-08-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/terminal.lua: little computer as avatar
