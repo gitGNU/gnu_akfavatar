@@ -264,6 +264,7 @@ lavt_initialize (lua_State * L)
       avt_reserve_single_keys (false);
       avt_set_balloon_color_name ("floral white");
       avt_normal_text ();
+      avt_set_mouse_visible (true);
 
       check (avt_mb_encoding (encoding));
       avt_set_title (title, shortname);
