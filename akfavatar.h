@@ -27,7 +27,7 @@
 #define _akfavatar_h
 
 /* SDL redefines main on some systems */
-#if defined(__WIN32__) ||  defined(__MACOS__) || defined(__MACOSX__)
+#if defined(_WIN32) || defined(__APPLE__) ||  defined(macintosh)
 #  include "SDL.h"
 #endif
 

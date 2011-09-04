@@ -30,7 +30,7 @@
 #include <errno.h>
 
 /* define SYSENCODING for systems that don't have langinfo.h */
-#if defined(__WIN32__) && !defined(SYSENCODING)
+#if defined(_WIN32) && !defined(SYSENCODING)
 #define SYSENCODING  "char"	/* for win_iconv */
 #endif
 
@@ -73,7 +73,7 @@
 /* slash */
 #define DIRECTORY L"/"
 
-#ifdef __WIN32__
+#ifdef _WIN32
 #  define HAS_DRIVE_LETTERS true
 #  define HAS_SCANDIR false
 #  define is_root_dir(x) (x[1] == ':' && x[3] == '\0')
@@ -126,7 +126,7 @@ show_directory (char *dirname)
   avt_new_line ();
 }
 
-#ifndef __WIN32__
+#ifndef _WIN32
 
 #ifdef __USE_GNU
 #  define FILTER_DIRENT_T  const struct dirent
@@ -146,7 +146,7 @@ filter_dirent (FILTER_DIRENT_T * d)
     return (custom_filter == NULL || (*custom_filter) (d->d_name));
 }
 
-#else /* __WIN32__ */
+#else /* _WIN32 */
 
 static int
 filter_dirent (const struct dirent *d)
@@ -162,7 +162,7 @@ filter_dirent (const struct dirent *d)
     return (custom_filter == NULL || (*custom_filter) (d->d_name));
 }
 
-#endif /* __WIN32__ */
+#endif /* _WIN32 */
 
 static int
 compare_dirent (const void *a, const void *b)
