@@ -29,6 +29,18 @@
 #include <unistd.h>
 #include <errno.h>
 
+/* define SYSENCODING for systems that don't have langinfo.h */
+#if defined(__WIN32__) && !defined(SYSENCODING)
+#define SYSENCODING  "WINDOWS-1252"
+#endif
+
+#ifdef SYSENCODING
+#define system_encoding(void)  avt_mb_encoding(SYSENCODING)
+#else
+#include <langinfo.h>		/* POSIX.1-2001 */
+#define system_encoding(void)  avt_mb_encoding(nl_langinfo(CODESET))
+#endif
+
 #define marked(void) avt_set_text_background_color (0xdd, 0xdd, 0xdd)
 
 /* entries or marks that are not files */
@@ -236,6 +248,7 @@ avta_file_selection (char *filename, int filename_size, avta_filter_t filter)
   int idx, menu_entry, page_nr;
   int entries, entry_nr;
   char *entry[100];		/* entry on screen */
+  char old_encoding[100];
   bool old_auto_margin, old_newline_mode;
 
   if (filename == NULL || filename_size <= 0)
@@ -260,6 +273,10 @@ avta_file_selection (char *filename, int filename_size, avta_filter_t filter)
   avt_set_auto_margin (false);
   old_newline_mode = avt_get_newline_mode ();
   avt_newline_mode (true);
+
+  strncpy (old_encoding, avt_get_mb_encoding (), sizeof (old_encoding));
+  old_encoding[sizeof (old_encoding) - 1] = '\0';
+  system_encoding ();
 
 start:
   /* returncode: assume failure as default */
@@ -455,6 +472,7 @@ quit:
   custom_filter = NULL;
   avt_set_auto_margin (old_auto_margin);
   avt_newline_mode (old_newline_mode);
+  avt_mb_encoding (old_encoding);
   avt_clear ();
   avt_lock_updates (false);
 
