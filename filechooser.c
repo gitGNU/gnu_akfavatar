@@ -31,7 +31,7 @@
 
 /* define SYSENCODING for systems that don't have langinfo.h */
 #if defined(__WIN32__) && !defined(SYSENCODING)
-#define SYSENCODING  "WINDOWS-1252"
+#define SYSENCODING  "char"	/* for win_iconv */
 #endif
 
 #ifdef SYSENCODING
