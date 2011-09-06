@@ -29,16 +29,11 @@
 #include <unistd.h>
 #include <errno.h>
 
-/* define SYSENCODING for systems that don't have langinfo.h */
-#if defined(_WIN32) && !defined(SYSENCODING)
-#define SYSENCODING  "char"	/* for win_iconv */
-#endif
 
-#ifdef SYSENCODING
-#define system_encoding(void)  avt_mb_encoding(SYSENCODING)
-#else
-#include <langinfo.h>		/* POSIX.1-2001 */
-#define system_encoding(void)  avt_mb_encoding(nl_langinfo(CODESET))
+/* empty string works as default with most iconv implementations */
+/* for some you have to use "char" or a specific one */
+#ifndef SYSENCODING
+#define SYSENCODING  ""
 #endif
 
 #define marked(void) avt_set_text_background_color (0xdd, 0xdd, 0xdd)
@@ -251,6 +246,8 @@ avta_file_selection (char *filename, int filename_size, avta_filter_t filter)
   char old_encoding[100];
   bool old_auto_margin, old_newline_mode;
 
+  rcode = -1;
+
   if (filename == NULL || filename_size <= 0)
     return -1;
 
@@ -276,7 +273,10 @@ avta_file_selection (char *filename, int filename_size, avta_filter_t filter)
 
   strncpy (old_encoding, avt_get_mb_encoding (), sizeof (old_encoding));
   old_encoding[sizeof (old_encoding) - 1] = '\0';
-  system_encoding ();
+
+  /* this also catches earlier errors */
+  if (avt_mb_encoding (SYSENCODING) != AVT_NORMAL)
+    goto quit;
 
 start:
   /* returncode: assume failure as default */
@@ -296,7 +296,7 @@ start:
 
   entries = get_directory (&namelist);
   if (entries < 0)
-    return rcode;
+    goto quit;
 
   /* entry for parent directory or home */
   if (!HAS_DRIVE_LETTERS && is_root_dir (dirname))
