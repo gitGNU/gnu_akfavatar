@@ -268,7 +268,7 @@ static int scroll_mode = 1;
 static SDL_Rect textfield;
 static SDL_Rect viewport;	/* sub-window in textfield */
 static bool avt_tab_stops[AVT_LINELENGTH];
-static char *avt_encoding = NULL;
+static char avt_encoding[100];
 
 /* origin mode */
 /* Home: textfield (false) or viewport (true) */
@@ -3505,15 +3505,10 @@ avt_mb_encoding (const char *encoding)
    * check if it is the result of avt_get_mb_encoding()
    * or the same encoding
    */
-  if (!encoding || encoding == avt_encoding
-      || (avt_encoding && SDL_strcmp (encoding, avt_encoding) == 0))
+  if (encoding == avt_encoding || SDL_strcmp (encoding, avt_encoding) == 0)
     return _avt_STATUS;
 
-  /* store encoding */
-  if (avt_encoding)
-    SDL_free (avt_encoding);
-
-  avt_encoding = SDL_strdup (encoding);
+  SDL_strlcpy (avt_encoding, encoding, sizeof (avt_encoding));
 
   /* output */
 
@@ -3528,7 +3523,7 @@ avt_mb_encoding (const char *encoding)
   if (output_cd == ICONV_UNINITIALIZED)
     {
       _avt_STATUS = AVT_ERROR;
-      SDL_SetError ("encoding %s not supported for output", encoding);
+      SDL_SetError ("encoding \"%s\" not supported for output", encoding);
       return _avt_STATUS;
     }
 
@@ -3545,7 +3540,7 @@ avt_mb_encoding (const char *encoding)
   if (input_cd == ICONV_UNINITIALIZED)
     {
       _avt_STATUS = AVT_ERROR;
-      SDL_SetError ("encoding %s not supported for input", encoding);
+      SDL_SetError ("encoding \"%s\" not supported for input", encoding);
       return _avt_STATUS;
     }
 
@@ -3768,15 +3763,11 @@ avt_recode_buffer (const char *tocode, const char *fromcode,
 
   /* NULL as code means the encoding, which was set */
 
-  if (!tocode || !*tocode)
+  if (!tocode)
     tocode = avt_encoding;
 
-  if (!fromcode || !*fromcode)
+  if (!fromcode)
     fromcode = avt_encoding;
-
-  /* if no encoding was set yet, fail */
-  if (!tocode || !fromcode)
-    return -1;
 
   cd = avt_iconv_open (tocode, fromcode);
   if (cd == (avt_iconv_t) (-1))
@@ -3837,15 +3828,11 @@ avt_recode (const char *tocode, const char *fromcode,
 
   /* NULL as code means the encoding, which was set */
 
-  if (!tocode || !*tocode)
+  if (!tocode)
     tocode = avt_encoding;
 
-  if (!fromcode || !*fromcode)
+  if (!fromcode)
     fromcode = avt_encoding;
-
-  /* if no encoding was set yet, fail */
-  if (!tocode || !fromcode)
-    return -1;
 
   cd = avt_iconv_open (tocode, fromcode);
   if (cd == (avt_iconv_t) (-1))
@@ -6582,18 +6569,14 @@ avt_quit (void)
 
   load_image_done ();
 
-  if (avt_encoding)
-    {
-      SDL_free (avt_encoding);
-      avt_encoding = NULL;
-    }
-
   /* close conversion descriptors */
   if (output_cd != ICONV_UNINITIALIZED)
     avt_iconv_close (output_cd);
   if (input_cd != ICONV_UNINITIALIZED)
     avt_iconv_close (input_cd);
   output_cd = input_cd = ICONV_UNINITIALIZED;
+
+  avt_encoding[0] = '\0';
 
   if (screen)
     {
@@ -6644,10 +6627,9 @@ extern void
 avt_set_title (const char *title, const char *shortname)
 {
   /* check if it's already in correct encoding default="UTF-8" */
-  if (!avt_encoding || SDL_strcasecmp ("UTF-8", avt_encoding) == 0
+  if (SDL_strcasecmp ("UTF-8", avt_encoding) == 0
       || SDL_strcasecmp ("UTF8", avt_encoding) == 0
       || SDL_strcasecmp ("CP65001", avt_encoding) == 0)
-
     SDL_WM_SetCaption (title, shortname);
   else				/* convert them to UTF-8 */
     {

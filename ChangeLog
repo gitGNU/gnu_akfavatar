@@ -3,6 +3,12 @@
 	* filechooser.c (avta_file_selection):
 	use "" as default encoding, macro system_encoding removed again
 
+	* avatar.c (avt_encoding): static buffer
+	(avt_mb_encoding, avt_quit, avt_set_title): adapted
+
+	* avatar.c (avt_recode_buffer, avt_recode):
+	accept empty string as normal encoding
+
 2011-09-04  Andreas K. Foerster  <info@akfoerster.de>
 
 	* filechooser.c (system_encoding): new macro

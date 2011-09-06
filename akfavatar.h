@@ -455,6 +455,7 @@ AVT_API int avt_mb_encode_buffer (char *dest, int dest_size,
 /*
  * recode string
  * if either tocode or fromcode is NULL, it uses the current mb_encoding
+ * the empty string is accepted as normal enconding name
  * the string src must not have incomplete characters at the end
  *
  * returns the size of dest (without the termination zeros)
@@ -466,6 +467,7 @@ AVT_API int avt_recode (const char *tocode, const char *fromcode,
 
 /*
  * recode a string with a fixed buffer
+ * otherwise the same as avt_recode
  *
  * returns the size of dest (without the termination zeros)
  * or -1 on error
