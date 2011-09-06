@@ -3539,6 +3539,8 @@ avt_mb_encoding (const char *encoding)
   /* check if it was successfully initialized */
   if (input_cd == ICONV_UNINITIALIZED)
     {
+      avt_iconv_close (output_cd);
+      output_cd = ICONV_UNINITIALIZED;
       _avt_STATUS = AVT_ERROR;
       SDL_SetError ("encoding \"%s\" not supported for input", encoding);
       return _avt_STATUS;

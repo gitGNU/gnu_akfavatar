@@ -9,6 +9,9 @@
 	* avatar.c (avt_recode_buffer, avt_recode):
 	accept empty string as normal encoding
 
+	* avatar.c (avt_mb_encoding):
+	if input cannot be opened also close output
+
 2011-09-04  Andreas K. Foerster  <info@akfoerster.de>
 
 	* filechooser.c (system_encoding): new macro
