@@ -3786,8 +3786,7 @@ avt_recode_buffer (const char *tocode, const char *fromcode,
   outbuf = dest;
 
   /* do the conversion */
-  returncode =
-    avt_iconv (output_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+  returncode = avt_iconv (cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
 
   /* jump over invalid characters */
   while (returncode == (size_t) (-1) && errno == EILSEQ)
@@ -3795,7 +3794,7 @@ avt_recode_buffer (const char *tocode, const char *fromcode,
       inbuf++;
       inbytesleft--;
       returncode =
-	avt_iconv (output_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+	avt_iconv (cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
     }
 
   /* ignore E2BIG - just put in as much as fits */
