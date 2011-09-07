@@ -235,8 +235,8 @@ local function play_select()
   repeat
     local audio_files = {}
     local menu = {
-      [1] = "\226\135\145", -- up
-      [2] = "* play all..."
+      {"\226\135\145", "/up"},
+      {"* play all...", "/all"}
       }
 
     -- find supported entries
@@ -244,9 +244,9 @@ local function play_select()
       if not string.find(v, "^%.") then
         if supported_file(v) then
           table.insert(audio_files, v)
-          table.insert(menu, v)
+          table.insert(menu, {avt.recode(v, ""), v})
         elseif avt.entry_type(v) == "directory" then
-          table.insert(menu, v .. "/")
+          table.insert(menu, {avt.recode(v, "") .. "/", v .. "/"})
         end
       end
     end
@@ -256,16 +256,15 @@ local function play_select()
     avt.say "Audio Player\n"
     avt.bold(false)
 
-    local item = avt.long_menu(menu)
-    name = menu[item]
+    name = avt.long_menu(menu)
 
     avt.show_avatar()
 
-    if item == 1 then
+    if name == "/up" then
       avt.set_directory("..")
       files = avt.directory_entries()
       table.sort(files)
-    elseif item == 2 then
+    elseif name == "/all" then
       play_list(audio_files) --> sorts out playlists
     elseif string.find(name, "/$") then -- directory
       avt.set_directory(name)

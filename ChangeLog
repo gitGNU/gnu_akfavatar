@@ -3,6 +3,9 @@
 	* avatar.c (avt_recode_buffer):
 	fix: use correct conversion descriptor (fixes title)
 
+	* lua/audioplayer.lua:
+	recode the filenames to UTF-8
+
 2011-09-06  Andreas K. Foerster  <info@akfoerster.de>
 
 	* filechooser.c (avta_file_selection):
