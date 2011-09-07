@@ -5,6 +5,7 @@
 
 	* lua/audioplayer.lua:
 	recode the filenames to UTF-8
+	fix: check for empty list
 
 2011-09-06  Andreas K. Foerster  <info@akfoerster.de>
 

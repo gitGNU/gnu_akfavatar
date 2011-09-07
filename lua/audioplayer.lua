@@ -155,7 +155,7 @@ local function play_list(list) --> plays a list of files (but no playlists)
   local number = 1
 
   -- no list?
-  if not list then return end
+  if not list or not list[1] then return end
 
   -- just one entry?
   if not list[2] then return play_single(list[1]) end
