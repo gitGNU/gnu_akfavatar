@@ -72,7 +72,7 @@ local function play_single(filename) --> play a single file
   local audio = load_audio(filename)
 
   if not audio then
-    avt.tell(filename, ":\nunsupported audio file")
+    avt.tell("unsupported audio file")
     avt.wait_button()
     return
   end
