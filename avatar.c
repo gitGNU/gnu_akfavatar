@@ -60,6 +60,14 @@
 
 #define COPYRIGHTYEAR "2011"
 
+/*
+ * Most iconv implementations support "" for the systems encoding.
+ * You should redefine this macro if and only if it is not supported.
+ */
+#ifndef SYSTEMENCODING
+#  define SYSTEMENCODING  ""
+#endif
+
 #define BUTTON_DISTANCE 10
 
 /* normal color of what's printed on the button */
@@ -3501,6 +3509,9 @@ avt_tell (const wchar_t * txt)
 extern int
 avt_mb_encoding (const char *encoding)
 {
+  if (encoding == NULL)
+    encoding = "";
+
   /*
    * check if it is the result of avt_get_mb_encoding()
    * or the same encoding
@@ -3509,6 +3520,10 @@ avt_mb_encoding (const char *encoding)
     return _avt_STATUS;
 
   SDL_strlcpy (avt_encoding, encoding, sizeof (avt_encoding));
+
+  /* if encoding is "" and SYSTEMENCODING is not "" */
+  if (encoding[0] == '\0' && SYSTEMENCODING[0] != '\0')
+    encoding = SYSTEMENCODING;
 
   /* output */
 

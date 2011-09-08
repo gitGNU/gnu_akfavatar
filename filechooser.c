@@ -30,12 +30,6 @@
 #include <errno.h>
 
 
-/* empty string works as default with most iconv implementations */
-/* for some you have to use "char" or a specific one */
-#ifndef SYSENCODING
-#define SYSENCODING  ""
-#endif
-
 #define marked(void) avt_set_text_background_color (0xdd, 0xdd, 0xdd)
 
 /* entries or marks that are not files */
@@ -274,8 +268,9 @@ avta_file_selection (char *filename, int filename_size, avta_filter_t filter)
   strncpy (old_encoding, avt_get_mb_encoding (), sizeof (old_encoding));
   old_encoding[sizeof (old_encoding) - 1] = '\0';
 
+  /* set the systems default encoding */
   /* this also catches earlier errors */
-  if (avt_mb_encoding (SYSENCODING) != AVT_NORMAL)
+  if (avt_mb_encoding (NULL) != AVT_NORMAL)
     goto quit;
 
 start:

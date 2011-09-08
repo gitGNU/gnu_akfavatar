@@ -356,6 +356,7 @@ AVT_API int avt_key (avt_char *ch);
 /* say or ask stuff with multy-byte encodings */
 
 /* set encoding for mb functions */
+/* NULL or "" sets the systems default encoding (use with care!) */
 AVT_API int avt_mb_encoding (const char *encoding);
 
 /* get the encoding, NULL if none set */
