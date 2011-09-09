@@ -1047,6 +1047,13 @@ und eine Fehlermeldung zurückgegeben.
 Die Liste enthält sowohl normale Dateinamen, einschließlich
 verstecken Dateien, Unterverzeichnisse und andere Arten von Einträgen.
 Die Einträge "." oder ".." sind nicht mit drin.
+.IP
+Achtung: Die Namen sind in einer systemspezifischen Kodierung.
+Um die Namen Anzeigen zu können, muss man entweder die Kodierung
+der Anzeige mit
+.B "avt.encoding("""")"
+ändern, oder die Namen wie folgt kovertieren:
+.BR "avt.say(avt.recode(name, """"))" .
 .PP
 .TP
 .BI "avt.entry_type(" Eintrag )

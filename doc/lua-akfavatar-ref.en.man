@@ -974,6 +974,13 @@ and an error message.
 The list contains normal files, including hidden files,
 subdirectories and any other type of entry.
 It does not contain "." or "..".
+.IP
+Note: the names are in a system specific encoding.
+To display the names you either have to change the encoding
+of the display with
+.B "avt.encoding("""")"
+or convert the names like this:
+.BR "avt.say(avt.recode(name, """"))" .
 .PP
 .TP
 .BI "avt.entry_type(" entry )
