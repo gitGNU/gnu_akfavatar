@@ -360,6 +360,7 @@ AVT_API int avt_key (avt_char *ch);
 AVT_API int avt_mb_encoding (const char *encoding);
 
 /* get the encoding, NULL if none set */
+/* you should make a copy of the result immediately */
 AVT_API char* avt_get_mb_encoding (void);
 
 /*
