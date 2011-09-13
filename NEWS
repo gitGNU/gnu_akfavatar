@@ -1,7 +1,13 @@
-* AKFAvatar-testing
+* AKFAvatar 0.21.2
 
-  - the filechooser uses the systems character encoding
-  - more bugfixes
+  This is again mainly a bugfix release, only few changes
+
+  - the filechooser uses the systems character encoding,
+    so does the audioplayer
+  - empty string is always accepted as encoding (system's encoding)
+  - fixed avt_recode_buffer, this also fixes setting the title/shortname
+  - the audioplayer doesn't crash if it gets an empty list
+  - updated documentation
 
 * AKFAvatar 0.21.1
 
