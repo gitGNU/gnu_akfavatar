@@ -5757,6 +5757,8 @@ avt_show_raw_image (void *image_data, int width, int height,
       return _avt_STATUS;
     }
 
+  image = NULL;
+
   /* the wrong endianess can be optimized away while compiling */
   if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
     {

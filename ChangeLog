@@ -3,6 +3,8 @@
 	* lua/akfavatar-graphic.c (lgraphic_shift_vertically):
 	new function
 
+	* avatar.c (avt_show_raw_image): make sure image is initialized
+
 ------------------------------------------------------------------------
 
 2011-09-13  Andreas K. Foerster  <info@akfoerster.de>
