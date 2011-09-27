@@ -1325,8 +1325,7 @@ lgraphic_shift_vertically (lua_State * L)
 {
   graphic *gr;
   uchar *data, *area;
-  int pixels;
-  int i;
+  int lines;
   int width, height;
   int red, green, blue;
 
@@ -1335,36 +1334,40 @@ lgraphic_shift_vertically (lua_State * L)
   data = gr->data;
   width = gr->width;
   height = gr->height;
-  pixels = luaL_checkint (L, 2);
+  lines = luaL_checkint (L, 2);
+
+  /* move pen position */
+  gr->peny += (double) lines;
 
   avt_get_background_color (&red, &green, &blue);
 
-  if (abs (pixels) >= height)	/* clear all */
+  if (abs (lines) >= height)	/* clear all */
     {
-      pixels = height;
+      lines = height;
       area = data;
     }
-  else if (pixels > 0)		/* move down */
+  else if (lines > 0)		/* move down */
     {
-      memmove (data + (pixels * BPP * width), data,
-	       (height - pixels) * width * BPP);
+      memmove (data + (lines * BPP * width), data,
+	       (height - lines) * width * BPP);
       area = data;
     }
-  else if (pixels < 0)		/* move up */
+  else if (lines < 0)		/* move up */
     {
-      pixels = -pixels;		/* make pixels positive */
-      memmove (data, data + (pixels * width * BPP),
-	       (height - pixels) * width * BPP);
-      area = data + (height - pixels) * width * BPP;
+      lines = -lines;		/* make lines positive */
+      memmove (data, data + (lines * width * BPP),
+	       (height - lines) * width * BPP);
+      area = data + (height - lines) * width * BPP;
     }
-  /* do nothing if pixels == 0 */
+  /* do nothing if lines == 0 */
 
   /* clear the area */
   if (area)
     {
+      int i;
       uchar r = red, g = green, b = blue;
 
-      for (i = 0; i < pixels * width; i++)
+      for (i = 0; i < lines * width; i++)
 	{
 	  *area++ = r;
 	  *area++ = g;

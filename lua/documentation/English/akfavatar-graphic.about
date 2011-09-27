@@ -221,6 +221,7 @@ gr:shift_vertically(lines)
     Shifts the graphic vertically.
     A positive value for lines shifts it down.
     A negative value for lines shifts it up.
+    The pen gets also moved.
 
 
 gr:export_ppm(filename)
