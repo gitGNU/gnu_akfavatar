@@ -232,6 +232,12 @@ gr:duplicate()
     zeichnen und dann verschiedene Vordergründe auf Duplikaten zu zeichnen.
 
 
+gr:shift_vertically(Zeilen)
+    Verschiebt die Grafik vertikal.
+    Ein positiver Wert für Zeilen schiebt sie nach unten.
+    Ein negativer Wert für Zeilen schiebt sie nach oben.
+
+
 gr:export_ppm(filename)
     Exportiert die Grafik als Portable Pixmap (PPM) Datei.
 

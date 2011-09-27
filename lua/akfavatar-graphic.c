@@ -1320,6 +1320,61 @@ lgraphic_duplicate (lua_State * L)
   return 1;
 }
 
+static int
+lgraphic_shift_vertically (lua_State * L)
+{
+  graphic *gr;
+  uchar *data, *area;
+  int pixels;
+  int i;
+  int width, height;
+  int red, green, blue;
+
+  area = NULL;
+  gr = get_graphic (L, 1);
+  data = gr->data;
+  width = gr->width;
+  height = gr->height;
+  pixels = luaL_checkint (L, 2);
+
+  avt_get_background_color (&red, &green, &blue);
+
+  if (abs (pixels) >= height)	/* clear all */
+    {
+      pixels = height;
+      area = data;
+    }
+  else if (pixels > 0)		/* move down */
+    {
+      memmove (data + (pixels * BPP * width), data,
+	       (height - pixels) * width * BPP);
+      area = data;
+    }
+  else if (pixels < 0)		/* move up */
+    {
+      pixels = -pixels;		/* make pixels positive */
+      memmove (data, data + (pixels * width * BPP),
+	       (height - pixels) * width * BPP);
+      area = data + (height - pixels) * width * BPP;
+    }
+  /* do nothing if pixels == 0 */
+
+  /* clear the area */
+  if (area)
+    {
+      uchar r = red, g = green, b = blue;
+
+      for (i = 0; i < pixels * width; i++)
+	{
+	  *area++ = r;
+	  *area++ = g;
+	  *area++ = b;
+	}
+    }
+
+  return 0;
+}
+
 
 static int
 lgraphic_export_ppm (lua_State * L)
@@ -1329,7 +1384,7 @@ lgraphic_export_ppm (lua_State * L)
   FILE *f;
 
   if (BPP != 3)
-    return luaL_error (L, "%s", strerror(ENOSYS));
+    return luaL_error (L, "%s", strerror (ENOSYS));
 
   gr = get_graphic (L, 1);
   fname = luaL_checkstring (L, 2);
@@ -1337,13 +1392,13 @@ lgraphic_export_ppm (lua_State * L)
   f = fopen (fname, "wb");
 
   if (!f)
-    return luaL_error (L, "\"%s\": %s", fname, strerror(errno));
+    return luaL_error (L, "\"%s\": %s", fname, strerror (errno));
 
   fprintf (f, "P6\n%d %d\n255\n", gr->width, gr->height);
   fwrite (gr->data, 1, gr->height * gr->width * BPP, f);
 
   if (fclose (f) != 0)
-    return luaL_error (L, "\"%s\": %s", fname, strerror(errno));
+    return luaL_error (L, "\"%s\": %s", fname, strerror (errno));
 
   return 0;
 }
@@ -1395,6 +1450,7 @@ static const struct luaL_reg graphiclib_methods[] = {
   {"left", lgraphic_left},
   {"draw", lgraphic_draw},
   {"move", lgraphic_move},
+  {"shift_vertically", lgraphic_shift_vertically},
   {"export_ppm", lgraphic_export_ppm},
   {NULL, NULL}
 };
