@@ -239,6 +239,13 @@ gr:shift_vertically(Zeilen)
     Der Stift wird mitbewegt.
 
 
+gr:shift_horizontally(Spalten)
+    Verschiebt die Grafik horizontal.
+    Ein positiver Wert für Spalten schiebt sie nach rechts.
+    Ein negativer Wert für Spalten schiebt sie nach links.
+    Der Stift wird mitbewegt.
+
+
 gr:export_ppm(filename)
     Exportiert die Grafik als Portable Pixmap (PPM) Datei.
 

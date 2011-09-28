@@ -1357,7 +1357,7 @@ lgraphic_shift_vertically (lua_State * L)
       lines = -lines;		/* make lines positive */
       memmove (data, data + (lines * width * BPP),
 	       (height - lines) * width * BPP);
-      area = data + (height - lines) * width * BPP;
+      area = data + ((height - lines) * width * BPP);
     }
   /* do nothing if lines == 0 */
 
@@ -1372,6 +1372,70 @@ lgraphic_shift_vertically (lua_State * L)
 	  *area++ = r;
 	  *area++ = g;
 	  *area++ = b;
+	}
+    }
+
+  return 0;
+}
+
+
+static int
+lgraphic_shift_horizontally (lua_State * L)
+{
+  graphic *gr;
+  uchar *data, *area;
+  int columns;
+  int width, height;
+  int red, green, blue;
+
+  area = NULL;
+  gr = get_graphic (L, 1);
+  data = gr->data;
+  width = gr->width;
+  height = gr->height;
+  columns = luaL_checkint (L, 2);
+
+  /* move pen position */
+  gr->penx += (double) columns;
+
+  avt_get_background_color (&red, &green, &blue);
+
+  if (abs (columns) >= width)	/* clear all */
+    {
+      columns = width;
+      area = data;
+    }
+  else if (columns > 0)		/* move right */
+    {
+      memmove (data + (columns * BPP), data,
+	       ((width * height) - columns) * BPP);
+      area = data;
+    }
+  else if (columns < 0)		/* move left */
+    {
+      columns = -columns;	/* make columns positive */
+      memmove (data, data + (columns * BPP),
+	       ((width * height) - columns) * BPP);
+      area = data + ((width - columns) * BPP);
+    }
+  /* do nothing if columns == 0 */
+
+  /* clear the area */
+  if (area)
+    {
+      int x, y;
+      uchar *p;
+      uchar r = red, g = green, b = blue;
+
+      for (y = 0; y < height; y++)
+	{
+	  p = area + (y * width * BPP);
+	  for (x = 0; x < columns; x++)
+	    {
+	      *p++ = r;
+	      *p++ = g;
+	      *p++ = b;
+	    }
 	}
     }
 
@@ -1454,6 +1518,7 @@ static const struct luaL_reg graphiclib_methods[] = {
   {"draw", lgraphic_draw},
   {"move", lgraphic_move},
   {"shift_vertically", lgraphic_shift_vertically},
+  {"shift_horizontally", lgraphic_shift_horizontally},
   {"export_ppm", lgraphic_export_ppm},
   {NULL, NULL}
 };

@@ -224,6 +224,13 @@ gr:shift_vertically(lines)
     The pen gets also moved.
 
 
+gr:shift_horizontally(columns)
+    Shifts the graphic horizontally.
+    A positive value for columns shifts it right.
+    A negative value for columns shifts it left.
+    The pen gets also moved.
+
+
 gr:export_ppm(filename)
     Exports the graphic as Portable Pixmap (PPM) file.
 
