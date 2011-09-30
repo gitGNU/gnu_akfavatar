@@ -1,7 +1,6 @@
-2011-09-29  Andreas K. Foerster  <info@akfoerster.de>
+2011-09-30  Andreas K. Foerster  <info@akfoerster.de>
 
-	* filechooser.c (compare_dirent):
-	use precise prototype (moving target)
+	* filechooser.c (get_directory): use alphasort for scandir
 
 2011-09-28  Andreas K. Foerster  <info@akfoerster.de>
 

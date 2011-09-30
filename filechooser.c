@@ -153,15 +153,16 @@ filter_dirent (const struct dirent *d)
 
 #endif /* _WIN32 */
 
-static int
-compare_dirent (const struct dirent **a, const struct dirent **b)
-{
-  return strcoll ((*a)->d_name, (*b)->d_name);
-}
-
 #if (HAS_SCANDIR)
-#  define get_directory(list) (scandir (".", list, filter_dirent, compare_dirent))
+#  define get_directory(list) (scandir (".", list, filter_dirent, alphasort))
 #else /* not HAS_SCANDIR */
+
+static int
+compare_dirent (const void *a, const void *b)
+{
+  return strcoll ((*(struct dirent **) a)->d_name,
+		  (*(struct dirent **) b)->d_name);
+}
 
 static int
 get_directory (struct dirent ***list)
@@ -205,8 +206,7 @@ get_directory (struct dirent ***list)
 	}
 
       /* sort */
-      qsort (mylist, entries, sizeof (struct dirent *),
-	     (int (*)(const void *, const void *)) compare_dirent);
+      qsort (mylist, entries, sizeof (struct dirent *), compare_dirent);
     }
 
   if (closedir (dir) < 0)
