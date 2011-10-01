@@ -33,11 +33,11 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
-typedef unsigned char uchar;
+typedef unsigned char byte;
 
 struct color
 {
-  uchar red, green, blue;
+  byte red, green, blue;
 };
 
 typedef struct graphic
@@ -140,7 +140,6 @@ bar (graphic * gr, int x1, int y1, int x2, int y2)
   x2 = RANGE (x2, 0, width - 1);
   y2 = RANGE (y2, 0, height - 1);
 
-
   for (y = y1; y <= y2; y++)
     {
       p = data + (y * width) + x1;
@@ -165,9 +164,11 @@ lgraphic_new (lua_State * L)
   int width, height;
   int red, green, blue;
   graphic *gr;
+  const char *background_color;
 
   width = luaL_optint (L, 1, avt_image_max_width ());
   height = luaL_optint (L, 2, avt_image_max_height ());
+  background_color = lua_tostring (L, 3);
 
   gr = new_graphic (L, graphic_bytes (width, height));
   gr->width = width;
@@ -185,10 +186,14 @@ lgraphic_new (lua_State * L)
 
   gr->heading = 0.0;
 
-  avt_get_background_color (&red, &green, &blue);
-  gr->background.red = (uchar) red;
-  gr->background.green = (uchar) green;
-  gr->background.blue = (uchar) blue;
+  if (!background_color)
+    avt_get_background_color (&red, &green, &blue);
+  else if (avt_name_to_color (background_color, &red, &green, &blue))
+    return luaL_argerror (L, 3, "invalid color");
+
+  gr->background.red = (byte) red;
+  gr->background.green = (byte) green;
+  gr->background.blue = (byte) blue;
   clear_graphic (gr);
 
   lua_pushinteger (L, width);
@@ -218,13 +223,15 @@ lgraphic_clear (lua_State * L)
   gr = get_graphic (L, 1);
   color_name = lua_tostring (L, 2);
 
-  if (color_name
-      && avt_name_to_color (color_name, &red, &green, &blue) == AVT_NORMAL)
+  if (color_name)
     {
       /* new background color */
-      gr->background.red = (uchar) red;
-      gr->background.green = (uchar) green;
-      gr->background.blue = (uchar) blue;
+      if (avt_name_to_color (color_name, &red, &green, &blue))
+	return luaL_argerror (L, 2, "invalid color");
+
+      gr->background.red = (byte) red;
+      gr->background.green = (byte) green;
+      gr->background.blue = (byte) blue;
     }
 
   clear_graphic (gr);
@@ -242,13 +249,13 @@ lgraphic_color (lua_State * L)
   const char *name;
 
   name = luaL_checkstring (L, 2);
-  if (avt_name_to_color (name, &red, &green, &blue) == AVT_NORMAL)
-    {
-      gr = get_graphic (L, 1);
-      gr->color.red = (uchar) red;
-      gr->color.green = (uchar) green;
-      gr->color.blue = (uchar) blue;
-    }
+  if (avt_name_to_color (name, &red, &green, &blue))
+    return luaL_argerror (L, 2, "invalid color");
+
+  gr = get_graphic (L, 1);
+  gr->color.red = (byte) red;
+  gr->color.green = (byte) green;
+  gr->color.blue = (byte) blue;
 
   return 0;
 }
@@ -275,9 +282,9 @@ lgraphic_rgb (lua_State * L)
 		 4, "value between 0 and 255 expected");
 
   gr = get_graphic (L, 1);
-  gr->color.red = (uchar) red;
-  gr->color.green = (uchar) green;
-  gr->color.blue = (uchar) blue;
+  gr->color.red = (byte) red;
+  gr->color.green = (byte) green;
+  gr->color.blue = (byte) blue;
 
   return 0;
 }
@@ -1003,12 +1010,12 @@ lgraphic_text (lua_State * L)
 
       for (i = 0; i < wclen; i++, wc++, x += fontwidth)
 	{
-	  const uchar *font_line;
+	  const byte *font_line;
 	  int lx, ly;
 
-	  font_line = (const uchar *) get_font_char ((int) *wc);
+	  font_line = (const byte *) get_font_char ((int) *wc);
 	  if (!font_line)
-	    font_line = (const uchar *) get_font_char (0);
+	    font_line = (const byte *) get_font_char (0);
 
 	  for (ly = 0; ly < fontheight; ly++)
 	    {

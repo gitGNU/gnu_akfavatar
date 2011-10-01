@@ -9,13 +9,13 @@ Hinweise:
   für jede Grafik einzeln festgelegt.
 
 
-graphic.new([Breite, Höhe])
+graphic.new([Breite, Höhe] [, Hintergrundfarbe])
     Erzeugt eine neue Grafik (eine Leinwand).
     Wenn die Breite und Höhe nicht angegeben wird, wird das gesamte Fenster
     bzw. Bildschirm verwendet.
     Es wird ein dünner, schwarzer Stift ausgewählt und die Position ist in der
-    Mitte, nach oben ausgerichtet. Die Hintergrund-Farbe wird von AKFAvatar
-    übernommen.
+    Mitte, nach oben ausgerichtet. Wenn die Hintergrundfarbe nicht angegeben
+    ist, wird diese von AKFAvatar übernommen.
 
     Gibt die Grafik, die Breite und Höhe zurück (dh. drei Werte).
 

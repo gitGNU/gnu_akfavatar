@@ -3,6 +3,11 @@
 	* lua/akfavatar-graphic.c: refactoring color handling
 	background color now stored for each graphic
 
+	* lua/akfavatar-graphic.c (lgraphic_new): accept background color
+
+	* lua/akfavatar-graphic.c (lgraphic_clear, lgraphic_color):
+	error on bad color name
+
 2011-09-30  Andreas K. Foerster  <info@akfoerster.de>
 
 	* filechooser.c (get_directory): use alphasort for scandir

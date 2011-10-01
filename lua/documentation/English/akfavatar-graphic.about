@@ -9,11 +9,12 @@ Notes:
   each graphic.
 
 
-graphic.new([width, height])
+graphic.new([width, height] [,background-color])
     Creates a new graphic (a canvas).
     When width and height are not given it uses the whole window/screen.
     A thin black pen is chosen and the position is centered, heading to
-    the top. The background color is imported from AKFAvatar.
+    the top. If the background color is not given, it is imported from
+    AKFAvatar.
 
     Retuns the graphic, the width and the height (ie. three values).
 

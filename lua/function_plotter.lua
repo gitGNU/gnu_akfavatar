@@ -169,9 +169,8 @@ end
 
 local function textplate(s)
   local fwidth, fheight = gr:font_size()
-  local p, pwidth, pheight = graphic.new((#s*fwidth)+8, fheight+8)
+  local p, pwidth, pheight = graphic.new((#s*fwidth)+8, fheight+8, "gold")
 
-  p:clear("gold")
   p:center()
   p:textalign("center", "center")
   p:color "black"
