@@ -21,9 +21,15 @@
 #include "akfavatar.h"
 #include "avtaddons.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
+#ifdef __cplusplus
+}
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>		/* for exit() and wchar_t */

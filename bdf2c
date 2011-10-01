@@ -25,6 +25,9 @@ BEGIN { width=height=started=default_char=charoffset=maxchar = 0 }
   if (started == 0)
     {
       print "\n#include <stddef.h>\n\n#define DEFAULT_CHAR " default_char
+      print "\n#ifdef __cplusplus"
+      print "extern \"C\" void *get_font_char (int ch);"
+      print "#endif"
       if (width <= 8)
         print "\nstatic const unsigned char font[] = {"
       else

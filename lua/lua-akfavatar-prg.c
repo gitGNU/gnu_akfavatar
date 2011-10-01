@@ -29,9 +29,15 @@
 #include <locale.h>
 #include <errno.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
+#ifdef __cplusplus
+}
+#endif
 
 /* keep it short */
 #define PRGNAME "Lua-AKFAvatar"

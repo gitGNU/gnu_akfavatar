@@ -9,8 +9,17 @@
 
 #include <string.h>
 
-#include "lua.h"
-#include "lauxlib.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <lua.h>
+#include <lauxlib.h>
+
+#ifdef __cplusplus
+LUALIB_API int luaopen_base64 (lua_State * L);
+}
+#endif
 
 #define MYNAME		"base64"
 #define MYVERSION	MYNAME " library for " LUA_VERSION " / Sep 2010"

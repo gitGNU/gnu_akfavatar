@@ -8,6 +8,8 @@
 	* lua/akfavatar-graphic.c (lgraphic_clear, lgraphic_color):
 	error on bad color name
 
+	* many files: make it compile as C++ again (extern "C")
+
 2011-09-30  Andreas K. Foerster  <info@akfoerster.de>
 
 	* filechooser.c (get_directory): use alphasort for scandir

@@ -29,6 +29,7 @@
 # define WINVER 0x0500
 #endif
 
+#include "iconv.h"
 #define STRICT
 #include <windows.h>
 #include <errno.h>
@@ -77,12 +78,6 @@
 typedef unsigned char uchar;
 typedef unsigned short ushort;
 typedef unsigned int uint;
-
-typedef void* iconv_t;
-
-iconv_t iconv_open(const char *tocode, const char *fromcode);
-int iconv_close(iconv_t cd);
-size_t iconv(iconv_t cd, char **inbuf, size_t *inbytesleft, char **outbuf, size_t *outbytesleft);
 
 /* libiconv interface for vim */
 #if defined(MAKE_DLL)
