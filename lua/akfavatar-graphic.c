@@ -33,33 +33,6 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
-/* Bytes per pixel (3=RGB) */
-#define BPP 3
-
-#ifndef M_PI
-#define M_PI  3.14159265358979323846
-#endif
-
-/* convert degree to radians */
-#define RAD(x)  ((x) * M_PI / 180.0)
-
-#define GRAPHICDATA "AKFAvatar-graphic"
-
-#define get_graphic(L, idx) \
-   ((graphic *) luaL_checkudata ((L), (idx), GRAPHICDATA))
-
-#define graphic_bytes(width, height) \
-  sizeof(graphic)-sizeof(uchar)+(width)*(height)*BPP
-
-#define new_graphic(L, nbytes) \
-  (graphic *) lua_newuserdata ((L), (nbytes)); \
-  luaL_getmetatable ((L), GRAPHICDATA); \
-  lua_setmetatable ((L), -2)
-
-/* force value to be in range */
-#define RANGE(v, min, max)  ((v) < (min) ? (min) : (v) > (max) ? (max) : (v))
-
-
 typedef unsigned char uchar;
 
 struct color
@@ -76,8 +49,34 @@ typedef struct graphic
   double heading;		/* heading of the turtle */
   struct color color;		/* drawing color */
   struct color background;	/* background color */
-  uchar data[1];
+  struct color data[1];
 } graphic;
+
+/* Bytes per pixel (3=RGB) */
+#define BPP 3
+
+#ifndef M_PI
+#define M_PI  3.14159265358979323846
+#endif
+
+/* convert degree to radians */
+#define RAD(x)  ((x) * M_PI / 180.0)
+
+#define GRAPHICDATA "AKFAvatar-graphic"
+
+#define get_graphic(L, idx) \
+   ((graphic *) luaL_checkudata ((L), (idx), GRAPHICDATA))
+
+#define graphic_bytes(width, height) \
+  sizeof(graphic)-sizeof(struct color)+(width)*(height)*BPP
+
+#define new_graphic(L, nbytes) \
+  (graphic *) lua_newuserdata ((L), (nbytes)); \
+  luaL_getmetatable ((L), GRAPHICDATA); \
+  lua_setmetatable ((L), -2)
+
+/* force value to be in range */
+#define RANGE(v, min, max)  ((v) < (min) ? (min) : (v) > (max) ? (max) : (v))
 
 #define visible_x(gr, x)  ((x) >= 0 && (x) < (gr)->width)
 #define visible_y(gr, y)  ((y) >= 0 && (y) < (gr)->height)
@@ -93,9 +92,7 @@ typedef struct graphic
 
 /* fast putpixel with color, no check */
 #define putpixelcolor(gr, x, y, width, col) \
-  *(struct color *) \
-    ((gr)->data + (((int)(y)) * (width) * BPP) \
-     + (((int)(x)) * BPP)) = (col)
+  *((gr)->data + ((int)(y) * (width)) + (int)(x)) = (col)
 
 /* fast putpixel, no check */
 #define putpixel(gr, x, y) \
@@ -118,7 +115,7 @@ clear_graphic (graphic * gr)
 
   color = gr->background;
   pixels = gr->width * gr->height;
-  p = (struct color *) gr->data;
+  p = gr->data;
 
   for (i = 0; i < pixels; i++)
     *p++ = color;
@@ -129,8 +126,7 @@ static void
 bar (graphic * gr, int x1, int y1, int x2, int y2)
 {
   int x, y, width, height;
-  uchar *data;
-  struct color *p;
+  struct color *data, *p;
   struct color color;
 
   width = gr->width;
@@ -147,7 +143,7 @@ bar (graphic * gr, int x1, int y1, int x2, int y2)
 
   for (y = y1; y <= y2; y++)
     {
-      p = (struct color *) (data + (y * width * BPP) + (x1 * BPP));
+      p = data + (y * width) + x1;
 
       for (x = x1; x <= x2; x++)
 	*p++ = color;
@@ -434,10 +430,10 @@ horizontal_line (graphic * gr, int x1, int x2, int y)
 	  struct color color;
 
 	  color = gr->color;
-	  p = (struct color *) (gr->data + (y * width * BPP) + (x1 * BPP));
+	  p = gr->data + (y * width) + x1;
 
 	  for (x = x1; x <= x2; x++)
-	      *p++ = color;
+	    *p++ = color;
 	}
     }
 }
@@ -669,7 +665,7 @@ lgraphic_getpixel (lua_State * L)
     {
       char color[8];
       struct color *p;
-      p = (struct color *) (gr->data + (y * gr->width * BPP) + x * BPP);
+      p = gr->data + (y * gr->width) + x;
       sprintf (color, "#%02X%02X%02X", (unsigned int) p->red,
 	       (unsigned int) p->green, (unsigned int) p->blue);
       lua_pushstring (L, color);
@@ -698,7 +694,7 @@ lgraphic_getpixelrgb (lua_State * L)
   if (visible (gr, x, y))
     {
       struct color *p;
-      p = (struct color *) (gr->data + (y * gr->width * BPP) + x * BPP);
+      p = gr->data + (y * gr->width) + x;
       lua_pushinteger (L, (int) p->red);
       lua_pushinteger (L, (int) p->green);
       lua_pushinteger (L, (int) p->blue);
@@ -1173,7 +1169,7 @@ lgraphic_put (lua_State * L)
   int lines, bytes;
   int xstart, show_width;	/* for horizontal cropping */
   int source_width, target_width, source_height, target_height;
-  uchar *source, *target;
+  struct color *source, *target;
 
   gr = get_graphic (L, 1);
   gr2 = get_graphic (L, 2);
@@ -1196,7 +1192,7 @@ lgraphic_put (lua_State * L)
   /* which line to start with? */
   if (yoffset < 0)
     {
-      source += abs (yoffset) * source_width * BPP;
+      source += abs (yoffset) * source_width;
       source_height -= abs (yoffset);
       yoffset = 0;
     }
@@ -1212,7 +1208,7 @@ lgraphic_put (lua_State * L)
 
   if (xoffset < 0)
     {
-      xstart = abs (xoffset) * BPP;
+      xstart = abs (xoffset);
       show_width -= abs (xoffset);
       xoffset = 0;
     }
@@ -1223,12 +1219,12 @@ lgraphic_put (lua_State * L)
   else
     bytes = (target_width - xoffset) * BPP;
 
-  if (bytes <= 0)
-    return 0;			/* nothing to copy */
-
-  for (y = 0; y < lines; y++)
-    memcpy (target + ((y + yoffset) * target_width * BPP) + xoffset * BPP,
-	    source + y * source_width * BPP + xstart, bytes);
+  if (bytes > 0)
+    {
+      for (y = 0; y < lines; y++)
+	memcpy (target + ((y + yoffset) * target_width) + xoffset,
+		source + y * source_width + xstart, bytes);
+    }
 
   return 0;
 }
@@ -1242,7 +1238,7 @@ lgraphic_get (lua_State * L)
   int x1, y1, x2, y2;
   int source_width, target_width, source_height, target_height;
   int bytes, y;
-  uchar *source, *target;
+  struct color *source, *target;
 
   gr = get_graphic (L, 1);
 
@@ -1290,13 +1286,13 @@ lgraphic_get (lua_State * L)
   gr2->vtextalign = gr->vtextalign;
   gr2->heading = 0.0;
 
-  source = gr->data + y1 * source_width * BPP;
+  source = gr->data + y1 * source_width;
   target = gr2->data;
   bytes = target_width * BPP;
 
   for (y = 0; y < target_height; y++)
-    memcpy (target + (y * target_width * BPP),
-	    source + y * source_width * BPP + x1 * BPP, bytes);
+    memcpy (target + (y * target_width),
+	    source + y * source_width + x1, bytes);
 
   return 1;
 }
@@ -1316,11 +1312,12 @@ lgraphic_duplicate (lua_State * L)
   return 1;
 }
 
+
 static int
 lgraphic_shift_vertically (lua_State * L)
 {
   graphic *gr;
-  uchar *data, *area;
+  struct color *data, *area;
   int lines;
   int width, height;
 
@@ -1341,16 +1338,14 @@ lgraphic_shift_vertically (lua_State * L)
     }
   else if (lines > 0)		/* move down */
     {
-      memmove (data + (lines * BPP * width), data,
-	       (height - lines) * width * BPP);
+      memmove (data + (lines * width), data, (height - lines) * width * BPP);
       area = data;
     }
   else if (lines < 0)		/* move up */
     {
       lines = -lines;		/* make lines positive */
-      memmove (data, data + (lines * width * BPP),
-	       (height - lines) * width * BPP);
-      area = data + ((height - lines) * width * BPP);
+      memmove (data, data + (lines * width), (height - lines) * width * BPP);
+      area = data + ((height - lines) * width);
     }
   /* do nothing if lines == 0 */
 
@@ -1359,10 +1354,9 @@ lgraphic_shift_vertically (lua_State * L)
     {
       int i;
       struct color color = gr->background;
-      struct color *p = (struct color *) area;
 
       for (i = 0; i < lines * width; i++)
-	*p++ = color;
+	*area++ = color;
     }
 
   return 0;
@@ -1373,7 +1367,7 @@ static int
 lgraphic_shift_horizontally (lua_State * L)
 {
   graphic *gr;
-  uchar *data, *area;
+  struct color *data, *area;
   int columns;
   int width, height;
 
@@ -1394,16 +1388,14 @@ lgraphic_shift_horizontally (lua_State * L)
     }
   else if (columns > 0)		/* move right */
     {
-      memmove (data + (columns * BPP), data,
-	       ((width * height) - columns) * BPP);
+      memmove (data + columns, data, ((width * height) - columns) * BPP);
       area = data;
     }
   else if (columns < 0)		/* move left */
     {
       columns = -columns;	/* make columns positive */
-      memmove (data, data + (columns * BPP),
-	       ((width * height) - columns) * BPP);
-      area = data + ((width - columns) * BPP);
+      memmove (data, data + columns, ((width * height) - columns) * BPP);
+      area = data + width - columns;
     }
   /* do nothing if columns == 0 */
 
@@ -1416,7 +1408,7 @@ lgraphic_shift_horizontally (lua_State * L)
 
       for (y = 0; y < height; y++)
 	{
-	  p = (struct color *) (area + (y * width * BPP));
+	  p = area + (y * width);
 	  for (x = 0; x < columns; x++)
 	    *p++ = color;
 	}
