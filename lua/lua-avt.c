@@ -24,10 +24,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
+
 #ifdef __cplusplus
+int luaopen_akfavatar (lua_State * L);
 }
 #endif
 
