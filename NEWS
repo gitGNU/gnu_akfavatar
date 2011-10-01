@@ -1,3 +1,9 @@
+* AKFAvatar testing
+
+  Lua-API changes:
+  - Module "akfavatar-graphic": new methods
+    gr:shift_vertically, gr:shift_horizontally
+
 * AKFAvatar 0.21.2
 
   This is again mainly a bugfix release, only few changes
