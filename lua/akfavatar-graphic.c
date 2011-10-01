@@ -59,6 +59,26 @@
 /* force value to be in range */
 #define RANGE(v, min, max)  ((v) < (min) ? (min) : (v) > (max) ? (max) : (v))
 
+
+typedef unsigned char uchar;
+
+struct color
+{
+  uchar red, green, blue;
+};
+
+typedef struct graphic
+{
+  int width, height;
+  int thickness;		/* thickness of pen */
+  int htextalign, vtextalign;	/* alignment for text */
+  double penx, peny;		/* position of pen */
+  double heading;		/* heading of the turtle */
+  struct color color;		/* drawing color */
+  struct color background;	/* background color */
+  uchar data[1];
+} graphic;
+
 #define visible_x(gr, x)  ((x) >= 0 && (x) < (gr)->width)
 #define visible_y(gr, y)  ((y) >= 0 && (y) < (gr)->height)
 #define visible(gr, x, y)  (visible_x(gr, x) && visible_y(gr, y))
@@ -71,18 +91,15 @@
     (gr)->peny = ((double) (gr)->height) / 2.0 - 1.0; \
   } while(0)
 
-
-/* fast putpixel with rgb, no check */
-#define putpixelrgb(gr, x, y, width, r, g, b) \
-  do { \
-    uchar *p = \
-      (gr)->data+(((int)(y))*(width)*BPP)+(((int)(x))*BPP); \
-    *p++=(r); *p++=(g); *p=(b); \
-  } while(0)
+/* fast putpixel with color, no check */
+#define putpixelcolor(gr, x, y, width, col) \
+  *(struct color *) \
+    ((gr)->data + (((int)(y)) * (width) * BPP) \
+     + (((int)(x)) * BPP)) = (col)
 
 /* fast putpixel, no check */
 #define putpixel(gr, x, y) \
-  putpixelrgb ((gr), (x), (y), (gr)->width, (gr)->r, (gr)->g, (gr)->b)
+  putpixelcolor ((gr), (x), (y), (gr)->width, (gr)->color)
 
 #define HA_LEFT 0
 #define HA_CENTER 1
@@ -91,35 +108,20 @@
 #define VA_CENTER 1
 #define VA_BOTTOM 2
 
-typedef unsigned char uchar;
-
-typedef struct graphic
-{
-  int width, height;
-  int thickness;		/* thickness of pen */
-  int htextalign, vtextalign;	/* alignment for text */
-  double penx, peny;		/* position of pen */
-  double heading;		/* heading of the turtle */
-  uchar r, g, b;		/* current color */
-  uchar data[1];
-} graphic;
-
 
 static void
-fill_graphic (graphic * gr, uchar r, uchar g, uchar b)
+clear_graphic (graphic * gr)
 {
-  uchar *p;
+  struct color *p;
   size_t i, pixels;
+  struct color color;
 
+  color = gr->background;
   pixels = gr->width * gr->height;
-  p = gr->data;
+  p = (struct color *) gr->data;
 
   for (i = 0; i < pixels; i++)
-    {
-      *p++ = r;
-      *p++ = g;
-      *p++ = b;
-    }
+    *p++ = color;
 }
 
 
@@ -127,15 +129,14 @@ static void
 bar (graphic * gr, int x1, int y1, int x2, int y2)
 {
   int x, y, width, height;
-  uchar r, g, b;
-  uchar *data, *p;
+  uchar *data;
+  struct color *p;
+  struct color color;
 
   width = gr->width;
   height = gr->height;
   data = gr->data;
-  r = gr->r;
-  g = gr->g;
-  b = gr->b;
+  color = gr->color;
 
   /* sanitize values */
   x1 = RANGE (x1, 0, width - 1);
@@ -146,14 +147,10 @@ bar (graphic * gr, int x1, int y1, int x2, int y2)
 
   for (y = y1; y <= y2; y++)
     {
-      p = data + (y * width * BPP) + (x1 * BPP);
+      p = (struct color *) (data + (y * width * BPP) + (x1 * BPP));
 
       for (x = x1; x <= x2; x++)
-	{
-	  *p++ = r;
-	  *p++ = g;
-	  *p++ = b;
-	}
+	*p++ = color;
     }
 }
 
@@ -181,7 +178,7 @@ lgraphic_new (lua_State * L)
   gr->height = height;
 
   /* black color */
-  gr->r = gr->g = gr->b = 0;
+  gr->color.red = gr->color.green = gr->color.blue = 0;
 
   /* pen in center */
   center (gr);
@@ -193,7 +190,10 @@ lgraphic_new (lua_State * L)
   gr->heading = 0.0;
 
   avt_get_background_color (&red, &green, &blue);
-  fill_graphic (gr, red, green, blue);
+  gr->background.red = (uchar) red;
+  gr->background.green = (uchar) green;
+  gr->background.blue = (uchar) blue;
+  clear_graphic (gr);
 
   lua_pushinteger (L, width);
   lua_pushinteger (L, height);
@@ -222,11 +222,16 @@ lgraphic_clear (lua_State * L)
   gr = get_graphic (L, 1);
   color_name = lua_tostring (L, 2);
 
-  if (color_name == NULL
-      || avt_name_to_color (color_name, &red, &green, &blue) != AVT_NORMAL)
-    avt_get_background_color (&red, &green, &blue);
+  if (color_name
+      && avt_name_to_color (color_name, &red, &green, &blue) == AVT_NORMAL)
+    {
+      /* new background color */
+      gr->background.red = (uchar) red;
+      gr->background.green = (uchar) green;
+      gr->background.blue = (uchar) blue;
+    }
 
-  fill_graphic (gr, red, green, blue);
+  clear_graphic (gr);
 
   return 0;
 }
@@ -244,9 +249,9 @@ lgraphic_color (lua_State * L)
   if (avt_name_to_color (name, &red, &green, &blue) == AVT_NORMAL)
     {
       gr = get_graphic (L, 1);
-      gr->r = (uchar) red;
-      gr->g = (uchar) green;
-      gr->b = (uchar) blue;
+      gr->color.red = (uchar) red;
+      gr->color.green = (uchar) green;
+      gr->color.blue = (uchar) blue;
     }
 
   return 0;
@@ -274,9 +279,9 @@ lgraphic_rgb (lua_State * L)
 		 4, "value between 0 and 255 expected");
 
   gr = get_graphic (L, 1);
-  gr->r = (uchar) red;
-  gr->g = (uchar) green;
-  gr->b = (uchar) blue;
+  gr->color.red = (uchar) red;
+  gr->color.green = (uchar) green;
+  gr->color.blue = (uchar) blue;
 
   return 0;
 }
@@ -287,13 +292,9 @@ static int
 lgraphic_eraser (lua_State * L)
 {
   graphic *gr;
-  int red, green, blue;
 
   gr = get_graphic (L, 1);
-  avt_get_background_color (&red, &green, &blue);
-  gr->r = (uchar) red;
-  gr->g = (uchar) green;
-  gr->b = (uchar) blue;
+  gr->color = gr->background;
 
   return 0;
 }
@@ -392,11 +393,12 @@ vertical_line (graphic * gr, int x, int y1, int y2)
 	}
       else
 	{
-	  uchar r = gr->r, g = gr->g, b = gr->b;
+	  struct color color = gr->color;
 	  int width = gr->width;
+
 	  for (y = y1; y <= y2; y++)
 	    if (visible_y (gr, y))
-	      putpixelrgb (gr, x, y, width, r, g, b);
+	      putpixelcolor (gr, x, y, width, color);
 	}
     }
 }
@@ -428,21 +430,14 @@ horizontal_line (graphic * gr, int x1, int x2, int y)
 	}
       else
 	{
-	  uchar *p;
-	  uchar r, g, b;
+	  struct color *p;
+	  struct color color;
 
-	  r = gr->r;
-	  g = gr->g;
-	  b = gr->b;
-
-	  p = gr->data + (y * width * BPP) + (x1 * BPP);
+	  color = gr->color;
+	  p = (struct color *) (gr->data + (y * width * BPP) + (x1 * BPP));
 
 	  for (x = x1; x <= x2; x++)
-	    {
-	      *p++ = r;
-	      *p++ = g;
-	      *p++ = b;
-	    }
+	      *p++ = color;
 	}
     }
 }
@@ -496,13 +491,13 @@ sloped_line (graphic * gr, double x1, double x2, double y1, double y2)
       else
 	{
 	  double x, y;
-	  uchar r = gr->r, g = gr->g, b = gr->b;
+	  struct color color = gr->color;
 	  int width = gr->width;
 
 	  for (x = x1, y = y1; x <= x2; x++, y += delta_y)
 	    {
 	      if (visible_y (gr, y))
-		putpixelrgb (gr, x, y, width, r, g, b);
+		putpixelcolor (gr, x, y, width, color);
 	    }
 	}
     }
@@ -546,13 +541,13 @@ sloped_line (graphic * gr, double x1, double x2, double y1, double y2)
       else
 	{
 	  double x, y;
-	  uchar r = gr->r, g = gr->g, b = gr->b;
+	  struct color color = gr->color;
 	  int width = gr->width;
 
 	  for (y = y1, x = x1; y <= y2; y++, x += delta_x)
 	    {
 	      if (visible_x (gr, x))
-		putpixelrgb (gr, x, y, width, r, g, b);
+		putpixelcolor (gr, x, y, width, color);
 	    }
 	}
     }
@@ -673,9 +668,10 @@ lgraphic_getpixel (lua_State * L)
   if (visible (gr, x, y))
     {
       char color[8];
-      uchar *p = gr->data + (y * gr->width * BPP) + x * BPP;
-      sprintf (color, "#%02X%02X%02X", (unsigned int) *p,
-	       (unsigned int) *(p + 1), (unsigned int) *(p + 2));
+      struct color *p;
+      p = (struct color *) (gr->data + (y * gr->width * BPP) + x * BPP);
+      sprintf (color, "#%02X%02X%02X", (unsigned int) p->red,
+	       (unsigned int) p->green, (unsigned int) p->blue);
       lua_pushstring (L, color);
       return 1;
     }
@@ -701,10 +697,11 @@ lgraphic_getpixelrgb (lua_State * L)
 
   if (visible (gr, x, y))
     {
-      uchar *p = gr->data + (y * gr->width * BPP) + x * BPP;
-      lua_pushinteger (L, (int) *p);	/* red */
-      lua_pushinteger (L, (int) *(p + 1));	/* green */
-      lua_pushinteger (L, (int) *(p + 2));	/* blue */
+      struct color *p;
+      p = (struct color *) (gr->data + (y * gr->width * BPP) + x * BPP);
+      lua_pushinteger (L, (int) p->red);
+      lua_pushinteger (L, (int) p->green);
+      lua_pushinteger (L, (int) p->blue);
       return 3;
     }
   else				/* outside */
@@ -982,7 +979,7 @@ lgraphic_text (lua_State * L)
 
   if (fontwidth > 8)		/* 2 bytes per character */
     {
-      uchar r = gr->r, g = gr->g, b = gr->b;
+      struct color color = gr->color;
       int width = gr->width;
 
       for (i = 0; i < wclen; i++, wc++, x += fontwidth)
@@ -998,14 +995,14 @@ lgraphic_text (lua_State * L)
 	    {
 	      for (lx = 0; lx < fontwidth; lx++)
 		if (*font_line & (1 << (15 - lx)))
-		  putpixelrgb (gr, x + lx, y + ly, width, r, g, b);
+		  putpixelcolor (gr, x + lx, y + ly, width, color);
 	      font_line++;
 	    }
 	}
     }
   else				/* fontwidth <= 8 */
     {
-      uchar r = gr->r, g = gr->g, b = gr->b;
+      struct color color = gr->color;
       int width = gr->width;
 
       for (i = 0; i < wclen; i++, wc++, x += fontwidth)
@@ -1021,7 +1018,7 @@ lgraphic_text (lua_State * L)
 	    {
 	      for (lx = 0; lx < fontwidth; lx++)
 		if (*font_line & (1 << (7 - lx)))
-		  putpixelrgb (gr, x + lx, y + ly, width, r, g, b);
+		  putpixelcolor (gr, x + lx, y + ly, width, color);
 	      font_line++;
 	    }
 	}
@@ -1282,9 +1279,8 @@ lgraphic_get (lua_State * L)
   gr2 = new_graphic (L, graphic_bytes (target_width, target_height));
   gr2->width = target_width;
   gr2->height = target_height;
-  gr2->r = gr->r;
-  gr2->g = gr->g;
-  gr2->b = gr->b;
+  gr2->color = gr->color;
+  gr2->background = gr->background;
 
   /* pen in center */
   penpos (gr2, target_width / 2 - 1, target_height / 2 - 1);
@@ -1327,7 +1323,6 @@ lgraphic_shift_vertically (lua_State * L)
   uchar *data, *area;
   int lines;
   int width, height;
-  int red, green, blue;
 
   area = NULL;
   gr = get_graphic (L, 1);
@@ -1338,8 +1333,6 @@ lgraphic_shift_vertically (lua_State * L)
 
   /* move pen position */
   gr->peny += (double) lines;
-
-  avt_get_background_color (&red, &green, &blue);
 
   if (abs (lines) >= height)	/* clear all */
     {
@@ -1365,14 +1358,11 @@ lgraphic_shift_vertically (lua_State * L)
   if (area)
     {
       int i;
-      uchar r = red, g = green, b = blue;
+      struct color color = gr->background;
+      struct color *p = (struct color *) area;
 
       for (i = 0; i < lines * width; i++)
-	{
-	  *area++ = r;
-	  *area++ = g;
-	  *area++ = b;
-	}
+	*p++ = color;
     }
 
   return 0;
@@ -1386,7 +1376,6 @@ lgraphic_shift_horizontally (lua_State * L)
   uchar *data, *area;
   int columns;
   int width, height;
-  int red, green, blue;
 
   area = NULL;
   gr = get_graphic (L, 1);
@@ -1397,8 +1386,6 @@ lgraphic_shift_horizontally (lua_State * L)
 
   /* move pen position */
   gr->penx += (double) columns;
-
-  avt_get_background_color (&red, &green, &blue);
 
   if (abs (columns) >= width)	/* clear all */
     {
@@ -1424,18 +1411,14 @@ lgraphic_shift_horizontally (lua_State * L)
   if (area)
     {
       int x, y;
-      uchar *p;
-      uchar r = red, g = green, b = blue;
+      struct color *p;
+      struct color color = gr->background;
 
       for (y = 0; y < height; y++)
 	{
-	  p = area + (y * width * BPP);
+	  p = (struct color *) (area + (y * width * BPP));
 	  for (x = 0; x < columns; x++)
-	    {
-	      *p++ = r;
-	      *p++ = g;
-	      *p++ = b;
-	    }
+	    *p++ = color;
 	}
     }
 

@@ -5,14 +5,15 @@ To use this module load it with require "akfavatar-graphic".
 Notes:
 - Coordinates start with 1, 1 in the upper left corner.
 - It can also be used in the style of turtle graphic.
-- The pen size, position, heading and color are set for each graphic.
+- The pen size, position, heading, pen color and background color are set for
+  each graphic.
 
 
 graphic.new([width, height])
     Creates a new graphic (a canvas).
     When width and height are not given it uses the whole window/screen.
     A thin black pen is chosen and the position is centered, heading to
-    the top.
+    the top. The background color is imported from AKFAvatar.
 
     Retuns the graphic, the width and the height (ie. three values).
 
@@ -65,9 +66,8 @@ gr:thickness(value)
 
 
 gr:clear([colorname])
-    Fills the graphic with the given color.
-    It uses the background color for AKFAvatar if no color is given or if the
-    colorname is invalid.
+    Clears the graphic.
+    If a colorname is given, then that becomes the new background color.
     The pen position is not changed.
 
 
@@ -213,8 +213,9 @@ gr:duplicate()
     The graphic-specific settings are copied, too.
     This is faster than using gr:get().
 
-    You can use this for example to create a fixed background and then draw the
-    individual foregrounds on duplicates.
+    You can use this for example to create a fixed background and then make a
+    duplicate and draw the foreground on it.  Then you can put the background
+    graphic back to the duplicate and draw another foreground.
 
 
 gr:shift_vertically(lines)

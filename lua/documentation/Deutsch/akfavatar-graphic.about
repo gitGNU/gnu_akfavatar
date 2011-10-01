@@ -5,8 +5,8 @@ Um dieses Modul zu verwenden, kann man es mit require "akfavatar-graphic" laden.
 Hinweise:
 - Koordinaten fangen mit 1, 1 in der oberen linken Ecke an.
 - Man kann es auch nach Art der Turtle-Grafik verwenden.
-- Die Stiftbreite, Position, Ausrichtung und Farbe sind für jede
-  Grafik einzeln festgelegt.
+- Die Stiftbreite, Position, Ausrichtung, Stift-Farbe und Hintergrund-Farbe sind
+  für jede Grafik einzeln festgelegt.
 
 
 graphic.new([Breite, Höhe])
@@ -14,7 +14,8 @@ graphic.new([Breite, Höhe])
     Wenn die Breite und Höhe nicht angegeben wird, wird das gesamte Fenster
     bzw. Bildschirm verwendet.
     Es wird ein dünner, schwarzer Stift ausgewählt und die Position ist in der
-    Mitte, nach oben ausgerichtet.
+    Mitte, nach oben ausgerichtet. Die Hintergrund-Farbe wird von AKFAvatar
+    übernommen.
 
     Gibt die Grafik, die Breite und Höhe zurück (dh. drei Werte).
 
@@ -69,9 +70,8 @@ gr:thickness(value)
 
 
 gr:clear([Farbname])
-    Füllt die Grafik mit der angegebenen Farbe.
-    Wenn keine Farbe angegeben ist, oder die Farbangabe fehlerhaft ist, wird die
-    aktuelle Hintergrundfarbe für AKFAvatar verwendet.
+    Löscht die Grafik.
+    Wenn ein Farbname angegeben ist, wird diese zur neuen Hintergrund-Farbe.
     Die Stift-Position wird nicht verändert.
 
 
@@ -229,7 +229,9 @@ gr:duplicate()
     Das geht schneller als mit gr:get().
 
     Man kann dies zum Beispiel verwenden, um einen erstmal festen Hintergrund zu
-    zeichnen und dann verschiedene Vordergründe auf Duplikaten zu zeichnen.
+    zeichnen und dann ein Duplikat zu erstellen. Darauf zeichnet man dann einen
+    Vordergrund. Dann kann man den Hintergrund wieder darauf kopieren (put)
+    und einen neuen Vordergrund zeichnen.
 
 
 gr:shift_vertically(Zeilen)
