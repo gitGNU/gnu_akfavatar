@@ -197,8 +197,9 @@ gr:font_size()
     It is a fixed-width font, each character has the same width.
 
 
-gr:put(graphic, x, y)
-    Puts a small graphic onto graphic gr at the given position (upper-left corner).
+gr:put(graphic [,x, y])
+    Puts a graphic onto graphic gr at the given position (upper-left corner).
+    If no position is given it puts it at the upper-left corner.
     The previous content is overwritten (no transparency supported).
 
 

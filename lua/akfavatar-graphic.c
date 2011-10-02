@@ -1176,7 +1176,7 @@ lgraphic_move (lua_State * L)
 }
 
 
-/* gr:put(graphic, xoffset, yoffset) */
+/* gr:put(graphic [, xoffset, yoffset]) */
 static int
 lgraphic_put (lua_State * L)
 {
@@ -1193,8 +1193,8 @@ lgraphic_put (lua_State * L)
   if (gr == gr2)
     return luaL_error (L, "cannot put a graphic onto itself");
 
-  xoffset = luaL_checkint (L, 3) - 1;
-  yoffset = luaL_checkint (L, 4) - 1;
+  xoffset = luaL_optint (L, 3, 1) - 1;
+  yoffset = luaL_optint (L, 4, 1) - 1;
 
   source = gr2->data;
   target = gr->data;

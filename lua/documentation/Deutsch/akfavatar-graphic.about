@@ -209,9 +209,10 @@ gr:font_size()
     die selbe Breite.
 
 
-gr:put(Grafik, x, y)
-    Kopiert eine kleine Grafik auf die Grafik gr bei der angegebenen Position
-    (obere linke Ecke). Der vorherige Inhalt wird überschrieben
+gr:put(Grafik [,x, y])
+    Kopiert eine Grafik auf die Grafik gr bei der angegebenen Position
+    (obere linke Ecke). Wenn keine Position angegeben ist, wird es in die
+    obere linke Ecke gesetzt. Der vorherige Inhalt wird überschrieben
     (keine Transparenz).
 
 

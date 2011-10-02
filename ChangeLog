@@ -1,3 +1,7 @@
+2011-10-02  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/akfavatar-graphic.c (lgraphic_put): position is optional
+
 2011-10-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar-graphic.c: refactoring color handling
