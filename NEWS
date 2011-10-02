@@ -6,7 +6,8 @@
   - Module "akfavatar-graphic"
     - gr:new() accepts name for background color
     - gr:put() optimized for same width, position is optional now
-    - new methods: gr:shift_vertically(), gr:shift_horizontally()
+    - new methods: gr:shift_vertically(), gr:shift_horizontally(),
+      gr:put_transparency()
 
 * AKFAvatar 0.21.2
 

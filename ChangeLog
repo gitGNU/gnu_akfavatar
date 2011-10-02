@@ -3,6 +3,8 @@
 	* lua/akfavatar-graphic.c (lgraphic_put): position is optional
 	optimized when same width and x==1
 
+	* lua/akfavatar-graphic.c (lgraphic_put_transparency): new function
+
 2011-10-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar-graphic.c: refactoring color handling

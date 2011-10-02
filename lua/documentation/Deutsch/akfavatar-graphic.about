@@ -220,6 +220,13 @@ gr:put(Grafik [,x, y])
     Breite hat und die x-Position auf 1 gesetzt ist.
 
 
+gr:put_transparency(Grafik [,x, y])
+    Legt eine Grafik über die Grafik gr bei der angegebenen Position
+    (obere linke Ecke). Wenn keine Position angegeben ist, wird es in die
+    obere linke Ecke gesetzt. Pixel mit der Hintergrundfarbe werden nicht
+    kopiert, die sind transparent. Dies ist wesentlich langsamer als gr:put().
+
+
 gr:get(x1, y1, x2, y2)
     Gibt einen Bereich der Grafik gr als neue Grafik zurück.
     Die meisten Einstellungen werden ebenfalls kopiert, mit Ausnahme der Größe

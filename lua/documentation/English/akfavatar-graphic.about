@@ -206,6 +206,13 @@ gr:put(graphic [,x, y])
     The same is true for a graphic with the same with and x set to 1.
 
 
+gr:put_transparency(graphic [,x, y])
+    Puts a graphic onto graphic gr at the given position (upper-left corner).
+    If no position is given it puts it at the upper-left corner.
+    Pixels with the background color are not copied, they are transparent.
+    This is much slower than gr:put().
+
+
 gr:get(x1, y1, x2, y2)
     Returns an area of the graphic gr as a new graphic.
     Most settings are copied, except the size and the pen settings.

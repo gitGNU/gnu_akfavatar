@@ -108,6 +108,9 @@ typedef struct graphic
 #define putpixel(gr, x, y) \
   putpixelcolor ((gr), (x), (y), (gr)->width, (gr)->color)
 
+#define equal_colors(a, b) \
+  ((a).red==(b).red && (a).green==(b).green && (a).blue==(b).blue)
+
 #define HA_LEFT 0
 #define HA_CENTER 1
 #define HA_RIGHT 2
@@ -1260,6 +1263,82 @@ lgraphic_put (lua_State * L)
 }
 
 
+/* gr:put_transparency(graphic [, xoffset, yoffset]) */
+static int
+lgraphic_put_transparency (lua_State * L)
+{
+  graphic *gr, *gr2;
+  int xoffset, yoffset, lines;
+  int source_width, target_width, source_height, target_height;
+  struct color *source, *target;
+
+  gr = get_graphic (L, 1);
+  gr2 = get_graphic (L, 2);
+
+  if (gr == gr2)
+    return 0;			/* do nothing */
+
+  xoffset = luaL_optint (L, 3, 1) - 1;
+  yoffset = luaL_optint (L, 4, 1) - 1;
+
+  source = gr2->data;
+  target = gr->data;
+  source_width = gr2->width;
+  target_width = gr->width;
+  source_height = gr2->height;
+  target_height = gr->height;
+
+  /* which line to start with? */
+  if (yoffset < 0)
+    {
+      source += abs (yoffset) * source_width;
+      source_height -= abs (yoffset);
+      yoffset = 0;
+    }
+
+  /* how many lines to copy? */
+  if (target_height > source_height + yoffset)
+    lines = source_height;
+  else
+    lines = target_height - yoffset;
+
+  if (lines > 0)
+    {
+      int x, y;
+      int xstart, show_width;	/* for horizontal cropping */
+      struct color foreground, background;
+      struct color *ps, *pt;
+
+      xstart = 0;
+      show_width = source_width;
+
+      if (xoffset < 0)
+	{
+	  xstart = abs (xoffset);
+	  show_width -= abs (xoffset);
+	  xoffset = 0;
+	}
+
+      background = gr2->background;
+
+      for (y = 0; y < lines; y++)
+	{
+	  ps = source + (y * source_width) + xstart;
+	  pt = target + ((y + yoffset) * target_width) + xoffset;
+
+	  for (x = 0; x < show_width; x++, ps++, pt++)
+	    {
+	      foreground = *ps;
+	      if (!equal_colors (foreground, background))
+		*pt = foreground;
+	    }
+	}
+    }
+
+  return 0;
+}
+
+
 /* gr:get(x1, y1, x2, y2) */
 static int
 lgraphic_get (lua_State * L)
@@ -1514,6 +1593,7 @@ static const struct luaL_reg graphiclib_methods[] = {
   {"width", lgraphic_width},
   {"height", lgraphic_height},
   {"put", lgraphic_put},
+  {"put_transparency", lgraphic_put_transparency},
   {"get", lgraphic_get},
   {"duplicate", lgraphic_duplicate},
   {"heading", lgraphic_heading},
