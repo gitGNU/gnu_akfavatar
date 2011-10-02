@@ -215,6 +215,10 @@ gr:put(Grafik [,x, y])
     obere linke Ecke gesetzt. Der vorherige Inhalt wird überschrieben
     (keine Transparenz).
 
+    Eine Grafik mit der selben Breite und ohne Angabe einer Position zu
+    kopieren ist äußerst effizient. Das selbe gilt wenn die Grafik die selbe
+    Breite hat und die x-Position auf 1 gesetzt ist.
+
 
 gr:get(x1, y1, x2, y2)
     Gibt einen Bereich der Grafik gr als neue Grafik zurück.
@@ -229,9 +233,9 @@ gr:duplicate()
     Die Grafik-spezifischen Einstellungen werden ebenfalls kopiert.
     Das geht schneller als mit gr:get().
 
-    Man kann dies zum Beispiel verwenden, um einen erstmal festen Hintergrund zu
+    Man kann dies zum Beispiel verwenden, um erstmal einen festen Hintergrund zu
     zeichnen und dann ein Duplikat zu erstellen. Darauf zeichnet man dann einen
-    Vordergrund. Dann kann man den Hintergrund wieder darauf kopieren (put)
+    Vordergrund. Dann kann man den Hintergrund wieder darauf kopieren (gr:put)
     und einen neuen Vordergrund zeichnen.
 
 

@@ -30,7 +30,8 @@
 #include <errno.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #include <lua.h>
@@ -38,7 +39,7 @@ extern "C" {
 #include <lualib.h>
 
 #ifdef __cplusplus
-int luaopen_graphic (lua_State * L);
+  int luaopen_graphic (lua_State * L);
 }
 #endif
 
@@ -1181,9 +1182,7 @@ static int
 lgraphic_put (lua_State * L)
 {
   graphic *gr, *gr2;
-  int xoffset, yoffset, y;
-  int lines, bytes;
-  int xstart, show_width;	/* for horizontal cropping */
+  int xoffset, yoffset, lines;
   int source_width, target_width, source_height, target_height;
   struct color *source, *target;
 
@@ -1202,8 +1201,6 @@ lgraphic_put (lua_State * L)
   target_width = gr->width;
   source_height = gr2->height;
   target_height = gr->height;
-  xstart = 0;
-  show_width = source_width;
 
   /* which line to start with? */
   if (yoffset < 0)
@@ -1222,24 +1219,41 @@ lgraphic_put (lua_State * L)
   if (lines <= 0)
     return 0;			/* nothing to copy */
 
-  if (xoffset < 0)
+  /* same width and no x-offset can be optimized */
+  if (source_width == target_width && xoffset == 0)
     {
-      xstart = abs (xoffset);
-      show_width -= abs (xoffset);
-      xoffset = 0;
+      memcpy (target + (yoffset * target_width), source,
+	      source_width * lines * BPP);
     }
-
-  /* how many bytes per line? */
-  if (target_width > show_width + xoffset)
-    bytes = show_width * BPP;
   else
-    bytes = (target_width - xoffset) * BPP;
-
-  if (bytes > 0)
     {
-      for (y = 0; y < lines; y++)
-	memcpy (target + ((y + yoffset) * target_width) + xoffset,
-		source + y * source_width + xstart, bytes);
+      int bytes;
+      int xstart, show_width;	/* for horizontal cropping */
+
+      xstart = 0;
+      show_width = source_width;
+
+      if (xoffset < 0)
+	{
+	  xstart = abs (xoffset);
+	  show_width -= abs (xoffset);
+	  xoffset = 0;
+	}
+
+      /* how many bytes per line? */
+      if (target_width > show_width + xoffset)
+	bytes = show_width * BPP;
+      else
+	bytes = (target_width - xoffset) * BPP;
+
+      if (bytes > 0)
+	{
+	  int y;
+
+	  for (y = 0; y < lines; y++)
+	    memcpy (target + ((y + yoffset) * target_width) + xoffset,
+		    source + y * source_width + xstart, bytes);
+	}
     }
 
   return 0;

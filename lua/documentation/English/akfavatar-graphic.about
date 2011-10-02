@@ -31,7 +31,7 @@ gr:show()
 
     Hint: You can show intermediate images, continue drawing, wait a while
     and then show the next step and so on.  This makes a nice animation.
-    But don't make the steps too small, or it will be painfull on slow devices.
+    But don't make the steps too small, or it will be painful on slow devices.
 
 
 gr:size()
@@ -202,10 +202,13 @@ gr:put(graphic [,x, y])
     If no position is given it puts it at the upper-left corner.
     The previous content is overwritten (no transparency supported).
 
+    Copying a graphic with the same size and no position is highly efficient.
+    The same is true for a graphic with the same with and x set to 1.
+
 
 gr:get(x1, y1, x2, y2)
     Returns an area of the graphic gr as a new graphic.
-    Most settings are copied, exept the size and the pen settings.
+    Most settings are copied, except the size and the pen settings.
     The pen is put in the center, heading to the top.
     All values must be in range.
 
@@ -216,8 +219,8 @@ gr:duplicate()
     This is faster than using gr:get().
 
     You can use this for example to create a fixed background and then make a
-    duplicate and draw the foreground on it.  Then you can put the background
-    graphic back to the duplicate and draw another foreground.
+    duplicate and draw the foreground on it.  Then you can gr:put() the
+    background graphic back to the duplicate and draw another foreground.
 
 
 gr:shift_vertically(lines)
@@ -258,7 +261,8 @@ Turtle graphics
 ===============
 
 To understand turtle graphics think of a turtle that carries a pen. You can
-control the turtle by tellig her in which direction to turn and how far to move.
+control the turtle by telling her in which direction to turn and how far to
+move.
 
 
 gr:heading(heading)

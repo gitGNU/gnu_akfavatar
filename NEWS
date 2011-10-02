@@ -3,9 +3,10 @@
   - The source code is compatible with C++ compilers again
 
   Lua-API changes:
-  - Module "akfavatar-graphic": gr:new() accepts name for background color
-  - Module "akfavatar-graphic": new methods
-    gr:shift_vertically, gr:shift_horizontally
+  - Module "akfavatar-graphic"
+    - gr:new() accepts name for background color
+    - gr:put() optimized for same width, position is optional now
+    - new methods: gr:shift_vertically(), gr:shift_horizontally()
 
 * AKFAvatar 0.21.2
 
