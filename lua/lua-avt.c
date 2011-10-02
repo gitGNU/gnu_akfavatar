@@ -22,7 +22,8 @@
 #include "avtaddons.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #include <lua.h>
@@ -30,7 +31,7 @@ extern "C" {
 #include <lualib.h>
 
 #ifdef __cplusplus
-int luaopen_akfavatar (lua_State * L);
+  int luaopen_akfavatar (lua_State * L);
 }
 #endif
 
@@ -1373,8 +1374,8 @@ lavt_load_audio_file (lua_State * L)
   /* if filename is not none or nil or "" */
   if (len > 0)
     {
-      if (!avt_audio_playing(NULL))
-        audio_not_playing (L);
+      if (!avt_audio_playing (NULL))
+	audio_not_playing (L);
 
       /* full garbage collection */
       lua_gc (L, LUA_GCCOLLECT, 0);
@@ -1410,8 +1411,8 @@ lavt_load_audio_string (lua_State * L)
   /* if string is not none or nil or "" */
   if (len > 0)
     {
-      if (!avt_audio_playing(NULL))
-        audio_not_playing (L);
+      if (!avt_audio_playing (NULL))
+	audio_not_playing (L);
 
       /* full garbage collection */
       lua_gc (L, LUA_GCCOLLECT, 0);

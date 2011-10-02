@@ -2002,7 +2002,7 @@ say_line (const wchar_t * line, ssize_t nread)
       /* filter out \r and \n */
       /* new-lines are handled at the beginning */
       if (*line != L'\n' && *line != L'\r')
-	status = avt_put_char ((avt_char) *line);
+	status = avt_put_char ((avt_char) * line);
       if (status)
 	break;
     }

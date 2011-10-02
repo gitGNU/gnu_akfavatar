@@ -161,7 +161,7 @@ avta_arch_first_member (int fd, char *member)
  */
 size_t
 avta_arch_get_data (const char *archive, const char *member,
-	       void **buf, size_t * size)
+		    void **buf, size_t * size)
 {
   int archive_fd;
 

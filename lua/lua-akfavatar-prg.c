@@ -30,7 +30,8 @@
 #include <errno.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 #include <lua.h>
 #include <lauxlib.h>

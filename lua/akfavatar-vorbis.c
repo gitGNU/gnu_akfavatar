@@ -25,7 +25,8 @@
 
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #include <lua.h>
@@ -33,7 +34,7 @@ extern "C" {
 #include <lualib.h>
 
 #ifdef __cplusplus
-int luaopen_vorbis (lua_State * L);
+  int luaopen_vorbis (lua_State * L);
 }
 #endif
 

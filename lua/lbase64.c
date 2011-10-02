@@ -10,14 +10,15 @@
 #include <string.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #include <lua.h>
 #include <lauxlib.h>
 
 #ifdef __cplusplus
-LUALIB_API int luaopen_base64 (lua_State * L);
+  LUALIB_API int luaopen_base64 (lua_State * L);
 }
 #endif
 

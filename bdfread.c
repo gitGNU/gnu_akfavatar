@@ -55,7 +55,7 @@ strip_nl (char *s)
 {
   char *p;
 
-  p = strchr(s, '\n');
+  p = strchr (s, '\n');
   if (p)
     *p = '\0';
 }
@@ -124,7 +124,7 @@ processchar (char *charname)
       fontstarted = true;
     }
 
-  strip_nl(charname);
+  strip_nl (charname);
   printf ("/* %s */\n", charname);
 
   while (fgets (zl, sizeof (zl), inp) && strncmp (zl, "BITMAP", 6) != 0)
@@ -138,12 +138,12 @@ processchar (char *charname)
     }
 
   fgets (zl, sizeof (zl), inp);
-  strip_nl(zl);
+  strip_nl (zl);
   printf ("0x%s", zl);
   fgets (zl, sizeof (zl), inp);
   while (strncmp (zl, "ENDCHAR", 7) != 0)
     {
-      strip_nl(zl);
+      strip_nl (zl);
       printf (",0x%s", zl);
       fgets (zl, sizeof (zl), inp);
     }

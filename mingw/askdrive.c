@@ -21,7 +21,7 @@
 
 #include "akfavatar.h"
 #include "avtaddons.h"
-#include <direct.h>             /* for _chdrive */
+#include <direct.h>		/* for _chdrive */
 #include <string.h>
 #include <errno.h>
 
@@ -72,7 +72,7 @@ ask:
   avt_lock_updates (false);
   status = avt_choice (&choice, 1, number + 1, 0, false, false);
 
-  if (choice == 1) /* home selected */
+  if (choice == 1)		/* home selected */
     status = AVT_QUIT;
 
   if (status == AVT_NORMAL)
