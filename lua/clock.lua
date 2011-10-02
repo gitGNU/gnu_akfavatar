@@ -26,13 +26,46 @@ avt.initialize {
   avatar = "none",
   }
 
-local oldtime = -1
+local oldtime, clockface
 
-local function clock(gr, show_date, timestamp)
+local function draw_clockface(gr, radius)
+  if clockface then
+    clockface:clear()
+  else
+    clockface = gr:duplicate()
+  end
+
+  -- draw minute points
+  clockface:thickness(2)
+  for i=1,60 do
+    clockface:home()
+    clockface:heading(i * 360/60)
+    clockface:move(radius)
+    clockface:putdot()
+  end
+
+  -- draw hour points
+  clockface:thickness(7)
+  for i=1,12 do
+    clockface:home()
+    clockface:heading(i * 360/12)
+    clockface:move(radius)
+    clockface:putdot()
+  end
+
+  -- show date
+  clockface:home()
+  clockface:heading(180)
+  clockface:move(radius / 2)
+  clockface:text(os.date("%x", timestamp))
+
+end -- draw clockface
+
+
+local function clock(gr, timestamp)
   timestamp = timestamp or os.time()
 
-  -- only draw when timestamp changes
-  -- timestamp changes every second
+  -- only draw when timestamp changes (every second)
   if timestamp == oldtime then return end
   oldtime = timestamp
 
@@ -40,33 +73,10 @@ local function clock(gr, show_date, timestamp)
   local width, height = gr:size()
   local radius = math.min(width, height) / 2 - 10
 
-  gr:clear()
+  if not clockface then draw_clockface(gr, radius) end
+  -- FIXME: date doesn't change at midnight
 
-  if show_date then
-    gr:home()
-    gr:heading(180)
-    gr:move(height / 4)
-    gr:textalign("center", "center")
-    gr:text(os.date("%x", timestamp))
-  end
-
-  -- show minute points
-  gr:thickness(2)
-  for i=1,60 do
-    gr:home()
-    gr:heading(i * 360/60)
-    gr:move(radius)
-    gr:putdot()
-  end
-
-  -- show hour points
-  gr:thickness(7)
-  for i=1,12 do
-    gr:home()
-    gr:heading(i * 360/12)
-    gr:move(radius)
-    gr:putdot()
-  end
+  gr:put(clockface)
 
   -- hours pointer
   gr:home()
@@ -92,10 +102,11 @@ end
 local s = math.min(graphic.fullsize())
 local gr = graphic.new(s, s)
 gr:color "saddle brown"
+
 os.setlocale("", "time") --> for the formatting of the date
 
 -- close with <Esc>-key or the close-button of the window
 while true do
-  clock(gr, true)
+  clock(gr)
   avt.wait(0.1)
 end

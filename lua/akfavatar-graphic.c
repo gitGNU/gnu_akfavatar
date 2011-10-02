@@ -1190,7 +1190,7 @@ lgraphic_put (lua_State * L)
   gr2 = get_graphic (L, 2);
 
   if (gr == gr2)
-    return luaL_error (L, "cannot put a graphic onto itself");
+    return 0;			/* do nothing */
 
   xoffset = luaL_optint (L, 3, 1) - 1;
   yoffset = luaL_optint (L, 4, 1) - 1;
