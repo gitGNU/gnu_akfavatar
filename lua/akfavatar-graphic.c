@@ -163,6 +163,51 @@ bar (graphic * gr, int x1, int y1, int x2, int y2)
 }
 
 
+static void
+disc (graphic * gr, double x, double y, double radius)
+{
+  int width, height;
+  int x1, y1, x2, y2;
+  int i;
+  double xv, yv;
+  double r2;
+  struct color *data, *p;
+  struct color color;
+
+  width = gr->width;
+  height = gr->height;
+  color = gr->color;
+  data = gr->data;
+  r2 = radius * radius;
+
+  for (yv = 0.0; yv <= radius; yv++)
+    {
+      xv = sqrt (r2 - (yv * yv));
+
+      x1 = (int) (x - xv);
+      y1 = (int) (y - yv);
+      x2 = (int) (x + xv);
+      y2 = (int) (y + yv);
+
+      /* sanitize values */
+      x1 = RANGE (x1, 0, width - 1);
+      y1 = RANGE (y1, 0, height - 1);
+      x2 = RANGE (x2, 0, width - 1);
+      y2 = RANGE (y2, 0, height - 1);
+
+      /* upper half */
+      p = data + (y1 * width) + x1;
+      for (i = x1; i <= x2; i++)
+	*p++ = color;
+
+      /* lower half */
+      p = data + (y2 * width) + x1;
+      for (i = x1; i <= x2; i++)
+	*p++ = color;
+    }
+}
+
+
 #define putdot(gr, x, y) \
   do { \
     int s = (gr)->thickness; \
@@ -841,6 +886,18 @@ lgraphic_arc (lua_State * L)
       x = newx;
       y = newy;
     }
+
+  return 0;
+}
+
+
+static int
+lgraphic_disc (lua_State * L)
+{
+  graphic *gr;
+
+  gr = get_graphic (L, 1);
+  disc (gr, gr->penx, gr->peny, luaL_checknumber (L, 2));
 
   return 0;
 }
@@ -1585,6 +1642,7 @@ static const struct luaL_reg graphiclib_methods[] = {
   {"rectangle", lgraphic_rectangle},
   {"arc", lgraphic_arc},
   {"circle", lgraphic_arc},
+  {"disc", lgraphic_disc},
   {"text", lgraphic_text},
   {"textalign", lgraphic_textalign},
   {"font_size", lgraphic_font_size},

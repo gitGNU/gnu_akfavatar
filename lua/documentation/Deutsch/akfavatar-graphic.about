@@ -170,6 +170,11 @@ gr:circle(Radius [,Winkel1] [,Winkel2])
     (siehe unten bei Turtle-Grafik).
 
 
+gr:disc(Radius)
+    Zeichnet eine Scheibe, dh. einen gefüllten Kreis mit dem angegebenen Radius.
+    Die Stift-Position markiert den Mittelpunkt.
+
+
 gr:text(Text [, x, y])
     Schreibt einen Text, ausgerichtet an der angegebenen Position oder der
     Stift-Position.
