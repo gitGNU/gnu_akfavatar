@@ -28,29 +28,32 @@ avt.initialize {
 
 local oldtime, clockface
 
-local function draw_clockface(gr, radius)
+local function draw_clockface(gr, radius, color)
   if clockface then
     clockface:clear()
   else
     clockface = gr:duplicate()
   end
 
+  clockface:home()
+  clockface:color("floral white")
+  clockface:disc(radius-1)
+  clockface:color(color)
+
   -- draw minute points
-  clockface:thickness(2)
   for i=1,60 do
     clockface:home()
     clockface:heading(i * 360/60)
-    clockface:move(radius)
-    clockface:putdot()
+    clockface:move(radius - 12)
+    clockface:disc(2)
   end
 
   -- draw hour points
-  clockface:thickness(7)
   for i=1,12 do
     clockface:home()
     clockface:heading(i * 360/12)
-    clockface:move(radius)
-    clockface:putdot()
+    clockface:move(radius - 12)
+    clockface:disc(7)
   end
 
   -- show date
@@ -62,7 +65,7 @@ local function draw_clockface(gr, radius)
 end -- draw clockface
 
 
-local function clock(gr, timestamp)
+local function clock(gr, color, timestamp)
   timestamp = timestamp or os.time()
 
   -- only draw when timestamp changes (every second)
@@ -71,12 +74,15 @@ local function clock(gr, timestamp)
 
   local time = os.date("*t", timestamp)
   local width, height = gr:size()
-  local radius = math.min(width, height) / 2 - 10
+  local radius = math.min(width, height) / 2
 
-  if not clockface then draw_clockface(gr, radius) end
+  if not clockface then draw_clockface(gr, radius, color) end
   -- FIXME: date doesn't change at midnight
 
   gr:put(clockface)
+  radius = radius - 12
+
+  gr:color(color)
 
   -- hours pointer
   gr:home()
@@ -88,7 +94,7 @@ local function clock(gr, timestamp)
   gr:home()
   gr:heading(time.min * 360/60)
   gr:thickness(3)
-  gr:draw(radius-12)
+  gr:draw(radius-14)
 
   -- seconds pointer
   gr:home()
@@ -101,12 +107,11 @@ end
 
 local s = math.min(graphic.fullsize())
 local gr = graphic.new(s, s)
-gr:color "saddle brown"
 
 os.setlocale("", "time") --> for the formatting of the date
 
 -- close with <Esc>-key or the close-button of the window
 while true do
-  clock(gr)
+  clock(gr, "saddle brown")
   avt.wait(0.1)
 end
