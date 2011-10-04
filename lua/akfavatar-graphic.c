@@ -891,13 +891,15 @@ lgraphic_arc (lua_State * L)
 }
 
 
+/* gr:disc(radius [,x,y]) */
 static int
 lgraphic_disc (lua_State * L)
 {
   graphic *gr;
 
   gr = get_graphic (L, 1);
-  disc (gr, gr->penx, gr->peny, luaL_checknumber (L, 2));
+  disc (gr, luaL_optnumber (L, 3, gr->penx), luaL_optnumber (L, 4, gr->peny),
+	luaL_checknumber (L, 2));
 
   return 0;
 }

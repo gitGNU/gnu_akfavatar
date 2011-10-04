@@ -160,9 +160,11 @@ gr:circle(radius [,angle1] [,angle2])
     start-angle (see below under turtle graphics).
 
 
-gr:disc(radius)
-    Draws a disc, ie. a filled circle with the given radius.
-    The pen position is the center.
+gr:disc(radius [, x, y])
+    Draws a disc, ie. a filled circle with the given radius with the given
+    coordinates as center.  If no coordinates are given, the current pen
+    position is used as center.
+    The pen position is not changed.
 
 
 gr:text(text [, x, y])

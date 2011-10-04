@@ -171,8 +171,10 @@ gr:circle(Radius [,Winkel1] [,Winkel2])
 
 
 gr:disc(Radius)
-    Zeichnet eine Scheibe, dh. einen gefüllten Kreis mit dem angegebenen Radius.
-    Die Stift-Position markiert den Mittelpunkt.
+    Zeichnet eine Scheibe, dh. einen gefüllten Kreis mit dem angegebenen Radius
+    und den angegebenen Koordinaten als Mittelpunkt. Sind keine Koordinaten
+    angegeben, wird die aktuelle Stift-Position als Mittelpunkt verwendet.
+    Die Stift-Position wird nicht verändert.
 
 
 gr:text(Text [, x, y])
