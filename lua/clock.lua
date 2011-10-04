@@ -26,14 +26,8 @@ avt.initialize {
   avatar = "none",
   }
 
-local oldtime, clockface
-
 local function draw_clockface(gr, radius, color)
-  if clockface then
-    clockface:clear()
-  else
-    clockface = gr:duplicate()
-  end
+  local clockface = gr:duplicate()
 
   clockface:home()
   clockface:color("floral white")
@@ -60,58 +54,64 @@ local function draw_clockface(gr, radius, color)
   clockface:home()
   clockface:heading(180)
   clockface:move(radius / 2)
+  os.setlocale("", "time") --> for the formatting of the date
   clockface:text(os.date("%x", timestamp))
 
+  return clockface
 end -- draw clockface
 
 
-local function clock(gr, color, timestamp)
-  timestamp = timestamp or os.time()
-
-  -- only draw when timestamp changes (every second)
-  if timestamp == oldtime then return end
-  oldtime = timestamp
-
-  local time = os.date("*t", timestamp)
-  local width, height = gr:size()
-  local radius = math.min(width, height) / 2
-
-  if not clockface then draw_clockface(gr, radius, color) end
-  -- FIXME: date doesn't change at midnight
-
-  gr:put(clockface)
-  radius = radius - 12
+local function clock()
+  local color = "saddle brown"
+  local s = math.min(graphic.fullsize())
+  local gr, width, height = graphic.new(s, s)
+  local radius = s / 2
+  local timestamp, oldtime
+  local time = os.time
+  local date = os.date
 
   gr:color(color)
+  local clockface = draw_clockface(gr, radius, color)
+  -- FIXME: date doesn't change at midnight
 
-  -- hours pointer
-  gr:home()
-  gr:heading((time.hour*60/12 + time.min/12) * 360/60)
-  gr:thickness(6)
-  gr:draw(radius/2)
+  radius = radius - 12
+  timestamp = time()
 
-  -- minutes pointer
-  gr:home()
-  gr:heading(time.min * 360/60)
-  gr:thickness(3)
-  gr:draw(radius-14)
+  repeat
 
-  -- seconds pointer
-  gr:home()
-  gr:heading(time.sec * 360/60)
-  gr:thickness(1)
-  gr:draw(radius-12)
+    -- wait until timestamp actually changes (every second)
+    while timestamp == oldtime do
+      avt.wait(0.1)
+      timestamp = time()
+    end
 
-  gr:show()
+    oldtime = timestamp
+
+    gr:put(clockface) --> overwrites everything
+
+    local time = date("*t", timestamp)
+
+    -- hours pointer
+    gr:home()
+    gr:heading((time.hour*60/12 + time.min/12) * 360/60)
+    gr:thickness(6)
+    gr:draw(radius/2)
+
+    -- minutes pointer
+    gr:home()
+    gr:heading(time.min * 360/60)
+    gr:thickness(3)
+    gr:draw(radius-14)
+
+    -- seconds pointer
+    gr:home()
+    gr:heading(time.sec * 360/60)
+    gr:thickness(1)
+    gr:draw(radius-14)
+
+    gr:show()
+  until false
+
 end
 
-local s = math.min(graphic.fullsize())
-local gr = graphic.new(s, s)
-
-os.setlocale("", "time") --> for the formatting of the date
-
--- close with <Esc>-key or the close-button of the window
-while true do
-  clock(gr, "saddle brown")
-  avt.wait(0.1)
-end
+clock()
