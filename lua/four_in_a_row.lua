@@ -1,7 +1,7 @@
 #!/usr/bin/env lua-akfavatar
 
 --[[---------------------------------------------------------------------
-Vier Gewinnt - Connect Four
+Four in a Row
 Game for 2 players (no computer-logic yet)
 
 Copyright (c) 2011 Andreas K. Foerster <info@akfoerster.de>

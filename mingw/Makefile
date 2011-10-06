@@ -325,7 +325,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(srcdir)/lua/audioplayer.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/function_plotter.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/clock.lua $(BINPKGNAME)/lua/
-	cp $(srcdir)/lua/connect_four.lua $(BINPKGNAME)/lua/
+	cp $(srcdir)/lua/four_in_a_row.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/textview.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/hello.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/story1-en.lua $(srcdir)/lua/story1-de.lua $(BINPKGNAME)/lua/

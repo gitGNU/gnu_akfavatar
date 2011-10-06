@@ -1,6 +1,6 @@
 2011-10-06  Andreas K. Foerster  <info@akfoerster.de>
 
-	* lua/connect_four.lua: new file
+	* lua/four_in_a_row.lua: new file
 
 2011-10-04  Andreas K. Foerster  <info@akfoerster.de>
 
