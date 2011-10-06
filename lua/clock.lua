@@ -35,18 +35,22 @@ local function draw_clockface(gr, radius, color)
   clockface:color(color)
 
   -- draw minute points
-  for i=1,60 do
+  for minute=1,60 do
     clockface:home()
-    clockface:heading(i * 360/60)
+    clockface:heading(minute * 360/60)
     clockface:move(radius - 12)
     clockface:disc(2)
   end
 
-  -- draw hour points
-  for i=1,12 do
+  -- draw hours
+  local textdist = 35
+  clockface:textalign("center", "center")
+  for hour=1,12 do
     clockface:home()
-    clockface:heading(i * 360/12)
-    clockface:move(radius - 12)
+    clockface:heading(hour * 360/12)
+    clockface:move(radius - textdist)
+    clockface:text(hour)
+    clockface:move(textdist - 12)
     clockface:disc(7)
   end
 
