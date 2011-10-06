@@ -2,6 +2,8 @@
 
 	* lua/four_in_a_row.lua: new file
 
+	* avatar.c (avt_key): treat number pad depending on numlock
+
 2011-10-04  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar-graphic.c (lgraphic_disc): optional coordinates
