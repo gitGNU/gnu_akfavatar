@@ -48,7 +48,7 @@ local boardxoffset = 1 + width/2 - boardwidth/2
 local boardyoffset = 1 + fieldsize
 local filled = {} -- how many chips in a column
 local chips = 0 -- how many chips alltogether
-local board
+local board = {}
 
 
 local function show_score()
@@ -66,39 +66,13 @@ local function show_score()
 end
 
 
-local function clear_board()
-  screen:eraser()
-  for row=1,6 do
-    for col=0,6 do
-      screen:disc(radius, boardxoffset + col*fieldsize + fieldsize/2,
-                  row*fieldsize + fieldsize/2);
-      filled[col+1] = 0
-      end
-    end
-  board = {[1]={}, [2]={}, [3]={}, [4]={}, [5]={}, [6]={}, [7]={}}
-  chips = 0
-end
-
-
-local function draw_board()
-  screen:clear()
-  screen:color "blue"
-  screen:bar(boardxoffset - 10, boardyoffset, 
-             boardxoffset + boardwidth + 10, height)
-  clear_board()
-  show_score()
-end
-
-
 -- show chip in that position - row 7 is above the board
 -- if color is not given it clears the field
 local function position(col, row, color)
   if col >= 1 and col <= 7 and row >= 1 and row <= 7 then
-    col = col - 1
-    row = 7 - row
     if color then screen:color(color) else screen:eraser() end
-    screen:disc(radius, boardxoffset + col*fieldsize + fieldsize/2,
-                row*fieldsize + fieldsize/2)
+    screen:disc(radius, boardxoffset + (col-1)*fieldsize + fieldsize/2,
+                (7-row)*fieldsize + fieldsize/2)
   end
 end
 
@@ -131,6 +105,19 @@ local function drop(column)
     avt.bell()
     return false
   end
+end
+
+
+local function clear_board()
+  for row=1,6 do
+    for col=1,7 do
+      position(col, row)
+      filled[col] = 0
+      board[col] = {}
+      end
+    end
+
+  chips = 0
 end
 
 
@@ -213,7 +200,13 @@ local function play()
     if player==1 then player=2 else player=1 end
   end
 
-  draw_board()
+  -- draw board
+  screen:clear()
+  screen:color "blue"
+  screen:bar(boardxoffset - 10, boardyoffset,
+             boardxoffset + boardwidth + 10, height)
+  clear_board()
+  show_score()
 
   repeat
     select()
