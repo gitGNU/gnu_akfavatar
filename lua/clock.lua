@@ -31,26 +31,28 @@ local function draw_clockface(gr, radius, color)
 
   clockface:home()
   clockface:color("floral white")
-  clockface:disc(radius-1)
+  clockface:disc(radius-3)
   clockface:color(color)
+  clockface:thickness(3)
+  clockface:circle(radius-3)
 
   -- draw minute points
   for minute=1,60 do
     clockface:home()
     clockface:heading(minute * 360/60)
-    clockface:move(radius - 12)
+    clockface:move(radius - 18)
     clockface:disc(2)
   end
 
   -- draw hours
-  local textdist = 35
+  local textdist = 40
   clockface:textalign("center", "center")
   for hour=1,12 do
     clockface:home()
     clockface:heading(hour * 360/12)
     clockface:move(radius - textdist)
     clockface:text(hour)
-    clockface:move(textdist - 12)
+    clockface:move(textdist - 18)
     clockface:disc(7)
   end
 
@@ -70,6 +72,7 @@ local function clock()
   local s = math.min(graphic.fullsize())
   local gr, width, height = graphic.new(s, s)
   local radius = s / 2
+  local pointerlength = radius - 35
   local timestamp, oldtime
   local time = os.time
   local date = os.date
@@ -78,7 +81,6 @@ local function clock()
   local clockface = draw_clockface(gr, radius, color)
   -- FIXME: date doesn't change at midnight
 
-  radius = radius - 12
   timestamp = time()
 
   repeat
@@ -99,19 +101,19 @@ local function clock()
     gr:home()
     gr:heading((time.hour*60/12 + time.min/12) * 360/60)
     gr:thickness(6)
-    gr:draw(radius/2)
+    gr:draw(pointerlength/2)
 
     -- minutes pointer
     gr:home()
     gr:heading(time.min * 360/60)
     gr:thickness(3)
-    gr:draw(radius-14)
+    gr:draw(pointerlength)
 
     -- seconds pointer
     gr:home()
     gr:heading(time.sec * 360/60)
     gr:thickness(1)
-    gr:draw(radius-14)
+    gr:draw(pointerlength)
 
     gr:show()
   until false
