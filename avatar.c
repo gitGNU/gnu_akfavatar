@@ -5571,6 +5571,7 @@ avt_show_image (avt_image_t * image)
   SDL_BlitSurface (image, NULL, screen, &dst);
   AVT_UPDATE_ALL ();
   SDL_SetClipRect (screen, &window);
+  avt_checkevent();
 }
 
 /*

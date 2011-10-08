@@ -912,9 +912,7 @@ lgraphic_show (lua_State * L)
   int status;
 
   gr = get_graphic (L, 1);
-  avt_show_raw_image (&gr->data, gr->width, gr->height, BPP);
-
-  status = avt_update ();
+  status = avt_show_raw_image (&gr->data, gr->width, gr->height, BPP);
 
   if (status <= AVT_ERROR)
     {

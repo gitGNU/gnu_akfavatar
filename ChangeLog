@@ -1,4 +1,10 @@
+2011-10-08  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_show_image): call avt_checkevent()
+	lua/akfavatar-graphic.c (lgraphic_show): don't call avt_update()
+
 2011-10-06  Andreas K. Foerster  <info@akfoerster.de>
+
 
 	* lua/four_in_a_row.lua: new file
 
