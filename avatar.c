@@ -2163,18 +2163,40 @@ avt_update (void)
   return _avt_STATUS;
 }
 
+/* send a timeout event */
+static Uint32
+avt_timeout (Uint32 intervall AVT_UNUSED, void *param AVT_UNUSED)
+{
+  SDL_Event event;
+
+  event.type = SDL_USEREVENT;
+  event.user.code = AVT_TIMEOUT;
+  event.user.data1 = event.user.data2 = NULL;
+  SDL_PushEvent (&event);
+
+  return 0;
+}
+
 extern int
 avt_wait (int milliseconds)
 {
-  Uint32 endtime;
+  SDL_Event event;
+  SDL_TimerID t;
 
   if (screen && milliseconds > 0 && _avt_STATUS == AVT_NORMAL)
     {
-      endtime = SDL_GetTicks () + milliseconds;
+      t = SDL_AddTimer (milliseconds, avt_timeout, NULL);
 
-      /* loop while time is not reached yet, and there is no event */
-      while ((SDL_GetTicks () < endtime) && !avt_checkevent ())
-	SDL_Delay (1);		/* give some time to other apps */
+      while (_avt_STATUS == AVT_NORMAL)
+	{
+	  SDL_WaitEvent (&event);
+	  if (event.type == SDL_USEREVENT && event.user.code == AVT_TIMEOUT)
+	    break;
+	  else
+	    avt_analyze_event (&event);
+	}
+
+      SDL_RemoveTimer (t);
     }
 
   return _avt_STATUS;
@@ -5571,7 +5593,7 @@ avt_show_image (avt_image_t * image)
   SDL_BlitSurface (image, NULL, screen, &dst);
   AVT_UPDATE_ALL ();
   SDL_SetClipRect (screen, &window);
-  avt_checkevent();
+  avt_checkevent ();
 }
 
 /*
