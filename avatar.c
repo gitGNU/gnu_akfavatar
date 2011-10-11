@@ -2187,6 +2187,14 @@ avt_wait (int milliseconds)
     {
       t = SDL_AddTimer (milliseconds, avt_timeout, NULL);
 
+      if (t == NULL)
+	{
+	  /* extremely unlikely error */
+	  SDL_SetError ("AddTimer doesn't work");
+	  _avt_STATUS = AVT_ERROR;
+	  return _avt_STATUS;
+	}
+
       while (_avt_STATUS == AVT_NORMAL)
 	{
 	  SDL_WaitEvent (&event);
