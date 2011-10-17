@@ -2210,6 +2210,12 @@ avt_wait (int milliseconds)
   return _avt_STATUS;
 }
 
+extern void
+avt_delay (int milliseconds)
+{
+  SDL_Delay(milliseconds);
+}
+
 extern unsigned int
 avt_ticks (void)
 {
@@ -3292,10 +3298,9 @@ avt_put_char (avt_char ch)
 	      avt_drawchar (ch, screen);
 	      avt_showchar ();
 	      if (text_delay)
-		avt_wait (text_delay);
-	      else
-		avt_checkevent ();
+		SDL_Delay (text_delay);
 	      avt_forward ();
+	      avt_checkevent ();
 	    }			/* if not markup */
 	}			/* if (ch > 0x0020) */
     }				/* switch */

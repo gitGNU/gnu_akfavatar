@@ -319,6 +319,12 @@ Wartet eine angegebene Zeit an Sekunden (kann ein Dezeimalbruch sein).
 .IP
 Wenn kein Wert angegeben ist, wartet er eine gewisse Zeit.
 .PP
+.TP "avt.delay(" Millisekunden )
+Verzögert für ein paar Millisekunden.
+Das sollte man nur für sehr kurze Zeiten verwenden.
+Es werden in der Zeit keine Ereignisse abgefragt, oder das Fenster
+aufgefrischt.
+.PP
 .TP
 .BI "avt.ticks()"
 Gibt einen Wert zurück, der jede Millisekunde erhöht wird.

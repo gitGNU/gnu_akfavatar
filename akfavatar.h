@@ -276,8 +276,19 @@ AVT_API void avt_flash (void);
 /* use this in a longer loop in your program */
 AVT_API int avt_update (void);
 
-/* wait a while */
+/*
+ * wait a while
+ * this is for longer times - a second or more
+ * it reacts on events and evetually redraws the screen if needed
+ */
 AVT_API int avt_wait (int milliseconds);
+
+/*
+ * delay
+ * this is for short delays - fractions of a second
+ * it doesn't react on events
+ */
+AVT_API void avt_delay (int milliseconds);
 
 /* counter, which is increased every millisecond */
 AVT_API unsigned int avt_ticks (void);

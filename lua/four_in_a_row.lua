@@ -95,7 +95,7 @@ local function drop(column)
       position(column, i+1) -- clear
       position(column, i, chip[player])
       screen:show()
-      avt.wait(0.05)
+      avt.delay(25)
     end
     chips = chips + 1
     filled[column] = number

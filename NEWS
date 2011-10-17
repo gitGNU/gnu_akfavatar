@@ -2,7 +2,11 @@
 
   - The source code is compatible with C++ compilers again
 
+  C-API changes:
+  - new functions: avt_delay()
+
   Lua-API changes:
+  - new functions: avt.delay()
   - Module "akfavatar-graphic"
     - gr:new() accepts name for background color
     - gr:put() optimized for same width, position is optional now

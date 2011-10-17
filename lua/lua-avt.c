@@ -1031,6 +1031,15 @@ lavt_wait_sec (lua_State * L)
   return 0;
 }
 
+/* delay some milliseconds */
+static int
+lavt_delay (lua_State * L)
+{
+  avt_delay (luaL_checkint (L, 1));
+
+  return 0;
+}
+
 static int
 lavt_ticks (lua_State * L)
 {
@@ -2131,6 +2140,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"flip_page", lavt_flip_page},
   {"update", lavt_update},
   {"wait", lavt_wait_sec},
+  {"delay", lavt_delay},
   {"ticks", lavt_ticks},
   {"set_balloon_size", lavt_set_balloon_size},
   {"set_balloon_width", lavt_set_balloon_width},
