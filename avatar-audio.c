@@ -68,10 +68,10 @@ static avt_audio_t *my_alert;
 
 /* current sound */
 static struct avt_audio_t current_sound;
-static Uint8 *soundpos = NULL;	/* Current play position */
-static Sint32 soundleft = 0;	/* Length of left unplayed wave data */
+static volatile Uint8 *soundpos = NULL;	/* Current play position */
+static volatile Sint32 soundleft = 0;	/* Length of left unplayed wave data */
 static bool loop = false;
-static bool playing = false;
+static volatile bool playing = false;
 
 /* table for decoding mu-law */
 static const Sint16 mulaw_decode[256] = {
@@ -158,7 +158,7 @@ fill_audio (void *userdata AVT_UNUSED, Uint8 * stream, int len)
   if (len > soundleft)
     len = soundleft;
 
-  SDL_memcpy (stream, soundpos, len);
+  SDL_memcpy (stream, (const void *) soundpos, len);
 
   soundpos += len;
   soundleft -= len;
