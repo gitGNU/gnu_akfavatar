@@ -51,6 +51,9 @@ extern "C"
 #  define ENOMSG EINVAL
 #endif
 
+/* environment variable for avt.datapath */
+#define AVTDATAPATH  "AVTDATAPATH"
+
 /* internal name for audio data */
 #define AUDIODATA   "AKFAvatar-Audio"
 
@@ -165,7 +168,7 @@ get_mode (lua_State * L, int index)
 	  }
 
       if (modes[i] == NULL)
-	return luaL_error (L, "initialize: mode: '%s': %s", mode_name,
+	return luaL_error (L, "initialize: mode: " LUA_QS ": %s", mode_name,
 			   strerror (ENOMSG));
     }
 
@@ -2103,6 +2106,65 @@ lavt_optional (lua_State * L)
   return 1;
 }
 
+/* searches given file in in given path or in avt.datapath */
+static int
+lavt_search (lua_State * L)
+{
+  const char *filename, *path;
+
+  filename = luaL_checkstring (L, 1);
+  path = lua_tostring (L, 2);
+
+  if (!path)
+    {
+      /* get avt.datapath */
+      lua_getglobal (L, "avt");
+      lua_getfield (L, -1, "datapath");
+      path = lua_tostring (L, -1);
+      lua_pop (L, 2);
+      if (!path)
+	path = ".";
+    }
+
+  while (*path)
+    {
+      char fullname[4096];
+      const char *name = filename;
+      size_t pos = 0;
+
+      /* start with next directory from path */
+      while (*path && *path != LUA_PATHSEP[0] && pos < sizeof (fullname) - 1)
+	fullname[pos++] = *path++;
+
+      /* skip path seperator(s) */
+      while (*path == LUA_PATHSEP[0])
+	path++;
+
+      /* eventually add directory separator */
+      if (fullname[pos - 1] != LUA_DIRSEP[0] && pos < sizeof (fullname) - 1)
+	fullname[pos++] = LUA_DIRSEP[0];
+
+      /* add name */
+      while (*name && pos < sizeof (fullname) - 1)
+	fullname[pos++] = *name++;
+
+      /* terminate fullname */
+      fullname[pos] = '\0';
+
+      /* check for file existence (POSIX.1-2001) */
+      if (access (fullname, F_OK) == 0)
+	{
+	  lua_pushstring (L, fullname);
+	  return 1;
+	}
+    }
+
+  /* not found */
+  lua_pushnil (L);
+  lua_pushfstring (L, LUA_QS " not found", filename);
+  return 2;
+}
+
 /* --------------------------------------------------------- */
 /* register library functions */
 
@@ -2233,6 +2295,7 @@ static const struct luaL_reg akfavtlib[] = {
   {"long_menu", lavt_menu},
   {"subprogram", lavt_subprogram},
   {"optional", lavt_optional},
+  {"search", lavt_search},
   {NULL, NULL}
 };
 
@@ -2247,6 +2310,62 @@ static const struct luaL_reg audiolib[] = {
   {NULL, NULL}
 };
 
+
+#ifdef _WIN32
+#include <windows.h>
+
+/* replaces "!" with the program's directory */
+
+static void
+set_datapath (lua_State * L)
+{
+  char *avtdatapath, *p;
+  char progdir[MAX_PATH + 1];
+  DWORD len;
+
+  avtdatapath = getenv (AVTDATAPATH);
+
+  if (avtdatapath)
+    lua_pushstring (L, avtdatapath);
+  else
+    lua_pushfstring (L,
+		     LUA_EXECDIR "\\data;%s\\lua-akfavatar;%s\\lua-akfavatar",
+		     getenv ("APPDATA"), getenv ("LOCALAPPDATA"));
+
+  len = GetModuleFileNameA (NULL, progdir, sizeof (progdir));
+
+  if (len == 0 | len == sizeof (progdir) | (p = strrchr (progdir, '\\')) ==
+      NULL)
+    luaL_error (L, "error with GetModuleFileNameA");
+  else
+    {
+      *p = '\0';		/* remove filename */
+      luaL_gsub (L, lua_tostring (L, -1), LUA_EXECDIR, progdir);
+      lua_remove (L, -2);
+    }
+
+  lua_setfield (L, -2, "datapath");
+}
+
+#else /* ! _WIN32 */
+
+static void
+set_datapath (lua_State * L)
+{
+  char *avtdatapath = getenv (AVTDATAPATH);
+
+  if (avtdatapath)
+    lua_pushstring (L, avtdatapath);
+  else
+    lua_pushliteral (L, "/usr/share/lua-akfavatar/" LUA_PATHSEP
+		     "/usr/local/share/lua-akfavatar/");
+
+  lua_setfield (L, -2, "datapath");
+}
+
+#endif /* ! _WIN32 */
+
+
 /*
  * use this as entry point when embedding this in
  * an AKFAvatar application
@@ -2260,8 +2379,12 @@ luaopen_akfavatar_embedded (lua_State * L)
   luaL_register (L, "avt", akfavtlib);
 
   /* variables */
+  /* avt.dirsep */
   lua_pushliteral (L, LUA_DIRSEP);
   lua_setfield (L, -2, "dirsep");
+
+  /* avt.datapath */
+  set_datapath (L);
 
   /* type for audio data */
   luaL_newmetatable (L, AUDIODATA);
