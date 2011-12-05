@@ -40,6 +40,10 @@ lang.translations {
   ["wrong"] = {
     de="falsch" },
 
+  ["???"] = {
+    en="What do you mean?",
+    de="Wie bitte?" },
+
   ["Do you want to take another exercise?"] = {
     de="Willst du eine andere Übung machen?" },
 
@@ -123,7 +127,7 @@ function sayUnknown()
   neutral()
   answerposition()
   avt.set_text_color("gray30")
-  avt.say(msg.unknown)
+  avt.say(L"???")
   avt.clear_eol()
   avt.newline()
   avt.normal_text()
