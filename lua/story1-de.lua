@@ -23,7 +23,7 @@ person.wartet = person.waits
 Mann = person:
   info {
   name = "Ken",
-  image = require "akfavatar.male_user",
+  image = assert(avt.search("male_user.xpm")),
   background_color = "sky blue",
   balloon_color = "ghost white"
   }
@@ -31,7 +31,7 @@ Mann = person:
 Frau = person:
   info {
   name = "Barbie",
-  image = require "akfavatar.female_user",
+  image = assert(avt.search("female_user.xpm")),
   background_color = "pink",
   balloon_color = "floral white"
   }

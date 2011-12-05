@@ -5,9 +5,10 @@
 
 require "lua-akfavatar"
 require "akfavatar.lang"
-require "akfavatar.positive"
-require "akfavatar.negative"
-require "akfavatar.neutral"
+
+local positive = avt.load_audio_file(avt.search("positive.au"))
+local negative = avt.load_audio_file(avt.search("negative.au"))
+local neutral = avt.load_audio_file(avt.search("neutral.au"))
 
 -- edit to your needs:
 local random_minimum = 1
@@ -213,7 +214,7 @@ function initialize()
   avt.initialize {
     title = "AKFAvatar: " .. L"Multiply",
     shortname = L"Multiply",
-    avatar = require "akfavatar.teacher",
+    avatar = avt.search("teacher.xpm"),
     audio = true,
     encoding = "UTF-8"
     }

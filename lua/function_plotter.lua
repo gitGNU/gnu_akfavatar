@@ -56,7 +56,7 @@ require "akfavatar-graphic"
 
 avt.initialize {
   title = "Function Plotter",
-  avatar = require "akfavatar.teacher",
+  avatar = assert(avt.search("teacher.xpm")),
   encoding = "UTF-8"
   }
 

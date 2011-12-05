@@ -12,7 +12,7 @@ require "akfavatar.Fragebogen"
 
 avt.initialize {
   title="Freie Software Quiz",
-  avatar=require "akfavatar.gnu_head",
+  avatar=assert(avt.search("gnu-head.xpm")),
   encoding="UTF-8",
   audio=true
 }

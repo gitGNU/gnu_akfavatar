@@ -37,7 +37,7 @@ SDL_LDFLAGS := $(shell $(SDL_CONFIG) --libs)
 BINPKGNAME=$(pkgname)-$(pkgversion).bin
 
 # if you change this, you also have to change the file avatar-default.c
-default_avatar = $(srcdir)/male_user.xpm
+default_avatar = $(srcdir)/data/male_user.xpm
 
 # convert from Unix newlines to DOS/Windows newlines
 u2d = sed -i -e 's/$$/\r/'
@@ -314,6 +314,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	mkdir $(BINPKGNAME)/lua/documentation/English
 	mkdir $(BINPKGNAME)/lua/documentation/Deutsch
 	mkdir $(BINPKGNAME)/lua/akfavatar
+	mkdir $(BINPKGNAME)/data
 	cp akfavatar.dll $(BINPKGNAME)/
 	cp $(srcdir)/fsdemo-??.avt $(BINPKGNAME)/
 	cp lua-akfavatar.exe $(BINPKGNAME)/
@@ -363,28 +364,21 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(srcdir)/lua/akfavatar/utf8.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/lang.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/person.lua $(BINPKGNAME)/lua/akfavatar/
-	cp $(srcdir)/lua/akfavatar/female_user.lua $(BINPKGNAME)/lua/akfavatar/
-	cp $(srcdir)/lua/akfavatar/male_user.lua $(BINPKGNAME)/lua/akfavatar/
-	cp $(srcdir)/lua/akfavatar/info_icon.lua $(BINPKGNAME)/lua/akfavatar/
-	cp $(srcdir)/lua/akfavatar/audio1.lua $(BINPKGNAME)/lua/akfavatar/
-	cp $(srcdir)/lua/akfavatar/gnu_head.lua $(BINPKGNAME)/lua/akfavatar/
-	cp $(srcdir)/lua/akfavatar/teacher.lua $(BINPKGNAME)/lua/akfavatar/
-	cp $(srcdir)/lua/akfavatar/akfoerster.lua $(BINPKGNAME)/lua/akfavatar/
-	cp $(srcdir)/lua/akfavatar/positive.lua $(BINPKGNAME)/lua/akfavatar/
-	cp $(srcdir)/lua/akfavatar/negative.lua $(BINPKGNAME)/lua/akfavatar/
-	cp $(srcdir)/lua/akfavatar/neutral.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/questionary.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/Fragebogen.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/ar.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/avtdemo.lua $(BINPKGNAME)/lua/akfavatar/
-	cp $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
+	cp $(srcdir)/data/gnu-head.xpm $(srcdir)/data/gnu-head.xbm \
+	   $(srcdir)/data/male_user.xpm $(srcdir)/data/female_user.xpm \
+	   $(srcdir)/data/audio1.xpm $(srcdir)/data/info.xpm \
+	   $(srcdir)/data/teacher.xpm $(srcdir)/data/akfoerster.xpm \
+	   $(srcdir)/data/positive.au $(srcdir)/data/negative.au \
+	   $(srcdir)/data/neutral.au \
+	   $(BINPKGNAME)/data/
 	cp $(srcdir)/AUTHORS $(BINPKGNAME)/AUTHORS.txt
 	cp $(srcdir)/COPYING $(BINPKGNAME)/COPYING.txt
 	cp $(srcdir)/COPYING.LESSER $(BINPKGNAME)/COPYING-LESSER.txt
 	cp $(srcdir)/NEWS $(BINPKGNAME)/NEWS.txt
-	cp $(srcdir)/teacher.xpm $(srcdir)/akfoerster.xpm $(BINPKGNAME)/
-	cp $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
-	cp $(srcdir)/audio1.xpm $(BINPKGNAME)/
 	cp $(sdl_dll) $(BINPKGNAME)/
 	cp $(srcdir)/README-SDL $(BINPKGNAME)/README-SDL.txt
 	cp $(lua_dll) $(BINPKGNAME)/

@@ -2,6 +2,10 @@
 
 	* lua/multiplication.lua: fix
 
+2011-12-04  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/lua-avt.c (lavt_search, set_datapath): new functions
+
 2011-11-14  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-audio.c: mark some variables as volatile
