@@ -2334,16 +2334,13 @@ set_datapath (lua_State * L)
 
   len = GetModuleFileNameA (NULL, progdir, sizeof (progdir));
 
-  if (len == 0 | len == sizeof (progdir) | (p = strrchr (progdir, '\\')) ==
-      NULL)
-    luaL_error (L, "error with GetModuleFileNameA");
-  else
-    {
-      *p = '\0';		/* remove filename */
-      luaL_gsub (L, lua_tostring (L, -1), LUA_EXECDIR, progdir);
-      lua_remove (L, -2);	/* remove original string */
-    }
+  if (len == 0 | len == sizeof (progdir)
+      | (p = strrchr (progdir, '\\')) == NULL)
+    return luaL_error (L, "error with GetModuleFileNameA");
 
+  *p = '\0';			/* cut filename off */
+  luaL_gsub (L, lua_tostring (L, -1), LUA_EXECDIR, progdir);
+  lua_remove (L, -2);		/* remove original string */
   lua_setfield (L, -2, "datapath");
 }
 
@@ -2357,8 +2354,8 @@ set_datapath (lua_State * L)
   if (avtdatapath)
     lua_pushstring (L, avtdatapath);
   else
-    lua_pushliteral (L, "/usr/local/share/akfavatar/" LUA_PATHSEP
-		     "/usr/share/akfavatar/");
+    lua_pushliteral (L, "/usr/local/share/akfavatar" LUA_PATHSEP
+		     "/usr/share/akfavatar");
 
   lua_setfield (L, -2, "datapath");
 }
