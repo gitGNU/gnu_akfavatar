@@ -25,7 +25,7 @@ LUA_CPATH="$localdir/?.so;$localdir/lua/?.so;;"
 export LUA_CPATH
 
 # for finding data (images, sounds, ...)
-AVTDATAPATH="$localdir/data;/usr/share/lua-akfavatar;/usr/local/share/lua-akfavatar"
+AVTDATAPATH="$localdir/data;/usr/local/share/akfavatar;/usr/share/akfavatar"
 export AVTDATAPATH
 
 # On HP-UX change LD_LIBRARY_PATH to SHLIB_PATH
