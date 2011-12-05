@@ -92,6 +92,9 @@ Ist ein Kurzname (häufig für minimalisierte Fenster verwendet) - Vorgabe=title.
 .I avatar
 Ist entweder "default" oder "none" oder die Bild-Daten als String,
 oder ein Dateiname mit Pfadangebe.
+Man kann mit
+.I avt.search()
+nach der Datei suchen lassen.
 .TP
 .I audio
 Kann man auf
@@ -125,7 +128,7 @@ avt.initialize{tilte="Mein Programm", encoding="ISO-8859-1"}
 avt.initialize{
   tilte="Mein Programm",
   shortname="Programm",
-  avatar="gnu-head.xpm",
+  avatar=avt.search("gnu-head.xpm"),
   audio=true,
   encoding="UTF-8",
   mode="fullscreen no switch"}
@@ -347,6 +350,9 @@ Die Anzeige blinkt einmal.
 .TP
 .BI "avt.show_image_file(" Dateiname )
 Lädt ein Bild und zeigt es an.
+Man kann mit
+.I avt.search()
+nach der Datei suchen lassen.
 Bei Erfolg wird
 .IR true " zurückgegeben, oder " false " im Fehlerfall."
 Bei Erfolg sollte eines von
@@ -832,6 +838,9 @@ zu setzen, wenn der letzte Eintrag eine weiter-Funktion hat
 .TQ
 .BI "avt.load_base_audio_file(" [Dateiname] )
 Liest Audio-Daten von einer Datei ein.
+Man kann mit
+.I avt.search()
+nach der Datei suchen lassen.
 .IP
 Lua-Module können Unterstützung für weitere Audio-Formate zu
 .B "avt.load_audio_file()"

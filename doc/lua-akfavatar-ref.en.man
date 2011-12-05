@@ -90,6 +90,8 @@ Is a shortname (often used for iconized windows) - default=title.
 .I avatar
 Is either "default" or "none" or image data in the string, or 
 a filename with the path.
+You can search for the file with
+.IR avt.search() .
 .TP
 .I audio
 Set this to true if the audio subsystem should be initialized.
@@ -120,7 +122,7 @@ avt.initialize{tilte="my program", encoding="ISO-8859-1"}
 avt.initialize{
   tilte="my program",
   shortname="program",
-  avatar="gnu-head.xpm",
+  avatar=avt.search("gnu-head.xpm"),
   audio=true,
   encoding="UTF-8",
   mode="fullscreen no switch"}
@@ -323,6 +325,8 @@ Flashes the display.
 Load an image and show it.
 It returns
 .IR true " on success, or " false " on error."
+You can search for the file with
+.IR avt.search() .
 If it succeeds you should call
 .BR avt.wait() " or " avt.wait_button() " or " avt.get_key() .
 .PP
@@ -773,6 +777,8 @@ when the last entry is a forward function
 .TQ
 .BI "avt.load_base_audio_file(" [filename] )
 Reads audio data from a file.
+You can search for the file with
+.IR avt.search() .
 .IP
 Lua modules may add support for more audio formats to
 .B "avt.load_audio_file()"
