@@ -6,6 +6,7 @@
 -- Note: Since this is a trivial example, you don't have to keep my
 -- Copyright notice, but you may replace it with your own.
 
+
 require "lua-akfavatar" --> gives access to the avt. comands
 
 avt.initialize {

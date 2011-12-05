@@ -9,7 +9,7 @@
 vorbis_max_channels = 8
 
 # if you change this, you also have to change the file avatar-default.c
-default_avatar = $(srcdir)/male_user.xpm
+default_avatar = $(srcdir)/data/male_user.xpm
 
 SHELL = /bin/sh
 INSTALL_PROGRAM = $(INSTALL) -c -m 755
@@ -40,17 +40,7 @@ BINPKGNAME = $(pkgname)-$(pkgversion).bin
 
 LUA_MODULES = \
 	  $(srcdir)/lua/akfavatar/dir.??.about \
-	  $(srcdir)/lua/akfavatar/female_user.lua \
-	  $(srcdir)/lua/akfavatar/male_user.lua \
-	  $(srcdir)/lua/akfavatar/teacher.lua \
-	  $(srcdir)/lua/akfavatar/gnu_head.lua \
-	  $(srcdir)/lua/akfavatar/info_icon.lua \
-	  $(srcdir)/lua/akfavatar/audio1.lua \
-	  $(srcdir)/lua/akfavatar/akfoerster.lua \
 	  $(srcdir)/lua/akfavatar/lang.lua \
-	  $(srcdir)/lua/akfavatar/positive.lua \
-	  $(srcdir)/lua/akfavatar/negative.lua \
-	  $(srcdir)/lua/akfavatar/neutral.lua \
 	  $(srcdir)/lua/akfavatar/questionary.lua \
 	  $(srcdir)/lua/akfavatar/Fragebogen.lua \
 	  $(srcdir)/lua/akfavatar/person.lua \
@@ -628,10 +618,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/avtaddons.h $(srcdir)/filechooser.c \
 	   $(srcdir)/avtreadfile.c $(srcdir)/colorchooser.c \
 	   $(srcdir)/balloonpointer.xbm $(srcdir)/circle.xbm \
-	   $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm \
-	   $(srcdir)/male_user.xpm $(srcdir)/female_user.xpm \
-	   $(srcdir)/audio1.xpm \
-	   $(srcdir)/teacher.xpm $(srcdir)/akfoerster.xpm $(srcdir)/lua.xpm \
+	   $(srcdir)/lua.xpm \
 	   $(srcdir)/btn.xpm $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
 	   $(srcdir)/mpointer.xbm $(srcdir)/mpointer_mask.xbm \
 	   $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
@@ -646,7 +633,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/arch.c \
 	   $(srcdir)/rgb.txt $(srcdir)/avtcmd \
 	   $(srcdir)/example.c $(srcdir)/fsdemo-??.avt \
-	   $(srcdir)/akfavatar.xpm $(srcdir)/info.xpm \
+	   $(srcdir)/akfavatar.xpm \
 	   $(srcdir)/7x14.bdf $(srcdir)/9x18.bdf $(srcdir)/bdf2c \
 	   $(srcdir)/font.c $(srcdir)/alert.flac $(srcdir)/alert.au \
 	   $(srcdir)/configure $(srcdir)/Makefile.in $(srcdir)/text2c \
@@ -659,8 +646,6 @@ dist: about $(srcdir)/alert.au
 	ln $(srcdir)/pascal/README $(srcdir)/pascal/akfavatar.pas \
 	   $(srcdir)/pascal/example.pas \
 	   $(srcdir)/pascal/multiply.pas \
-	   $(srcdir)/pascal/positive.au $(srcdir)/pascal/negative.au \
-	   $(srcdir)/pascal/neutral.au \
 	   $(srcdir)/pascal/positive.inc $(srcdir)/pascal/negative.inc \
 	   $(srcdir)/pascal/teacher.inc \
 	   $(srcdir)/pascal/xpm2pas $(srcdir)/pascal/xbm2pas \
@@ -688,6 +673,15 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/lua/akfavatar-vorbis.c \
 	   $(srcdir)/lua/akfavatar-graphic.c \
 	   $(PKGNAME)/lua/
+
+	mkdir $(PKGNAME)/data
+	ln $(srcdir)/data/gnu-head.xpm $(srcdir)/data/gnu-head.xbm \
+	   $(srcdir)/data/male_user.xpm $(srcdir)/data/female_user.xpm \
+	   $(srcdir)/data/audio1.xpm $(srcdir)/data/info.xpm \
+	   $(srcdir)/data/teacher.xpm $(srcdir)/data/akfoerster.xpm \
+	   $(srcdir)/data/positive.au $(srcdir)/data/negative.au \
+	   $(srcdir)/data/neutral.au \
+	   $(PKGNAME)/data/
 
 	mkdir $(PKGNAME)/lua/documentation
 	mkdir $(PKGNAME)/lua/documentation/English
@@ -723,16 +717,6 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/lua/akfavatar/utf8.lua \
 	   $(srcdir)/lua/akfavatar/lang.lua \
 	   $(srcdir)/lua/akfavatar/person.lua \
-	   $(srcdir)/lua/akfavatar/info_icon.lua \
-	   $(srcdir)/lua/akfavatar/audio1.lua \
-	   $(srcdir)/lua/akfavatar/female_user.lua \
-	   $(srcdir)/lua/akfavatar/male_user.lua \
-	   $(srcdir)/lua/akfavatar/gnu_head.lua \
-	   $(srcdir)/lua/akfavatar/teacher.lua \
-	   $(srcdir)/lua/akfavatar/akfoerster.lua \
-	   $(srcdir)/lua/akfavatar/positive.lua \
-	   $(srcdir)/lua/akfavatar/negative.lua \
-	   $(srcdir)/lua/akfavatar/neutral.lua \
 	   $(srcdir)/lua/akfavatar/questionary.lua \
 	   $(srcdir)/lua/akfavatar/Fragebogen.lua \
 	   $(srcdir)/lua/akfavatar/ar.lua \
@@ -772,16 +756,13 @@ dist-bin-default: all pdf
 	mkdir $(BINPKGNAME)/lua/documentation/English
 	mkdir $(BINPKGNAME)/lua/documentation/Deutsch
 	mkdir $(BINPKGNAME)/lua/akfavatar
+	mkdir $(BINPKGNAME)/data
 	cp $(LIBNAME) $(BINPKGNAME)/
 	-ln -sf $(LIBNAME) $(BINPKGNAME)/$(SONAME)
 	cp lua-akfavatar lua-akfavatar-bin $(BINPKGNAME)/
 	cp lua-akfavatar.so base64.so akfavatar-vorbis.so $(BINPKGNAME)/lua/
 	cp akfavatar-graphic.so $(BINPKGNAME)/lua/
 	cp akfavatar-term.so $(BINPKGNAME)/lua/
-	ln $(srcdir)/gnu-head.xpm $(srcdir)/gnu-head.xbm $(BINPKGNAME)/
-	ln $(srcdir)/female_user.xpm $(srcdir)/male_user.xpm $(BINPKGNAME)/
-	ln $(srcdir)/teacher.xpm $(srcdir)/akfoerster.xpm $(BINPKGNAME)/
-	ln $(srcdir)/audio1.xpm $(BINPKGNAME)/
 	ln $(srcdir)/README-Lua $(BINPKGNAME)/
 	ln $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/audioplayer.lua $(BINPKGNAME)/lua/
@@ -799,6 +780,13 @@ dist-bin-default: all pdf
 	ln $(srcdir)/lua/fs-quiz-en.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/fs-quiz-de.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/terminal.lua $(BINPKGNAME)/lua/
+	ln $(srcdir)/data/gnu-head.xpm $(srcdir)/data/gnu-head.xbm \
+	   $(srcdir)/data/male_user.xpm $(srcdir)/data/female_user.xpm \
+	   $(srcdir)/data/audio1.xpm $(srcdir)/data/info.xpm \
+	   $(srcdir)/data/teacher.xpm $(srcdir)/data/akfoerster.xpm \
+	   $(srcdir)/data/positive.au $(srcdir)/data/negative.au \
+	   $(srcdir)/data/neutral.au \
+	   $(BINPKGNAME)/data/
 	ln $(srcdir)/lua/documentation/English/base64.about $(BINPKGNAME)/lua/documentation/English/
 	ln $(srcdir)/lua/documentation/English/base64-encode.about $(BINPKGNAME)/lua/documentation/English/
 	ln $(srcdir)/lua/documentation/English/akfavatar-term.about $(BINPKGNAME)/lua/documentation/English/
@@ -838,16 +826,6 @@ dist-bin-default: all pdf
 	   $(srcdir)/lua/akfavatar/utf8.lua \
 	   $(srcdir)/lua/akfavatar/lang.lua \
 	   $(srcdir)/lua/akfavatar/person.lua \
-	   $(srcdir)/lua/akfavatar/info_icon.lua \
-	   $(srcdir)/lua/akfavatar/audio1.lua \
-	   $(srcdir)/lua/akfavatar/female_user.lua \
-	   $(srcdir)/lua/akfavatar/male_user.lua \
-	   $(srcdir)/lua/akfavatar/gnu_head.lua \
-	   $(srcdir)/lua/akfavatar/teacher.lua \
-	   $(srcdir)/lua/akfavatar/akfoerster.lua \
-	   $(srcdir)/lua/akfavatar/positive.lua \
-	   $(srcdir)/lua/akfavatar/negative.lua \
-	   $(srcdir)/lua/akfavatar/neutral.lua \
 	   $(srcdir)/lua/akfavatar/questionary.lua \
 	   $(srcdir)/lua/akfavatar/Fragebogen.lua \
 	   $(srcdir)/lua/akfavatar/ar.lua \

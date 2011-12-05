@@ -19,7 +19,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "male_user.xpm"
+#include "data/male_user.xpm"
 #include "akfavatar.h"
 
 extern avt_image_t *

@@ -2,9 +2,9 @@
 -- License: GPL version 3 or later
 
 require "lua-akfavatar"
-require "akfavatar.positive"
-require "akfavatar.negative"
 
+local positive = avt.load_audio_file(avt.search("positive.au"))
+local negative = avt.load_audio_file(avt.search("negative.au"))
 local count = { questions = 0, right = 0 }
 local questionary_encoding;
 
