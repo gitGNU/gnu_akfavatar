@@ -22,7 +22,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar reference" 3 2011-09-08 AKFAvatar
+.TH "Lua-AKFAvatar reference" 3 2011-12-05 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar reference \- AKFAvatar specific functions for Lua
@@ -943,6 +943,35 @@ Only use this, if you are sure you need it.
 .BI "avt.dirsep"
 This variable contains the systems directory separator;
 either "/" or "\\".
+.PP
+.TP
+.BI "avt.datapath"
+This variable contains the default searchpath for the function
+.I avt.search()
+(see below).
+Directories are separated by semicolons.
+There are no patterns like in the paths for Lua modules,
+just directories.
+This variable is initialized by the environment variable
+.I AVTDATAPATH
+or it gets a system-specific default.
+.PP
+.TP
+.BI "avt.search(" "filename [,path]" )
+Searches for a file with the given
+.I filename
+in the given
+.IR path .
+If no
+.I path
+is given, it uses the variable
+.I avt.datapath
+as default.
+.IP
+On success it returns the full path to the file,
+if the file is not found, it returns
+.I nil
+and an error message.
 .PP
 .TP
 .BI "avt.get_directory()"

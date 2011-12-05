@@ -22,7 +22,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar Referenz" 3 2011-09-08 AKFAvatar
+.TH "Lua-AKFAvatar Referenz" 3 2011-12-05 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar Referenz \- AKFAvatar spezifische Funktionen für Lua
@@ -319,7 +319,8 @@ Wartet eine angegebene Zeit an Sekunden (kann ein Dezeimalbruch sein).
 .IP
 Wenn kein Wert angegeben ist, wartet er eine gewisse Zeit.
 .PP
-.TP "avt.delay(" Millisekunden )
+.TP
+.BI "avt.delay(" Millisekunden )
 Verzögert für ein paar Millisekunden.
 Das sollte man nur für sehr kurze Zeiten verwenden.
 Es werden in der Zeit keine Ereignisse abgefragt, oder das Fenster
@@ -1016,6 +1017,37 @@ Diese Funktion sollte nur verwendet werden, wenn man weiß, was man tut.
 .BI "avt.dirsep"
 Diese Variable enthält das Verzeichnis-Ternnzeichen des Systems;
 entweder "/" oder "\\".
+.PP
+.TP
+.BI "avt.datapath"
+Diese Variable enthält den Standardsuchpfad für die Funktion
+.I avt.search()
+(siehe unten).
+Verzeichnisse werden durch Semikola getrennt.
+Es gibt keine Muster, wie in den Pfaden für Lua-Module,
+sondern es werden nur Verzeichnisse angegeben.
+Diese Variable wird entweder durch die Umgebungsvariable
+.I AVTDATAPATH
+initialisiert,
+oder sie bekommt eine systemspezifische Vorgabeeinstellung.
+.PP
+.TP
+.BI "avt.search(" "Dateiname [,Pfad]" )
+Sucht eine Datei mit dem angegebenen
+.IR Dateiname n
+im angegebenen
+.IR Pfad .
+Wenn kein
+.I Pfad
+angegeben ist, wird die Variable
+.I avt.datapath
+verwendet.
+.IP
+Wenn die Datei gefunden wurde, wird der vollständige Pfad der
+Datei zurückgegeben.
+Wenn die Datei nicht gefunden wurde, wird
+.I nil
+und eine Fehlermeldung zurückgegeben.
 .PP
 .TP
 .BI "avt.get_directory()"

@@ -1,12 +1,15 @@
 * AKFAvatar testing
 
   - The source code is compatible with C++ compilers again
+  - Data files are put in a separate directory and Lua has a search function
+    for it (scripts have to be adapted!)
 
   C-API changes:
   - new functions: avt_delay()
 
   Lua-API changes:
-  - new functions: avt.delay()
+  - new functions: avt.delay(), avt.search()
+  - new variable: avt.datapath
   - Module "akfavatar-graphic"
     - gr:new() accepts name for background color
     - gr:put() optimized for same width, position is optional now
