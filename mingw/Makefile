@@ -372,6 +372,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	   $(srcdir)/data/male_user.xpm $(srcdir)/data/female_user.xpm \
 	   $(srcdir)/data/audio1.xpm $(srcdir)/data/info.xpm \
 	   $(srcdir)/data/teacher.xpm $(srcdir)/data/akfoerster.xpm \
+	   $(srcdir)/data/computer.xpm \
 	   $(srcdir)/data/positive.au $(srcdir)/data/negative.au \
 	   $(srcdir)/data/neutral.au \
 	   $(BINPKGNAME)/data/

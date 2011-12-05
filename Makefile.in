@@ -682,6 +682,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/data/male_user.xpm $(srcdir)/data/female_user.xpm \
 	   $(srcdir)/data/audio1.xpm $(srcdir)/data/info.xpm \
 	   $(srcdir)/data/teacher.xpm $(srcdir)/data/akfoerster.xpm \
+	   $(srcdir)/data/computer.xpm \
 	   $(srcdir)/data/positive.au $(srcdir)/data/negative.au \
 	   $(srcdir)/data/neutral.au \
 	   $(PKGNAME)/data/
@@ -787,6 +788,7 @@ dist-bin-default: all pdf
 	   $(srcdir)/data/male_user.xpm $(srcdir)/data/female_user.xpm \
 	   $(srcdir)/data/audio1.xpm $(srcdir)/data/info.xpm \
 	   $(srcdir)/data/teacher.xpm $(srcdir)/data/akfoerster.xpm \
+	   $(srcdir)/data/computer.xpm \
 	   $(srcdir)/data/positive.au $(srcdir)/data/negative.au \
 	   $(srcdir)/data/neutral.au \
 	   $(BINPKGNAME)/data/
