@@ -298,7 +298,8 @@ Waits a given amount of seconds (may be a fraction).
 .IP
 If no value is given, it waits "a while".
 .PP
-.TP "avt.delay(" milliseconds )
+.TP
+.BI "avt.delay(" milliseconds )
 Delay for a few milliseconds.
 Use this only for very short times.
 It doesn't check for events or update the window.
