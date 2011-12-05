@@ -42,7 +42,7 @@ lang.translations {
     de="falsch" },
 
   ["???"] = {
-    en="What do you mean?",
+    en="pardon?",
     de="Wie bitte?" },
 
   ["Do you want to take another exercise?"] = {
