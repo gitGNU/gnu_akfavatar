@@ -8,9 +8,6 @@
 # output is limited to 2 channels, but this value may be higher
 vorbis_max_channels = 8
 
-# if you change this, you also have to change the file avatar-default.c
-default_avatar = $(srcdir)/data/male_user.xpm
-
 SHELL = /bin/sh
 INSTALL_PROGRAM = $(INSTALL) -c -m 755
 INSTALL_DATA = $(INSTALL) -c -m 644
@@ -113,7 +110,7 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
           $(srcdir)/akfavatar.xpm
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c $(srcdir)/avatar.c
 
-avatar-default.o: $(srcdir)/avatar-default.c $(default_avatar) $(srcdir)/akfavatar.h
+avatar-default.o: $(srcdir)/avatar-default.c $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/avatar-default.c
 
 avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h \
@@ -145,7 +142,7 @@ avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h rgb.h \
            $(srcdir)/akfavatar.xpm $(srcdir)/avtinternals.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c -fPIC -o $@ $(srcdir)/avatar.c
 
-avatar-default.lo: $(srcdir)/avatar-default.c $(default_avatar) $(srcdir)/akfavatar.h
+avatar-default.lo: $(srcdir)/avatar-default.c $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -fPIC -o $@ \
 	  $(srcdir)/avatar-default.c
 

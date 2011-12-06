@@ -36,9 +36,6 @@ SDL_LDFLAGS := $(shell $(SDL_CONFIG) --libs)
 # name for binary packages
 BINPKGNAME=$(pkgname)-$(pkgversion).bin
 
-# if you change this, you also have to change the file avatar-default.c
-default_avatar = $(srcdir)/data/male_user.xpm
-
 # convert from Unix newlines to DOS/Windows newlines
 u2d = sed -i -e 's/$$/\r/'
 
@@ -62,7 +59,7 @@ alert.c: $(srcdir)/alert.au
 	$(AWK) -f $(srcdir)/data2c -v name=avt_alert_data \
 	  $(srcdir)/alert.au > $@
 
-avatar-default.wo: $(srcdir)/avatar-default.c $(default_avatar)
+avatar-default.wo: $(srcdir)/avatar-default.c $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c -o $@ $(srcdir)/avatar-default.c
 
 filechooser.wo: $(srcdir)/filechooser.c $(srcdir)/avtinternals.h \
