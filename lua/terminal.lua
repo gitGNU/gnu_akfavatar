@@ -11,7 +11,7 @@ avt.initialize {
   shortname = "Terminal",
   audio = true, --> for the bell ("\a")
   mode = "auto",
-  avatar = assert(avt.search("computer.xpm"))
+  avatar = avt.search("computer.xpm") or "none"
 }
 
 -- 25x80 is a traditional default, but other sizes are okay
