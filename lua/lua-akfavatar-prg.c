@@ -410,7 +410,7 @@ start_screen (void)
 {
   if (avt_move_in () != AVT_NORMAL)
     exit (EXIT_SUCCESS);
-  avt_set_balloon_size (8, 80);
+  avt_set_balloon_size (9, 80);
   avt_underlined (true);
   avt_bold (true);
   avt_say_mb (PRGNAME);
@@ -426,6 +426,8 @@ start_screen (void)
   avt_say (L", ");
   avt_say_mb (LUA_COPYRIGHT);
   avt_new_line ();
+  avt_new_line ();
+  avt_say_mb ("Homepage: http://akfavatar.nongnu.org/");
   avt_new_line ();
   avt_say_mb (avt_license ());
   avt_new_line ();
