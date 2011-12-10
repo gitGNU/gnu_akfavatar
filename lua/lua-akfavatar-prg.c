@@ -182,7 +182,7 @@ check_filename (const char *filename)
     }
 }
 
-struct load_file_t
+struct load_file
 {
   FILE *f;
   char buffer[BUFSIZ];
@@ -191,9 +191,9 @@ struct load_file_t
 static const char *
 file_reader (lua_State * L AVT_UNUSED, void *data, size_t * size)
 {
-  struct load_file_t *fd;
+  struct load_file *fd;
 
-  fd = (struct load_file_t *) data;
+  fd = (struct load_file *) data;
 
   *size = fread (fd->buffer, 1, sizeof (fd->buffer), fd->f);
 
@@ -208,7 +208,7 @@ load_file (const char *filename)
 {
   int status;
   int c;
-  struct load_file_t fd;
+  struct load_file fd;
 
   fd.f = fopen (filename, "r");
   if (fd.f == NULL)
