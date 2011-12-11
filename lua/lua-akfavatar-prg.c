@@ -29,16 +29,11 @@
 #include <locale.h>
 #include <errno.h>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+AVT_BEGIN_DECLS
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
-#ifdef __cplusplus
-}
-#endif
+AVT_END_DECLS
 
 /* keep it short */
 #define PRGNAME "Lua-AKFAvatar"

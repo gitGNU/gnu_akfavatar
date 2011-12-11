@@ -21,19 +21,13 @@
 #include "akfavatar.h"
 #include "avtaddons.h"
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
+AVT_BEGIN_DECLS
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
 
-#ifdef __cplusplus
-  int luaopen_akfavatar (lua_State * L);
-}
-#endif
+extern int luaopen_akfavatar (lua_State * L);
+AVT_END_DECLS
 
 #include <stdio.h>
 #include <stdlib.h>		/* for exit() and wchar_t */

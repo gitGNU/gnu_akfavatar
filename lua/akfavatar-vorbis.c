@@ -24,19 +24,13 @@
 #include <stdlib.h>
 
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
+AVT_BEGIN_DECLS
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
 
-#ifdef __cplusplus
-  int luaopen_vorbis (lua_State * L);
-}
-#endif
+extern int luaopen_vorbis (lua_State * L);
+AVT_END_DECLS
 
 #define STB_VORBIS_HEADER_ONLY 1
 #define STB_VORBIS_NO_PUSHDATA_API 1
