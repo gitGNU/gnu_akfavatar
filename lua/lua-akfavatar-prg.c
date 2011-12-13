@@ -38,6 +38,11 @@ AVT_END_DECLS
 /* keep it short */
 #define PRGNAME "Lua-AKFAvatar"
 
+#define EXT_LUA  ".lua"
+#define EXT_DEMO ".avt"
+#define EXT_EXEC ".avtexe"
+#define EXT_ABOUT ".about"
+
 static lua_State *L;
 
 
@@ -171,9 +176,10 @@ check_filename (const char *filename)
     {
       const char *ext = strrchr (filename, '.');
       return (bool)
-	(ext && (strcasecmp (".lua", ext) == 0
-		 || strcasecmp (".avt", ext) == 0
-		 || strcasecmp (".about", ext) == 0));
+	(ext && (strcasecmp (EXT_LUA, ext) == 0
+		 || strcasecmp (EXT_DEMO, ext) == 0
+		 || strcasecmp (EXT_EXEC, ext) == 0
+		 || strcasecmp (EXT_ABOUT, ext) == 0));
     }
 }
 
@@ -311,6 +317,17 @@ initialize_lua (void)
 }
 
 static void
+arg0 (const char *filename)
+{
+  /* arg[0] = filename */
+  lua_newtable (L);
+  lua_pushinteger (L, 0);
+  lua_pushstring (L, filename);
+  lua_settable (L, -3);
+  lua_setglobal (L, "arg");
+}
+
+static void
 avtdemo (const char *filename)
 {
   require ("akfavatar.avtdemo");
@@ -323,6 +340,63 @@ avtdemo (const char *filename)
 	avta_error (lua_tostring (L, -1), NULL);
       lua_pop (L, 1);		/* pop message (or the nil) */
     }
+}
+
+/* returns 0 on success, or -1 on error with message on stack */
+static int
+executable (const char *filename)
+{
+  int status;
+  size_t size;
+  void *script;
+  const char *start;
+
+  if (avta_arch_get_data (filename, "AKFAvatar-Lua", &script, &size) <= 0)
+    {
+      lua_pushfstring (L, "%s: error in executable", filename);
+      return -1;
+    }
+
+  start = (const char *) script;
+
+  /* don't accept binary code */
+  if (*start == LUA_SIGNATURE[0])
+    {
+      free (script);
+      lua_pushfstring (L, "%s: binary rejected", filename);
+      return -1;
+    }
+
+  /* skip UTF-8 BOM */
+  if (start[0] == '\xEF' && start[1] == '\xBB' && start[2] == '\xBF')
+    {
+      start += 3;
+      size -= 3;
+    }
+
+  /* skip #! line */
+  if (start[0] == '#' && start[1] == '!')
+    while (*start != '\n')
+      {
+	start++;
+	size--;
+      }
+
+  status = luaL_loadbuffer (L, start, size, filename);
+  free (script);
+
+  arg0 (filename);
+
+  if (status != 0 || lua_pcall (L, 0, 0, 0) != 0)
+    {
+      /* on a normal quit-request there is nil on the stack */
+      if (lua_isstring (L, -1))
+	return -1;		/* message already on stack */
+      else
+	lua_pop (L, 1);		/* remove nil */
+    }
+
+  return 0;
 }
 
 static void
@@ -369,19 +443,21 @@ ask_file (void)
 	lua_dir[0] = '\0';
 
       ext = strrchr (filename, '.');
-      if (ext && strcasecmp (".avt", ext) == 0)
+      if (ext && strcasecmp (EXT_DEMO, ext) == 0)
 	avtdemo (filename);
-      else if (ext && strcasecmp (".about", ext) == 0)
+      if (ext && strcasecmp (EXT_EXEC, ext) == 0)
+	{
+	  if (executable (filename) != 0)
+	    {
+	      script_error (lua_tostring (L, -1));
+	      lua_pop (L, 1);
+	    }
+	}
+      else if (ext && strcasecmp (EXT_ABOUT, ext) == 0)
 	show_text (filename);
       else			/* assume Lua code */
 	{
-	  /* arg[0] = filename */
-	  lua_newtable (L);
-	  lua_pushinteger (L, 0);
-	  lua_pushstring (L, filename);
-	  lua_settable (L, -3);
-	  lua_setglobal (L, "arg");
-
+	  arg0 (filename);
 	  if (load_file (filename) != 0 || lua_pcall (L, 0, 0, 0) != 0)
 	    {
 	      /* on a normal quit-request there is nil on the stack */
@@ -484,8 +560,13 @@ main (int argc, char **argv)
       const char *ext;
 
       ext = strrchr (argv[script_index], '.');
-      if (ext && strcasecmp (".avt", ext) == 0)
+      if (ext && strcasecmp (EXT_DEMO, ext) == 0)
 	avtdemo (argv[script_index]);
+      if (ext && strcasecmp (EXT_EXEC, ext) == 0)
+	{
+	  if (executable (argv[script_index]) != 0)
+	    avta_error (lua_tostring (L, -1), NULL);
+	}
       else			/* assume Lua code */
 	{
 	  get_args (argc, argv, script_index);

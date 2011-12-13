@@ -200,10 +200,10 @@ example.exe: $(srcdir)/example.c akfavatar.dll icon.wo
 
 lua-akfavatar.exe: lua-akfavatar-prg.wo lua-avt.wo lua-akfavatar-prg-info.wo \
 		filechooser.wo askdrive.wo colorchooser.wo avtreadfile.wo \
-		avtmsg.wo avtgrmsg.wo
+		avtmsg.wo avtgrmsg.wo arch.wo
 	$(CC) -o $@ lua-akfavatar-prg.wo lua-avt.wo lua-akfavatar-prg-info.wo \
 	    filechooser.wo askdrive.wo colorchooser.wo avtreadfile.wo \
-	    avtmsg.wo avtgrmsg.wo \
+	    avtmsg.wo avtgrmsg.wo arch.wo \
 	    -L. -lakfavatar \
 	    $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS)
 

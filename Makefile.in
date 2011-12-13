@@ -240,10 +240,10 @@ avatarsay: $(srcdir)/avatarsay.sh avatarsay-bin
 	install -m 755 $(srcdir)/avatarsay.sh $@
 
 # lua-akfavatar dynamically linked
-lua-akfavatar-bin: lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
+lua-akfavatar-bin: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
                    filechooser.o colorchooser.o avtmsg.o avtgrmsg.o
 	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
-	     filechooser.o colorchooser.o avtmsg.o avtgrmsg.o \
+	     filechooser.o colorchooser.o avtmsg.o avtgrmsg.o arch.o \
 	     -L. -lakfavatar \
 	     $(LUA_LDFLAGS) $(LDFLAGS)
 

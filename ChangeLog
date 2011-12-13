@@ -1,3 +1,8 @@
+2011-12-13  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/lua-akfavatar-prg.c (arg0, executable): new functions
+	(ask_file, main): adopted
+
 2011-12-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-akfavatar-prg.c (start_screen): add Homepage
