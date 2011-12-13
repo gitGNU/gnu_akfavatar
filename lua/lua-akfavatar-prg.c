@@ -490,7 +490,10 @@ start_screen (void)
   avt_say_mb (LUA_COPYRIGHT);
   avt_new_line ();
   avt_new_line ();
-  avt_say_mb ("Homepage: http://akfavatar.nongnu.org/");
+  avt_say_mb ("Homepage: ");
+  avt_underlined (true);
+  avt_say_mb ("http://akfavatar.nongnu.org/");
+  avt_underlined (false);
   avt_new_line ();
   avt_say_mb (avt_license ());
   avt_new_line ();
