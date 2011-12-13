@@ -35,9 +35,7 @@ AVT_BEGIN_DECLS
 #include <lualib.h>
 AVT_END_DECLS
 
-/* keep it short */
-#define PRGNAME "Lua-AKFAvatar"
-
+#define PRGNAME "Lua-AKFAvatar" /* keep it short */
 #define EXT_LUA  ".lua"
 #define EXT_DEMO ".avt"
 #define EXT_EXEC ".avtexe"
@@ -169,18 +167,12 @@ reset (void)
 static bool
 check_filename (const char *filename)
 {
-  /* never show lua-akfavatar.lua! It's a module */
-  if (strcasecmp (filename, "lua-akfavatar.lua") == 0)
-    return false;
-  else
-    {
-      const char *ext = strrchr (filename, '.');
-      return (bool)
-	(ext && (strcasecmp (EXT_LUA, ext) == 0
-		 || strcasecmp (EXT_DEMO, ext) == 0
-		 || strcasecmp (EXT_EXEC, ext) == 0
-		 || strcasecmp (EXT_ABOUT, ext) == 0));
-    }
+  const char *ext = strrchr (filename, '.');
+
+  return (ext && (strcasecmp (EXT_LUA, ext) == 0
+		  || strcasecmp (EXT_DEMO, ext) == 0
+		  || strcasecmp (EXT_EXEC, ext) == 0
+		  || strcasecmp (EXT_ABOUT, ext) == 0));
 }
 
 struct load_file
