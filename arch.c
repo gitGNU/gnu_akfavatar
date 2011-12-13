@@ -213,8 +213,9 @@ avta_arch_get_data (const char *archive, const char *member, size_t *size)
   size_t msize;
   char *buf;
 
-  *size = 0;
   buf = NULL;
+  if (size != NULL)
+    *size = 0;
 
   fd = avta_arch_open (archive);
   if (fd < 0)
