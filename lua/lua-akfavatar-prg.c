@@ -340,18 +340,17 @@ executable (const char *filename)
 {
   int status;
   size_t size;
-  void *script;
-  const char *start;
+  char *script, *start;
 
-  size = avta_arch_get_data (filename, "AKFAvatar-Lua", &script);
+  script = avta_arch_get_data (filename, "AKFAvatar-Lua", &size);
 
-  if (size == 0)
+  if (script == NULL)
     {
       lua_pushfstring (L, "%s: error in executable", filename);
       return -1;
     }
 
-  start = (const char *) script;
+  start = script;
 
   /* don't accept binary code */
   if (*start == LUA_SIGNATURE[0])

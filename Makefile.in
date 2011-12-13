@@ -250,7 +250,8 @@ lua-akfavatar-bin: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
 lua-akfavatar: $(srcdir)/lua-akfavatar.sh lua-akfavatar-bin
 	install -m 755 $(srcdir)/lua-akfavatar.sh $@
 
-lua-akfavatar-prg.o: $(srcdir)/lua/lua-akfavatar-prg.c $(srcdir)/akfavatar.h
+lua-akfavatar-prg.o: $(srcdir)/lua/lua-akfavatar-prg.c $(srcdir)/akfavatar.h \
+                     $(srcdir)/avtaddons.h
 	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
 	  $(srcdir)/lua/lua-akfavatar-prg.c
 

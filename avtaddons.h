@@ -214,15 +214,21 @@ AVT_ADDON size_t avta_arch_find_member (int fd, const char *member);
 AVT_ADDON size_t avta_arch_first_member (int fd, char *member);
 
 /*
- * read in whole member of a named archive
- * the member name may not be longer than 15 characters 
- * the buffer is allocated with malloc and must be freed by the caller
- * the buffer gets some binary zeros added, so it can be used as string
- * returns size or 0 on error
+ * read in whole member
+ * the result is allocated with malloc and must be freed by the caller
+ * the result gets some binary zeros added, so it can be used as string
+ * returns NULL on error
  */
-AVT_ADDON size_t avta_arch_get_data (const char *archive,
-				     const char *member,
-				     void **buf);
+AVT_ADDON char *avta_arch_get_member (int fd, size_t size);
+
+/*
+ * read in whole member of a named archive
+ * the result is allocated with malloc and must be freed by the caller
+ * the result gets some binary zeros added, so it can be used as string
+ * returns NULL on error
+ */
+AVT_ADDON char * avta_arch_get_data (const char *archive, const char *member,
+                                     size_t *size);
 
 
 /**********************************************************************

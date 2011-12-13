@@ -110,7 +110,7 @@ avta_arch_find_member (int fd, const char *member)
   return strtoul ((const char *) &header.size, NULL, 10);
 }
 
-/* 
+/*
  * finds first archive member
  * if member is not NULL it will get the name of the member
  * member must have at least 16 bytes
@@ -153,68 +153,85 @@ avta_arch_first_member (int fd, char *member)
   return size;
 }
 
-/* 
- * read in whole member of a named archive
- * the buffer is allocated with malloc and must be freed by the caller
- * the buffer gets some binary zeros added, so it can be used as string
- * returns size or 0 on error 
+/*
+ * read in whole member
+ * the result is allocated with malloc and must be freed by the caller
+ * the result gets some binary zeros added, so it can be used as string
+ * returns NULL on error
  */
-size_t
-avta_arch_get_data (const char *archive, const char *member, void **buf)
+char *
+avta_arch_get_member (int fd, size_t size)
 {
-  int archive_fd;
-  size_t size;
+  ssize_t nread;
+  size_t remain;
+  char *buf, *p;
 
-  if (buf == NULL || size == NULL)
+  if (size == 0)
     return 0;
 
-  size = 0;
-  *buf = NULL;
+  /* we add 4 0-Bytes as possible string-terminator */
+  buf = (char *) malloc (size + 4);
 
-  archive_fd = avta_arch_open (archive);
-  if (archive_fd < 0)
-    return 0;
+  if (buf == NULL)
+    return NULL;
 
-  size = avta_arch_find_member (archive_fd, member);
-  if (size > 0)
+  p = buf;
+  remain = size;
+
+  do
     {
-      /* we add 4 0-Bytes as possible string-terminator */
-      *buf = (void *) malloc (size + 4);
-
-      if (*buf != NULL)
+      nread = read (fd, p, remain);
+      if (nread > 0)
 	{
-	  ssize_t nread;
-	  size_t remain;
-	  char *p;
-
-	  p = (char *) *buf;
-	  remain = size;
-
-	  do
-	    {
-	      nread = read (archive_fd, p, remain);
-	      if (nread > 0)
-		{
-		  remain -= nread;
-		  p += nread;
-		}
-	    }
-	  while (nread > 0);
-
-	  if (nread > -1)
-	    memset ((char *) *buf + size, '\0', 4);
-	  else			/* read error */
-	    {
-	      free (*buf);
-	      *buf = NULL;
-	      size = 0;
-	    }
+	  remain -= nread;
+	  p += nread;
 	}
-      else
-	size = 0;
+    }
+  while (nread > 0);
+
+  if (nread == -1)
+    {
+      free (buf);
+      return NULL;
     }
 
-  close (archive_fd);
+  memset (buf + size, '\0', 4);	/* terminate */
 
-  return size;
+  return buf;
+}
+
+/*
+ * read in whole member of a named archive
+ * the result is allocated with malloc and must be freed by the caller
+ * the result gets some binary zeros added, so it can be used as string
+ * returns NULL on error
+ */
+char *
+avta_arch_get_data (const char *archive, const char *member, size_t *size)
+{
+  int fd;
+  size_t msize;
+  char *buf;
+
+  *size = 0;
+  buf = NULL;
+
+  fd = avta_arch_open (archive);
+  if (fd < 0)
+    return NULL;
+
+  msize = avta_arch_find_member (fd, member);
+
+  if (msize > 0)
+    buf = avta_arch_get_member (fd, msize);
+
+  close (fd);
+
+  if (buf == NULL)
+    msize = 0;
+
+  if (size != NULL)
+    *size = msize;
+
+  return buf;
 }

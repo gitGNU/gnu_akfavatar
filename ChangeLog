@@ -6,8 +6,9 @@
 	* lua/lua-akfavatar-prg.c (check_filename):
 	don't ignore lua-akfavatar.lua anymore
 
-	* avtaddons.h, arch.c (avta_arch_get_data):
-	no size as parameter
+	* avtaddons.h, arch.c (avta_arch_get_data): refactored
+
+	* avtaddons.h, arch.c (avta_arch_get_member): new function
 
 2011-12-09  Andreas K. Foerster  <info@akfoerster.de>
 
