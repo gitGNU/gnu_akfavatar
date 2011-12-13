@@ -218,11 +218,11 @@ AVT_ADDON size_t avta_arch_first_member (int fd, char *member);
  * the member name may not be longer than 15 characters 
  * the buffer is allocated with malloc and must be freed by the caller
  * the buffer gets some binary zeros added, so it can be used as string
- * returns size or 0 on error 
+ * returns size or 0 on error
  */
-AVT_ADDON size_t avta_arch_get_data (const char *archive, 
+AVT_ADDON size_t avta_arch_get_data (const char *archive,
 				     const char *member,
-				     void **buf, size_t *size);
+				     void **buf);
 
 
 /**********************************************************************

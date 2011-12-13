@@ -343,7 +343,9 @@ executable (const char *filename)
   void *script;
   const char *start;
 
-  if (avta_arch_get_data (filename, "AKFAvatar-Lua", &script, &size) <= 0)
+  size = avta_arch_get_data (filename, "AKFAvatar-Lua", &script);
+
+  if (size == 0)
     {
       lua_pushfstring (L, "%s: error in executable", filename);
       return -1;

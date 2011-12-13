@@ -160,35 +160,35 @@ avta_arch_first_member (int fd, char *member)
  * returns size or 0 on error 
  */
 size_t
-avta_arch_get_data (const char *archive, const char *member,
-		    void **buf, size_t * size)
+avta_arch_get_data (const char *archive, const char *member, void **buf)
 {
   int archive_fd;
+  size_t size;
 
   if (buf == NULL || size == NULL)
     return 0;
 
-  *size = 0;
+  size = 0;
   *buf = NULL;
 
   archive_fd = avta_arch_open (archive);
   if (archive_fd < 0)
     return 0;
 
-  *size = avta_arch_find_member (archive_fd, member);
-  if (*size > 0)
+  size = avta_arch_find_member (archive_fd, member);
+  if (size > 0)
     {
       /* we add 4 0-Bytes as possible string-terminator */
-      *buf = (void *) malloc (*size + 4);
+      *buf = (void *) malloc (size + 4);
 
       if (*buf != NULL)
 	{
 	  ssize_t nread;
-	  char *p;
 	  size_t remain;
+	  char *p;
 
 	  p = (char *) *buf;
-	  remain = *size;
+	  remain = size;
 
 	  do
 	    {
@@ -202,19 +202,19 @@ avta_arch_get_data (const char *archive, const char *member,
 	  while (nread > 0);
 
 	  if (nread > -1)
-	    memset ((char *) *buf + *size, '\0', 4);
+	    memset ((char *) *buf + size, '\0', 4);
 	  else			/* read error */
 	    {
 	      free (*buf);
 	      *buf = NULL;
-	      *size = 0;
+	      size = 0;
 	    }
 	}
       else
-	*size = 0;
+	size = 0;
     }
 
   close (archive_fd);
 
-  return *size;
+  return size;
 }
