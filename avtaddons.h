@@ -225,10 +225,11 @@ AVT_ADDON char *avta_arch_get_member (int fd, size_t size);
  * read in whole member of a named archive
  * the result is allocated with malloc and must be freed by the caller
  * the result gets some binary zeros added, so it can be used as string
+ * if size is not NULL it gets the size of the member without the terminator
  * returns NULL on error
  */
-AVT_ADDON char * avta_arch_get_data (const char *archive, const char *member,
-                                     size_t *size);
+AVT_ADDON char *avta_arch_get_data (const char *archive, const char *member,
+                                    size_t *size);
 
 
 /**********************************************************************

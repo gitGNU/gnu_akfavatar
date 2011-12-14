@@ -5,10 +5,13 @@
     for it (scripts have to be adapted!)
 
   C-API changes:
-  - new functions: avt_delay()
+  - new functions: avt_delay
+  - avtaddons:
+    - avta_arch_get_member: new function
+    - avta_arch_get_data: rewritten
 
   Lua-API changes:
-  - new functions: avt.delay(), avt.search()
+  - new functions: avt.delay, avt.search
   - new variable: avt.datapath
   - Module "akfavatar-graphic"
     - gr:new() accepts name for background color
