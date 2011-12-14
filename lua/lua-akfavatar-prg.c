@@ -33,14 +33,13 @@ AVT_BEGIN_DECLS
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
-AVT_END_DECLS
-
-#define PRGNAME "Lua-AKFAvatar" /* keep it short */
-#define EXT_LUA  ".lua"
-#define EXT_DEMO ".avt"
-#define EXT_EXEC ".avtexe"
+  AVT_END_DECLS
+#define PRGNAME "Lua-AKFAvatar"	/* keep it short */
+#define NAME_EXEC "AKFAvatar.lua"	/* name in archive file */
+#define EXT_LUA   ".lua"
+#define EXT_DEMO  ".avt"
+#define EXT_EXEC  ".avtexe"
 #define EXT_ABOUT ".about"
-
 static lua_State *L;
 
 
@@ -342,7 +341,7 @@ executable (const char *filename)
   size_t size;
   char *script, *start;
 
-  script = avta_arch_get_data (filename, "AKFAvatar-Lua", &size);
+  script = avta_arch_get_data (filename, NAME_EXEC, &size);
 
   if (script == NULL)
     {
