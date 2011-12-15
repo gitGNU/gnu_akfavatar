@@ -16,15 +16,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --]]-------------------------------------------------------------------
 
-require "lua-akfavatar"
-require "akfavatar.ar"
+local avt = require "lua-akfavatar"
+local ar = require "akfavatar.ar"
 avt.optional "akfavatar-vorbis"
 
 -- wait times in milliseconds
 local text_wait = 2700
 local image_wait = 7000
 
-local avt = avt
 
 local audio, initialized, moved_in, avatar, avatarname
 local ballooncolor, textcolor, title, archive, target_time, txt
@@ -48,8 +47,12 @@ local function wait()
 end
 
 local function avatar_image(name)
-  if not archive or name=="default" or name=="none" then
-    avatar = name
+  if not archive then
+    if name=="default" or name=="none" then
+      avatar = name
+    else
+      avatar = avt.search(name) or "default"
+    end
   else
     avatar = archive:get(name)
   end
@@ -109,7 +112,7 @@ local function credits(name)
   if archive then
     avt.credits(assert(archive:get(name)), true)
   else
-    local f = assert(io.open(name, "r"))
+    local f = assert(io.open(avt.search(name), "r"))
     avt.credits(f:read("*all"), true)
     f:close()
   end
@@ -119,7 +122,7 @@ local function load_audio(name)
     if archive then
       audio = avt.load_audio_string(archive:get(name)) or avt.silent()
     else --> not an archive
-      audio = avt.load_audio_file(name) or avt.silent()
+      audio = avt.load_audio_file(avt.search(name)) or avt.silent()
     end
 end
 
@@ -131,7 +134,7 @@ local function show_image(name)
   if archive then
     avt.show_image_string(archive:get(name))
   else
-    avt.show_image_file(name);
+    avt.show_image_file(avt.search(name));
   end
 
   avt.wait_audio_end()
@@ -147,7 +150,7 @@ local function command(cmd)
     title = a
     if initialized then avt.set_title(title) end
   elseif "datadir"==c then
-    avt.set_directory(a)
+    avt.datapath = a
   elseif "flip"==c then
     if not moved_in then move(true) end
     avt.flip_page()
