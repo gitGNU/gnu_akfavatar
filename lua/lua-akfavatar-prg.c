@@ -437,7 +437,7 @@ ask_file (void)
       ext = strrchr (filename, '.');
       if (ext && strcasecmp (EXT_DEMO, ext) == 0)
 	avtdemo (filename);
-      if (ext && strcasecmp (EXT_EXEC, ext) == 0)
+      else if (ext && strcasecmp (EXT_EXEC, ext) == 0)
 	{
 	  if (executable (filename) != 0)
 	    {
@@ -557,7 +557,7 @@ main (int argc, char **argv)
       ext = strrchr (argv[script_index], '.');
       if (ext && strcasecmp (EXT_DEMO, ext) == 0)
 	avtdemo (argv[script_index]);
-      if (ext && strcasecmp (EXT_EXEC, ext) == 0)
+      else if (ext && strcasecmp (EXT_EXEC, ext) == 0)
 	{
 	  if (executable (argv[script_index]) != 0)
 	    avta_error (lua_tostring (L, -1), NULL);
