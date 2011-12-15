@@ -1,7 +1,7 @@
 .\" Process this file with
 .\" groff -man -Tutf8 lua-akfavatar.1
 .\"
-.TH "lua-akfavatar" 1 2011-07-11 AKFAvatar
+.TH "lua-akfavatar" 1 2011-12-15 AKFAvatar
 .
 .SH NAME
 lua-akfavatar \- Lua interpreter for the AKFAvatar user interface
@@ -75,6 +75,14 @@ add the default path.
 .IP LUA_CPATH
 searchpath for C modules.  Syntax like in
 .IR LUA_PATH .
+.IP AVTDATAPATH
+searchpath for data files (images, audio, texts...).
+It gets stored in the variable
+.I avt.datapath
+and can be used with the function
+.IR avt.search(filename) .
+The directories are separated with semicolons.
+Unlike the former paths there are no templates with question marks.
 .
 .SH EXAMPLE
 .nf

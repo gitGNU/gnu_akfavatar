@@ -1,7 +1,7 @@
 .\" Process this file with
 .\" groff -man -Tutf8 lua-akfavatar.1
 .\"
-.TH "lua-akfavatar" 1 2011-07-11 AKFAvatar
+.TH "lua-akfavatar" 1 2011-12-15 AKFAvatar
 .
 .SH NAME
 lua-akfavatar \- Lua interpreter für die AKFAvatar-Benutzeroberfläche
@@ -85,6 +85,16 @@ fügen den Standard-Pfad hinzu.
 Suchpfad für C-Module.
 Die Syntax ist die selbe, wie bei
 .IR LUA_PATH .
+.IP AVTDATAPATH
+Suchpfad für Datendateien (Bilder, Audio, Texte...).
+Er wird in der Variable
+.I avt.datapath
+abgelegt und kann mit der Funktion
+.I avt.search(Dateiname)
+verwendet werden.
+Die Verzeichnisse werden durch Semikola getrennt.
+Im Gegensatz zu den vorherigen Pfaden gibt es keine Suchmuster
+mit Fragezeichen.
 .
 .SH BEISPIEL
 .nf
