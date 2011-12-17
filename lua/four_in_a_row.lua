@@ -51,9 +51,18 @@ local chips = 0 -- how many chips alltogether
 local board = {}
 
 
+local function show_keys()
+  screen:color("black")
+  screen:textalign("left", "top")
+  screen:text("keys:", 15, 10)
+  screen:text("← →", 20, 25)
+  screen:text(" ↓ ", 20, 33)
+end
+
+
 local function show_score()
   screen:eraser()
-  screen:bar(1, 1, boardxoffset - 10, height)
+  screen:bar(1, 50, boardxoffset - 10, height)
   screen:color(chip[1])
   screen:disc(fheight/2, fheight, height/2 - fheight)
   screen:color(chip[2])
@@ -206,6 +215,7 @@ local function play()
   screen:bar(boardxoffset - 10, boardyoffset,
              boardxoffset + boardwidth + 10, height)
   clear_board()
+  show_keys()
   show_score()
 
   repeat
