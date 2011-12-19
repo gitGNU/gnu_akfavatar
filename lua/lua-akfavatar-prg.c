@@ -335,7 +335,7 @@ avtdemo (const char *filename)
 
 /* returns 0 on success, or -1 on error with message on stack */
 static int
-executable (const char *filename)
+run_executable (const char *filename)
 {
   int status;
   size_t size;
@@ -435,17 +435,20 @@ ask_file (void)
 	lua_dir[0] = '\0';
 
       ext = strrchr (filename, '.');
-      if (ext && strcasecmp (EXT_DEMO, ext) == 0)
+
+      if (!ext)
+	return false;		/* shouldn't happen */
+      else if (strcasecmp (EXT_DEMO, ext) == 0)
 	avtdemo (filename);
-      else if (ext && strcasecmp (EXT_EXEC, ext) == 0)
+      else if (strcasecmp (EXT_EXEC, ext) == 0)
 	{
-	  if (executable (filename) != 0)
+	  if (run_executable (filename) != 0)
 	    {
 	      script_error (lua_tostring (L, -1));
 	      lua_pop (L, 1);
 	    }
 	}
-      else if (ext && strcasecmp (EXT_ABOUT, ext) == 0)
+      else if (strcasecmp (EXT_ABOUT, ext) == 0)
 	show_text (filename);
       else			/* assume Lua code */
 	{
@@ -459,6 +462,7 @@ ask_file (void)
 	    }
 	}
 
+      /* go back to the lua directory if it was changedby the script */
       if (lua_dir[0] != '\0')
 	chdir (lua_dir);
 
@@ -559,7 +563,7 @@ main (int argc, char **argv)
 	avtdemo (argv[script_index]);
       else if (ext && strcasecmp (EXT_EXEC, ext) == 0)
 	{
-	  if (executable (argv[script_index]) != 0)
+	  if (run_executable (argv[script_index]) != 0)
 	    avta_error (lua_tostring (L, -1), NULL);
 	}
       else			/* assume Lua code */

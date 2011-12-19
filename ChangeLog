@@ -1,6 +1,6 @@
 2011-12-13  Andreas K. Foerster  <info@akfoerster.de>
 
-	* lua/lua-akfavatar-prg.c (arg0, executable): new functions
+	* lua/lua-akfavatar-prg.c (arg0, run_executable): new functions
 	(ask_file, main): adopted
 
 	* lua/lua-akfavatar-prg.c (check_filename):
