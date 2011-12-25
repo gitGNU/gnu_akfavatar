@@ -249,41 +249,6 @@ load_file (const char *filename)
   return status;
 }
 
-#if LUA_VERSION_NUM < 502
-
-/* loadfile with workaround for UTF-8 BOM and rejecting binaries */
-static int
-new_loadfile (lua_State * L)
-{
-  if (load_file (luaL_checkstring (L, 1)) != 0)
-    {
-      lua_pushnil (L);
-      lua_insert (L, -2);	/* nil before error message */
-      return 2;
-    }
-
-  return 1;
-}
-
-/* dofile with workaround for UTF-8 BOM and rejecting binaries */
-static int
-new_dofile (lua_State * L)
-{
-  /* make sure only the filename is in the stack */
-  lua_settop (L, 1);
-
-  if (load_file (luaL_checkstring (L, 1)) != 0)
-    lua_error (L);
-
-  lua_call (L, 0, LUA_MULTRET);
-
-  /* only the filename and the results are left on the stack */
-  /* so "lua_gettop (l) - 1" is the number of results */
-  return lua_gettop (L) - 1;
-}
-
-#endif /* LUA_VERSION_NUM < 502 */
-
 static void
 initialize_lua (void)
 {
@@ -294,7 +259,10 @@ initialize_lua (void)
   if (L == NULL)
     avta_error ("cannot open Lua", "not enough memory");
 
+  luaL_checkversion (L);
+  lua_gc(L, LUA_GCSTOP, 0);
   luaL_openlibs (L);
+  lua_gc(L, LUA_GCRESTART, 0);
 
   /* register loader functions for: "lua-akfavatar" */
   /* (users should not be able to leave the require command away) */
@@ -303,14 +271,6 @@ initialize_lua (void)
   lua_pushcfunction (L, luaopen_akfavatar_embedded);
   lua_setfield (L, -2, "lua-akfavatar");
   lua_pop (L, 2);
-
-#if LUA_VERSION_NUM < 502
-  /* replace loadfile/dofile */
-  lua_pushcfunction (L, new_loadfile);
-  lua_setglobal (L, "loadfile");
-  lua_pushcfunction (L, new_dofile);
-  lua_setglobal (L, "dofile");
-#endif
 }
 
 static void
@@ -495,8 +455,6 @@ start_screen (void)
   avt_say (L", ");
   avt_say_mb (avt_copyright ());
   avt_new_line ();
-  avt_say_mb (LUA_RELEASE);
-  avt_say (L", ");
   avt_say_mb (LUA_COPYRIGHT);
   avt_new_line ();
   avt_new_line ();
