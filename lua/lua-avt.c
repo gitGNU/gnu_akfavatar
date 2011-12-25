@@ -2324,8 +2324,7 @@ set_datapath (lua_State * L)
   if (avtdatapath)
     lua_pushstring (L, avtdatapath);
   else
-    lua_pushfstring (L,
-		     LUA_EXECDIR "\\data;%s\\akfavatar;%s\\akfavatar",
+    lua_pushfstring (L, "!\\data;%s\\akfavatar;%s\\akfavatar",
 		     getenv ("LOCALAPPDATA"), getenv ("APPDATA"));
 
   len = GetModuleFileNameA (NULL, progdir, sizeof (progdir));
@@ -2335,7 +2334,7 @@ set_datapath (lua_State * L)
     return luaL_error (L, "error with GetModuleFileNameA");
 
   *p = '\0';			/* cut filename off */
-  luaL_gsub (L, lua_tostring (L, -1), LUA_EXECDIR, progdir);
+  luaL_gsub (L, lua_tostring (L, -1), "!", progdir);
   lua_remove (L, -2);		/* remove original string */
   lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-datapath");
 }

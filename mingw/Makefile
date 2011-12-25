@@ -16,7 +16,7 @@ LDFLAGS =
 prefix = /usr/$(TARGET)
 
 # for make dist-bin
-lua_dll = $(srcdir)/misc/lua51.dll
+lua_dll = $(srcdir)/misc/lua52.dll
 sdl_dll = $(srcdir)/misc/SDL.dll
 
 # Ogg Vorbis files with how many channels should be supported?

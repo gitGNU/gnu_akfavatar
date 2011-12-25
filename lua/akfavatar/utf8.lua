@@ -91,7 +91,8 @@ end
 function u8.char (...)
   local r = ""
 
-  for i,c in ipairs({...}) do
+  for i=1,select('#', ...) do
+    local c = select(i, ...)
     if c < 0 or c > 0x10FFFF
         or (c >= 0xD800 and c <= 0xDFFF) then
       r = r .. "\239\191\189" --> inverted question mark
