@@ -1,5 +1,6 @@
 * AKFAvatar testing
 
+  - Uses Lua-5.2 now, no longer compatible with 5.1
   - The source code is compatible with C++ compilers again
   - Data files are put in a separate directory and Lua has a search function
     for it (scripts have to be adapted!)
