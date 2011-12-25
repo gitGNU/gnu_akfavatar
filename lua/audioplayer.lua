@@ -227,7 +227,7 @@ local function play_select()
   local name
 
   -- go home
-  avt.set_directory(os.getenv("HOME") or os.getenv("USERPROFILE"))
+ avt.set_directory(os.getenv("HOME") or os.getenv("USERPROFILE"))
 
   local files = avt.directory_entries()
   table.sort(files)

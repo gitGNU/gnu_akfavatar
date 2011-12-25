@@ -1,15 +1,13 @@
--- Copyright (c) 2010 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2010,2011 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
 -- this is a module
 -- see story1-en.lua for an example
 
-require "lua-akfavatar"
+local avt = require "lua-akfavatar"
 
 -- nil means no change - for no image use image="none"
 local P = {name="", image="none", background_color=nil, balloon_color=nil}
-
-person = P --> module name
 
 local current_avatar
 

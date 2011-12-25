@@ -236,7 +236,7 @@ load_file (const char *filename)
   ungetc (c, fd.f);
 
   lua_pushfstring (L, "@%s", filename);
-  status = lua_load (L, file_reader, &fd, lua_tostring (L, -1));
+  status = lua_load (L, file_reader, &fd, lua_tostring (L, -1), "t");
   lua_remove (L, -2);		/* remove the filename */
 
   if (fclose (fd.f) != 0)
@@ -248,6 +248,8 @@ load_file (const char *filename)
 
   return status;
 }
+
+#if LUA_VERSION_NUM < 502
 
 /* loadfile with workaround for UTF-8 BOM and rejecting binaries */
 static int
@@ -280,6 +282,8 @@ new_dofile (lua_State * L)
   return lua_gettop (L) - 1;
 }
 
+#endif /* LUA_VERSION_NUM < 502 */
+
 static void
 initialize_lua (void)
 {
@@ -300,11 +304,13 @@ initialize_lua (void)
   lua_setfield (L, -2, "lua-akfavatar");
   lua_pop (L, 2);
 
+#if LUA_VERSION_NUM < 502
   /* replace loadfile/dofile */
   lua_pushcfunction (L, new_loadfile);
   lua_setglobal (L, "loadfile");
   lua_pushcfunction (L, new_dofile);
   lua_setglobal (L, "dofile");
+#endif
 }
 
 static void

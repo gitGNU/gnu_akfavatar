@@ -17,7 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --]]-------------------------------------------------------------------
 
 local u8 = {}
-utf8 = u8
 
 -- local variables for speedup
 local string = string
@@ -92,7 +91,7 @@ end
 function u8.char (...)
   local r = ""
 
-  for i,c in ipairs(arg) do
+  for i,c in ipairs({...}) do
     if c < 0 or c > 0x10FFFF
         or (c >= 0xD800 and c <= 0xDFFF) then
       r = r .. "\239\191\189" --> inverted question mark

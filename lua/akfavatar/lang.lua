@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --]]-------------------------------------------------------------------
 
 local l = {}
-lang = l
 
 -- return language as 2 letter abbreviation
 function l.getlanguage()

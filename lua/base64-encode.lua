@@ -1,16 +1,16 @@
 #!/usr/bin/env lua-akfavatar
 
--- Copyright (c) 2010 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2010,2011 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
-require "base64"
+local base64 = require "base64"
 
 local i, o, infile, outfile
 
 if arg[1]
   then infile = arg[1]
   else 
-    require "lua-akfavatar"
+    avt = require "lua-akfavatar"
     avt.initialize{title="Base 64 encoder", shortname="base64"}
     infile = avt.file_selection()
     if not infile then return end

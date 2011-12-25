@@ -1,7 +1,7 @@
 /*
  * AKFAvatar Terminal emulation for Lua 5.1
  * ATTENTION: this is work in progress, ie. not finished yet
- * Copyright (c) 2010 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2010,2011 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -271,7 +271,7 @@ APC_command (wchar_t * command)
   return 0;
 }
 
-static const struct luaL_reg termlib[] = {
+static const luaL_Reg termlib[] = {
   {"startdir", lterm_startdir},
   {"homedir", lterm_homedir},
   {"color", lterm_color},
@@ -287,7 +287,7 @@ int
 luaopen_term (lua_State * L)
 {
   term_L = NULL;
-  luaL_register (L, "term", termlib);
+  luaL_newlib (L, termlib);
   avta_term_register_apc (APC_command);
   return 1;
 }

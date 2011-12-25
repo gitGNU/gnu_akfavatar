@@ -1606,7 +1606,7 @@ lgraphic_export_ppm (lua_State * L)
 }
 
 
-static const struct luaL_reg graphiclib[] = {
+static const luaL_Reg graphiclib[] = {
   {"new", lgraphic_new},
   {"fullsize", lgraphic_fullsize},
   {"font_size", lgraphic_font_size},
@@ -1614,7 +1614,7 @@ static const struct luaL_reg graphiclib[] = {
 };
 
 
-static const struct luaL_reg graphiclib_methods[] = {
+static const luaL_Reg graphiclib_methods[] = {
   {"clear", lgraphic_clear},
   {"color", lgraphic_color},
   {"rgb", lgraphic_rgb},
@@ -1664,12 +1664,12 @@ static const struct luaL_reg graphiclib_methods[] = {
 int
 luaopen_graphic (lua_State * L)
 {
-  luaL_register (L, "graphic", graphiclib);
+  luaL_newlib (L, graphiclib);
 
   luaL_newmetatable (L, GRAPHICDATA);
   lua_pushvalue (L, -1);
   lua_setfield (L, -2, "__index");
-  luaL_register (L, NULL, graphiclib_methods);
+  luaL_setfuncs (L, graphiclib_methods, 0);
   lua_pop (L, 1);
 
   return 1;

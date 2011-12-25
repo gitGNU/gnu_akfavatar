@@ -28,18 +28,14 @@ AVT_BEGIN_DECLS
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
-
 extern int luaopen_vorbis (lua_State * L);
 AVT_END_DECLS
-
 #define STB_VORBIS_HEADER_ONLY 1
 #define STB_VORBIS_NO_PUSHDATA_API 1
 #include "stb_vorbis.c"
-
 /* internal name for audio data */
 #define AUDIODATA   "AKFAvatar-Audio"
-
-static void
+  static void
 collect_garbage (lua_State * L)
 {
   if (!avt_audio_playing (NULL))
@@ -194,7 +190,7 @@ lvorbis_load_string_chain (lua_State * L)
 }
 
 
-static const struct luaL_reg vorbislib[] = {
+static const luaL_Reg vorbislib[] = {
   {"load_file", lvorbis_load_file},
   {"load_string", lvorbis_load_string},
   {NULL, NULL}
@@ -203,13 +199,12 @@ static const struct luaL_reg vorbislib[] = {
 int
 luaopen_vorbis (lua_State * L)
 {
-  /* require "lua-akfavatar" */
+  /* require "lua-akfavatar" and get the address of the table */
   lua_getglobal (L, "require");
   lua_pushliteral (L, "lua-akfavatar");
-  lua_call (L, 1, 0);
+  lua_call (L, 1, 1);		/* also gets table avt */
 
   /* save old avt.load_audio_file and avt.load_audio_string for chain loader */
-  lua_getglobal (L, "avt");
   lua_getfield (L, -1, "load_audio_file");
   lua_setfield (L, LUA_REGISTRYINDEX, "AVTVORBIS-old_load_audio_file");
   lua_getfield (L, -1, "load_audio_string");
@@ -223,7 +218,7 @@ luaopen_vorbis (lua_State * L)
 
   lua_pop (L, 1);		/* pop avt */
 
-  luaL_register (L, "vorbis", vorbislib);
+  luaL_newlib (L, vorbislib);
 
   return 1;
 }

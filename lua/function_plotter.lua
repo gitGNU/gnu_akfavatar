@@ -51,12 +51,12 @@ atan = math.atan
 -- add your own functions and constants here
 
 -------------------------------------------------------------------------------
-require "lua-akfavatar"
-require "akfavatar-graphic"
+local avt = require "lua-akfavatar"
+local graphic = require "akfavatar-graphic"
 
 avt.initialize {
   title = "Function Plotter",
-  avatar = assert(avt.search("teacher.xpm")),
+  avatar = avt.search("teacher.xpm") or "default",
   encoding = "UTF-8"
   }
 

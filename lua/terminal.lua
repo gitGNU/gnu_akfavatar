@@ -3,8 +3,8 @@
 -- Copyright (c) 2010,2011 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
-require "lua-akfavatar"
-require "akfavatar-term"
+local avt = require "lua-akfavatar"
+local term = require "akfavatar-term"
 
 avt.initialize {
   title = "AKFAvatar Terminal",

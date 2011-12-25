@@ -6,7 +6,7 @@
 -- this gives an overview which color names are available
 -- You can mix any deliberate color with thew hexadecimasl RGB notation
 
-require "lua-akfavatar"
+local avt = require "lua-akfavatar"
 
 avt.initialize {
   title = "colors overview",

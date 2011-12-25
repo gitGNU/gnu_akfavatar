@@ -1,13 +1,13 @@
 #!/usr/bin/env lua-akfavatar
 
--- Copyright (c) 2010 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2010,2011 Andreas K. Foerster <info@akfoerster.de>
 -- Lizenz: GPL Version 3 oder neuer
 -- mit Ideen von Arne Babenhauserheide
 
 -- Wenn man einen eigenen Fragebogen erstellt, muss man den Namen
 -- im Copyright-Vermerk nicht übernehmen
 
-require "lua-akfavatar"
+local avt = require "lua-akfavatar"
 require "akfavatar.Fragebogen"
 
 avt.initialize {

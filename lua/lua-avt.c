@@ -51,6 +51,9 @@ AVT_END_DECLS
 /* internal name for audio data */
 #define AUDIODATA   "AKFAvatar-Audio"
 
+/* separator in paths */
+#define PATHSEP ';'
+
 static bool initialized = false;
 
 static const char *const modes[] =
@@ -2100,7 +2103,7 @@ lavt_optional (lua_State * L)
   return 1;
 }
 
-/* searches given file in in given path or in avt.datapath */
+/* searches given file in in given path */
 static int
 lavt_search (lua_State * L)
 {
@@ -2112,10 +2115,9 @@ lavt_search (lua_State * L)
   if (!path)
     {
       /* get avt.datapath */
-      lua_getglobal (L, "avt");
-      lua_getfield (L, -1, "datapath");
+      lua_getfield (L, LUA_REGISTRYINDEX, "AKFAvatar-datapath");
       path = lua_tostring (L, -1);
-      lua_pop (L, 2);
+      lua_pop (L, 1);
       if (!path)
 	path = ".";
     }
@@ -2127,11 +2129,11 @@ lavt_search (lua_State * L)
       size_t pos = 0;
 
       /* start with next directory from path */
-      while (*path && *path != LUA_PATHSEP[0] && pos < sizeof (fullname) - 1)
+      while (*path && *path != PATHSEP && pos < sizeof (fullname) - 1)
 	fullname[pos++] = *path++;
 
       /* skip path seperator(s) */
-      while (*path == LUA_PATHSEP[0])
+      while (*path == PATHSEP)
 	path++;
 
       /* eventually add directory separator */
@@ -2162,7 +2164,7 @@ lavt_search (lua_State * L)
 /* --------------------------------------------------------- */
 /* register library functions */
 
-static const struct luaL_reg akfavtlib[] = {
+static const luaL_Reg akfavtlib[] = {
   {"initialize", lavt_initialize},
   {"quit", lavt_quit},
   {"change_avatar_image", lavt_change_avatar_image},
@@ -2293,7 +2295,7 @@ static const struct luaL_reg akfavtlib[] = {
   {NULL, NULL}
 };
 
-static const struct luaL_reg audiolib[] = {
+static const luaL_Reg audiolib[] = {
   {"play", laudio_play},
   {"loop", laudio_loop},
   {"playing", laudio_playing},
@@ -2335,7 +2337,7 @@ set_datapath (lua_State * L)
   *p = '\0';			/* cut filename off */
   luaL_gsub (L, lua_tostring (L, -1), LUA_EXECDIR, progdir);
   lua_remove (L, -2);		/* remove original string */
-  lua_setfield (L, -2, "datapath");
+  lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-datapath");
 }
 
 #else /* ! _WIN32 */
@@ -2348,10 +2350,9 @@ set_datapath (lua_State * L)
   if (avtdatapath)
     lua_pushstring (L, avtdatapath);
   else
-    lua_pushliteral (L, "/usr/local/share/akfavatar" LUA_PATHSEP
-		     "/usr/share/akfavatar");
+    lua_pushliteral (L, "/usr/local/share/akfavatar;/usr/share/akfavatar");
 
-  lua_setfield (L, -2, "datapath");
+  lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-datapath");
 }
 
 #endif /* ! _WIN32 */
@@ -2367,7 +2368,7 @@ luaopen_akfavatar_embedded (lua_State * L)
 {
   avt_audio_t **audio;
 
-  luaL_register (L, "avt", akfavtlib);
+  luaL_newlib (L, akfavtlib);
 
   /* variables */
   /* avt.dirsep */
@@ -2381,7 +2382,7 @@ luaopen_akfavatar_embedded (lua_State * L)
   luaL_newmetatable (L, AUDIODATA);
   lua_pushvalue (L, -1);
   lua_setfield (L, -2, "__index");	/* use metatabe itself for indexing */
-  luaL_register (L, NULL, audiolib);
+  luaL_setfuncs (L, audiolib, 0);
   lua_pop (L, 1);		/* pop metatable */
 
   /* create a reusable silent sound */

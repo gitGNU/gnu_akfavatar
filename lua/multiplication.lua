@@ -3,8 +3,8 @@
 -- Copyright (c) 2009,2010,2011 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
-require "lua-akfavatar"
-require "akfavatar.lang"
+local avt = require "lua-akfavatar"
+local lang = require "akfavatar.lang"
 
 local positive = avt.load_audio_file(avt.search("positive.au"))
 local negative = avt.load_audio_file(avt.search("negative.au"))

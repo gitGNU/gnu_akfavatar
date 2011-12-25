@@ -6,8 +6,8 @@
 -- this gives an impression over which characters are available
 -- note: the version for lower resolutions has less characters!
 
-require "lua-akfavatar"
-require "akfavatar.utf8"
+local avt = require "lua-akfavatar"
+local utf8 = require "akfavatar.utf8"
 
 avt.initialize{}
 

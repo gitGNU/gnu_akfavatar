@@ -1,9 +1,9 @@
 #!/usr/bin/env lua-akfavatar
 
--- Copyright (c) 2009,2010 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2009,2010,2011 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
-require "lua-akfavatar"
+avt = require "lua-akfavatar"
 
 print = avt.print --> redefine the print command
 say = print --> an alias that fits better

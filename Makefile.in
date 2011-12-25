@@ -13,8 +13,8 @@ INSTALL_PROGRAM = $(INSTALL) -c -m 755
 INSTALL_DATA = $(INSTALL) -c -m 644
 
 # does not depend on prefix!
-LUA_PATH = /usr/local/share/lua/5.1/
-LUA_CPATH = /usr/local/lib/lua/5.1/
+LUA_PATH = /usr/local/share/lua/5.2/
+LUA_CPATH = /usr/local/lib/lua/5.2/
 
 SOX = sox
 ROFF = groff

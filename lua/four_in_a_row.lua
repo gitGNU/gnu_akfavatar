@@ -26,8 +26,8 @@ Keys:
   space - clear board
 --]]--------------------------------------------------------------------
 
-require "lua-akfavatar"
-require "akfavatar-graphic"
+local avt = require "lua-akfavatar"
+local graphic = require "akfavatar-graphic"
 
 avt.initialize {
   title = "Connect Four",

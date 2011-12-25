@@ -1,12 +1,12 @@
 #!/usr/bin/env lua-akfavatar
 
--- Copyright (c) 2010 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2010,2011 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
 -- this gives an impression over which characters are available
 -- note: the version for lower resolutions has less characters!
 
-require "lua-akfavatar"
+local avt = require "lua-akfavatar"
 
 avt.initialize{}
 

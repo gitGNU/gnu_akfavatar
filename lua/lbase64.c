@@ -3,7 +3,7 @@
 * base64 encoding and decoding for Lua 5.1
 * Luiz Henrique de Figueiredo <lhf@tecgraf.puc-rio.br>
 * modified by Andreas K. Foerster <info@akfoerster.de>
-* 27 Aug 2010 17:10:00
+* 27 Aug 2010 17:10:00, 25.12.2011
 * This code is hereby placed in the public domain.
 */
 
@@ -23,7 +23,7 @@ extern "C"
 #endif
 
 #define MYNAME		"base64"
-#define MYVERSION	MYNAME " library for " LUA_VERSION " / Sep 2010"
+#define MYVERSION	MYNAME " library for " LUA_VERSION " / Dec 2011"
 
 #define uint unsigned int
 
@@ -158,7 +158,7 @@ static const luaL_Reg R[] = {
 LUALIB_API int
 luaopen_base64 (lua_State * L)
 {
-  luaL_register (L, MYNAME, R);
+  luaL_newlib (L, R);
   lua_pushliteral (L, "version");		/** version */
   lua_pushliteral (L, MYVERSION);
   lua_settable (L, -3);

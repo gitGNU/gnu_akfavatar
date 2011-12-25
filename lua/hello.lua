@@ -1,13 +1,13 @@
 #!/usr/bin/env lua-akfavatar
 
--- Copyright (c) 2009,2010 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2009,2010,2011 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
 -- Note: Since this is a trivial example, you don't have to keep my
 -- Copyright notice, but you may replace it with your own.
 
 
-require "lua-akfavatar" --> gives access to the avt. comands
+local avt = require "lua-akfavatar" --> gives access to the avt. comands
 
 avt.initialize {
   title="Hello World",

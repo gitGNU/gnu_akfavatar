@@ -1,6 +1,6 @@
 #!/usr/bin/env lua-akfavatar
 
--- Copyright (c) 2010 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2010,2011 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
 -- Dies ist nur ein kleines Beispiel für Lua-AKFAvatar 
@@ -9,8 +9,8 @@
 
 -- Die eigentliche Geschichte fängt nach der letzten Trennlinie an
 
-require "lua-akfavatar"
-require "akfavatar.person"
+local avt = require "lua-akfavatar"
+local person = require "akfavatar.person"
 
 -- Übersetzungen von Anweisungen
 person.kommt_herein = person.comes_in
