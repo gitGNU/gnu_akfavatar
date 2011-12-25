@@ -48,6 +48,9 @@ AVT_END_DECLS
 /* environment variable for avt.datapath */
 #define AVTDATAPATH  "AVTDATAPATH"
 
+/* internal name for the table in the registry */
+#define AVTTABLE  "AKFAvatar-table"
+
 /* internal name for audio data */
 #define AUDIODATA   "AKFAvatar-Audio"
 
@@ -2115,9 +2118,10 @@ lavt_search (lua_State * L)
   if (!path)
     {
       /* get avt.datapath */
-      lua_getfield (L, LUA_REGISTRYINDEX, "AKFAvatar-datapath");
+      lua_getfield (L, LUA_REGISTRYINDEX, AVTTABLE);
+      lua_getfield (L, -1, "datapath");
       path = lua_tostring (L, -1);
-      lua_pop (L, 1);
+      lua_pop (L, 2);
       if (!path)
 	path = ".";
     }
@@ -2336,7 +2340,7 @@ set_datapath (lua_State * L)
   *p = '\0';			/* cut filename off */
   luaL_gsub (L, lua_tostring (L, -1), "!", progdir);
   lua_remove (L, -2);		/* remove original string */
-  lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-datapath");
+  lua_setfield (L, -2, "datapath");
 }
 
 #else /* ! _WIN32 */
@@ -2351,7 +2355,7 @@ set_datapath (lua_State * L)
   else
     lua_pushliteral (L, "/usr/local/share/akfavatar;/usr/share/akfavatar");
 
-  lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-datapath");
+  lua_setfield (L, -2, "datapath");
 }
 
 #endif /* ! _WIN32 */
@@ -2369,13 +2373,17 @@ luaopen_akfavatar_embedded (lua_State * L)
 
   luaL_newlib (L, akfavtlib);
 
+  /* make a reference in the registry */
+  lua_pushvalue (L, -1);
+  lua_setfield (L, LUA_REGISTRYINDEX, AVTTABLE);
+
+  /* avt.datapath */
+  set_datapath (L);
+
   /* variables */
   /* avt.dirsep */
   lua_pushliteral (L, LUA_DIRSEP);
   lua_setfield (L, -2, "dirsep");
-
-  /* avt.datapath */
-  set_datapath (L);
 
   /* type for audio data */
   luaL_newmetatable (L, AUDIODATA);
