@@ -2314,22 +2314,12 @@ static const luaL_Reg audiolib[] = {
 #ifdef _WIN32
 #include <windows.h>
 
-/* replaces "!" with the program's directory */
-
 static void
 set_datapath (lua_State * L)
 {
   char *avtdatapath, *p;
   char progdir[MAX_PATH + 1];
   DWORD len;
-
-  avtdatapath = getenv (AVTDATAPATH);
-
-  if (avtdatapath)
-    lua_pushstring (L, avtdatapath);
-  else
-    lua_pushfstring (L, "!\\data;%s\\akfavatar;%s\\akfavatar",
-		     getenv ("LOCALAPPDATA"), getenv ("APPDATA"));
 
   len = GetModuleFileNameA (NULL, progdir, sizeof (progdir));
 
@@ -2338,8 +2328,20 @@ set_datapath (lua_State * L)
     return luaL_error (L, "error with GetModuleFileNameA");
 
   *p = '\0';			/* cut filename off */
-  luaL_gsub (L, lua_tostring (L, -1), "!", progdir);
-  lua_remove (L, -2);		/* remove original string */
+
+  avtdatapath = getenv (AVTDATAPATH);
+
+  if (avtdatapath == NULL)
+    lua_pushfstring (L, "%s\\data;%s\\akfavatar;%s\\akfavatar",
+		     progdir, getenv ("LOCALAPPDATA"), getenv ("APPDATA"));
+  else
+    {
+      lua_pushstring (L, avtdatapath);
+      /* replace "!" with the program's directory */
+      luaL_gsub (L, lua_tostring (L, -1), "!", progdir);
+      lua_remove (L, -2);	/* remove original string */
+    }
+
   lua_setfield (L, -2, "datapath");
 }
 
