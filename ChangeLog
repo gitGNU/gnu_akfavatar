@@ -2,8 +2,11 @@
 
 	* lua/interactve_lua.lua: use "computer.xpm" as avatar
 
-	* lua/lua-aikfavatar-prg.c (ask_file, main): use luaL_loadfilex
+	* lua/lua-akfavatar-prg.c (ask_file, main): use luaL_loadfilex
 	(file_reader, loadfile): removed
+
+	* lua/lua-akfavatar-prg.c (run_executable):
+	don't check for binary code, use luaL_loadbufferx
 
 2011-12-25  Andreas K. Foerster  <info@akfoerster.de>
 

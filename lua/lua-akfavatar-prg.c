@@ -242,14 +242,6 @@ run_executable (const char *filename)
 
   start = script;
 
-  /* don't accept binary code */
-  if (*start == LUA_SIGNATURE[0])
-    {
-      free (script);
-      lua_pushfstring (L, "%s: binary rejected", filename);
-      return -1;
-    }
-
   /* skip UTF-8 BOM */
   if (start[0] == '\xEF' && start[1] == '\xBB' && start[2] == '\xBF')
     {
@@ -265,7 +257,7 @@ run_executable (const char *filename)
 	size--;
       }
 
-  status = luaL_loadbuffer (L, start, size, filename);
+  status = luaL_loadbufferx (L, start, size, filename, "t");
   free (script);
 
   arg0 (filename);
