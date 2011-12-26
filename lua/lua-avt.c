@@ -30,9 +30,8 @@ extern "C"
 #include <lauxlib.h>
 #include <lualib.h>
 
-  extern int luaopen_akfavatar (lua_State * L);
-
 #ifdef __cplusplus
+  extern int luaopen_akfavatar (lua_State * L);
 }
 #endif
 

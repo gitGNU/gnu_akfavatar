@@ -29,17 +29,27 @@
 #include <locale.h>
 #include <errno.h>
 
-AVT_BEGIN_DECLS
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
-  AVT_END_DECLS
+
+#ifdef __cplusplus
+}
+#endif
+
 #define PRGNAME "Lua-AKFAvatar"	/* keep it short */
 #define NAME_EXEC "AKFAvatar.lua"	/* name in archive file */
+
 #define EXT_LUA   ".lua"
 #define EXT_DEMO  ".avt"
 #define EXT_EXEC  ".avtexe"
 #define EXT_ABOUT ".about"
+
 static lua_State *L;
 
 
@@ -185,9 +195,9 @@ initialize_lua (void)
     avta_error ("cannot open Lua", "not enough memory");
 
   luaL_checkversion (L);
-  lua_gc(L, LUA_GCSTOP, 0);
+  lua_gc (L, LUA_GCSTOP, 0);
   luaL_openlibs (L);
-  lua_gc(L, LUA_GCRESTART, 0);
+  lua_gc (L, LUA_GCRESTART, 0);
 
   /* register loader functions for: "lua-akfavatar" */
   /* (users should not be able to leave the require command away) */
@@ -336,7 +346,8 @@ ask_file (void)
       else			/* assume Lua code */
 	{
 	  arg0 (filename);
-	  if (luaL_loadfilex (L, filename, "t") != 0 || lua_pcall (L, 0, 0, 0) != 0)
+	  if (luaL_loadfilex (L, filename, "t") != 0
+	      || lua_pcall (L, 0, 0, 0) != 0)
 	    {
 	      /* on a normal quit-request there is nil on the stack */
 	      if (lua_isstring (L, -1))

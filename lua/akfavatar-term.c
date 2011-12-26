@@ -34,13 +34,20 @@
 #  include <langinfo.h>
 #endif
 
-AVT_BEGIN_DECLS
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
 
-extern int luaopen_term (lua_State * L);
-AVT_END_DECLS
+#ifdef __cplusplus
+  extern int luaopen_term (lua_State * L);
+}
+#endif
+
 
 static char *startdir = NULL;
 static lua_State *term_L;	/* lua_State of the running terminal */

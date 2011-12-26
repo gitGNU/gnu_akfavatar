@@ -29,13 +29,19 @@
 #include <string.h>
 #include <errno.h>
 
-AVT_BEGIN_DECLS
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
 
-extern int luaopen_graphic (lua_State * L);
-AVT_END_DECLS
+#ifdef __cplusplus
+  extern int luaopen_graphic (lua_State * L);
+}
+#endif
 
 typedef unsigned char byte;
 

@@ -24,18 +24,30 @@
 #include <stdlib.h>
 
 
-AVT_BEGIN_DECLS
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
-extern int luaopen_vorbis (lua_State * L);
-AVT_END_DECLS
+
+#ifdef __cplusplus
+  extern int luaopen_vorbis (lua_State * L);
+}
+#endif
+
+
 #define STB_VORBIS_HEADER_ONLY 1
 #define STB_VORBIS_NO_PUSHDATA_API 1
+
 #include "stb_vorbis.c"
+
 /* internal name for audio data */
 #define AUDIODATA   "AKFAvatar-Audio"
-  static void
+
+static void
 collect_garbage (lua_State * L)
 {
   if (!avt_audio_playing (NULL))
