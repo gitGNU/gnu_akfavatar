@@ -2123,6 +2123,7 @@ get_string_var (lua_State * L, const char *name)
   s = lua_tostring (L, -1);
   lua_pop (L, 2);
 
+  /* s points to the string in L */
   return s;
 }
 
@@ -2135,7 +2136,7 @@ lavt_search (lua_State * L)
   filename = luaL_checkstring (L, 1);
   path = lua_tostring (L, 2);
 
-  if (path == NULL || (path = get_string_var (L, "datapath")) == NULL)
+  if (path == NULL && (path = get_string_var (L, "datapath")) == NULL)
     path = ".";
 
   while (*path)

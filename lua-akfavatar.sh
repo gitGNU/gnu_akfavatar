@@ -30,6 +30,6 @@ AVTDATAPATH="${AVTDATAPATH:+$AVTDATAPATH;}$localdir/data;/usr/local/share/akfava
 # On Darwin/MacOS X change LD_LIBRARY_PATH to DYLD_LIBRARY_PATH
 LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$localdir"
 
-export LUA_PATH LUA_CPATH AVTDATADIR LD_LIBRARY_PATH
+export LUA_PATH LUA_CPATH AVTDATAPATH LD_LIBRARY_PATH
 
 exec "$localdir/lua-akfavatar-bin" "$@"
