@@ -8,6 +8,9 @@
 	* lua/lua-akfavatar-prg.c (run_executable):
 	don't check for binary code, use luaL_loadbufferx
 
+	* lua/characters_tables.lua:
+	use hexadecimal UTF-8 presentation (same for C and Lua)
+
 2011-12-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/*: ported to Lua-5.2

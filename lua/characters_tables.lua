@@ -12,9 +12,9 @@ local utf8 = require "akfavatar.utf8"
 avt.initialize{}
 
 local function block_list(f, t)
-  local list = "╔═══╤════════╤══════════╤══════════════╤══════════════╗\n" ..
-               "║ c │ number │ XML/HTML │  UTF-8 (C)   │ UTF-8 (Lua)  ║\n" ..
-               "╠═══╪════════╪══════════╪══════════════╪══════════════╣\n"
+  local list = "╔═══╤════════╤══════════╤══════════════╗\n" ..
+               "║ c │ number │ XML/HTML │    UTF-8     ║\n" ..
+               "╠═══╪════════╪══════════╪══════════════╣\n"
   
   for unicode = f, t do
     if avt.printable(unicode) then
@@ -29,19 +29,18 @@ local function block_list(f, t)
 
       local u8_c = ""
       for i=1, string.len(u8) do
-        u8_c = u8_c .. string.format("\\%o", string.byte(u8, i))
+        u8_c = u8_c .. string.format("\\x%02X", string.byte(u8, i))
       end
 
       -- u8 would break in string.format when it is \0
       list = list .. "║ " .. u8 ..
-             string.format(" │ %-6s │ %-8s │ %-12s │ %-12s ║\n", 
-                            hex, xml, u8_c, u8_lua)
+             string.format(" │ %-6s │ %-8s │ %-12s ║\n", hex, xml, u8_c)
     end
   end
 
-  list = list .. "╚═══╧════════╧══════════╧══════════════╧══════════════╝\n"
+  list = list .. "╚═══╧════════╧══════════╧══════════════╝"
 
-  avt.set_balloon_width(55)
+  avt.set_balloon_width(40)
   avt.pager(list)
 end
 
