@@ -29,7 +29,7 @@ local function interactive (cmd)
   if avt.where_x () > 1 then avt.newline () end
 
   if not cmd then --> first line
-    -- replace = at the beginning with return
+    -- replace "=" at the beginning with "return "
     cmd = string.gsub (avt.ask ("> "), "^=", "return ", 1)
   else
     local cmd2 = avt.ask (">> ")
@@ -51,7 +51,13 @@ local function interactive (cmd)
   return cmd
 end
 
-avt.initialize {title="Lua-AKFAvatar", encoding="UTF-8", audio=true}
+avt.initialize {
+  title    = "Lua-AKFAvatar",
+  encoding = "UTF-8",
+  audio    = true,
+  avatar   = avt.search("computer.xpm") or "default"
+  }
+
 -- avt.move_in ()
 avt.underlined(true)
 avt.say(_VERSION, " / AKFAvatar ", avt.version (), "\n\n")

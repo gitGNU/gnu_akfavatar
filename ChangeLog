@@ -1,3 +1,7 @@
+2011-12-26  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/interactve_lua.lua: use "computer.xpm" as avatar
+
 2011-12-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/*: ported to Lua-5.2
