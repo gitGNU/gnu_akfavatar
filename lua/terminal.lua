@@ -26,6 +26,6 @@ term.setenv("APC", _VERSION .. ", lua-akfavatar")
 
 term.color(true)
 term.homedir()
-term.execute(unpack(arg))
+term.execute(table.unpack(arg))
 term.unsetenv("APC")
 

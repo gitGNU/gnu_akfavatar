@@ -155,7 +155,7 @@ function u8.codepoints (s, startchar, endchar)
     if charnr >= endchar then break end
   end
 
-  return unpack(results)
+  return table.unpack(results)
 end
 
 -- iterator returning the characters of an UTF-8 string
