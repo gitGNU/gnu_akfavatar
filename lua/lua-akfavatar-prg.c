@@ -174,81 +174,6 @@ check_filename (const char *filename)
 		  || strcasecmp (EXT_ABOUT, ext) == 0));
 }
 
-struct load_file
-{
-  FILE *f;
-  char buffer[BUFSIZ];
-};
-
-static const char *
-file_reader (lua_State * L AVT_UNUSED, void *data, size_t * size)
-{
-  struct load_file *fd;
-
-  fd = (struct load_file *) data;
-
-  *size = fread (fd->buffer, 1, sizeof (fd->buffer), fd->f);
-
-  if (*size > 0)
-    return (const char *) fd->buffer;
-  else
-    return NULL;
-}
-
-static int
-load_file (const char *filename)
-{
-  int status;
-  int c;
-  struct load_file fd;
-
-  fd.f = fopen (filename, "r");
-  if (fd.f == NULL)
-    {
-      lua_pushfstring (L, "%s: %s", filename, strerror (errno));
-      return LUA_ERRFILE;
-    }
-
-  /* scan for UTF-8 BOM (workaround for Windows notepad.exe) */
-  if ((c = getc (fd.f)) == 0xEF && (c = getc (fd.f)) == 0xBB
-      && (c = getc (fd.f)) == 0xBF)
-    c = getc (fd.f);
-
-  if (c == '#')
-    {
-      /*
-       * skip to end of line
-       * '\n' will be pushed back so linenumbers stay correct
-       */
-      do
-	{
-	  c = getc (fd.f);
-	}
-      while (c != '\n' && c != EOF);
-    }
-
-  if (c == LUA_SIGNATURE[0])
-    {
-      lua_pushfstring (L, "%s: binary rejected", filename);
-      return LUA_ERRFILE;
-    }
-
-  ungetc (c, fd.f);
-
-  lua_pushfstring (L, "@%s", filename);
-  status = lua_load (L, file_reader, &fd, lua_tostring (L, -1), "t");
-  lua_remove (L, -2);		/* remove the filename */
-
-  if (fclose (fd.f) != 0)
-    {
-      lua_pop (L, 1);		/* pop chunk or previous error msg */
-      lua_pushfstring (L, "%s: %s", filename, strerror (errno));
-      return LUA_ERRFILE;
-    }
-
-  return status;
-}
-
 static void
 initialize_lua (void)
 {
@@ -419,7 +344,7 @@ ask_file (void)
       else			/* assume Lua code */
 	{
 	  arg0 (filename);
-	  if (load_file (filename) != 0 || lua_pcall (L, 0, 0, 0) != 0)
+	  if (luaL_loadfilex (L, filename, "t") != 0 || lua_pcall (L, 0, 0, 0) != 0)
 	    {
 	      /* on a normal quit-request there is nil on the stack */
 	      if (lua_isstring (L, -1))
@@ -534,7 +459,7 @@ main (int argc, char **argv)
 	{
 	  get_args (argc, argv, script_index);
 
-	  if (load_file (argv[script_index]) != 0
+	  if (luaL_loadfilex (L, argv[script_index], "t") != 0
 	      || lua_pcall (L, 0, 0, 0) != 0)
 	    {
 	      if (lua_isstring (L, -1))

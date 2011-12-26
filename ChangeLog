@@ -2,6 +2,9 @@
 
 	* lua/interactve_lua.lua: use "computer.xpm" as avatar
 
+	* lua/lua-aikfavatar-prg.c (ask_file, main): use luaL_loadfilex
+	(file_reader, loadfile): removed
+
 2011-12-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/*: ported to Lua-5.2
