@@ -21,13 +21,20 @@
 #include "akfavatar.h"
 #include "avtaddons.h"
 
-AVT_BEGIN_DECLS
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
 
-extern int luaopen_akfavatar (lua_State * L);
-AVT_END_DECLS
+  extern int luaopen_akfavatar (lua_State * L);
+
+#ifdef __cplusplus
+}
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>		/* for exit() and wchar_t */
@@ -49,7 +56,7 @@ AVT_END_DECLS
 #define AVTDATAPATH  "AVTDATAPATH"
 
 /* internal name for the table in the registry */
-#define AVTTABLE  "AKFAvatar-table"
+#define AVTMODULE  "AKFAvatar-module"
 
 /* internal name for audio data */
 #define AUDIODATA   "AKFAvatar-Audio"
@@ -2106,6 +2113,20 @@ lavt_optional (lua_State * L)
   return 1;
 }
 
+/* get a string variable from this module */
+static const char *
+get_string_var (lua_State * L, const char *name)
+{
+  const char *s;
+
+  lua_getfield (L, LUA_REGISTRYINDEX, AVTMODULE);
+  lua_getfield (L, -1, name);
+  s = lua_tostring (L, -1);
+  lua_pop (L, 2);
+
+  return s;
+}
+
 /* searches given file in in given path */
 static int
 lavt_search (lua_State * L)
@@ -2115,16 +2136,8 @@ lavt_search (lua_State * L)
   filename = luaL_checkstring (L, 1);
   path = lua_tostring (L, 2);
 
-  if (!path)
-    {
-      /* get avt.datapath */
-      lua_getfield (L, LUA_REGISTRYINDEX, AVTTABLE);
-      lua_getfield (L, -1, "datapath");
-      path = lua_tostring (L, -1);
-      lua_pop (L, 2);
-      if (!path)
-	path = ".";
-    }
+  if (path == NULL || (path = get_string_var (L, "datapath")) == NULL)
+    path = ".";
 
   while (*path)
     {
@@ -2377,7 +2390,7 @@ luaopen_akfavatar_embedded (lua_State * L)
 
   /* make a reference in the registry */
   lua_pushvalue (L, -1);
-  lua_setfield (L, LUA_REGISTRYINDEX, AVTTABLE);
+  lua_setfield (L, LUA_REGISTRYINDEX, AVTMODULE);
 
   /* avt.datapath */
   set_datapath (L);
