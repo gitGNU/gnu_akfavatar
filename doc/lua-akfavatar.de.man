@@ -1,7 +1,7 @@
 .\" Process this file with
 .\" groff -man -Tutf8 lua-akfavatar.1
 .\"
-.TH "lua-akfavatar" 1 2011-12-15 AKFAvatar
+.TH "lua-akfavatar" 1 2011-12-27 AKFAvatar
 .
 .SH NAME
 lua-akfavatar \- Lua interpreter für die AKFAvatar-Benutzeroberfläche
@@ -70,7 +70,10 @@ Das wird üblicherweise verwendet, um Bibliotheken zu laden.
 fange in dem Verzeichnis an
 .
 .SH UMGEBUNG
-.IP LUA_PATH
+.TP
+LUA_PATH_5_2
+.TQ
+LUA_PATH
 Suchpfad für Lua-Module.
 Die Suchmuster werden durch Semikola getrennt.
 Ein Fragezeichen
@@ -81,11 +84,15 @@ des Systems ersetzt.
 Zwei Semikola
 .RB ( ;; )
 fügen den Standard-Pfad hinzu.
-.IP LUA_CPATH
+.TP
+LUA_CPATH_5_2
+.TQ
+LUA_CPATH
 Suchpfad für C-Module.
 Die Syntax ist die selbe, wie bei
 .IR LUA_PATH .
-.IP AVTDATAPATH
+.TP
+AVTDATAPATH
 Suchpfad für Datendateien (Bilder, Audio, Texte...).
 Er wird in der Variable
 .I avt.datapath
@@ -98,10 +105,10 @@ mit Fragezeichen.
 .
 .SH BEISPIEL
 .nf
-require "lua-akfavatar"
+local avt = require "lua-akfavatar"
 avt.initialize {title="Mein erstes Programm", encoding="UTF-8"}
 avt.say("Hallo du!\\n")
-Benutzer = avt.ask("Wie heißt du denn? ")
+local Benutzer = avt.ask("Wie heißt du denn? ")
 avt.say("Hallo, ", Benutzer, ". Schön dich zu sehen!\\n")
 avt.wait_button()
 .fi
@@ -121,6 +128,6 @@ http://akfavatar.nongnu.org/
 .PP
 http://akfavatar.nongnu.org/manual/
 .br
-http://www.lua.org/manual/5.1/
+http://www.lua.org/manual/5.2/
 .br
 http://lua.coders-online.net/

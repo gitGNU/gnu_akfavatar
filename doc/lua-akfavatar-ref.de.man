@@ -22,7 +22,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar Referenz" 3 2011-12-05 AKFAvatar
+.TH "Lua-AKFAvatar Referenz" 3 2011-12-27 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar Referenz \- AKFAvatar spezifische Funktionen für Lua
@@ -31,6 +31,8 @@ Lua-AKFAvatar Referenz \- AKFAvatar spezifische Funktionen für Lua
 Dies ist eine Referenz für die Lua-Anbindung für AKFAvatar.
 Sie beschreibt nicht die Sprache Lua.
 Eine Referenz-Anleitung für die Sprache Lua findet man im Internet unter
+.BR http://www.lua.org/manual/5.2/ ,
+oder auf Deutsch unter
 .BR http://lua.coders-online.net/ .
 .PP
 Keine Angst. Man muss nicht alles gleich verstehen oder gar lernen.
@@ -59,21 +61,12 @@ welches Unterstützung für Ogg Vorbis Audio-Dateien hinzufügt.
 .PP
 .SS Grundfunktionalität
 .TP
-.B "require ""lua-akfavatar"""
-Bevor man die AKFAvatar-Anbindung verwenden kann, muss man sie mit der
-Anweisung
-.B "require ""lua-akfavatar"""
-laden, bzw. aktivieren.
-Dadurch wird die Tabelle
+.B "local avt = require ""lua-akfavatar"""
+Bevor man die AKFAvatar-Anbindung verwenden kann, muss man sie mit dieser
+Anweisung erstmal laden.
+Über die Tabelle
 .I avt
-erstellt, über die man die folgenden Funktionen abrufen kann.
-Wenn man das Prefix
-.I avt
-nicht mag, kann man auch folgendes machen:
-.BR "local avatar = require ""lua-akfavatar""" .
-Dann kann man das auch über das Prefix
-.I avatar
-aufrufen.
+kann man dann die folgenden Funktionen abrufen.
 .PP
 .TP
 .BI "avt.initialize({" "title, shortname, avatar, audio, encoding, mode" "})"
@@ -125,13 +118,14 @@ avt.initialize{}
 
 avt.initialize{tilte="Mein Programm", encoding="ISO-8859-1"}
 
-avt.initialize{
-  tilte="Mein Programm",
-  shortname="Programm",
-  avatar=avt.search("gnu-head.xpm"),
-  audio=true,
-  encoding="UTF-8",
-  mode="fullscreen no switch"}
+avt.initialize {
+  tilte = "Mein Programm",
+  shortname = "Programm",
+  avatar = avt.search("gnu-head.xpm") or "default",
+  audio = true,
+  encoding = "UTF-8",
+  mode = "fullscreen no switch"
+  }
 .EE
 .IP
 Viele der folgenden Funktionen rufen automatisch

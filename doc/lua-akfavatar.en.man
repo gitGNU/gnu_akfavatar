@@ -1,7 +1,7 @@
 .\" Process this file with
 .\" groff -man -Tutf8 lua-akfavatar.1
 .\"
-.TH "lua-akfavatar" 1 2011-12-15 AKFAvatar
+.TH "lua-akfavatar" 1 2011-12-27 AKFAvatar
 .
 .SH NAME
 lua-akfavatar \- Lua interpreter for the AKFAvatar user interface
@@ -62,7 +62,10 @@ Typically used to load libraries.
 Start in that directory
 .
 .SH ENVIRONMENT
-.IP LUA_PATH
+.TP
+LUA_PATH_5_2
+.TQ
+LUA_PATH
 searchpath for Lua modules.
 Templates are separated with semicolons.
 A question mark
@@ -72,10 +75,14 @@ A dot in the module name is replaced with the directory separator.
 Two semicolons
 .B (;;)
 add the default path.
-.IP LUA_CPATH
+.TP
+LUA_CPATH_5_2
+.TQ
+LUA_CPATH
 searchpath for C modules.  Syntax like in
 .IR LUA_PATH .
-.IP AVTDATAPATH
+.TP
+AVTDATAPATH
 searchpath for data files (images, audio, texts...).
 It gets stored in the variable
 .I avt.datapath
@@ -86,10 +93,10 @@ Unlike the former paths there are no templates with question marks.
 .
 .SH EXAMPLE
 .nf
-require "lua-akfavatar"
+local avt = require "lua-akfavatar"
 avt.initialize {title="my first program", encoding="UTF-8"}
 avt.say("Hello there!\\n")
-user = avt.ask("What's your name? ")
+local user = avt.ask("What's your name? ")
 avt.say("Hello, ", user, ". Nice to meet you!\\n")
 avt.wait_button()
 .fi
@@ -109,4 +116,4 @@ http://akfavatar.nongnu.org/
 .PP
 http://akfavatar.nongnu.org/manual/
 .br
-http://www.lua.org/manual/5.1/
+http://www.lua.org/manual/5.2/

@@ -22,7 +22,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar reference" 3 2011-12-05 AKFAvatar
+.TH "Lua-AKFAvatar reference" 3 2011-12-27 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar reference \- AKFAvatar specific functions for Lua
@@ -31,7 +31,7 @@ Lua-AKFAvatar reference \- AKFAvatar specific functions for Lua
 This is a reference for the Lua-bindings to AKFAvatar.
 It does not describe the language Lua.
 The reference manual for the language Lua can be found on the Internet on
-.BR http://www.lua.org/manual/5.1/ .
+.BR http://www.lua.org/manual/5.2/ .
 .PP
 Don't worry, you don't need to understand or even learn everything.
 You can do lots of things with very few commands.
@@ -58,19 +58,12 @@ which adds support for Ogg Vorbis audio files.
 .PP
 .SS Basic functionality
 .TP
-.B "require ""lua-akfavatar"""
-Before you can use the AKFAvatar binding, you have to load or activate
-it with the command 
-.BR "require ""lua-akfavatar""" .
-This creates a table 
+.B "local avt = require ""lua-akfavatar"""
+Before you can use the AKFAvatar binding, you have to load it with this
+function. 
+This gives you the table 
 .IR avt ,
-with which you can access the following functions.  By the way,
-if you don't like the prefix
-.IR avt ,
-you could also use something like this:
-.BR "local avatar = require ""lua-akfavatar""" ,
-then you can also access the functions with the prefix
-.IR avatar .
+with which you can access the following functions.
 .PP
 .TP
 .BI "avt.initialize({" "title, shortname, avatar, audio, encoding, mode" "})"
@@ -119,13 +112,14 @@ avt.initialize{}
 
 avt.initialize{tilte="my program", encoding="ISO-8859-1"}
 
-avt.initialize{
-  tilte="my program",
-  shortname="program",
-  avatar=avt.search("gnu-head.xpm"),
-  audio=true,
-  encoding="UTF-8",
-  mode="fullscreen no switch"}
+avt.initialize {
+  tilte = "my program",
+  shortname = "program",
+  avatar = avt.search("gnu-head.xpm") or "default",
+  audio = true,
+  encoding = "UTF-8",
+  mode = "fullscreen no switch"
+  }
 .EE
 .IP
 Many of the following functions implicitly call
