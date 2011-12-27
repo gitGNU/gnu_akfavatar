@@ -7,7 +7,7 @@
 lua-akfavatar \- Lua interpreter für die AKFAvatar-Benutzeroberfläche
 .
 .SH SYNTAX
-.BI "lua-akfavatar [" Optionen "] [" " Skript " "[" Argumente "] ]"
+.BI "local " avt " = lua-akfavatar [" Optionen "] [" " Skript " "[" Argumente "] ]"
 .
 .SH BESCHREIBUNG
 Das Programm Lua-AKFAvatar ist der Lua Interpreter für die 
@@ -40,7 +40,7 @@ und so weiter.
 .PP
 Um Zugang zu den AKFAvatar-spezifischen Funktionen zu bekommen,
 muss man erstmal den Befehl
-.BI "require """ lua-akfavatar """"
+.BI "local " avt " = require """ lua-akfavatar """"
 verwenden.
 .PP
 Mit dem Dateiauswahl-Dialog kann man auch Anleitungen

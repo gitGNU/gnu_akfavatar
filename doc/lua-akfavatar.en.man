@@ -7,7 +7,7 @@
 lua-akfavatar \- Lua interpreter for the AKFAvatar user interface
 .
 .SH SYNOPSIS
-.BI "lua-akfavatar [" options "] [" " script " "[" args "] ]"
+.BI "local " avt " = lua-akfavatar [" options "] [" " script " "[" args "] ]"
 .
 .SH DESCRIPTION
 The program Lua-AKFAvatar is the Lua interpreter for the AKFAvatar
@@ -35,7 +35,7 @@ the first argument is
 and so on.
 .PP
 You have to use the command
-.BI "require """ lua-akfavatar """"
+.BI "local " avt " = require """ lua-akfavatar """"
 to get access to the AKFAvatar specific functions.
 .PP
 With the file-selector you can also see documentation files
