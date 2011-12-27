@@ -3,8 +3,9 @@
 -- Copyright (c) 2010,2011 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
-local avt = require "lua-akfavatar"
-local term = require "akfavatar-term"
+-- global variables, so they can be used in APC commands
+avt = require "lua-akfavatar"
+term = require "akfavatar-term"
 
 avt.initialize {
   title = "AKFAvatar Terminal",
