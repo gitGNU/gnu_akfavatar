@@ -248,7 +248,7 @@ local function plot_string(s)
     s = string.gsub(s, ",", ".") --> many countries use a comma as decimal mark
   end
 
-  local fs = loadstring("function f(x) return "..s.." end")
+  local fs = load("function f(x) return "..s.." end")
   if fs and pcall(fs) then
     -- check if it produces a number
     local okay, v = pcall(f, 1)

@@ -37,7 +37,7 @@ local function interactive (cmd)
     cmd = cmd .. " " .. cmd2
   end
 
-  local func, err = loadstring (cmd)
+  local func, err = load (cmd)
 
   if func then show (pcall(func))
     else --> error

@@ -3,7 +3,7 @@ Lua module to handle ar archives (unfinished)
 currenty only for reading
 member names are limited to 15 characters
 
-Copyright (c) 2010 Andreas K. Foerster <info@akfoerster.de>
+Copyright (c) 2010,211 Andreas K. Foerster <info@akfoerster.de>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -157,7 +157,7 @@ end
 -- if no member name is given, it gets the current/next member
 -- errors are propagated
 function ar:dolua(member)
-  assert(loadstring(assert(self:get(member)), member or self.name))()
+  assert(load(assert(self:get(member)), member or self.name))()
 end
 
 return ar
