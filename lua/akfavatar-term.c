@@ -258,14 +258,17 @@ static int
 APC_command (wchar_t * command)
 {
   char *mbstring;
+  int size;
 
   if (!term_L)
     return -1;
 
   /* get mbstring from command (in current encoding) */
-  if (avt_mb_encode (&mbstring, command, wcslen (command)) > -1)
+  size = avt_mb_encode (&mbstring, command, wcslen (command));
+
+  if (size > -1)
     {
-      int ret = luaL_loadstring (term_L, mbstring);
+      int ret = luaL_loadbufferx (term_L, mbstring, size, mbstring, "t");
       free (mbstring);
 
       if (ret != 0)

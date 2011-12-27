@@ -1,3 +1,7 @@
+2011-12-27  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/akfavatar-term.c (APC_command): use luaL_loadbufferx()
+
 2011-12-26  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/interactve_lua.lua: use "computer.xpm" as avatar
