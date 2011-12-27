@@ -13,8 +13,10 @@ ACHTUNG: Dieses Modul steht nicht auf allen Plattformen zur Verfügung!
 Insbesondere nicht unter Windows.
 
 
-require "akfavatar-term"
+term = require "akfavatar-term"
     Damit lädt man das Modul für die Terminal-Emulation.
+    Man sollte eine globale Variable nehmen, damit man sie von der
+    APC-Schnittstelle verwenden kann.
 
 
 term.startdir([Verzeichnis])
@@ -59,7 +61,7 @@ term.execute ([Programm [,Argumente]])
     Standard-Shell ausgeführt.
 
 
-APC interface
+APC-Schnittstelle
     Die „Application Program Command“ (APC) Schnittstelle ist eine Methode mit
     der das ausgeführte Programm mit dem Lua-Interpreter des ausführenden
     Programmes kommunizieren kann. Um dies zu verwenden sendet das ausgeführte

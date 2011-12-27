@@ -5,8 +5,8 @@ Base64 ist eine Methode, um binäre Daten nur mit ASCII-Zeichen darzustellen.
 Das kann man verwenden, um zum Beispiel Audio-Dateien oder Bilder in
 Lua-Skripten einzubetten, mit Hilfe von langen Strings.
 
-Um das Base64-Modul verwenden zu können, muss es mit require "base64" geladen
-werden.
+Um das Base64-Modul verwenden zu können, muss es folgendermaßen geladen werden:
+local base64 = require "base64"
 
 ACHTUNG: Die Bild-Formate XPM und XBM siind bereits in einem ASCII-Format und
 können ohne weitere Kodierung in Lua-Skripte eingebettet werden.

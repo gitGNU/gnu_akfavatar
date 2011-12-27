@@ -13,8 +13,9 @@ Especially not on Windows.
 
 
 
-require "akfavatar-term"
+term = require "akfavatar-term"
     This loads the module for the terminal emulation.
+    It should be a global variable, so it can be used from the APC interface.
 
 
 term.startdir([directory])

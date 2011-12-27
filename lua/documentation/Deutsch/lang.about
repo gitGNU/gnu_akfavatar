@@ -3,7 +3,7 @@ Lua-Modul für Übersetzungen
 Dieses Modul wurde für AKFAvatar geschrieben, aber es kann auch ohne AKFAvatar
 verwendet werden.
 
-require "akfavatar.lang"
+local lang = require "akfavatar.lang"
   Damit lädt man das Modul für Übersetzungen. Die System-Sprache sollte
   automatisch erkannt werden, wenn das Modul geladen wird.
 
@@ -33,7 +33,7 @@ lang.translate(s)
 
 BEISPIEL:
 --------------------------------------------------------------------------------
-require "akfavatar.lang";
+local lang = require "akfavatar.lang";
 
 lang.translations {
 

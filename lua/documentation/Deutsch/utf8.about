@@ -2,12 +2,16 @@ Modul utf8.lua
 
 Dieses Modul definiert Funktionen für UTF-8 Strings.
 Viele dieser Funktionen dienen als Ersatz für Funktionen in Luas
-Sttring-Bibliothek.
+String-Bibliothek.
 
 UTF-8 ist eine Zeichen-Kodierung für Unicode. Ein Zeichen kann mit einem bis
 vier Byte kodiert sein. Darum wird eine besondere Behandlung erforderlich.
 Die meisten Funktionen der String-Bibliothek von Lua können nämlich nur
 mit Kodierungen mit einem Byte pro Zeichen umgehen.
+
+
+local utf8 = require "akfavatar.utf8"
+ So lädt man das Modul.
 
 
 utf8.len(String)

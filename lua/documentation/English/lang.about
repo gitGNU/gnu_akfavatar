@@ -2,7 +2,7 @@ Lua module for translations
 
 This module was written for AKFAvatar, but doesn't depend on it.
 
-require "akfavatar.lang"
+local lang = require "akfavatar.lang"
   This loads the module.  The language of the system should get detected
   automatically when the module is loaded.
 
@@ -32,7 +32,7 @@ lang.translate(s)
 
 EXAMPLE:
 --------------------------------------------------------------------------------
-require "akfavatar.lang";
+local lang = require "akfavatar.lang";
 
 lang.translations {
 

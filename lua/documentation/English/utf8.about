@@ -9,6 +9,10 @@ default string library of Lua can only handle encodings with a single byte per
 character.
 
 
+local utf8 = require "akfavatar.utf8"
+  This loads the module.
+
+
 utf8.len(string)
     Counts number of characters in an UTF-8 encoded string.
     Note: Control characters and invisible characters are counted, too.

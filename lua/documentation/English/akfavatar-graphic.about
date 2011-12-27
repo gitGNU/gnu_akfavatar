@@ -1,6 +1,7 @@
 Module "akfavatar-graphic"
 
-To use this module load it with require "akfavatar-graphic".
+To use this module load it with 
+local graphic = require "akfavatar-graphic"
 
 Notes:
 - Coordinates start with 1, 1 in the upper left corner.
