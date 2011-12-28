@@ -262,9 +262,7 @@ gr:export_ppm(filename)
     function export(graphic, name)
       local ppm = name..".ppm"
       graphic:export_ppm(ppm)
-      if os.execute("pnmtopng "..ppm.." > "..name..".png")==0 then
-        os.remove(ppm)
-      end
+      os.execute("pnmtopng "..ppm.." > "..name..".png") and os.remove(ppm)
     end
 
     First it exports the graphic in the PPM format.  Then it tries to convert it

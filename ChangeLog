@@ -1,3 +1,8 @@
+2011-12-28  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/documentation/*/akfavatar-graphic.about:
+	example code for gr:export_ppm() had to be adjusted
+
 2011-12-27  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar-term.c (APC_command): use luaL_loadbufferx()
