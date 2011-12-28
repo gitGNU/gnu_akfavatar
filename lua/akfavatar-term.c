@@ -271,7 +271,7 @@ APC_command (wchar_t * command)
       int ret = luaL_loadbufferx (term_L, mbstring, size, mbstring, "t");
       free (mbstring);
 
-      if (ret != 0)
+      if (ret != LUA_OK)
 	return lua_error (term_L);
 
       lua_call (term_L, 0, 0);
