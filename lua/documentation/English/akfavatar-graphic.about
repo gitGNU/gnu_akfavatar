@@ -256,18 +256,23 @@ gr:export_ppm(filename)
     Exports the graphic as Portable Pixmap (PPM) file.
 
     The PPM format is simple to implement, but not very efficient.
-    You might want to use the “netpbm” tools to convert it to another format.
+    You might want to use the “netpbm” tools or “ImageMagick” to convert it to
+    another format.
     The following example shows how to do this:
 
     function export(graphic, name)
       local ppm = name..".ppm"
+      local png = name..".png"
       graphic:export_ppm(ppm)
-      os.execute("pnmtopng "..ppm.." > "..name..".png") and os.remove(ppm)
+      if os.execute("pnmtopng "..ppm.." > "..png)
+         or os.execute("convert "..ppm.." "..png)
+      then os.remove(ppm) end
     end
 
     First it exports the graphic in the PPM format.  Then it tries to convert it
     to the PNG format.  If that succeeds, it deletes the PPM file.
-    If the user doesn't have “netpbm” installed, he still ends up with the PPM file.
+    If the user doesn't have “netpbm” or “ImageMagick” installed, he still ends
+    up with the PPM file.
 
 
 Turtle graphics
