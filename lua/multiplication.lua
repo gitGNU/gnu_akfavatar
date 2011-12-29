@@ -8,7 +8,7 @@ local lang = require "akfavatar.lang"
 
 local positive = avt.load_audio_file(avt.search("positive.au"))
 local negative = avt.load_audio_file(avt.search("negative.au"))
-local neutral = avt.load_audio_file(avt.search("neutral.au"))
+local question = avt.load_audio_file(avt.search("question.au"))
 
 -- edit to your needs:
 local random_minimum = 1
@@ -125,7 +125,7 @@ function sayWrong()
 end
 
 function sayUnknown()
-  neutral()
+  question()
   answerposition()
   avt.set_text_color("gray30")
   avt.say(L"???")

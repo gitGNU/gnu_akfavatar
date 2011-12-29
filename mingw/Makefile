@@ -371,7 +371,8 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	   $(srcdir)/data/teacher.xpm $(srcdir)/data/akfoerster.xpm \
 	   $(srcdir)/data/computer.xpm \
 	   $(srcdir)/data/positive.au $(srcdir)/data/negative.au \
-	   $(srcdir)/data/neutral.au \
+	   $(srcdir)/data/neutral.au $(srcdir)/data/harrumph.au \
+	   $(srcdir)/data/question.au $(srcdir)/data/sad.au \
 	   $(BINPKGNAME)/data/
 	cp $(srcdir)/AUTHORS $(BINPKGNAME)/AUTHORS.txt
 	cp $(srcdir)/COPYING $(BINPKGNAME)/COPYING.txt

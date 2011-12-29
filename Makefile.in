@@ -682,7 +682,8 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/data/teacher.xpm $(srcdir)/data/akfoerster.xpm \
 	   $(srcdir)/data/computer.xpm \
 	   $(srcdir)/data/positive.au $(srcdir)/data/negative.au \
-	   $(srcdir)/data/neutral.au \
+	   $(srcdir)/data/neutral.au $(srcdir)/data/harrumph.au \
+	   $(srcdir)/data/question.au $(srcdir)/data/sad.au \
 	   $(PKGNAME)/data/
 
 	mkdir $(PKGNAME)/lua/documentation
@@ -788,7 +789,8 @@ dist-bin-default: all pdf
 	   $(srcdir)/data/teacher.xpm $(srcdir)/data/akfoerster.xpm \
 	   $(srcdir)/data/computer.xpm \
 	   $(srcdir)/data/positive.au $(srcdir)/data/negative.au \
-	   $(srcdir)/data/neutral.au \
+	   $(srcdir)/data/neutral.au $(srcdir)/data/harrumph.au \
+	   $(srcdir)/data/question.au $(srcdir)/data/sad.au \
 	   $(BINPKGNAME)/data/
 	ln $(srcdir)/lua/documentation/English/base64.about $(BINPKGNAME)/lua/documentation/English/
 	ln $(srcdir)/lua/documentation/English/base64-encode.about $(BINPKGNAME)/lua/documentation/English/
