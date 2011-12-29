@@ -2336,9 +2336,12 @@ set_datapath (lua_State * L)
 
   len = GetModuleFileNameA (NULL, progdir, sizeof (progdir));
 
-  if (len == 0 | len == sizeof (progdir)
-      | (p = strrchr (progdir, '\\')) == NULL)
-    return luaL_error (L, "error with GetModuleFileNameA");
+  if (len == 0 || len == sizeof (progdir)
+      || (p = strrchr (progdir, '\\')) == NULL)
+    {
+      luaL_error (L, "error with GetModuleFileNameA");
+      return;
+    }
 
   *p = '\0';			/* cut filename off */
 
