@@ -1,3 +1,9 @@
+2011-12-29  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/lua-akfavatar-prg.c (require): parameter nresults
+	(handle_require_options, avtdemo): adapted
+	lua/akfavatar/avtdemo.lua: defines no globals
+
 2011-12-28  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/documentation/*/akfavatar-graphic.about:

@@ -281,7 +281,7 @@ local function get_script(demofile)
   return script
 end
 
-function avtdemo(demofile)
+local function avtdemo(demofile)
   if not demofile then return end
 
   -- reset settings

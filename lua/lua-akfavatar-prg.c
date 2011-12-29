@@ -1,6 +1,6 @@
 /*
  * Starter for Lua-AKFAvatar programs in Lua
- * Copyright (c) 2009,2010 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2009,2010,211 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -83,12 +83,13 @@ quit (void)
   lua_close (L);
 }
 
+/* require module and pushes nresults on the stack */
 static void
-require (const char *module)
+require (const char *module, int nresults)
 {
   lua_getglobal (L, "require");
   lua_pushstring (L, module);
-  if (lua_pcall (L, 1, 0, 0) != 0)
+  if (lua_pcall (L, 1, nresults, 0) != 0)
     {
       avta_error (lua_tostring (L, -1), NULL);
       lua_pop (L, 1);		/* pop message */
@@ -105,9 +106,9 @@ handle_require_options (int argc, char *argv[])
       if (strncmp (argv[i], "-l", 2) == 0)
 	{
 	  if (argv[i][2] != '\0')
-	    require (argv[i] + 2);
+	    require (argv[i] + 2, 0);
 	  else
-	    require (argv[++i]);
+	    require (argv[++i], 0);
 	}
     }
 }
@@ -222,8 +223,7 @@ arg0 (const char *filename)
 static void
 avtdemo (const char *filename)
 {
-  require ("akfavatar.avtdemo");
-  lua_getglobal (L, "avtdemo");
+  require ("akfavatar.avtdemo", 1);
   lua_pushstring (L, filename);
   if (lua_pcall (L, 1, 0, 0) != 0)
     {
