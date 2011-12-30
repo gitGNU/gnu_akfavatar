@@ -28,6 +28,7 @@ Keys:
 
 local avt = require "lua-akfavatar"
 local graphic = require "akfavatar-graphic"
+local success = avt.load_audio_file(avt.search "positive.au") or avt.silent()
 
 avt.initialize {
   title = "Connect Four",
@@ -140,7 +141,7 @@ local function check(column)
     else
       num = num+1
       if 4==num then --> success
-        avt.bell()
+        success:play()
         score[player] = score[player] + 1
         show_score()
         return true
