@@ -28,7 +28,7 @@ Keys:
 
 local avt = require "lua-akfavatar"
 local graphic = require "akfavatar-graphic"
-local success = avt.load_audio_file(avt.search "positive.au") or avt.silent()
+local success = avt.load_audio_file(avt.search "okay.au") or avt.silent()
 
 avt.initialize {
   title = "Connect Four",

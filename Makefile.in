@@ -684,6 +684,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/data/positive.au $(srcdir)/data/negative.au \
 	   $(srcdir)/data/neutral.au $(srcdir)/data/harrumph.au \
 	   $(srcdir)/data/question.au $(srcdir)/data/sad.au \
+	   $(srcdir)/data/hey.au $(srcdir)/data/okay.au \
 	   $(PKGNAME)/data/
 
 	mkdir $(PKGNAME)/lua/documentation
@@ -791,6 +792,7 @@ dist-bin-default: all pdf
 	   $(srcdir)/data/positive.au $(srcdir)/data/negative.au \
 	   $(srcdir)/data/neutral.au $(srcdir)/data/harrumph.au \
 	   $(srcdir)/data/question.au $(srcdir)/data/sad.au \
+	   $(srcdir)/data/hey.au $(srcdir)/data/okay.au \
 	   $(BINPKGNAME)/data/
 	ln $(srcdir)/lua/documentation/English/base64.about $(BINPKGNAME)/lua/documentation/English/
 	ln $(srcdir)/lua/documentation/English/base64-encode.about $(BINPKGNAME)/lua/documentation/English/
