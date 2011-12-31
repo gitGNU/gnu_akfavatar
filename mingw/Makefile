@@ -314,7 +314,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	mkdir $(BINPKGNAME)/data
 	cp akfavatar.dll $(BINPKGNAME)/
 	cp $(srcdir)/fsdemo-??.avt $(BINPKGNAME)/
-	cp lua-akfavatar.exe $(BINPKGNAME)/
+	cp lua-akfavatar.exe lua-akfavatar.dll $(BINPKGNAME)/
 	cp base64.dll $(BINPKGNAME)/
 	cp akfavatar-vorbis.dll $(BINPKGNAME)/
 	cp akfavatar-graphic.dll $(BINPKGNAME)/
