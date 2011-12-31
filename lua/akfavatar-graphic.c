@@ -1600,13 +1600,13 @@ lgraphic_export_ppm (lua_State * L)
   f = fopen (fname, "wb");
 
   if (!f)
-    return luaL_error (L, "\"%s\": %s", fname, strerror (errno));
+    return luaL_error (L, LUA_QS ": %s", fname, strerror (errno));
 
   fprintf (f, "P6\n%d %d\n255\n", gr->width, gr->height);
   fwrite (gr->data, 1, gr->height * gr->width * BPP, f);
 
   if (fclose (f) != 0)
-    return luaL_error (L, "\"%s\": %s", fname, strerror (errno));
+    return luaL_error (L, LUA_QS ": %s", fname, strerror (errno));
 
   return 0;
 }
