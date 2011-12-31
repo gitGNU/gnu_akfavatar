@@ -1,4 +1,4 @@
-Avatar library and program avatarsay
+AKFAvatar and Lua-AKFAvatar
 Copyright (c) 2007, 2008, 2009, 2010, 2011 Andreas K. Foerster <info@akfoerster.de>
 License GPLv3 or later
 See the file COPYING for details
@@ -15,6 +15,14 @@ notice and this notice are preserved.  This file is offered as-is,
 without any warranty.
 
 
+akfoerster.xpm, computer.xpm, info.xpm,
+harrumph.au, hey.au, negative.au, neutral.au, positive.au, okay.au,
+question.au, sad.au:
+Made by Andreas K. Foerster
+These files are dedicated to the Public Domain (CC0)
+http://creativecommons.org/publicdomain/zero/1.0/
+
+
 male_user.xpm:
 male user by Aaron Spike
 This file is in the Public Domain
@@ -25,6 +33,11 @@ female_user.xpm:
 female user by dagobert83
 This file is in the Public Domain
 http://openclipart.org/media/files/dagobert83/1514
+
+
+teacher.xpm:
+Drawing by Wilhelm Busch
+This file is in the Public Domain (Copyright expired)
 
 
 gnu-head.xbm, gnu-head.xpm:
@@ -73,7 +86,7 @@ lua/lbase64.c:
 base64 encoding and decoding for Lua 5.1
 Luiz Henrique de Figueiredo <lhf@tecgraf.puc-rio.br>
 modified by Andreas K. Foerster <info@akfoerster.de>
-27 Aug 2010 17:10:00
+Dec 2011
 This code is hereby placed in the public domain.
 
 

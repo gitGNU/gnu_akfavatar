@@ -3,7 +3,7 @@
 * base64 encoding and decoding for Lua 5.1
 * Luiz Henrique de Figueiredo <lhf@tecgraf.puc-rio.br>
 * modified by Andreas K. Foerster <info@akfoerster.de>
-* 27 Aug 2010 17:10:00, 25.12.2011
+* December 2011
 * This code is hereby placed in the public domain.
 */
 
