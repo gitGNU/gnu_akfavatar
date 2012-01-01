@@ -10,6 +10,12 @@
 
 	* lua/lua-avt.c (lavt_load_audio_stream): new function
 
+	* lua/akfavatar-vorbis.c (lvorbis_load_stream_chain):
+	new function
+
+	* lua/akfavatar/avtdemo.lua (load_audio):
+	load directly from stream, if audio comes from an archive
+
 2011-12-29  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-akfavatar-prg.c (require): parameter nresults

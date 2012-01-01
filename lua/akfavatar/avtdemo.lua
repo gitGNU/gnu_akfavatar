@@ -120,7 +120,8 @@ end
 
 local function load_audio(name)
     if archive then
-      audio = avt.load_audio_string(archive:get(name)) or avt.silent()
+      local size = archive:seek(name)
+      audio = avt.load_audio_stream(archive.file, size) or avt.silent()
     else --> not an archive
       audio = avt.load_audio_file(avt.search(name)) or avt.silent()
     end

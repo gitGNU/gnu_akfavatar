@@ -104,6 +104,9 @@ lvorbis_load_stream (lua_State * L)
   stream = (luaL_Stream *) luaL_checkudata (L, 1, LUA_FILEHANDLE);
   size = lua_tounsigned (L, 2);	/* nothing or 0 allowed */
 
+  if (stream->closef == NULL)
+    return luaL_error (L, "attempt to use a closed file");
+
   audio_data = avta_load_vorbis_stream (stream->f, size);
 
   if (audio_data == NULL)
@@ -179,6 +182,43 @@ lvorbis_load_file_chain (lua_State * L)
 }
 
 static int
+lvorbis_load_stream_chain (lua_State * L)
+{
+  luaL_Stream *stream;
+  lua_Unsigned size;
+  avt_audio_t *audio_data;
+
+  stream = (luaL_Stream *) luaL_checkudata (L, 1, LUA_FILEHANDLE);
+  size = lua_tounsigned (L, 2);	/* nothing or 0 allowed */
+
+  if (stream->closef == NULL)
+    return luaL_error (L, "attempt to use a closed file");
+
+  audio_data = avta_load_vorbis_stream (stream->f, size);
+
+  if (!audio_data)
+    {
+      lua_getfield (L, LUA_REGISTRYINDEX, "AVTVORBIS-old_load_audio_stream");
+      lua_pushvalue (L, 1);	/* push stream handle */
+      lua_pushunsigned (L, size);
+
+      if (lua_pcall (L, 2, 1, 0) != 0)
+	{
+	  lua_pushnil (L);	/* return nil on error */
+	  lua_pushliteral (L, "unsupported audio format");
+	  return 2;
+	}
+
+      return 1;
+    }
+
+  register_audio (L, audio_data);
+  collect_garbage (L);
+
+  return 1;
+}
+
+static int
 lvorbis_load_string_chain (lua_State * L)
 {
   avt_audio_t *audio_data;
@@ -210,9 +250,8 @@ lvorbis_load_string_chain (lua_State * L)
 	}
     }
 
-  collect_garbage (L);
-
   register_audio (L, audio_data);
+  collect_garbage (L);
 
   return 1;
 }
@@ -233,15 +272,19 @@ luaopen_vorbis (lua_State * L)
   lua_pushliteral (L, "lua-akfavatar");
   lua_call (L, 1, 1);		/* also gets table avt */
 
-  /* save old avt.load_audio_file and avt.load_audio_string for chain loader */
+  /* save original functions for chain loaders */
   lua_getfield (L, -1, "load_audio_file");
   lua_setfield (L, LUA_REGISTRYINDEX, "AVTVORBIS-old_load_audio_file");
+  lua_getfield (L, -1, "load_audio_stream");
+  lua_setfield (L, LUA_REGISTRYINDEX, "AVTVORBIS-old_load_audio_stream");
   lua_getfield (L, -1, "load_audio_string");
   lua_setfield (L, LUA_REGISTRYINDEX, "AVTVORBIS-old_load_audio_string");
 
   /* redefine avt.load_audio_file and avt.load_audio_string */
   lua_pushcfunction (L, lvorbis_load_file_chain);
   lua_setfield (L, -2, "load_audio_file");
+  lua_pushcfunction (L, lvorbis_load_stream_chain);
+  lua_setfield (L, -2, "load_audio_stream");
   lua_pushcfunction (L, lvorbis_load_string_chain);
   lua_setfield (L, -2, "load_audio_string");
 
