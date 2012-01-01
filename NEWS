@@ -12,6 +12,7 @@
   - avtaddons:
     - avta_arch_get_member: new function
     - avta_arch_get_data: rewritten
+    - avta_load_vorbis_section: new_function
 
   Lua-API changes:
   - new functions: avt.delay, avt.search

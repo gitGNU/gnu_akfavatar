@@ -1,6 +1,6 @@
 /*
  * different addons for AKFAvatar
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007,2008,2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -30,6 +30,7 @@
 
 #include "akfavatar.h"
 #include <wchar.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <unistd.h>
@@ -182,6 +183,7 @@ AVT_ADDON int avta_pager_command (const char *command, int startline);
  **********************************************************************/
 
 AVT_ADDON avt_audio_t *avta_load_vorbis_file (char *filename);
+AVT_ADDON avt_audio_t *avta_load_vorbis_section (FILE *f, unsigned int length);
 AVT_ADDON avt_audio_t *avta_load_vorbis_data (void *data, int datasize);
 
 

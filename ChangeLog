@@ -2,6 +2,9 @@
 
 	* lua/akfavatar/ar.lua: ar:dolua() replaced with ar:loadlua()
 
+	* avtaddons.h, avtvorbis.c (avta_load_vorbis_section): new function
+	(avta_load_vorbis_file): adapted
+
 2011-12-29  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-akfavatar-prg.c (require): parameter nresults

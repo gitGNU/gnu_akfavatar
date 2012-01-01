@@ -96,13 +96,40 @@ load_vorbis (stb_vorbis * vorbis)
 }
 
 extern avt_audio_t *
-avta_load_vorbis_file (char *filename)
+avta_load_vorbis_section (FILE *f, unsigned int length)
 {
-  FILE *f;
   int error;
+  long start;
   stb_vorbis *vorbis;
   avt_audio_t *audio_data;
   char buf[40];
+
+  start = ftell (f);
+
+  /* check content, must be plain vorbis with no other streams */
+  if (fread (&buf, sizeof (buf), 1, f) < 1
+      || memcmp ("OggS", buf, 4) != 0
+      || memcmp ("\x01vorbis", buf + 28, 7) != 0)
+      return NULL;
+
+  fseek (f, start, SEEK_SET);
+  vorbis = stb_vorbis_open_file_section (f, 0, &error, NULL, length);
+
+  if (!vorbis)
+    return NULL;
+
+  audio_data = load_vorbis (vorbis);
+  stb_vorbis_close (vorbis);
+
+  return audio_data;
+}
+
+extern avt_audio_t *
+avta_load_vorbis_file (char *filename)
+{
+  FILE *f;
+  long size;
+  avt_audio_t *audio_data;
 
   if (!filename || !*filename)
     return NULL;
@@ -112,26 +139,19 @@ avta_load_vorbis_file (char *filename)
   if (!f)
     return NULL;
 
-  /* check content, must be plain vorbis with no other streams */
-  if (fread (&buf, sizeof (buf), 1, f) < 1
-      || memcmp ("OggS", buf, 4) != 0
-      || memcmp ("\x01vorbis", buf + 28, 7) != 0)
-    {
-      fclose (f);
-      return NULL;
-    }
-
+  /*
+   * get size
+   * ugly, but stb_vorbis does roughly the same
+   */
+  fseek (f, 0, SEEK_END);
+  size = ftell (f);
   fseek (f, 0, SEEK_SET);
-  vorbis = stb_vorbis_open_file (f, 0, &error, NULL);
 
-  if (!vorbis)
-    {
-      fclose (f);
-      return NULL;
-    }
+  if (size > 0)
+    audio_data = avta_load_vorbis_section (f, size);
+  else
+    audio_data = NULL;
 
-  audio_data = load_vorbis (vorbis);
-  stb_vorbis_close (vorbis);
   fclose (f);
 
   return audio_data;
