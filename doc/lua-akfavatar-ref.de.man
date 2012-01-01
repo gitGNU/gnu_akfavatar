@@ -854,6 +854,25 @@ Bei Fehlern wird
 und eine Fehlermelung zurückgegeben.
 (Anmerkung: in Version 0.19.0 wurde dann auch eine Stille zurückgegeben.)
 .PP
+.BI "avt.load_audio_stream(" "Datei [,Größe]" )
+.TQ
+.BI "avt.load_base_audio_file(" "Datei [,Größe]" )
+Liest Audio-Daten von einer geöffneten Datei.
+Die Datei muss durchsuchbar sein.
+.IP
+Lua-Module können Unterstützung für weitere Audio-Formate zu
+.B "avt.load_audio_stream()"
+hinzufügen.
+(Das tut zum Beispiel das Modul
+.BR akfavatar-vorbis ).
+.IP
+Wenn keine Größe angegeben ist, wird davon ausgegangen, 
+dass die Audio-Daten bis zum Ende der Datei gehen.
+.IP
+Bei Fehlern wird
+.I nil
+und eine Fehlermelung zurückgegeben.
+.PP
 .TP
 .BI "avt.load_audio_string(" [Audiodaten] )
 .TQ

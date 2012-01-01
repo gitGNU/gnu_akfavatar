@@ -8,6 +8,8 @@
 	* lua/akfavatar-vorbis.c (lvorbis_load_stream, register_audio):
 	new functions
 
+	* lua/lua-avt.c (lavt_load_audio_stream): new function
+
 2011-12-29  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-akfavatar-prg.c (require): parameter nresults

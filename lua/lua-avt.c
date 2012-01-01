@@ -1412,6 +1412,38 @@ lavt_load_audio_file (lua_State * L)
   return 1;
 }
 
+/* loads audio from a stream */
+static int
+lavt_load_audio_stream (lua_State * L)
+{
+  luaL_Stream *stream;
+  avt_audio_t *audio_data;
+
+  stream = (luaL_Stream *) luaL_checkudata (L, 1, LUA_FILEHANDLE);
+  /* parameter 2 reserved for maximum size but not used here */
+
+  if (stream->closef == NULL)
+    return luaL_error(L, "attempt to use a closed file");
+
+  if (!avt_audio_playing (NULL))
+    audio_not_playing (L);
+
+  /* full garbage collection */
+  lua_gc (L, LUA_GCCOLLECT, 0);
+
+  audio_data = avt_load_audio_stream ((avt_stream *) stream->f);
+
+  if (!audio_data)
+    {
+      lua_pushnil (L);
+      lua_pushstring (L, avt_get_error ());
+      return 2;
+    }
+
+  make_audio_element (L, audio_data);
+  return 1;
+}
+
 static int
 lavt_load_audio_string (lua_State * L)
 {
@@ -2275,6 +2307,8 @@ static const luaL_Reg akfavtlib[] = {
   {"quit_audio", lavt_quit_audio},
   {"load_audio_file", lavt_load_audio_file},
   {"load_base_audio_file", lavt_load_audio_file},
+  {"load_audio_stream", lavt_load_audio_stream},
+  {"load_base_audio_stream", lavt_load_audio_stream},
   {"load_audio_string", lavt_load_audio_string},
   {"load_base_audio_string", lavt_load_audio_string},
   {"silent", lavt_silent},

@@ -793,6 +793,24 @@ and an error message.
 (Note: in version 0.19.0 it also returned a silent audio element then.)
 .PP
 .TP
+.BI "avt.load_audio_stream(" "file handle [,size]" )
+.TQ
+.BI "avt.load_base_audio_stream(" "file handle [,size]" )
+Reads audio data from an open file handle.
+The file must be searchable.
+.IP
+Lua modules may add support for more audio formats to
+.B "avt.load_audio_stream()"
+(for example the module
+.BR akfavatar-vorbis ).
+.IP
+If no size is given, it assumes the audio is the rest of the file.
+.IP
+On error it returns 
+.I nil
+and an error message.
+.PP
+.TP
 .BI "avt.load_audio_string(" [audio_data] )
 .TQ
 .BI "avt.load_base_audio_string(" [audio_data] )
