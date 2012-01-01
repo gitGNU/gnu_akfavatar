@@ -123,7 +123,7 @@ avta_load_vorbis_stream (avt_stream * stream, unsigned int size)
       /* get the size */
       /* ugly, but stb_vorbis does roughly the same */
       fseek (f, 0, SEEK_END);
-      size = ftell (f);
+      size = ftell (f) - start;
     }
 
   fseek (f, start, SEEK_SET);
