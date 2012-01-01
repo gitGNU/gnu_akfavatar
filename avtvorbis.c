@@ -113,7 +113,10 @@ avta_load_vorbis_stream (avt_stream * stream, unsigned int size)
   if (fread (&buf, sizeof (buf), 1, f) < 1
       || memcmp ("OggS", buf, 4) != 0
       || memcmp ("\x01vorbis", buf + 28, 7) != 0)
-    return NULL;
+    {
+      fseek (f, start, SEEK_SET);
+      return NULL;
+    }
 
   if (size == 0)
     {
@@ -131,8 +134,11 @@ avta_load_vorbis_stream (avt_stream * stream, unsigned int size)
       audio_data = load_vorbis (vorbis);
       stb_vorbis_close (vorbis);
     }
-  else
-    audio_data = NULL;
+  else				/* error */
+    {
+      fseek (f, start, SEEK_SET);
+      audio_data = NULL;
+    }
 
   return audio_data;
 }

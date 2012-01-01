@@ -188,6 +188,7 @@ AVT_ADDON avt_audio_t *avta_load_vorbis_data (void *data, int datasize);
 /*
  * read from a stream at current position size bytes maximum
  * if size is 0 then get the rest of the file
+ * on error it restores the file position and returns NULL
  */
 AVT_ADDON avt_audio_t *avta_load_vorbis_stream (avt_stream *stream,
                                                 unsigned int size);
