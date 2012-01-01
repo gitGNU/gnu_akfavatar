@@ -856,7 +856,7 @@ und eine Fehlermelung zurückgegeben.
 .PP
 .BI "avt.load_audio_stream(" "Datei [,Größe]" )
 .TQ
-.BI "avt.load_base_audio_file(" "Datei [,Größe]" )
+.BI "avt.load_base_audio_stream(" "Datei [,Größe]" )
 Liest Audio-Daten von einer geöffneten Datei.
 Die Datei muss durchsuchbar sein.
 .IP
