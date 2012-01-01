@@ -183,8 +183,14 @@ AVT_ADDON int avta_pager_command (const char *command, int startline);
  **********************************************************************/
 
 AVT_ADDON avt_audio_t *avta_load_vorbis_file (char *filename);
-AVT_ADDON avt_audio_t *avta_load_vorbis_section (FILE *f, unsigned int length);
 AVT_ADDON avt_audio_t *avta_load_vorbis_data (void *data, int datasize);
+
+/*
+ * read from a stream at current position size bytes maximum
+ * if size is 0 then get the rest of the file
+ */
+AVT_ADDON avt_audio_t *avta_load_vorbis_stream (avt_stream *stream,
+                                                unsigned int size);
 
 
 /**********************************************************************

@@ -97,14 +97,16 @@ load_vorbis (stb_vorbis * vorbis)
 }
 
 extern avt_audio_t *
-avta_load_vorbis_section (FILE * f, unsigned int length)
+avta_load_vorbis_stream (avt_stream * stream, unsigned int size)
 {
+  FILE *f;
   int error;
   long start;
   stb_vorbis *vorbis;
   avt_audio_t *audio_data;
   char buf[40];
 
+  f = (FILE *) stream;
   start = ftell (f);
 
   /* check content, must be plain vorbis with no other streams */
@@ -113,8 +115,16 @@ avta_load_vorbis_section (FILE * f, unsigned int length)
       || memcmp ("\x01vorbis", buf + 28, 7) != 0)
     return NULL;
 
+  if (size == 0)
+    {
+      /* get the size */
+      /* ugly, but stb_vorbis does roughly the same */
+      fseek (f, 0, SEEK_END);
+      size = ftell (f);
+    }
+
   fseek (f, start, SEEK_SET);
-  vorbis = stb_vorbis_open_file_section (f, 0, &error, NULL, length);
+  vorbis = stb_vorbis_open_file_section (f, 0, &error, NULL, size);
 
   if (vorbis)
     {
@@ -142,19 +152,7 @@ avta_load_vorbis_file (char *filename)
   if (!f)
     return NULL;
 
-  /*
-   * get size
-   * ugly, but stb_vorbis does roughly the same
-   */
-  fseek (f, 0, SEEK_END);
-  size = ftell (f);
-  fseek (f, 0, SEEK_SET);
-
-  if (size > 0)
-    audio_data = avta_load_vorbis_section (f, size);
-  else
-    audio_data = NULL;
-
+  audio_data = avta_load_vorbis_stream (f, 0);
   fclose (f);
 
   return audio_data;

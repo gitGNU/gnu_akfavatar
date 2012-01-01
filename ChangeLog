@@ -5,7 +5,7 @@
 	* avtaddons.h, avtvorbis.c (avta_load_vorbis_section): new function
 	(avta_load_vorbis_file): adapted
 
-	* lua/akfavatar-vorbis.c (lvorbis_load_section, register_audio):
+	* lua/akfavatar-vorbis.c (lvorbis_load_stream, register_audio):
 	new functions
 
 2011-12-29  Andreas K. Foerster  <info@akfoerster.de>

@@ -94,7 +94,7 @@ lvorbis_load_file (lua_State * L)
 }
 
 static int
-lvorbis_load_section (lua_State * L)
+lvorbis_load_stream (lua_State * L)
 {
   luaL_Stream *stream;
   lua_Unsigned size;
@@ -102,9 +102,9 @@ lvorbis_load_section (lua_State * L)
 
   collect_garbage (L);
   stream = (luaL_Stream *) luaL_checkudata (L, 1, LUA_FILEHANDLE);
-  size = luaL_checkunsigned (L, 2);
+  size = lua_tounsigned (L, 2);	/* nothing or 0 allowed */
 
-  audio_data = avta_load_vorbis_section (stream->f, size);
+  audio_data = avta_load_vorbis_stream (stream->f, size);
 
   if (audio_data == NULL)
     {
@@ -220,7 +220,7 @@ lvorbis_load_string_chain (lua_State * L)
 
 static const luaL_Reg vorbislib[] = {
   {"load_file", lvorbis_load_file},
-  {"load_section", lvorbis_load_section},
+  {"load_stream", lvorbis_load_stream},
   {"load_string", lvorbis_load_string},
   {NULL, NULL}
 };
