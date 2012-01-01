@@ -1,7 +1,7 @@
 * AKFAvatar testing
 
   - Uses Lua-5.2 now, no longer compatible with 5.1
-  - Lua modules don't define globals anymore
+  - Lua modules don't define globals anymore (scripts have to be adapted!)
   - The source code is compatible with C++ compilers again
   - Data files are put in a separate directory and Lua has a search function
     for it (scripts have to be adapted!)
@@ -21,6 +21,9 @@
     - gr:put() optimized for same width, position is optional now
     - new methods: gr:shift_vertically(), gr:shift_horizontally(),
       gr:put_transparency()
+  - Module "akfavatar.ar"
+    - ar:dolua() replaced with ar:loadlua()
+
 
 * AKFAvatar 0.21.2
 

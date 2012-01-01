@@ -3,7 +3,7 @@ Lua module to handle ar archives (unfinished)
 currenty only for reading
 member names are limited to 15 characters
 
-Copyright (c) 2010,211 Andreas K. Foerster <info@akfoerster.de>
+Copyright (c) 2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ function ar:open(filename, mode)
       return nil, filename .. ": not an archive file"
     end
   else
-    return nil, string.format("mode \"%s\" not supported", mode)
+    return nil, string.format("mode '%s' not supported, yet", mode)
   end --> if mode
 
   setmetatable(obj, self)
@@ -153,12 +153,11 @@ function ar:get(member)
   return result
 end
 
--- runs the member as lua code
+-- loads the member as lua code
 -- if no member name is given, it gets the current/next member
 -- errors are propagated
-function ar:dolua(member)
-  assert(load(assert(self:get(member)), member or self.name))()
+function ar:loadlua(member)
+  assert(load(assert(self:get(member)), member or self.name, "t"))
 end
 
 return ar
-
