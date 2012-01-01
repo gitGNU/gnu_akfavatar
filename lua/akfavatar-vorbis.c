@@ -1,7 +1,7 @@
 /*
  * AKFAvatar Ogg Vorbis decoder
  * based on stb_vorbis
- * Copyright (c) 2011 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2011,2012 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -59,12 +59,23 @@ collect_garbage (lua_State * L)
   lua_gc (L, LUA_GCCOLLECT, 0);
 }
 
+/* registers audio structure at table on to of stack */
+static void
+register_audio (lua_State * L, avt_audio_t * audio_data)
+{
+  avt_audio_t **audio;
+
+  audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
+  *audio = audio_data;
+  luaL_getmetatable (L, AUDIODATA);
+  lua_setmetatable (L, -2);
+}
+
 static int
 lvorbis_load_file (lua_State * L)
 {
   char *filename;
   avt_audio_t *audio_data;
-  avt_audio_t **audio;
 
   collect_garbage (L);
   filename = (char *) luaL_checkstring (L, 1);
@@ -77,11 +88,31 @@ lvorbis_load_file (lua_State * L)
       return 1;
     }
 
-  /* create audio structure */
-  audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
-  *audio = audio_data;
-  luaL_getmetatable (L, AUDIODATA);
-  lua_setmetatable (L, -2);
+  register_audio (L, audio_data);
+
+  return 1;
+}
+
+static int
+lvorbis_load_section (lua_State * L)
+{
+  luaL_Stream *stream;
+  lua_Unsigned size;
+  avt_audio_t *audio_data;
+
+  collect_garbage (L);
+  stream = (luaL_Stream *) luaL_checkudata (L, 1, LUA_FILEHANDLE);
+  size = luaL_checkunsigned (L, 2);
+
+  audio_data = avta_load_vorbis_section (stream->f, size);
+
+  if (audio_data == NULL)
+    {
+      lua_pushnil (L);
+      return 1;
+    }
+
+  register_audio (L, audio_data);
 
   return 1;
 }
@@ -92,7 +123,6 @@ lvorbis_load_string (lua_State * L)
   size_t len;
   void *vorbis_data;
   avt_audio_t *audio_data;
-  avt_audio_t **audio;
 
   collect_garbage (L);
   vorbis_data = (void *) luaL_checklstring (L, 1, &len);
@@ -105,11 +135,7 @@ lvorbis_load_string (lua_State * L)
       return 1;
     }
 
-  /* create audio structure */
-  audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
-  *audio = audio_data;
-  luaL_getmetatable (L, AUDIODATA);
-  lua_setmetatable (L, -2);
+  register_audio (L, audio_data);
 
   return 1;
 }
@@ -118,7 +144,6 @@ static int
 lvorbis_load_file_chain (lua_State * L)
 {
   avt_audio_t *audio_data;
-  avt_audio_t **audio;
 
   audio_data = NULL;
 
@@ -148,11 +173,7 @@ lvorbis_load_file_chain (lua_State * L)
 
   collect_garbage (L);
 
-  /* create audio structure */
-  audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
-  *audio = audio_data;
-  luaL_getmetatable (L, AUDIODATA);
-  lua_setmetatable (L, -2);
+  register_audio (L, audio_data);
 
   return 1;
 }
@@ -161,7 +182,6 @@ static int
 lvorbis_load_string_chain (lua_State * L)
 {
   avt_audio_t *audio_data;
-  avt_audio_t **audio;
 
   audio_data = NULL;
 
@@ -192,11 +212,7 @@ lvorbis_load_string_chain (lua_State * L)
 
   collect_garbage (L);
 
-  /* create audio structure with loaded audio_data */
-  audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
-  *audio = audio_data;
-  luaL_getmetatable (L, AUDIODATA);
-  lua_setmetatable (L, -2);
+  register_audio (L, audio_data);
 
   return 1;
 }
@@ -204,6 +220,7 @@ lvorbis_load_string_chain (lua_State * L)
 
 static const luaL_Reg vorbislib[] = {
   {"load_file", lvorbis_load_file},
+  {"load_section", lvorbis_load_section},
   {"load_string", lvorbis_load_string},
   {NULL, NULL}
 };
