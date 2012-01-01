@@ -2,7 +2,7 @@
  * AKFAvatar Ogg Vorbis decoder
  * based on stb_vorbis
  * ATTENTION: this is work in progress, ie. not finished yet
- * Copyright (c) 2011 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2011,2012 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -22,6 +22,7 @@
 
 #include "akfavatar.h"
 #include "avtaddons.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 #define STB_VORBIS_HEADER_ONLY 1
@@ -96,7 +97,7 @@ load_vorbis (stb_vorbis * vorbis)
 }
 
 extern avt_audio_t *
-avta_load_vorbis_section (FILE *f, unsigned int length)
+avta_load_vorbis_section (FILE * f, unsigned int length)
 {
   int error;
   long start;
@@ -110,16 +111,18 @@ avta_load_vorbis_section (FILE *f, unsigned int length)
   if (fread (&buf, sizeof (buf), 1, f) < 1
       || memcmp ("OggS", buf, 4) != 0
       || memcmp ("\x01vorbis", buf + 28, 7) != 0)
-      return NULL;
+    return NULL;
 
   fseek (f, start, SEEK_SET);
   vorbis = stb_vorbis_open_file_section (f, 0, &error, NULL, length);
 
-  if (!vorbis)
-    return NULL;
-
-  audio_data = load_vorbis (vorbis);
-  stb_vorbis_close (vorbis);
+  if (vorbis)
+    {
+      audio_data = load_vorbis (vorbis);
+      stb_vorbis_close (vorbis);
+    }
+  else
+    audio_data = NULL;
 
   return audio_data;
 }
