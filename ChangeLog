@@ -6,10 +6,10 @@
 
 	* lua/akfavatar/ar.lua: ar:dolua() replaced with ar:loadlua()
 
-	* avtaddons.h, avtvorbis.c (avta_load_vorbis_section): new function
+	* avtaddons.h, avtvorbis.c (avta_load_vorbis_stream): new function
 	(avta_load_vorbis_file): adapted
 
-	* lua/akfavatar-vorbis.c (lvorbis_load_stream, register_audio):
+	* lua/akfavatar-vorbis.c (lvorbis_load_stream, make_audio_element):
 	new functions
 
 	* lua/lua-avt.c (lavt_load_audio_stream): new function

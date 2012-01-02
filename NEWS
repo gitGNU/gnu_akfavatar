@@ -15,7 +15,7 @@
     - avta_load_vorbis_stream: new_function
 
   Lua-API changes:
-  - new functions: avt.delay, avt.search
+  - new functions: avt.delay, avt.search, avt.load_audio_stream
   - new variable: avt.datapath
   - Module "akfavatar-graphic"
     - gr:new() accepts name for background color
@@ -24,6 +24,8 @@
       gr:put_transparency()
   - Module "akfavatar.ar"
     - ar:dolua() replaced with ar:loadlua()
+  - Module akfavatar-vorbis:
+     - new function vorbis.load_stream
 
 
 * AKFAvatar 0.21.2
