@@ -799,7 +799,10 @@ avt_play_audio (avt_audio_t * snd, bool doloop)
       return _avt_STATUS;
     }
   else
-    return AVT_ERROR;
+    {
+      SDL_SetError ("error opening audio device");
+      return AVT_ERROR;
+    }
 }
 
 extern int

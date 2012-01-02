@@ -61,7 +61,7 @@ collect_garbage (lua_State * L)
 
 /* registers audio structure at table on to of stack */
 static void
-register_audio (lua_State * L, avt_audio_t * audio_data)
+make_audio_element (lua_State * L, avt_audio_t * audio_data)
 {
   avt_audio_t **audio;
 
@@ -88,7 +88,7 @@ lvorbis_load_file (lua_State * L)
       return 1;
     }
 
-  register_audio (L, audio_data);
+  make_audio_element (L, audio_data);
 
   return 1;
 }
@@ -115,7 +115,7 @@ lvorbis_load_stream (lua_State * L)
       return 1;
     }
 
-  register_audio (L, audio_data);
+  make_audio_element (L, audio_data);
 
   return 1;
 }
@@ -138,7 +138,7 @@ lvorbis_load_string (lua_State * L)
       return 1;
     }
 
-  register_audio (L, audio_data);
+  make_audio_element (L, audio_data);
 
   return 1;
 }
@@ -176,7 +176,7 @@ lvorbis_load_file_chain (lua_State * L)
 
   collect_garbage (L);
 
-  register_audio (L, audio_data);
+  make_audio_element (L, audio_data);
 
   return 1;
 }
@@ -212,7 +212,7 @@ lvorbis_load_stream_chain (lua_State * L)
       return 1;
     }
 
-  register_audio (L, audio_data);
+  make_audio_element (L, audio_data);
   collect_garbage (L);
 
   return 1;
@@ -250,7 +250,7 @@ lvorbis_load_string_chain (lua_State * L)
 	}
     }
 
-  register_audio (L, audio_data);
+  make_audio_element (L, audio_data);
   collect_garbage (L);
 
   return 1;
