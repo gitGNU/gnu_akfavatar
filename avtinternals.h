@@ -1,6 +1,6 @@
 /*
  * internal prototypes for AKFAvatar
- * Copyright (c) 2010,2011 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *

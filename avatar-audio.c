@@ -1,7 +1,7 @@
 /*
  * AKFAvatar - library for showing an avatar who says things in a balloon
  * this part is for the audio-output
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007,2008,2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
  *
  * needed: 
  *  SDL1.2

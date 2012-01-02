@@ -1,6 +1,6 @@
 /*
  * AKFAvatar library - for giving your programs a graphical Avatar
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007,2008,2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
  *
  * needed:
  *  SDL1.2 (recommended: SDL1.2.11 or later (but not 1.3!))
@@ -58,7 +58,7 @@
 #  include "SDL_image.h"
 #endif
 
-#define COPYRIGHTYEAR "2011"
+#define COPYRIGHTYEAR "2012"
 
 /*
  * Most iconv implementations support "" for the systems encoding.
@@ -2213,7 +2213,7 @@ avt_wait (int milliseconds)
 extern void
 avt_delay (int milliseconds)
 {
-  SDL_Delay(milliseconds);
+  SDL_Delay (milliseconds);
 }
 
 extern unsigned int
@@ -3572,8 +3572,8 @@ avt_mb_encoding (const char *encoding)
   /* check if it was successfully initialized */
   if (output_cd == ICONV_UNINITIALIZED)
     {
-      _avt_STATUS = AVT_ERROR;
       SDL_SetError ("encoding \"%s\" not supported for output", encoding);
+      _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
 
@@ -3591,8 +3591,8 @@ avt_mb_encoding (const char *encoding)
     {
       avt_iconv_close (output_cd);
       output_cd = ICONV_UNINITIALIZED;
-      _avt_STATUS = AVT_ERROR;
       SDL_SetError ("encoding \"%s\" not supported for input", encoding);
+      _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
 
@@ -4261,6 +4261,7 @@ avt_choice (int *result, int start_line, int items, int key,
 
       if (!plain_menu)
 	{
+	  SDL_SetError ("out of memory");
 	  _avt_STATUS = AVT_ERROR;
 	  return _avt_STATUS;
 	}
@@ -4274,6 +4275,7 @@ avt_choice (int *result, int start_line, int items, int key,
       if (!bar)
 	{
 	  SDL_FreeSurface (plain_menu);
+	  SDL_SetError ("out of memory");
 	  _avt_STATUS = AVT_ERROR;
 	  return _avt_STATUS;
 	}
@@ -5274,6 +5276,7 @@ avt_navigate (const char *buttons)
   if (buttons_rect.x < 0)
     {
       SDL_FreeSurface (base_button);
+      SDL_SetError ("too many buttons");
       return AVT_ERROR;
     }
 
@@ -5639,6 +5642,7 @@ avt_show_image_file (const char *filename)
   if (image == NULL)
     {
       avt_clear_screen ();	/* at least clear the screen */
+      SDL_SetError ("couldn't show image");
       return AVT_ERROR;
     }
 
@@ -5673,6 +5677,7 @@ avt_show_image_stream (avt_stream * stream)
   if (image == NULL)
     {
       avt_clear_screen ();	/* at least clear the screen */
+      SDL_SetError ("couldn't show image");
       return AVT_ERROR;
     }
 
@@ -5710,6 +5715,7 @@ avt_show_image_data (void *img, int imgsize)
   if (image == NULL)
     {
       avt_clear_screen ();	/* at least clear the screen */
+      SDL_SetError ("couldn't show image");
       return AVT_ERROR;
     }
 
@@ -5732,6 +5738,7 @@ avt_show_image_xpm (char **xpm)
   if (image == NULL)
     {
       avt_clear_screen ();	/* at least clear the screen */
+      SDL_SetError ("couldn't show image");
       return AVT_ERROR;
     }
 
@@ -5757,6 +5764,7 @@ avt_show_image_xbm (const unsigned char *bits, int width, int height,
   if (avt_name_to_color (colorname, &red, &green, &blue) < 0)
     {
       avt_clear ();		/* at least clear the balloon */
+      SDL_SetError ("couldn't show image");
       return AVT_ERROR;
     }
 
@@ -5765,6 +5773,7 @@ avt_show_image_xbm (const unsigned char *bits, int width, int height,
   if (image == NULL)
     {
       avt_clear_screen ();	/* at least clear the screen */
+      SDL_SetError ("couldn't show image");
       return AVT_ERROR;
     }
 
@@ -5837,6 +5846,7 @@ avt_show_raw_image (void *image_data, int width, int height,
   if (image == NULL)
     {
       avt_clear_screen ();	/* at least clear the screen */
+      SDL_SetError ("couldn't show image");
       return AVT_ERROR;
     }
 
@@ -5861,7 +5871,10 @@ avt_init_SDL (void)
       SDL_SetError ("15ce822f94d7e8e4281f1c2bcdd7c56d");
 
       if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
-	_avt_STATUS = AVT_ERROR;
+	{
+	  SDL_SetError ("couldn't show image");
+	  _avt_STATUS = AVT_ERROR;
+	}
     }
 
   return _avt_STATUS;
@@ -6101,6 +6114,7 @@ avt_change_avatar_image (avt_image_t * image)
 
       if (!avt_image)
 	{
+	  SDL_SetError ("couldn't load avatar");
 	  _avt_STATUS = AVT_ERROR;
 	  return _avt_STATUS;
 	}
@@ -6780,6 +6794,7 @@ avt_initialize (const char *title, const char *shortname,
   /* already initialized? */
   if (screen)
     {
+      SDL_SetError ("AKFAvatar already initialized");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
@@ -6798,6 +6813,7 @@ avt_initialize (const char *title, const char *shortname,
   if (avt_init_SDL ())
     {
       avt_free_image (image);
+      SDL_SetError ("error initializing AKFAvatar");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
@@ -6860,6 +6876,7 @@ avt_initialize (const char *title, const char *shortname,
   if (screen == NULL)
     {
       avt_free_image (image);
+      SDL_SetError ("error initializing AKFAvatar");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
@@ -6903,6 +6920,7 @@ avt_initialize (const char *title, const char *shortname,
 
   if (!avt_character)
     {
+      SDL_SetError ("out of memory");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
@@ -6917,6 +6935,7 @@ avt_initialize (const char *title, const char *shortname,
   if (!avt_text_cursor)
     {
       SDL_FreeSurface (avt_character);
+      SDL_SetError ("out of memory");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
@@ -6937,6 +6956,7 @@ avt_initialize (const char *title, const char *shortname,
     {
       SDL_FreeSurface (avt_text_cursor);
       SDL_FreeSurface (avt_character);
+      SDL_SetError ("out of memory");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }

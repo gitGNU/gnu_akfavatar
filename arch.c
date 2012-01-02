@@ -1,6 +1,6 @@
 /* 
  * some functions for handling ar archives
- * Copyright (c) 2008 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2008,2011,2012 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
