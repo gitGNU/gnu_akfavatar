@@ -1,43 +1,30 @@
--- Copyright (c) 2010,2011 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
 local avt = require "lua-akfavatar"
+local lang = require "akfavatar.lang"
 
-local positive = avt.load_audio_file(avt.search("positive.au"))
-local negative = avt.load_audio_file(avt.search("negative.au"))
-local count = { questions = 0, right = 0 }
-local questionary_encoding;
-
--- These messages can be changed with the function querymessages{}
-local msg = {
-  encoding = "US-ASCII",
-  correct = "That's correct.",
-  wrong = "Wrong!",
-  again = "Try again?",
-  correction = "The correct answer:",
-  questions = "Questions",
-  correctly_answered = "correct"
+lang.translations {
+  ["That's correct."] = {
+    de = "Das ist richtig."},
+  ["Wrong!"] = {
+    de = "Falsch!"},
+  ["Try again?"] = {
+    de = "Nochmal versuchen?"},
+  ["The correct answer:"] = {
+    de = "Die richtige Antwort lautet:"},
+  ["Questions: %d, correct: %d (%d%%)"] = {
+    de = "Fragen: %d, davon richtig: %d (%d%%)"},
 }
 
-function questionarymessages(m)
-  for key, message in pairs(m) do
-    msg[key] = message
-  end
-end
+local positive = avt.load_audio_file(avt.search("positive.au")) or avt.silent()
+local negative = avt.load_audio_file(avt.search("negative.au")) or avt.silent()
+local count = { questions = 0, right = 0 }
+local L = lang.translate
 
 local function normalize(s)
   -- make lowercase and remove leading and trailing spaces
   return string.lower(string.gsub(s, "^%s*(.-)%s*$", "%1"))
-end
-
-local function msgtell(s)
-  if msg.encoding == questionary_encoding then
-    avt.tell(s)
-  else
-    avt.encoding(msg.encoding)
-    avt.tell(s)
-    avt.encoding(questionary_encoding)
-  end
 end
 
 local function correct()
@@ -45,7 +32,7 @@ local function correct()
   count.right = count.right + 1
   avt.show_avatar()
   avt.set_balloon_color("#CFC")
-  msgtell(msg.correct)
+  avt.tell(L"That's correct.")
   avt.wait_button()
 
   return false --> correct answer
@@ -55,12 +42,12 @@ local function wrong(q)
   negative()
   avt.show_avatar()
   avt.set_balloon_color("#FCC")
-  msgtell(msg.wrong .. "\n\n" .. msg.again)
+  avt.tell(L"Wrong!", "\n\n", L"Try again?")
   if avt.decide()
   then return true --> wrong, try again
   else
     avt.set_balloon_color("floral white")
-    msgtell(msg.correction .. "\n- " .. table.concat(q, "\n- ", 2))
+    avt.tell(L"The correct answer:", "\n- ", table.concat(q, "\n- ", 2))
     avt.wait_button()
     return false --> correct answer shown
   end
@@ -73,7 +60,7 @@ local function ask_boolean(b)
       avt.show_avatar()
       avt.set_balloon_color("#FCC")
       negative()
-      msgtell(msg.wrong)
+      avt.tell(L"Wrong!")
       avt.wait_button()
   end
 
@@ -97,24 +84,28 @@ end
 
 local function show_results()
   avt.set_balloon_color("floral white")
-  msgtell(string.format("%s: %d, %s: %d (%d%%)",
-    msg.questions, count.questions,
-    msg.correctly_answered, count.right,
+  avt.tell(string.format(L"Questions: %d, correct: %d (%d%%)",
+    count.questions, count.right,
     count.right * 100 / count.questions))
   avt.wait_button()
 end
 
-function questionary(qa)
+local function questionary(qa)
   count.questions, count.right = 0, 0
 
   if not avt.initialized()
   then
-    avt.initialize{title="AKFAvatar: query", audio=true}
+    avt.initialize {
+      title = qa.title,
+      avatar = avt.search(qa.avatar) or "default",
+      audio = true,
+      encoding = "UTF-8"
+      }
   else
     avt.initialize_audio()
   end
 
-  questionary_encoding = avt.get_encoding()
+  if qa.lang then lang.use(qa.lang) end
 
   for i, q in ipairs(qa) do
     local again
@@ -136,9 +127,6 @@ function questionary(qa)
 
   show_results()
 end -- function
-
---for yes/no questions
-yes, no = true, false
 
 return questionary
 

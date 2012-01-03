@@ -39,7 +39,6 @@ LUA_MODULES = \
 	  $(srcdir)/lua/akfavatar/dir.??.about \
 	  $(srcdir)/lua/akfavatar/lang.lua \
 	  $(srcdir)/lua/akfavatar/questionary.lua \
-	  $(srcdir)/lua/akfavatar/Fragebogen.lua \
 	  $(srcdir)/lua/akfavatar/person.lua \
 	  $(srcdir)/lua/akfavatar/utf8.lua \
 	  $(srcdir)/lua/akfavatar/ar.lua \
@@ -722,7 +721,6 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/lua/akfavatar/lang.lua \
 	   $(srcdir)/lua/akfavatar/person.lua \
 	   $(srcdir)/lua/akfavatar/questionary.lua \
-	   $(srcdir)/lua/akfavatar/Fragebogen.lua \
 	   $(srcdir)/lua/akfavatar/ar.lua \
 	   $(srcdir)/lua/akfavatar/avtdemo.lua \
 	   $(PKGNAME)/lua/akfavatar/
@@ -834,7 +832,6 @@ dist-bin-default: all pdf
 	   $(srcdir)/lua/akfavatar/lang.lua \
 	   $(srcdir)/lua/akfavatar/person.lua \
 	   $(srcdir)/lua/akfavatar/questionary.lua \
-	   $(srcdir)/lua/akfavatar/Fragebogen.lua \
 	   $(srcdir)/lua/akfavatar/ar.lua \
 	   $(srcdir)/lua/akfavatar/avtdemo.lua \
 	   $(BINPKGNAME)/lua/akfavatar/

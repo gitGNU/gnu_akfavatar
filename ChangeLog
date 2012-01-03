@@ -1,3 +1,9 @@
+2012-01-03  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/akfavatar/questionary.lua: rewritten
+	  lua/fs-quiz-de.lua, lua/fs-quiz-en.lua: adapted
+	  lua/akfavatar/Fragebogen.lua: removed
+
 2012-01-02  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c: add more error messages

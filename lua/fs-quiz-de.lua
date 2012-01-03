@@ -1,6 +1,6 @@
 #!/usr/bin/env lua-akfavatar
 
--- Copyright (c) 2010,2011 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
 -- Lizenz: GPL Version 3 oder neuer
 -- mit Ideen von Arne Babenhauserheide
 
@@ -8,16 +8,18 @@
 -- im Copyright-Vermerk nicht übernehmen
 
 local avt = require "lua-akfavatar"
-require "akfavatar.Fragebogen"
+local Fragebogen = require "akfavatar.questionary"
 
 avt.initialize {
-  title="Freie Software Quiz",
-  avatar=assert(avt.search("gnu-head.xpm")),
-  encoding="UTF-8",
-  audio=true
+  title = "Freie Software Quiz",
+  avatar = avt.search("gnu-head.xpm") or "default",
+  encoding = "UTF-8",
+  audio = true
 }
 
 Fragebogen {
+
+  lang = "de",
 
   {"In welchem Jahr wurde das GNU-Projekt erstmalig angekündigt?",
    1983, 83},
@@ -54,6 +56,6 @@ Fragebogen {
    "Linus Torvalds", "Linus B. Torvalds", "Linus Benedict Torvalds", "Torvalds"},
 
   {"Darf man Freie Software, die man nicht selbst geschrieben hat, verkaufen?",
-   ja},
+   true},
 
 }

@@ -362,7 +362,6 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(srcdir)/lua/akfavatar/lang.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/person.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/questionary.lua $(BINPKGNAME)/lua/akfavatar/
-	cp $(srcdir)/lua/akfavatar/Fragebogen.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/ar.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/avtdemo.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/data/gnu-head.xpm $(srcdir)/data/gnu-head.xbm \
