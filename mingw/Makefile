@@ -373,6 +373,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	   $(srcdir)/data/neutral.au $(srcdir)/data/harrumph.au \
 	   $(srcdir)/data/question.au $(srcdir)/data/sad.au \
 	   $(srcdir)/data/hey.au $(srcdir)/data/okay.au \
+	   $(srcdir)/data/hahaha.au $(srcdir)/data/game_over.au \
 	   $(BINPKGNAME)/data/
 	cp $(srcdir)/AUTHORS $(BINPKGNAME)/AUTHORS.txt
 	cp $(srcdir)/COPYING $(BINPKGNAME)/COPYING.txt
