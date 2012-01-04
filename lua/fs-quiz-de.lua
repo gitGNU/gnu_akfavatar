@@ -7,18 +7,10 @@
 -- Wenn man einen eigenen Fragebogen erstellt, muss man den Namen
 -- im Copyright-Vermerk nicht übernehmen
 
-local avt = require "lua-akfavatar"
-local Fragebogen = require "akfavatar.questionary"
+require "akfavatar.questionary"
 
-avt.initialize {
-  title = "Freie Software Quiz",
-  avatar = avt.search("gnu-head.xpm") or "default",
-  encoding = "UTF-8",
-  audio = true
-}
-
-Fragebogen {
-
+{
+  avatar = "gnu-head.xpm",
   lang = "de",
 
   {"In welchem Jahr wurde das GNU-Projekt erstmalig angekündigt?",

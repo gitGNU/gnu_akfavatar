@@ -7,18 +7,10 @@
 -- when you make your own questionaire, you need not keep
 -- the name from the copyright notice
 
-local avt = require "lua-akfavatar"
-local questionary = require "akfavatar.questionary"
+require "akfavatar.questionary"
 
-avt.initialize {
-  title = "Free Software Quiz",
-  avatar = avt.search("gnu-head.xpm") or "default",
-  encoding = "UTF-8",
-  audio = true
-}
-
-
-questionary {
+{
+  avatar = "gnu-head.xpm",
   lang = "en",
 
   {"In which year was the GNU-project first announced?",

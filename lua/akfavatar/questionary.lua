@@ -91,18 +91,27 @@ local function show_results()
 end
 
 local function questionary(qa)
+  local myavatar
+
   count.questions, count.right = 0, 0
+
+  if qa.avatar=="default" or qa.avatar=="none" then
+    myavatar = qa.avatar
+  elseif qa.avatar then
+    myavatar = avt.search(qa.avatar) or "default"
+  end
 
   if not avt.initialized()
   then
     avt.initialize {
       title = qa.title,
-      avatar = avt.search(qa.avatar) or "default",
+      avatar = myavatar or "default",
       audio = true,
       encoding = "UTF-8"
       }
   else
     avt.initialize_audio()
+    if myavatar then avt.change_avatar_image(myavatar) end
   end
 
   if qa.lang then lang.use(qa.lang) end
