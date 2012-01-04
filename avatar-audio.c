@@ -257,17 +257,19 @@ avt_LoadAU_RW (SDL_RWops * src, int freesrc,
 	       SDL_AudioSpec * spec, Uint8 ** audio_buf, Uint32 * data_size)
 {
   Uint32 head_size, audio_size, encoding, samplingrate, channels;
+  int start;
   Uint8 *buf;
   bool completed;
 
+  if (!src || !spec || !audio_buf || !data_size)
+    return NULL;
+
   completed = false;
   buf = NULL;
-
-  if (!src || !spec || !audio_buf || !data_size)
-    goto done;
-
   *audio_buf = NULL;
   *data_size = 0;
+
+  start = SDL_RWtell (src);
 
   /* check magic ".snd" */
   if (SDL_ReadBE32 (src) != 0x2e736e64)
@@ -293,15 +295,10 @@ avt_LoadAU_RW (SDL_RWops * src, int freesrc,
   if (head_size > 24)
     SDL_RWseek (src, head_size - 24, RW_SEEK_CUR);
 
-  /*
-   * Note: A header size of 24 is not standard conformant,
-   * but many programs create such files anyway
-   */
-
   /* size of audio-data not given :-( */
   if (audio_size == 0xffffffff)
     {
-      Uint32 data_start;
+      int data_start;
 
       data_start = SDL_RWtell (src);
       audio_size = SDL_RWseek (src, 0, RW_SEEK_END) - data_start;
@@ -459,7 +456,11 @@ done:
   if (completed)
     return spec;
   else
-    return NULL;
+    {
+      /* restore file position on error */
+      SDL_RWseek (src, start, RW_SEEK_SET);
+      return NULL;
+    }
 }
 
 static avt_audio_t *
