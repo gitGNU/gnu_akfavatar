@@ -12,6 +12,7 @@
   - avt_audio_t renamed to avt_audio
   - new functions: avt_delay, avt_load_audio_part
   - avtaddons:
+    - avta_filter_t renamed to avt_filter
     - avta_arch_get_member: new function
     - avta_arch_get_data: rewritten
     - avta_load_vorbis_stream: new_function

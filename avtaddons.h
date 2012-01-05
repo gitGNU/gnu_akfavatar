@@ -120,7 +120,7 @@ AVT_ADDON const char *avta_color_selection (void);
  * file-chooser for AKFAvatar
  **********************************************************************/
 
-typedef bool (*avta_filter_t) (const char *filename);
+typedef bool (*avta_filter) (const char *filename);
 
 /* file selection
  * starts in current working directory - changes the working directory
@@ -128,7 +128,7 @@ typedef bool (*avta_filter_t) (const char *filename);
  * returns 0 on success or -1 on error
  */
 AVT_ADDON int avta_file_selection (char *filename, int filename_size,
-                                   avta_filter_t filter);
+                                   avta_filter filter);
 
 /* only for backward compatibility: */
 #define avta_get_file(f)  avta_file_selection(f, sizeof(f), NULL)

@@ -10,6 +10,9 @@
 	avt_audio_t renamed to avt_audio
 	all c-code adapted
 
+	* avtaddons.h: avt_filter_t renamed to avt_filter
+	all c-code adapted
+
 2012-01-04  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-audio.c (avt_LoadAU_RW): restore file position on error

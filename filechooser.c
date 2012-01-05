@@ -74,7 +74,7 @@
 #endif
 
 /* variable for custom filter */
-static avta_filter_t custom_filter = NULL;
+static avta_filter custom_filter = NULL;
 
 static bool
 is_directory (const char *name)
@@ -227,7 +227,7 @@ get_directory (struct dirent ***list)
  * return -1 on error or 0 on success
  */
 extern int
-avta_file_selection (char *filename, int filename_size, avta_filter_t filter)
+avta_file_selection (char *filename, int filename_size, avta_filter filter)
 {
   int rcode;			/* return code */
   struct dirent *d;

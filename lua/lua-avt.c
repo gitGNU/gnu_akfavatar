@@ -1750,7 +1750,7 @@ static int
 lavt_file_selection (lua_State * L)
 {
   char filename[256];
-  avta_filter_t filter;
+  avta_filter filter;
 
   is_initialized ();
 
