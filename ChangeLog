@@ -1,3 +1,10 @@
+2012-01-05  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar-audio.c (avt_load_audio_part): new function
+	avatar-audio.c (avt_LoadAU_RW, avt_load_audio_RW)
+	(avt_load_audio_stream, avt_load_audio_data): adapted
+	lua/lua-avt.c (lavt_load_audio_stream): adapted
+
 2012-01-04  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-audio.c (avt_LoadAU_RW): restore file position on error

@@ -185,22 +185,22 @@ static int
 lvorbis_load_stream_chain (lua_State * L)
 {
   luaL_Stream *stream;
-  lua_Unsigned size;
+  lua_Unsigned maxsize;
   avt_audio_t *audio_data;
 
   stream = (luaL_Stream *) luaL_checkudata (L, 1, LUA_FILEHANDLE);
-  size = lua_tounsigned (L, 2);	/* nothing or 0 allowed */
+  maxsize = lua_tounsigned (L, 2);	/* nothing or 0 allowed */
 
   if (stream->closef == NULL)
     return luaL_error (L, "attempt to use a closed file");
 
-  audio_data = avta_load_vorbis_stream (stream->f, size);
+  audio_data = avta_load_vorbis_stream (stream->f, maxsize);
 
   if (!audio_data)
     {
       lua_getfield (L, LUA_REGISTRYINDEX, "AVTVORBIS-old_load_audio_stream");
       lua_pushvalue (L, 1);	/* push stream handle */
-      lua_pushunsigned (L, size);
+      lua_pushunsigned (L, maxsize);
 
       if (lua_pcall (L, 2, 1, 0) != 0)
 	{

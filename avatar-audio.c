@@ -253,7 +253,7 @@ avt_get_RWdata (SDL_RWops * src, Sint32 size)
 }
 
 static SDL_AudioSpec *
-avt_LoadAU_RW (SDL_RWops * src, int freesrc,
+avt_LoadAU_RW (SDL_RWops * src, Uint32 maxsize, int freesrc,
 	       SDL_AudioSpec * spec, Uint8 ** audio_buf, Uint32 * data_size)
 {
   Uint32 head_size, audio_size, encoding, samplingrate, channels;
@@ -295,7 +295,10 @@ avt_LoadAU_RW (SDL_RWops * src, int freesrc,
   if (head_size > 24)
     SDL_RWseek (src, head_size - 24, RW_SEEK_CUR);
 
-  /* size of audio-data not given :-( */
+  if (maxsize > 0 && maxsize < audio_size)
+    audio_size = maxsize;
+
+  /* size of audio-data still unknown :-( */
   if (audio_size == 0xffffffff)
     {
       int data_start;
@@ -464,7 +467,7 @@ done:
 }
 
 static avt_audio_t *
-avt_load_audio_RW (SDL_RWops * src)
+avt_load_audio_RW (SDL_RWops * src, Uint32 maxsize)
 {
   int start, type;
   struct avt_audio_t *s;
@@ -514,7 +517,7 @@ avt_load_audio_RW (SDL_RWops * src)
     {
     case 1:			/* AU */
       s->wave = false;
-      r = avt_LoadAU_RW (src, 1, &s->audiospec, &s->sound, &s->len);
+      r = avt_LoadAU_RW (src, 1, maxsize, &s->audiospec, &s->sound, &s->len);
       break;
 
     case 2:			/* Wave */
@@ -539,19 +542,26 @@ avt_load_audio_RW (SDL_RWops * src)
 extern avt_audio_t *
 avt_load_audio_file (const char *file)
 {
-  return avt_load_audio_RW (SDL_RWFromFile (file, "rb"));
+  return avt_load_audio_RW (SDL_RWFromFile (file, "rb"), 0);
+}
+
+extern avt_audio_t *
+avt_load_audio_part (avt_stream * stream, int maxsize)
+{
+  return avt_load_audio_RW (SDL_RWFromFP ((FILE *) stream, 0),
+			    maxsize < 0 ? 0 : maxsize);
 }
 
 extern avt_audio_t *
 avt_load_audio_stream (avt_stream * stream)
 {
-  return avt_load_audio_RW (SDL_RWFromFP ((FILE *) stream, 0));
+  return avt_load_audio_RW (SDL_RWFromFP ((FILE *) stream, 0), 0);
 }
 
 extern avt_audio_t *
 avt_load_audio_data (void *data, int datasize)
 {
-  return avt_load_audio_RW (SDL_RWFromMem (data, datasize));
+  return avt_load_audio_RW (SDL_RWFromMem (data, datasize), datasize);
 }
 
 extern int
