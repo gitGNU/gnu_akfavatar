@@ -61,11 +61,11 @@ collect_garbage (lua_State * L)
 
 /* registers audio structure at table on to of stack */
 static void
-make_audio_element (lua_State * L, avt_audio_t * audio_data)
+make_audio_element (lua_State * L, avt_audio * audio_data)
 {
-  avt_audio_t **audio;
+  avt_audio **audio;
 
-  audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
+  audio = (avt_audio **) lua_newuserdata (L, sizeof (avt_audio *));
   *audio = audio_data;
   luaL_getmetatable (L, AUDIODATA);
   lua_setmetatable (L, -2);
@@ -75,7 +75,7 @@ static int
 lvorbis_load_file (lua_State * L)
 {
   char *filename;
-  avt_audio_t *audio_data;
+  avt_audio *audio_data;
 
   collect_garbage (L);
   filename = (char *) luaL_checkstring (L, 1);
@@ -98,7 +98,7 @@ lvorbis_load_stream (lua_State * L)
 {
   luaL_Stream *stream;
   lua_Unsigned size;
-  avt_audio_t *audio_data;
+  avt_audio *audio_data;
 
   collect_garbage (L);
   stream = (luaL_Stream *) luaL_checkudata (L, 1, LUA_FILEHANDLE);
@@ -125,7 +125,7 @@ lvorbis_load_string (lua_State * L)
 {
   size_t len;
   void *vorbis_data;
-  avt_audio_t *audio_data;
+  avt_audio *audio_data;
 
   collect_garbage (L);
   vorbis_data = (void *) luaL_checklstring (L, 1, &len);
@@ -146,7 +146,7 @@ lvorbis_load_string (lua_State * L)
 static int
 lvorbis_load_file_chain (lua_State * L)
 {
-  avt_audio_t *audio_data;
+  avt_audio *audio_data;
 
   audio_data = NULL;
 
@@ -186,7 +186,7 @@ lvorbis_load_stream_chain (lua_State * L)
 {
   luaL_Stream *stream;
   lua_Unsigned maxsize;
-  avt_audio_t *audio_data;
+  avt_audio *audio_data;
 
   stream = (luaL_Stream *) luaL_checkudata (L, 1, LUA_FILEHANDLE);
   maxsize = lua_tounsigned (L, 2);	/* nothing or 0 allowed */
@@ -221,7 +221,7 @@ lvorbis_load_stream_chain (lua_State * L)
 static int
 lvorbis_load_string_chain (lua_State * L)
 {
-  avt_audio_t *audio_data;
+  avt_audio *audio_data;
 
   audio_data = NULL;
 

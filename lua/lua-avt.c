@@ -1,5 +1,5 @@
 /*
- * Lua 5.1 binding for AKFAvatar
+ * Lua 5.2 binding for AKFAvatar
  * Copyright (c) 2008,2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
  *
  * required standards: C99 or C++, POSIX.1-2001
@@ -111,7 +111,7 @@ auto_initialize (lua_State * L)
   initialized = true;
 }
 
-static avt_image_t *
+static avt_image *
 get_avatar (lua_State * L, int index)
 {
   if (lua_isnil (L, index))
@@ -131,10 +131,10 @@ get_avatar (lua_State * L, int index)
       if (strcmp ("default", str) == 0)
 	return avt_default ();
       else if (strcmp ("none", str) == 0)
-	return (avt_image_t *) NULL;
+	return (avt_image *) NULL;
       else
 	{
-	  avt_image_t *image;
+	  avt_image *image;
 
 	  /* check if it is image data */
 	  image = avt_import_image_data ((void *) str, len);
@@ -206,12 +206,12 @@ lavt_initialize (lua_State * L)
 {
   const char *title, *shortname;
   const char *encoding;
-  avt_image_t *avatar;
+  avt_image *avatar;
   bool audio;
   int mode;
 
   title = shortname = NULL;
-  avatar = (avt_image_t *) (&avatar);	/* dummy value, not NULL */
+  avatar = (avt_image *) (&avatar);	/* dummy value, not NULL */
   encoding = "UTF-8";
   mode = AVT_AUTOMODE;
   audio = false;
@@ -262,7 +262,7 @@ lavt_initialize (lua_State * L)
     shortname = title;
 
   /* if avatar was not set */
-  if (avatar == (avt_image_t *) (&avatar))
+  if (avatar == (avt_image *) (&avatar))
     avatar = avt_default ();
 
   if (!initialized && !avt_initialized ())
@@ -1345,13 +1345,13 @@ lavt_quit_audio (lua_State * L)
 }
 
 static void
-make_audio_element (lua_State * L, avt_audio_t * data)
+make_audio_element (lua_State * L, avt_audio * data)
 {
-  avt_audio_t **audio;
+  avt_audio **audio;
 
   if (data)
     {
-      audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
+      audio = (avt_audio **) lua_newuserdata (L, sizeof (avt_audio *));
       *audio = data;
       luaL_getmetatable (L, AUDIODATA);
       lua_setmetatable (L, -2);
@@ -1382,7 +1382,7 @@ lavt_load_audio_file (lua_State * L)
 {
   const char *filename;
   size_t len;
-  avt_audio_t *audio_data;
+  avt_audio *audio_data;
 
   filename = "";
   audio_data = NULL;
@@ -1419,7 +1419,7 @@ static int
 lavt_load_audio_stream (lua_State * L)
 {
   luaL_Stream *stream;
-  avt_audio_t *audio_data;
+  avt_audio *audio_data;
   lua_Unsigned maxsize;
 
   stream = (luaL_Stream *) luaL_checkudata (L, 1, LUA_FILEHANDLE);
@@ -1452,7 +1452,7 @@ lavt_load_audio_string (lua_State * L)
 {
   char *data;
   size_t len;
-  avt_audio_t *audio_data;
+  avt_audio *audio_data;
 
   data = "";
   audio_data = NULL;
@@ -1515,9 +1515,9 @@ lavt_pause_audio (lua_State * L)
 static int
 laudio_play (lua_State * L)
 {
-  avt_audio_t **audio;
+  avt_audio **audio;
 
-  audio = (avt_audio_t **) luaL_checkudata (L, 1, AUDIODATA);
+  audio = (avt_audio **) luaL_checkudata (L, 1, AUDIODATA);
 
   if (audio && *audio)
     avt_play_audio (*audio, false);	/* no check! */
@@ -1533,9 +1533,9 @@ laudio_play (lua_State * L)
 static int
 laudio_loop (lua_State * L)
 {
-  avt_audio_t **audio;
+  avt_audio **audio;
 
-  audio = (avt_audio_t **) luaL_checkudata (L, 1, AUDIODATA);
+  audio = (avt_audio **) luaL_checkudata (L, 1, AUDIODATA);
 
   if (audio && *audio)
     avt_play_audio (*audio, true);	/* no check! */
@@ -1551,9 +1551,9 @@ laudio_loop (lua_State * L)
 static int
 laudio_free (lua_State * L)
 {
-  avt_audio_t **audio;
+  avt_audio **audio;
 
-  audio = (avt_audio_t **) luaL_checkudata (L, 1, AUDIODATA);
+  audio = (avt_audio **) luaL_checkudata (L, 1, AUDIODATA);
   if (audio && *audio)
     {
       avt_free_audio (*audio);
@@ -1567,13 +1567,13 @@ laudio_free (lua_State * L)
 static int
 laudio_playing (lua_State * L)
 {
-  avt_audio_t **audio;
+  avt_audio **audio;
 
   if (lua_isnoneornil (L, 1))
     lua_pushboolean (L, avt_audio_playing (NULL));
   else
     {
-      audio = (avt_audio_t **) luaL_checkudata (L, 1, AUDIODATA);
+      audio = (avt_audio **) luaL_checkudata (L, 1, AUDIODATA);
       lua_pushboolean (L, (audio && *audio && avt_audio_playing (*audio)));
     }
 
@@ -1583,9 +1583,9 @@ laudio_playing (lua_State * L)
 static int
 laudio_tostring (lua_State * L)
 {
-  avt_audio_t **audio;
+  avt_audio **audio;
 
-  audio = (avt_audio_t **) luaL_checkudata (L, 1, AUDIODATA);
+  audio = (avt_audio **) luaL_checkudata (L, 1, AUDIODATA);
 
   if (audio && *audio)
     lua_pushfstring (L, AUDIODATA " (%p)", audio);
@@ -2424,7 +2424,7 @@ set_datapath (lua_State * L)
 int
 luaopen_akfavatar_embedded (lua_State * L)
 {
-  avt_audio_t **audio;
+  avt_audio **audio;
 
   luaL_newlib (L, akfavtlib);
 
@@ -2448,7 +2448,7 @@ luaopen_akfavatar_embedded (lua_State * L)
   lua_pop (L, 1);		/* pop metatable */
 
   /* create a reusable silent sound */
-  audio = (avt_audio_t **) lua_newuserdata (L, sizeof (avt_audio_t *));
+  audio = (avt_audio **) lua_newuserdata (L, sizeof (avt_audio *));
   *audio = NULL;
   luaL_getmetatable (L, AUDIODATA);
   lua_setmetatable (L, -2);

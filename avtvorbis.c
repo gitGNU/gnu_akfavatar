@@ -35,13 +35,13 @@
  */
 #define MAX_CHANNELS  AVT_AUDIO_STEREO
 
-static avt_audio_t *
+static avt_audio *
 load_vorbis (stb_vorbis * vorbis)
 {
   int data_len, offset, total, limit, n;
   stb_vorbis_info info;
   short *data;
-  avt_audio_t *audio;
+  avt_audio *audio;
 
   info = stb_vorbis_get_info (vorbis);
 
@@ -96,14 +96,14 @@ load_vorbis (stb_vorbis * vorbis)
   return audio;
 }
 
-extern avt_audio_t *
+extern avt_audio *
 avta_load_vorbis_stream (avt_stream * stream, unsigned int size)
 {
   FILE *f;
   int error;
   long start;
   stb_vorbis *vorbis;
-  avt_audio_t *audio_data;
+  avt_audio *audio_data;
   char buf[40];
 
   f = (FILE *) stream;
@@ -143,11 +143,11 @@ avta_load_vorbis_stream (avt_stream * stream, unsigned int size)
   return audio_data;
 }
 
-extern avt_audio_t *
+extern avt_audio *
 avta_load_vorbis_file (char *filename)
 {
   FILE *f;
-  avt_audio_t *audio_data;
+  avt_audio *audio_data;
 
   if (!filename || !*filename)
     return NULL;
@@ -163,12 +163,12 @@ avta_load_vorbis_file (char *filename)
   return audio_data;
 }
 
-extern avt_audio_t *
+extern avt_audio *
 avta_load_vorbis_data (void *data, int datasize)
 {
   int error;
   stb_vorbis *vorbis;
-  avt_audio_t *audio_data;
+  avt_audio *audio_data;
 
   /* check content, must be plain vorbis with no other streams */
   if (!data || datasize <= 0

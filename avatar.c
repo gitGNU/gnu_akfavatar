@@ -256,7 +256,7 @@ typedef struct
 static avt_keyhandler avt_ext_keyhandler = NULL;
 static avt_mousehandler avt_ext_mousehandler = NULL;
 
-static SDL_Surface *screen, *avt_image, *avt_character;
+static SDL_Surface *screen, *avatar_image, *avt_character;
 static SDL_Surface *avt_text_cursor, *avt_cursor_character;
 static SDL_Surface *circle, *pointer;
 static SDL_Cursor *mpointer;
@@ -1496,7 +1496,7 @@ avt_show_name (void)
   SDL_Color old_colors[2], colors[2];
   wchar_t *p;
 
-  if (screen && avt_image && avt_name)
+  if (screen && avatar_image && avt_name)
     {
       /* save old character colors */
       old_colors[0] = avt_character->format->palette->colors[0];
@@ -1512,7 +1512,7 @@ avt_show_name (void)
 
       SDL_SetColors (avt_character, colors, 0, 2);
 
-      dst.x = window.x + AVATAR_MARGIN + avt_image->w + BUTTON_DISTANCE;
+      dst.x = window.x + AVATAR_MARGIN + avatar_image->w + BUTTON_DISTANCE;
       dst.y = window.y + window.h - AVATAR_MARGIN - FONTHEIGHT
 	- 2 * NAME_PADDING;
       dst.w = (avt_strwidth (avt_name) * FONTWIDTH) + 2 * NAME_PADDING;
@@ -1555,15 +1555,15 @@ avt_draw_avatar (void)
 
       SDL_SetClipRect (screen, &window);
 
-      if (avt_image)
+      if (avatar_image)
 	{
 	  /* left */
 	  dst.x = window.x + AVATAR_MARGIN;
 	  /* bottom */
-	  dst.y = window.y + window.h - avt_image->h - AVATAR_MARGIN;
-	  dst.w = avt_image->w;
-	  dst.h = avt_image->h;
-	  SDL_BlitSurface (avt_image, NULL, screen, &dst);
+	  dst.y = window.y + window.h - avatar_image->h - AVATAR_MARGIN;
+	  dst.w = avatar_image->w;
+	  dst.h = avatar_image->h;
+	  SDL_BlitSurface (avatar_image, NULL, screen, &dst);
 	}
 
       if (avt_name)
@@ -1657,7 +1657,7 @@ avt_draw_balloon2 (int offset, Uint32 ballooncolor)
 
   /* draw balloonpointer */
   /* only if there is an avatar image */
-  if (avt_image)
+  if (avatar_image)
     {
       SDL_Rect pointer_shape, pointer_pos;
 
@@ -1666,14 +1666,14 @@ avt_draw_balloon2 (int offset, Uint32 ballooncolor)
       pointer_shape.h = pointer->h;
 
       /* if the balloonpointer is too large, cut it */
-      if (pointer_shape.h > (avt_image->h / 2))
+      if (pointer_shape.h > (avatar_image->h / 2))
 	{
-	  pointer_shape.y = pointer_shape.h - (avt_image->h / 2);
+	  pointer_shape.y = pointer_shape.h - (avatar_image->h / 2);
 	  pointer_shape.h -= pointer_shape.y;
 	}
 
       pointer_pos.x =
-	window.x + avt_image->w + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET
+	window.x + avatar_image->w + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET
 	+ offset;
       pointer_pos.y = window.y + (balloonmaxheight * LINEHEIGHT)
 	+ (2 * BALLOON_INNER_MARGIN) + TOPMARGIN + offset;
@@ -1696,7 +1696,7 @@ avt_draw_balloon (void)
   textfield.w = (balloonwidth * FONTWIDTH);
   textfield.h = (balloonheight * LINEHEIGHT);
 
-  if (avt_image)
+  if (avatar_image)
     textfield.y = window.y + ((balloonmaxheight - balloonheight) * LINEHEIGHT)
       + TOPMARGIN + BALLOON_INNER_MARGIN;
   else				/* middle of the window */
@@ -1706,23 +1706,23 @@ avt_draw_balloon (void)
   textfield.x = window.x + (window.w / 2) - (balloonwidth * FONTWIDTH / 2);
 
   /* align with balloonpointer */
-  if (avt_image)
+  if (avatar_image)
     {
       /* left border not aligned with balloon pointer? */
       if (textfield.x >
-	  window.x + avt_image->w + (2 * AVATAR_MARGIN) +
+	  window.x + avatar_image->w + (2 * AVATAR_MARGIN) +
 	  BALLOONPOINTER_OFFSET)
 	textfield.x =
-	  window.x + avt_image->w + (2 * AVATAR_MARGIN) +
+	  window.x + avatar_image->w + (2 * AVATAR_MARGIN) +
 	  BALLOONPOINTER_OFFSET;
 
       /* right border not aligned with balloon pointer? */
       if (textfield.x + textfield.w <
-	  window.x + avt_image->w + pointer->w
+	  window.x + avatar_image->w + pointer->w
 	  + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET)
 	{
 	  textfield.x =
-	    window.x + avt_image->w - textfield.w + pointer->w
+	    window.x + avatar_image->w - textfield.w + pointer->w
 	    + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET;
 
 	  /* align with right window-border */
@@ -5025,7 +5025,7 @@ avt_move_in (void)
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
   viewport = textfield;
 
-  if (avt_image)
+  if (avatar_image)
     {
       SDL_Rect dst;
       Uint32 start_time;
@@ -5040,9 +5040,9 @@ avt_move_in (void)
 
       dst.x = screen->w;
       /* bottom */
-      dst.y = mywindow.y + mywindow.h - avt_image->h - AVATAR_MARGIN;
-      dst.w = avt_image->w;
-      dst.h = avt_image->h;
+      dst.y = mywindow.y + mywindow.h - avatar_image->h - AVATAR_MARGIN;
+      dst.w = avatar_image->w;
+      dst.h = avatar_image->h;
       start_time = SDL_GetTicks ();
 
       while (dst.x > mywindow.x + AVATAR_MARGIN)
@@ -5055,7 +5055,7 @@ avt_move_in (void)
 	  if (dst.x != oldx)
 	    {
 	      /* draw */
-	      SDL_BlitSurface (avt_image, NULL, screen, &dst);
+	      SDL_BlitSurface (avatar_image, NULL, screen, &dst);
 
 	      /* update */
 	      if ((oldx + dst.w) >= screen->w)
@@ -5098,7 +5098,7 @@ avt_move_out (void)
    */
   SDL_SetClipRect (screen, NULL);
 
-  if (avt_image)
+  if (avatar_image)
     {
       SDL_Rect dst;
       Uint32 start_time;
@@ -5115,9 +5115,9 @@ avt_move_out (void)
       start_position = mywindow.x + AVATAR_MARGIN;
       dst.x = start_position;
       /* bottom */
-      dst.y = mywindow.y + mywindow.h - avt_image->h - AVATAR_MARGIN;
-      dst.w = avt_image->w;
-      dst.h = avt_image->h;
+      dst.y = mywindow.y + mywindow.h - avatar_image->h - AVATAR_MARGIN;
+      dst.w = avatar_image->w;
+      dst.h = avatar_image->h;
       start_time = SDL_GetTicks ();
 
       /* delete (not visibly yet) */
@@ -5136,7 +5136,7 @@ avt_move_out (void)
 	  if (dst.x != oldx)
 	    {
 	      /* draw */
-	      SDL_BlitSurface (avt_image, NULL, screen, &dst);
+	      SDL_BlitSurface (avatar_image, NULL, screen, &dst);
 
 	      /* update */
 	      if ((dst.x + dst.w) >= screen->w)
@@ -5580,15 +5580,15 @@ avt_decide (void)
   return AVT_MAKE_BOOL (result);
 }
 
-/* free avt_image_t images */
+/* free avt_image images */
 extern void
-avt_free_image (avt_image_t * image)
+avt_free_image (avt_image * image)
 {
   SDL_FreeSurface (image);
 }
 
 static void
-avt_show_image (avt_image_t * image)
+avt_show_image (avt_image * image)
 {
   SDL_Rect dst;
 
@@ -5887,8 +5887,8 @@ avt_init_SDL (void)
  * make background transparent
  * pixel in the upper left corner is supposed to be the background color
  */
-extern avt_image_t *
-avt_make_transparent (avt_image_t * image)
+extern avt_image *
+avt_make_transparent (avt_image * image)
 {
   Uint32 color;
 
@@ -5907,7 +5907,7 @@ avt_make_transparent (avt_image_t * image)
   return image;
 }
 
-extern avt_image_t *
+extern avt_image *
 avt_import_xpm (char **xpm)
 {
   if (avt_init_SDL ())
@@ -5916,7 +5916,7 @@ avt_import_xpm (char **xpm)
   return avt_load_image_xpm (xpm);
 }
 
-extern avt_image_t *
+extern avt_image *
 avt_import_xbm (const unsigned char *bits, int width, int height,
 		const char *colorname)
 {
@@ -5938,7 +5938,7 @@ avt_import_xbm (const unsigned char *bits, int width, int height,
  * import RGB gimp_image as avatar
  * pixel in the upper left corner is supposed to be the background color
  */
-extern avt_image_t *
+extern avt_image *
 avt_import_gimp_image (void *gimp_image)
 {
   SDL_Surface *image;
@@ -5968,7 +5968,7 @@ avt_import_gimp_image (void *gimp_image)
 /*
  * import avatar from image data
  */
-extern avt_image_t *
+extern avt_image *
 avt_import_image_data (void *img, int imgsize)
 {
   SDL_Surface *image;
@@ -6000,7 +6000,7 @@ avt_import_image_data (void *img, int imgsize)
 /*
  * import avatar from file
  */
-extern avt_image_t *
+extern avt_image *
 avt_import_image_file (const char *filename)
 {
   SDL_Surface *image;
@@ -6029,7 +6029,7 @@ avt_import_image_file (const char *filename)
   return image;
 }
 
-extern avt_image_t *
+extern avt_image *
 avt_import_image_stream (avt_stream * stream)
 {
   SDL_Surface *image;
@@ -6063,7 +6063,7 @@ calculate_balloonmaxheight (void)
 {
   int avatar_height;
 
-  avatar_height = avt_image ? avt_image->h + AVATAR_MARGIN : 0;
+  avatar_height = avatar_image ? avatar_image->h + AVATAR_MARGIN : 0;
 
   balloonmaxheight = (window.h - avatar_height - (2 * TOPMARGIN)
 		      - (2 * BALLOON_INNER_MARGIN)) / LINEHEIGHT;
@@ -6074,8 +6074,8 @@ calculate_balloonmaxheight (void)
     {
       SDL_SetError ("Avatar image too large");
       _avt_STATUS = AVT_ERROR;
-      SDL_FreeSurface (avt_image);
-      avt_image = NULL;
+      SDL_FreeSurface (avatar_image);
+      avatar_image = NULL;
     }
 
   return _avt_STATUS;
@@ -6084,7 +6084,7 @@ calculate_balloonmaxheight (void)
 /* change avatar image and (re)calculate balloon size */
 /* also called from avt_initialize */
 extern int
-avt_change_avatar_image (avt_image_t * image)
+avt_change_avatar_image (avt_image * image)
 {
   if (_avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -6092,10 +6092,10 @@ avt_change_avatar_image (avt_image_t * image)
   if (avt_visible)
     avt_clear_screen ();
 
-  if (avt_image)
+  if (avatar_image)
     {
-      SDL_FreeSurface (avt_image);
-      avt_image = NULL;
+      SDL_FreeSurface (avatar_image);
+      avatar_image = NULL;
     }
 
   if (avt_name)
@@ -6109,13 +6109,13 @@ avt_change_avatar_image (avt_image_t * image)
     {
       /* convert image to display-format for faster drawing */
       if (image->flags & SDL_SRCALPHA)
-	avt_image = SDL_DisplayFormatAlpha (image);
+	avatar_image = SDL_DisplayFormatAlpha (image);
       else
-	avt_image = SDL_DisplayFormat (image);
+	avatar_image = SDL_DisplayFormat (image);
 
       SDL_FreeSurface (image);
 
-      if (!avt_image)
+      if (!avatar_image)
 	{
 	  SDL_SetError ("couldn't load avatar");
 	  _avt_STATUS = AVT_ERROR;
@@ -6672,8 +6672,8 @@ avt_quit (void)
       pointer = NULL;
       SDL_FreeSurface (avt_character);
       avt_character = NULL;
-      SDL_FreeSurface (avt_image);
-      avt_image = NULL;
+      SDL_FreeSurface (avatar_image);
+      avatar_image = NULL;
       SDL_FreeSurface (avt_text_cursor);
       avt_text_cursor = NULL;
       SDL_FreeSurface (avt_cursor_character);
@@ -6792,7 +6792,7 @@ avt_set_mouse_pointer (void)
 
 extern int
 avt_initialize (const char *title, const char *shortname,
-		avt_image_t * image, int mode)
+		avt_image * image, int mode)
 {
   /* already initialized? */
   if (screen)

@@ -54,7 +54,7 @@
 
 #pragma GCC poison  malloc free strlen memcpy memcmp getenv putenv
 
-struct avt_audio_t
+struct avt_audio
 {
   SDL_AudioSpec audiospec;
   Uint8 *sound;			/* Pointer to sound data */
@@ -66,10 +66,10 @@ struct avt_audio_t
 static bool avt_audio_initialized;
 
 /* short sound for the "avt_bell" function */
-static avt_audio_t *my_alert;
+static avt_audio *my_alert;
 
 /* current sound */
-static struct avt_audio_t current_sound;
+static struct avt_audio current_sound;
 static volatile Uint8 *soundpos = NULL;	/* Current play position */
 static volatile Sint32 soundleft = 0;	/* Length of left unplayed wave data */
 static bool loop = false;
@@ -468,11 +468,11 @@ done:
     }
 }
 
-static avt_audio_t *
+static avt_audio *
 avt_load_audio_RW (SDL_RWops * src, Uint32 maxsize)
 {
   int start, type;
-  struct avt_audio_t *s;
+  struct avt_audio *s;
   SDL_AudioSpec *r;
   char head[16];
 
@@ -506,7 +506,7 @@ avt_load_audio_RW (SDL_RWops * src, Uint32 maxsize)
 
   SDL_RWseek (src, start, RW_SEEK_SET);
 
-  s = (struct avt_audio_t *) SDL_malloc (sizeof (struct avt_audio_t));
+  s = (struct avt_audio *) SDL_malloc (sizeof (struct avt_audio));
   if (s == NULL)
     {
       SDL_SetError ("out of memory");
@@ -541,33 +541,33 @@ avt_load_audio_RW (SDL_RWops * src, Uint32 maxsize)
   return s;
 }
 
-extern avt_audio_t *
+extern avt_audio *
 avt_load_audio_file (const char *file)
 {
   return avt_load_audio_RW (SDL_RWFromFile (file, "rb"), 0xffffffffU);
 }
 
-extern avt_audio_t *
+extern avt_audio *
 avt_load_audio_part (avt_stream * stream, int maxsize)
 {
   return avt_load_audio_RW (SDL_RWFromFP ((FILE *) stream, 0),
 			    maxsize > 0 ? (Uint32) maxsize : 0xffffffffU);
 }
 
-extern avt_audio_t *
+extern avt_audio *
 avt_load_audio_stream (avt_stream * stream)
 {
   return avt_load_audio_RW (SDL_RWFromFP ((FILE *) stream, 0), 0xffffffffU);
 }
 
-extern avt_audio_t *
+extern avt_audio *
 avt_load_audio_data (void *data, int datasize)
 {
   return avt_load_audio_RW (SDL_RWFromMem (data, datasize), (Uint32) datasize);
 }
 
 extern int
-avt_add_raw_audio_data (avt_audio_t * snd, void *data, int data_size)
+avt_add_raw_audio_data (avt_audio * snd, void *data, int data_size)
 {
   void *new_sound;
   int i, old_size, new_size, out_size;
@@ -667,12 +667,12 @@ avt_add_raw_audio_data (avt_audio_t * snd, void *data, int data_size)
   return avt_checkevent ();
 }
 
-extern avt_audio_t *
+extern avt_audio *
 avt_load_raw_audio_data (void *data, int data_size,
 			 int samplingrate, int audio_type, int channels)
 {
   int format;
-  struct avt_audio_t *s;
+  struct avt_audio *s;
 
   if (channels < 1 || channels > 2)
     {
@@ -719,7 +719,7 @@ avt_load_raw_audio_data (void *data, int data_size,
     }
 
   /* get memory for struct */
-  s = (struct avt_audio_t *) SDL_malloc (sizeof (struct avt_audio_t));
+  s = (struct avt_audio *) SDL_malloc (sizeof (struct avt_audio));
   if (s == NULL)
     {
       SDL_SetError ("out of memory");
@@ -749,7 +749,7 @@ avt_load_raw_audio_data (void *data, int data_size,
 
 /* Is this sound currently playing? NULL for any sound */
 extern bool
-avt_audio_playing (avt_audio_t * snd)
+avt_audio_playing (avt_audio * snd)
 {
   if (snd && snd->sound != current_sound.sound)
     return false;		/* not same sound */
@@ -758,7 +758,7 @@ avt_audio_playing (avt_audio_t * snd)
 }
 
 extern void
-avt_free_audio (avt_audio_t * snd)
+avt_free_audio (avt_audio * snd)
 {
   if (snd)
     {
@@ -778,7 +778,7 @@ avt_free_audio (avt_audio_t * snd)
 }
 
 extern int
-avt_play_audio (avt_audio_t * snd, bool doloop)
+avt_play_audio (avt_audio * snd, bool doloop)
 {
   if (!avt_audio_initialized)
     return _avt_STATUS;
@@ -872,42 +872,42 @@ avt_quit_audio (void)
   no_audio ();
 }
 
-extern avt_audio_t *
+extern avt_audio *
 avt_load_audio_file (const char *file AVT_UNUSED)
 {
   no_audio ();
   return NULL;
 }
 
-extern avt_audio_t *
+extern avt_audio *
 avt_load_wave_file (const char *file AVT_UNUSED)
 {
   no_audio ();
   return NULL;
 }
 
-extern avt_audio_t *
+extern avt_audio *
 avt_load_audio_stream (avt_stream * stream AVT_UNUSED)
 {
   no_audio ();
   return NULL;
 }
 
-extern avt_audio_t *
+extern avt_audio *
 avt_load_audio_data (void *data AVT_UNUSED, int datasize AVT_UNUSED)
 {
   no_audio ();
   return NULL;
 }
 
-extern avt_audio_t *
+extern avt_audio *
 avt_load_wave_data (void *data AVT_UNUSED, int datasize AVT_UNUSED)
 {
   no_audio ();
   return NULL;
 }
 
-extern avt_audio_t *
+extern avt_audio *
 avt_load_raw_audio_data (void *data AVT_UNUSED, int data_size AVT_UNUSED,
 			 int samplingrate AVT_UNUSED,
 			 int audio_type AVT_UNUSED, int channels AVT_UNUSED)
@@ -917,14 +917,14 @@ avt_load_raw_audio_data (void *data AVT_UNUSED, int data_size AVT_UNUSED,
 }
 
 extern int
-avt_add_raw_audio_data (avt_audio_t * snd, void *data, int data_size)
+avt_add_raw_audio_data (avt_audio * snd, void *data, int data_size)
 {
   no_audio ();
   return AVT_ERROR;
 }
 
 extern void
-avt_free_audio (avt_audio_t * snd AVT_UNUSED)
+avt_free_audio (avt_audio * snd AVT_UNUSED)
 {
   no_audio ();
 }
@@ -937,7 +937,7 @@ avt_wait_audio_end (void)
 }
 
 extern int
-avt_play_audio (avt_audio_t * snd AVT_UNUSED, bool doloop AVT_UNUSED)
+avt_play_audio (avt_audio * snd AVT_UNUSED, bool doloop AVT_UNUSED)
 {
   no_audio ();
   return _avt_STATUS;
@@ -950,7 +950,7 @@ avt_pause_audio (bool pause)
 }
 
 extern bool
-avt_audio_playing (avt_audio_t * snd AVT_UNUSED)
+avt_audio_playing (avt_audio * snd AVT_UNUSED)
 {
   no_audio ();
   return false;

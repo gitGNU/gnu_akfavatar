@@ -8,6 +8,8 @@
   - Some more audio files
 
   C-API changes:
+  - avt_image_t renamed to avt_image
+  - avt_audio_t renamed to avt_audio
   - new functions: avt_delay, avt_load_audio_part
   - avtaddons:
     - avta_arch_get_member: new function

@@ -141,8 +141,8 @@ typedef int avt_char;
 /*
  * general types for avatar images and audio data
  */
-typedef struct SDL_Surface avt_image_t;
-typedef struct avt_audio_t avt_audio_t;
+typedef struct SDL_Surface avt_image;
+typedef struct avt_audio avt_audio;
 
 /* for streams (use FILE from your programs) */
 typedef void avt_stream;
@@ -171,7 +171,7 @@ AVT_BEGIN_DECLS
  */
 AVT_API int avt_initialize (const char *title,
 			    const char *shortname,
-			    avt_image_t *image,
+			    avt_image *image,
 			    int mode);
 
 /*
@@ -201,27 +201,27 @@ AVT_API void avt_button_quit (void);
  */
 
 /* get the default avatar image */
-AVT_API avt_image_t *avt_default (void);
+AVT_API avt_image *avt_default (void);
 
 /* import an avatar from XPM data */
-AVT_API avt_image_t *avt_import_xpm (char **xpm);
+AVT_API avt_image *avt_import_xpm (char **xpm);
 
 /* import an avatar from XBM data */
-AVT_API avt_image_t *avt_import_xbm (const unsigned char *bits,
-				     int width, int height,
-				     const char *colorname);
+AVT_API avt_image *avt_import_xbm (const unsigned char *bits,
+				   int width, int height,
+				   const char *colorname);
 
 /* RGB gimp_image */
-AVT_API avt_image_t *avt_import_gimp_image (void *gimp_image);
+AVT_API avt_image *avt_import_gimp_image (void *gimp_image);
 
 /* import avatar from image data */
-AVT_API avt_image_t *avt_import_image_data (void *img, int imgsize);
+AVT_API avt_image *avt_import_image_data (void *img, int imgsize);
 
 /* import avatar from file */
-AVT_API avt_image_t *avt_import_image_file (const char *filename);
+AVT_API avt_image *avt_import_image_file (const char *filename);
 
 /* import avatar from stream */
-AVT_API avt_image_t *avt_import_image_stream (avt_stream *stream);
+AVT_API avt_image *avt_import_image_stream (avt_stream *stream);
 
 /***********************************************************************/
 /* other functions for avatarimages */
@@ -234,19 +234,19 @@ AVT_API avt_image_t *avt_import_image_stream (avt_stream *stream);
  * on error AVT_ERROR is set and returned
  * an avatar name is cleared
  */
-AVT_API int avt_change_avatar_image (avt_image_t *image);
+AVT_API int avt_change_avatar_image (avt_image *image);
 
 /*
- * free avt_image_t images
+ * free avt_image images
  * (automatically called in avt_initialize and avt_change_avatar_image)
  */
-AVT_API void avt_free_image (avt_image_t *image);
+AVT_API void avt_free_image (avt_image *image);
 
 /*
  * make background transparent
  * pixel in the upper left corner is supposed to be the background color
  */
-AVT_API avt_image_t *avt_make_transparent (avt_image_t *image);
+AVT_API avt_image *avt_make_transparent (avt_image *image);
 
 /***********************************************************************/
 /* actions without or outside the balloon */
@@ -1030,7 +1030,7 @@ AVT_API void avt_quit_audio (void);
  * loads an audio file in AU or Wave format
  * not for headerless formats
  */
-AVT_API avt_audio_t *avt_load_audio_file (const char *filename);
+AVT_API avt_audio *avt_load_audio_file (const char *filename);
 
 /*
  * loads audio in AU or Wave format from a stream
@@ -1038,19 +1038,19 @@ AVT_API avt_audio_t *avt_load_audio_file (const char *filename);
  * maxsize is ignored for Wave data
  * not for headerless formats
  */
-AVT_API avt_audio_t *avt_load_audio_part (avt_stream *stream, int maxsize);
+AVT_API avt_audio *avt_load_audio_part (avt_stream *stream, int maxsize);
 
 /*
  * loads audio in AU or Wave format from a stream
  * not for headerless formats
  */
-AVT_API avt_audio_t *avt_load_audio_stream (avt_stream *stream);
+AVT_API avt_audio *avt_load_audio_stream (avt_stream *stream);
 
 /*
  * loads audio in AU or Wave format from memory
  * must still be freed with avt_free_audio!
  */
-AVT_API avt_audio_t *avt_load_audio_data (void *data, int datasize);
+AVT_API avt_audio *avt_load_audio_data (void *data, int datasize);
 
 /* values for audio_type */
 #define AVT_AUDIO_UNKNOWN   0  /* doesn't play */
@@ -1081,7 +1081,7 @@ AVT_API avt_audio_t *avt_load_audio_data (void *data, int datasize);
  *
  * must be freed with avt_free_audio! (even if empty)
  */
-AVT_API avt_audio_t *avt_load_raw_audio_data (void *data, int data_size,
+AVT_API avt_audio *avt_load_raw_audio_data (void *data, int data_size,
 			int samplingrate, int audio_type, int channels);
 
 /*
@@ -1089,18 +1089,18 @@ AVT_API avt_audio_t *avt_load_raw_audio_data (void *data, int data_size,
  * the audio type must have been created with avt_load_raw_audio_data
  * data should be a larger buffer
  */
-AVT_API int avt_add_raw_audio_data (avt_audio_t *snd, void *data, int data_size);
+AVT_API int avt_add_raw_audio_data (avt_audio *snd, void *data, int data_size);
 
 /*
  * frees memory of a loaded sound
  */
-AVT_API void avt_free_audio (avt_audio_t *snd);
+AVT_API void avt_free_audio (avt_audio *snd);
 
 /*
  * plays a sound
  * on error it returns AVT_ERROR without changing the status
  */
-AVT_API int avt_play_audio (avt_audio_t *snd, bool doloop);
+AVT_API int avt_play_audio (avt_audio *snd, bool doloop);
 
 /*
  * wait until the sound ends
@@ -1118,7 +1118,7 @@ AVT_API void avt_pause_audio (bool pause);
  * Is this sound currently playing?
  * Use NULL for any sound
  */
-AVT_API bool avt_audio_playing (avt_audio_t *snd);
+AVT_API bool avt_audio_playing (avt_audio *snd);
 
 
 /***********************************************************************/
