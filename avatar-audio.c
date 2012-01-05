@@ -519,7 +519,7 @@ avt_load_audio_RW (SDL_RWops * src, Uint32 maxsize)
     {
     case 1:			/* AU */
       s->wave = false;
-      r = avt_LoadAU_RW (src, 1, maxsize, &s->audiospec, &s->sound, &s->len);
+      r = avt_LoadAU_RW (src, maxsize, 1, &s->audiospec, &s->sound, &s->len);
       break;
 
     case 2:			/* Wave */
