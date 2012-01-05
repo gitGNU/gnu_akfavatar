@@ -3,8 +3,10 @@
  * this part is for the audio-output
  * Copyright (c) 2007,2008,2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
  *
- * needed: 
- *  SDL1.2
+ * required standards: C99 or C++
+ *
+ * other software
+ * required: SDL1.2
  *
  * This file is part of AKFAvatar
  *

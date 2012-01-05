@@ -2,6 +2,8 @@
  * Starter for Lua-AKFAvatar programs in Lua
  * Copyright (c) 2009,2010,211 Andreas K. Foerster <info@akfoerster.de>
  *
+ * required standards: C99 or C++, POSIX.1-2001
+ *
  * This file is part of AKFAvatar
  *
  * AKFAvatar is free software; you can redistribute it and/or modify

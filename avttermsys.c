@@ -2,6 +2,8 @@
  * avttermsys - system specific functions for terminal emulation
  * Copyright (c) 2007, 2008, 2009, 2010, 2011 Andreas K. Foerster <info@akfoerster.de>
  *
+ * required standards: C99 or C++, POSIX.1-2001
+ *
  * This file is part of AKFAvatar
  *
  * AKFAvatar is free software; you can redistribute it and/or modify

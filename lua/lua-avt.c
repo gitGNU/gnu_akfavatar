@@ -2,6 +2,8 @@
  * Lua 5.1 binding for AKFAvatar
  * Copyright (c) 2008,2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
  *
+ * required standards: C99 or C++, POSIX.1-2001
+ *
  * This file is part of AKFAvatar
  *
  * AKFAvatar is free software; you can redistribute it and/or modify
