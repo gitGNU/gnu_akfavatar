@@ -544,7 +544,7 @@ avt_load_audio_RW (SDL_RWops * src, Uint32 maxsize)
 extern avt_audio_t *
 avt_load_audio_file (const char *file)
 {
-  return avt_load_audio_RW (SDL_RWFromFile (file, "rb"), 0);
+  return avt_load_audio_RW (SDL_RWFromFile (file, "rb"), 0xffffffffU);
 }
 
 extern avt_audio_t *
@@ -557,13 +557,13 @@ avt_load_audio_part (avt_stream * stream, int maxsize)
 extern avt_audio_t *
 avt_load_audio_stream (avt_stream * stream)
 {
-  return avt_load_audio_RW (SDL_RWFromFP ((FILE *) stream, 0), 0);
+  return avt_load_audio_RW (SDL_RWFromFP ((FILE *) stream, 0), 0xffffffffU);
 }
 
 extern avt_audio_t *
 avt_load_audio_data (void *data, int datasize)
 {
-  return avt_load_audio_RW (SDL_RWFromMem (data, datasize), datasize);
+  return avt_load_audio_RW (SDL_RWFromMem (data, datasize), (Uint32) datasize);
 }
 
 extern int
