@@ -147,7 +147,6 @@ extern avt_audio_t *
 avta_load_vorbis_file (char *filename)
 {
   FILE *f;
-  long size;
   avt_audio_t *audio_data;
 
   if (!filename || !*filename)
