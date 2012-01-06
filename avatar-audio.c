@@ -233,7 +233,7 @@ avt_quit_audio (void)
 }
 
 static Uint8 *
-avt_get_RWdata (SDL_RWops * src, Sint32 size)
+avt_get_rwdata (SDL_RWops * src, Sint32 size)
 {
   Uint8 *buf;
 
@@ -255,8 +255,8 @@ avt_get_RWdata (SDL_RWops * src, Sint32 size)
 }
 
 static SDL_AudioSpec *
-avt_LoadAU_RW (SDL_RWops * src, Uint32 maxsize, int freesrc,
-	       SDL_AudioSpec * spec, Uint8 ** audio_buf, Uint32 * data_size)
+avt_load_au (SDL_RWops * src, Uint32 maxsize, bool freesrc,
+	     SDL_AudioSpec * spec, Uint8 ** audio_buf, Uint32 * data_size)
 {
   Uint32 head_size, audio_size, encoding, samplingrate, channels;
   int start;
@@ -360,7 +360,7 @@ avt_LoadAU_RW (SDL_RWops * src, Uint32 maxsize, int freesrc,
       break;
 
     case 2:			/* 8Bit linear PCM */
-      buf = avt_get_RWdata (src, audio_size);
+      buf = avt_get_rwdata (src, audio_size);
       if (buf)
 	{
 	  spec->format = AUDIO_S8;	/* signed! */
@@ -371,7 +371,7 @@ avt_LoadAU_RW (SDL_RWops * src, Uint32 maxsize, int freesrc,
       break;
 
     case 3:			/* 16Bit linear PCM */
-      buf = avt_get_RWdata (src, audio_size);
+      buf = avt_get_rwdata (src, audio_size);
       if (buf)
 	{
 	  /* convert to system endianess now, if necessary */
@@ -469,7 +469,7 @@ done:
 }
 
 static avt_audio *
-avt_load_audio_RW (SDL_RWops * src, Uint32 maxsize)
+avt_load_audio_rw (SDL_RWops * src, Uint32 maxsize)
 {
   int start, type;
   struct avt_audio *s;
@@ -519,7 +519,7 @@ avt_load_audio_RW (SDL_RWops * src, Uint32 maxsize)
     {
     case 1:			/* AU */
       s->wave = false;
-      r = avt_LoadAU_RW (src, maxsize, 1, &s->audiospec, &s->sound, &s->len);
+      r = avt_load_au (src, maxsize, true, &s->audiospec, &s->sound, &s->len);
       break;
 
     case 2:			/* Wave */
@@ -544,26 +544,27 @@ avt_load_audio_RW (SDL_RWops * src, Uint32 maxsize)
 extern avt_audio *
 avt_load_audio_file (const char *file)
 {
-  return avt_load_audio_RW (SDL_RWFromFile (file, "rb"), 0xffffffffU);
+  return avt_load_audio_rw (SDL_RWFromFile (file, "rb"), 0xffffffffU);
 }
 
 extern avt_audio *
 avt_load_audio_part (avt_stream * stream, int maxsize)
 {
-  return avt_load_audio_RW (SDL_RWFromFP ((FILE *) stream, 0),
+  return avt_load_audio_rw (SDL_RWFromFP ((FILE *) stream, 0),
 			    maxsize > 0 ? (Uint32) maxsize : 0xffffffffU);
 }
 
 extern avt_audio *
 avt_load_audio_stream (avt_stream * stream)
 {
-  return avt_load_audio_RW (SDL_RWFromFP ((FILE *) stream, 0), 0xffffffffU);
+  return avt_load_audio_rw (SDL_RWFromFP ((FILE *) stream, 0), 0xffffffffU);
 }
 
 extern avt_audio *
 avt_load_audio_data (void *data, int datasize)
 {
-  return avt_load_audio_RW (SDL_RWFromMem (data, datasize), (Uint32) datasize);
+  return avt_load_audio_rw (SDL_RWFromMem (data, datasize),
+			    (Uint32) datasize);
 }
 
 extern int
