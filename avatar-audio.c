@@ -255,7 +255,7 @@ avt_get_RWdata (SDL_RWops * src, Sint32 size)
 }
 
 static SDL_AudioSpec *
-avt_LoadAU_RW (SDL_RWops * src, Uint32 maxsize,
+avt_LoadAU_RW (SDL_RWops * src, Uint32 maxsize, int freesrc,
 	       SDL_AudioSpec * spec, Uint8 ** audio_buf, Uint32 * data_size)
 {
   Uint32 head_size, audio_size, encoding, samplingrate, channels;
@@ -455,6 +455,9 @@ avt_LoadAU_RW (SDL_RWops * src, Uint32 maxsize,
     }
 
 done:
+  if (src && freesrc)
+    SDL_RWclose (src);
+
   if (completed)
     return spec;
   else
@@ -516,7 +519,7 @@ avt_load_audio_RW (SDL_RWops * src, Uint32 maxsize)
     {
     case 1:			/* AU */
       s->wave = false;
-      r = avt_LoadAU_RW (src, maxsize, &s->audiospec, &s->sound, &s->len);
+      r = avt_LoadAU_RW (src, maxsize, 1, &s->audiospec, &s->sound, &s->len);
       break;
 
     case 2:			/* Wave */
@@ -560,8 +563,7 @@ avt_load_audio_stream (avt_stream * stream)
 extern avt_audio *
 avt_load_audio_data (void *data, int datasize)
 {
-  return avt_load_audio_RW (SDL_RWFromMem (data, datasize),
-			    (Uint32) datasize);
+  return avt_load_audio_RW (SDL_RWFromMem (data, datasize), (Uint32) datasize);
 }
 
 extern int
