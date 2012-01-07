@@ -383,6 +383,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(srcdir)/README-SDL $(BINPKGNAME)/README-SDL.txt
 	cp $(lua_dll) $(BINPKGNAME)/
 	cp $(srcdir)/README-Lua $(BINPKGNAME)/README-Lua.txt
+	cp $(srcdir)/mingw/Homepage.url $(BINPKGNAME)/
 	$(STRIP) -d $(BINPKGNAME)/*.exe
 	$(STRIP) -d $(BINPKGNAME)/*.dll
 	$(u2d) $(BINPKGNAME)/fsdemo-??.avt
