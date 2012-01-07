@@ -612,6 +612,7 @@ dist: about $(srcdir)/alert.au
 	ln $(srcdir)/README $(srcdir)/INSTALL $(srcdir)/AUTHORS \
 	   $(srcdir)/NEWS \
 	   $(srcdir)/COPYING $(srcdir)/ChangeLog $(srcdir)/lrun \
+	   $(srcdir)/Homepage.desktop \
 	   $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avatar-audio.c \
 	   $(srcdir)/avtinternals.h \
 	   $(srcdir)/avatar-default.c $(srcdir)/avtccio.c $(srcdir)/avtcwio.c \
@@ -767,6 +768,7 @@ dist-bin-default: all pdf
 	cp akfavatar-graphic.so $(BINPKGNAME)/lua/
 	cp akfavatar-term.so $(BINPKGNAME)/lua/
 	ln $(srcdir)/README-Lua $(BINPKGNAME)/
+	ln $(srcdir)/Homepage.desktop $(BINPKGNAME)/
 	ln $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/audioplayer.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/function_plotter.lua $(BINPKGNAME)/lua/
