@@ -297,10 +297,13 @@ avt_load_au (SDL_RWops * src, Uint32 maxsize, bool freesrc,
   if (head_size > 24)
     SDL_RWseek (src, head_size - 24, RW_SEEK_CUR);
 
-  maxsize -= head_size;
+  if (maxsize != 0xffffffff)
+    {
+      maxsize -= head_size;
 
-  if (maxsize < audio_size)
-    audio_size = maxsize;
+      if (maxsize < audio_size)
+	audio_size = maxsize;
+    }
 
   /* size of audio-data still unknown :-( */
   if (audio_size == 0xffffffff)
