@@ -232,28 +232,6 @@ avt_quit_audio (void)
     }
 }
 
-static Uint8 *
-avt_get_rwdata (SDL_RWops * src, Sint32 size)
-{
-  Uint8 *buf;
-
-  buf = (Uint8 *) SDL_malloc (size);
-  if (buf == NULL)
-    SDL_SetError ("out of memory");
-  else
-    {
-      /* read the data into the buf */
-      if (SDL_RWread (src, buf, 1, size) < size)
-	{
-	  SDL_SetError ("read error");
-	  SDL_free (buf);
-	  buf = NULL;
-	}
-    }
-
-  return buf;
-}
-
 static SDL_AudioSpec *
 avt_load_au (SDL_RWops * src, Uint32 maxsize, bool freesrc,
 	     SDL_AudioSpec * spec, Uint8 ** audio_buf, Uint32 * data_size)
@@ -365,29 +343,49 @@ avt_load_au (SDL_RWops * src, Uint32 maxsize, bool freesrc,
       break;
 
     case 2:			/* 8Bit linear PCM */
-      buf = avt_get_rwdata (src, audio_size);
+      buf = (Uint8 *) SDL_malloc (audio_size);
+
       if (buf)
 	{
+	  /* read the data into the buf */
+	  if (SDL_RWread (src, buf, 1, audio_size) < (int) audio_size)
+	    {
+	      SDL_SetError ("read error");
+	      SDL_free (buf);
+	      buf = NULL;
+	      goto done;
+	    }
+
 	  spec->format = AUDIO_S8;	/* signed! */
 	  *audio_buf = buf;
 	  *data_size = audio_size;
 	  completed = true;
 	}
+      else
+	SDL_SetError ("out of memory");
+
       break;
 
     case 3:			/* 16Bit linear PCM */
-      buf = avt_get_rwdata (src, audio_size);
+      buf = (Uint8 *) SDL_malloc (audio_size);
+
       if (buf)
 	{
-	  /* convert to system endianess now, if necessary */
-	  if (SDL_BYTEORDER == SDL_LIL_ENDIAN)
-	    {
-	      Uint32 i;
-	      Sint16 *bufp;
+	  Sint16 *bufp;
+	  Uint16 value;
+	  Uint32 i;
 
-	      bufp = (Sint16 *) buf;
-	      for (i = 0; i < (audio_size / 2); i++, bufp++)
-		*bufp = SDL_Swap16 (*bufp);
+	  bufp = (Sint16 *) buf;
+	  for (i = 0; i < audio_size; i += sizeof (value), bufp++)
+	    {
+	      if (SDL_RWread (src, &value, sizeof (value), 1) == -1)
+		{
+		  SDL_SetError ("read error");
+		  SDL_free (buf);
+		  buf = NULL;
+		  goto done;
+		}
+	      *bufp = (Sint16) SDL_SwapBE16 (value);
 	    }
 
 	  spec->format = AUDIO_S16SYS;
@@ -395,6 +393,9 @@ avt_load_au (SDL_RWops * src, Uint32 maxsize, bool freesrc,
 	  *data_size = audio_size;
 	  completed = true;
 	}
+      else
+	SDL_SetError ("out of memory");
+
       break;
 
     case 4:			/* 24Bit linear PCM */
