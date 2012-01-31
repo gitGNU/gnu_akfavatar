@@ -50,13 +50,13 @@ dist-bin: $(DISTBIN)
 
 default: libakfavatar.so libakfavatar.a libavtaddons.a \
 	lua-akfavatar lua-akfavatar.so base64.so akfavatar-term.so \
-	akfavatar-vorbis.so akfavatar-graphic.so about
+	akfavatar-vorbis.so akfavatar-graphic.so about example
 	@echo '*'
 	@echo '* use "make install" or "make install-strip"'
 	@echo '* with root-privileges to install it.'
 	@echo '*'
 
-nolua: libakfavatar.so libakfavatar.a libavtaddons.a
+nolua: libakfavatar.so libakfavatar.a libavtaddons.a example
 	@echo '*'
 	@echo '* use "make install" or "make install-strip"'
 	@echo '* with root-privileges to install it.'
@@ -519,7 +519,7 @@ distclean: clean
 	-rm -f avatarsay avatarsay-bin avatarsay-s
 	-rm -f example
 	-rm -f lua-akfavatar lua-akfavatar-bin
-	-rm -f example a.out *.a *.so
+	-rm -f a.out *.a *.so
 	-rm -f *.dll
 	-rm -f $(LIBNAME) $(SONAME)
 	-rm -f config.status

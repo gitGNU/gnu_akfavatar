@@ -44,7 +44,7 @@ SHELL = /bin/sh
 
 all: akfavatar.dll libakfavatar.a libavtaddons.a \
      lua-akfavatar.exe lua-akfavatar.dll base64.dll akfavatar-vorbis.dll \
-     akfavatar-graphic.dll iconv.exe about
+     akfavatar-graphic.dll iconv.exe about example.exe
 
 nolua: akfavatar.dll libakfavatar.a libavtaddons.a iconv.exe
 

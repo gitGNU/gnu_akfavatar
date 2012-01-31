@@ -1,6 +1,6 @@
 /*
  * example to program AKFAvatar in C (can be used as a starting point)
- * Copyright (c) 2009 ... (enter your name)
+ * Copyright (c) 2012 ... (enter your name)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,37 +25,9 @@
 #include <wchar.h>
 
 
-void
-initialize (int argc, char *argv[])
-{
-  int mode;
-  int i;
+#define PRGNAME  "AKFAvatar example program"
+#define PRGSHORTNAME  "AKFAvatar"
 
-  /* get the mode */
-  mode = AVT_AUTOMODE;
-
-  for (i = 1; i < argc; i++)
-    {
-      if (!strcmp ("--fullscreen", argv[i]) || !strcmp ("-f", argv[i]))
-	mode = AVT_FULLSCREEN;
-      if (!strcmp ("--window", argv[i]) || !strcmp ("-w", argv[i]))
-	mode = AVT_WINDOW;
-    }
-
-  /* initialize it */
-  if (avt_initialize ("AKFAvatar example program", "AKFAvatar",
-		      avt_default (), mode))
-    {
-      fprintf (stderr, "cannot initialize graphics: %s\n", avt_get_error ());
-      exit (EXIT_FAILURE);
-    }
-
-  /* clean up when the program exits */
-  atexit (avt_quit);
-
-  /* do slow printing */
-  avt_set_text_delay (AVT_DEFAULT_TEXT_DELAY);
-}
 
 void
 say (wchar_t * msg)
@@ -69,11 +41,15 @@ say (wchar_t * msg)
     exit (EXIT_SUCCESS);
 }
 
+
 void
 run_plot (void)
 {
   wchar_t name[AVT_LINELENGTH + 1];
   /* AVT_LINELENGTH is the maximum length of one line in a balloon */
+
+  /* do slow printing */
+  avt_set_text_delay (AVT_DEFAULT_TEXT_DELAY);
 
   /* set the balloon size: height, width (use 0 for maximum) */
   avt_set_balloon_size (6, 50);
@@ -100,9 +76,11 @@ run_plot (void)
        L"I am longing for being programmed by you!");
 
   /* wait for a key, move out and wait some time */
-  if (!avt_wait_button () && !avt_move_out () && !avt_wait (AVT_SECONDS (1)))
-    exit (EXIT_SUCCESS);
+  avt_wait_button ();
+  avt_move_out ();
+  avt_wait (AVT_SECONDS (1));
 }
+
 
 /*
  * For the SDL on the windows platform the main function must have
@@ -111,11 +89,19 @@ run_plot (void)
  * (Windows normally uses a non-standard entry function for graphical
  * programs, which is not portable at all. This macro makes it portable)
  */
-
 int
 main (int argc, char *argv[])
 {
-  initialize (argc, argv);
+  /* initialize it */
+  if (avt_initialize (PRGNAME, PRGSHORTNAME, avt_default (), AVT_AUTOMODE))
+    {
+      fprintf (stderr, "cannot initialize graphics: %s\n", avt_get_error ());
+      exit (EXIT_FAILURE);
+    }
+
+  /* clean up when the program exits */
+  atexit (avt_quit);
+
   run_plot ();
 
   return EXIT_SUCCESS;
