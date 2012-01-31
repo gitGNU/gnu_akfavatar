@@ -206,11 +206,6 @@ libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
 avtposix.o: $(srcdir)/avtposix.c $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtposix.c
 
-avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
-	     $(srcdir)/avtaddons.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -DPREFIX=\"$(exec_prefix)\" -I$(srcdir) -I. \
-	  -c -o $@ $(srcdir)/avatarsay.c
-
 # lua-akfavatar dynamically linked
 lua-akfavatar-bin: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
                    filechooser.o colorchooser.o
@@ -384,7 +379,6 @@ uninstall: uninstall-info uninstall-man uninstall-txt uninstall-html \
 	-rm -f $(libdir)/libakfavatar.a
 	-rm -f $(libdir)/libavtaddons.a
 	-rm -f $(libdir)/libavtcio.a # from old installations
-	-rm -f $(bindir)/avatarsay
 	-rm -f $(bindir)/lua-akfavatar
 	-rm -f $(bindir)/avtman
 	-rm -f $(bindir)/avtcmd
@@ -399,7 +393,6 @@ uninstall: uninstall-info uninstall-man uninstall-txt uninstall-html \
 	-rm -f $(LUA_CPATH)/akfavatar-term.so
 	-rm -f $(LUA_CPATH)/akfavatar-graphic.so
 
-	-xdg-desktop-menu uninstall akfoerster-avatarsay.desktop
 	-xdg-desktop-menu uninstall akfoerster-lua-akfavatar.desktop
 	-xdg-icon-resource uninstall --size 32 --novendor akfavatar.xpm
 	-xdg-icon-resource uninstall --size 32 --novendor lua.xpm
@@ -421,7 +414,6 @@ install-man: man
 	                 $(DESTDIR)$(mandir)/de/man3/lua-akfavatar-ref.3
 
 uninstall-man:
-	-rm -f $(DESTDIR)$(mandir)/man1/avatarsay.1
 	-rm -f $(DESTDIR)$(mandir)/man1/avtcmd.1
 	-rm -f $(DESTDIR)$(mandir)/man1/lua-akfavatar.1
 	-rm -f $(DESTDIR)$(mandir)/de/man1/lua-akfavatar.1
@@ -516,7 +508,6 @@ clean:
 mostlyclean: clean
 
 distclean: clean
-	-rm -f avatarsay avatarsay-bin avatarsay-s
 	-rm -f example
 	-rm -f lua-akfavatar lua-akfavatar-bin
 	-rm -f a.out *.a *.so
@@ -535,7 +526,6 @@ distclean: clean
 	-rm -f akfavatar-en.txt akfavatar-en.xml
 	-rm -f akfavatar-de.pdf akfavatar-de.ps akfavatar-de.dvi
 	-rm -f akfavatar-de.txt akfavatar-de.xml
-	-rm -f avatarsay*.exe
 	-rm -f akfavatar-*.zip
 	-rm -f lua-akfavatar.exe
 	-rm -f iconv.exe
@@ -701,7 +691,7 @@ dist: about $(srcdir)/alert.au
 	mkdir $(PKGNAME)/mingw
 	ln $(srcdir)/mingw/akfavatar.ico $(srcdir)/mingw/icon.rc \
 	   $(srcdir)/mingw/lua.ico \
-	   $(srcdir)/mingw/akfavatar-dll.rc $(srcdir)/mingw/avatarsay.rc \
+	   $(srcdir)/mingw/akfavatar-dll.rc \
 	   $(srcdir)/mingw/lua-akfavatar-dll.rc \
 	   $(srcdir)/mingw/lua-akfavatar-prg.rc \
 	   $(srcdir)/mingw/akfavatar-graphic.rc \
