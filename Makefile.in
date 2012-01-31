@@ -181,12 +181,6 @@ avttermsys.o: $(srcdir)/avttermsys.c $(srcdir)/avttermsys.h \
                 $(srcdir)/akfavatar.h version.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c -o $@ $(srcdir)/avttermsys.c
 
-avtmsg.o: $(srcdir)/avtmsg.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtmsg.c
-
-avtgrmsg.o: $(srcdir)/avtgrmsg.c $(srcdir)/akfavatar.h
-	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/avtgrmsg.c
-
 arch.o: $(srcdir)/arch.c $(srcdir)/avtaddons.h
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/arch.c
 
@@ -202,10 +196,10 @@ stb_vorbis.o: $(srcdir)/stb_vorbis.c
 	  $(srcdir)/stb_vorbis.c
 
 libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
-                avtccio.o avtcwio.o avtmsg.o avtgrmsg.o avtreadfile.o \
+                avtccio.o avtcwio.o avtreadfile.o \
                 colorchooser.o avtvorbis.o stb_vorbis.o
 	$(AR) rcu $@ filechooser.o avtterm.o avttermsys.o arch.o \
-	             avtccio.o avtcwio.o avtmsg.o avtgrmsg.o avtreadfile.o \
+	             avtccio.o avtcwio.o avtreadfile.o \
 	             colorchooser.o avtvorbis.o stb_vorbis.o
 	-$(RANLIB) $@
 
@@ -217,34 +211,12 @@ avatarsay.o: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -DPREFIX=\"$(exec_prefix)\" -I$(srcdir) -I. \
 	  -c -o $@ $(srcdir)/avatarsay.c
 
-# avatarsay dynamically linked
-avatarsay-bin: avatarsay.o avtposix.o libakfavatar.so \
-               arch.o avtterm.o avttermsys.o colorchooser.o filechooser.o \
-               avtreadfile.o avtmsg.o avtgrmsg.o
-	$(CC) -o $@ avatarsay.o avtposix.o \
-	      arch.o avtterm.o avttermsys.o colorchooser.o filechooser.o \
-	      avtreadfile.o avtmsg.o avtgrmsg.o \
-	      -L. -lakfavatar $(LDFLAGS) $(AVATARSAY_LDFLAGS)
-
-# avatarsay with statical libakfavatar.a
-avatarsay-s: avatarsay.o avtposix.o libakfavatar.a \
-             arch.o avtterm.o avttermsys.o colorchooser.o filechooser.o \
-             avtreadfile.o avtmsg.o avtgrmsg.o
-	$(CC) -o $@ avatarsay.o avtposix.o -L. libakfavatar.a \
-	     arch.o avtterm.o avttermsys.o colorchooser.o filechooser.o \
-             avtreadfile.o avtmsg.o avtgrmsg.o \
-	   $(SDL_LDFLAGS) $(LDFLAGS) $(AVATARSAY_LDFLAGS)
-
-avatarsay: $(srcdir)/avatarsay.sh avatarsay-bin
-	install -m 755 $(srcdir)/avatarsay.sh $@
-
 # lua-akfavatar dynamically linked
 lua-akfavatar-bin: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
-                   filechooser.o colorchooser.o avtmsg.o avtgrmsg.o
+                   filechooser.o colorchooser.o
 	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
-	     filechooser.o colorchooser.o avtmsg.o avtgrmsg.o arch.o \
-	     -L. -lakfavatar \
-	     $(LUA_LDFLAGS) $(LDFLAGS)
+	     filechooser.o colorchooser.o arch.o \
+	     -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS)
 
 lua-akfavatar: $(srcdir)/lua-akfavatar.sh lua-akfavatar-bin
 	install -m 755 $(srcdir)/lua-akfavatar.sh $@
@@ -259,9 +231,9 @@ lua-avt.o: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h
 	  $(srcdir)/lua/lua-avt.c
 
 # Lua-Modules
-lua-akfavatar.so: lua-avt.lo filechooser.lo colorchooser.lo avtmsg.lo avtgrmsg.lo
+lua-akfavatar.so: lua-avt.lo filechooser.lo colorchooser.lo
 	$(CC) -o $@ -shared -fpic lua-avt.lo filechooser.lo colorchooser.lo \
-	     avtmsg.lo avtgrmsg.lo -L. -lakfavatar $(LDFLAGS)
+	     -L. -lakfavatar $(LDFLAGS)
 
 akfavatar-vorbis.so: akfavatar-vorbis.lo avtvorbis.lo stb_vorbis.lo
 	$(CC) -o $@ -shared -fpic akfavatar-vorbis.lo avtvorbis.lo stb_vorbis.lo \
@@ -286,10 +258,9 @@ stb_vorbis.lo: $(srcdir)/stb_vorbis.c
 base64.so: lbase64.lo
 	$(CC) -o $@ -shared -fpic lbase64.lo $(LDFLAGS)
 
-akfavatar-term.so: akfavatar-term.lo avtterm.lo avttermsys.lo \
-	          avtmsg.lo avtgrmsg.lo
+akfavatar-term.so: akfavatar-term.lo avtterm.lo avttermsys.lo
 	$(CC) -o $@ -shared -fpic akfavatar-term.lo avtterm.lo avttermsys.lo \
-	     avtmsg.lo avtgrmsg.lo -L. -lakfavatar $(LDFLAGS)
+	     -L. -lakfavatar $(LDFLAGS)
 
 akfavatar-term.lo: $(srcdir)/lua/akfavatar-term.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -fpic -o $@ \
@@ -325,14 +296,6 @@ filechooser.lo: $(srcdir)/filechooser.c $(srcdir)/avtaddons.h \
 colorchooser.lo: $(srcdir)/colorchooser.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -fpic -o $@ \
 	  $(srcdir)/colorchooser.c
-
-avtmsg.lo: $(srcdir)/filechooser.c $(srcdir)/avtaddons.h \
-           $(srcdir)/avtinternals.h $(srcdir)/akfavatar.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -fpic -o $@ \
-	  $(srcdir)/avtmsg.c
-
-avtgrmsg.lo: $(srcdir)/avtgrmsg.c $(srcdir)/akfavatar.h
-	$(CC) $(CFLAGS) -fpic -c -o $@ $(srcdir)/avtgrmsg.c
 
 installdirs:
 	-[ -d $(DESTDIR)$(includedir) ]  || $(INSTALL) -d $(DESTDIR)$(includedir)
@@ -629,7 +592,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/btn_help.xbm $(srcdir)/btn_eject.xbm \
 	   $(srcdir)/btn_circle.xbm \
 	   $(srcdir)/avtposix.c $(srcdir)/avtterm.c $(srcdir)/avttermsys.h \
-	   $(srcdir)/avttermsys.c $(srcdir)/avtmsg.c $(srcdir)/avtgrmsg.c \
+	   $(srcdir)/avttermsys.c \
 	   $(srcdir)/stb_vorbis.c $(srcdir)/avtvorbis.c \
 	   $(srcdir)/arch.c \
 	   $(srcdir)/rgb.txt $(srcdir)/avtcmd \
@@ -743,7 +706,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/mingw/lua-akfavatar-prg.rc \
 	   $(srcdir)/mingw/akfavatar-graphic.rc \
 	   $(srcdir)/mingw/akfavatar-vorbis.rc \
-	   $(srcdir)/mingw/avtmsg.c $(srcdir)/mingw/avtwindows.c \
+	   $(srcdir)/mingw/avtwindows.c \
 	   $(srcdir)/mingw/avttermstub.c $(srcdir)/mingw/askdrive.c \
 	   $(srcdir)/mingw/win_iconv.c $(srcdir)/mingw/iconv.h \
 	   $(srcdir)/mingw/Makefile $(srcdir)/mingw/README \

@@ -152,45 +152,12 @@ avtreadfile.wo: $(srcdir)/avtreadfile.c $(srcdir)/avtaddons.h $(srcdir)/akfavata
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtreadfile.c
 
 libavtaddons.a: filechooser.wo askdrive.wo arch.wo avttermstub.wo \
-                avtccio.wo avtcwio.wo avtmsg.wo avtgrmsg.wo avtreadfile.wo \
+                avtccio.wo avtcwio.wo avtreadfile.wo \
                 colorchooser.wo avtvorbis.wo stb_vorbis.wo
 	$(AR) rcu $@ filechooser.wo askdrive.wo arch.wo avttermstub.wo \
-	             avtccio.wo avtcwio.wo avtmsg.wo avtgrmsg.wo \
+	             avtccio.wo avtcwio.wo \
 	             avtreadfile.wo colorchooser.wo avtvorbis.wo stb_vorbis.wo
 	-$(RANLIB) $@
-
-# from the mingw directory!
-avtmsg.wo: $(srcdir)/mingw/avtmsg.c $(srcdir)/avtaddons.h \
-	   $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
-	  $(srcdir)/mingw/avtmsg.c
-
-avtgrmsg.wo: $(srcdir)/avtgrmsg.c $(srcdir)/akfavatar.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ \
-	  $(srcdir)/avtgrmsg.c
-
-avatarsay.wo: $(srcdir)/avatarsay.c $(srcdir)/akfavatar.h \
-              $(srcdir)/avtinternals.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c -o $@ $(srcdir)/avatarsay.c
-
-avatarsay: avatarsay.exe
-
-avatarsay-s: avatarsay-s.exe
-
-# uses dynamic lib
-avatarsay.exe: avatarsay.wo akfavatar.dll \
-	         avtwindows.wo avatarsay-info.wo \
-	         arch.wo avttermstub.wo colorchooser.wo filechooser.wo \
-	         askdrive.wo avtreadfile.wo avtmsg.wo avtgrmsg.wo \
-	         avatarsay-info.wo
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -o $@ avatarsay.wo avtwindows.wo \
-	  arch.wo avttermstub.wo colorchooser.wo filechooser.wo \
-	  askdrive.wo avtreadfile.wo avtmsg.wo avtgrmsg.wo \
-	  avatarsay-info.wo -L. -lakfavatar $(SDL_LDFLAGS) $(LDFLAGS)
-
-avatarsay-info.wo: $(srcdir)/mingw/avatarsay.rc version.h \
-	   $(srcdir)/mingw/akfavatar.ico
-	$(WINDRES) -I. -o $@ -i $(srcdir)/mingw/avatarsay.rc
 
 example: example.exe
 
@@ -200,11 +167,10 @@ example.exe: $(srcdir)/example.c akfavatar.dll icon.wo
 
 lua-akfavatar.exe: lua-akfavatar-prg.wo lua-akfavatar-prg-info.wo \
 		filechooser.wo askdrive.wo colorchooser.wo avtreadfile.wo \
-		avtmsg.wo avtgrmsg.wo arch.wo lua-akfavatar.dll
+		arch.wo lua-akfavatar.dll
 	$(CC) -o $@ lua-akfavatar-prg.wo lua-akfavatar-prg-info.wo \
 	    filechooser.wo askdrive.wo colorchooser.wo avtreadfile.wo \
-	    avtmsg.wo avtgrmsg.wo arch.wo \
-	    -L. -lakfavatar -llua-akfavatar \
+	    arch.wo -L. -lakfavatar -llua-akfavatar \
 	    $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS)
 
 lua-akfavatar-prg-info.wo: $(srcdir)/mingw/lua-akfavatar-prg.rc version.h \
@@ -212,9 +178,9 @@ lua-akfavatar-prg-info.wo: $(srcdir)/mingw/lua-akfavatar-prg.rc version.h \
 	$(WINDRES) -I. -o $@ -i $(srcdir)/mingw/lua-akfavatar-prg.rc
 
 lua-akfavatar.dll: lua-avt.wo filechooser.wo askdrive.wo colorchooser.wo \
-	           avtmsg.wo avtgrmsg.wo lua-akfavatar-dll-info.wo
+	           lua-akfavatar-dll-info.wo
 	$(CC) -o $@ -shared lua-avt.wo filechooser.wo askdrive.wo \
-	     colorchooser.wo avtmsg.wo avtgrmsg.wo lua-akfavatar-dll-info.wo \
+	     colorchooser.wo lua-akfavatar-dll-info.wo \
 	     -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS) -mwindows
 
 lua-akfavatar-dll-info.wo: $(srcdir)/mingw/lua-akfavatar-dll.rc version.h \

@@ -1,3 +1,8 @@
+2012-01-31  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtmsg.c, avtgrmsg.c, mingw/avtmsg.c: removed
+	all callers adapted
+
 2012-01-28  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-audio.c (avt_load_au): code cleanup

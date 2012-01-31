@@ -1,6 +1,6 @@
 /*
  * Starter for Lua-AKFAvatar programs in Lua
- * Copyright (c) 2009,2010,211 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
  *
  * required standards: C99 or C++, POSIX.1-2001
  *
@@ -30,6 +30,10 @@
 #include <unistd.h>		/* getcwd, chdir */
 #include <locale.h>
 #include <errno.h>
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 #ifdef __cplusplus
 extern "C"
@@ -85,6 +89,47 @@ quit (void)
   lua_close (L);
 }
 
+
+static void
+error_box (const char *msg)
+{
+  avt_set_status (AVT_NORMAL);
+  avt_change_avatar_image (NULL);
+  avt_set_balloon_color (0xFF, 0xAA, 0xAA);
+  avt_normal_text ();
+  avt_set_auto_margin (true);
+  avt_set_scroll_mode (-1);
+  avt_set_text_delay (0);
+  avt_lock_updates (false);
+  avt_bell ();
+  avt_tell_mb (msg);
+  avt_wait_button ();
+}
+
+
+static void
+fatal (const char *m1, const char *m2)
+{
+  char msg[4096];
+
+  if (m2)
+    snprintf (msg, sizeof (msg), PRGNAME ": %s: %s", m1, m2);
+  else
+    snprintf (msg, sizeof (msg), PRGNAME ": %s", m1);
+
+  if (avt_initialized ())
+    error_box (msg);
+  else
+#ifdef _WIN32
+    MessageBox (NULL, msg, PRGNAME, MB_ICONERROR | MB_OK | MB_SETFOREGROUND);
+#else
+    fputs (msg, stderr);
+#endif
+
+  exit (EXIT_FAILURE);
+}
+
+
 /* require module and pushes nresults on the stack */
 static void
 require (const char *module, int nresults)
@@ -93,7 +138,7 @@ require (const char *module, int nresults)
   lua_pushstring (L, module);
   if (lua_pcall (L, 1, nresults, 0) != 0)
     {
-      avta_error (lua_tostring (L, -1), NULL);
+      fatal ("require", lua_tostring (L, -1));
       lua_pop (L, 1);		/* pop message */
     }
 }
@@ -135,7 +180,7 @@ check_options (int argc, char *argv[])
 	    i++;
 	}
       else
-	avta_error ("unknown option", argv[i]);
+	fatal ("unknown option", argv[i]);
     }
 
   /* no script found? */
@@ -152,7 +197,7 @@ initialize (void)
   avt_mb_encoding ("UTF-8");
   if (avt_initialize ("Lua-AKFAvatar", "AKFAvatar",
 		      avt_default (), AVT_AUTOMODE))
-    avta_error ("cannot initialize graphics", avt_get_error ());
+    fatal ("cannot initialize graphics", avt_get_error ());
 }
 
 static void
@@ -195,7 +240,7 @@ initialize_lua (void)
 
   L = luaL_newstate ();
   if (L == NULL)
-    avta_error ("cannot open Lua", "not enough memory");
+    fatal ("cannot open Lua", "not enough memory");
 
   luaL_checkversion (L);
   lua_gc (L, LUA_GCSTOP, 0);
@@ -231,7 +276,7 @@ avtdemo (const char *filename)
     {
       /* on a normal quit-request there is nil on the stack */
       if (lua_isstring (L, -1))
-	avta_error (lua_tostring (L, -1), NULL);
+	fatal ("akfavatar.avtdemo", lua_tostring (L, -1));
       lua_pop (L, 1);		/* pop message (or the nil) */
     }
 }
@@ -296,23 +341,6 @@ show_text (const char *filename)
   avta_pager_file (filename, 1);
 }
 
-/* error in script */
-static void
-script_error (const char *msg)
-{
-  avt_set_status (AVT_NORMAL);
-  avt_change_avatar_image (NULL);
-  avt_set_balloon_color (0xFF, 0xAA, 0xAA);
-  avt_normal_text ();
-  avt_set_auto_margin (true);
-  avt_set_scroll_mode (-1);
-  avt_set_text_delay (0);
-  avt_lock_updates (false);
-  avt_bell ();
-  avt_tell_mb (msg);
-  avt_wait_button ();
-}
-
 static bool
 ask_file (void)
 {
@@ -339,7 +367,7 @@ ask_file (void)
 	{
 	  if (run_executable (filename) != 0)
 	    {
-	      script_error (lua_tostring (L, -1));
+	      error_box (lua_tostring (L, -1));
 	      lua_pop (L, 1);
 	    }
 	}
@@ -353,7 +381,7 @@ ask_file (void)
 	    {
 	      /* on a normal quit-request there is nil on the stack */
 	      if (lua_isstring (L, -1))
-		script_error (lua_tostring (L, -1));
+		error_box (lua_tostring (L, -1));
 	      lua_pop (L, 1);	/* pop message (or the nil) */
 	    }
 	}
@@ -441,7 +469,6 @@ main (int argc, char **argv)
   setlocale (LC_ALL, "");
 
   script_index = check_options (argc, argv);
-  avta_prgname (PRGNAME);
 
   /* initialize Lua */
   initialize_lua ();
@@ -458,7 +485,7 @@ main (int argc, char **argv)
       else if (ext && strcasecmp (EXT_EXEC, ext) == 0)
 	{
 	  if (run_executable (argv[script_index]) != 0)
-	    avta_error (lua_tostring (L, -1), NULL);
+	    fatal ("executable", lua_tostring (L, -1));
 	}
       else			/* assume Lua code */
 	{
@@ -468,7 +495,7 @@ main (int argc, char **argv)
 	      || lua_pcall (L, 0, 0, 0) != 0)
 	    {
 	      if (lua_isstring (L, -1))
-		avta_error (lua_tostring (L, -1), NULL);
+		fatal (argv[script_index], lua_tostring (L, -1));
 	    }
 	}
     }

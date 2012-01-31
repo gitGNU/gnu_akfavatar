@@ -12,6 +12,7 @@
   - avt_audio_t renamed to avt_audio
   - new functions: avt_delay, avt_load_audio_part
   - avtaddons:
+    - avtmsg section removed - make your own messages
     - avta_filter_t renamed to avt_filter
     - avta_arch_get_member: new function
     - avta_arch_get_data: rewritten

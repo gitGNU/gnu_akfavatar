@@ -1,6 +1,6 @@
 /*
  * avtterm - terminal emulation for AKFAAvatar
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007,2008,2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -150,18 +150,12 @@ set_encoding (const char *encoding)
   vt100graphics = (strcmp (VT100, encoding) == 0);
 
   if (vt100graphics)
-    {
-      if (avt_mb_encoding ("US-ASCII"))
-	avta_error ("iconv", avt_get_error ());
-    }
+    avt_mb_encoding ("US-ASCII");
   else if (avt_mb_encoding (encoding))
     {
-      avta_warning ("iconv", avt_get_error ());
-
       /* try a fallback */
       avt_set_status (AVT_NORMAL);
-      if (avt_mb_encoding ("US-ASCII"))
-	avta_error ("iconv", avt_get_error ());
+      avt_mb_encoding ("US-ASCII");
     }
 }
 
@@ -1177,7 +1171,7 @@ CSI_sequence (int fd, avt_char last_character)
 
 #ifdef DEBUG
     default:
-      avta_warning ("unsupported CSI sequence", sequence);
+      fprintf (stderr, "unsupported CSI sequence: %s", sequence);
 #endif
     }
 }

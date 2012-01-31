@@ -43,6 +43,7 @@
   AVT_BEGIN_DECLS
 #endif
 
+
 /**********************************************************************
  * Section: avtccio
  * C-specific functions for input/output
@@ -57,6 +58,7 @@ AVT_ADDON int avta_puts (const char *s);
 AVT_ADDON int avta_scanf (const char *format, ...);
 AVT_ADDON int avta_vprintf (const char *format, va_list ap);
 AVT_ADDON int avta_vscanf (const char *format, va_list ap);
+
 
 /**********************************************************************
  * Section: avtcwio
@@ -75,45 +77,12 @@ AVT_ADDON int avta_vwscanf (const wchar_t *format, va_list ap);
 
 
 /**********************************************************************
- * Section: avtmsg
- * message output for avatarsay
- **********************************************************************/
-
-/*
- * the output takes place on stderr when this exists
- * or in message boxes on some other systems
- *
- * these functions are also used by other parts of avtaddons,
- * so they are most likely included
- *
- * "avta_warning", "avta_notice" and "avta_error" take 2 message strings
- * the second one may simply be NULL if you don't need it
- */
-
-/*
- * set the name of the programm, default: "AKFAvatar"
- * the string must be kept available - a string literal is okay
- */
-AVT_ADDON void avta_prgname (const char *name);
-
-/* info on stdout */
-AVT_ADDON void avta_info(const char *msg);
-
-/* warning on stderr */
-AVT_ADDON void avta_warning (const char *msg1, const char *msg2);
-
-/* unimportant notice (stderr - might be ignored) */
-AVT_ADDON void avta_notice (const char *msg1, const char *msg2);
-
-/* error that quits the program (stderr) */
-AVT_ADDON void avta_error (const char *msg1, const char *msg2);
-
-/**********************************************************************
  * Section: colorchooser
  * color-chooser for AKFAvatar
  **********************************************************************/
 
 AVT_ADDON const char *avta_color_selection (void);
+
 
 /**********************************************************************
  * Section: filechooser
@@ -132,6 +101,7 @@ AVT_ADDON int avta_file_selection (char *filename, int filename_size,
 
 /* only for backward compatibility: */
 #define avta_get_file(f)  avta_file_selection(f, sizeof(f), NULL)
+
 
 /**********************************************************************
  * Section: avtreadfile

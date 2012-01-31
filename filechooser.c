@@ -1,6 +1,6 @@
 /*
  * filechooser - filechooser dialog for AKFAvatar
- * Copyright (c) 2008, 2009, 2010, 2011 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2008,2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -209,8 +209,7 @@ get_directory (struct dirent ***list)
       qsort (mylist, entries, sizeof (struct dirent *), compare_dirent);
     }
 
-  if (closedir (dir) < 0)
-    avta_warning ("closedir", strerror (errno));
+  closedir (dir);
 
   if (!mylist)
     return -1;
@@ -284,7 +283,7 @@ start:
   idx = 0;
 
   if (!getcwd (dirname, sizeof (dirname)))
-    avta_warning ("getcwd", strerror (errno));
+    dirname[0] = '\0';
 
   show_directory (dirname);
   idx++;			/* for the directory-line */
@@ -432,8 +431,8 @@ start:
       avt_clear_line ();
       avt_ask_mb (dirname, sizeof (dirname));
       avt_normal_text ();
-      if (*dirname && chdir (dirname))
-	avta_warning (dirname, "cannot chdir");
+      if (*dirname)
+	chdir (dirname);
       goto start;
     }
 
@@ -458,8 +457,7 @@ start:
   /* directory chosen? */
   if (is_directory (filename))
     {
-      if (chdir (filename))
-	avta_warning (filename, "cannot chdir");
+      chdir (filename);
       goto start;
     }
 

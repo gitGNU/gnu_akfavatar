@@ -1,7 +1,7 @@
 /* 
  * askdrive - windows specific function:
  * ask for drive letter for avtfilechooser
- * Copyright (c) 2007, 2008, 2009, 2010 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007,2008,2009,2010,2012 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -20,7 +20,6 @@
  */
 
 #include "akfavatar.h"
-#include "avtaddons.h"
 #include <direct.h>		/* for _chdrive */
 #include <string.h>
 #include <errno.h>
@@ -78,10 +77,7 @@ ask:
   if (status == AVT_NORMAL)
     {
       if (_chdrive (drives[choice - 1 - 1]) < 0)
-	{
-	  avta_warning (strerror (errno), NULL);
-	  goto ask;
-	}
+        goto ask;
     }
 
   return status;
