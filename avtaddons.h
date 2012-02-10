@@ -99,9 +99,6 @@ typedef bool (*avta_filter) (const char *filename);
 AVT_ADDON int avta_file_selection (char *filename, int filename_size,
                                    avta_filter filter);
 
-/* only for backward compatibility: */
-#define avta_get_file(f)  avta_file_selection(f, sizeof(f), NULL)
-
 
 /**********************************************************************
  * Section: avtreadfile

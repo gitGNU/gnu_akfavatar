@@ -14,6 +14,7 @@
   - avtaddons:
     - avtmsg section removed - make your own messages
     - avta_filter_t renamed to avt_filter
+    - avta_get_file: removed
     - avta_arch_get_member: new function
     - avta_arch_get_data: rewritten
     - avta_load_vorbis_stream: new_function
