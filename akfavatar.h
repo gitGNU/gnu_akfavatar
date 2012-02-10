@@ -329,7 +329,7 @@ AVT_API int avt_tell (const wchar_t *txt);
  * sets the balloon size so that the text fits exactly
  * writes string with given length in the balloon
  * the string needn't be terminated and can contain binary zeros
- * if len is <= 0 then it's the same as avt_tell()
+ * if len is 0 then it's the same as avt_tell()
  * if there is no balloon, it is drawn
  * if there is no avatar, it is shown (not moved in)
  * interprets control characters including overstrike-text
@@ -354,8 +354,6 @@ AVT_API bool avt_is_printable (avt_char ch);
  * get string (just one line)
  * the maximum length is LINELENGTH-1
  * size is the size of s in bytes (not the length)
- *
- * (I don't use size_t for better compatiblity with other languages)
  */
 AVT_API int avt_ask (wchar_t *s, size_t size);
 
