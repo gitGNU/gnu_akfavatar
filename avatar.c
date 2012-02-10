@@ -3395,9 +3395,9 @@ avt_say (const wchar_t * txt)
  * interprets control characters
  */
 extern int
-avt_say_len (const wchar_t * txt, int len)
+avt_say_len (const wchar_t * txt, size_t len)
 {
-  int i;
+  size_t i;
 
   /* nothing to do, when txt == NULL */
   /* but do allow a text to start with zeros here */
@@ -3436,9 +3436,10 @@ avt_say_len (const wchar_t * txt, int len)
 }
 
 extern int
-avt_tell_len (const wchar_t * txt, int len)
+avt_tell_len (const wchar_t * txt, size_t len)
 {
-  int width, height, line_length, pos;
+  int width, height, line_length;
+  size_t pos;
   const wchar_t *p;
 
   if (!txt || !*txt || _avt_STATUS != AVT_NORMAL)
@@ -3450,7 +3451,7 @@ avt_tell_len (const wchar_t * txt, int len)
   pos = 1;
   p = txt;
 
-  while ((len > 0 && pos <= len) || (len <= 0 && *p))
+  while ((len > 0 && pos <= len) || (len == 0 && *p))
     {
       switch (*p)
 	{
@@ -3978,7 +3979,7 @@ avt_say_mb (const char *txt)
 }
 
 extern int
-avt_say_mb_len (const char *txt, int len)
+avt_say_mb_len (const char *txt, size_t len)
 {
   wchar_t wctext[AVT_LINELENGTH];
   char *inbuf, *outbuf;
@@ -3996,7 +3997,7 @@ avt_say_mb_len (const char *txt, int len)
     avt_mb_encoding (MB_DEFAULT_ENCODING);
 
   if (len > 0)
-    inbytesleft = (size_t) len;
+    inbytesleft = len;
   else
     inbytesleft = SDL_strlen (txt);
 
@@ -4076,12 +4077,12 @@ avt_say_mb_len (const char *txt, int len)
  * or else analyzing it would be too complicated
  */
 extern int
-avt_tell_mb_len (const char *txt, int len)
+avt_tell_mb_len (const char *txt, size_t len)
 {
   wchar_t *wctext;
   int wclen;
 
-  if (len <= 0)
+  if (len == 0)
     len = SDL_strlen (txt);
 
   if (screen && _avt_STATUS == AVT_NORMAL)
@@ -4464,8 +4465,8 @@ avt_button_inlay (SDL_Rect btn_rect, const unsigned char *bits,
   SDL_FreeSurface (inlay);
 }
 
-static int
-avt_pager_line (const wchar_t * txt, int pos, int len)
+static size_t
+avt_pager_line (const wchar_t * txt, size_t pos, size_t len)
 {
   const wchar_t *tpos;
   int line_length;
@@ -4492,8 +4493,8 @@ avt_pager_line (const wchar_t * txt, int pos, int len)
   return pos;
 }
 
-static int
-avt_pager_screen (const wchar_t * txt, int pos, int len)
+static size_t
+avt_pager_screen (const wchar_t * txt, size_t pos, size_t len)
 {
   int line_nr;
 
@@ -4513,8 +4514,8 @@ avt_pager_screen (const wchar_t * txt, int pos, int len)
   return pos;
 }
 
-static int
-avt_pager_lines_back (const wchar_t * txt, int pos, int lines)
+static size_t
+avt_pager_lines_back (const wchar_t * txt, size_t pos, int lines)
 {
   if (pos > 0)
     pos--;			/* go to last \n */
@@ -4537,9 +4538,9 @@ avt_pager_lines_back (const wchar_t * txt, int pos, int lines)
 }
 
 extern int
-avt_pager (const wchar_t * txt, int len, int startline)
+avt_pager (const wchar_t * txt, size_t len, int startline)
 {
-  int pos;
+  size_t pos;
   bool old_auto_margin, old_reserve_single_keys, old_tc;
   bool quit;
   avt_keyhandler old_keyhandler;
@@ -4557,7 +4558,7 @@ avt_pager (const wchar_t * txt, int len, int startline)
     return _avt_STATUS;
 
   /* get len if not given */
-  if (len <= 0)
+  if (len == 0)
     len = avt_strwidth (txt);
 
   /* find startline */
@@ -4771,14 +4772,14 @@ avt_pager (const wchar_t * txt, int len, int startline)
  * But that broke with UTF-16 and UTF-32.
  */
 extern int
-avt_pager_mb (const char *txt, int len, int startline)
+avt_pager_mb (const char *txt, size_t len, int startline)
 {
   wchar_t *wctext;
   int wclen;
 
   if (screen && txt && _avt_STATUS == AVT_NORMAL)
     {
-      if (len <= 0)
+      if (len == 0)
 	len = SDL_strlen (txt);
 
       wclen = avt_mb_decode (&wctext, txt, len);
@@ -4795,7 +4796,7 @@ avt_pager_mb (const char *txt, int len, int startline)
 
 /* size in Bytes! */
 extern int
-avt_ask (wchar_t * s, int size)
+avt_ask (wchar_t * s, size_t size)
 {
   avt_char ch;
   size_t len, maxlen, pos;
@@ -4979,7 +4980,7 @@ avt_ask (wchar_t * s, int size)
 }
 
 extern int
-avt_ask_mb (char *s, int size)
+avt_ask_mb (char *s, size_t size)
 {
   wchar_t ws[AVT_LINELENGTH + 1];
   char *inbuf;
@@ -5694,7 +5695,7 @@ avt_show_image_stream (avt_stream * stream)
  * show image from image data
  */
 extern int
-avt_show_image_data (void *img, int imgsize)
+avt_show_image_data (void *img, size_t imgsize)
 {
   SDL_Surface *image;
 
@@ -5969,7 +5970,7 @@ avt_import_gimp_image (void *gimp_image)
  * import avatar from image data
  */
 extern avt_image *
-avt_import_image_data (void *img, int imgsize)
+avt_import_image_data (void *img, size_t imgsize)
 {
   SDL_Surface *image;
 

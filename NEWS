@@ -8,6 +8,7 @@
   - Some more audio files
 
   C-API changes:
+  - uses size_t where appropriete (ABI change!)
   - avt_image_t renamed to avt_image
   - avt_audio_t renamed to avt_audio
   - new functions: avt_delay, avt_load_audio_part

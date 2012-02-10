@@ -554,7 +554,7 @@ avt_load_audio_file (const char *file)
 }
 
 extern avt_audio *
-avt_load_audio_part (avt_stream * stream, int maxsize)
+avt_load_audio_part (avt_stream * stream, size_t maxsize)
 {
   return avt_load_audio_rw (SDL_RWFromFP ((FILE *) stream, 0),
 			    maxsize > 0 ? (Uint32) maxsize : 0xffffffffU);
@@ -567,20 +567,20 @@ avt_load_audio_stream (avt_stream * stream)
 }
 
 extern avt_audio *
-avt_load_audio_data (void *data, int datasize)
+avt_load_audio_data (void *data, size_t datasize)
 {
   return avt_load_audio_rw (SDL_RWFromMem (data, datasize),
 			    (Uint32) datasize);
 }
 
 extern int
-avt_add_raw_audio_data (avt_audio * snd, void *data, int data_size)
+avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 {
   void *new_sound;
-  int i, old_size, new_size, out_size;
+  size_t i, old_size, new_size, out_size;
 
   if (_avt_STATUS != AVT_NORMAL || snd == NULL || data == NULL
-      || data_size <= 0)
+      || data_size == 0)
     return avt_checkevent ();
 
   /* audio structure must have been created with avt_load_raw_audio_data */
@@ -675,7 +675,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, int data_size)
 }
 
 extern avt_audio *
-avt_load_raw_audio_data (void *data, int data_size,
+avt_load_raw_audio_data (void *data, size_t data_size,
 			 int samplingrate, int audio_type, int channels)
 {
   int format;
@@ -688,7 +688,7 @@ avt_load_raw_audio_data (void *data, int data_size,
     }
 
   /* use NULL, if we have nothing to add, yet */
-  if (data_size <= 0)
+  if (data_size == 0)
     data = NULL;
   else if (data == NULL)
     data_size = 0;
@@ -744,7 +744,7 @@ avt_load_raw_audio_data (void *data, int data_size,
   s->audiospec.callback = fill_audio;
   s->audiospec.userdata = NULL;
 
-  if (data_size <= 0
+  if (data_size == 0
       || avt_add_raw_audio_data (s, data, data_size) == AVT_NORMAL)
     return s;
   else
@@ -915,7 +915,7 @@ avt_load_wave_data (void *data AVT_UNUSED, int datasize AVT_UNUSED)
 }
 
 extern avt_audio *
-avt_load_raw_audio_data (void *data AVT_UNUSED, int data_size AVT_UNUSED,
+avt_load_raw_audio_data (void *data AVT_UNUSED, size data_size AVT_UNUSED,
 			 int samplingrate AVT_UNUSED,
 			 int audio_type AVT_UNUSED, int channels AVT_UNUSED)
 {
@@ -924,7 +924,7 @@ avt_load_raw_audio_data (void *data AVT_UNUSED, int data_size AVT_UNUSED,
 }
 
 extern int
-avt_add_raw_audio_data (avt_audio * snd, void *data, int data_size)
+avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 {
   no_audio ();
   return AVT_ERROR;

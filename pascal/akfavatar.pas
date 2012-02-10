@@ -1,6 +1,6 @@
 {*
- * Pascal binding to the AKFAvatar library version 0.21.0
- * Copyright (c) 2007, 2008, 2009, 2011 Andreas K. Foerster <info@akfoerster.de>
+ * Pascal binding to the AKFAvatar library version 0.22.0
+ * Copyright (c) 2007,2008,2009,2011,2012 Andreas K. Foerster <info@akfoerster.de>
  *
  * Can be used with GNU-Pascal or FreePascal
  *
@@ -91,8 +91,8 @@ const BalloonColor = 15;
   type LineString = AnsiString;
 {$Else}
   { In UTF-8 encoding one char may take up to 4 Bytes }
-  type LineString = string (4 * LineLength);
-  type ShortString = string (255);
+  type LineString = string(4 * LineLength);
+  type ShortString = string(255);
 {$EndIf}
 
 type TextDirection = (LeftToRight, RightToLeft);
@@ -154,13 +154,13 @@ procedure AvatarName(const Name: string);
 { set a different background color }
 { should be used before any output took place }
 procedure setBackgroundColor(red, green, blue: byte);
-procedure setBackgroundColorName (const Name: string);
+procedure setBackgroundColorName(const Name: string);
 procedure getBackgroundColor(var red, green, blue: byte);
 
 { set a different balloon color }
 { should be used before any output took place }
 procedure setBalloonColor(red, green, blue: byte);
-procedure setBalloonColorName (const Name: string);
+procedure setBalloonColorName(const Name: string);
 
 { change pace of text and page flipping }
 { the scale is milliseconds }
@@ -225,7 +225,7 @@ procedure WaitKey;
 { compatible to CRT unit }
 procedure delay(milliseconds: integer);
 
-{ example use: delay (seconds (2.5)); }
+{ example use: delay(seconds(2.5)); }
 function seconds(s: Real): integer;
 
 { clears the window (not the screen!) }
@@ -244,11 +244,11 @@ procedure InsLine;
 
 { set the text color }
 { compatible to CRT unit }
-procedure TextColor (Color: Byte);
+procedure TextColor(Color: Byte);
 
 { set the text background color }
 { compatible to CRT unit, but light colors can be used }
-procedure TextBackground (Color: Byte);
+procedure TextBackground(Color: Byte);
 
 { set black on white text colors, switch bold and underlined off }
 { the markup mode is also deactivated by this }
@@ -262,12 +262,12 @@ procedure HighVideo;
 procedure LowVideo;
 
 { switch underline mode on or off }
-procedure Underlined (onoff: boolean);
+procedure Underlined(onoff: boolean);
 
 { activate markup mode }
 { in markup mode the character "_" toggles the underlined mode
   and "*" toggles the bold mode on or off }
-procedure MarkUp (onoff: boolean);
+procedure MarkUp(onoff: boolean);
 
 { shows the avatar without the balloon }
 procedure ShowAvatar;
@@ -426,8 +426,8 @@ function Choice(start_line, items: integer; startkey: char;
 { show a very long text in a pager }
 { You can navigate with up/down, page up/page down keys,
   Home and End keys, and even with the mouse-wheel }
-procedure PagerString (const txt: string; startline: integer);
-procedure PagerFile (const filename: string; startline: integer);
+procedure PagerString(const txt: string; startline: integer);
+procedure PagerFile(const filename: string; startline: integer);
 
 { lock or unlock updates - can be used for speedups }
 { when true the text_delay is set to 0 }
@@ -440,7 +440,7 @@ implementation
 {-----------------------------------------------------------------------}
 
 {$IfDef FPC}
-  uses DOS, Strings;
+  uses DOS, Strings, CTypes;
 
   {$MACRO ON}  
   {$Define libakfavatar:=cdecl; external 'akfavatar' name}
@@ -459,14 +459,17 @@ implementation
 
 {$IfDef FPC}
   type 
-    CInteger = LongInt;
     CString = PChar;
-    CBoolean = Boolean;
+    CBoolean = Boolean; { not cbool! }
 {$EndIf}
 
 {$IfDef __GPC__}
+  type Csize_t = SizeType;
+
   {$if __GPC_RELEASE__ < 20041218}
-    type CInteger = integer;
+    type Cint = Integer;
+  {$else}
+    type Cint = CInteger;
   {$EndIf}
 {$EndIf}
 
@@ -498,132 +501,132 @@ var GenSound: Pointer; { generated sound }
 
 { bindings: }
 
-procedure avt_reserve_single_keys (onoff: CBoolean); 
+procedure avt_reserve_single_keys(onoff: CBoolean); 
   libakfavatar 'avt_reserve_single_keys';
 
 function avt_default: PAvatarImage; libakfavatar 'avt_default';
 
-function avt_get_status: CInteger; libakfavatar 'avt_get_status';
+function avt_get_status: Cint; libakfavatar 'avt_get_status';
 
-procedure avt_set_text_delay (delay: CInteger);
+procedure avt_set_text_delay(delay: Cint);
   libakfavatar 'avt_set_text_delay';
 
-procedure avt_set_flip_page_delay (delay: CInteger);
+procedure avt_set_flip_page_delay(delay: Cint);
   libakfavatar 'avt_set_flip_page_delay';
 
-function avt_say_mb_len(t: pointer; size: CInteger): CInteger;
+function avt_say_mb_len(t: pointer; size: Csize_t): Cint;
   libakfavatar 'avt_say_mb_len';
 
-function avt_tell_mb_len(t: pointer; len: CInteger): CInteger;
+function avt_tell_mb_len(t: pointer; len: Csize_t): Cint;
   libakfavatar 'avt_tell_mb_len';
 
 procedure avt_clear; libakfavatar 'avt_clear';
 
 procedure avt_clear_eol; libakfavatar 'avt_clear_eol';
 
-function avt_mb_encoding (encoding: CString): CInteger;
+function avt_mb_encoding(encoding: CString): Cint;
   libakfavatar 'avt_mb_encoding';
 
-function avt_get_mb_encoding (): CString;
+function avt_get_mb_encoding(): CString;
   libakfavatar 'avt_get_mb_encoding';
 
-function avt_ask_mb(t: pointer; size: CInteger): CInteger;
+function avt_ask_mb(t: pointer; size: Csize_t): Cint;
   libakfavatar 'avt_ask_mb';
 
-function avt_wait(milliseconds: CInteger): CInteger; 
+function avt_wait(milliseconds: Cint): Cint; 
   libakfavatar 'avt_wait';
 
-function avt_wait_button: CInteger; 
+function avt_wait_button: Cint; 
   libakfavatar 'avt_wait_button';
 
-function avt_move_in: CInteger; libakfavatar 'avt_move_in';
+function avt_move_in: Cint; libakfavatar 'avt_move_in';
 
-function avt_move_out: CInteger; libakfavatar 'avt_move_out';
+function avt_move_out: Cint; libakfavatar 'avt_move_out';
 
 procedure avt_show_avatar; libakfavatar 'avt_show_avatar';
 
-function avt_import_image_file (FileName: CString): PAvatarImage;
+function avt_import_image_file(FileName: CString): PAvatarImage;
   libakfavatar 'avt_import_image_file';
 
-function avt_import_image_data(Data: Pointer; size: CInteger): PAvatarImage;
+function avt_import_image_data(Data: Pointer; size: Csize_t): PAvatarImage;
   libakfavatar 'avt_import_image_data';
 
-function avt_import_xbm(bits: Pointer; width, height: CInteger;
+function avt_import_xbm(bits: Pointer; width, height: Cint;
                         colorname: CString): PAvatarImage;
   libakfavatar 'avt_import_xbm';
 
 function avt_import_xpm(data: Pointer): PAvatarImage;
   libakfavatar 'avt_import_xpm';
 
-function avt_change_avatar_image(image: PAvatarImage): CInteger;
+function avt_change_avatar_image(image: PAvatarImage): Cint;
   libakfavatar 'avt_change_avatar_image';
 
 procedure avt_free_image(image: PAvatarImage);
   libakfavatar 'avt_free_image';
 
-function avt_set_avatar_name_mb (name: CString): CInteger;
+function avt_set_avatar_name_mb(name: CString): Cint;
   libakfavatar 'avt_set_avatar_name_mb';
 
-function avt_show_image_file(FileName: CString): CInteger;
+function avt_show_image_file(FileName: CString): Cint;
   libakfavatar 'avt_show_image_file';
 
-function avt_show_image_data(Data: pointer; size: CInteger): CInteger;
+function avt_show_image_data(Data: pointer; size: Csize_t): Cint;
   libakfavatar 'avt_show_image_data';
 
-function avt_show_image_xbm(bits: pointer; widrh, height: CInteger;
-                            colorname: CString): CInteger;
+function avt_show_image_xbm(bits: pointer; widrh, height: Cint;
+                            colorname: CString): Cint;
   libakfavatar 'avt_show_image_xbm';
 
-function avt_show_image_xpm(data: pointer): CInteger;
+function avt_show_image_xpm(data: pointer): Cint;
   libakfavatar 'avt_show_image_xpm';
 
-function avt_show_raw_image(Data: pointer; Width, Height, BPP: CInteger): CInteger;
+function avt_show_raw_image(Data: pointer; Width, Height, BPP: Cint): Cint;
   libakfavatar 'avt_show_raw_image';
 
-function avt_image_max_width: CInteger; libakfavatar 'avt_image_max_width';
-function avt_image_max_height: CInteger; libakfavatar 'avt_image_max_height';
+function avt_image_max_width: Cint; libakfavatar 'avt_image_max_width';
+function avt_image_max_height: Cint; libakfavatar 'avt_image_max_height';
 
-procedure avt_get_background_color(var red, green, blue: CInteger);
+procedure avt_get_background_color(var red, green, blue: Cint);
   libakfavatar 'avt_get_background_color';
 
-procedure avt_set_background_color (red, green, blue: CInteger);
+procedure avt_set_background_color(red, green, blue: Cint);
   libakfavatar 'avt_set_background_color';
 
-procedure avt_set_background_color_name (name: CString);
+procedure avt_set_background_color_name(name: CString);
   libakfavatar 'avt_set_background_color_name';
 
-procedure avt_set_balloon_color (red, green, blue: CInteger);
+procedure avt_set_balloon_color(red, green, blue: Cint);
   libakfavatar 'avt_set_balloon_color';
 
-procedure avt_set_balloon_color_name (name: CString);
+procedure avt_set_balloon_color_name(name: CString);
   libakfavatar 'avt_set_balloon_color_name';
 
-procedure avt_set_text_color (red, green, blue: CInteger);
+procedure avt_set_text_color(red, green, blue: Cint);
   libakfavatar 'avt_set_text_color';
 
-procedure avt_set_text_background_color (red, green, blue: CInteger);
+procedure avt_set_text_background_color(red, green, blue: Cint);
   libakfavatar 'avt_set_text_background_color';
 
 procedure avt_set_text_background_ballooncolor;
   libakfavatar 'avt_set_text_background_ballooncolor';
 
-procedure avt_bold (onoff: CBoolean); libakfavatar 'avt_bold';
+procedure avt_bold(onoff: CBoolean); libakfavatar 'avt_bold';
 
-procedure avt_underlined (onoff: CBoolean); libakfavatar 'avt_underlined';
+procedure avt_underlined(onoff: CBoolean); libakfavatar 'avt_underlined';
 
-procedure avt_markup (onoff: CBoolean); libakfavatar 'avt_markup';
+procedure avt_markup(onoff: CBoolean); libakfavatar 'avt_markup';
 
 procedure avt_normal_text; libakfavatar 'avt_normal_text';
 
-procedure avt_activate_cursor (onoff: CBoolean); 
+procedure avt_activate_cursor(onoff: CBoolean); 
   libakfavatar 'avt_activate_cursor';
 
 function avt_initialize(title, icon: CString;
                         image: PAvatarImage;
-                        mode: CInteger): CInteger;
+                        mode: Cint): Cint;
   libakfavatar 'avt_initialize';
 
-function avt_initialize_audio: CInteger; 
+function avt_initialize_audio: Cint; 
   libakfavatar 'avt_initialize_audio';
 
 procedure avt_quit; libakfavatar 'avt_quit';
@@ -635,17 +638,17 @@ procedure avt_flash; libakfavatar 'avt_flash';
 function avt_load_audio_file(f: CString): pointer;
   libakfavatar 'avt_load_audio_file';
 
-function avt_load_audio_data (Data: Pointer; size: CInteger): Pointer;
+function avt_load_audio_data(Data: Pointer; size: Csize_t): Pointer;
   libakfavatar 'avt_load_audio_data';
 
-function avt_load_raw_audio_data (Data: pointer; size: CInteger;
+function avt_load_raw_audio_data(Data: pointer; size: Csize_t;
                             Samplingrate, Audio_type,
-                            channels: CInteger): pointer;
+                            channels: Cint): pointer;
   libakfavatar 'avt_load_raw_audio_data';
 
-function avt_add_raw_audio_data (Sound: pointer;
-                                 Data: pointer;
-                                 size: CInteger): CInteger;
+function avt_add_raw_audio_data(Sound: pointer;
+                                Data: pointer;
+                                size: Csize_t): Cint;
   libakfavatar 'avt_add_raw_audio_data';
 
 function avt_audio_playing(snd: pointer): CBoolean;
@@ -654,64 +657,64 @@ function avt_audio_playing(snd: pointer): CBoolean;
 procedure avt_free_audio(snd: pointer); 
   libakfavatar 'avt_free_audio';
 
-function avt_play_audio(snd: pointer; loop: CBoolean): CInteger; 
+function avt_play_audio(snd: pointer; loop: CBoolean): Cint; 
   libakfavatar 'avt_play_audio';
 
-function avt_wait_audio_end: CInteger; libakfavatar 'avt_wait_audio_end';
+function avt_wait_audio_end: Cint; libakfavatar 'avt_wait_audio_end';
 
 procedure avt_stop_audio; libakfavatar 'avt_stop_audio';
 
-procedure avt_pause_audio (pause: CBoolean); libakfavatar 'avt_pause_audio';
+procedure avt_pause_audio(pause: CBoolean); libakfavatar 'avt_pause_audio';
 
 function avt_get_error: CString; libakfavatar 'avt_get_error';
 
-procedure avt_viewport(x, y, width, height: CInteger); 
+procedure avt_viewport(x, y, width, height: Cint); 
   libakfavatar 'avt_viewport';
 
-procedure avt_set_balloon_size(height, width: CInteger);
+procedure avt_set_balloon_size(height, width: Cint);
   libakfavatar 'avt_set_balloon_size';
 
-procedure avt_set_balloon_width(width: CInteger);
+procedure avt_set_balloon_width(width: Cint);
   libakfavatar 'avt_set_balloon_width';
 
-procedure avt_set_balloon_height(height: CInteger);
+procedure avt_set_balloon_height(height: Cint);
   libakfavatar 'avt_set_balloon_height';
 
-function avt_where_x: CInteger; libakfavatar 'avt_where_x';
-function avt_where_y: CInteger; libakfavatar 'avt_where_y';
-procedure avt_move_xy(x, y: CInteger); libakfavatar 'avt_move_xy';
-function avt_get_max_x: CInteger; libakfavatar 'avt_get_max_x'; 
-function avt_get_max_y: CInteger; libakfavatar 'avt_get_max_y';
+function avt_where_x: Cint; libakfavatar 'avt_where_x';
+function avt_where_y: Cint; libakfavatar 'avt_where_y';
+procedure avt_move_xy(x, y: Cint); libakfavatar 'avt_move_xy';
+function avt_get_max_x: Cint; libakfavatar 'avt_get_max_x'; 
+function avt_get_max_y: Cint; libakfavatar 'avt_get_max_y';
 function avt_home_position: CBoolean; libakfavatar 'avt_home_position';
 
-procedure avt_delete_lines(line, num: CInteger);
+procedure avt_delete_lines(line, num: Cint);
   libakfavatar 'avt_delete_lines';
 
-procedure avt_insert_lines(line, num: CInteger);
+procedure avt_insert_lines(line, num: Cint);
   libakfavatar 'avt_insert_lines';
 
-procedure avt_text_direction(direction: CInteger); 
+procedure avt_text_direction(direction: Cint); 
   libakfavatar 'avt_text_direction';
   
 procedure avt_register_keyhandler(handler: pointer);
   libakfavatar 'avt_register_keyhandler';
 
-procedure avt_set_scroll_mode(mode: CInteger); 
+procedure avt_set_scroll_mode(mode: Cint); 
   libakfavatar 'avt_set_scroll_mode';
 
-function avt_get_scroll_mode: CInteger; 
+function avt_get_scroll_mode: Cint; 
   libakfavatar 'avt_get_scroll_mode';
 
 
-function avt_choice(var result: CInteger;
-                    start_line, items, key: CInteger;
-                    back, fwrd: CBoolean): CInteger; 
+function avt_choice(var result: Cint;
+                    start_line, items, key: Cint;
+                    back, fwrd: CBoolean): Cint; 
   libakfavatar 'avt_choice';
 
-procedure avt_pager_mb (txt: CString; len, startline: CInteger); 
+procedure avt_pager_mb(txt: CString; len: Csize_t; startline: Cint); 
   libakfavatar 'avt_pager_mb';
 
-function avt_navigate(buttons: CString): CInteger;
+function avt_navigate(buttons: CString): Cint;
   libakfavatar 'avt_navigate';
 
 function avt_decide: CBoolean; libakfavatar 'avt_decide';
@@ -733,24 +736,24 @@ procedure avt_lock_updates(lock: CBoolean);
 
 {$EndIf}
 
-procedure setBackgroundColor (red, green, blue: byte);
+procedure setBackgroundColor(red, green, blue: byte);
 begin
 avt_set_background_color(red, green, blue)
 end;
 
-procedure setBackgroundColorName (const Name: string);
+procedure setBackgroundColorName(const Name: string);
 begin
-avt_set_background_color_name (String2CString(name))
+avt_set_background_color_name(String2CString(name))
 end;
 
-procedure setBalloonColor (red, green, blue: byte);
+procedure setBalloonColor(red, green, blue: byte);
 begin
 avt_set_balloon_color(red, green, blue)
 end;
 
-procedure setBalloonColorName (const Name: string);
+procedure setBalloonColorName(const Name: string);
 begin
-avt_set_balloon_color_name (String2CString(name))
+avt_set_balloon_color_name(String2CString(name))
 end;
 
 procedure setEncoding(const newEncoding: string);
@@ -760,22 +763,22 @@ end;
 
 function getEncoding: string;
 begin
-getEncoding := CString2String (avt_get_mb_encoding)
+getEncoding := CString2String(avt_get_mb_encoding)
 end;
 
 procedure setTextDelay(delay: integer);
 begin
-avt_set_text_delay (delay)
+avt_set_text_delay(delay)
 end;
 
 procedure setFlipPageDelay(delay: integer);
 begin
-avt_set_flip_page_delay (delay)
+avt_set_flip_page_delay(delay)
 end;
 
 procedure setTextDirection(direction: TextDirection);
 begin
-avt_text_direction (ord (direction))
+avt_text_direction(ord(direction))
 end;
 
 procedure AvatarImageFile(FileName: string);
@@ -835,16 +838,16 @@ end;
 procedure RestoreInOut;
 begin
 {$I-}
-Close (input);
-Close (output);
+Close(input);
+Close(output);
 {$I+}
 
 InOutRes := 0;
 
-Assign (input, '');
-Assign (output, '');
-Reset (input);
-Rewrite (output)
+Assign(input, '');
+Assign(output, '');
+Reset(input);
+Rewrite(output)
 end;
 
 procedure Quit;
@@ -881,11 +884,11 @@ WindMin := $0000;
 
 if ScrSize.y-1 >= $FF
   then WindMax := $FF shl 8
-  else WindMax := (ScrSize.y-1) shl 8;
+  else WindMax :=(ScrSize.y-1) shl 8;
 
 if ScrSize.x-1 >= $FF
   then WindMax := WindMax or $FF
-  else WindMax := WindMax or (ScrSize.x-1);
+  else WindMax := WindMax or(ScrSize.x-1);
 
 avt_initialize_audio;
 
@@ -896,7 +899,7 @@ end;
 procedure AvatarName(const Name: string);
 begin
 if not initialized then initializeAvatar;
-avt_set_avatar_name_mb (String2CString(Name))
+avt_set_avatar_name_mb(String2CString(Name))
 end;
 
 procedure Tell(const txt: string);
@@ -905,7 +908,7 @@ if not initialized then initializeAvatar;
 avt_tell_mb_len(String2CString(txt), length(txt))
 end;
 
-procedure TextColor (Color: Byte);
+procedure TextColor(Color: Byte);
 begin
 if not initialized then initializeAvatar;
 
@@ -919,26 +922,26 @@ OldTextAttr := TextAttr;
 if isMonochrome then Color := Color and $08;
 
 case Color of
-  Black        : avt_set_text_color ($00, $00, $00);
-  Blue         : avt_set_text_color ($00, $00, $88);
-  Green        : avt_set_text_color ($00, $88, $00);
-  Cyan         : avt_set_text_color ($00, $88, $88);
-  Red          : avt_set_text_color ($88, $00, $00);
-  Magenta      : avt_set_text_color ($88, $00, $88);
-  Brown        : avt_set_text_color ($88, $44, $22);
-  LightGray    : avt_set_text_color ($88, $88, $88);
-  DarkGray     : avt_set_text_color ($55, $55, $55);
-  LightBlue    : avt_set_text_color ($00, $00, $FF);
-  LightGreen   : avt_set_text_color ($00, $FF, $00);
-  LightCyan    : avt_set_text_color ($00, $FF, $FF);
-  LightRed     : avt_set_text_color ($FF, $00, $00); 
-  LightMagenta : avt_set_text_color ($FF, $00, $FF);
-  Yellow       : avt_set_text_color ($E0, $E0, $00);
-  White        : avt_set_text_color ($FF, $FF, $FF)
+  Black        : avt_set_text_color($00, $00, $00);
+  Blue         : avt_set_text_color($00, $00, $88);
+  Green        : avt_set_text_color($00, $88, $00);
+  Cyan         : avt_set_text_color($00, $88, $88);
+  Red          : avt_set_text_color($88, $00, $00);
+  Magenta      : avt_set_text_color($88, $00, $88);
+  Brown        : avt_set_text_color($88, $44, $22);
+  LightGray    : avt_set_text_color($88, $88, $88);
+  DarkGray     : avt_set_text_color($55, $55, $55);
+  LightBlue    : avt_set_text_color($00, $00, $FF);
+  LightGreen   : avt_set_text_color($00, $FF, $00);
+  LightCyan    : avt_set_text_color($00, $FF, $FF);
+  LightRed     : avt_set_text_color($FF, $00, $00); 
+  LightMagenta : avt_set_text_color($FF, $00, $FF);
+  Yellow       : avt_set_text_color($E0, $E0, $00);
+  White        : avt_set_text_color($FF, $FF, $FF)
   end
 end;
 
-procedure TextBackground (Color: Byte);
+procedure TextBackground(Color: Byte);
 begin
 if not initialized then initializeAvatar;
 
@@ -951,27 +954,27 @@ OldTextAttr := TextAttr;
 { no background color }
 if isMonochrome then
   begin
-  avt_set_text_background_color ($FF, $FF, $FF);
+  avt_set_text_background_color($FF, $FF, $FF);
   exit
   end;
 
 case Color of
-  Black        : avt_set_text_background_color ($00, $00, $00);
-  Blue         : avt_set_text_background_color ($00, $00, $88);
-  Green        : avt_set_text_background_color ($00, $88, $00);
-  Cyan         : avt_set_text_background_color ($00, $88, $88);
-  Red          : avt_set_text_background_color ($88, $00, $00);
-  Magenta      : avt_set_text_background_color ($88, $00, $88);
-  Brown        : avt_set_text_background_color ($88, $44, $22);
-  LightGray    : avt_set_text_background_color ($88, $88, $88);
-  DarkGray     : avt_set_text_background_color ($55, $55, $55);
-  LightBlue    : avt_set_text_background_color ($00, $00, $FF);
-  LightGreen   : avt_set_text_background_color ($00, $FF, $00);
-  LightCyan    : avt_set_text_background_color ($00, $FF, $FF);
-  LightRed     : avt_set_text_background_color ($FF, $00, $00); 
-  LightMagenta : avt_set_text_background_color ($FF, $00, $FF);
-  Yellow       : avt_set_text_background_color ($FF, $FF, $00);
-  White        : avt_set_text_background_ballooncolor ()
+  Black        : avt_set_text_background_color($00, $00, $00);
+  Blue         : avt_set_text_background_color($00, $00, $88);
+  Green        : avt_set_text_background_color($00, $88, $00);
+  Cyan         : avt_set_text_background_color($00, $88, $88);
+  Red          : avt_set_text_background_color($88, $00, $00);
+  Magenta      : avt_set_text_background_color($88, $00, $88);
+  Brown        : avt_set_text_background_color($88, $44, $22);
+  LightGray    : avt_set_text_background_color($88, $88, $88);
+  DarkGray     : avt_set_text_background_color($55, $55, $55);
+  LightBlue    : avt_set_text_background_color($00, $00, $FF);
+  LightGreen   : avt_set_text_background_color($00, $FF, $00);
+  LightCyan    : avt_set_text_background_color($00, $FF, $FF);
+  LightRed     : avt_set_text_background_color($FF, $00, $00); 
+  LightMagenta : avt_set_text_background_color($FF, $00, $FF);
+  Yellow       : avt_set_text_background_color($FF, $FF, $00);
+  White        : avt_set_text_background_ballooncolor()
   end
 end;
 
@@ -989,41 +992,41 @@ procedure NormVideo;
 begin
 if not initialized then initializeAvatar;
 
-avt_markup (false);
-avt_normal_text ();
+avt_markup(false);
+avt_normal_text();
 TextAttr := $F0;
 OldTextAttr := TextAttr;
 end;
 
 procedure HighVideo;
 begin
-avt_bold (true)
+avt_bold(true)
 end;
 
 procedure LowVideo;
 begin
-avt_bold (false)
+avt_bold(false)
 end;
 
-procedure Underlined (onoff: boolean);
+procedure Underlined(onoff: boolean);
 begin
-avt_underlined (onoff)
+avt_underlined(onoff)
 end;
 
-procedure MarkUp (onoff: boolean);
+procedure MarkUp(onoff: boolean);
 begin
-avt_markup (onoff)
+avt_markup(onoff)
 end;
 
-procedure SetMonochrome (monochrome: Boolean);
+procedure SetMonochrome(monochrome: Boolean);
 begin
 isMonochrome := monochrome
 end;
 
-procedure delay (milliseconds: integer);
+procedure delay(milliseconds: integer);
 begin
 if not initialized then initializeAvatar;
-if avt_wait (milliseconds) <> 0 then Halt
+if avt_wait(milliseconds) <> 0 then Halt
 end;
 
 procedure MoveAvatarIn;
@@ -1059,11 +1062,11 @@ if TextAttr<>OldTextAttr then UpdateTextAttr;
 avt_clear_eol
 end;
 
-function ShowImageFile (FileName: string): boolean;
-var result : CInteger;
+function ShowImageFile(FileName: string): boolean;
+var result : Cint;
 begin
 if not initialized then initializeAvatar;
-result := avt_show_image_file (String2CString(FileName));
+result := avt_show_image_file(String2CString(FileName));
 
 if result = 1 then Halt; { halt requested }
 if result = 0 
@@ -1072,22 +1075,22 @@ if result = 0
 end;
 
 procedure ShowImageData(data: pointer; size: LongInt);
-var result : CInteger;
+var result : Cint;
 begin
 if not initialized then initializeAvatar;
 
-result := avt_show_image_data (data, size);
+result := avt_show_image_data(data, size);
 if result = 1 then Halt; { halt requested }
 
 { ignore failure to show image }
 end;
 
 procedure ShowImageXPM(data: pointer);
-var result : CInteger;
+var result : Cint;
 begin
 if not initialized then initializeAvatar;
 
-result := avt_show_image_xpm (data);
+result := avt_show_image_xpm(data);
 if result = 1 then Halt; { halt requested }
 
 { ignore failure to show image }
@@ -1095,11 +1098,11 @@ end;
 
 procedure ShowImageXBM(bits: pointer; width, height: integer; 
                        colorname: string);
-var result : CInteger;
+var result : Cint;
 begin
 if not initialized then initializeAvatar;
 
-result := avt_show_image_xbm (bits, width, height, 
+result := avt_show_image_xbm(bits, width, height, 
                               String2CString(colorname));
 if result = 1 then Halt; { halt requested }
 
@@ -1123,23 +1126,23 @@ ImageMaxHeight := avt_image_max_height
 end;
 
 procedure getBackgroundColor(var red, green, blue: byte);
-var r, g, b: CInteger;
+var r, g, b: Cint;
 begin
-avt_get_background_color (r, g, b);
+avt_get_background_color(r, g, b);
 red := r;
 green := g;
 blue := b
 end;
 
-procedure PagerString (const txt: string; startline: integer);
+procedure PagerString(const txt: string; startline: integer);
 begin
 if not initialized then initializeAvatar;
 { getting the string-length in pascal is lightweight }
 { converting to a CString would be more heavy }
-avt_pager_mb (addr(txt[1]), length(txt), startline)
+avt_pager_mb(addr(txt[1]), length(txt), startline)
 end;
 
-procedure PagerFile (const filename: string; startline: integer);
+procedure PagerFile(const filename: string; startline: integer);
 var 
   f: file;
   buf: ^char;
@@ -1150,20 +1153,20 @@ if not initialized then initializeAvatar;
 assign(f, filename);
 reset(f, 1);
 size := FileSize(f);
-if size > 0 then GetMem (buf, size);
+if size > 0 then GetMem(buf, size);
 BlockRead(f, buf^, size, numread);
 close(f);
 
 avt_pager_mb(buf, numread, startline);
-if size > 0 then FreeMem (buf, size)
+if size > 0 then FreeMem(buf, size)
 end;
 
 function seconds(s: Real): integer;
-begin seconds := trunc (s * 1000) end;
+begin seconds := trunc(s * 1000) end;
 
 function AvatarGetError: ShortString;
 begin
-AvatarGetError := CString2String (avt_get_error)
+AvatarGetError := CString2String(avt_get_error)
 end;
 
 function WhereX: integer;
@@ -1181,9 +1184,9 @@ begin
 HomePosition := avt_home_position
 end;
 
-procedure GotoXY (x, y: integer);
+procedure GotoXY(x, y: integer);
 begin
-avt_move_xy (x, y)
+avt_move_xy(x, y)
 end;
 
 procedure DelLine;
@@ -1224,7 +1227,7 @@ end;
 procedure BalloonWidth(width: integer);
 begin
 if not initialized then initializeAvatar;
-avt_set_balloon_width (width);
+avt_set_balloon_width(width);
 ScrSize.x := avt_get_max_x;
 Window(1, 1, ScrSize.x, ScrSize.y);
 end;
@@ -1232,7 +1235,7 @@ end;
 procedure BalloonHeight(height: integer);
 begin
 if not initialized then initializeAvatar;
-avt_set_balloon_height (height);
+avt_set_balloon_height(height);
 ScrSize.y := avt_get_max_y;
 Window(1, 1, ScrSize.x, ScrSize.y);
 end;
@@ -1264,14 +1267,14 @@ end;
 function LoadRawSoundData(data:pointer; size: LongInt;
            samplingrate, audio_type, channels: integer): pointer;
 begin
-LoadRawSoundData := avt_load_raw_audio_data (data, size, samplingrate,
+LoadRawSoundData := avt_load_raw_audio_data(data, size, samplingrate,
                      audio_type, channels)
 end;
 
 procedure AddRawSoundData(sound: pointer; data: pointer; size: LongInt);
 begin
 { ignore error code }
-avt_add_raw_audio_data (sound, data, size)
+avt_add_raw_audio_data(sound, data, size)
 end;
 
 function Playing(snd: pointer): boolean;
@@ -1337,34 +1340,34 @@ end;
 
 procedure PauseSound(pause: boolean);
 begin
-avt_pause_audio (pause)
+avt_pause_audio(pause)
 end;
 
 {$IfDef FPC}
 
-  procedure page (var f: text);
+  procedure page(var f: text);
   begin
-  Write (f, chr (12))
+  Write(f, chr(12))
   end;
   
   procedure page;
   begin
-  Write (output, chr (12))
+  Write(output, chr(12))
   end;
 
 {$EndIf} { FPC }
 
 procedure CursorOff;
 begin
-avt_activate_cursor (false)
+avt_activate_cursor(false)
 end;
 
 procedure CursorOn;
 begin
-avt_activate_cursor (true)
+avt_activate_cursor(true)
 end;
 
-procedure KeyHandler(sym, modifiers, unicode: CInteger); 
+procedure KeyHandler(sym, modifiers, unicode: Cint); 
 {$IfDef FPC} cdecl; {$EndIf}
 begin
 {$IfDef Debug}
@@ -1432,10 +1435,10 @@ end;
 
 function Choice(start_line, items: integer; startkey: char;
                 back, fwrd: boolean): integer;
-var result: CInteger;
+var result: Cint;
 begin
 if not initialized then initializeAvatar;
-if avt_choice(result, start_line, items, CInteger(startkey), 
+if avt_choice(result, start_line, items, Cint(startkey),
               back, fwrd)<>0 then Halt;
 Choice := result
 end;
@@ -1453,7 +1456,7 @@ if avt_get_status<>0 then Halt
 end;
 
 function Navigate(buttons: String): char;
-var result: CInteger;
+var result: Cint;
 begin
 if not initialized then initializeAvatar;
 result := avt_navigate(String2CString(buttons));
@@ -1465,25 +1468,25 @@ end;
 { Input/output handling }
 { do not call Halt }
 
-procedure AssignCrt (var f: text);
+procedure AssignCrt(var f: text);
 begin
 AssignAvatar(f)
 end;
 
 {$IfDef FPC}
 
-  function fpc_io_dummy (var F: TextRec): integer;
+  function fpc_io_dummy(var F: TextRec): integer;
   begin
   fpc_io_dummy := 0
   end;
 
-  function fpc_io_close (var F: TextRec): integer;
+  function fpc_io_close(var F: TextRec): integer;
   begin
   F.Mode := fmClosed;
   fpc_io_close := 0
   end;
 
-  function fpc_io_write (var F: TextRec): integer;
+  function fpc_io_write(var F: TextRec): integer;
   begin
   if F.BufPos > 0 then
     begin
@@ -1491,25 +1494,25 @@ end;
 
     if TextAttr<>OldTextAttr then UpdateTextAttr;
 
-    avt_say_mb_len (F.BufPtr, F.BufPos);
+    avt_say_mb_len(F.BufPtr, F.BufPos);
     F.BufPos := 0; { everything read }
     end;
 
   fpc_io_write := 0
   end;
 
-  function fpc_io_read (var F: TextRec): integer;
+  function fpc_io_read(var F: TextRec): integer;
   begin
   if not initialized then initializeAvatar;
   if TextAttr<>OldTextAttr then UpdateTextAttr;
 
-  avt_ask_mb (F.BufPtr, F.BufSize);
+  avt_ask_mb(F.BufPtr, F.BufSize);
 
   F.BufPos := 0;
   F.BufEnd := strlen(F.BufPtr^) + 2;
 
   { sanity check }
-  if F.BufEnd > F.BufSize then RunError (201);
+  if F.BufEnd > F.BufSize then RunError(201);
 
   F.BufPtr^ [F.BufEnd-2] := #13;
   F.BufPtr^ [F.BufEnd-1] := #10;
@@ -1520,7 +1523,7 @@ end;
   fpc_io_read := 0
   end;
 
-  function fpc_io_open (var F: TextRec): integer;
+  function fpc_io_open(var F: TextRec): integer;
   begin
   if F.Mode = fmOutput 
     then begin
@@ -1532,7 +1535,7 @@ end;
          F.InOutFunc := @fpc_io_read;
          F.FlushFunc := @fpc_io_dummy; { sic }
 	 F.BufPtr    := @InputBuffer;
-	 F.BufSize   := SizeOf (InputBuffer);
+	 F.BufSize   := SizeOf(InputBuffer);
          end;
 
   F.BufPos := F.BufEnd;
@@ -1540,29 +1543,29 @@ end;
   fpc_io_open := 0
   end;
 
-  procedure AssignAvatar (var f: text);
+  procedure AssignAvatar(var f: text);
   begin
-  Assign (f, ''); { sets sane defaults }
+  Assign(f, ''); { sets sane defaults }
   TextRec(f).OpenFunc := @fpc_io_open;
   end;
 {$EndIf} { FPC }
 
 {$IfDef __GPC__}
 
-  function gpc_io_write (var unused; const Buffer; size: SizeType): SizeType;
+  function gpc_io_write(var unused; const Buffer; size: SizeType): SizeType;
   begin
   if size > 0 then
     begin
     if not initialized then initializeAvatar;
     if TextAttr<>OldTextAttr then UpdateTextAttr;
 
-    avt_say_mb_len (Addr(Buffer), size)
+    avt_say_mb_len(Addr(Buffer), size)
     end;
 
   gpc_io_write := size
   end;
 
-  function gpc_io_read (var unused; var Buffer; size: SizeType): SizeType;
+  function gpc_io_read(var unused; var Buffer; size: SizeType): SizeType;
   var 
     i: SizeType;
     CharBuf: array [0 .. size-1] of char absolute Buffer;
@@ -1570,17 +1573,17 @@ end;
   if not initialized then initializeAvatar;
   if TextAttr<>OldTextAttr then UpdateTextAttr;
 
-  avt_ask_mb (addr (InputBuffer), sizeof (InputBuffer));
+  avt_ask_mb(addr(InputBuffer), sizeof(InputBuffer));
 
   i := 0;
-  while (InputBuffer [i] <> chr (0)) and (i < size-1) do
+  while (InputBuffer [i] <> chr(0)) and (i < size-1) do
     begin
     CharBuf [i] := InputBuffer [i];
-    inc (i)
+    inc(i)
     end;
 
   CharBuf [i] := #10;
-  inc (i);
+  inc(i);
   
   { clear KeyBoardBuffer }
   KeyboardBufferRead := KeyboardBufferWrite;
@@ -1588,9 +1591,9 @@ end;
   gpc_io_read := i
   end;
 
-  procedure AssignAvatar (var f: text);
+  procedure AssignAvatar(var f: text);
   begin
-  AssignTFDD (f, NIL, NIL, NIL, 
+  AssignTFDD(f, NIL, NIL, NIL, 
                  gpc_io_read, gpc_io_write, NIL, NIL, NIL, NIL);
   end;
 
@@ -1634,11 +1637,11 @@ Initialization
 
   { redirect i/o to Avatar }
   { do they have to be closed? Problems under Windows then }
-  {Close (input);  Close (output);}
-  AssignAvatar (input);
-  AssignAvatar (output);
-  Reset (input);
-  Rewrite (output);
+  {Close(input);  Close(output);}
+  AssignAvatar(input);
+  AssignAvatar(output);
+  Reset(input);
+  Rewrite(output);
 
 
 

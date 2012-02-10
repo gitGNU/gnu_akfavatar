@@ -30,7 +30,7 @@
 #define _akfavatar_h
 
 /* SDL redefines main on some systems */
-#if defined(_WIN32) || defined(__APPLE__) ||  defined(macintosh)
+#if defined(_WIN32) || defined(__APPLE__) || defined(macintosh)
 #  include "SDL.h"
 #endif
 
@@ -215,7 +215,7 @@ AVT_API avt_image *avt_import_xbm (const unsigned char *bits,
 AVT_API avt_image *avt_import_gimp_image (void *gimp_image);
 
 /* import avatar from image data */
-AVT_API avt_image *avt_import_image_data (void *img, int imgsize);
+AVT_API avt_image *avt_import_image_data (void *img, size_t imgsize);
 
 /* import avatar from file */
 AVT_API avt_image *avt_import_image_file (const char *filename);
@@ -314,7 +314,7 @@ AVT_API int avt_say (const wchar_t *txt);
  * if there is no avatar, it is shown (not moved in)
  * interprets control characters including overstrike-text
  */
-AVT_API int avt_say_len (const wchar_t *txt, int len);
+AVT_API int avt_say_len (const wchar_t *txt, size_t len);
 
 /*
  * sets the balloon size so that the text fits exactly
@@ -334,7 +334,7 @@ AVT_API int avt_tell (const wchar_t *txt);
  * if there is no avatar, it is shown (not moved in)
  * interprets control characters including overstrike-text
  */
-AVT_API int avt_tell_len (const wchar_t *txt, int len);
+AVT_API int avt_tell_len (const wchar_t *txt, size_t len);
 
 /*
  * writes a single character in the balloon
@@ -357,7 +357,7 @@ AVT_API bool avt_is_printable (avt_char ch);
  *
  * (I don't use size_t for better compatiblity with other languages)
  */
-AVT_API int avt_ask (wchar_t *s, int size);
+AVT_API int avt_ask (wchar_t *s, size_t size);
 
 /*
  * get a character from the keyboard
@@ -393,7 +393,7 @@ AVT_API int avt_say_mb (const char *txt);
  * the string needn't be terminated then
  * and can contain binary zeros
  */
-AVT_API int avt_say_mb_len (const char *txt, int len);
+AVT_API int avt_say_mb_len (const char *txt, size_t len);
 
 /*
  * sets the balloon size so that the text fits exactly
@@ -412,7 +412,7 @@ AVT_API int avt_tell_mb (const char *txt);
  * the string needn't be terminated then
  * and can contain binary zeros
  */
-AVT_API int avt_tell_mb_len (const char *txt, int len);
+AVT_API int avt_tell_mb_len (const char *txt, size_t len);
 
 /*
  * get string (just one line)
@@ -420,7 +420,7 @@ AVT_API int avt_tell_mb_len (const char *txt, int len);
  *
  * for UTF-8 encoding s should have a capacity of 4 * LINELENGTH Bytes
  */
-AVT_API int avt_ask_mb (char *s, int size);
+AVT_API int avt_ask_mb (char *s, size_t size);
 
 /***********************************************************************/
 /* convert text encodings */
@@ -851,7 +851,7 @@ AVT_API int avt_show_image_stream (avt_stream *stream);
  * show image from image data
  * on error it returns AVT_ERROR without changing the status
  */
-AVT_API int avt_show_image_data (void *img, int imgsize);
+AVT_API int avt_show_image_data (void *img, size_t imgsize);
 
 /*
  * show image from XPM data
@@ -950,8 +950,8 @@ avt_choice (int *result, int start_line, int items, int key,
  * if len is 0, assume 0-terminated string
  * startline is only used, when it is greater than 1
  */
-AVT_API int avt_pager (const wchar_t *txt, int len, int startline);
-AVT_API int avt_pager_mb (const char *txt, int len, int startline);
+AVT_API int avt_pager (const wchar_t *txt, size_t len, int startline);
+AVT_API int avt_pager_mb (const char *txt, size_t len, int startline);
 
 /* show final credits */
 AVT_API int avt_credits (const wchar_t *text, bool centered);
@@ -1038,7 +1038,7 @@ AVT_API avt_audio *avt_load_audio_file (const char *filename);
  * maxsize is ignored for Wave data
  * not for headerless formats
  */
-AVT_API avt_audio *avt_load_audio_part (avt_stream *stream, int maxsize);
+AVT_API avt_audio *avt_load_audio_part (avt_stream *stream, size_t maxsize);
 
 /*
  * loads audio in AU or Wave format from a stream
@@ -1050,7 +1050,7 @@ AVT_API avt_audio *avt_load_audio_stream (avt_stream *stream);
  * loads audio in AU or Wave format from memory
  * must still be freed with avt_free_audio!
  */
-AVT_API avt_audio *avt_load_audio_data (void *data, int datasize);
+AVT_API avt_audio *avt_load_audio_data (void *data, size_t datasize);
 
 /* values for audio_type */
 #define AVT_AUDIO_UNKNOWN   0  /* doesn't play */
@@ -1081,7 +1081,7 @@ AVT_API avt_audio *avt_load_audio_data (void *data, int datasize);
  *
  * must be freed with avt_free_audio! (even if empty)
  */
-AVT_API avt_audio *avt_load_raw_audio_data (void *data, int data_size,
+AVT_API avt_audio *avt_load_raw_audio_data (void *data, size_t data_size,
 			int samplingrate, int audio_type, int channels);
 
 /*
@@ -1089,7 +1089,7 @@ AVT_API avt_audio *avt_load_raw_audio_data (void *data, int data_size,
  * the audio type must have been created with avt_load_raw_audio_data
  * data should be a larger buffer
  */
-AVT_API int avt_add_raw_audio_data (avt_audio *snd, void *data, int data_size);
+AVT_API int avt_add_raw_audio_data (avt_audio *snd, void *data, size_t data_size);
 
 /*
  * frees memory of a loaded sound
