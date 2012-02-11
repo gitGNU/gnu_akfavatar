@@ -5,6 +5,9 @@
 	use size_t
 	avtterm.c, lua/lua-avt.c: adapted
 
+	* pascal/multiply.pas:
+	cannot be compiled without AKFAvatar anymore (simplified)
+
 2012-02-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c, avatar-audio:

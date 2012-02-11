@@ -6,6 +6,7 @@
   - Data files are put in a separate directory and Lua has a search function
     for it (scripts have to be adapted!)
   - Some more audio files
+  - multiply.pas cannot be compiled without AKFAvatar anymore (simplified)
 
   C-API changes:
   - uses size_t where appropriete (ABI change!)
