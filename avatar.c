@@ -2220,10 +2220,10 @@ avt_delay (int milliseconds)
   SDL_Delay (milliseconds);
 }
 
-extern unsigned int
+extern size_t
 avt_ticks (void)
 {
-  return (unsigned int) SDL_GetTicks ();
+  return (size_t) SDL_GetTicks ();
 }
 
 extern int

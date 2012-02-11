@@ -294,7 +294,7 @@ AVT_API int avt_wait (int milliseconds);
 AVT_API void avt_delay (int milliseconds);
 
 /* counter, which is increased every millisecond */
-AVT_API unsigned int avt_ticks (void);
+AVT_API size_t avt_ticks (void);
 
 /***********************************************************************/
 /* say or ask stuff with wchar_t (Unicode) */
