@@ -431,7 +431,7 @@ lavt_recode (lua_State * L)
   const char *fromcode, *tocode;
   char *string, *result;
   size_t len;
-  int result_size;
+  size_t result_size;
 
   string = (char *) luaL_checklstring (L, 1, &len);
   fromcode = lua_tostring (L, 2);	/* may be nil */
@@ -443,13 +443,13 @@ lavt_recode (lua_State * L)
       return 1;
     }
 
-  result_size = avt_recode (tocode, fromcode, &result, string, (int) len);
+  result_size = avt_recode (tocode, fromcode, &result, string, len);
 
-  if (result_size < 0)
+  if (result_size == (size_t) (-1))
     lua_pushnil (L);
   else
     {
-      lua_pushlstring (L, result, (size_t) result_size);
+      lua_pushlstring (L, result, result_size);
       avt_free (result);
     }
 

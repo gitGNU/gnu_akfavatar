@@ -1,3 +1,10 @@
+2012-02-11  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_mb_decode, avt_mb_decode_buffer)
+	(avt_mb_encode, avt_mb_encode_buffer, avt_recode, avt_recode_bffer):
+	use size_t
+	avtterm.c, lua/lua-avt.c: adapted
+
 2012-02-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c, avatar-audio:

@@ -212,8 +212,8 @@ static wint_t
 get_character (int fd)
 {
   static wchar_t textbuffer[INBUFSIZE + 1];	/* +1 for terminator */
-  static int textbuffer_pos = 0;
-  static int textbuffer_len = 0;
+  static size_t textbuffer_pos = 0;
+  static size_t textbuffer_len = 0;
   wchar_t ch;
 
   if (fd == -1)			/* clear textbuffer */
@@ -253,7 +253,7 @@ get_character (int fd)
 	    }
 
 	  if (nread == -1)
-	    textbuffer_len = -1;
+	    textbuffer_len = (size_t) (-1);
 	  else			/* nread != -1 */
 	    {
 	      textbuffer_len =
@@ -266,7 +266,7 @@ get_character (int fd)
 	    avt_lock_updates (true);
 	}
 
-      if (textbuffer_len < 0)
+      if (textbuffer_len == (size_t) (-1))
 	ch = WEOF;
       else
 	ch = textbuffer[textbuffer_pos++];
