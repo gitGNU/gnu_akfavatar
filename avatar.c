@@ -2182,7 +2182,7 @@ avt_timeout (Uint32 intervall AVT_UNUSED, void *param AVT_UNUSED)
 }
 
 extern int
-avt_wait (int milliseconds)
+avt_wait (size_t milliseconds)
 {
   SDL_Event event;
   SDL_TimerID t;
@@ -2215,7 +2215,7 @@ avt_wait (int milliseconds)
 }
 
 extern void
-avt_delay (int milliseconds)
+avt_delay (size_t milliseconds)
 {
   SDL_Delay (milliseconds);
 }

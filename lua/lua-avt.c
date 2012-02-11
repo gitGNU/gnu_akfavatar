@@ -1037,7 +1037,7 @@ static int
 lavt_wait_sec (lua_State * L)
 {
   is_initialized ();
-  check (avt_wait ((int) (luaL_optnumber (L, 1, DEF_WAIT) * 1000.0)));
+  check (avt_wait ((size_t) (luaL_optnumber (L, 1, DEF_WAIT) * 1000.0)));
 
   return 0;
 }

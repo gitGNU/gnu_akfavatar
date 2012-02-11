@@ -533,7 +533,7 @@ function avt_get_mb_encoding(): CString;
 function avt_ask_mb(t: pointer; size: Csize_t): Cint;
   libakfavatar 'avt_ask_mb';
 
-function avt_wait(milliseconds: Cint): Cint; 
+function avt_wait(milliseconds: Csize_t): Cint; 
   libakfavatar 'avt_wait';
 
 function avt_wait_button: Cint; 

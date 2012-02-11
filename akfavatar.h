@@ -284,14 +284,14 @@ AVT_API int avt_update (void);
  * this is for longer times - a second or more
  * it reacts on events and evetually redraws the screen if needed
  */
-AVT_API int avt_wait (int milliseconds);
+AVT_API int avt_wait (size_t milliseconds);
 
 /*
  * delay
  * this is for short delays - fractions of a second
  * it doesn't react on events
  */
-AVT_API void avt_delay (int milliseconds);
+AVT_API void avt_delay (size_t milliseconds);
 
 /* counter, which is increased every millisecond */
 AVT_API size_t avt_ticks (void);
