@@ -2184,40 +2184,43 @@ avt_timeout (Uint32 intervall AVT_UNUSED, void *param AVT_UNUSED)
 extern int
 avt_wait (size_t milliseconds)
 {
-  SDL_Event event;
-  SDL_TimerID t;
-
   if (screen && milliseconds > 0 && _avt_STATUS == AVT_NORMAL)
     {
-      t = SDL_AddTimer (milliseconds, avt_timeout, NULL);
-
-      if (t == NULL)
+      if (milliseconds < 500)
 	{
-	  /* extremely unlikely error */
-	  SDL_SetError ("AddTimer doesn't work");
-	  _avt_STATUS = AVT_ERROR;
-	  return _avt_STATUS;
+	  SDL_Delay (milliseconds);
+	  return avt_checkevent ();
 	}
-
-      while (_avt_STATUS == AVT_NORMAL)
+      else
 	{
-	  SDL_WaitEvent (&event);
-	  if (event.type == SDL_USEREVENT && event.user.code == AVT_TIMEOUT)
-	    break;
-	  else
-	    avt_analyze_event (&event);
-	}
+	  SDL_Event event;
+	  SDL_TimerID t;
 
-      SDL_RemoveTimer (t);
+	  t = SDL_AddTimer (milliseconds, avt_timeout, NULL);
+
+	  if (t == NULL)
+	    {
+	      /* extremely unlikely error */
+	      SDL_SetError ("AddTimer doesn't work");
+	      _avt_STATUS = AVT_ERROR;
+	      return _avt_STATUS;
+	    }
+
+	  while (_avt_STATUS == AVT_NORMAL)
+	    {
+	      SDL_WaitEvent (&event);
+	      if (event.type == SDL_USEREVENT
+		  && event.user.code == AVT_TIMEOUT)
+		break;
+	      else
+		avt_analyze_event (&event);
+	    }
+
+	  SDL_RemoveTimer (t);
+	}
     }
 
   return _avt_STATUS;
-}
-
-extern void
-avt_delay (size_t milliseconds)
-{
-  SDL_Delay (milliseconds);
 }
 
 extern size_t

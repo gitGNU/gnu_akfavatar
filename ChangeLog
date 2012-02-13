@@ -1,3 +1,9 @@
+2012-02-13  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_wait): use SDL_Delay() for short times
+	akfavatar.h, avatar.c: remove avt_delay()
+	lua/lua-avt.c: adapted
+
 2012-02-11  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_mb_decode, avt_mb_decode_buffer)

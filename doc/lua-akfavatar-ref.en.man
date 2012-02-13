@@ -293,12 +293,6 @@ Waits a given amount of seconds (may be a fraction).
 If no value is given, it waits "a while".
 .PP
 .TP
-.BI "avt.delay(" milliseconds )
-Delay for a few milliseconds.
-Use this only for very short times.
-It doesn't check for events or update the window.
-.PP
-.TP
 .BI "avt.ticks()"
 Returns a value, which is increased each millisecond.
 This can be used for timing.
