@@ -2184,14 +2184,14 @@ avt_timeout (Uint32 intervall AVT_UNUSED, void *param AVT_UNUSED)
 extern int
 avt_wait (size_t milliseconds)
 {
-  if (screen && milliseconds > 0 && _avt_STATUS == AVT_NORMAL)
+  if (screen && _avt_STATUS == AVT_NORMAL)
     {
-      if (milliseconds < 500)
+      if (milliseconds <= 500)	/* short delay */
 	{
 	  SDL_Delay (milliseconds);
-	  return avt_checkevent ();
+	  avt_checkevent ();
 	}
-      else
+      else			/* longer */
 	{
 	  SDL_Event event;
 	  SDL_TimerID t;
