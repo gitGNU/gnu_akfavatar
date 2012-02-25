@@ -1,3 +1,7 @@
+2012-02-25  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_pager): support markup mode
+
 2012-02-13  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_wait): use SDL_Delay() for short times

@@ -6,6 +6,7 @@
   - Data files are put in a separate directory and Lua has a search function
     for it (scripts have to be adapted!)
   - Some more audio files
+  - The pager supports the markup mode now
   - multiply.pas cannot be compiled without AKFAvatar anymore (simplified)
 
   C-API changes:

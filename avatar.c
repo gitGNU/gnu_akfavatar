@@ -4630,7 +4630,13 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   avt_alert_func = NULL;
 
   avt_set_text_delay (0);
-  avt_normal_text ();
+  if (markup)
+    {
+      avt_normal_text ();
+      markup = true;
+    }
+  else
+    avt_normal_text ();
 
   /* show first screen */
   pos = avt_pager_screen (txt, pos, len);
