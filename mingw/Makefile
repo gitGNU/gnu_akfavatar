@@ -5,7 +5,6 @@ srcdir = ..
 CC = gcc
 AR = ar
 AWK = awk
-STRIP = strip
 WINDRES = windres
 RANLIB = ranlib
 SDL_CONFIG = sdl-config
@@ -350,8 +349,6 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(lua_dll) $(BINPKGNAME)/
 	cp $(srcdir)/README-Lua $(BINPKGNAME)/README-Lua.txt
 	cp $(srcdir)/mingw/Homepage.url $(BINPKGNAME)/
-	$(STRIP) -d $(BINPKGNAME)/*.exe
-	$(STRIP) -d $(BINPKGNAME)/*.dll
 	$(u2d) $(BINPKGNAME)/fsdemo-??.avt
 	$(u2d) $(BINPKGNAME)/*.txt
 	$(u2d) $(BINPKGNAME)/lua/*.lua
