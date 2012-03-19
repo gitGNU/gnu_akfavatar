@@ -7,6 +7,7 @@
     for it (scripts have to be adapted!)
   - Some more audio files
   - The pager supports the markup mode now
+  - The terminal emulation uses better colors for black backgroud
   - multiply.pas cannot be compiled without AKFAvatar anymore (simplified)
 
   C-API changes:
