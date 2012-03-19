@@ -476,7 +476,7 @@ set_foreground_color (int color)
       if (!faint)
 	avt_set_text_color (0x00, 0x00, 0x00);
       else
-	avt_set_text_color (0x55, 0x55, 0x55);
+	avt_set_text_color (0x88, 0x88, 0x88);
       break;
     case 1:			/* red */
       avt_set_text_color (0x88, 0x00, 0x00);
@@ -485,7 +485,7 @@ set_foreground_color (int color)
       avt_set_text_color (0x00, 0x88, 0x00);
       break;
     case 3:			/* brown */
-      avt_set_text_color (0x88, 0x44, 0x22);
+      avt_set_text_color (0x88, 0x00, 0x00);
       break;
     case 4:			/* blue */
       avt_set_text_color (0x00, 0x00, 0x88);
@@ -497,10 +497,10 @@ set_foreground_color (int color)
       avt_set_text_color (0x00, 0x88, 0x88);
       break;
     case 7:			/* lightgray */
-      avt_set_text_color (0x88, 0x88, 0x88);
+      avt_set_text_color (0xCC, 0xCC, 0xCC);
       break;
     case 8:			/* darkgray */
-      avt_set_text_color (0x55, 0x55, 0x55);
+      avt_set_text_color (0x88, 0x88, 0x88);
       break;
     case 9:			/* lightred */
       avt_set_text_color (0xFF, 0x00, 0x00);
@@ -509,7 +509,7 @@ set_foreground_color (int color)
       avt_set_text_color (0x00, 0xFF, 0x00);
       break;
     case 11:			/* yellow */
-      avt_set_text_color (0xE0, 0xE0, 0x00);
+      avt_set_text_color (0xFF, 0xFF, 0x00);
       break;
     case 12:			/* lightblue */
       avt_set_text_color (0x00, 0x00, 0xFF);
@@ -540,7 +540,7 @@ set_background_color (int color)
       avt_set_text_background_color (0x00, 0x88, 0x00);
       break;
     case 3:			/* brown */
-      avt_set_text_background_color (0x88, 0x44, 0x22);
+      avt_set_text_background_color (0x88, 0x00, 0x00);
       break;
     case 4:			/* blue */
       avt_set_text_background_color (0x00, 0x00, 0x88);
@@ -552,10 +552,10 @@ set_background_color (int color)
       avt_set_text_background_color (0x00, 0x88, 0x88);
       break;
     case 7:			/* lightgray */
-      avt_set_text_background_color (0x88, 0x88, 0x88);
+      avt_set_text_background_color (0xCC, 0xCC, 0xCC);
       break;
     case 8:			/* darkgray */
-      avt_set_text_background_color (0x55, 0x55, 0x55);
+      avt_set_text_background_color (0x88, 0x88, 0x88);
       break;
     case 9:			/* lightred */
       avt_set_text_background_color (0xFF, 0x00, 0x00);

@@ -1,3 +1,8 @@
+2012-03-19  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtterm.c (set_foreground_color, set_background_color):
+	improve colors
+
 2012-02-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_pager): support markup mode
