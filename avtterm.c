@@ -485,7 +485,7 @@ set_foreground_color (int color)
       avt_set_text_color (0x00, 0x88, 0x00);
       break;
     case 3:			/* brown */
-      avt_set_text_color (0x88, 0x00, 0x00);
+      avt_set_text_color (0x88, 0x88, 0x00);
       break;
     case 4:			/* blue */
       avt_set_text_color (0x00, 0x00, 0x88);
@@ -540,7 +540,7 @@ set_background_color (int color)
       avt_set_text_background_color (0x00, 0x88, 0x00);
       break;
     case 3:			/* brown */
-      avt_set_text_background_color (0x88, 0x00, 0x00);
+      avt_set_text_background_color (0x88, 0x88, 0x00);
       break;
     case 4:			/* blue */
       avt_set_text_background_color (0x00, 0x00, 0x88);
