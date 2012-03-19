@@ -928,15 +928,15 @@ case Color of
   Cyan         : avt_set_text_color($00, $88, $88);
   Red          : avt_set_text_color($88, $00, $00);
   Magenta      : avt_set_text_color($88, $00, $88);
-  Brown        : avt_set_text_color($88, $44, $22);
-  LightGray    : avt_set_text_color($88, $88, $88);
-  DarkGray     : avt_set_text_color($55, $55, $55);
+  Brown        : avt_set_text_color($88, $88, $00);
+  LightGray    : avt_set_text_color($CC, $CC, $CC);
+  DarkGray     : avt_set_text_color($88, $88, $88);
   LightBlue    : avt_set_text_color($00, $00, $FF);
   LightGreen   : avt_set_text_color($00, $FF, $00);
   LightCyan    : avt_set_text_color($00, $FF, $FF);
   LightRed     : avt_set_text_color($FF, $00, $00); 
   LightMagenta : avt_set_text_color($FF, $00, $FF);
-  Yellow       : avt_set_text_color($E0, $E0, $00);
+  Yellow       : avt_set_text_color($FF, $FF, $00);
   White        : avt_set_text_color($FF, $FF, $FF)
   end
 end;
@@ -965,9 +965,9 @@ case Color of
   Cyan         : avt_set_text_background_color($00, $88, $88);
   Red          : avt_set_text_background_color($88, $00, $00);
   Magenta      : avt_set_text_background_color($88, $00, $88);
-  Brown        : avt_set_text_background_color($88, $44, $22);
-  LightGray    : avt_set_text_background_color($88, $88, $88);
-  DarkGray     : avt_set_text_background_color($55, $55, $55);
+  Brown        : avt_set_text_background_color($88, $88, $00);
+  LightGray    : avt_set_text_background_color($CC, $CC, $CC);
+  DarkGray     : avt_set_text_background_color($88, $88, $88);
   LightBlue    : avt_set_text_background_color($00, $00, $FF);
   LightGreen   : avt_set_text_background_color($00, $FF, $00);
   LightCyan    : avt_set_text_background_color($00, $FF, $FF);

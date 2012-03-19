@@ -3,6 +3,9 @@
 	* avtterm.c (set_foreground_color, set_background_color):
 	improve colors
 
+	* pascal/akfavatar.pas (TextColor, TextBackground):
+	improve colors
+
 2012-02-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_pager): support markup mode
