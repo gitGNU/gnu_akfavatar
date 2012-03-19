@@ -6,6 +6,8 @@
 	* pascal/akfavatar.pas (TextColor, TextBackground):
 	improve colors
 
+	* pascal/akfavatar.pas: encrease buffer for sound to 1min
+
 2012-02-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_pager): support markup mode

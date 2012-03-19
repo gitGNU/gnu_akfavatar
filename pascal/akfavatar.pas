@@ -490,7 +490,7 @@ var KeyboardBufferRead, KeyboardBufferWrite: integer;
 { for sound generator }
 const 
   SampleRate = 44100;
-  BufMax = 4 * Samplerate;
+  BufMax = 60 * Samplerate; { 1 minute }
 
 type TRawSoundBuf = array[0..BufMax] of SmallInt;
 
