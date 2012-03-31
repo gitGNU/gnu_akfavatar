@@ -14,6 +14,7 @@
   - uses size_t where appropriete (ABI change!)
   - avt_image_t renamed to avt_image
   - avt_audio_t renamed to avt_audio
+  - fixed avt_show_image_stream, avt_import_image_stream
   - new functions: avt_load_audio_part
   - avtaddons:
     - avtmsg section removed - make your own messages

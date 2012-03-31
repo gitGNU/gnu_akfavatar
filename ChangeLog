@@ -1,3 +1,8 @@
+2012-03-31  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_show_image_stream, avt_import_image_stream):
+	fix: couldn't load anything but XPM
+
 2012-03-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtterm.c (set_foreground_color, set_background_color):

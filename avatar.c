@@ -5671,28 +5671,31 @@ extern int
 avt_show_image_stream (avt_stream * stream)
 {
   SDL_Surface *image;
+  SDL_RWops *RW;
 
   if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
+  RW = SDL_RWFromFP ((FILE *) stream, 0);
+
   /* try internal XPM reader first */
   /* it's better than in SDL_image */
-  image = avt_load_image_xpm_RW (SDL_RWFromFP ((FILE *) stream, 0), 1);
+  image = avt_load_image_xpm_RW (RW, 0);
 
   if (image == NULL)
-    image = avt_load_image_xbm_RW (SDL_RWFromFP ((FILE *) stream, 0), 1,
-				   XBM_DEFAULT_COLOR);
+    image = avt_load_image_xbm_RW (RW, 0, XBM_DEFAULT_COLOR);
 
   if (image == NULL)
     {
       load_image_init ();
-      image = load_image.rw (SDL_RWFromFP ((FILE *) stream, 0), 1);
+      image = load_image.rw (RW, 0);
     }
+
+  SDL_RWclose (RW);
 
   if (image == NULL)
     {
       avt_clear_screen ();	/* at least clear the screen */
-      SDL_SetError ("couldn't show image");
       return AVT_ERROR;
     }
 
@@ -6045,27 +6048,31 @@ extern avt_image *
 avt_import_image_stream (avt_stream * stream)
 {
   SDL_Surface *image;
+  SDL_RWops *RW;
 
   if (avt_init_SDL ())
     return NULL;
 
+  RW = SDL_RWFromFP ((FILE *) stream, 0);
+
   /* try internal XPM reader first */
-  image = avt_load_image_xpm_RW (SDL_RWFromFP ((FILE *) stream, 0), 1);
+  image = avt_load_image_xpm_RW (RW, 0);
 
   if (image == NULL)
-    image = avt_load_image_xbm_RW (SDL_RWFromFP ((FILE *) stream, 0), 1,
-				   XBM_DEFAULT_COLOR);
+    image = avt_load_image_xbm_RW (RW, 0, XBM_DEFAULT_COLOR);
 
   if (image == NULL)
     {
       load_image_init ();
-      image = load_image.rw (SDL_RWFromFP ((FILE *) stream, 0), 1);
+      image = load_image.rw (RW, 0);
 
       /* if it's not yet transparent, make it transparent */
       if (image)
 	if (!(image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
 	  avt_make_transparent (image);
     }
+
+  SDL_RWclose (RW);
 
   return image;
 }
