@@ -3,6 +3,13 @@
 	* avatar.c (avt_show_image_stream, avt_import_image_stream):
 	fix: couldn't load anything but XPM
 
+	* avatar.c (avt_show_image_file, avt_show_image_data)
+	(avt_import_image_data, avt_import_image_file):
+	optimized
+
+	* avatar.c (struct load_image, load_image_initialize, load_image_done):
+	uses no file loader anymore
+
 2012-03-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtterm.c (set_foreground_color, set_background_color):
