@@ -22,7 +22,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <wchar.h>
 
 
 #define PRGNAME  "AKFAvatar example program"
@@ -30,14 +29,14 @@
 
 
 void
-say (wchar_t * msg)
+say (char *msg)
 {
   /*
    * tell the message
    * and if there is quit-request or a fatal error, stop the program
    * (note: fatal errors are unlikely after initialization)
    */
-  if (avt_say (msg))
+  if (avt_say_mb (msg))
     exit (EXIT_SUCCESS);
 }
 
@@ -45,40 +44,41 @@ say (wchar_t * msg)
 void
 run_plot (void)
 {
-  wchar_t name[AVT_LINELENGTH + 1];
+  char name[AVT_LINELENGTH + 1];
   /* AVT_LINELENGTH is the maximum length of one line in a balloon */
+
+  if (avt_move_in ())
+    exit (EXIT_SUCCESS);
 
   /* do slow printing */
   avt_set_text_delay (AVT_DEFAULT_TEXT_DELAY);
 
   /* set the balloon size: height, width (use 0 for maximum) */
-  avt_set_balloon_size (6, 50);
-
-  if (avt_move_in ())
-    exit (EXIT_SUCCESS);
+  avt_set_balloon_size (1, 50);
 
   /* ask for a name */
-  say (L"What's your name? ");
-  if (avt_ask (name, sizeof (name)))
+  say ("What's your name? ");
+  if (avt_ask_mb (name, sizeof (name)))
     exit (EXIT_SUCCESS);
 
   /* if no name was given, call him "Mister unknown" ;-) */
   if (!name[0])
-    wcscpy (name, L"Mister unknown");
+    strcpy (name, "Mister unknown");
 
+  avt_set_balloon_size (6, 50);
   /* clear the balloon */
   avt_clear ();
-  say (L"Hello ");
+  say ("Hello ");
   say (name);
-  say (L",\n\n");
-  say (L"I am the avatar (the incarnation) of your program.\n"
-       L"It is sooo easy to program me...\n\n"
-       L"I am longing for being programmed by you!");
+  say (",\n\n");
+  say ("I am the avatar (the incarnation) of your program.\n"
+       "It is sooo easy to program me...\n\n"
+       "I am longing for being programmed by you!");
 
   /* wait for a key, move out and wait some time */
   avt_wait_button ();
   avt_move_out ();
-  avt_wait (AVT_SECONDS (1));
+  avt_wait (AVT_SECONDS (0.75));
 }
 
 
