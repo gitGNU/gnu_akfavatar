@@ -22,6 +22,11 @@
   - avt_audio_t renamed to avt_audio
   - fixed avt_show_image_stream, avt_import_image_stream
   - new functions: avt_load_audio_part
+  - deprecated functions:
+    avt_initialize, avt_default, avt_import_xpm, avt_import_xbm,
+    avt_import_gimp_image, avt_import_image_data, avt_import_image_file,
+    avt_import_image_stream, avt_change_avatar_image, avt_make_transparent,
+    avt_free_image
   - avtaddons:
     - avtmsg section removed - make your own messages
     - avta_filter_t renamed to avt_filter

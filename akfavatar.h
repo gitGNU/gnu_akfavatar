@@ -139,9 +139,8 @@
 typedef int avt_char;
 
 /*
- * general types for avatar images and audio data
+ * general type for audio data
  */
-typedef struct SDL_Surface avt_image;
 typedef struct avt_audio avt_audio;
 
 /* for streams (use FILE from your programs) */
@@ -201,31 +200,6 @@ AVT_API int avt_avatar_image_data (void *img, size_t imgsize);
 
 AVT_API int avt_avatar_image_file (const char *file);
 
-
-/***********************************************************************/
-/* other functions for avatarimages */
-
-/*
- * change avatar image while running
- * if the avatar is visible, the screen gets cleared
- * the original image is freed in this function!
- * the image may be NULL if no avatar should be shown
- * on error AVT_ERROR is set and returned
- * an avatar name is cleared
- */
-AVT_API int avt_change_avatar_image (avt_image *image);
-
-/*
- * free avt_image images
- * (automatically called in avt_initialize and avt_change_avatar_image)
- */
-AVT_API void avt_free_image (avt_image *image);
-
-/*
- * make background transparent
- * pixel in the upper left corner is supposed to be the background color
- */
-AVT_API avt_image *avt_make_transparent (avt_image *image);
 
 /***********************************************************************/
 /* actions without or outside the balloon */
@@ -1099,6 +1073,8 @@ AVT_API bool avt_audio_playing (avt_audio *snd);
 #  define AVT_DEPRECATED
 #endif /* __GNUC__ */
 
+typedef struct SDL_Surface avt_image;
+
 AVT_API int avt_initialize (const char *title,
 			    const char *shortname,
 			    avt_image *image,
@@ -1112,6 +1088,10 @@ AVT_API avt_image *avt_import_gimp_image (void *gimp_image) AVT_DEPRECATED;
 AVT_API avt_image *avt_import_image_data (void *img, size_t imgsize) AVT_DEPRECATED;
 AVT_API avt_image *avt_import_image_file (const char *filename) AVT_DEPRECATED;
 AVT_API avt_image *avt_import_image_stream (avt_stream *stream) AVT_DEPRECATED;
+AVT_API int avt_change_avatar_image (avt_image *image) AVT_DEPRECATED;
+AVT_API avt_image *avt_make_transparent (avt_image *image) AVT_DEPRECATED;
+AVT_API void avt_free_image (avt_image *image) AVT_DEPRECATED;
+
 
 AVT_END_DECLS
 

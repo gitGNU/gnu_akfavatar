@@ -94,7 +94,7 @@ static void
 error_box (const char *msg)
 {
   avt_set_status (AVT_NORMAL);
-  avt_change_avatar_image (NULL);
+  avt_avatar_image_none ();
   avt_set_balloon_color (0xFF, 0xAA, 0xAA);
   avt_normal_text ();
   avt_set_auto_margin (true);
@@ -334,7 +334,7 @@ run_executable (const char *filename)
 static void
 show_text (const char *filename)
 {
-  avt_change_avatar_image (NULL);	/* no avatar */
+  avt_avatar_image_none ();
   avt_set_balloon_size (0, 0);
   avt_set_balloon_color_name ("tan");
   /* text file must be UTF-8 encoded (or plain ASCII) */
