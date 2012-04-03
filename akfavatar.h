@@ -57,10 +57,11 @@
 #  define AVT_FULLSCREEN 1
 #endif
 
-/* for _avt_STATUS */
+/* status */
 #define AVT_NORMAL 0
 #define AVT_QUIT 1
 #define AVT_ERROR -1
+#define AVT_FAILURE -2  /* nonfatal failures */
 
 #define AVT_MAKE_BOOL(x) ((x) != 0)
 
@@ -778,32 +779,32 @@ AVT_API int avt_image_max_height (void);
 
 /*
  * load image file and show it
- * on error it returns AVT_ERROR without changing the status
+ * on error it returns AVT_FAILURE without changing the status
  */
 AVT_API int avt_show_image_file (const char *file);
 
 /*
  * load image from stream and show it
- * on error it returns AVT_ERROR without changing the status
+ * on error it returns AVT_FAILURE without changing the status
  */
 AVT_API int avt_show_image_stream (avt_stream *stream);
 
 /*
  * show image from image data
- * on error it returns AVT_ERROR without changing the status
+ * on error it returns AVT_FAILURE without changing the status
  */
 AVT_API int avt_show_image_data (void *img, size_t imgsize);
 
 /*
  * show image from XPM data
- * on error it returns AVT_ERROR without changing the status
+ * on error it returns AVT_FAILURE without changing the status
  */
 AVT_API int avt_show_image_xpm (char **xpm);
 
 /*
  * show image from XBM data with a given color
  * the background is transparent
- * on error it returns AVT_ERROR without changing the status
+ * on error it returns AVT_FAILURE without changing the status
  */
 AVT_API int avt_show_image_xbm (const unsigned char *bits,
 				int width, int height,
@@ -812,6 +813,7 @@ AVT_API int avt_show_image_xbm (const unsigned char *bits,
 /*
  * show raw image
  * only 3 or 4 Bytes per pixel supported (RGB or RGBA)
+ * on error it returns AVT_FAILURE without changing the status
  */
 AVT_API int avt_show_raw_image (void *image_data, int width, int height,
 				int bytes_per_pixel);

@@ -8,6 +8,9 @@
 
 	* akfavatar.pas: adapted
 
+	* akfavatar.h, avatar.c, avatar-audio.c (AVT_FAILURE):
+	new macro - many functions adapted
+
 2012-03-31  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_show_image_stream, avt_import_image_stream):

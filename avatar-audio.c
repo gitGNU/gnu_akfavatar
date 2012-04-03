@@ -174,7 +174,7 @@ short_audio_sound (void)
     avt_play_audio (my_alert, false);
 }
 
-/* must be called AFTER avt_initialize! */
+/* must be called AFTER avt_start! */
 extern int
 avt_initialize_audio (void)
 {
@@ -183,7 +183,8 @@ avt_initialize_audio (void)
       if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
 	{
 	  SDL_SetError ("error initializing audio");
-	  return AVT_ERROR;
+	  _avt_STATUS = AVT_ERROR;
+	  return _avt_STATUS;
 	}
 
       /* set this before calling anything from this lib */
@@ -587,7 +588,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
   if (snd->audio_type == AVT_AUDIO_UNKNOWN)
     {
       SDL_SetError ("unknown audio format");
-      return AVT_ERROR;
+      return AVT_FAILURE;
     }
 
   old_size = snd->len;
@@ -603,7 +604,8 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
   if (new_sound == NULL)
     {
       SDL_SetError ("out of memory");
-      return AVT_ERROR;
+      _avt_STATUS = AVT_ERROR;
+      return _avt_STATUS;
     }
 
   snd->sound = (Uint8 *) new_sound;
@@ -821,7 +823,8 @@ avt_play_audio (avt_audio * snd, bool doloop)
   else
     {
       SDL_SetError ("error opening audio device");
-      return AVT_ERROR;
+      _avt_STATUS = AVT_ERROR;
+      return _avt_STATUS;
     }
 }
 
@@ -864,7 +867,7 @@ avt_initialize_audio (void)
 {
   no_audio ();
   /* do not set _avt_STATUS here */
-  return AVT_ERROR;
+  return AVT_FAILURE;
 }
 
 extern void
@@ -927,7 +930,7 @@ extern int
 avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 {
   no_audio ();
-  return AVT_ERROR;
+  return AVT_FAILURE;
 }
 
 extern void

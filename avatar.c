@@ -5259,7 +5259,7 @@ avt_navigate (const char *buttons)
   if (!buttons || !*buttons || button_count > NAV_MAX)
     {
       SDL_SetError ("No or too many buttons for navigation bar");
-      return AVT_ERROR;
+      return AVT_FAILURE;
     }
 
   SDL_SetClipRect (screen, &window);
@@ -5279,7 +5279,7 @@ avt_navigate (const char *buttons)
     {
       SDL_FreeSurface (base_button);
       SDL_SetError ("too many buttons");
-      return AVT_ERROR;
+      return AVT_FAILURE;
     }
 
   /* save background for common button area */
@@ -5404,7 +5404,7 @@ avt_navigate (const char *buttons)
 
 	case SDL_KEYDOWN:
 	  {
-	    int r = AVT_ERROR;
+	    int r = -1;
 
 	    if (event.key.keysym.sym == SDLK_UP
 		|| event.key.keysym.sym == SDLK_KP8
@@ -5648,7 +5648,7 @@ avt_show_image_file (const char *filename)
   if (image == NULL)
     {
       avt_clear_screen ();	/* at least clear the screen */
-      return AVT_ERROR;
+      return AVT_FAILURE;
     }
 
   avt_show_image (image);
@@ -5686,7 +5686,7 @@ avt_show_image_stream (avt_stream * stream)
   if (image == NULL)
     {
       avt_clear_screen ();	/* at least clear the screen */
-      return AVT_ERROR;
+      return AVT_FAILURE;
     }
 
   avt_show_image (image);
@@ -5727,7 +5727,7 @@ avt_show_image_data (void *img, size_t imgsize)
   if (image == NULL)
     {
       avt_clear_screen ();	/* at least clear the screen */
-      return AVT_ERROR;
+      return AVT_FAILURE;
     }
 
   avt_show_image (image);
@@ -5750,7 +5750,7 @@ avt_show_image_xpm (char **xpm)
     {
       avt_clear_screen ();	/* at least clear the screen */
       SDL_SetError ("couldn't show image");
-      return AVT_ERROR;
+      return AVT_FAILURE;
     }
 
   avt_show_image (image);
@@ -5770,13 +5770,13 @@ avt_show_image_xbm (const unsigned char *bits, int width, int height,
     return _avt_STATUS;
 
   if (width <= 0 || height <= 0)
-    return AVT_ERROR;
+    return AVT_FAILURE;
 
   if (avt_name_to_color (colorname, &red, &green, &blue) < 0)
     {
       avt_clear ();		/* at least clear the balloon */
       SDL_SetError ("couldn't show image");
-      return AVT_ERROR;
+      return AVT_FAILURE;
     }
 
   image = avt_load_image_xbm (bits, width, height, red, green, blue);
@@ -5785,7 +5785,7 @@ avt_show_image_xbm (const unsigned char *bits, int width, int height,
     {
       avt_clear_screen ();	/* at least clear the screen */
       SDL_SetError ("couldn't show image");
-      return AVT_ERROR;
+      return AVT_FAILURE;
     }
 
   avt_show_image (image);
@@ -5821,9 +5821,8 @@ avt_show_raw_image (void *image_data, int width, int height,
 
   if (bytes_per_pixel < 3 || bytes_per_pixel > 4)
     {
-      _avt_STATUS = AVT_ERROR;
       SDL_SetError ("wrong number of bytes_per_pixel for raw image");
-      return _avt_STATUS;
+      return AVT_FAILURE;
     }
 
   image = NULL;
@@ -5858,7 +5857,7 @@ avt_show_raw_image (void *image_data, int width, int height,
     {
       avt_clear_screen ();	/* at least clear the screen */
       SDL_SetError ("couldn't show image");
-      return AVT_ERROR;
+      return AVT_FAILURE;
     }
 
   avt_show_image (image);
@@ -5882,10 +5881,7 @@ avt_init_SDL (void)
       SDL_SetError ("15ce822f94d7e8e4281f1c2bcdd7c56d");
 
       if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
-	{
-	  SDL_SetError ("couldn't show image");
 	  _avt_STATUS = AVT_ERROR;
-	}
     }
 
   return _avt_STATUS;
@@ -6165,10 +6161,10 @@ avt_avatar_image_xpm (char **xpm)
 
   image = avt_load_image_xpm (xpm);
 
-  if (image == NULL)
-    return AVT_ERROR;
-
-  avt_change_avatar_image (image);
+  if (image)
+    avt_change_avatar_image (image);
+  else
+    _avt_STATUS = AVT_ERROR;
 
   return _avt_STATUS;
 }
@@ -6183,14 +6179,18 @@ avt_avatar_image_xbm (const unsigned char *bits,
 
   if (width <= 0 || height <= 0
       || avt_name_to_color (colorname, &red, &green, &blue) < 0)
-    return AVT_ERROR;
+    {
+      SDL_SetError ("invalid parameters");
+      _avt_STATUS = AVT_ERROR;
+      return _avt_STATUS;
+    }
 
   image = avt_load_image_xbm (bits, width, height, red, green, blue);
 
-  if (image == NULL)
-    return AVT_ERROR;
-
-  avt_change_avatar_image (image);
+  if (image)
+    avt_change_avatar_image (image);
+  else
+    _avt_STATUS = AVT_ERROR;
 
   return _avt_STATUS;
 }
@@ -6223,10 +6223,10 @@ avt_avatar_image_data (void *img, size_t imgsize)
 
   SDL_RWclose (RW);
 
-  if (image == NULL)
-    return AVT_ERROR;
-
-  avt_change_avatar_image (image);
+  if (image)
+    avt_change_avatar_image (image);
+  else
+     _avt_STATUS = AVT_ERROR;
 
   return _avt_STATUS;
 }
@@ -6259,10 +6259,10 @@ avt_avatar_image_file (const char *file)
 
   SDL_RWclose (RW);
 
-  if (image == NULL)
-    return AVT_ERROR;
-
-  avt_change_avatar_image (image);
+  if (image)
+    avt_change_avatar_image (image);
+  else
+    _avt_STATUS = AVT_ERROR;
 
   return _avt_STATUS;
 }
@@ -6691,7 +6691,11 @@ avt_credits (const wchar_t * text, bool centered)
 			  screen->format->Bmask, screen->format->Amask);
 
   if (!last_line)
-    return AVT_ERROR;
+    {
+      SDL_SetError ("out of memory");
+      _avt_STATUS = AVT_ERROR;
+      return _avt_STATUS;
+    }
 
   /* cursor position for last_line */
   cursor.y = 0;
