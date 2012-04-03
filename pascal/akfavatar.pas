@@ -122,27 +122,31 @@ var
 { These variables are only set after the avatar is visible }
 var WindMin, WindMax: word;
 
+{ load the default Avatar image }
+{ This causes the library to be initialized }
+procedure AvatarImageDefault;
+
+{ load no Avatar image }
+{ This causes the library to be initialized }
+procedure AvatarImageNone;
+
 { load the Avatar image from a file }
-{ should be used before any output took place }
-{ but it can be changed later }
+{ This causes the library to be initialized }
 procedure AvatarImageFile(FileName: string);
 
 { load the Avatar image from memory }
-{ should be used before any output took place }
-{ but it can be changed later }
+{ This causes the library to be initialized }
 procedure AvatarImageData(data: pointer; size: LongInt);
 
 { load the Avatar image from XPM-data }
 { use the tool xpm2pas to import the data }
-{ should be used before any output took place }
-{ but it can be changed later }
+{ This causes the library to be initialized }
 { example:  AvatarImageXPM(addr(image)); }
 procedure AvatarImageXPM(data: pointer);
 
 { load the Avatar image from XBM-data }
 { use the tool xbm2pas to import the data }
-{ should be used before any output took place }
-{ but it can be changed later }
+{ This causes the library to be initialized }
 { example: 
   AvatarImageXBM(addr(img_bits), img_width, img_height, 'black'); }
 procedure AvatarImageXBM(bits: pointer; width, height: integer; 
@@ -473,13 +477,10 @@ implementation
   {$EndIf}
 {$EndIf}
 
-type PAvatarImage = pointer;
-
 var OldTextAttr : byte;
 var FastQuit : boolean;
 var isMonochrome : boolean;
 var fullscreen, initialized: boolean;
-var AvatarImage: PAvatarImage;
 var InputBuffer: array [ 0 .. (4 * LineLength) + 2] of char;
 var ScrSize : TScreenSize;
 
@@ -503,8 +504,6 @@ var GenSound: Pointer; { generated sound }
 
 procedure avt_reserve_single_keys(onoff: CBoolean); 
   libakfavatar 'avt_reserve_single_keys';
-
-function avt_default: PAvatarImage; libakfavatar 'avt_default';
 
 function avt_get_status: Cint; libakfavatar 'avt_get_status';
 
@@ -545,24 +544,24 @@ function avt_move_out: Cint; libakfavatar 'avt_move_out';
 
 procedure avt_show_avatar; libakfavatar 'avt_show_avatar';
 
-function avt_import_image_file(FileName: CString): PAvatarImage;
-  libakfavatar 'avt_import_image_file';
+function avt_avatar_image_default: Cint; 
+  libakfavatar 'avt_avatar_image_default';
 
-function avt_import_image_data(Data: Pointer; size: Csize_t): PAvatarImage;
-  libakfavatar 'avt_import_image_data';
+function avt_avatar_image_none: Cint; 
+  libakfavatar 'avt_avatar_image_none';
 
-function avt_import_xbm(bits: Pointer; width, height: Cint;
-                        colorname: CString): PAvatarImage;
-  libakfavatar 'avt_import_xbm';
+function avt_avatar_image_file(Filename: CString): Cint;
+  libakfavatar 'avt_avatar_image_file';
 
-function avt_import_xpm(data: Pointer): PAvatarImage;
-  libakfavatar 'avt_import_xpm';
+function avt_avatar_image_data(Data: Pointer; size: Csize_t): Cint;
+  libakfavatar 'avt_avatar_image_data';
 
-function avt_change_avatar_image(image: PAvatarImage): Cint;
-  libakfavatar 'avt_change_avatar_image';
+function avt_avatar_image_xbm(bits: Pointer; width, height: Cint;
+                        colorname: CString): Cint;
+  libakfavatar 'avt_avatar_image_xbm';
 
-procedure avt_free_image(image: PAvatarImage);
-  libakfavatar 'avt_free_image';
+function avt_avatar_image_xpm(data: Pointer): Cint;
+  libakfavatar 'avt_avatar_image_xpm';
 
 function avt_set_avatar_name_mb(name: CString): Cint;
   libakfavatar 'avt_set_avatar_name_mb';
@@ -621,10 +620,8 @@ procedure avt_normal_text; libakfavatar 'avt_normal_text';
 procedure avt_activate_cursor(onoff: CBoolean); 
   libakfavatar 'avt_activate_cursor';
 
-function avt_initialize(title, icon: CString;
-                        image: PAvatarImage;
-                        mode: Cint): Cint;
-  libakfavatar 'avt_initialize';
+function avt_start(title, shortname: CString; mode: Cint): Cint;
+  libakfavatar 'avt_start';
 
 function avt_initialize_audio: Cint; 
   libakfavatar 'avt_initialize_audio';
@@ -781,60 +778,6 @@ begin
 avt_text_direction(ord(direction))
 end;
 
-procedure AvatarImageFile(FileName: string);
-begin
-if AvatarImage <> NIL then avt_free_image(AvatarImage);
-
-AvatarImage := avt_import_image_file(String2CString(FileName));
-
-if initialized then 
-  begin
-  avt_change_avatar_image(AvatarImage);
-  AvatarImage := NIL
-  end
-end;
-
-procedure AvatarImageData(data: pointer; size: LongInt);
-begin
-if AvatarImage <> NIL then avt_free_image(AvatarImage);
-
-AvatarImage := avt_import_image_data(data, size);
-
-if initialized then
-  begin
-  avt_change_avatar_image(AvatarImage);
-  AvatarImage := NIL
-  end
-end;
-
-procedure AvatarImageXPM(data: pointer);
-begin
-if AvatarImage <> NIL then avt_free_image(AvatarImage);
-
-AvatarImage := avt_import_xpm(data);
-
-if initialized then
-  begin
-  avt_change_avatar_image(AvatarImage);
-  AvatarImage := NIL
-  end
-end;
-
-procedure AvatarImageXBM(bits: pointer; width, height: integer;
-                         colorname: string);
-begin
-if AvatarImage <> NIL then avt_free_image(AvatarImage);
-
-AvatarImage := avt_import_xbm(bits, width, height, 
-                              String2CString(colorname));
-
-if initialized then
-  begin
-  avt_change_avatar_image(AvatarImage);
-  AvatarImage := NIL
-  end
-end;
-
 procedure RestoreInOut;
 begin
 {$I-}
@@ -859,12 +802,9 @@ if initialized then
   avt_quit
 end;
 
-procedure initializeAvatar;
+procedure initializeAvatarWithoutImage;
 begin
-if AvatarImage = NIL then AvatarImage := avt_default;
-
-if avt_initialize('AKFAvatar', 'AKFAvatar', AvatarImage,
-                  ord(fullscreen)) < 0 
+if avt_start('AKFAvatar', 'AKFAvatar', ord(fullscreen)) < 0 
   then 
     begin
     WriteLn(stderr, 'cannot initialize graphics: ', AvatarGetError);
@@ -875,7 +815,6 @@ if avt_get_status = 1 then Halt; { shouldn't happen here yet }
 
 initialized := true;
 
-AvatarImage := NIL; { it was freed by initialize }
 ScrSize.x := avt_get_max_x;
 ScrSize.y := avt_get_max_y;
 
@@ -893,7 +832,72 @@ if ScrSize.x-1 >= $FF
 avt_initialize_audio;
 
 NormVideo;
-avt_move_in { do not call Halt here }
+end;
+
+procedure initializeAvatar;
+begin
+initializeAvatarWithoutImage;
+if avt_avatar_image_default <> 0 then Halt;
+if avt_move_in <> 0 then Halt
+end;
+
+procedure AvatarImageDefault;
+begin
+if not initialized
+  then initializeAvatar
+  else avt_avatar_image_default
+end;
+
+procedure AvatarImageNone;
+begin
+if not initialized
+  then initializeAvatarWithoutImage
+  else avt_avatar_image_none
+end;
+
+procedure AvatarImageFile(FileName: string);
+begin
+if not initialized
+  then begin
+       initializeAvatarWithoutImage;
+       avt_avatar_image_file(String2CString(FileName));
+       if avt_move_in <> 0 then Halt
+       end
+  else avt_avatar_image_file(String2CString(FileName))
+end;
+
+procedure AvatarImageData(data: pointer; size: LongInt);
+begin
+if not initialized 
+  then begin
+       initializeAvatarWithoutImage;
+       avt_avatar_image_data(data, size);
+       if avt_move_in <> 0 then Halt
+       end
+  else avt_avatar_image_data(data, size)
+end;
+
+procedure AvatarImageXPM(data: pointer);
+begin
+if not initialized 
+  then begin
+       initializeAvatarWithoutImage;
+       avt_avatar_image_xpm(data);
+       if avt_move_in <> 0 then Halt
+       end
+  else avt_avatar_image_xpm(data)
+end;
+
+procedure AvatarImageXBM(bits: pointer; width, height: integer;
+                         colorname: string);
+begin
+if not initialized
+  then begin
+       initializeAvatarWithoutImage;
+       avt_avatar_image_xbm(bits, width, height, String2CString(colorname));
+       if avt_move_in <> 0 then Halt
+       end
+  else avt_avatar_image_xbm(bits, width, height, String2CString(colorname))
 end;
 
 procedure AvatarName(const Name: string);
@@ -1603,7 +1607,6 @@ end;
 
 Initialization
 
-  AvatarImage := NIL;
   fullscreen := false;
   initialized := false;
   isMonochrome := false;

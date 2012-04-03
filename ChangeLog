@@ -6,6 +6,8 @@
 	new functions
 	all callers adapted
 
+	* akfavatar.pas: adapted
+
 2012-03-31  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_show_image_stream, avt_import_image_stream):
