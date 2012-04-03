@@ -1,5 +1,7 @@
 * AKFAvatar testing
 
+  There are a lot of changes in the APIs. Also the ABI was changed.
+
   - Uses Lua-5.2 now, no longer compatible with 5.1
   - Lua modules don't define globals anymore (scripts have to be adapted!)
   - The source code is compatible with C++ compilers again
@@ -41,6 +43,11 @@
   - Module akfavatar-vorbis:
      - new function vorbis.load_stream
 
+  Pascal-API changes:
+  - AvatarImageFile, AvatarImageData, AvatarImageXPM, AvatarImageXBM
+    initialize the library now
+  - new functions: AvatarImageDefault, AvatarImageNone
+
 
 * AKFAvatar 0.21.2
 
@@ -52,6 +59,7 @@
   - fixed avt_recode_buffer, this also fixes setting the title/shortname
   - the audioplayer doesn't crash if it gets an empty list
   - updated documentation
+
 
 * AKFAvatar 0.21.1
 
@@ -68,6 +76,7 @@
   - terminal.lua defines a small computer as avatar
   - Windows: binary Lua modules have version infos as metadata
     (only those which depend on AKFAvatar)
+
 
 * AKFAvatar 0.21.0
 
