@@ -7077,6 +7077,11 @@ avt_start (const char *title, const char *shortname, int mode)
   SDL_SetColors (avt_text_cursor, &cursor_color, 0, 1);
   SDL_SetAlpha (avt_text_cursor, SDL_SRCALPHA | SDL_RLEACCEL, 128);
 
+  /* set actual balloon size to the maximum size */
+  calculate_balloonmaxheight ();
+  balloonheight = balloonmaxheight;
+  balloonwidth = AVT_LINELENGTH;
+
   /* reserve space for character under text-mode cursor */
   avt_cursor_character =
     SDL_CreateRGBSurface (SDL_SWSURFACE, FONTWIDTH, FONTHEIGHT,
