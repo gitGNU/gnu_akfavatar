@@ -195,8 +195,8 @@ static void
 initialize (void)
 {
   avt_mb_encoding ("UTF-8");
-  if (avt_initialize ("Lua-AKFAvatar", "AKFAvatar",
-		      avt_default (), AVT_AUTOMODE))
+  if (avt_start ("Lua-AKFAvatar", "AKFAvatar", AVT_AUTOMODE) 
+      || avt_avatar_image_default ())
     fatal ("cannot initialize graphics", avt_get_error ());
 }
 
@@ -216,7 +216,7 @@ reset (void)
   avt_normal_text ();
   avt_quit_audio ();
   avt_set_title ("Lua-AKFAvatar Starter", "AKFAvatar");
-  avt_change_avatar_image (avt_default ());
+  avt_avatar_image_default ();
   avt_set_mouse_visible (true);
 }
 

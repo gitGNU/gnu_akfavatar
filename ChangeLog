@@ -1,3 +1,11 @@
+2012-04-03  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c, avatar-default.c (avt_start)
+	(avt_avatar_image_default, avt_avatar_image_none, avt_avatar_image_xpm)
+	(avt_avatar_image_xbm, avt_avatar_image_data, avt_avatar_image_file):
+	new functions
+	all callers adapted
+
 2012-03-31  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_show_image_stream, avt_import_image_stream):

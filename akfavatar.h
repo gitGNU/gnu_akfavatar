@@ -162,17 +162,10 @@ AVT_BEGIN_DECLS
  * initialize the avatar system
  *
  * mode is either AVT_WINDOW or AVT_FULLSCREEN or AVT_FULLSCREENNOSWITCH.
- * The original image is freed in this function!
- * So you can directly put calls to avt_default
- * or the avt_import_* functions here.
- * the image may be NULL if no avatar should be shown
- * title and/or shortname may also be NULL
+ * title and/or shortname may be NULL
  * avt_mb_encoding() may influence title/shortname
  */
-AVT_API int avt_initialize (const char *title,
-			    const char *shortname,
-			    avt_image *image,
-			    int mode);
+AVT_API int avt_start (const char *title, const char *shortname, int mode);
 
 /*
  * quit the avatar system
@@ -187,41 +180,27 @@ AVT_API void avt_quit (void);
 AVT_API void avt_button_quit (void);
 
 /***********************************************************************/
-/* getting an avatarimage */
-
-/*
- * these functions can be used directly with
- * avt_initialize or avt_change_avatar_image
- * they call avt_make_transparent if approriete
- */
+/* setting an avatar image */
 
 /*
  * X-Pixmaps (XPM), X Bitmaps (XBM) and uncompressed BMP are always supported
  * other image formats are supported with SDL_image
  */
 
-/* get the default avatar image */
-AVT_API avt_image *avt_default (void);
+AVT_API int avt_avatar_image_default (void);
 
-/* import an avatar from XPM data */
-AVT_API avt_image *avt_import_xpm (char **xpm);
+AVT_API int avt_avatar_image_none (void);
 
-/* import an avatar from XBM data */
-AVT_API avt_image *avt_import_xbm (const unsigned char *bits,
-				   int width, int height,
-				   const char *colorname);
+AVT_API int avt_avatar_image_xpm (char **xpm);
 
-/* RGB gimp_image */
-AVT_API avt_image *avt_import_gimp_image (void *gimp_image);
+AVT_API int avt_avatar_image_xbm (const unsigned char *bits,
+				  int width, int height,
+				  const char *colorname);
 
-/* import avatar from image data */
-AVT_API avt_image *avt_import_image_data (void *img, size_t imgsize);
+AVT_API int avt_avatar_image_data (void *img, size_t imgsize);
 
-/* import avatar from file */
-AVT_API avt_image *avt_import_image_file (const char *filename);
+AVT_API int avt_avatar_image_file (const char *file);
 
-/* import avatar from stream */
-AVT_API avt_image *avt_import_image_stream (avt_stream *stream);
 
 /***********************************************************************/
 /* other functions for avatarimages */
@@ -1120,7 +1099,19 @@ AVT_API bool avt_audio_playing (avt_audio *snd);
 #  define AVT_DEPRECATED
 #endif /* __GNUC__ */
 
-/* currently none */
+AVT_API int avt_initialize (const char *title,
+			    const char *shortname,
+			    avt_image *image,
+			    int mode) AVT_DEPRECATED;
+AVT_API avt_image *avt_default (void) AVT_DEPRECATED;
+AVT_API avt_image *avt_import_xpm (char **xpm) AVT_DEPRECATED;
+AVT_API avt_image *avt_import_xbm (const unsigned char *bits,
+				   int width, int height,
+				   const char *colorname) AVT_DEPRECATED;
+AVT_API avt_image *avt_import_gimp_image (void *gimp_image) AVT_DEPRECATED;
+AVT_API avt_image *avt_import_image_data (void *img, size_t imgsize) AVT_DEPRECATED;
+AVT_API avt_image *avt_import_image_file (const char *filename) AVT_DEPRECATED;
+AVT_API avt_image *avt_import_image_stream (avt_stream *stream) AVT_DEPRECATED;
 
 AVT_END_DECLS
 

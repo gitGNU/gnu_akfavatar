@@ -244,6 +244,7 @@ static int errno;
 
 
 /* type for gimp images */
+/* deprecated */
 typedef struct
 {
   unsigned int width;
@@ -5914,6 +5915,7 @@ avt_make_transparent (avt_image * image)
   return image;
 }
 
+/* deprecated */
 extern avt_image *
 avt_import_xpm (char **xpm)
 {
@@ -5923,6 +5925,7 @@ avt_import_xpm (char **xpm)
   return avt_load_image_xpm (xpm);
 }
 
+/* deprecated */
 extern avt_image *
 avt_import_xbm (const unsigned char *bits, int width, int height,
 		const char *colorname)
@@ -5941,10 +5944,7 @@ avt_import_xbm (const unsigned char *bits, int width, int height,
   return avt_load_image_xbm (bits, width, height, red, green, blue);
 }
 
-/*
- * import RGB gimp_image as avatar
- * pixel in the upper left corner is supposed to be the background color
- */
+/* deprecated */
 extern avt_image *
 avt_import_gimp_image (void *gimp_image)
 {
@@ -5972,9 +5972,7 @@ avt_import_gimp_image (void *gimp_image)
   return image;
 }
 
-/*
- * import avatar from image data
- */
+/* deprecated */
 extern avt_image *
 avt_import_image_data (void *img, size_t imgsize)
 {
@@ -6008,9 +6006,7 @@ avt_import_image_data (void *img, size_t imgsize)
   return image;
 }
 
-/*
- * import avatar from file
- */
+/* deprecated */
 extern avt_image *
 avt_import_image_file (const char *filename)
 {
@@ -6044,6 +6040,7 @@ avt_import_image_file (const char *filename)
   return image;
 }
 
+/* deprecated */
 extern avt_image *
 avt_import_image_stream (avt_stream * stream)
 {
@@ -6150,6 +6147,126 @@ avt_change_avatar_image (avt_image * image)
 
   return _avt_STATUS;
 }
+
+
+extern int
+avt_avatar_image_none (void)
+{
+  avt_change_avatar_image (NULL);
+
+  return _avt_STATUS;
+}
+
+
+extern int
+avt_avatar_image_xpm (char **xpm)
+{
+  SDL_Surface *image;
+
+  image = avt_load_image_xpm (xpm);
+
+  if (image == NULL)
+    return AVT_ERROR;
+
+  avt_change_avatar_image (image);
+
+  return _avt_STATUS;
+}
+
+
+extern int
+avt_avatar_image_xbm (const unsigned char *bits,
+		      int width, int height, const char *colorname)
+{
+  SDL_Surface *image;
+  int red, green, blue;
+
+  if (width <= 0 || height <= 0
+      || avt_name_to_color (colorname, &red, &green, &blue) < 0)
+    return AVT_ERROR;
+
+  image = avt_load_image_xbm (bits, width, height, red, green, blue);
+
+  if (image == NULL)
+    return AVT_ERROR;
+
+  avt_change_avatar_image (image);
+
+  return _avt_STATUS;
+}
+
+
+extern int
+avt_avatar_image_data (void *img, size_t imgsize)
+{
+  SDL_Surface *image;
+  SDL_RWops *RW;
+
+  RW = SDL_RWFromMem (img, imgsize);
+
+  /* try internal XPM reader first */
+  image = avt_load_image_xpm_RW (RW, 0);
+
+  if (image == NULL)
+    image = avt_load_image_xbm_RW (RW, 0, XBM_DEFAULT_COLOR);
+
+  if (image == NULL)
+    {
+      load_image_init ();
+      image = load_image.rw (RW, 0);
+
+      /* if it's not yet transparent, make it transparent */
+      if (image)
+	if (!(image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
+	  avt_make_transparent (image);
+    }
+
+  SDL_RWclose (RW);
+
+  if (image == NULL)
+    return AVT_ERROR;
+
+  avt_change_avatar_image (image);
+
+  return _avt_STATUS;
+}
+
+
+extern int
+avt_avatar_image_file (const char *file)
+{
+  SDL_Surface *image;
+  SDL_RWops *RW;
+
+  RW = SDL_RWFromFile (file, "rb");
+
+  /* try internal XPM reader first */
+  image = avt_load_image_xpm_RW (RW, 0);
+
+  if (image == NULL)
+    image = avt_load_image_xbm_RW (RW, 0, XBM_DEFAULT_COLOR);
+
+  if (image == NULL)
+    {
+      load_image_init ();
+      image = load_image.rw (RW, 0);
+
+      /* if it's not yet transparent, make it transparent */
+      if (image)
+	if (!(image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
+	  avt_make_transparent (image);
+    }
+
+  SDL_RWclose (RW);
+
+  if (image == NULL)
+    return AVT_ERROR;
+
+  avt_change_avatar_image (image);
+
+  return _avt_STATUS;
+}
+
 
 extern int
 avt_set_avatar_name (const wchar_t * name)
@@ -6811,9 +6928,10 @@ avt_set_mouse_pointer (void)
 }
 
 extern int
-avt_initialize (const char *title, const char *shortname,
-		avt_image * image, int mode)
+avt_start (const char *title, const char *shortname, int mode)
 {
+  SDL_Surface *icon;
+
   /* already initialized? */
   if (screen)
     {
@@ -6835,7 +6953,6 @@ avt_initialize (const char *title, const char *shortname,
 
   if (avt_init_SDL ())
     {
-      avt_free_image (image);
       SDL_SetError ("error initializing AKFAvatar");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
@@ -6850,12 +6967,9 @@ avt_initialize (const char *title, const char *shortname,
   avt_set_title (title, shortname);
 
   /* register icon */
-  {
-    SDL_Surface *icon;
-    icon = avt_load_image_xpm (akfavatar_xpm);
-    SDL_WM_SetIcon (icon, NULL);
-    SDL_FreeSurface (icon);
-  }
+  icon = avt_load_image_xpm (akfavatar_xpm);
+  SDL_WM_SetIcon (icon, NULL);
+  SDL_FreeSurface (icon);
 
   /*
    * Initialize the display, accept any format
@@ -6867,7 +6981,8 @@ avt_initialize (const char *title, const char *shortname,
     {
       SDL_Rect **modes;
 
-      /* if maximum fullscreen mode is exactly the minimal size,
+      /*
+       * if maximum fullscreen mode is exactly the minimal size,
        * then default to fullscreen, else default to window
        */
       modes = SDL_ListModes (NULL, screenflags | SDL_FULLSCREEN);
@@ -6898,7 +7013,6 @@ avt_initialize (const char *title, const char *shortname,
 
   if (screen == NULL)
     {
-      avt_free_image (image);
       SDL_SetError ("error initializing AKFAvatar");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
@@ -6906,7 +7020,6 @@ avt_initialize (const char *title, const char *shortname,
 
   if (screen->w < MINIMALWIDTH || screen->h < MINIMALHEIGHT)
     {
-      avt_free_image (image);
       SDL_SetError ("screen too small");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
@@ -6932,10 +7045,6 @@ avt_initialize (const char *title, const char *shortname,
 
   /* fill the whole screen with background color */
   avt_clear_screen ();
-
-  /* import the avatar image and calculate balloon size */
-  if (avt_change_avatar_image (image) != AVT_NORMAL)
-    return _avt_STATUS;
 
   /* reserve memory for one character */
   avt_character = SDL_CreateRGBSurface (SDL_SWSURFACE, FONTWIDTH, FONTHEIGHT,
@@ -7007,6 +7116,17 @@ avt_initialize (const char *title, const char *shortname,
 
   /* initialize tab stops */
   avt_reset_tab_stops ();
+
+  return _avt_STATUS;
+}
+
+/* deprecated */
+extern int
+avt_initialize (const char *title, const char *shortname,
+		avt_image * image, int mode)
+{
+  avt_start (title, shortname, mode);
+  avt_change_avatar_image (image);
 
   return _avt_STATUS;
 }

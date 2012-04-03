@@ -101,57 +101,31 @@ check_bool (lua_State * L, int index)
 
 #define to_bool(L, index)  ((bool) lua_toboolean ((L), (index)))
 
+static int
+set_avatar (lua_State * L, const char *avatar, size_t len)
+{
+  if (strcmp ("default", avatar) == 0)
+    return avt_avatar_image_default ();
+  else if (strcmp ("none", avatar) == 0)
+    return avt_avatar_image_none ();
+  else if (avt_avatar_image_data ((void *) avatar, len) != AVT_NORMAL
+	   && avt_avatar_image_file (avatar) != AVT_NORMAL)
+    return luaL_error (L, "cannot load avatar-image");
+
+  return AVT_NORMAL;
+}
+
 static void
 auto_initialize (lua_State * L)
 {
   /* it might be initialized outside of this module */
   if (!avt_initialized ())
-    check (avt_initialize (NULL, NULL, avt_default (), AVT_WINDOW));
+    {
+      check (avt_start (NULL, NULL, AVT_WINDOW));
+      set_avatar (L, "default", sizeof ("default"));
+    }
 
   initialized = true;
-}
-
-static avt_image *
-get_avatar (lua_State * L, int index)
-{
-  if (lua_isnil (L, index))
-    return avt_default ();
-
-  if (!lua_isstring (L, index))
-    {
-      luaL_error (L, "avatar: %s: %s", lua_typename (L, lua_type (L, index)),
-		  strerror (ENOMSG));
-      return NULL;
-    }
-  else				/* it is a string */
-    {
-      size_t len;
-      const char *str = lua_tolstring (L, index, &len);
-
-      if (strcmp ("default", str) == 0)
-	return avt_default ();
-      else if (strcmp ("none", str) == 0)
-	return (avt_image *) NULL;
-      else
-	{
-	  avt_image *image;
-
-	  /* check if it is image data */
-	  image = avt_import_image_data ((void *) str, len);
-
-	  /* if not, could it be a filename? */
-	  if (!image)
-	    image = avt_import_image_file (str);
-
-	  if (image)
-	    return image;
-	  else			/* give up */
-	    {
-	      luaL_error (L, "cannot load avatar-image");
-	      return NULL;
-	    }
-	}
-    }
 }
 
 static int
@@ -206,20 +180,20 @@ lavt_initialize (lua_State * L)
 {
   const char *title, *shortname;
   const char *encoding;
-  avt_image *avatar;
+  const char *avatar;
+  size_t avatar_size;
   bool audio;
   int mode;
 
   title = shortname = NULL;
-  avatar = (avt_image *) (&avatar);	/* dummy value, not NULL */
+  avatar = "default";
+  avatar_size = 0;
   encoding = "UTF-8";
   mode = AVT_AUTOMODE;
   audio = false;
 
   if (lua_isnone (L, 1))	/* no argument */
-    {
-      avatar = avt_default ();
-    }
+    avt_avatar_image_default ();
   else				/* has an argument */
     {
       luaL_checktype (L, 1, LUA_TTABLE);
@@ -241,7 +215,7 @@ lavt_initialize (lua_State * L)
 	  else if (strcmp ("shortname", key) == 0)
 	    shortname = lua_tostring (L, -1);
 	  else if (strcmp ("avatar", key) == 0)
-	    avatar = get_avatar (L, -1);
+	    avatar = lua_tolstring (L, -1, &avatar_size);
 	  else if (strcmp ("audio", key) == 0)
 	    audio = to_bool (L, -1);
 	  else if (strcmp ("encoding", key) == 0)
@@ -261,14 +235,11 @@ lavt_initialize (lua_State * L)
   if (!shortname)
     shortname = title;
 
-  /* if avatar was not set */
-  if (avatar == (avt_image *) (&avatar))
-    avatar = avt_default ();
-
   if (!initialized && !avt_initialized ())
     {
       check (avt_mb_encoding (encoding));
-      check (avt_initialize (title, shortname, avatar, mode));
+      check (avt_start (title, shortname, mode));
+      set_avatar (L, avatar, avatar_size);
       if (audio)
 	check (avt_initialize_audio ());
     }
@@ -289,7 +260,7 @@ lavt_initialize (lua_State * L)
 
       check (avt_mb_encoding (encoding));
       avt_set_title (title, shortname);
-      check (avt_change_avatar_image (avatar));
+      set_avatar (L, avatar, avatar_size);
 
       if (mode != AVT_AUTOMODE)
 	avt_switch_mode (mode);
@@ -464,8 +435,13 @@ lavt_recode (lua_State * L)
 static int
 lavt_change_avatar_image (lua_State * L)
 {
+  const char *avatar;
+  size_t avatar_size;
+
   is_initialized ();
-  check (avt_change_avatar_image (get_avatar (L, 1)));
+  avatar = luaL_checklstring (L, 1, &avatar_size);
+  set_avatar (L, avatar, avatar_size);
+
   return 0;
 }
 

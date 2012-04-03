@@ -92,12 +92,22 @@ run_plot (void)
 int
 main (int argc, char *argv[])
 {
+  /* make the compiler not complain, that they aare not used */
+  (void) argc;
+  (void) argv;
+
+  avt_set_background_color_name("sky blue");
+  avt_mb_encoding ("UTF-8");
+
   /* initialize it */
-  if (avt_initialize (PRGNAME, PRGSHORTNAME, avt_default (), AVT_AUTOMODE))
+  if (avt_start (PRGNAME, PRGSHORTNAME, AVT_AUTOMODE))
     {
       fprintf (stderr, "cannot initialize graphics: %s\n", avt_get_error ());
       exit (EXIT_FAILURE);
     }
+
+  /* set the default avatar */
+  avt_avatar_image_default ();
 
   /* clean up when the program exits */
   atexit (avt_quit);
