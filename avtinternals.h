@@ -35,10 +35,8 @@ extern int avt_checkevent (void);
 extern void (*avt_alert_func) (void);
 extern void (*avt_quit_audio_func) (void);
 
-/* avtgrmsg.c */
-extern void avta_graphic_error (const char *msg1, const char *msg2);
-
 /* avtposix.c / avtwindows.c */
+/* currently not used */
 extern void get_user_home (char *home_dir, size_t size);
 extern void edit_file (const char *name, const char *encoding);
 extern FILE *open_config_file (const char *name, bool writing);
