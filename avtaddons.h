@@ -25,8 +25,8 @@
  * Not all parts of this library are available on all platforms!
  */
 
-#ifndef _AVTADDONS_H
-#define _AVTADDONS_H
+#ifndef AVTADDONS_H
+#define AVTADDONS_H
 
 #include "akfavatar.h"
 #include <wchar.h>
@@ -36,11 +36,10 @@
 #include <string.h>
 #include <fcntl.h>
 
-/* for later use */
-#define AVT_ADDON  extern
-
-#ifdef AVTADDONS_DLL
-  AVT_BEGIN_DECLS
+#if defined(AVTADDONS_DLL) && defined(__cplusplus)
+#  define AVT_ADDON  extern "C"
+#else
+#  define AVT_ADDON  extern
 #endif
 
 
@@ -253,9 +252,5 @@ AVT_ADDON void avta_term_send (const char *buf, size_t count);
  */
 AVT_ADDON void avta_term_update_size (void);
 
-
-#ifdef AVTADDONS_DLL
-  AVT_END_DECLS
-#endif
 
 #endif /* AVTADDONS_H */

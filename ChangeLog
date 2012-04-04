@@ -3,6 +3,10 @@
 	* akfavatar.h: renamed avt_image back to avt_image_t
 	(only for backwards compatibility; it's deprecated anyway)
 
+	* akfavatar.h, avtaddons.h:
+	don't use AVT_BEGIN_DECLS, AVT_END_DECLS anymore
+	instead redefine AVT_API, AVT_ADDON
+
 2012-04-03  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c, avatar-default.c (avt_start)

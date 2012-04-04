@@ -119,15 +119,10 @@
 #endif /* __GNUC__ */
 
 #ifdef __cplusplus
-#  define AVT_BEGIN_DECLS  extern "C" {
-#  define AVT_END_DECLS    }
+#  define AVT_API  extern "C"
 #else
-#  define AVT_BEGIN_DECLS
-#  define AVT_END_DECLS
-#endif /* __cplusplus */
-
-/* for later use */
-#define AVT_API  extern
+#  define AVT_API  extern
+#endif
 
 /***********************************************************************/
 /* type definitions */
@@ -146,8 +141,6 @@ typedef struct avt_audio avt_audio;
 
 /* for streams (use FILE from your programs) */
 typedef void avt_stream;
-
-AVT_BEGIN_DECLS
 
 
 /***********************************************************************/
@@ -178,6 +171,7 @@ AVT_API void avt_quit (void);
  * can be used with atexit
  */
 AVT_API void avt_button_quit (void);
+
 
 /***********************************************************************/
 /* setting an avatar image */
@@ -1071,7 +1065,5 @@ AVT_API int avt_change_avatar_image (avt_image_t *image) AVT_DEPRECATED;
 AVT_API avt_image_t *avt_make_transparent (avt_image_t *image) AVT_DEPRECATED;
 AVT_API void avt_free_image (avt_image_t *image) AVT_DEPRECATED;
 
-
-AVT_END_DECLS
 
 #endif /* _akfavatar_h */
