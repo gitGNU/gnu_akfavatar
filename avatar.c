@@ -5579,15 +5579,17 @@ avt_decide (void)
   return AVT_MAKE_BOOL (result);
 }
 
-/* free avt_image images */
+
+/* deprecated */
 extern void
 avt_free_image (avt_image * image)
 {
   SDL_FreeSurface (image);
 }
 
+
 static void
-avt_show_image (avt_image * image)
+avt_show_image (SDL_Surface * image)
 {
   SDL_Rect dst;
 
@@ -5891,6 +5893,7 @@ avt_init_SDL (void)
  * make background transparent
  * pixel in the upper left corner is supposed to be the background color
  */
+/* deprecated, but needed internally */
 extern avt_image *
 avt_make_transparent (avt_image * image)
 {
@@ -6094,9 +6097,8 @@ calculate_balloonmaxheight (void)
 }
 
 /* change avatar image and (re)calculate balloon size */
-/* also called from avt_initialize */
-extern int
-avt_change_avatar_image (avt_image * image)
+static int
+avt_set_avatar_image (SDL_Surface * image)
 {
   if (_avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -6104,6 +6106,7 @@ avt_change_avatar_image (avt_image * image)
   if (avt_visible)
     avt_clear_screen ();
 
+  /* free old image */
   if (avatar_image)
     {
       SDL_FreeSurface (avatar_image);
@@ -6125,8 +6128,6 @@ avt_change_avatar_image (avt_image * image)
       else
 	avatar_image = SDL_DisplayFormat (image);
 
-      SDL_FreeSurface (image);
-
       if (!avatar_image)
 	{
 	  SDL_SetError ("couldn't load avatar");
@@ -6145,10 +6146,23 @@ avt_change_avatar_image (avt_image * image)
 }
 
 
+/* deprecated */
+extern int
+avt_change_avatar_image (avt_image * image)
+{
+  avt_set_avatar_image (image);
+
+  if (image)
+    SDL_FreeSurface (image);
+
+  return _avt_STATUS;
+}
+
+
 extern int
 avt_avatar_image_none (void)
 {
-  avt_change_avatar_image (NULL);
+  avt_set_avatar_image (NULL);
 
   return _avt_STATUS;
 }
@@ -6161,10 +6175,11 @@ avt_avatar_image_xpm (char **xpm)
 
   image = avt_load_image_xpm (xpm);
 
-  if (image)
-    avt_change_avatar_image (image);
-  else
-    _avt_STATUS = AVT_ERROR;
+  if (!image)
+    return AVT_FAILURE;
+
+  avt_set_avatar_image (image);
+  SDL_FreeSurface (image);
 
   return _avt_STATUS;
 }
@@ -6187,10 +6202,11 @@ avt_avatar_image_xbm (const unsigned char *bits,
 
   image = avt_load_image_xbm (bits, width, height, red, green, blue);
 
-  if (image)
-    avt_change_avatar_image (image);
-  else
-    _avt_STATUS = AVT_ERROR;
+  if (!image)
+    return AVT_FAILURE;
+
+  avt_set_avatar_image (image);
+  SDL_FreeSurface (image);
 
   return _avt_STATUS;
 }
@@ -6207,10 +6223,10 @@ avt_avatar_image_data (void *img, size_t imgsize)
   /* try internal XPM reader first */
   image = avt_load_image_xpm_RW (RW, 0);
 
-  if (image == NULL)
+  if (!image)
     image = avt_load_image_xbm_RW (RW, 0, XBM_DEFAULT_COLOR);
 
-  if (image == NULL)
+  if (!image)
     {
       load_image_init ();
       image = load_image.rw (RW, 0);
@@ -6223,10 +6239,11 @@ avt_avatar_image_data (void *img, size_t imgsize)
 
   SDL_RWclose (RW);
 
-  if (image)
-    avt_change_avatar_image (image);
-  else
-     _avt_STATUS = AVT_ERROR;
+  if (!image)
+    return AVT_FAILURE;
+
+  avt_set_avatar_image (image);
+  SDL_FreeSurface (image);
 
   return _avt_STATUS;
 }
@@ -6243,10 +6260,10 @@ avt_avatar_image_file (const char *file)
   /* try internal XPM reader first */
   image = avt_load_image_xpm_RW (RW, 0);
 
-  if (image == NULL)
+  if (!image)
     image = avt_load_image_xbm_RW (RW, 0, XBM_DEFAULT_COLOR);
 
-  if (image == NULL)
+  if (!image)
     {
       load_image_init ();
       image = load_image.rw (RW, 0);
@@ -6259,10 +6276,11 @@ avt_avatar_image_file (const char *file)
 
   SDL_RWclose (RW);
 
-  if (image)
-    avt_change_avatar_image (image);
-  else
-    _avt_STATUS = AVT_ERROR;
+  if (!image)
+    return AVT_FAILURE;
+
+  avt_set_avatar_image (image);
+  SDL_FreeSurface (image);
 
   return _avt_STATUS;
 }
@@ -7135,7 +7153,10 @@ avt_initialize (const char *title, const char *shortname,
 		avt_image * image, int mode)
 {
   avt_start (title, shortname, mode);
-  avt_change_avatar_image (image);
+  avt_set_avatar_image (image);
+
+  if (image)
+    SDL_FreeSurface (image);
 
   return _avt_STATUS;
 }

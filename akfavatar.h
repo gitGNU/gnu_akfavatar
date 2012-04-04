@@ -183,22 +183,21 @@ AVT_API void avt_button_quit (void);
 /* setting an avatar image */
 
 /*
+ * On error these functions return AVT_FAILURE without changing the status
+ */
+
+/*
  * X-Pixmaps (XPM), X Bitmaps (XBM) and uncompressed BMP are always supported
  * other image formats are supported with SDL_image
  */
 
 AVT_API int avt_avatar_image_default (void);
-
 AVT_API int avt_avatar_image_none (void);
-
 AVT_API int avt_avatar_image_xpm (char **xpm);
-
 AVT_API int avt_avatar_image_xbm (const unsigned char *bits,
 				  int width, int height,
 				  const char *colorname);
-
 AVT_API int avt_avatar_image_data (void *img, size_t imgsize);
-
 AVT_API int avt_avatar_image_file (const char *file);
 
 
@@ -770,6 +769,10 @@ AVT_API void avt_lock_updates (bool lock);
 /* you should call avt_wait or avt_wait_button or avt_get_key thereafter */
 
 /*
+ * On error these functions return AVT_FAILURE without changing the status
+ */
+
+/*
  * X-Pixmaps (XPM), X Bitmaps (XBM) and uncompressed BMP are always supported
  * other image formats are supported with SDL_image
  */
@@ -777,35 +780,10 @@ AVT_API void avt_lock_updates (bool lock);
 AVT_API int avt_image_max_width (void);
 AVT_API int avt_image_max_height (void);
 
-/*
- * load image file and show it
- * on error it returns AVT_FAILURE without changing the status
- */
 AVT_API int avt_show_image_file (const char *file);
-
-/*
- * load image from stream and show it
- * on error it returns AVT_FAILURE without changing the status
- */
 AVT_API int avt_show_image_stream (avt_stream *stream);
-
-/*
- * show image from image data
- * on error it returns AVT_FAILURE without changing the status
- */
 AVT_API int avt_show_image_data (void *img, size_t imgsize);
-
-/*
- * show image from XPM data
- * on error it returns AVT_FAILURE without changing the status
- */
 AVT_API int avt_show_image_xpm (char **xpm);
-
-/*
- * show image from XBM data with a given color
- * the background is transparent
- * on error it returns AVT_FAILURE without changing the status
- */
 AVT_API int avt_show_image_xbm (const unsigned char *bits,
 				int width, int height,
 				const char *colorname);
@@ -813,7 +791,6 @@ AVT_API int avt_show_image_xbm (const unsigned char *bits,
 /*
  * show raw image
  * only 3 or 4 Bytes per pixel supported (RGB or RGBA)
- * on error it returns AVT_FAILURE without changing the status
  */
 AVT_API int avt_show_raw_image (void *image_data, int width, int height,
 				int bytes_per_pixel);
