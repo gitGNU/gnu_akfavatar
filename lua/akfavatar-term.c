@@ -155,7 +155,7 @@ lterm_startdir (lua_State * L)
 }
 
 static int
-lterm_homedir (lua_State * L AVT_UNUSED)
+lterm_homedir (lua_State * L)
 {
   char *home;
 

@@ -45,8 +45,7 @@
 
 /* set terminal size */
 extern void
-avta_term_size (int fd AVT_UNUSED, int height AVT_UNUSED,
-		int width AVT_UNUSED)
+avta_term_size (int fd, int height, int width)
 {
 #ifdef TIOCSWINSZ
   struct winsize size;

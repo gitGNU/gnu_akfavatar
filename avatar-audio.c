@@ -131,7 +131,7 @@ static const Sint16 alaw_decode[256] = {
 
 /* this is the callback function */
 static void
-fill_audio (void *userdata AVT_UNUSED, Uint8 * stream, int len)
+fill_audio (void *userdata, Uint8 * stream, int len)
 {
   /* only play, when there is data left */
   if (soundleft <= 0)
@@ -883,44 +883,44 @@ avt_quit_audio (void)
 }
 
 extern avt_audio *
-avt_load_audio_file (const char *file AVT_UNUSED)
+avt_load_audio_file (const char *file)
 {
   no_audio ();
   return NULL;
 }
 
 extern avt_audio *
-avt_load_wave_file (const char *file AVT_UNUSED)
+avt_load_wave_file (const char *file)
 {
   no_audio ();
   return NULL;
 }
 
 extern avt_audio *
-avt_load_audio_stream (avt_stream * stream AVT_UNUSED)
+avt_load_audio_stream (avt_stream * stream)
 {
   no_audio ();
   return NULL;
 }
 
 extern avt_audio *
-avt_load_audio_data (void *data AVT_UNUSED, int datasize AVT_UNUSED)
+avt_load_audio_data (void *data, int datasize)
 {
   no_audio ();
   return NULL;
 }
 
 extern avt_audio *
-avt_load_wave_data (void *data AVT_UNUSED, int datasize AVT_UNUSED)
+avt_load_wave_data (void *data, int datasize)
 {
   no_audio ();
   return NULL;
 }
 
 extern avt_audio *
-avt_load_raw_audio_data (void *data AVT_UNUSED, size data_size AVT_UNUSED,
-			 int samplingrate AVT_UNUSED,
-			 int audio_type AVT_UNUSED, int channels AVT_UNUSED)
+avt_load_raw_audio_data (void *data, size data_size,
+			 int samplingrate,
+			 int audio_type, int channels)
 {
   no_audio ();
   return NULL;
@@ -934,7 +934,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 }
 
 extern void
-avt_free_audio (avt_audio * snd AVT_UNUSED)
+avt_free_audio (avt_audio * snd)
 {
   no_audio ();
 }
@@ -947,7 +947,7 @@ avt_wait_audio_end (void)
 }
 
 extern int
-avt_play_audio (avt_audio * snd AVT_UNUSED, bool doloop AVT_UNUSED)
+avt_play_audio (avt_audio * snd, bool doloop)
 {
   no_audio ();
   return _avt_STATUS;
@@ -960,7 +960,7 @@ avt_pause_audio (bool pause)
 }
 
 extern bool
-avt_audio_playing (avt_audio * snd AVT_UNUSED)
+avt_audio_playing (avt_audio * snd)
 {
   no_audio ();
   return false;

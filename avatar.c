@@ -2156,7 +2156,7 @@ avt_update (void)
 
 /* send a timeout event */
 static Uint32
-avt_timeout (Uint32 intervall AVT_UNUSED, void *param AVT_UNUSED)
+avt_timeout (Uint32 intervall, void *param)
 {
   SDL_Event event;
 

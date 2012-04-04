@@ -277,7 +277,7 @@ lavt_initialize (lua_State * L)
 
 /* quit the avatar subsystem (closes the window) */
 static int
-lavt_quit (lua_State * L AVT_UNUSED)
+lavt_quit (lua_State * L)
 {
   avt_quit ();
   initialized = false;
@@ -629,7 +629,7 @@ lavt_markup (lua_State * L)
 
 /* reset to normal text mode */
 static int
-lavt_normal_text (lua_State * L AVT_UNUSED)
+lavt_normal_text (lua_State * L)
 {
   avt_normal_text ();
   return 0;
@@ -637,7 +637,7 @@ lavt_normal_text (lua_State * L AVT_UNUSED)
 
 /* clear the whole screen */
 static int
-lavt_clear_screen (lua_State * L AVT_UNUSED)
+lavt_clear_screen (lua_State * L)
 {
   is_initialized ();
   avt_clear_screen ();
@@ -649,7 +649,7 @@ lavt_clear_screen (lua_State * L AVT_UNUSED)
  * if there is no balloon yet, it is drawn
  */
 static int
-lavt_clear (lua_State * L AVT_UNUSED)
+lavt_clear (lua_State * L)
 {
   is_initialized ();
   avt_clear ();
@@ -661,7 +661,7 @@ lavt_clear (lua_State * L AVT_UNUSED)
  * if there is no balloon yet, it is drawn
  */
 static int
-lavt_clear_down (lua_State * L AVT_UNUSED)
+lavt_clear_down (lua_State * L)
 {
   is_initialized ();
   avt_clear_down ();
@@ -673,7 +673,7 @@ lavt_clear_down (lua_State * L AVT_UNUSED)
  * depending on text direction
  */
 static int
-lavt_clear_eol (lua_State * L AVT_UNUSED)
+lavt_clear_eol (lua_State * L)
 {
   is_initialized ();
   avt_clear_eol ();
@@ -685,7 +685,7 @@ lavt_clear_eol (lua_State * L AVT_UNUSED)
  * depending on text direction
  */
 static int
-lavt_clear_bol (lua_State * L AVT_UNUSED)
+lavt_clear_bol (lua_State * L)
 {
   is_initialized ();
   avt_clear_bol ();
@@ -694,7 +694,7 @@ lavt_clear_bol (lua_State * L AVT_UNUSED)
 
 /* clear line */
 static int
-lavt_clear_line (lua_State * L AVT_UNUSED)
+lavt_clear_line (lua_State * L)
 {
   is_initialized ();
   avt_clear_line ();
@@ -706,7 +706,7 @@ lavt_clear_line (lua_State * L AVT_UNUSED)
  * if there is no balloon yet, it is drawn
  */
 static int
-lavt_clear_up (lua_State * L AVT_UNUSED)
+lavt_clear_up (lua_State * L)
 {
   is_initialized ();
   avt_clear_up ();
@@ -715,7 +715,7 @@ lavt_clear_up (lua_State * L AVT_UNUSED)
 
 /* show only the avatar */
 static int
-lavt_show_avatar (lua_State * L AVT_UNUSED)
+lavt_show_avatar (lua_State * L)
 {
   is_initialized ();
   avt_show_avatar ();
@@ -742,7 +742,7 @@ lavt_move_out (lua_State * L)
 
 /* bell or flash if sound is not initialized */
 static int
-lavt_bell (lua_State * L AVT_UNUSED)
+lavt_bell (lua_State * L)
 {
   is_initialized ();
   avt_bell ();
@@ -751,7 +751,7 @@ lavt_bell (lua_State * L AVT_UNUSED)
 
 /* flash */
 static int
-lavt_flash (lua_State * L AVT_UNUSED)
+lavt_flash (lua_State * L)
 {
   is_initialized ();
   avt_flash ();
@@ -784,7 +784,7 @@ lavt_set_text_background_color (lua_State * L)
 
 /* set background color of text to ballooncolor */
 static int
-lavt_set_text_background_ballooncolor (lua_State * L AVT_UNUSED)
+lavt_set_text_background_ballooncolor (lua_State * L)
 {
   avt_set_text_background_ballooncolor ();
   return 0;
@@ -860,7 +860,7 @@ lavt_move_xy (lua_State * L)
 
 /* save cursor position */
 static int
-lavt_save_position (lua_State * L AVT_UNUSED)
+lavt_save_position (lua_State * L)
 {
   is_initialized ();
   avt_save_position ();
@@ -869,7 +869,7 @@ lavt_save_position (lua_State * L AVT_UNUSED)
 
 /* restore cursor position */
 static int
-lavt_restore_position (lua_State * L AVT_UNUSED)
+lavt_restore_position (lua_State * L)
 {
   is_initialized ();
   avt_restore_position ();
@@ -878,7 +878,7 @@ lavt_restore_position (lua_State * L AVT_UNUSED)
 
 /* next tab position */
 static int
-lavt_next_tab (lua_State * L AVT_UNUSED)
+lavt_next_tab (lua_State * L)
 {
   is_initialized ();
   avt_next_tab ();
@@ -887,7 +887,7 @@ lavt_next_tab (lua_State * L AVT_UNUSED)
 
 /* last tab position */
 static int
-lavt_last_tab (lua_State * L AVT_UNUSED)
+lavt_last_tab (lua_State * L)
 {
   is_initialized ();
   avt_last_tab ();
@@ -896,7 +896,7 @@ lavt_last_tab (lua_State * L AVT_UNUSED)
 
 /* reset tab stops to every eigth column */
 static int
-lavt_reset_tab_stops (lua_State * L AVT_UNUSED)
+lavt_reset_tab_stops (lua_State * L)
 {
   is_initialized ();
   avt_reset_tab_stops ();
@@ -905,7 +905,7 @@ lavt_reset_tab_stops (lua_State * L AVT_UNUSED)
 
 /* clear all tab stops */
 static int
-lavt_clear_tab_stops (lua_State * L AVT_UNUSED)
+lavt_clear_tab_stops (lua_State * L)
 {
   is_initialized ();
   avt_clear_tab_stops ();
@@ -978,7 +978,7 @@ lavt_get_mode (lua_State * L)
 }
 
 static int
-lavt_toggle_fullscreen (lua_State * L AVT_UNUSED)
+lavt_toggle_fullscreen (lua_State * L)
 {
   is_initialized ();
   avt_toggle_fullscreen ();
@@ -1464,7 +1464,7 @@ lavt_wait_audio_end (lua_State * L)
 }
 
 static int
-lavt_stop_audio (lua_State * L AVT_UNUSED)
+lavt_stop_audio (lua_State * L)
 {
   avt_stop_audio ();
   audio_not_playing (L);

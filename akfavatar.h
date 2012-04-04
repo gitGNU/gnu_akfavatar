@@ -111,13 +111,6 @@
  */
 #define AVT_SECONDS(x) ((x)*1000)
 
-/* macro for marking unused symbols */
-#if defined(__GNUC__) || defined(__clang__)
-#  define AVT_UNUSED __attribute__ ((__unused__))
-#else
-#  define AVT_UNUSED
-#endif /* __GNUC__ */
-
 #ifdef __cplusplus
 #  define AVT_API  extern "C"
 #else
