@@ -18,7 +18,6 @@
   - avt_avatar_image_default, avt_avatar_image_none, avt_avatar_image_xpm
     avt_avatar_image_xbm, avt_avatar_image_data, avt_avatar_image_file
     replace the avt_import_* functions
-  - avt_image_t renamed to avt_image
   - avt_audio_t renamed to avt_audio
   - fixed avt_show_image_stream, avt_import_image_stream
   - new functions: avt_load_audio_part

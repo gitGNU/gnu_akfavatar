@@ -31,7 +31,7 @@ avt_avatar_image_default (void)
 }
 
 /* deprecated */
-extern avt_image *
+extern avt_image_t *
 avt_default (void)
 {
   return avt_import_xpm (male_user_xpm);

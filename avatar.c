@@ -5582,7 +5582,7 @@ avt_decide (void)
 
 /* deprecated */
 extern void
-avt_free_image (avt_image * image)
+avt_free_image (avt_image_t * image)
 {
   SDL_FreeSurface (image);
 }
@@ -5894,8 +5894,8 @@ avt_init_SDL (void)
  * pixel in the upper left corner is supposed to be the background color
  */
 /* deprecated, but needed internally */
-extern avt_image *
-avt_make_transparent (avt_image * image)
+extern avt_image_t *
+avt_make_transparent (avt_image_t * image)
 {
   Uint32 color;
 
@@ -5915,7 +5915,7 @@ avt_make_transparent (avt_image * image)
 }
 
 /* deprecated */
-extern avt_image *
+extern avt_image_t *
 avt_import_xpm (char **xpm)
 {
   if (avt_init_SDL ())
@@ -5925,7 +5925,7 @@ avt_import_xpm (char **xpm)
 }
 
 /* deprecated */
-extern avt_image *
+extern avt_image_t *
 avt_import_xbm (const unsigned char *bits, int width, int height,
 		const char *colorname)
 {
@@ -5944,7 +5944,7 @@ avt_import_xbm (const unsigned char *bits, int width, int height,
 }
 
 /* deprecated */
-extern avt_image *
+extern avt_image_t *
 avt_import_gimp_image (void *gimp_image)
 {
   SDL_Surface *image;
@@ -5972,7 +5972,7 @@ avt_import_gimp_image (void *gimp_image)
 }
 
 /* deprecated */
-extern avt_image *
+extern avt_image_t *
 avt_import_image_data (void *img, size_t imgsize)
 {
   SDL_Surface *image;
@@ -6006,7 +6006,7 @@ avt_import_image_data (void *img, size_t imgsize)
 }
 
 /* deprecated */
-extern avt_image *
+extern avt_image_t *
 avt_import_image_file (const char *filename)
 {
   SDL_Surface *image;
@@ -6040,7 +6040,7 @@ avt_import_image_file (const char *filename)
 }
 
 /* deprecated */
-extern avt_image *
+extern avt_image_t *
 avt_import_image_stream (avt_stream * stream)
 {
   SDL_Surface *image;
@@ -6148,7 +6148,7 @@ avt_set_avatar_image (SDL_Surface * image)
 
 /* deprecated */
 extern int
-avt_change_avatar_image (avt_image * image)
+avt_change_avatar_image (avt_image_t * image)
 {
   avt_set_avatar_image (image);
 
@@ -7150,7 +7150,7 @@ avt_start (const char *title, const char *shortname, int mode)
 /* deprecated */
 extern int
 avt_initialize (const char *title, const char *shortname,
-		avt_image * image, int mode)
+		avt_image_t * image, int mode)
 {
   avt_start (title, shortname, mode);
   avt_set_avatar_image (image);

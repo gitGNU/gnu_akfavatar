@@ -1052,24 +1052,24 @@ AVT_API bool avt_audio_playing (avt_audio *snd);
 #  define AVT_DEPRECATED
 #endif /* __GNUC__ */
 
-typedef struct SDL_Surface avt_image;
+typedef struct SDL_Surface avt_image_t;
 
 AVT_API int avt_initialize (const char *title,
 			    const char *shortname,
-			    avt_image *image,
+			    avt_image_t *image,
 			    int mode) AVT_DEPRECATED;
-AVT_API avt_image *avt_default (void) AVT_DEPRECATED;
-AVT_API avt_image *avt_import_xpm (char **xpm) AVT_DEPRECATED;
-AVT_API avt_image *avt_import_xbm (const unsigned char *bits,
-				   int width, int height,
-				   const char *colorname) AVT_DEPRECATED;
-AVT_API avt_image *avt_import_gimp_image (void *gimp_image) AVT_DEPRECATED;
-AVT_API avt_image *avt_import_image_data (void *img, size_t imgsize) AVT_DEPRECATED;
-AVT_API avt_image *avt_import_image_file (const char *filename) AVT_DEPRECATED;
-AVT_API avt_image *avt_import_image_stream (avt_stream *stream) AVT_DEPRECATED;
-AVT_API int avt_change_avatar_image (avt_image *image) AVT_DEPRECATED;
-AVT_API avt_image *avt_make_transparent (avt_image *image) AVT_DEPRECATED;
-AVT_API void avt_free_image (avt_image *image) AVT_DEPRECATED;
+AVT_API avt_image_t *avt_default (void) AVT_DEPRECATED;
+AVT_API avt_image_t *avt_import_xpm (char **xpm) AVT_DEPRECATED;
+AVT_API avt_image_t *avt_import_xbm (const unsigned char *bits,
+				     int width, int height,
+				     const char *colorname) AVT_DEPRECATED;
+AVT_API avt_image_t *avt_import_gimp_image (void *gimp_image) AVT_DEPRECATED;
+AVT_API avt_image_t *avt_import_image_data (void *img, size_t imgsize) AVT_DEPRECATED;
+AVT_API avt_image_t *avt_import_image_file (const char *filename) AVT_DEPRECATED;
+AVT_API avt_image_t *avt_import_image_stream (avt_stream *stream) AVT_DEPRECATED;
+AVT_API int avt_change_avatar_image (avt_image_t *image) AVT_DEPRECATED;
+AVT_API avt_image_t *avt_make_transparent (avt_image_t *image) AVT_DEPRECATED;
+AVT_API void avt_free_image (avt_image_t *image) AVT_DEPRECATED;
 
 
 AVT_END_DECLS
