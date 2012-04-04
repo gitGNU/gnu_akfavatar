@@ -112,7 +112,7 @@
 #define AVT_SECONDS(x) ((x)*1000)
 
 /* macro for marking unused symbols */
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__clang__)
 #  define AVT_UNUSED __attribute__ ((__unused__))
 #else
 #  define AVT_UNUSED
@@ -1040,7 +1040,7 @@ AVT_API bool avt_audio_playing (avt_audio *snd);
 /* don't use them for new programs! */
 
 /* macro for marking deprecated functions in this header */
-#if defined (__GNUC__) && !defined (_AVT_NO_DEPRECATED)
+#if (defined(__GNUC__) || defined(__clang__)) && !defined(_AVT_NO_DEPRECATED)
 #  define AVT_DEPRECATED  __attribute__ ((__deprecated__))
 #else
 #  define AVT_DEPRECATED
