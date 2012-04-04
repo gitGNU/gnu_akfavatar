@@ -913,8 +913,8 @@ AVT_API void avt_get_font_size (int *width, int *height);
 /***********************************************************************/
 /* audio stuff */
 
-/* must be called AFTER avt_initialize! */
-AVT_API int avt_initialize_audio (void);
+/* must be called AFTER avt_start! */
+AVT_API int avt_start_audio (void);
 
 /*
  * quit audio system
@@ -1057,6 +1057,7 @@ AVT_API avt_image_t *avt_import_image_stream (avt_stream *stream) AVT_DEPRECATED
 AVT_API int avt_change_avatar_image (avt_image_t *image) AVT_DEPRECATED;
 AVT_API avt_image_t *avt_make_transparent (avt_image_t *image) AVT_DEPRECATED;
 AVT_API void avt_free_image (avt_image_t *image) AVT_DEPRECATED;
+AVT_API int avt_initialize_audio (void) AVT_DEPRECATED;
 
 
 #endif /* _akfavatar_h */

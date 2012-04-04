@@ -241,7 +241,7 @@ lavt_initialize (lua_State * L)
       check (avt_start (title, shortname, mode));
       set_avatar (L, avatar, avatar_size);
       if (audio)
-	check (avt_initialize_audio ());
+	check (avt_start_audio ());
     }
   else				/* already initialized */
     {
@@ -266,7 +266,7 @@ lavt_initialize (lua_State * L)
 	avt_switch_mode (mode);
 
       if (audio)
-	avt_initialize_audio ();
+	avt_start_audio ();
       else
 	avt_quit_audio ();
     }
@@ -1282,7 +1282,7 @@ lavt_pager (lua_State * L)
 static int
 lavt_initialize_audio (lua_State * L)
 {
-  if (avt_initialize_audio ())
+  if (avt_start_audio ())
     {
       lua_pushnil (L);
       lua_pushstring (L, avt_get_error ());

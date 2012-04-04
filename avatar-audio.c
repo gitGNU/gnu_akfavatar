@@ -176,7 +176,7 @@ short_audio_sound (void)
 
 /* must be called AFTER avt_start! */
 extern int
-avt_initialize_audio (void)
+avt_start_audio (void)
 {
   if (!avt_audio_initialized)
     {
@@ -197,6 +197,13 @@ avt_initialize_audio (void)
     }
 
   return _avt_STATUS;
+}
+
+/* deprecated */
+extern int
+avt_initialize_audio (void)
+{
+  return avt_start_audio ();
 }
 
 /* stops audio */

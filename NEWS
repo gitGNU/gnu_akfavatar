@@ -15,6 +15,7 @@
   C-API changes:
   - uses size_t where appropriete (ABI change!)
   - avt_start replaces avt_initialize
+  - avt_start_audio replaces avt_initialize_audio
   - avt_avatar_image_default, avt_avatar_image_none, avt_avatar_image_xpm
     avt_avatar_image_xbm, avt_avatar_image_data, avt_avatar_image_file
     replace the avt_import_* functions
