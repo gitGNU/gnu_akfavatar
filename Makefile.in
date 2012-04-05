@@ -506,14 +506,11 @@ clean:
 	-rm -f pascal/link.res pascal/ppas.sh
 
 mostlyclean: clean
-
-distclean: clean
 	-rm -f example
 	-rm -f lua-akfavatar lua-akfavatar-bin
 	-rm -f a.out *.a *.so
 	-rm -f *.dll
 	-rm -f $(LIBNAME) $(SONAME)
-	-rm -f config.status
 	-rm -f version.h
 	-rm -f version.texi
 	-rm -f Makefile
@@ -531,6 +528,9 @@ distclean: clean
 	-rm -f iconv.exe
 	-rm -f config-mingw
 	-rm -f akfavatar.pc avtaddons.pc
+
+distclean: mostlyclean
+	-rm -f config.status
 
 
 # the rest is just for the maintainer
