@@ -30,9 +30,11 @@ avt_avatar_image_default (void)
   return avt_avatar_image_xpm (male_user_xpm);
 }
 
-/* deprecated */
+
+#ifndef DISABLE_DEPRECATED
 extern avt_image_t *
 avt_default (void)
 {
   return avt_import_xpm (male_user_xpm);
 }
+#endif

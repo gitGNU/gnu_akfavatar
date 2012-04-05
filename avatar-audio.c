@@ -199,12 +199,14 @@ avt_start_audio (void)
   return _avt_STATUS;
 }
 
-/* deprecated */
+
+#ifndef DISABLE_DEPRECATED
 extern int
 avt_initialize_audio (void)
 {
   return avt_start_audio ();
 }
+#endif
 
 /* stops audio */
 extern void

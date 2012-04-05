@@ -27,7 +27,7 @@
  */
 
 /* don't make functions deprecated for this file */
-#define _AVT_NO_DEPRECATED 1
+//#define _AVT_NO_DEPRECATED 1
 
 #include "akfavatar.h"
 #include "avtinternals.h"
@@ -244,7 +244,7 @@ static int errno;
 
 
 /* type for gimp images */
-/* deprecated */
+#ifndef DISABLE_DEPRECATED
 typedef struct
 {
   unsigned int width;
@@ -252,6 +252,7 @@ typedef struct
   unsigned int bytes_per_pixel;	/* 3:RGB, 4:RGBA */
   unsigned char pixel_data;	/* handle as startpoint */
 } gimp_img_t;
+#endif
 
 /* for an external keyboard/mouse handlers */
 static avt_keyhandler avt_ext_keyhandler = NULL;
@@ -5580,12 +5581,13 @@ avt_decide (void)
 }
 
 
-/* deprecated */
+#ifndef DISABLE_DEPRECATED
 extern void
 avt_free_image (avt_image_t * image)
 {
   SDL_FreeSurface (image);
 }
+#endif
 
 
 static void
@@ -5914,6 +5916,9 @@ avt_make_transparent (avt_image_t * image)
   return image;
 }
 
+
+#ifndef DISABLE_DEPRECATED
+
 /* deprecated */
 extern avt_image_t *
 avt_import_xpm (char **xpm)
@@ -6073,6 +6078,9 @@ avt_import_image_stream (avt_stream * stream)
   return image;
 }
 
+#endif /* DISABLE_DEPRECATED */
+
+
 static int
 calculate_balloonmaxheight (void)
 {
@@ -6146,7 +6154,7 @@ avt_set_avatar_image (SDL_Surface * image)
 }
 
 
-/* deprecated */
+#ifndef DISABLE_DEPRECATED
 extern int
 avt_change_avatar_image (avt_image_t * image)
 {
@@ -6157,6 +6165,7 @@ avt_change_avatar_image (avt_image_t * image)
 
   return _avt_STATUS;
 }
+#endif
 
 
 extern int
@@ -7147,7 +7156,8 @@ avt_start (const char *title, const char *shortname, int mode)
   return _avt_STATUS;
 }
 
-/* deprecated */
+
+#ifndef DISABLE_DEPRECATED
 extern int
 avt_initialize (const char *title, const char *shortname,
 		avt_image_t * image, int mode)
@@ -7160,3 +7170,4 @@ avt_initialize (const char *title, const char *shortname,
 
   return _avt_STATUS;
 }
+#endif

@@ -1,3 +1,8 @@
+2012-04-05  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c, avatar-default.c, avatar-audio.c (DISABLE_DEPRECATED):
+	new macro
+
 2012-04-04  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h: renamed avt_image back to avt_image_t
