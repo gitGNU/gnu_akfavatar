@@ -75,7 +75,10 @@ mingw-nolua:
 dist-mingw:
 	$(MAKE) -f $(srcdir)/mingw/Makefile srcdir=$(srcdir) dist-bin
 
-Makefile: $(srcdir)/configure $(srcdir)/Makefile.in
+Makefile: $(srcdir)/configure $(srcdir)/Makefile.in ./config.status
+	./config.status
+
+version.h: $(srcdir)/configure
 	./config.status
 
 # alert.au should be in the sourcecode-distribution
