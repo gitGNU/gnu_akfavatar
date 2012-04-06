@@ -29,9 +29,6 @@ include config-mingw
 libdir = $(prefix)/lib
 includedir = $(prefix)/include
 
-SDL_CFLAGS := $(shell $(SDL_CONFIG) --cflags)
-SDL_LDFLAGS := $(shell $(SDL_CONFIG) --libs)
-
 # name for binary packages
 BINPKGNAME=$(pkgname)-$(pkgversion).bin
 
