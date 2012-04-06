@@ -11,6 +11,7 @@
   - The pager supports the markup mode now
   - The terminal emulation uses better colors for black backgroud
   - multiply.pas cannot be compiled without AKFAvatar anymore (simplified)
+  - configure accepts the option --disable-deprecated
 
   C-API changes:
   - uses size_t where appropriete (ABI change!)

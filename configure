@@ -30,6 +30,7 @@ SDL_IMAGE="yes"
 LINK_SDL_IMAGE="no"
 NO_LUA="no"
 STATIC_LUA="no"
+NO_DEPRECATED="no"
 
 if [ ${BUILD} -gt 0 ]
 then pkgversion="${VERSION}.${SUBVERSION}.${REVISION}${VARIANT}-${BUILD}"
@@ -85,7 +86,7 @@ while [ x"$1" != x ] ; do
 		echo "Usage: configure [options]"
 		echo
 		echo "Options: [defaults in brackets]"
-		echo "  --help               display this help and exit"
+		echo "  --help                display this help and exit"
 		echo "  --version             output version information and exit"
 		echo "  --srcdir=DIR          find the sources in DIR [. or ..]"
 		echo "  --prefix=DIR          install into DIR [${prefix}]"
@@ -104,12 +105,10 @@ while [ x"$1" != x ] ; do
 		echo "  --with-static-lua     try to link Lua statically"
 		echo "  --disable-audio       disable audio support"
 		echo "  --disable-sdl-image   disable support for SDL_image completely"
+		echo "  --disable-deprecated  disable support for deprecated functions"
 		echo "  --disable-lua         build without Lua"
 		echo "  --enable-link-sdl-image link directly to SDL_image"
-		#echo "  --enable-qvga         compile for small QVGA (320x240) displays"
-		#echo "  --enable-size=qvga    compile for small QVGA (320x240) displays"
-		echo "  --enable-vga          compile for VGA (640x480) displays"
-		echo "  --enable-size=vga     compile for VGA (640x480) displays"
+		echo "  --enable-size=vga     compile for VGA size (640x480)"
 		echo "  CC=COMPILER           C compiler to use [gcc]"
 		#echo "  CXX=COMPILER          C++ compiler to use [g++]"
 		echo "  CPPFLAGS=OPTIONS      command line options for the preprocessor [${CPPFLAGS}]"
@@ -180,7 +179,9 @@ while [ x"$1" != x ] ; do
 	--disable-sdl-image=yes) SDL_IMAGE="no" ;;
 	--enable-sdl-image | \
 	--enable-sdl-image=yes) SDL_IMAGE="yes" ;;
-	--enable-qvga | --enable-qvga=yes | --enable-size=qvga) SIZE="QVGA" ;;
+	--enable-deprecated=no | \
+	--disable-deprecated | \
+	--disable-deprecated=yes) NO_DEPRECATED="yes" ;;
 	--enable-vga | --enable-vga=yes | --enable-size=vga) SIZE="VGA" ;;
 	--disable-audio | \
 	--enable-audio=no | \
@@ -193,7 +194,6 @@ while [ x"$1" != x ] ; do
 	esac
 done
 
-[ "$SIZE" = "QVGA" ] && CFLAGS="$CFLAGS -DQVGA"
 [ "$SIZE" = "VGA" ] && CFLAGS="$CFLAGS -DVGA"
 
 if [ "$OPENPTY" = "yes" ]; then
@@ -370,6 +370,11 @@ fi
 if [ x"$NO_AUDIO" = x"yes" ]
 then
   CFLAGS="$CFLAGS -DNO_AUDIO"
+fi
+
+if [ x"$NO_DEPRECATED" = x"yes" ]
+then
+  CFLAGS="$CFLAGS -DDISABLE_DEPRECATED"
 fi
 
 # Find the source files, if location was not specified.

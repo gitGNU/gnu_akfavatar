@@ -1,3 +1,7 @@
+2012-04-06  Andreas K. Foerster  <info@akfoerster.de>
+
+	* configure: new option --disable-deprecated
+
 2012-04-05  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c, avatar-default.c, avatar-audio.c (DISABLE_DEPRECATED):
