@@ -1033,7 +1033,7 @@ AVT_API bool avt_audio_playing (avt_audio *snd);
 /* don't use them for new programs! */
 
 /* macro for marking deprecated functions in this header */
-#if (defined(__GNUC__) || defined(__clang__)) && !defined(_AVT_NO_DEPRECATED)
+#if (defined(__GNUC__) || defined(__clang__)) && !defined(_AVT_USE_DEPRECATED)
 #  define AVT_DEPRECATED  __attribute__ ((__deprecated__))
 #else
 #  define AVT_DEPRECATED

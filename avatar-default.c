@@ -19,7 +19,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#define _AVT_NO_DEPRECATED 1
+#define _AVT_USE_DEPRECATED
 
 #include "data/male_user.xpm"
 #include "akfavatar.h"
