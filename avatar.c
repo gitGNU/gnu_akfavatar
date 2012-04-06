@@ -27,7 +27,7 @@
  */
 
 /* don't make functions deprecated for this file */
-//#define _AVT_NO_DEPRECATED 1
+#define _AVT_NO_DEPRECATED 1
 
 #include "akfavatar.h"
 #include "avtinternals.h"
