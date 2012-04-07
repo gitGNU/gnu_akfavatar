@@ -6,9 +6,8 @@ a.out
 *.ppu
 *.pc
 Makefile
+configure-maintainer
 config-mingw
-config-local
-config-debug
 config.status
 version.h
 avatarsay
