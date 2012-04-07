@@ -9,6 +9,8 @@
 
 	* avatar.c (avt_avatar_image_stream): new function
 
+	* avatar.c (avt_avatar_image_rw): new function
+
 2012-04-06  Andreas K. Foerster  <info@akfoerster.de>
 
 	* configure: new option --disable-deprecated
