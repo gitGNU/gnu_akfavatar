@@ -25,6 +25,13 @@ all: akfavatar.dll libakfavatar.a libavtaddons.a \
 
 nolua: akfavatar.dll libakfavatar.a libavtaddons.a iconv.exe
 
+
+Makefile: $(srcdir)/configure $(srcdir)/Makefile.in ./config.status
+	./config.status
+
+version.h: $(srcdir)/configure
+	./config.status
+
 icon.wo: $(srcdir)/mingw/icon.rc $(srcdir)/mingw/akfavatar.ico
 	 $(WINDRES) -o $@ -i $(srcdir)/mingw/icon.rc
 
