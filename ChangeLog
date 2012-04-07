@@ -2,6 +2,11 @@
 
 	* configure, mingw/Makefile.in: improve cross-compiling
 
+	* avatar.c (avt_show_image_file, avt_show_image_stream)
+	(avt_show_image_data, avt_import_image_data, avt_import_image_file)
+	(avt_import_image_stream, avt_avatar_image_data, avt_avatar_image_file):
+	check if RW has data
+
 2012-04-06  Andreas K. Foerster  <info@akfoerster.de>
 
 	* configure: new option --disable-deprecated
