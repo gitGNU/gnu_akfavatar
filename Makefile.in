@@ -62,18 +62,6 @@ nolua: libakfavatar.so libakfavatar.a libavtaddons.a example
 	@echo '* with root-privileges to install it.'
 	@echo '*'
 
-mingw:
-	$(MAKE) -f $(srcdir)/mingw/Makefile \
-	  srcdir="$(srcdir)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
-	  all
-
-mingw-nolua:
-	$(MAKE) -f $(srcdir)/mingw/Makefile \
-	  srcdir="$(srcdir)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
-	  nolua
-
-dist-mingw:
-	$(MAKE) -f $(srcdir)/mingw/Makefile srcdir=$(srcdir) dist-bin
 
 Makefile: $(srcdir)/configure $(srcdir)/Makefile.in ./config.status
 	./config.status

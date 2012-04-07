@@ -57,6 +57,7 @@ CFLAGS='-O2'
 CXXFLAGS='-O2'
 LDFLAGS=
 AVATARSAY_LDFLAGS=
+WINDRES='windres'
 INSTALL='install'
 AR='ar'
 RANLIB='ranlib'
@@ -222,13 +223,27 @@ case ${ARCH} in
   x86_64 | x86-64) ARCH="amd64" ;;
 esac
 
+# cross-compile
 case ${hosttype} in
+
   *mingw* | *MINGW*) 
            SYSTEM="mingw"
            ARCH="x86"
            TARGET="mingw"
            DISTBIN="dist-mingw"
+
+           if [ -x /usr/bin/i586-mingw32msvc-gcc ]
+           then
+             CC=/usr/bin/i586-mingw32msvc-gcc
+             AR=/usr/bin/i586-mingw32msvc-ar
+             STRIP=/usr/bin/i586-mingw32msvc-strip
+             RANLIB=/usr/bin/i586-mingw32msvc-ranlib
+             WINDRES=/usr/bin/i586-mingw32msvc-windres
+           fi
+
+           [ -d /usr/i586-mingw32msvc ] && prefix=/usr/i586-mingw32msvc
            ;;
+
   *x86* | *i?86*) # private hack
            if [ x"$ARCH" = x"x86" ]
            then
@@ -270,11 +285,30 @@ case ${sdlversion} in
          exit 1 ;;
 esac
 
+# cross-compile
 case ${hosttype} in
   *x86* | *i?86*)  # private hack
       SDL_CFLAGS="-I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT"
       SDL_LDFLAGS="-L/usr/lib32 -lSDL -lpthread"
       ;;
+
+   *mingw* | *MINGW*)
+     # find sdl-config for cross-compiling
+     if [ -x /usr/local/cross-tools/i386-mingw32/bin/sdl-config ]
+     then
+       SDL_CFLAGS=`/usr/local/cross-tools/i386-mingw32/bin/sdl-config --cflags`
+       SDL_LDFLAGS=`/usr/local/cross-tools/i386-mingw32/bin/sdl-config --libs`
+     elif [ -x /usr/i586-mingw32msvc/bin/sdl-config ]
+     then
+       SDL_CFLAGS=`/usr/i586-mingw32msvc/bin/sdl-config --cflags`
+       SDL_LDFLAGS=`/usr/i586-mingw32msvc/bin/sdl-config --libs`
+     else
+       # most probably not the correct directories
+       SDL_CFLAGS="-I/usr/include/SDL -D_GNU_SOURCE=1 -Dmain=SDL_main"
+       SDL_LDFLAGS="-L/usr/lib -lmingw32 -lSDLmain -lSDL -mwindows"
+     fi
+     ;;
+
    *)
       SDL_CFLAGS=`sdl-config --cflags`
       SDL_LDFLAGS=`sdl-config --libs`
@@ -470,6 +504,7 @@ echo "LUA_LDFLAGS = ${LUA_LDFLAGS}"
 echo "AVATARSAY_LDFLAGS = ${AVATARSAY_LDFLAGS}"
 echo "AR = ${AR}"
 echo "RANLIB = ${RANLIB}"
+echo "WINDRES = ${WINDRES}"
 echo "INSTALL = ${INSTALL}"
 echo "AWK = ${AWK}"
 echo "LDCONFIG = ${LDCONFIG}"
@@ -534,6 +569,7 @@ LDFLAGS = ${LDFLAGS}
 AVATARSAY_LDFLAGS = ${AVATARSAY_LDFLAGS}
 AR = ${AR}
 RANLIB = ${RANLIB}
+WINDRES = ${WINDRES}
 INSTALL = ${INSTALL}
 LDCONFIG = ${LDCONFIG}
 SDL_CFLAGS = ${SDL_CFLAGS}
@@ -547,62 +583,12 @@ TARGET = ${TARGET}
 DISTBIN = ${DISTBIN}
 
 EOF
-cat ${srcdir}/Makefile.in >> Makefile
 
-if [ -d ${srcdir}/mingw ]
-then
-  rm -f config-mingw
-  {
-    echo "# This file was generated automatically by configure. Do not edit."
-    echo "VERSION = ${VERSION}"
-    echo "SUBVERSION = ${SUBVERSION}"
-    echo "REVISION = ${REVISION}"
-    echo "BUILD = ${BUILD}"
-    echo "VARIANT = ${VARIANT}"
-    echo "pkgname = ${pkgname}"
-    echo "pkgversion = ${pkgversion}"
-    echo "AWK = ${AWK}"
-    echo "LUA_CFLAGS = ${LUA_CFLAGS}"
-    echo "LUA_LDFLAGS = ${LUA_LDFLAGS}"
-  } > config-mingw
+case ${SYSTEM} in
+ mingw)   cat ${srcdir}/mingw/Makefile.in >> Makefile ;;
+ *)       cat ${srcdir}/Makefile.in >> Makefile ;;
+esac
 
-  # find executables for crosscompiling
-
-  if [ -x /usr/bin/i586-mingw32msvc-gcc ]
-  then
-    {
-      echo "CC = /usr/bin/i586-mingw32msvc-gcc"
-      echo "AR = /usr/bin/i586-mingw32msvc-ar"
-      echo "STRIP = /usr/bin/i586-mingw32msvc-strip"
-      echo "RANLIB = /usr/bin/i586-mingw32msvc-ranlib"
-      echo "WINDRES = /usr/bin/i586-mingw32msvc-windres"
-    } >> config-mingw
-  fi
-
-  if [ -d /usr/i586-mingw32msvc ]
-  then
-    echo "prefix = /usr/i586-mingw32msvc" >> config-mingw
-  fi
-
-  if [ -x /usr/local/cross-tools/i386-mingw32/bin/sdl-config ]
-  then
-    {
-      echo "SDL_CFLAGS = $(/usr/local/cross-tools/i386-mingw32/bin/sdl-config --cflags)"
-      echo "SDL_LDFLAGS = $(/usr/local/cross-tools/i386-mingw32/bin/sdl-config --libs)"
-    } >> config-mingw
-  elif [ -x /usr/i586-mingw32msvc/bin/sdl-config ]
-  then
-    {
-      echo "SDL_CFLAGS = $(/usr/i586-mingw32msvc/bin/sdl-config --cflags)"
-      echo "SDL_LDFLAGS = $(/usr/i586-mingw32msvc/bin/sdl-config --libs)"
-    } >> config-mingw
-  else
-    {
-      echo "SDL_CFLAGS = ${SDL_CFLAGS}"
-      echo "SDL_LDFLAGS = ${SDL_LDFLAGS}"
-    } >> config-mingw
-  fi
-fi
 
 # files for pkg-config
 cat > akfavatar.pc << EOF

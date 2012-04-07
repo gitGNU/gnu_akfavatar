@@ -1,33 +1,14 @@
 # This file is in the Public Domain - AKFoerster
 
-srcdir = ..
-
-CC = gcc
-AR = ar
-AWK = awk
-WINDRES = windres
-RANLIB = ranlib
-SDL_CONFIG = sdl-config
-
-CFLAGS = -O2 -Wall -Wextra
-LDFLAGS =
-
-prefix = /usr/$(TARGET)
-
 # for make dist-bin
 lua_dll = $(srcdir)/misc/lua52.dll
 sdl_dll = $(srcdir)/misc/SDL.dll
 
+ROFF = groff
+
 # Ogg Vorbis files with how many channels should be supported?
 # output is limited to 2 channels, but this value may be higher
 vorbis_max_channels = 8
-
-ROFF = groff
-
-include config-mingw
-
-libdir = $(prefix)/lib
-includedir = $(prefix)/include
 
 # name for binary packages
 BINPKGNAME=$(pkgname)-$(pkgversion).bin
@@ -253,6 +234,46 @@ $(srcdir)/lua/documentation/Deutsch/lua-akfavatar-ref.about: \
   $(srcdir)/doc/lua-akfavatar-ref.de.man
 	-$(ROFF) -c -man -Tutf8 \
 	  $(srcdir)/doc/lua-akfavatar-ref.de.man > $@
+
+
+clean:
+	-rm -f *~
+	-rm -f *.wo
+	-rm -f *.ppu *.gpi *.gpm
+	-rm -f bdfread
+	-rm -f alert.c
+	-rm -f rgb.h
+	-rm -f ucsfont9x18.c ucsfont7x14.c
+	-rm -fr akfavatar-en.t2d/ akfavatar-de.t2d/
+	-rm -f pascal/*.o pascal/*.gpi pascal/*.gpm pascal/*.ppu
+	-rm -f pascal/link.res pascal/ppas.sh
+
+mostlyclean: clean
+	-rm -f example
+	-rm -f lua-akfavatar lua-akfavatar-bin
+	-rm -f a.out *.a *.so
+	-rm -f *.dll
+	-rm -f $(LIBNAME) $(SONAME)
+	-rm -f version.h
+	-rm -f version.texi
+	-rm -f Makefile
+	-rm -f akfavatar-*.tar.gz akfavatar-*.tar.bz2
+	-rm -f multiply-bin multiply
+	-rm -f multiplizieren-bin multiplizieren
+	-rm -f multiplizieren.exe multiply.exe example.exe
+	-rm -f akfavatar.def akfavatar.dll akfavatar.lib
+	-rm -f akfavatar-en.pdf akfavatar-en.ps akfavatar-en.dvi
+	-rm -f akfavatar-en.txt akfavatar-en.xml
+	-rm -f akfavatar-de.pdf akfavatar-de.ps akfavatar-de.dvi
+	-rm -f akfavatar-de.txt akfavatar-de.xml
+	-rm -f akfavatar-*.zip
+	-rm -f lua-akfavatar.exe
+	-rm -f iconv.exe
+	-rm -f config-mingw
+	-rm -f akfavatar.pc avtaddons.pc
+
+distclean: mostlyclean
+	-rm -f config.status
 
 # the folowing targets are for the maintainer
 # don't use them unless you know what you are doing
