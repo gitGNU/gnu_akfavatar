@@ -7,6 +7,8 @@
 	(avt_import_image_stream, avt_avatar_image_data, avt_avatar_image_file):
 	check if RW has data
 
+	* avatar.c (avt_avatar_image_stream): new function
+
 2012-04-06  Andreas K. Foerster  <info@akfoerster.de>
 
 	* configure: new option --disable-deprecated

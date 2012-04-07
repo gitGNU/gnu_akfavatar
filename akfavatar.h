@@ -186,6 +186,7 @@ AVT_API int avt_avatar_image_xbm (const unsigned char *bits,
 				  const char *colorname);
 AVT_API int avt_avatar_image_data (void *img, size_t imgsize);
 AVT_API int avt_avatar_image_file (const char *file);
+AVT_API int avt_avatar_image_stream (avt_stream *stream);
 
 
 /***********************************************************************/

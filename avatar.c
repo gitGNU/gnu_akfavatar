@@ -6328,6 +6328,47 @@ avt_avatar_image_file (const char *file)
 
 
 extern int
+avt_avatar_image_stream (avt_stream * stream)
+{
+  SDL_Surface *image;
+  SDL_RWops *RW;
+
+  image = NULL;
+  RW = SDL_RWFromFP ((FILE *) stream, 0);
+
+  if (RW)
+    {
+      /* try internal XPM reader first */
+      image = avt_load_image_xpm_RW (RW, 0);
+
+      if (!image)
+	image = avt_load_image_xbm_RW (RW, 0, XBM_DEFAULT_COLOR);
+
+      if (!image)
+	{
+	  load_image_init ();
+	  image = load_image.rw (RW, 0);
+
+	  /* if it's not yet transparent, make it transparent */
+	  if (image)
+	    if (!(image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
+	      avt_make_transparent (image);
+	}
+
+      SDL_RWclose (RW);
+    }
+
+  if (!image)
+    return AVT_FAILURE;
+
+  avt_set_avatar_image (image);
+  SDL_FreeSurface (image);
+
+  return _avt_STATUS;
+}
+
+
+extern int
 avt_set_avatar_name (const wchar_t * name)
 {
   int size;
