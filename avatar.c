@@ -5618,6 +5618,46 @@ avt_show_image (SDL_Surface * image)
   avt_checkevent ();
 }
 
+
+/* RW is closed here */
+static int
+avt_show_image_rw (SDL_RWops * RW)
+{
+  SDL_Surface *image;
+
+  if (!RW)
+    return AVT_FAILURE;
+
+  image = NULL;
+
+  /* try internal XPM reader first */
+  /* it's better than in SDL_image */
+  image = avt_load_image_xpm_RW (RW, 0);
+
+  if (image == NULL)
+    image = avt_load_image_xbm_RW (RW, 0, XBM_DEFAULT_COLOR);
+
+  if (image == NULL)
+    {
+      load_image_init ();
+      image = load_image.rw (RW, 0);
+    }
+
+  SDL_RWclose (RW);
+
+  if (image == NULL)
+    {
+      avt_clear_screen ();	/* at least clear the screen */
+      return AVT_FAILURE;
+    }
+
+  avt_show_image (image);
+  SDL_FreeSurface (image);
+
+  return _avt_STATUS;
+}
+
+
 /*
  * load image
  * if SDL_image isn't available then
@@ -5626,86 +5666,22 @@ avt_show_image (SDL_Surface * image)
 extern int
 avt_show_image_file (const char *filename)
 {
-  SDL_Surface *image;
-  SDL_RWops *RW;
-
   if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
-
-  image = NULL;
-  RW = SDL_RWFromFile (filename, "rb");
-
-  if (RW)
-    {
-      /* try internal XPM reader first */
-      /* it's better than in SDL_image */
-      image = avt_load_image_xpm_RW (RW, 0);
-
-      if (image == NULL)
-	image = avt_load_image_xbm_RW (RW, 0, XBM_DEFAULT_COLOR);
-
-      if (image == NULL)
-	{
-	  load_image_init ();
-	  image = load_image.rw (RW, 0);
-	}
-
-      SDL_RWclose (RW);
-    }
-
-  if (image == NULL)
-    {
-      avt_clear_screen ();	/* at least clear the screen */
-      return AVT_FAILURE;
-    }
-
-  avt_show_image (image);
-  SDL_FreeSurface (image);
-
-  return _avt_STATUS;
+  else
+    return avt_show_image_rw (SDL_RWFromFile (filename, "rb"));
 }
+
 
 extern int
 avt_show_image_stream (avt_stream * stream)
 {
-  SDL_Surface *image;
-  SDL_RWops *RW;
-
   if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
-
-  image = NULL;
-  RW = SDL_RWFromFP ((FILE *) stream, 0);
-
-  if (RW)
-    {
-      /* try internal XPM reader first */
-      /* it's better than in SDL_image */
-      image = avt_load_image_xpm_RW (RW, 0);
-
-      if (image == NULL)
-	image = avt_load_image_xbm_RW (RW, 0, XBM_DEFAULT_COLOR);
-
-      if (image == NULL)
-	{
-	  load_image_init ();
-	  image = load_image.rw (RW, 0);
-	}
-
-      SDL_RWclose (RW);
-    }
-
-  if (image == NULL)
-    {
-      avt_clear_screen ();	/* at least clear the screen */
-      return AVT_FAILURE;
-    }
-
-  avt_show_image (image);
-  SDL_FreeSurface (image);
-
-  return _avt_STATUS;
+  else
+    return avt_show_image_rw (SDL_RWFromFP ((FILE *) stream, 0));
 }
+
 
 /*
  * show image from image data
@@ -5713,44 +5689,12 @@ avt_show_image_stream (avt_stream * stream)
 extern int
 avt_show_image_data (void *img, size_t imgsize)
 {
-  SDL_Surface *image;
-  SDL_RWops *RW;
-
   if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
-
-  image = NULL;
-  RW = SDL_RWFromMem (img, imgsize);
-
-  if (RW)
-    {
-      /* try internal XPM reader first */
-      /* it's better than in SDL_image */
-      image = avt_load_image_xpm_RW (RW, 0);
-
-      if (image == NULL)
-	image = avt_load_image_xbm_RW (RW, 0, XBM_DEFAULT_COLOR);
-
-      if (image == NULL)
-	{
-	  load_image_init ();
-	  image = load_image.rw (RW, 0);
-	}
-
-      SDL_RWclose (RW);
-    }
-
-  if (image == NULL)
-    {
-      avt_clear_screen ();	/* at least clear the screen */
-      return AVT_FAILURE;
-    }
-
-  avt_show_image (image);
-  SDL_FreeSurface (image);
-
-  return _avt_STATUS;
+  else
+    return avt_show_image_rw (SDL_RWFromMem (img, imgsize));
 }
+
 
 extern int
 avt_show_image_xpm (char **xpm)
@@ -5774,6 +5718,7 @@ avt_show_image_xpm (char **xpm)
 
   return _avt_STATUS;
 }
+
 
 extern int
 avt_show_image_xbm (const unsigned char *bits, int width, int height,
@@ -5810,17 +5755,20 @@ avt_show_image_xbm (const unsigned char *bits, int width, int height,
   return _avt_STATUS;
 }
 
+
 extern int
 avt_image_max_width (void)
 {
   return screen->w;
 }
 
+
 extern int
 avt_image_max_height (void)
 {
   return screen->h;
 }
+
 
 /*
  * show raw image
@@ -5882,6 +5830,7 @@ avt_show_raw_image (void *image_data, int width, int height,
   return _avt_STATUS;
 }
 
+
 static int
 avt_init_SDL (void)
 {
@@ -5902,6 +5851,7 @@ avt_init_SDL (void)
 
   return _avt_STATUS;
 }
+
 
 /*
  * make background transparent
@@ -6245,10 +6195,14 @@ avt_avatar_image_xbm (const unsigned char *bits,
 }
 
 
+/* RW is closed here */
 static int
 avt_avatar_image_rw (SDL_RWops * RW)
 {
   SDL_Surface *image;
+
+  if (!RW)
+    return AVT_FAILURE;
 
   image = NULL;
 
@@ -6284,51 +6238,21 @@ avt_avatar_image_rw (SDL_RWops * RW)
 extern int
 avt_avatar_image_data (void *img, size_t imgsize)
 {
-  SDL_RWops *RW;
-
-  RW = SDL_RWFromMem (img, imgsize);
-
-  if (!RW)
-    return AVT_FAILURE;
-
-  avt_avatar_image_rw (RW);
-  SDL_RWclose (RW);
-
-  return _avt_STATUS;
+  return avt_avatar_image_rw (SDL_RWFromMem (img, imgsize));
 }
 
 
 extern int
 avt_avatar_image_file (const char *file)
 {
-  SDL_RWops *RW;
-
-  RW = SDL_RWFromFile (file, "rb");
-
-  if (!RW)
-    return AVT_FAILURE;
-
-  avt_avatar_image_rw (RW);
-  SDL_RWclose (RW);
-
-  return _avt_STATUS;
+  return avt_avatar_image_rw (SDL_RWFromFile (file, "rb"));
 }
 
 
 extern int
 avt_avatar_image_stream (avt_stream * stream)
 {
-  SDL_RWops *RW;
-
-  RW = SDL_RWFromFP ((FILE *) stream, 0);
-
-  if (!RW)
-    return AVT_FAILURE;
-
-  avt_avatar_image_rw (RW);
-  SDL_RWclose (RW);
-
-  return _avt_STATUS;
+  return avt_avatar_image_rw (SDL_RWFromFP ((FILE *) stream, 0));
 }
 
 

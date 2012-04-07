@@ -9,7 +9,7 @@
 
 	* avatar.c (avt_avatar_image_stream): new function
 
-	* avatar.c (avt_avatar_image_rw): new function
+	* avatar.c (avt_show_image_rw, avt_avatar_image_rw): new functions
 
 2012-04-06  Andreas K. Foerster  <info@akfoerster.de>
 
