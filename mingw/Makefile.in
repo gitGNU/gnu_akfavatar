@@ -19,14 +19,14 @@ u2d = sed -i -e 's/$$/\r/'
 SHELL = /bin/sh
 .SUFFIXES:
 
-all: akfavatar.dll libakfavatar.a libavtaddons.a \
+all: akfavatar.dll libakfavatar.a libavtaddons.a about example.exe iconv.exe \
      lua-akfavatar.exe lua-akfavatar.dll base64.dll akfavatar-vorbis.dll \
-     akfavatar-graphic.dll iconv.exe about example.exe
+     akfavatar-graphic.dll
 
-nolua: akfavatar.dll libakfavatar.a libavtaddons.a iconv.exe
+nolua: akfavatar.dll libakfavatar.a libavtaddons.a about example.exe iconv.exe
 
 
-Makefile: $(srcdir)/configure $(srcdir)/Makefile.in ./config.status
+Makefile: $(srcdir)/configure $(srcdir)/mingw/Makefile.in ./config.status
 	./config.status
 
 version.h: $(srcdir)/configure
@@ -263,8 +263,6 @@ mostlyclean: clean
 	-rm -f $(LIBNAME) $(SONAME)
 	-rm -f version.h
 	-rm -f version.texi
-	-rm -f Makefile
-	-rm -f akfavatar-*.tar.gz akfavatar-*.tar.bz2
 	-rm -f multiply-bin multiply
 	-rm -f multiplizieren-bin multiplizieren
 	-rm -f multiplizieren.exe multiply.exe example.exe
@@ -273,13 +271,21 @@ mostlyclean: clean
 	-rm -f akfavatar-en.txt akfavatar-en.xml
 	-rm -f akfavatar-de.pdf akfavatar-de.ps akfavatar-de.dvi
 	-rm -f akfavatar-de.txt akfavatar-de.xml
-	-rm -f akfavatar-*.zip
+	-rm -f lua-akfavatar.de.pdf lua-akfavatar.de.ps lua-akfavatar.de.dvi
+	-rm -f lua-akfavatar.en.pdf lua-akfavatar.en.ps lua-akfavatar.en.dvi
+	-rm -f lua-akfavatar-ref.de.pdf lua-akfavatar-ref.de.ps lua-akfavatar-ref.de.dvi
+	-rm -f lua-akfavatar-ref.en.pdf lua-akfavatar-ref.en.ps lua-akfavatar-ref.en.dvi
+	-rm -f akfavatar.h.ps akfavatar.h.pdf
+	-rm -f avtaddons.h.ps avtaddons.h.pdf
 	-rm -f lua-akfavatar.exe
 	-rm -f iconv.exe
 	-rm -f config-mingw
 	-rm -f akfavatar.pc avtaddons.pc
 
 distclean: mostlyclean
+	-rm -f Makefile
+	-rm -f akfavatar-*.zip
+	-rm -f akfavatar-*.tar.gz akfavatar-*.tar.bz2
 	-rm -f config.status
 
 # the folowing targets are for the maintainer

@@ -48,15 +48,15 @@ all: $(TARGET)
 
 dist-bin: $(DISTBIN)
 
-default: libakfavatar.so libakfavatar.a libavtaddons.a \
+default: libakfavatar.so libakfavatar.a libavtaddons.a example about \
 	lua-akfavatar lua-akfavatar.so base64.so akfavatar-term.so \
-	akfavatar-vorbis.so akfavatar-graphic.so about example
+	akfavatar-vorbis.so akfavatar-graphic.so
 	@echo '*'
 	@echo '* use "make install" or "make install-strip"'
 	@echo '* with root-privileges to install it.'
 	@echo '*'
 
-nolua: libakfavatar.so libakfavatar.a libavtaddons.a example
+nolua: libakfavatar.so libakfavatar.a libavtaddons.a example about
 	@echo '*'
 	@echo '* use "make install" or "make install-strip"'
 	@echo '* with root-privileges to install it.'
@@ -504,8 +504,6 @@ mostlyclean: clean
 	-rm -f $(LIBNAME) $(SONAME)
 	-rm -f version.h
 	-rm -f version.texi
-	-rm -f Makefile
-	-rm -f akfavatar-*.tar.gz akfavatar-*.tar.bz2
 	-rm -f multiply-bin multiply
 	-rm -f multiplizieren-bin multiplizieren
 	-rm -f multiplizieren.exe multiply.exe example.exe
@@ -514,13 +512,21 @@ mostlyclean: clean
 	-rm -f akfavatar-en.txt akfavatar-en.xml
 	-rm -f akfavatar-de.pdf akfavatar-de.ps akfavatar-de.dvi
 	-rm -f akfavatar-de.txt akfavatar-de.xml
-	-rm -f akfavatar-*.zip
+	-rm -f akfavatar.h.ps akfavatar.h.pdf
+	-rm -f avtaddons.h.ps avtaddons.h.pdf
+	-rm -f lua-akfavatar.de.pdf lua-akfavatar.de.ps lua-akfavatar.de.dvi
+	-rm -f lua-akfavatar.en.pdf lua-akfavatar.en.ps lua-akfavatar.en.dvi
+	-rm -f lua-akfavatar-ref.de.pdf lua-akfavatar-ref.de.ps lua-akfavatar-ref.de.dvi
+	-rm -f lua-akfavatar-ref.en.pdf lua-akfavatar-ref.en.ps lua-akfavatar-ref.en.dvi
 	-rm -f lua-akfavatar.exe
 	-rm -f iconv.exe
 	-rm -f config-mingw
 	-rm -f akfavatar.pc avtaddons.pc
 
 distclean: mostlyclean
+	-rm -f Makefile
+	-rm -f akfavatar-*.tar.gz akfavatar-*.tar.bz2
+	-rm -f akfavatar-*.zip
 	-rm -f config.status
 
 
