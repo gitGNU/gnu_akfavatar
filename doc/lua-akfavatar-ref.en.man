@@ -134,6 +134,37 @@ if AKFAvatar it is initialized, or else it returns
 .IR false .
 .PP
 .TP
+.BI "avt.avatar_image_default()"
+Sets the default avatar image.
+.PP
+.TP
+.BI "avt.avatar_image_none()"
+Clears the avatar image (ie. no avatar).
+.PP
+.TP
+.BI "avt.avatar_image_file(" filename )
+Loads the avatar image from a file.
+.PP
+.TP
+.BI "avt.avatar_image_data(" data )
+Loads the avatar image from the 
+.IR data .
+The
+.I data
+can be a string with the data or a table with strings from XPM data.
+.PP
+.TP
+.BI "avt.change_avatar_image(" [image] )
+Sets the avatar image.
+The image is a string like in
+.BR avt.initialize{} .
+.PP
+.TP
+.BI "avt.set_avatar_name(" [name] )
+Set the name of the avatar.  This must be used after
+.BR avt.change_avatar_image() .
+.PP
+.TP
 .BI "avt.say(" ... )
 .TQ
 .BI "avt.write(" ... )
@@ -265,19 +296,6 @@ Moves the avatar in.
 .TP
 .BI "avt.move_out()"
 Moves the avatar out.
-.PP
-.TP
-.BI "avt.avatar_image(" [image] )
-.TQ
-.BI "avt.change_avatar_image(" [image] )
-Sets the avatar image.
-The image is a string like in
-.BR avt.initialize{} .
-.PP
-.TP
-.BI "avt.set_avatar_name(" [name] )
-Set the name of the avatar.  This must be used after
-.BR avt.change_avatar_image() .
 .PP
 .TP
 .BI "avt.pager(" "text [,startline]" )

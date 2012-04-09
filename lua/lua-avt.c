@@ -184,11 +184,7 @@ auto_initialize (lua_State * L)
 {
   /* it might be initialized outside of this module */
   if (!avt_initialized ())
-    {
-      check (avt_start (NULL, NULL, AVT_WINDOW));
-      lua_pushliteral (L, "default");
-      set_avatar (L);
-    }
+    check (avt_start (NULL, NULL, AVT_WINDOW));
 
   initialized = true;
 }
@@ -492,36 +488,84 @@ lavt_recode (lua_State * L)
   return 1;
 }
 
-/*
- * set avatar image
- * if the avatar is visible, the screen gets cleared
- * the image may be given like in avt.initialize
- */
+/* deprecated */
 static int
-lavt_avatar_image (lua_State * L)
+lavt_change_avatar_image (lua_State * L)
 {
-  /* don't use is_initialized(), because it sets an avatar */
-  if (!initialized)
-    {
-      if (!avt_initialized ())
-	check (avt_start (NULL, NULL, AVT_WINDOW));
-      initialized = true;
-    }
-
+  is_initialized ();
   lua_pushvalue (L, 1);
   set_avatar (L);
 
   return 0;
 }
 
+static int
+lavt_avatar_image_default (lua_State * L)
+{
+  is_initialized ();
+  avt_avatar_image_default ();
+
+  return 0;
+}
+
+static int
+lavt_avatar_image_none (lua_State * L)
+{
+  if (initialized)
+    avt_avatar_image_none ();
+
+  return 0;
+}
+
+/* set avatar image from data (string or table) */
+static int
+lavt_avatar_image_data (lua_State * L)
+{
+  is_initialized ();
+
+  if (lua_isnoneornil (L, 1))
+    avt_avatar_image_none ();
+  else if (lua_istable (L, 1))	/* XPM table */
+    {
+      char **xpm = import_xpm (L, 1);
+
+      if (!xpm)
+	return luaL_error (L, "cannot load avatar-image");
+
+      avt_avatar_image_xpm (xpm);
+      free (xpm);
+    }
+  else				/* not a table */
+    {
+      const char *avatar;
+      size_t len;
+
+      avatar = luaL_checklstring (L, 1, &len);
+      if (avt_avatar_image_data ((void *) avatar, len) != AVT_NORMAL)
+	return luaL_error (L, "cannot load avatar-image");
+    }
+
+  return 0;
+}
+
+static int
+lavt_avatar_image_file (lua_State * L)
+{
+  is_initialized ();
+
+  if (avt_avatar_image_file (luaL_checkstring (L, 1)) != AVT_NORMAL)
+	return luaL_error (L, "cannot load avatar-image");
+
+  return 0;
+}
+
 /*
  * set the name of the avatar
- * must be after avt.avatar_image
+ * must be after setting the image
  */
 static int
 lavt_set_avatar_name (lua_State * L)
 {
-  is_initialized ();
   check (avt_set_avatar_name_mb (lua_tostring (L, 1)));
   return 0;
 }
@@ -2255,8 +2299,11 @@ lavt_search (lua_State * L)
 static const luaL_Reg akfavtlib[] = {
   {"initialize", lavt_initialize},
   {"quit", lavt_quit},
-  {"avatar_image", lavt_avatar_image},
-  {"change_avatar_image", lavt_avatar_image},  /* deprecated */
+  {"avatar_image_default", lavt_avatar_image_default},
+  {"avatar_image_none", lavt_avatar_image_none},
+  {"avatar_image_data", lavt_avatar_image_data},
+  {"avatar_image_file", lavt_avatar_image_file},
+  {"change_avatar_image", lavt_change_avatar_image},  /* deprecated */
   {"set_avatar_name", lavt_set_avatar_name},
   {"say", lavt_say},
   {"write", lavt_say},		/* alias */

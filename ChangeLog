@@ -2,7 +2,9 @@
 
 	* lua-avt.c (import_xpm): new function
 	set_avatar and all callers adapted
-	lavt_change_avatar_image renamed to lavt_avatar_image
+
+	* lua-avt.c (lavt_avatar_image_default, lavt_avatar_image_none)
+	(lavt_avatar_image_data, lavt_avatar_image_file): new functions
 
 2012-04-07  Andreas K. Foerster  <info@akfoerster.de>
 

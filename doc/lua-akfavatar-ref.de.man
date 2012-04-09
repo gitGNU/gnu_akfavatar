@@ -142,6 +142,40 @@ gibt es
 zurück.
 .PP
 .TP
+.BI "avt.avatar_image_default()"
+Setzt das normale Avatar-Bild
+.PP
+.TP
+.BI "avt.avatar_image_none()"
+Löscht das Avatar-Bild.
+.PP
+.TP
+.BI "avt.avatar_image_file(" Dateiname )
+Lädt das Avatar-Bild aus einer Datei.
+.PP
+.TP
+.BI "avt.avatar_image_data(" Daten )
+Lädt das Avatar-Bild von den
+.IR Daten .
+Die
+.I Daten
+können entweder ein String sein, oder eine Tabelle mit Strings
+von XPM-Daten.
+.PP
+.TP
+.BI "avt.change_avatar_image(" [Bild] )
+Legt das Avatar-Bild fest.
+Das
+.I Bild
+ist ein String, wie in
+.BR avt.initialize{} .
+.PP
+.TP
+.BI "avt.set_avatar_name(" [Name] )
+Setzt den Namen für den Avatar.
+Dies muss nach dem Setzen des Bildes geschehen.
+.PP
+.TP
 .BI "avt.say(" ... )
 .TQ
 .BI "avt.write(" ... )
@@ -285,23 +319,6 @@ Bewegt den Avatar herein.
 .TP
 .BI "avt.move_out()"
 Bewegt den Avatar heraus.
-.PP
-.TP
-.BI "avt.avatar_image(" [Bild] )
-.TQ
-.BI "avt.change_avatar_image(" [Bild] )
-Legt das Avatar-Bild fest.
-Das
-.I Bild
-ist ein String, wie in
-.BR avt.initialize{} .
-.PP
-.TP
-.BI "avt.set_avatar_name(" [Name] )
-Setzt den Namen für den Avatar.
-Dies muss nach der Verwendung von
-.B avt.change_avatar_image()
-geschehen.
 .PP
 .TP
 .BI "avt.pager(" "Text [,Anfangszeile]" )
