@@ -287,8 +287,10 @@ Bewegt den Avatar herein.
 Bewegt den Avatar heraus.
 .PP
 .TP
+.BI "avt.avatar_image(" [Bild] )
+.TQ
 .BI "avt.change_avatar_image(" [Bild] )
-Ändert das Avatar-Bild, während das Programm läuft.
+Legt das Avatar-Bild fest.
 Das
 .I Bild
 ist ein String, wie in

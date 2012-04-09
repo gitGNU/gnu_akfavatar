@@ -267,8 +267,10 @@ Moves the avatar in.
 Moves the avatar out.
 .PP
 .TP
+.BI "avt.avatar_image(" [image] )
+.TQ
 .BI "avt.change_avatar_image(" [image] )
-Change the avatar image while running.
+Sets the avatar image.
 The image is a string like in
 .BR avt.initialize{} .
 .PP

@@ -101,16 +101,78 @@ check_bool (lua_State * L, int index)
 
 #define to_bool(L, index)  ((bool) lua_toboolean ((L), (index)))
 
-static int
-set_avatar (lua_State * L, const char *avatar, size_t len)
+static char **
+import_xpm (lua_State * L, int index)
 {
-  if (strcmp ("default", avatar) == 0)
-    return avt_avatar_image_default ();
-  else if (strcmp ("none", avatar) == 0)
-    return avt_avatar_image_none ();
-  else if (avt_avatar_image_data ((void *) avatar, len) != AVT_NORMAL
-	   && avt_avatar_image_file (avatar) != AVT_NORMAL)
-    return luaL_error (L, "cannot load avatar-image");
+  char **xpm;
+  unsigned int linenr, linecount;
+  int idx;
+
+  idx = lua_absindex (L, index);
+  xpm = NULL;
+  linenr = 0;
+
+  linecount = 512;		/* can be extended later */
+  xpm = (char **) malloc (linecount * sizeof (*xpm));
+  if (!xpm)
+    return NULL;
+
+  lua_pushnil (L);
+  while (lua_next (L, idx))
+    {
+      xpm[linenr] = (char *) lua_tostring (L, -1);
+      linenr++;
+
+      if (linenr >= linecount)	/* leave one line reserved */
+	{
+	  linecount += 512;
+	  xpm = (char **) realloc (xpm, linecount * sizeof (*xpm));
+	  if (!xpm)
+	    return NULL;
+	}
+
+      lua_pop (L, 1);		/* pop value - leave key */
+    }
+
+  /* last line must be NULL */
+  if (xpm)
+    xpm[linenr] = NULL;
+
+  return xpm;
+}
+
+
+static int
+set_avatar (lua_State * L)
+{
+  if (lua_istable (L, -1))	/* XPM table */
+    {
+      char **xpm = import_xpm (L, -1);
+
+      if (!xpm)
+	return luaL_error (L, "cannot load avatar-image");
+
+      avt_avatar_image_xpm (xpm);
+      free (xpm);
+
+      lua_pop (L, 1);
+    }
+  else				/* not a table */
+    {
+      const char *avatar;
+      size_t len;
+
+      avatar = luaL_checklstring (L, -1, &len);
+      lua_pop (L, 1);
+
+      if (strcmp ("default", avatar) == 0)
+	return avt_avatar_image_default ();
+      else if (strcmp ("none", avatar) == 0)
+	return avt_avatar_image_none ();
+      else if (avt_avatar_image_data ((void *) avatar, len) != AVT_NORMAL
+	       && avt_avatar_image_file (avatar) != AVT_NORMAL)
+	return luaL_error (L, "cannot load avatar-image");
+    }
 
   return AVT_NORMAL;
 }
@@ -122,7 +184,8 @@ auto_initialize (lua_State * L)
   if (!avt_initialized ())
     {
       check (avt_start (NULL, NULL, AVT_WINDOW));
-      set_avatar (L, "default", sizeof ("default"));
+      lua_pushliteral (L, "default");
+      set_avatar (L);
     }
 
   initialized = true;
@@ -181,13 +244,11 @@ lavt_initialize (lua_State * L)
   const char *title, *shortname;
   const char *encoding;
   const char *avatar;
-  size_t avatar_size;
   bool audio;
   int mode;
 
   title = shortname = NULL;
   avatar = "default";
-  avatar_size = 0;
   encoding = "UTF-8";
   mode = AVT_AUTOMODE;
   audio = false;
@@ -215,7 +276,7 @@ lavt_initialize (lua_State * L)
 	  else if (strcmp ("shortname", key) == 0)
 	    shortname = lua_tostring (L, -1);
 	  else if (strcmp ("avatar", key) == 0)
-	    avatar = lua_tolstring (L, -1, &avatar_size);
+	    avatar = lua_tostring (L, -1);
 	  else if (strcmp ("audio", key) == 0)
 	    audio = to_bool (L, -1);
 	  else if (strcmp ("encoding", key) == 0)
@@ -239,7 +300,8 @@ lavt_initialize (lua_State * L)
     {
       check (avt_mb_encoding (encoding));
       check (avt_start (title, shortname, mode));
-      set_avatar (L, avatar, avatar_size);
+      lua_pushstring (L, avatar);
+      set_avatar (L);
       if (audio)
 	check (avt_start_audio ());
     }
@@ -260,7 +322,8 @@ lavt_initialize (lua_State * L)
 
       check (avt_mb_encoding (encoding));
       avt_set_title (title, shortname);
-      set_avatar (L, avatar, avatar_size);
+      lua_pushstring (L, avatar);
+      set_avatar (L);
 
       if (mode != AVT_AUTOMODE)
 	avt_switch_mode (mode);
@@ -428,26 +491,28 @@ lavt_recode (lua_State * L)
 }
 
 /*
- * change avatar image while running
+ * set avatar image
  * if the avatar is visible, the screen gets cleared
  * the image may be given like in avt.initialize
  */
 static int
-lavt_change_avatar_image (lua_State * L)
+lavt_avatar_image (lua_State * L)
 {
-  const char *avatar;
-  size_t avatar_size;
+  if (!initialized)
+    {
+      if (!avt_initialized ())
+	check (avt_start (NULL, NULL, AVT_WINDOW));
+      initialized = true;
+    }
 
-  is_initialized ();
-  avatar = luaL_checklstring (L, 1, &avatar_size);
-  set_avatar (L, avatar, avatar_size);
+  set_avatar (L);
 
   return 0;
 }
 
 /*
  * set the name of the avatar
- * must be after avt.change_avatar_image
+ * must be after avt.avatar_image
  */
 static int
 lavt_set_avatar_name (lua_State * L)
@@ -2186,7 +2251,8 @@ lavt_search (lua_State * L)
 static const luaL_Reg akfavtlib[] = {
   {"initialize", lavt_initialize},
   {"quit", lavt_quit},
-  {"change_avatar_image", lavt_change_avatar_image},
+  {"change_avatar_image", lavt_avatar_image},
+  {"avatar_image", lavt_avatar_image},
   {"set_avatar_name", lavt_set_avatar_name},
   {"say", lavt_say},
   {"write", lavt_say},		/* alias */
