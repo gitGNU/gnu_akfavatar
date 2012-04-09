@@ -1,7 +1,7 @@
 .\" Process this file with
 .\" groff -man -Tutf8 lua-akfavatar.1
 .\"
-.TH "lua-akfavatar" 1 2011-12-27 AKFAvatar
+.TH "lua-akfavatar" 1 2012-04-09 AKFAvatar
 .
 .SH NAME
 lua-akfavatar \- Lua interpreter for the AKFAvatar user interface

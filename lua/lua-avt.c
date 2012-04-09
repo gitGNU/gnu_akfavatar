@@ -144,41 +144,6 @@ import_xpm (lua_State * L, int index)
 }
 
 
-static int
-set_avatar (lua_State * L)
-{
-  if (lua_istable (L, -1))	/* XPM table */
-    {
-      char **xpm = import_xpm (L, -1);
-
-      if (!xpm)
-	return luaL_error (L, "cannot load avatar-image");
-
-      avt_avatar_image_xpm (xpm);
-      free (xpm);
-
-      lua_pop (L, 1);
-    }
-  else				/* not a table */
-    {
-      const char *avatar;
-      size_t len;
-
-      avatar = luaL_checklstring (L, -1, &len);
-      lua_pop (L, 1);
-
-      if (strcmp ("default", avatar) == 0)
-	return avt_avatar_image_default ();
-      else if (strcmp ("none", avatar) == 0)
-	return avt_avatar_image_none ();
-      else if (avt_avatar_image_data ((void *) avatar, len) != AVT_NORMAL
-	       && avt_avatar_image_file (avatar) != AVT_NORMAL)
-	return luaL_error (L, "cannot load avatar-image");
-    }
-
-  return AVT_NORMAL;
-}
-
 static void
 auto_initialize (lua_State * L)
 {
@@ -218,123 +183,6 @@ get_mode (lua_State * L, int index)
   return mode;
 }
 
-
-/*
- * expects a table with values for: title, shortname, avatar, encoding, mode
- *
- * title and shortname should be strings
- *
- * avatar may be "default, "none", image data in a string,
- *        or a path to a file
- *
- * audio may be set to true to activate audio
- *
- * encoding is the encoding for strings, for example to "ISO-8859-1"
- *          default is "UTF-8"
- *
- * mode is one of "auto", "window", "fullscreen", "fullscreen no switch"
- *
- * No parameter is needed, use them as you wish.
- */
-static int
-lavt_initialize (lua_State * L)
-{
-  const char *title, *shortname;
-  const char *encoding;
-  const char *avatar;
-  bool audio;
-  int mode;
-
-  title = shortname = NULL;
-  avatar = "default";
-  encoding = "UTF-8";
-  mode = AVT_AUTOMODE;
-  audio = false;
-
-  if (lua_isnone (L, 1))	/* no argument */
-    avt_avatar_image_default ();
-  else				/* has an argument */
-    {
-      luaL_checktype (L, 1, LUA_TTABLE);
-
-      lua_pushnil (L);		/* initial dummy key */
-      while (lua_next (L, 1))
-	{
-	  const char *key;
-
-	  if (lua_type (L, -2) != LUA_TSTRING)
-	    return luaL_error (L, "initialize: %s: %s",
-			       lua_typename (L, lua_type (L, -2)),
-			       strerror (ENOMSG));
-
-	  key = lua_tostring (L, -2);	/* known to be a string */
-
-	  if (strcmp ("title", key) == 0)
-	    title = lua_tostring (L, -1);
-	  else if (strcmp ("shortname", key) == 0)
-	    shortname = lua_tostring (L, -1);
-	  else if (strcmp ("avatar", key) == 0)
-	    avatar = lua_tostring (L, -1);
-	  else if (strcmp ("audio", key) == 0)
-	    audio = to_bool (L, -1);
-	  else if (strcmp ("encoding", key) == 0)
-	    encoding = lua_tostring (L, -1);
-	  else if (strcmp ("mode", key) == 0)
-	    mode = get_mode (L, -1);
-	  else
-	    return luaL_error (L, "initialize: %s: %s", key,
-			       strerror (EINVAL));
-
-	  lua_pop (L, 1);	/* remove value, keep key */
-	}			/* while (lua_next... */
-
-      lua_pop (L, 1);		/* pop key */
-    }				/* if (lua_isnone...) else */
-
-  if (!shortname)
-    shortname = title;
-
-  if (!initialized && !avt_initialized ())
-    {
-      check (avt_mb_encoding (encoding));
-      check (avt_start (title, shortname, mode));
-      lua_pushstring (L, avatar);
-      set_avatar (L);
-      if (audio)
-	check (avt_start_audio ());
-    }
-  else				/* already initialized */
-    {
-      /* reset almost everything */
-      /* not the background color - should be set before initialization */
-      avt_clear_screen ();
-      avt_set_balloon_size (0, 0);
-      avt_newline_mode (true);
-      avt_set_auto_margin (true);
-      avt_set_origin_mode (true);
-      avt_set_scroll_mode (1);
-      avt_reserve_single_keys (false);
-      avt_set_balloon_color_name ("floral white");
-      avt_normal_text ();
-      avt_set_mouse_visible (true);
-
-      check (avt_mb_encoding (encoding));
-      avt_set_title (title, shortname);
-      lua_pushstring (L, avatar);
-      set_avatar (L);
-
-      if (mode != AVT_AUTOMODE)
-	avt_switch_mode (mode);
-
-      if (audio)
-	avt_start_audio ();
-      else
-	avt_quit_audio ();
-    }
-
-  initialized = true;
-  return 0;
-}
 
 static int
 lavt_start (lua_State * L)
@@ -414,9 +262,9 @@ lavt_license (lua_State * L)
   return 1;
 }
 
-/* returns whether it is initialized */
+/* returns whether it is started */
 static int
-lavt_initialized (lua_State * L)
+lavt_started (lua_State * L)
 {
   lua_pushboolean (L, (int) avt_initialized ());
   return 1;
@@ -531,17 +379,6 @@ lavt_recode (lua_State * L)
     }
 
   return 1;
-}
-
-/* deprecated */
-static int
-lavt_change_avatar_image (lua_State * L)
-{
-  is_initialized ();
-  lua_pushvalue (L, 1);
-  set_avatar (L);
-
-  return 0;
 }
 
 static int
@@ -2396,14 +2233,12 @@ lavt_search (lua_State * L)
 /* register library functions */
 
 static const luaL_Reg akfavtlib[] = {
-  {"initialize", lavt_initialize},	/* deprecated */
   {"start", lavt_start},
   {"quit", lavt_quit},
   {"avatar_image_default", lavt_avatar_image_default},
   {"avatar_image_none", lavt_avatar_image_none},
   {"avatar_image_data", lavt_avatar_image_data},
   {"avatar_image_file", lavt_avatar_image_file},
-  {"change_avatar_image", lavt_change_avatar_image},	/* deprecated */
   {"set_avatar_name", lavt_set_avatar_name},
   {"say", lavt_say},
   {"write", lavt_say},		/* alias */
@@ -2421,8 +2256,7 @@ static const luaL_Reg akfavtlib[] = {
   {"version", lavt_version},
   {"copyright", lavt_copyright},
   {"license", lavt_license},
-  {"initialized", lavt_initialized}, /* deprecated */
-  {"started", lavt_initialized},
+  {"started", lavt_started},
   {"get_color", lavt_get_color},
   {"colors", lavt_colors},
   {"encoding", lavt_encoding},
@@ -2490,7 +2324,6 @@ static const luaL_Reg akfavtlib[] = {
   {"set_tab", lavt_set_tab},
   {"delete_lines", lavt_delete_lines},
   {"insert_lines", lavt_insert_lines},
-  {"initialize_audio", lavt_start_audio},	/* deprecated */
   {"start_audio", lavt_start_audio},
   {"quit_audio", lavt_quit_audio},
   {"load_audio_file", lavt_load_audio_file},
