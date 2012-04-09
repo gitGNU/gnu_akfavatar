@@ -101,6 +101,8 @@ check_bool (lua_State * L, int index)
 
 #define to_bool(L, index)  ((bool) lua_toboolean ((L), (index)))
 
+/* imports an XPM table at given index */
+/* result must be freed by caller */
 static char **
 import_xpm (lua_State * L, int index)
 {
@@ -498,6 +500,7 @@ lavt_recode (lua_State * L)
 static int
 lavt_avatar_image (lua_State * L)
 {
+  /* don't use is_initialized(), because it sets an avatar */
   if (!initialized)
     {
       if (!avt_initialized ())
@@ -505,6 +508,7 @@ lavt_avatar_image (lua_State * L)
       initialized = true;
     }
 
+  lua_pushvalue (L, 1);
   set_avatar (L);
 
   return 0;
@@ -2251,8 +2255,8 @@ lavt_search (lua_State * L)
 static const luaL_Reg akfavtlib[] = {
   {"initialize", lavt_initialize},
   {"quit", lavt_quit},
-  {"change_avatar_image", lavt_avatar_image},
   {"avatar_image", lavt_avatar_image},
+  {"change_avatar_image", lavt_avatar_image},  /* deprecated */
   {"set_avatar_name", lavt_set_avatar_name},
   {"say", lavt_say},
   {"write", lavt_say},		/* alias */
