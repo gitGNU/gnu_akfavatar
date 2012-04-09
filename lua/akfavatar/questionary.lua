@@ -112,7 +112,11 @@ local function questionary(qa)
       end
   else
     avt.start_audio()
-    if myavatar then avt.change_avatar_image(myavatar) end
+    if myavatar then
+      if not avt.avatar_image_data(myavatar) then
+        avt.avatar_image_file(myavatar)
+      end
+    end
   end
 
   if qa.lang then lang.use(qa.lang) end
