@@ -1457,7 +1457,7 @@ lavt_pager (lua_State * L)
 }
 
 static int
-lavt_initialize_audio (lua_State * L)
+lavt_start_audio (lua_State * L)
 {
   if (avt_start_audio ())
     {
@@ -2454,7 +2454,8 @@ static const luaL_Reg akfavtlib[] = {
   {"set_tab", lavt_set_tab},
   {"delete_lines", lavt_delete_lines},
   {"insert_lines", lavt_insert_lines},
-  {"initialize_audio", lavt_initialize_audio},
+  {"initialize_audio", lavt_start_audio},	/* deprecated */
+  {"start_audio", lavt_start_audio},
   {"quit_audio", lavt_quit_audio},
   {"load_audio_file", lavt_load_audio_file},
   {"load_base_audio_file", lavt_load_audio_file},
