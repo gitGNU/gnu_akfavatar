@@ -6838,6 +6838,10 @@ avt_set_title (const char *title, const char *shortname)
 extern void
 avt_set_title (const char *title, const char *shortname)
 {
+  /* check if encoding was set */
+  if (output_cd == ICONV_UNINITIALIZED)
+    avt_mb_encoding (MB_DEFAULT_ENCODING);
+
   /* check if it's already in correct encoding default="UTF-8" */
   if (SDL_strcasecmp ("UTF-8", avt_encoding) == 0
       || SDL_strcasecmp ("UTF8", avt_encoding) == 0

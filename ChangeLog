@@ -12,6 +12,8 @@
 
 	* lua-avt.c: deprecated funtions removed
 
+	* avatar.c (avt_set_title): fix: check if encoding was set
+
 2012-04-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* configure, mingw/Makefile.in: improve cross-compiling
