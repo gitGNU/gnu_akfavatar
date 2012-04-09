@@ -84,7 +84,7 @@ Ist ein Kurzname (häufig für minimalisierte Fenster verwendet) - Vorgabe=title.
 .TP
 .I avatar
 Ist entweder "default" oder "none" oder die Bild-Daten als String,
-oder ein Dateiname mit Pfadangebe.
+oder ein Dateiname mit Pfadangabe.
 Man kann mit
 .I avt.search()
 nach der Datei suchen lassen.
