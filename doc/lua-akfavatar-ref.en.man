@@ -144,6 +144,7 @@ Clears the avatar image (ie. no avatar).
 .TP
 .BI "avt.avatar_image_file(" filename )
 Loads the avatar image from a file.
+The strings "default" or "none" are also accepted.
 .PP
 .TP
 .BI "avt.avatar_image_data(" data )
@@ -152,6 +153,7 @@ Loads the avatar image from the
 The
 .I data
 can be a string with the data or a table with strings from XPM data.
+The strings "default" or "none" are also accepted.
 .PP
 .TP
 .BI "avt.change_avatar_image(" [image] )

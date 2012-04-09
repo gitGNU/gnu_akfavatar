@@ -94,7 +94,9 @@ Unlike the former paths there are no templates with question marks.
 .SH EXAMPLE
 .nf
 local avt = require "lua-akfavatar"
-avt.initialize {title="my first program", encoding="UTF-8"}
+avt.encoding("UTF-8")
+avt.set_title("my first program")
+avt.start()
 avt.say("Hello there!\\n")
 local user = avt.ask("What's your name? ")
 avt.say("Hello, ", user, ". Nice to meet you!\\n")

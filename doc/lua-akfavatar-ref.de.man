@@ -152,6 +152,7 @@ Löscht das Avatar-Bild.
 .TP
 .BI "avt.avatar_image_file(" Dateiname )
 Lädt das Avatar-Bild aus einer Datei.
+Die Strings "default" oder "none" werden auch akzeptiert.
 .PP
 .TP
 .BI "avt.avatar_image_data(" Daten )
@@ -161,6 +162,7 @@ Die
 .I Daten
 können entweder ein String sein, oder eine Tabelle mit Strings
 von XPM-Daten.
+Die Strings "default" oder "none" werden auch akzeptiert.
 .PP
 .TP
 .BI "avt.change_avatar_image(" [Bild] )
