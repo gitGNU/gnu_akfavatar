@@ -586,7 +586,11 @@ lavt_avatar_image_data (lua_State * L)
       size_t len;
 
       avatar = luaL_checklstring (L, 1, &len);
-      if (avt_avatar_image_data ((void *) avatar, len) != AVT_NORMAL)
+      if (strcmp ("default", avatar) == 0)
+	avt_avatar_image_default ();
+      else if (strcmp ("none", avatar) == 0)
+	avt_avatar_image_none ();
+      else if (avt_avatar_image_data ((void *) avatar, len) != AVT_NORMAL)
 	return luaL_error (L, "cannot load avatar-image");
     }
 
@@ -596,9 +600,17 @@ lavt_avatar_image_data (lua_State * L)
 static int
 lavt_avatar_image_file (lua_State * L)
 {
+  const char *avatar;
+
   is_initialized ();
 
-  if (avt_avatar_image_file (luaL_checkstring (L, 1)) != AVT_NORMAL)
+  avatar = luaL_checkstring (L, 1);
+
+  if (strcmp ("default", avatar) == 0)
+    avt_avatar_image_default ();
+  else if (strcmp ("none", avatar) == 0)
+    avt_avatar_image_none ();
+  else if (avt_avatar_image_file (avatar) != AVT_NORMAL)
     return luaL_error (L, "cannot load avatar-image");
 
   return 0;
