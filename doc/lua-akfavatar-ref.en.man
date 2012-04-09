@@ -136,15 +136,22 @@ if AKFAvatar it is initialized, or else it returns
 .TP
 .BI "avt.avatar_image_default()"
 Sets the default avatar image.
+Always returns true.
 .PP
 .TP
 .BI "avt.avatar_image_none()"
 Clears the avatar image (ie. no avatar).
+On error it returns
+.I nil
+and an error message.
 .PP
 .TP
 .BI "avt.avatar_image_file(" filename )
 Loads the avatar image from a file.
 The strings "default" or "none" are also accepted.
+On error it returns
+.I nil
+and an error message.
 .PP
 .TP
 .BI "avt.avatar_image_data(" data )
@@ -154,6 +161,9 @@ The
 .I data
 can be a string with the data or a table with strings from XPM data.
 The strings "default" or "none" are also accepted.
+On error it returns
+.I nil
+and an error message.
 .PP
 .TP
 .BI "avt.change_avatar_image(" [image] )

@@ -550,16 +550,25 @@ lavt_avatar_image_default (lua_State * L)
   is_initialized ();
   avt_avatar_image_default ();
 
-  return 0;
+  lua_pushboolean (L, true);
+  return 1;
 }
 
 static int
 lavt_avatar_image_none (lua_State * L)
 {
   if (initialized)
-    avt_avatar_image_none ();
-
-  return 0;
+    {
+      avt_avatar_image_none ();
+      lua_pushboolean (L, true);
+      return 1;
+    }
+  else
+    {
+      lua_pushnil (L);
+      lua_pushliteral (L, "AKFAvatar not initialized");
+      return 2;
+    }
 }
 
 /* set avatar image from data (string or table) */
@@ -575,7 +584,11 @@ lavt_avatar_image_data (lua_State * L)
       char **xpm = import_xpm (L, 1);
 
       if (!xpm)
-	return luaL_error (L, "cannot load avatar-image");
+	{
+	  lua_pushnil (L);
+	  lua_pushliteral (L, "cannot load avatar-image");
+	  return 2;
+	}
 
       avt_avatar_image_xpm (xpm);
       free (xpm);
@@ -591,10 +604,15 @@ lavt_avatar_image_data (lua_State * L)
       else if (strcmp ("none", avatar) == 0)
 	avt_avatar_image_none ();
       else if (avt_avatar_image_data ((void *) avatar, len) != AVT_NORMAL)
-	return luaL_error (L, "cannot load avatar-image");
+	{
+	  lua_pushnil (L);
+	  lua_pushliteral (L, "cannot load avatar-image");
+	  return 2;
+	}
     }
 
-  return 0;
+  lua_pushboolean (L, true);
+  return 1;
 }
 
 static int
@@ -611,9 +629,14 @@ lavt_avatar_image_file (lua_State * L)
   else if (strcmp ("none", avatar) == 0)
     avt_avatar_image_none ();
   else if (avt_avatar_image_file (avatar) != AVT_NORMAL)
-    return luaL_error (L, "cannot load avatar-image");
+    {
+      lua_pushnil (L);
+      lua_pushliteral (L, "cannot load avatar-image");
+      return 2;
+    }
 
-  return 0;
+  lua_pushboolean (L, true);
+  return 1;
 }
 
 /*
