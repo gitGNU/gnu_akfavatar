@@ -69,75 +69,56 @@ Anweisung erstmal laden.
 kann man dann die folgenden Funktionen abrufen.
 .PP
 .TP
-.BI "avt.initialize({" "title, shortname, avatar, audio, encoding, mode" "})"
+.BI "avt.encoding(" encoding )
+Legt die Text-Kodierung fest.
+.PP
+.TP
+.BI "avt.get_encoding()"
+Fragt die Text-Kodierung ab.
+.IP
+Wenn noch keine gesetzt worden ist, wird
+.I nil
+zurückgegeben.
+.PP
+.TP
+.BI "avt.set_title(" "[title] [,shortname]" )
+Legt den Titel und den Kurznamen fest.
+.PP
+.TP
+.BI "avt.start(" Modus )
 Diese Funktion öffnet das grafische Fenster oder wechselt in den Grafikmodus.
+Falls es schon gestartet war, wird vieles zurück gesetzt.
 .IP
-Sie erwartet eine Tabelle als Parameter mit Definitionen für die folgenden
-Einträge:
-.RS
-.TP
-.I title
-Ist der Titel des Fensters im Fenstermodus - Vorgabe="AKFAvatar".
-.TP
-.I shortname
-Ist ein Kurzname (häufig für minimalisierte Fenster verwendet) - Vorgabe=title.
-.TP
-.I avatar
-Ist entweder "default" oder "none" oder die Bild-Daten als String,
-oder ein Dateiname mit Pfadangabe.
-Man kann mit
-.I avt.search()
-nach der Datei suchen lassen.
-.TP
-.I audio
-Kann man auf
-.I true
-setzen, damit das Audio-Untersystem initialisiert wird.
-Das hat auch Auswirkungen auf den System-Klang ("\\a").
-.TP
-.I encoding
-Ist die Kodierung für Strings. Zum Beispiel "ISO-8859-1", "UTF-8" oder
-"WINDOWS-1252" - Vorgabe="UTF-8".
-.TP
-.I mode
-Ist eines von "auto", "window", "fullscreen", oder "fullscreen no switch".
-Die Vorgabe ist "auto", die einen brauchbare Vorgabe verwendet, oder die
-Einstellung unverändert lässt, wenn es bereits initialisiert war.
-.RE
+.I Modus
+ist eines von "auto", "window", "fullscreen", oder "fullscreen no switch".
+Die Vorgabe ist "auto", die einen brauchbare Modus verwendet, oder die
+Einstellung unverändert lässt, wenn es bereits gestartet war.
 .IP
-.B Achtung:
-Man muss hier geschweifte Klammern verwenden (es ist eine Tabelle).
-Die runden Klammern kann man weg lassen.
+Wenn man die Kodierung, den Titel oder die Hintergrund-Farbe setzen will,
+sollte man es machen, bevor man avt.start() aufruft.
+Alle anderen Funktionen sollten erst danach verwendet werden.
 .IP
-Kein Eintrag ist erforderlich, die Reihenfolge ist beliebig, man kann
-sie nach Belieben einsetzen.
-.IP
-.B Beispiele:
+.B Beispiel:
 .EX
-avt.initialize{}
-
-avt.initialize{tilte="Mein Programm", encoding="ISO-8859-1"}
-
-avt.initialize {
-  tilte = "Mein Programm",
-  shortname = "Programm",
-  avatar = avt.search("gnu-head.xpm") or "default",
-  audio = true,
-  encoding = "UTF-8",
-  mode = "fullscreen no switch"
-  }
+avt.encoding("ISO-8859-1")
+avt.set_title("Mein Programm")
+avt.set_background_color("sky blue")
+avt.start()
+avt.start_audio()
+avt.avatar_image_default()
+avt.tell("Hallo Welt!")
+avt.wait_button()
 .EE
 .IP
 Viele der folgenden Funktionen rufen automatisch
-.B avt.initialize{}
-auf, wenn es noch nicht initialisiert ist.
+.B avt.start()
+auf, wenn es noch nicht gestartet ist.
 .PP
 .TP
-.BI "avt.initialized()"
+.BI "avt.started()"
 Gibt
 .I true
-zurück, wenn AKFAvatar bereits initialisiert ist, ansonsten
-gibt es
+zurück, wenn AKFAvatar bereits gestartet ist, ansonsten gibt es
 .I false
 zurück.
 .PP
@@ -163,14 +144,6 @@ Die
 können entweder ein String sein, oder eine Tabelle mit Strings
 von XPM-Daten.
 Die Strings "default" oder "none" werden auch akzeptiert.
-.PP
-.TP
-.BI "avt.change_avatar_image(" [Bild] )
-Legt das Avatar-Bild fest.
-Das
-.I Bild
-ist ein String, wie in
-.BR avt.initialize{} .
 .PP
 .TP
 .BI "avt.set_avatar_name(" [Name] )
@@ -842,6 +815,16 @@ zu setzen, wenn der letzte Eintrag eine weiter-Funktion hat
 .PP
 .SS Audio-Ausgabe
 .TP
+.BI "avt.start_audio()"
+Startet das Audio-Untersystem.
+.IP
+Bei Erfolg gibt es
+.I true
+zurück, im Fehlerfall gibt es
+.I nil
+und eine Fehlermeldung zurück.
+.PP
+.TP
 .BI "avt.load_audio_file(" [Dateiname] )
 .TQ
 .BI "avt.load_base_audio_file(" [Dateiname] )
@@ -1027,21 +1010,6 @@ gerade abgespielt werden, wird die Audio-Ausgabe abgebrochen.
 Audiodaten werden auch vom Garbage Collector freigegeben.
 .PP
 .TP
-.BI "avt.initialize_audio()"
-Initialisiert das Audio-Untersystem.
-.IP
-Bei Erfolg gibt es
-.I true
-zurück, im Fehlerfall gibt es
-.I nil
-und eine Fehlermeldung zurück.
-.IP
-Normallerweise sollte das Audio-System mit
-.B avt.initialize{}
-initialisiert werden.
-Diese Funktion sollte nur verwendet werden, wenn man weiß, was man tut.
-.PP
-.TP
 .BI "avt.quit_audio()"
 Das Audio-Untersystem beenden.
 .IP
@@ -1148,18 +1116,6 @@ Kaputte Links werden wie nicht existierende Einträge behandelt.
 .PP
 .SS Verschiedenes
 .TP
-.BI "avt.encoding(" encoding )
-Ändert die Text-Kodierung.
-.PP
-.TP
-.BI "avt.get_encoding()"
-Fragt die Text-Kodierung ab.
-.IP
-Wenn noch keine gesetzt worden ist, wird
-.I nil
-zurückgegeben.
-.PP
-.TP
 .BI "avt.recode (" "String, Quellkodierung [,Zielkodierung]" )
 Konvertiert den angegebenen String, der in
 .I Quellkodierung
@@ -1181,13 +1137,6 @@ angeben.
 Gibt den kodierten String zurück, oder
 .IR nil ,
 falls er nicht umkodiert werden konnte.
-.PP
-.TP
-.BI "avt.set_title(" "[title] [,shortname]" )
-Ändert den Titel und/oder den Kurznamen.
-Wenn eine Angabe fehlt, oder
-.I nil
-ist, bleibt der entsprechende Eintrag unverändert.
 .PP
 .TP
 .BI "avt.right_to_left(" true | false )

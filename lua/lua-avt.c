@@ -2421,7 +2421,8 @@ static const luaL_Reg akfavtlib[] = {
   {"version", lavt_version},
   {"copyright", lavt_copyright},
   {"license", lavt_license},
-  {"initialized", lavt_initialized},
+  {"initialized", lavt_initialized}, /* deprecated */
+  {"started", lavt_initialized},
   {"get_color", lavt_get_color},
   {"colors", lavt_colors},
   {"encoding", lavt_encoding},

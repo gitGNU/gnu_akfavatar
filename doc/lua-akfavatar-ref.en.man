@@ -66,71 +66,57 @@ This gives you the table
 with which you can access the following functions.
 .PP
 .TP
-.BI "avt.initialize({" "title, shortname, avatar, audio, encoding, mode" "})"
+.BI "avt.encoding(" encoding )
+Set the used text encoding.
+.PP
+.TP
+.BI "avt.get_encoding()"
+Gets the current text encoding.
+.IP
+Returns
+.I nil
+if none is set yet.
+.PP
+.TP
+.BI "avt.set_title(" "title [,shortname]" )
+Sets the title and the shortname.
+.PP
+.TP
+.BI "avt.start(" [mode] )
 This function opens the graphical window or switches into the
-graphical mode.  If it was already initialized it resets almost
+graphical mode.  If it was already started it resets almost
 everything.
 .IP
-It accepts a table as parameter with definitions for the following items:
-.RS
-.TP
-.I title
-Is the title for the window in windowed mode - default="AKFAvatar".
-.TP
-.I shortname
-Is a shortname (often used for iconized windows) - default=title.
-.TP
-.I avatar
-Is either "default" or "none" or image data in the string, or 
-a filename with the path.
-You can search for the file with
-.IR avt.search() .
-.TP
-.I audio
-Set this to true if the audio subsystem should be initialized.
-This has also influence on the system "bell".
-.TP
-.I encoding
-Is the encoding for strings, for example to "ISO-8859-1", "UTF-8" or
-"WINDOWS-1252" - default="UTF-8".
-.TP
 .I mode
 Is one of "auto", "window", "fullscreen", or "fullscreen no switch".
 The default is "auto" which uses a sensible default,
-or leaves the mode unchanged, if it already was initialized.
-.RE
+or leaves the mode unchanged, if it already was started.
 .IP
-.B Attention:
-You have to use curly braces here (it is a table).
-But you can leave the round brackets away.
+If you want to set the encoding, the title and the background color, you should
+do it before you call avt.start().
+All other functions should be used after it.
 .IP
-No item is needed, the order doesn't matter, use them as you wish.
-.IP
-.B Examples:
+.B Example:
 .EX
-avt.initialize{}
-
-avt.initialize{tilte="my program", encoding="ISO-8859-1"}
-
-avt.initialize {
-  tilte = "my program",
-  shortname = "program",
-  avatar = avt.search("gnu-head.xpm") or "default",
-  audio = true,
-  encoding = "UTF-8",
-  mode = "fullscreen no switch"
-  }
+avt.encoding("ISO-8859-1")
+avt.set_title("my program")
+avt.set_background_color("sky blue")
+avt.start()
+avt.start_audio()
+avt.avatar_image_default()
+avt.tell("hello world")
+avt.wait_button()
 .EE
 .IP
 Many of the following functions implicitly call
-.B avt.initialize{}
-when it is not initialized yet.
+.B avt.start()
+when it is not started yet.
 .PP
 .TP
-.BI "avt.initialized()"
+.BI "avt.started()"
 Returns
 .I true
-if AKFAvatar it is initialized, or else it returns
+if AKFAvatar it is started, or else it returns
 .IR false .
 .PP
 .TP
@@ -164,12 +150,6 @@ The strings "default" or "none" are also accepted.
 On error it returns
 .I nil
 and an error message.
-.PP
-.TP
-.BI "avt.change_avatar_image(" [image] )
-Sets the avatar image.
-The image is a string like in
-.BR avt.initialize{} .
 .PP
 .TP
 .BI "avt.set_avatar_name(" [name] )
@@ -335,7 +315,7 @@ Shows only the avatar without any balloon.
 .PP
 .TP
 .BI "avt.bell()"
-Makes a sound or flashes the display if audio is not initialized.
+Makes a sound or flashes the display if audio is not started.
 .PP
 .TP
 .BI "avt.flash()"
@@ -794,6 +774,16 @@ when the last entry is a forward function
 .PP
 .SS Audio Output
 .TP
+.BI "avt.start_audio()"
+Starts the audio subsystem.
+.IP
+On success it returns 
+.IR true ,
+on error it returns
+.I nil
+and an error message.
+.PP
+.TP
 .BI "avt.load_audio_file(" [filename] )
 .TQ
 .BI "avt.load_base_audio_file(" [filename] )
@@ -963,20 +953,6 @@ is currently playing, it is stopped.
 Audio data is also freed by the garbage collector.
 .PP
 .TP
-.BI "avt.initialize_audio()"
-Initialize the audio subsystem.
-.IP
-On success it returns 
-.IR true ,
-on error it returns
-.I nil
-and an error message.
-.IP
-Normally you should initialize it with
-.BR avt.initialize{} .
-Only use this, if you are sure you need it.
-.PP
-.TP
 .BI "avt.quit_audio()"
 Quit the audio subsystem.
 .IP
@@ -1080,18 +1056,6 @@ Broken links are treated like not existing entries.
 .PP
 .SS Miscellaneous
 .TP
-.BI "avt.encoding(" encoding )
-Change the used text encoding.
-.PP
-.TP
-.BI "avt.get_encoding()"
-Gets the currently used text encoding.
-.IP
-Returns
-.I nil
-if none is set yet.
-.PP
-.TP
 .BI "avt.recode (" "string, fromcode [,tocode]" )
 Recode the given string, which is encoded as
 .I fromcode
@@ -1110,13 +1074,6 @@ To encode to or from the systems default encoding
 Returns the recoded string or
 .I nil
 on error.
-.PP
-.TP
-.BI "avt.set_title(" "[title] [,shortname]" )
-Change the title and/or the shortname.
-A missing option or
-.I nil
-leaves it unchanged.
 .PP
 .TP
 .BI "avt.right_to_left(" true | false )
