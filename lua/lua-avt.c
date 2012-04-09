@@ -220,6 +220,7 @@ lavt_start (lua_State * L)
       avt_normal_text ();
       avt_set_mouse_visible (true);
       avt_set_title (title, shortname);
+      avt_avatar_image_none ();
 
       if (mode != AVT_AUTOMODE)
 	avt_switch_mode (mode);
@@ -521,26 +522,18 @@ lavt_show_image_string (lua_State * L)
 }
 
 /* change title and/or icontitle */
-/* a missing option or "nil" leaves it unchanged */
 static int
 lavt_set_title (lua_State * L)
 {
   const char *title, *shortname;
 
-  title = lua_tostring (L, 1);
-  shortname = lua_tostring (L, 2);
+  title = luaL_checkstring (L, 1);
+  shortname = luaL_optstring (L, 2, title);
 
-  if (title)
-    {
-      lua_pushvalue (L, 1);
-      lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-title");
-    }
-
-  if (shortname)
-    {
-      lua_pushvalue (L, 2);
-      lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-shortname");
-    }
+  lua_pushstring (L, title);
+  lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-title");
+  lua_pushstring (L, shortname);
+  lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-shortname");
 
   if (initialized)
     avt_set_title (title, shortname);
