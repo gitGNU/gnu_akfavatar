@@ -1249,6 +1249,6 @@ you have to initialize AKFAvatar again...
 .BR lua-akfavatar (1)
 .BR lua (1)
 .br
-.B http://www.lua.org/manual/5.1/
+.B http://www.lua.org/manual/5.2/
 .br
 .B http://akfavatar.nongnu.org/manual/

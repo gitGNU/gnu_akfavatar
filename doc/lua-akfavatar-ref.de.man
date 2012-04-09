@@ -1327,6 +1327,6 @@ abfangen will, muss man danach AKFAvatar neu initialisieren...
 .br
 .B http://lua.coders-online.net/
 .br
-.B http://www.lua.org/manual/5.1/
+.B http://www.lua.org/manual/5.2/
 .br
 .B http://akfavatar.nongnu.org/manual/
