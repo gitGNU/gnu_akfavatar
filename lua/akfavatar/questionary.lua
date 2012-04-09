@@ -101,7 +101,7 @@ local function questionary(qa)
     myavatar = avt.search(qa.avatar)
   end
 
-  if not avt.initialized()
+  if not avt.started()
   then
     avt.encoding("UTF-8")
     avt.set_title(qa.title)

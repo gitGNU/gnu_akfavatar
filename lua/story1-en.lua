@@ -1,6 +1,6 @@
 #!/usr/bin/env lua-akfavatar
 
--- Copyright (c) 2010,2011 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
 -- this is just an example for Lua-AKFAvatar with different Avatars
@@ -37,13 +37,9 @@ story = person:
 
 ------------------------------------------------------------------------
 
-avt.initialize {
-  title = woman.name .. " & " .. man.name,
-  shortname = woman.name,
-  encoding = "UTF-8",
-  avatar = "none"
-  }
-
+avt.encoding("UTF-8")
+avt.set_title(woman.name .. " & " .. man.name, woman.name)
+avt.start()
 avt.set_text_delay ()  --> activate the slowprint mode
 avt.markup (true) --> use "_" for underlined text and "*" for bold
 

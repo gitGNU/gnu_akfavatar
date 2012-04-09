@@ -1,6 +1,6 @@
 #!/usr/bin/env lua-akfavatar
 
--- Copyright (c) 2010,2011 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
 -- Dies ist nur ein kleines Beispiel für Lua-AKFAvatar 
@@ -45,13 +45,9 @@ Erzaehler = person:
 
 ------------------------------------------------------------------------
 
-avt.initialize {
-  title = Frau.name .. " & " .. Mann.name,
-  shortname = Frau.name,
-  encoding = "UTF-8",
-  avatar = "none"
-  }
-
+avt.encoding("UTF-8")
+avt.set_title(Frau.name .. " & " .. Mann.name, Frau.name)
+avt.start()
 avt.set_text_delay () --> den Langsamschreibmodus aktivieren
 avt.markup (true) --> Verwende "_" für Unterstreichen, "*" für Fettdruck
 
