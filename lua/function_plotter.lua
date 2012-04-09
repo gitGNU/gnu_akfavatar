@@ -54,11 +54,9 @@ atan = math.atan
 local avt = require "lua-akfavatar"
 local graphic = require "akfavatar-graphic"
 
-avt.initialize {
-  title = "Function Plotter",
-  avatar = avt.search("teacher.xpm") or "default",
-  encoding = "UTF-8"
-  }
+avt.encoding("UTF-8")
+avt.set_title("Function Plotter")
+avt.avatar_image_file(avt.search("teacher.xpm"))
 
 local gr, width, height = graphic.new()
 local xoffset, yoffset = width/2, height/2

@@ -21,10 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 local avt = require "lua-akfavatar"
 local graphic = require "akfavatar-graphic"
 
-avt.initialize {
-  title = "Clock",
-  avatar = "none",
-  }
+avt.set_title("Clock")
+avt.start()
 
 local function draw_clockface(gr, radius, color)
   local clockface = gr:duplicate()

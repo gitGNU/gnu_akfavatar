@@ -8,11 +8,8 @@
 
 local avt = require "lua-akfavatar"
 
-avt.initialize {
-  title = "colors overview",
-  shortname = "colors",
-  avatar = "none"
-  }
+avt.set_title("colors overview", "colors")
+avt.start()
 
 local color = avt.color_selection()
 if color then

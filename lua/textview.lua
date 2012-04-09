@@ -1,16 +1,14 @@
 #!/usr/bin/env lua-akfavatar
 
--- Copyright (c) 2010,2011 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
 local avt = require "lua-akfavatar"
 local utf8 = require "akfavatar.utf8"
 
-avt.initialize{
-  title = "Text Viewer",
-  avatar = "none",
-  encoding = "UTF-8"
-  }
+avt.encoding("UTF-8")
+avt.set_title("Text Viewer")
+avt.start()
 
 -- what files to show with file_selection
 function textfile(n)

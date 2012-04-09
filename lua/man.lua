@@ -8,12 +8,13 @@
 
 local avt = require "lua-akfavatar"
 
--- we don't know yet which avatar to use - "none" is fastest
-avt.initialize{title="Manpage", avatar="none", encoding="ISO-8859-1"}
+avt.encoding("ISO-8859-1")
+avt.set_title("Manpage")
+avt.start()
 
 function ask()
   avt.markup(true)
-  avt.change_avatar_image("default")
+  avt.avatar_image_default()
   --avt.move_in()
   avt.set_balloon_size(3, 40)
   avt.say("man [_Option_ ...] [_Section_] _Page_ ...\n\nman ")
@@ -33,7 +34,7 @@ local manpage = assert(io.popen(
   "env MANWIDTH=80 GROFF_TYPESETTER=latin1 GROFF_NO_SGR=1 man -t "
   .. page .. " 2>&1"))
 
-avt.change_avatar_image(assert(avt.search("info.xpm")))
+avt.avatar_image_file(avt.search("info.xpm"))
 avt.set_balloon_size(0, 0)
 -- manpages use the overstrike technique in the output
 avt.markup(false)

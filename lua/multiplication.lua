@@ -209,15 +209,13 @@ function WantToContinue()
 end
 
 function initialize()
+  avt.encoding("UTF-8")
+  avt.set_title("AKFAvatar: " .. L"Multiply", L"Multiply")
   avt.set_background_color("tan")
   avt.set_balloon_color("floral white")
-  avt.initialize {
-    title = "AKFAvatar: " .. L"Multiply",
-    shortname = L"Multiply",
-    avatar = avt.search("teacher.xpm"),
-    audio = true,
-    encoding = "UTF-8"
-    }
+  avt.start()
+  avt.start_audio()
+  avt.avatar_image_file(avt.search("teacher.xpm"))
   avt.move_in()
 
   -- initialize the random number generator

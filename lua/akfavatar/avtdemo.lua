@@ -29,7 +29,10 @@ local audio, initialized, moved_in, avatar, avatarname
 local ballooncolor, textcolor, title, archive, target_time, txt
 
 local function initialize()
-  avt.initialize {title=title, avatar=avatar, audio=true}
+  avt.set_title(title)
+  avt.start()
+  avt.start_audio()
+  avt.change_avatar_image(avatar)
   if avatarname then avt.set_avatar_name(avatarname) end
   if ballooncolor then avt.set_balloon_color(ballooncolor) end
   if textcolor then avt.set_text_color(textcolor) end

@@ -7,13 +7,10 @@
 avt = require "lua-akfavatar"
 term = require "akfavatar-term"
 
-avt.initialize {
-  title = "AKFAvatar Terminal",
-  shortname = "Terminal",
-  audio = true, --> for the bell ("\a")
-  mode = "auto",
-  avatar = avt.search("computer.xpm") or "none"
-}
+avt.set_title("AKFAvatar Terminal", "Terminal")
+avt.start()
+avt.start_audio()
+avt.avatar_image_file(avt.search("computer.xpm"))
 
 -- 25x80 is a traditional default, but other sizes are okay
 avt.set_balloon_size(25, 80)

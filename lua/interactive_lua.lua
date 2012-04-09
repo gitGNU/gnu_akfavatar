@@ -51,12 +51,11 @@ local function interactive (cmd)
   return cmd
 end
 
-avt.initialize {
-  title    = "Lua-AKFAvatar",
-  encoding = "UTF-8",
-  audio    = true,
-  avatar   = avt.search("computer.xpm") or "default"
-  }
+avt.encoding("UTF-8")
+avt.set_title("Lua-AKFAvatar")
+avt.start()
+avt.start_audio()
+avt.avatar_image_file(avt.search("computer.xpm") or "default")
 
 -- avt.move_in ()
 avt.underlined(true)

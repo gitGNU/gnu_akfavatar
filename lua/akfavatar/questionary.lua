@@ -98,19 +98,18 @@ local function questionary(qa)
   if qa.avatar=="default" or qa.avatar=="none" then
     myavatar = qa.avatar
   elseif qa.avatar then
-    myavatar = avt.search(qa.avatar) or "default"
+    myavatar = avt.search(qa.avatar)
   end
 
   if not avt.initialized()
   then
-    avt.initialize {
-      title = qa.title,
-      avatar = myavatar or "default",
-      audio = true,
-      encoding = "UTF-8"
-      }
+    avt.encoding("UTF-8")
+    avt.set_title(qa.title)
+    avt.start()
+    avt.start_audio()
+    avt.change_avatar_image(myavatar or "default")
   else
-    avt.initialize_audio()
+    avt.start_audio()
     if myavatar then avt.change_avatar_image(myavatar) end
   end
 

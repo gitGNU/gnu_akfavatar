@@ -28,14 +28,12 @@ Keys:
 
 local avt = require "lua-akfavatar"
 local graphic = require "akfavatar-graphic"
+
+avt.set_title("Connect Four")
+avt.start()
+avt.start_audio()
+
 local success = avt.load_audio_file(avt.search "okay.au") or avt.silent()
-
-avt.initialize {
-  title = "Connect Four",
-  avatar = "none",
-  audio = true
-  }
-
 local chip = {[1] = "yellow", [2] = "red"}
 local score = {[1] = 0, [2] = 0}
 local player = 1

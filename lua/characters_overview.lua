@@ -8,7 +8,7 @@
 
 local avt = require "lua-akfavatar"
 
-avt.initialize{}
+avt.start()
 
 local items = {
   "End",

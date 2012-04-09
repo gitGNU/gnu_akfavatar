@@ -9,7 +9,7 @@
 local avt = require "lua-akfavatar"
 local utf8 = require "akfavatar.utf8"
 
-avt.initialize{}
+avt.start()
 
 local function block_list(f, t)
   local list = "╔═══╤════════╤══════════╤══════════════╗\n" ..
