@@ -32,7 +32,7 @@ local function initialize()
   avt.set_title(title)
   avt.start()
   avt.start_audio()
-  avt.change_avatar_image(avatar)
+  if not avt.avatar_image_data(avatar) then avt.avatar_image_file(avatar) end
   if avatarname then avt.set_avatar_name(avatarname) end
   if ballooncolor then avt.set_balloon_color(ballooncolor) end
   if textcolor then avt.set_text_color(textcolor) end
@@ -60,7 +60,11 @@ local function avatar_image(name)
     avatar = archive:get(name)
   end
 
-  if initialized then avt.change_avatar_image(avatar) end
+  if initialized then 
+    if not avt.avatar_image_data(avatar) then
+      avt.avatar_image_file(avatar)
+    end
+  end
 end
 
 local function set_avatar_name(name)

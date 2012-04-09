@@ -107,7 +107,9 @@ local function questionary(qa)
     avt.set_title(qa.title)
     avt.start()
     avt.start_audio()
-    avt.change_avatar_image(myavatar or "default")
+    if not avt.avatar_image_data(myavatar) then
+      avt.avatar_image_file(myavatar)
+      end
   else
     avt.start_audio()
     if myavatar then avt.change_avatar_image(myavatar) end
