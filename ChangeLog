@@ -6,6 +6,10 @@
 	* lua-avt.c (lavt_avatar_image_default, lavt_avatar_image_none)
 	(lavt_avatar_image_data, lavt_avatar_image_file): new functions
 
+	* lua-avt.c (lavt_set_title): store values in registry
+
+	* lua-avt.c (lavt_start): new function
+
 2012-04-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* configure, mingw/Makefile.in: improve cross-compiling

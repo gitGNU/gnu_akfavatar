@@ -336,6 +336,51 @@ lavt_initialize (lua_State * L)
   return 0;
 }
 
+static int
+lavt_start (lua_State * L)
+{
+  int mode;
+  const char *title, *shortname;
+
+  mode = AVT_AUTOMODE;
+
+  if (!lua_isnoneornil (L, 1))
+    mode = get_mode (L, 1);
+
+  lua_getfield (L, LUA_REGISTRYINDEX, "AKFAvatar-title");
+  title = lua_tostring (L, -1);
+  lua_getfield (L, LUA_REGISTRYINDEX, "AKFAvatar-shortname");
+  shortname = lua_tostring (L, -1);
+  lua_pop (L, 2);
+
+  if (!initialized && !avt_initialized ())
+    {
+      check (avt_start (title, shortname, mode));
+    }
+  else				/* already initialized */
+    {
+      /* reset almost everything */
+      /* not the background color - should be set before initialization */
+      avt_clear_screen ();
+      avt_set_balloon_size (0, 0);
+      avt_newline_mode (true);
+      avt_set_auto_margin (true);
+      avt_set_origin_mode (true);
+      avt_set_scroll_mode (1);
+      avt_reserve_single_keys (false);
+      avt_set_balloon_color_name ("floral white");
+      avt_normal_text ();
+      avt_set_mouse_visible (true);
+      avt_set_title (title, shortname);
+
+      if (mode != AVT_AUTOMODE)
+	avt_switch_mode (mode);
+    }
+
+  initialized = true;
+  return 0;
+}
+
 /* quit the avatar subsystem (closes the window) */
 static int
 lavt_quit (lua_State * L)
@@ -554,7 +599,7 @@ lavt_avatar_image_file (lua_State * L)
   is_initialized ();
 
   if (avt_avatar_image_file (luaL_checkstring (L, 1)) != AVT_NORMAL)
-	return luaL_error (L, "cannot load avatar-image");
+    return luaL_error (L, "cannot load avatar-image");
 
   return 0;
 }
@@ -608,7 +653,26 @@ lavt_show_image_string (lua_State * L)
 static int
 lavt_set_title (lua_State * L)
 {
-  avt_set_title (lua_tostring (L, 1), lua_tostring (L, 2));
+  const char *title, *shortname;
+
+  title = lua_tostring (L, 1);
+  shortname = lua_tostring (L, 2);
+
+  if (title)
+    {
+      lua_pushvalue (L, 1);
+      lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-title");
+    }
+
+  if (shortname)
+    {
+      lua_pushvalue (L, 2);
+      lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-shortname");
+    }
+
+  if (initialized)
+    avt_set_title (title, shortname);
+
   return 0;
 }
 
@@ -2297,13 +2361,14 @@ lavt_search (lua_State * L)
 /* register library functions */
 
 static const luaL_Reg akfavtlib[] = {
-  {"initialize", lavt_initialize},
+  {"initialize", lavt_initialize},	/* deprecated */
+  {"start", lavt_start},
   {"quit", lavt_quit},
   {"avatar_image_default", lavt_avatar_image_default},
   {"avatar_image_none", lavt_avatar_image_none},
   {"avatar_image_data", lavt_avatar_image_data},
   {"avatar_image_file", lavt_avatar_image_file},
-  {"change_avatar_image", lavt_change_avatar_image},  /* deprecated */
+  {"change_avatar_image", lavt_change_avatar_image},	/* deprecated */
   {"set_avatar_name", lavt_set_avatar_name},
   {"say", lavt_say},
   {"write", lavt_say},		/* alias */
