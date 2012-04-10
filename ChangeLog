@@ -11,6 +11,8 @@
 	* lua-avt.c: avt.load_audio_string and avt.load_base_audio_string were
 	renamed to avt.load_audio and avt.load_base_audio
 
+	* avatar.c (avt_wait_button): store/restore background
+
 2012-04-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua-avt.c (import_xpm): new function

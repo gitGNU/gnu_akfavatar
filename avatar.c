@@ -5168,7 +5168,7 @@ extern int
 avt_wait_button (void)
 {
   SDL_Event event;
-  SDL_Surface *button;
+  SDL_Surface *button, *button_area;
   SDL_Rect btn_rect;
   bool nokey;
 
@@ -5185,6 +5185,15 @@ avt_wait_button (void)
   btn_rect.h = button->h;
 
   SDL_SetClipRect (screen, &window);
+
+  /* store background */
+  button_area =
+    SDL_CreateRGBSurface (SDL_SWSURFACE, btn_rect.w, btn_rect.h,
+			  screen->format->BitsPerPixel,
+			  screen->format->Rmask, screen->format->Gmask,
+			  screen->format->Bmask, screen->format->Amask);
+  SDL_BlitSurface (screen, &btn_rect, button_area, NULL);
+
   SDL_BlitSurface (button, NULL, screen, &btn_rect);
   SDL_FreeSurface (button);
   button = NULL;
@@ -5220,9 +5229,8 @@ avt_wait_button (void)
     }
 
   /* delete button */
-  /* TODO: save/restore background */
-  SDL_SetClipRect (screen, &window);
-  SDL_FillRect (screen, &btn_rect, background_color);
+  SDL_BlitSurface (button_area, NULL, screen, &btn_rect);
+  SDL_FreeSurface (button_area);
   AVT_UPDATE_RECT (btn_rect);
 
   if (textfield.x >= 0)
