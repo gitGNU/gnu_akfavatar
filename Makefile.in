@@ -607,6 +607,7 @@ dist: about $(srcdir)/alert.au
 	ln $(srcdir)/lua/lua-avt.c $(srcdir)/lua/lua-akfavatar-prg.c \
 	   $(srcdir)/lua/interactive_lua.lua \
 	   $(srcdir)/lua/hello.lua \
+	   $(srcdir)/lua/fullscreen.lua \
 	   $(srcdir)/lua/audioplayer.lua \
 	   $(srcdir)/lua/function_plotter.lua \
 	   $(srcdir)/lua/clock.lua \
@@ -719,6 +720,7 @@ dist-bin-default: all pdf
 	cp akfavatar-term.so $(BINPKGNAME)/lua/
 	ln $(srcdir)/README-Lua $(BINPKGNAME)/
 	ln $(srcdir)/Homepage.desktop $(BINPKGNAME)/
+	ln $(srcdir)/lua/fullscreen.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/audioplayer.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/function_plotter.lua $(BINPKGNAME)/lua/

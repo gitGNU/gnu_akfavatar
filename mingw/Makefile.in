@@ -314,6 +314,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp base64.dll $(BINPKGNAME)/
 	cp akfavatar-vorbis.dll $(BINPKGNAME)/
 	cp akfavatar-graphic.dll $(BINPKGNAME)/
+	cp $(srcdir)/lua/fullscreen.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/multiplication.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/audioplayer.lua $(BINPKGNAME)/lua/
