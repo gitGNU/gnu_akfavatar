@@ -13,7 +13,7 @@ avt.encoding("UTF-8")
 avt.set_title("Hello World", "Hello")
 avt.set_background_color("tan")
 avt.start()
-avt.avatar_image_default()
+avt.avatar_image("default")
 avt.set_text_delay() --> activate the slowprint mode (optional)
 
 avt.set_balloon_size(10, 20) --> set the size of the balloon (optional)
