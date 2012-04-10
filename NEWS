@@ -37,7 +37,16 @@
     - avta_load_vorbis_stream: new_function
 
   Lua-API changes:
-  - new functions: avt.delay, avt.search, avt.load_audio_stream
+  - avt.initialize removed, use avt.start instead
+  - avt.initialized renamed to avt.started
+  - avt.initialize_audio renamed to avt.start_audio
+  - avt.change_avatar_image renamed to avt.avatar_image, for files
+    you have to use the new function avt.avatar_image_file
+  - avt.show_image_string renamed to avt.show_image
+  - the functions avt.avatar_image and avt.show_image support
+    a table with strings from XPM data
+  - new functions: avt.avatar_image_file, avt.delay, avt.search,
+    avt.load_audio_stream
   - new variable: avt.datapath
   - Module "akfavatar-graphic"
     - gr:new() accepts name for background color
