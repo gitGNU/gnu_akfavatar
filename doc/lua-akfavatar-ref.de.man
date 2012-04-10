@@ -22,7 +22,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar Referenz" 3 2011-04-09 AKFAvatar
+.TH "Lua-AKFAvatar Referenz" 3 2011-04-10 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar Referenz \- AKFAvatar spezifische Funktionen für Lua
@@ -71,6 +71,7 @@ kann man dann die folgenden Funktionen abrufen.
 .TP
 .BI "avt.encoding(" encoding )
 Legt die Text-Kodierung fest.
+Wenn diese Funktion nicht verwendet wird, wird "UTF-8" verwendet.
 .PP
 .TP
 .BI "avt.get_encoding()"
@@ -321,11 +322,12 @@ initialisiert ist.
 Die Anzeige blinkt einmal.
 .PP
 .TP
-.BI "avt.show_image_file(" Dateiname )
-Lädt ein Bild und zeigt es an.
-Man kann mit
-.I avt.search()
-nach der Datei suchen lassen.
+.BI "avt.show_image(" Daten )
+Zeigt ein Bild von Bilddaten.
+Die
+.I Daten
+können ein String mit Bilddaten sein,
+oder eine Tabelle mit Strings von XPM-Daten.
 Bei Erfolg wird
 .IR true " zurückgegeben, oder " false " im Fehlerfall."
 Bei Erfolg sollte eines von
@@ -333,8 +335,13 @@ Bei Erfolg sollte eines von
 aufgerufen werden.
 .PP
 .TP
-.BI "avt.show_image_string(" Bild )
-Zeigt ein Bild von Bilddaten in einem String an.
+.BI "avt.show_image_file(" Dateiname )
+Lädt ein Bild und zeigt es an.
+Man kann mit
+.I avt.search()
+nach der Datei suchen lassen.
+Bei Erfolg wird
+.IR true " zurückgegeben, oder " false " im Fehlerfall."
 Bei Erfolg sollte eines von
 .BR avt.wait() " oder " avt.wait_button() " oder " avt.get_key()
 aufgerufen werden.

@@ -3,7 +3,10 @@
 	* lua-avt.c (lavt_avatar_image_default, lavt_avatar_image_none):
 	functions removed again
 
-	* lua-avt.c (lavt_avatar_image_data): renamed lavt_avatar_image
+	* lua-avt.c (lavt_avatar_image): renamed from lavt_avatar_image_data
+
+	* lua-avt.c (lavt_show_image): renamed from lavt_show_image_string
+	also supports XPM data in a table now
 
 2012-04-09  Andreas K. Foerster  <info@akfoerster.de>
 

@@ -479,19 +479,37 @@ lavt_show_image_file (lua_State * L)
 }
 
 /*
- * get image from string
+ * get image from data
  * on error it returns nil
  * if it succeeds call avt.wait or avt.waitkey
  */
 static int
-lavt_show_image_string (lua_State * L)
+lavt_show_image (lua_State * L)
 {
-  char *data;
-  size_t len;
-
   is_initialized ();
-  data = (char *) luaL_checklstring (L, 1, &len);
-  lua_pushboolean (L, (int) (avt_show_image_data (data, len) == AVT_NORMAL));
+
+  if (lua_istable (L, 1))	/* assume XPM table */
+    {
+      char **xpm = import_xpm (L, 1);
+
+      if (xpm)
+	{
+	  lua_pushboolean (L, (int) (avt_show_image_xpm (xpm) == AVT_NORMAL));
+	  free (xpm);
+	}
+      else
+	lua_pushboolean (L, (int) false);
+    }
+  else				/* not a table */
+    {
+      char *data;
+      size_t len;
+
+      data = (char *) luaL_checklstring (L, 1, &len);
+      lua_pushboolean (L,
+		       (int) (avt_show_image_data (data, len) == AVT_NORMAL));
+    }
+
   return 1;
 }
 
@@ -2260,8 +2278,8 @@ static const luaL_Reg akfavtlib[] = {
   {"clear_bol", lavt_clear_bol},
   {"clear_line", lavt_clear_line},
   {"show_avatar", lavt_show_avatar},
+  {"show_image", lavt_show_image},
   {"show_image_file", lavt_show_image_file},
-  {"show_image_string", lavt_show_image_string},
   {"credits", lavt_credits},
   {"move_in", lavt_move_in},
   {"move_out", lavt_move_out},
