@@ -5493,8 +5493,8 @@ extern bool
 avt_decide (void)
 {
   SDL_Event event;
-  SDL_Surface *base_button;
-  SDL_Rect yes_rect, no_rect;
+  SDL_Surface *base_button, *buttons_area;
+  SDL_Rect yes_rect, no_rect, area_rect;
   int result;
 
   if (!screen || _avt_STATUS != AVT_NORMAL)
@@ -5510,18 +5510,33 @@ avt_decide (void)
   yes_rect.y = window.y + window.h - base_button->h - AVATAR_MARGIN;
   yes_rect.w = base_button->w;
   yes_rect.h = base_button->h;
-  SDL_BlitSurface (base_button, NULL, screen, &yes_rect);
-  avt_button_inlay (yes_rect, AVT_XBM_INFO (btn_yes), 0, 0xAA, 0);
 
   no_rect.x = yes_rect.x - BUTTON_DISTANCE - base_button->w;
   no_rect.y = yes_rect.y;
   no_rect.w = base_button->w;
   no_rect.h = base_button->h;
+
+  area_rect.x = no_rect.x;
+  area_rect.y = no_rect.y;
+  area_rect.w = 2*base_button->w + BUTTON_DISTANCE;
+  area_rect.h = no_rect.h;
+
+  /* store background */
+  buttons_area =
+    SDL_CreateRGBSurface (SDL_SWSURFACE, area_rect.w, area_rect.h,
+			  screen->format->BitsPerPixel,
+			  screen->format->Rmask, screen->format->Gmask,
+			  screen->format->Bmask, screen->format->Amask);
+  SDL_BlitSurface (screen, &area_rect, buttons_area, NULL);
+
+  /* draw buttons */
+  SDL_BlitSurface (base_button, NULL, screen, &yes_rect);
+  avt_button_inlay (yes_rect, AVT_XBM_INFO (btn_yes), 0, 0xAA, 0);
+
   SDL_BlitSurface (base_button, NULL, screen, &no_rect);
   avt_button_inlay (no_rect, AVT_XBM_INFO (btn_no), 0xAA, 0, 0);
 
-  AVT_UPDATE_RECT (no_rect);
-  AVT_UPDATE_RECT (yes_rect);
+  AVT_UPDATE_RECT (area_rect);
 
   SDL_FreeSurface (base_button);
   base_button = NULL;
@@ -5575,12 +5590,9 @@ avt_decide (void)
     }
 
   /* delete buttons */
-  /* TODO: save/restore background */
-  SDL_SetClipRect (screen, &window);
-  SDL_FillRect (screen, &no_rect, background_color);
-  SDL_FillRect (screen, &yes_rect, background_color);
-  AVT_UPDATE_RECT (no_rect);
-  AVT_UPDATE_RECT (yes_rect);
+  SDL_BlitSurface (buttons_area, NULL, screen, &area_rect);
+  SDL_FreeSurface (buttons_area);
+  AVT_UPDATE_RECT (area_rect);
 
   if (textfield.x >= 0)
     SDL_SetClipRect (screen, &viewport);
