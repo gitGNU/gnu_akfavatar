@@ -870,15 +870,15 @@ Bei Fehlern wird
 und eine Fehlermelung zurückgegeben.
 .PP
 .TP
-.BI "avt.load_audio_string(" [Audiodaten] )
+.BI "avt.load_audio(" [Audiodaten] )
 .TQ
-.BI "avt.load_base_audio_string(" [Audiodaten] )
+.BI "avt.load_base_audio(" [Audiodaten] )
 Liest Audiodaten aus einem String.
 Ansonsten das selbe, wie
 .BR avt.load_audio_file() .
 .IP
 Lua-Module können Unterstützung für weitere Audio-Formate zu
-.B "avt.load_audio_string()"
+.B "avt.load_audio()"
 hinzufügen.
 (Das tut zum Beispiel das Modul
 .BR akfavatar-vorbis ).

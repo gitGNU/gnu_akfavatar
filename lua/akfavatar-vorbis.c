@@ -121,7 +121,7 @@ lvorbis_load_stream (lua_State * L)
 }
 
 static int
-lvorbis_load_string (lua_State * L)
+lvorbis_load (lua_State * L)
 {
   size_t len;
   void *vorbis_data;
@@ -219,7 +219,7 @@ lvorbis_load_stream_chain (lua_State * L)
 }
 
 static int
-lvorbis_load_string_chain (lua_State * L)
+lvorbis_load_chain (lua_State * L)
 {
   avt_audio *audio_data;
 
@@ -233,10 +233,10 @@ lvorbis_load_string_chain (lua_State * L)
       vorbis_data = (void *) luaL_checklstring (L, 1, &len);
       audio_data = avta_load_vorbis_data (vorbis_data, (int) len);
 
-      if (!audio_data)		/* call old avt.load_audio_string */
+      if (!audio_data)		/* call old avt.load_audio */
 	{
 	  lua_getfield (L, LUA_REGISTRYINDEX,
-			"AVTVORBIS-old_load_audio_string");
+			"AVTVORBIS-old_load_audio");
 	  lua_pushvalue (L, 1);	/* push audio data */
 
 	  if (lua_pcall (L, 1, 1, 0) != 0)
@@ -260,7 +260,7 @@ lvorbis_load_string_chain (lua_State * L)
 static const luaL_Reg vorbislib[] = {
   {"load_file", lvorbis_load_file},
   {"load_stream", lvorbis_load_stream},
-  {"load_string", lvorbis_load_string},
+  {"load", lvorbis_load},
   {NULL, NULL}
 };
 
@@ -277,16 +277,16 @@ luaopen_vorbis (lua_State * L)
   lua_setfield (L, LUA_REGISTRYINDEX, "AVTVORBIS-old_load_audio_file");
   lua_getfield (L, -1, "load_audio_stream");
   lua_setfield (L, LUA_REGISTRYINDEX, "AVTVORBIS-old_load_audio_stream");
-  lua_getfield (L, -1, "load_audio_string");
-  lua_setfield (L, LUA_REGISTRYINDEX, "AVTVORBIS-old_load_audio_string");
+  lua_getfield (L, -1, "load_audio");
+  lua_setfield (L, LUA_REGISTRYINDEX, "AVTVORBIS-old_load_audio");
 
-  /* redefine avt.load_audio_file and avt.load_audio_string */
+  /* redefine avt.load_audio_file and avt.load_audio */
   lua_pushcfunction (L, lvorbis_load_file_chain);
   lua_setfield (L, -2, "load_audio_file");
   lua_pushcfunction (L, lvorbis_load_stream_chain);
   lua_setfield (L, -2, "load_audio_stream");
-  lua_pushcfunction (L, lvorbis_load_string_chain);
-  lua_setfield (L, -2, "load_audio_string");
+  lua_pushcfunction (L, lvorbis_load_chain);
+  lua_setfield (L, -2, "load_audio");
 
   lua_pop (L, 1);		/* pop avt */
 

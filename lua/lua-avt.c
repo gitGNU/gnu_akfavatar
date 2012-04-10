@@ -1449,7 +1449,7 @@ lavt_load_audio_stream (lua_State * L)
 }
 
 static int
-lavt_load_audio_string (lua_State * L)
+lavt_load_audio (lua_State * L)
 {
   char *data;
   size_t len;
@@ -2313,8 +2313,8 @@ static const luaL_Reg akfavtlib[] = {
   {"load_base_audio_file", lavt_load_audio_file},
   {"load_audio_stream", lavt_load_audio_stream},
   {"load_base_audio_stream", lavt_load_audio_stream},
-  {"load_audio_string", lavt_load_audio_string},
-  {"load_base_audio_string", lavt_load_audio_string},
+  {"load_audio", lavt_load_audio},
+  {"load_base_audio", lavt_load_audio},
   {"silent", lavt_silent},
   {"audio_playing", laudio_playing},
   {"wait_audio_end", lavt_wait_audio_end},

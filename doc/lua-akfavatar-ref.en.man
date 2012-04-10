@@ -823,14 +823,14 @@ On error it returns
 and an error message.
 .PP
 .TP
-.BI "avt.load_audio_string(" [audio_data] )
+.BI "avt.load_audio(" [audio_data] )
 .TQ
-.BI "avt.load_base_audio_string(" [audio_data] )
+.BI "avt.load_base_audio(" [audio_data] )
 Reads audio data from a string.  Otherwise the same as
 .BR avt.load_audio_file() .
 .IP
 Lua modules may add support for more audio formats to
-.B "avt.load_audio_string()"
+.B "avt.load_audio()"
 (for example the module
 .BR akfavatar-vorbis ).
 .IP

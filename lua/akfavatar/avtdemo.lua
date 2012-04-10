@@ -140,7 +140,7 @@ local function show_image(name)
   wait()
 
   if archive then
-    avt.show_image_string(archive:get(name))
+    avt.show_image(archive:get(name))
   else
     avt.show_image_file(avt.search(name));
   end
