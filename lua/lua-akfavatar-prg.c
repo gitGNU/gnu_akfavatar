@@ -120,11 +120,15 @@ fatal (const char *m1, const char *m2)
   if (avt_initialized ())
     error_box (msg);
   else
+    {
 #ifdef _WIN32
-    MessageBox (NULL, msg, PRGNAME, MB_ICONERROR | MB_OK | MB_SETFOREGROUND);
+      MessageBox (NULL, msg, PRGNAME,
+		  MB_ICONERROR | MB_OK | MB_SETFOREGROUND);
 #else
-    fputs (msg, stderr);
+      fputs (msg, stderr);
+      fputc ('\n', stderr);
 #endif
+    }
 
   exit (EXIT_FAILURE);
 }
@@ -195,7 +199,7 @@ static void
 initialize (void)
 {
   avt_mb_encoding ("UTF-8");
-  if (avt_start ("Lua-AKFAvatar", "AKFAvatar", AVT_AUTOMODE) 
+  if (avt_start ("Lua-AKFAvatar", "AKFAvatar", AVT_AUTOMODE)
       || avt_avatar_image_default ())
     fatal ("cannot initialize graphics", avt_get_error ());
 }
