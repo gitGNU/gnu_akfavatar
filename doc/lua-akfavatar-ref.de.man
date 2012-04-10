@@ -123,26 +123,18 @@ zurück, wenn AKFAvatar bereits gestartet ist, ansonsten gibt es
 zurück.
 .PP
 .TP
-.BI "avt.avatar_image_default()"
-Setzt das normale Avatar-Bild
-.PP
-.TP
-.BI "avt.avatar_image_none()"
-Löscht das Avatar-Bild.
-.PP
-.TP
-.BI "avt.avatar_image_file(" Dateiname )
-Lädt das Avatar-Bild aus einer Datei.
-Die Strings "default" oder "none" werden auch akzeptiert.
-.PP
-.TP
-.BI "avt.avatar_image_data(" Daten )
+.BI "avt.avatar_image(" Daten )
 Lädt das Avatar-Bild von den
 .IR Daten .
 Die
 .I Daten
-können entweder ein String sein, oder eine Tabelle mit Strings
-von XPM-Daten.
+können entweder "default" oder "none" sein,
+oder ein String mit Bilddaten,
+oder eine Tabelle mit Strings von XPM-Daten.
+.PP
+.TP
+.BI "avt.avatar_image_file(" Dateiname )
+Lädt das Avatar-Bild aus einer Datei.
 Die Strings "default" oder "none" werden auch akzeptiert.
 .PP
 .TP
@@ -1321,7 +1313,7 @@ Wenn man Fehler mit
 .B pcall
 abfangen will, muss man danach AKFAvatar neu initialisieren...
 .PP
-.SH "SEE ALSO"
+.SH "SIEHE AUCH"
 .BR lua-akfavatar (1)
 .BR lua (1)
 .br

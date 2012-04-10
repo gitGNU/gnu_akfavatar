@@ -1,6 +1,6 @@
 --[[-------------------------------------------------------------------
 Moldule for making demos for Lua-AKFAvatar
-Copyright (c) 2010,2011 Andreas K. Foerster <info@akfoerster.de>
+Copyright (c) 2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ local function initialize()
   avt.set_title(title)
   avt.start()
   avt.start_audio()
-  if not avt.avatar_image_data(avatar) then avt.avatar_image_file(avatar) end
+  if not avt.avatar_image(avatar) then avt.avatar_image_file(avatar) end
   if avatarname then avt.set_avatar_name(avatarname) end
   if ballooncolor then avt.set_balloon_color(ballooncolor) end
   if textcolor then avt.set_text_color(textcolor) end
@@ -61,7 +61,7 @@ local function avatar_image(name)
   end
 
   if initialized then 
-    if not avt.avatar_image_data(avatar) then
+    if not avt.avatar_image(avatar) then
       avt.avatar_image_file(avatar)
     end
   end

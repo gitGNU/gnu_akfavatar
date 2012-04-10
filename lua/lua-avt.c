@@ -382,42 +382,16 @@ lavt_recode (lua_State * L)
   return 1;
 }
 
-static int
-lavt_avatar_image_default (lua_State * L)
-{
-  is_initialized ();
-  avt_avatar_image_default ();
-
-  lua_pushboolean (L, true);
-  return 1;
-}
-
-static int
-lavt_avatar_image_none (lua_State * L)
-{
-  if (initialized)
-    {
-      avt_avatar_image_none ();
-      lua_pushboolean (L, true);
-      return 1;
-    }
-  else
-    {
-      lua_pushnil (L);
-      lua_pushliteral (L, "AKFAvatar not initialized");
-      return 2;
-    }
-}
 
 /* set avatar image from data (string or table) */
 static int
-lavt_avatar_image_data (lua_State * L)
+lavt_avatar_image (lua_State * L)
 {
   is_initialized ();
 
   if (lua_isnoneornil (L, 1))
     avt_avatar_image_none ();
-  else if (lua_istable (L, 1))	/* XPM table */
+  else if (lua_istable (L, 1))	/* assume XPM table */
     {
       char **xpm = import_xpm (L, 1);
 
@@ -2228,9 +2202,7 @@ lavt_search (lua_State * L)
 static const luaL_Reg akfavtlib[] = {
   {"start", lavt_start},
   {"quit", lavt_quit},
-  {"avatar_image_default", lavt_avatar_image_default},
-  {"avatar_image_none", lavt_avatar_image_none},
-  {"avatar_image_data", lavt_avatar_image_data},
+  {"avatar_image", lavt_avatar_image},
   {"avatar_image_file", lavt_avatar_image_file},
   {"set_avatar_name", lavt_set_avatar_name},
   {"say", lavt_say},

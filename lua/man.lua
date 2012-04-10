@@ -14,7 +14,7 @@ avt.start()
 
 function ask()
   avt.markup(true)
-  avt.avatar_image_default()
+  avt.avatar_image("default")
   --avt.move_in()
   avt.set_balloon_size(3, 40)
   avt.say("man [_Option_ ...] [_Section_] _Page_ ...\n\nman ")

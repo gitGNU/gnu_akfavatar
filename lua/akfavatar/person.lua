@@ -41,7 +41,7 @@ end
 function P:activate()
   if current_avatar~=self then
     if self.image then
-      if not avt.avatar_image_data(self.image) then
+      if not avt.avatar_image(self.image) then
         avt.avatar_image_file(self.image)
         end
       end
