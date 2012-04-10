@@ -13,6 +13,8 @@
 
 	* avatar.c (avt_wait_button, avt_decide): store/restore background
 
+	* avatar.c (avt_save_background): new function
+
 2012-04-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua-avt.c (import_xpm): new function

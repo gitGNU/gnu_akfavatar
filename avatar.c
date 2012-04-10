@@ -1882,6 +1882,31 @@ avt_bell (void)
   bell ();
 }
 
+/* saves the background of the area */
+/* the result should be freed with SDL_FreeSurface */
+static SDL_Surface *
+avt_save_background (SDL_Rect area)
+{
+  SDL_Surface *result;
+
+  result =
+    SDL_CreateRGBSurface (SDL_SWSURFACE, area.w, area.h,
+			  screen->format->BitsPerPixel,
+			  screen->format->Rmask, screen->format->Gmask,
+			  screen->format->Bmask, screen->format->Amask);
+
+  if (!result)
+    {
+      SDL_SetError ("out of memory");
+      _avt_STATUS = AVT_ERROR;
+      return NULL;
+    }
+
+  SDL_BlitSurface (screen, &area, result, NULL);
+
+  return result;
+}
+
 /* flashes the screen */
 extern void
 avt_flash (void)
@@ -1891,14 +1916,7 @@ avt_flash (void)
   if (!screen)
     return;
 
-  oldwindowimage = SDL_CreateRGBSurface (SDL_SWSURFACE, window.w, window.h,
-					 screen->format->BitsPerPixel,
-					 screen->format->Rmask,
-					 screen->format->Gmask,
-					 screen->format->Bmask,
-					 screen->format->Amask);
-
-  SDL_BlitSurface (screen, &window, oldwindowimage, NULL);
+  oldwindowimage = avt_save_background (window);
 
   /* switch clipping off */
   SDL_SetClipRect (screen, NULL);
@@ -1928,14 +1946,7 @@ avt_change_mode (void)
   SDL_Surface *oldwindowimage;
 
   /* save the window */
-  oldwindowimage = SDL_CreateRGBSurface (SDL_SWSURFACE, window.w, window.h,
-					 screen->format->BitsPerPixel,
-					 screen->format->Rmask,
-					 screen->format->Gmask,
-					 screen->format->Bmask,
-					 screen->format->Amask);
-
-  SDL_BlitSurface (screen, &window, oldwindowimage, NULL);
+  oldwindowimage = avt_save_background (window);
 
   /* set new mode */
   screen = SDL_SetVideoMode (windowmode_size.w, windowmode_size.h,
@@ -4248,22 +4259,7 @@ avt_choice (int *result, int start_line, int items, int key,
   if (screen && _avt_STATUS == AVT_NORMAL)
     {
       /* get a copy of the viewport */
-      plain_menu = SDL_CreateRGBSurface (SDL_SWSURFACE,
-					 viewport.w, viewport.h,
-					 screen->format->BitsPerPixel,
-					 screen->format->Rmask,
-					 screen->format->Gmask,
-					 screen->format->Bmask,
-					 screen->format->Amask);
-
-      if (!plain_menu)
-	{
-	  SDL_SetError ("out of memory");
-	  _avt_STATUS = AVT_ERROR;
-	  return _avt_STATUS;
-	}
-
-      SDL_BlitSurface (screen, &viewport, plain_menu, NULL);
+      plain_menu = avt_save_background (viewport);
 
       /* prepare transparent bar */
       bar = SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_SRCALPHA | SDL_RLEACCEL,
@@ -5185,15 +5181,7 @@ avt_wait_button (void)
   btn_rect.h = button->h;
 
   SDL_SetClipRect (screen, &window);
-
-  /* store background */
-  button_area =
-    SDL_CreateRGBSurface (SDL_SWSURFACE, btn_rect.w, btn_rect.h,
-			  screen->format->BitsPerPixel,
-			  screen->format->Rmask, screen->format->Gmask,
-			  screen->format->Bmask, screen->format->Amask);
-  SDL_BlitSurface (screen, &btn_rect, button_area, NULL);
-
+  button_area = avt_save_background (btn_rect);
   SDL_BlitSurface (button, NULL, screen, &btn_rect);
   SDL_FreeSurface (button);
   button = NULL;
@@ -5292,13 +5280,7 @@ avt_navigate (const char *buttons)
     }
 
   /* save background for common button area */
-  buttons_area =
-    SDL_CreateRGBSurface (SDL_SWSURFACE, buttons_rect.w, buttons_rect.h,
-			  screen->format->BitsPerPixel,
-			  screen->format->Rmask, screen->format->Gmask,
-			  screen->format->Bmask, screen->format->Amask);
-
-  SDL_BlitSurface (screen, &buttons_rect, buttons_area, NULL);
+  buttons_area = avt_save_background (buttons_rect);
 
   /* common values for button rectangles */
   for (i = 0; i < NAV_MAX; i++)
@@ -5518,16 +5500,11 @@ avt_decide (void)
 
   area_rect.x = no_rect.x;
   area_rect.y = no_rect.y;
-  area_rect.w = 2*base_button->w + BUTTON_DISTANCE;
+  area_rect.w = 2 * base_button->w + BUTTON_DISTANCE;
   area_rect.h = no_rect.h;
 
   /* store background */
-  buttons_area =
-    SDL_CreateRGBSurface (SDL_SWSURFACE, area_rect.w, area_rect.h,
-			  screen->format->BitsPerPixel,
-			  screen->format->Rmask, screen->format->Gmask,
-			  screen->format->Bmask, screen->format->Amask);
-  SDL_BlitSurface (screen, &area_rect, buttons_area, NULL);
+  buttons_area = avt_save_background (area_rect);
 
   /* draw buttons */
   SDL_BlitSurface (base_button, NULL, screen, &yes_rect);
