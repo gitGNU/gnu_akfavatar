@@ -33,8 +33,9 @@ avt.set_title("Connect Four")
 avt.start()
 avt.start_audio()
 
+local board_color = "saddle brown"
+local chip = {[1] = "white", [2] = "black"}
 local success = avt.load_audio_file(avt.search "okay.au") or avt.silent()
-local chip = {[1] = "yellow", [2] = "red"}
 local score = {[1] = 0, [2] = 0}
 local player = 1
 
@@ -210,7 +211,7 @@ local function play()
 
   -- draw board
   screen:clear()
-  screen:color "blue"
+  screen:color(board_color)
   screen:bar(boardxoffset - 10, boardyoffset,
              boardxoffset + boardwidth + 10, height)
   clear_board()
