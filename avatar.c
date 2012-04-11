@@ -5269,7 +5269,7 @@ avt_navigate (const char *buttons)
   buttons_rect.x = window.x + window.w - AVATAR_MARGIN
     - (button_count * (base_button->w + BUTTON_DISTANCE)) + BUTTON_DISTANCE;
   buttons_rect.h = base_button->h;
-  buttons_rect.w = window.w - AVATAR_MARGIN - buttons_rect.x;
+  buttons_rect.w = window.x + window.w - AVATAR_MARGIN - buttons_rect.x;
 
   /* yet another check, if there are too many buttons */
   if (buttons_rect.x < 0)
