@@ -57,6 +57,7 @@ extern "C"
 #define EXT_ABOUT ".about"
 
 static lua_State *L;
+static int mode = AVT_AUTOMODE;
 
 
 static void
@@ -73,8 +74,10 @@ help (void)
   puts (PRGNAME);
   puts ("Usage: lua-akfavatar [script [args]]");
   puts (" or:   lua-akfavatar --dir=/usr/local/share/akfavatar/lua\n");
-  puts (" --help                    show this help");
-  puts (" --version                 show version");
+  puts (" -h, --help                show this help");
+  puts (" -v, --version             show version");
+  puts (" -f, --fullscreen          fullscreen mode (unless script given)");
+  puts (" -F, --Fullscreen          full fullscreen mode (unless script given)");
   puts (" -l name                   require library 'name'");
   puts
     (" --dir=<directory>         start in directory (for the filechooser)");
@@ -175,6 +178,10 @@ check_options (int argc, char *argv[])
 	version ();
       else if (strcmp (argv[i], "--help") == 0 || strcmp (argv[i], "-h") == 0)
 	help ();
+      else if (strcmp (argv[i], "--fullscreen") == 0 || strcmp (argv[i], "-f") == 0)
+        mode = AVT_FULLSCREEN;
+      else if (strcmp (argv[i], "--Fullscreen") == 0 || strcmp (argv[i], "-F") == 0)
+        mode = AVT_FULLSCREENNOSWITCH;
       else if (strncmp (argv[i], "--dir=", 6) == 0)
 	chdir (argv[i] + 6);
       else if (strncmp (argv[i], "-l", 2) == 0)
@@ -199,7 +206,7 @@ static void
 initialize (void)
 {
   avt_mb_encoding ("UTF-8");
-  if (avt_start ("Lua-AKFAvatar", "AKFAvatar", AVT_AUTOMODE)
+  if (avt_start ("Lua-AKFAvatar", "AKFAvatar", mode)
       || avt_avatar_image_default ())
     fatal ("cannot initialize graphics", avt_get_error ());
 }

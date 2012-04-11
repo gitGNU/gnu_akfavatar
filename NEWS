@@ -8,6 +8,7 @@
   - Data files are put in a separate directory and Lua has a search function
     for it (scripts have to be adapted!)
   - Some more audio files
+  - the command lua-akfavatar accepts options for fullscreen mode
   - The pager supports the markup mode now
   - The terminal emulation uses better colors for black backgroud
   - multiply.pas cannot be compiled without AKFAvatar anymore (simplified)

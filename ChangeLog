@@ -1,3 +1,8 @@
+2012-04-11  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/lua-akfavatar-prg.c (help, check_options, initialize):
+	support options for fullscreen mode (-f, -F)
+
 2012-04-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua-avt.c (lavt_avatar_image_default, lavt_avatar_image_none):
