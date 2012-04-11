@@ -2,7 +2,7 @@
 
 --[[---------------------------------------------------------------------
 Audio player for AKFvatar
-Copyright (c) 2011 Andreas K. Foerster <info@akfoerster.de>
+Copyright (c) 2011,2012 Andreas K. Foerster <info@akfoerster.de>
 License: GPL version 3 or later
 
 Supported audio formats: Ogg Vorbis, Wave, AU
@@ -17,8 +17,7 @@ local default_cover = assert(avt.search("audio1.xpm"))
 -- url is appended, data should be dumped to stdout
 local downloader = "curl --silent --location"
 
-avt.encoding("UTF-8")
-avt.set_title("Audio-Player")
+avt.title("Audio-Player")
 avt.start()
 avt.start_audio()
 avt.avatar_image("default")

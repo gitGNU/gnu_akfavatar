@@ -2,7 +2,7 @@
 
 --[[-------------------------------------------------------------------
 Function Plotter for AKFAvatar
-Copyright (c) 2011 Andreas K. Foerster <info@akfoerster.de>
+Copyright (c) 2011,2012 Andreas K. Foerster <info@akfoerster.de>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -54,8 +54,7 @@ atan = math.atan
 local avt = require "lua-akfavatar"
 local graphic = require "akfavatar-graphic"
 
-avt.encoding("UTF-8")
-avt.set_title("Function Plotter")
+avt.title("Function Plotter")
 avt.avatar_image_file(avt.search("teacher.xpm"))
 
 local gr, width, height = graphic.new()

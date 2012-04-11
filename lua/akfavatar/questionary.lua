@@ -103,8 +103,7 @@ local function questionary(qa)
 
   if not avt.started()
   then
-    avt.encoding("UTF-8")
-    avt.set_title(qa.title)
+    avt.title(qa.title)
     avt.start()
     avt.start_audio()
     if not avt.avatar_image(myavatar) then

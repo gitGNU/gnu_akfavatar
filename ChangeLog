@@ -5,6 +5,8 @@
 
 	* avatar.c (avt_navigate): fix size with window offset
 
+	* lua/lua-avt.c: avt.title()
+
 2012-04-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua-avt.c (lavt_avatar_image_default, lavt_avatar_image_none):

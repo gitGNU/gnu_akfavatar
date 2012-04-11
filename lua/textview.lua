@@ -6,8 +6,7 @@
 local avt = require "lua-akfavatar"
 local utf8 = require "akfavatar.utf8"
 
-avt.encoding("UTF-8")
-avt.set_title("Text Viewer")
+avt.title("Text Viewer")
 avt.start()
 avt.avatar_image("none")
 

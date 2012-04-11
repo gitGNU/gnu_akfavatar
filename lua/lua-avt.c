@@ -2245,6 +2245,7 @@ static const luaL_Reg akfavtlib[] = {
   {"encoding", lavt_encoding},
   {"get_encoding", lavt_get_encoding},
   {"recode", lavt_recode},
+  {"title", lavt_set_title},
   {"set_title", lavt_set_title},
   {"set_text_delay", lavt_set_text_delay},
   {"set_flip_page_delay", lavt_set_flip_page_delay},

@@ -11,7 +11,7 @@ if arg[1]
   then infile = arg[1]
   else 
     avt = require "lua-akfavatar"
-    avt.set_title("Base 64 encoder", "base64")
+    avt.title("Base 64 encoder", "base64")
     avt.start()
     infile = avt.file_selection()
     if not infile then return end

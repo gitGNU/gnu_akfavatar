@@ -1,6 +1,6 @@
 #!/usr/bin/env lua-akfavatar
 
--- Copyright (c) 2009,2010,2011 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
 -- Note: Since this is a trivial example, you don't have to keep my
@@ -9,8 +9,8 @@
 
 local avt = require "lua-akfavatar" --> gives access to the avt. comands
 
-avt.encoding("UTF-8")
-avt.set_title("Hello World", "Hello")
+avt.encoding("UTF-8") --> UTF-8 is default
+avt.title("Hello World", "Hello")
 avt.set_background_color("tan")
 avt.start()
 avt.avatar_image("default")

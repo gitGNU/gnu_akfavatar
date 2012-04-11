@@ -29,7 +29,7 @@ local audio, initialized, moved_in, avatar, avatarname
 local ballooncolor, textcolor, title, archive, target_time, txt
 
 local function initialize()
-  avt.set_title(title)
+  avt.title(title)
   avt.start()
   avt.start_audio()
   if not avt.avatar_image(avatar) then avt.avatar_image_file(avatar) end
@@ -156,7 +156,7 @@ local function command(cmd)
   -- ignore
   elseif "title"==c then
     title = a
-    if initialized then avt.set_title(title) end
+    if initialized then avt.title(title) end
   elseif "datadir"==c then
     avt.datapath = a
   elseif "flip"==c then

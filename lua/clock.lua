@@ -2,7 +2,7 @@
 
 --[[-------------------------------------------------------------------
 Clock for AKFAvatar
-Copyright (c) 2011 Andreas K. Foerster <info@akfoerster.de>
+Copyright (c) 2011,2012 Andreas K. Foerster <info@akfoerster.de>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 local avt = require "lua-akfavatar"
 local graphic = require "akfavatar-graphic"
 
-avt.set_title("Clock")
+avt.title("Clock")
 avt.start()
 
 local function draw_clockface(gr, radius, color)

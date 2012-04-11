@@ -4,7 +4,7 @@
 Four in a Row
 Game for 2 players (no computer-logic yet)
 
-Copyright (c) 2011 Andreas K. Foerster <info@akfoerster.de>
+Copyright (c) 2011,2012 Andreas K. Foerster <info@akfoerster.de>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ Keys:
 local avt = require "lua-akfavatar"
 local graphic = require "akfavatar-graphic"
 
-avt.set_title("Four in a row")
+avt.title("Four in a row")
 avt.start()
 avt.start_audio()
 

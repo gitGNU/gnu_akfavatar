@@ -48,6 +48,7 @@
     a table with strings from XPM data
   - avt.load_audio_string and avt.load_base_audio_string were renamed
     to avt.load_audio and avt.load_base_audio
+  - avt.title is an alias for avt.set_title
   - new functions: avt.avatar_image_file, avt.delay, avt.search,
     avt.load_audio_stream
   - new variable: avt.datapath

@@ -1,6 +1,6 @@
 --[[-------------------------------------------------------------------
 Lua module for translations
-Copyright (c) 2011 Andreas K. Foerster <info@akfoerster.de>
+Copyright (c) 2011,2012 Andreas K. Foerster <info@akfoerster.de>
 
 This module was written for AKFAvatar, but doesn't depend on it.
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env lua-akfavatar
 
--- Copyright (c) 2010,2011 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
 -- this gives an impression over which characters are available
@@ -9,6 +9,7 @@
 local avt = require "lua-akfavatar"
 local utf8 = require "akfavatar.utf8"
 
+avt.title("characters tables")
 avt.start()
 
 local function block_list(f, t)

@@ -45,8 +45,7 @@ Erzaehler = person:
 
 ------------------------------------------------------------------------
 
-avt.encoding("UTF-8")
-avt.set_title(Frau.name .. " & " .. Mann.name, Frau.name)
+avt.title(Frau.name .. " & " .. Mann.name, Frau.name)
 avt.start()
 avt.set_text_delay () --> den Langsamschreibmodus aktivieren
 avt.markup (true) --> Verwende "_" für Unterstreichen, "*" für Fettdruck
