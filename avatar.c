@@ -238,7 +238,7 @@ static int errno;
 #endif
 
 /* shorthand */
-#define bell(void)  if (avt_alert_func) (*avt_alert_func)()
+#define bell(void)  do { if (avt_alert_func) (*avt_alert_func)(); } while(0)
 
 #define avt_isblank(c)  ((c) == ' ' || (c) == '\t')
 
