@@ -107,7 +107,7 @@ mit Fragezeichen.
 .nf
 local avt = require "lua-akfavatar"
 avt.encoding("UTF-8")
-avt.set_title("Mein erstes Programm")
+avt.title("Mein erstes Programm")
 avt.start()
 avt.say("Hallo du!\\n")
 local Benutzer = avt.ask("Wie heiﬂt du denn? ")

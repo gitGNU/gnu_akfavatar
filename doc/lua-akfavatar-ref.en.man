@@ -79,6 +79,8 @@ Returns
 if none is set yet.
 .PP
 .TP
+.BI "avt.title(" "title [,shortname]" )
+.TQ
 .BI "avt.set_title(" "title [,shortname]" )
 Sets the title and the shortname.
 .PP
@@ -100,7 +102,7 @@ All other functions should be used after it.
 .B Example:
 .EX
 avt.encoding("ISO-8859-1")
-avt.set_title("my program")
+avt.title("my program")
 avt.set_background_color("sky blue")
 avt.start()
 avt.start_audio()
