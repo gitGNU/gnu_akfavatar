@@ -29,7 +29,7 @@ Keys:
 local avt = require "lua-akfavatar"
 local graphic = require "akfavatar-graphic"
 
-avt.set_title("Connect Four")
+avt.set_title("Four in a row")
 avt.start()
 avt.start_audio()
 
@@ -226,7 +226,7 @@ local function play()
     end
   until won or chips == 42
 
-  avt.wait_button()
+  avt.get_key()
 end
 
 repeat play() until false
