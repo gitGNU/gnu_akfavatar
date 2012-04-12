@@ -10,15 +10,15 @@ Needed
  * SDL-1.2.x (version 1.2.11 or higher recommended)
      http://libsdl.org/download-1.2.php
    You need the "Runtime Libraries" as well as the "Development Libraries"!
-   The 1.3 series is _not_ backward compatible!
+   The serieses 1.3 and 2.0 are _not_ backward compatible!
 
    Of course SDL needs a graphical environment to run in.
    For example the X-Window-System or a Linux framebuffer-device...
 
- * Lua-5.1.x
+ * Lua-5.2.x
      http://lua.org/
 
- * An ANSI-C Compiler (gcc or others)
+ * An ANSI-C Compiler (gcc or clang or others)
      http://gcc.gnu.org/
 
  * Entries for "linux" and "linux-m" in the terminal database.
@@ -59,45 +59,21 @@ For Unix systems there are scripts, so you can use it without installing.
 
 Compiling - special cases
 
-On some systems you need the use the parameter "--with-iconv" with 
+On some systems you need the use the parameter "--with-iconv" with
 "./configure" to get full iconv support (iconv is a charset-encoding
-converter).  This parameter is not needed when SDL is already configured
-to use an external iconv.  But in some cases it is not, although an external
-iconv is available (because maybe there is more than one implementation).
-This software (AKFAvatar) does an educated guess to get the internal encoding
-for wchar_t right.  In some cases it might not work.  You might then provide
-that information with this option, like this "--with-iconv=UCS-4LE".  On many 
-systems you can get a list with the command "iconv -l".  If "WCHAR_T" or
-"wchar_t" is on the list, use that.
+converter). This software (AKFAvatar) does an educated guess to get the
+internal encoding for wchar_t right.  In some cases it might not work.
+You might then provide that information with this option, like this
+"--with-iconv=UCS-4LE".  On many systems you can get a list with the
+command "iconv -l".  If "WCHAR_T" or "wchar_t" is on the list, use that.
 
 If you know that SDL_image is always installed, then you can provide the
 parameter "--enable-link-sdl-image" to directly link to it, instead 
 of loading it at runtime.
 
-To support old versions of SDL on a target machine, it might be 
-necessary to use the parameter "--with-oldsdl". Note that this is
-not needed if you just want to run the program on the same machine
-on which you compile it.
-
 If you want to use it on devices with a small display (eg. netbooks), use the
 parameter "--enable-size=vga" with configure. 
 The value "vga" means a size of 640*480 pixels.
-
-Testing
-
-The program "avatarsay" is a text reader and a simple scripting language.
-Try to view this text with that program: "./avatarsay --pager INSTALL".
-
-You can stop avatarsay any time with the [Esc] key. On some systems you can 
-toggle between window and fullscreen mode using the key [F11]. Another useful
-key is the [Pause] key.
-
-There are some example scripts in the package. 
-Try to run "./fsdemo-en" or whatever language you prefer. Open fsdemo-en in 
-a text-editor to see how to write such scripts...
-
-You can also use it as a fancy manpage reader.
-Try "avtman man"...
 
 
 Installing
@@ -108,10 +84,9 @@ that "/usr/local/bin" is in your "PATH" evironment variable.
 
 Now get root privileges and run "make install" to install it in
 /usr/local. If you are low on disk space, you can instead use
-"make install-strip". This installs binaries stripped from
-debugging information.
+"make install-strip".
 
-If you want to uninstall it later, you can use the command 
+If you want to uninstall it later, you can use the command
 "make uninstall".
 
 
@@ -121,30 +96,16 @@ With the command "make example" you can compile the program example.c.
 The file "example.c" is an example, which you can use to start your own
 programs.
 
-TROUBLESHOOTING
-
- * Problem: the system can't find the library "libavatar.so"
-   Solution: first try to add /usr/local/lib or wherever you installed it 
-   to the environment variable LD_LIBRARY_PATH: 
-   "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib".
-
-   As a more permanent solution make sure "/usr/local/lib" is directly or
-   indirectly included in the file "/etc/ld.so.conf". Then run the command
-   "ldconfig" with root privileges.
-
- * Problem: some characters are not shown correctly with "avatarsay"
-   Solution: There are different character sets. Try to use the parameters
-   "--utf-8" or "--latin1".
 
 OTHER SYSTEMS
 
  * BSD
-   AKFAvatar is known to be compilable with FreeBSD 6.2.  To get iconv 
+   AKFAvatar is known to be compilable with FreeBSD 6.2.  To get iconv
    support, install libiconv and use "./configure --with-iconv".
 
  * Windows / ReactOS
    These systems are just partly supported.  I provide binaries which are
-   build with a crosscompiler.  I haven't compiled them directly under 
+   build with a crosscompiler.  I haven't compiled them directly under
    Windows yet, so you're on your own here.  I'm sorry.
    Especially the terminal emulation doesn't work on Windows.
 
