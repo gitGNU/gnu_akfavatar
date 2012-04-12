@@ -1,3 +1,7 @@
+2012-04-12  Andreas K. Foerster  <info@akfoerster.de>
+
+	* example.c: include XPM file
+
 2012-04-11  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-akfavatar-prg.c (help, check_options, initialize):
