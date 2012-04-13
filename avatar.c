@@ -2051,64 +2051,27 @@ avt_analyze_event (SDL_Event * event)
       break;
 
     case SDL_KEYDOWN:
-      switch (event->key.keysym.sym)
-	{
-	case SDLK_PAUSE:
-	  avt_pause ();
-	  break;
-
-	  /* no "break" default for the following ones: */
-	  /* they may fall through to default: */
-
-	case SDLK_F11:
-	  if (event->key.keysym.sym == SDLK_F11 && !reserve_single_keys)
-	    {
-	      avt_toggle_fullscreen ();
-	      break;
-	    }
-
-	case SDLK_ESCAPE:
-	  if (event->key.keysym.sym == SDLK_ESCAPE && !reserve_single_keys)
-	    {
-	      _avt_STATUS = AVT_QUIT;
-	      break;
-	    }
-
-	  /* Alt + Q -> Quit */
-	case SDLK_q:
-	  if (event->key.keysym.sym == SDLK_q
-	      && (event->key.keysym.mod & KMOD_LALT))
-	    {
-	      _avt_STATUS = AVT_QUIT;
-	      break;
-	    }
-
-	  /* Left Alt + Return -> avt_toggle_fullscreen */
-	case SDLK_RETURN:
-	  if (event->key.keysym.sym == SDLK_RETURN
-	      && event->key.keysym.mod & KMOD_LALT)
-	    {
-	      avt_toggle_fullscreen ();
-	      break;
-	    }
-
-	  /* Ctrl + Left Alt + F -> avt_toggle_fullscreen */
-	case SDLK_f:
-	  if (event->key.keysym.sym == SDLK_f
-	      && (event->key.keysym.mod & KMOD_CTRL)
-	      && (event->key.keysym.mod & KMOD_LALT))
-	    {
-	      avt_toggle_fullscreen ();
-	      break;
-	    }
-
-	default:
-	  if (avt_ext_keyhandler)
-	    avt_ext_keyhandler (event->key.keysym.sym, event->key.keysym.mod,
-				event->key.keysym.unicode);
-	  break;
-	}			/* switch (*event.key.keysym.sym) */
-    }				/* switch (*event.type) */
+      if (event->key.keysym.sym == SDLK_PAUSE)
+	avt_pause ();
+      else if (event->key.keysym.sym == SDLK_ESCAPE && !reserve_single_keys)
+	_avt_STATUS = AVT_QUIT;
+      else if (event->key.keysym.sym == SDLK_q
+	       && (event->key.keysym.mod & KMOD_LALT))
+	_avt_STATUS = AVT_QUIT;
+      else if (event->key.keysym.sym == SDLK_F11 && !reserve_single_keys)
+	avt_toggle_fullscreen ();
+      else if (event->key.keysym.sym == SDLK_RETURN
+	       && event->key.keysym.mod & KMOD_LALT)
+	avt_toggle_fullscreen ();
+      else if (event->key.keysym.sym == SDLK_f
+               && (event->key.keysym.mod & KMOD_CTRL)
+               && (event->key.keysym.mod & KMOD_LALT))
+	avt_toggle_fullscreen ();
+      else if (avt_ext_keyhandler)
+	avt_ext_keyhandler (event->key.keysym.sym, event->key.keysym.mod,
+			    event->key.keysym.unicode);
+      break;
+    }				/* switch (event->type) */
 }
 
 static int

@@ -1,3 +1,7 @@
+2012-04-13  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_analyze_event): code cleanup
+
 2012-04-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* example.c: include XPM file
