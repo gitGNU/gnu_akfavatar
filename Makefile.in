@@ -486,7 +486,6 @@ check:
 clean:
 	-rm -f *~
 	-rm -f *.o *.lo
-	-rm -f *.wo
 	-rm -f *.ppu *.gpi *.gpm
 	-rm -f bdfread
 	-rm -f alert.c
