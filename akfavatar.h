@@ -290,7 +290,8 @@ AVT_API int avt_ask (wchar_t *s, size_t size);
 /*
  * get a character from the keyboard
  * see AVT_KEY constants for function keys
- * (ch is a pointer to one character, not a string)
+ * ch is a pointer to one character, not a string
+ * ch may be NULL, if you just want to wait for any key
  */
 AVT_API int avt_key (avt_char *ch);
 

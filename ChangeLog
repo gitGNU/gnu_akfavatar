@@ -2,6 +2,8 @@
 
 	* avatar.c (avt_analyze_event): code cleanup
 
+	* avatar.c (avt_key): parameter may be NULL
+
 2012-04-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* example.c: include XPM file

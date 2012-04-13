@@ -4079,73 +4079,75 @@ extern int
 avt_key (avt_char * ch)
 {
   SDL_Event event;
+  avt_char c;
+
+  c = 0;
 
   if (screen)
     {
-      *ch = 0;
-      while ((*ch == 0) && (_avt_STATUS == AVT_NORMAL))
+      while (!c && (_avt_STATUS == AVT_NORMAL))
 	{
 	  SDL_WaitEvent (&event);
 	  avt_analyze_event (&event);
 
-	  if (SDL_KEYDOWN == event.type)
+	  if (ch && SDL_KEYDOWN == event.type)
 	    {
 	      if (event.key.keysym.unicode)
-		*ch = event.key.keysym.unicode;
+		c = event.key.keysym.unicode;
 	      else
 		switch (event.key.keysym.sym)
 		  {
 		  case SDLK_UP:
 		  case SDLK_KP8:
-		    *ch = AVT_KEY_UP;
+		    c = AVT_KEY_UP;
 		    break;
 		  case SDLK_DOWN:
 		  case SDLK_KP2:
-		    *ch = AVT_KEY_DOWN;
+		    c = AVT_KEY_DOWN;
 		    break;
 		  case SDLK_RIGHT:
 		  case SDLK_KP6:
-		    *ch = AVT_KEY_RIGHT;
+		    c = AVT_KEY_RIGHT;
 		    break;
 		  case SDLK_LEFT:
 		  case SDLK_KP4:
-		    *ch = AVT_KEY_LEFT;
+		    c = AVT_KEY_LEFT;
 		    break;
 		  case SDLK_INSERT:
 		  case SDLK_KP0:
-		    *ch = AVT_KEY_INSERT;
+		    c = AVT_KEY_INSERT;
 		    break;
 		  case SDLK_DELETE:
 		  case SDLK_KP_PERIOD:
-		    *ch = AVT_KEY_DELETE;
+		    c = AVT_KEY_DELETE;
 		    break;
 		  case SDLK_BACKSPACE:
-		    *ch = AVT_KEY_BACKSPACE;
+		    c = AVT_KEY_BACKSPACE;
 		    break;
 		  case SDLK_HOME:
 		  case SDLK_KP7:
-		    *ch = AVT_KEY_HOME;
+		    c = AVT_KEY_HOME;
 		    break;
 		  case SDLK_END:
 		  case SDLK_KP1:
-		    *ch = AVT_KEY_END;
+		    c = AVT_KEY_END;
 		    break;
 		  case SDLK_PAGEUP:
 		  case SDLK_KP9:
-		    *ch = AVT_KEY_PAGEUP;
+		    c = AVT_KEY_PAGEUP;
 		    break;
 		  case SDLK_PAGEDOWN:
 		  case SDLK_KP3:
-		    *ch = AVT_KEY_PAGEDOWN;
+		    c = AVT_KEY_PAGEDOWN;
 		    break;
 		  case SDLK_HELP:
-		    *ch = AVT_KEY_HELP;
+		    c = AVT_KEY_HELP;
 		    break;
 		  case SDLK_MENU:
-		    *ch = AVT_KEY_MENU;
+		    c = AVT_KEY_MENU;
 		    break;
 		  case SDLK_EURO:
-		    *ch = 0x20AC;
+		    c = 0x20AC;
 		    break;
 		  case SDLK_F1:
 		  case SDLK_F2:
@@ -4161,11 +4163,11 @@ avt_key (avt_char * ch)
 		  case SDLK_F13:
 		  case SDLK_F14:
 		  case SDLK_F15:
-		    *ch = AVT_KEY_F1 + (event.key.keysym.sym - SDLK_F1);
+		    c = AVT_KEY_F1 + (event.key.keysym.sym - SDLK_F1);
 		    break;
 		  case SDLK_F11:
 		    if (reserve_single_keys)
-		      *ch = AVT_KEY_F11;
+		      c = AVT_KEY_F11;
 		    break;
 		  default:
 		    break;
@@ -4173,6 +4175,9 @@ avt_key (avt_char * ch)
 	    }			/* if (event.type) */
 	}			/* while */
     }				/* if (screen) */
+
+  if (ch)
+    *ch = c;
 
   return _avt_STATUS;
 }
