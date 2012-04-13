@@ -4090,7 +4090,7 @@ avt_key (avt_char * ch)
 	  SDL_WaitEvent (&event);
 	  avt_analyze_event (&event);
 
-	  if (ch && SDL_KEYDOWN == event.type)
+	  if (SDL_KEYDOWN == event.type)
 	    {
 	      if (event.key.keysym.unicode)
 		c = event.key.keysym.unicode;
