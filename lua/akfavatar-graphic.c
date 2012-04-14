@@ -1060,9 +1060,9 @@ lgraphic_text (lua_State * L)
 	  const unsigned short *font_line;
 	  int lx, ly;
 
-	  font_line = (const unsigned short *) get_font_char ((int) *wc);
+	  font_line = (const unsigned short *) avt_get_font_char ((int) *wc);
 	  if (!font_line)
-	    font_line = (const unsigned short *) get_font_char (0);
+	    font_line = (const unsigned short *) avt_get_font_char (0);
 
 	  for (ly = 0; ly < fontheight; ly++)
 	    {
@@ -1083,9 +1083,9 @@ lgraphic_text (lua_State * L)
 	  const byte *font_line;
 	  int lx, ly;
 
-	  font_line = (const byte *) get_font_char ((int) *wc);
+	  font_line = (const byte *) avt_get_font_char ((int) *wc);
 	  if (!font_line)
-	    font_line = (const byte *) get_font_char (0);
+	    font_line = (const byte *) avt_get_font_char (0);
 
 	  for (ly = 0; ly < fontheight; ly++)
 	    {

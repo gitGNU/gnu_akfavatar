@@ -904,7 +904,7 @@ AVT_API void avt_register_mousehandler (avt_mousehandler handler);
  * either defined as unsigned char or unsigned short,
  * depending on the fonts width
  */
-AVT_API void *get_font_char (int ch);
+AVT_API void *avt_get_font_char (int ch);
 
 /*
  * get height and width of a character

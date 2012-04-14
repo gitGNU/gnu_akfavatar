@@ -3,13 +3,16 @@
 # bdf2c - Convert bdf font into C-code
 # only for fixed-width fonts!
 #
-# Copyright (c) 2009, 2011 Andreas K. Foerster
+# Copyright (c) 2009,2011,2012 Andreas K. Foerster
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
 
-BEGIN { width=height=started=default_char=charoffset=maxchar = 0 }
+BEGIN {
+  name = "get_font_char"
+  width=height=started=default_char=charoffset=maxchar = 0
+  }
 
 /^FONT / { print "/* " $0 " */" }
 
@@ -26,7 +29,7 @@ BEGIN { width=height=started=default_char=charoffset=maxchar = 0 }
     {
       print "\n#include <stddef.h>\n\n#define DEFAULT_CHAR " default_char
       print "\n#ifdef __cplusplus"
-      print "extern \"C\" void *get_font_char (int ch);"
+      print "extern \"C\" void *" name " (int ch);"
       print "#endif"
       if (width <= 8)
         print "\nstatic const unsigned char font[] = {"
@@ -50,7 +53,7 @@ BEGIN { width=height=started=default_char=charoffset=maxchar = 0 }
 
 function writetranstable(    i, blockstart)
 {
-  print "void *\nget_font_char (int ch)"
+  print "void *\n" name " (int ch)"
 
   print "{"
   printf "  "

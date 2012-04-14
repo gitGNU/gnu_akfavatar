@@ -2928,9 +2928,9 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
 
   pitch = avt_character->pitch / sizeof (*p);
   pixels = p = (unsigned short *) avt_character->pixels;
-  font_line = (const unsigned short *) get_font_char ((int) ch);
+  font_line = (const unsigned short *) avt_get_font_char ((int) ch);
   if (!font_line)
-    font_line = (const unsigned short *) get_font_char (0);
+    font_line = (const unsigned short *) avt_get_font_char (0);
 
   for (y = 0; y < FONTHEIGHT; y++)
     {
@@ -2965,9 +2965,9 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
 
   pitch = avt_character->pitch;
   pixels = p = (Uint8 *) avt_character->pixels;
-  font_line = (const unsigned char *) get_font_char ((int) ch);
+  font_line = (const unsigned char *) avt_get_font_char ((int) ch);
   if (!font_line)
-    font_line = (const unsigned char *) get_font_char (0);
+    font_line = (const unsigned char *) avt_get_font_char (0);
 
   for (y = 0; y < FONTHEIGHT; y++)
     {
@@ -3000,7 +3000,7 @@ avt_get_font_size (int *width, int *height)
 extern bool
 avt_is_printable (avt_char ch)
 {
-  return (bool) (get_font_char ((int) ch) != NULL);
+  return (bool) (avt_get_font_char ((int) ch) != NULL);
 }
 
 /* make current char visible */
@@ -4891,7 +4891,7 @@ avt_ask (wchar_t * s, size_t size)
 	  break;
 
 	default:
-	  if (pos < maxlen && ch >= 32 && get_font_char (ch) != NULL)
+	  if (pos < maxlen && ch >= 32 && avt_get_font_char (ch) != NULL)
 	    {
 	      /* delete cursor */
 	      avt_show_text_cursor (false);
