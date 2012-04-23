@@ -5471,20 +5471,26 @@ avt_navigate (const char *buttons)
 	  break;
 
 	case SDL_MOUSEBUTTONDOWN:
-	  if (event.button.button <= 3
-	      && event.button.y >= buttons_rect.y + window.y
-	      && event.button.y <= buttons_rect.y + window.y + buttons_rect.h
-	      && event.button.x >= buttons_rect.x + window.x
-	      && event.button.x <= buttons_rect.x + window.x + buttons_rect.w)
-	    {
-	      for (i = 0; i < button_count && result < 0; i++)
-		{
-		  if (buttons[i] != ' '
-		      && event.button.x >= rect[i].x + window.x
-		      && event.button.x <= rect[i].x + window.x + rect[i].w)
-		    result = buttons[i];
-		}
-	    }
+	  {
+	    Sint16 mbx, mby;
+
+	    mbx = event.button.x - window.x;
+	    mby = event.button.y - window.y;
+
+	    if (event.button.button <= 3
+		&& mby >= buttons_rect.y
+		&& mby <= buttons_rect.y + buttons_rect.h
+		&& mbx >= buttons_rect.x
+		&& mbx <= buttons_rect.x + buttons_rect.w)
+	      {
+		for (i = 0; i < button_count && result < 0; i++)
+		  {
+		    if (buttons[i] != ' '
+			&& mbx >= rect[i].x && mbx <= rect[i].x + rect[i].w)
+		      result = buttons[i];
+		  }
+	      }
+	  }
 	  break;
 	}
 
@@ -5586,20 +5592,22 @@ avt_decide (void)
 	  break;
 
 	case SDL_MOUSEBUTTONDOWN:
-	  /* assume both buttons have the same height */
-	  /* any mouse button, but ignore the wheel */
-	  if (event.button.button <= 3
-	      && event.button.y >= area_rect.y + window.y
-	      && event.button.y <= area_rect.y + window.y + area_rect.h)
-	    {
-	      if (event.button.x >= yes_rect.x + window.x
-		  && event.button.x <= yes_rect.x + window.x + yes_rect.w)
-		result = true;
-	      else
-		if (event.button.x >= no_rect.x + window.x
-		    && event.button.x <= no_rect.x + window.x + no_rect.w)
-		result = false;
-	    }
+	  {
+	    Sint16 mbx, mby;
+
+	    mbx = event.button.x - window.x;
+	    mby = event.button.y - window.y;
+
+	    /* any mouse button, but ignore the wheel */
+	    if (event.button.button <= 3
+		&& mby >= area_rect.y && mby <= area_rect.y + area_rect.h)
+	      {
+		if (mbx >= yes_rect.x && mbx <= yes_rect.x + yes_rect.w)
+		  result = true;
+		else if (mbx >= no_rect.x && mbx <= no_rect.x + no_rect.w)
+		  result = false;
+	      }
+	  }
 	  break;
 	}
 

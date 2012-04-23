@@ -2,6 +2,7 @@
 
   There are a lot of changes in the APIs. Also the ABI was changed.
 
+  - Window is resizable again (content gets centered)
   - Uses Lua-5.2 now, no longer compatible with 5.1
   - Lua modules don't define globals anymore (scripts have to be adapted!)
   - The source code is compatible with C++ compilers again
