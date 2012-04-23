@@ -5273,6 +5273,7 @@ avt_wait_button (void)
     }
 
   /* delete button */
+  SDL_SetClipRect (screen, &window);
   avt_post_resize (btn_rect);
   SDL_BlitSurface (button_area, NULL, screen, &btn_rect);
   SDL_FreeSurface (button_area);
