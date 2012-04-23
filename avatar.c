@@ -1888,6 +1888,7 @@ avt_resize (int w, int h)
 {
   SDL_Surface *oldwindowimage;
   SDL_Rect oldwindow;
+  SDL_Event event;
 
   if (w < MINIMALWIDTH)
     w = MINIMALWIDTH;
@@ -1938,6 +1939,10 @@ avt_resize (int w, int h)
 
   /* make all changes visible */
   AVT_UPDATE_ALL ();
+
+  /* ignore one resize event here to avoid recursive calling */
+  while (SDL_PollEvent (&event) && event.type != SDL_VIDEORESIZE)
+    avt_analyze_event (&event);
 }
 
 extern void
