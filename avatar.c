@@ -2009,37 +2009,6 @@ avt_flash (void)
     SDL_SetClipRect (screen, &viewport);
 }
 
-static void
-avt_change_mode (void)
-{
-  SDL_Surface *oldwindowimage;
-
-  /* save the window */
-  oldwindowimage = avt_save_background (window);
-
-  /* set new mode */
-  screen = SDL_SetVideoMode (windowmode_size.w, windowmode_size.h,
-			     COLORDEPTH, screenflags);
-
-  background_color = SDL_MapRGB (screen->format,
-				 backgroundcolor_RGB.r,
-				 backgroundcolor_RGB.g,
-				 backgroundcolor_RGB.b);
-  avt_free_screen ();
-
-  /* new position of the window on the screen */
-  window.x = screen->w > window.w ? (screen->w / 2) - (window.w / 2) : 0;
-  window.y = screen->h > window.h ? (screen->h / 2) - (window.h / 2) : 0;
-
-  /* restore image */
-  SDL_SetClipRect (screen, &window);
-  SDL_BlitSurface (oldwindowimage, NULL, screen, &window);
-  SDL_FreeSurface (oldwindowimage);
-
-  /* make all changes visible */
-  AVT_UPDATE_ALL ();
-}
-
 extern void
 avt_toggle_fullscreen (void)
 {
