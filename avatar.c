@@ -2019,11 +2019,13 @@ avt_toggle_fullscreen (void)
 
       if ((screenflags & SDL_FULLSCREEN) != 0)
 	{
+	  screenflags |= SDL_NOFRAME;
 	  avt_resize (MINIMALWIDTH, MINIMALHEIGHT);
 	  avt_mode = AVT_FULLSCREEN;
 	}
       else
 	{
+	  screenflags &= ~SDL_NOFRAME;
 	  avt_resize (windowmode_size.w, windowmode_size.h);
 	  avt_mode = AVT_WINDOW;
 	}
@@ -2043,14 +2045,14 @@ avt_switch_mode (int mode)
 	case AVT_FULLSCREEN:
 	  if ((screenflags & SDL_FULLSCREEN) == 0)
 	    {
-	      screenflags |= SDL_FULLSCREEN;
+	      screenflags |= SDL_FULLSCREEN | SDL_NOFRAME;
 	      avt_resize (MINIMALWIDTH, MINIMALHEIGHT);
 	    }
 	  break;
 	case AVT_WINDOW:
 	  if ((screenflags & SDL_FULLSCREEN) != 0)
 	    {
-	      screenflags &= ~SDL_FULLSCREEN;
+	      screenflags &= ~(SDL_FULLSCREEN | SDL_NOFRAME);
 	      avt_resize (windowmode_size.w, windowmode_size.h);
 	    }
 	  break;
@@ -7021,14 +7023,14 @@ avt_start (const char *title, const char *shortname, int mode)
       modes = SDL_ListModes (NULL, screenflags | SDL_FULLSCREEN);
       if (modes != (SDL_Rect **) (0) && modes != (SDL_Rect **) (-1))
 	if (modes[0]->w == MINIMALWIDTH && modes[0]->h == MINIMALHEIGHT)
-	  screenflags |= SDL_FULLSCREEN;
+	  screenflags |= SDL_FULLSCREEN | SDL_NOFRAME;
     }
 #endif
 
   SDL_ClearError ();
 
   if (avt_mode >= 1)
-    screenflags |= SDL_FULLSCREEN;
+    screenflags |= SDL_FULLSCREEN | SDL_NOFRAME;
 
   if (avt_mode == AVT_FULLSCREENNOSWITCH)
     {
