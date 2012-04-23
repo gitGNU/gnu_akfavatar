@@ -4660,27 +4660,38 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 	{
 	case SDL_MOUSEBUTTONDOWN:
 	  if (event.button.button == SDL_BUTTON_WHEELDOWN)
-	    event.key.keysym.sym = SDLK_DOWN;
+	    {
+	      /* simulate arrow key down */
+	      event.type = SDL_KEYDOWN;
+	      event.key.state = SDL_PRESSED;
+	      event.key.keysym.sym = SDLK_DOWN;
+	      SDL_PushEvent (&event);
+	    }
 	  else if (event.button.button == SDL_BUTTON_WHEELUP)
-	    event.key.keysym.sym = SDLK_UP;
+	    {
+	      /* simulate arrow key up */
+	      event.type = SDL_KEYDOWN;
+	      event.key.state = SDL_PRESSED;
+	      event.key.keysym.sym = SDLK_UP;
+	      SDL_PushEvent (&event);
+	    }
 	  else if (event.button.button == SDL_BUTTON_MIDDLE)	/* press on wheel */
+	    quit = true;
+	  else			/* check uf button was clicked */
 	    {
-	      quit = true;
-	      break;
-	    }
-	  else if (event.button.button <= 3
-		   && event.button.y >= btn_rect.y + window.y
-		   && event.button.y <= btn_rect.y + window.y + btn_rect.h
-		   && event.button.x >= btn_rect.x + window.x
-		   && event.button.x <= btn_rect.x + window.x + btn_rect.w)
-	    {
-	      quit = true;
-	      break;
-	    }
-	  else
-	    break;
+	      Sint16 mbx, mby;
 
-	  /* deliberate fallthrough here */
+	      mbx = event.button.x - window.x;
+	      mby = event.button.y - window.y;
+
+	      if (event.button.button <= 3
+		  && mby >= btn_rect.y
+		  && mby <= btn_rect.y + btn_rect.h
+		  && mbx >= btn_rect.x && mbx <= btn_rect.x + btn_rect.w)
+		quit = true;
+	    }
+
+	  break;
 
 	case SDL_KEYDOWN:
 	  if (event.key.keysym.sym == SDLK_DOWN
