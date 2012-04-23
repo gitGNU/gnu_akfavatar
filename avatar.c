@@ -4639,6 +4639,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   SDL_FreeSurface (button);
   button = NULL;
   AVT_UPDATE_RECT (btn_rect);
+  avt_pre_resize (btn_rect);
 
   /* limit to viewport (else more problems with binary files */
   SDL_SetClipRect (screen, &viewport);
@@ -4697,10 +4698,10 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 	      break;
 	    }
 	  else if (event.button.button <= 3
-		   && event.button.y >= btn_rect.y
-		   && event.button.y <= btn_rect.y + btn_rect.h
-		   && event.button.x >= btn_rect.x
-		   && event.button.x <= btn_rect.x + btn_rect.w)
+		   && event.button.y >= btn_rect.y + window.y
+		   && event.button.y <= btn_rect.y + window.y + btn_rect.h
+		   && event.button.x >= btn_rect.x + window.x
+		   && event.button.x <= btn_rect.x + window.x + btn_rect.w)
 	    {
 	      quit = true;
 	      break;
@@ -4791,6 +4792,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 
   /* remove button */
   SDL_SetClipRect (screen, &window);
+  avt_post_resize (btn_rect);
   SDL_FillRect (screen, &btn_rect, background_color);
   AVT_UPDATE_RECT (btn_rect);
   SDL_SetClipRect (screen, &viewport);
