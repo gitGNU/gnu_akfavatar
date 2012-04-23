@@ -5521,6 +5521,7 @@ avt_navigate (const char *buttons)
     }
 
   /* restore background */
+  SDL_SetClipRect (screen, &window);
   avt_post_resize (buttons_rect);
   SDL_BlitSurface (buttons_area, NULL, screen, &buttons_rect);
   SDL_FreeSurface (buttons_area);
@@ -5635,6 +5636,7 @@ avt_decide (void)
     }
 
   /* delete buttons */
+  SDL_SetClipRect (screen, &window);
   avt_post_resize (area_rect);
   SDL_BlitSurface (buttons_area, NULL, screen, &area_rect);
   SDL_FreeSurface (buttons_area);
