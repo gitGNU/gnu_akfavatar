@@ -341,6 +341,7 @@ void (*avt_quit_audio_func) (void) AVT_HIDDEN = NULL;
 /* forward declaration */
 static int avt_pause (void);
 static void avt_drawchar (avt_char ch, SDL_Surface * surface);
+static SDL_Surface *avt_save_background (SDL_Rect area);
 
 
 /* color selector */
@@ -1876,6 +1877,69 @@ avt_set_balloon_size (int height, int width)
     }
 }
 
+/* rectangles in some functions have to be adjusted */
+#define avt_pre_resize(rect) \
+  do { rect.x -= window.x; rect.y -= window.y; } while(0)
+#define avt_post_resize(rect) \
+  do { rect.x += window.x; rect.y += window.y; } while(0)
+
+static void
+avt_resize (int w, int h)
+{
+  SDL_Surface *oldwindowimage;
+  SDL_Rect oldwindow;
+
+  if (w < MINIMALWIDTH)
+    w = MINIMALWIDTH;
+  if (h < MINIMALHEIGHT)
+    h = MINIMALHEIGHT;
+
+  /* save the window */
+  oldwindow = window;
+  oldwindowimage = avt_save_background (window);
+
+  /* resize screen */
+  screen = SDL_SetVideoMode (w, h, COLORDEPTH, screenflags);
+
+  avt_free_screen ();
+
+  /* new position of the window on the screen */
+  window.x = screen->w > window.w ? (screen->w / 2) - (window.w / 2) : 0;
+  window.y = screen->h > window.h ? (screen->h / 2) - (window.h / 2) : 0;
+
+  /* restore image */
+  SDL_SetClipRect (screen, &window);
+  SDL_BlitSurface (oldwindowimage, NULL, screen, &window);
+  SDL_FreeSurface (oldwindowimage);
+
+  /* recalculate textfield & viewport positions */
+  if (textfield.x >= 0)
+    {
+      textfield.x = textfield.x - oldwindow.x + window.x;
+      textfield.y = textfield.y - oldwindow.y + window.y;
+
+      viewport.x = viewport.x - oldwindow.x + window.x;
+      viewport.y = viewport.y - oldwindow.y + window.y;
+
+      linestart =
+	(textdir_rtl) ? viewport.x + viewport.w - FONTWIDTH : viewport.x;
+
+      cursor.x = cursor.x - oldwindow.x + window.x;
+      cursor.y = cursor.y - oldwindow.y + window.y;
+      SDL_SetClipRect (screen, &viewport);
+    }
+
+  /* set windowmode_size */
+  if ((screenflags & SDL_FULLSCREEN) == 0)
+    {
+      windowmode_size.w = w;
+      windowmode_size.h = h;
+    }
+
+  /* make all changes visible */
+  AVT_UPDATE_ALL ();
+}
+
 extern void
 avt_bell (void)
 {
@@ -1980,11 +2044,15 @@ avt_toggle_fullscreen (void)
       screenflags ^= SDL_FULLSCREEN;
 
       if ((screenflags & SDL_FULLSCREEN) != 0)
-	avt_mode = AVT_FULLSCREEN;
+	{
+	  avt_resize (MINIMALWIDTH, MINIMALHEIGHT);
+	  avt_mode = AVT_FULLSCREEN;
+	}
       else
-	avt_mode = AVT_WINDOW;
-
-      avt_change_mode ();
+	{
+	  avt_resize (windowmode_size.w, windowmode_size.h);
+	  avt_mode = AVT_WINDOW;
+	}
     }
 }
 
@@ -2002,14 +2070,14 @@ avt_switch_mode (int mode)
 	  if ((screenflags & SDL_FULLSCREEN) == 0)
 	    {
 	      screenflags |= SDL_FULLSCREEN;
-	      avt_change_mode ();
+	      avt_resize (MINIMALWIDTH, MINIMALHEIGHT);
 	    }
 	  break;
 	case AVT_WINDOW:
 	  if ((screenflags & SDL_FULLSCREEN) != 0)
 	    {
 	      screenflags &= ~SDL_FULLSCREEN;
-	      avt_change_mode ();
+	      avt_resize (windowmode_size.w, windowmode_size.h);
 	    }
 	  break;
 	}
@@ -2030,6 +2098,10 @@ avt_analyze_event (SDL_Event * event)
     {
     case SDL_QUIT:
       _avt_STATUS = AVT_QUIT;
+      break;
+
+    case SDL_VIDEORESIZE:
+      avt_resize (event->resize.w, event->resize.h);
       break;
 
     case SDL_MOUSEBUTTONUP:
@@ -2064,8 +2136,8 @@ avt_analyze_event (SDL_Event * event)
 	       && event->key.keysym.mod & KMOD_LALT)
 	avt_toggle_fullscreen ();
       else if (event->key.keysym.sym == SDLK_f
-               && (event->key.keysym.mod & KMOD_CTRL)
-               && (event->key.keysym.mod & KMOD_LALT))
+	       && (event->key.keysym.mod & KMOD_CTRL)
+	       && (event->key.keysym.mod & KMOD_LALT))
 	avt_toggle_fullscreen ();
       else if (avt_ext_keyhandler)
 	avt_ext_keyhandler (event->key.keysym.sym, event->key.keysym.mod,
@@ -5029,6 +5101,10 @@ avt_move_in (void)
 		SDL_UpdateRect (screen, dst.x, dst.y,
 				dst.w + (oldx - dst.x), dst.h);
 
+	      /* if window is resized then break */
+	      if (window.x != mywindow.x || window.y != mywindow.y)
+		break;
+
 	      /* delete (not visibly yet) */
 	      SDL_FillRect (screen, &dst, background_color);
 	    }
@@ -5109,6 +5185,10 @@ avt_move_out (void)
 		SDL_UpdateRect (screen, oldx, dst.y,
 				dst.w + dst.x - oldx, dst.h);
 
+	      /* if window is resized then break */
+	      if (window.x != mywindow.x || window.y != mywindow.y)
+		break;
+
 	      /* delete (not visibly yet) */
 	      SDL_FillRect (screen, &dst, background_color);
 	    }
@@ -5156,6 +5236,7 @@ avt_wait_button (void)
 
   avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_right), BUTTON_COLOR);
   AVT_UPDATE_RECT (btn_rect);
+  avt_pre_resize (btn_rect);
 
   nokey = true;
   while (nokey)
@@ -5185,6 +5266,7 @@ avt_wait_button (void)
     }
 
   /* delete button */
+  avt_post_resize (btn_rect);
   SDL_BlitSurface (button_area, NULL, screen, &btn_rect);
   SDL_FreeSurface (button_area);
   AVT_UPDATE_RECT (btn_rect);
@@ -5349,6 +5431,11 @@ avt_navigate (const char *buttons)
   /* show all buttons */
   AVT_UPDATE_RECT (buttons_rect);
 
+  /* prepare resizing */
+  avt_pre_resize (buttons_rect);
+  for (i = 0; i < button_count; i++)
+    avt_pre_resize (rect[i]);
+
   while (result < 0 && _avt_STATUS == AVT_NORMAL)
     {
       SDL_WaitEvent (&event);
@@ -5406,16 +5493,16 @@ avt_navigate (const char *buttons)
 
 	case SDL_MOUSEBUTTONDOWN:
 	  if (event.button.button <= 3
-	      && event.button.y >= buttons_rect.y
-	      && event.button.y <= buttons_rect.y + buttons_rect.h
-	      && event.button.x >= buttons_rect.x
-	      && event.button.x <= buttons_rect.x + buttons_rect.w)
+	      && event.button.y >= buttons_rect.y + window.y
+	      && event.button.y <= buttons_rect.y + window.y + buttons_rect.h
+	      && event.button.x >= buttons_rect.x + window.x
+	      && event.button.x <= buttons_rect.x + window.x + buttons_rect.w)
 	    {
 	      for (i = 0; i < button_count && result < 0; i++)
 		{
 		  if (buttons[i] != ' '
-		      && event.button.x >= rect[i].x
-		      && event.button.x <= rect[i].x + rect[i].w)
+		      && event.button.x >= rect[i].x + window.x
+		      && event.button.x <= rect[i].x + window.x + rect[i].w)
 		    result = buttons[i];
 		}
 	    }
@@ -5426,6 +5513,7 @@ avt_navigate (const char *buttons)
     }
 
   /* restore background */
+  avt_post_resize (buttons_rect);
   SDL_BlitSurface (buttons_area, NULL, screen, &buttons_rect);
   SDL_FreeSurface (buttons_area);
   AVT_UPDATE_RECT (buttons_rect);
@@ -5486,6 +5574,10 @@ avt_decide (void)
   SDL_FreeSurface (base_button);
   base_button = NULL;
 
+  avt_pre_resize (yes_rect);
+  avt_pre_resize (no_rect);
+  avt_pre_resize (area_rect);
+
   result = -1;			/* no result */
   while (result < 0)
     {
@@ -5517,15 +5609,15 @@ avt_decide (void)
 	  /* assume both buttons have the same height */
 	  /* any mouse button, but ignore the wheel */
 	  if (event.button.button <= 3
-	      && event.button.y >= yes_rect.y
-	      && event.button.y <= yes_rect.y + yes_rect.h)
+	      && event.button.y >= area_rect.y + window.y
+	      && event.button.y <= area_rect.y + window.y + area_rect.h)
 	    {
-	      if (event.button.x >= yes_rect.x
-		  && event.button.x <= yes_rect.x + yes_rect.w)
+	      if (event.button.x >= yes_rect.x + window.x
+		  && event.button.x <= yes_rect.x + window.x + yes_rect.w)
 		result = true;
 	      else
-		if (event.button.x >= no_rect.x
-		    && event.button.x <= no_rect.x + no_rect.w)
+		if (event.button.x >= no_rect.x + window.x
+		    && event.button.x <= no_rect.x + window.x + no_rect.w)
 		result = false;
 	    }
 	  break;
@@ -5535,6 +5627,7 @@ avt_decide (void)
     }
 
   /* delete buttons */
+  avt_post_resize (area_rect);
   SDL_BlitSurface (buttons_area, NULL, screen, &area_rect);
   SDL_FreeSurface (buttons_area);
   AVT_UPDATE_RECT (area_rect);
@@ -6935,7 +7028,7 @@ avt_start (const char *title, const char *shortname, int mode)
   /*
    * Initialize the display, accept any format
    */
-  screenflags = SDL_SWSURFACE | SDL_ANYFORMAT;
+  screenflags = SDL_SWSURFACE | SDL_ANYFORMAT | SDL_RESIZABLE;
 
 #ifndef __WIN32__
   if (avt_mode == AVT_AUTOMODE)
