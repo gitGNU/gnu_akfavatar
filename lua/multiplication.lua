@@ -209,6 +209,7 @@ function WantToContinue()
 end
 
 function initialize()
+  avt.encoding("UTF-8")
   avt.title("AKFAvatar: " .. L"Multiply", L"Multiply")
   avt.set_background_color("tan")
   avt.set_balloon_color("floral white")

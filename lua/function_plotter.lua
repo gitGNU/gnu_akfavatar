@@ -54,6 +54,7 @@ atan = math.atan
 local avt = require "lua-akfavatar"
 local graphic = require "akfavatar-graphic"
 
+avt.encoding("UTF-8")
 avt.title("Function Plotter")
 avt.avatar_image_file(avt.search("teacher.xpm"))
 

@@ -17,6 +17,7 @@ local default_cover = assert(avt.search("audio1.xpm"))
 -- url is appended, data should be dumped to stdout
 local downloader = "curl --silent --location"
 
+avt.encoding("UTF-8")
 avt.title("Audio-Player")
 avt.start()
 avt.start_audio()

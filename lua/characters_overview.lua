@@ -8,6 +8,7 @@
 
 local avt = require "lua-akfavatar"
 
+avt.encoding("UTF-8")
 avt.title("characters overview")
 avt.start()
 

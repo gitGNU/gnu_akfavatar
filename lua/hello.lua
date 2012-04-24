@@ -9,7 +9,7 @@
 
 local avt = require "lua-akfavatar" --> gives access to the avt. comands
 
-avt.encoding("UTF-8") --> UTF-8 is default
+avt.encoding("UTF-8")
 avt.title("Hello World", "Hello")
 avt.set_background_color("tan")
 avt.start()

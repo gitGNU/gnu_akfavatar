@@ -45,6 +45,7 @@ Erzaehler = person:
 
 ------------------------------------------------------------------------
 
+avt.encoding("UTF-8")
 avt.title(Frau.name .. " & " .. Mann.name, Frau.name)
 avt.start()
 avt.set_text_delay () --> den Langsamschreibmodus aktivieren

@@ -7,6 +7,7 @@
 avt = require "lua-akfavatar"
 term = require "akfavatar-term"
 
+avt.encoding("")
 avt.title("AKFAvatar Terminal", "Terminal")
 avt.start()
 avt.start_audio()

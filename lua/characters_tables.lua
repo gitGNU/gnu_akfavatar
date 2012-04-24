@@ -9,6 +9,7 @@
 local avt = require "lua-akfavatar"
 local utf8 = require "akfavatar.utf8"
 
+avt.encoding("UTF-8")
 avt.title("characters tables")
 avt.start()
 

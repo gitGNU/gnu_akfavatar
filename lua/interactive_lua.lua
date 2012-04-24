@@ -51,6 +51,7 @@ local function interactive (cmd)
   return cmd
 end
 
+avt.encoding("UTF-8")
 avt.title("Lua-AKFAvatar")
 avt.start()
 avt.start_audio()

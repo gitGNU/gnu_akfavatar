@@ -37,6 +37,7 @@ story = person:
 
 ------------------------------------------------------------------------
 
+avt.encoding("UTF-8")
 avt.title(woman.name .. " & " .. man.name, woman.name)
 avt.start()
 avt.set_text_delay ()  --> activate the slowprint mode

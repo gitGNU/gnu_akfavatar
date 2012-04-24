@@ -29,6 +29,7 @@ Keys:
 local avt = require "lua-akfavatar"
 local graphic = require "akfavatar-graphic"
 
+avt.encoding("UTF-8")
 avt.title("Four in a row")
 avt.start()
 avt.start_audio()
