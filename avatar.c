@@ -2122,16 +2122,29 @@ avt_analyze_event (SDL_Event * event)
       if (avt_ext_mousehandler)
 	{
 	  int x, y;
-	  x = (event->button.x - textfield.x) / FONTWIDTH + 1;
-	  y = (event->button.y - textfield.y) / LINEHEIGHT + 1;
 
-	  /* if x or y is invalid set both to -1 */
-	  if (x < 1 || x > AVT_LINELENGTH
-	      || y < 1 || y > (textfield.h / LINEHEIGHT))
-	    x = y = -1;
+	  if (textfield.x >= 0)
+	    {
+	      /* if there is a textfield, use the character position */
+	      x = (event->button.x - textfield.x) / FONTWIDTH + 1;
+	      y = (event->button.y - textfield.y) / LINEHEIGHT + 1;
 
-	  avt_ext_mousehandler (event->button.button,
-				(event->button.state == SDL_PRESSED), x, y);
+	      /* check if x and y are valid */
+	      if (x >= 1 && x <= AVT_LINELENGTH
+		  && y >= 1 && y <= (textfield.h / LINEHEIGHT))
+		avt_ext_mousehandler (event->button.button,
+				      (event->button.state == SDL_PRESSED),
+				      x, y);
+	    }
+	  else			/* no textfield */
+	    {
+	      x = event->button.x - window.x;
+	      y = event->button.y - window.y;
+	      if (x >= 0 && x <= window.w && y >= 0 && y <= window.h)
+		avt_ext_mousehandler (event->button.button,
+				      (event->button.state == SDL_PRESSED),
+				      x, y);
+	    }
 	}
       break;
 

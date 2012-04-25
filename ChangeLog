@@ -7,6 +7,9 @@
 	* avatar.c (avt_resize, avt_toggle_fullscreen, avt_switch_mode):
 	fullscreen mode respects size of inner window
 
+	* avatar.c (avt_analyze_event):
+	make mousehandler work (differently), when there is no textfield
+
 2012-04-23  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c: add code for resizing again
