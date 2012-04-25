@@ -2,8 +2,7 @@
 
 	* avatar.c (avt_avatar_window): new function
 
-	* avatar.c (avt_show_image):
-	inner window is widened if image is larger
+	* avatar.c (avt_show_image): inner window becomes image
 
 	* avatar.c (avt_resize, avt_toggle_fullscreen, avt_switch_mode):
 	fullscreen mode respects size of inner window

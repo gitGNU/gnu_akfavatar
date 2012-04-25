@@ -242,6 +242,7 @@ static int errno;
 
 #define avt_isblank(c)  ((c) == ' ' || (c) == '\t')
 
+#define MAX(a,b) (((a) > (b)) ? (a) : (b))
 
 /* type for gimp images */
 #ifndef DISABLE_DEPRECATED
@@ -375,7 +376,8 @@ avt_avatar_window (void)
   window.h = MINIMALHEIGHT;
   window.x = screen->w > window.w ? (screen->w / 2) - (window.w / 2) : 0;
   window.y = screen->h > window.h ? (screen->h / 2) - (window.h / 2) : 0;
-  calculate_balloonmaxheight();
+  SDL_SetClipRect (screen, &window);
+  calculate_balloonmaxheight ();
 }
 
 /* color selector */
@@ -2056,7 +2058,8 @@ avt_toggle_fullscreen (void)
       if ((screenflags & SDL_FULLSCREEN) != 0)
 	{
 	  screenflags |= SDL_NOFRAME;
-	  avt_resize (window.w, window.h);
+	  avt_resize (MAX (window.w, MINIMALWIDTH),
+		      MAX (window.h, MINIMALHEIGHT));
 	  avt_mode = AVT_FULLSCREEN;
 	}
       else
@@ -2082,7 +2085,8 @@ avt_switch_mode (int mode)
 	  if ((screenflags & SDL_FULLSCREEN) == 0)
 	    {
 	      screenflags |= SDL_FULLSCREEN | SDL_NOFRAME;
-	      avt_resize (window.w, window.h);
+	      avt_resize (MAX (window.w, MINIMALWIDTH),
+			  MAX (window.h, MINIMALHEIGHT));
 	    }
 	  break;
 
@@ -5704,18 +5708,8 @@ avt_show_image (SDL_Surface * image)
   dst.w = image->w;
   dst.h = image->h;
 
-  /* eventually increase inner window */
-  if (dst.w > window.w)
-    {
-      window.w = (dst.w <= screen->w) ? dst.w : screen->w;
-      window.x = (screen->w / 2) - (window.w / 2);
-    }
-
-  if (dst.h > window.h)
-    {
-      window.h = (dst.h <= screen->h) ? dst.h : screen->h;
-      window.y = (screen->h / 2) - (window.h / 2);
-    }
+  /* inner window is image */
+  window = dst;
 
   /*
    * if image is larger than the screen,
@@ -5723,7 +5717,6 @@ avt_show_image (SDL_Surface * image)
    */
   SDL_BlitSurface (image, NULL, screen, &dst);
   AVT_UPDATE_ALL ();
-  SDL_SetClipRect (screen, &window);
   avt_checkevent ();
 }
 
