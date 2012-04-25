@@ -343,6 +343,40 @@ static int avt_pause (void);
 static void avt_drawchar (avt_char ch, SDL_Surface * surface);
 static SDL_Surface *avt_save_background (SDL_Rect area);
 
+static int
+calculate_balloonmaxheight (void)
+{
+  int avatar_height;
+
+  avatar_height = avatar_image ? avatar_image->h + AVATAR_MARGIN : 0;
+
+  balloonmaxheight = (window.h - avatar_height - (2 * TOPMARGIN)
+		      - (2 * BALLOON_INNER_MARGIN)) / LINEHEIGHT;
+
+  /* check, whether image is too high */
+  /* at least 10 lines */
+  if (balloonmaxheight < 10)
+    {
+      SDL_SetError ("Avatar image too large");
+      _avt_STATUS = AVT_ERROR;
+      SDL_FreeSurface (avatar_image);
+      avatar_image = NULL;
+    }
+
+  return _avt_STATUS;
+}
+
+/* set the inner window for the avatar-display */
+static void
+avt_avatar_window (void)
+{
+  /* window may be smaller than the screen */
+  window.w = MINIMALWIDTH;
+  window.h = MINIMALHEIGHT;
+  window.x = screen->w > window.w ? (screen->w / 2) - (window.w / 2) : 0;
+  window.y = screen->h > window.h ? (screen->h / 2) - (window.h / 2) : 0;
+  calculate_balloonmaxheight();
+}
 
 /* color selector */
 extern int
@@ -1543,6 +1577,7 @@ avt_draw_avatar (void)
       avt_free_screen ();
 
       SDL_SetClipRect (screen, &window);
+      avt_avatar_window ();
 
       if (avatar_image)
 	{
@@ -1890,10 +1925,11 @@ avt_resize (int w, int h)
   SDL_Rect oldwindow;
   SDL_Event event;
 
-  if (w < MINIMALWIDTH)
-    w = MINIMALWIDTH;
-  if (h < MINIMALHEIGHT)
-    h = MINIMALHEIGHT;
+  /* minimal size */
+  if (w < window.w)
+    w = window.w;
+  if (h < window.h)
+    h = window.h;
 
   /* save the window */
   oldwindow = window;
@@ -2020,7 +2056,7 @@ avt_toggle_fullscreen (void)
       if ((screenflags & SDL_FULLSCREEN) != 0)
 	{
 	  screenflags |= SDL_NOFRAME;
-	  avt_resize (MINIMALWIDTH, MINIMALHEIGHT);
+	  avt_resize (window.w, window.h);
 	  avt_mode = AVT_FULLSCREEN;
 	}
       else
@@ -2046,9 +2082,10 @@ avt_switch_mode (int mode)
 	  if ((screenflags & SDL_FULLSCREEN) == 0)
 	    {
 	      screenflags |= SDL_FULLSCREEN | SDL_NOFRAME;
-	      avt_resize (MINIMALWIDTH, MINIMALHEIGHT);
+	      avt_resize (window.w, window.h);
 	    }
 	  break;
+
 	case AVT_WINDOW:
 	  if ((screenflags & SDL_FULLSCREEN) != 0)
 	    {
@@ -5667,7 +5704,21 @@ avt_show_image (SDL_Surface * image)
   dst.w = image->w;
   dst.h = image->h;
 
-  /* if image is larger than the window,
+  /* eventually increase inner window */
+  if (dst.w > window.w)
+    {
+      window.w = (dst.w <= screen->w) ? dst.w : screen->w;
+      window.x = (screen->w / 2) - (window.w / 2);
+    }
+
+  if (dst.h > window.h)
+    {
+      window.h = (dst.h <= screen->h) ? dst.h : screen->h;
+      window.y = (screen->h / 2) - (window.h / 2);
+    }
+
+  /*
+   * if image is larger than the screen,
    * just the upper left part is shown, as far as it fits
    */
   SDL_BlitSurface (image, NULL, screen, &dst);
@@ -6112,29 +6163,6 @@ avt_import_image_stream (avt_stream * stream)
 
 #endif /* DISABLE_DEPRECATED */
 
-
-static int
-calculate_balloonmaxheight (void)
-{
-  int avatar_height;
-
-  avatar_height = avatar_image ? avatar_image->h + AVATAR_MARGIN : 0;
-
-  balloonmaxheight = (window.h - avatar_height - (2 * TOPMARGIN)
-		      - (2 * BALLOON_INNER_MARGIN)) / LINEHEIGHT;
-
-  /* check, whether image is too high */
-  /* at least 10 lines */
-  if (balloonmaxheight < 10)
-    {
-      SDL_SetError ("Avatar image too large");
-      _avt_STATUS = AVT_ERROR;
-      SDL_FreeSurface (avatar_image);
-      avatar_image = NULL;
-    }
-
-  return _avt_STATUS;
-}
 
 /* change avatar image and (re)calculate balloon size */
 static int
@@ -6791,11 +6819,7 @@ avt_credits (const wchar_t * text, bool centered)
     avt_credits_up (NULL);
 
   SDL_FreeSurface (last_line);
-
-  window.w = MINIMALWIDTH;
-  window.h = MINIMALHEIGHT;
-  window.x = screen->w > window.w ? (screen->w / 2) - (window.w / 2) : 0;
-  window.y = screen->h > window.h ? (screen->h / 2) - (window.h / 2) : 0;
+  avt_avatar_window ();
 
   /* back to normal (also sets variables!) */
   avt_set_background_color (old_backgroundcolor.r, old_backgroundcolor.g,
@@ -7084,12 +7108,7 @@ avt_start (const char *title, const char *shortname, int mode)
   windowmode_size.w = screen->w;
   windowmode_size.h = screen->h;
 
-  /* window may be smaller than the screen */
-  window.w = MINIMALWIDTH;
-  window.h = MINIMALHEIGHT;
-  window.x = screen->w > window.w ? (screen->w / 2) - (window.w / 2) : 0;
-  window.y = screen->h > window.h ? (screen->h / 2) - (window.h / 2) : 0;
-
+  avt_avatar_window ();
   avt_set_mouse_pointer ();
 
   background_color = SDL_MapRGB (screen->format,
@@ -7132,7 +7151,6 @@ avt_start (const char *title, const char *shortname, int mode)
   SDL_SetAlpha (avt_text_cursor, SDL_SRCALPHA | SDL_RLEACCEL, 128);
 
   /* set actual balloon size to the maximum size */
-  calculate_balloonmaxheight ();
   balloonheight = balloonmaxheight;
   balloonwidth = AVT_LINELENGTH;
 
