@@ -242,8 +242,6 @@ static int errno;
 
 #define avt_isblank(c)  ((c) == ' ' || (c) == '\t')
 
-#define MAX(a,b) (((a) > (b)) ? (a) : (b))
-
 /* type for gimp images */
 #ifndef DISABLE_DEPRECATED
 typedef struct
@@ -1928,10 +1926,10 @@ avt_resize (int w, int h)
   SDL_Event event;
 
   /* minimal size */
-  if (w < window.w)
-    w = window.w;
-  if (h < window.h)
-    h = window.h;
+  if (w < MINIMALWIDTH)
+    w = MINIMALWIDTH;
+  if (h < MINIMALHEIGHT)
+    h = MINIMALHEIGHT;
 
   /* save the window */
   oldwindow = window;
@@ -2058,8 +2056,7 @@ avt_toggle_fullscreen (void)
       if ((screenflags & SDL_FULLSCREEN) != 0)
 	{
 	  screenflags |= SDL_NOFRAME;
-	  avt_resize (MAX (window.w, MINIMALWIDTH),
-		      MAX (window.h, MINIMALHEIGHT));
+	  avt_resize (window.w, window.h);
 	  avt_mode = AVT_FULLSCREEN;
 	}
       else
@@ -2085,8 +2082,7 @@ avt_switch_mode (int mode)
 	  if ((screenflags & SDL_FULLSCREEN) == 0)
 	    {
 	      screenflags |= SDL_FULLSCREEN | SDL_NOFRAME;
-	      avt_resize (MAX (window.w, MINIMALWIDTH),
-			  MAX (window.h, MINIMALHEIGHT));
+	      avt_resize (window.w, window.h);
 	    }
 	  break;
 
