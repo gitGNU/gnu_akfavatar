@@ -719,7 +719,9 @@ dist-bin-default: all pdf
 	cp akfavatar-graphic.so $(BINPKGNAME)/lua/
 	cp akfavatar-term.so $(BINPKGNAME)/lua/
 	ln $(srcdir)/README-Lua $(BINPKGNAME)/
+	ln $(srcdir)/akfoerster-lua-akfavatar.desktop $(BINPKGNAME)/
 	ln $(srcdir)/Homepage.desktop $(BINPKGNAME)/
+	ln $(srcdir)/akfavatar.xpm $(srcdir)/lua.xpm $(BINPKGNAME)
 	ln $(srcdir)/lua/fullscreen.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/audioplayer.lua $(BINPKGNAME)/lua/
