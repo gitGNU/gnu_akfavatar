@@ -562,6 +562,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/NEWS \
 	   $(srcdir)/COPYING $(srcdir)/ChangeLog $(srcdir)/lrun \
 	   $(srcdir)/Homepage.desktop \
+	   $(srcdir)/akfoerster-lua-akfavatar.desktop \
 	   $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avatar-audio.c \
 	   $(srcdir)/avtinternals.h \
 	   $(srcdir)/avatar-default.c $(srcdir)/avtccio.c $(srcdir)/avtcwio.c \
