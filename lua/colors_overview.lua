@@ -4,7 +4,7 @@
 -- License: GPL version 3 or later
 
 -- this gives an overview which color names are available
--- You can mix any deliberate color with thew hexadecimasl RGB notation
+-- You can mix any deliberate color with the hexadecimal RGB notation
 
 local avt = require "lua-akfavatar"
 
