@@ -215,6 +215,7 @@ static void
 reset (void)
 {
   avt_clear_screen ();
+  avt_set_balloon_mode (AVT_SAY);
   avt_newline_mode (true);
   avt_set_auto_margin (true);
   avt_set_origin_mode (true);
