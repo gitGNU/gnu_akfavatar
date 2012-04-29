@@ -5,6 +5,8 @@
 	(avt_move_in, avt_move_out, avt_start): adapted
 	(lua/lua-avt.c): adapted
 
+	* pascal/akfavatar.pas (SetBalloonMode): new procedure
+
 2012-04-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_avatar_window): new function
