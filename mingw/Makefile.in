@@ -65,8 +65,8 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
              $(srcdir)/btn_pause.xbm $(srcdir)/btn_stop.xbm \
              $(srcdir)/btn_help.xbm $(srcdir)/btn_cancel.xbm \
              $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm \
-             $(srcdir)/balloonpointer.xbm $(srcdir)/circle.xbm \
-             $(srcdir)/akfavatar.xpm
+             $(srcdir)/balloonpointer.xbm $(srcdir)/thinkpointer.xbm \
+             $(srcdir)/circle.xbm $(srcdir)/akfavatar.xpm
 	$(CC) -c -I$(srcdir) -I. -I$(srcdir)/mingw $(SDL_CFLAGS) $(CFLAGS) \
 	    -o $@ $(srcdir)/avatar.c
 

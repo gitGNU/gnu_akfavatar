@@ -89,7 +89,8 @@ rgb.h: $(srcdir)/rgb.txt $(srcdir)/rgb2c
 
 avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
           version.h rgb.h \
-          $(srcdir)/balloonpointer.xbm $(srcdir)/circle.xbm \
+          $(srcdir)/balloonpointer.xbm $(srcdir)/thinkpointer.xbm \
+          $(srcdir)/circle.xbm \
           $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
           $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
           $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
@@ -121,7 +122,8 @@ libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o
 	-$(RANLIB) $@
 
 avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h rgb.h \
-           $(srcdir)/balloonpointer.xbm $(srcdir)/circle.xbm \
+           $(srcdir)/balloonpointer.xbm $(srcdir)/thinkpointer.xbm \
+           $(srcdir)/circle.xbm \
            $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
            $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
            $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
@@ -568,8 +570,8 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/avatar-default.c $(srcdir)/avtccio.c $(srcdir)/avtcwio.c \
 	   $(srcdir)/avtaddons.h $(srcdir)/filechooser.c \
 	   $(srcdir)/avtreadfile.c $(srcdir)/colorchooser.c \
-	   $(srcdir)/balloonpointer.xbm $(srcdir)/circle.xbm \
-	   $(srcdir)/lua.xpm \
+	   $(srcdir)/balloonpointer.xbm $(srcdir)/thinkpointer.xbm \
+	   $(srcdir)/circle.xbm $(srcdir)/lua.xpm \
 	   $(srcdir)/btn.xpm $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
 	   $(srcdir)/mpointer.xbm $(srcdir)/mpointer_mask.xbm \
 	   $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
