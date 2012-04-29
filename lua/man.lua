@@ -34,7 +34,7 @@ local manpage = assert(io.popen(
   "env MANWIDTH=80 GROFF_TYPESETTER=latin1 GROFF_NO_SGR=1 man -t "
   .. page .. " 2>&1"))
 
-avt.avatar_image_file(avt.search("info.xpm"))
+avt.avatar_image("none")
 avt.set_balloon_size(0, 0)
 -- manpages use the overstrike technique in the output
 avt.markup(false)
