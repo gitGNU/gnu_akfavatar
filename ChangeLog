@@ -7,6 +7,8 @@
 
 	* pascal/akfavatar.pas (SetBalloonMode): new procedure
 
+	* bdf2c: fix for -v
+
 2012-04-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_avatar_window): new function

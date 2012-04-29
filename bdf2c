@@ -10,7 +10,7 @@
 # without any warranty.
 
 BEGIN {
-  name = "get_font_char"
+  if (name == "") name = "get_font_char"
   width=height=started=default_char=charoffset=maxchar = 0
   }
 
