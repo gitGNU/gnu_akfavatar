@@ -46,7 +46,7 @@ benötigt.
 Für Bilder werden die Formate
 .BR XPM ", " XBM " und unkomprimiertes " BMP
 auf jeden Fall unterstützt.
-Wietere Formate werden unterstützt, wenn
+Weitere Formate werden unterstützt, wenn
 .B SDL_image
 und weitere Bibliotheken installiert sind.
 .PP
