@@ -39,6 +39,7 @@
 #include "akfavatar.xpm"
 #include "btn.xpm"
 #include "balloonpointer.xbm"
+#include "thinkpointer.xbm"
 #include "circle.xbm"
 #include "btn_yes.xbm"
 #include "btn_no.xbm"
@@ -269,6 +270,7 @@ static bool underlined, bold, inverse;	/* text underlined, bold? */
 static bool auto_margin;	/* automatic new lines? */
 static Uint32 screenflags;	/* flags for the screen */
 static int avt_mode;		/* whether fullscreen or window or ... */
+static int balloon_mode;
 static SDL_Rect window;		/* if screen is in fact larger */
 static SDL_Rect windowmode_size;	/* size of the whole window (screen) */
 static bool avt_visible;	/* avatar visible? */
@@ -1581,8 +1583,11 @@ avt_draw_avatar (void)
 
       if (avatar_image)
 	{
-	  /* left */
-	  dst.x = window.x + AVATAR_MARGIN;
+	  if (balloon_mode == AVT_SEPARATE)
+	    dst.x = ((window.x + window.w) / 2) - (avatar_image->w / 2);
+	  else			/* left */
+	    dst.x = window.x + AVATAR_MARGIN;
+
 	  /* bottom */
 	  dst.y = window.y + window.h - avatar_image->h - AVATAR_MARGIN;
 	  dst.w = avatar_image->w;
@@ -1681,7 +1686,7 @@ avt_draw_balloon2 (int offset, Uint32 ballooncolor)
 
   /* draw balloonpointer */
   /* only if there is an avatar image */
-  if (avatar_image)
+  if (avatar_image && balloon_mode != AVT_SEPARATE)
     {
       SDL_Rect pointer_shape, pointer_pos;
 
@@ -1731,7 +1736,7 @@ avt_draw_balloon (void)
   textfield.x = window.x + (window.w / 2) - (balloonwidth * FONTWIDTH / 2);
 
   /* align with balloonpointer */
-  if (avatar_image)
+  if (avatar_image && balloon_mode != AVT_SEPARATE)
     {
       /* left border not aligned with balloon pointer? */
       if (textfield.x >
@@ -1910,6 +1915,42 @@ avt_set_balloon_size (int height, int width)
 	  avt_draw_balloon ();
 	}
     }
+}
+
+extern void
+avt_balloon_mode (int mode)
+{
+  if (mode != balloon_mode)
+    {
+      switch (mode)
+	{
+	case AVT_SAY:
+	  SDL_FreeSurface (pointer);
+	  pointer =
+	    avt_load_image_xbm (AVT_XBM_INFO (balloonpointer),
+				ballooncolor_RGB.r, ballooncolor_RGB.g,
+				ballooncolor_RGB.b);
+	  balloon_mode = AVT_SAY;
+	  break;
+
+	case AVT_THINK:
+	  SDL_FreeSurface (pointer);
+	  pointer =
+	    avt_load_image_xbm (AVT_XBM_INFO (thinkpointer),
+				ballooncolor_RGB.r, ballooncolor_RGB.g,
+				ballooncolor_RGB.b);
+	  balloon_mode = AVT_THINK;
+	  break;
+
+	case AVT_SEPARATE:
+	  balloon_mode = AVT_SEPARATE;
+	  break;
+	}
+    }
+
+  /* if balloon is visible, remove it */
+  if (textfield.x >= 0)
+    avt_show_avatar ();
 }
 
 /* rectangles in some functions have to be adjusted */
@@ -5103,6 +5144,7 @@ avt_move_in (void)
   if (avatar_image)
     {
       SDL_Rect dst;
+      Sint16 destination;
       Uint32 start_time;
       SDL_Rect mywindow;
 
@@ -5120,7 +5162,12 @@ avt_move_in (void)
       dst.h = avatar_image->h;
       start_time = SDL_GetTicks ();
 
-      while (dst.x > mywindow.x + AVATAR_MARGIN)
+      if (balloon_mode == AVT_SEPARATE)
+	destination = ((window.x + window.w) / 2) - (avatar_image->w / 2);
+      else			/* left */
+	destination = window.x + AVATAR_MARGIN;
+
+      while (dst.x > destination)
 	{
 	  Sint16 oldx = dst.x;
 
@@ -5191,7 +5238,11 @@ avt_move_out (void)
       mywindow = window;
       mywindow.w = screen->w - mywindow.x;
 
-      start_position = mywindow.x + AVATAR_MARGIN;
+      if (balloon_mode == AVT_SEPARATE)
+	start_position = ((window.x + window.w) / 2) - (avatar_image->w / 2);
+      else
+	start_position = mywindow.x + AVATAR_MARGIN;
+
       dst.x = start_position;
       /* bottom */
       dst.y = mywindow.y + mywindow.h - avatar_image->h - AVATAR_MARGIN;
@@ -7175,6 +7226,8 @@ avt_start (const char *title, const char *shortname, int mode)
   circle =
     avt_load_image_xbm (AVT_XBM_INFO (circle), ballooncolor_RGB.r,
 			ballooncolor_RGB.g, ballooncolor_RGB.b);
+
+  balloon_mode = AVT_SAY;
   pointer =
     avt_load_image_xbm (AVT_XBM_INFO (balloonpointer), ballooncolor_RGB.r,
 			ballooncolor_RGB.g, ballooncolor_RGB.b);

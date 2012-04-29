@@ -69,6 +69,11 @@
 #define AVT_DEFAULT_TEXT_DELAY 75
 #define AVT_DEFAULT_FLIP_PAGE_DELAY 2700
 
+/* for avt_balloon_mode */
+#define AVT_SAY 0
+#define AVT_THINK 1
+#define AVT_SEPARATE 2
+
 /* for avt_text_direction */
 #define AVT_LEFT_TO_RIGHT 0
 #define AVT_RIGHT_TO_LEFT 1
@@ -502,6 +507,12 @@ AVT_API int avt_get_mode (void);
 AVT_API void avt_set_balloon_size (int height, int width);
 AVT_API void avt_set_balloon_width (int width);
 AVT_API void avt_set_balloon_height (int height);
+
+/*
+ * set the balloon mode
+ * either of AVT_SAY, AVT_THINK or AVT_SEPARATE
+ */
+AVT_API void avt_balloon_mode (int mode);
 
 /* activate the text cursor? (default: no) */
 AVT_API void avt_activate_cursor (bool on);
