@@ -512,7 +512,7 @@ AVT_API void avt_set_balloon_height (int height);
  * set the balloon mode
  * either of AVT_SAY, AVT_THINK or AVT_SEPARATE
  */
-AVT_API void avt_balloon_mode (int mode);
+AVT_API void avt_set_balloon_mode (int mode);
 
 /* activate the text cursor? (default: no) */
 AVT_API void avt_activate_cursor (bool on);

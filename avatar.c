@@ -1918,7 +1918,7 @@ avt_set_balloon_size (int height, int width)
 }
 
 extern void
-avt_balloon_mode (int mode)
+avt_set_balloon_mode (int mode)
 {
   if (mode != balloon_mode)
     {

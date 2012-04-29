@@ -1,8 +1,9 @@
 2012-04-29  Andreas K. Foerster  <info@akfoerster.de>
 
-	* akfavatar.h, avatar.c (avt_balloon_mode): new function
+	* akfavatar.h, avatar.c (avt_set_balloon_mode): new function
 	(avt_draw_avatar, avt_draw_balloon, avt_draw_balloon2)
 	(avt_move_in, avt_move_out, avt_start): adapted
+	(lua/lua-avt.c): adapted
 
 2012-04-25  Andreas K. Foerster  <info@akfoerster.de>
 
