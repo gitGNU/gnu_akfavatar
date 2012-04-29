@@ -148,6 +148,14 @@ Set the name of the avatar.  This must be used after
 .BR avt.change_avatar_image() .
 .PP
 .TP
+.BI "avt.set_balloon_mode(" mode )
+Set the balloon mode.
+The
+.I mode
+can be one of "say", "think" or "separate".
+The balloon mode is only used, when there is an avatar image.
+.PP
+.TP
 .BI "avt.say(" ... )
 .TQ
 .BI "avt.write(" ... )

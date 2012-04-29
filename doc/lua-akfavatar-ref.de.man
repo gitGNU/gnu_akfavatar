@@ -146,6 +146,15 @@ Setzt den Namen für den Avatar.
 Dies muss nach dem Setzen des Bildes geschehen.
 .PP
 .TP
+.BI "avt.set_balloon_mode(" Modus )
+Legt den Sprechblasen-Modus fest.
+Der
+.I Modus
+ist eines von "say" (sagen), "think" (denken) oder "separate" (separat).
+Der Sprechblasen-Modus wird nur angewandt, wenn ein Avatar-Bild vorhanden
+ist.
+.PP
+.TP
 .BI "avt.say(" ... )
 .TQ
 .BI "avt.write(" ... )
