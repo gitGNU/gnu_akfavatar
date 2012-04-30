@@ -307,10 +307,10 @@ static bool hold_updates;
 static SDL_Color ballooncolor_RGB = { 255, 250, 240, 0 };
 
 /* default (pale brown) */
-static int backgroundcolornr = avt_rgb (0xE0, 0xD5, 0xC5);
+static int backgroundcolornr = 0xE0D5C5;
 
 /* grey */
-/* static SDL_Color backgroundcolornr = avt_rgb(0xCC, 0xCC, 0xCC); */
+/* static SDL_Color backgroundcolornr = 0xCCCCCC; */
 
 /* color for cursor and menu-bar */
 static SDL_Color cursor_color = { 0xF2, 0x89, 0x19, 0 };
@@ -6916,9 +6916,9 @@ avt_credits (const wchar_t * text, bool centered)
 
   /* the background-color is used when the window is resized */
   /* this implicitly also clears the screen */
-  avt_set_background_colornr (avt_rgb (0, 0, 0));
-  avt_set_text_background_colornr (avt_rgb (0, 0, 0));
-  avt_set_text_colornr (avt_rgb (0xff, 0xff, 0xff));
+  avt_set_background_colornr (0x000000);
+  avt_set_text_background_colornr (0x000000);
+  avt_set_text_colornr (0xFFFFFF);
 
   window.x = (screen->w / 2) - (80 * FONTWIDTH / 2);
   window.w = 80 * FONTWIDTH;

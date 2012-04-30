@@ -38,12 +38,12 @@
 
 /* entries or marks that are not colors */
 #define marked_text(S) \
-         do { avt_set_text_background_colornr (avt_rgb (0xdd, 0xdd, 0xdd)); \
+         do { avt_set_text_background_colornr (0xDDDDDD); \
          avt_say (S); avt_normal_text (); } while(0)
 
 #define marked_line(S) \
          do { \
-           avt_set_text_background_colornr (avt_rgb (0xdd, 0xdd, 0xdd)); \
+           avt_set_text_background_colornr (0xDDDDDD); \
            avt_clear_line (); \
            avt_move_x (mid_x-(sizeof(S)/sizeof(wchar_t)-1)/2); \
            avt_say(S); \

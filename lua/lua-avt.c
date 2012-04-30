@@ -1895,7 +1895,7 @@ lavt_launch (lua_State * L)
 
 #define MARK(S) \
          do { \
-           avt_set_text_background_colornr (avt_rgb (0xdd, 0xdd, 0xdd)); \
+           avt_set_text_background_colornr (0xDDDDDD); \
            avt_clear_line (); \
            avt_move_x (mid_x-(sizeof(S)/sizeof(wchar_t)-1)/2); \
            avt_say(S); \

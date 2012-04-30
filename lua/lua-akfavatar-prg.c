@@ -99,7 +99,7 @@ error_box (const char *msg)
 {
   avt_set_status (AVT_NORMAL);
   avt_avatar_image_none ();
-  avt_set_balloon_colornr (avt_rgb (0xFF, 0xAA, 0xAA));
+  avt_set_balloon_colornr (0xFFAAAA);
   avt_normal_text ();
   avt_set_auto_margin (true);
   avt_set_scroll_mode (-1);
