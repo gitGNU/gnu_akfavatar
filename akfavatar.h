@@ -275,7 +275,7 @@ AVT_API int avt_tell_len (const wchar_t *txt, size_t len);
 AVT_API int avt_put_char (avt_char ch);
 
 /*
- * checks whether the given charactrer is printable
+ * checks whether the given character is printable
  * returns false on unknown or control characters
  */
 AVT_API bool avt_is_printable (avt_char ch);
@@ -459,12 +459,17 @@ AVT_API const char *avt_get_color_name (int nr);
  */
 AVT_API const char *avt_get_color (int nr, int *red, int *green, int *blue);
 
+#define avt_rgb(r,g,b)      ((((r)&0xFF)<<16) | (((g)&0xFF)<<8) | ((b)&0xFF))
+#define avt_red(colornr)    (((colornr) >> 16) & 0xFF)
+#define avt_green(colornr)  (((colornr) >> 8) & 0xFF)
+#define avt_blue(colornr)   ((colornr) & 0xFF)
+
 /*
- * get color values for a given color-name
- * returns 0 on success or -1 on error
+ * get color from a given name
+ * returns -1 on error
  */
-AVT_API int avt_name_to_color (const char *name,
-			       int *red, int *green, int *blue);
+AVT_API int avt_colorname (const char *name);
+AVT_API void avt_color_to_rgb (int colornr, int *red, int *green, int *blue);
 
 /***********************************************************************/
 /* settings */
@@ -517,32 +522,23 @@ AVT_API void avt_activate_cursor (bool on);
 
 /*
  * define the background color
- * values in the range 0x00 .. 0xFF
  * can and should be called before avt_initialize
  * if the balloon is visible, it is cleared
  */
-AVT_API void avt_set_background_color (int red, int green, int blue);
-AVT_API void avt_set_background_color_name (const char *name);
-AVT_API void avt_get_background_color (int *red, int *green, int *blue);
+AVT_API void avt_set_background_colornr (int colornr);
+AVT_API int avt_get_background_colornr (void);
 
 /*
  * define the balloon color
- * values in the range 0x00 .. 0xFF
  * can be called before avt_initialize
  * the text-background-color is set to the balloon-color too
  * if the balloon is visible, it is cleared
  */
-AVT_API void avt_set_balloon_color (int red, int green, int blue);
-AVT_API void avt_set_balloon_color_name (const char *name);
+AVT_API void avt_set_balloon_colornr (int colornr);
 
-/*
- * change the text color
- * values in the range 0x00 .. 0xFF
- */
-AVT_API void avt_set_text_color (int red, int green, int blue);
-AVT_API void avt_set_text_color_name (const char *name);
-AVT_API void avt_set_text_background_color (int red, int green, int blue);
-AVT_API void avt_set_text_background_color_name (const char *name);
+/* change the text color */
+AVT_API void avt_set_text_colornr (int colornr);
+AVT_API void avt_set_text_background_colornr (int colornr);
 
 /* set text background to balloon color */
 AVT_API void avt_set_text_background_ballooncolor (void);
@@ -1043,6 +1039,8 @@ AVT_API bool avt_audio_playing (avt_audio *snd);
 /* deprecated functions - only for backward comatibility */
 /* don't use them for new programs! */
 
+#ifndef DISABLE_DEPRECATED
+
 /* macro for marking deprecated functions in this header */
 #if (defined(__GNUC__) || defined(__clang__)) && !defined(_AVT_USE_DEPRECATED)
 #  define AVT_DEPRECATED  __attribute__ ((__deprecated__))
@@ -1069,6 +1067,18 @@ AVT_API int avt_change_avatar_image (avt_image_t *image) AVT_DEPRECATED;
 AVT_API avt_image_t *avt_make_transparent (avt_image_t *image) AVT_DEPRECATED;
 AVT_API void avt_free_image (avt_image_t *image) AVT_DEPRECATED;
 AVT_API int avt_initialize_audio (void) AVT_DEPRECATED;
+AVT_API void avt_set_background_color (int red, int green, int blue) AVT_DEPRECATED;
+AVT_API void avt_set_background_color_name (const char *name) AVT_DEPRECATED;
+AVT_API void avt_get_background_color (int *red, int *green, int *blue) AVT_DEPRECATED;
+AVT_API void avt_set_balloon_color (int red, int green, int blue) AVT_DEPRECATED;
+AVT_API void avt_set_balloon_color_name (const char *name) AVT_DEPRECATED;
+AVT_API void avt_set_text_color (int red, int green, int blue) AVT_DEPRECATED;
+AVT_API void avt_set_text_color_name (const char *name) AVT_DEPRECATED;
+AVT_API void avt_set_text_background_color (int red, int green, int blue) AVT_DEPRECATED;
+AVT_API void avt_set_text_background_color_name (const char *name) AVT_DEPRECATED;
+AVT_API int avt_name_to_color (const char *name, 
+                               int *red, int *green, int *blue) AVT_DEPRECATED;
 
+#endif /* DISABLE_DEPRECATED */
 
 #endif /* _akfavatar_h */

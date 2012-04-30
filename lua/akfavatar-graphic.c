@@ -1,6 +1,6 @@
 /*
  * AKFAvatar graphic API
- * Copyright (c) 2011 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2011,2012 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -220,7 +220,7 @@ static int
 lgraphic_new (lua_State * L)
 {
   int width, height;
-  int red, green, blue;
+  int colornr;
   graphic *gr;
   const char *background_color;
 
@@ -244,14 +244,17 @@ lgraphic_new (lua_State * L)
 
   gr->heading = 0.0;
 
-  if (!background_color)
-    avt_get_background_color (&red, &green, &blue);
-  else if (avt_name_to_color (background_color, &red, &green, &blue))
+  if (background_color)
+    colornr = avt_colorname (background_color);
+  else
+    colornr = avt_get_background_colornr ();
+
+  if (colornr < 0)
     return luaL_argerror (L, 3, "invalid color");
 
-  gr->background.red = (byte) red;
-  gr->background.green = (byte) green;
-  gr->background.blue = (byte) blue;
+  gr->background.red = avt_red (colornr);
+  gr->background.green = avt_green (colornr);
+  gr->background.blue = avt_blue (colornr);
   clear_graphic (gr);
 
   lua_pushinteger (L, width);
@@ -275,21 +278,22 @@ static int
 lgraphic_clear (lua_State * L)
 {
   graphic *gr;
-  int red, green, blue;
   const char *color_name;
+  int colornr;
 
   gr = get_graphic (L, 1);
   color_name = lua_tostring (L, 2);
 
   if (color_name)
     {
-      /* new background color */
-      if (avt_name_to_color (color_name, &red, &green, &blue))
+      colornr = avt_colorname (color_name);
+
+      if (colornr < 0)
 	return luaL_argerror (L, 2, "invalid color");
 
-      gr->background.red = (byte) red;
-      gr->background.green = (byte) green;
-      gr->background.blue = (byte) blue;
+      gr->background.red = avt_red (colornr);
+      gr->background.green = avt_green (colornr);
+      gr->background.blue = avt_blue (colornr);
     }
 
   clear_graphic (gr);
@@ -303,17 +307,17 @@ static int
 lgraphic_color (lua_State * L)
 {
   graphic *gr;
-  int red, green, blue;
-  const char *name;
-
-  name = luaL_checkstring (L, 2);
-  if (avt_name_to_color (name, &red, &green, &blue))
-    return luaL_argerror (L, 2, "invalid color");
+  int colornr;
 
   gr = get_graphic (L, 1);
-  gr->color.red = (byte) red;
-  gr->color.green = (byte) green;
-  gr->color.blue = (byte) blue;
+  colornr = avt_colorname (luaL_checkstring (L, 2));
+
+  if (colornr < 0)
+    return luaL_argerror (L, 2, "invalid color");
+
+  gr->color.red = avt_red (colornr);
+  gr->color.green = avt_green (colornr);
+  gr->color.blue = avt_blue (colornr);
 
   return 0;
 }

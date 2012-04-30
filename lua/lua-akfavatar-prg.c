@@ -77,7 +77,8 @@ help (void)
   puts (" -h, --help                show this help");
   puts (" -v, --version             show version");
   puts (" -f, --fullscreen          fullscreen mode (unless script given)");
-  puts (" -F, --Fullscreen          full fullscreen mode (unless script given)");
+  puts
+    (" -F, --Fullscreen          full fullscreen mode (unless script given)");
   puts (" -l name                   require library 'name'");
   puts
     (" --dir=<directory>         start in directory (for the filechooser)");
@@ -98,7 +99,7 @@ error_box (const char *msg)
 {
   avt_set_status (AVT_NORMAL);
   avt_avatar_image_none ();
-  avt_set_balloon_color (0xFF, 0xAA, 0xAA);
+  avt_set_balloon_colornr (avt_rgb (0xFF, 0xAA, 0xAA));
   avt_normal_text ();
   avt_set_auto_margin (true);
   avt_set_scroll_mode (-1);
@@ -178,10 +179,12 @@ check_options (int argc, char *argv[])
 	version ();
       else if (strcmp (argv[i], "--help") == 0 || strcmp (argv[i], "-h") == 0)
 	help ();
-      else if (strcmp (argv[i], "--fullscreen") == 0 || strcmp (argv[i], "-f") == 0)
-        mode = AVT_FULLSCREEN;
-      else if (strcmp (argv[i], "--Fullscreen") == 0 || strcmp (argv[i], "-F") == 0)
-        mode = AVT_FULLSCREENNOSWITCH;
+      else if (strcmp (argv[i], "--fullscreen") == 0
+	       || strcmp (argv[i], "-f") == 0)
+	mode = AVT_FULLSCREEN;
+      else if (strcmp (argv[i], "--Fullscreen") == 0
+	       || strcmp (argv[i], "-F") == 0)
+	mode = AVT_FULLSCREENNOSWITCH;
       else if (strncmp (argv[i], "--dir=", 6) == 0)
 	chdir (argv[i] + 6);
       else if (strncmp (argv[i], "-l", 2) == 0)
@@ -221,8 +224,8 @@ reset (void)
   avt_set_origin_mode (true);
   avt_set_scroll_mode (1);
   avt_reserve_single_keys (false);
-  avt_set_background_color_name ("default");
-  avt_set_balloon_color_name ("floral white");
+  avt_set_background_colornr (avt_colorname ("default"));
+  avt_set_balloon_colornr (avt_colorname ("floral white"));
   avt_markup (false);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
   avt_normal_text ();
@@ -348,7 +351,7 @@ show_text (const char *filename)
 {
   avt_avatar_image_none ();
   avt_set_balloon_size (0, 0);
-  avt_set_balloon_color_name ("tan");
+  avt_set_balloon_colornr (avt_colorname ("tan"));
   /* text file must be UTF-8 encoded (or plain ASCII) */
   avta_pager_file (filename, 1);
 }

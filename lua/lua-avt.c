@@ -216,7 +216,7 @@ lavt_start (lua_State * L)
       avt_set_origin_mode (true);
       avt_set_scroll_mode (1);
       avt_reserve_single_keys (false);
-      avt_set_balloon_color_name ("floral white");
+      avt_set_balloon_colornr (avt_colorname ("floral white"));
       avt_normal_text ();
       avt_set_mouse_visible (true);
       avt_set_title (title, shortname);
@@ -594,7 +594,7 @@ static int
 lavt_set_balloon_color (lua_State * L)
 {
   is_initialized ();
-  avt_set_balloon_color_name (luaL_checkstring (L, 1));
+  avt_set_balloon_colornr (avt_colorname (luaL_checkstring (L, 1)));
   return 0;
 }
 
@@ -806,7 +806,7 @@ lavt_flash (lua_State * L)
 static int
 lavt_set_background_color (lua_State * L)
 {
-  avt_set_background_color_name (luaL_checkstring (L, 1));
+  avt_set_background_colornr (avt_colorname (luaL_checkstring (L, 1)));
   return 0;
 }
 
@@ -814,7 +814,7 @@ lavt_set_background_color (lua_State * L)
 static int
 lavt_set_text_color (lua_State * L)
 {
-  avt_set_text_color_name (luaL_checkstring (L, 1));
+  avt_set_text_colornr (avt_colorname (luaL_checkstring (L, 1)));
   return 0;
 }
 
@@ -822,7 +822,7 @@ lavt_set_text_color (lua_State * L)
 static int
 lavt_set_text_background_color (lua_State * L)
 {
-  avt_set_text_background_color_name (luaL_checkstring (L, 1));
+  avt_set_text_background_colornr (avt_colorname (luaL_checkstring (L, 1)));
   return 0;
 }
 
@@ -1895,7 +1895,7 @@ lavt_launch (lua_State * L)
 
 #define MARK(S) \
          do { \
-           avt_set_text_background_color (0xdd, 0xdd, 0xdd); \
+           avt_set_text_background_colornr (avt_rgb (0xdd, 0xdd, 0xdd)); \
            avt_clear_line (); \
            avt_move_x (mid_x-(sizeof(S)/sizeof(wchar_t)-1)/2); \
            avt_say(S); \

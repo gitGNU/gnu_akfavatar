@@ -1,6 +1,6 @@
 /*
  * colorchooser - colorchooser dialog for AKFAvatar
- * Copyright (c) 2009, 2010 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2009,2010,2012 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -38,12 +38,12 @@
 
 /* entries or marks that are not colors */
 #define marked_text(S) \
-         do { avt_set_text_background_color (0xdd, 0xdd, 0xdd); \
+         do { avt_set_text_background_colornr (avt_rgb (0xdd, 0xdd, 0xdd)); \
          avt_say (S); avt_normal_text (); } while(0)
 
 #define marked_line(S) \
          do { \
-           avt_set_text_background_color (0xdd, 0xdd, 0xdd); \
+           avt_set_text_background_colornr (avt_rgb (0xdd, 0xdd, 0xdd)); \
            avt_clear_line (); \
            avt_move_x (mid_x-(sizeof(S)/sizeof(wchar_t)-1)/2); \
            avt_say(S); \
@@ -65,7 +65,7 @@ manual_entry (void)
     return NULL;
 
   /* check, if it's a valid color name */
-  if (avt_name_to_color (manual_color, &red, &green, &blue) > -1)
+  if (avt_colorname (manual_color) > -1)
     return manual_color;
   else
     return NULL;
@@ -127,7 +127,7 @@ avta_color_selection (void)
 	  if (color_name)
 	    {
 	      /* show colored spaces */
-	      avt_set_text_background_color (red, green, blue);
+	      avt_set_text_background_colornr (avt_rgb (red, green, blue));
 	      avt_say (L"  ");
 	      avt_set_text_background_ballooncolor ();
 	      avt_forward ();

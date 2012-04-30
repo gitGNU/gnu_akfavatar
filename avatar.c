@@ -307,10 +307,10 @@ static bool hold_updates;
 static SDL_Color ballooncolor_RGB = { 255, 250, 240, 0 };
 
 /* default (pale brown) */
-static SDL_Color backgroundcolor_RGB = { 0xE0, 0xD5, 0xC5, 0 };
+static int backgroundcolornr = avt_rgb (0xE0, 0xD5, 0xC5);
 
 /* grey */
-/* static SDL_Color backgroundcolor_RGB = { 0xCC, 0xCC, 0xCC, 0 }; */
+/* static SDL_Color backgroundcolornr = avt_rgb(0xCC, 0xCC, 0xCC); */
 
 /* color for cursor and menu-bar */
 static SDL_Color cursor_color = { 0xF2, 0x89, 0x19, 0 };
@@ -332,6 +332,13 @@ static struct pos cursor, saved_position;
 #else
 #  define AVT_HIDDEN
 #endif /* __GNUC__ */
+
+#ifdef DISABLE_DEPRECATED
+#  define DEPRECATED_EXTERN  static
+#  define avt_image_t  SDL_Surface
+#else
+#  define DEPRECATED_EXTERN  extern
+#endif
 
 /* 0 = normal; 1 = quit-request; -1 = error */
 int _avt_STATUS AVT_HIDDEN;
@@ -380,8 +387,8 @@ avt_avatar_window (void)
   calculate_balloonmaxheight ();
 }
 
-/* color selector */
-extern int
+/* deprecated, but used internally */
+DEPRECATED_EXTERN int
 avt_name_to_color (const char *name, int *red, int *green, int *blue)
 {
   int status;
@@ -435,6 +442,30 @@ avt_name_to_color (const char *name, int *red, int *green, int *blue)
     }
 
   return status;
+}
+
+extern int
+avt_colorname (const char *name)
+{
+  int red, green, blue;
+
+  if (avt_name_to_color (name, &red, &green, &blue) == 0)
+    return avt_rgb (red, green, blue);
+  else
+    return -1;
+}
+
+extern void
+avt_color_to_rgb (int colornr, int *red, int *green, int *blue)
+{
+  if (red)
+    *red = avt_red (colornr);
+
+  if (green)
+    *green = avt_green (colornr);
+
+  if (blue)
+    *blue = avt_blue (colornr);
 }
 
 extern const char *
@@ -1718,6 +1749,8 @@ avt_draw_balloon2 (int offset, Uint32 ballooncolor)
 static void
 avt_draw_balloon (void)
 {
+  SDL_Color shadow_color;
+
   if (!avt_visible)
     avt_draw_avatar ();
 
@@ -1766,36 +1799,29 @@ avt_draw_balloon (void)
   viewport = textfield;
 
   /* shadow color is a little darker than the background color */
-  {
-    SDL_Color shadow_color;
+  shadow_color.r = avt_red (backgroundcolornr);
+  shadow_color.g = avt_green (backgroundcolornr);
+  shadow_color.b = avt_blue (backgroundcolornr);
 
-    shadow_color.r =
-      (backgroundcolor_RGB.r > 0x20) ? backgroundcolor_RGB.r - 0x20 : 0;
-    shadow_color.g =
-      (backgroundcolor_RGB.g > 0x20) ? backgroundcolor_RGB.g - 0x20 : 0;
-    shadow_color.b =
-      (backgroundcolor_RGB.b > 0x20) ? backgroundcolor_RGB.b - 0x20 : 0;
+  shadow_color.r = (shadow_color.r > 0x20) ? shadow_color.r - 0x20 : 0;
+  shadow_color.g = (shadow_color.g > 0x20) ? shadow_color.g - 0x20 : 0;
+  shadow_color.b = (shadow_color.b > 0x20) ? shadow_color.b - 0x20 : 0;
 
-    SDL_SetColors (circle, &shadow_color, 1, 1);
-    SDL_SetColors (pointer, &shadow_color, 1, 1);
+  SDL_SetColors (circle, &shadow_color, 1, 1);
+  SDL_SetColors (pointer, &shadow_color, 1, 1);
 
-    /* first draw shadow */
-    avt_draw_balloon2 (SHADOWOFFSET,
-		       SDL_MapRGB (screen->format, shadow_color.r,
-				   shadow_color.g, shadow_color.b));
-  }
-
+  /* first draw shadow */
+  avt_draw_balloon2 (SHADOWOFFSET,
+		     SDL_MapRGB (screen->format, shadow_color.r,
+				 shadow_color.g, shadow_color.b));
 
   /* real balloon */
-  {
-    SDL_SetColors (circle, &ballooncolor_RGB, 1, 1);
-    SDL_SetColors (pointer, &ballooncolor_RGB, 1, 1);
+  SDL_SetColors (circle, &ballooncolor_RGB, 1, 1);
+  SDL_SetColors (pointer, &ballooncolor_RGB, 1, 1);
 
-    avt_draw_balloon2 (0, SDL_MapRGB (screen->format,
-				      ballooncolor_RGB.r,
-				      ballooncolor_RGB.g,
-				      ballooncolor_RGB.b));
-  }
+  avt_draw_balloon2 (0, SDL_MapRGB (screen->format,
+				    ballooncolor_RGB.r,
+				    ballooncolor_RGB.g, ballooncolor_RGB.b));
 
   linestart =
     (textdir_rtl) ? viewport.x + viewport.w - FONTWIDTH : viewport.x;
@@ -6020,7 +6046,7 @@ avt_init_SDL (void)
  * pixel in the upper left corner is supposed to be the background color
  */
 /* deprecated, but needed internally */
-extern avt_image_t *
+DEPRECATED_EXTERN avt_image_t *
 avt_make_transparent (avt_image_t * image)
 {
   Uint32 color;
@@ -6458,6 +6484,26 @@ avt_set_text_background_ballooncolor (void)
 
 /* can and should be called before avt_initialize */
 extern void
+avt_set_balloon_colornr (int colornr)
+{
+  ballooncolor_RGB.r = avt_red (colornr);
+  ballooncolor_RGB.g = avt_green (colornr);
+  ballooncolor_RGB.b = avt_blue (colornr);
+
+  if (screen)
+    {
+      avt_set_text_background_ballooncolor ();
+
+      /* redraw the balloon, if it is visible */
+      if (textfield.x >= 0)
+	avt_draw_balloon ();
+    }
+}
+
+#ifndef DISABLE_DEPRECATED
+
+/* deprecated */
+extern void
 avt_set_balloon_color (int red, int green, int blue)
 {
   ballooncolor_RGB.r = red;
@@ -6475,7 +6521,7 @@ avt_set_balloon_color (int red, int green, int blue)
 }
 
 
-/* can and should be called before avt_initialize */
+/* deprecated */
 extern void
 avt_set_balloon_color_name (const char *name)
 {
@@ -6485,13 +6531,43 @@ avt_set_balloon_color_name (const char *name)
     avt_set_balloon_color (red, green, blue);
 }
 
+#endif /* DISABLE_DEPRECATED */
+
 /* can and should be called before avt_initialize */
+extern void
+avt_set_background_colornr (int colornr)
+{
+  if (screen)
+    {
+      background_color =
+	SDL_MapRGB (screen->format, avt_red (colornr),
+		    avt_green (colornr), avt_blue (colornr));
+
+      if (textfield.x >= 0)
+	{
+	  avt_visible = false;	/* force to redraw everything */
+	  avt_draw_balloon ();
+	}
+      else if (avt_visible)
+	avt_show_avatar ();
+      else
+	avt_clear_screen ();
+    }
+}
+
+extern int
+avt_get_background_colornr (void)
+{
+  return backgroundcolornr;
+}
+
+#ifndef DISABLE_DEPRECATED
+
+/* deprecated */
 extern void
 avt_set_background_color (int red, int green, int blue)
 {
-  backgroundcolor_RGB.r = red;
-  backgroundcolor_RGB.g = green;
-  backgroundcolor_RGB.b = blue;
+  backgroundcolornr = avt_rgb (red, green, blue);
 
   if (screen)
     {
@@ -6524,11 +6600,13 @@ avt_get_background_color (int *red, int *green, int *blue)
 {
   if (red && green && blue)
     {
-      *red = backgroundcolor_RGB.r;
-      *green = backgroundcolor_RGB.g;
-      *blue = backgroundcolor_RGB.b;
+      *red = avt_red (backgroundcolornr);
+      *green = avt_green (backgroundcolornr);
+      *blue = avt_blue (backgroundcolornr);
     }
 }
+
+#endif /* DISABLE_DEPRECATED */
 
 extern void
 avt_reserve_single_keys (bool onoff)
@@ -6558,6 +6636,41 @@ avt_set_mouse_visible (bool visible)
 }
 
 extern void
+avt_set_text_colornr (int colornr)
+{
+  SDL_Color color;
+
+  if (avt_character)
+    {
+      color.r = avt_red (colornr);
+      color.g = avt_green (colornr);
+      color.b = avt_blue (colornr);
+      SDL_SetColors (avt_character, &color, 1, 1);
+    }
+}
+
+extern void
+avt_set_text_background_colornr (int colornr)
+{
+  SDL_Color color;
+
+  if (avt_character)
+    {
+      color.r = avt_red (colornr);
+      color.g = avt_green (colornr);
+      color.b = avt_blue (colornr);
+      SDL_SetColors (avt_character, &color, 0, 1);
+
+      text_background_color =
+	SDL_MapRGB (screen->format, color.r, color.g, color.b);
+    }
+}
+
+
+#ifndef DISABLE_DEPRECATED
+
+/* deprecated */
+extern void
 avt_set_text_color (int red, int green, int blue)
 {
   SDL_Color color;
@@ -6571,6 +6684,7 @@ avt_set_text_color (int red, int green, int blue)
     }
 }
 
+/* deprecated */
 extern void
 avt_set_text_color_name (const char *name)
 {
@@ -6580,6 +6694,7 @@ avt_set_text_color_name (const char *name)
     avt_set_text_color (red, green, blue);
 }
 
+/* deprecated */
 extern void
 avt_set_text_background_color (int red, int green, int blue)
 {
@@ -6596,6 +6711,7 @@ avt_set_text_background_color (int red, int green, int blue)
     }
 }
 
+/* deprecated */
 extern void
 avt_set_text_background_color_name (const char *name)
 {
@@ -6604,6 +6720,8 @@ avt_set_text_background_color_name (const char *name)
   if (avt_name_to_color (name, &red, &green, &blue) == 0)
     avt_set_text_background_color (red, green, blue);
 }
+
+#endif /* DISABLE_DEPRECATED */
 
 extern void
 avt_inverse (bool onoff)
@@ -6772,7 +6890,7 @@ avt_credits (const wchar_t * text, bool centered)
 {
   wchar_t line[80];
   SDL_Surface *last_line;
-  SDL_Color old_backgroundcolor;
+  int old_backgroundcolornr;
   avt_keyhandler old_keyhandler;
   avt_mousehandler old_mousehandler;
   const wchar_t *p;
@@ -6783,7 +6901,7 @@ avt_credits (const wchar_t * text, bool centered)
     return _avt_STATUS;
 
   /* store old background color */
-  old_backgroundcolor = backgroundcolor_RGB;
+  old_backgroundcolornr = backgroundcolornr;
 
   /* deactivate mous/key- handlers */
   old_keyhandler = avt_ext_keyhandler;
@@ -6798,9 +6916,9 @@ avt_credits (const wchar_t * text, bool centered)
 
   /* the background-color is used when the window is resized */
   /* this implicitly also clears the screen */
-  avt_set_background_color (0, 0, 0);
-  avt_set_text_background_color (0, 0, 0);
-  avt_set_text_color (0xff, 0xff, 0xff);
+  avt_set_background_colornr (avt_rgb (0, 0, 0));
+  avt_set_text_background_colornr (avt_rgb (0, 0, 0));
+  avt_set_text_colornr (avt_rgb (0xff, 0xff, 0xff));
 
   window.x = (screen->w / 2) - (80 * FONTWIDTH / 2);
   window.w = 80 * FONTWIDTH;
@@ -6875,8 +6993,7 @@ avt_credits (const wchar_t * text, bool centered)
   avt_avatar_window ();
 
   /* back to normal (also sets variables!) */
-  avt_set_background_color (old_backgroundcolor.r, old_backgroundcolor.g,
-			    old_backgroundcolor.b);
+  avt_set_background_colornr (old_backgroundcolornr);
   avt_normal_text ();
   avt_clear_screen ();
 
@@ -7165,9 +7282,9 @@ avt_start (const char *title, const char *shortname, int mode)
   avt_set_mouse_pointer ();
 
   background_color = SDL_MapRGB (screen->format,
-				 backgroundcolor_RGB.r,
-				 backgroundcolor_RGB.g,
-				 backgroundcolor_RGB.b);
+				 avt_red (backgroundcolornr),
+				 avt_green (backgroundcolornr),
+				 avt_blue (backgroundcolornr));
 
   /* fill the whole screen with background color */
   avt_clear_screen ();
