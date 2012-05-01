@@ -11,6 +11,9 @@
 
 	* akfavatar.xpm, lua.xpm: don't use named colors
 
+	* avatar.c (avt_load_image_xpm):
+	no support for named colors anymore
+
 2012-04-30  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_colorname): new function

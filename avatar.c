@@ -635,6 +635,8 @@ avt_load_image_xpm (char **xpm)
 	    color_name[color_name_pos++] = *p++;
 	  color_name[color_name_pos] = '\0';
 
+          colornr = 0x000000;
+
 	  if (SDL_strcasecmp (color_name, "None") == 0)
 	    {
 	      SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL, code_nr);
@@ -642,12 +644,12 @@ avt_load_image_xpm (char **xpm)
 	      /* some weird color, that hopefully doesn't conflict (#1A2A3A) */
 	      colornr = 0x1A2A3A;
 	    }
+	  else if (SDL_strcasecmp (color_name, "black") == 0)
+	    colornr = 0x000000;
+	  else if (SDL_strcasecmp (color_name, "white") == 0)
+	    colornr = 0xFFFFFF;
 	  else
-	    {
-	      colornr = avt_colorname (color_name);
-	      /* no check, because it couldn't do anything usefull anyway */
-	      /* and it shoudn't break on broken image-files */
-	    }
+	    SDL_sscanf (color_name, "#%6X", &colornr);
 
 	  if (ncolors <= 256)
 	    {
