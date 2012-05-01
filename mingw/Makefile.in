@@ -6,6 +6,8 @@ sdl_dll = $(srcdir)/misc/SDL.dll
 
 ROFF = groff
 
+DEFAULT_COLOR = 0xE0D5C5
+
 # Ogg Vorbis files with how many channels should be supported?
 # output is limited to 2 channels, but this value may be higher
 vorbis_max_channels = 8
@@ -54,7 +56,8 @@ colorchooser.o: $(srcdir)/colorchooser.c $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/colorchooser.c
 
 rgb.h: $(srcdir)/rgb.txt $(srcdir)/rgb2c
-	$(AWK) -f $(srcdir)/rgb2c -v name="avt_colors" $(srcdir)/rgb.txt > $@
+	$(AWK) -f $(srcdir)/rgb2c -v name="avt_colors" \
+	  -v default="$(DEFAULT_COLOR)" $(srcdir)/rgb.txt > $@
 
 avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
              version.h rgb.h \
@@ -68,7 +71,7 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
              $(srcdir)/balloonpointer.xbm $(srcdir)/thinkpointer.xbm \
              $(srcdir)/circle.xbm $(srcdir)/akfavatar.xpm
 	$(CC) -c -I$(srcdir) -I. -I$(srcdir)/mingw $(SDL_CFLAGS) $(CFLAGS) \
-	    -o $@ $(srcdir)/avatar.c
+	    -DDEFAULT_COLOR=$(DEFAULT_COLOR) -o $@ $(srcdir)/avatar.c
 
 avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h \
                   $(srcdir)/avtinternals.h alert.c

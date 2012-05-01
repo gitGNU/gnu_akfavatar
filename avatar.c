@@ -80,6 +80,10 @@
 
 #define AVT_XBM_INFO(img)  img##_bits, img##_width, img##_height
 
+#ifndef DEFAULT_COLOR
+#  define DEFAULT_COLOR  0xE0D5C5
+#endif
+
 #if defined(VGA)
 #  define FONTWIDTH 7
 #  define FONTHEIGHT 14
@@ -306,11 +310,7 @@ static bool hold_updates;
 /* floral white */
 static SDL_Color ballooncolor_RGB = { 255, 250, 240, 0 };
 
-/* default (pale brown) */
-static int backgroundcolornr = 0xE0D5C5;
-
-/* grey */
-/* static SDL_Color backgroundcolornr = 0xCCCCCC; */
+static int backgroundcolornr = DEFAULT_COLOR;
 
 /* color for cursor and menu-bar */
 static SDL_Color cursor_color = { 0xF2, 0x89, 0x19, 0 };

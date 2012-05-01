@@ -20,6 +20,8 @@ SOX = sox
 ROFF = groff
 ENSCRIPT = enscript
 
+DEFAULT_COLOR = 0xE0D5C5
+
 # Soundfile for the alert (\a)
 # may be any format that sox supports
 # should be higher quality; it will be converted into the needed format
@@ -85,7 +87,8 @@ colorchooser.o: $(srcdir)/colorchooser.c $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/colorchooser.c
 
 rgb.h: $(srcdir)/rgb.txt $(srcdir)/rgb2c
-	$(AWK) -f $(srcdir)/rgb2c -v name="avt_colors" $(srcdir)/rgb.txt > $@
+	$(AWK) -f $(srcdir)/rgb2c -v name="avt_colors" \
+	  -v default="$(DEFAULT_COLOR)" $(srcdir)/rgb.txt > $@
 
 avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
           version.h rgb.h \
@@ -99,7 +102,8 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
           $(srcdir)/btn_help.xbm $(srcdir)/btn_cancel.xbm \
           $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm \
           $(srcdir)/akfavatar.xpm
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c $(srcdir)/avatar.c
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. \
+	  -DDEFAULT_COLOR=$(DEFAULT_COLOR) -c $(srcdir)/avatar.c
 
 avatar-default.o: $(srcdir)/avatar-default.c $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/avatar-default.c
@@ -132,7 +136,8 @@ avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h rgb.h \
            $(srcdir)/btn_help.xbm $(srcdir)/btn_cancel.xbm \
            $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm \
            $(srcdir)/akfavatar.xpm $(srcdir)/avtinternals.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c -fPIC -o $@ $(srcdir)/avatar.c
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c -fPIC \
+	  -DDEFAULT_COLOR=$(DEFAULT_COLOR) -o $@ $(srcdir)/avatar.c
 
 avatar-default.lo: $(srcdir)/avatar-default.c $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -fPIC -o $@ \
