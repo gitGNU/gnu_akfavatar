@@ -455,19 +455,6 @@ avt_colorname (const char *name)
     return -1;
 }
 
-extern void
-avt_color_to_rgb (int colornr, int *red, int *green, int *blue)
-{
-  if (red)
-    *red = avt_red (colornr);
-
-  if (green)
-    *green = avt_green (colornr);
-
-  if (blue)
-    *blue = avt_blue (colornr);
-}
-
 extern const char *
 avt_get_color_name (int nr)
 {

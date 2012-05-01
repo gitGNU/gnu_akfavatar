@@ -1,7 +1,6 @@
 2012-04-30  Andreas K. Foerster  <info@akfoerster.de>
 
-	* akfavatar.h, avatar.c (avt_colorname, avt_color_to_rgb):
-	new functions
+	* akfavatar.h, avatar.c (avt_colorname): new function
 
         * akfavatar.h (avt_rgb, avt_red, avt_green, avt_blue):
 	new macros

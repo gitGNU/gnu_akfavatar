@@ -469,7 +469,6 @@ AVT_API const char *avt_get_color (int nr, int *red, int *green, int *blue);
  * returns -1 on error
  */
 AVT_API int avt_colorname (const char *name);
-AVT_API void avt_color_to_rgb (int colornr, int *red, int *green, int *blue);
 
 /***********************************************************************/
 /* settings */
