@@ -619,7 +619,7 @@ avt_load_image_xpm (char **xpm)
 
       if (*p)
 	{
-	  int red, green, blue;
+	  int colornr;
 	  int color_name_pos;
 	  char color_name[80];
 
@@ -640,27 +640,26 @@ avt_load_image_xpm (char **xpm)
 	      SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL, code_nr);
 
 	      /* some weird color, that hopefully doesn't conflict (#1A2A3A) */
-	      red = 0x1A;
-	      green = 0x2A;
-	      blue = 0x3A;
+	      colornr = 0x1A2A3A;
 	    }
 	  else
 	    {
-	      avt_name_to_color (color_name, &red, &green, &blue);
+	      colornr = avt_colorname (color_name);
 	      /* no check, because it couldn't do anything usefull anyway */
 	      /* and it shoudn't break on broken image-files */
 	    }
 
 	  if (ncolors <= 256)
 	    {
-	      colors256[code_nr].r = red;
-	      colors256[code_nr].g = green;
-	      colors256[code_nr].b = blue;
+	      colors256[code_nr].r = avt_red (colornr);
+	      colors256[code_nr].g = avt_green (colornr);
+	      colors256[code_nr].b = avt_blue (colornr);
 	    }
 	  else			/* ncolors > 256 */
 	    {
 	      *(colors + colornr - 1) =
-		SDL_MapRGB (img->format, red, green, blue);
+		SDL_MapRGB (img->format, avt_red (colornr),
+			    avt_green (colornr), avt_blue (colornr));
 	    }
 	}
     }
@@ -5795,7 +5794,7 @@ avt_show_image_xbm (const unsigned char *bits, int width, int height,
 		    const char *colorname)
 {
   SDL_Surface *image;
-  int red, green, blue;
+  int colornr;
 
   if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -5803,14 +5802,16 @@ avt_show_image_xbm (const unsigned char *bits, int width, int height,
   if (width <= 0 || height <= 0)
     return AVT_FAILURE;
 
-  if (avt_name_to_color (colorname, &red, &green, &blue) < 0)
+  colornr = avt_colorname (colorname);
+  if (colornr < 0)
     {
       avt_clear ();		/* at least clear the balloon */
       SDL_SetError ("couldn't show image");
       return AVT_FAILURE;
     }
 
-  image = avt_load_image_xbm (bits, width, height, red, green, blue);
+  image = avt_load_image_xbm (bits, width, height, avt_red (colornr),
+			      avt_green (colornr), avt_blue (colornr));
 
   if (image == NULL)
     {
@@ -5966,18 +5967,22 @@ extern avt_image_t *
 avt_import_xbm (const unsigned char *bits, int width, int height,
 		const char *colorname)
 {
-  int red, green, blue;
+  int colornr;
 
   if (width <= 0 || height <= 0)
     return NULL;
 
-  if (avt_name_to_color (colorname, &red, &green, &blue) < 0)
+  colornr = avt_colorname (colorname);
+
+  if (colornr < 0)
     return NULL;
 
   if (avt_init_SDL ())
     return NULL;
 
-  return avt_load_image_xbm (bits, width, height, red, green, blue);
+  return
+    avt_load_image_xbm (bits, width, height, avt_red (colornr),
+			avt_green (colornr), avt_blue (colornr));
 }
 
 /* deprecated */
@@ -6220,17 +6225,20 @@ avt_avatar_image_xbm (const unsigned char *bits,
 		      int width, int height, const char *colorname)
 {
   SDL_Surface *image;
-  int red, green, blue;
+  int c;
 
-  if (width <= 0 || height <= 0
-      || avt_name_to_color (colorname, &red, &green, &blue) < 0)
+  c = avt_colorname (colorname);
+
+  if (width <= 0 || height <= 0 || c < 0)
     {
       SDL_SetError ("invalid parameters");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
 
-  image = avt_load_image_xbm (bits, width, height, red, green, blue);
+  image =
+    avt_load_image_xbm (bits, width, height,
+			avt_red (c), avt_green (c), avt_blue (c));
 
   if (!image)
     return AVT_FAILURE;
@@ -6407,10 +6415,10 @@ avt_set_balloon_color (int red, int green, int blue)
 extern void
 avt_set_balloon_color_name (const char *name)
 {
-  int red, green, blue;
+  int c = avt_colorname (name);
 
-  if (avt_name_to_color (name, &red, &green, &blue) == 0)
-    avt_set_balloon_color (red, green, blue);
+  if (c >= 0)
+    avt_set_balloon_color (avt_red (c), avt_green (c), avt_blue (c));
 }
 
 #endif /* DISABLE_DEPRECATED */
@@ -6473,10 +6481,10 @@ avt_set_background_color (int red, int green, int blue)
 extern void
 avt_set_background_color_name (const char *name)
 {
-  int red, green, blue;
+  int c = avt_colorname (name);
 
-  if (avt_name_to_color (name, &red, &green, &blue) == 0)
-    avt_set_background_color (red, green, blue);
+  if (c >= 0)
+    avt_set_background_color (avt_red (c), avt_green (c), avt_blue (c));
 }
 
 extern void
@@ -6572,10 +6580,10 @@ avt_set_text_color (int red, int green, int blue)
 extern void
 avt_set_text_color_name (const char *name)
 {
-  int red, green, blue;
+  int c = avt_colorname (name);
 
-  if (avt_name_to_color (name, &red, &green, &blue) == 0)
-    avt_set_text_color (red, green, blue);
+  if (c >= 0)
+    avt_set_text_color (avt_red (c), avt_green (c), avt_blue (c));
 }
 
 /* deprecated */
@@ -6599,10 +6607,10 @@ avt_set_text_background_color (int red, int green, int blue)
 extern void
 avt_set_text_background_color_name (const char *name)
 {
-  int red, green, blue;
+  int c = avt_colorname (name);
 
-  if (avt_name_to_color (name, &red, &green, &blue) == 0)
-    avt_set_text_background_color (red, green, blue);
+  if (c >= 0)
+    avt_set_text_background_color (avt_red (c), avt_green (c), avt_blue (c));
 }
 
 #endif /* DISABLE_DEPRECATED */
