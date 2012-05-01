@@ -80,10 +80,6 @@
 
 #define AVT_XBM_INFO(img)  img##_bits, img##_width, img##_height
 
-#ifndef DEFAULT_COLOR
-#  define DEFAULT_COLOR  0xE0D5C5
-#endif
-
 #if defined(VGA)
 #  define FONTWIDTH 7
 #  define FONTHEIGHT 14

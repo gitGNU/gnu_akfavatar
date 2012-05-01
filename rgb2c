@@ -16,9 +16,11 @@ BEGIN	{ if (name == "") name = "palette"
 	  print "#ifndef _RGB2C"
 	  print "#define _RGB2C"
 	  print ""
+	  print "#define DEFAULT_COLOR " default
+	  print ""
 	  print "static const struct { int number; const char *name; }"
 	  print name "[] = {"
-	  printf "  {%s, \"default\"}", default
+	  printf "  {DEFAULT_COLOR, \"default\"}"
 	}
 
 /^!/	{ next }

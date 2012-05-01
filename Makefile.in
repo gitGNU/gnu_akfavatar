@@ -102,8 +102,7 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
           $(srcdir)/btn_help.xbm $(srcdir)/btn_cancel.xbm \
           $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm \
           $(srcdir)/akfavatar.xpm
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. \
-	  -DDEFAULT_COLOR=$(DEFAULT_COLOR) -c $(srcdir)/avatar.c
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c $(srcdir)/avatar.c
 
 avatar-default.o: $(srcdir)/avatar-default.c $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/avatar-default.c
@@ -137,7 +136,7 @@ avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h rgb.h \
            $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm \
            $(srcdir)/akfavatar.xpm $(srcdir)/avtinternals.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c -fPIC \
-	  -DDEFAULT_COLOR=$(DEFAULT_COLOR) -o $@ $(srcdir)/avatar.c
+	   -o $@ $(srcdir)/avatar.c
 
 avatar-default.lo: $(srcdir)/avatar-default.c $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -fPIC -o $@ \
