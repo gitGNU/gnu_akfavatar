@@ -6544,6 +6544,8 @@ avt_set_balloon_color_name (const char *name)
 extern void
 avt_set_background_colornr (int colornr)
 {
+  backgroundcolornr = colornr;
+
   if (screen)
     {
       background_color =
