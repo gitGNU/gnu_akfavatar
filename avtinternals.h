@@ -28,6 +28,8 @@
 #define AVT_AUDIO_ENDED 1
 #define AVT_TIMEOUT 2
 
+#define avt_isblank(c)  ((c) == ' ' || (c) == '\t')
+
 /* avatar.c */
 extern int _avt_STATUS;
 extern void avt_analyze_event (SDL_Event * event);

@@ -33,7 +33,7 @@
 #include "avtinternals.h"
 #include "SDL.h"
 #include "version.h"
-#include "rgb.h"
+#include "rgb.h"		/* only for DEFAULT_COLOR */
 
 /* include images */
 #include "akfavatar.xpm"
@@ -241,8 +241,6 @@ static int errno;
 /* shorthand */
 #define bell(void)  do { if (avt_alert_func) (*avt_alert_func)(); } while(0)
 
-#define avt_isblank(c)  ((c) == ' ' || (c) == '\t')
-
 /* type for gimp images */
 #ifndef DISABLE_DEPRECATED
 typedef struct
@@ -381,129 +379,6 @@ avt_avatar_window (void)
   window.y = screen->h > window.h ? (screen->h / 2) - (window.h / 2) : 0;
   SDL_SetClipRect (screen, &window);
   calculate_balloonmaxheight ();
-}
-
-/* deprecated, but used internally */
-DEPRECATED_EXTERN int
-avt_name_to_color (const char *name, int *red, int *green, int *blue)
-{
-  int status;
-
-  if (!name || !*name || !red || !green || !blue)
-    return -1;
-
-  status = -1;
-  *red = *green = *blue = -1;
-
-  /* skip space */
-  while (avt_isblank (*name))
-    name++;
-
-  if (name[0] == '#')		/* hexadecimal values */
-    {
-      unsigned int r, g, b;
-
-      if (SDL_sscanf (name, " #%2x%2x%2x", &r, &g, &b) == 3)
-	{
-	  *red = r;
-	  *green = g;
-	  *blue = b;
-	  status = 0;
-	}
-      else if (SDL_sscanf (name, " #%1x%1x%1x", &r, &g, &b) == 3)
-	{
-	  *red = r << 4 | r;
-	  *green = g << 4 | g;
-	  *blue = b << 4 | b;
-	  status = 0;
-	}
-    }
-  else if (name[0] == '%')	/* HSV values not supported */
-    status = -1;
-  else				/* look up color table */
-    {
-      int i;
-      const int numcolors = sizeof (avt_colors) / sizeof (avt_colors[0]);
-
-      for (i = 0; i < numcolors && status != 0; i++)
-	{
-	  if (SDL_strcasecmp (avt_colors[i].name, name) == 0)
-	    {
-	      int number = avt_colors[i].number;
-	      *red = avt_red (number);
-	      *green = avt_green (number);
-	      *blue = avt_blue (number);
-	      status = 0;
-	    }
-	}
-    }
-
-  return status;
-}
-
-extern int
-avt_colorname (const char *name)
-{
-  int red, green, blue;
-
-  if (avt_name_to_color (name, &red, &green, &blue) == 0)
-    return avt_rgb (red, green, blue);
-  else
-    return -1;
-}
-
-
-#ifndef DISABLE_DEPRECATED
-
-extern const char *
-avt_get_color_name (int entry)
-{
-  const int numcolors = sizeof (avt_colors) / sizeof (avt_colors[0]);
-
-  if (entry >= 0 && entry < numcolors)
-    return avt_colors[entry].name;
-  else
-    return NULL;
-}
-
-extern const char *
-avt_get_color (int entry, int *red, int *green, int *blue)
-{
-  const int numcolors = sizeof (avt_colors) / sizeof (avt_colors[0]);
-
-  if (entry >= 0 && entry < numcolors)
-    {
-      int number = avt_colors[entry].number;
-      if (red)
-	*red = avt_red (number);
-      if (green)
-	*green = avt_green (number);
-      if (blue)
-	*blue = avt_blue (number);
-
-      return avt_colors[entry].name;
-    }
-  else
-    return NULL;
-}
-
-#endif /* DISABLE_DEPRECATED */
-
-extern const char *
-avt_get_palette (int entry, int *colornr)
-{
-  const char *name = NULL;
-  const int numcolors = sizeof (avt_colors) / sizeof (avt_colors[0]);
-
-  if (entry >= 0 && entry < numcolors)
-    {
-      name = avt_colors[entry].name;
-
-      if (colornr)
-	*colornr = avt_colors[entry].number;
-    }
-
-  return name;
 }
 
 /* for dynamically loading SDL_image */

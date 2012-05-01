@@ -59,6 +59,11 @@ rgb.h: $(srcdir)/rgb.txt $(srcdir)/rgb2c
 	$(AWK) -f $(srcdir)/rgb2c -v name="avt_colors" \
 	  -v default="$(DEFAULT_COLOR)" $(srcdir)/rgb.txt > $@
 
+avtpalette.o: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
+	      $(srcdir)/avtinternals.h
+	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c \
+	  -o $@ $(srcdir)/avtpalette.c
+
 avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
              version.h rgb.h \
              $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
@@ -96,15 +101,15 @@ iconv: iconv.exe
 
 # static library
 libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o \
-	  win_iconv.o
+	  avtpalette.o win_iconv.o
 	$(AR) rcu $@ avatar.o avatar-default.o avatar-audio.o font.o \
-	  win_iconv.o
+	  avtpalette.o win_iconv.o
 	$(RANLIB) $@
 
 akfavatar.dll: avatar.o avatar-default.o avatar-audio.o font.o libinfo.o \
-	  win_iconv.o
+	  avtpalette.o win_iconv.o
 	$(CC) -shared -o $@ avatar.o avatar-default.o avatar-audio.o \
-	        font.o libinfo.o win_iconv.o \
+	        font.o avtpalette.o win_iconv.o libinfo.o \
 	        -Wl,-no-undefined,--enable-runtime-pseudo-reloc \
 	        -Wl,--output-def,akfavatar.def \
 	        -Wl,--out-implib,libakfavatar.dll.a \

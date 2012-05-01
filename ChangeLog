@@ -6,6 +6,9 @@
 
 	* rgb2c, avatar.c: new macro DEFAULT_COLOR
 
+	* avtpalette.c: new file
+	avatar.c: adapted
+
 2012-04-30  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_colorname): new function
