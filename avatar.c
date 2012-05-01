@@ -455,35 +455,59 @@ avt_colorname (const char *name)
     return -1;
 }
 
+
+#ifndef DISABLE_DEPRECATED
+
 extern const char *
-avt_get_color_name (int nr)
+avt_get_color_name (int entry)
 {
   const int numcolors = sizeof (avt_colors) / sizeof (avt_colors[0]);
 
-  if (nr >= 0 && nr < numcolors)
-    return avt_colors[nr].color_name;
+  if (entry >= 0 && entry < numcolors)
+    return avt_colors[entry].color_name;
   else
     return NULL;
 }
 
 extern const char *
-avt_get_color (int nr, int *red, int *green, int *blue)
+avt_get_color (int entry, int *red, int *green, int *blue)
 {
   const int numcolors = sizeof (avt_colors) / sizeof (avt_colors[0]);
 
-  if (nr >= 0 && nr < numcolors)
+  if (entry >= 0 && entry < numcolors)
     {
       if (red)
-	*red = avt_colors[nr].red;
+	*red = avt_colors[entry].red;
       if (green)
-	*green = avt_colors[nr].green;
+	*green = avt_colors[entry].green;
       if (blue)
-	*blue = avt_colors[nr].blue;
+	*blue = avt_colors[entry].blue;
 
-      return avt_colors[nr].color_name;
+      return avt_colors[entry].color_name;
     }
   else
     return NULL;
+}
+
+#endif /* DISABLE_DEPRECATED */
+
+extern const char *
+avt_get_palette (int entry, int *colornr)
+{
+  const char *name = NULL;
+  const int numcolors = sizeof (avt_colors) / sizeof (avt_colors[0]);
+
+  if (entry >= 0 && entry < numcolors)
+    {
+      if (colornr)
+	*colornr =
+	  avt_rgb (avt_colors[entry].red, avt_colors[entry].green,
+		   avt_colors[entry].blue);
+
+      name = avt_colors[entry].color_name;
+    }
+
+  return name;
 }
 
 /* for dynamically loading SDL_image */

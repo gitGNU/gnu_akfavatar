@@ -450,14 +450,8 @@ AVT_API const char *avt_copyright (void);
 /* get license information */
 AVT_API const char *avt_license (void);
 
-/* get color name of given number, or NULL on error */
-AVT_API const char *avt_get_color_name (int nr);
-
-/*
- * get the color definition
- * returns the color name or NULL on error
- */
-AVT_API const char *avt_get_color (int nr, int *red, int *green, int *blue);
+/***********************************************************************/
+/* colors */
 
 #define avt_rgb(r,g,b)      ((((r)&0xFF)<<16) | (((g)&0xFF)<<8) | ((b)&0xFF))
 #define avt_red(colornr)    (((colornr) >> 16) & 0xFF)
@@ -465,10 +459,17 @@ AVT_API const char *avt_get_color (int nr, int *red, int *green, int *blue);
 #define avt_blue(colornr)   ((colornr) & 0xFF)
 
 /*
- * get color from a given name
+ * get color number from a given name
  * returns -1 on error
  */
 AVT_API int avt_colorname (const char *name);
+
+/*
+ * reads a palette of predefined colors
+ * returns the color name or NULL on error
+ * if colornr is not NULL it gets the color number
+ */
+AVT_API const char *avt_get_palette (int entry, int *colornr);
 
 /***********************************************************************/
 /* settings */
@@ -1077,6 +1078,9 @@ AVT_API void avt_set_text_background_color (int red, int green, int blue) AVT_DE
 AVT_API void avt_set_text_background_color_name (const char *name) AVT_DEPRECATED;
 AVT_API int avt_name_to_color (const char *name, 
                                int *red, int *green, int *blue) AVT_DEPRECATED;
+AVT_API const char *avt_get_color_name (int entry) AVT_DEPRECATED;
+AVT_API const char *avt_get_color (int entry,
+             int *red, int *green, int *blue) AVT_DEPRECATED;
 
 #endif /* DISABLE_DEPRECATED */
 

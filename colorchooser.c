@@ -74,9 +74,9 @@ manual_entry (void)
 extern const char *
 avta_color_selection (void)
 {
-  const char *color, *color_name;
+  const char *result, *color_name;
   char desc[AVT_LINELENGTH];
-  int red, green, blue;
+  int colornr;
   int i;
   int mid_x;
   int max_idx, items, offset, page_nr;
@@ -90,7 +90,7 @@ avta_color_selection (void)
   /* set maximum size */
   avt_set_balloon_size (0, 35);
 
-  color = color_name = NULL;
+  result = color_name = NULL;
   max_idx = avt_get_max_y ();
   mid_x = avt_get_max_x () / 2;	/* for marked_line() */
 
@@ -99,7 +99,7 @@ avta_color_selection (void)
   old_auto_margin = avt_get_auto_margin ();
   avt_set_auto_margin (false);
 
-  while (!color)
+  while (!result)
     {
       avt_clear ();
 
@@ -121,19 +121,19 @@ avta_color_selection (void)
 
       for (i = 0; i < max_idx - offset - 1; i++)
 	{
-	  color_name = avt_get_color (i + (page_nr * (max_idx - offset)),
-				      &red, &green, &blue);
+	  color_name =
+	    avt_get_palette (i + (page_nr * (max_idx - offset)), &colornr);
 
 	  if (color_name)
 	    {
 	      /* show colored spaces */
-	      avt_set_text_background_colornr (avt_rgb (red, green, blue));
+	      avt_set_text_background_colornr (colornr);
 	      avt_say (L"  ");
 	      avt_set_text_background_ballooncolor ();
 	      avt_forward ();
 
-	      snprintf (desc, sizeof (desc), "#%02X%02X%02X: %s\n",
-			red, green, blue, color_name);
+	      snprintf (desc, sizeof (desc), "#%06X: %s\n",
+			colornr, color_name);
 
 	      /* show description */
 	      avt_say_mb (desc);
@@ -162,17 +162,18 @@ avta_color_selection (void)
 	page_nr += (color_name == NULL) ? 0 : 1;	/* page forward */
       else if (page_nr == 0 && choice == 2)
 	{
-	  color = (const char *) manual_entry ();
+	  result = (const char *) manual_entry ();
 	  break;
 	}
       else
-	color = avt_get_color_name (choice - 1 - offset
-				    + (page_nr * (max_idx - offset)));
+	result =
+	  avt_get_palette (choice - 1 - offset
+			   + (page_nr * (max_idx - offset)), NULL);
     }
 
   avt_set_auto_margin (old_auto_margin);
   avt_clear ();
   avt_lock_updates (false);
 
-  return color;
+  return result;
 }

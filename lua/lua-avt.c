@@ -281,13 +281,13 @@ lavt_get_color (lua_State * L)
 {
   const char *name;
   char RGB[8];
-  int red, green, blue;
+  int colornr;
 
-  name = avt_get_color (luaL_checkint (L, 1), &red, &green, &blue);
+  name = avt_get_palette (luaL_checkint (L, 1), &colornr);
 
   if (name)
     {
-      sprintf (RGB, "#%02X%02X%02X", red, green, blue);
+      sprintf (RGB, "#%06X", colornr);
       lua_pushstring (L, name);
       lua_pushstring (L, RGB);
       return 2;
@@ -302,14 +302,14 @@ lavt_color_iteration (lua_State * L)
 {
   const char *name;
   char RGB[8];
-  int red, green, blue;
+  int colornr;
   int nr = lua_tointeger (L, 2) + 1;
 
-  name = avt_get_color (nr, &red, &green, &blue);
+  name = avt_get_palette (nr, &colornr);
 
   if (name)
     {
-      sprintf (RGB, "#%02X%02X%02X", red, green, blue);
+      sprintf (RGB, "#%06X", colornr);
       lua_pushinteger (L, nr);
       lua_pushstring (L, name);
       lua_pushstring (L, RGB);
