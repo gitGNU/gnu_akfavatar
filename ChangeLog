@@ -2,6 +2,8 @@
 
 	* akfavatar.h, avatar.c (avt_get_palette): new function
 
+	* rgb2c, avatar.c: avt_colors uses one color number
+
 2012-04-30  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_colorname): new function

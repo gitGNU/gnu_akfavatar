@@ -431,11 +431,12 @@ avt_name_to_color (const char *name, int *red, int *green, int *blue)
 
       for (i = 0; i < numcolors && status != 0; i++)
 	{
-	  if (SDL_strcasecmp (avt_colors[i].color_name, name) == 0)
+	  if (SDL_strcasecmp (avt_colors[i].name, name) == 0)
 	    {
-	      *red = avt_colors[i].red;
-	      *green = avt_colors[i].green;
-	      *blue = avt_colors[i].blue;
+	      int number = avt_colors[i].number;
+	      *red = avt_red (number);
+	      *green = avt_green (number);
+	      *blue = avt_blue (number);
 	      status = 0;
 	    }
 	}
@@ -464,7 +465,7 @@ avt_get_color_name (int entry)
   const int numcolors = sizeof (avt_colors) / sizeof (avt_colors[0]);
 
   if (entry >= 0 && entry < numcolors)
-    return avt_colors[entry].color_name;
+    return avt_colors[entry].name;
   else
     return NULL;
 }
@@ -476,14 +477,15 @@ avt_get_color (int entry, int *red, int *green, int *blue)
 
   if (entry >= 0 && entry < numcolors)
     {
+      int number = avt_colors[entry].number;
       if (red)
-	*red = avt_colors[entry].red;
+	*red = avt_red (number);
       if (green)
-	*green = avt_colors[entry].green;
+	*green = avt_green (number);
       if (blue)
-	*blue = avt_colors[entry].blue;
+	*blue = avt_blue (number);
 
-      return avt_colors[entry].color_name;
+      return avt_colors[entry].name;
     }
   else
     return NULL;
@@ -499,12 +501,10 @@ avt_get_palette (int entry, int *colornr)
 
   if (entry >= 0 && entry < numcolors)
     {
-      if (colornr)
-	*colornr =
-	  avt_rgb (avt_colors[entry].red, avt_colors[entry].green,
-		   avt_colors[entry].blue);
+      name = avt_colors[entry].name;
 
-      name = avt_colors[entry].color_name;
+      if (colornr)
+	*colornr = avt_colors[entry].number;
     }
 
   return name;

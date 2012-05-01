@@ -53,8 +53,8 @@ filechooser.o: $(srcdir)/filechooser.c $(srcdir)/avtinternals.h \
 colorchooser.o: $(srcdir)/colorchooser.c $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/colorchooser.c
 
-rgb.h: $(srcdir)/rgb.txt
-	$(AWK) -f $(srcdir)/rgb2c $(srcdir)/rgb.txt > $@
+rgb.h: $(srcdir)/rgb.txt $(srcdir)/rgb2c
+	$(AWK) -f $(srcdir)/rgb2c -v name="avt_colors" $(srcdir)/rgb.txt > $@
 
 avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
              version.h rgb.h \
