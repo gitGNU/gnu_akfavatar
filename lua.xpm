@@ -10,8 +10,8 @@ This file is in the Public Domain
 
 "32 32 3 1",
 "       c None m None",
-".      c gray33 m black",
-"+      c FloralWhite m white",
+".      c #545454 m #00000",
+"+      c #FFFAF0 m #FFFFFF",
 "                                ",
 "                                ",
 "                                ",

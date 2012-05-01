@@ -9,6 +9,8 @@
 	* avtpalette.c: new file
 	avatar.c: adapted
 
+	* akfavatar.xpm, lua.xpm: don't use named colors
+
 2012-04-30  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_colorname): new function

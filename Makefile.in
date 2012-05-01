@@ -581,7 +581,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/Homepage.desktop \
 	   $(srcdir)/akfoerster-lua-akfavatar.desktop \
 	   $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avatar-audio.c \
-	   $(srcdir)/avtinternals.h \
+	   $(srcdir)/avtinternals.h $(srcdir)/avtpalette.c \
 	   $(srcdir)/avatar-default.c $(srcdir)/avtccio.c $(srcdir)/avtcwio.c \
 	   $(srcdir)/avtaddons.h $(srcdir)/filechooser.c \
 	   $(srcdir)/avtreadfile.c $(srcdir)/colorchooser.c \
