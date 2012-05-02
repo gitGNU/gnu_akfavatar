@@ -182,8 +182,7 @@ AVT_API int avt_avatar_image_default (void);
 AVT_API int avt_avatar_image_none (void);
 AVT_API int avt_avatar_image_xpm (char **xpm);
 AVT_API int avt_avatar_image_xbm (const unsigned char *bits,
-				  int width, int height,
-				  const char *colorname);
+				  int width, int height, int color);
 AVT_API int avt_avatar_image_data (void *img, size_t imgsize);
 AVT_API int avt_avatar_image_file (const char *file);
 AVT_API int avt_avatar_image_stream (avt_stream *stream);
@@ -779,8 +778,7 @@ AVT_API int avt_show_image_stream (avt_stream *stream);
 AVT_API int avt_show_image_data (void *img, size_t imgsize);
 AVT_API int avt_show_image_xpm (char **xpm);
 AVT_API int avt_show_image_xbm (const unsigned char *bits,
-				int width, int height,
-				const char *colorname);
+				int width, int height, int color);
 
 /*
  * show raw image

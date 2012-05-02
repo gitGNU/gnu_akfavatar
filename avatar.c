@@ -75,8 +75,8 @@
 #define BUTTON_DISTANCE 10
 
 /* normal color of what's printed on the button */
-#define BUTTON_COLOR  0x66, 0x55, 0x33
-#define XBM_DEFAULT_COLOR  0x00, 0x00, 0x00
+#define BUTTON_COLOR  0x665533
+#define XBM_DEFAULT_COLOR  0x000000
 
 #define AVT_XBM_INFO(img)  img##_bits, img##_width, img##_height
 
@@ -620,7 +620,7 @@ avt_load_image_xpm (char **xpm)
       if (*p)
 	{
 	  int colornr;
-	  int color_name_pos;
+	  size_t color_name_pos;
 	  char color_name[80];
 
 	  /* skip to color name/definition */
@@ -631,13 +631,15 @@ avt_load_image_xpm (char **xpm)
 	  /* copy colorname up to next space */
 	  color_name_pos = 0;
 	  while (*p && !avt_isblank (*p)
-		 && color_name_pos < (int) sizeof (color_name) - 1)
+		 && color_name_pos < sizeof (color_name) - 1)
 	    color_name[color_name_pos++] = *p++;
 	  color_name[color_name_pos] = '\0';
 
-          colornr = 0x000000;
+	  colornr = 0x000000;
 
-	  if (SDL_strcasecmp (color_name, "None") == 0)
+	  if (color_name[0] == '#')
+	    colornr = SDL_strtol (&color_name[1], NULL, 16);
+	  else if (SDL_strcasecmp (color_name, "None") == 0)
 	    {
 	      SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL, code_nr);
 
@@ -648,8 +650,11 @@ avt_load_image_xpm (char **xpm)
 	    colornr = 0x000000;
 	  else if (SDL_strcasecmp (color_name, "white") == 0)
 	    colornr = 0xFFFFFF;
-	  else
-	    SDL_sscanf (color_name, "#%6X", &colornr);
+
+	  /*
+	   * Note: don't use avt_colorname,
+	   * or the pallette is always needed
+	   */
 
 	  if (ncolors <= 256)
 	    {
@@ -893,7 +898,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
  */
 static SDL_Surface *
 avt_load_image_xbm (const unsigned char *bits, int width, int height,
-		    int red, int green, int blue)
+		    int colornr)
 {
   SDL_Surface *img;
   SDL_Color color[2];
@@ -946,12 +951,12 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
   if (SDL_MUSTLOCK (img))
     SDL_UnlockSurface (img);
 
-  color[0].r = ~red;
-  color[0].g = ~green;
-  color[0].b = ~blue;
-  color[1].r = red;
-  color[1].g = green;
-  color[1].b = blue;
+  color[0].r = ~avt_red (colornr);
+  color[0].g = ~avt_green (colornr);
+  color[0].b = ~avt_blue (colornr);
+  color[1].r = avt_red (colornr);
+  color[1].g = avt_green (colornr);
+  color[1].b = avt_blue (colornr);
   SDL_SetPalette (img, SDL_LOGPAL, color, 0, 2);
   SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL, 0);
 
@@ -959,8 +964,7 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
 }
 
 static SDL_Surface *
-avt_load_image_xbm_RW (SDL_RWops * src, int freesrc,
-		       int red, int green, int blue)
+avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
 {
   unsigned char *bits;
   int width, height;
@@ -1110,7 +1114,7 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc,
     }
 
   if (!error)
-    img = avt_load_image_xbm (bits, width, height, red, green, blue);
+    img = avt_load_image_xbm (bits, width, height, color);
 
 done:
   /* free bits */
@@ -1837,8 +1841,9 @@ avt_set_balloon_mode (int mode)
 	  SDL_FreeSurface (pointer);
 	  pointer =
 	    avt_load_image_xbm (AVT_XBM_INFO (balloonpointer),
-				ballooncolor_RGB.r, ballooncolor_RGB.g,
-				ballooncolor_RGB.b);
+				avt_rgb (ballooncolor_RGB.r,
+					 ballooncolor_RGB.g,
+					 ballooncolor_RGB.b));
 	  avt_balloon_mode = AVT_SAY;
 	  break;
 
@@ -1846,8 +1851,9 @@ avt_set_balloon_mode (int mode)
 	  SDL_FreeSurface (pointer);
 	  pointer =
 	    avt_load_image_xbm (AVT_XBM_INFO (thinkpointer),
-				ballooncolor_RGB.r, ballooncolor_RGB.g,
-				ballooncolor_RGB.b);
+				avt_rgb (ballooncolor_RGB.r,
+					 ballooncolor_RGB.g,
+					 ballooncolor_RGB.b));
 	  avt_balloon_mode = AVT_THINK;
 	  break;
 
@@ -4454,14 +4460,14 @@ avt_lock_updates (bool lock)
 
 static void
 avt_button_inlay (SDL_Rect btn_rect, const unsigned char *bits,
-		  int width, int height, int red, int green, int blue)
+		  int width, int height, int color)
 {
   SDL_Surface *inlay;
   SDL_Rect inlay_rect;
   int radius;
 
   radius = btn_rect.w / 2;
-  inlay = avt_load_image_xbm (bits, width, height, red, green, blue);
+  inlay = avt_load_image_xbm (bits, width, height, color);
   inlay_rect.w = inlay->w;
   inlay_rect.h = inlay->h;
   inlay_rect.x = btn_rect.x + radius - (inlay_rect.w / 2);
@@ -5571,10 +5577,10 @@ avt_decide (void)
 
   /* draw buttons */
   SDL_BlitSurface (base_button, NULL, screen, &yes_rect);
-  avt_button_inlay (yes_rect, AVT_XBM_INFO (btn_yes), 0, 0xAA, 0);
+  avt_button_inlay (yes_rect, AVT_XBM_INFO (btn_yes), 0x00AA00);
 
   SDL_BlitSurface (base_button, NULL, screen, &no_rect);
-  avt_button_inlay (no_rect, AVT_XBM_INFO (btn_no), 0xAA, 0, 0);
+  avt_button_inlay (no_rect, AVT_XBM_INFO (btn_no), 0xAA0000);
 
   AVT_UPDATE_RECT (area_rect);
 
@@ -5793,10 +5799,9 @@ avt_show_image_xpm (char **xpm)
 
 extern int
 avt_show_image_xbm (const unsigned char *bits, int width, int height,
-		    const char *colorname)
+		    int color)
 {
   SDL_Surface *image;
-  int colornr;
 
   if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -5804,16 +5809,14 @@ avt_show_image_xbm (const unsigned char *bits, int width, int height,
   if (width <= 0 || height <= 0)
     return AVT_FAILURE;
 
-  colornr = avt_colorname (colorname);
-  if (colornr < 0)
+  if (color < 0)
     {
       avt_clear ();		/* at least clear the balloon */
       SDL_SetError ("couldn't show image");
       return AVT_FAILURE;
     }
 
-  image = avt_load_image_xbm (bits, width, height, avt_red (colornr),
-			      avt_green (colornr), avt_blue (colornr));
+  image = avt_load_image_xbm (bits, width, height, color);
 
   if (image == NULL)
     {
@@ -6224,23 +6227,18 @@ avt_avatar_image_xpm (char **xpm)
 
 extern int
 avt_avatar_image_xbm (const unsigned char *bits,
-		      int width, int height, const char *colorname)
+		      int width, int height, int color)
 {
   SDL_Surface *image;
-  int c;
 
-  c = avt_colorname (colorname);
-
-  if (width <= 0 || height <= 0 || c < 0)
+  if (width <= 0 || height <= 0 || color < 0)
     {
       SDL_SetError ("invalid parameters");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
 
-  image =
-    avt_load_image_xbm (bits, width, height,
-			avt_red (c), avt_green (c), avt_blue (c));
+  image = avt_load_image_xbm (bits, width, height, color);
 
   if (!image)
     return AVT_FAILURE;
@@ -7235,13 +7233,15 @@ avt_start (const char *title, const char *shortname, int mode)
     }
 
   circle =
-    avt_load_image_xbm (AVT_XBM_INFO (circle), ballooncolor_RGB.r,
-			ballooncolor_RGB.g, ballooncolor_RGB.b);
+    avt_load_image_xbm (AVT_XBM_INFO (circle), avt_rgb (ballooncolor_RGB.r,
+							ballooncolor_RGB.g,
+							ballooncolor_RGB.b));
 
   avt_balloon_mode = AVT_SAY;
   pointer =
-    avt_load_image_xbm (AVT_XBM_INFO (balloonpointer), ballooncolor_RGB.r,
-			ballooncolor_RGB.g, ballooncolor_RGB.b);
+    avt_load_image_xbm (AVT_XBM_INFO (balloonpointer),
+			avt_rgb (ballooncolor_RGB.r, ballooncolor_RGB.g,
+				 ballooncolor_RGB.b));
 
   /* needed to get the character of the typed key */
   SDL_EnableUNICODE (1);

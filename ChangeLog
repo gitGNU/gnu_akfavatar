@@ -1,3 +1,11 @@
+2012-05-02  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatr.h, avatar.c (avt_avatar_image_xbm, avt_show_image_xbm):
+	use color number
+
+	* avatar.c (avt_load_image_xpm):
+	regression: doesn't support color names anymore
+
 2012-05-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_get_palette): new function
