@@ -120,4 +120,40 @@ avt_get_color (int entry, int *red, int *green, int *blue)
     return NULL;
 }
 
+extern void
+avt_set_balloon_color_name (const char *name)
+{
+  int c = avt_colorname (name);
+
+  if (c >= 0)
+    avt_set_balloon_color (c);
+}
+
+extern void
+avt_set_background_color_name (const char *name)
+{
+  int c = avt_colorname (name);
+
+  if (c >= 0)
+    avt_set_background_color (c);
+}
+
+extern void
+avt_set_text_color_name (const char *name)
+{
+  int c = avt_colorname (name);
+
+  if (c >= 0)
+    avt_set_text_color (c);
+}
+
+extern void
+avt_set_text_background_color_name (const char *name)
+{
+  int c = avt_colorname (name);
+
+  if (c >= 0)
+    avt_set_text_background_color (c);
+}
+
 #endif /* DISABLE_DEPRECATED */

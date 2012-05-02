@@ -1067,6 +1067,10 @@ AVT_API int avt_name_to_color (const char *name,
 AVT_API const char *avt_get_color_name (int entry) AVT_DEPRECATED;
 AVT_API const char *avt_get_color (int entry,
              int *red, int *green, int *blue) AVT_DEPRECATED;
+AVT_API void avt_set_background_color_name (const char *name) AVT_DEPRECATED;
+AVT_API void avt_set_balloon_color_name (const char *name) AVT_DEPRECATED;
+AVT_API void avt_set_text_color_name (const char *name) AVT_DEPRECATED;
+AVT_API void avt_set_text_background_color_name (const char *name) AVT_DEPRECATED;
 
 #endif /* DISABLE_DEPRECATED */
 
