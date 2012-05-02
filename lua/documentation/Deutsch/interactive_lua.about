@@ -37,9 +37,9 @@ Beispiel kann man dem Avatar einen Namen geben:
   > avt.set_avatar_name("Hugo")
 
 Oder, wenn man überhaupt keinen Avatar haben will:
-  > avt.change_avatar_image("none")
+  > avt.avatar_image("none")
 
 Um einen weiblichen Avatar zu bekommen:
-  > avt.change_avatar_image(require "akfavatar.female_user")
+  > avt.avatar_image_file(avt.search("female_user.xpm"))
 
 Man kann so viel mehr damit machen...  Einfach mal rumprobieren... ☺

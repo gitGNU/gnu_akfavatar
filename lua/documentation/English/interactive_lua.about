@@ -11,7 +11,7 @@ have to use the American notation with a point.
 You can define your own variables.  For example one Megabyte is 2^20 Bytes.
 So enter 'MB=2^20'.  Now you can use it in your calculations.  If you want to
 know what 5 Megabytes is in Bytes, enter '=5*MB', the result is '5242880'.
-Please note that Lua is case sensitive. That means for example that 'MB' and
+Please note that Lua is case sensitive.  That means for example that 'MB' and
 'mb' are two different variables.
 
 Starting lines with the equal sign is a special feature of the interactive
@@ -34,10 +34,10 @@ can set a name for the avatar.  Try this:
   > avt.set_avatar_name("Hugo")
 
 Or if you don't want to have an avatar at all use 
-  > avt.change_avatar_image("none")
+  > avt.avatar_image("none")
 
 To get a female avatar use
-  > avt.change_avatar_image(require "akfavatar.female_user")
+  > avt.avatar_image_file(avt.search("female_user.xpm"))
 
 You can do a lot more...  Just experiment with it... ☺
 
