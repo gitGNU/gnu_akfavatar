@@ -247,7 +247,7 @@ lgraphic_new (lua_State * L)
   if (background_color)
     colornr = avt_colorname (background_color);
   else
-    colornr = avt_get_background_colornr ();
+    colornr = avt_get_background_color ();
 
   if (colornr < 0)
     return luaL_argerror (L, 3, "invalid color");

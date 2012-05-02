@@ -474,54 +474,54 @@ set_foreground_color (int color)
     {
     case 0:
       if (!faint)
-	avt_set_text_colornr (0x000000);
+	avt_set_text_color (0x000000);
       else
-	avt_set_text_colornr (0x888888);
+	avt_set_text_color (0x888888);
       break;
     case 1:			/* red */
-      avt_set_text_colornr (0x880000);
+      avt_set_text_color (0x880000);
       break;
     case 2:			/* green */
-      avt_set_text_colornr (0x008800);
+      avt_set_text_color (0x008800);
       break;
     case 3:			/* brown */
-      avt_set_text_colornr (0x888800);
+      avt_set_text_color (0x888800);
       break;
     case 4:			/* blue */
-      avt_set_text_colornr (0x000088);
+      avt_set_text_color (0x000088);
       break;
     case 5:			/* magenta */
-      avt_set_text_colornr (0x880088);
+      avt_set_text_color (0x880088);
       break;
     case 6:			/* cyan */
-      avt_set_text_colornr (0x008888);
+      avt_set_text_color (0x008888);
       break;
     case 7:			/* lightgray */
-      avt_set_text_colornr (0xCCCCCC);
+      avt_set_text_color (0xCCCCCC);
       break;
     case 8:			/* darkgray */
-      avt_set_text_colornr (0x888888);
+      avt_set_text_color (0x888888);
       break;
     case 9:			/* lightred */
-      avt_set_text_colornr (0xFF0000);
+      avt_set_text_color (0xFF0000);
       break;
     case 10:			/* lightgreen */
-      avt_set_text_colornr (0x00FF00);
+      avt_set_text_color (0x00FF00);
       break;
     case 11:			/* yellow */
-      avt_set_text_colornr (0xFFFF00);
+      avt_set_text_color (0xFFFF00);
       break;
     case 12:			/* lightblue */
-      avt_set_text_colornr (0x0000FF);
+      avt_set_text_color (0x0000FF);
       break;
     case 13:			/* lightmagenta */
-      avt_set_text_colornr (0xFF00FF);
+      avt_set_text_color (0xFF00FF);
       break;
     case 14:			/* lightcyan */
-      avt_set_text_colornr (0x00FFFF);
+      avt_set_text_color (0x00FFFF);
       break;
     case 15:			/* white */
-      avt_set_text_colornr (0xFFFFFF);
+      avt_set_text_color (0xFFFFFF);
     }
 }
 
@@ -531,49 +531,49 @@ set_background_color (int color)
   switch (color)
     {
     case 0:			/* black */
-      avt_set_text_background_colornr (0x000000);
+      avt_set_text_background_color (0x000000);
       break;
     case 1:			/* red */
-      avt_set_text_background_colornr (0x880000);
+      avt_set_text_background_color (0x880000);
       break;
     case 2:			/* green */
-      avt_set_text_background_colornr (0x008800);
+      avt_set_text_background_color (0x008800);
       break;
     case 3:			/* brown */
-      avt_set_text_background_colornr (0x888800);
+      avt_set_text_background_color (0x888800);
       break;
     case 4:			/* blue */
-      avt_set_text_background_colornr (0x000088);
+      avt_set_text_background_color (0x000088);
       break;
     case 5:			/* magenta */
-      avt_set_text_background_colornr (0x880088);
+      avt_set_text_background_color (0x880088);
       break;
     case 6:			/* cyan */
-      avt_set_text_background_colornr (0x008888);
+      avt_set_text_background_color (0x008888);
       break;
     case 7:			/* lightgray */
-      avt_set_text_background_colornr (0xCCCCCC);
+      avt_set_text_background_color (0xCCCCCC);
       break;
     case 8:			/* darkgray */
-      avt_set_text_background_colornr (0x888888);
+      avt_set_text_background_color (0x888888);
       break;
     case 9:			/* lightred */
-      avt_set_text_background_colornr (0xFF0000);
+      avt_set_text_background_color (0xFF0000);
       break;
     case 10:			/* lightgreen */
-      avt_set_text_background_colornr (0x00FF00);
+      avt_set_text_background_color (0x00FF00);
       break;
     case 11:			/* yellow */
-      avt_set_text_background_colornr (0xFFFF00);
+      avt_set_text_background_color (0xFFFF00);
       break;
     case 12:			/* lightblue */
-      avt_set_text_background_colornr (0x0000FF);
+      avt_set_text_background_color (0x0000FF);
       break;
     case 13:			/* lighmagenta */
-      avt_set_text_background_colornr (0xFF00FF);
+      avt_set_text_background_color (0xFF00FF);
       break;
     case 14:			/* lightcyan */
-      avt_set_text_background_colornr (0x00FFFF);
+      avt_set_text_background_color (0x00FFFF);
       break;
     case 15:			/* ballooncolor */
       avt_set_text_background_ballooncolor ();
