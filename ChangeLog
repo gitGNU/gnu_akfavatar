@@ -14,6 +14,9 @@
         (avt_set_text_color, avt_set_text_background_color):
         just take one color value
 
+	* akfavatar.h, avtpalette.c (avt_palette):
+	renamed from avt_get_palette
+
 2012-05-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_get_palette): new function

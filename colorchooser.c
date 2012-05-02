@@ -122,7 +122,7 @@ avta_color_selection (void)
       for (i = 0; i < max_idx - offset - 1; i++)
 	{
 	  color_name =
-	    avt_get_palette (i + (page_nr * (max_idx - offset)), &colornr);
+	    avt_palette (i + (page_nr * (max_idx - offset)), &colornr);
 
 	  if (color_name)
 	    {
@@ -167,8 +167,8 @@ avta_color_selection (void)
 	}
       else
 	result =
-	  avt_get_palette (choice - 1 - offset
-			   + (page_nr * (max_idx - offset)), NULL);
+	  avt_palette (choice - 1 - offset
+		       + (page_nr * (max_idx - offset)), NULL);
     }
 
   avt_set_auto_margin (old_auto_margin);

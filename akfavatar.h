@@ -468,7 +468,7 @@ AVT_API int avt_colorname (const char *name);
  * returns the color name or NULL on error
  * if color is not NULL it gets the color number
  */
-AVT_API const char *avt_get_palette (int entry, int *color);
+AVT_API const char *avt_palette (int entry, int *color);
 
 /***********************************************************************/
 /* settings */

@@ -42,7 +42,7 @@ avt_colorname (const char *name)
 }
 
 extern const char *
-avt_get_palette (int entry, int *colornr)
+avt_palette (int entry, int *colornr)
 {
   const char *name = NULL;
   const int numcolors = sizeof (avt_colors) / sizeof (avt_colors[0]);

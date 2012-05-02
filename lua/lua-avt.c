@@ -283,7 +283,7 @@ lavt_get_color (lua_State * L)
   char RGB[8];
   int colornr;
 
-  name = avt_get_palette (luaL_checkint (L, 1), &colornr);
+  name = avt_palette (luaL_checkint (L, 1), &colornr);
 
   if (name)
     {
@@ -305,7 +305,7 @@ lavt_color_iteration (lua_State * L)
   int colornr;
   int nr = lua_tointeger (L, 2) + 1;
 
-  name = avt_get_palette (nr, &colornr);
+  name = avt_palette (nr, &colornr);
 
   if (name)
     {

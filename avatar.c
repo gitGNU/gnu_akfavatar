@@ -166,7 +166,8 @@ static int errno;
 #pragma GCC poison  strstr atoi atol strtol
 
 /* for static linking avoid to drag in unneeded object files */
-#pragma GCC poison  avt_colorname avt_get_palette avt_avatar_image_default
+#pragma GCC poison  avt_colorname avt_palette avt_colors
+#pragma GCC poison  avt_avatar_image_default
 
 
 #define COLORDEPTH 24
