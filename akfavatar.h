@@ -1054,9 +1054,6 @@ AVT_API int avt_initialize (const char *title,
 			    int mode) AVT_DEPRECATED;
 AVT_API avt_image_t *avt_default (void) AVT_DEPRECATED;
 AVT_API avt_image_t *avt_import_xpm (char **xpm) AVT_DEPRECATED;
-AVT_API avt_image_t *avt_import_xbm (const unsigned char *bits,
-				     int width, int height,
-				     const char *colorname) AVT_DEPRECATED;
 AVT_API avt_image_t *avt_import_gimp_image (void *gimp_image) AVT_DEPRECATED;
 AVT_API avt_image_t *avt_import_image_data (void *img, size_t imgsize) AVT_DEPRECATED;
 AVT_API avt_image_t *avt_import_image_file (const char *filename) AVT_DEPRECATED;
@@ -1066,14 +1063,10 @@ AVT_API avt_image_t *avt_make_transparent (avt_image_t *image) AVT_DEPRECATED;
 AVT_API void avt_free_image (avt_image_t *image) AVT_DEPRECATED;
 AVT_API int avt_initialize_audio (void) AVT_DEPRECATED;
 AVT_API void avt_set_background_color (int red, int green, int blue) AVT_DEPRECATED;
-AVT_API void avt_set_background_color_name (const char *name) AVT_DEPRECATED;
 AVT_API void avt_get_background_color (int *red, int *green, int *blue) AVT_DEPRECATED;
 AVT_API void avt_set_balloon_color (int red, int green, int blue) AVT_DEPRECATED;
-AVT_API void avt_set_balloon_color_name (const char *name) AVT_DEPRECATED;
 AVT_API void avt_set_text_color (int red, int green, int blue) AVT_DEPRECATED;
-AVT_API void avt_set_text_color_name (const char *name) AVT_DEPRECATED;
 AVT_API void avt_set_text_background_color (int red, int green, int blue) AVT_DEPRECATED;
-AVT_API void avt_set_text_background_color_name (const char *name) AVT_DEPRECATED;
 AVT_API int avt_name_to_color (const char *name, 
                                int *red, int *green, int *blue) AVT_DEPRECATED;
 AVT_API const char *avt_get_color_name (int entry) AVT_DEPRECATED;

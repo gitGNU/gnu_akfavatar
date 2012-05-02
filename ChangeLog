@@ -6,6 +6,9 @@
 	* avatar.c (avt_load_image_xpm):
 	regression: doesn't support color names anymore
 
+	* avatar.c: poison avt_colorname,
+	remove functions that use it
+
 2012-05-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_get_palette): new function

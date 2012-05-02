@@ -164,7 +164,9 @@ static int errno;
 /* don't use any libc commands directly! */
 #pragma GCC poison  malloc calloc free strlen memcpy memset getenv putenv
 #pragma GCC poison  strstr atoi atol strtol
-/* do not poison the iconv stuff, it causes problems with external libiconv */
+
+/* for static linking avoid to drag in unneeded object files */
+#pragma GCC poison  avt_colorname avt_get_palette avt_avatar_image_default
 
 
 #define COLORDEPTH 24
@@ -5969,29 +5971,6 @@ avt_import_xpm (char **xpm)
 
 /* deprecated */
 extern avt_image_t *
-avt_import_xbm (const unsigned char *bits, int width, int height,
-		const char *colorname)
-{
-  int colornr;
-
-  if (width <= 0 || height <= 0)
-    return NULL;
-
-  colornr = avt_colorname (colorname);
-
-  if (colornr < 0)
-    return NULL;
-
-  if (avt_init_SDL ())
-    return NULL;
-
-  return
-    avt_load_image_xbm (bits, width, height, avt_red (colornr),
-			avt_green (colornr), avt_blue (colornr));
-}
-
-/* deprecated */
-extern avt_image_t *
 avt_import_gimp_image (void *gimp_image)
 {
   SDL_Surface *image;
@@ -6410,17 +6389,6 @@ avt_set_balloon_color (int red, int green, int blue)
     }
 }
 
-
-/* deprecated */
-extern void
-avt_set_balloon_color_name (const char *name)
-{
-  int c = avt_colorname (name);
-
-  if (c >= 0)
-    avt_set_balloon_color (avt_red (c), avt_green (c), avt_blue (c));
-}
-
 #endif /* DISABLE_DEPRECATED */
 
 /* can and should be called before avt_initialize */
@@ -6475,16 +6443,6 @@ avt_set_background_color (int red, int green, int blue)
       else
 	avt_clear_screen ();
     }
-}
-
-/* can and should be called before avt_initialize */
-extern void
-avt_set_background_color_name (const char *name)
-{
-  int c = avt_colorname (name);
-
-  if (c >= 0)
-    avt_set_background_color (avt_red (c), avt_green (c), avt_blue (c));
 }
 
 extern void
@@ -6578,16 +6536,6 @@ avt_set_text_color (int red, int green, int blue)
 
 /* deprecated */
 extern void
-avt_set_text_color_name (const char *name)
-{
-  int c = avt_colorname (name);
-
-  if (c >= 0)
-    avt_set_text_color (avt_red (c), avt_green (c), avt_blue (c));
-}
-
-/* deprecated */
-extern void
 avt_set_text_background_color (int red, int green, int blue)
 {
   SDL_Color color;
@@ -6601,16 +6549,6 @@ avt_set_text_background_color (int red, int green, int blue)
 
       text_background_color = SDL_MapRGB (screen->format, red, green, blue);
     }
-}
-
-/* deprecated */
-extern void
-avt_set_text_background_color_name (const char *name)
-{
-  int c = avt_colorname (name);
-
-  if (c >= 0)
-    avt_set_text_background_color (avt_red (c), avt_green (c), avt_blue (c));
 }
 
 #endif /* DISABLE_DEPRECATED */
