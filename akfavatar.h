@@ -452,10 +452,10 @@ AVT_API const char *avt_license (void);
 /***********************************************************************/
 /* colors */
 
-#define avt_rgb(r,g,b)      ((((r)&0xFF)<<16) | (((g)&0xFF)<<8) | ((b)&0xFF))
-#define avt_red(colornr)    (((colornr) >> 16) & 0xFF)
-#define avt_green(colornr)  (((colornr) >> 8) & 0xFF)
-#define avt_blue(colornr)   ((colornr) & 0xFF)
+#define avt_rgb(r,g,b)    ((((r)&0xFF)<<16) | (((g)&0xFF)<<8) | ((b)&0xFF))
+#define avt_red(color)    (((color) >> 16) & 0xFF)
+#define avt_green(color)  (((color) >> 8) & 0xFF)
+#define avt_blue(color)   ((color) & 0xFF)
 
 /*
  * get color number from a given name
@@ -466,9 +466,9 @@ AVT_API int avt_colorname (const char *name);
 /*
  * reads a palette of predefined colors
  * returns the color name or NULL on error
- * if colornr is not NULL it gets the color number
+ * if color is not NULL it gets the color number
  */
-AVT_API const char *avt_get_palette (int entry, int *colornr);
+AVT_API const char *avt_get_palette (int entry, int *color);
 
 /***********************************************************************/
 /* settings */
@@ -524,8 +524,8 @@ AVT_API void avt_activate_cursor (bool on);
  * can and should be called before avt_initialize
  * if the balloon is visible, it is cleared
  */
-AVT_API void avt_set_background_colornr (int colornr);
-AVT_API int avt_get_background_colornr (void);
+AVT_API void avt_set_background_color (int color);
+AVT_API int avt_get_background_color (void);
 
 /*
  * define the balloon color
@@ -533,11 +533,11 @@ AVT_API int avt_get_background_colornr (void);
  * the text-background-color is set to the balloon-color too
  * if the balloon is visible, it is cleared
  */
-AVT_API void avt_set_balloon_colornr (int colornr);
+AVT_API void avt_set_balloon_color (int color);
 
 /* change the text color */
-AVT_API void avt_set_text_colornr (int colornr);
-AVT_API void avt_set_text_background_colornr (int colornr);
+AVT_API void avt_set_text_color (int color);
+AVT_API void avt_set_text_background_color (int color);
 
 /* set text background to balloon color */
 AVT_API void avt_set_text_background_ballooncolor (void);
@@ -1062,11 +1062,6 @@ AVT_API int avt_change_avatar_image (avt_image_t *image) AVT_DEPRECATED;
 AVT_API avt_image_t *avt_make_transparent (avt_image_t *image) AVT_DEPRECATED;
 AVT_API void avt_free_image (avt_image_t *image) AVT_DEPRECATED;
 AVT_API int avt_initialize_audio (void) AVT_DEPRECATED;
-AVT_API void avt_set_background_color (int red, int green, int blue) AVT_DEPRECATED;
-AVT_API void avt_get_background_color (int *red, int *green, int *blue) AVT_DEPRECATED;
-AVT_API void avt_set_balloon_color (int red, int green, int blue) AVT_DEPRECATED;
-AVT_API void avt_set_text_color (int red, int green, int blue) AVT_DEPRECATED;
-AVT_API void avt_set_text_background_color (int red, int green, int blue) AVT_DEPRECATED;
 AVT_API int avt_name_to_color (const char *name, 
                                int *red, int *green, int *blue) AVT_DEPRECATED;
 AVT_API const char *avt_get_color_name (int entry) AVT_DEPRECATED;

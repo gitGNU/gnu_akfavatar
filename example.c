@@ -57,7 +57,7 @@ main (int argc, char *argv[])
   (void) argc;
   (void) argv;
 
-  avt_set_background_colornr (avt_colorname ("sky blue"));
+  avt_set_background_color (avt_colorname ("sky blue"));
   avt_mb_encoding ("UTF-8");
 
   /* initialize it */

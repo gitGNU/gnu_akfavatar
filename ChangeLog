@@ -9,6 +9,11 @@
 	* avatar.c: poison avt_colorname,
 	remove functions that use it
 
+	* akfavatar.h, avatar.c (avt_set_background_color)
+	(avt_get_background_color, avt_set_balloon_color)
+        (avt_set_text_color, avt_set_text_background_color):
+        just take one color value
+
 2012-05-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_get_palette): new function

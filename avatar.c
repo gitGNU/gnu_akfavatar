@@ -6353,11 +6353,11 @@ avt_set_text_background_ballooncolor (void)
 
 /* can and should be called before avt_initialize */
 extern void
-avt_set_balloon_colornr (int colornr)
+avt_set_balloon_color (int color)
 {
-  ballooncolor_RGB.r = avt_red (colornr);
-  ballooncolor_RGB.g = avt_green (colornr);
-  ballooncolor_RGB.b = avt_blue (colornr);
+  ballooncolor_RGB.r = avt_red (color);
+  ballooncolor_RGB.g = avt_green (color);
+  ballooncolor_RGB.b = avt_blue (color);
 
   if (screen)
     {
@@ -6368,32 +6368,10 @@ avt_set_balloon_colornr (int colornr)
 	avt_draw_balloon ();
     }
 }
-
-#ifndef DISABLE_DEPRECATED
-
-/* deprecated */
-extern void
-avt_set_balloon_color (int red, int green, int blue)
-{
-  ballooncolor_RGB.r = red;
-  ballooncolor_RGB.g = green;
-  ballooncolor_RGB.b = blue;
-
-  if (screen)
-    {
-      avt_set_text_background_ballooncolor ();
-
-      /* redraw the balloon, if it is visible */
-      if (textfield.x >= 0)
-	avt_draw_balloon ();
-    }
-}
-
-#endif /* DISABLE_DEPRECATED */
 
 /* can and should be called before avt_initialize */
 extern void
-avt_set_background_colornr (int colornr)
+avt_set_background_color (int colornr)
 {
   backgroundcolornr = colornr;
 
@@ -6416,47 +6394,10 @@ avt_set_background_colornr (int colornr)
 }
 
 extern int
-avt_get_background_colornr (void)
+avt_get_background_color (void)
 {
   return backgroundcolornr;
 }
-
-#ifndef DISABLE_DEPRECATED
-
-/* deprecated */
-extern void
-avt_set_background_color (int red, int green, int blue)
-{
-  backgroundcolornr = avt_rgb (red, green, blue);
-
-  if (screen)
-    {
-      background_color = SDL_MapRGB (screen->format, red, green, blue);
-
-      if (textfield.x >= 0)
-	{
-	  avt_visible = false;	/* force to redraw everything */
-	  avt_draw_balloon ();
-	}
-      else if (avt_visible)
-	avt_show_avatar ();
-      else
-	avt_clear_screen ();
-    }
-}
-
-extern void
-avt_get_background_color (int *red, int *green, int *blue)
-{
-  if (red && green && blue)
-    {
-      *red = avt_red (backgroundcolornr);
-      *green = avt_green (backgroundcolornr);
-      *blue = avt_blue (backgroundcolornr);
-    }
-}
-
-#endif /* DISABLE_DEPRECATED */
 
 extern void
 avt_reserve_single_keys (bool onoff)
@@ -6486,7 +6427,7 @@ avt_set_mouse_visible (bool visible)
 }
 
 extern void
-avt_set_text_colornr (int colornr)
+avt_set_text_color (int colornr)
 {
   SDL_Color color;
 
@@ -6500,7 +6441,7 @@ avt_set_text_colornr (int colornr)
 }
 
 extern void
-avt_set_text_background_colornr (int colornr)
+avt_set_text_background_color (int colornr)
 {
   SDL_Color color;
 
@@ -6515,43 +6456,6 @@ avt_set_text_background_colornr (int colornr)
 	SDL_MapRGB (screen->format, color.r, color.g, color.b);
     }
 }
-
-
-#ifndef DISABLE_DEPRECATED
-
-/* deprecated */
-extern void
-avt_set_text_color (int red, int green, int blue)
-{
-  SDL_Color color;
-
-  if (avt_character)
-    {
-      color.r = red;
-      color.g = green;
-      color.b = blue;
-      SDL_SetColors (avt_character, &color, 1, 1);
-    }
-}
-
-/* deprecated */
-extern void
-avt_set_text_background_color (int red, int green, int blue)
-{
-  SDL_Color color;
-
-  if (avt_character)
-    {
-      color.r = red;
-      color.g = green;
-      color.b = blue;
-      SDL_SetColors (avt_character, &color, 0, 1);
-
-      text_background_color = SDL_MapRGB (screen->format, red, green, blue);
-    }
-}
-
-#endif /* DISABLE_DEPRECATED */
 
 extern void
 avt_inverse (bool onoff)
@@ -6746,9 +6650,9 @@ avt_credits (const wchar_t * text, bool centered)
 
   /* the background-color is used when the window is resized */
   /* this implicitly also clears the screen */
-  avt_set_background_colornr (0x000000);
-  avt_set_text_background_colornr (0x000000);
-  avt_set_text_colornr (0xFFFFFF);
+  avt_set_background_color (0x000000);
+  avt_set_text_background_color (0x000000);
+  avt_set_text_color (0xFFFFFF);
 
   window.x = (screen->w / 2) - (80 * FONTWIDTH / 2);
   window.w = 80 * FONTWIDTH;
@@ -6823,7 +6727,7 @@ avt_credits (const wchar_t * text, bool centered)
   avt_avatar_window ();
 
   /* back to normal (also sets variables!) */
-  avt_set_background_colornr (old_backgroundcolornr);
+  avt_set_background_color (old_backgroundcolornr);
   avt_normal_text ();
   avt_clear_screen ();
 

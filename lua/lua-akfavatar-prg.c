@@ -99,7 +99,7 @@ error_box (const char *msg)
 {
   avt_set_status (AVT_NORMAL);
   avt_avatar_image_none ();
-  avt_set_balloon_colornr (0xFFAAAA);
+  avt_set_balloon_color (0xFFAAAA);
   avt_normal_text ();
   avt_set_auto_margin (true);
   avt_set_scroll_mode (-1);
@@ -224,8 +224,8 @@ reset (void)
   avt_set_origin_mode (true);
   avt_set_scroll_mode (1);
   avt_reserve_single_keys (false);
-  avt_set_background_colornr (avt_colorname ("default"));
-  avt_set_balloon_colornr (avt_colorname ("floral white"));
+  avt_set_background_color (avt_colorname ("default"));
+  avt_set_balloon_color (avt_colorname ("floral white"));
   avt_markup (false);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
   avt_normal_text ();
@@ -351,7 +351,7 @@ show_text (const char *filename)
 {
   avt_avatar_image_none ();
   avt_set_balloon_size (0, 0);
-  avt_set_balloon_colornr (avt_colorname ("tan"));
+  avt_set_balloon_color (avt_colorname ("tan"));
   /* text file must be UTF-8 encoded (or plain ASCII) */
   avta_pager_file (filename, 1);
 }

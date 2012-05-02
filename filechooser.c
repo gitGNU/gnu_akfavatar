@@ -30,7 +30,7 @@
 #include <errno.h>
 
 
-#define marked(void) avt_set_text_background_colornr(0xDDDDDD)
+#define marked(void) avt_set_text_background_color(0xDDDDDD)
 
 /* entries or marks that are not files */
 #define marked_text(S) \
