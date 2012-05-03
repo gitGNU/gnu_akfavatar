@@ -53,11 +53,12 @@ static void run_plot (void);
 int
 main (int argc, char *argv[])
 {
-  /* make the compiler not complain, that they aare not used */
+  /* make the compiler not complain, that they are not used */
   (void) argc;
   (void) argv;
 
-  avt_set_background_color (avt_colorname ("sky blue"));
+  /* for static linking it is beneficial to avoid avt_colorname */
+  avt_set_background_color (0xFFC0CB);
   avt_mb_encoding ("UTF-8");
 
   /* initialize it */
@@ -112,9 +113,9 @@ run_plot (void)
   if (avt_ask_mb (name, sizeof (name)))
     exit (EXIT_SUCCESS);
 
-  /* if no name was given, call him "Mister unknown" ;-) */
+  /* if no name was given, call him "stranger" ;-) */
   if (!name[0])
-    strcpy (name, "Mister unknown");
+    strcpy (name, "stranger");
 
   avt_set_balloon_size (6, 50);
   /* clear the balloon */

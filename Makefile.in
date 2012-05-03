@@ -169,9 +169,10 @@ libakfavatar.so: avatar.lo avatar-default.lo avtpalette.lo avatar-audio.lo \
 	-ln -sf $(LIBNAME) $(SONAME)
 	-ln -sf $(LIBNAME) libakfavatar.so
 
-example: $(srcdir)/example.c libakfavatar.so
-	$(CC) $(CFLAGS) -I$(srcdir) -o $@ $(srcdir)/example.c \
-	  -L. -lakfavatar $(LDFLAGS)
+# when you use the static lib you have to link with SDL
+example: $(srcdir)/example.c libakfavatar.a
+	$(CC) $(CFLAGS) -I$(srcdir) -s -o $@ $(srcdir)/example.c \
+	  libakfavatar.a $(SDL_LDFLAGS) $(LDFLAGS)
 
 avtccio.o: $(srcdir)/avtccio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/avtccio.c
