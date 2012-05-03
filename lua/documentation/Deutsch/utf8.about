@@ -44,7 +44,7 @@ utf8.codepoints(String [,Anfangszeichen [,Endzeichen]])
     Wie string.byte.
     Gibt die Unicode-Werte von Anfangszeichen bis Endzeichen zurück.
     Wenn man nur das erste Zeichen benötigt, sollte man stattdessen
-    utf8.codepoins() verwenden.
+    utf8.codepoint() verwenden.
 
 
 utf8.characters(String)
