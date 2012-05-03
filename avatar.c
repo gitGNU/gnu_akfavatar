@@ -1458,7 +1458,13 @@ avt_show_name (void)
 
       SDL_SetColors (avt_character, colors, 0, 2);
 
-      dst.x = window.x + AVATAR_MARGIN + avatar_image->w + BUTTON_DISTANCE;
+      if (avt_balloon_mode == AVT_SEPARATE)
+	dst.x =
+	  ((window.x + window.w) / 2) + (avatar_image->w / 2)
+	  + BUTTON_DISTANCE;
+      else			/* left */
+	dst.x = window.x + AVATAR_MARGIN + avatar_image->w + BUTTON_DISTANCE;
+
       dst.y = window.y + window.h - AVATAR_MARGIN - FONTHEIGHT
 	- 2 * NAME_PADDING;
       dst.w = (avt_strwidth (avt_name) * FONTWIDTH) + 2 * NAME_PADDING;
