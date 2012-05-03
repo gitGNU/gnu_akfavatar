@@ -53,10 +53,23 @@ atan = math.atan
 -------------------------------------------------------------------------------
 local avt = require "lua-akfavatar"
 local graphic = require "akfavatar-graphic"
+local lang = require "akfavatar.lang"
+local L = lang.translate
+
+lang.translations {
+  ["Function Plotter"] = {
+    de="Funktionszeichner" },
+
+  ["Enter the function:"] = {
+    de="Gib die Funktion an:" },
+
+  ["The function was not\nin a correct notation!"] = {
+    de="Die Funktion war nicht in\nder korrekten Notation!" }
+}
 
 avt.encoding("UTF-8")
-avt.title("Function Plotter")
-avt.avatar_image_file(avt.search("teacher.xpm"))
+avt.title(L"Function Plotter")
+avt.avatar_image_file(avt.search("teacher.xpm") or "default")
 
 local gr, width, height = graphic.new()
 local xoffset, yoffset = width/2, height/2
@@ -155,7 +168,7 @@ local function grid()
 end
 
 local function function_error()
-  avt.tell("The function was not\nin a correct notation!")
+  avt.tell(L"The function was not\nin a correct notation!")
   avt.wait_button()
 end
 
@@ -265,7 +278,7 @@ if arg[1] then
 else
   repeat
     avt.set_balloon_size(2, 0)
-    avt.say "Enter the function:\n"
+    avt.say(L"Enter the function:", "\n")
     local funcstring = avt.ask "f(x)="
     if funcstring~="" then plot_string(funcstring) end
   until funcstring == ""
