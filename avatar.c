@@ -656,7 +656,7 @@ avt_load_image_xpm (char **xpm)
 
 	  /*
 	   * Note: don't use avt_colorname,
-	   * or the pallette is always needed
+	   * or the palette is always needed
 	   */
 
 	  if (ncolors <= 256)
@@ -5815,10 +5815,7 @@ avt_show_image_xbm (const unsigned char *bits, int width, int height,
   if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  if (width <= 0 || height <= 0)
-    return AVT_FAILURE;
-
-  if (color < 0)
+  if (width <= 0 || height <= 0 || color < 0)
     {
       avt_clear ();		/* at least clear the balloon */
       SDL_SetError ("couldn't show image");
@@ -6362,41 +6359,47 @@ avt_set_text_background_ballooncolor (void)
 extern void
 avt_set_balloon_color (int color)
 {
-  ballooncolor_RGB.r = avt_red (color);
-  ballooncolor_RGB.g = avt_green (color);
-  ballooncolor_RGB.b = avt_blue (color);
-
-  if (screen)
+  if (color >= 0)
     {
-      avt_set_text_background_ballooncolor ();
+      ballooncolor_RGB.r = avt_red (color);
+      ballooncolor_RGB.g = avt_green (color);
+      ballooncolor_RGB.b = avt_blue (color);
 
-      /* redraw the balloon, if it is visible */
-      if (textfield.x >= 0)
-	avt_draw_balloon ();
+      if (screen)
+	{
+	  avt_set_text_background_ballooncolor ();
+
+	  /* redraw the balloon, if it is visible */
+	  if (textfield.x >= 0)
+	    avt_draw_balloon ();
+	}
     }
 }
 
 /* can and should be called before avt_initialize */
 extern void
-avt_set_background_color (int colornr)
+avt_set_background_color (int color)
 {
-  backgroundcolornr = colornr;
-
-  if (screen)
+  if (color >= 0)
     {
-      background_color =
-	SDL_MapRGB (screen->format, avt_red (colornr),
-		    avt_green (colornr), avt_blue (colornr));
+      backgroundcolornr = color;
 
-      if (textfield.x >= 0)
+      if (screen)
 	{
-	  avt_visible = false;	/* force to redraw everything */
-	  avt_draw_balloon ();
+	  background_color =
+	    SDL_MapRGB (screen->format, avt_red (color),
+			avt_green (color), avt_blue (color));
+
+	  if (textfield.x >= 0)
+	    {
+	      avt_visible = false;	/* force to redraw everything */
+	      avt_draw_balloon ();
+	    }
+	  else if (avt_visible)
+	    avt_show_avatar ();
+	  else
+	    avt_clear_screen ();
 	}
-      else if (avt_visible)
-	avt_show_avatar ();
-      else
-	avt_clear_screen ();
     }
 }
 
@@ -6438,7 +6441,7 @@ avt_set_text_color (int colornr)
 {
   SDL_Color color;
 
-  if (avt_character)
+  if (colornr >= 0 && avt_character)
     {
       color.r = avt_red (colornr);
       color.g = avt_green (colornr);
@@ -6452,7 +6455,7 @@ avt_set_text_background_color (int colornr)
 {
   SDL_Color color;
 
-  if (avt_character)
+  if (colornr >= 0 && avt_character)
     {
       color.r = avt_red (colornr);
       color.g = avt_green (colornr);

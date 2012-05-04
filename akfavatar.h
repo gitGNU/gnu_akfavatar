@@ -46,7 +46,7 @@
 /* maximum linelength */
 #define AVT_LINELENGTH 80
 
-/* for avt_initialize */
+/* for avt_start */
 #define AVT_AUTOMODE -1
 #define AVT_WINDOW 0
 #define AVT_FULLSCREENNOSWITCH 2
@@ -452,7 +452,15 @@ AVT_API const char *avt_license (void);
 /***********************************************************************/
 /* colors */
 
-#define avt_rgb(r,g,b)    ((((r)&0xFF)<<16) | (((g)&0xFF)<<8) | ((b)&0xFF))
+/*
+ * returns a color number for the given values for red, green and blue
+ * with these base colors you can mix any deliberate color
+ * the values must be in the range of 0-255
+ */
+#define avt_rgb(red, green, blue) \
+   ((((red)&0xFF)<<16) | (((green)&0xFF)<<8) | ((blue)&0xFF))
+
+/* strip the red, green or blue parts from a color number */
 #define avt_red(color)    (((color) >> 16) & 0xFF)
 #define avt_green(color)  (((color) >> 8) & 0xFF)
 #define avt_blue(color)   ((color) & 0xFF)
@@ -469,6 +477,29 @@ AVT_API int avt_colorname (const char *name);
  * if color is not NULL it gets the color number
  */
 AVT_API const char *avt_palette (int entry, int *color);
+
+/*
+ * define the background color
+ * can and should be called before avt_start
+ * if the balloon is visible, it is cleared
+ */
+AVT_API void avt_set_background_color (int color);
+AVT_API int avt_get_background_color (void);
+
+/*
+ * define the balloon color
+ * can be called before avt_start
+ * the text-background-color is set to the balloon-color too
+ * if the balloon is visible, it is cleared
+ */
+AVT_API void avt_set_balloon_color (int color);
+
+/* change the text color */
+AVT_API void avt_set_text_color (int color);
+AVT_API void avt_set_text_background_color (int color);
+
+/* set text background to balloon color */
+AVT_API void avt_set_text_background_ballooncolor (void);
 
 /***********************************************************************/
 /* settings */
@@ -518,29 +549,6 @@ AVT_API void avt_set_balloon_mode (int mode);
 
 /* activate the text cursor? (default: no) */
 AVT_API void avt_activate_cursor (bool on);
-
-/*
- * define the background color
- * can and should be called before avt_initialize
- * if the balloon is visible, it is cleared
- */
-AVT_API void avt_set_background_color (int color);
-AVT_API int avt_get_background_color (void);
-
-/*
- * define the balloon color
- * can be called before avt_initialize
- * the text-background-color is set to the balloon-color too
- * if the balloon is visible, it is cleared
- */
-AVT_API void avt_set_balloon_color (int color);
-
-/* change the text color */
-AVT_API void avt_set_text_color (int color);
-AVT_API void avt_set_text_background_color (int color);
-
-/* set text background to balloon color */
-AVT_API void avt_set_text_background_ballooncolor (void);
 
 /*
  * set text direction
