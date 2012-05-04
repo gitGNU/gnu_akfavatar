@@ -561,8 +561,12 @@ function avt_avatar_image_data(Data: Pointer; size: Csize_t): Cint;
   libakfavatar 'avt_avatar_image_data';
 
 function avt_avatar_image_xbm(bits: Pointer; width, height: Cint;
-                        colorname: CString): Cint;
+                        color: Cint): Cint;
   libakfavatar 'avt_avatar_image_xbm';
+
+function avt_show_image_xbm(bits: pointer; width, height: Cint;
+                            color: Cint): Cint;
+  libakfavatar 'avt_show_image_xbm';
 
 function avt_avatar_image_xpm(data: Pointer): Cint;
   libakfavatar 'avt_avatar_image_xpm';
@@ -576,10 +580,6 @@ function avt_show_image_file(FileName: CString): Cint;
 function avt_show_image_data(Data: pointer; size: Csize_t): Cint;
   libakfavatar 'avt_show_image_data';
 
-function avt_show_image_xbm(bits: pointer; widrh, height: Cint;
-                            colorname: CString): Cint;
-  libakfavatar 'avt_show_image_xbm';
-
 function avt_show_image_xpm(data: pointer): Cint;
   libakfavatar 'avt_show_image_xpm';
 
@@ -589,25 +589,29 @@ function avt_show_raw_image(Data: pointer; Width, Height, BPP: Cint): Cint;
 function avt_image_max_width: Cint; libakfavatar 'avt_image_max_width';
 function avt_image_max_height: Cint; libakfavatar 'avt_image_max_height';
 
-procedure avt_get_background_color(var red, green, blue: Cint);
+function avt_rgb(red, green, blue: byte): Cint;
+begin
+avt_rgb := ((red and $FF) shl 16)
+        or ((green and $FF) shl 8)
+        or (blue and $FF)
+end;
+
+function avt_colorname(Name: Cstring): Cint;
+  libakfavatar 'avt_colorname';
+
+function avt_get_background_color: Cint;
   libakfavatar 'avt_get_background_color';
 
-procedure avt_set_background_color(red, green, blue: Cint);
+procedure avt_set_background_color(color: Cint);
   libakfavatar 'avt_set_background_color';
 
-procedure avt_set_background_color_name(name: CString);
-  libakfavatar 'avt_set_background_color_name';
-
-procedure avt_set_balloon_color(red, green, blue: Cint);
+procedure avt_set_balloon_color(color: Cint);
   libakfavatar 'avt_set_balloon_color';
 
-procedure avt_set_balloon_color_name(name: CString);
-  libakfavatar 'avt_set_balloon_color_name';
-
-procedure avt_set_text_color(red, green, blue: Cint);
+procedure avt_set_text_color(color: Cint);
   libakfavatar 'avt_set_text_color';
 
-procedure avt_set_text_background_color(red, green, blue: Cint);
+procedure avt_set_text_background_color(color: Cint);
   libakfavatar 'avt_set_text_background_color';
 
 procedure avt_set_text_background_ballooncolor;
@@ -726,7 +730,6 @@ procedure avt_lock_updates(lock: CBoolean);
 procedure avt_set_balloon_mode(mode: Cint); 
   libakfavatar 'avt_set_balloon_mode';
 
-
 {$IfNDef __GPC__}
 
   function String2CString(s: string): CString;
@@ -743,22 +746,22 @@ procedure avt_set_balloon_mode(mode: Cint);
 
 procedure setBackgroundColor(red, green, blue: byte);
 begin
-avt_set_background_color(red, green, blue)
+avt_set_background_color(avt_rgb(red, green, blue))
 end;
 
 procedure setBackgroundColorName(const Name: string);
 begin
-avt_set_background_color_name(String2CString(name))
+avt_set_background_color(avt_colorname(String2CString(name)))
 end;
 
 procedure setBalloonColor(red, green, blue: byte);
 begin
-avt_set_balloon_color(red, green, blue)
+avt_set_balloon_color(avt_rgb(red, green, blue))
 end;
 
 procedure setBalloonColorName(const Name: string);
 begin
-avt_set_balloon_color_name(String2CString(name))
+avt_set_balloon_color(avt_colorname(String2CString(name)))
 end;
 
 procedure setEncoding(const newEncoding: string);
@@ -902,10 +905,12 @@ begin
 if not initialized
   then begin
        initializeAvatarWithoutImage;
-       avt_avatar_image_xbm(bits, width, height, String2CString(colorname));
+       avt_avatar_image_xbm(bits, width, height, 
+          avt_colorname(String2CString(colorname)));
        if avt_move_in <> 0 then Halt
        end
-  else avt_avatar_image_xbm(bits, width, height, String2CString(colorname))
+  else avt_avatar_image_xbm(bits, width, height, 
+          avt_colorname(String2CString(colorname)))
 end;
 
 procedure AvatarName(const Name: string);
@@ -934,22 +939,22 @@ OldTextAttr := TextAttr;
 if isMonochrome then Color := Color and $08;
 
 case Color of
-  Black        : avt_set_text_color($00, $00, $00);
-  Blue         : avt_set_text_color($00, $00, $88);
-  Green        : avt_set_text_color($00, $88, $00);
-  Cyan         : avt_set_text_color($00, $88, $88);
-  Red          : avt_set_text_color($88, $00, $00);
-  Magenta      : avt_set_text_color($88, $00, $88);
-  Brown        : avt_set_text_color($88, $88, $00);
-  LightGray    : avt_set_text_color($CC, $CC, $CC);
-  DarkGray     : avt_set_text_color($88, $88, $88);
-  LightBlue    : avt_set_text_color($00, $00, $FF);
-  LightGreen   : avt_set_text_color($00, $FF, $00);
-  LightCyan    : avt_set_text_color($00, $FF, $FF);
-  LightRed     : avt_set_text_color($FF, $00, $00); 
-  LightMagenta : avt_set_text_color($FF, $00, $FF);
-  Yellow       : avt_set_text_color($FF, $FF, $00);
-  White        : avt_set_text_color($FF, $FF, $FF)
+  Black        : avt_set_text_color($000000);
+  Blue         : avt_set_text_color($000088);
+  Green        : avt_set_text_color($008800);
+  Cyan         : avt_set_text_color($008888);
+  Red          : avt_set_text_color($880000);
+  Magenta      : avt_set_text_color($880088);
+  Brown        : avt_set_text_color($888800);
+  LightGray    : avt_set_text_color($CCCCCC);
+  DarkGray     : avt_set_text_color($888888);
+  LightBlue    : avt_set_text_color($0000FF);
+  LightGreen   : avt_set_text_color($00FF00);
+  LightCyan    : avt_set_text_color($00FFFF);
+  LightRed     : avt_set_text_color($FF0000); 
+  LightMagenta : avt_set_text_color($FF00FF);
+  Yellow       : avt_set_text_color($FFFF00);
+  White        : avt_set_text_color($FFFFFF)
   end
 end;
 
@@ -966,26 +971,26 @@ OldTextAttr := TextAttr;
 { no background color }
 if isMonochrome then
   begin
-  avt_set_text_background_color($FF, $FF, $FF);
+  avt_set_text_background_color($FFFFFF);
   exit
   end;
 
 case Color of
-  Black        : avt_set_text_background_color($00, $00, $00);
-  Blue         : avt_set_text_background_color($00, $00, $88);
-  Green        : avt_set_text_background_color($00, $88, $00);
-  Cyan         : avt_set_text_background_color($00, $88, $88);
-  Red          : avt_set_text_background_color($88, $00, $00);
-  Magenta      : avt_set_text_background_color($88, $00, $88);
-  Brown        : avt_set_text_background_color($88, $88, $00);
-  LightGray    : avt_set_text_background_color($CC, $CC, $CC);
-  DarkGray     : avt_set_text_background_color($88, $88, $88);
-  LightBlue    : avt_set_text_background_color($00, $00, $FF);
-  LightGreen   : avt_set_text_background_color($00, $FF, $00);
-  LightCyan    : avt_set_text_background_color($00, $FF, $FF);
-  LightRed     : avt_set_text_background_color($FF, $00, $00); 
-  LightMagenta : avt_set_text_background_color($FF, $00, $FF);
-  Yellow       : avt_set_text_background_color($FF, $FF, $00);
+  Black        : avt_set_text_background_color($000000);
+  Blue         : avt_set_text_background_color($000088);
+  Green        : avt_set_text_background_color($008800);
+  Cyan         : avt_set_text_background_color($008888);
+  Red          : avt_set_text_background_color($880000);
+  Magenta      : avt_set_text_background_color($880088);
+  Brown        : avt_set_text_background_color($888800);
+  LightGray    : avt_set_text_background_color($CCCCCC);
+  DarkGray     : avt_set_text_background_color($888888);
+  LightBlue    : avt_set_text_background_color($0000FF);
+  LightGreen   : avt_set_text_background_color($00FF00);
+  LightCyan    : avt_set_text_background_color($00FFFF);
+  LightRed     : avt_set_text_background_color($FF0000); 
+  LightMagenta : avt_set_text_background_color($FF00FF);
+  Yellow       : avt_set_text_background_color($FFFF00);
   White        : avt_set_text_background_ballooncolor()
   end
 end;
@@ -1115,7 +1120,7 @@ begin
 if not initialized then initializeAvatar;
 
 result := avt_show_image_xbm(bits, width, height, 
-                              String2CString(colorname));
+                    avt_colorname(String2CString(colorname)));
 if result = 1 then Halt; { halt requested }
 
 { ignore failure to show image }
@@ -1138,12 +1143,12 @@ ImageMaxHeight := avt_image_max_height
 end;
 
 procedure getBackgroundColor(var red, green, blue: byte);
-var r, g, b: Cint;
+var color: Cint;
 begin
-avt_get_background_color(r, g, b);
-red := r;
-green := g;
-blue := b
+color := avt_get_background_color;
+red := (color shr 16) and $FF;
+green := (color shr 8) and $FF;
+blue := color and $FF
 end;
 
 procedure PagerString(const txt: string; startline: integer);
