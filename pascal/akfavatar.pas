@@ -469,6 +469,12 @@ implementation
   type 
     CString = PChar;
     CBoolean = Boolean; { not cbool! }
+
+  {$IfDef CPU64}
+    type Csize_t = Cuint64;
+  {$Else}
+    type Csize_t = Cuint32;
+  {$EndIf}
 {$EndIf}
 
 {$IfDef __GPC__}

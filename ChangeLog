@@ -1,6 +1,7 @@
 2012-05-04  Andreas K. Foerster  <info@akfoerster.de>
 
 	* pascal/akfavatar.pas: updated
+	define Csize_t for old FPC versions (needed for 2.0.4)
 
 2012-05-02  Andreas K. Foerster  <info@akfoerster.de>
 
