@@ -1,7 +1,35 @@
 .\" Process this file with
 .\" groff -man -Tutf8 lua-akfavatar.1
 .\"
-.TH "lua-akfavatar" 1 2012-04-09 AKFAvatar
+.
+.\" Macros .TQ .EX .EE taken from groff an-ext.tmac
+.\" Copyright (C) 2007, 2009 Free Software Foundation, Inc.
+.\" You may freely use, modify and/or distribute this file.
+.
+.\" Continuation line for .TP header.
+.de TQ
+.  br
+.  ns
+.  TP \\$1\" no doublequotes around argument!
+..
+.
+.\" Start example.
+.de EX
+.  nr mE \\n(.f
+.  nf
+.  nh
+.  ft CW
+..
+.
+.
+.\" End example.
+.de EE
+.  ft \\n(mE
+.  fi
+.  hy \\n(HY
+..
+.
+.TH "lua-akfavatar" 1 2012-05-05 AKFAvatar
 .
 .SH NAME
 lua-akfavatar \- Lua interpreter für die AKFAvatar-Benutzeroberfläche
@@ -104,7 +132,7 @@ Im Gegensatz zu den vorherigen Pfaden gibt es keine Suchmuster
 mit Fragezeichen.
 .
 .SH BEISPIEL
-.nf
+.EX
 local avt = require "lua-akfavatar"
 avt.encoding("UTF-8")
 avt.title("Mein erstes Programm")
@@ -113,7 +141,7 @@ avt.say("Hallo du!\\n")
 local Benutzer = avt.ask("Wie heißt du denn? ")
 avt.say("Hallo, ", Benutzer, ". Schön dich zu sehen!\\n")
 avt.wait_button()
-.fi
+.EE
 .
 .SH AUTOREN
 .IP "AKFAvatar, Lua-AKFAvatar"

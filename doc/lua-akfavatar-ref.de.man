@@ -2,9 +2,16 @@
 .\" groff -man -Tutf8 lua-akfavatar-reference.de.man
 .\"
 .
-.\" Macros .EX .EE taken from groff an-ext.tmac
+.\" Macros .TQ .EX .EE taken from groff an-ext.tmac
 .\" Copyright (C) 2007, 2009 Free Software Foundation, Inc.
 .\" You may freely use, modify and/or distribute this file.
+.
+.\" Continuation line for .TP header.
+.de TQ
+.  br
+.  ns
+.  TP \\$1\" no doublequotes around argument!
+..
 .
 .\" Start example.
 .de EX
@@ -22,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar Referenz" 3 2011-04-10 AKFAvatar
+.TH "Lua-AKFAvatar Referenz" 3 2012-05-05 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar Referenz \- AKFAvatar spezifische Funktionen für Lua

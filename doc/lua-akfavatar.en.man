@@ -1,7 +1,35 @@
 .\" Process this file with
 .\" groff -man -Tutf8 lua-akfavatar.1
 .\"
-.TH "lua-akfavatar" 1 2012-04-09 AKFAvatar
+.
+.\" Macros .TQ .EX .EE taken from groff an-ext.tmac
+.\" Copyright (C) 2007, 2009 Free Software Foundation, Inc.
+.\" You may freely use, modify and/or distribute this file.
+.
+.\" Continuation line for .TP header.
+.de TQ
+.  br
+.  ns
+.  TP \\$1\" no doublequotes around argument!
+..
+.
+.\" Start example.
+.de EX
+.  nr mE \\n(.f
+.  nf
+.  nh
+.  ft CW
+..
+.
+.
+.\" End example.
+.de EE
+.  ft \\n(mE
+.  fi
+.  hy \\n(HY
+..
+.
+.TH "lua-akfavatar" 1 2012-05-05 AKFAvatar
 .
 .SH NAME
 lua-akfavatar \- Lua interpreter for the AKFAvatar user interface
@@ -92,7 +120,7 @@ The directories are separated with semicolons.
 Unlike the former paths there are no templates with question marks.
 .
 .SH EXAMPLE
-.nf
+.EX
 local avt = require "lua-akfavatar"
 avt.encoding("UTF-8")
 avt.title("my first program")
@@ -101,7 +129,7 @@ avt.say("Hello there!\\n")
 local user = avt.ask("What's your name? ")
 avt.say("Hello, ", user, ". Nice to meet you!\\n")
 avt.wait_button()
-.fi
+.EE
 .
 .SH AUTHORS
 .IP "AKFAvatar, Lua-AKFAvatar"
