@@ -5692,8 +5692,18 @@ avt_show_image (SDL_Surface * image)
   dst.w = image->w;
   dst.h = image->h;
 
-  /* inner window is image */
-  window = dst;
+  /* eventually increase inner window - never decrease! */
+  if (dst.w > window.w)
+    {
+      window.w = (dst.w <= screen->w) ? dst.w : screen->w;
+      window.x = (screen->w / 2) - (window.w / 2);
+    }
+
+  if (dst.h > window.h)
+    {
+      window.h = (dst.h <= screen->h) ? dst.h : screen->h;
+      window.y = (screen->h / 2) - (window.h / 2);
+    }
 
   /*
    * if image is larger than the screen,

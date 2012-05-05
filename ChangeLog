@@ -1,5 +1,10 @@
 2012-05-04  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatar.c (avt_show_image):
+	don't make inner window ever smaller
+
+2012-05-04  Andreas K. Foerster  <info@akfoerster.de>
+
 	* pascal/akfavatar.pas: updated
 	define Csize_t for old FPC versions (needed for 2.0.4)
 
