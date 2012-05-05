@@ -315,7 +315,6 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	mkdir $(BINPKGNAME)/lua/akfavatar
 	mkdir $(BINPKGNAME)/data
 	cp akfavatar.dll $(BINPKGNAME)/
-	cp $(srcdir)/fsdemo-??.avt $(BINPKGNAME)/
 	cp lua-akfavatar.exe lua-akfavatar.dll $(BINPKGNAME)/
 	cp base64.dll $(BINPKGNAME)/
 	cp akfavatar-vorbis.dll $(BINPKGNAME)/
@@ -336,6 +335,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(srcdir)/lua/characters_overview.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/characters_tables.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/colors_overview.lua $(BINPKGNAME)/lua/
+	cp $(srcdir)/lua/fsdemo-??.avt $(BINPKGNAME)/lua
 	cp $(srcdir)/lua/documentation/English/base64.about $(BINPKGNAME)/lua/documentation/English/
 	cp $(srcdir)/lua/documentation/English/akfavatar-graphic.about $(BINPKGNAME)/lua/documentation/English/
 	cp $(srcdir)/lua/documentation/English/interactive_lua.about $(BINPKGNAME)/lua/documentation/English/
@@ -387,7 +387,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(lua_dll) $(BINPKGNAME)/
 	cp $(srcdir)/README-Lua $(BINPKGNAME)/README-Lua.txt
 	cp $(srcdir)/mingw/Homepage.url $(BINPKGNAME)/
-	$(u2d) $(BINPKGNAME)/fsdemo-??.avt
+	$(u2d) $(BINPKGNAME)/lua/fsdemo-??.avt
 	$(u2d) $(BINPKGNAME)/*.txt
 	$(u2d) $(BINPKGNAME)/lua/*.lua
 	$(u2d) $(BINPKGNAME)/lua/akfavatar/*.lua

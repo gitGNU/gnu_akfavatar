@@ -601,7 +601,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/stb_vorbis.c $(srcdir)/avtvorbis.c \
 	   $(srcdir)/arch.c \
 	   $(srcdir)/rgb.txt $(srcdir)/avtcmd \
-	   $(srcdir)/example.c $(srcdir)/fsdemo-??.avt \
+	   $(srcdir)/example.c \
 	   $(srcdir)/akfavatar.xpm \
 	   $(srcdir)/7x14.bdf $(srcdir)/9x18.bdf $(srcdir)/bdf2c \
 	   $(srcdir)/font.c $(srcdir)/alert.flac $(srcdir)/alert.au \
@@ -642,6 +642,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/lua/akfavatar-term.c $(srcdir)/lua/terminal.lua \
 	   $(srcdir)/lua/akfavatar-vorbis.c \
 	   $(srcdir)/lua/akfavatar-graphic.c \
+	   $(srcdir)/lua/fsdemo-??.avt \
 	   $(PKGNAME)/lua/
 
 	mkdir $(PKGNAME)/data
@@ -757,6 +758,7 @@ dist-bin-default: all pdf
 	ln $(srcdir)/lua/fs-quiz-en.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/fs-quiz-de.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/terminal.lua $(BINPKGNAME)/lua/
+	ln $(srcdir)/lua/fsdemo-??.avt $(BINPKGNAME)/lua/
 	ln $(srcdir)/data/gnu-head.xpm $(srcdir)/data/gnu-head.xbm \
 	   $(srcdir)/data/male_user.xpm $(srcdir)/data/female_user.xpm \
 	   $(srcdir)/data/audio1.xpm $(srcdir)/data/info.xpm \
@@ -794,9 +796,7 @@ dist-bin-default: all pdf
 	-ln lua-akfavatar.de.pdf $(BINPKGNAME)/
 	-ln lua-akfavatar-ref.en.pdf $(BINPKGNAME)/
 	-ln lua-akfavatar-ref.de.pdf $(BINPKGNAME)/
-
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/NEWS \
-	   $(srcdir)/fsdemo-??.avt \
 	   $(srcdir)/avtcmd \
 	   $(BINPKGNAME)/
 	ln $(srcdir)/doc/lua-akfavatar.en.man $(BINPKGNAME)/
