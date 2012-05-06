@@ -589,6 +589,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/avtinternals.h $(srcdir)/avtpalette.c \
 	   $(srcdir)/avatar-default.c $(srcdir)/avtccio.c $(srcdir)/avtcwio.c \
 	   $(srcdir)/avtaddons.h $(srcdir)/filechooser.c \
+	   $(srcdir)/version.c \
 	   $(srcdir)/avtreadfile.c $(srcdir)/colorchooser.c \
 	   $(srcdir)/balloonpointer.xbm $(srcdir)/thinkpointer.xbm \
 	   $(srcdir)/circle.xbm $(srcdir)/lua.xpm \
