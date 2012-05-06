@@ -8,6 +8,8 @@
 	* akfavatar.h (avt_get_font_dimensions):
 	new function replaces avt_get_font_size
 
+	* avatar.c: use variables for font-sizes
+
 2012-05-05  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_show_image):

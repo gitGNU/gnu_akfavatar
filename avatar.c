@@ -80,19 +80,20 @@
 
 #define AVT_XBM_INFO(img)  img##_bits, img##_width, img##_height
 
+/* these definitions are deprecated */
 #if defined(VGA)
 #  define FONTWIDTH 7
 #  define FONTHEIGHT 14
 #  define UNDERLINE 13
-#  define LINEHEIGHT FONTHEIGHT	/* + something, if you want */
 #  define NOT_BOLD 0
 #else
 #  define FONTWIDTH 9
 #  define FONTHEIGHT 18
 #  define UNDERLINE 15
-#  define LINEHEIGHT FONTHEIGHT	/* + something, if you want */
 #  define NOT_BOLD 0
 #endif
+
+#define LINEHEIGHT (fontheight)	/* + something, if you want */
 
 #define SHADOWOFFSET 5
 
@@ -264,6 +265,7 @@ static SDL_Surface *avt_text_cursor, *avt_cursor_character;
 static SDL_Surface *circle, *pointer;
 static SDL_Cursor *mpointer;
 static wchar_t *avt_name;
+static int fontwidth, fontheight, fontunderline;
 static Uint32 background_color;
 static Uint32 text_background_color;
 static bool newline_mode;	/* when off, you need an extra CR */
@@ -1374,8 +1376,8 @@ avt_show_text_cursor (bool on)
     {
       dst.x = cursor.x;
       dst.y = cursor.y;
-      dst.w = FONTWIDTH;
-      dst.h = FONTHEIGHT;
+      dst.w = fontwidth;
+      dst.h = fontheight;
 
       if (on)
 	{
@@ -1465,10 +1467,10 @@ avt_show_name (void)
       else			/* left */
 	dst.x = window.x + AVATAR_MARGIN + avatar_image->w + BUTTON_DISTANCE;
 
-      dst.y = window.y + window.h - AVATAR_MARGIN - FONTHEIGHT
+      dst.y = window.y + window.h - AVATAR_MARGIN - fontheight
 	- 2 * NAME_PADDING;
-      dst.w = (avt_strwidth (avt_name) * FONTWIDTH) + 2 * NAME_PADDING;
-      dst.h = FONTHEIGHT + 2 * NAME_PADDING;
+      dst.w = (avt_strwidth (avt_name) * fontwidth) + 2 * NAME_PADDING;
+      dst.h = fontheight + 2 * NAME_PADDING;
 
       /* draw sign */
       SDL_FillRect (screen, &dst,
@@ -1483,7 +1485,7 @@ avt_show_name (void)
       while (*p)
 	{
 	  avt_drawchar ((avt_char) * p++, screen);
-	  cursor.x += FONTWIDTH;
+	  cursor.x += fontwidth;
 	}
 
       /* restore old character colors */
@@ -1652,8 +1654,8 @@ avt_draw_balloon (void)
 
   SDL_SetClipRect (screen, &window);
 
-  textfield.w = (balloonwidth * FONTWIDTH);
-  textfield.h = (balloonheight * LINEHEIGHT);
+  textfield.w = (balloonwidth * fontwidth);
+  textfield.h = (balloonheight * fontheight);
 
   if (avatar_image)
     textfield.y = window.y + ((balloonmaxheight - balloonheight) * LINEHEIGHT)
@@ -1662,7 +1664,7 @@ avt_draw_balloon (void)
     textfield.y = window.y + (window.h / 2) - (textfield.h / 2);
 
   /* centered as default */
-  textfield.x = window.x + (window.w / 2) - (balloonwidth * FONTWIDTH / 2);
+  textfield.x = window.x + (window.w / 2) - (balloonwidth * fontwidth / 2);
 
   /* align with balloonpointer */
   if (avatar_image && avt_balloon_mode != AVT_SEPARATE)
@@ -1685,9 +1687,9 @@ avt_draw_balloon (void)
 	    + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET;
 
 	  /* align with right window-border */
-	  if (textfield.x > window.x + window.w - (balloonwidth * FONTWIDTH)
+	  if (textfield.x > window.x + window.w - (balloonwidth * fontwidth)
 	      - (2 * BALLOON_INNER_MARGIN))
-	    textfield.x = window.x + window.w - (balloonwidth * FONTWIDTH)
+	    textfield.x = window.x + window.w - (balloonwidth * fontwidth)
 	      - (2 * BALLOON_INNER_MARGIN);
 	}
     }
@@ -1720,7 +1722,7 @@ avt_draw_balloon (void)
 				    ballooncolor_RGB.g, ballooncolor_RGB.b));
 
   linestart =
-    (textdir_rtl) ? viewport.x + viewport.w - FONTWIDTH : viewport.x;
+    (textdir_rtl) ? viewport.x + viewport.w - fontwidth : viewport.x;
 
   avt_visible = true;
 
@@ -1769,7 +1771,7 @@ avt_text_direction (int direction)
       else
 	area = textfield;
 
-      linestart = (textdir_rtl) ? area.x + area.w - FONTWIDTH : area.x;
+      linestart = (textdir_rtl) ? area.x + area.w - fontwidth : area.x;
       cursor.x = linestart;
 
       if (text_cursor_visible)
@@ -1924,7 +1926,7 @@ avt_resize (int w, int h)
       viewport.y = viewport.y - oldwindow.y + window.y;
 
       linestart =
-	(textdir_rtl) ? viewport.x + viewport.w - FONTWIDTH : viewport.x;
+	(textdir_rtl) ? viewport.x + viewport.w - fontwidth : viewport.x;
 
       cursor.x = cursor.x - oldwindow.x + window.x;
       cursor.y = cursor.y - oldwindow.y + window.y;
@@ -2091,7 +2093,7 @@ avt_analyze_event (SDL_Event * event)
 	  if (textfield.x >= 0)
 	    {
 	      /* if there is a textfield, use the character position */
-	      x = (event->button.x - textfield.x) / FONTWIDTH + 1;
+	      x = (event->button.x - textfield.x) / fontwidth + 1;
 	      y = (event->button.y - textfield.y) / LINEHEIGHT + 1;
 
 	      /* check if x and y are valid */
@@ -2260,9 +2262,9 @@ avt_where_x (void)
   if (screen && textfield.x >= 0)
     {
       if (origin_mode)
-	return ((cursor.x - viewport.x) / FONTWIDTH) + 1;
+	return ((cursor.x - viewport.x) / fontwidth) + 1;
       else
-	return ((cursor.x - textfield.x) / FONTWIDTH) + 1;
+	return ((cursor.x - textfield.x) / fontwidth) + 1;
     }
   else
     return -1;
@@ -2329,11 +2331,11 @@ avt_move_x (int x)
       else
 	area = textfield;
 
-      cursor.x = (x - 1) * FONTWIDTH + area.x;
+      cursor.x = (x - 1) * fontwidth + area.x;
 
       /* max-pos exeeded? */
-      if (cursor.x > area.x + area.w - FONTWIDTH)
-	cursor.x = area.x + area.w - FONTWIDTH;
+      if (cursor.x > area.x + area.w - fontwidth)
+	cursor.x = area.x + area.w - fontwidth;
 
       if (text_cursor_visible)
 	avt_show_text_cursor (true);
@@ -2390,12 +2392,12 @@ avt_move_xy (int x, int y)
       else
 	area = textfield;
 
-      cursor.x = (x - 1) * FONTWIDTH + area.x;
+      cursor.x = (x - 1) * fontwidth + area.x;
       cursor.y = (y - 1) * LINEHEIGHT + area.y;
 
       /* max-pos exeeded? */
-      if (cursor.x > area.x + area.w - FONTWIDTH)
-	cursor.x = area.x + area.w - FONTWIDTH;
+      if (cursor.x > area.x + area.w - fontwidth)
+	cursor.x = area.x + area.w - fontwidth;
 
       if (cursor.y > area.y + area.h - LINEHEIGHT)
 	cursor.y = area.y + area.h - LINEHEIGHT;
@@ -2431,17 +2433,17 @@ avt_insert_spaces (int num)
 
   /* get the rest of the viewport */
   rest.x = cursor.x;
-  rest.w = viewport.w - (cursor.x - viewport.x) - (num * FONTWIDTH);
+  rest.w = viewport.w - (cursor.x - viewport.x) - (num * fontwidth);
   rest.y = cursor.y;
   rest.h = LINEHEIGHT;
 
-  dest.x = cursor.x + (num * FONTWIDTH);
+  dest.x = cursor.x + (num * fontwidth);
   dest.y = cursor.y;
   SDL_BlitSurface (screen, &rest, screen, &dest);
 
   clear.x = cursor.x;
   clear.y = cursor.y;
-  clear.w = num * FONTWIDTH;
+  clear.w = num * fontwidth;
   clear.h = LINEHEIGHT;
   SDL_FillRect (screen, &clear, text_background_color);
 
@@ -2450,7 +2452,7 @@ avt_insert_spaces (int num)
 
   /* update line */
   if (!hold_updates)
-    SDL_UpdateRect (screen, viewport.x, cursor.y, viewport.w, FONTHEIGHT);
+    SDL_UpdateRect (screen, viewport.x, cursor.y, viewport.w, fontheight);
 }
 
 extern void
@@ -2466,8 +2468,8 @@ avt_delete_characters (int num)
     avt_show_text_cursor (false);
 
   /* get the rest of the viewport */
-  rest.x = cursor.x + (num * FONTWIDTH);
-  rest.w = viewport.w - (cursor.x - viewport.x) - (num * FONTWIDTH);
+  rest.x = cursor.x + (num * fontwidth);
+  rest.w = viewport.w - (cursor.x - viewport.x) - (num * fontwidth);
   rest.y = cursor.y;
   rest.h = LINEHEIGHT;
 
@@ -2475,9 +2477,9 @@ avt_delete_characters (int num)
   dest.y = cursor.y;
   SDL_BlitSurface (screen, &rest, screen, &dest);
 
-  clear.x = viewport.x + viewport.w - (num * FONTWIDTH);
+  clear.x = viewport.x + viewport.w - (num * fontwidth);
   clear.y = cursor.y;
-  clear.w = num * FONTWIDTH;
+  clear.w = num * fontwidth;
   clear.h = LINEHEIGHT;
   SDL_FillRect (screen, &clear, text_background_color);
 
@@ -2486,7 +2488,7 @@ avt_delete_characters (int num)
 
   /* update line */
   if (!hold_updates)
-    SDL_UpdateRect (screen, viewport.x, cursor.y, viewport.w, FONTHEIGHT);
+    SDL_UpdateRect (screen, viewport.x, cursor.y, viewport.w, fontheight);
 }
 
 extern void
@@ -2501,9 +2503,9 @@ avt_erase_characters (int num)
   if (text_cursor_visible)
     avt_show_text_cursor (false);
 
-  clear.x = (textdir_rtl) ? cursor.x - (num * FONTWIDTH) : cursor.x;
+  clear.x = (textdir_rtl) ? cursor.x - (num * fontwidth) : cursor.x;
   clear.y = cursor.y;
-  clear.w = num * FONTWIDTH;
+  clear.w = num * fontwidth;
   clear.h = LINEHEIGHT;
   SDL_FillRect (screen, &clear, text_background_color);
 
@@ -2610,13 +2612,13 @@ avt_viewport (int x, int y, int width, int height)
   if (text_cursor_visible)
     avt_show_text_cursor (false);
 
-  viewport.x = textfield.x + ((x - 1) * FONTWIDTH);
+  viewport.x = textfield.x + ((x - 1) * fontwidth);
   viewport.y = textfield.y + ((y - 1) * LINEHEIGHT);
-  viewport.w = width * FONTWIDTH;
+  viewport.w = width * fontwidth;
   viewport.h = height * LINEHEIGHT;
 
   linestart =
-    (textdir_rtl) ? viewport.x + viewport.w - FONTWIDTH : viewport.x;
+    (textdir_rtl) ? viewport.x + viewport.w - fontwidth : viewport.x;
 
   cursor.x = linestart;
   cursor.y = viewport.y;
@@ -2670,7 +2672,7 @@ avt_set_origin_mode (bool mode)
   else
     area = textfield;
 
-  linestart = (textdir_rtl) ? area.x + area.w - FONTWIDTH : area.x;
+  linestart = (textdir_rtl) ? area.x + area.w - fontwidth : area.x;
 
   /* cursor to position 1,1 */
   /* when origin mode is off, then it may be outside the viewport (sic) */
@@ -2738,7 +2740,7 @@ avt_clear_up (void)
 
   dst.x = viewport.x;
   dst.w = viewport.w;
-  dst.y = viewport.y + FONTHEIGHT;
+  dst.y = viewport.y + fontheight;
   dst.h = cursor.y;
 
   SDL_FillRect (screen, &dst, text_background_color);
@@ -2801,14 +2803,14 @@ avt_clear_eol (void)
     {
       dst.x = viewport.x;
       dst.y = cursor.y;
-      dst.h = FONTHEIGHT;
-      dst.w = cursor.x + FONTWIDTH - viewport.x;
+      dst.h = fontheight;
+      dst.w = cursor.x + fontwidth - viewport.x;
     }
   else				/* left to right */
     {
       dst.x = cursor.x;
       dst.y = cursor.y;
-      dst.h = FONTHEIGHT;
+      dst.h = fontheight;
       dst.w = viewport.w - (cursor.x - viewport.x);
     }
 
@@ -2841,15 +2843,15 @@ avt_clear_bol (void)
     {
       dst.x = cursor.x;
       dst.y = cursor.y;
-      dst.h = FONTHEIGHT;
+      dst.h = fontheight;
       dst.w = viewport.w - (cursor.x - viewport.x);
     }
   else				/* left to right */
     {
       dst.x = viewport.x;
       dst.y = cursor.y;
-      dst.h = FONTHEIGHT;
-      dst.w = cursor.x + FONTWIDTH - viewport.x;
+      dst.h = fontheight;
+      dst.w = cursor.x + fontwidth - viewport.x;
     }
 
   SDL_FillRect (screen, &dst, text_background_color);
@@ -2878,7 +2880,7 @@ avt_clear_line (void)
 
   dst.x = viewport.x;
   dst.y = cursor.y;
-  dst.h = FONTHEIGHT;
+  dst.h = fontheight;
   dst.w = viewport.w;
 
   SDL_FillRect (screen, &dst, text_background_color);
@@ -2979,86 +2981,76 @@ avt_new_line (void)
 }
 
 /* avt_drawchar: draws the raw char - with no interpretation */
-#if (FONTWIDTH > 8)
 static void
 avt_drawchar (avt_char ch, SDL_Surface * surface)
 {
-  const unsigned short *font_line;
-  unsigned int y;
   SDL_Rect dest;
-  unsigned short *pixels, *p;
   Uint16 pitch;
-
-  pitch = avt_character->pitch / sizeof (*p);
-  pixels = p = (unsigned short *) avt_character->pixels;
-  font_line = (const unsigned short *) avt_get_font_char ((int) ch);
-  if (!font_line)
-    font_line = (const unsigned short *) avt_get_font_char (0);
-
-  for (y = 0; y < FONTHEIGHT; y++)
-    {
-      /* TODO: needs test on big endian machines */
-      *p = SDL_SwapBE16 (*font_line);
-      if (bold && !NOT_BOLD)
-	*p |= SDL_SwapBE16 (*font_line >> 1);
-      if (inverse)
-	*p = ~*p;
-      font_line++;
-      p += pitch;
-    }
-
-  if (underlined)
-    pixels[UNDERLINE * pitch] = (inverse) ? 0x0000 : 0xFFFF;
-
-  dest.x = cursor.x;
-  dest.y = cursor.y;
-  SDL_BlitSurface (avt_character, NULL, surface, &dest);
-}
-
-#else /* FONTWIDTH <= 8 */
-
-static void
-avt_drawchar (avt_char ch, SDL_Surface * surface)
-{
-  const unsigned char *font_line;
   int y;
-  SDL_Rect dest;
-  Uint8 *pixels, *p;
-  Uint16 pitch;
 
-  pitch = avt_character->pitch;
-  pixels = p = (Uint8 *) avt_character->pixels;
-  font_line = (const unsigned char *) avt_get_font_char ((int) ch);
-  if (!font_line)
-    font_line = (const unsigned char *) avt_get_font_char (0);
-
-  for (y = 0; y < FONTHEIGHT; y++)
+  if (fontwidth > 8)
     {
-      *p = *font_line;
-      if (bold && !NOT_BOLD)
-	*p |= (*font_line >> 1);
-      if (inverse)
-	*p = ~*p;
-      font_line++;
-      p += pitch;
-    }
+      const unsigned short *font_line;
+      unsigned short *pixels, *p;
 
-  if (underlined)
-    pixels[UNDERLINE * pitch] = (inverse) ? 0x00 : 0xFF;
+      pitch = avt_character->pitch / sizeof (*p);
+      pixels = p = (unsigned short *) avt_character->pixels;
+      font_line = (const unsigned short *) avt_get_font_char ((int) ch);
+      if (!font_line)
+	font_line = (const unsigned short *) avt_get_font_char (0);
+
+      for (y = 0; y < fontheight; y++)
+	{
+	  /* TODO: needs test on big endian machines */
+	  *p = SDL_SwapBE16 (*font_line);
+	  if (bold && !NOT_BOLD)
+	    *p |= SDL_SwapBE16 (*font_line >> 1);
+	  if (inverse)
+	    *p = ~*p;
+	  font_line++;
+	  p += pitch;
+	}
+
+      if (underlined)
+	pixels[fontunderline * pitch] = (inverse) ? 0x0000 : 0xFFFF;
+    }
+  else				/* fontwidth <= 8 */
+    {
+      const unsigned char *font_line;
+      Uint8 *pixels, *p;
+
+      pitch = avt_character->pitch;
+      pixels = p = (Uint8 *) avt_character->pixels;
+      font_line = (const unsigned char *) avt_get_font_char ((int) ch);
+      if (!font_line)
+	font_line = (const unsigned char *) avt_get_font_char (0);
+
+      for (y = 0; y < fontheight; y++)
+	{
+	  *p = *font_line;
+	  if (bold && !NOT_BOLD)
+	    *p |= (*font_line >> 1);
+	  if (inverse)
+	    *p = ~*p;
+	  font_line++;
+	  p += pitch;
+	}
+
+      if (underlined)
+	pixels[fontunderline * pitch] = (inverse) ? 0x00 : 0xFF;
+    }
 
   dest.x = cursor.x;
   dest.y = cursor.y;
   SDL_BlitSurface (avt_character, NULL, surface, &dest);
 }
-
-#endif /* FONTWIDTH <= 8 */
 
 #ifndef DISABLE_DEPRECATED
 extern void
 avt_get_font_size (int *width, int *height)
 {
-  *width = FONTWIDTH;
-  *height = FONTHEIGHT;
+  *width = fontwidth ? fontwidth : FONTWIDTH;
+  *height = fontheight ? fontheight : FONTHEIGHT;
 }
 #endif
 
@@ -3074,7 +3066,7 @@ avt_showchar (void)
 {
   if (!hold_updates)
     {
-      SDL_UpdateRect (screen, cursor.x, cursor.y, FONTWIDTH, FONTHEIGHT);
+      SDL_UpdateRect (screen, cursor.x, cursor.y, fontwidth, fontheight);
       text_cursor_actually_visible = false;
     }
 }
@@ -3087,7 +3079,7 @@ avt_forward (void)
   if (!screen || textfield.x < 0)
     return _avt_STATUS;
 
-  cursor.x = (textdir_rtl) ? cursor.x - FONTWIDTH : cursor.x + FONTWIDTH;
+  cursor.x = (textdir_rtl) ? cursor.x - fontwidth : cursor.x + fontwidth;
 
   if (text_cursor_visible)
     avt_show_text_cursor (true);
@@ -3107,7 +3099,7 @@ check_auto_margin (void)
   if (screen && textfield.x >= 0 && auto_margin)
     {
       if (cursor.x < viewport.x
-	  || cursor.x > viewport.x + viewport.w - FONTWIDTH)
+	  || cursor.x > viewport.x + viewport.w - fontwidth)
 	{
 	  if (!newline_mode)
 	    avt_carriage_return ();
@@ -3210,8 +3202,8 @@ avt_clearchar (void)
 
   dst.x = cursor.x;
   dst.y = cursor.y;
-  dst.w = FONTWIDTH;
-  dst.h = FONTHEIGHT;
+  dst.w = fontwidth;
+  dst.h = fontheight;
 
   SDL_FillRect (screen, &dst, text_background_color);
   avt_showchar ();
@@ -3228,7 +3220,7 @@ avt_backspace (void)
 	    avt_show_text_cursor (false);
 
 	  cursor.x =
-	    (textdir_rtl) ? cursor.x + FONTWIDTH : cursor.x - FONTWIDTH;
+	    (textdir_rtl) ? cursor.x + fontwidth : cursor.x - fontwidth;
 	}
 
       if (text_cursor_visible)
@@ -4864,9 +4856,9 @@ avt_ask (wchar_t * s, size_t size)
 
   /* maxlen is the rest of line */
   if (textdir_rtl)
-    maxlen = (cursor.x - viewport.x) / FONTWIDTH;
+    maxlen = (cursor.x - viewport.x) / fontwidth;
   else
-    maxlen = ((viewport.x + viewport.w) - cursor.x) / FONTWIDTH;
+    maxlen = ((viewport.x + viewport.w) - cursor.x) / fontwidth;
 
   /* does it fit in the buffer size? */
   if (maxlen > size / sizeof (wchar_t) - 1)
@@ -4895,7 +4887,7 @@ avt_ask (wchar_t * s, size_t size)
 
 	case AVT_KEY_HOME:
 	  avt_show_text_cursor (false);
-	  cursor.x -= pos * FONTWIDTH;
+	  cursor.x -= pos * fontwidth;
 	  pos = 0;
 	  break;
 
@@ -4903,12 +4895,12 @@ avt_ask (wchar_t * s, size_t size)
 	  avt_show_text_cursor (false);
 	  if (len < maxlen)
 	    {
-	      cursor.x += (len - pos) * FONTWIDTH;
+	      cursor.x += (len - pos) * fontwidth;
 	      pos = len;
 	    }
 	  else
 	    {
-	      cursor.x += (maxlen - 1 - pos) * FONTWIDTH;
+	      cursor.x += (maxlen - 1 - pos) * fontwidth;
 	      pos = maxlen - 1;
 	    }
 	  break;
@@ -4947,7 +4939,7 @@ avt_ask (wchar_t * s, size_t size)
 	      pos--;
 	      /* delete cursor */
 	      avt_show_text_cursor (false);
-	      cursor.x -= FONTWIDTH;
+	      cursor.x -= fontwidth;
 	    }
 	  else
 	    bell ();
@@ -4958,7 +4950,7 @@ avt_ask (wchar_t * s, size_t size)
 	    {
 	      pos++;
 	      avt_show_text_cursor (false);
-	      cursor.x += FONTWIDTH;
+	      cursor.x += fontwidth;
 	    }
 	  else
 	    bell ();
@@ -4999,7 +4991,7 @@ avt_ask (wchar_t * s, size_t size)
 		}
 	      else
 		cursor.x =
-		  (textdir_rtl) ? cursor.x - FONTWIDTH : cursor.x + FONTWIDTH;
+		  (textdir_rtl) ? cursor.x - fontwidth : cursor.x + fontwidth;
 	    }
 	}
     }
@@ -6676,8 +6668,8 @@ avt_credits (const wchar_t * text, bool centered)
   avt_set_text_background_color (0x000000);
   avt_set_text_color (0xFFFFFF);
 
-  window.x = (screen->w / 2) - (80 * FONTWIDTH / 2);
-  window.w = 80 * FONTWIDTH;
+  window.x = (screen->w / 2) - (80 * fontwidth / 2);
+  window.w = 80 * fontwidth;
   /* horizontal values unchanged */
 
   SDL_SetClipRect (screen, &window);
@@ -6723,7 +6715,7 @@ avt_credits (const wchar_t * text, bool centered)
 
       /* draw line */
       if (centered)
-	cursor.x = (window.w / 2) - (length * FONTWIDTH / 2);
+	cursor.x = (window.w / 2) - (length * fontwidth / 2);
       else
 	cursor.x = 0;
 
@@ -6731,7 +6723,7 @@ avt_credits (const wchar_t * text, bool centered)
       SDL_FillRect (last_line, NULL, 0);
 
       /* print on last_line */
-      for (i = 0; i < length; i++, cursor.x += FONTWIDTH)
+      for (i = 0; i < length; i++, cursor.x += fontwidth)
 	avt_drawchar ((avt_char) line[i], last_line);
 
       avt_credits_up (last_line);
@@ -6955,6 +6947,12 @@ avt_start (const char *title, const char *shortname, int mode)
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
   viewport = textfield;
 
+  avt_get_font_dimensions (&fontwidth, &fontheight, &fontunderline);
+
+  /* fine-tuning: avoid conflict between underscore and underlining */
+  if (fontheight >= 18)
+    ++fontunderline;
+
   if (avt_init_SDL ())
     {
       SDL_SetError ("error initializing AKFAvatar");
@@ -7046,7 +7044,7 @@ avt_start (const char *title, const char *shortname, int mode)
   avt_clear_screen ();
 
   /* reserve memory for one character */
-  avt_character = SDL_CreateRGBSurface (SDL_SWSURFACE, FONTWIDTH, FONTHEIGHT,
+  avt_character = SDL_CreateRGBSurface (SDL_SWSURFACE, fontwidth, fontheight,
 					1, 0, 0, 0, 0);
 
   if (!avt_character)
@@ -7061,7 +7059,7 @@ avt_start (const char *title, const char *shortname, int mode)
   /* prepare text-mode cursor */
   avt_text_cursor =
     SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_SRCALPHA | SDL_RLEACCEL,
-			  FONTWIDTH, FONTHEIGHT, 8, 0, 0, 0, 128);
+			  fontwidth, fontheight, 8, 0, 0, 0, 128);
 
   if (!avt_text_cursor)
     {
@@ -7082,7 +7080,7 @@ avt_start (const char *title, const char *shortname, int mode)
 
   /* reserve space for character under text-mode cursor */
   avt_cursor_character =
-    SDL_CreateRGBSurface (SDL_SWSURFACE, FONTWIDTH, FONTHEIGHT,
+    SDL_CreateRGBSurface (SDL_SWSURFACE, fontwidth, fontheight,
 			  screen->format->BitsPerPixel,
 			  screen->format->Rmask, screen->format->Gmask,
 			  screen->format->Bmask, screen->format->Amask);
