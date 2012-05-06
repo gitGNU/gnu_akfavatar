@@ -82,14 +82,11 @@ avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h \
                   $(srcdir)/avtinternals.h alert.c
 	$(CC) -c $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -o $@ $(srcdir)/avatar-audio.c
 
-ucsfont7x14.c: $(srcdir)/7x14.bdf $(srcdir)/bdf2c
-	$(AWK) -f $(srcdir)/bdf2c -v prefix="avt_" $(srcdir)/7x14.bdf > $@
+font.c: $(srcdir)/$(FONT) $(srcdir)/bdf2c
+	$(AWK) -f $(srcdir)/bdf2c -v prefix="avt_" $(srcdir)/$(FONT) > $@
 
-ucsfont9x18.c: $(srcdir)/9x18.bdf $(srcdir)/bdf2c
-	$(AWK) -f $(srcdir)/bdf2c -v prefix="avt_" $(srcdir)/9x18.bdf > $@
-
-font.o: $(srcdir)/font.c ucsfont7x14.c ucsfont9x18.c
-	$(CC) -c $(SDL_CFLAGS) $(CFLAGS) -I. -o $@ $(srcdir)/font.c
+font.o: font.c
+	$(CC) -c $(CFLAGS) -o $@ font.c
 
 win_iconv.o: $(srcdir)/mingw/win_iconv.c
 	$(CC) -c $(CFLAGS) -o $@ $(srcdir)/mingw/win_iconv.c
@@ -254,10 +251,9 @@ clean:
 	-rm -f *~
 	-rm -f *.o
 	-rm -f *.ppu *.gpi *.gpm
-	-rm -f bdfread
 	-rm -f alert.c
+	-rm -f font.c
 	-rm -f rgb.h
-	-rm -f ucsfont9x18.c ucsfont7x14.c
 	-rm -f pascal/*.o pascal/*.gpi pascal/*.gpm pascal/*.ppu
 	-rm -f pascal/link.res pascal/ppas.sh
 

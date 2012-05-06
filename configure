@@ -31,6 +31,7 @@ LINK_SDL_IMAGE="no"
 NO_LUA="no"
 STATIC_LUA="no"
 NO_DEPRECATED="no"
+FONT="9x18.bdf"
 
 if [ ${BUILD} -gt 0 ]
 then pkgversion="${VERSION}.${SUBVERSION}.${REVISION}${VARIANT}-${BUILD}"
@@ -195,7 +196,11 @@ while [ x"$1" != x ] ; do
 	esac
 done
 
-[ "$SIZE" = "VGA" ] && CFLAGS="$CFLAGS -DVGA"
+if [ "$SIZE" = "VGA" ]
+then
+  CFLAGS="$CFLAGS -DVGA"
+  FONT="7x14.bdf"
+fi
 
 if [ "$OPENPTY" = "yes" ]; then
   CFLAGS="$CFLAGS -DUSE_OPENPTY"
@@ -512,6 +517,7 @@ echo "SYSTEM = ${SYSTEM}"
 echo "ARCH = ${ARCH}"
 echo "TARGET = ${TARGET}"
 echo "DISTBIN = ${DISTBIN}"
+echo "FONT = ${FONT}"
 
 VERSIONNR=`printf "%02d%02d%02d" ${VERSION} ${SUBVERSION} ${REVISION}`
 AVTVERSIONSTR="${VERSION}.${SUBVERSION}.${REVISION}${VARIANT}"
@@ -533,7 +539,7 @@ EOF
 rm -f Makefile
 cat > Makefile << EOF
 # Makefile for AKFAvatar
-# Copyright (C) 2007 Andreas K. Foerster
+# Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 Andreas K. Foerster
 # Copyright (C) 2003, 2004, 2005, 2006, 2007 Antonio Diaz Diaz.
 # This file was generated automatically by configure. Do not edit.
 #
@@ -581,6 +587,7 @@ SYSTEM = ${SYSTEM}
 ARCH = ${ARCH}
 TARGET = ${TARGET}
 DISTBIN = ${DISTBIN}
+FONT = ${FONT}
 
 EOF
 
