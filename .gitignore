@@ -24,7 +24,7 @@ lua-akfavatar-ref.about
 akfavatar.h.about
 avtaddons.h.about
 bin2c
-ucsfont*.c
+font.c
 alert.c
 rgb.h
 *.tar.bz2
