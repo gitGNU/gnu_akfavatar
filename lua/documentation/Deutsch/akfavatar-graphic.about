@@ -212,7 +212,7 @@ gr:textalign([horizontal] [, vertikal])
 
 graphic.font_size()
 gr:font_size()
-    Git die Breite und die Höhe eines Zeichens zurück.
+    Git die Breite, Höhe und die Grundlinie eines Zeichens zurück.
     Es handelt sich um einen Zeichensatz mit fester Breite, jedes Zeichen hat
     die selbe Breite.
 

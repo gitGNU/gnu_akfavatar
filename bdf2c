@@ -10,8 +10,7 @@
 # without any warranty.
 
 BEGIN {
-  if (name == "") name = "get_font_char"
-  width=height=started=default_char=charoffset=maxchar = 0
+  width=height=top=baseline=started=default_char=charoffset=maxchar = 0
   }
 
 /^FONT / { print "/* " $0 " */" }
@@ -22,14 +21,20 @@ BEGIN {
 
 /^DEFAULT_CHAR/ { default_char = $2 }
 
-/^FONTBOUNDINGBOX/ { width = $2; height = $3 }
+/^FONTBOUNDINGBOX/ { width = $2; height = $3; top = $4; baseline = $5 }
 
 /^STARTCHAR / {
   if (started == 0)
     {
       print "\n#include <stddef.h>\n\n#define DEFAULT_CHAR " default_char
       print "\n#ifdef __cplusplus"
-      print "extern \"C\" void *" name " (int ch);"
+      print "extern \"C\" void *" prefix "get_font_char (int ch);"
+      print "extern \"C\" void " prefix \
+            "get_font_dimensions (int *width, int *height, int *baseline);"
+      print "#else"
+      print "extern void *" prefix "get_font_char (int ch);"
+      print "extern void " prefix \
+            "get_font_dimensions (int *width, int *height, int *baseline);"
       print "#endif"
       if (width <= 8)
         print "\nstatic const unsigned char font[] = {"
@@ -53,7 +58,7 @@ BEGIN {
 
 function writetranstable(    i, blockstart)
 {
-  print "void *\n" name " (int ch)"
+  print "void *\n" prefix "get_font_char (int ch)"
 
   print "{"
   printf "  "
@@ -93,6 +98,15 @@ function writetranstable(    i, blockstart)
 END {
   # the additional 0 is just to avoid ending with a comma
   print "\n0 };\n"
+
+  print "void"
+  print prefix "get_font_dimensions " \
+        "(int *width, int *height, int *baseline)"
+  print "{"
+  print "  if (width) *width = " width ";"
+  print "  if (height) *height = " height ";"
+  print "  if (baseline) *baseline = " height + baseline ";"
+  print "}\n"
 
   writetranstable()
   }

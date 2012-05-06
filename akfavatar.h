@@ -918,10 +918,11 @@ AVT_API void avt_register_mousehandler (avt_mousehandler handler);
 AVT_API void *avt_get_font_char (int ch);
 
 /*
- * get height and width of a character
+ * get height, width and baseline of a character
  * the font is a fixed width font
  */
-AVT_API void avt_get_font_size (int *width, int *height);
+AVT_API void avt_get_font_dimensions (int *width, int *height, 
+                                      int *baseline);
 
 /***********************************************************************/
 /* audio stuff */
@@ -1079,6 +1080,7 @@ AVT_API void avt_set_background_color_name (const char *name) AVT_DEPRECATED;
 AVT_API void avt_set_balloon_color_name (const char *name) AVT_DEPRECATED;
 AVT_API void avt_set_text_color_name (const char *name) AVT_DEPRECATED;
 AVT_API void avt_set_text_background_color_name (const char *name) AVT_DEPRECATED;
+AVT_API void avt_get_font_size (int *width, int *height) AVT_DEPRECATED;
 
 #endif /* DISABLE_DEPRECATED */
 

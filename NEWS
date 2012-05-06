@@ -26,6 +26,7 @@
     replace the avt_import_* functions
   - avt_audio_t renamed to avt_audio
   - avt_get_font_char replaces get_font_char
+  - avt_get_font_dimensions replaces avt_get_font_size
   - functions with changed API (color value):
     avt_set_background_color, avt_get_background_color,
     avt_set_balloon_color, avt_set_text_color,
@@ -71,6 +72,7 @@
   - Module "akfavatar-graphic"
     - gr:new() accepts name for background color
     - gr:put() optimized for same width, position is optional now
+    - gr:font_size() additionally returns the baseline
     - new methods: gr:shift_vertically(), gr:shift_horizontally(),
       gr:put_transparency()
   - Module "akfavatar.ar"

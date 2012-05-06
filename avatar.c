@@ -3053,12 +3053,14 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
 
 #endif /* FONTWIDTH <= 8 */
 
+#ifndef DISABLE_DEPRECATED
 extern void
 avt_get_font_size (int *width, int *height)
 {
   *width = FONTWIDTH;
   *height = FONTHEIGHT;
 }
+#endif
 
 extern bool
 avt_is_printable (avt_char ch)

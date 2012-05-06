@@ -201,7 +201,7 @@ gr:textalign([horizontal] [, vertical])
 
 graphic.font_size()
 gr:font_size()
-    Returns the width and the height of the font, ie. one character.
+    Returns the width, height and the baseline of the font, ie. one character.
     It is a fixed-width font, each character has the same width.
 
 

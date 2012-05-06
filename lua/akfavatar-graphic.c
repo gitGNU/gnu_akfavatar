@@ -966,14 +966,15 @@ lgraphic_height (lua_State * L)
 static int
 lgraphic_font_size (lua_State * L)
 {
-  int fontwidth, fontheight;
+  int fontwidth, fontheight, baseline;
 
-  avt_get_font_size (&fontwidth, &fontheight);
+  avt_get_font_dimensions (&fontwidth, &fontheight, &baseline);
 
   lua_pushinteger (L, fontwidth);
   lua_pushinteger (L, fontheight);
+  lua_pushinteger (L, baseline);
 
-  return 2;
+  return 3;
 }
 
 
@@ -994,7 +995,7 @@ lgraphic_text (lua_State * L)
   x = luaL_optint (L, 3, (int) gr->penx + 1) - 1;
   y = luaL_optint (L, 4, (int) gr->peny + 1) - 1;
 
-  avt_get_font_size (&fontwidth, &fontheight);
+  avt_get_font_dimensions (&fontwidth, &fontheight, NULL);
 
   switch (gr->vtextalign)
     {
