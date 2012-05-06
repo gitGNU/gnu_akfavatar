@@ -21,7 +21,6 @@
  */
 
 #include "avttermsys.h"
-#include "version.h"
 #include <stdlib.h>
 #include <pwd.h>
 #include <unistd.h>

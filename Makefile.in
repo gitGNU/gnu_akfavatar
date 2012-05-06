@@ -71,6 +71,12 @@ Makefile: $(srcdir)/configure $(srcdir)/Makefile.in ./config.status
 version.h: $(srcdir)/configure
 	./config.status
 
+version.o: $(srcdir)/version.c version.h
+	$(CC) $(CFLAGS) -c -o $@ -I. $(srcdir)/version.c
+
+version.lo: $(srcdir)/version.c version.h
+	$(CC) $(CFLAGS) -fPIC -c -o $@ -I. $(srcdir)/version.c
+
 # alert.au should be in the sourcecode-distribution
 $(srcdir)/alert.au: $(ALERT)
 	$(SOX) $(ALERT) --comment "" -e mu-law -c 1 $@ rate 16k
@@ -96,7 +102,7 @@ avtpalette.o: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
 	  -o $@ $(srcdir)/avtpalette.c
 
 avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
-          version.h rgb.h \
+          rgb.h \
           $(srcdir)/balloonpointer.xbm $(srcdir)/thinkpointer.xbm \
           $(srcdir)/circle.xbm \
           $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
@@ -125,11 +131,13 @@ font.o: font.c
 font.lo: font.c
 	$(CC) $(CFLAGS) -c -fPIC -o $@ font.c
 
-libakfavatar.a: avatar.o avatar-default.o avtpalette.o avatar-audio.o font.o
-	$(AR) rcu $@ avatar.o avatar-default.o avtpalette.o avatar-audio.o font.o
+libakfavatar.a: avatar.o avatar-default.o avtpalette.o avatar-audio.o font.o \
+	        version.o
+	$(AR) rcu $@ avatar.o avatar-default.o avtpalette.o avatar-audio.o font.o \
+	             version.o
 	-$(RANLIB) $@
 
-avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h version.h rgb.h \
+avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h rgb.h \
            $(srcdir)/balloonpointer.xbm $(srcdir)/thinkpointer.xbm \
            $(srcdir)/circle.xbm \
            $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
@@ -158,11 +166,11 @@ avtpalette.lo: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
 	  -o $@ $(srcdir)/avtpalette.c
 
 libakfavatar.so: avatar.lo avatar-default.lo avtpalette.lo avatar-audio.lo \
-	         font.lo
+	         font.lo version.lo
 	$(CC) -shared \
 	      -Wl,-soname,$(SONAME) -o $(LIBNAME) -fPIC \
 	      avatar.lo avatar-default.lo avtpalette.lo avatar-audio.lo \
-	      font.lo $(SDL_LDFLAGS) $(LDFLAGS)
+	      font.lo version.lo $(SDL_LDFLAGS) $(LDFLAGS)
 	-ln -sf $(LIBNAME) $(SONAME)
 	-ln -sf $(LIBNAME) libakfavatar.so
 
@@ -184,7 +192,7 @@ avtterm.o: $(srcdir)/avtterm.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/avtterm.c
 
 avttermsys.o: $(srcdir)/avttermsys.c $(srcdir)/avttermsys.h \
-                $(srcdir)/akfavatar.h version.h
+                $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c -o $@ $(srcdir)/avttermsys.c
 
 arch.o: $(srcdir)/arch.c $(srcdir)/avtaddons.h
@@ -271,7 +279,7 @@ avtterm.lo: $(srcdir)/avtterm.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	 $(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -fpic -c -o $@ $(srcdir)/avtterm.c
 
 avttermsys.lo: $(srcdir)/avttermsys.c $(srcdir)/avttermsys.h \
-	        $(srcdir)/akfavatar.h version.h
+	        $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -fpic -c -o $@ $(srcdir)/avttermsys.c
 
 akfavatar-graphic.so: akfavatar-graphic.lo

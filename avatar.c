@@ -1279,12 +1279,6 @@ avt_iconv (avt_iconv_t cd,
 
 
 extern const char *
-avt_version (void)
-{
-  return AVTVERSIONSTR;
-}
-
-extern const char *
 avt_copyright (void)
 {
   return "Copyright (c) " COPYRIGHTYEAR " Andreas K. Foerster";

@@ -34,6 +34,9 @@ Makefile: $(srcdir)/configure $(srcdir)/mingw/Makefile.in ./config.status
 version.h: $(srcdir)/configure
 	./config.status
 
+version.o: $(srcdir)/version.c version.h
+	$(CC) $(CFLAGS) -c -o $@ -I. $(srcdir)/version.c
+
 icon.o: $(srcdir)/mingw/icon.rc $(srcdir)/mingw/akfavatar.ico
 	 $(WINDRES) -I$(srcdir)/mingw -o $@ -i $(srcdir)/mingw/icon.rc
 
@@ -65,7 +68,7 @@ avtpalette.o: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
 	  -o $@ $(srcdir)/avtpalette.c
 
 avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
-             version.h rgb.h \
+             rgb.h \
              $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
              $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
              $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
@@ -98,15 +101,15 @@ iconv: iconv.exe
 
 # static library
 libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o \
-	  avtpalette.o win_iconv.o
+	  avtpalette.o win_iconv.o version.o
 	$(AR) rcu $@ avatar.o avatar-default.o avatar-audio.o font.o \
-	  avtpalette.o win_iconv.o
+	  avtpalette.o win_iconv.o version.o
 	$(RANLIB) $@
 
 akfavatar.dll: avatar.o avatar-default.o avatar-audio.o font.o libinfo.o \
-	  avtpalette.o win_iconv.o
+	  avtpalette.o win_iconv.o version.o
 	$(CC) -shared -o $@ avatar.o avatar-default.o avatar-audio.o \
-	        font.o avtpalette.o win_iconv.o libinfo.o \
+	        font.o avtpalette.o win_iconv.o version.o libinfo.o \
 	        -Wl,-no-undefined,--enable-runtime-pseudo-reloc \
 	        -Wl,--output-def,akfavatar.def \
 	        -Wl,--out-implib,libakfavatar.dll.a \

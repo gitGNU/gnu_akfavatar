@@ -10,6 +10,8 @@
 
 	* avatar.c: use variables for font-sizes
 
+	* version.c: new file
+
 2012-05-05  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_show_image):
