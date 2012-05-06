@@ -25,11 +25,6 @@ LUA_CPATH="${LUA_CPATH:+$LUA_CPATH;}$localdir/?.so;$localdir/lua/?.so;;"
 # for finding data (images, sounds, ...)
 AVTDATAPATH="${AVTDATAPATH:+$AVTDATAPATH;}$localdir/data;/usr/local/share/akfavatar;/usr/share/akfavatar"
 
-# On HP-UX change LD_LIBRARY_PATH to SHLIB_PATH
-# On AIX change LD_LIBRARY_PATH to LIBPATH
-# On Darwin/MacOS X change LD_LIBRARY_PATH to DYLD_LIBRARY_PATH
-LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$localdir"
-
-export LUA_PATH LUA_CPATH AVTDATAPATH LD_LIBRARY_PATH
+export LUA_PATH LUA_CPATH AVTDATAPATH
 
 exec "$localdir/lua-akfavatar-bin" "$@"

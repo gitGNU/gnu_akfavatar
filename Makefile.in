@@ -51,7 +51,8 @@ all: $(TARGET)
 dist-bin: $(DISTBIN)
 
 default: libakfavatar.so libakfavatar.a libavtaddons.a example about \
-	lua-akfavatar lua-akfavatar.so base64.so akfavatar-term.so \
+	lua-akfavatar lua-akfavatar-dyn \
+	lua-akfavatar.so base64.so akfavatar-term.so \
 	akfavatar-vorbis.so akfavatar-graphic.so
 	@echo '*'
 	@echo '* use "make install" or "make install-strip"'
@@ -221,11 +222,18 @@ avtposix.o: $(srcdir)/avtposix.c $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtposix.c
 
 # lua-akfavatar dynamically linked
-lua-akfavatar-bin: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
+lua-akfavatar-dyn: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
                    filechooser.o colorchooser.o
 	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
 	     filechooser.o colorchooser.o arch.o \
 	     -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS)
+
+# lua-akfavatar statically linked wit AKFAvatar
+lua-akfavatar-bin: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
+                   filechooser.o colorchooser.o libakfavatar.a
+	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
+	     filechooser.o colorchooser.o arch.o \
+	     libakfavatar.a $(SDL_LDFLAGS) $(LUA_LDFLAGS) $(LDFLAGS)
 
 lua-akfavatar: $(srcdir)/lua-akfavatar.sh lua-akfavatar-bin
 	install -m 755 $(srcdir)/lua-akfavatar.sh $@
@@ -323,7 +331,8 @@ installdirs:
 	-[ -d $(DESTDIR)$(LUA_CPATH) ] \
 	   || $(INSTALL) -d $(DESTDIR)$(LUA_CPATH)
 
-install: libakfavatar.so libakfavatar.a installdirs install-info install-man
+install: libakfavatar.so libakfavatar.a lua-akfavatar-dyn \
+	 installdirs install-info install-man
 	$(INSTALL_DATA) $(srcdir)/akfavatar.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) $(srcdir)/avtaddons.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) $(LIBNAME) $(DESTDIR)$(libdir)
@@ -332,7 +341,7 @@ install: libakfavatar.so libakfavatar.a installdirs install-info install-man
 	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
 	$(INSTALL_DATA) libavtaddons.a $(DESTDIR)$(libdir)
 	-$(LDCONFIG) $(libdir)
-	-$(INSTALL_PROGRAM) lua-akfavatar-bin $(DESTDIR)$(bindir)/lua-akfavatar
+	-$(INSTALL_PROGRAM) lua-akfavatar-dyn $(DESTDIR)$(bindir)/lua-akfavatar
 	$(INSTALL_PROGRAM) $(srcdir)/avtcmd $(DESTDIR)$(bindir)
 	$(INSTALL_DATA) $(srcdir)/README $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/AUTHORS $(DESTDIR)$(docdir)
@@ -350,7 +359,8 @@ install: libakfavatar.so libakfavatar.a installdirs install-info install-man
 	@echo '* make install-desktop-menu: to install lua-akfavatar in a desktop menu'
 	@echo '*'
 
-install-strip: libakfavatar.so libakfavatar.a installdirs install-info install-man
+install-strip: libakfavatar.so libakfavatar.a lua-akfavatar-dyn \
+	       installdirs install-info install-man
 	$(INSTALL_DATA) $(srcdir)/akfavatar.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) $(srcdir)/avtaddons.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) -s $(LIBNAME) $(DESTDIR)$(libdir)
@@ -359,7 +369,7 @@ install-strip: libakfavatar.so libakfavatar.a installdirs install-info install-m
 	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
 	$(INSTALL_DATA) libavtaddons.a $(DESTDIR)$(libdir)
 	-$(LDCONFIG) $(libdir)
-	-$(INSTALL_PROGRAM) -s lua-akfavatar-bin $(DESTDIR)$(bindir)/lua-akfavatar
+	-$(INSTALL_PROGRAM) -s lua-akfavatar-dyn $(DESTDIR)$(bindir)/lua-akfavatar
 	$(INSTALL_PROGRAM) $(srcdir)/avtcmd $(DESTDIR)$(bindir)
 	$(INSTALL_DATA) $(srcdir)/README $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/AUTHORS $(DESTDIR)$(docdir)
@@ -519,7 +529,7 @@ clean:
 
 mostlyclean: clean
 	-rm -f example
-	-rm -f lua-akfavatar lua-akfavatar-bin
+	-rm -f lua-akfavatar lua-akfavatar-bin lua-akfavatar-dyn
 	-rm -f a.out *.a *.so
 	-rm -f *.dll
 	-rm -f $(LIBNAME) $(SONAME)
