@@ -58,6 +58,7 @@ extern "C"
 
 static lua_State *L;
 static int mode = AVT_AUTOMODE;
+static char *directory;
 
 
 static void
@@ -186,7 +187,7 @@ check_options (int argc, char *argv[])
 	       || strcmp (argv[i], "-F") == 0)
 	mode = AVT_FULLSCREENNOSWITCH;
       else if (strncmp (argv[i], "--dir=", 6) == 0)
-	chdir (argv[i] + 6);
+	directory = (argv[i] + 6);
       else if (strncmp (argv[i], "-l", 2) == 0)
 	{
 	  /* ignore -l for now */
@@ -518,6 +519,10 @@ main (int argc, char **argv)
     {
       initialize ();
       start_screen ();
+
+      if (directory)
+	chdir (directory);
+
       while (ask_file ())
 	{
 	  /* reset settings */
