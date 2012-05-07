@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=AKFAvatar: Lua
+Name=Lua-AKFAvatar
 Comment=Lua-AKFAvatar runtime environment
 Comment[de]=Lua-AKFAvatar Laufzeitumgebung
 Exec=lua-akfavatar %f
