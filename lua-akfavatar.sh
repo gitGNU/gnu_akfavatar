@@ -27,4 +27,4 @@ AVTDATAPATH="${AVTDATAPATH:+$AVTDATAPATH;}$localdir/data;/usr/local/share/akfava
 
 export LUA_PATH LUA_CPATH AVTDATAPATH
 
-exec "$localdir/lua-akfavatar-bin" "$@"
+exec "$localdir/lua-akfavatar-bin" --dir="$localdir/lua" "$@"

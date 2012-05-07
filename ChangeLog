@@ -3,6 +3,8 @@
 	* lua/lua-akfavatar-prg.c (check_options, main):
 	make parameter --dir really only for file-selector
 
+	* lua-akfavatar.sh: use --dir parameter
+
 2012-05-06  Andreas K. Foerster  <info@akfoerster.de>
 
 	* bdf2font:

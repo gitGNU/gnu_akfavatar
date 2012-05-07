@@ -231,7 +231,7 @@ reset (void)
   avt_text_direction (AVT_LEFT_TO_RIGHT);
   avt_normal_text ();
   avt_quit_audio ();
-  avt_set_title ("Lua-AKFAvatar Starter", "AKFAvatar");
+  avt_set_title ("Lua-AKFAvatar", "AKFAvatar");
   avt_avatar_image_default ();
   avt_set_mouse_visible (true);
 }
@@ -424,7 +424,7 @@ start_screen (void)
   avt_normal_text ();
   avt_new_line ();
   avt_new_line ();
-  avt_say (L"AKFAvatar ");
+  avt_say_mb ("AKFAvatar ");
   avt_say_mb (avt_version ());
   avt_say (L", ");
   avt_say_mb (avt_copyright ());
