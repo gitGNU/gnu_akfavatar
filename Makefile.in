@@ -336,70 +336,55 @@ installdirs:
 	-[ -d $(DESTDIR)$(LUA_CPATH) ] \
 	   || $(INSTALL) -d $(DESTDIR)$(LUA_CPATH)
 
-install: libakfavatar.so libakfavatar.a lua-akfavatar-dyn \
-	 installdirs install-info install-man
+install-common: installdirs install-info install-man
 	$(INSTALL_DATA) $(srcdir)/akfavatar.h $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) $(srcdir)/avtaddons.h $(DESTDIR)$(includedir)
+	$(INSTALL_PROGRAM) $(srcdir)/avtcmd $(DESTDIR)$(bindir)
+	$(INSTALL_DATA) $(srcdir)/README $(DESTDIR)$(docdir)
+	$(INSTALL_DATA) $(srcdir)/AUTHORS $(DESTDIR)$(docdir)
+	$(INSTALL_DATA) $(srcdir)/COPYING $(DESTDIR)$(docdir)
+	$(INSTALL_DATA) $(srcdir)/NEWS $(DESTDIR)$(docdir)
+	$(INSTALL_DATA) $(LUA_MODULES) $(DESTDIR)$(LUA_PATH)/akfavatar
+	$(INSTALL_DATA) $(srcdir)/data/* $(DESTDIR)$(datadir)/akfavatar
+	$(INSTALL_DATA) $(srcdir)/lua/*.lua $(srcdir)/lua/*.avt \
+	       $(DESTDIR)$(datadir)/akfavatar/lua
+	$(INSTALL_DATA) $(srcdir)/lua/documentation/English/* \
+	       $(DESTDIR)$(datadir)/akfavatar/lua/documentation/English
+	$(INSTALL_DATA) $(srcdir)/lua/documentation/Deutsch/* \
+	       $(DESTDIR)$(datadir)/akfavatar/lua/documentation/Deutsch
+
+install: libakfavatar.so libakfavatar.a lua-akfavatar-dyn \
+	 install-common
 	$(INSTALL_DATA) $(LIBNAME) $(DESTDIR)$(libdir)
 	-ln -sf $(LIBNAME) $(DESTDIR)$(libdir)/$(SONAME)
 	-ln -sf $(LIBNAME) $(DESTDIR)$(libdir)/libakfavatar.so
 	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
 	$(INSTALL_DATA) libavtaddons.a $(DESTDIR)$(libdir)
-	-$(LDCONFIG) $(libdir)
 	-$(INSTALL_PROGRAM) lua-akfavatar-dyn $(DESTDIR)$(bindir)/lua-akfavatar
-	$(INSTALL_PROGRAM) $(srcdir)/avtcmd $(DESTDIR)$(bindir)
-	$(INSTALL_DATA) $(srcdir)/README $(DESTDIR)$(docdir)
-	$(INSTALL_DATA) $(srcdir)/AUTHORS $(DESTDIR)$(docdir)
-	$(INSTALL_DATA) $(srcdir)/COPYING $(DESTDIR)$(docdir)
-	$(INSTALL_DATA) $(srcdir)/NEWS $(DESTDIR)$(docdir)
-	$(INSTALL_DATA) $(LUA_MODULES) $(DESTDIR)$(LUA_PATH)/akfavatar
-	$(INSTALL_DATA) $(srcdir)/data/* $(DESTDIR)$(datadir)/akfavatar
-	$(INSTALL_DATA) $(srcdir)/lua/*.lua $(srcdir)/lua/*.avt \
-	       $(DESTDIR)$(datadir)/akfavatar/lua
-	$(INSTALL_DATA) $(srcdir)/lua/documentation/English/* \
-	       $(DESTDIR)$(datadir)/akfavatar/lua/documentation/English
-	$(INSTALL_DATA) $(srcdir)/lua/documentation/Deutsch/* \
-	       $(DESTDIR)$(datadir)/akfavatar/lua/documentation/Deutsch
 	-$(INSTALL_DATA) lua-akfavatar.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) base64.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) akfavatar-vorbis.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) akfavatar-term.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) akfavatar-graphic.so $(DESTDIR)$(LUA_CPATH)
-	-rm -f $(DESTDIR)$(LUA_PATH)/lua-akfavatar.lua
+	-$(LDCONFIG) $(libdir)
 	@echo '*'
 	@echo '* make install-desktop-menu: to install lua-akfavatar in a desktop menu'
 	@echo '*'
 
 install-strip: libakfavatar.so libakfavatar.a lua-akfavatar-dyn \
-	       installdirs install-info install-man
-	$(INSTALL_DATA) $(srcdir)/akfavatar.h $(DESTDIR)$(includedir)
-	$(INSTALL_DATA) $(srcdir)/avtaddons.h $(DESTDIR)$(includedir)
+	       install-common
 	$(INSTALL_DATA) -s $(LIBNAME) $(DESTDIR)$(libdir)
 	-ln -sf $(LIBNAME) $(DESTDIR)$(libdir)/$(SONAME)
 	-ln -sf $(LIBNAME) $(DESTDIR)$(libdir)/libakfavatar.so
 	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
 	$(INSTALL_DATA) libavtaddons.a $(DESTDIR)$(libdir)
-	-$(LDCONFIG) $(libdir)
 	-$(INSTALL_PROGRAM) -s lua-akfavatar-dyn $(DESTDIR)$(bindir)/lua-akfavatar
-	$(INSTALL_PROGRAM) $(srcdir)/avtcmd $(DESTDIR)$(bindir)
-	$(INSTALL_DATA) $(srcdir)/README $(DESTDIR)$(docdir)
-	$(INSTALL_DATA) $(srcdir)/AUTHORS $(DESTDIR)$(docdir)
-	$(INSTALL_DATA) $(srcdir)/COPYING $(DESTDIR)$(docdir)
-	$(INSTALL_DATA) $(srcdir)/NEWS $(DESTDIR)$(docdir)
-	$(INSTALL_DATA) $(LUA_MODULES) $(DESTDIR)$(LUA_PATH)/akfavatar
-	$(INSTALL_DATA) $(srcdir)/data/* $(DESTDIR)$(datadir)/akfavatar
-	$(INSTALL_DATA) $(srcdir)/lua/*.lua $(srcdir)/lua/*.avt \
-	       $(DESTDIR)$(datadir)/akfavatar/lua
-	$(INSTALL_DATA) $(srcdir)/lua/documentation/English/* \
-	       $(DESTDIR)$(datadir)/akfavatar/lua/documentation/English
-	$(INSTALL_DATA) $(srcdir)/lua/documentation/Deutsch/* \
-	       $(DESTDIR)$(datadir)/akfavatar/lua/documentation/Deutsch
 	-$(INSTALL_DATA) -s lua-akfavatar.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) -s base64.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) -s akfavatar-vorbis.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) -s akfavatar-term.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) -s akfavatar-graphic.so $(DESTDIR)$(LUA_CPATH)
-	-rm -f $(DESTDIR)$(LUA_PATH)/lua-akfavatar.lua
+	-$(LDCONFIG) $(libdir)
 	@echo '*'
 	@echo '* use "make install-desktop-menu" to install lua-akfavatar in a desktop menu'
 	@echo '*'
