@@ -127,6 +127,7 @@ fatal (const char *m1, const char *m2)
   else
     {
 #ifdef _WIN32
+      /* no standard */
       MessageBox (NULL, msg, PRGNAME,
 		  MB_ICONERROR | MB_OK | MB_SETFOREGROUND);
 #else
@@ -482,6 +483,8 @@ get_args (int argc, char *argv[], int script_index)
 /*
  * on Windows Lua scripts should be in a subdirectory
  * named lua of where the executable is
+ *
+ * this part is not conforming to any standard
  */
 
 static void
@@ -509,6 +512,8 @@ find_scripts (void)
 
 #else /* not _WIN32 */
 
+/* conforming with POSIX.1-2001 */
+
 static void
 find_scripts (void)
 {
@@ -521,6 +526,7 @@ find_scripts (void)
 }
 
 #endif /* not _WIN32 */
+
 
 int
 main (int argc, char **argv)
