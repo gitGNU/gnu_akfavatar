@@ -477,6 +477,51 @@ get_args (int argc, char *argv[], int script_index)
   lua_setglobal (L, "arg");
 }
 
+#ifdef _WIN32
+
+/*
+ * on Windows Lua scripts should be in a subdirectory
+ * named lua of where the executable is
+ */
+
+static void
+find_scripts (void)
+{
+  if (directory)
+    chdir (directory);
+  else
+    {
+      char progdir[MAX_PATH + 1];
+      char *p;
+      DWORD len;
+
+      len = GetModuleFileNameA (NULL, progdir, sizeof (progdir));
+
+      if (len != 0 && len != sizeof (progdir)
+	  && (p = strrchr (progdir, '\\')) != NULL)
+	{
+	  *p = '\0';		/* cut filename off */
+	  chdir (progdir);
+	  chdir ("lua");
+	}
+    }
+}
+
+#else /* not _WIN32 */
+
+static void
+find_scripts (void)
+{
+  if (directory)
+    chdir (directory);
+  else if (access ("/usr/local/share/akfavatar/lua", R_OK | X_OK) == 0)
+    chdir ("/usr/local/share/akfavatar/lua");
+  else if (access ("/usr/share/akfavatar/lua", R_OK | X_OK) == 0)
+    chdir ("/usr/share/akfavatar/lua");
+}
+
+#endif /* not _WIN32 */
+
 int
 main (int argc, char **argv)
 {
@@ -519,9 +564,7 @@ main (int argc, char **argv)
     {
       initialize ();
       start_screen ();
-
-      if (directory)
-	chdir (directory);
+      find_scripts ();
 
       while (ask_file ())
 	{

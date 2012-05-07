@@ -5,6 +5,8 @@
 
 	* lua-akfavatar.sh: use --dir parameter
 
+	* lua/lua-akfavatar-prg.c (find_scripts): new function
+
 2012-05-06  Andreas K. Foerster  <info@akfoerster.de>
 
 	* bdf2font:
