@@ -29,7 +29,7 @@ ALERT = $(srcdir)/alert.flac
 
 # names for packages
 PKGNAME = $(pkgname)-$(pkgversion)
-BINPKGNAME = $(pkgname)-$(pkgversion).bin
+BINPKGNAME = lua-akfavatar-$(pkgversion).bin
 
 
 .PHONY: all check doc txt info install install-strip installdirs uninstall \
@@ -228,7 +228,7 @@ lua-akfavatar-dyn: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
 	     filechooser.o colorchooser.o arch.o \
 	     -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS)
 
-# lua-akfavatar statically linked wit AKFAvatar
+# lua-akfavatar statically linked with AKFAvatar
 lua-akfavatar-bin: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
                    filechooser.o colorchooser.o libakfavatar.a
 	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
@@ -254,7 +254,7 @@ lua-akfavatar.so: lua-avt.lo filechooser.lo colorchooser.lo
 
 akfavatar-vorbis.so: akfavatar-vorbis.lo avtvorbis.lo stb_vorbis.lo
 	$(CC) -o $@ -shared -fpic akfavatar-vorbis.lo avtvorbis.lo stb_vorbis.lo \
-	  -L. -lakfavatar -lm $(LDFLAGS)
+	  -lm $(LDFLAGS)
 
 avtvorbis.lo: $(srcdir)/avtvorbis.c $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h \
 	      $(srcdir)/stb_vorbis.c
@@ -277,7 +277,7 @@ base64.so: lbase64.lo
 
 akfavatar-term.so: akfavatar-term.lo avtterm.lo avttermsys.lo
 	$(CC) -o $@ -shared -fpic akfavatar-term.lo avtterm.lo avttermsys.lo \
-	     -L. -lakfavatar $(LDFLAGS)
+	     $(LDFLAGS)
 
 akfavatar-term.lo: $(srcdir)/lua/akfavatar-term.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -fpic -o $@ \
@@ -291,7 +291,7 @@ avttermsys.lo: $(srcdir)/avttermsys.c $(srcdir)/avttermsys.h \
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -fpic -c -o $@ $(srcdir)/avttermsys.c
 
 akfavatar-graphic.so: akfavatar-graphic.lo
-	$(CC) -o $@ -shared -fpic akfavatar-graphic.lo -L. -lakfavatar -lm $(LDFLAGS)
+	$(CC) -o $@ -shared -fpic akfavatar-graphic.lo -lm $(LDFLAGS)
 
 akfavatar-graphic.lo: $(srcdir)/lua/akfavatar-graphic.c $(srcdir)/akfavatar.h
 	$(CC) $(SDL_CFLAGS) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -fpic -o $@ \
@@ -746,10 +746,11 @@ dist-bin-default: all pdf
 	mkdir $(BINPKGNAME)/lua/documentation/Deutsch
 	mkdir $(BINPKGNAME)/lua/akfavatar
 	mkdir $(BINPKGNAME)/data
-	cp $(LIBNAME) $(BINPKGNAME)/
-	-ln -sf $(LIBNAME) $(BINPKGNAME)/$(SONAME)
+	#cp $(LIBNAME) $(BINPKGNAME)/
+	#-ln -sf $(LIBNAME) $(BINPKGNAME)/$(SONAME)
+	#cp lua-akfavatar.so $(BINPKGNAME)/lua/
 	cp lua-akfavatar lua-akfavatar-bin $(BINPKGNAME)/
-	cp lua-akfavatar.so base64.so akfavatar-vorbis.so $(BINPKGNAME)/lua/
+	cp base64.so akfavatar-vorbis.so $(BINPKGNAME)/lua/
 	cp akfavatar-graphic.so $(BINPKGNAME)/lua/
 	cp akfavatar-term.so $(BINPKGNAME)/lua/
 	ln $(srcdir)/README-Lua $(BINPKGNAME)/
