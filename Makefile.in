@@ -232,8 +232,8 @@ lua-akfavatar-dyn: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
 lua-akfavatar-bin: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
                    filechooser.o colorchooser.o libakfavatar.a
 	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
-	     filechooser.o colorchooser.o arch.o \
-	     libakfavatar.a $(SDL_LDFLAGS) $(LUA_LDFLAGS) $(LDFLAGS)
+	     filechooser.o colorchooser.o arch.o libakfavatar.a \
+	     $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS) -Wl,-E
 
 lua-akfavatar: $(srcdir)/lua-akfavatar.sh lua-akfavatar-bin
 	install -m 755 $(srcdir)/lua-akfavatar.sh $@
