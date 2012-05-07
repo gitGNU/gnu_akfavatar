@@ -325,7 +325,8 @@ installdirs:
 	-[ -d $(DESTDIR)$(mandir)/man3 ] || $(INSTALL) -d $(DESTDIR)$(mandir)/man3
 	-[ -d $(DESTDIR)$(mandir)/de/man3 ] || $(INSTALL) -d $(DESTDIR)$(mandir)/de/man3
 	-[ -d $(DESTDIR)$(docdir) ]      || $(INSTALL) -d $(DESTDIR)$(docdir)
-	-[ -d $(DESTDIR)$(datadir)/akfavatar ]      || $(INSTALL) -d $(DESTDIR)$(datadir)/akfavatar
+	-[ -d $(DESTDIR)$(datadir)/akfavatar ]     || $(INSTALL) -d $(DESTDIR)$(datadir)/akfavatar
+	-[ -d $(DESTDIR)$(datadir)/akfavatar/lua ] || $(INSTALL) -d $(DESTDIR)$(datadir)/akfavatar/lua
 	-[ -d $(DESTDIR)$(LUA_PATH)/akfavatar ] \
 	   || $(INSTALL) -d $(DESTDIR)$(LUA_PATH)/akfavatar
 	-[ -d $(DESTDIR)$(LUA_CPATH) ] \
@@ -349,6 +350,7 @@ install: libakfavatar.so libakfavatar.a lua-akfavatar-dyn \
 	$(INSTALL_DATA) $(srcdir)/NEWS $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(LUA_MODULES) $(DESTDIR)$(LUA_PATH)/akfavatar
 	$(INSTALL_DATA) $(srcdir)/data/* $(DESTDIR)$(datadir)/akfavatar
+	$(INSTALL_DATA) $(srcdir)/lua/*.lua $(DESTDIR)$(datadir)/akfavatar/lua
 	-$(INSTALL_DATA) lua-akfavatar.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) base64.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) akfavatar-vorbis.so $(DESTDIR)$(LUA_CPATH)
@@ -377,6 +379,7 @@ install-strip: libakfavatar.so libakfavatar.a lua-akfavatar-dyn \
 	$(INSTALL_DATA) $(srcdir)/NEWS $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(LUA_MODULES) $(DESTDIR)$(LUA_PATH)/akfavatar
 	$(INSTALL_DATA) $(srcdir)/data/* $(DESTDIR)$(datadir)/akfavatar
+	$(INSTALL_DATA) $(srcdir)/lua/*.lua $(DESTDIR)$(datadir)/akfavatar/lua
 	-$(INSTALL_DATA) -s lua-akfavatar.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) -s base64.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) -s akfavatar-vorbis.so $(DESTDIR)$(LUA_CPATH)
