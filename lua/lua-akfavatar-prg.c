@@ -491,7 +491,7 @@ static void
 find_scripts (void)
 {
   if (directory)
-    chdir (directory);
+    chdir (directory);		/* don't try any other! */
   else
     {
       char progdir[MAX_PATH + 1];
@@ -518,10 +518,8 @@ static void
 find_scripts (void)
 {
   if (directory)
-    chdir (directory);
-  else if (access ("/usr/local/share/akfavatar/lua", R_OK | X_OK) == 0)
-    chdir ("/usr/local/share/akfavatar/lua");
-  else if (access ("/usr/share/akfavatar/lua", R_OK | X_OK) == 0)
+    chdir (directory);		/* don't try any other! */
+  else if (chdir ("/usr/local/share/akfavatar/lua") < 0)
     chdir ("/usr/share/akfavatar/lua");
 }
 
