@@ -314,7 +314,8 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	mkdir $(BINPKGNAME)/lua/akfavatar
 	mkdir $(BINPKGNAME)/data
 	cp akfavatar.dll $(BINPKGNAME)/
-	cp lua-akfavatar.exe lua-akfavatar.dll $(BINPKGNAME)/
+	cp lua-akfavatar.exe $(BINPKGNAME)/
+	#cp lua-akfavatar.dll $(BINPKGNAME)/
 	cp base64.dll $(BINPKGNAME)/
 	cp akfavatar-vorbis.dll $(BINPKGNAME)/
 	cp akfavatar-graphic.dll $(BINPKGNAME)/
@@ -395,7 +396,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	$(u2d) $(BINPKGNAME)/lua/documentation/Deutsch/*.about
 	strip $(BINPKGNAME)/akfavatar.dll
 	strip $(BINPKGNAME)/lua-akfavatar.exe
-	strip $(BINPKGNAME)/lua-akfavatar.dll
+	-strip $(BINPKGNAME)/lua-akfavatar.dll
 	strip $(BINPKGNAME)/akfavatar-graphic.dll
 	strip $(BINPKGNAME)/akfavatar-vorbis.dll
 	strip $(BINPKGNAME)/base64.dll
