@@ -211,8 +211,7 @@ static void
 initialize (void)
 {
   avt_mb_encoding ("UTF-8");
-  if (avt_start ("Lua-AKFAvatar", "AKFAvatar", mode)
-      || avt_avatar_image_default ())
+  if (avt_start ("Lua-AKFAvatar", "AKFAvatar", mode))
     fatal ("cannot initialize graphics", avt_get_error ());
 }
 
@@ -233,7 +232,7 @@ reset (void)
   avt_normal_text ();
   avt_quit_audio ();
   avt_set_title ("Lua-AKFAvatar", "AKFAvatar");
-  avt_avatar_image_default ();
+  avt_avatar_image_none ();
   avt_set_mouse_visible (true);
 }
 
@@ -416,6 +415,7 @@ ask_file (void)
 static void
 start_screen (void)
 {
+  avt_avatar_image_default ();
   if (avt_move_in () != AVT_NORMAL)
     exit (EXIT_SUCCESS);
   avt_set_balloon_size (9, 80);
@@ -452,6 +452,7 @@ start_screen (void)
 
   if (avt_wait_button () != AVT_NORMAL)
     exit (EXIT_SUCCESS);
+  avt_avatar_image_none ();
 }
 
 static void
