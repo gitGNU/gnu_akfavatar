@@ -159,10 +159,10 @@ example.exe: $(srcdir)/example.c akfavatar.dll icon.o
 
 lua-akfavatar.exe: lua-akfavatar-prg.o lua-akfavatar-prg-info.o \
 		filechooser.o askdrive.o colorchooser.o avtreadfile.o \
-		arch.o lua-akfavatar.dll
+		arch.o lua-avt.o
 	$(CC) -o $@ lua-akfavatar-prg.o lua-akfavatar-prg-info.o \
 	    filechooser.o askdrive.o colorchooser.o avtreadfile.o \
-	    arch.o -L. -lakfavatar -llua-akfavatar \
+	    arch.o lua-avt.o -L. -lakfavatar \
 	    $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS)
 
 lua-akfavatar-prg-info.o: $(srcdir)/mingw/lua-akfavatar-prg.rc version.h \
