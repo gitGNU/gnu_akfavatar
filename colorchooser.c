@@ -55,7 +55,6 @@ static char *
 manual_entry (void)
 {
   static char manual_color[80];	/* must be static! */
-  int red, green, blue;
 
   avt_set_balloon_height (1);
   avt_say (L"> ");

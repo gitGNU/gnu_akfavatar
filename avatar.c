@@ -6576,9 +6576,10 @@ static void
 avt_credits_up (SDL_Surface * last_line)
 {
   SDL_Rect src, dst, line_pos;
-  Uint32 moved;
+  Sint32 moved;
   Uint32 now, next_time;
-  Uint32 pixel, tickinterval;
+  Sint32 pixel;
+  Uint32 tickinterval;
 
   moved = 0;
   pixel = 1;
