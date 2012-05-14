@@ -13,7 +13,7 @@ DEFAULT_COLOR = 0xE0D5C5
 vorbis_max_channels = 8
 
 # name for binary packages
-BINPKGNAME=$(pkgname)-$(pkgversion).bin
+BINPKGNAME=lua-akfavatar-$(pkgversion).bin
 
 # convert from Unix newlines to DOS/Windows newlines
 u2d = sed -i -e 's/$$/\r/'
