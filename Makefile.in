@@ -88,7 +88,7 @@ alert.c: $(srcdir)/alert.au $(srcdir)/data2c
 
 filechooser.o: $(srcdir)/filechooser.c $(srcdir)/akfavatar.h \
 	       $(srcdir)/avtaddons.h $(srcdir)/avtinternals.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/filechooser.c
+	$(CC) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/filechooser.c
 
 colorchooser.o: $(srcdir)/colorchooser.c $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/colorchooser.c
@@ -99,7 +99,7 @@ rgb.h: $(srcdir)/rgb.txt $(srcdir)/rgb2c
 
 avtpalette.o: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
 	      $(srcdir)/avtinternals.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c \
+	$(CC) -I. $(CFLAGS) $(SDL_CFLAGS) -I$(srcdir) -c \
 	  -o $@ $(srcdir)/avtpalette.c
 
 avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
@@ -114,14 +114,14 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
           $(srcdir)/btn_help.xbm $(srcdir)/btn_cancel.xbm \
           $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm \
           $(srcdir)/akfavatar.xpm
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c $(srcdir)/avatar.c
+	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c $(srcdir)/avatar.c
 
 avatar-default.o: $(srcdir)/avatar-default.c $(srcdir)/akfavatar.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/avatar-default.c
+	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/avatar-default.c
 
 avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h \
 	        $(srcdir)/avtinternals.h alert.c
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c -o $@ $(srcdir)/avatar-audio.c
+	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/avatar-audio.c
 
 font.c: $(srcdir)/$(FONT) $(srcdir)/bdf2c
 	$(AWK) -f $(srcdir)/bdf2c -v prefix="avt_" $(srcdir)/$(FONT) > $@
@@ -149,21 +149,21 @@ avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h rgb.h \
            $(srcdir)/btn_help.xbm $(srcdir)/btn_cancel.xbm \
            $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm \
            $(srcdir)/akfavatar.xpm $(srcdir)/avtinternals.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c -fPIC \
+	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -fPIC \
 	   -o $@ $(srcdir)/avatar.c
 
 avatar-default.lo: $(srcdir)/avatar-default.c $(srcdir)/akfavatar.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -fPIC -o $@ \
+	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -fPIC -o $@ \
 	  $(srcdir)/avatar-default.c
 
 avatar-audio.lo: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h \
 	         $(srcdir)/avtinternals.h alert.c
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c -fPIC -o $@ \
+	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -fPIC -o $@ \
 	  $(srcdir)/avatar-audio.c
 
 avtpalette.lo: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
 	       $(srcdir)/avtinternals.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c -fPIC \
+	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -fPIC \
 	  -o $@ $(srcdir)/avtpalette.c
 
 libakfavatar.so: avatar.lo avatar-default.lo avtpalette.lo avatar-audio.lo \
@@ -177,31 +177,31 @@ libakfavatar.so: avatar.lo avatar-default.lo avtpalette.lo avatar-audio.lo \
 
 # when you use the static lib you have to link with SDL
 example: $(srcdir)/example.c libakfavatar.a
-	$(CC) $(CFLAGS) -I$(srcdir) -s -o $@ $(srcdir)/example.c \
+	$(CC) -I$(srcdir) $(CFLAGS) -s -o $@ $(srcdir)/example.c \
 	  libakfavatar.a $(SDL_LDFLAGS) $(LDFLAGS)
 
 avtccio.o: $(srcdir)/avtccio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
-	$(CC) $(CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/avtccio.c
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtccio.c
 
 avtcwio.o: $(srcdir)/avtcwio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
-	$(CC) $(CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/avtcwio.c
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtcwio.c
 
 avtreadfile.o: $(srcdir)/avtreadfile.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
-	$(CC) $(CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/avtreadfile.c
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtreadfile.c
 
 avtterm.o: $(srcdir)/avtterm.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -o $@ $(srcdir)/avtterm.c
+	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/avtterm.c
 
 avttermsys.o: $(srcdir)/avttermsys.c $(srcdir)/avttermsys.h \
                 $(srcdir)/akfavatar.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -c -o $@ $(srcdir)/avttermsys.c
+	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/avttermsys.c
 
 arch.o: $(srcdir)/arch.c $(srcdir)/avtaddons.h
-	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/arch.c
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/arch.c
 
 avtvorbis.o: $(srcdir)/avtvorbis.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h \
 	     $(srcdir)/stb_vorbis.c
-	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/avtvorbis.c
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtvorbis.c
 
 stb_vorbis.o: $(srcdir)/stb_vorbis.c
 	$(CC) $(CFLAGS) -c -o $@ \
@@ -219,7 +219,7 @@ libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
 	-$(RANLIB) $@
 
 avtposix.o: $(srcdir)/avtposix.c $(srcdir)/akfavatar.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -c -o $@ $(srcdir)/avtposix.c
+	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/avtposix.c
 
 # lua-akfavatar dynamically linked
 lua-akfavatar-dyn: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
@@ -240,11 +240,11 @@ lua-akfavatar: $(srcdir)/lua-akfavatar.sh lua-akfavatar-bin
 
 lua-akfavatar-prg.o: $(srcdir)/lua/lua-akfavatar-prg.c $(srcdir)/akfavatar.h \
                      $(srcdir)/avtaddons.h
-	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
+	$(CC) -I$(srcdir) $(CFLAGS) $(LUA_CFLAGS) -c -o $@ \
 	  $(srcdir)/lua/lua-akfavatar-prg.c
 
 lua-avt.o: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h
-	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -o $@ \
+	$(CC) -I$(srcdir) $(CFLAGS) $(LUA_CFLAGS) -c -o $@ \
 	  $(srcdir)/lua/lua-avt.c
 
 # Lua-Modules
@@ -258,11 +258,11 @@ akfavatar-vorbis.so: akfavatar-vorbis.lo avtvorbis.lo stb_vorbis.lo
 
 avtvorbis.lo: $(srcdir)/avtvorbis.c $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h \
 	      $(srcdir)/stb_vorbis.c
-	$(CC) $(CFLAGS) -fpic -c -o $@ $(srcdir)/avtvorbis.c
+	$(CC) -I$(srcdir) $(CFLAGS) -fpic -c -o $@ $(srcdir)/avtvorbis.c
 
 akfavatar-vorbis.lo: $(srcdir)/lua/akfavatar-vorbis.c $(srcdir)/akfavatar.h \
 	             $(srcdir)/stb_vorbis.c
-	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -fpic -c -o $@ \
+	$(CC) -I$(srcdir) $(CFLAGS) $(LUA_CFLAGS) -fpic -c -o $@ \
 	  $(srcdir)/lua/akfavatar-vorbis.c
 
 stb_vorbis.lo: $(srcdir)/stb_vorbis.c
@@ -280,38 +280,38 @@ akfavatar-term.so: akfavatar-term.lo avtterm.lo avttermsys.lo
 	     $(LDFLAGS)
 
 akfavatar-term.lo: $(srcdir)/lua/akfavatar-term.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -fpic -o $@ \
+	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -c -fpic -o $@ \
 	  $(srcdir)/lua/akfavatar-term.c
 
 avtterm.lo: $(srcdir)/avtterm.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
-	 $(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -fpic -c -o $@ $(srcdir)/avtterm.c
+	 $(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -fpic -c -o $@ $(srcdir)/avtterm.c
 
 avttermsys.lo: $(srcdir)/avttermsys.c $(srcdir)/avttermsys.h \
 	        $(srcdir)/akfavatar.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -I. -fpic -c -o $@ $(srcdir)/avttermsys.c
+	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -fpic -c -o $@ $(srcdir)/avttermsys.c
 
 akfavatar-graphic.so: akfavatar-graphic.lo
 	$(CC) -o $@ -shared -fpic akfavatar-graphic.lo -lm $(LDFLAGS)
 
 akfavatar-graphic.lo: $(srcdir)/lua/akfavatar-graphic.c $(srcdir)/akfavatar.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -fpic -o $@ \
+	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -c -fpic -o $@ \
 	  $(srcdir)/lua/akfavatar-graphic.c
 
 lbase64.lo: $(srcdir)/lua/lbase64.c
-	$(CC) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -fpic -c -o $@ \
+	$(CC) -I$(srcdir) $(CFLAGS) $(LUA_CFLAGS) -fpic -c -o $@ \
 	  $(srcdir)/lua/lbase64.c
 
 lua-avt.lo: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h
-	  $(CC) $(SDL_CFLAGS) $(CFLAGS) $(LUA_CFLAGS) -I$(srcdir) -c -fpic -o $@ \
+	  $(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -c -fpic -o $@ \
 	  $(srcdir)/lua/lua-avt.c
 
 filechooser.lo: $(srcdir)/filechooser.c $(srcdir)/avtaddons.h \
                 $(srcdir)/avtinternals.h  $(srcdir)/akfavatar.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -fpic -o $@ \
+	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -fpic -o $@ \
 	  $(srcdir)/filechooser.c
 
 colorchooser.lo: $(srcdir)/colorchooser.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
-	$(CC) $(SDL_CFLAGS) $(CFLAGS) -I$(srcdir) -c -fpic -o $@ \
+	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -fpic -o $@ \
 	  $(srcdir)/colorchooser.c
 
 installdirs:
