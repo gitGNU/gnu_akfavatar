@@ -11,7 +11,8 @@ kann man die globale Variable AUDIO verwenden. Diese sollte entweder eine
 Zeichenkette, oder eine Tabelle mit Zeichenketten enthalten.
 
 Ogg Vorbis wird nur unterstützt, wenn das Modul „akfavatar-vorbis“ verfügbar
-ist.
+ist.  Es können keine komplexen Dateien mit mehreren Streams abgespielt
+werden, nur „Vorbis I simple profile“.
 
 Wenn man „play all...“ auswählt, oder mehrere Dateien als Parameter übergibt,
 dann werden Playlisten ignoriert.  Playlisten können auch nicht auf andere

@@ -9,6 +9,8 @@ If you want to call it from anothter Lua-script with dofile(), you can set the
 global variable AUDIO with either a string or an array of strings.
 
 Ogg Vorbis is only supported when the module “akfavatar-vorbis” is available.
+It cannot play files with more than a single Vorbis stream
+(“Vorbis I” simple profile).
 
 When you select “play all...” or use several files as arguments, then
 playlists are ignored.  Playlists also cannot refer to other playlists.
