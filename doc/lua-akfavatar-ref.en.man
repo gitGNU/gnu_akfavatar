@@ -551,14 +551,14 @@ Resets the text to normal settings.
 .BI "avt.set_background_color(" color )
 Sets the background color of the window.
 .IP
-Colors can either be given as English names or as RGB value with 3
-or 6 hexadicimal digits.
+Colors can either be given as English names or as RGB value with 6 hexadicimal digits.
 .IP
 .B Examples
 .EX
 avt.set_background_color("sky blue")
-avt.set_background_color("#555")
-avt.set_background_color("#8B4513")
+avt.set_background_color(0x8B4513)
+avt.set_background_color("#8B4513") --> deprecated
+avt.set_background_color("#555") --> deprecated
 .EE
 .PP
 .TP

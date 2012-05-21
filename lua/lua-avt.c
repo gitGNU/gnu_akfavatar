@@ -594,7 +594,12 @@ static int
 lavt_set_balloon_color (lua_State * L)
 {
   is_initialized ();
-  avt_set_balloon_color (avt_colorname (luaL_checkstring (L, 1)));
+
+  if (lua_type (L, 1) == LUA_TNUMBER)
+    avt_set_balloon_color (lua_tonumber (L, 1));
+  else
+    avt_set_balloon_color (avt_colorname (luaL_checkstring (L, 1)));
+
   return 0;
 }
 
@@ -806,7 +811,11 @@ lavt_flash (lua_State * L)
 static int
 lavt_set_background_color (lua_State * L)
 {
-  avt_set_background_color (avt_colorname (luaL_checkstring (L, 1)));
+  if (lua_type (L, 1) == LUA_TNUMBER)
+    avt_set_background_color (lua_tonumber (L, 1));
+  else
+    avt_set_background_color (avt_colorname (luaL_checkstring (L, 1)));
+
   return 0;
 }
 
@@ -814,7 +823,11 @@ lavt_set_background_color (lua_State * L)
 static int
 lavt_set_text_color (lua_State * L)
 {
-  avt_set_text_color (avt_colorname (luaL_checkstring (L, 1)));
+  if (lua_type (L, 1) == LUA_TNUMBER)
+    avt_set_text_color (lua_tonumber (L, 1));
+  else
+    avt_set_text_color (avt_colorname (luaL_checkstring (L, 1)));
+
   return 0;
 }
 
@@ -822,7 +835,10 @@ lavt_set_text_color (lua_State * L)
 static int
 lavt_set_text_background_color (lua_State * L)
 {
-  avt_set_text_background_color (avt_colorname (luaL_checkstring (L, 1)));
+  if (lua_type (L, 1) == LUA_TNUMBER)
+    avt_set_text_background_color (lua_tonumber (L, 1));
+  else
+    avt_set_text_background_color (avt_colorname (luaL_checkstring (L, 1)));
   return 0;
 }
 

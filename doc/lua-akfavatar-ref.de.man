@@ -581,13 +581,14 @@ Setzt normale Einstellungen für Text zurück.
 Setzt die Hintergrundfarbe für den Bildschirm.
 .IP
 Farben können entweder über ihren englischen Namen angegeben werden,
-oder als RGB-Angabe mit 3 oder 6 hexadezimalen Ziffern.
+oder als RGB-Angabe 6 hexadezimalen Ziffern.
 .IP
 .B Beispiele:
 .EX
 avt.set_background_color("sky blue")
-avt.set_background_color("#555")
-avt.set_background_color("#8B4513")
+avt.set_background_color(0x8B4513)
+avt.set_background_color("#8B4513") --> nicht empfohlen
+avt.set_background_color("#555") --> nicht empfohlen
 .EE
 .PP
 .TP
