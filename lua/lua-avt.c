@@ -216,7 +216,7 @@ lavt_start (lua_State * L)
       avt_set_origin_mode (true);
       avt_set_scroll_mode (1);
       avt_reserve_single_keys (false);
-      avt_set_balloon_color (avt_colorname ("floral white"));
+      avt_set_balloon_color (0xFFFAF0);	/* floral white */
       avt_normal_text ();
       avt_set_mouse_visible (true);
       avt_set_title (title, shortname);
