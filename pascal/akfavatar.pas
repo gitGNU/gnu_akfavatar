@@ -637,8 +637,7 @@ procedure avt_activate_cursor(onoff: CBoolean);
 function avt_start(title, shortname: CString; mode: Cint): Cint;
   libakfavatar 'avt_start';
 
-function avt_initialize_audio: Cint; 
-  libakfavatar 'avt_initialize_audio';
+function avt_start_audio: Cint; libakfavatar 'avt_start_audio';
 
 procedure avt_quit; libakfavatar 'avt_quit';
 
@@ -846,7 +845,7 @@ if ScrSize.x-1 >= $FF
   then WindMax := WindMax or $FF
   else WindMax := WindMax or(ScrSize.x-1);
 
-avt_initialize_audio;
+avt_start_audio;
 
 NormVideo;
 end;
