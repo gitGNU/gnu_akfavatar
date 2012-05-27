@@ -70,6 +70,9 @@ static bool initialized = false;
 static const char *const modes[] =
   { "auto", "window", "fullscreen", "fullscreen no switch", NULL };
 
+/* modes for playing audio */
+static const char *const playmodes[] = { "load", "play", "loop", NULL };
+
 /* "check()" checks the returned status code */
 #define check(X)  do { if ((X) != AVT_NORMAL) quit (L); } while (0)
 #define is_initialized(void)  if (!initialized) auto_initialize(L)
@@ -1410,7 +1413,7 @@ lavt_load_audio_file (lua_State * L)
   const char *filename;
   size_t len;
   avt_audio *audio_data;
-  bool play;
+  int playmode;
 
   filename = "";
   audio_data = NULL;
@@ -1419,7 +1422,7 @@ lavt_load_audio_file (lua_State * L)
   if (!lua_isnoneornil (L, 1))
     filename = luaL_checklstring (L, 1, &len);
 
-  play = to_bool (L, 2);
+  playmode = luaL_checkoption (L, 2, "load", playmodes);
 
   /* if filename is not none or nil or "" */
   if (len > 0)
@@ -1430,7 +1433,7 @@ lavt_load_audio_file (lua_State * L)
       /* full garbage collection */
       lua_gc (L, LUA_GCCOLLECT, 0);
 
-      audio_data = avt_load_audio_file (filename);
+      audio_data = avt_load_audio_file (filename, playmode);
 
       if (!audio_data)
 	{
@@ -1441,10 +1444,6 @@ lavt_load_audio_file (lua_State * L)
     }
 
   make_audio_element (L, audio_data);
-
-  if (play && audio_data)
-    avt_play_audio (audio_data, AVT_PLAY);
-
   return 1;
 }
 
@@ -1455,11 +1454,11 @@ lavt_load_audio_stream (lua_State * L)
   luaL_Stream *stream;
   avt_audio *audio_data;
   lua_Unsigned maxsize;
-  bool play;
+  int playmode;
 
   stream = (luaL_Stream *) luaL_checkudata (L, 1, LUA_FILEHANDLE);
   maxsize = lua_tounsigned (L, 2);	/* nothing or 0 allowed */
-  play = to_bool (L, 3);
+  playmode = luaL_checkoption (L, 3, "load", playmodes);
 
   if (stream->closef == NULL)
     return luaL_error (L, "attempt to use a closed file");
@@ -1470,7 +1469,8 @@ lavt_load_audio_stream (lua_State * L)
   /* full garbage collection */
   lua_gc (L, LUA_GCCOLLECT, 0);
 
-  audio_data = avt_load_audio_part ((avt_stream *) stream->f, maxsize);
+  audio_data =
+    avt_load_audio_part ((avt_stream *) stream->f, maxsize, playmode);
 
   if (!audio_data)
     {
@@ -1480,10 +1480,6 @@ lavt_load_audio_stream (lua_State * L)
     }
 
   make_audio_element (L, audio_data);
-
-  if (play && audio_data)
-    avt_play_audio (audio_data, AVT_PLAY);
-
   return 1;
 }
 
@@ -1493,7 +1489,7 @@ lavt_load_audio (lua_State * L)
   char *data;
   size_t len;
   avt_audio *audio_data;
-  bool play;
+  int playmode;
 
   data = "";
   audio_data = NULL;
@@ -1502,7 +1498,7 @@ lavt_load_audio (lua_State * L)
   if (!lua_isnoneornil (L, 1))
     data = (char *) luaL_checklstring (L, 1, &len);
 
-  play = to_bool (L, 2);
+  playmode = luaL_checkoption (L, 2, "load", playmodes);
 
   /* if string is not none or nil or "" */
   if (len > 0)
@@ -1513,7 +1509,7 @@ lavt_load_audio (lua_State * L)
       /* full garbage collection */
       lua_gc (L, LUA_GCCOLLECT, 0);
 
-      audio_data = avt_load_audio_data (data, len);
+      audio_data = avt_load_audio_data (data, len, playmode);
 
       if (!audio_data)
 	{
@@ -1524,10 +1520,6 @@ lavt_load_audio (lua_State * L)
     }
 
   make_audio_element (L, audio_data);
-
-  if (play && audio_data)
-    avt_play_audio (audio_data, AVT_PLAY);
-
   return 1;
 }
 

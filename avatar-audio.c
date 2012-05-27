@@ -190,8 +190,8 @@ avt_start_audio (void)
       /* set this before calling anything from this lib */
       avt_audio_initialized = true;
 
-      my_alert =
-	avt_load_audio_data ((void *) &avt_alert_data, avt_alert_data_size);
+      my_alert = avt_load_audio_data ((void *) &avt_alert_data,
+				      avt_alert_data_size, AVT_LOAD);
       avt_alert_func = short_audio_sound;
       avt_quit_audio_func = avt_quit_audio;
     }
@@ -558,29 +558,57 @@ avt_load_audio_rw (SDL_RWops * src, Uint32 maxsize)
 }
 
 extern avt_audio *
-avt_load_audio_file (const char *file)
+avt_load_audio_file (const char *file, int playmode)
 {
-  return avt_load_audio_rw (SDL_RWFromFile (file, "rb"), 0xffffffffU);
+  avt_audio *audio;
+
+  audio = avt_load_audio_rw (SDL_RWFromFile (file, "rb"), 0xffffffffU);
+
+  if (audio != NULL && playmode != AVT_LOAD)
+    avt_play_audio (audio, playmode);
+
+  return audio;
 }
 
 extern avt_audio *
-avt_load_audio_part (avt_stream * stream, size_t maxsize)
+avt_load_audio_part (avt_stream * stream, size_t maxsize, int playmode)
 {
-  return avt_load_audio_rw (SDL_RWFromFP ((FILE *) stream, 0),
-			    maxsize > 0 ? (Uint32) maxsize : 0xffffffffU);
+  avt_audio *audio;
+
+  audio = avt_load_audio_rw (SDL_RWFromFP ((FILE *) stream, 0),
+			     maxsize > 0 ? (Uint32) maxsize : 0xffffffffU);
+
+  if (audio != NULL && playmode != AVT_LOAD)
+    avt_play_audio (audio, playmode);
+
+  return audio;
 }
 
 extern avt_audio *
-avt_load_audio_stream (avt_stream * stream)
+avt_load_audio_stream (avt_stream * stream, int playmode)
 {
-  return avt_load_audio_rw (SDL_RWFromFP ((FILE *) stream, 0), 0xffffffffU);
+  avt_audio *audio;
+
+  audio = avt_load_audio_rw (SDL_RWFromFP ((FILE *) stream, 0), 0xffffffffU);
+
+  if (audio != NULL && playmode != AVT_LOAD)
+    avt_play_audio (audio, playmode);
+
+  return audio;
 }
 
 extern avt_audio *
-avt_load_audio_data (void *data, size_t datasize)
+avt_load_audio_data (void *data, size_t datasize, int playmode)
 {
-  return avt_load_audio_rw (SDL_RWFromMem (data, datasize),
-			    (Uint32) datasize);
+  avt_audio *audio;
+
+  audio = avt_load_audio_rw (SDL_RWFromMem (data, datasize),
+			     (Uint32) datasize);
+
+  if (audio != NULL && playmode != AVT_LOAD)
+    avt_play_audio (audio, playmode);
+
+  return audio;
 }
 
 extern int
