@@ -485,7 +485,7 @@ done:
 }
 
 static avt_audio *
-avt_load_audio_rw (SDL_RWops * src, Uint32 maxsize)
+avt_load_audio_rw (SDL_RWops * src, Uint32 maxsize, int playmode)
 {
   int start, type;
   struct avt_audio *s;
@@ -554,61 +554,39 @@ avt_load_audio_rw (SDL_RWops * src, Uint32 maxsize)
       return NULL;
     }
 
+  if (playmode != AVT_LOAD)
+    avt_play_audio (s, playmode);
+
   return s;
 }
 
 extern avt_audio *
 avt_load_audio_file (const char *file, int playmode)
 {
-  avt_audio *audio;
-
-  audio = avt_load_audio_rw (SDL_RWFromFile (file, "rb"), 0xffffffffU);
-
-  if (audio != NULL && playmode != AVT_LOAD)
-    avt_play_audio (audio, playmode);
-
-  return audio;
+  return avt_load_audio_rw (SDL_RWFromFile (file, "rb"), 0xffffffffU,
+			    playmode);
 }
 
 extern avt_audio *
 avt_load_audio_part (avt_stream * stream, size_t maxsize, int playmode)
 {
-  avt_audio *audio;
-
-  audio = avt_load_audio_rw (SDL_RWFromFP ((FILE *) stream, 0),
-			     maxsize > 0 ? (Uint32) maxsize : 0xffffffffU);
-
-  if (audio != NULL && playmode != AVT_LOAD)
-    avt_play_audio (audio, playmode);
-
-  return audio;
+  return avt_load_audio_rw (SDL_RWFromFP ((FILE *) stream, 0),
+			    maxsize > 0 ? (Uint32) maxsize : 0xffffffffU,
+			    playmode);
 }
 
 extern avt_audio *
 avt_load_audio_stream (avt_stream * stream, int playmode)
 {
-  avt_audio *audio;
-
-  audio = avt_load_audio_rw (SDL_RWFromFP ((FILE *) stream, 0), 0xffffffffU);
-
-  if (audio != NULL && playmode != AVT_LOAD)
-    avt_play_audio (audio, playmode);
-
-  return audio;
+  return avt_load_audio_rw (SDL_RWFromFP ((FILE *) stream, 0), 0xffffffffU,
+			    playmode);
 }
 
 extern avt_audio *
 avt_load_audio_data (void *data, size_t datasize, int playmode)
 {
-  avt_audio *audio;
-
-  audio = avt_load_audio_rw (SDL_RWFromMem (data, datasize),
-			     (Uint32) datasize);
-
-  if (audio != NULL && playmode != AVT_LOAD)
-    avt_play_audio (audio, playmode);
-
-  return audio;
+  return avt_load_audio_rw (SDL_RWFromMem (data, datasize),
+			    (Uint32) datasize, playmode);
 }
 
 extern int
