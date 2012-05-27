@@ -147,8 +147,11 @@ AVT_ADDON int avta_pager_command (const char *command, int startline);
  * Ogg Vorbis support for AKFAvatar based on stb_vorbis
  **********************************************************************/
 
-AVT_ADDON avt_audio *avta_load_vorbis_file (char *filename);
-AVT_ADDON avt_audio *avta_load_vorbis_data (void *data, int datasize);
+AVT_ADDON avt_audio *avta_load_vorbis_file (char *filename, bool play);
+
+AVT_ADDON avt_audio *avta_load_vorbis_data (void *data,
+                                            int datasize,
+                                            bool play);
 
 /*
  * read from a stream at current position size bytes maximum
@@ -156,7 +159,7 @@ AVT_ADDON avt_audio *avta_load_vorbis_data (void *data, int datasize);
  * on error it restores the file position and returns NULL
  */
 AVT_ADDON avt_audio *avta_load_vorbis_stream (avt_stream *stream,
-                                              unsigned int size);
+                                              unsigned int size, bool play);
 
 
 /**********************************************************************

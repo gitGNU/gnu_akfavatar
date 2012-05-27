@@ -52,6 +52,8 @@
     - avta_get_file: removed
     - avta_arch_get_member: new function
     - avta_arch_get_data: rewritten
+    - avta_load_vorbis_file, avta_load_vorbis_data:
+      parameter for playing immediately
     - avta_load_vorbis_stream: new_function
 
   Lua-API changes:
@@ -65,6 +67,8 @@
     a table with strings from XPM data
   - avt.load_audio_string and avt.load_base_audio_string were renamed
     to avt.load_audio and avt.load_base_audio
+  - avt.load_audio_file, avt.load_audio_stream, avt.load_audio have a new
+    parameter for playing immediately
   - avt.title is an alias for avt.set_title
   - new functions: avt.set_balloon_mode, avt.avatar_image_file, avt.delay,
     avt.search, avt.load_audio_stream

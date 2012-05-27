@@ -797,9 +797,9 @@ on error it returns
 and an error message.
 .PP
 .TP
-.BI "avt.load_audio_file(" [filename] )
+.BI "avt.load_audio_file(" "[filename [,play]]" )
 .TQ
-.BI "avt.load_base_audio_file(" [filename] )
+.BI "avt.load_base_audio_file(" "[filename [,play]]" )
 Reads audio data from a file.
 You can search for the file with
 .IR avt.search() .
@@ -816,15 +816,18 @@ is given, or the
 or an empty string, it returns a silent audio element, 
 ie. you can call its methods, it just doesn't play anything.
 .IP
+.RI "if " play " is " true
+it starts playing immediately.
+.IP
 On error it returns 
 .I nil
 and an error message.
 (Note: in version 0.19.0 it also returned a silent audio element then.)
 .PP
 .TP
-.BI "avt.load_audio_stream(" "file handle [,size]" )
+.BI "avt.load_audio_stream(" "file handle [,size [,play]]" )
 .TQ
-.BI "avt.load_base_audio_stream(" "file handle [,size]" )
+.BI "avt.load_base_audio_stream(" "file handle [,size [,play]]" )
 Reads audio data from an open file handle.
 The file must be searchable.
 .IP
@@ -833,16 +836,19 @@ Lua modules may add support for more audio formats to
 (for example the module
 .BR akfavatar-vorbis ).
 .IP
-If no size is given, it assumes the audio is the rest of the file.
+If size is 0 or not given, it assumes the audio is the rest of the file.
+.IP
+.RI "if " play " is " true
+it starts playing immediately.
 .IP
 On error it returns 
 .I nil
 and an error message.
 .PP
 .TP
-.BI "avt.load_audio(" [audio_data] )
+.BI "avt.load_audio(" "[audio_data [,play]]" )
 .TQ
-.BI "avt.load_base_audio(" [audio_data] )
+.BI "avt.load_base_audio(" "[audio_data [,play]]" )
 Reads audio data from a string.  Otherwise the same as
 .BR avt.load_audio_file() .
 .IP
@@ -851,12 +857,15 @@ Lua modules may add support for more audio formats to
 (for example the module
 .BR akfavatar-vorbis ).
 .IP
-When no 
+When no
 .I audio_data
 is given, or the 
 .IR audio_data " is " nil
 or an empty string, it returns a silent audio element,
 ie. you can call its methods, it just doesn't play anything.
+.IP
+.RI "if " play " is " true
+it starts playing immediately.
 .IP
 On error it returns 
 .I nil

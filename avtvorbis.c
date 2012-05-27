@@ -36,22 +36,18 @@
 #define MAX_CHANNELS  AVT_AUDIO_STEREO
 
 static avt_audio *
-load_vorbis (stb_vorbis * vorbis)
+load_vorbis (stb_vorbis * vorbis, bool play)
 {
   int data_len, offset, total, limit, n;
   stb_vorbis_info info;
-  short *data;
   avt_audio *audio;
+  short data[12 * 1024];
 
   info = stb_vorbis_get_info (vorbis);
 
   limit = info.channels * 4096;
-  total = 1024 * 1024;
+  total = sizeof (data) / sizeof (data[0]);
   offset = data_len = 0;
-
-  data = (short *) malloc (total * sizeof (*data));
-  if (data == NULL)
-    return NULL;
 
   if (info.channels > MAX_CHANNELS)
     info.channels = MAX_CHANNELS;
@@ -61,7 +57,7 @@ load_vorbis (stb_vorbis * vorbis)
 
   while ((n = stb_vorbis_get_frame_short_interleaved (vorbis,
 						      info.channels,
-						      data + offset,
+						      &data[offset],
 						      total - offset)) != 0)
     {
       data_len += n;
@@ -71,12 +67,17 @@ load_vorbis (stb_vorbis * vorbis)
       if (offset + limit > total)
 	{
 	  if (avt_add_raw_audio_data (audio, data,
-				      data_len * sizeof (*data) *
+				      data_len * sizeof (data[0]) *
 				      info.channels) != AVT_NORMAL)
 	    {
-	      free (data);
 	      avt_free_audio (audio);
 	      return NULL;
+	    }
+
+	  if (play)
+	    {
+	      avt_play_audio (audio, false);
+	      play = false;
 	    }
 
 	  offset = data_len = 0;
@@ -87,17 +88,19 @@ load_vorbis (stb_vorbis * vorbis)
 					      data_len * sizeof (*data) *
 					      info.channels) != AVT_NORMAL)
     {
-      free (data);
       avt_free_audio (audio);
       return NULL;
     }
 
-  free (data);
+  /* if not started yet, start it */
+  if (play)
+    avt_play_audio (audio, false);
+
   return audio;
 }
 
 extern avt_audio *
-avta_load_vorbis_stream (avt_stream * stream, unsigned int size)
+avta_load_vorbis_stream (avt_stream * stream, unsigned int size, bool play)
 {
   FILE *f;
   int error;
@@ -131,7 +134,7 @@ avta_load_vorbis_stream (avt_stream * stream, unsigned int size)
 
   if (vorbis)
     {
-      audio_data = load_vorbis (vorbis);
+      audio_data = load_vorbis (vorbis, play);
       stb_vorbis_close (vorbis);
     }
   else				/* error */
@@ -144,7 +147,7 @@ avta_load_vorbis_stream (avt_stream * stream, unsigned int size)
 }
 
 extern avt_audio *
-avta_load_vorbis_file (char *filename)
+avta_load_vorbis_file (char *filename, bool play)
 {
   FILE *f;
   avt_audio *audio_data;
@@ -157,14 +160,14 @@ avta_load_vorbis_file (char *filename)
   if (!f)
     return NULL;
 
-  audio_data = avta_load_vorbis_stream (f, 0);
+  audio_data = avta_load_vorbis_stream (f, 0, play);
   fclose (f);
 
   return audio_data;
 }
 
 extern avt_audio *
-avta_load_vorbis_data (void *data, int datasize)
+avta_load_vorbis_data (void *data, int datasize, bool play)
 {
   int error;
   stb_vorbis *vorbis;
@@ -181,7 +184,7 @@ avta_load_vorbis_data (void *data, int datasize)
   if (vorbis == NULL)
     return NULL;
 
-  audio_data = load_vorbis (vorbis);
+  audio_data = load_vorbis (vorbis, play);
   stb_vorbis_close (vorbis);
 
   return audio_data;

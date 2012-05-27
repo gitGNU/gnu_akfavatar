@@ -57,9 +57,9 @@ local function load_audio(url)
   local audio
 
   if string.find(url, "^https?://") or string.find(url, "^s?ftps?://") then
-    audio = avt.load_audio_string(get_url(url))
+    audio = avt.load_audio_string(get_url(url), true)
   else
-    audio = avt.load_audio_file(handle_list_entry(url))
+    audio = avt.load_audio_file(handle_list_entry(url), true)
   end
 
   return audio
@@ -76,7 +76,6 @@ local function play_single(filename) --> play a single file
   end
 
   show_cover(string.match(filename, "^(.-)[^\\/]+$"))
-  audio:play()
 
   repeat
     button = avt.navigate("ps")
@@ -172,8 +171,6 @@ local function play_list(list) --> plays a list of files (but no playlists)
     until audio or not list[number]
 
     if not audio then return end
-
-    audio:play()
 
     repeat
       button = avt.navigate("bpsf")

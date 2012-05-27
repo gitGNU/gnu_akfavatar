@@ -1410,6 +1410,7 @@ lavt_load_audio_file (lua_State * L)
   const char *filename;
   size_t len;
   avt_audio *audio_data;
+  bool play;
 
   filename = "";
   audio_data = NULL;
@@ -1417,6 +1418,8 @@ lavt_load_audio_file (lua_State * L)
 
   if (!lua_isnoneornil (L, 1))
     filename = luaL_checklstring (L, 1, &len);
+
+  play = to_bool (L, 2);
 
   /* if filename is not none or nil or "" */
   if (len > 0)
@@ -1438,6 +1441,10 @@ lavt_load_audio_file (lua_State * L)
     }
 
   make_audio_element (L, audio_data);
+
+  if (play && audio_data)
+    avt_play_audio (audio_data, false);
+
   return 1;
 }
 
@@ -1448,9 +1455,11 @@ lavt_load_audio_stream (lua_State * L)
   luaL_Stream *stream;
   avt_audio *audio_data;
   lua_Unsigned maxsize;
+  bool play;
 
   stream = (luaL_Stream *) luaL_checkudata (L, 1, LUA_FILEHANDLE);
   maxsize = lua_tounsigned (L, 2);	/* nothing or 0 allowed */
+  play = to_bool (L, 3);
 
   if (stream->closef == NULL)
     return luaL_error (L, "attempt to use a closed file");
@@ -1471,6 +1480,10 @@ lavt_load_audio_stream (lua_State * L)
     }
 
   make_audio_element (L, audio_data);
+
+  if (play && audio_data)
+    avt_play_audio (audio_data, false);
+
   return 1;
 }
 
@@ -1480,6 +1493,7 @@ lavt_load_audio (lua_State * L)
   char *data;
   size_t len;
   avt_audio *audio_data;
+  bool play;
 
   data = "";
   audio_data = NULL;
@@ -1487,6 +1501,8 @@ lavt_load_audio (lua_State * L)
 
   if (!lua_isnoneornil (L, 1))
     data = (char *) luaL_checklstring (L, 1, &len);
+
+  play = to_bool (L, 2);
 
   /* if string is not none or nil or "" */
   if (len > 0)
@@ -1508,6 +1524,10 @@ lavt_load_audio (lua_State * L)
     }
 
   make_audio_element (L, audio_data);
+
+  if (play && audio_data)
+    avt_play_audio (audio_data, false);
+
   return 1;
 }
 

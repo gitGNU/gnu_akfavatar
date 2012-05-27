@@ -1,3 +1,16 @@
+2012-05-27  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-audio.c (fill_audio, avt_stop_audio, avt_quit_audio)
+	(avt_play_audio): make soundpos an offset instead of a pointer
+
+	* avatar-audio.c (avt_add_raw_audio_data):
+	allow adding data while playing
+
+	* avtvorbis.c: parameters for playing while loading
+
+	* lua/lua-avt.c: parameters for playing while|after loading
+	lua/akfavatar-vorbis.c: adapted
+
 2012-05-21  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c (lavt_set_balloon_color, lavt_set_background_color)

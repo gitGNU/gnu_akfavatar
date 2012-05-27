@@ -47,6 +47,8 @@ extern "C"
 /* internal name for audio data */
 #define AUDIODATA   "AKFAvatar-Audio"
 
+#define to_bool(L, index)  ((bool) lua_toboolean ((L), (index)))
+
 static void
 collect_garbage (lua_State * L)
 {
@@ -76,11 +78,13 @@ lvorbis_load_file (lua_State * L)
 {
   char *filename;
   avt_audio *audio_data;
+  bool play;
 
   collect_garbage (L);
   filename = (char *) luaL_checkstring (L, 1);
+  play = to_bool (L, 2);
 
-  audio_data = avta_load_vorbis_file (filename);
+  audio_data = avta_load_vorbis_file (filename, play);
 
   if (audio_data == NULL)
     {
@@ -99,15 +103,17 @@ lvorbis_load_stream (lua_State * L)
   luaL_Stream *stream;
   lua_Unsigned size;
   avt_audio *audio_data;
+  bool play;
 
   collect_garbage (L);
   stream = (luaL_Stream *) luaL_checkudata (L, 1, LUA_FILEHANDLE);
   size = lua_tounsigned (L, 2);	/* nothing or 0 allowed */
+  play = to_bool (L, 3);
 
   if (stream->closef == NULL)
     return luaL_error (L, "attempt to use a closed file");
 
-  audio_data = avta_load_vorbis_stream (stream->f, size);
+  audio_data = avta_load_vorbis_stream (stream->f, size, play);
 
   if (audio_data == NULL)
     {
@@ -126,11 +132,13 @@ lvorbis_load (lua_State * L)
   size_t len;
   void *vorbis_data;
   avt_audio *audio_data;
+  bool play;
 
   collect_garbage (L);
   vorbis_data = (void *) luaL_checklstring (L, 1, &len);
+  play = to_bool (L, 2);
 
-  audio_data = avta_load_vorbis_data (vorbis_data, (int) len);
+  audio_data = avta_load_vorbis_data (vorbis_data, (int) len, play);
 
   if (audio_data == NULL)
     {
@@ -153,17 +161,21 @@ lvorbis_load_file_chain (lua_State * L)
   if (!lua_isnoneornil (L, 1))
     {
       char *filename;
-      filename = (char *) luaL_checkstring (L, 1);
+      bool play;
 
-      audio_data = avta_load_vorbis_file (filename);
+      filename = (char *) luaL_checkstring (L, 1);
+      play = to_bool (L, 2);
+
+      audio_data = avta_load_vorbis_file (filename, play);
 
       if (!audio_data)
 	{
 	  lua_getfield (L, LUA_REGISTRYINDEX,
 			"AVTVORBIS-old_load_audio_file");
 	  lua_pushvalue (L, 1);	/* push filename */
+	  lua_pushboolean (L, play);
 
-	  if (lua_pcall (L, 1, 1, 0) != 0)
+	  if (lua_pcall (L, 2, 1, 0) != 0)
 	    {
 	      lua_pushnil (L);	/* return nil on error */
 	      lua_pushliteral (L, "unsupported audio format");
@@ -187,22 +199,25 @@ lvorbis_load_stream_chain (lua_State * L)
   luaL_Stream *stream;
   lua_Unsigned maxsize;
   avt_audio *audio_data;
+  bool play;
 
   stream = (luaL_Stream *) luaL_checkudata (L, 1, LUA_FILEHANDLE);
   maxsize = lua_tounsigned (L, 2);	/* nothing or 0 allowed */
+  play = to_bool (L, 3);
 
   if (stream->closef == NULL)
     return luaL_error (L, "attempt to use a closed file");
 
-  audio_data = avta_load_vorbis_stream (stream->f, maxsize);
+  audio_data = avta_load_vorbis_stream (stream->f, maxsize, play);
 
   if (!audio_data)
     {
       lua_getfield (L, LUA_REGISTRYINDEX, "AVTVORBIS-old_load_audio_stream");
       lua_pushvalue (L, 1);	/* push stream handle */
       lua_pushunsigned (L, maxsize);
+      lua_pushboolean (L, play);
 
-      if (lua_pcall (L, 2, 1, 0) != 0)
+      if (lua_pcall (L, 3, 1, 0) != 0)
 	{
 	  lua_pushnil (L);	/* return nil on error */
 	  lua_pushliteral (L, "unsupported audio format");
@@ -229,17 +244,19 @@ lvorbis_load_chain (lua_State * L)
     {
       size_t len;
       void *vorbis_data;
+      bool play;
 
       vorbis_data = (void *) luaL_checklstring (L, 1, &len);
-      audio_data = avta_load_vorbis_data (vorbis_data, (int) len);
+      play = to_bool (L, 2);
+      audio_data = avta_load_vorbis_data (vorbis_data, (int) len, play);
 
       if (!audio_data)		/* call old avt.load_audio */
 	{
-	  lua_getfield (L, LUA_REGISTRYINDEX,
-			"AVTVORBIS-old_load_audio");
+	  lua_getfield (L, LUA_REGISTRYINDEX, "AVTVORBIS-old_load_audio");
 	  lua_pushvalue (L, 1);	/* push audio data */
+	  lua_pushboolean (L, play);
 
-	  if (lua_pcall (L, 1, 1, 0) != 0)
+	  if (lua_pcall (L, 2, 1, 0) != 0)
 	    {
 	      lua_pushnil (L);	/* return nil on error */
 	      lua_pushliteral (L, "unsupported audio format");

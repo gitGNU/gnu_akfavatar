@@ -70,7 +70,7 @@ static avt_audio *my_alert;
 
 /* current sound */
 static struct avt_audio current_sound;
-static volatile Uint8 *soundpos = NULL;	/* Current play position */
+static volatile Sint32 soundpos = 0;	/* Current play position */
 static volatile Sint32 soundleft = 0;	/* Length of left unplayed wave data */
 static bool loop = false;
 static volatile bool playing = false;
@@ -139,7 +139,7 @@ fill_audio (void *userdata, Uint8 * stream, int len)
       if (loop)
 	{
 	  /* rewind to beginning */
-	  soundpos = current_sound.sound;
+	  soundpos = 0;
 	  soundleft = current_sound.len;
 	}
       else			/* no more data */
@@ -160,7 +160,7 @@ fill_audio (void *userdata, Uint8 * stream, int len)
   if (len > soundleft)
     len = soundleft;
 
-  SDL_memcpy (stream, (const void *) soundpos, len);
+  SDL_memcpy (stream, current_sound.sound + soundpos, len);
 
   soundpos += len;
   soundleft -= len;
@@ -214,7 +214,7 @@ avt_stop_audio (void)
 {
   SDL_CloseAudio ();
   playing = false;
-  soundpos = NULL;
+  soundpos = 0;
   soundleft = 0;
   loop = false;
   current_sound.len = 0;
@@ -228,7 +228,7 @@ avt_quit_audio (void)
     {
       avt_quit_audio_func = NULL;
       SDL_CloseAudio ();
-      soundpos = NULL;
+      soundpos = 0;
       soundleft = 0;
       current_sound.len = 0;
       current_sound.sound = NULL;
@@ -588,6 +588,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 {
   void *new_sound;
   size_t i, old_size, new_size, out_size;
+  bool active;
 
   if (_avt_STATUS != AVT_NORMAL || snd == NULL || data == NULL
       || data_size == 0)
@@ -607,6 +608,11 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
     out_size *= 2;		/* one byte becomes 2 bytes */
 
   new_size = old_size + out_size;
+
+  /* if it's currently playing, lock it */
+  active = (playing && snd->sound == current_sound.sound);
+  if (active)
+    SDL_LockAudio ();
 
   /* get more memory for output buffer */
   new_sound = SDL_realloc (snd->sound, new_size);
@@ -680,6 +686,14 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
     default:			/* linear PCM */
       /* simply copy the audio data */
       SDL_memcpy (snd->sound + old_size, data, out_size);
+    }
+
+  if (active)
+    {
+      current_sound.sound = (Uint8 *) new_sound;
+      current_sound.len = new_size;
+      soundleft += out_size;
+      SDL_UnlockAudio ();
     }
 
   return avt_checkevent ();
@@ -822,7 +836,7 @@ avt_play_audio (avt_audio * snd, bool doloop)
 
   if (SDL_OpenAudio (&current_sound.audiospec, NULL) == 0)
     {
-      soundpos = current_sound.sound;
+      soundpos = 0;
       soundleft = current_sound.len;
       SDL_UnlockAudio ();
       playing = true;
@@ -928,8 +942,7 @@ avt_load_wave_data (void *data, int datasize)
 
 extern avt_audio *
 avt_load_raw_audio_data (void *data, size data_size,
-			 int samplingrate,
-			 int audio_type, int channels)
+			 int samplingrate, int audio_type, int channels)
 {
   no_audio ();
   return NULL;
