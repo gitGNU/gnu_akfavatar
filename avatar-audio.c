@@ -921,10 +921,12 @@ avt_initialize_audio (void)
   return AVT_FAILURE;
 }
 
-extern void
-avt_stop_audio (void)
+extern int
+avt_start_audio (void)
 {
   no_audio ();
+  /* do not set _avt_STATUS here */
+  return AVT_FAILURE;
 }
 
 extern void
@@ -933,43 +935,42 @@ avt_quit_audio (void)
   no_audio ();
 }
 
+extern void
+avt_stop_audio (void)
+{
+  no_audio ();
+}
+
 extern avt_audio *
-avt_load_audio_file (const char *file)
+avt_load_audio_file (const char *filename, int playmode)
 {
   no_audio ();
   return NULL;
 }
 
 extern avt_audio *
-avt_load_wave_file (const char *file)
+avt_load_audio_part (avt_stream * stream, size_t maxsize, int playmode)
 {
   no_audio ();
   return NULL;
 }
 
 extern avt_audio *
-avt_load_audio_stream (avt_stream * stream)
+avt_load_audio_stream (avt_stream * stream, int playmode)
 {
   no_audio ();
   return NULL;
 }
 
 extern avt_audio *
-avt_load_audio_data (void *data, int datasize)
+avt_load_audio_data (void *data, int datasize, int playmode)
 {
   no_audio ();
   return NULL;
 }
 
 extern avt_audio *
-avt_load_wave_data (void *data, int datasize)
-{
-  no_audio ();
-  return NULL;
-}
-
-extern avt_audio *
-avt_load_raw_audio_data (void *data, size data_size,
+avt_load_raw_audio_data (void *data, size_t data_size,
 			 int samplingrate, int audio_type, int channels)
 {
   no_audio ();
@@ -997,7 +998,7 @@ avt_wait_audio_end (void)
 }
 
 extern int
-avt_play_audio (avt_audio * snd, bool doloop)
+avt_play_audio (avt_audio * snd, int playmode)
 {
   no_audio ();
   return _avt_STATUS;
