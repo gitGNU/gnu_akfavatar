@@ -645,10 +645,10 @@ procedure avt_bell; libakfavatar 'avt_bell';
 
 procedure avt_flash; libakfavatar 'avt_flash';
 
-function avt_load_audio_file(f: CString): pointer;
+function avt_load_audio_file(f: CString; playmode: Cint): pointer;
   libakfavatar 'avt_load_audio_file';
 
-function avt_load_audio_data(Data: Pointer; size: Csize_t): Pointer;
+function avt_load_audio_data(Data: Pointer; size: Csize_t; playmode: Cint): Pointer;
   libakfavatar 'avt_load_audio_data';
 
 function avt_load_raw_audio_data(Data: pointer; size: Csize_t;
@@ -667,7 +667,7 @@ function avt_audio_playing(snd: pointer): CBoolean;
 procedure avt_free_audio(snd: pointer); 
   libakfavatar 'avt_free_audio';
 
-function avt_play_audio(snd: pointer; loop: CBoolean): Cint; 
+function avt_play_audio(snd: pointer; playmode: Cint): Cint; 
   libakfavatar 'avt_play_audio';
 
 function avt_wait_audio_end: Cint; libakfavatar 'avt_wait_audio_end';
@@ -1284,12 +1284,12 @@ end;
 
 function LoadSoundFile(const FileName: string): pointer;
 begin
-LoadSoundFile := avt_load_audio_file(String2CString(FileName))
+LoadSoundFile := avt_load_audio_file(String2CString(FileName), 0)
 end;
 
 function LoadSoundData(data: pointer; size: LongInt): pointer;
 begin
-LoadSoundData := avt_load_audio_data(data, size)
+LoadSoundData := avt_load_audio_data(data, size, 0)
 end;
 
 function LoadRawSoundData(data:pointer; size: LongInt;
@@ -1327,7 +1327,7 @@ end;
 
 procedure PlaySound(snd: pointer; loop: boolean);
 begin
-avt_play_audio(snd, loop)
+avt_play_audio(snd, ord(loop)+1)
 end;
 
 procedure WaitSoundEnd;
@@ -1352,7 +1352,7 @@ if GenSound<>NIL then avt_free_audio(GenSound);
 GenSound := avt_load_raw_audio_data(RawSoundBuf, BufMax, 
                                     SampleRate, S16SYS, Mono);
 
-avt_play_audio(GenSound, true)
+avt_play_audio(GenSound, 2)
 end;
 
 procedure NoSound;
