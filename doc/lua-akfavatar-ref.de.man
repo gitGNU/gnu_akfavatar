@@ -843,9 +843,9 @@ zurück, im Fehlerfall gibt es
 und eine Fehlermeldung zurück.
 .PP
 .TP
-.BI "avt.load_audio_file(" "[Dateiname [,abspielen]]" )
+.BI "avt.load_audio_file(" "[Dateiname [,Abspielmodus]]" )
 .TQ
-.BI "avt.load_base_audio_file(" "[Dateiname [,abspielen]]" )
+.BI "avt.load_base_audio_file(" "[Dateiname [,Abspielmodus]]" )
 Liest Audio-Daten von einer Datei ein.
 Man kann mit
 .I avt.search()
@@ -864,8 +864,8 @@ angegeben ist, oder der
 oder ein leerer String, wird ein Audio-Element mit Stille zurückgegeben,
 das heißt, man kann die Methoden aufrufen, aber es wird kein Klang ausgegeben.
 .IP
-.RI "Wenn " abspielen " " true " ist,"
-wird das Audio-Element sofort abgespielt.
+.I Abspielmodus
+kann entweder "load", "play" oder "loop" sein.
 .IP
 Bei Fehlern wird
 .I nil
@@ -873,9 +873,9 @@ und eine Fehlermelung zurückgegeben.
 (Anmerkung: in Version 0.19.0 wurde dann auch eine Stille zurückgegeben.)
 .PP
 .TP
-.BI "avt.load_audio_stream(" "Datei [,Größe [,abspielen]]" )
+.BI "avt.load_audio_stream(" "Datei [,Größe [,Abspielmodus]]" )
 .TQ
-.BI "avt.load_base_audio_stream(" "Datei [,Größe [,abspielen]]" )
+.BI "avt.load_base_audio_stream(" "Datei [,Größe [,Abspielmodus]]" )
 Liest Audio-Daten von einer geöffneten Datei.
 Die Datei muss durchsuchbar sein.
 .IP
@@ -888,17 +888,17 @@ hinzufügen.
 Wenn keine Größe angegeben ist, wird davon ausgegangen, 
 dass die Audio-Daten bis zum Ende der Datei gehen.
 .IP
-.RI "Wenn " abspielen " " true " ist,"
-wird das Audio-Element sofort abgespielt.
+.I Abspielmodus
+kann entweder "load", "play" oder "loop" sein.
 .IP
 Bei Fehlern wird
 .I nil
 und eine Fehlermelung zurückgegeben.
 .PP
 .TP
-.BI "avt.load_audio(" "[Audiodaten [,abspielen]]" )
+.BI "avt.load_audio(" "[Audiodaten [,Abspielmodus]]" )
 .TQ
-.BI "avt.load_base_audio(" "[Audiodaten [,abspielen]]" )
+.BI "avt.load_base_audio(" "[Audiodaten [,Abspielmodus]]" )
 Liest Audiodaten aus einem String.
 Ansonsten das selbe, wie
 .BR avt.load_audio_file() .
@@ -916,8 +916,8 @@ angegeben sind, oder
 oder ein leerer String, wird ein Audio-Element mit Stille zurückgegeben,
 das heißt, man kann die Methoden aufrufen, aber es wird kein Klang ausgegeben.
 .IP
-.RI "Wenn " abspielen " " true " ist,"
-wird das Audio-Element sofort abgespielt.
+.I Abspielmodus
+kann entweder "load", "play" oder "loop" sein.
 .IP
 Bei Fehlern wird
 .I nil

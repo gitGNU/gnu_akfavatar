@@ -797,9 +797,9 @@ on error it returns
 and an error message.
 .PP
 .TP
-.BI "avt.load_audio_file(" "[filename [,play]]" )
+.BI "avt.load_audio_file(" "[filename [,playmode]]" )
 .TQ
-.BI "avt.load_base_audio_file(" "[filename [,play]]" )
+.BI "avt.load_base_audio_file(" "[filename [,playmode]]" )
 Reads audio data from a file.
 You can search for the file with
 .IR avt.search() .
@@ -816,8 +816,9 @@ is given, or the
 or an empty string, it returns a silent audio element, 
 ie. you can call its methods, it just doesn't play anything.
 .IP
-.RI "if " play " is " true
-it starts playing immediately.
+The
+.I playmode
+can be one of "load", "play" or "loop".
 .IP
 On error it returns 
 .I nil
@@ -825,9 +826,9 @@ and an error message.
 (Note: in version 0.19.0 it also returned a silent audio element then.)
 .PP
 .TP
-.BI "avt.load_audio_stream(" "file handle [,size [,play]]" )
+.BI "avt.load_audio_stream(" "file handle [,size [,playmode]]" )
 .TQ
-.BI "avt.load_base_audio_stream(" "file handle [,size [,play]]" )
+.BI "avt.load_base_audio_stream(" "file handle [,size [,playmode]]" )
 Reads audio data from an open file handle.
 The file must be searchable.
 .IP
@@ -838,17 +839,18 @@ Lua modules may add support for more audio formats to
 .IP
 If size is 0 or not given, it assumes the audio is the rest of the file.
 .IP
-.RI "if " play " is " true
-it starts playing immediately.
+The
+.I playmode
+can be one of "load", "play" or "loop".
 .IP
 On error it returns 
 .I nil
 and an error message.
 .PP
 .TP
-.BI "avt.load_audio(" "[audio_data [,play]]" )
+.BI "avt.load_audio(" "[audio_data [,playmode]]" )
 .TQ
-.BI "avt.load_base_audio(" "[audio_data [,play]]" )
+.BI "avt.load_base_audio(" "[audio_data [,playmode]]" )
 Reads audio data from a string.  Otherwise the same as
 .BR avt.load_audio_file() .
 .IP
@@ -864,8 +866,9 @@ is given, or the
 or an empty string, it returns a silent audio element,
 ie. you can call its methods, it just doesn't play anything.
 .IP
-.RI "if " play " is " true
-it starts playing immediately.
+The
+.I playmode
+can be one of "load", "play" or "loop".
 .IP
 On error it returns 
 .I nil
