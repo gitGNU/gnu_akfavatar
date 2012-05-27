@@ -171,7 +171,7 @@ short_audio_sound (void)
 {
   /* if my_alert is loaded and nothing is currently playing */
   if (my_alert && !playing)
-    avt_play_audio (my_alert, false);
+    avt_play_audio (my_alert, AVT_PLAY);
 }
 
 /* must be called AFTER avt_start! */
@@ -846,6 +846,9 @@ avt_play_audio (avt_audio * snd, int playmode)
   /* no sound? - just ignore it */
   if (!snd)
     return _avt_STATUS;
+
+  if (playmode != AVT_PLAY && playmode != AVT_LOOP)
+    return AVT_FAILURE;
 
   /* close audio, in case it is left open */
   SDL_CloseAudio ();
