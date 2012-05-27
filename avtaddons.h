@@ -159,7 +159,7 @@ AVT_ADDON avt_audio *avta_load_vorbis_data (void *data,
  * on error it restores the file position and returns NULL
  */
 AVT_ADDON avt_audio *avta_load_vorbis_stream (avt_stream *stream,
-                                              unsigned int size,
+                                              size_t size,
                                               int playmode);
 
 

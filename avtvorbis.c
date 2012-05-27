@@ -100,7 +100,7 @@ load_vorbis (stb_vorbis * vorbis, int playmode)
 }
 
 extern avt_audio *
-avta_load_vorbis_stream (avt_stream * stream, unsigned int size, int playmode)
+avta_load_vorbis_stream (avt_stream * stream, size_t size, int playmode)
 {
   FILE *f;
   int error;
