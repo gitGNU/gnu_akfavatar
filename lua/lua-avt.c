@@ -1443,7 +1443,7 @@ lavt_load_audio_file (lua_State * L)
   make_audio_element (L, audio_data);
 
   if (play && audio_data)
-    avt_play_audio (audio_data, false);
+    avt_play_audio (audio_data, AVT_PLAY);
 
   return 1;
 }
@@ -1482,7 +1482,7 @@ lavt_load_audio_stream (lua_State * L)
   make_audio_element (L, audio_data);
 
   if (play && audio_data)
-    avt_play_audio (audio_data, false);
+    avt_play_audio (audio_data, AVT_PLAY);
 
   return 1;
 }
@@ -1526,7 +1526,7 @@ lavt_load_audio (lua_State * L)
   make_audio_element (L, audio_data);
 
   if (play && audio_data)
-    avt_play_audio (audio_data, false);
+    avt_play_audio (audio_data, AVT_PLAY);
 
   return 1;
 }
@@ -1567,7 +1567,7 @@ laudio_play (lua_State * L)
   audio = (avt_audio **) luaL_checkudata (L, 1, AUDIODATA);
 
   if (audio && *audio)
-    avt_play_audio (*audio, false);	/* no check! */
+    avt_play_audio (*audio, AVT_PLAY);	/* no check! */
 
   /* store reference to audio, so it isn't garbage collected while playing */
   lua_pushvalue (L, 1);
@@ -1585,7 +1585,7 @@ laudio_loop (lua_State * L)
   audio = (avt_audio **) luaL_checkudata (L, 1, AUDIODATA);
 
   if (audio && *audio)
-    avt_play_audio (*audio, true);	/* no check! */
+    avt_play_audio (*audio, AVT_LOOP);	/* no check! */
 
   /* store reference to audio, so it isn't garbage collected while playing */
   lua_pushvalue (L, 1);

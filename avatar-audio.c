@@ -810,7 +810,7 @@ avt_free_audio (avt_audio * snd)
 }
 
 extern int
-avt_play_audio (avt_audio * snd, bool doloop)
+avt_play_audio (avt_audio * snd, int playmode)
 {
   if (!avt_audio_initialized)
     return _avt_STATUS;
@@ -832,7 +832,7 @@ avt_play_audio (avt_audio * snd, bool doloop)
   /* lower audio buffer size for lower latency */
   current_sound.audiospec.samples = 1024;
 
-  loop = AVT_MAKE_BOOL (doloop);
+  loop = (playmode == AVT_LOOP);
 
   if (SDL_OpenAudio (&current_sound.audiospec, NULL) == 0)
     {

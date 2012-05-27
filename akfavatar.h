@@ -927,6 +927,11 @@ AVT_API void avt_get_font_dimensions (int *width, int *height,
 /***********************************************************************/
 /* audio stuff */
 
+/* for playmode parameters */
+#define AVT_LOAD 0
+#define AVT_PLAY 1
+#define AVT_LOOP 2
+
 /* must be called AFTER avt_start! */
 AVT_API int avt_start_audio (void);
 
@@ -1019,9 +1024,10 @@ AVT_API void avt_free_audio (avt_audio *snd);
 
 /*
  * plays a sound
+ * playmode is one of AVT_PLAY or AVT_LOOP
  * on error it returns AVT_ERROR without changing the status
  */
-AVT_API int avt_play_audio (avt_audio *snd, bool doloop);
+AVT_API int avt_play_audio (avt_audio *snd, int playmode);
 
 /*
  * wait until the sound ends

@@ -11,6 +11,10 @@
 	* lua/lua-avt.c: parameters for playing while|after loading
 	lua/akfavatar-vorbis.c: adapted
 
+	* akfavatar.h, avatar-audio.c (avt_play_audio):
+	playmode parameter instead of doloop
+	lua/lua-avt.c: adapted
+
 2012-05-21  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c (lavt_set_balloon_color, lavt_set_background_color)
