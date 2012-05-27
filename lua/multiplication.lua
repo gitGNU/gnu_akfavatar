@@ -6,9 +6,9 @@
 local avt = require "lua-akfavatar"
 local lang = require "akfavatar.lang"
 
-local positive = avt.load_audio_file(avt.search("positive.au"))
-local negative = avt.load_audio_file(avt.search("negative.au"))
-local question = avt.load_audio_file(avt.search("question.au"))
+local positive = avt.load_audio_file(avt.search("positive.au")) or avt.silent()
+local negative = avt.load_audio_file(avt.search("negative.au")) or avt.silent()
+local question = avt.load_audio_file(avt.search("question.au")) or avt.silent()
 
 -- edit to your needs:
 local random_minimum = 1
