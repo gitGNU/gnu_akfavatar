@@ -20,6 +20,8 @@
 	preliminary support for playmode
 	lua/lua-avt.c, lua/akfavatar-vorbis.c: adapted
 
+	* avtaddons.h, avtvorbis.c: support for playmode
+
 2012-05-21  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c (lavt_set_balloon_color, lavt_set_background_color)

@@ -36,7 +36,7 @@
 #define MAX_CHANNELS  AVT_AUDIO_STEREO
 
 static avt_audio *
-load_vorbis (stb_vorbis * vorbis, bool play)
+load_vorbis (stb_vorbis * vorbis, int playmode)
 {
   int data_len, offset, total, limit, n;
   stb_vorbis_info info;
@@ -74,10 +74,10 @@ load_vorbis (stb_vorbis * vorbis, bool play)
 	      return NULL;
 	    }
 
-	  if (play)
+	  if (playmode != AVT_LOAD)
 	    {
-	      avt_play_audio (audio, false);
-	      play = false;
+	      avt_play_audio (audio, playmode);
+	      playmode = AVT_LOAD;
 	    }
 
 	  offset = data_len = 0;
@@ -93,14 +93,14 @@ load_vorbis (stb_vorbis * vorbis, bool play)
     }
 
   /* if not started yet, start it */
-  if (play)
-    avt_play_audio (audio, false);
+  if (playmode != AVT_LOAD)
+    avt_play_audio (audio, playmode);
 
   return audio;
 }
 
 extern avt_audio *
-avta_load_vorbis_stream (avt_stream * stream, unsigned int size, bool play)
+avta_load_vorbis_stream (avt_stream * stream, unsigned int size, int playmode)
 {
   FILE *f;
   int error;
@@ -134,7 +134,7 @@ avta_load_vorbis_stream (avt_stream * stream, unsigned int size, bool play)
 
   if (vorbis)
     {
-      audio_data = load_vorbis (vorbis, play);
+      audio_data = load_vorbis (vorbis, playmode);
       stb_vorbis_close (vorbis);
     }
   else				/* error */
@@ -147,7 +147,7 @@ avta_load_vorbis_stream (avt_stream * stream, unsigned int size, bool play)
 }
 
 extern avt_audio *
-avta_load_vorbis_file (char *filename, bool play)
+avta_load_vorbis_file (char *filename, int playmode)
 {
   FILE *f;
   avt_audio *audio_data;
@@ -160,14 +160,14 @@ avta_load_vorbis_file (char *filename, bool play)
   if (!f)
     return NULL;
 
-  audio_data = avta_load_vorbis_stream (f, 0, play);
+  audio_data = avta_load_vorbis_stream (f, 0, playmode);
   fclose (f);
 
   return audio_data;
 }
 
 extern avt_audio *
-avta_load_vorbis_data (void *data, int datasize, bool play)
+avta_load_vorbis_data (void *data, int datasize, int playmode)
 {
   int error;
   stb_vorbis *vorbis;
@@ -184,7 +184,7 @@ avta_load_vorbis_data (void *data, int datasize, bool play)
   if (vorbis == NULL)
     return NULL;
 
-  audio_data = load_vorbis (vorbis, play);
+  audio_data = load_vorbis (vorbis, playmode);
   stb_vorbis_close (vorbis);
 
   return audio_data;
