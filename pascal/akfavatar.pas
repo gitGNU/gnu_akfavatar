@@ -312,13 +312,19 @@ procedure Beep;
 { a short visual flash on the screen }
 procedure Flash;
 
+{ values for playmode }
+const
+  AVT_LOAD = 0;
+  AVT_PLAY = 1;
+  AVT_LOOP = 2;
+
 { loads Audio File
   AU or WAV files supported }
-function LoadSoundFile(const FileName: string): pointer;
-function LoadSoundData(data: pointer; size: LongInt): pointer;
-procedure FreeSound(snd: pointer);
-procedure PlaySound(snd: pointer; loop: boolean);
+function LoadSoundFile(const FileName: string; playmode: Integer): pointer;
+function LoadSoundData(data: pointer; size: LongInt; playmode: Integer): pointer;
+procedure PlaySound(snd: pointer; playmode: Integer);
 function Playing(snd: pointer): boolean;
+procedure FreeSound(snd: pointer);
 
 { for importing raw sound data }
 
@@ -1282,14 +1288,14 @@ for i := 1 to ParamCount do
     then fullscreen := true
 end;
 
-function LoadSoundFile(const FileName: string): pointer;
+function LoadSoundFile(const FileName: string; playmode: Integer): pointer;
 begin
-LoadSoundFile := avt_load_audio_file(String2CString(FileName), 0)
+LoadSoundFile := avt_load_audio_file(String2CString(FileName), playmode)
 end;
 
-function LoadSoundData(data: pointer; size: LongInt): pointer;
+function LoadSoundData(data: pointer; size: LongInt; playmode: Integer): pointer;
 begin
-LoadSoundData := avt_load_audio_data(data, size, 0)
+LoadSoundData := avt_load_audio_data(data, size, playmode)
 end;
 
 function LoadRawSoundData(data:pointer; size: LongInt;
@@ -1325,9 +1331,9 @@ begin
 avt_free_audio(snd)
 end;
 
-procedure PlaySound(snd: pointer; loop: boolean);
+procedure PlaySound(snd: pointer; playmode: Integer);
 begin
-avt_play_audio(snd, ord(loop)+1)
+avt_play_audio(snd, playmode)
 end;
 
 procedure WaitSoundEnd;

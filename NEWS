@@ -87,6 +87,7 @@
   Pascal-API changes:
   - AvatarImageFile, AvatarImageData, AvatarImageXPM, AvatarImageXBM
     initialize the library now
+  - Parameter playmode for LoadSoundFile, LoadSoundData and PlaySound
   - new functions: AvatarImageDefault, AvatarImageNone, SetBalloonMode
 
 

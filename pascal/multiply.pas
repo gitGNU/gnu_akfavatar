@@ -110,14 +110,14 @@ end;
 
 procedure sayCorrect;
 begin 
-PlaySound(correctsnd, false);
+PlaySound(correctsnd, AVT_PLAY);
 TextColor(green);
 WriteLn(correct) 
 end;
 
 procedure sayWrong;
 begin 
-PlaySound(wrongsnd, false);
+PlaySound(wrongsnd, AVT_PLAY);
 TextColor(red); 
 WriteLn(wrong) 
 end;
@@ -182,8 +182,8 @@ AvatarImageXPM(Addr(teacher));
 { or use this to load the image from a file: }
 { AvatarImageFile('teacher.xpm'); }
 
-correctsnd := LoadSoundData(Addr(snd_positive), sizeof(snd_positive));
-wrongsnd   := LoadSoundData(Addr(snd_negative), sizeof(snd_negative));
+correctsnd := LoadSoundData(Addr(snd_positive), sizeof(snd_positive), AVT_LOAD);
+wrongsnd   := LoadSoundData(Addr(snd_negative), sizeof(snd_negative), AVT_LOAD);
 
 Randomize;
 
