@@ -36,6 +36,9 @@
 
 #include "alert.c"
 
+/* lower audio buffer size for lower latency, but it could become choppy */
+#define OUTPUT_BUFFER 4096
+
 #ifndef _SDL_stdinc_h
 #  define OLD_SDL 1
 #endif
@@ -465,7 +468,7 @@ avt_load_au (SDL_RWops * src, Uint32 maxsize, bool freesrc,
     {
       spec->freq = samplingrate;
       spec->channels = channels;
-      spec->samples = 1024;	/* internal buffer */
+      spec->samples = OUTPUT_BUFFER;
       spec->callback = fill_audio;
       spec->userdata = NULL;
     }
@@ -771,7 +774,7 @@ avt_load_raw_audio_data (void *data, size_t data_size,
   s->audiospec.format = format;
   s->audiospec.freq = samplingrate;
   s->audiospec.channels = channels;
-  s->audiospec.samples = 1024;	/* internal buffer */
+  s->audiospec.samples = OUTPUT_BUFFER;
   s->audiospec.callback = fill_audio;
   s->audiospec.userdata = NULL;
 
@@ -837,9 +840,7 @@ avt_play_audio (avt_audio * snd, int playmode)
   current_sound.len = snd->len;
   current_sound.audiospec = snd->audiospec;
   current_sound.audiospec.callback = fill_audio;
-
-  /* lower audio buffer size for lower latency */
-  current_sound.audiospec.samples = 1024;
+  current_sound.audiospec.samples = OUTPUT_BUFFER;
 
   loop = (playmode == AVT_LOOP);
 
