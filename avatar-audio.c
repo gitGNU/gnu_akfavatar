@@ -245,6 +245,7 @@ avt_quit_audio (void)
     }
 }
 
+// TODO: to be replaced
 static SDL_AudioSpec *
 avt_load_au (SDL_RWops * src, Uint32 maxsize, bool freesrc,
 	     SDL_AudioSpec * spec, Uint8 ** audio_buf, Uint32 * data_size)
@@ -482,48 +483,17 @@ done:
   else
     {
       /* restore file position on error */
-      SDL_RWseek (src, start, RW_SEEK_SET);
+      if (!freesrc)
+	SDL_RWseek (src, start, RW_SEEK_SET);
+
       return NULL;
     }
 }
 
 static avt_audio *
-avt_load_audio_rw (SDL_RWops * src, Uint32 maxsize, int playmode)
+avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
 {
-  int start, type;
   struct avt_audio *s;
-  SDL_AudioSpec *r;
-  char head[16];
-
-  if (src == NULL)
-    return NULL;
-
-  r = NULL;
-  type = 0;
-  start = SDL_RWtell (src);
-  if (SDL_RWread (src, head, sizeof (head), 1))
-    {
-      if (SDL_memcmp (&head[0], ".snd", 4) == 0)
-	type = 1;
-      else
-	if (SDL_memcmp (&head[0], "RIFF", 4) == 0
-	    && SDL_memcmp (&head[8], "WAVE", 4) == 0)
-	type = 2;
-      else
-	{
-	  SDL_SetError ("audio data neither in AU nor WAVE format");
-	  SDL_RWclose (src);
-	  return NULL;
-	}
-    }
-  else
-    {
-      SDL_SetError ("cannot read head of audio data");
-      SDL_RWclose (src);
-      return NULL;
-    }
-
-  SDL_RWseek (src, start, RW_SEEK_SET);
 
   s = (struct avt_audio *) SDL_malloc (sizeof (struct avt_audio));
   if (s == NULL)
@@ -533,32 +503,80 @@ avt_load_audio_rw (SDL_RWops * src, Uint32 maxsize, int playmode)
     }
 
   s->audio_type = AVT_AUDIO_UNKNOWN;
+  s->wave = true;
 
-  switch (type)
-    {
-    case 1:			/* AU */
-      s->wave = false;
-      r = avt_load_au (src, maxsize, true, &s->audiospec, &s->sound, &s->len);
-      break;
-
-    case 2:			/* Wave */
-      s->wave = true;
-      r = SDL_LoadWAV_RW (src, 1, &s->audiospec, &s->sound, &s->len);
-      break;
-
-    default:
-      SDL_SetError ("internal error");
-      return NULL;
-    }
-
-  if (r == NULL)
+  if (SDL_LoadWAV_RW (src, 1, &s->audiospec, &s->sound, &s->len) == NULL)
     {
       SDL_free (s);
-      return NULL;
+      s = NULL;
     }
 
   if (playmode != AVT_LOAD)
     avt_play_audio (s, playmode);
+
+  return s;
+}
+
+static avt_audio *
+avt_load_AU (SDL_RWops * src, Uint32 maxsize, int playmode)
+{
+  struct avt_audio *s;
+
+  s = (struct avt_audio *) SDL_malloc (sizeof (struct avt_audio));
+  if (s == NULL)
+    {
+      SDL_SetError ("out of memory");
+      return NULL;
+    }
+
+  s->audio_type = AVT_AUDIO_UNKNOWN;
+  s->wave = false;
+
+  if (!avt_load_au (src, maxsize, true, &s->audiospec, &s->sound, &s->len))
+    {
+      SDL_free (s);
+      s = NULL;
+    }
+
+  if (playmode != AVT_LOAD)
+    avt_play_audio (s, playmode);
+
+  return s;
+}
+
+/* src gets always closed */
+static avt_audio *
+avt_load_audio_rw (SDL_RWops * src, Uint32 maxsize, int playmode)
+{
+  struct avt_audio *s;
+  int start;
+  char head[16];
+
+  if (src == NULL)
+    return NULL;
+
+  start = SDL_RWtell (src);
+
+  if (SDL_RWread (src, head, sizeof (head), 1) != 1)
+    {
+      SDL_SetError ("cannot read head of audio data");
+      SDL_RWclose (src);
+      return NULL;
+    }
+
+  SDL_RWseek (src, start, RW_SEEK_SET);
+
+  if (SDL_memcmp (&head[0], ".snd", 4) == 0)
+    s = avt_load_AU (src, maxsize, playmode);
+  else if (SDL_memcmp (&head[0], "RIFF", 4) == 0
+	   && SDL_memcmp (&head[8], "WAVE", 4) == 0)
+    s = avt_load_wave (src, maxsize, playmode);
+  else
+    {
+      s = NULL;
+      SDL_SetError ("audio data neither in AU nor WAVE format");
+      SDL_RWclose (src);
+    }
 
   return s;
 }
