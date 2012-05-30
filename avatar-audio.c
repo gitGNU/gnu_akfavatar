@@ -508,7 +508,7 @@ avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
   if (SDL_LoadWAV_RW (src, 1, &s->audiospec, &s->sound, &s->len) == NULL)
     {
       SDL_free (s);
-      s = NULL;
+      return NULL;
     }
 
   if (playmode != AVT_LOAD)
@@ -535,7 +535,7 @@ avt_load_AU (SDL_RWops * src, Uint32 maxsize, int playmode)
   if (!avt_load_au (src, maxsize, true, &s->audiospec, &s->sound, &s->len))
     {
       SDL_free (s);
-      s = NULL;
+      return NULL;
     }
 
   if (playmode != AVT_LOAD)
