@@ -245,249 +245,45 @@ avt_quit_audio (void)
     }
 }
 
-// TODO: to be replaced
-static SDL_AudioSpec *
-avt_load_au (SDL_RWops * src, Uint32 maxsize, bool freesrc,
-	     SDL_AudioSpec * spec, Uint8 ** audio_buf, Uint32 * data_size)
+static avt_audio *
+avt_load_pcm (SDL_RWops * src, Uint32 maxsize,
+	      int samplingrate, int audio_type, int channels, int playmode)
 {
-  Uint32 head_size, audio_size, encoding, samplingrate, channels;
-  int start;
-  Uint8 *buf;
-  bool completed;
+  avt_audio *audio;
+  int n;
+  Uint32 block, rest;
+  Uint8 data[24 * 1024];
 
-  if (!src || !spec || !audio_buf || !data_size)
+  audio = avt_load_raw_audio_data (NULL, 0, samplingrate,
+				   audio_type, channels);
+
+  if (!audio)
     return NULL;
 
-  completed = false;
-  buf = NULL;
-  *audio_buf = NULL;
-  *data_size = 0;
+  rest = maxsize;
+  block = sizeof (data);
 
-  start = SDL_RWtell (src);
-
-  /* check magic ".snd" */
-  if (SDL_ReadBE32 (src) != 0x2e736e64)
+  while ((n = SDL_RWread (src, data, 1, block)) > 0)
     {
-      SDL_SetError ("Data is not an AU audio file"
-		    " (maybe old raw data format?)");
-      goto done;
-    }
-
-  head_size = SDL_ReadBE32 (src);
-  audio_size = SDL_ReadBE32 (src);
-  encoding = SDL_ReadBE32 (src);
-  samplingrate = SDL_ReadBE32 (src);
-  channels = SDL_ReadBE32 (src);
-
-  if (channels < 1 || channels > 2)
-    {
-      SDL_SetError ("only 1 or 2 channels supported");
-      goto done;
-    }
-
-  /* skip the rest of the header */
-  if (head_size > 24)
-    SDL_RWseek (src, head_size - 24, RW_SEEK_CUR);
-
-  if (maxsize != 0xffffffff)
-    {
-      maxsize -= head_size;
-
-      if (maxsize < audio_size)
-	audio_size = maxsize;
-    }
-
-  /* size of audio-data still unknown :-( */
-  if (audio_size == 0xffffffff)
-    {
-      int data_start;
-
-      data_start = SDL_RWtell (src);
-      audio_size = SDL_RWseek (src, 0, RW_SEEK_END) - data_start;
-      SDL_RWseek (src, data_start, RW_SEEK_SET);
-    }
-
-  /* Note: linear PCM is always assumed to be signed and big endian */
-  switch (encoding)
-    {
-    case 1:			/* mu-law */
-    case 27:			/* A-law */
-      {
-	Uint32 i;
-	Uint32 out_size;
-	Sint16 *outbuf, *outp;
-	Uint8 value;
-
-	/* get larger output buffer */
-	out_size = sizeof (Sint16) * audio_size;
-	outbuf = (Sint16 *) SDL_malloc (out_size);
-	if (outbuf == NULL)
-	  {
-	    SDL_SetError ("out of memory");
-	    goto done;
-	  }
-
-	/* decode */
-	outp = outbuf;
-	if (encoding == 1)	/* mu-law */
-	  {
-	    for (i = 0; i < audio_size; i++, outp++)
-	      {
-		if (SDL_RWread (src, &value, sizeof (value), 1) == -1)
-		  break;
-		*outp = mulaw_decode[value];
-	      }
-	  }
-	else			/* A-law */
-	  {
-	    for (i = 0; i < audio_size; i++, outp++)
-	      {
-		if (SDL_RWread (src, &value, sizeof (value), 1) == -1)
-		  break;
-		*outp = alaw_decode[value];
-	      }
-	  }
-
-	/* assign values */
-	spec->format = AUDIO_S16SYS;
-	*audio_buf = (Uint8 *) outbuf;
-	*data_size = out_size;
-	completed = true;
-      }
-      break;
-
-    case 2:			/* 8Bit linear PCM */
-      buf = (Uint8 *) SDL_malloc (audio_size);
-
-      if (buf)
+      if (avt_add_raw_audio_data (audio, data, n) != AVT_NORMAL)
 	{
-	  /* read the data into the buf */
-	  if (SDL_RWread (src, buf, 1, audio_size) < (int) audio_size)
-	    {
-	      SDL_SetError ("read error");
-	      SDL_free (buf);
-	      buf = NULL;
-	      goto done;
-	    }
-
-	  spec->format = AUDIO_S8;	/* signed! */
-	  *audio_buf = buf;
-	  *data_size = audio_size;
-	  completed = true;
+	  avt_free_audio (audio);
+	  return NULL;
 	}
-      else
-	SDL_SetError ("out of memory");
 
-      break;
-
-    case 3:			/* 16Bit linear PCM */
-      buf = (Uint8 *) SDL_malloc (audio_size);
-
-      if (buf)
+      if (playmode != AVT_LOAD)
 	{
-	  Sint16 *bufp;
-	  Uint16 value;
-	  Uint32 i;
-
-	  bufp = (Sint16 *) buf;
-	  for (i = 0; i < audio_size; i += sizeof (value), bufp++)
-	    {
-	      if (SDL_RWread (src, &value, sizeof (value), 1) == -1)
-		{
-		  SDL_SetError ("read error");
-		  SDL_free (buf);
-		  buf = NULL;
-		  goto done;
-		}
-	      *bufp = (Sint16) SDL_SwapBE16 (value);
-	    }
-
-	  spec->format = AUDIO_S16SYS;
-	  *audio_buf = buf;
-	  *data_size = audio_size;
-	  completed = true;
+	  avt_play_audio (audio, playmode);
+	  playmode = AVT_LOAD;
 	}
-      else
-	SDL_SetError ("out of memory");
 
-      break;
+      rest -= n;
 
-    case 4:			/* 24Bit linear PCM */
-    case 5:			/* 32Bit linear PCM */
-      /* degrade to 16Bit */
-      {
-	Uint32 i;
-	Uint8 BPS;		/* Bytes per Sample */
-	Uint32 out_size;
-	Uint32 samples;
-	Sint16 *outbuf, *outp;
-	Sint16 value, dummy;
-
-	/* Bytes per Sample and skip value */
-	if (encoding == 4)
-	  BPS = 24 / 8;
-	else
-	  BPS = 32 / 8;
-
-	samples = audio_size / BPS;
-	out_size = samples * sizeof (Sint16);
-	outbuf = (Sint16 *) SDL_malloc (out_size);
-
-	if (outbuf == NULL)
-	  {
-	    SDL_SetError ("out of memory");
-	    goto done;
-	  }
-
-	outp = outbuf;
-	for (i = 0; i < samples; i++, outp++)
-	  {
-	    if (SDL_RWread (src, &value, sizeof (value), 1) == -1)
-	      break;
-	    *outp = SDL_SwapBE16 (value);
-
-	    /* skip the rest */
-	    if (SDL_RWread (src, &dummy, BPS - sizeof (value), 1) == -1)
-	      break;
-	  }
-
-	/* assign values */
-	spec->format = AUDIO_S16SYS;
-	*audio_buf = (Uint8 *) outbuf;
-	*data_size = out_size;
-	completed = true;
-      }
-      break;
-
-    default:
-      SDL_SetError ("unsupported encoding in AU file");
-      goto done;
+      if (rest < block)
+        block = rest;
     }
 
-  /* settings, which don't depend on the format */
-  if (completed)
-    {
-      spec->freq = samplingrate;
-      spec->channels = channels;
-      spec->samples = OUTPUT_BUFFER;
-      spec->callback = fill_audio;
-      spec->userdata = NULL;
-    }
-
-done:
-  if (src && freesrc)
-    SDL_RWclose (src);
-
-  if (completed)
-    return spec;
-  else
-    {
-      /* restore file position on error */
-      if (!freesrc)
-	SDL_RWseek (src, start, RW_SEEK_SET);
-
-      return NULL;
-    }
+  return audio;
 }
 
 static avt_audio *
@@ -505,7 +301,7 @@ avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
   s->audio_type = AVT_AUDIO_UNKNOWN;
   s->wave = true;
 
-  if (SDL_LoadWAV_RW (src, 1, &s->audiospec, &s->sound, &s->len) == NULL)
+  if (SDL_LoadWAV_RW (src, 0, &s->audiospec, &s->sound, &s->len) == NULL)
     {
       SDL_free (s);
       return NULL;
@@ -518,30 +314,88 @@ avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
 }
 
 static avt_audio *
-avt_load_AU (SDL_RWops * src, Uint32 maxsize, int playmode)
+avt_load_au (SDL_RWops * src, Uint32 maxsize, int playmode)
 {
-  struct avt_audio *s;
+  avt_audio *audio;
+  Uint32 head_size, audio_size, encoding, samplingrate, channels;
+  int audio_type;
 
-  s = (struct avt_audio *) SDL_malloc (sizeof (struct avt_audio));
-  if (s == NULL)
+  audio = NULL;
+
+  if (!src)
+    return NULL;
+
+  /* check magic ".snd" */
+  if (SDL_ReadBE32 (src) != 0x2e736e64)
     {
-      SDL_SetError ("out of memory");
+      SDL_SetError ("Data is not an AU audio file"
+		    " (maybe old raw data format?)");
       return NULL;
     }
 
-  s->audio_type = AVT_AUDIO_UNKNOWN;
-  s->wave = false;
+  head_size = SDL_ReadBE32 (src);
+  audio_size = SDL_ReadBE32 (src);
+  encoding = SDL_ReadBE32 (src);
+  samplingrate = SDL_ReadBE32 (src);
+  channels = SDL_ReadBE32 (src);
 
-  if (!avt_load_au (src, maxsize, true, &s->audiospec, &s->sound, &s->len))
+  if (channels < 1 || channels > 2)
     {
-      SDL_free (s);
+      SDL_SetError ("only 1 or 2 channels supported");
       return NULL;
     }
 
-  if (playmode != AVT_LOAD)
-    avt_play_audio (s, playmode);
+  /* skip the rest of the header */
+  if (head_size > 24)
+    SDL_RWseek (src, head_size - 24, RW_SEEK_CUR);
 
-  return s;
+  if (maxsize != 0xffffffff)
+    {
+      maxsize -= head_size;
+
+      if (maxsize < audio_size)
+	audio_size = maxsize;
+    }
+
+  /* Note: linear PCM is always assumed to be signed and big endian */
+  switch (encoding)
+    {
+    case 1:			/* mu-law */
+      audio_type = AVT_AUDIO_MULAW;
+      break;
+
+    case 2:			/* 8Bit linear PCM */
+      audio_type = AVT_AUDIO_S8;	/* signed! */
+      break;
+
+    case 3:			/* 16Bit linear PCM */
+      audio_type = AVT_AUDIO_S16BE;
+      break;
+
+    case 27:			/* A-law */
+      audio_type = AVT_AUDIO_ALAW;
+      break;
+
+    default:
+      SDL_SetError ("unsupported encoding in AU file");
+      return NULL;
+    }
+
+    /*
+     * other encodings:
+     *
+     * 4: 24Bit linear PCM
+     * 5: 32Bit linear PCM
+     * 6: 32Bit float
+     * 7: 64Bit float
+     * 10-13: 8/16/24/32Bit fixed point
+     * 23-26: ADPCM variants
+     */
+
+  audio = avt_load_pcm (src, audio_size, samplingrate, audio_type, channels,
+			playmode);
+
+  return audio;
 }
 
 /* src gets always closed */
@@ -567,7 +421,7 @@ avt_load_audio_rw (SDL_RWops * src, Uint32 maxsize, int playmode)
   SDL_RWseek (src, start, RW_SEEK_SET);
 
   if (SDL_memcmp (&head[0], ".snd", 4) == 0)
-    s = avt_load_AU (src, maxsize, playmode);
+    s = avt_load_au (src, maxsize, playmode);
   else if (SDL_memcmp (&head[0], "RIFF", 4) == 0
 	   && SDL_memcmp (&head[8], "WAVE", 4) == 0)
     s = avt_load_wave (src, maxsize, playmode);
@@ -575,9 +429,9 @@ avt_load_audio_rw (SDL_RWops * src, Uint32 maxsize, int playmode)
     {
       s = NULL;
       SDL_SetError ("audio data neither in AU nor WAVE format");
-      SDL_RWclose (src);
     }
 
+  SDL_RWclose (src);
   return s;
 }
 
