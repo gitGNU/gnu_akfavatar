@@ -21,7 +21,6 @@ avt.encoding("UTF-8")
 avt.title("Audio-Player")
 avt.start()
 avt.start_audio()
-avt.avatar_image("default")
 
 -- open URL with the tool "curl"
 -- returns file handle
