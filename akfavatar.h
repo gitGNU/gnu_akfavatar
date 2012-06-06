@@ -1011,6 +1011,13 @@ AVT_API avt_audio *avt_load_raw_audio_data (void *data, size_t data_size,
 			int samplingrate, int audio_type, int channels);
 
 /*
+ * set the capacity for raw audio data
+ * use this when you know the size in advance
+ * it makes avt_add_raw_audio_data faster
+ */
+AVT_API int avt_set_raw_audio_capacity (avt_audio * snd, size_t data_size);
+
+/*
  * add raw audio data to an audio type
  * the audio type must have been created with avt_load_raw_audio_data
  * data should be a larger buffer

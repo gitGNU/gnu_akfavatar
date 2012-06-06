@@ -61,7 +61,8 @@ struct avt_audio
 {
   SDL_AudioSpec audiospec;
   Uint8 *sound;			/* Pointer to sound data */
-  Uint32 len;			/* Length of wave data */
+  Uint32 len;			/* Length of sound data */
+  Uint32 capacity;		/* Capacity in bytes */
   int audio_type;		/* Type of raw data */
   Uint8 wave;			/* wether SDL_FreeWav is needed? */
 };
@@ -245,6 +246,7 @@ avt_quit_audio (void)
     }
 }
 
+/* if size is unknown use 0 or 0xffffffff for maxsize */
 static avt_audio *
 avt_load_pcm (SDL_RWops * src, Uint32 maxsize,
 	      int samplingrate, int audio_type, int channels, int playmode)
@@ -260,7 +262,18 @@ avt_load_pcm (SDL_RWops * src, Uint32 maxsize,
   if (!audio)
     return NULL;
 
-  rest = maxsize;
+  if (maxsize != 0)
+    rest = maxsize;
+  else
+    rest = 0xffffffff;
+
+  /* if size is known, pre-allocate enough memory */
+  if (rest < 0xffffffff)
+    {
+      if (avt_set_raw_audio_capacity (audio, rest) != AVT_NORMAL)
+	return NULL;
+    }
+
   block = sizeof (data);
 
   while ((n = SDL_RWread (src, data, 1, block)) > 0)
@@ -280,7 +293,7 @@ avt_load_pcm (SDL_RWops * src, Uint32 maxsize,
       rest -= n;
 
       if (rest < block)
-        block = rest;
+	block = rest;
     }
 
   return audio;
@@ -306,6 +319,8 @@ avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
       SDL_free (s);
       return NULL;
     }
+
+  s->capacity = s->len;
 
   if (playmode != AVT_LOAD)
     avt_play_audio (s, playmode);
@@ -381,16 +396,16 @@ avt_load_au (SDL_RWops * src, Uint32 maxsize, int playmode)
       return NULL;
     }
 
-    /*
-     * other encodings:
-     *
-     * 4: 24Bit linear PCM
-     * 5: 32Bit linear PCM
-     * 6: 32Bit float
-     * 7: 64Bit float
-     * 10-13: 8/16/24/32Bit fixed point
-     * 23-26: ADPCM variants
-     */
+  /*
+   * other encodings:
+   *
+   * 4: 24Bit linear PCM
+   * 5: 32Bit linear PCM
+   * 6: 32Bit float
+   * 7: 64Bit float
+   * 10-13: 8/16/24/32Bit fixed point
+   * 23-26: ADPCM variants
+   */
 
   audio = avt_load_pcm (src, audio_size, samplingrate, audio_type, channels,
 			playmode);
@@ -465,9 +480,40 @@ avt_load_audio_data (void *data, size_t datasize, int playmode)
 }
 
 extern int
-avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
+avt_set_raw_audio_capacity (avt_audio * snd, size_t data_size)
 {
   void *new_sound;
+
+  if (!snd)
+    return AVT_FAILURE;
+
+  new_sound = NULL;
+
+  if (data_size > 0)
+    {
+      new_sound = SDL_realloc (snd->sound, data_size);
+
+      if (new_sound == NULL)
+	{
+	  SDL_SetError ("out of memory");
+	  _avt_STATUS = AVT_ERROR;
+	  return _avt_STATUS;
+	}
+    }
+
+  snd->sound = (Uint8 *) new_sound;
+  snd->capacity = data_size;
+
+  /* eventually shrink length */
+  if (snd->len > data_size)
+    snd->len = data_size;
+
+  return _avt_STATUS;
+}
+
+extern int
+avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
+{
   size_t i, old_size, new_size, out_size;
   bool active;
 
@@ -495,17 +541,22 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
   if (active)
     SDL_LockAudio ();
 
-  /* get more memory for output buffer */
-  new_sound = SDL_realloc (snd->sound, new_size);
-  if (new_sound == NULL)
+  /* eventually get more memory for output buffer */
+  if (new_size > snd->capacity)
     {
-      SDL_SetError ("out of memory");
-      _avt_STATUS = AVT_ERROR;
-      return _avt_STATUS;
-    }
+      void *new_sound;
 
-  snd->sound = (Uint8 *) new_sound;
-  snd->len = new_size;
+      new_sound = SDL_realloc (snd->sound, new_size);
+      if (new_sound == NULL)
+	{
+	  SDL_SetError ("out of memory");
+	  _avt_STATUS = AVT_ERROR;
+	  return _avt_STATUS;
+	}
+
+      snd->sound = (Uint8 *) new_sound;
+      snd->capacity = new_size;
+    }
 
   /* convert or copy the data */
   switch (snd->audio_type)
@@ -569,10 +620,13 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
       SDL_memcpy (snd->sound + old_size, data, out_size);
     }
 
+  snd->len = new_size;
+
   if (active)
     {
-      current_sound.sound = (Uint8 *) new_sound;
+      current_sound.sound = snd->sound;	/* might have changed */
       current_sound.len = new_size;
+      current_sound.capacity = snd->capacity;
       soundleft += out_size;
       SDL_UnlockAudio ();
     }
@@ -641,6 +695,7 @@ avt_load_raw_audio_data (void *data, size_t data_size,
 
   s->sound = NULL;
   s->len = 0;
+  s->capacity = 0;
   s->audio_type = audio_type;
   s->wave = false;
   s->audiospec.format = format;
@@ -710,6 +765,7 @@ avt_play_audio (avt_audio * snd, int playmode)
   /* load sound */
   current_sound.sound = snd->sound;
   current_sound.len = snd->len;
+  current_sound.capacity = snd->capacity;
   current_sound.audiospec = snd->audiospec;
   current_sound.audiospec.callback = fill_audio;
   current_sound.audiospec.samples = OUTPUT_BUFFER;
@@ -833,6 +889,13 @@ avt_load_raw_audio_data (void *data, size_t data_size,
 
 extern int
 avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
+{
+  no_audio ();
+  return AVT_FAILURE;
+}
+
+extern int
+avt_set_raw_audio_capacity (avt_audio * snd, size_t data_size)
 {
   no_audio ();
   return AVT_FAILURE;

@@ -3,6 +3,9 @@
 	* avatar-audio.c (avt_load_pcm, avt_load_wave, avt_load_au)
 	(avt_load_audio_rw): rewritten
 
+	* akfavatar.h, avatar-audio.c (avt_set_raw_audio_capacity):
+	new function
+
 2012-05-27  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-audio.c (fill_audio, avt_stop_audio, avt_quit_audio)
