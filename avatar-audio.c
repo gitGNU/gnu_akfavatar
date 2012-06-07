@@ -550,16 +550,15 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
   if (new_size > snd->capacity)
     {
       void *new_sound;
-      Uint32 new_capacity;
+      size_t new_capacity;
 
-      new_capacity = snd->capacity;
+      new_capacity = 2 * snd->capacity;
 
-      if (new_capacity > 0)
-        new_capacity *= 2;
-      else
+      if (new_capacity == 0)
         new_capacity = 10240;
 
       new_sound = SDL_realloc (snd->sound, new_capacity);
+
       if (new_sound == NULL)
 	{
 	  SDL_SetError ("out of memory");
