@@ -3,6 +3,8 @@
 	* avatar-audio.c (avt_add_raw_audio_data):
 	double capacity when it's too low
 
+	* avtvorbis.c (load_vorbis): detect needed capacity
+
 2012-06-06  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-audio.c (avt_load_pcm, avt_load_wave, avt_load_au)

@@ -39,11 +39,13 @@ static avt_audio *
 load_vorbis (stb_vorbis * vorbis, int playmode)
 {
   int data_len, offset, total, limit, n;
+  unsigned int samples;
   stb_vorbis_info info;
   avt_audio *audio;
   short data[12 * 1024];
 
   info = stb_vorbis_get_info (vorbis);
+  samples = stb_vorbis_stream_length_in_samples (vorbis);
 
   limit = info.channels * 4096;
   total = sizeof (data) / sizeof (data[0]);
@@ -54,6 +56,10 @@ load_vorbis (stb_vorbis * vorbis, int playmode)
 
   audio = avt_load_raw_audio_data (NULL, 0, info.sample_rate,
 				   AVT_AUDIO_S16SYS, info.channels);
+
+  if (samples > 0)
+    avt_set_raw_audio_capacity (audio,
+				samples * sizeof (data[0]) * info.channels);
 
   while ((n = stb_vorbis_get_frame_short_interleaved (vorbis,
 						      info.channels,
