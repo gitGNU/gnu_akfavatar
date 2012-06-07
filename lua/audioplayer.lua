@@ -65,16 +65,17 @@ local function load_audio(url)
 end
 
 local function play_single(filename) --> play a single file
-  local button
-  local audio = load_audio(filename)
+  local audio, button
+
+  show_cover(string.match(filename, "^(.-)[^\\/]+$"))
+
+  audio = load_audio(filename)
 
   if not audio then
     avt.tell("unsupported audio file")
     avt.wait_button()
     return
   end
-
-  show_cover(string.match(filename, "^(.-)[^\\/]+$"))
 
   repeat
     button = avt.navigate("ps")
