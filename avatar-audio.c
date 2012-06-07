@@ -552,10 +552,15 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
       void *new_sound;
       size_t new_capacity;
 
+      /* get twice the capacity */
       new_capacity = 2 * snd->capacity;
 
-      if (new_capacity == 0)
-        new_capacity = 10240;
+      /*
+       * the capacity must never be lower than new_size
+       * and it may still be 0
+       */
+      if (new_capacity < new_size)
+        new_capacity = new_size;
 
       new_sound = SDL_realloc (snd->sound, new_capacity);
 
