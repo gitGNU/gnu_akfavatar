@@ -491,6 +491,11 @@ avt_set_raw_audio_capacity (avt_audio * snd, size_t data_size)
 
   if (data_size > 0)
     {
+      /* mu-law and A-law get expanded while loading */
+      if (snd->audio_type == AVT_AUDIO_MULAW
+	  || snd->audio_type == AVT_AUDIO_ALAW)
+	data_size *= 2;
+
       new_sound = SDL_realloc (snd->sound, data_size);
 
       if (new_sound == NULL)
