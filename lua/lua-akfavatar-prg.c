@@ -545,6 +545,8 @@ main (int argc, char **argv)
     {
       const char *ext;
 
+      initialize ();
+
       ext = strrchr (argv[script_index], '.');
       if (ext && strcasecmp (EXT_DEMO, ext) == 0)
 	avtdemo (argv[script_index]);
