@@ -302,30 +302,100 @@ avt_load_pcm (SDL_RWops * src, Uint32 maxsize,
 static avt_audio *
 avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
 {
-  struct avt_audio *s;
+  struct avt_audio *audio;
+  int start;
+  int audio_type;
+  char chunk_name[4];
+  bool wrong_chunk;
+  Uint32 chunk_size, chunk_end;
+  Uint32 samplingrate, bytes_per_second;
+  Uint16 encoding, channels, block_align, bits_per_sample;
 
-  s = (struct avt_audio *) SDL_malloc (sizeof (struct avt_audio));
-  if (s == NULL)
+  audio = NULL;
+
+  if (!src)
+    return NULL;
+
+  start = SDL_RWtell (src);
+
+  if (SDL_RWread (src, &chunk_name, sizeof (chunk_name), 1) < 0
+      || SDL_memcmp ("RIFF", chunk_name, sizeof (chunk_name)) != 0)
+    return NULL;
+
+  SDL_RWseek (src, 4, RW_SEEK_CUR);
+
+  /* this is not really a new chunk */
+  if (SDL_RWread (src, &chunk_name, sizeof (chunk_name), 1) < 0
+      || SDL_memcmp ("WAVE", chunk_name, sizeof (chunk_name)) != 0)
+    return NULL;
+
+  /* search format chunk */
+  do
     {
-      SDL_SetError ("out of memory");
+      SDL_RWread (src, &chunk_name, sizeof (chunk_name), 1);
+      chunk_size = SDL_ReadLE32 (src);
+      chunk_end = SDL_RWtell (src) + chunk_size;
+      wrong_chunk =
+	(SDL_memcmp ("fmt ", chunk_name, sizeof (chunk_name)) != 0);
+      if (wrong_chunk)
+	SDL_RWseek (src, chunk_end, RW_SEEK_SET);
+    }
+  while (wrong_chunk);
+
+  encoding = SDL_ReadLE16 (src);
+  channels = SDL_ReadLE16 (src);
+  samplingrate = SDL_ReadLE32 (src);
+  bytes_per_second = SDL_ReadLE32 (src);
+  block_align = SDL_ReadLE16 (src);
+  bits_per_sample = SDL_ReadLE16 (src);	/* just for PCM */
+  SDL_RWseek (src, chunk_end, RW_SEEK_SET);
+
+  switch (encoding)
+    {
+    case 1:			/* PCM */
+      if (bits_per_sample <= 8)
+	audio_type = AVT_AUDIO_U8;
+      else if (bits_per_sample <= 16)
+	audio_type = AVT_AUDIO_S16LE;
+      else
+	return NULL;
+      break;
+
+    case 6:			/* A-law */
+      if (bits_per_sample == 8)
+	audio_type = AVT_AUDIO_ALAW;
+      else
+	return NULL;
+      break;
+
+    case 7:			/* mu-law */
+      if (bits_per_sample == 8)
+	audio_type = AVT_AUDIO_MULAW;
+      else
+	return NULL;
+      break;
+
+    default:			/* unsupported encoding */
       return NULL;
     }
 
-  s->audio_type = AVT_AUDIO_UNKNOWN;
-  s->wave = true;
-
-  if (SDL_LoadWAV_RW (src, 0, &s->audiospec, &s->sound, &s->len) == NULL)
+  /* search data chunk */
+  do
     {
-      SDL_free (s);
-      return NULL;
+      SDL_RWread (src, &chunk_name, sizeof (chunk_name), 1);
+      chunk_size = SDL_ReadLE32 (src);
+      chunk_end = SDL_RWtell (src) + chunk_size;
+      wrong_chunk =
+	(SDL_memcmp ("data", chunk_name, sizeof (chunk_name)) != 0);
+      if (wrong_chunk)
+	SDL_RWseek (src, chunk_end, RW_SEEK_SET);
     }
+  while (wrong_chunk);
 
-  s->capacity = s->len;
+  audio = avt_load_pcm (src, chunk_size, samplingrate, audio_type, channels,
+			playmode);
 
-  if (playmode != AVT_LOAD)
-    avt_play_audio (s, playmode);
-
-  return s;
+  return audio;
 }
 
 static avt_audio *
@@ -560,7 +630,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
        * and it may still be 0
        */
       if (new_capacity < new_size)
-        new_capacity = new_size;
+	new_capacity = new_size;
 
       new_sound = SDL_realloc (snd->sound, new_capacity);
 
