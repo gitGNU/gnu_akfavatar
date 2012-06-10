@@ -684,7 +684,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
 	in = (Uint8 *) data;
 	out = (Sint16 *) (snd->sound + old_size);
-	for (i = 0; i < data_size; i++)
+	for (i = data_size; i > 0; i--)
 	  *out++ = mulaw_decode[*in++];
 	break;
       }
@@ -696,7 +696,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
 	in = (Uint8 *) data;
 	out = (Sint16 *) (snd->sound + old_size);
-	for (i = 0; i < data_size; i++)
+	for (i = data_size; i > 0; i--)
 	  *out++ = alaw_decode[*in++];
 	break;
       }
@@ -711,8 +711,8 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
 	  in = (Sint16 *) data;
 	  out = (Sint16 *) (snd->sound + old_size);
-	  for (i = 0; i < (out_size / 2); i++, in++, out++)
-	    *out = SDL_Swap16 (*in);
+	  for (i = (out_size / sizeof(*out)); i > 0; i--)
+	    *out++ = SDL_Swap16 (*in++);
 	}
       break;
 
@@ -726,8 +726,8 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
 	  in = (Sint16 *) data;
 	  out = (Sint16 *) (snd->sound + old_size);
-	  for (i = 0; i < (out_size / 2); i++, in++, out++)
-	    *out = SDL_Swap16 (*in);
+	  for (i = (out_size / sizeof(*out)); i > 0; i--)
+	    *out++ = SDL_Swap16 (*in++);
 	}
       break;
 
