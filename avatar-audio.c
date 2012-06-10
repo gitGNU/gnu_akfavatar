@@ -299,10 +299,40 @@ avt_load_pcm (SDL_RWops * src, Uint32 maxsize,
   return audio;
 }
 
+/* SDL supports MS-ADPCM and IMA-ADPCM... */
+/* but playing whlie loading doesnt work with this */
+static avt_audio *
+avt_load_sdl_wave (SDL_RWops * src, int playmode)
+{
+  struct avt_audio *s;
+
+  s = (struct avt_audio *) SDL_malloc (sizeof (struct avt_audio));
+  if (s == NULL)
+    {
+      SDL_SetError ("out of memory");
+      return NULL;
+    }
+
+  s->audio_type = AVT_AUDIO_UNKNOWN;
+  s->wave = true;
+
+  if (SDL_LoadWAV_RW (src, 0, &s->audiospec, &s->sound, &s->len) == NULL)
+    {
+      SDL_free (s);
+      return NULL;
+    }
+
+  s->capacity = s->len;
+
+  if (playmode != AVT_LOAD)
+    avt_play_audio (s, playmode);
+
+  return s;
+}
+
 static avt_audio *
 avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
 {
-  struct avt_audio *audio;
   int start;
   int audio_type;
   char chunk_name[4];
@@ -310,8 +340,6 @@ avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
   Uint32 chunk_size, chunk_end;
   Uint32 samplingrate, bytes_per_second;
   Uint16 encoding, channels, block_align, bits_per_sample;
-
-  audio = NULL;
 
   if (!src)
     return NULL;
@@ -375,6 +403,14 @@ avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
 	return NULL;
       break;
 
+    case 2:			/* MS-ADPCM */
+    case 17:			/* IMA-ADPCM */
+      /* only supported in SDL */
+      /* support may be removed in later versions of AKFAvatar */
+      SDL_RWseek (src, start, RW_SEEK_SET);
+      return avt_load_sdl_wave (src, playmode);
+      break;
+
     default:			/* unsupported encoding */
       return NULL;
     }
@@ -392,20 +428,15 @@ avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
     }
   while (wrong_chunk);
 
-  audio = avt_load_pcm (src, chunk_size, samplingrate, audio_type, channels,
-			playmode);
-
-  return audio;
+  return avt_load_pcm (src, chunk_size, samplingrate, audio_type, channels,
+		       playmode);
 }
 
 static avt_audio *
 avt_load_au (SDL_RWops * src, Uint32 maxsize, int playmode)
 {
-  avt_audio *audio;
   Uint32 head_size, audio_size, encoding, samplingrate, channels;
   int audio_type;
-
-  audio = NULL;
 
   if (!src)
     return NULL;
@@ -477,10 +508,8 @@ avt_load_au (SDL_RWops * src, Uint32 maxsize, int playmode)
    * 23-26: ADPCM variants
    */
 
-  audio = avt_load_pcm (src, audio_size, samplingrate, audio_type, channels,
-			playmode);
-
-  return audio;
+  return avt_load_pcm (src, audio_size, samplingrate, audio_type, channels,
+		       playmode);
 }
 
 /* src gets always closed */
