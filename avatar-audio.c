@@ -1045,6 +1045,10 @@ avt_set_raw_audio_capacity (avt_audio * snd, size_t data_size)
   return AVT_FAILURE;
 }
 
+extern void avt_finalize_raw_audio (avt_audio * snd)
+{
+}
+
 extern void
 avt_free_audio (avt_audio * snd)
 {
