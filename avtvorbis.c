@@ -102,7 +102,7 @@ load_vorbis (stb_vorbis * vorbis, int playmode)
   if (playmode != AVT_LOAD)
     avt_play_audio (audio, playmode);
 
-  avt_finalize_raw_audio_data (audio);
+  avt_finalize_raw_audio (audio);
 
   return audio;
 }

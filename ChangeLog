@@ -1,6 +1,6 @@
 2012-06-11  Andreas K. Foerster  <info@akfoerster.de>
 
-	* akfavatar.h, avatar-audio (avt_finalize_raw_audio_data):
+	* akfavatar.h, avatar-audio (avt_finalize_raw_audio):
 	new function
 
 2012-06-10  Andreas K. Foerster  <info@akfoerster.de>
