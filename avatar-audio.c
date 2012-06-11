@@ -335,7 +335,7 @@ avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
 {
   int start;
   int audio_type;
-  char chunk_name[4];
+  char identifier[4];
   bool wrong_chunk;
   Uint32 chunk_size, chunk_end;
   Uint32 samplingrate, bytes_per_second;
@@ -346,25 +346,29 @@ avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
 
   start = SDL_RWtell (src);
 
-  if (SDL_RWread (src, &chunk_name, sizeof (chunk_name), 1) < 0
-      || SDL_memcmp ("RIFF", chunk_name, sizeof (chunk_name)) != 0)
-    return NULL;
+  if (SDL_RWread (src, &identifier, sizeof (identifier), 1) != 1
+      || SDL_memcmp ("RIFF", identifier, sizeof (identifier)) != 0)
+    return NULL;		/* not a RIFF file */
 
-  SDL_RWseek (src, 4, RW_SEEK_CUR);
+  /*
+   * this chunk contains the rest,
+   * so chunk_size should be the file size - 8
+   */
+  chunk_size = SDL_ReadLE32 (src);
 
-  /* this is not really a new chunk */
-  if (SDL_RWread (src, &chunk_name, sizeof (chunk_name), 1) < 0
-      || SDL_memcmp ("WAVE", chunk_name, sizeof (chunk_name)) != 0)
-    return NULL;
+  if (SDL_RWread (src, &identifier, sizeof (identifier), 1) != 1
+      || SDL_memcmp ("WAVE", identifier, sizeof (identifier)) != 0)
+    return NULL;		/* not a Wave file */
 
   /* search format chunk */
   do
     {
-      SDL_RWread (src, &chunk_name, sizeof (chunk_name), 1);
+      if (SDL_RWread (src, &identifier, sizeof (identifier), 1) != 1)
+	return NULL;		/* no format chunk found */
       chunk_size = SDL_ReadLE32 (src);
       chunk_end = SDL_RWtell (src) + chunk_size;
       wrong_chunk =
-	(SDL_memcmp ("fmt ", chunk_name, sizeof (chunk_name)) != 0);
+	(SDL_memcmp ("fmt ", identifier, sizeof (identifier)) != 0);
       if (wrong_chunk)
 	SDL_RWseek (src, chunk_end, RW_SEEK_SET);
     }
@@ -405,8 +409,9 @@ avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
 
     case 2:			/* MS-ADPCM */
     case 17:			/* IMA-ADPCM */
-      /* only supported in SDL */
+      /* only supported via SDL */
       /* support may be removed in later versions of AKFAvatar */
+      /* it should be portable to other backends later */
       SDL_RWseek (src, start, RW_SEEK_SET);
       return avt_load_sdl_wave (src, playmode);
       break;
@@ -418,11 +423,12 @@ avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
   /* search data chunk */
   do
     {
-      SDL_RWread (src, &chunk_name, sizeof (chunk_name), 1);
+      if (SDL_RWread (src, &identifier, sizeof (identifier), 1) != 1)
+	return NULL;		/* no data chunk found */
       chunk_size = SDL_ReadLE32 (src);
       chunk_end = SDL_RWtell (src) + chunk_size;
       wrong_chunk =
-	(SDL_memcmp ("data", chunk_name, sizeof (chunk_name)) != 0);
+	(SDL_memcmp ("data", identifier, sizeof (identifier)) != 0);
       if (wrong_chunk)
 	SDL_RWseek (src, chunk_end, RW_SEEK_SET);
     }
@@ -711,7 +717,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
 	  in = (Sint16 *) data;
 	  out = (Sint16 *) (snd->sound + old_size);
-	  for (i = (out_size / sizeof(*out)); i > 0; i--)
+	  for (i = (out_size / sizeof (*out)); i > 0; i--)
 	    *out++ = SDL_Swap16 (*in++);
 	}
       break;
@@ -726,7 +732,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
 	  in = (Sint16 *) data;
 	  out = (Sint16 *) (snd->sound + old_size);
-	  for (i = (out_size / sizeof(*out)); i > 0; i--)
+	  for (i = (out_size / sizeof (*out)); i > 0; i--)
 	    *out++ = SDL_Swap16 (*in++);
 	}
       break;
