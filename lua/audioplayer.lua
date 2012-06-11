@@ -209,10 +209,12 @@ local function play(e) --> play file or list
   end
 end
 
+-- which files to show in the file chooser
 local function supported_file(n)
   n = string.lower(n)
   return (vorbis and string.find(n, "%.ogg$"))
          or string.find(n, "%.au$")
+         or string.find(n, "%.snd$")
          or string.find(n, "%.wav$")
          or string.find(n, "%.m3u$")
          or string.find(n, "%.pls$")
