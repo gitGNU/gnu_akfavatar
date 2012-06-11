@@ -1,3 +1,8 @@
+2012-06-11  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar-audio (avt_finalize_raw_audio_data):
+	new function
+
 2012-06-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-audio.c (avt_load_wave): native support for wave files

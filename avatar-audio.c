@@ -296,6 +296,8 @@ avt_load_pcm (SDL_RWops * src, Uint32 maxsize,
 	block = rest;
     }
 
+  avt_finalize_raw_audio_data (audio);
+
   return audio;
 }
 
@@ -835,6 +837,32 @@ avt_load_raw_audio_data (void *data, size_t data_size,
       SDL_free (s);
       return NULL;
     }
+}
+
+extern int
+avt_finalize_raw_audio_data (avt_audio * snd)
+{
+  /* eventually free unneeded memory */
+  if (snd->capacity > snd->len)
+    {
+      void *new_sound;
+      size_t new_capacity;
+
+      new_capacity = snd->len;
+      new_sound = SDL_realloc (snd->sound, new_capacity);
+
+      if (new_sound == NULL)
+	{
+	  SDL_SetError ("out of memory");
+	  _avt_STATUS = AVT_ERROR;
+	  return _avt_STATUS;
+	}
+
+      snd->sound = (Uint8 *) new_sound;
+      snd->capacity = new_capacity;
+    }
+
+  return _avt_STATUS;
 }
 
 /* Is this sound currently playing? NULL for any sound */

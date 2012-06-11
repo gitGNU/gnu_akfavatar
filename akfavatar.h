@@ -1024,6 +1024,9 @@ AVT_API int avt_set_raw_audio_capacity (avt_audio * snd, size_t data_size);
  */
 AVT_API int avt_add_raw_audio_data (avt_audio *snd, void *data, size_t data_size);
 
+/* eventually do some cleanups after several avt_add_raw_audio_data */
+AVT_API int avt_finalize_raw_audio_data (avt_audio *snd);
+
 /*
  * frees memory of a loaded sound
  */
