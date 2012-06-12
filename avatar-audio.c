@@ -327,6 +327,7 @@ avt_load_sdl_wave (SDL_RWops * src, int playmode)
   return s;
 }
 
+/* The Wave format is so stupid - don't ever use it! */
 static avt_audio *
 avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
 {
@@ -364,6 +365,8 @@ avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
 	return NULL;		/* no format chunk found */
       chunk_size = SDL_ReadLE32 (src);
       chunk_end = SDL_RWtell (src) + chunk_size;
+      if (chunk_end % 2 != 0)
+	chunk_end++;		/* padding to even addresses */
       wrong_chunk =
 	(SDL_memcmp ("fmt ", identifier, sizeof (identifier)) != 0);
       if (wrong_chunk)
@@ -383,9 +386,9 @@ avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
     {
     case 1:			/* PCM */
       if (bits_per_sample <= 8)
-	audio_type = AVT_AUDIO_U8;
+	audio_type = AVT_AUDIO_U8;	/* unsigned */
       else if (bits_per_sample <= 16)
-	audio_type = AVT_AUDIO_S16LE;
+	audio_type = AVT_AUDIO_S16LE;	/* signed */
       else
 	return NULL;
       break;
@@ -418,6 +421,8 @@ avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
 	return NULL;		/* no data chunk found */
       chunk_size = SDL_ReadLE32 (src);
       chunk_end = SDL_RWtell (src) + chunk_size;
+      if (chunk_end % 2 != 0)
+	chunk_end++;		/* padding to even addresses */
       wrong_chunk =
 	(SDL_memcmp ("data", identifier, sizeof (identifier)) != 0);
       if (wrong_chunk)
