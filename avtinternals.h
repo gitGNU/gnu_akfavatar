@@ -29,6 +29,8 @@
 #define AVT_TIMEOUT 2
 
 #define avt_isblank(c)  ((c) == ' ' || (c) == '\t')
+#define avt_min(a, b) ((a) < (b) ? (a) : (b))
+#define avt_max(a, b) ((a) > (b) ? (a) : (b))
 
 /* avatar.c */
 extern int _avt_STATUS;

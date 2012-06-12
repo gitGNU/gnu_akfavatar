@@ -253,7 +253,7 @@ avt_load_pcm (SDL_RWops * src, Uint32 maxsize,
 {
   avt_audio *audio;
   int n;
-  Uint32 block, rest;
+  Uint32 rest;
   Uint8 data[24 * 1024];
 
   audio = avt_load_raw_audio_data (NULL, 0, samplingrate,
@@ -274,9 +274,7 @@ avt_load_pcm (SDL_RWops * src, Uint32 maxsize,
 	return NULL;
     }
 
-  block = sizeof (data);
-
-  while ((n = SDL_RWread (src, data, 1, block)) > 0)
+  while ((n = SDL_RWread (src, data, 1, avt_min (sizeof (data), rest))) > 0)
     {
       if (avt_add_raw_audio_data (audio, data, n) != AVT_NORMAL)
 	{
@@ -291,9 +289,6 @@ avt_load_pcm (SDL_RWops * src, Uint32 maxsize,
 	}
 
       rest -= n;
-
-      if (rest < block)
-	block = rest;
     }
 
   avt_finalize_raw_audio (audio);
