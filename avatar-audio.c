@@ -340,8 +340,8 @@ avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
   char identifier[4];
   bool wrong_chunk;
   Uint32 chunk_size, chunk_end;
-  Uint32 samplingrate, bytes_per_second;
-  Uint16 encoding, channels, block_align, bits_per_sample;
+  Uint32 samplingrate;
+  Uint16 encoding, channels, bits_per_sample;
 
   if (!src)
     return NULL;
@@ -379,8 +379,8 @@ avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
   encoding = SDL_ReadLE16 (src);
   channels = SDL_ReadLE16 (src);
   samplingrate = SDL_ReadLE32 (src);
-  bytes_per_second = SDL_ReadLE32 (src);
-  block_align = SDL_ReadLE16 (src);
+  SDL_ReadLE32 (src);		/* bytes_per_second */
+  SDL_ReadLE16 (src);		/* block_align */
   bits_per_sample = SDL_ReadLE16 (src);	/* just for PCM */
   SDL_RWseek (src, chunk_end, RW_SEEK_SET);
 
@@ -396,17 +396,11 @@ avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
       break;
 
     case 6:			/* A-law */
-      if (bits_per_sample == 8)
-	audio_type = AVT_AUDIO_ALAW;
-      else
-	return NULL;
+      audio_type = AVT_AUDIO_ALAW;
       break;
 
     case 7:			/* mu-law */
-      if (bits_per_sample == 8)
-	audio_type = AVT_AUDIO_MULAW;
-      else
-	return NULL;
+      audio_type = AVT_AUDIO_MULAW;
       break;
 
     case 2:			/* MS-ADPCM */
@@ -422,7 +416,7 @@ avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
       return NULL;
     }
 
-  /* search data chunk */
+  /* search data chunk - must be after format chunk */
   do
     {
       if (SDL_RWread (src, &identifier, sizeof (identifier), 1) != 1)
@@ -1045,7 +1039,8 @@ avt_set_raw_audio_capacity (avt_audio * snd, size_t data_size)
   return AVT_FAILURE;
 }
 
-extern void avt_finalize_raw_audio (avt_audio * snd)
+extern void
+avt_finalize_raw_audio (avt_audio * snd)
 {
 }
 
