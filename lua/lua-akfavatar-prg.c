@@ -416,8 +416,6 @@ static void
 start_screen (void)
 {
   avt_avatar_image_default ();
-  if (avt_move_in () != AVT_NORMAL)
-    exit (EXIT_SUCCESS);
   avt_set_balloon_size (9, 80);
   avt_underlined (true);
   avt_bold (true);
@@ -545,7 +543,8 @@ main (int argc, char **argv)
     {
       const char *ext;
 
-      initialize ();
+      if (mode != AVT_AUTOMODE)
+	initialize ();
 
       ext = strrchr (argv[script_index], '.');
       if (ext && strcasecmp (EXT_DEMO, ext) == 0)
