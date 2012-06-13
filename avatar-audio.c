@@ -703,37 +703,22 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 	break;
       }
 
-    case AVT_AUDIO_U16BE:
-    case AVT_AUDIO_S16BE:
-      if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-	SDL_memcpy (snd->sound + old_size, data, out_size);
-      else			/* swap bytes */
-	{
-	  Sint16 *in, *out;
-
-	  in = (Sint16 *) data;
-	  out = (Sint16 *) (snd->sound + old_size);
-	  for (i = (out_size / sizeof (*out)); i > 0; i--)
-	    *out++ = SDL_Swap16 (*in++);
-	}
-      break;
-
+    /* these are only stored when it's not the native endianess */
     case AVT_AUDIO_U16LE:
     case AVT_AUDIO_S16LE:
-      if (SDL_BYTEORDER == SDL_LIL_ENDIAN)
-	SDL_memcpy (snd->sound + old_size, data, out_size);
-      else			/* swap bytes */
+    case AVT_AUDIO_U16BE:
+    case AVT_AUDIO_S16BE:
 	{
-	  Sint16 *in, *out;
+	  Uint16 *in, *out;
 
-	  in = (Sint16 *) data;
-	  out = (Sint16 *) (snd->sound + old_size);
+	  in = (Uint16 *) data;
+	  out = (Uint16 *) (snd->sound + old_size);
 	  for (i = (out_size / sizeof (*out)); i > 0; i--)
 	    *out++ = SDL_Swap16 (*in++);
 	}
       break;
 
-    default:			/* linear PCM */
+    default:			/* linear PCM, native endian */
       /* simply copy the audio data */
       SDL_memcpy (snd->sound + old_size, data, out_size);
     }
@@ -770,6 +755,21 @@ avt_load_raw_audio_data (void *data, size_t data_size,
     data = NULL;
   else if (data == NULL)
     data_size = 0;
+
+  if (SDL_LIL_ENDIAN == SDL_BYTEORDER)
+    {
+      if (audio_type == AVT_AUDIO_S16LE)
+	audio_type = AVT_AUDIO_S16SYS;
+      else if (audio_type == AVT_AUDIO_U16LE)
+	audio_type = AVT_AUDIO_U16SYS;
+    }
+ else if (SDL_BIG_ENDIAN == SDL_BYTEORDER)
+    {
+      if (audio_type == AVT_AUDIO_S16BE)
+	audio_type = AVT_AUDIO_S16SYS;
+      else if (audio_type == AVT_AUDIO_U16BE)
+	audio_type = AVT_AUDIO_U16SYS;
+    }
 
   /* convert audio_type into SDL format number */
   switch (audio_type)

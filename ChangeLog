@@ -1,5 +1,10 @@
 2012-06-11  Andreas K. Foerster  <info@akfoerster.de>
 
+	* avatar-audio.c (avt_load_raw_audio_data, avt_add_raw_audio_data):
+	only store the endianness when it is not the native one
+
+2012-06-11  Andreas K. Foerster  <info@akfoerster.de>
+
 	* akfavatar.h, avatar-audio (avt_finalize_raw_audio):
 	new function
 
