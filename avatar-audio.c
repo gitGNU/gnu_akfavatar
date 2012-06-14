@@ -60,11 +60,11 @@
 struct avt_audio
 {
   SDL_AudioSpec audiospec;
-  Uint8 *sound;			/* Pointer to sound data */
-  Uint32 len;			/* Length of sound data */
-  Uint32 capacity;		/* Capacity in bytes */
+  uint8_t *sound;		/* Pointer to sound data */
+  uint32_t len;			/* Length of sound data */
+  uint32_t capacity;		/* Capacity in bytes */
   int audio_type;		/* Type of raw data */
-  Uint8 wave;			/* wether SDL_FreeWav is needed? */
+  uint8_t wave;			/* wether SDL_FreeWav is needed? */
 };
 
 static bool avt_audio_initialized;
@@ -74,13 +74,13 @@ static avt_audio *my_alert;
 
 /* current sound */
 static struct avt_audio current_sound;
-static volatile Sint32 soundpos = 0;	/* Current play position */
-static volatile Sint32 soundleft = 0;	/* Length of left unplayed wave data */
+static volatile int32_t soundpos = 0;	/* Current play position */
+static volatile int32_t soundleft = 0;	/* Length of left unplayed wave data */
 static bool loop = false;
 static volatile bool playing = false;
 
 /* table for decoding mu-law */
-static const Sint16 mulaw_decode[256] = {
+static const int16_t mulaw_decode[256] = {
   -32124, -31100, -30076, -29052, -28028, -27004, -25980, -24956, -23932,
   -22908, -21884, -20860, -19836, -18812, -17788, -16764, -15996, -15484,
   -14972, -14460, -13948, -13436, -12924, -12412, -11900, -11388, -10876,
@@ -107,7 +107,7 @@ static const Sint16 mulaw_decode[256] = {
 };
 
 /* table for decoding A-law */
-static const Sint16 alaw_decode[256] = {
+static const int16_t alaw_decode[256] = {
   -5504, -5248, -6016, -5760, -4480, -4224, -4992, -4736, -7552, -7296, -8064,
   -7808, -6528, -6272, -7040, -6784, -2752, -2624, -3008, -2880, -2240,
   -2112, -2496, -2368, -3776, -3648, -4032, -3904, -3264, -3136, -3520,
@@ -135,7 +135,7 @@ static const Sint16 alaw_decode[256] = {
 
 /* this is the callback function */
 static void
-fill_audio (void *userdata, Uint8 * stream, int len)
+fill_audio (void *userdata, uint8_t * stream, int len)
 {
   /* only play, when there is data left */
   if (soundleft <= 0)
@@ -248,13 +248,13 @@ avt_quit_audio (void)
 
 /* if size is unknown use 0 or 0xffffffff for maxsize */
 static avt_audio *
-avt_load_pcm (SDL_RWops * src, Uint32 maxsize,
+avt_load_pcm (SDL_RWops * src, uint32_t maxsize,
 	      int samplingrate, int audio_type, int channels, int playmode)
 {
   avt_audio *audio;
   int n;
-  Uint32 rest;
-  Uint8 data[24 * 1024];
+  uint32_t rest;
+  uint8_t data[24 * 1024];
 
   audio = avt_load_raw_audio_data (NULL, 0, samplingrate,
 				   audio_type, channels);
@@ -330,15 +330,15 @@ avt_load_sdl_wave (SDL_RWops * src, int playmode)
 
 /* The Wave format is so stupid - don't ever use it! */
 static avt_audio *
-avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
+avt_load_wave (SDL_RWops * src, uint32_t maxsize, int playmode)
 {
   int start;
   int audio_type;
   char identifier[4];
   bool wrong_chunk;
-  Uint32 chunk_size, chunk_end;
-  Uint32 samplingrate;
-  Uint16 encoding, channels, bits_per_sample;
+  uint32_t chunk_size, chunk_end;
+  uint32_t samplingrate;
+  uint16_t encoding, channels, bits_per_sample;
 
   if (!src)
     return NULL;
@@ -441,9 +441,9 @@ avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
 }
 
 static avt_audio *
-avt_load_au (SDL_RWops * src, Uint32 maxsize, int playmode)
+avt_load_au (SDL_RWops * src, uint32_t maxsize, int playmode)
 {
-  Uint32 head_size, audio_size, encoding, samplingrate, channels;
+  uint32_t head_size, audio_size, encoding, samplingrate, channels;
   int audio_type;
 
   if (!src)
@@ -530,7 +530,7 @@ avt_load_au (SDL_RWops * src, Uint32 maxsize, int playmode)
 
 /* src gets always closed */
 static avt_audio *
-avt_load_audio_rw (SDL_RWops * src, Uint32 maxsize, int playmode)
+avt_load_audio_rw (SDL_RWops * src, uint32_t maxsize, int playmode)
 {
   struct avt_audio *s;
   int start;
@@ -576,7 +576,7 @@ extern avt_audio *
 avt_load_audio_part (avt_stream * stream, size_t maxsize, int playmode)
 {
   return avt_load_audio_rw (SDL_RWFromFP ((FILE *) stream, 0),
-			    maxsize > 0 ? (Uint32) maxsize : 0xffffffffU,
+			    maxsize > 0 ? (uint32_t) maxsize : 0xffffffffU,
 			    playmode);
 }
 
@@ -591,7 +591,7 @@ extern avt_audio *
 avt_load_audio_data (void *data, size_t datasize, int playmode)
 {
   return avt_load_audio_rw (SDL_RWFromMem (data, datasize),
-			    (Uint32) datasize, playmode);
+			    (uint32_t) datasize, playmode);
 }
 
 static size_t
@@ -657,7 +657,7 @@ avt_set_raw_audio_capacity (avt_audio * snd, size_t data_size)
 	}
     }
 
-  snd->sound = (Uint8 *) new_sound;
+  snd->sound = (uint8_t *) new_sound;
   snd->capacity = out_size;
 
   /* eventually shrink length */
@@ -718,7 +718,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 	  return _avt_STATUS;
 	}
 
-      snd->sound = (Uint8 *) new_sound;
+      snd->sound = (uint8_t *) new_sound;
       snd->capacity = new_capacity;
     }
 
@@ -727,11 +727,11 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
     {
     case AVT_AUDIO_MULAW:	/* mu-law, logarithmic PCM */
       {
-	Uint8 *in;
-	Sint16 *out;
+	uint8_t *in;
+	int16_t *out;
 
-	in = (Uint8 *) data;
-	out = (Sint16 *) (snd->sound + old_size);
+	in = (uint8_t *) data;
+	out = (int16_t *) (snd->sound + old_size);
 	for (i = data_size; i > 0; i--)
 	  *out++ = mulaw_decode[*in++];
 	break;
@@ -739,11 +739,11 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
     case AVT_AUDIO_ALAW:	/* A-law, logarithmic PCM */
       {
-	Uint8 *in;
-	Sint16 *out;
+	uint8_t *in;
+	int16_t *out;
 
-	in = (Uint8 *) data;
-	out = (Sint16 *) (snd->sound + old_size);
+	in = (uint8_t *) data;
+	out = (int16_t *) (snd->sound + old_size);
 	for (i = data_size; i > 0; i--)
 	  *out++ = alaw_decode[*in++];
 	break;
@@ -755,8 +755,8 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
     case AVT_AUDIO_U16BE:
     case AVT_AUDIO_S16BE:
       {
-	Uint8 *in = (Uint8 *) data;
-	Uint8 *out = (Uint8 *) (snd->sound + old_size);
+	uint8_t *in = (uint8_t *) data;
+	uint8_t *out = (uint8_t *) (snd->sound + old_size);
 
 	for (i = out_size / 2; i > 0; i--)
 	  {
@@ -773,8 +773,8 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
     case AVT_AUDIO_U24LE:
     case AVT_AUDIO_S24LE:
       {
-	Uint8 *in = (Uint8 *) data;
-	Uint16 *out = (Uint16 *) (snd->sound + old_size);
+	uint8_t *in = (uint8_t *) data;
+	uint16_t *out = (uint16_t *) (snd->sound + old_size);
 
 	for (i = out_size / sizeof (*out); i > 0; i--, in += 3)
 	  *out++ = (in[2] << 8) | in[1];
@@ -784,8 +784,8 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
     case AVT_AUDIO_U24BE:
     case AVT_AUDIO_S24BE:
       {
-	Uint8 *in = (Uint8 *) data;
-	Uint16 *out = (Uint16 *) (snd->sound + old_size);
+	uint8_t *in = (uint8_t *) data;
+	uint16_t *out = (uint16_t *) (snd->sound + old_size);
 
 	for (i = out_size / sizeof (*out); i > 0; i--, in += 3)
 	  *out++ = (in[0] << 8) | in[1];
@@ -795,8 +795,8 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
     case AVT_AUDIO_U32LE:
     case AVT_AUDIO_S32LE:
       {
-	Uint8 *in = (Uint8 *) data;
-	Uint16 *out = (Uint16 *) (snd->sound + old_size);
+	uint8_t *in = (uint8_t *) data;
+	uint16_t *out = (uint16_t *) (snd->sound + old_size);
 
 	for (i = out_size / sizeof (*out); i > 0; i--, in += 4)
 	  *out++ = (in[3] << 8) | in[2];
@@ -806,8 +806,8 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
     case AVT_AUDIO_U32BE:
     case AVT_AUDIO_S32BE:
       {
-	Uint8 *in = (Uint8 *) data;
-	Uint16 *out = (Uint16 *) (snd->sound + old_size);
+	uint8_t *in = (uint8_t *) data;
+	uint16_t *out = (uint16_t *) (snd->sound + old_size);
 
 	for (i = out_size / sizeof (*out); i > 0; i--, in += 4)
 	  *out++ = (in[0] << 8) | in[1];
@@ -1004,7 +1004,7 @@ avt_finalize_raw_audio (avt_audio * snd)
 
       if (new_sound)
 	{
-	  snd->sound = (Uint8 *) new_sound;
+	  snd->sound = (uint8_t *) new_sound;
 	  snd->capacity = new_capacity;
 	}
     }

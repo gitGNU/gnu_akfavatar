@@ -266,12 +266,12 @@ static SDL_Surface *circle, *pointer;
 static SDL_Cursor *mpointer;
 static wchar_t *avt_name;
 static int fontwidth, fontheight, fontunderline;
-static Uint32 background_color;
-static Uint32 text_background_color;
+static uint32_t background_color;
+static uint32_t text_background_color;
 static bool newline_mode;	/* when off, you need an extra CR */
 static bool underlined, bold, inverse;	/* text underlined, bold? */
 static bool auto_margin;	/* automatic new lines? */
-static Uint32 screenflags;	/* flags for the screen */
+static uint32_t screenflags;	/* flags for the screen */
 static int avt_mode;		/* whether fullscreen or window or ... */
 static int avt_balloon_mode;
 static SDL_Rect window;		/* if screen is in fact larger */
@@ -423,7 +423,7 @@ static struct
 /* for xpm codes */
 union xpm_codes
 {
-  Uint32 nr;
+  uint32_t nr;
   union xpm_codes *next;
 };
 
@@ -454,7 +454,7 @@ avt_load_image_xpm (char **xpm)
   int width, height, ncolors, cpp;
   int colornr;
   union xpm_codes *codes;
-  Uint32 *colors;
+  uint32_t *colors;
   SDL_Color *colors256;
   int code_nr;
 
@@ -514,7 +514,7 @@ avt_load_image_xpm (char **xpm)
   if (ncolors <= 256)
     colors256 = (SDL_Color *) SDL_calloc (256, sizeof (SDL_Color));
   else
-    colors = (Uint32 *) SDL_calloc (ncolors, sizeof (Uint32));
+    colors = (uint32_t *) SDL_calloc (ncolors, sizeof (uint32_t));
 
   /*
    * note: for colors256 the colors will be scattered around the palette
@@ -696,13 +696,13 @@ avt_load_image_xpm (char **xpm)
 	  if (xpm[ncolors + 1 + line] == NULL)
 	    break;
 
-	  SDL_memcpy ((Uint8 *) img->pixels + (line * img->pitch),
+	  SDL_memcpy ((uint8_t *) img->pixels + (line * img->pitch),
 		      xpm[ncolors + 1 + line], width);
 	}
     }
   else				/* cpp != 1 */
     {
-      Uint8 *pix;
+      uint8_t *pix;
       char *xpm_line;
       int line;
       int bpp;
@@ -715,7 +715,7 @@ avt_load_image_xpm (char **xpm)
       for (line = 0; line < height; line++)
 	{
 	  /* point to beginning of the line */
-	  pix = (Uint8 *) img->pixels + (line * img->pitch);
+	  pix = (uint8_t *) img->pixels + (line * img->pitch);
 	  xpm_line = xpm[ncolors + 1 + line];
 
 	  /* check for premture end of data */
@@ -750,7 +750,7 @@ avt_load_image_xpm (char **xpm)
 	      if (ncolors <= 256)
 		*pix = code_nr;
 	      else
-		*(Uint32 *) pix = *(colors + code_nr);
+		*(uint32_t *) pix = *(colors + code_nr);
 	    }
 	}
     }
@@ -909,7 +909,7 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
   SDL_Color color[2];
   int y;
   int bpl;			/* Bytes per line */
-  Uint8 *line;
+  uint8_t *line;
 
   img = SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 1, 0, 0, 0, 0);
 
@@ -925,7 +925,7 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
   if (SDL_MUSTLOCK (img))
     SDL_LockSurface (img);
 
-  line = (Uint8 *) img->pixels;
+  line = (uint8_t *) img->pixels;
 
   for (y = 0; y < height; y++)
     {
@@ -933,7 +933,7 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
 
       for (byte = 0; byte < bpl; byte++)
 	{
-	  Uint8 val, res;
+	  uint8_t val, res;
 	  int bit;
 
 	  val = *bits;
@@ -1314,12 +1314,12 @@ avt_set_status (int status)
  * Return the pixel value at (x, y)
  * NOTE: The surface must be locked before calling this!
  */
-static Uint32
+static uint32_t
 getpixel (SDL_Surface * surface, int x, int y)
 {
   int bpp = surface->format->BytesPerPixel;
   /* Here p is the address to the pixel we want to retrieve */
-  Uint8 *p = (Uint8 *) surface->pixels + y * surface->pitch + x * bpp;
+  uint8_t *p = (uint8_t *) surface->pixels + y * surface->pitch + x * bpp;
 
   switch (bpp)
     {
@@ -1327,7 +1327,7 @@ getpixel (SDL_Surface * surface, int x, int y)
       return *p;
 
     case 2:
-      return *(Uint16 *) p;
+      return *(uint16_t *) p;
 
     case 3:
       if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
@@ -1336,7 +1336,7 @@ getpixel (SDL_Surface * surface, int x, int y)
 	return p[0] | p[1] << 8 | p[2] << 16;
 
     case 4:
-      return *(Uint32 *) p;
+      return *(uint32_t *) p;
 
     default:
       return 0;			/* shouldn't happen, but avoids warnings */
@@ -1539,7 +1539,7 @@ avt_show_avatar (void)
 }
 
 static void
-avt_draw_balloon2 (int offset, Uint32 ballooncolor)
+avt_draw_balloon2 (int offset, uint32_t ballooncolor)
 {
   SDL_Rect shape;
 
@@ -2189,8 +2189,8 @@ avt_update (void)
 }
 
 /* send a timeout event */
-static Uint32
-avt_timeout (Uint32 intervall, void *param)
+static uint32_t
+avt_timeout (uint32_t intervall, void *param)
 {
   SDL_Event event;
 
@@ -2979,7 +2979,7 @@ static void
 avt_drawchar (avt_char ch, SDL_Surface * surface)
 {
   SDL_Rect dest;
-  Uint16 pitch;
+  uint16_t pitch;
   int y;
 
   if (fontwidth > 8)
@@ -3011,10 +3011,10 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
   else				/* fontwidth <= 8 */
     {
       const unsigned char *font_line;
-      Uint8 *pixels, *p;
+      uint8_t *pixels, *p;
 
       pitch = avt_character->pitch;
-      pixels = p = (Uint8 *) avt_character->pixels;
+      pixels = p = (uint8_t *) avt_character->pixels;
       font_line = (const unsigned char *) avt_get_font_char ((int) ch);
       if (!font_line)
 	font_line = (const unsigned char *) avt_get_font_char (0);
@@ -4682,7 +4682,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 	    quit = true;
 	  else			/* check uf button was clicked */
 	    {
-	      Sint16 mbx, mby;
+	      int16_t mbx, mby;
 
 	      mbx = event.button.x - window.x;
 	      mby = event.button.y - window.y;
@@ -5056,8 +5056,8 @@ avt_move_in (void)
   if (avatar_image)
     {
       SDL_Rect dst;
-      Sint16 destination;
-      Uint32 start_time;
+      int16_t destination;
+      uint32_t start_time;
       SDL_Rect mywindow;
 
       /*
@@ -5081,7 +5081,7 @@ avt_move_in (void)
 
       while (dst.x > destination)
 	{
-	  Sint16 oldx = dst.x;
+	  int16_t oldx = dst.x;
 
 	  /* move */
 	  dst.x = screen->w - ((SDL_GetTicks () - start_time) / MOVE_DELAY);
@@ -5139,8 +5139,8 @@ avt_move_out (void)
   if (avatar_image)
     {
       SDL_Rect dst;
-      Uint32 start_time;
-      Sint16 start_position;
+      uint32_t start_time;
+      int16_t start_position;
       SDL_Rect mywindow;
 
       /*
@@ -5167,7 +5167,7 @@ avt_move_out (void)
 
       while (dst.x < screen->w)
 	{
-	  Sint16 oldx;
+	  int16_t oldx;
 
 	  oldx = dst.x;
 
@@ -5496,7 +5496,7 @@ avt_navigate (const char *buttons)
 
 	case SDL_MOUSEBUTTONDOWN:
 	  {
-	    Sint16 mbx, mby;
+	    int16_t mbx, mby;
 
 	    mbx = event.button.x - window.x;
 	    mby = event.button.y - window.y;
@@ -5617,7 +5617,7 @@ avt_decide (void)
 
 	case SDL_MOUSEBUTTONDOWN:
 	  {
-	    Sint16 mbx, mby;
+	    int16_t mbx, mby;
 
 	    mbx = event.button.x - window.x;
 	    mby = event.button.y - window.y;
@@ -5941,7 +5941,7 @@ avt_init_SDL (void)
 DEPRECATED_EXTERN avt_image_t *
 avt_make_transparent (avt_image_t * image)
 {
-  Uint32 color;
+  uint32_t color;
 
   if (SDL_MUSTLOCK (image))
     SDL_LockSurface (image);
@@ -6576,10 +6576,10 @@ static void
 avt_credits_up (SDL_Surface * last_line)
 {
   SDL_Rect src, dst, line_pos;
-  Sint32 moved;
-  Uint32 now, next_time;
-  Sint32 pixel;
-  Uint32 tickinterval;
+  int32_t moved;
+  uint32_t now, next_time;
+  int32_t pixel;
+  uint32_t tickinterval;
 
   moved = 0;
   pixel = 1;
