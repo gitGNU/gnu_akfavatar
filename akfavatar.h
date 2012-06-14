@@ -988,6 +988,18 @@ AVT_API avt_audio *avt_load_audio_data (void *data, size_t datasize, int playmod
 #define AVT_AUDIO_S16LE     6  /* signed 16 Bit little endian */
 #define AVT_AUDIO_S16BE     7  /* signed 16 Bit big endian */
 #define AVT_AUDIO_S16SYS    8  /* signed 16 Bit system's endianess */
+#define AVT_AUDIO_U24LE     9  /* unsigned 24 Bit little endian */
+#define AVT_AUDIO_U24BE    10  /* unsigned 24 Bit big endian */
+#define AVT_AUDIO_U24SYS   11  /* unsigned 24 Bit system's endianess */
+#define AVT_AUDIO_S24LE    12  /* signed 24 Bit little endian */
+#define AVT_AUDIO_S24BE    13  /* signed 24 Bit big endian */
+#define AVT_AUDIO_S24SYS   14  /* signed 24 Bit system's endianess */
+#define AVT_AUDIO_U32LE    15  /* unsigned 32 Bit little endian */
+#define AVT_AUDIO_U32BE    16  /* unsigned 32 Bit big endian */
+#define AVT_AUDIO_U32SYS   17  /* unsigned 32 Bit system's endianess */
+#define AVT_AUDIO_S32LE    18  /* signed 32 Bit little endian */
+#define AVT_AUDIO_S32BE    19  /* signed 32 Bit big endian */
+#define AVT_AUDIO_S32SYS   20  /* signed 32 Bit system's endianess */
 #define AVT_AUDIO_MULAW   100  /* 8 Bit mu-law (u-law) */
 #define AVT_AUDIO_ALAW    101  /* 8 Bit A-Law */
 

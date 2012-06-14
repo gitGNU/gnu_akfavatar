@@ -262,6 +262,7 @@ avt_load_pcm (SDL_RWops * src, Uint32 maxsize,
   if (!audio)
     return NULL;
 
+
   if (maxsize != 0)
     rest = maxsize;
   else
@@ -385,10 +386,15 @@ avt_load_wave (SDL_RWops * src, Uint32 maxsize, int playmode)
   switch (encoding)
     {
     case 1:			/* PCM */
+      /* smaller numbers are already right-padded */
       if (bits_per_sample <= 8)
 	audio_type = AVT_AUDIO_U8;	/* unsigned */
       else if (bits_per_sample <= 16)
 	audio_type = AVT_AUDIO_S16LE;	/* signed */
+      else if (bits_per_sample <= 24)
+	audio_type = AVT_AUDIO_S24LE;	/* signed */
+      else if (bits_per_sample <= 32)
+	audio_type = AVT_AUDIO_S32LE;	/* signed */
       else
 	return NULL;
       break;
@@ -490,6 +496,14 @@ avt_load_au (SDL_RWops * src, Uint32 maxsize, int playmode)
       audio_type = AVT_AUDIO_S16BE;
       break;
 
+    case 4:			/* 24Bit linear PCM */
+      audio_type = AVT_AUDIO_S24BE;
+      break;
+
+    case 5:			/* 32Bit linear PCM */
+      audio_type = AVT_AUDIO_S32BE;
+      break;
+
     case 27:			/* A-law */
       audio_type = AVT_AUDIO_ALAW;
       break;
@@ -580,24 +594,60 @@ avt_load_audio_data (void *data, size_t datasize, int playmode)
 			    (Uint32) datasize, playmode);
 }
 
+static size_t
+avt_required_audio_size (avt_audio * snd, size_t data_size)
+{
+  size_t out_size;
+
+  switch (snd->audio_type)
+    {
+    case AVT_AUDIO_MULAW:
+    case AVT_AUDIO_ALAW:
+      out_size = 2 * data_size;	/* one byte becomes 2 bytes */
+      break;
+
+    case AVT_AUDIO_S24SYS:
+    case AVT_AUDIO_S24LE:
+    case AVT_AUDIO_S24BE:
+    case AVT_AUDIO_U24SYS:
+    case AVT_AUDIO_U24LE:
+    case AVT_AUDIO_U24BE:
+      out_size = (data_size * 2) / 3;	/* reduced to 16 Bit */
+      break;
+
+    case AVT_AUDIO_S32SYS:
+    case AVT_AUDIO_S32LE:
+    case AVT_AUDIO_S32BE:
+    case AVT_AUDIO_U32SYS:
+    case AVT_AUDIO_U32LE:
+    case AVT_AUDIO_U32BE:
+      out_size = data_size / 2;	/* reduced to 16 Bit */
+      break;
+
+    default:
+      out_size = data_size;
+      break;
+    }
+
+  return out_size;
+}
+
 extern int
 avt_set_raw_audio_capacity (avt_audio * snd, size_t data_size)
 {
   void *new_sound;
+  size_t out_size;
 
   if (!snd)
     return AVT_FAILURE;
 
   new_sound = NULL;
+  out_size = 0;
 
   if (data_size > 0)
     {
-      /* mu-law and A-law get expanded while loading */
-      if (snd->audio_type == AVT_AUDIO_MULAW
-	  || snd->audio_type == AVT_AUDIO_ALAW)
-	data_size *= 2;
-
-      new_sound = SDL_realloc (snd->sound, data_size);
+      out_size = avt_required_audio_size (snd, data_size);
+      new_sound = SDL_realloc (snd->sound, out_size);
 
       if (new_sound == NULL)
 	{
@@ -608,11 +658,11 @@ avt_set_raw_audio_capacity (avt_audio * snd, size_t data_size)
     }
 
   snd->sound = (Uint8 *) new_sound;
-  snd->capacity = data_size;
+  snd->capacity = out_size;
 
   /* eventually shrink length */
-  if (snd->len > data_size)
-    snd->len = data_size;
+  if (snd->len > out_size)
+    snd->len = out_size;
 
   return _avt_STATUS;
 }
@@ -634,12 +684,8 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
       return AVT_FAILURE;
     }
 
+  out_size = avt_required_audio_size (snd, data_size);
   old_size = snd->len;
-  out_size = data_size;
-
-  if (snd->audio_type == AVT_AUDIO_MULAW || snd->audio_type == AVT_AUDIO_ALAW)
-    out_size *= 2;		/* one byte becomes 2 bytes */
-
   new_size = old_size + out_size;
 
   /* if it's currently playing, lock it */
@@ -679,7 +725,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
   /* convert or copy the data */
   switch (snd->audio_type)
     {
-    case AVT_AUDIO_MULAW:
+    case AVT_AUDIO_MULAW:	/* mu-law, logarithmic PCM */
       {
 	Uint8 *in;
 	Sint16 *out;
@@ -691,7 +737,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 	break;
       }
 
-    case AVT_AUDIO_ALAW:
+    case AVT_AUDIO_ALAW:	/* A-law, logarithmic PCM */
       {
 	Uint8 *in;
 	Sint16 *out;
@@ -703,24 +749,74 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 	break;
       }
 
-    /* these are only stored when it's not the native endianess */
+      /* these are only stored when it's not the native endianess */
     case AVT_AUDIO_U16LE:
     case AVT_AUDIO_S16LE:
     case AVT_AUDIO_U16BE:
     case AVT_AUDIO_S16BE:
-	{
-	  Uint16 *in, *out;
+      {
+	Uint8 *in = (Uint8 *) data;
+	Uint8 *out = (Uint8 *) (snd->sound + old_size);
 
-	  in = (Uint16 *) data;
-	  out = (Uint16 *) (snd->sound + old_size);
-	  for (i = (out_size / sizeof (*out)); i > 0; i--)
-	    *out++ = SDL_Swap16 (*in++);
-	}
+	for (i = out_size / 2; i > 0; i--)
+	  {
+	    /* swap bytes */
+	    *out++ = in[1];
+	    *out++ = in[0];
+	    in += 2;
+	  }
+      }
       break;
 
-    default:			/* linear PCM, native endian */
-      /* simply copy the audio data */
+      /* the following ones are all converted to 16 bits */
+
+    case AVT_AUDIO_U24LE:
+    case AVT_AUDIO_S24LE:
+      {
+	Uint8 *in = (Uint8 *) data;
+	Uint16 *out = (Uint16 *) (snd->sound + old_size);
+
+	for (i = out_size / sizeof (*out); i > 0; i--, in += 3)
+	  *out++ = (in[2] << 8) | in[1];
+      }
+      break;
+
+    case AVT_AUDIO_U24BE:
+    case AVT_AUDIO_S24BE:
+      {
+	Uint8 *in = (Uint8 *) data;
+	Uint16 *out = (Uint16 *) (snd->sound + old_size);
+
+	for (i = out_size / sizeof (*out); i > 0; i--, in += 3)
+	  *out++ = (in[0] << 8) | in[1];
+      }
+      break;
+
+    case AVT_AUDIO_U32LE:
+    case AVT_AUDIO_S32LE:
+      {
+	Uint8 *in = (Uint8 *) data;
+	Uint16 *out = (Uint16 *) (snd->sound + old_size);
+
+	for (i = out_size / sizeof (*out); i > 0; i--, in += 4)
+	  *out++ = (in[3] << 8) | in[2];
+      }
+      break;
+
+    case AVT_AUDIO_U32BE:
+    case AVT_AUDIO_S32BE:
+      {
+	Uint8 *in = (Uint8 *) data;
+	Uint16 *out = (Uint16 *) (snd->sound + old_size);
+
+	for (i = out_size / sizeof (*out); i > 0; i--, in += 4)
+	  *out++ = (in[0] << 8) | in[1];
+      }
+      break;
+
+    default:			/* linear PCM, same bit size and endianness */
       SDL_memcpy (snd->sound + old_size, data, out_size);
+      break;
     }
 
   snd->len = new_size;
@@ -756,19 +852,64 @@ avt_load_raw_audio_data (void *data, size_t data_size,
   else if (data == NULL)
     data_size = 0;
 
+  /* adjustments for later optimizations */
   if (SDL_LIL_ENDIAN == SDL_BYTEORDER)
     {
-      if (audio_type == AVT_AUDIO_S16LE)
-	audio_type = AVT_AUDIO_S16SYS;
-      else if (audio_type == AVT_AUDIO_U16LE)
-	audio_type = AVT_AUDIO_U16SYS;
+      switch (audio_type)
+	{
+	case AVT_AUDIO_S16LE:
+	  audio_type = AVT_AUDIO_S16SYS;
+	  break;
+
+	case AVT_AUDIO_U16LE:
+	  audio_type = AVT_AUDIO_U16SYS;
+	  break;
+
+	case AVT_AUDIO_S24SYS:
+	  audio_type = AVT_AUDIO_S24LE;
+	  break;
+
+	case AVT_AUDIO_U24SYS:
+	  audio_type = AVT_AUDIO_U24LE;
+	  break;
+
+	case AVT_AUDIO_S32SYS:
+	  audio_type = AVT_AUDIO_S32LE;
+	  break;
+
+	case AVT_AUDIO_U32SYS:
+	  audio_type = AVT_AUDIO_U32LE;
+	  break;
+	}
     }
- else if (SDL_BIG_ENDIAN == SDL_BYTEORDER)
+  else if (SDL_BIG_ENDIAN == SDL_BYTEORDER)
     {
-      if (audio_type == AVT_AUDIO_S16BE)
-	audio_type = AVT_AUDIO_S16SYS;
-      else if (audio_type == AVT_AUDIO_U16BE)
-	audio_type = AVT_AUDIO_U16SYS;
+      switch (audio_type)
+	{
+	case AVT_AUDIO_S16BE:
+	  audio_type = AVT_AUDIO_S16SYS;
+	  break;
+
+	case AVT_AUDIO_U16BE:
+	  audio_type = AVT_AUDIO_U16SYS;
+	  break;
+
+	case AVT_AUDIO_S24SYS:
+	  audio_type = AVT_AUDIO_S24BE;
+	  break;
+
+	case AVT_AUDIO_U24SYS:
+	  audio_type = AVT_AUDIO_U24BE;
+	  break;
+
+	case AVT_AUDIO_S32SYS:
+	  audio_type = AVT_AUDIO_S32BE;
+	  break;
+
+	case AVT_AUDIO_U32SYS:
+	  audio_type = AVT_AUDIO_U32BE;
+	  break;
+	}
     }
 
   /* convert audio_type into SDL format number */
@@ -777,21 +918,37 @@ avt_load_raw_audio_data (void *data, size_t data_size,
     case AVT_AUDIO_U8:
       format = AUDIO_U8;
       break;
+
     case AVT_AUDIO_S8:
       format = AUDIO_S8;
       break;
+
     case AVT_AUDIO_U16LE:
     case AVT_AUDIO_U16BE:
     case AVT_AUDIO_U16SYS:
-      /* endianess will get adjusted while loading */
+    case AVT_AUDIO_U24LE:
+    case AVT_AUDIO_U24BE:
+    case AVT_AUDIO_U24SYS:
+    case AVT_AUDIO_U32LE:
+    case AVT_AUDIO_U32BE:
+    case AVT_AUDIO_U32SYS:
+      /* size and endianess will get adjusted while loading */
       format = AUDIO_U16SYS;
       break;
+
     case AVT_AUDIO_S16LE:
     case AVT_AUDIO_S16BE:
     case AVT_AUDIO_S16SYS:
-      /* endianess will get adjusted while loading */
+    case AVT_AUDIO_S24LE:
+    case AVT_AUDIO_S24BE:
+    case AVT_AUDIO_S24SYS:
+    case AVT_AUDIO_S32LE:
+    case AVT_AUDIO_S32BE:
+    case AVT_AUDIO_S32SYS:
+      /* size and endianess will get adjusted while loading */
       format = AUDIO_S16SYS;
       break;
+
     case AVT_AUDIO_MULAW:
     case AVT_AUDIO_ALAW:
       /* will be converted to S16SYS */
