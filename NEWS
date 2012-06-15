@@ -9,7 +9,9 @@
   - Data files are put in a separate directory and Lua has a search function
     for it (scripts have to be adapted!)
   - Audio files can be played while loading (except for ADPCM)
+  - Support for audio-files with up to 32 bit (converted to 16 bit internally)
   - Support for wave files with mu-law and A-law encoding
+  - ADPCM encodings are deprecated now (but still supported)
   - Some more audio files
   - the command lua-akfavatar accepts options for fullscreen mode
   - The pager supports the markup mode now

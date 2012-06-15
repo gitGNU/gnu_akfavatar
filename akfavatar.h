@@ -943,13 +943,13 @@ AVT_API void avt_quit_audio (void);
 
 /*
  * supported audio formats:
- * AU:  linear PCM with up to 32Bit, mu-law, A-law
- * WAV: linear PCM with up to 16Bit, MS-ADPCM, IMA-ADPCM
- * Both: mono or stereo
+ * AU or Wave (*.au, *.snd, *.wav)
+ * linear PCM with up to 32Bit, mu-law, A-law
+ * mono or stereo
  *
- * the current implementation can only play sounds with 
- * up to 16Bit precision, but AU-files with more Bits can
- * be read.
+ * the current implementation can only play sounds with
+ * up to 16Bit precision, but files with more bits can
+ * be imported.
  */
 
 /*
@@ -961,7 +961,6 @@ AVT_API avt_audio *avt_load_audio_file (const char *filename, int playmode);
 /*
  * loads audio in AU or Wave format from a stream
  * if maxsize is >0 it reads no more than this size
- * maxsize is ignored for Wave data
  * not for headerless formats
  */
 AVT_API avt_audio *avt_load_audio_part (avt_stream *stream, size_t maxsize, int playmode);
@@ -1009,7 +1008,7 @@ AVT_API avt_audio *avt_load_audio_data (void *data, size_t datasize, int playmod
 
 /*
  * loads raw audio data from memory
- * the data buffer is copied and can be freed immediately
+ * the data buffer is copied and can be reused
  *
  * audio_type is one of the AVT_AUDIO_* constants
  * channels is AVT_MONO or AVT_STEREO

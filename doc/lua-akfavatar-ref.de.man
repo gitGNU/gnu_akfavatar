@@ -59,9 +59,8 @@ und weitere Bibliotheken installiert sind.
 .PP
 Für Audio werden die Formate
 .BR AU " und " WAV
-auf jeden Fall unterstützt.
-AU-Dateien können als PCM, \(*m-law oder A-law kodiert sein.
-WAV-Dateien können als PCM, IMA-ADPCM oder MS-ADPCM kodiert sein.
+unterstützt.
+Dateien können als PCM, \(*m-law oder A-law kodiert sein.
 Es gibt auch ein Lua-Modul namens
 .BR akfavatar-vorbis ,
 welches Unterstützung für Ogg Vorbis Audio-Dateien hinzufügt.
