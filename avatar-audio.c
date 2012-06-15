@@ -463,12 +463,6 @@ avt_load_au (SDL_RWops * src, uint32_t maxsize, int playmode)
   samplingrate = SDL_ReadBE32 (src);
   channels = SDL_ReadBE32 (src);
 
-  if (channels < 1 || channels > 2)
-    {
-      SDL_SetError ("only 1 or 2 channels supported");
-      return NULL;
-    }
-
   /* skip the rest of the header */
   if (head_size > 24)
     SDL_RWseek (src, head_size - 24, RW_SEEK_CUR);
@@ -516,8 +510,6 @@ avt_load_au (SDL_RWops * src, uint32_t maxsize, int playmode)
   /*
    * other encodings:
    *
-   * 4: 24Bit linear PCM
-   * 5: 32Bit linear PCM
    * 6: 32Bit float
    * 7: 64Bit float
    * 10-13: 8/16/24/32Bit fixed point
@@ -725,6 +717,14 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
   /* convert or copy the data */
   switch (snd->audio_type)
     {
+    case AVT_AUDIO_S16SYS:
+    case AVT_AUDIO_U16SYS:
+    case AVT_AUDIO_U8:
+    case AVT_AUDIO_S8:
+      /* linear PCM, same bit size and endianness */
+      SDL_memcpy (snd->sound + old_size, data, out_size);
+      break;
+
     case AVT_AUDIO_MULAW:	/* mu-law, logarithmic PCM */
       {
 	uint8_t *in;
@@ -749,22 +749,25 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 	break;
       }
 
-      /* these are only stored when it's not the native endianess */
     case AVT_AUDIO_U16LE:
     case AVT_AUDIO_S16LE:
+      {
+	uint8_t *in = (uint8_t *) data;
+	uint16_t *out = (uint16_t *) (snd->sound + old_size);
+
+	for (i = out_size / 2; i > 0; i--, in += 2)
+	  *out++ = (in[1] << 8) | in[0];
+      }
+      break;
+
     case AVT_AUDIO_U16BE:
     case AVT_AUDIO_S16BE:
       {
 	uint8_t *in = (uint8_t *) data;
-	uint8_t *out = (uint8_t *) (snd->sound + old_size);
+	uint16_t *out = (uint16_t *) (snd->sound + old_size);
 
-	for (i = out_size / 2; i > 0; i--)
-	  {
-	    /* swap bytes */
-	    *out++ = in[1];
-	    *out++ = in[0];
-	    in += 2;
-	  }
+	for (i = out_size / 2; i > 0; i--, in += 2)
+	  *out++ = (in[0] << 8) | in[1];
       }
       break;
 
@@ -814,9 +817,10 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
       }
       break;
 
-    default:			/* linear PCM, same bit size and endianness */
-      SDL_memcpy (snd->sound + old_size, data, out_size);
-      break;
+    default:
+      SDL_SetError ("Internal error");
+      _avt_STATUS = AVT_ERROR;
+      return _avt_STATUS;
     }
 
   snd->len = new_size;
