@@ -1,6 +1,7 @@
 #include "akfavatar.h"
 #include "avtinternals.h"
-#include "SDL.h"
+#include "stdio.h"		/* sscanf */
+#include "strings.h"		/* strcasecmp */
 #include "rgb.h"
 
 extern int
@@ -21,9 +22,9 @@ avt_colorname (const char *name)
     {
       unsigned int r, g, b;
 
-      if (SDL_sscanf (name, " #%2x%2x%2x", &r, &g, &b) == 3)
+      if (sscanf (name, " #%2x%2x%2x", &r, &g, &b) == 3)
 	colornr = avt_rgb (r, g, b);
-      else if (SDL_sscanf (name, " #%1x%1x%1x", &r, &g, &b) == 3)
+      else if (sscanf (name, " #%1x%1x%1x", &r, &g, &b) == 3)
 	colornr = avt_rgb ((r << 4 | r), (g << 4 | g), (b << 4 | b));
     }
   else if (name[0] == '%')	/* HSV values not supported */
@@ -34,7 +35,7 @@ avt_colorname (const char *name)
       const int numcolors = sizeof (avt_colors) / sizeof (avt_colors[0]);
 
       for (i = 0; i < numcolors && colornr == -1; i++)
-	if (SDL_strcasecmp (avt_colors[i].name, name) == 0)
+	if (strcasecmp (avt_colors[i].name, name) == 0)
 	  colornr = avt_colors[i].number;
     }
 

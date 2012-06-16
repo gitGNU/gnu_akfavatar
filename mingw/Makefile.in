@@ -53,10 +53,10 @@ avatar-default.o: $(srcdir)/avatar-default.c $(srcdir)/akfavatar.h
 
 filechooser.o: $(srcdir)/filechooser.c $(srcdir)/avtinternals.h \
                  $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h
-	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/filechooser.c
+	$(CC) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/filechooser.c
 
 colorchooser.o: $(srcdir)/colorchooser.c $(srcdir)/akfavatar.h
-	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/colorchooser.c
+	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/colorchooser.c
 
 rgb.h: $(srcdir)/rgb.txt $(srcdir)/rgb2c
 	$(AWK) -f $(srcdir)/rgb2c -v name="avt_colors" \
@@ -68,7 +68,7 @@ avtpalette.o: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
 	  -o $@ $(srcdir)/avtpalette.c
 
 avatar-sdl.o: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
-             $(srcdir)/avtinternals.h rgb.h \
+             $(srcdir)/avtinternals.h version.h rgb.h \
              $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
              $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
              $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \

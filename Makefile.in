@@ -152,13 +152,11 @@ rgb.h: $(srcdir)/rgb.txt $(srcdir)/rgb2c
 
 avtpalette.o: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
 	      $(srcdir)/avtinternals.h
-	$(CC) -I. $(CFLAGS) $(SDL_CFLAGS) -I$(srcdir) -c \
-	  -o $@ $(srcdir)/avtpalette.c
+	$(CC) -I$(srcdir) -I. $(CFLAGS) -c -o $@ $(srcdir)/avtpalette.c
 
 avtpalette.lo: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
 	       $(srcdir)/avtinternals.h
-	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -fPIC \
-	  -o $@ $(srcdir)/avtpalette.c
+	$(CC) -I$(srcdir) -I. $(CFLAGS) -c -fPIC -o $@ $(srcdir)/avtpalette.c
 
 avatar-sdl.o: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
           $(srcdir)/avtinternals.h version.h rgb.h \
