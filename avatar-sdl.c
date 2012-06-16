@@ -6568,6 +6568,11 @@ avt_get_error (void)
   return SDL_GetError ();
 }
 
+extern void
+avt_set_error (const char *message)
+{
+  SDL_SetError ("%s", message);
+}
 
 #define CREDITDELAY 50
 

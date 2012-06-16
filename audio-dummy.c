@@ -29,12 +29,11 @@
 
 #include "akfavatar.h"
 #include "avtinternals.h"
-#include "SDL.h"		/* for SDL_SetError */
 
 static void
 no_audio (void)
 {
-  SDL_SetError ("not compiled with audio support");
+  avt_set_error ("not compiled with audio support");
 }
 
 extern int
