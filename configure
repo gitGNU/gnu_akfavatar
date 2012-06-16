@@ -411,6 +411,7 @@ fi
 if [ x"$NO_AUDIO" = x"yes" ]
 then
   OBJAUDIO="audio-dummy"
+  CFLAGS="$CFLAGS -DNO_AUDIO"
 fi
 
 if [ x"$NO_DEPRECATED" = x"yes" ]
