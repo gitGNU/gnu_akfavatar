@@ -22,7 +22,6 @@
 #define _AVTINTERNALS_H
 
 #include "akfavatar.h"
-#include "SDL.h"
 #include <stdio.h>		/* FILE */
 
 #define AVT_AUDIO_ENDED 1
@@ -32,10 +31,10 @@
 #define avt_min(a, b) ((a) < (b) ? (a) : (b))
 #define avt_max(a, b) ((a) > (b) ? (a) : (b))
 
-/* avatar.c */
+/* avatar-sdl.c */
 extern int _avt_STATUS;
-extern void avt_analyze_event (SDL_Event * event);
 extern int avt_checkevent (void);
+extern int avt_wait_event (void);
 extern void (*avt_alert_func) (void);
 extern void (*avt_quit_audio_func) (void);
 

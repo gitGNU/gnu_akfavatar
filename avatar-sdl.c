@@ -349,6 +349,7 @@ void (*avt_quit_audio_func) (void) AVT_HIDDEN = NULL;
 static int avt_pause (void);
 static void avt_drawchar (avt_char ch, SDL_Surface * surface);
 static SDL_Surface *avt_save_background (SDL_Rect area);
+static void avt_analyze_event (SDL_Event * event);
 
 static int
 calculate_balloonmaxheight (void)
@@ -2064,8 +2065,7 @@ avt_get_mode (void)
   return avt_mode;
 }
 
-/* external: not in the API, but used in avatar-audio */
-void AVT_HIDDEN
+static void
 avt_analyze_event (SDL_Event * event)
 {
   switch (event->type)
@@ -2171,6 +2171,18 @@ avt_checkevent (void)
 
   while (SDL_PollEvent (&event))
     avt_analyze_event (&event);
+
+  return _avt_STATUS;
+}
+
+/* external: not in the API, but used in avatar-audio */
+int AVT_HIDDEN
+avt_wait_event (void)
+{
+  SDL_Event event;
+
+  SDL_WaitEvent (&event);
+  avt_analyze_event (&event);
 
   return _avt_STATUS;
 }

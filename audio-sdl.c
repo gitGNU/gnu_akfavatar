@@ -1088,8 +1088,6 @@ avt_play_audio (avt_audio * snd, int playmode)
 extern int
 avt_wait_audio_end (void)
 {
-  SDL_Event event;
-
   if (!playing)
     return _avt_STATUS;
 
@@ -1097,10 +1095,7 @@ avt_wait_audio_end (void)
   loop = false;
 
   while (playing && _avt_STATUS == AVT_NORMAL)
-    {
-      SDL_WaitEvent (&event);	/* end of audio also triggers event */
-      avt_analyze_event (&event);
-    }
+    avt_wait_event ();		/* end of audio also triggers event */
 
   return _avt_STATUS;
 }

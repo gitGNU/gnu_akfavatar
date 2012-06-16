@@ -8,6 +8,9 @@
 
 	* akfavatar.h, avatar-sdl.c (avt_set_error): new function
 
+	* avatar-sdl.c (avt_wait_event): new function
+	audio-sdl.c (avt_wait_audio_end): adapted
+
 2012-06-14  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-audio.c: support for 24 and 32 bit audio data

@@ -17,6 +17,7 @@
  */
 
 #define _BSD_SOURCE
+#define _GNU_SOURCE
 
 #include "akfavatar.h"
 #include "avtaddons.h"

@@ -133,12 +133,11 @@ alert.c: $(srcdir)/alert.au $(srcdir)/data2c
 
 filechooser.o: $(srcdir)/filechooser.c $(srcdir)/akfavatar.h \
 	       $(srcdir)/avtaddons.h $(srcdir)/avtinternals.h
-	$(CC) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/filechooser.c
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/filechooser.c
 
 filechooser.lo: $(srcdir)/filechooser.c $(srcdir)/avtaddons.h \
                 $(srcdir)/avtinternals.h  $(srcdir)/akfavatar.h
-	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -fpic -o $@ \
-	  $(srcdir)/filechooser.c
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/filechooser.c
 
 colorchooser.o: $(srcdir)/colorchooser.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/colorchooser.c
@@ -208,11 +207,11 @@ audio-sdl.lo: $(srcdir)/audio-sdl.c $(srcdir)/akfavatar.h \
 
 audio-dummy.o: $(srcdir)/audio-dummy.c $(srcdir)/akfavatar.h \
 	        $(srcdir)/avtinternals.h
-	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/audio-dummy.c
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/audio-dummy.c
 
 audio-dummy.lo: $(srcdir)/audio-dummy.c $(srcdir)/akfavatar.h \
 	         $(srcdir)/avtinternals.h
-	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -fPIC -o $@ \
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ \
 	  $(srcdir)/audio-dummy.c
 
 font.c: $(srcdir)/$(FONT) $(srcdir)/bdf2c
