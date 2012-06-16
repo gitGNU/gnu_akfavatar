@@ -20,7 +20,7 @@ invocation_name=$0
 args=
 no_create=
 pkgname=akfavatar
-srctrigger=avatar.c
+srctrigger=avatar-sdl.c
 SIZE=DEFAULT
 OLDSDL=
 OPENPTY=
@@ -32,6 +32,8 @@ NO_LUA="no"
 STATIC_LUA="no"
 NO_DEPRECATED="no"
 FONT="9x18.bdf"
+OBJAVATAR="avatar-sdl"
+OBJAUDIO="audio-sdl"
 
 if [ ${BUILD} -gt 0 ]
 then pkgversion="${VERSION}.${SUBVERSION}.${REVISION}${VARIANT}-${BUILD}"
@@ -99,8 +101,8 @@ while [ x"$1" != x ] ; do
 		echo "  --mandir=DIR          man pages directory [${mandir}]"
 		echo "  --docdir=DIR          documentation directory [${docdir}]"
 		echo "  --sysconfdir=DIR      read-only single-machine data directory [${sysconfdir}]"
-		echo "  --with-openpty        use openpty instead of posix_openpt"
 		echo "  --host=mingw          cross-compile with mingw (experimental)"
+		echo "  --with-openpty        use openpty instead of posix_openpt"
 		echo "  --with-oldsdl         support for older SDL versions on target machine"
 		echo "  --with-iconv[=enc]    force use of external iconv (normally not needed)"
 		echo "  --with-sdl-iconv=enc  set encoding for wchar_t when SDL's iconv is used"
@@ -408,7 +410,7 @@ fi
 
 if [ x"$NO_AUDIO" = x"yes" ]
 then
-  CFLAGS="$CFLAGS -DNO_AUDIO"
+  OBJAUDIO="audio-dummy"
 fi
 
 if [ x"$NO_DEPRECATED" = x"yes" ]
@@ -518,6 +520,8 @@ echo "ARCH = ${ARCH}"
 echo "TARGET = ${TARGET}"
 echo "DISTBIN = ${DISTBIN}"
 echo "FONT = ${FONT}"
+echo "OBJAVATAR = ${OBJAVATAR}"
+echo "OBJAUDIO = ${OBJAUDIO}"
 
 VERSIONNR=`printf "%02d%02d%02d" ${VERSION} ${SUBVERSION} ${REVISION}`
 AVTVERSIONSTR="${VERSION}.${SUBVERSION}.${REVISION}${VARIANT}"
@@ -588,6 +592,8 @@ ARCH = ${ARCH}
 TARGET = ${TARGET}
 DISTBIN = ${DISTBIN}
 FONT = ${FONT}
+OBJAVATAR = ${OBJAVATAR}
+OBJAUDIO = ${OBJAUDIO}
 
 EOF
 

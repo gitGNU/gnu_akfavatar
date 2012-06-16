@@ -67,8 +67,8 @@ avtpalette.o: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
 	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c \
 	  -o $@ $(srcdir)/avtpalette.c
 
-avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
-             rgb.h \
+avatar-sdl.o: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
+             $(srcdir)/avtinternals.h rgb.h \
              $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
              $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
              $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
@@ -79,11 +79,15 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
              $(srcdir)/balloonpointer.xbm $(srcdir)/thinkpointer.xbm \
              $(srcdir)/circle.xbm $(srcdir)/akfavatar.xpm
 	$(CC) -c -I$(srcdir) -I. -I$(srcdir)/mingw $(CFLAGS) $(SDL_CFLAGS) \
-	    -o $@ $(srcdir)/avatar.c
+	    -o $@ $(srcdir)/avatar-sdl.c
 
-avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h \
+audio-sdl.o: $(srcdir)/audio-sdl.c $(srcdir)/akfavatar.h \
                   $(srcdir)/avtinternals.h alert.c
-	$(CC) -c -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -o $@ $(srcdir)/avatar-audio.c
+	$(CC) -c -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -o $@ $(srcdir)/audio-sdl.c
+
+audio-dummy.o: $(srcdir)/audio-dummy.c $(srcdir)/akfavatar.h \
+                  $(srcdir)/avtinternals.h
+	$(CC) -c -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -o $@ $(srcdir)/audio-dummy.c
 
 font.c: $(srcdir)/$(FONT) $(srcdir)/bdf2c
 	$(AWK) -f $(srcdir)/bdf2c -v prefix="avt_" $(srcdir)/$(FONT) > $@
@@ -100,15 +104,15 @@ iconv.exe: $(srcdir)/mingw/win_iconv.c
 iconv: iconv.exe
 
 # static library
-libakfavatar.a: avatar.o avatar-default.o avatar-audio.o font.o \
+libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar-default.o font.o \
 	  avtpalette.o win_iconv.o version.o
-	$(AR) rcu $@ avatar.o avatar-default.o avatar-audio.o font.o \
+	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o avatar-default.o font.o \
 	  avtpalette.o win_iconv.o version.o
 	$(RANLIB) $@
 
-akfavatar.dll: avatar.o avatar-default.o avatar-audio.o font.o libinfo.o \
+akfavatar.dll: $(OBJAVATAR).o $(OBJAUDIO).o avatar-default.o font.o libinfo.o \
 	  avtpalette.o win_iconv.o version.o
-	$(CC) -shared -o $@ avatar.o avatar-default.o avatar-audio.o \
+	$(CC) -shared -o $@ $(OBJAVATAR).o $(OBJAUDIO).o avatar-default.o \
 	        font.o avtpalette.o win_iconv.o version.o libinfo.o \
 	        -Wl,-no-undefined,--enable-runtime-pseudo-reloc \
 	        -Wl,--output-def,akfavatar.def \

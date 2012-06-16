@@ -102,8 +102,8 @@ avtpalette.o: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
 	$(CC) -I. $(CFLAGS) $(SDL_CFLAGS) -I$(srcdir) -c \
 	  -o $@ $(srcdir)/avtpalette.c
 
-avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
-          rgb.h \
+avatar-sdl.o: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
+          $(srcdir)/avtinternals.h rgb.h \
           $(srcdir)/balloonpointer.xbm $(srcdir)/thinkpointer.xbm \
           $(srcdir)/circle.xbm \
           $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
@@ -114,14 +114,18 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
           $(srcdir)/btn_help.xbm $(srcdir)/btn_cancel.xbm \
           $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm \
           $(srcdir)/akfavatar.xpm
-	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c $(srcdir)/avatar.c
+	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c $(srcdir)/avatar-sdl.c
 
 avatar-default.o: $(srcdir)/avatar-default.c $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/avatar-default.c
 
-avatar-audio.o: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h \
+audio-sdl.o: $(srcdir)/audio-sdl.c $(srcdir)/akfavatar.h \
 	        $(srcdir)/avtinternals.h alert.c
-	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/avatar-audio.c
+	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/audio-sdl.c
+
+audio-dummy.o: $(srcdir)/audio-dummy.c $(srcdir)/akfavatar.h \
+	        $(srcdir)/avtinternals.h
+	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/audio-dummy.c
 
 font.c: $(srcdir)/$(FONT) $(srcdir)/bdf2c
 	$(AWK) -f $(srcdir)/bdf2c -v prefix="avt_" $(srcdir)/$(FONT) > $@
@@ -132,13 +136,13 @@ font.o: font.c
 font.lo: font.c
 	$(CC) $(CFLAGS) -c -fPIC -o $@ font.c
 
-libakfavatar.a: avatar.o avatar-default.o avtpalette.o avatar-audio.o font.o \
-	        version.o
-	$(AR) rcu $@ avatar.o avatar-default.o avtpalette.o avatar-audio.o font.o \
-	             version.o
+libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar-default.o avtpalette.o \
+	        font.o version.o
+	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o \
+	             avatar-default.o avtpalette.o font.o version.o
 	-$(RANLIB) $@
 
-avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h rgb.h \
+avatar-sdl.lo: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h rgb.h \
            $(srcdir)/balloonpointer.xbm $(srcdir)/thinkpointer.xbm \
            $(srcdir)/circle.xbm \
            $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
@@ -150,27 +154,32 @@ avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h rgb.h \
            $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm \
            $(srcdir)/akfavatar.xpm $(srcdir)/avtinternals.h
 	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -fPIC \
-	   -o $@ $(srcdir)/avatar.c
+	   -o $@ $(srcdir)/avatar-sdl.c
 
 avatar-default.lo: $(srcdir)/avatar-default.c $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -fPIC -o $@ \
 	  $(srcdir)/avatar-default.c
 
-avatar-audio.lo: $(srcdir)/avatar-audio.c $(srcdir)/akfavatar.h \
+audio-sdl.lo: $(srcdir)/audio-sdl.c $(srcdir)/akfavatar.h \
 	         $(srcdir)/avtinternals.h alert.c
 	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -fPIC -o $@ \
-	  $(srcdir)/avatar-audio.c
+	  $(srcdir)/audio-sdl.c
+
+audio-dummy.lo: $(srcdir)/audio-dummy.c $(srcdir)/akfavatar.h \
+	         $(srcdir)/avtinternals.h
+	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -fPIC -o $@ \
+	  $(srcdir)/audio-dummy.c
 
 avtpalette.lo: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
 	       $(srcdir)/avtinternals.h
 	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -fPIC \
 	  -o $@ $(srcdir)/avtpalette.c
 
-libakfavatar.so: avatar.lo avatar-default.lo avtpalette.lo avatar-audio.lo \
+libakfavatar.so: $(OBJAVATAR).lo $(OBJAUDIO).lo avatar-default.lo avtpalette.lo \
 	         font.lo version.lo
 	$(CC) -shared \
 	      -Wl,-soname,$(SONAME) -o $(LIBNAME) -fPIC \
-	      avatar.lo avatar-default.lo avtpalette.lo avatar-audio.lo \
+	      $(OBJAVATAR).lo $(OBJAUDIO).lo avatar-default.lo avtpalette.lo \
 	      font.lo version.lo $(SDL_LDFLAGS) $(LDFLAGS)
 	-ln -sf $(LIBNAME) $(SONAME)
 	-ln -sf $(LIBNAME) libakfavatar.so
@@ -597,7 +606,8 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/COPYING $(srcdir)/ChangeLog $(srcdir)/lrun \
 	   $(srcdir)/Homepage.desktop \
 	   $(srcdir)/akfoerster-lua-akfavatar.desktop \
-	   $(srcdir)/avatar.c $(srcdir)/akfavatar.h $(srcdir)/avatar-audio.c \
+	   $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
+	   $(srcdir)/audio-sdl.c $(srcdir)/audio-dummy.c \
 	   $(srcdir)/avtinternals.h $(srcdir)/avtpalette.c \
 	   $(srcdir)/avatar-default.c $(srcdir)/avtccio.c $(srcdir)/avtcwio.c \
 	   $(srcdir)/avtaddons.h $(srcdir)/filechooser.c \

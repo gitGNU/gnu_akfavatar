@@ -1,3 +1,11 @@
+2012-06-16  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-sdl.c: renamed from avatar.c
+
+	* audio-sdl.c: renamed from avatar-audio.c
+
+	* audio-dummy.c: new file
+
 2012-06-14  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-audio.c: support for 24 and 32 bit audio data
