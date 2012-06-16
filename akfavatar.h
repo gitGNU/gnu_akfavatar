@@ -26,8 +26,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _akfavatar_h
-#define _akfavatar_h
+#ifndef AKFAVATAR_H
+#define AKFAVATAR_H
 
 /* SDL redefines main on some systems */
 #if defined(_WIN32) || defined(__APPLE__) || defined(macintosh)
@@ -1114,4 +1114,4 @@ AVT_API void avt_get_font_size (int *width, int *height) AVT_DEPRECATED;
 
 #endif /* DISABLE_DEPRECATED */
 
-#endif /* _akfavatar_h */
+#endif /* AKFAVATAR_H */

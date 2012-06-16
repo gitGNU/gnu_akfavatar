@@ -18,8 +18,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _AVTINTERNALS_H
-#define _AVTINTERNALS_H
+#ifndef AVTINTERNALS_H
+#define AVTINTERNALS_H
 
 #include "akfavatar.h"
 #include <stdio.h>		/* FILE */
