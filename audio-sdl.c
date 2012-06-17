@@ -598,18 +598,12 @@ avt_required_audio_size (avt_audio * snd, size_t data_size)
     case AVT_AUDIO_S24SYS:
     case AVT_AUDIO_S24LE:
     case AVT_AUDIO_S24BE:
-    case AVT_AUDIO_U24SYS:
-    case AVT_AUDIO_U24LE:
-    case AVT_AUDIO_U24BE:
       out_size = (data_size * 2) / 3;	/* reduced to 16 Bit */
       break;
 
     case AVT_AUDIO_S32SYS:
     case AVT_AUDIO_S32LE:
     case AVT_AUDIO_S32BE:
-    case AVT_AUDIO_U32SYS:
-    case AVT_AUDIO_U32LE:
-    case AVT_AUDIO_U32BE:
       out_size = data_size / 2;	/* reduced to 16 Bit */
       break;
 
@@ -715,7 +709,6 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
   switch (snd->audio_type)
     {
     case AVT_AUDIO_S16SYS:
-    case AVT_AUDIO_U16SYS:
     case AVT_AUDIO_U8:
     case AVT_AUDIO_S8:
       /* linear PCM, same bit size and endianness */
@@ -746,7 +739,6 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 	break;
       }
 
-    case AVT_AUDIO_U16LE:
     case AVT_AUDIO_S16LE:
       {
 	uint8_t *in = (uint8_t *) data;
@@ -757,7 +749,6 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
       }
       break;
 
-    case AVT_AUDIO_U16BE:
     case AVT_AUDIO_S16BE:
       {
 	uint8_t *in = (uint8_t *) data;
@@ -770,7 +761,6 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
       /* the following ones are all converted to 16 bits */
 
-    case AVT_AUDIO_U24LE:
     case AVT_AUDIO_S24LE:
       {
 	uint8_t *in = (uint8_t *) data;
@@ -781,7 +771,6 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
       }
       break;
 
-    case AVT_AUDIO_U24BE:
     case AVT_AUDIO_S24BE:
       {
 	uint8_t *in = (uint8_t *) data;
@@ -792,7 +781,6 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
       }
       break;
 
-    case AVT_AUDIO_U32LE:
     case AVT_AUDIO_S32LE:
       {
 	uint8_t *in = (uint8_t *) data;
@@ -803,7 +791,6 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
       }
       break;
 
-    case AVT_AUDIO_U32BE:
     case AVT_AUDIO_S32BE:
       {
 	uint8_t *in = (uint8_t *) data;
@@ -862,24 +849,12 @@ avt_load_raw_audio_data (void *data, size_t data_size,
 	  audio_type = AVT_AUDIO_S16SYS;
 	  break;
 
-	case AVT_AUDIO_U16LE:
-	  audio_type = AVT_AUDIO_U16SYS;
-	  break;
-
 	case AVT_AUDIO_S24SYS:
 	  audio_type = AVT_AUDIO_S24LE;
 	  break;
 
-	case AVT_AUDIO_U24SYS:
-	  audio_type = AVT_AUDIO_U24LE;
-	  break;
-
 	case AVT_AUDIO_S32SYS:
 	  audio_type = AVT_AUDIO_S32LE;
-	  break;
-
-	case AVT_AUDIO_U32SYS:
-	  audio_type = AVT_AUDIO_U32LE;
 	  break;
 	}
     }
@@ -891,24 +866,12 @@ avt_load_raw_audio_data (void *data, size_t data_size,
 	  audio_type = AVT_AUDIO_S16SYS;
 	  break;
 
-	case AVT_AUDIO_U16BE:
-	  audio_type = AVT_AUDIO_U16SYS;
-	  break;
-
 	case AVT_AUDIO_S24SYS:
 	  audio_type = AVT_AUDIO_S24BE;
 	  break;
 
-	case AVT_AUDIO_U24SYS:
-	  audio_type = AVT_AUDIO_U24BE;
-	  break;
-
 	case AVT_AUDIO_S32SYS:
 	  audio_type = AVT_AUDIO_S32BE;
-	  break;
-
-	case AVT_AUDIO_U32SYS:
-	  audio_type = AVT_AUDIO_U32BE;
 	  break;
 	}
     }
@@ -922,19 +885,6 @@ avt_load_raw_audio_data (void *data, size_t data_size,
 
     case AVT_AUDIO_S8:
       format = AUDIO_S8;
-      break;
-
-    case AVT_AUDIO_U16LE:
-    case AVT_AUDIO_U16BE:
-    case AVT_AUDIO_U16SYS:
-    case AVT_AUDIO_U24LE:
-    case AVT_AUDIO_U24BE:
-    case AVT_AUDIO_U24SYS:
-    case AVT_AUDIO_U32LE:
-    case AVT_AUDIO_U32BE:
-    case AVT_AUDIO_U32SYS:
-      /* size and endianess will get adjusted while loading */
-      format = AUDIO_U16SYS;
       break;
 
     case AVT_AUDIO_S16LE:
