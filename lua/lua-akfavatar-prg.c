@@ -48,6 +48,9 @@ extern "C"
 }
 #endif
 
+#include "data/akfavatar-logo.xpm"
+
+
 #define PRGNAME "Lua-AKFAvatar"	/* keep it short */
 #define NAME_EXEC "AKFAvatar.lua"	/* name in archive file */
 
@@ -415,7 +418,8 @@ ask_file (void)
 static void
 start_screen (void)
 {
-  avt_avatar_image_default ();
+  avt_avatar_image_xpm (akfavatar_logo_xpm);
+  avt_set_balloon_mode (AVT_SEPARATE);
   avt_set_balloon_size (9, 80);
   avt_underlined (true);
   avt_bold (true);
@@ -451,6 +455,7 @@ start_screen (void)
   if (avt_wait_button () != AVT_NORMAL)
     exit (EXIT_SUCCESS);
   avt_avatar_image_none ();
+  avt_set_balloon_mode (AVT_SAY);
 }
 
 static void

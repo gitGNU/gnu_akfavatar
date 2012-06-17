@@ -3,6 +3,8 @@
 	* akfavatar.h, audio-sdl.c:
 	remove unsigned audio except for 8 bit
 
+	* lua/lua-akfavatar-prg.c: use Logo on start-screen
+
 2012-06-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl.c: renamed from avatar.c
