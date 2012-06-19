@@ -1,3 +1,8 @@
+2012-06-19  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-sdl.c (avt_draw_balloon):
+	improve alignment of balloon in separate mode
+
 2012-06-17  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, audio-sdl.c:

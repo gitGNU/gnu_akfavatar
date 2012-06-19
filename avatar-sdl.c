@@ -1643,6 +1643,7 @@ static void
 avt_draw_balloon (void)
 {
   SDL_Color shadow_color;
+  int16_t centered_y;
 
   if (!avt_visible)
     avt_draw_avatar ();
@@ -1651,14 +1652,20 @@ avt_draw_balloon (void)
 
   textfield.w = (balloonwidth * fontwidth);
   textfield.h = (balloonheight * fontheight);
+  centered_y = window.y + (window.h / 2) - (textfield.h / 2);
 
-  if (avatar_image)
+  if (avatar_image)		/* align with balloon */
     textfield.y = window.y + ((balloonmaxheight - balloonheight) * LINEHEIGHT)
       + TOPMARGIN + BALLOON_INNER_MARGIN;
   else				/* middle of the window */
-    textfield.y = window.y + (window.h / 2) - (textfield.h / 2);
+    textfield.y = centered_y;
 
-  /* centered as default */
+  /* in separate mode it might also be better to center it */
+  if (AVT_SEPARATE == avt_balloon_mode && avatar_image
+      && textfield.y > centered_y)
+    textfield.y = centered_y;
+
+  /* horizontally centered as default */
   textfield.x = window.x + (window.w / 2) - (balloonwidth * fontwidth / 2);
 
   /* align with balloonpointer */
