@@ -31,6 +31,9 @@
 #include <stdint.h>
 #include <string.h>		/* memcmp */
 
+/* absolute maximum size for audio data */
+#define MAXIMUM_SIZE  0xFFFFFFFFU
+
 
 #ifdef NO_AUDIO
 
@@ -38,10 +41,11 @@
 
 #else /* not NO_AUDIO */
 
-/* if size is unknown use 0 or 0xffffffff for maxsize */
+/* if size is unknown use 0 or MAXIMUM_SIZE for maxsize */
 static avt_audio *
 avt_load_audio_block (avt_data * src, uint32_t maxsize,
-	      int samplingrate, int audio_type, int channels, int playmode)
+		      int samplingrate, int audio_type, int channels,
+		      int playmode)
 {
   avt_audio *audio;
   int n;
@@ -57,10 +61,10 @@ avt_load_audio_block (avt_data * src, uint32_t maxsize,
   if (maxsize != 0)
     rest = maxsize;
   else
-    rest = 0xFFFFFFFFU;
+    rest = MAXIMUM_SIZE;
 
   /* if size is known, pre-allocate enough memory */
-  if (rest < 0xFFFFFFFFU)
+  if (rest < MAXIMUM_SIZE)
     {
       if (avt_set_raw_audio_capacity (audio, rest) != AVT_NORMAL)
 	return NULL;
@@ -117,7 +121,7 @@ avt_load_au (avt_data * src, uint32_t maxsize, int playmode)
   if (head_size > 24)
     avt_data_seek (src, head_size - 24, SEEK_CUR);
 
-  if (maxsize != 0xffffffff)
+  if (maxsize != MAXIMUM_SIZE)
     {
       maxsize -= head_size;
 
@@ -166,8 +170,8 @@ avt_load_au (avt_data * src, uint32_t maxsize, int playmode)
    * 23-26: ADPCM variants
    */
 
-  return avt_load_audio_block (src, audio_size, samplingrate, audio_type, channels,
-		       playmode);
+  return avt_load_audio_block (src, audio_size, samplingrate, audio_type,
+			       channels, playmode);
 }
 
 
@@ -272,7 +276,7 @@ avt_load_wave (avt_data * src, uint32_t maxsize, int playmode)
     maxsize = chunk_size;
 
   return avt_load_audio_block (src, maxsize, samplingrate,
-		       audio_type, channels, playmode);
+			       audio_type, channels, playmode);
 }
 
 /* src gets always closed */
@@ -287,7 +291,7 @@ avt_load_audio_general (avt_data * src, uint32_t maxsize, int playmode)
     return NULL;
 
   if (maxsize == 0)
-    maxsize = 0xFFFFFFFFU;
+    maxsize = MAXIMUM_SIZE;
 
   start = avt_data_tell (src);
 
@@ -315,12 +319,13 @@ avt_load_audio_general (avt_data * src, uint32_t maxsize, int playmode)
   return s;
 }
 
-#endif
+#endif /* not NO_AUDIO */
+
 
 extern avt_audio *
 avt_load_audio_file (const char *file, int playmode)
 {
-  return avt_load_audio_general (avt_data_open_file (file, "rb"), 0xFFFFFFFFU,
+  return avt_load_audio_general (avt_data_open_file (file, "rb"), MAXIMUM_SIZE,
 				 playmode);
 }
 
@@ -335,7 +340,7 @@ extern avt_audio *
 avt_load_audio_stream (avt_stream * stream, int playmode)
 {
   return avt_load_audio_general (avt_data_open_stream ((FILE *) stream),
-				 0xFFFFFFFFU, playmode);
+				 MAXIMUM_SIZE, playmode);
 }
 
 extern avt_audio *
