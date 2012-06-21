@@ -1,3 +1,7 @@
+2012-06-21  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtdata.h, avtdata.c, audio-common.c: new files
+
 2012-06-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl.c (avt_draw_balloon):

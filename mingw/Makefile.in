@@ -67,6 +67,9 @@ avtpalette.o: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
 	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c \
 	  -o $@ $(srcdir)/avtpalette.c
 
+avtdata.o: $(srcdir)/avtdata.c $(srcdir)/avtdata.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtdata.c
+
 avatar-sdl.o: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
              $(srcdir)/avtinternals.h version.h rgb.h \
              $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
@@ -89,6 +92,11 @@ audio-dummy.o: $(srcdir)/audio-dummy.c $(srcdir)/akfavatar.h \
                   $(srcdir)/avtinternals.h
 	$(CC) -c -I$(srcdir) $(CFLAGS) -o $@ $(srcdir)/audio-dummy.c
 
+audio-common.o: $(srcdir)/audio-common.c $(srcdir)/akfavatar.h \
+	        $(srcdir)/avtinternals.h $(srcdir)/avtdata.h
+	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ \
+	  $(srcdir)/audio-common.c
+
 font.c: $(srcdir)/$(FONT) $(srcdir)/bdf2c
 	$(AWK) -f $(srcdir)/bdf2c -v prefix="avt_" $(srcdir)/$(FONT) > $@
 
@@ -104,16 +112,17 @@ iconv.exe: $(srcdir)/mingw/win_iconv.c
 iconv: iconv.exe
 
 # static library
-libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar-default.o font.o \
-	  avtpalette.o win_iconv.o version.o
-	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o avatar-default.o font.o \
-	  avtpalette.o win_iconv.o version.o
+libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o audio-common.o avatar-default.o \
+	  avtdata.o font.o avtpalette.o win_iconv.o version.o
+	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o audio-common.o avatar-default.o \
+	  avtdata.o font.o avtpalette.o win_iconv.o version.o
 	$(RANLIB) $@
 
-akfavatar.dll: $(OBJAVATAR).o $(OBJAUDIO).o avatar-default.o font.o libinfo.o \
-	  avtpalette.o win_iconv.o version.o
+akfavatar.dll: $(OBJAVATAR).o $(OBJAUDIO).o audio-common.o avatar-default.o \
+	  avtdata.o font.o libinfo.o avtpalette.o win_iconv.o version.o
 	$(CC) -shared -o $@ $(OBJAVATAR).o $(OBJAUDIO).o avatar-default.o \
-	        font.o avtpalette.o win_iconv.o version.o libinfo.o \
+	        avtdata.o audio-common.o font.o avtpalette.o win_iconv.o \
+	        version.o libinfo.o \
 	        -Wl,-no-undefined,--enable-runtime-pseudo-reloc \
 	        -Wl,--output-def,akfavatar.def \
 	        -Wl,--out-implib,libakfavatar.dll.a \

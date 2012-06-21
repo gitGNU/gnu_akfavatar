@@ -65,34 +65,6 @@ avt_stop_audio (void)
 }
 
 extern avt_audio *
-avt_load_audio_file (const char *filename, int playmode)
-{
-  no_audio ();
-  return NULL;
-}
-
-extern avt_audio *
-avt_load_audio_part (avt_stream * stream, size_t maxsize, int playmode)
-{
-  no_audio ();
-  return NULL;
-}
-
-extern avt_audio *
-avt_load_audio_stream (avt_stream * stream, int playmode)
-{
-  no_audio ();
-  return NULL;
-}
-
-extern avt_audio *
-avt_load_audio_data (void *data, size_t datasize, int playmode)
-{
-  no_audio ();
-  return NULL;
-}
-
-extern avt_audio *
 avt_load_raw_audio_data (void *data, size_t data_size,
 			 int samplingrate, int audio_type, int channels)
 {

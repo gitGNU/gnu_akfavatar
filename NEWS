@@ -5,13 +5,12 @@
   - Window is resizable again (content gets centered)
   - Uses Lua-5.2 now, no longer compatible with 5.1
   - Lua modules don't define globals anymore (scripts have to be adapted!)
-  - The source code is compatible with C++ compilers again
   - Data files are put in a separate directory and Lua has a search function
     for it (scripts have to be adapted!)
-  - Audio files can be played while loading (except for ADPCM)
+  - Audio files can be played while loading
   - Support for audio-files with up to 32 bit (converted to 16 bit internally)
   - Support for wave files with mu-law and A-law encoding
-  - ADPCM encodings are deprecated now (but still supported)
+  - regression: ADPCM encodings are no longer supported for wave files
   - Some more audio files
   - the command lua-akfavatar accepts options for fullscreen mode
   - The pager supports the markup mode now

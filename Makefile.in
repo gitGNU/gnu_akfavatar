@@ -95,8 +95,8 @@ lua-akfavatar: $(srcdir)/lua-akfavatar.sh lua-akfavatar-bin
 	install -m 755 $(srcdir)/lua-akfavatar.sh $@
 
 libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar-default.o avtpalette.o \
-	        font.o version.o
-	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o \
+	        font.o version.o avtdata.o audio-common.o
+	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o audio-common.o avtdata.o \
 	             avatar-default.o avtpalette.o font.o version.o
 	-$(RANLIB) $@
 
@@ -109,11 +109,12 @@ libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
 	-$(RANLIB) $@
 
 libakfavatar.so: $(OBJAVATAR).lo $(OBJAUDIO).lo avatar-default.lo avtpalette.lo \
-	         font.lo version.lo
+	         font.lo version.lo avtdata.lo audio-common.lo
 	$(CC) -shared \
 	      -Wl,-soname,$(SONAME) -o $(LIBNAME) -fPIC \
 	      $(OBJAVATAR).lo $(OBJAUDIO).lo avatar-default.lo avtpalette.lo \
-	      font.lo version.lo $(SDL_LDFLAGS) $(LDFLAGS)
+	      font.lo version.lo avtdata.lo audio-common.lo \
+	      $(SDL_LDFLAGS) $(LDFLAGS)
 	-ln -sf $(LIBNAME) $(SONAME)
 	-ln -sf $(LIBNAME) libakfavatar.so
 
@@ -157,6 +158,12 @@ avtpalette.o: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
 avtpalette.lo: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
 	       $(srcdir)/avtinternals.h
 	$(CC) -I$(srcdir) -I. $(CFLAGS) -c -fPIC -o $@ $(srcdir)/avtpalette.c
+
+avtdata.o: $(srcdir)/avtdata.c $(srcdir)/avtdata.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtdata.c
+
+avtdata.lo: $(srcdir)/avtdata.c $(srcdir)/avtdata.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ $(srcdir)/avtdata.c
 
 avatar-sdl.o: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
           $(srcdir)/avtinternals.h version.h rgb.h \
@@ -209,8 +216,15 @@ audio-dummy.o: $(srcdir)/audio-dummy.c $(srcdir)/akfavatar.h \
 
 audio-dummy.lo: $(srcdir)/audio-dummy.c $(srcdir)/akfavatar.h \
 	         $(srcdir)/avtinternals.h
-	$(CC) -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ \
-	  $(srcdir)/audio-dummy.c
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ $(srcdir)/audio-dummy.c
+
+audio-common.o: $(srcdir)/audio-common.c $(srcdir)/akfavatar.h \
+	        $(srcdir)/avtinternals.h $(srcdir)/avtdata.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/audio-common.c
+
+audio-common.lo: $(srcdir)/audio-common.c $(srcdir)/akfavatar.h \
+	         $(srcdir)/avtinternals.h $(srcdir)/avtdata.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ $(srcdir)/audio-common.c
 
 font.c: $(srcdir)/$(FONT) $(srcdir)/bdf2c
 	$(AWK) -f $(srcdir)/bdf2c -v prefix="avt_" $(srcdir)/$(FONT) > $@
