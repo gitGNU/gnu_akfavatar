@@ -43,10 +43,11 @@ long avt_data_tell (avt_data *d);
 size_t avt_data_read (avt_data *d, void *data, size_t size, size_t number);
 
 /* read values of specific size and endianness */
-uint8_t  avt_read8    (avt_data *d);
-uint16_t avt_read16le (avt_data *d);
-uint16_t avt_read16be (avt_data *d);
-uint32_t avt_read32le (avt_data *d);
-uint32_t avt_read32be (avt_data *d);
+/* le = Little Endian, be = Big Endian */
+uint8_t  avt_data_read8    (avt_data *d);
+uint16_t avt_data_read16le (avt_data *d);
+uint16_t avt_data_read16be (avt_data *d);
+uint32_t avt_data_read32le (avt_data *d);
+uint32_t avt_data_read32be (avt_data *d);
 
-#endif
+#endif /* AVTDATA_H */

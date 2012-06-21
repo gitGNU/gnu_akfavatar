@@ -104,18 +104,18 @@ avt_load_au (avt_data * src, uint32_t maxsize, int playmode)
     return NULL;
 
   /* check magic ".snd" */
-  if (avt_read32be (src) != 0x2e736e64)
+  if (avt_data_read32be (src) != 0x2e736e64)
     {
       avt_set_error ("Data is not an AU audio file"
 		     " (maybe old raw data format?)");
       return NULL;
     }
 
-  head_size = avt_read32be (src);
-  audio_size = avt_read32be (src);
-  encoding = avt_read32be (src);
-  samplingrate = avt_read32be (src);
-  channels = avt_read32be (src);
+  head_size = avt_data_read32be (src);
+  audio_size = avt_data_read32be (src);
+  encoding = avt_data_read32be (src);
+  samplingrate = avt_data_read32be (src);
+  channels = avt_data_read32be (src);
 
   /* skip the rest of the header */
   if (head_size > 24)
@@ -200,7 +200,7 @@ avt_load_wave (avt_data * src, uint32_t maxsize, int playmode)
    * this chunk contains the rest,
    * so chunk_size should be the file size - 8
    */
-  chunk_size = avt_read32le (src);
+  chunk_size = avt_data_read32le (src);
 
   if (avt_data_read (src, &identifier, sizeof (identifier), 1) != 1
       || memcmp ("WAVE", identifier, sizeof (identifier)) != 0)
@@ -211,7 +211,7 @@ avt_load_wave (avt_data * src, uint32_t maxsize, int playmode)
     {
       if (avt_data_read (src, &identifier, sizeof (identifier), 1) != 1)
 	return NULL;		/* no format chunk found */
-      chunk_size = avt_read32le (src);
+      chunk_size = avt_data_read32le (src);
       chunk_end = avt_data_tell (src) + chunk_size;
       if (chunk_end % 2 != 0)
 	chunk_end++;		/* padding to even addresses */
@@ -221,12 +221,12 @@ avt_load_wave (avt_data * src, uint32_t maxsize, int playmode)
     }
   while (wrong_chunk);
 
-  encoding = avt_read16le (src);
-  channels = avt_read16le (src);
-  samplingrate = avt_read32le (src);
-  avt_read32le (src);		/* bytes_per_second */
-  avt_read16le (src);		/* block_align */
-  bits_per_sample = avt_read16le (src);	/* just for PCM */
+  encoding = avt_data_read16le (src);
+  channels = avt_data_read16le (src);
+  samplingrate = avt_data_read32le (src);
+  avt_data_read32le (src);	/* bytes_per_second */
+  avt_data_read16le (src);	/* block_align */
+  bits_per_sample = avt_data_read16le (src);	/* just for PCM */
   avt_data_seek (src, chunk_end, SEEK_SET);
 
   switch (encoding)
@@ -262,7 +262,7 @@ avt_load_wave (avt_data * src, uint32_t maxsize, int playmode)
     {
       if (avt_data_read (src, &identifier, sizeof (identifier), 1) != 1)
 	return NULL;		/* no data chunk found */
-      chunk_size = avt_read32le (src);
+      chunk_size = avt_data_read32le (src);
       chunk_end = avt_data_tell (src) + chunk_size;
       if (chunk_end % 2 != 0)
 	chunk_end++;		/* padding to even addresses */
@@ -325,8 +325,8 @@ avt_load_audio_general (avt_data * src, uint32_t maxsize, int playmode)
 extern avt_audio *
 avt_load_audio_file (const char *file, int playmode)
 {
-  return avt_load_audio_general (avt_data_open_file (file, "rb"), MAXIMUM_SIZE,
-				 playmode);
+  return avt_load_audio_general (avt_data_open_file (file, "rb"),
+				 MAXIMUM_SIZE, playmode);
 }
 
 extern avt_audio *

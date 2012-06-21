@@ -2,7 +2,7 @@
  * data handling
  * Copyright (c) 2012 Andreas K. Foerster <info@akfoerster.de>
  *
- * required standards: C99 or C++
+ * required standards: C99
  *
  * This file is part of AKFAvatar
  *
@@ -40,7 +40,7 @@ struct avt_data
   FILE *stream;
   const char *memory;
 
-  long position, start, end;
+  size_t position, start, end;
   int type;
   bool eof, err;
 };
@@ -74,10 +74,12 @@ avt_data_read (avt_data * d, void *data, size_t size, size_t number)
     case AVT_DATA_MEMORY:
       {
 	size_t all = size * number;
-	d->position += all;
-	if (d->position <= d->end)
+	size_t position = d->position;
+
+	if (position + all <= d->end)
 	  {
-	    memcpy (data, d->memory, all);
+	    memcpy (data, d->memory + position, all);
+	    d->position += all;
 	    result = all;
 	  }
 	else
@@ -95,7 +97,7 @@ avt_data_read (avt_data * d, void *data, size_t size, size_t number)
 
 /* read 8 bit value */
 extern uint8_t
-avt_read8 (avt_data * d)
+avt_data_read8 (avt_data * d)
 {
   uint8_t data;
 
@@ -107,7 +109,7 @@ avt_read8 (avt_data * d)
 
 /* read little endian 16 bit value */
 extern uint16_t
-avt_read16le (avt_data * d)
+avt_data_read16le (avt_data * d)
 {
   uint8_t data[2];
 
@@ -119,7 +121,7 @@ avt_read16le (avt_data * d)
 
 /* read big endian 16 bit value */
 extern uint16_t
-avt_read16be (avt_data * d)
+avt_data_read16be (avt_data * d)
 {
   uint8_t data[2];
 
@@ -131,7 +133,7 @@ avt_read16be (avt_data * d)
 
 /* read little endian 32 bit value */
 extern uint32_t
-avt_read32le (avt_data * d)
+avt_data_read32le (avt_data * d)
 {
   uint8_t data[4];
 
@@ -143,7 +145,7 @@ avt_read32le (avt_data * d)
 
 /* read big endian 32 bit value */
 extern uint32_t
-avt_read32be (avt_data * d)
+avt_data_read32be (avt_data * d)
 {
   uint8_t data[4];
 
@@ -154,19 +156,19 @@ avt_read32be (avt_data * d)
 
 
 extern long
-avt_data_tell (avt_data *d)
+avt_data_tell (avt_data * d)
 {
   long result = -1;
 
   switch (d->type)
     {
     case AVT_DATA_STREAM:
-      result = ftell (d->stream);
+      result = ftell (d->stream) - d->start;
       break;
 
     case AVT_DATA_MEMORY:
       if (d->position > 0 && d->position <= d->end)
-        result = d->position;
+	result = d->position;
       break;
     }
 
@@ -182,6 +184,9 @@ avt_data_seek (avt_data * d, long offset, int whence)
   switch (d->type)
     {
     case AVT_DATA_STREAM:
+      if (SEEK_SET == whence)
+	offset += d->start;
+
       okay = (fseek (d->stream, offset, whence) > -1);
       break;
 
@@ -248,7 +253,7 @@ avt_data_open_memory (const void *memory, size_t size)
       d->stream = NULL;
       d->memory = (const char *) memory;
       d->eof = d->err = false;
-      d->start = d->position = 0;
+      d->start = d->position = 0;	/* start is always 0 */
       d->end = size;
     }
 
