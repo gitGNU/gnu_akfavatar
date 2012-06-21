@@ -202,7 +202,8 @@ lbase64.o: $(srcdir)/lua/lbase64.c
 	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -c -o $@ \
 	  $(srcdir)/lua/lbase64.c
 
-lua-akfavatar-prg.o: $(srcdir)/lua/lua-akfavatar-prg.c $(srcdir)/akfavatar.h
+lua-akfavatar-prg.o: $(srcdir)/lua/lua-akfavatar-prg.c $(srcdir)/akfavatar.h \
+	  $(srcdir)/avtaddons.h $(srcdir)/data/akfavatar-logo.xpm
 	$(CC) -I$(srcdir) $(CFLAGS) $(LUA_CFLAGS) $(SDL_CFLAGS) -c -o $@ \
 	 $(srcdir)/lua/lua-akfavatar-prg.c
 

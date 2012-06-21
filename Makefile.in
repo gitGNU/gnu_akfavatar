@@ -287,7 +287,7 @@ avtposix.o: $(srcdir)/avtposix.c $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/avtposix.c
 
 lua-akfavatar-prg.o: $(srcdir)/lua/lua-akfavatar-prg.c $(srcdir)/akfavatar.h \
-                     $(srcdir)/avtaddons.h
+                     $(srcdir)/avtaddons.h $(srcdir)/data/akfavatar-logo.xpm
 	$(CC) -I$(srcdir) $(CFLAGS) $(LUA_CFLAGS) -c -o $@ \
 	  $(srcdir)/lua/lua-akfavatar-prg.c
 
