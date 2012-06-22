@@ -27,9 +27,9 @@
 #include "akfavatar.h"
 #include "avtinternals.h"
 #include "avtdata.h"
-#include <stdlib.h>		/* malloc / realloc /free */
+#include <stdlib.h>		/* malloc / realloc / free */
 #include <stdint.h>
-#include <string.h>		/* memcmp */
+#include <string.h>		/* memcmp / memcpy */
 
 /* absolute maximum size for audio data */
 #define MAXIMUM_SIZE  0xFFFFFFFFU
@@ -37,9 +37,441 @@
 
 #ifdef NO_AUDIO
 
+extern avt_audio *
+avt_load_raw_audio_data (void *data, size_t data_size,
+			 int samplingrate, int audio_type, int channels)
+{
+  return NULL;
+}
+
+extern int
+avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
+{
+  return AVT_FAILURE;
+}
+
+extern int
+avt_set_raw_audio_capacity (avt_audio * snd, size_t data_size)
+{
+  return AVT_FAILURE;
+}
+
+extern void
+avt_finalize_raw_audio (avt_audio * snd)
+{
+}
+
+extern void
+avt_free_audio (avt_audio * snd)
+{
+}
+
 #define avt_load_audio_general(a,b,c)  NULL
 
 #else /* not NO_AUDIO */
+
+/* table for decoding mu-law */
+static const int16_t mulaw_decode[256] = {
+  -32124, -31100, -30076, -29052, -28028, -27004, -25980, -24956, -23932,
+  -22908, -21884, -20860, -19836, -18812, -17788, -16764, -15996, -15484,
+  -14972, -14460, -13948, -13436, -12924, -12412, -11900, -11388, -10876,
+  -10364, -9852, -9340, -8828, -8316, -7932, -7676, -7420, -7164, -6908,
+  -6652, -6396, -6140, -5884, -5628, -5372, -5116, -4860, -4604, -4348,
+  -4092, -3900, -3772, -3644, -3516, -3388, -3260, -3132, -3004, -2876,
+  -2748, -2620, -2492, -2364, -2236, -2108, -1980, -1884, -1820, -1756,
+  -1692, -1628, -1564, -1500, -1436, -1372, -1308, -1244, -1180, -1116,
+  -1052, -988, -924, -876, -844, -812, -780, -748, -716, -684, -652, -620,
+  -588, -556, -524, -492, -460, -428, -396, -372, -356, -340, -324, -308,
+  -292, -276, -260, -244, -228, -212, -196, -180, -164, -148, -132, -120,
+  -112, -104, -96, -88, -80, -72, -64, -56, -48, -40, -32, -24, -16, -8, 0,
+  32124, 31100, 30076, 29052, 28028, 27004, 25980, 24956, 23932, 22908,
+  21884, 20860, 19836, 18812, 17788, 16764, 15996, 15484, 14972, 14460,
+  13948, 13436, 12924, 12412, 11900, 11388, 10876, 10364, 9852, 9340, 8828,
+  8316, 7932, 7676, 7420, 7164, 6908, 6652, 6396, 6140, 5884, 5628, 5372,
+  5116, 4860, 4604, 4348, 4092, 3900, 3772, 3644, 3516, 3388, 3260, 3132,
+  3004, 2876, 2748, 2620, 2492, 2364, 2236, 2108, 1980, 1884, 1820, 1756,
+  1692, 1628, 1564, 1500, 1436, 1372, 1308, 1244, 1180, 1116, 1052, 988,
+  924, 876, 844, 812, 780, 748, 716, 684, 652, 620, 588, 556, 524, 492, 460,
+  428, 396, 372, 356, 340, 324, 308, 292, 276, 260, 244, 228, 212, 196, 180,
+  164, 148, 132, 120, 112, 104, 96, 88, 80, 72, 64, 56, 48, 40, 32, 24, 16,
+  8, 0
+};
+
+/* table for decoding A-law */
+static const int16_t alaw_decode[256] = {
+  -5504, -5248, -6016, -5760, -4480, -4224, -4992, -4736, -7552, -7296, -8064,
+  -7808, -6528, -6272, -7040, -6784, -2752, -2624, -3008, -2880, -2240,
+  -2112, -2496, -2368, -3776, -3648, -4032, -3904, -3264, -3136, -3520,
+  -3392, -22016, -20992, -24064, -23040, -17920, -16896, -19968, -18944,
+  -30208, -29184, -32256, -31232, -26112, -25088, -28160, -27136, -11008,
+  -10496, -12032, -11520, -8960, -8448, -9984, -9472, -15104, -14592,
+  -16128, -15616, -13056, -12544, -14080, -13568, -344, -328, -376, -360,
+  -280, -264, -312, -296, -472, -456, -504, -488, -408, -392, -440, -424,
+  -88, -72, -120, -104, -24, -8, -56, -40, -216, -200, -248, -232, -152,
+  -136, -184, -168, -1376, -1312, -1504, -1440, -1120, -1056, -1248, -1184,
+  -1888, -1824, -2016, -1952, -1632, -1568, -1760, -1696, -688, -656, -752,
+  -720, -560, -528, -624, -592, -944, -912, -1008, -976, -816, -784, -880,
+  -848, 5504, 5248, 6016, 5760, 4480, 4224, 4992, 4736, 7552, 7296, 8064,
+  7808, 6528, 6272, 7040, 6784, 2752, 2624, 3008, 2880, 2240, 2112, 2496,
+  2368, 3776, 3648, 4032, 3904, 3264, 3136, 3520, 3392, 22016, 20992, 24064,
+  23040, 17920, 16896, 19968, 18944, 30208, 29184, 32256, 31232, 26112,
+  25088, 28160, 27136, 11008, 10496, 12032, 11520, 8960, 8448, 9984, 9472,
+  15104, 14592, 16128, 15616, 13056, 12544, 14080, 13568, 344, 328, 376,
+  360, 280, 264, 312, 296, 472, 456, 504, 488, 408, 392, 440, 424, 88, 72,
+  120, 104, 24, 8, 56, 40, 216, 200, 248, 232, 152, 136, 184, 168, 1376,
+  1312, 1504, 1440, 1120, 1056, 1248, 1184, 1888, 1824, 2016, 1952, 1632,
+  1568, 1760, 1696, 688, 656, 752, 720, 560, 528, 624, 592, 944, 912, 1008,
+  976, 816, 784, 880, 848
+};
+
+static size_t
+avt_required_audio_size (avt_audio * snd, size_t data_size)
+{
+  size_t out_size;
+
+  switch (snd->audio_type)
+    {
+    case AVT_AUDIO_MULAW:
+    case AVT_AUDIO_ALAW:
+      out_size = 2 * data_size;	/* one byte becomes 2 bytes */
+      break;
+
+    case AVT_AUDIO_S24SYS:
+    case AVT_AUDIO_S24LE:
+    case AVT_AUDIO_S24BE:
+      out_size = (data_size * 2) / 3;	/* reduced to 16 Bit */
+      break;
+
+    case AVT_AUDIO_S32SYS:
+    case AVT_AUDIO_S32LE:
+    case AVT_AUDIO_S32BE:
+      out_size = data_size / 2;	/* reduced to 16 Bit */
+      break;
+
+    default:
+      out_size = data_size;
+      break;
+    }
+
+  return out_size;
+}
+
+extern int
+avt_set_raw_audio_capacity (avt_audio * snd, size_t data_size)
+{
+  void *new_sound;
+  size_t out_size;
+
+  if (!snd)
+    return AVT_FAILURE;
+
+  new_sound = NULL;
+  out_size = 0;
+
+  if (data_size > 0)
+    {
+      out_size = avt_required_audio_size (snd, data_size);
+      new_sound = realloc (snd->sound, out_size);
+
+      if (new_sound == NULL)
+	{
+	  avt_set_error ("out of memory");
+	  _avt_STATUS = AVT_ERROR;
+	  return _avt_STATUS;
+	}
+    }
+
+  snd->sound = (unsigned char *) new_sound;
+  snd->capacity = out_size;
+
+  /* eventually shrink length */
+  if (snd->length > out_size)
+    snd->length = out_size;
+
+  return _avt_STATUS;
+}
+
+extern int
+avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
+{
+  size_t i, old_size, new_size, out_size;
+  bool active;
+
+  if (_avt_STATUS != AVT_NORMAL || snd == NULL || data == NULL
+      || data_size == 0)
+    return avt_checkevent ();
+
+  /* audio structure must have been created with avt_load_raw_audio_data */
+  if (snd->audio_type == AVT_AUDIO_UNKNOWN)
+    {
+      avt_set_error ("unknown audio format");
+      return AVT_FAILURE;
+    }
+
+  out_size = avt_required_audio_size (snd, data_size);
+  old_size = snd->length;
+  new_size = old_size + out_size;
+
+  /* if it's currently playing, lock it */
+  active = avt_audio_playing (snd);
+  if (active)
+    avt_lock_audio ();
+
+  /* eventually get more memory for output buffer */
+  if (new_size > snd->capacity)
+    {
+      void *new_sound;
+      size_t new_capacity;
+
+      /* get twice the capacity */
+      new_capacity = 2 * snd->capacity;
+
+      /*
+       * the capacity must never be lower than new_size
+       * and it may still be 0
+       */
+      if (new_capacity < new_size)
+	new_capacity = new_size;
+
+      new_sound = realloc (snd->sound, new_capacity);
+
+      if (new_sound == NULL)
+	{
+	  avt_set_error ("out of memory");
+	  _avt_STATUS = AVT_ERROR;
+	  return _avt_STATUS;
+	}
+
+      snd->sound = (unsigned char *) new_sound;
+      snd->capacity = new_capacity;
+    }
+
+  /* convert or copy the data */
+  switch (snd->audio_type)
+    {
+    case AVT_AUDIO_S16SYS:
+    case AVT_AUDIO_U8:
+    case AVT_AUDIO_S8:
+      /* linear PCM, same bit size and endianness */
+      memcpy (snd->sound + old_size, data, out_size);
+      break;
+
+    case AVT_AUDIO_MULAW:	/* mu-law, logarithmic PCM */
+      {
+	uint8_t *in;
+	int16_t *out;
+
+	in = (uint8_t *) data;
+	out = (int16_t *) (snd->sound + old_size);
+	for (i = data_size; i > 0; i--)
+	  *out++ = mulaw_decode[*in++];
+	break;
+      }
+
+    case AVT_AUDIO_ALAW:	/* A-law, logarithmic PCM */
+      {
+	uint8_t *in;
+	int16_t *out;
+
+	in = (uint8_t *) data;
+	out = (int16_t *) (snd->sound + old_size);
+	for (i = data_size; i > 0; i--)
+	  *out++ = alaw_decode[*in++];
+	break;
+      }
+
+    case AVT_AUDIO_S16LE:
+      {
+	uint8_t *in = (uint8_t *) data;
+	uint16_t *out = (uint16_t *) (snd->sound + old_size);
+
+	for (i = out_size / 2; i > 0; i--, in += 2)
+	  *out++ = (in[1] << 8) | in[0];
+      }
+      break;
+
+    case AVT_AUDIO_S16BE:
+      {
+	uint8_t *in = (uint8_t *) data;
+	uint16_t *out = (uint16_t *) (snd->sound + old_size);
+
+	for (i = out_size / 2; i > 0; i--, in += 2)
+	  *out++ = (in[0] << 8) | in[1];
+      }
+      break;
+
+      /* the following ones are all converted to 16 bits */
+
+    case AVT_AUDIO_S24LE:
+      {
+	uint8_t *in = (uint8_t *) data;
+	uint16_t *out = (uint16_t *) (snd->sound + old_size);
+
+	for (i = out_size / sizeof (*out); i > 0; i--, in += 3)
+	  *out++ = (in[2] << 8) | in[1];
+      }
+      break;
+
+    case AVT_AUDIO_S24BE:
+      {
+	uint8_t *in = (uint8_t *) data;
+	uint16_t *out = (uint16_t *) (snd->sound + old_size);
+
+	for (i = out_size / sizeof (*out); i > 0; i--, in += 3)
+	  *out++ = (in[0] << 8) | in[1];
+      }
+      break;
+
+    case AVT_AUDIO_S32LE:
+      {
+	uint8_t *in = (uint8_t *) data;
+	uint16_t *out = (uint16_t *) (snd->sound + old_size);
+
+	for (i = out_size / sizeof (*out); i > 0; i--, in += 4)
+	  *out++ = (in[3] << 8) | in[2];
+      }
+      break;
+
+    case AVT_AUDIO_S32BE:
+      {
+	uint8_t *in = (uint8_t *) data;
+	uint16_t *out = (uint16_t *) (snd->sound + old_size);
+
+	for (i = out_size / sizeof (*out); i > 0; i--, in += 4)
+	  *out++ = (in[0] << 8) | in[1];
+      }
+      break;
+
+    default:
+      avt_set_error ("Internal error");
+      _avt_STATUS = AVT_ERROR;
+      return _avt_STATUS;
+    }
+
+  snd->length = new_size;
+
+  if (active)
+    avt_unlock_audio (snd);
+
+  return avt_checkevent ();
+}
+
+extern avt_audio *
+avt_load_raw_audio_data (void *data, size_t data_size,
+			 int samplingrate, int audio_type, int channels)
+{
+  struct avt_audio *s;
+
+  if (channels < 1 || channels > 2)
+    {
+      avt_set_error ("only 1 or 2 channels supported");
+      return NULL;
+    }
+
+  /* use NULL, if we have nothing to add, yet */
+  if (data_size == 0)
+    data = NULL;
+  else if (data == NULL)
+    data_size = 0;
+
+  /* adjustments for later optimizations */
+  if (AVT_LITTLE_ENDIAN == AVT_BYTE_ORDER)
+    {
+      switch (audio_type)
+	{
+	case AVT_AUDIO_S16LE:
+	  audio_type = AVT_AUDIO_S16SYS;
+	  break;
+
+	case AVT_AUDIO_S24SYS:
+	  audio_type = AVT_AUDIO_S24LE;
+	  break;
+
+	case AVT_AUDIO_S32SYS:
+	  audio_type = AVT_AUDIO_S32LE;
+	  break;
+	}
+    }
+  else if (AVT_BIG_ENDIAN == AVT_BYTE_ORDER)
+    {
+      switch (audio_type)
+	{
+	case AVT_AUDIO_S16BE:
+	  audio_type = AVT_AUDIO_S16SYS;
+	  break;
+
+	case AVT_AUDIO_S24SYS:
+	  audio_type = AVT_AUDIO_S24BE;
+	  break;
+
+	case AVT_AUDIO_S32SYS:
+	  audio_type = AVT_AUDIO_S32BE;
+	  break;
+	}
+    }
+
+  /* get memory for struct */
+  s = (struct avt_audio *) malloc (sizeof (struct avt_audio));
+  if (s == NULL)
+    {
+      avt_set_error ("out of memory");
+      return NULL;
+    }
+
+  s->sound = NULL;
+  s->length = 0;
+  s->capacity = 0;
+  s->audio_type = audio_type;
+  s->samplingrate = samplingrate;
+  s->channels = channels;
+
+  if (data_size == 0
+      || avt_add_raw_audio_data (s, data, data_size) == AVT_NORMAL)
+    return s;
+  else
+    {
+      free (s);
+      return NULL;
+    }
+}
+
+extern void
+avt_finalize_raw_audio (avt_audio * snd)
+{
+  /* eventually free unneeded memory */
+  if (snd->capacity > snd->length)
+    {
+      void *new_sound;
+      size_t new_capacity;
+
+      new_capacity = snd->length;
+      new_sound = realloc (snd->sound, new_capacity);
+
+      if (new_sound)
+	{
+	  snd->sound = (unsigned char *) new_sound;
+	  snd->capacity = new_capacity;
+	}
+    }
+}
+
+extern void
+avt_free_audio (avt_audio * snd)
+{
+  if (snd)
+    {
+      /* Is this sound currently playing? Then stop it! */
+      if (avt_audio_playing (snd))
+	avt_stop_audio ();
+
+      /* free the sound data */
+      free (snd->sound);
+
+      /* free the rest */
+      free (snd);
+    }
+}
+
 
 /* if size is unknown use 0 or MAXIMUM_SIZE for maxsize */
 static avt_audio *

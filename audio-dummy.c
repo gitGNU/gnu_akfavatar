@@ -64,39 +64,6 @@ avt_stop_audio (void)
   no_audio ();
 }
 
-extern avt_audio *
-avt_load_raw_audio_data (void *data, size_t data_size,
-			 int samplingrate, int audio_type, int channels)
-{
-  no_audio ();
-  return NULL;
-}
-
-extern int
-avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
-{
-  no_audio ();
-  return AVT_FAILURE;
-}
-
-extern int
-avt_set_raw_audio_capacity (avt_audio * snd, size_t data_size)
-{
-  no_audio ();
-  return AVT_FAILURE;
-}
-
-extern void
-avt_finalize_raw_audio (avt_audio * snd)
-{
-}
-
-extern void
-avt_free_audio (avt_audio * snd)
-{
-  no_audio ();
-}
-
 extern int
 avt_wait_audio_end (void)
 {

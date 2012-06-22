@@ -24,6 +24,25 @@
 #include "akfavatar.h"
 #include <stdio.h>		/* FILE */
 
+#define AVT_LITTLE_ENDIAN  1234
+#define AVT_BIG_ENDIAN     4321
+
+/* AVT_BYTE_ORDER */
+#ifndef AVT_BYTE_ORDER
+#if defined(__linux__)
+#include <endian.h>
+#define AVT_BYTE_ORDER  __BYTE_ORDER
+#else /* not __linux__ */
+#if defined(__sparc__) || defined(__MIPSEB__) \
+    || defined(__ppc__) || defined(__POWERPC__) || defined(_M_PPC) \
+    || defined(__hppa__)
+#define AVT_BYTE_ORDER  AVT_BIG_ENDIAN
+#else
+#define AVT_BYTE_ORDER  AVT_LITTLE_ENDIAN
+#endif
+#endif
+#endif
+
 struct avt_audio
 {
   unsigned char *sound;		/* Pointer to sound data */
@@ -47,6 +66,10 @@ extern int avt_checkevent (void);
 extern int avt_wait_event (void);
 extern void (*avt_alert_func) (void);
 extern void (*avt_quit_audio_func) (void);
+
+/* audio-sdl.c */
+extern void avt_lock_audio (void);
+extern void avt_unlock_audio (avt_audio *snd);
 
 /* avtposix.c / avtwindows.c */
 /* currently not used */
