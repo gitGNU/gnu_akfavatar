@@ -1,3 +1,7 @@
+2012-06-22  Andreas K. Foerster  <info@akfoerster.de>
+
+	* audio-sdl.c: more steps for SDL independence
+
 2012-06-21  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtdata.h, avtdata.c, audio-common.c: new files

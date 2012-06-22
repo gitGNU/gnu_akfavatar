@@ -24,6 +24,16 @@
 #include "akfavatar.h"
 #include <stdio.h>		/* FILE */
 
+struct avt_audio
+{
+  unsigned char *sound;		/* Pointer to sound data */
+  size_t length;		/* Length of sound data in bytes */
+  size_t capacity;		/* Capacity in bytes */
+  int audio_type;		/* Type of raw data */
+  int samplingrate;
+  int channels;
+};
+
 #define AVT_AUDIO_ENDED 1
 #define AVT_TIMEOUT 2
 

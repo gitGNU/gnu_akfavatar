@@ -54,16 +54,6 @@
 
 #pragma GCC poison  malloc free strlen memcpy memcmp getenv putenv
 
-struct avt_audio
-{
-  SDL_AudioSpec audiospec;
-  uint8_t *sound;		/* Pointer to sound data */
-  uint32_t len;			/* Length of sound data */
-  uint32_t capacity;		/* Capacity in bytes */
-  int audio_type;		/* Type of raw data */
-  uint8_t wave;			/* wether SDL_FreeWav is needed? */
-};
-
 static bool avt_audio_initialized;
 
 /* short sound for the "avt_bell" function */
@@ -71,6 +61,7 @@ static avt_audio *my_alert;
 
 /* current sound */
 static struct avt_audio current_sound;
+static SDL_AudioSpec audiospec;
 static volatile int32_t soundpos = 0;	/* Current play position */
 static volatile int32_t soundleft = 0;	/* Length of left unplayed wave data */
 static bool loop = false;
@@ -141,7 +132,7 @@ fill_audio (void *userdata, uint8_t * stream, int len)
 	{
 	  /* rewind to beginning */
 	  soundpos = 0;
-	  soundleft = current_sound.len;
+	  soundleft = current_sound.length;
 	}
       else			/* no more data */
 	{
@@ -218,7 +209,7 @@ avt_stop_audio (void)
   soundpos = 0;
   soundleft = 0;
   loop = false;
-  current_sound.len = 0;
+  current_sound.length = 0;
   current_sound.sound = NULL;
 }
 
@@ -231,7 +222,7 @@ avt_quit_audio (void)
       SDL_CloseAudio ();
       soundpos = 0;
       soundleft = 0;
-      current_sound.len = 0;
+      current_sound.length = 0;
       current_sound.sound = NULL;
       loop = false;
       playing = false;
@@ -300,12 +291,12 @@ avt_set_raw_audio_capacity (avt_audio * snd, size_t data_size)
 	}
     }
 
-  snd->sound = (uint8_t *) new_sound;
+  snd->sound = (unsigned char *) new_sound;
   snd->capacity = out_size;
 
   /* eventually shrink length */
-  if (snd->len > out_size)
-    snd->len = out_size;
+  if (snd->length > out_size)
+    snd->length = out_size;
 
   return _avt_STATUS;
 }
@@ -328,7 +319,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
     }
 
   out_size = avt_required_audio_size (snd, data_size);
-  old_size = snd->len;
+  old_size = snd->length;
   new_size = old_size + out_size;
 
   /* if it's currently playing, lock it */
@@ -361,7 +352,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 	  return _avt_STATUS;
 	}
 
-      snd->sound = (uint8_t *) new_sound;
+      snd->sound = (unsigned char *) new_sound;
       snd->capacity = new_capacity;
     }
 
@@ -467,12 +458,12 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
       return _avt_STATUS;
     }
 
-  snd->len = new_size;
+  snd->length = new_size;
 
   if (active)
     {
       current_sound.sound = snd->sound;	/* might have changed */
-      current_sound.len = new_size;
+      current_sound.length = new_size;
       current_sound.capacity = snd->capacity;
       soundleft += out_size;
       SDL_UnlockAudio ();
@@ -485,7 +476,6 @@ extern avt_audio *
 avt_load_raw_audio_data (void *data, size_t data_size,
 			 int samplingrate, int audio_type, int channels)
 {
-  int format;
   struct avt_audio *s;
 
   if (channels < 1 || channels > 2)
@@ -536,41 +526,6 @@ avt_load_raw_audio_data (void *data, size_t data_size,
 	}
     }
 
-  /* convert audio_type into SDL format number */
-  switch (audio_type)
-    {
-    case AVT_AUDIO_U8:
-      format = AUDIO_U8;
-      break;
-
-    case AVT_AUDIO_S8:
-      format = AUDIO_S8;
-      break;
-
-    case AVT_AUDIO_S16LE:
-    case AVT_AUDIO_S16BE:
-    case AVT_AUDIO_S16SYS:
-    case AVT_AUDIO_S24LE:
-    case AVT_AUDIO_S24BE:
-    case AVT_AUDIO_S24SYS:
-    case AVT_AUDIO_S32LE:
-    case AVT_AUDIO_S32BE:
-    case AVT_AUDIO_S32SYS:
-      /* size and endianess will get adjusted while loading */
-      format = AUDIO_S16SYS;
-      break;
-
-    case AVT_AUDIO_MULAW:
-    case AVT_AUDIO_ALAW:
-      /* will be converted to S16SYS */
-      format = AUDIO_S16SYS;
-      break;
-
-    default:
-      SDL_SetError ("unsupported audio type");
-      return NULL;
-    }
-
   /* get memory for struct */
   s = (struct avt_audio *) SDL_malloc (sizeof (struct avt_audio));
   if (s == NULL)
@@ -580,16 +535,11 @@ avt_load_raw_audio_data (void *data, size_t data_size,
     }
 
   s->sound = NULL;
-  s->len = 0;
+  s->length = 0;
   s->capacity = 0;
   s->audio_type = audio_type;
-  s->wave = false;
-  s->audiospec.format = format;
-  s->audiospec.freq = samplingrate;
-  s->audiospec.channels = channels;
-  s->audiospec.samples = OUTPUT_BUFFER;
-  s->audiospec.callback = fill_audio;
-  s->audiospec.userdata = NULL;
+  s->samplingrate = samplingrate;
+  s->channels = channels;
 
   if (data_size == 0
       || avt_add_raw_audio_data (s, data, data_size) == AVT_NORMAL)
@@ -605,17 +555,17 @@ extern void
 avt_finalize_raw_audio (avt_audio * snd)
 {
   /* eventually free unneeded memory */
-  if (snd->capacity > snd->len)
+  if (snd->capacity > snd->length)
     {
       void *new_sound;
       size_t new_capacity;
 
-      new_capacity = snd->len;
+      new_capacity = snd->length;
       new_sound = SDL_realloc (snd->sound, new_capacity);
 
       if (new_sound)
 	{
-	  snd->sound = (uint8_t *) new_sound;
+	  snd->sound = (unsigned char *) new_sound;
 	  snd->capacity = new_capacity;
 	}
     }
@@ -641,10 +591,7 @@ avt_free_audio (avt_audio * snd)
 	avt_stop_audio ();
 
       /* free the sound data */
-      if (snd->wave)
-	SDL_FreeWAV (snd->sound);
-      else
-	SDL_free (snd->sound);
+      SDL_free (snd->sound);
 
       /* free the rest */
       SDL_free (snd);
@@ -669,19 +616,35 @@ avt_play_audio (avt_audio * snd, int playmode)
   SDL_LockAudio ();
 
   /* load sound */
-  current_sound.sound = snd->sound;
-  current_sound.len = snd->len;
-  current_sound.capacity = snd->capacity;
-  current_sound.audiospec = snd->audiospec;
-  current_sound.audiospec.callback = fill_audio;
-  current_sound.audiospec.samples = OUTPUT_BUFFER;
+  current_sound = *snd;
+
+  switch (snd->audio_type)
+    {
+    case AVT_AUDIO_U8:
+      audiospec.format = AUDIO_U8;
+      break;
+
+    case AVT_AUDIO_S8:
+      audiospec.format = AUDIO_S8;
+      break;
+
+    default:			/* all other get converted */
+      audiospec.format = AUDIO_S16SYS;
+      break;
+    }
+
+  audiospec.freq = snd->samplingrate;
+  audiospec.channels = snd->channels;
+  audiospec.callback = fill_audio;
+  audiospec.samples = OUTPUT_BUFFER;
+  audiospec.userdata = &current_sound;
 
   loop = (playmode == AVT_LOOP);
 
-  if (SDL_OpenAudio (&current_sound.audiospec, NULL) == 0)
+  if (SDL_OpenAudio (&audiospec, NULL) == 0)
     {
       soundpos = 0;
-      soundleft = current_sound.len;
+      soundleft = current_sound.length;
       SDL_UnlockAudio ();
       playing = true;
       SDL_PauseAudio (0);
