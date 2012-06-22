@@ -3,10 +3,7 @@
  * this part contains dummy audio functions
  * Copyright (c) 2007,2008,2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
  *
- * required standards: C99 or C++
- *
- * other software
- * required: SDL1.2
+ * required standards: C99
  *
  * This file is part of AKFAvatar
  *
@@ -76,6 +73,18 @@ avt_play_audio (avt_audio * snd, int playmode)
 {
   no_audio ();
   return _avt_STATUS;
+}
+
+extern void
+avt_lock_audio (void)
+{
+  no_audio ();
+}
+
+extern void
+avt_unlock_audio (avt_audio * snd)
+{
+  no_audio ();
 }
 
 extern void
