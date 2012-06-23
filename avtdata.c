@@ -42,7 +42,6 @@ struct avt_data
 
   size_t position, start, end;
   int type;
-  bool eof, err;
 };
 
 
@@ -75,17 +74,27 @@ avt_data_read (avt_data * d, void *data, size_t size, size_t number)
       {
 	size_t all = size * number;
 	size_t position = d->position;
+	size_t end = d->end;
 
-	if (position + all <= d->end)
+	if (position + all <= end)	// all elements readable
 	  {
 	    memcpy (data, d->memory + position, all);
 	    d->position += all;
 	    result = number;
 	  }
-	else
+	else if (position <= end - size)	// at least 1 element readable
 	  {
-	    d->eof = true;
-	    result = 0;
+	    end -= size;
+
+	    do
+	      {
+		memcpy (data, d->memory + position, size);
+		position += size;
+		result++;
+	      }
+	    while (position <= end);
+
+	    d->position = position;
 	  }
       }
       break;
@@ -221,7 +230,6 @@ avt_data_open_stream (FILE * stream)
       d->type = AVT_DATA_STREAM;
       d->stream = stream;
       d->memory = NULL;
-      d->eof = d->err = false;
       d->start = ftell (stream);
       d->end = d->position = -1;	/* unused */
     }
@@ -252,7 +260,6 @@ avt_data_open_memory (const void *memory, size_t size)
       d->type = AVT_DATA_MEMORY;
       d->stream = NULL;
       d->memory = (const char *) memory;
-      d->eof = d->err = false;
       d->start = d->position = 0;	/* start is always 0 */
       d->end = size;
     }

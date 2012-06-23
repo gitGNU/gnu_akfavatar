@@ -5,6 +5,7 @@
  * These functions are only for internal use, they are not part of the API!
  *
  * This file is part of AKFAvatar
+ * This file is not part of the official API
  *
  * AKFAvatar is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -3,6 +3,7 @@
  * Copyright (c) 2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
+ * This file is not part of the official API
  *
  * AKFAvatar is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
