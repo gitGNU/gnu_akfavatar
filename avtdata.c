@@ -80,7 +80,7 @@ avt_data_read (avt_data * d, void *data, size_t size, size_t number)
 	  {
 	    memcpy (data, d->memory + position, all);
 	    d->position += all;
-	    result = all;
+	    result = number;
 	  }
 	else
 	  {
@@ -167,7 +167,7 @@ avt_data_tell (avt_data * d)
       break;
 
     case AVT_DATA_MEMORY:
-      if (d->position > 0 && d->position <= d->end)
+      if (d->position <= d->end)
 	result = d->position;
       break;
     }
