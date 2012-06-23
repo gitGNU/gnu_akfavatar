@@ -24,24 +24,43 @@
 #include "akfavatar.h"
 #include <stdio.h>		/* FILE */
 
+// AVT_BYTE_ORDER
+#ifdef AVT_BYTE_ORDER
+
 #define AVT_LITTLE_ENDIAN  1234
 #define AVT_BIG_ENDIAN     4321
 
-/* AVT_BYTE_ORDER */
-#ifndef AVT_BYTE_ORDER
-#if defined(__linux__)
-#include <endian.h>
-#define AVT_BYTE_ORDER  __BYTE_ORDER
-#else /* not __linux__ */
-#if defined(__sparc__) || defined(__MIPSEB__) \
-    || defined(__ppc__) || defined(__POWERPC__) || defined(_M_PPC) \
-    || defined(__hppa__)
-#define AVT_BYTE_ORDER  AVT_BIG_ENDIAN
 #else
+
+#if defined(__GLIBC__) || defined(__UCLIBC__) || defined(__dietlibc__)
+
+#include <endian.h>
+
+#define AVT_LITTLE_ENDIAN  __LITTLE_ENDIAN
+#define AVT_BIG_ENDIAN     __BIG_ENDIAN
+#define AVT_BYTE_ORDER     __BYTE_ORDER
+
+#else // no endian.h
+
+#define AVT_LITTLE_ENDIAN  1234
+#define AVT_BIG_ENDIAN     4321
+
+// big endian - FIXME: these may be wrong or at least incomplete...
+#if !defined(__LITTLE_ENDIAN__) \
+    && (defined(__sparc__) || defined(__ARMEB__) || defined(__MIPSEB__) \
+    || defined(__ppc__) || defined(__POWERPC__) || defined(_M_PPC) \
+    || defined(__hppa__))
+
+#define AVT_BYTE_ORDER  AVT_BIG_ENDIAN
+
+#else  // assume little endian as default
+
 #define AVT_BYTE_ORDER  AVT_LITTLE_ENDIAN
-#endif
-#endif
-#endif
+
+#endif // not big endian system
+#endif // no endian.h
+#endif // not AVT_BYTE_ORDER
+
 
 struct avt_audio
 {
