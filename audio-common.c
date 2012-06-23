@@ -27,6 +27,7 @@
 #include "akfavatar.h"
 #include "avtinternals.h"
 #include "avtdata.h"
+
 #include <stdlib.h>		/* malloc / realloc / free */
 #include <stdint.h>
 #include <string.h>		/* memcmp / memcpy */
@@ -69,6 +70,11 @@ avt_free_audio (avt_audio * snd)
 #define avt_load_audio_general(a,b,c)  NULL
 
 #else /* not NO_AUDIO */
+
+#include "alert.c"
+
+/* short sound for the "avt_bell" function */
+static avt_audio *my_alert;
 
 /* table for decoding mu-law */
 static const int16_t mulaw_decode[256] = {
@@ -123,6 +129,32 @@ static const int16_t alaw_decode[256] = {
   1568, 1760, 1696, 688, 656, 752, 720, 560, 528, 624, 592, 944, 912, 1008,
   976, 816, 784, 880, 848
 };
+
+static void
+short_audio_sound (void)
+{
+  /* if my_alert is loaded and nothing is currently playing */
+  if (my_alert && !avt_audio_playing(NULL))
+    avt_play_audio (my_alert, AVT_PLAY);
+}
+
+extern int
+avt_start_audio_common (void)
+{
+  my_alert = avt_load_audio_data ((void *) &avt_alert_data,
+  			          avt_alert_data_size, AVT_LOAD);
+  avt_alert_func = short_audio_sound;
+
+  return _avt_STATUS;
+}
+
+extern void
+avt_quit_audio_common (void)
+{
+  avt_free_audio (my_alert);
+  my_alert = NULL;
+  avt_alert_func = avt_flash;
+}
 
 static size_t
 avt_required_audio_size (avt_audio * snd, size_t data_size)

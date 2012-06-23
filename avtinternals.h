@@ -90,6 +90,10 @@ extern void (*avt_quit_audio_func) (void);
 extern void avt_lock_audio (void);
 extern void avt_unlock_audio (avt_audio *snd);
 
+/* audio-common */
+extern int avt_start_audio_common (void);
+extern void avt_quit_audio_common (void);
+
 /* avtposix.c / avtwindows.c */
 /* currently not used */
 extern void get_user_home (char *home_dir, size_t size);

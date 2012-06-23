@@ -31,7 +31,6 @@
 #include "avtinternals.h"
 #include "SDL.h"
 #include "SDL_audio.h"
-#include "alert.c"
 
 /* lower audio buffer size for lower latency, but it could become choppy */
 #define OUTPUT_BUFFER 4096
@@ -55,9 +54,6 @@
 #pragma GCC poison  malloc free strlen memcpy memcmp getenv putenv
 
 static bool avt_audio_initialized;
-
-/* short sound for the "avt_bell" function */
-static avt_audio *my_alert;
 
 /* current sound */
 static struct avt_audio current_sound;
@@ -104,14 +100,6 @@ fill_audio (void *userdata, uint8_t * stream, int len)
   soundleft -= len;
 }
 
-static void
-short_audio_sound (void)
-{
-  /* if my_alert is loaded and nothing is currently playing */
-  if (my_alert && !playing)
-    avt_play_audio (my_alert, AVT_PLAY);
-}
-
 /* must be called AFTER avt_start! */
 extern int
 avt_start_audio (void)
@@ -127,10 +115,7 @@ avt_start_audio (void)
 
       /* set this before calling anything from this lib */
       avt_audio_initialized = true;
-
-      my_alert = avt_load_audio_data ((void *) &avt_alert_data,
-				      avt_alert_data_size, AVT_LOAD);
-      avt_alert_func = short_audio_sound;
+      avt_start_audio_common ();
       avt_quit_audio_func = avt_quit_audio;
     }
 
@@ -172,10 +157,8 @@ avt_quit_audio (void)
       current_sound.sound = NULL;
       loop = false;
       playing = false;
-      avt_alert_func = avt_flash;
-      avt_free_audio (my_alert);
-      my_alert = NULL;
       SDL_QuitSubSystem (SDL_INIT_AUDIO);
+      avt_quit_audio_common ();
       avt_audio_initialized = false;
     }
 }
