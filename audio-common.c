@@ -77,7 +77,7 @@ avt_free_audio (avt_audio * snd)
 #include "alert.c"
 
 /* short sound for the "avt_bell" function */
-static avt_audio *my_alert;
+static avt_audio *alert_sound;
 
 /* table for decoding mu-law */
 static const int16_t mulaw_decode[256] = {
@@ -134,28 +134,35 @@ static const int16_t alaw_decode[256] = {
 };
 
 static void
-short_audio_sound (void)
+audio_alert (void)
 {
-  /* if my_alert is loaded and nothing is currently playing */
-  if (my_alert && !avt_audio_playing(NULL))
-    avt_play_audio (my_alert, AVT_PLAY);
+  /* if alert_sound is loaded and nothing is currently playing */
+  if (alert_sound && !avt_audio_playing (NULL))
+    avt_play_audio (alert_sound, AVT_PLAY);
 }
 
 extern int
-avt_start_audio_common (void)
+avt_activate_audio_alert (void)
 {
-  my_alert = avt_load_audio_data ((void *) &avt_alert_data,
-  			          avt_alert_data_size, AVT_LOAD);
-  avt_alert_func = short_audio_sound;
+  if (!alert_sound)
+    alert_sound = avt_load_audio_data (&avt_alert_data,
+				       avt_alert_data_size, AVT_LOAD);
+
+  if (alert_sound)
+    avt_alert_func = audio_alert;
 
   return _avt_STATUS;
 }
 
 extern void
-avt_quit_audio_common (void)
+avt_deactivate_audio_alert (void)
 {
-  avt_free_audio (my_alert);
-  my_alert = NULL;
+  if (alert_sound)
+    {
+      avt_free_audio (alert_sound);
+      alert_sound = NULL;
+    }
+
   avt_alert_func = avt_flash;
 }
 

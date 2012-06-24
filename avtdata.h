@@ -51,4 +51,6 @@ uint16_t avt_data_read16be (avt_data *d);
 uint32_t avt_data_read32le (avt_data *d);
 uint32_t avt_data_read32be (avt_data *d);
 
+#define avt_data_rewind(d)  avt_data_seek((d), 0, SEEK_SET)
+
 #endif /* AVTDATA_H */

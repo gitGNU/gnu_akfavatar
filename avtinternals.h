@@ -92,8 +92,8 @@ extern void avt_lock_audio (void);
 extern void avt_unlock_audio (avt_audio *snd);
 
 /* audio-common */
-extern int avt_start_audio_common (void);
-extern void avt_quit_audio_common (void);
+extern int avt_activate_audio_alert (void);
+extern void avt_deactivate_audio_alert (void);
 
 /* avtposix.c / avtwindows.c */
 /* currently not used */

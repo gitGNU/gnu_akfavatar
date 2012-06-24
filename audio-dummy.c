@@ -36,6 +36,7 @@ no_audio (void)
   avt_set_error ("not compiled with audio support");
 }
 
+#ifndef DISABLE_DEPRECATED
 extern int
 avt_initialize_audio (void)
 {
@@ -43,12 +44,13 @@ avt_initialize_audio (void)
   // do not set _avt_STATUS here
   return AVT_FAILURE;
 }
+#endif
 
 extern int
 avt_start_audio (void)
 {
   no_audio ();
-  // if you implement sound, call avt_start_audio_common ()
+  // if you implement sound, call avt_activate_audio_alert ();
   // do not set _avt_STATUS here
   return AVT_FAILURE;
 }
@@ -56,7 +58,7 @@ avt_start_audio (void)
 extern void
 avt_quit_audio (void)
 {
-  // if you implement sound, call avt_quit_audio_common ()
+  // if you implement sound, call avt_deactivate_audio_alert ();
   no_audio ();
 }
 
