@@ -21,6 +21,9 @@
 
 /* ATTENTION: coordinates are 1-based externally, but internally 0-based */
 
+#define _ISOC99_SOURCE
+#define _POSIX_C_SOURCE 200112L
+
 #include "akfavatar.h"
 
 #include <math.h>

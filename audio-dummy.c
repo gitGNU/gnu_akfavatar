@@ -21,6 +21,9 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#define _ISOC99_SOURCE
+#define _POSIX_C_SOURCE 200112L
+
 /* don't make functions deprecated for this file */
 #define _AVT_USE_DEPRECATED
 
@@ -37,7 +40,7 @@ extern int
 avt_initialize_audio (void)
 {
   no_audio ();
-  /* do not set _avt_STATUS here */
+  // do not set _avt_STATUS here
   return AVT_FAILURE;
 }
 
@@ -45,13 +48,15 @@ extern int
 avt_start_audio (void)
 {
   no_audio ();
-  /* do not set _avt_STATUS here */
+  // if you implement sound, call avt_start_audio_common ()
+  // do not set _avt_STATUS here
   return AVT_FAILURE;
 }
 
 extern void
 avt_quit_audio (void)
 {
+  // if you implement sound, call avt_quit_audio_common ()
   no_audio ();
 }
 

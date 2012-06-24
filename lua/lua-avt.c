@@ -2,7 +2,7 @@
  * Lua 5.2 binding for AKFAvatar
  * Copyright (c) 2008,2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
  *
- * required standards: C99 or C++, POSIX.1-2001
+ * required standards: C99, POSIX.1-2001
  *
  * This file is part of AKFAvatar
  *
@@ -19,6 +19,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
+
+#define _ISOC99_SOURCE
+#define _POSIX_C_SOURCE 200112L
 
 #include "akfavatar.h"
 #include "avtaddons.h"

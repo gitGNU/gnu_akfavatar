@@ -24,6 +24,9 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#define _ISOC99_SOURCE
+#define _POSIX_C_SOURCE 200112L
+
 /* don't make functions deprecated for this file */
 #define _AVT_USE_DEPRECATED
 

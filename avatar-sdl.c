@@ -2,7 +2,7 @@
  * AKFAvatar library - for giving your programs a graphical Avatar
  * Copyright (c) 2007,2008,2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
  *
- * required standards: C99 or C++
+ * required standards: C99
  *
  * other software:
  * required:
@@ -25,6 +25,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
+
+#define _ISOC99_SOURCE
+#define _POSIX_C_SOURCE 200112L
 
 /* don't make functions deprecated for this file */
 #define _AVT_USE_DEPRECATED
