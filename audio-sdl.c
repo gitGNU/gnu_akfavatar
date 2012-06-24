@@ -27,7 +27,7 @@
 #define _ISOC99_SOURCE
 #define _POSIX_C_SOURCE 200112L
 
-/* don't make functions deprecated for this file */
+// don't make functions deprecated for this file
 #define _AVT_USE_DEPRECATED
 
 #include "akfavatar.h"
@@ -35,7 +35,7 @@
 #include "SDL.h"
 #include "SDL_audio.h"
 
-/* lower audio buffer size for lower latency, but it could become choppy */
+// lower audio buffer size for lower latency, but it could become choppy
 #define OUTPUT_BUFFER 4096
 
 #ifndef _SDL_stdinc_h
@@ -52,38 +52,38 @@
 #  define SDL_memcmp              memcmp
 #  undef SDL_free
 #  define SDL_free                free
-#endif /* OLD_SDL */
+#endif // OLD_SDL
 
 #pragma GCC poison  malloc free strlen memcpy memcmp getenv putenv
 
 static bool avt_audio_initialized;
 
-/* current sound */
+// current sound
 static struct avt_audio current_sound;
 static SDL_AudioSpec audiospec;
-static volatile int32_t soundpos = 0;	/* Current play position */
-static volatile int32_t soundleft = 0;	/* Length of left unplayed wave data */
+static volatile int32_t soundpos = 0;	// Current play position
+static volatile int32_t soundleft = 0;	// Length of left unplayed wave data
 static bool loop = false;
 static volatile bool playing = false;
 
-/* this is the callback function */
+// this is the callback function
 static void
 fill_audio (void *userdata, uint8_t * stream, int len)
 {
-  /* only play, when there is data left */
+  // only play, when there is data left
   if (soundleft <= 0)
     {
       if (loop)
 	{
-	  /* rewind to beginning */
+	  // rewind to beginning
 	  soundpos = 0;
 	  soundleft = current_sound.length;
 	}
-      else			/* no more data */
+      else			// no more data
 	{
 	  SDL_Event event;
 
-	  SDL_PauseAudio (1);	/* shut up */
+	  SDL_PauseAudio (1);	// shut up
 	  playing = false;
 	  event.type = SDL_USEREVENT;
 	  event.user.code = AVT_AUDIO_ENDED;
@@ -93,7 +93,7 @@ fill_audio (void *userdata, uint8_t * stream, int len)
 	}
     }
 
-  /* Copy as much data as possible */
+  // Copy as much data as possible
   if (len > soundleft)
     len = soundleft;
 
@@ -103,7 +103,7 @@ fill_audio (void *userdata, uint8_t * stream, int len)
   soundleft -= len;
 }
 
-/* must be called AFTER avt_start! */
+// must be called AFTER avt_start!
 extern int
 avt_start_audio (void)
 {
@@ -116,7 +116,7 @@ avt_start_audio (void)
 	  return _avt_STATUS;
 	}
 
-      /* set this before calling anything from this lib */
+      // set this before calling anything from this lib
       avt_audio_initialized = true;
       avt_activate_audio_alert ();
       avt_quit_audio_func = avt_quit_audio;
@@ -134,7 +134,7 @@ avt_initialize_audio (void)
 }
 #endif
 
-/* stops audio */
+// stops audio
 extern void
 avt_stop_audio (void)
 {
@@ -184,12 +184,12 @@ avt_unlock_audio (avt_audio * snd)
   SDL_UnlockAudio ();
 }
 
-/* Is this sound currently playing? NULL for any sound */
+// Is this sound currently playing? NULL for any sound
 extern bool
 avt_audio_playing (avt_audio * snd)
 {
   if (snd && snd->sound != current_sound.sound)
-    return false;		/* not same sound */
+    return false;		// not same sound
 
   return playing;
 }
@@ -200,18 +200,18 @@ avt_play_audio (avt_audio * snd, int playmode)
   if (!avt_audio_initialized)
     return _avt_STATUS;
 
-  /* no sound? - just ignore it */
+  // no sound? - just ignore it
   if (!snd)
     return _avt_STATUS;
 
   if (playmode != AVT_PLAY && playmode != AVT_LOOP)
     return AVT_FAILURE;
 
-  /* close audio, in case it is left open */
+  // close audio, in case it is left open
   SDL_CloseAudio ();
   SDL_LockAudio ();
 
-  /* load sound */
+  // load sound
   current_sound = *snd;
 
   switch (snd->audio_type)
@@ -224,7 +224,7 @@ avt_play_audio (avt_audio * snd, int playmode)
       audiospec.format = AUDIO_S8;
       break;
 
-    default:			/* all other get converted */
+    default:			// all other get converted
       audiospec.format = AUDIO_S16SYS;
       break;
     }
@@ -260,11 +260,11 @@ avt_wait_audio_end (void)
   if (!playing)
     return _avt_STATUS;
 
-  /* end the loop, but wait for end of sound */
+  // end the loop, but wait for end of sound
   loop = false;
 
   while (playing && _avt_STATUS == AVT_NORMAL)
-    avt_wait_event ();		/* end of audio also triggers event */
+    avt_wait_event ();		// end of audio also triggers event
 
   return _avt_STATUS;
 }

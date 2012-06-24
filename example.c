@@ -23,7 +23,7 @@
  * AKFoerster
  */
 
-/* include the akfavatar library functions */
+// include the akfavatar library functions
 #include "akfavatar.h"
 
 #include <stdio.h>
@@ -31,14 +31,14 @@
 #include <string.h>
 
 
-/* XPM files are valid C-Code! */
+// XPM files are valid C-Code!
 #include <data/female_user.xpm>
 
 
 #define PRGNAME  "AKFAvatar example program"
 #define PRGSHORTNAME  "AKFAvatar"
 
-/* Prototypes */
+// Prototypes
 static void say (char *msg);
 static void run_plot (void);
 
@@ -53,25 +53,25 @@ static void run_plot (void);
 int
 main (int argc, char *argv[])
 {
-  /* make the compiler not complain, that they are not used */
+  // make the compiler not complain, that they are not used
   (void) argc;
   (void) argv;
 
-  /* for static linking it is beneficial to avoid avt_colorname */
+  // for static linking it is beneficial to avoid avt_colorname
   avt_set_background_color (0xFFC0CB);
   avt_mb_encoding ("UTF-8");
 
-  /* initialize it */
+  // initialize it
   if (avt_start (PRGNAME, PRGSHORTNAME, AVT_AUTOMODE))
     {
       fprintf (stderr, "cannot initialize graphics: %s\n", avt_get_error ());
       exit (EXIT_FAILURE);
     }
 
-  /* set the avatar */
+  // set the avatar
   avt_avatar_image_xpm (female_user_xpm);
 
-  /* clean up when the program exits */
+  // clean up when the program exits
   atexit (avt_quit);
 
   run_plot ();
@@ -97,28 +97,28 @@ static void
 run_plot (void)
 {
   char name[AVT_LINELENGTH + 1];
-  /* AVT_LINELENGTH is the maximum length of one line in a balloon */
+  // AVT_LINELENGTH is the maximum length of one line in a balloon
 
   if (avt_move_in ())
     exit (EXIT_SUCCESS);
 
-  /* do slow printing */
+  // do slow printing
   avt_set_text_delay (AVT_DEFAULT_TEXT_DELAY);
 
-  /* set the balloon size: height, width (use 0 for maximum) */
+  // set the balloon size: height, width (use 0 for maximum)
   avt_set_balloon_size (1, 50);
 
-  /* ask for a name */
+  // ask for a name
   say ("What's your name? ");
   if (avt_ask_mb (name, sizeof (name)))
     exit (EXIT_SUCCESS);
 
-  /* if no name was given, call him "stranger" ;-) */
+  // if no name was given, call him "stranger" ;-)
   if (!name[0])
     strcpy (name, "stranger");
 
   avt_set_balloon_size (6, 50);
-  /* clear the balloon */
+  // clear the balloon
   avt_clear ();
   say ("Hello ");
   say (name);
@@ -127,7 +127,7 @@ run_plot (void)
        "It is sooo easy to program me...\n\n"
        "I am longing for being programmed by you!");
 
-  /* wait for a key, move out and wait some time */
+  // wait for a key, move out and wait some time
   avt_wait_button ();
   avt_move_out ();
   avt_wait (AVT_SECONDS (0.75));

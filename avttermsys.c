@@ -34,7 +34,7 @@
 #  include <pty.h>
 #endif
 
-/* terminal type */
+// terminal type
 /*
  * this is not dependent on the system on which it runs,
  * but the terminal database should have an entry for this
@@ -42,7 +42,7 @@
 #define TERM "linux"
 #define BWTERM "linux-m"
 
-/* set terminal size */
+// set terminal size
 extern void
 avta_term_size (int fd, int height, int width)
 {
@@ -63,7 +63,7 @@ get_user_shell (void)
 
   shell = getenv ("SHELL");
 
-  /* when the variable is not set, dig deeper */
+  // when the variable is not set, dig deeper
   if (shell == NULL || *shell == '\0')
     {
       struct passwd *user_data;
@@ -73,7 +73,7 @@ get_user_shell (void)
 	  && *user_data->pw_shell != '\0')
 	shell = user_data->pw_shell;
       else
-	shell = "/bin/sh";	/* default shell */
+	shell = "/bin/sh";	// default shell
     }
 
   return shell;
@@ -98,13 +98,13 @@ avta_term_initialize (int *input_fd, int width, int height,
   if (openpty (&master, &slave, NULL, NULL, NULL) < 0)
     return -1;
 
-#else /* not USE_OPENPTY */
+#else // not USE_OPENPTY
 
-  /* as specified in POSIX.1-2001 */
+  // as specified in POSIX.1-2001
   master = posix_openpt (O_RDWR);
 
-  /* some older systems: */
-  /* master = open("/dev/ptmx", O_RDWR); */
+  // some older systems:
+  // master = open("/dev/ptmx", O_RDWR);
 
   if (master < 0)
     return -1;
@@ -131,9 +131,9 @@ avta_term_initialize (int *input_fd, int width, int height,
       return -1;
     }
 
-#endif /* not USE_OPENPTY */
+#endif // not USE_OPENPTY
 
-  /* terminal settings */
+  // terminal settings
   if (tcgetattr (master, &settings) < 0)
     {
       close (master);
@@ -141,8 +141,8 @@ avta_term_initialize (int *input_fd, int width, int height,
       return -1;
     }
 
-  settings.c_cc[VERASE] = 8;	/* Backspace */
-  settings.c_iflag |= ICRNL;	/* input: cr -> nl */
+  settings.c_cc[VERASE] = 8;	// Backspace
+  settings.c_iflag |= ICRNL;	// input: cr -> nl
   settings.c_lflag |= (ECHO | ECHOE | ECHOK | ICANON);
 
   if (tcsetattr (master, TCSANOW, &settings) < 0)
@@ -154,7 +154,7 @@ avta_term_initialize (int *input_fd, int width, int height,
 
   avta_term_size (master, height, width);
 
-  /*-------------------------------------------------------- */
+  //--------------------------------------------------------
   childpid = fork ();
 
   if (childpid == -1)
@@ -164,16 +164,16 @@ avta_term_initialize (int *input_fd, int width, int height,
       return -1;
     }
 
-  /* is it the child process? */
+  // is it the child process?
   if (childpid == 0)
     {
-      /* child closes master */
+      // child closes master
       close (master);
 
-      /* create a new session */
+      // create a new session
       setsid ();
 
-      /* redirect stdin, stdout, stderr to slave */
+      // redirect stdin, stdout, stderr to slave
       if (dup2 (slave, STDIN_FILENO) < 0
 	  || dup2 (slave, STDOUT_FILENO) < 0
 	  || dup2 (slave, STDERR_FILENO) < 0)
@@ -181,7 +181,7 @@ avta_term_initialize (int *input_fd, int width, int height,
 
       close (slave);
 
-      /* unset the controling terminal */
+      // unset the controling terminal
 #ifdef TIOCSCTTY
       ioctl (STDIN_FILENO, TIOCSCTTY, 0);
 #endif
@@ -194,18 +194,18 @@ avta_term_initialize (int *input_fd, int width, int height,
       if (working_dir)
 	(void) chdir (working_dir);
 
-      if (prg_argv == NULL)	/* execute shell */
+      if (prg_argv == NULL)	// execute shell
 	execl (shell, shell, (char *) NULL);
-      else			/* execute the command */
+      else			// execute the command
 	execvp (prg_argv[0], (char *const *) prg_argv);
 
 
-      /* in case of an error, we can not do much */
-      /* stdout and stderr are broken by now */
+      // in case of an error, we can not do much
+      // stdout and stderr are broken by now
       _exit (EXIT_FAILURE);
     }
 
-  /* parent process */
+  // parent process
   close (slave);
   fcntl (master, F_SETFL, O_NONBLOCK);
   *input_fd = master;
@@ -216,9 +216,9 @@ avta_term_initialize (int *input_fd, int width, int height,
 extern void
 avta_closeterm (int fd)
 {
-  /* close file descriptor */
+  // close file descriptor
   (void) close (fd);
 
-  /* just to prevent zombies */
+  // just to prevent zombies
   wait (NULL);
 }

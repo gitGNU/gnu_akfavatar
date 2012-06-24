@@ -1,7 +1,7 @@
 #include "akfavatar.h"
 #include "avtinternals.h"
-#include "stdio.h"		/* sscanf */
-#include "strings.h"		/* strcasecmp */
+#include "stdio.h"		// sscanf
+#include "strings.h"		// strcasecmp
 #include "rgb.h"
 
 extern int
@@ -14,11 +14,11 @@ avt_colorname (const char *name)
 
   colornr = -1;
 
-  /* skip space */
+  // skip space
   while (avt_isblank (*name))
     name++;
 
-  if (name[0] == '#')		/* hexadecimal values */
+  if (name[0] == '#')		// hexadecimal values
     {
       unsigned int r, g, b;
 
@@ -27,9 +27,9 @@ avt_colorname (const char *name)
       else if (sscanf (name, " #%1x%1x%1x", &r, &g, &b) == 3)
 	colornr = avt_rgb ((r << 4 | r), (g << 4 | g), (b << 4 | b));
     }
-  else if (name[0] == '%')	/* HSV values not supported */
+  else if (name[0] == '%')	// HSV values not supported
     colornr = -1;
-  else				/* look up color table */
+  else				// look up color table
     {
       int i;
       const int numcolors = sizeof (avt_colors) / sizeof (avt_colors[0]);
@@ -157,4 +157,4 @@ avt_set_text_background_color_name (const char *name)
     avt_set_text_background_color (c);
 }
 
-#endif /* DISABLE_DEPRECATED */
+#endif // DISABLE_DEPRECATED

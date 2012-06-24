@@ -41,31 +41,31 @@ extern "C"
 #endif
 
 #include <stdio.h>
-#include <stdlib.h>		/* for exit() and wchar_t */
-#include <string.h>		/* for strcmp(), strerror() */
+#include <stdlib.h>		// for exit() and wchar_t
+#include <string.h>		// for strcmp(), strerror()
 #include <errno.h>
 
-#include <unistd.h>		/* for chdir(), getcwd(), execlp */
-#include <dirent.h>		/* opendir, readdir, closedir */
+#include <unistd.h>		// for chdir(), getcwd(), execlp
+#include <dirent.h>		// opendir, readdir, closedir
 
 #include <sys/types.h>
 #include <sys/stat.h>
 
-/* MinGW and Wine don't know ENOMSG */
+// MinGW and Wine don't know ENOMSG
 #ifndef ENOMSG
 #  define ENOMSG EINVAL
 #endif
 
-/* environment variable for avt.datapath */
+// environment variable for avt.datapath
 #define AVTDATAPATH  "AVTDATAPATH"
 
-/* internal name for the table in the registry */
+// internal name for the table in the registry
 #define AVTMODULE  "AKFAvatar-module"
 
-/* internal name for audio data */
+// internal name for audio data
 #define AUDIODATA   "AKFAvatar-Audio"
 
-/* separator in paths */
+// separator in paths
 #define PATHSEP ';'
 
 static bool initialized = false;
@@ -73,14 +73,14 @@ static bool initialized = false;
 static const char *const modes[] =
   { "auto", "window", "fullscreen", "fullscreen no switch", NULL };
 
-/* modes for playing audio */
+// modes for playing audio
 static const char *const playmodes[] = { "load", "play", "loop", NULL };
 
-/* "check()" checks the returned status code */
+// "check()" checks the returned status code
 #define check(X)  do { if ((X) != AVT_NORMAL) quit (L); } while (0)
 #define is_initialized(void)  if (!initialized) auto_initialize(L)
 
-/* for internal use only */
+// for internal use only
 static int
 quit (lua_State * L)
 {
@@ -88,16 +88,16 @@ quit (lua_State * L)
     {
       return luaL_error (L, "%s", avt_get_error ());
     }
-  else				/* stop requested */
+  else				// stop requested
     {
-      /* no actual error, so no error message */
-      /* this is handled by the calling program */
+      // no actual error, so no error message
+      // this is handled by the calling program
       lua_pushnil (L);
       return lua_error (L);
     }
 }
 
-/* check if it's a boolean */
+// check if it's a boolean
 static bool
 check_bool (lua_State * L, int index)
 {
@@ -107,8 +107,8 @@ check_bool (lua_State * L, int index)
 
 #define to_bool(L, index)  ((bool) lua_toboolean ((L), (index)))
 
-/* imports an XPM table at given index */
-/* result must be freed by caller */
+// imports an XPM table at given index
+// result must be freed by caller
 static char **
 import_xpm (lua_State * L, int index)
 {
@@ -120,7 +120,7 @@ import_xpm (lua_State * L, int index)
   xpm = NULL;
   linenr = 0;
 
-  linecount = 512;		/* can be extended later */
+  linecount = 512;		// can be extended later
   xpm = (char **) malloc (linecount * sizeof (*xpm));
   if (!xpm)
     return NULL;
@@ -131,7 +131,7 @@ import_xpm (lua_State * L, int index)
       xpm[linenr] = (char *) lua_tostring (L, -1);
       linenr++;
 
-      if (linenr >= linecount)	/* leave one line reserved */
+      if (linenr >= linecount)	// leave one line reserved
 	{
 	  linecount += 512;
 	  xpm = (char **) realloc (xpm, linecount * sizeof (*xpm));
@@ -139,10 +139,10 @@ import_xpm (lua_State * L, int index)
 	    return NULL;
 	}
 
-      lua_pop (L, 1);		/* pop value - leave key */
+      lua_pop (L, 1);		// pop value - leave key
     }
 
-  /* last line must be NULL */
+  // last line must be NULL
   if (xpm)
     xpm[linenr] = NULL;
 
@@ -153,7 +153,7 @@ import_xpm (lua_State * L, int index)
 static void
 auto_initialize (lua_State * L)
 {
-  /* it might be initialized outside of this module */
+  // it might be initialized outside of this module
   if (!avt_initialized ())
     check (avt_start (NULL, NULL, AVT_WINDOW));
 
@@ -211,10 +211,10 @@ lavt_start (lua_State * L)
     {
       check (avt_start (title, shortname, mode));
     }
-  else				/* already initialized */
+  else				// already initialized
     {
-      /* reset almost everything */
-      /* not the background color - should be set before initialization */
+      // reset almost everything
+      // not the background color - should be set before initialization
       avt_clear_screen ();
       avt_set_balloon_size (0, 0);
       avt_newline_mode (true);
@@ -222,7 +222,7 @@ lavt_start (lua_State * L)
       avt_set_origin_mode (true);
       avt_set_scroll_mode (1);
       avt_reserve_single_keys (false);
-      avt_set_balloon_color (0xFFFAF0);	/* floral white */
+      avt_set_balloon_color (0xFFFAF0);	// floral white
       avt_normal_text ();
       avt_set_mouse_visible (true);
       avt_set_title (title, shortname);
@@ -236,7 +236,7 @@ lavt_start (lua_State * L)
   return 0;
 }
 
-/* quit the avatar subsystem (closes the window) */
+// quit the avatar subsystem (closes the window)
 static int
 lavt_quit (lua_State * L)
 {
@@ -245,7 +245,7 @@ lavt_quit (lua_State * L)
   return 0;
 }
 
-/* returns version string */
+// returns version string
 static int
 lavt_version (lua_State * L)
 {
@@ -253,7 +253,7 @@ lavt_version (lua_State * L)
   return 1;
 }
 
-/* returns copyright string */
+// returns copyright string
 static int
 lavt_copyright (lua_State * L)
 {
@@ -261,7 +261,7 @@ lavt_copyright (lua_State * L)
   return 1;
 }
 
-/* returns license string */
+// returns license string
 static int
 lavt_license (lua_State * L)
 {
@@ -269,7 +269,7 @@ lavt_license (lua_State * L)
   return 1;
 }
 
-/* returns whether it is started */
+// returns whether it is started
 static int
 lavt_started (lua_State * L)
 {
@@ -302,7 +302,7 @@ lavt_get_color (lua_State * L)
     return 0;
 }
 
-/* internal function used in lavt_colors() */
+// internal function used in lavt_colors()
 static int
 lavt_color_iteration (lua_State * L)
 {
@@ -334,12 +334,12 @@ static int
 lavt_colors (lua_State * L)
 {
   lua_pushcfunction (L, lavt_color_iteration);
-  lua_pushnil (L);		/* no state */
-  lua_pushinteger (L, -1);	/* first color - 1 */
+  lua_pushnil (L);		// no state
+  lua_pushinteger (L, -1);	// first color - 1
   return 3;
 }
 
-/* change the used encoding (iconv) */
+// change the used encoding (iconv)
 static int
 lavt_encoding (lua_State * L)
 {
@@ -347,7 +347,7 @@ lavt_encoding (lua_State * L)
   return 0;
 }
 
-/* get the current encoding (iconv) */
+// get the current encoding (iconv)
 static int
 lavt_get_encoding (lua_State * L)
 {
@@ -355,8 +355,8 @@ lavt_get_encoding (lua_State * L)
   return 1;
 }
 
-/* recode from one given encoding to another */
-/* avt.recode (string, fromcode [,tocode]) */
+// recode from one given encoding to another
+// avt.recode (string, fromcode [,tocode])
 static int
 lavt_recode (lua_State * L)
 {
@@ -366,8 +366,8 @@ lavt_recode (lua_State * L)
   size_t result_size;
 
   string = (char *) luaL_checklstring (L, 1, &len);
-  fromcode = lua_tostring (L, 2);	/* may be nil */
-  tocode = lua_tostring (L, 3);	/* optional */
+  fromcode = lua_tostring (L, 2);	// may be nil
+  tocode = lua_tostring (L, 3);	// optional
 
   if (!fromcode && !tocode)
     {
@@ -389,7 +389,7 @@ lavt_recode (lua_State * L)
 }
 
 
-/* set avatar image from data (string or table) */
+// set avatar image from data (string or table)
 static int
 lavt_avatar_image (lua_State * L)
 {
@@ -397,7 +397,7 @@ lavt_avatar_image (lua_State * L)
 
   if (lua_isnoneornil (L, 1))
     avt_avatar_image_none ();
-  else if (lua_istable (L, 1))	/* assume XPM table */
+  else if (lua_istable (L, 1))	// assume XPM table
     {
       char **xpm = import_xpm (L, 1);
 
@@ -411,7 +411,7 @@ lavt_avatar_image (lua_State * L)
       avt_avatar_image_xpm (xpm);
       free (xpm);
     }
-  else				/* not a table */
+  else				// not a table
     {
       const char *avatar;
       size_t len;
@@ -494,7 +494,7 @@ lavt_show_image (lua_State * L)
 {
   is_initialized ();
 
-  if (lua_istable (L, 1))	/* assume XPM table */
+  if (lua_istable (L, 1))	// assume XPM table
     {
       char **xpm = import_xpm (L, 1);
 
@@ -506,7 +506,7 @@ lavt_show_image (lua_State * L)
       else
 	lua_pushboolean (L, (int) false);
     }
-  else				/* not a table */
+  else				// not a table
     {
       char *data;
       size_t len;
@@ -519,7 +519,7 @@ lavt_show_image (lua_State * L)
   return 1;
 }
 
-/* change title and/or icontitle */
+// change title and/or icontitle
 static int
 lavt_set_title (lua_State * L)
 {
@@ -539,7 +539,7 @@ lavt_set_title (lua_State * L)
   return 0;
 }
 
-/* right to left writing (true/false) */
+// right to left writing (true/false)
 static int
 lavt_right_to_left (lua_State * L)
 {
@@ -547,8 +547,8 @@ lavt_right_to_left (lua_State * L)
   return 0;
 }
 
-/* set_text_delay */
-/* 0 for no delay, no value for default delay */
+// set_text_delay
+// 0 for no delay, no value for default delay
 static int
 lavt_set_text_delay (lua_State * L)
 {
@@ -556,8 +556,8 @@ lavt_set_text_delay (lua_State * L)
   return 0;
 }
 
-/* set flip-page delay */
-/* 0 for no delay, no value for default delay */
+// set flip-page delay
+// 0 for no delay, no value for default delay
 static int
 lavt_set_flip_page_delay (lua_State * L)
 {
@@ -565,8 +565,8 @@ lavt_set_flip_page_delay (lua_State * L)
   return 0;
 }
 
-/* set balloon size (height, width) */
-/* no values sets the maximum */
+// set balloon size (height, width)
+// no values sets the maximum
 static int
 lavt_set_balloon_size (lua_State * L)
 {
@@ -575,8 +575,8 @@ lavt_set_balloon_size (lua_State * L)
   return 0;
 }
 
-/* set balloon width */
-/* no value sets the maximum */
+// set balloon width
+// no value sets the maximum
 static int
 lavt_set_balloon_width (lua_State * L)
 {
@@ -585,8 +585,8 @@ lavt_set_balloon_width (lua_State * L)
   return 0;
 }
 
-/* set balloon height */
-/* no value sets the maximum */
+// set balloon height
+// no value sets the maximum
 static int
 lavt_set_balloon_height (lua_State * L)
 {
@@ -595,7 +595,7 @@ lavt_set_balloon_height (lua_State * L)
   return 0;
 }
 
-/* set balloon color (name) */
+// set balloon color (name)
 static int
 lavt_set_balloon_color (lua_State * L)
 {
@@ -609,7 +609,7 @@ lavt_set_balloon_color (lua_State * L)
   return 0;
 }
 
-/* set balloon mode */
+// set balloon mode
 static int
 lavt_set_balloon_mode (lua_State * L)
 {
@@ -619,7 +619,7 @@ lavt_set_balloon_mode (lua_State * L)
   return 0;
 }
 
-/* show cursor (true or false) */
+// show cursor (true or false)
 static int
 lavt_activate_cursor (lua_State * L)
 {
@@ -627,7 +627,7 @@ lavt_activate_cursor (lua_State * L)
   return 0;
 }
 
-/* underline mode (true or false) */
+// underline mode (true or false)
 static int
 lavt_underlined (lua_State * L)
 {
@@ -635,7 +635,7 @@ lavt_underlined (lua_State * L)
   return 0;
 }
 
-/* return underline mode (true or false) */
+// return underline mode (true or false)
 static int
 lavt_get_underlined (lua_State * L)
 {
@@ -643,7 +643,7 @@ lavt_get_underlined (lua_State * L)
   return 1;
 }
 
-/* bold mode (true or false) */
+// bold mode (true or false)
 static int
 lavt_bold (lua_State * L)
 {
@@ -651,7 +651,7 @@ lavt_bold (lua_State * L)
   return 0;
 }
 
-/* return bold mode (true or false) */
+// return bold mode (true or false)
 static int
 lavt_get_bold (lua_State * L)
 {
@@ -659,7 +659,7 @@ lavt_get_bold (lua_State * L)
   return 1;
 }
 
-/* inverse mode (true or false) */
+// inverse mode (true or false)
 static int
 lavt_inverse (lua_State * L)
 {
@@ -667,7 +667,7 @@ lavt_inverse (lua_State * L)
   return 0;
 }
 
-/* return inverse mode (true or false) */
+// return inverse mode (true or false)
 static int
 lavt_get_inverse (lua_State * L)
 {
@@ -682,7 +682,7 @@ lavt_markup (lua_State * L)
   return 0;
 }
 
-/* reset to normal text mode */
+// reset to normal text mode
 static int
 lavt_normal_text (lua_State * L)
 {
@@ -690,7 +690,7 @@ lavt_normal_text (lua_State * L)
   return 0;
 }
 
-/* clear the whole screen */
+// clear the whole screen
 static int
 lavt_clear_screen (lua_State * L)
 {
@@ -747,7 +747,7 @@ lavt_clear_bol (lua_State * L)
   return 0;
 }
 
-/* clear line */
+// clear line
 static int
 lavt_clear_line (lua_State * L)
 {
@@ -768,7 +768,7 @@ lavt_clear_up (lua_State * L)
   return 0;
 }
 
-/* show only the avatar */
+// show only the avatar
 static int
 lavt_show_avatar (lua_State * L)
 {
@@ -777,7 +777,7 @@ lavt_show_avatar (lua_State * L)
   return 0;
 }
 
-/* move in */
+// move in
 static int
 lavt_move_in (lua_State * L)
 {
@@ -786,7 +786,7 @@ lavt_move_in (lua_State * L)
   return 0;
 }
 
-/* move out */
+// move out
 static int
 lavt_move_out (lua_State * L)
 {
@@ -795,7 +795,7 @@ lavt_move_out (lua_State * L)
   return 0;
 }
 
-/* bell or flash if sound is not initialized */
+// bell or flash if sound is not initialized
 static int
 lavt_bell (lua_State * L)
 {
@@ -804,7 +804,7 @@ lavt_bell (lua_State * L)
   return 0;
 }
 
-/* flash */
+// flash
 static int
 lavt_flash (lua_State * L)
 {
@@ -813,7 +813,7 @@ lavt_flash (lua_State * L)
   return 0;
 }
 
-/* background color of window (name) */
+// background color of window (name)
 static int
 lavt_set_background_color (lua_State * L)
 {
@@ -825,7 +825,7 @@ lavt_set_background_color (lua_State * L)
   return 0;
 }
 
-/* text color (name | #RRGGBB) */
+// text color (name | #RRGGBB)
 static int
 lavt_set_text_color (lua_State * L)
 {
@@ -837,7 +837,7 @@ lavt_set_text_color (lua_State * L)
   return 0;
 }
 
-/* background color of text (name | #RRGGBB) */
+// background color of text (name | #RRGGBB)
 static int
 lavt_set_text_background_color (lua_State * L)
 {
@@ -848,7 +848,7 @@ lavt_set_text_background_color (lua_State * L)
   return 0;
 }
 
-/* set background color of text to ballooncolor */
+// set background color of text to ballooncolor
 static int
 lavt_set_text_background_ballooncolor (lua_State * L)
 {
@@ -856,7 +856,7 @@ lavt_set_text_background_ballooncolor (lua_State * L)
   return 0;
 }
 
-/* get x position */
+// get x position
 static int
 lavt_where_x (lua_State * L)
 {
@@ -864,7 +864,7 @@ lavt_where_x (lua_State * L)
   return 1;
 }
 
-/* get y position */
+// get y position
 static int
 lavt_where_y (lua_State * L)
 {
@@ -872,7 +872,7 @@ lavt_where_y (lua_State * L)
   return 1;
 }
 
-/* get maximum x position */
+// get maximum x position
 static int
 lavt_get_max_x (lua_State * L)
 {
@@ -880,7 +880,7 @@ lavt_get_max_x (lua_State * L)
   return 1;
 }
 
-/* get maximum y position */
+// get maximum y position
 static int
 lavt_get_max_y (lua_State * L)
 {
@@ -888,8 +888,8 @@ lavt_get_max_y (lua_State * L)
   return 1;
 }
 
-/* is the cursor in the home position? */
-/* (also works for right-to-left writing) */
+// is the cursor in the home position?
+// (also works for right-to-left writing)
 static int
 lavt_home_position (lua_State * L)
 {
@@ -897,7 +897,7 @@ lavt_home_position (lua_State * L)
   return 1;
 }
 
-/* move to x position */
+// move to x position
 static int
 lavt_move_x (lua_State * L)
 {
@@ -906,7 +906,7 @@ lavt_move_x (lua_State * L)
   return 0;
 }
 
-/* move to y position */
+// move to y position
 static int
 lavt_move_y (lua_State * L)
 {
@@ -915,7 +915,7 @@ lavt_move_y (lua_State * L)
   return 0;
 }
 
-/* move to x and y position */
+// move to x and y position
 static int
 lavt_move_xy (lua_State * L)
 {
@@ -924,7 +924,7 @@ lavt_move_xy (lua_State * L)
   return 0;
 }
 
-/* save cursor position */
+// save cursor position
 static int
 lavt_save_position (lua_State * L)
 {
@@ -933,7 +933,7 @@ lavt_save_position (lua_State * L)
   return 0;
 }
 
-/* restore cursor position */
+// restore cursor position
 static int
 lavt_restore_position (lua_State * L)
 {
@@ -942,7 +942,7 @@ lavt_restore_position (lua_State * L)
   return 0;
 }
 
-/* next tab position */
+// next tab position
 static int
 lavt_next_tab (lua_State * L)
 {
@@ -951,7 +951,7 @@ lavt_next_tab (lua_State * L)
   return 0;
 }
 
-/* last tab position */
+// last tab position
 static int
 lavt_last_tab (lua_State * L)
 {
@@ -960,7 +960,7 @@ lavt_last_tab (lua_State * L)
   return 0;
 }
 
-/* reset tab stops to every eigth column */
+// reset tab stops to every eigth column
 static int
 lavt_reset_tab_stops (lua_State * L)
 {
@@ -969,7 +969,7 @@ lavt_reset_tab_stops (lua_State * L)
   return 0;
 }
 
-/* clear all tab stops */
+// clear all tab stops
 static int
 lavt_clear_tab_stops (lua_State * L)
 {
@@ -978,7 +978,7 @@ lavt_clear_tab_stops (lua_State * L)
   return 0;
 }
 
-/* set or clear tab in position x */
+// set or clear tab in position x
 static int
 lavt_set_tab (lua_State * L)
 {
@@ -1011,7 +1011,7 @@ lavt_insert_lines (lua_State * L)
   return 0;
 }
 
-/* wait until a button is pressed */
+// wait until a button is pressed
 static int
 lavt_wait_button (lua_State * L)
 {
@@ -1020,7 +1020,7 @@ lavt_wait_button (lua_State * L)
   return 0;
 }
 
-/* reserve single keys? (true/false) */
+// reserve single keys? (true/false)
 static int
 lavt_reserve_single_keys (lua_State * L)
 {
@@ -1073,7 +1073,7 @@ lavt_update (lua_State * L)
   return 0;
 }
 
-/* wait a given amount of seconds (fraction) */
+// wait a given amount of seconds (fraction)
 #define DEF_WAIT (AVT_DEFAULT_FLIP_PAGE_DELAY / 1000.0)
 static int
 lavt_wait_sec (lua_State * L)
@@ -1087,13 +1087,13 @@ lavt_wait_sec (lua_State * L)
 static int
 lavt_ticks (lua_State * L)
 {
-  /* a Lua number may be larger than a Lua integer */
+  // a Lua number may be larger than a Lua integer
   lua_pushnumber (L, avt_ticks ());
   return 1;
 }
 
-/* show final credits from a string */
-/* 1=text, 2=centered (true/false/nothing) */
+// show final credits from a string
+// 1=text, 2=centered (true/false/nothing)
 static int
 lavt_credits (lua_State * L)
 {
@@ -1129,7 +1129,7 @@ lavt_ask (lua_State * L)
   return 1;
 }
 
-/* returns a pressed key (unicode-value) */
+// returns a pressed key (unicode-value)
 static int
 lavt_get_key (lua_State * L)
 {
@@ -1187,7 +1187,7 @@ lavt_navigate (lua_State * L)
   return 1;
 }
 
-/* make a positive/negative decision */
+// make a positive/negative decision
 static int
 lavt_decide (lua_State * L)
 {
@@ -1206,7 +1206,7 @@ lavt_choice (lua_State * L)
 
   is_initialized ();
 
-  /* get string in position 3 */
+  // get string in position 3
   c = lua_tostring (L, 3);
 
   check (avt_choice (&result,
@@ -1217,8 +1217,8 @@ lavt_choice (lua_State * L)
   return 1;
 }
 
-/* works like "io.write", but writes in the balloon */
-/* expects one or more strings or numbers */
+// works like "io.write", but writes in the balloon
+// expects one or more strings or numbers
 static int
 lavt_say (lua_State * L)
 {
@@ -1239,8 +1239,8 @@ lavt_say (lua_State * L)
   return 0;
 }
 
-/* works like "print", but prints in the balloon */
-/* expects one or more strings or numbers */
+// works like "print", but prints in the balloon
+// expects one or more strings or numbers
 static int
 lavt_print (lua_State * L)
 {
@@ -1254,11 +1254,11 @@ lavt_print (lua_State * L)
 
   for (i = 1; i <= n; i++)
     {
-      lua_pushvalue (L, -1);	/* function "tostring" */
-      lua_pushvalue (L, i);	/* value */
+      lua_pushvalue (L, -1);	// function "tostring"
+      lua_pushvalue (L, i);	// value
       lua_call (L, 1, 1);
       s = lua_tolstring (L, -1, &len);
-      lua_pop (L, 1);		/* pop result of "tostring" */
+      lua_pop (L, 1);		// pop result of "tostring"
       if (s)
 	{
 	  if (i > 1)
@@ -1267,7 +1267,7 @@ lavt_print (lua_State * L)
 	}
     }
 
-  lua_pop (L, 1);		/* pop function */
+  lua_pop (L, 1);		// pop function
   avt_new_line ();
 
   return 0;
@@ -1280,7 +1280,7 @@ lavt_tell (lua_State * L)
   size_t len;
 
   is_initialized ();
-  lua_concat (L, lua_gettop (L));	/* make it one single string */
+  lua_concat (L, lua_gettop (L));	// make it one single string
 
   s = luaL_checklstring (L, 1, &len);
   if (s)
@@ -1361,14 +1361,14 @@ lavt_start_audio (lua_State * L)
     }
 }
 
-/* the current sound may be garbage collected again */
+// the current sound may be garbage collected again
 #define audio_not_playing(L) \
   do { \
     lua_pushnil(L); \
     lua_setfield(L, LUA_REGISTRYINDEX, "AKFAvatar-current-sound"); \
     } while(0)
 
-/* shut down the audio-system */
+// shut down the audio-system
 static int
 lavt_quit_audio (lua_State * L)
 {
@@ -1427,13 +1427,13 @@ lavt_load_audio_file (lua_State * L)
 
   playmode = luaL_checkoption (L, 2, "load", playmodes);
 
-  /* if filename is not none or nil or "" */
+  // if filename is not none or nil or ""
   if (len > 0)
     {
       if (!avt_audio_playing (NULL))
 	audio_not_playing (L);
 
-      /* full garbage collection */
+      // full garbage collection
       lua_gc (L, LUA_GCCOLLECT, 0);
 
       audio_data = avt_load_audio_file (filename, playmode);
@@ -1450,7 +1450,7 @@ lavt_load_audio_file (lua_State * L)
   return 1;
 }
 
-/* loads audio from a stream */
+// loads audio from a stream
 static int
 lavt_load_audio_stream (lua_State * L)
 {
@@ -1460,7 +1460,7 @@ lavt_load_audio_stream (lua_State * L)
   int playmode;
 
   stream = (luaL_Stream *) luaL_checkudata (L, 1, LUA_FILEHANDLE);
-  maxsize = lua_tounsigned (L, 2);	/* nothing or 0 allowed */
+  maxsize = lua_tounsigned (L, 2);	// nothing or 0 allowed
   playmode = luaL_checkoption (L, 3, "load", playmodes);
 
   if (stream->closef == NULL)
@@ -1469,7 +1469,7 @@ lavt_load_audio_stream (lua_State * L)
   if (!avt_audio_playing (NULL))
     audio_not_playing (L);
 
-  /* full garbage collection */
+  // full garbage collection
   lua_gc (L, LUA_GCCOLLECT, 0);
 
   audio_data =
@@ -1503,13 +1503,13 @@ lavt_load_audio (lua_State * L)
 
   playmode = luaL_checkoption (L, 2, "load", playmodes);
 
-  /* if string is not none or nil or "" */
+  // if string is not none or nil or ""
   if (len > 0)
     {
       if (!avt_audio_playing (NULL))
 	audio_not_playing (L);
 
-      /* full garbage collection */
+      // full garbage collection
       lua_gc (L, LUA_GCCOLLECT, 0);
 
       audio_data = avt_load_audio_data (data, len, playmode);
@@ -1553,7 +1553,7 @@ lavt_pause_audio (lua_State * L)
   return 0;
 }
 
-/* plays audio data */
+// plays audio data
 static int
 laudio_play (lua_State * L)
 {
@@ -1562,16 +1562,16 @@ laudio_play (lua_State * L)
   audio = (avt_audio **) luaL_checkudata (L, 1, AUDIODATA);
 
   if (audio && *audio)
-    avt_play_audio (*audio, AVT_PLAY);	/* no check! */
+    avt_play_audio (*audio, AVT_PLAY);	// no check!
 
-  /* store reference to audio, so it isn't garbage collected while playing */
+  // store reference to audio, so it isn't garbage collected while playing
   lua_pushvalue (L, 1);
   lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-current-sound");
 
   return 0;
 }
 
-/* plays audio data in a loop */
+// plays audio data in a loop
 static int
 laudio_loop (lua_State * L)
 {
@@ -1580,16 +1580,16 @@ laudio_loop (lua_State * L)
   audio = (avt_audio **) luaL_checkudata (L, 1, AUDIODATA);
 
   if (audio && *audio)
-    avt_play_audio (*audio, AVT_LOOP);	/* no check! */
+    avt_play_audio (*audio, AVT_LOOP);	// no check!
 
-  /* store reference to audio, so it isn't garbage collected while playing */
+  // store reference to audio, so it isn't garbage collected while playing
   lua_pushvalue (L, 1);
   lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-current-sound");
 
   return 0;
 }
 
-/* frees audio data */
+// frees audio data
 static int
 laudio_free (lua_State * L)
 {
@@ -1605,7 +1605,7 @@ laudio_free (lua_State * L)
   return 0;
 }
 
-/* checks if audio is still playing */
+// checks if audio is still playing
 static int
 laudio_playing (lua_State * L)
 {
@@ -1753,7 +1753,7 @@ lavt_subprogram (lua_State * L)
 
   if (lua_pcall (L, lua_gettop (L) - 1, LUA_MULTRET, 0) != 0)
     {
-      if (lua_isnil (L, -1))	/* just a quit-request? */
+      if (lua_isnil (L, -1))	// just a quit-request?
 	{
 	  avt_set_status (AVT_NORMAL);
 	  return 0;
@@ -1765,25 +1765,25 @@ lavt_subprogram (lua_State * L)
   return lua_gettop (L);
 }
 
-/* --------------------------------------------------------- */
-/* avtaddons.h */
+// ---------------------------------------------------------
+// avtaddons.h
 
-/* avt.file_selection (filter) */
+// avt.file_selection (filter)
 
-/* we need to temporarily store a pointer to the Lua_state :-( */
+// we need to temporarily store a pointer to the Lua_state :-(
 static lua_State *tmp_lua_state;
 
-/* call the function at index 1 with the filename */
+// call the function at index 1 with the filename
 static bool
 file_filter (const char *filename)
 {
   bool result;
 
-  lua_pushvalue (tmp_lua_state, 1);	/* push func again, to keep it */
-  lua_pushstring (tmp_lua_state, filename);	/* parameter */
+  lua_pushvalue (tmp_lua_state, 1);	// push func again, to keep it
+  lua_pushstring (tmp_lua_state, filename);	// parameter
   lua_call (tmp_lua_state, 1, 1);
   result = to_bool (tmp_lua_state, -1);
-  lua_pop (tmp_lua_state, 1);	/* pop result, leave func on stack */
+  lua_pop (tmp_lua_state, 1);	// pop result, leave func on stack
 
   return result;
 }
@@ -1821,19 +1821,19 @@ lavt_color_selection (lua_State * L)
   return 1;
 }
 
-/* --------------------------------------------------------- */
-/* system calls */
+// ---------------------------------------------------------
+// system calls
 
 static int
 lavt_chdir (lua_State * L)
 {
   const char *path;
 
-  /* nil or empty string is acceptable */
+  // nil or empty string is acceptable
   path = lua_tostring (L, 1);
 
   if (path && *path)
-    chdir (path);		/* chdir() conforms to POSIX.1-2001 */
+    chdir (path);		// chdir() conforms to POSIX.1-2001
 
   return 0;
 }
@@ -1858,7 +1858,7 @@ lavt_getcwd (lua_State * L)
       if (buffer == NULL)
 	return luaL_error (L, "%s", strerror (errno));
 
-      /* getcwd() conforms to POSIX.1-2001 */
+      // getcwd() conforms to POSIX.1-2001
       if (getcwd (buffer, size) == buffer)
 	{
 	  lua_pushstring (L, buffer);
@@ -1872,13 +1872,13 @@ lavt_getcwd (lua_State * L)
 
       if (error_nr != ERANGE)
 	{
-	  /* unsolvable error */
+	  // unsolvable error
 	  lua_pushnil (L);
 	  lua_pushstring (L, strerror (error_nr));
 	  return 2;
 	}
 
-      /* try again with a larger buffer */
+      // try again with a larger buffer
       size *= 2;
     }
 }
@@ -1889,39 +1889,39 @@ lavt_launch (lua_State * L)
   char *argv[256];
   int i, n;
 
-  /* program must be given */
+  // program must be given
   argv[0] = (char *) luaL_checkstring (L, 1);
 
-  n = lua_gettop (L);		/* number of options */
+  n = lua_gettop (L);		// number of options
 
-  /* number of arguments is already limited in Lua, but I want to be save */
+  // number of arguments is already limited in Lua, but I want to be save
   if (n > 255)
     return luaL_error (L, "launch: %s", strerror (E2BIG));
 
-  /* collect arguments */
+  // collect arguments
   for (i = 1; i < n; i++)
     argv[i] = (char *) lua_tostring (L, i + 1);
   argv[n] = NULL;
 
-  avt_quit ();			/* close window / graphic mode */
+  avt_quit ();			// close window / graphic mode
   initialized = false;
 
-  /* don't close lua state - it is still needed */
+  // don't close lua state - it is still needed
 
-  /* conforming to POSIX.1-2001 */
+  // conforming to POSIX.1-2001
   execvp (argv[0], argv);
 
-  /* execvp only returns in case of an error */
+  // execvp only returns in case of an error
   return luaL_error (L, "launch: %s: %s", argv[0], strerror (errno));
 }
 
-/* --------------------------------------------------------- */
-/* high level functions */
+// ---------------------------------------------------------
+// high level functions
 
-/* three arrows up */
+// three arrows up
 #define BACK L"\x2191 \x2191 \x2191"
 
-/* three arrows down */
+// three arrows down
 #define CONTINUE L"\x2193 \x2193 \x2193"
 
 #define MARK(S) \
@@ -1956,13 +1956,13 @@ lavt_menu (lua_State * L)
   avt_lock_updates (true);
 
   start_line = avt_where_y ();
-  if (start_line < 1)		/* no balloon yet? */
+  if (start_line < 1)		// no balloon yet?
     start_line = 1;
 
-  mid_x = avt_get_max_x () / 2;	/* used by MARK() */
+  mid_x = avt_get_max_x () / 2;	// used by MARK()
   max_idx = avt_get_max_y () - start_line + 1;
 
-  /* check, if it's a short menu */
+  // check, if it's a short menu
   lua_rawgeti (L, 1, max_idx + 1);
   small = (bool) lua_isnil (L, -1);
   lua_pop (L, 1);
@@ -2002,9 +2002,9 @@ lavt_menu (lua_State * L)
 	    {
 	      lua_rawgeti (L, -1, 1);
 	      item_desc = lua_tolstring (L, -1, &len);
-	      lua_pop (L, 1);	/* pop value */
+	      lua_pop (L, 1);	// pop value
 	    }
-	  else			/* only string given */
+	  else			// only string given
 	    item_desc = lua_tolstring (L, -1, &len);
 
 	  if (item_desc)
@@ -2015,14 +2015,14 @@ lavt_menu (lua_State * L)
 	      items++;
 	    }
 
-	  lua_pop (L, 1);	/* pop item from stack */
-	  /* from now on item_desc should not be dereferenced */
+	  lua_pop (L, 1);	// pop item from stack
+	  // from now on item_desc should not be dereferenced
 
 	  if (!item_desc)
 	    break;
 	}
 
-      /* are there more items? */
+      // are there more items?
       if (item_desc)
 	{
 	  lua_rawgeti (L, 1, (page_nr + 1) * items_per_page + 1);
@@ -2032,7 +2032,7 @@ lavt_menu (lua_State * L)
 	      MARK (CONTINUE);
 	      items = max_idx;
 	    }
-	  lua_pop (L, 1);	/* pop item description from stack */
+	  lua_pop (L, 1);	// pop item description from stack
 	}
 
       menu_start = start_line;
@@ -2051,9 +2051,9 @@ lavt_menu (lua_State * L)
 	choice++;
 
       if (!small && choice == 1 && page_nr > 0)
-	page_nr--;		/* page back */
+	page_nr--;		// page back
       else if (!small && choice == max_idx)
-	page_nr += (item_desc == NULL) ? 0 : 1;	/* page forward */
+	page_nr += (item_desc == NULL) ? 0 : 1;	// page forward
       else
 	item_nr = choice - 1 + (page_nr * items_per_page);
     }
@@ -2063,14 +2063,14 @@ lavt_menu (lua_State * L)
   avt_clear ();
   avt_lock_updates (false);
 
-  /* check item_nr */
+  // check item_nr
   lua_rawgeti (L, 1, item_nr);
   if (lua_istable (L, -1))
     {
       int item, nresults, table;
 
       table = lua_gettop (L);
-      item = 2;			/* skip title */
+      item = 2;			// skip title
       nresults = 0;
 
       while (1)
@@ -2081,14 +2081,14 @@ lavt_menu (lua_State * L)
 	    nresults++;
 	  else
 	    {
-	      lua_pop (L, 1);	/* pop nil */
+	      lua_pop (L, 1);	// pop nil
 	      break;
 	    }
 	}
 
       return nresults;
     }
-  else				/* not a table */
+  else				// not a table
     {
       lua_pushinteger (L, item_nr);
       return 1;
@@ -2108,7 +2108,7 @@ lavt_directory_entries (lua_State * L)
   struct dirent *d;
   int nr;
 
-  /* conforming to POSIX.1-2001 */
+  // conforming to POSIX.1-2001
 
   if ((dir = opendir (luaL_optstring (L, 1, "."))) == NULL)
     {
@@ -2132,12 +2132,12 @@ lavt_directory_entries (lua_State * L)
 
   closedir (dir);
 
-  lua_pushinteger (L, nr);	/* number of entries */
+  lua_pushinteger (L, nr);	// number of entries
 
   return 2;
 }
 
-/* S_ISSOCK not on all systems, although in POSIX.1-2001 */
+// S_ISSOCK not on all systems, although in POSIX.1-2001
 #ifndef S_ISSOCK
 #define S_ISSOCK(x) 0
 #endif
@@ -2147,7 +2147,7 @@ lavt_entry_type (lua_State * L)
 {
   struct stat st;
 
-  /* conforming to POSIX.1-2001 */
+  // conforming to POSIX.1-2001
 
   if (stat (luaL_checkstring (L, 1), &st) == -1)
     {
@@ -2184,12 +2184,12 @@ lavt_optional (lua_State * L)
   lua_getglobal (L, "require");
   lua_pushvalue (L, 1);
   if (lua_pcall (L, 1, 1, 0) != 0)
-    lua_pushnil (L);		/* return nil on error */
+    lua_pushnil (L);		// return nil on error
 
   return 1;
 }
 
-/* get a string variable from this module */
+// get a string variable from this module
 static const char *
 get_string_var (lua_State * L, const char *name)
 {
@@ -2200,11 +2200,11 @@ get_string_var (lua_State * L, const char *name)
   s = lua_tostring (L, -1);
   lua_pop (L, 2);
 
-  /* s points to the string in L */
+  // s points to the string in L
   return s;
 }
 
-/* searches given file in in given path */
+// searches given file in in given path
 static int
 lavt_search (lua_State * L)
 {
@@ -2222,26 +2222,26 @@ lavt_search (lua_State * L)
       const char *name = filename;
       size_t pos = 0;
 
-      /* start with next directory from path */
+      // start with next directory from path
       while (*path && *path != PATHSEP && pos < sizeof (fullname) - 1)
 	fullname[pos++] = *path++;
 
-      /* skip path seperator(s) */
+      // skip path seperator(s)
       while (*path == PATHSEP)
 	path++;
 
-      /* eventually add directory separator */
+      // eventually add directory separator
       if (fullname[pos - 1] != LUA_DIRSEP[0] && pos < sizeof (fullname) - 1)
 	fullname[pos++] = LUA_DIRSEP[0];
 
-      /* add name */
+      // add name
       while (*name && pos < sizeof (fullname) - 1)
 	fullname[pos++] = *name++;
 
-      /* terminate fullname */
+      // terminate fullname
       fullname[pos] = '\0';
 
-      /* check for file existence (POSIX.1-2001) */
+      // check for file existence (POSIX.1-2001)
       if (access (fullname, F_OK) == 0)
 	{
 	  lua_pushstring (L, fullname);
@@ -2249,14 +2249,14 @@ lavt_search (lua_State * L)
 	}
     }
 
-  /* not found */
+  // not found
   lua_pushnil (L);
   lua_pushfstring (L, LUA_QS " not found", filename);
   return 2;
 }
 
-/* --------------------------------------------------------- */
-/* register library functions */
+// ---------------------------------------------------------
+// register library functions
 
 static const luaL_Reg akfavtlib[] = {
   {"start", lavt_start},
@@ -2265,7 +2265,7 @@ static const luaL_Reg akfavtlib[] = {
   {"avatar_image_file", lavt_avatar_image_file},
   {"set_avatar_name", lavt_set_avatar_name},
   {"say", lavt_say},
-  {"write", lavt_say},		/* alias */
+  {"write", lavt_say},		// alias
   {"print", lavt_print},
   {"tell", lavt_tell},
   {"say_unicode", lavt_say_unicode},
@@ -2424,7 +2424,7 @@ set_datapath (lua_State * L)
       return;
     }
 
-  *p = '\0';			/* cut filename off */
+  *p = '\0';			// cut filename off
 
   avtdatapath = getenv (AVTDATAPATH);
 
@@ -2434,15 +2434,15 @@ set_datapath (lua_State * L)
   else
     {
       lua_pushstring (L, avtdatapath);
-      /* replace "!" with the program's directory */
+      // replace "!" with the program's directory
       luaL_gsub (L, lua_tostring (L, -1), "!", progdir);
-      lua_remove (L, -2);	/* remove original string */
+      lua_remove (L, -2);	// remove original string
     }
 
   lua_setfield (L, -2, "datapath");
 }
 
-#else /* ! _WIN32 */
+#else // ! _WIN32
 
 static void
 set_datapath (lua_State * L)
@@ -2457,7 +2457,7 @@ set_datapath (lua_State * L)
   lua_setfield (L, -2, "datapath");
 }
 
-#endif /* ! _WIN32 */
+#endif // ! _WIN32
 
 
 /*
@@ -2472,26 +2472,26 @@ luaopen_akfavatar_embedded (lua_State * L)
 
   luaL_newlib (L, akfavtlib);
 
-  /* make a reference in the registry */
+  // make a reference in the registry
   lua_pushvalue (L, -1);
   lua_setfield (L, LUA_REGISTRYINDEX, AVTMODULE);
 
-  /* avt.datapath */
+  // avt.datapath
   set_datapath (L);
 
-  /* variables */
-  /* avt.dirsep */
+  // variables
+  // avt.dirsep
   lua_pushliteral (L, LUA_DIRSEP);
   lua_setfield (L, -2, "dirsep");
 
-  /* type for audio data */
+  // type for audio data
   luaL_newmetatable (L, AUDIODATA);
   lua_pushvalue (L, -1);
-  lua_setfield (L, -2, "__index");	/* use metatabe itself for indexing */
+  lua_setfield (L, -2, "__index");	// use metatabe itself for indexing
   luaL_setfuncs (L, audiolib, 0);
-  lua_pop (L, 1);		/* pop metatable */
+  lua_pop (L, 1);		// pop metatable
 
-  /* create a reusable silent sound */
+  // create a reusable silent sound
   audio = (avt_audio **) lua_newuserdata (L, sizeof (avt_audio *));
   *audio = NULL;
   luaL_getmetatable (L, AUDIODATA);
@@ -2515,10 +2515,10 @@ luaopen_akfavatar (lua_State * L)
    * cleanup function for the garbage collector
    */
   lua_newuserdata (L, 1);
-  lua_newtable (L);		/* create metatable */
-  lua_pushcfunction (L, lavt_quit);	/* function for collector */
+  lua_newtable (L);		// create metatable
+  lua_pushcfunction (L, lavt_quit);	// function for collector
   lua_setfield (L, -2, "__gc");
-  lua_setmetatable (L, -2);	/* set it up as metatable */
+  lua_setmetatable (L, -2);	// set it up as metatable
   lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-module_quit");
 
   return 1;

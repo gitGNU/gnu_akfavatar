@@ -69,7 +69,7 @@ load_vorbis (stb_vorbis * vorbis, int playmode)
       data_len += n;
       offset += n * info.channels;
 
-      /* buffer full? */
+      // buffer full?
       if (offset + limit > total)
 	{
 	  if (avt_add_raw_audio_data (audio, data,
@@ -98,7 +98,7 @@ load_vorbis (stb_vorbis * vorbis, int playmode)
       return NULL;
     }
 
-  /* if not started yet, start it */
+  // if not started yet, start it
   if (playmode != AVT_LOAD)
     avt_play_audio (audio, playmode);
 
@@ -120,7 +120,7 @@ avta_load_vorbis_stream (avt_stream * stream, size_t size, int playmode)
   f = (FILE *) stream;
   start = ftell (f);
 
-  /* check content, must be plain vorbis with no other streams */
+  // check content, must be plain vorbis with no other streams
   if (fread (&buf, sizeof (buf), 1, f) < 1
       || memcmp ("OggS", buf, 4) != 0
       || memcmp ("\x01vorbis", buf + 28, 7) != 0)
@@ -131,8 +131,8 @@ avta_load_vorbis_stream (avt_stream * stream, size_t size, int playmode)
 
   if (size == 0)
     {
-      /* get the size */
-      /* ugly, but stb_vorbis does roughly the same */
+      // get the size
+      // ugly, but stb_vorbis does roughly the same
       fseek (f, 0, SEEK_END);
       size = ftell (f) - start;
     }
@@ -145,7 +145,7 @@ avta_load_vorbis_stream (avt_stream * stream, size_t size, int playmode)
       audio_data = load_vorbis (vorbis, playmode);
       stb_vorbis_close (vorbis);
     }
-  else				/* error */
+  else				// error
     {
       fseek (f, start, SEEK_SET);
       audio_data = NULL;
@@ -181,7 +181,7 @@ avta_load_vorbis_data (void *data, int datasize, int playmode)
   stb_vorbis *vorbis;
   avt_audio *audio_data;
 
-  /* check content, must be plain vorbis with no other streams */
+  // check content, must be plain vorbis with no other streams
   if (!data || datasize <= 0
       || memcmp ("OggS", data, 4) != 0
       || memcmp ("\x01vorbis", ((char *) data) + 28, 7) != 0)

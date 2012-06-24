@@ -30,7 +30,7 @@
 #include <string.h>
 #include <strings.h>
 #include <stdlib.h>
-#include <unistd.h>		/* getcwd, chdir */
+#include <unistd.h>		// getcwd, chdir
 #include <locale.h>
 #include <errno.h>
 
@@ -54,8 +54,8 @@ extern "C"
 #include "data/akfavatar-logo.xpm"
 
 
-#define PRGNAME "Lua-AKFAvatar"	/* keep it short */
-#define NAME_EXEC "AKFAvatar.lua"	/* name in archive file */
+#define PRGNAME "Lua-AKFAvatar"	// keep it short
+#define NAME_EXEC "AKFAvatar.lua"	// name in archive file
 
 #define EXT_LUA   ".lua"
 #define EXT_DEMO  ".avt"
@@ -92,7 +92,7 @@ help (void)
   exit (EXIT_SUCCESS);
 }
 
-/* used with atexit */
+// used with atexit
 static void
 quit (void)
 {
@@ -133,7 +133,7 @@ fatal (const char *m1, const char *m2)
   else
     {
 #ifdef _WIN32
-      /* no standard */
+      // no standard
       MessageBox (NULL, msg, PRGNAME,
 		  MB_ICONERROR | MB_OK | MB_SETFOREGROUND);
 #else
@@ -146,7 +146,7 @@ fatal (const char *m1, const char *m2)
 }
 
 
-/* require module and pushes nresults on the stack */
+// require module and pushes nresults on the stack
 static void
 require (const char *module, int nresults)
 {
@@ -155,7 +155,7 @@ require (const char *module, int nresults)
   if (lua_pcall (L, 1, nresults, 0) != 0)
     {
       fatal ("require", lua_tostring (L, -1));
-      lua_pop (L, 1);		/* pop message */
+      lua_pop (L, 1);		// pop message
     }
 }
 
@@ -197,7 +197,7 @@ check_options (int argc, char *argv[])
 	directory = (argv[i] + 6);
       else if (strncmp (argv[i], "-l", 2) == 0)
 	{
-	  /* ignore -l for now */
+	  // ignore -l for now
 	  if (argv[i][2] == '\0')
 	    i++;
 	}
@@ -205,11 +205,11 @@ check_options (int argc, char *argv[])
 	fatal ("unknown option", argv[i]);
     }
 
-  /* no script found? */
+  // no script found?
   if (i >= argc)
     i = 0;
 
-  /* return script-index */
+  // return script-index
   return i;
 }
 
@@ -242,7 +242,7 @@ reset (void)
   avt_set_mouse_visible (true);
 }
 
-/* check if this program can handle the file */
+// check if this program can handle the file
 static bool
 check_filename (const char *filename)
 {
@@ -257,7 +257,7 @@ check_filename (const char *filename)
 static void
 initialize_lua (void)
 {
-  /* from lua-avt.c */
+  // from lua-avt.c
   extern int luaopen_akfavatar_embedded (lua_State * L);
 
   L = luaL_newstate ();
@@ -269,8 +269,8 @@ initialize_lua (void)
   luaL_openlibs (L);
   lua_gc (L, LUA_GCRESTART, 0);
 
-  /* register loader functions for: "lua-akfavatar" */
-  /* (users should not be able to leave the require command away) */
+  // register loader functions for: "lua-akfavatar"
+  // (users should not be able to leave the require command away)
   lua_getglobal (L, "package");
   lua_getfield (L, -1, "preload");
   lua_pushcfunction (L, luaopen_akfavatar_embedded);
@@ -281,7 +281,7 @@ initialize_lua (void)
 static void
 arg0 (const char *filename)
 {
-  /* arg[0] = filename */
+  // arg[0] = filename
   lua_newtable (L);
   lua_pushinteger (L, 0);
   lua_pushstring (L, filename);
@@ -296,14 +296,14 @@ avtdemo (const char *filename)
   lua_pushstring (L, filename);
   if (lua_pcall (L, 1, 0, 0) != 0)
     {
-      /* on a normal quit-request there is nil on the stack */
+      // on a normal quit-request there is nil on the stack
       if (lua_isstring (L, -1))
 	fatal ("akfavatar.avtdemo", lua_tostring (L, -1));
-      lua_pop (L, 1);		/* pop message (or the nil) */
+      lua_pop (L, 1);		// pop message (or the nil)
     }
 }
 
-/* returns 0 on success, or -1 on error with message on stack */
+// returns 0 on success, or -1 on error with message on stack
 static int
 run_executable (const char *filename)
 {
@@ -321,14 +321,14 @@ run_executable (const char *filename)
 
   start = script;
 
-  /* skip UTF-8 BOM */
+  // skip UTF-8 BOM
   if (start[0] == '\xEF' && start[1] == '\xBB' && start[2] == '\xBF')
     {
       start += 3;
       size -= 3;
     }
 
-  /* skip #! line */
+  // skip #! line
   if (start[0] == '#' && start[1] == '!')
     while (*start != '\n')
       {
@@ -343,11 +343,11 @@ run_executable (const char *filename)
 
   if (status != 0 || lua_pcall (L, 0, 0, 0) != 0)
     {
-      /* on a normal quit-request there is nil on the stack */
+      // on a normal quit-request there is nil on the stack
       if (lua_isstring (L, -1))
-	return -1;		/* message already on stack */
+	return -1;		// message already on stack
       else
-	lua_pop (L, 1);		/* remove nil */
+	lua_pop (L, 1);		// remove nil
     }
 
   return 0;
@@ -359,7 +359,7 @@ show_text (const char *filename)
   avt_avatar_image_none ();
   avt_set_balloon_size (0, 0);
   avt_set_balloon_color (avt_colorname ("tan"));
-  /* text file must be UTF-8 encoded (or plain ASCII) */
+  // text file must be UTF-8 encoded (or plain ASCII)
   avta_pager_file (filename, 1);
 }
 
@@ -382,7 +382,7 @@ ask_file (void)
       ext = strrchr (filename, '.');
 
       if (!ext)
-	return false;		/* shouldn't happen */
+	return false;		// shouldn't happen
       else if (strcasecmp (EXT_DEMO, ext) == 0)
 	avtdemo (filename);
       else if (strcasecmp (EXT_EXEC, ext) == 0)
@@ -395,24 +395,24 @@ ask_file (void)
 	}
       else if (strcasecmp (EXT_ABOUT, ext) == 0)
 	show_text (filename);
-      else			/* assume Lua code */
+      else			// assume Lua code
 	{
 	  arg0 (filename);
 	  if (luaL_loadfilex (L, filename, "t") != 0
 	      || lua_pcall (L, 0, 0, 0) != 0)
 	    {
-	      /* on a normal quit-request there is nil on the stack */
+	      // on a normal quit-request there is nil on the stack
 	      if (lua_isstring (L, -1))
 		error_box (lua_tostring (L, -1));
-	      lua_pop (L, 1);	/* pop message (or the nil) */
+	      lua_pop (L, 1);	// pop message (or the nil)
 	    }
 	}
 
-      /* go back to the lua directory if it was changedby the script */
+      // go back to the lua directory if it was changedby the script
       if (lua_dir[0] != '\0')
 	chdir (lua_dir);
 
-      return true;		/* run this again */
+      return true;		// run this again
     }
 
   return false;
@@ -466,15 +466,15 @@ get_args (int argc, char *argv[], int script_index)
 {
   int i;
 
-  /* create global table "arg" and fill it */
+  // create global table "arg" and fill it
   lua_newtable (L);
 
-  /* script name as arg[0] */
+  // script name as arg[0]
   lua_pushinteger (L, 0);
   lua_pushstring (L, argv[script_index]);
   lua_settable (L, -3);
 
-  /* arg[1] ... */
+  // arg[1] ...
   for (i = script_index + 1; i < argc; i++)
     {
       lua_pushinteger (L, i - script_index);
@@ -498,7 +498,7 @@ static void
 find_scripts (void)
 {
   if (directory)
-    chdir (directory);		/* don't try any other! */
+    chdir (directory);		// don't try any other!
   else
     {
       char progdir[MAX_PATH + 1];
@@ -510,27 +510,27 @@ find_scripts (void)
       if (len != 0 && len != sizeof (progdir)
 	  && (p = strrchr (progdir, '\\')) != NULL)
 	{
-	  *p = '\0';		/* cut filename off */
+	  *p = '\0';		// cut filename off
 	  chdir (progdir);
 	  chdir ("lua");
 	}
     }
 }
 
-#else /* not _WIN32 */
+#else // not _WIN32
 
-/* conforming with POSIX.1-2001 */
+// conforming with POSIX.1-2001
 
 static void
 find_scripts (void)
 {
   if (directory)
-    chdir (directory);		/* don't try any other! */
+    chdir (directory);		// don't try any other!
   else if (chdir ("/usr/local/share/akfavatar/lua") < 0)
     chdir ("/usr/share/akfavatar/lua");
 }
 
-#endif /* not _WIN32 */
+#endif // not _WIN32
 
 
 int
@@ -542,7 +542,7 @@ main (int argc, char **argv)
 
   script_index = check_options (argc, argv);
 
-  /* initialize Lua */
+  // initialize Lua
   initialize_lua ();
   atexit (quit);
   handle_require_options (argc, argv);
@@ -562,7 +562,7 @@ main (int argc, char **argv)
 	  if (run_executable (argv[script_index]) != 0)
 	    fatal ("executable", lua_tostring (L, -1));
 	}
-      else			/* assume Lua code */
+      else			// assume Lua code
 	{
 	  get_args (argc, argv, script_index);
 
@@ -574,7 +574,7 @@ main (int argc, char **argv)
 	    }
 	}
     }
-  else				/* no script at command-line */
+  else				// no script at command-line
     {
       initialize ();
       start_screen ();
@@ -582,15 +582,15 @@ main (int argc, char **argv)
 
       while (ask_file ())
 	{
-	  /* reset settings */
+	  // reset settings
 	  avt_set_status (AVT_NORMAL);
 
-	  /* restart Lua */
+	  // restart Lua
 	  lua_close (L);
 	  initialize_lua ();
 
-	  /* script may have called avt.quit() */
-	  /* also closing Lua may have accidently closed AKFAvatar */
+	  // script may have called avt.quit()
+	  // also closing Lua may have accidently closed AKFAvatar
 	  if (avt_initialized ())
 	    reset ();
 	  else

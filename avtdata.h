@@ -24,7 +24,7 @@
 #ifndef AVTDATA_H
 #define AVTDATA_H
 
-#include <stdio.h>		/* FILE */
+#include <stdio.h>		// FILE
 #include <stdint.h>
 
 #ifndef __cplusplus
@@ -43,8 +43,8 @@ bool avt_data_seek (avt_data *d, long offset, int whence);
 long avt_data_tell (avt_data *d);
 size_t avt_data_read (avt_data *d, void *data, size_t size, size_t number);
 
-/* read values of specific size and endianness */
-/* le = Little Endian, be = Big Endian */
+// read values of specific size and endianness 
+// le = Little Endian, be = Big Endian
 uint8_t  avt_data_read8    (avt_data *d);
 uint16_t avt_data_read16le (avt_data *d);
 uint16_t avt_data_read16be (avt_data *d);
@@ -53,4 +53,4 @@ uint32_t avt_data_read32be (avt_data *d);
 
 #define avt_data_rewind(d)  avt_data_seek((d), 0, SEEK_SET)
 
-#endif /* AVTDATA_H */
+#endif // AVTDATA_H

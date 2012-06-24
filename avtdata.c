@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <string.h>		/* memcpy */
+#include <string.h>		// memcpy
 
 #ifndef __cplusplus
 #include <stdbool.h>
@@ -104,7 +104,7 @@ avt_data_read (avt_data * d, void *data, size_t size, size_t number)
 }
 
 
-/* read 8 bit value */
+// read 8 bit value
 extern uint8_t
 avt_data_read8 (avt_data * d)
 {
@@ -116,7 +116,7 @@ avt_data_read8 (avt_data * d)
 }
 
 
-/* read little endian 16 bit value */
+// read little endian 16 bit value
 extern uint16_t
 avt_data_read16le (avt_data * d)
 {
@@ -128,7 +128,7 @@ avt_data_read16le (avt_data * d)
 }
 
 
-/* read big endian 16 bit value */
+// read big endian 16 bit value
 extern uint16_t
 avt_data_read16be (avt_data * d)
 {
@@ -140,7 +140,7 @@ avt_data_read16be (avt_data * d)
 }
 
 
-/* read little endian 32 bit value */
+// read little endian 32 bit value
 extern uint32_t
 avt_data_read32le (avt_data * d)
 {
@@ -152,7 +152,7 @@ avt_data_read32le (avt_data * d)
 }
 
 
-/* read big endian 32 bit value */
+// read big endian 32 bit value
 extern uint32_t
 avt_data_read32be (avt_data * d)
 {
@@ -231,7 +231,7 @@ avt_data_open_stream (FILE * stream)
       d->stream = stream;
       d->memory = NULL;
       d->start = ftell (stream);
-      d->end = d->position = -1;	/* unused */
+      d->end = d->position = -1;	// unused
     }
 
   return d;
@@ -260,7 +260,7 @@ avt_data_open_memory (const void *memory, size_t size)
       d->type = AVT_DATA_MEMORY;
       d->stream = NULL;
       d->memory = (const char *) memory;
-      d->start = d->position = 0;	/* start is always 0 */
+      d->start = d->position = 0;	// start is always 0
       d->end = size;
     }
 

@@ -29,7 +29,7 @@
 #include <sys/types.h>
 #include <pwd.h>
 
-/* TODO: write integrated editor! */
+// TODO: write integrated editor!
 
 void
 edit_file (const char *name, const char *encoding)
@@ -51,7 +51,7 @@ edit_file (const char *name, const char *encoding)
     avta_term_run (fd);
 }
 
-/* get user's home direcory */
+// get user's home direcory
 void
 get_user_home (char *home_dir, size_t size)
 {
@@ -59,7 +59,7 @@ get_user_home (char *home_dir, size_t size)
 
   home = getenv ("HOME");
 
-  /* when the variable is not set, dig deeper */
+  // when the variable is not set, dig deeper
   if (home == NULL || *home == '\0')
     {
       struct passwd *user_data;
@@ -100,11 +100,11 @@ open_config_file (const char *name, bool writing)
     {
       f = fopen (path, "r");
     }
-  else				/* writing */
+  else				// writing
     {
       f = fopen (path, "w");
 
-      /* if that fails, try to create directories */
+      // if that fails, try to create directories
       if (!f)
 	{
 	  if (xdg_config_home)
@@ -124,7 +124,7 @@ open_config_file (const char *name, bool writing)
 			name);
 	    }
 
-	  /* try again */
+	  // try again
 	  f = fopen (path, "w");
 	}
     }

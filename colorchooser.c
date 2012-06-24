@@ -19,24 +19,24 @@
  */
 
 #include "akfavatar.h"
-#include <stdio.h>		/* for sprintf */
+#include <stdio.h>		// for sprintf
 
-/* House symbol */
+// House symbol
 #define HOME L"\x2302"
 
-/* Keyboard symbol (not int the 7x14 font) */
-/* #define KEYBOARD L" \x2328 " */
+// Keyboard symbol (not int the 7x14 font)
+// #define KEYBOARD L" \x2328 "
 
-/* Manual input */
+// Manual input
 #define MANUAL L" > "
 
-/* three arrows up */
+// three arrows up
 #define BACK L"\x2191 \x2191 \x2191"
 
-/* three arrows down */
+// three arrows down
 #define CONTINUE L"\x2193 \x2193 \x2193"
 
-/* entries or marks that are not colors */
+// entries or marks that are not colors
 #define marked_text(S) \
          do { avt_set_text_background_color (0xDDDDDD); \
          avt_say (S); avt_normal_text (); } while(0)
@@ -54,7 +54,7 @@
 static char *
 manual_entry (void)
 {
-  static char manual_color[80];	/* must be static! */
+  static char manual_color[80];	// must be static!
 
   avt_set_balloon_height (1);
   avt_say (L"> ");
@@ -63,7 +63,7 @@ manual_entry (void)
   if (avt_ask_mb (manual_color, sizeof (manual_color)) != AVT_NORMAL)
     return NULL;
 
-  /* check, if it's a valid color name */
+  // check, if it's a valid color name
   if (avt_colorname (manual_color) > -1)
     return manual_color;
   else
@@ -86,12 +86,12 @@ avta_color_selection (void)
   avt_normal_text ();
   avt_lock_updates (true);
 
-  /* set maximum size */
+  // set maximum size
   avt_set_balloon_size (0, 35);
 
   result = color_name = NULL;
   max_idx = avt_get_max_y ();
-  mid_x = avt_get_max_x () / 2;	/* for marked_line() */
+  mid_x = avt_get_max_x () / 2;	// for marked_line()
 
   page_nr = 0;
 
@@ -125,7 +125,7 @@ avta_color_selection (void)
 
 	  if (color_name)
 	    {
-	      /* show colored spaces */
+	      // show colored spaces
 	      avt_set_text_background_color (colornr);
 	      avt_say (L"  ");
 	      avt_set_text_background_ballooncolor ();
@@ -134,7 +134,7 @@ avta_color_selection (void)
 	      snprintf (desc, sizeof (desc), "#%06X: %s\n",
 			colornr, color_name);
 
-	      /* show description */
+	      // show description
 	      avt_say_mb (desc);
 	      items++;
 	    }
@@ -154,11 +154,11 @@ avta_color_selection (void)
 	avt_lock_updates (true);
 
       if (choice == 1 && page_nr > 0)
-	page_nr--;		/* page back */
+	page_nr--;		// page back
       else if (choice == 1)
-	break;			/* home */
+	break;			// home
       else if (choice == max_idx)
-	page_nr += (color_name == NULL) ? 0 : 1;	/* page forward */
+	page_nr += (color_name == NULL) ? 0 : 1;	// page forward
       else if (page_nr == 0 && choice == 2)
 	{
 	  result = (const char *) manual_entry ();

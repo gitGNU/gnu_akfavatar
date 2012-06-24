@@ -33,7 +33,7 @@
 
 #define marked(void) avt_set_text_background_color(0xDDDDDD)
 
-/* entries or marks that are not files */
+// entries or marks that are not files
 #define marked_text(S) \
          marked (); avt_say (S); avt_normal_text ()
 
@@ -45,22 +45,22 @@
            avt_normal_text(); \
          } while(0)
 
-/* double arrow up */
+// double arrow up
 #define PARENT_DIRECTORY L" \x21D1 "
 
-/* House symbol */
+// House symbol
 #define HOME L" \x2302 "
 
-/* three arrows up */
+// three arrows up
 #define BACK L"\x2191 \x2191 \x2191"
 
-/* three arrows down */
+// three arrows down
 #define CONTINUE L"\x2193 \x2193 \x2193"
 
-/* 3 dots */
+// 3 dots
 #define LONGER L"\x2026"
 
-/* slash */
+// slash
 #define DIRECTORY L"/"
 
 #ifdef _WIN32
@@ -71,10 +71,10 @@
 #  define HAS_DRIVE_LETTERS false
 #  define HAS_SCANDIR true
 #  define is_root_dir(x) (x[1] == '\0')
-#  define avta_ask_drive(max_idx) 0	/* dummy */
+#  define avta_ask_drive(max_idx) 0	// dummy
 #endif
 
-/* variable for custom filter */
+// variable for custom filter
 static avta_filter custom_filter = NULL;
 
 static bool
@@ -95,7 +95,7 @@ is_directory (const char *name)
 	             && is_directory (d->d_name)))
 #else
 #  define is_dirent_directory(d) (is_directory (d->d_name))
-#endif /* _DIRENT_HAVE_D_TYPE */
+#endif // _DIRENT_HAVE_D_TYPE
 
 static void
 new_page (void)
@@ -127,7 +127,7 @@ show_directory (char *dirname)
 static int
 filter_dirent (FILTER_DIRENT_T * d)
 {
-  /* allow nothing that starts with a dot */
+  // allow nothing that starts with a dot
   if (d == NULL || d->d_name[0] == '.')
     return false;
   else if (is_dirent_directory (d))
@@ -136,12 +136,12 @@ filter_dirent (FILTER_DIRENT_T * d)
     return (custom_filter == NULL || (*custom_filter) (d->d_name));
 }
 
-#else /* _WIN32 */
+#else // _WIN32
 
 static int
 filter_dirent (const struct dirent *d)
 {
-  /* don't allow "." and ".." and apply custom_filter */
+  // don't allow "." and ".." and apply custom_filter
   if (d == NULL)
     return false;
   else if (strcmp (".", d->d_name) == 0 || strcmp ("..", d->d_name) == 0)
@@ -152,11 +152,11 @@ filter_dirent (const struct dirent *d)
     return (custom_filter == NULL || (*custom_filter) (d->d_name));
 }
 
-#endif /* _WIN32 */
+#endif // _WIN32
 
 #if (HAS_SCANDIR)
 #  define get_directory(list) (scandir (".", list, filter_dirent, alphasort))
-#else /* not HAS_SCANDIR */
+#else // not HAS_SCANDIR
 
 static int
 compare_dirent (const void *a, const void *b)
@@ -178,8 +178,8 @@ get_directory (struct dirent ***list)
   *list = NULL;
   entries = 0;
 
-  /* TODO: potential portability problem */
-  dirent_size = sizeof (struct dirent);	/* works for all I have */
+  // TODO: potential portability problem
+  dirent_size = sizeof (struct dirent);	// works for all I have
 
   /*
      dirent_size = offsetof (struct dirent, d_name)
@@ -206,7 +206,7 @@ get_directory (struct dirent ***list)
 	    }
 	}
 
-      /* sort */
+      // sort
       qsort (mylist, entries, sizeof (struct dirent *), compare_dirent);
     }
 
@@ -229,14 +229,14 @@ get_directory (struct dirent ***list)
 extern int
 avta_file_selection (char *filename, int filename_size, avta_filter filter)
 {
-  int rcode;			/* return code */
+  int rcode;			// return code
   struct dirent *d;
   struct dirent **namelist;
   char dirname[4096];
   int max_x, max_idx, page_entries;
   int idx, menu_entry, page_nr;
   int entries, entry_nr;
-  char *entry[100];		/* entry on screen */
+  char *entry[100];		// entry on screen
   char old_encoding[100];
   bool old_auto_margin, old_newline_mode;
 
@@ -248,15 +248,15 @@ avta_file_selection (char *filename, int filename_size, avta_filter filter)
   avt_set_text_delay (0);
   avt_normal_text ();
 
-  /* don't show the balloon */
+  // don't show the balloon
   avt_show_avatar ();
 
-  /* set maximum size */
+  // set maximum size
   avt_set_balloon_size (0, 0);
 
   max_x = avt_get_max_x ();
   max_idx = avt_get_max_y ();
-  page_entries = max_idx - 2;	/* minus back and forward entries */
+  page_entries = max_idx - 2;	// minus back and forward entries
   custom_filter = filter;
   namelist = NULL;
 
@@ -268,13 +268,13 @@ avta_file_selection (char *filename, int filename_size, avta_filter filter)
   strncpy (old_encoding, avt_get_mb_encoding (), sizeof (old_encoding));
   old_encoding[sizeof (old_encoding) - 1] = '\0';
 
-  /* set the systems default encoding */
-  /* this also catches earlier errors */
+  // set the systems default encoding
+  // this also catches earlier errors
   if (avt_mb_encoding (NULL) != AVT_NORMAL)
     goto quit;
 
 start:
-  /* returncode: assume failure as default */
+  // returncode: assume failure as default
   rcode = -1;
   menu_entry = -1;
   page_nr = 0;
@@ -287,13 +287,13 @@ start:
     dirname[0] = '\0';
 
   show_directory (dirname);
-  idx++;			/* for the directory-line */
+  idx++;			// for the directory-line
 
   entries = get_directory (&namelist);
   if (entries < 0)
     goto quit;
 
-  /* entry for parent directory or home */
+  // entry for parent directory or home
   if (!HAS_DRIVE_LETTERS && is_root_dir (dirname))
     {
       entry[idx] = "";
@@ -314,13 +314,13 @@ start:
       else
 	d = NULL;
 
-      if (idx == 1 && !d)	/* no entries at all */
+      if (idx == 1 && !d)	// no entries at all
 	break;
 
-      /* end reached? */
+      // end reached?
       if (!d || idx == max_idx - 1)
 	{
-	  if (d)		/* continue entry */
+	  if (d)		// continue entry
 	    {
 	      marked_line (CONTINUE);
 	      idx++;
@@ -330,11 +330,11 @@ start:
 	  if (avt_choice (&menu_entry, 1, idx, 0, (page_nr > 0), (d != NULL)))
 	    break;
 
-	  if (page_nr == 0 && menu_entry == 1)	/* path-bar */
+	  if (page_nr == 0 && menu_entry == 1)	// path-bar
 	    {
 	      break;
 	    }
-	  else if (d && menu_entry == idx)	/* continue? */
+	  else if (d && menu_entry == idx)	// continue?
 	    {
 	      idx = 0;
 	      page_nr++;
@@ -345,7 +345,7 @@ start:
 	      idx++;
 	      avt_new_line ();
 	    }
-	  else if (page_nr > 0 && menu_entry == 1)	/* back */
+	  else if (page_nr > 0 && menu_entry == 1)	// back
 	    {
 	      idx = 0;
 	      page_nr--;
@@ -354,11 +354,11 @@ start:
 	      new_page ();
 	      if (page_nr > 0)
 		{
-		  entry_nr--;	/* first page had one extra entry */
+		  entry_nr--;	// first page had one extra entry
 		  entry[idx] = "";
 		  marked_line (BACK);
 		}
-	      else		/* first page */
+	      else		// first page
 		{
 		  show_directory (dirname);
 		  idx++;
@@ -379,7 +379,7 @@ start:
 	      avt_new_line ();
 	      continue;
 	    }
-	  else			/* file chosen */
+	  else			// file chosen
 	    {
 	      if (strlen (entry[menu_entry - 1]) < (size_t) filename_size)
 		{
@@ -390,14 +390,14 @@ start:
 	    }
 	}
 
-      /* copy name into entry */
+      // copy name into entry
       entry[idx] = d->d_name;
       avt_say_mb (entry[idx]);
 
-      /* is it a directory? */
+      // is it a directory?
       if (is_dirent_directory (d))
 	{
-	  /* mark as directory */
+	  // mark as directory
 	  if (avt_where_x () > max_x)
 	    {
 	      avt_move_x (max_x - 1);
@@ -405,7 +405,7 @@ start:
 	    }
 	  marked_text (DIRECTORY);
 	}
-      else			/* not directory */
+      else			// not directory
 	{
 	  if (avt_where_x () > max_x)
 	    {
@@ -418,13 +418,13 @@ start:
       idx++;
     }
 
-  /* free namelist */
+  // free namelist
   while (entries--)
     free (namelist[entries]);
   free (namelist);
   namelist = NULL;
 
-  /* path chosen */
+  // path chosen
   if (page_nr == 0 && menu_entry == 1)
     {
       avt_move_xy (1, 1);
@@ -437,11 +437,11 @@ start:
       goto start;
     }
 
-  /* back-entry in root_dir */
+  // back-entry in root_dir
   if (page_nr == 0 && menu_entry == 2 && is_root_dir (dirname))
     {
       *filename = '\0';
-      if (HAS_DRIVE_LETTERS)	/* ask for drive? */
+      if (HAS_DRIVE_LETTERS)	// ask for drive?
 	{
 	  if (avta_ask_drive (max_idx + 1) == AVT_NORMAL)
 	    {
@@ -451,11 +451,11 @@ start:
 	  else
 	    goto quit;
 	}
-      else			/* return to main menu */
+      else			// return to main menu
 	goto quit;
     }
 
-  /* directory chosen? */
+  // directory chosen?
   if (is_directory (filename))
     {
       chdir (filename);

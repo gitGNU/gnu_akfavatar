@@ -53,7 +53,7 @@ extern "C"
 
 
 static char *startdir = NULL;
-static lua_State *term_L;	/* lua_State of the running terminal */
+static lua_State *term_L;	// lua_State of the running terminal
 
 static int
 quit (lua_State * L)
@@ -62,10 +62,10 @@ quit (lua_State * L)
     {
       return luaL_error (L, "%s", avt_get_error ());
     }
-  else				/* stop requested */
+  else				// stop requested
     {
-      /* no actual error, so no error message */
-      /* this is handled by the calling program */
+      // no actual error, so no error message
+      // this is handled by the calling program
       lua_pushnil (L);
       return lua_error (L);
     }
@@ -87,27 +87,27 @@ lterm_execute (lua_State * L)
   if (!avt_initialized ())
     luaL_error (L, "execute: AKFAvatar not initialized");
 
-  /* set all locale settings */
+  // set all locale settings
   setlocale (LC_ALL, "");
 
 #ifdef NO_LANGINFO
-  /* get encoding from AKFAvatar settings */
+  // get encoding from AKFAvatar settings
   strncpy (encoding, avt_get_mb_encoding (), sizeof (encoding));
 #else
-  /* get encoding from system settings, needs LC_CTYPE to be set correctly */
-  /* conforming to SUSv2, POSIX.1-2001 */
+  // get encoding from system settings, needs LC_CTYPE to be set correctly
+  // conforming to SUSv2, POSIX.1-2001
   strncpy (encoding, nl_langinfo (CODESET), sizeof (encoding));
 #endif
 
-  encoding[sizeof (encoding) - 1] = '\0';	/* enforce termination */
+  encoding[sizeof (encoding) - 1] = '\0';	// enforce termination
 
-  n = lua_gettop (L);		/* number of options */
+  n = lua_gettop (L);		// number of options
 
-  /* number of arguments is already limited in Lua, but I want to be save */
+  // number of arguments is already limited in Lua, but I want to be save
   if (n > 255)
     luaL_error (L, "execute: too many arguments");
 
-  if (n >= 1)			/* start program */
+  if (n >= 1)			// start program
     {
       for (i = 0; i < n; i++)
 	argv[i] = (char *) luaL_checkstring (L, i + 1);
@@ -115,7 +115,7 @@ lterm_execute (lua_State * L)
 
       fd = avta_term_start (encoding, startdir, argv);
     }
-  else				/* start shell */
+  else				// start shell
     fd = avta_term_start (encoding, startdir, NULL);
 
 
@@ -164,11 +164,11 @@ lterm_homedir (lua_State * L)
 
   home = getenv ("HOME");
 
-  /* when the variable is not set, dig deeper */
+  // when the variable is not set, dig deeper
   if (home == NULL || *home == '\0')
     {
       struct passwd *user_data;
-      user_data = getpwuid (getuid ());	/* POSIX.1-2001 */
+      user_data = getpwuid (getuid ());	// POSIX.1-2001
       if (user_data != NULL && user_data->pw_dir != NULL
 	  && *user_data->pw_dir != '\0')
 	home = user_data->pw_dir;
@@ -210,7 +210,7 @@ lterm_color (lua_State * L)
   return 0;
 }
 
-/* send string to stdin of process (APC), add "\r" for return */
+// send string to stdin of process (APC), add "\r" for return
 static int
 lterm_send (lua_State * L)
 {
@@ -266,7 +266,7 @@ APC_command (wchar_t * command)
   if (!term_L)
     return -1;
 
-  /* get mbstring from command (in current encoding) */
+  // get mbstring from command (in current encoding)
   size = avt_mb_encode (&mbstring, command, wcslen (command));
 
   if (size > -1)
@@ -278,7 +278,7 @@ APC_command (wchar_t * command)
 	return lua_error (term_L);
 
       lua_call (term_L, 0, 0);
-      avta_term_update_size ();	/* in case the size changed */
+      avta_term_update_size ();	// in case the size changed
     }
 
   return 0;

@@ -24,18 +24,18 @@
 #define _ISOC99_SOURCE
 #define _POSIX_C_SOURCE 200112L
 
-/* don't make functions deprecated for this file */
+// don't make functions deprecated for this file
 #define _AVT_USE_DEPRECATED
 
 #include "akfavatar.h"
 #include "avtinternals.h"
 #include "avtdata.h"
 
-#include <stdlib.h>		/* malloc / realloc / free */
+#include <stdlib.h>		// malloc / realloc / free
 #include <stdint.h>
-#include <string.h>		/* memcmp / memcpy */
+#include <string.h>		// memcmp / memcpy
 
-/* absolute maximum size for audio data */
+// absolute maximum size for audio data
 #define MAXIMUM_SIZE  0xFFFFFFFFU
 
 
@@ -72,14 +72,14 @@ avt_free_audio (avt_audio * snd)
 
 #define avt_load_audio_general(a,b,c)  NULL
 
-#else /* not NO_AUDIO */
+#else // not NO_AUDIO
 
 #include "alert.c"
 
-/* short sound for the "avt_bell" function */
+// short sound for the "avt_bell" function
 static avt_audio *alert_sound;
 
-/* table for decoding mu-law */
+// table for decoding mu-law
 static const int16_t mulaw_decode[256] = {
   -32124, -31100, -30076, -29052, -28028, -27004, -25980, -24956, -23932,
   -22908, -21884, -20860, -19836, -18812, -17788, -16764, -15996, -15484,
@@ -106,7 +106,7 @@ static const int16_t mulaw_decode[256] = {
   8, 0
 };
 
-/* table for decoding A-law */
+// table for decoding A-law
 static const int16_t alaw_decode[256] = {
   -5504, -5248, -6016, -5760, -4480, -4224, -4992, -4736, -7552, -7296, -8064,
   -7808, -6528, -6272, -7040, -6784, -2752, -2624, -3008, -2880, -2240,
@@ -136,7 +136,7 @@ static const int16_t alaw_decode[256] = {
 static void
 audio_alert (void)
 {
-  /* if alert_sound is loaded and nothing is currently playing */
+  // if alert_sound is loaded and nothing is currently playing
   if (alert_sound && !avt_audio_playing (NULL))
     avt_play_audio (alert_sound, AVT_PLAY);
 }
@@ -175,19 +175,19 @@ avt_required_audio_size (avt_audio * snd, size_t data_size)
     {
     case AVT_AUDIO_MULAW:
     case AVT_AUDIO_ALAW:
-      out_size = 2 * data_size;	/* one byte becomes 2 bytes */
+      out_size = 2 * data_size;	// one byte becomes 2 bytes
       break;
 
     case AVT_AUDIO_S24SYS:
     case AVT_AUDIO_S24LE:
     case AVT_AUDIO_S24BE:
-      out_size = (data_size * 2) / 3;	/* reduced to 16 Bit */
+      out_size = (data_size * 2) / 3;	// reduced to 16 Bit
       break;
 
     case AVT_AUDIO_S32SYS:
     case AVT_AUDIO_S32LE:
     case AVT_AUDIO_S32BE:
-      out_size = data_size / 2;	/* reduced to 16 Bit */
+      out_size = data_size / 2;	// reduced to 16 Bit
       break;
 
     default:
@@ -226,7 +226,7 @@ avt_set_raw_audio_capacity (avt_audio * snd, size_t data_size)
   snd->sound = (unsigned char *) new_sound;
   snd->capacity = out_size;
 
-  /* eventually shrink length */
+  // eventually shrink length
   if (snd->length > out_size)
     snd->length = out_size;
 
@@ -243,7 +243,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
       || data_size == 0)
     return avt_checkevent ();
 
-  /* audio structure must have been created with avt_load_raw_audio_data */
+  // audio structure must have been created with avt_load_raw_audio_data
   if (snd->audio_type == AVT_AUDIO_UNKNOWN)
     {
       avt_set_error ("unknown audio format");
@@ -254,18 +254,18 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
   old_size = snd->length;
   new_size = old_size + out_size;
 
-  /* if it's currently playing, lock it */
+  // if it's currently playing, lock it
   active = avt_audio_playing (snd);
   if (active)
     avt_lock_audio ();
 
-  /* eventually get more memory for output buffer */
+  // eventually get more memory for output buffer
   if (new_size > snd->capacity)
     {
       void *new_sound;
       size_t new_capacity;
 
-      /* get twice the capacity */
+      // get twice the capacity
       new_capacity = 2 * snd->capacity;
 
       /*
@@ -288,17 +288,17 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
       snd->capacity = new_capacity;
     }
 
-  /* convert or copy the data */
+  // convert or copy the data
   switch (snd->audio_type)
     {
     case AVT_AUDIO_S16SYS:
     case AVT_AUDIO_U8:
     case AVT_AUDIO_S8:
-      /* linear PCM, same bit size and endianness */
+      // linear PCM, same bit size and endianness
       memcpy (snd->sound + old_size, data, out_size);
       break;
 
-    case AVT_AUDIO_MULAW:	/* mu-law, logarithmic PCM */
+    case AVT_AUDIO_MULAW:	// mu-law, logarithmic PCM
       {
 	uint8_t *in;
 	int16_t *out;
@@ -310,7 +310,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 	break;
       }
 
-    case AVT_AUDIO_ALAW:	/* A-law, logarithmic PCM */
+    case AVT_AUDIO_ALAW:	// A-law, logarithmic PCM
       {
 	uint8_t *in;
 	int16_t *out;
@@ -342,7 +342,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
       }
       break;
 
-      /* the following ones are all converted to 16 bits */
+      // the following ones are all converted to 16 bits
 
     case AVT_AUDIO_S24LE:
       {
@@ -410,13 +410,13 @@ avt_load_raw_audio_data (void *data, size_t data_size,
       return NULL;
     }
 
-  /* use NULL, if we have nothing to add, yet */
+  // use NULL, if we have nothing to add, yet
   if (data_size == 0)
     data = NULL;
   else if (data == NULL)
     data_size = 0;
 
-  /* adjustments for later optimizations */
+  // adjustments for later optimizations
   if (AVT_LITTLE_ENDIAN == AVT_BYTE_ORDER)
     {
       switch (audio_type)
@@ -452,7 +452,7 @@ avt_load_raw_audio_data (void *data, size_t data_size,
 	}
     }
 
-  /* get memory for struct */
+  // get memory for struct
   s = (struct avt_audio *) malloc (sizeof (struct avt_audio));
   if (s == NULL)
     {
@@ -480,7 +480,7 @@ avt_load_raw_audio_data (void *data, size_t data_size,
 extern void
 avt_finalize_raw_audio (avt_audio * snd)
 {
-  /* eventually free unneeded memory */
+  // eventually free unneeded memory
   if (snd->capacity > snd->length)
     {
       void *new_sound;
@@ -502,20 +502,20 @@ avt_free_audio (avt_audio * snd)
 {
   if (snd)
     {
-      /* Is this sound currently playing? Then stop it! */
+      // Is this sound currently playing? Then stop it!
       if (avt_audio_playing (snd))
 	avt_stop_audio ();
 
-      /* free the sound data */
+      // free the sound data
       free (snd->sound);
 
-      /* free the rest */
+      // free the rest
       free (snd);
     }
 }
 
 
-/* if size is unknown use 0 or MAXIMUM_SIZE for maxsize */
+// if size is unknown use 0 or MAXIMUM_SIZE for maxsize
 static avt_audio *
 avt_load_audio_block (avt_data * src, uint32_t maxsize,
 		      int samplingrate, int audio_type, int channels,
@@ -537,7 +537,7 @@ avt_load_audio_block (avt_data * src, uint32_t maxsize,
   else
     rest = MAXIMUM_SIZE;
 
-  /* if size is known, pre-allocate enough memory */
+  // if size is known, pre-allocate enough memory
   if (rest < MAXIMUM_SIZE)
     {
       if (avt_set_raw_audio_capacity (audio, rest) != AVT_NORMAL)
@@ -577,7 +577,7 @@ avt_load_au (avt_data * src, uint32_t maxsize, int playmode)
   if (!src)
     return NULL;
 
-  /* check magic ".snd" */
+  // check magic ".snd"
   if (avt_data_read32be (src) != 0x2e736e64)
     {
       avt_set_error ("Data is not an AU audio file"
@@ -591,7 +591,7 @@ avt_load_au (avt_data * src, uint32_t maxsize, int playmode)
   samplingrate = avt_data_read32be (src);
   channels = avt_data_read32be (src);
 
-  /* skip the rest of the header */
+  // skip the rest of the header
   if (head_size > 24)
     avt_data_seek (src, head_size - 24, SEEK_CUR);
 
@@ -603,30 +603,30 @@ avt_load_au (avt_data * src, uint32_t maxsize, int playmode)
 	audio_size = maxsize;
     }
 
-  /* Note: linear PCM is always assumed to be signed and big endian */
+  // Note: linear PCM is always assumed to be signed and big endian
   switch (encoding)
     {
-    case 1:			/* mu-law */
+    case 1:			// mu-law
       audio_type = AVT_AUDIO_MULAW;
       break;
 
-    case 2:			/* 8Bit linear PCM */
-      audio_type = AVT_AUDIO_S8;	/* signed! */
+    case 2:			// 8Bit linear PCM
+      audio_type = AVT_AUDIO_S8;	// signed!
       break;
 
-    case 3:			/* 16Bit linear PCM */
+    case 3:			// 16Bit linear PCM
       audio_type = AVT_AUDIO_S16BE;
       break;
 
-    case 4:			/* 24Bit linear PCM */
+    case 4:			// 24Bit linear PCM
       audio_type = AVT_AUDIO_S24BE;
       break;
 
-    case 5:			/* 32Bit linear PCM */
+    case 5:			// 32Bit linear PCM
       audio_type = AVT_AUDIO_S32BE;
       break;
 
-    case 27:			/* A-law */
+    case 27:			// A-law
       audio_type = AVT_AUDIO_ALAW;
       break;
 
@@ -649,7 +649,7 @@ avt_load_au (avt_data * src, uint32_t maxsize, int playmode)
 }
 
 
-/* The Wave format is so stupid - don't ever use it! */
+// The Wave format is so stupid - don't ever use it!
 static avt_audio *
 avt_load_wave (avt_data * src, uint32_t maxsize, int playmode)
 {
@@ -668,7 +668,7 @@ avt_load_wave (avt_data * src, uint32_t maxsize, int playmode)
 
   if (avt_data_read (src, &identifier, sizeof (identifier), 1) != 1
       || memcmp ("RIFF", identifier, sizeof (identifier)) != 0)
-    return NULL;		/* not a RIFF file */
+    return NULL;		// not a RIFF file
 
   /*
    * this chunk contains the rest,
@@ -678,17 +678,17 @@ avt_load_wave (avt_data * src, uint32_t maxsize, int playmode)
 
   if (avt_data_read (src, &identifier, sizeof (identifier), 1) != 1
       || memcmp ("WAVE", identifier, sizeof (identifier)) != 0)
-    return NULL;		/* not a Wave file */
+    return NULL;		// not a Wave file
 
-  /* search format chunk */
+  // search format chunk
   do
     {
       if (avt_data_read (src, &identifier, sizeof (identifier), 1) != 1)
-	return NULL;		/* no format chunk found */
+	return NULL;		// no format chunk found
       chunk_size = avt_data_read32le (src);
       chunk_end = avt_data_tell (src) + chunk_size;
       if (chunk_end % 2 != 0)
-	chunk_end++;		/* padding to even addresses */
+	chunk_end++;		// padding to even addresses
       wrong_chunk = (memcmp ("fmt ", identifier, sizeof (identifier)) != 0);
       if (wrong_chunk)
 	avt_data_seek (src, chunk_end, SEEK_SET);
@@ -698,48 +698,48 @@ avt_load_wave (avt_data * src, uint32_t maxsize, int playmode)
   encoding = avt_data_read16le (src);
   channels = avt_data_read16le (src);
   samplingrate = avt_data_read32le (src);
-  avt_data_read32le (src);	/* bytes_per_second */
-  avt_data_read16le (src);	/* block_align */
-  bits_per_sample = avt_data_read16le (src);	/* just for PCM */
+  avt_data_read32le (src);	// bytes_per_second
+  avt_data_read16le (src);	// block_align
+  bits_per_sample = avt_data_read16le (src);	// just for PCM
   avt_data_seek (src, chunk_end, SEEK_SET);
 
   switch (encoding)
     {
-    case 1:			/* PCM */
-      /* smaller numbers are already right-padded */
+    case 1:			// PCM
+      // smaller numbers are already right-padded
       if (bits_per_sample <= 8)
-	audio_type = AVT_AUDIO_U8;	/* unsigned */
+	audio_type = AVT_AUDIO_U8;	// unsigned
       else if (bits_per_sample <= 16)
-	audio_type = AVT_AUDIO_S16LE;	/* signed */
+	audio_type = AVT_AUDIO_S16LE;	// signed
       else if (bits_per_sample <= 24)
-	audio_type = AVT_AUDIO_S24LE;	/* signed */
+	audio_type = AVT_AUDIO_S24LE;	// signed
       else if (bits_per_sample <= 32)
-	audio_type = AVT_AUDIO_S32LE;	/* signed */
+	audio_type = AVT_AUDIO_S32LE;	// signed
       else
 	return NULL;
       break;
 
-    case 6:			/* A-law */
+    case 6:			// A-law
       audio_type = AVT_AUDIO_ALAW;
       break;
 
-    case 7:			/* mu-law */
+    case 7:			// mu-law
       audio_type = AVT_AUDIO_MULAW;
       break;
 
-    default:			/* unsupported encoding */
+    default:			// unsupported encoding
       return NULL;
     }
 
-  /* search data chunk - must be after format chunk */
+  // search data chunk - must be after format chunk
   do
     {
       if (avt_data_read (src, &identifier, sizeof (identifier), 1) != 1)
-	return NULL;		/* no data chunk found */
+	return NULL;		// no data chunk found
       chunk_size = avt_data_read32le (src);
       chunk_end = avt_data_tell (src) + chunk_size;
       if (chunk_end % 2 != 0)
-	chunk_end++;		/* padding to even addresses */
+	chunk_end++;		// padding to even addresses
       wrong_chunk = (memcmp ("data", identifier, sizeof (identifier)) != 0);
       if (wrong_chunk)
 	avt_data_seek (src, chunk_end, SEEK_SET);
@@ -753,7 +753,7 @@ avt_load_wave (avt_data * src, uint32_t maxsize, int playmode)
 			       audio_type, channels, playmode);
 }
 
-/* src gets always closed */
+// src gets always closed
 static avt_audio *
 avt_load_audio_general (avt_data * src, uint32_t maxsize, int playmode)
 {
@@ -793,7 +793,7 @@ avt_load_audio_general (avt_data * src, uint32_t maxsize, int playmode)
   return s;
 }
 
-#endif /* not NO_AUDIO */
+#endif // not NO_AUDIO
 
 
 extern avt_audio *

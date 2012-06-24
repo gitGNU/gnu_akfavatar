@@ -29,16 +29,16 @@
 #define _ISOC99_SOURCE
 #define _POSIX_C_SOURCE 200112L
 
-/* don't make functions deprecated for this file */
+// don't make functions deprecated for this file
 #define _AVT_USE_DEPRECATED
 
 #include "akfavatar.h"
 #include "avtinternals.h"
 #include "SDL.h"
 #include "version.h"
-#include "rgb.h"		/* only for DEFAULT_COLOR */
+#include "rgb.h"		// only for DEFAULT_COLOR
 
-/* include images */
+// include images
 #include "akfavatar.xpm"
 #include "btn.xpm"
 #include "balloonpointer.xbm"
@@ -77,13 +77,13 @@
 
 #define BUTTON_DISTANCE 10
 
-/* normal color of what's printed on the button */
+// normal color of what's printed on the button
 #define BUTTON_COLOR  0x665533
 #define XBM_DEFAULT_COLOR  0x000000
 
 #define AVT_XBM_INFO(img)  img##_bits, img##_width, img##_height
 
-/* these definitions are deprecated */
+// these definitions are deprecated
 #if defined(VGA)
 #  define FONTWIDTH 7
 #  define FONTHEIGHT 14
@@ -96,7 +96,7 @@
 #  define NOT_BOLD 0
 #endif
 
-#define LINEHEIGHT (fontheight)	/* + something, if you want */
+#define LINEHEIGHT (fontheight)	// + something, if you want
 
 #define SHADOWOFFSET 5
 
@@ -146,9 +146,9 @@
 #  define SDL_putenv              putenv
 #  undef SDL_sscanf
 #  define SDL_sscanf              sscanf
-#endif /* OLD_SDL */
+#endif // OLD_SDL
 
-/* Note errno is only used for iconv and may not be the external errno! */
+// Note errno is only used for iconv and may not be the external errno!
 
 #ifndef USE_SDL_ICONV
 #  include <errno.h>
@@ -157,19 +157,19 @@
 #  define avt_iconv_open          iconv_open
 #  define avt_iconv_close         iconv_close
 #  define avt_iconv               iconv
-#else /* USE_SDL_ICONV */
+#else // USE_SDL_ICONV
 static int errno;
 #  define avt_iconv_t             SDL_iconv_t
 #  define avt_iconv_open          SDL_iconv_open
 #  define avt_iconv_close         SDL_iconv_close
-   /* avt_iconv implemented below */
-#endif /* USE_SDL_ICONV */
+   // avt_iconv implemented below
+#endif // USE_SDL_ICONV
 
-/* don't use any libc commands directly! */
+// don't use any libc commands directly!
 #pragma GCC poison  malloc calloc free strlen memcpy memset getenv putenv
 #pragma GCC poison  strstr atoi atol strtol
 
-/* for static linking avoid to drag in unneeded object files */
+// for static linking avoid to drag in unneeded object files
 #pragma GCC poison  avt_colorname avt_palette avt_colors
 #pragma GCC poison  avt_avatar_image_default
 
@@ -182,7 +182,7 @@ static int errno;
 #  define TOPMARGIN 25
 #  define BALLOON_INNER_MARGIN 10
 #  define AVATAR_MARGIN 10
-   /* Delay for moving in or out - the higher, the slower */
+   // Delay for moving in or out - the higher, the slower
 #  define MOVE_DELAY 2.5
 #else
 #  define MINIMALWIDTH 800
@@ -190,9 +190,9 @@ static int errno;
 #  define TOPMARGIN 25
 #  define BALLOON_INNER_MARGIN 15
 #  define AVATAR_MARGIN 20
-   /* Delay for moving in or out - the higher, the slower */
+   // Delay for moving in or out - the higher, the slower
 #  define MOVE_DELAY 1.8
-#endif /* !VGA */
+#endif // not VGA
 
 #define BALLOONPOINTER_OFFSET 20
 
@@ -217,18 +217,18 @@ static int errno;
 #  elif (WCHAR_MAX <= 65535U)
 #    if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
 #      define WCHAR_ENCODING "UTF-16BE"
-#    else /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
+#    else // SDL_BYTEORDER != SDL_BIG_ENDIAN
 #      define WCHAR_ENCODING "UTF-16LE"
-#    endif /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
-#  else	/* (WCHAR_MAX > 65535U) */
+#    endif // SDL_BYTEORDER != SDL_BIG_ENDIAN
+#  else	// (WCHAR_MAX > 65535U)
 #    if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
 #      define WCHAR_ENCODING "UTF-32BE"
-#    else /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
+#    else // SDL_BYTEORDER != SDL_BIG_ENDIAN
 #      define WCHAR_ENCODING "UTF-32LE"
-#    endif /* SDL_BYTEORDER != SDL_BIG_ENDIAN */
-#  endif /* (WCHAR_MAX > 65535U) */
+#    endif // SDL_BYTEORDER != SDL_BIG_ENDIAN
+#  endif // (WCHAR_MAX > 65535U)
 
-#endif /* not WCHAR_ENCODING */
+#endif // not WCHAR_ENCODING
 
 /*
  * this will be used, when somebody forgets to set the
@@ -236,7 +236,7 @@ static int errno;
  */
 #define MB_DEFAULT_ENCODING "UTF-8"
 
-/* only defined in later SDL versions */
+// only defined in later SDL versions
 #ifndef SDL_BUTTON_WHEELUP
 #  define SDL_BUTTON_WHEELUP 4
 #endif
@@ -245,21 +245,21 @@ static int errno;
 #  define SDL_BUTTON_WHEELDOWN 5
 #endif
 
-/* shorthand */
+// shorthand
 #define bell(void)  do { if (avt_alert_func) (*avt_alert_func)(); } while(0)
 
-/* type for gimp images */
+// type for gimp images
 #ifndef DISABLE_DEPRECATED
 typedef struct
 {
   unsigned int width;
   unsigned int height;
-  unsigned int bytes_per_pixel;	/* 3:RGB, 4:RGBA */
-  unsigned char pixel_data;	/* handle as startpoint */
+  unsigned int bytes_per_pixel;	// 3:RGB, 4:RGBA
+  unsigned char pixel_data;	// handle as startpoint
 } gimp_img_t;
 #endif
 
-/* for an external keyboard/mouse handlers */
+// for an external keyboard/mouse handlers
 static avt_keyhandler avt_ext_keyhandler = NULL;
 static avt_mousehandler avt_ext_mousehandler = NULL;
 
@@ -271,53 +271,53 @@ static wchar_t *avt_name;
 static int fontwidth, fontheight, fontunderline;
 static uint32_t background_color;
 static uint32_t text_background_color;
-static bool newline_mode;	/* when off, you need an extra CR */
-static bool underlined, bold, inverse;	/* text underlined, bold? */
-static bool auto_margin;	/* automatic new lines? */
-static uint32_t screenflags;	/* flags for the screen */
-static int avt_mode;		/* whether fullscreen or window or ... */
+static bool newline_mode;	// when off, you need an extra CR
+static bool underlined, bold, inverse;	// text underlined, bold?
+static bool auto_margin;	// automatic new lines?
+static uint32_t screenflags;	// flags for the screen
+static int avt_mode;		// whether fullscreen or window or ...
 static int avt_balloon_mode;
-static SDL_Rect window;		/* if screen is in fact larger */
-static SDL_Rect windowmode_size;	/* size of the whole window (screen) */
-static bool avt_visible;	/* avatar visible? */
-static bool text_cursor_visible;	/* shall the text cursor be visible? */
-static bool text_cursor_actually_visible;	/* is it actually visible? */
-static bool reserve_single_keys;	/* reserve single keys? */
-static bool markup;		/* markup-syntax activated? */
+static SDL_Rect window;		// if screen is in fact larger
+static SDL_Rect windowmode_size;	// size of the whole window (screen)
+static bool avt_visible;	// avatar visible?
+static bool text_cursor_visible;	// shall the text cursor be visible?
+static bool text_cursor_actually_visible;	// is it actually visible?
+static bool reserve_single_keys;	// reserve single keys?
+static bool markup;		// markup-syntax activated?
 static int scroll_mode = 1;
 static SDL_Rect textfield;
-static SDL_Rect viewport;	/* sub-window in textfield */
+static SDL_Rect viewport;	// sub-window in textfield
 static bool avt_tab_stops[AVT_LINELENGTH];
 static char avt_encoding[100];
 
-/* origin mode */
-/* Home: textfield (false) or viewport (true) */
-/* avt_initialize sets it to true for backwards compatibility */
+// origin mode
+// Home: textfield (false) or viewport (true)
+// avt_initialize sets it to true for backwards compatibility
 static bool origin_mode;
 static int textdir_rtl = AVT_LEFT_TO_RIGHT;
 
-/* beginning of line - depending on text direction */
+// beginning of line - depending on text direction
 static int linestart;
 static int balloonheight, balloonmaxheight, balloonwidth;
 
-/* delay values for printing text and flipping the page */
-static int text_delay = 0;	/* AVT_DEFAULT_TEXT_DELAY */
+// delay values for printing text and flipping the page
+static int text_delay = 0;	// AVT_DEFAULT_TEXT_DELAY
 static int flip_page_delay = AVT_DEFAULT_FLIP_PAGE_DELAY;
 
-/* holding updates back? */
+// holding updates back?
 static bool hold_updates;
 
-/* color independent from the screen mode */
+// color independent from the screen mode
 
-/* floral white */
+// floral white
 static SDL_Color ballooncolor_RGB = { 255, 250, 240, 0 };
 
 static int backgroundcolornr = DEFAULT_COLOR;
 
-/* color for cursor and menu-bar */
+// color for cursor and menu-bar
 static SDL_Color cursor_color = { 0xF2, 0x89, 0x19, 0 };
 
-/* conversion descriptors for text input and output */
+// conversion descriptors for text input and output
 static avt_iconv_t output_cd = ICONV_UNINITIALIZED;
 static avt_iconv_t input_cd = ICONV_UNINITIALIZED;
 
@@ -333,7 +333,7 @@ static struct pos cursor, saved_position;
 #  define AVT_HIDDEN __attribute__((__visibility__("hidden")))
 #else
 #  define AVT_HIDDEN
-#endif /* __GNUC__ */
+#endif // __GNUC__
 
 #ifdef DISABLE_DEPRECATED
 #  define DEPRECATED_EXTERN  static
@@ -342,13 +342,13 @@ static struct pos cursor, saved_position;
 #  define DEPRECATED_EXTERN  extern
 #endif
 
-/* 0 = normal; 1 = quit-request; -1 = error */
+// 0 = normal; 1 = quit-request; -1 = error
 int _avt_STATUS AVT_HIDDEN;
 
 void (*avt_alert_func) (void) AVT_HIDDEN = NULL;
 void (*avt_quit_audio_func) (void) AVT_HIDDEN = NULL;
 
-/* forward declaration */
+// forward declaration
 static int avt_pause (void);
 static void avt_drawchar (avt_char ch, SDL_Surface * surface);
 static SDL_Surface *avt_save_background (SDL_Rect area);
@@ -364,8 +364,8 @@ calculate_balloonmaxheight (void)
   balloonmaxheight = (window.h - avatar_height - (2 * TOPMARGIN)
 		      - (2 * BALLOON_INNER_MARGIN)) / LINEHEIGHT;
 
-  /* check, whether image is too high */
-  /* at least 10 lines */
+  // check, whether image is too high
+  // at least 10 lines
   if (balloonmaxheight < 10)
     {
       SDL_SetError ("Avatar image too large");
@@ -377,11 +377,11 @@ calculate_balloonmaxheight (void)
   return _avt_STATUS;
 }
 
-/* set the inner window for the avatar-display */
+// set the inner window for the avatar-display
 static void
 avt_avatar_window (void)
 {
-  /* window may be smaller than the screen */
+  // window may be smaller than the screen
   window.w = MINIMALWIDTH;
   window.h = MINIMALHEIGHT;
   window.x = screen->w > window.w ? (screen->w / 2) - (window.w / 2) : 0;
@@ -390,14 +390,14 @@ avt_avatar_window (void)
   calculate_balloonmaxheight ();
 }
 
-/* for dynamically loading SDL_image */
+// for dynamically loading SDL_image
 #ifndef AVT_SDL_IMAGE_LIB
 #  if defined (__WIN32__)
 #    define AVT_SDL_IMAGE_LIB "SDL_image.dll"
-#  else	/* not Windows */
+#  else	// not Windows
 #    define AVT_SDL_IMAGE_LIB "libSDL_image-1.2.so.0"
-#  endif /* not Windows */
-#endif /* not AVT_SDL_IMAGE_LIB */
+#  endif // not Windows
+#endif // not AVT_SDL_IMAGE_LIB
 
 /*
  * object for image-loading
@@ -406,7 +406,7 @@ avt_avatar_window (void)
 static struct
 {
   bool initialized;
-  void *handle;			/* handle for dynamically loaded SDL_image */
+  void *handle;			// handle for dynamically loaded SDL_image
   SDL_Surface *(*rw) (SDL_RWops * src, int freesrc);
 } load_image;
 
@@ -419,12 +419,12 @@ static struct
 #define AVT_UPDATE_ALL(void) SDL_UpdateRect(screen, 0, 0, 0, 0)
 
 
-/* X-Pixmap (XPM) support */
+// X-Pixmap (XPM) support
 
-/* number of printable ASCII codes */
+// number of printable ASCII codes
 #define XPM_NR_CODES (126 - 32 + 1)
 
-/* for xpm codes */
+// for xpm codes
 union xpm_codes
 {
   uint32_t nr;
@@ -450,7 +450,7 @@ avt_free_xpm_tree (union xpm_codes *tree, int depth, int cpp)
   SDL_free (tree);
 }
 
-/* use this for internal stuff! */
+// use this for internal stuff!
 static SDL_Surface *
 avt_load_image_xpm (char **xpm)
 {
@@ -467,7 +467,7 @@ avt_load_image_xpm (char **xpm)
   colors256 = NULL;
   img = NULL;
 
-  /* check if we actually have data to process */
+  // check if we actually have data to process
   if (!xpm || !*xpm)
     goto done;
 
@@ -482,7 +482,7 @@ avt_load_image_xpm (char **xpm)
       goto done;
     }
 
-  /* create target surface */
+  // create target surface
   if (ncolors <= 256)
     img = SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 8, 0, 0, 0, 0);
   else
@@ -501,7 +501,7 @@ avt_load_image_xpm (char **xpm)
       goto done;
     }
 
-  /* get memory for codes table */
+  // get memory for codes table
   if (cpp > 1)
     {
       codes = (union xpm_codes *) SDL_calloc (XPM_NR_CODES, sizeof (codes));
@@ -514,7 +514,7 @@ avt_load_image_xpm (char **xpm)
 	}
     }
 
-  /* get memory for colors table (palette) */
+  // get memory for colors table (palette)
   if (ncolors <= 256)
     colors256 = (SDL_Color *) SDL_calloc (256, sizeof (SDL_Color));
   else
@@ -538,10 +538,10 @@ avt_load_image_xpm (char **xpm)
 
   code_nr = 0;
 
-  /* process colors */
+  // process colors
   for (colornr = 1; colornr <= ncolors; colornr++, code_nr++)
     {
-      char *p;			/* pointer for scanning through the string */
+      char *p;			// pointer for scanning through the string
 
       if (xpm[colornr] == NULL)
 	{
@@ -556,7 +556,7 @@ avt_load_image_xpm (char **xpm)
        */
       if (cpp == 1)
 	code_nr = xpm[colornr][0];
-      else			/* store characters in codes table */
+      else			// store characters in codes table
 	{
 	  int i;
 	  char c;
@@ -592,35 +592,35 @@ avt_load_image_xpm (char **xpm)
 	  (table + (c - 32))->nr = colornr - 1;
 	}
 
-      /* scan for color definition */
-      p = &xpm[colornr][cpp];	/* skip color-characters */
+      // scan for color definition
+      p = &xpm[colornr][cpp];	// skip color-characters
       while (*p && (*p != 'c' || !avt_isblank (*(p + 1))
 		    || !avt_isblank (*(p - 1))))
 	p++;
 
-      /* no color definition found? search for grayscale definition */
+      // no color definition found? search for grayscale definition
       if (!*p)
 	{
-	  p = &xpm[colornr][cpp];	/* skip color-characters */
+	  p = &xpm[colornr][cpp];	// skip color-characters
 	  while (*p && (*p != 'g' || !avt_isblank (*(p + 1))
 			|| !avt_isblank (*(p - 1))))
 	    p++;
 	}
 
-      /* no grayscale definition found? search for g4 definition */
+      // no grayscale definition found? search for g4 definition
       if (!*p)
 	{
-	  p = &xpm[colornr][cpp];	/* skip color-characters */
+	  p = &xpm[colornr][cpp];	// skip color-characters
 	  while (*p
 		 && (*p != '4' || *(p - 1) != 'g' || !avt_isblank (*(p + 1))
 		     || !avt_isblank (*(p - 2))))
 	    p++;
 	}
 
-      /* search for monochrome definition */
+      // search for monochrome definition
       if (!*p)
 	{
-	  p = &xpm[colornr][cpp];	/* skip color-characters */
+	  p = &xpm[colornr][cpp];	// skip color-characters
 	  while (*p && (*p != 'm' || !avt_isblank (*(p + 1))
 			|| !avt_isblank (*(p - 1))))
 	    p++;
@@ -632,12 +632,12 @@ avt_load_image_xpm (char **xpm)
 	  size_t color_name_pos;
 	  char color_name[80];
 
-	  /* skip to color name/definition */
+	  // skip to color name/definition
 	  p++;
 	  while (*p && avt_isblank (*p))
 	    p++;
 
-	  /* copy colorname up to next space */
+	  // copy colorname up to next space
 	  color_name_pos = 0;
 	  while (*p && !avt_isblank (*p)
 		 && color_name_pos < sizeof (color_name) - 1)
@@ -652,7 +652,7 @@ avt_load_image_xpm (char **xpm)
 	    {
 	      SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL, code_nr);
 
-	      /* some weird color, that hopefully doesn't conflict (#1A2A3A) */
+	      // some weird color, that hopefully doesn't conflict (#1A2A3A)
 	      colornr = 0x1A2A3A;
 	    }
 	  else if (SDL_strcasecmp (color_name, "black") == 0)
@@ -671,7 +671,7 @@ avt_load_image_xpm (char **xpm)
 	      colors256[code_nr].g = avt_green (colornr);
 	      colors256[code_nr].b = avt_blue (colornr);
 	    }
-	  else			/* ncolors > 256 */
+	  else			// ncolors > 256
 	    {
 	      *(colors + colornr - 1) =
 		SDL_MapRGB (img->format, avt_red (colornr),
@@ -680,23 +680,23 @@ avt_load_image_xpm (char **xpm)
 	}
     }
 
-  /* put colormap into the image */
+  // put colormap into the image
   if (ncolors <= 256)
     {
       SDL_SetPalette (img, SDL_LOGPAL, colors256, 0, 256);
       SDL_free (colors256);
     }
 
-  /* process pixeldata */
+  // process pixeldata
   if (SDL_MUSTLOCK (img))
     SDL_LockSurface (img);
-  if (cpp == 1)			/* the easiest case */
+  if (cpp == 1)			// the easiest case
     {
       int line;
 
       for (line = 0; line < height; line++)
 	{
-	  /* check for premture end of data */
+	  // check for premture end of data
 	  if (xpm[ncolors + 1 + line] == NULL)
 	    break;
 
@@ -704,7 +704,7 @@ avt_load_image_xpm (char **xpm)
 		      xpm[ncolors + 1 + line], width);
 	}
     }
-  else				/* cpp != 1 */
+  else				// cpp != 1
     {
       uint8_t *pix;
       char *xpm_line;
@@ -713,16 +713,16 @@ avt_load_image_xpm (char **xpm)
       int pos;
       int i;
 
-      /* Bytes per Pixel of img */
+      // Bytes per Pixel of img
       bpp = img->format->BytesPerPixel;
 
       for (line = 0; line < height; line++)
 	{
-	  /* point to beginning of the line */
+	  // point to beginning of the line
 	  pix = (uint8_t *) img->pixels + (line * img->pitch);
 	  xpm_line = xpm[ncolors + 1 + line];
 
-	  /* check for premture end of data */
+	  // check for premture end of data
 	  if (xpm_line == NULL)
 	    break;
 
@@ -732,7 +732,7 @@ avt_load_image_xpm (char **xpm)
 	      char c;
 
 	      c = '\0';
-	      /* find code in codes table */
+	      // find code in codes table
 	      table = codes;
 	      for (i = 0; i < cpp - 1; i++)
 		{
@@ -765,7 +765,7 @@ done:
   if (colors)
     SDL_free (colors);
 
-  /* clean up codes table */
+  // clean up codes table
   if (codes)
     avt_free_xpm_tree (codes, 1, cpp);
 
@@ -794,7 +794,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
 
   start = SDL_RWtell (src);
 
-  /* check if it has an XPM header */
+  // check if it has an XPM header
   if (SDL_RWread (src, head, sizeof (head), 1) < 1
       || SDL_memcmp (head, "/* XPM */", 9) != 0)
     {
@@ -816,7 +816,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
       return NULL;
     }
 
-  linecount = 512;		/* can be extended later */
+  linecount = 512;		// can be extended later
   xpm = (char **) SDL_malloc (linecount * sizeof (*xpm));
   if (!xpm)
     {
@@ -826,7 +826,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
 
   while (!end)
     {
-      /* skip to next quote */
+      // skip to next quote
       do
 	{
 	  if (SDL_RWread (src, &c, sizeof (c), 1) < 1)
@@ -834,13 +834,13 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
 	}
       while (!end && c != '"');
 
-      /* read line */
+      // read line
       linepos = 0;
       c = '\0';
       while (!end && c != '"')
 	{
 	  if (SDL_RWread (src, &c, sizeof (c), 1) < 1)
-	    error = end = true;	/* shouldn't happen here */
+	    error = end = true;	// shouldn't happen here
 
 	  if (c != '"')
 	    line[linepos++] = c;
@@ -854,14 +854,14 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
 	    }
 	}
 
-      /* copy line */
+      // copy line
       if (!end)
 	{
 	  line[linepos++] = '\0';
 	  xpm[linenr] = (char *) SDL_malloc (linepos);
 	  SDL_memcpy (xpm[linenr], line, linepos);
 	  linenr++;
-	  if (linenr >= linecount)	/* leave one line reserved */
+	  if (linenr >= linecount)	// leave one line reserved
 	    {
 	      linecount += 512;
 	      xpm = (char **) SDL_realloc (xpm, linecount * sizeof (*xpm));
@@ -880,12 +880,12 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
   if (!error)
     img = avt_load_image_xpm (xpm);
 
-  /* free xpm */
+  // free xpm
   if (xpm)
     {
       unsigned int i;
 
-      /* linenr points to next (uninitialized) line */
+      // linenr points to next (uninitialized) line
       for (i = 0; i < linenr; i++)
 	SDL_free (xpm[i]);
 
@@ -912,7 +912,7 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
   SDL_Surface *img;
   SDL_Color color[2];
   int y;
-  int bpl;			/* Bytes per line */
+  int bpl;			// Bytes per line
   uint8_t *line;
 
   img = SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 1, 0, 0, 0, 0);
@@ -923,7 +923,7 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
       return NULL;
     }
 
-  /* Bytes per line */
+  // Bytes per line
   bpl = (width + 7) / 8;
 
   if (SDL_MUSTLOCK (img))
@@ -943,7 +943,7 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
 	  val = *bits;
 	  res = 0;
 
-	  /* bits must be reversed */
+	  // bits must be reversed
 	  for (bit = 7; bit >= 0; bit--)
 	    {
 	      res |= (val & 1) << bit;
@@ -995,7 +995,7 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
 
   start = SDL_RWtell (src);
 
-  /* check if it starts with #define */
+  // check if it starts with #define
   if (SDL_RWread (src, line, 1, sizeof (line) - 1) < 1
       || SDL_memcmp (line, "#define", 7) != 0)
     {
@@ -1007,10 +1007,10 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
       return NULL;
     }
 
-  /* make it usable as a string */
+  // make it usable as a string
   line[sizeof (line) - 1] = '\0';
 
-  /* search for width and height */
+  // search for width and height
   {
     char *p;
     p = SDL_strstr (line, "_width ");
@@ -1035,18 +1035,18 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
   if (width && height)
     {
       bytes = ((width + 7) / 8) * height;
-      /* one byte larger for safety with old X10 format */
+      // one byte larger for safety with old X10 format
       bits = (unsigned char *) SDL_malloc (bytes + 1);
     }
 
-  /* this catches different errors */
+  // this catches different errors
   if (!bits)
     {
       SDL_SetError ("out of memory");
       error = end = true;
     }
 
-  /* search start of bitmap part */
+  // search start of bitmap part
   if (!end && !error)
     {
       char c;
@@ -1060,10 +1060,10 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
 	}
       while (c != '{' && !error);
 
-      if (error)		/* no '{' found */
+      if (error)		// no '{' found
 	goto done;
 
-      /* skip newline */
+      // skip newline
       SDL_RWread (src, &c, sizeof (c), 1);
     }
 
@@ -1072,7 +1072,7 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
       char c;
       unsigned int linepos;
 
-      /* read line */
+      // read line
       linepos = 0;
       c = '\0';
       while (!end && linepos < sizeof (line) && c != '\n')
@@ -1088,7 +1088,7 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
 	}
       line[linepos] = '\0';
 
-      /* parse line */
+      // parse line
       if (line[0] != '\0')
 	{
 	  char *p;
@@ -1107,16 +1107,16 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
 		{
 		  if (!X10)
 		    bits[bmpos++] = value;
-		  else		/* X10 */
+		  else		// X10
 		    {
 		      unsigned short *v;
-		      /* image is assumed to be in native endianess */
+		      // image is assumed to be in native endianess
 		      v = (unsigned short *) (bits + bmpos);
 		      *v = value;
 		      bmpos += sizeof (*v);
 		    }
 
-		  p = endptr + 1;	/* skip comma */
+		  p = endptr + 1;	// skip comma
 		}
 	    }
 	}
@@ -1126,7 +1126,7 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
     img = avt_load_image_xbm (bits, width, height, color);
 
 done:
-  /* free bits */
+  // free bits
   if (bits)
     SDL_free (bits);
 
@@ -1155,16 +1155,16 @@ load_image_initialize (void)
     }
 }
 
-/* speedup */
+// speedup
 #define load_image_init(void) \
   if (!load_image.initialized) \
     load_image_initialize()
 
-#define load_image_done(void)	/* empty */
+#define load_image_done(void)	// empty
 
-#else /* ! LINK_SDL_IMAGE */
+#else // ! LINK_SDL_IMAGE
 
-/* helper functions */
+// helper functions
 
 static SDL_Surface *
 avt_load_image_RW (SDL_RWops * src, int freesrc)
@@ -1198,14 +1198,14 @@ avt_load_image_RW (SDL_RWops * src, int freesrc)
 static void
 load_image_initialize (void)
 {
-  if (!load_image.initialized)	/* avoid loading it twice! */
+  if (!load_image.initialized)	// avoid loading it twice!
     {
-      /* first load defaults from plain SDL */
+      // first load defaults from plain SDL
       load_image.handle = NULL;
       load_image.rw = avt_load_image_RW;
 
 #ifndef NO_SDL_IMAGE
-/* loadso.h is only available with SDL 1.2.6 or higher */
+// loadso.h is only available with SDL 1.2.6 or higher
 #ifdef _SDL_loadso_h
       load_image.handle = SDL_LoadObject (AVT_SDL_IMAGE_LIB);
       if (load_image.handle)
@@ -1214,21 +1214,21 @@ load_image_initialize (void)
 	    (SDL_Surface * (*)(SDL_RWops *, int))
 	    SDL_LoadFunction (load_image.handle, "IMG_Load_RW");
 	}
-#endif /* _SDL_loadso_h */
-#endif /* NO_SDL_IMAGE */
+#endif // _SDL_loadso_h
+#endif // NO_SDL_IMAGE
 
       load_image.initialized = true;
     }
 }
 
-/* speedup */
+// speedup
 #define load_image_init(void) \
   if (!load_image.initialized) \
     load_image_initialize()
 
 #ifndef _SDL_loadso_h
-#  define load_image_done(void)	/* empty */
-#else /* _SDL_loadso_h */
+#  define load_image_done(void)	// empty
+#else // _SDL_loadso_h
 static void
 load_image_done (void)
 {
@@ -1237,12 +1237,12 @@ load_image_done (void)
       SDL_UnloadObject (load_image.handle);
       load_image.handle = NULL;
       load_image.rw = NULL;
-      load_image.initialized = false;	/* try again next time */
+      load_image.initialized = false;	// try again next time
     }
 }
-#endif /* _SDL_loadso_h */
+#endif // _SDL_loadso_h
 
-#endif /* ! LINK_SDL_IMAGE */
+#endif // ! LINK_SDL_IMAGE
 
 #ifdef USE_SDL_ICONV
 static size_t
@@ -1272,14 +1272,14 @@ avt_iconv (avt_iconv_t cd,
       break;
 
     case SDL_ICONV_ERROR:
-      errno = EBADMSG;		/* ??? */
+      errno = EBADMSG;		// ???
       r = (size_t) (-1);
       break;
     }
 
   return r;
 }
-#endif /* USE_SDL_ICONV */
+#endif // USE_SDL_ICONV
 
 
 extern const char *
@@ -1313,7 +1313,7 @@ avt_set_status (int status)
   _avt_STATUS = status;
 }
 
-/* taken from the SDL documentation */
+// taken from the SDL documentation
 /*
  * Return the pixel value at (x, y)
  * NOTE: The surface must be locked before calling this!
@@ -1322,7 +1322,7 @@ static uint32_t
 getpixel (SDL_Surface * surface, int x, int y)
 {
   int bpp = surface->format->BytesPerPixel;
-  /* Here p is the address to the pixel we want to retrieve */
+  // Here p is the address to the pixel we want to retrieve
   uint8_t *p = (uint8_t *) surface->pixels + y * surface->pitch + x * bpp;
 
   switch (bpp)
@@ -1343,11 +1343,11 @@ getpixel (SDL_Surface * surface, int x, int y)
       return *(uint32_t *) p;
 
     default:
-      return 0;			/* shouldn't happen, but avoids warnings */
+      return 0;			// shouldn't happen, but avoids warnings
     }
 }
 
-/* avoid using the libc */
+// avoid using the libc
 static int
 avt_strwidth (const wchar_t * m)
 {
@@ -1361,8 +1361,8 @@ avt_strwidth (const wchar_t * m)
   return l;
 }
 
-/* shows or clears the text cursor in the current position */
-/* note: this function is rather time consuming */
+// shows or clears the text cursor in the current position
+// note: this function is rather time consuming
 static void
 avt_show_text_cursor (bool on)
 {
@@ -1379,16 +1379,16 @@ avt_show_text_cursor (bool on)
 
       if (on)
 	{
-	  /* save character under cursor */
+	  // save character under cursor
 	  SDL_BlitSurface (screen, &dst, avt_cursor_character, NULL);
 
-	  /* show text-cursor */
+	  // show text-cursor
 	  SDL_BlitSurface (avt_text_cursor, NULL, screen, &dst);
 	  AVT_UPDATE_TRECT (dst);
 	}
       else
 	{
-	  /* restore saved character */
+	  // restore saved character
 	  SDL_BlitSurface (avt_cursor_character, NULL, screen, &dst);
 	  AVT_UPDATE_TRECT (dst);
 	}
@@ -1412,9 +1412,9 @@ avt_activate_cursor (bool on)
 static void
 avt_free_screen (void)
 {
-  /* switch clipping off */
+  // switch clipping off
   SDL_SetClipRect (screen, NULL);
-  /* fill the whole screen with background color */
+  // fill the whole screen with background color
   SDL_FillRect (screen, NULL, background_color);
 }
 
@@ -1427,7 +1427,7 @@ avt_clear_screen (void)
       AVT_UPDATE_ALL ();
     }
 
-  /* undefine textfield / viewport */
+  // undefine textfield / viewport
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
   viewport = textfield;
   avt_visible = false;
@@ -1444,16 +1444,16 @@ avt_show_name (void)
 
   if (screen && avatar_image && avt_name)
     {
-      /* save old character colors */
+      // save old character colors
       old_colors[0] = avt_character->format->palette->colors[0];
       old_colors[1] = avt_character->format->palette->colors[1];
 
-      /* tan background */
+      // tan background
       colors[0].r = 210;
       colors[0].g = 180;
       colors[0].b = 140;
 
-      /* black foreground */
+      // black foreground
       colors[1].r = colors[1].g = colors[1].b = 0;
 
       SDL_SetColors (avt_character, colors, 0, 2);
@@ -1462,7 +1462,7 @@ avt_show_name (void)
 	dst.x =
 	  ((window.x + window.w) / 2) + (avatar_image->w / 2)
 	  + BUTTON_DISTANCE;
-      else			/* left */
+      else			// left
 	dst.x = window.x + AVATAR_MARGIN + avatar_image->w + BUTTON_DISTANCE;
 
       dst.y = window.y + window.h - AVATAR_MARGIN - fontheight
@@ -1470,12 +1470,12 @@ avt_show_name (void)
       dst.w = (avt_strwidth (avt_name) * fontwidth) + 2 * NAME_PADDING;
       dst.h = fontheight + 2 * NAME_PADDING;
 
-      /* draw sign */
+      // draw sign
       SDL_FillRect (screen, &dst,
 		    SDL_MapRGB (screen->format,
 				colors[0].r, colors[0].g, colors[0].b));
 
-      /* show name */
+      // show name
       cursor.x = dst.x + NAME_PADDING;
       cursor.y = dst.y + NAME_PADDING;
 
@@ -1486,7 +1486,7 @@ avt_show_name (void)
 	  cursor.x += fontwidth;
 	}
 
-      /* restore old character colors */
+      // restore old character colors
       SDL_SetColors (avt_character, old_colors, 0, 2);
     }
 }
@@ -1501,8 +1501,8 @@ avt_draw_avatar (void)
 
   if (screen)
     {
-      /* fill the screen with background color */
-      /* (not only the window!) */
+      // fill the screen with background color
+      // (not only the window!)
       avt_free_screen ();
 
       SDL_SetClipRect (screen, &window);
@@ -1512,10 +1512,10 @@ avt_draw_avatar (void)
 	{
 	  if (avt_balloon_mode == AVT_SEPARATE)
 	    dst.x = ((window.x + window.w) / 2) - (avatar_image->w / 2);
-	  else			/* left */
+	  else			// left
 	    dst.x = window.x + AVATAR_MARGIN;
 
-	  /* bottom */
+	  // bottom
 	  dst.y = window.y + window.h - avatar_image->h - AVATAR_MARGIN;
 	  dst.w = avatar_image->w;
 	  dst.h = avatar_image->h;
@@ -1535,7 +1535,7 @@ avt_show_avatar (void)
       avt_draw_avatar ();
       AVT_UPDATE_ALL ();
 
-      /* undefine textfield */
+      // undefine textfield
       textfield.x = textfield.y = textfield.w = textfield.h = -1;
       viewport = textfield;
       avt_visible = true;
@@ -1547,13 +1547,13 @@ avt_draw_balloon2 (int offset, uint32_t ballooncolor)
 {
   SDL_Rect shape;
 
-  /* full size */
+  // full size
   shape.x = textfield.x - BALLOON_INNER_MARGIN + offset;
   shape.w = textfield.w + (2 * BALLOON_INNER_MARGIN);
   shape.y = textfield.y - BALLOON_INNER_MARGIN + offset;
   shape.h = textfield.h + (2 * BALLOON_INNER_MARGIN);
 
-  /* horizontal shape */
+  // horizontal shape
   {
     SDL_Rect hshape;
     hshape.x = shape.x;
@@ -1563,7 +1563,7 @@ avt_draw_balloon2 (int offset, uint32_t ballooncolor)
     SDL_FillRect (screen, &hshape, ballooncolor);
   }
 
-  /* vertical shape */
+  // vertical shape
   {
     SDL_Rect vshape;
     vshape.x = shape.x + (circle_width / 2);
@@ -1573,37 +1573,37 @@ avt_draw_balloon2 (int offset, uint32_t ballooncolor)
     SDL_FillRect (screen, &vshape, ballooncolor);
   }
 
-  /* draw corners */
+  // draw corners
   {
     SDL_Rect circle_piece, corner_pos;
 
-    /* prepare circle piece */
-    /* the size is always the same */
+    // prepare circle piece
+    // the size is always the same
     circle_piece.w = circle_width / 2;
     circle_piece.h = circle_height / 2;
 
-    /* upper left corner */
+    // upper left corner
     circle_piece.x = 0;
     circle_piece.y = 0;
     corner_pos.x = shape.x;
     corner_pos.y = shape.y;
     SDL_BlitSurface (circle, &circle_piece, screen, &corner_pos);
 
-    /* upper right corner */
+    // upper right corner
     circle_piece.x = ((circle_width + 7) / 8) / 2;
     circle_piece.y = 0;
     corner_pos.x = shape.x + shape.w - circle_piece.w;
     corner_pos.y = shape.y;
     SDL_BlitSurface (circle, &circle_piece, screen, &corner_pos);
 
-    /* lower left corner */
+    // lower left corner
     circle_piece.x = 0;
     circle_piece.y = circle_height / 2;
     corner_pos.x = shape.x;
     corner_pos.y = shape.y + shape.h - circle_piece.h;
     SDL_BlitSurface (circle, &circle_piece, screen, &corner_pos);
 
-    /* lower right corner */
+    // lower right corner
     circle_piece.x = ((circle_width + 7) / 8) / 2;
     circle_piece.y = circle_height / 2;
     corner_pos.x = shape.x + shape.w - circle_piece.w;
@@ -1611,8 +1611,8 @@ avt_draw_balloon2 (int offset, uint32_t ballooncolor)
     SDL_BlitSurface (circle, &circle_piece, screen, &corner_pos);
   }
 
-  /* draw balloonpointer */
-  /* only if there is an avatar image */
+  // draw balloonpointer
+  // only if there is an avatar image
   if (avatar_image && avt_balloon_mode != AVT_SEPARATE)
     {
       SDL_Rect pointer_shape, pointer_pos;
@@ -1621,7 +1621,7 @@ avt_draw_balloon2 (int offset, uint32_t ballooncolor)
       pointer_shape.w = pointer->w;
       pointer_shape.h = pointer->h;
 
-      /* if the balloonpointer is too large, cut it */
+      // if the balloonpointer is too large, cut it
       if (pointer_shape.h > (avatar_image->h / 2))
 	{
 	  pointer_shape.y = pointer_shape.h - (avatar_image->h / 2);
@@ -1635,7 +1635,7 @@ avt_draw_balloon2 (int offset, uint32_t ballooncolor)
 	window.y + (balloonmaxheight * LINEHEIGHT) +
 	(2 * BALLOON_INNER_MARGIN) + TOPMARGIN + offset;
 
-      /* only draw the balloonpointer, when it fits */
+      // only draw the balloonpointer, when it fits
       if (pointer_pos.x + pointer->w + BALLOONPOINTER_OFFSET
 	  + BALLOON_INNER_MARGIN < window.x + window.w)
 	SDL_BlitSurface (pointer, &pointer_shape, screen, &pointer_pos);
@@ -1657,24 +1657,24 @@ avt_draw_balloon (void)
   textfield.h = (balloonheight * fontheight);
   centered_y = window.y + (window.h / 2) - (textfield.h / 2);
 
-  if (avatar_image)		/* align with balloon */
+  if (avatar_image)		// align with balloon
     textfield.y = window.y + ((balloonmaxheight - balloonheight) * LINEHEIGHT)
       + TOPMARGIN + BALLOON_INNER_MARGIN;
-  else				/* middle of the window */
+  else				// middle of the window
     textfield.y = centered_y;
 
-  /* in separate mode it might also be better to center it */
+  // in separate mode it might also be better to center it
   if (AVT_SEPARATE == avt_balloon_mode && avatar_image
       && textfield.y > centered_y)
     textfield.y = centered_y;
 
-  /* horizontally centered as default */
+  // horizontally centered as default
   textfield.x = window.x + (window.w / 2) - (balloonwidth * fontwidth / 2);
 
-  /* align with balloonpointer */
+  // align with balloonpointer
   if (avatar_image && avt_balloon_mode != AVT_SEPARATE)
     {
-      /* left border not aligned with balloon pointer? */
+      // left border not aligned with balloon pointer?
       if (textfield.x >
 	  window.x + avatar_image->w + (2 * AVATAR_MARGIN) +
 	  BALLOONPOINTER_OFFSET)
@@ -1682,7 +1682,7 @@ avt_draw_balloon (void)
 	  window.x + avatar_image->w + (2 * AVATAR_MARGIN) +
 	  BALLOONPOINTER_OFFSET;
 
-      /* right border not aligned with balloon pointer? */
+      // right border not aligned with balloon pointer?
       if (textfield.x + textfield.w <
 	  window.x + avatar_image->w + pointer->w
 	  + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET)
@@ -1691,7 +1691,7 @@ avt_draw_balloon (void)
 	    window.x + avatar_image->w - textfield.w + pointer->w
 	    + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET;
 
-	  /* align with right window-border */
+	  // align with right window-border
 	  if (textfield.x > window.x + window.w - (balloonwidth * fontwidth)
 	      - (2 * BALLOON_INNER_MARGIN))
 	    textfield.x = window.x + window.w - (balloonwidth * fontwidth)
@@ -1701,7 +1701,7 @@ avt_draw_balloon (void)
 
   viewport = textfield;
 
-  /* shadow color is a little darker than the background color */
+  // shadow color is a little darker than the background color
   shadow_color.r = avt_red (backgroundcolornr);
   shadow_color.g = avt_green (backgroundcolornr);
   shadow_color.b = avt_blue (backgroundcolornr);
@@ -1713,12 +1713,12 @@ avt_draw_balloon (void)
   SDL_SetColors (circle, &shadow_color, 1, 1);
   SDL_SetColors (pointer, &shadow_color, 1, 1);
 
-  /* first draw shadow */
+  // first draw shadow
   avt_draw_balloon2 (SHADOWOFFSET,
 		     SDL_MapRGB (screen->format, shadow_color.r,
 				 shadow_color.g, shadow_color.b));
 
-  /* real balloon */
+  // real balloon
   SDL_SetColors (circle, &ballooncolor_RGB, 1, 1);
   SDL_SetColors (pointer, &ballooncolor_RGB, 1, 1);
 
@@ -1731,11 +1731,11 @@ avt_draw_balloon (void)
 
   avt_visible = true;
 
-  /* cursor at top  */
+  // cursor at top 
   cursor.x = linestart;
   cursor.y = viewport.y;
 
-  /* reset saved position */
+  // reset saved position
   saved_position = cursor;
 
   if (text_cursor_visible)
@@ -1744,8 +1744,8 @@ avt_draw_balloon (void)
       avt_show_text_cursor (true);
     }
 
-  /* update everything */
-  /* (there may be leftovers from large images) */
+  // update everything
+  // (there may be leftovers from large images)
   AVT_UPDATE_ALL ();
 
   /*
@@ -1794,10 +1794,10 @@ avt_set_balloon_width (int width)
       else
 	balloonwidth = AVT_LINELENGTH;
 
-      /* if balloon is visible, redraw it */
+      // if balloon is visible, redraw it
       if (textfield.x >= 0)
 	{
-	  avt_visible = false;	/* force to redraw everything */
+	  avt_visible = false;	// force to redraw everything
 	  avt_draw_balloon ();
 	}
     }
@@ -1813,10 +1813,10 @@ avt_set_balloon_height (int height)
       else
 	balloonheight = balloonmaxheight;
 
-      /* if balloon is visible, redraw it */
+      // if balloon is visible, redraw it
       if (textfield.x >= 0)
 	{
-	  avt_visible = false;	/* force to redraw everything */
+	  avt_visible = false;	// force to redraw everything
 	  avt_draw_balloon ();
 	}
     }
@@ -1837,10 +1837,10 @@ avt_set_balloon_size (int height, int width)
       else
 	balloonwidth = AVT_LINELENGTH;
 
-      /* if balloon is visible, redraw it */
+      // if balloon is visible, redraw it
       if (textfield.x >= 0)
 	{
-	  avt_visible = false;	/* force to redraw everything */
+	  avt_visible = false;	// force to redraw everything
 	  avt_draw_balloon ();
 	}
     }
@@ -1879,12 +1879,12 @@ avt_set_balloon_mode (int mode)
 	}
     }
 
-  /* if balloon is visible, remove it */
+  // if balloon is visible, remove it
   if (textfield.x >= 0)
     avt_show_avatar ();
 }
 
-/* rectangles in some functions have to be adjusted */
+// rectangles in some functions have to be adjusted
 #define avt_pre_resize(rect) \
   do { rect.x -= window.x; rect.y -= window.y; } while(0)
 #define avt_post_resize(rect) \
@@ -1897,31 +1897,31 @@ avt_resize (int w, int h)
   SDL_Rect oldwindow;
   SDL_Event event;
 
-  /* minimal size */
+  // minimal size
   if (w < MINIMALWIDTH)
     w = MINIMALWIDTH;
   if (h < MINIMALHEIGHT)
     h = MINIMALHEIGHT;
 
-  /* save the window */
+  // save the window
   oldwindow = window;
   oldwindowimage = avt_save_background (window);
 
-  /* resize screen */
+  // resize screen
   screen = SDL_SetVideoMode (w, h, COLORDEPTH, screenflags);
 
   avt_free_screen ();
 
-  /* new position of the window on the screen */
+  // new position of the window on the screen
   window.x = screen->w > window.w ? (screen->w / 2) - (window.w / 2) : 0;
   window.y = screen->h > window.h ? (screen->h / 2) - (window.h / 2) : 0;
 
-  /* restore image */
+  // restore image
   SDL_SetClipRect (screen, &window);
   SDL_BlitSurface (oldwindowimage, NULL, screen, &window);
   SDL_FreeSurface (oldwindowimage);
 
-  /* recalculate textfield & viewport positions */
+  // recalculate textfield & viewport positions
   if (textfield.x >= 0)
     {
       textfield.x = textfield.x - oldwindow.x + window.x;
@@ -1938,17 +1938,17 @@ avt_resize (int w, int h)
       SDL_SetClipRect (screen, &viewport);
     }
 
-  /* set windowmode_size */
+  // set windowmode_size
   if ((screenflags & SDL_FULLSCREEN) == 0)
     {
       windowmode_size.w = w;
       windowmode_size.h = h;
     }
 
-  /* make all changes visible */
+  // make all changes visible
   AVT_UPDATE_ALL ();
 
-  /* ignore one resize event here to avoid recursive calling */
+  // ignore one resize event here to avoid recursive calling
   while (SDL_PollEvent (&event) && event.type != SDL_VIDEORESIZE)
     avt_analyze_event (&event);
 }
@@ -1959,8 +1959,8 @@ avt_bell (void)
   bell ();
 }
 
-/* saves the background of the area */
-/* the result should be freed with SDL_FreeSurface */
+// saves the background of the area
+// the result should be freed with SDL_FreeSurface
 static SDL_Surface *
 avt_save_background (SDL_Rect area)
 {
@@ -1984,7 +1984,7 @@ avt_save_background (SDL_Rect area)
   return result;
 }
 
-/* flashes the screen */
+// flashes the screen
 extern void
 avt_flash (void)
 {
@@ -1995,24 +1995,24 @@ avt_flash (void)
 
   oldwindowimage = avt_save_background (window);
 
-  /* switch clipping off */
+  // switch clipping off
   SDL_SetClipRect (screen, NULL);
-  /* fill the whole screen with color */
+  // fill the whole screen with color
   SDL_FillRect (screen, NULL, SDL_MapRGB (screen->format, 0xFF, 0xFF, 0x00));
   AVT_UPDATE_ALL ();
   SDL_Delay (150);
 
-  /* fill the whole screen with background color */
+  // fill the whole screen with background color
   SDL_FillRect (screen, NULL, background_color);
-  /* restore image */
+  // restore image
   SDL_SetClipRect (screen, &window);
   SDL_BlitSurface (oldwindowimage, NULL, screen, &window);
   SDL_FreeSurface (oldwindowimage);
 
-  /* make visible again */
+  // make visible again
   AVT_UPDATE_ALL ();
 
-  /* restore the clipping */
+  // restore the clipping
   if (textfield.x >= 0)
     SDL_SetClipRect (screen, &viewport);
 }
@@ -2022,7 +2022,7 @@ avt_toggle_fullscreen (void)
 {
   if (avt_mode != AVT_FULLSCREENNOSWITCH)
     {
-      /* toggle bit for fullscreenmode */
+      // toggle bit for fullscreenmode
       screenflags ^= SDL_FULLSCREEN;
 
       if ((screenflags & SDL_FULLSCREEN) != 0)
@@ -2040,7 +2040,7 @@ avt_toggle_fullscreen (void)
     }
 }
 
-/* switch to fullscreen or window mode */
+// switch to fullscreen or window mode
 extern void
 avt_switch_mode (int mode)
 {
@@ -2096,18 +2096,18 @@ avt_analyze_event (SDL_Event * event)
 
 	  if (textfield.x >= 0)
 	    {
-	      /* if there is a textfield, use the character position */
+	      // if there is a textfield, use the character position
 	      x = (event->button.x - textfield.x) / fontwidth + 1;
 	      y = (event->button.y - textfield.y) / LINEHEIGHT + 1;
 
-	      /* check if x and y are valid */
+	      // check if x and y are valid
 	      if (x >= 1 && x <= AVT_LINELENGTH
 		  && y >= 1 && y <= (textfield.h / LINEHEIGHT))
 		avt_ext_mousehandler (event->button.button,
 				      (event->button.state == SDL_PRESSED),
 				      x, y);
 	    }
-	  else			/* no textfield */
+	  else			// no textfield
 	    {
 	      x = event->button.x - window.x;
 	      y = event->button.y - window.y;
@@ -2140,7 +2140,7 @@ avt_analyze_event (SDL_Event * event)
 	avt_ext_keyhandler (event->key.keysym.sym, event->key.keysym.mod,
 			    event->key.keysym.unicode);
       break;
-    }				/* switch (event->type) */
+    }				// switch (event->type)
 }
 
 static int
@@ -2173,7 +2173,7 @@ avt_pause (void)
   return _avt_STATUS;
 }
 
-/* external: not in the API, but used in avatar-audio */
+// external: not in the API, but used in avatar-audio
 int AVT_HIDDEN
 avt_checkevent (void)
 {
@@ -2185,7 +2185,7 @@ avt_checkevent (void)
   return _avt_STATUS;
 }
 
-/* external: not in the API, but used in avatar-audio */
+// external: not in the API, but used in avatar-audio
 int AVT_HIDDEN
 avt_wait_event (void)
 {
@@ -2197,7 +2197,7 @@ avt_wait_event (void)
   return _avt_STATUS;
 }
 
-/* checks for events and gives some time to other apps */
+// checks for events and gives some time to other apps
 extern int
 avt_update (void)
 {
@@ -2210,7 +2210,7 @@ avt_update (void)
   return _avt_STATUS;
 }
 
-/* send a timeout event */
+// send a timeout event
 static uint32_t
 avt_timeout (uint32_t intervall, void *param)
 {
@@ -2229,12 +2229,12 @@ avt_wait (size_t milliseconds)
 {
   if (screen && _avt_STATUS == AVT_NORMAL)
     {
-      if (milliseconds <= 500)	/* short delay */
+      if (milliseconds <= 500)	// short delay
 	{
 	  SDL_Delay (milliseconds);
 	  avt_checkevent ();
 	}
-      else			/* longer */
+      else			// longer
 	{
 	  SDL_Event event;
 	  SDL_TimerID t;
@@ -2243,7 +2243,7 @@ avt_wait (size_t milliseconds)
 
 	  if (t == NULL)
 	    {
-	      /* extremely unlikely error */
+	      // extremely unlikely error
 	      SDL_SetError ("AddTimer doesn't work");
 	      _avt_STATUS = AVT_ERROR;
 	      return _avt_STATUS;
@@ -2304,12 +2304,12 @@ extern bool
 avt_home_position (void)
 {
   if (!screen || textfield.x < 0)
-    return true;		/* about to be set to home position */
+    return true;		// about to be set to home position
   else
     return (cursor.y == viewport.y && cursor.x == linestart);
 }
 
-/* this always means the full textfield */
+// this always means the full textfield
 extern int
 avt_get_max_x (void)
 {
@@ -2319,7 +2319,7 @@ avt_get_max_x (void)
     return -1;
 }
 
-/* this always means the full textfield */
+// this always means the full textfield
 extern int
 avt_get_max_y (void)
 {
@@ -2349,7 +2349,7 @@ avt_move_x (int x)
 
       cursor.x = (x - 1) * fontwidth + area.x;
 
-      /* max-pos exeeded? */
+      // max-pos exeeded?
       if (cursor.x > area.x + area.w - fontwidth)
 	cursor.x = area.x + area.w - fontwidth;
 
@@ -2378,7 +2378,7 @@ avt_move_y (int y)
 
       cursor.y = (y - 1) * LINEHEIGHT + area.y;
 
-      /* max-pos exeeded? */
+      // max-pos exeeded?
       if (cursor.y > area.y + area.h - LINEHEIGHT)
 	cursor.y = area.y + area.h - LINEHEIGHT;
 
@@ -2411,7 +2411,7 @@ avt_move_xy (int x, int y)
       cursor.x = (x - 1) * fontwidth + area.x;
       cursor.y = (y - 1) * LINEHEIGHT + area.y;
 
-      /* max-pos exeeded? */
+      // max-pos exeeded?
       if (cursor.x > area.x + area.w - fontwidth)
 	cursor.x = area.x + area.w - fontwidth;
 
@@ -2440,14 +2440,14 @@ avt_insert_spaces (int num)
 {
   SDL_Rect rest, dest, clear;
 
-  /* no textfield? do nothing */
+  // no textfield? do nothing
   if (!screen || textfield.x < 0)
     return;
 
   if (text_cursor_visible)
     avt_show_text_cursor (false);
 
-  /* get the rest of the viewport */
+  // get the rest of the viewport
   rest.x = cursor.x;
   rest.w = viewport.w - (cursor.x - viewport.x) - (num * fontwidth);
   rest.y = cursor.y;
@@ -2466,7 +2466,7 @@ avt_insert_spaces (int num)
   if (text_cursor_visible)
     avt_show_text_cursor (true);
 
-  /* update line */
+  // update line
   if (!hold_updates)
     SDL_UpdateRect (screen, viewport.x, cursor.y, viewport.w, fontheight);
 }
@@ -2476,14 +2476,14 @@ avt_delete_characters (int num)
 {
   SDL_Rect rest, dest, clear;
 
-  /* no textfield? do nothing */
+  // no textfield? do nothing
   if (!screen || textfield.x < 0)
     return;
 
   if (text_cursor_visible)
     avt_show_text_cursor (false);
 
-  /* get the rest of the viewport */
+  // get the rest of the viewport
   rest.x = cursor.x + (num * fontwidth);
   rest.w = viewport.w - (cursor.x - viewport.x) - (num * fontwidth);
   rest.y = cursor.y;
@@ -2502,7 +2502,7 @@ avt_delete_characters (int num)
   if (text_cursor_visible)
     avt_show_text_cursor (true);
 
-  /* update line */
+  // update line
   if (!hold_updates)
     SDL_UpdateRect (screen, viewport.x, cursor.y, viewport.w, fontheight);
 }
@@ -2512,7 +2512,7 @@ avt_erase_characters (int num)
 {
   SDL_Rect clear;
 
-  /* no textfield? do nothing */
+  // no textfield? do nothing
   if (!screen || textfield.x < 0)
     return;
 
@@ -2528,7 +2528,7 @@ avt_erase_characters (int num)
   if (text_cursor_visible)
     avt_show_text_cursor (true);
 
-  /* update area */
+  // update area
   AVT_UPDATE_TRECT (clear);
 }
 
@@ -2537,21 +2537,21 @@ avt_delete_lines (int line, int num)
 {
   SDL_Rect rest, dest, clear;
 
-  /* no textfield? do nothing */
+  // no textfield? do nothing
   if (!screen || textfield.x < 0)
     return;
 
   if (!origin_mode)
     line -= (viewport.y - textfield.y) / LINEHEIGHT;
 
-  /* check if values are sane */
+  // check if values are sane
   if (line < 1 || num < 1 || line > (viewport.h / LINEHEIGHT))
     return;
 
   if (text_cursor_visible)
     avt_show_text_cursor (false);
 
-  /* get the rest of the viewport */
+  // get the rest of the viewport
   rest.x = viewport.x;
   rest.w = viewport.w;
   rest.y = viewport.y + ((line - 1 + num) * LINEHEIGHT);
@@ -2578,21 +2578,21 @@ avt_insert_lines (int line, int num)
 {
   SDL_Rect rest, dest, clear;
 
-  /* no textfield? do nothing */
+  // no textfield? do nothing
   if (!screen || textfield.x < 0)
     return;
 
   if (!origin_mode)
     line -= (viewport.y - textfield.y) / LINEHEIGHT;
 
-  /* check if values are sane */
+  // check if values are sane
   if (line < 1 || num < 1 || line > (viewport.h / LINEHEIGHT))
     return;
 
   if (text_cursor_visible)
     avt_show_text_cursor (false);
 
-  /* get the rest of the viewport */
+  // get the rest of the viewport
   rest.x = viewport.x;
   rest.w = viewport.w;
   rest.y = viewport.y + ((line - 1) * LINEHEIGHT);
@@ -2617,11 +2617,11 @@ avt_insert_lines (int line, int num)
 extern void
 avt_viewport (int x, int y, int width, int height)
 {
-  /* not initialized? -> do nothing */
+  // not initialized? -> do nothing
   if (!screen)
     return;
 
-  /* if there's no balloon, draw it */
+  // if there's no balloon, draw it
   if (textfield.x < 0)
     avt_draw_balloon ();
 
@@ -2690,12 +2690,12 @@ avt_set_origin_mode (bool mode)
 
   linestart = (textdir_rtl) ? area.x + area.w - fontwidth : area.x;
 
-  /* cursor to position 1,1 */
-  /* when origin mode is off, then it may be outside the viewport (sic) */
+  // cursor to position 1,1
+  // when origin mode is off, then it may be outside the viewport (sic)
   cursor.x = linestart;
   cursor.y = area.y;
 
-  /* reset saved position */
+  // reset saved position
   saved_position = cursor;
 
   if (text_cursor_visible && textfield.x >= 0)
@@ -2714,15 +2714,15 @@ avt_get_origin_mode (void)
 extern void
 avt_clear (void)
 {
-  /* not initialized? -> do nothing */
+  // not initialized? -> do nothing
   if (!screen)
     return;
 
-  /* if there's no balloon, draw it */
+  // if there's no balloon, draw it
   if (textfield.x < 0)
     avt_draw_balloon ();
 
-  /* use background color of characters */
+  // use background color of characters
   SDL_FillRect (screen, &viewport, text_background_color);
 
   cursor.x = linestart;
@@ -2746,11 +2746,11 @@ avt_clear_up (void)
 {
   SDL_Rect dst;
 
-  /* not initialized? -> do nothing */
+  // not initialized? -> do nothing
   if (!screen)
     return;
 
-  /* if there's no balloon, draw it */
+  // if there's no balloon, draw it
   if (textfield.x < 0)
     avt_draw_balloon ();
 
@@ -2775,11 +2775,11 @@ avt_clear_down (void)
 {
   SDL_Rect dst;
 
-  /* not initialized? -> do nothing */
+  // not initialized? -> do nothing
   if (!screen)
     return;
 
-  /* if there's no balloon, draw it */
+  // if there's no balloon, draw it
   if (textfield.x < 0)
     avt_draw_balloon ();
 
@@ -2807,22 +2807,22 @@ avt_clear_eol (void)
 {
   SDL_Rect dst;
 
-  /* not initialized? -> do nothing */
+  // not initialized? -> do nothing
   if (!screen)
     return;
 
-  /* if there's no balloon, draw it */
+  // if there's no balloon, draw it
   if (textfield.x < 0)
     avt_draw_balloon ();
 
-  if (textdir_rtl)		/* right to left */
+  if (textdir_rtl)		// right to left
     {
       dst.x = viewport.x;
       dst.y = cursor.y;
       dst.h = fontheight;
       dst.w = cursor.x + fontwidth - viewport.x;
     }
-  else				/* left to right */
+  else				// left to right
     {
       dst.x = cursor.x;
       dst.y = cursor.y;
@@ -2841,28 +2841,28 @@ avt_clear_eol (void)
   AVT_UPDATE_TRECT (dst);
 }
 
-/* clear beginning of line */
+// clear beginning of line
 extern void
 avt_clear_bol (void)
 {
   SDL_Rect dst;
 
-  /* not initialized? -> do nothing */
+  // not initialized? -> do nothing
   if (!screen)
     return;
 
-  /* if there's no balloon, draw it */
+  // if there's no balloon, draw it
   if (textfield.x < 0)
     avt_draw_balloon ();
 
-  if (textdir_rtl)		/* right to left */
+  if (textdir_rtl)		// right to left
     {
       dst.x = cursor.x;
       dst.y = cursor.y;
       dst.h = fontheight;
       dst.w = viewport.w - (cursor.x - viewport.x);
     }
-  else				/* left to right */
+  else				// left to right
     {
       dst.x = viewport.x;
       dst.y = cursor.y;
@@ -2886,11 +2886,11 @@ avt_clear_line (void)
 {
   SDL_Rect dst;
 
-  /* not initialized? -> do nothing */
+  // not initialized? -> do nothing
   if (!screen)
     return;
 
-  /* if there's no balloon, draw it */
+  // if there's no balloon, draw it
   if (textfield.x < 0)
     avt_draw_balloon ();
 
@@ -2913,11 +2913,11 @@ avt_clear_line (void)
 extern int
 avt_flip_page (void)
 {
-  /* no textfield? do nothing */
+  // no textfield? do nothing
   if (!screen || textfield.x < 0)
     return _avt_STATUS;
 
-  /* do nothing when the textfield is already empty */
+  // do nothing when the textfield is already empty
   if (cursor.x == linestart && cursor.y == viewport.y)
     return _avt_STATUS;
 
@@ -2937,7 +2937,7 @@ avt_scroll_up (void)
   switch (scroll_mode)
     {
     case -1:
-      /* move cursor outside of balloon */
+      // move cursor outside of balloon
       cursor.y += LINEHEIGHT;
       break;
     case 1:
@@ -2972,7 +2972,7 @@ avt_carriage_return (void)
 extern int
 avt_new_line (void)
 {
-  /* no textfield? do nothing */
+  // no textfield? do nothing
   if (!screen || textfield.x < 0)
     return _avt_STATUS;
 
@@ -2996,7 +2996,7 @@ avt_new_line (void)
   return _avt_STATUS;
 }
 
-/* avt_drawchar: draws the raw char - with no interpretation */
+// avt_drawchar: draws the raw char - with no interpretation
 static void
 avt_drawchar (avt_char ch, SDL_Surface * surface)
 {
@@ -3017,7 +3017,7 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
 
       for (y = 0; y < fontheight; y++)
 	{
-	  /* TODO: needs test on big endian machines */
+	  // TODO: needs test on big endian machines
 	  *p = SDL_SwapBE16 (*font_line);
 	  if (bold && !NOT_BOLD)
 	    *p |= SDL_SwapBE16 (*font_line >> 1);
@@ -3030,7 +3030,7 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
       if (underlined)
 	pixels[fontunderline * pitch] = (inverse) ? 0x0000 : 0xFFFF;
     }
-  else				/* fontwidth <= 8 */
+  else				// fontwidth <= 8
     {
       const unsigned char *font_line;
       uint8_t *pixels, *p;
@@ -3076,7 +3076,7 @@ avt_is_printable (avt_char ch)
   return (bool) (avt_get_font_char ((int) ch) != NULL);
 }
 
-/* make current char visible */
+// make current char visible
 static void
 avt_showchar (void)
 {
@@ -3087,11 +3087,11 @@ avt_showchar (void)
     }
 }
 
-/* advance position - only in the textfield */
+// advance position - only in the textfield
 extern int
 avt_forward (void)
 {
-  /* no textfield? do nothing */
+  // no textfield? do nothing
   if (!screen || textfield.x < 0)
     return _avt_STATUS;
 
@@ -3151,17 +3151,17 @@ avt_set_tab (int x, bool onoff)
   avt_tab_stops[x - 1] = AVT_MAKE_BOOL (onoff);
 }
 
-/* advance to next tabstop */
+// advance to next tabstop
 extern void
 avt_next_tab (void)
 {
   int x;
   int i;
 
-  /* here we count zero based */
+  // here we count zero based
   x = avt_where_x () - 1;
 
-  if (textdir_rtl)		/* right to left */
+  if (textdir_rtl)		// right to left
     {
       for (i = x; i >= 0; i--)
 	{
@@ -3170,7 +3170,7 @@ avt_next_tab (void)
 	}
       avt_move_x (i);
     }
-  else				/* left to right */
+  else				// left to right
     {
       for (i = x + 1; i < AVT_LINELENGTH; i++)
 	{
@@ -3181,17 +3181,17 @@ avt_next_tab (void)
     }
 }
 
-/* go to last tabstop */
+// go to last tabstop
 extern void
 avt_last_tab (void)
 {
   int x;
   int i;
 
-  /* here we count zero based */
+  // here we count zero based
   x = avt_where_x () - 1;
 
-  if (textdir_rtl)		/* right to left */
+  if (textdir_rtl)		// right to left
     {
       for (i = x; i < AVT_LINELENGTH; i++)
 	{
@@ -3200,7 +3200,7 @@ avt_last_tab (void)
 	}
       avt_move_x (i);
     }
-  else				/* left to right */
+  else				// left to right
     {
       for (i = x + 1; i >= 0; i--)
 	{
@@ -3254,37 +3254,37 @@ avt_put_char (avt_char ch)
   if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  /* no textfield? => draw balloon */
+  // no textfield? => draw balloon
   if (textfield.x < 0)
     avt_draw_balloon ();
 
   switch (ch)
     {
-    case 0x000A:		/* LF: Line Feed */
-    case 0x000B:		/* VT: Vertical Tab */
-    case 0x0085:		/* NEL: NExt Line */
-    case 0x2028:		/* LS: Line Separator */
-    case 0x2029:		/* PS: Paragraph Separator */
+    case 0x000A:		// LF: Line Feed
+    case 0x000B:		// VT: Vertical Tab
+    case 0x0085:		// NEL: NExt Line
+    case 0x2028:		// LS: Line Separator
+    case 0x2029:		// PS: Paragraph Separator
       avt_new_line ();
       break;
 
-    case 0x000D:		/* CR: Carriage Return */
+    case 0x000D:		// CR: Carriage Return
       avt_carriage_return ();
       break;
 
-    case 0x000C:		/* FF: Form Feed */
+    case 0x000C:		// FF: Form Feed
       avt_flip_page ();
       break;
 
-    case 0x0009:		/* HT: Horizontal Tab */
+    case 0x0009:		// HT: Horizontal Tab
       avt_next_tab ();
       break;
 
-    case 0x0008:		/* BS: Back Space */
+    case 0x0008:		// BS: Back Space
       avt_backspace ();
       break;
 
-    case 0x0007:		/* BEL */
+    case 0x0007:		// BEL
       bell ();
       break;
 
@@ -3294,27 +3294,27 @@ avt_put_char (avt_char ch)
     case 0xFEFF:
       break;
 
-      /* LRM/RLM: only supported at the beginning of a line */
-    case 0x200E:		/* LEFT-TO-RIGHT MARK (LRM) */
+      // LRM/RLM: only supported at the beginning of a line
+    case 0x200E:		// LEFT-TO-RIGHT MARK (LRM)
       avt_text_direction (AVT_LEFT_TO_RIGHT);
       break;
 
-    case 0x200F:		/* RIGHT-TO-LEFT MARK (RLM) */
+    case 0x200F:		// RIGHT-TO-LEFT MARK (RLM)
       avt_text_direction (AVT_RIGHT_TO_LEFT);
       break;
 
-      /* other ignorable (invisible) characters */
+      // other ignorable (invisible) characters
     case 0x200B:
     case 0x200C:
     case 0x200D:
       break;
 
-    case 0x0020:		/* SP: space */
+    case 0x0020:		// SP: space
       if (auto_margin)
 	check_auto_margin ();
       if (!underlined && !inverse)
 	avt_clearchar ();
-      else			/* underlined or inverse */
+      else			// underlined or inverse
 	{
 	  avt_drawchar (0x0020, screen);
 	  avt_showchar ();
@@ -3329,11 +3329,11 @@ avt_put_char (avt_char ch)
     default:
       if (ch > 0x0020 || ch == 0x0000)
 	{
-	  if (markup && ch == 0x005F)	/* '_' */
+	  if (markup && ch == 0x005F)	// '_'
 	    underlined = !underlined;
-	  else if (markup && ch == 0x002A)	/* '*' */
+	  else if (markup && ch == 0x002A)	// '*'
 	    bold = !bold;
-	  else			/* not a markup character */
+	  else			// not a markup character
 	    {
 	      if (auto_margin)
 		check_auto_margin ();
@@ -3343,9 +3343,9 @@ avt_put_char (avt_char ch)
 		SDL_Delay (text_delay);
 	      avt_forward ();
 	      avt_checkevent ();
-	    }			/* if not markup */
-	}			/* if (ch > 0x0020) */
-    }				/* switch */
+	    }			// if not markup
+	}			// if (ch > 0x0020)
+    }				// switch
 
   return _avt_STATUS;
 }
@@ -3361,7 +3361,7 @@ avt_overstrike (const wchar_t * txt)
 
   r = 0;
 
-  /* check if all conditions are met */
+  // check if all conditions are met
   if (!*txt || !*(txt + 1) || !*(txt + 2) || *(txt + 1) != L'\b')
     r = -1;
   else
@@ -3395,11 +3395,11 @@ avt_say (const wchar_t * txt)
   if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  /* nothing to do, when there is no text  */
+  // nothing to do, when there is no text 
   if (!txt || !*txt)
     return avt_checkevent ();
 
-  /* no textfield? => draw balloon */
+  // no textfield? => draw balloon
   if (textfield.x < 0)
     avt_draw_balloon ();
 
@@ -3414,7 +3414,7 @@ avt_say (const wchar_t * txt)
       else
 	{
 	  avt_char c = (avt_char) * txt;
-	  if (0xD800 <= *txt && *txt <= 0xDBFF)	/* UTF-16 high surrogate */
+	  if (0xD800 <= *txt && *txt <= 0xDBFF)	// UTF-16 high surrogate
 	    {
 	      c = ((*txt & 0x3FF) << 10) + (*(txt + 1) & 0x3FF) + 0x10000;
 	      txt++;
@@ -3438,12 +3438,12 @@ avt_say_len (const wchar_t * txt, size_t len)
 {
   size_t i;
 
-  /* nothing to do, when txt == NULL */
-  /* but do allow a text to start with zeros here */
+  // nothing to do, when txt == NULL
+  // but do allow a text to start with zeros here
   if (!screen || !txt || _avt_STATUS != AVT_NORMAL)
     return avt_checkevent ();
 
-  /* no textfield? => draw balloon */
+  // no textfield? => draw balloon
   if (textfield.x < 0)
     avt_draw_balloon ();
 
@@ -3459,7 +3459,7 @@ avt_say_len (const wchar_t * txt, size_t len)
       else
 	{
 	  avt_char c = (avt_char) * txt;
-	  if (0xD800 <= *txt && *txt <= 0xDBFF)	/* UTF-16 high surrogate */
+	  if (0xD800 <= *txt && *txt <= 0xDBFF)	// UTF-16 high surrogate
 	    {
 	      c = ((*txt & 0x3FF) << 10) + (*(txt + 1) & 0x3FF) + 0x10000;
 	      txt++;
@@ -3496,9 +3496,9 @@ avt_tell_len (const wchar_t * txt, size_t len)
 	{
 	case L'\n':
 	case L'\v':
-	case L'\x0085':	/* NEL: NExt Line */
-	case L'\x2028':	/* LS: Line Separator */
-	case L'\x2029':	/* PS: Paragraph Separator */
+	case L'\x0085':	// NEL: NExt Line
+	case L'\x2028':	// LS: Line Separator
+	case L'\x2029':	// PS: Paragraph Separator
 	  if (width < line_length)
 	    width = line_length;
 	  line_length = 0;
@@ -3512,7 +3512,7 @@ avt_tell_len (const wchar_t * txt, size_t len)
 	  break;
 
 	case L'\t':
-	  /* FIXME */
+	  // FIXME
 	  line_length += 8;
 	  break;
 
@@ -3527,11 +3527,11 @@ avt_tell_len (const wchar_t * txt, size_t len)
 	case L'\x200B':
 	case L'\x200C':
 	case L'\x200D':
-	  /* no width */
+	  // no width
 	  break;
 
-	  /* '_' is tricky because of overstrike */
-	  /* must be therefore before '*' */
+	  // '_' is tricky because of overstrike
+	  // must be therefore before '*'
 	case L'_':
 	  if (markup)
 	    {
@@ -3539,12 +3539,12 @@ avt_tell_len (const wchar_t * txt, size_t len)
 		line_length++;
 	      break;
 	    }
-	  /* else fall through */
+	  // else fall through
 
 	case L'*':
 	  if (markup)
 	    break;
-	  /* else fall through */
+	  // else fall through
 
 	default:
 	  if ((*p >= 32 || *p == 0) && (*p < 0xD800 || *p > 0xDBFF))
@@ -3599,20 +3599,20 @@ avt_mb_encoding (const char *encoding)
 
   SDL_strlcpy (avt_encoding, encoding, sizeof (avt_encoding));
 
-  /* if encoding is "" and SYSTEMENCODING is not "" */
+  // if encoding is "" and SYSTEMENCODING is not ""
   if (encoding[0] == '\0' && SYSTEMENCODING[0] != '\0')
     encoding = SYSTEMENCODING;
 
-  /* output */
+  // output
 
-  /*  if it is already open, close it first */
+  //  if it is already open, close it first
   if (output_cd != ICONV_UNINITIALIZED)
     avt_iconv_close (output_cd);
 
-  /* initialize the conversion framework */
+  // initialize the conversion framework
   output_cd = avt_iconv_open (WCHAR_ENCODING, encoding);
 
-  /* check if it was successfully initialized */
+  // check if it was successfully initialized
   if (output_cd == ICONV_UNINITIALIZED)
     {
       SDL_SetError ("encoding \"%s\" not supported for output", encoding);
@@ -3620,16 +3620,16 @@ avt_mb_encoding (const char *encoding)
       return _avt_STATUS;
     }
 
-  /* input */
+  // input
 
-  /*  if it is already open, close it first */
+  //  if it is already open, close it first
   if (input_cd != ICONV_UNINITIALIZED)
     avt_iconv_close (input_cd);
 
-  /* initialize the conversion framework */
+  // initialize the conversion framework
   input_cd = avt_iconv_open (encoding, WCHAR_ENCODING);
 
-  /* check if it was successfully initialized */
+  // check if it was successfully initialized
   if (input_cd == ICONV_UNINITIALIZED)
     {
       avt_iconv_close (output_cd);
@@ -3648,8 +3648,8 @@ avt_get_mb_encoding (void)
   return avt_encoding;
 }
 
-/* size in bytes */
-/* returns length (number of characters) */
+// size in bytes
+// returns length (number of characters)
 extern size_t
 avt_mb_decode_buffer (wchar_t * dest, size_t dest_size,
 		      const char *src, size_t src_size)
@@ -3661,24 +3661,24 @@ avt_mb_decode_buffer (wchar_t * dest, size_t dest_size,
   size_t inbytesleft, outbytesleft;
   size_t returncode;
 
-  /* check if sizes are useful */
+  // check if sizes are useful
   if (!dest || !dest_size || !src || !src_size)
     return (size_t) (-1);
 
-  /* check if encoding was set */
+  // check if encoding was set
   if (output_cd == ICONV_UNINITIALIZED)
     avt_mb_encoding (MB_DEFAULT_ENCODING);
 
   inbytesleft = src_size;
   inbuf = (char *) src;
 
-  /* leave room for terminator */
+  // leave room for terminator
   outbytesleft = dest_size - sizeof (wchar_t);
   outbuf = (char *) dest;
 
   restbuf = (char *) rest_buffer;
 
-  /* if there is a rest from last call, try to complete it */
+  // if there is a rest from last call, try to complete it
   while (rest_bytes > 0 && inbytesleft > 0)
     {
       rest_buffer[rest_bytes++] = *inbuf;
@@ -3699,11 +3699,11 @@ avt_mb_decode_buffer (wchar_t * dest, size_t dest_size,
 	}
     }
 
-  /* do the conversion */
+  // do the conversion
   returncode =
     avt_iconv (output_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
 
-  /* handle invalid characters */
+  // handle invalid characters
   while (returncode == (size_t) (-1) && errno == EILSEQ)
     {
       inbuf++;
@@ -3717,7 +3717,7 @@ avt_mb_decode_buffer (wchar_t * dest, size_t dest_size,
 	avt_iconv (output_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
     }
 
-  /* check for incomplete sequences and put them into the rest_buffer */
+  // check for incomplete sequences and put them into the rest_buffer
   if (returncode == (size_t) (-1) && errno == EINVAL
       && inbytesleft <= sizeof (rest_buffer))
     {
@@ -3725,16 +3725,16 @@ avt_mb_decode_buffer (wchar_t * dest, size_t dest_size,
       SDL_memcpy ((void *) &rest_buffer, inbuf, rest_bytes);
     }
 
-  /* ignore E2BIG - just put in as much as fits */
+  // ignore E2BIG - just put in as much as fits
 
-  /* terminate outbuf */
+  // terminate outbuf
   *((wchar_t *) outbuf) = L'\0';
 
   return ((dest_size - sizeof (wchar_t) - outbytesleft) / sizeof (wchar_t));
 }
 
-/* size in bytes */
-/* dest must be freed by caller */
+// size in bytes
+// dest must be freed by caller
 extern size_t
 avt_mb_decode (wchar_t ** dest, const char *src, size_t src_size)
 {
@@ -3749,12 +3749,12 @@ avt_mb_decode (wchar_t ** dest, const char *src, size_t src_size)
   if (!src || !src_size)
     return (size_t) (-1);
 
-  /* get enough space */
-  /* a character may be 4 Bytes, also in UTF-16  */
-  /* plus the terminator */
+  // get enough space
+  // a character may be 4 Bytes, also in UTF-16
+  // plus the terminator
   dest_size = src_size * 4 + sizeof (wchar_t);
 
-  /* minimal string size */
+  // minimal string size
   if (dest_size < 8)
     dest_size = 8;
 
@@ -3783,26 +3783,26 @@ avt_mb_encode_buffer (char *dest, size_t dest_size, const wchar_t * src,
   char *inbuf;
   size_t inbytesleft, outbytesleft;
 
-  /* check if sizes are useful */
+  // check if sizes are useful
   if (!dest || !dest_size || !src || !len)
     return (size_t) (-1);
 
-  /* check if encoding was set */
+  // check if encoding was set
   if (input_cd == ICONV_UNINITIALIZED)
     avt_mb_encoding (MB_DEFAULT_ENCODING);
 
   inbytesleft = len * sizeof (wchar_t);
   inbuf = (char *) src;
 
-  /* leave room for terminator */
+  // leave room for terminator
   outbytesleft = dest_size - sizeof (char);
   outbuf = dest;
 
-  /* do the conversion */
+  // do the conversion
   (void) avt_iconv (input_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
-  /* ignore errors */
+  // ignore errors
 
-  /* terminate outbuf */
+  // terminate outbuf
   *outbuf = '\0';
 
   return (dest_size - sizeof (char) - outbytesleft);
@@ -3818,13 +3818,13 @@ avt_mb_encode (char **dest, const wchar_t * src, size_t len)
 
   *dest = NULL;
 
-  /* check if len is useful */
+  // check if len is useful
   if (!src || !len)
     return (size_t) (-1);
 
-  /* get enough space */
-  /* UTF-8 may need 4 bytes per character */
-  /* +1 for the terminator */
+  // get enough space
+  // UTF-8 may need 4 bytes per character
+  // +1 for the terminator
   dest_size = len * 4 + 1;
   *dest = (char *) SDL_malloc (dest_size);
 
@@ -3853,11 +3853,11 @@ avt_recode_buffer (const char *tocode, const char *fromcode,
   size_t inbytesleft, outbytesleft;
   size_t returncode;
 
-  /* check if sizes are useful */
+  // check if sizes are useful
   if (!dest || !dest_size || !src || !src_size)
     return (size_t) (-1);
 
-  /* NULL as code means the encoding, which was set */
+  // NULL as code means the encoding, which was set
 
   if (!tocode)
     tocode = avt_encoding;
@@ -3879,10 +3879,10 @@ avt_recode_buffer (const char *tocode, const char *fromcode,
   outbytesleft = dest_size - 4;
   outbuf = dest;
 
-  /* do the conversion */
+  // do the conversion
   returncode = avt_iconv (cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
 
-  /* jump over invalid characters */
+  // jump over invalid characters
   while (returncode == (size_t) (-1) && errno == EILSEQ)
     {
       inbuf++;
@@ -3891,17 +3891,17 @@ avt_recode_buffer (const char *tocode, const char *fromcode,
 	avt_iconv (cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
     }
 
-  /* ignore E2BIG - just put in as much as fits */
+  // ignore E2BIG - just put in as much as fits
 
   avt_iconv_close (cd);
 
-  /* terminate outbuf (4 Bytes were reserved) */
+  // terminate outbuf (4 Bytes were reserved)
   SDL_memset (outbuf, 0, 4);
 
   return (dest_size - 4 - outbytesleft);
 }
 
-/* dest must be freed by the caller */
+// dest must be freed by the caller
 extern size_t
 avt_recode (const char *tocode, const char *fromcode,
 	    char **dest, const char *src, size_t src_size)
@@ -3917,11 +3917,11 @@ avt_recode (const char *tocode, const char *fromcode,
 
   *dest = NULL;
 
-  /* check if size is useful */
+  // check if size is useful
   if (!src || !src_size)
     return (size_t) (-1);
 
-  /* NULL as code means the encoding, which was set */
+  // NULL as code means the encoding, which was set
 
   if (!tocode)
     tocode = avt_encoding;
@@ -3941,7 +3941,7 @@ avt_recode (const char *tocode, const char *fromcode,
    * in case of using UTF-32
    */
 
-  /* guess it's the same size */
+  // guess it's the same size
   dest_size = src_size + 4;
   *dest = (char *) SDL_malloc (dest_size);
 
@@ -3952,19 +3952,19 @@ avt_recode (const char *tocode, const char *fromcode,
     }
 
   outbuf = *dest;
-  outbytesleft = dest_size - 4;	/* reserve 4 Bytes for terminator */
+  outbytesleft = dest_size - 4;	// reserve 4 Bytes for terminator
 
-  /* do the conversion */
+  // do the conversion
   while (inbytesleft > 0)
     {
       returncode =
 	avt_iconv (cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
 
-      /* check for fatal errors */
+      // check for fatal errors
       if (returncode == (size_t) (-1))
 	switch (errno)
 	  {
-	  case E2BIG:		/* needs more memory */
+	  case E2BIG:		// needs more memory
 	    {
 	      ptrdiff_t old_size = outbuf - *dest;
 
@@ -3978,25 +3978,25 @@ avt_recode (const char *tocode, const char *fromcode,
 
 	      outbuf = *dest + old_size;
 	      outbytesleft = dest_size - old_size - 4;
-	      /* reserve 4 bytes for terminator again */
+	      // reserve 4 bytes for terminator again
 	    }
 	    break;
 
 	  case EILSEQ:
-	    inbuf++;		/* jump over invalid chars bytewise */
+	    inbuf++;		// jump over invalid chars bytewise
 	    inbytesleft--;
 	    break;
 
-	  case EINVAL:		/* incomplete sequence */
+	  case EINVAL:		// incomplete sequence
 	  default:
-	    inbytesleft = 0;	/* cannot continue */
+	    inbytesleft = 0;	// cannot continue
 	    break;
 	  }
     }
 
   avt_iconv_close (cd);
 
-  /* terminate outbuf (4 Bytes were reserved) */
+  // terminate outbuf (4 Bytes were reserved)
   SDL_memset (outbuf, 0, 4);
 
   return (dest_size - 4 - outbytesleft);
@@ -4032,7 +4032,7 @@ avt_say_mb_len (const char *txt, size_t len)
   if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  /* check if encoding was set */
+  // check if encoding was set
   if (output_cd == ICONV_UNINITIALIZED)
     avt_mb_encoding (MB_DEFAULT_ENCODING);
 
@@ -4043,7 +4043,7 @@ avt_say_mb_len (const char *txt, size_t len)
 
   inbuf = (char *) txt;
 
-  /* if there is a rest from last call, try to complete it */
+  // if there is a rest from last call, try to complete it
   while (rest_bytes > 0 && rest_bytes < sizeof (rest_buffer)
 	 && inbytesleft > 0)
     {
@@ -4066,20 +4066,20 @@ avt_say_mb_len (const char *txt, size_t len)
 		   &outbytesleft);
       err = errno;
 
-      if (nconv != (size_t) (-1))	/* no error */
+      if (nconv != (size_t) (-1))	// no error
 	{
 	  avt_say_len (wctext,
 		       (sizeof (wctext) - outbytesleft) / sizeof (wchar_t));
 	  rest_bytes = 0;
 	}
-      else if (err != EINVAL)	/* any error, but incomplete sequence */
+      else if (err != EINVAL)	// any error, but incomplete sequence
 	{
-	  avt_put_char (0xFFFD);	/* broken character */
+	  avt_put_char (0xFFFD);	// broken character
 	  rest_bytes = 0;
 	}
     }
 
-  /* convert and display the text */
+  // convert and display the text
   while (inbytesleft > 0)
     {
       outbuf = (char *) wctext;
@@ -4094,13 +4094,13 @@ avt_say_mb_len (const char *txt, size_t len)
 
       if (nconv == (size_t) (-1))
 	{
-	  if (err == EILSEQ)	/* broken character */
+	  if (err == EILSEQ)	// broken character
 	    {
 	      avt_put_char (0xFFFD);
 	      inbuf++;
 	      inbytesleft--;
 	    }
-	  else if (err == EINVAL)	/* incomplete sequence */
+	  else if (err == EINVAL)	// incomplete sequence
 	    {
 	      rest_bytes = inbytesleft;
 	      SDL_memcpy (&rest_buffer, inbuf, rest_bytes);
@@ -4244,10 +4244,10 @@ avt_key (avt_char * ch)
 		    break;
 		  default:
 		    break;
-		  }		/* switch */
-	    }			/* if (event.type) */
-	}			/* while */
-    }				/* if (screen) */
+		  }		// switch
+	    }			// if (event.type)
+	}			// while
+    }				// if (screen)
 
   if (ch)
     *ch = c;
@@ -4263,7 +4263,7 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
 
   if (line_nr != old_line)
     {
-      /* restore oldline */
+      // restore oldline
       if (old_line >= menu_start && old_line <= menu_end)
 	{
 	  s.x = 0;
@@ -4276,7 +4276,7 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
 	  SDL_UpdateRect (screen, t.x, t.y, viewport.w, LINEHEIGHT);
 	}
 
-      /* show bar */
+      // show bar
       if (line_nr >= menu_start && line_nr <= menu_end)
 	{
 	  t.x = viewport.x;
@@ -4299,10 +4299,10 @@ avt_choice (int *result, int start_line, int items, int key,
 
   if (screen && _avt_STATUS == AVT_NORMAL)
     {
-      /* get a copy of the viewport */
+      // get a copy of the viewport
       plain_menu = avt_save_background (viewport);
 
-      /* prepare transparent bar */
+      // prepare transparent bar
       bar = SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_SRCALPHA | SDL_RLEACCEL,
 				  viewport.w, LINEHEIGHT, 8, 0, 0, 0, 128);
 
@@ -4314,7 +4314,7 @@ avt_choice (int *result, int start_line, int items, int key,
 	  return _avt_STATUS;
 	}
 
-      /* set color for bar and make it transparent */
+      // set color for bar and make it transparent
       SDL_FillRect (bar, NULL, 0);
       SDL_SetColors (bar, &cursor_color, 0, 1);
       SDL_SetAlpha (bar, SDL_SRCALPHA | SDL_RLEACCEL, 128);
@@ -4403,15 +4403,15 @@ avt_choice (int *result, int start_line, int items, int key,
 	      break;
 
 	    case SDL_MOUSEBUTTONDOWN:
-	      /* any of the first three buttons, but not the wheel */
+	      // any of the first three buttons, but not the wheel
 	      if (event.button.button <= 3)
 		{
-		  /* if a valid line was chosen */
+		  // if a valid line was chosen
 		  if (line_nr >= start_line && line_nr <= end_line)
 		    *result = line_nr - start_line + 1;
 		  else
 		    {
-		      /* check if mouse currently points to a valid line */
+		      // check if mouse currently points to a valid line
 		      if (event.button.x >= viewport.x &&
 			  event.button.x <= viewport.x + viewport.w)
 			{
@@ -4469,11 +4469,11 @@ avt_lock_updates (bool lock)
 {
   hold_updates = AVT_MAKE_BOOL (lock);
 
-  /* side effect: set text_delay to 0 */
+  // side effect: set text_delay to 0
   if (hold_updates)
     text_delay = 0;
 
-  /* if hold_updates is not set update the textfield */
+  // if hold_updates is not set update the textfield
   AVT_UPDATE_TRECT (textfield);
 }
 
@@ -4504,11 +4504,11 @@ avt_pager_line (const wchar_t * txt, size_t pos, size_t len)
   line_length = 0;
   tpos = txt + pos;
 
-  /* skip formfeeds */
+  // skip formfeeds
   if (*tpos == L'\f')
     tpos++;
 
-  /* search for newline or end of text */
+  // search for newline or end of text
   while (pos + line_length < len && *(tpos + line_length) != L'\n'
 	 && *(tpos + line_length) != L'\f')
     line_length++;
@@ -4516,7 +4516,7 @@ avt_pager_line (const wchar_t * txt, size_t pos, size_t len)
   avt_say_len (tpos, line_length);
   pos += line_length;
 
-  /* skip \n | \f */
+  // skip \n | \f
   if (pos < len)
     pos++;
 
@@ -4548,14 +4548,14 @@ static size_t
 avt_pager_lines_back (const wchar_t * txt, size_t pos, int lines)
 {
   if (pos > 0)
-    pos--;			/* go to last \n */
+    pos--;			// go to last \n
 
   lines--;
 
   while (lines--)
     {
       if (pos > 0 && *(txt + pos) == L'\n')
-	pos--;			/* go before last \n */
+	pos--;			// go before last \n
 
       while (pos > 0 && *(txt + pos) != L'\n')
 	pos--;
@@ -4583,15 +4583,15 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   if (!screen)
     return AVT_ERROR;
 
-  /* do we actually have something to show? */
+  // do we actually have something to show?
   if (!txt || !*txt || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  /* get len if not given */
+  // get len if not given
   if (len == 0)
     len = avt_strwidth (txt);
 
-  /* find startline */
+  // find startline
   pos = 0;
   if (startline > 1)
     {
@@ -4607,7 +4607,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 	}
     }
 
-  /* last screen */
+  // last screen
   if (pos >= len)
     pos = avt_pager_lines_back (txt, len, balloonheight + 1);
 
@@ -4616,15 +4616,15 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   else
     viewport = textfield;
 
-  /* show close-button */
+  // show close-button
 
-  /* load button */
+  // load button
   button = avt_load_image_xpm (btn_xpm);
 
-  /* alignment: right bottom */
+  // alignment: right bottom
   btn_rect.x = window.x + window.w - button->w - AVATAR_MARGIN;
   btn_rect.y = window.y + window.h - button->h - AVATAR_MARGIN;
-  if (btn_rect.y < textfield.y + textfield.h)	/* shouldn't be clipped */
+  if (btn_rect.y < textfield.y + textfield.h)	// shouldn't be clipped
     btn_rect.y = textfield.y + textfield.h;
   btn_rect.w = button->w;
   btn_rect.h = button->h;
@@ -4637,7 +4637,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   AVT_UPDATE_RECT (btn_rect);
   avt_pre_resize (btn_rect);
 
-  /* limit to viewport (else more problems with binary files */
+  // limit to viewport (else more problems with binary files
   SDL_SetClipRect (screen, &viewport);
 
   old_tc = text_cursor_visible;
@@ -4651,7 +4651,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   old_mousehandler = avt_ext_mousehandler;
   avt_ext_mousehandler = NULL;
 
-  /* temporarily disable the alert function */
+  // temporarily disable the alert function
   old_alert_func = avt_alert_func;
   avt_alert_func = NULL;
 
@@ -4664,10 +4664,10 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   else
     avt_normal_text ();
 
-  /* show first screen */
+  // show first screen
   pos = avt_pager_screen (txt, pos, len);
 
-  /* last screen */
+  // last screen
   if (pos >= len)
     {
       pos = avt_pager_lines_back (txt, len, balloonheight + 1);
@@ -4686,7 +4686,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 	case SDL_MOUSEBUTTONDOWN:
 	  if (event.button.button == SDL_BUTTON_WHEELDOWN)
 	    {
-	      /* simulate arrow key down */
+	      // simulate arrow key down
 	      event.type = SDL_KEYDOWN;
 	      event.key.state = SDL_PRESSED;
 	      event.key.keysym.sym = SDLK_DOWN;
@@ -4694,15 +4694,15 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 	    }
 	  else if (event.button.button == SDL_BUTTON_WHEELUP)
 	    {
-	      /* simulate arrow key up */
+	      // simulate arrow key up
 	      event.type = SDL_KEYDOWN;
 	      event.key.state = SDL_PRESSED;
 	      event.key.keysym.sym = SDLK_UP;
 	      SDL_PushEvent (&event);
 	    }
-	  else if (event.button.button == SDL_BUTTON_MIDDLE)	/* press on wheel */
+	  else if (event.button.button == SDL_BUTTON_MIDDLE)	// press on wheel
 	    quit = true;
-	  else			/* check uf button was clicked */
+	  else			// check uf button was clicked
 	    {
 	      int16_t mbx, mby;
 
@@ -4722,7 +4722,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 	  if (event.key.keysym.sym == SDLK_DOWN
 	      || event.key.keysym.sym == SDLK_KP2)
 	    {
-	      /* if it's not the end */
+	      // if it's not the end
 	      if (pos < len)
 		{
 		  hold_updates = true;
@@ -4788,16 +4788,16 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 	      pos = avt_pager_screen (txt, pos, len);
 	    }
 	  else if (event.key.keysym.sym == SDLK_q)
-	    quit = true;	/* Q with any combination-key quits */
+	    quit = true;	// Q with any combination-key quits
 	  break;
 	}
     }
 
-  /* quit request only quits the pager here */
+  // quit request only quits the pager here
   if (_avt_STATUS == AVT_QUIT)
     _avt_STATUS = AVT_NORMAL;
 
-  /* remove button */
+  // remove button
   SDL_SetClipRect (screen, &window);
   avt_post_resize (btn_rect);
   SDL_FillRect (screen, &btn_rect, background_color);
@@ -4843,7 +4843,7 @@ avt_pager_mb (const char *txt, size_t len, int startline)
   return _avt_STATUS;
 }
 
-/* size in Bytes! */
+// size in Bytes!
 extern int
 avt_ask (wchar_t * s, size_t size)
 {
@@ -4855,12 +4855,12 @@ avt_ask (wchar_t * s, size_t size)
   if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  /* this function only works with left to right text */
-  /* it would be too hard otherwise */
+  // this function only works with left to right text
+  // it would be too hard otherwise
   old_textdir = textdir_rtl;
   textdir_rtl = AVT_LEFT_TO_RIGHT;
 
-  /* no textfield? => draw balloon */
+  // no textfield? => draw balloon
   if (textfield.x < 0)
     avt_draw_balloon ();
 
@@ -4870,17 +4870,17 @@ avt_ask (wchar_t * s, size_t size)
   if (cursor.y > viewport.y + viewport.h - LINEHEIGHT)
     avt_flip_page ();
 
-  /* maxlen is the rest of line */
+  // maxlen is the rest of line
   if (textdir_rtl)
     maxlen = (cursor.x - viewport.x) / fontwidth;
   else
     maxlen = ((viewport.x + viewport.w) - cursor.x) / fontwidth;
 
-  /* does it fit in the buffer size? */
+  // does it fit in the buffer size?
   if (maxlen > size / sizeof (wchar_t) - 1)
     maxlen = size / sizeof (wchar_t) - 1;
 
-  /* clear the input field */
+  // clear the input field
   avt_erase_characters (maxlen);
 
   len = pos = 0;
@@ -4890,7 +4890,7 @@ avt_ask (wchar_t * s, size_t size)
 
   do
     {
-      /* show cursor */
+      // show cursor
       avt_show_text_cursor (true);
 
       if (avt_key (&ch) != AVT_NORMAL)
@@ -4953,7 +4953,7 @@ avt_ask (wchar_t * s, size_t size)
 	  if (pos > 0)
 	    {
 	      pos--;
-	      /* delete cursor */
+	      // delete cursor
 	      avt_show_text_cursor (false);
 	      cursor.x -= fontwidth;
 	    }
@@ -4979,7 +4979,7 @@ avt_ask (wchar_t * s, size_t size)
 	default:
 	  if (pos < maxlen && ch >= 32 && avt_get_font_char (ch) != NULL)
 	    {
-	      /* delete cursor */
+	      // delete cursor
 	      avt_show_text_cursor (false);
 	      if (insert_mode && pos < len)
 		{
@@ -4990,7 +4990,7 @@ avt_ask (wchar_t * s, size_t size)
 				   (len - pos) * sizeof (wchar_t));
 		      len++;
 		    }
-		  else		/* len >= maxlen */
+		  else		// len >= maxlen
 		    SDL_memmove (&s[pos + 1], &s[pos],
 				 (len - pos - 1) * sizeof (wchar_t));
 		}
@@ -5002,7 +5002,7 @@ avt_ask (wchar_t * s, size_t size)
 		len++;
 	      if (pos > maxlen - 1)
 		{
-		  pos--;	/* cursor stays where it is */
+		  pos--;	// cursor stays where it is
 		  bell ();
 		}
 	      else
@@ -5015,7 +5015,7 @@ avt_ask (wchar_t * s, size_t size)
 
   s[len] = L'\0';
 
-  /* delete cursor */
+  // delete cursor
   avt_show_text_cursor (false);
 
   if (!newline_mode)
@@ -5038,7 +5038,7 @@ avt_ask_mb (char *s, size_t size)
   if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  /* check if encoding was set */
+  // check if encoding was set
   if (input_cd == ICONV_UNINITIALIZED)
     avt_mb_encoding (MB_DEFAULT_ENCODING);
 
@@ -5046,16 +5046,16 @@ avt_ask_mb (char *s, size_t size)
 
   s[0] = '\0';
 
-  /* if a halt is requested, don't bother with the conversion */
+  // if a halt is requested, don't bother with the conversion
   if (_avt_STATUS)
     return _avt_STATUS;
 
-  /* prepare the buffer */
+  // prepare the buffer
   inbuf = (char *) &ws;
   inbytesleft = (avt_strwidth (ws) + 1) * sizeof (wchar_t);
   outbytesleft = size;
 
-  /* do the conversion */
+  // do the conversion
   avt_iconv (input_cd, &inbuf, &inbytesleft, &s, &outbytesleft);
 
   return _avt_STATUS;
@@ -5067,11 +5067,11 @@ avt_move_in (void)
   if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  /* fill the screen with background color */
-  /* (not only the window!) */
+  // fill the screen with background color
+  // (not only the window!)
   avt_clear_screen ();
 
-  /* undefine textfield */
+  // undefine textfield
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
   viewport = textfield;
 
@@ -5090,7 +5090,7 @@ avt_move_in (void)
       mywindow.w = screen->w - mywindow.x;
 
       dst.x = screen->w;
-      /* bottom */
+      // bottom
       dst.y = mywindow.y + mywindow.h - avatar_image->h - AVATAR_MARGIN;
       dst.w = avatar_image->w;
       dst.h = avatar_image->h;
@@ -5098,22 +5098,22 @@ avt_move_in (void)
 
       if (avt_balloon_mode == AVT_SEPARATE)
 	destination = ((window.x + window.w) / 2) - (avatar_image->w / 2);
-      else			/* left */
+      else			// left
 	destination = window.x + AVATAR_MARGIN;
 
       while (dst.x > destination)
 	{
 	  int16_t oldx = dst.x;
 
-	  /* move */
+	  // move
 	  dst.x = screen->w - ((SDL_GetTicks () - start_time) / MOVE_DELAY);
 
 	  if (dst.x != oldx)
 	    {
-	      /* draw */
+	      // draw
 	      SDL_BlitSurface (avatar_image, NULL, screen, &dst);
 
-	      /* update */
+	      // update
 	      if ((oldx + dst.w) >= screen->w)
 		SDL_UpdateRect (screen, dst.x, dst.y,
 				screen->w - dst.x, dst.h);
@@ -5121,23 +5121,23 @@ avt_move_in (void)
 		SDL_UpdateRect (screen, dst.x, dst.y,
 				dst.w + (oldx - dst.x), dst.h);
 
-	      /* if window is resized then break */
+	      // if window is resized then break
 	      if (window.x != mywindow.x || window.y != mywindow.y)
 		break;
 
-	      /* delete (not visibly yet) */
+	      // delete (not visibly yet)
 	      SDL_FillRect (screen, &dst, background_color);
 	    }
 
-	  /* check event */
+	  // check event
 	  if (avt_checkevent ())
 	    return _avt_STATUS;
 
-	  /* some time for other processes */
+	  // some time for other processes
 	  SDL_Delay (1);
 	}
 
-      /* final position */
+      // final position
       avt_show_avatar ();
     }
 
@@ -5150,7 +5150,7 @@ avt_move_out (void)
   if (!screen || !avt_visible || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  /* needed to remove the balloon */
+  // needed to remove the balloon
   avt_show_avatar ();
 
   /*
@@ -5178,13 +5178,13 @@ avt_move_out (void)
 	start_position = mywindow.x + AVATAR_MARGIN;
 
       dst.x = start_position;
-      /* bottom */
+      // bottom
       dst.y = mywindow.y + mywindow.h - avatar_image->h - AVATAR_MARGIN;
       dst.w = avatar_image->w;
       dst.h = avatar_image->h;
       start_time = SDL_GetTicks ();
 
-      /* delete (not visibly yet) */
+      // delete (not visibly yet)
       SDL_FillRect (screen, &dst, background_color);
 
       while (dst.x < screen->w)
@@ -5193,40 +5193,40 @@ avt_move_out (void)
 
 	  oldx = dst.x;
 
-	  /* move */
+	  // move
 	  dst.x =
 	    start_position + ((SDL_GetTicks () - start_time) / MOVE_DELAY);
 
 	  if (dst.x != oldx)
 	    {
-	      /* draw */
+	      // draw
 	      SDL_BlitSurface (avatar_image, NULL, screen, &dst);
 
-	      /* update */
+	      // update
 	      if ((dst.x + dst.w) >= screen->w)
 		SDL_UpdateRect (screen, oldx, dst.y, screen->w - oldx, dst.h);
 	      else
 		SDL_UpdateRect (screen, oldx, dst.y,
 				dst.w + dst.x - oldx, dst.h);
 
-	      /* if window is resized then break */
+	      // if window is resized then break
 	      if (window.x != mywindow.x || window.y != mywindow.y)
 		break;
 
-	      /* delete (not visibly yet) */
+	      // delete (not visibly yet)
 	      SDL_FillRect (screen, &dst, background_color);
 	    }
 
-	  /* check event */
+	  // check event
 	  if (avt_checkevent ())
 	    return _avt_STATUS;
 
-	  /* some time for other processes */
+	  // some time for other processes
 	  SDL_Delay (1);
 	}
     }
 
-  /* fill the whole screen with background color */
+  // fill the whole screen with background color
   avt_clear_screen ();
 
   return _avt_STATUS;
@@ -5243,10 +5243,10 @@ avt_wait_button (void)
   if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  /* load button */
+  // load button
   button = avt_load_image_xpm (btn_xpm);
 
-  /* alignment: right bottom */
+  // alignment: right bottom
   btn_rect.x = window.x + window.w - button->w - AVATAR_MARGIN;
   btn_rect.y = window.y + window.h - button->h - AVATAR_MARGIN;
   btn_rect.w = button->w;
@@ -5279,17 +5279,17 @@ avt_wait_button (void)
 	  break;
 
 	case SDL_MOUSEBUTTONDOWN:
-	  /* ignore the wheel */
+	  // ignore the wheel
 	  if (event.button.button <= 3)
 	    nokey = false;
 	  break;
 	}
 
-      /* do other stuff */
+      // do other stuff
       avt_analyze_event (&event);
     }
 
-  /* delete button */
+  // delete button
   SDL_SetClipRect (screen, &window);
   avt_post_resize (btn_rect);
   SDL_BlitSurface (button_area, NULL, screen, &btn_rect);
@@ -5317,8 +5317,8 @@ avt_navigate (const char *buttons)
   int i, button_count, button_pos, audio_end_button;
   int result;
 
-  result = AVT_ERROR;		/* no result */
-  audio_end_button = false;	/* none */
+  result = AVT_ERROR;		// no result
+  audio_end_button = false;	// none
 
   if (_avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -5336,17 +5336,17 @@ avt_navigate (const char *buttons)
 
   SDL_SetClipRect (screen, &window);
 
-  /* load base button image */
+  // load base button image
   base_button = avt_load_image_xpm (btn_xpm);
 
-  /* common button area */
+  // common button area
   buttons_rect.y = window.y + window.h - base_button->h - AVATAR_MARGIN;
   buttons_rect.x = window.x + window.w - AVATAR_MARGIN
     - (button_count * (base_button->w + BUTTON_DISTANCE)) + BUTTON_DISTANCE;
   buttons_rect.h = base_button->h;
   buttons_rect.w = window.x + window.w - AVATAR_MARGIN - buttons_rect.x;
 
-  /* yet another check, if there are too many buttons */
+  // yet another check, if there are too many buttons
   if (buttons_rect.x < 0)
     {
       SDL_FreeSurface (base_button);
@@ -5354,15 +5354,15 @@ avt_navigate (const char *buttons)
       return AVT_FAILURE;
     }
 
-  /* save background for common button area */
+  // save background for common button area
   buttons_area = avt_save_background (buttons_rect);
 
-  /* common values for button rectangles */
+  // common values for button rectangles
   for (i = 0; i < NAV_MAX; i++)
     {
       rect[i].w = base_button->w;
       rect[i].h = base_button->h;
-      rect[i].x = 0;		/* changed later */
+      rect[i].x = 0;		// changed later
       rect[i].y = buttons_rect.y;
     }
 
@@ -5374,7 +5374,7 @@ avt_navigate (const char *buttons)
     {
       rect[i].x = button_pos;
 
-      /* show base button, if it's not a spacer */
+      // show base button, if it's not a spacer
       if (buttons[i] != ' ')
 	SDL_BlitSurface (base_button, NULL, screen, &rect[i]);
 
@@ -5402,13 +5402,13 @@ avt_navigate (const char *buttons)
 
 	case 's':
 	  avt_nav_inlay (btn_stop);
-	  if (!audio_end_button)	/* 'f' has precedence */
+	  if (!audio_end_button)	// 'f' has precedence
 	    audio_end_button = 's';
 	  break;
 
 	case 'f':
 	  avt_nav_inlay (btn_fastforward);
-	  audio_end_button = 'f';	/* this has precedence */
+	  audio_end_button = 'f';	// this has precedence
 	  break;
 
 	case 'b':
@@ -5453,10 +5453,10 @@ avt_navigate (const char *buttons)
   SDL_FreeSurface (base_button);
   base_button = NULL;
 
-  /* show all buttons */
+  // show all buttons
   AVT_UPDATE_RECT (buttons_rect);
 
-  /* prepare resizing */
+  // prepare resizing
   avt_pre_resize (buttons_rect);
   for (i = 0; i < button_count; i++)
     avt_pre_resize (rect[i]);
@@ -5467,7 +5467,7 @@ avt_navigate (const char *buttons)
 
       switch (event.type)
 	{
-	  /* end of audio triggers stop key */
+	  // end of audio triggers stop key
 	case SDL_USEREVENT:
 	  if (event.user.code == AVT_AUDIO_ENDED && audio_end_button)
 	    result = audio_end_button;
@@ -5499,14 +5499,14 @@ avt_navigate (const char *buttons)
 	    else if (event.key.keysym.sym == SDLK_PAUSE)
 	      {
 		r = 'p';
-		/* prevent further handling of the Pause-key */
+		// prevent further handling of the Pause-key
 		event.key.keysym.sym = SDLK_UNKNOWN;
 	      }
 	    else if (event.key.keysym.unicode > 32
 		     && event.key.keysym.unicode < 127)
 	      r = event.key.keysym.unicode;
 
-	    /* check if it is one of the requested characters */
+	    // check if it is one of the requested characters
 	    {
 	      const char *b = buttons;
 	      while (*b)
@@ -5543,7 +5543,7 @@ avt_navigate (const char *buttons)
       avt_analyze_event (&event);
     }
 
-  /* restore background */
+  // restore background
   SDL_SetClipRect (screen, &window);
   avt_post_resize (buttons_rect);
   SDL_BlitSurface (buttons_area, NULL, screen, &buttons_rect);
@@ -5572,10 +5572,10 @@ avt_decide (void)
 
   SDL_SetClipRect (screen, &window);
 
-  /* show buttons */
+  // show buttons
   base_button = avt_load_image_xpm (btn_xpm);
 
-  /* alignment: right bottom */
+  // alignment: right bottom
   yes_rect.x = window.x + window.w - base_button->w - AVATAR_MARGIN;
   yes_rect.y = window.y + window.h - base_button->h - AVATAR_MARGIN;
   yes_rect.w = base_button->w;
@@ -5591,10 +5591,10 @@ avt_decide (void)
   area_rect.w = 2 * base_button->w + BUTTON_DISTANCE;
   area_rect.h = no_rect.h;
 
-  /* store background */
+  // store background
   buttons_area = avt_save_background (area_rect);
 
-  /* draw buttons */
+  // draw buttons
   SDL_BlitSurface (base_button, NULL, screen, &yes_rect);
   avt_button_inlay (yes_rect, AVT_XBM_INFO (btn_yes), 0x00AA00);
 
@@ -5610,7 +5610,7 @@ avt_decide (void)
   avt_pre_resize (no_rect);
   avt_pre_resize (area_rect);
 
-  result = -1;			/* no result */
+  result = -1;			// no result
   while (result < 0)
     {
       SDL_WaitEvent (&event);
@@ -5644,7 +5644,7 @@ avt_decide (void)
 	    mbx = event.button.x - window.x;
 	    mby = event.button.y - window.y;
 
-	    /* any mouse button, but ignore the wheel */
+	    // any mouse button, but ignore the wheel
 	    if (event.button.button <= 3
 		&& mby >= area_rect.y && mby <= area_rect.y + area_rect.h)
 	      {
@@ -5660,7 +5660,7 @@ avt_decide (void)
       avt_analyze_event (&event);
     }
 
-  /* delete buttons */
+  // delete buttons
   SDL_SetClipRect (screen, &window);
   avt_post_resize (area_rect);
   SDL_BlitSurface (buttons_area, NULL, screen, &area_rect);
@@ -5688,21 +5688,21 @@ avt_show_image (SDL_Surface * image)
 {
   SDL_Rect dst;
 
-  /* clear the screen */
+  // clear the screen
   avt_free_screen ();
 
-  /* set informational variables */
+  // set informational variables
   avt_visible = false;
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
   viewport = textfield;
 
-  /* center image on screen */
+  // center image on screen
   dst.x = (screen->w / 2) - (image->w / 2);
   dst.y = (screen->h / 2) - (image->h / 2);
   dst.w = image->w;
   dst.h = image->h;
 
-  /* eventually increase inner window - never decrease! */
+  // eventually increase inner window - never decrease!
   if (dst.w > window.w)
     {
       window.w = (dst.w <= screen->w) ? dst.w : screen->w;
@@ -5725,7 +5725,7 @@ avt_show_image (SDL_Surface * image)
 }
 
 
-/* RW is closed here */
+// RW is closed here
 static int
 avt_show_image_rw (SDL_RWops * RW)
 {
@@ -5736,8 +5736,8 @@ avt_show_image_rw (SDL_RWops * RW)
 
   image = NULL;
 
-  /* try internal XPM reader first */
-  /* it's better than in SDL_image */
+  // try internal XPM reader first
+  // it's better than in SDL_image
   image = avt_load_image_xpm_RW (RW, 0);
 
   if (image == NULL)
@@ -5753,7 +5753,7 @@ avt_show_image_rw (SDL_RWops * RW)
 
   if (image == NULL)
     {
-      avt_clear_screen ();	/* at least clear the screen */
+      avt_clear_screen ();	// at least clear the screen
       return AVT_FAILURE;
     }
 
@@ -5814,7 +5814,7 @@ avt_show_image_xpm (char **xpm)
 
   if (image == NULL)
     {
-      avt_clear_screen ();	/* at least clear the screen */
+      avt_clear_screen ();	// at least clear the screen
       SDL_SetError ("couldn't show image");
       return AVT_FAILURE;
     }
@@ -5837,7 +5837,7 @@ avt_show_image_xbm (const unsigned char *bits, int width, int height,
 
   if (width <= 0 || height <= 0 || color < 0)
     {
-      avt_clear ();		/* at least clear the balloon */
+      avt_clear ();		// at least clear the balloon
       SDL_SetError ("couldn't show image");
       return AVT_FAILURE;
     }
@@ -5846,7 +5846,7 @@ avt_show_image_xbm (const unsigned char *bits, int width, int height,
 
   if (image == NULL)
     {
-      avt_clear_screen ();	/* at least clear the screen */
+      avt_clear_screen ();	// at least clear the screen
       SDL_SetError ("couldn't show image");
       return AVT_FAILURE;
     }
@@ -5893,7 +5893,7 @@ avt_show_raw_image (void *image_data, int width, int height,
 
   image = NULL;
 
-  /* the wrong endianess can be optimized away while compiling */
+  // the wrong endianess can be optimized away while compiling
   if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
     {
       if (bytes_per_pixel == 3)
@@ -5906,7 +5906,7 @@ avt_show_raw_image (void *image_data, int width, int height,
 					  0xFF000000, 0x00FF0000, 0x0000FF00,
 					  0x000000FF);
     }
-  else				/* little endian */
+  else				// little endian
     {
       if (bytes_per_pixel == 3)
 	image = SDL_CreateRGBSurfaceFrom (image_data, width, height,
@@ -5921,7 +5921,7 @@ avt_show_raw_image (void *image_data, int width, int height,
 
   if (image == NULL)
     {
-      avt_clear_screen ();	/* at least clear the screen */
+      avt_clear_screen ();	// at least clear the screen
       SDL_SetError ("couldn't show image");
       return AVT_FAILURE;
     }
@@ -5936,7 +5936,7 @@ avt_show_raw_image (void *image_data, int width, int height,
 static int
 avt_init_SDL (void)
 {
-  /* only if not already initialized */
+  // only if not already initialized
   if (SDL_WasInit (SDL_INIT_VIDEO | SDL_INIT_TIMER) == 0)
     {
       /* don't try to use the mouse
@@ -5959,7 +5959,7 @@ avt_init_SDL (void)
  * make background transparent
  * pixel in the upper left corner is supposed to be the background color
  */
-/* deprecated, but needed internally */
+// deprecated, but needed internally
 DEPRECATED_EXTERN avt_image_t *
 avt_make_transparent (avt_image_t * image)
 {
@@ -5968,7 +5968,7 @@ avt_make_transparent (avt_image_t * image)
   if (SDL_MUSTLOCK (image))
     SDL_LockSurface (image);
 
-  /* get color of upper left corner */
+  // get color of upper left corner
   color = getpixel (image, 0, 0);
 
   if (SDL_MUSTLOCK (image))
@@ -5983,7 +5983,7 @@ avt_make_transparent (avt_image_t * image)
 
 #ifndef DISABLE_DEPRECATED
 
-/* deprecated */
+// deprecated
 extern avt_image_t *
 avt_import_xpm (char **xpm)
 {
@@ -5993,7 +5993,7 @@ avt_import_xpm (char **xpm)
   return avt_load_image_xpm (xpm);
 }
 
-/* deprecated */
+// deprecated
 extern avt_image_t *
 avt_import_gimp_image (void *gimp_image)
 {
@@ -6021,7 +6021,7 @@ avt_import_gimp_image (void *gimp_image)
   return image;
 }
 
-/* deprecated */
+// deprecated
 extern avt_image_t *
 avt_import_image_data (void *img, size_t imgsize)
 {
@@ -6036,7 +6036,7 @@ avt_import_image_data (void *img, size_t imgsize)
 
   if (RW)
     {
-      /* try internal XPM reader first */
+      // try internal XPM reader first
       image = avt_load_image_xpm_RW (RW, 0);
 
       if (image == NULL)
@@ -6047,7 +6047,7 @@ avt_import_image_data (void *img, size_t imgsize)
 	  load_image_init ();
 	  image = load_image.rw (RW, 0);
 
-	  /* if it's not yet transparent, make it transparent */
+	  // if it's not yet transparent, make it transparent
 	  if (image)
 	    if (!(image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
 	      avt_make_transparent (image);
@@ -6059,7 +6059,7 @@ avt_import_image_data (void *img, size_t imgsize)
   return image;
 }
 
-/* deprecated */
+// deprecated
 extern avt_image_t *
 avt_import_image_file (const char *filename)
 {
@@ -6074,7 +6074,7 @@ avt_import_image_file (const char *filename)
 
   if (RW)
     {
-      /* try internal XPM reader first */
+      // try internal XPM reader first
       image = avt_load_image_xpm_RW (RW, 0);
 
       if (image == NULL)
@@ -6085,7 +6085,7 @@ avt_import_image_file (const char *filename)
 	  load_image_init ();
 	  image = load_image.rw (RW, 0);
 
-	  /* if it's not yet transparent, make it transparent */
+	  // if it's not yet transparent, make it transparent
 	  if (image)
 	    if (!(image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
 	      avt_make_transparent (image);
@@ -6097,7 +6097,7 @@ avt_import_image_file (const char *filename)
   return image;
 }
 
-/* deprecated */
+// deprecated
 extern avt_image_t *
 avt_import_image_stream (avt_stream * stream)
 {
@@ -6112,7 +6112,7 @@ avt_import_image_stream (avt_stream * stream)
 
   if (RW)
     {
-      /* try internal XPM reader first */
+      // try internal XPM reader first
       image = avt_load_image_xpm_RW (RW, 0);
 
       if (image == NULL)
@@ -6123,7 +6123,7 @@ avt_import_image_stream (avt_stream * stream)
 	  load_image_init ();
 	  image = load_image.rw (RW, 0);
 
-	  /* if it's not yet transparent, make it transparent */
+	  // if it's not yet transparent, make it transparent
 	  if (image)
 	    if (!(image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
 	      avt_make_transparent (image);
@@ -6135,10 +6135,10 @@ avt_import_image_stream (avt_stream * stream)
   return image;
 }
 
-#endif /* DISABLE_DEPRECATED */
+#endif // DISABLE_DEPRECATED
 
 
-/* change avatar image and (re)calculate balloon size */
+// change avatar image and (re)calculate balloon size
 static int
 avt_set_avatar_image (SDL_Surface * image)
 {
@@ -6148,7 +6148,7 @@ avt_set_avatar_image (SDL_Surface * image)
   if (avt_visible)
     avt_clear_screen ();
 
-  /* free old image */
+  // free old image
   if (avatar_image)
     {
       SDL_FreeSurface (avatar_image);
@@ -6161,10 +6161,10 @@ avt_set_avatar_image (SDL_Surface * image)
       avt_name = NULL;
     }
 
-  /* import the avatar image */
+  // import the avatar image
   if (image)
     {
-      /* convert image to display-format for faster drawing */
+      // convert image to display-format for faster drawing
       if (image->flags & SDL_SRCALPHA)
 	avatar_image = SDL_DisplayFormatAlpha (image);
       else
@@ -6180,7 +6180,7 @@ avt_set_avatar_image (SDL_Surface * image)
 
   calculate_balloonmaxheight ();
 
-  /* set actual balloon size to the maximum size */
+  // set actual balloon size to the maximum size
   balloonheight = balloonmaxheight;
   balloonwidth = AVT_LINELENGTH;
 
@@ -6253,7 +6253,7 @@ avt_avatar_image_xbm (const unsigned char *bits,
 }
 
 
-/* RW is closed here */
+// RW is closed here
 static int
 avt_avatar_image_rw (SDL_RWops * RW)
 {
@@ -6264,7 +6264,7 @@ avt_avatar_image_rw (SDL_RWops * RW)
 
   image = NULL;
 
-  /* try internal XPM reader first */
+  // try internal XPM reader first
   image = avt_load_image_xpm_RW (RW, 0);
 
   if (!image)
@@ -6275,7 +6275,7 @@ avt_avatar_image_rw (SDL_RWops * RW)
       load_image_init ();
       image = load_image.rw (RW, 0);
 
-      /* if it's not yet transparent, make it transparent */
+      // if it's not yet transparent, make it transparent
       if (image)
 	if (!(image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
 	  avt_make_transparent (image);
@@ -6319,14 +6319,14 @@ avt_set_avatar_name (const wchar_t * name)
 {
   int size;
 
-  /* clear old name */
+  // clear old name
   if (avt_name)
     {
       SDL_free (avt_name);
       avt_name = NULL;
     }
 
-  /* copy name */
+  // copy name
   if (name && *name)
     {
       size = (avt_strwidth (name) + 1) * sizeof (wchar_t);
@@ -6375,7 +6375,7 @@ avt_set_text_background_ballooncolor (void)
     }
 }
 
-/* can and should be called before avt_initialize */
+// can and should be called before avt_initialize
 extern void
 avt_set_balloon_color (int color)
 {
@@ -6389,14 +6389,14 @@ avt_set_balloon_color (int color)
 	{
 	  avt_set_text_background_ballooncolor ();
 
-	  /* redraw the balloon, if it is visible */
+	  // redraw the balloon, if it is visible
 	  if (textfield.x >= 0)
 	    avt_draw_balloon ();
 	}
     }
 }
 
-/* can and should be called before avt_initialize */
+// can and should be called before avt_initialize
 extern void
 avt_set_background_color (int color)
 {
@@ -6412,7 +6412,7 @@ avt_set_background_color (int color)
 
 	  if (textfield.x >= 0)
 	    {
-	      avt_visible = false;	/* force to redraw everything */
+	      avt_visible = false;	// force to redraw everything
 	      avt_draw_balloon ();
 	    }
 	  else if (avt_visible)
@@ -6528,16 +6528,16 @@ avt_normal_text (void)
 {
   underlined = bold = inverse = markup = false;
 
-  /* set color table for character canvas */
+  // set color table for character canvas
   if (avt_character)
     {
       SDL_Color colors[2];
 
-      /* background -> ballooncolor */
+      // background -> ballooncolor
       colors[0].r = ballooncolor_RGB.r;
       colors[0].g = ballooncolor_RGB.g;
       colors[0].b = ballooncolor_RGB.b;
-      /* black foreground */
+      // black foreground
       colors[1].r = colors[1].g = colors[1].b = 0x00;
 
       SDL_SetColors (avt_character, colors, 0, 2);
@@ -6561,7 +6561,7 @@ avt_set_text_delay (int delay)
 {
   text_delay = delay;
 
-  /* eventually switch off updates lock */
+  // eventually switch off updates lock
   if (text_delay != 0 && hold_updates)
     avt_lock_updates (false);
 }
@@ -6598,7 +6598,7 @@ avt_set_error (const char *message)
 
 #define CREDITDELAY 50
 
-/* scroll one line up */
+// scroll one line up
 static void
 avt_credits_up (SDL_Surface * last_line)
 {
@@ -6615,7 +6615,7 @@ avt_credits_up (SDL_Surface * last_line)
 
   while (moved <= LINEHEIGHT)
     {
-      /* move screen up */
+      // move screen up
       src.x = window.x;
       src.w = window.w;
       src.y = window.y + pixel;
@@ -6643,7 +6643,7 @@ avt_credits_up (SDL_Surface * last_line)
 	SDL_Delay (next_time - now);
       else
 	{
-	  /* move more pixels at once and give more time next time */
+	  // move more pixels at once and give more time next time
 	  if (pixel < LINEHEIGHT - moved)
 	    {
 	      pixel++;
@@ -6670,33 +6670,33 @@ avt_credits (const wchar_t * text, bool centered)
   if (!screen || _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  /* store old background color */
+  // store old background color
   old_backgroundcolornr = backgroundcolornr;
 
-  /* deactivate mous/key- handlers */
+  // deactivate mous/key- handlers
   old_keyhandler = avt_ext_keyhandler;
   old_mousehandler = avt_ext_mousehandler;
   avt_ext_keyhandler = NULL;
   avt_ext_mousehandler = NULL;
 
-  /* needed to handle resizing correctly */
+  // needed to handle resizing correctly
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
   avt_visible = false;
   hold_updates = false;
 
-  /* the background-color is used when the window is resized */
-  /* this implicitly also clears the screen */
+  // the background-color is used when the window is resized
+  // this implicitly also clears the screen
   avt_set_background_color (0x000000);
   avt_set_text_background_color (0x000000);
   avt_set_text_color (0xFFFFFF);
 
   window.x = (screen->w / 2) - (80 * fontwidth / 2);
   window.w = 80 * fontwidth;
-  /* horizontal values unchanged */
+  // horizontal values unchanged
 
   SDL_SetClipRect (screen, &window);
 
-  /* last line added to credits */
+  // last line added to credits
   last_line =
     SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_RLEACCEL,
 			  window.w, LINEHEIGHT,
@@ -6712,14 +6712,14 @@ avt_credits (const wchar_t * text, bool centered)
       return _avt_STATUS;
     }
 
-  /* cursor position for last_line */
+  // cursor position for last_line
   cursor.y = 0;
 
-  /* show text */
+  // show text
   p = text;
   while (*p && _avt_STATUS == AVT_NORMAL)
     {
-      /* get line */
+      // get line
       length = 0;
       while (*p && *p != L'\n')
 	{
@@ -6732,37 +6732,37 @@ avt_credits (const wchar_t * text, bool centered)
 	  p++;
 	}
 
-      /* skip line-end */
+      // skip line-end
       p++;
 
-      /* draw line */
+      // draw line
       if (centered)
 	cursor.x = (window.w / 2) - (length * fontwidth / 2);
       else
 	cursor.x = 0;
 
-      /* clear line */
+      // clear line
       SDL_FillRect (last_line, NULL, 0);
 
-      /* print on last_line */
+      // print on last_line
       for (i = 0; i < length; i++, cursor.x += fontwidth)
 	avt_drawchar ((avt_char) line[i], last_line);
 
       avt_credits_up (last_line);
     }
 
-  /* show one empty line to avoid streakes */
+  // show one empty line to avoid streakes
   SDL_FillRect (last_line, NULL, 0);
   avt_credits_up (last_line);
 
-  /* scroll up until screen is empty */
+  // scroll up until screen is empty
   for (i = 0; i < window.h / LINEHEIGHT && _avt_STATUS == AVT_NORMAL; i++)
     avt_credits_up (NULL);
 
   SDL_FreeSurface (last_line);
   avt_avatar_window ();
 
-  /* back to normal (also sets variables!) */
+  // back to normal (also sets variables!)
   avt_set_background_color (old_backgroundcolornr);
   avt_normal_text ();
   avt_clear_screen ();
@@ -6803,7 +6803,7 @@ avt_quit (void)
 
   load_image_done ();
 
-  /* close conversion descriptors */
+  // close conversion descriptors
   if (output_cd != ICONV_UNINITIALIZED)
     avt_iconv_close (output_cd);
   if (input_cd != ICONV_UNINITIALIZED)
@@ -6830,7 +6830,7 @@ avt_quit (void)
       avt_cursor_character = NULL;
       avt_alert_func = NULL;
       SDL_Quit ();
-      screen = NULL;		/* it was freed by SDL_Quit */
+      screen = NULL;		// it was freed by SDL_Quit
       avt_visible = false;
       textfield.x = textfield.y = textfield.w = textfield.h = -1;
       viewport = textfield;
@@ -6847,7 +6847,7 @@ avt_button_quit (void)
 
 #ifdef OLD_SDL
 
-/* old SDL could only handle ASCII titles */
+// old SDL could only handle ASCII titles
 
 extern void
 avt_set_title (const char *title, const char *shortname)
@@ -6855,21 +6855,21 @@ avt_set_title (const char *title, const char *shortname)
   SDL_WM_SetCaption (title, shortname);
 }
 
-#else /* not OLD_SDL */
+#else // not OLD_SDL
 
 extern void
 avt_set_title (const char *title, const char *shortname)
 {
-  /* check if encoding was set */
+  // check if encoding was set
   if (output_cd == ICONV_UNINITIALIZED)
     avt_mb_encoding (MB_DEFAULT_ENCODING);
 
-  /* check if it's already in correct encoding default="UTF-8" */
+  // check if it's already in correct encoding default="UTF-8"
   if (SDL_strcasecmp ("UTF-8", avt_encoding) == 0
       || SDL_strcasecmp ("UTF8", avt_encoding) == 0
       || SDL_strcasecmp ("CP65001", avt_encoding) == 0)
     SDL_WM_SetCaption (title, shortname);
-  else				/* convert them to UTF-8 */
+  else				// convert them to UTF-8
     {
       char my_title[260];
       char my_shortname[84];
@@ -6901,7 +6901,7 @@ avt_set_title (const char *title, const char *shortname)
     }
 }
 
-#endif /* not OLD_SDL */
+#endif // not OLD_SDL
 
 
 #define reverse_byte(b) \
@@ -6914,7 +6914,7 @@ avt_set_title (const char *title, const char *shortname)
    ((b) & 0x02) << 5 | \
    ((b) & 0x01) << 7)
 
-/* width must be a multiple of 8 */
+// width must be a multiple of 8
 #define xbm_bytes(img)  ((img##_width / 8) * img##_height)
 
 static void
@@ -6924,7 +6924,7 @@ avt_set_mouse_pointer (void)
   unsigned char mp_mask[xbm_bytes (mpointer_mask)];
   int i;
 
-  /* we need the bytes reversed :-( */
+  // we need the bytes reversed :-(
 
   for (i = 0; i < xbm_bytes (mpointer); i++)
     {
@@ -6950,7 +6950,7 @@ avt_start (const char *title, const char *shortname, int mode)
 {
   SDL_Surface *icon;
 
-  /* already initialized? */
+  // already initialized?
   if (screen)
     {
       SDL_SetError ("AKFAvatar already initialized");
@@ -6963,7 +6963,7 @@ avt_start (const char *title, const char *shortname, int mode)
   reserve_single_keys = false;
   newline_mode = true;
   auto_margin = true;
-  origin_mode = true;		/* for backwards compatibility */
+  origin_mode = true;		// for backwards compatibility
   avt_visible = false;
   markup = false;
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
@@ -6971,7 +6971,7 @@ avt_start (const char *title, const char *shortname, int mode)
 
   avt_get_font_dimensions (&fontwidth, &fontheight, &fontunderline);
 
-  /* fine-tuning: avoid conflict between underscore and underlining */
+  // fine-tuning: avoid conflict between underscore and underlining
   if (fontheight >= 18)
     ++fontunderline;
 
@@ -6990,7 +6990,7 @@ avt_start (const char *title, const char *shortname, int mode)
 
   avt_set_title (title, shortname);
 
-  /* register icon */
+  // register icon
   icon = avt_load_image_xpm (akfavatar_xpm);
   SDL_WM_SetIcon (icon, NULL);
   SDL_FreeSurface (icon);
@@ -7025,7 +7025,7 @@ avt_start (const char *title, const char *shortname, int mode)
     {
       screen = SDL_SetVideoMode (0, 0, COLORDEPTH, screenflags);
 
-      /* fallback if 0,0 is not supported yet (before SDL-1.2.10) */
+      // fallback if 0,0 is not supported yet (before SDL-1.2.10)
       if (screen && (screen->w == 0 || screen->h == 0))
 	screen =
 	  SDL_SetVideoMode (MINIMALWIDTH, MINIMALHEIGHT, COLORDEPTH,
@@ -7049,8 +7049,8 @@ avt_start (const char *title, const char *shortname, int mode)
       return _avt_STATUS;
     }
 
-  /* size of the window (not to be confused with the variable window */
-  windowmode_size.x = windowmode_size.y = 0;	/* unused */
+  // size of the window (not to be confused with the variable window
+  windowmode_size.x = windowmode_size.y = 0;	// unused
   windowmode_size.w = screen->w;
   windowmode_size.h = screen->h;
 
@@ -7062,10 +7062,10 @@ avt_start (const char *title, const char *shortname, int mode)
 				 avt_green (backgroundcolornr),
 				 avt_blue (backgroundcolornr));
 
-  /* fill the whole screen with background color */
+  // fill the whole screen with background color
   avt_clear_screen ();
 
-  /* reserve memory for one character */
+  // reserve memory for one character
   avt_character = SDL_CreateRGBSurface (SDL_SWSURFACE, fontwidth, fontheight,
 					1, 0, 0, 0, 0);
 
@@ -7078,7 +7078,7 @@ avt_start (const char *title, const char *shortname, int mode)
 
   avt_normal_text ();
 
-  /* prepare text-mode cursor */
+  // prepare text-mode cursor
   avt_text_cursor =
     SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_SRCALPHA | SDL_RLEACCEL,
 			  fontwidth, fontheight, 8, 0, 0, 0, 128);
@@ -7091,16 +7091,16 @@ avt_start (const char *title, const char *shortname, int mode)
       return _avt_STATUS;
     }
 
-  /* set color table for character canvas */
+  // set color table for character canvas
   SDL_FillRect (avt_text_cursor, NULL, 0);
   SDL_SetColors (avt_text_cursor, &cursor_color, 0, 1);
   SDL_SetAlpha (avt_text_cursor, SDL_SRCALPHA | SDL_RLEACCEL, 128);
 
-  /* set actual balloon size to the maximum size */
+  // set actual balloon size to the maximum size
   balloonheight = balloonmaxheight;
   balloonwidth = AVT_LINELENGTH;
 
-  /* reserve space for character under text-mode cursor */
+  // reserve space for character under text-mode cursor
   avt_cursor_character =
     SDL_CreateRGBSurface (SDL_SWSURFACE, fontwidth, fontheight,
 			  screen->format->BitsPerPixel,
@@ -7127,21 +7127,21 @@ avt_start (const char *title, const char *shortname, int mode)
 			avt_rgb (ballooncolor_RGB.r, ballooncolor_RGB.g,
 				 ballooncolor_RGB.b));
 
-  /* needed to get the character of the typed key */
+  // needed to get the character of the typed key
   SDL_EnableUNICODE (1);
 
-  /* key repeat mode */
+  // key repeat mode
   SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
-  /* ignore what we don't use */
+  // ignore what we don't use
   SDL_EventState (SDL_MOUSEMOTION, SDL_IGNORE);
   SDL_EventState (SDL_KEYUP, SDL_IGNORE);
 
-  /* visual flash for the alert */
-  /* when you initialize the audio stuff, you get an audio alert */
+  // visual flash for the alert
+  // when you initialize the audio stuff, you get an audio alert
   avt_alert_func = avt_flash;
 
-  /* initialize tab stops */
+  // initialize tab stops
   avt_reset_tab_stops ();
 
   return _avt_STATUS;

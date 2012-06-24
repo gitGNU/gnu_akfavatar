@@ -19,7 +19,7 @@
  */
 
 
-/* ATTENTION: coordinates are 1-based externally, but internally 0-based */
+// ATTENTION: coordinates are 1-based externally, but internally 0-based
 
 #define _ISOC99_SOURCE
 #define _POSIX_C_SOURCE 200112L
@@ -56,23 +56,23 @@ struct color
 typedef struct graphic
 {
   int width, height;
-  int thickness;		/* thickness of pen */
-  int htextalign, vtextalign;	/* alignment for text */
-  double penx, peny;		/* position of pen */
-  double heading;		/* heading of the turtle */
-  struct color color;		/* drawing color */
-  struct color background;	/* background color */
+  int thickness;		// thickness of pen
+  int htextalign, vtextalign;	// alignment for text
+  double penx, peny;		// position of pen
+  double heading;		// heading of the turtle
+  struct color color;		// drawing color
+  struct color background;	// background color
   struct color data[1];
 } graphic;
 
-/* Bytes per pixel (3=RGB) */
+// Bytes per pixel (3=RGB)
 #define BPP 3
 
 #ifndef M_PI
 #define M_PI  3.14159265358979323846
 #endif
 
-/* convert degree to radians */
+// convert degree to radians
 #define RAD(x)  ((x) * M_PI / 180.0)
 
 #define GRAPHICDATA "AKFAvatar-graphic"
@@ -88,14 +88,14 @@ typedef struct graphic
   luaL_getmetatable ((L), GRAPHICDATA); \
   lua_setmetatable ((L), -2)
 
-/* force value to be in range */
+// force value to be in range
 #define RANGE(v, min, max)  ((v) < (min) ? (min) : (v) > (max) ? (max) : (v))
 
 #define visible_x(gr, x)  ((x) >= 0 && (x) < (gr)->width)
 #define visible_y(gr, y)  ((y) >= 0 && (y) < (gr)->height)
 #define visible(gr, x, y)  (visible_x(gr, x) && visible_y(gr, y))
 
-/* set pen position */
+// set pen position
 #define penpos(gr, x, y)  (gr)->penx = (x); (gr)->peny = (y)
 #define center(gr) \
   do { \
@@ -103,11 +103,11 @@ typedef struct graphic
     (gr)->peny = ((double) (gr)->height) / 2.0 - 1.0; \
   } while(0)
 
-/* fast putpixel with color, no check */
+// fast putpixel with color, no check
 #define putpixelcolor(gr, x, y, width, col) \
   *((gr)->data + ((int)(y) * (width)) + (int)(x)) = (col)
 
-/* fast putpixel, no check */
+// fast putpixel, no check
 #define putpixel(gr, x, y) \
   putpixelcolor ((gr), (x), (y), (gr)->width, (gr)->color)
 
@@ -150,7 +150,7 @@ bar (graphic * gr, int x1, int y1, int x2, int y2)
   data = gr->data;
   color = gr->color;
 
-  /* sanitize values */
+  // sanitize values
   x1 = RANGE (x1, 0, width - 1);
   y1 = RANGE (y1, 0, height - 1);
   x2 = RANGE (x2, 0, width - 1);
@@ -192,18 +192,18 @@ disc (graphic * gr, double x, double y, double radius)
       x2 = (int) (x + xv);
       y2 = (int) (y + yv);
 
-      /* sanitize values */
+      // sanitize values
       x1 = RANGE (x1, 0, width - 1);
       y1 = RANGE (y1, 0, height - 1);
       x2 = RANGE (x2, 0, width - 1);
       y2 = RANGE (y2, 0, height - 1);
 
-      /* upper half */
+      // upper half
       p = data + (y1 * width) + x1;
       for (i = x1; i <= x2; i++)
 	*p++ = color;
 
-      /* lower half */
+      // lower half
       p = data + (y2 * width) + x1;
       for (i = x1; i <= x2; i++)
 	*p++ = color;
@@ -218,7 +218,7 @@ disc (graphic * gr, double x, double y, double radius)
   } while(0)
 
 
-/* local gr, width, height = graphic.new([width, height]) */
+// local gr, width, height = graphic.new([width, height])
 static int
 lgraphic_new (lua_State * L)
 {
@@ -235,10 +235,10 @@ lgraphic_new (lua_State * L)
   gr->width = width;
   gr->height = height;
 
-  /* black color */
+  // black color
   gr->color.red = gr->color.green = gr->color.blue = 0;
 
-  /* pen in center */
+  // pen in center
   center (gr);
   gr->thickness = 1 - 1;
 
@@ -305,7 +305,7 @@ lgraphic_clear (lua_State * L)
 }
 
 
-/* gr:color(colorname) */
+// gr:color(colorname)
 static int
 lgraphic_color (lua_State * L)
 {
@@ -326,7 +326,7 @@ lgraphic_color (lua_State * L)
 }
 
 
-/* gr:rgb(red, green, blue) */
+// gr:rgb(red, green, blue)
 static int
 lgraphic_rgb (lua_State * L)
 {
@@ -355,7 +355,7 @@ lgraphic_rgb (lua_State * L)
 }
 
 
-/* gr:eraser() */
+// gr:eraser()
 static int
 lgraphic_eraser (lua_State * L)
 {
@@ -368,7 +368,7 @@ lgraphic_eraser (lua_State * L)
 }
 
 
-/* gr:thickness(size) */
+// gr:thickness(size)
 static int
 lgraphic_thickness (lua_State * L)
 {
@@ -381,7 +381,7 @@ lgraphic_thickness (lua_State * L)
 }
 
 
-/* x, y = gr:pen_position () */
+// x, y = gr:pen_position ()
 static int
 lgraphic_pen_position (lua_State * L)
 {
@@ -394,20 +394,20 @@ lgraphic_pen_position (lua_State * L)
 }
 
 
-/* gr:moveto (x, y) */
+// gr:moveto (x, y)
 static int
 lgraphic_moveto (lua_State * L)
 {
   graphic *gr = get_graphic (L, 1);
 
-  /* a pen outside the field is allowed! */
+  // a pen outside the field is allowed!
   penpos (gr, luaL_checknumber (L, 2) - 1.0, luaL_checknumber (L, 3) - 1.0);
 
   return 0;
 }
 
 
-/* gr:moverel (x, y) */
+// gr:moverel (x, y)
 static int
 lgraphic_moverel (lua_State * L)
 {
@@ -421,8 +421,8 @@ lgraphic_moverel (lua_State * L)
 }
 
 
-/* gr:center () */
-/* gr:home () */
+// gr:center ()
+// gr:home ()
 static int
 lgraphic_center (lua_State * L)
 {
@@ -443,7 +443,7 @@ vertical_line (graphic * gr, int x, int y1, int y2)
 
   if (visible_x (gr, x))
     {
-      if (y1 > y2)		/* swap */
+      if (y1 > y2)		// swap
 	{
 	  int ty = y1;
 	  y1 = y2;
@@ -480,7 +480,7 @@ horizontal_line (graphic * gr, int x1, int x2, int y)
 
   if (visible_y (gr, y))
     {
-      if (x1 > x2)		/* swap */
+      if (x1 > x2)		// swap
 	{
 	  int tx = x1;
 	  x1 = x2;
@@ -519,11 +519,11 @@ sloped_line (graphic * gr, double x1, double x2, double y1, double y2)
   dx = fabs (x2 - x1);
   dy = fabs (y2 - y1);
 
-  if (dx > dy)			/* x steps 1 */
+  if (dx > dy)			// x steps 1
     {
       double delta_y;
 
-      if (x1 > x2)		/* swap start and end point */
+      if (x1 > x2)		// swap start and end point
 	{
 	  double tx, ty;
 
@@ -539,7 +539,7 @@ sloped_line (graphic * gr, double x1, double x2, double y1, double y2)
       dy = y2 - y1;
       delta_y = dy / dx;
 
-      /* sanitize range of x */
+      // sanitize range of x
       if (x1 < 0.0)
 	{
 	  y1 -= delta_y * x1;
@@ -569,11 +569,11 @@ sloped_line (graphic * gr, double x1, double x2, double y1, double y2)
 	    }
 	}
     }
-  else				/* y steps 1 */
+  else				// y steps 1
     {
       double delta_x;
 
-      if (y1 > y2)		/* swap start and end point */
+      if (y1 > y2)		// swap start and end point
 	{
 	  double tx, ty;
 
@@ -589,7 +589,7 @@ sloped_line (graphic * gr, double x1, double x2, double y1, double y2)
       dx = x2 - x1;
       delta_x = dx / dy;
 
-      /* sanitize range of y */
+      // sanitize range of y
       if (y1 < 0.0)
 	{
 	  x1 -= delta_x * y1;
@@ -632,7 +632,7 @@ line (graphic * gr, double x1, double y1, double x2, double y2)
   ix2 = (int) x2;
   iy2 = (int) y2;
 
-  if (ix1 == ix2 && iy1 == iy2)	/* one dot */
+  if (ix1 == ix2 && iy1 == iy2)	// one dot
     {
       if (visible (gr, ix1, iy1))
 	putdot (gr, ix1, iy1);
@@ -646,7 +646,7 @@ line (graphic * gr, double x1, double y1, double x2, double y2)
 }
 
 
-/* gr:line (x1, y1, x2, y2) */
+// gr:line (x1, y1, x2, y2)
 static int
 lgraphic_line (lua_State * L)
 {
@@ -666,7 +666,7 @@ lgraphic_line (lua_State * L)
 }
 
 
-/* gr:lineto (x, y) */
+// gr:lineto (x, y)
 static int
 lgraphic_lineto (lua_State * L)
 {
@@ -684,7 +684,7 @@ lgraphic_lineto (lua_State * L)
 }
 
 
-/* gr:linerel (x, y) */
+// gr:linerel (x, y)
 static int
 lgraphic_linerel (lua_State * L)
 {
@@ -704,7 +704,7 @@ lgraphic_linerel (lua_State * L)
 }
 
 
-/* gr:putpixel ([x, y]) */
+// gr:putpixel ([x, y])
 static int
 lgraphic_putpixel (lua_State * L)
 {
@@ -722,7 +722,7 @@ lgraphic_putpixel (lua_State * L)
 }
 
 
-/* gr:getpixel ([x, y]) */
+// gr:getpixel ([x, y])
 static int
 lgraphic_getpixel (lua_State * L)
 {
@@ -743,7 +743,7 @@ lgraphic_getpixel (lua_State * L)
       lua_pushstring (L, color);
       return 1;
     }
-  else				/* outside */
+  else				// outside
     {
       lua_pushnil (L);
       lua_pushliteral (L, "outside of graphic");
@@ -752,7 +752,7 @@ lgraphic_getpixel (lua_State * L)
 }
 
 
-/* gr:getpixelrgb ([x, y]) */
+// gr:getpixelrgb ([x, y])
 static int
 lgraphic_getpixelrgb (lua_State * L)
 {
@@ -772,7 +772,7 @@ lgraphic_getpixelrgb (lua_State * L)
       lua_pushinteger (L, (int) p->blue);
       return 3;
     }
-  else				/* outside */
+  else				// outside
     {
       lua_pushnil (L);
       lua_pushliteral (L, "outside of graphic");
@@ -781,7 +781,7 @@ lgraphic_getpixelrgb (lua_State * L)
 }
 
 
-/* gr:putdot ([x, y]) */
+// gr:putdot ([x, y])
 static int
 lgraphic_putdot (lua_State * L)
 {
@@ -792,7 +792,7 @@ lgraphic_putdot (lua_State * L)
   x = luaL_optint (L, 2, (int) gr->penx + 1) - 1;
   y = luaL_optint (L, 3, (int) gr->peny + 1) - 1;
 
-  /* macros evaluate the values more than once! */
+  // macros evaluate the values more than once!
   if (visible (gr, x, y))
     {
       if (gr->thickness > 0)
@@ -805,7 +805,7 @@ lgraphic_putdot (lua_State * L)
 }
 
 
-/* gr:bar (x1, y1, x2, y2) */
+// gr:bar (x1, y1, x2, y2)
 static int
 lgraphic_bar (lua_State * L)
 {
@@ -825,7 +825,7 @@ lgraphic_bar (lua_State * L)
 }
 
 
-/* gr:rectangle (x1, y1, x2, y2) */
+// gr:rectangle (x1, y1, x2, y2)
 static int
 lgraphic_rectangle (lua_State * L)
 {
@@ -847,7 +847,7 @@ lgraphic_rectangle (lua_State * L)
   return 0;
 }
 
-/* gr:arc (radius [,angle1] [,angle2]) */
+// gr:arc (radius [,angle1] [,angle2])
 static int
 lgraphic_arc (lua_State * L)
 {
@@ -859,17 +859,17 @@ lgraphic_arc (lua_State * L)
 
   radius = luaL_checknumber (L, 2);
 
-  if (lua_isnoneornil (L, 3))	/* no angles given */
+  if (lua_isnoneornil (L, 3))	// no angles given
     {
       startangle = 0;
-      endangle = 360;		/* full circle */
+      endangle = 360;		// full circle
     }
-  else if (lua_isnoneornil (L, 4))	/* one angle given */
+  else if (lua_isnoneornil (L, 4))	// one angle given
     {
       startangle = gr->heading;
       endangle = luaL_checknumber (L, 3);
     }
-  else				/* two angles given */
+  else				// two angles given
     {
       startangle = luaL_checknumber (L, 3);
       endangle = luaL_checknumber (L, 4);
@@ -898,7 +898,7 @@ lgraphic_arc (lua_State * L)
 }
 
 
-/* gr:disc(radius [,x,y]) */
+// gr:disc(radius [,x,y])
 static int
 lgraphic_disc (lua_State * L)
 {
@@ -927,8 +927,8 @@ lgraphic_show (lua_State * L)
     }
   else if (status == AVT_QUIT)
     {
-      /* no actual error, so no error message */
-      /* this is handled by the calling program */
+      // no actual error, so no error message
+      // this is handled by the calling program
       lua_pushnil (L);
       return lua_error (L);
     }
@@ -981,7 +981,7 @@ lgraphic_font_size (lua_State * L)
 }
 
 
-/* gr:text (string [,x ,y]) */
+// gr:text (string [,x ,y])
 static int
 lgraphic_text (lua_State * L)
 {
@@ -1014,7 +1014,7 @@ lgraphic_text (lua_State * L)
       break;
     }
 
-  /* vertically outside visible area? (cannot show partly) */
+  // vertically outside visible area? (cannot show partly)
   if (y < 0 || y >= gr->height - fontheight)
     return 0;
 
@@ -1036,7 +1036,7 @@ lgraphic_text (lua_State * L)
       break;
     }
 
-  /* horizontally outside visible area? (cannot show partly) */
+  // horizontally outside visible area? (cannot show partly)
   if (wclen <= 0 || x >= gr->width - fontwidth || x + (wclen * fontwidth) < 0)
     {
       avt_free (wctext);
@@ -1045,7 +1045,7 @@ lgraphic_text (lua_State * L)
 
   wc = wctext;
 
-  /* crop text as neccessary */
+  // crop text as neccessary
   if (x < 0)
     {
       int pixels = fontwidth - x + 1;
@@ -1058,7 +1058,7 @@ lgraphic_text (lua_State * L)
   if (wclen > (gr->width - x) / fontwidth)
     wclen = (gr->width - x) / fontwidth;
 
-  if (fontwidth > 8)		/* 2 bytes per character */
+  if (fontwidth > 8)		// 2 bytes per character
     {
       struct color color = gr->color;
       int width = gr->width;
@@ -1081,7 +1081,7 @@ lgraphic_text (lua_State * L)
 	    }
 	}
     }
-  else				/* fontwidth <= 8 */
+  else				// fontwidth <= 8
     {
       struct color color = gr->color;
       int width = gr->width;
@@ -1111,7 +1111,7 @@ lgraphic_text (lua_State * L)
 }
 
 
-/* gr:textalign (horizontal, vertical) */
+// gr:textalign (horizontal, vertical)
 static int
 lgraphic_textalign (lua_State * L)
 {
@@ -1126,7 +1126,7 @@ lgraphic_textalign (lua_State * L)
   return 0;
 }
 
-/* gr:heading(degree) */
+// gr:heading(degree)
 static int
 lgraphic_heading (lua_State * L)
 {
@@ -1148,7 +1148,7 @@ lgraphic_heading (lua_State * L)
 }
 
 
-/* degree = gr:get_heading() */
+// degree = gr:get_heading()
 static int
 lgraphic_get_heading (lua_State * L)
 {
@@ -1161,7 +1161,7 @@ lgraphic_get_heading (lua_State * L)
 }
 
 
-/* gr:right(degree) */
+// gr:right(degree)
 static int
 lgraphic_right (lua_State * L)
 {
@@ -1182,7 +1182,7 @@ lgraphic_right (lua_State * L)
 }
 
 
-/* gr:left(degree) */
+// gr:left(degree)
 static int
 lgraphic_left (lua_State * L)
 {
@@ -1203,7 +1203,7 @@ lgraphic_left (lua_State * L)
 }
 
 
-/* gr:draw(steps) */
+// gr:draw(steps)
 static int
 lgraphic_draw (lua_State * L)
 {
@@ -1228,7 +1228,7 @@ lgraphic_draw (lua_State * L)
 }
 
 
-/* gr:move(steps) */
+// gr:move(steps)
 static int
 lgraphic_move (lua_State * L)
 {
@@ -1245,7 +1245,7 @@ lgraphic_move (lua_State * L)
 }
 
 
-/* gr:put(graphic [, xoffset, yoffset]) */
+// gr:put(graphic [, xoffset, yoffset])
 static int
 lgraphic_put (lua_State * L)
 {
@@ -1258,7 +1258,7 @@ lgraphic_put (lua_State * L)
   gr2 = get_graphic (L, 2);
 
   if (gr == gr2)
-    return 0;			/* do nothing */
+    return 0;			// do nothing
 
   xoffset = luaL_optint (L, 3, 1) - 1;
   yoffset = luaL_optint (L, 4, 1) - 1;
@@ -1270,7 +1270,7 @@ lgraphic_put (lua_State * L)
   source_height = gr2->height;
   target_height = gr->height;
 
-  /* which line to start with? */
+  // which line to start with?
   if (yoffset < 0)
     {
       source += abs (yoffset) * source_width;
@@ -1278,16 +1278,16 @@ lgraphic_put (lua_State * L)
       yoffset = 0;
     }
 
-  /* how many lines to copy? */
+  // how many lines to copy?
   if (target_height > source_height + yoffset)
     lines = source_height;
   else
     lines = target_height - yoffset;
 
   if (lines <= 0)
-    return 0;			/* nothing to copy */
+    return 0;			// nothing to copy
 
-  /* same width and no x-offset can be optimized */
+  // same width and no x-offset can be optimized
   if (source_width == target_width && xoffset == 0)
     {
       memcpy (target + (yoffset * target_width), source,
@@ -1296,7 +1296,7 @@ lgraphic_put (lua_State * L)
   else
     {
       int bytes;
-      int xstart, show_width;	/* for horizontal cropping */
+      int xstart, show_width;	// for horizontal cropping
 
       xstart = 0;
       show_width = source_width;
@@ -1308,7 +1308,7 @@ lgraphic_put (lua_State * L)
 	  xoffset = 0;
 	}
 
-      /* how many bytes per line? */
+      // how many bytes per line?
       if (target_width > show_width + xoffset)
 	bytes = show_width * BPP;
       else
@@ -1328,7 +1328,7 @@ lgraphic_put (lua_State * L)
 }
 
 
-/* gr:put_transparency(graphic [, xoffset, yoffset]) */
+// gr:put_transparency(graphic [, xoffset, yoffset])
 static int
 lgraphic_put_transparency (lua_State * L)
 {
@@ -1341,7 +1341,7 @@ lgraphic_put_transparency (lua_State * L)
   gr2 = get_graphic (L, 2);
 
   if (gr == gr2)
-    return 0;			/* do nothing */
+    return 0;			// do nothing
 
   xoffset = luaL_optint (L, 3, 1) - 1;
   yoffset = luaL_optint (L, 4, 1) - 1;
@@ -1353,7 +1353,7 @@ lgraphic_put_transparency (lua_State * L)
   source_height = gr2->height;
   target_height = gr->height;
 
-  /* which line to start with? */
+  // which line to start with?
   if (yoffset < 0)
     {
       source += abs (yoffset) * source_width;
@@ -1361,7 +1361,7 @@ lgraphic_put_transparency (lua_State * L)
       yoffset = 0;
     }
 
-  /* how many lines to copy? */
+  // how many lines to copy?
   if (target_height > source_height + yoffset)
     lines = source_height;
   else
@@ -1370,7 +1370,7 @@ lgraphic_put_transparency (lua_State * L)
   if (lines > 0)
     {
       int x, y;
-      int xstart, show_width;	/* for horizontal cropping */
+      int xstart, show_width;	// for horizontal cropping
       struct color foreground, background;
       struct color *ps, *pt;
 
@@ -1404,7 +1404,7 @@ lgraphic_put_transparency (lua_State * L)
 }
 
 
-/* gr:get(x1, y1, x2, y2) */
+// gr:get(x1, y1, x2, y2)
 static int
 lgraphic_get (lua_State * L)
 {
@@ -1429,14 +1429,14 @@ lgraphic_get (lua_State * L)
   luaL_argcheck (L, x2 >= 0 && x2 < source_width, 4, "value out of range");
   luaL_argcheck (L, y2 >= 0 && y2 < source_height, 5, "value out of range");
 
-  if (x1 > x2)			/* swap */
+  if (x1 > x2)			// swap
     {
       int tx = x1;
       x1 = x2;
       x2 = tx;
     }
 
-  if (y1 > y2)			/* swap */
+  if (y1 > y2)			// swap
     {
       int ty = y1;
       y1 = y2;
@@ -1452,7 +1452,7 @@ lgraphic_get (lua_State * L)
   gr2->color = gr->color;
   gr2->background = gr->background;
 
-  /* pen in center */
+  // pen in center
   penpos (gr2, target_width / 2 - 1, target_height / 2 - 1);
   gr2->thickness = gr->thickness;
 
@@ -1502,28 +1502,28 @@ lgraphic_shift_vertically (lua_State * L)
   height = gr->height;
   lines = luaL_checkint (L, 2);
 
-  /* move pen position */
+  // move pen position
   gr->peny += (double) lines;
 
-  if (abs (lines) >= height)	/* clear all */
+  if (abs (lines) >= height)	// clear all
     {
       lines = height;
       area = data;
     }
-  else if (lines > 0)		/* move down */
+  else if (lines > 0)		// move down
     {
       memmove (data + (lines * width), data, (height - lines) * width * BPP);
       area = data;
     }
-  else if (lines < 0)		/* move up */
+  else if (lines < 0)		// move up
     {
-      lines = -lines;		/* make lines positive */
+      lines = -lines;		// make lines positive
       memmove (data, data + (lines * width), (height - lines) * width * BPP);
       area = data + ((height - lines) * width);
     }
-  /* do nothing if lines == 0 */
+  // do nothing if lines == 0
 
-  /* clear the area */
+  // clear the area
   if (area)
     {
       int i;
@@ -1552,28 +1552,28 @@ lgraphic_shift_horizontally (lua_State * L)
   height = gr->height;
   columns = luaL_checkint (L, 2);
 
-  /* move pen position */
+  // move pen position
   gr->penx += (double) columns;
 
-  if (abs (columns) >= width)	/* clear all */
+  if (abs (columns) >= width)	// clear all
     {
       columns = width;
       area = data;
     }
-  else if (columns > 0)		/* move right */
+  else if (columns > 0)		// move right
     {
       memmove (data + columns, data, ((width * height) - columns) * BPP);
       area = data;
     }
-  else if (columns < 0)		/* move left */
+  else if (columns < 0)		// move left
     {
-      columns = -columns;	/* make columns positive */
+      columns = -columns;	// make columns positive
       memmove (data, data + columns, ((width * height) - columns) * BPP);
       area = data + width - columns;
     }
-  /* do nothing if columns == 0 */
+  // do nothing if columns == 0
 
-  /* clear the area */
+  // clear the area
   if (area)
     {
       int x, y;
