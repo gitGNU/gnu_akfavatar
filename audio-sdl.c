@@ -60,10 +60,9 @@ static bool avt_audio_initialized;
 
 // current sound
 static struct avt_audio current_sound;
-static SDL_AudioSpec audiospec;
 static volatile int32_t soundpos = 0;	// Current play position
-static volatile int32_t soundleft = 0;	// Length of left unplayed wave data
-static bool loop = false;
+static volatile int32_t soundleft = 0;	// Length of left unplayed audio data
+static volatile bool loop = false;
 static volatile bool playing = false;
 
 // this is the callback function
@@ -79,7 +78,7 @@ fill_audio (void *userdata, uint8_t * stream, int len)
 	  soundpos = 0;
 	  soundleft = current_sound.length;
 	}
-      else			// no more data
+      else			// finished
 	{
 	  SDL_Event event;
 
@@ -87,7 +86,7 @@ fill_audio (void *userdata, uint8_t * stream, int len)
 	  playing = false;
 	  event.type = SDL_USEREVENT;
 	  event.user.code = AVT_AUDIO_ENDED;
-	  event.user.data1 = event.user.data2 = NULL;
+	  event.user.data1 = event.user.data2 = userdata;	// not really used
 	  SDL_PushEvent (&event);
 	  return;
 	}
@@ -197,6 +196,8 @@ avt_audio_playing (avt_audio * snd)
 extern int
 avt_play_audio (avt_audio * snd, int playmode)
 {
+  SDL_AudioSpec audiospec;
+
   if (!avt_audio_initialized)
     return _avt_STATUS;
 
@@ -233,7 +234,7 @@ avt_play_audio (avt_audio * snd, int playmode)
   audiospec.channels = snd->channels;
   audiospec.callback = fill_audio;
   audiospec.samples = OUTPUT_BUFFER;
-  audiospec.userdata = &current_sound;
+  audiospec.userdata = &current_sound;	// not really used
 
   loop = (playmode == AVT_LOOP);
 
