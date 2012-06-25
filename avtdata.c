@@ -35,13 +35,23 @@
 #define AVT_DATA_MEMORY 2
 
 
-struct avt_data
+union avt_data
 {
-  FILE *stream;
-  const char *memory;
-
-  size_t position, start, end;
   int type;
+
+  struct
+  {
+    int type;			// overlays type
+    FILE *data;
+    size_t start;
+  } stream;
+
+  struct
+  {
+    int type;			// overlays type
+    const unsigned char *data;
+    size_t position, end;
+  } memory;
 };
 
 
@@ -49,12 +59,9 @@ extern void
 avt_data_close (avt_data * d)
 {
   if (AVT_DATA_STREAM == d->type)
-    {
-      fclose (d->stream);
-      d->stream = NULL;
-    }
+    fclose (d->stream.data);
 
-  d->memory = NULL;
+  d->memory.data = NULL;
   d->type = AVT_DATA_CLOSED;
 }
 
@@ -67,19 +74,19 @@ avt_data_read (avt_data * d, void *data, size_t size, size_t number)
   switch (d->type)
     {
     case AVT_DATA_STREAM:
-      result = fread (data, size, number, d->stream);
+      result = fread (data, size, number, d->stream.data);
       break;
 
     case AVT_DATA_MEMORY:
       {
 	size_t all = size * number;
-	size_t position = d->position;
-	size_t end = d->end;
+	size_t position = d->memory.position;
+	size_t end = d->memory.end;
 
 	if (position + all <= end)	// all elements readable
 	  {
-	    memcpy (data, d->memory + position, all);
-	    d->position += all;
+	    memcpy (data, d->memory.data + position, all);
+	    d->memory.position += all;
 	    result = number;
 	  }
 	else if (position <= end - size)	// at least 1 element readable
@@ -88,13 +95,13 @@ avt_data_read (avt_data * d, void *data, size_t size, size_t number)
 
 	    do
 	      {
-		memcpy (data, d->memory + position, size);
+		memcpy (data, d->memory.data + position, size);
 		position += size;
 		result++;
 	      }
 	    while (position <= end);
 
-	    d->position = position;
+	    d->memory.position = position;
 	  }
       }
       break;
@@ -172,12 +179,12 @@ avt_data_tell (avt_data * d)
   switch (d->type)
     {
     case AVT_DATA_STREAM:
-      result = ftell (d->stream) - d->start;
+      result = ftell (d->stream.data) - d->stream.start;
       break;
 
     case AVT_DATA_MEMORY:
-      if (d->position <= d->end)
-	result = d->position;
+      if (d->memory.position <= d->memory.end)
+	result = d->memory.position;
       break;
     }
 
@@ -194,20 +201,20 @@ avt_data_seek (avt_data * d, long offset, int whence)
     {
     case AVT_DATA_STREAM:
       if (SEEK_SET == whence)
-	offset += d->start;
+	offset += d->stream.start;
 
-      okay = (fseek (d->stream, offset, whence) > -1);
+      okay = (fseek (d->stream.data, offset, whence) > -1);
       break;
 
     case AVT_DATA_MEMORY:
       if (SEEK_SET == whence)
-	d->position = offset;
+	d->memory.position = offset;
       else if (SEEK_CUR == whence)
-	d->position += offset;
+	d->memory.position += offset;
       else if (SEEK_END == whence)
-	d->position = d->end - offset;
+	d->memory.position = d->memory.end - offset;
 
-      okay = (d->position <= d->end && d->position >= d->start);
+      okay = (d->memory.position <= d->memory.end);
       break;
     }
 
@@ -228,10 +235,8 @@ avt_data_open_stream (FILE * stream)
   if (d)
     {
       d->type = AVT_DATA_STREAM;
-      d->stream = stream;
-      d->memory = NULL;
-      d->start = ftell (stream);
-      d->end = d->position = -1;	// unused
+      d->stream.data = stream;
+      d->stream.start = ftell (stream);
     }
 
   return d;
@@ -258,10 +263,9 @@ avt_data_open_memory (const void *memory, size_t size)
   if (d)
     {
       d->type = AVT_DATA_MEMORY;
-      d->stream = NULL;
-      d->memory = (const char *) memory;
-      d->start = d->position = 0;	// start is always 0
-      d->end = size;
+      d->memory.data = (const unsigned char *) memory;
+      d->memory.position = 0;
+      d->memory.end = size;
     }
 
   return d;

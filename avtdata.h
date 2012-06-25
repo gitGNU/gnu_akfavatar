@@ -31,7 +31,7 @@
 #include <stdbool.h>
 #endif
 
-typedef struct avt_data avt_data;
+typedef union avt_data avt_data;
 
 avt_data *avt_data_open_stream (FILE * stream);
 avt_data *avt_data_open_file (const char *filename, const char *mode);
