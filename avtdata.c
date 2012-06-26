@@ -277,7 +277,7 @@ avt_data_open_memory (const void *memory, size_t size)
       d->type = AVT_DATA_MEMORY;
       d->memory.data = (const unsigned char *) memory;
       d->memory.position = 0;
-      d->memory.end = size;
+      d->memory.end = size - 1;
     }
 
   return d;

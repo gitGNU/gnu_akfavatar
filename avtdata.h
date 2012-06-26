@@ -34,7 +34,7 @@
 typedef union avt_data avt_data;
 
 // open a stream
-// in autoclose is true avt_data_close closes it with fclose
+// if autoclose is true avt_data_close closes the stream with fclose
 avt_data *avt_data_open_stream (FILE * stream, bool autoclose);
 
 // open a file for reading in binary mode
@@ -45,7 +45,7 @@ avt_data *avt_data_open_file (const char *filename);
 avt_data *avt_data_open_memory (const void *memory, size_t size);
 
 // closes the data construct
-// eventually also closes the stream, but doesn't fre the memory
+// eventually also closes the stream with fclose
 void avt_data_close (avt_data *d);
 
 // read data
