@@ -33,15 +33,26 @@
 
 typedef union avt_data avt_data;
 
-avt_data *avt_data_open_stream (FILE * stream);
-avt_data *avt_data_open_file (const char *filename, const char *mode);
+// open a stream
+// in autoclose is true avt_data_close closes it with fclose
+avt_data *avt_data_open_stream (FILE * stream, bool autoclose);
+
+// open a file for reading in binary mode
+avt_data *avt_data_open_file (const char *filename);
+
+// read data from memory
+// the memory area must be kept available until closed
 avt_data *avt_data_open_memory (const void *memory, size_t size);
 
+// closes the data construct
+// eventually also closes the stream, but doesn't fre the memory
 void avt_data_close (avt_data *d);
+
+// read data
+size_t avt_data_read (avt_data *d, void *data, size_t size, size_t number);
 
 bool avt_data_seek (avt_data *d, long offset, int whence);
 long avt_data_tell (avt_data *d);
-size_t avt_data_read (avt_data *d, void *data, size_t size, size_t number);
 
 // read values of specific size and endianness 
 // le = Little Endian, be = Big Endian

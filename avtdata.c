@@ -30,7 +30,6 @@
 #include <stdbool.h>
 #endif
 
-#define AVT_DATA_CLOSED 0
 #define AVT_DATA_STREAM 1
 #define AVT_DATA_MEMORY 2
 
@@ -44,6 +43,7 @@ union avt_data
     int type;			// overlays type
     FILE *data;
     size_t start;
+    bool autoclose;
   } stream;
 
   struct
@@ -58,11 +58,10 @@ union avt_data
 extern void
 avt_data_close (avt_data * d)
 {
-  if (AVT_DATA_STREAM == d->type)
+  if (AVT_DATA_STREAM == d->type && d->stream.autoclose)
     fclose (d->stream.data);
 
-  d->memory.data = NULL;
-  d->type = AVT_DATA_CLOSED;
+  free (d);
 }
 
 
@@ -223,7 +222,7 @@ avt_data_seek (avt_data * d, long offset, int whence)
 
 
 extern avt_data *
-avt_data_open_stream (FILE * stream)
+avt_data_open_stream (FILE * stream, bool autoclose)
 {
   avt_data *d;
 
@@ -237,6 +236,7 @@ avt_data_open_stream (FILE * stream)
       d->type = AVT_DATA_STREAM;
       d->stream.data = stream;
       d->stream.start = ftell (stream);
+      d->stream.autoclose = autoclose;
     }
 
   return d;
@@ -244,9 +244,9 @@ avt_data_open_stream (FILE * stream)
 
 
 extern avt_data *
-avt_data_open_file (const char *filename, const char *mode)
+avt_data_open_file (const char *filename)
 {
-  return avt_data_open_stream (fopen (filename, mode));
+  return avt_data_open_stream (fopen (filename, "rb"), true);
 }
 
 

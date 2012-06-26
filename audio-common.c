@@ -799,21 +799,21 @@ avt_load_audio_general (avt_data * src, uint32_t maxsize, int playmode)
 extern avt_audio *
 avt_load_audio_file (const char *file, int playmode)
 {
-  return avt_load_audio_general (avt_data_open_file (file, "rb"),
+  return avt_load_audio_general (avt_data_open_file (file),
 				 MAXIMUM_SIZE, playmode);
 }
 
 extern avt_audio *
 avt_load_audio_part (avt_stream * stream, size_t maxsize, int playmode)
 {
-  return avt_load_audio_general (avt_data_open_stream ((FILE *) stream),
+  return avt_load_audio_general (avt_data_open_stream ((FILE *) stream, false),
 				 maxsize, playmode);
 }
 
 extern avt_audio *
 avt_load_audio_stream (avt_stream * stream, int playmode)
 {
-  return avt_load_audio_general (avt_data_open_stream ((FILE *) stream),
+  return avt_load_audio_general (avt_data_open_stream ((FILE *) stream, false),
 				 MAXIMUM_SIZE, playmode);
 }
 

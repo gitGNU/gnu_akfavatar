@@ -957,6 +957,7 @@ AVT_API avt_audio *avt_load_audio_file (const char *filename, int playmode);
 /*
  * loads audio in AU or Wave format from a stream
  * if maxsize is >0 it reads no more than this size
+ * the stream will not be closed
  * not for headerless formats
  */
 AVT_API avt_audio *avt_load_audio_part (avt_stream *stream, size_t maxsize, int playmode);
@@ -964,6 +965,7 @@ AVT_API avt_audio *avt_load_audio_part (avt_stream *stream, size_t maxsize, int 
 /*
  * loads audio in AU or Wave format from a stream
  * not for headerless formats
+ * the stream will not be closed
  */
 AVT_API avt_audio *avt_load_audio_stream (avt_stream *stream, int playmode);
 
