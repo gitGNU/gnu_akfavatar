@@ -1,5 +1,5 @@
 /*
- * data handling
+ * data reading abstraction
  * Copyright (c) 2012 Andreas K. Foerster <info@akfoerster.de>
  *
  * required standards: C99
@@ -58,10 +58,13 @@ union avt_data
 extern void
 avt_data_close (avt_data * d)
 {
-  if (AVT_DATA_STREAM == d->type && d->stream.autoclose)
-    fclose (d->stream.data);
+  if (d)
+    {
+      if (AVT_DATA_STREAM == d->type && d->stream.autoclose)
+	fclose (d->stream.data);
 
-  free (d);
+      free (d);
+    }
 }
 
 
@@ -69,6 +72,9 @@ extern size_t
 avt_data_read (avt_data * d, void *data, size_t size, size_t number)
 {
   size_t result = 0;
+
+  if (!d)
+    return 0;
 
   switch (d->type)
     {
@@ -175,6 +181,9 @@ avt_data_tell (avt_data * d)
 {
   long result = -1;
 
+  if (!d)
+    return -1;
+
   switch (d->type)
     {
     case AVT_DATA_STREAM:
@@ -195,6 +204,9 @@ extern bool
 avt_data_seek (avt_data * d, long offset, int whence)
 {
   bool okay = false;
+
+  if (!d)
+    return false;
 
   switch (d->type)
     {
