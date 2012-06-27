@@ -50,7 +50,8 @@ union avt_data
   {
     int type;			// overlays type
     const unsigned char *data;
-    size_t position, end;
+    size_t size;
+    size_t position;
   } memory;
 };
 
@@ -86,28 +87,24 @@ avt_data_read (avt_data * d, void *data, size_t size, size_t number)
       {
 	size_t all = size * number;
 	size_t position = d->memory.position;
-	size_t end = d->memory.end;
+	size_t datasize = d->memory.size;
 
-	if (position + all <= end)	// all elements readable
+	if (position + all > datasize)
 	  {
-	    memcpy (data, d->memory.data + position, all);
-	    d->memory.position += all;
-	    result = number;
-	  }
-	else if (position <= end - size)	// at least 1 element readable
-	  {
-	    end -= size;
-
-	    do
+	    // at least 1 element readable?
+	    if (position < datasize && (datasize - position) >= size)
 	      {
-		memcpy (data, d->memory.data + position, size);
-		position += size;
-		result++;
+		// integer division ignores the rest
+		number = (datasize - position) / size;
+		all = size * number;
 	      }
-	    while (position <= end);
-
-	    d->memory.position = position;
+	    else
+	      break;		// nothing readable
 	  }
+
+	memcpy (data, d->memory.data + position, all);
+	d->memory.position += all;
+	result = number;
       }
       break;
     }
@@ -191,7 +188,7 @@ avt_data_tell (avt_data * d)
       break;
 
     case AVT_DATA_MEMORY:
-      if (d->memory.position <= d->memory.end)
+      if (d->memory.position <= d->memory.size)
 	result = d->memory.position;
       break;
     }
@@ -223,9 +220,9 @@ avt_data_seek (avt_data * d, long offset, int whence)
       else if (SEEK_CUR == whence)
 	d->memory.position += offset;
       else if (SEEK_END == whence)
-	d->memory.position = d->memory.end - offset;
+	d->memory.position = d->memory.size - offset;
 
-      okay = (d->memory.position <= d->memory.end);
+      okay = (d->memory.position <= d->memory.size);
       break;
     }
 
@@ -277,7 +274,7 @@ avt_data_open_memory (const void *memory, size_t size)
       d->type = AVT_DATA_MEMORY;
       d->memory.data = (const unsigned char *) memory;
       d->memory.position = 0;
-      d->memory.end = size - 1;
+      d->memory.size = size;
     }
 
   return d;
