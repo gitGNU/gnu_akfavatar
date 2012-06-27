@@ -224,8 +224,8 @@ initialize (void)
 static void
 reset (void)
 {
+  avt_set_status (AVT_NORMAL);
   avt_clear_screen ();
-  avt_set_balloon_mode (AVT_SAY);
   avt_newline_mode (true);
   avt_set_auto_margin (true);
   avt_set_origin_mode (true);
@@ -238,7 +238,6 @@ reset (void)
   avt_normal_text ();
   avt_quit_audio ();
   avt_set_title ("Lua-AKFAvatar", "AKFAvatar");
-  avt_avatar_image_none ();
   avt_set_mouse_visible (true);
 }
 
@@ -370,12 +369,20 @@ ask_file (void)
   char lua_dir[4096 + 1];
   const char *ext;
 
+  avt_clear_screen ();
+  avt_avatar_image_xpm (akfavatar_logo_xpm);
+  avt_set_balloon_mode (AVT_SEPARATE);
   avt_set_balloon_size (0, 0);
+
   if (avta_file_selection (filename, sizeof (filename), &check_filename))
     return false;
 
   if (*filename)
     {
+      avt_clear_screen ();
+      avt_avatar_image_none ();
+      avt_set_balloon_mode (AVT_SAY);
+
       if (!getcwd (lua_dir, sizeof (lua_dir)))
 	lua_dir[0] = '\0';
 
@@ -412,6 +419,12 @@ ask_file (void)
       if (lua_dir[0] != '\0')
 	chdir (lua_dir);
 
+      // script may have called avt.quit()
+      if (avt_initialized ())
+	reset ();
+      else
+	initialize ();
+
       return true;		// run this again
     }
 
@@ -421,6 +434,7 @@ ask_file (void)
 static void
 start_screen (void)
 {
+  avt_clear_screen ();
   avt_avatar_image_xpm (akfavatar_logo_xpm);
   avt_set_balloon_mode (AVT_SEPARATE);
   avt_set_balloon_size (9, 80);
@@ -457,8 +471,6 @@ start_screen (void)
 
   if (avt_wait_button () != AVT_NORMAL)
     exit (EXIT_SUCCESS);
-  avt_avatar_image_none ();
-  avt_set_balloon_mode (AVT_SAY);
 }
 
 static void
@@ -588,13 +600,6 @@ main (int argc, char **argv)
 	  // restart Lua
 	  lua_close (L);
 	  initialize_lua ();
-
-	  // script may have called avt.quit()
-	  // also closing Lua may have accidently closed AKFAvatar
-	  if (avt_initialized ())
-	    reset ();
-	  else
-	    initialize ();
 
 	  handle_require_options (argc, argv);
 	}
