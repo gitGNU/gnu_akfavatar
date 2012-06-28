@@ -62,6 +62,12 @@ extern "C"
 #define EXT_EXEC  ".avtexe"
 #define EXT_ABOUT ".about"
 
+#define COLOR_BACKGROUND  0xE0D5C5  // "default"
+#define COLOR_ERROR       0xFFAAAA
+#define COLOR_SAY         0xFFFAF0  // "floral white"
+#define COLOR_TEXT        0xD2B48C  // "tan"
+#define COLOR_START       COLOR_TEXT
+
 static lua_State *L;
 static int mode = AVT_AUTOMODE;
 static char *directory;
@@ -106,7 +112,7 @@ error_box (const char *msg)
 {
   avt_set_status (AVT_NORMAL);
   avt_avatar_image_none ();
-  avt_set_balloon_color (0xFFAAAA);
+  avt_set_balloon_color (COLOR_ERROR);
   avt_normal_text ();
   avt_set_auto_margin (true);
   avt_set_scroll_mode (-1);
@@ -231,8 +237,8 @@ reset (void)
   avt_set_origin_mode (true);
   avt_set_scroll_mode (1);
   avt_reserve_single_keys (false);
-  avt_set_background_color (avt_colorname ("default"));
-  avt_set_balloon_color (avt_colorname ("floral white"));
+  avt_set_background_color (COLOR_BACKGROUND);
+  avt_set_balloon_color (COLOR_SAY);
   avt_markup (false);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
   avt_normal_text ();
@@ -357,7 +363,7 @@ show_text (const char *filename)
 {
   avt_avatar_image_none ();
   avt_set_balloon_size (0, 0);
-  avt_set_balloon_color (avt_colorname ("tan"));
+  avt_set_balloon_color (COLOR_TEXT);
   // text file must be UTF-8 encoded (or plain ASCII)
   avta_pager_file (filename, 1);
 }
@@ -370,6 +376,7 @@ ask_file (void)
   const char *ext;
 
   avt_clear_screen ();
+  avt_set_balloon_color (COLOR_SAY);
   avt_avatar_image_xpm (akfavatar_logo_xpm);
   avt_set_balloon_mode (AVT_SEPARATE);
   avt_set_balloon_size (0, 0);
@@ -435,6 +442,7 @@ static void
 start_screen (void)
 {
   avt_clear_screen ();
+  avt_set_balloon_color (COLOR_START);
   avt_avatar_image_xpm (akfavatar_logo_xpm);
   avt_set_balloon_mode (AVT_SEPARATE);
   avt_set_balloon_size (9, 80);
