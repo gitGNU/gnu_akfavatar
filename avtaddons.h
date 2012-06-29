@@ -19,9 +19,6 @@
  */
 
 /*
- * This library is not so strictly handled as the main library.
- * This library uses the libc directly and can use system-specific
- * functions.
  * Not all parts of this library are available on all platforms!
  */
 
@@ -163,6 +160,17 @@ AVT_ADDON avt_audio *avta_load_vorbis_stream (avt_stream *stream,
                                               size_t size,
                                               int playmode);
 
+
+/**********************************************************************
+ * Section: language
+ * getting a language code for messages
+ **********************************************************************/
+
+/*
+ * returns 2-letter language code according ISO 639-1
+ * or NULL if unknown
+ */
+AVT_ADDON char *avta_get_language (void);
 
 /**********************************************************************
  * Section: arch

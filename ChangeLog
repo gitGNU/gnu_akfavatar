@@ -1,3 +1,7 @@
+2012-06-29  Andreas K. Foerster  <info@akfoerster.de>
+
+	* langposix.c, mingw/langwindows.c: new files
+
 2012-06-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* audio-sdl.c: more steps for SDL independence

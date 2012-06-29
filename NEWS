@@ -58,7 +58,8 @@
     - avta_arch_get_data: rewritten
     - avta_load_vorbis_file, avta_load_vorbis_data:
       parameter for playing immediately
-    - avta_load_vorbis_stream: new_function
+    - avta_load_vorbis_stream: new function
+    - avta_get_language: new function
 
   Lua-API changes:
   - avt.initialize removed, use avt.start instead

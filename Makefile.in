@@ -102,10 +102,10 @@ libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar-default.o avtpalette.o \
 
 libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
                 avtccio.o avtcwio.o avtreadfile.o \
-                colorchooser.o avtvorbis.o stb_vorbis.o
+                colorchooser.o avtvorbis.o stb_vorbis.o langposix.o
 	$(AR) rcu $@ filechooser.o avtterm.o avttermsys.o arch.o \
 	             avtccio.o avtcwio.o avtreadfile.o \
-	             colorchooser.o avtvorbis.o stb_vorbis.o
+	             colorchooser.o avtvorbis.o stb_vorbis.o langposix.o
 	-$(RANLIB) $@
 
 libakfavatar.so: $(OBJAVATAR).lo $(OBJAUDIO).lo avatar-default.lo avtpalette.lo \
@@ -285,6 +285,9 @@ stb_vorbis.lo: $(srcdir)/stb_vorbis.c
 
 avtposix.o: $(srcdir)/avtposix.c $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/avtposix.c
+
+langposix.o: $(srcdir)/langposix.c
+	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/langposix.c
 
 lua-akfavatar-prg.o: $(srcdir)/lua/lua-akfavatar-prg.c $(srcdir)/akfavatar.h \
                      $(srcdir)/avtaddons.h $(srcdir)/data/akfavatar-logo.xpm
@@ -638,7 +641,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/btn_help.xbm $(srcdir)/btn_eject.xbm \
 	   $(srcdir)/btn_circle.xbm \
 	   $(srcdir)/avtposix.c $(srcdir)/avtterm.c $(srcdir)/avttermsys.h \
-	   $(srcdir)/avttermsys.c \
+	   $(srcdir)/langposix.c $(srcdir)/avttermsys.c \
 	   $(srcdir)/stb_vorbis.c $(srcdir)/avtvorbis.c \
 	   $(srcdir)/arch.c \
 	   $(srcdir)/rgb.txt $(srcdir)/avtcmd \
@@ -755,6 +758,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/mingw/akfavatar-graphic.rc \
 	   $(srcdir)/mingw/akfavatar-vorbis.rc \
 	   $(srcdir)/mingw/avtwindows.c \
+	   $(srcdir)/mingw/langwindows.c \
 	   $(srcdir)/mingw/avttermstub.c $(srcdir)/mingw/askdrive.c \
 	   $(srcdir)/mingw/win_iconv.c $(srcdir)/mingw/iconv.h \
 	   $(srcdir)/mingw/Makefile.in $(srcdir)/mingw/README \

@@ -135,6 +135,9 @@ avtwindows.o: $(srcdir)/mingw/avtwindows.c $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ \
 	  $(srcdir)/mingw/avtwindows.c
 
+langwindows.o: $(srcdir)/mingw/langwindows.c
+	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/mingw/langwindows.c
+
 askdrive.o: $(srcdir)/mingw/askdrive.c \
 	     $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ \
@@ -158,10 +161,11 @@ avtreadfile.o: $(srcdir)/avtreadfile.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar
 
 libavtaddons.a: filechooser.o askdrive.o arch.o avttermstub.o \
                 avtccio.o avtcwio.o avtreadfile.o \
-                colorchooser.o avtvorbis.o stb_vorbis.o
+                colorchooser.o avtvorbis.o stb_vorbis.o langwindows.o
 	$(AR) rcu $@ filechooser.o askdrive.o arch.o avttermstub.o \
 	             avtccio.o avtcwio.o \
-	             avtreadfile.o colorchooser.o avtvorbis.o stb_vorbis.o
+	             avtreadfile.o colorchooser.o avtvorbis.o stb_vorbis.o \
+	             langwindows.o
 	-$(RANLIB) $@
 
 example: example.exe
