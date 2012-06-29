@@ -80,7 +80,8 @@ avta_get_language (void)
 	lang = "bs";		// Bosnian
       else if (nr == 0x001A || nr == 0x101A || nr == 0x041A)
 	lang = "hr";		// Croatian
-      else if (nr == 0x1C1A || nr == 0x181A || nr == 0x0C1A || nr == 0x081A)
+      else if (nr == 0x7C1A || nr == 0x1C1A || nr == 0x181A || nr == 0x0C1A
+	       || nr == 0x081A)
 	lang = "sr";		// Serbian
       else
 	lang = NULL;
@@ -163,7 +164,7 @@ avta_get_language (void)
       break;
 
     case 0x08:
-      lang = "gr";		// Greek
+      lang = "el";		// Greek
       break;
 
     case 0x6F:
