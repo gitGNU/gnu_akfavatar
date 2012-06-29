@@ -3,13 +3,7 @@ Lua module for translations
 This module was written for AKFAvatar, but doesn't depend on it.
 
 local lang = require "akfavatar.lang"
-  This loads the module.  The language of the system should get detected
-  automatically when the module is loaded.
-
-
-lang.getlanguage()
-  Detect the language code.  The language code is a two-letter abbreviation
-  according to ISO 639-1.
+  This loads the module.
 
 
 lang.use(language)
@@ -66,13 +60,10 @@ encoding itself a translatable string and to use "US-ASCII" for English.
 
 Although it is not required, but you should use English as the default language.
 
-If the language can't be automatically detected on your system, you can
-set the environment variable LANG so that it starts with the required two-letter
-code.  The language code needed is a two-letter abbreviation according to
-ISO 639-1.
-
 If you have text with variables in it, it is not a good approach to split the
 text into parts.  It is better to define a format string for string.format().
 
 The translatable string must match exactly.  Please keep in mind that when you
 change the strings in the program you also have to change the table!
+
+The string could also be a filename for a textfile or a speech recording.

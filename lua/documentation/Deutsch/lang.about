@@ -1,16 +1,7 @@
 Lua-Modul für Übersetzungen
 
-Dieses Modul wurde für AKFAvatar geschrieben, aber es kann auch ohne AKFAvatar
-verwendet werden.
-
 local lang = require "akfavatar.lang"
-  Damit lädt man das Modul für Übersetzungen. Die System-Sprache sollte
-  automatisch erkannt werden, wenn das Modul geladen wird.
-
-
-lang.getlanguage()
-  Erkenne die System-Sprache. Die Sprache ist eine zweibuchstabige Abkürzung
-  gemäß ISO 639-1.
+  Damit lädt man das Modul für Übersetzungen.
 
 
 lang.use(Sprache)
@@ -69,10 +60,6 @@ die Kodierung selbst zu einem übersetzbaren String zu machen, wobei man
 Obwohl es nicht notwendig ist, sollte man Englisch als Ausgangssprache
 verwenden.
 
-Falls die System-Sprache nicht automatisch erkannt wird, kann man die
-Umgebungsvariable LANG so setzen, dass sie mit dem benötigten Code anfängt.
-Der benötigte Code ist eine zweibuchstabige Abkürzung gemäß ISO 639-1.
-
 Wenn man Text mit Variablen dazwischen hat, ist es kein guter Ansatz, den Text
 in Teile aufzuteilen. Es ist besser einen Format-String für string.format() zu
 definieren.
@@ -80,3 +67,6 @@ definieren.
 Der übersetzbare String muss exakt übereinstimmen. Bitte daran denken, dass
 wenn man die Strings im Programm abändert, man auch die Übersetzungstabelle
 anpassen muss!
+
+Der String kann auch ein Dateiname sein, für eine Textdatei oder eine
+Sprachaufnahme.

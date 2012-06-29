@@ -3,6 +3,7 @@
 	* langposix.c, mingw/langwindows.c: new files
 
 	* lua/lua-avt.c: set variable avt.language
+	lua/akfavatar/lang.lua: adapted
 
 2012-06-22  Andreas K. Foerster  <info@akfoerster.de>
 
