@@ -1143,6 +1143,13 @@ Kaputte Links werden wie nicht existierende Einträge behandelt.
 .PP
 .SS Verschiedenes
 .TP
+.BI "avt.language"
+Diese Variable enthält einen Sprachcode für Meldungen.
+Es handelt sich um eine Kennung mit zwei Buchstaben gemäß ISO 639-1.
+Wenn die Sprache nicht ermittelt werden konnte, ist die Variable
+nicht gesetzt.
+.PP
+.TP
 .BI "avt.recode (" "String, Quellkodierung [,Zielkodierung]" )
 Konvertiert den angegebenen String, der in
 .I Quellkodierung

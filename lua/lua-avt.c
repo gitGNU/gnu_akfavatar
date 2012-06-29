@@ -2484,6 +2484,14 @@ luaopen_akfavatar_embedded (lua_State * L)
   lua_pushliteral (L, LUA_DIRSEP);
   lua_setfield (L, -2, "dirsep");
 
+  // avt.language
+  char *language = avta_get_language ();
+  if (language)
+    {
+      lua_pushstring (L, language);
+      lua_setfield (L, -2, "language");
+    }
+
   // type for audio data
   luaL_newmetatable (L, AUDIODATA);
   lua_pushvalue (L, -1);

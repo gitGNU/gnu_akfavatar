@@ -176,10 +176,10 @@ example.exe: $(srcdir)/example.c akfavatar.dll icon.o
 
 lua-akfavatar.exe: lua-akfavatar-prg.o lua-akfavatar-prg-info.o \
 		filechooser.o askdrive.o colorchooser.o avtreadfile.o \
-		arch.o lua-avt.o
+		arch.o lua-avt.o langwindows.o
 	$(CC) -o $@ lua-akfavatar-prg.o lua-akfavatar-prg-info.o \
 	    filechooser.o askdrive.o colorchooser.o avtreadfile.o \
-	    arch.o lua-avt.o -L. -lakfavatar \
+	    arch.o lua-avt.o langwindows.o -L. -lakfavatar \
 	    $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS)
 
 lua-akfavatar-prg-info.o: $(srcdir)/mingw/lua-akfavatar-prg.rc version.h \
@@ -187,9 +187,9 @@ lua-akfavatar-prg-info.o: $(srcdir)/mingw/lua-akfavatar-prg.rc version.h \
 	$(WINDRES) -I. -I$(srcdir)/mingw -o $@ -i $(srcdir)/mingw/lua-akfavatar-prg.rc
 
 lua-akfavatar.dll: lua-avt.o filechooser.o askdrive.o colorchooser.o \
-	           lua-akfavatar-dll-info.o
+	           langwindows.o lua-akfavatar-dll-info.o
 	$(CC) -o $@ -shared lua-avt.o filechooser.o askdrive.o \
-	     colorchooser.o lua-akfavatar-dll-info.o \
+	     colorchooser.o langwindows.o lua-akfavatar-dll-info.o \
 	     -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS) -mwindows
 
 lua-akfavatar-dll-info.o: $(srcdir)/mingw/lua-akfavatar-dll.rc version.h

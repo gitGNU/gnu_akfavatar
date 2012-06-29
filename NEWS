@@ -77,7 +77,7 @@
   - avt.title is an alias for avt.set_title
   - new functions: avt.set_balloon_mode, avt.avatar_image_file, avt.delay,
     avt.search, avt.load_audio_stream
-  - new variable: avt.datapath
+  - new variables: avt.datapath, avt.language
   - Module "akfavatar-graphic"
     - gr:new() accepts name for background color
     - gr:put() optimized for same width, position is optional now

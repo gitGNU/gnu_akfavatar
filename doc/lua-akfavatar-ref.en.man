@@ -1080,6 +1080,13 @@ Broken links are treated like not existing entries.
 .PP
 .SS Miscellaneous
 .TP
+.BI "avt.language"
+This variable contains a language code for messages.
+It is a two-letter code conforming to ISO 639-1.
+The variable is not set, when the language could not be
+detected.
+.PP
+.TP
 .BI "avt.recode (" "string, fromcode [,tocode]" )
 Recode the given string, which is encoded as
 .I fromcode

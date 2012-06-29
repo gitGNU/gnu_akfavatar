@@ -2,6 +2,8 @@
 
 	* langposix.c, mingw/langwindows.c: new files
 
+	* lua/lua-avt.c: set variable avt.language
+
 2012-06-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* audio-sdl.c: more steps for SDL independence
