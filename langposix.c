@@ -19,14 +19,16 @@
  */
 
 #include <stdlib.h>
+#include <locale.h>
 
-// ASCII based charset required!
+// the macros assume that latin letters are in a continuous ordered block
+// like in ASCII based charsets, but not in EBCDIC
 
 #define checkalpha(c) \
   (((c) >= 'A' && (c) <= 'Z') || ((c) >= 'a' && (c) <= 'z'))
 
 #define lowercase(c) \
-  ((c) >= 'a' ? (c) : (c) + ('a' - 'A'))
+  (((c) >= 'a' && (c) <= 'z') ? (c) : (c) + ('a' - 'A'))
 
 // returns 2-letter language code according ISO 639-1
 // or NULL if unknown
@@ -36,16 +38,13 @@ avta_get_language (void)
   static char language[3];
   char *l;
 
-  // don't actually depend on setlocale being used
-  l = getenv ("LC_ALL");
+  // don't depend on setlocale being used (only as last resort)
+  if (!(l = getenv ("LC_ALL"))
+      || !(l = getenv ("LC_MESSAGES")) || !(l = getenv ("LANG")))
+    l = setlocale (LC_MESSAGES, NULL);
 
-  if (!l)
-    l = getenv ("LC_MESSAGES");
-
-  if (!l)
-    l = getenv ("LANG");
-
-  if (!l || !checkalpha (l[0]) || !checkalpha (l[1]))
+  // check if it starts with two letters, followed by a non-letter
+  if (!l || !checkalpha (l[0]) || !checkalpha (l[1]) || checkalpha (l[2]))
     return NULL;
 
   language[0] = lowercase (l[0]);
