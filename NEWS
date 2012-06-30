@@ -13,7 +13,8 @@
   - regression: ADPCM encodings are no longer supported for wave files
   - Some more audio files
   - the command lua-akfavatar accepts options for fullscreen mode
-  - The pager supports the markup mode now
+  - The pager supports the markup mode
+  - The pager supports formfeeds and separator control codes
   - The terminal emulation uses better colors for black backgroud
   - multiply.pas cannot be compiled without AKFAvatar anymore (simplified)
   - regression: in XPM-files named colors are not supported anymore;

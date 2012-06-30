@@ -4499,25 +4499,44 @@ static size_t
 avt_pager_line (const wchar_t * txt, size_t pos, size_t len)
 {
   const wchar_t *tpos;
-  int line_length;
 
-  line_length = 0;
   tpos = txt + pos;
 
-  // skip formfeeds
-  if (*tpos == L'\f')
-    tpos++;
+  // formfeeds, separators
+  if (*tpos == L'\f' || (*tpos >= L'\x001C' && *tpos <= L'\x001F'))
+    {
+      int i;
 
-  // search for newline or end of text
-  while (pos + line_length < len && *(tpos + line_length) != L'\n'
-	 && *(tpos + line_length) != L'\f')
-    line_length++;
+      // draw separator line
+      for (i = AVT_LINELENGTH; i > 0; i--)
+	avt_put_char (0x2550);
+
+      tpos++;
+      pos++;
+
+      // evtl. skip line end
+      while (txt[pos] == L'\r' || txt[pos] == L'\n')
+	pos++;
+
+      return pos;
+    }
+
+  // search for newline or separators or end of text
+  const wchar_t *p = tpos;
+  int line_length = 0;
+
+  while (pos + line_length < len && *p != L'\n' && *p != L'\f'
+	 && !(*p >= L'\x001C' && *p <= L'\x001F'))
+    {
+      line_length++;
+      p++;
+    }
 
   avt_say_len (tpos, line_length);
   pos += line_length;
 
-  // skip \n | \f
-  if (pos < len)
+  // skip \n
+  if (pos < len && *p == L'\n')
     pos++;
 
   return pos;
