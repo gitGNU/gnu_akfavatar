@@ -3,7 +3,7 @@
 	* avatar-sdl.c (avt_pager_line): support separators
 
 	* avatar-sdl.c (avt_pager, avt_pager_line, avt_pager_screen):
-	support for horizontal scrolling (slow)
+	support for horizontal scrolling
 
 2012-06-29  Andreas K. Foerster  <info@akfoerster.de>
 

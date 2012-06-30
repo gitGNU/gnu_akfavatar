@@ -4830,15 +4830,17 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 	      break;
 
 	    case SDLK_RIGHT:
-	      horizontal++;
+	    case SDLK_KP6:
+	      horizontal += 4;
 	      pos = avt_pager_lines_back (txt, pos, balloonheight + 1);
 	      pos = avt_pager_screen (txt, pos, len, horizontal);
 	      break;
 
 	    case SDLK_LEFT:
+	    case SDLK_KP4:
 	      if (horizontal)
 		{
-		  horizontal--;
+		  horizontal -= 4;
 		  pos = avt_pager_lines_back (txt, pos, balloonheight + 1);
 		  pos = avt_pager_screen (txt, pos, len, horizontal);
 		}
