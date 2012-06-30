@@ -4496,7 +4496,8 @@ avt_button_inlay (SDL_Rect btn_rect, const unsigned char *bits,
 }
 
 static size_t
-avt_pager_line (const wchar_t * txt, size_t pos, size_t len)
+avt_pager_line (const wchar_t * txt, size_t pos, size_t len,
+		size_t horizontal)
 {
   const wchar_t *tpos;
 
@@ -4523,7 +4524,7 @@ avt_pager_line (const wchar_t * txt, size_t pos, size_t len)
 
   // search for newline or separators or end of text
   const wchar_t *p = tpos;
-  int line_length = 0;
+  size_t line_length = 0;
 
   while (pos + line_length < len && *p != L'\n' && *p != L'\f'
 	 && !(*p >= L'\x001C' && *p <= L'\x001F'))
@@ -4532,7 +4533,9 @@ avt_pager_line (const wchar_t * txt, size_t pos, size_t len)
       p++;
     }
 
-  avt_say_len (tpos, line_length);
+  if (line_length > horizontal)
+    avt_say_len (tpos + horizontal, line_length - horizontal);
+
   pos += line_length;
 
   // skip \n
@@ -4543,7 +4546,8 @@ avt_pager_line (const wchar_t * txt, size_t pos, size_t len)
 }
 
 static size_t
-avt_pager_screen (const wchar_t * txt, size_t pos, size_t len)
+avt_pager_screen (const wchar_t * txt, size_t pos, size_t len,
+		  size_t horizontal)
 {
   int line_nr;
 
@@ -4554,7 +4558,7 @@ avt_pager_screen (const wchar_t * txt, size_t pos, size_t len)
     {
       cursor.x = linestart;
       cursor.y = line_nr * LINEHEIGHT + textfield.y;
-      pos = avt_pager_line (txt, pos, len);
+      pos = avt_pager_line (txt, pos, len, horizontal);
     }
 
   hold_updates = false;
@@ -4590,6 +4594,7 @@ extern int
 avt_pager (const wchar_t * txt, size_t len, int startline)
 {
   size_t pos;
+  size_t horizontal;
   bool old_auto_margin, old_reserve_single_keys, old_tc;
   bool quit;
   avt_keyhandler old_keyhandler;
@@ -4609,6 +4614,8 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   // get len if not given
   if (len == 0)
     len = avt_strwidth (txt);
+
+  horizontal = 0;
 
   // find startline
   pos = 0;
@@ -4684,13 +4691,13 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
     avt_normal_text ();
 
   // show first screen
-  pos = avt_pager_screen (txt, pos, len);
+  pos = avt_pager_screen (txt, pos, len, horizontal);
 
   // last screen
   if (pos >= len)
     {
       pos = avt_pager_lines_back (txt, len, balloonheight + 1);
-      pos = avt_pager_screen (txt, pos, len);
+      pos = avt_pager_screen (txt, pos, len, horizontal);
     }
 
   quit = false;
@@ -4703,114 +4710,150 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
       switch (event.type)
 	{
 	case SDL_MOUSEBUTTONDOWN:
-	  if (event.button.button == SDL_BUTTON_WHEELDOWN)
+	  switch (event.button.button)
 	    {
+	    case SDL_BUTTON_WHEELDOWN:
 	      // simulate arrow key down
 	      event.type = SDL_KEYDOWN;
 	      event.key.state = SDL_PRESSED;
 	      event.key.keysym.sym = SDLK_DOWN;
 	      SDL_PushEvent (&event);
-	    }
-	  else if (event.button.button == SDL_BUTTON_WHEELUP)
-	    {
+	      break;
+
+	    case SDL_BUTTON_WHEELUP:
 	      // simulate arrow key up
 	      event.type = SDL_KEYDOWN;
 	      event.key.state = SDL_PRESSED;
 	      event.key.keysym.sym = SDLK_UP;
 	      SDL_PushEvent (&event);
+	      break;
+
+	    case SDL_BUTTON_MIDDLE:	// press on wheel
+	      quit = true;
+	      break;
+
+	    default:		// check if click was on button
+	      {
+		int16_t mbx, mby;
+
+		mbx = event.button.x - window.x;
+		mby = event.button.y - window.y;
+
+		if (event.button.button <= 3
+		    && mby >= btn_rect.y
+		    && mby <= btn_rect.y + btn_rect.h
+		    && mbx >= btn_rect.x && mbx <= btn_rect.x + btn_rect.w)
+		  quit = true;
+	      }
+	      break;
 	    }
-	  else if (event.button.button == SDL_BUTTON_MIDDLE)	// press on wheel
-	    quit = true;
-	  else			// check uf button was clicked
-	    {
-	      int16_t mbx, mby;
-
-	      mbx = event.button.x - window.x;
-	      mby = event.button.y - window.y;
-
-	      if (event.button.button <= 3
-		  && mby >= btn_rect.y
-		  && mby <= btn_rect.y + btn_rect.h
-		  && mbx >= btn_rect.x && mbx <= btn_rect.x + btn_rect.w)
-		quit = true;
-	    }
-
-	  break;
+	  break;		// case SDL_MOUSEBUTTONDOWN:
 
 	case SDL_KEYDOWN:
-	  if (event.key.keysym.sym == SDLK_DOWN
-	      || event.key.keysym.sym == SDLK_KP2)
+	  switch (event.key.keysym.sym)
 	    {
-	      // if it's not the end
-	      if (pos < len)
+	    case SDLK_DOWN:
+	    case SDLK_KP2:
+	      if (pos < len)	// if it's not the end
 		{
 		  hold_updates = true;
 		  avt_delete_lines (1, 1);
 		  cursor.x = linestart;
 		  cursor.y = (balloonheight - 1) * LINEHEIGHT + textfield.y;
-		  pos = avt_pager_line (txt, pos, len);
+		  pos = avt_pager_line (txt, pos, len, horizontal);
 		  hold_updates = false;
 		  AVT_UPDATE_TRECT (textfield);
 		}
-	    }
-	  else if (event.key.keysym.sym == SDLK_PAGEDOWN
-		   || event.key.keysym.sym == SDLK_KP3
-		   || event.key.keysym.sym == SDLK_SPACE
-		   || event.key.keysym.sym == SDLK_f)
-	    {
+	      break;
+
+	    case SDLK_UP:
+	    case SDLK_KP8:
+	      {
+		int start_pos;
+
+		start_pos =
+		  avt_pager_lines_back (txt, pos, balloonheight + 2);
+
+		if (start_pos == 0)
+		  pos = avt_pager_screen (txt, 0, len, horizontal);
+		else
+		  {
+		    hold_updates = true;
+		    avt_insert_lines (1, 1);
+		    cursor.x = linestart;
+		    cursor.y = textfield.y;
+		    avt_pager_line (txt, start_pos, len, horizontal);
+		    hold_updates = false;
+		    AVT_UPDATE_TRECT (textfield);
+		    pos = avt_pager_lines_back (txt, pos, 2);
+		  }
+	      }
+	      break;
+
+	    case SDLK_PAGEDOWN:
+	    case SDLK_KP3:
+	    case SDLK_SPACE:
+	    case SDLK_f:
 	      if (pos < len)
 		{
-		  pos = avt_pager_screen (txt, pos, len);
+		  pos = avt_pager_screen (txt, pos, len, horizontal);
 		  if (pos >= len)
 		    {
 		      pos =
 			avt_pager_lines_back (txt, len, balloonheight + 1);
-		      pos = avt_pager_screen (txt, pos, len);
+		      pos = avt_pager_screen (txt, pos, len, horizontal);
 		    }
 		}
-	    }
-	  else if (event.key.keysym.sym == SDLK_UP
-		   || event.key.keysym.sym == SDLK_KP8)
-	    {
-	      int start_pos;
+	      break;
 
-	      start_pos = avt_pager_lines_back (txt, pos, balloonheight + 2);
-
-	      if (start_pos == 0)
-		pos = avt_pager_screen (txt, 0, len);
-	      else
-		{
-		  hold_updates = true;
-		  avt_insert_lines (1, 1);
-		  cursor.x = linestart;
-		  cursor.y = textfield.y;
-		  avt_pager_line (txt, start_pos, len);
-		  hold_updates = false;
-		  AVT_UPDATE_TRECT (textfield);
-		  pos = avt_pager_lines_back (txt, pos, 2);
-		}
-	    }
-	  else if (event.key.keysym.sym == SDLK_PAGEUP
-		   || event.key.keysym.sym == SDLK_KP9
-		   || event.key.keysym.sym == SDLK_b)
-	    {
+	    case SDLK_PAGEUP:
+	    case SDLK_KP9:
+	    case SDLK_b:
 	      pos = avt_pager_lines_back (txt, pos, 2 * balloonheight + 1);
-	      pos = avt_pager_screen (txt, pos, len);
-	    }
-	  else if (event.key.keysym.sym == SDLK_HOME
-		   || event.key.keysym.sym == SDLK_KP7)
-	    pos = avt_pager_screen (txt, 0, len);
-	  else if (event.key.keysym.sym == SDLK_END
-		   || event.key.keysym.sym == SDLK_KP1)
-	    {
+	      pos = avt_pager_screen (txt, pos, len, horizontal);
+	      break;
+
+	    case SDLK_HOME:
+	    case SDLK_KP7:
+	      horizontal = 0;
+	      pos = avt_pager_screen (txt, 0, len, horizontal);
+	      break;
+
+	    case SDLK_END:
+	    case SDLK_KP1:
 	      pos = avt_pager_lines_back (txt, len, balloonheight + 1);
-	      pos = avt_pager_screen (txt, pos, len);
+	      pos = avt_pager_screen (txt, pos, len, horizontal);
+	      break;
+
+	    case SDLK_q:
+	      quit = true;	// Q with any combination-key quits
+	      break;
+
+	    case SDLK_RIGHT:
+	      horizontal++;
+	      pos = avt_pager_lines_back (txt, pos, balloonheight + 1);
+	      pos = avt_pager_screen (txt, pos, len, horizontal);
+	      break;
+
+	    case SDLK_LEFT:
+	      if (horizontal)
+		{
+		  horizontal--;
+		  pos = avt_pager_lines_back (txt, pos, balloonheight + 1);
+		  pos = avt_pager_screen (txt, pos, len, horizontal);
+		}
+	      break;
+
+	    default:
+	      break;
 	    }
-	  else if (event.key.keysym.sym == SDLK_q)
-	    quit = true;	// Q with any combination-key quits
+
+	  break;		// case SDL_KEYDOWN:
+
+	default:
 	  break;
 	}
-    }
+    }				// while
 
   // quit request only quits the pager here
   if (_avt_STATUS == AVT_QUIT)
