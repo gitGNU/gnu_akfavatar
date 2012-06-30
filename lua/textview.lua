@@ -37,7 +37,10 @@ end
 
 if arg[1]
   then io.input(arg[1])
-  else io.input(avt.file_selection(textfile))
+  else
+    local file = avt.file_selection(textfile)
+    if not file or file=="" then return end
+    io.input(file)
   end
 
 local text = io.read("*all")
