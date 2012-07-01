@@ -60,8 +60,8 @@
 // 3 dots
 #define LONGER L"\x2026"
 
-// slash
-#define DIRECTORY L"/"
+// black right-pointing pointer
+#define DIRECTORY L"\x25BA"
 
 #ifdef _WIN32
 #  define HAS_DRIVE_LETTERS true
