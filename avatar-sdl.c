@@ -4542,15 +4542,59 @@ avt_pager_line (const wchar_t * txt, size_t pos, size_t len,
       p++;
     }
 
-  horizontal *= 4;
-  if (line_length > horizontal)
-    avt_say_len (tpos + horizontal, line_length - horizontal);
-
   pos += line_length;
 
   // skip linebreak, but not a pagebreak
   if (pos < len && avt_is_linebreak (*p))
     pos++;
+
+  // speedup horizontal scrolling
+  horizontal *= 4;
+
+  if (line_length > horizontal)
+    {
+      size_t i;
+
+      // skip horizonta characters, iff visible
+      for (i = 0; i < horizontal; i++)
+	{
+	  // FIXME: find solution for tabulators
+
+	  // skip invisible characters
+	  while (line_length
+		 && (*tpos == L'\a' || *tpos == L'\xFEFF'
+		     || *tpos == L'\x200E' || *tpos == L'\x200F'
+		     || *tpos == L'\x200B' || *tpos == L'\x200C'
+		     || *tpos == L'\x200D'))
+	    {
+	      tpos++;
+	      line_length--;
+	    }
+
+	  // handle backspace (used for overstrike text)
+	  while (line_length > 2 && *(tpos + 1) == L'\b')
+	    {
+	      tpos += 2;
+	      line_length -= 2;
+	    }
+
+	  // hande markup mode
+	  while (markup && (*tpos == L'_' || *tpos == L'*'))
+	    {
+	      tpos++;
+	      line_length--;
+	    }
+
+	  if (!line_length)
+	    break;
+
+	  tpos++;
+	  line_length--;
+	}
+
+      if (line_length)
+	avt_say_len (tpos, line_length);
+    }
 
   return pos;
 }
