@@ -4512,6 +4512,8 @@ avt_pager_line (const wchar_t * txt, size_t pos, size_t len,
 
   tpos = txt + pos;
 
+  underlined = bold = false;
+
   // handle pagebreaks
   if (avt_is_pagebreak (*tpos))
     {
@@ -4581,6 +4583,11 @@ avt_pager_line (const wchar_t * txt, size_t pos, size_t len,
 	  // hande markup mode
 	  while (markup && (*tpos == L'_' || *tpos == L'*'))
 	    {
+	      if (*tpos == L'_')
+		underlined = !underlined;
+	      else if (*tpos == L'*')
+		bold = !bold;
+
 	      tpos++;
 	      line_length--;
 	    }
