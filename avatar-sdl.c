@@ -4495,6 +4495,15 @@ avt_button_inlay (SDL_Rect btn_rect, const unsigned char *bits,
   SDL_FreeSurface (inlay);
 }
 
+
+#define avt_is_linebreak(c)  \
+  ((c)==L'\n' || (c)==L'\v' || (c)==L'\x85' \
+   || (c)==L'\x2028' || (c)==L'\x2029')
+
+// checks for formfeed or text separators
+#define avt_is_pagebreak(c)  \
+  ((c) == L'\f' || ((c) >= L'\x1C' && (c) <= L'\x1F'))
+
 static size_t
 avt_pager_line (const wchar_t * txt, size_t pos, size_t len,
 		size_t horizontal)
@@ -4503,8 +4512,8 @@ avt_pager_line (const wchar_t * txt, size_t pos, size_t len,
 
   tpos = txt + pos;
 
-  // formfeeds, separators
-  if (*tpos == L'\f' || (*tpos >= L'\x001C' && *tpos <= L'\x001F'))
+  // handle pagebreaks
+  if (avt_is_pagebreak (*tpos))
     {
       int i;
 
@@ -4516,18 +4525,18 @@ avt_pager_line (const wchar_t * txt, size_t pos, size_t len,
       pos++;
 
       // evtl. skip line end
-      while (txt[pos] == L'\r' || txt[pos] == L'\n')
+      while (pos < len && (txt[pos] == L'\r' || avt_is_linebreak (txt[pos])))
 	pos++;
 
       return pos;
     }
 
-  // search for newline or separators or end of text
+  // search for linebreak or pagebreak or end of text
   const wchar_t *p = tpos;
   size_t line_length = 0;
 
-  while (pos + line_length < len && *p != L'\n' && *p != L'\f'
-	 && !(*p >= L'\x001C' && *p <= L'\x001F'))
+  while (pos + line_length < len && !avt_is_linebreak (*p)
+	 && !avt_is_pagebreak (*p))
     {
       line_length++;
       p++;
@@ -4539,8 +4548,8 @@ avt_pager_line (const wchar_t * txt, size_t pos, size_t len,
 
   pos += line_length;
 
-  // skip \n
-  if (pos < len && *p == L'\n')
+  // skip linebreak, but not a pagebreak
+  if (pos < len && avt_is_linebreak (*p))
     pos++;
 
   return pos;
