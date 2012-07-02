@@ -2,6 +2,7 @@
 
 # for make dist-bin
 lua_dll = $(srcdir)/misc/lua52.dll
+lua_exe = $(srcdir)/misc/lua.exe
 sdl_dll = $(srcdir)/misc/SDL.dll
 
 ROFF = groff
@@ -403,6 +404,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(sdl_dll) $(BINPKGNAME)/
 	cp $(srcdir)/README-SDL $(BINPKGNAME)/README-SDL.txt
 	cp $(lua_dll) $(BINPKGNAME)/
+	-cp $(lua_exe) $(BINPKGNAME)/
 	cp $(srcdir)/README-Lua $(BINPKGNAME)/README-Lua.txt
 	cp $(srcdir)/mingw/Homepage.url $(BINPKGNAME)/
 	$(u2d) $(BINPKGNAME)/lua/fsdemo-??.avt
