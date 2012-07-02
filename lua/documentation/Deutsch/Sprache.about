@@ -10,7 +10,7 @@ Diese Variable sollte von Lua-AKFAvatar automatisch initialisiert worden sein,
 sie kann aber auch im Skript geändert werden.  Sie enthält eine Sprach-Kennung
 mit zwei Buchstaben gemäß ISO 639-1.
 
-Die Funktion lang.translate(Text) gibt dann den übersetzten Text zurück.
+Die Funktion avt.translate(Text) gibt dann den übersetzten Text zurück.
 Falls keine Übersetzung zur Verfügung steht, wird der Text unverändert zurück
 gegeben.
 
