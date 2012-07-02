@@ -53,10 +53,10 @@ atan = math.atan
 -------------------------------------------------------------------------------
 local avt = require "lua-akfavatar"
 local graphic = require "akfavatar-graphic"
-local lang = require "akfavatar.lang"
-local L = lang.translate
 
-lang.translations {
+local L = avt.translate
+
+avt.translations = {
   ["Function Plotter"] = {
     de="Funktionszeichner" },
 

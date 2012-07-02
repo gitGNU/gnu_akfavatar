@@ -2,9 +2,8 @@
 -- License: GPL version 3 or later
 
 local avt = require "lua-akfavatar"
-local lang = require "akfavatar.lang"
 
-lang.translations {
+avt.translations = {
   ["That's correct."] = {
     de = "Das ist richtig."},
   ["Wrong!"] = {
@@ -20,7 +19,7 @@ lang.translations {
 local positive = avt.load_audio_file(avt.search("positive.au")) or avt.silent()
 local negative = avt.load_audio_file(avt.search("negative.au")) or avt.silent()
 local count = { questions = 0, right = 0 }
-local L = lang.translate
+local L = avt.translate
 
 local function normalize(s)
   -- make lowercase and remove leading and trailing spaces
@@ -118,7 +117,7 @@ local function questionary(qa)
     end
   end
 
-  if qa.lang then lang.use(qa.lang) end
+  if qa.lang then avt.language = qa.lang end
 
   for i, q in ipairs(qa) do
     local again

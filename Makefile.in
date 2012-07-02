@@ -39,7 +39,6 @@ BINPKGNAME = lua-akfavatar-$(pkgversion).bin
 
 LUA_MODULES = \
 	  $(srcdir)/lua/akfavatar/dir.??.about \
-	  $(srcdir)/lua/akfavatar/lang.lua \
 	  $(srcdir)/lua/akfavatar/questionary.lua \
 	  $(srcdir)/lua/akfavatar/person.lua \
 	  $(srcdir)/lua/akfavatar/utf8.lua \
@@ -734,7 +733,6 @@ dist: about $(srcdir)/alert.au
 	mkdir $(PKGNAME)/lua/akfavatar
 	ln $(srcdir)/lua/akfavatar/dir.??.about \
 	   $(srcdir)/lua/akfavatar/utf8.lua \
-	   $(srcdir)/lua/akfavatar/lang.lua \
 	   $(srcdir)/lua/akfavatar/person.lua \
 	   $(srcdir)/lua/akfavatar/questionary.lua \
 	   $(srcdir)/lua/akfavatar/ar.lua \
@@ -851,7 +849,6 @@ dist-bin-default: all pdf
 	ln $(srcdir)/doc/lua-akfavatar-ref.de.man $(BINPKGNAME)/
 	ln $(srcdir)/lua/akfavatar/dir.??.about \
 	   $(srcdir)/lua/akfavatar/utf8.lua \
-	   $(srcdir)/lua/akfavatar/lang.lua \
 	   $(srcdir)/lua/akfavatar/person.lua \
 	   $(srcdir)/lua/akfavatar/questionary.lua \
 	   $(srcdir)/lua/akfavatar/ar.lua \

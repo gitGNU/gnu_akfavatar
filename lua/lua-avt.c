@@ -2255,6 +2255,44 @@ lavt_search (lua_State * L)
   return 2;
 }
 
+static int
+lavt_translate (lua_State * L)
+{
+  const char *text, *language, *translation;
+
+  text = luaL_checkstring (L, 1);
+
+  lua_getfield (L, LUA_REGISTRYINDEX, AVTMODULE);
+  lua_getfield (L, -1, "language");
+  language = lua_tostring (L, -1);
+
+  if (language)
+    {
+      lua_getfield (L, -2, "translations");
+
+      if (lua_istable (L, -1))
+	{
+	  lua_getfield (L, -1, text);
+
+	  if (lua_istable (L, -1))
+	    {
+	      lua_getfield (L, -1, language);
+	      translation = lua_tostring (L, -1);
+
+	      if (translation)	// success
+		{
+		  lua_pushstring (L, translation);
+		  return 1;
+		}
+	    }
+	}
+    }
+
+  // on failure return original text
+  lua_pushstring (L, text);
+  return 1;
+}
+
 // ---------------------------------------------------------
 // register library functions
 
@@ -2390,6 +2428,7 @@ static const luaL_Reg akfavtlib[] = {
   {"subprogram", lavt_subprogram},
   {"optional", lavt_optional},
   {"search", lavt_search},
+  {"translate", lavt_translate},
   {NULL, NULL}
 };
 

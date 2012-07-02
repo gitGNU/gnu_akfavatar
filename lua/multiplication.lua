@@ -4,7 +4,6 @@
 -- License: GPL version 3 or later
 
 local avt = require "lua-akfavatar"
-local lang = require "akfavatar.lang"
 
 local positive = avt.load_audio_file(avt.search("positive.au")) or avt.silent()
 local negative = avt.load_audio_file(avt.search("negative.au")) or avt.silent()
@@ -15,7 +14,7 @@ local random_minimum = 1
 local random_maximum = 10
 local maximum_tries = 3
 
-lang.translations {
+avt.translations = {
 
   ["Multiply"] = {
     de="Multiplizieren" },
@@ -56,7 +55,7 @@ lang.translations {
 }
 
 ------------------------------------------------------------------
-local L = lang.translate  -- abbreviation
+local L = avt.translate  -- abbreviation
 local specific_table = nil
 local endRequest = false
 
