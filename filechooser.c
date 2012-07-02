@@ -45,8 +45,11 @@
            avt_normal_text(); \
          } while(0)
 
-// double arrow up
-#define PARENT_DIRECTORY L" \x21D1 "
+// black left-pointing pointer
+#define PARENT_DIRECTORY L" \x25C4 "
+
+// black right-pointing pointer
+#define DIRECTORY L"\x25BA"
 
 // House symbol
 #define HOME L" \x2302 "
@@ -59,9 +62,6 @@
 
 // 3 dots
 #define LONGER L"\x2026"
-
-// black right-pointing pointer
-#define DIRECTORY L"\x25BA"
 
 #ifdef _WIN32
 #  define HAS_DRIVE_LETTERS true
