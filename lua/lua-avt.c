@@ -2266,28 +2266,27 @@ lavt_translate (lua_State * L)
   lua_getfield (L, -1, "language");
   language = lua_tostring (L, -1);
 
-  if (language)
+  if (!language)
+    goto fail;
+
+  lua_getfield (L, -2, "translations");
+  if (!lua_istable (L, -1))
+    goto fail;
+
+  lua_getfield (L, -1, text);
+  if (!lua_istable (L, -1))
+    goto fail;
+
+  lua_getfield (L, -1, language);
+  translation = lua_tostring (L, -1);
+
+  if (translation)		// success
     {
-      lua_getfield (L, -2, "translations");
-
-      if (lua_istable (L, -1))
-	{
-	  lua_getfield (L, -1, text);
-
-	  if (lua_istable (L, -1))
-	    {
-	      lua_getfield (L, -1, language);
-	      translation = lua_tostring (L, -1);
-
-	      if (translation)	// success
-		{
-		  lua_pushstring (L, translation);
-		  return 1;
-		}
-	    }
-	}
+      lua_pushstring (L, translation);
+      return 1;
     }
 
+fail:
   // on failure return original text
   lua_pushstring (L, text);
   return 1;
