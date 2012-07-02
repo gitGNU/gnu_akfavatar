@@ -32,7 +32,7 @@
 
 // returns 2-letter language code according ISO 639-1
 // or NULL if unknown
-extern char *
+extern const char *
 avta_get_language (void)
 {
   static char language[3];
@@ -51,5 +51,5 @@ avta_get_language (void)
   language[1] = lowercase (l[1]);
   language[2] = '\0';
 
-  return language;
+  return (const char *) language;
 }

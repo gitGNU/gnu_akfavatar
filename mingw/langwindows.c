@@ -22,11 +22,11 @@
 
 // returns 2-letter language code according ISO 639-1
 // or NULL if unknown
-extern char *
+extern const char *
 avta_get_language (void)
 {
   int nr;
-  char *lang;
+  const char *lang;
 
   // lower byte is the main language
   // but we need all
