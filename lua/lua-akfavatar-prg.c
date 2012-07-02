@@ -62,15 +62,16 @@ extern "C"
 #define EXT_EXEC  ".avtexe"
 #define EXT_ABOUT ".about"
 
-#define COLOR_BACKGROUND  0xE0D5C5  // "default"
+#define COLOR_BACKGROUND  0xE0D5C5	// "default"
 #define COLOR_ERROR       0xFFAAAA
-#define COLOR_SAY         0xFFFAF0  // "floral white"
-#define COLOR_TEXT        0xD2B48C  // "tan"
+#define COLOR_SAY         0xFFFAF0	// "floral white"
+#define COLOR_TEXT        0xD2B48C	// "tan"
 #define COLOR_START       COLOR_TEXT
 
 static lua_State *L;
 static int mode = AVT_AUTOMODE;
 static char *directory;
+static const char *language;
 
 
 static void
@@ -462,7 +463,10 @@ start_screen (void)
   avt_new_line ();
   avt_say_mb ("Homepage: ");
   avt_underlined (true);
-  avt_say_mb ("http://akfavatar.nongnu.org/");
+  if (strcmp ("de", language) == 0)
+    avt_say_mb ("http://akfavatar.nongnu.org/akfavatar.de.html");
+  else
+    avt_say_mb ("http://akfavatar.nongnu.org/");
   avt_underlined (false);
   avt_new_line ();
   avt_say_mb (avt_license ());
@@ -471,11 +475,17 @@ start_screen (void)
   avt_bold (true);
   avt_say_mb ("F11");
   avt_bold (false);
-  avt_say_mb (": Fullscreen, ");
+  if (strcmp ("de", language) == 0)
+    avt_say_mb (": Vollbild, ");
+  else
+    avt_say_mb (": Fullscreen, ");
   avt_bold (true);
   avt_say_mb ("Esc");
   avt_bold (false);
-  avt_say_mb (": end/back");
+  if (strcmp ("de", language) == 0)
+    avt_say_mb (": Ende/zurück");
+  else
+    avt_say_mb (": end/back");
 
   if (avt_wait_button () != AVT_NORMAL)
     exit (EXIT_SUCCESS);
@@ -561,6 +571,7 @@ main (int argc, char **argv)
   setlocale (LC_ALL, "");
 
   script_index = check_options (argc, argv);
+  language = avta_get_language ();
 
   // initialize Lua
   initialize_lua ();
