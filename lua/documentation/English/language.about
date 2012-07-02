@@ -25,8 +25,8 @@ avt.encoding("UTF-8")
 avt.translations = {
 
   ["Hello world!"] = {
-    ru="◈◈pa◈c◈◈y◈ ◈◈p!",
-    el="K◈◈◈µ◈◈◈ ◈◈◈µ◈!",
+    ru="Здравствуй мир!",
+    el="Καλημέρα κόσμε!",
     es="¡Hola mundo!",
     fr="Bonjour le monde!",
     de="Hallo Welt!",
