@@ -29,6 +29,14 @@ Keys:
 local avt = require "lua-akfavatar"
 local graphic = require "akfavatar-graphic"
 
+avt.translations = {
+  ["keys:"] = {
+    de = "Tasten:",
+  }
+}
+
+local L = avt.translate
+
 avt.encoding("UTF-8")
 avt.title("Four in a row")
 avt.start()
@@ -55,7 +63,7 @@ local board = {}
 local function show_keys()
   screen:color("black")
   screen:textalign("left", "top")
-  screen:text("keys:", 15, 10)
+  screen:text(L"keys:", 15, 10)
   screen:text("← →", 20, 25)
   screen:text(" ↓ ", 20, 33)
 end
