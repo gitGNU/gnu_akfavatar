@@ -362,7 +362,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(srcdir)/lua/documentation/English/function_plotter.about $(BINPKGNAME)/lua/documentation/English/
 	cp $(srcdir)/lua/documentation/English/base64-encode.about $(BINPKGNAME)/lua/documentation/English/
 	cp $(srcdir)/lua/documentation/English/utf8.about $(BINPKGNAME)/lua/documentation/English/
-	cp $(srcdir)/lua/documentation/English/lang.about $(BINPKGNAME)/lua/documentation/English/
+	cp $(srcdir)/lua/documentation/English/language.about $(BINPKGNAME)/lua/documentation/English/
 	-cp $(srcdir)/lua/documentation/English/lua-akfavatar.about $(BINPKGNAME)/lua/documentation/English/
 	-cp $(srcdir)/lua/documentation/English/lua-akfavatar-ref.about $(BINPKGNAME)/lua/documentation/English/
 	cp $(srcdir)/lua/documentation/Deutsch/base64.about $(BINPKGNAME)/lua/documentation/Deutsch/
@@ -372,7 +372,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(srcdir)/lua/documentation/Deutsch/function_plotter.about $(BINPKGNAME)/lua/documentation/Deutsch/
 	cp $(srcdir)/lua/documentation/Deutsch/base64-encode.about $(BINPKGNAME)/lua/documentation/Deutsch/
 	cp $(srcdir)/lua/documentation/Deutsch/utf8.about $(BINPKGNAME)/lua/documentation/Deutsch/
-	cp $(srcdir)/lua/documentation/Deutsch/lang.about $(BINPKGNAME)/lua/documentation/Deutsch/
+	cp $(srcdir)/lua/documentation/Deutsch/Sprache.about $(BINPKGNAME)/lua/documentation/Deutsch/
 	-cp $(srcdir)/lua/documentation/Deutsch/lua-akfavatar.about $(BINPKGNAME)/lua/documentation/Deutsch/
 	-cp $(srcdir)/lua/documentation/Deutsch/lua-akfavatar-ref.about $(BINPKGNAME)/lua/documentation/Deutsch/
 	cp lua-akfavatar.en.pdf $(BINPKGNAME)/

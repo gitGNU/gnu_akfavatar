@@ -1,0 +1,64 @@
+Writing translations for Lua-AKFAvatar scripts
+
+To make translations for your Lua-AKFAvatar script, you first have to define the
+variable avt.translations.  This is a stacked table.  Well, it's not easy to
+describe, but have a look at the example.
+
+The language is determined by the variable avt.language.  This variable should
+be automatically initialized by Lua-AKFAvatar, but it can be changed by the
+script.  It contains a two-letter language code conforming to ISO 639-1.
+
+The function avt.translate(text) then translates the text.
+If the translation is not available, then it retruns the text unmodified.
+
+It is useful to define a local alias for avt.translate named L:
+  local L = avt.translate
+Then you can simply prepend your string literals with L.
+
+
+EXAMPLE:
+--------------------------------------------------------------------------------
+local avt = require "lua-akfavatar"
+
+avt.encoding("UTF-8")
+
+avt.translations = {
+
+  ["Hello world!"] = {
+    ru="◈◈pa◈c◈◈y◈ ◈◈p!",
+    el="K◈◈◈µ◈◈◈ ◈◈◈µ◈!",
+    es="¡Hola mundo!",
+    fr="Bonjour le monde!",
+    de="Hallo Welt!",
+    sv="Hej Världen!",
+    },
+
+  ["That's live!"] = {
+    de="So ist das Leben!",
+    fr="C'est la vie!" },
+}
+
+local L = avt.translate
+
+-- avt.language = "de"
+
+avt.start()
+avt.avatar_image("default")
+avt.tell(L"Hello world!", "\n", L"That's live!");
+avt.wait_button ()
+--------------------------------------------------------------------------------
+
+HINTS:
+
+Although it is not required, but you should use English as the default language.
+
+If you have text with variables in it, it is not a good approach to split the
+text into parts.  It is better to define a format string for string.format().
+
+The string in the translations table must match exactly.  Please keep in mind
+that when you change the strings in the program you also have to change the
+table!
+
+The string could also be a filename for a textfile or a speech recording.
+
+By the way, this implementation was inspired by GNU gettext.
