@@ -40,7 +40,7 @@ avta_get_language (void)
 
   // don't depend on setlocale being used (only as last resort)
   if (!(l = getenv ("LC_ALL"))
-      || !(l = getenv ("LC_MESSAGES")) || !(l = getenv ("LANG")))
+      && !(l = getenv ("LC_MESSAGES")) && !(l = getenv ("LANG")))
     l = setlocale (LC_MESSAGES, NULL);
 
   // check if it starts with two letters, followed by a non-letter
