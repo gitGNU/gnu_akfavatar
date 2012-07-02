@@ -1291,7 +1291,7 @@ avt_copyright (void)
 extern const char *
 avt_license (void)
 {
-  return "License GPLv3+: GNU GPL version 3 or later "
+  return "GPLv3+: GNU GPL version 3 or later "
     "<http://gnu.org/licenses/gpl.html>";
 }
 

@@ -77,8 +77,8 @@ static const char *language;
 static void
 version (void)
 {
-  printf (PRGNAME "\n\nAKFAvatar %s, %s\n%s, %s\n\n%s\n\n", avt_version (),
-	  avt_copyright (), LUA_RELEASE, LUA_COPYRIGHT, avt_license ());
+  printf (PRGNAME "\n\nAKFAvatar %s, %s\n%s, %s\n\nLicense %s\n\n", 
+  avt_version (), avt_copyright (), LUA_RELEASE, LUA_COPYRIGHT, avt_license ());
   exit (EXIT_SUCCESS);
 }
 
@@ -442,6 +442,10 @@ ask_file (void)
 static void
 start_screen (void)
 {
+  bool german;
+
+  german = (language && strcmp ("de", language) == 0);
+
   avt_clear_screen ();
   avt_set_balloon_color (COLOR_START);
   avt_avatar_image_xpm (akfavatar_logo_xpm);
@@ -463,26 +467,30 @@ start_screen (void)
   avt_new_line ();
   avt_say_mb ("Homepage: ");
   avt_underlined (true);
-  if (strcmp ("de", language) == 0)
+  if (german)
     avt_say_mb ("http://akfavatar.nongnu.org/akfavatar.de.html");
   else
     avt_say_mb ("http://akfavatar.nongnu.org/");
   avt_underlined (false);
   avt_new_line ();
+  if (german)
+    avt_say_mb ("Lizenz: ");
+  else
+    avt_say_mb ("License: ");
   avt_say_mb (avt_license ());
   avt_new_line ();
   avt_new_line ();
   avt_bold (true);
   avt_say_mb ("F11");
   avt_bold (false);
-  if (strcmp ("de", language) == 0)
+  if (german)
     avt_say_mb (": Vollbild, ");
   else
     avt_say_mb (": Fullscreen, ");
   avt_bold (true);
   avt_say_mb ("Esc");
   avt_bold (false);
-  if (strcmp ("de", language) == 0)
+  if (german)
     avt_say_mb (": Ende/zurück");
   else
     avt_say_mb (": end/back");

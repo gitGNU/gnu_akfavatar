@@ -3,6 +3,9 @@
 	* lua/lua-avt.c (lavt_translate): new function
 	lua/akfavatar/lang.lua: deleted
 
+	* avatar-sdl.c (avt_license):
+	don't return the term "license"
+
 2012-06-30  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl.c (avt_pager_line): support separators
