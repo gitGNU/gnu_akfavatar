@@ -1087,6 +1087,14 @@ The variable is not set, when the language could not be
 detected.
 .PP
 .TP
+.BI "avt.translate (" text )
+Translate the
+.IR text ,
+if possible.
+.IP
+How to provide translations is documented elsewhere.
+.PP
+.TP
 .BI "avt.recode (" "string, fromcode [,tocode]" )
 Recode the given string, which is encoded as
 .I fromcode

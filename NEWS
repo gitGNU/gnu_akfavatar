@@ -7,6 +7,8 @@
   - Lua modules don't define globals anymore (scripts have to be adapted!)
   - Data files are put in a separate directory and Lua has a search function
     for it (scripts have to be adapted!)
+  - the function for translations is integrated in Lua-AKFAvatar
+    (scripts have to be adapted!)
   - Audio files can be played while loading
   - Support for audio-files with up to 32 bit (converted to 16 bit internally)
   - Support for wave files with mu-law and A-law encoding
@@ -78,7 +80,7 @@
     parameter for playing immediately
   - avt.title is an alias for avt.set_title
   - new functions: avt.set_balloon_mode, avt.avatar_image_file, avt.delay,
-    avt.search, avt.load_audio_stream
+    avt.search, avt.load_audio_stream, avt.translate
   - new variables: avt.datapath, avt.language
   - Module "akfavatar-graphic"
     - gr:new() accepts name for background color

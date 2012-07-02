@@ -1150,6 +1150,14 @@ Wenn die Sprache nicht ermittelt werden konnte, ist die Variable
 nicht gesetzt.
 .PP
 .TP
+.BI "avt.translate (" Text )
+Übersetzt den
+.IR Text ,
+falls möglich.
+.IP
+Wie man Übersetzungen angeben kann, ist woanders dokumentiert.
+.PP
+.TP
 .BI "avt.recode (" "String, Quellkodierung [,Zielkodierung]" )
 Konvertiert den angegebenen String, der in
 .I Quellkodierung
