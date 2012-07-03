@@ -963,9 +963,9 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
   if (SDL_MUSTLOCK (img))
     SDL_UnlockSurface (img);
 
-  color[0].r = ~avt_red (colornr);
-  color[0].g = ~avt_green (colornr);
-  color[0].b = ~avt_blue (colornr);
+  color[0].r = compl avt_red (colornr);
+  color[0].g = compl avt_green (colornr);
+  color[0].b = compl avt_blue (colornr);
   color[1].r = avt_red (colornr);
   color[1].g = avt_green (colornr);
   color[1].b = avt_blue (colornr);
@@ -2026,7 +2026,7 @@ avt_toggle_fullscreen (void)
   if (avt_mode != AVT_FULLSCREENNOSWITCH)
     {
       // toggle bit for fullscreenmode
-      screenflags ^= SDL_FULLSCREEN;
+      screenflags = screenflags xor SDL_FULLSCREEN;
 
       if ((screenflags & SDL_FULLSCREEN) != 0)
 	{
@@ -2036,7 +2036,7 @@ avt_toggle_fullscreen (void)
 	}
       else
 	{
-	  screenflags &= ~SDL_NOFRAME;
+	  screenflags &= compl SDL_NOFRAME;
 	  avt_resize (windowmode_size.w, windowmode_size.h);
 	  avt_mode = AVT_WINDOW;
 	}
@@ -2064,7 +2064,7 @@ avt_switch_mode (int mode)
 	case AVT_WINDOW:
 	  if ((screenflags & SDL_FULLSCREEN) != 0)
 	    {
-	      screenflags &= ~(SDL_FULLSCREEN | SDL_NOFRAME);
+	      screenflags &= compl (SDL_FULLSCREEN | SDL_NOFRAME);
 	      avt_resize (windowmode_size.w, windowmode_size.h);
 	    }
 	  break;
@@ -3026,7 +3026,7 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
 	  if (bold and not NOT_BOLD)
 	    *p |= SDL_SwapBE16 (*font_line >> 1);
 	  if (inverse)
-	    *p = ~*p;
+	    *p = compl *p;
 	  font_line++;
 	  p += pitch;
 	}
@@ -3051,7 +3051,7 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
 	  if (bold and not NOT_BOLD)
 	    *p |= (*font_line >> 1);
 	  if (inverse)
-	    *p = ~*p;
+	    *p = compl *p;
 	  font_line++;
 	  p += pitch;
 	}
