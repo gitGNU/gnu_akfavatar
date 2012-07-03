@@ -113,7 +113,7 @@ while [ x"$1" != x ] ; do
 		echo "  --disable-lua         build without Lua"
 		echo "  --enable-link-sdl-image link directly to SDL_image"
 		echo "  --enable-size=vga     compile for VGA size (640x480)"
-		echo "  CC=COMPILER           C compiler to use [gcc]"
+		echo "  CC=COMPILER           C compiler to use [gcc --std=c99]"
 		#echo "  CXX=COMPILER          C++ compiler to use [g++]"
 		echo "  CPPFLAGS=OPTIONS      command line options for the preprocessor [${CPPFLAGS}]"
 		echo "  CFLAGS=OPTIONS        command line options for the C compiler [${CFLAGS}]"
@@ -241,7 +241,7 @@ case ${hosttype} in
 
            if [ -x /usr/bin/i586-mingw32msvc-gcc ]
            then
-             CC=/usr/bin/i586-mingw32msvc-gcc
+             CC="/usr/bin/i586-mingw32msvc-gcc --std=c99"
              AR=/usr/bin/i586-mingw32msvc-ar
              STRIP=/usr/bin/i586-mingw32msvc-strip
              RANLIB=/usr/bin/i586-mingw32msvc-ranlib
@@ -446,9 +446,9 @@ if [ x"${CC}" = x ] ; then		# Let the user override the test.
 	if [ -x /bin/gcc ] ||
 	   [ -x /usr/bin/gcc ] ||
 	   [ -x /usr/local/bin/gcc ] ; then
-		CC="gcc"
+		CC="gcc --std=c99"
 	else
-		CC="cc"
+		CC="c99"
 	fi
 fi
 

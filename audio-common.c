@@ -237,7 +237,7 @@ avt_set_raw_audio_capacity (avt_audio * snd, size_t data_size)
 extern int
 avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 {
-  size_t i, old_size, new_size, out_size;
+  size_t old_size, new_size, out_size;
   bool active;
 
   if (_avt_STATUS != AVT_NORMAL or snd == NULL or data == NULL
@@ -306,7 +306,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
 	in = (uint8_t *) data;
 	out = (int16_t *) (snd->sound + old_size);
-	for (i = data_size; i > 0; i--)
+	for (size_t i = data_size; i > 0; i--)
 	  *out++ = mulaw_decode[*in++];
 	break;
       }
@@ -318,7 +318,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
 	in = (uint8_t *) data;
 	out = (int16_t *) (snd->sound + old_size);
-	for (i = data_size; i > 0; i--)
+	for (size_t i = data_size; i > 0; i--)
 	  *out++ = alaw_decode[*in++];
 	break;
       }
@@ -328,7 +328,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 	uint8_t *in = (uint8_t *) data;
 	uint16_t *out = (uint16_t *) (snd->sound + old_size);
 
-	for (i = out_size / 2; i > 0; i--, in += 2)
+	for (size_t i = out_size / 2; i > 0; i--, in += 2)
 	  *out++ = (in[1] << 8) | in[0];
       }
       break;
@@ -338,7 +338,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 	uint8_t *in = (uint8_t *) data;
 	uint16_t *out = (uint16_t *) (snd->sound + old_size);
 
-	for (i = out_size / 2; i > 0; i--, in += 2)
+	for (size_t i = out_size / 2; i > 0; i--, in += 2)
 	  *out++ = (in[0] << 8) | in[1];
       }
       break;
@@ -350,7 +350,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 	uint8_t *in = (uint8_t *) data;
 	uint16_t *out = (uint16_t *) (snd->sound + old_size);
 
-	for (i = out_size / sizeof (*out); i > 0; i--, in += 3)
+	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 3)
 	  *out++ = (in[2] << 8) | in[1];
       }
       break;
@@ -360,7 +360,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 	uint8_t *in = (uint8_t *) data;
 	uint16_t *out = (uint16_t *) (snd->sound + old_size);
 
-	for (i = out_size / sizeof (*out); i > 0; i--, in += 3)
+	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 3)
 	  *out++ = (in[0] << 8) | in[1];
       }
       break;
@@ -370,7 +370,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 	uint8_t *in = (uint8_t *) data;
 	uint16_t *out = (uint16_t *) (snd->sound + old_size);
 
-	for (i = out_size / sizeof (*out); i > 0; i--, in += 4)
+	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 4)
 	  *out++ = (in[3] << 8) | in[2];
       }
       break;
@@ -380,7 +380,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 	uint8_t *in = (uint8_t *) data;
 	uint16_t *out = (uint16_t *) (snd->sound + old_size);
 
-	for (i = out_size / sizeof (*out); i > 0; i--, in += 4)
+	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 4)
 	  *out++ = (in[0] << 8) | in[1];
       }
       break;

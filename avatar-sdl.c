@@ -436,12 +436,11 @@ union xpm_codes
 static void
 avt_free_xpm_tree (union xpm_codes *tree, int depth, int cpp)
 {
-  int i;
   union xpm_codes *e;
 
   if (depth < cpp)
     {
-      for (i = 0; i < XPM_NR_CODES; i++)
+      for (int i = 0; i < XPM_NR_CODES; i++)
 	{
 	  e = (tree + i)->next;
 	  if (e != NULL)
@@ -560,13 +559,12 @@ avt_load_image_xpm (char **xpm)
 	code_nr = xpm[colornr][0];
       else			// store characters in codes table
 	{
-	  int i;
 	  char c;
 	  union xpm_codes *table;
 
 	  c = '\0';
 	  table = codes;
-	  for (i = 0; i < cpp - 1; i++)
+	  for (int i = 0; i < cpp - 1; i++)
 	    {
 	      c = xpm[colornr][i];
 
@@ -695,9 +693,7 @@ avt_load_image_xpm (char **xpm)
     SDL_LockSurface (img);
   if (cpp == 1)			// the easiest case
     {
-      int line;
-
-      for (line = 0; line < height; line++)
+      for (int line = 0; line < height; line++)
 	{
 	  // check for premture end of data
 	  if (xpm[ncolors + 1 + line] == NULL)
@@ -711,15 +707,12 @@ avt_load_image_xpm (char **xpm)
     {
       uint8_t *pix;
       char *xpm_line;
-      int line;
       int bpp;
-      int pos;
-      int i;
 
       // Bytes per Pixel of img
       bpp = img->format->BytesPerPixel;
 
-      for (line = 0; line < height; line++)
+      for (int line = 0; line < height; line++)
 	{
 	  // point to beginning of the line
 	  pix = (uint8_t *) img->pixels + (line * img->pitch);
@@ -729,7 +722,7 @@ avt_load_image_xpm (char **xpm)
 	  if (xpm_line == NULL)
 	    break;
 
-	  for (pos = 0; pos < width; pos++, pix += bpp)
+	  for (int pos = 0; pos < width; pos++, pix += bpp)
 	    {
 	      union xpm_codes *table;
 	      char c;
@@ -737,7 +730,7 @@ avt_load_image_xpm (char **xpm)
 	      c = '\0';
 	      // find code in codes table
 	      table = codes;
-	      for (i = 0; i < cpp - 1; i++)
+	      for (int i = 0; i < cpp - 1; i++)
 		{
 		  c = xpm_line[pos * cpp + i];
 		  if (c < 32 or c > 126)
@@ -886,10 +879,8 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
   // free xpm
   if (xpm)
     {
-      unsigned int i;
-
       // linenr points to next (uninitialized) line
-      for (i = 0; i < linenr; i++)
+      for (unsigned int i = 0; i < linenr; i++)
 	SDL_free (xpm[i]);
 
       SDL_free (xpm);
@@ -914,7 +905,6 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
 {
   SDL_Surface *img;
   SDL_Color color[2];
-  int y;
   int bpl;			// Bytes per line
   uint8_t *line;
 
@@ -934,20 +924,17 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
 
   line = (uint8_t *) img->pixels;
 
-  for (y = 0; y < height; y++)
+  for (int y = 0; y < height; y++)
     {
-      int byte;
-
-      for (byte = 0; byte < bpl; byte++)
+      for (int byte = 0; byte < bpl; byte++)
 	{
 	  uint8_t val, res;
-	  int bit;
 
 	  val = *bits;
 	  res = 0;
 
 	  // bits must be reversed
-	  for (bit = 7; bit >= 0; bit--)
+	  for (int bit = 7; bit >= 0; bit--)
 	    {
 	      res |= (val & 1) << bit;
 	      val >>= 1;
@@ -3006,7 +2993,6 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
 {
   SDL_Rect dest;
   uint16_t pitch;
-  int y;
 
   if (fontwidth > 8)
     {
@@ -3019,7 +3005,7 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
       if (not font_line)
 	font_line = (const unsigned short *) avt_get_font_char (0);
 
-      for (y = 0; y < fontheight; y++)
+      for (int y = 0; y < fontheight; y++)
 	{
 	  // TODO: needs test on big endian machines
 	  *p = SDL_SwapBE16 (*font_line);
@@ -3045,7 +3031,7 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
       if (not font_line)
 	font_line = (const unsigned char *) avt_get_font_char (0);
 
-      for (y = 0; y < fontheight; y++)
+      for (int y = 0; y < fontheight; y++)
 	{
 	  *p = *font_line;
 	  if (bold and not NOT_BOLD)
@@ -3134,9 +3120,7 @@ check_auto_margin (void)
 extern void
 avt_reset_tab_stops (void)
 {
-  int i;
-
-  for (i = 0; i < AVT_LINELENGTH; i++)
+  for (int i = 0; i < AVT_LINELENGTH; i++)
     if (i % 8 == 0)
       avt_tab_stops[i] = true;
     else
@@ -3440,8 +3424,6 @@ avt_say (const wchar_t * txt)
 extern int
 avt_say_len (const wchar_t * txt, size_t len)
 {
-  size_t i;
-
   // nothing to do, when txt == NULL
   // but do allow a text to start with zeros here
   if (not screen or not txt or _avt_STATUS != AVT_NORMAL)
@@ -3451,7 +3433,7 @@ avt_say_len (const wchar_t * txt, size_t len)
   if (textfield.x < 0)
     avt_draw_balloon ();
 
-  for (i = 0; i < len; i++, txt++)
+  for (size_t i = 0; i < len; i++, txt++)
     {
       if (*(txt + 1) == L'\b' and i < len - 1)
 	{
@@ -4521,10 +4503,8 @@ avt_pager_line (const wchar_t * txt, size_t pos, size_t len,
   // handle pagebreaks
   if (avt_is_pagebreak (*tpos))
     {
-      int i;
-
       // draw separator line
-      for (i = AVT_LINELENGTH; i > 0; i--)
+      for (int i = AVT_LINELENGTH; i > 0; i--)
 	avt_put_char (0x2550);
 
       tpos++;
@@ -4559,10 +4539,8 @@ avt_pager_line (const wchar_t * txt, size_t pos, size_t len,
 
   if (line_length > horizontal)
     {
-      size_t i;
-
-      // skip horizonta characters, iff visible
-      for (i = 0; i < horizontal; i++)
+      // skip horizontal characters, iff visible
+      for (size_t i = 0; i < horizontal; i++)
 	{
 	  // FIXME: find solution for tabulators
 
@@ -4614,12 +4592,10 @@ static size_t
 avt_pager_screen (const wchar_t * txt, size_t pos, size_t len,
 		  size_t horizontal)
 {
-  int line_nr;
-
   hold_updates = true;
   SDL_FillRect (screen, &textfield, text_background_color);
 
-  for (line_nr = 0; line_nr < balloonheight; line_nr++)
+  for (int line_nr = 0; line_nr < balloonheight; line_nr++)
     {
       cursor.x = linestart;
       cursor.y = line_nr * LINEHEIGHT + textfield.y;
@@ -5446,7 +5422,7 @@ avt_navigate (const char *buttons)
   SDL_Event event;
   SDL_Surface *base_button, *buttons_area;
   SDL_Rect rect[NAV_MAX], buttons_rect;
-  int i, button_count, button_pos, audio_end_button;
+  int button_count, button_pos, audio_end_button;
   int result;
 
   result = AVT_ERROR;		// no result
@@ -5490,7 +5466,7 @@ avt_navigate (const char *buttons)
   buttons_area = avt_save_background (buttons_rect);
 
   // common values for button rectangles
-  for (i = 0; i < NAV_MAX; i++)
+  for (int i = 0; i < NAV_MAX; i++)
     {
       rect[i].w = base_button->w;
       rect[i].h = base_button->h;
@@ -5502,7 +5478,7 @@ avt_navigate (const char *buttons)
   avt_button_inlay(rect[i],bt##_bits,bt##_width,bt##_height,BUTTON_COLOR)
 
   button_pos = buttons_rect.x;
-  for (i = 0; i < button_count; i++)
+  for (int i = 0; i < button_count; i++)
     {
       rect[i].x = button_pos;
 
@@ -5590,7 +5566,7 @@ avt_navigate (const char *buttons)
 
   // prepare resizing
   avt_pre_resize (buttons_rect);
-  for (i = 0; i < button_count; i++)
+  for (int i = 0; i < button_count; i++)
     avt_pre_resize (rect[i]);
 
   while (result < 0 and _avt_STATUS == AVT_NORMAL)
@@ -5661,7 +5637,7 @@ avt_navigate (const char *buttons)
 		and mbx >= buttons_rect.x
 		and mbx <= buttons_rect.x + buttons_rect.w)
 	      {
-		for (i = 0; i < button_count and result < 0; i++)
+		for (int i = 0; i < button_count and result < 0; i++)
 		  {
 		    if (buttons[i] != ' '
 			and mbx >= rect[i].x and mbx <= rect[i].x + rect[i].w)
@@ -6796,7 +6772,6 @@ avt_credits (const wchar_t * text, bool centered)
   avt_keyhandler old_keyhandler;
   avt_mousehandler old_mousehandler;
   const wchar_t *p;
-  int i;
   int length;
 
   if (not screen or _avt_STATUS != AVT_NORMAL)
@@ -6877,7 +6852,7 @@ avt_credits (const wchar_t * text, bool centered)
       SDL_FillRect (last_line, NULL, 0);
 
       // print on last_line
-      for (i = 0; i < length; i++, cursor.x += fontwidth)
+      for (int i = 0; i < length; i++, cursor.x += fontwidth)
 	avt_drawchar ((avt_char) line[i], last_line);
 
       avt_credits_up (last_line);
@@ -6888,7 +6863,7 @@ avt_credits (const wchar_t * text, bool centered)
   avt_credits_up (last_line);
 
   // scroll up until screen is empty
-  for (i = 0; i < window.h / LINEHEIGHT and _avt_STATUS == AVT_NORMAL; i++)
+  for (int i = 0; i < window.h / LINEHEIGHT and _avt_STATUS == AVT_NORMAL; i++)
     avt_credits_up (NULL);
 
   SDL_FreeSurface (last_line);
@@ -7054,17 +7029,16 @@ avt_set_mouse_pointer (void)
 {
   unsigned char mp[xbm_bytes (mpointer)];
   unsigned char mp_mask[xbm_bytes (mpointer_mask)];
-  int i;
 
   // we need the bytes reversed :-(
 
-  for (i = 0; i < xbm_bytes (mpointer); i++)
+  for (int i = 0; i < xbm_bytes (mpointer); i++)
     {
       register unsigned char b = mpointer_bits[i];
       mp[i] = reverse_byte (b);
     }
 
-  for (i = 0; i < xbm_bytes (mpointer_mask); i++)
+  for (int i = 0; i < xbm_bytes (mpointer_mask); i++)
     {
       register unsigned char b = mpointer_mask_bits[i];
       mp_mask[i] = reverse_byte (b);

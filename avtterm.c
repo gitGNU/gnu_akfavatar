@@ -846,8 +846,7 @@ CSI_sequence (int fd, avt_char last_character)
       else
 	{
 	  int count = strtol (sequence, NULL, 10);
-	  int i;
-	  for (i = 0; i < count; i++)
+	  for (int i = 0; i < count; i++)
 	    avt_put_char (last_character);
 	}
       break;
@@ -1156,9 +1155,8 @@ CSI_sequence (int fd, avt_char last_character)
 	avt_last_tab ();
       else
 	{
-	  int i;
 	  int count = strtol (sequence, NULL, 10);
-	  for (i = 0; i < count; i++)
+	  for (int i = 0; i < count; i++)
 	    avt_last_tab ();
 	}
       break;
@@ -1213,14 +1211,13 @@ static void
 OSC_sequence (int fd)
 {
   wchar_t ch, old;
-  int i;
 
   ch = get_character (fd);
 
   if (ch == L'P')		// set palette (Linux)
     {
       // ignore 7 characters
-      for (i = 0; i < 7; i++)
+      for (int i = 0; i < 7; i++)
 	get_character (fd);
       return;
     }
