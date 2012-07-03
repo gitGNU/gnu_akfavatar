@@ -4638,10 +4638,10 @@ avt_pager_lines_back (const wchar_t * txt, size_t pos, int lines)
 
   while (lines--)
     {
-      if (pos > 0 && avt_is_linebreak(txt[pos]))
+      if (pos > 0 && avt_is_linebreak (txt[pos]))
 	pos--;			// go before last linebreak
 
-      while (pos > 0 && !avt_is_linebreak(txt[pos]))
+      while (pos > 0 && !avt_is_linebreak (txt[pos]))
 	pos--;
     }
 
@@ -4687,7 +4687,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
       nr = startline - 1;
       while (nr > 0 && pos < len)
 	{
-	  while (pos < len && !avt_is_linebreak(txt[pos]))
+	  while (pos < len && !avt_is_linebreak (txt[pos]))
 	    pos++;
 	  pos++;
 	  nr--;
@@ -6846,7 +6846,7 @@ avt_credits (const wchar_t * text, bool centered)
     {
       // get line
       length = 0;
-      while (*p && *p != L'\n')
+      while (*p && !avt_is_linebreak (*p))
 	{
 	  if (*p >= L' ' && length < 80)
 	    {
@@ -6857,7 +6857,7 @@ avt_credits (const wchar_t * text, bool centered)
 	  p++;
 	}
 
-      // skip line-end
+      // skip linebreak
       p++;
 
       // draw line
