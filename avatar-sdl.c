@@ -4797,6 +4797,9 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 	      {
 		int16_t mbx, mby;
 
+		// FIXME: strange bug
+		// in fullscreen mode sometimes event.button.y is limited?
+
 		mbx = event.button.x - window.x;
 		mby = event.button.y - window.y;
 
