@@ -4632,16 +4632,16 @@ static size_t
 avt_pager_lines_back (const wchar_t * txt, size_t pos, int lines)
 {
   if (pos > 0)
-    pos--;			// go to last \n
+    pos--;			// go to last linebreak
 
   lines--;
 
   while (lines--)
     {
-      if (pos > 0 && *(txt + pos) == L'\n')
-	pos--;			// go before last \n
+      if (pos > 0 && avt_is_linebreak(txt[pos]))
+	pos--;			// go before last linebreak
 
-      while (pos > 0 && *(txt + pos) != L'\n')
+      while (pos > 0 && !avt_is_linebreak(txt[pos]))
 	pos--;
     }
 
@@ -4687,7 +4687,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
       nr = startline - 1;
       while (nr > 0 && pos < len)
 	{
-	  while (pos < len && *(txt + pos) != L'\n')
+	  while (pos < len && !avt_is_linebreak(txt[pos]))
 	    pos++;
 	  pos++;
 	  nr--;
