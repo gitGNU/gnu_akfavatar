@@ -189,7 +189,7 @@ avt_unlock_audio (avt_audio * snd)
 extern bool
 avt_audio_playing (avt_audio * snd)
 {
-  if (snd && snd->sound != current_sound.sound)
+  if (snd and snd->sound != current_sound.sound)
     return false;		// not same sound
 
   return playing;
@@ -207,7 +207,7 @@ avt_play_audio (avt_audio * snd, int playmode)
   if (not snd)
     return _avt_STATUS;
 
-  if (playmode != AVT_PLAY && playmode != AVT_LOOP)
+  if (playmode != AVT_PLAY and playmode != AVT_LOOP)
     return AVT_FAILURE;
 
   // close audio, in case it is left open
@@ -266,7 +266,7 @@ avt_wait_audio_end (void)
   // end the loop, but wait for end of sound
   loop = false;
 
-  while (playing && _avt_STATUS == AVT_NORMAL)
+  while (playing and _avt_STATUS == AVT_NORMAL)
     avt_wait_event ();		// end of audio also triggers event
 
   return _avt_STATUS;

@@ -26,6 +26,7 @@
 #include "akfavatar.h"
 #include "avtaddons.h"
 #include <stdio.h>
+#include <iso646.h>
 
 static int
 read_stream (FILE * f, char **buffer, bool terminate)
@@ -87,7 +88,7 @@ read_stream (FILE * f, char **buffer, bool terminate)
 	buf = nbuf;
     }
 
-  if (!buf)
+  if (not buf)
     size = -1;
 
   *buffer = buf;
@@ -101,7 +102,7 @@ avta_read_textfile (const char *file_name, char **buffer)
   char *buf;
   int size;
 
-  if (!buffer)
+  if (not buffer)
     return -1;
 
   buf = NULL;
@@ -131,7 +132,7 @@ avta_read_datafile (const char *file_name, void **buffer)
   char *buf;
   int size;
 
-  if (!buffer || !file_name)
+  if (not buffer or not file_name)
     return -1;
 
   buf = NULL;
@@ -156,7 +157,7 @@ avta_read_command (const char *command, char **buffer)
   char *buf;
   int size;
 
-  if (!buffer || !command)
+  if (not buffer or not command)
     return -1;
 
   buf = NULL;

@@ -31,6 +31,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <iso646.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -91,9 +92,9 @@ typedef struct graphic
 // force value to be in range
 #define RANGE(v, min, max)  ((v) < (min) ? (min) : (v) > (max) ? (max) : (v))
 
-#define visible_x(gr, x)  ((x) >= 0 && (x) < (gr)->width)
-#define visible_y(gr, y)  ((y) >= 0 && (y) < (gr)->height)
-#define visible(gr, x, y)  (visible_x(gr, x) && visible_y(gr, y))
+#define visible_x(gr, x)  ((x) >= 0 and (x) < (gr)->width)
+#define visible_y(gr, y)  ((y) >= 0 and (y) < (gr)->height)
+#define visible(gr, x, y)  (visible_x(gr, x) and visible_y(gr, y))
 
 // set pen position
 #define penpos(gr, x, y)  (gr)->penx = (x); (gr)->peny = (y)
@@ -112,7 +113,7 @@ typedef struct graphic
   putpixelcolor ((gr), (x), (y), (gr)->width, (gr)->color)
 
 #define equal_colors(a, b) \
-  ((a).red==(b).red && (a).green==(b).green && (a).blue==(b).blue)
+  ((a).red==(b).red and (a).green==(b).green and (a).blue==(b).blue)
 
 #define HA_LEFT 0
 #define HA_CENTER 1
@@ -337,13 +338,13 @@ lgraphic_rgb (lua_State * L)
   green = luaL_checkint (L, 3);
   blue = luaL_checkint (L, 4);
 
-  luaL_argcheck (L, red >= 0 && red <= 255,
+  luaL_argcheck (L, red >= 0 and red <= 255,
 		 2, "value between 0 and 255 expected");
 
-  luaL_argcheck (L, green >= 0 && green <= 255,
+  luaL_argcheck (L, green >= 0 and green <= 255,
 		 3, "value between 0 and 255 expected");
 
-  luaL_argcheck (L, blue >= 0 && blue <= 255,
+  luaL_argcheck (L, blue >= 0 and blue <= 255,
 		 4, "value between 0 and 255 expected");
 
   gr = get_graphic (L, 1);
@@ -632,7 +633,7 @@ line (graphic * gr, double x1, double y1, double x2, double y2)
   ix2 = (int) x2;
   iy2 = (int) y2;
 
-  if (ix1 == ix2 && iy1 == iy2)	// one dot
+  if (ix1 == ix2 and iy1 == iy2)	// one dot
     {
       if (visible (gr, ix1, iy1))
 	putdot (gr, ix1, iy1);
@@ -1015,11 +1016,11 @@ lgraphic_text (lua_State * L)
     }
 
   // vertically outside visible area? (cannot show partly)
-  if (y < 0 || y >= gr->height - fontheight)
+  if (y < 0 or y >= gr->height - fontheight)
     return 0;
 
   wclen = avt_mb_decode (&wctext, s, (int) len);
-  if (!wctext)
+  if (not wctext)
     return 0;
 
   switch (gr->htextalign)
@@ -1037,7 +1038,7 @@ lgraphic_text (lua_State * L)
     }
 
   // horizontally outside visible area? (cannot show partly)
-  if (wclen <= 0 || x >= gr->width - fontwidth || x + (wclen * fontwidth) < 0)
+  if (wclen <= 0 or x >= gr->width - fontwidth or x + (wclen * fontwidth) < 0)
     {
       avt_free (wctext);
       return 0;
@@ -1069,7 +1070,7 @@ lgraphic_text (lua_State * L)
 	  int lx, ly;
 
 	  font_line = (const unsigned short *) avt_get_font_char ((int) *wc);
-	  if (!font_line)
+	  if (not font_line)
 	    font_line = (const unsigned short *) avt_get_font_char (0);
 
 	  for (ly = 0; ly < fontheight; ly++)
@@ -1092,7 +1093,7 @@ lgraphic_text (lua_State * L)
 	  int lx, ly;
 
 	  font_line = (const byte *) avt_get_font_char ((int) *wc);
-	  if (!font_line)
+	  if (not font_line)
 	    font_line = (const byte *) avt_get_font_char (0);
 
 	  for (ly = 0; ly < fontheight; ly++)
@@ -1288,7 +1289,7 @@ lgraphic_put (lua_State * L)
     return 0;			// nothing to copy
 
   // same width and no x-offset can be optimized
-  if (source_width == target_width && xoffset == 0)
+  if (source_width == target_width and xoffset == 0)
     {
       memcpy (target + (yoffset * target_width), source,
 	      source_width * lines * BPP);
@@ -1394,7 +1395,7 @@ lgraphic_put_transparency (lua_State * L)
 	  for (x = 0; x < show_width; x++, ps++, pt++)
 	    {
 	      foreground = *ps;
-	      if (!equal_colors (foreground, background))
+	      if (not equal_colors (foreground, background))
 		*pt = foreground;
 	    }
 	}
@@ -1424,10 +1425,10 @@ lgraphic_get (lua_State * L)
   source_width = gr->width;
   source_height = gr->height;
 
-  luaL_argcheck (L, x1 >= 0 && x1 < source_width, 2, "value out of range");
-  luaL_argcheck (L, y1 >= 0 && y1 < source_height, 3, "value out of range");
-  luaL_argcheck (L, x2 >= 0 && x2 < source_width, 4, "value out of range");
-  luaL_argcheck (L, y2 >= 0 && y2 < source_height, 5, "value out of range");
+  luaL_argcheck (L, x1 >= 0 and x1 < source_width, 2, "value out of range");
+  luaL_argcheck (L, y1 >= 0 and y1 < source_height, 3, "value out of range");
+  luaL_argcheck (L, x2 >= 0 and x2 < source_width, 4, "value out of range");
+  luaL_argcheck (L, y2 >= 0 and y2 < source_height, 5, "value out of range");
 
   if (x1 > x2)			// swap
     {
@@ -1607,7 +1608,7 @@ lgraphic_export_ppm (lua_State * L)
 
   f = fopen (fname, "wb");
 
-  if (!f)
+  if (not f)
     return luaL_error (L, LUA_QS ": %s", fname, strerror (errno));
 
   fprintf (f, "P6\n%d %d\n255\n", gr->width, gr->height);

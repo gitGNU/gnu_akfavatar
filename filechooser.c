@@ -29,6 +29,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>
+#include <iso646.h>
 
 
 #define marked(void) avt_set_text_background_color(0xDDDDDD)
@@ -66,7 +67,7 @@
 #ifdef _WIN32
 #  define HAS_DRIVE_LETTERS true
 #  define HAS_SCANDIR false
-#  define is_root_dir(x) (x[1] == ':' && x[3] == '\0')
+#  define is_root_dir(x) (x[1] == ':' and x[3] == '\0')
 #else
 #  define HAS_DRIVE_LETTERS false
 #  define HAS_SCANDIR true
@@ -91,8 +92,8 @@ is_directory (const char *name)
 #ifdef _DIRENT_HAVE_D_TYPE
 #  define is_dirent_directory(d) \
 	    (d->d_type == DT_DIR \
-	      || ((d->d_type == DT_UNKNOWN || d->d_type == DT_LNK) \
-	             && is_directory (d->d_name)))
+	      or ((d->d_type == DT_UNKNOWN or d->d_type == DT_LNK) \
+	             and is_directory (d->d_name)))
 #else
 #  define is_dirent_directory(d) (is_directory (d->d_name))
 #endif // _DIRENT_HAVE_D_TYPE
@@ -128,12 +129,12 @@ static int
 filter_dirent (FILTER_DIRENT_T * d)
 {
   // allow nothing that starts with a dot
-  if (d == NULL || d->d_name[0] == '.')
+  if (d == NULL or d->d_name[0] == '.')
     return false;
   else if (is_dirent_directory (d))
     return true;
   else
-    return (custom_filter == NULL || (*custom_filter) (d->d_name));
+    return (custom_filter == NULL or (*custom_filter) (d->d_name));
 }
 
 #else // _WIN32
@@ -144,12 +145,12 @@ filter_dirent (const struct dirent *d)
   // don't allow "." and ".." and apply custom_filter
   if (d == NULL)
     return false;
-  else if (strcmp (".", d->d_name) == 0 || strcmp ("..", d->d_name) == 0)
+  else if (strcmp (".", d->d_name) == 0 or strcmp ("..", d->d_name) == 0)
     return false;
   else if (is_dirent_directory (d))
     return true;
   else
-    return (custom_filter == NULL || (*custom_filter) (d->d_name));
+    return (custom_filter == NULL or (*custom_filter) (d->d_name));
 }
 
 #endif // _WIN32
@@ -194,12 +195,12 @@ get_directory (struct dirent ***list)
 
   if (mylist)
     {
-      while ((d = readdir (dir)) != NULL && entries < max_entries)
+      while ((d = readdir (dir)) and entries < max_entries)
 	{
 	  if (filter_dirent (d))
 	    {
 	      n = (struct dirent *) malloc (dirent_size);
-	      if (!n)
+	      if (not n)
 		break;
 	      memcpy (n, d, dirent_size);
 	      mylist[entries++] = n;
@@ -212,7 +213,7 @@ get_directory (struct dirent ***list)
 
   closedir (dir);
 
-  if (!mylist)
+  if (not mylist)
     return -1;
 
   *list = mylist;
@@ -242,7 +243,7 @@ avta_file_selection (char *filename, int filename_size, avta_filter filter)
 
   rcode = -1;
 
-  if (filename == NULL || filename_size <= 0)
+  if (filename == NULL or filename_size <= 0)
     return -1;
 
   avt_set_text_delay (0);
@@ -283,7 +284,7 @@ start:
   *filename = '\0';
   idx = 0;
 
-  if (!getcwd (dirname, sizeof (dirname)))
+  if (not getcwd (dirname, sizeof (dirname)))
     dirname[0] = '\0';
 
   show_directory (dirname);
@@ -294,7 +295,7 @@ start:
     goto quit;
 
   // entry for parent directory or home
-  if (!HAS_DRIVE_LETTERS && is_root_dir (dirname))
+  if (not HAS_DRIVE_LETTERS and is_root_dir (dirname))
     {
       entry[idx] = "";
       marked_text (HOME);
@@ -307,18 +308,18 @@ start:
   idx++;
   avt_new_line ();
 
-  while (!*filename)
+  while (not * filename)
     {
       if (entry_nr < entries)
 	d = namelist[entry_nr++];
       else
 	d = NULL;
 
-      if (idx == 1 && !d)	// no entries at all
+      if (idx == 1 and not d)	// no entries at all
 	break;
 
       // end reached?
-      if (!d || idx == max_idx - 1)
+      if (not d or idx == max_idx - 1)
 	{
 	  if (d)		// continue entry
 	    {
@@ -330,11 +331,11 @@ start:
 	  if (avt_choice (&menu_entry, 1, idx, 0, (page_nr > 0), (d != NULL)))
 	    break;
 
-	  if (page_nr == 0 && menu_entry == 1)	// path-bar
+	  if (page_nr == 0 and menu_entry == 1)	// path-bar
 	    {
 	      break;
 	    }
-	  else if (d && menu_entry == idx)	// continue?
+	  else if (d and menu_entry == idx)	// continue?
 	    {
 	      idx = 0;
 	      page_nr++;
@@ -345,7 +346,7 @@ start:
 	      idx++;
 	      avt_new_line ();
 	    }
-	  else if (page_nr > 0 && menu_entry == 1)	// back
+	  else if (page_nr > 0 and menu_entry == 1)	// back
 	    {
 	      idx = 0;
 	      page_nr--;
@@ -363,7 +364,7 @@ start:
 		  show_directory (dirname);
 		  idx++;
 
-		  if (!HAS_DRIVE_LETTERS && is_root_dir (dirname))
+		  if (not HAS_DRIVE_LETTERS and is_root_dir (dirname))
 		    {
 		      entry[idx] = "";
 		      marked_text (HOME);
@@ -425,7 +426,7 @@ start:
   namelist = NULL;
 
   // path chosen
-  if (page_nr == 0 && menu_entry == 1)
+  if (page_nr == 0 and menu_entry == 1)
     {
       avt_move_xy (1, 1);
       marked ();
@@ -438,7 +439,7 @@ start:
     }
 
   // back-entry in root_dir
-  if (page_nr == 0 && menu_entry == 2 && is_root_dir (dirname))
+  if (page_nr == 0 and menu_entry == 2 and is_root_dir (dirname))
     {
       *filename = '\0';
       if (HAS_DRIVE_LETTERS)	// ask for drive?

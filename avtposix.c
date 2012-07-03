@@ -28,6 +28,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <pwd.h>
+#include <iso646.h>
 
 // TODO: write integrated editor!
 
@@ -39,7 +40,7 @@ edit_file (const char *name, const char *encoding)
   int fd;
 
   if ((editor = getenv ("VISUAL")) == NULL
-      && (editor = getenv ("EDITOR")) == NULL)
+      and (editor = getenv ("EDITOR")) == NULL)
     editor = "vi";
 
   args[0] = editor;
@@ -60,13 +61,13 @@ get_user_home (char *home_dir, size_t size)
   home = getenv ("HOME");
 
   // when the variable is not set, dig deeper
-  if (home == NULL || *home == '\0')
+  if (not home or * home == '\0')
     {
       struct passwd *user_data;
 
       user_data = getpwuid (getuid ());
-      if (user_data != NULL && user_data->pw_dir != NULL
-	  && *user_data->pw_dir != '\0')
+      if (user_data != NULL and user_data->pw_dir != NULL
+	  and * user_data->pw_dir != '\0')
 	home = user_data->pw_dir;
     }
 
@@ -96,7 +97,7 @@ open_config_file (const char *name, bool writing)
   else
     snprintf (path, sizeof (path), "%s/.config/akfavatar/%s", home, name);
 
-  if (!writing)
+  if (not writing)
     {
       f = fopen (path, "r");
     }
@@ -105,7 +106,7 @@ open_config_file (const char *name, bool writing)
       f = fopen (path, "w");
 
       // if that fails, try to create directories
-      if (!f)
+      if (not f)
 	{
 	  if (xdg_config_home)
 	    {

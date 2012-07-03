@@ -20,6 +20,7 @@
 
 #include "akfavatar.h"
 #include <stdio.h>		// for sprintf
+#include <iso646.h>
 
 // House symbol
 #define HOME L"\x2302"
@@ -98,7 +99,7 @@ avta_color_selection (void)
   old_auto_margin = avt_get_auto_margin ();
   avt_set_auto_margin (false);
 
-  while (!result)
+  while (not result)
     {
       avt_clear ();
 
@@ -153,13 +154,13 @@ avta_color_selection (void)
       else
 	avt_lock_updates (true);
 
-      if (choice == 1 && page_nr > 0)
+      if (choice == 1 and page_nr > 0)
 	page_nr--;		// page back
       else if (choice == 1)
 	break;			// home
       else if (choice == max_idx)
 	page_nr += (color_name == NULL) ? 0 : 1;	// page forward
-      else if (page_nr == 0 && choice == 2)
+      else if (page_nr == 0 and choice == 2)
 	{
 	  result = (const char *) manual_entry ();
 	  break;

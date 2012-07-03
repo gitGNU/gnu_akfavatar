@@ -33,6 +33,7 @@
 #include <unistd.h>		// getcwd, chdir
 #include <locale.h>
 #include <errno.h>
+#include <iso646.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -77,8 +78,9 @@ static const char *language;
 static void
 version (void)
 {
-  printf (PRGNAME "\n\nAKFAvatar %s, %s\n%s, %s\n\nLicense %s\n\n", 
-  avt_version (), avt_copyright (), LUA_RELEASE, LUA_COPYRIGHT, avt_license ());
+  printf (PRGNAME "\n\nAKFAvatar %s, %s\n%s, %s\n\nLicense %s\n\n",
+	  avt_version (), avt_copyright (), LUA_RELEASE, LUA_COPYRIGHT,
+	  avt_license ());
   exit (EXIT_SUCCESS);
 }
 
@@ -171,7 +173,7 @@ handle_require_options (int argc, char *argv[])
 {
   int i;
 
-  for (i = 1; i < argc && argv[i][0] == '-'; i++)
+  for (i = 1; i < argc and argv[i][0] == '-'; i++)
     {
       if (strncmp (argv[i], "-l", 2) == 0)
 	{
@@ -188,17 +190,17 @@ check_options (int argc, char *argv[])
 {
   int i;
 
-  for (i = 1; i < argc && argv[i][0] == '-'; i++)
+  for (i = 1; i < argc and argv[i][0] == '-'; i++)
     {
-      if (strcmp (argv[i], "--version") == 0 || strcmp (argv[i], "-v") == 0)
+      if (strcmp (argv[i], "--version") == 0 or strcmp (argv[i], "-v") == 0)
 	version ();
-      else if (strcmp (argv[i], "--help") == 0 || strcmp (argv[i], "-h") == 0)
+      else if (strcmp (argv[i], "--help") == 0 or strcmp (argv[i], "-h") == 0)
 	help ();
       else if (strcmp (argv[i], "--fullscreen") == 0
-	       || strcmp (argv[i], "-f") == 0)
+	       or strcmp (argv[i], "-f") == 0)
 	mode = AVT_FULLSCREEN;
       else if (strcmp (argv[i], "--Fullscreen") == 0
-	       || strcmp (argv[i], "-F") == 0)
+	       or strcmp (argv[i], "-F") == 0)
 	mode = AVT_FULLSCREENNOSWITCH;
       else if (strncmp (argv[i], "--dir=", 6) == 0)
 	directory = (argv[i] + 6);
@@ -254,10 +256,10 @@ check_filename (const char *filename)
 {
   const char *ext = strrchr (filename, '.');
 
-  return (ext && (strcasecmp (EXT_LUA, ext) == 0
-		  || strcasecmp (EXT_DEMO, ext) == 0
-		  || strcasecmp (EXT_EXEC, ext) == 0
-		  || strcasecmp (EXT_ABOUT, ext) == 0));
+  return (ext and (strcasecmp (EXT_LUA, ext) == 0
+		   or strcasecmp (EXT_DEMO, ext) == 0
+		   or strcasecmp (EXT_EXEC, ext) == 0
+		   or strcasecmp (EXT_ABOUT, ext) == 0));
 }
 
 static void
@@ -328,14 +330,14 @@ run_executable (const char *filename)
   start = script;
 
   // skip UTF-8 BOM
-  if (start[0] == '\xEF' && start[1] == '\xBB' && start[2] == '\xBF')
+  if (start[0] == '\xEF' and start[1] == '\xBB' and start[2] == '\xBF')
     {
       start += 3;
       size -= 3;
     }
 
   // skip #! line
-  if (start[0] == '#' && start[1] == '!')
+  if (start[0] == '#' and start[1] == '!')
     while (*start != '\n')
       {
 	start++;
@@ -347,7 +349,7 @@ run_executable (const char *filename)
 
   arg0 (filename);
 
-  if (status != 0 || lua_pcall (L, 0, 0, 0) != 0)
+  if (status != 0 or lua_pcall (L, 0, 0, 0) != 0)
     {
       // on a normal quit-request there is nil on the stack
       if (lua_isstring (L, -1))
@@ -391,12 +393,12 @@ ask_file (void)
       avt_avatar_image_none ();
       avt_set_balloon_mode (AVT_SAY);
 
-      if (!getcwd (lua_dir, sizeof (lua_dir)))
+      if (not getcwd (lua_dir, sizeof (lua_dir)))
 	lua_dir[0] = '\0';
 
       ext = strrchr (filename, '.');
 
-      if (!ext)
+      if (not ext)
 	return false;		// shouldn't happen
       else if (strcasecmp (EXT_DEMO, ext) == 0)
 	avtdemo (filename);
@@ -414,7 +416,7 @@ ask_file (void)
 	{
 	  arg0 (filename);
 	  if (luaL_loadfilex (L, filename, "t") != 0
-	      || lua_pcall (L, 0, 0, 0) != 0)
+	      or lua_pcall (L, 0, 0, 0) != 0)
 	    {
 	      // on a normal quit-request there is nil on the stack
 	      if (lua_isstring (L, -1))
@@ -444,7 +446,7 @@ start_screen (void)
 {
   bool german;
 
-  german = (language && strcmp ("de", language) == 0);
+  german = (language and strcmp ("de", language) == 0);
 
   avt_clear_screen ();
   avt_set_balloon_color (COLOR_START);
@@ -545,8 +547,8 @@ find_scripts (void)
 
       len = GetModuleFileNameA (NULL, progdir, sizeof (progdir));
 
-      if (len != 0 && len != sizeof (progdir)
-	  && (p = strrchr (progdir, '\\')) != NULL)
+      if (len != 0 and len != sizeof (progdir)
+	  and (p = strrchr (progdir, '\\')) != NULL)
 	{
 	  *p = '\0';		// cut filename off
 	  chdir (progdir);
@@ -594,9 +596,9 @@ main (int argc, char **argv)
 	initialize ();
 
       ext = strrchr (argv[script_index], '.');
-      if (ext && strcasecmp (EXT_DEMO, ext) == 0)
+      if (ext and strcasecmp (EXT_DEMO, ext) == 0)
 	avtdemo (argv[script_index]);
-      else if (ext && strcasecmp (EXT_EXEC, ext) == 0)
+      else if (ext and strcasecmp (EXT_EXEC, ext) == 0)
 	{
 	  if (run_executable (argv[script_index]) != 0)
 	    fatal ("executable", lua_tostring (L, -1));
@@ -606,7 +608,7 @@ main (int argc, char **argv)
 	  get_args (argc, argv, script_index);
 
 	  if (luaL_loadfilex (L, argv[script_index], "t") != 0
-	      || lua_pcall (L, 0, 0, 0) != 0)
+	      or lua_pcall (L, 0, 0, 0) != 0)
 	    {
 	      if (lua_isstring (L, -1))
 		fatal (argv[script_index], lua_tostring (L, -1));

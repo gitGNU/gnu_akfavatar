@@ -29,6 +29,7 @@
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/wait.h>
+#include <iso646.h>
 
 #ifdef USE_OPENPTY
 #  include <pty.h>
@@ -64,13 +65,13 @@ get_user_shell (void)
   shell = getenv ("SHELL");
 
   // when the variable is not set, dig deeper
-  if (shell == NULL || *shell == '\0')
+  if (shell == NULL or * shell == '\0')
     {
       struct passwd *user_data;
 
       user_data = getpwuid (getuid ());
-      if (user_data != NULL && user_data->pw_shell != NULL
-	  && *user_data->pw_shell != '\0')
+      if (user_data != NULL and user_data->pw_shell != NULL
+	  and * user_data->pw_shell != '\0')
 	shell = user_data->pw_shell;
       else
 	shell = "/bin/sh";	// default shell
@@ -109,7 +110,7 @@ avta_term_initialize (int *input_fd, int width, int height,
   if (master < 0)
     return -1;
 
-  if (grantpt (master) < 0 || unlockpt (master) < 0)
+  if (grantpt (master) < 0 or unlockpt (master) < 0)
     {
       close (master);
       return -1;
@@ -175,8 +176,8 @@ avta_term_initialize (int *input_fd, int width, int height,
 
       // redirect stdin, stdout, stderr to slave
       if (dup2 (slave, STDIN_FILENO) < 0
-	  || dup2 (slave, STDOUT_FILENO) < 0
-	  || dup2 (slave, STDERR_FILENO) < 0)
+	  or dup2 (slave, STDOUT_FILENO) < 0
+	  or dup2 (slave, STDERR_FILENO) < 0)
 	_exit (EXIT_FAILURE);
 
       close (slave);

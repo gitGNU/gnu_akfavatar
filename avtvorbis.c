@@ -24,6 +24,7 @@
 #include "avtaddons.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <iso646.h>
 
 #define STB_VORBIS_HEADER_ONLY 1
 #define STB_VORBIS_NO_PUSHDATA_API 1
@@ -90,9 +91,9 @@ load_vorbis (stb_vorbis * vorbis, int playmode)
 	}
     }
 
-  if (data_len > 0 && avt_add_raw_audio_data (audio, data,
-					      data_len * sizeof (*data) *
-					      info.channels) != AVT_NORMAL)
+  if (data_len > 0 and avt_add_raw_audio_data (audio, data,
+					       data_len * sizeof (*data) *
+					       info.channels) != AVT_NORMAL)
     {
       avt_free_audio (audio);
       return NULL;
@@ -122,8 +123,8 @@ avta_load_vorbis_stream (avt_stream * stream, size_t size, int playmode)
 
   // check content, must be plain vorbis with no other streams
   if (fread (&buf, sizeof (buf), 1, f) < 1
-      || memcmp ("OggS", buf, 4) != 0
-      || memcmp ("\x01vorbis", buf + 28, 7) != 0)
+      or memcmp ("OggS", buf, 4) != 0
+      or memcmp ("\x01vorbis", buf + 28, 7) != 0)
     {
       fseek (f, start, SEEK_SET);
       return NULL;
@@ -160,12 +161,12 @@ avta_load_vorbis_file (char *filename, int playmode)
   FILE *f;
   avt_audio *audio_data;
 
-  if (!filename || !*filename)
+  if (not filename or not * filename)
     return NULL;
 
   f = fopen (filename, "rb");
 
-  if (!f)
+  if (not f)
     return NULL;
 
   audio_data = avta_load_vorbis_stream (f, 0, playmode);
@@ -182,9 +183,9 @@ avta_load_vorbis_data (void *data, int datasize, int playmode)
   avt_audio *audio_data;
 
   // check content, must be plain vorbis with no other streams
-  if (!data || datasize <= 0
-      || memcmp ("OggS", data, 4) != 0
-      || memcmp ("\x01vorbis", ((char *) data) + 28, 7) != 0)
+  if (not data or datasize <= 0
+      or memcmp ("OggS", data, 4) != 0
+      or memcmp ("\x01vorbis", ((char *) data) + 28, 7) != 0)
     return NULL;
 
   vorbis =

@@ -3,13 +3,14 @@
 #include "stdio.h"		// sscanf
 #include "strings.h"		// strcasecmp
 #include "rgb.h"
+#include <iso646.h>
 
 extern int
 avt_colorname (const char *name)
 {
   int colornr;
 
-  if (!name || !*name)
+  if (not name or not * name)
     return -1;
 
   colornr = -1;
@@ -34,7 +35,7 @@ avt_colorname (const char *name)
       int i;
       const int numcolors = sizeof (avt_colors) / sizeof (avt_colors[0]);
 
-      for (i = 0; i < numcolors && colornr == -1; i++)
+      for (i = 0; i < numcolors and colornr == -1; i++)
 	if (strcasecmp (avt_colors[i].name, name) == 0)
 	  colornr = avt_colors[i].number;
     }
@@ -48,7 +49,7 @@ avt_palette (int entry, int *colornr)
   const char *name = NULL;
   const int numcolors = sizeof (avt_colors) / sizeof (avt_colors[0]);
 
-  if (entry >= 0 && entry < numcolors)
+  if (entry >= 0 and entry < numcolors)
     {
       name = avt_colors[entry].name;
 
@@ -68,7 +69,7 @@ avt_name_to_color (const char *name, int *red, int *green, int *blue)
   int status;
   int colornr;
 
-  if (!name || !*name || !red || !green || !blue)
+  if (not name or not * name or not red or not green or not blue)
     return -1;
 
   colornr = avt_colorname (name);
@@ -94,7 +95,7 @@ avt_get_color_name (int entry)
 {
   const int numcolors = sizeof (avt_colors) / sizeof (avt_colors[0]);
 
-  if (entry >= 0 && entry < numcolors)
+  if (entry >= 0 and entry < numcolors)
     return avt_colors[entry].name;
   else
     return NULL;
@@ -105,7 +106,7 @@ avt_get_color (int entry, int *red, int *green, int *blue)
 {
   const int numcolors = sizeof (avt_colors) / sizeof (avt_colors[0]);
 
-  if (entry >= 0 && entry < numcolors)
+  if (entry >= 0 and entry < numcolors)
     {
       int number = avt_colors[entry].number;
       if (red)

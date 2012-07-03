@@ -19,6 +19,7 @@
  */
 
 #include "avtaddons.h"
+#include <iso646.h>
 
 /*
  * some weird systems needs O_BINARY, most others not
@@ -56,7 +57,7 @@ avta_arch_open (const char *archive)
 
   nread = read (fd, &archive_magic, 8);
 
-  if (nread != 8 || memcmp ("!<arch>\n", archive_magic, 8) != 0)
+  if (nread != 8 or memcmp ("!<arch>\n", archive_magic, 8) != 0)
     {
       close (fd);
       fd = -1;
@@ -90,8 +91,8 @@ avta_arch_find_member (int fd, const char *member)
 
   /* check name */
   while (memcmp (&header.name, member, name_length) != 0
-	 || (header.name[name_length] != ' '
-	     && header.name[name_length] != '/'))
+	 or (header.name[name_length] != ' '
+	     and header.name[name_length] != '/'))
     {
       /* skip block */
       skip_size = strtoul ((const char *) &header.size, NULL, 10);
@@ -141,7 +142,7 @@ avta_arch_first_member (int fd, char *member)
       /* either terminated by / or by space */
       end = (char *) memchr (member, '/', sizeof (header.name));
 
-      if (!end)
+      if (not end)
 	end = (char *) memchr (member, ' ', sizeof (header.name));
 
       if (end)
@@ -172,7 +173,7 @@ avta_arch_get_member (int fd, size_t size)
   /* we add 4 0-Bytes as possible string-terminator */
   buf = (char *) malloc (size + 4);
 
-  if (buf == NULL)
+  if (not buf)
     return NULL;
 
   p = buf;
@@ -207,14 +208,14 @@ avta_arch_get_member (int fd, size_t size)
  * returns NULL on error
  */
 char *
-avta_arch_get_data (const char *archive, const char *member, size_t *size)
+avta_arch_get_data (const char *archive, const char *member, size_t * size)
 {
   int fd;
   size_t msize;
   char *buf;
 
   buf = NULL;
-  if (size != NULL)
+  if (size)
     *size = 0;
 
   fd = avta_arch_open (archive);
@@ -228,10 +229,10 @@ avta_arch_get_data (const char *archive, const char *member, size_t *size)
 
   close (fd);
 
-  if (buf == NULL)
+  if (not buf)
     msize = 0;
 
-  if (size != NULL)
+  if (size)
     *size = msize;
 
   return buf;

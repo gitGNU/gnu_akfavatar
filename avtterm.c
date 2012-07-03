@@ -30,6 +30,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+#include <iso646.h>
 
 // size for input buffer
 #define INBUFSIZE 1024
@@ -191,7 +192,7 @@ avta_term_update_size (void)
       int new_max_x = avt_get_max_x ();
       int new_max_y = avt_get_max_y ();
 
-      if (new_max_x != max_x || new_max_y != max_y)
+      if (new_max_x != max_x or new_max_y != max_y)
 	{
 	  max_x = new_max_x;
 	  max_y = new_max_y;
@@ -236,7 +237,7 @@ get_character (int fd)
 	  nread = read (fd, &filebuf, sizeof (filebuf));
 
 	  // waiting for data
-	  if (nread == -1 && errno == EAGAIN)
+	  if (nread == -1 and errno == EAGAIN)
 	    {
 	      if (cursor_active)
 		avt_activate_cursor (true);
@@ -245,8 +246,8 @@ get_character (int fd)
 		{
 		  nread = read (fd, &filebuf, sizeof (filebuf));
 		}
-	      while (nread == -1 && errno == EAGAIN
-		     && avt_update () == AVT_NORMAL);
+	      while (nread == -1 and errno == EAGAIN
+		     and avt_update () == AVT_NORMAL);
 	      idle = false;
 	      if (cursor_active)
 		avt_activate_cursor (false);
@@ -292,7 +293,7 @@ avta_term_send (const char *buf, size_t count)
 	      buf += r;
 	    }
 	}
-      while (r > 0 && count > 0);
+      while (r > 0 and count > 0);
     }
 }
 
@@ -304,7 +305,7 @@ prg_keyhandler (int sym, int mod, int unicode)
 {
   // TODO: support application_keypad
 
-  if (idle && prg_input > 0)
+  if (idle and prg_input > 0)
     {
       idle = false;		// avoid reentrance
 
@@ -430,16 +431,16 @@ prg_keyhandler (int sym, int mod, int unicode)
 static void
 prg_mousehandler (int button, bool pressed, int x, int y)
 {
-  if (pressed && button == 4)	// wheel up
+  if (pressed and button == 4)	// wheel up
     send_cursor_seq ('A');	// cursor key up
-  else if (pressed && button == 5)	// wheel down
+  else if (pressed and button == 5)	// wheel down
     send_cursor_seq ('B');	// cursor key down
-  else if (button <= 3 && ((mouse_mode == 1 && pressed) || mouse_mode == 2))
+  else if (button <= 3 and ((mouse_mode == 1 and pressed) or mouse_mode == 2))
     {
       char code[7];
       int b;
 
-      if (mouse_mode == 2 && !pressed)
+      if (mouse_mode == 2 and not pressed)
 	b = 3;			// button released
       else
 	b = button - 1;
@@ -473,7 +474,7 @@ set_foreground_color (int color)
   switch (color)
     {
     case 0:
-      if (!faint)
+      if (not faint)
 	avt_set_text_color (0x000000);
       else
 	avt_set_text_color (0x888888);
@@ -598,7 +599,7 @@ ansi_graphic_code (int mode)
       faint = false;
       avt_bold (true);
       // bold is sometimes assumed to light colors
-      if (text_color > 0 && text_color < 7)
+      if (text_color > 0 and text_color < 7)
 	{
 	  text_color += 8;
 	  set_foreground_color (text_color);
@@ -659,11 +660,11 @@ ansi_graphic_code (int mode)
     case 35:
     case 36:
     case 37:
-      if (!nocolor)
+      if (not nocolor)
 	{
 	  text_color = (mode - 30);
 	  // bold is sometimes assumed to be in light color
-	  if (text_color > 0 && text_color < 7 && avt_get_bold ())
+	  if (text_color > 0 and text_color < 7 and avt_get_bold ())
 	    text_color += 8;
 	  set_foreground_color (text_color);
 	}
@@ -689,7 +690,7 @@ ansi_graphic_code (int mode)
     case 45:
     case 46:
     case 47:
-      if (!nocolor)
+      if (not nocolor)
 	{
 	  text_background_color = (mode - 40);
 	  set_background_color (text_background_color);
@@ -709,7 +710,7 @@ ansi_graphic_code (int mode)
     case 95:
     case 96:
     case 97:
-      if (!nocolor)
+      if (not nocolor)
 	{
 	  text_color = (mode - 90 + 8);
 	  set_foreground_color (text_color);
@@ -724,7 +725,7 @@ ansi_graphic_code (int mode)
     case 105:
     case 106:
     case 107:
-      if (!nocolor)
+      if (not nocolor)
 	{
 	  text_background_color = (mode - 100 + 8);
 	  set_background_color (text_background_color);
@@ -787,20 +788,20 @@ CSI_sequence (int fd, avt_char last_character)
       ch = get_character (fd);
 
       // ignore CSI [ + one character
-      if (pos == 0 && ch == L'[')
+      if (pos == 0 and ch == L'[')
 	{
 	  get_character (fd);	// ignore one char
 	  return;
 	}
 
       // CAN or SUB cancel the escape-sequence
-      if (ch == L'\x18' || ch == L'\x1A')
+      if (ch == L'\x18' or ch == L'\x1A')
 	return;
 
       sequence[pos] = (char) ch;
       pos++;
     }
-  while (pos < sizeof (sequence) && ch < L'@');
+  while (pos < sizeof (sequence) and ch < L'@');
   sequence[pos] = '\0';
   pos++;
 
@@ -863,13 +864,13 @@ CSI_sequence (int fd, avt_char last_character)
 	avta_term_send_literal (DS);
       else if (sequence[0] == '?')
 	{			// I have no real infos about that :-(
-	  if (sequence[1] == '1' && sequence[2] == 'c')
+	  if (sequence[1] == '1' and sequence[2] == 'c')
 	    activate_cursor (false);
-	  else if (sequence[1] == '2' && sequence[2] == 'c')
+	  else if (sequence[1] == '2' and sequence[2] == 'c')
 	    activate_cursor (true);
-	  else if (sequence[1] == '0' && sequence[2] == 'c')
+	  else if (sequence[1] == '0' and sequence[2] == 'c')
 	    activate_cursor (true);	// normal?
-	  else if (sequence[1] == '8' && sequence[2] == 'c')
+	  else if (sequence[1] == '8' and sequence[2] == 'c')
 	    activate_cursor (true);	// very visible
 	}
       break;
@@ -914,7 +915,7 @@ CSI_sequence (int fd, avt_char last_character)
       // L'f', HVP: see H
 
     case L'g':			// TBC
-      if (sequence[0] == 'g' || sequence[0] == '0')
+      if (sequence[0] == 'g' or sequence[0] == '0')
 	avt_set_tab (avt_where_x (), false);
       else			// TODO: TBC 1-5 are not distinguished here
 	avt_clear_tab_stops ();
@@ -929,7 +930,7 @@ CSI_sequence (int fd, avt_char last_character)
 
     case L'H':			// CUP
     case L'f':			// HVP
-      if (sequence[0] == 'H' || sequence[0] == 'f')
+      if (sequence[0] == 'H' or sequence[0] == 'f')
 	avt_move_xy (1, 1);
       else
 	{
@@ -1007,7 +1008,7 @@ CSI_sequence (int fd, avt_char last_character)
       break;
 
     case L'J':			// ED
-      if (sequence[0] == '0' || sequence[0] == 'J')
+      if (sequence[0] == '0' or sequence[0] == 'J')
 	avt_clear_down ();
       else if (sequence[0] == '1')
 	avt_clear_up ();
@@ -1016,7 +1017,7 @@ CSI_sequence (int fd, avt_char last_character)
       break;
 
     case L'K':			// EL
-      if (sequence[0] == '0' || sequence[0] == 'K')
+      if (sequence[0] == '0' or sequence[0] == 'K')
 	avt_clear_eol ();
       else if (sequence[0] == '1')
 	avt_clear_bol ();
@@ -1032,7 +1033,7 @@ CSI_sequence (int fd, avt_char last_character)
 	  char *next;
 
 	  next = &sequence[0];
-	  while (*next >= '0' && *next <= '9')
+	  while (*next >= '0' and * next <= '9')
 	    {
 	      ansi_graphic_code (strtol (next, &next, 10));
 	      if (*next == ';')
@@ -1056,10 +1057,10 @@ CSI_sequence (int fd, avt_char last_character)
       break;
 
     case L'n':			// DSR
-      if (sequence[0] == '5' && sequence[1] == 'n')
+      if (sequence[0] == '5' and sequence[1] == 'n')
 	avta_term_send_literal (CSI "0n");	// device okay
       // CSI "3n" for failure
-      else if (sequence[0] == '6' && sequence[1] == 'n')
+      else if (sequence[0] == '6' and sequence[1] == 'n')
 	{
 	  // report cursor position
 	  char s[80];
@@ -1189,11 +1190,12 @@ APC_sequence (int fd)
 
   // skip until "\a" or "\x9c" or "\033\\" is found
   while (p < (sizeof (command) / sizeof (wchar_t))
-	 && ch != L'\a' && ch != L'\x9c' && (old != L'\033' || ch != L'\\'))
+	 and ch != L'\a' and ch != L'\x9c' and (old != L'\033' or ch !=
+						L'\\'))
     {
       old = ch;
       ch = get_character (fd);
-      if (ch >= L' ' && ch != L'\x9c' && (old != L'\033' || ch != L'\\'))
+      if (ch >= L' ' and ch != L'\x9c' and (old != L'\033' or ch != L'\\'))
 	command[p++] = ch;
     }
 
@@ -1233,7 +1235,7 @@ OSC_sequence (int fd)
       old = ch;
       ch = get_character (fd);
     }
-  while (ch != L'\a' && ch != L'\x9c' && (old != L'\033' || ch != L'\\'));
+  while (ch != L'\a' and ch != L'\x9c' and (old != L'\033' or ch != L'\\'));
 }
 
 static void
@@ -1288,7 +1290,7 @@ escape_sequence (int fd, avt_char last_character)
 	ch2 = get_character (fd);
 	if (ch2 == L'@')
 	  set_encoding (G0);	// unsure
-	else if (ch2 == L'G' || ch2 == L'8' /* obsolete */ )
+	else if (ch2 == L'G' or ch2 == L'8' /* obsolete */ )
 	  set_encoding ("UTF-8");
 	/* else if (ch2 == L'B')
 	   set_encoding ("UTF-1"); */// does anybody use that?
@@ -1428,7 +1430,7 @@ avta_term_run (int fd)
   reset_terminal ();
   avt_lock_updates (true);
 
-  while ((ch = get_character (fd)) != WEOF && !stop)
+  while ((ch = get_character (fd)) != WEOF and not stop)
     {
       if (ch == L'\033')	// Esc
 	escape_sequence (fd, last_character);
@@ -1447,7 +1449,7 @@ avta_term_run (int fd)
 	  if (insert_mode)
 	    avt_insert_spaces (1);
 
-	  if (vt100graphics && (ch >= 95 && ch <= 126))
+	  if (vt100graphics and (ch >= 95 and ch <= 126))
 	    ch = vt100trans[ch - 95];
 
 	  last_character = (avt_char) ch;
@@ -1483,7 +1485,7 @@ avta_term_start (const char *system_encoding, const char *working_dir,
   insert_mode = false;
 
   // check if AKFAvatar was initialized
-  if (max_x < 0 || max_y < 0)
+  if (max_x < 0 or max_y < 0)
     return -1;
 
   return

@@ -19,6 +19,7 @@
  */
 
 #include <windows.h>
+#include <iso646.h>
 
 // returns 2-letter language code according ISO 639-1
 // or NULL if unknown
@@ -76,12 +77,12 @@ avta_get_language (void)
       break;
 
     case 0x1A:
-      if (nr == 0x781A || nr == 0x201A || nr == 0x141A)
+      if (nr == 0x781A or nr == 0x201A or nr == 0x141A)
 	lang = "bs";		// Bosnian
-      else if (nr == 0x001A || nr == 0x101A || nr == 0x041A)
+      else if (nr == 0x001A or nr == 0x101A or nr == 0x041A)
 	lang = "hr";		// Croatian
-      else if (nr == 0x7C1A || nr == 0x1C1A || nr == 0x181A || nr == 0x0C1A
-	       || nr == 0x081A)
+      else if (nr == 0x7C1A or nr == 0x1C1A or nr == 0x181A or nr == 0x0C1A
+	       or nr == 0x081A)
 	lang = "sr";		// Serbian
       else
 	lang = NULL;

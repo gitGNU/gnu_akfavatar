@@ -29,6 +29,7 @@
 #include <string.h>
 #include <wchar.h>
 #include <locale.h>
+#include <iso646.h>
 
 #include <sys/types.h>
 #include <pwd.h>
@@ -84,7 +85,7 @@ lterm_execute (lua_State * L)
   char encoding[80];
   char *argv[256];
 
-  if (!avt_initialized ())
+  if (not avt_initialized ())
     luaL_error (L, "execute: AKFAvatar not initialized");
 
   // set all locale settings
@@ -151,7 +152,7 @@ lterm_startdir (lua_State * L)
       startdir = NULL;
     }
 
-  if (!lua_isnoneornil (L, 1))
+  if (not lua_isnoneornil (L, 1))
     startdir = strdup (luaL_checkstring (L, 1));
 
   return 0;
@@ -165,12 +166,12 @@ lterm_homedir (lua_State * L)
   home = getenv ("HOME");
 
   // when the variable is not set, dig deeper
-  if (home == NULL || *home == '\0')
+  if (not home or * home == '\0')
     {
       struct passwd *user_data;
       user_data = getpwuid (getuid ());	// POSIX.1-2001
-      if (user_data != NULL && user_data->pw_dir != NULL
-	  && *user_data->pw_dir != '\0')
+      if (user_data != NULL and user_data->pw_dir != NULL
+	  and * user_data->pw_dir != '\0')
 	home = user_data->pw_dir;
     }
 
@@ -205,7 +206,7 @@ static int
 lterm_color (lua_State * L)
 {
   luaL_checktype (L, 1, LUA_TBOOLEAN);
-  avta_term_nocolor (!lua_toboolean (L, 1));
+  avta_term_nocolor (not lua_toboolean (L, 1));
 
   return 0;
 }
@@ -217,7 +218,7 @@ lterm_send (lua_State * L)
   size_t len;
   const char *buf;
 
-  if (!term_L)
+  if (not term_L)
     return
       luaL_error (L, "send: only for Application Program Commands (APC)");
 
@@ -237,7 +238,7 @@ lterm_decide (lua_State * L)
   size_t len;
   const char *buf;
 
-  if (!term_L)
+  if (not term_L)
     return
       luaL_error (L, "decide: only for Application Program Commands (APC)");
 
@@ -263,7 +264,7 @@ APC_command (wchar_t * command)
   char *mbstring;
   int size;
 
-  if (!term_L)
+  if (not term_L)
     return -1;
 
   // get mbstring from command (in current encoding)

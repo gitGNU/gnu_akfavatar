@@ -44,6 +44,7 @@ extern "C"
 #include <stdlib.h>		// for exit() and wchar_t
 #include <string.h>		// for strcmp(), strerror()
 #include <errno.h>
+#include <iso646.h>
 
 #include <unistd.h>		// for chdir(), getcwd(), execlp
 #include <dirent.h>		// opendir, readdir, closedir
@@ -78,7 +79,7 @@ static const char *const playmodes[] = { "load", "play", "loop", NULL };
 
 // "check()" checks the returned status code
 #define check(X)  do { if ((X) != AVT_NORMAL) quit (L); } while (0)
-#define is_initialized(void)  if (!initialized) auto_initialize(L)
+#define is_initialized(void)  if (not initialized) auto_initialize(L)
 
 // for internal use only
 static int
@@ -122,7 +123,7 @@ import_xpm (lua_State * L, int index)
 
   linecount = 512;		// can be extended later
   xpm = (char **) malloc (linecount * sizeof (*xpm));
-  if (!xpm)
+  if (not xpm)
     return NULL;
 
   lua_pushnil (L);
@@ -135,7 +136,7 @@ import_xpm (lua_State * L, int index)
 	{
 	  linecount += 512;
 	  xpm = (char **) realloc (xpm, linecount * sizeof (*xpm));
-	  if (!xpm)
+	  if (not xpm)
 	    return NULL;
 	}
 
@@ -154,7 +155,7 @@ static void
 auto_initialize (lua_State * L)
 {
   // it might be initialized outside of this module
-  if (!avt_initialized ())
+  if (not avt_initialized ())
     check (avt_start (NULL, NULL, AVT_WINDOW));
 
   initialized = true;
@@ -167,7 +168,7 @@ get_mode (lua_State * L, int index)
   int mode = AVT_AUTOMODE;
 
   mode_name = lua_tostring (L, index);
-  if (!mode_name)
+  if (not mode_name)
     return luaL_error (L, "initialize: mode: (string expected, got %s)",
 		       lua_typename (L, lua_type (L, -1)));
   else
@@ -198,7 +199,7 @@ lavt_start (lua_State * L)
 
   mode = AVT_AUTOMODE;
 
-  if (!lua_isnoneornil (L, 1))
+  if (not lua_isnoneornil (L, 1))
     mode = get_mode (L, 1);
 
   lua_getfield (L, LUA_REGISTRYINDEX, "AKFAvatar-title");
@@ -207,7 +208,7 @@ lavt_start (lua_State * L)
   shortname = lua_tostring (L, -1);
   lua_pop (L, 2);
 
-  if (!initialized && !avt_initialized ())
+  if (not initialized and not avt_initialized ())
     {
       check (avt_start (title, shortname, mode));
     }
@@ -369,7 +370,7 @@ lavt_recode (lua_State * L)
   fromcode = lua_tostring (L, 2);	// may be nil
   tocode = lua_tostring (L, 3);	// optional
 
-  if (!fromcode && !tocode)
+  if (not fromcode and not tocode)
     {
       lua_pushnil (L);
       return 1;
@@ -401,7 +402,7 @@ lavt_avatar_image (lua_State * L)
     {
       char **xpm = import_xpm (L, 1);
 
-      if (!xpm)
+      if (not xpm)
 	{
 	  lua_pushnil (L);
 	  lua_pushliteral (L, "cannot load avatar-image");
@@ -1422,7 +1423,7 @@ lavt_load_audio_file (lua_State * L)
   audio_data = NULL;
   len = 0;
 
-  if (!lua_isnoneornil (L, 1))
+  if (not lua_isnoneornil (L, 1))
     filename = luaL_checklstring (L, 1, &len);
 
   playmode = luaL_checkoption (L, 2, "load", playmodes);
@@ -1430,7 +1431,7 @@ lavt_load_audio_file (lua_State * L)
   // if filename is not none or nil or ""
   if (len > 0)
     {
-      if (!avt_audio_playing (NULL))
+      if (not avt_audio_playing (NULL))
 	audio_not_playing (L);
 
       // full garbage collection
@@ -1438,7 +1439,7 @@ lavt_load_audio_file (lua_State * L)
 
       audio_data = avt_load_audio_file (filename, playmode);
 
-      if (!audio_data)
+      if (not audio_data)
 	{
 	  lua_pushnil (L);
 	  lua_pushstring (L, avt_get_error ());
@@ -1466,7 +1467,7 @@ lavt_load_audio_stream (lua_State * L)
   if (stream->closef == NULL)
     return luaL_error (L, "attempt to use a closed file");
 
-  if (!avt_audio_playing (NULL))
+  if (not avt_audio_playing (NULL))
     audio_not_playing (L);
 
   // full garbage collection
@@ -1475,7 +1476,7 @@ lavt_load_audio_stream (lua_State * L)
   audio_data =
     avt_load_audio_part ((avt_stream *) stream->f, maxsize, playmode);
 
-  if (!audio_data)
+  if (not audio_data)
     {
       lua_pushnil (L);
       lua_pushstring (L, avt_get_error ());
@@ -1498,7 +1499,7 @@ lavt_load_audio (lua_State * L)
   audio_data = NULL;
   len = 0;
 
-  if (!lua_isnoneornil (L, 1))
+  if (not lua_isnoneornil (L, 1))
     data = (char *) luaL_checklstring (L, 1, &len);
 
   playmode = luaL_checkoption (L, 2, "load", playmodes);
@@ -1506,7 +1507,7 @@ lavt_load_audio (lua_State * L)
   // if string is not none or nil or ""
   if (len > 0)
     {
-      if (!avt_audio_playing (NULL))
+      if (not avt_audio_playing (NULL))
 	audio_not_playing (L);
 
       // full garbage collection
@@ -1514,7 +1515,7 @@ lavt_load_audio (lua_State * L)
 
       audio_data = avt_load_audio_data (data, len, playmode);
 
-      if (!audio_data)
+      if (not audio_data)
 	{
 	  lua_pushnil (L);
 	  lua_pushstring (L, avt_get_error ());
@@ -1561,7 +1562,7 @@ laudio_play (lua_State * L)
 
   audio = (avt_audio **) luaL_checkudata (L, 1, AUDIODATA);
 
-  if (audio && *audio)
+  if (audio and * audio)
     avt_play_audio (*audio, AVT_PLAY);	// no check!
 
   // store reference to audio, so it isn't garbage collected while playing
@@ -1579,7 +1580,7 @@ laudio_loop (lua_State * L)
 
   audio = (avt_audio **) luaL_checkudata (L, 1, AUDIODATA);
 
-  if (audio && *audio)
+  if (audio and * audio)
     avt_play_audio (*audio, AVT_LOOP);	// no check!
 
   // store reference to audio, so it isn't garbage collected while playing
@@ -1596,7 +1597,7 @@ laudio_free (lua_State * L)
   avt_audio **audio;
 
   audio = (avt_audio **) luaL_checkudata (L, 1, AUDIODATA);
-  if (audio && *audio)
+  if (audio and * audio)
     {
       avt_free_audio (*audio);
       *audio = NULL;
@@ -1616,7 +1617,7 @@ laudio_playing (lua_State * L)
   else
     {
       audio = (avt_audio **) luaL_checkudata (L, 1, AUDIODATA);
-      lua_pushboolean (L, (audio && *audio && avt_audio_playing (*audio)));
+      lua_pushboolean (L, (audio and * audio and avt_audio_playing (*audio)));
     }
 
   return 1;
@@ -1629,7 +1630,7 @@ laudio_tostring (lua_State * L)
 
   audio = (avt_audio **) luaL_checkudata (L, 1, AUDIODATA);
 
-  if (audio && *audio)
+  if (audio and * audio)
     lua_pushfstring (L, AUDIODATA " (%p)", audio);
   else
     lua_pushfstring (L, AUDIODATA ", silent (%p)", audio);
@@ -1832,7 +1833,7 @@ lavt_chdir (lua_State * L)
   // nil or empty string is acceptable
   path = lua_tostring (L, 1);
 
-  if (path && *path)
+  if (path and * path)
     chdir (path);		// chdir() conforms to POSIX.1-2001
 
   return 0;
@@ -1978,14 +1979,14 @@ lavt_menu (lua_State * L)
   old_newline_mode = avt_get_newline_mode ();
   avt_newline_mode (true);
 
-  while (!item_nr)
+  while (not item_nr)
     {
       avt_move_xy (1, start_line);
       avt_clear_down ();
 
       items = 0;
 
-      if (!small)
+      if (not small)
 	{
 	  if (page_nr > 0)
 	    MARK (BACK);
@@ -2009,7 +2010,7 @@ lavt_menu (lua_State * L)
 
 	  if (item_desc)
 	    {
-	      if (!small || i > 1)
+	      if (not small or i > 1)
 		avt_new_line ();
 	      avt_say_mb_len (item_desc, len);
 	      items++;
@@ -2018,7 +2019,7 @@ lavt_menu (lua_State * L)
 	  lua_pop (L, 1);	// pop item from stack
 	  // from now on item_desc should not be dereferenced
 
-	  if (!item_desc)
+	  if (not item_desc)
 	    break;
 	}
 
@@ -2026,7 +2027,7 @@ lavt_menu (lua_State * L)
       if (item_desc)
 	{
 	  lua_rawgeti (L, 1, (page_nr + 1) * items_per_page + 1);
-	  if (!lua_isnil (L, -1))
+	  if (not lua_isnil (L, -1))
 	    {
 	      avt_new_line ();
 	      MARK (CONTINUE);
@@ -2036,7 +2037,7 @@ lavt_menu (lua_State * L)
 	}
 
       menu_start = start_line;
-      if (!small && page_nr == 0)
+      if (not small and page_nr == 0)
 	{
 	  menu_start++;
 	  items--;
@@ -2044,15 +2045,15 @@ lavt_menu (lua_State * L)
 
       avt_lock_updates (false);
       check (avt_choice (&choice, menu_start, items, 0,
-			 (page_nr > 0), (!small && item_desc != NULL)));
+			 (page_nr > 0), (not small and item_desc != NULL)));
       avt_lock_updates (true);
 
       if (page_nr == 0)
 	choice++;
 
-      if (!small && choice == 1 && page_nr > 0)
+      if (not small and choice == 1 and page_nr > 0)
 	page_nr--;		// page back
-      else if (!small && choice == max_idx)
+      else if (not small and choice == max_idx)
 	page_nr += (item_desc == NULL) ? 0 : 1;	// page forward
       else
 	item_nr = choice - 1 + (page_nr * items_per_page);
@@ -2077,7 +2078,7 @@ lavt_menu (lua_State * L)
 	{
 	  lua_rawgeti (L, table, item++);
 
-	  if (!lua_isnil (L, -1))
+	  if (not lua_isnil (L, -1))
 	    nresults++;
 	  else
 	    {
@@ -2123,7 +2124,7 @@ lavt_directory_entries (lua_State * L)
 
   while ((d = readdir (dir)) != NULL)
     {
-      if (strcmp (".", d->d_name) != 0 && strcmp ("..", d->d_name) != 0)
+      if (strcmp (".", d->d_name) != 0 and strcmp ("..", d->d_name) != 0)
 	{
 	  lua_pushstring (L, d->d_name);
 	  lua_rawseti (L, -2, ++nr);
@@ -2213,7 +2214,7 @@ lavt_search (lua_State * L)
   filename = luaL_checkstring (L, 1);
   path = lua_tostring (L, 2);
 
-  if (path == NULL && (path = get_string_var (L, "datapath")) == NULL)
+  if (path == NULL and (path = get_string_var (L, "datapath")) == NULL)
     path = ".";
 
   while (*path)
@@ -2223,7 +2224,7 @@ lavt_search (lua_State * L)
       size_t pos = 0;
 
       // start with next directory from path
-      while (*path && *path != PATHSEP && pos < sizeof (fullname) - 1)
+      while (*path and * path != PATHSEP and pos < sizeof (fullname) - 1)
 	fullname[pos++] = *path++;
 
       // skip path seperator(s)
@@ -2231,11 +2232,11 @@ lavt_search (lua_State * L)
 	path++;
 
       // eventually add directory separator
-      if (fullname[pos - 1] != LUA_DIRSEP[0] && pos < sizeof (fullname) - 1)
+      if (fullname[pos - 1] != LUA_DIRSEP[0] and pos < sizeof (fullname) - 1)
 	fullname[pos++] = LUA_DIRSEP[0];
 
       // add name
-      while (*name && pos < sizeof (fullname) - 1)
+      while (*name and pos < sizeof (fullname) - 1)
 	fullname[pos++] = *name++;
 
       // terminate fullname
@@ -2266,15 +2267,15 @@ lavt_translate (lua_State * L)
   lua_getfield (L, -1, "language");
   language = lua_tostring (L, -1);
 
-  if (!language)
+  if (not language)
     goto fail;
 
   lua_getfield (L, -2, "translations");
-  if (!lua_istable (L, -1))
+  if (not lua_istable (L, -1))
     goto fail;
 
   lua_getfield (L, -1, text);
-  if (!lua_istable (L, -1))
+  if (not lua_istable (L, -1))
     goto fail;
 
   lua_getfield (L, -1, language);
@@ -2455,8 +2456,8 @@ set_datapath (lua_State * L)
 
   len = GetModuleFileNameA (NULL, progdir, sizeof (progdir));
 
-  if (len == 0 || len == sizeof (progdir)
-      || (p = strrchr (progdir, '\\')) == NULL)
+  if (len == 0 or len == sizeof (progdir)
+      or (p = strrchr (progdir, '\\')) == NULL)
     {
       luaL_error (L, "error with GetModuleFileNameA");
       return;
@@ -2480,7 +2481,7 @@ set_datapath (lua_State * L)
   lua_setfield (L, -2, "datapath");
 }
 
-#else // ! _WIN32
+#else // not _WIN32
 
 static void
 set_datapath (lua_State * L)
@@ -2495,7 +2496,7 @@ set_datapath (lua_State * L)
   lua_setfield (L, -2, "datapath");
 }
 
-#endif // ! _WIN32
+#endif // not _WIN32
 
 
 /*
@@ -2523,7 +2524,7 @@ luaopen_akfavatar_embedded (lua_State * L)
   lua_setfield (L, -2, "dirsep");
 
   // avt.language
-  char *language = avta_get_language ();
+  const char *language = avta_get_language ();
   if (language)
     {
       lua_pushstring (L, language);
