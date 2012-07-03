@@ -35,6 +35,8 @@
 #include "SDL.h"
 #include "SDL_audio.h"
 
+#include <iso646.h>
+
 // lower audio buffer size for lower latency, but it could become choppy
 #define OUTPUT_BUFFER 4096
 
@@ -106,7 +108,7 @@ fill_audio (void *userdata, uint8_t * stream, int len)
 extern int
 avt_start_audio (void)
 {
-  if (!avt_audio_initialized)
+  if (not avt_audio_initialized)
     {
       if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
 	{
@@ -198,11 +200,11 @@ avt_play_audio (avt_audio * snd, int playmode)
 {
   SDL_AudioSpec audiospec;
 
-  if (!avt_audio_initialized)
+  if (not avt_audio_initialized)
     return _avt_STATUS;
 
   // no sound? - just ignore it
-  if (!snd)
+  if (not snd)
     return _avt_STATUS;
 
   if (playmode != AVT_PLAY && playmode != AVT_LOOP)
@@ -258,7 +260,7 @@ avt_play_audio (avt_audio * snd, int playmode)
 extern int
 avt_wait_audio_end (void)
 {
-  if (!playing)
+  if (not playing)
     return _avt_STATUS;
 
   // end the loop, but wait for end of sound

@@ -34,6 +34,7 @@
 #include <stdlib.h>		// malloc / realloc / free
 #include <stdint.h>
 #include <string.h>		// memcmp / memcpy
+#include <iso646.h>
 
 // absolute maximum size for audio data
 #define MAXIMUM_SIZE  0xFFFFFFFFU
@@ -137,14 +138,14 @@ static void
 audio_alert (void)
 {
   // if alert_sound is loaded and nothing is currently playing
-  if (alert_sound && !avt_audio_playing (NULL))
+  if (alert_sound and not avt_audio_playing (NULL))
     avt_play_audio (alert_sound, AVT_PLAY);
 }
 
 extern int
 avt_activate_audio_alert (void)
 {
-  if (!alert_sound)
+  if (not alert_sound)
     alert_sound = avt_load_audio_data (&avt_alert_data,
 				       avt_alert_data_size, AVT_LOAD);
 
@@ -204,7 +205,7 @@ avt_set_raw_audio_capacity (avt_audio * snd, size_t data_size)
   void *new_sound;
   size_t out_size;
 
-  if (!snd)
+  if (not snd)
     return AVT_FAILURE;
 
   new_sound = NULL;
@@ -239,8 +240,8 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
   size_t i, old_size, new_size, out_size;
   bool active;
 
-  if (_avt_STATUS != AVT_NORMAL || snd == NULL || data == NULL
-      || data_size == 0)
+  if (_avt_STATUS != AVT_NORMAL or snd == NULL or data == NULL
+      or data_size == 0)
     return avt_checkevent ();
 
   // audio structure must have been created with avt_load_raw_audio_data
@@ -404,7 +405,7 @@ avt_load_raw_audio_data (void *data, size_t data_size,
 {
   struct avt_audio *s;
 
-  if (channels < 1 || channels > 2)
+  if (channels < 1 or channels > 2)
     {
       avt_set_error ("only 1 or 2 channels supported");
       return NULL;
@@ -468,7 +469,7 @@ avt_load_raw_audio_data (void *data, size_t data_size,
   s->channels = channels;
 
   if (data_size == 0
-      || avt_add_raw_audio_data (s, data, data_size) == AVT_NORMAL)
+      or avt_add_raw_audio_data (s, data, data_size) == AVT_NORMAL)
     return s;
   else
     {
@@ -529,7 +530,7 @@ avt_load_audio_block (avt_data * src, uint32_t maxsize,
   audio = avt_load_raw_audio_data (NULL, 0, samplingrate,
 				   audio_type, channels);
 
-  if (!audio)
+  if (not audio)
     return NULL;
 
   if (maxsize != 0)
@@ -574,7 +575,7 @@ avt_load_au (avt_data * src, uint32_t maxsize, int playmode)
   uint32_t head_size, audio_size, encoding, samplingrate, channels;
   int audio_type;
 
-  if (!src)
+  if (not src)
     return NULL;
 
   // check magic ".snd"
@@ -661,13 +662,13 @@ avt_load_wave (avt_data * src, uint32_t maxsize, int playmode)
   uint32_t samplingrate;
   uint16_t encoding, channels, bits_per_sample;
 
-  if (!src)
+  if (not src)
     return NULL;
 
   start = avt_data_tell (src);
 
   if (avt_data_read (src, &identifier, sizeof (identifier), 1) != 1
-      || memcmp ("RIFF", identifier, sizeof (identifier)) != 0)
+      or memcmp ("RIFF", identifier, sizeof (identifier)) != 0)
     return NULL;		// not a RIFF file
 
   /*
@@ -677,7 +678,7 @@ avt_load_wave (avt_data * src, uint32_t maxsize, int playmode)
   chunk_size = avt_data_read32le (src);
 
   if (avt_data_read (src, &identifier, sizeof (identifier), 1) != 1
-      || memcmp ("WAVE", identifier, sizeof (identifier)) != 0)
+      or memcmp ("WAVE", identifier, sizeof (identifier)) != 0)
     return NULL;		// not a Wave file
 
   // search format chunk
@@ -781,7 +782,7 @@ avt_load_audio_general (avt_data * src, uint32_t maxsize, int playmode)
   if (memcmp (&head[0], ".snd", 4) == 0)
     s = avt_load_au (src, maxsize, playmode);
   else if (memcmp (&head[0], "RIFF", 4) == 0
-	   && memcmp (&head[8], "WAVE", 4) == 0)
+	   and memcmp (&head[8], "WAVE", 4) == 0)
     s = avt_load_wave (src, maxsize, playmode);
   else
     {
@@ -806,15 +807,17 @@ avt_load_audio_file (const char *file, int playmode)
 extern avt_audio *
 avt_load_audio_part (avt_stream * stream, size_t maxsize, int playmode)
 {
-  return avt_load_audio_general (avt_data_open_stream ((FILE *) stream, false),
-				 maxsize, playmode);
+  return
+    avt_load_audio_general (avt_data_open_stream ((FILE *) stream, false),
+			    maxsize, playmode);
 }
 
 extern avt_audio *
 avt_load_audio_stream (avt_stream * stream, int playmode)
 {
-  return avt_load_audio_general (avt_data_open_stream ((FILE *) stream, false),
-				 MAXIMUM_SIZE, playmode);
+  return
+    avt_load_audio_general (avt_data_open_stream ((FILE *) stream, false),
+			    MAXIMUM_SIZE, playmode);
 }
 
 extern avt_audio *

@@ -38,6 +38,8 @@
 #include "version.h"
 #include "rgb.h"		// only for DEFAULT_COLOR
 
+#include <iso646.h>
+
 // include images
 #include "akfavatar.xpm"
 #include "btn.xpm"
@@ -202,7 +204,7 @@ static int errno;
  * based on WCHAR_MAX or __WCHAR_MAX__ if it is available
  * note: newer SDL versions include stdint.h if available
  */
-#if !defined(WCHAR_MAX) && defined(__WCHAR_MAX__)
+#if not defined(WCHAR_MAX) and defined(__WCHAR_MAX__)
 #  define WCHAR_MAX __WCHAR_MAX__
 #endif
 
@@ -329,7 +331,7 @@ struct pos
 static struct pos cursor, saved_position;
 
 
-#if defined(__GNUC__) && !defined(__WIN32__)
+#if defined(__GNUC__) and  not defined(__WIN32__)
 #  define AVT_HIDDEN __attribute__((__visibility__("hidden")))
 #else
 #  define AVT_HIDDEN
@@ -414,7 +416,7 @@ static struct
   SDL_UpdateRect(screen, rect.x, rect.y, rect.w, rect.h)
 
 #define AVT_UPDATE_TRECT(rect) \
-  if (!hold_updates) AVT_UPDATE_RECT(rect)
+  if (not hold_updates) AVT_UPDATE_RECT(rect)
 
 #define AVT_UPDATE_ALL(void) SDL_UpdateRect(screen, 0, 0, 0, 0)
 
@@ -468,7 +470,7 @@ avt_load_image_xpm (char **xpm)
   img = NULL;
 
   // check if we actually have data to process
-  if (!xpm || !*xpm)
+  if (not xpm or not * xpm)
     goto done;
 
   /* read value line
@@ -476,7 +478,7 @@ avt_load_image_xpm (char **xpm)
    * need the first four
    */
   if (SDL_sscanf (xpm[0], "%d %d %d %d", &width, &height, &ncolors, &cpp) < 4
-      || width < 1 || height < 1 || ncolors < 1)
+      or width < 1 or height < 1 or ncolors < 1)
     {
       SDL_SetError ("error in XPM data");
       goto done;
@@ -495,7 +497,7 @@ avt_load_image_xpm (char **xpm)
 				    0x0000FF, 0x00FF00, 0xFF0000, 0);
     }
 
-  if (!img)
+  if (not img)
     {
       SDL_SetError ("out of memory");
       goto done;
@@ -505,7 +507,7 @@ avt_load_image_xpm (char **xpm)
   if (cpp > 1)
     {
       codes = (union xpm_codes *) SDL_calloc (XPM_NR_CODES, sizeof (codes));
-      if (!codes)
+      if (not codes)
 	{
 	  SDL_SetError ("out of memory");
 	  SDL_free (img);
@@ -528,7 +530,7 @@ avt_load_image_xpm (char **xpm)
    * for each color
    */
 
-  if (!colors && !colors256)
+  if (not colors and not colors256)
     {
       SDL_SetError ("out of memory");
       SDL_free (img);
@@ -568,12 +570,12 @@ avt_load_image_xpm (char **xpm)
 	    {
 	      c = xpm[colornr][i];
 
-	      if (c < 32 || c > 126)
+	      if (c < 32 or c > 126)
 		break;
 
 	      table = (table + (c - 32));
 
-	      if (!table->next)
+	      if (not table->next)
 		table->next =
 		  (union xpm_codes *) SDL_calloc (XPM_NR_CODES,
 						  sizeof (*codes));
@@ -581,12 +583,12 @@ avt_load_image_xpm (char **xpm)
 	      table = table->next;
 	    }
 
-	  if (c < 32 || c > 126)
+	  if (c < 32 or c > 126)
 	    break;
 
 	  c = xpm[colornr][cpp - 1];
 
-	  if (c < 32 || c > 126)
+	  if (c < 32 or c > 126)
 	    break;
 
 	  (table + (c - 32))->nr = colornr - 1;
@@ -594,35 +596,36 @@ avt_load_image_xpm (char **xpm)
 
       // scan for color definition
       p = &xpm[colornr][cpp];	// skip color-characters
-      while (*p && (*p != 'c' || !avt_isblank (*(p + 1))
-		    || !avt_isblank (*(p - 1))))
+      while (*p and (*p != 'c' or not avt_isblank (*(p + 1))
+		     or not avt_isblank (*(p - 1))))
 	p++;
 
       // no color definition found? search for grayscale definition
-      if (!*p)
+      if (not * p)
 	{
 	  p = &xpm[colornr][cpp];	// skip color-characters
-	  while (*p && (*p != 'g' || !avt_isblank (*(p + 1))
-			|| !avt_isblank (*(p - 1))))
+	  while (*p and (*p != 'g' or not avt_isblank (*(p + 1))
+			 or not avt_isblank (*(p - 1))))
 	    p++;
 	}
 
       // no grayscale definition found? search for g4 definition
-      if (!*p)
+      if (not * p)
 	{
 	  p = &xpm[colornr][cpp];	// skip color-characters
 	  while (*p
-		 && (*p != '4' || *(p - 1) != 'g' || !avt_isblank (*(p + 1))
-		     || !avt_isblank (*(p - 2))))
+		 and (*p != '4' or * (p - 1) !=
+		      'g' or not avt_isblank (*(p + 1)) or not
+		      avt_isblank (*(p - 2))))
 	    p++;
 	}
 
       // search for monochrome definition
-      if (!*p)
+      if (not * p)
 	{
 	  p = &xpm[colornr][cpp];	// skip color-characters
-	  while (*p && (*p != 'm' || !avt_isblank (*(p + 1))
-			|| !avt_isblank (*(p - 1))))
+	  while (*p and (*p != 'm' or not avt_isblank (*(p + 1))
+			 or not avt_isblank (*(p - 1))))
 	    p++;
 	}
 
@@ -634,13 +637,13 @@ avt_load_image_xpm (char **xpm)
 
 	  // skip to color name/definition
 	  p++;
-	  while (*p && avt_isblank (*p))
+	  while (*p and avt_isblank (*p))
 	    p++;
 
 	  // copy colorname up to next space
 	  color_name_pos = 0;
-	  while (*p && !avt_isblank (*p)
-		 && color_name_pos < sizeof (color_name) - 1)
+	  while (*p and not avt_isblank (*p)
+		 and color_name_pos < sizeof (color_name) - 1)
 	    color_name[color_name_pos++] = *p++;
 	  color_name[color_name_pos] = '\0';
 
@@ -737,16 +740,16 @@ avt_load_image_xpm (char **xpm)
 	      for (i = 0; i < cpp - 1; i++)
 		{
 		  c = xpm_line[pos * cpp + i];
-		  if (c < 32 || c > 126)
+		  if (c < 32 or c > 126)
 		    break;
 		  table = (table + (c - 32))->next;
 		}
 
-	      if (c < 32 || c > 126)
+	      if (c < 32 or c > 126)
 		break;
 
 	      c = xpm_line[pos * cpp + cpp - 1];
-	      if (c < 32 || c > 126)
+	      if (c < 32 or c > 126)
 		break;
 
 	      code_nr = (table + (c - 32))->nr;
@@ -784,7 +787,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
   char c;
   bool end, error;
 
-  if (!src)
+  if (not src)
     return NULL;
 
   img = NULL;
@@ -796,7 +799,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
 
   // check if it has an XPM header
   if (SDL_RWread (src, head, sizeof (head), 1) < 1
-      || SDL_memcmp (head, "/* XPM */", 9) != 0)
+      or SDL_memcmp (head, "/* XPM */", 9) != 0)
     {
       if (freesrc)
 	SDL_RWclose (src);
@@ -810,7 +813,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
 
   linecapacity = 100;
   line = (char *) SDL_malloc (linecapacity);
-  if (!line)
+  if (not line)
     {
       SDL_SetError ("out of memory");
       return NULL;
@@ -818,13 +821,13 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
 
   linecount = 512;		// can be extended later
   xpm = (char **) SDL_malloc (linecount * sizeof (*xpm));
-  if (!xpm)
+  if (not xpm)
     {
       SDL_SetError ("out of memory");
       error = end = true;
     }
 
-  while (!end)
+  while (not end)
     {
       // skip to next quote
       do
@@ -832,12 +835,12 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
 	  if (SDL_RWread (src, &c, sizeof (c), 1) < 1)
 	    end = true;
 	}
-      while (!end && c != '"');
+      while (not end and c != '"');
 
       // read line
       linepos = 0;
       c = '\0';
-      while (!end && c != '"')
+      while (not end and c != '"')
 	{
 	  if (SDL_RWread (src, &c, sizeof (c), 1) < 1)
 	    error = end = true;	// shouldn't happen here
@@ -849,13 +852,13 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
 	    {
 	      linecapacity += 100;
 	      line = (char *) SDL_realloc (line, linecapacity);
-	      if (!line)
+	      if (not line)
 		error = end = true;
 	    }
 	}
 
       // copy line
-      if (!end)
+      if (not end)
 	{
 	  line[linepos++] = '\0';
 	  xpm[linenr] = (char *) SDL_malloc (linepos);
@@ -865,7 +868,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
 	    {
 	      linecount += 512;
 	      xpm = (char **) SDL_realloc (xpm, linecount * sizeof (*xpm));
-	      if (!xpm)
+	      if (not xpm)
 		error = end = true;
 	    }
 	}
@@ -877,7 +880,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
   if (xpm)
     xpm[linenr] = NULL;
 
-  if (!error)
+  if (not error)
     img = avt_load_image_xpm (xpm);
 
   // free xpm
@@ -917,7 +920,7 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
 
   img = SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 1, 0, 0, 0, 0);
 
-  if (!img)
+  if (not img)
     {
       SDL_SetError ("out of memory");
       return NULL;
@@ -984,7 +987,7 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
   bool end, error;
   bool X10;
 
-  if (!src)
+  if (not src)
     return NULL;
 
   img = NULL;
@@ -997,7 +1000,7 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
 
   // check if it starts with #define
   if (SDL_RWread (src, line, 1, sizeof (line) - 1) < 1
-      || SDL_memcmp (line, "#define", 7) != 0)
+      or SDL_memcmp (line, "#define", 7) != 0)
     {
       if (freesrc)
 	SDL_RWclose (src);
@@ -1032,7 +1035,7 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
   if (error)
     goto done;
 
-  if (width && height)
+  if (width and height)
     {
       bytes = ((width + 7) / 8) * height;
       // one byte larger for safety with old X10 format
@@ -1040,14 +1043,14 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
     }
 
   // this catches different errors
-  if (!bits)
+  if (not bits)
     {
       SDL_SetError ("out of memory");
       error = end = true;
     }
 
   // search start of bitmap part
-  if (!end && !error)
+  if (not end and not error)
     {
       char c;
 
@@ -1058,7 +1061,7 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
 	  if (SDL_RWread (src, &c, sizeof (c), 1) < 1)
 	    error = end = true;
 	}
-      while (c != '{' && !error);
+      while (c != '{' and not error);
 
       if (error)		// no '{' found
 	goto done;
@@ -1067,7 +1070,7 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
       SDL_RWread (src, &c, sizeof (c), 1);
     }
 
-  while (!end && !error)
+  while (not end and not error)
     {
       char c;
       unsigned int linepos;
@@ -1075,12 +1078,12 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
       // read line
       linepos = 0;
       c = '\0';
-      while (!end && linepos < sizeof (line) && c != '\n')
+      while (not end and linepos < sizeof (line) and c != '\n')
 	{
 	  if (SDL_RWread (src, &c, sizeof (c), 1) < 1)
 	    error = end = true;
 
-	  if (c != '\n' && c != '}')
+	  if (c != '\n' and c != '}')
 	    line[linepos++] = c;
 
 	  if (c == '}')
@@ -1098,14 +1101,14 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
 
 	  p = line;
 	  end_of_line = false;
-	  while (!end_of_line && bmpos < bytes)
+	  while (not end_of_line and bmpos < bytes)
 	    {
 	      value = SDL_strtol (p, &endptr, 0);
 	      if (endptr == p)
 		end_of_line = true;
 	      else
 		{
-		  if (!X10)
+		  if (not X10)
 		    bits[bmpos++] = value;
 		  else		// X10
 		    {
@@ -1122,7 +1125,7 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
 	}
     }
 
-  if (!error)
+  if (not error)
     img = avt_load_image_xbm (bits, width, height, color);
 
 done:
@@ -1146,7 +1149,7 @@ done:
 static void
 load_image_initialize (void)
 {
-  if (!load_image.initialized)
+  if (not load_image.initialized)
     {
       load_image.handle = NULL;
       load_image.rw = IMG_Load_RW;
@@ -1157,12 +1160,12 @@ load_image_initialize (void)
 
 // speedup
 #define load_image_init(void) \
-  if (!load_image.initialized) \
+  if (not load_image.initialized) \
     load_image_initialize()
 
 #define load_image_done(void)	// empty
 
-#else // ! LINK_SDL_IMAGE
+#else // not LINK_SDL_IMAGE
 
 // helper functions
 
@@ -1198,7 +1201,7 @@ avt_load_image_RW (SDL_RWops * src, int freesrc)
 static void
 load_image_initialize (void)
 {
-  if (!load_image.initialized)	// avoid loading it twice!
+  if (not load_image.initialized)	// avoid loading it twice!
     {
       // first load defaults from plain SDL
       load_image.handle = NULL;
@@ -1223,7 +1226,7 @@ load_image_initialize (void)
 
 // speedup
 #define load_image_init(void) \
-  if (!load_image.initialized) \
+  if (not load_image.initialized) \
     load_image_initialize()
 
 #ifndef _SDL_loadso_h
@@ -1242,7 +1245,7 @@ load_image_done (void)
 }
 #endif // _SDL_loadso_h
 
-#endif // ! LINK_SDL_IMAGE
+#endif // not LINK_SDL_IMAGE
 
 #ifdef USE_SDL_ICONV
 static size_t
@@ -1370,7 +1373,7 @@ avt_show_text_cursor (bool on)
 
   on = AVT_MAKE_BOOL (on);
 
-  if (on != text_cursor_actually_visible && !hold_updates)
+  if (on != text_cursor_actually_visible and not hold_updates)
     {
       dst.x = cursor.x;
       dst.y = cursor.y;
@@ -1402,7 +1405,7 @@ avt_activate_cursor (bool on)
 {
   text_cursor_visible = AVT_MAKE_BOOL (on);
 
-  if (screen && textfield.x >= 0)
+  if (screen and textfield.x >= 0)
     avt_show_text_cursor (text_cursor_visible);
 }
 
@@ -1442,7 +1445,7 @@ avt_show_name (void)
   SDL_Color old_colors[2], colors[2];
   wchar_t *p;
 
-  if (screen && avatar_image && avt_name)
+  if (screen and avatar_image and avt_name)
     {
       // save old character colors
       old_colors[0] = avt_character->format->palette->colors[0];
@@ -1613,7 +1616,7 @@ avt_draw_balloon2 (int offset, uint32_t ballooncolor)
 
   // draw balloonpointer
   // only if there is an avatar image
-  if (avatar_image && avt_balloon_mode != AVT_SEPARATE)
+  if (avatar_image and avt_balloon_mode != AVT_SEPARATE)
     {
       SDL_Rect pointer_shape, pointer_pos;
 
@@ -1648,7 +1651,7 @@ avt_draw_balloon (void)
   SDL_Color shadow_color;
   int16_t centered_y;
 
-  if (!avt_visible)
+  if (not avt_visible)
     avt_draw_avatar ();
 
   SDL_SetClipRect (screen, &window);
@@ -1664,15 +1667,15 @@ avt_draw_balloon (void)
     textfield.y = centered_y;
 
   // in separate mode it might also be better to center it
-  if (AVT_SEPARATE == avt_balloon_mode && avatar_image
-      && textfield.y > centered_y)
+  if (AVT_SEPARATE == avt_balloon_mode and avatar_image
+      and textfield.y > centered_y)
     textfield.y = centered_y;
 
   // horizontally centered as default
   textfield.x = window.x + (window.w / 2) - (balloonwidth * fontwidth / 2);
 
   // align with balloonpointer
-  if (avatar_image && avt_balloon_mode != AVT_SEPARATE)
+  if (avatar_image and avt_balloon_mode != AVT_SEPARATE)
     {
       // left border not aligned with balloon pointer?
       if (textfield.x >
@@ -1766,7 +1769,7 @@ avt_text_direction (int direction)
    * if there is already a ballon,
    * recalculate the linestart and put the cursor in the first position
    */
-  if (screen && textfield.x >= 0)
+  if (screen and textfield.x >= 0)
     {
       if (text_cursor_visible)
 	avt_show_text_cursor (false);
@@ -1789,7 +1792,7 @@ avt_set_balloon_width (int width)
 {
   if (width != balloonwidth)
     {
-      if (width < AVT_LINELENGTH && width > 0)
+      if (width < AVT_LINELENGTH and width > 0)
 	balloonwidth = (width > 7) ? width : 7;
       else
 	balloonwidth = AVT_LINELENGTH;
@@ -1808,7 +1811,7 @@ avt_set_balloon_height (int height)
 {
   if (height != balloonheight)
     {
-      if (height > 0 && height < balloonmaxheight)
+      if (height > 0 and height < balloonmaxheight)
 	balloonheight = height;
       else
 	balloonheight = balloonmaxheight;
@@ -1825,14 +1828,14 @@ avt_set_balloon_height (int height)
 extern void
 avt_set_balloon_size (int height, int width)
 {
-  if (height != balloonheight || width != balloonwidth)
+  if (height != balloonheight or width != balloonwidth)
     {
-      if (height > 0 && height < balloonmaxheight)
+      if (height > 0 and height < balloonmaxheight)
 	balloonheight = height;
       else
 	balloonheight = balloonmaxheight;
 
-      if (width < AVT_LINELENGTH && width > 0)
+      if (width < AVT_LINELENGTH and width > 0)
 	balloonwidth = (width > 7) ? width : 7;
       else
 	balloonwidth = AVT_LINELENGTH;
@@ -1949,7 +1952,7 @@ avt_resize (int w, int h)
   AVT_UPDATE_ALL ();
 
   // ignore one resize event here to avoid recursive calling
-  while (SDL_PollEvent (&event) && event.type != SDL_VIDEORESIZE)
+  while (SDL_PollEvent (&event) and event.type != SDL_VIDEORESIZE)
     avt_analyze_event (&event);
 }
 
@@ -1972,7 +1975,7 @@ avt_save_background (SDL_Rect area)
 			  screen->format->Rmask, screen->format->Gmask,
 			  screen->format->Bmask, screen->format->Amask);
 
-  if (!result)
+  if (not result)
     {
       SDL_SetError ("out of memory");
       _avt_STATUS = AVT_ERROR;
@@ -1990,7 +1993,7 @@ avt_flash (void)
 {
   SDL_Surface *oldwindowimage;
 
-  if (!screen)
+  if (not screen)
     return;
 
   oldwindowimage = avt_save_background (window);
@@ -2044,7 +2047,7 @@ avt_toggle_fullscreen (void)
 extern void
 avt_switch_mode (int mode)
 {
-  if (screen && mode != avt_mode)
+  if (screen and mode != avt_mode)
     {
       avt_mode = mode;
       switch (mode)
@@ -2101,8 +2104,8 @@ avt_analyze_event (SDL_Event * event)
 	      y = (event->button.y - textfield.y) / LINEHEIGHT + 1;
 
 	      // check if x and y are valid
-	      if (x >= 1 && x <= AVT_LINELENGTH
-		  && y >= 1 && y <= (textfield.h / LINEHEIGHT))
+	      if (x >= 1 and x <= AVT_LINELENGTH
+		  and y >= 1 and y <= (textfield.h / LINEHEIGHT))
 		avt_ext_mousehandler (event->button.button,
 				      (event->button.state == SDL_PRESSED),
 				      x, y);
@@ -2111,7 +2114,7 @@ avt_analyze_event (SDL_Event * event)
 	    {
 	      x = event->button.x - window.x;
 	      y = event->button.y - window.y;
-	      if (x >= 0 && x <= window.w && y >= 0 && y <= window.h)
+	      if (x >= 0 and x <= window.w and y >= 0 and y <= window.h)
 		avt_ext_mousehandler (event->button.button,
 				      (event->button.state == SDL_PRESSED),
 				      x, y);
@@ -2122,19 +2125,20 @@ avt_analyze_event (SDL_Event * event)
     case SDL_KEYDOWN:
       if (event->key.keysym.sym == SDLK_PAUSE)
 	avt_pause ();
-      else if (event->key.keysym.sym == SDLK_ESCAPE && !reserve_single_keys)
+      else if (event->key.keysym.sym ==
+	       SDLK_ESCAPE and not reserve_single_keys)
 	_avt_STATUS = AVT_QUIT;
       else if (event->key.keysym.sym == SDLK_q
-	       && (event->key.keysym.mod & KMOD_LALT))
+	       and (event->key.keysym.mod & KMOD_LALT))
 	_avt_STATUS = AVT_QUIT;
-      else if (event->key.keysym.sym == SDLK_F11 && !reserve_single_keys)
+      else if (event->key.keysym.sym == SDLK_F11 and not reserve_single_keys)
 	avt_toggle_fullscreen ();
       else if (event->key.keysym.sym == SDLK_RETURN
-	       && event->key.keysym.mod & KMOD_LALT)
+	       and event->key.keysym.mod & KMOD_LALT)
 	avt_toggle_fullscreen ();
       else if (event->key.keysym.sym == SDLK_f
-	       && (event->key.keysym.mod & KMOD_CTRL)
-	       && (event->key.keysym.mod & KMOD_LALT))
+	       and (event->key.keysym.mod & KMOD_CTRL)
+	       and (event->key.keysym.mod & KMOD_LALT))
 	avt_toggle_fullscreen ();
       else if (avt_ext_keyhandler)
 	avt_ext_keyhandler (event->key.keysym.sym, event->key.keysym.mod,
@@ -2165,9 +2169,9 @@ avt_pause (void)
 	  avt_analyze_event (&event);
 	}
     }
-  while (pause && !_avt_STATUS);
+  while (pause and not _avt_STATUS);
 
-  if (audio_initialized && !_avt_STATUS)
+  if (audio_initialized and not _avt_STATUS)
     SDL_PauseAudio (pause);
 
   return _avt_STATUS;
@@ -2227,7 +2231,7 @@ avt_timeout (uint32_t intervall, void *param)
 extern int
 avt_wait (size_t milliseconds)
 {
-  if (screen && _avt_STATUS == AVT_NORMAL)
+  if (screen and _avt_STATUS == AVT_NORMAL)
     {
       if (milliseconds <= 500)	// short delay
 	{
@@ -2253,7 +2257,7 @@ avt_wait (size_t milliseconds)
 	    {
 	      SDL_WaitEvent (&event);
 	      if (event.type == SDL_USEREVENT
-		  && event.user.code == AVT_TIMEOUT)
+		  and event.user.code == AVT_TIMEOUT)
 		break;
 	      else
 		avt_analyze_event (&event);
@@ -2275,7 +2279,7 @@ avt_ticks (void)
 extern int
 avt_where_x (void)
 {
-  if (screen && textfield.x >= 0)
+  if (screen and textfield.x >= 0)
     {
       if (origin_mode)
 	return ((cursor.x - viewport.x) / fontwidth) + 1;
@@ -2289,7 +2293,7 @@ avt_where_x (void)
 extern int
 avt_where_y (void)
 {
-  if (screen && textfield.x >= 0)
+  if (screen and textfield.x >= 0)
     {
       if (origin_mode)
 	return ((cursor.y - viewport.y) / LINEHEIGHT) + 1;
@@ -2303,10 +2307,10 @@ avt_where_y (void)
 extern bool
 avt_home_position (void)
 {
-  if (!screen || textfield.x < 0)
+  if (not screen or textfield.x < 0)
     return true;		// about to be set to home position
   else
-    return (cursor.y == viewport.y && cursor.x == linestart);
+    return (cursor.y == viewport.y and cursor.x == linestart);
 }
 
 // this always means the full textfield
@@ -2334,7 +2338,7 @@ avt_move_x (int x)
 {
   SDL_Rect area;
 
-  if (screen && textfield.x >= 0)
+  if (screen and textfield.x >= 0)
     {
       if (x < 1)
 	x = 1;
@@ -2363,7 +2367,7 @@ avt_move_y (int y)
 {
   SDL_Rect area;
 
-  if (screen && textfield.x >= 0)
+  if (screen and textfield.x >= 0)
     {
       if (y < 1)
 	y = 1;
@@ -2392,7 +2396,7 @@ avt_move_xy (int x, int y)
 {
   SDL_Rect area;
 
-  if (screen && textfield.x >= 0)
+  if (screen and textfield.x >= 0)
     {
       if (x < 1)
 	x = 1;
@@ -2441,7 +2445,7 @@ avt_insert_spaces (int num)
   SDL_Rect rest, dest, clear;
 
   // no textfield? do nothing
-  if (!screen || textfield.x < 0)
+  if (not screen or textfield.x < 0)
     return;
 
   if (text_cursor_visible)
@@ -2467,7 +2471,7 @@ avt_insert_spaces (int num)
     avt_show_text_cursor (true);
 
   // update line
-  if (!hold_updates)
+  if (not hold_updates)
     SDL_UpdateRect (screen, viewport.x, cursor.y, viewport.w, fontheight);
 }
 
@@ -2477,7 +2481,7 @@ avt_delete_characters (int num)
   SDL_Rect rest, dest, clear;
 
   // no textfield? do nothing
-  if (!screen || textfield.x < 0)
+  if (not screen or textfield.x < 0)
     return;
 
   if (text_cursor_visible)
@@ -2503,7 +2507,7 @@ avt_delete_characters (int num)
     avt_show_text_cursor (true);
 
   // update line
-  if (!hold_updates)
+  if (not hold_updates)
     SDL_UpdateRect (screen, viewport.x, cursor.y, viewport.w, fontheight);
 }
 
@@ -2513,7 +2517,7 @@ avt_erase_characters (int num)
   SDL_Rect clear;
 
   // no textfield? do nothing
-  if (!screen || textfield.x < 0)
+  if (not screen or textfield.x < 0)
     return;
 
   if (text_cursor_visible)
@@ -2538,14 +2542,14 @@ avt_delete_lines (int line, int num)
   SDL_Rect rest, dest, clear;
 
   // no textfield? do nothing
-  if (!screen || textfield.x < 0)
+  if (not screen or textfield.x < 0)
     return;
 
-  if (!origin_mode)
+  if (not origin_mode)
     line -= (viewport.y - textfield.y) / LINEHEIGHT;
 
   // check if values are sane
-  if (line < 1 || num < 1 || line > (viewport.h / LINEHEIGHT))
+  if (line < 1 or num < 1 or line > (viewport.h / LINEHEIGHT))
     return;
 
   if (text_cursor_visible)
@@ -2579,14 +2583,14 @@ avt_insert_lines (int line, int num)
   SDL_Rect rest, dest, clear;
 
   // no textfield? do nothing
-  if (!screen || textfield.x < 0)
+  if (not screen or textfield.x < 0)
     return;
 
-  if (!origin_mode)
+  if (not origin_mode)
     line -= (viewport.y - textfield.y) / LINEHEIGHT;
 
   // check if values are sane
-  if (line < 1 || num < 1 || line > (viewport.h / LINEHEIGHT))
+  if (line < 1 or num < 1 or line > (viewport.h / LINEHEIGHT))
     return;
 
   if (text_cursor_visible)
@@ -2618,7 +2622,7 @@ extern void
 avt_viewport (int x, int y, int width, int height)
 {
   // not initialized? -> do nothing
-  if (!screen)
+  if (not screen)
     return;
 
   // if there's no balloon, draw it
@@ -2680,7 +2684,7 @@ avt_set_origin_mode (bool mode)
 
   origin_mode = AVT_MAKE_BOOL (mode);
 
-  if (text_cursor_visible && textfield.x >= 0)
+  if (text_cursor_visible and textfield.x >= 0)
     avt_show_text_cursor (false);
 
   if (origin_mode)
@@ -2698,7 +2702,7 @@ avt_set_origin_mode (bool mode)
   // reset saved position
   saved_position = cursor;
 
-  if (text_cursor_visible && textfield.x >= 0)
+  if (text_cursor_visible and textfield.x >= 0)
     avt_show_text_cursor (true);
 
   if (textfield.x >= 0)
@@ -2715,7 +2719,7 @@ extern void
 avt_clear (void)
 {
   // not initialized? -> do nothing
-  if (!screen)
+  if (not screen)
     return;
 
   // if there's no balloon, draw it
@@ -2747,7 +2751,7 @@ avt_clear_up (void)
   SDL_Rect dst;
 
   // not initialized? -> do nothing
-  if (!screen)
+  if (not screen)
     return;
 
   // if there's no balloon, draw it
@@ -2776,7 +2780,7 @@ avt_clear_down (void)
   SDL_Rect dst;
 
   // not initialized? -> do nothing
-  if (!screen)
+  if (not screen)
     return;
 
   // if there's no balloon, draw it
@@ -2808,7 +2812,7 @@ avt_clear_eol (void)
   SDL_Rect dst;
 
   // not initialized? -> do nothing
-  if (!screen)
+  if (not screen)
     return;
 
   // if there's no balloon, draw it
@@ -2848,7 +2852,7 @@ avt_clear_bol (void)
   SDL_Rect dst;
 
   // not initialized? -> do nothing
-  if (!screen)
+  if (not screen)
     return;
 
   // if there's no balloon, draw it
@@ -2887,7 +2891,7 @@ avt_clear_line (void)
   SDL_Rect dst;
 
   // not initialized? -> do nothing
-  if (!screen)
+  if (not screen)
     return;
 
   // if there's no balloon, draw it
@@ -2914,16 +2918,16 @@ extern int
 avt_flip_page (void)
 {
   // no textfield? do nothing
-  if (!screen || textfield.x < 0)
+  if (not screen or textfield.x < 0)
     return _avt_STATUS;
 
   // do nothing when the textfield is already empty
-  if (cursor.x == linestart && cursor.y == viewport.y)
+  if (cursor.x == linestart and cursor.y == viewport.y)
     return _avt_STATUS;
 
   /* the viewport must be updated,
      if it's not updated letter by letter */
-  if (!text_delay)
+  if (not text_delay)
     AVT_UPDATE_TRECT (viewport);
 
   avt_wait (flip_page_delay);
@@ -2973,7 +2977,7 @@ extern int
 avt_new_line (void)
 {
   // no textfield? do nothing
-  if (!screen || textfield.x < 0)
+  if (not screen or textfield.x < 0)
     return _avt_STATUS;
 
   if (text_cursor_visible)
@@ -3012,14 +3016,14 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
       pitch = avt_character->pitch / sizeof (*p);
       pixels = p = (unsigned short *) avt_character->pixels;
       font_line = (const unsigned short *) avt_get_font_char ((int) ch);
-      if (!font_line)
+      if (not font_line)
 	font_line = (const unsigned short *) avt_get_font_char (0);
 
       for (y = 0; y < fontheight; y++)
 	{
 	  // TODO: needs test on big endian machines
 	  *p = SDL_SwapBE16 (*font_line);
-	  if (bold && !NOT_BOLD)
+	  if (bold and not NOT_BOLD)
 	    *p |= SDL_SwapBE16 (*font_line >> 1);
 	  if (inverse)
 	    *p = ~*p;
@@ -3038,13 +3042,13 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
       pitch = avt_character->pitch;
       pixels = p = (uint8_t *) avt_character->pixels;
       font_line = (const unsigned char *) avt_get_font_char ((int) ch);
-      if (!font_line)
+      if (not font_line)
 	font_line = (const unsigned char *) avt_get_font_char (0);
 
       for (y = 0; y < fontheight; y++)
 	{
 	  *p = *font_line;
-	  if (bold && !NOT_BOLD)
+	  if (bold and not NOT_BOLD)
 	    *p |= (*font_line >> 1);
 	  if (inverse)
 	    *p = ~*p;
@@ -3080,7 +3084,7 @@ avt_is_printable (avt_char ch)
 static void
 avt_showchar (void)
 {
-  if (!hold_updates)
+  if (not hold_updates)
     {
       SDL_UpdateRect (screen, cursor.x, cursor.y, fontwidth, fontheight);
       text_cursor_actually_visible = false;
@@ -3092,7 +3096,7 @@ extern int
 avt_forward (void)
 {
   // no textfield? do nothing
-  if (!screen || textfield.x < 0)
+  if (not screen or textfield.x < 0)
     return _avt_STATUS;
 
   cursor.x = (textdir_rtl) ? cursor.x - fontwidth : cursor.x + fontwidth;
@@ -3112,12 +3116,12 @@ avt_forward (void)
 static void
 check_auto_margin (void)
 {
-  if (screen && textfield.x >= 0 && auto_margin)
+  if (screen and textfield.x >= 0 and auto_margin)
     {
       if (cursor.x < viewport.x
-	  || cursor.x > viewport.x + viewport.w - fontwidth)
+	  or cursor.x > viewport.x + viewport.w - fontwidth)
 	{
-	  if (!newline_mode)
+	  if (not newline_mode)
 	    avt_carriage_return ();
 	  avt_new_line ();
 	}
@@ -3228,7 +3232,7 @@ avt_clearchar (void)
 extern void
 avt_backspace (void)
 {
-  if (screen && textfield.x >= 0)
+  if (screen and textfield.x >= 0)
     {
       if (cursor.x != linestart)
 	{
@@ -3251,7 +3255,7 @@ avt_backspace (void)
 extern int
 avt_put_char (avt_char ch)
 {
-  if (!screen || _avt_STATUS != AVT_NORMAL)
+  if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   // no textfield? => draw balloon
@@ -3312,7 +3316,7 @@ avt_put_char (avt_char ch)
     case 0x0020:		// SP: space
       if (auto_margin)
 	check_auto_margin ();
-      if (!underlined && !inverse)
+      if (not underlined and not inverse)
 	avt_clearchar ();
       else			// underlined or inverse
 	{
@@ -3327,12 +3331,12 @@ avt_put_char (avt_char ch)
       break;
 
     default:
-      if (ch > 0x0020 || ch == 0x0000)
+      if (ch > 0x0020 or ch == 0x0000)
 	{
-	  if (markup && ch == 0x005F)	// '_'
-	    underlined = !underlined;
-	  else if (markup && ch == 0x002A)	// '*'
-	    bold = !bold;
+	  if (markup and ch == 0x005F)	// '_'
+	    underlined = not underlined;
+	  else if (markup and ch == 0x002A)	// '*'
+	    bold = not bold;
 	  else			// not a markup character
 	    {
 	      if (auto_margin)
@@ -3362,7 +3366,7 @@ avt_overstrike (const wchar_t * txt)
   r = 0;
 
   // check if all conditions are met
-  if (!*txt || !*(txt + 1) || !*(txt + 2) || *(txt + 1) != L'\b')
+  if (not * txt or not * (txt + 1) or not * (txt + 2) or * (txt + 1) != L'\b')
     r = -1;
   else
     {
@@ -3392,11 +3396,11 @@ avt_overstrike (const wchar_t * txt)
 extern int
 avt_say (const wchar_t * txt)
 {
-  if (!screen || _avt_STATUS != AVT_NORMAL)
+  if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   // nothing to do, when there is no text 
-  if (!txt || !*txt)
+  if (not txt or not * txt)
     return avt_checkevent ();
 
   // no textfield? => draw balloon
@@ -3414,7 +3418,7 @@ avt_say (const wchar_t * txt)
       else
 	{
 	  avt_char c = (avt_char) * txt;
-	  if (0xD800 <= *txt && *txt <= 0xDBFF)	// UTF-16 high surrogate
+	  if (0xD800 <= *txt and * txt <= 0xDBFF)	// UTF-16 high surrogate
 	    {
 	      c = ((*txt & 0x3FF) << 10) + (*(txt + 1) & 0x3FF) + 0x10000;
 	      txt++;
@@ -3440,7 +3444,7 @@ avt_say_len (const wchar_t * txt, size_t len)
 
   // nothing to do, when txt == NULL
   // but do allow a text to start with zeros here
-  if (!screen || !txt || _avt_STATUS != AVT_NORMAL)
+  if (not screen or not txt or _avt_STATUS != AVT_NORMAL)
     return avt_checkevent ();
 
   // no textfield? => draw balloon
@@ -3449,7 +3453,7 @@ avt_say_len (const wchar_t * txt, size_t len)
 
   for (i = 0; i < len; i++, txt++)
     {
-      if (*(txt + 1) == L'\b' && i < len - 1)
+      if (*(txt + 1) == L'\b' and i < len - 1)
 	{
 	  if (avt_overstrike (txt))
 	    break;
@@ -3459,7 +3463,7 @@ avt_say_len (const wchar_t * txt, size_t len)
       else
 	{
 	  avt_char c = (avt_char) * txt;
-	  if (0xD800 <= *txt && *txt <= 0xDBFF)	// UTF-16 high surrogate
+	  if (0xD800 <= *txt and * txt <= 0xDBFF)	// UTF-16 high surrogate
 	    {
 	      c = ((*txt & 0x3FF) << 10) + (*(txt + 1) & 0x3FF) + 0x10000;
 	      txt++;
@@ -3481,7 +3485,7 @@ avt_tell_len (const wchar_t * txt, size_t len)
   size_t pos;
   const wchar_t *p;
 
-  if (!txt || !*txt || _avt_STATUS != AVT_NORMAL)
+  if (not txt or not * txt or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   width = 0;
@@ -3490,7 +3494,7 @@ avt_tell_len (const wchar_t * txt, size_t len)
   pos = 1;
   p = txt;
 
-  while ((len > 0 && pos <= len) || (len == 0 && *p))
+  while ((len > 0 and pos <= len) or (len == 0 and * p))
     {
       switch (*p)
 	{
@@ -3547,10 +3551,10 @@ avt_tell_len (const wchar_t * txt, size_t len)
 	  // else fall through
 
 	default:
-	  if ((*p >= 32 || *p == 0) && (*p < 0xD800 || *p > 0xDBFF))
+	  if ((*p >= 32 or * p == 0) and (*p < 0xD800 or * p > 0xDBFF))
 	    {
 	      line_length++;
-	      if (auto_margin && line_length > AVT_LINELENGTH)
+	      if (auto_margin and line_length > AVT_LINELENGTH)
 		{
 		  width = AVT_LINELENGTH;
 		  height++;
@@ -3594,13 +3598,13 @@ avt_mb_encoding (const char *encoding)
    * check if it is the result of avt_get_mb_encoding()
    * or the same encoding
    */
-  if (encoding == avt_encoding || SDL_strcmp (encoding, avt_encoding) == 0)
+  if (encoding == avt_encoding or SDL_strcmp (encoding, avt_encoding) == 0)
     return _avt_STATUS;
 
   SDL_strlcpy (avt_encoding, encoding, sizeof (avt_encoding));
 
   // if encoding is "" and SYSTEMENCODING is not ""
-  if (encoding[0] == '\0' && SYSTEMENCODING[0] != '\0')
+  if (encoding[0] == '\0' and SYSTEMENCODING[0] != '\0')
     encoding = SYSTEMENCODING;
 
   // output
@@ -3662,7 +3666,7 @@ avt_mb_decode_buffer (wchar_t * dest, size_t dest_size,
   size_t returncode;
 
   // check if sizes are useful
-  if (!dest || !dest_size || !src || !src_size)
+  if (not dest or not dest_size or not src or not src_size)
     return (size_t) (-1);
 
   // check if encoding was set
@@ -3679,7 +3683,7 @@ avt_mb_decode_buffer (wchar_t * dest, size_t dest_size,
   restbuf = (char *) rest_buffer;
 
   // if there is a rest from last call, try to complete it
-  while (rest_bytes > 0 && inbytesleft > 0)
+  while (rest_bytes > 0 and inbytesleft > 0)
     {
       rest_buffer[rest_bytes++] = *inbuf;
       inbuf++;
@@ -3704,7 +3708,7 @@ avt_mb_decode_buffer (wchar_t * dest, size_t dest_size,
     avt_iconv (output_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
 
   // handle invalid characters
-  while (returncode == (size_t) (-1) && errno == EILSEQ)
+  while (returncode == (size_t) (-1) and errno == EILSEQ)
     {
       inbuf++;
       inbytesleft--;
@@ -3718,8 +3722,8 @@ avt_mb_decode_buffer (wchar_t * dest, size_t dest_size,
     }
 
   // check for incomplete sequences and put them into the rest_buffer
-  if (returncode == (size_t) (-1) && errno == EINVAL
-      && inbytesleft <= sizeof (rest_buffer))
+  if (returncode == (size_t) (-1) and errno == EINVAL
+      and inbytesleft <= sizeof (rest_buffer))
     {
       rest_bytes = inbytesleft;
       SDL_memcpy ((void *) &rest_buffer, inbuf, rest_bytes);
@@ -3741,12 +3745,12 @@ avt_mb_decode (wchar_t ** dest, const char *src, size_t src_size)
   size_t dest_size;
   size_t length;
 
-  if (!dest)
+  if (not dest)
     return (size_t) (-1);
 
   *dest = NULL;
 
-  if (!src || !src_size)
+  if (not src or not src_size)
     return (size_t) (-1);
 
   // get enough space
@@ -3760,12 +3764,12 @@ avt_mb_decode (wchar_t ** dest, const char *src, size_t src_size)
 
   *dest = (wchar_t *) SDL_malloc (dest_size);
 
-  if (!*dest)
+  if (not * dest)
     return (size_t) (-1);
 
   length = avt_mb_decode_buffer (*dest, dest_size, src, src_size);
 
-  if (length == (size_t) (-1) || length == 0)
+  if (length == (size_t) (-1) or length == 0)
     {
       SDL_free (*dest);
       *dest = NULL;
@@ -3784,7 +3788,7 @@ avt_mb_encode_buffer (char *dest, size_t dest_size, const wchar_t * src,
   size_t inbytesleft, outbytesleft;
 
   // check if sizes are useful
-  if (!dest || !dest_size || !src || !len)
+  if (not dest or not dest_size or not src or not len)
     return (size_t) (-1);
 
   // check if encoding was set
@@ -3813,13 +3817,13 @@ avt_mb_encode (char **dest, const wchar_t * src, size_t len)
 {
   size_t dest_size, size;
 
-  if (!dest)
+  if (not dest)
     return (size_t) (-1);
 
   *dest = NULL;
 
   // check if len is useful
-  if (!src || !len)
+  if (not src or not len)
     return (size_t) (-1);
 
   // get enough space
@@ -3828,12 +3832,12 @@ avt_mb_encode (char **dest, const wchar_t * src, size_t len)
   dest_size = len * 4 + 1;
   *dest = (char *) SDL_malloc (dest_size);
 
-  if (!*dest)
+  if (not * dest)
     return (size_t) (-1);
 
   size = avt_mb_encode_buffer (*dest, dest_size, src, len);
 
-  if (size == (size_t) (-1) || size == 0)
+  if (size == (size_t) (-1) or size == 0)
     {
       SDL_free (*dest);
       *dest = NULL;
@@ -3854,15 +3858,15 @@ avt_recode_buffer (const char *tocode, const char *fromcode,
   size_t returncode;
 
   // check if sizes are useful
-  if (!dest || !dest_size || !src || !src_size)
+  if (not dest or not dest_size or not src or not src_size)
     return (size_t) (-1);
 
   // NULL as code means the encoding, which was set
 
-  if (!tocode)
+  if (not tocode)
     tocode = avt_encoding;
 
-  if (!fromcode)
+  if (not fromcode)
     fromcode = avt_encoding;
 
   cd = avt_iconv_open (tocode, fromcode);
@@ -3883,7 +3887,7 @@ avt_recode_buffer (const char *tocode, const char *fromcode,
   returncode = avt_iconv (cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
 
   // jump over invalid characters
-  while (returncode == (size_t) (-1) && errno == EILSEQ)
+  while (returncode == (size_t) (-1) and errno == EILSEQ)
     {
       inbuf++;
       inbytesleft--;
@@ -3912,21 +3916,21 @@ avt_recode (const char *tocode, const char *fromcode,
   size_t inbytesleft, outbytesleft;
   size_t returncode;
 
-  if (!dest)
+  if (not dest)
     return (size_t) (-1);
 
   *dest = NULL;
 
   // check if size is useful
-  if (!src || !src_size)
+  if (not src or not src_size)
     return (size_t) (-1);
 
   // NULL as code means the encoding, which was set
 
-  if (!tocode)
+  if (not tocode)
     tocode = avt_encoding;
 
-  if (!fromcode)
+  if (not fromcode)
     fromcode = avt_encoding;
 
   cd = avt_iconv_open (tocode, fromcode);
@@ -4012,7 +4016,7 @@ avt_free (void *ptr)
 extern int
 avt_say_mb (const char *txt)
 {
-  if (screen && _avt_STATUS == AVT_NORMAL)
+  if (screen and _avt_STATUS == AVT_NORMAL)
     avt_say_mb_len (txt, SDL_strlen (txt));
 
   return _avt_STATUS;
@@ -4029,7 +4033,7 @@ avt_say_mb_len (const char *txt, size_t len)
   static char rest_buffer[10];
   static size_t rest_bytes = 0;
 
-  if (!screen || _avt_STATUS != AVT_NORMAL)
+  if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   // check if encoding was set
@@ -4044,8 +4048,8 @@ avt_say_mb_len (const char *txt, size_t len)
   inbuf = (char *) txt;
 
   // if there is a rest from last call, try to complete it
-  while (rest_bytes > 0 && rest_bytes < sizeof (rest_buffer)
-	 && inbytesleft > 0)
+  while (rest_bytes > 0 and rest_bytes < sizeof (rest_buffer)
+	 and inbytesleft > 0)
     {
       char *rest_buf;
       size_t rest_bytes_left;
@@ -4125,7 +4129,7 @@ avt_tell_mb_len (const char *txt, size_t len)
   if (len == 0)
     len = SDL_strlen (txt);
 
-  if (screen && _avt_STATUS == AVT_NORMAL)
+  if (screen and _avt_STATUS == AVT_NORMAL)
     {
       wclen = avt_mb_decode (&wctext, txt, len);
 
@@ -4142,7 +4146,7 @@ avt_tell_mb_len (const char *txt, size_t len)
 extern int
 avt_tell_mb (const char *txt)
 {
-  if (screen && _avt_STATUS == AVT_NORMAL)
+  if (screen and _avt_STATUS == AVT_NORMAL)
     avt_tell_mb_len (txt, SDL_strlen (txt));
 
   return _avt_STATUS;
@@ -4158,7 +4162,7 @@ avt_key (avt_char * ch)
 
   if (screen)
     {
-      while (!c && (_avt_STATUS == AVT_NORMAL))
+      while (not c and (_avt_STATUS == AVT_NORMAL))
 	{
 	  SDL_WaitEvent (&event);
 	  avt_analyze_event (&event);
@@ -4264,7 +4268,7 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
   if (line_nr != old_line)
     {
       // restore oldline
-      if (old_line >= menu_start && old_line <= menu_end)
+      if (old_line >= menu_start and old_line <= menu_end)
 	{
 	  s.x = 0;
 	  s.y = (old_line - 1) * LINEHEIGHT;
@@ -4277,7 +4281,7 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
 	}
 
       // show bar
-      if (line_nr >= menu_start && line_nr <= menu_end)
+      if (line_nr >= menu_start and line_nr <= menu_end)
 	{
 	  t.x = viewport.x;
 	  t.y = viewport.y + ((line_nr - 1) * LINEHEIGHT);
@@ -4297,7 +4301,7 @@ avt_choice (int *result, int start_line, int items, int key,
   int end_line;
   int line_nr, old_line;
 
-  if (screen && _avt_STATUS == AVT_NORMAL)
+  if (screen and _avt_STATUS == AVT_NORMAL)
     {
       // get a copy of the viewport
       plain_menu = avt_save_background (viewport);
@@ -4306,7 +4310,7 @@ avt_choice (int *result, int start_line, int items, int key,
       bar = SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_SRCALPHA | SDL_RLEACCEL,
 				  viewport.w, LINEHEIGHT, 8, 0, 0, 0, 128);
 
-      if (!bar)
+      if (not bar)
 	{
 	  SDL_FreeSurface (plain_menu);
 	  SDL_SetError ("out of memory");
@@ -4331,7 +4335,7 @@ avt_choice (int *result, int start_line, int items, int key,
       line_nr = -1;
       old_line = 0;
       *result = -1;
-      while ((*result == -1) && (_avt_STATUS == AVT_NORMAL))
+      while ((*result == -1) and (_avt_STATUS == AVT_NORMAL))
 	{
 	  SDL_WaitEvent (&event);
 	  avt_analyze_event (&event);
@@ -4339,15 +4343,15 @@ avt_choice (int *result, int start_line, int items, int key,
 	  switch (event.type)
 	    {
 	    case SDL_KEYDOWN:
-	      if (key && (event.key.keysym.unicode >= key)
-		  && (event.key.keysym.unicode <= last_key))
+	      if (key and (event.key.keysym.unicode >= key)
+		  and (event.key.keysym.unicode <= last_key))
 		*result = (int) (event.key.keysym.unicode - key + 1);
 	      else if ((event.key.keysym.sym == SDLK_DOWN
-			|| event.key.keysym.sym == SDLK_KP2))
+			or event.key.keysym.sym == SDLK_KP2))
 		{
 		  if (line_nr != end_line)
 		    {
-		      if (line_nr < start_line || line_nr > end_line)
+		      if (line_nr < start_line or line_nr > end_line)
 			line_nr = start_line;
 		      else
 			line_nr++;
@@ -4359,11 +4363,11 @@ avt_choice (int *result, int start_line, int items, int key,
 		    *result = items;
 		}
 	      else if ((event.key.keysym.sym == SDLK_UP
-			|| event.key.keysym.sym == SDLK_KP8))
+			or event.key.keysym.sym == SDLK_KP8))
 		{
 		  if (line_nr != start_line)
 		    {
-		      if (line_nr < start_line || line_nr > end_line)
+		      if (line_nr < start_line or line_nr > end_line)
 			line_nr = end_line;
 		      else
 			line_nr--;
@@ -4374,24 +4378,24 @@ avt_choice (int *result, int start_line, int items, int key,
 		  else if (back)
 		    *result = 1;
 		}
-	      else if (back && (event.key.keysym.sym == SDLK_PAGEUP))
+	      else if (back and (event.key.keysym.sym == SDLK_PAGEUP))
 		*result = 1;
-	      else if (forward && (event.key.keysym.sym == SDLK_PAGEDOWN))
+	      else if (forward and (event.key.keysym.sym == SDLK_PAGEDOWN))
 		*result = items;
 	      else if ((event.key.keysym.sym == SDLK_RETURN
-			|| event.key.keysym.sym == SDLK_KP_ENTER
-			|| event.key.keysym.sym == SDLK_RIGHT
-			|| event.key.keysym.sym == SDLK_KP6)
-		       && line_nr >= start_line && line_nr <= end_line)
+			or event.key.keysym.sym == SDLK_KP_ENTER
+			or event.key.keysym.sym == SDLK_RIGHT
+			or event.key.keysym.sym == SDLK_KP6)
+		       and line_nr >= start_line and line_nr <= end_line)
 		*result = line_nr - start_line + 1;
 	      break;
 
 	    case SDL_MOUSEMOTION:
 	      if (event.motion.x >= viewport.x
-		  && event.motion.x <= viewport.x + viewport.w
-		  && event.motion.y
+		  and event.motion.x <= viewport.x + viewport.w
+		  and event.motion.y
 		  >= viewport.y + ((start_line - 1) * LINEHEIGHT)
-		  && event.motion.y < viewport.y + (end_line * LINEHEIGHT))
+		  and event.motion.y < viewport.y + (end_line * LINEHEIGHT))
 		line_nr = ((event.motion.y - viewport.y) / LINEHEIGHT) + 1;
 
 	      if (line_nr != old_line)
@@ -4407,17 +4411,17 @@ avt_choice (int *result, int start_line, int items, int key,
 	      if (event.button.button <= 3)
 		{
 		  // if a valid line was chosen
-		  if (line_nr >= start_line && line_nr <= end_line)
+		  if (line_nr >= start_line and line_nr <= end_line)
 		    *result = line_nr - start_line + 1;
 		  else
 		    {
 		      // check if mouse currently points to a valid line
-		      if (event.button.x >= viewport.x &&
+		      if (event.button.x >= viewport.x and
 			  event.button.x <= viewport.x + viewport.w)
 			{
 			  line_nr =
 			    ((event.button.y - viewport.y) / LINEHEIGHT) + 1;
-			  if (line_nr >= start_line && line_nr <= end_line)
+			  if (line_nr >= start_line and line_nr <= end_line)
 			    *result = line_nr - start_line + 1;
 			}
 		    }
@@ -4426,7 +4430,7 @@ avt_choice (int *result, int start_line, int items, int key,
 		{
 		  if (line_nr != start_line)
 		    {
-		      if (line_nr < start_line || line_nr > end_line)
+		      if (line_nr < start_line or line_nr > end_line)
 			line_nr = end_line;
 		      else
 			line_nr--;
@@ -4441,7 +4445,7 @@ avt_choice (int *result, int start_line, int items, int key,
 		{
 		  if (line_nr != end_line)
 		    {
-		      if (line_nr < start_line || line_nr > end_line)
+		      if (line_nr < start_line or line_nr > end_line)
 			line_nr = start_line;
 		      else
 			line_nr++;
@@ -4497,12 +4501,12 @@ avt_button_inlay (SDL_Rect btn_rect, const unsigned char *bits,
 
 
 #define avt_is_linebreak(c)  \
-  ((c)==L'\n' || (c)==L'\v' || (c)==L'\x85' \
-   || (c)==L'\x2028' || (c)==L'\x2029')
+  ((c)==L'\n' or (c)==L'\v' or (c)==L'\x85' \
+   or (c)==L'\x2028' or (c)==L'\x2029')
 
 // checks for formfeed or text separators
 #define avt_is_pagebreak(c)  \
-  ((c) == L'\f' || ((c) >= L'\x1C' && (c) <= L'\x1F'))
+  ((c) == L'\f' or ((c) >= L'\x1C' and (c) <= L'\x1F'))
 
 static size_t
 avt_pager_line (const wchar_t * txt, size_t pos, size_t len,
@@ -4527,7 +4531,7 @@ avt_pager_line (const wchar_t * txt, size_t pos, size_t len,
       pos++;
 
       // evtl. skip line end
-      while (pos < len && (txt[pos] == L'\r' || avt_is_linebreak (txt[pos])))
+      while (pos < len and (txt[pos] == L'\r' or avt_is_linebreak (txt[pos])))
 	pos++;
 
       return pos;
@@ -4537,8 +4541,8 @@ avt_pager_line (const wchar_t * txt, size_t pos, size_t len,
   const wchar_t *p = tpos;
   size_t line_length = 0;
 
-  while (pos + line_length < len && !avt_is_linebreak (*p)
-	 && !avt_is_pagebreak (*p))
+  while (pos + line_length < len and not avt_is_linebreak (*p)
+	 and not avt_is_pagebreak (*p))
     {
       line_length++;
       p++;
@@ -4547,7 +4551,7 @@ avt_pager_line (const wchar_t * txt, size_t pos, size_t len,
   pos += line_length;
 
   // skip linebreak, but not a pagebreak
-  if (pos < len && avt_is_linebreak (*p))
+  if (pos < len and avt_is_linebreak (*p))
     pos++;
 
   // speedup horizontal scrolling
@@ -4564,35 +4568,35 @@ avt_pager_line (const wchar_t * txt, size_t pos, size_t len,
 
 	  // skip invisible characters
 	  while (line_length
-		 && (*tpos == L'\a' || *tpos == L'\xFEFF'
-		     || *tpos == L'\x200E' || *tpos == L'\x200F'
-		     || *tpos == L'\x200B' || *tpos == L'\x200C'
-		     || *tpos == L'\x200D'))
+		 and (*tpos == L'\a' or * tpos == L'\xFEFF'
+		      or * tpos == L'\x200E' or * tpos == L'\x200F'
+		      or * tpos == L'\x200B' or * tpos == L'\x200C'
+		      or * tpos == L'\x200D'))
 	    {
 	      tpos++;
 	      line_length--;
 	    }
 
 	  // handle backspace (used for overstrike text)
-	  while (line_length > 2 && *(tpos + 1) == L'\b')
+	  while (line_length > 2 and * (tpos + 1) == L'\b')
 	    {
 	      tpos += 2;
 	      line_length -= 2;
 	    }
 
 	  // hande markup mode
-	  while (markup && (*tpos == L'_' || *tpos == L'*'))
+	  while (markup and (*tpos == L'_' or * tpos == L'*'))
 	    {
 	      if (*tpos == L'_')
-		underlined = !underlined;
+		underlined = not underlined;
 	      else if (*tpos == L'*')
-		bold = !bold;
+		bold = not bold;
 
 	      tpos++;
 	      line_length--;
 	    }
 
-	  if (!line_length)
+	  if (not line_length)
 	    break;
 
 	  tpos++;
@@ -4638,10 +4642,10 @@ avt_pager_lines_back (const wchar_t * txt, size_t pos, int lines)
 
   while (lines--)
     {
-      if (pos > 0 && avt_is_linebreak (txt[pos]))
+      if (pos > 0 and avt_is_linebreak (txt[pos]))
 	pos--;			// go before last linebreak
 
-      while (pos > 0 && !avt_is_linebreak (txt[pos]))
+      while (pos > 0 and not avt_is_linebreak (txt[pos]))
 	pos--;
     }
 
@@ -4665,11 +4669,11 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   SDL_Surface *button;
   SDL_Rect btn_rect;
 
-  if (!screen)
+  if (not screen)
     return AVT_ERROR;
 
   // do we actually have something to show?
-  if (!txt || !*txt || _avt_STATUS != AVT_NORMAL)
+  if (not txt or not * txt or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   // get len if not given
@@ -4685,9 +4689,9 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
       int nr;
 
       nr = startline - 1;
-      while (nr > 0 && pos < len)
+      while (nr > 0 and pos < len)
 	{
-	  while (pos < len && !avt_is_linebreak (txt[pos]))
+	  while (pos < len and not avt_is_linebreak (txt[pos]))
 	    pos++;
 	  pos++;
 	  nr--;
@@ -4763,7 +4767,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 
   quit = false;
 
-  while (!quit && _avt_STATUS == AVT_NORMAL)
+  while (not quit and _avt_STATUS == AVT_NORMAL)
     {
       SDL_WaitEvent (&event);
       avt_analyze_event (&event);
@@ -4804,9 +4808,9 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 		mby = event.button.y - window.y;
 
 		if (event.button.button <= 3
-		    && mby >= btn_rect.y
-		    && mby <= btn_rect.y + btn_rect.h
-		    && mbx >= btn_rect.x && mbx <= btn_rect.x + btn_rect.w)
+		    and mby >= btn_rect.y
+		    and mby <= btn_rect.y + btn_rect.h
+		    and mbx >= btn_rect.x and mbx <= btn_rect.x + btn_rect.w)
 		  quit = true;
 	      }
 	      break;
@@ -4954,7 +4958,7 @@ avt_pager_mb (const char *txt, size_t len, int startline)
   wchar_t *wctext;
   int wclen;
 
-  if (screen && txt && _avt_STATUS == AVT_NORMAL)
+  if (screen and txt and _avt_STATUS == AVT_NORMAL)
     {
       if (len == 0)
 	len = SDL_strlen (txt);
@@ -4980,7 +4984,7 @@ avt_ask (wchar_t * s, size_t size)
   int old_textdir;
   bool insert_mode;
 
-  if (!screen || _avt_STATUS != AVT_NORMAL)
+  if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   // this function only works with left to right text
@@ -5090,7 +5094,7 @@ avt_ask (wchar_t * s, size_t size)
 	  break;
 
 	case AVT_KEY_RIGHT:
-	  if (pos < len && pos < maxlen - 1)
+	  if (pos < len and pos < maxlen - 1)
 	    {
 	      pos++;
 	      avt_show_text_cursor (false);
@@ -5101,15 +5105,15 @@ avt_ask (wchar_t * s, size_t size)
 	  break;
 
 	case AVT_KEY_INSERT:
-	  insert_mode = !insert_mode;
+	  insert_mode = not insert_mode;
 	  break;
 
 	default:
-	  if (pos < maxlen && ch >= 32 && avt_get_font_char (ch) != NULL)
+	  if (pos < maxlen and ch >= 32 and avt_get_font_char (ch) != NULL)
 	    {
 	      // delete cursor
 	      avt_show_text_cursor (false);
-	      if (insert_mode && pos < len)
+	      if (insert_mode and pos < len)
 		{
 		  avt_insert_spaces (1);
 		  if (len < maxlen)
@@ -5139,14 +5143,14 @@ avt_ask (wchar_t * s, size_t size)
 	    }
 	}
     }
-  while ((ch != AVT_KEY_ENTER) && (_avt_STATUS == AVT_NORMAL));
+  while ((ch != AVT_KEY_ENTER) and (_avt_STATUS == AVT_NORMAL));
 
   s[len] = L'\0';
 
   // delete cursor
   avt_show_text_cursor (false);
 
-  if (!newline_mode)
+  if (not newline_mode)
     avt_carriage_return ();
 
   avt_new_line ();
@@ -5163,7 +5167,7 @@ avt_ask_mb (char *s, size_t size)
   char *inbuf;
   size_t inbytesleft, outbytesleft;
 
-  if (!screen || _avt_STATUS != AVT_NORMAL)
+  if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   // check if encoding was set
@@ -5192,7 +5196,7 @@ avt_ask_mb (char *s, size_t size)
 extern int
 avt_move_in (void)
 {
-  if (!screen || _avt_STATUS != AVT_NORMAL)
+  if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   // fill the screen with background color
@@ -5250,7 +5254,7 @@ avt_move_in (void)
 				dst.w + (oldx - dst.x), dst.h);
 
 	      // if window is resized then break
-	      if (window.x != mywindow.x || window.y != mywindow.y)
+	      if (window.x != mywindow.x or window.y != mywindow.y)
 		break;
 
 	      // delete (not visibly yet)
@@ -5275,7 +5279,7 @@ avt_move_in (void)
 extern int
 avt_move_out (void)
 {
-  if (!screen || !avt_visible || _avt_STATUS != AVT_NORMAL)
+  if (not screen or not avt_visible or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   // needed to remove the balloon
@@ -5338,7 +5342,7 @@ avt_move_out (void)
 				dst.w + dst.x - oldx, dst.h);
 
 	      // if window is resized then break
-	      if (window.x != mywindow.x || window.y != mywindow.y)
+	      if (window.x != mywindow.x or window.y != mywindow.y)
 		break;
 
 	      // delete (not visibly yet)
@@ -5368,7 +5372,7 @@ avt_wait_button (void)
   SDL_Rect btn_rect;
   bool nokey;
 
-  if (!screen || _avt_STATUS != AVT_NORMAL)
+  if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   // load button
@@ -5402,7 +5406,7 @@ avt_wait_button (void)
 	  break;
 
 	case SDL_KEYDOWN:
-	  if (SDLK_F11 != event.key.keysym.sym || reserve_single_keys)
+	  if (SDLK_F11 != event.key.keysym.sym or reserve_single_keys)
 	    nokey = false;
 	  break;
 
@@ -5451,12 +5455,12 @@ avt_navigate (const char *buttons)
   if (_avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  if (!screen)
+  if (not screen)
     return AVT_ERROR;
 
   button_count = SDL_strlen (buttons);
 
-  if (!buttons || !*buttons || button_count > NAV_MAX)
+  if (not buttons or not * buttons or button_count > NAV_MAX)
     {
       SDL_SetError ("No or too many buttons for navigation bar");
       return AVT_FAILURE;
@@ -5530,7 +5534,7 @@ avt_navigate (const char *buttons)
 
 	case 's':
 	  avt_nav_inlay (btn_stop);
-	  if (!audio_end_button)	// 'f' has precedence
+	  if (not audio_end_button)	// 'f' has precedence
 	    audio_end_button = 's';
 	  break;
 
@@ -5589,7 +5593,7 @@ avt_navigate (const char *buttons)
   for (i = 0; i < button_count; i++)
     avt_pre_resize (rect[i]);
 
-  while (result < 0 && _avt_STATUS == AVT_NORMAL)
+  while (result < 0 and _avt_STATUS == AVT_NORMAL)
     {
       SDL_WaitEvent (&event);
 
@@ -5597,7 +5601,7 @@ avt_navigate (const char *buttons)
 	{
 	  // end of audio triggers stop key
 	case SDL_USEREVENT:
-	  if (event.user.code == AVT_AUDIO_ENDED && audio_end_button)
+	  if (event.user.code == AVT_AUDIO_ENDED and audio_end_button)
 	    result = audio_end_button;
 	  break;
 
@@ -5606,23 +5610,23 @@ avt_navigate (const char *buttons)
 	    int r = -1;
 
 	    if (event.key.keysym.sym == SDLK_UP
-		|| event.key.keysym.sym == SDLK_KP8
-		|| event.key.keysym.sym == SDLK_HOME
-		|| event.key.keysym.sym == SDLK_KP7)
+		or event.key.keysym.sym == SDLK_KP8
+		or event.key.keysym.sym == SDLK_HOME
+		or event.key.keysym.sym == SDLK_KP7)
 	      r = 'u';
 	    else if (event.key.keysym.sym == SDLK_DOWN
-		     || event.key.keysym.sym == SDLK_KP2
-		     || event.key.keysym.sym == SDLK_END
-		     || event.key.keysym.sym == SDLK_KP1)
+		     or event.key.keysym.sym == SDLK_KP2
+		     or event.key.keysym.sym == SDLK_END
+		     or event.key.keysym.sym == SDLK_KP1)
 	      r = 'd';
 	    else if (event.key.keysym.sym == SDLK_LEFT
-		     || event.key.keysym.sym == SDLK_KP4)
+		     or event.key.keysym.sym == SDLK_KP4)
 	      r = 'l';
 	    else if (event.key.keysym.sym == SDLK_RIGHT
-		     || event.key.keysym.sym == SDLK_KP6)
+		     or event.key.keysym.sym == SDLK_KP6)
 	      r = 'r';
 	    else if (event.key.keysym.sym == SDLK_HELP
-		     || event.key.keysym.sym == SDLK_F1)
+		     or event.key.keysym.sym == SDLK_F1)
 	      r = '?';
 	    else if (event.key.keysym.sym == SDLK_PAUSE)
 	      {
@@ -5631,7 +5635,7 @@ avt_navigate (const char *buttons)
 		event.key.keysym.sym = SDLK_UNKNOWN;
 	      }
 	    else if (event.key.keysym.unicode > 32
-		     && event.key.keysym.unicode < 127)
+		     and event.key.keysym.unicode < 127)
 	      r = event.key.keysym.unicode;
 
 	    // check if it is one of the requested characters
@@ -5652,15 +5656,15 @@ avt_navigate (const char *buttons)
 	    mby = event.button.y - window.y;
 
 	    if (event.button.button <= 3
-		&& mby >= buttons_rect.y
-		&& mby <= buttons_rect.y + buttons_rect.h
-		&& mbx >= buttons_rect.x
-		&& mbx <= buttons_rect.x + buttons_rect.w)
+		and mby >= buttons_rect.y
+		and mby <= buttons_rect.y + buttons_rect.h
+		and mbx >= buttons_rect.x
+		and mbx <= buttons_rect.x + buttons_rect.w)
 	      {
-		for (i = 0; i < button_count && result < 0; i++)
+		for (i = 0; i < button_count and result < 0; i++)
 		  {
 		    if (buttons[i] != ' '
-			&& mbx >= rect[i].x && mbx <= rect[i].x + rect[i].w)
+			and mbx >= rect[i].x and mbx <= rect[i].x + rect[i].w)
 		      result = buttons[i];
 		  }
 	      }
@@ -5695,7 +5699,7 @@ avt_decide (void)
   SDL_Rect yes_rect, no_rect, area_rect;
   int result;
 
-  if (!screen || _avt_STATUS != AVT_NORMAL)
+  if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   SDL_SetClipRect (screen, &window);
@@ -5756,12 +5760,12 @@ avt_decide (void)
 	      _avt_STATUS = AVT_QUIT;
 	    }
 	  else if (event.key.keysym.unicode == L'-'
-		   || event.key.keysym.unicode == L'0'
-		   || event.key.keysym.sym == SDLK_BACKSPACE)
+		   or event.key.keysym.unicode == L'0'
+		   or event.key.keysym.sym == SDLK_BACKSPACE)
 	    result = false;
 	  else if (event.key.keysym.unicode == L'+'
-		   || event.key.keysym.unicode == L'1'
-		   || event.key.keysym.unicode == L'\r')
+		   or event.key.keysym.unicode == L'1'
+		   or event.key.keysym.unicode == L'\r')
 	    result = true;
 	  break;
 
@@ -5774,11 +5778,11 @@ avt_decide (void)
 
 	    // any mouse button, but ignore the wheel
 	    if (event.button.button <= 3
-		&& mby >= area_rect.y && mby <= area_rect.y + area_rect.h)
+		and mby >= area_rect.y and mby <= area_rect.y + area_rect.h)
 	      {
-		if (mbx >= yes_rect.x && mbx <= yes_rect.x + yes_rect.w)
+		if (mbx >= yes_rect.x and mbx <= yes_rect.x + yes_rect.w)
 		  result = true;
-		else if (mbx >= no_rect.x && mbx <= no_rect.x + no_rect.w)
+		else if (mbx >= no_rect.x and mbx <= no_rect.x + no_rect.w)
 		  result = false;
 	      }
 	  }
@@ -5859,7 +5863,7 @@ avt_show_image_rw (SDL_RWops * RW)
 {
   SDL_Surface *image;
 
-  if (!RW)
+  if (not RW)
     return AVT_FAILURE;
 
   image = NULL;
@@ -5900,7 +5904,7 @@ avt_show_image_rw (SDL_RWops * RW)
 extern int
 avt_show_image_file (const char *filename)
 {
-  if (!screen || _avt_STATUS != AVT_NORMAL)
+  if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
   else
     return avt_show_image_rw (SDL_RWFromFile (filename, "rb"));
@@ -5910,7 +5914,7 @@ avt_show_image_file (const char *filename)
 extern int
 avt_show_image_stream (avt_stream * stream)
 {
-  if (!screen || _avt_STATUS != AVT_NORMAL)
+  if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
   else
     return avt_show_image_rw (SDL_RWFromFP ((FILE *) stream, 0));
@@ -5923,7 +5927,7 @@ avt_show_image_stream (avt_stream * stream)
 extern int
 avt_show_image_data (void *img, size_t imgsize)
 {
-  if (!screen || _avt_STATUS != AVT_NORMAL)
+  if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
   else
     return avt_show_image_rw (SDL_RWFromMem (img, imgsize));
@@ -5935,7 +5939,7 @@ avt_show_image_xpm (char **xpm)
 {
   SDL_Surface *image = NULL;
 
-  if (!screen || _avt_STATUS != AVT_NORMAL)
+  if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   image = avt_load_image_xpm (xpm);
@@ -5960,10 +5964,10 @@ avt_show_image_xbm (const unsigned char *bits, int width, int height,
 {
   SDL_Surface *image;
 
-  if (!screen || _avt_STATUS != AVT_NORMAL)
+  if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  if (width <= 0 || height <= 0 || color < 0)
+  if (width <= 0 or height <= 0 or color < 0)
     {
       avt_clear ();		// at least clear the balloon
       SDL_SetError ("couldn't show image");
@@ -6010,10 +6014,10 @@ avt_show_raw_image (void *image_data, int width, int height,
 {
   SDL_Surface *image;
 
-  if (!screen || _avt_STATUS != AVT_NORMAL || !image_data)
+  if (not screen or _avt_STATUS != AVT_NORMAL or not image_data)
     return _avt_STATUS;
 
-  if (bytes_per_pixel < 3 || bytes_per_pixel > 4)
+  if (bytes_per_pixel < 3 or bytes_per_pixel > 4)
     {
       SDL_SetError ("wrong number of bytes_per_pixel for raw image");
       return AVT_FAILURE;
@@ -6102,7 +6106,7 @@ avt_make_transparent (avt_image_t * image)
   if (SDL_MUSTLOCK (image))
     SDL_UnlockSurface (image);
 
-  if (!SDL_SetColorKey (image, SDL_SRCCOLORKEY | SDL_RLEACCEL, color))
+  if (not SDL_SetColorKey (image, SDL_SRCCOLORKEY | SDL_RLEACCEL, color))
     image = NULL;
 
   return image;
@@ -6177,7 +6181,7 @@ avt_import_image_data (void *img, size_t imgsize)
 
 	  // if it's not yet transparent, make it transparent
 	  if (image)
-	    if (!(image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
+	    if (not (image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
 	      avt_make_transparent (image);
 	}
 
@@ -6215,7 +6219,7 @@ avt_import_image_file (const char *filename)
 
 	  // if it's not yet transparent, make it transparent
 	  if (image)
-	    if (!(image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
+	    if (not (image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
 	      avt_make_transparent (image);
 	}
 
@@ -6253,7 +6257,7 @@ avt_import_image_stream (avt_stream * stream)
 
 	  // if it's not yet transparent, make it transparent
 	  if (image)
-	    if (!(image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
+	    if (not (image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
 	      avt_make_transparent (image);
 	}
 
@@ -6298,7 +6302,7 @@ avt_set_avatar_image (SDL_Surface * image)
       else
 	avatar_image = SDL_DisplayFormat (image);
 
-      if (!avatar_image)
+      if (not avatar_image)
 	{
 	  SDL_SetError ("couldn't load avatar");
 	  _avt_STATUS = AVT_ERROR;
@@ -6346,7 +6350,7 @@ avt_avatar_image_xpm (char **xpm)
 
   image = avt_load_image_xpm (xpm);
 
-  if (!image)
+  if (not image)
     return AVT_FAILURE;
 
   avt_set_avatar_image (image);
@@ -6362,7 +6366,7 @@ avt_avatar_image_xbm (const unsigned char *bits,
 {
   SDL_Surface *image;
 
-  if (width <= 0 || height <= 0 || color < 0)
+  if (width <= 0 or height <= 0 or color < 0)
     {
       SDL_SetError ("invalid parameters");
       _avt_STATUS = AVT_ERROR;
@@ -6371,7 +6375,7 @@ avt_avatar_image_xbm (const unsigned char *bits,
 
   image = avt_load_image_xbm (bits, width, height, color);
 
-  if (!image)
+  if (not image)
     return AVT_FAILURE;
 
   avt_set_avatar_image (image);
@@ -6387,7 +6391,7 @@ avt_avatar_image_rw (SDL_RWops * RW)
 {
   SDL_Surface *image;
 
-  if (!RW)
+  if (not RW)
     return AVT_FAILURE;
 
   image = NULL;
@@ -6395,23 +6399,23 @@ avt_avatar_image_rw (SDL_RWops * RW)
   // try internal XPM reader first
   image = avt_load_image_xpm_RW (RW, 0);
 
-  if (!image)
+  if (not image)
     image = avt_load_image_xbm_RW (RW, 0, XBM_DEFAULT_COLOR);
 
-  if (!image)
+  if (not image)
     {
       load_image_init ();
       image = load_image.rw (RW, 0);
 
       // if it's not yet transparent, make it transparent
       if (image)
-	if (!(image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
+	if (not (image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
 	  avt_make_transparent (image);
     }
 
   SDL_RWclose (RW);
 
-  if (!image)
+  if (not image)
     return AVT_FAILURE;
 
   avt_set_avatar_image (image);
@@ -6455,7 +6459,7 @@ avt_set_avatar_name (const wchar_t * name)
     }
 
   // copy name
-  if (name && *name)
+  if (name and * name)
     {
       size = (avt_strwidth (name) + 1) * sizeof (wchar_t);
       avt_name = (wchar_t *) SDL_malloc (size);
@@ -6473,7 +6477,7 @@ avt_set_avatar_name_mb (const char *name)
 {
   wchar_t *wcname;
 
-  if (name == NULL || *name == '\0')
+  if (name == NULL or * name == '\0')
     avt_set_avatar_name (NULL);
   else
     {
@@ -6589,7 +6593,7 @@ avt_set_text_color (int colornr)
 {
   SDL_Color color;
 
-  if (colornr >= 0 && avt_character)
+  if (colornr >= 0 and avt_character)
     {
       color.r = avt_red (colornr);
       color.g = avt_green (colornr);
@@ -6603,7 +6607,7 @@ avt_set_text_background_color (int colornr)
 {
   SDL_Color color;
 
-  if (colornr >= 0 && avt_character)
+  if (colornr >= 0 and avt_character)
     {
       color.r = avt_red (colornr);
       color.g = avt_green (colornr);
@@ -6690,7 +6694,7 @@ avt_set_text_delay (int delay)
   text_delay = delay;
 
   // eventually switch off updates lock
-  if (text_delay != 0 && hold_updates)
+  if (text_delay != 0 and hold_updates)
     avt_lock_updates (false);
 }
 
@@ -6795,7 +6799,7 @@ avt_credits (const wchar_t * text, bool centered)
   int i;
   int length;
 
-  if (!screen || _avt_STATUS != AVT_NORMAL)
+  if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   // store old background color
@@ -6833,7 +6837,7 @@ avt_credits (const wchar_t * text, bool centered)
 			  screen->format->Gmask,
 			  screen->format->Bmask, screen->format->Amask);
 
-  if (!last_line)
+  if (not last_line)
     {
       SDL_SetError ("out of memory");
       _avt_STATUS = AVT_ERROR;
@@ -6845,13 +6849,13 @@ avt_credits (const wchar_t * text, bool centered)
 
   // show text
   p = text;
-  while (*p && _avt_STATUS == AVT_NORMAL)
+  while (*p and _avt_STATUS == AVT_NORMAL)
     {
       // get line
       length = 0;
-      while (*p && !avt_is_linebreak (*p))
+      while (*p and not avt_is_linebreak (*p))
 	{
-	  if (*p >= L' ' && length < 80)
+	  if (*p >= L' ' and length < 80)
 	    {
 	      line[length] = *p;
 	      length++;
@@ -6884,7 +6888,7 @@ avt_credits (const wchar_t * text, bool centered)
   avt_credits_up (last_line);
 
   // scroll up until screen is empty
-  for (i = 0; i < window.h / LINEHEIGHT && _avt_STATUS == AVT_NORMAL; i++)
+  for (i = 0; i < window.h / LINEHEIGHT and _avt_STATUS == AVT_NORMAL; i++)
     avt_credits_up (NULL);
 
   SDL_FreeSurface (last_line);
@@ -6906,7 +6910,7 @@ avt_credits_mb (const char *txt, bool centered)
 {
   wchar_t *wctext;
 
-  if (screen && _avt_STATUS == AVT_NORMAL)
+  if (screen and _avt_STATUS == AVT_NORMAL)
     {
       avt_mb_decode (&wctext, txt, SDL_strlen (txt) + 1);
 
@@ -6994,15 +6998,15 @@ avt_set_title (const char *title, const char *shortname)
 
   // check if it's already in correct encoding default="UTF-8"
   if (SDL_strcasecmp ("UTF-8", avt_encoding) == 0
-      || SDL_strcasecmp ("UTF8", avt_encoding) == 0
-      || SDL_strcasecmp ("CP65001", avt_encoding) == 0)
+      or SDL_strcasecmp ("UTF8", avt_encoding) == 0
+      or SDL_strcasecmp ("CP65001", avt_encoding) == 0)
     SDL_WM_SetCaption (title, shortname);
   else				// convert them to UTF-8
     {
       char my_title[260];
       char my_shortname[84];
 
-      if (title && *title)
+      if (title and * title)
 	{
 	  if (avt_recode_buffer ("UTF-8", avt_encoding,
 				 my_title, sizeof (my_title),
@@ -7013,7 +7017,7 @@ avt_set_title (const char *title, const char *shortname)
 	    }
 	}
 
-      if (shortname && *shortname)
+      if (shortname and * shortname)
 	{
 	  if (avt_recode_buffer ("UTF-8", avt_encoding,
 				 my_shortname, sizeof (my_shortname),
@@ -7138,8 +7142,8 @@ avt_start (const char *title, const char *shortname, int mode)
        * then default to fullscreen, else default to window
        */
       modes = SDL_ListModes (NULL, screenflags | SDL_FULLSCREEN);
-      if (modes != (SDL_Rect **) (0) && modes != (SDL_Rect **) (-1))
-	if (modes[0]->w == MINIMALWIDTH && modes[0]->h == MINIMALHEIGHT)
+      if (modes != (SDL_Rect **) (0) and modes != (SDL_Rect **) (-1))
+	if (modes[0]->w == MINIMALWIDTH and modes[0]->h == MINIMALHEIGHT)
 	  screenflags |= SDL_FULLSCREEN | SDL_NOFRAME;
     }
 #endif
@@ -7154,7 +7158,7 @@ avt_start (const char *title, const char *shortname, int mode)
       screen = SDL_SetVideoMode (0, 0, COLORDEPTH, screenflags);
 
       // fallback if 0,0 is not supported yet (before SDL-1.2.10)
-      if (screen && (screen->w == 0 || screen->h == 0))
+      if (screen and (screen->w == 0 or screen->h == 0))
 	screen =
 	  SDL_SetVideoMode (MINIMALWIDTH, MINIMALHEIGHT, COLORDEPTH,
 			    screenflags);
@@ -7170,7 +7174,7 @@ avt_start (const char *title, const char *shortname, int mode)
       return _avt_STATUS;
     }
 
-  if (screen->w < MINIMALWIDTH || screen->h < MINIMALHEIGHT)
+  if (screen->w < MINIMALWIDTH or screen->h < MINIMALHEIGHT)
     {
       SDL_SetError ("screen too small");
       _avt_STATUS = AVT_ERROR;
@@ -7197,7 +7201,7 @@ avt_start (const char *title, const char *shortname, int mode)
   avt_character = SDL_CreateRGBSurface (SDL_SWSURFACE, fontwidth, fontheight,
 					1, 0, 0, 0, 0);
 
-  if (!avt_character)
+  if (not avt_character)
     {
       SDL_SetError ("out of memory");
       _avt_STATUS = AVT_ERROR;
@@ -7211,7 +7215,7 @@ avt_start (const char *title, const char *shortname, int mode)
     SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_SRCALPHA | SDL_RLEACCEL,
 			  fontwidth, fontheight, 8, 0, 0, 0, 128);
 
-  if (!avt_text_cursor)
+  if (not avt_text_cursor)
     {
       SDL_FreeSurface (avt_character);
       SDL_SetError ("out of memory");
@@ -7235,7 +7239,7 @@ avt_start (const char *title, const char *shortname, int mode)
 			  screen->format->Rmask, screen->format->Gmask,
 			  screen->format->Bmask, screen->format->Amask);
 
-  if (!avt_cursor_character)
+  if (not avt_cursor_character)
     {
       SDL_FreeSurface (avt_text_cursor);
       SDL_FreeSurface (avt_character);
