@@ -73,54 +73,101 @@ typedef struct graphic
 #define M_PI  3.14159265358979323846
 #endif
 
-// convert degree to radians
-#define RAD(x)  ((x) * M_PI / 180.0)
-
-#define GRAPHICDATA "AKFAvatar-graphic"
-
-#define get_graphic(L, idx) \
-   ((graphic *) luaL_checkudata ((L), (idx), GRAPHICDATA))
-
-#define graphic_bytes(width, height) \
-  sizeof(graphic)-sizeof(struct color)+(width)*(height)*BPP
-
-#define new_graphic(L, nbytes) \
-  (graphic *) lua_newuserdata ((L), (nbytes)); \
-  luaL_getmetatable ((L), GRAPHICDATA); \
-  lua_setmetatable ((L), -2)
-
-// force value to be in range
-#define RANGE(v, min, max)  ((v) < (min) ? (min) : (v) > (max) ? (max) : (v))
-
-#define visible_x(gr, x)  ((x) >= 0 and (x) < (gr)->width)
-#define visible_y(gr, y)  ((y) >= 0 and (y) < (gr)->height)
-#define visible(gr, x, y)  (visible_x(gr, x) and visible_y(gr, y))
-
-// set pen position
-#define penpos(gr, x, y)  (gr)->penx = (x); (gr)->peny = (y)
-#define center(gr) \
-  do { \
-    (gr)->penx = ((double) (gr)->width) / 2.0 - 1.0; \
-    (gr)->peny = ((double) (gr)->height) / 2.0 - 1.0; \
-  } while(0)
-
-// fast putpixel with color, no check
-#define putpixelcolor(gr, x, y, width, col) \
-  *((gr)->data + ((int)(y) * (width)) + (int)(x)) = (col)
-
-// fast putpixel, no check
-#define putpixel(gr, x, y) \
-  putpixelcolor ((gr), (x), (y), (gr)->width, (gr)->color)
-
-#define equal_colors(a, b) \
-  ((a).red==(b).red and (a).green==(b).green and (a).blue==(b).blue)
-
 #define HA_LEFT 0
 #define HA_CENTER 1
 #define HA_RIGHT 2
 #define VA_TOP 0
 #define VA_CENTER 1
 #define VA_BOTTOM 2
+
+#define GRAPHICDATA "AKFAvatar-graphic"
+
+// convert degree to radians
+static inline double
+radians (double x)
+{
+  return (x * M_PI / 180.0);
+}
+
+static inline graphic *
+get_graphic (lua_State * L, int idx)
+{
+  return (graphic *) luaL_checkudata (L, idx, GRAPHICDATA);
+}
+
+static inline size_t
+graphic_bytes (int width, int height)
+{
+  return sizeof (graphic) - sizeof (struct color) + width * height * BPP;
+}
+
+static inline graphic *
+new_graphic (lua_State * L, size_t nbytes)
+{
+  graphic *gr;
+
+  gr = (graphic *) lua_newuserdata (L, nbytes);
+  luaL_getmetatable (L, GRAPHICDATA);
+  lua_setmetatable (L, -2);
+
+  return gr;
+}
+
+// force value to be in range
+#define RANGE(v, min, max)  ((v) < (min) ? (min) : (v) > (max) ? (max) : (v))
+
+static inline bool
+visible_x (graphic * gr, int x)
+{
+  return (x >= 0 and x < gr->width);
+}
+
+static inline bool
+visible_y (graphic * gr, int y)
+{
+  return (y >= 0 and y < gr->height);
+}
+
+static inline bool
+visible (graphic * gr, int x, int y)
+{
+  return (x >= 0 and x < gr->width and y >= 0 and y < gr->height);
+}
+
+// set pen position
+static inline void
+penpos (graphic * gr, int x, int y)
+{
+  gr->penx = x;
+  gr->peny = y;
+}
+
+static inline void
+center (graphic * gr)
+{
+  gr->penx = ((double) gr->width) / 2.0 - 1.0;
+  gr->peny = ((double) gr->height) / 2.0 - 1.0;
+}
+
+// fast putpixel with color, no check
+static inline void
+putpixelcolor (graphic * gr, int x, int y, int width, struct color col)
+{
+  *(gr->data + (y * width) + x) = col;
+}
+
+// fast putpixel, no check
+static inline void
+putpixel (graphic * gr, int x, int y)
+{
+  *(gr->data + (y * gr->width) + x) = gr->color;
+}
+
+static inline bool
+equal_colors (struct color a, struct color b)
+{
+  return (a.red == b.red and a.green == b.green and a.blue == b.blue);
+}
 
 
 static void
@@ -212,11 +259,14 @@ disc (graphic * gr, double x, double y, double radius)
 }
 
 
-#define putdot(gr, x, y) \
-  do { \
-    int s = (gr)->thickness; \
-    bar ((gr), ((int) (x))-s, ((int)(y))-s, ((int)(x))+s, ((int)(y))+s); \
-  } while(0)
+static inline void
+putdot (graphic * gr, int x, int y)
+{
+  register int s;
+
+  s = gr->thickness;
+  bar (gr, x - s, y - s, x + s, y + s);
+}
 
 
 // local gr, width, height = graphic.new([width, height])
@@ -882,14 +932,14 @@ lgraphic_arc (lua_State * L)
   xcenter = gr->penx;
   ycenter = gr->peny;
 
-  x = xcenter + radius * sin (RAD (startangle));
-  y = ycenter - radius * cos (RAD (startangle));
+  x = xcenter + radius * sin (radians (startangle));
+  y = ycenter - radius * cos (radians (startangle));
 
   for (i = startangle; i <= endangle; i++)
     {
       double newx, newy;
-      newx = xcenter + radius * sin (RAD (i));
-      newy = ycenter - radius * cos (RAD (i));
+      newx = xcenter + radius * sin (radians (i));
+      newy = ycenter - radius * cos (radians (i));
       line (gr, x, y, newx, newy);
       x = newx;
       y = newy;
@@ -1217,7 +1267,7 @@ lgraphic_draw (lua_State * L)
 
   penx = gr->penx;
   peny = gr->peny;
-  value = RAD (gr->heading);
+  value = radians (gr->heading);
 
   x = penx + steps * sin (value);
   y = peny - steps * cos (value);
@@ -1239,7 +1289,7 @@ lgraphic_move (lua_State * L)
   gr = get_graphic (L, 1);
   steps = (double) luaL_checknumber (L, 2);
 
-  value = RAD (gr->heading);
+  value = radians (gr->heading);
   penpos (gr, gr->penx + steps * sin (value), gr->peny - steps * cos (value));
 
   return 0;
