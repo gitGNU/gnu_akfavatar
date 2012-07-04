@@ -216,7 +216,7 @@ avt_set_raw_audio_capacity (avt_audio * snd, size_t data_size)
       out_size = avt_required_audio_size (snd, data_size);
       new_sound = realloc (snd->sound, out_size);
 
-      if (new_sound == NULL)
+      if (not new_sound)
 	{
 	  avt_set_error ("out of memory");
 	  _avt_STATUS = AVT_ERROR;
@@ -235,13 +235,13 @@ avt_set_raw_audio_capacity (avt_audio * snd, size_t data_size)
 }
 
 extern int
-avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
+avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
+			size_t data_size)
 {
   size_t old_size, new_size, out_size;
   bool active;
 
-  if (_avt_STATUS != AVT_NORMAL or snd == NULL or data == NULL
-      or data_size == 0)
+  if (_avt_STATUS != AVT_NORMAL or not snd or not data or not data_size)
     return avt_checkevent ();
 
   // audio structure must have been created with avt_load_raw_audio_data
@@ -278,7 +278,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
       new_sound = realloc (snd->sound, new_capacity);
 
-      if (new_sound == NULL)
+      if (not new_sound)
 	{
 	  avt_set_error ("out of memory");
 	  _avt_STATUS = AVT_ERROR;
@@ -306,6 +306,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
 	in = (uint8_t *) data;
 	out = (int16_t *) (snd->sound + old_size);
+
 	for (size_t i = data_size; i > 0; i--)
 	  *out++ = mulaw_decode[*in++];
 	break;
@@ -318,6 +319,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
 	in = (uint8_t *) data;
 	out = (int16_t *) (snd->sound + old_size);
+
 	for (size_t i = data_size; i > 0; i--)
 	  *out++ = alaw_decode[*in++];
 	break;
@@ -330,6 +332,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
 	in = (uint8_t *) data;
 	out = (uint16_t *) (snd->sound + old_size);
+
 	for (size_t i = out_size / 2; i > 0; i--, in += 2)
 	  *out++ = (in[1] << 8) | in[0];
       }
@@ -342,6 +345,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
 	in = (uint8_t *) data;
 	out = (uint16_t *) (snd->sound + old_size);
+
 	for (size_t i = out_size / 2; i > 0; i--, in += 2)
 	  *out++ = (in[0] << 8) | in[1];
       }
@@ -356,6 +360,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
 	in = (uint8_t *) data;
 	out = (uint16_t *) (snd->sound + old_size);
+
 	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 3)
 	  *out++ = (in[2] << 8) | in[1];
       }
@@ -368,6 +373,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
 	in = (uint8_t *) data;
 	out = (uint16_t *) (snd->sound + old_size);
+
 	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 3)
 	  *out++ = (in[0] << 8) | in[1];
       }
@@ -380,6 +386,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
 	in = (uint8_t *) data;
 	out = (uint16_t *) (snd->sound + old_size);
+
 	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 4)
 	  *out++ = (in[3] << 8) | in[2];
       }
@@ -392,6 +399,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
 	in = (uint8_t *) data;
 	out = (uint16_t *) (snd->sound + old_size);
+
 	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 4)
 	  *out++ = (in[0] << 8) | in[1];
       }
@@ -424,9 +432,9 @@ avt_load_raw_audio_data (void *data, size_t data_size,
     }
 
   // use NULL, if we have nothing to add, yet
-  if (data_size == 0)
+  if (not data_size)
     data = NULL;
-  else if (data == NULL)
+  else if (not data)
     data_size = 0;
 
   // adjustments for later optimizations
@@ -467,7 +475,7 @@ avt_load_raw_audio_data (void *data, size_t data_size,
 
   // get memory for struct
   s = (struct avt_audio *) malloc (sizeof (struct avt_audio));
-  if (s == NULL)
+  if (not s)
     {
       avt_set_error ("out of memory");
       return NULL;
@@ -480,7 +488,7 @@ avt_load_raw_audio_data (void *data, size_t data_size,
   s->samplingrate = samplingrate;
   s->channels = channels;
 
-  if (data_size == 0
+  if (not data_size
       or avt_add_raw_audio_data (s, data, data_size) == AVT_NORMAL)
     return s;
   else
@@ -545,7 +553,7 @@ avt_load_audio_block (avt_data * src, uint32_t maxsize,
   if (not audio)
     return NULL;
 
-  if (maxsize != 0)
+  if (maxsize)
     rest = maxsize;
   else
     rest = MAXIMUM_SIZE;
@@ -700,8 +708,7 @@ avt_load_wave (avt_data * src, uint32_t maxsize, int playmode)
 	return NULL;		// no format chunk found
       chunk_size = avt_data_read32le (src);
       chunk_end = avt_data_tell (src) + chunk_size;
-      if (chunk_end % 2 != 0)
-	chunk_end++;		// padding to even addresses
+      chunk_end += (chunk_end % 2);	// padding to even addresses
       wrong_chunk = (memcmp ("fmt ", identifier, sizeof (identifier)) != 0);
       if (wrong_chunk)
 	avt_data_seek (src, chunk_end, SEEK_SET);
@@ -751,8 +758,7 @@ avt_load_wave (avt_data * src, uint32_t maxsize, int playmode)
 	return NULL;		// no data chunk found
       chunk_size = avt_data_read32le (src);
       chunk_end = avt_data_tell (src) + chunk_size;
-      if (chunk_end % 2 != 0)
-	chunk_end++;		// padding to even addresses
+      chunk_end += (chunk_end % 2);	// padding to even addresses
       wrong_chunk = (memcmp ("data", identifier, sizeof (identifier)) != 0);
       if (wrong_chunk)
 	avt_data_seek (src, chunk_end, SEEK_SET);
@@ -774,10 +780,10 @@ avt_load_audio_general (avt_data * src, uint32_t maxsize, int playmode)
   int start;
   char head[16];
 
-  if (src == NULL)
+  if (not src)
     return NULL;
 
-  if (maxsize == 0)
+  if (not maxsize)
     maxsize = MAXIMUM_SIZE;
 
   start = avt_data_tell (src);
