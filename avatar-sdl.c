@@ -247,9 +247,6 @@ static int errno;
 #  define SDL_BUTTON_WHEELDOWN 5
 #endif
 
-// shorthand
-#define bell(void)  do { if (avt_alert_func) (*avt_alert_func)(); } while(0)
-
 // type for gimp images
 #ifndef DISABLE_DEPRECATED
 typedef struct
@@ -331,7 +328,7 @@ struct pos
 static struct pos cursor, saved_position;
 
 
-#if defined(__GNUC__) and  not defined(__WIN32__)
+#if defined(__GNUC__) and not defined(__WIN32__)
 #  define AVT_HIDDEN __attribute__((__visibility__("hidden")))
 #else
 #  define AVT_HIDDEN
@@ -355,6 +352,14 @@ static int avt_pause (void);
 static void avt_drawchar (avt_char ch, SDL_Surface * surface);
 static SDL_Surface *avt_save_background (SDL_Rect area);
 static void avt_analyze_event (SDL_Event * event);
+
+
+static inline void
+bell (void)
+{
+  if (avt_alert_func)
+    (*avt_alert_func) ();
+}
 
 static int
 calculate_balloonmaxheight (void)
@@ -412,14 +417,25 @@ static struct
   SDL_Surface *(*rw) (SDL_RWops * src, int freesrc);
 } load_image;
 
-#define AVT_UPDATE_RECT(rect) \
-  SDL_UpdateRect(screen, rect.x, rect.y, rect.w, rect.h)
 
-#define AVT_UPDATE_TRECT(rect) \
-  if (not hold_updates) AVT_UPDATE_RECT(rect)
+static inline void
+avt_update_rect (SDL_Rect rect)
+{
+  SDL_UpdateRect (screen, rect.x, rect.y, rect.w, rect.h);
+}
 
-#define AVT_UPDATE_ALL(void) SDL_UpdateRect(screen, 0, 0, 0, 0)
+static inline void
+avt_update_trect (SDL_Rect rect)
+{
+  if (not hold_updates)
+    SDL_UpdateRect (screen, rect.x, rect.y, rect.w, rect.h);
+}
 
+static inline void
+avt_update_all (void)
+{
+  SDL_UpdateRect (screen, 0, 0, 0, 0);
+}
 
 // X-Pixmap (XPM) support
 
@@ -612,9 +628,9 @@ avt_load_image_xpm (char **xpm)
 	{
 	  p = &xpm[colornr][cpp];	// skip color-characters
 	  while (*p
-		 and (*p != '4' or * (p - 1) !=
-		      'g' or not avt_isblank (*(p + 1)) or not
-		      avt_isblank (*(p - 2))))
+		 and (*p != '4' or * (p - 1) != 'g'
+		      or not avt_isblank (*(p + 1))
+		      or not avt_isblank (*(p - 2))))
 	    p++;
 	}
 
@@ -1146,9 +1162,12 @@ load_image_initialize (void)
 }
 
 // speedup
-#define load_image_init(void) \
-  if (not load_image.initialized) \
-    load_image_initialize()
+static inline void
+load_image_init (void)
+{
+  if (not load_image.initialized)
+    load_image_initialize ();
+}
 
 #define load_image_done(void)	// empty
 
@@ -1212,9 +1231,12 @@ load_image_initialize (void)
 }
 
 // speedup
-#define load_image_init(void) \
-  if (not load_image.initialized) \
-    load_image_initialize()
+static inline void
+load_image_init (void)
+{
+  if (not load_image.initialized)
+    load_image_initialize ();
+}
 
 #ifndef _SDL_loadso_h
 #  define load_image_done(void)	// empty
@@ -1343,11 +1365,9 @@ avt_strwidth (const wchar_t * m)
 {
   int l = 0;
 
-  while (*m != 0)
-    {
-      m++;
-      l++;
-    }
+  while (*m++)
+    l++;
+
   return l;
 }
 
@@ -1374,13 +1394,13 @@ avt_show_text_cursor (bool on)
 
 	  // show text-cursor
 	  SDL_BlitSurface (avt_text_cursor, NULL, screen, &dst);
-	  AVT_UPDATE_TRECT (dst);
+	  avt_update_trect (dst);
 	}
       else
 	{
 	  // restore saved character
 	  SDL_BlitSurface (avt_cursor_character, NULL, screen, &dst);
-	  AVT_UPDATE_TRECT (dst);
+	  avt_update_trect (dst);
 	}
 
       text_cursor_actually_visible = on;
@@ -1399,7 +1419,7 @@ avt_activate_cursor (bool on)
 /* fills the screen with the background color,
  * but doesn't update the screen yet
  */
-static void
+static inline void
 avt_free_screen (void)
 {
   // switch clipping off
@@ -1414,7 +1434,7 @@ avt_clear_screen (void)
   if (screen)
     {
       avt_free_screen ();
-      AVT_UPDATE_ALL ();
+      avt_update_all ();
     }
 
   // undefine textfield / viewport
@@ -1523,7 +1543,7 @@ avt_show_avatar (void)
   if (screen)
     {
       avt_draw_avatar ();
-      AVT_UPDATE_ALL ();
+      avt_update_all ();
 
       // undefine textfield
       textfield.x = textfield.y = textfield.w = textfield.h = -1;
@@ -1736,7 +1756,7 @@ avt_draw_balloon (void)
 
   // update everything
   // (there may be leftovers from large images)
-  AVT_UPDATE_ALL ();
+  avt_update_all ();
 
   /*
    * only allow drawings inside this area from now on
@@ -1877,6 +1897,7 @@ avt_set_balloon_mode (int mode)
 // rectangles in some functions have to be adjusted
 #define avt_pre_resize(rect) \
   do { rect.x -= window.x; rect.y -= window.y; } while(0)
+
 #define avt_post_resize(rect) \
   do { rect.x += window.x; rect.y += window.y; } while(0)
 
@@ -1936,7 +1957,7 @@ avt_resize (int w, int h)
     }
 
   // make all changes visible
-  AVT_UPDATE_ALL ();
+  avt_update_all ();
 
   // ignore one resize event here to avoid recursive calling
   while (SDL_PollEvent (&event) and event.type != SDL_VIDEORESIZE)
@@ -1989,7 +2010,7 @@ avt_flash (void)
   SDL_SetClipRect (screen, NULL);
   // fill the whole screen with color
   SDL_FillRect (screen, NULL, SDL_MapRGB (screen->format, 0xFF, 0xFF, 0x00));
-  AVT_UPDATE_ALL ();
+  avt_update_all ();
   SDL_Delay (150);
 
   // fill the whole screen with background color
@@ -2000,7 +2021,7 @@ avt_flash (void)
   SDL_FreeSurface (oldwindowimage);
 
   // make visible again
-  AVT_UPDATE_ALL ();
+  avt_update_all ();
 
   // restore the clipping
   if (textfield.x >= 0)
@@ -2015,15 +2036,15 @@ avt_toggle_fullscreen (void)
       // toggle bit for fullscreenmode
       screenflags = screenflags xor SDL_FULLSCREEN;
 
-      if ((screenflags & SDL_FULLSCREEN) != 0)
+      if ((screenflags bitand SDL_FULLSCREEN) != 0)
 	{
-	  screenflags |= SDL_NOFRAME;
+	  screenflags = screenflags bitor SDL_NOFRAME;
 	  avt_resize (window.w, window.h);
 	  avt_mode = AVT_FULLSCREEN;
 	}
       else
 	{
-	  screenflags &= compl SDL_NOFRAME;
+	  screenflags = screenflags bitand compl SDL_NOFRAME;
 	  avt_resize (windowmode_size.w, windowmode_size.h);
 	  avt_mode = AVT_WINDOW;
 	}
@@ -2041,17 +2062,19 @@ avt_switch_mode (int mode)
 	{
 	case AVT_FULLSCREENNOSWITCH:
 	case AVT_FULLSCREEN:
-	  if ((screenflags & SDL_FULLSCREEN) == 0)
+	  if ((screenflags bitand SDL_FULLSCREEN) == 0)
 	    {
-	      screenflags |= SDL_FULLSCREEN | SDL_NOFRAME;
+	      screenflags =
+		screenflags bitor SDL_FULLSCREEN bitor SDL_NOFRAME;
 	      avt_resize (window.w, window.h);
 	    }
 	  break;
 
 	case AVT_WINDOW:
-	  if ((screenflags & SDL_FULLSCREEN) != 0)
+	  if ((screenflags bitand SDL_FULLSCREEN) != 0)
 	    {
-	      screenflags &= compl (SDL_FULLSCREEN | SDL_NOFRAME);
+	      screenflags =
+		screenflags bitand compl (SDL_FULLSCREEN bitor SDL_NOFRAME);
 	      avt_resize (windowmode_size.w, windowmode_size.h);
 	    }
 	  break;
@@ -2112,8 +2135,8 @@ avt_analyze_event (SDL_Event * event)
     case SDL_KEYDOWN:
       if (event->key.keysym.sym == SDLK_PAUSE)
 	avt_pause ();
-      else if (event->key.keysym.sym ==
-	       SDLK_ESCAPE and not reserve_single_keys)
+      else if (event->key.keysym.sym == SDLK_ESCAPE
+	       and not reserve_single_keys)
 	_avt_STATUS = AVT_QUIT;
       else if (event->key.keysym.sym == SDLK_q
 	       and (event->key.keysym.mod & KMOD_LALT))
@@ -2232,7 +2255,7 @@ avt_wait (size_t milliseconds)
 
 	  t = SDL_AddTimer (milliseconds, avt_timeout, NULL);
 
-	  if (t == NULL)
+	  if (not t)
 	    {
 	      // extremely unlikely error
 	      SDL_SetError ("AddTimer doesn't work");
@@ -2520,7 +2543,7 @@ avt_erase_characters (int num)
     avt_show_text_cursor (true);
 
   // update area
-  AVT_UPDATE_TRECT (clear);
+  avt_update_trect (clear);
 }
 
 extern void
@@ -2561,7 +2584,7 @@ avt_delete_lines (int line, int num)
   if (text_cursor_visible)
     avt_show_text_cursor (true);
 
-  AVT_UPDATE_TRECT (viewport);
+  avt_update_trect (viewport);
 }
 
 extern void
@@ -2602,7 +2625,7 @@ avt_insert_lines (int line, int num)
   if (text_cursor_visible)
     avt_show_text_cursor (true);
 
-  AVT_UPDATE_TRECT (viewport);
+  avt_update_trect (viewport);
 }
 
 extern void
@@ -2729,7 +2752,7 @@ avt_clear (void)
       avt_show_text_cursor (true);
     }
 
-  AVT_UPDATE_TRECT (viewport);
+  avt_update_trect (viewport);
 }
 
 extern void
@@ -2758,7 +2781,7 @@ avt_clear_up (void)
       avt_show_text_cursor (true);
     }
 
-  AVT_UPDATE_TRECT (dst);
+  avt_update_trect (dst);
 }
 
 extern void
@@ -2790,7 +2813,7 @@ avt_clear_down (void)
       avt_show_text_cursor (true);
     }
 
-  AVT_UPDATE_TRECT (dst);
+  avt_update_trect (dst);
 }
 
 extern void
@@ -2829,7 +2852,7 @@ avt_clear_eol (void)
       avt_show_text_cursor (true);
     }
 
-  AVT_UPDATE_TRECT (dst);
+  avt_update_trect (dst);
 }
 
 // clear beginning of line
@@ -2869,7 +2892,7 @@ avt_clear_bol (void)
       avt_show_text_cursor (true);
     }
 
-  AVT_UPDATE_TRECT (dst);
+  avt_update_trect (dst);
 }
 
 extern void
@@ -2898,7 +2921,7 @@ avt_clear_line (void)
       avt_show_text_cursor (true);
     }
 
-  AVT_UPDATE_TRECT (dst);
+  avt_update_trect (dst);
 }
 
 extern int
@@ -2915,7 +2938,7 @@ avt_flip_page (void)
   /* the viewport must be updated,
      if it's not updated letter by letter */
   if (not text_delay)
-    AVT_UPDATE_TRECT (viewport);
+    avt_update_trect (viewport);
 
   avt_wait (flip_page_delay);
   avt_clear ();
@@ -3012,7 +3035,7 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
 	  if (bold and not NOT_BOLD)
 	    *p |= SDL_SwapBE16 (*font_line >> 1);
 	  if (inverse)
-	    *p = compl *p;
+	    *p = compl * p;
 	  font_line++;
 	  p += pitch;
 	}
@@ -3037,7 +3060,7 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
 	  if (bold and not NOT_BOLD)
 	    *p |= (*font_line >> 1);
 	  if (inverse)
-	    *p = compl *p;
+	    *p = compl * p;
 	  font_line++;
 	  p += pitch;
 	}
@@ -3391,7 +3414,7 @@ avt_say (const wchar_t * txt)
   if (textfield.x < 0)
     avt_draw_balloon ();
 
-  while (*txt != L'\0')
+  while (*txt)
     {
       if (*(txt + 1) == L'\b')
 	{
@@ -3556,7 +3579,7 @@ avt_tell_len (const wchar_t * txt, size_t len)
   avt_set_balloon_size (height, width);
   avt_clear ();
 
-  if (len > 0)
+  if (len)
     avt_say_len (txt, len);
   else
     avt_say (txt);
@@ -3573,7 +3596,7 @@ avt_tell (const wchar_t * txt)
 extern int
 avt_mb_encoding (const char *encoding)
 {
-  if (encoding == NULL)
+  if (not encoding)
     encoding = "";
 
   /*
@@ -4022,7 +4045,7 @@ avt_say_mb_len (const char *txt, size_t len)
   if (output_cd == ICONV_UNINITIALIZED)
     avt_mb_encoding (MB_DEFAULT_ENCODING);
 
-  if (len > 0)
+  if (len)
     inbytesleft = len;
   else
     inbytesleft = SDL_strlen (txt);
@@ -4108,11 +4131,11 @@ avt_tell_mb_len (const char *txt, size_t len)
   wchar_t *wctext;
   int wclen;
 
-  if (len == 0)
-    len = SDL_strlen (txt);
-
   if (screen and _avt_STATUS == AVT_NORMAL)
     {
+      if (not len)
+	len = SDL_strlen (txt);
+
       wclen = avt_mb_decode (&wctext, txt, len);
 
       if (wctext)
@@ -4460,7 +4483,7 @@ avt_lock_updates (bool lock)
     text_delay = 0;
 
   // if hold_updates is not set update the textfield
-  AVT_UPDATE_TRECT (textfield);
+  avt_update_trect (textfield);
 }
 
 static void
@@ -4482,13 +4505,28 @@ avt_button_inlay (SDL_Rect btn_rect, const unsigned char *bits,
 }
 
 
-#define avt_is_linebreak(c)  \
-  ((c)==L'\n' or (c)==L'\v' or (c)==L'\x85' \
-   or (c)==L'\x2028' or (c)==L'\x2029')
+static inline bool
+avt_is_linebreak (wchar_t c)
+{
+  return (c == L'\n' or c == L'\v' or c == L'\x85'
+	  or c == L'\x2028' or c == L'\x2029');
+}
 
 // checks for formfeed or text separators
-#define avt_is_pagebreak(c)  \
-  ((c) == L'\f' or ((c) >= L'\x1C' and (c) <= L'\x1F'))
+static inline bool
+avt_is_pagebreak (wchar_t c)
+{
+  return (c == L'\f' or (c >= L'\x1C' and c <= L'\x1F'));
+}
+
+// checks for invisible characters (including '\a'!)
+static inline bool
+avt_is_invisible (wchar_t c)
+{
+  return (c == L'\a'
+	  or c == L'\xFEFF' or c == L'\x200E' or c == L'\x200F'
+	  or c == L'\x200B' or c == L'\x200C' or c == L'\x200D');
+}
 
 static size_t
 avt_pager_line (const wchar_t * txt, size_t pos, size_t len,
@@ -4545,18 +4583,14 @@ avt_pager_line (const wchar_t * txt, size_t pos, size_t len,
 	  // FIXME: find solution for tabulators
 
 	  // skip invisible characters
-	  while (line_length
-		 and (*tpos == L'\a' or * tpos == L'\xFEFF'
-		      or * tpos == L'\x200E' or * tpos == L'\x200F'
-		      or * tpos == L'\x200B' or * tpos == L'\x200C'
-		      or * tpos == L'\x200D'))
+	  while (line_length and avt_is_invisible (*tpos))
 	    {
 	      tpos++;
 	      line_length--;
 	    }
 
 	  // handle backspace (used for overstrike text)
-	  while (line_length > 2 and * (tpos + 1) == L'\b')
+	  while (line_length > 2 and tpos[1] == L'\b')
 	    {
 	      tpos += 2;
 	      line_length -= 2;
@@ -4603,7 +4637,7 @@ avt_pager_screen (const wchar_t * txt, size_t pos, size_t len,
     }
 
   hold_updates = false;
-  AVT_UPDATE_TRECT (textfield);
+  avt_update_trect (textfield);
 
   return pos;
 }
@@ -4701,7 +4735,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_cancel), BUTTON_COLOR);
   SDL_FreeSurface (button);
   button = NULL;
-  AVT_UPDATE_RECT (btn_rect);
+  avt_update_rect (btn_rect);
   avt_pre_resize (btn_rect);
 
   // limit to viewport (else more problems with binary files
@@ -4806,7 +4840,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 		  cursor.y = (balloonheight - 1) * LINEHEIGHT + textfield.y;
 		  pos = avt_pager_line (txt, pos, len, horizontal);
 		  hold_updates = false;
-		  AVT_UPDATE_TRECT (textfield);
+		  avt_update_trect (textfield);
 		}
 	      break;
 
@@ -4828,7 +4862,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 		    cursor.y = textfield.y;
 		    avt_pager_line (txt, start_pos, len, horizontal);
 		    hold_updates = false;
-		    AVT_UPDATE_TRECT (textfield);
+		    avt_update_trect (textfield);
 		    pos = avt_pager_lines_back (txt, pos, 2);
 		  }
 	      }
@@ -4909,7 +4943,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   SDL_SetClipRect (screen, &window);
   avt_post_resize (btn_rect);
   SDL_FillRect (screen, &btn_rect, background_color);
-  AVT_UPDATE_RECT (btn_rect);
+  avt_update_rect (btn_rect);
   SDL_SetClipRect (screen, &viewport);
 
   auto_margin = old_auto_margin;
@@ -4936,7 +4970,7 @@ avt_pager_mb (const char *txt, size_t len, int startline)
 
   if (screen and txt and _avt_STATUS == AVT_NORMAL)
     {
-      if (len == 0)
+      if (not len)
 	len = SDL_strlen (txt);
 
       wclen = avt_mb_decode (&wctext, txt, len);
@@ -5367,7 +5401,7 @@ avt_wait_button (void)
   button = NULL;
 
   avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_right), BUTTON_COLOR);
-  AVT_UPDATE_RECT (btn_rect);
+  avt_update_rect (btn_rect);
   avt_pre_resize (btn_rect);
 
   nokey = true;
@@ -5402,7 +5436,7 @@ avt_wait_button (void)
   avt_post_resize (btn_rect);
   SDL_BlitSurface (button_area, NULL, screen, &btn_rect);
   SDL_FreeSurface (button_area);
-  AVT_UPDATE_RECT (btn_rect);
+  avt_update_rect (btn_rect);
 
   if (textfield.x >= 0)
     SDL_SetClipRect (screen, &viewport);
@@ -5562,7 +5596,7 @@ avt_navigate (const char *buttons)
   base_button = NULL;
 
   // show all buttons
-  AVT_UPDATE_RECT (buttons_rect);
+  avt_update_rect (buttons_rect);
 
   // prepare resizing
   avt_pre_resize (buttons_rect);
@@ -5615,12 +5649,10 @@ avt_navigate (const char *buttons)
 	      r = event.key.keysym.unicode;
 
 	    // check if it is one of the requested characters
-	    {
-	      const char *b = buttons;
-	      while (*b)
-		if (r == (int) *b++)
-		  result = r;
-	    }
+	    const char *b = buttons;
+	    while (*b)
+	      if (r == (int) *b++)
+		result = r;
 	  }
 	  break;
 
@@ -5656,7 +5688,7 @@ avt_navigate (const char *buttons)
   avt_post_resize (buttons_rect);
   SDL_BlitSurface (buttons_area, NULL, screen, &buttons_rect);
   SDL_FreeSurface (buttons_area);
-  AVT_UPDATE_RECT (buttons_rect);
+  avt_update_rect (buttons_rect);
 
   if (textfield.x >= 0)
     SDL_SetClipRect (screen, &viewport);
@@ -5709,7 +5741,7 @@ avt_decide (void)
   SDL_BlitSurface (base_button, NULL, screen, &no_rect);
   avt_button_inlay (no_rect, AVT_XBM_INFO (btn_no), 0xAA0000);
 
-  AVT_UPDATE_RECT (area_rect);
+  avt_update_rect (area_rect);
 
   SDL_FreeSurface (base_button);
   base_button = NULL;
@@ -5773,7 +5805,7 @@ avt_decide (void)
   avt_post_resize (area_rect);
   SDL_BlitSurface (buttons_area, NULL, screen, &area_rect);
   SDL_FreeSurface (buttons_area);
-  AVT_UPDATE_RECT (area_rect);
+  avt_update_rect (area_rect);
 
   if (textfield.x >= 0)
     SDL_SetClipRect (screen, &viewport);
@@ -5828,7 +5860,7 @@ avt_show_image (SDL_Surface * image)
    * just the upper left part is shown, as far as it fits
    */
   SDL_BlitSurface (image, NULL, screen, &dst);
-  AVT_UPDATE_ALL ();
+  avt_update_all ();
   avt_checkevent ();
 }
 
@@ -5952,7 +5984,7 @@ avt_show_image_xbm (const unsigned char *bits, int width, int height,
 
   image = avt_load_image_xbm (bits, width, height, color);
 
-  if (image == NULL)
+  if (not image)
     {
       avt_clear_screen ();	// at least clear the screen
       SDL_SetError ("couldn't show image");
@@ -6027,7 +6059,7 @@ avt_show_raw_image (void *image_data, int width, int height,
 					  0xFF000000);
     }
 
-  if (image == NULL)
+  if (not image)
     {
       avt_clear_screen ();	// at least clear the screen
       SDL_SetError ("couldn't show image");
@@ -6147,10 +6179,10 @@ avt_import_image_data (void *img, size_t imgsize)
       // try internal XPM reader first
       image = avt_load_image_xpm_RW (RW, 0);
 
-      if (image == NULL)
+      if (not image)
 	image = avt_load_image_xbm_RW (RW, 0, XBM_DEFAULT_COLOR);
 
-      if (image == NULL)
+      if (not image)
 	{
 	  load_image_init ();
 	  image = load_image.rw (RW, 0);
@@ -6185,10 +6217,10 @@ avt_import_image_file (const char *filename)
       // try internal XPM reader first
       image = avt_load_image_xpm_RW (RW, 0);
 
-      if (image == NULL)
+      if (not image)
 	image = avt_load_image_xbm_RW (RW, 0, XBM_DEFAULT_COLOR);
 
-      if (image == NULL)
+      if (not image)
 	{
 	  load_image_init ();
 	  image = load_image.rw (RW, 0);
@@ -6223,10 +6255,10 @@ avt_import_image_stream (avt_stream * stream)
       // try internal XPM reader first
       image = avt_load_image_xpm_RW (RW, 0);
 
-      if (image == NULL)
+      if (not image)
 	image = avt_load_image_xbm_RW (RW, 0, XBM_DEFAULT_COLOR);
 
-      if (image == NULL)
+      if (not image)
 	{
 	  load_image_init ();
 	  image = load_image.rw (RW, 0);
@@ -6453,7 +6485,7 @@ avt_set_avatar_name_mb (const char *name)
 {
   wchar_t *wcname;
 
-  if (name == NULL or * name == '\0')
+  if (not name or not * name)
     avt_set_avatar_name (NULL);
   else
     {
@@ -6739,7 +6771,7 @@ avt_credits_up (SDL_Surface * last_line)
 	  SDL_BlitSurface (last_line, NULL, screen, &line_pos);
 	}
 
-      AVT_UPDATE_RECT (window);
+      avt_update_rect (window);
 
       if (avt_checkevent ())
 	return;
@@ -6863,7 +6895,8 @@ avt_credits (const wchar_t * text, bool centered)
   avt_credits_up (last_line);
 
   // scroll up until screen is empty
-  for (int i = 0; i < window.h / LINEHEIGHT and _avt_STATUS == AVT_NORMAL; i++)
+  for (int i = 0; i < window.h / LINEHEIGHT and _avt_STATUS == AVT_NORMAL;
+       i++)
     avt_credits_up (NULL);
 
   SDL_FreeSurface (last_line);
@@ -7088,10 +7121,10 @@ avt_start (const char *title, const char *shortname, int mode)
       return _avt_STATUS;
     }
 
-  if (title == NULL)
+  if (not title)
     title = "AKFAvatar";
 
-  if (shortname == NULL)
+  if (not shortname)
     shortname = title;
 
   avt_set_title (title, shortname);
