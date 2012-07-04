@@ -180,7 +180,7 @@ avta_term_slowprint (bool on)
 static void
 activate_cursor (bool on)
 {
-  cursor_active = AVT_MAKE_BOOL (on);
+  cursor_active = on;
   avt_activate_cursor (cursor_active);
 }
 

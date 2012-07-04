@@ -63,8 +63,6 @@
 #define AVT_ERROR -1
 #define AVT_FAILURE -2  // nonfatal failures
 
-#define AVT_MAKE_BOOL(x) ((x) != 0)
-
 // for avt_set_text_delay and avt_set_flip_page_delay
 #define AVT_DEFAULT_TEXT_DELAY 75
 #define AVT_DEFAULT_FLIP_PAGE_DELAY 2700

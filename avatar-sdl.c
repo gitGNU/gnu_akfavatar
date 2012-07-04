@@ -1378,8 +1378,6 @@ avt_show_text_cursor (bool on)
 {
   SDL_Rect dst;
 
-  on = AVT_MAKE_BOOL (on);
-
   if (on != text_cursor_actually_visible and not hold_updates)
     {
       dst.x = cursor.x;
@@ -1410,7 +1408,7 @@ avt_show_text_cursor (bool on)
 extern void
 avt_activate_cursor (bool on)
 {
-  text_cursor_visible = AVT_MAKE_BOOL (on);
+  text_cursor_visible = on;
 
   if (screen and textfield.x >= 0)
     avt_show_text_cursor (text_cursor_visible);
@@ -2692,7 +2690,7 @@ avt_set_origin_mode (bool mode)
 {
   SDL_Rect area;
 
-  origin_mode = AVT_MAKE_BOOL (mode);
+  origin_mode = mode;
 
   if (text_cursor_visible and textfield.x >= 0)
     avt_show_text_cursor (false);
@@ -3159,7 +3157,7 @@ avt_clear_tab_stops (void)
 extern void
 avt_set_tab (int x, bool onoff)
 {
-  avt_tab_stops[x - 1] = AVT_MAKE_BOOL (onoff);
+  avt_tab_stops[x - 1] = onoff;
 }
 
 // advance to next tabstop
@@ -4476,7 +4474,7 @@ avt_choice (int *result, int start_line, int items, int key,
 extern void
 avt_lock_updates (bool lock)
 {
-  hold_updates = AVT_MAKE_BOOL (lock);
+  hold_updates = lock;
 
   // side effect: set text_delay to 0
   if (hold_updates)
@@ -5810,7 +5808,7 @@ avt_decide (void)
   if (textfield.x >= 0)
     SDL_SetClipRect (screen, &viewport);
 
-  return AVT_MAKE_BOOL (result);
+  return result != 0;
 }
 
 
@@ -6572,7 +6570,7 @@ avt_get_background_color (void)
 extern void
 avt_reserve_single_keys (bool onoff)
 {
-  reserve_single_keys = AVT_MAKE_BOOL (onoff);
+  reserve_single_keys = onoff;
 }
 
 extern void
@@ -6630,7 +6628,7 @@ avt_set_text_background_color (int colornr)
 extern void
 avt_inverse (bool onoff)
 {
-  inverse = AVT_MAKE_BOOL (onoff);
+  inverse = onoff;
 }
 
 extern bool
@@ -6642,7 +6640,7 @@ avt_get_inverse (void)
 extern void
 avt_bold (bool onoff)
 {
-  bold = AVT_MAKE_BOOL (onoff);
+  bold = onoff;
 }
 
 extern bool
@@ -6654,7 +6652,7 @@ avt_get_bold (void)
 extern void
 avt_underlined (bool onoff)
 {
-  underlined = AVT_MAKE_BOOL (onoff);
+  underlined = onoff;
 }
 
 extern bool
@@ -6692,7 +6690,7 @@ avt_normal_text (void)
 extern void
 avt_markup (bool onoff)
 {
-  markup = AVT_MAKE_BOOL (onoff);
+  markup = onoff;
   underlined = bold = false;
 }
 
