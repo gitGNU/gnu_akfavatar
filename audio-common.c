@@ -39,7 +39,7 @@
 // absolute maximum size for audio data
 #define MAXIMUM_SIZE  0xFFFFFFFFU
 
-#ifdef __cplusplus
+#if not defined(__STDC_VERSION__) or __STDC_VERSION__ < 199901L
 #define restrict
 #endif
 
