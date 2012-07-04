@@ -301,8 +301,8 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
     case AVT_AUDIO_MULAW:	// mu-law, logarithmic PCM
       {
-	uint8_t *in;
-	int16_t *out;
+	uint8_t *restrict in;
+	int16_t *restrict out;
 
 	in = (uint8_t *) data;
 	out = (int16_t *) (snd->sound + old_size);
@@ -313,8 +313,8 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
     case AVT_AUDIO_ALAW:	// A-law, logarithmic PCM
       {
-	uint8_t *in;
-	int16_t *out;
+	uint8_t *restrict in;
+	int16_t *restrict out;
 
 	in = (uint8_t *) data;
 	out = (int16_t *) (snd->sound + old_size);
@@ -325,9 +325,11 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
     case AVT_AUDIO_S16LE:
       {
-	uint8_t *in = (uint8_t *) data;
-	uint16_t *out = (uint16_t *) (snd->sound + old_size);
+	uint8_t *restrict in;
+	uint16_t *restrict out;
 
+	in = (uint8_t *) data;
+	out = (uint16_t *) (snd->sound + old_size);
 	for (size_t i = out_size / 2; i > 0; i--, in += 2)
 	  *out++ = (in[1] << 8) | in[0];
       }
@@ -335,9 +337,11 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
     case AVT_AUDIO_S16BE:
       {
-	uint8_t *in = (uint8_t *) data;
-	uint16_t *out = (uint16_t *) (snd->sound + old_size);
+	uint8_t *restrict in;
+	uint16_t *restrict out;
 
+	in = (uint8_t *) data;
+	out = (uint16_t *) (snd->sound + old_size);
 	for (size_t i = out_size / 2; i > 0; i--, in += 2)
 	  *out++ = (in[0] << 8) | in[1];
       }
@@ -347,9 +351,11 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
     case AVT_AUDIO_S24LE:
       {
-	uint8_t *in = (uint8_t *) data;
-	uint16_t *out = (uint16_t *) (snd->sound + old_size);
+	uint8_t *restrict in;
+	uint16_t *restrict out;
 
+	in = (uint8_t *) data;
+	out = (uint16_t *) (snd->sound + old_size);
 	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 3)
 	  *out++ = (in[2] << 8) | in[1];
       }
@@ -357,9 +363,11 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
     case AVT_AUDIO_S24BE:
       {
-	uint8_t *in = (uint8_t *) data;
-	uint16_t *out = (uint16_t *) (snd->sound + old_size);
+	uint8_t *restrict in;
+	uint16_t *restrict out;
 
+	in = (uint8_t *) data;
+	out = (uint16_t *) (snd->sound + old_size);
 	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 3)
 	  *out++ = (in[0] << 8) | in[1];
       }
@@ -367,9 +375,11 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
     case AVT_AUDIO_S32LE:
       {
-	uint8_t *in = (uint8_t *) data;
-	uint16_t *out = (uint16_t *) (snd->sound + old_size);
+	uint8_t *restrict in;
+	uint16_t *restrict out;
 
+	in = (uint8_t *) data;
+	out = (uint16_t *) (snd->sound + old_size);
 	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 4)
 	  *out++ = (in[3] << 8) | in[2];
       }
@@ -377,9 +387,11 @@ avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 
     case AVT_AUDIO_S32BE:
       {
-	uint8_t *in = (uint8_t *) data;
-	uint16_t *out = (uint16_t *) (snd->sound + old_size);
+	uint8_t *restrict in;
+	uint16_t *restrict out;
 
+	in = (uint8_t *) data;
+	out = (uint16_t *) (snd->sound + old_size);
 	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 4)
 	  *out++ = (in[0] << 8) | in[1];
       }
