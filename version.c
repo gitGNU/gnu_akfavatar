@@ -18,6 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "akfavatar.h"
 #include "version.h"
 
 extern const char *
@@ -25,4 +26,3 @@ avt_version (void)
 {
   return AVTVERSIONSTR;
 }
-

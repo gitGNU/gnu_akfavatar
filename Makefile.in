@@ -117,10 +117,10 @@ libakfavatar.so: $(OBJAVATAR).lo $(OBJAUDIO).lo avatar-default.lo avtpalette.lo 
 	-ln -sf $(LIBNAME) $(SONAME)
 	-ln -sf $(LIBNAME) libakfavatar.so
 
-version.o: $(srcdir)/version.c version.h
+version.o: $(srcdir)/version.c $(srcdir)/akfavatar.h version.h
 	$(CC) $(CFLAGS) -c -o $@ -I. $(srcdir)/version.c
 
-version.lo: $(srcdir)/version.c version.h
+version.lo: $(srcdir)/version.c $(srcdir)/akfavatar.h version.h
 	$(CC) $(CFLAGS) -fPIC -c -o $@ -I. $(srcdir)/version.c
 
 # alert.au should be in the sourcecode-distribution
