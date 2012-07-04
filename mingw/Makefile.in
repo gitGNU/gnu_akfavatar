@@ -36,7 +36,7 @@ version.h: $(srcdir)/configure
 	./config.status
 
 version.o: $(srcdir)/version.c $(srcdir)/akfavatar.h version.h
-	$(CC) -I. $(CFLAGS) -c -o $@ $(srcdir)/version.c
+	$(CC) -I. $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/version.c
 
 icon.o: $(srcdir)/mingw/icon.rc $(srcdir)/mingw/akfavatar.ico
 	 $(WINDRES) -I$(srcdir)/mingw -o $@ -i $(srcdir)/mingw/icon.rc
