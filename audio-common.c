@@ -39,6 +39,9 @@
 // absolute maximum size for audio data
 #define MAXIMUM_SIZE  0xFFFFFFFFU
 
+#ifdef __cplusplus
+#define restrict
+#endif
 
 #ifdef NO_AUDIO
 
@@ -839,7 +842,7 @@ avt_load_audio_stream (avt_stream * stream, int playmode)
 }
 
 extern avt_audio *
-avt_load_audio_data (void *data, size_t datasize, int playmode)
+avt_load_audio_data (const void *data, size_t datasize, int playmode)
 {
   return avt_load_audio_general (avt_data_open_memory (data, datasize),
 				 datasize, playmode);
