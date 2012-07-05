@@ -42,8 +42,9 @@ extern "C"
 #include <lauxlib.h>
 #include <lualib.h>
 
-#ifdef __cplusplus
   extern int luaopen_graphic (lua_State * L);
+
+#ifdef __cplusplus
 }
 #endif
 

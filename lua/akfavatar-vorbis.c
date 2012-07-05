@@ -25,6 +25,7 @@
 #include "akfavatar.h"
 #include "avtaddons.h"
 #include <stdlib.h>
+#include <iso646.h>
 
 
 #ifdef __cplusplus
@@ -36,8 +37,9 @@ extern "C"
 #include <lauxlib.h>
 #include <lualib.h>
 
-#ifdef __cplusplus
   extern int luaopen_vorbis (lua_State * L);
+
+#ifdef __cplusplus
 }
 #endif
 
@@ -58,7 +60,8 @@ static const char *const playmodes[] = { "load", "play", "loop", NULL };
 static void
 collect_garbage (lua_State * L)
 {
-  if (!avt_audio_playing (NULL))
+  // make current sound collectable, if it's not playing
+  if (not avt_audio_playing (NULL))
     {
       lua_pushnil (L);
       lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-current-sound");
@@ -92,7 +95,7 @@ lvorbis_load_file (lua_State * L)
 
   audio_data = avta_load_vorbis_file (filename, playmode);
 
-  if (audio_data == NULL)
+  if (not audio_data)
     {
       lua_pushnil (L);
       return 1;
@@ -115,12 +118,12 @@ lvorbis_load_stream (lua_State * L)
   size = lua_tounsigned (L, 2);	// nothing or 0 allowed
   playmode = luaL_checkoption (L, 3, "load", playmodes);
 
-  if (stream->closef == NULL)
+  if (not stream->closef)
     return luaL_error (L, "attempt to use a closed file");
 
   audio_data = avta_load_vorbis_stream (stream->f, size, playmode);
 
-  if (audio_data == NULL)
+  if (not audio_data)
     {
       lua_pushnil (L);
       return 1;
@@ -144,7 +147,7 @@ lvorbis_load (lua_State * L)
 
   audio_data = avta_load_vorbis_data (vorbis_data, (int) len, playmode);
 
-  if (audio_data == NULL)
+  if (not audio_data)
     {
       lua_pushnil (L);
       return 1;
@@ -161,7 +164,7 @@ lvorbis_load_file_chain (lua_State * L)
 
   audio_data = NULL;
 
-  if (!lua_isnoneornil (L, 1))
+  if (not lua_isnoneornil (L, 1))
     {
       char *filename;
       int playmode;
@@ -171,7 +174,7 @@ lvorbis_load_file_chain (lua_State * L)
 
       audio_data = avta_load_vorbis_file (filename, playmode);
 
-      if (!audio_data)
+      if (not audio_data)
 	{
 	  lua_getfield (L, LUA_REGISTRYINDEX,
 			"AVTVORBIS-old_load_audio_file");
@@ -208,12 +211,12 @@ lvorbis_load_stream_chain (lua_State * L)
   maxsize = lua_tounsigned (L, 2);	// nothing or 0 allowed
   playmode = luaL_checkoption (L, 3, "load", playmodes);
 
-  if (stream->closef == NULL)
+  if (not stream->closef)
     return luaL_error (L, "attempt to use a closed file");
 
   audio_data = avta_load_vorbis_stream (stream->f, maxsize, playmode);
 
-  if (!audio_data)
+  if (not audio_data)
     {
       lua_getfield (L, LUA_REGISTRYINDEX, "AVTVORBIS-old_load_audio_stream");
       lua_pushvalue (L, 1);	// push stream handle
@@ -243,7 +246,7 @@ lvorbis_load_chain (lua_State * L)
 
   audio_data = NULL;
 
-  if (!lua_isnoneornil (L, 1))
+  if (not lua_isnoneornil (L, 1))
     {
       size_t len;
       void *vorbis_data;
@@ -253,7 +256,7 @@ lvorbis_load_chain (lua_State * L)
       playmode = luaL_checkoption (L, 2, "load", playmodes);
       audio_data = avta_load_vorbis_data (vorbis_data, (int) len, playmode);
 
-      if (!audio_data)		// call old avt.load_audio
+      if (not audio_data)	// call old avt.load_audio
 	{
 	  lua_getfield (L, LUA_REGISTRYINDEX, "AVTVORBIS-old_load_audio");
 	  lua_pushvalue (L, 1);	// push audio data

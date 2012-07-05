@@ -47,8 +47,9 @@ extern "C"
 #include <lauxlib.h>
 #include <lualib.h>
 
-#ifdef __cplusplus
   extern int luaopen_term (lua_State * L);
+
+#ifdef __cplusplus
 }
 #endif
 
@@ -81,7 +82,7 @@ static int
 lterm_execute (lua_State * L)
 {
   int fd;
-  int n, i;
+  int n;
   char encoding[80];
   char *argv[256];
 
@@ -110,7 +111,7 @@ lterm_execute (lua_State * L)
 
   if (n >= 1)			// start program
     {
-      for (i = 0; i < n; i++)
+      for (int i = 0; i < n; i++)
 	argv[i] = (char *) luaL_checkstring (L, i + 1);
       argv[n] = NULL;
 
@@ -166,12 +167,11 @@ lterm_homedir (lua_State * L)
   home = getenv ("HOME");
 
   // when the variable is not set, dig deeper
-  if (not home or * home == '\0')
+  if (not home or not * home)
     {
       struct passwd *user_data;
       user_data = getpwuid (getuid ());	// POSIX.1-2001
-      if (user_data != NULL and user_data->pw_dir != NULL
-	  and * user_data->pw_dir != '\0')
+      if (user_data and user_data->pw_dir and * user_data->pw_dir)
 	home = user_data->pw_dir;
     }
 
