@@ -2261,7 +2261,7 @@ lavt_search (lua_State * L)
 static int
 lavt_translate (lua_State * L)
 {
-  const char *text, *language, *translation;
+  const char *text, *language;
 
   text = luaL_checkstring (L, 1);
 
@@ -2281,13 +2281,11 @@ lavt_translate (lua_State * L)
     goto fail;
 
   lua_getfield (L, -1, language);
-  translation = lua_tostring (L, -1);
+  if (not lua_isstring (L, -1))
+    goto fail;
 
-  if (translation)		// success
-    {
-      lua_pushstring (L, translation);
-      return 1;
-    }
+  // success - translation on top of stack
+  return 1;
 
 fail:
   // on failure return original text

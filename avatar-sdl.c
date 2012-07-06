@@ -26,8 +26,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-
 #define _ISOC99_SOURCE
 #define _POSIX_C_SOURCE 200112L
 
