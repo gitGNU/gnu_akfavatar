@@ -4724,7 +4724,8 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   btn_rect.x = window.x + window.w - button->w - AVATAR_MARGIN;
   btn_rect.y = window.y + window.h - button->h - AVATAR_MARGIN;
 
-  if (btn_rect.x < textfield.x + textfield.w)	// shouldn't be clipped
+  // the button shouldn't be clipped
+  if (btn_rect.y < textfield.y + textfield.h and btn_rect.x < textfield.x + textfield.w)
     btn_rect.x = textfield.x + textfield.w;
   // this is a workaround: moving it down clashed with a bug in SDL
 

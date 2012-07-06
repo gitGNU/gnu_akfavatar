@@ -29,13 +29,13 @@
 .  hy \\n(HY
 ..
 .
-.TH "lua-akfavatar" 1 2012-05-05 AKFAvatar
+.TH "lua-akfavatar" 1 2012-07-06 AKFAvatar
 .
 .SH NAME
 lua-akfavatar \- Lua interpreter for the AKFAvatar user interface
 .
 .SH SYNOPSIS
-.BI "local " avt " = lua-akfavatar [" options "] [" " script " "[" args "] ]"
+.BI "lua-akfavatar [" options "] [" " script " "[" args "] ]"
 .
 .SH DESCRIPTION
 The program Lua-AKFAvatar is the Lua interpreter for the AKFAvatar
@@ -44,9 +44,7 @@ It loads and executes Lua scripts in source form (not bytecode).
 Either Lua scripts can be loaded or ".avt" demo files.
 If no
 .I script
-is given, it starts with a file-selector.  The file-selector starts in
-the current working directory, or in the directory given with the option
-.IR --dir=directory .
+is given, it starts with a file-selector.
 .PP
 The given
 .I args
@@ -86,8 +84,17 @@ call
 before executing the script.
 Typically used to load libraries.
 .TP
+.IP "-f | --fullscreen"
+start in fullscreen mode
+(only if no script is given)
+.TP
+.IP "-F | --Fullscreen"
+start in fullscreen mode without switching the resolution
+(only if no script is given)
+.TP
 .RI --dir= dir
-Start in that directory
+start the file-selector in that directory
+(only if no script is given)
 .
 .SH ENVIRONMENT
 .TP
@@ -126,8 +133,8 @@ avt.encoding("UTF-8")
 avt.title("my first program")
 avt.start()
 avt.say("Hello there!\\n")
-local user = avt.ask("What's your name? ")
-avt.say("Hello, ", user, ". Nice to meet you!\\n")
+local name = avt.ask("What's your name? ")
+avt.say("Hello, ", name, ". Nice to meet you!\\n")
 avt.wait_button()
 .EE
 .

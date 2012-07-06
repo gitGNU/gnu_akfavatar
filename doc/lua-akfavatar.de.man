@@ -29,13 +29,13 @@
 .  hy \\n(HY
 ..
 .
-.TH "lua-akfavatar" 1 2012-05-05 AKFAvatar
+.TH "lua-akfavatar" 1 2012-07-06 AKFAvatar
 .
 .SH NAME
 lua-akfavatar \- Lua interpreter für die AKFAvatar-Benutzeroberfläche
 .
 .SH SYNTAX
-.BI "local " avt " = lua-akfavatar [" Optionen "] [" " Skript " "[" Argumente "] ]"
+.BI "lua-akfavatar [" Optionen "] [" " Skript " "[" Argumente "] ]"
 .
 .SH BESCHREIBUNG
 Das Programm Lua-AKFAvatar ist der Lua Interpreter für die 
@@ -46,10 +46,6 @@ Es können entweder Lua-Skripte geladen werden oder ".avt"-Demo-Dateien.
 Wenn kein
 .I Skript
 angegeben ist, wird ein Dateiauswahl-Dialog angezeigt.
-Der Dateiauswahl-Dialog fängt entweder im aktuellen Arbeitsverzeichnis an,
-oder in dem Verzeichnis, das mit der Option
-.I --dir=Verzeichnis
-angegeben wurde.
 .PP
 Die angegebenen
 .I Argumente
@@ -94,8 +90,17 @@ ruft
 auf, bevor das Skript ausgeführt wird.
 Das wird üblicherweise verwendet, um Bibliotheken zu laden.
 .TP
+.IP "-f | --fullscreen"
+starte im Vollbild Modus
+(nur wenn kein Skript angegeben ist)
+.TP
+.IP "-F | --Fullscreen"
+starte im Vollbild Modus ohne die Auflösung umzustellen
+(nur wenn kein Skript angegeben ist)
+.TP
 .RI --dir= Verzeichnis
-fange in dem Verzeichnis an
+starte den Dateiauswahl-Dialog in diesem Verzeichnis
+(nur wenn kein Skript angegeben ist)
 .
 .SH UMGEBUNG
 .TP
@@ -138,8 +143,8 @@ avt.encoding("UTF-8")
 avt.title("Mein erstes Programm")
 avt.start()
 avt.say("Hallo du!\\n")
-local Benutzer = avt.ask("Wie heißt du denn? ")
-avt.say("Hallo, ", Benutzer, ". Schön dich zu sehen!\\n")
+local Name = avt.ask("Wie heißt du denn? ")
+avt.say("Hallo, ", Name, ". Schön dich zu sehen!\\n")
 avt.wait_button()
 .EE
 .
