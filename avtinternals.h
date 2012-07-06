@@ -25,6 +25,8 @@
 #include "akfavatar.h"
 #include <stdio.h>		/* FILE */
 
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
 // AVT_BYTE_ORDER
 #ifdef AVT_BYTE_ORDER
 
