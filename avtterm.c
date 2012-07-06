@@ -18,6 +18,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
 #endif
