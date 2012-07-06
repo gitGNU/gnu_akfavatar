@@ -1,3 +1,9 @@
+2012-07-06  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-sdl.c (avt_pager):
+	move the button to the right instead of down if it doesn't fit
+	this is a workaround for a bug in SDL
+
 2012-07-04  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h (AVT_MAKE_BOOL): macro removed
