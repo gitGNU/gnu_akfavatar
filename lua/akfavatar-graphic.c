@@ -64,7 +64,7 @@ typedef struct graphic
   double heading;		// heading of the turtle
   struct color color;		// drawing color
   struct color background;	// background color
-  struct color data[1];
+  struct color data[];		// data - flexible array member (C99)
 } graphic;
 
 // Bytes per pixel (3=RGB)
@@ -99,7 +99,7 @@ get_graphic (lua_State * L, int idx)
 static inline size_t
 graphic_bytes (int width, int height)
 {
-  return sizeof (graphic) - sizeof (struct color) + width * height * BPP;
+  return sizeof (graphic) + width * height * BPP;
 }
 
 static inline graphic *
