@@ -24,6 +24,7 @@
 
 #include "akfavatar.h"
 #include <stdio.h>		/* FILE */
+#include <iso646.h>
 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
@@ -40,7 +41,7 @@
 
 #else
 
-#if defined(__GLIBC__) || defined(__UCLIBC__) || defined(__dietlibc__)
+#if defined(__GLIBC__) or defined(__UCLIBC__) or defined(__dietlibc__)
 
 #include <endian.h>
 
@@ -54,10 +55,10 @@
 #define AVT_BIG_ENDIAN     4321
 
 // big endian - FIXME: these may be wrong or at least incomplete...
-#if !defined(__LITTLE_ENDIAN__) \
-    && (defined(__sparc__) || defined(__ARMEB__) || defined(__MIPSEB__) \
-    || defined(__ppc__) || defined(__POWERPC__) || defined(_M_PPC) \
-    || defined(__hppa__))
+#if not defined(__LITTLE_ENDIAN__) \
+    and (defined(__sparc__) or defined(__ARMEB__) or defined(__MIPSEB__) \
+    or defined(__ppc__) or defined(__POWERPC__) or defined(_M_PPC) \
+    or defined(__hppa__))
 
 #define AVT_BYTE_ORDER  AVT_BIG_ENDIAN
 
@@ -83,7 +84,7 @@ struct avt_audio
 #define AVT_AUDIO_ENDED 1
 #define AVT_TIMEOUT 2
 
-#define avt_isblank(c)  ((c) == ' ' || (c) == '\t')
+#define avt_isblank(c)  ((c) == ' ' or (c) == '\t')
 #define avt_min(a, b) ((a) < (b) ? (a) : (b))
 #define avt_max(a, b) ((a) > (b) ? (a) : (b))
 
