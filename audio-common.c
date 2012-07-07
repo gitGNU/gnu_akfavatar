@@ -39,10 +39,6 @@
 // absolute maximum size for audio data
 #define MAXIMUM_SIZE  0xFFFFFFFFU
 
-#if not defined(__STDC_VERSION__) or __STDC_VERSION__ < 199901L
-#define restrict
-#endif
-
 #ifdef NO_AUDIO
 
 extern avt_audio *

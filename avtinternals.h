@@ -27,6 +27,11 @@
 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
+// define an empty restrict unless the compiler is in C99 mode
+#if not defined(__STDC_VERSION__) or __STDC_VERSION__ < 199901L
+#define restrict
+#endif
+
 // AVT_BYTE_ORDER
 #ifdef AVT_BYTE_ORDER
 
