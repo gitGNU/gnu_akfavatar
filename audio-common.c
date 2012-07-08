@@ -606,11 +606,14 @@ avt_load_au (avt_data * src, uint32_t maxsize, int playmode)
   samplingrate = avt_data_read32be (src);
   channels = avt_data_read32be (src);
 
+  if (audio_size == 0xFFFFFFFFU)
+    audio_size = MAXIMUM_SIZE;
+
   // skip the rest of the header
   if (head_size > 24)
     avt_data_seek (src, head_size - 24, SEEK_CUR);
 
-  if (maxsize != MAXIMUM_SIZE)
+  if (maxsize < MAXIMUM_SIZE)
     {
       maxsize -= head_size;
 
