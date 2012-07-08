@@ -2491,7 +2491,7 @@ set_datapath (lua_State * L)
   if (avtdatapath)
     lua_pushstring (L, avtdatapath);
   else
-    lua_pushliteral (L, "/usr/local/share/akfavatar;/usr/share/akfavatar");
+    lua_pushliteral (L, "/usr/local/share/akfavatar/data;/usr/share/akfavatar/data");
 
   lua_setfield (L, -2, "datapath");
 }

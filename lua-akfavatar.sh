@@ -23,7 +23,7 @@ LUA_PATH="${LUA_PATH:+$LUA_PATH;}$localdir/lua/?.lua;;"
 LUA_CPATH="${LUA_CPATH:+$LUA_CPATH;}$localdir/?.so;$localdir/lua/?.so;;"
 
 # for finding data (images, sounds, ...)
-AVTDATAPATH="${AVTDATAPATH:+$AVTDATAPATH;}$localdir/data;/usr/local/share/akfavatar;/usr/share/akfavatar"
+AVTDATAPATH="${AVTDATAPATH:+$AVTDATAPATH;}$localdir/data;/usr/local/share/akfavatar/data;/usr/share/akfavatar/data"
 
 export LUA_PATH LUA_CPATH AVTDATAPATH
 

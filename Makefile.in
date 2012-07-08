@@ -350,6 +350,7 @@ installdirs:
 	-[ -d $(DESTDIR)$(docdir) ]      || $(INSTALL) -d $(DESTDIR)$(docdir)
 	-[ -d $(DESTDIR)$(datadir)/akfavatar ]     || $(INSTALL) -d $(DESTDIR)$(datadir)/akfavatar
 	-[ -d $(DESTDIR)$(datadir)/akfavatar/lua ] || $(INSTALL) -d $(DESTDIR)$(datadir)/akfavatar/lua
+	-[ -d $(DESTDIR)$(datadir)/akfavatar/data ] || $(INSTALL) -d $(DESTDIR)$(datadir)/akfavatar/data
 	-[ -d $(DESTDIR)$(datadir)/akfavatar/documentation/English ] \
            || $(INSTALL) -d $(DESTDIR)$(datadir)/akfavatar/lua/documentation/English
 	-[ -d $(DESTDIR)$(datadir)/akfavatar/documentation/Deutsch ] \
@@ -368,7 +369,7 @@ install-common: installdirs install-info install-man
 	$(INSTALL_DATA) $(srcdir)/COPYING $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(srcdir)/NEWS $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(LUA_MODULES) $(DESTDIR)$(LUA_PATH)/akfavatar
-	$(INSTALL_DATA) $(srcdir)/data/* $(DESTDIR)$(datadir)/akfavatar
+	$(INSTALL_DATA) $(srcdir)/data/* $(DESTDIR)$(datadir)/akfavatar/data
 	$(INSTALL_DATA) $(srcdir)/lua/*.lua $(srcdir)/lua/*.avt \
 	       $(DESTDIR)$(datadir)/akfavatar/lua
 	$(INSTALL_DATA) $(srcdir)/lua/documentation/English/* \
