@@ -42,20 +42,23 @@
 #ifdef NO_AUDIO
 
 extern avt_audio *
+avt_prepare_raw_audio_data (size_t capacity,
+			    int samplingrate, int audio_type, int channels)
+{
+  return NULL;
+}
+
+#ifndef DISABLE_DEPRECATED
+extern avt_audio *
 avt_load_raw_audio_data (void *data, size_t data_size,
 			 int samplingrate, int audio_type, int channels)
 {
   return NULL;
 }
+#endif
 
 extern int
 avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
-{
-  return AVT_FAILURE;
-}
-
-extern int
-avt_set_raw_audio_capacity (avt_audio * snd, size_t data_size)
 {
   return AVT_FAILURE;
 }
@@ -199,41 +202,6 @@ avt_required_audio_size (avt_audio * snd, size_t data_size)
 }
 
 extern int
-avt_set_raw_audio_capacity (avt_audio * snd, size_t data_size)
-{
-  void *new_sound;
-  size_t out_size;
-
-  if (not snd)
-    return AVT_FAILURE;
-
-  new_sound = NULL;
-  out_size = 0;
-
-  if (data_size > 0)
-    {
-      out_size = avt_required_audio_size (snd, data_size);
-      new_sound = realloc (snd->sound, out_size);
-
-      if (not new_sound)
-	{
-	  avt_set_error ("out of memory");
-	  _avt_STATUS = AVT_ERROR;
-	  return _avt_STATUS;
-	}
-    }
-
-  snd->sound = (unsigned char *) new_sound;
-  snd->capacity = out_size;
-
-  // eventually shrink length
-  if (snd->length > out_size)
-    snd->length = out_size;
-
-  return _avt_STATUS;
-}
-
-extern int
 avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
 			size_t data_size)
 {
@@ -243,7 +211,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
   if (_avt_STATUS != AVT_NORMAL or not snd or not data or not data_size)
     return avt_checkevent ();
 
-  // audio structure must have been created with avt_load_raw_audio_data
+  // audio structure must have been created with avt_prepare_raw_audio_data
   if (snd->audio_type == AVT_AUDIO_UNKNOWN)
     {
       avt_set_error ("unknown audio format");
@@ -419,8 +387,8 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
 }
 
 extern avt_audio *
-avt_load_raw_audio_data (void *data, size_t data_size,
-			 int samplingrate, int audio_type, int channels)
+avt_prepare_raw_audio_data (size_t capacity,
+			    int samplingrate, int audio_type, int channels)
 {
   struct avt_audio *s;
 
@@ -429,12 +397,6 @@ avt_load_raw_audio_data (void *data, size_t data_size,
       avt_set_error ("only 1 or 2 channels supported");
       return NULL;
     }
-
-  // use NULL, if we have nothing to add, yet
-  if (not data_size)
-    data = NULL;
-  else if (not data)
-    data_size = 0;
 
   // adjustments for later optimizations
   if (AVT_LITTLE_ENDIAN == AVT_BYTE_ORDER)
@@ -480,22 +442,62 @@ avt_load_raw_audio_data (void *data, size_t data_size,
       return NULL;
     }
 
-  s->sound = NULL;
   s->length = 0;
-  s->capacity = 0;
   s->audio_type = audio_type;
   s->samplingrate = samplingrate;
   s->channels = channels;
 
-  if (not data_size
-      or avt_add_raw_audio_data (s, data, data_size) == AVT_NORMAL)
-    return s;
-  else
+  // reserve memory
+  unsigned char *sound_data = NULL;
+  size_t real_capacity = 0;
+
+  if (capacity > 0 and capacity < MAXIMUM_SIZE)
     {
-      free (s);
-      return NULL;
+      real_capacity = avt_required_audio_size (s, capacity);
+      sound_data = (unsigned char *) malloc (real_capacity);
+
+      if (not sound_data)
+	{
+	  avt_set_error ("out of memory");
+	  free (s);
+	  return NULL;
+	}
     }
+
+  s->sound = sound_data;
+  s->capacity = real_capacity;
+
+  return s;
 }
+
+#ifndef DISABLE_DEPRECATED
+extern avt_audio *
+avt_load_raw_audio_data (void *data, size_t data_size,
+			 int samplingrate, int audio_type, int channels)
+{
+  struct avt_audio *s;
+
+  // use NULL, if we have nothing to add, yet
+  if (not data_size)
+    data = NULL;
+  else if (not data)
+    data_size = 0;
+
+  s = avt_prepare_raw_audio_data (data_size,
+				  samplingrate, audio_type, channels);
+
+  if (s)
+    {
+      if (avt_add_raw_audio_data (s, data, data_size) != AVT_NORMAL)
+	{
+	  avt_free_audio (s);
+	  s = NULL;
+	}
+    }
+
+  return s;
+}
+#endif
 
 extern void
 avt_finalize_raw_audio (avt_audio * snd)
@@ -546,8 +548,8 @@ avt_load_audio_block (avt_data * src, uint32_t maxsize,
   uint32_t rest;
   uint8_t data[24 * 1024];
 
-  audio = avt_load_raw_audio_data (NULL, 0, samplingrate,
-				   audio_type, channels);
+  audio =
+    avt_prepare_raw_audio_data (maxsize, samplingrate, audio_type, channels);
 
   if (not audio)
     return NULL;
@@ -556,13 +558,6 @@ avt_load_audio_block (avt_data * src, uint32_t maxsize,
     rest = maxsize;
   else
     rest = MAXIMUM_SIZE;
-
-  // if size is known, pre-allocate enough memory
-  if (rest < MAXIMUM_SIZE)
-    {
-      if (avt_set_raw_audio_capacity (audio, rest) != AVT_NORMAL)
-	return NULL;
-    }
 
   while ((n = avt_data_read (src, &data, 1,
 			     avt_min (sizeof (data), rest))) > 0)

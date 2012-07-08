@@ -994,30 +994,23 @@ AVT_API avt_audio *avt_load_audio_data (const void *data, size_t datasize, int p
 #define AVT_AUDIO_STEREO    2
 
 /*
- * loads raw audio data from memory
- * the data buffer is copied and can be reused
+ * prepares raw audio
+ * you can use avt_add_raw_audio_data to add data
+ * and avt_finalize_raw_audio to finalize it
  *
+ * capacity is the amount of bytes you want to add
+ * capacity may be 0 if unknown, but you should avoid that
  * audio_type is one of the AVT_AUDIO_* constants
  * channels is AVT_MONO or AVT_STEREO
  *
- * you can use avt_add_raw_audio_data to add data later
- * then you can start with a data_size of zero here
- *
  * must be freed with avt_free_audio! (even if empty)
  */
-AVT_API avt_audio *avt_load_raw_audio_data (void *data, size_t data_size,
-			int samplingrate, int audio_type, int channels);
-
-/*
- * set the capacity for raw audio data
- * use this when you know the size in advance
- * it makes avt_add_raw_audio_data faster
- */
-AVT_API int avt_set_raw_audio_capacity (avt_audio * snd, size_t data_size);
+AVT_API avt_audio *avt_prepare_raw_audio_data (size_t capacity,
+                       int samplingrate, int audio_type, int channels);
 
 /*
  * add raw audio data to an audio type
- * the audio type must have been created with avt_load_raw_audio_data
+ * the audio type must have been created with avt_prepare_raw_audio_data
  * data should be a larger buffer
  */
 AVT_API int avt_add_raw_audio_data (avt_audio *snd, void *data, size_t data_size);
@@ -1093,6 +1086,10 @@ AVT_API void avt_set_balloon_color_name (const char *name) AVT_DEPRECATED;
 AVT_API void avt_set_text_color_name (const char *name) AVT_DEPRECATED;
 AVT_API void avt_set_text_background_color_name (const char *name) AVT_DEPRECATED;
 AVT_API void avt_get_font_size (int *width, int *height) AVT_DEPRECATED;
+AVT_API avt_audio *avt_load_raw_audio_data (void *data, size_t data_size,
+			int samplingrate, int audio_type, int channels)
+			AVT_DEPRECATED;
+
 
 #endif // DISABLE_DEPRECATED
 

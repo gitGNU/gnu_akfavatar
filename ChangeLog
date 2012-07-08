@@ -1,3 +1,10 @@
+2012-07-08  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, audio-common.c (avt_prepare_raw_audio_data):
+	new function
+	replaces avt_load_raw_audio_data and avt_set_raw_audio_capacity
+	all callers adapted
+
 2012-07-06  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl.c (avt_pager):
