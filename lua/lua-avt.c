@@ -2525,12 +2525,17 @@ set_datapath (lua_State * L)
   char basedir[4097];
 
   get_base_directory (basedir, sizeof (basedir));
+
+  // if basedir is /usr or /usr/local, ignore it
+  if (*basedir and (strcmp ("/usr/local", basedir) == 0
+		    or strcmp ("/usr", basedir) == 0))
+    basedir[0] = '\0';
+
   avtdatapath = getenv (AVTDATAPATH);
 
   if (not avtdatapath)
     {
-      if (*basedir and strcmp ("/usr/local", basedir) != 0
-	  and strcmp ("/usr", basedir) != 0)
+      if (*basedir)
 	lua_pushfstring (L, "%s/data;", basedir);
       else
 	lua_pushliteral (L, "");
@@ -2549,6 +2554,26 @@ set_datapath (lua_State * L)
     }
 
   lua_setfield (L, -2, "datapath");
+
+  // if basedir is nonstandard, add to Lua searchpaths
+  if (*basedir)
+    {
+      lua_getglobal (L, "package");
+
+      // set package.path
+      lua_pushfstring(L, "%s/lua/?.lua;", basedir);
+      lua_getfield (L, -2, "path");
+      lua_concat (L, 2);
+      lua_setfield (L, -2, "path");
+
+      // set package.cpath
+      lua_pushfstring(L, "%s/?.so;%s/lua/?.so;", basedir, basedir);
+      lua_getfield (L, -2, "cpath");
+      lua_concat (L, 2);
+      lua_setfield (L, -2, "cpath");
+
+      lua_pop (L, 1); // pop "package"
+    }
 }
 
 #endif // not _WIN32

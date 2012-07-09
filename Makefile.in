@@ -84,14 +84,11 @@ lua-akfavatar-dyn: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
 	     -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS)
 
 # lua-akfavatar statically linked with AKFAvatar
-lua-akfavatar-bin: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
+lua-akfavatar: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
                    filechooser.o colorchooser.o langposix.o libakfavatar.a
 	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
 	     filechooser.o colorchooser.o arch.o langposix.o \
 	     libakfavatar.a $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS) -Wl,-E
-
-lua-akfavatar: $(srcdir)/lua-akfavatar.sh lua-akfavatar-bin
-	install -m 755 $(srcdir)/lua-akfavatar.sh $@
 
 libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar-default.o avtpalette.o \
 	        font.o version.o avtdata.o audio-common.o
@@ -778,7 +775,7 @@ dist-bin-default: all pdf
 	#cp $(LIBNAME) $(BINPKGNAME)/
 	#-ln -sf $(LIBNAME) $(BINPKGNAME)/$(SONAME)
 	#cp lua-akfavatar.so $(BINPKGNAME)/lua/
-	cp lua-akfavatar lua-akfavatar-bin $(BINPKGNAME)/
+	cp lua-akfavatar $(BINPKGNAME)/
 	cp base64.so akfavatar-vorbis.so $(BINPKGNAME)/lua/
 	cp akfavatar-graphic.so $(BINPKGNAME)/lua/
 	cp akfavatar-term.so $(BINPKGNAME)/lua/

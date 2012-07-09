@@ -3,6 +3,9 @@
 	* lua/lua-avt.c (get_base_directory): new functions
 	(set_datapath): adapted
 
+	* lua/lua-avt.c (set_datapath):
+	eventually also add to package.path and package.cpath
+
 2012-07-08  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, audio-common.c (avt_prepare_raw_audio_data):
