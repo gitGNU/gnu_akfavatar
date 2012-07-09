@@ -1,3 +1,8 @@
+2012-07-09  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/lua-avt.c (base_directory): new functions
+	(set_datapath): adapted
+
 2012-07-08  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, audio-common.c (avt_prepare_raw_audio_data):

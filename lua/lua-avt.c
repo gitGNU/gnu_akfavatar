@@ -43,12 +43,12 @@ extern "C"
 #endif
 
 #include <stdio.h>
-#include <stdlib.h>		// for exit() and wchar_t
-#include <string.h>		// for strcmp(), strerror()
+#include <stdlib.h>		// for exit and wchar_t
+#include <string.h>		// for strcmp, memcmp, strerror()
 #include <errno.h>
 #include <iso646.h>
 
-#include <unistd.h>		// for chdir(), getcwd(), execlp
+#include <unistd.h>		// for chdir, getcwd, execlp, readlink
 #include <dirent.h>		// opendir, readdir, closedir
 
 #include <sys/types.h>
@@ -2443,34 +2443,38 @@ static const luaL_Reg audiolib[] = {
 #ifdef _WIN32
 #include <windows.h>
 
+// get directory of binary - Windows specific
+static void
+base_directory (char *name, size_t size)
+{
+  char *p;
+  DWORD len;
+
+  len = GetModuleFileNameA (NULL, name, size);
+
+  if (not len or len == size or not (p = strrchr (name, '\\')))
+    name[0] = '\0';
+  else
+    *p = '\0';			// cut filename off
+}
+
 static void
 set_datapath (lua_State * L)
 {
-  char *avtdatapath, *p;
-  char progdir[MAX_PATH + 1];
-  DWORD len;
+  char *avtdatapath;
+  char basedir[MAX_PATH + 1];
 
-  len = GetModuleFileNameA (NULL, progdir, sizeof (progdir));
-
-  if (len == 0 or len == sizeof (progdir)
-      or (p = strrchr (progdir, '\\')) == NULL)
-    {
-      luaL_error (L, "error with GetModuleFileNameA");
-      return;
-    }
-
-  *p = '\0';			// cut filename off
-
+  base_directory (basedir, sizeof (basedir));
   avtdatapath = getenv (AVTDATAPATH);
 
-  if (avtdatapath == NULL)
-    lua_pushfstring (L, "%s\\data;%s\\akfavatar;%s\\akfavatar",
-		     progdir, getenv ("LOCALAPPDATA"), getenv ("APPDATA"));
+  if (not avtdatapath)
+    lua_pushfstring (L, "%s\\data;%s\\akfavatar\\data;%s\\akfavatar\\data",
+		     basedir, getenv ("LOCALAPPDATA"), getenv ("APPDATA"));
   else
     {
       lua_pushstring (L, avtdatapath);
-      // replace "!" with the program's directory
-      luaL_gsub (L, lua_tostring (L, -1), "!", progdir);
+      // replace "!" with the base directory
+      luaL_gsub (L, lua_tostring (L, -1), "!", basedir);
       lua_remove (L, -2);	// remove original string
     }
 
@@ -2479,16 +2483,70 @@ set_datapath (lua_State * L)
 
 #else // not _WIN32
 
+#ifdef __linux__
+
+// get base directory of binary - Linux 2.2 or later
+static void
+base_directory (char *name, size_t size)
+{
+  char *p;
+
+  if (readlink ("/proc/self/exe", name, size) == -1
+      or not (p = strrchr (name, '/')))
+    {
+      name[0] = '\0';
+      return;
+    }
+
+  // cut filename off
+  *p = '\0';
+
+  // eventually also strip subdirectory /bin
+  if (memcmp ("/bin", p - 4, 5) == 0)
+    *(p - 4) = '\0';
+}
+
+#else // not __linux__
+
+static int
+base_directory (char *name, size_t size)
+{
+  // no general known way to find a base directory
+  strncpy (name, "/usr/local", size);
+  name[size - 1] = '\0';
+}
+
+#endif // not __linux__
+
 static void
 set_datapath (lua_State * L)
 {
-  char *avtdatapath = getenv (AVTDATAPATH);
+  char *avtdatapath;
+  char basedir[4097];
 
-  if (avtdatapath)
-    lua_pushstring (L, avtdatapath);
-  else
-    lua_pushliteral (L, "/usr/local/share/akfavatar/data"
-		     ";/usr/share/akfavatar/data");
+  base_directory (basedir, sizeof (basedir));
+  avtdatapath = getenv (AVTDATAPATH);
+
+  if (not avtdatapath)
+    {
+      if (strcmp ("/usr/local", basedir) != 0
+	  and strcmp ("/usr", basedir) != 0)
+	lua_pushfstring (L, "%s/data;", basedir);
+      else
+	lua_pushliteral (L, "");
+
+      lua_pushliteral (L, "/usr/local/share/akfavatar/data"
+		       ";/usr/share/akfavatar/data");
+
+      lua_concat (L, 2);
+    }
+  else				// avtdatapath
+    {
+      lua_pushstring (L, avtdatapath);
+      // replace "!" with the base directory
+      luaL_gsub (L, lua_tostring (L, -1), "!", basedir);
+      lua_remove (L, -2);	// remove original string
+    }
 
   lua_setfield (L, -2, "datapath");
 }
