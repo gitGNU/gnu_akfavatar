@@ -2445,7 +2445,7 @@ static const luaL_Reg audiolib[] = {
 
 // get directory of binary - Windows specific
 static void
-base_directory (char *name, size_t size)
+get_base_directory (char *name, size_t size)
 {
   char *p;
   DWORD len;
@@ -2464,7 +2464,7 @@ set_datapath (lua_State * L)
   char *avtdatapath;
   char basedir[MAX_PATH + 1];
 
-  base_directory (basedir, sizeof (basedir));
+  get_base_directory (basedir, sizeof (basedir));
   avtdatapath = getenv (AVTDATAPATH);
 
   if (not avtdatapath)
@@ -2487,7 +2487,7 @@ set_datapath (lua_State * L)
 
 // get base directory of binary - Linux 2.2 or later
 static void
-base_directory (char *name, size_t size)
+get_base_directory (char *name, size_t size)
 {
   char *p;
 
@@ -2509,11 +2509,11 @@ base_directory (char *name, size_t size)
 #else // not __linux__
 
 static int
-base_directory (char *name, size_t size)
+get_base_directory (char *name, size_t size)
 {
   // no general known way to find a base directory
-  strncpy (name, "/usr/local", size);
-  name[size - 1] = '\0';
+  if (size > 0)
+    name[0] = '\0';
 }
 
 #endif // not __linux__
@@ -2524,12 +2524,12 @@ set_datapath (lua_State * L)
   char *avtdatapath;
   char basedir[4097];
 
-  base_directory (basedir, sizeof (basedir));
+  get_base_directory (basedir, sizeof (basedir));
   avtdatapath = getenv (AVTDATAPATH);
 
   if (not avtdatapath)
     {
-      if (strcmp ("/usr/local", basedir) != 0
+      if (*basedir and strcmp ("/usr/local", basedir) != 0
 	  and strcmp ("/usr", basedir) != 0)
 	lua_pushfstring (L, "%s/data;", basedir);
       else
