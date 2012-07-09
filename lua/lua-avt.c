@@ -2491,6 +2491,8 @@ get_base_directory (char *name, size_t size)
 {
   char *p;
 
+  // readlink conforms to POSIX.1-2001
+  // "/proc/self/exe" is linux specific
   if (readlink ("/proc/self/exe", name, size) == -1
       or not (p = strrchr (name, '/')))
     {
@@ -2512,6 +2514,7 @@ static int
 get_base_directory (char *name, size_t size)
 {
   // no general known way to find a base directory
+  // well, I could search the PATH for argv[0], but...
   if (size > 0)
     name[0] = '\0';
 }
@@ -2561,18 +2564,24 @@ set_datapath (lua_State * L)
       lua_getglobal (L, "package");
 
       // set package.path
-      lua_pushfstring(L, "%s/lua/?.lua;", basedir);
+      lua_pushfstring (L, "%s/lua/?.lua;", basedir);
       lua_getfield (L, -2, "path");
       lua_concat (L, 2);
+      // replace "!" with the base directory
+      luaL_gsub (L, lua_tostring (L, -1), "!", basedir);
+      lua_remove (L, -2);	// remove original string
       lua_setfield (L, -2, "path");
 
       // set package.cpath
-      lua_pushfstring(L, "%s/?.so;%s/lua/?.so;", basedir, basedir);
+      lua_pushfstring (L, "%s/?.so;%s/lua/?.so;", basedir, basedir);
       lua_getfield (L, -2, "cpath");
       lua_concat (L, 2);
+      // replace "!" with the base directory
+      luaL_gsub (L, lua_tostring (L, -1), "!", basedir);
+      lua_remove (L, -2);	// remove original string
       lua_setfield (L, -2, "cpath");
 
-      lua_pop (L, 1); // pop "package"
+      lua_pop (L, 1);		// pop "package"
     }
 }
 
