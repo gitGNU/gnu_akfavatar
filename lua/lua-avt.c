@@ -2261,18 +2261,13 @@ lavt_search (lua_State * L)
 static int
 lavt_translate (lua_State * L)
 {
-  const char *text, *language;
+  const char *text;
 
   text = luaL_checkstring (L, 1);
 
   lua_getfield (L, LUA_REGISTRYINDEX, AVTMODULE);
-  lua_getfield (L, -1, "language");
-  language = lua_tostring (L, -1);
 
-  if (not language)
-    goto fail;
-
-  lua_getfield (L, -2, "translations");
+  lua_getfield (L, -1, "translations");
   if (not lua_istable (L, -1))
     goto fail;
 
@@ -2280,7 +2275,8 @@ lavt_translate (lua_State * L)
   if (not lua_istable (L, -1))
     goto fail;
 
-  lua_getfield (L, -1, language);
+  lua_getfield (L, -3, "language");
+  lua_gettable (L, -2);
   if (not lua_isstring (L, -1))
     goto fail;
 
@@ -2491,7 +2487,8 @@ set_datapath (lua_State * L)
   if (avtdatapath)
     lua_pushstring (L, avtdatapath);
   else
-    lua_pushliteral (L, "/usr/local/share/akfavatar/data;/usr/share/akfavatar/data");
+    lua_pushliteral (L, "/usr/local/share/akfavatar/data"
+		     ";/usr/share/akfavatar/data");
 
   lua_setfield (L, -2, "datapath");
 }
