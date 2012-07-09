@@ -2289,7 +2289,7 @@ lavt_translate (lua_State * L)
 
 fail:
   // on failure return original text
-  lua_pushstring (L, text);
+  lua_pushvalue (L, 1);
   return 1;
 }
 
