@@ -2441,30 +2441,14 @@ static const luaL_Reg audiolib[] = {
 
 
 #ifdef _WIN32
-#include <windows.h>
-
-// get directory of binary - Windows specific
-static void
-get_base_directory (char *name, size_t size)
-{
-  char *p;
-  DWORD len;
-
-  len = GetModuleFileNameA (NULL, name, size);
-
-  if (not len or len == size or not (p = strrchr (name, '\\')))
-    name[0] = '\0';
-  else
-    *p = '\0';			// cut filename off
-}
 
 static void
 set_datapath (lua_State * L)
 {
   char *avtdatapath;
-  char basedir[MAX_PATH + 1];
+  char basedir[4097];
 
-  get_base_directory (basedir, sizeof (basedir));
+  avta_base_directory (basedir, sizeof (basedir));
   avtdatapath = getenv (AVTDATAPATH);
 
   if (not avtdatapath)
@@ -2483,51 +2467,13 @@ set_datapath (lua_State * L)
 
 #else // not _WIN32
 
-#ifdef __linux__
-
-// get base directory of binary - Linux 2.2 or later
-static void
-get_base_directory (char *name, size_t size)
-{
-  char *p;
-
-  // readlink conforms to POSIX.1-2001
-  // "/proc/self/exe" is linux specific
-  if (readlink ("/proc/self/exe", name, size) == -1
-      or not (p = strrchr (name, '/')))
-    {
-      name[0] = '\0';
-      return;
-    }
-
-  // cut filename off
-  *p = '\0';
-
-  // eventually also strip subdirectory /bin
-  if (memcmp ("/bin", p - 4, 5) == 0)
-    *(p - 4) = '\0';
-}
-
-#else // not __linux__
-
-static int
-get_base_directory (char *name, size_t size)
-{
-  // no general known way to find a base directory
-  // well, I could search the PATH for argv[0], but...
-  if (size > 0)
-    name[0] = '\0';
-}
-
-#endif // not __linux__
-
 static void
 set_datapath (lua_State * L)
 {
   char *avtdatapath;
   char basedir[4097];
 
-  get_base_directory (basedir, sizeof (basedir));
+  avta_base_directory (basedir, sizeof (basedir));
 
   // if basedir is /usr or /usr/local, ignore it
   if (*basedir and (strcmp ("/usr/local", basedir) == 0

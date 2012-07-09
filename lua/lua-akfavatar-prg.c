@@ -525,14 +525,17 @@ get_args (int argc, char *argv[], int script_index)
   lua_setglobal (L, "arg");
 }
 
-#ifdef _WIN32
+static void
+local_lua_dir (void)
+{
+  char basedir[4097];
 
-/*
- * on Windows Lua scripts should be in a subdirectory
- * named lua of where the executable is
- *
- * this part is not conforming to any standard
- */
+  if (avta_base_directory (basedir, sizeof (basedir)) != -1
+      and chdir (basedir) != -1)
+    chdir ("lua");
+}
+
+#ifdef _WIN32
 
 static void
 find_scripts (void)
@@ -540,34 +543,19 @@ find_scripts (void)
   if (directory)
     chdir (directory);		// don't try any other!
   else
-    {
-      char progdir[MAX_PATH + 1];
-      char *p;
-      DWORD len;
-
-      len = GetModuleFileNameA (NULL, progdir, sizeof (progdir));
-
-      if (len != 0 and len != sizeof (progdir)
-	  and (p = strrchr (progdir, '\\')) != NULL)
-	{
-	  *p = '\0';		// cut filename off
-	  chdir (progdir);
-	  chdir ("lua");
-	}
-    }
+    local_lua_dir ();
 }
 
 #else // not _WIN32
-
-// conforming with POSIX.1-2001
 
 static void
 find_scripts (void)
 {
   if (directory)
     chdir (directory);		// don't try any other!
-  else if (chdir ("/usr/local/share/akfavatar/lua") < 0)
-    chdir ("/usr/share/akfavatar/lua");
+  else if (chdir ("/usr/local/share/akfavatar/lua") < 0
+	   and chdir ("/usr/share/akfavatar/lua") < 0)
+    local_lua_dir ();
 }
 
 #endif // not _WIN32

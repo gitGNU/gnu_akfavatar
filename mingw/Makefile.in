@@ -71,6 +71,9 @@ avtpalette.o: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
 avtdata.o: $(srcdir)/avtdata.c $(srcdir)/avtdata.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtdata.c
 
+basedir.o: $(srcdir)/basedir.c $(srcdir)/avtaddons.h
+	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/basedir.c
+
 avatar-sdl.o: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
              $(srcdir)/avtinternals.h version.h rgb.h \
              $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
@@ -161,10 +164,10 @@ avtreadfile.o: $(srcdir)/avtreadfile.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/avtreadfile.c
 
 libavtaddons.a: filechooser.o askdrive.o arch.o avttermstub.o \
-                avtccio.o avtcwio.o avtreadfile.o \
+                avtccio.o avtcwio.o avtreadfile.o basedir.o \
                 colorchooser.o avtvorbis.o stb_vorbis.o langwindows.o
 	$(AR) rcu $@ filechooser.o askdrive.o arch.o avttermstub.o \
-	             avtccio.o avtcwio.o \
+	             avtccio.o avtcwio.o basedir.o \
 	             avtreadfile.o colorchooser.o avtvorbis.o stb_vorbis.o \
 	             langwindows.o
 	-$(RANLIB) $@
@@ -177,10 +180,10 @@ example.exe: $(srcdir)/example.c akfavatar.dll icon.o
 
 lua-akfavatar.exe: lua-akfavatar-prg.o lua-akfavatar-prg-info.o \
 		filechooser.o askdrive.o colorchooser.o avtreadfile.o \
-		arch.o lua-avt.o langwindows.o
+		arch.o lua-avt.o langwindows.o basedir.o
 	$(CC) -o $@ lua-akfavatar-prg.o lua-akfavatar-prg-info.o \
 	    filechooser.o askdrive.o colorchooser.o avtreadfile.o \
-	    arch.o lua-avt.o langwindows.o -L. -lakfavatar \
+	    arch.o lua-avt.o langwindows.o basedir.o -L. -lakfavatar \
 	    $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS)
 
 lua-akfavatar-prg-info.o: $(srcdir)/mingw/lua-akfavatar-prg.rc version.h \
@@ -188,9 +191,9 @@ lua-akfavatar-prg-info.o: $(srcdir)/mingw/lua-akfavatar-prg.rc version.h \
 	$(WINDRES) -I. -I$(srcdir)/mingw -o $@ -i $(srcdir)/mingw/lua-akfavatar-prg.rc
 
 lua-akfavatar.dll: lua-avt.o filechooser.o askdrive.o colorchooser.o \
-	           langwindows.o lua-akfavatar-dll-info.o
+	           langwindows.o basedir.o lua-akfavatar-dll-info.o
 	$(CC) -o $@ -shared lua-avt.o filechooser.o askdrive.o \
-	     colorchooser.o langwindows.o lua-akfavatar-dll-info.o \
+	     colorchooser.o langwindows.o basedir.o lua-akfavatar-dll-info.o \
 	     -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS) -mwindows
 
 lua-akfavatar-dll-info.o: $(srcdir)/mingw/lua-akfavatar-dll.rc version.h

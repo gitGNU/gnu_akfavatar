@@ -173,6 +173,19 @@ AVT_ADDON avt_audio *avta_load_vorbis_stream (avt_stream *stream,
 AVT_ADDON const char *avta_get_language (void);
 
 /**********************************************************************
+ * Section: base directory
+ * get the base directory of executable
+ * currently for GNU/Linux and Windows only
+ **********************************************************************/
+
+/*
+ * sets name to the base directory
+ * name should be a buffer of the given size
+ * returns 0 on success and -1 on error
+ */
+AVT_ADDON int avta_base_directory (char *name, size_t size);
+
+/**********************************************************************
  * Section: arch
  * functions for handling ar archives
  **********************************************************************/

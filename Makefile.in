@@ -78,16 +78,17 @@ example: $(srcdir)/example.c libakfavatar.a
 
 # lua-akfavatar dynamically linked
 lua-akfavatar-dyn: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
-                   filechooser.o colorchooser.o langposix.o
+                   filechooser.o colorchooser.o basedir.o langposix.o
 	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
-	     filechooser.o colorchooser.o arch.o langposix.o \
+	     filechooser.o colorchooser.o arch.o basedir.o langposix.o \
 	     -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS)
 
 # lua-akfavatar statically linked with AKFAvatar
 lua-akfavatar: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
-                   filechooser.o colorchooser.o langposix.o libakfavatar.a
+                   filechooser.o colorchooser.o langposix.o basedir.o \
+                   libakfavatar.a
 	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
-	     filechooser.o colorchooser.o arch.o langposix.o \
+	     filechooser.o colorchooser.o arch.o langposix.o basedir.o \
 	     libakfavatar.a $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS) -Wl,-E
 
 libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar-default.o avtpalette.o \
@@ -97,10 +98,10 @@ libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar-default.o avtpalette.o \
 	-$(RANLIB) $@
 
 libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
-                avtccio.o avtcwio.o avtreadfile.o \
+                avtccio.o avtcwio.o avtreadfile.o basedir.o \
                 colorchooser.o avtvorbis.o stb_vorbis.o langposix.o
 	$(AR) rcu $@ filechooser.o avtterm.o avttermsys.o arch.o \
-	             avtccio.o avtcwio.o avtreadfile.o \
+	             avtccio.o avtcwio.o avtreadfile.o basedir.o \
 	             colorchooser.o avtvorbis.o stb_vorbis.o langposix.o
 	-$(RANLIB) $@
 
@@ -160,6 +161,12 @@ avtdata.o: $(srcdir)/avtdata.c $(srcdir)/avtdata.h
 
 avtdata.lo: $(srcdir)/avtdata.c $(srcdir)/avtdata.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ $(srcdir)/avtdata.c
+
+basedir.o: $(srcdir)/basedir.c $(srcdir)/avtaddons.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/basedir.c
+
+basedir.lo: $(srcdir)/basedir.c $(srcdir)/avtaddons.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ $(srcdir)/basedir.c
 
 avatar-sdl.o: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
           $(srcdir)/avtinternals.h version.h rgb.h \
@@ -285,6 +292,9 @@ avtposix.o: $(srcdir)/avtposix.c $(srcdir)/akfavatar.h
 langposix.o: $(srcdir)/langposix.c
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/langposix.c
 
+langposix.lo: $(srcdir)/langposix.c
+	$(CC) $(CFLAGS) -c -fpic -o $@ $(srcdir)/langposix.c
+
 lua-akfavatar-prg.o: $(srcdir)/lua/lua-akfavatar-prg.c $(srcdir)/akfavatar.h \
                      $(srcdir)/avtaddons.h $(srcdir)/data/akfavatar-logo.xpm
 	$(CC) -I$(srcdir) $(CFLAGS) $(LUA_CFLAGS) -c -o $@ \
@@ -295,9 +305,10 @@ lua-avt.o: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h
 	  $(srcdir)/lua/lua-avt.c
 
 # Lua-Modules
-lua-akfavatar.so: lua-avt.lo filechooser.lo colorchooser.lo
+lua-akfavatar.so: lua-avt.lo filechooser.lo colorchooser.lo basedir.lo \
+                  langposix.lo
 	$(CC) -o $@ -shared -fpic lua-avt.lo filechooser.lo colorchooser.lo \
-	     -L. -lakfavatar $(LDFLAGS)
+	     basedir.lo langposix.lo -L. -lakfavatar $(LDFLAGS)
 
 akfavatar-vorbis.so: akfavatar-vorbis.lo avtvorbis.lo stb_vorbis.lo
 	$(CC) -o $@ -shared -fpic akfavatar-vorbis.lo avtvorbis.lo stb_vorbis.lo \
@@ -622,6 +633,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/audio-sdl.c $(srcdir)/audio-dummy.c \
 	   $(srcdir)/audio-common.c \
 	   $(srcdir)/avtdata.h $(srcdir)/avtdata.c \
+	   $(srcdir)/basedir.c \
 	   $(srcdir)/avtinternals.h $(srcdir)/avtpalette.c \
 	   $(srcdir)/avatar-default.c $(srcdir)/avtccio.c $(srcdir)/avtcwio.c \
 	   $(srcdir)/avtaddons.h $(srcdir)/filechooser.c \
