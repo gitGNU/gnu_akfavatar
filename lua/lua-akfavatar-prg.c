@@ -525,40 +525,29 @@ get_args (int argc, char *argv[], int script_index)
   lua_setglobal (L, "arg");
 }
 
-static void
+static int
 local_lua_dir (void)
 {
   char basedir[4097];
 
-  if (avta_base_directory (basedir, sizeof (basedir)) != -1
-      and chdir (basedir) != -1)
-    chdir ("lua");
-}
+  if (avta_base_directory (basedir, sizeof (basedir)) == -1)
+    return -1;
 
-#ifdef _WIN32
+  strcat (basedir, LUA_DIRSEP);
+  strcat (basedir, "lua");
+
+  return chdir (basedir);
+}
 
 static void
 find_scripts (void)
 {
   if (directory)
     chdir (directory);		// don't try any other!
-  else
-    local_lua_dir ();
+  else if (local_lua_dir () < 0
+	   and chdir ("/usr/local/share/akfavatar/lua") < 0)
+    chdir ("/usr/share/akfavatar/lua");
 }
-
-#else // not _WIN32
-
-static void
-find_scripts (void)
-{
-  if (directory)
-    chdir (directory);		// don't try any other!
-  else if (chdir ("/usr/local/share/akfavatar/lua") < 0
-	   and chdir ("/usr/share/akfavatar/lua") < 0)
-    local_lua_dir ();
-}
-
-#endif // not _WIN32
 
 
 int
