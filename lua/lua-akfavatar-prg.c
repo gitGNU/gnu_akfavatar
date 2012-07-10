@@ -56,8 +56,6 @@ extern "C"
 
 
 #define PRGNAME "Lua-AKFAvatar"	// keep it short
-#define MODULENAME  "lua-akfavatar"	// name of the module
-
 #define NAME_EXEC "AKFAvatar.lua"	// name in archive file
 
 #define EXT_LUA   ".lua"
@@ -279,6 +277,10 @@ initialize_lua (void)
   luaL_openlibs (L);
   lua_gc (L, LUA_GCRESTART, 0);
 
+  // load lua-akfavatar
+  luaL_requiref (L, "lua-akfavatar", luaopen_akfavatar_embedded, false);
+  lua_pop (L, 1);
+
 #if defined(__linux__)
 
   /*
@@ -317,14 +319,6 @@ initialize_lua (void)
 
 #endif // __linux__
 
-  // load lua-akfavatar and mark it as loaded
-  lua_pushliteral (L, MODULENAME);
-  luaopen_akfavatar_embedded (L);	// pushes table on stack
-  lua_getglobal (L, "package");
-  lua_getfield (L, -1, "loaded");
-  lua_pushvalue (L, -3);	// push table
-  lua_setfield (L, -2, MODULENAME);
-  lua_pop (L, 4);
 }
 
 static void
