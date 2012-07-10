@@ -7,7 +7,7 @@ REQUIREMENTS
 
 Needed
 
- * SDL-1.2.x (version 1.2.11 or higher recommended)
+ * SDL-1.2.11 or higher
      http://libsdl.org/download-1.2.php
    You need the "Runtime Libraries" as well as the "Development Libraries"!
    The serieses 1.3 and 2.0 are _not_ backward compatible!
@@ -18,8 +18,9 @@ Needed
  * Lua-5.2.x
      http://lua.org/
 
- * An ANSI-C Compiler (gcc or clang or others)
+ * A C99 Compiler (gcc and clang tested)
      http://gcc.gnu.org/
+     http://clang.llvm.org/
 
  * Entries for "linux" and "linux-m" in the terminal database.
 
@@ -27,7 +28,7 @@ Needed
    on Windows.  On Debian or derived distributions, you must have the package
    "ncurses-term" installed.
 
-Recommended
+Optional
 
  * SDL_image
      http://www.libsdl.org/projects/SDL_image/
@@ -41,7 +42,7 @@ SDL_image can be installed after the installation of this package.
 
  * iconv
    integrated in GNU libc
- 
+
 Optional
 
   * GNU-Pascal or Free Pascal
@@ -68,7 +69,7 @@ You might then provide that information with this option, like this
 command "iconv -l".  If "WCHAR_T" or "wchar_t" is on the list, use that.
 
 If you know that SDL_image is always installed, then you can provide the
-parameter "--enable-link-sdl-image" to directly link to it, instead 
+parameter "--enable-link-sdl-image" to directly link to it, instead
 of loading it at runtime.
 
 If you want to use it on devices with a small display (eg. netbooks), use the
@@ -100,7 +101,7 @@ programs.
 OTHER SYSTEMS
 
  * BSD
-   AKFAvatar is known to be compilable with FreeBSD 6.2.  To get iconv
+   Older versions of AKFAvatar were tested on FreeBSD.  To get iconv
    support, install libiconv and use "./configure --with-iconv".
 
  * Windows / ReactOS
