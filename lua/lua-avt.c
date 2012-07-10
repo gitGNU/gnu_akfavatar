@@ -2503,32 +2503,6 @@ set_datapath (lua_State * L)
     }
 
   lua_setfield (L, -2, "datapath");
-
-  // if basedir is nonstandard, add to Lua searchpaths
-  if (*basedir)
-    {
-      lua_getglobal (L, "package");
-
-      // set package.path
-      lua_pushfstring (L, "%s/lua/?.lua;", basedir);
-      lua_getfield (L, -2, "path");
-      lua_concat (L, 2);
-      // replace "!" with the base directory
-      luaL_gsub (L, lua_tostring (L, -1), "!", basedir);
-      lua_remove (L, -2);	// remove original string
-      lua_setfield (L, -2, "path");
-
-      // set package.cpath
-      lua_pushfstring (L, "%s/?.so;%s/lua/?.so;", basedir, basedir);
-      lua_getfield (L, -2, "cpath");
-      lua_concat (L, 2);
-      // replace "!" with the base directory
-      luaL_gsub (L, lua_tostring (L, -1), "!", basedir);
-      lua_remove (L, -2);	// remove original string
-      lua_setfield (L, -2, "cpath");
-
-      lua_pop (L, 1);		// pop "package"
-    }
 }
 
 #endif // not _WIN32

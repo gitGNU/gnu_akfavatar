@@ -277,6 +277,44 @@ initialize_lua (void)
   luaL_openlibs (L);
   lua_gc (L, LUA_GCRESTART, 0);
 
+
+#if defined(__linux__)
+
+  /*
+   * if this program is called from an unusual directory
+   * set up special search paths for subdirectory "lua"
+   *
+   * Lua itself does that already for Windows
+   * Here I do it for GNU/Linux
+   * I don't know how to do it on other systems
+   */
+
+  char basedir[4097];
+  avta_base_directory (basedir, sizeof (basedir));
+
+  // if basedir is nonstandard, add to Lua searchpaths
+  if (*basedir and strcmp ("/usr/local", basedir) != 0
+      and strcmp ("/usr", basedir) != 0)
+    {
+      lua_getglobal (L, "package");
+
+      // set package.path
+      lua_pushfstring (L, "%s/lua/?.lua;", basedir);
+      lua_getfield (L, -2, "path");
+      lua_concat (L, 2);
+      lua_setfield (L, -2, "path");
+
+      // set package.cpath
+      lua_pushfstring (L, "%s/?.so;%s/lua/?.so;", basedir, basedir);
+      lua_getfield (L, -2, "cpath");
+      lua_concat (L, 2);
+      lua_setfield (L, -2, "cpath");
+
+      lua_pop (L, 1);		// pop "package"
+    }
+
+#endif // __linux__
+
   // register loader functions for: "lua-akfavatar"
   // (users should not be able to leave the require command away)
   lua_getglobal (L, "package");
