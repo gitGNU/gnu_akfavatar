@@ -4,6 +4,9 @@
 	for GNU/Linux add relative paths to package.path and package.cpath
 	lua/lua-avt.c (set_datapath): don't do that in the module
 
+	* lua/lua-akfavatar-prg.c (initialize_lua):
+	load lua-akfavatar already
+
 2012-07-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c (get_base_directory): new functions
