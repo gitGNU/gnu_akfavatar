@@ -69,6 +69,9 @@ extern "C"
 #define COLOR_TEXT        0xD2B48C	// "tan"
 #define COLOR_START       COLOR_TEXT
 
+// from lua-avt.c
+extern int luaopen_akfavatar_embedded (lua_State * L);
+
 static lua_State *L;
 static int mode = AVT_AUTOMODE;
 static char *directory;
@@ -265,9 +268,6 @@ check_filename (const char *filename)
 static void
 initialize_lua (void)
 {
-  // from lua-avt.c
-  extern int luaopen_akfavatar_embedded (lua_State * L);
-
   L = luaL_newstate ();
   if (L == NULL)
     fatal ("cannot open Lua", "not enough memory");
