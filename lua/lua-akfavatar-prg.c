@@ -265,6 +265,52 @@ check_filename (const char *filename)
 		   or strcasecmp (EXT_ABOUT, ext) == 0));
 }
 
+
+#if defined(__linux__)
+
+ /*
+  * If this program is called from an unusual directory
+  * set up special search paths for modules in
+  * the subdirectory "lua".
+  *
+  * Lua itself does that already for Windows.
+  * Here I do it for GNU/Linux.
+  * I don't know how to do it on other systems.
+  */
+
+static void
+change_searchpaths (void)
+{
+  char basedir[4097];
+
+  avta_base_directory (basedir, sizeof (basedir));
+
+  // if basedir is nonstandard, add to Lua searchpaths
+  if (*basedir and strcmp ("/usr", basedir) != 0
+      and strcmp ("/usr/local", basedir) != 0)
+    {
+      lua_getglobal (L, "package");
+
+      // set package.path
+      lua_pushfstring (L, "%s/lua/?.lua;", basedir);
+      lua_getfield (L, -2, "path");
+      lua_concat (L, 2);
+      lua_setfield (L, -2, "path");
+
+      // set package.cpath
+      lua_pushfstring (L, "%s/?.so;%s/lua/?.so;", basedir, basedir);
+      lua_getfield (L, -2, "cpath");
+      lua_concat (L, 2);
+      lua_setfield (L, -2, "cpath");
+
+      lua_pop (L, 1);		// pop "package"
+    }
+}
+
+#else // not __linux__
+#define change_searchpaths(void)
+#endif // not __linux__
+
 static void
 initialize_lua (void)
 {
@@ -281,44 +327,7 @@ initialize_lua (void)
   luaL_requiref (L, "lua-akfavatar", luaopen_akfavatar_embedded, false);
   lua_pop (L, 1);
 
-#if defined(__linux__)
-
-  /*
-   * if this program is called from an unusual directory
-   * set up special search paths for subdirectory "lua"
-   *
-   * Lua itself does that already for Windows
-   * Here I do it for GNU/Linux
-   * I don't know how to do it on other systems
-   */
-  {
-    char basedir[4097];
-    avta_base_directory (basedir, sizeof (basedir));
-
-    // if basedir is nonstandard, add to Lua searchpaths
-    if (*basedir and strcmp ("/usr/local", basedir) != 0
-	and strcmp ("/usr", basedir) != 0)
-      {
-	lua_getglobal (L, "package");
-
-	// set package.path
-	lua_pushfstring (L, "%s/lua/?.lua;", basedir);
-	lua_getfield (L, -2, "path");
-	lua_concat (L, 2);
-	lua_setfield (L, -2, "path");
-
-	// set package.cpath
-	lua_pushfstring (L, "%s/?.so;%s/lua/?.so;", basedir, basedir);
-	lua_getfield (L, -2, "cpath");
-	lua_concat (L, 2);
-	lua_setfield (L, -2, "cpath");
-
-	lua_pop (L, 1);		// pop "package"
-      }
-  }
-
-#endif // __linux__
-
+  change_searchpaths ();
 }
 
 static void
@@ -356,7 +365,7 @@ run_executable (const char *filename)
 
   script = avta_arch_get_data (filename, NAME_EXEC, &size);
 
-  if (script == NULL)
+  if (not script)
     {
       lua_pushfstring (L, "%s: error in executable", filename);
       return -1;
