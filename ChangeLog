@@ -1,3 +1,7 @@
+2012-07-11  Andreas K. Foerster  <info@akfoerster.de>
+
+	* configure: use gnu99 (or MinGW disables some POSIX functions)
+
 2012-07-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-akfavatar-prg.c (initialize_lua):

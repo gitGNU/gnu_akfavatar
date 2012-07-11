@@ -11,7 +11,7 @@
 VERSION=0
 SUBVERSION=22
 REVISION=0
-BUILD=34 # set to 0 for official releases
+BUILD=35 # set to 0 for official releases
 VARIANT="-testing"
 LIBNAME=libakfavatar.so.${VERSION}.${SUBVERSION}.${REVISION}
 SONAME=libakfavatar.so.${VERSION}.${SUBVERSION}
@@ -113,7 +113,7 @@ while [ x"$1" != x ] ; do
 		echo "  --disable-lua         build without Lua"
 		echo "  --enable-link-sdl-image link directly to SDL_image"
 		echo "  --enable-size=vga     compile for VGA size (640x480)"
-		echo "  CC=COMPILER           C compiler to use [gcc -std=c99]"
+		echo "  CC=COMPILER           C compiler to use [gcc -std=gnu99]"
 		#echo "  CXX=COMPILER          C++ compiler to use [g++]"
 		echo "  CPPFLAGS=OPTIONS      command line options for the preprocessor [${CPPFLAGS}]"
 		echo "  CFLAGS=OPTIONS        command line options for the C compiler [${CFLAGS}]"
@@ -241,7 +241,7 @@ case ${hosttype} in
 
            if [ -x /usr/bin/i586-mingw32msvc-gcc ]
            then
-             CC="/usr/bin/i586-mingw32msvc-gcc -std=c99"
+             CC="/usr/bin/i586-mingw32msvc-gcc -std=gnu99"
              AR=/usr/bin/i586-mingw32msvc-ar
              STRIP=/usr/bin/i586-mingw32msvc-strip
              RANLIB=/usr/bin/i586-mingw32msvc-ranlib
@@ -446,11 +446,14 @@ if [ x"${CC}" = x ] ; then		# Let the user override the test.
 	if [ -x /bin/gcc ] ||
 	   [ -x /usr/bin/gcc ] ||
 	   [ -x /usr/local/bin/gcc ] ; then
-		CC="gcc -std=c99"
+		CC="gcc -std=gnu99"
 	else
 		CC="c99"
 	fi
 fi
+
+# NOTE: -std=c99 would also define __STRICT_ANSI__ and
+# MinGW doesn't define some POSIX functions then
 
 # checking whether we are using GNU C++.
 if [ x"${CXX}" = x ] ; then		# Let the user override the test.
