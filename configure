@@ -239,16 +239,23 @@ case ${hosttype} in
            TARGET="mingw"
            DISTBIN="dist-mingw"
 
-           if [ -x /usr/bin/i586-mingw32msvc-gcc ]
+           if [ -x /usr/bin/i686-w64-mingw32-gcc ]
+           then
+             CC="/usr/bin/i686-w64-mingw32-gcc -std=gnu99"
+             AR=/usr/bin/i686-w64-mingw32-ar
+             STRIP=/usr/bin/i686-w64-mingw32-strip
+             RANLIB=/usr/bin/i686-w64-mingw32-ranlib
+             WINDRES=/usr/bin/i686-w64-mingw32-windres
+             [ -d /usr/i686-w64-mingw32 ] && prefix=/usr/i686-w64-mingw32
+           elif [ -x /usr/bin/i586-mingw32msvc-gcc ]
            then
              CC="/usr/bin/i586-mingw32msvc-gcc -std=gnu99"
              AR=/usr/bin/i586-mingw32msvc-ar
              STRIP=/usr/bin/i586-mingw32msvc-strip
              RANLIB=/usr/bin/i586-mingw32msvc-ranlib
              WINDRES=/usr/bin/i586-mingw32msvc-windres
+             [ -d /usr/i586-mingw32msvc ] && prefix=/usr/i586-mingw32msvc
            fi
-
-           [ -d /usr/i586-mingw32msvc ] && prefix=/usr/i586-mingw32msvc
            ;;
 
   *x86* | *i?86*) # private hack
