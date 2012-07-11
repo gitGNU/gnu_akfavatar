@@ -450,10 +450,12 @@ uninstall: uninstall-info uninstall-man uninstall-txt uninstall-html \
 	-rm -f $(LUA_CPATH)/akfavatar-vorbis.so
 	-rm -f $(LUA_CPATH)/akfavatar-term.so
 	-rm -f $(LUA_CPATH)/akfavatar-graphic.so
-
 	-xdg-desktop-menu uninstall akfoerster-lua-akfavatar.desktop
 	-xdg-icon-resource uninstall --size 32 --novendor akfavatar.xpm
 	-xdg-icon-resource uninstall --size 32 --novendor lua.xpm
+	@echo '*'
+	@echo '* not uninstalling $(datadir)/akfavatar/'
+	@echo '*'
 
 info:
 	$(MAKE) -f $(srcdir)/doc/Makefile VPATH="$(srcdir)/doc" srcdir="$(srcdir)" info
