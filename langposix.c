@@ -36,23 +36,27 @@
 extern const char *
 avta_get_language (void)
 {
-  static char language[3];
-  char *locale;
+  static char language[3] = "";
 
-  // don't depend on setlocale being used (only as last resort)
-  if (not (locale = getenv ("LC_ALL"))
-      and not (locale = getenv ("LC_MESSAGES"))
-      and not (locale = getenv ("LANG")))
-    locale = setlocale (LC_MESSAGES, NULL);
+  if (not * language)
+    {
+      char *locale;
 
-  // check if it starts with two letters, followed by a non-letter
-  if (not locale or not checkalpha (locale[0]) or not checkalpha (locale[1])
-      or checkalpha (locale[2]))
-    return NULL;
+      // don't depend on setlocale being used (only as last resort)
+      if (not (locale = getenv ("LC_ALL"))
+	  and not (locale = getenv ("LC_MESSAGES"))
+	  and not (locale = getenv ("LANG")))
+	locale = setlocale (LC_MESSAGES, NULL);
 
-  language[0] = lowercase (locale[0]);
-  language[1] = lowercase (locale[1]);
-  language[2] = '\0';
+      // check if it starts with two letters, followed by a non-letter
+      if (not locale or not checkalpha (locale[0]) or not
+	  checkalpha (locale[1]) or checkalpha (locale[2]))
+	return NULL;
+
+      language[0] = lowercase (locale[0]);
+      language[1] = lowercase (locale[1]);
+      language[2] = '\0';
+    }
 
   return (const char *) language;
 }
