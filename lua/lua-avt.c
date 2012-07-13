@@ -2540,6 +2540,9 @@ luaopen_akfavatar_embedded (lua_State * L)
       lua_setfield (L, -2, "language");
     }
 
+  lua_newtable (L);
+  lua_setfield (L, -2, "translations");
+
   // type for audio data
   luaL_newmetatable (L, AUDIODATA);
   lua_pushvalue (L, -1);
