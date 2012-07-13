@@ -176,7 +176,7 @@ static int errno;
 #pragma GCC poison  avt_avatar_image_default
 
 
-#define COLORDEPTH 24
+#define COLORDEPTH 32
 
 #if defined(VGA)
 #  define MINIMALWIDTH 640
