@@ -3,18 +3,20 @@
 
 local avt = require "lua-akfavatar"
 
-avt.translations = {
-  ["That's correct."] = {
-    de = "Das ist richtig."},
-  ["Wrong!"] = {
-    de = "Falsch!"},
-  ["Try again?"] = {
-    de = "Nochmal versuchen?"},
-  ["The correct answer:"] = {
-    de = "Die richtige Antwort lautet:"},
-  ["Questions: %d, correct: %d (%d%%)"] = {
-    de = "Fragen: %d, davon richtig: %d (%d%%)"},
-}
+avt.translations["That's correct."] = {
+    de = "Das ist richtig."}
+
+avt.translations["Wrong!"] = {
+    de = "Falsch!"}
+
+avt.translations["Try again?"] = {
+    de = "Nochmal versuchen?"}
+
+avt.translations["The correct answer:"] = {
+    de = "Die richtige Antwort lautet:"}
+
+avt.translations["Questions: %d, correct: %d (%d%%)"] = {
+    de = "Fragen: %d, davon richtig: %d (%d%%)"}
 
 local positive = avt.load_audio_file(avt.search("positive.au")) or avt.silent()
 local negative = avt.load_audio_file(avt.search("negative.au")) or avt.silent()
