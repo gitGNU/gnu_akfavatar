@@ -410,6 +410,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(srcdir)/README-SDL $(BINPKGNAME)/doc/README-SDL.txt
 	cp $(srcdir)/README-Lua $(BINPKGNAME)/doc/README-Lua.txt
 	cp $(srcdir)/mingw/Homepage.url $(BINPKGNAME)/doc/
+	cp $(srcdir)/mingw/Lua-doc.url $(BINPKGNAME)/doc/
 	$(u2d) $(BINPKGNAME)/lua/fsdemo-??.avt
 	$(u2d) $(BINPKGNAME)/doc/*.txt
 	$(u2d) $(BINPKGNAME)/lua/*.lua

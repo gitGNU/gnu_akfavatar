@@ -757,6 +757,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/doc/lua-akfavatar-ref.en.man \
 	   $(srcdir)/doc/lua-akfavatar-ref.de.man \
 	   $(srcdir)/doc/Homepage.desktop \
+	   $(srcdir)/doc/Lua-doc.desktop \
 	   $(PKGNAME)/doc/
 
 	mkdir $(PKGNAME)/mingw
@@ -860,6 +861,7 @@ dist-bin-default: all pdf
 	ln $(srcdir)/doc/lua-akfavatar-ref.en.man $(BINPKGNAME)/doc/
 	ln $(srcdir)/doc/lua-akfavatar-ref.de.man $(BINPKGNAME)/doc/
 	ln $(srcdir)/doc/Homepage.desktop $(BINPKGNAME)/doc/
+	ln $(srcdir)/doc/Lua-doc.desktop $(BINPKGNAME)/doc/
 	ln $(srcdir)/lua/akfavatar/dir.??.about \
 	   $(srcdir)/lua/akfavatar/utf8.lua \
 	   $(srcdir)/lua/akfavatar/person.lua \
