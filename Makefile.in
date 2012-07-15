@@ -629,7 +629,6 @@ dist: about $(srcdir)/alert.au
 	ln $(srcdir)/README $(srcdir)/INSTALL $(srcdir)/AUTHORS \
 	   $(srcdir)/NEWS \
 	   $(srcdir)/COPYING $(srcdir)/ChangeLog $(srcdir)/lrun \
-	   $(srcdir)/Homepage.desktop \
 	   $(srcdir)/akfoerster-lua-akfavatar.desktop \
 	   $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
 	   $(srcdir)/audio-sdl.c $(srcdir)/audio-dummy.c \
@@ -757,6 +756,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/doc/lua-akfavatar.de.man \
 	   $(srcdir)/doc/lua-akfavatar-ref.en.man \
 	   $(srcdir)/doc/lua-akfavatar-ref.de.man \
+	   $(srcdir)/doc/Homepage.desktop \
 	   $(PKGNAME)/doc/
 
 	mkdir $(PKGNAME)/mingw
@@ -796,7 +796,6 @@ dist-bin-default: all pdf
 	cp akfavatar-graphic.so $(BINPKGNAME)/lua/
 	cp akfavatar-term.so $(BINPKGNAME)/lua/
 	ln $(srcdir)/akfoerster-lua-akfavatar.desktop $(BINPKGNAME)/
-	ln $(srcdir)/Homepage.desktop $(BINPKGNAME)/
 	ln $(srcdir)/akfavatar.xpm $(srcdir)/lua.xpm $(BINPKGNAME)
 	ln $(srcdir)/lua/fullscreen.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/lua/
@@ -860,6 +859,7 @@ dist-bin-default: all pdf
 	ln $(srcdir)/doc/lua-akfavatar.de.man $(BINPKGNAME)/doc/
 	ln $(srcdir)/doc/lua-akfavatar-ref.en.man $(BINPKGNAME)/doc/
 	ln $(srcdir)/doc/lua-akfavatar-ref.de.man $(BINPKGNAME)/doc/
+	ln $(srcdir)/doc/Homepage.desktop $(BINPKGNAME)/doc/
 	ln $(srcdir)/lua/akfavatar/dir.??.about \
 	   $(srcdir)/lua/akfavatar/utf8.lua \
 	   $(srcdir)/lua/akfavatar/person.lua \
