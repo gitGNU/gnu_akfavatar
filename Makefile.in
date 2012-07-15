@@ -773,6 +773,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/mingw/avttermstub.c $(srcdir)/mingw/askdrive.c \
 	   $(srcdir)/mingw/win_iconv.c $(srcdir)/mingw/iconv.h \
 	   $(srcdir)/mingw/Makefile.in $(srcdir)/mingw/README \
+	   $(srcdir)/mingw/Homepage.url $(srcdir)/mingw/Lua-doc.url \
 	   $(PKGNAME)/mingw/
 
 	tar -cvf $(PKGNAME).src.tar $(PKGNAME)/
