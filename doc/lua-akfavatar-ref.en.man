@@ -107,12 +107,13 @@ All other functions should be used after it.
 .IP
 .B Example:
 .EX
+local avt = require "lua-akfavatar"
 avt.encoding("ISO-8859-1")
 avt.title("my program")
 avt.set_background_color("sky blue")
 avt.start()
 avt.start_audio()
-avt.avatar_image_default()
+avt.avatar_image("default")
 avt.tell("hello world")
 avt.wait_button()
 .EE
