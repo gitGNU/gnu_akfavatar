@@ -335,6 +335,10 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	mkdir $(BINPKGNAME)/lua/documentation/Deutsch
 	mkdir $(BINPKGNAME)/lua/akfavatar
 	mkdir $(BINPKGNAME)/data
+	mkdir $(BINPKGNAME)/doc
+	cp $(sdl_dll) $(BINPKGNAME)/
+	cp $(lua_dll) $(BINPKGNAME)/
+	-cp $(lua_exe) $(BINPKGNAME)/
 	cp akfavatar.dll $(BINPKGNAME)/
 	cp lua-akfavatar.exe $(BINPKGNAME)/
 	#cp lua-akfavatar.dll $(BINPKGNAME)/
@@ -378,10 +382,6 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(srcdir)/lua/documentation/Deutsch/Sprache.about $(BINPKGNAME)/lua/documentation/Deutsch/
 	-cp $(srcdir)/lua/documentation/Deutsch/lua-akfavatar.about $(BINPKGNAME)/lua/documentation/Deutsch/
 	-cp $(srcdir)/lua/documentation/Deutsch/lua-akfavatar-ref.about $(BINPKGNAME)/lua/documentation/Deutsch/
-	cp lua-akfavatar.en.pdf $(BINPKGNAME)/
-	cp lua-akfavatar.de.pdf $(BINPKGNAME)/
-	cp lua-akfavatar-ref.en.pdf $(BINPKGNAME)/
-	cp lua-akfavatar-ref.de.pdf $(BINPKGNAME)/
 	cp $(srcdir)/lua/akfavatar/dir.??.about $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/utf8.lua $(BINPKGNAME)/lua/akfavatar/
 	cp $(srcdir)/lua/akfavatar/person.lua $(BINPKGNAME)/lua/akfavatar/
@@ -399,18 +399,19 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	   $(srcdir)/data/hey.au $(srcdir)/data/okay.au \
 	   $(srcdir)/data/hahaha.au $(srcdir)/data/game_over.au \
 	   $(BINPKGNAME)/data/
-	cp $(srcdir)/AUTHORS $(BINPKGNAME)/AUTHORS.txt
-	cp $(srcdir)/COPYING $(BINPKGNAME)/COPYING.txt
-	cp $(srcdir)/COPYING.LESSER $(BINPKGNAME)/COPYING-LESSER.txt
-	cp $(srcdir)/NEWS $(BINPKGNAME)/NEWS.txt
-	cp $(sdl_dll) $(BINPKGNAME)/
-	cp $(srcdir)/README-SDL $(BINPKGNAME)/README-SDL.txt
-	cp $(lua_dll) $(BINPKGNAME)/
-	-cp $(lua_exe) $(BINPKGNAME)/
-	cp $(srcdir)/README-Lua $(BINPKGNAME)/README-Lua.txt
+	cp lua-akfavatar.en.pdf $(BINPKGNAME)/doc/
+	cp lua-akfavatar.de.pdf $(BINPKGNAME)/doc/
+	cp lua-akfavatar-ref.en.pdf $(BINPKGNAME)/doc/
+	cp lua-akfavatar-ref.de.pdf $(BINPKGNAME)/doc/
+	cp $(srcdir)/AUTHORS $(BINPKGNAME)/doc/AUTHORS.txt
+	cp $(srcdir)/COPYING $(BINPKGNAME)/doc/COPYING.txt
+	cp $(srcdir)/COPYING.LESSER $(BINPKGNAME)/doc/COPYING-LESSER.txt
+	cp $(srcdir)/NEWS $(BINPKGNAME)/doc/NEWS.txt
+	cp $(srcdir)/README-SDL $(BINPKGNAME)/doc/README-SDL.txt
+	cp $(srcdir)/README-Lua $(BINPKGNAME)/doc/README-Lua.txt
 	cp $(srcdir)/mingw/Homepage.url $(BINPKGNAME)/
 	$(u2d) $(BINPKGNAME)/lua/fsdemo-??.avt
-	$(u2d) $(BINPKGNAME)/*.txt
+	$(u2d) $(BINPKGNAME)/doc/*.txt
 	$(u2d) $(BINPKGNAME)/lua/*.lua
 	$(u2d) $(BINPKGNAME)/lua/akfavatar/*.lua
 	$(u2d) $(BINPKGNAME)/lua/akfavatar/*.about

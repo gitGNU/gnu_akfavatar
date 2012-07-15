@@ -786,14 +786,15 @@ dist-bin-default: all pdf
 	mkdir $(BINPKGNAME)/lua/documentation/Deutsch
 	mkdir $(BINPKGNAME)/lua/akfavatar
 	mkdir $(BINPKGNAME)/data
+	mkdir $(BINPKGNAME)/doc
 	#cp $(LIBNAME) $(BINPKGNAME)/
 	#-ln -sf $(LIBNAME) $(BINPKGNAME)/$(SONAME)
 	#cp lua-akfavatar.so $(BINPKGNAME)/lua/
 	cp lua-akfavatar $(BINPKGNAME)/
+	cp $(srcdir)/avtcmd $(BINPKGNAME)/
 	cp base64.so akfavatar-vorbis.so $(BINPKGNAME)/lua/
 	cp akfavatar-graphic.so $(BINPKGNAME)/lua/
 	cp akfavatar-term.so $(BINPKGNAME)/lua/
-	ln $(srcdir)/README-Lua $(BINPKGNAME)/
 	ln $(srcdir)/akfoerster-lua-akfavatar.desktop $(BINPKGNAME)/
 	ln $(srcdir)/Homepage.desktop $(BINPKGNAME)/
 	ln $(srcdir)/akfavatar.xpm $(srcdir)/lua.xpm $(BINPKGNAME)
@@ -848,17 +849,17 @@ dist-bin-default: all pdf
 	ln $(srcdir)/lua/documentation/Deutsch/function_plotter.about $(BINPKGNAME)/lua/documentation/Deutsch/
 	-ln $(srcdir)/lua/documentation/Deutsch/lua-akfavatar.about $(BINPKGNAME)/lua/documentation/Deutsch/
 	-ln $(srcdir)/lua/documentation/Deutsch/lua-akfavatar-ref.about $(BINPKGNAME)/lua/documentation/Deutsch/
-	-ln lua-akfavatar.en.pdf $(BINPKGNAME)/
-	-ln lua-akfavatar.de.pdf $(BINPKGNAME)/
-	-ln lua-akfavatar-ref.en.pdf $(BINPKGNAME)/
-	-ln lua-akfavatar-ref.de.pdf $(BINPKGNAME)/
+	-ln lua-akfavatar.en.pdf $(BINPKGNAME)/doc/
+	-ln lua-akfavatar.de.pdf $(BINPKGNAME)/doc/
+	-ln lua-akfavatar-ref.en.pdf $(BINPKGNAME)/doc/
+	-ln lua-akfavatar-ref.de.pdf $(BINPKGNAME)/doc/
+	ln $(srcdir)/README-Lua $(BINPKGNAME)/doc/
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/NEWS \
-	   $(srcdir)/avtcmd \
-	   $(BINPKGNAME)/
-	ln $(srcdir)/doc/lua-akfavatar.en.man $(BINPKGNAME)/
-	ln $(srcdir)/doc/lua-akfavatar.de.man $(BINPKGNAME)/
-	ln $(srcdir)/doc/lua-akfavatar-ref.en.man $(BINPKGNAME)/
-	ln $(srcdir)/doc/lua-akfavatar-ref.de.man $(BINPKGNAME)/
+	   $(BINPKGNAME)/doc/
+	ln $(srcdir)/doc/lua-akfavatar.en.man $(BINPKGNAME)/doc/
+	ln $(srcdir)/doc/lua-akfavatar.de.man $(BINPKGNAME)/doc/
+	ln $(srcdir)/doc/lua-akfavatar-ref.en.man $(BINPKGNAME)/doc/
+	ln $(srcdir)/doc/lua-akfavatar-ref.de.man $(BINPKGNAME)/doc/
 	ln $(srcdir)/lua/akfavatar/dir.??.about \
 	   $(srcdir)/lua/akfavatar/utf8.lua \
 	   $(srcdir)/lua/akfavatar/person.lua \
