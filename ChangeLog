@@ -5,6 +5,8 @@
 
 	* filechooser.c: markcolor depending on balloon color
 
+	* lua/lua-avt.c (lavt_menu): markcolor depending on balloon color
+
 	* lua/lua-akfavatar-prg.c (ask_file): different color
 
 2012-07-11  Andreas K. Foerster  <info@akfoerster.de>

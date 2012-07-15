@@ -1929,20 +1929,36 @@ lavt_launch (lua_State * L)
 
 #define MARK(S) \
          do { \
-           avt_set_text_background_color (0xDDDDDD); \
+           avt_set_text_background_color (markcolor); \
            avt_clear_line (); \
            avt_move_x (mid_x-(sizeof(S)/sizeof(wchar_t)-1)/2); \
            avt_say(S); \
            avt_normal_text(); \
          } while(0)
 
+// return a darker color
+static inline int
+darker (int color, int amount)
+{
+  int r, g, b;
+
+  r = avt_red (color);
+  g = avt_green (color);
+  b = avt_blue (color);
+
+  r = r > amount ? r - amount : 0;
+  g = g > amount ? g - amount : 0;
+  b = b > amount ? b - amount : 0;
+
+  return avt_rgb (r, g, b);
+}
 
 static int
 lavt_menu (lua_State * L)
 {
   long int item_nr;
   const char *item_desc;
-  int i;
+  int markcolor;
   int start_line, menu_start;
   int max_idx, items, page_nr, items_per_page;
   int choice;
@@ -1957,6 +1973,8 @@ lavt_menu (lua_State * L)
   avt_set_text_delay (0);
   avt_normal_text ();
   avt_lock_updates (true);
+
+  markcolor = darker (avt_get_balloon_color(), 0x22);
 
   start_line = avt_where_y ();
   if (start_line < 1)		// no balloon yet?
@@ -1998,7 +2016,7 @@ lavt_menu (lua_State * L)
 	  items = 1;
 	}
 
-      for (i = 1; i <= items_per_page; i++)
+      for (int i = 1; i <= items_per_page; i++)
 	{
 	  lua_rawgeti (L, 1, i + (page_nr * items_per_page));
 	  if (lua_istable (L, -1))
