@@ -14,6 +14,7 @@ avt.title("Hello World", "Hello")
 avt.set_background_color("tan")
 avt.start()
 avt.avatar_image("default")
+avt.move_in()
 avt.set_text_delay() --> activate the slowprint mode (optional)
 
 avt.set_balloon_size(10, 20) --> set the size of the balloon (optional)
@@ -33,3 +34,4 @@ Xin chào thế giới
 avt.newline()
 avt.say("π≈", math.pi) --> avt.say accepts strings and numbers
 avt.wait_button() --> wait for a button to be pressed
+avt.move_out()
