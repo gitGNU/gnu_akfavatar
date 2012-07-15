@@ -488,6 +488,7 @@ AVT_API int avt_get_background_color (void);
  * if the balloon is visible, it is cleared
  */
 AVT_API void avt_set_balloon_color (int color);
+AVT_API int avt_get_balloon_color (void);
 
 // change the text color
 AVT_API void avt_set_text_color (int color);

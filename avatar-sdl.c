@@ -4725,7 +4725,8 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   btn_rect.y = window.y + window.h - button->h - AVATAR_MARGIN;
 
   // the button shouldn't be clipped
-  if (btn_rect.y < textfield.y + textfield.h and btn_rect.x < textfield.x + textfield.w)
+  if (btn_rect.y < textfield.y + textfield.h
+      and btn_rect.x < textfield.x + textfield.w)
     btn_rect.x = textfield.x + textfield.w;
   // this is a workaround: moving it down clashed with a bug in SDL
 
@@ -6533,6 +6534,12 @@ avt_set_balloon_color (int color)
 	    avt_draw_balloon ();
 	}
     }
+}
+
+extern int
+avt_get_balloon_color (void)
+{
+  return avt_rgb (ballooncolor_RGB.r, ballooncolor_RGB.g, ballooncolor_RGB.b);
 }
 
 // can and should be called before avt_initialize
