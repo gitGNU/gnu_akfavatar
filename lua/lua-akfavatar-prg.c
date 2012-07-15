@@ -68,6 +68,7 @@ extern "C"
 #define AVT_COLOR_SAY         0xFFFAF0	// "floral white"
 #define AVT_COLOR_TEXT        0xD2B48C	// "tan"
 #define AVT_COLOR_START       AVT_COLOR_TEXT
+#define AVT_COLOR_SELECTOR    AVT_COLOR_TEXT
 
 // from lua-avt.c
 extern int luaopen_akfavatar_embedded (lua_State * L);
@@ -423,7 +424,7 @@ ask_file (void)
   const char *ext;
 
   avt_clear_screen ();
-  avt_set_balloon_color (AVT_COLOR_SAY);
+  avt_set_balloon_color (AVT_COLOR_SELECTOR);
   avt_avatar_image_xpm (akfavatar_logo_xpm);
   avt_set_balloon_mode (AVT_SEPARATE);
   avt_set_balloon_size (0, 0);

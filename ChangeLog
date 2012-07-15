@@ -3,6 +3,10 @@
 	* akfavatar.h, avatar-sdl.c (avt_get_balloon_color):
 	new function
 
+	* filechooser.c: markcolor depending on balloon color
+
+	* lua/lua-akfavatar-prg.c (ask_file): different color
+
 2012-07-11  Andreas K. Foerster  <info@akfoerster.de>
 
 	* configure: use gnu99 (or MinGW disables some POSIX functions)

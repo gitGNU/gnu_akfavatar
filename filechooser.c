@@ -34,7 +34,7 @@
 #include <iso646.h>
 
 
-#define marked(void) avt_set_text_background_color(0xDDDDDD)
+#define marked(void) avt_set_text_background_color(markcolor)
 
 // entries or marks that are not files
 #define marked_text(S) \
@@ -79,6 +79,8 @@
 
 // variable for custom filter
 static avta_filter custom_filter = NULL;
+
+static int markcolor;
 
 static bool
 is_directory (const char *name)
@@ -224,6 +226,23 @@ get_directory (struct dirent ***list)
 
 #endif
 
+// return a darker color
+static inline int
+darker (int color, int amount)
+{
+  int r, g, b;
+
+  r = avt_red (color);
+  g = avt_green (color);
+  b = avt_blue (color);
+
+  r = r > amount ? r - amount : 0;
+  g = g > amount ? g - amount : 0;
+  b = b > amount ? b - amount : 0;
+
+  return avt_rgb (r, g, b);
+}
+
 /*
  * filechooser
  * coose a file, starting in working directory
@@ -250,6 +269,8 @@ avta_file_selection (char *filename, int filename_size, avta_filter filter)
 
   avt_set_text_delay (0);
   avt_normal_text ();
+
+  markcolor = darker (avt_get_balloon_color (), 0x22);
 
   // don't show the balloon
   avt_show_avatar ();
