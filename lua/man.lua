@@ -11,11 +11,10 @@ local avt = require "lua-akfavatar"
 avt.encoding("ISO-8859-1")
 avt.title("Manpage")
 avt.start()
+avt.set_balloon_color("tan")
 
 function ask()
   avt.markup(true)
-  avt.avatar_image("default")
-  --avt.move_in()
   avt.set_balloon_size(3, 40)
   avt.say("man [_Option_ ...] [_Section_] _Page_ ...\n\nman ")
   local answer = avt.ask()

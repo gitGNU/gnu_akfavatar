@@ -21,6 +21,7 @@ avt.encoding("UTF-8")
 avt.title("Audio-Player")
 avt.start()
 avt.start_audio()
+avt.set_balloon_color("tan")
 
 -- open URL with the tool "curl"
 -- returns file handle

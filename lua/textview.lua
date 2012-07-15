@@ -9,6 +9,7 @@ local utf8 = require "akfavatar.utf8"
 avt.title("Text Viewer")
 avt.start()
 avt.avatar_image("none")
+avt.set_balloon_color("tan")
 
 -- what files to show with file_selection
 function textfile(n)
@@ -44,8 +45,6 @@ if arg[1]
   end
 
 local text = io.read("*all")
-
-avt.set_balloon_color "tan"
 
 -- note: WINDOWS-1252 is a superset of ISO-8859-1
 -- you should not use WINDOWS-1252 for your own texts, though!
