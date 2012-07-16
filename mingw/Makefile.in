@@ -2,7 +2,6 @@
 
 # for make dist-bin
 lua_dll = $(srcdir)/misc/lua52.dll
-lua_exe = $(srcdir)/misc/lua.exe
 sdl_dll = $(srcdir)/misc/SDL.dll
 
 ROFF = groff
@@ -338,7 +337,6 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	mkdir $(BINPKGNAME)/doc
 	cp $(sdl_dll) $(BINPKGNAME)/
 	cp $(lua_dll) $(BINPKGNAME)/
-	-cp $(lua_exe) $(BINPKGNAME)/
 	cp akfavatar.dll $(BINPKGNAME)/
 	cp lua-akfavatar.exe $(BINPKGNAME)/
 	#cp lua-akfavatar.dll $(BINPKGNAME)/
