@@ -69,6 +69,7 @@ avt.translations = {
 
 avt.encoding("UTF-8")
 avt.title(L"Function Plotter")
+avt.start()
 avt.avatar_image_file(avt.search("teacher.xpm") or "default")
 
 local gr, width, height = graphic.new()
