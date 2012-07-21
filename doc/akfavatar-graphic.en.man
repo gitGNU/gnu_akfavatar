@@ -1,0 +1,499 @@
+.\" Process this file with
+.\" groff -man -Tutf8 akfavatar-graphic.en.man
+.\"
+.
+.\" Macros .TQ .EX .EE taken from groff an-ext.tmac
+.\" Copyright (C) 2007, 2009 Free Software Foundation, Inc.
+.\" You may freely use, modify and/or distribute this file.
+.
+.\" Continuation line for .TP header.
+.de TQ
+.  br
+.  ns
+.  TP \\$1\" no doublequotes around argument!
+..
+.
+.\" Start example.
+.de EX
+.  nr mE \\n(.f
+.  nf
+.  nh
+.  ft CW
+..
+.
+.
+.\" End example.
+.de EE
+.  ft \\n(mE
+.  fi
+.  hy \\n(HY
+..
+.
+.TH "akfavatar-graphic" 3 2012-07-21 AKFAvatar
+.
+.SH NAME
+akfavatar-graphic \- module to display graphics in Lua-AKFAvatar
+.
+.SH SYNOPSIS
+.PP
+local graphic = require "akfavatar-graphic"
+.PP
+.SH DESCRIPTION
+.PP
+Module for Lua-AKFAvatar to display graphics.
+.PP
+.BR Notes :
+.br
+- Coordinates start with 1, 1 in the upper left corner.
+.br
+- It can also be used in the style of turtle graphic.
+.br
+- The pen size, position, heading, pen color and background color are set for
+each graphic.
+.PP
+.SS Functions / Methods
+.TP
+.BI "graphic.new(" "[width, height] [, background-color]" )
+Creates a new graphic (a canvas).
+.IP
+When 
+.IR width " and " height
+are not given it uses the whole window/screen.
+.br
+A thin black pen is chosen and the position is centered, heading to
+the top.
+.br
+If the
+.I "background-color"
+is not given, it is imported from AKFAvatar.
+.IP
+Retuns the graphic, the width and the height (ie. three values).
+.IP
+Use it like this:
+.EX
+local gr, width, height = graphic.new()
+.EE
+.PP
+.TP
+.B "graphic.fullsize()"
+Returns the width and height for a graphic so that it fills the whole window.
+.PP
+.TP
+.B "gr:show()"
+Shows the graphic as image after drawing.
+.IP
+.BR Hint :
+You can show intermediate images, continue drawing, wait a while
+and then show the next step and so on.
+This makes a nice animation.
+But don't make the steps too small, or it will be painful on slow devices.
+.PP
+.TP
+.B "gr:size()"
+Returns the width and the height of the graphic
+.IR gr .
+.PP
+.TP
+.B "gr:width()"
+Returns the width of the graphic
+.IR gr .
+.PP
+.TP
+.B "gr:height()"
+Returns the height of the graphic
+.IR gr .
+.PP
+.TP
+.BI "gr:color(" colorname )
+Sets the drawing color.
+.br
+The color can be either a defined color name,
+or a hexadecimal representation, like for example
+.IR """#FFFF00""" .
+.PP
+.TP
+.BI "gr:rgb(" "red, green, blue" )
+Sets the drawing color from RGB values.
+.br
+The values must be in the range from 0 to 255 inclusive.
+.br
+This method is faster than using
+.BR gr:color() .
+.PP
+.TP
+.B "gr:eraser()"
+Sets the drawing color to the background color.
+.PP
+.TP
+.B "gr:thickness(value)"
+Sets the thickness of the pen.
+.br
+The
+.I value
+1 is the thinnest.
+.PP
+.TP
+.BI "gr:clear(" "[colorname]" )
+Clears the graphic.
+.br
+If a
+.I colorname
+is given, then that becomes the new background color.
+.br
+The pen position is not changed.
+.PP
+.TP
+.BI "gr:putpixel(" "[x, y]" )
+Puts a pixel at the given coordinates or at the current pen position.
+.br
+The pen position is not changed.
+.PP
+.TP
+.BI "gr:getpixel(" "[x, y]" )
+Gets the pixel color at the given coordinates or at the current pen position.
+.br
+The color is returned as string in the hexadecimal RGB notation.
+.br
+On error it returns
+.I nil
+and an error message.
+.br
+The pen position is not changed.
+.PP
+.TP
+.BI "gr:getpixelrgb(" "[x, y]" )
+Gets the pixel color at the given coordinates or at the current pen position.
+.br
+Returns three integers for red, green and blue, in the range of 0-255.
+.br
+On error it returns
+.I nil
+and an error message.
+.br
+The pen position is not changed.
+.PP
+.TP
+.BI "gr:putdot(" "[x, y]" )
+Puts a dot at the given coordinates or at the current pen position.
+.br
+If the pen is thin, it's the same as
+.BR gr:putpixel .
+.br
+The pen position is not changed.
+.PP
+.TP
+.B "gr:pen_position()"
+Returns the x and y position of the pen
+(ie. returns two values).
+.PP
+.TP
+.B "gr:center()"
+.TQ
+.B "gr:home()"
+Sets the pen to the center of the graphic, heading to the top.
+.PP
+.TP
+.BI "gr:moveto(" "x, y" )
+Move the pen to
+.I "x, y"
+without drawing.
+.PP
+.TP
+.BI "gr:moverel(" "x, y" )
+Move the pen without drawing relative to its current position.
+.br
+A positive
+.I x
+value moves it to the right,
+.br
+a negative
+.I x
+value moves it to the left.
+.br
+A positive
+.I y
+value moves it down,
+.br
+a negative
+.I y
+value moves it up.
+.PP
+.TP
+.BI "gr:lineto(" "x, y" )
+Draws a line from the current pen position to these absolute coordinates.
+.br
+The pen is moved to the new coordinates.
+.PP
+.TP
+.BI "gr:linerel(" "x, y" )
+Draws a line relative to its current pen position.
+.br
+A positive
+.I x
+value draws to the right,
+.br
+a negative
+.I x
+value draws to the left.
+.br
+A positive
+.I y
+value draws down,
+.br
+a negative
+.I y
+value draws up.
+.br
+The pen is moved to the new position.
+.PP
+.TP
+.BI "gr:line(" "x1, y1, x2, y2" )
+Draws a line from
+.IR "x1, y1" " to " "x2, y2" .
+.br
+The pen is set to
+.IR "x2, y2" .
+.PP
+.TP
+.BI "gr:bar(" "x1, y1, x2, y2" )
+Draws a solid bar with
+.I "x1, y1"
+as the upper left corner and
+.I "x2, y2"
+as the lower right corner.
+.br
+The pen position is not changed.
+.PP
+.TP
+.BI "gr:rectangle(" "x1, y1, x2, y2" )
+Draws rectangle with
+.I "x1, y1"
+as the upper left corner and
+.I "x2, y2"
+as the lower right corner.
+.br
+The pen position is not changed.
+.PP
+.TP
+.BI "gr:arc(" "radius [, angle1] [, angle2]" )
+.TQ
+.BI "gr:circle(" "radius [, angle1] [, angle2]" )
+Draws a circle or an arc with the given
+.IR radius .
+.br
+The pen position is the center.
+.IP
+You can draw a part of the circle (an arc) by giving one or two angles
+in degree.
+If two angles are given, then it draws clockwise from the first
+angle to the second.
+If just one angle is given, it uses the heading as
+start-angle (see below under
+.BR "turtle graphics" ).
+.PP
+.TP
+.BI "gr:disc(" "radius [, x, y]" )
+Draws a disc, ie. a filled circle with the given
+.I radius
+with the given coordinates as center.
+If no coordinates are given, the current pen position is used as center.
+.br
+The pen position is not changed.
+.PP
+.TP
+.BI "gr:text(" "text [, x, y]" )
+Prints a text aligned to the given position or the pen position.
+.IP
+By default the text is centered to the position.
+But you can change this with 
+.BR "gr:textalign()" .
+.IP
+The encoding is used from the AKFAvatar settings.
+However no other of those settings are taken into account.
+The color is the drawing color for the graphic.
+There is currently no easy way to make boldface, underlined or
+inverted text.
+.IP
+You can use all printable characters, but control characters are not
+supported, not even a newline.
+.br
+The pen position is not changed.
+.PP
+.TP
+.BI "gr:textalign(" "[horizontal] [, vertical]" )
+Sets the textalignment for
+.BR "gr:text()" .
+.IP
+The horizontal alignment can be one of "left", "center" or "right".
+The default is "center".
+.IP
+The vertical alignment can be one of "top", "center" or "bottom".
+The default is "center".
+.IP
+The alignment means, where the given point is, eg. when you tell it to be
+"left"-aligned, the fixed point is on the left, but the text runs to the
+right.
+.PP
+.TP
+.B "graphic.font_size()"
+.TQ
+.B "gr:font_size()"
+Returns the width, height and the baseline of the font, ie. one character.
+It is a fixed-width font, each character has the same width.
+.PP
+.TP
+.BI "gr:put(" "graphic [, x, y]" )
+Puts a graphic onto graphic
+.I gr
+at the given position (upper-left corner).
+If no position is given it puts it at the upper-left corner.
+The previous content is overwritten (no transparency supported).
+.IP
+Copying a graphic with the same size and no position is highly efficient.
+The same is true for a graphic with the same width and
+.I x
+set to 1.
+.PP
+.TP
+.BI "gr:put_transparency(" "graphic [, x, y]" )
+Puts a graphic onto graphic
+.I gr
+at the given position (upper-left corner).
+.br
+If no position is given it puts it at the upper-left corner.
+.br
+Pixels with the background color are not copied, they are transparent.
+.br
+This is much slower than
+.BR "gr:put()" .
+.PP
+.TP
+.BI "gr:get(" "x1, y1, x2, y2" )
+Returns an area of the graphic
+.I gr
+as a new graphic.
+.br
+Most settings are copied, except the size and the pen settings.
+.br
+The pen is put in the center, heading to the top.
+.br
+All values must be in range.
+.PP
+.TP
+.B "gr:duplicate()"
+Returns an exact duplicate (a copy) of the graphic
+.IR gr .
+.br
+The graphic-specific settings are copied, too.
+.br
+This is faster than using
+.BR gr:get() .
+.IP
+You can use this for example to create a fixed background and then make a
+duplicate and draw the foreground on it.
+Then you can
+.B gr:put()
+the background graphic back to the duplicate and draw another foreground.
+.PP
+.TP
+.BI "gr:shift_vertically(" lines )
+Shifts the graphic vertically.
+.br
+A positive value for
+.I lines
+shifts it down.
+.br
+A negative value for
+.I lines
+shifts it up.
+.br
+The pen gets also moved.
+.PP
+.TP
+.BI "gr:shift_horizontally(" columns )
+Shifts the graphic horizontally.
+.br
+A positive value for
+.I columns
+shifts it right.
+.br
+A negative value for
+.I columns
+shifts it left.
+.br
+The pen gets also moved.
+.PP
+.TP
+.BI "gr:export_ppm(" filename )
+Exports the graphic as Portable Pixmap (PPM) file.
+.IP
+The PPM format is simple to implement, but not very efficient.
+You might want to use the ``netpbm'' tools or ``ImageMagick'' to convert
+it to another format.
+.IP
+The following example shows how to do this:
+.IP
+.EX
+function export(graphic, name)
+  local ppm = name..".ppm"
+  local png = name..".png"
+  graphic:export_ppm(ppm)
+  if os.execute("pnmtopng "..ppm.." > "..png)
+     or os.execute("convert "..ppm.." "..png)
+  then os.remove(ppm) end
+end
+.EE
+.IP
+First it exports the graphic in the PPM format.
+Then it tries to convert it to the PNG format.
+If that succeeds, it deletes the PPM file.
+If the user doesn't have ``netpbm'' or ``ImageMagick'' installed, he still ends
+up with the PPM file.
+.PP
+.SS Turtle graphics
+.PP
+To understand turtle graphics think of a turtle that carries a pen.
+You can control the turtle by telling her in which direction to turn
+and how far to move.
+.PP
+.TP
+.BI "gr:heading(" heading )
+Sets the heading for the turtle.
+The value must be given in degree and the turtle turns clockwise.
+The value 0 means, it's heading to the top,
+90 means it heads to the right.
+.PP
+.TP
+.B "gr:get_heading()"
+Returns the heading of the turtle
+(see
+.BR "gr:heading()" ).
+.PP
+.TP
+.BI "gr:right(" angle )
+Turn the turtle clockwise by the specified
+.I angle
+in degree.
+.PP
+.TP
+.BI "gr:left(" angle )
+Turn the turtle counterclockwise by the specified
+.I angle
+in degree.
+.PP
+.TP
+.BI "gr:draw(" steps )
+Draw a line in the direction the turtle is heading.
+.PP
+.TP
+.BI "gr:move(" steps )
+Move the turtle in the direction it is heading without drawing.
+.PP
+.TP
+.B "gr:home()"
+Sets the pen to the center of the graphic, heading to the top.
+.PP
+.SH "SEE ALSO"
+.BR lua-akfavatar (1)
+.BR lua (1)
+.BR lua-akfavatar-ref (3)

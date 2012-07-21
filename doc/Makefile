@@ -18,21 +18,26 @@ info:
 
 html: lua-akfavatar.en.html lua-akfavatar.de.html \
       akfavatar.h.html avtaddons.h.html \
-      lua-akfavatar-ref.en.html lua-akfavatar-ref.de.html
+      lua-akfavatar-ref.en.html lua-akfavatar-ref.de.html \
+      akfavatar-graphic.en.html akfavatar-graphic.de.html
 
 txt: lua-akfavatar-ref.en.txt lua-akfavatar-ref.de.txt \
-     lua-akfavatar.en.txt lua-akfavatar.de.txt
+     lua-akfavatar.en.txt lua-akfavatar.de.txt \
+     akfavatar-graphic.en.txt akfavatar-graphic.de.txt
 
 pdf: lua-akfavatar.en.pdf lua-akfavatar.de.pdf \
      akfavatar.h.pdf avtaddons.h.pdf \
-     lua-akfavatar-ref.en.pdf lua-akfavatar-ref.de.pdf
+     lua-akfavatar-ref.en.pdf lua-akfavatar-ref.de.pdf \
+     akfavatar-graphic.en.pdf akfavatar-graphic.de.pdf
 
 ps: lua-akfavatar.en.ps lua-akfavatar.de.ps \
     akfavatar.h.ps avtaddons.h.ps \
-    lua-akfavatar-ref.en.ps lua-akfavatar-ref.de.ps
+    lua-akfavatar-ref.en.ps lua-akfavatar-ref.de.ps \
+    akfavatar-graphic.en.ps akfavatar-graphic.de.ps
 
 dvi: lua-akfavatar.en.dvi lua-akfavatar.de.dvi \
-     lua-akfavatar-ref.en.dvi lua-akfavatar-ref.de.dvi
+     lua-akfavatar-ref.en.dvi lua-akfavatar-ref.de.dvi \
+     akfavatar-graphic.en.dvi akfavatar-graphic.de.dvi
 
 docbook:
 

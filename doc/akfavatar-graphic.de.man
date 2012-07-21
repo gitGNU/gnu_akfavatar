@@ -1,0 +1,522 @@
+.\" Process this file with
+.\" groff -man -Tutf8 akfavatar-graphic.de.man
+.\"
+.
+.\" Macros .TQ .EX .EE taken from groff an-ext.tmac
+.\" Copyright (C) 2007, 2009 Free Software Foundation, Inc.
+.\" You may freely use, modify and/or distribute this file.
+.
+.\" Continuation line for .TP header.
+.de TQ
+.  br
+.  ns
+.  TP \\$1\" no doublequotes around argument!
+..
+.
+.\" Start example.
+.de EX
+.  nr mE \\n(.f
+.  nf
+.  nh
+.  ft CW
+..
+.
+.
+.\" End example.
+.de EE
+.  ft \\n(mE
+.  fi
+.  hy \\n(HY
+..
+.
+.TH "akfavatar-graphic" 3 2012-07-21 AKFAvatar
+.
+.SH NAME
+akfavatar-graphic \- Modul für die Anzeige von Grafiken unter Lua-AKFAvatar
+.
+.SH SYNTAX
+.PP
+local graphic = require "akfavatar-graphic"
+.PP
+.SH BESCHREIBUNG
+.PP
+Modul für Lua-AKFAvatar um Grafiken anzuzeigen.
+.PP
+.BR Hinweise :
+.br
+- Koordinaten fangen mit 1, 1 in der oberen linken Ecke an.
+.br
+- Man kann es auch nach Art der Turtle-Grafik verwenden.
+.br
+- Die Stiftbreite, Position, Ausrichtung, Stift-Farbe und Hintergrund-Farbe sind
+für jede Grafik einzeln festgelegt.
+.PP
+.SS Funktionen / Methoden
+.TP
+.BI "graphic.new(" "[Breite, Höhe] [, Hintergrundfarbe]" )
+Erzeugt eine neue Grafik (eine Leinwand).
+.IP
+Wenn die 
+.IR Breite " und " Höhe
+nicht angegeben wird, wird das gesamte Fenster bzw. Bildschirm verwendet.
+.br
+Es wird ein dünner, schwarzer Stift ausgewählt und die Position ist in der
+Mitte, nach oben ausgerichtet.
+.br
+Wenn die
+.I Hintergrundfarbe
+nicht angegeben ist, wird diese von AKFAvatar übernommen.
+.IP
+Gibt die Grafik, die Breite und Höhe zurück (dh. drei Werte).
+.IP
+Beispiel:
+.EX
+local gr, width, height = graphic.new()
+.EE
+.PP
+.TP
+.B "graphic.fullsize()"
+Gibt die erforderliche Breite und Höhe zurück, so dass das Bild das gesamte
+Fenster füllt.
+.PP
+.TP
+.B "gr:show()"
+Zeigt die Grafik als Bild nach dem Zeichnen.
+.IP
+.BR Hinweis :
+Man kann auch Zwischenschritte zeigen, dann weiter zeichnen, eine
+Weile warten und dann den nächsten Schritt zeigen und so weiter.
+Dadurch erzeugt man eine kleine Animation.
+Man sollte die Schritte aber nicht zu klein wählen, sonst wird es
+zu langsam auf langsamen Geräten.
+.PP
+.TP
+.B "gr:size()"
+Gibt die Breite und Höhe der Grafik
+.I gr
+zurück.
+.PP
+.TP
+.B "gr:width()"
+Gibt die Breite der Grafik
+.I gr
+zurück.
+.PP
+.TP
+.B "gr:height()"
+Gibt die Höhe der Grafik
+.I gr
+zurück.
+.PP
+.TP
+.BI "gr:color(" Farbname )
+Legt die Zeichenfarbe fest.
+.br
+Die Farbe kann entweder ein vordefinierter englischsprachiger Name sein,
+oder eine hexadezimale Angabe, wie zum Beispiel
+.IR """#FFFF00""" .
+.PP
+.TP
+.BI "gr:rgb(" "rot, grün, blau" )
+Legt die Zeichenfarbe anhand von RGB-Werten fest.
+.br
+Die Werte müssen im Bereich von 0 bis 255 inklusive sein.
+.br
+Diese Methode ist schneller, als
+.B gr:color()
+zu verwenden.
+.PP
+.TP
+.B "gr:eraser()"
+Setzt die Zeichenfarbe auf die Hintergrundfarbe (Radiergummi).
+.PP
+.TP
+.BI "gr:thickness(" Wert )
+Legt die Dicke des Stiftes fest.
+Der
+.I Wert
+1 ist der dünnste.
+.PP
+.TP
+.BI "gr:clear(" [Farbname] )
+Löscht die Grafik.
+.br
+Wenn ein
+.I Farbname
+angegeben ist, wird dieser zur neuen Hintergrund-Farbe.
+.br
+Die Stift-Position wird nicht verändert.
+.PP
+.TP
+.BI "gr:putpixel(" "[x, y]" )
+Setzt einen Pixel an den angegebenen Koordinaten, oder bei der aktuellen
+Stift-Position.
+.br
+Die Stift-Position wird nicht verändert.
+.PP
+.TP
+.BI "gr:getpixel(" "[x, y]" )
+Gibt die Pixelfarbe an den angegebenen Koordinaten oder bei der aktuellen
+Stift-Position zurück.
+Die Farbe wird als String in hexadezimaler RGB-Schreibweise zurückgegeben.
+Im Fehlerfall wird
+.I nil
+und eine Fehlermeldung zurückgegeben.
+.br
+Die Stift-Position wird nicht verändert.
+.PP
+.TP
+.BI "gr:getpixelrgb(" "[x, y]" )
+Gibt die Pixelfarbe an den angegebenen Koordinaten oder bei der aktuellen
+Stift-Position zurück.
+.br
+Es werden drei Ganzzahlen für rot, grün und blau, im Bereich von 
+0 bis 255 zurückgegeben.
+.br
+Im Fehlerfall wird
+.I nil
+und eine Fehlermeldung zurückgegeben.
+.br
+Die Stift-Position wird nicht verändert.
+.PP
+.TP
+.BI "gr:putdot(" "[x, y]" )
+Setzt einen Punkt an den angegebenen Koordinaten, oder bei der aktuellen
+Stift-Position.
+.br
+Wenn der Stift dünn ist, ist es das gleiche wie
+.BR gr:putpixel() .
+.br
+Die Stift-Position wird nicht verändert.
+.PP
+.TP
+.B "gr:pen_position()"
+Gibt die x- und y-Position des Stiftes zurück
+(dh. es werden zwei Werte zurückgegeben).
+.PP
+.TP
+.B "gr:center()"
+.TQ
+.B "gr:home()"
+Setzt den Stift auf die Mitte der Grafik, nach oben ausgerichtet.
+.PP
+.TP
+.BI "gr:moveto(" "x, y" )
+Bewegt den Stift nach
+.I "x, y"
+ohne zu zeichnen.
+.PP
+.TP
+.BI "gr:moverel(" "x, y" )
+Bewegt den Stift ohne zu zeichnen relativ zu seiner aktuellen Position.
+.br
+Ein postitiver
+.IR x -Wert
+bewegt ihn nach rechts,
+.br
+ein negativer
+.IR x -Wert
+bewegt ihn nach links.
+.br
+Ein postitiver
+.IR y -Wert
+bewegt ihn nach unten,
+.br
+ein negativer
+.IR y -Wert
+bewegt ihn nach oben.
+.PP
+.TP
+.BI "gr:lineto(" "x, y" )
+Zeichnet eine Linie von der aktuellen Stift-Position zu den absoluten
+Koordinaten.
+.br
+Der Stift wird zu den neuen Koordinaten bewegt.
+.PP
+.TP
+.BI "gr:linerel(" "x, y" )
+Zeichnet eine Linie relativ zur aktuellen Stift-Position.
+.br
+Ein postitiver
+.IR x -Wert
+zeichnet nach rechts,
+.br
+ein negativer
+.IR x -Wert
+zeichnet nach links.
+.br
+Ein postitiver 
+.IR y -Wert
+zeichnet nach unten,
+.br
+ein negativer
+.IR y -Wert
+zeichnet nach oben.
+.br
+Der Stift wird dabei zu den neuen Koordinaten bewegt.
+.PP
+.TP
+.BI "gr:line(" "x1, y1, x2, y2" )
+Zeichnet eine Linie von
+.IR "x1, y1" " nach " "x2, y2" .
+.br
+Der Stift wird auf
+.I "x2, y2"
+gesetzt.
+.PP
+.TP
+.BI "gr:bar(" "x1, y1, x2, y2" )
+Malt einen ausgefüllten Balken mit
+.I "x1, y1"
+als obere linke Ecke und
+.I "x2, y2"
+als untere rechte Ecke.
+.br
+Die Stift-Position wird nicht verändert.
+.PP
+.TP
+.BI "gr:rectangle(" "x1, y1, x2, y2" )
+Zeichnet ein Rechteck mit
+.I "x1, y1"
+als obere linke Ecke und
+.I "x2, y2"
+als untere rechte Ecke.
+.br
+Die Stift-Position wird nicht verändert.
+.PP
+.TP
+.BI "gr:arc(" "Radius [, Winkel1] [, Winkel2]" )
+.TQ
+.BI "gr:circle(" "Radius [, Winkel1] [, Winkel2]" )
+Zeichnet einen Kreis oder Bogen mit dem angegebenen
+.IR Radius .
+.br
+Die Stift-Position markiert den Mittelpunkt.
+.IP
+Man kann einen Teil des Kreises (einen Bogen) zeichnen, indem man einen oder
+zwei Winkel in Grad angibt.
+Wenn zwei Winkel angegeben sind, dann wird im Uhrzeigersinn vom ersten Winkel
+bis zum zweiten gezeichnet.
+Wenn nur ein Winkel angegebene ist, verwendet es die Stift-Ausrichtung als
+Anfangswinkel (siehe unten bei
+.BR Turtle-Grafik ).
+.PP
+.TP
+.BI "gr:disc(" "Radius [, x, y] )
+Zeichnet eine Scheibe, dh. einen gefüllten Kreis mit dem angegebenen
+.I Radius
+und den angegebenen Koordinaten als Mittelpunkt.
+Sind keine Koordinaten angegeben, wird die aktuelle Stift-Position als
+Mittelpunkt verwendet.
+.br
+Die Stift-Position wird nicht verändert.
+.PP
+.TP
+.BI "gr:text(" "Text [, x, y]" )
+Schreibt einen Text, ausgerichtet an der angegebenen Position oder der
+Stift-Position.
+.IP
+Standardmäßig wird der Text an der Postion zentriert.
+Aber das kann man mit
+.B gr:textalign()
+ändern.
+.IP
+Die Kodierung wird von den AKFAvatar-Einstellungen übernommen.
+Andererseits werden keine anderen der dortigen Einstellungen verwendet.
+Die Farbe ist die Zeichenfarbe für die Grafik.
+Es gibt momentan keine einfache Möglichkeit für Fettdruck, Unterstreichen
+oder inverse Dastellung.
+.IP
+Man kann sämtliche darstellbaren Zeichen verwenden, aber Steuerzeichen
+werden nicht unterstützt, nichtmal ein Zeilenumbruch.
+.br
+Die Stift-Position wird nicht verändert.
+.PP
+.TP
+.BI "gr:textalign(" "[horizontal] [, vertikal]" )
+Legt die Ausrichtung für
+.B gr:text()
+fest.
+.IP
+Die horizontale Ausrichtung kann eines von "left", "center" oder "right"
+sein.
+Die Vorgabe ist "center".
+.IP
+Die vertikale Ausrichtung kann eines von "top", "center" oder "bottom" sein.
+Die Vorgabe ist "center".
+.IP
+Die Ausrichtung bedeutet, wo der Bezugspunkt ist, zum Beispiel wenn man
+angibt, dass es links ausgerichtet sein soll, ist der Bezugspunkt links,
+aber der Text läuft nach rechts.
+.PP
+.TP
+.B "graphic.font_size()"
+.TQ
+.B "gr:font_size()"
+Gibt die Breite, Höhe und die Grundlinie eines Zeichens zurück.
+Es handelt sich um einen Zeichensatz mit fester Breite, jedes Zeichen hat
+die selbe Breite.
+.PP
+.TP
+.BI "gr:put(" "Grafik [, x, y]" )
+Kopiert eine Grafik auf die Grafik
+.I gr
+bei der angegebenen Position (obere linke Ecke).
+Wenn keine Position angegeben ist, wird es in die obere linke Ecke gesetzt.
+Der vorherige Inhalt wird überschrieben (keine Transparenz).
+.IP
+Eine Grafik mit der selben Breite und ohne Angabe einer Position zu
+kopieren ist äußerst effizient.
+Das selbe gilt wenn die Grafik die selbe Breite hat und die
+.IR x -Position
+auf 1 gesetzt ist.
+.PP
+.TP
+.BI "gr:put_transparency(" "Grafik [, x, y]" )
+Legt eine Grafik über die Grafik
+.I gr
+bei der angegebenen Position (obere linke Ecke).
+.br
+Wenn keine Position angegeben ist, wird es in die obere linke Ecke gesetzt.
+.br
+Pixel mit der Hintergrundfarbe werden nicht kopiert, die sind transparent.
+.br
+Dies ist wesentlich langsamer als
+.BR gr:put() .
+.PP
+.TP
+.BI "gr:get(" "x1, y1, x2, y2" )
+Gibt einen Bereich der Grafik
+.I gr
+als neue Grafik zurück.
+.br
+Die meisten Einstellungen werden ebenfalls kopiert, mit Ausnahme der Größe
+und der Stift-Position.
+.br
+Der Stift wird auf die Mitte der neuen Grafik gesetzt, nach oben ausgerichtet.
+.br
+Alle Werte müssen im gültigen Bereich liegen.
+.PP
+.TP
+.B "gr:duplicate()"
+Gibt ein exaktes Duplikat (eine Kopie) der Grafik 
+.I gr
+zurück.
+.br
+Die Grafik-spezifischen Einstellungen werden ebenfalls kopiert.
+.br
+Das geht schneller als mit
+.BR gr:get() .
+.IP
+Man kann dies zum Beispiel verwenden, um erstmal einen festen Hintergrund zu
+zeichnen und dann ein Duplikat zu erstellen.
+Darauf zeichnet man dann einen Vordergrund.
+Dann kann man den Hintergrund wieder darauf kopieren
+.RB ( gr:put )
+und einen neuen Vordergrund zeichnen.
+.PP
+.TP
+.BI "gr:shift_vertically(" Zeilen )
+Verschiebt die Grafik vertikal.
+.br
+Ein positiver Wert für
+.I Zeilen
+schiebt sie nach unten.
+.br
+Ein negativer Wert für
+.I Zeilen
+schiebt sie nach oben.
+.br
+Der Stift wird mitbewegt.
+.PP
+.TP
+.BI "gr:shift_horizontally(" Spalten )
+Verschiebt die Grafik horizontal.
+.br
+Ein positiver Wert für
+.I Spalten
+schiebt sie nach rechts.
+.br
+Ein negativer Wert für
+.I Spalten
+schiebt sie nach links.
+.br
+Der Stift wird mitbewegt.
+.PP
+.TP
+.BI "gr:export_ppm(" filename )
+Exportiert die Grafik als Portable Pixmap (PPM) Datei.
+.IP
+Das PPM-Format ist simpel zu implementieren, aber nicht sehr effizient.
+Man kann aber die ``netpbm''-Werkzeuge oder ``ImageMagick'' verwenden,
+um es in ein anderes Format umzuwandeln.
+.IP
+Das fogende Beispiel zeigt, wie man das macht:
+.IP
+.EX
+function export(graphic, name)
+  local ppm = name..".ppm"
+  local png = name..".png"
+  graphic:export_ppm(ppm)
+  if os.execute("pnmtopng "..ppm.." > "..png)
+     or os.execute("convert "..ppm.." "..png)
+  then os.remove(ppm) end
+end
+.EE
+.IP
+Zunächst exportiert es die Grafik im PPM-Format.
+Dann versucht es dieses ins PNG-Format umzuwandeln.
+Falls das gelingt, wird die PPM-Datei gelöscht.
+Wenn der Anwender ``netpbm'' oder ``ImageMagick'' aber nicht installiert hat,
+hat er am Ende immer noch die PPM-Datei.
+.PP
+.SS Turtle-Grafik
+.PP
+Um Turtle-Grafik (``Schildkröten-Grafik'', manchmal auch ``Igel-Grafik'' genannt)
+zu verstehen, muss man sich eine Schildkröte verstellen, die einen Stift trägt.
+Man kann der Schildkröte dann Befehle erteilen in welche Richtung sie sich drehen
+soll und wie weit sie sich zu bewegen hat.
+.PP
+.TP
+.BI "gr:heading(" Ausrichtung )
+Legt die Ausrichtung der Schildkröte fest.
+Der Wert muss in Grad angegeben werden und die Schildkröte dreht sich im
+Uhrzeigersinn.
+Der Wert 0 bedeutet, sie ist nach oben ausgerichtet,
+90 bedeutet nach rechts.
+.PP
+.TP
+.B "gr:get_heading()"
+Gibt die Ausrichtung der Schildkröte zurück
+(siehe
+.BR "gr:heading()" ).
+.PP
+.TP
+.BI "gr:right(" Winkel )
+Drehe die Schildkröte im Uhrzeigersinn um den angegebenen
+.I Winkel
+in Grad.
+.PP
+.TP
+.BI "gr:left(" Winkel )
+Drehe die Schildkröte gegen den Uhrzeigersinn um den angegebenen
+.I Winkel
+in Grad.
+.PP
+.TP
+.BI "gr:draw(" Schritte )
+Zeichne eine Linie in die Richtung, in die die Schildköte ausgerichtet ist.
+.PP
+.TP
+.BI "gr:move(" Schritte )
+Bewege die Schildkröte in die Richtung in der sie ausgerichtet ist, ohne zu
+zeichnen.
+.PP
+.TP
+.B "gr:home()"
+Setzt die Schildkröte in die Mitte der Grafik, nach oben ausgerichtet.
+.PP
+.SH "SIEHE AUCH"
+.BR lua-akfavatar (1)
+.BR lua (1)
+.BR lua-akfavatar-ref (3)

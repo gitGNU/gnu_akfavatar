@@ -252,7 +252,9 @@ akfavatar-graphic-info.o: $(srcdir)/mingw/akfavatar-graphic.rc version.h
 about: $(srcdir)/lua/documentation/English/lua-akfavatar.about \
        $(srcdir)/lua/documentation/Deutsch/lua-akfavatar.about \
        $(srcdir)/lua/documentation/English/lua-akfavatar-ref.about \
-       $(srcdir)/lua/documentation/Deutsch/lua-akfavatar-ref.about
+       $(srcdir)/lua/documentation/Deutsch/lua-akfavatar-ref.about \
+       $(srcdir)/lua/documentation/English/akfavatar-graphic.about \
+       $(srcdir)/lua/documentation/Deutsch/akfavatar-graphic.about \
 
 $(srcdir)/lua/documentation/English/lua-akfavatar.about: $(srcdir)/doc/lua-akfavatar.en.man
 	-$(ROFF) -c -man -Tutf8 $(srcdir)/doc/lua-akfavatar.en.man > $@
@@ -269,6 +271,16 @@ $(srcdir)/lua/documentation/Deutsch/lua-akfavatar-ref.about: \
   $(srcdir)/doc/lua-akfavatar-ref.de.man
 	-$(ROFF) -c -man -Tutf8 \
 	  $(srcdir)/doc/lua-akfavatar-ref.de.man > $@
+
+$(srcdir)/lua/documentation/English/akfavatar-graphic.about: \
+  $(srcdir)/doc/akfavatar-graphic.en.man
+	-$(ROFF) -c -man -Tutf8 \
+	  $(srcdir)/doc/akfavatar-graphic.en.man > $@
+
+$(srcdir)/lua/documentation/Deutsch/akfavatar-graphic.about: \
+  $(srcdir)/doc/akfavatar-graphic.de.man
+	-$(ROFF) -c -man -Tutf8 \
+	  $(srcdir)/doc/akfavatar-graphic.de.man > $@
 
 
 clean:
@@ -301,6 +313,8 @@ mostlyclean: clean
 	-rm -f lua-akfavatar.en.pdf lua-akfavatar.en.ps lua-akfavatar.en.dvi
 	-rm -f lua-akfavatar-ref.de.pdf lua-akfavatar-ref.de.ps lua-akfavatar-ref.de.dvi
 	-rm -f lua-akfavatar-ref.en.pdf lua-akfavatar-ref.en.ps lua-akfavatar-ref.en.dvi
+	-rm -f akfavatar-graphic.de.pdf akfavatar-graphic.de.ps akfavatar-graphic.de.dvi
+	-rm -f akfavatar-graphic.en.pdf akfavatar-graphic.en.ps akfavatar-graphic.en.dvi
 	-rm -f akfavatar.h.ps akfavatar.h.pdf
 	-rm -f avtaddons.h.ps avtaddons.h.pdf
 	-rm -f lua-akfavatar.exe
@@ -401,6 +415,8 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp lua-akfavatar.de.pdf $(BINPKGNAME)/doc/
 	cp lua-akfavatar-ref.en.pdf $(BINPKGNAME)/doc/
 	cp lua-akfavatar-ref.de.pdf $(BINPKGNAME)/doc/
+	cp akfavatar-graphic.en.pdf $(BINPKGNAME)/doc/
+	cp akfavatar-graphic.de.pdf $(BINPKGNAME)/doc/
 	cp $(srcdir)/AUTHORS $(BINPKGNAME)/doc/AUTHORS.txt
 	cp $(srcdir)/COPYING $(BINPKGNAME)/doc/COPYING.txt
 	cp $(srcdir)/COPYING.LESSER $(BINPKGNAME)/doc/COPYING-LESSER.txt
