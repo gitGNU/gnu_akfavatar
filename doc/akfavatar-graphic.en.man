@@ -497,3 +497,4 @@ Sets the pen to the center of the graphic, heading to the top.
 .BR lua-akfavatar (1)
 .BR lua (1)
 .BR lua-akfavatar-ref (3)
+.BR akfavatar-term (3)

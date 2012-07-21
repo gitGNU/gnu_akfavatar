@@ -166,3 +166,9 @@ to the guest program, as if it is typed from the keyboard.
 This can only be used from the APC interface (see above).
 If the guest program is line-oriented, both strings should be given and
 they should be closed with "\\r" (for return).
+.PP
+.SH "SEE ALSO"
+.BR lua-akfavatar (1)
+.BR lua (1)
+.BR lua-akfavatar-ref (3)
+.BR akfavatar-graphic (3)

@@ -176,3 +176,9 @@ Das kann man nur von der APC-Schnittstelle (siehe oben) verwenden.
 .br
 Wenn das ausgeführte Programm zeilenorientiert ist, sollten beide Strings
 angegeben werden und beide mit einem "\\r" (wie Return) abgeschlossen werden.
+.PP
+.SH "SIEHE AUCH"
+.BR lua-akfavatar (1)
+.BR lua (1)
+.BR lua-akfavatar-ref (3)
+.BR akfavatar-graphic (3)
