@@ -1,0 +1,168 @@
+.\" Process this file with
+.\" groff -man -Tutf8 akfavatar-term.en.man
+.\"
+.
+.\" Macros .TQ .EX .EE taken from groff an-ext.tmac
+.\" Copyright (C) 2007, 2009 Free Software Foundation, Inc.
+.\" You may freely use, modify and/or distribute this file.
+.
+.\" Continuation line for .TP header.
+.de TQ
+.  br
+.  ns
+.  TP \\$1\" no doublequotes around argument!
+..
+.
+.\" Start example.
+.de EX
+.  nr mE \\n(.f
+.  nf
+.  nh
+.  ft CW
+..
+.
+.
+.\" End example.
+.de EE
+.  ft \\n(mE
+.  fi
+.  hy \\n(HY
+..
+.
+.TH "akfavatar-term" 3 2012-07-21 AKFAvatar
+.
+.SH NAME
+akfavatar-term \- module to execute terminal based programs inside of AKFAvatar
+.
+.SH SYNOPSIS
+.PP
+term = require "akfavatar-term"
+.PP
+.BR Note :
+You have to use a global variable if you want to use the APC interface.
+.PP
+.SH DESCRIPTION
+.PP
+This module can be used to execute common terminal based programs inside of
+AKFAvatar.
+The terminal emulation emulates a Linux textconsole (not only on Linux
+based systems).
+.PP
+It can also be used to write specific programs for AKFAvatar in otherwise
+unsupported languages.
+There are some facilities with which the hosting script and the guest 
+program can communicate with each other.
+.PP
+.BR ATTENTION :
+This module is not available for all platforms!
+Especially not for Windows.
+.PP
+.TP
+.BI term.startdir( [directory] )
+Sets the start directory for the next
+.B term.execute()
+command.
+If no directory is given, it clears the previous setting.
+.IP
+.BR Note :
+The working directory of the host and the guest program are independent!
+.PP
+.TP
+.B term.homedir()
+Set the start directory for the next
+.B term.execute()
+command to the users home directory.
+.IP
+.BR Note :
+The working directory of the host and the guest program are independent!
+.PP
+.TP
+.BI term.color( "true|false" )
+Switches the color support on or off.
+.br
+The terminal type with color is "linux", without color it is "linux-m".
+.PP
+.TP
+.BI term.setenv( "variable, value" )
+Sets the given environment
+.I variable
+to the given
+.IR value .
+.br
+This also affects programs started with
+.BR os.execute() " or " io.popen() .
+.PP
+.TP
+.BI term.unsetenv( variable )
+Unsets (clears) the given environment
+.IR variable .
+.br
+This also affects programs started with
+.BR os.execute() " or " io.popen() .
+.PP
+.TP
+.BI term.execute( "[program [,arguments]]" )
+Executes the given
+.I program
+with the given
+.I arguments
+in the terminal emulation.
+If no
+.I program
+is given it starts the default shell.
+.PP
+.SS APC interface
+.PP
+The ``Application Program Command'' (APC) interface is a method with which the
+guest program can communicate with the Lua interpreter of the host program.
+To use this, the guest program sends Escape sequences to the standard output,
+like follows: ESC + "_", followed by the command, closed with ESC + "\\" to
+end the sequence.
+The output has eventually to be flushed to get an immediate effect.
+.PP
+For example in C:
+.PP
+.EX
+static void
+APC (const char *s)
+{
+  fprintf (stdout, "\\033_%s\\033\\\\", s);
+  fflush (stdout);
+}
+.EE
+.PP
+The commands can be Lua function calls, especially the ``avt.'' commands
+defined by ``lua-akfavatar'' (see the ``lua-akfavatar-ref'').
+.br
+Up to 1024 characters can be sent.
+So it is not suited to send complicated code from the guest program.
+However the hosting script, that is the Lua script that calls the guest
+program, can define its own global functions, which are then also accessible
+with the APC interface.
+.PP
+As a convention the host script should define an environment variable named
+.IR """APC""" ,
+which decribes the accessible commands.
+.PP
+For example:
+.PP
+.EX
+  term.setenv("APC", _VERSION .. ", lua-akfavatar")
+.EE
+.PP
+.TP
+.BI term.send( string )
+Send a string to the guest program, as if it is typed from the keyboard.
+This can only be used from the APC interface (see above).
+.br
+If the guest program is line-oriented, the string should be closed
+with a "\\r" (for return).
+.PP
+.TP
+.BI term.decide( "string1 [,string2]" )
+Present plus/minus buttons and depending on that choice sends
+.IR string1 " or " string2
+to the guest program, as if it is typed from the keyboard.
+This can only be used from the APC interface (see above).
+If the guest program is line-oriented, both strings should be given and
+they should be closed with "\\r" (for return).

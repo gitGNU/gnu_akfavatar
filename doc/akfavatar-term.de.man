@@ -1,0 +1,178 @@
+.\" Process this file with
+.\" groff -man -Tutf8 akfavatar-term.de.man
+.\"
+.
+.\" Macros .TQ .EX .EE taken from groff an-ext.tmac
+.\" Copyright (C) 2007, 2009 Free Software Foundation, Inc.
+.\" You may freely use, modify and/or distribute this file.
+.
+.\" Continuation line for .TP header.
+.de TQ
+.  br
+.  ns
+.  TP \\$1\" no doublequotes around argument!
+..
+.
+.\" Start example.
+.de EX
+.  nr mE \\n(.f
+.  nf
+.  nh
+.  ft CW
+..
+.
+.
+.\" End example.
+.de EE
+.  ft \\n(mE
+.  fi
+.  hy \\n(HY
+..
+.
+.TH "akfavatar-term" 3 2012-07-21 AKFAvatar
+.
+.SH NAME
+akfavatar-term \- Modul zum Ausführen von Terminal-basierten Programmen in AKFAvatar
+.
+.SH SYNTAX
+.PP
+term = require "akfavatar-term"
+.PP
+.BR Hinweis :
+Man muss eine globale Variable verwenden, wenn man die APC-Schnittstelle
+verwenden will.
+.PP
+.SH BESCHREIBUNG
+.PP
+Dieses Modul kann man verwenden um allgemeine Terminal-basierte Programme
+innerhalb von AKFAvatar laufen zu lassen.
+Die Terminal-Emulation emuliert eine Linux-Textkonsole
+(nicht nur auf Linux-basierten Systemen).
+.PP
+Es kann auch dafür verwendet werden, um spezifische Programme für AKFAvatar zu
+schreiben, in Programmiersprachen, die ansonsten nicht unterstützt werden.
+Es gibt ein paar Möglichkeiten mit denen das ausführende Skript und das
+auszuführende Programm miteinander kommunizieren können.
+.PP
+.BR Achtung :
+Dieses Modul steht nicht für allen Plattformen zur Verfügung!
+Insbesondere nicht für Windows.
+.PP
+.TP
+.BI term.startdir( [Verzeichnis] )
+Legt das Anfangsverzeichnis für den nächsten
+.BR term.execute() -Befehl
+fest.
+Wenn kein
+.I Verzeichnis
+angegeben wird, wird die vorherige Einstellung dadurch gelöscht.
+.IP
+.BR Hinweis :
+Das Arbeitsverzeichnis des ausführenden Skriptes und des ausgeführten
+Programmes sind voneinander unabhängig!
+.PP
+.TP
+.B term.homedir()
+Setzt das Anfangsverzeichnis für den nächsten
+.BR term.execute() -Befehl
+auf das Heimatverzeichnis des Benutzers.
+.IP
+.BR Hinweis :
+Das Arbeitsverzeichnis des ausführenden Skriptes und des ausgeführten
+Programmes sind voneinander unabhängig!
+.PP
+.TP
+.BI term.color( "true|false" )
+Schaltet die Farbunterstützung ein oder aus.
+Der Terminal-Typ mit Farben ist "linux", ohne Farben "linux-m".
+.PP
+.TP
+.BI term.setenv( "Variable, Wert" )
+Setzt die angegebene
+.RI Umgebungs variable
+auf den angegebenen
+.IR Wert .
+.br
+Das hat auch Einfluss auf Programme, die mit
+.BR os.execute() " oder " io.popen()
+ausgeführt werden.
+.PP
+.TP
+.BI term.unsetenv( Variable )
+Löscht die angegebene
+.RI Umgebungs variable .
+.br
+Das hat auch Einfluss auf Programme, die mit
+.BR os.execute() " oder " io.popen()
+ausgeführt werden.
+.PP
+.TP
+.BI term.execute( "[Programm [, Argumente]]" )
+Führt das angegebene
+.I Programm
+mit den angegebenen
+.IR Argumente n
+in der Terminal-Emulation aus.
+Wenn kein
+.I Programm
+angegeben wird, wird die Standard-Shell ausgeführt.
+.PP
+.SS APC-Schnittstelle
+.PP
+Die ``Application Program Command'' (APC) Schnittstelle ist eine Methode mit
+der das ausgeführte Programm mit dem Lua-Interpreter des ausführenden
+Programmes kommunizieren kann.
+Um dies zu verwenden sendet das ausgeführte Programm Escape-Sequenzen der Art,
+wie ESC + "_", gefolgt vom Befehl, abgeschlossen mit ESC + "\\".
+Die Ausgabe muss eventuell noch einen Flush bekommen, um einen sofortigen
+Effekt zu erzielen.
+.PP
+Zum Beispiel in C:
+.PP
+.EX
+static void
+APC (const char *s)
+{
+  fprintf (stdout, "\\033_%s\\033\\\\", s);
+  fflush (stdout);
+}
+.EE
+.PP
+Die Befehle können Lua-Funktionsaufrufe sein, insbesondere die 
+``avt.''-Befehle von ``lua-akfavatar'' (siehe ``lua-akfavatar-ref'').
+.br
+Bis zu 1024 Zeichen können gesendet werden.
+Das bedeutet, man kann keinen komplizierten Code vom ausgeführten Programm
+senden.
+Allerdings kann man im Lua-Skript, das das Programm aufruft globale Funktionen
+definieren, die dann auch mit der APC-Schnittstelle aufrufbar sind.
+.PP
+Als Konvention sollte das aufrufende Skript eine Umgebungsvariable namens
+.I """APC"""
+definieren, die die verfügbaren Funktionen beschreibt.
+.PP
+Zum Beispiel:
+.PP
+.EX
+  term.setenv("APC", _VERSION .. ", lua-akfavatar")
+.EE
+.PP
+.TP
+.BI term.send( String )
+Sendet einen String an das ausgeführte Programm, so als ob es von der
+Tastatur eingegeben worden wäre.
+Das kann man nur von der APC-Schnittstelle (siehe oben) verwenden.
+.br
+Wenn das ausgeführte Programm zeilenorientiert ist, sollte der String mit
+einem "\\r" (wie Return) abgeschlossen werden.
+.PP
+.TP
+.BI term.decide( "String1 [,String2]" )
+Zeige Plus-/Minus-Knöpfe und abhängig von dieser Auswahl sende
+.IR String1 " oder " String2
+an das ausgeführte Programm, so als ob es von Tastatur eingegeben
+worden wäre.
+Das kann man nur von der APC-Schnittstelle (siehe oben) verwenden.
+.br
+Wenn das ausgeführte Programm zeilenorientiert ist, sollten beide Strings
+angegeben werden und beide mit einem "\\r" (wie Return) abgeschlossen werden.
