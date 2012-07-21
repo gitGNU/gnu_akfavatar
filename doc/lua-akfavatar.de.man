@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "lua-akfavatar" 1 2012-07-06 AKFAvatar
+.TH "lua-akfavatar" 1 2012-07-21 AKFAvatar
 .
 .SH NAME
 lua-akfavatar \- Lua interpreter für die AKFAvatar-Benutzeroberfläche
@@ -161,6 +161,7 @@ http://akfavatar.nongnu.org/
 .SH "SIEHE AUCH"
 .BR lua (1)
 .BR lua-akfavatar-ref (3)
+.BR akfavatar-graphic (3)
 .PP
 http://akfavatar.nongnu.org/manual/
 .br

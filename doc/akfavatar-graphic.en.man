@@ -79,7 +79,7 @@ local gr, width, height = graphic.new()
 Returns the width and height for a graphic so that it fills the whole window.
 .PP
 .TP
-.B "gr:show()"
+.IB gr :show()
 Shows the graphic as image after drawing.
 .IP
 .BR Hint :
@@ -89,22 +89,22 @@ This makes a nice animation.
 But don't make the steps too small, or it will be painful on slow devices.
 .PP
 .TP
-.B "gr:size()"
+.IB gr :size()
 Returns the width and the height of the graphic
 .IR gr .
 .PP
 .TP
-.B "gr:width()"
+.IB gr :width()
 Returns the width of the graphic
 .IR gr .
 .PP
 .TP
-.B "gr:height()"
+.IB gr :height()
 Returns the height of the graphic
 .IR gr .
 .PP
 .TP
-.BI "gr:color(" colorname )
+.IB gr :color( colorname )
 Sets the drawing color.
 .br
 The color can be either a defined color name,
@@ -112,7 +112,7 @@ or a hexadecimal representation, like for example
 .IR """#FFFF00""" .
 .PP
 .TP
-.BI "gr:rgb(" "red, green, blue" )
+.IB gr :rgb( "red, green, blue" )
 Sets the drawing color from RGB values.
 .br
 The values must be in the range from 0 to 255 inclusive.
@@ -121,11 +121,11 @@ This method is faster than using
 .BR gr:color() .
 .PP
 .TP
-.B "gr:eraser()"
+.IB gr :eraser()
 Sets the drawing color to the background color.
 .PP
 .TP
-.B "gr:thickness(value)"
+.IB gr :thickness( value )
 Sets the thickness of the pen.
 .br
 The
@@ -133,7 +133,7 @@ The
 1 is the thinnest.
 .PP
 .TP
-.BI "gr:clear(" "[colorname]" )
+.IB gr :clear( [colorname] )
 Clears the graphic.
 .br
 If a
@@ -143,13 +143,13 @@ is given, then that becomes the new background color.
 The pen position is not changed.
 .PP
 .TP
-.BI "gr:putpixel(" "[x, y]" )
+.IB gr :putpixel( "[x, y]" )
 Puts a pixel at the given coordinates or at the current pen position.
 .br
 The pen position is not changed.
 .PP
 .TP
-.BI "gr:getpixel(" "[x, y]" )
+.IB gr :getpixel( "[x, y]" )
 Gets the pixel color at the given coordinates or at the current pen position.
 .br
 The color is returned as string in the hexadecimal RGB notation.
@@ -161,7 +161,7 @@ and an error message.
 The pen position is not changed.
 .PP
 .TP
-.BI "gr:getpixelrgb(" "[x, y]" )
+.IB gr :getpixelrgb( "[x, y]" )
 Gets the pixel color at the given coordinates or at the current pen position.
 .br
 Returns three integers for red, green and blue, in the range of 0-255.
@@ -173,7 +173,7 @@ and an error message.
 The pen position is not changed.
 .PP
 .TP
-.BI "gr:putdot(" "[x, y]" )
+.IB gr :putdot( "[x, y]" )
 Puts a dot at the given coordinates or at the current pen position.
 .br
 If the pen is thin, it's the same as
@@ -182,24 +182,24 @@ If the pen is thin, it's the same as
 The pen position is not changed.
 .PP
 .TP
-.B "gr:pen_position()"
+.IB gr :pen_position()
 Returns the x and y position of the pen
 (ie. returns two values).
 .PP
 .TP
-.B "gr:center()"
+.IB gr :center()
 .TQ
-.B "gr:home()"
+.IB gr :home()
 Sets the pen to the center of the graphic, heading to the top.
 .PP
 .TP
-.BI "gr:moveto(" "x, y" )
+.IB gr :moveto( "x, y" )
 Move the pen to
 .I "x, y"
 without drawing.
 .PP
 .TP
-.BI "gr:moverel(" "x, y" )
+.IB gr :moverel( "x, y" )
 Move the pen without drawing relative to its current position.
 .br
 A positive
@@ -219,13 +219,13 @@ a negative
 value moves it up.
 .PP
 .TP
-.BI "gr:lineto(" "x, y" )
+.IB gr :lineto( "x, y" )
 Draws a line from the current pen position to these absolute coordinates.
 .br
 The pen is moved to the new coordinates.
 .PP
 .TP
-.BI "gr:linerel(" "x, y" )
+.IB gr :linerel( "x, y" )
 Draws a line relative to its current pen position.
 .br
 A positive
@@ -247,7 +247,7 @@ value draws up.
 The pen is moved to the new position.
 .PP
 .TP
-.BI "gr:line(" "x1, y1, x2, y2" )
+.IB gr :line( "x1, y1, x2, y2" )
 Draws a line from
 .IR "x1, y1" " to " "x2, y2" .
 .br
@@ -255,7 +255,7 @@ The pen is set to
 .IR "x2, y2" .
 .PP
 .TP
-.BI "gr:bar(" "x1, y1, x2, y2" )
+.IB gr :bar( "x1, y1, x2, y2" )
 Draws a solid bar with
 .I "x1, y1"
 as the upper left corner and
@@ -265,7 +265,7 @@ as the lower right corner.
 The pen position is not changed.
 .PP
 .TP
-.BI "gr:rectangle(" "x1, y1, x2, y2" )
+.IB gr :rectangle( "x1, y1, x2, y2" )
 Draws rectangle with
 .I "x1, y1"
 as the upper left corner and
@@ -275,9 +275,9 @@ as the lower right corner.
 The pen position is not changed.
 .PP
 .TP
-.BI "gr:arc(" "radius [, angle1] [, angle2]" )
+.IB gr :arc( "radius [, angle1] [, angle2]" )
 .TQ
-.BI "gr:circle(" "radius [, angle1] [, angle2]" )
+.IB gr :circle( "radius [, angle1] [, angle2]" )
 Draws a circle or an arc with the given
 .IR radius .
 .br
@@ -292,7 +292,7 @@ start-angle (see below under
 .BR "turtle graphics" ).
 .PP
 .TP
-.BI "gr:disc(" "radius [, x, y]" )
+.IB gr :disc( "radius [, x, y]" )
 Draws a disc, ie. a filled circle with the given
 .I radius
 with the given coordinates as center.
@@ -301,7 +301,7 @@ If no coordinates are given, the current pen position is used as center.
 The pen position is not changed.
 .PP
 .TP
-.BI "gr:text(" "text [, x, y]" )
+.IB gr :text( "text [, x, y]" )
 Prints a text aligned to the given position or the pen position.
 .IP
 By default the text is centered to the position.
@@ -320,7 +320,7 @@ supported, not even a newline.
 The pen position is not changed.
 .PP
 .TP
-.BI "gr:textalign(" "[horizontal] [, vertical]" )
+.IB gr :textalign( "[horizontal] [, vertical]" )
 Sets the textalignment for
 .BR "gr:text()" .
 .IP
@@ -335,14 +335,14 @@ The alignment means, where the given point is, eg. when you tell it to be
 right.
 .PP
 .TP
-.B "graphic.font_size()"
+.B graphic.font_size()
 .TQ
-.B "gr:font_size()"
+.IB gr :font_size()
 Returns the width, height and the baseline of the font, ie. one character.
 It is a fixed-width font, each character has the same width.
 .PP
 .TP
-.BI "gr:put(" "graphic [, x, y]" )
+.IB gr :put( "graphic [, x, y]" )
 Puts a graphic onto graphic
 .I gr
 at the given position (upper-left corner).
@@ -355,7 +355,7 @@ The same is true for a graphic with the same width and
 set to 1.
 .PP
 .TP
-.BI "gr:put_transparency(" "graphic [, x, y]" )
+.IB gr :put_transparency( "graphic [, x, y]" )
 Puts a graphic onto graphic
 .I gr
 at the given position (upper-left corner).
@@ -368,7 +368,7 @@ This is much slower than
 .BR "gr:put()" .
 .PP
 .TP
-.BI "gr:get(" "x1, y1, x2, y2" )
+.IB gr :get( "x1, y1, x2, y2" )
 Returns an area of the graphic
 .I gr
 as a new graphic.
@@ -380,7 +380,7 @@ The pen is put in the center, heading to the top.
 All values must be in range.
 .PP
 .TP
-.B "gr:duplicate()"
+.IB gr :duplicate()
 Returns an exact duplicate (a copy) of the graphic
 .IR gr .
 .br
@@ -396,7 +396,7 @@ Then you can
 the background graphic back to the duplicate and draw another foreground.
 .PP
 .TP
-.BI "gr:shift_vertically(" lines )
+.IB gr :shift_vertically( lines )
 Shifts the graphic vertically.
 .br
 A positive value for
@@ -410,7 +410,7 @@ shifts it up.
 The pen gets also moved.
 .PP
 .TP
-.BI "gr:shift_horizontally(" columns )
+.IB gr :shift_horizontally( columns )
 Shifts the graphic horizontally.
 .br
 A positive value for
@@ -424,7 +424,7 @@ shifts it left.
 The pen gets also moved.
 .PP
 .TP
-.BI "gr:export_ppm(" filename )
+.IB gr :export_ppm( filename )
 Exports the graphic as Portable Pixmap (PPM) file.
 .IP
 The PPM format is simple to implement, but not very efficient.
@@ -457,40 +457,40 @@ You can control the turtle by telling her in which direction to turn
 and how far to move.
 .PP
 .TP
-.BI "gr:heading(" heading )
+.IB gr :heading( heading )
 Sets the heading for the turtle.
 The value must be given in degree and the turtle turns clockwise.
 The value 0 means, it's heading to the top,
 90 means it heads to the right.
 .PP
 .TP
-.B "gr:get_heading()"
+.IB gr :get_heading()
 Returns the heading of the turtle
 (see
 .BR "gr:heading()" ).
 .PP
 .TP
-.BI "gr:right(" angle )
+.IB gr :right( angle )
 Turn the turtle clockwise by the specified
 .I angle
 in degree.
 .PP
 .TP
-.BI "gr:left(" angle )
+.IB gr :left( angle )
 Turn the turtle counterclockwise by the specified
 .I angle
 in degree.
 .PP
 .TP
-.BI "gr:draw(" steps )
+.IB gr :draw( steps )
 Draw a line in the direction the turtle is heading.
 .PP
 .TP
-.BI "gr:move(" steps )
+.IB gr :move( steps )
 Move the turtle in the direction it is heading without drawing.
 .PP
 .TP
-.B "gr:home()"
+.IB gr :home()
 Sets the pen to the center of the graphic, heading to the top.
 .PP
 .SH "SEE ALSO"

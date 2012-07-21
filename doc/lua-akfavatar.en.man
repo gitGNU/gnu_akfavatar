@@ -151,6 +151,7 @@ http://akfavatar.nongnu.org/
 .SH "SEE ALSO"
 .BR lua (1)
 .BR lua-akfavatar-ref (3)
+.BR akfavatar-graphic (3)
 .PP
 http://akfavatar.nongnu.org/manual/
 .br
