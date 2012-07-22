@@ -43,12 +43,12 @@ local graphic = require "akfavatar-graphic"
 Module for Lua-AKFAvatar to display graphics.
 .PP
 .BR Notes :
-.br
-- Coordinates start with 1, 1 in the upper left corner.
-.br
-- It can also be used in the style of turtle graphic.
-.br
-- The pen size, position, heading, pen color and background color are set for
+.IP - 2
+Coordinates start with 1, 1 in the upper left corner.
+.IP - 2
+It can also be used in the style of turtle graphic.
+.IP - 2
+The pen size, position, heading, pen color and background color are set for
 each graphic.
 .PP
 .SS Functions / Methods
