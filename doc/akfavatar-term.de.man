@@ -182,3 +182,4 @@ angegeben werden und beide mit einem "\\r" (wie Return) abgeschlossen werden.
 .BR lua (1)
 .BR lua-akfavatar-ref (3)
 .BR akfavatar-graphic (3)
+.BR akfavatar.utf8 (3)

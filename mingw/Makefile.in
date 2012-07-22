@@ -256,7 +256,9 @@ about: $(srcdir)/lua/documentation/English/lua-akfavatar.about \
        $(srcdir)/lua/documentation/English/akfavatar-graphic.about \
        $(srcdir)/lua/documentation/Deutsch/akfavatar-graphic.about \
        $(srcdir)/lua/documentation/English/akfavatar-term.about \
-       $(srcdir)/lua/documentation/Deutsch/akfavatar-term.about
+       $(srcdir)/lua/documentation/Deutsch/akfavatar-term.about \
+       $(srcdir)/lua/documentation/English/akfavatar.utf8.about \
+       $(srcdir)/lua/documentation/Deutsch/akfavatar.utf8.about
 
 $(srcdir)/lua/documentation/English/lua-akfavatar.about: $(srcdir)/doc/lua-akfavatar.en.man
 	-$(ROFF) -c -man -Tutf8 $(srcdir)/doc/lua-akfavatar.en.man > $@
@@ -294,6 +296,16 @@ $(srcdir)/lua/documentation/Deutsch/akfavatar-term.about: \
 	-$(ROFF) -c -man -Tutf8 \
 	  $(srcdir)/doc/akfavatar-term.de.man > $@
 
+$(srcdir)/lua/documentation/English/akfavatar.utf8.about: \
+  $(srcdir)/doc/akfavatar.utf8.en.man
+	-$(ROFF) -c -man -Tutf8 \
+	  $(srcdir)/doc/akfavatar.utf8.en.man > $@
+
+$(srcdir)/lua/documentation/Deutsch/akfavatar.utf8.about: \
+  $(srcdir)/doc/akfavatar.utf8.de.man
+	-$(ROFF) -c -man -Tutf8 \
+	  $(srcdir)/doc/akfavatar.utf8.de.man > $@
+
 
 clean:
 	-rm -f *~
@@ -329,6 +341,8 @@ mostlyclean: clean
 	-rm -f akfavatar-graphic.en.pdf akfavatar-graphic.en.ps akfavatar-graphic.en.dvi
 	-rm -f akfavatar-term.de.pdf akfavatar-term.de.ps akfavatar-term.de.dvi
 	-rm -f akfavatar-term.en.pdf akfavatar-term.en.ps akfavatar-term.en.dvi
+	-rm -f akfavatar.utf8.de.pdf akfavatar.utf8.de.ps akfavatar.utf8.de.dvi
+	-rm -f akfavatar.utf8.en.pdf akfavatar.utf8.en.ps akfavatar.utf8.en.dvi
 	-rm -f akfavatar.h.ps akfavatar.h.pdf
 	-rm -f avtaddons.h.ps avtaddons.h.pdf
 	-rm -f lua-akfavatar.exe
@@ -395,7 +409,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(srcdir)/lua/documentation/English/audioplayer.about $(BINPKGNAME)/lua/documentation/English/
 	cp $(srcdir)/lua/documentation/English/function_plotter.about $(BINPKGNAME)/lua/documentation/English/
 	cp $(srcdir)/lua/documentation/English/base64-encode.about $(BINPKGNAME)/lua/documentation/English/
-	cp $(srcdir)/lua/documentation/English/utf8.about $(BINPKGNAME)/lua/documentation/English/
+	cp $(srcdir)/lua/documentation/English/akfavatar.utf8.about $(BINPKGNAME)/lua/documentation/English/
 	cp $(srcdir)/lua/documentation/English/language.about $(BINPKGNAME)/lua/documentation/English/
 	-cp $(srcdir)/lua/documentation/English/lua-akfavatar.about $(BINPKGNAME)/lua/documentation/English/
 	-cp $(srcdir)/lua/documentation/English/lua-akfavatar-ref.about $(BINPKGNAME)/lua/documentation/English/
@@ -406,7 +420,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(srcdir)/lua/documentation/Deutsch/audioplayer.about $(BINPKGNAME)/lua/documentation/Deutsch/
 	cp $(srcdir)/lua/documentation/Deutsch/function_plotter.about $(BINPKGNAME)/lua/documentation/Deutsch/
 	cp $(srcdir)/lua/documentation/Deutsch/base64-encode.about $(BINPKGNAME)/lua/documentation/Deutsch/
-	cp $(srcdir)/lua/documentation/Deutsch/utf8.about $(BINPKGNAME)/lua/documentation/Deutsch/
+	cp $(srcdir)/lua/documentation/Deutsch/akfavatar.utf8.about $(BINPKGNAME)/lua/documentation/Deutsch/
 	cp $(srcdir)/lua/documentation/Deutsch/Sprache.about $(BINPKGNAME)/lua/documentation/Deutsch/
 	-cp $(srcdir)/lua/documentation/Deutsch/lua-akfavatar.about $(BINPKGNAME)/lua/documentation/Deutsch/
 	-cp $(srcdir)/lua/documentation/Deutsch/lua-akfavatar-ref.about $(BINPKGNAME)/lua/documentation/Deutsch/
@@ -435,6 +449,8 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp akfavatar-graphic.de.pdf $(BINPKGNAME)/doc/
 	cp akfavatar-term.en.pdf $(BINPKGNAME)/doc/
 	cp akfavatar-term.de.pdf $(BINPKGNAME)/doc/
+	cp akfavatar.utf8.en.pdf $(BINPKGNAME)/doc/
+	cp akfavatar.utf8.de.pdf $(BINPKGNAME)/doc/
 	cp $(srcdir)/AUTHORS $(BINPKGNAME)/doc/AUTHORS.txt
 	cp $(srcdir)/COPYING $(BINPKGNAME)/doc/COPYING.txt
 	cp $(srcdir)/COPYING.LESSER $(BINPKGNAME)/doc/COPYING-LESSER.txt

@@ -521,3 +521,4 @@ Setzt die Schildkröte in die Mitte der Grafik, nach oben ausgerichtet.
 .BR lua (1)
 .BR lua-akfavatar-ref (3)
 .BR akfavatar-term (3)
+.BR akfavatar.utf8 (3)

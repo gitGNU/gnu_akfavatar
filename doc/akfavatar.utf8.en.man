@@ -1,0 +1,201 @@
+.\" Process this file with
+.\" groff -man -Tutf8 akfavatar-utf8.en.man
+.\"
+.
+.\" Macros .TQ .EX .EE taken from groff an-ext.tmac
+.\" Copyright (C) 2007, 2009 Free Software Foundation, Inc.
+.\" You may freely use, modify and/or distribute this file.
+.
+.\" Continuation line for .TP header.
+.de TQ
+.  br
+.  ns
+.  TP \\$1\" no doublequotes around argument!
+..
+.
+.\" Start example.
+.de EX
+.  nr mE \\n(.f
+.  nf
+.  nh
+.  ft CW
+..
+.
+.
+.\" End example.
+.de EE
+.  ft \\n(mE
+.  fi
+.  hy \\n(HY
+..
+.
+.TH "akfavatar.utf8" 3 2012-07-22 AKFAvatar
+.
+.SH NAME
+akfavatar.utf8 \- module for UTF-8 support in Lua-AKFAvatar
+.
+.SH SYNOPSIS
+.PP
+local utf8 = require "akfavatar.utf8"
+.PP
+.SH DESCRIPTION
+This module defines functions for UTF-8 strings.
+Many functions are replacements to the functions in Lua's string lirbrary.
+.PP
+UTF-8 is a character encoding for Unicode.
+A character can be encoded with one to four bytes.
+That's why it needs special handling.
+Most functions in the default string library of Lua can only handle
+encodings with a single byte per character.
+.PP
+.TP
+.BI utf8.len( string )
+Counts the number of characters in an UTF-8 encoded
+.IR string .
+.br
+.BR Note :
+Control characters and invisible characters are counted, too.
+.PP
+.TP
+.BI utf8.sub( "string, startchar [,endchar]" )
+Like string.sub, but for UTF-8 strings.
+.IP
+Returns a substring from
+.IR startchar " to " endchar .
+If
+.IR startchar " or " endchar
+are negative, then they are counted from the end of the string.
+.br
+So, utf8.sub(s, 1, 3) returns the first 3 characters,
+while utf8.sub(s, -3) returns the last 3 characters.
+.PP
+.TP
+.BI utf8.char( ... )
+Like
+.B string.char
+but accepts higher numbers and returns an UTF-8 encoded string.
+.PP
+.TP
+.BI utf8.codepoint( string )
+Return the codepoint of the first character of the given
+.IR string .
+.br
+Returns
+.I nil
+on error (but that's not a real validity check).
+.PP
+.TP
+.BI utf8.codepoints( "string [,startchar [,endchar]]" )
+Like
+.BR string.byte .
+.br
+Returns the unicode numbers of the characters from
+.IR startchar " to " endchar .
+.br
+If you only need the first character, use
+.B utf8.codepoint()
+instead.
+.PP
+.TP
+.BI utf8.characters( string )
+Iterator for the characters of an UTF-8 string.
+.br
+A character may be a single- or multi-byte string.
+.IP
+Use like this:
+.EX
+  for c in utf8.characters(line) do print(utf8.codepoint(c)) end
+.EE
+.PP
+.TP
+.BI utf8.reverse( string )
+Reverses an UTF-8 encoded
+.IR string .
+.br
+.BR Note :
+combining characters are still problematic.
+.PP
+.TP
+.BI utf8.rep( "string, n" )
+Returns the
+.IR string " repeated " n " times."
+It's simply an alias for
+.BR string.rep() .
+.PP
+.TP
+.BI utf8.underlined( string )
+Returns the
+.I string
+underlined (overstrike technique).
+.PP
+.TP
+.BI utf8.bold( string )
+Returns the
+.I string
+in boldface (overstrike technique).
+.PP
+.TP
+.B utf8.bom
+Byte Order Mark.
+.br
+Not really needed for UTF8, but sometimes used as signature.
+.PP
+.TP
+.BI utf8.check_bom( string )
+Check, if the
+.I string
+starts with a UTF8-BOM.
+.PP
+.TP
+.BI utf8.check( string )
+Check if the
+.I string
+is an UTF-8 string.
+.br
+It's just for checking if it is UTF-8 or not, not a validity check.
+.br
+.BR Note :
+plain ASCII is also valid UTF-8.
+.PP
+.TP
+.BI utf8.check_unicode( string )
+Checks text for unicode encodings.
+.br
+Returns either of "UTF-8", "UTF-16BE", UTF-16LE", "UTF-32BE", "UTF-32LE"
+or
+.I nil
+if it cannot be detected.
+.PP
+.TP
+.BI utf8.from_ncr( string )
+Replaces numeric character references (NCR) with UTF-8 characters.
+.br
+For example "&#8364;" (decimal) or "&#x20AC;" (hexadecimal) for the Euro
+currency sign.
+.PP
+.TP
+.BI utf8.to_ncr( string )
+Replaces non-ASCII characters with numeric character references.
+The result is a plain ASCII string, but encoded.
+.PP
+.TP
+.BI utf8.from_latin1( string )
+Converts a
+.I string
+from Latin-1 (ISO-8859-1) to UTF-8.
+.PP
+.TP
+.BI utf8.to_latin1( "string [,replacement]" )
+Converts an UTF-8
+.I string
+into Latin-1 (ISO-8859-1).
+Characters which cannot be converted are replaced with the
+.I replacement
+string if given, or they are ignored.
+.PP
+.SH "SEE ALSO"
+.BR lua-akfavatar (1)
+.BR lua (1)
+.BR lua-akfavatar-ref (3)
+.BR akfavatar-graphic (3)
+.BR akfavatar-term (3)

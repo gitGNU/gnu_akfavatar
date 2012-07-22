@@ -163,6 +163,7 @@ http://akfavatar.nongnu.org/
 .BR lua-akfavatar-ref (3)
 .BR akfavatar-graphic (3)
 .BR akfavatar-term (3)
+.BR akfavatar.utf8 (3)
 .PP
 http://akfavatar.nongnu.org/manual/
 .br

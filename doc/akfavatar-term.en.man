@@ -172,3 +172,4 @@ they should be closed with "\\r" (for return).
 .BR lua (1)
 .BR lua-akfavatar-ref (3)
 .BR akfavatar-graphic (3)
+.BR akfavatar.utf8 (3)
