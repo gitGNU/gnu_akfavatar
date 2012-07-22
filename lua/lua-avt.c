@@ -230,6 +230,7 @@ lavt_start (lua_State * L)
       avt_set_mouse_visible (true);
       avt_set_title (title, shortname);
       avt_avatar_image_none ();
+      avt_set_balloon_mode (AVT_SAY);
 
       if (mode != AVT_AUTOMODE)
 	avt_switch_mode (mode);
