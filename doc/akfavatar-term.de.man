@@ -119,7 +119,7 @@ angegeben wird, wird die Standard-Shell ausgeführt.
 .PP
 .SS APC-Schnittstelle
 .PP
-Die ``Application Program Command'' (APC) Schnittstelle ist eine Methode mit
+Die "Application Program Command" (APC) Schnittstelle ist eine Methode mit
 der das ausgeführte Programm mit dem Lua-Interpreter des ausführenden
 Programmes kommunizieren kann.
 Um dies zu verwenden sendet das ausgeführte Programm Escape-Sequenzen der Art,
@@ -139,7 +139,7 @@ APC (const char *s)
 .EE
 .PP
 Die Befehle können Lua-Funktionsaufrufe sein, insbesondere die 
-``avt.''-Befehle von ``lua-akfavatar'' (siehe ``lua-akfavatar-ref'').
+"avt."-Befehle von "lua-akfavatar" (siehe "lua-akfavatar-ref").
 .br
 Bis zu 1024 Zeichen können gesendet werden.
 Das bedeutet, man kann keinen komplizierten Code vom ausgeführten Programm

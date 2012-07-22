@@ -113,7 +113,7 @@ is given it starts the default shell.
 .PP
 .SS APC interface
 .PP
-The ``Application Program Command'' (APC) interface is a method with which the
+The "Application Program Command" (APC) interface is a method with which the
 guest program can communicate with the Lua interpreter of the host program.
 To use this, the guest program sends Escape sequences to the standard output,
 like follows: ESC + "_", followed by the command, closed with ESC + "\\" to
@@ -131,8 +131,8 @@ APC (const char *s)
 }
 .EE
 .PP
-The commands can be Lua function calls, especially the ``avt.'' commands
-defined by ``lua-akfavatar'' (see the ``lua-akfavatar-ref'').
+The commands can be Lua function calls, especially the "avt." commands
+defined by "lua-akfavatar" (see the "lua-akfavatar-ref").
 .br
 Up to 1024 characters can be sent.
 So it is not suited to send complicated code from the guest program.
