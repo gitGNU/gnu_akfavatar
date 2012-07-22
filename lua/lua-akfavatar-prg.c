@@ -76,7 +76,6 @@ extern int luaopen_akfavatar_embedded (lua_State * L);
 static lua_State *L;
 static int mode = AVT_AUTOMODE;
 static char *directory;
-static const char *language;
 
 
 static void
@@ -489,8 +488,10 @@ ask_file (void)
 static void
 start_screen (void)
 {
+  const char *language;
   bool german;
 
+  language = avta_get_language ();
   german = (language and strcmp ("de", language) == 0);
 
   avt_clear_screen ();
@@ -603,7 +604,6 @@ main (int argc, char **argv)
   setlocale (LC_ALL, "");
 
   script_index = check_options (argc, argv);
-  language = avta_get_language ();
 
   // initialize Lua
   initialize_lua ();
