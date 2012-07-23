@@ -22,6 +22,7 @@
   - multiply.pas cannot be compiled without AKFAvatar anymore (simplified)
   - regression: in XPM-files named colors are not supported anymore;
     they are rarely used anyway
+  - the script about2html supports the overstrike technique better
   - configure accepts the option --disable-deprecated
 
   C-API changes:
