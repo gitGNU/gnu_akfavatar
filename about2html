@@ -40,7 +40,7 @@ NR == 1 {
   gsub(/<\/b> <b>/, " ")
 
   # page breaks
-  gsub(/\f\x1C-\x1F/, "<hr>")
+  gsub(/[\f\x1C-\x1F]/, "<hr>")
 
   print
 }
