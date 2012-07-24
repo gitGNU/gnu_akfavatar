@@ -43,11 +43,11 @@ local graphic = require "akfavatar-graphic"
 Modul für Lua-AKFAvatar um Grafiken anzuzeigen.
 .PP
 .BR Hinweise :
-.IP - 2
+.IP \(en 2
 Koordinaten fangen mit 1, 1 in der oberen linken Ecke an.
-.IP - 2
+.IP \(en
 Man kann es auch nach Art der Turtle-Grafik verwenden.
-.IP - 2
+.IP \(en
 Die Stiftbreite, Position, Ausrichtung, Stift-Farbe und Hintergrund-Farbe sind
 für jede Grafik einzeln festgelegt.
 .PP
