@@ -479,9 +479,6 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	$(u2d) $(BINPKGNAME)/doc/*.txt
 	$(u2d) $(BINPKGNAME)/lua/*.lua
 	$(u2d) $(BINPKGNAME)/lua/akfavatar/*.lua
-	$(u2d) $(BINPKGNAME)/lua/akfavatar/*.about
-	$(u2d) $(BINPKGNAME)/lua/documentation/English/*.about
-	$(u2d) $(BINPKGNAME)/lua/documentation/Deutsch/*.about
 	strip $(BINPKGNAME)/akfavatar.dll
 	strip $(BINPKGNAME)/lua-akfavatar.exe
 	-strip $(BINPKGNAME)/lua-akfavatar.dll
