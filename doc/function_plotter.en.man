@@ -45,23 +45,17 @@ which will then be plotted.
 For example, enter something like this: "(x/5)^3"
 .PP
 You can use the following operators:
-.TP
-.B +
+.IP +
 plus (addition)
-.TP
-.B -
+.IP -
 minus (substraction)
-.TP
-.B *
+.IP *
 multiply (multiplication)
-.TP
-.B /
+.IP /
 divide (division)
-.TP
-.B ^
+.IP ^
 exponentation (for example use "x^3" for x³)
-.TP
-.B %
+.IP %
 modulo (the rest of a division)
 .PP
 For fractions you can use either a point or a comma as decimal mark.

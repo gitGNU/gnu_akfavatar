@@ -45,23 +45,17 @@ angeben, die dann gezeichnet wird.
 Als Beispiel könnte man \[Bq](x/5)^3\[lq] eingeben.
 .PP
 Man kann folgende Operatoren verwenden:
-.TP
-.B +
+.IP +
 Plus (Addition)
-.TP
-.B -
+.IP -
 Minus (Substraktion)
-.TP
-.B *
+.IP *
 Mal (Multiplikation)
-.TP
-.B /
+.IP /
 Geteilt (Division)
-.TP
-.B ^
+.IP ^
 Hoch (Zum Beispiel \[Bq]x^3\[lq] für x³)
-.TP
-.B %
+.IP %
 Modulo (Der Rest einer Division)
 .PP
 Gleitkommazahlen kann man wahlweise mit einem Komma, oder einem Punkt schreiben.
