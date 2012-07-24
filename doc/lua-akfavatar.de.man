@@ -29,10 +29,10 @@
 .  hy \\n(HY
 ..
 .
-.TH "lua-akfavatar" 1 2012-07-21 AKFAvatar
+.TH "lua-akfavatar" 1 2012-07-24 AKFAvatar
 .
 .SH NAME
-lua-akfavatar \- Lua interpreter für die AKFAvatar-Benutzeroberfläche
+lua-akfavatar \- Lua-Interpreter für die AKFAvatar-Benutzeroberfläche
 .
 .SH SYNTAX
 .BI "lua-akfavatar [" Optionen "] [" " Skript " "[" Argumente "] ]"
@@ -42,7 +42,8 @@ Das Programm Lua-AKFAvatar ist der Lua Interpreter für die
 AKFAvatar-Benutzeroberfläche.
 Es lädt und führt Lua-Skripte in Form von Quellcode aus
 (kein Bytecode).
-Es können entweder Lua-Skripte geladen werden oder ".avt"-Demo-Dateien.
+Es können entweder Lua-Skripte geladen werden oder
+.RB \[Bq] .avt \[lq]-Demo-Dateien.
 Wenn kein
 .I Skript
 angegeben ist, wird ein Dateiauswahl-Dialog angezeigt.
@@ -64,19 +65,19 @@ und so weiter.
 .PP
 Um Zugang zu den AKFAvatar-spezifischen Funktionen zu bekommen,
 muss man erstmal den Befehl
-.BI "local " avt " = require """ lua-akfavatar """"
+.BI "local " avt " = require " "\[dq]lua-akfavatar\[dq]"
 verwenden.
 .PP
 Mit dem Dateiauswahl-Dialog kann man auch Anleitungen
 mit der Dateiendung
-.RI """" .about """"
+.RB \[Bq] .about \[lq]
 sehen.
 Das können einfache Textdateien sein, die in UTF-8 oder reinem ASCII
 kodiert sind.
-Man kann auch die "overstrike"-Technik verwenden, um Text fett oder
-unterstrichen darstellen zu können.
-Man kann zum Beispiel das Textsatzsystem "groff" verwenden, um solche
-Dateien zu erstellen.
+Man kann auch die \[Bq]overstrike\[lq]-Technik verwenden, um Text fett
+oder unterstrichen darstellen zu können.
+Man kann zum Beispiel das Textsatzsystem \[Bq]groff\[lq] verwenden,
+um solche Dateien zu erstellen.
 .
 .SH OPTIONEN
 .IP "-h | --help"
@@ -86,7 +87,7 @@ zeigt die Version an
 .TP
 .RI "-l " Name
 ruft
-.BI require(' name ')
+.BI require( \[dq]name\[dq] )
 auf, bevor das Skript ausgeführt wird.
 Das wird üblicherweise verwendet, um Bibliotheken zu laden.
 .TP
@@ -128,9 +129,9 @@ Die Syntax ist die selbe, wie bei
 AVTDATAPATH
 Suchpfad für Datendateien (Bilder, Audio, Texte...).
 Er wird in der Variable
-.I avt.datapath
+.B avt.datapath
 abgelegt und kann mit der Funktion
-.I avt.search(Dateiname)
+.BI avt.search( Dateiname )
 verwendet werden.
 Die Verzeichnisse werden durch Semikola getrennt.
 Im Gegensatz zu den vorherigen Pfaden gibt es keine Suchmuster

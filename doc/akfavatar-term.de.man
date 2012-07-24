@@ -84,7 +84,8 @@ Programmes sind voneinander unabhängig!
 .TP
 .BI term.color( "true|false" )
 Schaltet die Farbunterstützung ein oder aus.
-Der Terminal-Typ mit Farben ist "linux", ohne Farben "linux-m".
+Der Terminal-Typ mit Farben ist \[Bq]linux\[lq],
+ohne Farben \[Bq]linux-m\[lq].
 .PP
 .TP
 .BI term.setenv( "Variable, Wert" )
@@ -119,11 +120,12 @@ angegeben wird, wird die Standard-Shell ausgeführt.
 .PP
 .SS APC-Schnittstelle
 .PP
-Die "Application Program Command" (APC) Schnittstelle ist eine Methode mit
-der das ausgeführte Programm mit dem Lua-Interpreter des ausführenden
-Programmes kommunizieren kann.
+Die \[Bq]Application Program Command\[lq] (APC) Schnittstelle ist
+eine Methode mit der das ausgeführte Programm mit dem Lua-Interpreter
+des ausführenden Programmes kommunizieren kann.
 Um dies zu verwenden sendet das ausgeführte Programm Escape-Sequenzen der Art,
-wie ESC + "_", gefolgt vom Befehl, abgeschlossen mit ESC + "\\".
+wie ESC + \[Bq]_\[lq], gefolgt vom Befehl, abgeschlossen mit 
+ESC + \[Bq]\\\[lq].
 Die Ausgabe muss eventuell noch einen Flush bekommen, um einen sofortigen
 Effekt zu erzielen.
 .PP
@@ -139,7 +141,8 @@ APC (const char *s)
 .EE
 .PP
 Die Befehle können Lua-Funktionsaufrufe sein, insbesondere die 
-"avt."-Befehle von "lua-akfavatar" (siehe "lua-akfavatar-ref").
+\[Bq]avt.\[lq]-Befehle von \[Bq]lua-akfavatar\[lq]
+(siehe \[Bq]lua-akfavatar-ref\[lq]).
 .br
 Bis zu 1024 Zeichen können gesendet werden.
 Das bedeutet, man kann keinen komplizierten Code vom ausgeführten Programm
@@ -148,7 +151,7 @@ Allerdings kann man im Lua-Skript, das das Programm aufruft globale Funktionen
 definieren, die dann auch mit der APC-Schnittstelle aufrufbar sind.
 .PP
 Als Konvention sollte das aufrufende Skript eine Umgebungsvariable namens
-.I """APC"""
+.I "\[Bq]APC\[lq]"
 definieren, die die verfügbaren Funktionen beschreibt.
 .PP
 Zum Beispiel:
@@ -164,7 +167,7 @@ Tastatur eingegeben worden wäre.
 Das kann man nur von der APC-Schnittstelle (siehe oben) verwenden.
 .br
 Wenn das ausgeführte Programm zeilenorientiert ist, sollte der String mit
-einem "\\r" (wie Return) abgeschlossen werden.
+einem \[Bq]\\r\[lq] (wie Return) abgeschlossen werden.
 .PP
 .TP
 .BI term.decide( "String1 [,String2]" )
@@ -175,7 +178,8 @@ worden wäre.
 Das kann man nur von der APC-Schnittstelle (siehe oben) verwenden.
 .br
 Wenn das ausgeführte Programm zeilenorientiert ist, sollten beide Strings
-angegeben werden und beide mit einem "\\r" (wie Return) abgeschlossen werden.
+angegeben werden und beide mit einem \[Bq]\\r\[lq] (wie Return)
+abgeschlossen werden.
 .PP
 .SH "SIEHE AUCH"
 .BR lua-akfavatar (1)

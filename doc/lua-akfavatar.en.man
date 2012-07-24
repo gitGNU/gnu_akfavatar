@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "lua-akfavatar" 1 2012-07-06 AKFAvatar
+.TH "lua-akfavatar" 1 2012-07-24 AKFAvatar
 .
 .SH NAME
 lua-akfavatar \- Lua interpreter for the AKFAvatar user interface
@@ -41,7 +41,9 @@ lua-akfavatar \- Lua interpreter for the AKFAvatar user interface
 The program Lua-AKFAvatar is the Lua interpreter for the AKFAvatar
 user interface.
 It loads and executes Lua scripts in source form (not bytecode).
-Either Lua scripts can be loaded or ".avt" demo files.
+Either Lua scripts can be loaded or
+.RB \[dq] .avt \[dq]
+demo files.
 If no
 .I script
 is given, it starts with a file-selector.
@@ -61,14 +63,14 @@ the first argument is
 and so on.
 .PP
 You have to use the command
-.BI "local " avt " = require """ lua-akfavatar """"
+.BI "local " avt " = require " "\[dq]lua-akfavatar\[dq]"
 to get access to the AKFAvatar specific functions.
 .PP
 With the file-selector you can also see documentation files
 with the file extension
-.RI """" .about """."
+.RB \[dq] .about "\[dq]."
 These can be simple text files encoded in UTF-8 or plain ASCII.
-They can use the "overstriking" technique for bold or underlined text.
+They can use the "overstrike" technique for bold or underlined text.
 You can for example use the text-setting system "groff" to generate
 such files.
 .
@@ -80,7 +82,7 @@ print version information
 .TP
 .RI "-l " name
 call
-.BI require(' name ')
+.BI require( \[dq]name\[dq] )
 before executing the script.
 Typically used to load libraries.
 .TP
@@ -120,9 +122,9 @@ searchpath for C modules.  Syntax like in
 AVTDATAPATH
 searchpath for data files (images, audio, texts...).
 It gets stored in the variable
-.I avt.datapath
+.B avt.datapath
 and can be used with the function
-.IR avt.search(filename) .
+.BI avt.search( filename ) .
 The directories are separated with semicolons.
 Unlike the former paths there are no templates with question marks.
 .

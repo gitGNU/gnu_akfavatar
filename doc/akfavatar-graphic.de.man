@@ -448,7 +448,8 @@ Der Stift wird mitbewegt.
 Exportiert die Grafik als Portable Pixmap (PPM) Datei.
 .IP
 Das PPM-Format ist simpel zu implementieren, aber nicht sehr effizient.
-Man kann aber die "netpbm"-Werkzeuge oder "ImageMagick" verwenden,
+Man kann aber die \[Bq]netpbm\[lq]-Werkzeuge oder \[Bq]ImageMagick\[lq]
+verwenden,
 um es in ein anderes Format umzuwandeln.
 .IP
 Das fogende Beispiel zeigt, wie man das macht:
@@ -467,12 +468,14 @@ end
 Zunächst exportiert es die Grafik im PPM-Format.
 Dann versucht es dieses ins PNG-Format umzuwandeln.
 Falls das gelingt, wird die PPM-Datei gelöscht.
-Wenn der Anwender "netpbm" oder "ImageMagick" aber nicht installiert hat,
+Wenn der Anwender \[Bq]netpbm\[lq] oder \[Bq]ImageMagick\[lq] aber
+nicht installiert hat,
 hat er am Ende immer noch die PPM-Datei.
 .PP
 .SS Turtle-Grafik
 .PP
-Um Turtle-Grafik ("Schildkröten-Grafik", manchmal auch "Igel-Grafik" genannt)
+Um Turtle-Grafik (\[Bq]Schildkröten-Grafik\[lq], manchmal auch 
+\[Bq]Igel-Grafik\[lq] genannt)
 zu verstehen, muss man sich eine Schildkröte verstellen, die einen Stift trägt.
 Man kann der Schildkröte dann Befehle erteilen in welche Richtung sie sich drehen
 soll und wie weit sie sich zu bewegen hat.
