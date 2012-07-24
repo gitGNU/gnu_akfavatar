@@ -1,0 +1,136 @@
+.\" Process this file with
+.\" groff -man -Tutf8 function_plotter.en.man
+.\"
+.
+.\" Macros .TQ .EX .EE taken from groff an-ext.tmac
+.\" Copyright (C) 2007, 2009 Free Software Foundation, Inc.
+.\" You may freely use, modify and/or distribute this file.
+.
+.\" Continuation line for .TP header.
+.de TQ
+.  br
+.  ns
+.  TP \\$1\" no doublequotes around argument!
+..
+.
+.\" Start example.
+.de EX
+.  nr mE \\n(.f
+.  nf
+.  nh
+.  ft CW
+..
+.
+.
+.\" End example.
+.de EE
+.  ft \\n(mE
+.  fi
+.  hy \\n(HY
+..
+.
+.TH "function_plotter.lua" 1 2012-07-24 AKFAvatar
+.
+.SH NAME
+function_plotter.lua \- function plotter for Lua-AKFAvatar
+.
+.SH SYNOPSIS
+.BI "function_plotter.lua [" function ]
+.
+.SH DESCRIPTION
+Function plotter for Lua-AKFAvatar.
+You can enter a function for the variable
+.IR x ,
+which will then be plotted.
+For example, enter something like this: "(x/5)^3"
+.PP
+You can use the following operators:
+.TP
+.B +
+plus (addition)
+.TP
+.B -
+minus (substraction)
+.TP
+.B *
+multiply (multiplication)
+.TP
+.B /
+divide (division)
+.TP
+.B ^
+exponentation (for example use "x^3" for x³)
+.TP
+.B %
+modulo (the rest of a division)
+.PP
+For fractions you can use either a point or a comma as decimal mark.
+So "0.5" or "0,5" is the same.
+You cannot use a thousands separator.
+The number \(*p can be written as "pi".
+.PP
+You can use the following functions:
+.TP 10
+.BI sqrt( x )
+square root
+.RI (\(sr x )
+.TP
+.BI exp( x )
+.RI e^ x
+.TP
+.BI log( x )
+natural logarithm
+.TP
+.BI log10( x )
+base-10 logarithm
+.TP
+.BI deg( x )
+convert to degree
+.RI ( x " in radians)"
+.TP
+.BI rad( x )
+covert to radians
+.RI ( x " in degree)"
+.TP
+.BI sin( x )
+sine
+.RI ( x " in radians)"
+.TP
+.BI sinh( x )
+hyperbolic sine
+.RI ( x " in radians)"
+.TP
+.BI asin( x )
+arc sine
+.RI ( x " in radians)"
+.TP
+.BI cos( x )
+cosine
+.RI ( x " in radians)"
+.TP
+.BI cosh( x )
+hyperbolic cosine
+.RI ( x " in radians)"
+.TP
+.BI acos( x )
+arc cosine
+.RI ( x " in radians)"
+.TP
+.BI tan( x )
+tangent
+.RI ( x " in radians)"
+.TP
+.BI tanh( x )
+hyperbolic tangent
+.RI ( x " in radians)"
+.TP
+.BI atan( x )
+arc tangent
+.RI ( x " in radians)"
+.PP
+.BR ATTENTION :
+The argument for these functions must always be put in parentheses!
+.PP
+If you often need special functions or constant, it's easy to add them to the
+script.
+.PP

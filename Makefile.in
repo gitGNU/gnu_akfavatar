@@ -547,6 +547,8 @@ about: $(srcdir)/lua/documentation/English/lua-akfavatar.about \
        $(srcdir)/lua/documentation/Deutsch/akfavatar-term.about \
        $(srcdir)/lua/documentation/English/akfavatar.utf8.about \
        $(srcdir)/lua/documentation/Deutsch/akfavatar.utf8.about \
+       $(srcdir)/lua/documentation/English/function_plotter.about \
+       $(srcdir)/lua/documentation/Deutsch/function_plotter.about \
        $(srcdir)/akfavatar.h.about \
        $(srcdir)/avtaddons.h.about
 
@@ -596,6 +598,13 @@ $(srcdir)/lua/documentation/Deutsch/akfavatar.utf8.about: \
 	-$(ROFF) -c -man -Tutf8 \
 	  $(srcdir)/doc/akfavatar.utf8.de.man > $@
 
+$(srcdir)/lua/documentation/English/function_plotter.about: $(srcdir)/doc/function_plotter.en.man
+	-$(ROFF) -c -man -Tutf8 $(srcdir)/doc/function_plotter.en.man > $@
+
+$(srcdir)/lua/documentation/Deutsch/function_plotter.about: $(srcdir)/doc/function_plotter.de.man
+	-$(ROFF) -c -man -Tutf8 $(srcdir)/doc/function_plotter.de.man > $@
+
+
 $(srcdir)/akfavatar.h.about: $(srcdir)/akfavatar.h
 	-$(ENSCRIPT) -takfavatar.h -E -woverstrike -p$@ $(srcdir)/akfavatar.h
 
@@ -643,6 +652,8 @@ mostlyclean: clean
 	-rm -f akfavatar-term.en.pdf akfavatar-term.en.ps akfavatar-term.en.dvi
 	-rm -f akfavatar.utf8.de.pdf akfavatar.utf8.de.ps akfavatar.utf8.de.dvi
 	-rm -f akfavatar.utf8.en.pdf akfavatar.utf8.en.ps akfavatar.utf8.en.dvi
+	-rm -f function_plotter.de.pdf function_plotter.de.ps function_plotter.de.dvi
+	-rm -f function_plotter.en.pdf function_plotter.en.ps function_plotter.en.dvi
 	-rm -f lua-akfavatar.exe
 	-rm -f iconv.exe
 	-rm -f config-mingw
@@ -824,6 +835,8 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/doc/akfavatar-term.de.man \
 	   $(srcdir)/doc/akfavatar.utf8.en.man \
 	   $(srcdir)/doc/akfavatar.utf8.de.man \
+	   $(srcdir)/doc/function_plotter.en.man \
+	   $(srcdir)/doc/function_plotter.de.man \
 	   $(srcdir)/doc/Homepage.desktop \
 	   $(srcdir)/doc/Lua-doc.desktop \
 	   $(PKGNAME)/doc/
@@ -928,6 +941,8 @@ dist-bin-default: all pdf
 	-ln akfavatar-term.de.pdf $(BINPKGNAME)/doc/
 	-ln akfavatar.utf8.en.pdf $(BINPKGNAME)/doc/
 	-ln akfavatar.utf8.de.pdf $(BINPKGNAME)/doc/
+	-ln function_plotter.en.pdf $(BINPKGNAME)/doc/
+	-ln function_plotter.de.pdf $(BINPKGNAME)/doc/
 	ln $(srcdir)/README-Lua $(BINPKGNAME)/doc/
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/NEWS \
 	   $(BINPKGNAME)/doc/
@@ -941,6 +956,8 @@ dist-bin-default: all pdf
 	ln $(srcdir)/doc/akfavatar-term.de.man $(BINPKGNAME)/doc/
 	ln $(srcdir)/doc/akfavatar.utf8.en.man $(BINPKGNAME)/doc/
 	ln $(srcdir)/doc/akfavatar.utf8.de.man $(BINPKGNAME)/doc/
+	ln $(srcdir)/doc/function_plotter.en.man $(BINPKGNAME)/doc/
+	ln $(srcdir)/doc/function_plotter.de.man $(BINPKGNAME)/doc/
 	ln $(srcdir)/doc/Homepage.desktop $(BINPKGNAME)/doc/
 	ln $(srcdir)/doc/Lua-doc.desktop $(BINPKGNAME)/doc/
 	ln $(srcdir)/lua/akfavatar/dir.??.about \

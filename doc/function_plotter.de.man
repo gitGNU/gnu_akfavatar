@@ -1,0 +1,136 @@
+.\" Process this file with
+.\" groff -man -Tutf8 function_plotter.de.man
+.\"
+.
+.\" Macros .TQ .EX .EE taken from groff an-ext.tmac
+.\" Copyright (C) 2007, 2009 Free Software Foundation, Inc.
+.\" You may freely use, modify and/or distribute this file.
+.
+.\" Continuation line for .TP header.
+.de TQ
+.  br
+.  ns
+.  TP \\$1\" no doublequotes around argument!
+..
+.
+.\" Start example.
+.de EX
+.  nr mE \\n(.f
+.  nf
+.  nh
+.  ft CW
+..
+.
+.
+.\" End example.
+.de EE
+.  ft \\n(mE
+.  fi
+.  hy \\n(HY
+..
+.
+.TH "function_plotter.lua" 1 2012-07-24 AKFAvatar
+.
+.SH NAME
+function_plotter.lua \- Funktions-Plotter für Lua-AKFAvatar
+.
+.SH SYNTAX
+.BI "function_plotter.lua [" Funktion ]
+.
+.SH BESCHREIBUNG
+Funktions-Plotter für Lua-AKFAvatar.
+Man kann eine Funktion für die Variable
+.I x
+angeben, die dann gezeichnet wird.
+Als Beispiel könnte man \[Bq](x/5)^3\[lq] eingeben.
+.PP
+Man kann folgende Operatoren verwenden:
+.TP
+.B +
+Plus (Addition)
+.TP
+.B -
+Minus (Substraktion)
+.TP
+.B *
+Mal (Multiplikation)
+.TP
+.B /
+Geteilt (Division)
+.TP
+.B ^
+Hoch (Zum Beispiel \[Bq]x^3\[lq] für x³)
+.TP
+.B %
+Modulo (Der Rest einer Division)
+.PP
+Gleitkommazahlen kann man wahlweise mit einem Komma, oder einem Punkt schreiben.
+Zum Beispiel \[Bq]0,5\[lq] oder \[Bq]0.5\[lq] sind das selbe.
+Tausender-Trennzeichen kann man jedoch nicht verwenden.
+Die Zahl \(*p kann als \[Bq]pi\[lq] geschrieben werden.
+.PP
+Man kann folgende Funktionen verwenden:
+.TP 10
+.BI sqrt( x )
+Quadratwurzel
+.RI (\(sr x )
+.TP
+.BI exp( x )
+.RI e^ x
+.TP
+.BI log( x )
+Natürlicher Logarithmus
+.TP
+.BI log10( x )
+Basis-10 Logarithmus
+.TP
+.BI deg( x )
+In Grad umwandeln
+.RI ( x " im Bogenmaß)"
+.TP
+.BI rad( x )
+Ins Bogenmaß umwandeln
+.RI ( x " in Grad)"
+.TP
+.BI sin( x )
+Sinus
+.RI ( x " im Bogenmaß)"
+.TP
+.BI sinh( x )
+Sinus Hyperbolicus
+.RI ( x " im Bogenmaß)"
+.TP
+.BI asin( x )
+Arkussinus
+.RI ( x " im Bogenmaß)"
+.TP
+.BI cos( x )
+Kosinus
+.RI ( x " im Bogenmaß)"
+.TP
+.BI cosh( x )
+Kosinus Hyperbolicus
+.RI ( x " im Bogenmaß)"
+.TP
+.BI acos( x )
+Arkuskosinus
+.RI ( x " im Bogenmaß)"
+.TP
+.BI tan( x )
+Tangens
+.RI ( x " im Bogenmaß)"
+.TP
+.BI tanh( x )
+Tangens Hyperbolicus
+.RI ( x " im Bogenmaß)"
+.TP
+.BI atan( x )
+Arkustangens
+.RI ( x " im Bogenmaß)"
+.PP
+.BR Achtung :
+Der Ausdruck für diese Funktionen muss immer in Klammern stehen!
+.PP
+Wenn man häufig spezielle Funktionen oder Konstanten benötigt,
+kann man sie einfach im Skript hinzufügen.
+.PP

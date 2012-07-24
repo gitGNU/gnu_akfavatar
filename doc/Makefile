@@ -21,33 +21,38 @@ html: lua-akfavatar.en.html lua-akfavatar.de.html \
       lua-akfavatar-ref.en.html lua-akfavatar-ref.de.html \
       akfavatar-graphic.en.html akfavatar-graphic.de.html \
       akfavatar-term.en.html akfavatar-term.de.html \
-      akfavatar.utf8.en.html akfavatar.utf8.de.html
+      akfavatar.utf8.en.html akfavatar.utf8.de.html \
+      function_plotter.en.html function_plotter.de.html
 
 txt: lua-akfavatar-ref.en.txt lua-akfavatar-ref.de.txt \
      lua-akfavatar.en.txt lua-akfavatar.de.txt \
      akfavatar-graphic.en.txt akfavatar-graphic.de.txt \
      akfavatar-term.en.txt akfavatar-term.de.txt \
-     akfavatar.utf8.en.txt akfavatar.utf8.de.txt
+     akfavatar.utf8.en.txt akfavatar.utf8.de.txt \
+     function_plotter.en.txt function_plotter.de.txt
 
 pdf: lua-akfavatar.en.pdf lua-akfavatar.de.pdf \
      akfavatar.h.pdf avtaddons.h.pdf \
      lua-akfavatar-ref.en.pdf lua-akfavatar-ref.de.pdf \
      akfavatar-graphic.en.pdf akfavatar-graphic.de.pdf \
      akfavatar-term.en.pdf akfavatar-term.de.pdf \
-     akfavatar.utf8.en.pdf akfavatar.utf8.de.pdf
+     akfavatar.utf8.en.pdf akfavatar.utf8.de.pdf \
+     function_plotter.en.pdf function_plotter.de.pdf
 
 ps: lua-akfavatar.en.ps lua-akfavatar.de.ps \
     akfavatar.h.ps avtaddons.h.ps \
     lua-akfavatar-ref.en.ps lua-akfavatar-ref.de.ps \
     akfavatar-graphic.en.ps akfavatar-graphic.de.ps \
     akfavatar-term.en.ps akfavatar-term.de.ps \
-    akfavatar.utf8.en.ps akfavatar.utf8.de.ps
+    akfavatar.utf8.en.ps akfavatar.utf8.de.ps \
+    function_plotter.en.ps function_plotter.de.ps
 
 dvi: lua-akfavatar.en.dvi lua-akfavatar.de.dvi \
      lua-akfavatar-ref.en.dvi lua-akfavatar-ref.de.dvi \
      akfavatar-graphic.en.dvi akfavatar-graphic.de.dvi \
      akfavatar-term.en.dvi akfavatar-term.de.dvi \
-     akfavatar.utf8.en.dvi akfavatar.utf8.de.dvi
+     akfavatar.utf8.en.dvi akfavatar.utf8.de.dvi \
+     function_plotter.en.dvi function_plotter.de.dvi
 
 docbook:
 
