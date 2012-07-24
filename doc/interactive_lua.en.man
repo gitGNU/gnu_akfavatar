@@ -1,0 +1,105 @@
+.\" Process this file with
+.\" groff -man -Tutf8 interactive_lua.en.man
+.\"
+.
+.\" Macros .TQ .EX .EE taken from groff an-ext.tmac
+.\" Copyright (C) 2007, 2009 Free Software Foundation, Inc.
+.\" You may freely use, modify and/or distribute this file.
+.
+.\" Continuation line for .TP header.
+.de TQ
+.  br
+.  ns
+.  TP \\$1\" no doublequotes around argument!
+..
+.
+.\" Start example.
+.de EX
+.  nr mE \\n(.f
+.  nf
+.  nh
+.  ft CW
+..
+.
+.
+.\" End example.
+.de EE
+.  ft \\n(mE
+.  fi
+.  hy \\n(HY
+..
+.
+.TH "interactive_lua.lua" 1 2012-07-24 AKFAvatar
+.
+.SH NAME
+interactive_lua.lua \- Using Lua interactively with AKFAvatar
+.
+.SH SYNOPSIS
+.BI interactive_lua.lua
+.
+.SH DESCRIPTION
+Using Lua interactively with AKFAvatar.
+.PP
+This could for example be used as a calculator.
+When you start a line with an equal sign ("=") then the result(s) of
+the expression is shown.
+For example, when you enter "=10/4" it prints "2.5".
+.PP
+Note that it might show a different character for the decimal point, depending
+on your language settings.
+But when you want to enter a decimal fraction, you have to use the American
+notation with a point.
+.PP
+You can define your own variables.
+For example one Megabyte is 2^20 Bytes.
+So enter "MB=2^20".
+Now you can use it in your calculations.
+If you want to know what 5 Megabytes is in Bytes, enter "=5*MB",
+the result is "5242880".
+Please note that Lua is case sensitive.
+That means for example that "MB" and "mb" are two different variables.
+.PP
+Starting lines with the equal sign is a special feature of the
+interactive shell.
+It can not be used in scripts.
+.PP
+Your normal prompt is a ">".
+But when you enter an incomplete command,
+then you'll get a different prompt that looks like this ">>".
+Then you can continue to complete your entry.
+If you end up on the secondary prompt by accident, then
+simply press <Enter>.
+This cancels the previous entry.
+.PP
+You can define your own functions.
+For example:
+.EX
+  > function circle_area(radius)
+  >> return radius^2 * math.pi
+  >> end
+  > =3 * circle_area(5)
+  235.61944901923
+.EE
+.PP
+You can use any Lua command, including the AKFAvatar commands.
+For example you can set a name for the avatar.
+Try this:
+.EX
+  > avt.set_avatar_name("Hugo")
+.EE
+.PP
+Or if you don't want to have an avatar at all use
+.EX
+  > avt.avatar_image("none")
+.EE
+.PP
+To get a female avatar use
+.EX
+  > avt.avatar_image_file(avt.search("female_user.xpm"))
+.EE
+.PP
+You can do a lot more...
+Just experiment with it...
+.PP
+
+
