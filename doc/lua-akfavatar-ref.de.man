@@ -175,7 +175,7 @@ Standardausgabe.
 .IP
 .B Beispiel:
 .EX
-avt.say("Drei Äpfel kosten ", 3 * Apfelpreis, " Euro.\\n").
+avt.say("Drei Äpfel kosten ", 3 * Apfelpreis, " Euro.\en").
 .EE
 .PP
 .TP
@@ -214,7 +214,7 @@ avt.tell("Drei Äpfel kosten ", 3 * Apfelpreis, " Euro.").
 .EE
 .IP
 .B Achtung:
-Diese Funktion hat noch immer Probleme mit Tabulatoren ("\\t").
+Diese Funktion hat noch immer Probleme mit Tabulatoren ("\et").
 .PP
 .TP
 .BI "avt.say_unicode(" ... )
@@ -235,7 +235,7 @@ Manchmal ist es aber auch einfach nur einfacher.
 .EX
 avt.say_unicode("Drei Äpfel kosten ",
                 tostring(3 * appleprice), 0x20AC,
-                ".\\n").
+                ".\en").
 .EE
 .IP
 Wie man hier sieht, muss man
@@ -268,7 +268,7 @@ eingesetzt werden.
 .TP
 .BI "avt.newline()"
 Beginne eine neue Zeile.
-Das selbe, wie "\\n" in
+Das selbe, wie "\en" in
 .BR avt.say() ,
 aber schneller.
 .PP
@@ -292,7 +292,7 @@ Wenn noch keine Sprechblase angezeigt wird, wird diese hierdurch gezeichnet.
 .TP
 .BI "avt.flip_page()"
 Wartet eine Weile und löscht dann das Text-Feld.
-Dasselbe wird durch "\\f" in
+Dasselbe wird durch "\ef" in
 .B avt.say()
 erreicht.
 Siehe auch
@@ -799,7 +799,7 @@ Dadurch kann man eine Überschrift vor das Menü setzen.
 .IP
 .EX
 avt.clear()
-avt.say("Bitte das Liebligsessen auswählen:\\n")
+avt.say("Bitte das Liebligsessen auswählen:\en")
 local Menuepunt = avt.long_menu {
   "Chicken",
   "Chips",
@@ -1048,7 +1048,7 @@ Diese Funktion sollte nur verwendet werden, wenn man weiß, was man tut.
 .TP
 .BI "avt.dirsep"
 Diese Variable enthält das Verzeichnis-Ternnzeichen des Systems;
-entweder "/" oder "\\".
+entweder "/" oder "\e".
 .PP
 .TP
 .BI "avt.datapath"
@@ -1156,7 +1156,8 @@ nicht gesetzt.
 .IR Text ,
 falls möglich.
 .IP
-Wie man Übersetzungen angeben kann, ist woanders dokumentiert.
+Wie man Übersetzungen angeben kann, steht im Abschnitt
+.BR Übersetzungen .
 .PP
 .TP
 .BI "avt.recode (" "String, Quellkodierung [,Zielkodierung]" )
@@ -1192,7 +1193,7 @@ Dies ist noch experimentell und funktioniert nur eingeschränkt.
 .BI "avt.set_flip_page_delay(" [delay] )
 Setzt eine Verzögerung für
 .B avt.flip_page()
-oder "\\f".
+oder "\ef".
 Ohne Angabe eines Wertes wird auf die Vorgabe zurückgesetzt.
 Der Wert 0 schaltet die Verzögerung ganz aus.
 .PP
@@ -1363,6 +1364,86 @@ Entweder das Programm läuft, oder es wird ein fataler Fehler angezeigt.
 Wenn man Fehler mit
 .B pcall
 abfangen will, muss man danach AKFAvatar neu initialisieren...
+.PP
+.SH Übersetzungen
+Um Übersetzungen für Lua-AKFAvatar Skripte zu schreiben, muss man erstmal die
+Variable
+.B avt.translations
+definieren.
+Es handelt sich dabei um eine verschachtelte Tabelle.
+Nun, die ist schwer zu beschreiben, aber das Beispiel-Skript weiter unten
+sollte es verständlich machen.
+.PP
+Die zu verwendende Sprache wird durch die Variable
+.B avt.language
+festgelegt.
+Diese Variable sollte von Lua-AKFAvatar automatisch initialisiert worden sein,
+sie kann aber auch im Skript geändert werden.
+Sie enthält eine Sprach-Kennung mit zwei Buchstaben gemäß ISO 639-1.
+.PP
+Die Funktion
+.BI avt.translate( Text )
+gibt dann den übersetzten Text zurück.
+Falls keine Übersetzung zur Verfügung steht, wird der Text unverändert zurück
+gegeben.
+.PP
+Es ist ratsam, einen lokalen Alias namens
+.BR L " für " avt.translate
+anzulegen:
+.EX
+  local L = avt.translate
+.EE
+Dann kann man einfach eine String-Konstante damit einleiten.
+.PP
+.BR Beispiel :
+.EX
+local avt = require "lua-akfavatar"
+
+avt.encoding("UTF-8")
+
+avt.translations = {
+
+  ["Hello world!"] = {
+    es="¡Hola mundo!",
+    fr="Bonjour le monde!",
+    de="Hallo Welt!",
+    sv="Hej Världen!",
+    },
+
+  ["That's live!"] = {
+    de="So ist das Leben!",
+    fr="C'est la vie!" },
+}
+
+local L = avt.translate
+
+-- avt.language = "de"
+
+avt.start()
+avt.avatar_image("default")
+avt.tell(L"Hello world!", "\en", L"That's live!");
+avt.wait_button ()
+.EE
+.PP
+.BR Tipps :
+.IP \(en 2
+Obwohl es nicht notwendig ist, sollte man Englisch als Ausgangssprache
+verwenden.
+.IP \(en
+Wenn man Text mit Variablen dazwischen hat, ist es kein guter Ansatz, den Text
+in Teile aufzuteilen.
+Es ist besser einen Format-String für
+.B string.format()
+zu definieren.
+.IP \(en
+Der übersetzbare String muss exakt übereinstimmen.
+Bitte daran denken, dass wenn man die Strings im Programm abändert,
+man auch die Übersetzungstabelle anpassen muss!
+.IP \(en
+Der String kann auch ein Dateiname sein, für eine Textdatei oder eine
+Sprachaufnahme.
+.PP
+Übrigens, diese Implementierung wurde von GNU gettext inspiriert.
 .PP
 .SH "SIEHE AUCH"
 .BR lua-akfavatar (1)

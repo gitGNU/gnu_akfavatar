@@ -135,9 +135,9 @@ avt.encoding("UTF-8")
 avt.title("my first program")
 avt.start()
 avt.avatar_image("default")
-avt.say("Hello there!\\n")
+avt.say("Hello there!\en")
 local name = avt.ask("What's your name? ")
-avt.say("Hello, ", name, ". Nice to meet you!\\n")
+avt.say("Hello, ", name, ". Nice to meet you!\en")
 avt.wait_button()
 .EE
 .

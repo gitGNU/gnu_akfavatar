@@ -144,9 +144,9 @@ avt.encoding("UTF-8")
 avt.title("Mein erstes Programm")
 avt.start()
 avt.avatar_image("default")
-avt.say("Hallo du!\\n")
+avt.say("Hallo du!\en")
 local Name = avt.ask("Wie heißt du denn? ")
-avt.say("Hallo, ", Name, ". Schön dich zu sehen!\\n")
+avt.say("Hallo, ", Name, ". Schön dich zu sehen!\en")
 avt.wait_button()
 .EE
 .

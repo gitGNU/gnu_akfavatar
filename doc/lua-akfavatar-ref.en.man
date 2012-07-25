@@ -174,7 +174,7 @@ but it writes into the balloon instead of the standard output.
 .IP
 .B Example:
 .EX
-avt.say("Three apples cost ", 3 * appleprice, " Euros.\\n").
+avt.say("Three apples cost ", 3 * appleprice, " Euros.\en").
 .EE
 .PP
 .TP
@@ -211,7 +211,7 @@ avt.tell("Three apples cost ", 3 * appleprice, " Euros.").
 .EE
 .IP
 .B Attention:
-This function still has problems with tabs ("\\t").
+This function still has problems with tabs ("\et").
 .PP
 .TP
 .BI "avt.say_unicode(" ... )
@@ -231,7 +231,7 @@ use.
 .EX
 avt.say_unicode("Three apples cost ",
                 tostring(3 * appleprice), 0x20AC,
-                ".\\n").
+                ".\en").
 .EE
 .IP
 As you can see, you have to use 
@@ -262,7 +262,7 @@ It can be used together with
 .PP
 .TP
 .BI "avt.newline()"
-Start a new line. It is the same as "\\n" in
+Start a new line. It is the same as "\en" in
 .BR avt.say() ,
 but faster.
 .PP
@@ -282,7 +282,7 @@ If there is no balloon yet, it is drawn.
 .PP
 .TP
 .BI "avt.flip_page()"
-Waits a while and then clears the textfield; same as "\\f" in
+Waits a while and then clears the textfield; same as "\ef" in
 .BR avt.say() .
 See also
 .BR avt.set_flip_delay(delay) .
@@ -753,7 +753,7 @@ So you could put a headline before the menu.
 .IP
 .EX
 avt.clear()
-avt.say("Please select your favourite food:\\n")
+avt.say("Please select your favourite food:\en")
 local item = avt.long_menu {
   "Chicken",
   "Chips",
@@ -988,7 +988,7 @@ Only use this, if you are sure you need it.
 .TP
 .BI "avt.dirsep"
 This variable contains the systems directory separator;
-either "/" or "\\".
+either "/" or "\e".
 .PP
 .TP
 .BI "avt.datapath"
@@ -1093,7 +1093,9 @@ Translate the
 .IR text ,
 if possible.
 .IP
-How to provide translations is documented elsewhere.
+See section
+.B Translations
+for how to provide translations.
 .PP
 .TP
 .BI "avt.recode (" "string, fromcode [,tocode]" )
@@ -1126,7 +1128,7 @@ This is an experimental feature, that might not always work.
 .BI "avt.set_flip_page_delay(" [delay] )
 Set the delay for 
 .B avt.flip_page()
-or "\\f".
+or "\ef".
 Use no value for the default delay, or 0 to set no delay.
 .PP
 .TP
@@ -1284,6 +1286,83 @@ runs, or a fatal error is shown.
 If you want to catch the error with
 .BR pcall ,
 you have to initialize AKFAvatar again...
+.SH Translations
+How to translate Lua-AKFAvatar scripts.
+.PP
+To make translations for your Lua-AKFAvatar script, you first have to define the
+variable
+.BR avt.translations .
+This is a stacked table.
+Well, it's not easy to describe, but have a look at the example.
+.PP
+The language is determined by the variable
+.BR avt.language .
+This variable should be automatically initialized by Lua-AKFAvatar, 
+but it can be changed by the script.
+It contains a two-letter language code conforming to ISO 639-1.
+.PP
+The function
+.BI avt.translate( text )
+then translates the
+.IR text .
+If the translation is not available, then it retruns the
+.I text
+unmodified.
+.PP
+It is useful to define a local alias for
+.BR avt.translate " named " L :
+.EX
+  local L = avt.translate
+.EE
+Then you can simply prepend your string literals with
+.BR L .
+.PP
+.BR Example :
+.EX
+local avt = require "lua-akfavatar"
+
+avt.encoding("UTF-8")
+
+avt.translations = {
+
+  ["Hello world!"] = {
+    es="¡Hola mundo!",
+    fr="Bonjour le monde!",
+    de="Hallo Welt!",
+    sv="Hej Världen!",
+    },
+
+  ["That's live!"] = {
+    de="So ist das Leben!",
+    fr="C'est la vie!" },
+}
+
+local L = avt.translate
+
+-- avt.language = "de"
+
+avt.start()
+avt.avatar_image("default")
+avt.tell(L"Hello world!", "\en", L"That's live!");
+avt.wait_button ()
+.EE
+.PP
+.BR Hints :
+.IP \(en 2
+Although it is not required, but you should use English as the default language.
+.IP \(en
+If you have text with variables in it, it is not a good approach to split the
+text into parts.
+It is better to define a format string for
+.BR string.format() .
+.IP \(en
+The string in the translations table must match exactly.
+Please keep in mind that when you change the strings in the program you
+also have to change the table!
+.IP \(en
+The string could also be a filename for a textfile or a speech recording.
+.PP
+By the way, this implementation was inspired by GNU gettext.
 .PP
 .SH "SEE ALSO"
 .BR lua-akfavatar (1)
