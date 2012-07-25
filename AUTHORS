@@ -23,6 +23,12 @@ These files are dedicated to the Public Domain (CC0)
 http://creativecommons.org/publicdomain/zero/1.0/
 
 
+doc/*.man:
+Macros .TQ .EX .EE taken from groff an-ext.tmac
+Copyright (C) 2007, 2009 Free Software Foundation, Inc.
+You may freely use, modify and/or distribute this file.
+
+
 male_user.xpm:
 male user by Aaron Spike
 This file is in the Public Domain
