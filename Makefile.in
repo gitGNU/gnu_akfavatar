@@ -551,6 +551,8 @@ about: $(srcdir)/lua/documentation/English/lua-akfavatar.about \
        $(srcdir)/lua/documentation/Deutsch/function_plotter.about \
        $(srcdir)/lua/documentation/English/interactive_lua.about \
        $(srcdir)/lua/documentation/Deutsch/interactive_lua.about \
+       $(srcdir)/lua/documentation/English/audioplayer.about \
+       $(srcdir)/lua/documentation/Deutsch/audioplayer.about \
        $(srcdir)/akfavatar.h.about \
        $(srcdir)/avtaddons.h.about
 
@@ -612,6 +614,12 @@ $(srcdir)/lua/documentation/English/interactive_lua.about: $(srcdir)/doc/interac
 $(srcdir)/lua/documentation/Deutsch/interactive_lua.about: $(srcdir)/doc/interactive_lua.de.man
 	-$(ROFF) -c -man -Tutf8 $(srcdir)/doc/interactive_lua.de.man > $@
 
+$(srcdir)/lua/documentation/English/audioplayer.about: $(srcdir)/doc/audioplayer.en.man
+	-$(ROFF) -c -man -Tutf8 $(srcdir)/doc/audioplayer.en.man > $@
+
+$(srcdir)/lua/documentation/Deutsch/audioplayer.about: $(srcdir)/doc/audioplayer.de.man
+	-$(ROFF) -c -man -Tutf8 $(srcdir)/doc/audioplayer.de.man > $@
+
 $(srcdir)/akfavatar.h.about: $(srcdir)/akfavatar.h
 	-$(ENSCRIPT) -takfavatar.h -E -woverstrike -p$@ $(srcdir)/akfavatar.h
 
@@ -663,6 +671,8 @@ mostlyclean: clean
 	-rm -f function_plotter.en.pdf function_plotter.en.ps function_plotter.en.dvi
 	-rm -f interactive_lua.de.pdf interactive_lua.de.ps interactive_lua.de.dvi
 	-rm -f interactive_lua.en.pdf interactive_lua.en.ps interactive_lua.en.dvi
+	-rm -f audioplayer.de.pdf audioplayer.de.ps audioplayer.de.dvi
+	-rm -f audioplayer.en.pdf audioplayer.en.ps audioplayer.en.dvi
 	-rm -f lua-akfavatar.exe
 	-rm -f iconv.exe
 	-rm -f config-mingw
@@ -848,6 +858,8 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/doc/function_plotter.de.man \
 	   $(srcdir)/doc/interactive_lua.en.man \
 	   $(srcdir)/doc/interactive_lua.de.man \
+	   $(srcdir)/doc/audioplayer.en.man \
+	   $(srcdir)/doc/audioplayer.de.man \
 	   $(srcdir)/doc/Homepage.desktop \
 	   $(srcdir)/doc/Lua-doc.desktop \
 	   $(PKGNAME)/doc/
@@ -956,6 +968,8 @@ dist-bin-default: all pdf
 	-ln function_plotter.de.pdf $(BINPKGNAME)/doc/
 	-ln interactive_lua.en.pdf $(BINPKGNAME)/doc/
 	-ln interactive_lua.de.pdf $(BINPKGNAME)/doc/
+	-ln audioplayer.en.pdf $(BINPKGNAME)/doc/
+	-ln audioplayer.de.pdf $(BINPKGNAME)/doc/
 	ln $(srcdir)/README-Lua $(BINPKGNAME)/doc/
 	ln $(srcdir)/COPYING $(srcdir)/AUTHORS $(srcdir)/NEWS \
 	   $(BINPKGNAME)/doc/
@@ -973,6 +987,8 @@ dist-bin-default: all pdf
 	ln $(srcdir)/doc/function_plotter.de.man $(BINPKGNAME)/doc/
 	ln $(srcdir)/doc/interactive_lua.en.man $(BINPKGNAME)/doc/
 	ln $(srcdir)/doc/interactive_lua.de.man $(BINPKGNAME)/doc/
+	ln $(srcdir)/doc/audioplayer.en.man $(BINPKGNAME)/doc/
+	ln $(srcdir)/doc/audioplayer.de.man $(BINPKGNAME)/doc/
 	ln $(srcdir)/doc/Homepage.desktop $(BINPKGNAME)/doc/
 	ln $(srcdir)/doc/Lua-doc.desktop $(BINPKGNAME)/doc/
 	ln $(srcdir)/lua/akfavatar/dir.??.about \

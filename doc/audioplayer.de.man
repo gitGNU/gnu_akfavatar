@@ -1,0 +1,53 @@
+.\" Process this file with
+.\" groff -man -Tutf8 function_plotter.de.man
+.\"
+.
+.TH "audioplayer.lua" 1 2012-07-25 AKFAvatar
+.
+.SH NAME
+audioplayer.lua \- Audio-Abspieler für AKFAvatar
+.
+.SH SYNTAX
+.BI "audioplayer.lua [" "Audio-Datei(en)" ]
+.
+.SH BESCHREIBUNG
+Audio-Abspieler für AKFAvatar.
+.PP
+.TP
+Unterstützte Audio-Formate:
+Ogg Vorbis, Wave, AU
+.TP
+Unterstützte Playlisten-Formate:
+M3U, PLS
+.PP
+Dieses Programm kann entweder interaktiv verwendet werden,
+oder Dateien können als Parameter übergeben werden.
+.PP
+Wenn man es von einem anderen Lua-Programm mit
+.B dofile()
+aufrufen will,
+kann man die globale Variable
+.I AUDIO
+verwenden. Diese sollte entweder eine Zeichenkette,
+oder eine Tabelle mit Zeichenketten enthalten.
+.PP
+Ogg Vorbis wird nur unterstützt, wenn das Modul \[Bq]akfavatar-vorbis\[lq]
+verfügbar ist.
+Es können keine komplexen Dateien mit mehreren Streams abgespielt werden,
+nur \[Bq]Vorbis I simple profile\[lq].
+.PP
+Wenn man \[Bq]play all...\[lq] auswählt, oder mehrere Dateien als Parameter
+übergibt, dann werden Playlisten ignoriert.
+Playlisten können auch nicht auf andere Playlisten verweisen.
+.PP
+Netzwerk-Adressen werden unterstützt, wenn das Programm \[Bq]curl\[lq] im
+.B PATH
+installiert ist.
+Aber das funktioniert nicht auf allen Systemen.
+.PP
+Wenn in dem Verzeichnis mit den Dateien eine Bild-Datei namens \[Bq]cover\[lq]
+liegt, wird dieses Bild bei der Wiedergabe angezeigt.
+Wenn man eine Playliste mit relativen Pfaden oder URLs verwendet,
+dann muss das Bild im selben Verzeichnis wie die Playliste liegen.
+Das Bild wird auf keinen Fall vom Netz geladen.
+.PP

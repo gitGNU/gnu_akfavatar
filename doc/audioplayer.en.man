@@ -1,0 +1,49 @@
+.\" Process this file with
+.\" groff -man -Tutf8 function_plotter.en.man
+.\"
+.
+.TH "audioplayer.lua" 1 2012-07-25 AKFAvatar
+.
+.SH NAME
+audioplayer.lua \- Audio player for AKFAvatar
+.
+.SH SYNOPSIS
+.BI "audioplayer.lua [" "audio file(s)" ]
+.
+.SH DESCRIPTION
+Audio player for AKFAvatar.
+.PP
+.TP
+Supported audio formats:
+Ogg Vorbis, Wave, AU
+.TP
+Supported playlist formats:
+M3U, PLS
+.PP
+This program can be used interactively, or files can be given as arguments.
+.PP
+If you want to call it from another Lua-script with
+.BR dofile() ,
+you can set the global variable
+.I AUDIO
+with either a string or an array of strings.
+.PP
+Ogg Vorbis is only supported when the module "akfavatar-vorbis" is available.
+It cannot play files with more than a single Vorbis stream
+("Vorbis I" simple profile).
+.PP
+When you select "play all..." or use several files as arguments, then
+playlists are ignored.
+Playlists also cannot refer to other playlists.
+.PP
+Network addresses may be supported, when you have the tool "curl" installed
+in your
+.BR PATH .
+But this doesn't work on all platforms.
+.PP
+If the directory with the files has an image file named "cover" this image is
+shown while playing the files.
+If you use a playlist with paths or URLs,
+then the file has to be in the same directory as the playlist.
+This image is never fetched from a network.
+.PP

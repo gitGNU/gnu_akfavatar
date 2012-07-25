@@ -262,7 +262,9 @@ about: $(srcdir)/lua/documentation/English/lua-akfavatar.about \
        $(srcdir)/lua/documentation/English/function_plotter.about \
        $(srcdir)/lua/documentation/Deutsch/function_plotter.about \
        $(srcdir)/lua/documentation/English/interactive_lua.about \
-       $(srcdir)/lua/documentation/Deutsch/interactive_lua.about
+       $(srcdir)/lua/documentation/Deutsch/interactive_lua.about \
+       $(srcdir)/lua/documentation/English/audioplayer.about \
+       $(srcdir)/lua/documentation/Deutsch/audioplayer.about
 
 $(srcdir)/lua/documentation/English/lua-akfavatar.about: $(srcdir)/doc/lua-akfavatar.en.man
 	-$(ROFF) -c -man -Tutf8 $(srcdir)/doc/lua-akfavatar.en.man > $@
@@ -330,6 +332,16 @@ $(srcdir)/lua/documentation/Deutsch/interactive_lua.about: \
 	-$(ROFF) -c -man -Tutf8 \
 	  $(srcdir)/doc/interactive_lua.de.man > $@
 
+$(srcdir)/lua/documentation/English/audioplayer.about: \
+  $(srcdir)/doc/audioplayer.en.man
+	-$(ROFF) -c -man -Tutf8 \
+	  $(srcdir)/doc/audioplayer.en.man > $@
+
+$(srcdir)/lua/documentation/Deutsch/audioplayer.about: \
+  $(srcdir)/doc/audioplayer.de.man
+	-$(ROFF) -c -man -Tutf8 \
+	  $(srcdir)/doc/audioplayer.de.man > $@
+
 
 clean:
 	-rm -f *~
@@ -371,6 +383,8 @@ mostlyclean: clean
 	-rm -f function_plotter.en.pdf function_plotter.en.ps function_plotter.en.dvi
 	-rm -f interactive_lua.de.pdf interactive_lua.de.ps interactive_lua.de.dvi
 	-rm -f interactive_lua.en.pdf interactive_lua.en.ps interactive_lua.en.dvi
+	-rm -f audioplayer.de.pdf audioplayer.de.ps audioplayer.de.dvi
+	-rm -f audioplayer.en.pdf audioplayer.en.ps audioplayer.en.dvi
 	-rm -f akfavatar.h.ps akfavatar.h.pdf
 	-rm -f avtaddons.h.ps avtaddons.h.pdf
 	-rm -f lua-akfavatar.exe
@@ -483,6 +497,8 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp function_plotter.de.pdf $(BINPKGNAME)/doc/
 	cp interactive_lua.en.pdf $(BINPKGNAME)/doc/
 	cp interactive_lua.de.pdf $(BINPKGNAME)/doc/
+	cp audioplayer.en.pdf $(BINPKGNAME)/doc/
+	cp audioplayer.de.pdf $(BINPKGNAME)/doc/
 	cp $(srcdir)/AUTHORS $(BINPKGNAME)/doc/AUTHORS.txt
 	cp $(srcdir)/COPYING $(BINPKGNAME)/doc/COPYING.txt
 	cp $(srcdir)/COPYING.LESSER $(BINPKGNAME)/doc/COPYING-LESSER.txt
