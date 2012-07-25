@@ -257,6 +257,8 @@ about: $(srcdir)/lua/documentation/English/lua-akfavatar.about \
        $(srcdir)/lua/documentation/Deutsch/akfavatar-graphic.about \
        $(srcdir)/lua/documentation/English/akfavatar-term.about \
        $(srcdir)/lua/documentation/Deutsch/akfavatar-term.about \
+       $(srcdir)/lua/documentation/English/base64.about \
+       $(srcdir)/lua/documentation/Deutsch/base64.about \
        $(srcdir)/lua/documentation/English/akfavatar.utf8.about \
        $(srcdir)/lua/documentation/Deutsch/akfavatar.utf8.about \
        $(srcdir)/lua/documentation/English/function_plotter.about \
@@ -301,6 +303,16 @@ $(srcdir)/lua/documentation/Deutsch/akfavatar-term.about: \
   $(srcdir)/doc/akfavatar-term.de.man
 	-$(ROFF) -c -man -Tutf8 \
 	  $(srcdir)/doc/akfavatar-term.de.man > $@
+
+$(srcdir)/lua/documentation/English/base64.about: \
+  $(srcdir)/doc/base64.en.man
+	-$(ROFF) -c -man -Tutf8 \
+	  $(srcdir)/doc/base64.en.man > $@
+
+$(srcdir)/lua/documentation/Deutsch/base64.about: \
+  $(srcdir)/doc/base64.de.man
+	-$(ROFF) -c -man -Tutf8 \
+	  $(srcdir)/doc/base64.de.man > $@
 
 $(srcdir)/lua/documentation/English/akfavatar.utf8.about: \
   $(srcdir)/doc/akfavatar.utf8.en.man
@@ -377,6 +389,8 @@ mostlyclean: clean
 	-rm -f akfavatar-graphic.en.pdf akfavatar-graphic.en.ps akfavatar-graphic.en.dvi
 	-rm -f akfavatar-term.de.pdf akfavatar-term.de.ps akfavatar-term.de.dvi
 	-rm -f akfavatar-term.en.pdf akfavatar-term.en.ps akfavatar-term.en.dvi
+	-rm -f base64.de.pdf base64.de.ps base64.de.dvi
+	-rm -f base64.en.pdf base64.en.ps base64.en.dvi
 	-rm -f akfavatar.utf8.de.pdf akfavatar.utf8.de.ps akfavatar.utf8.de.dvi
 	-rm -f akfavatar.utf8.en.pdf akfavatar.utf8.en.ps akfavatar.utf8.en.dvi
 	-rm -f function_plotter.de.pdf function_plotter.de.ps function_plotter.de.dvi
@@ -491,6 +505,8 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp akfavatar-graphic.de.pdf $(BINPKGNAME)/doc/
 	cp akfavatar-term.en.pdf $(BINPKGNAME)/doc/
 	cp akfavatar-term.de.pdf $(BINPKGNAME)/doc/
+	cp base64.en.pdf $(BINPKGNAME)/doc/
+	cp base64.de.pdf $(BINPKGNAME)/doc/
 	cp akfavatar.utf8.en.pdf $(BINPKGNAME)/doc/
 	cp akfavatar.utf8.de.pdf $(BINPKGNAME)/doc/
 	cp function_plotter.en.pdf $(BINPKGNAME)/doc/
