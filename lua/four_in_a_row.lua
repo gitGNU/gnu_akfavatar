@@ -44,7 +44,8 @@ avt.start_audio()
 
 local board_color = "saddle brown"
 local chip = {[1] = "white", [2] = "black"}
-local success = avt.load_audio_file(avt.search "okay.au") or avt.silent()
+local connect_color = "green"
+local success = avt.load_audio_file(avt.search "hahaha.au") or avt.silent()
 local score = {[1] = 0, [2] = 0}
 local player = 1
 
@@ -83,6 +84,12 @@ local function show_score()
   screen:show()
 end
 
+
+-- get center position for column, row
+local function get_position(col, row)
+  return boardxoffset + (col-1)*fieldsize + fieldsize/2,
+         (7-row)*fieldsize + fieldsize/2
+end
 
 -- show chip in that position - row 7 is above the board
 -- if color is not given it clears the field
@@ -142,34 +149,38 @@ end
 -- check whether there are 4 in a row for last player
 local function check(column)
   local row = filled[column]
-  local nr, num
+  local num
 
-  local function won()
-    if nr~=player then num=0
+  local function won(c, r)
+    if player ~= board[c][r] then
+      num=0
     else
       num = num+1
-      if 4==num then --> success
+      if 1==num then --> start of success-row???
+        screen:moveto(get_position(c, r))
+      elseif 4==num then --> success
         success:play()
+        screen:thickness(4)
+        screen:color(connect_color)
+        screen:lineto(get_position(c, r))
         score[player] = score[player] + 1
         show_score()
         return true
       end
     end
     return false
-  end
+  end -- won
 
   -- check for vertical line
   num=0
   for r=1,6 do
-    nr = board[column][r]
-    if won() then return true end
+    if won(column, r) then return true end
   end
 
   -- check for horizontal line
   num=0
   for c=1,7 do
-    nr = board[c][row]
-    if won() then return true end
+    if won(c, row) then return true end
   end
 
   -- check for ascending diagonal line
@@ -177,8 +188,7 @@ local function check(column)
   local r = row - column
   for c=1,7 do
     r = r + 1
-    nr = board[c][r]
-    if won() then return true end
+    if won(c, r) then return true end
   end
 
   -- check for descending diagonal line
@@ -186,8 +196,7 @@ local function check(column)
   local r = row + column
   for c=1,7 do
     r = r - 1
-    nr = board[c][r]
-    if won() then return true end
+    if won(c, r) then return true end
   end
 
   return false
