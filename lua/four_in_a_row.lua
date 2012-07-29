@@ -30,6 +30,11 @@ local avt = require "lua-akfavatar"
 local graphic = require "akfavatar-graphic"
 
 avt.translations = {
+  -- avoid trademarked names
+  ["Four in a row"] = {
+    de = "Vier in einer Reihe",
+    },
+
   ["keys:"] = {
     de = "Tasten:",
   }
@@ -38,7 +43,7 @@ avt.translations = {
 local L = avt.translate
 
 avt.encoding("UTF-8")
-avt.title("Four in a row")
+avt.title(L"Four in a row")
 avt.start()
 avt.start_audio()
 
