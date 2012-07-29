@@ -212,7 +212,7 @@ local function play()
   local won = false
   local column = 4
 
-  local function select()
+  local function select_slot()
     local key
     local left, right, down = 0xF003, 0xF002, 0xF001
     local new = 32
@@ -226,7 +226,7 @@ local function play()
       elseif new==key then clear_board()
       end
     until down==key
-  end -- select
+  end -- select_slot
 
   local function next_player()
     if player==1 then player=2 else player=1 end
@@ -242,7 +242,7 @@ local function play()
   show_score()
 
   repeat
-    select()
+    select_slot()
     if drop(column, player) then
       won=check(column, player)
       if not won then next_player() end
