@@ -86,7 +86,6 @@ local function show_score()
   screen:textalign("left", "center")
   screen:text(score[1], fheight*2, height/2 - fheight)
   screen:text(score[2], fheight*2, height/2 + fheight)
-  screen:show()
 end
 
 
@@ -158,18 +157,21 @@ local function check(column)
 
   local function won(c, r)
     if player ~= board[c][r] then
-      num=0
+      num=0 -- from other player
     else
       num = num+1
       if 1==num then --> start of success-row???
         screen:moveto(get_position(c, r))
       elseif 4==num then --> success
         success:play()
-        screen:thickness(4)
         screen:color(connect_color)
+        screen:thickness(4)
+        screen:disc(10)
         screen:lineto(get_position(c, r))
+        screen:disc(10)
         score[player] = score[player] + 1
         show_score()
+        screen:show()
         return true
       end
     end
