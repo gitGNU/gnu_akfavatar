@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 Keys:
-  left/right - choose column
-  down - drop chip
-  space - clear board
+  left / right - choose column
+  1 - 7 - choose column
+  enter / down - drop chip
 --]]--------------------------------------------------------------------
 
 local avt = require "lua-akfavatar"
@@ -71,14 +71,14 @@ local function show_keys()
   screen:color("black")
   screen:textalign("left", "top")
   screen:text(L"keys:", 15, 10)
-  screen:text("← →", 20, 25)
-  screen:text(" ↓ ", 20, 33)
+  screen:text("1-7 ← →", 20, 25)
+  screen:text("Enter ↓ ", 20, 40)
 end
 
 
 local function show_score()
   screen:eraser()
-  screen:bar(1, 50, boardxoffset - 10, height)
+  screen:bar(1, boardyoffset, boardxoffset - 10, height)
   screen:color(chip[1])
   screen:disc(fheight/2, fheight, height/2 - fheight)
   screen:color(chip[2])
@@ -216,17 +216,15 @@ local function play()
 
   local function select_slot()
     local key
-    local left, right, down, enter = 0xF003, 0xF002, 0xF001, 0x000D
-    local new = 32
+    local left, right, down, enter = 0xF003, 0xF002, 0xF001, 0x0D
 
     repeat
       above(column, player)
       screen:show()
       key=avt.get_key()
       if left==key and column>1 then column = column - 1
-      elseif right==key and column < 7 then column = column + 1
-      elseif key >= 49 and key <= 55 then column = key - 48
-      elseif new==key then clear_board()
+      elseif right==key and column<7 then column = column + 1
+      elseif key>=0x31 and key<=0x37 then column = key - 0x30
       end
     until down==key or enter==key
   end -- select_slot
