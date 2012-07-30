@@ -48,6 +48,7 @@ avt.start()
 avt.start_audio()
 
 local board_color = "saddle brown"
+local column_number_color = "white"
 local chip = {[1] = "white", [2] = "black"}
 local connect_color = "green"
 local success = avt.load_audio_file(avt.search "hahaha.au") or avt.silent()
@@ -215,7 +216,7 @@ local function play()
 
   local function select_slot()
     local key
-    local left, right, down = 0xF003, 0xF002, 0xF001
+    local left, right, down, enter = 0xF003, 0xF002, 0xF001, 0x000D
     local new = 32
 
     repeat
@@ -224,9 +225,10 @@ local function play()
       key=avt.get_key()
       if left==key and column>1 then column = column - 1
       elseif right==key and column < 7 then column = column + 1
+      elseif key >= 49 and key <= 55 then column = key - 48
       elseif new==key then clear_board()
       end
-    until down==key
+    until down==key or enter==key
   end -- select_slot
 
   local function next_player()
@@ -239,6 +241,11 @@ local function play()
   screen:bar(boardxoffset - 10, boardyoffset,
              boardxoffset + boardwidth + 10, height)
   clear_board()
+  screen:color(column_number_color)
+  screen:textalign("left", "top")
+  for col=1,7 do
+    screen:text(col, boardxoffset + (col-1)*fieldsize, boardyoffset)
+  end
   show_keys()
   show_score()
 
