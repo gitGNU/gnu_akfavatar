@@ -29,6 +29,15 @@ Keys:
 local avt = require "lua-akfavatar"
 local graphic = require "akfavatar-graphic"
 
+local color = {
+  background = "default",
+  board = "saddle brown",
+  text = "black",
+  numbers = "white",
+  chip = {[1] = "white", [2] = "black"},
+  connector = "green"
+  }
+
 avt.translations = {
   -- avoid trademarked names
   ["Four in a row"] = {
@@ -40,17 +49,15 @@ avt.translations = {
   }
 }
 
-local L = avt.translate
+------------------------------------------------------------------------
 
+local L = avt.translate
 avt.encoding("UTF-8")
 avt.title(L"Four in a row")
+avt.set_background_color(color.background)
 avt.start()
 avt.start_audio()
 
-local board_color = "saddle brown"
-local column_number_color = "white"
-local chip = {[1] = "white", [2] = "black"}
-local connect_color = "green"
 local success = avt.load_audio_file(avt.search "hahaha.au") or avt.silent()
 local score = {[1] = 0, [2] = 0}
 local player = 1
@@ -68,7 +75,7 @@ local board = {}
 
 
 local function show_keys()
-  screen:color("black")
+  screen:color(color.text)
   screen:textalign("left", "top")
   screen:text(L"keys:", 15, 10)
   screen:text("1-7 ← →", 20, 25)
@@ -79,11 +86,11 @@ end
 local function show_score()
   screen:eraser()
   screen:bar(1, boardyoffset, boardxoffset - 10, height)
-  screen:color(chip[1])
+  screen:color(color.chip[1])
   screen:disc(fheight/2, fheight, height/2 - fheight)
-  screen:color(chip[2])
+  screen:color(color.chip[2])
   screen:disc(fheight/2, fheight, height/2 + fheight)
-  screen:color("black")
+  screen:color(color.text)
   screen:textalign("left", "center")
   screen:text(score[1], fheight*2, height/2 - fheight)
   screen:text(score[2], fheight*2, height/2 + fheight)
@@ -111,7 +118,7 @@ end
 local function above(column)
   screen:eraser()
   screen:bar(boardxoffset, 1, boardxoffset + boardwidth, fieldsize)
-  position(column, 7, chip[player])
+  position(column, 7, color.chip[player])
 end
 
 
@@ -123,7 +130,7 @@ local function drop(column)
     number = number + 1
     for i=6,number,-1 do
       position(column, i+1) -- clear
-      position(column, i, chip[player])
+      position(column, i, color.chip[player])
       screen:show()
       avt.wait(0.025)
     end
@@ -165,7 +172,7 @@ local function check(column)
         screen:moveto(get_position(c, r))
       elseif 4==num then --> success
         success:play()
-        screen:color(connect_color)
+        screen:color(color.connector)
         screen:thickness(4)
         screen:disc(10)
         screen:lineto(get_position(c, r))
@@ -235,11 +242,11 @@ local function play()
 
   -- draw board
   screen:clear()
-  screen:color(board_color)
+  screen:color(color.board)
   screen:bar(boardxoffset - 10, boardyoffset,
              boardxoffset + boardwidth + 10, height)
   clear_board()
-  screen:color(column_number_color)
+  screen:color(color.numbers)
   screen:textalign("left", "top")
   for col=1,7 do
     screen:text(col, boardxoffset + (col-1)*fieldsize, boardyoffset)
