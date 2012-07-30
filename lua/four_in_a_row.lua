@@ -171,7 +171,6 @@ local function check(column)
         screen:disc(10)
         score[player] = score[player] + 1
         show_score()
-        screen:show()
         return true
       end
     end
@@ -251,6 +250,7 @@ local function play()
     end
   until won or chips == 42
 
+  screen:show()
   avt.get_key()
 end
 
