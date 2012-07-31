@@ -456,12 +456,11 @@ Das fogende Beispiel zeigt, wie man das macht:
 .IP
 .EX
 function export(graphic, name)
-  local ppm = name..".ppm"
-  local png = name..".png"
-  graphic:export_ppm(ppm)
-  if os.execute("pnmtopng "..ppm.." > "..png)
-     or os.execute("convert "..ppm.." "..png)
-  then os.remove(ppm) end
+  graphic:export_ppm(name..".ppm")
+  if os.execute("pnmtopng "..name..".ppm > "..name..".png")
+     or os.execute("convert "..name..".ppm "..name..".png") then
+    os.remove(name..".ppm")
+  end
 end
 .EE
 .IP
