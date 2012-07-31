@@ -1,3 +1,7 @@
+2012-07-31  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/akfavatar-graphic.c: prepare support for alpha channel
+
 2012-07-23  Andreas K. Foerster  <info@akfoerster.de>
 
 	* about2html: full support for overstrike and page breaks

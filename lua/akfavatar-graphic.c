@@ -52,7 +52,7 @@ typedef unsigned char byte;
 
 struct color
 {
-  byte red, green, blue;
+  byte red, green, blue;	// evetually alpha as last value
 };
 
 typedef struct graphic
@@ -68,7 +68,8 @@ typedef struct graphic
 } graphic;
 
 // Bytes per pixel (3=RGB)
-#define BPP 3
+#define BPP  (sizeof(struct color))
+#define OPAQUE  0xFF
 
 #ifndef M_PI
 #define M_PI  3.14159265358979323846
@@ -175,14 +176,12 @@ static void
 clear_graphic (graphic * gr)
 {
   struct color *p;
-  size_t i, pixels;
   struct color color;
 
   color = gr->background;
-  pixels = gr->width * gr->height;
   p = gr->data;
 
-  for (i = 0; i < pixels; i++)
+  for (size_t i = gr->width * gr->height; i > 0; i--)
     *p++ = color;
 }
 
@@ -310,6 +309,7 @@ lgraphic_new (lua_State * L)
   gr->background.red = avt_red (colornr);
   gr->background.green = avt_green (colornr);
   gr->background.blue = avt_blue (colornr);
+  // gr->background.alpha = OPAQUE;
   clear_graphic (gr);
 
   lua_pushinteger (L, width);
@@ -349,6 +349,7 @@ lgraphic_clear (lua_State * L)
       gr->background.red = avt_red (colornr);
       gr->background.green = avt_green (colornr);
       gr->background.blue = avt_blue (colornr);
+      // gr->background.alpha = OPAQUE;
     }
 
   clear_graphic (gr);
@@ -373,6 +374,7 @@ lgraphic_color (lua_State * L)
   gr->color.red = avt_red (colornr);
   gr->color.green = avt_green (colornr);
   gr->color.blue = avt_blue (colornr);
+  // gr->color.alpha = OPAQUE;
 
   return 0;
 }
@@ -402,6 +404,7 @@ lgraphic_rgb (lua_State * L)
   gr->color.red = (byte) red;
   gr->color.green = (byte) green;
   gr->color.blue = (byte) blue;
+  // gr->color.alpha = OPAQUE;
 
   return 0;
 }
@@ -1648,11 +1651,9 @@ static int
 lgraphic_export_ppm (lua_State * L)
 {
   graphic *gr;
+  struct color *p;
   const char *fname;
   FILE *f;
-
-  if (BPP != 3)
-    return luaL_error (L, "%s", strerror (ENOSYS));
 
   gr = get_graphic (L, 1);
   fname = luaL_checkstring (L, 2);
@@ -1663,7 +1664,14 @@ lgraphic_export_ppm (lua_State * L)
     return luaL_error (L, LUA_QS ": %s", fname, strerror (errno));
 
   fprintf (f, "P6\n%d %d\n255\n", gr->width, gr->height);
-  fwrite (gr->data, 1, gr->height * gr->width * BPP, f);
+
+  p = gr->data;
+  for (size_t i = gr->height * gr->width; i > 0; i--, p++)
+    {
+      fwrite (&p->red, 1, 1, f);
+      fwrite (&p->green, 1, 1, f);
+      fwrite (&p->blue, 1, 1, f);
+    }
 
   if (fclose (f) != 0)
     return luaL_error (L, LUA_QS ": %s", fname, strerror (errno));
