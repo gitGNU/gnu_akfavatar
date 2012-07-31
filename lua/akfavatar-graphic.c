@@ -1668,9 +1668,9 @@ lgraphic_export_ppm (lua_State * L)
   p = gr->data;
   for (size_t i = gr->height * gr->width; i > 0; i--, p++)
     {
-      fwrite (&p->red, 1, 1, f);
-      fwrite (&p->green, 1, 1, f);
-      fwrite (&p->blue, 1, 1, f);
+      putc (p->red, f);
+      putc (p->green, f);
+      putc (p->blue, f);
     }
 
   if (fclose (f) != 0)
