@@ -452,7 +452,7 @@ Man kann aber die \[Bq]netpbm\[lq]-Werkzeuge oder \[Bq]ImageMagick\[lq]
 verwenden,
 um es in ein anderes Format umzuwandeln.
 .IP
-Das fogende Beispiel zeigt, wie man das macht:
+Das folgende Beispiel zeigt, wie man das macht:
 .IP
 .EX
 function export(graphic, name)
