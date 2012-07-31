@@ -464,7 +464,7 @@ function export(graphic, name)
 end
 .EE
 .IP
-Zunächst exportiert es die Grafik im PPM-Format.
+Zunächst exportiert es die Grafik ins PPM-Format.
 Dann versucht es dieses ins PNG-Format umzuwandeln.
 Falls das gelingt, wird die PPM-Datei gelöscht.
 Wenn der Anwender \[Bq]netpbm\[lq] oder \[Bq]ImageMagick\[lq] aber
