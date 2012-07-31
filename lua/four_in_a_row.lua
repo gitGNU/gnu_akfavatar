@@ -38,6 +38,8 @@ local color = {
   connector = "green"
   }
 
+local success_sound = "hahaha.au"  -- false for none
+
 avt.translations = {
   -- avoid trademarked names
   ["Four in a row"] = {
@@ -52,13 +54,14 @@ avt.translations = {
 ------------------------------------------------------------------------
 
 local L = avt.translate
+
 avt.encoding("UTF-8")
 avt.title(L"Four in a row")
 avt.set_background_color(color.background)
 avt.start()
 avt.start_audio()
 
-local success = avt.load_audio_file(avt.search "hahaha.au") or avt.silent()
+
 local score = {[1] = 0, [2] = 0}
 local player = 1
 
@@ -73,13 +76,24 @@ local filled = {} -- how many chips in a column
 local chips = 0 -- how many chips alltogether
 local board = {}
 
+local success
+
+if success_sound then
+  success = avt.load_audio_file(avt.search(success_sound)) or avt.silent()
+else
+  success = avt.silent()
+end
+
 
 local function show_keys()
   screen:color(color.text)
   screen:textalign("left", "top")
-  screen:text(L"keys:", 15, 10)
-  screen:text("1-7 ← →", 20, 25)
-  screen:text("Enter ↓ ", 20, 40)
+  screen:moveto(15,10)
+  screen:text(L"keys:")
+  screen:moverel(0,fheight)
+  screen:text("1-7  ← →")
+  screen:moverel(0,fheight)
+  screen:text("Enter ↓ ")
 end
 
 
@@ -103,13 +117,20 @@ local function get_position(col, row)
          (7-row)*fieldsize + fieldsize/2
 end
 
+
 -- show chip in that position - row 7 is above the board
--- if color is not given it clears the field
-local function position(col, row, color)
+local function chip_position(col, row)
   if col >= 1 and col <= 7 and row >= 1 and row <= 7 then
-    if color then screen:color(color) else screen:eraser() end
-    screen:disc(radius, boardxoffset + (col-1)*fieldsize + fieldsize/2,
-                (7-row)*fieldsize + fieldsize/2)
+    screen:color(color.chip[player])
+    screen:disc(radius, get_position(col, row))
+  end
+end
+
+
+local function clear_position(col, row)
+  if col >= 1 and col <= 7 and row >= 1 and row <= 7 then
+    screen:eraser()
+    screen:disc(radius, get_position(col, row))
   end
 end
 
@@ -118,7 +139,7 @@ end
 local function above(column)
   screen:eraser()
   screen:bar(boardxoffset, 1, boardxoffset + boardwidth, fieldsize)
-  position(column, 7, color.chip[player])
+  chip_position(column, 7)
 end
 
 
@@ -129,8 +150,8 @@ local function drop(column)
   if number < 6 then
     number = number + 1
     for i=6,number,-1 do
-      position(column, i+1) -- clear
-      position(column, i, color.chip[player])
+      clear_position(column, i+1)
+      chip_position(column, i)
       screen:show()
       avt.wait(0.025)
     end
@@ -148,7 +169,7 @@ end
 local function clear_board()
   for row=1,6 do
     for col=1,7 do
-      position(col, row)
+      clear_position(col, row)
       filled[col] = 0
       board[col] = {}
       end
@@ -158,6 +179,30 @@ local function clear_board()
 end
 
 
+local function draw_board()
+  screen:clear()
+
+  screen:color(color.board)
+  screen:bar(boardxoffset - 10, boardyoffset,
+             boardxoffset + boardwidth + 10,
+             height)
+
+  clear_board()
+
+  -- show numbers
+  screen:color(color.numbers)
+  screen:textalign("left", "top")
+  screen:moveto(boardxoffset + 8, boardyoffset)
+  for col=1,7 do
+    screen:text(col)
+    screen:moverel(fieldsize, 0)
+  end
+
+  show_keys()
+  show_score()
+end -- draw_board
+
+
 -- check whether there are 4 in a row for last player
 local function check(column)
   local row = filled[column]
@@ -165,13 +210,13 @@ local function check(column)
 
   local function won(c, r)
     if player ~= board[c][r] then
-      num=0 -- from other player
+      num=0 -- not same player
     else
       num = num+1
-      if 1==num then --> start of success-row???
+      if 1==num then --> possible start of success-row
         screen:moveto(get_position(c, r))
       elseif 4==num then --> success
-        success:play()
+        success() --> play sound
         screen:color(color.connector)
         screen:thickness(4)
         screen:disc(10)
@@ -217,6 +262,11 @@ local function check(column)
 end
 
 
+local function next_player()
+  if player==1 then player=2 else player=1 end
+end
+
+
 local function play()
   local won = false
   local column = 4
@@ -236,23 +286,7 @@ local function play()
     until down==key or enter==key
   end -- select_slot
 
-  local function next_player()
-    if player==1 then player=2 else player=1 end
-  end
-
-  -- draw board
-  screen:clear()
-  screen:color(color.board)
-  screen:bar(boardxoffset - 10, boardyoffset,
-             boardxoffset + boardwidth + 10, height)
-  clear_board()
-  screen:color(color.numbers)
-  screen:textalign("left", "top")
-  for col=1,7 do
-    screen:text(col, boardxoffset + (col-1)*fieldsize, boardyoffset)
-  end
-  show_keys()
-  show_score()
+  draw_board()
 
   repeat
     select_slot()
@@ -265,5 +299,6 @@ local function play()
   screen:show()
   avt.get_key()
 end
+
 
 repeat play() until false
