@@ -811,7 +811,8 @@ dist: about $(srcdir)/alert.au
 	ln $(srcdir)/data/gnu-head.xpm $(srcdir)/data/gnu-head.xbm \
 	   $(srcdir)/data/male_user.xpm $(srcdir)/data/female_user.xpm \
 	   $(srcdir)/data/audio1.xpm $(srcdir)/data/info.xpm \
-	   $(srcdir)/data/teacher.xpm $(srcdir)/data/akfoerster.xpm \
+	   $(srcdir)/data/teacher.xpm \
+	   $(srcdir)/data/akfoerster.xpm $(srcdir)/data/akf64.xpm \
 	   $(srcdir)/data/computer.xpm $(srcdir)/data/akfavatar-logo.xpm \
 	   $(srcdir)/data/positive.au $(srcdir)/data/negative.au \
 	   $(srcdir)/data/neutral.au $(srcdir)/data/harrumph.au \
@@ -942,7 +943,8 @@ dist-bin-default: all pdf
 	ln $(srcdir)/data/gnu-head.xpm $(srcdir)/data/gnu-head.xbm \
 	   $(srcdir)/data/male_user.xpm $(srcdir)/data/female_user.xpm \
 	   $(srcdir)/data/audio1.xpm $(srcdir)/data/info.xpm \
-	   $(srcdir)/data/teacher.xpm $(srcdir)/data/akfoerster.xpm \
+	   $(srcdir)/data/teacher.xpm \
+	   $(srcdir)/data/akfoerster.xpm $(srcdir)/data/akf64.xpm \
 	   $(srcdir)/data/computer.xpm $(srcdir)/data/akfavatar-logo.xpm \
 	   $(srcdir)/data/positive.au $(srcdir)/data/negative.au \
 	   $(srcdir)/data/neutral.au $(srcdir)/data/harrumph.au \

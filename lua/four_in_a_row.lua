@@ -200,6 +200,8 @@ local function draw_board()
 
   show_keys()
   show_score()
+
+  screen:put_file(avt.search("akf64.xpm"), width - 64 - 5, 5)
 end -- draw_board
 
 
