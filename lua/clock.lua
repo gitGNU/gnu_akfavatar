@@ -34,6 +34,11 @@ local function draw_clockface(gr, radius, color)
   clockface:thickness(3)
   clockface:circle(radius-3)
 
+  -- background image
+  clockface:put_file(avt.search("gnu-head.xbm"),
+    clockface:width() / 2 - 268 / 2,
+    clockface:height() / 2 - 253)
+
   -- draw minute points
   for minute=1,60 do
     clockface:home()
