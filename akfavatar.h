@@ -174,7 +174,7 @@ AVT_API int avt_avatar_image_default (void);
 AVT_API int avt_avatar_image_none (void);
 AVT_API int avt_avatar_image_xpm (char **xpm);
 AVT_API int avt_avatar_image_xbm (const unsigned char *bits,
-				  int width, int height, int color);
+                                  int width, int height, int color);
 AVT_API int avt_avatar_image_data (void *img, size_t imgsize);
 AVT_API int avt_avatar_image_file (const char *file);
 AVT_API int avt_avatar_image_stream (avt_stream *stream);
@@ -780,14 +780,33 @@ AVT_API int avt_show_image_stream (avt_stream *stream);
 AVT_API int avt_show_image_data (void *img, size_t imgsize);
 AVT_API int avt_show_image_xpm (char **xpm);
 AVT_API int avt_show_image_xbm (const unsigned char *bits,
-				int width, int height, int color);
+                                int width, int height, int color);
 
 /*
  * show raw image
  * only 3 or 4 Bytes per pixel supported (RGB or RGBA)
  */
 AVT_API int avt_show_raw_image (void *image_data, int width, int height,
-				int bytes_per_pixel);
+                                int bytes_per_pixel);
+
+
+/* put an image onto a raw image */
+
+AVT_API int avt_put_raw_image_file (const char *file, int x, int y,
+                                    void *image_data, int width, int height,
+                                    int bytes_per_pixel);
+
+AVT_API int avt_put_raw_image_stream (avt_stream * stream, int x, int y,
+                                      void *image_data, int width, int height,
+                                      int bytes_per_pixel);
+
+AVT_API int avt_put_raw_image_data (void *img, size_t imgsize, int x, int y,
+                                    void *image_data, int width, int height,
+                                    int bytes_per_pixel);
+
+AVT_API int avt_put_raw_image_xpm (char **xpm, int x, int y,
+                                   void *image_data, int width, int height,
+                                   int bytes_per_pixel);
 
 /***********************************************************************/
 // high-level functions
@@ -857,7 +876,7 @@ AVT_API int avt_navigate (const char *buttons);
  */
 AVT_API int
 avt_choice (int *result, int start_line, int items, int key,
-	    bool back, bool forward);
+            bool back, bool forward);
 
 /*
  * show longer text with a text-viewer application
@@ -894,7 +913,7 @@ AVT_API void avt_register_keyhandler (avt_keyhandler handler);
  * see avt_register_mousehandler
  */
 typedef void (*avt_mousehandler) (int button, bool pressed,
-				  int x, int y);
+                                  int x, int y);
 
 /*
  * register an external mousehandler
@@ -1064,9 +1083,9 @@ AVT_API bool avt_audio_playing (avt_audio *snd);
 typedef struct SDL_Surface avt_image_t;
 
 AVT_API int avt_initialize (const char *title,
-			    const char *shortname,
-			    avt_image_t *image,
-			    int mode) AVT_DEPRECATED;
+                            const char *shortname,
+                            avt_image_t *image,
+                            int mode) AVT_DEPRECATED;
 AVT_API avt_image_t *avt_default (void) AVT_DEPRECATED;
 AVT_API avt_image_t *avt_import_xpm (char **xpm) AVT_DEPRECATED;
 AVT_API avt_image_t *avt_import_gimp_image (void *gimp_image) AVT_DEPRECATED;
@@ -1088,8 +1107,8 @@ AVT_API void avt_set_text_color_name (const char *name) AVT_DEPRECATED;
 AVT_API void avt_set_text_background_color_name (const char *name) AVT_DEPRECATED;
 AVT_API void avt_get_font_size (int *width, int *height) AVT_DEPRECATED;
 AVT_API avt_audio *avt_load_raw_audio_data (void *data, size_t data_size,
-			int samplingrate, int audio_type, int channels)
-			AVT_DEPRECATED;
+                        int samplingrate, int audio_type, int channels)
+                        AVT_DEPRECATED;
 
 
 #endif // DISABLE_DEPRECATED

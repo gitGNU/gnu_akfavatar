@@ -1,3 +1,17 @@
+2012-08-01  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar-sdl.c (avt_put_raw_image_file)
+	(avt_put_raw_image_stream, avt_put_raw_image_data)
+	(avt_put_raw_image_xpm): new functions
+
+	* avatar-sdl.c (avt_import_image): new function
+	(avt_show_raw_image): adapted
+
+	* avatar-sdl.c (avt_put_image_rw): new function
+
+	* lua/akfavatar-graphic.c (lgraphic_put_file, import_xpm)
+	(lgraphic_put_image): new functions
+
 2012-07-31  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar-graphic.c: prepare support for alpha channel

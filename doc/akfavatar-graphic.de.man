@@ -385,6 +385,27 @@ Dies ist wesentlich langsamer als
 .BR gr:put() .
 .PP
 .TP
+.IB gr :put_file( "Dateiname [, x, y]" )
+Kopiert eine Grafik aus einer Datei auf die Grafik
+.I gr
+bei der angegebenen Position (obere linke Ecke).
+.br
+Wenn keine Position angegeben ist, wird es in die obere linke Ecke gesetzt.
+.PP
+.TP
+.IB gr :put_image( "Daten [, x, y]" )
+Kopiert eine Grafik aus den
+.I Daten
+auf die Grafik
+.I gr
+bei der angegebenen Position (obere linke Ecke).
+.I Daten
+kann ein String mit den Bilddaten sein,
+oder eine Tabelle mit Strings von XPM-Daten.
+.br
+Wenn keine Position angegeben ist, wird es in die obere linke Ecke gesetzt.
+.PP
+.TP
 .IB gr :get( "x1, y1, x2, y2" )
 Gibt einen Bereich der Grafik
 .I gr

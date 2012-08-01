@@ -46,6 +46,8 @@
     avt_rgb, avt_red, avt_green, avt_blue,
     avt_colorname, avt_palette,
     avt_finalize_raw_audio
+    avt_put_raw_image_file, avt_put_raw_image_stream, avt_put_raw_image_data,
+    avt_put_raw_image_xpm
   - fixed avt_show_image_stream, avt_import_image_stream
   - avt_key(ch): ch may be NULL
   - deprecated or removed functions:
@@ -86,13 +88,13 @@
     avt.search, avt.load_audio_stream, avt.translate
   - new variables: avt.datapath, avt.language
   - Module "akfavatar-graphic"
-    - gr:new() accepts name for background color
-    - gr:put() optimized for same width, position is optional now
-    - gr:font_size() additionally returns the baseline
-    - new methods: gr:shift_vertically(), gr:shift_horizontally(),
-      gr:put_transparency()
+    - gr:new accepts name for background color
+    - gr:put optimized for same width, position is optional now
+    - gr:font_size additionally returns the baseline
+    - new methods: gr:shift_vertically, gr:shift_horizontally,
+      gr:put_transparency, gr:put_file, gr:put_image
   - Module "akfavatar.ar"
-    - ar:dolua() replaced with ar:loadlua()
+    - ar:dolua replaced with ar:loadlua
   - Module akfavatar-vorbis:
      - new function vorbis.load_stream
 

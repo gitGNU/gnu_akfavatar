@@ -368,6 +368,28 @@ This is much slower than
 .BR "gr:put()" .
 .PP
 .TP
+.IB gr :put_file( "filename [, x, y]" )
+Puts a graphic from a file onto graphic
+.I gr
+at the given position (upper-left corner).
+.br
+If no position is given it puts it at the upper-left corner.
+.PP
+.TP
+.IB gr :put_image( "data [, x, y]" )
+Puts a graphic from
+.I data
+onto graphic
+.I gr
+at the given position (upper-left corner).
+The
+.I data
+can be a string with image-data
+or a table with strings from XPM data.
+.br
+If no position is given it puts it at the upper-left corner.
+.PP
+.TP
 .IB gr :get( "x1, y1, x2, y2" )
 Returns an area of the graphic
 .I gr

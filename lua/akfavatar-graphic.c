@@ -1459,6 +1459,104 @@ lgraphic_put_transparency (lua_State * L)
 }
 
 
+// gr:put_file(file [, xoffset, yoffset])
+static int
+lgraphic_put_file (lua_State * L)
+{
+  graphic *gr;
+  const char *filename;
+  int xoffset, yoffset;
+
+  gr = get_graphic (L, 1);
+  filename = luaL_checkstring (L, 2);
+  xoffset = luaL_optint (L, 3, 1) - 1;
+  yoffset = luaL_optint (L, 4, 1) - 1;
+
+  avt_put_raw_image_file (filename, xoffset, yoffset,
+			  &gr->data, gr->width, gr->height, BPP);
+
+  return 0;
+}
+
+// imports an XPM table at given index
+// result must be freed by caller
+static char **
+import_xpm (lua_State * L, int index)
+{
+  char **xpm;
+  unsigned int linenr, linecount;
+  int idx;
+
+  idx = lua_absindex (L, index);
+  xpm = NULL;
+  linenr = 0;
+
+  linecount = 512;		// can be extended later
+  xpm = (char **) malloc (linecount * sizeof (*xpm));
+  if (not xpm)
+    return NULL;
+
+  lua_pushnil (L);
+  while (lua_next (L, idx))
+    {
+      xpm[linenr] = (char *) lua_tostring (L, -1);
+      linenr++;
+
+      if (linenr >= linecount)	// leave one line reserved
+	{
+	  linecount += 512;
+	  xpm = (char **) realloc (xpm, linecount * sizeof (*xpm));
+	  if (not xpm)
+	    return NULL;
+	}
+
+      lua_pop (L, 1);		// pop value - leave key
+    }
+
+  // last line must be NULL
+  if (xpm)
+    xpm[linenr] = NULL;
+
+  return xpm;
+}
+
+// gr:put_image(image [, xoffset, yoffset])
+static int
+lgraphic_put_image (lua_State * L)
+{
+  graphic *gr;
+  int xoffset, yoffset;
+
+  gr = get_graphic (L, 1);
+
+  xoffset = luaL_optint (L, 3, 1) - 1;
+  yoffset = luaL_optint (L, 4, 1) - 1;
+
+  if (lua_istable (L, 2))	// assume XPM table
+    {
+      char **xpm = import_xpm (L, 2);
+
+      if (xpm)
+	{
+	  avt_put_raw_image_xpm (xpm, xoffset, yoffset,
+				 &gr->data, gr->width, gr->height, BPP);
+	  free (xpm);
+	}
+    }
+  else				// not a table
+    {
+      char *data;
+      size_t len;
+
+      data = (char *) luaL_checklstring (L, 2, &len);
+      avt_put_raw_image_data (data, len, xoffset, yoffset,
+			      &gr->data, gr->width, gr->height, BPP);
+    }
+
+  return 0;
+}
+
+
 // gr:get(x1, y1, x2, y2)
 static int
 lgraphic_get (lua_State * L)
@@ -1720,6 +1818,8 @@ static const luaL_Reg graphiclib_methods[] = {
   {"height", lgraphic_height},
   {"put", lgraphic_put},
   {"put_transparency", lgraphic_put_transparency},
+  {"put_file", lgraphic_put_file},
+  {"put_image", lgraphic_put_image},
   {"get", lgraphic_get},
   {"duplicate", lgraphic_duplicate},
   {"heading", lgraphic_heading},

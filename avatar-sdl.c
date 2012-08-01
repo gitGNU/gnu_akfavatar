@@ -6011,25 +6011,10 @@ avt_image_max_height (void)
   return screen->h;
 }
 
-
-/*
- * show raw image
- * only 3 or 4 Bytes per pixel supported (RGB or RGBA)
- */
-extern int
-avt_show_raw_image (void *image_data, int width, int height,
-		    int bytes_per_pixel)
+static SDL_Surface *
+avt_import_image (void *image_data, int width, int height, int bytes_per_pixel)
 {
   SDL_Surface *image;
-
-  if (not screen or _avt_STATUS != AVT_NORMAL or not image_data)
-    return _avt_STATUS;
-
-  if (bytes_per_pixel < 3 or bytes_per_pixel > 4)
-    {
-      SDL_SetError ("wrong number of bytes_per_pixel for raw image");
-      return AVT_FAILURE;
-    }
 
   image = NULL;
 
@@ -6059,6 +6044,30 @@ avt_show_raw_image (void *image_data, int width, int height,
 					  0xFF000000);
     }
 
+  return image;
+}
+
+/*
+ * show raw image
+ * only 3 or 4 Bytes per pixel supported (RGB or RGBA)
+ */
+extern int
+avt_show_raw_image (void *image_data, int width, int height,
+		    int bytes_per_pixel)
+{
+  SDL_Surface *image;
+
+  if (not screen or _avt_STATUS != AVT_NORMAL or not image_data)
+    return _avt_STATUS;
+
+  if (bytes_per_pixel < 3 or bytes_per_pixel > 4)
+    {
+      SDL_SetError ("wrong number of bytes_per_pixel for raw image");
+      return AVT_FAILURE;
+    }
+
+  image = avt_import_image (image_data, width, height, bytes_per_pixel);
+
   if (not image)
     {
       avt_clear_screen ();	// at least clear the screen
@@ -6068,6 +6077,140 @@ avt_show_raw_image (void *image_data, int width, int height,
 
   avt_show_image (image);
   SDL_FreeSurface (image);
+
+  return _avt_STATUS;
+}
+
+
+static int
+avt_put_image_rw (SDL_RWops * RW, int x, int y, void *image_data,
+		  int width, int height, int bytes_per_pixel)
+{
+  SDL_Surface *src, *dest;
+  SDL_Rect destrect;
+
+  if (not RW)
+    return AVT_FAILURE;
+
+  if (not screen or _avt_STATUS != AVT_NORMAL or not image_data)
+    return _avt_STATUS;
+
+  if (bytes_per_pixel < 3 or bytes_per_pixel > 4)
+    {
+      SDL_SetError ("wrong number of bytes_per_pixel for raw image");
+      return AVT_FAILURE;
+    }
+
+  src = dest = NULL;
+
+  src = avt_load_image_xpm_RW (RW, 0);
+
+  if (not src)
+    src = avt_load_image_xbm_RW (RW, 0, XBM_DEFAULT_COLOR);
+
+  if (not src)
+    {
+      load_image_init ();
+      src = load_image.rw (RW, 0);
+    }
+
+  SDL_RWclose (RW);
+
+  if (not src)
+    return AVT_FAILURE;
+
+  dest = avt_import_image (image_data, width, height, bytes_per_pixel);
+
+  if (not dest)
+    {
+      SDL_FreeSurface (src);
+      SDL_SetError ("export_image");
+      return AVT_FAILURE;
+    }
+
+  destrect.x = x;
+  destrect.y = y;
+  destrect.w = destrect.h = 0;	// ignored
+
+  SDL_BlitSurface (src, NULL, dest, &destrect);
+
+  SDL_FreeSurface (dest);
+  SDL_FreeSurface (src);
+
+  return _avt_STATUS;
+}
+
+extern int
+avt_put_raw_image_file (const char *file, int x, int y,
+			void *image_data, int width, int height,
+			int bytes_per_pixel)
+{
+  if (not screen or _avt_STATUS != AVT_NORMAL)
+    return _avt_STATUS;
+  else
+    return avt_put_image_rw (SDL_RWFromFile (file, "rb"), x, y, image_data,
+			     width, height, bytes_per_pixel);
+}
+
+extern int
+avt_put_raw_image_stream (avt_stream * stream, int x, int y,
+			  void *image_data, int width, int height,
+			  int bytes_per_pixel)
+{
+  if (not screen or _avt_STATUS != AVT_NORMAL)
+    return _avt_STATUS;
+  else
+    return avt_put_image_rw (SDL_RWFromFP ((FILE *) stream, 0), x, y,
+			     image_data, width, height, bytes_per_pixel);
+}
+
+extern int
+avt_put_raw_image_data (void *img, size_t imgsize, int x, int y,
+			void *image_data, int width, int height,
+			int bytes_per_pixel)
+{
+  if (not screen or _avt_STATUS != AVT_NORMAL)
+    return _avt_STATUS;
+  else
+    return avt_put_image_rw (SDL_RWFromMem (img, imgsize), x, y, image_data,
+			     width, height, bytes_per_pixel);
+}
+
+extern int
+avt_put_raw_image_xpm (char **xpm, int x, int y,
+		       void *image_data, int width, int height,
+		       int bytes_per_pixel)
+{
+  SDL_Surface *src, *dest;
+  SDL_Rect destrect;
+
+  if (not screen or _avt_STATUS != AVT_NORMAL)
+    return _avt_STATUS;
+
+  src = dest = NULL;
+
+  src = avt_load_image_xpm (xpm);
+
+  if (not src)
+    return AVT_FAILURE;
+
+  dest = avt_import_image (image_data, width, height, bytes_per_pixel);
+
+  if (not dest)
+    {
+      SDL_FreeSurface (src);
+      SDL_SetError ("export_image");
+      return AVT_FAILURE;
+    }
+
+  destrect.x = x;
+  destrect.y = y;
+  destrect.w = destrect.h = 0;	// ignored
+
+  SDL_BlitSurface (src, NULL, dest, &destrect);
+
+  SDL_FreeSurface (dest);
+  SDL_FreeSurface (src);
 
   return _avt_STATUS;
 }
