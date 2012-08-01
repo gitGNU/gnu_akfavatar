@@ -66,6 +66,10 @@ local function draw_clockface(gr, radius, color)
   os.setlocale("", "time") --> for the formatting of the date
   clockface:text(os.date("%x", timestamp))
 
+  -- middle dot
+  clockface:home()
+  clockface:disc(10)
+
   return clockface
 end -- draw clockface
 
