@@ -81,7 +81,6 @@
 
 // normal color of what's printed on the button
 #define BUTTON_COLOR  0x665533
-#define XBM_DEFAULT_COLOR  0x000000
 
 #define AVT_XBM_INFO(img)  img##_bits, img##_width, img##_height
 
@@ -288,6 +287,7 @@ static SDL_Rect textfield;
 static SDL_Rect viewport;	// sub-window in textfield
 static bool avt_tab_stops[AVT_LINELENGTH];
 static char avt_encoding[100];
+static int bitmap_color;	// color for bitmaps
 
 // origin mode
 // Home: textfield (false) or viewport (true)
@@ -1190,7 +1190,7 @@ avt_load_image_RW (SDL_RWops * src, int freesrc)
 	img = avt_load_image_xpm_RW (src, 0);
 
       if (img == NULL)
-	img = avt_load_image_xbm_RW (src, 0, XBM_DEFAULT_COLOR);
+	img = avt_load_image_xbm_RW (src, 0, bitmap_color);
 
       if (freesrc)
 	SDL_RWclose (src);
@@ -5881,7 +5881,7 @@ avt_show_image_rw (SDL_RWops * RW)
   image = avt_load_image_xpm_RW (RW, 0);
 
   if (image == NULL)
-    image = avt_load_image_xbm_RW (RW, 0, XBM_DEFAULT_COLOR);
+    image = avt_load_image_xbm_RW (RW, 0, bitmap_color);
 
   if (image == NULL)
     {
@@ -6012,7 +6012,8 @@ avt_image_max_height (void)
 }
 
 static SDL_Surface *
-avt_import_image (void *image_data, int width, int height, int bytes_per_pixel)
+avt_import_image (void *image_data, int width, int height,
+		  int bytes_per_pixel)
 {
   SDL_Surface *image;
 
@@ -6106,7 +6107,7 @@ avt_put_image_rw (SDL_RWops * RW, int x, int y, void *image_data,
   src = avt_load_image_xpm_RW (RW, 0);
 
   if (not src)
-    src = avt_load_image_xbm_RW (RW, 0, XBM_DEFAULT_COLOR);
+    src = avt_load_image_xbm_RW (RW, 0, bitmap_color);
 
   if (not src)
     {
@@ -6323,7 +6324,7 @@ avt_import_image_data (void *img, size_t imgsize)
       image = avt_load_image_xpm_RW (RW, 0);
 
       if (not image)
-	image = avt_load_image_xbm_RW (RW, 0, XBM_DEFAULT_COLOR);
+	image = avt_load_image_xbm_RW (RW, 0, bitmap_color);
 
       if (not image)
 	{
@@ -6361,7 +6362,7 @@ avt_import_image_file (const char *filename)
       image = avt_load_image_xpm_RW (RW, 0);
 
       if (not image)
-	image = avt_load_image_xbm_RW (RW, 0, XBM_DEFAULT_COLOR);
+	image = avt_load_image_xbm_RW (RW, 0, bitmap_color);
 
       if (not image)
 	{
@@ -6399,7 +6400,7 @@ avt_import_image_stream (avt_stream * stream)
       image = avt_load_image_xpm_RW (RW, 0);
 
       if (not image)
-	image = avt_load_image_xbm_RW (RW, 0, XBM_DEFAULT_COLOR);
+	image = avt_load_image_xbm_RW (RW, 0, bitmap_color);
 
       if (not image)
 	{
@@ -6551,7 +6552,7 @@ avt_avatar_image_rw (SDL_RWops * RW)
   image = avt_load_image_xpm_RW (RW, 0);
 
   if (not image)
-    image = avt_load_image_xbm_RW (RW, 0, XBM_DEFAULT_COLOR);
+    image = avt_load_image_xbm_RW (RW, 0, bitmap_color);
 
   if (not image)
     {
@@ -6716,6 +6717,12 @@ extern int
 avt_get_background_color (void)
 {
   return backgroundcolornr;
+}
+
+extern void
+avt_set_bitmap_color (int color)
+{
+  bitmap_color = color;
 }
 
 extern void
@@ -7256,6 +7263,7 @@ avt_start (const char *title, const char *shortname, int mode)
   markup = false;
   textfield.x = textfield.y = textfield.w = textfield.h = -1;
   viewport = textfield;
+  bitmap_color = 0x000000;	// black
 
   avt_get_font_dimensions (&fontwidth, &fontheight, &fontunderline);
 

@@ -577,6 +577,10 @@ Sets the text background color.
 .BI "avt.set_text_background_ballooncolor()"
 Sets the text background color to the color of the balloon.
 .PP
+.TP "avt.set_bitmap_color(" color )
+Sets the foregroud color for bitmaps.
+The background is always transparent.
+.PP
 .TP
 .BI "avt.get_color(" color_number )
 Get a color for a given integer value.

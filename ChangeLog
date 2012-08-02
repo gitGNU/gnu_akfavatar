@@ -1,3 +1,10 @@
+2012-08-02  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar-sdl.c (avt_set_bitmap_color):
+	new function
+
+	* lua/lua-avt.c (lavt_set_bitmap_color): new function
+
 2012-08-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar-sdl.c (avt_put_raw_image_file)

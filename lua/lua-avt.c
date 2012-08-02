@@ -226,6 +226,7 @@ lavt_start (lua_State * L)
       avt_set_scroll_mode (1);
       avt_reserve_single_keys (false);
       avt_set_balloon_color (0xFFFAF0);	// floral white
+      avt_set_bitmap_color (0x000000);	// black
       avt_normal_text ();
       avt_set_mouse_visible (true);
       avt_set_title (title, shortname);
@@ -859,6 +860,18 @@ lavt_set_text_background_ballooncolor (lua_State * L)
   avt_set_text_background_ballooncolor ();
   return 0;
 }
+
+// set color for bitmaps
+static int
+lavt_set_bitmap_color (lua_State * L)
+{
+  if (lua_type (L, 1) == LUA_TNUMBER)
+    avt_set_bitmap_color (lua_tointeger (L, 1));
+  else
+    avt_set_bitmap_color (avt_colorname (luaL_checkstring (L, 1)));
+  return 0;
+}
+
 
 // get x position
 static int
@@ -1975,7 +1988,7 @@ lavt_menu (lua_State * L)
   avt_normal_text ();
   avt_lock_updates (true);
 
-  markcolor = darker (avt_get_balloon_color(), 0x22);
+  markcolor = darker (avt_get_balloon_color (), 0x22);
 
   start_line = avt_where_y ();
   if (start_line < 1)		// no balloon yet?
@@ -2357,6 +2370,7 @@ static const luaL_Reg akfavtlib[] = {
   {"set_text_color", lavt_set_text_color},
   {"set_text_background_color", lavt_set_text_background_color},
   {"set_text_background_ballooncolor", lavt_set_text_background_ballooncolor},
+  {"set_bitmap_color", lavt_set_bitmap_color},
   {"activate_cursor", lavt_activate_cursor},
   {"underlined", lavt_underlined},
   {"get_underlined", lavt_get_underlined},

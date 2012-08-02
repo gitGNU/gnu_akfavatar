@@ -47,7 +47,7 @@
     avt_colorname, avt_palette,
     avt_finalize_raw_audio
     avt_put_raw_image_file, avt_put_raw_image_stream, avt_put_raw_image_data,
-    avt_put_raw_image_xpm
+    avt_put_raw_image_xpm, avt_set_bitmap_color
   - fixed avt_show_image_stream, avt_import_image_stream
   - avt_key(ch): ch may be NULL
   - deprecated or removed functions:
@@ -85,7 +85,7 @@
     parameter for playing immediately
   - avt.title is an alias for avt.set_title
   - new functions: avt.set_balloon_mode, avt.avatar_image_file, avt.delay,
-    avt.search, avt.load_audio_stream, avt.translate
+    avt.search, avt.load_audio_stream, avt.translate, avt.set_bitmap_color
   - new variables: avt.datapath, avt.language
   - Module "akfavatar-graphic"
     - gr:new accepts name for background color

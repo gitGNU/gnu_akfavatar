@@ -607,6 +607,10 @@ Setzt die Hintergrundfarbe des Textes.
 .BI "avt.set_text_background_ballooncolor()"
 Setzt die Hintergrundfarbe des Textes auf die Farbe der Sprechblase.
 .PP
+.TP "avt.set_bitmap_color(" Farbe )
+Setzt die Vordergrundfarbe für Bitmaps (einfarbige Grafiken).
+Der Hintergrund ist immer transparent.
+.PP
 .TP
 .BI "avt.get_color(" Farbnummer )
 Hole die Farbdefinition für die angegebene Farbnummer.

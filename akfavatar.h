@@ -497,6 +497,10 @@ AVT_API void avt_set_text_background_color (int color);
 // set text background to balloon color
 AVT_API void avt_set_text_background_ballooncolor (void);
 
+// set a color for loading monochrome bitmaps
+// the background is always transparent
+AVT_API void avt_set_bitmap_color (int color);
+
 /***********************************************************************/
 // settings
 
