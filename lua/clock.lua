@@ -35,7 +35,7 @@ local function draw_clockface(gr, radius, color)
   clockface:circle(radius-3)
 
   -- background image
-  avt.set_bitmap_color("black")
+  avt.set_bitmap_color("dark blue")
   clockface:put_file(avt.search("gnu-head.xbm"),
     clockface:width() / 2 - 268 / 2,
     clockface:height() / 2 - 253)
