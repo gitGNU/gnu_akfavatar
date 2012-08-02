@@ -148,6 +148,11 @@ typedef void avt_stream;
 AVT_API int avt_start (const char *title, const char *shortname, int mode);
 
 /*
+ * reset almost everthing
+ */
+AVT_API void avt_reset (void);
+
+/*
  * quit the avatar system
  * can be used with atexit
  */

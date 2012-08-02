@@ -236,21 +236,12 @@ initialize (void)
 static void
 reset (void)
 {
-  avt_set_status (AVT_NORMAL);
-  avt_clear_screen ();
-  avt_newline_mode (true);
-  avt_set_auto_margin (true);
-  avt_set_origin_mode (true);
-  avt_set_scroll_mode (1);
-  avt_reserve_single_keys (false);
+  avt_reset ();
   avt_set_background_color (AVT_COLOR_BACKGROUND);
   avt_set_balloon_color (AVT_COLOR_SAY);
-  avt_markup (false);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
-  avt_normal_text ();
   avt_quit_audio ();
   avt_set_title ("Lua-AKFAvatar", "AKFAvatar");
-  avt_set_mouse_visible (true);
 }
 
 // check if this program can handle the file

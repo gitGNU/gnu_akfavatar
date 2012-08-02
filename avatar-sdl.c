@@ -1857,6 +1857,12 @@ avt_set_balloon_size (int height, int width)
 extern void
 avt_set_balloon_mode (int mode)
 {
+  if (not screen)
+    {
+      avt_balloon_mode = mode;
+      return;
+    }
+
   if (mode != avt_balloon_mode)
     {
       switch (mode)
@@ -7240,6 +7246,32 @@ avt_set_mouse_pointer (void)
   SDL_SetCursor (mpointer);
 }
 
+extern void
+avt_reset ()
+{
+  _avt_STATUS = AVT_NORMAL;
+  reserve_single_keys = false;
+  newline_mode = true;
+  auto_margin = true;
+  origin_mode = true;		// for backwards compatibility
+  scroll_mode = 1;
+  bitmap_color = 0x000000;	// black
+
+  ballooncolor_RGB.r = 255;
+  ballooncolor_RGB.g = 250;
+  ballooncolor_RGB.b = 240;
+
+  avt_clear_screen ();		// also resets some variables
+  avt_normal_text ();
+  avt_reset_tab_stops ();
+  avt_set_balloon_mode (AVT_SAY);
+  avt_set_mouse_visible (true);
+  avt_set_avatar_name (NULL);
+
+  if (avatar_image)
+    avt_set_avatar_image (NULL);
+}
+
 extern int
 avt_start (const char *title, const char *shortname, int mode)
 {
@@ -7254,16 +7286,8 @@ avt_start (const char *title, const char *shortname, int mode)
     }
 
   avt_mode = mode;
-  _avt_STATUS = AVT_NORMAL;
-  reserve_single_keys = false;
-  newline_mode = true;
-  auto_margin = true;
-  origin_mode = true;		// for backwards compatibility
-  avt_visible = false;
-  markup = false;
-  textfield.x = textfield.y = textfield.w = textfield.h = -1;
-  viewport = textfield;
-  bitmap_color = 0x000000;	// black
+
+  avt_reset ();
 
   avt_get_font_dimensions (&fontwidth, &fontheight, &fontunderline);
 
@@ -7358,9 +7382,6 @@ avt_start (const char *title, const char *shortname, int mode)
 				 avt_green (backgroundcolornr),
 				 avt_blue (backgroundcolornr));
 
-  // fill the whole screen with background color
-  avt_clear_screen ();
-
   // reserve memory for one character
   avt_character = SDL_CreateRGBSurface (SDL_SWSURFACE, fontwidth, fontheight,
 					1, 0, 0, 0, 0);
@@ -7417,6 +7438,10 @@ avt_start (const char *title, const char *shortname, int mode)
 							ballooncolor_RGB.g,
 							ballooncolor_RGB.b));
 
+  // just to be save, because of avt_reset()
+  if (pointer)
+    SDL_FreeSurface (pointer);
+
   avt_balloon_mode = AVT_SAY;
   pointer =
     avt_load_image_xbm (AVT_XBM_INFO (balloonpointer),
@@ -7436,9 +7461,6 @@ avt_start (const char *title, const char *shortname, int mode)
   // visual flash for the alert
   // when you initialize the audio stuff, you get an audio alert
   avt_alert_func = avt_flash;
-
-  // initialize tab stops
-  avt_reset_tab_stops ();
 
   return _avt_STATUS;
 }

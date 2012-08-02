@@ -5,6 +5,10 @@
 
 	* lua/lua-avt.c (lavt_set_bitmap_color): new function
 
+	* akfavatar.h, avatar-sdl.c (avt_reset): new function
+	lua/lua-avt.c (lavt_start): adapted
+	lua/lua-akfavatar-prg.c (reset): adapted
+
 2012-08-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar-sdl.c (avt_put_raw_image_file)
