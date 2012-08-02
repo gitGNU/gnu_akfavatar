@@ -61,6 +61,8 @@ avt.set_background_color(color.background)
 avt.start()
 avt.start_audio()
 
+local logo = graphic.new(64, 64)
+logo:put_file(avt.search("akf64.xpm"))
 
 local score = {[1] = 0, [2] = 0}
 local player = 1
@@ -201,7 +203,7 @@ local function draw_board()
   show_keys()
   show_score()
 
-  screen:put_file(avt.search("akf64.xpm"), width - 64 - 5, 5)
+  screen:put(logo, width - logo:width() - 5, 5)
 end -- draw_board
 
 
