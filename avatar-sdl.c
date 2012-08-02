@@ -288,6 +288,8 @@ static SDL_Rect viewport;	// sub-window in textfield
 static bool avt_tab_stops[AVT_LINELENGTH];
 static char avt_encoding[100];
 static int bitmap_color;	// color for bitmaps
+static SDL_Surface *raw_image;
+
 
 // origin mode
 // Home: textfield (false) or viewport (true)
@@ -353,6 +355,16 @@ static void avt_drawchar (avt_char ch, SDL_Surface * surface);
 static SDL_Surface *avt_save_background (SDL_Rect area);
 static void avt_analyze_event (SDL_Event * event);
 
+
+static inline void
+avt_release_raw_image (void)
+{
+  if (raw_image)
+    {
+      SDL_FreeSurface (raw_image);
+      raw_image = NULL;
+    }
+}
 
 static inline void
 bell (void)
@@ -1414,7 +1426,8 @@ avt_activate_cursor (bool on)
     avt_show_text_cursor (text_cursor_visible);
 }
 
-/* fills the screen with the background color,
+/*
+ * fills the screen with the background color,
  * but doesn't update the screen yet
  */
 static inline void
@@ -1512,6 +1525,8 @@ avt_draw_avatar (void)
       // fill the screen with background color
       // (not only the window!)
       avt_free_screen ();
+
+      avt_release_raw_image ();	// not needed anymore
 
       SDL_SetClipRect (screen, &window);
       avt_avatar_window ();
@@ -6062,8 +6077,6 @@ extern int
 avt_show_raw_image (void *image_data, int width, int height,
 		    int bytes_per_pixel)
 {
-  SDL_Surface *image;
-
   if (not screen or _avt_STATUS != AVT_NORMAL or not image_data)
     return _avt_STATUS;
 
@@ -6073,17 +6086,23 @@ avt_show_raw_image (void *image_data, int width, int height,
       return AVT_FAILURE;
     }
 
-  image = avt_import_image (image_data, width, height, bytes_per_pixel);
+  // check if it's a different image
+  if (raw_image
+      and (width != raw_image->w or height != raw_image->h
+	   or image_data != raw_image->pixels))
+    avt_release_raw_image ();
 
-  if (not image)
+  if (not raw_image)
+    raw_image = avt_import_image (image_data, width, height, bytes_per_pixel);
+
+  if (not raw_image)
     {
       avt_clear_screen ();	// at least clear the screen
       SDL_SetError ("couldn't show image");
       return AVT_FAILURE;
     }
 
-  avt_show_image (image);
-  SDL_FreeSurface (image);
+  avt_show_image (raw_image);
 
   return _avt_STATUS;
 }
@@ -7104,6 +7123,7 @@ avt_quit (void)
     }
 
   load_image_done ();
+  avt_release_raw_image ();
 
   // close conversion descriptors
   if (output_cd != ICONV_UNINITIALIZED)

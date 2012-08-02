@@ -9,6 +9,10 @@
 	lua/lua-avt.c (lavt_start): adapted
 	lua/lua-akfavatar-prg.c (reset): adapted
 
+	* avatar-sdl.c (avt_show_raw_image): optimized
+	(avt_release_raw_image): new function
+	(avt_draw_avatar, avt_quit): adapted
+
 2012-08-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar-sdl.c (avt_put_raw_image_file)
