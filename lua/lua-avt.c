@@ -2233,10 +2233,20 @@ lavt_search (lua_State * L)
 {
   const char *filename, *path;
 
-  filename = luaL_checkstring (L, 1);
+  filename = lua_tostring (L, 1);
+
+  // if filename is not a string or an empty string
+  if (not filename or not * filename)
+    {
+      lua_pushnil (L);
+      lua_pushstring (L, "bad argument #1 to 'search'"
+		      " (not a string or empty)");
+      return 2;
+    }
+
   path = lua_tostring (L, 2);
 
-  if (path == NULL and (path = get_string_var (L, "datapath")) == NULL)
+  if (not path and not (path = get_string_var (L, "datapath")))
     path = ".";
 
   while (*path)
