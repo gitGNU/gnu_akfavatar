@@ -38,7 +38,11 @@ local color = {
   connector = "green"
   }
 
-local success_sound = "hahaha.au"  -- false for none
+local sound = {
+  success = "hahaha.au",
+  remis = "question.au",
+  full = "harrumph.au"
+  }
 
 avt.translations = {
   -- avoid trademarked names
@@ -78,12 +82,24 @@ local filled = {} -- how many chips in a column
 local chips = 0 -- how many chips alltogether
 local board = {}
 
-local success
+local success, remis, full
 
-if success_sound then
-  success = avt.load_audio_file(avt.search(success_sound)) or avt.silent()
+if sound.success then
+  success = avt.load_audio_file(avt.search(sound.success)) or avt.silent()
 else
   success = avt.silent()
+end
+
+if sound.remis then
+  remis = avt.load_audio_file(avt.search(sound.remis)) or avt.silent()
+else
+  remis = avt.silent()
+end
+
+if sound.full then
+  full = avt.load_audio_file(avt.search(sound.full)) or avt.silent()
+else
+  full = avt.silent()
 end
 
 
@@ -162,7 +178,7 @@ local function drop(column)
     board[column][number] = player
     return true
   else -- column full
-    avt.bell()
+    full()
     return false
   end
 end
@@ -299,6 +315,8 @@ local function play()
       if not won then next_player() end
     end
   until won or chips == 42
+
+  if not won then remis() end
 
   screen:show()
   avt.get_key()
