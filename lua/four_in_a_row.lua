@@ -83,9 +83,9 @@ local filled = {} -- how many chips in a column
 local chips = 0 -- how many chips alltogether
 local board = {}
 
-local success = avt.load_audio_file((avt.search(sound.success))) or avt.silent()
-local remis = avt.load_audio_file((avt.search(sound.remis))) or avt.silent()
-local full = avt.load_audio_file((avt.search(sound.full))) or avt.silent()
+local success = avt.load_audio_file(avt.search(sound.success)) or avt.silent()
+local remis = avt.load_audio_file(avt.search(sound.remis)) or avt.silent()
+local full = avt.load_audio_file(avt.search(sound.full)) or avt.silent()
 
 
 local function show_keys()

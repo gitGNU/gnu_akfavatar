@@ -1424,13 +1424,15 @@ lavt_load_audio_file (lua_State * L)
   int playmode;
 
   filename = "";
+  playmode = AVT_LOAD;
   audio_data = NULL;
   len = 0;
 
   if (not lua_isnoneornil (L, 1))
-    filename = luaL_checklstring (L, 1, &len);
-
-  playmode = luaL_checkoption (L, 2, "load", playmodes);
+    {
+      filename = luaL_checklstring (L, 1, &len);
+      playmode = luaL_checkoption (L, 2, "load", playmodes);
+    }
 
   // if filename is not none or nil or ""
   if (len > 0)
@@ -1500,13 +1502,15 @@ lavt_load_audio (lua_State * L)
   int playmode;
 
   data = "";
+  playmode = AVT_LOAD;
   audio_data = NULL;
   len = 0;
 
   if (not lua_isnoneornil (L, 1))
-    data = (char *) luaL_checklstring (L, 1, &len);
-
-  playmode = luaL_checkoption (L, 2, "load", playmodes);
+    {
+      data = (char *) luaL_checklstring (L, 1, &len);
+      playmode = luaL_checkoption (L, 2, "load", playmodes);
+    }
 
   // if string is not none or nil or ""
   if (len > 0)

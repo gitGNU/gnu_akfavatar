@@ -3,6 +3,10 @@
 	* lua/lua-avt.c (lavt_search):
 	never raise an error and don't accept an empty string
 
+	* lua/lua-avt.c (lavt_load_audio_file, lavt_load_audio):
+	if first option is nil ignore second option
+	(works better with avt.search)
+
 2012-08-02  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar-sdl.c (avt_set_bitmap_color):
