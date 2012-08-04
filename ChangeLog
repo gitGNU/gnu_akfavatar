@@ -3,6 +3,8 @@
 	* lua/lua-avt.c (lavt_entry_type):
 	never raise an error and don't accept an empty string
 
+	* lua/akfavatar-graphic.c: accept numbers as color
+
 2012-08-03  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c (lavt_search):

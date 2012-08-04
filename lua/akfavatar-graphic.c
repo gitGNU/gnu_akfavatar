@@ -276,11 +276,19 @@ lgraphic_new (lua_State * L)
   int width, height;
   int colornr;
   graphic *gr;
-  const char *background_color;
 
   width = luaL_optint (L, 1, avt_image_max_width ());
   height = luaL_optint (L, 2, avt_image_max_height ());
-  background_color = lua_tostring (L, 3);
+
+  if (lua_isnoneornil (L, 3))
+    colornr = avt_get_background_color ();
+  else if (lua_type (L, 3) == LUA_TNUMBER)
+    colornr = lua_tointeger (L, 3);
+  else
+    colornr = avt_colorname (lua_tostring (L, 3));
+
+  if (colornr < 0)
+    return luaL_argerror (L, 3, "invalid color");
 
   gr = new_graphic (L, graphic_bytes (width, height));
   gr->width = width;
@@ -297,14 +305,6 @@ lgraphic_new (lua_State * L)
   gr->vtextalign = VA_CENTER;
 
   gr->heading = 0.0;
-
-  if (background_color)
-    colornr = avt_colorname (background_color);
-  else
-    colornr = avt_get_background_color ();
-
-  if (colornr < 0)
-    return luaL_argerror (L, 3, "invalid color");
 
   gr->background.red = avt_red (colornr);
   gr->background.green = avt_green (colornr);
@@ -333,15 +333,17 @@ static int
 lgraphic_clear (lua_State * L)
 {
   graphic *gr;
-  const char *color_name;
-  int colornr;
 
   gr = get_graphic (L, 1);
-  color_name = lua_tostring (L, 2);
 
-  if (color_name)
+  if (not lua_isnoneornil (L, 2))
     {
-      colornr = avt_colorname (color_name);
+      int colornr;
+
+      if (lua_type (L, 2) == LUA_TNUMBER)
+	colornr = lua_tointeger (L, 2);
+      else
+	colornr = avt_colorname (lua_tostring (L, 2));
 
       if (colornr < 0)
 	return luaL_argerror (L, 2, "invalid color");
@@ -366,7 +368,14 @@ lgraphic_color (lua_State * L)
   int colornr;
 
   gr = get_graphic (L, 1);
-  colornr = avt_colorname (luaL_checkstring (L, 2));
+
+
+  if (lua_isnoneornil (L, 2))
+    colornr = -1;
+  else if (lua_type (L, 2) == LUA_TNUMBER)
+    colornr = lua_tointeger (L, 2);
+  else
+    colornr = avt_colorname (lua_tostring (L, 2));
 
   if (colornr < 0)
     return luaL_argerror (L, 2, "invalid color");

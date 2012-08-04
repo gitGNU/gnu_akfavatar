@@ -117,7 +117,7 @@ Legt die Zeichenfarbe fest.
 .br
 Die Farbe kann entweder ein vordefinierter englischsprachiger Name sein,
 oder eine hexadezimale Angabe, wie zum Beispiel
-.IR """#FFFF00""" .
+.IR 0xFFFF00 " oder " "\[dq]#FFFF00\[dq]" .
 .PP
 .TP
 .IB gr :rgb( "rot, grün, blau" )
@@ -141,12 +141,12 @@ Der
 1 ist der dünnste.
 .PP
 .TP
-.IB gr :clear( [Farbname] )
+.IB gr :clear( [Farbe] )
 Löscht die Grafik.
 .br
-Wenn ein
-.I Farbname
-angegeben ist, wird dieser zur neuen Hintergrund-Farbe.
+Wenn eine
+.I Farbe
+angegeben ist, wird diese zur neuen Hintergrund-Farbe.
 .br
 Die Stift-Position wird nicht verändert.
 .PP
