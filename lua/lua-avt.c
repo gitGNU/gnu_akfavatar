@@ -2172,11 +2172,21 @@ lavt_directory_entries (lua_State * L)
 static int
 lavt_entry_type (lua_State * L)
 {
+  const char *entry;
   struct stat st;
 
-  // conforming to POSIX.1-2001
+  entry = lua_tostring (L, 1);
 
-  if (stat (luaL_checkstring (L, 1), &st) == -1)
+  if (not entry or not * entry)
+    {
+      lua_pushnil (L);
+      lua_pushstring (L, "bad argument #1 to 'entry_type'"
+		      " (not a string or empty)");
+      return 2;
+    }
+
+  // conforming to POSIX.1-2001
+  if (stat (entry, &st) == -1)
     {
       int err = errno;
       lua_pushnil (L);

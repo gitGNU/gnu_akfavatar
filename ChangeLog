@@ -1,3 +1,8 @@
+2012-08-04  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/lua-avt.c (lavt_entry_type):
+	never raise an error and don't accept an empty string
+
 2012-08-03  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c (lavt_search):
