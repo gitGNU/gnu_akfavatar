@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar reference" 3 2012-07-21 AKFAvatar
+.TH "Lua-AKFAvatar reference" 3 2012-08-04 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar reference \- AKFAvatar specific functions for Lua
@@ -102,7 +102,8 @@ The default is "auto" which uses a sensible default,
 or leaves the mode unchanged, if it already was started.
 .IP
 If you want to set the encoding, the title and the background color, you should
-do it before you call avt.start().
+do it before you call
+.BR avt.start() .
 All other functions should be used after it.
 .IP
 .B Example:
@@ -413,11 +414,15 @@ otherwise.  (This also works for right-to-left writing.)
 .PP
 .TP
 .BI "avt.move_x(" x )
-Moves the cursor to the given X position.
+Moves the cursor to the given
+.I x
+position.
 .PP
 .TP
 .BI "avt.move_y("y )
-Moves the cursor to the given Y position.
+Moves the cursor to the given
+.I y
+position.
 .PP
 .TP
 .BI "avt.move_xy(" "x, y" )
@@ -577,7 +582,8 @@ Sets the text background color.
 .BI "avt.set_text_background_ballooncolor()"
 Sets the text background color to the color of the balloon.
 .PP
-.TP "avt.set_bitmap_color(" color )
+.TP
+.BI "avt.set_bitmap_color(" color )
 Sets the foregroud color for bitmaps.
 The background is always transparent.
 .PP
@@ -773,17 +779,22 @@ It is a more basic function than
 It returns the number of the selected item.
 .IP
 .RS
-.IP start_line:
+.TP
+.IR start_line :
 line, where choice begins
-.IP items:
+.TP
+.IR items :
 number of items/lines
-.IP key:
+.TP
+.IR key :
 first key, like "1" or "a", 0 for no keys
-.IP back:
+.TP
+.IR back :
 set to 
 .IR true ,
 when the first entry is a back function
-.IP forward:
+.TP
+.IR forward :
 set to 
 .IR true ,
 when the last entry is a forward function
@@ -806,7 +817,7 @@ and an error message.
 .BI "avt.load_base_audio_file(" "[filename [,playmode]]" )
 Reads audio data from a file.
 You can search for the file with
-.IR avt.search() .
+.BR avt.search() .
 .IP
 Lua modules may add support for more audio formats to
 .B "avt.load_audio_file()"
@@ -939,8 +950,8 @@ The audio can also be played by calling the audio variables like a function.
 .IP
 .EX
 play_audio_file = function (filename)
-  local sound = avt.load_audio_file(filename)
-  sound:play()
+  local sound = avt.load_audio_file(avt.search(filename))
+  if sound then sound:play() end
 end
 .EE
 .PP
@@ -997,7 +1008,7 @@ either "/" or "\e".
 .TP
 .BI "avt.datapath"
 This variable contains the default searchpath for the function
-.I avt.search()
+.B avt.search()
 (see below).
 Directories are separated by semicolons.
 There are no patterns like in the paths for Lua modules,
@@ -1092,7 +1103,7 @@ The variable is not set, when the language could not be
 detected.
 .PP
 .TP
-.BI "avt.translate (" text )
+.BI "avt.translate(" text )
 Translate the
 .IR text ,
 if possible.
@@ -1102,8 +1113,10 @@ See section
 for how to provide translations.
 .PP
 .TP
-.BI "avt.recode (" "string, fromcode [,tocode]" )
-Recode the given string, which is encoded as
+.BI "avt.recode(" "string, fromcode [,tocode]" )
+Recode the given
+.IR string ,
+which is encoded as
 .I fromcode
 to a string encoded as
 .IR tocode .

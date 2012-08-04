@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "lua-akfavatar" 1 2012-07-24 AKFAvatar
+.TH "lua-akfavatar" 1 2012-08-04 AKFAvatar
 .
 .SH NAME
 lua-akfavatar \- Lua-Interpreter für die AKFAvatar-Benutzeroberfläche
@@ -80,9 +80,15 @@ Man kann zum Beispiel das Textsatzsystem \[Bq]groff\[lq] verwenden,
 um solche Dateien zu erstellen.
 .
 .SH OPTIONEN
-.IP "-h | --help"
+.TP
+-h
+.TQ
+--help
 zeigt eine kurze Hilfe an
-.IP "-v | --version"
+.TP
+-v
+.TQ
+--version
 zeigt die Version an
 .TP
 .RI "-l " Name
@@ -91,11 +97,15 @@ ruft
 auf, bevor das Skript ausgeführt wird.
 Das wird üblicherweise verwendet, um Bibliotheken zu laden.
 .TP
-.IP "-f | --fullscreen"
+-f
+.TQ
+--fullscreen
 starte im Vollbild Modus
 (nur wenn kein Skript angegeben ist)
 .TP
-.IP "-F | --Fullscreen"
+-F
+.TQ
+--Fullscreen
 starte im Vollbild Modus ohne die Auflösung umzustellen
 (nur wenn kein Skript angegeben ist)
 .TP
@@ -123,7 +133,7 @@ LUA_CPATH_5_2
 .TQ
 LUA_CPATH
 Suchpfad für C-Module.
-Die Syntax ist die selbe, wie bei
+Die Syntax ist die selbe wie bei
 .IR LUA_PATH .
 .TP
 AVTDATAPATH

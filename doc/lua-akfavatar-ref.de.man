@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar Referenz" 3 2012-07-21 AKFAvatar
+.TH "Lua-AKFAvatar Referenz" 3 2012-08-04 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar Referenz \- AKFAvatar spezifische Funktionen für Lua
@@ -99,12 +99,14 @@ Diese Funktion öffnet das grafische Fenster oder wechselt in den Grafikmodus.
 Falls es schon gestartet war, wird vieles zurück gesetzt.
 .IP
 .I Modus
-ist eines von "auto", "window", "fullscreen", oder "fullscreen no switch".
-Die Vorgabe ist "auto", die einen brauchbare Modus verwendet, oder die
+ist entweder "auto", "window", "fullscreen", oder "fullscreen no switch".
+Die Vorgabe ist "auto", die einen brauchbaren Modus verwendet, oder die
 Einstellung unverändert lässt, wenn es bereits gestartet war.
 .IP
 Wenn man die Kodierung, den Titel oder die Hintergrund-Farbe setzen will,
-sollte man es machen, bevor man avt.start() aufruft.
+sollte man es machen, bevor man
+.B avt.start()
+aufruft.
 Alle anderen Funktionen sollten erst danach verwendet werden.
 .IP
 .B Beispiel:
@@ -157,7 +159,7 @@ Dies muss nach dem Setzen des Bildes geschehen.
 Legt den Sprechblasen-Modus fest.
 Der
 .I Modus
-ist eines von "say" (sagen), "think" (denken) oder "separate" (separat).
+ist entweder "say" (sagen), "think" (denken) oder "separate" (separat).
 Der Sprechblasen-Modus wird nur angewandt, wenn ein Avatar-Bild vorhanden
 ist.
 .PP
@@ -201,7 +203,7 @@ Mann kann einfach den print-Befehl mit diesem Befehl ersetzen:
 Die Funktion
 .B avt.say()
 eignet sich besser für Programme, während diese Funktion besser für
-die interaktive Verwendung ud für's Debuggen geeignet ist.
+die interaktive Verwendung und für's Debuggen geeignet ist.
 .PP
 .TP
 .BI "avt.tell(" ... )
@@ -234,7 +236,7 @@ Manchmal ist es aber auch einfach nur einfacher.
 .B Beispiel:
 .EX
 avt.say_unicode("Drei Äpfel kosten ",
-                tostring(3 * appleprice), 0x20AC,
+                tostring(3 * Apfelpreis), 0x20AC,
                 ".\en").
 .EE
 .IP
@@ -246,7 +248,7 @@ Die Zahl
 hingegen repräsentiert hier das Euro-Währungszeichen.
 (Das `0x' leitet hexadezimale Zahlen ein.)
 .IP
-Übrigens werden eine Gruppe von Unicode-Zahlen effektiver verarbeitet,
+Übrigens werden eine Gruppe von Unicode-Zahlen effektiver verarbeitet
 als Strings.
 .PP
 .TP
@@ -348,7 +350,7 @@ können ein String mit Bilddaten sein,
 oder eine Tabelle mit Strings von XPM-Daten.
 Bei Erfolg wird
 .IR true " zurückgegeben, oder " false " im Fehlerfall."
-Bei Erfolg sollte eines von
+Bei Erfolg sollte entweder
 .BR avt.wait() " oder " avt.wait_button() " oder " avt.get_key()
 aufgerufen werden.
 .PP
@@ -360,7 +362,7 @@ Man kann mit
 nach der Datei suchen lassen.
 Bei Erfolg wird
 .IR true " zurückgegeben, oder " false " im Fehlerfall."
-Bei Erfolg sollte eines von
+Bei Erfolg sollte entweder
 .BR avt.wait() " oder " avt.wait_button() " oder " avt.get_key()
 aufgerufen werden.
 .PP
@@ -387,7 +389,7 @@ avt.subprogram(dofile, "unterprogramm.lua")
 .BI "avt.optional(" modname )
 Lädt ein Modul wie
 .BR require ,
-aber das Modul wird nicht benötigt, sondern optional.
+aber das Modul wird nicht benötigt, sondern es ist optional.
 Das heißt, es ist kein Fehler, wenn das Modul nicht geladen
 werden kann.
 .IP
@@ -441,16 +443,18 @@ wenn nicht.
 .PP
 .TP
 .BI "avt.move_x(" x )
-Setzt den Curser auf die angegebene X-Position.
+Setzt den Curser auf die angegebene
+.IR x -Position.
 .PP
 .TP
 .BI "avt.move_y("y )
-Setzt den Curser auf die angegebene Y-Position.
+Setzt den Curser auf die angegebene
+.IR y -Position.
 .PP
 .TP
 .BI "avt.move_xy(" "x, y" )
 Setzt den Curser auf die angegebene
-.IR X " und " Y " Position."
+.IR x " und " y " Position."
 .PP
 .TP
 .BI "avt.save_position()"
@@ -521,14 +525,15 @@ Die Zeichen werden mit Leerzeichen überschrieben.
 .TP
 .BI "avt.backspace()"
 Geht ein Zeichen zurück.
-Wenn der Cursor am anfang der Zeile ist, passiert nichts.
+Wenn der Cursor am Anfang der Zeile ist, passiert nichts.
 .PP
 .SS Text-Stil
 .TP
 .BI "avt.markup(" true | false )
-Setzt den Auszeichnungs-Modus. Im Auszeichnungs-Modus schalte das
-Zeichen "_" das Unterstreichen ein oder aus und das Zeichen "*"
-schaltet den Fettdruck-Modus ein oder aus.
+Setzt den Auszeichnungs-Modus.
+Im Auszeichnungs-Modus schaltet das Zeichen "_" das Unterstreichen
+ein oder aus und das Zeichen "*" schaltet den Fettdruck-Modus
+ein oder aus.
 Die beiden Zeichen werden im Auszeichnungs-Modus niemals angezeigt!
 .IP
 Man kann immer die Overstrike-Technik verwenden, die keine Zeichen
@@ -607,7 +612,8 @@ Setzt die Hintergrundfarbe des Textes.
 .BI "avt.set_text_background_ballooncolor()"
 Setzt die Hintergrundfarbe des Textes auf die Farbe der Sprechblase.
 .PP
-.TP "avt.set_bitmap_color(" Farbe )
+.TP
+.BI "avt.set_bitmap_color(" Farbe )
 Setzt die Vordergrundfarbe für Bitmaps (einfarbige Grafiken).
 Der Hintergrund ist immer transparent.
 .PP
@@ -792,7 +798,7 @@ zurückgegeben.
 .IP
 Oder
 .I Menüpunkte
-können eine Array mit weiteren Arrays sein.
+können ein Array mit weiteren Arrays sein.
 Die inneren Arrays müssen dann mit einem String anfangen, gefolgt von
 einem oder mehreren Egebnissen.
 Die Ergebnisse können jeder beliebige Lua-Typ sein, einschließlich
@@ -804,7 +810,7 @@ Dadurch kann man eine Überschrift vor das Menü setzen.
 .EX
 avt.clear()
 avt.say("Bitte das Liebligsessen auswählen:\en")
-local Menuepunt = avt.long_menu {
+local Menuepunkt = avt.long_menu {
   "Chicken",
   "Chips",
   "Pizza",
@@ -819,17 +825,22 @@ Es ist eine grundlegendere Funktion, als
 Es gibt die Nummer den ausgewählten Menüpunktes zurück.
 .IP
 .RS
-.IP Anfangszeile:
+.TP
+.IR Anfangszeile :
 die Zeile, in der die Auswahl beginnt
-.IP Einträge:
+.TP
+.IR Einträge :
 Anzahl der Einträge (Zeilen)
-.IP Taste:
+.TP
+.IR Taste :
 Anfangstaste, wie "1" oder "a", 0 für keine Tastenunterstützung
-.IP zurück:
+.TP
+.IR zurück :
 auf
 .I true
 zu setzen, wenn der erste Eintrag eine zurück-Funktion hat
-.IP vorwärts:
+.TP
+.IR vorwärts :
 auf
 .I true
 zu setzen, wenn der letzte Eintrag eine weiter-Funktion hat
@@ -852,7 +863,7 @@ und eine Fehlermeldung zurück.
 .BI "avt.load_base_audio_file(" "[Dateiname [,Abspielmodus]]" )
 Liest Audio-Daten von einer Datei ein.
 Man kann mit
-.I avt.search()
+.B avt.search()
 nach der Datei suchen lassen.
 .IP
 Lua-Module können Unterstützung für weitere Audio-Formate zu
@@ -994,8 +1005,8 @@ wie eine Funktion aufruft.
 .IP
 .EX
 abspielen = function (Dateiname)
-  local Klang = avt.load_audio_file(Dateiname)
-  Klang:play()
+  local Klang = avt.load_audio_file(avt.search(Dateiname))
+  if Klang then Klang:play() end
 end
 .EE
 .PP
@@ -1051,13 +1062,13 @@ Diese Funktion sollte nur verwendet werden, wenn man weiß, was man tut.
 .SS Dateisystem
 .TP
 .BI "avt.dirsep"
-Diese Variable enthält das Verzeichnis-Ternnzeichen des Systems;
+Diese Variable enthält das Verzeichnis-Trennzeichen des Systems;
 entweder "/" oder "\e".
 .PP
 .TP
 .BI "avt.datapath"
 Diese Variable enthält den Standardsuchpfad für die Funktion
-.I avt.search()
+.B avt.search()
 (siehe unten).
 Verzeichnisse werden durch Semikola getrennt.
 Es gibt keine Muster, wie in den Pfaden für Lua-Module,
@@ -1123,7 +1134,7 @@ verstecken Dateien, Unterverzeichnisse und andere Arten von Einträgen.
 Die Einträge "." oder ".." sind nicht mit drin.
 .IP
 Achtung: Die Namen sind in einer systemspezifischen Kodierung.
-Um die Namen Anzeigen zu können, muss man entweder die Kodierung
+Um die Namen anzeigen zu können, muss man entweder die Kodierung
 der Anzeige mit
 .B "avt.encoding("""")"
 ändern, oder die Namen wie folgt kovertieren:
@@ -1135,7 +1146,7 @@ Ermittle die Art eines Verzeichniseintrags und seine Größe.
 .IP
 Bei Erfolg gibt es die Art des Verzeichniseintrags als String
 zurück und die Größe als Zahl.
-Die Art ist eins von "file", "directory", "character device", 
+Die Art ist entweder "file", "directory", "character device", 
 "block device", "fifo", "socket" oder "unknown".
 .IP
 Im Fehlerfall wird
@@ -1155,7 +1166,7 @@ Wenn die Sprache nicht ermittelt werden konnte, ist die Variable
 nicht gesetzt.
 .PP
 .TP
-.BI "avt.translate (" Text )
+.BI "avt.translate(" Text )
 Übersetzt den
 .IR Text ,
 falls möglich.
@@ -1164,8 +1175,10 @@ Wie man Übersetzungen angeben kann, steht im Abschnitt
 .BR Übersetzungen .
 .PP
 .TP
-.BI "avt.recode (" "String, Quellkodierung [,Zielkodierung]" )
-Konvertiert den angegebenen String, der in
+.BI "avt.recode(" "String, Quellkodierung [,Zielkodierung]" )
+Konvertiert den angegebenen
+.IR String ,
+der in
 .I Quellkodierung
 kodiert ist, in einen String der in
 .I Zielkodierung
@@ -1441,11 +1454,11 @@ Es ist besser einen Format-String für
 zu definieren.
 .IP \(en
 Der übersetzbare String muss exakt übereinstimmen.
-Bitte daran denken, dass wenn man die Strings im Programm abändert,
-man auch die Übersetzungstabelle anpassen muss!
+Bitte daran denken, wenn man die Strings im Programm abändert,
+dass man dann auch die Übersetzungstabelle anpassen muss!
 .IP \(en
-Der String kann auch ein Dateiname sein, für eine Textdatei oder eine
-Sprachaufnahme.
+Der String kann auch ein Dateiname für eine Textdatei oder eine
+Sprachaufnahme sein.
 .PP
 Übrigens, diese Implementierung wurde von GNU gettext inspiriert.
 .PP

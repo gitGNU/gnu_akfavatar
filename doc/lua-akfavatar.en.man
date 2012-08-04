@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "lua-akfavatar" 1 2012-07-24 AKFAvatar
+.TH "lua-akfavatar" 1 2012-08-04 AKFAvatar
 .
 .SH NAME
 lua-akfavatar \- Lua interpreter for the AKFAvatar user interface
@@ -75,9 +75,15 @@ You can for example use the text-setting system "groff" to generate
 such files.
 .
 .SH OPTIONS
-.IP "-h | --help"
+.TP
+-h
+.TQ
+--help
 print a short help-message
-.IP "-v | --version"
+.TP
+-v
+.TQ
+--version
 print version information
 .TP
 .RI "-l " name
@@ -86,11 +92,15 @@ call
 before executing the script.
 Typically used to load libraries.
 .TP
-.IP "-f | --fullscreen"
+-f
+.TQ
+--fullscreen
 start in fullscreen mode
 (only if no script is given)
 .TP
-.IP "-F | --Fullscreen"
+-F
+.TQ
+--Fullscreen
 start in fullscreen mode without switching the resolution
 (only if no script is given)
 .TP

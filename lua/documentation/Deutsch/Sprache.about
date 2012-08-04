@@ -60,11 +60,11 @@ Wenn man Text mit Variablen dazwischen hat, ist es kein guter Ansatz, den Text
 in Teile aufzuteilen. Es ist besser einen Format-String für string.format() zu
 definieren.
 
-Der übersetzbare String muss exakt übereinstimmen. Bitte daran denken, dass
-wenn man die Strings im Programm abändert, man auch die Übersetzungstabelle
-anpassen muss!
+Der übersetzbare String muss exakt übereinstimmen.  Bitte daran denken,
+wenn man die Strings im Programm abändert, dass man dann auch die
+Übersetzungstabelle anpassen muss!
 
-Der String kann auch ein Dateiname sein, für eine Textdatei oder eine
-Sprachaufnahme.
+Der String kann auch ein Dateiname für eine Textdatei oder eine
+Sprachaufnahme sein.
 
 Übrigens, diese Implementierung wurde von GNU gettext inspiriert.
