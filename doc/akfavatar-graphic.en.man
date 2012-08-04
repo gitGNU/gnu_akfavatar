@@ -50,6 +50,9 @@ It can also be used in the style of turtle graphic.
 .IP \(en
 The pen size, position, heading, pen color and background color are set for
 each graphic.
+.IP \(en
+The code is not optimized for speed.
+You can do animations, but they won't be smooth.
 .PP
 .SS Functions / Methods
 .TP

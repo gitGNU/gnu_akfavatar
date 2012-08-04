@@ -50,6 +50,9 @@ Man kann es auch nach Art der Turtle-Grafik verwenden.
 .IP \(en
 Die Stiftbreite, Position, Ausrichtung, Stift-Farbe und Hintergrund-Farbe sind
 für jede Grafik einzeln festgelegt.
+.IP \(en
+Der Code ist nicht auf Geschwindigkeit optimiert.
+Man kann zwar Animationen machen, aber es werden keine fließenden Bewegungen.
 .PP
 .SS Funktionen / Methoden
 .TP
