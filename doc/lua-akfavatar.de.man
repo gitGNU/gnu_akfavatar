@@ -150,8 +150,21 @@ avt.say("Hallo, ", Name, ". Schön dich zu sehen!\en")
 avt.wait_button()
 .EE
 .
+.SH SICHERHEIT
+Lua ist eine vollständige Programmiersprache.
+Jede vollständige Programmiersprache kann dafür
+missbraucht werden, um Schadcode zu schreiben.
+Man sollte also immer daran denken, dass Lua-Skripte
+Programme sind und mit der selben Sorgfalt wie andere
+Programme zu behandeln sind.
+Einige andere Dateien für Lua-AKFAvatar können ebenfalls
+Code enthalten.
+.
 .SH AUTOREN
-.IP "AKFAvatar, Lua-AKFAvatar"
+.TP 16
+AKFAvatar
+.TQ
+Lua-AKFAvatar
 Andreas K. Förster
 .IP "Lua"
 R. Ierusalimschy, L. H. de Figueiredo, and W. Celes

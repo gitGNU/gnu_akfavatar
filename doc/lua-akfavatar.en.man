@@ -141,10 +141,22 @@ avt.say("Hello, ", name, ". Nice to meet you!\en")
 avt.wait_button()
 .EE
 .
+.SH SECURITY
+Lua is a complete programming language.
+Any complete programming language can be misused to
+write malicious code.
+So keep in mind that Lua scripts are programs
+and should be treated with the same care as other programs.
+Some other input files for Lua-AKFAvatar could contain code, too.
+.
 .SH AUTHORS
-.IP "AKFAvatar, Lua-AKFAvatar"
+.TP 16
+AKFAvatar
+.TQ
+Lua-AKFAvatar
 Andreas K. Foerster
-.IP "Lua"
+.TP
+Lua
 R. Ierusalimschy, L. H. de Figueiredo, and W. Celes
 .
 .SH HOMEPAGE
