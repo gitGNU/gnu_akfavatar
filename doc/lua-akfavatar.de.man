@@ -162,7 +162,8 @@ avt.wait_button()
 .
 .SH SICHERHEIT
 Lua ist eine vollständige Programmiersprache.
-Jede vollständige Programmiersprache kann dafür
+Es gibt keine Sandbox-Beschränkungen.
+Jede vollständige, unbeschränkte Programmiersprache kann dafür
 missbraucht werden, um Schadcode zu schreiben.
 Man sollte also immer daran denken, dass Lua-Skripte
 Programme sind und mit der selben Sorgfalt wie andere

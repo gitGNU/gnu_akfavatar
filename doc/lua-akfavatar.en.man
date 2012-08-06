@@ -153,7 +153,8 @@ avt.wait_button()
 .
 .SH SECURITY
 Lua is a complete programming language.
-Any complete programming language can be misused to
+There are no sandbox limitations.
+Any such programming language can be misused to
 write malicious code.
 So keep in mind that Lua scripts are programs
 and should be treated with the same care as other programs.
