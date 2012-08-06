@@ -33,6 +33,7 @@ function P:__call(...)
     -- remove spurious spaces
     text = string.gsub(text, "^%s*(.-)%s*$", "%1")
     text = string.gsub(text, "\n[ \t]+", "\n")
+    avt.set_balloon_mode("say")
     avt.tell(expand(text))
     avt.wait()
   end
@@ -67,12 +68,22 @@ end
 -- say something without changing the balloon size
 function P:says(...)
   if current_avatar~=self then self:activate() end
+  avt.set_balloon_mode("say")
   avt.say(expand(table.concat ({...})))
 end
 
 function P:asks()
   if current_avatar~=self then self:activate() end
+  avt.set_balloon_mode("say")
   return avt.ask()
+end
+
+-- think something
+function P:thinks(...)
+  if current_avatar~=self then self:activate() end
+  avt.set_balloon_mode("think")
+  avt.tell(expand(table.concat ({...})))
+  avt.wait()
 end
 
 function P:comes_in()

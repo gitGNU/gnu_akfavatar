@@ -68,6 +68,8 @@ How are you?
 
 woman "I'm fine. Thank you!"
 
+woman: thinks "Oh, he is nice today."
+
 woman "Do I look beautiful today?"
 
 if man: affirms () then

@@ -17,6 +17,7 @@ person.kommt_herein = person.comes_in
 person.geht_heraus = person.leaves
 person.bestaetigt = person.affirms
 person.wartet = person.waits
+person.denkt = person.thinks
 
 --------------------------------------------------------------------------
 
@@ -75,6 +76,8 @@ Wie geht's dir?
 ]]
 
 Frau "Mir geht es gut, danke!"
+
+Frau: denkt "Wie nett er heute doch ist..."
 
 Frau "Sehe ich heute schön aus?"
 
