@@ -602,13 +602,13 @@ lavt_set_balloon_color (lua_State * L)
   return 0;
 }
 
-// set balloon mode
+// set avatar mode
 static int
-lavt_set_balloon_mode (lua_State * L)
+lavt_set_avatar_mode (lua_State * L)
 {
-  const char *const balloon_modes[] =
+  const char *const avatar_modes[] =
     { "say", "think", "header", "footer", NULL };
-  avt_set_balloon_mode (luaL_checkoption (L, 1, "say", balloon_modes));
+  avt_set_avatar_mode (luaL_checkoption (L, 1, "say", avatar_modes));
 
   return 0;
 }
@@ -2378,7 +2378,7 @@ static const luaL_Reg akfavtlib[] = {
   {"set_balloon_width", lavt_set_balloon_width},
   {"set_balloon_height", lavt_set_balloon_height},
   {"set_balloon_color", lavt_set_balloon_color},
-  {"set_balloon_mode", lavt_set_balloon_mode},
+  {"set_avatar_mode", lavt_set_avatar_mode},
   {"set_background_color", lavt_set_background_color},
   {"set_text_color", lavt_set_text_color},
   {"set_text_background_color", lavt_set_text_background_color},

@@ -3,6 +3,9 @@
 	* akfavatar.h, avatar-sdl.c (AVT_FOOTER, AVT_HEADER):
 	new modes replace AVT_SEPARATE
 
+	* akfavatar.h, avatar-sdl.c (avt_avatar_mode):
+	replaces avt_balloon_mode
+
 2012-08-06  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar/person.lua: method thinks

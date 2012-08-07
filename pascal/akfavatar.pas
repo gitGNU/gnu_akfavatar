@@ -376,9 +376,9 @@ procedure BalloonSize(height, width: integer);
 procedure BalloonWidth(width: integer);
 procedure BalloonHeight(height: integer);
 
-{ set the balloon mode }
-{ 0 = say, 1 = think, 2 = separate }
-procedure SetBalloonMode(mode: integer);
+{ set the avatar mode }
+{ 0 = say, 1 = think, 2 = header. 3 = footer }
+procedure SetAvatarMode(mode: integer);
 
 { set/get scroll mode }
 { 0 = off (page-flipping), 1 = normal }
@@ -738,8 +738,8 @@ function avt_decide: CBoolean; libakfavatar 'avt_decide';
 procedure avt_lock_updates(lock: CBoolean);
   libakfavatar 'avt_lock_updates';
 
-procedure avt_set_balloon_mode(mode: Cint); 
-  libakfavatar 'avt_set_balloon_mode';
+procedure avt_set_avatar_mode(mode: Cint); 
+  libakfavatar 'avt_set_avatar_mode';
 
 {$IfNDef __GPC__}
 
@@ -1268,10 +1268,10 @@ ScrSize.y := avt_get_max_y;
 Window(1, 1, ScrSize.x, ScrSize.y);
 end;
 
-procedure SetBalloonMode(mode: integer);
+procedure SetAvatarMode(mode: integer);
 begin
 if not initialized then initializeAvatar;
-avt_set_balloon_mode(mode)
+avt_set_avatar_mode(mode)
 end;
 
 procedure waitkey;

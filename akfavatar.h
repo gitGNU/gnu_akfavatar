@@ -530,7 +530,7 @@ AVT_API void avt_switch_mode (int mode);
 // toggle fullscreen mode
 AVT_API void avt_toggle_fullscreen (void);
 
-// get mode
+// get screen mode
 AVT_API int avt_get_mode (void);
 
 /*
@@ -544,14 +544,14 @@ AVT_API void avt_set_balloon_width (int width);
 AVT_API void avt_set_balloon_height (int height);
 
 
-// values for avt_balloon_mode
+// values for avt_avatar_mode
 #define AVT_SAY 0
 #define AVT_THINK 1
 #define AVT_HEADER 2
 #define AVT_FOOTER 3
 
-// set the balloon mode
-AVT_API void avt_set_balloon_mode (int mode);
+// set the avatar mode
+AVT_API void avt_set_avatar_mode (int mode);
 
 // activate the text cursor? (default: no)
 AVT_API void avt_activate_cursor (bool on);
