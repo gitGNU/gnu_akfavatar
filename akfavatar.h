@@ -547,7 +547,8 @@ AVT_API void avt_set_balloon_height (int height);
 // values for avt_balloon_mode
 #define AVT_SAY 0
 #define AVT_THINK 1
-#define AVT_SEPARATE 2
+#define AVT_HEADER 2
+#define AVT_FOOTER 3
 
 // set the balloon mode
 AVT_API void avt_set_balloon_mode (int mode);

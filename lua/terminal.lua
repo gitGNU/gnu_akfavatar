@@ -12,7 +12,7 @@ avt.title("AKFAvatar Terminal", "Terminal")
 avt.start()
 avt.start_audio()
 avt.avatar_image_file(avt.search("computer.xpm"))
-avt.set_balloon_mode("separate")
+avt.set_balloon_mode("footer")
 
 -- 25x80 is a traditional default, but other sizes are okay
 avt.set_balloon_size(25, 80)

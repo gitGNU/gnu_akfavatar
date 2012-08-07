@@ -55,7 +55,7 @@ avt.title("Lua-AKFAvatar")
 avt.start()
 avt.start_audio()
 avt.avatar_image_file(avt.search("computer.xpm") or "default")
-avt.set_balloon_mode("separate")
+avt.set_balloon_mode("footer")
 
 -- avt.move_in ()
 avt.underlined(true)

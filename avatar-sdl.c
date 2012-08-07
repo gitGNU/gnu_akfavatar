@@ -1479,15 +1479,19 @@ avt_show_name (void)
 
       SDL_SetColors (avt_character, colors, 0, 2);
 
-      if (avt_balloon_mode == AVT_SEPARATE)
+      if (AVT_FOOTER == avt_balloon_mode or AVT_HEADER == avt_balloon_mode)
 	dst.x =
 	  ((window.x + window.w) / 2) + (avatar_image->w / 2)
 	  + BUTTON_DISTANCE;
       else			// left
 	dst.x = window.x + AVATAR_MARGIN + avatar_image->w + BUTTON_DISTANCE;
 
-      dst.y = window.y + window.h - AVATAR_MARGIN - fontheight
-	- 2 * NAME_PADDING;
+      if (AVT_HEADER == avt_balloon_mode)
+	dst.y = window.y + TOPMARGIN + avatar_image->h
+	  - fontheight - 2 * NAME_PADDING;
+      else
+	dst.y = window.y + window.h - AVATAR_MARGIN
+	  - fontheight - 2 * NAME_PADDING;
       dst.w = (avt_strwidth (avt_name) * fontwidth) + 2 * NAME_PADDING;
       dst.h = fontheight + 2 * NAME_PADDING;
 
@@ -1533,13 +1537,17 @@ avt_draw_avatar (void)
 
       if (avatar_image)
 	{
-	  if (avt_balloon_mode == AVT_SEPARATE)
+	  if (AVT_FOOTER == avt_balloon_mode
+	      or AVT_HEADER == avt_balloon_mode)
 	    dst.x = ((window.x + window.w) / 2) - (avatar_image->w / 2);
 	  else			// left
 	    dst.x = window.x + AVATAR_MARGIN;
 
-	  // bottom
-	  dst.y = window.y + window.h - avatar_image->h - AVATAR_MARGIN;
+	  if (AVT_HEADER == avt_balloon_mode)
+	    dst.y = window.y + TOPMARGIN;
+	  else			// bottom
+	    dst.y = window.y + window.h - avatar_image->h - AVATAR_MARGIN;
+
 	  dst.w = avatar_image->w;
 	  dst.h = avatar_image->h;
 	  SDL_BlitSurface (avatar_image, NULL, screen, &dst);
@@ -1636,7 +1644,9 @@ avt_draw_balloon2 (int offset, uint32_t ballooncolor)
 
   // draw balloonpointer
   // only if there is an avatar image
-  if (avatar_image and avt_balloon_mode != AVT_SEPARATE)
+  if (avatar_image
+      and AVT_FOOTER != avt_balloon_mode
+      and AVT_HEADER != avt_balloon_mode)
     {
       SDL_Rect pointer_shape, pointer_pos;
 
@@ -1681,21 +1691,30 @@ avt_draw_balloon (void)
   centered_y = window.y + (window.h / 2) - (textfield.h / 2);
 
   if (avatar_image)		// align with balloon
-    textfield.y = window.y + ((balloonmaxheight - balloonheight) * LINEHEIGHT)
-      + TOPMARGIN + BALLOON_INNER_MARGIN;
-  else				// middle of the window
-    textfield.y = centered_y;
+    {
+      if (AVT_HEADER == avt_balloon_mode)
+	textfield.y = window.y + avatar_image->h + AVATAR_MARGIN
+	  + TOPMARGIN + BALLOON_INNER_MARGIN;
+      else
+	textfield.y =
+	  window.y + ((balloonmaxheight - balloonheight) * LINEHEIGHT)
+	  + TOPMARGIN + BALLOON_INNER_MARGIN;
 
-  // in separate mode it might also be better to center it
-  if (AVT_SEPARATE == avt_balloon_mode and avatar_image
-      and textfield.y > centered_y)
+      // in separate or heading mode it might also be better to center it
+      if ((AVT_FOOTER == avt_balloon_mode and textfield.y > centered_y)
+	  or (AVT_HEADER == avt_balloon_mode and textfield.y < centered_y))
+	textfield.y = centered_y;
+    }
+  else				// middle of the window
     textfield.y = centered_y;
 
   // horizontally centered as default
   textfield.x = window.x + (window.w / 2) - (balloonwidth * fontwidth / 2);
 
   // align with balloonpointer
-  if (avatar_image and avt_balloon_mode != AVT_SEPARATE)
+  if (avatar_image
+      and AVT_FOOTER != avt_balloon_mode
+      and AVT_HEADER != avt_balloon_mode)
     {
       // left border not aligned with balloon pointer?
       if (textfield.x >
@@ -1902,8 +1921,12 @@ avt_set_balloon_mode (int mode)
 	  avt_balloon_mode = AVT_THINK;
 	  break;
 
-	case AVT_SEPARATE:
-	  avt_balloon_mode = AVT_SEPARATE;
+	case AVT_FOOTER:
+	  avt_balloon_mode = AVT_FOOTER;
+	  break;
+
+	case AVT_HEADER:
+	  avt_balloon_mode = AVT_HEADER;
 	  break;
 	}
     }
@@ -5259,7 +5282,7 @@ avt_move_in (void)
       dst.h = avatar_image->h;
       start_time = SDL_GetTicks ();
 
-      if (avt_balloon_mode == AVT_SEPARATE)
+      if (AVT_FOOTER == avt_balloon_mode or AVT_HEADER == avt_balloon_mode)
 	destination = ((window.x + window.w) / 2) - (avatar_image->w / 2);
       else			// left
 	destination = window.x + AVATAR_MARGIN;
@@ -5335,7 +5358,7 @@ avt_move_out (void)
       mywindow = window;
       mywindow.w = screen->w - mywindow.x;
 
-      if (avt_balloon_mode == AVT_SEPARATE)
+      if (AVT_FOOTER == avt_balloon_mode or AVT_HEADER == avt_balloon_mode)
 	start_position = ((window.x + window.w) / 2) - (avatar_image->w / 2);
       else
 	start_position = mywindow.x + AVATAR_MARGIN;

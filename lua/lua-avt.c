@@ -606,7 +606,8 @@ lavt_set_balloon_color (lua_State * L)
 static int
 lavt_set_balloon_mode (lua_State * L)
 {
-  const char *const balloon_modes[] = { "say", "think", "separate", NULL };
+  const char *const balloon_modes[] =
+    { "say", "think", "header", "footer", NULL };
   avt_set_balloon_mode (luaL_checkoption (L, 1, "say", balloon_modes));
 
   return 0;

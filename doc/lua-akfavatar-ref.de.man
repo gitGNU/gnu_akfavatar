@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar Referenz" 3 2012-08-04 AKFAvatar
+.TH "Lua-AKFAvatar Referenz" 3 2012-08-07 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar Referenz \- AKFAvatar spezifische Funktionen für Lua
@@ -159,7 +159,8 @@ Dies muss nach dem Setzen des Bildes geschehen.
 Legt den Sprechblasen-Modus fest.
 Der
 .I Modus
-ist entweder "say" (sagen), "think" (denken) oder "separate" (separat).
+ist entweder "say" (sagen), "think" (denken),
+"header" (Überschrift) oder "footer" (Fußzeile).
 Der Sprechblasen-Modus wird nur angewandt, wenn ein Avatar-Bild vorhanden
 ist.
 .PP

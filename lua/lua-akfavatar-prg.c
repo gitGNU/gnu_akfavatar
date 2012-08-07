@@ -416,7 +416,7 @@ ask_file (void)
   avt_clear_screen ();
   avt_set_balloon_color (AVT_COLOR_SELECTOR);
   avt_avatar_image_xpm (akfavatar_logo_xpm);
-  avt_set_balloon_mode (AVT_SEPARATE);
+  avt_set_balloon_mode (AVT_HEADER);
   avt_set_balloon_size (0, 0);
 
   if (avta_file_selection (filename, sizeof (filename), &check_filename))
@@ -488,7 +488,7 @@ start_screen (void)
   avt_clear_screen ();
   avt_set_balloon_color (AVT_COLOR_START);
   avt_avatar_image_xpm (akfavatar_logo_xpm);
-  avt_set_balloon_mode (AVT_SEPARATE);
+  avt_set_balloon_mode (AVT_HEADER);
   avt_set_balloon_size (9, 80);
   avt_underlined (true);
   avt_bold (true);
