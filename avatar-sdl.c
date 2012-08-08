@@ -1537,8 +1537,7 @@ avt_draw_avatar (void)
 
       if (avatar_image)
 	{
-	  if (AVT_FOOTER == avt_avatar_mode
-	      or AVT_HEADER == avt_avatar_mode)
+	  if (AVT_FOOTER == avt_avatar_mode or AVT_HEADER == avt_avatar_mode)
 	    dst.x = ((window.x + window.w) / 2) - (avatar_image->w / 2);
 	  else			// left
 	    dst.x = window.x + AVATAR_MARGIN;
@@ -1645,8 +1644,7 @@ avt_draw_balloon2 (int offset, uint32_t ballooncolor)
   // draw balloonpointer
   // only if there is an avatar image
   if (avatar_image
-      and AVT_FOOTER != avt_avatar_mode
-      and AVT_HEADER != avt_avatar_mode)
+      and AVT_FOOTER != avt_avatar_mode and AVT_HEADER != avt_avatar_mode)
     {
       SDL_Rect pointer_shape, pointer_pos;
 
@@ -1690,8 +1688,11 @@ avt_draw_balloon (void)
   textfield.h = (balloonheight * fontheight);
   centered_y = window.y + (window.h / 2) - (textfield.h / 2);
 
-  if (avatar_image)		// align with balloon
+  if (not avatar_image)
+    textfield.y = centered_y;	// middle of the window
+  else
     {
+      // align with balloon
       if (AVT_HEADER == avt_avatar_mode)
 	textfield.y = window.y + avatar_image->h + AVATAR_MARGIN
 	  + TOPMARGIN + BALLOON_INNER_MARGIN;
@@ -1705,16 +1706,13 @@ avt_draw_balloon (void)
 	  or (AVT_HEADER == avt_avatar_mode and textfield.y < centered_y))
 	textfield.y = centered_y;
     }
-  else				// middle of the window
-    textfield.y = centered_y;
 
   // horizontally centered as default
   textfield.x = window.x + (window.w / 2) - (balloonwidth * fontwidth / 2);
 
-  // align with balloonpointer
+  // align horizontally with balloonpointer
   if (avatar_image
-      and AVT_FOOTER != avt_avatar_mode
-      and AVT_HEADER != avt_avatar_mode)
+      and AVT_FOOTER != avt_avatar_mode and AVT_HEADER != avt_avatar_mode)
     {
       // left border not aligned with balloon pointer?
       if (textfield.x >
