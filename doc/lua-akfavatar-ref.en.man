@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar reference" 3 2012-08-07 AKFAvatar
+.TH "Lua-AKFAvatar reference" 3 2012-08-08 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar reference \- AKFAvatar specific functions for Lua
@@ -156,12 +156,12 @@ Set the name of the avatar.  This must be used after
 .BR avt.change_avatar_image() .
 .PP
 .TP
-.BI "avt.set_balloon_mode(" mode )
-Set the balloon mode.
+.BI "avt.set_avatar_mode(" mode )
+Set the avatar mode.
 The
 .I mode
 can be one of "say", "think", "header" or "footer".
-The balloon mode is only used, when there is an avatar image.
+The avatar mode is only used, when there is an avatar image.
 .PP
 .TP
 .BI "avt.say(" ... )

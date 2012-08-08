@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar Referenz" 3 2012-08-07 AKFAvatar
+.TH "Lua-AKFAvatar Referenz" 3 2012-08-08 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar Referenz \- AKFAvatar spezifische Funktionen für Lua
@@ -155,14 +155,13 @@ Setzt den Namen für den Avatar.
 Dies muss nach dem Setzen des Bildes geschehen.
 .PP
 .TP
-.BI "avt.set_balloon_mode(" Modus )
-Legt den Sprechblasen-Modus fest.
+.BI "avt.set_avatar_mode(" Modus )
+Legt den Avatar-Modus fest.
 Der
 .I Modus
 ist entweder "say" (sagen), "think" (denken),
 "header" (Überschrift) oder "footer" (Fußzeile).
-Der Sprechblasen-Modus wird nur angewandt, wenn ein Avatar-Bild vorhanden
-ist.
+Der Avatar-Modus wird nur angewandt, wenn ein Avatar-Bild vorhanden ist.
 .PP
 .TP
 .BI "avt.say(" ... )
