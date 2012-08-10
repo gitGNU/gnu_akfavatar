@@ -446,6 +446,7 @@ avt_prepare_raw_audio_data (size_t capacity,
   s->audio_type = audio_type;
   s->samplingrate = samplingrate;
   s->channels = channels;
+  s->complete = false;
 
   // reserve memory
   unsigned char *sound_data = NULL;
@@ -502,6 +503,12 @@ avt_load_raw_audio_data (void *data, size_t data_size,
 extern void
 avt_finalize_raw_audio (avt_audio * snd)
 {
+  bool active;
+
+  active = avt_audio_playing (snd);
+  if (active)
+    avt_lock_audio ();
+
   // eventually free unneeded memory
   if (snd->capacity > snd->length)
     {
@@ -517,6 +524,11 @@ avt_finalize_raw_audio (avt_audio * snd)
 	  snd->capacity = new_capacity;
 	}
     }
+
+  snd->complete = true;
+
+  if (active)
+    avt_unlock_audio (snd);
 }
 
 extern void

@@ -79,6 +79,7 @@ struct avt_audio
   int audio_type;		/* Type of raw data */
   int samplingrate;
   int channels;
+  bool complete;
 };
 
 #define AVT_AUDIO_ENDED 1

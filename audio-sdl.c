@@ -74,7 +74,9 @@ fill_audio (void *userdata, uint8_t * stream, int len)
   // only play, when there is data left
   if (soundleft <= 0)
     {
-      if (loop)
+      if (not current_sound.complete)
+	return;
+      else if (loop)
 	{
 	  // rewind to beginning
 	  soundpos = 0;
