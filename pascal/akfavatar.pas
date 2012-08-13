@@ -657,10 +657,13 @@ function avt_load_audio_file(f: CString; playmode: Cint): pointer;
 function avt_load_audio_data(Data: Pointer; size: Csize_t; playmode: Cint): Pointer;
   libakfavatar 'avt_load_audio_data';
 
-function avt_load_raw_audio_data(Data: pointer; size: Csize_t;
+function avt_prepare_raw_audio_data(size: Csize_t;
                             Samplingrate, Audio_type,
                             channels: Cint): pointer;
-  libakfavatar 'avt_load_raw_audio_data';
+  libakfavatar 'avt_prepare_raw_audio_data';
+
+procedure avt_finalize_raw_audio(Data: Pointer);
+  libakfavatar 'avt_finalize_raw_audio';
 
 function avt_add_raw_audio_data(Sound: pointer;
                                 Data: pointer;
@@ -738,7 +741,7 @@ function avt_decide: CBoolean; libakfavatar 'avt_decide';
 procedure avt_lock_updates(lock: CBoolean);
   libakfavatar 'avt_lock_updates';
 
-procedure avt_set_avatar_mode(mode: Cint); 
+procedure avt_set_avatar_mode(mode: Cint);
   libakfavatar 'avt_set_avatar_mode';
 
 {$IfNDef __GPC__}
@@ -1300,9 +1303,14 @@ end;
 
 function LoadRawSoundData(data:pointer; size: LongInt;
            samplingrate, audio_type, channels: integer): pointer;
+var snd: Pointer;
 begin
-LoadRawSoundData := avt_load_raw_audio_data(data, size, samplingrate,
-                     audio_type, channels)
+snd := avt_prepare_raw_audio_data(size, samplingrate,
+                     audio_type, channels);
+avt_add_raw_audio_data(snd, data, size);
+avt_finalize_raw_audio(snd);
+
+LoadRawSoundData := snd
 end;
 
 procedure AddRawSoundData(sound: pointer; data: pointer; size: LongInt);
@@ -1355,8 +1363,10 @@ for i := 0 to BufMax do
   RawSoundBuf^[i] := trunc(Amplitude * sin(2*pi*frequency*i/Samplerate));
 
 if GenSound<>NIL then avt_free_audio(GenSound);
-GenSound := avt_load_raw_audio_data(RawSoundBuf, BufMax, 
-                                    SampleRate, S16SYS, Mono);
+
+GenSound := avt_prepare_raw_audio_data(BufMax, SampleRate, S16SYS, Mono);
+avt_add_raw_audio_data(GenSound, RawSoundBuf, BufMax);
+avt_finalize_raw_audio(GenSound);
 
 avt_play_audio(GenSound, 2)
 end;
