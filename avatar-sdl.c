@@ -5274,8 +5274,12 @@ avt_move_in (void)
       mywindow.w = screen->w - mywindow.x;
 
       dst.x = screen->w;
-      // bottom
-      dst.y = mywindow.y + mywindow.h - avatar_image->h - AVATAR_MARGIN;
+
+      if (AVT_HEADER == avt_avatar_mode)
+	dst.y = mywindow.y + TOPMARGIN;
+      else			// bottom
+	dst.y = mywindow.y + mywindow.h - avatar_image->h - AVATAR_MARGIN;
+
       dst.w = avatar_image->w;
       dst.h = avatar_image->h;
       start_time = SDL_GetTicks ();
@@ -5362,8 +5366,12 @@ avt_move_out (void)
 	start_position = mywindow.x + AVATAR_MARGIN;
 
       dst.x = start_position;
-      // bottom
-      dst.y = mywindow.y + mywindow.h - avatar_image->h - AVATAR_MARGIN;
+
+      if (AVT_HEADER == avt_avatar_mode)
+	dst.y = mywindow.y + TOPMARGIN;
+      else			// bottom
+	dst.y = mywindow.y + mywindow.h - avatar_image->h - AVATAR_MARGIN;
+
       dst.w = avatar_image->w;
       dst.h = avatar_image->h;
       start_time = SDL_GetTicks ();
