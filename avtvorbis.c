@@ -56,9 +56,8 @@ load_vorbis (stb_vorbis * vorbis, int playmode)
     info.channels = MAX_CHANNELS;
 
   audio =
-    avt_prepare_raw_audio_data (samples * sizeof (data[0]) * info.channels,
-				info.sample_rate, AVT_AUDIO_S16SYS,
-				info.channels);
+    avt_prepare_raw_audio (samples * sizeof (data[0]) * info.channels,
+			   info.sample_rate, AVT_AUDIO_S16SYS, info.channels);
 
   while ((n = stb_vorbis_get_frame_short_interleaved (vorbis,
 						      info.channels,

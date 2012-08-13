@@ -1035,12 +1035,12 @@ AVT_API avt_audio *avt_load_audio_data (const void *data, size_t datasize, int p
  *
  * must be freed with avt_free_audio! (even if empty)
  */
-AVT_API avt_audio *avt_prepare_raw_audio_data (size_t capacity,
+AVT_API avt_audio *avt_prepare_raw_audio (size_t capacity,
                        int samplingrate, int audio_type, int channels);
 
 /*
  * add raw audio data to an audio type
- * the audio type must have been created with avt_prepare_raw_audio_data
+ * the audio type must have been created with avt_prepare_raw_audio
  * data should be a larger buffer
  */
 AVT_API int avt_add_raw_audio_data (avt_audio *snd, void *data, size_t data_size);

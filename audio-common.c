@@ -42,8 +42,8 @@
 #ifdef NO_AUDIO
 
 extern avt_audio *
-avt_prepare_raw_audio_data (size_t capacity,
-			    int samplingrate, int audio_type, int channels)
+avt_prepare_raw_audio (size_t capacity,
+		       int samplingrate, int audio_type, int channels)
 {
   return NULL;
 }
@@ -211,7 +211,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
   if (_avt_STATUS != AVT_NORMAL or not snd or not data or not data_size)
     return avt_checkevent ();
 
-  // audio structure must have been created with avt_prepare_raw_audio_data
+  // audio structure must have been created with avt_prepare_raw_audio
   if (snd->audio_type == AVT_AUDIO_UNKNOWN)
     {
       avt_set_error ("unknown audio format");
@@ -387,8 +387,8 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
 }
 
 extern avt_audio *
-avt_prepare_raw_audio_data (size_t capacity,
-			    int samplingrate, int audio_type, int channels)
+avt_prepare_raw_audio (size_t capacity,
+		       int samplingrate, int audio_type, int channels)
 {
   struct avt_audio *s;
 
@@ -484,8 +484,7 @@ avt_load_raw_audio_data (void *data, size_t data_size,
   else if (not data)
     data_size = 0;
 
-  s = avt_prepare_raw_audio_data (data_size,
-				  samplingrate, audio_type, channels);
+  s = avt_prepare_raw_audio (data_size, samplingrate, audio_type, channels);
 
   if (s)
     {
@@ -562,8 +561,7 @@ avt_load_audio_block (avt_data * src, uint32_t maxsize,
   uint32_t rest;
   uint8_t data[24 * 1024];
 
-  audio =
-    avt_prepare_raw_audio_data (maxsize, samplingrate, audio_type, channels);
+  audio = avt_prepare_raw_audio (maxsize, samplingrate, audio_type, channels);
 
   if (not audio)
     return NULL;

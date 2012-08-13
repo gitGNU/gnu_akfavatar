@@ -34,7 +34,8 @@
     avt_avatar_image_xbm, avt_avatar_image_data, avt_avatar_image_file
     replace the avt_import_* functions
   - avt_audio_t renamed to avt_audio
-  - avt_prepare_raw_audio_data replaces avt_load_raw_audio_data
+  - avt_prepare_raw_audio, avt_add_raw_audio_data, avt_finalize_raw_audio
+    replace avt_load_raw_audio_data
   - avt_get_font_char replaces get_font_char
   - avt_get_font_dimensions replaces avt_get_font_size
   - functions with changed API (color value):

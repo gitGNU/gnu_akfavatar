@@ -657,10 +657,10 @@ function avt_load_audio_file(f: CString; playmode: Cint): pointer;
 function avt_load_audio_data(Data: Pointer; size: Csize_t; playmode: Cint): Pointer;
   libakfavatar 'avt_load_audio_data';
 
-function avt_prepare_raw_audio_data(size: Csize_t;
+function avt_prepare_raw_audio(size: Csize_t;
                             Samplingrate, Audio_type,
                             channels: Cint): pointer;
-  libakfavatar 'avt_prepare_raw_audio_data';
+  libakfavatar 'avt_prepare_raw_audio';
 
 procedure avt_finalize_raw_audio(Data: Pointer);
   libakfavatar 'avt_finalize_raw_audio';
@@ -1305,8 +1305,7 @@ function LoadRawSoundData(data:pointer; size: LongInt;
            samplingrate, audio_type, channels: integer): pointer;
 var snd: Pointer;
 begin
-snd := avt_prepare_raw_audio_data(size, samplingrate,
-                     audio_type, channels);
+snd := avt_prepare_raw_audio(size, samplingrate, audio_type, channels);
 avt_add_raw_audio_data(snd, data, size);
 avt_finalize_raw_audio(snd);
 
@@ -1364,7 +1363,7 @@ for i := 0 to BufMax do
 
 if GenSound<>NIL then avt_free_audio(GenSound);
 
-GenSound := avt_prepare_raw_audio_data(BufMax, SampleRate, S16SYS, Mono);
+GenSound := avt_prepare_raw_audio(BufMax, SampleRate, S16SYS, Mono);
 avt_add_raw_audio_data(GenSound, RawSoundBuf, BufMax);
 avt_finalize_raw_audio(GenSound);
 
