@@ -2,7 +2,7 @@
 
 # data2c - Convert binary data file into C-code
 #
-# Copyright (c) 2009 Andreas K. Foerster
+# Copyright (c) 2009,2012 Andreas K. Foerster
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
 # notice and this notice are preserved.  This file is offered as-is,
@@ -36,8 +36,7 @@ BEGIN \
       if (data == "-") help(1)
 
       name = data
-      gsub(/\./, "_", name)
-      gsub(/-/, "_", name)
+      gsub(/[-\.:&~]/, "_", name) # replace some chars
     }
 
   size = 0
