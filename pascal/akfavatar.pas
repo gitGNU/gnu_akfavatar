@@ -155,6 +155,10 @@ procedure AvatarImageXBM(bits: pointer; width, height: integer;
 { give the avatar a name }
 procedure AvatarName(const Name: string);
 
+{ set the avatar mode }
+type AvatarMode = (say, think, header, footer);
+procedure SetAvatarMode(mode: AvatarMode);
+
 { set a different background color }
 { should be used before any output took place }
 procedure setBackgroundColor(red, green, blue: byte);
@@ -375,10 +379,6 @@ function HomePosition: boolean;
 procedure BalloonSize(height, width: integer);
 procedure BalloonWidth(width: integer);
 procedure BalloonHeight(height: integer);
-
-{ set the avatar mode }
-{ 0 = say, 1 = think, 2 = header. 3 = footer }
-procedure SetAvatarMode(mode: integer);
 
 { set/get scroll mode }
 { 0 = off (page-flipping), 1 = normal }
@@ -1271,10 +1271,10 @@ ScrSize.y := avt_get_max_y;
 Window(1, 1, ScrSize.x, ScrSize.y);
 end;
 
-procedure SetAvatarMode(mode: integer);
+procedure SetAvatarMode(mode: AvatarMode);
 begin
 if not initialized then initializeAvatar;
-avt_set_avatar_mode(mode)
+avt_set_avatar_mode(ord(mode))
 end;
 
 procedure waitkey;
