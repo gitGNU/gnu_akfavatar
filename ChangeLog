@@ -3,6 +3,8 @@
 	* akfavatar.h, audio-common.c (avt_prepare_raw_audio):
 	renamed from avt_prepare_raw_audio_data
 
+	* pascal/akfavatar.pas: do not move the avatar in automatically
+
 2012-08-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar-sdl.c (AVT_FOOTER, AVT_HEADER):

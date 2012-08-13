@@ -863,7 +863,6 @@ procedure initializeAvatar;
 begin
 initializeAvatarWithoutImage;
 if avt_avatar_image_default <> 0 then Halt;
-if avt_move_in <> 0 then Halt
 end;
 
 procedure AvatarImageDefault;
@@ -886,7 +885,6 @@ if not initialized
   then begin
        initializeAvatarWithoutImage;
        avt_avatar_image_file(String2CString(FileName));
-       if avt_move_in <> 0 then Halt
        end
   else avt_avatar_image_file(String2CString(FileName))
 end;
@@ -897,7 +895,6 @@ if not initialized
   then begin
        initializeAvatarWithoutImage;
        avt_avatar_image_data(data, size);
-       if avt_move_in <> 0 then Halt
        end
   else avt_avatar_image_data(data, size)
 end;
@@ -908,7 +905,6 @@ if not initialized
   then begin
        initializeAvatarWithoutImage;
        avt_avatar_image_xpm(data);
-       if avt_move_in <> 0 then Halt
        end
   else avt_avatar_image_xpm(data)
 end;
@@ -921,7 +917,6 @@ if not initialized
        initializeAvatarWithoutImage;
        avt_avatar_image_xbm(bits, width, height, 
           avt_colorname(String2CString(colorname)));
-       if avt_move_in <> 0 then Halt
        end
   else avt_avatar_image_xbm(bits, width, height, 
           avt_colorname(String2CString(colorname)))
@@ -1062,9 +1057,8 @@ end;
 
 procedure MoveAvatarIn;
 begin
-if not initialized 
-  then initializeAvatar
-  else if avt_move_in <> 0 then Halt
+if not initialized then initializeAvatar;
+if avt_move_in <> 0 then Halt
 end;
 
 procedure MoveAvatarOut;
@@ -1273,7 +1267,7 @@ end;
 
 procedure SetAvatarMode(mode: AvatarMode);
 begin
-if not initialized then initializeAvatar;
+if not initialized then initializeAvatarWithoutImage;
 avt_set_avatar_mode(ord(mode))
 end;
 
