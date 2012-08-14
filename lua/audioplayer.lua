@@ -17,8 +17,18 @@ local default_cover = assert(avt.search("audio1.xpm"))
 -- url is appended, data should be dumped to stdout
 local downloader = "curl --silent --location"
 
+avt.translations = {
+  ["Audio-Player"] = {
+    de="Audio-Abspieler"},
+
+  ["play all..."] = {
+    de="alle abspielen..."},
+}
+
+local L = avt.translate
+
 avt.encoding("UTF-8")
-avt.title("Audio-Player")
+avt.title(L"Audio-Player")
 avt.start()
 avt.start_audio()
 avt.set_balloon_color("tan")
@@ -225,7 +235,7 @@ local function play_select()
   local name
 
   -- go home
- avt.set_directory(os.getenv("HOME") or os.getenv("USERPROFILE"))
+  avt.set_directory(os.getenv("HOME") or os.getenv("USERPROFILE"))
 
   local files = avt.directory_entries()
   table.sort(files)
@@ -233,8 +243,8 @@ local function play_select()
   repeat
     local audio_files = {}
     local menu = {
-      {"\226\135\145", "/up"},
-      {"* play all...", "/all"}
+      {"\xE2\x97\x84", "/up"},
+      {"\xE2\x80\xA2 " .. L"play all...", "/all"}
       }
 
     -- find supported entries
@@ -244,15 +254,16 @@ local function play_select()
           table.insert(audio_files, v)
           table.insert(menu, {avt.recode(v, ""), v})
         elseif avt.entry_type(v) == "directory" then
-          table.insert(menu, {avt.recode(v, "") .. "/", v .. "/"})
+          table.insert(menu, {avt.recode(v, "") .. "\xE2\x96\xBA", v .. "/"})
         end
       end
     end
 
     avt.set_balloon_size(0, 0)
     avt.bold(true)
-    avt.say "Audio Player\n"
+    avt.say(L"Audio-Player")
     avt.bold(false)
+    avt.newline()
 
     name = avt.long_menu(menu)
 
