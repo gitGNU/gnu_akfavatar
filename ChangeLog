@@ -1,3 +1,7 @@
+2012-08-28  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.22.1 released
+
 2012-08-13  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, audio-common.c (avt_prepare_raw_audio):
