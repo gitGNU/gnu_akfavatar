@@ -68,11 +68,9 @@
 
 #ifdef _WIN32
 #  define HAS_DRIVE_LETTERS true
-#  define HAS_SCANDIR false
 #  define is_root_dir(x) (x[1] == ':' and x[3] == '\0')
 #else
 #  define HAS_DRIVE_LETTERS false
-#  define HAS_SCANDIR true
 #  define is_root_dir(x) (x[1] == '\0')
 #  define avta_ask_drive(max_idx) 0	// dummy
 #endif
@@ -102,7 +100,7 @@ is_directory (const char *name)
 #  define is_dirent_directory(d) (is_directory (d->d_name))
 #endif // _DIRENT_HAVE_D_TYPE
 
-static void
+static inline void
 new_page (void)
 {
   avt_lock_updates (true);
@@ -159,10 +157,6 @@ filter_dirent (const struct dirent *d)
 
 #endif // _WIN32
 
-#if (HAS_SCANDIR)
-#  define get_directory(list) (scandir (".", list, filter_dirent, alphasort))
-#else // not HAS_SCANDIR
-
 static int
 compare_dirent (const void *a, const void *b)
 {
@@ -173,47 +167,66 @@ compare_dirent (const void *a, const void *b)
 static int
 get_directory (struct dirent ***list)
 {
-  const int max_entries = 1024;
+  int max_entries;
   struct dirent **mylist;
-  struct dirent *d, *n;
+  struct dirent *d;
   int entries;
-  size_t dirent_size;
   DIR *dir;
 
   *list = NULL;
-  entries = 0;
-
-  // TODO: potential portability problem
-  dirent_size = sizeof (struct dirent);	// works for all I have
-
-  /*
-     dirent_size = offsetof (struct dirent, d_name)
-     + pathconf (".", _PC_NAME_MAX) + 1;
-   */
+  mylist = NULL;
+  entries = max_entries = 0;
 
   dir = opendir (".");
   if (dir == NULL)
     return -1;
 
-  mylist = (struct dirent **) malloc (max_entries * sizeof (struct dirent *));
-
-  if (mylist)
+  while ((d = readdir (dir)))
     {
-      while ((d = readdir (dir)) and entries < max_entries)
+      // need mor memory?
+      if (entries >= max_entries)
 	{
-	  if (filter_dirent (d))
+	  struct dirent **tmp;
+
+	  if (max_entries > 0)
+	    max_entries *= 2;
+	  else
+	    max_entries = 10;
+
+	  tmp = (struct dirent **)
+	    realloc (mylist, max_entries * sizeof (struct dirent *));
+
+	  if (not tmp)
 	    {
-	      n = (struct dirent *) malloc (dirent_size);
-	      if (not n)
-		break;
-	      memcpy (n, d, dirent_size);
-	      mylist[entries++] = n;
+	      while (entries--)
+		free (mylist[entries]);
+
+	      free (mylist);
+	      closedir (dir);
+
+	      return -1;
 	    }
+
+	  mylist = tmp;
 	}
 
-      // sort
-      qsort (mylist, entries, sizeof (struct dirent *), compare_dirent);
+      if (filter_dirent (d))
+	{
+	  struct dirent *n;
+
+	  n = (struct dirent *) malloc (sizeof (struct dirent));
+
+	  if (not n)
+	    break;
+
+	  memcpy (n, d, sizeof (struct dirent));
+	  mylist[entries++] = n;
+	}
     }
+
+  // sort
+  if (mylist)
+    qsort (mylist, entries, sizeof (struct dirent *), compare_dirent);
 
   closedir (dir);
 
@@ -223,8 +236,6 @@ get_directory (struct dirent ***list)
   *list = mylist;
   return entries;
 }
-
-#endif
 
 // return a darker color
 static inline int

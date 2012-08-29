@@ -1,3 +1,10 @@
+2012-08-29  Andreas K. Foerster  <info@akfoerster.de>
+
+	* filechooser.c (get_directory): improved memory mangagement
+	don't use scandir anymore
+
+------------------------------------------------------------------------
+
 2012-08-28  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.22.1 released
