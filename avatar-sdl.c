@@ -1437,6 +1437,13 @@ avt_activate_cursor (bool on)
     avt_show_text_cursor (avt.text_cursor_visible);
 }
 
+static inline void
+avt_no_textfield (void)
+{
+  avt.textfield.x = avt.textfield.y = avt.textfield.w = avt.textfield.h = -1;
+  avt.viewport = avt.textfield;
+}
+
 /*
  * fills the screen with the background color,
  * but doesn't update the screen yet
@@ -1460,8 +1467,7 @@ avt_clear_screen (void)
     }
 
   // undefine textfield / viewport
-  avt.textfield.x = avt.textfield.y = avt.textfield.w = avt.textfield.h = -1;
-  avt.viewport = avt.textfield;
+  avt_no_textfield ();
   avt.avatar_visible = false;
 }
 
@@ -5286,10 +5292,6 @@ avt_move_in (void)
   // (not only the window!)
   avt_clear_screen ();
 
-  // undefine textfield
-  avt.textfield.x = avt.textfield.y = avt.textfield.w = avt.textfield.h = -1;
-  avt.viewport = avt.textfield;
-
   if (avt.avatar_image)
     {
       SDL_Rect dst;
@@ -5914,9 +5916,8 @@ avt_show_image (SDL_Surface * image)
   avt_free_screen ();
 
   // set informational variables
+  avt_no_textfield ();
   avt.avatar_visible = false;
-  avt.textfield.x = avt.textfield.y = avt.textfield.w = avt.textfield.h = -1;
-  avt.viewport = avt.textfield;
 
   // center image on screen
   dst.x = (screen->w / 2) - (image->w / 2);
@@ -7062,7 +7063,7 @@ avt_credits (const wchar_t * text, bool centered)
   avt.ext_mousehandler = NULL;
 
   // needed to handle resizing correctly
-  avt.textfield.x = avt.textfield.y = avt.textfield.w = avt.textfield.h = -1;
+  avt_no_textfield ();
   avt.avatar_visible = false;
   avt.hold_updates = false;
 
