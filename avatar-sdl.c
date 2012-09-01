@@ -257,78 +257,89 @@ typedef struct
 } gimp_img_t;
 #endif
 
-// for an external keyboard/mouse handlers
-static avt_keyhandler avt_ext_keyhandler = NULL;
-static avt_mousehandler avt_ext_mousehandler = NULL;
-
-static SDL_Surface *screen, *avatar_image, *avt_character;
-static SDL_Surface *avt_text_cursor, *avt_cursor_character;
-static SDL_Surface *circle, *pointer;
+static SDL_Surface *screen;
+static SDL_Surface *circle;
+static SDL_Surface *raw_image;
 static SDL_Cursor *mpointer;
-static wchar_t *avt_name;
-static int fontwidth, fontheight, fontunderline;
-static uint32_t background_color;
-static uint32_t text_background_color;
-static bool newline_mode;	// when off, you need an extra CR
-static bool underlined, bold, inverse;	// text underlined, bold?
-static bool auto_margin;	// automatic new lines?
-static uint32_t screenflags;	// flags for the screen
-static int avt_mode;		// whether fullscreen or window or ...
-static int avt_avatar_mode;
 static SDL_Rect window;		// if screen is in fact larger
 static SDL_Rect windowmode_size;	// size of the whole window (screen)
-static bool avt_visible;	// avatar visible?
-static bool text_cursor_visible;	// shall the text cursor be visible?
-static bool text_cursor_actually_visible;	// is it actually visible?
-static bool reserve_single_keys;	// reserve single keys?
-static bool markup;		// markup-syntax activated?
-static int scroll_mode = 1;
-static SDL_Rect textfield;
-static SDL_Rect viewport;	// sub-window in textfield
-static bool avt_tab_stops[AVT_LINELENGTH];
-static char avt_encoding[100];
-static int bitmap_color;	// color for bitmaps
-static SDL_Surface *raw_image;
-
-
-// origin mode
-// Home: textfield (false) or viewport (true)
-// avt_initialize sets it to true for backwards compatibility
-static bool origin_mode;
-static int textdir_rtl = AVT_LEFT_TO_RIGHT;
-
-// beginning of line - depending on text direction
-static int linestart;
-static int balloonheight, balloonmaxheight, balloonwidth;
-
-// delay values for printing text and flipping the page
-static int text_delay = 0;	// AVT_DEFAULT_TEXT_DELAY
-static int flip_page_delay = AVT_DEFAULT_FLIP_PAGE_DELAY;
-
-// holding updates back?
-static bool hold_updates;
-
-// color independent from the screen mode
-
-// floral white
-static SDL_Color ballooncolor_RGB = { 255, 250, 240, 0 };
-
-static int backgroundcolornr = DEFAULT_COLOR;
-
-// color for cursor and menu-bar
-static SDL_Color cursor_color = { 0xF2, 0x89, 0x19, 0 };
+static uint32_t screenflags;	// flags for the screen
+static int fontwidth, fontheight, fontunderline;
 
 // conversion descriptors for text input and output
 static avt_iconv_t output_cd = ICONV_UNINITIALIZED;
 static avt_iconv_t input_cd = ICONV_UNINITIALIZED;
+
 
 struct pos
 {
   int x, y;
 };
 
-static struct pos cursor, saved_position;
+struct avt_settings
+{
+  SDL_Surface *avatar_image, *character;
+  SDL_Surface *text_cursor, *cursor_character;
+  SDL_Surface *pointer;
+  wchar_t *name;
+  uint32_t background_color;
+  uint32_t text_background_color;
+  bool newline_mode;		// when off, you need an extra CR
+  bool underlined, bold, inverse;	// text underlined, bold?
+  bool auto_margin;		// automatic new lines?
+  int mode;			// whether fullscreen or window or ...
+  int avatar_mode;
+  bool avatar_visible;		// avatar visible?
+  bool text_cursor_visible;	// shall the text cursor be visible?
+  bool text_cursor_actually_visible;	// is it actually visible?
+  bool reserve_single_keys;	// reserve single keys?
+  bool markup;			// markup-syntax activated?
+  int scroll_mode;
+  SDL_Rect textfield;
+  SDL_Rect viewport;		// sub-window in textfield
+  bool tab_stops[AVT_LINELENGTH];
+  char encoding[100];
+  int bitmap_color;		// color for bitmaps
 
+  // origin mode
+  // Home: textfield (false) or viewport (true)
+  // avt_initialize sets it to true for backwards compatibility
+  bool origin_mode;
+  int textdir_rtl;
+
+  // beginning of line - depending on text direction
+  int linestart;
+  int balloonheight, balloonmaxheight, balloonwidth;
+
+  // delay values for printing text and flipping the page
+  int text_delay;
+  int flip_page_delay;
+
+  // holding updates back?
+  bool hold_updates;
+
+  // color independent from the screen mode
+
+  SDL_Color ballooncolor_RGB;
+  int backgroundcolornr;
+
+  // color for cursor and menu-bar
+  SDL_Color cursor_color;
+
+  struct pos cursor, saved_position;
+
+  // for an external keyboard/mouse handlers
+  avt_keyhandler ext_keyhandler;
+  avt_mousehandler ext_mousehandler;
+};
+
+
+static struct avt_settings avt = {
+  .backgroundcolornr = DEFAULT_COLOR,
+  .ballooncolor_RGB = {0xFF, 0xFA, 0xF0, 0},
+  .cursor_color = {0xF2, 0x89, 0x19, 0},
+  .textdir_rtl = AVT_LEFT_TO_RIGHT
+};
 
 #if defined(__GNUC__) and not defined(__WIN32__)
 #  define AVT_HIDDEN __attribute__((__visibility__("hidden")))
@@ -378,19 +389,19 @@ calculate_balloonmaxheight (void)
 {
   int avatar_height;
 
-  avatar_height = avatar_image ? avatar_image->h + AVATAR_MARGIN : 0;
+  avatar_height = avt.avatar_image ? avt.avatar_image->h + AVATAR_MARGIN : 0;
 
-  balloonmaxheight = (window.h - avatar_height - (2 * TOPMARGIN)
-		      - (2 * BALLOON_INNER_MARGIN)) / LINEHEIGHT;
+  avt.balloonmaxheight = (window.h - avatar_height - (2 * TOPMARGIN)
+			  - (2 * BALLOON_INNER_MARGIN)) / LINEHEIGHT;
 
   // check, whether image is too high
   // at least 10 lines
-  if (balloonmaxheight < 10)
+  if (avt.balloonmaxheight < 10)
     {
       SDL_SetError ("Avatar image too large");
       _avt_STATUS = AVT_ERROR;
-      SDL_FreeSurface (avatar_image);
-      avatar_image = NULL;
+      SDL_FreeSurface (avt.avatar_image);
+      avt.avatar_image = NULL;
     }
 
   return _avt_STATUS;
@@ -439,7 +450,7 @@ avt_update_rect (SDL_Rect rect)
 static inline void
 avt_update_trect (SDL_Rect rect)
 {
-  if (not hold_updates)
+  if (not avt.hold_updates)
     SDL_UpdateRect (screen, rect.x, rect.y, rect.w, rect.h);
 }
 
@@ -1202,7 +1213,7 @@ avt_load_image_RW (SDL_RWops * src, int freesrc)
 	img = avt_load_image_xpm_RW (src, 0);
 
       if (img == NULL)
-	img = avt_load_image_xbm_RW (src, 0, bitmap_color);
+	img = avt_load_image_xbm_RW (src, 0, avt.bitmap_color);
 
       if (freesrc)
 	SDL_RWclose (src);
@@ -1390,40 +1401,40 @@ avt_show_text_cursor (bool on)
 {
   SDL_Rect dst;
 
-  if (on != text_cursor_actually_visible and not hold_updates)
+  if (on != avt.text_cursor_actually_visible and not avt.hold_updates)
     {
-      dst.x = cursor.x;
-      dst.y = cursor.y;
+      dst.x = avt.cursor.x;
+      dst.y = avt.cursor.y;
       dst.w = fontwidth;
       dst.h = fontheight;
 
       if (on)
 	{
 	  // save character under cursor
-	  SDL_BlitSurface (screen, &dst, avt_cursor_character, NULL);
+	  SDL_BlitSurface (screen, &dst, avt.cursor_character, NULL);
 
 	  // show text-cursor
-	  SDL_BlitSurface (avt_text_cursor, NULL, screen, &dst);
+	  SDL_BlitSurface (avt.text_cursor, NULL, screen, &dst);
 	  avt_update_trect (dst);
 	}
       else
 	{
 	  // restore saved character
-	  SDL_BlitSurface (avt_cursor_character, NULL, screen, &dst);
+	  SDL_BlitSurface (avt.cursor_character, NULL, screen, &dst);
 	  avt_update_trect (dst);
 	}
 
-      text_cursor_actually_visible = on;
+      avt.text_cursor_actually_visible = on;
     }
 }
 
 extern void
 avt_activate_cursor (bool on)
 {
-  text_cursor_visible = on;
+  avt.text_cursor_visible = on;
 
-  if (screen and textfield.x >= 0)
-    avt_show_text_cursor (text_cursor_visible);
+  if (screen and avt.textfield.x >= 0)
+    avt_show_text_cursor (avt.text_cursor_visible);
 }
 
 /*
@@ -1436,7 +1447,7 @@ avt_free_screen (void)
   // switch clipping off
   SDL_SetClipRect (screen, NULL);
   // fill the whole screen with background color
-  SDL_FillRect (screen, NULL, background_color);
+  SDL_FillRect (screen, NULL, avt.background_color);
 }
 
 extern void
@@ -1449,9 +1460,9 @@ avt_clear_screen (void)
     }
 
   // undefine textfield / viewport
-  textfield.x = textfield.y = textfield.w = textfield.h = -1;
-  viewport = textfield;
-  avt_visible = false;
+  avt.textfield.x = avt.textfield.y = avt.textfield.w = avt.textfield.h = -1;
+  avt.viewport = avt.textfield;
+  avt.avatar_visible = false;
 }
 
 #define NAME_PADDING 3
@@ -1463,11 +1474,11 @@ avt_show_name (void)
   SDL_Color old_colors[2], colors[2];
   wchar_t *p;
 
-  if (screen and avatar_image and avt_name)
+  if (screen and avt.avatar_image and avt.name)
     {
       // save old character colors
-      old_colors[0] = avt_character->format->palette->colors[0];
-      old_colors[1] = avt_character->format->palette->colors[1];
+      old_colors[0] = avt.character->format->palette->colors[0];
+      old_colors[1] = avt.character->format->palette->colors[1];
 
       // tan background
       colors[0].r = 210;
@@ -1477,22 +1488,23 @@ avt_show_name (void)
       // black foreground
       colors[1].r = colors[1].g = colors[1].b = 0;
 
-      SDL_SetColors (avt_character, colors, 0, 2);
+      SDL_SetColors (avt.character, colors, 0, 2);
 
-      if (AVT_FOOTER == avt_avatar_mode or AVT_HEADER == avt_avatar_mode)
+      if (AVT_FOOTER == avt.avatar_mode or AVT_HEADER == avt.avatar_mode)
 	dst.x =
-	  ((window.x + window.w) / 2) + (avatar_image->w / 2)
+	  ((window.x + window.w) / 2) + (avt.avatar_image->w / 2)
 	  + BUTTON_DISTANCE;
       else			// left
-	dst.x = window.x + AVATAR_MARGIN + avatar_image->w + BUTTON_DISTANCE;
+	dst.x =
+	  window.x + AVATAR_MARGIN + avt.avatar_image->w + BUTTON_DISTANCE;
 
-      if (AVT_HEADER == avt_avatar_mode)
-	dst.y = window.y + TOPMARGIN + avatar_image->h
+      if (AVT_HEADER == avt.avatar_mode)
+	dst.y = window.y + TOPMARGIN + avt.avatar_image->h
 	  - fontheight - 2 * NAME_PADDING;
       else
 	dst.y = window.y + window.h - AVATAR_MARGIN
 	  - fontheight - 2 * NAME_PADDING;
-      dst.w = (avt_strwidth (avt_name) * fontwidth) + 2 * NAME_PADDING;
+      dst.w = (avt_strwidth (avt.name) * fontwidth) + 2 * NAME_PADDING;
       dst.h = fontheight + 2 * NAME_PADDING;
 
       // draw sign
@@ -1501,18 +1513,18 @@ avt_show_name (void)
 				colors[0].r, colors[0].g, colors[0].b));
 
       // show name
-      cursor.x = dst.x + NAME_PADDING;
-      cursor.y = dst.y + NAME_PADDING;
+      avt.cursor.x = dst.x + NAME_PADDING;
+      avt.cursor.y = dst.y + NAME_PADDING;
 
-      p = avt_name;
+      p = avt.name;
       while (*p)
 	{
 	  avt_drawchar ((avt_char) * p++, screen);
-	  cursor.x += fontwidth;
+	  avt.cursor.x += fontwidth;
 	}
 
       // restore old character colors
-      SDL_SetColors (avt_character, old_colors, 0, 2);
+      SDL_SetColors (avt.character, old_colors, 0, 2);
     }
 }
 
@@ -1535,24 +1547,24 @@ avt_draw_avatar (void)
       SDL_SetClipRect (screen, &window);
       avt_avatar_window ();
 
-      if (avatar_image)
+      if (avt.avatar_image)
 	{
-	  if (AVT_FOOTER == avt_avatar_mode or AVT_HEADER == avt_avatar_mode)
-	    dst.x = ((window.x + window.w) / 2) - (avatar_image->w / 2);
+	  if (AVT_FOOTER == avt.avatar_mode or AVT_HEADER == avt.avatar_mode)
+	    dst.x = ((window.x + window.w) / 2) - (avt.avatar_image->w / 2);
 	  else			// left
 	    dst.x = window.x + AVATAR_MARGIN;
 
-	  if (AVT_HEADER == avt_avatar_mode)
+	  if (AVT_HEADER == avt.avatar_mode)
 	    dst.y = window.y + TOPMARGIN;
 	  else			// bottom
-	    dst.y = window.y + window.h - avatar_image->h - AVATAR_MARGIN;
+	    dst.y = window.y + window.h - avt.avatar_image->h - AVATAR_MARGIN;
 
-	  dst.w = avatar_image->w;
-	  dst.h = avatar_image->h;
-	  SDL_BlitSurface (avatar_image, NULL, screen, &dst);
+	  dst.w = avt.avatar_image->w;
+	  dst.h = avt.avatar_image->h;
+	  SDL_BlitSurface (avt.avatar_image, NULL, screen, &dst);
 	}
 
-      if (avt_name)
+      if (avt.name)
 	avt_show_name ();
     }
 }
@@ -1566,9 +1578,10 @@ avt_show_avatar (void)
       avt_update_all ();
 
       // undefine textfield
-      textfield.x = textfield.y = textfield.w = textfield.h = -1;
-      viewport = textfield;
-      avt_visible = true;
+      avt.textfield.x = avt.textfield.y = avt.textfield.w = avt.textfield.h =
+	-1;
+      avt.viewport = avt.textfield;
+      avt.avatar_visible = true;
     }
 }
 
@@ -1578,10 +1591,10 @@ avt_draw_balloon2 (int offset, uint32_t ballooncolor)
   SDL_Rect shape;
 
   // full size
-  shape.x = textfield.x - BALLOON_INNER_MARGIN + offset;
-  shape.w = textfield.w + (2 * BALLOON_INNER_MARGIN);
-  shape.y = textfield.y - BALLOON_INNER_MARGIN + offset;
-  shape.h = textfield.h + (2 * BALLOON_INNER_MARGIN);
+  shape.x = avt.textfield.x - BALLOON_INNER_MARGIN + offset;
+  shape.w = avt.textfield.w + (2 * BALLOON_INNER_MARGIN);
+  shape.y = avt.textfield.y - BALLOON_INNER_MARGIN + offset;
+  shape.h = avt.textfield.h + (2 * BALLOON_INNER_MARGIN);
 
   // horizontal shape
   {
@@ -1643,33 +1656,33 @@ avt_draw_balloon2 (int offset, uint32_t ballooncolor)
 
   // draw balloonpointer
   // only if there is an avatar image
-  if (avatar_image
-      and AVT_FOOTER != avt_avatar_mode and AVT_HEADER != avt_avatar_mode)
+  if (avt.avatar_image
+      and AVT_FOOTER != avt.avatar_mode and AVT_HEADER != avt.avatar_mode)
     {
       SDL_Rect pointer_shape, pointer_pos;
 
       pointer_shape.x = pointer_shape.y = 0;
-      pointer_shape.w = pointer->w;
-      pointer_shape.h = pointer->h;
+      pointer_shape.w = avt.pointer->w;
+      pointer_shape.h = avt.pointer->h;
 
       // if the balloonpointer is too large, cut it
-      if (pointer_shape.h > (avatar_image->h / 2))
+      if (pointer_shape.h > (avt.avatar_image->h / 2))
 	{
-	  pointer_shape.y = pointer_shape.h - (avatar_image->h / 2);
+	  pointer_shape.y = pointer_shape.h - (avt.avatar_image->h / 2);
 	  pointer_shape.h -= pointer_shape.y;
 	}
 
       pointer_pos.x =
-	window.x + avatar_image->w + (2 * AVATAR_MARGIN) +
+	window.x + avt.avatar_image->w + (2 * AVATAR_MARGIN) +
 	BALLOONPOINTER_OFFSET + offset;
       pointer_pos.y =
-	window.y + (balloonmaxheight * LINEHEIGHT) +
+	window.y + (avt.balloonmaxheight * LINEHEIGHT) +
 	(2 * BALLOON_INNER_MARGIN) + TOPMARGIN + offset;
 
       // only draw the balloonpointer, when it fits
-      if (pointer_pos.x + pointer->w + BALLOONPOINTER_OFFSET
+      if (pointer_pos.x + avt.pointer->w + BALLOONPOINTER_OFFSET
 	  + BALLOON_INNER_MARGIN < window.x + window.w)
-	SDL_BlitSurface (pointer, &pointer_shape, screen, &pointer_pos);
+	SDL_BlitSurface (avt.pointer, &pointer_shape, screen, &pointer_pos);
     }
 }
 
@@ -1679,79 +1692,82 @@ avt_draw_balloon (void)
   SDL_Color shadow_color;
   int16_t centered_y;
 
-  if (not avt_visible)
+  if (not avt.avatar_visible)
     avt_draw_avatar ();
 
   SDL_SetClipRect (screen, &window);
 
-  textfield.w = (balloonwidth * fontwidth);
-  textfield.h = (balloonheight * fontheight);
-  centered_y = window.y + (window.h / 2) - (textfield.h / 2);
+  avt.textfield.w = (avt.balloonwidth * fontwidth);
+  avt.textfield.h = (avt.balloonheight * fontheight);
+  centered_y = window.y + (window.h / 2) - (avt.textfield.h / 2);
 
-  if (not avatar_image)
-    textfield.y = centered_y;	// middle of the window
+  if (not avt.avatar_image)
+    avt.textfield.y = centered_y;	// middle of the window
   else
     {
       // align with balloon
-      if (AVT_HEADER == avt_avatar_mode)
-	textfield.y = window.y + avatar_image->h + AVATAR_MARGIN
+      if (AVT_HEADER == avt.avatar_mode)
+	avt.textfield.y = window.y + avt.avatar_image->h + AVATAR_MARGIN
 	  + TOPMARGIN + BALLOON_INNER_MARGIN;
       else
-	textfield.y =
-	  window.y + ((balloonmaxheight - balloonheight) * LINEHEIGHT)
+	avt.textfield.y =
+	  window.y + ((avt.balloonmaxheight - avt.balloonheight) * LINEHEIGHT)
 	  + TOPMARGIN + BALLOON_INNER_MARGIN;
 
       // in separate or heading mode it might also be better to center it
-      if ((AVT_FOOTER == avt_avatar_mode and textfield.y > centered_y)
-	  or (AVT_HEADER == avt_avatar_mode and textfield.y < centered_y))
-	textfield.y = centered_y;
+      if ((AVT_FOOTER == avt.avatar_mode and avt.textfield.y > centered_y)
+	  or (AVT_HEADER == avt.avatar_mode and avt.textfield.y < centered_y))
+	avt.textfield.y = centered_y;
     }
 
   // horizontally centered as default
-  textfield.x = window.x + (window.w / 2) - (balloonwidth * fontwidth / 2);
+  avt.textfield.x =
+    window.x + (window.w / 2) - (avt.balloonwidth * fontwidth / 2);
 
   // align horizontally with balloonpointer
-  if (avatar_image
-      and AVT_FOOTER != avt_avatar_mode and AVT_HEADER != avt_avatar_mode)
+  if (avt.avatar_image
+      and AVT_FOOTER != avt.avatar_mode and AVT_HEADER != avt.avatar_mode)
     {
       // left border not aligned with balloon pointer?
-      if (textfield.x >
-	  window.x + avatar_image->w + (2 * AVATAR_MARGIN) +
+      if (avt.textfield.x >
+	  window.x + avt.avatar_image->w + (2 * AVATAR_MARGIN) +
 	  BALLOONPOINTER_OFFSET)
-	textfield.x =
-	  window.x + avatar_image->w + (2 * AVATAR_MARGIN) +
+	avt.textfield.x =
+	  window.x + avt.avatar_image->w + (2 * AVATAR_MARGIN) +
 	  BALLOONPOINTER_OFFSET;
 
       // right border not aligned with balloon pointer?
-      if (textfield.x + textfield.w <
-	  window.x + avatar_image->w + pointer->w
+      if (avt.textfield.x + avt.textfield.w <
+	  window.x + avt.avatar_image->w + avt.pointer->w
 	  + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET)
 	{
-	  textfield.x =
-	    window.x + avatar_image->w - textfield.w + pointer->w
+	  avt.textfield.x =
+	    window.x + avt.avatar_image->w - avt.textfield.w + avt.pointer->w
 	    + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET;
 
 	  // align with right window-border
-	  if (textfield.x > window.x + window.w - (balloonwidth * fontwidth)
-	      - (2 * BALLOON_INNER_MARGIN))
-	    textfield.x = window.x + window.w - (balloonwidth * fontwidth)
-	      - (2 * BALLOON_INNER_MARGIN);
+	  if (avt.textfield.x >
+	      window.x + window.w - (avt.balloonwidth * fontwidth) -
+	      (2 * BALLOON_INNER_MARGIN))
+	    avt.textfield.x =
+	      window.x + window.w - (avt.balloonwidth * fontwidth) -
+	      (2 * BALLOON_INNER_MARGIN);
 	}
     }
 
-  viewport = textfield;
+  avt.viewport = avt.textfield;
 
   // shadow color is a little darker than the background color
-  shadow_color.r = avt_red (backgroundcolornr);
-  shadow_color.g = avt_green (backgroundcolornr);
-  shadow_color.b = avt_blue (backgroundcolornr);
+  shadow_color.r = avt_red (avt.backgroundcolornr);
+  shadow_color.g = avt_green (avt.backgroundcolornr);
+  shadow_color.b = avt_blue (avt.backgroundcolornr);
 
   shadow_color.r = (shadow_color.r > 0x20) ? shadow_color.r - 0x20 : 0;
   shadow_color.g = (shadow_color.g > 0x20) ? shadow_color.g - 0x20 : 0;
   shadow_color.b = (shadow_color.b > 0x20) ? shadow_color.b - 0x20 : 0;
 
   SDL_SetColors (circle, &shadow_color, 1, 1);
-  SDL_SetColors (pointer, &shadow_color, 1, 1);
+  SDL_SetColors (avt.pointer, &shadow_color, 1, 1);
 
   // first draw shadow
   avt_draw_balloon2 (SHADOWOFFSET,
@@ -1759,28 +1775,30 @@ avt_draw_balloon (void)
 				 shadow_color.g, shadow_color.b));
 
   // real balloon
-  SDL_SetColors (circle, &ballooncolor_RGB, 1, 1);
-  SDL_SetColors (pointer, &ballooncolor_RGB, 1, 1);
+  SDL_SetColors (circle, &avt.ballooncolor_RGB, 1, 1);
+  SDL_SetColors (avt.pointer, &avt.ballooncolor_RGB, 1, 1);
 
   avt_draw_balloon2 (0, SDL_MapRGB (screen->format,
-				    ballooncolor_RGB.r,
-				    ballooncolor_RGB.g, ballooncolor_RGB.b));
+				    avt.ballooncolor_RGB.r,
+				    avt.ballooncolor_RGB.g,
+				    avt.ballooncolor_RGB.b));
 
-  linestart =
-    (textdir_rtl) ? viewport.x + viewport.w - fontwidth : viewport.x;
+  avt.linestart =
+    (avt.textdir_rtl) ? avt.viewport.x + avt.viewport.w -
+    fontwidth : avt.viewport.x;
 
-  avt_visible = true;
+  avt.avatar_visible = true;
 
   // cursor at top 
-  cursor.x = linestart;
-  cursor.y = viewport.y;
+  avt.cursor.x = avt.linestart;
+  avt.cursor.y = avt.viewport.y;
 
   // reset saved position
-  saved_position = cursor;
+  avt.saved_position = avt.cursor;
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     {
-      text_cursor_actually_visible = false;
+      avt.text_cursor_actually_visible = false;
       avt_show_text_cursor (true);
     }
 
@@ -1792,7 +1810,7 @@ avt_draw_balloon (void)
    * only allow drawings inside this area from now on
    * (only for blitting)
    */
-  SDL_SetClipRect (screen, &viewport);
+  SDL_SetClipRect (screen, &avt.viewport);
 }
 
 extern void
@@ -1800,26 +1818,27 @@ avt_text_direction (int direction)
 {
   SDL_Rect area;
 
-  textdir_rtl = direction;
+  avt.textdir_rtl = direction;
 
   /*
    * if there is already a ballon,
    * recalculate the linestart and put the cursor in the first position
    */
-  if (screen and textfield.x >= 0)
+  if (screen and avt.textfield.x >= 0)
     {
-      if (text_cursor_visible)
+      if (avt.text_cursor_visible)
 	avt_show_text_cursor (false);
 
-      if (origin_mode)
-	area = viewport;
+      if (avt.origin_mode)
+	area = avt.viewport;
       else
-	area = textfield;
+	area = avt.textfield;
 
-      linestart = (textdir_rtl) ? area.x + area.w - fontwidth : area.x;
-      cursor.x = linestart;
+      avt.linestart =
+	(avt.textdir_rtl) ? area.x + area.w - fontwidth : area.x;
+      avt.cursor.x = avt.linestart;
 
-      if (text_cursor_visible)
+      if (avt.text_cursor_visible)
 	avt_show_text_cursor (true);
     }
 }
@@ -1827,17 +1846,17 @@ avt_text_direction (int direction)
 extern void
 avt_set_balloon_width (int width)
 {
-  if (width != balloonwidth)
+  if (width != avt.balloonwidth)
     {
       if (width < AVT_LINELENGTH and width > 0)
-	balloonwidth = (width > 7) ? width : 7;
+	avt.balloonwidth = (width > 7) ? width : 7;
       else
-	balloonwidth = AVT_LINELENGTH;
+	avt.balloonwidth = AVT_LINELENGTH;
 
       // if balloon is visible, redraw it
-      if (textfield.x >= 0)
+      if (avt.textfield.x >= 0)
 	{
-	  avt_visible = false;	// force to redraw everything
+	  avt.avatar_visible = false;	// force to redraw everything
 	  avt_draw_balloon ();
 	}
     }
@@ -1846,17 +1865,17 @@ avt_set_balloon_width (int width)
 extern void
 avt_set_balloon_height (int height)
 {
-  if (height != balloonheight)
+  if (height != avt.balloonheight)
     {
-      if (height > 0 and height < balloonmaxheight)
-	balloonheight = height;
+      if (height > 0 and height < avt.balloonmaxheight)
+	avt.balloonheight = height;
       else
-	balloonheight = balloonmaxheight;
+	avt.balloonheight = avt.balloonmaxheight;
 
       // if balloon is visible, redraw it
-      if (textfield.x >= 0)
+      if (avt.textfield.x >= 0)
 	{
-	  avt_visible = false;	// force to redraw everything
+	  avt.avatar_visible = false;	// force to redraw everything
 	  avt_draw_balloon ();
 	}
     }
@@ -1865,22 +1884,22 @@ avt_set_balloon_height (int height)
 extern void
 avt_set_balloon_size (int height, int width)
 {
-  if (height != balloonheight or width != balloonwidth)
+  if (height != avt.balloonheight or width != avt.balloonwidth)
     {
-      if (height > 0 and height < balloonmaxheight)
-	balloonheight = height;
+      if (height > 0 and height < avt.balloonmaxheight)
+	avt.balloonheight = height;
       else
-	balloonheight = balloonmaxheight;
+	avt.balloonheight = avt.balloonmaxheight;
 
       if (width < AVT_LINELENGTH and width > 0)
-	balloonwidth = (width > 7) ? width : 7;
+	avt.balloonwidth = (width > 7) ? width : 7;
       else
-	balloonwidth = AVT_LINELENGTH;
+	avt.balloonwidth = AVT_LINELENGTH;
 
       // if balloon is visible, redraw it
-      if (textfield.x >= 0)
+      if (avt.textfield.x >= 0)
 	{
-	  avt_visible = false;	// force to redraw everything
+	  avt.avatar_visible = false;	// force to redraw everything
 	  avt_draw_balloon ();
 	}
     }
@@ -1891,46 +1910,46 @@ avt_set_avatar_mode (int mode)
 {
   if (not screen)
     {
-      avt_avatar_mode = mode;
+      avt.avatar_mode = mode;
       return;
     }
 
-  if (mode != avt_avatar_mode)
+  if (mode != avt.avatar_mode)
     {
       switch (mode)
 	{
 	case AVT_SAY:
-	  SDL_FreeSurface (pointer);
-	  pointer =
+	  SDL_FreeSurface (avt.pointer);
+	  avt.pointer =
 	    avt_load_image_xbm (AVT_XBM_INFO (balloonpointer),
-				avt_rgb (ballooncolor_RGB.r,
-					 ballooncolor_RGB.g,
-					 ballooncolor_RGB.b));
-	  avt_avatar_mode = AVT_SAY;
+				avt_rgb (avt.ballooncolor_RGB.r,
+					 avt.ballooncolor_RGB.g,
+					 avt.ballooncolor_RGB.b));
+	  avt.avatar_mode = AVT_SAY;
 	  break;
 
 	case AVT_THINK:
-	  SDL_FreeSurface (pointer);
-	  pointer =
+	  SDL_FreeSurface (avt.pointer);
+	  avt.pointer =
 	    avt_load_image_xbm (AVT_XBM_INFO (thinkpointer),
-				avt_rgb (ballooncolor_RGB.r,
-					 ballooncolor_RGB.g,
-					 ballooncolor_RGB.b));
-	  avt_avatar_mode = AVT_THINK;
+				avt_rgb (avt.ballooncolor_RGB.r,
+					 avt.ballooncolor_RGB.g,
+					 avt.ballooncolor_RGB.b));
+	  avt.avatar_mode = AVT_THINK;
 	  break;
 
 	case AVT_FOOTER:
-	  avt_avatar_mode = AVT_FOOTER;
+	  avt.avatar_mode = AVT_FOOTER;
 	  break;
 
 	case AVT_HEADER:
-	  avt_avatar_mode = AVT_HEADER;
+	  avt.avatar_mode = AVT_HEADER;
 	  break;
 	}
     }
 
   // if balloon is visible, remove it
-  if (textfield.x >= 0)
+  if (avt.textfield.x >= 0)
     avt_show_avatar ();
 }
 
@@ -1973,20 +1992,21 @@ avt_resize (int w, int h)
   SDL_FreeSurface (oldwindowimage);
 
   // recalculate textfield & viewport positions
-  if (textfield.x >= 0)
+  if (avt.textfield.x >= 0)
     {
-      textfield.x = textfield.x - oldwindow.x + window.x;
-      textfield.y = textfield.y - oldwindow.y + window.y;
+      avt.textfield.x = avt.textfield.x - oldwindow.x + window.x;
+      avt.textfield.y = avt.textfield.y - oldwindow.y + window.y;
 
-      viewport.x = viewport.x - oldwindow.x + window.x;
-      viewport.y = viewport.y - oldwindow.y + window.y;
+      avt.viewport.x = avt.viewport.x - oldwindow.x + window.x;
+      avt.viewport.y = avt.viewport.y - oldwindow.y + window.y;
 
-      linestart =
-	(textdir_rtl) ? viewport.x + viewport.w - fontwidth : viewport.x;
+      avt.linestart =
+	(avt.textdir_rtl) ? avt.viewport.x + avt.viewport.w -
+	fontwidth : avt.viewport.x;
 
-      cursor.x = cursor.x - oldwindow.x + window.x;
-      cursor.y = cursor.y - oldwindow.y + window.y;
-      SDL_SetClipRect (screen, &viewport);
+      avt.cursor.x = avt.cursor.x - oldwindow.x + window.x;
+      avt.cursor.y = avt.cursor.y - oldwindow.y + window.y;
+      SDL_SetClipRect (screen, &avt.viewport);
     }
 
   // set windowmode_size
@@ -2054,7 +2074,7 @@ avt_flash (void)
   SDL_Delay (150);
 
   // fill the whole screen with background color
-  SDL_FillRect (screen, NULL, background_color);
+  SDL_FillRect (screen, NULL, avt.background_color);
   // restore image
   SDL_SetClipRect (screen, &window);
   SDL_BlitSurface (oldwindowimage, NULL, screen, &window);
@@ -2064,14 +2084,14 @@ avt_flash (void)
   avt_update_all ();
 
   // restore the clipping
-  if (textfield.x >= 0)
-    SDL_SetClipRect (screen, &viewport);
+  if (avt.textfield.x >= 0)
+    SDL_SetClipRect (screen, &avt.viewport);
 }
 
 extern void
 avt_toggle_fullscreen (void)
 {
-  if (avt_mode != AVT_FULLSCREENNOSWITCH)
+  if (avt.mode != AVT_FULLSCREENNOSWITCH)
     {
       // toggle bit for fullscreenmode
       screenflags = screenflags xor SDL_FULLSCREEN;
@@ -2080,13 +2100,13 @@ avt_toggle_fullscreen (void)
 	{
 	  screenflags = screenflags bitor SDL_NOFRAME;
 	  avt_resize (window.w, window.h);
-	  avt_mode = AVT_FULLSCREEN;
+	  avt.mode = AVT_FULLSCREEN;
 	}
       else
 	{
 	  screenflags = screenflags bitand compl SDL_NOFRAME;
 	  avt_resize (windowmode_size.w, windowmode_size.h);
-	  avt_mode = AVT_WINDOW;
+	  avt.mode = AVT_WINDOW;
 	}
     }
 }
@@ -2095,9 +2115,9 @@ avt_toggle_fullscreen (void)
 extern void
 avt_switch_mode (int mode)
 {
-  if (screen and mode != avt_mode)
+  if (screen and mode != avt.mode)
     {
-      avt_mode = mode;
+      avt.mode = mode;
       switch (mode)
 	{
 	case AVT_FULLSCREENNOSWITCH:
@@ -2125,7 +2145,7 @@ avt_switch_mode (int mode)
 extern int
 avt_get_mode (void)
 {
-  return avt_mode;
+  return avt.mode;
 }
 
 static void
@@ -2143,20 +2163,20 @@ avt_analyze_event (SDL_Event * event)
 
     case SDL_MOUSEBUTTONUP:
     case SDL_MOUSEBUTTONDOWN:
-      if (avt_ext_mousehandler)
+      if (avt.ext_mousehandler)
 	{
 	  int x, y;
 
-	  if (textfield.x >= 0)
+	  if (avt.textfield.x >= 0)
 	    {
 	      // if there is a textfield, use the character position
-	      x = (event->button.x - textfield.x) / fontwidth + 1;
-	      y = (event->button.y - textfield.y) / LINEHEIGHT + 1;
+	      x = (event->button.x - avt.textfield.x) / fontwidth + 1;
+	      y = (event->button.y - avt.textfield.y) / LINEHEIGHT + 1;
 
 	      // check if x and y are valid
 	      if (x >= 1 and x <= AVT_LINELENGTH
-		  and y >= 1 and y <= (textfield.h / LINEHEIGHT))
-		avt_ext_mousehandler (event->button.button,
+		  and y >= 1 and y <= (avt.textfield.h / LINEHEIGHT))
+		avt.ext_mousehandler (event->button.button,
 				      (event->button.state == SDL_PRESSED),
 				      x, y);
 	    }
@@ -2165,7 +2185,7 @@ avt_analyze_event (SDL_Event * event)
 	      x = event->button.x - window.x;
 	      y = event->button.y - window.y;
 	      if (x >= 0 and x <= window.w and y >= 0 and y <= window.h)
-		avt_ext_mousehandler (event->button.button,
+		avt.ext_mousehandler (event->button.button,
 				      (event->button.state == SDL_PRESSED),
 				      x, y);
 	    }
@@ -2176,12 +2196,13 @@ avt_analyze_event (SDL_Event * event)
       if (event->key.keysym.sym == SDLK_PAUSE)
 	avt_pause ();
       else if (event->key.keysym.sym == SDLK_ESCAPE
-	       and not reserve_single_keys)
+	       and not avt.reserve_single_keys)
 	_avt_STATUS = AVT_QUIT;
       else if (event->key.keysym.sym == SDLK_q
 	       and (event->key.keysym.mod & KMOD_LALT))
 	_avt_STATUS = AVT_QUIT;
-      else if (event->key.keysym.sym == SDLK_F11 and not reserve_single_keys)
+      else if (event->key.keysym.sym ==
+	       SDLK_F11 and not avt.reserve_single_keys)
 	avt_toggle_fullscreen ();
       else if (event->key.keysym.sym == SDLK_RETURN
 	       and event->key.keysym.mod & KMOD_LALT)
@@ -2190,8 +2211,8 @@ avt_analyze_event (SDL_Event * event)
 	       and (event->key.keysym.mod & KMOD_CTRL)
 	       and (event->key.keysym.mod & KMOD_LALT))
 	avt_toggle_fullscreen ();
-      else if (avt_ext_keyhandler)
-	avt_ext_keyhandler (event->key.keysym.sym, event->key.keysym.mod,
+      else if (avt.ext_keyhandler)
+	avt.ext_keyhandler (event->key.keysym.sym, event->key.keysym.mod,
 			    event->key.keysym.unicode);
       break;
     }				// switch (event->type)
@@ -2329,12 +2350,12 @@ avt_ticks (void)
 extern int
 avt_where_x (void)
 {
-  if (screen and textfield.x >= 0)
+  if (screen and avt.textfield.x >= 0)
     {
-      if (origin_mode)
-	return ((cursor.x - viewport.x) / fontwidth) + 1;
+      if (avt.origin_mode)
+	return ((avt.cursor.x - avt.viewport.x) / fontwidth) + 1;
       else
-	return ((cursor.x - textfield.x) / fontwidth) + 1;
+	return ((avt.cursor.x - avt.textfield.x) / fontwidth) + 1;
     }
   else
     return -1;
@@ -2343,12 +2364,12 @@ avt_where_x (void)
 extern int
 avt_where_y (void)
 {
-  if (screen and textfield.x >= 0)
+  if (screen and avt.textfield.x >= 0)
     {
-      if (origin_mode)
-	return ((cursor.y - viewport.y) / LINEHEIGHT) + 1;
+      if (avt.origin_mode)
+	return ((avt.cursor.y - avt.viewport.y) / LINEHEIGHT) + 1;
       else
-	return ((cursor.y - textfield.y) / LINEHEIGHT) + 1;
+	return ((avt.cursor.y - avt.textfield.y) / LINEHEIGHT) + 1;
     }
   else
     return -1;
@@ -2357,10 +2378,10 @@ avt_where_y (void)
 extern bool
 avt_home_position (void)
 {
-  if (not screen or textfield.x < 0)
+  if (not screen or avt.textfield.x < 0)
     return true;		// about to be set to home position
   else
-    return (cursor.y == viewport.y and cursor.x == linestart);
+    return (avt.cursor.y == avt.viewport.y and avt.cursor.x == avt.linestart);
 }
 
 // this always means the full textfield
@@ -2368,7 +2389,7 @@ extern int
 avt_get_max_x (void)
 {
   if (screen)
-    return balloonwidth;
+    return avt.balloonwidth;
   else
     return -1;
 }
@@ -2378,7 +2399,7 @@ extern int
 avt_get_max_y (void)
 {
   if (screen)
-    return balloonheight;
+    return avt.balloonheight;
   else
     return -1;
 }
@@ -2388,26 +2409,26 @@ avt_move_x (int x)
 {
   SDL_Rect area;
 
-  if (screen and textfield.x >= 0)
+  if (screen and avt.textfield.x >= 0)
     {
       if (x < 1)
 	x = 1;
 
-      if (text_cursor_visible)
+      if (avt.text_cursor_visible)
 	avt_show_text_cursor (false);
 
-      if (origin_mode)
-	area = viewport;
+      if (avt.origin_mode)
+	area = avt.viewport;
       else
-	area = textfield;
+	area = avt.textfield;
 
-      cursor.x = (x - 1) * fontwidth + area.x;
+      avt.cursor.x = (x - 1) * fontwidth + area.x;
 
       // max-pos exeeded?
-      if (cursor.x > area.x + area.w - fontwidth)
-	cursor.x = area.x + area.w - fontwidth;
+      if (avt.cursor.x > area.x + area.w - fontwidth)
+	avt.cursor.x = area.x + area.w - fontwidth;
 
-      if (text_cursor_visible)
+      if (avt.text_cursor_visible)
 	avt_show_text_cursor (true);
     }
 }
@@ -2417,26 +2438,26 @@ avt_move_y (int y)
 {
   SDL_Rect area;
 
-  if (screen and textfield.x >= 0)
+  if (screen and avt.textfield.x >= 0)
     {
       if (y < 1)
 	y = 1;
 
-      if (text_cursor_visible)
+      if (avt.text_cursor_visible)
 	avt_show_text_cursor (false);
 
-      if (origin_mode)
-	area = viewport;
+      if (avt.origin_mode)
+	area = avt.viewport;
       else
-	area = textfield;
+	area = avt.textfield;
 
-      cursor.y = (y - 1) * LINEHEIGHT + area.y;
+      avt.cursor.y = (y - 1) * LINEHEIGHT + area.y;
 
       // max-pos exeeded?
-      if (cursor.y > area.y + area.h - LINEHEIGHT)
-	cursor.y = area.y + area.h - LINEHEIGHT;
+      if (avt.cursor.y > area.y + area.h - LINEHEIGHT)
+	avt.cursor.y = area.y + area.h - LINEHEIGHT;
 
-      if (text_cursor_visible)
+      if (avt.text_cursor_visible)
 	avt_show_text_cursor (true);
     }
 }
@@ -2446,7 +2467,7 @@ avt_move_xy (int x, int y)
 {
   SDL_Rect area;
 
-  if (screen and textfield.x >= 0)
+  if (screen and avt.textfield.x >= 0)
     {
       if (x < 1)
 	x = 1;
@@ -2454,25 +2475,25 @@ avt_move_xy (int x, int y)
       if (y < 1)
 	y = 1;
 
-      if (text_cursor_visible)
+      if (avt.text_cursor_visible)
 	avt_show_text_cursor (false);
 
-      if (origin_mode)
-	area = viewport;
+      if (avt.origin_mode)
+	area = avt.viewport;
       else
-	area = textfield;
+	area = avt.textfield;
 
-      cursor.x = (x - 1) * fontwidth + area.x;
-      cursor.y = (y - 1) * LINEHEIGHT + area.y;
+      avt.cursor.x = (x - 1) * fontwidth + area.x;
+      avt.cursor.y = (y - 1) * LINEHEIGHT + area.y;
 
       // max-pos exeeded?
-      if (cursor.x > area.x + area.w - fontwidth)
-	cursor.x = area.x + area.w - fontwidth;
+      if (avt.cursor.x > area.x + area.w - fontwidth)
+	avt.cursor.x = area.x + area.w - fontwidth;
 
-      if (cursor.y > area.y + area.h - LINEHEIGHT)
-	cursor.y = area.y + area.h - LINEHEIGHT;
+      if (avt.cursor.y > area.y + area.h - LINEHEIGHT)
+	avt.cursor.y = area.y + area.h - LINEHEIGHT;
 
-      if (text_cursor_visible)
+      if (avt.text_cursor_visible)
 	avt_show_text_cursor (true);
     }
 }
@@ -2480,13 +2501,13 @@ avt_move_xy (int x, int y)
 extern void
 avt_save_position (void)
 {
-  saved_position = cursor;
+  avt.saved_position = avt.cursor;
 }
 
 extern void
 avt_restore_position (void)
 {
-  cursor = saved_position;
+  avt.cursor = avt.saved_position;
 }
 
 extern void
@@ -2495,34 +2516,36 @@ avt_insert_spaces (int num)
   SDL_Rect rest, dest, clear;
 
   // no textfield? do nothing
-  if (not screen or textfield.x < 0)
+  if (not screen or avt.textfield.x < 0)
     return;
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
   // get the rest of the viewport
-  rest.x = cursor.x;
-  rest.w = viewport.w - (cursor.x - viewport.x) - (num * fontwidth);
-  rest.y = cursor.y;
+  rest.x = avt.cursor.x;
+  rest.w =
+    avt.viewport.w - (avt.cursor.x - avt.viewport.x) - (num * fontwidth);
+  rest.y = avt.cursor.y;
   rest.h = LINEHEIGHT;
 
-  dest.x = cursor.x + (num * fontwidth);
-  dest.y = cursor.y;
+  dest.x = avt.cursor.x + (num * fontwidth);
+  dest.y = avt.cursor.y;
   SDL_BlitSurface (screen, &rest, screen, &dest);
 
-  clear.x = cursor.x;
-  clear.y = cursor.y;
+  clear.x = avt.cursor.x;
+  clear.y = avt.cursor.y;
   clear.w = num * fontwidth;
   clear.h = LINEHEIGHT;
-  SDL_FillRect (screen, &clear, text_background_color);
+  SDL_FillRect (screen, &clear, avt.text_background_color);
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
 
   // update line
-  if (not hold_updates)
-    SDL_UpdateRect (screen, viewport.x, cursor.y, viewport.w, fontheight);
+  if (not avt.hold_updates)
+    SDL_UpdateRect (screen, avt.viewport.x, avt.cursor.y, avt.viewport.w,
+		    fontheight);
 }
 
 extern void
@@ -2531,34 +2554,36 @@ avt_delete_characters (int num)
   SDL_Rect rest, dest, clear;
 
   // no textfield? do nothing
-  if (not screen or textfield.x < 0)
+  if (not screen or avt.textfield.x < 0)
     return;
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
   // get the rest of the viewport
-  rest.x = cursor.x + (num * fontwidth);
-  rest.w = viewport.w - (cursor.x - viewport.x) - (num * fontwidth);
-  rest.y = cursor.y;
+  rest.x = avt.cursor.x + (num * fontwidth);
+  rest.w =
+    avt.viewport.w - (avt.cursor.x - avt.viewport.x) - (num * fontwidth);
+  rest.y = avt.cursor.y;
   rest.h = LINEHEIGHT;
 
-  dest.x = cursor.x;
-  dest.y = cursor.y;
+  dest.x = avt.cursor.x;
+  dest.y = avt.cursor.y;
   SDL_BlitSurface (screen, &rest, screen, &dest);
 
-  clear.x = viewport.x + viewport.w - (num * fontwidth);
-  clear.y = cursor.y;
+  clear.x = avt.viewport.x + avt.viewport.w - (num * fontwidth);
+  clear.y = avt.cursor.y;
   clear.w = num * fontwidth;
   clear.h = LINEHEIGHT;
-  SDL_FillRect (screen, &clear, text_background_color);
+  SDL_FillRect (screen, &clear, avt.text_background_color);
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
 
   // update line
-  if (not hold_updates)
-    SDL_UpdateRect (screen, viewport.x, cursor.y, viewport.w, fontheight);
+  if (not avt.hold_updates)
+    SDL_UpdateRect (screen, avt.viewport.x, avt.cursor.y, avt.viewport.w,
+		    fontheight);
 }
 
 extern void
@@ -2567,19 +2592,20 @@ avt_erase_characters (int num)
   SDL_Rect clear;
 
   // no textfield? do nothing
-  if (not screen or textfield.x < 0)
+  if (not screen or avt.textfield.x < 0)
     return;
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
-  clear.x = (textdir_rtl) ? cursor.x - (num * fontwidth) : cursor.x;
-  clear.y = cursor.y;
+  clear.x =
+    (avt.textdir_rtl) ? avt.cursor.x - (num * fontwidth) : avt.cursor.x;
+  clear.y = avt.cursor.y;
   clear.w = num * fontwidth;
   clear.h = LINEHEIGHT;
-  SDL_FillRect (screen, &clear, text_background_color);
+  SDL_FillRect (screen, &clear, avt.text_background_color);
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
 
   // update area
@@ -2592,39 +2618,39 @@ avt_delete_lines (int line, int num)
   SDL_Rect rest, dest, clear;
 
   // no textfield? do nothing
-  if (not screen or textfield.x < 0)
+  if (not screen or avt.textfield.x < 0)
     return;
 
-  if (not origin_mode)
-    line -= (viewport.y - textfield.y) / LINEHEIGHT;
+  if (not avt.origin_mode)
+    line -= (avt.viewport.y - avt.textfield.y) / LINEHEIGHT;
 
   // check if values are sane
-  if (line < 1 or num < 1 or line > (viewport.h / LINEHEIGHT))
+  if (line < 1 or num < 1 or line > (avt.viewport.h / LINEHEIGHT))
     return;
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
   // get the rest of the viewport
-  rest.x = viewport.x;
-  rest.w = viewport.w;
-  rest.y = viewport.y + ((line - 1 + num) * LINEHEIGHT);
-  rest.h = viewport.h - ((line - 1 + num) * LINEHEIGHT);
+  rest.x = avt.viewport.x;
+  rest.w = avt.viewport.w;
+  rest.y = avt.viewport.y + ((line - 1 + num) * LINEHEIGHT);
+  rest.h = avt.viewport.h - ((line - 1 + num) * LINEHEIGHT);
 
-  dest.x = viewport.x;
-  dest.y = viewport.y + ((line - 1) * LINEHEIGHT);
+  dest.x = avt.viewport.x;
+  dest.y = avt.viewport.y + ((line - 1) * LINEHEIGHT);
   SDL_BlitSurface (screen, &rest, screen, &dest);
 
-  clear.w = viewport.w;
+  clear.w = avt.viewport.w;
   clear.h = num * LINEHEIGHT;
-  clear.x = viewport.x;
-  clear.y = viewport.y + viewport.h - (num * LINEHEIGHT);
-  SDL_FillRect (screen, &clear, text_background_color);
+  clear.x = avt.viewport.x;
+  clear.y = avt.viewport.y + avt.viewport.h - (num * LINEHEIGHT);
+  SDL_FillRect (screen, &clear, avt.text_background_color);
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
 
-  avt_update_trect (viewport);
+  avt_update_trect (avt.viewport);
 }
 
 extern void
@@ -2633,39 +2659,39 @@ avt_insert_lines (int line, int num)
   SDL_Rect rest, dest, clear;
 
   // no textfield? do nothing
-  if (not screen or textfield.x < 0)
+  if (not screen or avt.textfield.x < 0)
     return;
 
-  if (not origin_mode)
-    line -= (viewport.y - textfield.y) / LINEHEIGHT;
+  if (not avt.origin_mode)
+    line -= (avt.viewport.y - avt.textfield.y) / LINEHEIGHT;
 
   // check if values are sane
-  if (line < 1 or num < 1 or line > (viewport.h / LINEHEIGHT))
+  if (line < 1 or num < 1 or line > (avt.viewport.h / LINEHEIGHT))
     return;
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
   // get the rest of the viewport
-  rest.x = viewport.x;
-  rest.w = viewport.w;
-  rest.y = viewport.y + ((line - 1) * LINEHEIGHT);
-  rest.h = viewport.h - ((line - 1 + num) * LINEHEIGHT);
+  rest.x = avt.viewport.x;
+  rest.w = avt.viewport.w;
+  rest.y = avt.viewport.y + ((line - 1) * LINEHEIGHT);
+  rest.h = avt.viewport.h - ((line - 1 + num) * LINEHEIGHT);
 
-  dest.x = viewport.x;
-  dest.y = viewport.y + ((line - 1 + num) * LINEHEIGHT);
+  dest.x = avt.viewport.x;
+  dest.y = avt.viewport.y + ((line - 1 + num) * LINEHEIGHT);
   SDL_BlitSurface (screen, &rest, screen, &dest);
 
-  clear.x = viewport.x;
-  clear.y = viewport.y + ((line - 1) * LINEHEIGHT);
-  clear.w = viewport.w;
+  clear.x = avt.viewport.x;
+  clear.y = avt.viewport.y + ((line - 1) * LINEHEIGHT);
+  clear.w = avt.viewport.w;
   clear.h = num * LINEHEIGHT;
-  SDL_FillRect (screen, &clear, text_background_color);
+  SDL_FillRect (screen, &clear, avt.text_background_color);
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
 
-  avt_update_trect (viewport);
+  avt_update_trect (avt.viewport);
 }
 
 extern void
@@ -2676,55 +2702,56 @@ avt_viewport (int x, int y, int width, int height)
     return;
 
   // if there's no balloon, draw it
-  if (textfield.x < 0)
+  if (avt.textfield.x < 0)
     avt_draw_balloon ();
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
-  viewport.x = textfield.x + ((x - 1) * fontwidth);
-  viewport.y = textfield.y + ((y - 1) * LINEHEIGHT);
-  viewport.w = width * fontwidth;
-  viewport.h = height * LINEHEIGHT;
+  avt.viewport.x = avt.textfield.x + ((x - 1) * fontwidth);
+  avt.viewport.y = avt.textfield.y + ((y - 1) * LINEHEIGHT);
+  avt.viewport.w = width * fontwidth;
+  avt.viewport.h = height * LINEHEIGHT;
 
-  linestart =
-    (textdir_rtl) ? viewport.x + viewport.w - fontwidth : viewport.x;
+  avt.linestart =
+    (avt.textdir_rtl) ? avt.viewport.x + avt.viewport.w -
+    fontwidth : avt.viewport.x;
 
-  cursor.x = linestart;
-  cursor.y = viewport.y;
+  avt.cursor.x = avt.linestart;
+  avt.cursor.y = avt.viewport.y;
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
 
-  if (origin_mode)
-    SDL_SetClipRect (screen, &viewport);
+  if (avt.origin_mode)
+    SDL_SetClipRect (screen, &avt.viewport);
   else
-    SDL_SetClipRect (screen, &textfield);
+    SDL_SetClipRect (screen, &avt.textfield);
 }
 
 extern void
 avt_newline_mode (bool mode)
 {
-  newline_mode = mode;
+  avt.newline_mode = mode;
 }
 
 
 extern bool
 avt_get_newline_mode (void)
 {
-  return newline_mode;
+  return avt.newline_mode;
 }
 
 extern void
 avt_set_auto_margin (bool mode)
 {
-  auto_margin = mode;
+  avt.auto_margin = mode;
 }
 
 extern bool
 avt_get_auto_margin (void)
 {
-  return auto_margin;
+  return avt.auto_margin;
 }
 
 extern void
@@ -2732,37 +2759,37 @@ avt_set_origin_mode (bool mode)
 {
   SDL_Rect area;
 
-  origin_mode = mode;
+  avt.origin_mode = mode;
 
-  if (text_cursor_visible and textfield.x >= 0)
+  if (avt.text_cursor_visible and avt.textfield.x >= 0)
     avt_show_text_cursor (false);
 
-  if (origin_mode)
-    area = viewport;
+  if (avt.origin_mode)
+    area = avt.viewport;
   else
-    area = textfield;
+    area = avt.textfield;
 
-  linestart = (textdir_rtl) ? area.x + area.w - fontwidth : area.x;
+  avt.linestart = (avt.textdir_rtl) ? area.x + area.w - fontwidth : area.x;
 
   // cursor to position 1,1
   // when origin mode is off, then it may be outside the viewport (sic)
-  cursor.x = linestart;
-  cursor.y = area.y;
+  avt.cursor.x = avt.linestart;
+  avt.cursor.y = area.y;
 
   // reset saved position
-  saved_position = cursor;
+  avt.saved_position = avt.cursor;
 
-  if (text_cursor_visible and textfield.x >= 0)
+  if (avt.text_cursor_visible and avt.textfield.x >= 0)
     avt_show_text_cursor (true);
 
-  if (textfield.x >= 0)
+  if (avt.textfield.x >= 0)
     SDL_SetClipRect (screen, &area);
 }
 
 extern bool
 avt_get_origin_mode (void)
 {
-  return origin_mode;
+  return avt.origin_mode;
 }
 
 extern void
@@ -2773,26 +2800,26 @@ avt_clear (void)
     return;
 
   // if there's no balloon, draw it
-  if (textfield.x < 0)
+  if (avt.textfield.x < 0)
     avt_draw_balloon ();
 
   // use background color of characters
-  SDL_FillRect (screen, &viewport, text_background_color);
+  SDL_FillRect (screen, &avt.viewport, avt.text_background_color);
 
-  cursor.x = linestart;
+  avt.cursor.x = avt.linestart;
 
-  if (origin_mode)
-    cursor.y = viewport.y;
+  if (avt.origin_mode)
+    avt.cursor.y = avt.viewport.y;
   else
-    cursor.y = textfield.y;
+    avt.cursor.y = avt.textfield.y;
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     {
-      text_cursor_actually_visible = false;
+      avt.text_cursor_actually_visible = false;
       avt_show_text_cursor (true);
     }
 
-  avt_update_trect (viewport);
+  avt_update_trect (avt.viewport);
 }
 
 extern void
@@ -2805,19 +2832,19 @@ avt_clear_up (void)
     return;
 
   // if there's no balloon, draw it
-  if (textfield.x < 0)
+  if (avt.textfield.x < 0)
     avt_draw_balloon ();
 
-  dst.x = viewport.x;
-  dst.w = viewport.w;
-  dst.y = viewport.y + fontheight;
-  dst.h = cursor.y;
+  dst.x = avt.viewport.x;
+  dst.w = avt.viewport.w;
+  dst.y = avt.viewport.y + fontheight;
+  dst.h = avt.cursor.y;
 
-  SDL_FillRect (screen, &dst, text_background_color);
+  SDL_FillRect (screen, &dst, avt.text_background_color);
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     {
-      text_cursor_actually_visible = false;
+      avt.text_cursor_actually_visible = false;
       avt_show_text_cursor (true);
     }
 
@@ -2834,22 +2861,22 @@ avt_clear_down (void)
     return;
 
   // if there's no balloon, draw it
-  if (textfield.x < 0)
+  if (avt.textfield.x < 0)
     avt_draw_balloon ();
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
-  dst.x = viewport.x;
-  dst.w = viewport.w;
-  dst.y = cursor.y;
-  dst.h = viewport.h - (cursor.y - viewport.y);
+  dst.x = avt.viewport.x;
+  dst.w = avt.viewport.w;
+  dst.y = avt.cursor.y;
+  dst.h = avt.viewport.h - (avt.cursor.y - avt.viewport.y);
 
-  SDL_FillRect (screen, &dst, text_background_color);
+  SDL_FillRect (screen, &dst, avt.text_background_color);
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     {
-      text_cursor_actually_visible = false;
+      avt.text_cursor_actually_visible = false;
       avt_show_text_cursor (true);
     }
 
@@ -2866,29 +2893,29 @@ avt_clear_eol (void)
     return;
 
   // if there's no balloon, draw it
-  if (textfield.x < 0)
+  if (avt.textfield.x < 0)
     avt_draw_balloon ();
 
-  if (textdir_rtl)		// right to left
+  if (avt.textdir_rtl)		// right to left
     {
-      dst.x = viewport.x;
-      dst.y = cursor.y;
+      dst.x = avt.viewport.x;
+      dst.y = avt.cursor.y;
       dst.h = fontheight;
-      dst.w = cursor.x + fontwidth - viewport.x;
+      dst.w = avt.cursor.x + fontwidth - avt.viewport.x;
     }
   else				// left to right
     {
-      dst.x = cursor.x;
-      dst.y = cursor.y;
+      dst.x = avt.cursor.x;
+      dst.y = avt.cursor.y;
       dst.h = fontheight;
-      dst.w = viewport.w - (cursor.x - viewport.x);
+      dst.w = avt.viewport.w - (avt.cursor.x - avt.viewport.x);
     }
 
-  SDL_FillRect (screen, &dst, text_background_color);
+  SDL_FillRect (screen, &dst, avt.text_background_color);
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     {
-      text_cursor_actually_visible = false;
+      avt.text_cursor_actually_visible = false;
       avt_show_text_cursor (true);
     }
 
@@ -2906,29 +2933,29 @@ avt_clear_bol (void)
     return;
 
   // if there's no balloon, draw it
-  if (textfield.x < 0)
+  if (avt.textfield.x < 0)
     avt_draw_balloon ();
 
-  if (textdir_rtl)		// right to left
+  if (avt.textdir_rtl)		// right to left
     {
-      dst.x = cursor.x;
-      dst.y = cursor.y;
+      dst.x = avt.cursor.x;
+      dst.y = avt.cursor.y;
       dst.h = fontheight;
-      dst.w = viewport.w - (cursor.x - viewport.x);
+      dst.w = avt.viewport.w - (avt.cursor.x - avt.viewport.x);
     }
   else				// left to right
     {
-      dst.x = viewport.x;
-      dst.y = cursor.y;
+      dst.x = avt.viewport.x;
+      dst.y = avt.cursor.y;
       dst.h = fontheight;
-      dst.w = cursor.x + fontwidth - viewport.x;
+      dst.w = avt.cursor.x + fontwidth - avt.viewport.x;
     }
 
-  SDL_FillRect (screen, &dst, text_background_color);
+  SDL_FillRect (screen, &dst, avt.text_background_color);
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     {
-      text_cursor_actually_visible = false;
+      avt.text_cursor_actually_visible = false;
       avt_show_text_cursor (true);
     }
 
@@ -2945,19 +2972,19 @@ avt_clear_line (void)
     return;
 
   // if there's no balloon, draw it
-  if (textfield.x < 0)
+  if (avt.textfield.x < 0)
     avt_draw_balloon ();
 
-  dst.x = viewport.x;
-  dst.y = cursor.y;
+  dst.x = avt.viewport.x;
+  dst.y = avt.cursor.y;
   dst.h = fontheight;
-  dst.w = viewport.w;
+  dst.w = avt.viewport.w;
 
-  SDL_FillRect (screen, &dst, text_background_color);
+  SDL_FillRect (screen, &dst, avt.text_background_color);
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     {
-      text_cursor_actually_visible = false;
+      avt.text_cursor_actually_visible = false;
       avt_show_text_cursor (true);
     }
 
@@ -2968,19 +2995,19 @@ extern int
 avt_flip_page (void)
 {
   // no textfield? do nothing
-  if (not screen or textfield.x < 0)
+  if (not screen or avt.textfield.x < 0)
     return _avt_STATUS;
 
   // do nothing when the textfield is already empty
-  if (cursor.x == linestart and cursor.y == viewport.y)
+  if (avt.cursor.x == avt.linestart and avt.cursor.y == avt.viewport.y)
     return _avt_STATUS;
 
   /* the viewport must be updated,
      if it's not updated letter by letter */
-  if (not text_delay)
-    avt_update_trect (viewport);
+  if (not avt.text_delay)
+    avt_update_trect (avt.viewport);
 
-  avt_wait (flip_page_delay);
+  avt_wait (avt.flip_page_delay);
   avt_clear ();
   return _avt_STATUS;
 }
@@ -2988,22 +3015,23 @@ avt_flip_page (void)
 static void
 avt_scroll_up (void)
 {
-  switch (scroll_mode)
+  switch (avt.scroll_mode)
     {
     case -1:
       // move cursor outside of balloon
-      cursor.y += LINEHEIGHT;
+      avt.cursor.y += LINEHEIGHT;
       break;
     case 1:
-      avt_delete_lines (((viewport.y - textfield.y) / LINEHEIGHT) + 1, 1);
+      avt_delete_lines (((avt.viewport.y - avt.textfield.y) / LINEHEIGHT) + 1,
+			1);
 
-      if (origin_mode)
-	cursor.y = viewport.y + viewport.h - LINEHEIGHT;
+      if (avt.origin_mode)
+	avt.cursor.y = avt.viewport.y + avt.viewport.h - LINEHEIGHT;
       else
-	cursor.y = textfield.y + textfield.h - LINEHEIGHT;
+	avt.cursor.y = avt.textfield.y + avt.textfield.h - LINEHEIGHT;
 
-      if (newline_mode)
-	cursor.x = linestart;
+      if (avt.newline_mode)
+	avt.cursor.x = avt.linestart;
       break;
     case 0:
       avt_flip_page ();
@@ -3014,12 +3042,12 @@ avt_scroll_up (void)
 static void
 avt_carriage_return (void)
 {
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
-  cursor.x = linestart;
+  avt.cursor.x = avt.linestart;
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
 }
 
@@ -3027,24 +3055,24 @@ extern int
 avt_new_line (void)
 {
   // no textfield? do nothing
-  if (not screen or textfield.x < 0)
+  if (not screen or avt.textfield.x < 0)
     return _avt_STATUS;
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
-  if (newline_mode)
-    cursor.x = linestart;
+  if (avt.newline_mode)
+    avt.cursor.x = avt.linestart;
 
   /* if the cursor is at the last line of the viewport
    * scroll up
    */
-  if (cursor.y == viewport.y + viewport.h - LINEHEIGHT)
+  if (avt.cursor.y == avt.viewport.y + avt.viewport.h - LINEHEIGHT)
     avt_scroll_up ();
   else
-    cursor.y += LINEHEIGHT;
+    avt.cursor.y += LINEHEIGHT;
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
 
   return _avt_STATUS;
@@ -3062,8 +3090,8 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
       const unsigned short *font_line;
       unsigned short *pixels, *p;
 
-      pitch = avt_character->pitch / sizeof (*p);
-      pixels = p = (unsigned short *) avt_character->pixels;
+      pitch = avt.character->pitch / sizeof (*p);
+      pixels = p = (unsigned short *) avt.character->pixels;
       font_line = (const unsigned short *) avt_get_font_char ((int) ch);
       if (not font_line)
 	font_line = (const unsigned short *) avt_get_font_char (0);
@@ -3072,24 +3100,24 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
 	{
 	  // TODO: needs test on big endian machines
 	  *p = SDL_SwapBE16 (*font_line);
-	  if (bold and not NOT_BOLD)
+	  if (avt.bold and not NOT_BOLD)
 	    *p |= SDL_SwapBE16 (*font_line >> 1);
-	  if (inverse)
+	  if (avt.inverse)
 	    *p = compl * p;
 	  font_line++;
 	  p += pitch;
 	}
 
-      if (underlined)
-	pixels[fontunderline * pitch] = (inverse) ? 0x0000 : 0xFFFF;
+      if (avt.underlined)
+	pixels[fontunderline * pitch] = (avt.inverse) ? 0x0000 : 0xFFFF;
     }
   else				// fontwidth <= 8
     {
       const unsigned char *font_line;
       uint8_t *pixels, *p;
 
-      pitch = avt_character->pitch;
-      pixels = p = (uint8_t *) avt_character->pixels;
+      pitch = avt.character->pitch;
+      pixels = p = (uint8_t *) avt.character->pixels;
       font_line = (const unsigned char *) avt_get_font_char ((int) ch);
       if (not font_line)
 	font_line = (const unsigned char *) avt_get_font_char (0);
@@ -3097,21 +3125,21 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
       for (int y = 0; y < fontheight; y++)
 	{
 	  *p = *font_line;
-	  if (bold and not NOT_BOLD)
+	  if (avt.bold and not NOT_BOLD)
 	    *p |= (*font_line >> 1);
-	  if (inverse)
+	  if (avt.inverse)
 	    *p = compl * p;
 	  font_line++;
 	  p += pitch;
 	}
 
-      if (underlined)
-	pixels[fontunderline * pitch] = (inverse) ? 0x00 : 0xFF;
+      if (avt.underlined)
+	pixels[fontunderline * pitch] = (avt.inverse) ? 0x00 : 0xFF;
     }
 
-  dest.x = cursor.x;
-  dest.y = cursor.y;
-  SDL_BlitSurface (avt_character, NULL, surface, &dest);
+  dest.x = avt.cursor.x;
+  dest.y = avt.cursor.y;
+  SDL_BlitSurface (avt.character, NULL, surface, &dest);
 }
 
 #ifndef DISABLE_DEPRECATED
@@ -3133,10 +3161,11 @@ avt_is_printable (avt_char ch)
 static void
 avt_showchar (void)
 {
-  if (not hold_updates)
+  if (not avt.hold_updates)
     {
-      SDL_UpdateRect (screen, cursor.x, cursor.y, fontwidth, fontheight);
-      text_cursor_actually_visible = false;
+      SDL_UpdateRect (screen, avt.cursor.x, avt.cursor.y, fontwidth,
+		      fontheight);
+      avt.text_cursor_actually_visible = false;
     }
 }
 
@@ -3145,12 +3174,13 @@ extern int
 avt_forward (void)
 {
   // no textfield? do nothing
-  if (not screen or textfield.x < 0)
+  if (not screen or avt.textfield.x < 0)
     return _avt_STATUS;
 
-  cursor.x = (textdir_rtl) ? cursor.x - fontwidth : cursor.x + fontwidth;
+  avt.cursor.x =
+    (avt.textdir_rtl) ? avt.cursor.x - fontwidth : avt.cursor.x + fontwidth;
 
-  if (text_cursor_visible)
+  if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
 
   return _avt_STATUS;
@@ -3165,17 +3195,17 @@ avt_forward (void)
 static void
 check_auto_margin (void)
 {
-  if (screen and textfield.x >= 0 and auto_margin)
+  if (screen and avt.textfield.x >= 0 and avt.auto_margin)
     {
-      if (cursor.x < viewport.x
-	  or cursor.x > viewport.x + viewport.w - fontwidth)
+      if (avt.cursor.x < avt.viewport.x
+	  or avt.cursor.x > avt.viewport.x + avt.viewport.w - fontwidth)
 	{
-	  if (not newline_mode)
+	  if (not avt.newline_mode)
 	    avt_carriage_return ();
 	  avt_new_line ();
 	}
 
-      if (text_cursor_visible)
+      if (avt.text_cursor_visible)
 	avt_show_text_cursor (true);
     }
 }
@@ -3185,21 +3215,21 @@ avt_reset_tab_stops (void)
 {
   for (int i = 0; i < AVT_LINELENGTH; i++)
     if (i % 8 == 0)
-      avt_tab_stops[i] = true;
+      avt.tab_stops[i] = true;
     else
-      avt_tab_stops[i] = false;
+      avt.tab_stops[i] = false;
 }
 
 extern void
 avt_clear_tab_stops (void)
 {
-  SDL_memset (&avt_tab_stops, false, sizeof (avt_tab_stops));
+  SDL_memset (&avt.tab_stops, false, sizeof (avt.tab_stops));
 }
 
 extern void
 avt_set_tab (int x, bool onoff)
 {
-  avt_tab_stops[x - 1] = onoff;
+  avt.tab_stops[x - 1] = onoff;
 }
 
 // advance to next tabstop
@@ -3212,11 +3242,11 @@ avt_next_tab (void)
   // here we count zero based
   x = avt_where_x () - 1;
 
-  if (textdir_rtl)		// right to left
+  if (avt.textdir_rtl)		// right to left
     {
       for (i = x; i >= 0; i--)
 	{
-	  if (avt_tab_stops[i])
+	  if (avt.tab_stops[i])
 	    break;
 	}
       avt_move_x (i);
@@ -3225,7 +3255,7 @@ avt_next_tab (void)
     {
       for (i = x + 1; i < AVT_LINELENGTH; i++)
 	{
-	  if (avt_tab_stops[i])
+	  if (avt.tab_stops[i])
 	    break;
 	}
       avt_move_x (i + 1);
@@ -3242,11 +3272,11 @@ avt_last_tab (void)
   // here we count zero based
   x = avt_where_x () - 1;
 
-  if (textdir_rtl)		// right to left
+  if (avt.textdir_rtl)		// right to left
     {
       for (i = x; i < AVT_LINELENGTH; i++)
 	{
-	  if (avt_tab_stops[i])
+	  if (avt.tab_stops[i])
 	    break;
 	}
       avt_move_x (i);
@@ -3255,7 +3285,7 @@ avt_last_tab (void)
     {
       for (i = x + 1; i >= 0; i--)
 	{
-	  if (avt_tab_stops[i])
+	  if (avt.tab_stops[i])
 	    break;
 	}
       avt_move_x (i + 1);
@@ -3267,30 +3297,31 @@ avt_clearchar (void)
 {
   SDL_Rect dst;
 
-  dst.x = cursor.x;
-  dst.y = cursor.y;
+  dst.x = avt.cursor.x;
+  dst.y = avt.cursor.y;
   dst.w = fontwidth;
   dst.h = fontheight;
 
-  SDL_FillRect (screen, &dst, text_background_color);
+  SDL_FillRect (screen, &dst, avt.text_background_color);
   avt_showchar ();
 }
 
 extern void
 avt_backspace (void)
 {
-  if (screen and textfield.x >= 0)
+  if (screen and avt.textfield.x >= 0)
     {
-      if (cursor.x != linestart)
+      if (avt.cursor.x != avt.linestart)
 	{
-	  if (text_cursor_visible)
+	  if (avt.text_cursor_visible)
 	    avt_show_text_cursor (false);
 
-	  cursor.x =
-	    (textdir_rtl) ? cursor.x + fontwidth : cursor.x - fontwidth;
+	  avt.cursor.x =
+	    (avt.textdir_rtl) ? avt.cursor.x + fontwidth : avt.cursor.x -
+	    fontwidth;
 	}
 
-      if (text_cursor_visible)
+      if (avt.text_cursor_visible)
 	avt_show_text_cursor (true);
     }
 }
@@ -3306,7 +3337,7 @@ avt_put_char (avt_char ch)
     return _avt_STATUS;
 
   // no textfield? => draw balloon
-  if (textfield.x < 0)
+  if (avt.textfield.x < 0)
     avt_draw_balloon ();
 
   switch (ch)
@@ -3361,9 +3392,9 @@ avt_put_char (avt_char ch)
       break;
 
     case 0x0020:		// SP: space
-      if (auto_margin)
+      if (avt.auto_margin)
 	check_auto_margin ();
-      if (not underlined and not inverse)
+      if (not avt.underlined and not avt.inverse)
 	avt_clearchar ();
       else			// underlined or inverse
 	{
@@ -3380,18 +3411,18 @@ avt_put_char (avt_char ch)
     default:
       if (ch > 0x0020 or ch == 0x0000)
 	{
-	  if (markup and ch == 0x005F)	// '_'
-	    underlined = not underlined;
-	  else if (markup and ch == 0x002A)	// '*'
-	    bold = not bold;
+	  if (avt.markup and ch == 0x005F)	// '_'
+	    avt.underlined = not avt.underlined;
+	  else if (avt.markup and ch == 0x002A)	// '*'
+	    avt.bold = not avt.bold;
 	  else			// not a markup character
 	    {
-	      if (auto_margin)
+	      if (avt.auto_margin)
 		check_auto_margin ();
 	      avt_drawchar (ch, screen);
 	      avt_showchar ();
-	      if (text_delay)
-		SDL_Delay (text_delay);
+	      if (avt.text_delay)
+		SDL_Delay (avt.text_delay);
 	      avt_forward ();
 	      avt_checkevent ();
 	    }			// if not markup
@@ -3419,17 +3450,17 @@ avt_overstrike (const wchar_t * txt)
     {
       if (*txt == L'_')
 	{
-	  underlined = true;
+	  avt.underlined = true;
 	  if (avt_put_char ((avt_char) * (txt + 2)))
 	    r = -1;
-	  underlined = false;
+	  avt.underlined = false;
 	}
       else if (*txt == *(txt + 2))
 	{
-	  bold = true;
+	  avt.bold = true;
 	  if (avt_put_char ((avt_char) * txt))
 	    r = -1;
-	  bold = false;
+	  avt.bold = false;
 	}
     }
 
@@ -3451,7 +3482,7 @@ avt_say (const wchar_t * txt)
     return avt_checkevent ();
 
   // no textfield? => draw balloon
-  if (textfield.x < 0)
+  if (avt.textfield.x < 0)
     avt_draw_balloon ();
 
   while (*txt)
@@ -3493,7 +3524,7 @@ avt_say_len (const wchar_t * txt, size_t len)
     return avt_checkevent ();
 
   // no textfield? => draw balloon
-  if (textfield.x < 0)
+  if (avt.textfield.x < 0)
     avt_draw_balloon ();
 
   for (size_t i = 0; i < len; i++, txt++)
@@ -3582,7 +3613,7 @@ avt_tell_len (const wchar_t * txt, size_t len)
 	  // '_' is tricky because of overstrike
 	  // must be therefore before '*'
 	case L'_':
-	  if (markup)
+	  if (avt.markup)
 	    {
 	      if (*(p + 1) == L'\b')
 		line_length++;
@@ -3591,7 +3622,7 @@ avt_tell_len (const wchar_t * txt, size_t len)
 	  // else fall through
 
 	case L'*':
-	  if (markup)
+	  if (avt.markup)
 	    break;
 	  // else fall through
 
@@ -3599,7 +3630,7 @@ avt_tell_len (const wchar_t * txt, size_t len)
 	  if ((*p >= 32 or * p == 0) and (*p < 0xD800 or * p > 0xDBFF))
 	    {
 	      line_length++;
-	      if (auto_margin and line_length > AVT_LINELENGTH)
+	      if (avt.auto_margin and line_length > AVT_LINELENGTH)
 		{
 		  width = AVT_LINELENGTH;
 		  height++;
@@ -3643,10 +3674,10 @@ avt_mb_encoding (const char *encoding)
    * check if it is the result of avt_get_mb_encoding()
    * or the same encoding
    */
-  if (encoding == avt_encoding or SDL_strcmp (encoding, avt_encoding) == 0)
+  if (encoding == avt.encoding or SDL_strcmp (encoding, avt.encoding) == 0)
     return _avt_STATUS;
 
-  SDL_strlcpy (avt_encoding, encoding, sizeof (avt_encoding));
+  SDL_strlcpy (avt.encoding, encoding, sizeof (avt.encoding));
 
   // if encoding is "" and SYSTEMENCODING is not ""
   if (encoding[0] == '\0' and SYSTEMENCODING[0] != '\0')
@@ -3694,7 +3725,7 @@ avt_mb_encoding (const char *encoding)
 extern char *
 avt_get_mb_encoding (void)
 {
-  return avt_encoding;
+  return avt.encoding;
 }
 
 // size in bytes
@@ -3909,10 +3940,10 @@ avt_recode_buffer (const char *tocode, const char *fromcode,
   // NULL as code means the encoding, which was set
 
   if (not tocode)
-    tocode = avt_encoding;
+    tocode = avt.encoding;
 
   if (not fromcode)
-    fromcode = avt_encoding;
+    fromcode = avt.encoding;
 
   cd = avt_iconv_open (tocode, fromcode);
   if (cd == (avt_iconv_t) (-1))
@@ -3973,10 +4004,10 @@ avt_recode (const char *tocode, const char *fromcode,
   // NULL as code means the encoding, which was set
 
   if (not tocode)
-    tocode = avt_encoding;
+    tocode = avt.encoding;
 
   if (not fromcode)
-    fromcode = avt_encoding;
+    fromcode = avt.encoding;
 
   cd = avt_iconv_open (tocode, fromcode);
   if (cd == (avt_iconv_t) (-1))
@@ -4288,7 +4319,7 @@ avt_key (avt_char * ch)
 		    c = AVT_KEY_F1 + (event.key.keysym.sym - SDLK_F1);
 		    break;
 		  case SDLK_F11:
-		    if (reserve_single_keys)
+		    if (avt.reserve_single_keys)
 		      c = AVT_KEY_F11;
 		    break;
 		  default:
@@ -4317,21 +4348,21 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
 	{
 	  s.x = 0;
 	  s.y = (old_line - 1) * LINEHEIGHT;
-	  s.w = viewport.w;
+	  s.w = avt.viewport.w;
 	  s.h = LINEHEIGHT;
-	  t.x = viewport.x;
-	  t.y = viewport.y + s.y;
+	  t.x = avt.viewport.x;
+	  t.y = avt.viewport.y + s.y;
 	  SDL_BlitSurface (plain_menu, &s, screen, &t);
-	  SDL_UpdateRect (screen, t.x, t.y, viewport.w, LINEHEIGHT);
+	  SDL_UpdateRect (screen, t.x, t.y, avt.viewport.w, LINEHEIGHT);
 	}
 
       // show bar
       if (line_nr >= menu_start and line_nr <= menu_end)
 	{
-	  t.x = viewport.x;
-	  t.y = viewport.y + ((line_nr - 1) * LINEHEIGHT);
+	  t.x = avt.viewport.x;
+	  t.y = avt.viewport.y + ((line_nr - 1) * LINEHEIGHT);
 	  SDL_BlitSurface (bar, NULL, screen, &t);
-	  SDL_UpdateRect (screen, t.x, t.y, viewport.w, LINEHEIGHT);
+	  SDL_UpdateRect (screen, t.x, t.y, avt.viewport.w, LINEHEIGHT);
 	}
     }
 }
@@ -4349,11 +4380,12 @@ avt_choice (int *result, int start_line, int items, int key,
   if (screen and _avt_STATUS == AVT_NORMAL)
     {
       // get a copy of the viewport
-      plain_menu = avt_save_background (viewport);
+      plain_menu = avt_save_background (avt.viewport);
 
       // prepare transparent bar
       bar = SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_SRCALPHA | SDL_RLEACCEL,
-				  viewport.w, LINEHEIGHT, 8, 0, 0, 0, 128);
+				  avt.viewport.w, LINEHEIGHT, 8, 0, 0, 0,
+				  128);
 
       if (not bar)
 	{
@@ -4365,7 +4397,7 @@ avt_choice (int *result, int start_line, int items, int key,
 
       // set color for bar and make it transparent
       SDL_FillRect (bar, NULL, 0);
-      SDL_SetColors (bar, &cursor_color, 0, 1);
+      SDL_SetColors (bar, &avt.cursor_color, 0, 1);
       SDL_SetAlpha (bar, SDL_SRCALPHA | SDL_RLEACCEL, 128);
 
       SDL_EventState (SDL_MOUSEMOTION, SDL_ENABLE);
@@ -4436,12 +4468,14 @@ avt_choice (int *result, int start_line, int items, int key,
 	      break;
 
 	    case SDL_MOUSEMOTION:
-	      if (event.motion.x >= viewport.x
-		  and event.motion.x <= viewport.x + viewport.w
+	      if (event.motion.x >= avt.viewport.x
+		  and event.motion.x <= avt.viewport.x + avt.viewport.w
 		  and event.motion.y
-		  >= viewport.y + ((start_line - 1) * LINEHEIGHT)
-		  and event.motion.y < viewport.y + (end_line * LINEHEIGHT))
-		line_nr = ((event.motion.y - viewport.y) / LINEHEIGHT) + 1;
+		  >= avt.viewport.y + ((start_line - 1) * LINEHEIGHT)
+		  and event.motion.y <
+		  avt.viewport.y + (end_line * LINEHEIGHT))
+		line_nr =
+		  ((event.motion.y - avt.viewport.y) / LINEHEIGHT) + 1;
 
 	      if (line_nr != old_line)
 		{
@@ -4461,11 +4495,12 @@ avt_choice (int *result, int start_line, int items, int key,
 		  else
 		    {
 		      // check if mouse currently points to a valid line
-		      if (event.button.x >= viewport.x and
-			  event.button.x <= viewport.x + viewport.w)
+		      if (event.button.x >= avt.viewport.x and
+			  event.button.x <= avt.viewport.x + avt.viewport.w)
 			{
 			  line_nr =
-			    ((event.button.y - viewport.y) / LINEHEIGHT) + 1;
+			    ((event.button.y - avt.viewport.y) / LINEHEIGHT) +
+			    1;
 			  if (line_nr >= start_line and line_nr <= end_line)
 			    *result = line_nr - start_line + 1;
 			}
@@ -4516,14 +4551,14 @@ avt_choice (int *result, int start_line, int items, int key,
 extern void
 avt_lock_updates (bool lock)
 {
-  hold_updates = lock;
+  avt.hold_updates = lock;
 
   // side effect: set text_delay to 0
-  if (hold_updates)
-    text_delay = 0;
+  if (avt.hold_updates)
+    avt.text_delay = 0;
 
   // if hold_updates is not set update the textfield
-  avt_update_trect (textfield);
+  avt_update_trect (avt.textfield);
 }
 
 static void
@@ -4576,7 +4611,7 @@ avt_pager_line (const wchar_t * txt, size_t pos, size_t len,
 
   tpos = txt + pos;
 
-  underlined = bold = false;
+  avt.underlined = avt.bold = false;
 
   // handle pagebreaks
   if (avt_is_pagebreak (*tpos))
@@ -4637,12 +4672,12 @@ avt_pager_line (const wchar_t * txt, size_t pos, size_t len,
 	    }
 
 	  // hande markup mode
-	  while (markup and (*tpos == L'_' or * tpos == L'*'))
+	  while (avt.markup and (*tpos == L'_' or * tpos == L'*'))
 	    {
 	      if (*tpos == L'_')
-		underlined = not underlined;
+		avt.underlined = not avt.underlined;
 	      else if (*tpos == L'*')
-		bold = not bold;
+		avt.bold = not avt.bold;
 
 	      tpos++;
 	      line_length--;
@@ -4666,18 +4701,18 @@ static size_t
 avt_pager_screen (const wchar_t * txt, size_t pos, size_t len,
 		  size_t horizontal)
 {
-  hold_updates = true;
-  SDL_FillRect (screen, &textfield, text_background_color);
+  avt.hold_updates = true;
+  SDL_FillRect (screen, &avt.textfield, avt.text_background_color);
 
-  for (int line_nr = 0; line_nr < balloonheight; line_nr++)
+  for (int line_nr = 0; line_nr < avt.balloonheight; line_nr++)
     {
-      cursor.x = linestart;
-      cursor.y = line_nr * LINEHEIGHT + textfield.y;
+      avt.cursor.x = avt.linestart;
+      avt.cursor.y = line_nr * LINEHEIGHT + avt.textfield.y;
       pos = avt_pager_line (txt, pos, len, horizontal);
     }
 
-  hold_updates = false;
-  avt_update_trect (textfield);
+  avt.hold_updates = false;
+  avt_update_trect (avt.textfield);
 
   return pos;
 }
@@ -4710,10 +4745,8 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 {
   size_t pos;
   size_t horizontal;
-  bool old_auto_margin, old_reserve_single_keys, old_tc;
+  struct avt_settings old_settings;
   bool quit;
-  avt_keyhandler old_keyhandler;
-  avt_mousehandler old_mousehandler;
   void (*old_alert_func) (void);
   SDL_Event event;
   SDL_Surface *button;
@@ -4750,12 +4783,12 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 
   // last screen
   if (pos >= len)
-    pos = avt_pager_lines_back (txt, len, balloonheight + 1);
+    pos = avt_pager_lines_back (txt, len, avt.balloonheight + 1);
 
-  if (textfield.x < 0)
+  if (avt.textfield.x < 0)
     avt_draw_balloon ();
   else
-    viewport = textfield;
+    avt.viewport = avt.textfield;
 
   // show close-button
 
@@ -4767,9 +4800,9 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   btn_rect.y = window.y + window.h - button->h - AVATAR_MARGIN;
 
   // the button shouldn't be clipped
-  if (btn_rect.y < textfield.y + textfield.h
-      and btn_rect.x < textfield.x + textfield.w)
-    btn_rect.x = textfield.x + textfield.w;
+  if (btn_rect.y < avt.textfield.y + avt.textfield.h
+      and btn_rect.x < avt.textfield.x + avt.textfield.w)
+    btn_rect.x = avt.textfield.x + avt.textfield.w;
   // this is a workaround: moving it down clashed with a bug in SDL
 
   btn_rect.w = button->w;
@@ -4784,28 +4817,25 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   avt_pre_resize (btn_rect);
 
   // limit to viewport (else more problems with binary files
-  SDL_SetClipRect (screen, &viewport);
+  SDL_SetClipRect (screen, &avt.viewport);
 
-  old_tc = text_cursor_visible;
-  text_cursor_visible = false;
-  old_auto_margin = auto_margin;
-  auto_margin = false;
-  old_reserve_single_keys = reserve_single_keys;
-  reserve_single_keys = false;
-  old_keyhandler = avt_ext_keyhandler;
-  avt_ext_keyhandler = NULL;
-  old_mousehandler = avt_ext_mousehandler;
-  avt_ext_mousehandler = NULL;
+  old_settings = avt;
+
+  avt.text_cursor_visible = false;
+  avt.auto_margin = false;
+  avt.reserve_single_keys = false;
+  avt.ext_keyhandler = NULL;
+  avt.ext_mousehandler = NULL;
 
   // temporarily disable the alert function
   old_alert_func = avt_alert_func;
   avt_alert_func = NULL;
 
   avt_set_text_delay (0);
-  if (markup)
+  if (avt.markup)
     {
       avt_normal_text ();
-      markup = true;
+      avt.markup = true;
     }
   else
     avt_normal_text ();
@@ -4816,7 +4846,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   // last screen
   if (pos >= len)
     {
-      pos = avt_pager_lines_back (txt, len, balloonheight + 1);
+      pos = avt_pager_lines_back (txt, len, avt.balloonheight + 1);
       pos = avt_pager_screen (txt, pos, len, horizontal);
     }
 
@@ -4876,13 +4906,14 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 	    case SDLK_KP2:
 	      if (pos < len)	// if it's not the end
 		{
-		  hold_updates = true;
+		  avt.hold_updates = true;
 		  avt_delete_lines (1, 1);
-		  cursor.x = linestart;
-		  cursor.y = (balloonheight - 1) * LINEHEIGHT + textfield.y;
+		  avt.cursor.x = avt.linestart;
+		  avt.cursor.y =
+		    (avt.balloonheight - 1) * LINEHEIGHT + avt.textfield.y;
 		  pos = avt_pager_line (txt, pos, len, horizontal);
-		  hold_updates = false;
-		  avt_update_trect (textfield);
+		  avt.hold_updates = false;
+		  avt_update_trect (avt.textfield);
 		}
 	      break;
 
@@ -4892,19 +4923,19 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 		int start_pos;
 
 		start_pos =
-		  avt_pager_lines_back (txt, pos, balloonheight + 2);
+		  avt_pager_lines_back (txt, pos, avt.balloonheight + 2);
 
 		if (start_pos == 0)
 		  pos = avt_pager_screen (txt, 0, len, horizontal);
 		else
 		  {
-		    hold_updates = true;
+		    avt.hold_updates = true;
 		    avt_insert_lines (1, 1);
-		    cursor.x = linestart;
-		    cursor.y = textfield.y;
+		    avt.cursor.x = avt.linestart;
+		    avt.cursor.y = avt.textfield.y;
 		    avt_pager_line (txt, start_pos, len, horizontal);
-		    hold_updates = false;
-		    avt_update_trect (textfield);
+		    avt.hold_updates = false;
+		    avt_update_trect (avt.textfield);
 		    pos = avt_pager_lines_back (txt, pos, 2);
 		  }
 	      }
@@ -4920,7 +4951,8 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 		  if (pos >= len)
 		    {
 		      pos =
-			avt_pager_lines_back (txt, len, balloonheight + 1);
+			avt_pager_lines_back (txt, len,
+					      avt.balloonheight + 1);
 		      pos = avt_pager_screen (txt, pos, len, horizontal);
 		    }
 		}
@@ -4929,7 +4961,8 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 	    case SDLK_PAGEUP:
 	    case SDLK_KP9:
 	    case SDLK_b:
-	      pos = avt_pager_lines_back (txt, pos, 2 * balloonheight + 1);
+	      pos =
+		avt_pager_lines_back (txt, pos, 2 * avt.balloonheight + 1);
 	      pos = avt_pager_screen (txt, pos, len, horizontal);
 	      break;
 
@@ -4941,7 +4974,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 
 	    case SDLK_END:
 	    case SDLK_KP1:
-	      pos = avt_pager_lines_back (txt, len, balloonheight + 1);
+	      pos = avt_pager_lines_back (txt, len, avt.balloonheight + 1);
 	      pos = avt_pager_screen (txt, pos, len, horizontal);
 	      break;
 
@@ -4952,7 +4985,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 	    case SDLK_RIGHT:
 	    case SDLK_KP6:
 	      horizontal++;
-	      pos = avt_pager_lines_back (txt, pos, balloonheight + 1);
+	      pos = avt_pager_lines_back (txt, pos, avt.balloonheight + 1);
 	      pos = avt_pager_screen (txt, pos, len, horizontal);
 	      break;
 
@@ -4961,7 +4994,8 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 	      if (horizontal)
 		{
 		  horizontal--;
-		  pos = avt_pager_lines_back (txt, pos, balloonheight + 1);
+		  pos =
+		    avt_pager_lines_back (txt, pos, avt.balloonheight + 1);
 		  pos = avt_pager_screen (txt, pos, len, horizontal);
 		}
 	      break;
@@ -4984,17 +5018,13 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   // remove button
   SDL_SetClipRect (screen, &window);
   avt_post_resize (btn_rect);
-  SDL_FillRect (screen, &btn_rect, background_color);
+  SDL_FillRect (screen, &btn_rect, avt.background_color);
   avt_update_rect (btn_rect);
-  SDL_SetClipRect (screen, &viewport);
-
-  auto_margin = old_auto_margin;
-  reserve_single_keys = old_reserve_single_keys;
-  avt_ext_keyhandler = old_keyhandler;
-  avt_ext_mousehandler = old_mousehandler;
-  avt_activate_cursor (old_tc);
+  SDL_SetClipRect (screen, &avt.viewport);
 
   avt_alert_func = old_alert_func;
+  avt = old_settings;
+  avt_activate_cursor (avt.text_cursor_visible);
 
   return _avt_STATUS;
 }
@@ -5041,24 +5071,24 @@ avt_ask (wchar_t * s, size_t size)
 
   // this function only works with left to right text
   // it would be too hard otherwise
-  old_textdir = textdir_rtl;
-  textdir_rtl = AVT_LEFT_TO_RIGHT;
+  old_textdir = avt.textdir_rtl;
+  avt.textdir_rtl = AVT_LEFT_TO_RIGHT;
 
   // no textfield? => draw balloon
-  if (textfield.x < 0)
+  if (avt.textfield.x < 0)
     avt_draw_balloon ();
 
   /* if the cursor is beyond the end of the viewport,
    * get a new page
    */
-  if (cursor.y > viewport.y + viewport.h - LINEHEIGHT)
+  if (avt.cursor.y > avt.viewport.y + avt.viewport.h - LINEHEIGHT)
     avt_flip_page ();
 
   // maxlen is the rest of line
-  if (textdir_rtl)
-    maxlen = (cursor.x - viewport.x) / fontwidth;
+  if (avt.textdir_rtl)
+    maxlen = (avt.cursor.x - avt.viewport.x) / fontwidth;
   else
-    maxlen = ((viewport.x + viewport.w) - cursor.x) / fontwidth;
+    maxlen = ((avt.viewport.x + avt.viewport.w) - avt.cursor.x) / fontwidth;
 
   // does it fit in the buffer size?
   if (maxlen > size / sizeof (wchar_t) - 1)
@@ -5087,7 +5117,7 @@ avt_ask (wchar_t * s, size_t size)
 
 	case AVT_KEY_HOME:
 	  avt_show_text_cursor (false);
-	  cursor.x -= pos * fontwidth;
+	  avt.cursor.x -= pos * fontwidth;
 	  pos = 0;
 	  break;
 
@@ -5095,12 +5125,12 @@ avt_ask (wchar_t * s, size_t size)
 	  avt_show_text_cursor (false);
 	  if (len < maxlen)
 	    {
-	      cursor.x += (len - pos) * fontwidth;
+	      avt.cursor.x += (len - pos) * fontwidth;
 	      pos = len;
 	    }
 	  else
 	    {
-	      cursor.x += (maxlen - 1 - pos) * fontwidth;
+	      avt.cursor.x += (maxlen - 1 - pos) * fontwidth;
 	      pos = maxlen - 1;
 	    }
 	  break;
@@ -5139,7 +5169,7 @@ avt_ask (wchar_t * s, size_t size)
 	      pos--;
 	      // delete cursor
 	      avt_show_text_cursor (false);
-	      cursor.x -= fontwidth;
+	      avt.cursor.x -= fontwidth;
 	    }
 	  else
 	    bell ();
@@ -5150,7 +5180,7 @@ avt_ask (wchar_t * s, size_t size)
 	    {
 	      pos++;
 	      avt_show_text_cursor (false);
-	      cursor.x += fontwidth;
+	      avt.cursor.x += fontwidth;
 	    }
 	  else
 	    bell ();
@@ -5190,8 +5220,9 @@ avt_ask (wchar_t * s, size_t size)
 		  bell ();
 		}
 	      else
-		cursor.x =
-		  (textdir_rtl) ? cursor.x - fontwidth : cursor.x + fontwidth;
+		avt.cursor.x =
+		  (avt.textdir_rtl) ? avt.cursor.x -
+		  fontwidth : avt.cursor.x + fontwidth;
 	    }
 	}
     }
@@ -5202,12 +5233,12 @@ avt_ask (wchar_t * s, size_t size)
   // delete cursor
   avt_show_text_cursor (false);
 
-  if (not newline_mode)
+  if (not avt.newline_mode)
     avt_carriage_return ();
 
   avt_new_line ();
 
-  textdir_rtl = old_textdir;
+  avt.textdir_rtl = old_textdir;
 
   return _avt_STATUS;
 }
@@ -5256,10 +5287,10 @@ avt_move_in (void)
   avt_clear_screen ();
 
   // undefine textfield
-  textfield.x = textfield.y = textfield.w = textfield.h = -1;
-  viewport = textfield;
+  avt.textfield.x = avt.textfield.y = avt.textfield.w = avt.textfield.h = -1;
+  avt.viewport = avt.textfield;
 
-  if (avatar_image)
+  if (avt.avatar_image)
     {
       SDL_Rect dst;
       int16_t destination;
@@ -5275,17 +5306,17 @@ avt_move_in (void)
 
       dst.x = screen->w;
 
-      if (AVT_HEADER == avt_avatar_mode)
+      if (AVT_HEADER == avt.avatar_mode)
 	dst.y = mywindow.y + TOPMARGIN;
       else			// bottom
-	dst.y = mywindow.y + mywindow.h - avatar_image->h - AVATAR_MARGIN;
+	dst.y = mywindow.y + mywindow.h - avt.avatar_image->h - AVATAR_MARGIN;
 
-      dst.w = avatar_image->w;
-      dst.h = avatar_image->h;
+      dst.w = avt.avatar_image->w;
+      dst.h = avt.avatar_image->h;
       start_time = SDL_GetTicks ();
 
-      if (AVT_FOOTER == avt_avatar_mode or AVT_HEADER == avt_avatar_mode)
-	destination = ((window.x + window.w) / 2) - (avatar_image->w / 2);
+      if (AVT_FOOTER == avt.avatar_mode or AVT_HEADER == avt.avatar_mode)
+	destination = ((window.x + window.w) / 2) - (avt.avatar_image->w / 2);
       else			// left
 	destination = window.x + AVATAR_MARGIN;
 
@@ -5299,7 +5330,7 @@ avt_move_in (void)
 	  if (dst.x != oldx)
 	    {
 	      // draw
-	      SDL_BlitSurface (avatar_image, NULL, screen, &dst);
+	      SDL_BlitSurface (avt.avatar_image, NULL, screen, &dst);
 
 	      // update
 	      if ((oldx + dst.w) >= screen->w)
@@ -5314,7 +5345,7 @@ avt_move_in (void)
 		break;
 
 	      // delete (not visibly yet)
-	      SDL_FillRect (screen, &dst, background_color);
+	      SDL_FillRect (screen, &dst, avt.background_color);
 	    }
 
 	  // check event
@@ -5335,7 +5366,7 @@ avt_move_in (void)
 extern int
 avt_move_out (void)
 {
-  if (not screen or not avt_visible or _avt_STATUS != AVT_NORMAL)
+  if (not screen or not avt.avatar_visible or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   // needed to remove the balloon
@@ -5346,7 +5377,7 @@ avt_move_out (void)
    */
   SDL_SetClipRect (screen, NULL);
 
-  if (avatar_image)
+  if (avt.avatar_image)
     {
       SDL_Rect dst;
       uint32_t start_time;
@@ -5360,24 +5391,25 @@ avt_move_out (void)
       mywindow = window;
       mywindow.w = screen->w - mywindow.x;
 
-      if (AVT_FOOTER == avt_avatar_mode or AVT_HEADER == avt_avatar_mode)
-	start_position = ((window.x + window.w) / 2) - (avatar_image->w / 2);
+      if (AVT_FOOTER == avt.avatar_mode or AVT_HEADER == avt.avatar_mode)
+	start_position =
+	  ((window.x + window.w) / 2) - (avt.avatar_image->w / 2);
       else
 	start_position = mywindow.x + AVATAR_MARGIN;
 
       dst.x = start_position;
 
-      if (AVT_HEADER == avt_avatar_mode)
+      if (AVT_HEADER == avt.avatar_mode)
 	dst.y = mywindow.y + TOPMARGIN;
       else			// bottom
-	dst.y = mywindow.y + mywindow.h - avatar_image->h - AVATAR_MARGIN;
+	dst.y = mywindow.y + mywindow.h - avt.avatar_image->h - AVATAR_MARGIN;
 
-      dst.w = avatar_image->w;
-      dst.h = avatar_image->h;
+      dst.w = avt.avatar_image->w;
+      dst.h = avt.avatar_image->h;
       start_time = SDL_GetTicks ();
 
       // delete (not visibly yet)
-      SDL_FillRect (screen, &dst, background_color);
+      SDL_FillRect (screen, &dst, avt.background_color);
 
       while (dst.x < screen->w)
 	{
@@ -5392,7 +5424,7 @@ avt_move_out (void)
 	  if (dst.x != oldx)
 	    {
 	      // draw
-	      SDL_BlitSurface (avatar_image, NULL, screen, &dst);
+	      SDL_BlitSurface (avt.avatar_image, NULL, screen, &dst);
 
 	      // update
 	      if ((dst.x + dst.w) >= screen->w)
@@ -5406,7 +5438,7 @@ avt_move_out (void)
 		break;
 
 	      // delete (not visibly yet)
-	      SDL_FillRect (screen, &dst, background_color);
+	      SDL_FillRect (screen, &dst, avt.background_color);
 	    }
 
 	  // check event
@@ -5466,7 +5498,7 @@ avt_wait_button (void)
 	  break;
 
 	case SDL_KEYDOWN:
-	  if (SDLK_F11 != event.key.keysym.sym or reserve_single_keys)
+	  if (SDLK_F11 != event.key.keysym.sym or avt.reserve_single_keys)
 	    nokey = false;
 	  break;
 
@@ -5488,8 +5520,8 @@ avt_wait_button (void)
   SDL_FreeSurface (button_area);
   avt_update_rect (btn_rect);
 
-  if (textfield.x >= 0)
-    SDL_SetClipRect (screen, &viewport);
+  if (avt.textfield.x >= 0)
+    SDL_SetClipRect (screen, &avt.viewport);
 
   return _avt_STATUS;
 }
@@ -5740,8 +5772,8 @@ avt_navigate (const char *buttons)
   SDL_FreeSurface (buttons_area);
   avt_update_rect (buttons_rect);
 
-  if (textfield.x >= 0)
-    SDL_SetClipRect (screen, &viewport);
+  if (avt.textfield.x >= 0)
+    SDL_SetClipRect (screen, &avt.viewport);
 
   if (_avt_STATUS != AVT_NORMAL)
     result = _avt_STATUS;
@@ -5857,8 +5889,8 @@ avt_decide (void)
   SDL_FreeSurface (buttons_area);
   avt_update_rect (area_rect);
 
-  if (textfield.x >= 0)
-    SDL_SetClipRect (screen, &viewport);
+  if (avt.textfield.x >= 0)
+    SDL_SetClipRect (screen, &avt.viewport);
 
   return result != 0;
 }
@@ -5882,9 +5914,9 @@ avt_show_image (SDL_Surface * image)
   avt_free_screen ();
 
   // set informational variables
-  avt_visible = false;
-  textfield.x = textfield.y = textfield.w = textfield.h = -1;
-  viewport = textfield;
+  avt.avatar_visible = false;
+  avt.textfield.x = avt.textfield.y = avt.textfield.w = avt.textfield.h = -1;
+  avt.viewport = avt.textfield;
 
   // center image on screen
   dst.x = (screen->w / 2) - (image->w / 2);
@@ -5931,7 +5963,7 @@ avt_show_image_rw (SDL_RWops * RW)
   image = avt_load_image_xpm_RW (RW, 0);
 
   if (image == NULL)
-    image = avt_load_image_xbm_RW (RW, 0, bitmap_color);
+    image = avt_load_image_xbm_RW (RW, 0, avt.bitmap_color);
 
   if (image == NULL)
     {
@@ -6161,7 +6193,7 @@ avt_put_image_rw (SDL_RWops * RW, int x, int y, void *image_data,
   src = avt_load_image_xpm_RW (RW, 0);
 
   if (not src)
-    src = avt_load_image_xbm_RW (RW, 0, bitmap_color);
+    src = avt_load_image_xbm_RW (RW, 0, avt.bitmap_color);
 
   if (not src)
     {
@@ -6378,7 +6410,7 @@ avt_import_image_data (void *img, size_t imgsize)
       image = avt_load_image_xpm_RW (RW, 0);
 
       if (not image)
-	image = avt_load_image_xbm_RW (RW, 0, bitmap_color);
+	image = avt_load_image_xbm_RW (RW, 0, avt.bitmap_color);
 
       if (not image)
 	{
@@ -6416,7 +6448,7 @@ avt_import_image_file (const char *filename)
       image = avt_load_image_xpm_RW (RW, 0);
 
       if (not image)
-	image = avt_load_image_xbm_RW (RW, 0, bitmap_color);
+	image = avt_load_image_xbm_RW (RW, 0, avt.bitmap_color);
 
       if (not image)
 	{
@@ -6454,7 +6486,7 @@ avt_import_image_stream (avt_stream * stream)
       image = avt_load_image_xpm_RW (RW, 0);
 
       if (not image)
-	image = avt_load_image_xbm_RW (RW, 0, bitmap_color);
+	image = avt_load_image_xbm_RW (RW, 0, avt.bitmap_color);
 
       if (not image)
 	{
@@ -6483,20 +6515,20 @@ avt_set_avatar_image (SDL_Surface * image)
   if (_avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  if (avt_visible)
+  if (avt.avatar_visible)
     avt_clear_screen ();
 
   // free old image
-  if (avatar_image)
+  if (avt.avatar_image)
     {
-      SDL_FreeSurface (avatar_image);
-      avatar_image = NULL;
+      SDL_FreeSurface (avt.avatar_image);
+      avt.avatar_image = NULL;
     }
 
-  if (avt_name)
+  if (avt.name)
     {
-      SDL_free (avt_name);
-      avt_name = NULL;
+      SDL_free (avt.name);
+      avt.name = NULL;
     }
 
   // import the avatar image
@@ -6504,11 +6536,11 @@ avt_set_avatar_image (SDL_Surface * image)
     {
       // convert image to display-format for faster drawing
       if (image->flags & SDL_SRCALPHA)
-	avatar_image = SDL_DisplayFormatAlpha (image);
+	avt.avatar_image = SDL_DisplayFormatAlpha (image);
       else
-	avatar_image = SDL_DisplayFormat (image);
+	avt.avatar_image = SDL_DisplayFormat (image);
 
-      if (not avatar_image)
+      if (not avt.avatar_image)
 	{
 	  SDL_SetError ("couldn't load avatar");
 	  _avt_STATUS = AVT_ERROR;
@@ -6519,8 +6551,8 @@ avt_set_avatar_image (SDL_Surface * image)
   calculate_balloonmaxheight ();
 
   // set actual balloon size to the maximum size
-  balloonheight = balloonmaxheight;
-  balloonwidth = AVT_LINELENGTH;
+  avt.balloonheight = avt.balloonmaxheight;
+  avt.balloonwidth = AVT_LINELENGTH;
 
   return _avt_STATUS;
 }
@@ -6606,7 +6638,7 @@ avt_avatar_image_rw (SDL_RWops * RW)
   image = avt_load_image_xpm_RW (RW, 0);
 
   if (not image)
-    image = avt_load_image_xbm_RW (RW, 0, bitmap_color);
+    image = avt_load_image_xbm_RW (RW, 0, avt.bitmap_color);
 
   if (not image)
     {
@@ -6658,21 +6690,21 @@ avt_set_avatar_name (const wchar_t * name)
   int size;
 
   // clear old name
-  if (avt_name)
+  if (avt.name)
     {
-      SDL_free (avt_name);
-      avt_name = NULL;
+      SDL_free (avt.name);
+      avt.name = NULL;
     }
 
   // copy name
   if (name and * name)
     {
       size = (avt_strwidth (name) + 1) * sizeof (wchar_t);
-      avt_name = (wchar_t *) SDL_malloc (size);
-      SDL_memcpy (avt_name, name, size);
+      avt.name = (wchar_t *) SDL_malloc (size);
+      SDL_memcpy (avt.name, name, size);
     }
 
-  if (avt_visible)
+  if (avt.avatar_visible)
     avt_show_avatar ();
 
   return _avt_STATUS;
@@ -6702,14 +6734,14 @@ avt_set_avatar_name_mb (const char *name)
 extern void
 avt_set_text_background_ballooncolor (void)
 {
-  if (avt_character)
+  if (avt.character)
     {
-      SDL_SetColors (avt_character, &ballooncolor_RGB, 0, 1);
+      SDL_SetColors (avt.character, &avt.ballooncolor_RGB, 0, 1);
 
-      text_background_color = SDL_MapRGB (screen->format,
-					  ballooncolor_RGB.r,
-					  ballooncolor_RGB.g,
-					  ballooncolor_RGB.b);
+      avt.text_background_color = SDL_MapRGB (screen->format,
+					      avt.ballooncolor_RGB.r,
+					      avt.ballooncolor_RGB.g,
+					      avt.ballooncolor_RGB.b);
     }
 }
 
@@ -6719,16 +6751,16 @@ avt_set_balloon_color (int color)
 {
   if (color >= 0)
     {
-      ballooncolor_RGB.r = avt_red (color);
-      ballooncolor_RGB.g = avt_green (color);
-      ballooncolor_RGB.b = avt_blue (color);
+      avt.ballooncolor_RGB.r = avt_red (color);
+      avt.ballooncolor_RGB.g = avt_green (color);
+      avt.ballooncolor_RGB.b = avt_blue (color);
 
       if (screen)
 	{
 	  avt_set_text_background_ballooncolor ();
 
 	  // redraw the balloon, if it is visible
-	  if (textfield.x >= 0)
+	  if (avt.textfield.x >= 0)
 	    avt_draw_balloon ();
 	}
     }
@@ -6737,7 +6769,8 @@ avt_set_balloon_color (int color)
 extern int
 avt_get_balloon_color (void)
 {
-  return avt_rgb (ballooncolor_RGB.r, ballooncolor_RGB.g, ballooncolor_RGB.b);
+  return avt_rgb (avt.ballooncolor_RGB.r, avt.ballooncolor_RGB.g,
+		  avt.ballooncolor_RGB.b);
 }
 
 // can and should be called before avt_initialize
@@ -6746,20 +6779,20 @@ avt_set_background_color (int color)
 {
   if (color >= 0)
     {
-      backgroundcolornr = color;
+      avt.backgroundcolornr = color;
 
       if (screen)
 	{
-	  background_color =
+	  avt.background_color =
 	    SDL_MapRGB (screen->format, avt_red (color),
 			avt_green (color), avt_blue (color));
 
-	  if (textfield.x >= 0)
+	  if (avt.textfield.x >= 0)
 	    {
-	      avt_visible = false;	// force to redraw everything
+	      avt.avatar_visible = false;	// force to redraw everything
 	      avt_draw_balloon ();
 	    }
-	  else if (avt_visible)
+	  else if (avt.avatar_visible)
 	    avt_show_avatar ();
 	  else
 	    avt_clear_screen ();
@@ -6770,31 +6803,31 @@ avt_set_background_color (int color)
 extern int
 avt_get_background_color (void)
 {
-  return backgroundcolornr;
+  return avt.backgroundcolornr;
 }
 
 extern void
 avt_set_bitmap_color (int color)
 {
-  bitmap_color = color;
+  avt.bitmap_color = color;
 }
 
 extern void
 avt_reserve_single_keys (bool onoff)
 {
-  reserve_single_keys = onoff;
+  avt.reserve_single_keys = onoff;
 }
 
 extern void
 avt_register_keyhandler (avt_keyhandler handler)
 {
-  avt_ext_keyhandler = handler;
+  avt.ext_keyhandler = handler;
 }
 
 extern void
 avt_register_mousehandler (avt_mousehandler handler)
 {
-  avt_ext_mousehandler = handler;
+  avt.ext_mousehandler = handler;
 }
 
 extern void
@@ -6811,12 +6844,12 @@ avt_set_text_color (int colornr)
 {
   SDL_Color color;
 
-  if (colornr >= 0 and avt_character)
+  if (colornr >= 0 and avt.character)
     {
       color.r = avt_red (colornr);
       color.g = avt_green (colornr);
       color.b = avt_blue (colornr);
-      SDL_SetColors (avt_character, &color, 1, 1);
+      SDL_SetColors (avt.character, &color, 1, 1);
     }
 }
 
@@ -6825,14 +6858,14 @@ avt_set_text_background_color (int colornr)
 {
   SDL_Color color;
 
-  if (colornr >= 0 and avt_character)
+  if (colornr >= 0 and avt.character)
     {
       color.r = avt_red (colornr);
       color.g = avt_green (colornr);
       color.b = avt_blue (colornr);
-      SDL_SetColors (avt_character, &color, 0, 1);
+      SDL_SetColors (avt.character, &color, 0, 1);
 
-      text_background_color =
+      avt.text_background_color =
 	SDL_MapRGB (screen->format, color.r, color.g, color.b);
     }
 }
@@ -6840,98 +6873,98 @@ avt_set_text_background_color (int colornr)
 extern void
 avt_inverse (bool onoff)
 {
-  inverse = onoff;
+  avt.inverse = onoff;
 }
 
 extern bool
 avt_get_inverse (void)
 {
-  return inverse;
+  return avt.inverse;
 }
 
 extern void
 avt_bold (bool onoff)
 {
-  bold = onoff;
+  avt.bold = onoff;
 }
 
 extern bool
 avt_get_bold (void)
 {
-  return bold;
+  return avt.bold;
 }
 
 extern void
 avt_underlined (bool onoff)
 {
-  underlined = onoff;
+  avt.underlined = onoff;
 }
 
 extern bool
 avt_get_underlined (void)
 {
-  return underlined;
+  return avt.underlined;
 }
 
 extern void
 avt_normal_text (void)
 {
-  underlined = bold = inverse = markup = false;
+  avt.underlined = avt.bold = avt.inverse = avt.markup = false;
 
   // set color table for character canvas
-  if (avt_character)
+  if (avt.character)
     {
       SDL_Color colors[2];
 
       // background -> ballooncolor
-      colors[0].r = ballooncolor_RGB.r;
-      colors[0].g = ballooncolor_RGB.g;
-      colors[0].b = ballooncolor_RGB.b;
+      colors[0].r = avt.ballooncolor_RGB.r;
+      colors[0].g = avt.ballooncolor_RGB.g;
+      colors[0].b = avt.ballooncolor_RGB.b;
       // black foreground
       colors[1].r = colors[1].g = colors[1].b = 0x00;
 
-      SDL_SetColors (avt_character, colors, 0, 2);
+      SDL_SetColors (avt.character, colors, 0, 2);
 
-      text_background_color = SDL_MapRGB (screen->format,
-					  ballooncolor_RGB.r,
-					  ballooncolor_RGB.g,
-					  ballooncolor_RGB.b);
+      avt.text_background_color = SDL_MapRGB (screen->format,
+					      avt.ballooncolor_RGB.r,
+					      avt.ballooncolor_RGB.g,
+					      avt.ballooncolor_RGB.b);
     }
 }
 
 extern void
 avt_markup (bool onoff)
 {
-  markup = onoff;
-  underlined = bold = false;
+  avt.markup = onoff;
+  avt.underlined = avt.bold = false;
 }
 
 extern void
 avt_set_text_delay (int delay)
 {
-  text_delay = delay;
+  avt.text_delay = delay;
 
   // eventually switch off updates lock
-  if (text_delay != 0 and hold_updates)
+  if (avt.text_delay != 0 and avt.hold_updates)
     avt_lock_updates (false);
 }
 
 extern void
 avt_set_flip_page_delay (int delay)
 {
-  flip_page_delay = delay;
+  avt.flip_page_delay = delay;
 }
 
 extern void
 avt_set_scroll_mode (int mode)
 {
-  scroll_mode = mode;
+  avt.scroll_mode = mode;
 }
 
 extern int
 avt_get_scroll_mode (void)
 {
-  return scroll_mode;
+  return avt.scroll_mode;
 }
 
 extern char *
@@ -7020,18 +7053,18 @@ avt_credits (const wchar_t * text, bool centered)
     return _avt_STATUS;
 
   // store old background color
-  old_backgroundcolornr = backgroundcolornr;
+  old_backgroundcolornr = avt.backgroundcolornr;
 
   // deactivate mous/key- handlers
-  old_keyhandler = avt_ext_keyhandler;
-  old_mousehandler = avt_ext_mousehandler;
-  avt_ext_keyhandler = NULL;
-  avt_ext_mousehandler = NULL;
+  old_keyhandler = avt.ext_keyhandler;
+  old_mousehandler = avt.ext_mousehandler;
+  avt.ext_keyhandler = NULL;
+  avt.ext_mousehandler = NULL;
 
   // needed to handle resizing correctly
-  textfield.x = textfield.y = textfield.w = textfield.h = -1;
-  avt_visible = false;
-  hold_updates = false;
+  avt.textfield.x = avt.textfield.y = avt.textfield.w = avt.textfield.h = -1;
+  avt.avatar_visible = false;
+  avt.hold_updates = false;
 
   // the background-color is used when the window is resized
   // this implicitly also clears the screen
@@ -7062,7 +7095,7 @@ avt_credits (const wchar_t * text, bool centered)
     }
 
   // cursor position for last_line
-  cursor.y = 0;
+  avt.cursor.y = 0;
 
   // show text
   p = text;
@@ -7086,15 +7119,15 @@ avt_credits (const wchar_t * text, bool centered)
 
       // draw line
       if (centered)
-	cursor.x = (window.w / 2) - (length * fontwidth / 2);
+	avt.cursor.x = (window.w / 2) - (length * fontwidth / 2);
       else
-	cursor.x = 0;
+	avt.cursor.x = 0;
 
       // clear line
       SDL_FillRect (last_line, NULL, 0);
 
       // print on last_line
-      for (int i = 0; i < length; i++, cursor.x += fontwidth)
+      for (int i = 0; i < length; i++, avt.cursor.x += fontwidth)
 	avt_drawchar ((avt_char) line[i], last_line);
 
       avt_credits_up (last_line);
@@ -7117,8 +7150,8 @@ avt_credits (const wchar_t * text, bool centered)
   avt_normal_text ();
   avt_clear_screen ();
 
-  avt_ext_keyhandler = old_keyhandler;
-  avt_ext_mousehandler = old_mousehandler;
+  avt.ext_keyhandler = old_keyhandler;
+  avt.ext_mousehandler = old_mousehandler;
 
   return _avt_STATUS;
 }
@@ -7161,7 +7194,7 @@ avt_quit (void)
     avt_iconv_close (input_cd);
   output_cd = input_cd = ICONV_UNINITIALIZED;
 
-  avt_encoding[0] = '\0';
+  avt.encoding[0] = '\0';
 
   if (screen)
     {
@@ -7169,22 +7202,23 @@ avt_quit (void)
       mpointer = NULL;
       SDL_FreeSurface (circle);
       circle = NULL;
-      SDL_FreeSurface (pointer);
-      pointer = NULL;
-      SDL_FreeSurface (avt_character);
-      avt_character = NULL;
-      SDL_FreeSurface (avatar_image);
-      avatar_image = NULL;
-      SDL_FreeSurface (avt_text_cursor);
-      avt_text_cursor = NULL;
-      SDL_FreeSurface (avt_cursor_character);
-      avt_cursor_character = NULL;
+      SDL_FreeSurface (avt.pointer);
+      avt.pointer = NULL;
+      SDL_FreeSurface (avt.character);
+      avt.character = NULL;
+      SDL_FreeSurface (avt.avatar_image);
+      avt.avatar_image = NULL;
+      SDL_FreeSurface (avt.text_cursor);
+      avt.text_cursor = NULL;
+      SDL_FreeSurface (avt.cursor_character);
+      avt.cursor_character = NULL;
       avt_alert_func = NULL;
       SDL_Quit ();
       screen = NULL;		// it was freed by SDL_Quit
-      avt_visible = false;
-      textfield.x = textfield.y = textfield.w = textfield.h = -1;
-      viewport = textfield;
+      avt.avatar_visible = false;
+      avt.textfield.x = avt.textfield.y = avt.textfield.w = avt.textfield.h =
+	-1;
+      avt.viewport = avt.textfield;
     }
 }
 
@@ -7216,9 +7250,9 @@ avt_set_title (const char *title, const char *shortname)
     avt_mb_encoding (MB_DEFAULT_ENCODING);
 
   // check if it's already in correct encoding default="UTF-8"
-  if (SDL_strcasecmp ("UTF-8", avt_encoding) == 0
-      or SDL_strcasecmp ("UTF8", avt_encoding) == 0
-      or SDL_strcasecmp ("CP65001", avt_encoding) == 0)
+  if (SDL_strcasecmp ("UTF-8", avt.encoding) == 0
+      or SDL_strcasecmp ("UTF8", avt.encoding) == 0
+      or SDL_strcasecmp ("CP65001", avt.encoding) == 0)
     SDL_WM_SetCaption (title, shortname);
   else				// convert them to UTF-8
     {
@@ -7227,7 +7261,7 @@ avt_set_title (const char *title, const char *shortname)
 
       if (title and * title)
 	{
-	  if (avt_recode_buffer ("UTF-8", avt_encoding,
+	  if (avt_recode_buffer ("UTF-8", avt.encoding,
 				 my_title, sizeof (my_title),
 				 title, SDL_strlen (title)) == (size_t) (-1))
 	    {
@@ -7238,7 +7272,7 @@ avt_set_title (const char *title, const char *shortname)
 
       if (shortname and * shortname)
 	{
-	  if (avt_recode_buffer ("UTF-8", avt_encoding,
+	  if (avt_recode_buffer ("UTF-8", avt.encoding,
 				 my_shortname, sizeof (my_shortname),
 				 shortname,
 				 SDL_strlen (shortname)) == (size_t) (-1))
@@ -7299,16 +7333,21 @@ extern void
 avt_reset ()
 {
   _avt_STATUS = AVT_NORMAL;
-  reserve_single_keys = false;
-  newline_mode = true;
-  auto_margin = true;
-  origin_mode = true;		// for backwards compatibility
-  scroll_mode = 1;
-  bitmap_color = 0x000000;	// black
-
-  ballooncolor_RGB.r = 255;
-  ballooncolor_RGB.g = 250;
-  ballooncolor_RGB.b = 240;
+  avt.reserve_single_keys = false;
+  avt.newline_mode = true;
+  avt.auto_margin = true;
+  avt.origin_mode = true;	// for backwards compatibility
+  avt.scroll_mode = 1;
+  avt.textdir_rtl = AVT_LEFT_TO_RIGHT;
+  avt.flip_page_delay = AVT_DEFAULT_FLIP_PAGE_DELAY;
+  avt.text_delay = 0;
+  avt.bitmap_color = 0x000000;	// black
+  avt.ballooncolor_RGB.r = 255;
+  avt.ballooncolor_RGB.g = 250;
+  avt.ballooncolor_RGB.b = 240;
+  avt.cursor_color.r = 0xF2;
+  avt.cursor_color.g = 0x89;
+  avt.cursor_color.b = 0x19;
 
   avt_clear_screen ();		// also resets some variables
   avt_normal_text ();
@@ -7317,7 +7356,7 @@ avt_reset ()
   avt_set_mouse_visible (true);
   avt_set_avatar_name (NULL);
 
-  if (avatar_image)
+  if (avt.avatar_image)
     avt_set_avatar_image (NULL);
 }
 
@@ -7334,7 +7373,7 @@ avt_start (const char *title, const char *shortname, int mode)
       return _avt_STATUS;
     }
 
-  avt_mode = mode;
+  avt.mode = mode;
 
   avt_reset ();
 
@@ -7370,7 +7409,7 @@ avt_start (const char *title, const char *shortname, int mode)
   screenflags = SDL_SWSURFACE | SDL_ANYFORMAT | SDL_RESIZABLE;
 
 #ifndef __WIN32__
-  if (avt_mode == AVT_AUTOMODE)
+  if (avt.mode == AVT_AUTOMODE)
     {
       SDL_Rect **modes;
 
@@ -7387,10 +7426,10 @@ avt_start (const char *title, const char *shortname, int mode)
 
   SDL_ClearError ();
 
-  if (avt_mode >= 1)
+  if (avt.mode >= 1)
     screenflags |= SDL_FULLSCREEN | SDL_NOFRAME;
 
-  if (avt_mode == AVT_FULLSCREENNOSWITCH)
+  if (avt.mode == AVT_FULLSCREENNOSWITCH)
     {
       screen = SDL_SetVideoMode (0, 0, COLORDEPTH, screenflags);
 
@@ -7426,16 +7465,16 @@ avt_start (const char *title, const char *shortname, int mode)
   avt_avatar_window ();
   avt_set_mouse_pointer ();
 
-  background_color = SDL_MapRGB (screen->format,
-				 avt_red (backgroundcolornr),
-				 avt_green (backgroundcolornr),
-				 avt_blue (backgroundcolornr));
+  avt.background_color = SDL_MapRGB (screen->format,
+				     avt_red (avt.backgroundcolornr),
+				     avt_green (avt.backgroundcolornr),
+				     avt_blue (avt.backgroundcolornr));
 
   // reserve memory for one character
-  avt_character = SDL_CreateRGBSurface (SDL_SWSURFACE, fontwidth, fontheight,
+  avt.character = SDL_CreateRGBSurface (SDL_SWSURFACE, fontwidth, fontheight,
 					1, 0, 0, 0, 0);
 
-  if (not avt_character)
+  if (not avt.character)
     {
       SDL_SetError ("out of memory");
       _avt_STATUS = AVT_ERROR;
@@ -7445,57 +7484,59 @@ avt_start (const char *title, const char *shortname, int mode)
   avt_normal_text ();
 
   // prepare text-mode cursor
-  avt_text_cursor =
+  avt.text_cursor =
     SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_SRCALPHA | SDL_RLEACCEL,
 			  fontwidth, fontheight, 8, 0, 0, 0, 128);
 
-  if (not avt_text_cursor)
+  if (not avt.text_cursor)
     {
-      SDL_FreeSurface (avt_character);
+      SDL_FreeSurface (avt.character);
       SDL_SetError ("out of memory");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
 
   // set color table for character canvas
-  SDL_FillRect (avt_text_cursor, NULL, 0);
-  SDL_SetColors (avt_text_cursor, &cursor_color, 0, 1);
-  SDL_SetAlpha (avt_text_cursor, SDL_SRCALPHA | SDL_RLEACCEL, 128);
+  SDL_FillRect (avt.text_cursor, NULL, 0);
+  SDL_SetColors (avt.text_cursor, &avt.cursor_color, 0, 1);
+  SDL_SetAlpha (avt.text_cursor, SDL_SRCALPHA | SDL_RLEACCEL, 128);
 
   // set actual balloon size to the maximum size
-  balloonheight = balloonmaxheight;
-  balloonwidth = AVT_LINELENGTH;
+  avt.balloonheight = avt.balloonmaxheight;
+  avt.balloonwidth = AVT_LINELENGTH;
 
   // reserve space for character under text-mode cursor
-  avt_cursor_character =
+  avt.cursor_character =
     SDL_CreateRGBSurface (SDL_SWSURFACE, fontwidth, fontheight,
 			  screen->format->BitsPerPixel,
 			  screen->format->Rmask, screen->format->Gmask,
 			  screen->format->Bmask, screen->format->Amask);
 
-  if (not avt_cursor_character)
+  if (not avt.cursor_character)
     {
-      SDL_FreeSurface (avt_text_cursor);
-      SDL_FreeSurface (avt_character);
+      SDL_FreeSurface (avt.text_cursor);
+      SDL_FreeSurface (avt.character);
       SDL_SetError ("out of memory");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
 
   circle =
-    avt_load_image_xbm (AVT_XBM_INFO (circle), avt_rgb (ballooncolor_RGB.r,
-							ballooncolor_RGB.g,
-							ballooncolor_RGB.b));
+    avt_load_image_xbm (AVT_XBM_INFO (circle),
+			avt_rgb (avt.ballooncolor_RGB.r,
+				 avt.ballooncolor_RGB.g,
+				 avt.ballooncolor_RGB.b));
 
   // just to be save, because of avt_reset()
-  if (pointer)
-    SDL_FreeSurface (pointer);
+  if (avt.pointer)
+    SDL_FreeSurface (avt.pointer);
 
-  avt_avatar_mode = AVT_SAY;
-  pointer =
+  avt.avatar_mode = AVT_SAY;
+  avt.pointer =
     avt_load_image_xbm (AVT_XBM_INFO (balloonpointer),
-			avt_rgb (ballooncolor_RGB.r, ballooncolor_RGB.g,
-				 ballooncolor_RGB.b));
+			avt_rgb (avt.ballooncolor_RGB.r,
+				 avt.ballooncolor_RGB.g,
+				 avt.ballooncolor_RGB.b));
 
   // needed to get the character of the typed key
   SDL_EnableUNICODE (1);

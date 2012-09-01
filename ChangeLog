@@ -1,3 +1,7 @@
+2012-09-01  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-sdl.c (avt): bundle most settings in one structure
+
 2012-08-29  Andreas K. Foerster  <info@akfoerster.de>
 
 	* filechooser.c (get_directory): improved memory mangagement
