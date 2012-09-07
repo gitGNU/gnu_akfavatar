@@ -341,6 +341,20 @@ static struct avt_settings avt = {
   .textdir_rtl = AVT_LEFT_TO_RIGHT
 };
 
+
+// Note: any event should have an associated key, so key == event
+
+#define AVT_KEYBUFFER_SIZE  512
+
+struct avt_key_buffer
+{
+  uint16_t position, end;
+  avt_char buffer[AVT_KEYBUFFER_SIZE];
+};
+
+static struct avt_key_buffer avt_keys;
+
+
 #if defined(__GNUC__) and not defined(__WIN32__)
 #  define AVT_HIDDEN __attribute__((__visibility__("hidden")))
 #else
@@ -2154,6 +2168,218 @@ avt_get_mode (void)
   return avt.mode;
 }
 
+// push key into buffer
+static void
+avt_push_key (avt_char key)
+{
+  int new_end;
+
+  if (key == 0x1B and not avt.reserve_single_keys)
+    {
+      _avt_STATUS = AVT_QUIT;
+      return;
+    }
+
+  new_end = (avt_keys.end + 1) % AVT_KEYBUFFER_SIZE;
+
+  // if buffer is not full
+  if (new_end != avt_keys.position)
+    {
+      avt_keys.buffer[avt_keys.end] = key;
+      avt_keys.end = new_end;
+    }
+}
+
+static inline void
+avt_analyze_key (SDL_keysym key)
+{
+  // return immediately to avoid the external key handler
+
+  switch (key.sym)
+    {
+    case SDLK_PAUSE:
+      avt_pause ();
+      break;
+
+    case SDLK_ESCAPE:
+      if (avt.reserve_single_keys)
+	avt_push_key (0x1B);
+      else
+	{
+	  _avt_STATUS = AVT_QUIT;
+	  return;
+	}
+      break;
+
+    case SDLK_q:
+      if (key.mod & KMOD_LALT)
+	{
+	  _avt_STATUS = AVT_QUIT;
+	  return;
+	}
+      else
+	{
+	  if (key.unicode)
+	    avt_push_key (key.unicode);
+	}
+      break;
+
+    case SDLK_F11:
+      if (avt.reserve_single_keys)
+	avt_push_key (AVT_KEY_F11);
+      else
+	{
+	  avt_toggle_fullscreen ();
+	  return;
+	}
+      break;
+
+    case SDLK_RETURN:
+      if (key.mod & KMOD_LALT)
+	{
+	  avt_toggle_fullscreen ();
+	  return;
+	}
+      else
+	avt_push_key (AVT_KEY_ENTER);
+      break;
+
+    case SDLK_f:
+      if ((key.mod & KMOD_CTRL) and (key.mod & KMOD_LALT))
+	{
+	  avt_toggle_fullscreen ();
+	  return;
+	}
+      else
+	{
+	  if (key.unicode)
+	    avt_push_key (key.unicode);
+	}
+      break;
+
+    case SDLK_UP:
+    case SDLK_KP8:
+      if (key.unicode)
+	avt_push_key (key.unicode);
+      else
+	avt_push_key (AVT_KEY_UP);
+      break;
+
+    case SDLK_DOWN:
+    case SDLK_KP2:
+      if (key.unicode)
+	avt_push_key (key.unicode);
+      else
+	avt_push_key (AVT_KEY_DOWN);
+      break;
+
+    case SDLK_RIGHT:
+    case SDLK_KP6:
+      if (key.unicode)
+	avt_push_key (key.unicode);
+      else
+	avt_push_key (AVT_KEY_RIGHT);
+      break;
+
+    case SDLK_LEFT:
+    case SDLK_KP4:
+      if (key.unicode)
+	avt_push_key (key.unicode);
+      else
+	avt_push_key (AVT_KEY_LEFT);
+      break;
+
+    case SDLK_INSERT:
+    case SDLK_KP0:
+      if (key.unicode)
+	avt_push_key (key.unicode);
+      else
+	avt_push_key (AVT_KEY_INSERT);
+      break;
+
+    case SDLK_DELETE:
+    case SDLK_KP_PERIOD:
+      if (key.unicode)
+	avt_push_key (key.unicode);
+      else
+	avt_push_key (AVT_KEY_DELETE);
+      break;
+
+    case SDLK_HOME:
+    case SDLK_KP7:
+      if (key.unicode)
+	avt_push_key (key.unicode);
+      else
+	avt_push_key (AVT_KEY_HOME);
+      break;
+
+    case SDLK_END:
+    case SDLK_KP1:
+      if (key.unicode)
+	avt_push_key (key.unicode);
+      else
+	avt_push_key (AVT_KEY_END);
+      break;
+
+    case SDLK_PAGEUP:
+    case SDLK_KP9:
+      if (key.unicode)
+	avt_push_key (key.unicode);
+      else
+	avt_push_key (AVT_KEY_PAGEUP);
+      break;
+
+    case SDLK_PAGEDOWN:
+    case SDLK_KP3:
+      if (key.unicode)
+	avt_push_key (key.unicode);
+      else
+	avt_push_key (AVT_KEY_PAGEDOWN);
+      break;
+
+    case SDLK_BACKSPACE:
+      avt_push_key (AVT_KEY_BACKSPACE);
+      break;
+
+    case SDLK_HELP:
+      avt_push_key (AVT_KEY_HELP);
+      break;
+
+    case SDLK_MENU:
+      avt_push_key (AVT_KEY_MENU);
+      break;
+
+    case SDLK_EURO:
+      avt_push_key (0x20AC);
+      break;
+
+    case SDLK_F1:
+    case SDLK_F2:
+    case SDLK_F3:
+    case SDLK_F4:
+    case SDLK_F5:
+    case SDLK_F6:
+    case SDLK_F7:
+    case SDLK_F8:
+    case SDLK_F9:
+    case SDLK_F10:
+    case SDLK_F12:
+    case SDLK_F13:
+    case SDLK_F14:
+    case SDLK_F15:
+      avt_push_key (AVT_KEY_F1 + (key.sym - SDLK_F1));
+      break;
+
+    default:
+      if (key.unicode)
+	avt_push_key (key.unicode);
+      break;
+    }				// switch (key.sym)
+
+  if (avt.ext_keyhandler)
+    avt.ext_keyhandler (key.sym, key.mod, key.unicode);
+}
+
 static void
 avt_analyze_event (SDL_Event * event)
 {
@@ -2199,27 +2425,7 @@ avt_analyze_event (SDL_Event * event)
       break;
 
     case SDL_KEYDOWN:
-      if (event->key.keysym.sym == SDLK_PAUSE)
-	avt_pause ();
-      else if (event->key.keysym.sym == SDLK_ESCAPE
-	       and not avt.reserve_single_keys)
-	_avt_STATUS = AVT_QUIT;
-      else if (event->key.keysym.sym == SDLK_q
-	       and (event->key.keysym.mod & KMOD_LALT))
-	_avt_STATUS = AVT_QUIT;
-      else if (event->key.keysym.sym ==
-	       SDLK_F11 and not avt.reserve_single_keys)
-	avt_toggle_fullscreen ();
-      else if (event->key.keysym.sym == SDLK_RETURN
-	       and event->key.keysym.mod & KMOD_LALT)
-	avt_toggle_fullscreen ();
-      else if (event->key.keysym.sym == SDLK_f
-	       and (event->key.keysym.mod & KMOD_CTRL)
-	       and (event->key.keysym.mod & KMOD_LALT))
-	avt_toggle_fullscreen ();
-      else if (avt.ext_keyhandler)
-	avt.ext_keyhandler (event->key.keysym.sym, event->key.keysym.mod,
-			    event->key.keysym.unicode);
+      avt_analyze_key (event->key.keysym);
       break;
     }				// switch (event->type)
 }
@@ -4234,109 +4440,33 @@ avt_tell_mb (const char *txt)
   return _avt_STATUS;
 }
 
+static inline void
+avt_clear_keys (void)
+{
+  avt_keys.position = avt_keys.end = 0;
+}
+
+static inline void
+avt_wait_key (void)
+{
+  SDL_Event event;
+
+  while (_avt_STATUS == AVT_NORMAL and avt_keys.position == avt_keys.end)
+    {
+      SDL_WaitEvent (&event);
+      avt_analyze_event (&event);
+    }
+}
+
 extern int
 avt_key (avt_char * ch)
 {
-  SDL_Event event;
-  avt_char c;
-
-  c = 0;
-
-  if (screen)
-    {
-      while (not c and (_avt_STATUS == AVT_NORMAL))
-	{
-	  SDL_WaitEvent (&event);
-	  avt_analyze_event (&event);
-
-	  if (SDL_KEYDOWN == event.type)
-	    {
-	      if (event.key.keysym.unicode)
-		c = event.key.keysym.unicode;
-	      else
-		switch (event.key.keysym.sym)
-		  {
-		  case SDLK_UP:
-		  case SDLK_KP8:
-		    c = AVT_KEY_UP;
-		    break;
-		  case SDLK_DOWN:
-		  case SDLK_KP2:
-		    c = AVT_KEY_DOWN;
-		    break;
-		  case SDLK_RIGHT:
-		  case SDLK_KP6:
-		    c = AVT_KEY_RIGHT;
-		    break;
-		  case SDLK_LEFT:
-		  case SDLK_KP4:
-		    c = AVT_KEY_LEFT;
-		    break;
-		  case SDLK_INSERT:
-		  case SDLK_KP0:
-		    c = AVT_KEY_INSERT;
-		    break;
-		  case SDLK_DELETE:
-		  case SDLK_KP_PERIOD:
-		    c = AVT_KEY_DELETE;
-		    break;
-		  case SDLK_BACKSPACE:
-		    c = AVT_KEY_BACKSPACE;
-		    break;
-		  case SDLK_HOME:
-		  case SDLK_KP7:
-		    c = AVT_KEY_HOME;
-		    break;
-		  case SDLK_END:
-		  case SDLK_KP1:
-		    c = AVT_KEY_END;
-		    break;
-		  case SDLK_PAGEUP:
-		  case SDLK_KP9:
-		    c = AVT_KEY_PAGEUP;
-		    break;
-		  case SDLK_PAGEDOWN:
-		  case SDLK_KP3:
-		    c = AVT_KEY_PAGEDOWN;
-		    break;
-		  case SDLK_HELP:
-		    c = AVT_KEY_HELP;
-		    break;
-		  case SDLK_MENU:
-		    c = AVT_KEY_MENU;
-		    break;
-		  case SDLK_EURO:
-		    c = 0x20AC;
-		    break;
-		  case SDLK_F1:
-		  case SDLK_F2:
-		  case SDLK_F3:
-		  case SDLK_F4:
-		  case SDLK_F5:
-		  case SDLK_F6:
-		  case SDLK_F7:
-		  case SDLK_F8:
-		  case SDLK_F9:
-		  case SDLK_F10:
-		  case SDLK_F12:
-		  case SDLK_F13:
-		  case SDLK_F14:
-		  case SDLK_F15:
-		    c = AVT_KEY_F1 + (event.key.keysym.sym - SDLK_F1);
-		    break;
-		  case SDLK_F11:
-		    if (avt.reserve_single_keys)
-		      c = AVT_KEY_F11;
-		    break;
-		  default:
-		    break;
-		  }		// switch
-	    }			// if (event.type)
-	}			// while
-    }				// if (screen)
+  avt_wait_key ();
 
   if (ch)
-    *ch = c;
+    *ch = avt_keys.buffer[avt_keys.position];
+
+  avt_keys.position = (avt_keys.position + 1) % AVT_KEYBUFFER_SIZE;
 
   return _avt_STATUS;
 }
@@ -7350,6 +7480,7 @@ avt_reset ()
   avt.cursor_color.g = 0x89;
   avt.cursor_color.b = 0x19;
 
+  avt_clear_keys ();
   avt_clear_screen ();		// also resets some variables
   avt_normal_text ();
   avt_reset_tab_stops ();

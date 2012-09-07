@@ -1,3 +1,9 @@
+2012-09-07  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-sdl.c (avt_push_key, avt_analyze_key)
+	(avt_clear_keys, avt_wait_key): new functions
+	(avt_analyze_event, avt_key, avt_reset): adapted
+
 2012-09-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl.c (avt): bundle most settings in one structure
