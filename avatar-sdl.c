@@ -2389,6 +2389,33 @@ avt_analyze_key (SDL_keysym key)
 }
 
 static void
+avt_call_mouse_handler (SDL_Event * event)
+{
+  int x, y;
+
+  if (avt.textfield.x >= 0)
+    {
+      // if there is a textfield, use the character position
+      x = (event->button.x - avt.textfield.x) / fontwidth + 1;
+      y = (event->button.y - avt.textfield.y) / LINEHEIGHT + 1;
+
+      // check if x and y are valid
+      if (x >= 1 and x <= AVT_LINELENGTH
+	  and y >= 1 and y <= (avt.textfield.h / LINEHEIGHT))
+	avt.ext_mousehandler (event->button.button,
+			      (event->button.state == SDL_PRESSED), x, y);
+    }
+  else				// no textfield
+    {
+      x = event->button.x - window.x;
+      y = event->button.y - window.y;
+      if (x >= 0 and x <= window.w and y >= 0 and y <= window.h)
+	avt.ext_mousehandler (event->button.button,
+			      (event->button.state == SDL_PRESSED), x, y);
+    }
+}
+
+static void
 avt_analyze_event (SDL_Event * event)
 {
   switch (event->type)
@@ -2401,35 +2428,14 @@ avt_analyze_event (SDL_Event * event)
       avt_resize (event->resize.w, event->resize.h);
       break;
 
-    case SDL_MOUSEBUTTONUP:
     case SDL_MOUSEBUTTONDOWN:
       if (avt.ext_mousehandler)
-	{
-	  int x, y;
+	avt_call_mouse_handler (event);
+      break;
 
-	  if (avt.textfield.x >= 0)
-	    {
-	      // if there is a textfield, use the character position
-	      x = (event->button.x - avt.textfield.x) / fontwidth + 1;
-	      y = (event->button.y - avt.textfield.y) / LINEHEIGHT + 1;
-
-	      // check if x and y are valid
-	      if (x >= 1 and x <= AVT_LINELENGTH
-		  and y >= 1 and y <= (avt.textfield.h / LINEHEIGHT))
-		avt.ext_mousehandler (event->button.button,
-				      (event->button.state == SDL_PRESSED),
-				      x, y);
-	    }
-	  else			// no textfield
-	    {
-	      x = event->button.x - window.x;
-	      y = event->button.y - window.y;
-	      if (x >= 0 and x <= window.w and y >= 0 and y <= window.h)
-		avt.ext_mousehandler (event->button.button,
-				      (event->button.state == SDL_PRESSED),
-				      x, y);
-	    }
-	}
+    case SDL_MOUSEBUTTONUP:
+      if (avt.ext_mousehandler)
+	avt_call_mouse_handler (event);
       break;
 
     case SDL_KEYDOWN:
