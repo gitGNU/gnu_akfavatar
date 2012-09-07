@@ -1994,13 +1994,6 @@ avt_set_avatar_mode (int mode)
     avt_show_avatar ();
 }
 
-// rectangles in some functions have to be adjusted
-#define avt_pre_resize(rect) \
-  do { rect.x -= window.x; rect.y -= window.y; } while(0)
-
-#define avt_post_resize(rect) \
-  do { rect.x += window.x; rect.y += window.y; } while(0)
-
 static void
 avt_resize (int w, int h)
 {
@@ -4732,6 +4725,7 @@ avt_button_inlay (SDL_Rect btn_rect, const unsigned char *bits,
   SDL_FreeSurface (inlay);
 }
 
+// coordinates are relative to window
 static void
 avt_show_button (int x, int y, enum avt_button_type type,
 		 avt_char key, int color)
@@ -4754,12 +4748,12 @@ avt_show_button (int x, int y, enum avt_button_type type,
 
   button = &avt_buttons[buttonnr];
 
-  button->x = x - window.x;
-  button->y = y - window.y;
+  button->x = x;
+  button->y = y;
   button->key = key;
 
-  btn_rect.x = x;
-  btn_rect.y = y;
+  btn_rect.x = x + window.x;
+  btn_rect.y = y + window.y;
   btn_rect.w = BASE_BUTTON_WIDTH;
   btn_rect.h = BASE_BUTTON_HEIGHT;
 
@@ -5073,13 +5067,13 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   // show close-button
 
   // alignment: right bottom
-  btn_rect.x = window.x + window.w - BASE_BUTTON_WIDTH - AVATAR_MARGIN;
-  btn_rect.y = window.y + window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
+  btn_rect.x = window.w - BASE_BUTTON_WIDTH - AVATAR_MARGIN;
+  btn_rect.y = window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
 
   // the button shouldn't be clipped
-  if (btn_rect.y < avt.textfield.y + avt.textfield.h
-      and btn_rect.x < avt.textfield.x + avt.textfield.w)
-    btn_rect.x = avt.textfield.x + avt.textfield.w;
+  if (btn_rect.y + window.y < avt.textfield.y + avt.textfield.h
+      and btn_rect.x + window.x < avt.textfield.x + avt.textfield.w)
+    btn_rect.x = avt.textfield.x + avt.textfield.w - window.x;
   // this is a workaround: moving it down clashed with a bug in SDL
 
   btn_rect.w = BASE_BUTTON_WIDTH;
@@ -5087,7 +5081,6 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 
   avt_show_button (btn_rect.x, btn_rect.y, btn_cancel,
 		   AVT_KEY_ESCAPE, BUTTON_COLOR);
-  avt_pre_resize (btn_rect);
 
   // limit to viewport (else more problems with binary files
   SDL_SetClipRect (screen, &avt.viewport);
@@ -5727,13 +5720,12 @@ avt_wait_button (void)
     return _avt_STATUS;
 
   // alignment: right bottom
-  btn_rect.x = window.x + window.w - BASE_BUTTON_WIDTH - AVATAR_MARGIN;
-  btn_rect.y = window.y + window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
+  btn_rect.x = window.w - BASE_BUTTON_WIDTH - AVATAR_MARGIN;
+  btn_rect.y = window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
   btn_rect.w = BASE_BUTTON_WIDTH;
   btn_rect.h = BASE_BUTTON_HEIGHT;
 
   avt_show_button (btn_rect.x, btn_rect.y, btn_right, L' ', BUTTON_COLOR);
-  avt_pre_resize (btn_rect);
 
   nokey = true;
   while (nokey and _avt_STATUS == AVT_NORMAL)
@@ -5805,8 +5797,8 @@ avt_navigate (const char *buttons)
   SDL_SetClipRect (screen, &window);
 
   // common button area
-  buttons_rect.y = window.y + window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
-  buttons_rect.x = window.x + window.w - AVATAR_MARGIN
+  buttons_rect.y = window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
+  buttons_rect.x = window.w - AVATAR_MARGIN
     - (button_count * (BASE_BUTTON_WIDTH + BUTTON_DISTANCE)) +
     BUTTON_DISTANCE;
   buttons_rect.h = BASE_BUTTON_HEIGHT;
@@ -5916,11 +5908,6 @@ avt_navigate (const char *buttons)
       button_pos += BASE_BUTTON_WIDTH + BUTTON_DISTANCE;
     }
 
-  // prepare resizing
-  avt_pre_resize (buttons_rect);
-  for (int i = 0; i < button_count; i++)
-    avt_pre_resize (rect[i]);
-
   while (result < 0 and _avt_STATUS == AVT_NORMAL)
     {
       SDL_WaitEvent (&event);
@@ -6025,8 +6012,8 @@ avt_decide (void)
   SDL_SetClipRect (screen, &window);
 
   // alignment: right bottom
-  yes_rect.x = window.x + window.w - BASE_BUTTON_WIDTH - AVATAR_MARGIN;
-  yes_rect.y = window.y + window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
+  yes_rect.x = window.w - BASE_BUTTON_WIDTH - AVATAR_MARGIN;
+  yes_rect.y = window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
   yes_rect.w = BASE_BUTTON_WIDTH;
   yes_rect.h = BASE_BUTTON_HEIGHT;
 
@@ -6043,10 +6030,6 @@ avt_decide (void)
   // draw buttons
   avt_show_button (yes_rect.x, yes_rect.y, btn_yes, L'+', 0x00AA00);
   avt_show_button (no_rect.x, no_rect.y, btn_no, L'-', 0xAA0000);
-
-  avt_pre_resize (yes_rect);
-  avt_pre_resize (no_rect);
-  avt_pre_resize (area_rect);
 
   avt_clear_keys ();
   result = -1;			// no result
