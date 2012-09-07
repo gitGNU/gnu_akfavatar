@@ -4723,7 +4723,8 @@ avt_button_inlay (SDL_Rect btn_rect, const unsigned char *bits,
 }
 
 static void
-avt_show_button (int x, int y, enum avt_button_type type, int color)
+avt_show_button (int x, int y, enum avt_button_type type,
+		 avt_char key, int color)
 {
   SDL_Rect btn_rect;
 
@@ -5021,7 +5022,8 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   btn_rect.w = BASE_BUTTON_WIDTH;
   btn_rect.h = BASE_BUTTON_HEIGHT;
 
-  avt_show_button (btn_rect.x, btn_rect.y, btn_cancel, BUTTON_COLOR);
+  avt_show_button (btn_rect.x, btn_rect.y, btn_cancel,
+		   AVT_KEY_ESCAPE, BUTTON_COLOR);
   avt_pre_resize (btn_rect);
 
   // limit to viewport (else more problems with binary files
@@ -5672,7 +5674,7 @@ avt_wait_button (void)
   btn_rect.h = BASE_BUTTON_HEIGHT;
 
   button_area = avt_save_background (btn_rect);
-  avt_show_button (btn_rect.x, btn_rect.y, btn_right, BUTTON_COLOR);
+  avt_show_button (btn_rect.x, btn_rect.y, btn_right, L' ', BUTTON_COLOR);
   avt_pre_resize (btn_rect);
 
   nokey = true;
@@ -5711,6 +5713,8 @@ avt_wait_button (void)
 
   if (avt.textfield.x >= 0)
     SDL_SetClipRect (screen, &avt.viewport);
+
+  avt_clear_keys ();
 
   return _avt_STATUS;
 }
@@ -5752,7 +5756,8 @@ avt_navigate (const char *buttons)
   // common button area
   buttons_rect.y = window.y + window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
   buttons_rect.x = window.x + window.w - AVATAR_MARGIN
-    - (button_count * (BASE_BUTTON_WIDTH + BUTTON_DISTANCE)) + BUTTON_DISTANCE;
+    - (button_count * (BASE_BUTTON_WIDTH + BUTTON_DISTANCE)) +
+    BUTTON_DISTANCE;
   buttons_rect.h = BASE_BUTTON_HEIGHT;
   buttons_rect.w = window.x + window.w - AVATAR_MARGIN - buttons_rect.x;
 
@@ -5783,62 +5788,73 @@ avt_navigate (const char *buttons)
       switch (buttons[i])
 	{
 	case 'l':
-	  avt_show_button (rect[i].x, rect[i].y, btn_left, BUTTON_COLOR);
+	  avt_show_button (rect[i].x, rect[i].y, btn_left, L'l',
+			   BUTTON_COLOR);
 	  break;
 
 	case 'd':
-	  avt_show_button (rect[i].x, rect[i].y, btn_down, BUTTON_COLOR);
+	  avt_show_button (rect[i].x, rect[i].y, btn_down, L'd',
+			   BUTTON_COLOR);
 	  break;
 
 	case 'u':
-	  avt_show_button (rect[i].x, rect[i].y, btn_up, BUTTON_COLOR);
+	  avt_show_button (rect[i].x, rect[i].y, btn_up, L'u', BUTTON_COLOR);
 	  break;
 
 	case 'r':
-	  avt_show_button (rect[i].x, rect[i].y, btn_right, BUTTON_COLOR);
+	  avt_show_button (rect[i].x, rect[i].y, btn_right, L'r',
+			   BUTTON_COLOR);
 	  break;
 
 	case 'x':
-	  avt_show_button (rect[i].x, rect[i].y, btn_cancel, BUTTON_COLOR);
+	  avt_show_button (rect[i].x, rect[i].y, btn_cancel, L'x',
+			   BUTTON_COLOR);
 	  break;
 
 	case 's':
-	  avt_show_button (rect[i].x, rect[i].y, btn_stop, BUTTON_COLOR);
+	  avt_show_button (rect[i].x, rect[i].y, btn_stop, L's',
+			   BUTTON_COLOR);
 	  if (not audio_end_button)	// 'f' has precedence
 	    audio_end_button = 's';
 	  break;
 
 	case 'f':
-	  avt_show_button (rect[i].x, rect[i].y, btn_fastforward, BUTTON_COLOR);
+	  avt_show_button (rect[i].x, rect[i].y, btn_fastforward, L'f',
+			   BUTTON_COLOR);
 	  audio_end_button = 'f';	// this has precedence
 	  break;
 
 	case 'b':
-	  avt_show_button (rect[i].x, rect[i].y, btn_fastbackward, BUTTON_COLOR);
+	  avt_show_button (rect[i].x, rect[i].y, btn_fastbackward, L'b',
+			   BUTTON_COLOR);
 	  break;
 
 	case '+':
-	  avt_show_button (rect[i].x, rect[i].y, btn_yes, BUTTON_COLOR);
+	  avt_show_button (rect[i].x, rect[i].y, btn_yes, L'+', BUTTON_COLOR);
 	  break;
 
 	case '-':
-	  avt_show_button (rect[i].x, rect[i].y, btn_no, BUTTON_COLOR);
+	  avt_show_button (rect[i].x, rect[i].y, btn_no, L'-', BUTTON_COLOR);
 	  break;
 
 	case 'p':
-	  avt_show_button (rect[i].x, rect[i].y, btn_pause, BUTTON_COLOR);
+	  avt_show_button (rect[i].x, rect[i].y, btn_pause, L'p',
+			   BUTTON_COLOR);
 	  break;
 
 	case '?':
-	  avt_show_button (rect[i].x, rect[i].y, btn_help, BUTTON_COLOR);
+	  avt_show_button (rect[i].x, rect[i].y, btn_help, L'?',
+			   BUTTON_COLOR);
 	  break;
 
 	case 'e':
-	  avt_show_button (rect[i].x, rect[i].y, btn_eject, BUTTON_COLOR);
+	  avt_show_button (rect[i].x, rect[i].y, btn_eject, L'e',
+			   BUTTON_COLOR);
 	  break;
 
 	case '*':
-	  avt_show_button (rect[i].x, rect[i].y, btn_circle, BUTTON_COLOR);
+	  avt_show_button (rect[i].x, rect[i].y, btn_circle, L'*',
+			   BUTTON_COLOR);
 	  break;
 
 	default:
@@ -5986,8 +6002,8 @@ avt_decide (void)
   buttons_area = avt_save_background (area_rect);
 
   // draw buttons
-  avt_show_button (yes_rect.x, yes_rect.y, btn_yes, 0x00AA00);
-  avt_show_button (no_rect.x, no_rect.y, btn_no, 0xAA0000);
+  avt_show_button (yes_rect.x, yes_rect.y, btn_yes, L'+', 0x00AA00);
+  avt_show_button (no_rect.x, no_rect.y, btn_no, L'-', 0xAA0000);
 
   avt_pre_resize (yes_rect);
   avt_pre_resize (no_rect);
