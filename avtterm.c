@@ -427,16 +427,11 @@ prg_keyhandler (int sym, int mod, int unicode)
     }				// if (idle...)
 }
 
-// mouse wheel simulates cursor keys
 // TODO: clicking works only for xterm
 static void
 prg_mousehandler (int button, bool pressed, int x, int y)
 {
-  if (pressed and button == 4)	// wheel up
-    send_cursor_seq ('A');	// cursor key up
-  else if (pressed and button == 5)	// wheel down
-    send_cursor_seq ('B');	// cursor key down
-  else if (button <= 3 and ((mouse_mode == 1 and pressed) or mouse_mode == 2))
+  if (button <= 3 and ((mouse_mode == 1 and pressed) or mouse_mode == 2))
     {
       char code[7];
       int b;
