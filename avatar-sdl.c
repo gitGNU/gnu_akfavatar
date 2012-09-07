@@ -69,6 +69,9 @@
 
 #define COPYRIGHTYEAR "2012"
 
+#define BASE_BUTTON_WIDTH 32
+#define BASE_BUTTON_HEIGHT 32
+
 /*
  * Most iconv implementations support "" for the systems encoding.
  * You should redefine this macro if and only if it is not supported.
@@ -4726,8 +4729,8 @@ avt_show_button (int x, int y, enum avt_button_type type, int color)
 
   btn_rect.x = x;
   btn_rect.y = y;
-  btn_rect.w = base_button->w;
-  btn_rect.h = base_button->h;
+  btn_rect.w = BASE_BUTTON_WIDTH;
+  btn_rect.h = BASE_BUTTON_HEIGHT;
 
   SDL_SetClipRect (screen, &window);
   SDL_BlitSurface (base_button, NULL, screen, &btn_rect);
@@ -5006,8 +5009,8 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   // show close-button
 
   // alignment: right bottom
-  btn_rect.x = window.x + window.w - base_button->w - AVATAR_MARGIN;
-  btn_rect.y = window.y + window.h - base_button->h - AVATAR_MARGIN;
+  btn_rect.x = window.x + window.w - BASE_BUTTON_WIDTH - AVATAR_MARGIN;
+  btn_rect.y = window.y + window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
 
   // the button shouldn't be clipped
   if (btn_rect.y < avt.textfield.y + avt.textfield.h
@@ -5015,8 +5018,8 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
     btn_rect.x = avt.textfield.x + avt.textfield.w;
   // this is a workaround: moving it down clashed with a bug in SDL
 
-  btn_rect.w = base_button->w;
-  btn_rect.h = base_button->h;
+  btn_rect.w = BASE_BUTTON_WIDTH;
+  btn_rect.h = BASE_BUTTON_HEIGHT;
 
   avt_show_button (btn_rect.x, btn_rect.y, btn_cancel, BUTTON_COLOR);
   avt_pre_resize (btn_rect);
@@ -5663,10 +5666,10 @@ avt_wait_button (void)
     return _avt_STATUS;
 
   // alignment: right bottom
-  btn_rect.x = window.x + window.w - base_button->w - AVATAR_MARGIN;
-  btn_rect.y = window.y + window.h - base_button->h - AVATAR_MARGIN;
-  btn_rect.w = base_button->w;
-  btn_rect.h = base_button->h;
+  btn_rect.x = window.x + window.w - BASE_BUTTON_WIDTH - AVATAR_MARGIN;
+  btn_rect.y = window.y + window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
+  btn_rect.w = BASE_BUTTON_WIDTH;
+  btn_rect.h = BASE_BUTTON_HEIGHT;
 
   button_area = avt_save_background (btn_rect);
   avt_show_button (btn_rect.x, btn_rect.y, btn_right, BUTTON_COLOR);
@@ -5747,10 +5750,10 @@ avt_navigate (const char *buttons)
   SDL_SetClipRect (screen, &window);
 
   // common button area
-  buttons_rect.y = window.y + window.h - base_button->h - AVATAR_MARGIN;
+  buttons_rect.y = window.y + window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
   buttons_rect.x = window.x + window.w - AVATAR_MARGIN
-    - (button_count * (base_button->w + BUTTON_DISTANCE)) + BUTTON_DISTANCE;
-  buttons_rect.h = base_button->h;
+    - (button_count * (BASE_BUTTON_WIDTH + BUTTON_DISTANCE)) + BUTTON_DISTANCE;
+  buttons_rect.h = BASE_BUTTON_HEIGHT;
   buttons_rect.w = window.x + window.w - AVATAR_MARGIN - buttons_rect.x;
 
   // yet another check, if there are too many buttons
@@ -5766,8 +5769,8 @@ avt_navigate (const char *buttons)
   // common values for button rectangles
   for (int i = 0; i < NAV_MAX; i++)
     {
-      rect[i].w = base_button->w;
-      rect[i].h = base_button->h;
+      rect[i].w = BASE_BUTTON_WIDTH;
+      rect[i].h = BASE_BUTTON_HEIGHT;
       rect[i].x = 0;		// changed later
       rect[i].y = buttons_rect.y;
     }
@@ -5846,7 +5849,7 @@ avt_navigate (const char *buttons)
 	  break;
 	}
 
-      button_pos += base_button->w + BUTTON_DISTANCE;
+      button_pos += BASE_BUTTON_WIDTH + BUTTON_DISTANCE;
     }
 
   // prepare resizing
@@ -5964,19 +5967,19 @@ avt_decide (void)
   SDL_SetClipRect (screen, &window);
 
   // alignment: right bottom
-  yes_rect.x = window.x + window.w - base_button->w - AVATAR_MARGIN;
-  yes_rect.y = window.y + window.h - base_button->h - AVATAR_MARGIN;
-  yes_rect.w = base_button->w;
-  yes_rect.h = base_button->h;
+  yes_rect.x = window.x + window.w - BASE_BUTTON_WIDTH - AVATAR_MARGIN;
+  yes_rect.y = window.y + window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
+  yes_rect.w = BASE_BUTTON_WIDTH;
+  yes_rect.h = BASE_BUTTON_HEIGHT;
 
-  no_rect.x = yes_rect.x - BUTTON_DISTANCE - base_button->w;
+  no_rect.x = yes_rect.x - BUTTON_DISTANCE - BASE_BUTTON_WIDTH;
   no_rect.y = yes_rect.y;
-  no_rect.w = base_button->w;
-  no_rect.h = base_button->h;
+  no_rect.w = BASE_BUTTON_WIDTH;
+  no_rect.h = BASE_BUTTON_HEIGHT;
 
   area_rect.x = no_rect.x;
   area_rect.y = no_rect.y;
-  area_rect.w = 2 * base_button->w + BUTTON_DISTANCE;
+  area_rect.w = 2 * BASE_BUTTON_WIDTH + BUTTON_DISTANCE;
   area_rect.h = no_rect.h;
 
   // store background
