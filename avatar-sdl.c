@@ -4548,6 +4548,7 @@ avt_choice (int *result, int start_line, int items, int key,
       line_nr = -1;
       old_line = 0;
       *result = -1;
+
       while ((*result == -1) and (_avt_STATUS == AVT_NORMAL))
 	{
 	  SDL_WaitEvent (&event);
@@ -4556,51 +4557,50 @@ avt_choice (int *result, int start_line, int items, int key,
 	  switch (event.type)
 	    {
 	    case SDL_KEYDOWN:
-	      if (key and (event.key.keysym.unicode >= key)
-		  and (event.key.keysym.unicode <= last_key))
-		*result = (int) (event.key.keysym.unicode - key + 1);
-	      else if ((event.key.keysym.sym == SDLK_DOWN
-			or event.key.keysym.sym == SDLK_KP2))
-		{
-		  if (line_nr != end_line)
-		    {
-		      if (line_nr < start_line or line_nr > end_line)
-			line_nr = start_line;
-		      else
-			line_nr++;
-		      update_menu_bar (start_line, end_line, line_nr,
-				       old_line, plain_menu, bar);
-		      old_line = line_nr;
-		    }
-		  else if (forward)
-		    *result = items;
-		}
-	      else if ((event.key.keysym.sym == SDLK_UP
-			or event.key.keysym.sym == SDLK_KP8))
-		{
-		  if (line_nr != start_line)
-		    {
-		      if (line_nr < start_line or line_nr > end_line)
-			line_nr = end_line;
-		      else
-			line_nr--;
-		      update_menu_bar (start_line, end_line, line_nr,
-				       old_line, plain_menu, bar);
-		      old_line = line_nr;
-		    }
-		  else if (back)
-		    *result = 1;
-		}
-	      else if (back and (event.key.keysym.sym == SDLK_PAGEUP))
-		*result = 1;
-	      else if (forward and (event.key.keysym.sym == SDLK_PAGEDOWN))
-		*result = items;
-	      else if ((event.key.keysym.sym == SDLK_RETURN
-			or event.key.keysym.sym == SDLK_KP_ENTER
-			or event.key.keysym.sym == SDLK_RIGHT
-			or event.key.keysym.sym == SDLK_KP6)
-		       and line_nr >= start_line and line_nr <= end_line)
-		*result = line_nr - start_line + 1;
+	      {
+		avt_char ch;
+		avt_key (&ch);
+
+		if (key and (ch >= key) and (ch <= last_key))
+		  *result = (int) (ch - key + 1);
+		else if (AVT_KEY_DOWN == ch)
+		  {
+		    if (line_nr != end_line)
+		      {
+			if (line_nr < start_line or line_nr > end_line)
+			  line_nr = start_line;
+			else
+			  line_nr++;
+			update_menu_bar (start_line, end_line, line_nr,
+					 old_line, plain_menu, bar);
+			old_line = line_nr;
+		      }
+		    else if (forward)
+		      *result = items;
+		  }
+		else if (AVT_KEY_UP == ch)
+		  {
+		    if (line_nr != start_line)
+		      {
+			if (line_nr < start_line or line_nr > end_line)
+			  line_nr = end_line;
+			else
+			  line_nr--;
+			update_menu_bar (start_line, end_line, line_nr,
+					 old_line, plain_menu, bar);
+			old_line = line_nr;
+		      }
+		    else if (back)
+		      *result = 1;
+		  }
+		else if (back and (AVT_KEY_PAGEUP == ch))
+		  *result = 1;
+		else if (forward and (AVT_KEY_PAGEDOWN == ch))
+		  *result = items;
+		else if ((AVT_KEY_ENTER == ch or AVT_KEY_RIGHT == ch)
+			 and line_nr >= start_line and line_nr <= end_line)
+		  *result = line_nr - start_line + 1;
+	      }
 	      break;
 
 	    case SDL_MOUSEMOTION:
