@@ -365,6 +365,16 @@ struct avt_key_buffer
 
 static struct avt_key_buffer avt_keys;
 
+struct avt_button
+{
+  int x, y;
+  avt_char key;
+  SDL_Surface *background;
+};
+
+#define MAX_BUTTONS 15
+
+static struct avt_button avt_buttons[MAX_BUTTONS];
 
 #if defined(__GNUC__) and not defined(__WIN32__)
 #  define AVT_HIDDEN __attribute__((__visibility__("hidden")))
@@ -4727,6 +4737,26 @@ avt_show_button (int x, int y, enum avt_button_type type,
 		 avt_char key, int color)
 {
   SDL_Rect btn_rect;
+  int buttonnr;
+  struct avt_button *button;
+
+  // find free button number
+  buttonnr = 0;
+  while (buttonnr < MAX_BUTTONS and avt_buttons[buttonnr].background)
+    buttonnr++;
+
+  if (buttonnr == MAX_BUTTONS)
+    {
+      SDL_SetError ("too many buttons");
+      _avt_STATUS = AVT_ERROR;
+      return;
+    }
+
+  button = &avt_buttons[buttonnr];
+
+  button->x = x - window.x;
+  button->y = y - window.y;
+  button->key = key;
 
   btn_rect.x = x;
   btn_rect.y = y;
@@ -4734,6 +4764,9 @@ avt_show_button (int x, int y, enum avt_button_type type,
   btn_rect.h = BASE_BUTTON_HEIGHT;
 
   SDL_SetClipRect (screen, &window);
+
+  button->background = avt_save_background (btn_rect);
+
   SDL_BlitSurface (base_button, NULL, screen, &btn_rect);
 
   switch (type)
@@ -4796,6 +4829,36 @@ avt_show_button (int x, int y, enum avt_button_type type,
     }
 
   avt_update_rect (btn_rect);
+}
+
+static void
+avt_clear_buttons (void)
+{
+  SDL_Rect btn_rect;
+  struct avt_button *button;
+
+  SDL_SetClipRect (screen, &window);
+
+  for (int nr = 0; nr < MAX_BUTTONS; nr++)
+    {
+      button = &avt_buttons[nr];
+
+      btn_rect.x = button->x + window.x;
+      btn_rect.y = button->y + window.y;
+      btn_rect.w = BASE_BUTTON_WIDTH;
+      btn_rect.h = BASE_BUTTON_HEIGHT;
+
+      if (button->background)
+	{
+	  SDL_BlitSurface (button->background, NULL, screen, &btn_rect);
+	  avt_update_rect (btn_rect);
+	  SDL_FreeSurface (button->background);
+	  button->background = NULL;
+	}
+
+      button->x = button->y = 0;
+      button->key = 0;
+    }
 }
 
 static inline bool
@@ -5219,11 +5282,8 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   if (_avt_STATUS == AVT_QUIT)
     _avt_STATUS = AVT_NORMAL;
 
-  // remove button
-  SDL_SetClipRect (screen, &window);
-  avt_post_resize (btn_rect);
-  SDL_FillRect (screen, &btn_rect, avt.background_color);
-  avt_update_rect (btn_rect);
+  avt_clear_buttons ();
+
   SDL_SetClipRect (screen, &avt.viewport);
 
   avt_alert_func = old_alert_func;
@@ -5660,7 +5720,6 @@ extern int
 avt_wait_button (void)
 {
   SDL_Event event;
-  SDL_Surface *button_area;
   SDL_Rect btn_rect;
   bool nokey;
 
@@ -5673,7 +5732,6 @@ avt_wait_button (void)
   btn_rect.w = BASE_BUTTON_WIDTH;
   btn_rect.h = BASE_BUTTON_HEIGHT;
 
-  button_area = avt_save_background (btn_rect);
   avt_show_button (btn_rect.x, btn_rect.y, btn_right, L' ', BUTTON_COLOR);
   avt_pre_resize (btn_rect);
 
@@ -5704,17 +5762,11 @@ avt_wait_button (void)
       avt_analyze_event (&event);
     }
 
-  // delete button
-  SDL_SetClipRect (screen, &window);
-  avt_post_resize (btn_rect);
-  SDL_BlitSurface (button_area, NULL, screen, &btn_rect);
-  SDL_FreeSurface (button_area);
-  avt_update_rect (btn_rect);
+  avt_clear_buttons ();
+  avt_clear_keys ();
 
   if (avt.textfield.x >= 0)
     SDL_SetClipRect (screen, &avt.viewport);
-
-  avt_clear_keys ();
 
   return _avt_STATUS;
 }
@@ -5723,13 +5775,12 @@ avt_wait_button (void)
  * maximum number of displayable navigation buttons
  * for the smallest resolution
  */
-#define NAV_MAX 15
+#define NAV_MAX MAX_BUTTONS
 
 extern int
 avt_navigate (const char *buttons)
 {
   SDL_Event event;
-  SDL_Surface *buttons_area;
   SDL_Rect rect[NAV_MAX], buttons_rect;
   int button_count, button_pos, audio_end_button;
   int result;
@@ -5767,9 +5818,6 @@ avt_navigate (const char *buttons)
       SDL_SetError ("too many buttons");
       return AVT_FAILURE;
     }
-
-  // save background for common button area
-  buttons_area = avt_save_background (buttons_rect);
 
   // common values for button rectangles
   for (int i = 0; i < NAV_MAX; i++)
@@ -5953,12 +6001,7 @@ avt_navigate (const char *buttons)
       avt_analyze_event (&event);
     }
 
-  // restore background
-  SDL_SetClipRect (screen, &window);
-  avt_post_resize (buttons_rect);
-  SDL_BlitSurface (buttons_area, NULL, screen, &buttons_rect);
-  SDL_FreeSurface (buttons_area);
-  avt_update_rect (buttons_rect);
+  avt_clear_buttons ();
 
   if (avt.textfield.x >= 0)
     SDL_SetClipRect (screen, &avt.viewport);
@@ -5973,7 +6016,6 @@ extern bool
 avt_decide (void)
 {
   SDL_Event event;
-  SDL_Surface *buttons_area;
   SDL_Rect yes_rect, no_rect, area_rect;
   int result;
 
@@ -5997,9 +6039,6 @@ avt_decide (void)
   area_rect.y = no_rect.y;
   area_rect.w = 2 * BASE_BUTTON_WIDTH + BUTTON_DISTANCE;
   area_rect.h = no_rect.h;
-
-  // store background
-  buttons_area = avt_save_background (area_rect);
 
   // draw buttons
   avt_show_button (yes_rect.x, yes_rect.y, btn_yes, L'+', 0x00AA00);
@@ -6052,12 +6091,7 @@ avt_decide (void)
 	}
     }
 
-  // delete buttons
-  SDL_SetClipRect (screen, &window);
-  avt_post_resize (area_rect);
-  SDL_BlitSurface (buttons_area, NULL, screen, &area_rect);
-  SDL_FreeSurface (buttons_area);
-  avt_update_rect (area_rect);
+  avt_clear_buttons ();
 
   if (avt.textfield.x >= 0)
     SDL_SetClipRect (screen, &avt.viewport);

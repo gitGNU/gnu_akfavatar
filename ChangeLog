@@ -9,6 +9,8 @@
 
 	* avatar-sdl.c (avt_show_button): new function
 
+	* avatar-sdl.c (avt_clear_buttons): new function
+
 2012-09-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl.c (avt): bundle most settings in one structure
