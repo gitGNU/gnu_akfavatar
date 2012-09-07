@@ -257,6 +257,13 @@ typedef struct
 } gimp_img_t;
 #endif
 
+enum avt_button_type
+{
+  btn_cancel, btn_yes, btn_no, btn_right, btn_left, btn_down, btn_up,
+  btn_fastforward, btn_fastbackward, btn_stop, btn_pause, btn_help,
+  btn_eject, btn_circle
+};
+
 static SDL_Surface *screen;
 static SDL_Surface *circle;
 static SDL_Surface *base_button;
@@ -4712,6 +4719,80 @@ avt_button_inlay (SDL_Rect btn_rect, const unsigned char *bits,
   SDL_FreeSurface (inlay);
 }
 
+static void
+avt_show_button (int x, int y, enum avt_button_type type, int color)
+{
+  SDL_Rect btn_rect;
+
+  btn_rect.x = x;
+  btn_rect.y = y;
+  btn_rect.w = base_button->w;
+  btn_rect.h = base_button->h;
+
+  SDL_SetClipRect (screen, &window);
+  SDL_BlitSurface (base_button, NULL, screen, &btn_rect);
+
+  switch (type)
+    {
+    case btn_cancel:
+      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_cancel), color);
+      break;
+
+    case btn_yes:
+      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_yes), color);
+      break;
+
+    case btn_no:
+      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_no), color);
+      break;
+
+    case btn_right:
+      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_right), color);
+      break;
+
+    case btn_left:
+      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_left), color);
+      break;
+
+    case btn_up:
+      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_up), color);
+      break;
+
+    case btn_down:
+      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_down), color);
+      break;
+
+    case btn_fastforward:
+      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_fastforward), color);
+      break;
+
+    case btn_fastbackward:
+      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_fastbackward), color);
+      break;
+
+    case btn_stop:
+      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_stop), color);
+      break;
+
+    case btn_pause:
+      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_pause), color);
+      break;
+
+    case btn_help:
+      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_help), color);
+      break;
+
+    case btn_eject:
+      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_eject), color);
+      break;
+
+    case btn_circle:
+      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_circle), color);
+      break;
+    }
+
+  avt_update_rect (btn_rect);
+}
 
 static inline bool
 avt_is_linebreak (wchar_t c)
@@ -4937,10 +5018,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   btn_rect.w = base_button->w;
   btn_rect.h = base_button->h;
 
-  SDL_SetClipRect (screen, &window);
-  SDL_BlitSurface (base_button, NULL, screen, &btn_rect);
-  avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_cancel), BUTTON_COLOR);
-  avt_update_rect (btn_rect);
+  avt_show_button (btn_rect.x, btn_rect.y, btn_cancel, BUTTON_COLOR);
   avt_pre_resize (btn_rect);
 
   // limit to viewport (else more problems with binary files
@@ -5590,12 +5668,8 @@ avt_wait_button (void)
   btn_rect.w = base_button->w;
   btn_rect.h = base_button->h;
 
-  SDL_SetClipRect (screen, &window);
   button_area = avt_save_background (btn_rect);
-  SDL_BlitSurface (base_button, NULL, screen, &btn_rect);
-
-  avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_right), BUTTON_COLOR);
-  avt_update_rect (btn_rect);
+  avt_show_button (btn_rect.x, btn_rect.y, btn_right, BUTTON_COLOR);
   avt_pre_resize (btn_rect);
 
   nokey = true;
@@ -5698,77 +5772,70 @@ avt_navigate (const char *buttons)
       rect[i].y = buttons_rect.y;
     }
 
-#define avt_nav_inlay(bt) \
-  avt_button_inlay(rect[i],bt##_bits,bt##_width,bt##_height,BUTTON_COLOR)
-
   button_pos = buttons_rect.x;
   for (int i = 0; i < button_count; i++)
     {
       rect[i].x = button_pos;
 
-      // show base button, if it's not a spacer
-      if (buttons[i] != ' ')
-	SDL_BlitSurface (base_button, NULL, screen, &rect[i]);
-
       switch (buttons[i])
 	{
 	case 'l':
-	  avt_nav_inlay (btn_left);
+	  avt_show_button (rect[i].x, rect[i].y, btn_left, BUTTON_COLOR);
 	  break;
 
 	case 'd':
-	  avt_nav_inlay (btn_down);
+	  avt_show_button (rect[i].x, rect[i].y, btn_down, BUTTON_COLOR);
 	  break;
 
 	case 'u':
-	  avt_nav_inlay (btn_up);
+	  avt_show_button (rect[i].x, rect[i].y, btn_up, BUTTON_COLOR);
 	  break;
 
 	case 'r':
-	  avt_nav_inlay (btn_right);
+	  avt_show_button (rect[i].x, rect[i].y, btn_right, BUTTON_COLOR);
 	  break;
 
 	case 'x':
-	  avt_nav_inlay (btn_cancel);
+	  avt_show_button (rect[i].x, rect[i].y, btn_cancel, BUTTON_COLOR);
 	  break;
 
 	case 's':
-	  avt_nav_inlay (btn_stop);
+	  avt_show_button (rect[i].x, rect[i].y, btn_stop, BUTTON_COLOR);
 	  if (not audio_end_button)	// 'f' has precedence
 	    audio_end_button = 's';
 	  break;
 
 	case 'f':
-	  avt_nav_inlay (btn_fastforward);
+	  avt_show_button (rect[i].x, rect[i].y, btn_fastforward, BUTTON_COLOR);
 	  audio_end_button = 'f';	// this has precedence
 	  break;
 
 	case 'b':
-	  avt_nav_inlay (btn_fastbackward);
+	  avt_show_button (rect[i].x, rect[i].y, btn_fastbackward, BUTTON_COLOR);
 	  break;
 
 	case '+':
-	  avt_nav_inlay (btn_yes);
+	  avt_show_button (rect[i].x, rect[i].y, btn_yes, BUTTON_COLOR);
 	  break;
 
 	case '-':
-	  avt_nav_inlay (btn_no);
+	  avt_show_button (rect[i].x, rect[i].y, btn_no, BUTTON_COLOR);
 	  break;
 
 	case 'p':
-	  avt_nav_inlay (btn_pause);
+	  avt_show_button (rect[i].x, rect[i].y, btn_pause, BUTTON_COLOR);
 	  break;
 
 	case '?':
-	  avt_nav_inlay (btn_help);
+	  avt_show_button (rect[i].x, rect[i].y, btn_help, BUTTON_COLOR);
 	  break;
 
 	case 'e':
-	  avt_nav_inlay (btn_eject);
+	  avt_show_button (rect[i].x, rect[i].y, btn_eject, BUTTON_COLOR);
 	  break;
 
 	case '*':
-	  avt_nav_inlay (btn_circle);
+	  avt_show_button (rect[i].x, rect[i].y, btn_circle, BUTTON_COLOR);
 	  break;
 
 	default:
@@ -5781,9 +5848,6 @@ avt_navigate (const char *buttons)
 
       button_pos += base_button->w + BUTTON_DISTANCE;
     }
-
-  // show all buttons
-  avt_update_rect (buttons_rect);
 
   // prepare resizing
   avt_pre_resize (buttons_rect);
@@ -5919,13 +5983,8 @@ avt_decide (void)
   buttons_area = avt_save_background (area_rect);
 
   // draw buttons
-  SDL_BlitSurface (base_button, NULL, screen, &yes_rect);
-  avt_button_inlay (yes_rect, AVT_XBM_INFO (btn_yes), 0x00AA00);
-
-  SDL_BlitSurface (base_button, NULL, screen, &no_rect);
-  avt_button_inlay (no_rect, AVT_XBM_INFO (btn_no), 0xAA0000);
-
-  avt_update_rect (area_rect);
+  avt_show_button (yes_rect.x, yes_rect.y, btn_yes, 0x00AA00);
+  avt_show_button (no_rect.x, no_rect.y, btn_no, 0xAA0000);
 
   avt_pre_resize (yes_rect);
   avt_pre_resize (no_rect);

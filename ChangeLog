@@ -7,6 +7,8 @@
 
 	* avatar-sdl.c (avt_start, avt_quit): load base button globally
 
+	* avatar-sdl.c (avt_show_button): new function
+
 2012-09-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl.c (avt): bundle most settings in one structure
