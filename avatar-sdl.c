@@ -2174,12 +2174,6 @@ avt_push_key (avt_char key)
 {
   int new_end;
 
-  if (key == 0x1B and not avt.reserve_single_keys)
-    {
-      _avt_STATUS = AVT_QUIT;
-      return;
-    }
-
   new_end = (avt_keys.end + 1) % AVT_KEYBUFFER_SIZE;
 
   // if buffer is not full
@@ -2203,7 +2197,7 @@ avt_analyze_key (SDL_keysym key)
 
     case SDLK_ESCAPE:
       if (avt.reserve_single_keys)
-	avt_push_key (0x1B);
+	avt_push_key (AVT_KEY_ESCAPE);
       else
 	{
 	  _avt_STATUS = AVT_QUIT;
@@ -5965,30 +5959,24 @@ avt_decide (void)
   avt_pre_resize (area_rect);
 
   result = -1;			// no result
-  while (result < 0)
+  while (result < 0 and _avt_STATUS == AVT_NORMAL)
     {
       SDL_WaitEvent (&event);
+      avt_analyze_event (&event);
+
       switch (event.type)
 	{
-	case SDL_QUIT:
-	  result = false;
-	  _avt_STATUS = AVT_QUIT;
-	  break;
-
 	case SDL_KEYDOWN:
-	  if (event.key.keysym.sym == SDLK_ESCAPE)
-	    {
+	  {
+	    avt_char ch;
+	    avt_key (&ch);
+
+	    if (L'-' == ch or L'0' == ch or AVT_KEY_BACKSPACE == ch
+		or AVT_KEY_ESCAPE == ch)
 	      result = false;
-	      _avt_STATUS = AVT_QUIT;
-	    }
-	  else if (event.key.keysym.unicode == L'-'
-		   or event.key.keysym.unicode == L'0'
-		   or event.key.keysym.sym == SDLK_BACKSPACE)
-	    result = false;
-	  else if (event.key.keysym.unicode == L'+'
-		   or event.key.keysym.unicode == L'1'
-		   or event.key.keysym.unicode == L'\r')
-	    result = true;
+	    else if (L'+' == ch or L'1' == ch or AVT_KEY_ENTER == ch)
+	      result = true;
+	  }
 	  break;
 
 	case SDL_MOUSEBUTTONDOWN:
@@ -6010,8 +5998,6 @@ avt_decide (void)
 	  }
 	  break;
 	}
-
-      avt_analyze_event (&event);
     }
 
   // delete buttons
@@ -6024,7 +6010,7 @@ avt_decide (void)
   if (avt.textfield.x >= 0)
     SDL_SetClipRect (screen, &avt.viewport);
 
-  return result != 0;
+  return (result > 0);
 }
 
 

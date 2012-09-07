@@ -75,6 +75,7 @@
 // note: F11 is normally used to toggle fullscreen mode!
 // note: most keyboards don't have all those keys
 #define AVT_KEY_ENTER     0x000D
+#define AVT_KEY_ESCAPE    0x001B  // only if single keys are reserved
 #define AVT_KEY_BACKSPACE 0x0008
 #define AVT_KEY_DELETE    0x007F
 #define AVT_KEY_UP        0xF000
