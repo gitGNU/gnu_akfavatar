@@ -5,6 +5,8 @@
 	(avt_analyze_event, avt_key, avt_reset): adapted
 	(avt_choice, avt_decide, avt_pager): adapted
 
+	* avatar-sdl.c (avt_start, avt_quit): load base button globally
+
 2012-09-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl.c (avt): bundle most settings in one structure

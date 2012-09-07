@@ -259,6 +259,7 @@ typedef struct
 
 static SDL_Surface *screen;
 static SDL_Surface *circle;
+static SDL_Surface *base_button;
 static SDL_Surface *raw_image;
 static SDL_Cursor *mpointer;
 static SDL_Rect window;		// if screen is in fact larger
@@ -4881,7 +4882,6 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   bool quit;
   void (*old_alert_func) (void);
   SDL_Event event;
-  SDL_Surface *button;
   SDL_Rect btn_rect;
 
   if (not screen)
@@ -4924,12 +4924,9 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 
   // show close-button
 
-  // load button
-  button = avt_load_image_xpm (btn_xpm);
-
   // alignment: right bottom
-  btn_rect.x = window.x + window.w - button->w - AVATAR_MARGIN;
-  btn_rect.y = window.y + window.h - button->h - AVATAR_MARGIN;
+  btn_rect.x = window.x + window.w - base_button->w - AVATAR_MARGIN;
+  btn_rect.y = window.y + window.h - base_button->h - AVATAR_MARGIN;
 
   // the button shouldn't be clipped
   if (btn_rect.y < avt.textfield.y + avt.textfield.h
@@ -4937,14 +4934,12 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
     btn_rect.x = avt.textfield.x + avt.textfield.w;
   // this is a workaround: moving it down clashed with a bug in SDL
 
-  btn_rect.w = button->w;
-  btn_rect.h = button->h;
+  btn_rect.w = base_button->w;
+  btn_rect.h = base_button->h;
 
   SDL_SetClipRect (screen, &window);
-  SDL_BlitSurface (button, NULL, screen, &btn_rect);
+  SDL_BlitSurface (base_button, NULL, screen, &btn_rect);
   avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_cancel), BUTTON_COLOR);
-  SDL_FreeSurface (button);
-  button = NULL;
   avt_update_rect (btn_rect);
   avt_pre_resize (btn_rect);
 
@@ -5582,27 +5577,22 @@ extern int
 avt_wait_button (void)
 {
   SDL_Event event;
-  SDL_Surface *button, *button_area;
+  SDL_Surface *button_area;
   SDL_Rect btn_rect;
   bool nokey;
 
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  // load button
-  button = avt_load_image_xpm (btn_xpm);
-
   // alignment: right bottom
-  btn_rect.x = window.x + window.w - button->w - AVATAR_MARGIN;
-  btn_rect.y = window.y + window.h - button->h - AVATAR_MARGIN;
-  btn_rect.w = button->w;
-  btn_rect.h = button->h;
+  btn_rect.x = window.x + window.w - base_button->w - AVATAR_MARGIN;
+  btn_rect.y = window.y + window.h - base_button->h - AVATAR_MARGIN;
+  btn_rect.w = base_button->w;
+  btn_rect.h = base_button->h;
 
   SDL_SetClipRect (screen, &window);
   button_area = avt_save_background (btn_rect);
-  SDL_BlitSurface (button, NULL, screen, &btn_rect);
-  SDL_FreeSurface (button);
-  button = NULL;
+  SDL_BlitSurface (base_button, NULL, screen, &btn_rect);
 
   avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_right), BUTTON_COLOR);
   avt_update_rect (btn_rect);
@@ -5658,7 +5648,7 @@ extern int
 avt_navigate (const char *buttons)
 {
   SDL_Event event;
-  SDL_Surface *base_button, *buttons_area;
+  SDL_Surface *buttons_area;
   SDL_Rect rect[NAV_MAX], buttons_rect;
   int button_count, button_pos, audio_end_button;
   int result;
@@ -5682,9 +5672,6 @@ avt_navigate (const char *buttons)
 
   SDL_SetClipRect (screen, &window);
 
-  // load base button image
-  base_button = avt_load_image_xpm (btn_xpm);
-
   // common button area
   buttons_rect.y = window.y + window.h - base_button->h - AVATAR_MARGIN;
   buttons_rect.x = window.x + window.w - AVATAR_MARGIN
@@ -5695,7 +5682,6 @@ avt_navigate (const char *buttons)
   // yet another check, if there are too many buttons
   if (buttons_rect.x < 0)
     {
-      SDL_FreeSurface (base_button);
       SDL_SetError ("too many buttons");
       return AVT_FAILURE;
     }
@@ -5795,9 +5781,6 @@ avt_navigate (const char *buttons)
 
       button_pos += base_button->w + BUTTON_DISTANCE;
     }
-
-  SDL_FreeSurface (base_button);
-  base_button = NULL;
 
   // show all buttons
   avt_update_rect (buttons_rect);
@@ -5907,7 +5890,7 @@ extern bool
 avt_decide (void)
 {
   SDL_Event event;
-  SDL_Surface *base_button, *buttons_area;
+  SDL_Surface *buttons_area;
   SDL_Rect yes_rect, no_rect, area_rect;
   int result;
 
@@ -5915,9 +5898,6 @@ avt_decide (void)
     return _avt_STATUS;
 
   SDL_SetClipRect (screen, &window);
-
-  // show buttons
-  base_button = avt_load_image_xpm (btn_xpm);
 
   // alignment: right bottom
   yes_rect.x = window.x + window.w - base_button->w - AVATAR_MARGIN;
@@ -5946,9 +5926,6 @@ avt_decide (void)
   avt_button_inlay (no_rect, AVT_XBM_INFO (btn_no), 0xAA0000);
 
   avt_update_rect (area_rect);
-
-  SDL_FreeSurface (base_button);
-  base_button = NULL;
 
   avt_pre_resize (yes_rect);
   avt_pre_resize (no_rect);
@@ -7316,6 +7293,8 @@ avt_quit (void)
       mpointer = NULL;
       SDL_FreeSurface (circle);
       circle = NULL;
+      SDL_FreeSurface (base_button);
+      base_button = NULL;
       SDL_FreeSurface (avt.pointer);
       avt.pointer = NULL;
       SDL_FreeSurface (avt.character);
@@ -7610,6 +7589,8 @@ avt_start (const char *title, const char *shortname, int mode)
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
+
+  base_button = avt_load_image_xpm (btn_xpm);
 
   // set color table for character canvas
   SDL_FillRect (avt.text_cursor, NULL, 0);
