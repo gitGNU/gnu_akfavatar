@@ -2186,6 +2186,7 @@ avt_get_mode (void)
 extern void
 avt_push_key (avt_char key)
 {
+  SDL_Event event;
   int new_end;
 
   new_end = (avt_keys.end + 1) % AVT_KEYBUFFER_SIZE;
@@ -2195,6 +2196,15 @@ avt_push_key (avt_char key)
     {
       avt_keys.buffer[avt_keys.end] = key;
       avt_keys.end = new_end;
+
+      /*
+       * Send some event to satisfy avt_wait_key,
+       * but no keyboard event to avoid endless loops!
+       * Pushing a key also should have no side effects!
+       */
+      event.type = SDL_USEREVENT;
+      event.user.code = AVT_PUSH_KEY;
+      SDL_PushEvent (&event);
     }
 }
 
@@ -2500,7 +2510,7 @@ avt_pause (void)
   return _avt_STATUS;
 }
 
-// external: not in the API, but used in avatar-audio
+// external: not in the API, but used in audio-common.c
 int AVT_HIDDEN
 avt_checkevent (void)
 {
@@ -2508,18 +2518,6 @@ avt_checkevent (void)
 
   while (SDL_PollEvent (&event))
     avt_analyze_event (&event);
-
-  return _avt_STATUS;
-}
-
-// external: not in the API, but used in avatar-audio
-int AVT_HIDDEN
-avt_wait_event (void)
-{
-  SDL_Event event;
-
-  SDL_WaitEvent (&event);
-  avt_analyze_event (&event);
 
   return _avt_STATUS;
 }
@@ -5795,13 +5793,11 @@ avt_navigate (const char *buttons)
       switch (buttons[i])
 	{
 	case 'l':
-	  avt_show_button (button.x, button.y, btn_left, L'l',
-			   BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_left, L'l', BUTTON_COLOR);
 	  break;
 
 	case 'd':
-	  avt_show_button (button.x, button.y, btn_down, L'd',
-			   BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_down, L'd', BUTTON_COLOR);
 	  break;
 
 	case 'u':
@@ -5809,8 +5805,7 @@ avt_navigate (const char *buttons)
 	  break;
 
 	case 'r':
-	  avt_show_button (button.x, button.y, btn_right, L'r',
-			   BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_right, L'r', BUTTON_COLOR);
 	  break;
 
 	case 'x':
@@ -5819,8 +5814,7 @@ avt_navigate (const char *buttons)
 	  break;
 
 	case 's':
-	  avt_show_button (button.x, button.y, btn_stop, L's',
-			   BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_stop, L's', BUTTON_COLOR);
 	  if (not audio_end_button)	// 'f' has precedence
 	    audio_end_button = 's';
 	  break;
@@ -5845,18 +5839,15 @@ avt_navigate (const char *buttons)
 	  break;
 
 	case 'p':
-	  avt_show_button (button.x, button.y, btn_pause, L'p',
-			   BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_pause, L'p', BUTTON_COLOR);
 	  break;
 
 	case '?':
-	  avt_show_button (button.x, button.y, btn_help, L'?',
-			   BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_help, L'?', BUTTON_COLOR);
 	  break;
 
 	case 'e':
-	  avt_show_button (button.x, button.y, btn_eject, L'e',
-			   BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_eject, L'e', BUTTON_COLOR);
 	  break;
 
 	case '*':

@@ -84,6 +84,7 @@ struct avt_audio
 
 #define AVT_AUDIO_ENDED 1
 #define AVT_TIMEOUT 2
+#define AVT_PUSH_KEY 3
 
 #define avt_isblank(c)  ((c) == ' ' or (c) == '\t')
 #define avt_min(a, b) ((a) < (b) ? (a) : (b))
@@ -92,7 +93,6 @@ struct avt_audio
 /* avatar-sdl.c */
 extern int _avt_STATUS;
 extern int avt_checkevent (void);
-extern int avt_wait_event (void);
 extern void (*avt_alert_func) (void);
 extern void (*avt_quit_audio_func) (void);
 

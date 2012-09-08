@@ -84,14 +84,8 @@ fill_audio (void *userdata, uint8_t * stream, int len)
 	}
       else			// finished
 	{
-	  SDL_Event event;
-
 	  SDL_PauseAudio (1);	// shut up
 	  playing = false;
-	  event.type = SDL_USEREVENT;
-	  event.user.code = AVT_AUDIO_ENDED;
-	  event.user.data1 = event.user.data2 = userdata;	// not really used
-	  SDL_PushEvent (&event);
 	  avt_push_key (AVT_KEY_AUDIO_END);
 	  return;
 	}
@@ -270,7 +264,7 @@ avt_wait_audio_end (void)
   loop = false;
 
   while (playing and _avt_STATUS == AVT_NORMAL)
-    avt_wait_event ();		// end of audio also triggers event
+    avt_key (NULL);		// end of audio also sends a pseudo key
 
   return _avt_STATUS;
 }
