@@ -92,6 +92,7 @@ fill_audio (void *userdata, uint8_t * stream, int len)
 	  event.user.code = AVT_AUDIO_ENDED;
 	  event.user.data1 = event.user.data2 = userdata;	// not really used
 	  SDL_PushEvent (&event);
+	  avt_push_key (AVT_KEY_AUDIO_END);
 	  return;
 	}
     }

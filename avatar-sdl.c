@@ -5757,13 +5757,10 @@ avt_wait_button (void)
 extern int
 avt_navigate (const char *buttons)
 {
-  SDL_Event event;
-  SDL_Rect rect[NAV_MAX], buttons_rect;
-  int button_count, button_pos, audio_end_button;
+  int button_count;
+  avt_char audio_end_button;
+  struct pos button;
   int result;
-
-  result = AVT_ERROR;		// no result
-  audio_end_button = false;	// none
 
   if (_avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -5771,6 +5768,8 @@ avt_navigate (const char *buttons)
   if (not screen)
     return AVT_ERROR;
 
+  result = AVT_ERROR;		// no result
+  audio_end_button = L'\0';	// none
   button_count = SDL_strlen (buttons);
 
   if (not buttons or not * buttons or button_count > NAV_MAX)
@@ -5779,106 +5778,87 @@ avt_navigate (const char *buttons)
       return AVT_FAILURE;
     }
 
+  // display buttons:
+
   SDL_SetClipRect (screen, &window);
 
-  // common button area
-  buttons_rect.y = window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
-  buttons_rect.x = window.w - AVATAR_MARGIN
+  button.x = window.w - AVATAR_MARGIN
     - (button_count * (BASE_BUTTON_WIDTH + BUTTON_DISTANCE)) +
     BUTTON_DISTANCE;
-  buttons_rect.h = BASE_BUTTON_HEIGHT;
-  buttons_rect.w = window.x + window.w - AVATAR_MARGIN - buttons_rect.x;
 
-  // yet another check, if there are too many buttons
-  if (buttons_rect.x < 0)
-    {
-      SDL_SetError ("too many buttons");
-      return AVT_FAILURE;
-    }
+  button.y = window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
 
-  // common values for button rectangles
-  for (int i = 0; i < NAV_MAX; i++)
-    {
-      rect[i].w = BASE_BUTTON_WIDTH;
-      rect[i].h = BASE_BUTTON_HEIGHT;
-      rect[i].x = 0;		// changed later
-      rect[i].y = buttons_rect.y;
-    }
-
-  button_pos = buttons_rect.x;
   for (int i = 0; i < button_count; i++)
     {
-      rect[i].x = button_pos;
-
       switch (buttons[i])
 	{
 	case 'l':
-	  avt_show_button (rect[i].x, rect[i].y, btn_left, L'l',
+	  avt_show_button (button.x, button.y, btn_left, L'l',
 			   BUTTON_COLOR);
 	  break;
 
 	case 'd':
-	  avt_show_button (rect[i].x, rect[i].y, btn_down, L'd',
+	  avt_show_button (button.x, button.y, btn_down, L'd',
 			   BUTTON_COLOR);
 	  break;
 
 	case 'u':
-	  avt_show_button (rect[i].x, rect[i].y, btn_up, L'u', BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_up, L'u', BUTTON_COLOR);
 	  break;
 
 	case 'r':
-	  avt_show_button (rect[i].x, rect[i].y, btn_right, L'r',
+	  avt_show_button (button.x, button.y, btn_right, L'r',
 			   BUTTON_COLOR);
 	  break;
 
 	case 'x':
-	  avt_show_button (rect[i].x, rect[i].y, btn_cancel, L'x',
+	  avt_show_button (button.x, button.y, btn_cancel, L'x',
 			   BUTTON_COLOR);
 	  break;
 
 	case 's':
-	  avt_show_button (rect[i].x, rect[i].y, btn_stop, L's',
+	  avt_show_button (button.x, button.y, btn_stop, L's',
 			   BUTTON_COLOR);
 	  if (not audio_end_button)	// 'f' has precedence
 	    audio_end_button = 's';
 	  break;
 
 	case 'f':
-	  avt_show_button (rect[i].x, rect[i].y, btn_fastforward, L'f',
+	  avt_show_button (button.x, button.y, btn_fastforward, L'f',
 			   BUTTON_COLOR);
 	  audio_end_button = 'f';	// this has precedence
 	  break;
 
 	case 'b':
-	  avt_show_button (rect[i].x, rect[i].y, btn_fastbackward, L'b',
+	  avt_show_button (button.x, button.y, btn_fastbackward, L'b',
 			   BUTTON_COLOR);
 	  break;
 
 	case '+':
-	  avt_show_button (rect[i].x, rect[i].y, btn_yes, L'+', BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_yes, L'+', BUTTON_COLOR);
 	  break;
 
 	case '-':
-	  avt_show_button (rect[i].x, rect[i].y, btn_no, L'-', BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_no, L'-', BUTTON_COLOR);
 	  break;
 
 	case 'p':
-	  avt_show_button (rect[i].x, rect[i].y, btn_pause, L'p',
+	  avt_show_button (button.x, button.y, btn_pause, L'p',
 			   BUTTON_COLOR);
 	  break;
 
 	case '?':
-	  avt_show_button (rect[i].x, rect[i].y, btn_help, L'?',
+	  avt_show_button (button.x, button.y, btn_help, L'?',
 			   BUTTON_COLOR);
 	  break;
 
 	case 'e':
-	  avt_show_button (rect[i].x, rect[i].y, btn_eject, L'e',
+	  avt_show_button (button.x, button.y, btn_eject, L'e',
 			   BUTTON_COLOR);
 	  break;
 
 	case '*':
-	  avt_show_button (rect[i].x, rect[i].y, btn_circle, L'*',
+	  avt_show_button (button.x, button.y, btn_circle, L'*',
 			   BUTTON_COLOR);
 	  break;
 
@@ -5890,87 +5870,60 @@ avt_navigate (const char *buttons)
 	  break;
 	}
 
-      button_pos += BASE_BUTTON_WIDTH + BUTTON_DISTANCE;
+      button.x += BASE_BUTTON_WIDTH + BUTTON_DISTANCE;
     }
+
+  // check button presses
 
   while (result < 0 and _avt_STATUS == AVT_NORMAL)
     {
-      SDL_WaitEvent (&event);
+      avt_char ch;
+      avt_key (&ch);
 
-      switch (event.type)
+      switch (ch)
 	{
-	  // end of audio triggers stop key
-	case SDL_USEREVENT:
-	  if (event.user.code == AVT_AUDIO_ENDED and audio_end_button)
-	    result = audio_end_button;
+	case AVT_KEY_UP:
+	case AVT_KEY_HOME:
+	  ch = L'u';
 	  break;
 
-	case SDL_KEYDOWN:
-	  {
-	    int r = -1;
-
-	    if (event.key.keysym.sym == SDLK_UP
-		or event.key.keysym.sym == SDLK_KP8
-		or event.key.keysym.sym == SDLK_HOME
-		or event.key.keysym.sym == SDLK_KP7)
-	      r = 'u';
-	    else if (event.key.keysym.sym == SDLK_DOWN
-		     or event.key.keysym.sym == SDLK_KP2
-		     or event.key.keysym.sym == SDLK_END
-		     or event.key.keysym.sym == SDLK_KP1)
-	      r = 'd';
-	    else if (event.key.keysym.sym == SDLK_LEFT
-		     or event.key.keysym.sym == SDLK_KP4)
-	      r = 'l';
-	    else if (event.key.keysym.sym == SDLK_RIGHT
-		     or event.key.keysym.sym == SDLK_KP6)
-	      r = 'r';
-	    else if (event.key.keysym.sym == SDLK_HELP
-		     or event.key.keysym.sym == SDLK_F1)
-	      r = '?';
-	    else if (event.key.keysym.sym == SDLK_PAUSE)
-	      {
-		r = 'p';
-		// prevent further handling of the Pause-key
-		event.key.keysym.sym = SDLK_UNKNOWN;
-	      }
-	    else if (event.key.keysym.unicode > 32
-		     and event.key.keysym.unicode < 127)
-	      r = event.key.keysym.unicode;
-
-	    // check if it is one of the requested characters
-	    const char *b = buttons;
-	    while (*b)
-	      if (r == (int) *b++)
-		result = r;
-	  }
+	case AVT_KEY_DOWN:
+	case AVT_KEY_END:
+	  ch = L'd';
 	  break;
 
-	case SDL_MOUSEBUTTONDOWN:
-	  {
-	    int16_t mbx, mby;
+	case AVT_KEY_LEFT:
+	  ch = L'l';
+	  break;
 
-	    mbx = event.button.x - window.x;
-	    mby = event.button.y - window.y;
+	case AVT_KEY_RIGHT:
+	  ch = L'r';
+	  break;
 
-	    if (event.button.button <= 3
-		and mby >= buttons_rect.y
-		and mby <= buttons_rect.y + buttons_rect.h
-		and mbx >= buttons_rect.x
-		and mbx <= buttons_rect.x + buttons_rect.w)
-	      {
-		for (int i = 0; i < button_count and result < 0; i++)
-		  {
-		    if (buttons[i] != ' '
-			and mbx >= rect[i].x and mbx <= rect[i].x + rect[i].w)
-		      result = buttons[i];
-		  }
-	      }
-	  }
+	case AVT_KEY_HELP:
+	case AVT_KEY_F1:
+	  ch = L'?';
+	  break;
+
+	case AVT_KEY_PAGEDOWN:
+	  ch = L'f';
+	  break;
+
+	case AVT_KEY_PAGEUP:
+	  ch = L'b';
+	  break;
+
+	case AVT_KEY_AUDIO_END:
+	  if (audio_end_button)
+	    ch = audio_end_button;
 	  break;
 	}
 
-      avt_analyze_event (&event);
+      // check if it is one of the requested characters
+      const char *b = buttons;
+      while (*b)
+	if (ch == (avt_char) * b++)
+	  result = ch;
     }
 
   avt_clear_buttons ();

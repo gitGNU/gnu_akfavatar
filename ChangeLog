@@ -2,6 +2,9 @@
 
 	* akfavatar.h, avatar-sdl.c (avt_push_key): new function
 
+	* audio-sdl.c (fill_audio): sends pseudo-key on audio end
+	avatar-sdl.c (avt_navigate): adapted
+
 2012-09-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl.c (avt_push_key, avt_analyze_key)
