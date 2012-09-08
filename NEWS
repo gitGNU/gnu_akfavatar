@@ -3,7 +3,7 @@
   - regression: the navigation bar cannot handle the paus key anymore
 
   C-API changes:
-    - new functions: avt_push_key
+    - new functions: avt_key_pressed, avt_push_key, avt_clear_keys
 
 * AKFAvatar 0.22.1
 

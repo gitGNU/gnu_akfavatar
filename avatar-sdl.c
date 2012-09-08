@@ -4480,10 +4480,18 @@ avt_tell_mb (const char *txt)
   return _avt_STATUS;
 }
 
-static inline void
+extern void
 avt_clear_keys (void)
 {
   avt_keys.position = avt_keys.end = 0;
+}
+
+#define avt_clear_keys(void)  avt_keys.position = avt_keys.end = 0
+
+extern bool
+avt_key_pressed (void)
+{
+  return (avt_keys.position != avt_keys.end);
 }
 
 static inline void
@@ -4496,12 +4504,6 @@ avt_wait_key (void)
       SDL_WaitEvent (&event);
       avt_analyze_event (&event);
     }
-}
-
-static inline bool
-avt_key_pressed (void)
-{
-  return (avt_keys.position != avt_keys.end);
 }
 
 extern int

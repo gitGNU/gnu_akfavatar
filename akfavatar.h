@@ -293,6 +293,15 @@ AVT_API int avt_ask (wchar_t *s, size_t size);
  */
 AVT_API int avt_key (avt_char *ch);
 
+/*
+ * check if a key was pressed (or an event happened)
+ * the key should then be fetched with avt_key
+ */
+AVT_API bool avt_key_pressed (void);
+
+/* clear key buffer */
+void avt_clear_keys (void);
+
 /* push key or event */
 AVT_API void avt_push_key (avt_char key);
 
