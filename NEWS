@@ -1,3 +1,8 @@
+* AKFAvatar testing
+
+  C-API changes:
+  - new functions: avt_push_key
+
 * AKFAvatar 0.22.1
 
   There are a lot of changes in the APIs. Also the ABI was changed.

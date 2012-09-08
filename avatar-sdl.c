@@ -2183,7 +2183,7 @@ avt_get_mode (void)
 }
 
 // push key into buffer
-static void
+extern void
 avt_push_key (avt_char key)
 {
   int new_end;

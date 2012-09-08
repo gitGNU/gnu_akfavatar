@@ -292,6 +292,10 @@ AVT_API int avt_ask (wchar_t *s, size_t size);
  */
 AVT_API int avt_key (avt_char *ch);
 
+/* push key or event */
+AVT_API void avt_push_key (avt_char key);
+
+
 /***********************************************************************/
 // say or ask stuff with multy-byte encodings
 
