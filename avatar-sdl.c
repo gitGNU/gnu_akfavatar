@@ -4605,8 +4605,14 @@ avt_choice (int *result, int start_line, int items, int key,
 	  switch (event.type)
 	    {
 	    case SDL_KEYDOWN:
+	    case SDL_USEREVENT:
 	      {
 		avt_char ch;
+
+                // user event might or might not be a key
+		if (avt_keys.end == avt_keys.position)
+		  break;
+
 		avt_key (&ch);
 
 		if (key and (ch >= key) and (ch <= last_key))
@@ -4689,36 +4695,6 @@ avt_choice (int *result, int start_line, int items, int key,
 			    *result = line_nr - start_line + 1;
 			}
 		    }
-		}
-	      else if (event.button.button == SDL_BUTTON_WHEELUP)
-		{
-		  if (line_nr != start_line)
-		    {
-		      if (line_nr < start_line or line_nr > end_line)
-			line_nr = end_line;
-		      else
-			line_nr--;
-		      update_menu_bar (start_line, end_line, line_nr,
-				       old_line, plain_menu, bar);
-		      old_line = line_nr;
-		    }
-		  else if (back)
-		    *result = 1;
-		}
-	      else if (event.button.button == SDL_BUTTON_WHEELDOWN)
-		{
-		  if (line_nr != end_line)
-		    {
-		      if (line_nr < start_line or line_nr > end_line)
-			line_nr = start_line;
-		      else
-			line_nr++;
-		      update_menu_bar (start_line, end_line, line_nr,
-				       old_line, plain_menu, bar);
-		      old_line = line_nr;
-		    }
-		  else if (forward)
-		    *result = items;
 		}
 	      break;
 	    }
