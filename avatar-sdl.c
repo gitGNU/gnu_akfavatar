@@ -298,14 +298,14 @@ struct avt_settings
   bool newline_mode;		// when off, you need an extra CR
   bool underlined, bold, inverse;	// text underlined, bold?
   bool auto_margin;		// automatic new lines?
-  int mode;			// whether fullscreen or window or ...
-  int avatar_mode;
+  short int mode;			// whether fullscreen or window or ...
+  short int avatar_mode;
   bool avatar_visible;		// avatar visible?
   bool text_cursor_visible;	// shall the text cursor be visible?
   bool text_cursor_actually_visible;	// is it actually visible?
   bool reserve_single_keys;	// reserve single keys?
   bool markup;			// markup-syntax activated?
-  int scroll_mode;
+  short int scroll_mode;
   SDL_Rect textfield;
   SDL_Rect viewport;		// sub-window in textfield
   bool tab_stops[AVT_LINELENGTH];
@@ -316,11 +316,11 @@ struct avt_settings
   // Home: textfield (false) or viewport (true)
   // avt_initialize sets it to true for backwards compatibility
   bool origin_mode;
-  int textdir_rtl;
+  short int textdir_rtl;
 
   // beginning of line - depending on text direction
   int linestart;
-  int balloonheight, balloonmaxheight, balloonwidth;
+  short int balloonheight, balloonmaxheight, balloonwidth;
 
   // delay values for printing text and flipping the page
   int text_delay;
@@ -359,7 +359,7 @@ static struct avt_settings avt = {
 
 struct avt_key_buffer
 {
-  unsigned short position, end;
+  unsigned short int position, end;
   avt_char buffer[AVT_KEYBUFFER_SIZE];
 };
 
@@ -367,7 +367,7 @@ static struct avt_key_buffer avt_keys;
 
 struct avt_button
 {
-  short x, y;
+  short int x, y;
   avt_char key;
   SDL_Surface *background;
 };
