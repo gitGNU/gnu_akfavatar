@@ -282,9 +282,9 @@ static avt_iconv_t output_cd = ICONV_UNINITIALIZED;
 static avt_iconv_t input_cd = ICONV_UNINITIALIZED;
 
 
-struct pos
+struct avt_position
 {
-  int x, y;
+  short x, y;
 };
 
 struct avt_settings
@@ -337,7 +337,7 @@ struct avt_settings
   // color for cursor and menu-bar
   SDL_Color cursor_color;
 
-  struct pos cursor, saved_position;
+  struct avt_position cursor, saved_position;
 
   // for an external keyboard/mouse handlers
   avt_keyhandler ext_keyhandler;
@@ -359,7 +359,7 @@ static struct avt_settings avt = {
 
 struct avt_key_buffer
 {
-  uint16_t position, end;
+  unsigned short position, end;
   avt_char buffer[AVT_KEYBUFFER_SIZE];
 };
 
@@ -367,7 +367,7 @@ static struct avt_key_buffer avt_keys;
 
 struct avt_button
 {
-  int x, y;
+  short x, y;
   avt_char key;
   SDL_Surface *background;
 };
@@ -5037,7 +5037,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   struct avt_settings old_settings;
   bool quit;
   void (*old_alert_func) (void);
-  SDL_Rect btn_rect;
+  struct avt_position button;
 
   if (not screen)
     return AVT_ERROR;
@@ -5080,19 +5080,16 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   // show close-button
 
   // alignment: right bottom
-  btn_rect.x = window.w - BASE_BUTTON_WIDTH - AVATAR_MARGIN;
-  btn_rect.y = window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
+  button.x = window.w - BASE_BUTTON_WIDTH - AVATAR_MARGIN;
+  button.y = window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
 
   // the button shouldn't be clipped
-  if (btn_rect.y + window.y < avt.textfield.y + avt.textfield.h
-      and btn_rect.x + window.x < avt.textfield.x + avt.textfield.w)
-    btn_rect.x = avt.textfield.x + avt.textfield.w - window.x;
+  if (button.y + window.y < avt.textfield.y + avt.textfield.h
+      and button.x + window.x < avt.textfield.x + avt.textfield.w)
+    button.x = avt.textfield.x + avt.textfield.w - window.x;
   // this is a workaround: moving it down clashed with a bug in SDL
 
-  btn_rect.w = BASE_BUTTON_WIDTH;
-  btn_rect.h = BASE_BUTTON_HEIGHT;
-
-  avt_show_button (btn_rect.x, btn_rect.y, btn_cancel,
+  avt_show_button (button.x, button.y, btn_cancel,
 		   AVT_KEY_ESCAPE, BUTTON_COLOR);
 
   // limit to viewport (else more problems with binary files
@@ -5674,19 +5671,17 @@ extern int
 avt_wait_button (void)
 {
   SDL_Event event;
-  SDL_Rect btn_rect;
+  struct avt_position button;
   bool nokey;
 
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   // alignment: right bottom
-  btn_rect.x = window.w - BASE_BUTTON_WIDTH - AVATAR_MARGIN;
-  btn_rect.y = window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
-  btn_rect.w = BASE_BUTTON_WIDTH;
-  btn_rect.h = BASE_BUTTON_HEIGHT;
+  button.x = window.w - BASE_BUTTON_WIDTH - AVATAR_MARGIN;
+  button.y = window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
 
-  avt_show_button (btn_rect.x, btn_rect.y, btn_right, L' ', BUTTON_COLOR);
+  avt_show_button (button.x, button.y, btn_right, L' ', BUTTON_COLOR);
 
   nokey = true;
   while (nokey and _avt_STATUS == AVT_NORMAL)
@@ -5735,7 +5730,7 @@ avt_navigate (const char *buttons)
 {
   int button_count;
   avt_char audio_end_button;
-  struct pos button;
+  struct avt_position button;
   int result;
 
   if (_avt_STATUS != AVT_NORMAL)
@@ -5909,7 +5904,7 @@ avt_navigate (const char *buttons)
 extern bool
 avt_decide (void)
 {
-  SDL_Rect yes_rect, no_rect, area_rect;
+  struct avt_position yes_button, no_button;
   int result;
 
   if (not screen or _avt_STATUS != AVT_NORMAL)
@@ -5918,24 +5913,15 @@ avt_decide (void)
   SDL_SetClipRect (screen, &window);
 
   // alignment: right bottom
-  yes_rect.x = window.w - BASE_BUTTON_WIDTH - AVATAR_MARGIN;
-  yes_rect.y = window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
-  yes_rect.w = BASE_BUTTON_WIDTH;
-  yes_rect.h = BASE_BUTTON_HEIGHT;
+  yes_button.x = window.w - BASE_BUTTON_WIDTH - AVATAR_MARGIN;
+  yes_button.y = window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
 
-  no_rect.x = yes_rect.x - BUTTON_DISTANCE - BASE_BUTTON_WIDTH;
-  no_rect.y = yes_rect.y;
-  no_rect.w = BASE_BUTTON_WIDTH;
-  no_rect.h = BASE_BUTTON_HEIGHT;
-
-  area_rect.x = no_rect.x;
-  area_rect.y = no_rect.y;
-  area_rect.w = 2 * BASE_BUTTON_WIDTH + BUTTON_DISTANCE;
-  area_rect.h = no_rect.h;
+  no_button.x = yes_button.x - BUTTON_DISTANCE - BASE_BUTTON_WIDTH;
+  no_button.y = yes_button.y;
 
   // draw buttons
-  avt_show_button (yes_rect.x, yes_rect.y, btn_yes, L'+', 0x00AA00);
-  avt_show_button (no_rect.x, no_rect.y, btn_no, L'-', 0xAA0000);
+  avt_show_button (yes_button.x, yes_button.y, btn_yes, L'+', 0x00AA00);
+  avt_show_button (no_button.x, no_button.y, btn_no, L'-', 0xAA0000);
 
   avt_clear_keys ();
   result = -1;			// no result
