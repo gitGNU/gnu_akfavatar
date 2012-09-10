@@ -293,55 +293,55 @@ struct avt_settings
   SDL_Surface *text_cursor, *cursor_character;
   SDL_Surface *pointer;
   wchar_t *name;
+
+  // for an external keyboard/mouse handlers
+  avt_keyhandler ext_keyhandler;
+  avt_mousehandler ext_mousehandler;
+
   uint32_t background_color;
   uint32_t text_background_color;
-  bool newline_mode;		// when off, you need an extra CR
-  bool underlined, bold, inverse;	// text underlined, bold?
-  bool auto_margin;		// automatic new lines?
-  short int mode;			// whether fullscreen or window or ...
-  short int avatar_mode;
-  bool avatar_visible;		// avatar visible?
-  bool text_cursor_visible;	// shall the text cursor be visible?
-  bool text_cursor_actually_visible;	// is it actually visible?
-  bool reserve_single_keys;	// reserve single keys?
-  bool markup;			// markup-syntax activated?
-  short int scroll_mode;
-  SDL_Rect textfield;
-  SDL_Rect viewport;		// sub-window in textfield
-  bool tab_stops[AVT_LINELENGTH];
-  char encoding[100];
-  int bitmap_color;		// color for bitmaps
-
-  // origin mode
-  // Home: textfield (false) or viewport (true)
-  // avt_initialize sets it to true for backwards compatibility
-  bool origin_mode;
-  short int textdir_rtl;
-
-  // beginning of line - depending on text direction
-  int linestart;
-  short int balloonheight, balloonmaxheight, balloonwidth;
+  uint32_t backgroundcolornr;
+  uint32_t bitmap_color;		// color for bitmaps
 
   // delay values for printing text and flipping the page
   int text_delay;
   int flip_page_delay;
 
-  // holding updates back?
-  bool hold_updates;
+  bool newline_mode;		// when off, you need an extra CR
+  bool underlined, bold, inverse;	// text underlined, bold?
+  bool auto_margin;		// automatic new lines?
+  bool avatar_visible;		// avatar visible?
+  bool text_cursor_visible;	// shall the text cursor be visible?
+  bool text_cursor_actually_visible;	// is it actually visible?
+  bool reserve_single_keys;	// reserve single keys?
+  bool markup;			// markup-syntax activated?
+  bool hold_updates; // holding updates back?
+  bool tab_stops[AVT_LINELENGTH];
 
-  // color independent from the screen mode
+  // origin mode
+  // Home: textfield (false) or viewport (true)
+  // avt_initialize sets it to true for backwards compatibility
+  bool origin_mode;
 
-  SDL_Color ballooncolor_RGB;
-  int backgroundcolornr;
+  char encoding[100];
 
-  // color for cursor and menu-bar
-  SDL_Color cursor_color;
+  short int mode;			// whether fullscreen or window or ...
+  short int avatar_mode;
+  short int scroll_mode;
+  short int textdir_rtl;
+  short int linestart; // beginning of line - depending on text direction
+  short int balloonheight, balloonmaxheight, balloonwidth;
 
   struct avt_position cursor, saved_position;
 
-  // for an external keyboard/mouse handlers
-  avt_keyhandler ext_keyhandler;
-  avt_mousehandler ext_mousehandler;
+  SDL_Rect textfield;
+  SDL_Rect viewport;		// sub-window in textfield
+
+  // color independent from the screen mode
+  SDL_Color ballooncolor_RGB;
+
+  // color for cursor and menu-bar
+  SDL_Color cursor_color;
 };
 
 
