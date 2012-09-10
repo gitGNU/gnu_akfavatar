@@ -82,8 +82,14 @@
 
 #define BUTTON_DISTANCE 10
 
-// normal color of what's printed on the button
-#define BUTTON_COLOR  0x665533
+#define AVT_COLOR_BLACK         0x000000
+#define AVT_COLOR_WHITE         0xFFFFFF
+#define AVT_COLOR_FLORAL_WHITE  0xFFFAF0
+#define AVT_COLOR_TAN           0xD2B48C
+
+#define AVT_BUTTON_COLOR        0x665533
+#define AVT_CURSOR_COLOR        0xF28919
+#define AVT_BALLOON_COLOR       AVT_COLOR_FLORAL_WHITE
 
 #define AVT_XBM_INFO(img)  img##_bits, img##_width, img##_height
 
@@ -343,8 +349,8 @@ struct avt_settings
 
 static struct avt_settings avt = {
   .backgroundcolornr = DEFAULT_COLOR,
-  .ballooncolor = 0xFFFAF0,
-  .cursor_color = 0xF28919,
+  .ballooncolor = AVT_BALLOON_COLOR,
+  .cursor_color = AVT_CURSOR_COLOR,
   .textdir_rtl = AVT_LEFT_TO_RIGHT
 };
 
@@ -727,7 +733,7 @@ avt_load_image_xpm (char **xpm)
 	    color_name[color_name_pos++] = *p++;
 	  color_name[color_name_pos] = '\0';
 
-	  colornr = 0x000000;
+	  colornr = AVT_COLOR_BLACK;
 
 	  if (color_name[0] == '#')
 	    colornr = SDL_strtol (&color_name[1], NULL, 16);
@@ -735,13 +741,13 @@ avt_load_image_xpm (char **xpm)
 	    {
 	      SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL, code_nr);
 
-	      // some weird color, that hopefully doesn't conflict (#1A2A3A)
+	      // some weird color, that hopefully doesn't conflict
 	      colornr = 0x1A2A3A;
 	    }
 	  else if (SDL_strcasecmp (color_name, "black") == 0)
-	    colornr = 0x000000;
+	    colornr = AVT_COLOR_BLACK;
 	  else if (SDL_strcasecmp (color_name, "white") == 0)
-	    colornr = 0xFFFFFF;
+	    colornr = AVT_COLOR_WHITE;
 
 	  /*
 	   * Note: don't use avt_colorname,
@@ -1525,11 +1531,9 @@ avt_show_name (void)
       old_colors[0] = avt.character->format->palette->colors[0];
       old_colors[1] = avt.character->format->palette->colors[1];
 
-      // tan background
-      colors[0] = avt_sdlcolor(0xD2B48C);
-
-      // black foreground
-      colors[1] = avt_sdlcolor(0x000000);
+      // background [0], foreground [1]
+      colors[0] = avt_sdlcolor(AVT_COLOR_TAN);
+      colors[1] = avt_sdlcolor(AVT_COLOR_BLACK);
 
       SDL_SetColors (avt.character, colors, 0, 2);
 
@@ -5088,7 +5092,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   // this is a workaround: moving it down clashed with a bug in SDL
 
   avt_show_button (button.x, button.y, btn_cancel,
-		   AVT_KEY_ESCAPE, BUTTON_COLOR);
+		   AVT_KEY_ESCAPE, AVT_BUTTON_COLOR);
 
   // limit to viewport (else more problems with binary files
   SDL_SetClipRect (screen, &avt.viewport);
@@ -5679,7 +5683,7 @@ avt_wait_button (void)
   button.x = window.w - BASE_BUTTON_WIDTH - AVATAR_MARGIN;
   button.y = window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
 
-  avt_show_button (button.x, button.y, btn_right, L' ', BUTTON_COLOR);
+  avt_show_button (button.x, button.y, btn_right, L' ', AVT_BUTTON_COLOR);
 
   nokey = true;
   while (nokey and _avt_STATUS == AVT_NORMAL)
@@ -5762,66 +5766,66 @@ avt_navigate (const char *buttons)
       switch (buttons[i])
 	{
 	case 'l':
-	  avt_show_button (button.x, button.y, btn_left, L'l', BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_left, L'l', AVT_BUTTON_COLOR);
 	  break;
 
 	case 'd':
-	  avt_show_button (button.x, button.y, btn_down, L'd', BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_down, L'd', AVT_BUTTON_COLOR);
 	  break;
 
 	case 'u':
-	  avt_show_button (button.x, button.y, btn_up, L'u', BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_up, L'u', AVT_BUTTON_COLOR);
 	  break;
 
 	case 'r':
-	  avt_show_button (button.x, button.y, btn_right, L'r', BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_right, L'r', AVT_BUTTON_COLOR);
 	  break;
 
 	case 'x':
 	  avt_show_button (button.x, button.y, btn_cancel, L'x',
-			   BUTTON_COLOR);
+			   AVT_BUTTON_COLOR);
 	  break;
 
 	case 's':
-	  avt_show_button (button.x, button.y, btn_stop, L's', BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_stop, L's', AVT_BUTTON_COLOR);
 	  if (not audio_end_button)	// 'f' has precedence
 	    audio_end_button = 's';
 	  break;
 
 	case 'f':
 	  avt_show_button (button.x, button.y, btn_fastforward, L'f',
-			   BUTTON_COLOR);
+			   AVT_BUTTON_COLOR);
 	  audio_end_button = 'f';	// this has precedence
 	  break;
 
 	case 'b':
 	  avt_show_button (button.x, button.y, btn_fastbackward, L'b',
-			   BUTTON_COLOR);
+			   AVT_BUTTON_COLOR);
 	  break;
 
 	case '+':
-	  avt_show_button (button.x, button.y, btn_yes, L'+', BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_yes, L'+', AVT_BUTTON_COLOR);
 	  break;
 
 	case '-':
-	  avt_show_button (button.x, button.y, btn_no, L'-', BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_no, L'-', AVT_BUTTON_COLOR);
 	  break;
 
 	case 'p':
-	  avt_show_button (button.x, button.y, btn_pause, L'p', BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_pause, L'p', AVT_BUTTON_COLOR);
 	  break;
 
 	case '?':
-	  avt_show_button (button.x, button.y, btn_help, L'?', BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_help, L'?', AVT_BUTTON_COLOR);
 	  break;
 
 	case 'e':
-	  avt_show_button (button.x, button.y, btn_eject, L'e', BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_eject, L'e', AVT_BUTTON_COLOR);
 	  break;
 
 	case '*':
 	  avt_show_button (button.x, button.y, btn_circle, L'*',
-			   BUTTON_COLOR);
+			   AVT_BUTTON_COLOR);
 	  break;
 
 	default:
@@ -6960,7 +6964,7 @@ avt_normal_text (void)
       // background -> ballooncolor
       colors[0] = avt_sdlcolor (avt.ballooncolor);
       // black foreground
-      colors[1] = avt_sdlcolor(0x000000);
+      colors[1] = avt_sdlcolor(AVT_COLOR_BLACK);
 
       SDL_SetColors (avt.character, colors, 0, 2);
 
@@ -7104,9 +7108,9 @@ avt_credits (const wchar_t * text, bool centered)
 
   // the background-color is used when the window is resized
   // this implicitly also clears the screen
-  avt_set_background_color (0x000000);
-  avt_set_text_background_color (0x000000);
-  avt_set_text_color (0xFFFFFF);
+  avt_set_background_color (AVT_COLOR_BLACK);
+  avt_set_text_background_color (AVT_COLOR_BLACK);
+  avt_set_text_color (AVT_COLOR_WHITE);
 
   window.x = (screen->w / 2) - (80 * fontwidth / 2);
   window.w = 80 * fontwidth;
@@ -7379,8 +7383,8 @@ avt_reset ()
   avt.textdir_rtl = AVT_LEFT_TO_RIGHT;
   avt.flip_page_delay = AVT_DEFAULT_FLIP_PAGE_DELAY;
   avt.text_delay = 0;
-  avt.bitmap_color = 0x000000;	// black
-  avt.ballooncolor = 0xFFFAF0;
+  avt.bitmap_color = AVT_COLOR_BLACK;
+  avt.ballooncolor = AVT_BALLOON_COLOR;
   avt.cursor_color = 0xF28919;
 
   avt_clear_keys ();
