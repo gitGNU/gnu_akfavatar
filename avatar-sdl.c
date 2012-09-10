@@ -298,14 +298,16 @@ struct avt_settings
   avt_keyhandler ext_keyhandler;
   avt_mousehandler ext_mousehandler;
 
-  uint32_t background_color;
-  uint32_t text_background_color;
-  uint32_t backgroundcolornr;
-  uint32_t bitmap_color;		// color for bitmaps
-
   // delay values for printing text and flipping the page
-  int text_delay;
-  int flip_page_delay;
+  int text_delay, flip_page_delay;
+
+  int ballooncolor;
+  int backgroundcolornr;
+  int cursor_color;		// color for cursor and menu-bar
+  int bitmap_color;		// color for bitmaps
+
+  // colors mapped for the screen
+  uint32_t background_color, text_background_color;
 
   bool newline_mode;		// when off, you need an extra CR
   bool underlined, bold, inverse;	// text underlined, bold?
@@ -315,7 +317,7 @@ struct avt_settings
   bool text_cursor_actually_visible;	// is it actually visible?
   bool reserve_single_keys;	// reserve single keys?
   bool markup;			// markup-syntax activated?
-  bool hold_updates; // holding updates back?
+  bool hold_updates;		// holding updates back?
   bool tab_stops[AVT_LINELENGTH];
 
   // origin mode
@@ -325,30 +327,24 @@ struct avt_settings
 
   char encoding[100];
 
-  short int mode;			// whether fullscreen or window or ...
+  short int mode;		// whether fullscreen or window or ...
   short int avatar_mode;
   short int scroll_mode;
   short int textdir_rtl;
-  short int linestart; // beginning of line - depending on text direction
+  short int linestart;		// beginning of line - depending on text direction
   short int balloonheight, balloonmaxheight, balloonwidth;
 
   struct avt_position cursor, saved_position;
 
   SDL_Rect textfield;
   SDL_Rect viewport;		// sub-window in textfield
-
-  // color independent from the screen mode
-  SDL_Color ballooncolor_RGB;
-
-  // color for cursor and menu-bar
-  SDL_Color cursor_color;
 };
 
 
 static struct avt_settings avt = {
   .backgroundcolornr = DEFAULT_COLOR,
-  .ballooncolor_RGB = {0xFF, 0xFA, 0xF0, 0},
-  .cursor_color = {0xF2, 0x89, 0x19, 0},
+  .ballooncolor = 0xFFFAF0,
+  .cursor_color = 0xF28919,
   .textdir_rtl = AVT_LEFT_TO_RIGHT
 };
 
@@ -523,6 +519,18 @@ avt_free_xpm_tree (union xpm_codes *tree, int depth, int cpp)
     }
 
   SDL_free (tree);
+}
+
+static inline SDL_Color
+avt_sdlcolor (int colornr)
+{
+  SDL_Color color;
+
+  color.r = avt_red (colornr);
+  color.g = avt_green (colornr);
+  color.b = avt_blue (colornr);
+
+  return color;
 }
 
 // use this for internal stuff!
@@ -742,9 +750,7 @@ avt_load_image_xpm (char **xpm)
 
 	  if (ncolors <= 256)
 	    {
-	      colors256[code_nr].r = avt_red (colornr);
-	      colors256[code_nr].g = avt_green (colornr);
-	      colors256[code_nr].b = avt_blue (colornr);
+	      colors256[code_nr] = avt_sdlcolor (colornr);
 	    }
 	  else			// ncolors > 256
 	    {
@@ -1027,9 +1033,7 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
   color[0].r = compl avt_red (colornr);
   color[0].g = compl avt_green (colornr);
   color[0].b = compl avt_blue (colornr);
-  color[1].r = avt_red (colornr);
-  color[1].g = avt_green (colornr);
-  color[1].b = avt_blue (colornr);
+  color[1] = avt_sdlcolor (colornr);
   SDL_SetPalette (img, SDL_LOGPAL, color, 0, 2);
   SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL, 0);
 
@@ -1522,12 +1526,10 @@ avt_show_name (void)
       old_colors[1] = avt.character->format->palette->colors[1];
 
       // tan background
-      colors[0].r = 210;
-      colors[0].g = 180;
-      colors[0].b = 140;
+      colors[0] = avt_sdlcolor(0xD2B48C);
 
       // black foreground
-      colors[1].r = colors[1].g = colors[1].b = 0;
+      colors[1] = avt_sdlcolor(0x000000);
 
       SDL_SetColors (avt.character, colors, 0, 2);
 
@@ -1730,7 +1732,7 @@ avt_draw_balloon2 (int offset, uint32_t ballooncolor)
 static void
 avt_draw_balloon (void)
 {
-  SDL_Color shadow_color;
+  SDL_Color shadow_color, balloon_color;
   int16_t centered_y;
 
   if (not avt.avatar_visible)
@@ -1799,10 +1801,7 @@ avt_draw_balloon (void)
   avt.viewport = avt.textfield;
 
   // shadow color is a little darker than the background color
-  shadow_color.r = avt_red (avt.backgroundcolornr);
-  shadow_color.g = avt_green (avt.backgroundcolornr);
-  shadow_color.b = avt_blue (avt.backgroundcolornr);
-
+  shadow_color = avt_sdlcolor (avt.backgroundcolornr);
   shadow_color.r = (shadow_color.r > 0x20) ? shadow_color.r - 0x20 : 0;
   shadow_color.g = (shadow_color.g > 0x20) ? shadow_color.g - 0x20 : 0;
   shadow_color.b = (shadow_color.b > 0x20) ? shadow_color.b - 0x20 : 0;
@@ -1816,13 +1815,14 @@ avt_draw_balloon (void)
 				 shadow_color.g, shadow_color.b));
 
   // real balloon
-  SDL_SetColors (circle, &avt.ballooncolor_RGB, 1, 1);
-  SDL_SetColors (avt.pointer, &avt.ballooncolor_RGB, 1, 1);
+  balloon_color = avt_sdlcolor (avt.ballooncolor);
+  SDL_SetColors (circle, &balloon_color, 1, 1);
+  SDL_SetColors (avt.pointer, &balloon_color, 1, 1);
 
   avt_draw_balloon2 (0, SDL_MapRGB (screen->format,
-				    avt.ballooncolor_RGB.r,
-				    avt.ballooncolor_RGB.g,
-				    avt.ballooncolor_RGB.b));
+				    avt_red (avt.ballooncolor),
+				    avt_green (avt.ballooncolor),
+				    avt_blue (avt.ballooncolor)));
 
   avt.linestart =
     (avt.textdir_rtl) ? avt.viewport.x + avt.viewport.w -
@@ -1963,9 +1963,7 @@ avt_set_avatar_mode (int mode)
 	  SDL_FreeSurface (avt.pointer);
 	  avt.pointer =
 	    avt_load_image_xbm (AVT_XBM_INFO (balloonpointer),
-				avt_rgb (avt.ballooncolor_RGB.r,
-					 avt.ballooncolor_RGB.g,
-					 avt.ballooncolor_RGB.b));
+				avt.ballooncolor);
 	  avt.avatar_mode = AVT_SAY;
 	  break;
 
@@ -1973,9 +1971,7 @@ avt_set_avatar_mode (int mode)
 	  SDL_FreeSurface (avt.pointer);
 	  avt.pointer =
 	    avt_load_image_xbm (AVT_XBM_INFO (thinkpointer),
-				avt_rgb (avt.ballooncolor_RGB.r,
-					 avt.ballooncolor_RGB.g,
-					 avt.ballooncolor_RGB.b));
+				avt.ballooncolor);
 	  avt.avatar_mode = AVT_THINK;
 	  break;
 
@@ -4555,6 +4551,7 @@ avt_choice (int *result, int start_line, int items, int key,
 {
   SDL_Surface *plain_menu, *bar;
   SDL_Event event;
+  SDL_Color barcolor;
   int last_key;
   int end_line;
   int line_nr, old_line;
@@ -4578,8 +4575,9 @@ avt_choice (int *result, int start_line, int items, int key,
 	}
 
       // set color for bar and make it transparent
+      barcolor = avt_sdlcolor (avt.cursor_color);
       SDL_FillRect (bar, NULL, 0);
-      SDL_SetColors (bar, &avt.cursor_color, 0, 1);
+      SDL_SetColors (bar, &barcolor, 0, 1);
       SDL_SetAlpha (bar, SDL_SRCALPHA | SDL_RLEACCEL, 128);
 
       SDL_EventState (SDL_MOUSEMOTION, SDL_ENABLE);
@@ -4609,7 +4607,7 @@ avt_choice (int *result, int start_line, int items, int key,
 	      {
 		avt_char ch;
 
-                // user event might or might not be a key
+		// user event might or might not be a key
 		if (avt_keys.end == avt_keys.position)
 		  break;
 
@@ -6786,12 +6784,12 @@ avt_set_text_background_ballooncolor (void)
 {
   if (avt.character)
     {
-      SDL_SetColors (avt.character, &avt.ballooncolor_RGB, 0, 1);
+      SDL_Color color;
+      color = avt_sdlcolor (avt.ballooncolor);
+      SDL_SetColors (avt.character, &color, 0, 1);
 
       avt.text_background_color = SDL_MapRGB (screen->format,
-					      avt.ballooncolor_RGB.r,
-					      avt.ballooncolor_RGB.g,
-					      avt.ballooncolor_RGB.b);
+					      color.r, color.g, color.b);
     }
 }
 
@@ -6801,9 +6799,7 @@ avt_set_balloon_color (int color)
 {
   if (color >= 0)
     {
-      avt.ballooncolor_RGB.r = avt_red (color);
-      avt.ballooncolor_RGB.g = avt_green (color);
-      avt.ballooncolor_RGB.b = avt_blue (color);
+      avt.ballooncolor = color;
 
       if (screen)
 	{
@@ -6819,8 +6815,7 @@ avt_set_balloon_color (int color)
 extern int
 avt_get_balloon_color (void)
 {
-  return avt_rgb (avt.ballooncolor_RGB.r, avt.ballooncolor_RGB.g,
-		  avt.ballooncolor_RGB.b);
+  return avt.ballooncolor;
 }
 
 // can and should be called before avt_initialize
@@ -6892,13 +6887,11 @@ avt_set_mouse_visible (bool visible)
 extern void
 avt_set_text_color (int colornr)
 {
-  SDL_Color color;
-
   if (colornr >= 0 and avt.character)
     {
-      color.r = avt_red (colornr);
-      color.g = avt_green (colornr);
-      color.b = avt_blue (colornr);
+      SDL_Color color;
+
+      color = avt_sdlcolor (colornr);
       SDL_SetColors (avt.character, &color, 1, 1);
     }
 }
@@ -6906,13 +6899,11 @@ avt_set_text_color (int colornr)
 extern void
 avt_set_text_background_color (int colornr)
 {
-  SDL_Color color;
-
   if (colornr >= 0 and avt.character)
     {
-      color.r = avt_red (colornr);
-      color.g = avt_green (colornr);
-      color.b = avt_blue (colornr);
+      SDL_Color color;
+
+      color = avt_sdlcolor (colornr);
       SDL_SetColors (avt.character, &color, 0, 1);
 
       avt.text_background_color =
@@ -6967,18 +6958,13 @@ avt_normal_text (void)
       SDL_Color colors[2];
 
       // background -> ballooncolor
-      colors[0].r = avt.ballooncolor_RGB.r;
-      colors[0].g = avt.ballooncolor_RGB.g;
-      colors[0].b = avt.ballooncolor_RGB.b;
+      colors[0] = avt_sdlcolor (avt.ballooncolor);
       // black foreground
-      colors[1].r = colors[1].g = colors[1].b = 0x00;
+      colors[1] = avt_sdlcolor(0x000000);
 
       SDL_SetColors (avt.character, colors, 0, 2);
 
-      avt.text_background_color = SDL_MapRGB (screen->format,
-					      avt.ballooncolor_RGB.r,
-					      avt.ballooncolor_RGB.g,
-					      avt.ballooncolor_RGB.b);
+      avt.text_background_color = SDL_MapRGB (screen->format, colors[0].r, colors[0].g, colors[0].b);
     }
 }
 
@@ -7394,12 +7380,8 @@ avt_reset ()
   avt.flip_page_delay = AVT_DEFAULT_FLIP_PAGE_DELAY;
   avt.text_delay = 0;
   avt.bitmap_color = 0x000000;	// black
-  avt.ballooncolor_RGB.r = 255;
-  avt.ballooncolor_RGB.g = 250;
-  avt.ballooncolor_RGB.b = 240;
-  avt.cursor_color.r = 0xF2;
-  avt.cursor_color.g = 0x89;
-  avt.cursor_color.b = 0x19;
+  avt.ballooncolor = 0xFFFAF0;
+  avt.cursor_color = 0xF28919;
 
   avt_clear_keys ();
   avt_clear_screen ();		// also resets some variables
@@ -7552,8 +7534,10 @@ avt_start (const char *title, const char *shortname, int mode)
   base_button = avt_load_image_xpm (btn_xpm);
 
   // set color table for character canvas
+  SDL_Color cursor_color;
+  cursor_color = avt_sdlcolor (avt.cursor_color);
   SDL_FillRect (avt.text_cursor, NULL, 0);
-  SDL_SetColors (avt.text_cursor, &avt.cursor_color, 0, 1);
+  SDL_SetColors (avt.text_cursor, &cursor_color, 0, 1);
   SDL_SetAlpha (avt.text_cursor, SDL_SRCALPHA | SDL_RLEACCEL, 128);
 
   // set actual balloon size to the maximum size
@@ -7576,11 +7560,7 @@ avt_start (const char *title, const char *shortname, int mode)
       return _avt_STATUS;
     }
 
-  circle =
-    avt_load_image_xbm (AVT_XBM_INFO (circle),
-			avt_rgb (avt.ballooncolor_RGB.r,
-				 avt.ballooncolor_RGB.g,
-				 avt.ballooncolor_RGB.b));
+  circle = avt_load_image_xbm (AVT_XBM_INFO (circle), avt.ballooncolor);
 
   // just to be save, because of avt_reset()
   if (avt.pointer)
@@ -7588,10 +7568,7 @@ avt_start (const char *title, const char *shortname, int mode)
 
   avt.avatar_mode = AVT_SAY;
   avt.pointer =
-    avt_load_image_xbm (AVT_XBM_INFO (balloonpointer),
-			avt_rgb (avt.ballooncolor_RGB.r,
-				 avt.ballooncolor_RGB.g,
-				 avt.ballooncolor_RGB.b));
+    avt_load_image_xbm (AVT_XBM_INFO (balloonpointer), avt.ballooncolor);
 
   // needed to get the character of the typed key
   SDL_EnableUNICODE (1);
