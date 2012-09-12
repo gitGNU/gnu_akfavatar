@@ -209,7 +209,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
   bool active;
 
   if (_avt_STATUS != AVT_NORMAL or not snd or not data or not data_size)
-    return avt_checkevent ();
+    return avt_update ();
 
   // audio structure must have been created with avt_prepare_raw_audio
   if (snd->audio_type == AVT_AUDIO_UNKNOWN)
@@ -383,7 +383,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
   if (active)
     avt_unlock_audio (snd);
 
-  return avt_checkevent ();
+  return avt_update ();
 }
 
 extern avt_audio *

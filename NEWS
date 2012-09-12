@@ -1,8 +1,10 @@
 * AKFAvatar testing
 
-  - regression: the navigation bar cannot handle the paus key anymore
+  - avt_update() is much faster
+  - regression: the navigation bar cannot handle the pause key anymore
 
   C-API changes:
+    - avt_update() is much faster
     - new functions: avt_key_pressed, avt_push_key, avt_clear_keys
 
 * AKFAvatar 0.22.1

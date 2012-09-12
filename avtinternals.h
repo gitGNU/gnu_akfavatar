@@ -92,7 +92,6 @@ struct avt_audio
 
 /* avatar-sdl.c */
 extern int _avt_STATUS;
-extern int avt_checkevent (void);
 extern void (*avt_alert_func) (void);
 extern void (*avt_quit_audio_func) (void);
 

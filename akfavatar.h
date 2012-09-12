@@ -214,7 +214,7 @@ AVT_API void avt_bell (void);
 // visual flash of the screen
 AVT_API void avt_flash (void);
 
-// update, ie handle events and give some time to other processes
+// update, ie handle events
 // use this in a longer loop in your program
 AVT_API int avt_update (void);
 

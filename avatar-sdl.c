@@ -1532,8 +1532,8 @@ avt_show_name (void)
       old_colors[1] = avt.character->format->palette->colors[1];
 
       // background [0], foreground [1]
-      colors[0] = avt_sdlcolor(AVT_COLOR_TAN);
-      colors[1] = avt_sdlcolor(AVT_COLOR_BLACK);
+      colors[0] = avt_sdlcolor (AVT_COLOR_TAN);
+      colors[1] = avt_sdlcolor (AVT_COLOR_BLACK);
 
       SDL_SetColors (avt.character, colors, 0, 2);
 
@@ -2510,8 +2510,7 @@ avt_pause (void)
   return _avt_STATUS;
 }
 
-// external: not in the API, but used in audio-common.c
-int AVT_HIDDEN
+static inline int
 avt_checkevent (void)
 {
   SDL_Event event;
@@ -2522,15 +2521,12 @@ avt_checkevent (void)
   return _avt_STATUS;
 }
 
-// checks for events and gives some time to other apps
+// checks for events
 extern int
 avt_update (void)
 {
   if (screen)
-    {
-      SDL_Delay (1);
-      avt_checkevent ();
-    }
+    avt_checkevent ();
 
   return _avt_STATUS;
 }
@@ -5766,19 +5762,23 @@ avt_navigate (const char *buttons)
       switch (buttons[i])
 	{
 	case 'l':
-	  avt_show_button (button.x, button.y, btn_left, L'l', AVT_BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_left, L'l',
+			   AVT_BUTTON_COLOR);
 	  break;
 
 	case 'd':
-	  avt_show_button (button.x, button.y, btn_down, L'd', AVT_BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_down, L'd',
+			   AVT_BUTTON_COLOR);
 	  break;
 
 	case 'u':
-	  avt_show_button (button.x, button.y, btn_up, L'u', AVT_BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_up, L'u',
+			   AVT_BUTTON_COLOR);
 	  break;
 
 	case 'r':
-	  avt_show_button (button.x, button.y, btn_right, L'r', AVT_BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_right, L'r',
+			   AVT_BUTTON_COLOR);
 	  break;
 
 	case 'x':
@@ -5787,7 +5787,8 @@ avt_navigate (const char *buttons)
 	  break;
 
 	case 's':
-	  avt_show_button (button.x, button.y, btn_stop, L's', AVT_BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_stop, L's',
+			   AVT_BUTTON_COLOR);
 	  if (not audio_end_button)	// 'f' has precedence
 	    audio_end_button = 's';
 	  break;
@@ -5804,23 +5805,28 @@ avt_navigate (const char *buttons)
 	  break;
 
 	case '+':
-	  avt_show_button (button.x, button.y, btn_yes, L'+', AVT_BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_yes, L'+',
+			   AVT_BUTTON_COLOR);
 	  break;
 
 	case '-':
-	  avt_show_button (button.x, button.y, btn_no, L'-', AVT_BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_no, L'-',
+			   AVT_BUTTON_COLOR);
 	  break;
 
 	case 'p':
-	  avt_show_button (button.x, button.y, btn_pause, L'p', AVT_BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_pause, L'p',
+			   AVT_BUTTON_COLOR);
 	  break;
 
 	case '?':
-	  avt_show_button (button.x, button.y, btn_help, L'?', AVT_BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_help, L'?',
+			   AVT_BUTTON_COLOR);
 	  break;
 
 	case 'e':
-	  avt_show_button (button.x, button.y, btn_eject, L'e', AVT_BUTTON_COLOR);
+	  avt_show_button (button.x, button.y, btn_eject, L'e',
+			   AVT_BUTTON_COLOR);
 	  break;
 
 	case '*':
@@ -6964,11 +6970,12 @@ avt_normal_text (void)
       // background -> ballooncolor
       colors[0] = avt_sdlcolor (avt.ballooncolor);
       // black foreground
-      colors[1] = avt_sdlcolor(AVT_COLOR_BLACK);
+      colors[1] = avt_sdlcolor (AVT_COLOR_BLACK);
 
       SDL_SetColors (avt.character, colors, 0, 2);
 
-      avt.text_background_color = SDL_MapRGB (screen->format, colors[0].r, colors[0].g, colors[0].b);
+      avt.text_background_color =
+	SDL_MapRGB (screen->format, colors[0].r, colors[0].g, colors[0].b);
     }
 }
 

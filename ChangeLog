@@ -1,3 +1,7 @@
+2012-09-12  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-sdl.c (avt_update): no delay anymore
+
 2012-09-08  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar-sdl.c (avt_push_key): new function
