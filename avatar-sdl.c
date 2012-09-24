@@ -5845,6 +5845,9 @@ avt_navigate (const char *buttons)
       button.x += BASE_BUTTON_WIDTH + BUTTON_DISTANCE;
     }
 
+  if (audio_end_button)
+    avt_set_audio_end_key (audio_end_button);
+
   // check button presses
 
   while (result < 0 and _avt_STATUS == AVT_NORMAL)
@@ -5884,11 +5887,6 @@ avt_navigate (const char *buttons)
 	case AVT_KEY_PAGEUP:
 	  ch = L'b';
 	  break;
-
-	case AVT_KEY_AUDIO_END:
-	  if (audio_end_button)
-	    ch = audio_end_button;
-	  break;
 	}
 
       // check if it is one of the requested characters
@@ -5899,6 +5897,7 @@ avt_navigate (const char *buttons)
     }
 
   avt_clear_buttons ();
+  avt_set_audio_end_key (0);
 
   if (avt.textfield.x >= 0)
     SDL_SetClipRect (screen, &avt.viewport);

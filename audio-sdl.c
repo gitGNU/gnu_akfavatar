@@ -66,6 +66,7 @@ static volatile int32_t soundpos = 0;	// Current play position
 static volatile int32_t soundleft = 0;	// Length of left unplayed audio data
 static volatile bool loop = false;
 static volatile bool playing = false;
+static avt_char audio_key;
 
 // this is the callback function
 static void
@@ -86,7 +87,9 @@ fill_audio (void *userdata, uint8_t * stream, int len)
 	{
 	  SDL_PauseAudio (1);	// shut up
 	  playing = false;
-	  avt_push_key (AVT_KEY_AUDIO_END);
+
+	  if (audio_key)
+	    avt_push_key (audio_key);
 	  return;
 	}
     }
@@ -254,17 +257,30 @@ avt_play_audio (avt_audio * snd, int playmode)
     }
 }
 
+extern void
+avt_set_audio_end_key (avt_char key)
+{
+  audio_key = key;
+}
+
 extern int
 avt_wait_audio_end (void)
 {
+  avt_char old_audio_key;
+
   if (not playing)
     return _avt_STATUS;
+
+  old_audio_key = audio_key;
+  audio_key = 0xF050;
 
   // end the loop, but wait for end of sound
   loop = false;
 
   while (playing and _avt_STATUS == AVT_NORMAL)
     avt_key (NULL);		// end of audio also sends a pseudo key
+
+  audio_key = old_audio_key;
 
   return _avt_STATUS;
 }

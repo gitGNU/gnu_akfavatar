@@ -1,3 +1,10 @@
+2012-09-24  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, audio-sdl.c (avt_set_audio_end_key):
+	new function
+	(avt_wait_audio_end): adapted
+	avatar-sdl.c (avt_navigate): adapted
+
 2012-09-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl.c (avt_update): no delay anymore

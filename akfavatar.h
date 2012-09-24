@@ -89,7 +89,6 @@
 #define AVT_KEY_PAGEDOWN  0xF008
 #define AVT_KEY_HELP      0xF009
 #define AVT_KEY_MENU      0xF00A
-#define AVT_KEY_AUDIO_END 0xF050  // event pseudo-key
 #define AVT_KEY_F1        0xF0F1
 #define AVT_KEY_F2        0xF0F2
 #define AVT_KEY_F3        0xF0F3
@@ -1090,6 +1089,11 @@ AVT_API void avt_pause_audio (bool pause);
  */
 AVT_API bool avt_audio_playing (avt_audio *snd);
 
+/*
+ * automatically push a key when audio ends
+ * set to 0 to stop it
+ */
+AVT_API void avt_set_audio_end_key (avt_char key);
 
 /***********************************************************************/
 // deprecated functions - only for backward comatibility
