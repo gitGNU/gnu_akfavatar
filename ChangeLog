@@ -1,6 +1,6 @@
 2012-09-24  Andreas K. Foerster  <info@akfoerster.de>
 
-	* akfavatar.h, audio-sdl.c (avt_set_audio_end_key):
+	* akfavatar.h, audio-sdl.c, audio-dummy.c (avt_set_audio_end_key):
 	new function
 	(avt_wait_audio_end): adapted
 	avatar-sdl.c (avt_navigate): adapted
