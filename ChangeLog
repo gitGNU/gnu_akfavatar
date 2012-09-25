@@ -18,6 +18,8 @@
 	* avatar-sdl.c (avt_check_buttons): returns boolean
 	(avt_analyze_event): adapted
 
+	* avatar-sdl.c (avt_wait_button): use avt_key()
+
 2012-09-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, audio-sdl.c, audio-dummy.c (avt_set_audio_end_key):

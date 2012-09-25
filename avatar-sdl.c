@@ -5685,47 +5685,22 @@ avt_move_out (void)
 extern int
 avt_wait_button (void)
 {
-  SDL_Event event;
-  struct avt_position button;
-  bool nokey;
+  avt_char old_buttons_key;
 
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
   // alignment: right bottom
-  button.x = window.w - BASE_BUTTON_WIDTH - AVATAR_MARGIN;
-  button.y = window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN;
+  avt_show_button (window.w - BASE_BUTTON_WIDTH - AVATAR_MARGIN,
+		   window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN,
+		   btn_right, AVT_KEY_ENTER, AVT_BUTTON_COLOR);
 
-  avt_show_button (button.x, button.y, btn_right, L' ', AVT_BUTTON_COLOR);
+  old_buttons_key = avt_set_mouse_buttons_key (AVT_KEY_ENTER);
 
-  nokey = true;
-  while (nokey and _avt_STATUS == AVT_NORMAL)
-    {
-      SDL_WaitEvent (&event);
-      switch (event.type)
-	{
-	case SDL_QUIT:
-	  nokey = false;
-	  _avt_STATUS = AVT_QUIT;
-	  break;
-
-	case SDL_KEYDOWN:
-	  if (SDLK_F11 != event.key.keysym.sym or avt.reserve_single_keys)
-	    nokey = false;
-	  break;
-
-	case SDL_MOUSEBUTTONDOWN:
-	  // ignore the wheel
-	  if (event.button.button <= 3)
-	    nokey = false;
-	  break;
-	}
-
-      // do other stuff
-      avt_analyze_event (&event);
-    }
+  avt_key (NULL);
 
   avt_clear_buttons ();
+  avt_set_mouse_buttons_key (old_buttons_key);
   avt_clear_keys ();
 
   if (avt.textfield.x >= 0)
