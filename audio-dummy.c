@@ -68,10 +68,12 @@ avt_stop_audio (void)
   no_audio ();
 }
 
-extern void
+extern avt_char
 avt_set_audio_end_key (avt_char key)
 {
   no_audio ();
+
+  return 0;
 }
 
 extern int

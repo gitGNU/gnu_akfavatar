@@ -257,10 +257,15 @@ avt_play_audio (avt_audio * snd, int playmode)
     }
 }
 
-extern void
+extern avt_char
 avt_set_audio_end_key (avt_char key)
 {
+  avt_char old;
+
+  old = audio_key;
   audio_key = key;
+
+  return old;
 }
 
 extern int

@@ -1,3 +1,8 @@
+2012-09-25  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, audio-sdl.c, audio-dummy.c (avt_set_audio_end_key):
+	returns old value
+
 2012-09-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, audio-sdl.c, audio-dummy.c (avt_set_audio_end_key):

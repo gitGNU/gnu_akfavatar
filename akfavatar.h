@@ -1092,8 +1092,9 @@ AVT_API bool avt_audio_playing (avt_audio *snd);
 /*
  * automatically push a key when audio ends
  * set to 0 to stop it
+ * it returns the previous key
  */
-AVT_API void avt_set_audio_end_key (avt_char key);
+AVT_API avt_char avt_set_audio_end_key (avt_char key);
 
 /***********************************************************************/
 // deprecated functions - only for backward comatibility
