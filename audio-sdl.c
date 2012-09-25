@@ -123,6 +123,8 @@ avt_start_audio (void)
       avt_quit_audio_func = avt_quit_audio;
     }
 
+  audio_key = 0;
+
   return _avt_STATUS;
 }
 
@@ -144,6 +146,7 @@ avt_stop_audio (void)
   soundpos = 0;
   soundleft = 0;
   loop = false;
+  audio_key = 0;
   current_sound.length = 0;
   current_sound.sound = NULL;
 }

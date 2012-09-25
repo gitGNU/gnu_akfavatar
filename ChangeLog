@@ -3,6 +3,8 @@
 	* akfavatar.h, audio-sdl.c, audio-dummy.c (avt_set_audio_end_key):
 	returns old value
 
+	* audio-sdl.c (avt_start_audio, avt_stop_audio): reset audio_key
+
 2012-09-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, audio-sdl.c, audio-dummy.c (avt_set_audio_end_key):
