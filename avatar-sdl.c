@@ -2428,7 +2428,7 @@ avt_call_mouse_handler (SDL_Event * event)
     }
 }
 
-static void
+static bool
 avt_check_buttons (int x, int y)
 {
   struct avt_button *button;
@@ -2443,8 +2443,13 @@ avt_check_buttons (int x, int y)
       if (button->background
 	  and (y >= button->y) and (y <= (button->y + BASE_BUTTON_HEIGHT))
 	  and (x >= button->x) and (x <= (button->x + BASE_BUTTON_WIDTH)))
-	avt_push_key (button->key);
+	{
+	  avt_push_key (button->key);
+	  return true;
+	}
     }
+
+  return false;
 }
 
 static void
@@ -2463,10 +2468,11 @@ avt_analyze_event (SDL_Event * event)
     case SDL_MOUSEBUTTONDOWN:
       if (event->button.button <= 3)
 	{
-	  avt_check_buttons (event->button.x, event->button.y);
-
-	  if (avt.mouse_button_key)
-	    avt_push_key (avt.mouse_button_key);
+	  if (not avt_check_buttons (event->button.x, event->button.y))
+	    {
+	      if (avt.mouse_button_key)
+		avt_push_key (avt.mouse_button_key);
+	    }
 	}
       else if (SDL_BUTTON_WHEELDOWN == event->button.button)
 	avt_push_key (AVT_KEY_DOWN);
