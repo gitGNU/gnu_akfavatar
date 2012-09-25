@@ -312,6 +312,8 @@ struct avt_settings
   int cursor_color;		// color for cursor and menu-bar
   int bitmap_color;		// color for bitmaps
 
+  avt_char mouse_motion_key;	// key simulated be mouse motion
+
   // colors mapped for the screen
   uint32_t background_color, text_background_color;
 
@@ -2474,6 +2476,11 @@ avt_analyze_event (SDL_Event * event)
 	avt_call_mouse_handler (event);
       break;
 
+    case SDL_MOUSEMOTION:
+      if (avt.mouse_motion_key)
+	avt_push_key (avt.mouse_motion_key);
+      break;
+
     case SDL_KEYDOWN:
       avt_analyze_key (event->key.keysym);
       break;
@@ -4513,6 +4520,28 @@ avt_key (avt_char * ch)
   return _avt_STATUS;
 }
 
+static avt_char
+avt_set_mouse_motion_key (avt_char key)
+{
+  avt_char old;
+
+  old = avt.mouse_motion_key;
+  avt.mouse_motion_key = key;
+
+  if (key)
+    SDL_EventState (SDL_MOUSEMOTION, SDL_ENABLE);
+  else
+    SDL_EventState (SDL_MOUSEMOTION, SDL_IGNORE);
+
+  return old;
+}
+
+static inline void
+avt_get_mouse_position (int *x, int *y)
+{
+  SDL_GetMouseState (x, y);
+}
+
 static void
 update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
 		 SDL_Surface * plain_menu, SDL_Surface * bar)
@@ -4580,8 +4609,6 @@ avt_choice (int *result, int start_line, int items, int key,
       SDL_SetColors (bar, &barcolor, 0, 1);
       SDL_SetAlpha (bar, SDL_SRCALPHA | SDL_RLEACCEL, 128);
 
-      SDL_EventState (SDL_MOUSEMOTION, SDL_ENABLE);
-
       end_line = start_line + items - 1;
 
       if (key)
@@ -4594,6 +4621,7 @@ avt_choice (int *result, int start_line, int items, int key,
       *result = -1;
 
       avt_clear_keys ();
+      avt_set_mouse_motion_key (0xF802);
 
       while ((*result == -1) and (_avt_STATUS == AVT_NORMAL))
 	{
@@ -4698,7 +4726,8 @@ avt_choice (int *result, int start_line, int items, int key,
 	    }
 	}
 
-      SDL_EventState (SDL_MOUSEMOTION, SDL_IGNORE);
+      avt_set_mouse_motion_key (0);
+      avt_clear_keys ();
       SDL_FreeSurface (plain_menu);
       SDL_FreeSurface (bar);
     }
@@ -7392,6 +7421,7 @@ avt_reset ()
   avt.bitmap_color = AVT_COLOR_BLACK;
   avt.ballooncolor = AVT_BALLOON_COLOR;
   avt.cursor_color = 0xF28919;
+  avt.mouse_motion_key = 0;
 
   avt_clear_keys ();
   avt_clear_screen ();		// also resets some variables

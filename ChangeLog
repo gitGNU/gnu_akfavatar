@@ -9,6 +9,10 @@
 
 	* lua/lua-avt.c (lavt_set_audio_end_key): new function
 
+	* avatar-sdl.c (avt_set_mouse_motion_key, avt_get_mouse_position):
+	new functions
+	(avt_analyze_event): adapted
+
 2012-09-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, audio-sdl.c, audio-dummy.c (avt_set_audio_end_key):
