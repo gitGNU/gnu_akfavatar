@@ -7,6 +7,8 @@
 
 	* audio-sdl.c (avt_navigate): restore audio-end-key
 
+	* lua/lua-avt.c (lavt_set_audio_end_key): new function
+
 2012-09-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, audio-sdl.c, audio-dummy.c (avt_set_audio_end_key):

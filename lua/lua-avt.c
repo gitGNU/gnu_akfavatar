@@ -1647,6 +1647,13 @@ laudio_tostring (lua_State * L)
   return 1;
 }
 
+static int
+lavt_set_audio_end_key (lua_State * L)
+{
+  lua_pushinteger (L, avt_set_audio_end_key (luaL_checkint (L, 1)));
+  return 1;
+}
+
 /*
  * set a viewport (sub-area of the textarea)
  * 1=x, 2=y, 3=width, 4=height
@@ -2443,6 +2450,7 @@ static const luaL_Reg akfavtlib[] = {
   {"wait_audio_end", lavt_wait_audio_end},
   {"stop_audio", lavt_stop_audio},
   {"pause_audio", lavt_pause_audio},
+  {"set_audio_end_key", lavt_set_audio_end_key},
   {"viewport", lavt_viewport},
   {"set_scroll_mode", lavt_set_scroll_mode},
   {"get_scroll_mode", lavt_get_scroll_mode},

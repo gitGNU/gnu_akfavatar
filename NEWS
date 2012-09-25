@@ -5,7 +5,12 @@
 
   C-API changes:
     - avt_update() is much faster
-    - new functions: avt_key_pressed, avt_push_key, avt_clear_keys
+    - new functions: avt_key_pressed, avt_push_key, avt_clear_keys,
+      avt_set_audio_end_key
+
+  Lua-API changes:
+    - new functions: avt.set_audio_end_key
+
 
 * AKFAvatar 0.22.1
 

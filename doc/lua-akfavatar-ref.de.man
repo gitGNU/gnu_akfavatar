@@ -221,7 +221,7 @@ Diese Funktion hat noch immer Probleme mit Tabulatoren ("\et").
 .TP
 .BI "avt.say_unicode(" ... )
 Schreibt Text in der Sprechblase mit spezieller Unterstützung für 
-Unicoode-Zeichen.
+Unicode-Zeichen.
 .IP
 Dieser Befehl ist ähnlich wie
 .BR avt.say() .
@@ -728,7 +728,7 @@ Beide Werte können für die Farbauswahl verwendet werden.
 .PP
 .TP
 .BI "avt.get_key()"
-Wartet auf einen Tastendruck und gibt den Unicode Codepoint des
+Wartet auf einen Tastendruck und gibt den Unicode-Codepoint des
 Zeichens zurück.
 Für einige Funktionstasten werden Werte aus einem Unicode-Bereich
 für den privaten Gebrauch zurückgegeben.
@@ -1051,6 +1051,19 @@ Falls diese
 gerade abgespielt werden, wird die Audio-Ausgabe abgebrochen.
 .IP
 Audiodaten werden auch vom Garbage Collector freigegeben.
+.PP
+.TP
+.BI "avt.set_audio_end_key (" Taste )
+Definiere eine Taste, die automatisch gedrückt werden soll, wenn
+die Audio-Ausgabe endet.
+Die
+.I Taste
+sollte als Zahl für den Unicode-Codepoint angegeben werden.
+Durch den Wert
+.I 0
+kann man das wieder abschalten.
+.IP
+Die Funktion gibt den voher gesetzten Wert zurück.
 .PP
 .TP
 .BI "avt.quit_audio()"

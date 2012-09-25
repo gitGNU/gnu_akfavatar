@@ -993,6 +993,18 @@ is currently playing, it is stopped.
 Audio data is also freed by the garbage collector.
 .PP
 .TP
+.BI "avt.set_audio_end_key (" key )
+Define a key that should automatically be pressed when audio ends.
+The
+.I key
+should be given as a number for the Unicode codepoint.
+Use
+.I 0
+to deactivate it.
+.IP
+The function returns the value that was previously set.
+.PP
+.TP
 .BI "avt.quit_audio()"
 Quit the audio subsystem.
 .IP
