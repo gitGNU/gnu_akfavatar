@@ -5727,7 +5727,7 @@ extern int
 avt_navigate (const char *buttons)
 {
   int button_count;
-  avt_char audio_end_button;
+  avt_char audio_end_button, old_audio_key;
   struct avt_position button;
   int result;
 
@@ -5738,7 +5738,7 @@ avt_navigate (const char *buttons)
     return AVT_ERROR;
 
   result = AVT_ERROR;		// no result
-  audio_end_button = L'\0';	// none
+  audio_end_button = old_audio_key = 0;	// none
   button_count = SDL_strlen (buttons);
 
   if (not buttons or not * buttons or button_count > NAV_MAX)
@@ -5846,7 +5846,7 @@ avt_navigate (const char *buttons)
     }
 
   if (audio_end_button)
-    avt_set_audio_end_key (audio_end_button);
+    old_audio_key = avt_set_audio_end_key (audio_end_button);
 
   // check button presses
 
@@ -5897,7 +5897,7 @@ avt_navigate (const char *buttons)
     }
 
   avt_clear_buttons ();
-  avt_set_audio_end_key (0);
+  avt_set_audio_end_key (old_audio_key);
 
   if (avt.textfield.x >= 0)
     SDL_SetClipRect (screen, &avt.viewport);
