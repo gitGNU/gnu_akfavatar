@@ -313,6 +313,7 @@ struct avt_settings
   int bitmap_color;		// color for bitmaps
 
   avt_char mouse_motion_key;	// key simulated be mouse motion
+  avt_char mouse_button_key;	// key simulated for mouse button 1-3
 
   // colors mapped for the screen
   uint32_t background_color, text_background_color;
@@ -2461,7 +2462,12 @@ avt_analyze_event (SDL_Event * event)
 
     case SDL_MOUSEBUTTONDOWN:
       if (event->button.button <= 3)
-	avt_check_buttons (event->button.x, event->button.y);
+	{
+	  avt_check_buttons (event->button.x, event->button.y);
+
+	  if (avt.mouse_button_key)
+	    avt_push_key (avt.mouse_button_key);
+	}
       else if (SDL_BUTTON_WHEELDOWN == event->button.button)
 	avt_push_key (AVT_KEY_DOWN);
       else if (SDL_BUTTON_WHEELUP == event->button.button)
@@ -4536,6 +4542,18 @@ avt_set_mouse_motion_key (avt_char key)
   return old;
 }
 
+// key for mouse buttons 1-3
+static avt_char
+avt_set_mouse_buttons_key (avt_char key)
+{
+  avt_char old;
+
+  old = avt.mouse_button_key;
+  avt.mouse_button_key = key;
+
+  return old;
+}
+
 static inline void
 avt_get_mouse_position (int *x, int *y)
 {
@@ -4579,7 +4597,6 @@ avt_choice (int *result, int start_line, int items, int key,
 	    bool back, bool forward)
 {
   SDL_Surface *plain_menu, *bar;
-  SDL_Event event;
   SDL_Color barcolor;
   int last_key;
   int end_line;
@@ -4622,76 +4639,63 @@ avt_choice (int *result, int start_line, int items, int key,
 
       avt_clear_keys ();
       avt_set_mouse_motion_key (0xF802);
+      avt_set_mouse_buttons_key (AVT_KEY_ENTER);
 
       while ((*result == -1) and (_avt_STATUS == AVT_NORMAL))
 	{
-	  SDL_WaitEvent (&event);
-	  avt_analyze_event (&event);
+	  avt_char ch;
 
-	  switch (event.type)
+	  avt_key (&ch);
+
+	  if (key and (ch >= key) and (ch <= last_key))
+	    *result = (int) (ch - key + 1);
+	  else if (AVT_KEY_DOWN == ch)
 	    {
-	    case SDL_KEYDOWN:
-	    case SDL_USEREVENT:
-	      {
-		avt_char ch;
+	      if (line_nr != end_line)
+		{
+		  if (line_nr < start_line or line_nr > end_line)
+		    line_nr = start_line;
+		  else
+		    line_nr++;
+		  update_menu_bar (start_line, end_line, line_nr,
+				   old_line, plain_menu, bar);
+		  old_line = line_nr;
+		}
+	      else if (forward)
+		*result = items;
+	    }
+	  else if (AVT_KEY_UP == ch)
+	    {
+	      if (line_nr != start_line)
+		{
+		  if (line_nr < start_line or line_nr > end_line)
+		    line_nr = end_line;
+		  else
+		    line_nr--;
+		  update_menu_bar (start_line, end_line, line_nr,
+				   old_line, plain_menu, bar);
+		  old_line = line_nr;
+		}
+	      else if (back)
+		*result = 1;
+	    }
+	  else if (back and (AVT_KEY_PAGEUP == ch))
+	    *result = 1;
+	  else if (forward and (AVT_KEY_PAGEDOWN == ch))
+	    *result = items;
+	  else if ((AVT_KEY_ENTER == ch or AVT_KEY_RIGHT == ch)
+		   and line_nr >= start_line and line_nr <= end_line)
+	    *result = line_nr - start_line + 1;
+	  else if (0xF802 == ch)	// mouse motion
+	    {
+	      int x, y;
+	      avt_get_mouse_position (&x, &y);
 
-		// user event might or might not be a key
-		if (avt_keys.end == avt_keys.position)
-		  break;
-
-		avt_key (&ch);
-
-		if (key and (ch >= key) and (ch <= last_key))
-		  *result = (int) (ch - key + 1);
-		else if (AVT_KEY_DOWN == ch)
-		  {
-		    if (line_nr != end_line)
-		      {
-			if (line_nr < start_line or line_nr > end_line)
-			  line_nr = start_line;
-			else
-			  line_nr++;
-			update_menu_bar (start_line, end_line, line_nr,
-					 old_line, plain_menu, bar);
-			old_line = line_nr;
-		      }
-		    else if (forward)
-		      *result = items;
-		  }
-		else if (AVT_KEY_UP == ch)
-		  {
-		    if (line_nr != start_line)
-		      {
-			if (line_nr < start_line or line_nr > end_line)
-			  line_nr = end_line;
-			else
-			  line_nr--;
-			update_menu_bar (start_line, end_line, line_nr,
-					 old_line, plain_menu, bar);
-			old_line = line_nr;
-		      }
-		    else if (back)
-		      *result = 1;
-		  }
-		else if (back and (AVT_KEY_PAGEUP == ch))
-		  *result = 1;
-		else if (forward and (AVT_KEY_PAGEDOWN == ch))
-		  *result = items;
-		else if ((AVT_KEY_ENTER == ch or AVT_KEY_RIGHT == ch)
-			 and line_nr >= start_line and line_nr <= end_line)
-		  *result = line_nr - start_line + 1;
-	      }
-	      break;
-
-	    case SDL_MOUSEMOTION:
-	      if (event.motion.x >= avt.viewport.x
-		  and event.motion.x <= avt.viewport.x + avt.viewport.w
-		  and event.motion.y
-		  >= avt.viewport.y + ((start_line - 1) * LINEHEIGHT)
-		  and event.motion.y <
-		  avt.viewport.y + (end_line * LINEHEIGHT))
-		line_nr =
-		  ((event.motion.y - avt.viewport.y) / LINEHEIGHT) + 1;
+	      if (x >= avt.viewport.x
+		  and x <= avt.viewport.x + avt.viewport.w
+		  and y >= avt.viewport.y + ((start_line - 1) * LINEHEIGHT)
+		  and y < avt.viewport.y + (end_line * LINEHEIGHT))
+		line_nr = ((y - avt.viewport.y) / LINEHEIGHT) + 1;
 
 	      if (line_nr != old_line)
 		{
@@ -4699,35 +4703,13 @@ avt_choice (int *result, int start_line, int items, int key,
 				   plain_menu, bar);
 		  old_line = line_nr;
 		}
-	      break;
-
-	    case SDL_MOUSEBUTTONDOWN:
-	      // any of the first three buttons, but not the wheel
-	      if (event.button.button <= 3)
-		{
-		  // if a valid line was chosen
-		  if (line_nr >= start_line and line_nr <= end_line)
-		    *result = line_nr - start_line + 1;
-		  else
-		    {
-		      // check if mouse currently points to a valid line
-		      if (event.button.x >= avt.viewport.x and
-			  event.button.x <= avt.viewport.x + avt.viewport.w)
-			{
-			  line_nr =
-			    ((event.button.y - avt.viewport.y) / LINEHEIGHT) +
-			    1;
-			  if (line_nr >= start_line and line_nr <= end_line)
-			    *result = line_nr - start_line + 1;
-			}
-		    }
-		}
-	      break;
 	    }
-	}
+	}			// while
 
       avt_set_mouse_motion_key (0);
+      avt_set_mouse_buttons_key (0);
       avt_clear_keys ();
+
       SDL_FreeSurface (plain_menu);
       SDL_FreeSurface (bar);
     }
@@ -7422,6 +7404,7 @@ avt_reset ()
   avt.ballooncolor = AVT_BALLOON_COLOR;
   avt.cursor_color = 0xF28919;
   avt.mouse_motion_key = 0;
+  avt.mouse_button_key = 0;
 
   avt_clear_keys ();
   avt_clear_screen ();		// also resets some variables
