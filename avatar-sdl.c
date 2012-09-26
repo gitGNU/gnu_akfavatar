@@ -312,8 +312,8 @@ struct avt_settings
   int cursor_color;		// color for cursor and menu-bar
   int bitmap_color;		// color for bitmaps
 
-  avt_char mouse_motion_key;	// key simulated be mouse motion
-  avt_char mouse_button_key;	// key simulated for mouse button 1-3
+  avt_char pointer_motion_key;	// key simulated be pointer motion
+  avt_char pointer_button_key;	// key simulated for mouse button 1-3
 
   // colors mapped for the screen
   uint32_t background_color, text_background_color;
@@ -2470,8 +2470,8 @@ avt_analyze_event (SDL_Event * event)
 	{
 	  if (not avt_check_buttons (event->button.x, event->button.y))
 	    {
-	      if (avt.mouse_button_key)
-		avt_push_key (avt.mouse_button_key);
+	      if (avt.pointer_button_key)
+		avt_push_key (avt.pointer_button_key);
 	    }
 	}
       else if (SDL_BUTTON_WHEELDOWN == event->button.button)
@@ -2489,8 +2489,8 @@ avt_analyze_event (SDL_Event * event)
       break;
 
     case SDL_MOUSEMOTION:
-      if (avt.mouse_motion_key)
-	avt_push_key (avt.mouse_motion_key);
+      if (avt.pointer_motion_key)
+	avt_push_key (avt.pointer_motion_key);
       break;
 
     case SDL_KEYDOWN:
@@ -4533,12 +4533,12 @@ avt_key (avt_char * ch)
 }
 
 static avt_char
-avt_set_mouse_motion_key (avt_char key)
+avt_set_pointer_motion_key (avt_char key)
 {
   avt_char old;
 
-  old = avt.mouse_motion_key;
-  avt.mouse_motion_key = key;
+  old = avt.pointer_motion_key;
+  avt.pointer_motion_key = key;
 
   if (key)
     SDL_EventState (SDL_MOUSEMOTION, SDL_ENABLE);
@@ -4548,20 +4548,20 @@ avt_set_mouse_motion_key (avt_char key)
   return old;
 }
 
-// key for mouse buttons 1-3
+// key for pointer buttons 1-3
 static avt_char
-avt_set_mouse_buttons_key (avt_char key)
+avt_set_pointer_buttons_key (avt_char key)
 {
   avt_char old;
 
-  old = avt.mouse_button_key;
-  avt.mouse_button_key = key;
+  old = avt.pointer_button_key;
+  avt.pointer_button_key = key;
 
   return old;
 }
 
 static inline void
-avt_get_mouse_position (int *x, int *y)
+avt_get_pointer_position (int *x, int *y)
 {
   SDL_GetMouseState (x, y);
 }
@@ -4644,8 +4644,8 @@ avt_choice (int *result, int start_line, int items, int key,
       *result = -1;
 
       avt_clear_keys ();
-      avt_set_mouse_motion_key (0xF802);
-      avt_set_mouse_buttons_key (AVT_KEY_ENTER);
+      avt_set_pointer_motion_key (0xF802);
+      avt_set_pointer_buttons_key (AVT_KEY_ENTER);
 
       while ((*result == -1) and (_avt_STATUS == AVT_NORMAL))
 	{
@@ -4695,7 +4695,7 @@ avt_choice (int *result, int start_line, int items, int key,
 	  else if (0xF802 == ch)	// mouse motion
 	    {
 	      int x, y;
-	      avt_get_mouse_position (&x, &y);
+	      avt_get_pointer_position (&x, &y);
 
 	      if (x >= avt.viewport.x
 		  and x <= avt.viewport.x + avt.viewport.w
@@ -4712,8 +4712,8 @@ avt_choice (int *result, int start_line, int items, int key,
 	    }
 	}			// while
 
-      avt_set_mouse_motion_key (0);
-      avt_set_mouse_buttons_key (0);
+      avt_set_pointer_motion_key (0);
+      avt_set_pointer_buttons_key (0);
       avt_clear_keys ();
 
       SDL_FreeSurface (plain_menu);
@@ -5685,7 +5685,7 @@ avt_move_out (void)
 extern int
 avt_wait_button (void)
 {
-  avt_char old_buttons_key;
+  avt_char old_buttons_key, old_motion_key;
 
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -5695,12 +5695,15 @@ avt_wait_button (void)
 		   window.h - BASE_BUTTON_HEIGHT - AVATAR_MARGIN,
 		   btn_right, AVT_KEY_ENTER, AVT_BUTTON_COLOR);
 
-  old_buttons_key = avt_set_mouse_buttons_key (AVT_KEY_ENTER);
+  old_motion_key = avt_set_pointer_motion_key (0);	// ignore moves
+  old_buttons_key = avt_set_pointer_buttons_key (AVT_KEY_ENTER);
 
+  avt_clear_keys ();
   avt_key (NULL);
 
   avt_clear_buttons ();
-  avt_set_mouse_buttons_key (old_buttons_key);
+  avt_set_pointer_motion_key (old_motion_key);
+  avt_set_pointer_buttons_key (old_buttons_key);
   avt_clear_keys ();
 
   if (avt.textfield.x >= 0)
@@ -7384,8 +7387,8 @@ avt_reset ()
   avt.bitmap_color = AVT_COLOR_BLACK;
   avt.ballooncolor = AVT_BALLOON_COLOR;
   avt.cursor_color = 0xF28919;
-  avt.mouse_motion_key = 0;
-  avt.mouse_button_key = 0;
+  avt.pointer_motion_key = 0;
+  avt.pointer_button_key = 0;
 
   avt_clear_keys ();
   avt_clear_screen ();		// also resets some variables
