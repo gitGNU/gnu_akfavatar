@@ -4560,10 +4560,18 @@ avt_set_pointer_buttons_key (avt_char key)
   return old;
 }
 
-static inline void
-avt_get_pointer_position (int *x, int *y)
+static inline struct avt_position
+avt_get_pointer_position (void)
 {
-  SDL_GetMouseState (x, y);
+  struct avt_position pos;
+  int x, y;
+
+  SDL_GetMouseState (&x, &y);
+
+  pos.x = x;
+  pos.y = y;
+
+  return pos;
 }
 
 static void
@@ -4694,14 +4702,14 @@ avt_choice (int *result, int start_line, int items, int key,
 	    *result = line_nr - start_line + 1;
 	  else if (0xF802 == ch)	// mouse motion
 	    {
-	      int x, y;
-	      avt_get_pointer_position (&x, &y);
+	      struct avt_position pos;
+	      pos = avt_get_pointer_position ();
 
-	      if (x >= avt.viewport.x
-		  and x <= avt.viewport.x + avt.viewport.w
-		  and y >= avt.viewport.y + ((start_line - 1) * LINEHEIGHT)
-		  and y < avt.viewport.y + (end_line * LINEHEIGHT))
-		line_nr = ((y - avt.viewport.y) / LINEHEIGHT) + 1;
+	      if (pos.x >= avt.viewport.x
+		  and pos.x <= avt.viewport.x + avt.viewport.w
+		  and pos.y >= avt.viewport.y + ((start_line - 1) * LINEHEIGHT)
+		  and pos.y < avt.viewport.y + (end_line * LINEHEIGHT))
+		line_nr = ((pos.y - avt.viewport.y) / LINEHEIGHT) + 1;
 
 	      if (line_nr != old_line)
 		{
