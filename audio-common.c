@@ -680,7 +680,6 @@ avt_load_au (avt_data * src, uint32_t maxsize, int playmode)
 static avt_audio *
 avt_load_wave (avt_data * src, uint32_t maxsize, int playmode)
 {
-  int start;
   int audio_type;
   char identifier[4];
   bool wrong_chunk;
@@ -690,8 +689,6 @@ avt_load_wave (avt_data * src, uint32_t maxsize, int playmode)
 
   if (not src)
     return NULL;
-
-  start = avt_data_tell (src);
 
   if (avt_data_read (src, &identifier, sizeof (identifier), 1) != 1
       or memcmp ("RIFF", identifier, sizeof (identifier)) != 0)
