@@ -794,6 +794,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/lua/four_in_a_row.lua \
 	   $(srcdir)/lua/multiplication.lua $(srcdir)/lua/man.lua \
 	   $(srcdir)/lua/textview.lua \
+	   $(srcdir)/lua/hexviewer.lua \
 	   $(srcdir)/lua/story1-en.lua $(srcdir)/lua/story1-de.lua \
 	   $(srcdir)/lua/lbase64.c \
 	   $(srcdir)/lua/base64-encode.lua \
@@ -931,6 +932,7 @@ dist-bin-default: all pdf
 	ln $(srcdir)/lua/multiplication.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/hello.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/man.lua $(srcdir)/lua/textview.lua $(BINPKGNAME)/lua/
+	ln $(srcdir)/lua/hexviewer.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/story1-en.lua $(srcdir)/lua/story1-de.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/base64-encode.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/characters_overview.lua $(BINPKGNAME)/lua/
