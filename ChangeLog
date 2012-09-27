@@ -2,6 +2,8 @@
 
 	* lua/lua-avt.c (lavt_pager): do full garbage collection
 
+	* lua/hexviewer.lua: new file
+
 2012-09-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, audio-sdl.c, audio-dummy.c (avt_set_audio_end_key):
