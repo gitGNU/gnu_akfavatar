@@ -6,7 +6,7 @@
 local avt = require "lua-akfavatar"
 
 -- all is done in memory and it needs time, so we have to set a limit
-local limit = 2^20 --> 1MB
+local limit = 0x100000  --> 1MB
 
 avt.translations = {
   ["Hex Viewer"] = {
