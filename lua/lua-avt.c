@@ -1346,7 +1346,10 @@ lavt_pager (lua_State * L)
   startline = lua_tointeger (L, 2);
 
   if (s)
-    check (avt_pager_mb (s, len, startline));
+    {
+      lua_gc (L, LUA_GCCOLLECT, 0);	// full garbage collection
+      check (avt_pager_mb (s, len, startline));
+    }
 
   return 0;
 }
