@@ -422,6 +422,26 @@ avt_putpixel (SDL_Surface * s, int x, int y, int color)
 }
 
 static inline void
+avt_fill_area (SDL_Surface * s, int x, int y, int width, int height,
+	       int color)
+{
+  SDL_Rect dst;
+
+  dst.x = x;
+  dst.y = y;
+  dst.w = width;
+  dst.h = height;
+
+  SDL_FillRect (s, &dst, color);
+}
+
+static inline void
+avt_fill (SDL_Surface * s, int color)
+{
+  SDL_FillRect (s, NULL, color);
+}
+
+static inline void
 avt_release_raw_image (void)
 {
   if (raw_image)
@@ -1516,7 +1536,7 @@ avt_free_screen (void)
   // switch clipping off
   SDL_SetClipRect (screen, NULL);
   // fill the whole screen with background color
-  SDL_FillRect (screen, NULL, avt.background_color);
+  avt_fill (screen, avt.background_color);
 }
 
 extern void
@@ -1538,7 +1558,7 @@ avt_clear_screen (void)
 static void
 avt_show_name (void)
 {
-  SDL_Rect dst;
+  int x, y;
   int old_text_color, old_background_color;
   wchar_t *p;
 
@@ -1546,34 +1566,33 @@ avt_show_name (void)
     {
       // save old character colors
       old_text_color = avt.text_color;
-      old_background_color = avt.background_color;
+      old_background_color = avt.text_background_color;
 
-      avt.text_color = AVT_COLOR_TAN;
-      avt.text_background_color = AVT_COLOR_BLACK;
+      avt.text_color = AVT_COLOR_BLACK;
+      avt.text_background_color = AVT_COLOR_TAN;
 
       if (AVT_FOOTER == avt.avatar_mode or AVT_HEADER == avt.avatar_mode)
-	dst.x =
-	  ((window.x + window.w) / 2) + (avt.avatar_image->w / 2)
+	x = ((window.x + window.w) / 2) + (avt.avatar_image->w / 2)
 	  + BUTTON_DISTANCE;
       else			// left
-	dst.x =
-	  window.x + AVATAR_MARGIN + avt.avatar_image->w + BUTTON_DISTANCE;
+	x = window.x + AVATAR_MARGIN + avt.avatar_image->w + BUTTON_DISTANCE;
 
       if (AVT_HEADER == avt.avatar_mode)
-	dst.y = window.y + TOPMARGIN + avt.avatar_image->h
+	y = window.y + TOPMARGIN + avt.avatar_image->h
 	  - fontheight - 2 * NAME_PADDING;
       else
-	dst.y = window.y + window.h - AVATAR_MARGIN
+	y = window.y + window.h - AVATAR_MARGIN
 	  - fontheight - 2 * NAME_PADDING;
-      dst.w = (avt_strwidth (avt.name) * fontwidth) + 2 * NAME_PADDING;
-      dst.h = fontheight + 2 * NAME_PADDING;
 
       // draw sign
-      SDL_FillRect (screen, &dst, avt.text_background_color);
+      avt_fill_area (screen, x, y,
+		     (avt_strwidth (avt.name) * fontwidth) + 2 * NAME_PADDING,
+		     fontheight + 2 * NAME_PADDING,
+		     avt.text_background_color);
 
       // show name
-      avt.cursor.x = dst.x + NAME_PADDING;
-      avt.cursor.y = dst.y + NAME_PADDING;
+      avt.cursor.x = x + NAME_PADDING;
+      avt.cursor.y = y + NAME_PADDING;
 
       p = avt.name;
       while (*p)
@@ -1657,24 +1676,12 @@ avt_draw_balloon2 (int offset, uint32_t ballooncolor)
   shape.h = avt.textfield.h + (2 * BALLOON_INNER_MARGIN);
 
   // horizontal shape
-  {
-    SDL_Rect hshape;
-    hshape.x = shape.x;
-    hshape.w = shape.w;
-    hshape.y = shape.y + (circle_height / 2);
-    hshape.h = shape.h - circle_height;
-    SDL_FillRect (screen, &hshape, ballooncolor);
-  }
+  avt_fill_area (screen, shape.x, shape.y + (circle_height / 2),
+		 shape.w, shape.h - circle_height, ballooncolor);
 
   // vertical shape
-  {
-    SDL_Rect vshape;
-    vshape.x = shape.x + (circle_width / 2);
-    vshape.w = shape.w - circle_width;
-    vshape.y = shape.y;
-    vshape.h = shape.h;
-    SDL_FillRect (screen, &vshape, ballooncolor);
-  }
+  avt_fill_area (screen, shape.x + (circle_width / 2), shape.y,
+		 shape.w - circle_width, shape.h, ballooncolor);
 
   // draw corners
   {
@@ -2116,12 +2123,13 @@ avt_flash (void)
   // switch clipping off
   SDL_SetClipRect (screen, NULL);
   // fill the whole screen with color
-  SDL_FillRect (screen, NULL, SDL_MapRGB (screen->format, 0xFF, 0xFF, 0x00));
+  avt_fill (screen, 0xFFFF00);
   avt_update_all ();
   SDL_Delay (150);
 
   // fill the whole screen with background color
-  SDL_FillRect (screen, NULL, avt.background_color);
+  avt_fill (screen, avt.background_color);
+
   // restore image
   SDL_SetClipRect (screen, &window);
   SDL_BlitSurface (oldwindowimage, NULL, screen, &window);
@@ -2788,7 +2796,7 @@ avt_restore_position (void)
 extern void
 avt_insert_spaces (int num)
 {
-  SDL_Rect rest, dest, clear;
+  SDL_Rect rest, dest;
 
   // no textfield? do nothing
   if (not screen or avt.textfield.x < 0)
@@ -2808,11 +2816,8 @@ avt_insert_spaces (int num)
   dest.y = avt.cursor.y;
   SDL_BlitSurface (screen, &rest, screen, &dest);
 
-  clear.x = avt.cursor.x;
-  clear.y = avt.cursor.y;
-  clear.w = num * fontwidth;
-  clear.h = LINEHEIGHT;
-  SDL_FillRect (screen, &clear, avt.text_background_color);
+  avt_fill_area (screen, avt.cursor.x, avt.cursor.y,
+		 num * fontwidth, LINEHEIGHT, avt.text_background_color);
 
   if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
@@ -2826,7 +2831,7 @@ avt_insert_spaces (int num)
 extern void
 avt_delete_characters (int num)
 {
-  SDL_Rect rest, dest, clear;
+  SDL_Rect rest, dest;
 
   // no textfield? do nothing
   if (not screen or avt.textfield.x < 0)
@@ -2846,11 +2851,9 @@ avt_delete_characters (int num)
   dest.y = avt.cursor.y;
   SDL_BlitSurface (screen, &rest, screen, &dest);
 
-  clear.x = avt.viewport.x + avt.viewport.w - (num * fontwidth);
-  clear.y = avt.cursor.y;
-  clear.w = num * fontwidth;
-  clear.h = LINEHEIGHT;
-  SDL_FillRect (screen, &clear, avt.text_background_color);
+  avt_fill_area (screen, avt.viewport.x + avt.viewport.w - (num * fontwidth),
+		 avt.cursor.y, num * fontwidth, LINEHEIGHT,
+		 avt.text_background_color);
 
   if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
@@ -2864,8 +2867,6 @@ avt_delete_characters (int num)
 extern void
 avt_erase_characters (int num)
 {
-  SDL_Rect clear;
-
   // no textfield? do nothing
   if (not screen or avt.textfield.x < 0)
     return;
@@ -2873,24 +2874,23 @@ avt_erase_characters (int num)
   if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
-  clear.x =
-    (avt.textdir_rtl) ? avt.cursor.x - (num * fontwidth) : avt.cursor.x;
-  clear.y = avt.cursor.y;
-  clear.w = num * fontwidth;
-  clear.h = LINEHEIGHT;
-  SDL_FillRect (screen, &clear, avt.text_background_color);
+  int x = (avt.textdir_rtl) ? avt.cursor.x - (num * fontwidth) : avt.cursor.x;
+
+  avt_fill_area (screen, x, avt.cursor.y, num * fontwidth, LINEHEIGHT,
+		 avt.text_background_color);
 
   if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
 
   // update area
-  avt_update_trect (clear);
+  if (not avt.hold_updates)
+    SDL_UpdateRect (screen, x, avt.cursor.y, num * fontwidth, LINEHEIGHT);
 }
 
 extern void
 avt_delete_lines (int line, int num)
 {
-  SDL_Rect rest, dest, clear;
+  SDL_Rect rest, dest;
 
   // no textfield? do nothing
   if (not screen or avt.textfield.x < 0)
@@ -2916,11 +2916,9 @@ avt_delete_lines (int line, int num)
   dest.y = avt.viewport.y + ((line - 1) * LINEHEIGHT);
   SDL_BlitSurface (screen, &rest, screen, &dest);
 
-  clear.w = avt.viewport.w;
-  clear.h = num * LINEHEIGHT;
-  clear.x = avt.viewport.x;
-  clear.y = avt.viewport.y + avt.viewport.h - (num * LINEHEIGHT);
-  SDL_FillRect (screen, &clear, avt.text_background_color);
+  avt_fill_area (screen, avt.viewport.x,
+		 avt.viewport.y + avt.viewport.h - (num * LINEHEIGHT),
+		 avt.viewport.w, num * LINEHEIGHT, avt.text_background_color);
 
   if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
@@ -2931,7 +2929,7 @@ avt_delete_lines (int line, int num)
 extern void
 avt_insert_lines (int line, int num)
 {
-  SDL_Rect rest, dest, clear;
+  SDL_Rect rest, dest;
 
   // no textfield? do nothing
   if (not screen or avt.textfield.x < 0)
@@ -2957,11 +2955,9 @@ avt_insert_lines (int line, int num)
   dest.y = avt.viewport.y + ((line - 1 + num) * LINEHEIGHT);
   SDL_BlitSurface (screen, &rest, screen, &dest);
 
-  clear.x = avt.viewport.x;
-  clear.y = avt.viewport.y + ((line - 1) * LINEHEIGHT);
-  clear.w = avt.viewport.w;
-  clear.h = num * LINEHEIGHT;
-  SDL_FillRect (screen, &clear, avt.text_background_color);
+  avt_fill_area (screen, avt.viewport.x,
+		 avt.viewport.y + ((line - 1) * LINEHEIGHT),
+		 avt.viewport.w, num * LINEHEIGHT, avt.text_background_color);
 
   if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
@@ -3100,8 +3096,6 @@ avt_clear (void)
 extern void
 avt_clear_up (void)
 {
-  SDL_Rect dst;
-
   // not initialized? -> do nothing
   if (not screen)
     return;
@@ -3110,12 +3104,8 @@ avt_clear_up (void)
   if (avt.textfield.x < 0)
     avt_draw_balloon ();
 
-  dst.x = avt.viewport.x;
-  dst.w = avt.viewport.w;
-  dst.y = avt.viewport.y + fontheight;
-  dst.h = avt.cursor.y;
-
-  SDL_FillRect (screen, &dst, avt.text_background_color);
+  avt_fill_area (screen, avt.viewport.x, avt.viewport.y + fontheight,
+		 avt.viewport.w, avt.cursor.y, avt.text_background_color);
 
   if (avt.text_cursor_visible)
     {
@@ -3123,14 +3113,14 @@ avt_clear_up (void)
       avt_show_text_cursor (true);
     }
 
-  avt_update_trect (dst);
+  if (not avt.hold_updates)
+    SDL_UpdateRect (screen, avt.viewport.x, avt.viewport.y + fontheight,
+		    avt.viewport.w, avt.cursor.y);
 }
 
 extern void
 avt_clear_down (void)
 {
-  SDL_Rect dst;
-
   // not initialized? -> do nothing
   if (not screen)
     return;
@@ -3142,12 +3132,9 @@ avt_clear_down (void)
   if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
-  dst.x = avt.viewport.x;
-  dst.w = avt.viewport.w;
-  dst.y = avt.cursor.y;
-  dst.h = avt.viewport.h - (avt.cursor.y - avt.viewport.y);
-
-  SDL_FillRect (screen, &dst, avt.text_background_color);
+  avt_fill_area (screen, avt.viewport.x, avt.cursor.y, avt.viewport.w,
+		 avt.viewport.h - (avt.cursor.y - avt.viewport.y),
+		 avt.text_background_color);
 
   if (avt.text_cursor_visible)
     {
@@ -3155,13 +3142,15 @@ avt_clear_down (void)
       avt_show_text_cursor (true);
     }
 
-  avt_update_trect (dst);
+  if (not avt.hold_updates)
+    SDL_UpdateRect (screen, avt.viewport.x, avt.cursor.y, avt.viewport.w,
+		    avt.viewport.h - (avt.cursor.y - avt.viewport.y));
 }
 
 extern void
 avt_clear_eol (void)
 {
-  SDL_Rect dst;
+  int x, width;
 
   // not initialized? -> do nothing
   if (not screen)
@@ -3173,20 +3162,17 @@ avt_clear_eol (void)
 
   if (avt.textdir_rtl)		// right to left
     {
-      dst.x = avt.viewport.x;
-      dst.y = avt.cursor.y;
-      dst.h = fontheight;
-      dst.w = avt.cursor.x + fontwidth - avt.viewport.x;
+      x = avt.viewport.x;
+      width = avt.cursor.x + fontwidth - avt.viewport.x;
     }
   else				// left to right
     {
-      dst.x = avt.cursor.x;
-      dst.y = avt.cursor.y;
-      dst.h = fontheight;
-      dst.w = avt.viewport.w - (avt.cursor.x - avt.viewport.x);
+      x = avt.cursor.x;
+      width = avt.viewport.w - (avt.cursor.x - avt.viewport.x);
     }
 
-  SDL_FillRect (screen, &dst, avt.text_background_color);
+  avt_fill_area (screen, x, avt.cursor.y, width, fontheight,
+		 avt.text_background_color);
 
   if (avt.text_cursor_visible)
     {
@@ -3194,14 +3180,15 @@ avt_clear_eol (void)
       avt_show_text_cursor (true);
     }
 
-  avt_update_trect (dst);
+  if (not avt.hold_updates)
+    SDL_UpdateRect (screen, x, avt.cursor.y, width, fontheight);
 }
 
 // clear beginning of line
 extern void
 avt_clear_bol (void)
 {
-  SDL_Rect dst;
+  int x, width;
 
   // not initialized? -> do nothing
   if (not screen)
@@ -3213,20 +3200,17 @@ avt_clear_bol (void)
 
   if (avt.textdir_rtl)		// right to left
     {
-      dst.x = avt.cursor.x;
-      dst.y = avt.cursor.y;
-      dst.h = fontheight;
-      dst.w = avt.viewport.w - (avt.cursor.x - avt.viewport.x);
+      x = avt.cursor.x;
+      width = avt.viewport.w - (avt.cursor.x - avt.viewport.x);
     }
   else				// left to right
     {
-      dst.x = avt.viewport.x;
-      dst.y = avt.cursor.y;
-      dst.h = fontheight;
-      dst.w = avt.cursor.x + fontwidth - avt.viewport.x;
+      x = avt.viewport.x;
+      width = avt.cursor.x + fontwidth - avt.viewport.x;
     }
 
-  SDL_FillRect (screen, &dst, avt.text_background_color);
+  avt_fill_area (screen, x, avt.cursor.y, width, fontheight,
+		 avt.text_background_color);
 
   if (avt.text_cursor_visible)
     {
@@ -3234,14 +3218,13 @@ avt_clear_bol (void)
       avt_show_text_cursor (true);
     }
 
-  avt_update_trect (dst);
+  if (not avt.hold_updates)
+    SDL_UpdateRect (screen, x, avt.cursor.y, width, fontheight);
 }
 
 extern void
 avt_clear_line (void)
 {
-  SDL_Rect dst;
-
   // not initialized? -> do nothing
   if (not screen)
     return;
@@ -3250,12 +3233,8 @@ avt_clear_line (void)
   if (avt.textfield.x < 0)
     avt_draw_balloon ();
 
-  dst.x = avt.viewport.x;
-  dst.y = avt.cursor.y;
-  dst.h = fontheight;
-  dst.w = avt.viewport.w;
-
-  SDL_FillRect (screen, &dst, avt.text_background_color);
+  avt_fill_area (screen, avt.viewport.x, avt.cursor.y,
+		 avt.viewport.w, fontheight, avt.text_background_color);
 
   if (avt.text_cursor_visible)
     {
@@ -3263,7 +3242,9 @@ avt_clear_line (void)
       avt_show_text_cursor (true);
     }
 
-  avt_update_trect (dst);
+  if (not avt.hold_updates)
+    SDL_UpdateRect (screen, avt.viewport.x, avt.cursor.y, avt.viewport.w,
+		    fontheight);
 }
 
 extern int
@@ -3594,14 +3575,8 @@ avt_last_tab (void)
 static void
 avt_clearchar (void)
 {
-  SDL_Rect dst;
-
-  dst.x = avt.cursor.x;
-  dst.y = avt.cursor.y;
-  dst.w = fontwidth;
-  dst.h = fontheight;
-
-  SDL_FillRect (screen, &dst, avt.text_background_color);
+  avt_fill_area (screen, avt.cursor.x, avt.cursor.y, fontwidth, fontheight,
+		 avt.text_background_color);
   avt_showchar ();
 }
 
@@ -4662,7 +4637,7 @@ avt_choice (int *result, int start_line, int items, int key,
 
       // set color for bar and make it transparent
       barcolor = avt_sdlcolor (avt.cursor_color);
-      SDL_FillRect (bar, NULL, 0);
+      avt_fill (bar, 0);
       SDL_SetColors (bar, &barcolor, 0, 1);
       SDL_SetAlpha (bar, SDL_SRCALPHA | SDL_RLEACCEL, 128);
 
@@ -7163,7 +7138,7 @@ avt_credits (const wchar_t * text, bool centered)
 	avt.cursor.x = 0;
 
       // clear line
-      SDL_FillRect (last_line, NULL, 0);
+      avt_fill (last_line, AVT_COLOR_BLACK);
 
       // print on last_line
       for (int i = 0; i < length; i++, avt.cursor.x += fontwidth)
@@ -7173,7 +7148,7 @@ avt_credits (const wchar_t * text, bool centered)
     }
 
   // show one empty line to avoid streakes
-  SDL_FillRect (last_line, NULL, 0);
+  avt_fill (last_line, AVT_COLOR_BLACK);
   avt_credits_up (last_line);
 
   // scroll up until screen is empty
@@ -7525,7 +7500,7 @@ avt_start (const char *title, const char *shortname, int mode)
   // set color table for character canvas
   SDL_Color cursor_color;
   cursor_color = avt_sdlcolor (avt.cursor_color);
-  SDL_FillRect (avt.text_cursor, NULL, 0);
+  avt_fill (avt.text_cursor, 0);
   SDL_SetColors (avt.text_cursor, &cursor_color, 0, 1);
   SDL_SetAlpha (avt.text_cursor, SDL_SRCALPHA | SDL_RLEACCEL, 128);
 

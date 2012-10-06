@@ -2,6 +2,8 @@
 
 	* avatar-sdl.c: start to migrate anything to 32bpp surfaces
 
+	* avatar-sdl.c (avt_fill_area, avt_fill): new fuctions
+
 2012-09-27  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c (lavt_pager): do full garbage collection
