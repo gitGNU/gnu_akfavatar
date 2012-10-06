@@ -4,6 +4,8 @@
 
 	* avatar-sdl.c (avt_fill_area, avt_fill): new fuctions
 
+	* avatar-sdl.c (avt_update_area): new fuction
+
 2012-09-27  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c (lavt_pager): do full garbage collection

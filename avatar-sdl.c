@@ -442,6 +442,31 @@ avt_fill (SDL_Surface * s, int color)
 }
 
 static inline void
+avt_update_area (int x, int y, int width, int height)
+{
+  SDL_UpdateRect (screen, x, y, width, height);
+}
+
+static inline void
+avt_update_rect (SDL_Rect rect)
+{
+  avt_update_area (rect.x, rect.y, rect.w, rect.h);
+}
+
+static inline void
+avt_update_trect (SDL_Rect rect)
+{
+  if (not avt.hold_updates)
+    avt_update_area (rect.x, rect.y, rect.w, rect.h);
+}
+
+static inline void
+avt_update_all (void)
+{
+  avt_update_area (0, 0, 0, 0);
+}
+
+static inline void
 avt_release_raw_image (void)
 {
   if (raw_image)
@@ -514,25 +539,6 @@ static struct
   SDL_Surface *(*rw) (SDL_RWops * src, int freesrc);
 } load_image;
 
-
-static inline void
-avt_update_rect (SDL_Rect rect)
-{
-  SDL_UpdateRect (screen, rect.x, rect.y, rect.w, rect.h);
-}
-
-static inline void
-avt_update_trect (SDL_Rect rect)
-{
-  if (not avt.hold_updates)
-    SDL_UpdateRect (screen, rect.x, rect.y, rect.w, rect.h);
-}
-
-static inline void
-avt_update_all (void)
-{
-  SDL_UpdateRect (screen, 0, 0, 0, 0);
-}
 
 // X-Pixmap (XPM) support
 
@@ -2824,8 +2830,8 @@ avt_insert_spaces (int num)
 
   // update line
   if (not avt.hold_updates)
-    SDL_UpdateRect (screen, avt.viewport.x, avt.cursor.y, avt.viewport.w,
-		    fontheight);
+    avt_update_area (avt.viewport.x, avt.cursor.y, avt.viewport.w,
+		     fontheight);
 }
 
 extern void
@@ -2860,8 +2866,8 @@ avt_delete_characters (int num)
 
   // update line
   if (not avt.hold_updates)
-    SDL_UpdateRect (screen, avt.viewport.x, avt.cursor.y, avt.viewport.w,
-		    fontheight);
+    avt_update_area (avt.viewport.x, avt.cursor.y, avt.viewport.w,
+		     fontheight);
 }
 
 extern void
@@ -2884,7 +2890,7 @@ avt_erase_characters (int num)
 
   // update area
   if (not avt.hold_updates)
-    SDL_UpdateRect (screen, x, avt.cursor.y, num * fontwidth, LINEHEIGHT);
+    avt_update_area (x, avt.cursor.y, num * fontwidth, LINEHEIGHT);
 }
 
 extern void
@@ -3114,8 +3120,8 @@ avt_clear_up (void)
     }
 
   if (not avt.hold_updates)
-    SDL_UpdateRect (screen, avt.viewport.x, avt.viewport.y + fontheight,
-		    avt.viewport.w, avt.cursor.y);
+    avt_update_area (avt.viewport.x, avt.viewport.y + fontheight,
+		     avt.viewport.w, avt.cursor.y);
 }
 
 extern void
@@ -3143,8 +3149,8 @@ avt_clear_down (void)
     }
 
   if (not avt.hold_updates)
-    SDL_UpdateRect (screen, avt.viewport.x, avt.cursor.y, avt.viewport.w,
-		    avt.viewport.h - (avt.cursor.y - avt.viewport.y));
+    avt_update_area (avt.viewport.x, avt.cursor.y, avt.viewport.w,
+		     avt.viewport.h - (avt.cursor.y - avt.viewport.y));
 }
 
 extern void
@@ -3181,7 +3187,7 @@ avt_clear_eol (void)
     }
 
   if (not avt.hold_updates)
-    SDL_UpdateRect (screen, x, avt.cursor.y, width, fontheight);
+    avt_update_area (x, avt.cursor.y, width, fontheight);
 }
 
 // clear beginning of line
@@ -3219,7 +3225,7 @@ avt_clear_bol (void)
     }
 
   if (not avt.hold_updates)
-    SDL_UpdateRect (screen, x, avt.cursor.y, width, fontheight);
+    avt_update_area (x, avt.cursor.y, width, fontheight);
 }
 
 extern void
@@ -3243,8 +3249,8 @@ avt_clear_line (void)
     }
 
   if (not avt.hold_updates)
-    SDL_UpdateRect (screen, avt.viewport.x, avt.cursor.y, avt.viewport.w,
-		    fontheight);
+    avt_update_area (avt.viewport.x, avt.cursor.y, avt.viewport.w,
+		     fontheight);
 }
 
 extern int
@@ -3443,8 +3449,7 @@ avt_showchar (void)
 {
   if (not avt.hold_updates)
     {
-      SDL_UpdateRect (screen, avt.cursor.x, avt.cursor.y, fontwidth,
-		      fontheight);
+      avt_update_area (avt.cursor.x, avt.cursor.y, fontwidth, fontheight);
       avt.text_cursor_actually_visible = false;
     }
 }
@@ -4593,7 +4598,7 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
 	  t.x = avt.viewport.x;
 	  t.y = avt.viewport.y + s.y;
 	  SDL_BlitSurface (plain_menu, &s, screen, &t);
-	  SDL_UpdateRect (screen, t.x, t.y, avt.viewport.w, LINEHEIGHT);
+	  avt_update_area (t.x, t.y, avt.viewport.w, LINEHEIGHT);
 	}
 
       // show bar
@@ -4602,7 +4607,7 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
 	  t.x = avt.viewport.x;
 	  t.y = avt.viewport.y + ((line_nr - 1) * LINEHEIGHT);
 	  SDL_BlitSurface (bar, NULL, screen, &t);
-	  SDL_UpdateRect (screen, t.x, t.y, avt.viewport.w, LINEHEIGHT);
+	  avt_update_area (t.x, t.y, avt.viewport.w, LINEHEIGHT);
 	}
     }
 }
@@ -5569,11 +5574,9 @@ avt_move_in (void)
 
 	      // update
 	      if ((oldx + dst.w) >= screen->w)
-		SDL_UpdateRect (screen, dst.x, dst.y,
-				screen->w - dst.x, dst.h);
+		avt_update_area (dst.x, dst.y, screen->w - dst.x, dst.h);
 	      else
-		SDL_UpdateRect (screen, dst.x, dst.y,
-				dst.w + (oldx - dst.x), dst.h);
+		avt_update_area (dst.x, dst.y, dst.w + (oldx - dst.x), dst.h);
 
 	      // if window is resized then break
 	      if (window.x != mywindow.x or window.y != mywindow.y)
@@ -5663,10 +5666,9 @@ avt_move_out (void)
 
 	      // update
 	      if ((dst.x + dst.w) >= screen->w)
-		SDL_UpdateRect (screen, oldx, dst.y, screen->w - oldx, dst.h);
+		avt_update_area (oldx, dst.y, screen->w - oldx, dst.h);
 	      else
-		SDL_UpdateRect (screen, oldx, dst.y,
-				dst.w + dst.x - oldx, dst.h);
+		avt_update_area (oldx, dst.y, dst.w + dst.x - oldx, dst.h);
 
 	      // if window is resized then break
 	      if (window.x != mywindow.x or window.y != mywindow.y)
