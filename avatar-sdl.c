@@ -295,7 +295,7 @@ struct avt_position
 
 struct avt_settings
 {
-  SDL_Surface *avatar_image, *character;
+  SDL_Surface *avatar_image;
   SDL_Surface *text_cursor, *cursor_character;
   SDL_Surface *pointer;
   wchar_t *name;
@@ -309,6 +309,8 @@ struct avt_settings
 
   int ballooncolor;
   int backgroundcolornr;
+  int text_color;
+  int text_background_color;
   int cursor_color;		// color for cursor and menu-bar
   int bitmap_color;		// color for bitmaps
 
@@ -316,7 +318,7 @@ struct avt_settings
   avt_char pointer_button_key;	// key simulated for mouse button 1-3
 
   // colors mapped for the screen
-  uint32_t background_color, text_background_color;
+  uint32_t background_color;
 
   bool newline_mode;		// when off, you need an extra CR
   bool underlined, bold, inverse;	// text underlined, bold?
@@ -406,6 +408,18 @@ static void avt_drawchar (avt_char ch, SDL_Surface * surface);
 static SDL_Surface *avt_save_background (SDL_Rect area);
 static void avt_analyze_event (SDL_Event * event);
 
+
+// Fast putpixel with no checks
+// surface must have 32 bits per pixel!
+// surface must eventually be locked
+static inline void
+avt_putpixel (SDL_Surface * s, int x, int y, int color)
+{
+  uint8_t *p;
+
+  p = ((uint8_t *) s->pixels) + y * s->pitch + (x * sizeof (uint32_t));
+  *((uint32_t *) p) = color;
+}
 
 static inline void
 avt_release_raw_image (void)
@@ -1525,20 +1539,17 @@ static void
 avt_show_name (void)
 {
   SDL_Rect dst;
-  SDL_Color old_colors[2], colors[2];
+  int old_text_color, old_background_color;
   wchar_t *p;
 
   if (screen and avt.avatar_image and avt.name)
     {
       // save old character colors
-      old_colors[0] = avt.character->format->palette->colors[0];
-      old_colors[1] = avt.character->format->palette->colors[1];
+      old_text_color = avt.text_color;
+      old_background_color = avt.background_color;
 
-      // background [0], foreground [1]
-      colors[0] = avt_sdlcolor (AVT_COLOR_TAN);
-      colors[1] = avt_sdlcolor (AVT_COLOR_BLACK);
-
-      SDL_SetColors (avt.character, colors, 0, 2);
+      avt.text_color = AVT_COLOR_TAN;
+      avt.text_background_color = AVT_COLOR_BLACK;
 
       if (AVT_FOOTER == avt.avatar_mode or AVT_HEADER == avt.avatar_mode)
 	dst.x =
@@ -1558,9 +1569,7 @@ avt_show_name (void)
       dst.h = fontheight + 2 * NAME_PADDING;
 
       // draw sign
-      SDL_FillRect (screen, &dst,
-		    SDL_MapRGB (screen->format,
-				colors[0].r, colors[0].g, colors[0].b));
+      SDL_FillRect (screen, &dst, avt.text_background_color);
 
       // show name
       avt.cursor.x = dst.x + NAME_PADDING;
@@ -1574,7 +1583,8 @@ avt_show_name (void)
 	}
 
       // restore old character colors
-      SDL_SetColors (avt.character, old_colors, 0, 2);
+      avt.text_color = old_text_color;
+      avt.text_background_color = old_background_color;
     }
 }
 
@@ -3344,67 +3354,91 @@ avt_new_line (void)
 }
 
 // avt_drawchar: draws the raw char - with no interpretation
+// surface must be 32 bit per pixel
 static void
 avt_drawchar (avt_char ch, SDL_Surface * surface)
 {
-  SDL_Rect dest;
-  uint16_t pitch;
-
   if (fontwidth > 8)
     {
-      const unsigned short *font_line;
-      unsigned short *pixels, *p;
+      const uint16_t *font_line;
+      uint16_t line;
 
-      pitch = avt.character->pitch / sizeof (*p);
-      pixels = p = (unsigned short *) avt.character->pixels;
-      font_line = (const unsigned short *) avt_get_font_char ((int) ch);
+      font_line = (const uint16_t *) avt_get_font_char ((int) ch);
+
       if (not font_line)
-	font_line = (const unsigned short *) avt_get_font_char (0);
+	font_line = (const uint16_t *) avt_get_font_char (0);
 
-      for (int y = 0; y < fontheight; y++)
+      for (int y = 0; y < fontheight; y++, font_line++)
 	{
-	  // TODO: needs test on big endian machines
-	  *p = SDL_SwapBE16 (*font_line);
-	  if (avt.bold and not NOT_BOLD)
-	    *p |= SDL_SwapBE16 (*font_line >> 1);
-	  if (avt.inverse)
-	    *p = compl * p;
-	  font_line++;
-	  p += pitch;
-	}
+	  if (not avt.underlined or y != fontunderline)
+	    line = *font_line;
+	  else
+	    line = 0xFFFF;
 
-      if (avt.underlined)
-	pixels[fontunderline * pitch] = (avt.inverse) ? 0x0000 : 0xFFFF;
+	  if (avt.inverse)
+	    line = compl line;
+
+	  // fill with background color
+	  // TODO: optimize
+	  if (avt.text_background_color != avt.ballooncolor)
+	    for (int x = 0; x < fontwidth; x++)
+	      avt_putpixel (surface, avt.cursor.x + x,
+			    avt.cursor.y + y, avt.text_background_color);
+
+	  for (int x = 0; x < fontwidth; x++)
+	    {
+	      if (line bitand (1 << (16 - x)))
+		{
+		  avt_putpixel (surface, avt.cursor.x + x,
+				avt.cursor.y + y, avt.text_color);
+
+		  if (avt.bold and not NOT_BOLD)
+		    avt_putpixel (surface, avt.cursor.x + x + 1,
+				  avt.cursor.y + y, avt.text_color);
+		}
+	    }
+	}
     }
   else				// fontwidth <= 8
     {
-      const unsigned char *font_line;
-      uint8_t *pixels, *p;
+      const uint8_t *font_line;
+      uint8_t line;
 
-      pitch = avt.character->pitch;
-      pixels = p = (uint8_t *) avt.character->pixels;
-      font_line = (const unsigned char *) avt_get_font_char ((int) ch);
+      font_line = (const uint8_t *) avt_get_font_char ((int) ch);
+
       if (not font_line)
-	font_line = (const unsigned char *) avt_get_font_char (0);
+	font_line = (const uint8_t *) avt_get_font_char (0);
 
-      for (int y = 0; y < fontheight; y++)
+      for (int y = 0; y < fontheight; y++, font_line++)
 	{
-	  *p = *font_line;
-	  if (avt.bold and not NOT_BOLD)
-	    *p |= (*font_line >> 1);
+	  if (not avt.underlined or y != fontunderline)
+	    line = *font_line;
+	  else
+	    line = 0xFF;
+
 	  if (avt.inverse)
-	    *p = compl * p;
-	  font_line++;
-	  p += pitch;
+	    line = compl line;
+
+	  // fill with background color
+	  if (avt.text_background_color != avt.ballooncolor)
+	    for (int x = 0; x < fontwidth; x++)
+	      avt_putpixel (surface, avt.cursor.x + x,
+			    avt.cursor.y + y, avt.text_background_color);
+
+	  for (int x = 0; x < fontwidth; x++)
+	    {
+	      if (line bitand (1 << (8 - x)))
+		{
+		  avt_putpixel (surface, avt.cursor.x + x,
+				avt.cursor.y + y, avt.text_color);
+
+		  if (avt.bold and not NOT_BOLD)
+		    avt_putpixel (surface, avt.cursor.x + x + 1,
+				  avt.cursor.y + y, avt.text_color);
+		}
+	    }
 	}
-
-      if (avt.underlined)
-	pixels[fontunderline * pitch] = (avt.inverse) ? 0x00 : 0xFF;
     }
-
-  dest.x = avt.cursor.x;
-  dest.y = avt.cursor.y;
-  SDL_BlitSurface (avt.character, NULL, surface, &dest);
 }
 
 #ifndef DISABLE_DEPRECATED
@@ -6786,15 +6820,7 @@ avt_set_avatar_name_mb (const char *name)
 extern void
 avt_set_text_background_ballooncolor (void)
 {
-  if (avt.character)
-    {
-      SDL_Color color;
-      color = avt_sdlcolor (avt.ballooncolor);
-      SDL_SetColors (avt.character, &color, 0, 1);
-
-      avt.text_background_color = SDL_MapRGB (screen->format,
-					      color.r, color.g, color.b);
-    }
+  avt.text_background_color = avt.ballooncolor;
 }
 
 // can and should be called before avt_initialize
@@ -6891,28 +6917,13 @@ avt_set_mouse_visible (bool visible)
 extern void
 avt_set_text_color (int colornr)
 {
-  if (colornr >= 0 and avt.character)
-    {
-      SDL_Color color;
-
-      color = avt_sdlcolor (colornr);
-      SDL_SetColors (avt.character, &color, 1, 1);
-    }
+  avt.text_color = colornr;
 }
 
 extern void
 avt_set_text_background_color (int colornr)
 {
-  if (colornr >= 0 and avt.character)
-    {
-      SDL_Color color;
-
-      color = avt_sdlcolor (colornr);
-      SDL_SetColors (avt.character, &color, 0, 1);
-
-      avt.text_background_color =
-	SDL_MapRGB (screen->format, color.r, color.g, color.b);
-    }
+  avt.text_background_color = colornr;
 }
 
 extern void
@@ -6956,21 +6967,8 @@ avt_normal_text (void)
 {
   avt.underlined = avt.bold = avt.inverse = avt.markup = false;
 
-  // set color table for character canvas
-  if (avt.character)
-    {
-      SDL_Color colors[2];
-
-      // background -> ballooncolor
-      colors[0] = avt_sdlcolor (avt.ballooncolor);
-      // black foreground
-      colors[1] = avt_sdlcolor (AVT_COLOR_BLACK);
-
-      SDL_SetColors (avt.character, colors, 0, 2);
-
-      avt.text_background_color =
-	SDL_MapRGB (screen->format, colors[0].r, colors[0].g, colors[0].b);
-    }
+  avt.text_color = AVT_COLOR_BLACK;
+  avt.text_background_color = avt.ballooncolor;
 }
 
 extern void
@@ -7121,7 +7119,7 @@ avt_credits (const wchar_t * text, bool centered)
 
   // last line added to credits
   last_line =
-    SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_RLEACCEL,
+    SDL_CreateRGBSurface (SDL_SWSURFACE,
 			  window.w, LINEHEIGHT,
 			  screen->format->BitsPerPixel,
 			  screen->format->Rmask,
@@ -7247,8 +7245,6 @@ avt_quit (void)
       base_button = NULL;
       SDL_FreeSurface (avt.pointer);
       avt.pointer = NULL;
-      SDL_FreeSurface (avt.character);
-      avt.character = NULL;
       SDL_FreeSurface (avt.avatar_image);
       avt.avatar_image = NULL;
       SDL_FreeSurface (avt.text_cursor);
@@ -7445,10 +7441,8 @@ avt_start (const char *title, const char *shortname, int mode)
   SDL_WM_SetIcon (icon, NULL);
   SDL_FreeSurface (icon);
 
-  /*
-   * Initialize the display, accept any format
-   */
-  screenflags = SDL_SWSURFACE | SDL_ANYFORMAT | SDL_RESIZABLE;
+  // Initialize the display
+  screenflags = SDL_SWSURFACE | SDL_RESIZABLE;
 
 #ifndef __WIN32__
   if (avt.mode == AVT_AUTOMODE)
@@ -7512,17 +7506,6 @@ avt_start (const char *title, const char *shortname, int mode)
 				     avt_green (avt.backgroundcolornr),
 				     avt_blue (avt.backgroundcolornr));
 
-  // reserve memory for one character
-  avt.character = SDL_CreateRGBSurface (SDL_SWSURFACE, fontwidth, fontheight,
-					1, 0, 0, 0, 0);
-
-  if (not avt.character)
-    {
-      SDL_SetError ("out of memory");
-      _avt_STATUS = AVT_ERROR;
-      return _avt_STATUS;
-    }
-
   avt_normal_text ();
 
   // prepare text-mode cursor
@@ -7532,7 +7515,6 @@ avt_start (const char *title, const char *shortname, int mode)
 
   if (not avt.text_cursor)
     {
-      SDL_FreeSurface (avt.character);
       SDL_SetError ("out of memory");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
@@ -7561,7 +7543,6 @@ avt_start (const char *title, const char *shortname, int mode)
   if (not avt.cursor_character)
     {
       SDL_FreeSurface (avt.text_cursor);
-      SDL_FreeSurface (avt.character);
       SDL_SetError ("out of memory");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
