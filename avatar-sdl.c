@@ -297,7 +297,7 @@ struct avt_position
 struct avt_settings
 {
   SDL_Surface *avatar_image;
-  SDL_Surface *text_cursor, *cursor_character;
+  SDL_Surface *cursor_character;
   SDL_Surface *pointer;
   wchar_t *name;
 
@@ -1442,8 +1442,8 @@ avt_set_status (int status)
  * Return the pixel value at (x, y)
  * NOTE: The surface must be locked before calling this!
  */
-static uint32_t
-getpixel (SDL_Surface * surface, int x, int y)
+static int
+avt_getpixel (SDL_Surface * surface, int x, int y)
 {
   int bpp = surface->format->BytesPerPixel;
   // Here p is the address to the pixel we want to retrieve
@@ -1499,18 +1499,28 @@ avt_show_text_cursor (bool on)
 
       if (on)
 	{
+	  int bg_color;
+
 	  // save character under cursor
 	  SDL_BlitSurface (screen, &dst, avt.cursor_character, NULL);
 
+	  // assume lower right corner is the background color
+	  bg_color = avt_getpixel (avt.cursor_character,
+				   fontwidth - 1, fontheight - 1);
+
 	  // show text-cursor
-	  SDL_BlitSurface (avt.text_cursor, NULL, screen, &dst);
-	  avt_update_trect (dst);
+	  for (int y = avt.cursor.y + fontheight - 1; y >= avt.cursor.y; y--)
+	    for (int x = avt.cursor.x + fontwidth - 1; x >= avt.cursor.x; x--)
+	      if (bg_color == avt_getpixel (screen, x, y))
+		avt_putpixel (screen, x, y, avt.cursor_color);
+
+	  avt_update_area (avt.cursor.x, avt.cursor.y, fontwidth, fontheight);
 	}
       else
 	{
 	  // restore saved character
 	  SDL_BlitSurface (avt.cursor_character, NULL, screen, &dst);
-	  avt_update_trect (dst);
+	  avt_update_area (avt.cursor.x, avt.cursor.y, fontwidth, fontheight);
 	}
 
       avt.text_cursor_actually_visible = on;
@@ -3363,7 +3373,7 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
       line = *(const uint16_t *) font_line;
 
       if (AVT_LITTLE_ENDIAN == AVT_BYTE_ORDER and fontwidth <= 8)
-        line = line << 8;
+	line = line << 8;
 
       if (avt.underlined and y == fontunderline)
 	line = 0xFFFF;
@@ -6354,13 +6364,13 @@ avt_init_SDL (void)
 DEPRECATED_EXTERN avt_image_t *
 avt_make_transparent (avt_image_t * image)
 {
-  uint32_t color;
+  int32_t color;
 
   if (SDL_MUSTLOCK (image))
     SDL_LockSurface (image);
 
   // get color of upper left corner
-  color = getpixel (image, 0, 0);
+  color = avt_getpixel (image, 0, 0);
 
   if (SDL_MUSTLOCK (image))
     SDL_UnlockSurface (image);
@@ -7182,8 +7192,6 @@ avt_quit (void)
       avt.pointer = NULL;
       SDL_FreeSurface (avt.avatar_image);
       avt.avatar_image = NULL;
-      SDL_FreeSurface (avt.text_cursor);
-      avt.text_cursor = NULL;
       SDL_FreeSurface (avt.cursor_character);
       avt.cursor_character = NULL;
       avt_alert_func = NULL;
@@ -7451,26 +7459,7 @@ avt_start (const char *title, const char *shortname, int mode)
 
   avt_normal_text ();
 
-  // prepare text-mode cursor
-  avt.text_cursor =
-    SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_SRCALPHA | SDL_RLEACCEL,
-			  fontwidth, fontheight, 8, 0, 0, 0, 128);
-
-  if (not avt.text_cursor)
-    {
-      SDL_SetError ("out of memory");
-      _avt_STATUS = AVT_ERROR;
-      return _avt_STATUS;
-    }
-
   base_button = avt_load_image_xpm (btn_xpm);
-
-  // set color table for character canvas
-  SDL_Color cursor_color;
-  cursor_color = avt_sdlcolor (avt.cursor_color);
-  avt_fill (avt.text_cursor, 0);
-  SDL_SetColors (avt.text_cursor, &cursor_color, 0, 1);
-  SDL_SetAlpha (avt.text_cursor, SDL_SRCALPHA | SDL_RLEACCEL, 128);
 
   // set actual balloon size to the maximum size
   avt.balloonheight = avt.balloonmaxheight;
@@ -7485,7 +7474,6 @@ avt_start (const char *title, const char *shortname, int mode)
 
   if (not avt.cursor_character)
     {
-      SDL_FreeSurface (avt.text_cursor);
       SDL_SetError ("out of memory");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
