@@ -25,6 +25,7 @@
 #define _POSIX_C_SOURCE 200112L
 
 #include "akfavatar.h"
+#include "avtinternals.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -1137,6 +1138,9 @@ lgraphic_text (lua_State * L)
       for (int ly = 0; ly < fontheight; ly++)
 	{
 	  uint16_t line = *(uint16_t *) font_line;
+
+	  if (AVT_LITTLE_ENDIAN == AVT_BYTE_ORDER and fontwidth <= 8)
+	    line = line << 8;
 
 	  for (int lx = 0; lx < fontwidth; lx++)
 	    if (line bitand (1 << (15 - lx)))

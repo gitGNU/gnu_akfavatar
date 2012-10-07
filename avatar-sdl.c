@@ -3361,6 +3361,9 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
     {
       line = *(const uint16_t *) font_line;
 
+      if (AVT_LITTLE_ENDIAN == AVT_BYTE_ORDER and fontwidth <= 8)
+        line = line << 8;
+
       if (avt.underlined and y == fontunderline)
 	line = 0xFFFF;
 
