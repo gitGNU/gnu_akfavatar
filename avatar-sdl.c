@@ -3374,7 +3374,7 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
 
 	  for (int x = 0; x < fontwidth; x++)
 	    {
-	      if (line bitand (1 << (16 - x)))
+	      if (line bitand (1 << (15 - x)))
 		{
 		  avt_putpixel (surface, avt.cursor.x + x,
 				avt.cursor.y + y, avt.text_color);
@@ -3414,7 +3414,7 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
 
 	  for (int x = 0; x < fontwidth; x++)
 	    {
-	      if (line bitand (1 << (8 - x)))
+	      if (line bitand (1 << (7 - x)))
 		{
 		  avt_putpixel (surface, avt.cursor.x + x,
 				avt.cursor.y + y, avt.text_color);
