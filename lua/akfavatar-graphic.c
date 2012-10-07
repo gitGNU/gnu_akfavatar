@@ -29,6 +29,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <errno.h>
 #include <iso646.h>
@@ -48,11 +49,9 @@ extern "C"
 }
 #endif
 
-typedef unsigned char byte;
-
 struct color
 {
-  byte red, green, blue;	// evetually alpha as last value
+  uint8_t red, green, blue;	// evetually alpha as last value
 };
 
 typedef struct graphic
@@ -410,9 +409,9 @@ lgraphic_rgb (lua_State * L)
 		 4, "value between 0 and 255 expected");
 
   gr = get_graphic (L, 1);
-  gr->color.red = (byte) red;
-  gr->color.green = (byte) green;
-  gr->color.blue = (byte) blue;
+  gr->color.red = (uint8_t) red;
+  gr->color.green = (uint8_t) green;
+  gr->color.blue = (uint8_t) blue;
   // gr->color.alpha = OPAQUE;
 
   return 0;
@@ -1053,7 +1052,7 @@ lgraphic_text (lua_State * L)
   const char *s;
   size_t len;
   wchar_t *wctext, *wc;
-  int wclen, i;
+  int wclen;
   int x, y;
   int fontwidth, fontheight;
 
@@ -1127,22 +1126,18 @@ lgraphic_text (lua_State * L)
       struct color color = gr->color;
       int width = gr->width;
 
-      for (i = 0; i < wclen; i++, wc++, x += fontwidth)
+      for (int i = 0; i < wclen; i++, wc++, x += fontwidth)
 	{
-	  const unsigned short *font_line;
-	  int lx, ly;
+	  const uint16_t *font_line;
 
-	  font_line = (const unsigned short *) avt_get_font_char ((int) *wc);
+	  font_line = (const uint16_t *) avt_get_font_char ((int) *wc);
 	  if (not font_line)
-	    font_line = (const unsigned short *) avt_get_font_char (0);
+	    font_line = (const uint16_t *) avt_get_font_char (0);
 
-	  for (ly = 0; ly < fontheight; ly++)
-	    {
-	      for (lx = 0; lx < fontwidth; lx++)
-		if (*font_line & (1 << (15 - lx)))
-		  putpixelcolor (gr, x + lx, y + ly, width, color);
-	      font_line++;
-	    }
+	  for (int ly = 0; ly < fontheight; ly++, font_line++)
+	    for (int lx = 0; lx < fontwidth; lx++)
+	      if (*font_line bitand (1 << (15 - lx)))
+		putpixelcolor (gr, x + lx, y + ly, width, color);
 	}
     }
   else				// fontwidth <= 8
@@ -1150,22 +1145,18 @@ lgraphic_text (lua_State * L)
       struct color color = gr->color;
       int width = gr->width;
 
-      for (i = 0; i < wclen; i++, wc++, x += fontwidth)
+      for (int i = 0; i < wclen; i++, wc++, x += fontwidth)
 	{
-	  const byte *font_line;
-	  int lx, ly;
+	  const uint8_t *font_line;
 
-	  font_line = (const byte *) avt_get_font_char ((int) *wc);
+	  font_line = (const uint8_t *) avt_get_font_char ((int) *wc);
 	  if (not font_line)
-	    font_line = (const byte *) avt_get_font_char (0);
+	    font_line = (const uint8_t *) avt_get_font_char (0);
 
-	  for (ly = 0; ly < fontheight; ly++)
-	    {
-	      for (lx = 0; lx < fontwidth; lx++)
-		if (*font_line & (1 << (7 - lx)))
-		  putpixelcolor (gr, x + lx, y + ly, width, color);
-	      font_line++;
-	    }
+	  for (int ly = 0; ly < fontheight; ly++, font_line++)
+	    for (int lx = 0; lx < fontwidth; lx++)
+	      if (*font_line bitand (1 << (7 - lx)))
+		putpixelcolor (gr, x + lx, y + ly, width, color);
 	}
     }
 
