@@ -1054,12 +1054,17 @@ lgraphic_text (lua_State * L)
   wchar_t *wctext, *wc;
   int wclen;
   int x, y;
+  int width;
   int fontwidth, fontheight;
+  struct color color;
 
   gr = get_graphic (L, 1);
   s = luaL_checklstring (L, 2, &len);
   x = luaL_optint (L, 3, (int) gr->penx + 1) - 1;
   y = luaL_optint (L, 4, (int) gr->peny + 1) - 1;
+
+  color = gr->color;
+  width = gr->width;
 
   avt_get_font_dimensions (&fontwidth, &fontheight, NULL);
 
@@ -1100,7 +1105,7 @@ lgraphic_text (lua_State * L)
     }
 
   // horizontally outside visible area? (cannot show partly)
-  if (wclen <= 0 or x >= gr->width - fontwidth or x + (wclen * fontwidth) < 0)
+  if (wclen <= 0 or x >= width - fontwidth or x + (wclen * fontwidth) < 0)
     {
       avt_free (wctext);
       return 0;
@@ -1118,45 +1123,26 @@ lgraphic_text (lua_State * L)
       x = fontwidth - (pixels % fontwidth);
     }
 
-  if (wclen > (gr->width - x) / fontwidth)
-    wclen = (gr->width - x) / fontwidth;
+  if (wclen > (width - x) / fontwidth)
+    wclen = (width - x) / fontwidth;
 
-  if (fontwidth > 8)		// 2 bytes per character
+  for (int i = 0; i < wclen; i++, wc++, x += fontwidth)
     {
-      struct color color = gr->color;
-      int width = gr->width;
+      const uint8_t *font_line;
 
-      for (int i = 0; i < wclen; i++, wc++, x += fontwidth)
+      font_line = (const uint8_t *) avt_get_font_char ((int) *wc);
+      if (not font_line)
+	font_line = (const uint8_t *) avt_get_font_char (0);
+
+      for (int ly = 0; ly < fontheight; ly++)
 	{
-	  const uint16_t *font_line;
+	  uint16_t line = *(uint16_t *) font_line;
 
-	  font_line = (const uint16_t *) avt_get_font_char ((int) *wc);
-	  if (not font_line)
-	    font_line = (const uint16_t *) avt_get_font_char (0);
+	  for (int lx = 0; lx < fontwidth; lx++)
+	    if (line bitand (1 << (15 - lx)))
+	      putpixelcolor (gr, x + lx, y + ly, width, color);
 
-	  for (int ly = 0; ly < fontheight; ly++, font_line++)
-	    for (int lx = 0; lx < fontwidth; lx++)
-	      if (*font_line bitand (1 << (15 - lx)))
-		putpixelcolor (gr, x + lx, y + ly, width, color);
-	}
-    }
-  else				// fontwidth <= 8
-    {
-      struct color color = gr->color;
-      int width = gr->width;
-
-      for (int i = 0; i < wclen; i++, wc++, x += fontwidth)
-	{
-	  const uint8_t *font_line;
-
-	  font_line = (const uint8_t *) avt_get_font_char ((int) *wc);
-	  if (not font_line)
-	    font_line = (const uint8_t *) avt_get_font_char (0);
-
-	  for (int ly = 0; ly < fontheight; ly++, font_line++)
-	    for (int lx = 0; lx < fontwidth; lx++)
-	      if (*font_line bitand (1 << (7 - lx)))
-		putpixelcolor (gr, x + lx, y + ly, width, color);
+	  font_line += (fontwidth > 8) ? 2 : 1;
 	}
     }
 
