@@ -38,6 +38,7 @@
 #include "version.h"
 #include "rgb.h"		// only for DEFAULT_COLOR
 
+#include <stdint.h>
 #include <iso646.h>
 
 // include images
@@ -225,17 +226,17 @@ static int errno;
 #  if (WCHAR_MAX <= 255)
 #    define WCHAR_ENCODING "ISO-8859-1"
 #  elif (WCHAR_MAX <= 65535U)
-#    if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+#    if (AVT_BIG_ENDIAN == AVT_BYTE_ORDER)
 #      define WCHAR_ENCODING "UTF-16BE"
 #    else // SDL_BYTEORDER != SDL_BIG_ENDIAN
 #      define WCHAR_ENCODING "UTF-16LE"
 #    endif // SDL_BYTEORDER != SDL_BIG_ENDIAN
 #  else	// (WCHAR_MAX > 65535U)
-#    if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+#    if (AVT_BIG_ENDIAN == AVT_BYTE_ORDER)
 #      define WCHAR_ENCODING "UTF-32BE"
-#    else // SDL_BYTEORDER != SDL_BIG_ENDIAN
+#    else // little endian
 #      define WCHAR_ENCODING "UTF-32LE"
-#    endif // SDL_BYTEORDER != SDL_BIG_ENDIAN
+#    endif // little endian
 #  endif // (WCHAR_MAX > 65535U)
 
 #endif // not WCHAR_ENCODING
