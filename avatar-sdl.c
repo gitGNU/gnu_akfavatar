@@ -3346,9 +3346,8 @@ static void
 avt_drawchar (avt_char ch, SDL_Surface * surface)
 {
   // fill with background color
-  if (avt.text_background_color != avt.ballooncolor)
-    avt_fill_area (surface, avt.cursor.x, avt.cursor.y,
-		   fontwidth, fontheight, avt.text_background_color);
+  avt_fill_area (surface, avt.cursor.x, avt.cursor.y,
+		 fontwidth, fontheight, avt.text_background_color);
 
   if (fontwidth > 8)
     {
