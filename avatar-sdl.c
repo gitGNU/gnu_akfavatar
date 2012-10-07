@@ -7444,7 +7444,15 @@ avt_start (const char *title, const char *shortname, int mode)
     screen =
       SDL_SetVideoMode (MINIMALWIDTH, MINIMALHEIGHT, COLORDEPTH, screenflags);
 
-  if (screen == NULL)
+  if (not screen)
+    {
+      SDL_SetError ("error initializing AKFAvatar");
+      _avt_STATUS = AVT_ERROR;
+      return _avt_STATUS;
+    }
+
+  // assure we really get what we need
+  if (SDL_MUSTLOCK (screen) or screen->format->BytesPerPixel != 4)
     {
       SDL_SetError ("error initializing AKFAvatar");
       _avt_STATUS = AVT_ERROR;
