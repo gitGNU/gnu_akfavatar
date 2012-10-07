@@ -3345,6 +3345,11 @@ avt_new_line (void)
 static void
 avt_drawchar (avt_char ch, SDL_Surface * surface)
 {
+  // fill with background color
+  if (avt.text_background_color != avt.ballooncolor)
+    avt_fill_area (surface, avt.cursor.x, avt.cursor.y,
+		   fontwidth, fontheight, avt.text_background_color);
+
   if (fontwidth > 8)
     {
       const uint16_t *font_line;
@@ -3355,35 +3360,26 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
       if (not font_line)
 	font_line = (const uint16_t *) avt_get_font_char (0);
 
-      for (int y = 0; y < fontheight; y++, font_line++)
+      for (int y = 0; y < fontheight; y++)
 	{
-	  if (not avt.underlined or y != fontunderline)
-	    line = *font_line;
-	  else
+	  line = *font_line++;
+
+	  if (avt.underlined and y == fontunderline)
 	    line = 0xFFFF;
 
 	  if (avt.inverse)
 	    line = compl line;
 
-	  // fill with background color
-	  // TODO: optimize
-	  if (avt.text_background_color != avt.ballooncolor)
-	    for (int x = 0; x < fontwidth; x++)
-	      avt_putpixel (surface, avt.cursor.x + x,
-			    avt.cursor.y + y, avt.text_background_color);
-
 	  for (int x = 0; x < fontwidth; x++)
-	    {
-	      if (line bitand (1 << (15 - x)))
-		{
-		  avt_putpixel (surface, avt.cursor.x + x,
-				avt.cursor.y + y, avt.text_color);
+	    if (line bitand (1 << (15 - x)))
+	      {
+		avt_putpixel (surface, avt.cursor.x + x,
+			      avt.cursor.y + y, avt.text_color);
 
-		  if (avt.bold and not NOT_BOLD)
-		    avt_putpixel (surface, avt.cursor.x + x + 1,
-				  avt.cursor.y + y, avt.text_color);
-		}
-	    }
+		if (avt.bold and not NOT_BOLD)
+		  avt_putpixel (surface, avt.cursor.x + x + 1,
+				avt.cursor.y + y, avt.text_color);
+	      }
 	}
     }
   else				// fontwidth <= 8
@@ -3396,34 +3392,26 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
       if (not font_line)
 	font_line = (const uint8_t *) avt_get_font_char (0);
 
-      for (int y = 0; y < fontheight; y++, font_line++)
+      for (int y = 0; y < fontheight; y++)
 	{
-	  if (not avt.underlined or y != fontunderline)
-	    line = *font_line;
-	  else
+	  line = *font_line++;
+
+	  if (avt.underlined and y == fontunderline)
 	    line = 0xFF;
 
 	  if (avt.inverse)
 	    line = compl line;
 
-	  // fill with background color
-	  if (avt.text_background_color != avt.ballooncolor)
-	    for (int x = 0; x < fontwidth; x++)
-	      avt_putpixel (surface, avt.cursor.x + x,
-			    avt.cursor.y + y, avt.text_background_color);
-
 	  for (int x = 0; x < fontwidth; x++)
-	    {
-	      if (line bitand (1 << (7 - x)))
-		{
-		  avt_putpixel (surface, avt.cursor.x + x,
-				avt.cursor.y + y, avt.text_color);
+	    if (line bitand (1 << (7 - x)))
+	      {
+		avt_putpixel (surface, avt.cursor.x + x,
+			      avt.cursor.y + y, avt.text_color);
 
-		  if (avt.bold and not NOT_BOLD)
-		    avt_putpixel (surface, avt.cursor.x + x + 1,
-				  avt.cursor.y + y, avt.text_color);
-		}
-	    }
+		if (avt.bold and not NOT_BOLD)
+		  avt_putpixel (surface, avt.cursor.x + x + 1,
+				avt.cursor.y + y, avt.text_color);
+	      }
 	}
     }
 }
