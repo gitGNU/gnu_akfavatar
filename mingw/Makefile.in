@@ -60,7 +60,7 @@ colorchooser.o: $(srcdir)/colorchooser.c $(srcdir)/akfavatar.h
 
 rgb.h: $(srcdir)/rgb.txt $(srcdir)/rgb2c
 	$(AWK) -f $(srcdir)/rgb2c -v name="avt_colors" \
-	  -v default="$(DEFAULT_COLOR)" $(srcdir)/rgb.txt > $@
+	  -v default_color="$(DEFAULT_COLOR)" $(srcdir)/rgb.txt > $@
 
 avtpalette.o: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
 	      $(srcdir)/avtinternals.h
