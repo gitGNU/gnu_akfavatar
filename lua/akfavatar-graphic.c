@@ -1130,6 +1130,7 @@ lgraphic_text (lua_State * L)
   for (int i = 0; i < wclen; i++, wc++, x += fontwidth)
     {
       const uint8_t *font_line;
+      uint16_t line;
 
       font_line = (const uint8_t *) avt_get_font_char ((int) *wc);
       if (not font_line)
@@ -1137,18 +1138,22 @@ lgraphic_text (lua_State * L)
 
       for (int ly = 0; ly < fontheight; ly++)
 	{
-	  uint16_t line = *(uint16_t *) font_line;
-
-	  if (AVT_LITTLE_ENDIAN == AVT_BYTE_ORDER and fontwidth <= 8)
-	    line = line << 8;
+	  if (fontwidth > 8)
+	    {
+	      line = *(const uint16_t *) font_line;
+	      font_line += 2;
+	    }
+	  else
+	    {
+	      line = *font_line << 8;
+	      font_line++;
+	    }
 
 	  for (int lx = 0; lx < fontwidth; lx++)
 	    if (line bitand (1 << (15 - lx)))
 	      putpixelcolor (gr, x + lx, y + ly, width, color);
-
-	  font_line += (fontwidth > 8) ? 2 : 1;
-	}
-    }
+	}			// for (int ly...
+    }				//for (int i
 
   avt_free (wctext);
 

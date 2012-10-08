@@ -3370,10 +3370,16 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
 
   for (int y = 0; y < fontheight; y++)
     {
-      line = *(const uint16_t *) font_line;
-
-      if (AVT_LITTLE_ENDIAN == AVT_BYTE_ORDER and fontwidth <= 8)
-	line = line << 8;
+      if (fontwidth > 8)
+	{
+	  line = *(const uint16_t *) font_line;
+	  font_line += 2;
+	}
+      else
+	{
+	  line = *font_line << 8;
+	  font_line++;
+	}
 
       if (avt.underlined and y == fontunderline)
 	line = 0xFFFF;
@@ -3391,9 +3397,7 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
 	      avt_putpixel (surface, avt.cursor.x + x + 1,
 			    avt.cursor.y + y, avt.text_color);
 	  }
-
-      font_line += (fontwidth > 8) ? 2 : 1;
-    }
+    }				// for (int y...
 }
 
 #ifndef DISABLE_DEPRECATED
