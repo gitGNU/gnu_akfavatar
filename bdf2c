@@ -54,10 +54,10 @@ BEGIN {
   }
 
 /^BITMAP/, /^ENDCHAR/ {
-  if ($1 !~ /^BITMAP/ && $1 !~ /^ENDCHAR/) {
-    if (comma) { printf ",0x%s", $1 }
-      else { printf "0x%s", $1; comma = 1 }
-    }
+  if (/^BITMAP/ || /^ENDCHAR/) next
+
+  if (comma) { printf ",0x%s", $1 }
+    else { printf "0x%s", $1; comma = 1 }
   }
 
 function writetranstable(    i, blockstart)
