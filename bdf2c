@@ -10,7 +10,7 @@
 # without any warranty.
 
 BEGIN {
-  width=height=top=baseline=started=default_char=charoffset=maxchar = 0
+  width=height=top=baseline=started=comma=default_char=charoffset=maxchar = 0
   }
 
 /^FONT / { print "/* " $0 " */" }
@@ -26,7 +26,8 @@ BEGIN {
 /^STARTCHAR / {
   if (started == 0)
     {
-      print "\n#include <stddef.h>\n\n#define DEFAULT_CHAR " default_char
+      print "\n#include <stddef.h>\n#include <stdint.h>\n"
+      print "#define DEFAULT_CHAR " default_char
       print "\n#ifdef __cplusplus"
       print "extern \"C\" void *" prefix "get_font_char (int ch);"
       print "extern \"C\" void " prefix \
@@ -37,9 +38,9 @@ BEGIN {
             "get_font_dimensions (int *width, int *height, int *baseline);"
       print "#endif"
       if (width <= 8)
-        print "\nstatic const unsigned char font[] = {"
+        print "\nstatic const uint8_t font[] = {"
       else
-        print "\nstatic const unsigned short font[] = {"
+        print "\nstatic const uint16_t font[] = {"
      started = 1
     }
   else print ""
@@ -53,7 +54,10 @@ BEGIN {
   }
 
 /^BITMAP/, /^ENDCHAR/ {
-  if ($1 !~ /^BITMAP/ && $1 !~ /^ENDCHAR/) printf "0x%s,", $1
+  if ($1 !~ /^BITMAP/ && $1 !~ /^ENDCHAR/) {
+    if (comma) { printf ",0x%s", $1 }
+      else { printf "0x%s", $1; comma = 1 }
+    }
   }
 
 function writetranstable(    i, blockstart)
@@ -96,8 +100,7 @@ function writetranstable(    i, blockstart)
 }
 
 END {
-  # the additional 0 is just to avoid ending with a comma
-  print "\n0 };\n"
+  print "\n};\n"
 
   print "void"
   print prefix "get_font_dimensions " \
