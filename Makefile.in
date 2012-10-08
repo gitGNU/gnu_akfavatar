@@ -125,8 +125,8 @@ version.lo: $(srcdir)/version.c $(srcdir)/akfavatar.h version.h
 $(srcdir)/alert.au: $(ALERT)
 	$(SOX) $(ALERT) --comment "" -e mu-law -c 1 $@ rate 16k
 
-alert.c: $(srcdir)/alert.au $(srcdir)/data2c
-	$(AWK) -f $(srcdir)/data2c -v name=avt_alert_data \
+alert.c: $(srcdir)/alert.au $(srcdir)/data2c.awk
+	$(AWK) -f $(srcdir)/data2c.awk -v name=avt_alert_data \
 	  $(srcdir)/alert.au > $@
 
 filechooser.o: $(srcdir)/filechooser.c $(srcdir)/akfavatar.h \
@@ -144,8 +144,8 @@ colorchooser.lo: $(srcdir)/colorchooser.c $(srcdir)/avtaddons.h $(srcdir)/akfava
 	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -fpic -o $@ \
 	  $(srcdir)/colorchooser.c
 
-rgb.h: $(srcdir)/rgb.txt $(srcdir)/rgb2c
-	$(AWK) -f $(srcdir)/rgb2c -v name="avt_colors" \
+rgb.h: $(srcdir)/rgb.txt $(srcdir)/rgb2c.awk
+	$(AWK) -f $(srcdir)/rgb2c.awk -v name="avt_colors" \
 	  -v default_color="$(DEFAULT_COLOR)" $(srcdir)/rgb.txt > $@
 
 avtpalette.o: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
@@ -229,8 +229,8 @@ audio-common.lo: $(srcdir)/audio-common.c $(srcdir)/akfavatar.h \
 	         $(srcdir)/avtinternals.h $(srcdir)/avtdata.h alert.c
 	$(CC) -I. -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ $(srcdir)/audio-common.c
 
-font.c: $(srcdir)/$(FONT) $(srcdir)/bdf2c
-	$(AWK) -f $(srcdir)/bdf2c -v prefix="avt_" $(srcdir)/$(FONT) > $@
+font.c: $(srcdir)/$(FONT) $(srcdir)/bdf2c.awk
+	$(AWK) -f $(srcdir)/bdf2c.awk -v prefix="avt_" $(srcdir)/$(FONT) > $@
 
 font.o: font.c
 	$(CC) $(CFLAGS) -c -o $@ font.c
@@ -765,10 +765,10 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/rgb.txt $(srcdir)/avtcmd \
 	   $(srcdir)/example.c \
 	   $(srcdir)/akfavatar.xpm \
-	   $(srcdir)/7x14.bdf $(srcdir)/9x18.bdf $(srcdir)/bdf2c \
+	   $(srcdir)/7x14.bdf $(srcdir)/9x18.bdf $(srcdir)/bdf2c.awk \
 	   $(srcdir)/alert.flac $(srcdir)/alert.au \
-	   $(srcdir)/configure $(srcdir)/Makefile.in $(srcdir)/text2c \
-	   $(srcdir)/data2c $(srcdir)/rgb2c $(srcdir)/about2html \
+	   $(srcdir)/configure $(srcdir)/Makefile.in $(srcdir)/text2c.awk \
+	   $(srcdir)/data2c.awk $(srcdir)/rgb2c.awk $(srcdir)/about2html.awk \
 	   $(srcdir)/lua-akfavatar.sh \
 	   $(srcdir)/akfavatar.h.about $(srcdir)/avtaddons.h.about \
 	   $(PKGNAME)/

@@ -2,6 +2,8 @@
 
 	* bdf2c, rgb2c: fixed for new GAWK and improved
 
+	* give all AWK scripts the file extension ".awk"
+
 2012-10-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl.c (avt_drawchar, avt_show_text_cursor): simplify

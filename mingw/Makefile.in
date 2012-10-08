@@ -44,8 +44,8 @@ icon.o: $(srcdir)/mingw/icon.rc $(srcdir)/mingw/akfavatar.ico
 $(srcdir)/alert.au: $(srcdir)/alert.flac
 	sox $(srcdir)/alert.flac --comment "" -e mu-law -c 1 $@ rate 16k
 
-alert.c: $(srcdir)/alert.au
-	$(AWK) -f $(srcdir)/data2c -v name=avt_alert_data \
+alert.c: $(srcdir)/alert.au $(srcdir)/data2c.awk
+	$(AWK) -f $(srcdir)/data2c.awk -v name=avt_alert_data \
 	  $(srcdir)/alert.au > $@
 
 avatar-default.o: $(srcdir)/avatar-default.c $(srcdir)/akfavatar.h
@@ -58,8 +58,8 @@ filechooser.o: $(srcdir)/filechooser.c $(srcdir)/avtinternals.h \
 colorchooser.o: $(srcdir)/colorchooser.c $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/colorchooser.c
 
-rgb.h: $(srcdir)/rgb.txt $(srcdir)/rgb2c
-	$(AWK) -f $(srcdir)/rgb2c -v name="avt_colors" \
+rgb.h: $(srcdir)/rgb.txt $(srcdir)/rgb2c.awk
+	$(AWK) -f $(srcdir)/rgb2c.awk -v name="avt_colors" \
 	  -v default_color="$(DEFAULT_COLOR)" $(srcdir)/rgb.txt > $@
 
 avtpalette.o: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
@@ -100,8 +100,8 @@ audio-common.o: $(srcdir)/audio-common.c $(srcdir)/akfavatar.h \
 	$(CC) -I. -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ \
 	  $(srcdir)/audio-common.c
 
-font.c: $(srcdir)/$(FONT) $(srcdir)/bdf2c
-	$(AWK) -f $(srcdir)/bdf2c -v prefix="avt_" $(srcdir)/$(FONT) > $@
+font.c: $(srcdir)/$(FONT) $(srcdir)/bdf2c.awk
+	$(AWK) -f $(srcdir)/bdf2c.awk -v prefix="avt_" $(srcdir)/$(FONT) > $@
 
 font.o: font.c
 	$(CC) -c $(CFLAGS) -o $@ font.c
