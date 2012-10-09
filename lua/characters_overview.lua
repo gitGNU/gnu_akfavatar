@@ -68,6 +68,9 @@ local items = {
 local function block(f, t)
   for i = f, t do
     if avt.printable(i) then
+      if avt.combining(i) then
+        avt.say_unicode(0x25CC)
+      end
       avt.say_unicode(i, 0x0020)
     end
   end
