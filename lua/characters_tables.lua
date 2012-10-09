@@ -21,7 +21,6 @@ local function block_list(f, t)
   for unicode = f, t do
     if avt.printable(unicode) then
       local u8 = utf8.char(unicode)
-      if avt.combining(unicode) then u8 = "\xE2\x97\x8C"..u8; end
       local hex = string.format("0x%X", unicode)
       local xml = string.format("&#x%X;", unicode)
 
@@ -34,6 +33,9 @@ local function block_list(f, t)
       for i=1, string.len(u8) do
         u8_c = u8_c .. string.format("\\x%02X", string.byte(u8, i))
       end
+
+      -- add a base character for combining
+      if avt.combining(unicode) then u8 = "\xE2\x97\x8C"..u8; end
 
       -- u8 would break in string.format when it is \0
       list = list .. "║ " .. u8 ..
