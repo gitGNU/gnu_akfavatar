@@ -262,6 +262,18 @@ It can be used together with
 .BR "avt.say_unicode(...)" .
 .PP
 .TP
+.BI "avt.combining(" codepoint )
+Checks whether the given
+.I codepoint
+represents a combining Unicode character and is treated as such.
+It returns 
+.I true
+when this is the case or
+.I false
+if not.
+It is only really applicable for supported characters.
+.PP
+.TP
 .BI "avt.newline()"
 Start a new line. It is the same as "\en" in
 .BR avt.say() ,

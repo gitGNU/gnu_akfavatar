@@ -3,6 +3,8 @@
 	* akfavatar.h, avatar-sdl.c (avt_combining): new function
 	(avt_drawchar, avt_tell_len): adapted
 
+	* lua/lua-avt.c (lavt_combining): new function
+
 2012-10-08  Andreas K. Foerster  <info@akfoerster.de>
 
 	* bdf2c, rgb2c: fixed for new GAWK and improved

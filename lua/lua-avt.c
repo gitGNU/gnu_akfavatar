@@ -1335,6 +1335,14 @@ lavt_printable (lua_State * L)
 }
 
 static int
+lavt_combining (lua_State * L)
+{
+  lua_pushboolean (L,
+		   (int) avt_combining ((avt_char) luaL_checkinteger (L, 1)));
+  return 1;
+}
+
+static int
 lavt_pager (lua_State * L)
 {
   const char *s;
@@ -2359,6 +2367,7 @@ static const luaL_Reg akfavtlib[] = {
   {"tell", lavt_tell},
   {"say_unicode", lavt_say_unicode},
   {"printable", lavt_printable},
+  {"combining", lavt_combining},
   {"ask", lavt_ask},
   {"navigate", lavt_navigate},
   {"decide", lavt_decide},
