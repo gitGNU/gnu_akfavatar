@@ -1,12 +1,13 @@
 * AKFAvatar testing
 
   - avt_update() is much faster
+  - experimental support for combining characters (Unicode)
   - regression: the navigation bar cannot handle the pause key anymore
 
   C-API changes:
     - avt_update() is much faster
     - new functions: avt_key_pressed, avt_push_key, avt_clear_keys,
-      avt_set_audio_end_key
+      avt_set_audio_end_key, avt_combining
 
   Lua-API changes:
     - new functions: avt.set_audio_end_key

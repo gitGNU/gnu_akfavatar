@@ -3351,6 +3351,28 @@ avt_new_line (void)
   return _avt_STATUS;
 }
 
+extern bool
+avt_combining (avt_char ch)
+{
+  // this is still very incomplete
+  return (ch >= 0x0300 and ch <= 0x036F)
+    or ch == 0x0374 or ch == 0x0375 or ch == 0x037A
+    or ch == 0x0385 or ch == 0x1FBD
+    or (ch >= 0x1FBF and ch <= 0x1FC1)
+    or (ch >= 0x1FCD and ch <= 0x1FCF)
+    or (ch >= 0x1FED and ch <= 0x1FEF)
+    or ch == 0x1FFD or ch == 0x1FFE
+    or (ch >= 0x0483 and ch <= 0x0489)
+    or (ch >= 0x0591 and ch <= 0x05BD)
+    or ch == 0x05BF or ch == 0x05C1 or ch == 0x05C2
+    or ch == 0x05C4 or ch == 0x05C5 or ch == 0x05C7
+    or ch == 0x0E31
+    or (ch >= 0x0E34 and ch <= 0x0E3A)
+    or (ch >= 0x0E47 and ch <= 0x0E4E)
+    or (ch >= 0x1DC0 and ch <= 0x1DFF)
+    or (ch >= 0x20D0 and ch <= 0x20FF) or (ch >= 0xFE20 and ch <= 0xFE2F);
+}
+
 // avt_drawchar: draws the raw char - with no interpretation
 // surface must be 32 bit per pixel
 static void
@@ -3364,9 +3386,14 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
   if (not font_line)
     font_line = (const uint8_t *) avt_get_font_char (0);
 
-  // fill with background color
-  avt_fill_area (surface, avt.cursor.x, avt.cursor.y,
-		 fontwidth, fontheight, avt.text_background_color);
+  if (not avt_combining (ch))
+    {
+      // fill with background color
+      avt_fill_area (surface, avt.cursor.x, avt.cursor.y,
+		     fontwidth, fontheight, avt.text_background_color);
+    }
+  else				// combining
+    avt_backspace ();
 
   for (int y = 0; y < fontheight; y++)
     {
@@ -3878,7 +3905,8 @@ avt_tell_len (const wchar_t * txt, size_t len)
 	  // else fall through
 
 	default:
-	  if ((*p >= 32 or * p == 0) and (*p < 0xD800 or * p > 0xDBFF))
+	  if ((*p >= 32 or * p == 0) and (*p < 0xD800 or * p > 0xDBFF)
+	      and not avt_combining (*p))
 	    {
 	      line_length++;
 	      if (avt.auto_margin and line_length > AVT_LINELENGTH)

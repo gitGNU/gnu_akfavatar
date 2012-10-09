@@ -278,6 +278,15 @@ AVT_API int avt_put_char (avt_char ch);
 AVT_API bool avt_is_printable (avt_char ch);
 
 /*
+ * checks whether the given character is a combining character
+ * combining characters are added to the previous character
+ * they don't take space
+ *
+ * not all combining characters of Unicode supported
+ */
+AVT_API bool avt_combining (avt_char ch);
+
+/*
  * get string (just one line)
  * the maximum length is LINELENGTH-1
  * size is the size of s in bytes (not the length)
