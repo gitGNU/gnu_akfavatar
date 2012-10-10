@@ -1,3 +1,8 @@
+2012-10-10  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/akfavatar-graphic.c (lgraphic_text):
+	support combining characters
+
 2012-10-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar-sdl.c (avt_combining): new function

@@ -1124,18 +1124,26 @@ lgraphic_text (lua_State * L)
       x = fontwidth - (pixels % fontwidth);
     }
 
-  if (wclen > (width - x) / fontwidth)
-    wclen = (width - x) / fontwidth;
-
+  // actally display the text
   for (int i = 0; i < wclen; i++, wc++, x += fontwidth)
     {
       const uint8_t *font_line;
       uint16_t line;
 
+      // check if it's a combining character
+      if (avt_combining (*wc))
+	x -= fontwidth;
+
+      // does this character still fit?
+      if (x > width - fontwidth)
+        break;
+
+      // get the definition
       font_line = (const uint8_t *) avt_get_font_char ((int) *wc);
       if (not font_line)
 	font_line = (const uint8_t *) avt_get_font_char (0);
 
+      // display character
       for (int ly = 0; ly < fontheight; ly++)
 	{
 	  if (fontwidth > 8)
@@ -1153,7 +1161,7 @@ lgraphic_text (lua_State * L)
 	    if (line bitand (1 << (15 - lx)))
 	      putpixelcolor (gr, x + lx, y + ly, width, color);
 	}			// for (int ly...
-    }				//for (int i
+    }				// for (int i
 
   avt_free (wctext);
 
