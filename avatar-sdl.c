@@ -3360,6 +3360,7 @@ avt_combining (avt_char ch)
     or ch == 0x0385 or ch == 0x1FBD
     or (ch >= 0x1FBF and ch <= 0x1FC1)
     or (ch >= 0x1FCD and ch <= 0x1FCF)
+    or (ch >= 0x1FDD and ch <= 0x1FDF)
     or (ch >= 0x1FED and ch <= 0x1FEF)
     or ch == 0x1FFD or ch == 0x1FFE
     or (ch >= 0x0483 and ch <= 0x0489)
@@ -3369,6 +3370,7 @@ avt_combining (avt_char ch)
     or ch == 0x0E31
     or (ch >= 0x0E34 and ch <= 0x0E3A)
     or (ch >= 0x0E47 and ch <= 0x0E4E)
+    or (ch >= 0x135D and ch <= 0x135F)
     or (ch >= 0x1DC0 and ch <= 0x1DFF)
     or (ch >= 0x20D0 and ch <= 0x20FF) or (ch >= 0xFE20 and ch <= 0xFE2F);
 }
