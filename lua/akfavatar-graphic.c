@@ -1114,16 +1114,6 @@ lgraphic_text (lua_State * L)
 
   wc = wctext;
 
-  // crop text as neccessary
-  if (x < 0)
-    {
-      int pixels = fontwidth - x + 1;
-      int crop = pixels / fontwidth;
-      wc += crop;
-      wclen -= crop;
-      x = fontwidth - (pixels % fontwidth);
-    }
-
   // actally display the text
   for (int i = 0; i < wclen; i++, wc++, x += fontwidth)
     {
@@ -1134,7 +1124,13 @@ lgraphic_text (lua_State * L)
       if (avt_combining (*wc))
 	x -= fontwidth;
 
-      // does this character still fit?
+      // still before visible area?
+      // cannot display character just partly
+      if (x < 0)
+        continue;
+
+      // already beyond visible area?
+      // cannot display character just partly
       if (x > width - fontwidth)
         break;
 
