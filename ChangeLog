@@ -1,3 +1,8 @@
+2012-10-11  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-sdl.c (avt_put_image_xbm): new function
+	(avt_button_inlay): adapted
+
 2012-10-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar-graphic.c (lgraphic_text):

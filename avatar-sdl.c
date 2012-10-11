@@ -1034,6 +1034,29 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
   return img;
 }
 
+// only for 32bit per pixel!
+static void
+avt_put_image_xbm (SDL_Surface * img, short x, short y,
+		   const unsigned char *bits, int width, int height,
+		   int colornr)
+{
+  int dx;
+
+  for (int dy = 0; dy < height; dy++)
+    {
+      dx = 0;
+
+      while (dx < width)
+	{
+	  for (int bit = 0; bit < 8 and dx < width; bit++, dx++)
+	    if (*bits bitand (1 << bit))
+	      avt_putpixel (img, x + dx, y + dy, colornr);
+
+	  bits++;
+	}
+    }
+}
+
 /*
  * loads an X-Bitmap (XBM) with a given color as foreground
  * and a transarent background
@@ -4757,22 +4780,14 @@ avt_lock_updates (bool lock)
   avt_update_trect (avt.textfield);
 }
 
-static void
+static inline void
 avt_button_inlay (SDL_Rect btn_rect, const unsigned char *bits,
 		  int width, int height, int color)
 {
-  SDL_Surface *inlay;
-  SDL_Rect inlay_rect;
-  int radius;
-
-  radius = btn_rect.w / 2;
-  inlay = avt_load_image_xbm (bits, width, height, color);
-  inlay_rect.w = inlay->w;
-  inlay_rect.h = inlay->h;
-  inlay_rect.x = btn_rect.x + radius - (inlay_rect.w / 2);
-  inlay_rect.y = btn_rect.y + radius - (inlay_rect.h / 2);
-  SDL_BlitSurface (inlay, NULL, screen, &inlay_rect);
-  SDL_FreeSurface (inlay);
+  avt_put_image_xbm (screen,
+		     btn_rect.x + (BASE_BUTTON_WIDTH / 2) - (width / 2),
+		     btn_rect.y + (BASE_BUTTON_WIDTH / 2) - (height / 2),
+		     bits, width, height, color);
 }
 
 // coordinates are relative to window
