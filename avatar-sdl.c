@@ -409,6 +409,15 @@ static void avt_drawchar (avt_char ch, SDL_Surface * surface);
 static SDL_Surface *avt_save_background (SDL_Rect area);
 static void avt_analyze_event (SDL_Event * event);
 
+//-----------------------------------------------------------------------------
+
+static inline SDL_Surface *
+avt_new_graphic (short width, short height)
+{
+  return
+    SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 32,
+			  0x00FF0000, 0x0000FF00, 0x000000FF, 0);
+}
 
 // Fast putpixel with no checks
 // surface must have 32 bits per pixel!
@@ -2108,11 +2117,7 @@ avt_save_background (SDL_Rect area)
 {
   SDL_Surface *result;
 
-  result =
-    SDL_CreateRGBSurface (SDL_SWSURFACE, area.w, area.h,
-			  screen->format->BitsPerPixel,
-			  screen->format->Rmask, screen->format->Gmask,
-			  screen->format->Bmask, screen->format->Amask);
+  result = avt_new_graphic (area.w, area.h);
 
   if (not result)
     {
@@ -7097,13 +7102,7 @@ avt_credits (const wchar_t * text, bool centered)
   SDL_SetClipRect (screen, &window);
 
   // last line added to credits
-  last_line =
-    SDL_CreateRGBSurface (SDL_SWSURFACE,
-			  window.w, LINEHEIGHT,
-			  screen->format->BitsPerPixel,
-			  screen->format->Rmask,
-			  screen->format->Gmask,
-			  screen->format->Bmask, screen->format->Amask);
+  last_line = avt_new_graphic (window.w, LINEHEIGHT);
 
   if (not last_line)
     {
@@ -7464,7 +7463,7 @@ avt_start (const char *title, const char *shortname, int mode)
     }
 
   // assure we really get what we need
-  if (SDL_MUSTLOCK (screen) or screen->format->BytesPerPixel != 4)
+  if (SDL_MUSTLOCK (screen) or screen->format->BitsPerPixel != 32)
     {
       SDL_SetError ("error initializing AKFAvatar");
       _avt_STATUS = AVT_ERROR;
@@ -7500,11 +7499,7 @@ avt_start (const char *title, const char *shortname, int mode)
   avt.balloonwidth = AVT_LINELENGTH;
 
   // reserve space for character under text-mode cursor
-  avt.cursor_character =
-    SDL_CreateRGBSurface (SDL_SWSURFACE, fontwidth, fontheight,
-			  screen->format->BitsPerPixel,
-			  screen->format->Rmask, screen->format->Gmask,
-			  screen->format->Bmask, screen->format->Amask);
+  avt.cursor_character = avt_new_graphic (fontwidth, fontheight);
 
   if (not avt.cursor_character)
     {
