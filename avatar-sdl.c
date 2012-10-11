@@ -1048,8 +1048,8 @@ avt_put_image_xbm (SDL_Surface * img, short x, short y,
 
       while (dx < width)
 	{
-	  for (int bit = 0; bit < 8 and dx < width; bit++, dx++)
-	    if (*bits bitand (1 << bit))
+	  for (int bit = 1; bit <= 0x80 and dx < width; bit <<= 1, dx++)
+	    if (*bits bitand bit)
 	      avt_putpixel (img, x + dx, y + dy, colornr);
 
 	  bits++;
@@ -3444,8 +3444,9 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
       if (avt.inverse)
 	line = compl line;
 
-      for (int x = 0; x < fontwidth; x++)
-	if (line bitand (1 << (15 - x)))
+      uint16_t bit = 0x8000;
+      for (int x = 0; x < fontwidth; x++, bit >>= 1)
+	if (line bitand bit)
 	  {
 	    avt_putpixel (surface, avt.cursor.x + x,
 			  avt.cursor.y + y, avt.text_color);

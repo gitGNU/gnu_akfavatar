@@ -1127,12 +1127,12 @@ lgraphic_text (lua_State * L)
       // still before visible area?
       // cannot display character just partly
       if (x < 0)
-        continue;
+	continue;
 
       // already beyond visible area?
       // cannot display character just partly
       if (x > width - fontwidth)
-        break;
+	break;
 
       // get the definition
       font_line = (const uint8_t *) avt_get_font_char ((int) *wc);
@@ -1153,8 +1153,9 @@ lgraphic_text (lua_State * L)
 	      font_line++;
 	    }
 
-	  for (int lx = 0; lx < fontwidth; lx++)
-	    if (line bitand (1 << (15 - lx)))
+	  uint16_t bit = 0x8000;
+	  for (int lx = 0; lx < fontwidth; lx++, bit >>= 1)
+	    if (line bitand bit)
 	      putpixelcolor (gr, x + lx, y + ly, width, color);
 	}			// for (int ly...
     }				// for (int i
