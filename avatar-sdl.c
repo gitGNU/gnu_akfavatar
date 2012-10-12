@@ -6130,29 +6130,21 @@ extern int
 avt_show_image_xbm (const unsigned char *bits, int width, int height,
 		    int color)
 {
-  SDL_Surface *image;
-
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
+  avt_clear_screen ();
+
   if (width <= 0 or height <= 0 or color < 0)
     {
-      avt_clear ();		// at least clear the balloon
       SDL_SetError ("couldn't show image");
       return AVT_FAILURE;
     }
 
-  image = avt_load_image_xbm (bits, width, height, color);
-
-  if (not image)
-    {
-      avt_clear_screen ();	// at least clear the screen
-      SDL_SetError ("couldn't show image");
-      return AVT_FAILURE;
-    }
-
-  avt_show_image (image);
-  SDL_FreeSurface (image);
+  avt_put_image_xbm (screen,
+		     (screen->w / 2) - (width / 2),
+		     (screen->h / 2) - (height / 2),
+		     bits, width, height, color);
 
   return _avt_STATUS;
 }
