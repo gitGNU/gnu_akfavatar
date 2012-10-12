@@ -453,6 +453,12 @@ avt_fill (SDL_Surface * s, int color)
 }
 
 static inline void
+avt_set_color_key (SDL_Surface *s, int color)
+{
+  SDL_SetColorKey (s, SDL_SRCCOLORKEY, color);
+}
+
+static inline void
 avt_update_area (int x, int y, int width, int height)
 {
   SDL_UpdateRect (screen, x, y, width, height);
@@ -793,7 +799,7 @@ avt_load_image_xpm (char **xpm)
 	    colornr = SDL_strtol (&color_name[1], NULL, 16);
 	  else if (SDL_strcasecmp (color_name, "None") == 0)
 	    {
-	      SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL, code_nr);
+	      avt_set_color_key (img, code_nr);
 
 	      // some weird color, that hopefully doesn't conflict
 	      colornr = 0x1A2A3A;
@@ -1089,7 +1095,7 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
 
   avt_fill (image, background_color);
   avt_put_image_xbm (image, 0, 0, bits, width, height, color);
-  SDL_SetColorKey (image, SDL_SRCCOLORKEY, background_color);
+  avt_set_color_key (image, background_color);
 
   return image;
 }
@@ -6379,8 +6385,7 @@ avt_make_transparent (avt_image_t * image)
   if (SDL_MUSTLOCK (image))
     SDL_UnlockSurface (image);
 
-  if (not SDL_SetColorKey (image, SDL_SRCCOLORKEY | SDL_RLEACCEL, color))
-    image = NULL;
+  avt_set_color_key (image, color);
 
   return image;
 }
