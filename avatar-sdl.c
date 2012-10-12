@@ -1070,63 +1070,28 @@ avt_put_image_xbm (SDL_Surface * img, short x, short y,
  */
 static SDL_Surface *
 avt_load_image_xbm (const unsigned char *bits, int width, int height,
-		    int colornr)
+		    int color)
 {
-  SDL_Surface *img;
-  SDL_Color color[2];
-  int bpl;			// Bytes per line
-  uint8_t *line;
+  int background_color;
+  SDL_Surface *image;
 
-  img = SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 1, 0, 0, 0, 0);
+  // background color is the complement of color, to assure it is different
+  // later it is made transparent
+  background_color = (compl color) bitand 0xFFFFFF;
 
-  if (not img)
+  image = avt_new_graphic (width, height);
+
+  if (not image)
     {
       SDL_SetError ("out of memory");
       return NULL;
     }
 
-  // Bytes per line
-  bpl = (width + 7) / 8;
+  avt_fill (image, background_color);
+  avt_put_image_xbm (image, 0, 0, bits, width, height, color);
+  SDL_SetColorKey (image, SDL_SRCCOLORKEY, background_color);
 
-  if (SDL_MUSTLOCK (img))
-    SDL_LockSurface (img);
-
-  line = (uint8_t *) img->pixels;
-
-  for (int y = 0; y < height; y++)
-    {
-      for (int byte = 0; byte < bpl; byte++)
-	{
-	  uint8_t val, res;
-
-	  val = *bits;
-	  res = 0;
-
-	  // bits must be reversed
-	  for (int bit = 7; bit >= 0; bit--)
-	    {
-	      res |= (val & 1) << bit;
-	      val >>= 1;
-	    }
-
-	  line[byte] = res;
-	  bits++;
-	}
-
-      line += img->pitch;
-    }
-
-  if (SDL_MUSTLOCK (img))
-    SDL_UnlockSurface (img);
-
-  color[0].r = compl avt_red (colornr);
-  color[0].g = compl avt_green (colornr);
-  color[0].b = compl avt_blue (colornr);
-  color[1] = avt_sdlcolor (colornr);
-  SDL_SetPalette (img, SDL_LOGPAL, color, 0, 2);
-  SDL_SetColorKey (img, SDL_SRCCOLORKEY | SDL_RLEACCEL, 0);
-
-  return img;
+  return image;
 }
 
 static SDL_Surface *
