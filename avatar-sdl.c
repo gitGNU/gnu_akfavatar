@@ -300,7 +300,6 @@ struct avt_settings
 {
   SDL_Surface *avatar_image;
   SDL_Surface *cursor_character;
-  SDL_Surface *pointer;
   wchar_t *name;
 
   // for an external keyboard/mouse handlers
@@ -1036,6 +1035,12 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
   return img;
 }
 
+static inline int
+avt_xbm_bytes_per_line (int width)
+{
+  return ((width + 7) / 8);
+}
+
 // only for 32bit per pixel!
 static void
 avt_put_image_xbm (SDL_Surface * img, short x, short y,
@@ -1715,6 +1720,23 @@ avt_show_avatar (void)
     }
 }
 
+// return a darker color
+static inline int
+avt_darker (int color, int amount)
+{
+  int r, g, b;
+
+  r = avt_red (color);
+  g = avt_green (color);
+  b = avt_blue (color);
+
+  r = r > amount ? r - amount : 0;
+  g = g > amount ? g - amount : 0;
+  b = b > amount ? b - amount : 0;
+
+  return avt_rgb (r, g, b);
+}
+
 static void
 avt_draw_balloon2 (int offset, uint32_t ballooncolor)
 {
@@ -1764,37 +1786,43 @@ avt_draw_balloon2 (int offset, uint32_t ballooncolor)
   if (avt.avatar_image
       and AVT_FOOTER != avt.avatar_mode and AVT_HEADER != avt.avatar_mode)
     {
-      SDL_Rect pointer_shape, pointer_pos;
+      struct avt_position position;
+      unsigned char *bits;
+      unsigned short height;
 
-      pointer_shape.x = pointer_shape.y = 0;
-      pointer_shape.w = avt.pointer->w;
-      pointer_shape.h = avt.pointer->h;
+      if (avt.avatar_mode == AVT_THINK)
+	bits = thinkpointer_bits;
+      else
+	bits = balloonpointer_bits;
+
+      // balloonpointer and thinkpointer must have the same size!
+      height = balloonpointer_height;
 
       // if the balloonpointer is too large, cut it
-      if (pointer_shape.h > (avt.avatar_image->h / 2))
+      if (balloonpointer_height > (avt.avatar_image->h / 2))
 	{
-	  pointer_shape.y = pointer_shape.h - (avt.avatar_image->h / 2);
-	  pointer_shape.h -= pointer_shape.y;
+	  bits += avt_xbm_bytes_per_line (balloonpointer_width)
+	    * (balloonpointer_height - (avt.avatar_image->h / 2));
+	  height -= (balloonpointer_height - (avt.avatar_image->h / 2));
 	}
 
-      pointer_pos.x =
-	window.x + avt.avatar_image->w + (2 * AVATAR_MARGIN) +
-	BALLOONPOINTER_OFFSET + offset;
-      pointer_pos.y =
-	window.y + (avt.balloonmaxheight * LINEHEIGHT) +
-	(2 * BALLOON_INNER_MARGIN) + TOPMARGIN + offset;
+      position.x = window.x + avt.avatar_image->w
+	+ (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET + offset;
+
+      position.y = window.y + (avt.balloonmaxheight * LINEHEIGHT)
+	+ (2 * BALLOON_INNER_MARGIN) + TOPMARGIN + offset;
 
       // only draw the balloonpointer, when it fits
-      if (pointer_pos.x + avt.pointer->w + BALLOONPOINTER_OFFSET
+      if (position.x + balloonpointer_width + BALLOONPOINTER_OFFSET
 	  + BALLOON_INNER_MARGIN < window.x + window.w)
-	SDL_BlitSurface (avt.pointer, &pointer_shape, screen, &pointer_pos);
+	avt_put_image_xbm (screen, position.x, position.y,
+			   bits, balloonpointer_width, height, ballooncolor);
     }
 }
 
 static void
 avt_draw_balloon (void)
 {
-  SDL_Color shadow_color, balloon_color;
   int16_t centered_y;
 
   if (not avt.avatar_visible)
@@ -1843,11 +1871,12 @@ avt_draw_balloon (void)
 
       // right border not aligned with balloon pointer?
       if (avt.textfield.x + avt.textfield.w <
-	  window.x + avt.avatar_image->w + avt.pointer->w
+	  window.x + avt.avatar_image->w + balloonpointer_width
 	  + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET)
 	{
 	  avt.textfield.x =
-	    window.x + avt.avatar_image->w - avt.textfield.w + avt.pointer->w
+	    window.x + avt.avatar_image->w - avt.textfield.w
+	    + balloonpointer_width
 	    + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET;
 
 	  // align with right window-border
@@ -1862,27 +1891,10 @@ avt_draw_balloon (void)
 
   avt.viewport = avt.textfield;
 
-  // shadow color is a little darker than the background color
-  shadow_color = avt_sdlcolor (avt.backgroundcolornr);
-  shadow_color.r = (shadow_color.r > 0x20) ? shadow_color.r - 0x20 : 0;
-  shadow_color.g = (shadow_color.g > 0x20) ? shadow_color.g - 0x20 : 0;
-  shadow_color.b = (shadow_color.b > 0x20) ? shadow_color.b - 0x20 : 0;
-
-  SDL_SetColors (avt.pointer, &shadow_color, 1, 1);
-
   // first draw shadow
-  avt_draw_balloon2 (SHADOWOFFSET,
-		     SDL_MapRGB (screen->format, shadow_color.r,
-				 shadow_color.g, shadow_color.b));
+  avt_draw_balloon2 (SHADOWOFFSET, avt_darker (avt.backgroundcolornr, 0x20));
 
-  // real balloon
-  balloon_color = avt_sdlcolor (avt.ballooncolor);
-  SDL_SetColors (avt.pointer, &balloon_color, 1, 1);
-
-  avt_draw_balloon2 (0, SDL_MapRGB (screen->format,
-				    avt_red (avt.ballooncolor),
-				    avt_green (avt.ballooncolor),
-				    avt_blue (avt.ballooncolor)));
+  avt_draw_balloon2 (0, avt.ballooncolor);
 
   avt.linestart =
     (avt.textdir_rtl) ? avt.viewport.x + avt.viewport.w -
@@ -2020,18 +2032,10 @@ avt_set_avatar_mode (int mode)
       switch (mode)
 	{
 	case AVT_SAY:
-	  SDL_FreeSurface (avt.pointer);
-	  avt.pointer =
-	    avt_load_image_xbm (AVT_XBM_INFO (balloonpointer),
-				avt.ballooncolor);
 	  avt.avatar_mode = AVT_SAY;
 	  break;
 
 	case AVT_THINK:
-	  SDL_FreeSurface (avt.pointer);
-	  avt.pointer =
-	    avt_load_image_xbm (AVT_XBM_INFO (thinkpointer),
-				avt.ballooncolor);
 	  avt.avatar_mode = AVT_THINK;
 	  break;
 
@@ -7223,8 +7227,6 @@ avt_quit (void)
       mpointer = NULL;
       SDL_FreeSurface (base_button);
       base_button = NULL;
-      SDL_FreeSurface (avt.pointer);
-      avt.pointer = NULL;
       SDL_FreeSurface (avt.avatar_image);
       avt.avatar_image = NULL;
       SDL_FreeSurface (avt.cursor_character);
@@ -7509,14 +7511,6 @@ avt_start (const char *title, const char *shortname, int mode)
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
-
-  // just to be save, because of avt_reset()
-  if (avt.pointer)
-    SDL_FreeSurface (avt.pointer);
-
-  avt.avatar_mode = AVT_SAY;
-  avt.pointer =
-    avt_load_image_xbm (AVT_XBM_INFO (balloonpointer), avt.ballooncolor);
 
   // needed to get the character of the typed key
   SDL_EnableUNICODE (1);
