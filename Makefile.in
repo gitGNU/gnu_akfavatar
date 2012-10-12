@@ -171,7 +171,8 @@ basedir.lo: $(srcdir)/basedir.c $(srcdir)/avtaddons.h
 avatar-sdl.o: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
           $(srcdir)/avtinternals.h version.h rgb.h \
           $(srcdir)/balloonpointer.xbm $(srcdir)/thinkpointer.xbm \
-          $(srcdir)/circle.xbm \
+          $(srcdir)/round_upper_left.xbm $(srcdir)/round_upper_right.xbm \
+          $(srcdir)/round_lower_left.xbm $(srcdir)/round_lower_right.xbm \
           $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
           $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
           $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
@@ -185,7 +186,8 @@ avatar-sdl.o: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
 avatar-sdl.lo: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
            $(srcdir)/avtinternals.h version.h rgb.h \
            $(srcdir)/balloonpointer.xbm $(srcdir)/thinkpointer.xbm \
-           $(srcdir)/circle.xbm \
+           $(srcdir)/round_upper_left.xbm $(srcdir)/round_upper_right.xbm \
+           $(srcdir)/round_lower_left.xbm $(srcdir)/round_lower_right.xbm \
            $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
            $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
            $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
@@ -749,7 +751,9 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/version.c \
 	   $(srcdir)/avtreadfile.c $(srcdir)/colorchooser.c \
 	   $(srcdir)/balloonpointer.xbm $(srcdir)/thinkpointer.xbm \
-	   $(srcdir)/circle.xbm $(srcdir)/lua.xpm \
+	   $(srcdir)/round_upper_left.xbm $(srcdir)/round_upper_right.xbm \
+	   $(srcdir)/round_lower_left.xbm $(srcdir)/round_lower_right.xbm \
+	   $(srcdir)/lua.xpm \
 	   $(srcdir)/btn.xpm $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
 	   $(srcdir)/mpointer.xbm $(srcdir)/mpointer_mask.xbm \
 	   $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \

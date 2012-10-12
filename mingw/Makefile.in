@@ -83,7 +83,9 @@ avatar-sdl.o: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
              $(srcdir)/btn_help.xbm $(srcdir)/btn_cancel.xbm \
              $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm \
              $(srcdir)/balloonpointer.xbm $(srcdir)/thinkpointer.xbm \
-             $(srcdir)/circle.xbm $(srcdir)/akfavatar.xpm
+             $(srcdir)/round_upper_left.xbm $(srcdir)/round_upper_right.xbm \
+             $(srcdir)/round_lower_left.xbm $(srcdir)/round_lower_right.xbm \
+             $(srcdir)/akfavatar.xpm
 	$(CC) -c -I$(srcdir) -I. -I$(srcdir)/mingw $(CFLAGS) $(SDL_CFLAGS) \
 	    -o $@ $(srcdir)/avatar-sdl.c
 

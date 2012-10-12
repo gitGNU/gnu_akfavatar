@@ -46,7 +46,10 @@
 #include "btn.xpm"
 #include "balloonpointer.xbm"
 #include "thinkpointer.xbm"
-#include "circle.xbm"
+#include "round_upper_left.xbm"
+#include "round_upper_right.xbm"
+#include "round_lower_left.xbm"
+#include "round_lower_right.xbm"
 #include "btn_yes.xbm"
 #include "btn_no.xbm"
 #include "btn_right.xbm"
@@ -275,7 +278,6 @@ enum avt_button_type
 };
 
 static SDL_Surface *screen;
-static SDL_Surface *circle;
 static SDL_Surface *base_button;
 static SDL_Surface *raw_image;
 static SDL_Cursor *mpointer;
@@ -1725,50 +1727,37 @@ avt_draw_balloon2 (int offset, uint32_t ballooncolor)
   shape.h = avt.textfield.h + (2 * BALLOON_INNER_MARGIN);
 
   // horizontal shape
-  avt_fill_area (screen, shape.x, shape.y + (circle_height / 2),
-		 shape.w, shape.h - circle_height, ballooncolor);
+  avt_fill_area (screen, shape.x, shape.y + round_upper_left_height,
+		 shape.w,
+		 shape.h
+		 - (round_upper_left_height + round_lower_left_height),
+		 ballooncolor);
 
   // vertical shape
-  avt_fill_area (screen, shape.x + (circle_width / 2), shape.y,
-		 shape.w - circle_width, shape.h, ballooncolor);
+  avt_fill_area (screen, shape.x + round_upper_left_width, shape.y,
+		 shape.w - (round_upper_left_width + round_upper_right_width),
+		 shape.h, ballooncolor);
 
   // draw corners
-  {
-    SDL_Rect circle_piece, corner_pos;
+  avt_put_image_xbm (screen, shape.x, shape.y,
+		     round_upper_left_bits, round_upper_left_width,
+		     round_upper_left_height, ballooncolor);
 
-    // prepare circle piece
-    // the size is always the same
-    circle_piece.w = circle_width / 2;
-    circle_piece.h = circle_height / 2;
+  avt_put_image_xbm (screen,
+		     shape.x + shape.w - round_upper_right_width, shape.y,
+		     round_upper_right_bits, round_upper_right_width,
+		     round_upper_right_height, ballooncolor);
 
-    // upper left corner
-    circle_piece.x = 0;
-    circle_piece.y = 0;
-    corner_pos.x = shape.x;
-    corner_pos.y = shape.y;
-    SDL_BlitSurface (circle, &circle_piece, screen, &corner_pos);
+  avt_put_image_xbm (screen, shape.x,
+		     shape.y + shape.h - round_lower_left_height,
+		     round_lower_left_bits, round_lower_left_width,
+		     round_lower_left_height, ballooncolor);
 
-    // upper right corner
-    circle_piece.x = ((circle_width + 7) / 8) / 2;
-    circle_piece.y = 0;
-    corner_pos.x = shape.x + shape.w - circle_piece.w;
-    corner_pos.y = shape.y;
-    SDL_BlitSurface (circle, &circle_piece, screen, &corner_pos);
-
-    // lower left corner
-    circle_piece.x = 0;
-    circle_piece.y = circle_height / 2;
-    corner_pos.x = shape.x;
-    corner_pos.y = shape.y + shape.h - circle_piece.h;
-    SDL_BlitSurface (circle, &circle_piece, screen, &corner_pos);
-
-    // lower right corner
-    circle_piece.x = ((circle_width + 7) / 8) / 2;
-    circle_piece.y = circle_height / 2;
-    corner_pos.x = shape.x + shape.w - circle_piece.w;
-    corner_pos.y = shape.y + shape.h - circle_piece.h;
-    SDL_BlitSurface (circle, &circle_piece, screen, &corner_pos);
-  }
+  avt_put_image_xbm (screen,
+		     shape.x + shape.w - round_lower_right_width,
+		     shape.y + shape.h - round_lower_right_height,
+		     round_lower_right_bits, round_lower_right_width,
+		     round_lower_right_height, ballooncolor);
 
   // draw balloonpointer
   // only if there is an avatar image
@@ -1879,7 +1868,6 @@ avt_draw_balloon (void)
   shadow_color.g = (shadow_color.g > 0x20) ? shadow_color.g - 0x20 : 0;
   shadow_color.b = (shadow_color.b > 0x20) ? shadow_color.b - 0x20 : 0;
 
-  SDL_SetColors (circle, &shadow_color, 1, 1);
   SDL_SetColors (avt.pointer, &shadow_color, 1, 1);
 
   // first draw shadow
@@ -1889,7 +1877,6 @@ avt_draw_balloon (void)
 
   // real balloon
   balloon_color = avt_sdlcolor (avt.ballooncolor);
-  SDL_SetColors (circle, &balloon_color, 1, 1);
   SDL_SetColors (avt.pointer, &balloon_color, 1, 1);
 
   avt_draw_balloon2 (0, SDL_MapRGB (screen->format,
@@ -7234,8 +7221,6 @@ avt_quit (void)
     {
       SDL_FreeCursor (mpointer);
       mpointer = NULL;
-      SDL_FreeSurface (circle);
-      circle = NULL;
       SDL_FreeSurface (base_button);
       base_button = NULL;
       SDL_FreeSurface (avt.pointer);
@@ -7524,8 +7509,6 @@ avt_start (const char *title, const char *shortname, int mode)
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
-
-  circle = avt_load_image_xbm (AVT_XBM_INFO (circle), avt.ballooncolor);
 
   // just to be save, because of avt_reset()
   if (avt.pointer)
