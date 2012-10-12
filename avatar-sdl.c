@@ -422,14 +422,12 @@ avt_new_graphic (short width, short height)
 
 // Fast putpixel with no checks
 // surface must have 32 bits per pixel!
+// the pixels must be aligned
 // surface must eventually be locked
 static inline void
 avt_putpixel (SDL_Surface * s, int x, int y, int color)
 {
-  uint8_t *p;
-
-  p = ((uint8_t *) s->pixels) + y * s->pitch + (x * sizeof (uint32_t));
-  *((uint32_t *) p) = color;
+  *((uint32_t *) s->pixels + y * s->w + x) = color;
 }
 
 static inline void
