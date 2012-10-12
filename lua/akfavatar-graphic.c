@@ -1117,8 +1117,8 @@ lgraphic_text (lua_State * L)
   // actally display the text
   for (int i = 0; i < wclen; i++, wc++, x += fontwidth)
     {
-      const uint8_t *font_line;
-      uint16_t line;
+      const uint8_t *font_line;	// pixel line from font definition
+      uint16_t line;		// normalized pixel line might get modified
 
       // check if it's a combining character
       if (avt_combining (*wc))
@@ -1153,6 +1153,7 @@ lgraphic_text (lua_State * L)
 	      font_line++;
 	    }
 
+	  // leftmost bit set, gets shifted to the right in the for loop
 	  uint16_t bit = 0x8000;
 	  for (int lx = 0; lx < fontwidth; lx++, bit >>= 1)
 	    if (line bitand bit)

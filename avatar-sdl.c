@@ -3408,8 +3408,8 @@ avt_combining (avt_char ch)
 static void
 avt_drawchar (avt_char ch, SDL_Surface * surface)
 {
-  const uint8_t *font_line;
-  uint16_t line;
+  const uint8_t *font_line;	// pixel line from font definition
+  uint16_t line;		// normalized pixel line might get modified
 
   font_line = (const uint8_t *) avt_get_font_char ((int) ch);
 
@@ -3444,6 +3444,7 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
       if (avt.inverse)
 	line = compl line;
 
+      // leftmost bit set, gets shifted to the right in the for loop
       uint16_t bit = 0x8000;
       for (int x = 0; x < fontwidth; x++, bit >>= 1)
 	if (line bitand bit)
