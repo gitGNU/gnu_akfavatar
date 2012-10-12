@@ -430,17 +430,19 @@ avt_putpixel (SDL_Surface * s, int x, int y, int color)
   *((uint32_t *) s->pixels + y * s->w + x) = color;
 }
 
+// surface must have 32 bits per pixel!
 static inline void
 avt_bar (SDL_Surface * s, int x, int y, int width, int height, int color)
 {
-  SDL_Rect dst;
+  uint32_t *p;
 
-  dst.x = x;
-  dst.y = y;
-  dst.w = width;
-  dst.h = height;
+  for (int ny = 0; ny < height; ny++)
+    {
+      p = (uint32_t *) s->pixels + ((y + ny) * s->w) + x;
 
-  SDL_FillRect (s, &dst, color);
+      for (int nx = width; nx > 0; nx--, p++)
+	*p = color;
+    }
 }
 
 // surface must have 32 bits per pixel!
