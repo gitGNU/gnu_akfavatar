@@ -445,10 +445,15 @@ avt_bar (SDL_Surface * s, int x, int y, int width, int height, int color)
   SDL_FillRect (s, &dst, color);
 }
 
+// surface must have 32 bits per pixel!
 static inline void
 avt_fill (SDL_Surface * s, int color)
 {
-  SDL_FillRect (s, NULL, color);
+  uint32_t *p;
+
+  p = s->pixels;
+  for (int i = (s->w * s->h); i > 0; --i, p++)
+    *p = color;
 }
 
 static inline void
@@ -460,6 +465,7 @@ avt_set_color_key (SDL_Surface * s, int color)
 static inline void
 avt_update_area (int x, int y, int width, int height)
 {
+  // this shall be the only function to update the window/screen
   SDL_UpdateRect (screen, x, y, width, height);
 }
 
@@ -4634,7 +4640,7 @@ avt_choice (int *result, int start_line, int items, int key,
 
       // set color for bar and make it transparent
       barcolor = avt_sdlcolor (avt.cursor_color);
-      avt_fill (bar, 0);
+      SDL_FillRect (bar, NULL, 0);
       SDL_SetColors (bar, &barcolor, 0, 1);
       SDL_SetAlpha (bar, SDL_SRCALPHA | SDL_RLEACCEL, 128);
 

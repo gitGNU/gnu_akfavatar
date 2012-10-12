@@ -10,7 +10,7 @@
       avt_set_audio_end_key, avt_combining
 
   Lua-API changes:
-    - new functions: avt.set_audio_end_key
+    - new functions: avt.set_audio_end_key, avt.combining
 
 
 * AKFAvatar 0.22.1
