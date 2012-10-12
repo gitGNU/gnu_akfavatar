@@ -1,3 +1,9 @@
+2012-10-12  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-sdl.c (avt_bar): renamed from avt_fill_area
+
+	* avatar-sdl.c: lots of refactoring
+
 2012-10-11  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl.c (avt_put_image_xbm): new function

@@ -433,8 +433,7 @@ avt_putpixel (SDL_Surface * s, int x, int y, int color)
 }
 
 static inline void
-avt_fill_area (SDL_Surface * s, int x, int y, int width, int height,
-	       int color)
+avt_bar (SDL_Surface * s, int x, int y, int width, int height, int color)
 {
   SDL_Rect dst;
 
@@ -453,7 +452,7 @@ avt_fill (SDL_Surface * s, int color)
 }
 
 static inline void
-avt_set_color_key (SDL_Surface *s, int color)
+avt_set_color_key (SDL_Surface * s, int color)
 {
   SDL_SetColorKey (s, SDL_SRCCOLORKEY, color);
 }
@@ -1612,10 +1611,9 @@ avt_show_name (void)
 	  - fontheight - 2 * NAME_PADDING;
 
       // draw sign
-      avt_fill_area (screen, x, y,
-		     (avt_strwidth (avt.name) * fontwidth) + 2 * NAME_PADDING,
-		     fontheight + 2 * NAME_PADDING,
-		     avt.text_background_color);
+      avt_bar (screen, x, y,
+	       (avt_strwidth (avt.name) * fontwidth) + 2 * NAME_PADDING,
+	       fontheight + 2 * NAME_PADDING, avt.text_background_color);
 
       // show name
       avt.cursor.x = x + NAME_PADDING;
@@ -1720,16 +1718,16 @@ avt_draw_balloon2 (int offset, uint32_t ballooncolor)
   shape.h = avt.textfield.h + (2 * BALLOON_INNER_MARGIN);
 
   // horizontal shape
-  avt_fill_area (screen, shape.x, shape.y + round_upper_left_height,
-		 shape.w,
-		 shape.h
-		 - (round_upper_left_height + round_lower_left_height),
-		 ballooncolor);
+  avt_bar (screen, shape.x, shape.y + round_upper_left_height,
+	   shape.w,
+	   shape.h
+	   - (round_upper_left_height + round_lower_left_height),
+	   ballooncolor);
 
   // vertical shape
-  avt_fill_area (screen, shape.x + round_upper_left_width, shape.y,
-		 shape.w - (round_upper_left_width + round_upper_right_width),
-		 shape.h, ballooncolor);
+  avt_bar (screen, shape.x + round_upper_left_width, shape.y,
+	   shape.w - (round_upper_left_width + round_upper_right_width),
+	   shape.h, ballooncolor);
 
   // draw corners
   avt_put_image_xbm (screen, shape.x, shape.y,
@@ -2823,8 +2821,8 @@ avt_insert_spaces (int num)
   dest.y = avt.cursor.y;
   SDL_BlitSurface (screen, &rest, screen, &dest);
 
-  avt_fill_area (screen, avt.cursor.x, avt.cursor.y,
-		 num * fontwidth, LINEHEIGHT, avt.text_background_color);
+  avt_bar (screen, avt.cursor.x, avt.cursor.y,
+	   num * fontwidth, LINEHEIGHT, avt.text_background_color);
 
   if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
@@ -2858,9 +2856,9 @@ avt_delete_characters (int num)
   dest.y = avt.cursor.y;
   SDL_BlitSurface (screen, &rest, screen, &dest);
 
-  avt_fill_area (screen, avt.viewport.x + avt.viewport.w - (num * fontwidth),
-		 avt.cursor.y, num * fontwidth, LINEHEIGHT,
-		 avt.text_background_color);
+  avt_bar (screen, avt.viewport.x + avt.viewport.w - (num * fontwidth),
+	   avt.cursor.y, num * fontwidth, LINEHEIGHT,
+	   avt.text_background_color);
 
   if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
@@ -2883,8 +2881,8 @@ avt_erase_characters (int num)
 
   int x = (avt.textdir_rtl) ? avt.cursor.x - (num * fontwidth) : avt.cursor.x;
 
-  avt_fill_area (screen, x, avt.cursor.y, num * fontwidth, LINEHEIGHT,
-		 avt.text_background_color);
+  avt_bar (screen, x, avt.cursor.y, num * fontwidth, LINEHEIGHT,
+	   avt.text_background_color);
 
   if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
@@ -2923,9 +2921,9 @@ avt_delete_lines (int line, int num)
   dest.y = avt.viewport.y + ((line - 1) * LINEHEIGHT);
   SDL_BlitSurface (screen, &rest, screen, &dest);
 
-  avt_fill_area (screen, avt.viewport.x,
-		 avt.viewport.y + avt.viewport.h - (num * LINEHEIGHT),
-		 avt.viewport.w, num * LINEHEIGHT, avt.text_background_color);
+  avt_bar (screen, avt.viewport.x,
+	   avt.viewport.y + avt.viewport.h - (num * LINEHEIGHT),
+	   avt.viewport.w, num * LINEHEIGHT, avt.text_background_color);
 
   if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
@@ -2962,9 +2960,9 @@ avt_insert_lines (int line, int num)
   dest.y = avt.viewport.y + ((line - 1 + num) * LINEHEIGHT);
   SDL_BlitSurface (screen, &rest, screen, &dest);
 
-  avt_fill_area (screen, avt.viewport.x,
-		 avt.viewport.y + ((line - 1) * LINEHEIGHT),
-		 avt.viewport.w, num * LINEHEIGHT, avt.text_background_color);
+  avt_bar (screen, avt.viewport.x,
+	   avt.viewport.y + ((line - 1) * LINEHEIGHT),
+	   avt.viewport.w, num * LINEHEIGHT, avt.text_background_color);
 
   if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
@@ -3111,8 +3109,8 @@ avt_clear_up (void)
   if (avt.textfield.x < 0)
     avt_draw_balloon ();
 
-  avt_fill_area (screen, avt.viewport.x, avt.viewport.y + fontheight,
-		 avt.viewport.w, avt.cursor.y, avt.text_background_color);
+  avt_bar (screen, avt.viewport.x, avt.viewport.y + fontheight,
+	   avt.viewport.w, avt.cursor.y, avt.text_background_color);
 
   if (avt.text_cursor_visible)
     {
@@ -3139,9 +3137,9 @@ avt_clear_down (void)
   if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
-  avt_fill_area (screen, avt.viewport.x, avt.cursor.y, avt.viewport.w,
-		 avt.viewport.h - (avt.cursor.y - avt.viewport.y),
-		 avt.text_background_color);
+  avt_bar (screen, avt.viewport.x, avt.cursor.y, avt.viewport.w,
+	   avt.viewport.h - (avt.cursor.y - avt.viewport.y),
+	   avt.text_background_color);
 
   if (avt.text_cursor_visible)
     {
@@ -3178,8 +3176,8 @@ avt_clear_eol (void)
       width = avt.viewport.w - (avt.cursor.x - avt.viewport.x);
     }
 
-  avt_fill_area (screen, x, avt.cursor.y, width, fontheight,
-		 avt.text_background_color);
+  avt_bar (screen, x, avt.cursor.y, width, fontheight,
+	   avt.text_background_color);
 
   if (avt.text_cursor_visible)
     {
@@ -3216,8 +3214,8 @@ avt_clear_bol (void)
       width = avt.cursor.x + fontwidth - avt.viewport.x;
     }
 
-  avt_fill_area (screen, x, avt.cursor.y, width, fontheight,
-		 avt.text_background_color);
+  avt_bar (screen, x, avt.cursor.y, width, fontheight,
+	   avt.text_background_color);
 
   if (avt.text_cursor_visible)
     {
@@ -3240,8 +3238,8 @@ avt_clear_line (void)
   if (avt.textfield.x < 0)
     avt_draw_balloon ();
 
-  avt_fill_area (screen, avt.viewport.x, avt.cursor.y,
-		 avt.viewport.w, fontheight, avt.text_background_color);
+  avt_bar (screen, avt.viewport.x, avt.cursor.y,
+	   avt.viewport.w, fontheight, avt.text_background_color);
 
   if (avt.text_cursor_visible)
     {
@@ -3381,8 +3379,8 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
   if (not avt_combining (ch))
     {
       // fill with background color
-      avt_fill_area (surface, avt.cursor.x, avt.cursor.y,
-		     fontwidth, fontheight, avt.text_background_color);
+      avt_bar (surface, avt.cursor.x, avt.cursor.y,
+	       fontwidth, fontheight, avt.text_background_color);
     }
   else				// combining
     avt_backspace ();
@@ -3573,8 +3571,8 @@ avt_last_tab (void)
 static void
 avt_clearchar (void)
 {
-  avt_fill_area (screen, avt.cursor.x, avt.cursor.y, fontwidth, fontheight,
-		 avt.text_background_color);
+  avt_bar (screen, avt.cursor.x, avt.cursor.y, fontwidth, fontheight,
+	   avt.text_background_color);
   avt_showchar ();
 }
 
