@@ -112,7 +112,7 @@ avt_start_audio (void)
     {
       if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
 	{
-	  SDL_SetError ("error initializing audio");
+	  avt_set_error ("error initializing audio");
 	  _avt_STATUS = AVT_ERROR;
 	  return _avt_STATUS;
 	}
@@ -254,7 +254,7 @@ avt_play_audio (avt_audio * snd, int playmode)
     }
   else
     {
-      SDL_SetError ("error opening audio device");
+      avt_set_error ("error opening audio device");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }

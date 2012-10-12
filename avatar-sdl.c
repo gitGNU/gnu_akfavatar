@@ -513,7 +513,7 @@ calculate_balloonmaxheight (void)
   // at least 10 lines
   if (avt.balloonmaxheight < 10)
     {
-      SDL_SetError ("Avatar image too large");
+      avt_set_error ("Avatar image too large");
       _avt_STATUS = AVT_ERROR;
       SDL_FreeSurface (avt.avatar_image);
       avt.avatar_image = NULL;
@@ -626,7 +626,7 @@ avt_load_image_xpm (char **xpm)
   if (SDL_sscanf (xpm[0], "%d %d %d %d", &width, &height, &ncolors, &cpp) < 4
       or width < 1 or height < 1 or ncolors < 1)
     {
-      SDL_SetError ("error in XPM data");
+      avt_set_error ("error in XPM data");
       goto done;
     }
 
@@ -645,7 +645,7 @@ avt_load_image_xpm (char **xpm)
 
   if (not img)
     {
-      SDL_SetError ("out of memory");
+      avt_set_error ("out of memory");
       goto done;
     }
 
@@ -655,7 +655,7 @@ avt_load_image_xpm (char **xpm)
       codes = (union xpm_codes *) SDL_calloc (XPM_NR_CODES, sizeof (codes));
       if (not codes)
 	{
-	  SDL_SetError ("out of memory");
+	  avt_set_error ("out of memory");
 	  SDL_free (img);
 	  img = NULL;
 	  goto done;
@@ -678,7 +678,7 @@ avt_load_image_xpm (char **xpm)
 
   if (not colors and not colors256)
     {
-      SDL_SetError ("out of memory");
+      avt_set_error ("out of memory");
       SDL_free (img);
       img = NULL;
       goto done;
@@ -693,7 +693,7 @@ avt_load_image_xpm (char **xpm)
 
       if (xpm[colornr] == NULL)
 	{
-	  SDL_SetError ("error in XPM data");
+	  avt_set_error ("error in XPM data");
 	  SDL_free (img);
 	  img = NULL;
 	  goto done;
@@ -953,7 +953,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
   line = (char *) SDL_malloc (linecapacity);
   if (not line)
     {
-      SDL_SetError ("out of memory");
+      avt_set_error ("out of memory");
       return NULL;
     }
 
@@ -961,7 +961,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
   xpm = (char **) SDL_malloc (linecount * sizeof (*xpm));
   if (not xpm)
     {
-      SDL_SetError ("out of memory");
+      avt_set_error ("out of memory");
       error = end = true;
     }
 
@@ -1088,7 +1088,7 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
 
   if (not image)
     {
-      SDL_SetError ("out of memory");
+      avt_set_error ("out of memory");
       return NULL;
     }
 
@@ -1169,7 +1169,7 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
   // this catches different errors
   if (not bits)
     {
-      SDL_SetError ("out of memory");
+      avt_set_error ("out of memory");
       error = end = true;
     }
 
@@ -2104,7 +2104,7 @@ avt_save_background (SDL_Rect area)
 
   if (not result)
     {
-      SDL_SetError ("out of memory");
+      avt_set_error ("out of memory");
       _avt_STATUS = AVT_ERROR;
       return NULL;
     }
@@ -2607,7 +2607,7 @@ avt_wait (size_t milliseconds)
 	  if (not t)
 	    {
 	      // extremely unlikely error
-	      SDL_SetError ("AddTimer doesn't work");
+	      avt_set_error ("AddTimer doesn't work");
 	      _avt_STATUS = AVT_ERROR;
 	      return _avt_STATUS;
 	    }
@@ -3966,7 +3966,7 @@ avt_mb_encoding (const char *encoding)
   // check if it was successfully initialized
   if (output_cd == ICONV_UNINITIALIZED)
     {
-      SDL_SetError ("encoding \"%s\" not supported for output", encoding);
+      avt_set_error ("encoding not supported for output");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
@@ -3985,7 +3985,7 @@ avt_mb_encoding (const char *encoding)
     {
       avt_iconv_close (output_cd);
       output_cd = ICONV_UNINITIALIZED;
-      SDL_SetError ("encoding \"%s\" not supported for input", encoding);
+      avt_set_error ("encoding not supported for input");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
@@ -4627,7 +4627,7 @@ avt_choice (int *result, int start_line, int items, int key,
       if (not bar)
 	{
 	  SDL_FreeSurface (plain_menu);
-	  SDL_SetError ("out of memory");
+	  avt_set_error ("out of memory");
 	  _avt_STATUS = AVT_ERROR;
 	  return _avt_STATUS;
 	}
@@ -4768,7 +4768,7 @@ avt_show_button (int x, int y, enum avt_button_type type,
 
   if (buttonnr == MAX_BUTTONS)
     {
-      SDL_SetError ("too many buttons");
+      avt_set_error ("too many buttons");
       _avt_STATUS = AVT_ERROR;
       return;
     }
@@ -5733,7 +5733,7 @@ avt_navigate (const char *buttons)
 
   if (not buttons or not * buttons or button_count > NAV_MAX)
     {
-      SDL_SetError ("No or too many buttons for navigation bar");
+      avt_set_error ("No or too many buttons for navigation bar");
       return AVT_FAILURE;
     }
 
@@ -6084,7 +6084,7 @@ avt_show_image_xpm (char **xpm)
   if (image == NULL)
     {
       avt_clear_screen ();	// at least clear the screen
-      SDL_SetError ("couldn't show image");
+      avt_set_error ("couldn't show image");
       return AVT_FAILURE;
     }
 
@@ -6106,7 +6106,7 @@ avt_show_image_xbm (const unsigned char *bits, int width, int height,
 
   if (width <= 0 or height <= 0 or color < 0)
     {
-      SDL_SetError ("couldn't show image");
+      avt_set_error ("couldn't show image");
       return AVT_FAILURE;
     }
 
@@ -6182,7 +6182,7 @@ avt_show_raw_image (void *image_data, int width, int height,
 
   if (bytes_per_pixel < 3 or bytes_per_pixel > 4)
     {
-      SDL_SetError ("wrong number of bytes_per_pixel for raw image");
+      avt_set_error ("wrong number of bytes_per_pixel for raw image");
       return AVT_FAILURE;
     }
 
@@ -6198,7 +6198,7 @@ avt_show_raw_image (void *image_data, int width, int height,
   if (not raw_image)
     {
       avt_clear_screen ();	// at least clear the screen
-      SDL_SetError ("couldn't show image");
+      avt_set_error ("couldn't show image");
       return AVT_FAILURE;
     }
 
@@ -6223,7 +6223,7 @@ avt_put_image_rw (SDL_RWops * RW, int x, int y, void *image_data,
 
   if (bytes_per_pixel < 3 or bytes_per_pixel > 4)
     {
-      SDL_SetError ("wrong number of bytes_per_pixel for raw image");
+      avt_set_error ("wrong number of bytes_per_pixel for raw image");
       return AVT_FAILURE;
     }
 
@@ -6250,7 +6250,7 @@ avt_put_image_rw (SDL_RWops * RW, int x, int y, void *image_data,
   if (not dest)
     {
       SDL_FreeSurface (src);
-      SDL_SetError ("export_image");
+      avt_set_error ("export_image");
       return AVT_FAILURE;
     }
 
@@ -6325,7 +6325,7 @@ avt_put_raw_image_xpm (char **xpm, int x, int y,
   if (not dest)
     {
       SDL_FreeSurface (src);
-      SDL_SetError ("export_image");
+      avt_set_error ("export_image");
       return AVT_FAILURE;
     }
 
@@ -6354,7 +6354,7 @@ avt_init_SDL (void)
        */
       SDL_putenv ("SDL_NOMOUSE=1");
 
-      SDL_SetError ("15ce822f94d7e8e4281f1c2bcdd7c56d");
+      avt_set_error ("15ce822f94d7e8e4281f1c2bcdd7c56d");
 
       if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
 	_avt_STATUS = AVT_ERROR;
@@ -6580,7 +6580,7 @@ avt_set_avatar_image (SDL_Surface * image)
 
       if (not avt.avatar_image)
 	{
-	  SDL_SetError ("couldn't load avatar");
+	  avt_set_error ("couldn't load avatar");
 	  _avt_STATUS = AVT_ERROR;
 	  return _avt_STATUS;
 	}
@@ -6644,7 +6644,7 @@ avt_avatar_image_xbm (const unsigned char *bits,
 
   if (width <= 0 or height <= 0 or color < 0)
     {
-      SDL_SetError ("invalid parameters");
+      avt_set_error ("invalid parameters");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
@@ -7074,7 +7074,7 @@ avt_credits (const wchar_t * text, bool centered)
 
   if (not last_line)
     {
-      SDL_SetError ("out of memory");
+      avt_set_error ("out of memory");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
@@ -7346,7 +7346,7 @@ avt_start (const char *title, const char *shortname, int mode)
   // already initialized?
   if (screen)
     {
-      SDL_SetError ("AKFAvatar already initialized");
+      avt_set_error ("AKFAvatar already initialized");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
@@ -7363,7 +7363,7 @@ avt_start (const char *title, const char *shortname, int mode)
 
   if (avt_init_SDL ())
     {
-      SDL_SetError ("error initializing AKFAvatar");
+      avt_set_error ("error initializing AKFAvatar");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
@@ -7421,7 +7421,7 @@ avt_start (const char *title, const char *shortname, int mode)
 
   if (not screen)
     {
-      SDL_SetError ("error initializing AKFAvatar");
+      avt_set_error ("error initializing AKFAvatar");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
@@ -7429,14 +7429,14 @@ avt_start (const char *title, const char *shortname, int mode)
   // assure we really get what we need
   if (SDL_MUSTLOCK (screen) or screen->format->BitsPerPixel != 32)
     {
-      SDL_SetError ("error initializing AKFAvatar");
+      avt_set_error ("error initializing AKFAvatar");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
 
   if (screen->w < MINIMALWIDTH or screen->h < MINIMALHEIGHT)
     {
-      SDL_SetError ("screen too small");
+      avt_set_error ("screen too small");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
@@ -7467,7 +7467,7 @@ avt_start (const char *title, const char *shortname, int mode)
 
   if (not avt.cursor_character)
     {
-      SDL_SetError ("out of memory");
+      avt_set_error ("out of memory");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
