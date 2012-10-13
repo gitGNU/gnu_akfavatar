@@ -6,8 +6,8 @@
  *
  * other software:
  * required:
- *  SDL1.2 (recommended: SDL1.2.11 or later (but not 1.3!))
- * optional:
+ *  SDL1.2.11 or later (but not 1.3!)
+ * optional (deprecated):
  *  SDL_image1.2
  *
  * This file is part of AKFAvatar
@@ -38,8 +38,11 @@
 #include "version.h"
 #include "rgb.h"		// only for DEFAULT_COLOR
 
+#include <stdlib.h>
 #include <stdint.h>
 #include <iso646.h>
+#include <string.h>
+#include <strings.h>
 
 // include images
 #include "akfavatar.xpm"
@@ -114,54 +117,6 @@
 
 #define SHADOWOFFSET 5
 
-/*
- * newer vesions of SDL have some fallback implementations
- * for libc functionality - I try to use it, if available
- * This is the fallback for older SDL versions.
- */
-#ifndef _SDL_stdinc_h
-#  define OLD_SDL 1
-#endif
-
-#ifdef OLD_SDL
-#  warning "compiling for old SDL - using libc directly"
-#  include <stdio.h>
-#  include <stdlib.h>
-#  include <string.h>
-#  include <ctype.h>
-
-#  undef SDL_malloc
-#  define SDL_malloc              malloc
-#  undef SDL_calloc
-#  define SDL_calloc              calloc
-#  undef SDL_free
-#  define SDL_free                free
-#  undef SDL_strlen
-#  define SDL_strlen              strlen
-#  undef SDL_strstr
-#  define SDL_strstr              strstr
-#  undef SDL_strdup
-#  define SDL_strdup              strdup
-#  undef SDL_atoi
-#  define SDL_atoi                atoi
-#  undef SDL_strtol
-#  define SDL_strtol              strtol
-#  undef SDL_memcpy
-#  define SDL_memcpy              memcpy
-#  undef SDL_memset
-#  define SDL_memset              memset
-#  undef SDL_memcmp
-#  define SDL_memcmp              memcmp
-#  undef SDL_strcasecmp
-#  define SDL_strcasecmp          strcasecmp
-#  undef SDL_strncasecmp
-#  define SDL_strncasecmp         strncasecmp
-#  undef SDL_putenv
-#  define SDL_putenv              putenv
-#  undef SDL_sscanf
-#  define SDL_sscanf              sscanf
-#endif // OLD_SDL
-
 // Note errno is only used for iconv and may not be the external errno!
 
 #ifndef USE_SDL_ICONV
@@ -178,10 +133,6 @@ static int errno;
 #  define avt_iconv_close         SDL_iconv_close
    // avt_iconv implemented below
 #endif // USE_SDL_ICONV
-
-// don't use any libc commands directly!
-#pragma GCC poison  malloc calloc free strlen memcpy memset getenv putenv
-#pragma GCC poison  strstr atoi atol strtol
 
 // for static linking avoid to drag in unneeded object files
 #pragma GCC poison  avt_colorname avt_palette avt_colors
@@ -618,7 +569,7 @@ avt_free_xpm_tree (union xpm_codes *tree, int depth, int cpp)
 	}
     }
 
-  SDL_free (tree);
+  free (tree);
 }
 
 static inline SDL_Color
@@ -654,7 +605,7 @@ avt_load_image_xpm (char **xpm)
    * there may be more values in the line, but we just
    * need the first four
    */
-  if (SDL_sscanf (xpm[0], "%d %d %d %d", &width, &height, &ncolors, &cpp) < 4
+  if (sscanf (xpm[0], "%d %d %d %d", &width, &height, &ncolors, &cpp) < 4
       or width < 1 or height < 1 or ncolors < 1)
     {
       avt_set_error ("error in XPM data");
@@ -673,7 +624,7 @@ avt_load_image_xpm (char **xpm)
   // get memory for codes table
   if (cpp > 1)
     {
-      codes = (union xpm_codes *) SDL_calloc (XPM_NR_CODES, sizeof (codes));
+      codes = (union xpm_codes *) calloc (XPM_NR_CODES, sizeof (codes));
       if (not codes)
 	{
 	  avt_set_error ("out of memory");
@@ -686,9 +637,9 @@ avt_load_image_xpm (char **xpm)
   // get memory for colors table (palette)
   // note: for 1 character per pixel we use the character-32 as index
   if (cpp == 1)
-    colors = (uint32_t *) SDL_calloc (127 - 32, sizeof (uint32_t));
+    colors = (uint32_t *) calloc (127 - 32, sizeof (uint32_t));
   else
-    colors = (uint32_t *) SDL_calloc (ncolors, sizeof (uint32_t));
+    colors = (uint32_t *) calloc (ncolors, sizeof (uint32_t));
 
   if (not colors)
     {
@@ -737,8 +688,7 @@ avt_load_image_xpm (char **xpm)
 
 	      if (not table->next)
 		table->next =
-		  (union xpm_codes *) SDL_calloc (XPM_NR_CODES,
-						  sizeof (*codes));
+		  (union xpm_codes *) calloc (XPM_NR_CODES, sizeof (*codes));
 
 	      table = table->next;
 	    }
@@ -810,16 +760,16 @@ avt_load_image_xpm (char **xpm)
 	  colornr = AVT_COLOR_BLACK;
 
 	  if (color_name[0] == '#')
-	    colornr = SDL_strtol (&color_name[1], NULL, 16);
-	  else if (SDL_strcasecmp (color_name, "None") == 0)
+	    colornr = strtol (&color_name[1], NULL, 16);
+	  else if (strcasecmp (color_name, "None") == 0)
 	    {
 	      // some weird color, that hopefully doesn't conflict
 	      colornr = 0x1A2A3A;
 	      avt_set_color_key (img, colornr);
 	    }
-	  else if (SDL_strcasecmp (color_name, "black") == 0)
+	  else if (strcasecmp (color_name, "black") == 0)
 	    colornr = AVT_COLOR_BLACK;
-	  else if (SDL_strcasecmp (color_name, "white") == 0)
+	  else if (strcasecmp (color_name, "white") == 0)
 	    colornr = AVT_COLOR_WHITE;
 
 	  /*
@@ -890,7 +840,7 @@ avt_load_image_xpm (char **xpm)
 
 done:
   if (colors)
-    SDL_free (colors);
+    free (colors);
 
   // clean up codes table
   if (codes)
@@ -923,7 +873,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
 
   // check if it has an XPM header
   if (SDL_RWread (src, head, sizeof (head), 1) < 1
-      or SDL_memcmp (head, "/* XPM */", 9) != 0)
+      or memcmp (head, "/* XPM */", 9) != 0)
     {
       if (freesrc)
 	SDL_RWclose (src);
@@ -936,7 +886,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
   linenr = linepos = 0;
 
   linecapacity = 100;
-  line = (char *) SDL_malloc (linecapacity);
+  line = (char *) malloc (linecapacity);
   if (not line)
     {
       avt_set_error ("out of memory");
@@ -944,7 +894,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
     }
 
   linecount = 512;		// can be extended later
-  xpm = (char **) SDL_malloc (linecount * sizeof (*xpm));
+  xpm = (char **) malloc (linecount * sizeof (*xpm));
   if (not xpm)
     {
       avt_set_error ("out of memory");
@@ -975,7 +925,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
 	  if (linepos >= linecapacity)
 	    {
 	      linecapacity += 100;
-	      line = (char *) SDL_realloc (line, linecapacity);
+	      line = (char *) realloc (line, linecapacity);
 	      if (not line)
 		error = end = true;
 	    }
@@ -985,13 +935,13 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
       if (not end)
 	{
 	  line[linepos++] = '\0';
-	  xpm[linenr] = (char *) SDL_malloc (linepos);
-	  SDL_memcpy (xpm[linenr], line, linepos);
+	  xpm[linenr] = (char *) malloc (linepos);
+	  memcpy (xpm[linenr], line, linepos);
 	  linenr++;
 	  if (linenr >= linecount)	// leave one line reserved
 	    {
 	      linecount += 512;
-	      xpm = (char **) SDL_realloc (xpm, linecount * sizeof (*xpm));
+	      xpm = (char **) realloc (xpm, linecount * sizeof (*xpm));
 	      if (not xpm)
 		error = end = true;
 	    }
@@ -1012,13 +962,13 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
     {
       // linenr points to next (uninitialized) line
       for (unsigned int i = 0; i < linenr; i++)
-	SDL_free (xpm[i]);
+	free (xpm[i]);
 
-      SDL_free (xpm);
+      free (xpm);
     }
 
   if (line)
-    SDL_free (line);
+    free (line);
 
   if (freesrc)
     SDL_RWclose (src);
@@ -1110,7 +1060,7 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
 
   // check if it starts with #define
   if (SDL_RWread (src, line, 1, sizeof (line) - 1) < 1
-      or SDL_memcmp (line, "#define", 7) != 0)
+      or memcmp (line, "#define", 7) != 0)
     {
       if (freesrc)
 	SDL_RWclose (src);
@@ -1126,19 +1076,19 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
   // search for width and height
   {
     char *p;
-    p = SDL_strstr (line, "_width ");
+    p = strstr (line, "_width ");
     if (p)
-      width = SDL_atoi (p + 7);
+      width = atoi (p + 7);
     else
       error = end = true;
 
-    p = SDL_strstr (line, "_height ");
+    p = strstr (line, "_height ");
     if (p)
-      height = SDL_atoi (p + 8);
+      height = atoi (p + 8);
     else
       error = end = true;
 
-    if (SDL_strstr (line, " short ") != NULL)
+    if (strstr (line, " short ") != NULL)
       X10 = true;
   }
 
@@ -1149,7 +1099,7 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
     {
       bytes = ((width + 7) / 8) * height;
       // one byte larger for safety with old X10 format
-      bits = (unsigned char *) SDL_malloc (bytes + 1);
+      bits = (unsigned char *) malloc (bytes + 1);
     }
 
   // this catches different errors
@@ -1213,7 +1163,7 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
 	  end_of_line = false;
 	  while (not end_of_line and bmpos < bytes)
 	    {
-	      value = SDL_strtol (p, &endptr, 0);
+	      value = strtol (p, &endptr, 0);
 	      if (endptr == p)
 		end_of_line = true;
 	      else
@@ -1241,7 +1191,7 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
 done:
   // free bits
   if (bits)
-    SDL_free (bits);
+    free (bits);
 
   if (freesrc)
     SDL_RWclose (src);
@@ -3485,7 +3435,7 @@ avt_reset_tab_stops (void)
 extern void
 avt_clear_tab_stops (void)
 {
-  SDL_memset (&avt.tab_stops, false, sizeof (avt.tab_stops));
+  memset (&avt.tab_stops, false, sizeof (avt.tab_stops));
 }
 
 extern void
@@ -4059,7 +4009,7 @@ avt_mb_decode_buffer (wchar_t * dest, size_t dest_size,
       and inbytesleft <= sizeof (rest_buffer))
     {
       rest_bytes = inbytesleft;
-      SDL_memcpy ((void *) &rest_buffer, inbuf, rest_bytes);
+      memcpy ((void *) &rest_buffer, inbuf, rest_bytes);
     }
 
   // ignore E2BIG - just put in as much as fits
@@ -4095,7 +4045,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, size_t src_size)
   if (dest_size < 8)
     dest_size = 8;
 
-  *dest = (wchar_t *) SDL_malloc (dest_size);
+  *dest = (wchar_t *) malloc (dest_size);
 
   if (not * dest)
     return (size_t) (-1);
@@ -4104,7 +4054,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, size_t src_size)
 
   if (length == (size_t) (-1) or length == 0)
     {
-      SDL_free (*dest);
+      free (*dest);
       *dest = NULL;
       return (size_t) (-1);
     }
@@ -4163,7 +4113,7 @@ avt_mb_encode (char **dest, const wchar_t * src, size_t len)
   // UTF-8 may need 4 bytes per character
   // +1 for the terminator
   dest_size = len * 4 + 1;
-  *dest = (char *) SDL_malloc (dest_size);
+  *dest = (char *) malloc (dest_size);
 
   if (not * dest)
     return (size_t) (-1);
@@ -4172,7 +4122,7 @@ avt_mb_encode (char **dest, const wchar_t * src, size_t len)
 
   if (size == (size_t) (-1) or size == 0)
     {
-      SDL_free (*dest);
+      free (*dest);
       *dest = NULL;
       return (size_t) (-1);
     }
@@ -4233,7 +4183,7 @@ avt_recode_buffer (const char *tocode, const char *fromcode,
   avt_iconv_close (cd);
 
   // terminate outbuf (4 Bytes were reserved)
-  SDL_memset (outbuf, 0, 4);
+  memset (outbuf, 0, 4);
 
   return (dest_size - 4 - outbytesleft);
 }
@@ -4280,7 +4230,7 @@ avt_recode (const char *tocode, const char *fromcode,
 
   // guess it's the same size
   dest_size = src_size + 4;
-  *dest = (char *) SDL_malloc (dest_size);
+  *dest = (char *) malloc (dest_size);
 
   if (*dest == NULL)
     {
@@ -4306,7 +4256,7 @@ avt_recode (const char *tocode, const char *fromcode,
 	      ptrdiff_t old_size = outbuf - *dest;
 
 	      dest_size *= 2;
-	      *dest = (char *) SDL_realloc (*dest, dest_size);
+	      *dest = (char *) realloc (*dest, dest_size);
 	      if (*dest == NULL)
 		{
 		  avt_iconv_close (cd);
@@ -4334,7 +4284,7 @@ avt_recode (const char *tocode, const char *fromcode,
   avt_iconv_close (cd);
 
   // terminate outbuf (4 Bytes were reserved)
-  SDL_memset (outbuf, 0, 4);
+  memset (outbuf, 0, 4);
 
   return (dest_size - 4 - outbytesleft);
 }
@@ -4343,14 +4293,14 @@ extern void
 avt_free (void *ptr)
 {
   if (ptr)
-    SDL_free (ptr);
+    free (ptr);
 }
 
 extern int
 avt_say_mb (const char *txt)
 {
   if (screen and _avt_STATUS == AVT_NORMAL)
-    avt_say_mb_len (txt, SDL_strlen (txt));
+    avt_say_mb_len (txt, strlen (txt));
 
   return _avt_STATUS;
 }
@@ -4376,7 +4326,7 @@ avt_say_mb_len (const char *txt, size_t len)
   if (len)
     inbytesleft = len;
   else
-    inbytesleft = SDL_strlen (txt);
+    inbytesleft = strlen (txt);
 
   inbuf = (char *) txt;
 
@@ -4440,7 +4390,7 @@ avt_say_mb_len (const char *txt, size_t len)
 	  else if (err == EINVAL)	// incomplete sequence
 	    {
 	      rest_bytes = inbytesleft;
-	      SDL_memcpy (&rest_buffer, inbuf, rest_bytes);
+	      memcpy (&rest_buffer, inbuf, rest_bytes);
 	      inbytesleft = 0;
 	    }
 	}
@@ -4462,14 +4412,14 @@ avt_tell_mb_len (const char *txt, size_t len)
   if (screen and _avt_STATUS == AVT_NORMAL)
     {
       if (not len)
-	len = SDL_strlen (txt);
+	len = strlen (txt);
 
       wclen = avt_mb_decode (&wctext, txt, len);
 
       if (wctext)
 	{
 	  avt_tell_len (wctext, wclen);
-	  SDL_free (wctext);
+	  free (wctext);
 	}
     }
 
@@ -4480,7 +4430,7 @@ extern int
 avt_tell_mb (const char *txt)
 {
   if (screen and _avt_STATUS == AVT_NORMAL)
-    avt_tell_mb_len (txt, SDL_strlen (txt));
+    avt_tell_mb_len (txt, strlen (txt));
 
   return _avt_STATUS;
 }
@@ -5257,14 +5207,14 @@ avt_pager_mb (const char *txt, size_t len, int startline)
   if (screen and txt and _avt_STATUS == AVT_NORMAL)
     {
       if (not len)
-	len = SDL_strlen (txt);
+	len = strlen (txt);
 
       wclen = avt_mb_decode (&wctext, txt, len);
 
       if (wctext)
 	{
 	  avt_pager (wctext, wclen, startline);
-	  SDL_free (wctext);
+	  free (wctext);
 	}
     }
 
@@ -5313,7 +5263,7 @@ avt_ask (wchar_t * s, size_t size)
 
   len = pos = 0;
   insert_mode = true;
-  SDL_memset (s, 0, size);
+  memset (s, 0, size);
   ch = 0;
 
   do
@@ -5715,7 +5665,7 @@ avt_navigate (const char *buttons)
 
   result = AVT_ERROR;		// no result
   audio_end_button = old_audio_key = 0;	// none
-  button_count = SDL_strlen (buttons);
+  button_count = strlen (buttons);
 
   if (not buttons or not * buttons or button_count > NAV_MAX)
     {
@@ -6551,7 +6501,7 @@ avt_set_avatar_image (SDL_Surface * image)
 
   if (avt.name)
     {
-      SDL_free (avt.name);
+      free (avt.name);
       avt.name = NULL;
     }
 
@@ -6716,7 +6666,7 @@ avt_set_avatar_name (const wchar_t * name)
   // clear old name
   if (avt.name)
     {
-      SDL_free (avt.name);
+      free (avt.name);
       avt.name = NULL;
     }
 
@@ -6724,8 +6674,8 @@ avt_set_avatar_name (const wchar_t * name)
   if (name and * name)
     {
       size = (avt_strwidth (name) + 1) * sizeof (wchar_t);
-      avt.name = (wchar_t *) SDL_malloc (size);
-      SDL_memcpy (avt.name, name, size);
+      avt.name = (wchar_t *) malloc (size);
+      memcpy (avt.name, name, size);
     }
 
   if (avt.avatar_visible)
@@ -6743,12 +6693,12 @@ avt_set_avatar_name_mb (const char *name)
     avt_set_avatar_name (NULL);
   else
     {
-      avt_mb_decode (&wcname, name, SDL_strlen (name) + 1);
+      avt_mb_decode (&wcname, name, strlen (name) + 1);
 
       if (wcname)
 	{
 	  avt_set_avatar_name (wcname);
-	  SDL_free (wcname);
+	  free (wcname);
 	}
     }
 
@@ -7134,12 +7084,12 @@ avt_credits_mb (const char *txt, bool centered)
 
   if (screen and _avt_STATUS == AVT_NORMAL)
     {
-      avt_mb_decode (&wctext, txt, SDL_strlen (txt) + 1);
+      avt_mb_decode (&wctext, txt, strlen (txt) + 1);
 
       if (wctext)
 	{
 	  avt_credits (wctext, centered);
-	  SDL_free (wctext);
+	  free (wctext);
 	}
     }
 
@@ -7195,18 +7145,6 @@ avt_button_quit (void)
   avt_quit ();
 }
 
-#ifdef OLD_SDL
-
-// old SDL could only handle ASCII titles
-
-extern void
-avt_set_title (const char *title, const char *shortname)
-{
-  SDL_WM_SetCaption (title, shortname);
-}
-
-#else // not OLD_SDL
-
 extern void
 avt_set_title (const char *title, const char *shortname)
 {
@@ -7215,9 +7153,9 @@ avt_set_title (const char *title, const char *shortname)
     avt_mb_encoding (MB_DEFAULT_ENCODING);
 
   // check if it's already in correct encoding default="UTF-8"
-  if (SDL_strcasecmp ("UTF-8", avt.encoding) == 0
-      or SDL_strcasecmp ("UTF8", avt.encoding) == 0
-      or SDL_strcasecmp ("CP65001", avt.encoding) == 0)
+  if (strcasecmp ("UTF-8", avt.encoding) == 0
+      or strcasecmp ("UTF8", avt.encoding) == 0
+      or strcasecmp ("CP65001", avt.encoding) == 0)
     SDL_WM_SetCaption (title, shortname);
   else				// convert them to UTF-8
     {
@@ -7228,9 +7166,9 @@ avt_set_title (const char *title, const char *shortname)
 	{
 	  if (avt_recode_buffer ("UTF-8", avt.encoding,
 				 my_title, sizeof (my_title),
-				 title, SDL_strlen (title)) == (size_t) (-1))
+				 title, strlen (title)) == (size_t) (-1))
 	    {
-	      SDL_memcpy (my_title, title, sizeof (my_title));
+	      memcpy (my_title, title, sizeof (my_title));
 	      my_title[sizeof (my_title) - 1] = '\0';
 	    }
 	}
@@ -7240,9 +7178,9 @@ avt_set_title (const char *title, const char *shortname)
 	  if (avt_recode_buffer ("UTF-8", avt.encoding,
 				 my_shortname, sizeof (my_shortname),
 				 shortname,
-				 SDL_strlen (shortname)) == (size_t) (-1))
+				 strlen (shortname)) == (size_t) (-1))
 	    {
-	      SDL_memcpy (my_shortname, shortname, sizeof (my_shortname));
+	      memcpy (my_shortname, shortname, sizeof (my_shortname));
 	      my_shortname[sizeof (my_shortname) - 1] = '\0';
 	    }
 	}
@@ -7250,8 +7188,6 @@ avt_set_title (const char *title, const char *shortname)
       SDL_WM_SetCaption (my_title, my_shortname);
     }
 }
-
-#endif // not OLD_SDL
 
 
 #define reverse_byte(b) \

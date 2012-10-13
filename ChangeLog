@@ -3,6 +3,9 @@
 	* avatar-sdl.c (avt_load_image_xpm):
 	refactoring also fixes bug with truecolor images
 
+	* avatar-sdl.c: remove support for OLD_SDL
+	use standard libc where appropriete
+
 2012-10-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl.c (avt_bar): renamed from avt_fill_area
