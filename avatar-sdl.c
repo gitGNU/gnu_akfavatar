@@ -633,21 +633,17 @@ avt_sdlcolor (int colornr)
   return color;
 }
 
-// TODO: make this mess simpler
 static SDL_Surface *
 avt_load_image_xpm (char **xpm)
 {
   SDL_Surface *img;
   int width, height, ncolors, cpp;
-  int colornr;
   union xpm_codes *codes;
   uint32_t *colors;
-  uint32_t *colors256;
   int code_nr;
 
   codes = NULL;
   colors = NULL;
-  colors256 = NULL;
   img = NULL;
 
   // check if we actually have data to process
@@ -688,17 +684,13 @@ avt_load_image_xpm (char **xpm)
     }
 
   // get memory for colors table (palette)
-  if (ncolors <= 256)
-    colors256 = (uint32_t *) SDL_calloc (256, sizeof (uint32_t));
+  // note: for 1 character per pixel we use the character as index
+  if (cpp == 1)
+    colors = (uint32_t *) SDL_calloc (127, sizeof (uint32_t));
   else
     colors = (uint32_t *) SDL_calloc (ncolors, sizeof (uint32_t));
 
-  /*
-   * note: for colors256 the colors will be scattered around the palette
-   * so we need a full sized palette
-   */
-
-  if (not colors and not colors256)
+  if (not colors)
     {
       avt_set_error ("out of memory");
       SDL_FreeSurface (img);
@@ -709,7 +701,7 @@ avt_load_image_xpm (char **xpm)
   code_nr = 0;
 
   // process colors
-  for (colornr = 1; colornr <= ncolors; colornr++, code_nr++)
+  for (int colornr = 1; colornr <= ncolors; colornr++, code_nr++)
     {
       char *p;			// pointer for scanning through the string
 
@@ -835,10 +827,7 @@ avt_load_image_xpm (char **xpm)
 	   * or the palette is always needed
 	   */
 
-	  if (ncolors <= 256)
-	    colors256[code_nr] = colornr;
-	  else			// ncolors > 256
-	    colors[code_nr] = colornr;
+	  colors[code_nr] = colornr;
 	}
     }
 
@@ -854,12 +843,8 @@ avt_load_image_xpm (char **xpm)
 	  pix = (uint32_t *) img->pixels + (line * img->w);
 	  xpm_data = (uint8_t *) xpm[ncolors + 1 + line];
 
-	  // check for premture end of data
-	  if (xpm_data == NULL)
-	    break;
-
 	  for (int pos = width; pos > 0; pos--)
-	    *pix++ = colors256[*xpm_data++];
+	    *pix++ = colors[*xpm_data++];
 	}
     }
   else				// cpp != 1
@@ -872,10 +857,6 @@ avt_load_image_xpm (char **xpm)
 	  // point to beginning of the line
 	  pix = (uint32_t *) img->pixels + (line * img->w);
 	  xpm_line = (uint8_t *) xpm[ncolors + 1 + line];
-
-	  // check for premture end of data
-	  if (xpm_line == NULL)
-	    break;
 
 	  for (int pos = 0; pos < width; pos++, pix++)
 	    {
@@ -902,18 +883,12 @@ avt_load_image_xpm (char **xpm)
 
 	      code_nr = (table + (c - 32))->nr;
 
-	      if (ncolors <= 256)
-		*pix = colors256[code_nr];
-	      else
-		*pix = colors[code_nr];
+	      *pix = colors[code_nr];
 	    }
 	}
     }
 
 done:
-  if (colors256)
-    SDL_free (colors256);
-
   if (colors)
     SDL_free (colors);
 
