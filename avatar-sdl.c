@@ -634,7 +634,6 @@ avt_sdlcolor (int colornr)
 }
 
 // TODO: make this mess simpler
-// FIXME: test with more than 256 colors!
 static SDL_Surface *
 avt_load_image_xpm (char **xpm)
 {
@@ -839,7 +838,7 @@ avt_load_image_xpm (char **xpm)
 	  if (ncolors <= 256)
 	    colors256[code_nr] = colornr;
 	  else			// ncolors > 256
-	    colors[colornr - 1] = colornr;	// FIXME: Huh???
+	    colors[code_nr] = colornr;
 	}
     }
 
