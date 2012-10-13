@@ -633,7 +633,8 @@ avt_sdlcolor (int colornr)
   return color;
 }
 
-// use this for internal stuff!
+// TODO: make this mess simpler
+// FIXME: test with more than 256 colors!
 static SDL_Surface *
 avt_load_image_xpm (char **xpm)
 {
@@ -642,7 +643,7 @@ avt_load_image_xpm (char **xpm)
   int colornr;
   union xpm_codes *codes;
   uint32_t *colors;
-  SDL_Color *colors256;
+  uint32_t *colors256;
   int code_nr;
 
   codes = NULL;
@@ -666,17 +667,7 @@ avt_load_image_xpm (char **xpm)
     }
 
   // create target surface
-  if (ncolors <= 256)
-    img = SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 8, 0, 0, 0, 0);
-  else
-    {
-      if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-	img = SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 32,
-				    0xFF0000, 0x00FF00, 0x0000FF, 0);
-      else
-	img = SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 32,
-				    0x0000FF, 0x00FF00, 0xFF0000, 0);
-    }
+  img = avt_new_graphic (width, height);
 
   if (not img)
     {
@@ -691,7 +682,7 @@ avt_load_image_xpm (char **xpm)
       if (not codes)
 	{
 	  avt_set_error ("out of memory");
-	  SDL_free (img);
+	  SDL_FreeSurface (img);
 	  img = NULL;
 	  goto done;
 	}
@@ -699,22 +690,19 @@ avt_load_image_xpm (char **xpm)
 
   // get memory for colors table (palette)
   if (ncolors <= 256)
-    colors256 = (SDL_Color *) SDL_calloc (256, sizeof (SDL_Color));
+    colors256 = (uint32_t *) SDL_calloc (256, sizeof (uint32_t));
   else
     colors = (uint32_t *) SDL_calloc (ncolors, sizeof (uint32_t));
 
   /*
    * note: for colors256 the colors will be scattered around the palette
    * so we need a full sized palette
-   *
-   * colors is a different type so we have to call SDL_MapRGB only once
-   * for each color
    */
 
   if (not colors and not colors256)
     {
       avt_set_error ("out of memory");
-      SDL_free (img);
+      SDL_FreeSurface (img);
       img = NULL;
       goto done;
     }
@@ -729,13 +717,14 @@ avt_load_image_xpm (char **xpm)
       if (xpm[colornr] == NULL)
 	{
 	  avt_set_error ("error in XPM data");
-	  SDL_free (img);
+	  SDL_FreeSurface (img);
 	  img = NULL;
 	  goto done;
 	}
 
-      /* if there is only one character per pixel,
-       * the character is the palette number
+      /*
+       * if there is only one character per pixel,
+       * the character is the palette number (simpler)
        */
       if (cpp == 1)
 	code_nr = xpm[colornr][0];
@@ -833,10 +822,9 @@ avt_load_image_xpm (char **xpm)
 	    colornr = SDL_strtol (&color_name[1], NULL, 16);
 	  else if (SDL_strcasecmp (color_name, "None") == 0)
 	    {
-	      avt_set_color_key (img, code_nr);
-
 	      // some weird color, that hopefully doesn't conflict
 	      colornr = 0x1A2A3A;
+	      avt_set_color_key (img, colornr);
 	    }
 	  else if (SDL_strcasecmp (color_name, "black") == 0)
 	    colornr = AVT_COLOR_BLACK;
@@ -849,63 +837,51 @@ avt_load_image_xpm (char **xpm)
 	   */
 
 	  if (ncolors <= 256)
-	    {
-	      colors256[code_nr] = avt_sdlcolor (colornr);
-	    }
+	    colors256[code_nr] = colornr;
 	  else			// ncolors > 256
-	    {
-	      *(colors + colornr - 1) =
-		SDL_MapRGB (img->format, avt_red (colornr),
-			    avt_green (colornr), avt_blue (colornr));
-	    }
+	    colors[colornr - 1] = colornr;	// FIXME: Huh???
 	}
-    }
-
-  // put colormap into the image
-  if (ncolors <= 256)
-    {
-      SDL_SetPalette (img, SDL_LOGPAL, colors256, 0, 256);
-      SDL_free (colors256);
     }
 
   // process pixeldata
-  if (SDL_MUSTLOCK (img))
-    SDL_LockSurface (img);
   if (cpp == 1)			// the easiest case
     {
-      for (int line = 0; line < height; line++)
-	{
-	  // check for premture end of data
-	  if (xpm[ncolors + 1 + line] == NULL)
-	    break;
-
-	  SDL_memcpy ((uint8_t *) img->pixels + (line * img->pitch),
-		      xpm[ncolors + 1 + line], width);
-	}
-    }
-  else				// cpp != 1
-    {
-      uint8_t *pix;
-      char *xpm_line;
-      int bpp;
-
-      // Bytes per Pixel of img
-      bpp = img->format->BytesPerPixel;
+      uint32_t *pix;
+      uint8_t *xpm_data;
 
       for (int line = 0; line < height; line++)
 	{
 	  // point to beginning of the line
-	  pix = (uint8_t *) img->pixels + (line * img->pitch);
-	  xpm_line = xpm[ncolors + 1 + line];
+	  pix = (uint32_t *) img->pixels + (line * img->w);
+	  xpm_data = (uint8_t *) xpm[ncolors + 1 + line];
+
+	  // check for premture end of data
+	  if (xpm_data == NULL)
+	    break;
+
+	  for (int pos = width; pos > 0; pos--)
+	    *pix++ = colors256[*xpm_data++];
+	}
+    }
+  else				// cpp != 1
+    {
+      uint32_t *pix;
+      uint8_t *xpm_line;
+
+      for (int line = 0; line < height; line++)
+	{
+	  // point to beginning of the line
+	  pix = (uint32_t *) img->pixels + (line * img->w);
+	  xpm_line = (uint8_t *) xpm[ncolors + 1 + line];
 
 	  // check for premture end of data
 	  if (xpm_line == NULL)
 	    break;
 
-	  for (int pos = 0; pos < width; pos++, pix += bpp)
+	  for (int pos = 0; pos < width; pos++, pix++)
 	    {
 	      union xpm_codes *table;
-	      char c;
+	      uint8_t c;
 
 	      c = '\0';
 	      // find code in codes table
@@ -928,16 +904,17 @@ avt_load_image_xpm (char **xpm)
 	      code_nr = (table + (c - 32))->nr;
 
 	      if (ncolors <= 256)
-		*pix = code_nr;
+		*pix = colors256[code_nr];
 	      else
-		*(uint32_t *) pix = *(colors + code_nr);
+		*pix = colors[code_nr];
 	    }
 	}
     }
-  if (SDL_MUSTLOCK (img))
-    SDL_UnlockSurface (img);
 
 done:
+  if (colors256)
+    SDL_free (colors256);
+
   if (colors)
     SDL_free (colors);
 
