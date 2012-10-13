@@ -684,9 +684,9 @@ avt_load_image_xpm (char **xpm)
     }
 
   // get memory for colors table (palette)
-  // note: for 1 character per pixel we use the character as index
+  // note: for 1 character per pixel we use the character-32 as index
   if (cpp == 1)
-    colors = (uint32_t *) SDL_calloc (127, sizeof (uint32_t));
+    colors = (uint32_t *) SDL_calloc (127 - 32, sizeof (uint32_t));
   else
     colors = (uint32_t *) SDL_calloc (ncolors, sizeof (uint32_t));
 
@@ -718,7 +718,7 @@ avt_load_image_xpm (char **xpm)
        * the character is the palette number (simpler)
        */
       if (cpp == 1)
-	code_nr = xpm[colornr][0];
+	code_nr = xpm[colornr][0] - 32;
       else			// store characters in codes table
 	{
 	  char c;
@@ -843,8 +843,8 @@ avt_load_image_xpm (char **xpm)
 	  pix = (uint32_t *) img->pixels + (line * img->w);
 	  xpm_data = (uint8_t *) xpm[ncolors + 1 + line];
 
-	  for (int pos = width; pos > 0; pos--)
-	    *pix++ = colors[*xpm_data++];
+	  for (int pos = width; pos > 0; pos--, pix++, xpm_data++)
+	    *pix = colors[*xpm_data - 32];
 	}
     }
   else				// cpp != 1
