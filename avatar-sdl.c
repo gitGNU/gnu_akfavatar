@@ -424,6 +424,7 @@ avt_new_graphic (short width, short height)
 // surface must have 32 bits per pixel!
 // the pixels must be aligned
 // surface must eventually be locked
+// INSECURE
 static inline void
 avt_putpixel (SDL_Surface * s, int x, int y, int color)
 {
@@ -431,13 +432,39 @@ avt_putpixel (SDL_Surface * s, int x, int y, int color)
 }
 
 // surface must have 32 bits per pixel!
+// disregards clipping
+// otherwise secure
 static inline void
 avt_bar (SDL_Surface * s, int x, int y, int width, int height, int color)
 {
-  uint32_t *p;
+  if (x > s->w or y > s->h)
+    return;
+
+  if (x < 0)
+    {
+      width += x;
+      x = 0;
+    }
+
+  if (y < 0)
+    {
+      height += y;
+      y = 0;
+    }
+
+  if (width <= 0 or height <= 0)
+    return;
+
+  if (x + width > s->w)
+    width = s->w - x;
+
+  if (y + height > s->h)
+    height = s->h - y;
 
   for (int ny = 0; ny < height; ny++)
     {
+      uint32_t *p;
+
       p = (uint32_t *) s->pixels + ((y + ny) * s->w) + x;
 
       for (int nx = width; nx > 0; nx--, p++)
@@ -446,6 +473,8 @@ avt_bar (SDL_Surface * s, int x, int y, int width, int height, int color)
 }
 
 // surface must have 32 bits per pixel!
+// disregards clipping
+// otherwise secure
 static inline void
 avt_fill (SDL_Surface * s, int color)
 {
@@ -462,10 +491,10 @@ avt_set_color_key (SDL_Surface * s, int color)
   SDL_SetColorKey (s, SDL_SRCCOLORKEY, color);
 }
 
+// this shall be the only function to update the window/screen
 static inline void
 avt_update_area (int x, int y, int width, int height)
 {
-  // this shall be the only function to update the window/screen
   SDL_UpdateRect (screen, x, y, width, height);
 }
 
