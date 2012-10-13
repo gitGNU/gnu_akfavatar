@@ -434,7 +434,7 @@ avt_putpixel (SDL_Surface * s, int x, int y, int color)
 // surface must have 32 bits per pixel!
 // disregards clipping
 // otherwise secure
-static inline void
+static void
 avt_bar (SDL_Surface * s, int x, int y, int width, int height, int color)
 {
   if (x > s->w or y > s->h)
