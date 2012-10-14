@@ -2,7 +2,6 @@
 #include "avtinternals.h"
 #include "rgb.h"
 #include <stdlib.h>
-#include <string.h>
 #include <strings.h>		// strcasecmp
 #include <iso646.h>
 
@@ -22,23 +21,21 @@ avt_colorname (const char *name)
 
   if (name[0] == '#')		// hexadecimal values
     {
-      if (strspn (name + 1, "0123456789ABCDEFabcdef") >= 6)
-        colornr = strtol(name + 1, NULL, 16);
-      else
-        {
-          char nr[2];
-          unsigned int r, g, b;
+      char *p;
 
-          nr[1] = '\0';
-          nr[0] = name[1];
-          r = strtol(nr, NULL, 16);
-          nr[0] = name[2];
-          g = strtol(nr, NULL, 16);
-          nr[0] = name[3];
-          b = strtol(nr, NULL, 16);
+      colornr = strtol (name + 1, &p, 16);
 
-          colornr = avt_rgb ((r << 4 | r), (g << 4 | g), (b << 4 | b));
-        }
+      // only 3 hex digits?
+      if (p - name <= 4)
+	{
+	  unsigned int r, g, b;
+
+	  r = (colornr >> 8) bitand 0xF;
+	  g = (colornr >> 4) bitand 0xF;
+	  b = colornr bitand 0xF;
+
+	  colornr = avt_rgb ((r << 4 | r), (g << 4 | g), (b << 4 | b));
+	}
     }
   else if (name[0] == '%')	// HSV values not supported
     colornr = -1;
