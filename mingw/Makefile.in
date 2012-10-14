@@ -35,7 +35,7 @@ version.h: $(srcdir)/configure
 	./config.status
 
 version.o: $(srcdir)/version.c $(srcdir)/akfavatar.h version.h
-	$(CC) -I. $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/version.c
+	$(CC) -I. -I$(srcdir)/mingw $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/version.c
 
 icon.o: $(srcdir)/mingw/icon.rc $(srcdir)/mingw/akfavatar.ico
 	 $(WINDRES) -I$(srcdir)/mingw -o $@ -i $(srcdir)/mingw/icon.rc
@@ -49,7 +49,7 @@ alert.c: $(srcdir)/alert.au $(srcdir)/data2c.awk
 	  $(srcdir)/alert.au > $@
 
 avatar-default.o: $(srcdir)/avatar-default.c $(srcdir)/akfavatar.h
-	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/avatar-default.c
+	$(CC) -I$(srcdir) -I. -I$(srcdir)/mingw $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/avatar-default.c
 
 filechooser.o: $(srcdir)/filechooser.c $(srcdir)/avtinternals.h \
                  $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h
@@ -64,7 +64,7 @@ rgb.h: $(srcdir)/rgb.txt $(srcdir)/rgb2c.awk
 
 avtpalette.o: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
 	      $(srcdir)/avtinternals.h
-	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c \
+	$(CC) -I$(srcdir) -I. -I$(srcdir)/mingw $(CFLAGS) $(SDL_CFLAGS) -c \
 	  -o $@ $(srcdir)/avtpalette.c
 
 avtdata.o: $(srcdir)/avtdata.c $(srcdir)/avtdata.h
@@ -91,7 +91,8 @@ avatar-sdl.o: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
 
 audio-sdl.o: $(srcdir)/audio-sdl.c $(srcdir)/akfavatar.h \
                   $(srcdir)/avtinternals.h
-	$(CC) -c -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -o $@ $(srcdir)/audio-sdl.c
+	$(CC) -c -I$(srcdir) -I. -I$(srcdir)/mingw $(CFLAGS) $(SDL_CFLAGS) \
+	    -o $@ $(srcdir)/audio-sdl.c
 
 audio-dummy.o: $(srcdir)/audio-dummy.c $(srcdir)/akfavatar.h \
                   $(srcdir)/avtinternals.h
@@ -99,8 +100,8 @@ audio-dummy.o: $(srcdir)/audio-dummy.c $(srcdir)/akfavatar.h \
 
 audio-common.o: $(srcdir)/audio-common.c $(srcdir)/akfavatar.h \
 	        $(srcdir)/avtinternals.h $(srcdir)/avtdata.h alert.c
-	$(CC) -I. -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ \
-	  $(srcdir)/audio-common.c
+	$(CC) -I. -I$(srcdir) -I$(srcdir)/mingw $(CFLAGS) $(SDL_CFLAGS) -c \
+	  -o $@ $(srcdir)/audio-common.c
 
 font.c: $(srcdir)/$(FONT) $(srcdir)/bdf2c.awk
 	$(AWK) -f $(srcdir)/bdf2c.awk -v prefix="avt_" $(srcdir)/$(FONT) > $@
