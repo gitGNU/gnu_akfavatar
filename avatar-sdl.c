@@ -1391,6 +1391,7 @@ avt_set_status (int status)
 }
 
 // taken from the SDL documentation
+// TODO: simplify
 /*
  * Return the pixel value at (x, y)
  * NOTE: The surface must be locked before calling this!

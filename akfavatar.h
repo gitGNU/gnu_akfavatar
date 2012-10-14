@@ -7,7 +7,7 @@
  * other software:
  * required:
  *  SDL1.2 (recommended: SDL1.2.11 or later (but not 1.3 or 2.0!))
- * optional:
+ * optional/deprecated:
  *  SDL_image1.2 (support may be removed in future versions)
  *
  * This file is part of AKFAvatar
@@ -29,12 +29,12 @@
 #ifndef AKFAVATAR_H
 #define AKFAVATAR_H
 
-// SDL redefines main on some systems
+/* SDL redefines main on some systems */
 #if defined(_WIN32) || defined(__APPLE__) || defined(macintosh)
 #  include "SDL.h"
 #endif
 
-// to get the systems definition of wchar_t
+/* to get the systems definition of wchar_t */
 #include <stddef.h>
 
 #ifndef __cplusplus
@@ -43,10 +43,10 @@
 
 #define AKFAVATAR 1
 
-// maximum linelength
+/* maximum linelength */
 #define AVT_LINELENGTH 80
 
-// for avt_start
+/* for avt_start */
 #define AVT_AUTOMODE -1
 #define AVT_WINDOW 0
 #define AVT_FULLSCREENNOSWITCH 2
@@ -57,25 +57,27 @@
 #  define AVT_FULLSCREEN 1
 #endif
 
-// status
+/* status */
 #define AVT_NORMAL 0
 #define AVT_QUIT 1
 #define AVT_ERROR -1
-#define AVT_FAILURE -2  // nonfatal failures
+#define AVT_FAILURE -2  /* nonfatal failures */
 
-// for avt_set_text_delay and avt_set_flip_page_delay
+/* for avt_set_text_delay and avt_set_flip_page_delay */
 #define AVT_DEFAULT_TEXT_DELAY 75
 #define AVT_DEFAULT_FLIP_PAGE_DELAY 2700
 
-// for avt_text_direction
+/* for avt_text_direction */
 #define AVT_LEFT_TO_RIGHT 0
 #define AVT_RIGHT_TO_LEFT 1
 
-// for avt_get_key(&k)
-// note: F11 is normally used to toggle fullscreen mode!
-// note: most keyboards don't have all those keys
+/*
+ * for avt_get_key(&k)
+ * note: F11 is normally used to toggle fullscreen mode!
+ * note: most keyboards don't have all those keys
+ */
 #define AVT_KEY_ENTER     0x000D
-#define AVT_KEY_ESCAPE    0x001B  // only if single keys are reserved
+#define AVT_KEY_ESCAPE    0x001B  /* only if single keys are reserved */
 #define AVT_KEY_BACKSPACE 0x0008
 #define AVT_KEY_DELETE    0x007F
 #define AVT_KEY_UP        0xF000
@@ -99,13 +101,13 @@
 #define AVT_KEY_F8        0xF0F8
 #define AVT_KEY_F9        0xF0F9
 #define AVT_KEY_F10       0xF0FA
-#define AVT_KEY_F11       0xF0FB  // only if single keys are reserved
+#define AVT_KEY_F11       0xF0FB  /* only if single keys are reserved */
 #define AVT_KEY_F12       0xF0FC
 #define AVT_KEY_F13       0xF0FD
 #define AVT_KEY_F14       0xF0FE
 #define AVT_KEY_F15       0xF0FF
 
-// example: avt_wait(AVT_SECONDS(2.5)) waits 2.5 seconds
+/* example: avt_wait(AVT_SECONDS(2.5)) waits 2.5 seconds */
 #define AVT_SECONDS(x) ((x)*1000)
 
 #ifdef __cplusplus
@@ -115,7 +117,7 @@
 #endif
 
 /***********************************************************************/
-// type definitions
+/* type definitions */
 
 /*
  * type for single characters
@@ -124,10 +126,10 @@
  */
 typedef int avt_char;
 
-// general type for audio data
+/* general type for audio data */
 typedef struct avt_audio avt_audio;
 
-// for streams (use FILE from your programs)
+/* for streams (use FILE from your programs) */
 typedef void avt_stream;
 
 
@@ -137,7 +139,7 @@ typedef void avt_stream;
 /***********************************************************************/
 
 /***********************************************************************/
-// initialization / finalization
+/* initialization / finalization */
 
 /*
  * initialize the avatar system
@@ -167,13 +169,12 @@ AVT_API void avt_button_quit (void);
 
 
 /***********************************************************************/
-// setting an avatar image
+/* setting an avatar image */
 
-// On error these functions return AVT_FAILURE without changing the status
+/* On error these functions return AVT_FAILURE without changing the status */
 
 /*
  * X-Pixmaps (XPM), X Bitmaps (XBM) and uncompressed BMP are always supported
- * other image formats are supported with SDL_image
  */
 
 AVT_API int avt_avatar_image_default (void);
@@ -187,19 +188,19 @@ AVT_API int avt_avatar_image_stream (avt_stream *stream);
 
 
 /***********************************************************************/
-// actions without or outside the balloon
-// see also "showing images without the avatar"
+/* actions without or outside the balloon */
+/* see also "showing images without the avatar" */
 
-// show an empty screen with the background color
+/* show an empty screen with the background color */
 AVT_API void avt_clear_screen (void);
 
-// show just the avatar without the balloon
+/* show just the avatar without the balloon */
 AVT_API void avt_show_avatar (void);
 
-// like avt_show_avatar, but the avatar is moved in
+/* like avt_show_avatar, but the avatar is moved in */
 AVT_API int avt_move_in (void);
 
-// move the avatar out => empty screen
+/* move the avatar out => empty screen */
 AVT_API int avt_move_out (void);
 
 /*
@@ -210,21 +211,23 @@ AVT_API int avt_move_out (void);
  */
 AVT_API void avt_bell (void);
 
-// visual flash of the screen
+/* visual flash of the screen */
 AVT_API void avt_flash (void);
 
-// update, ie handle events
-// use this in a longer loop in your program
+/*
+ * update, ie handle events
+ * use this in a longer loop in your program
+ */
 AVT_API int avt_update (void);
 
-// wait a while
+/* wait a while */
 AVT_API int avt_wait (size_t milliseconds);
 
-// counter, which is increased every millisecond
+/* counter, which is increased every millisecond */
 AVT_API size_t avt_ticks (void);
 
 /***********************************************************************/
-// say or ask stuff with wchar_t (Unicode)
+/* say or ask stuff with wchar_t (Unicode) */
 
 /*
  * prints a L'\0' terminated string in the balloon
@@ -315,14 +318,18 @@ AVT_API void avt_push_key (avt_char key);
 
 
 /***********************************************************************/
-// say or ask stuff with multy-byte encodings
+/* say or ask stuff with multy-byte encodings */
 
-// set encoding for mb functions
-// NULL or "" sets the systems default encoding (use with care!)
+/*
+ * set encoding for mb functions
+ * NULL or "" sets the systems default encoding (use with care!)
+ */
 AVT_API int avt_mb_encoding (const char *encoding);
 
-// get the encoding, NULL if none set
-// you should make a copy of the result immediately
+/*
+ * get the encoding, NULL if none set
+ * you should make a copy of the result immediately
+ */
 AVT_API char* avt_get_mb_encoding (void);
 
 /*
@@ -371,7 +378,7 @@ AVT_API int avt_tell_mb_len (const char *txt, size_t len);
 AVT_API int avt_ask_mb (char *s, size_t size);
 
 /***********************************************************************/
-// convert text encodings
+/* convert text encodings */
 
 /*
  * decode a string into wchar_t
@@ -442,38 +449,38 @@ AVT_API size_t avt_recode_buffer (const char *tocode, const char *fromcode,
                                   char *dest, size_t dest_size,
                                   const char *src, size_t src_size);
 
-// free memory allocated by this library
+/* free memory allocated by this library */
 AVT_API void avt_free (void *ptr);
 
 /***********************************************************************/
-// informational stuff
+/* informational stuff */
 
-// is it initialized?
+/* is it initialized? */
 AVT_API bool avt_initialized (void);
 
-// 0 = normal; 1 = quit-request; -1 = error
+/* 0 = normal; 1 = quit-request; -1 = error */
 AVT_API int avt_get_status (void);
 
-// set status
+/* set status */
 AVT_API void avt_set_status (int status);
 
-// get error message
+/* get error message */
 AVT_API char *avt_get_error (void);
 
-// set error message
+/* set error message */
 AVT_API void avt_set_error (const char *message);
 
-// which version of the linked library is used?
+/* which version of the linked library is used? */
 AVT_API const char *avt_version (void);
 
-// get copyright information
+/* get copyright information */
 AVT_API const char *avt_copyright (void);
 
-// get license information
+/* get license information */
 AVT_API const char *avt_license (void);
 
 /***********************************************************************/
-// colors
+/* colors */
 
 /*
  * returns a color number for the given values for red, green and blue
@@ -483,7 +490,7 @@ AVT_API const char *avt_license (void);
 #define avt_rgb(red, green, blue) \
    ((((red)&0xFF)<<16) | (((green)&0xFF)<<8) | ((blue)&0xFF))
 
-// strip the red, green or blue parts from a color number
+/* strip the red, green or blue parts from a color number */
 #define avt_red(color)    (((color) >> 16) & 0xFF)
 #define avt_green(color)  (((color) >> 8) & 0xFF)
 #define avt_blue(color)   ((color) & 0xFF)
@@ -518,19 +525,19 @@ AVT_API int avt_get_background_color (void);
 AVT_API void avt_set_balloon_color (int color);
 AVT_API int avt_get_balloon_color (void);
 
-// change the text color
+/* change the text color */
 AVT_API void avt_set_text_color (int color);
 AVT_API void avt_set_text_background_color (int color);
 
-// set text background to balloon color
+/* set text background to balloon color */
 AVT_API void avt_set_text_background_ballooncolor (void);
 
-// set a color for loading monochrome bitmaps
-// the background is always transparent
+/* set a color for loading monochrome bitmaps */
+/* the background is always transparent */
 AVT_API void avt_set_bitmap_color (int color);
 
 /***********************************************************************/
-// settings
+/* settings */
 
 /*
  * change the title and/or the shortname
@@ -547,13 +554,13 @@ AVT_API void avt_set_title (const char *title, const char *shortname);
 AVT_API int avt_set_avatar_name (const wchar_t *name);
 AVT_API int avt_set_avatar_name_mb (const char *name);
 
-// switch to fullscreen or window mode
+/* switch to fullscreen or window mode */
 AVT_API void avt_switch_mode (int mode);
 
-// toggle fullscreen mode
+/* toggle fullscreen mode */
 AVT_API void avt_toggle_fullscreen (void);
 
-// get screen mode
+/* get screen mode */
 AVT_API int avt_get_mode (void);
 
 /*
@@ -567,16 +574,16 @@ AVT_API void avt_set_balloon_width (int width);
 AVT_API void avt_set_balloon_height (int height);
 
 
-// values for avt_avatar_mode
+/* values for avt_avatar_mode */
 #define AVT_SAY 0
 #define AVT_THINK 1
 #define AVT_HEADER 2
 #define AVT_FOOTER 3
 
-// set the avatar mode
+/* set the avatar mode */
 AVT_API void avt_set_avatar_mode (int mode);
 
-// activate the text cursor? (default: no)
+/* activate the text cursor? (default: no) */
 AVT_API void avt_activate_cursor (bool on);
 
 /*
@@ -598,26 +605,26 @@ AVT_API void avt_set_text_delay (int delay);
  */
 AVT_API void avt_set_flip_page_delay (int delay);
 
-// set underlined mode on or off
+/* set underlined mode on or off */
 AVT_API void avt_underlined (bool onoff);
 
-// get underlined mode
+/* get underlined mode */
 AVT_API bool avt_get_underlined (void);
 
-// set bold mode on or off (not recommended)
+/* set bold mode on or off (not recommended) */
 AVT_API void avt_bold (bool onoff);
 
-// get bold mode
+/* get bold mode */
 AVT_API bool avt_get_bold (void);
 
-// set inverse mode on or off
+/* set inverse mode on or off */
 AVT_API void avt_inverse (bool onoff);
 
-// get inverse mode
+/* get inverse mode */
 AVT_API bool avt_get_inverse (void);
 
-// set default color and switch off bold, underlined, inverse
-// also switches the markup mode off
+/* set default color and switch off bold, underlined, inverse */
+/* also switches the markup mode off */
 AVT_API void avt_normal_text (void);
 
 /*
@@ -635,17 +642,17 @@ AVT_API void avt_markup (bool onoff);
 AVT_API void avt_set_scroll_mode (int mode);
 AVT_API int avt_get_scroll_mode (void);
 
-// set newline mode (default: on)
+/* set newline mode (default: on) */
 AVT_API void avt_newline_mode (bool mode);
 
-// get newline mode
+/* get newline mode */
 AVT_API bool avt_get_newline_mode (void);
 
-// set auto-margin mode (default: on)
+/* set auto-margin mode (default: on) */
 AVT_API void avt_set_auto_margin (bool mode);
 AVT_API void avt_auto_margin (bool mode);
 
-// get auto-margin mode
+/* get auto-margin mode */
 AVT_API bool avt_get_auto_margin (void);
 
 /*
@@ -664,14 +671,14 @@ AVT_API void avt_set_mouse_visible (bool visible);
 
 
 /***********************************************************************/
-// handle coordinates inside the balloon
+/* handle coordinates inside the balloon */
 
 /*
  * the coordinates start with 1, 1 in the upper left corner
  * and are independent from the text direction
  */
 
-// get position in the viewport
+/* get position in the viewport */
 AVT_API int avt_where_x (void);
 AVT_API int avt_where_y (void);
 
@@ -681,29 +688,29 @@ AVT_API int avt_where_y (void);
  */
 AVT_API bool avt_home_position (void);
 
-// maximum positions (whole text-field)
+/* maximum positions (whole text-field) */
 AVT_API int avt_get_max_x (void);
 AVT_API int avt_get_max_y (void);
 
-// put cusor to specified coordinates
+/* put cusor to specified coordinates */
 AVT_API void avt_move_x (int x);
 AVT_API void avt_move_y (int y);
 AVT_API void avt_move_xy (int x, int y);
 
-// save and restore current cursor position
+/* save and restore current cursor position */
 AVT_API void avt_save_position (void);
 AVT_API void avt_restore_position (void);
 
-// set a viewport (sub-area of the textarea)
+/* set a viewport (sub-area of the textarea) */
 AVT_API void avt_viewport (int x, int y, int width, int height);
 
 /***********************************************************************/
-// activities inside the balloon
+/* activities inside the balloon */
 
-// new line - same as \n in avt_say
+/* new line - same as \n in avt_say */
 AVT_API int avt_new_line (void);
 
-// wait a while and then clear the textfield - same as \f in avt_say
+/* wait a while and then clear the textfield - same as \f in avt_say */
 AVT_API int avt_flip_page (void);
 
 /*
@@ -736,7 +743,7 @@ AVT_API void avt_clear_eol (void);
  */
 AVT_API void avt_clear_bol (void);
 
-// clear line
+/* clear line */
 AVT_API void avt_clear_line (void);
 
 /*
@@ -745,13 +752,13 @@ AVT_API void avt_clear_line (void);
  */
 AVT_API int avt_forward (void);
 
-// delete last caracter
+/* delete last caracter */
 AVT_API void avt_backspace (void);
 
-// insert spaces at current position (move rest of line)
+/* insert spaces at current position (move rest of line) */
 AVT_API void avt_insert_spaces (int num);
 
-// delete num characters at current position (move rest of line)
+/* delete num characters at current position (move rest of line) */
 AVT_API void avt_delete_characters (int num);
 
 /*
@@ -760,17 +767,17 @@ AVT_API void avt_delete_characters (int num);
  */
 AVT_API void avt_erase_characters (int num);
 
-// go to next or last tab stop
+/* go to next or last tab stop */
 AVT_API void avt_next_tab (void);
 AVT_API void avt_last_tab (void);
 
-// reset tab stops to every eigth column
+/* reset tab stops to every eigth column */
 AVT_API void avt_reset_tab_stops (void);
 
-// clear all tab stops
+/* clear all tab stops */
 AVT_API void avt_clear_tab_stops (void);
 
-// set or clear a tab in position x
+/* set or clear a tab in position x */
 AVT_API void avt_set_tab (int x, bool onoff);
 
 /*
@@ -795,14 +802,13 @@ AVT_API void avt_insert_lines (int line, int num);
 AVT_API void avt_lock_updates (bool lock);
 
 /***********************************************************************/
-// showing images without the avatar
-// you should call avt_wait or avt_wait_button or avt_get_key thereafter
+/* showing images without the avatar */
+/* you should call avt_wait or avt_wait_button or avt_get_key thereafter */
 
-// On error these functions return AVT_FAILURE without changing the status
+/* On error these functions return AVT_FAILURE without changing the status */
 
 /*
  * X-Pixmaps (XPM), X Bitmaps (XBM) and uncompressed BMP are always supported
- * other image formats are supported with SDL_image
  */
 
 AVT_API int avt_image_max_width (void);
@@ -842,9 +848,9 @@ AVT_API int avt_put_raw_image_xpm (char **xpm, int x, int y,
                                    int bytes_per_pixel);
 
 /***********************************************************************/
-// high-level functions
+/* high-level functions */
 
-// wait for a keypress while displaying a button
+/* wait for a keypress while displaying a button */
 AVT_API int avt_wait_button (void);
 
 /*
@@ -923,7 +929,7 @@ AVT_API int avt_credits (const wchar_t *text, bool centered);
 AVT_API int avt_credits_mb (const char *text, bool centered);
 
 /***********************************************************************/
-// plumbing
+/* plumbing */
 
 /*
  * reserve single keys (Esc, F11)
@@ -937,7 +943,7 @@ AVT_API void avt_reserve_single_keys (bool onoff);
  */
 typedef void (*avt_keyhandler) (int sym, int mod, int unicode);
 
-// register an external keyhandler
+/* register an external keyhandler */
 AVT_API void avt_register_keyhandler (avt_keyhandler handler);
 
 /*
@@ -971,14 +977,14 @@ AVT_API void avt_get_font_dimensions (int *width, int *height,
                                       int *baseline);
 
 /***********************************************************************/
-// audio output
+/* audio output */
 
-// for playmode parameters
+/* for playmode parameters */
 #define AVT_LOAD 0
 #define AVT_PLAY 1
 #define AVT_LOOP 2
 
-// must be called AFTER avt_start!
+/* must be called AFTER avt_start! */
 AVT_API int avt_start_audio (void);
 
 /*
@@ -1025,23 +1031,23 @@ AVT_API avt_audio *avt_load_audio_stream (avt_stream *stream, int playmode);
  */
 AVT_API avt_audio *avt_load_audio_data (const void *data, size_t datasize, int playmode);
 
-// values for audio_type
-#define AVT_AUDIO_UNKNOWN   0  // doesn't play
-#define AVT_AUDIO_U8        1  // unsigned 8 Bit
-#define AVT_AUDIO_S8        2  // signed 8 Bit
-#define AVT_AUDIO_S16LE     3  // signed 16 Bit little endian
-#define AVT_AUDIO_S16BE     4  // signed 16 Bit big endian
-#define AVT_AUDIO_S16SYS    5  // signed 16 Bit system's endianess
-#define AVT_AUDIO_S24LE     6  // signed 24 Bit little endian
-#define AVT_AUDIO_S24BE     7  // signed 24 Bit big endian
-#define AVT_AUDIO_S24SYS    8  // signed 24 Bit system's endianess
-#define AVT_AUDIO_S32LE     9  // signed 32 Bit little endian
-#define AVT_AUDIO_S32BE    10  // signed 32 Bit big endian
-#define AVT_AUDIO_S32SYS   11  // signed 32 Bit system's endianess
-#define AVT_AUDIO_MULAW   100  // 8 Bit mu-law (u-law)
-#define AVT_AUDIO_ALAW    101  // 8 Bit A-Law
+/* values for audio_type */
+#define AVT_AUDIO_UNKNOWN   0  /* doesn't play */
+#define AVT_AUDIO_U8        1  /* unsigned 8 Bit */
+#define AVT_AUDIO_S8        2  /* signed 8 Bit */
+#define AVT_AUDIO_S16LE     3  /* signed 16 Bit little endian */
+#define AVT_AUDIO_S16BE     4  /* signed 16 Bit big endian */
+#define AVT_AUDIO_S16SYS    5  /* signed 16 Bit system's endianess */
+#define AVT_AUDIO_S24LE     6  /* signed 24 Bit little endian */
+#define AVT_AUDIO_S24BE     7  /* signed 24 Bit big endian */
+#define AVT_AUDIO_S24SYS    8  /* signed 24 Bit system's endianess */
+#define AVT_AUDIO_S32LE     9  /* signed 32 Bit little endian */
+#define AVT_AUDIO_S32BE    10  /* signed 32 Bit big endian */
+#define AVT_AUDIO_S32SYS   11  /* signed 32 Bit system's endianess */
+#define AVT_AUDIO_MULAW   100  /* 8 Bit mu-law (u-law) */
+#define AVT_AUDIO_ALAW    101  /* 8 Bit A-Law */
 
-// for channels
+/* for channels */
 #define AVT_AUDIO_MONO      1
 #define AVT_AUDIO_STEREO    2
 
@@ -1067,10 +1073,10 @@ AVT_API avt_audio *avt_prepare_raw_audio (size_t capacity,
  */
 AVT_API int avt_add_raw_audio_data (avt_audio *snd, void *data, size_t data_size);
 
-// eventually do some cleanups after several avt_add_raw_audio_data
+/* eventually do some cleanups after several avt_add_raw_audio_data */
 AVT_API void avt_finalize_raw_audio (avt_audio *snd);
 
-// frees memory of a loaded sound
+/* frees memory of a loaded sound */
 AVT_API void avt_free_audio (avt_audio *snd);
 
 /*
@@ -1086,10 +1092,10 @@ AVT_API int avt_play_audio (avt_audio *snd, int playmode);
  */
 AVT_API int avt_wait_audio_end (void);
 
-// stops audio immediately
+/* stops audio immediately */
 AVT_API void avt_stop_audio (void);
 
-// pause/resume audio
+/* pause/resume audio */
 AVT_API void avt_pause_audio (bool pause);
 
 /*
@@ -1106,17 +1112,17 @@ AVT_API bool avt_audio_playing (avt_audio *snd);
 AVT_API avt_char avt_set_audio_end_key (avt_char key);
 
 /***********************************************************************/
-// deprecated functions - only for backward comatibility
-// don't use them for new programs!
+/* deprecated functions - only for backward comatibility */
+/* don't use them for new programs! */
 
 #ifndef DISABLE_DEPRECATED
 
-// macro for marking deprecated functions in this header
+/* macro for marking deprecated functions in this header */
 #if (defined(__GNUC__) || defined(__clang__)) && !defined(_AVT_USE_DEPRECATED)
 #  define AVT_DEPRECATED  __attribute__ ((__deprecated__))
 #else
 #  define AVT_DEPRECATED
-#endif // __GNUC__
+#endif /* __GNUC__ */
 
 typedef struct SDL_Surface avt_image_t;
 
@@ -1149,6 +1155,6 @@ AVT_API avt_audio *avt_load_raw_audio_data (void *data, size_t data_size,
                         AVT_DEPRECATED;
 
 
-#endif // DISABLE_DEPRECATED
+#endif /* DISABLE_DEPRECATED */
 
-#endif // AKFAVATAR_H
+#endif /* AKFAVATAR_H */

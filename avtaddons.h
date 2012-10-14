@@ -255,7 +255,7 @@ AVT_ADDON void avta_term_run (int fd);
 AVT_ADDON void avta_term_nocolor (bool nocolor);
 
 
-// register handler for APC commands (optional)
+/* register handler for APC commands (optional) */
 AVT_ADDON void avta_term_register_apc (avta_term_apc_cmd command);
 
 /*
@@ -263,13 +263,13 @@ AVT_ADDON void avta_term_register_apc (avta_term_apc_cmd command);
  * from the APC handler
  */
 
-// APC: (de)activate slowprint mode
+/* APC: (de)activate slowprint mode */
 AVT_ADDON void avta_term_slowprint (bool on);
 
-// APC: send data to stdin of the running program
+/* APC: send data to stdin of the running program */
 AVT_ADDON void avta_term_send (const char *buf, size_t count);
 
-// APC: send string literal to stdin of the running program
+/* APC: send string literal to stdin of the running program */
 #define avta_term_send_literal(l)  avta_term_send("" l, sizeof(l)-1)
 
 /*
@@ -279,4 +279,4 @@ AVT_ADDON void avta_term_send (const char *buf, size_t count);
 AVT_ADDON void avta_term_update_size (void);
 
 
-#endif // AVTADDONS_H
+#endif /* AVTADDONS_H */
