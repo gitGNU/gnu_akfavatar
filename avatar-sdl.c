@@ -601,12 +601,20 @@ avt_load_image_xpm (char **xpm)
   if (not xpm or not * xpm)
     goto done;
 
-  /* read value line
+  /*
+   * read value line
    * there may be more values in the line, but we just
    * need the first four
    */
-  if (sscanf (xpm[0], "%d %d %d %d", &width, &height, &ncolors, &cpp) < 4
-      or width < 1 or height < 1 or ncolors < 1)
+  {
+    char *p = xpm[0];
+    width = strtol (p, &p, 10);
+    height = strtol (p, &p, 10);
+    ncolors = strtol (p, &p, 10);	// number of colors
+    cpp = strtol (p, &p, 10);	// characters per pixel
+  }
+
+  if (width < 1 or height < 1 or ncolors < 1 or cpp < 1)
     {
       avt_set_error ("error in XPM data");
       goto done;
