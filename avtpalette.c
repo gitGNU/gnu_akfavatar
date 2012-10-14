@@ -1,8 +1,9 @@
 #include "akfavatar.h"
 #include "avtinternals.h"
-#include "stdio.h"		// sscanf
-#include "strings.h"		// strcasecmp
 #include "rgb.h"
+#include <stdlib.h>
+#include <string.h>
+#include <strings.h>		// strcasecmp
 #include <iso646.h>
 
 extern int
@@ -21,12 +22,23 @@ avt_colorname (const char *name)
 
   if (name[0] == '#')		// hexadecimal values
     {
-      unsigned int r, g, b;
+      if (strspn (name + 1, "0123456789ABCDEFabcdef") >= 6)
+        colornr = strtol(name + 1, NULL, 16);
+      else
+        {
+          char nr[2];
+          unsigned int r, g, b;
 
-      if (sscanf (name, " #%2x%2x%2x", &r, &g, &b) == 3)
-	colornr = avt_rgb (r, g, b);
-      else if (sscanf (name, " #%1x%1x%1x", &r, &g, &b) == 3)
-	colornr = avt_rgb ((r << 4 | r), (g << 4 | g), (b << 4 | b));
+          nr[1] = '\0';
+          nr[0] = name[1];
+          r = strtol(nr, NULL, 16);
+          nr[0] = name[2];
+          g = strtol(nr, NULL, 16);
+          nr[0] = name[3];
+          b = strtol(nr, NULL, 16);
+
+          colornr = avt_rgb ((r << 4 | r), (g << 4 | g), (b << 4 | b));
+        }
     }
   else if (name[0] == '%')	// HSV values not supported
     colornr = -1;
