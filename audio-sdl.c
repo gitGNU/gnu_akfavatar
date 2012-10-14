@@ -40,24 +40,6 @@
 // lower audio buffer size for lower latency, but it could become choppy
 #define OUTPUT_BUFFER 4096
 
-#ifndef _SDL_stdinc_h
-#  define OLD_SDL 1
-#endif
-
-#ifdef OLD_SDL
-#  include <stdlib.h>
-#  undef SDL_malloc
-#  define SDL_malloc              malloc
-#  undef SDL_memcpy
-#  define SDL_memcpy              memcpy
-#  undef SDL_memcmp
-#  define SDL_memcmp              memcmp
-#  undef SDL_free
-#  define SDL_free                free
-#endif // OLD_SDL
-
-#pragma GCC poison  malloc free strlen memcpy memcmp getenv putenv
-
 static bool avt_audio_initialized;
 
 // current sound
