@@ -637,7 +637,7 @@ avt_load_image_xpm (char **xpm)
   // get memory for colors table (palette)
   // note: for 1 character per pixel we use the character-32 as index
   if (cpp == 1)
-    colors = (uint32_t *) malloc ((127 - 32) * sizeof (uint32_t));
+    colors = (uint32_t *) malloc (XPM_NR_CODES * sizeof (uint32_t));
   else
     colors = (uint32_t *) malloc (ncolors * sizeof (uint32_t));
 
@@ -3884,7 +3884,8 @@ avt_mb_encoding (const char *encoding)
   if (encoding == avt.encoding or SDL_strcmp (encoding, avt.encoding) == 0)
     return _avt_STATUS;
 
-  SDL_strlcpy (avt.encoding, encoding, sizeof (avt.encoding));
+  strncpy (avt.encoding, encoding, sizeof (avt.encoding));
+  avt.encoding[sizeof (avt.encoding) - 1] = '\0';
 
   // if encoding is "" and SYSTEMENCODING is not ""
   if (encoding[0] == '\0' and SYSTEMENCODING[0] != '\0')
@@ -5306,8 +5307,8 @@ avt_ask (wchar_t * s, size_t size)
 	      avt_show_text_cursor (false);
 	      avt_backspace ();
 	      avt_delete_characters (1);
-	      SDL_memmove (&s[pos], &s[pos + 1],
-			   (len - pos - 1) * sizeof (wchar_t));
+	      memmove (&s[pos], &s[pos + 1],
+		       (len - pos - 1) * sizeof (wchar_t));
 	      len--;
 	    }
 	  else
@@ -5319,8 +5320,8 @@ avt_ask (wchar_t * s, size_t size)
 	    {
 	      avt_show_text_cursor (false);
 	      avt_delete_characters (1);
-	      SDL_memmove (&s[pos], &s[pos + 1],
-			   (len - pos - 1) * sizeof (wchar_t));
+	      memmove (&s[pos], &s[pos + 1],
+		       (len - pos - 1) * sizeof (wchar_t));
 	      len--;
 	    }
 	  else
@@ -5364,13 +5365,13 @@ avt_ask (wchar_t * s, size_t size)
 		  avt_insert_spaces (1);
 		  if (len < maxlen)
 		    {
-		      SDL_memmove (&s[pos + 1], &s[pos],
-				   (len - pos) * sizeof (wchar_t));
+		      memmove (&s[pos + 1], &s[pos],
+			       (len - pos) * sizeof (wchar_t));
 		      len++;
 		    }
 		  else		// len >= maxlen
-		    SDL_memmove (&s[pos + 1], &s[pos],
-				 (len - pos - 1) * sizeof (wchar_t));
+		    memmove (&s[pos + 1], &s[pos],
+			     (len - pos - 1) * sizeof (wchar_t));
 		}
 	      s[pos] = (wchar_t) ch;
 	      avt_drawchar (ch, screen);
