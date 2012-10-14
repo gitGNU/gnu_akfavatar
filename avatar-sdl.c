@@ -624,7 +624,7 @@ avt_load_image_xpm (char **xpm)
   // get memory for codes table
   if (cpp > 1)
     {
-      codes = (union xpm_codes *) calloc (XPM_NR_CODES, sizeof (codes));
+      codes = (union xpm_codes *) malloc (XPM_NR_CODES * sizeof (codes));
       if (not codes)
 	{
 	  avt_set_error ("out of memory");
@@ -637,9 +637,9 @@ avt_load_image_xpm (char **xpm)
   // get memory for colors table (palette)
   // note: for 1 character per pixel we use the character-32 as index
   if (cpp == 1)
-    colors = (uint32_t *) calloc (127 - 32, sizeof (uint32_t));
+    colors = (uint32_t *) malloc ((127 - 32) * sizeof (uint32_t));
   else
-    colors = (uint32_t *) calloc (ncolors, sizeof (uint32_t));
+    colors = (uint32_t *) malloc (ncolors * sizeof (uint32_t));
 
   if (not colors)
     {
@@ -688,7 +688,7 @@ avt_load_image_xpm (char **xpm)
 
 	      if (not table->next)
 		table->next =
-		  (union xpm_codes *) calloc (XPM_NR_CODES, sizeof (*codes));
+		  (union xpm_codes *) malloc (XPM_NR_CODES * sizeof (*codes));
 
 	      table = table->next;
 	    }
