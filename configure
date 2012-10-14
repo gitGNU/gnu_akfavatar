@@ -22,7 +22,6 @@ no_create=
 pkgname=akfavatar
 srctrigger=avatar-sdl.c
 SIZE=DEFAULT
-OLDSDL=
 OPENPTY=
 FORCE_ICONV=
 WCHAR_ENCODING=
@@ -103,7 +102,6 @@ while [ x"$1" != x ] ; do
 		echo "  --sysconfdir=DIR      read-only single-machine data directory [${sysconfdir}]"
 		echo "  --host=mingw          cross-compile with mingw (experimental)"
 		echo "  --with-openpty        use openpty instead of posix_openpt"
-		echo "  --with-oldsdl         support for older SDL versions on target machine"
 		echo "  --with-iconv[=enc]    force use of external iconv (normally not needed)"
 		echo "  --with-sdl-iconv=enc  set encoding for wchar_t when SDL's iconv is used"
 		echo "  --with-static-lua     try to link Lua statically"
@@ -164,7 +162,6 @@ while [ x"$1" != x ] ; do
 	AWK=*)      AWK=${optarg} ;;
 
 	--with-openpty) OPENPTY="yes" ;;
-	--with-oldsdl) OLDSDL="yes" ;;
 	--with-sdl-iconv=*) WCHAR_ENCODING=${optarg} ;;
 	--with-sdl-iconv) ;;
 	--with-iconv) FORCE_ICONV="yes" ;;
@@ -275,9 +272,6 @@ esac
 ###################################################################################
 # SDL
 
-# old SDL is meant for the target machine 
-# and independant of the systems SDL-Version
-[ x"$OLDSDL" = x"yes" ] && CFLAGS="$CFLAGS -DOLD_SDL=1"
 [ x"$FORCE_ICONV" = x"yes" ] && CFLAGS="$CFLAGS -DFORCE_ICONV=1"
 [ -n "$WCHAR_ENCODING" ] \
   && CFLAGS="$CFLAGS -DWCHAR_ENCODING=\\\"$WCHAR_ENCODING\\\""
