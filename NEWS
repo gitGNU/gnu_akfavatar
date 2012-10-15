@@ -1,5 +1,7 @@
 * AKFAvatar testing
 
+  - bugfix: fix for XPM images with more than 256 colors
+  - bugfix: lua-akfavatar also resets the charset
   - avt_update() is much faster
   - experimental support for combining characters (Unicode)
   - regression: the navigation bar cannot handle the pause key anymore

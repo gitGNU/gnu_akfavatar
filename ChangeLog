@@ -3,6 +3,8 @@
 	* avatar-sdl (avt_load_image_xpm):
 	limit sizes to avoid exessive memory usage
 
+	* lua/lua-akfavatar-prg.c (reset): also reset encoding
+
 2012-10-13  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl.c (avt_load_image_xpm):

@@ -241,6 +241,7 @@ reset (void)
   avt_set_balloon_color (AVT_COLOR_SAY);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
   avt_quit_audio ();
+  avt_mb_encoding("UTF-8");
   avt_set_title ("Lua-AKFAvatar", "AKFAvatar");
 }
 
