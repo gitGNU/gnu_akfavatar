@@ -614,7 +614,9 @@ avt_load_image_xpm (char **xpm)
     cpp = strtol (p, &p, 10);	// characters per pixel
   }
 
-  if (width < 1 or height < 1 or ncolors < 1 or cpp < 1)
+  // check values and limit sizes to avoid exessive memory usage
+  if (width < 1 or height < 1 or ncolors < 1 or cpp < 1
+      or ncolors > 0xFFFFFF or cpp > 4 or width > 10000 or height > 10000)
     {
       avt_set_error ("error in XPM data");
       goto done;
@@ -1105,7 +1107,7 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
 
   if (width and height)
     {
-      bytes = ((width + 7) / 8) * height;
+      bytes = avt_xbm_bytes_per_line(width) * height;
       // one byte larger for safety with old X10 format
       bits = (unsigned char *) malloc (bytes + 1);
     }

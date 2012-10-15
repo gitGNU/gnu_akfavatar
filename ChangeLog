@@ -1,3 +1,8 @@
+2012-10-15  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-sdl (avt_load_image_xpm):
+	limit sizes to avoid exessive memory usage
+
 2012-10-13  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl.c (avt_load_image_xpm):
