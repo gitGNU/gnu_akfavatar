@@ -634,7 +634,7 @@ avt_load_image_xpm (char **xpm)
   // get memory for codes table
   if (cpp > 1)
     {
-      codes = (union xpm_codes *) malloc (XPM_NR_CODES * sizeof (codes));
+      codes = (union xpm_codes *) calloc (XPM_NR_CODES, sizeof (*codes));
       if (not codes)
 	{
 	  avt_set_error ("out of memory");
@@ -698,7 +698,7 @@ avt_load_image_xpm (char **xpm)
 
 	      if (not table->next)
 		table->next =
-		  (union xpm_codes *) malloc (XPM_NR_CODES * sizeof (*codes));
+		  (union xpm_codes *) calloc (XPM_NR_CODES, sizeof (*codes));
 
 	      table = table->next;
 	    }
