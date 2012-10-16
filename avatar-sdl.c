@@ -29,11 +29,15 @@
 #define _ISOC99_SOURCE
 #define _POSIX_C_SOURCE 200112L
 
+// FIXME: just for testing
+#define NO_SDL_IMAGE
+
 // don't make functions deprecated for this file
 #define _AVT_USE_DEPRECATED
 
 #include "akfavatar.h"
 #include "avtinternals.h"
+#include "avtdata.h"
 #include "SDL.h"
 #include "version.h"
 #include "rgb.h"		// only for DEFAULT_COLOR
@@ -869,7 +873,7 @@ done:
 }
 
 static SDL_Surface *
-avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
+avt_load_image_xpm_data (avt_data * src, int freesrc)
 {
   int start;
   char head[9];
@@ -888,16 +892,16 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
   line = NULL;
   end = error = false;
 
-  start = SDL_RWtell (src);
+  start = avt_data_tell (src);
 
   // check if it has an XPM header
-  if (SDL_RWread (src, head, sizeof (head), 1) < 1
+  if (avt_data_read (src, head, sizeof (head), 1) < 1
       or memcmp (head, "/* XPM */", 9) != 0)
     {
       if (freesrc)
-	SDL_RWclose (src);
+	avt_data_close (src);
       else
-	SDL_RWseek (src, start, RW_SEEK_SET);
+	avt_data_seek (src, start, SEEK_SET);
 
       return NULL;
     }
@@ -925,7 +929,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
       // skip to next quote
       do
 	{
-	  if (SDL_RWread (src, &c, sizeof (c), 1) < 1)
+	  if (avt_data_read (src, &c, sizeof (c), 1) < 1)
 	    end = true;
 	}
       while (not end and c != '"');
@@ -935,7 +939,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
       c = '\0';
       while (not end and c != '"')
 	{
-	  if (SDL_RWread (src, &c, sizeof (c), 1) < 1)
+	  if (avt_data_read (src, &c, sizeof (c), 1) < 1)
 	    error = end = true;	// shouldn't happen here
 
 	  if (c != '"')
@@ -990,7 +994,7 @@ avt_load_image_xpm_RW (SDL_RWops * src, int freesrc)
     free (line);
 
   if (freesrc)
-    SDL_RWclose (src);
+    avt_data_close (src);
 
   return img;
 }
@@ -1055,7 +1059,7 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
 }
 
 static SDL_Surface *
-avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
+avt_load_image_xbm_data (avt_data * src, int freesrc, int color)
 {
   unsigned char *bits;
   int width, height;
@@ -1075,16 +1079,16 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
   end = error = false;
   width = height = bytes = bmpos = 0;
 
-  start = SDL_RWtell (src);
+  start = avt_data_tell (src);
 
   // check if it starts with #define
-  if (SDL_RWread (src, line, 1, sizeof (line) - 1) < 1
+  if (avt_data_read (src, line, 1, sizeof (line) - 1) < 1
       or memcmp (line, "#define", 7) != 0)
     {
       if (freesrc)
-	SDL_RWclose (src);
+	avt_data_close (src);
       else
-	SDL_RWseek (src, start, RW_SEEK_SET);
+	avt_data_seek (src, start, SEEK_SET);
 
       return NULL;
     }
@@ -1133,11 +1137,11 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
     {
       char c;
 
-      SDL_RWseek (src, start, RW_SEEK_SET);
+      avt_data_seek (src, start, SEEK_SET);
 
       do
 	{
-	  if (SDL_RWread (src, &c, sizeof (c), 1) < 1)
+	  if (avt_data_read (src, &c, sizeof (c), 1) < 1)
 	    error = end = true;
 	}
       while (c != '{' and not error);
@@ -1146,7 +1150,7 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
 	goto done;
 
       // skip newline
-      SDL_RWread (src, &c, sizeof (c), 1);
+      avt_data_read (src, &c, sizeof (c), 1);
     }
 
   while (not end and not error)
@@ -1159,7 +1163,7 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
       c = '\0';
       while (not end and linepos < sizeof (line) and c != '\n')
 	{
-	  if (SDL_RWread (src, &c, sizeof (c), 1) < 1)
+	  if (avt_data_read (src, &c, sizeof (c), 1) < 1)
 	    error = end = true;
 
 	  if (c != '\n' and c != '}')
@@ -1213,9 +1217,9 @@ done:
     free (bits);
 
   if (freesrc)
-    SDL_RWclose (src);
+    avt_data_close (src);
   else if (error)
-    SDL_RWseek (src, start, RW_SEEK_SET);
+    avt_data_seek (src, start, SEEK_SET);
 
   return img;
 }
@@ -1261,12 +1265,6 @@ avt_load_image_RW (SDL_RWops * src, int freesrc)
   if (src)
     {
       image = SDL_LoadBMP_RW (src, 0);
-
-      if (not image)
-	image = avt_load_image_xpm_RW (src, 0);
-
-      if (not image)
-	image = avt_load_image_xbm_RW (src, 0, avt.bitmap_color);
 
       if (freesrc)
 	SDL_RWclose (src);
@@ -4228,7 +4226,7 @@ avt_recode (const char *tocode, const char *fromcode,
   dest_size = src_size + 4;
   *dest = (char *) malloc (dest_size);
 
-  if (not *dest)
+  if (not * dest)
     {
       avt_iconv_close (cd);
       return -1;
@@ -4253,7 +4251,7 @@ avt_recode (const char *tocode, const char *fromcode,
 
 	      dest_size *= 2;
 	      *dest = (char *) realloc (*dest, dest_size);
-	      if (not *dest)
+	      if (not * dest)
 		{
 		  avt_iconv_close (cd);
 		  return (size_t) (-1);
@@ -5926,6 +5924,35 @@ avt_show_image (SDL_Surface * image)
 }
 
 
+static int
+avt_show_image_avtdata (avt_data * data)
+{
+  SDL_Surface *image;
+
+  if (not data)
+    return AVT_FAILURE;
+
+  image = NULL;
+
+  image = avt_load_image_xpm_data (data, false);
+
+  if (not image)
+    image = avt_load_image_xbm_data (data, false, avt.bitmap_color);
+
+  avt_data_close (data);
+
+  if (not image)
+    {
+      avt_clear_screen ();	// at least clear the screen
+      return AVT_FAILURE;
+    }
+
+  avt_show_image (image);
+  SDL_FreeSurface (image);
+
+  return _avt_STATUS;
+}
+
 // RW is closed here
 static int
 avt_show_image_rw (SDL_RWops * RW)
@@ -5935,20 +5962,8 @@ avt_show_image_rw (SDL_RWops * RW)
   if (not RW)
     return AVT_FAILURE;
 
-  image = NULL;
-
-  // try internal XPM reader first
-  // it's better than in SDL_image
-  image = avt_load_image_xpm_RW (RW, 0);
-
-  if (not image)
-    image = avt_load_image_xbm_RW (RW, 0, avt.bitmap_color);
-
-  if (not image)
-    {
-      load_image_init ();
-      image = load_image.rw (RW, 0);
-    }
+  load_image_init ();
+  image = load_image.rw (RW, 0);
 
   SDL_RWclose (RW);
 
@@ -5973,20 +5988,35 @@ avt_show_image_rw (SDL_RWops * RW)
 extern int
 avt_show_image_file (const char *filename)
 {
+  int status;
+
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
-  else
-    return avt_show_image_rw (SDL_RWFromFile (filename, "rb"));
+
+  status = avt_show_image_avtdata (avt_data_open_file (filename));
+
+  if (status == AVT_FAILURE)
+    status = avt_show_image_rw (SDL_RWFromFile (filename, "rb"));
+
+  return status;
 }
 
 
 extern int
 avt_show_image_stream (avt_stream * stream)
 {
+  int status;
+
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
-  else
-    return avt_show_image_rw (SDL_RWFromFP ((FILE *) stream, 0));
+
+  status =
+    avt_show_image_avtdata (avt_data_open_stream ((FILE *) stream, false));
+
+  if (status == AVT_FAILURE)
+    status = avt_show_image_rw (SDL_RWFromFP ((FILE *) stream, 0));
+
+  return status;
 }
 
 
@@ -5996,10 +6026,16 @@ avt_show_image_stream (avt_stream * stream)
 extern int
 avt_show_image_data (void *img, size_t imgsize)
 {
+  int status;
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
-  else
-    return avt_show_image_rw (SDL_RWFromMem (img, imgsize));
+
+  status = avt_show_image_avtdata (avt_data_open_memory (img, imgsize));
+
+  if (status == AVT_FAILURE)
+    status = avt_show_image_rw (SDL_RWFromMem (img, imgsize));
+
+  return status;
 }
 
 
@@ -6141,6 +6177,60 @@ avt_show_raw_image (void *image_data, int width, int height,
 
 
 static int
+avt_put_image_avtdata (avt_data * data, int x, int y, void *image_data,
+		       int width, int height, int bytes_per_pixel)
+{
+  SDL_Surface *src, *dest;
+  SDL_Rect destrect;
+
+  if (not data)
+    return AVT_FAILURE;
+
+  if (not screen or _avt_STATUS != AVT_NORMAL or not image_data)
+    return _avt_STATUS;
+
+  if (bytes_per_pixel < 3 or bytes_per_pixel > 4)
+    {
+      avt_set_error ("wrong number of bytes_per_pixel for raw image");
+      return AVT_FAILURE;
+    }
+
+  src = dest = NULL;
+
+  src = avt_load_image_xpm_data (data, false);
+
+  if (not src)
+    src = avt_load_image_xbm_data (data, false, avt.bitmap_color);
+
+  avt_data_close (data);
+
+  if (not src)
+    return AVT_FAILURE;
+
+  dest = avt_import_image (image_data, width, height, bytes_per_pixel);
+
+  if (not dest)
+    {
+      SDL_FreeSurface (src);
+      avt_set_error ("export_image");
+      return AVT_FAILURE;
+    }
+
+  destrect.x = x;
+  destrect.y = y;
+  destrect.w = destrect.h = 0;	// ignored
+
+  SDL_BlitSurface (src, NULL, dest, &destrect);
+
+  SDL_FreeSurface (dest);
+  SDL_FreeSurface (src);
+
+  return _avt_STATUS;
+}
+
+
+
+static int
 avt_put_image_rw (SDL_RWops * RW, int x, int y, void *image_data,
 		  int width, int height, int bytes_per_pixel)
 {
@@ -6161,16 +6251,8 @@ avt_put_image_rw (SDL_RWops * RW, int x, int y, void *image_data,
 
   src = dest = NULL;
 
-  src = avt_load_image_xpm_RW (RW, 0);
-
-  if (not src)
-    src = avt_load_image_xbm_RW (RW, 0, avt.bitmap_color);
-
-  if (not src)
-    {
-      load_image_init ();
-      src = load_image.rw (RW, 0);
-    }
+  load_image_init ();
+  src = load_image.rw (RW, 0);
 
   SDL_RWclose (RW);
 
@@ -6203,11 +6285,19 @@ avt_put_raw_image_file (const char *file, int x, int y,
 			void *image_data, int width, int height,
 			int bytes_per_pixel)
 {
+  int status;
+
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
-  else
-    return avt_put_image_rw (SDL_RWFromFile (file, "rb"), x, y, image_data,
-			     width, height, bytes_per_pixel);
+
+  status = avt_put_image_avtdata (avt_data_open_file (file), x, y, image_data,
+				  width, height, bytes_per_pixel);
+
+  if (status == AVT_FAILURE)
+    status = avt_put_image_rw (SDL_RWFromFile (file, "rb"), x, y, image_data,
+			       width, height, bytes_per_pixel);
+
+  return status;
 }
 
 extern int
@@ -6215,11 +6305,21 @@ avt_put_raw_image_stream (avt_stream * stream, int x, int y,
 			  void *image_data, int width, int height,
 			  int bytes_per_pixel)
 {
+  int status;
+
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
-  else
-    return avt_put_image_rw (SDL_RWFromFP ((FILE *) stream, 0), x, y,
-			     image_data, width, height, bytes_per_pixel);
+
+  status =
+    avt_put_image_avtdata (avt_data_open_stream ((FILE *) stream, false),
+			   x, y, image_data, width, height, bytes_per_pixel);
+
+  if (status == AVT_FAILURE)
+    status = avt_put_image_rw (SDL_RWFromFP ((FILE *) stream, 0),
+			       x, y, image_data, width, height,
+			       bytes_per_pixel);
+
+  return status;
 }
 
 extern int
@@ -6227,11 +6327,20 @@ avt_put_raw_image_data (void *img, size_t imgsize, int x, int y,
 			void *image_data, int width, int height,
 			int bytes_per_pixel)
 {
+  int status;
+
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
-  else
-    return avt_put_image_rw (SDL_RWFromMem (img, imgsize), x, y, image_data,
-			     width, height, bytes_per_pixel);
+
+  status =
+    avt_put_image_avtdata (avt_data_open_memory (img, imgsize),
+			   x, y, image_data, width, height, bytes_per_pixel);
+
+  if (status == AVT_FAILURE)
+    status = avt_put_image_rw (SDL_RWFromMem (img, imgsize), x, y, image_data,
+			       width, height, bytes_per_pixel);
+
+  return status;
 }
 
 extern int
@@ -6602,26 +6711,45 @@ avt_avatar_image_rw (SDL_RWops * RW)
   if (not RW)
     return AVT_FAILURE;
 
-  image = NULL;
+  load_image_init ();
+  image = load_image.rw (RW, 0);
 
-  // try internal XPM reader first
-  image = avt_load_image_xpm_RW (RW, 0);
-
-  if (not image)
-    image = avt_load_image_xbm_RW (RW, 0, avt.bitmap_color);
-
-  if (not image)
-    {
-      load_image_init ();
-      image = load_image.rw (RW, 0);
-
-      // if it's not yet transparent, make it transparent
-      if (image)
-	if (not (image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
-	  avt_make_transparent (image);
-    }
+  // if it's not yet transparent, make it transparent
+  if (image)
+    if (not (image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
+      avt_make_transparent (image);
 
   SDL_RWclose (RW);
+
+  if (not image)
+    return AVT_FAILURE;
+
+  avt_set_avatar_image (image);
+  SDL_FreeSurface (image);
+
+  return _avt_STATUS;
+}
+
+// data is closed here
+static int
+avt_avatar_image_avtdata (avt_data * data)
+{
+  SDL_Surface *image;
+
+  if (not data)
+    return AVT_FAILURE;
+
+  image = avt_load_image_xpm_data (data, false);
+
+  if (not image)
+    image = avt_load_image_xbm_data (data, false, avt.bitmap_color);
+
+  // if it's not yet transparent, make it transparent
+  if (image)
+    if (not (image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
+      avt_make_transparent (image);
+
+  avt_data_close (data);
 
   if (not image)
     return AVT_FAILURE;
@@ -6636,21 +6764,43 @@ avt_avatar_image_rw (SDL_RWops * RW)
 extern int
 avt_avatar_image_data (void *img, size_t imgsize)
 {
-  return avt_avatar_image_rw (SDL_RWFromMem (img, imgsize));
+  int status;
+
+  status = avt_avatar_image_avtdata (avt_data_open_memory (img, imgsize));
+
+  if (status == AVT_FAILURE)
+    status = avt_avatar_image_rw (SDL_RWFromMem (img, imgsize));
+
+  return status;
 }
 
 
 extern int
 avt_avatar_image_file (const char *file)
 {
-  return avt_avatar_image_rw (SDL_RWFromFile (file, "rb"));
+  int status;
+
+  status = avt_avatar_image_avtdata (avt_data_open_file (file));
+
+  if (status == AVT_FAILURE)
+    status = avt_avatar_image_rw (SDL_RWFromFile (file, "rb"));
+
+  return status;
 }
 
 
 extern int
 avt_avatar_image_stream (avt_stream * stream)
 {
-  return avt_avatar_image_rw (SDL_RWFromFP ((FILE *) stream, 0));
+  int status;
+
+  status =
+    avt_avatar_image_avtdata (avt_data_open_stream ((FILE *) stream, false));
+
+  if (status == AVT_FAILURE)
+    status = avt_avatar_image_rw (SDL_RWFromFP ((FILE *) stream, 0));
+
+  return status;
 }
 
 
