@@ -366,9 +366,18 @@ static void avt_analyze_event (SDL_Event * event);
 static inline SDL_Surface *
 avt_new_graphic (short width, short height)
 {
+  // this shall be the only format accepted for now
+  // it will be replaced with an internal structure later
   return
     SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 32,
 			  0x00FF0000, 0x0000FF00, 0x000000FF, 0);
+}
+
+// import an SDL_Surface into the internal format
+static inline SDL_Surface *
+avt_import_sdl_surface (SDL_Surface * s)
+{
+  return SDL_DisplayFormat (s);
 }
 
 // Fast putpixel with no checks
@@ -564,7 +573,7 @@ avt_free_xpm_tree (union xpm_codes *tree, int depth, int cpp)
       for (int i = 0; i < XPM_NR_CODES; i++)
 	{
 	  e = (tree + i)->next;
-	  if (e != NULL)
+	  if (e)
 	    avt_free_xpm_tree (e, depth + 1, cpp);
 	}
     }
@@ -1107,7 +1116,7 @@ avt_load_image_xbm_RW (SDL_RWops * src, int freesrc, int color)
 
   if (width and height)
     {
-      bytes = avt_xbm_bytes_per_line(width) * height;
+      bytes = avt_xbm_bytes_per_line (width) * height;
       // one byte larger for safety with old X10 format
       bits = (unsigned char *) malloc (bytes + 1);
     }
@@ -1245,25 +1254,25 @@ load_image_init (void)
 static SDL_Surface *
 avt_load_image_RW (SDL_RWops * src, int freesrc)
 {
-  SDL_Surface *img;
+  SDL_Surface *image;
 
-  img = NULL;
+  image = NULL;
 
   if (src)
     {
-      img = SDL_LoadBMP_RW (src, 0);
+      image = SDL_LoadBMP_RW (src, 0);
 
-      if (img == NULL)
-	img = avt_load_image_xpm_RW (src, 0);
+      if (not image)
+	image = avt_load_image_xpm_RW (src, 0);
 
-      if (img == NULL)
-	img = avt_load_image_xbm_RW (src, 0, avt.bitmap_color);
+      if (not image)
+	image = avt_load_image_xbm_RW (src, 0, avt.bitmap_color);
 
       if (freesrc)
 	SDL_RWclose (src);
     }
 
-  return img;
+  return image;
 }
 
 
@@ -1937,36 +1946,11 @@ avt_set_balloon_size (int height, int width)
 extern void
 avt_set_avatar_mode (int mode)
 {
-  if (not screen)
-    {
-      avt.avatar_mode = mode;
-      return;
-    }
-
-  if (mode != avt.avatar_mode)
-    {
-      switch (mode)
-	{
-	case AVT_SAY:
-	  avt.avatar_mode = AVT_SAY;
-	  break;
-
-	case AVT_THINK:
-	  avt.avatar_mode = AVT_THINK;
-	  break;
-
-	case AVT_FOOTER:
-	  avt.avatar_mode = AVT_FOOTER;
-	  break;
-
-	case AVT_HEADER:
-	  avt.avatar_mode = AVT_HEADER;
-	  break;
-	}
-    }
+  if (mode >= AVT_SAY and mode <= AVT_FOOTER)
+    avt.avatar_mode = mode;
 
   // if balloon is visible, remove it
-  if (avt.textfield.x >= 0)
+  if (screen and avt.textfield.x >= 0)
     avt_show_avatar ();
 }
 
@@ -4244,7 +4228,7 @@ avt_recode (const char *tocode, const char *fromcode,
   dest_size = src_size + 4;
   *dest = (char *) malloc (dest_size);
 
-  if (*dest == NULL)
+  if (not *dest)
     {
       avt_iconv_close (cd);
       return -1;
@@ -4269,7 +4253,7 @@ avt_recode (const char *tocode, const char *fromcode,
 
 	      dest_size *= 2;
 	      *dest = (char *) realloc (*dest, dest_size);
-	      if (*dest == NULL)
+	      if (not *dest)
 		{
 		  avt_iconv_close (cd);
 		  return (size_t) (-1);
@@ -5957,10 +5941,10 @@ avt_show_image_rw (SDL_RWops * RW)
   // it's better than in SDL_image
   image = avt_load_image_xpm_RW (RW, 0);
 
-  if (image == NULL)
+  if (not image)
     image = avt_load_image_xbm_RW (RW, 0, avt.bitmap_color);
 
-  if (image == NULL)
+  if (not image)
     {
       load_image_init ();
       image = load_image.rw (RW, 0);
@@ -5968,7 +5952,7 @@ avt_show_image_rw (SDL_RWops * RW)
 
   SDL_RWclose (RW);
 
-  if (image == NULL)
+  if (not image)
     {
       avt_clear_screen ();	// at least clear the screen
       return AVT_FAILURE;
@@ -6029,7 +6013,7 @@ avt_show_image_xpm (char **xpm)
 
   image = avt_load_image_xpm (xpm);
 
-  if (image == NULL)
+  if (not image)
     {
       avt_clear_screen ();	// at least clear the screen
       avt_set_error ("couldn't show image");
