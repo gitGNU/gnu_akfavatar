@@ -5672,7 +5672,7 @@ avt_move_out (void)
 
 	      // delete (not visibly yet)
 	      avt_bar (screen, pos.x, pos.y,
-		       avt.avatar_image->w, avt.avatar_image->w,
+		       avt.avatar_image->w, avt.avatar_image->h,
 		       avt.background_color);
 	    }
 
