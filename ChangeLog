@@ -1,3 +1,11 @@
+2012-10-17  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-sdl.c (avt_load_image_file_backend)
+	(avt_load_image_stream_backend, avt_load_image_memory_backend)
+	(avt_load_image_file, avt_load_image_stream, avt_load_image_memory):
+	new funtions
+	rest adapted
+
 2012-10-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl (avt_load_image_xpm):

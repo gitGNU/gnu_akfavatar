@@ -1224,6 +1224,24 @@ done:
   return img;
 }
 
+static SDL_Surface *
+avt_load_image_avtdata (avt_data * data)
+{
+  SDL_Surface *image;
+
+  if (not data)
+    return NULL;
+
+  image = avt_load_image_xpm_data (data, false);
+
+  if (not image)
+    image = avt_load_image_xbm_data (data, false, avt.bitmap_color);
+
+  avt_data_close (data);
+
+  return image;
+}
+
 #ifdef LINK_SDL_IMAGE
 
 /*
@@ -1329,6 +1347,84 @@ load_image_done (void)
 #endif // _SDL_loadso_h
 
 #endif // not LINK_SDL_IMAGE
+
+// TODO
+// backend (sdl) image loaders
+
+static inline SDL_Surface *
+avt_load_image_rw (SDL_RWops * RW)
+{
+  SDL_Surface *image;
+
+  if (not RW)
+    return NULL;
+
+  load_image_init ();
+  image = load_image.rw (RW, 0);
+
+  SDL_RWclose (RW);
+
+  return image;
+}
+
+static SDL_Surface *
+avt_load_image_file_backend (const char *filename)
+{
+  return avt_load_image_rw (SDL_RWFromFile (filename, "rb"));
+}
+
+static SDL_Surface *
+avt_load_image_stream_backend (avt_stream * stream)
+{
+  return avt_load_image_rw (SDL_RWFromFP ((FILE *) stream, 0));
+}
+
+static SDL_Surface *
+avt_load_image_memory_backend (void *data, size_t size)
+{
+  return avt_load_image_rw (SDL_RWFromMem (data, size));
+}
+
+static SDL_Surface *
+avt_load_image_file (const char *filename)
+{
+  SDL_Surface *image;
+
+  image = avt_load_image_avtdata (avt_data_open_file (filename));
+
+  if (not image)
+    image = avt_load_image_file_backend (filename);
+
+  return image;
+}
+
+static SDL_Surface *
+avt_load_image_stream (avt_stream * stream)
+{
+  SDL_Surface *image;
+
+  image =
+    avt_load_image_avtdata (avt_data_open_stream ((FILE *) stream, false));
+
+  if (not image)
+    image = avt_load_image_stream_backend ((FILE *) stream);
+
+  return image;
+}
+
+static SDL_Surface *
+avt_load_image_memory (void *data, size_t size)
+{
+  SDL_Surface *image;
+
+  image = avt_load_image_avtdata (avt_data_open_memory (data, size));
+
+  if (not image)
+    image = avt_load_image_memory_backend (data, size);
+
+  return image;
+}
+
 
 #ifdef USE_SDL_ICONV
 static size_t
@@ -5924,118 +6020,63 @@ avt_show_image (SDL_Surface * image)
 }
 
 
-static int
-avt_show_image_avtdata (avt_data * data)
-{
-  SDL_Surface *image;
-
-  if (not data)
-    return AVT_FAILURE;
-
-  image = NULL;
-
-  image = avt_load_image_xpm_data (data, false);
-
-  if (not image)
-    image = avt_load_image_xbm_data (data, false, avt.bitmap_color);
-
-  avt_data_close (data);
-
-  if (not image)
-    {
-      avt_clear_screen ();	// at least clear the screen
-      return AVT_FAILURE;
-    }
-
-  avt_show_image (image);
-  SDL_FreeSurface (image);
-
-  return _avt_STATUS;
-}
-
-// RW is closed here
-static int
-avt_show_image_rw (SDL_RWops * RW)
-{
-  SDL_Surface *image;
-
-  if (not RW)
-    return AVT_FAILURE;
-
-  load_image_init ();
-  image = load_image.rw (RW, 0);
-
-  SDL_RWclose (RW);
-
-  if (not image)
-    {
-      avt_clear_screen ();	// at least clear the screen
-      return AVT_FAILURE;
-    }
-
-  avt_show_image (image);
-  SDL_FreeSurface (image);
-
-  return _avt_STATUS;
-}
-
-
-/*
- * load image
- * if SDL_image isn't available then
- * XPM and uncompressed BMP are still supported
- */
 extern int
 avt_show_image_file (const char *filename)
 {
-  int status;
+  SDL_Surface *image;
 
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  status = avt_show_image_avtdata (avt_data_open_file (filename));
+  image = avt_load_image_file (filename);
 
-  if (status == AVT_FAILURE)
-    status = avt_show_image_rw (SDL_RWFromFile (filename, "rb"));
+  if (image)
+    {
+      avt_show_image (image);
+      SDL_FreeSurface (image);
+    }
 
-  return status;
+  return _avt_STATUS;
 }
 
 
 extern int
 avt_show_image_stream (avt_stream * stream)
 {
-  int status;
+  SDL_Surface *image;
 
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  status =
-    avt_show_image_avtdata (avt_data_open_stream ((FILE *) stream, false));
+  image = avt_load_image_stream (stream);
 
-  if (status == AVT_FAILURE)
-    status = avt_show_image_rw (SDL_RWFromFP ((FILE *) stream, 0));
+  if (image)
+    {
+      avt_show_image (image);
+      SDL_FreeSurface (image);
+    }
 
-  return status;
+  return _avt_STATUS;
 }
 
 
-/*
- * show image from image data
- */
 extern int
-avt_show_image_data (void *img, size_t imgsize)
+avt_show_image_data (void *data, size_t size)
 {
-  int status;
+  SDL_Surface *image;
+
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  status = avt_show_image_avtdata (avt_data_open_memory (img, imgsize));
+  image = avt_load_image_memory (data, size);
 
-  if (status == AVT_FAILURE)
-    status = avt_show_image_rw (SDL_RWFromMem (img, imgsize));
+  if (image)
+    {
+      avt_show_image (image);
+      SDL_FreeSurface (image);
+    }
 
-  return status;
+  return _avt_STATUS;
 }
 
 
@@ -6177,17 +6218,12 @@ avt_show_raw_image (void *image_data, int width, int height,
 
 
 static int
-avt_put_image_avtdata (avt_data * data, int x, int y, void *image_data,
-		       int width, int height, int bytes_per_pixel)
+avt_put_raw_image (SDL_Surface * image, int x, int y,
+		   void *image_data, int width, int height,
+		   int bytes_per_pixel)
 {
-  SDL_Surface *src, *dest;
+  SDL_Surface *dest;
   SDL_Rect destrect;
-
-  if (not data)
-    return AVT_FAILURE;
-
-  if (not screen or _avt_STATUS != AVT_NORMAL or not image_data)
-    return _avt_STATUS;
 
   if (bytes_per_pixel < 3 or bytes_per_pixel > 4)
     {
@@ -6195,23 +6231,10 @@ avt_put_image_avtdata (avt_data * data, int x, int y, void *image_data,
       return AVT_FAILURE;
     }
 
-  src = dest = NULL;
-
-  src = avt_load_image_xpm_data (data, false);
-
-  if (not src)
-    src = avt_load_image_xbm_data (data, false, avt.bitmap_color);
-
-  avt_data_close (data);
-
-  if (not src)
-    return AVT_FAILURE;
-
   dest = avt_import_image (image_data, width, height, bytes_per_pixel);
 
   if (not dest)
     {
-      SDL_FreeSurface (src);
       avt_set_error ("export_image");
       return AVT_FAILURE;
     }
@@ -6220,62 +6243,9 @@ avt_put_image_avtdata (avt_data * data, int x, int y, void *image_data,
   destrect.y = y;
   destrect.w = destrect.h = 0;	// ignored
 
-  SDL_BlitSurface (src, NULL, dest, &destrect);
+  SDL_BlitSurface (image, NULL, dest, &destrect);
 
   SDL_FreeSurface (dest);
-  SDL_FreeSurface (src);
-
-  return _avt_STATUS;
-}
-
-
-
-static int
-avt_put_image_rw (SDL_RWops * RW, int x, int y, void *image_data,
-		  int width, int height, int bytes_per_pixel)
-{
-  SDL_Surface *src, *dest;
-  SDL_Rect destrect;
-
-  if (not RW)
-    return AVT_FAILURE;
-
-  if (not screen or _avt_STATUS != AVT_NORMAL or not image_data)
-    return _avt_STATUS;
-
-  if (bytes_per_pixel < 3 or bytes_per_pixel > 4)
-    {
-      avt_set_error ("wrong number of bytes_per_pixel for raw image");
-      return AVT_FAILURE;
-    }
-
-  src = dest = NULL;
-
-  load_image_init ();
-  src = load_image.rw (RW, 0);
-
-  SDL_RWclose (RW);
-
-  if (not src)
-    return AVT_FAILURE;
-
-  dest = avt_import_image (image_data, width, height, bytes_per_pixel);
-
-  if (not dest)
-    {
-      SDL_FreeSurface (src);
-      avt_set_error ("export_image");
-      return AVT_FAILURE;
-    }
-
-  destrect.x = x;
-  destrect.y = y;
-  destrect.w = destrect.h = 0;	// ignored
-
-  SDL_BlitSurface (src, NULL, dest, &destrect);
-
-  SDL_FreeSurface (dest);
-  SDL_FreeSurface (src);
 
   return _avt_STATUS;
 }
@@ -6286,16 +6256,24 @@ avt_put_raw_image_file (const char *file, int x, int y,
 			int bytes_per_pixel)
 {
   int status;
+  SDL_Surface *image;
 
-  if (not screen or _avt_STATUS != AVT_NORMAL)
+  if (not file or not * file)
+    return AVT_FAILURE;
+
+  if (not screen or _avt_STATUS != AVT_NORMAL or not image_data)
     return _avt_STATUS;
 
-  status = avt_put_image_avtdata (avt_data_open_file (file), x, y, image_data,
-				  width, height, bytes_per_pixel);
+  status = _avt_STATUS;
+  image = avt_load_image_file (file);
 
-  if (status == AVT_FAILURE)
-    status = avt_put_image_rw (SDL_RWFromFile (file, "rb"), x, y, image_data,
-			       width, height, bytes_per_pixel);
+  if (image)
+    {
+      status = avt_put_raw_image (image, x, y, image_data, width, height,
+				  bytes_per_pixel);
+
+      SDL_FreeSurface (image);
+    }
 
   return status;
 }
@@ -6306,18 +6284,21 @@ avt_put_raw_image_stream (avt_stream * stream, int x, int y,
 			  int bytes_per_pixel)
 {
   int status;
+  SDL_Surface *image;
 
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  status =
-    avt_put_image_avtdata (avt_data_open_stream ((FILE *) stream, false),
-			   x, y, image_data, width, height, bytes_per_pixel);
+  status = _avt_STATUS;
+  image = avt_load_image_stream (stream);
 
-  if (status == AVT_FAILURE)
-    status = avt_put_image_rw (SDL_RWFromFP ((FILE *) stream, 0),
-			       x, y, image_data, width, height,
-			       bytes_per_pixel);
+  if (image)
+    {
+      status = avt_put_raw_image (image, x, y, image_data, width, height,
+				  bytes_per_pixel);
+
+      SDL_FreeSurface (image);
+    }
 
   return status;
 }
@@ -6328,17 +6309,21 @@ avt_put_raw_image_data (void *img, size_t imgsize, int x, int y,
 			int bytes_per_pixel)
 {
   int status;
+  SDL_Surface *image;
 
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  status =
-    avt_put_image_avtdata (avt_data_open_memory (img, imgsize),
-			   x, y, image_data, width, height, bytes_per_pixel);
+  status = _avt_STATUS;
+  image = avt_load_image_memory (img, imgsize);
 
-  if (status == AVT_FAILURE)
-    status = avt_put_image_rw (SDL_RWFromMem (img, imgsize), x, y, image_data,
-			       width, height, bytes_per_pixel);
+  if (image)
+    {
+      status = avt_put_raw_image (image, x, y, image_data, width, height,
+				  bytes_per_pixel);
+
+      SDL_FreeSurface (image);
+    }
 
   return status;
 }
@@ -6702,60 +6687,18 @@ avt_avatar_image_xbm (const unsigned char *bits,
 }
 
 
-// RW is closed here
-static int
-avt_avatar_image_rw (SDL_RWops * RW)
+static inline int
+avt_avatar_image (SDL_Surface * image)
 {
-  SDL_Surface *image;
-
-  if (not RW)
-    return AVT_FAILURE;
-
-  load_image_init ();
-  image = load_image.rw (RW, 0);
-
-  // if it's not yet transparent, make it transparent
   if (image)
-    if (not (image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
-      avt_make_transparent (image);
+    {
+      // if it's not yet transparent, make it transparent
+      if (not (image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
+	avt_make_transparent (image);
 
-  SDL_RWclose (RW);
-
-  if (not image)
-    return AVT_FAILURE;
-
-  avt_set_avatar_image (image);
-  SDL_FreeSurface (image);
-
-  return _avt_STATUS;
-}
-
-// data is closed here
-static int
-avt_avatar_image_avtdata (avt_data * data)
-{
-  SDL_Surface *image;
-
-  if (not data)
-    return AVT_FAILURE;
-
-  image = avt_load_image_xpm_data (data, false);
-
-  if (not image)
-    image = avt_load_image_xbm_data (data, false, avt.bitmap_color);
-
-  // if it's not yet transparent, make it transparent
-  if (image)
-    if (not (image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
-      avt_make_transparent (image);
-
-  avt_data_close (data);
-
-  if (not image)
-    return AVT_FAILURE;
-
-  avt_set_avatar_image (image);
-  SDL_FreeSurface (image);
+      avt_set_avatar_image (image);
+      SDL_FreeSurface (image);
+    }
 
   return _avt_STATUS;
 }
@@ -6764,43 +6707,21 @@ avt_avatar_image_avtdata (avt_data * data)
 extern int
 avt_avatar_image_data (void *img, size_t imgsize)
 {
-  int status;
-
-  status = avt_avatar_image_avtdata (avt_data_open_memory (img, imgsize));
-
-  if (status == AVT_FAILURE)
-    status = avt_avatar_image_rw (SDL_RWFromMem (img, imgsize));
-
-  return status;
+  return avt_avatar_image (avt_load_image_memory (img, imgsize));
 }
 
 
 extern int
 avt_avatar_image_file (const char *file)
 {
-  int status;
-
-  status = avt_avatar_image_avtdata (avt_data_open_file (file));
-
-  if (status == AVT_FAILURE)
-    status = avt_avatar_image_rw (SDL_RWFromFile (file, "rb"));
-
-  return status;
+  return avt_avatar_image (avt_load_image_file (file));
 }
 
 
 extern int
 avt_avatar_image_stream (avt_stream * stream)
 {
-  int status;
-
-  status =
-    avt_avatar_image_avtdata (avt_data_open_stream ((FILE *) stream, false));
-
-  if (status == AVT_FAILURE)
-    status = avt_avatar_image_rw (SDL_RWFromFP ((FILE *) stream, 0));
-
-  return status;
+  return avt_avatar_image (avt_load_image_stream (stream));
 }
 
 
