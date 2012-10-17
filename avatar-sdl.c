@@ -29,9 +29,6 @@
 #define _ISOC99_SOURCE
 #define _POSIX_C_SOURCE 200112L
 
-// FIXME: just for testing
-#define NO_SDL_IMAGE
-
 // don't make functions deprecated for this file
 #define _AVT_USE_DEPRECATED
 
@@ -203,6 +200,10 @@ static int errno;
 #  define SDL_BUTTON_WHEELDOWN 5
 #endif
 
+// FIXME
+// it will be replaced with an internal structure later
+typedef SDL_Surface avt_graphic;
+
 enum avt_button_type
 {
   btn_cancel, btn_yes, btn_no, btn_right, btn_left, btn_down, btn_up,
@@ -211,8 +212,8 @@ enum avt_button_type
 };
 
 static SDL_Surface *screen;
-static SDL_Surface *base_button;
-static SDL_Surface *raw_image;
+static avt_graphic *base_button;
+static avt_graphic *raw_image;
 static SDL_Cursor *mpointer;
 static SDL_Rect window;		// if screen is in fact larger
 static SDL_Rect windowmode_size;	// size of the whole window (screen)
@@ -231,8 +232,8 @@ struct avt_position
 
 struct avt_settings
 {
-  SDL_Surface *avatar_image;
-  SDL_Surface *cursor_character;
+  avt_graphic *avatar_image;
+  avt_graphic *cursor_character;
   wchar_t *name;
 
   // for an external keyboard/mouse handlers
@@ -311,7 +312,7 @@ struct avt_button
 {
   short int x, y;
   avt_char key;
-  SDL_Surface *background;
+  avt_graphic *background;
 };
 
 #define MAX_BUTTONS 15
@@ -332,27 +333,36 @@ void (*avt_quit_audio_func) (void) AVT_HIDDEN = NULL;
 
 // forward declaration
 static int avt_pause (void);
-static void avt_drawchar (avt_char ch, SDL_Surface * surface);
-static SDL_Surface *avt_save_background (SDL_Rect area);
+static void avt_drawchar (avt_char ch, avt_graphic * surface);
+static avt_graphic *avt_save_background (SDL_Rect area);
 static void avt_analyze_event (SDL_Event * event);
 
 //-----------------------------------------------------------------------------
 
-static inline SDL_Surface *
+static inline avt_graphic *
 avt_new_graphic (short width, short height)
 {
+  // FIXME
   // this shall be the only format accepted for now
   // it will be replaced with an internal structure later
-  return
+  return (avt_graphic *)
     SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 32,
 			  0x00FF0000, 0x0000FF00, 0x000000FF, 0);
 }
 
+static inline void
+avt_free_graphic (avt_graphic * gr)
+{
+  // FIXME
+  SDL_FreeSurface ((SDL_Surface *) gr);
+}
+
 // import an SDL_Surface into the internal format
-static inline SDL_Surface *
+static inline avt_graphic *
 avt_import_sdl_surface (SDL_Surface * s)
 {
-  return SDL_DisplayFormat (s);
+  // FIXME
+  return (avt_graphic *) SDL_DisplayFormat (s);
 }
 
 // Fast putpixel with no checks
@@ -361,7 +371,7 @@ avt_import_sdl_surface (SDL_Surface * s)
 // surface must eventually be locked
 // INSECURE
 static inline void
-avt_putpixel (SDL_Surface * s, int x, int y, int color)
+avt_putpixel (avt_graphic * s, int x, int y, int color)
 {
   *((uint32_t *) s->pixels + y * s->w + x) = color;
 }
@@ -370,7 +380,7 @@ avt_putpixel (SDL_Surface * s, int x, int y, int color)
 // disregards clipping
 // otherwise secure
 static void
-avt_bar (SDL_Surface * s, int x, int y, int width, int height, int color)
+avt_bar (avt_graphic * s, int x, int y, int width, int height, int color)
 {
   if (x > s->w or y > s->h)
     return;
@@ -411,7 +421,7 @@ avt_bar (SDL_Surface * s, int x, int y, int width, int height, int color)
 // disregards clipping
 // otherwise secure
 static inline void
-avt_fill (SDL_Surface * s, int color)
+avt_fill (avt_graphic * s, int color)
 {
   uint32_t *p;
 
@@ -421,15 +431,18 @@ avt_fill (SDL_Surface * s, int color)
 }
 
 static inline void
-avt_set_color_key (SDL_Surface * s, int color)
+avt_set_color_key (avt_graphic * s, int color)
 {
-  SDL_SetColorKey (s, SDL_SRCCOLORKEY, color);
+  // FIXME
+  SDL_SetColorKey ((SDL_Surface *) s, SDL_SRCCOLORKEY, color);
 }
 
 // this shall be the only function to update the window/screen
+// all values as 0 shall update everything
 static inline void
 avt_update_area (int x, int y, int width, int height)
 {
+  // FIXME
   SDL_UpdateRect (screen, x, y, width, height);
 }
 
@@ -457,7 +470,7 @@ avt_release_raw_image (void)
 {
   if (raw_image)
     {
-      SDL_FreeSurface (raw_image);
+      avt_free_graphic (raw_image);
       raw_image = NULL;
     }
 }
@@ -485,7 +498,7 @@ calculate_balloonmaxheight (void)
     {
       avt_set_error ("Avatar image too large");
       _avt_STATUS = AVT_ERROR;
-      SDL_FreeSurface (avt.avatar_image);
+      avt_free_graphic (avt.avatar_image);
       avt.avatar_image = NULL;
     }
 
@@ -568,10 +581,10 @@ avt_sdlcolor (int colornr)
   return color;
 }
 
-static SDL_Surface *
+static avt_graphic *
 avt_load_image_xpm (char **xpm)
 {
-  SDL_Surface *img;
+  avt_graphic *img;
   int width, height, ncolors, cpp;
   union xpm_codes *codes;
   uint32_t *colors;
@@ -622,7 +635,7 @@ avt_load_image_xpm (char **xpm)
       if (not codes)
 	{
 	  avt_set_error ("out of memory");
-	  SDL_FreeSurface (img);
+	  avt_free_graphic (img);
 	  img = NULL;
 	  goto done;
 	}
@@ -638,7 +651,7 @@ avt_load_image_xpm (char **xpm)
   if (not colors)
     {
       avt_set_error ("out of memory");
-      SDL_FreeSurface (img);
+      avt_free_graphic (img);
       img = NULL;
       goto done;
     }
@@ -653,7 +666,7 @@ avt_load_image_xpm (char **xpm)
       if (xpm[colornr] == NULL)
 	{
 	  avt_set_error ("error in XPM data");
-	  SDL_FreeSurface (img);
+	  avt_free_graphic (img);
 	  img = NULL;
 	  goto done;
 	}
@@ -843,7 +856,7 @@ done:
   return img;
 }
 
-static SDL_Surface *
+static avt_graphic *
 avt_load_image_xpm_data (avt_data * src, int freesrc)
 {
   int start;
@@ -851,7 +864,7 @@ avt_load_image_xpm_data (avt_data * src, int freesrc)
   char **xpm;
   char *line;
   unsigned int linepos, linenr, linecount, linecapacity;
-  SDL_Surface *img;
+  avt_graphic *img;
   char c;
   bool end, error;
 
@@ -978,7 +991,7 @@ avt_xbm_bytes_per_line (int width)
 
 // only for 32bit per pixel!
 static void
-avt_put_image_xbm (SDL_Surface * img, short x, short y,
+avt_put_image_xbm (avt_graphic * img, short x, short y,
 		   const unsigned char *bits, int width, int height,
 		   int colornr)
 {
@@ -1003,12 +1016,12 @@ avt_put_image_xbm (SDL_Surface * img, short x, short y,
  * loads an X-Bitmap (XBM) with a given color as foreground
  * and a transarent background
  */
-static SDL_Surface *
+static avt_graphic *
 avt_load_image_xbm (const unsigned char *bits, int width, int height,
 		    int color)
 {
   int background_color;
-  SDL_Surface *image;
+  avt_graphic *image;
 
   // background color is the complement of color, to assure it is different
   // later it is made transparent
@@ -1029,7 +1042,7 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
   return image;
 }
 
-static SDL_Surface *
+static avt_graphic *
 avt_load_image_xbm_data (avt_data * src, int freesrc, int color)
 {
   unsigned char *bits;
@@ -1037,7 +1050,7 @@ avt_load_image_xbm_data (avt_data * src, int freesrc, int color)
   int start;
   unsigned int bytes, bmpos;
   char line[1024];
-  SDL_Surface *img;
+  avt_graphic *img;
   bool end, error;
   bool X10;
 
@@ -1195,10 +1208,10 @@ done:
   return img;
 }
 
-static SDL_Surface *
+static avt_graphic *
 avt_load_image_avtdata (avt_data * data)
 {
-  SDL_Surface *image;
+  avt_graphic *image;
 
   if (not data)
     return NULL;
@@ -1244,10 +1257,10 @@ load_image_init (void)
 
 // helper functions
 
-static SDL_Surface *
+static avt_graphic *
 avt_load_image_RW (SDL_RWops * src, int freesrc)
 {
-  SDL_Surface *image;
+  avt_graphic *image;
 
   image = NULL;
 
@@ -1322,44 +1335,45 @@ load_image_done (void)
 
 // sdl image loaders
 
-static inline SDL_Surface *
+static inline avt_graphic *
 avt_load_image_rw (SDL_RWops * RW)
 {
-  SDL_Surface *image;
+  avt_graphic *image;
 
   if (not RW)
     return NULL;
 
   load_image_init ();
-  image = load_image.rw (RW, 0);
+  // FIXME!
+  image = (avt_graphic *) load_image.rw (RW, 0);
 
   SDL_RWclose (RW);
 
   return image;
 }
 
-static SDL_Surface *
+static avt_graphic *
 avt_load_image_file_sdl (const char *filename)
 {
   return avt_load_image_rw (SDL_RWFromFile (filename, "rb"));
 }
 
-static SDL_Surface *
+static avt_graphic *
 avt_load_image_stream_sdl (avt_stream * stream)
 {
   return avt_load_image_rw (SDL_RWFromFP ((FILE *) stream, 0));
 }
 
-static SDL_Surface *
+static avt_graphic *
 avt_load_image_memory_sdl (void *data, size_t size)
 {
   return avt_load_image_rw (SDL_RWFromMem (data, size));
 }
 
-static SDL_Surface *
+static avt_graphic *
 avt_load_image_file (const char *filename)
 {
-  SDL_Surface *image;
+  avt_graphic *image;
 
   image = avt_load_image_avtdata (avt_data_open_file (filename));
 
@@ -1369,10 +1383,10 @@ avt_load_image_file (const char *filename)
   return image;
 }
 
-static SDL_Surface *
+static avt_graphic *
 avt_load_image_stream (avt_stream * stream)
 {
-  SDL_Surface *image;
+  avt_graphic *image;
 
   image =
     avt_load_image_avtdata (avt_data_open_stream ((FILE *) stream, false));
@@ -1383,10 +1397,10 @@ avt_load_image_stream (avt_stream * stream)
   return image;
 }
 
-static SDL_Surface *
+static avt_graphic *
 avt_load_image_memory (void *data, size_t size)
 {
-  SDL_Surface *image;
+  avt_graphic *image;
 
   image = avt_load_image_avtdata (avt_data_open_memory (data, size));
 
@@ -1473,7 +1487,7 @@ avt_set_status (int status)
  * NOTE: The surface must be locked before calling this!
  */
 static int
-avt_getpixel (SDL_Surface * surface, int x, int y)
+avt_getpixel (avt_graphic * surface, int x, int y)
 {
   int bpp = surface->format->BytesPerPixel;
   // Here p is the address to the pixel we want to retrieve
@@ -2022,7 +2036,7 @@ avt_set_avatar_mode (int mode)
 static void
 avt_resize (int w, int h)
 {
-  SDL_Surface *oldwindowimage;
+  avt_graphic *oldwindowimage;
   SDL_Rect oldwindow;
   SDL_Event event;
 
@@ -2048,7 +2062,7 @@ avt_resize (int w, int h)
   // restore image
   SDL_SetClipRect (screen, &window);
   SDL_BlitSurface (oldwindowimage, NULL, screen, &window);
-  SDL_FreeSurface (oldwindowimage);
+  avt_free_graphic (oldwindowimage);
 
   // recalculate textfield & viewport positions
   if (avt.textfield.x >= 0)
@@ -2090,11 +2104,11 @@ avt_bell (void)
 }
 
 // saves the background of the area
-// the result should be freed with SDL_FreeSurface
-static SDL_Surface *
+// the result should be freed with avt_free_graphic
+static avt_graphic *
 avt_save_background (SDL_Rect area)
 {
-  SDL_Surface *result;
+  avt_graphic *result;
 
   result = avt_new_graphic (area.w, area.h);
 
@@ -2105,7 +2119,8 @@ avt_save_background (SDL_Rect area)
       return NULL;
     }
 
-  SDL_BlitSurface (screen, &area, result, NULL);
+  // FIXME
+  SDL_BlitSurface (screen, &area, (SDL_Surface *) result, NULL);
 
   return result;
 }
@@ -2114,7 +2129,7 @@ avt_save_background (SDL_Rect area)
 extern void
 avt_flash (void)
 {
-  SDL_Surface *oldwindowimage;
+  avt_graphic *oldwindowimage;
 
   if (not screen)
     return;
@@ -2134,7 +2149,7 @@ avt_flash (void)
   // restore image
   SDL_SetClipRect (screen, &window);
   SDL_BlitSurface (oldwindowimage, NULL, screen, &window);
-  SDL_FreeSurface (oldwindowimage);
+  avt_free_graphic (oldwindowimage);
 
   // make visible again
   avt_update_all ();
@@ -3362,7 +3377,7 @@ avt_combining (avt_char ch)
 // avt_drawchar: draws the raw char - with no interpretation
 // surface must be 32 bit per pixel
 static void
-avt_drawchar (avt_char ch, SDL_Surface * surface)
+avt_drawchar (avt_char ch, avt_graphic * surface)
 {
   const uint8_t *font_line;	// pixel line from font definition
   uint16_t line;		// normalized pixel line might get modified
@@ -4562,7 +4577,7 @@ avt_get_pointer_position (int *x, int *y)
 
 static void
 update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
-		 SDL_Surface * plain_menu, SDL_Surface * bar)
+		 avt_graphic * plain_menu, avt_graphic * bar)
 {
   SDL_Rect s, t;
 
@@ -4596,7 +4611,7 @@ extern int
 avt_choice (int *result, int start_line, int items, int key,
 	    bool back, bool forward)
 {
-  SDL_Surface *plain_menu, *bar;
+  avt_graphic *plain_menu, *bar;
   SDL_Color barcolor;
   int last_key;
   int end_line;
@@ -4614,7 +4629,7 @@ avt_choice (int *result, int start_line, int items, int key,
 
       if (not bar)
 	{
-	  SDL_FreeSurface (plain_menu);
+	  avt_free_graphic (plain_menu);
 	  avt_set_error ("out of memory");
 	  _avt_STATUS = AVT_ERROR;
 	  return _avt_STATUS;
@@ -4710,8 +4725,8 @@ avt_choice (int *result, int start_line, int items, int key,
       avt_set_pointer_buttons_key (0);
       avt_clear_keys ();
 
-      SDL_FreeSurface (plain_menu);
-      SDL_FreeSurface (bar);
+      avt_free_graphic (plain_menu);
+      avt_free_graphic (bar);
     }
 
   return _avt_STATUS;
@@ -4861,7 +4876,7 @@ avt_clear_buttons (void)
 	{
 	  SDL_BlitSurface (button->background, NULL, screen, &btn_rect);
 	  avt_update_rect (btn_rect);
-	  SDL_FreeSurface (button->background);
+	  avt_free_graphic (button->background);
 	  button->background = NULL;
 	}
 
@@ -5933,7 +5948,7 @@ avt_decide (void)
 
 
 static void
-avt_show_image (SDL_Surface * image)
+avt_show_image (avt_graphic * image)
 {
   SDL_Rect dst;
 
@@ -5976,7 +5991,7 @@ avt_show_image (SDL_Surface * image)
 extern int
 avt_show_image_file (const char *filename)
 {
-  SDL_Surface *image;
+  avt_graphic *image;
 
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -5991,7 +6006,7 @@ avt_show_image_file (const char *filename)
     }
 
   avt_show_image (image);
-  SDL_FreeSurface (image);
+  avt_free_graphic (image);
 
   return _avt_STATUS;
 }
@@ -6000,7 +6015,7 @@ avt_show_image_file (const char *filename)
 extern int
 avt_show_image_stream (avt_stream * stream)
 {
-  SDL_Surface *image;
+  avt_graphic *image;
 
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -6015,7 +6030,7 @@ avt_show_image_stream (avt_stream * stream)
     }
 
   avt_show_image (image);
-  SDL_FreeSurface (image);
+  avt_free_graphic (image);
 
   return _avt_STATUS;
 }
@@ -6024,7 +6039,7 @@ avt_show_image_stream (avt_stream * stream)
 extern int
 avt_show_image_data (void *data, size_t size)
 {
-  SDL_Surface *image;
+  avt_graphic *image;
 
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -6039,7 +6054,7 @@ avt_show_image_data (void *data, size_t size)
     }
 
   avt_show_image (image);
-  SDL_FreeSurface (image);
+  avt_free_graphic (image);
 
   return _avt_STATUS;
 }
@@ -6048,7 +6063,7 @@ avt_show_image_data (void *data, size_t size)
 extern int
 avt_show_image_xpm (char **xpm)
 {
-  SDL_Surface *image = NULL;
+  avt_graphic *image = NULL;
 
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -6063,7 +6078,7 @@ avt_show_image_xpm (char **xpm)
     }
 
   avt_show_image (image);
-  SDL_FreeSurface (image);
+  avt_free_graphic (image);
 
   return _avt_STATUS;
 }
@@ -6106,11 +6121,11 @@ avt_image_max_height (void)
   return screen->h;
 }
 
-static SDL_Surface *
+static avt_graphic *
 avt_import_image (void *image_data, int width, int height,
 		  int bytes_per_pixel)
 {
-  SDL_Surface *image;
+  avt_graphic *image;
 
   image = NULL;
 
@@ -6183,11 +6198,11 @@ avt_show_raw_image (void *image_data, int width, int height,
 
 
 static int
-avt_put_raw_image (SDL_Surface * image, int x, int y,
+avt_put_raw_image (avt_graphic * image, int x, int y,
 		   void *image_data, int width, int height,
 		   int bytes_per_pixel)
 {
-  SDL_Surface *dest;
+  avt_graphic *dest;
   SDL_Rect destrect;
 
   if (bytes_per_pixel < 3 or bytes_per_pixel > 4)
@@ -6210,7 +6225,7 @@ avt_put_raw_image (SDL_Surface * image, int x, int y,
 
   SDL_BlitSurface (image, NULL, dest, &destrect);
 
-  SDL_FreeSurface (dest);
+  avt_free_graphic (dest);
 
   return _avt_STATUS;
 }
@@ -6221,7 +6236,7 @@ avt_put_raw_image_file (const char *file, int x, int y,
 			int bytes_per_pixel)
 {
   int status;
-  SDL_Surface *image;
+  avt_graphic *image;
 
   if (not file or not * file)
     return AVT_FAILURE;
@@ -6237,7 +6252,7 @@ avt_put_raw_image_file (const char *file, int x, int y,
       status = avt_put_raw_image (image, x, y, image_data, width, height,
 				  bytes_per_pixel);
 
-      SDL_FreeSurface (image);
+      avt_free_graphic (image);
     }
 
   return status;
@@ -6249,7 +6264,7 @@ avt_put_raw_image_stream (avt_stream * stream, int x, int y,
 			  int bytes_per_pixel)
 {
   int status;
-  SDL_Surface *image;
+  avt_graphic *image;
 
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -6262,7 +6277,7 @@ avt_put_raw_image_stream (avt_stream * stream, int x, int y,
       status = avt_put_raw_image (image, x, y, image_data, width, height,
 				  bytes_per_pixel);
 
-      SDL_FreeSurface (image);
+      avt_free_graphic (image);
     }
 
   return status;
@@ -6274,7 +6289,7 @@ avt_put_raw_image_data (void *img, size_t imgsize, int x, int y,
 			int bytes_per_pixel)
 {
   int status;
-  SDL_Surface *image;
+  avt_graphic *image;
 
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -6287,7 +6302,7 @@ avt_put_raw_image_data (void *img, size_t imgsize, int x, int y,
       status = avt_put_raw_image (image, x, y, image_data, width, height,
 				  bytes_per_pixel);
 
-      SDL_FreeSurface (image);
+      avt_free_graphic (image);
     }
 
   return status;
@@ -6298,7 +6313,7 @@ avt_put_raw_image_xpm (char **xpm, int x, int y,
 		       void *image_data, int width, int height,
 		       int bytes_per_pixel)
 {
-  SDL_Surface *src, *dest;
+  avt_graphic *src, *dest;
   SDL_Rect destrect;
 
   if (not screen or _avt_STATUS != AVT_NORMAL)
@@ -6315,7 +6330,7 @@ avt_put_raw_image_xpm (char **xpm, int x, int y,
 
   if (not dest)
     {
-      SDL_FreeSurface (src);
+      avt_free_graphic (src);
       avt_set_error ("export_image");
       return AVT_FAILURE;
     }
@@ -6326,8 +6341,8 @@ avt_put_raw_image_xpm (char **xpm, int x, int y,
 
   SDL_BlitSurface (src, NULL, dest, &destrect);
 
-  SDL_FreeSurface (dest);
-  SDL_FreeSurface (src);
+  avt_free_graphic (dest);
+  avt_free_graphic (src);
 
   return _avt_STATUS;
 }
@@ -6359,8 +6374,8 @@ avt_init_SDL (void)
  * make background transparent
  * pixel in the upper left corner is supposed to be the background color
  */
-static SDL_Surface *
-avt_make_transparent (SDL_Surface * image)
+static avt_graphic *
+avt_make_transparent (avt_graphic * image)
 {
   int32_t color;
 
@@ -6380,7 +6395,7 @@ avt_make_transparent (SDL_Surface * image)
 
 // change avatar image and (re)calculate balloon size
 static int
-avt_set_avatar_image (SDL_Surface * image)
+avt_set_avatar_image (avt_graphic * image)
 {
   if (_avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -6391,7 +6406,7 @@ avt_set_avatar_image (SDL_Surface * image)
   // free old image
   if (avt.avatar_image)
     {
-      SDL_FreeSurface (avt.avatar_image);
+      avt_free_graphic (avt.avatar_image);
       avt.avatar_image = NULL;
     }
 
@@ -6440,7 +6455,7 @@ avt_avatar_image_none (void)
 extern int
 avt_avatar_image_xpm (char **xpm)
 {
-  SDL_Surface *image;
+  avt_graphic *image;
 
   image = avt_load_image_xpm (xpm);
 
@@ -6448,7 +6463,7 @@ avt_avatar_image_xpm (char **xpm)
     return AVT_FAILURE;
 
   avt_set_avatar_image (image);
-  SDL_FreeSurface (image);
+  avt_free_graphic (image);
 
   return _avt_STATUS;
 }
@@ -6458,7 +6473,7 @@ extern int
 avt_avatar_image_xbm (const unsigned char *bits,
 		      int width, int height, int color)
 {
-  SDL_Surface *image;
+  avt_graphic *image;
 
   if (width <= 0 or height <= 0 or color < 0)
     {
@@ -6473,14 +6488,14 @@ avt_avatar_image_xbm (const unsigned char *bits,
     return AVT_FAILURE;
 
   avt_set_avatar_image (image);
-  SDL_FreeSurface (image);
+  avt_free_graphic (image);
 
   return _avt_STATUS;
 }
 
 
 static inline int
-avt_avatar_image (SDL_Surface * image)
+avt_avatar_image (avt_graphic * image)
 {
   if (not image)
     return AVT_FAILURE;
@@ -6490,7 +6505,7 @@ avt_avatar_image (SDL_Surface * image)
     avt_make_transparent (image);
 
   avt_set_avatar_image (image);
-  SDL_FreeSurface (image);
+  avt_free_graphic (image);
 
   return _avt_STATUS;
 }
@@ -6769,7 +6784,7 @@ avt_set_error (const char *message)
 
 // scroll one line up
 static void
-avt_credits_up (SDL_Surface * last_line)
+avt_credits_up (avt_graphic * last_line)
 {
   SDL_Rect src, dst, line_pos;
   int32_t moved;
@@ -6828,7 +6843,7 @@ extern int
 avt_credits (const wchar_t * text, bool centered)
 {
   wchar_t line[80];
-  SDL_Surface *last_line;
+  avt_graphic *last_line;
   int old_backgroundcolornr;
   avt_keyhandler old_keyhandler;
   avt_mousehandler old_mousehandler;
@@ -6922,7 +6937,7 @@ avt_credits (const wchar_t * text, bool centered)
        i++)
     avt_credits_up (NULL);
 
-  SDL_FreeSurface (last_line);
+  avt_free_graphic (last_line);
   avt_avatar_window ();
 
   // back to normal (also sets variables!)
@@ -6980,11 +6995,11 @@ avt_quit (void)
     {
       SDL_FreeCursor (mpointer);
       mpointer = NULL;
-      SDL_FreeSurface (base_button);
+      avt_free_graphic (base_button);
       base_button = NULL;
-      SDL_FreeSurface (avt.avatar_image);
+      avt_free_graphic (avt.avatar_image);
       avt.avatar_image = NULL;
-      SDL_FreeSurface (avt.cursor_character);
+      avt_free_graphic (avt.cursor_character);
       avt.cursor_character = NULL;
       avt_alert_func = NULL;
       SDL_Quit ();
@@ -7122,7 +7137,7 @@ avt_reset ()
 extern int
 avt_start (const char *title, const char *shortname, int mode)
 {
-  SDL_Surface *icon;
+  avt_graphic *icon;
 
   // already initialized?
   if (screen)
@@ -7160,7 +7175,7 @@ avt_start (const char *title, const char *shortname, int mode)
   // register icon
   icon = avt_load_image_xpm (akfavatar_xpm);
   SDL_WM_SetIcon (icon, NULL);
-  SDL_FreeSurface (icon);
+  avt_free_graphic (icon);
 
   // Initialize the display
   screenflags = SDL_SWSURFACE | SDL_RESIZABLE;
