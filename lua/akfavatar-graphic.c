@@ -1154,9 +1154,9 @@ lgraphic_text (lua_State * L)
 	    }
 
 	  // leftmost bit set, gets shifted to the right in the for loop
-	  uint16_t bit = 0x8000;
-	  for (int lx = 0; lx < fontwidth; lx++, bit >>= 1)
-	    if (line bitand bit)
+	  uint16_t scanbit = 0x8000;
+	  for (int lx = 0; lx < fontwidth; lx++, scanbit >>= 1)
+	    if (line bitand scanbit)
 	      putpixelcolor (gr, x + lx, y + ly, width, color);
 	}			// for (int ly...
     }				// for (int i

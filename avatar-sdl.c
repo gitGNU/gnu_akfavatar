@@ -3428,9 +3428,9 @@ avt_drawchar (avt_char ch, avt_graphic * surface)
 	line = compl line;
 
       // leftmost bit set, gets shifted to the right in the for loop
-      uint16_t bit = 0x8000;
-      for (int x = 0; x < fontwidth; x++, bit >>= 1)
-	if (line bitand bit)
+      uint16_t scanbit = 0x8000;
+      for (int x = 0; x < fontwidth; x++, scanbit >>= 1)
+	if (line bitand scanbit)
 	  avt_putpixel (surface, avt.cursor.x + x, avt.cursor.y + y,
 			avt.text_color);
     }				// for (int y...
