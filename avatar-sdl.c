@@ -5527,8 +5527,8 @@ avt_move_in (void)
   if (avt.avatar_image)
     {
       struct avt_position pos;
-      int16_t destination;
-      uint32_t start_time;
+      short destination;
+      size_t start_time;
 
       pos.x = screen->w;
 
@@ -5537,7 +5537,7 @@ avt_move_in (void)
       else			// bottom
 	pos.y = window.y + window.h - avt.avatar_image->h - AVATAR_MARGIN;
 
-      start_time = SDL_GetTicks ();
+      start_time = avt_ticks ();
 
       if (AVT_FOOTER == avt.avatar_mode or AVT_HEADER == avt.avatar_mode)
 	destination = ((window.x + window.w) / 2) - (avt.avatar_image->w / 2);
@@ -5549,7 +5549,7 @@ avt_move_in (void)
 	  int16_t oldx = pos.x;
 
 	  // move
-	  pos.x = screen->w - ((SDL_GetTicks () - start_time) / MOVE_DELAY);
+	  pos.x = screen->w - ((avt_ticks () - start_time) / MOVE_DELAY);
 
 	  if (pos.x != oldx)
 	    {
@@ -5600,8 +5600,8 @@ avt_move_out (void)
   if (avt.avatar_image)
     {
       struct avt_position pos;
-      uint32_t start_time;
-      int16_t start_position;
+      size_t start_time;
+      short start_position;
 
       if (AVT_FOOTER == avt.avatar_mode or AVT_HEADER == avt.avatar_mode)
 	start_position =
@@ -5616,7 +5616,7 @@ avt_move_out (void)
       else			// bottom
 	pos.y = window.y + window.h - avt.avatar_image->h - AVATAR_MARGIN;
 
-      start_time = SDL_GetTicks ();
+      start_time = avt_ticks ();
 
       // delete (not visibly yet)
       avt_bar (screen, pos.x, pos.y, avt.avatar_image->w, avt.avatar_image->h,
@@ -5629,8 +5629,7 @@ avt_move_out (void)
 	  oldx = pos.x;
 
 	  // move
-	  pos.x =
-	    start_position + ((SDL_GetTicks () - start_time) / MOVE_DELAY);
+	  pos.x = start_position + ((avt_ticks () - start_time) / MOVE_DELAY);
 
 	  if (pos.x != oldx)
 	    {
@@ -6762,14 +6761,14 @@ avt_credits_up (avt_graphic * last_line)
 {
   SDL_Rect src, dst, line_pos;
   int32_t moved;
-  uint32_t now, next_time;
+  size_t now, next_time;
   int32_t pixel;
   uint32_t tickinterval;
 
   moved = 0;
   pixel = 1;
   tickinterval = CREDITDELAY;
-  next_time = SDL_GetTicks () + tickinterval;
+  next_time = avt_ticks () + tickinterval;
 
   while (moved <= LINEHEIGHT)
     {
@@ -6795,7 +6794,7 @@ avt_credits_up (avt_graphic * last_line)
 	return;
 
       moved += pixel;
-      now = SDL_GetTicks ();
+      now = avt_ticks ();
 
       if (next_time > now)
 	SDL_Delay (next_time - now);
