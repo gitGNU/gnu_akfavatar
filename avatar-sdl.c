@@ -1319,7 +1319,7 @@ load_image_done (void)
 
 #endif // not LINK_SDL_IMAGE
 
-// TODO
+
 // backend (sdl) image loaders
 
 static inline SDL_Surface *
@@ -5983,11 +5983,15 @@ avt_show_image_file (const char *filename)
 
   image = avt_load_image_file (filename);
 
-  if (image)
+  if (not image)
     {
-      avt_show_image (image);
-      SDL_FreeSurface (image);
+      avt_clear_screen ();	// at least clear the screen
+      avt_set_error ("couldn't show image");
+      return AVT_FAILURE;
     }
+
+  avt_show_image (image);
+  SDL_FreeSurface (image);
 
   return _avt_STATUS;
 }
@@ -6003,11 +6007,15 @@ avt_show_image_stream (avt_stream * stream)
 
   image = avt_load_image_stream (stream);
 
-  if (image)
+  if (not image)
     {
-      avt_show_image (image);
-      SDL_FreeSurface (image);
+      avt_clear_screen ();	// at least clear the screen
+      avt_set_error ("couldn't show image");
+      return AVT_FAILURE;
     }
+
+  avt_show_image (image);
+  SDL_FreeSurface (image);
 
   return _avt_STATUS;
 }
@@ -6023,11 +6031,15 @@ avt_show_image_data (void *data, size_t size)
 
   image = avt_load_image_memory (data, size);
 
-  if (image)
+  if (not image)
     {
-      avt_show_image (image);
-      SDL_FreeSurface (image);
+      avt_clear_screen ();	// at least clear the screen
+      avt_set_error ("couldn't show image");
+      return AVT_FAILURE;
     }
+
+  avt_show_image (image);
+  SDL_FreeSurface (image);
 
   return _avt_STATUS;
 }
