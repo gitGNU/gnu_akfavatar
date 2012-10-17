@@ -5529,21 +5529,13 @@ avt_move_in (void)
       struct avt_position pos;
       int16_t destination;
       uint32_t start_time;
-      SDL_Rect mywindow;
-
-      /*
-       * mywindow is like window,
-       * but to the edge of the screen on the right
-       */
-      mywindow = window;
-      mywindow.w = screen->w - mywindow.x;
 
       pos.x = screen->w;
 
       if (AVT_HEADER == avt.avatar_mode)
-	pos.y = mywindow.y + TOPMARGIN;
+	pos.y = window.y + TOPMARGIN;
       else			// bottom
-	pos.y = mywindow.y + mywindow.h - avt.avatar_image->h - AVATAR_MARGIN;
+	pos.y = window.y + window.h - avt.avatar_image->h - AVATAR_MARGIN;
 
       start_time = SDL_GetTicks ();
 
@@ -5572,10 +5564,6 @@ avt_move_in (void)
 		avt_update_area (pos.x, pos.y,
 				 avt.avatar_image->w + (oldx - pos.x),
 				 avt.avatar_image->h);
-
-	      // if window is resized then break
-	      if (window.x != mywindow.x or window.y != mywindow.y)
-		break;
 
 	      // delete (not visibly yet)
 	      avt_bar (screen, pos.x, pos.y,
@@ -5614,27 +5602,19 @@ avt_move_out (void)
       struct avt_position pos;
       uint32_t start_time;
       int16_t start_position;
-      SDL_Rect mywindow;
-
-      /*
-       * mywindow is like window,
-       * but to the edge of the screen on the right
-       */
-      mywindow = window;
-      mywindow.w = screen->w - mywindow.x;
 
       if (AVT_FOOTER == avt.avatar_mode or AVT_HEADER == avt.avatar_mode)
 	start_position =
 	  ((window.x + window.w) / 2) - (avt.avatar_image->w / 2);
       else
-	start_position = mywindow.x + AVATAR_MARGIN;
+	start_position = window.x + AVATAR_MARGIN;
 
       pos.x = start_position;
 
       if (AVT_HEADER == avt.avatar_mode)
-	pos.y = mywindow.y + TOPMARGIN;
+	pos.y = window.y + TOPMARGIN;
       else			// bottom
-	pos.y = mywindow.y + mywindow.h - avt.avatar_image->h - AVATAR_MARGIN;
+	pos.y = window.y + window.h - avt.avatar_image->h - AVATAR_MARGIN;
 
       start_time = SDL_GetTicks ();
 
@@ -5665,10 +5645,6 @@ avt_move_out (void)
 		avt_update_area (oldx, pos.y,
 				 avt.avatar_image->w + pos.x - oldx,
 				 avt.avatar_image->h);
-
-	      // if window is resized then break
-	      if (window.x != mywindow.x or window.y != mywindow.y)
-		break;
 
 	      // delete (not visibly yet)
 	      avt_bar (screen, pos.x, pos.y,
