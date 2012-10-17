@@ -431,6 +431,16 @@ avt_fill (avt_graphic * s, int color)
 }
 
 static inline void
+avt_put_image (avt_graphic * src, avt_graphic * dest, int x, int y)
+{
+  SDL_Rect dst;
+  dst.x = x;
+  dst.y = y;
+
+  SDL_BlitSurface (src, NULL, dest, &dst);
+}
+
+static inline void
 avt_set_color_key (avt_graphic * s, int color)
 {
   // FIXME
@@ -1563,7 +1573,8 @@ avt_show_text_cursor (bool on)
       else
 	{
 	  // restore saved character
-	  SDL_BlitSurface (avt.cursor_character, NULL, screen, &dst);
+	  avt_put_image (avt.cursor_character, screen, avt.cursor.x,
+			 avt.cursor.y);
 	  avt_update_area (avt.cursor.x, avt.cursor.y, fontwidth, fontheight);
 	}
 
@@ -1673,7 +1684,7 @@ avt_show_name (void)
 static void
 avt_draw_avatar (void)
 {
-  SDL_Rect dst;
+  struct avt_position pos;
 
   if (screen)
     {
@@ -1689,18 +1700,16 @@ avt_draw_avatar (void)
       if (avt.avatar_image)
 	{
 	  if (AVT_FOOTER == avt.avatar_mode or AVT_HEADER == avt.avatar_mode)
-	    dst.x = ((window.x + window.w) / 2) - (avt.avatar_image->w / 2);
+	    pos.x = ((window.x + window.w) / 2) - (avt.avatar_image->w / 2);
 	  else			// left
-	    dst.x = window.x + AVATAR_MARGIN;
+	    pos.x = window.x + AVATAR_MARGIN;
 
 	  if (AVT_HEADER == avt.avatar_mode)
-	    dst.y = window.y + TOPMARGIN;
+	    pos.y = window.y + TOPMARGIN;
 	  else			// bottom
-	    dst.y = window.y + window.h - avt.avatar_image->h - AVATAR_MARGIN;
+	    pos.y = window.y + window.h - avt.avatar_image->h - AVATAR_MARGIN;
 
-	  dst.w = avt.avatar_image->w;
-	  dst.h = avt.avatar_image->h;
-	  SDL_BlitSurface (avt.avatar_image, NULL, screen, &dst);
+	  avt_put_image (avt.avatar_image, screen, pos.x, pos.y);
 	}
 
       if (avt.name)
@@ -4601,7 +4610,7 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
 	{
 	  t.x = avt.viewport.x;
 	  t.y = avt.viewport.y + ((line_nr - 1) * LINEHEIGHT);
-	  SDL_BlitSurface (bar, NULL, screen, &t);
+	  avt_put_image (bar, screen, t.x, t.y);
 	  avt_update_area (t.x, t.y, avt.viewport.w, LINEHEIGHT);
 	}
     }
@@ -4791,7 +4800,7 @@ avt_show_button (int x, int y, enum avt_button_type type,
 
   button->background = avt_save_background (btn_rect);
 
-  SDL_BlitSurface (base_button, NULL, screen, &btn_rect);
+  avt_put_image (base_button, screen, btn_rect.x, btn_rect.y);
 
   switch (type)
     {
@@ -4874,7 +4883,7 @@ avt_clear_buttons (void)
 
       if (button->background)
 	{
-	  SDL_BlitSurface (button->background, NULL, screen, &btn_rect);
+	  avt_put_image (button->background, screen, btn_rect.x, btn_rect.y);
 	  avt_update_rect (btn_rect);
 	  avt_free_graphic (button->background);
 	  button->background = NULL;
@@ -5982,7 +5991,7 @@ avt_show_image (avt_graphic * image)
    * if image is larger than the screen,
    * just the upper left part is shown, as far as it fits
    */
-  SDL_BlitSurface (image, NULL, screen, &dst);
+  avt_put_image (image, screen, dst.x, dst.y);
   avt_update_all ();
   avt_checkevent ();
 }
@@ -6203,7 +6212,6 @@ avt_put_raw_image (avt_graphic * image, int x, int y,
 		   int bytes_per_pixel)
 {
   avt_graphic *dest;
-  SDL_Rect destrect;
 
   if (bytes_per_pixel < 3 or bytes_per_pixel > 4)
     {
@@ -6219,11 +6227,7 @@ avt_put_raw_image (avt_graphic * image, int x, int y,
       return AVT_FAILURE;
     }
 
-  destrect.x = x;
-  destrect.y = y;
-  destrect.w = destrect.h = 0;	// ignored
-
-  SDL_BlitSurface (image, NULL, dest, &destrect);
+  avt_put_image (image, dest, x, y);
 
   avt_free_graphic (dest);
 
@@ -6314,7 +6318,6 @@ avt_put_raw_image_xpm (char **xpm, int x, int y,
 		       int bytes_per_pixel)
 {
   avt_graphic *src, *dest;
-  SDL_Rect destrect;
 
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -6335,11 +6338,7 @@ avt_put_raw_image_xpm (char **xpm, int x, int y,
       return AVT_FAILURE;
     }
 
-  destrect.x = x;
-  destrect.y = y;
-  destrect.w = destrect.h = 0;	// ignored
-
-  SDL_BlitSurface (src, NULL, dest, &destrect);
+  avt_put_image (src, dest, x, y);
 
   avt_free_graphic (dest);
   avt_free_graphic (src);
@@ -6812,7 +6811,7 @@ avt_credits_up (avt_graphic * last_line)
 	{
 	  line_pos.x = window.x;
 	  line_pos.y = window.y + window.h - moved;
-	  SDL_BlitSurface (last_line, NULL, screen, &line_pos);
+	  avt_put_image (last_line, screen, line_pos.x, line_pos.y);
 	}
 
       avt_update_rect (window);
