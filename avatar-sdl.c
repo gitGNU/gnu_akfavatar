@@ -5526,7 +5526,7 @@ avt_move_in (void)
 
   if (avt.avatar_image)
     {
-      SDL_Rect dst;
+      struct avt_position pos;
       int16_t destination;
       uint32_t start_time;
       SDL_Rect mywindow;
@@ -5538,15 +5538,13 @@ avt_move_in (void)
       mywindow = window;
       mywindow.w = screen->w - mywindow.x;
 
-      dst.x = screen->w;
+      pos.x = screen->w;
 
       if (AVT_HEADER == avt.avatar_mode)
-	dst.y = mywindow.y + TOPMARGIN;
+	pos.y = mywindow.y + TOPMARGIN;
       else			// bottom
-	dst.y = mywindow.y + mywindow.h - avt.avatar_image->h - AVATAR_MARGIN;
+	pos.y = mywindow.y + mywindow.h - avt.avatar_image->h - AVATAR_MARGIN;
 
-      dst.w = avt.avatar_image->w;
-      dst.h = avt.avatar_image->h;
       start_time = SDL_GetTicks ();
 
       if (AVT_FOOTER == avt.avatar_mode or AVT_HEADER == avt.avatar_mode)
@@ -5554,39 +5552,40 @@ avt_move_in (void)
       else			// left
 	destination = window.x + AVATAR_MARGIN;
 
-      while (dst.x > destination)
+      while (pos.x > destination)
 	{
-	  int16_t oldx = dst.x;
+	  int16_t oldx = pos.x;
 
 	  // move
-	  dst.x = screen->w - ((SDL_GetTicks () - start_time) / MOVE_DELAY);
+	  pos.x = screen->w - ((SDL_GetTicks () - start_time) / MOVE_DELAY);
 
-	  if (dst.x != oldx)
+	  if (pos.x != oldx)
 	    {
 	      // draw
-	      SDL_BlitSurface (avt.avatar_image, NULL, screen, &dst);
+	      avt_put_image (avt.avatar_image, screen, pos.x, pos.y);
 
 	      // update
-	      if ((oldx + dst.w) >= screen->w)
-		avt_update_area (dst.x, dst.y, screen->w - dst.x, dst.h);
+	      if ((oldx + avt.avatar_image->w) >= screen->w)
+		avt_update_area (pos.x, pos.y, screen->w - pos.x,
+				 avt.avatar_image->h);
 	      else
-		avt_update_area (dst.x, dst.y, dst.w + (oldx - dst.x), dst.h);
+		avt_update_area (pos.x, pos.y,
+				 avt.avatar_image->w + (oldx - pos.x),
+				 avt.avatar_image->h);
 
 	      // if window is resized then break
 	      if (window.x != mywindow.x or window.y != mywindow.y)
 		break;
 
 	      // delete (not visibly yet)
-	      avt_bar (screen, dst.x, dst.y, dst.w, dst.h,
+	      avt_bar (screen, pos.x, pos.y,
+		       avt.avatar_image->w, avt.avatar_image->h,
 		       avt.background_color);
 	    }
 
 	  // check event
 	  if (avt_checkevent ())
 	    return _avt_STATUS;
-
-	  // some time for other processes
-	  SDL_Delay (1);
 	}
 
       // final position
@@ -5612,7 +5611,7 @@ avt_move_out (void)
 
   if (avt.avatar_image)
     {
-      SDL_Rect dst;
+      struct avt_position pos;
       uint32_t start_time;
       int16_t start_position;
       SDL_Rect mywindow;
@@ -5630,56 +5629,56 @@ avt_move_out (void)
       else
 	start_position = mywindow.x + AVATAR_MARGIN;
 
-      dst.x = start_position;
+      pos.x = start_position;
 
       if (AVT_HEADER == avt.avatar_mode)
-	dst.y = mywindow.y + TOPMARGIN;
+	pos.y = mywindow.y + TOPMARGIN;
       else			// bottom
-	dst.y = mywindow.y + mywindow.h - avt.avatar_image->h - AVATAR_MARGIN;
+	pos.y = mywindow.y + mywindow.h - avt.avatar_image->h - AVATAR_MARGIN;
 
-      dst.w = avt.avatar_image->w;
-      dst.h = avt.avatar_image->h;
       start_time = SDL_GetTicks ();
 
       // delete (not visibly yet)
-      avt_bar (screen, dst.x, dst.y, dst.h, dst.w, avt.background_color);
+      avt_bar (screen, pos.x, pos.y, avt.avatar_image->w, avt.avatar_image->h,
+	       avt.background_color);
 
-      while (dst.x < screen->w)
+      while (pos.x < screen->w)
 	{
 	  int16_t oldx;
 
-	  oldx = dst.x;
+	  oldx = pos.x;
 
 	  // move
-	  dst.x =
+	  pos.x =
 	    start_position + ((SDL_GetTicks () - start_time) / MOVE_DELAY);
 
-	  if (dst.x != oldx)
+	  if (pos.x != oldx)
 	    {
 	      // draw
-	      SDL_BlitSurface (avt.avatar_image, NULL, screen, &dst);
+	      avt_put_image (avt.avatar_image, screen, pos.x, pos.y);
 
 	      // update
-	      if ((dst.x + dst.w) >= screen->w)
-		avt_update_area (oldx, dst.y, screen->w - oldx, dst.h);
+	      if ((pos.x + avt.avatar_image->w) >= screen->w)
+		avt_update_area (oldx, pos.y, screen->w - oldx,
+				 avt.avatar_image->h);
 	      else
-		avt_update_area (oldx, dst.y, dst.w + dst.x - oldx, dst.h);
+		avt_update_area (oldx, pos.y,
+				 avt.avatar_image->w + pos.x - oldx,
+				 avt.avatar_image->h);
 
 	      // if window is resized then break
 	      if (window.x != mywindow.x or window.y != mywindow.y)
 		break;
 
 	      // delete (not visibly yet)
-	      avt_bar (screen, dst.x, dst.y, dst.w, dst.h,
+	      avt_bar (screen, pos.x, pos.y,
+		       avt.avatar_image->w, avt.avatar_image->w,
 		       avt.background_color);
 	    }
 
 	  // check event
 	  if (avt_checkevent ())
 	    return _avt_STATUS;
-
-	  // some time for other processes
-	  SDL_Delay (1);
 	}
     }
 
