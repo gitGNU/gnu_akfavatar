@@ -6482,15 +6482,15 @@ avt_avatar_image_xbm (const unsigned char *bits,
 static inline int
 avt_avatar_image (SDL_Surface * image)
 {
-  if (image)
-    {
-      // if it's not yet transparent, make it transparent
-      if (not (image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
-	avt_make_transparent (image);
+  if (not image)
+    return AVT_FAILURE;
 
-      avt_set_avatar_image (image);
-      SDL_FreeSurface (image);
-    }
+  // if it's not yet transparent, make it transparent
+  if (not (image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
+    avt_make_transparent (image);
+
+  avt_set_avatar_image (image);
+  SDL_FreeSurface (image);
 
   return _avt_STATUS;
 }
