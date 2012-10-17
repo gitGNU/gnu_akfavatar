@@ -6,6 +6,8 @@
 	new funtions
 	rest adapted
 
+	* remove all deprecated code (would be too much to change)
+
 2012-10-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl (avt_load_image_xpm):

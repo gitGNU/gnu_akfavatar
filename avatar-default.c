@@ -19,8 +19,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#define _AVT_USE_DEPRECATED
-
 #include "data/male_user.xpm"
 #include "akfavatar.h"
 
@@ -29,12 +27,3 @@ avt_avatar_image_default (void)
 {
   return avt_avatar_image_xpm (male_user_xpm);
 }
-
-
-#ifndef DISABLE_DEPRECATED
-extern avt_image_t *
-avt_default (void)
-{
-  return avt_import_xpm (male_user_xpm);
-}
-#endif

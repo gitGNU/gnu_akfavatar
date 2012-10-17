@@ -1124,37 +1124,6 @@ AVT_API avt_char avt_set_audio_end_key (avt_char key);
 #  define AVT_DEPRECATED
 #endif /* __GNUC__ */
 
-typedef struct SDL_Surface avt_image_t;
-
-AVT_API int avt_initialize (const char *title,
-                            const char *shortname,
-                            avt_image_t *image,
-                            int mode) AVT_DEPRECATED;
-AVT_API avt_image_t *avt_default (void) AVT_DEPRECATED;
-AVT_API avt_image_t *avt_import_xpm (char **xpm) AVT_DEPRECATED;
-AVT_API avt_image_t *avt_import_gimp_image (void *gimp_image) AVT_DEPRECATED;
-AVT_API avt_image_t *avt_import_image_data (void *img, size_t imgsize) AVT_DEPRECATED;
-AVT_API avt_image_t *avt_import_image_file (const char *filename) AVT_DEPRECATED;
-AVT_API avt_image_t *avt_import_image_stream (avt_stream *stream) AVT_DEPRECATED;
-AVT_API int avt_change_avatar_image (avt_image_t *image) AVT_DEPRECATED;
-AVT_API avt_image_t *avt_make_transparent (avt_image_t *image) AVT_DEPRECATED;
-AVT_API void avt_free_image (avt_image_t *image) AVT_DEPRECATED;
-AVT_API int avt_initialize_audio (void) AVT_DEPRECATED;
-AVT_API int avt_name_to_color (const char *name, 
-                               int *red, int *green, int *blue) AVT_DEPRECATED;
-AVT_API const char *avt_get_color_name (int entry) AVT_DEPRECATED;
-AVT_API const char *avt_get_color (int entry,
-             int *red, int *green, int *blue) AVT_DEPRECATED;
-AVT_API void avt_set_background_color_name (const char *name) AVT_DEPRECATED;
-AVT_API void avt_set_balloon_color_name (const char *name) AVT_DEPRECATED;
-AVT_API void avt_set_text_color_name (const char *name) AVT_DEPRECATED;
-AVT_API void avt_set_text_background_color_name (const char *name) AVT_DEPRECATED;
-AVT_API void avt_get_font_size (int *width, int *height) AVT_DEPRECATED;
-AVT_API avt_audio *avt_load_raw_audio_data (void *data, size_t data_size,
-                        int samplingrate, int audio_type, int channels)
-                        AVT_DEPRECATED;
-
-
 #endif /* DISABLE_DEPRECATED */
 
 #endif /* AKFAVATAR_H */

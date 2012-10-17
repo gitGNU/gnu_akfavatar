@@ -102,20 +102,9 @@
 #define AVT_CURSOR_COLOR        0xF28919
 #define AVT_BALLOON_COLOR       AVT_COLOR_FLORAL_WHITE
 
-#define AVT_XBM_INFO(img)  img##_bits, img##_width, img##_height
+#define NOT_BOLD   false
 
-// these definitions are deprecated
-#if defined(VGA)
-#  define FONTWIDTH 7
-#  define FONTHEIGHT 14
-#  define UNDERLINE 13
-#  define NOT_BOLD 0
-#else
-#  define FONTWIDTH 9
-#  define FONTHEIGHT 18
-#  define UNDERLINE 15
-#  define NOT_BOLD 0
-#endif
+#define AVT_XBM_INFO(img)  img##_bits, img##_width, img##_height
 
 #define LINEHEIGHT (fontheight)	// + something, if you want
 
@@ -212,17 +201,6 @@ static int errno;
 
 #ifndef SDL_BUTTON_WHEELDOWN
 #  define SDL_BUTTON_WHEELDOWN 5
-#endif
-
-// type for gimp images
-#ifndef DISABLE_DEPRECATED
-typedef struct
-{
-  unsigned int width;
-  unsigned int height;
-  unsigned int bytes_per_pixel;	// 3:RGB, 4:RGBA
-  unsigned char pixel_data;	// handle as startpoint
-} gimp_img_t;
 #endif
 
 enum avt_button_type
@@ -345,13 +323,6 @@ static struct avt_button avt_buttons[MAX_BUTTONS];
 #else
 #  define AVT_HIDDEN
 #endif // __GNUC__
-
-#ifdef DISABLE_DEPRECATED
-#  define DEPRECATED_EXTERN  static
-#  define avt_image_t  SDL_Surface
-#else
-#  define DEPRECATED_EXTERN  extern
-#endif
 
 // 0 = normal; 1 = quit-request; -1 = error
 int _avt_STATUS AVT_HIDDEN;
@@ -3444,15 +3415,6 @@ avt_drawchar (avt_char ch, SDL_Surface * surface)
     }				// for (int y...
 }
 
-#ifndef DISABLE_DEPRECATED
-extern void
-avt_get_font_size (int *width, int *height)
-{
-  *width = fontwidth ? fontwidth : FONTWIDTH;
-  *height = fontheight ? fontheight : FONTHEIGHT;
-}
-#endif
-
 extern bool
 avt_is_printable (avt_char ch)
 {
@@ -5970,15 +5932,6 @@ avt_decide (void)
 }
 
 
-#ifndef DISABLE_DEPRECATED
-extern void
-avt_free_image (avt_image_t * image)
-{
-  SDL_FreeSurface (image);
-}
-#endif
-
-
 static void
 avt_show_image (SDL_Surface * image)
 {
@@ -6394,9 +6347,8 @@ avt_init_SDL (void)
  * make background transparent
  * pixel in the upper left corner is supposed to be the background color
  */
-// deprecated, but needed internally
-DEPRECATED_EXTERN avt_image_t *
-avt_make_transparent (avt_image_t * image)
+static SDL_Surface *
+avt_make_transparent (SDL_Surface * image)
 {
   int32_t color;
 
@@ -6413,164 +6365,6 @@ avt_make_transparent (avt_image_t * image)
 
   return image;
 }
-
-
-#ifndef DISABLE_DEPRECATED
-
-// deprecated
-extern avt_image_t *
-avt_import_xpm (char **xpm)
-{
-  if (avt_init_SDL ())
-    return NULL;
-
-  return avt_load_image_xpm (xpm);
-}
-
-// deprecated
-extern avt_image_t *
-avt_import_gimp_image (void *gimp_image)
-{
-  SDL_Surface *image;
-  gimp_img_t *img;
-
-  if (avt_init_SDL ())
-    return NULL;
-
-  img = (gimp_img_t *) gimp_image;
-
-  if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-    image = SDL_CreateRGBSurfaceFrom (&img->pixel_data,
-				      img->width, img->height, 3 * 8,
-				      img->width * 3, 0xFF0000, 0x00FF00,
-				      0x0000FF, 0);
-  else
-    image = SDL_CreateRGBSurfaceFrom (&img->pixel_data,
-				      img->width, img->height, 3 * 8,
-				      img->width * 3, 0x0000FF, 0x00FF00,
-				      0xFF0000, 0);
-
-  avt_make_transparent (image);
-
-  return image;
-}
-
-// deprecated
-extern avt_image_t *
-avt_import_image_data (void *img, size_t imgsize)
-{
-  SDL_Surface *image;
-  SDL_RWops *RW;
-
-  if (avt_init_SDL ())
-    return NULL;
-
-  image = NULL;
-  RW = SDL_RWFromMem (img, imgsize);
-
-  if (RW)
-    {
-      // try internal XPM reader first
-      image = avt_load_image_xpm_RW (RW, 0);
-
-      if (not image)
-	image = avt_load_image_xbm_RW (RW, 0, avt.bitmap_color);
-
-      if (not image)
-	{
-	  load_image_init ();
-	  image = load_image.rw (RW, 0);
-
-	  // if it's not yet transparent, make it transparent
-	  if (image)
-	    if (not (image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
-	      avt_make_transparent (image);
-	}
-
-      SDL_RWclose (RW);
-    }
-
-  return image;
-}
-
-// deprecated
-extern avt_image_t *
-avt_import_image_file (const char *filename)
-{
-  SDL_Surface *image;
-  SDL_RWops *RW;
-
-  if (avt_init_SDL ())
-    return NULL;
-
-  image = NULL;
-  RW = SDL_RWFromFile (filename, "rb");
-
-  if (RW)
-    {
-      // try internal XPM reader first
-      image = avt_load_image_xpm_RW (RW, 0);
-
-      if (not image)
-	image = avt_load_image_xbm_RW (RW, 0, avt.bitmap_color);
-
-      if (not image)
-	{
-	  load_image_init ();
-	  image = load_image.rw (RW, 0);
-
-	  // if it's not yet transparent, make it transparent
-	  if (image)
-	    if (not (image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
-	      avt_make_transparent (image);
-	}
-
-      SDL_RWclose (RW);
-    }
-
-  return image;
-}
-
-// deprecated
-extern avt_image_t *
-avt_import_image_stream (avt_stream * stream)
-{
-  SDL_Surface *image;
-  SDL_RWops *RW;
-
-  if (avt_init_SDL ())
-    return NULL;
-
-  image = NULL;
-  RW = SDL_RWFromFP ((FILE *) stream, 0);
-
-  if (RW)
-    {
-      // try internal XPM reader first
-      image = avt_load_image_xpm_RW (RW, 0);
-
-      if (not image)
-	image = avt_load_image_xbm_RW (RW, 0, avt.bitmap_color);
-
-      if (not image)
-	{
-	  load_image_init ();
-	  image = load_image.rw (RW, 0);
-
-	  // if it's not yet transparent, make it transparent
-	  if (image)
-	    if (not (image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
-	      avt_make_transparent (image);
-	}
-
-      SDL_RWclose (RW);
-    }
-
-  return image;
-}
-
-#endif // DISABLE_DEPRECATED
-
 
 // change avatar image and (re)calculate balloon size
 static int
@@ -6620,20 +6414,6 @@ avt_set_avatar_image (SDL_Surface * image)
 
   return _avt_STATUS;
 }
-
-
-#ifndef DISABLE_DEPRECATED
-extern int
-avt_change_avatar_image (avt_image_t * image)
-{
-  avt_set_avatar_image (image);
-
-  if (image)
-    SDL_FreeSurface (image);
-
-  return _avt_STATUS;
-}
-#endif
 
 
 extern int
@@ -7477,19 +7257,3 @@ avt_start (const char *title, const char *shortname, int mode)
 
   return _avt_STATUS;
 }
-
-
-#ifndef DISABLE_DEPRECATED
-extern int
-avt_initialize (const char *title, const char *shortname,
-		avt_image_t * image, int mode)
-{
-  avt_start (title, shortname, mode);
-  avt_set_avatar_image (image);
-
-  if (image)
-    SDL_FreeSurface (image);
-
-  return _avt_STATUS;
-}
-#endif
