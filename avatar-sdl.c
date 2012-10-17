@@ -3100,7 +3100,8 @@ avt_clear (void)
     avt_draw_balloon ();
 
   // use background color of characters
-  SDL_FillRect (screen, &avt.viewport, avt.text_background_color);
+  avt_bar (screen, avt.viewport.x, avt.viewport.y,
+	   avt.viewport.w, avt.viewport.h, avt.text_background_color);
 
   avt.cursor.x = avt.linestart;
 
@@ -5576,7 +5577,8 @@ avt_move_in (void)
 		break;
 
 	      // delete (not visibly yet)
-	      SDL_FillRect (screen, &dst, avt.background_color);
+	      avt_bar (screen, dst.x, dst.y, dst.w, dst.h,
+		       avt.background_color);
 	    }
 
 	  // check event
@@ -5640,7 +5642,7 @@ avt_move_out (void)
       start_time = SDL_GetTicks ();
 
       // delete (not visibly yet)
-      SDL_FillRect (screen, &dst, avt.background_color);
+      avt_bar (screen, dst.x, dst.y, dst.h, dst.w, avt.background_color);
 
       while (dst.x < screen->w)
 	{
@@ -5668,7 +5670,8 @@ avt_move_out (void)
 		break;
 
 	      // delete (not visibly yet)
-	      SDL_FillRect (screen, &dst, avt.background_color);
+	      avt_bar (screen, dst.x, dst.y, dst.w, dst.h,
+		       avt.background_color);
 	    }
 
 	  // check event
