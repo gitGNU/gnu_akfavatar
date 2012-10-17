@@ -1320,7 +1320,7 @@ load_image_done (void)
 #endif // not LINK_SDL_IMAGE
 
 
-// backend (sdl) image loaders
+// sdl image loaders
 
 static inline SDL_Surface *
 avt_load_image_rw (SDL_RWops * RW)
@@ -1339,19 +1339,19 @@ avt_load_image_rw (SDL_RWops * RW)
 }
 
 static SDL_Surface *
-avt_load_image_file_backend (const char *filename)
+avt_load_image_file_sdl (const char *filename)
 {
   return avt_load_image_rw (SDL_RWFromFile (filename, "rb"));
 }
 
 static SDL_Surface *
-avt_load_image_stream_backend (avt_stream * stream)
+avt_load_image_stream_sdl (avt_stream * stream)
 {
   return avt_load_image_rw (SDL_RWFromFP ((FILE *) stream, 0));
 }
 
 static SDL_Surface *
-avt_load_image_memory_backend (void *data, size_t size)
+avt_load_image_memory_sdl (void *data, size_t size)
 {
   return avt_load_image_rw (SDL_RWFromMem (data, size));
 }
@@ -1364,7 +1364,7 @@ avt_load_image_file (const char *filename)
   image = avt_load_image_avtdata (avt_data_open_file (filename));
 
   if (not image)
-    image = avt_load_image_file_backend (filename);
+    image = avt_load_image_file_sdl (filename);
 
   return image;
 }
@@ -1378,7 +1378,7 @@ avt_load_image_stream (avt_stream * stream)
     avt_load_image_avtdata (avt_data_open_stream ((FILE *) stream, false));
 
   if (not image)
-    image = avt_load_image_stream_backend ((FILE *) stream);
+    image = avt_load_image_stream_sdl ((FILE *) stream);
 
   return image;
 }
@@ -1391,7 +1391,7 @@ avt_load_image_memory (void *data, size_t size)
   image = avt_load_image_avtdata (avt_data_open_memory (data, size));
 
   if (not image)
-    image = avt_load_image_memory_backend (data, size);
+    image = avt_load_image_memory_sdl (data, size);
 
   return image;
 }
