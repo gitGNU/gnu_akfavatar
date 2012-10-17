@@ -3418,6 +3418,9 @@ avt_drawchar (avt_char ch, avt_graphic * surface)
 	  font_line++;
 	}
 
+      if (avt.bold and not NOT_BOLD)
+	line = line bitor (line >> 1);
+
       if (avt.underlined and y == fontunderline)
 	line = 0xFFFF;
 
@@ -3428,14 +3431,8 @@ avt_drawchar (avt_char ch, avt_graphic * surface)
       uint16_t bit = 0x8000;
       for (int x = 0; x < fontwidth; x++, bit >>= 1)
 	if (line bitand bit)
-	  {
-	    avt_putpixel (surface, avt.cursor.x + x,
-			  avt.cursor.y + y, avt.text_color);
-
-	    if (avt.bold and not NOT_BOLD)
-	      avt_putpixel (surface, avt.cursor.x + x + 1,
-			    avt.cursor.y + y, avt.text_color);
-	  }
+	  avt_putpixel (surface, avt.cursor.x + x, avt.cursor.y + y,
+			avt.text_color);
     }				// for (int y...
 }
 
