@@ -430,14 +430,36 @@ avt_fill (avt_graphic * s, int color)
     *p = color;
 }
 
+// TODO
 static inline void
-avt_put_image (avt_graphic * src, avt_graphic * dest, int x, int y)
+avt_put_image (avt_graphic * source, avt_graphic * destination, int x, int y)
 {
-  SDL_Rect dst;
-  dst.x = x;
-  dst.y = y;
+  SDL_Rect d;
 
-  SDL_BlitSurface (src, NULL, dest, &dst);
+  d.x = x;
+  d.y = y;
+
+  SDL_BlitSurface (source, NULL, destination, &d);
+}
+
+// TODO
+// find a better name
+// source and destination may be the same!
+static inline void
+avt_get_segment (avt_graphic * source, int xoffset, int yoffset,
+		 int width, int height, avt_graphic * destination,
+		 int x, int y)
+{
+  SDL_Rect s, d;
+
+  s.x = xoffset;
+  s.y = yoffset;
+  s.w = width;
+  s.h = height;
+  d.x = x;
+  d.y = y;
+
+  SDL_BlitSurface (source, &s, destination, &d);
 }
 
 static inline void
@@ -1542,21 +1564,15 @@ avt_strwidth (const wchar_t * m)
 static void
 avt_show_text_cursor (bool on)
 {
-  SDL_Rect dst;
-
   if (on != avt.text_cursor_actually_visible and not avt.hold_updates)
     {
-      dst.x = avt.cursor.x;
-      dst.y = avt.cursor.y;
-      dst.w = fontwidth;
-      dst.h = fontheight;
-
       if (on)
 	{
 	  int bg_color;
 
 	  // save character under cursor
-	  SDL_BlitSurface (screen, &dst, avt.cursor_character, NULL);
+	  avt_get_segment (screen, avt.cursor.x, avt.cursor.y,
+			   fontwidth, fontheight, avt.cursor_character, 0, 0);
 
 	  // assume lower right corner is the background color
 	  bg_color = avt_getpixel (avt.cursor_character,
@@ -2070,7 +2086,7 @@ avt_resize (int w, int h)
 
   // restore image
   SDL_SetClipRect (screen, &window);
-  SDL_BlitSurface (oldwindowimage, NULL, screen, &window);
+  avt_put_image (oldwindowimage, screen, window.x, window.y);
   avt_free_graphic (oldwindowimage);
 
   // recalculate textfield & viewport positions
@@ -2128,8 +2144,7 @@ avt_save_background (SDL_Rect area)
       return NULL;
     }
 
-  // FIXME
-  SDL_BlitSurface (screen, &area, (SDL_Surface *) result, NULL);
+  avt_get_segment (screen, area.x, area.y, area.w, area.h, result, 0, 0);
 
   return result;
 }
@@ -2157,7 +2172,7 @@ avt_flash (void)
 
   // restore image
   SDL_SetClipRect (screen, &window);
-  SDL_BlitSurface (oldwindowimage, NULL, screen, &window);
+  avt_put_image (oldwindowimage, screen, window.x, window.h);
   avt_free_graphic (oldwindowimage);
 
   // make visible again
@@ -2821,8 +2836,6 @@ avt_restore_position (void)
 extern void
 avt_insert_spaces (int num)
 {
-  SDL_Rect rest, dest;
-
   // no textfield? do nothing
   if (not screen or avt.textfield.x < 0)
     return;
@@ -2830,16 +2843,10 @@ avt_insert_spaces (int num)
   if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
-  // get the rest of the viewport
-  rest.x = avt.cursor.x;
-  rest.w =
-    avt.viewport.w - (avt.cursor.x - avt.viewport.x) - (num * fontwidth);
-  rest.y = avt.cursor.y;
-  rest.h = LINEHEIGHT;
-
-  dest.x = avt.cursor.x + (num * fontwidth);
-  dest.y = avt.cursor.y;
-  SDL_BlitSurface (screen, &rest, screen, &dest);
+  avt_get_segment (screen, avt.cursor.x, avt.cursor.y,
+		   avt.viewport.w - (avt.cursor.x - avt.viewport.x)
+		   - (num * fontwidth), LINEHEIGHT,
+		   screen, avt.cursor.x + (num * fontwidth), avt.cursor.y);
 
   avt_bar (screen, avt.cursor.x, avt.cursor.y,
 	   num * fontwidth, LINEHEIGHT, avt.text_background_color);
@@ -2856,8 +2863,6 @@ avt_insert_spaces (int num)
 extern void
 avt_delete_characters (int num)
 {
-  SDL_Rect rest, dest;
-
   // no textfield? do nothing
   if (not screen or avt.textfield.x < 0)
     return;
@@ -2865,16 +2870,10 @@ avt_delete_characters (int num)
   if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
-  // get the rest of the viewport
-  rest.x = avt.cursor.x + (num * fontwidth);
-  rest.w =
-    avt.viewport.w - (avt.cursor.x - avt.viewport.x) - (num * fontwidth);
-  rest.y = avt.cursor.y;
-  rest.h = LINEHEIGHT;
-
-  dest.x = avt.cursor.x;
-  dest.y = avt.cursor.y;
-  SDL_BlitSurface (screen, &rest, screen, &dest);
+  avt_get_segment (screen, avt.cursor.x + (num * fontwidth), avt.cursor.y,
+		   avt.viewport.w - (avt.cursor.x - avt.viewport.x)
+		   - (num * fontwidth), LINEHEIGHT,
+		   screen, avt.cursor.x, avt.cursor.y);
 
   avt_bar (screen, avt.viewport.x + avt.viewport.w - (num * fontwidth),
 	   avt.cursor.y, num * fontwidth, LINEHEIGHT,
@@ -2915,8 +2914,6 @@ avt_erase_characters (int num)
 extern void
 avt_delete_lines (int line, int num)
 {
-  SDL_Rect rest, dest;
-
   // no textfield? do nothing
   if (not screen or avt.textfield.x < 0)
     return;
@@ -2931,15 +2928,12 @@ avt_delete_lines (int line, int num)
   if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
-  // get the rest of the viewport
-  rest.x = avt.viewport.x;
-  rest.w = avt.viewport.w;
-  rest.y = avt.viewport.y + ((line - 1 + num) * LINEHEIGHT);
-  rest.h = avt.viewport.h - ((line - 1 + num) * LINEHEIGHT);
-
-  dest.x = avt.viewport.x;
-  dest.y = avt.viewport.y + ((line - 1) * LINEHEIGHT);
-  SDL_BlitSurface (screen, &rest, screen, &dest);
+  avt_get_segment (screen, avt.viewport.x,
+		   avt.viewport.y + ((line - 1 + num) * LINEHEIGHT),
+		   avt.viewport.w,
+		   avt.viewport.h - ((line - 1 + num) * LINEHEIGHT),
+		   screen, avt.viewport.x,
+		   avt.viewport.y + ((line - 1) * LINEHEIGHT));
 
   avt_bar (screen, avt.viewport.x,
 	   avt.viewport.y + avt.viewport.h - (num * LINEHEIGHT),
@@ -2954,8 +2948,6 @@ avt_delete_lines (int line, int num)
 extern void
 avt_insert_lines (int line, int num)
 {
-  SDL_Rect rest, dest;
-
   // no textfield? do nothing
   if (not screen or avt.textfield.x < 0)
     return;
@@ -2970,15 +2962,11 @@ avt_insert_lines (int line, int num)
   if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
-  // get the rest of the viewport
-  rest.x = avt.viewport.x;
-  rest.w = avt.viewport.w;
-  rest.y = avt.viewport.y + ((line - 1) * LINEHEIGHT);
-  rest.h = avt.viewport.h - ((line - 1 + num) * LINEHEIGHT);
-
-  dest.x = avt.viewport.x;
-  dest.y = avt.viewport.y + ((line - 1 + num) * LINEHEIGHT);
-  SDL_BlitSurface (screen, &rest, screen, &dest);
+  avt_get_segment (screen, avt.viewport.x,
+		   avt.viewport.y + ((line - 1) * LINEHEIGHT), avt.viewport.w,
+		   avt.viewport.h - ((line - 1 + num) * LINEHEIGHT), screen,
+		   avt.viewport.x,
+		   avt.viewport.y + ((line - 1 + num) * LINEHEIGHT));
 
   avt_bar (screen, avt.viewport.x,
 	   avt.viewport.y + ((line - 1) * LINEHEIGHT),
@@ -6759,11 +6747,8 @@ avt_set_error (const char *message)
 static void
 avt_credits_up (avt_graphic * last_line)
 {
-  SDL_Rect src, dst, line_pos;
-  int32_t moved;
-  size_t now, next_time;
-  int32_t pixel;
-  uint32_t tickinterval;
+  size_t now, next_time, tickinterval;
+  short moved, pixel;
 
   moved = 0;
   pixel = 1;
@@ -6773,20 +6758,13 @@ avt_credits_up (avt_graphic * last_line)
   while (moved <= LINEHEIGHT)
     {
       // move screen up
-      src.x = window.x;
-      src.w = window.w;
-      src.y = window.y + pixel;
-      src.h = window.h - pixel;
-      dst.x = window.x;
-      dst.y = window.y;
-      SDL_BlitSurface (screen, &src, screen, &dst);
+      avt_get_segment (screen, window.x, window.y + pixel,
+		       window.w, window.h - pixel, screen, window.x,
+		       window.y);
 
       if (last_line)
-	{
-	  line_pos.x = window.x;
-	  line_pos.y = window.y + window.h - moved;
-	  avt_put_image (last_line, screen, line_pos.x, line_pos.y);
-	}
+	avt_put_image (last_line, screen, window.x,
+		       window.y + window.h - moved);
 
       avt_update_rect (window);
 
