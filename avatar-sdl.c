@@ -479,22 +479,31 @@ avt_update_area (int x, int y, int width, int height)
 }
 
 static inline void
-avt_update_rect (SDL_Rect rect)
-{
-  avt_update_area (rect.x, rect.y, rect.w, rect.h);
-}
-
-static inline void
-avt_update_trect (SDL_Rect rect)
-{
-  if (not avt.hold_updates)
-    avt_update_area (rect.x, rect.y, rect.w, rect.h);
-}
-
-static inline void
 avt_update_all (void)
 {
   avt_update_area (0, 0, 0, 0);
+}
+
+static inline void
+avt_update_window (void)
+{
+  avt_update_area (window.x, window.y, window.w, window.h);
+}
+
+static inline void
+avt_update_textfield (void)
+{
+  if (not avt.hold_updates)
+    avt_update_area (avt.textfield.x, avt.textfield.y,
+		     avt.textfield.w, avt.textfield.h);
+}
+
+static inline void
+avt_update_viewport (void)
+{
+  if (not avt.hold_updates)
+    avt_update_area (avt.viewport.x, avt.viewport.y,
+		     avt.viewport.w, avt.viewport.h);
 }
 
 static inline void
@@ -2942,7 +2951,7 @@ avt_delete_lines (int line, int num)
   if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
 
-  avt_update_trect (avt.viewport);
+  avt_update_viewport ();
 }
 
 extern void
@@ -2975,7 +2984,7 @@ avt_insert_lines (int line, int num)
   if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
 
-  avt_update_trect (avt.viewport);
+  avt_update_viewport ();
 }
 
 extern void
@@ -3104,7 +3113,7 @@ avt_clear (void)
       avt_show_text_cursor (true);
     }
 
-  avt_update_trect (avt.viewport);
+  avt_update_viewport ();
 }
 
 extern void
@@ -3275,7 +3284,7 @@ avt_flip_page (void)
   /* the viewport must be updated,
      if it's not updated letter by letter */
   if (not avt.text_delay)
-    avt_update_trect (avt.viewport);
+    avt_update_viewport ();
 
   avt_wait (avt.flip_page_delay);
   avt_clear ();
@@ -4737,7 +4746,7 @@ avt_lock_updates (bool lock)
     avt.text_delay = 0;
 
   // if hold_updates is not set update the textfield
-  avt_update_trect (avt.textfield);
+  avt_update_textfield ();
 }
 
 static inline void
@@ -4847,7 +4856,8 @@ avt_show_button (int x, int y, enum avt_button_type type,
       break;
     }
 
-  avt_update_rect (btn_rect);
+  avt_update_area (btn_rect.x, btn_rect.y, BASE_BUTTON_WIDTH,
+		   BASE_BUTTON_HEIGHT);
 }
 
 static void
@@ -4870,7 +4880,8 @@ avt_clear_buttons (void)
       if (button->background)
 	{
 	  avt_put_image (button->background, screen, btn_rect.x, btn_rect.y);
-	  avt_update_rect (btn_rect);
+	  avt_update_area (button->x + window.x, button->y + window.y,
+			   BASE_BUTTON_WIDTH, BASE_BUTTON_HEIGHT);
 	  avt_free_graphic (button->background);
 	  button->background = NULL;
 	}
@@ -5012,7 +5023,7 @@ avt_pager_screen (const wchar_t * txt, size_t pos, size_t len,
     }
 
   avt.hold_updates = false;
-  avt_update_trect (avt.textfield);
+  avt_update_textfield ();
 
   return pos;
 }
@@ -5161,7 +5172,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 		(avt.balloonheight - 1) * LINEHEIGHT + avt.textfield.y;
 	      pos = avt_pager_line (txt, pos, len, horizontal);
 	      avt.hold_updates = false;
-	      avt_update_trect (avt.textfield);
+	      avt_update_textfield ();
 	    }
 	  break;
 
@@ -5182,7 +5193,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 		avt.cursor.y = avt.textfield.y;
 		avt_pager_line (txt, start_pos, len, horizontal);
 		avt.hold_updates = false;
-		avt_update_trect (avt.textfield);
+		avt_update_textfield ();
 		pos = avt_pager_lines_back (txt, pos, 2);
 	      }
 	  }
@@ -6766,7 +6777,7 @@ avt_credits_up (avt_graphic * last_line)
 	avt_put_image (last_line, screen, window.x,
 		       window.y + window.h - moved);
 
-      avt_update_rect (window);
+      avt_update_window ();
 
       if (avt_checkevent ())
 	return;
