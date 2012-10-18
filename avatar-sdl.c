@@ -361,14 +361,6 @@ avt_free_graphic (avt_graphic * gr)
   SDL_FreeSurface ((SDL_Surface *) gr);
 }
 
-// import an SDL_Surface into the internal format
-static inline avt_graphic *
-avt_import_sdl_surface (SDL_Surface * s)
-{
-  // FIXME
-  return (avt_graphic *) SDL_DisplayFormat (s);
-}
-
 // Fast putpixel with no checks
 // surface must have 32 bits per pixel!
 // the pixels must be aligned
@@ -442,6 +434,18 @@ avt_put_image (avt_graphic * source, avt_graphic * destination, int x, int y)
   d.y = y;
 
   SDL_BlitSurface (source, NULL, destination, &d);
+}
+
+// import an SDL_Surface into the internal format
+static inline avt_graphic *
+avt_import_sdl_surface (SDL_Surface * s)
+{
+  avt_graphic *gr;
+
+  gr = avt_new_graphic (s->w, s->h);
+  avt_put_image (s, gr, 0, 0);
+
+  return gr;
 }
 
 // TODO
@@ -1408,18 +1412,21 @@ load_image_done (void)
 static inline avt_graphic *
 avt_load_image_rw (SDL_RWops * RW)
 {
-  avt_graphic *image;
+  SDL_Surface *image;
+  avt_graphic *result;
 
   if (not RW)
     return NULL;
 
   load_image_init ();
-  // FIXME!
-  image = (avt_graphic *) load_image.rw (RW, 0);
+  image = load_image.rw (RW, 0);
 
   SDL_RWclose (RW);
 
-  return image;
+  result = avt_import_sdl_surface (image);
+  SDL_FreeSurface (image);
+
+  return result;
 }
 
 static avt_graphic *
