@@ -2187,7 +2187,7 @@ avt_flash (void)
 
   // restore image
   SDL_SetClipRect (screen, &window);
-  avt_put_image (oldwindowimage, screen, window.x, window.h);
+  avt_put_image (oldwindowimage, screen, window.x, window.y);
   avt_free_graphic (oldwindowimage);
 
   // make visible again
