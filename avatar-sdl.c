@@ -1418,13 +1418,18 @@ avt_load_image_rw (SDL_RWops * RW)
   if (not RW)
     return NULL;
 
+  result = NULL;
+
   load_image_init ();
   image = load_image.rw (RW, 0);
 
   SDL_RWclose (RW);
 
-  result = avt_import_sdl_surface (image);
-  SDL_FreeSurface (image);
+  if (image)
+    {
+      result = avt_import_sdl_surface (image);
+      SDL_FreeSurface (image);
+    }
 
   return result;
 }
