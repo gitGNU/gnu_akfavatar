@@ -376,7 +376,6 @@ avt_putpixel (avt_graphic * s, int x, int y, int color)
 }
 
 // surface must have 32 bits per pixel!
-// disregards clipping
 // otherwise secure
 static void
 avt_bar (avt_graphic * s, int x, int y, int width, int height, int color)
@@ -417,7 +416,6 @@ avt_bar (avt_graphic * s, int x, int y, int width, int height, int color)
 }
 
 // surface must have 32 bits per pixel!
-// disregards clipping
 // otherwise secure
 static inline void
 avt_fill (avt_graphic * s, int color)
@@ -582,7 +580,6 @@ avt_avatar_window (void)
   window.h = MINIMALHEIGHT;
   window.x = screen->w > window.w ? (screen->w / 2) - (window.w / 2) : 0;
   window.y = screen->h > window.h ? (screen->h / 2) - (window.h / 2) : 0;
-  SDL_SetClipRect (screen, &window);
   calculate_balloonmaxheight ();
 }
 
@@ -1657,9 +1654,6 @@ avt_no_textfield (void)
 static inline void
 avt_free_screen (void)
 {
-  // switch clipping off
-  SDL_SetClipRect (screen, NULL);
-  // fill the whole screen with background color
   avt_fill (screen, avt.background_color);
 }
 
@@ -1746,7 +1740,6 @@ avt_draw_avatar (void)
 
       avt_release_raw_image ();	// not needed anymore
 
-      SDL_SetClipRect (screen, &window);
       avt_avatar_window ();
 
       if (avt.avatar_image)
@@ -1893,8 +1886,6 @@ avt_draw_balloon (void)
   if (not avt.avatar_visible)
     avt_draw_avatar ();
 
-  SDL_SetClipRect (screen, &window);
-
   avt.textfield.w = (avt.balloonwidth * fontwidth);
   avt.textfield.h = (avt.balloonheight * fontheight);
   centered_y = window.y + (window.h / 2) - (avt.textfield.h / 2);
@@ -1983,12 +1974,6 @@ avt_draw_balloon (void)
   // update everything
   // (there may be leftovers from large images)
   avt_update_all ();
-
-  /*
-   * only allow drawings inside this area from now on
-   * (only for blitting)
-   */
-  SDL_SetClipRect (screen, &avt.viewport);
 }
 
 extern void
@@ -2121,7 +2106,6 @@ avt_resize (int w, int h)
   window.y = screen->h > window.h ? (screen->h / 2) - (window.h / 2) : 0;
 
   // restore image
-  SDL_SetClipRect (screen, &window);
   avt_put_image (oldwindowimage, screen, window.x, window.y);
   avt_free_graphic (oldwindowimage);
 
@@ -2140,7 +2124,6 @@ avt_resize (int w, int h)
 
       avt.cursor.x = avt.cursor.x - oldwindow.x + window.x;
       avt.cursor.y = avt.cursor.y - oldwindow.y + window.y;
-      SDL_SetClipRect (screen, &avt.viewport);
     }
 
   // set windowmode_size
@@ -2175,8 +2158,6 @@ avt_flash (void)
 
   oldwindowimage = avt_get_window ();
 
-  // switch clipping off
-  SDL_SetClipRect (screen, NULL);
   // fill the whole screen with color
   avt_fill (screen, 0xFFFF00);
   avt_update_all ();
@@ -2186,16 +2167,11 @@ avt_flash (void)
   avt_fill (screen, avt.background_color);
 
   // restore image
-  SDL_SetClipRect (screen, &window);
   avt_put_image (oldwindowimage, screen, window.x, window.y);
   avt_free_graphic (oldwindowimage);
 
   // make visible again
   avt_update_all ();
-
-  // restore the clipping
-  if (avt.textfield.x >= 0)
-    SDL_SetClipRect (screen, &avt.viewport);
 }
 
 extern void
@@ -3021,11 +2997,6 @@ avt_viewport (int x, int y, int width, int height)
 
   if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
-
-  if (avt.origin_mode)
-    SDL_SetClipRect (screen, &avt.viewport);
-  else
-    SDL_SetClipRect (screen, &avt.textfield);
 }
 
 extern void
@@ -3080,9 +3051,6 @@ avt_set_origin_mode (bool mode)
 
   if (avt.text_cursor_visible and avt.textfield.x >= 0)
     avt_show_text_cursor (true);
-
-  if (avt.textfield.x >= 0)
-    SDL_SetClipRect (screen, &area);
 }
 
 extern bool
@@ -4796,8 +4764,6 @@ avt_show_button (int x, int y, enum avt_button_type type,
   pos.x = x + window.x;
   pos.y = y + window.y;
 
-  SDL_SetClipRect (screen, &window);
-
   button->background =
     avt_get_area (pos.x, pos.y, BASE_BUTTON_WIDTH, BASE_BUTTON_HEIGHT);
 
@@ -4870,8 +4836,6 @@ avt_clear_buttons (void)
 {
   SDL_Rect btn_rect;
   struct avt_button *button;
-
-  SDL_SetClipRect (screen, &window);
 
   for (int nr = 0; nr < MAX_BUTTONS; nr++)
     {
@@ -5119,9 +5083,6 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   avt_show_button (button.x, button.y, btn_cancel,
 		   AVT_KEY_ESCAPE, AVT_BUTTON_COLOR);
 
-  // limit to viewport (else more problems with binary files
-  SDL_SetClipRect (screen, &avt.viewport);
-
   old_settings = avt;
 
   avt.text_cursor_visible = false;
@@ -5261,9 +5222,6 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
     _avt_STATUS = AVT_NORMAL;
 
   avt_clear_buttons ();
-
-  SDL_SetClipRect (screen, &avt.viewport);
-
   avt_alert_func = old_alert_func;
   avt = old_settings;
   avt_activate_cursor (avt.text_cursor_visible);
@@ -5596,11 +5554,6 @@ avt_move_out (void)
   // needed to remove the balloon
   avt_show_avatar ();
 
-  /*
-   * remove clipping
-   */
-  SDL_SetClipRect (screen, NULL);
-
   if (avt.avatar_image)
     {
       struct avt_position pos;
@@ -5691,9 +5644,6 @@ avt_wait_button (void)
   avt_set_pointer_buttons_key (old_buttons_key);
   avt_clear_keys ();
 
-  if (avt.textfield.x >= 0)
-    SDL_SetClipRect (screen, &avt.viewport);
-
   return _avt_STATUS;
 }
 
@@ -5728,9 +5678,6 @@ avt_navigate (const char *buttons)
     }
 
   // display buttons:
-
-  SDL_SetClipRect (screen, &window);
-
   button.x = window.w - AVATAR_MARGIN
     - (button_count * (BASE_BUTTON_WIDTH + BUTTON_DISTANCE)) +
     BUTTON_DISTANCE;
@@ -5879,9 +5826,6 @@ avt_navigate (const char *buttons)
   avt_clear_buttons ();
   avt_set_audio_end_key (old_audio_key);
 
-  if (avt.textfield.x >= 0)
-    SDL_SetClipRect (screen, &avt.viewport);
-
   if (_avt_STATUS != AVT_NORMAL)
     result = _avt_STATUS;
 
@@ -5896,8 +5840,6 @@ avt_decide (void)
 
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
-
-  SDL_SetClipRect (screen, &window);
 
   // alignment: right bottom
   yes_button.x = window.w - BASE_BUTTON_WIDTH - AVATAR_MARGIN;
@@ -5926,9 +5868,6 @@ avt_decide (void)
 
   avt_clear_buttons ();
   avt_clear_keys ();
-
-  if (avt.textfield.x >= 0)
-    SDL_SetClipRect (screen, &avt.viewport);
 
   return (result > 0);
 }
@@ -6843,8 +6782,6 @@ avt_credits (const wchar_t * text, bool centered)
   window.x = (screen->w / 2) - (80 * fontwidth / 2);
   window.w = 80 * fontwidth;
   // horizontal values unchanged
-
-  SDL_SetClipRect (screen, &window);
 
   // last line added to credits
   last_line = avt_new_graphic (window.w, LINEHEIGHT);
