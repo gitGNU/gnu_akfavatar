@@ -334,7 +334,6 @@ void (*avt_quit_audio_func) (void) AVT_HIDDEN = NULL;
 // forward declaration
 static int avt_pause (void);
 static void avt_drawchar (avt_char ch, avt_graphic * surface);
-static avt_graphic *avt_save_background (SDL_Rect area);
 static void avt_analyze_event (SDL_Event * event);
 
 //-----------------------------------------------------------------------------
@@ -462,6 +461,33 @@ avt_get_segment (avt_graphic * source, int xoffset, int yoffset,
   SDL_BlitSurface (source, &s, destination, &d);
 }
 
+// saves the area into a new graphic
+// the result should be freed with avt_free_graphic
+static avt_graphic *
+avt_get_area (int x, int y, int width, int height)
+{
+  avt_graphic *result;
+
+  result = avt_new_graphic (width, height);
+
+  if (not result)
+    {
+      avt_set_error ("out of memory");
+      _avt_STATUS = AVT_ERROR;
+      return NULL;
+    }
+
+  avt_get_segment (screen, x, y, width, height, result, 0, 0);
+
+  return result;
+}
+
+static inline avt_graphic *
+avt_get_window (void)
+{
+  return avt_get_area (window.x, window.y, window.w, window.h);
+}
+
 static inline void
 avt_set_color_key (avt_graphic * s, int color)
 {
@@ -505,6 +531,7 @@ avt_update_viewport (void)
     avt_update_area (avt.viewport.x, avt.viewport.y,
 		     avt.viewport.w, avt.viewport.h);
 }
+
 
 static inline void
 avt_release_raw_image (void)
@@ -2082,7 +2109,7 @@ avt_resize (int w, int h)
 
   // save the window
   oldwindow = window;
-  oldwindowimage = avt_save_background (window);
+  oldwindowimage = avt_get_window ();
 
   // resize screen
   screen = SDL_SetVideoMode (w, h, COLORDEPTH, screenflags);
@@ -2137,27 +2164,6 @@ avt_bell (void)
   bell ();
 }
 
-// saves the background of the area
-// the result should be freed with avt_free_graphic
-static avt_graphic *
-avt_save_background (SDL_Rect area)
-{
-  avt_graphic *result;
-
-  result = avt_new_graphic (area.w, area.h);
-
-  if (not result)
-    {
-      avt_set_error ("out of memory");
-      _avt_STATUS = AVT_ERROR;
-      return NULL;
-    }
-
-  avt_get_segment (screen, area.x, area.y, area.w, area.h, result, 0, 0);
-
-  return result;
-}
-
 // flashes the screen
 extern void
 avt_flash (void)
@@ -2167,7 +2173,7 @@ avt_flash (void)
   if (not screen)
     return;
 
-  oldwindowimage = avt_save_background (window);
+  oldwindowimage = avt_get_window ();
 
   // switch clipping off
   SDL_SetClipRect (screen, NULL);
@@ -4624,7 +4630,8 @@ avt_choice (int *result, int start_line, int items, int key,
   if (screen and _avt_STATUS == AVT_NORMAL)
     {
       // get a copy of the viewport
-      plain_menu = avt_save_background (avt.viewport);
+      plain_menu = avt_get_area (avt.viewport.x, avt.viewport.y,
+				 avt.viewport.w, avt.viewport.h);
 
       // prepare transparent bar
       bar = SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_SRCALPHA | SDL_RLEACCEL,
@@ -4793,7 +4800,9 @@ avt_show_button (int x, int y, enum avt_button_type type,
 
   SDL_SetClipRect (screen, &window);
 
-  button->background = avt_save_background (btn_rect);
+  button->background =
+    avt_get_area (btn_rect.x, btn_rect.y,
+		  BASE_BUTTON_WIDTH, BASE_BUTTON_HEIGHT);
 
   avt_put_image (base_button, screen, btn_rect.x, btn_rect.y);
 
