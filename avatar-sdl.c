@@ -200,6 +200,16 @@ static int errno;
 #  define SDL_BUTTON_WHEELDOWN 5
 #endif
 
+struct avt_position
+{
+  short x, y;
+};
+
+struct avt_area
+{
+  short x, y, w, h;
+};
+
 // FIXME
 // it will be replaced with an internal structure later
 typedef SDL_Surface avt_graphic;
@@ -215,8 +225,8 @@ static SDL_Surface *screen;
 static avt_graphic *base_button;
 static avt_graphic *raw_image;
 static SDL_Cursor *mpointer;
-static SDL_Rect window;		// if screen is in fact larger
-static SDL_Rect windowmode_size;	// size of the whole window (screen)
+static struct avt_area window;	// if screen is in fact larger
+static struct avt_area windowmode_size;	// size of the whole window (screen)
 static uint32_t screenflags;	// flags for the screen
 static int fontwidth, fontheight, fontunderline;
 
@@ -224,11 +234,6 @@ static int fontwidth, fontheight, fontunderline;
 static avt_iconv_t output_cd = ICONV_UNINITIALIZED;
 static avt_iconv_t input_cd = ICONV_UNINITIALIZED;
 
-
-struct avt_position
-{
-  short x, y;
-};
 
 struct avt_settings
 {
@@ -283,8 +288,8 @@ struct avt_settings
 
   struct avt_position cursor, saved_position;
 
-  SDL_Rect textfield;
-  SDL_Rect viewport;		// sub-window in textfield
+  struct avt_area textfield;
+  struct avt_area viewport;	// sub-window in textfield
 };
 
 
@@ -1798,7 +1803,7 @@ avt_darker (int color, int amount)
 static void
 avt_draw_balloon2 (int offset, uint32_t ballooncolor)
 {
-  SDL_Rect shape;
+  struct avt_area shape;
 
   // full size
   shape.x = avt.textfield.x - BALLOON_INNER_MARGIN + offset;
@@ -1979,7 +1984,7 @@ avt_draw_balloon (void)
 extern void
 avt_text_direction (int direction)
 {
-  SDL_Rect area;
+  struct avt_area area;
 
   avt.textdir_rtl = direction;
 
@@ -2083,7 +2088,7 @@ static void
 avt_resize (int w, int h)
 {
   avt_graphic *oldwindowimage;
-  SDL_Rect oldwindow;
+  struct avt_area oldwindow;
   SDL_Event event;
 
   // minimal size
@@ -2721,7 +2726,7 @@ avt_get_max_y (void)
 extern void
 avt_move_x (int x)
 {
-  SDL_Rect area;
+  struct avt_area area;
 
   if (screen and avt.textfield.x >= 0)
     {
@@ -2750,7 +2755,7 @@ avt_move_x (int x)
 extern void
 avt_move_y (int y)
 {
-  SDL_Rect area;
+  struct avt_area area;
 
   if (screen and avt.textfield.x >= 0)
     {
@@ -2779,7 +2784,7 @@ avt_move_y (int y)
 extern void
 avt_move_xy (int x, int y)
 {
-  SDL_Rect area;
+  struct avt_area area;
 
   if (screen and avt.textfield.x >= 0)
     {
@@ -3027,7 +3032,7 @@ avt_get_auto_margin (void)
 extern void
 avt_set_origin_mode (bool mode)
 {
-  SDL_Rect area;
+  struct avt_area area;
 
   avt.origin_mode = mode;
 
@@ -4834,21 +4839,16 @@ avt_show_button (int x, int y, enum avt_button_type type,
 static void
 avt_clear_buttons (void)
 {
-  SDL_Rect btn_rect;
   struct avt_button *button;
 
   for (int nr = 0; nr < MAX_BUTTONS; nr++)
     {
       button = &avt_buttons[nr];
 
-      btn_rect.x = button->x + window.x;
-      btn_rect.y = button->y + window.y;
-      btn_rect.w = BASE_BUTTON_WIDTH;
-      btn_rect.h = BASE_BUTTON_HEIGHT;
-
       if (button->background)
 	{
-	  avt_put_image (button->background, screen, btn_rect.x, btn_rect.y);
+	  avt_put_image (button->background, screen,
+			 button->x + window.x, button->y + window.y);
 	  avt_update_area (button->x + window.x, button->y + window.y,
 			   BASE_BUTTON_WIDTH, BASE_BUTTON_HEIGHT);
 	  avt_free_graphic (button->background);
@@ -4982,7 +4982,8 @@ avt_pager_screen (const wchar_t * txt, size_t pos, size_t len,
 		  size_t horizontal)
 {
   avt.hold_updates = true;
-  SDL_FillRect (screen, &avt.textfield, avt.text_background_color);
+  avt_bar (screen, avt.textfield.x, avt.textfield.y,
+	   avt.textfield.w, avt.textfield.h, avt.text_background_color);
 
   for (int line_nr = 0; line_nr < avt.balloonheight; line_nr++)
     {
@@ -5876,7 +5877,7 @@ avt_decide (void)
 static void
 avt_show_image (avt_graphic * image)
 {
-  SDL_Rect dst;
+  struct avt_position pos;
 
   // clear the screen
   avt_free_screen ();
@@ -5886,21 +5887,19 @@ avt_show_image (avt_graphic * image)
   avt.avatar_visible = false;
 
   // center image on screen
-  dst.x = (screen->w / 2) - (image->w / 2);
-  dst.y = (screen->h / 2) - (image->h / 2);
-  dst.w = image->w;
-  dst.h = image->h;
+  pos.x = (screen->w / 2) - (image->w / 2);
+  pos.y = (screen->h / 2) - (image->h / 2);
 
   // eventually increase inner window - never decrease!
-  if (dst.w > window.w)
+  if (image->w > window.w)
     {
-      window.w = (dst.w <= screen->w) ? dst.w : screen->w;
+      window.w = (image->w <= screen->w) ? image->w : screen->w;
       window.x = (screen->w / 2) - (window.w / 2);
     }
 
-  if (dst.h > window.h)
+  if (image->h > window.h)
     {
-      window.h = (dst.h <= screen->h) ? dst.h : screen->h;
+      window.h = (image->h <= screen->h) ? image->h : screen->h;
       window.y = (screen->h / 2) - (window.h / 2);
     }
 
@@ -5908,7 +5907,7 @@ avt_show_image (avt_graphic * image)
    * if image is larger than the screen,
    * just the upper left part is shown, as far as it fits
    */
-  avt_put_image (image, screen, dst.x, dst.y);
+  avt_put_image (image, screen, pos.x, pos.y);
   avt_update_all ();
   avt_checkevent ();
 }
