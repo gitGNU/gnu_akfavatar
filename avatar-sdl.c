@@ -4757,12 +4757,12 @@ avt_lock_updates (bool lock)
 }
 
 static inline void
-avt_button_inlay (SDL_Rect btn_rect, const unsigned char *bits,
+avt_button_inlay (int x, int y, const unsigned char *bits,
 		  int width, int height, int color)
 {
   avt_put_image_xbm (screen,
-		     btn_rect.x + (BASE_BUTTON_WIDTH / 2) - (width / 2),
-		     btn_rect.y + (BASE_BUTTON_WIDTH / 2) - (height / 2),
+		     x + (BASE_BUTTON_WIDTH / 2) - (width / 2),
+		     y + (BASE_BUTTON_WIDTH / 2) - (height / 2),
 		     bits, width, height, color);
 }
 
@@ -4771,7 +4771,7 @@ static void
 avt_show_button (int x, int y, enum avt_button_type type,
 		 avt_char key, int color)
 {
-  SDL_Rect btn_rect;
+  struct avt_position pos;
   int buttonnr;
   struct avt_button *button;
 
@@ -4793,80 +4793,76 @@ avt_show_button (int x, int y, enum avt_button_type type,
   button->y = y;
   button->key = key;
 
-  btn_rect.x = x + window.x;
-  btn_rect.y = y + window.y;
-  btn_rect.w = BASE_BUTTON_WIDTH;
-  btn_rect.h = BASE_BUTTON_HEIGHT;
+  pos.x = x + window.x;
+  pos.y = y + window.y;
 
   SDL_SetClipRect (screen, &window);
 
   button->background =
-    avt_get_area (btn_rect.x, btn_rect.y,
-		  BASE_BUTTON_WIDTH, BASE_BUTTON_HEIGHT);
+    avt_get_area (pos.x, pos.y, BASE_BUTTON_WIDTH, BASE_BUTTON_HEIGHT);
 
-  avt_put_image (base_button, screen, btn_rect.x, btn_rect.y);
+  avt_put_image (base_button, screen, pos.x, pos.y);
 
   switch (type)
     {
     case btn_cancel:
-      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_cancel), color);
+      avt_button_inlay (pos.x, pos.y, AVT_XBM_INFO (btn_cancel), color);
       break;
 
     case btn_yes:
-      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_yes), color);
+      avt_button_inlay (pos.x, pos.y, AVT_XBM_INFO (btn_yes), color);
       break;
 
     case btn_no:
-      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_no), color);
+      avt_button_inlay (pos.x, pos.y, AVT_XBM_INFO (btn_no), color);
       break;
 
     case btn_right:
-      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_right), color);
+      avt_button_inlay (pos.x, pos.y, AVT_XBM_INFO (btn_right), color);
       break;
 
     case btn_left:
-      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_left), color);
+      avt_button_inlay (pos.x, pos.y, AVT_XBM_INFO (btn_left), color);
       break;
 
     case btn_up:
-      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_up), color);
+      avt_button_inlay (pos.x, pos.y, AVT_XBM_INFO (btn_up), color);
       break;
 
     case btn_down:
-      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_down), color);
+      avt_button_inlay (pos.x, pos.y, AVT_XBM_INFO (btn_down), color);
       break;
 
     case btn_fastforward:
-      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_fastforward), color);
+      avt_button_inlay (pos.x, pos.y, AVT_XBM_INFO (btn_fastforward), color);
       break;
 
     case btn_fastbackward:
-      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_fastbackward), color);
+      avt_button_inlay (pos.x, pos.y, AVT_XBM_INFO (btn_fastbackward), color);
       break;
 
     case btn_stop:
-      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_stop), color);
+      avt_button_inlay (pos.x, pos.y, AVT_XBM_INFO (btn_stop), color);
       break;
 
     case btn_pause:
-      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_pause), color);
+      avt_button_inlay (pos.x, pos.y, AVT_XBM_INFO (btn_pause), color);
       break;
 
     case btn_help:
-      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_help), color);
+      avt_button_inlay (pos.x, pos.y, AVT_XBM_INFO (btn_help), color);
       break;
 
     case btn_eject:
-      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_eject), color);
+      avt_button_inlay (pos.x, pos.y, AVT_XBM_INFO (btn_eject), color);
       break;
 
     case btn_circle:
-      avt_button_inlay (btn_rect, AVT_XBM_INFO (btn_circle), color);
+      avt_button_inlay (pos.x, pos.y, AVT_XBM_INFO (btn_circle), color);
       break;
     }
 
-  avt_update_area (btn_rect.x, btn_rect.y, BASE_BUTTON_WIDTH,
-		   BASE_BUTTON_HEIGHT);
+  avt_update_area (pos.x, pos.y, BASE_BUTTON_WIDTH, BASE_BUTTON_HEIGHT);
 }
 
 static void
