@@ -403,14 +403,14 @@ avt_bar (avt_graphic * s, int x, int y, int width, int height, int color)
       y = 0;
     }
 
-  if (width <= 0 or height <= 0)
-    return;
-
   if (x + width > s->w)
     width = s->w - x;
 
   if (y + height > s->h)
     height = s->h - y;
+
+  if (width <= 0 or height <= 0)
+    return;
 
   for (int ny = 0; ny < height; ny++)
     {
@@ -505,13 +505,6 @@ avt_put_image (avt_graphic * source, avt_graphic * destination, int x, int y)
 
 #endif
 
-// import an SDL_Surface into the internal format
-static inline avt_graphic *
-avt_import_sdl_surface (SDL_Surface * s)
-{
-  return (avt_graphic *) SDL_DisplayFormat (s);
-}
-
 // TODO
 // find a better name
 // source and destination may be the same!
@@ -530,6 +523,13 @@ avt_get_segment (avt_graphic * source, int xoffset, int yoffset,
   d.y = y;
 
   SDL_BlitSurface (source, &s, destination, &d);
+}
+
+// import an SDL_Surface into the internal format
+static inline avt_graphic *
+avt_import_sdl_surface (SDL_Surface * s)
+{
+  return (avt_graphic *) SDL_DisplayFormat (s);
 }
 
 // saves the area into a new graphic
