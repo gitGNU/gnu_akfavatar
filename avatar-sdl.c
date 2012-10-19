@@ -495,6 +495,7 @@ avt_put_image (avt_graphic * source, avt_graphic * destination, int x, int y)
     return;
 
   bool opaque = ((source->flags bitand SDL_SRCCOLORKEY) == 0);
+  uint32_t color_key = source->format->colorkey;
 
   for (int line = 0; line < height; line++)
     {
@@ -509,8 +510,6 @@ avt_put_image (avt_graphic * source, avt_graphic * destination, int x, int y)
 	memcpy (d, s, width * sizeof (uint32_t));
       else			// transparent
 	{
-	  uint32_t color_key = source->format->colorkey;
-
 	  for (int i = 0; i < width; i++, s++, d++)
 	    if (*s != color_key)
 	      *d = *s;
