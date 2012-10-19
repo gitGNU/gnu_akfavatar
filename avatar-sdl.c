@@ -374,9 +374,6 @@ avt_free_graphic (avt_graphic * gr)
 }
 
 // Fast putpixel with no checks
-// surface must have 32 bits per pixel!
-// the pixels must be aligned
-// surface must eventually be locked
 // INSECURE
 static inline void
 avt_putpixel (avt_graphic * s, int x, int y, int color)
@@ -384,8 +381,7 @@ avt_putpixel (avt_graphic * s, int x, int y, int color)
   *((uint32_t *) s->pixels + y * s->w + x) = color;
 }
 
-// surface must have 32 bits per pixel!
-// otherwise secure
+// secure
 static void
 avt_bar (avt_graphic * s, int x, int y, int width, int height, int color)
 {
@@ -424,8 +420,7 @@ avt_bar (avt_graphic * s, int x, int y, int width, int height, int color)
     }
 }
 
-// surface must have 32 bits per pixel!
-// otherwise secure
+// secure
 static inline void
 avt_fill (avt_graphic * s, int color)
 {
@@ -1158,7 +1153,7 @@ avt_xbm_bytes_per_line (int width)
   return ((width + 7) / 8);
 }
 
-// only for 32bit per pixel!
+// TODO: check if it fits! (uses insecure putpixel)
 static void
 avt_put_image_xbm (avt_graphic * img, short x, short y,
 		   const unsigned char *bits, int width, int height,
@@ -3471,7 +3466,6 @@ avt_combining (avt_char ch)
 }
 
 // avt_drawchar: draws the raw char - with no interpretation
-// surface must be 32 bit per pixel
 static void
 avt_drawchar (avt_char ch, avt_graphic * surface)
 {
