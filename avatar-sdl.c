@@ -448,7 +448,7 @@ avt_put_image_sdl (SDL_Surface * source, avt_graphic * destination, int x,
   SDL_BlitSurface (source, NULL, destination, &d);
 }
 
-#if true
+#if false
 
 static inline void
 avt_put_image (avt_graphic * source, avt_graphic * destination, int x, int y)
@@ -466,14 +466,28 @@ avt_put_image (avt_graphic * source, avt_graphic * destination, int x, int y)
       or x > destination->w or y > destination->h)
     return;
 
-  if (x < 0 or y < 0)
-    return;			// TODO: support using part of the image
-
   int width = source->w;
+  int height = source->h;
+
+  int skip_y = 0;
+  if (y < 0)
+    {
+      skip_y = -y;
+      height -= skip_y;
+      y = 0;
+    }
+
+  int skip_x = 0;
+  if (x < 0)
+    {
+      skip_x = -x;
+      width -= skip_x;
+      x = 0;
+    }
+
   if (x + width > destination->w)
     width = destination->w - x;
 
-  int height = source->h;
   if (y + height > destination->h)
     height = destination->h - y;
 
@@ -486,9 +500,10 @@ avt_put_image (avt_graphic * source, avt_graphic * destination, int x, int y)
     {
       uint32_t *s, *d;
 
-      s = (uint32_t *) source->pixels + (line * source->w);
-      d = (uint32_t *) destination->pixels
-	+ ((y + line) * destination->w) + x;
+      s =
+	(uint32_t *) source->pixels + ((line + skip_y) * source->w) + skip_x;
+      d =
+	(uint32_t *) destination->pixels + ((y + line) * destination->w) + x;
 
       if (opaque)
 	memcpy (d, s, width * sizeof (uint32_t));
