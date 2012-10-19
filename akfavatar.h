@@ -823,13 +823,16 @@ AVT_API int avt_show_image_xbm (const unsigned char *bits,
 
 /*
  * show raw image
- * only 3 or 4 Bytes per pixel supported (RGB or RGBA)
+ * only 4 Bytes per pixel supported (0RGB)
  */
 AVT_API int avt_show_raw_image (void *image_data, int width, int height,
                                 int bytes_per_pixel);
 
 
-/* put an image onto a raw image */
+/*
+ * put an image onto a raw image
+ * only 4 Bytes per pixel supported (0RGB)
+ */
 
 AVT_API int avt_put_raw_image_file (const char *file, int x, int y,
                                     void *image_data, int width, int height,

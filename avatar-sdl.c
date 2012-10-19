@@ -354,6 +354,17 @@ avt_new_graphic (short width, short height)
 			  0x00FF0000, 0x0000FF00, 0x000000FF, 0);
 }
 
+// use data for pixels
+// data may olny be freed after avt_free_graphic is called on this
+static inline avt_graphic *
+avt_data_to_graphic (void *data, short width, short height)
+{
+  return (avt_graphic *)
+    SDL_CreateRGBSurfaceFrom (data, width, height, 32,
+			      width * sizeof (uint32_t),
+			      0x00FF0000, 0x0000FF00, 0x000000FF, 0);
+}
+
 static inline void
 avt_free_graphic (avt_graphic * gr)
 {
@@ -446,6 +457,7 @@ avt_put_image (avt_graphic * source, avt_graphic * destination, int x, int y)
 }
 
 #else
+#warning "using untested blitter"
 
 static void
 avt_put_image (avt_graphic * source, avt_graphic * destination, int x, int y)
@@ -5972,7 +5984,7 @@ avt_show_image (avt_graphic * image)
    * if image is larger than the screen,
    * just the upper left part is shown, as far as it fits
    */
-  avt_put_image_sdl (image, screen, pos.x, pos.y);
+  avt_put_image (image, screen, pos.x, pos.y);
   avt_update_all ();
   avt_checkevent ();
 }
@@ -6115,42 +6127,16 @@ static avt_graphic *
 avt_import_image (void *image_data, int width, int height,
 		  int bytes_per_pixel)
 {
-  SDL_Surface *image;
+  // TODO: only 4 bytes per pixel allowed!
+  if (bytes_per_pixel != 4)
+    return NULL;
 
-  image = NULL;
-
-  // the wrong endianess can be optimized away while compiling
-  if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-    {
-      if (bytes_per_pixel == 3)
-	image = SDL_CreateRGBSurfaceFrom (image_data, width, height,
-					  3 * 8, 3 * width,
-					  0xFF0000, 0x00FF00, 0x0000FF, 0);
-      else if (bytes_per_pixel == 4)
-	image = SDL_CreateRGBSurfaceFrom (image_data, width, height,
-					  4 * 8, 4 * width,
-					  0xFF000000, 0x00FF0000, 0x0000FF00,
-					  0x000000FF);
-    }
-  else				// little endian
-    {
-      if (bytes_per_pixel == 3)
-	image = SDL_CreateRGBSurfaceFrom (image_data, width, height,
-					  3 * 8, 3 * width,
-					  0x0000FF, 0x00FF00, 0xFF0000, 0);
-      else if (bytes_per_pixel == 4)
-	image = SDL_CreateRGBSurfaceFrom (image_data, width, height,
-					  4 * 8, 4 * width,
-					  0x000000FF, 0x0000FF00, 0x00FF0000,
-					  0xFF000000);
-    }
-
-  return image;
+  return avt_data_to_graphic (image_data, width, height);
 }
 
 /*
  * show raw image
- * only 3 or 4 Bytes per pixel supported (RGB or RGBA)
+ * only 4 Bytes per pixel supported (0RGB)
  */
 extern int
 avt_show_raw_image (void *image_data, int width, int height,
@@ -6159,7 +6145,7 @@ avt_show_raw_image (void *image_data, int width, int height,
   if (not screen or _avt_STATUS != AVT_NORMAL or not image_data)
     return _avt_STATUS;
 
-  if (bytes_per_pixel < 3 or bytes_per_pixel > 4)
+  if (bytes_per_pixel != 4)
     {
       avt_set_error ("wrong number of bytes_per_pixel for raw image");
       return AVT_FAILURE;
@@ -6194,7 +6180,7 @@ avt_put_raw_image (avt_graphic * image, int x, int y,
 {
   avt_graphic *dest;
 
-  if (bytes_per_pixel < 3 or bytes_per_pixel > 4)
+  if (bytes_per_pixel != 4)
     {
       avt_set_error ("wrong number of bytes_per_pixel for raw image");
       return AVT_FAILURE;
@@ -6208,7 +6194,7 @@ avt_put_raw_image (avt_graphic * image, int x, int y,
       return AVT_FAILURE;
     }
 
-  avt_put_image_sdl (image, dest, x, y);
+  avt_put_image (image, dest, x, y);
 
   avt_free_graphic (dest);
 
@@ -6319,7 +6305,7 @@ avt_put_raw_image_xpm (char **xpm, int x, int y,
       return AVT_FAILURE;
     }
 
-  avt_put_image_sdl (src, dest, x, y);
+  avt_put_image (src, dest, x, y);
 
   avt_free_graphic (dest);
   avt_free_graphic (src);

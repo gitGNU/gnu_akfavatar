@@ -1,3 +1,12 @@
+2012-10-19  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lots of refactoring not further documented
+
+	* avatar-sdl.c: only support 32 bits per pixel internally
+
+	* lua/akfavatar-graphic.c:
+	use same color method as rest of AKFAvatar
+
 2012-10-17  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl.c (avt_load_image_file_sdl)

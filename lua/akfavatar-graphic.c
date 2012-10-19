@@ -52,7 +52,7 @@ extern "C"
 
 struct color
 {
-  uint8_t red, green, blue;	// evetually alpha as last value
+  uint8_t blue, green, red, alpha;
 };
 
 typedef struct graphic
@@ -62,13 +62,13 @@ typedef struct graphic
   int htextalign, vtextalign;	// alignment for text
   double penx, peny;		// position of pen
   double heading;		// heading of the turtle
-  struct color color;		// drawing color
-  struct color background;	// background color
-  struct color data[];		// data - flexible array member (C99)
+  uint32_t color;		// drawing color
+  uint32_t background;		// background color
+  uint32_t data[];		// data - flexible array member (C99)
 } graphic;
 
-// Bytes per pixel (3=RGB)
-#define BPP  (sizeof(struct color))
+// Bytes per pixel
+#define BPP  4
 #define OPAQUE  0xFF
 
 #ifndef M_PI
@@ -153,7 +153,7 @@ center (graphic * gr)
 
 // fast putpixel with color, no check
 static inline void
-putpixelcolor (graphic * gr, int x, int y, int width, struct color col)
+putpixelcolor (graphic * gr, int x, int y, int width, uint32_t col)
 {
   *(gr->data + (y * width) + x) = col;
 }
@@ -166,17 +166,17 @@ putpixel (graphic * gr, int x, int y)
 }
 
 static inline bool
-equal_colors (struct color a, struct color b)
+equal_colors (uint32_t a, uint32_t b)
 {
-  return (a.red == b.red and a.green == b.green and a.blue == b.blue);
+  return a == b;
 }
 
 
 static void
 clear_graphic (graphic * gr)
 {
-  struct color *p;
-  struct color color;
+  uint32_t *p;
+  uint32_t color;
 
   color = gr->background;
   p = gr->data;
@@ -190,8 +190,8 @@ static void
 bar (graphic * gr, int x1, int y1, int x2, int y2)
 {
   int x, y, width, height;
-  struct color *data, *p;
-  struct color color;
+  uint32_t *data, *p;
+  uint32_t color;
 
   width = gr->width;
   height = gr->height;
@@ -222,8 +222,8 @@ disc (graphic * gr, double x, double y, double radius)
   int i;
   double xv, yv;
   double r2;
-  struct color *data, *p;
-  struct color color;
+  uint32_t *data, *p;
+  uint32_t color;
 
   width = gr->width;
   height = gr->height;
@@ -295,7 +295,7 @@ lgraphic_new (lua_State * L)
   gr->height = height;
 
   // black color
-  gr->color.red = gr->color.green = gr->color.blue = 0;
+  gr->color = 0x000000;
 
   // pen in center
   center (gr);
@@ -306,10 +306,7 @@ lgraphic_new (lua_State * L)
 
   gr->heading = 0.0;
 
-  gr->background.red = avt_red (colornr);
-  gr->background.green = avt_green (colornr);
-  gr->background.blue = avt_blue (colornr);
-  // gr->background.alpha = OPAQUE;
+  gr->background = colornr;
   clear_graphic (gr);
 
   lua_pushinteger (L, width);
@@ -348,10 +345,7 @@ lgraphic_clear (lua_State * L)
       if (colornr < 0)
 	return luaL_argerror (L, 2, "invalid color");
 
-      gr->background.red = avt_red (colornr);
-      gr->background.green = avt_green (colornr);
-      gr->background.blue = avt_blue (colornr);
-      // gr->background.alpha = OPAQUE;
+      gr->background = colornr;
     }
 
   clear_graphic (gr);
@@ -380,10 +374,7 @@ lgraphic_color (lua_State * L)
   if (colornr < 0)
     return luaL_argerror (L, 2, "invalid color");
 
-  gr->color.red = avt_red (colornr);
-  gr->color.green = avt_green (colornr);
-  gr->color.blue = avt_blue (colornr);
-  // gr->color.alpha = OPAQUE;
+  gr->color = colornr;
 
   return 0;
 }
@@ -410,10 +401,7 @@ lgraphic_rgb (lua_State * L)
 		 4, "value between 0 and 255 expected");
 
   gr = get_graphic (L, 1);
-  gr->color.red = (uint8_t) red;
-  gr->color.green = (uint8_t) green;
-  gr->color.blue = (uint8_t) blue;
-  // gr->color.alpha = OPAQUE;
+  gr->color = avt_rgb (red, green, blue);
 
   return 0;
 }
@@ -525,7 +513,7 @@ vertical_line (graphic * gr, int x, int y1, int y2)
 	}
       else
 	{
-	  struct color color = gr->color;
+	  uint32_t color = gr->color;
 	  int width = gr->width;
 
 	  for (y = y1; y <= y2; y++)
@@ -562,8 +550,8 @@ horizontal_line (graphic * gr, int x1, int x2, int y)
 	}
       else
 	{
-	  struct color *p;
-	  struct color color;
+	  uint32_t *p;
+	  uint32_t color;
 
 	  color = gr->color;
 	  p = gr->data + (y * width) + x1;
@@ -623,7 +611,7 @@ sloped_line (graphic * gr, double x1, double x2, double y1, double y2)
       else
 	{
 	  double x, y;
-	  struct color color = gr->color;
+	  uint32_t color = gr->color;
 	  int width = gr->width;
 
 	  for (x = x1, y = y1; x <= x2; x++, y += delta_y)
@@ -673,7 +661,7 @@ sloped_line (graphic * gr, double x1, double x2, double y1, double y2)
       else
 	{
 	  double x, y;
-	  struct color color = gr->color;
+	  uint32_t color = gr->color;
 	  int width = gr->width;
 
 	  for (y = y1, x = x1; y <= y2; y++, x += delta_x)
@@ -800,10 +788,10 @@ lgraphic_getpixel (lua_State * L)
   if (visible (gr, x, y))
     {
       char color[8];
-      struct color *p;
+      uint32_t *p;
       p = gr->data + (y * gr->width) + x;
-      sprintf (color, "#%02X%02X%02X", (unsigned int) p->red,
-	       (unsigned int) p->green, (unsigned int) p->blue);
+      sprintf (color, "#%02X%02X%02X",
+	       avt_red (*p), avt_green (*p), avt_blue (*p));
       lua_pushstring (L, color);
       return 1;
     }
@@ -829,11 +817,11 @@ lgraphic_getpixelrgb (lua_State * L)
 
   if (visible (gr, x, y))
     {
-      struct color *p;
+      uint32_t *p;
       p = gr->data + (y * gr->width) + x;
-      lua_pushinteger (L, (int) p->red);
-      lua_pushinteger (L, (int) p->green);
-      lua_pushinteger (L, (int) p->blue);
+      lua_pushinteger (L, (int) avt_red (*p));
+      lua_pushinteger (L, (int) avt_green (*p));
+      lua_pushinteger (L, (int) avt_blue (*p));
       return 3;
     }
   else				// outside
@@ -1057,7 +1045,7 @@ lgraphic_text (lua_State * L)
   int x, y;
   int width;
   int fontwidth, fontheight;
-  struct color color;
+  uint32_t color;
 
   gr = get_graphic (L, 1);
   s = luaL_checklstring (L, 2, &len);
@@ -1308,7 +1296,7 @@ lgraphic_put (lua_State * L)
   graphic *gr, *gr2;
   int xoffset, yoffset, lines;
   int source_width, target_width, source_height, target_height;
-  struct color *source, *target;
+  uint32_t *source, *target;
 
   gr = get_graphic (L, 1);
   gr2 = get_graphic (L, 2);
@@ -1391,7 +1379,7 @@ lgraphic_put_transparency (lua_State * L)
   graphic *gr, *gr2;
   int xoffset, yoffset, lines;
   int source_width, target_width, source_height, target_height;
-  struct color *source, *target;
+  uint32_t *source, *target;
 
   gr = get_graphic (L, 1);
   gr2 = get_graphic (L, 2);
@@ -1427,8 +1415,8 @@ lgraphic_put_transparency (lua_State * L)
     {
       int x, y;
       int xstart, show_width;	// for horizontal cropping
-      struct color foreground, background;
-      struct color *ps, *pt;
+      uint32_t foreground, background;
+      uint32_t *ps, *pt;
 
       xstart = 0;
       show_width = source_width;
@@ -1566,7 +1554,7 @@ lgraphic_get (lua_State * L)
   int x1, y1, x2, y2;
   int source_width, target_width, source_height, target_height;
   int bytes, y;
-  struct color *source, *target;
+  uint32_t *source, *target;
 
   gr = get_graphic (L, 1);
 
@@ -1645,7 +1633,7 @@ static int
 lgraphic_shift_vertically (lua_State * L)
 {
   graphic *gr;
-  struct color *data, *area;
+  uint32_t *data, *area;
   int lines;
   int width, height;
 
@@ -1681,7 +1669,7 @@ lgraphic_shift_vertically (lua_State * L)
   if (area)
     {
       int i;
-      struct color color = gr->background;
+      uint32_t color = gr->background;
 
       for (i = 0; i < lines * width; i++)
 	*area++ = color;
@@ -1695,7 +1683,7 @@ static int
 lgraphic_shift_horizontally (lua_State * L)
 {
   graphic *gr;
-  struct color *data, *area;
+  uint32_t *data, *area;
   int columns;
   int width, height;
 
@@ -1731,8 +1719,8 @@ lgraphic_shift_horizontally (lua_State * L)
   if (area)
     {
       int x, y;
-      struct color *p;
-      struct color color = gr->background;
+      uint32_t *p;
+      uint32_t color = gr->background;
 
       for (y = 0; y < height; y++)
 	{
@@ -1750,7 +1738,7 @@ static int
 lgraphic_export_ppm (lua_State * L)
 {
   graphic *gr;
-  struct color *p;
+  uint32_t *p;
   const char *fname;
   FILE *f;
 
@@ -1767,9 +1755,9 @@ lgraphic_export_ppm (lua_State * L)
   p = gr->data;
   for (size_t i = gr->height * gr->width; i > 0; i--, p++)
     {
-      putc (p->red, f);
-      putc (p->green, f);
-      putc (p->blue, f);
+      putc (avt_red (*p), f);
+      putc (avt_green (*p), f);
+      putc (avt_blue (*p), f);
     }
 
   if (fclose (f) != 0)
