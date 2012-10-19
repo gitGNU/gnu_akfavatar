@@ -39,6 +39,7 @@
 #include "version.h"
 #include "rgb.h"		// only for DEFAULT_COLOR
 
+#include <limits.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <iso646.h>
@@ -448,40 +449,51 @@ avt_put_image_sdl (SDL_Surface * source, avt_graphic * destination, int x,
   SDL_BlitSurface (source, NULL, destination, &d);
 }
 
-#if false
-
 static inline void
-avt_put_image (avt_graphic * source, avt_graphic * destination, int x, int y)
+avt_line_move (uint32_t * d, uint32_t * s, int width, uint32_t color_key)
 {
-  avt_put_image_sdl (source, destination, x, y);
+  if (s > d)
+    {
+      for (int i = width; i > 0; i--, s++, d++)
+	if (*s != color_key)
+	  *d = *s;
+    }
+  else
+    {
+      s += width - 1;
+      d += width - 1;
+      for (int i = width; i > 0; i--, s--, d--)
+	if (*s != color_key)
+	  *d = *s;
+    }
 }
 
-#else
-#warning "using untested blitter"
-
 static void
-avt_put_image (avt_graphic * source, avt_graphic * destination, int x, int y)
+avt_graphic_segment (avt_graphic * source, int xoffset, int yoffset,
+		     int width, int height, avt_graphic * destination,
+		     int x, int y)
 {
-  if (source == destination or not source or not destination
+  if (not source or not destination
       or x > destination->w or y > destination->h)
     return;
 
-  int width = source->w;
-  int height = source->h;
+  if (width > source->w)
+    width = source->w;
 
-  int skip_y = 0;
+  if (height > source->h)
+    height = source->h;
+
   if (y < 0)
     {
-      skip_y = -y;
-      height -= skip_y;
+      yoffset += (-y);
+      height -= (-y);
       y = 0;
     }
 
-  int skip_x = 0;
   if (x < 0)
     {
-      skip_x = -x;
-      width -= skip_x;
+      xoffset += (-x);
+      width -= (-x);
       x = 0;
     }
 
@@ -497,46 +509,51 @@ avt_put_image (avt_graphic * source, avt_graphic * destination, int x, int y)
   bool opaque = ((source->flags bitand SDL_SRCCOLORKEY) == 0);
   uint32_t color_key = source->format->colorkey;
 
-  for (int line = 0; line < height; line++)
+  // overlap allowed, so we must take care about the direction we go
+
+  if (yoffset >= y)
     {
-      uint32_t *s, *d;
-
-      s =
-	(uint32_t *) source->pixels + ((line + skip_y) * source->w) + skip_x;
-      d =
-	(uint32_t *) destination->pixels + ((y + line) * destination->w) + x;
-
-      if (opaque)
-	memcpy (d, s, width * sizeof (uint32_t));
-      else			// transparent
+      for (int line = 0; line < height; line++)
 	{
-	  for (int i = 0; i < width; i++, s++, d++)
-	    if (*s != color_key)
-	      *d = *s;
+	  uint32_t *s, *d;
+
+	  s = (uint32_t *) source->pixels + ((line + yoffset) * source->w)
+	    + xoffset;
+
+	  d = (uint32_t *) destination->pixels + ((y + line) * destination->w)
+	    + x;
+
+	  if (opaque)
+	    memmove (d, s, width * sizeof (uint32_t));
+	  else			// transparent
+	    avt_line_move (d, s, width, color_key);
+	}
+    }
+  else				// yoffset < y
+    {
+      for (int line = height - 1; line >= 0; line--)
+	{
+	  uint32_t *s, *d;
+
+	  s = (uint32_t *) source->pixels + ((line + yoffset) * source->w)
+	    + xoffset;
+
+	  d = (uint32_t *) destination->pixels + ((y + line) * destination->w)
+	    + x;
+
+	  if (opaque)
+	    memmove (d, s, width * sizeof (uint32_t));
+	  else			// transparent
+	    avt_line_move (d, s, width, color_key);
 	}
     }
 }
 
-#endif
-
-// TODO
-// find a better name
-// source and destination may be the same!
 static inline void
-avt_get_segment (avt_graphic * source, int xoffset, int yoffset,
-		 int width, int height, avt_graphic * destination,
-		 int x, int y)
+avt_put_graphic (avt_graphic * source, avt_graphic * destination, int x,
+		 int y)
 {
-  SDL_Rect s, d;
-
-  s.x = xoffset;
-  s.y = yoffset;
-  s.w = width;
-  s.h = height;
-  d.x = x;
-  d.y = y;
-
-  SDL_BlitSurface (source, &s, destination, &d);
+  avt_graphic_segment (source, 0, 0, INT_MAX, INT_MAX, destination, x, y);
 }
 
 // import an SDL_Surface into the internal format
@@ -562,7 +579,7 @@ avt_get_area (int x, int y, int width, int height)
       return NULL;
     }
 
-  avt_get_segment (screen, x, y, width, height, result, 0, 0);
+  avt_graphic_segment (screen, x, y, width, height, result, 0, 0);
 
   return result;
 }
@@ -1699,8 +1716,9 @@ avt_show_text_cursor (bool on)
 	  int bg_color;
 
 	  // save character under cursor
-	  avt_get_segment (screen, avt.cursor.x, avt.cursor.y,
-			   fontwidth, fontheight, avt.cursor_character, 0, 0);
+	  avt_graphic_segment (screen, avt.cursor.x, avt.cursor.y,
+			       fontwidth, fontheight, avt.cursor_character, 0,
+			       0);
 
 	  // assume lower right corner is the background color
 	  bg_color = avt_getpixel (avt.cursor_character,
@@ -1717,8 +1735,8 @@ avt_show_text_cursor (bool on)
       else
 	{
 	  // restore saved character
-	  avt_put_image (avt.cursor_character, screen, avt.cursor.x,
-			 avt.cursor.y);
+	  avt_put_graphic (avt.cursor_character, screen, avt.cursor.x,
+			   avt.cursor.y);
 	  avt_update_area (avt.cursor.x, avt.cursor.y, fontwidth, fontheight);
 	}
 
@@ -1849,7 +1867,7 @@ avt_draw_avatar (void)
 	  else			// bottom
 	    pos.y = window.y + window.h - avt.avatar_image->h - AVATAR_MARGIN;
 
-	  avt_put_image (avt.avatar_image, screen, pos.x, pos.y);
+	  avt_put_graphic (avt.avatar_image, screen, pos.x, pos.y);
 	}
 
       if (avt.name)
@@ -2201,7 +2219,7 @@ avt_resize (int w, int h)
   window.y = screen->h > window.h ? (screen->h / 2) - (window.h / 2) : 0;
 
   // restore image
-  avt_put_image (oldwindowimage, screen, window.x, window.y);
+  avt_put_graphic (oldwindowimage, screen, window.x, window.y);
   avt_free_graphic (oldwindowimage);
 
   // recalculate textfield & viewport positions
@@ -2262,7 +2280,7 @@ avt_flash (void)
   avt_fill (screen, avt.background_color);
 
   // restore image
-  avt_put_image (oldwindowimage, screen, window.x, window.y);
+  avt_put_graphic (oldwindowimage, screen, window.x, window.y);
   avt_free_graphic (oldwindowimage);
 
   // make visible again
@@ -2929,10 +2947,11 @@ avt_insert_spaces (int num)
   if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
-  avt_get_segment (screen, avt.cursor.x, avt.cursor.y,
-		   avt.viewport.w - (avt.cursor.x - avt.viewport.x)
-		   - (num * fontwidth), LINEHEIGHT,
-		   screen, avt.cursor.x + (num * fontwidth), avt.cursor.y);
+  avt_graphic_segment (screen, avt.cursor.x, avt.cursor.y,
+		       avt.viewport.w - (avt.cursor.x - avt.viewport.x)
+		       - (num * fontwidth), LINEHEIGHT,
+		       screen, avt.cursor.x + (num * fontwidth),
+		       avt.cursor.y);
 
   avt_bar (screen, avt.cursor.x, avt.cursor.y,
 	   num * fontwidth, LINEHEIGHT, avt.text_background_color);
@@ -2956,10 +2975,10 @@ avt_delete_characters (int num)
   if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
-  avt_get_segment (screen, avt.cursor.x + (num * fontwidth), avt.cursor.y,
-		   avt.viewport.w - (avt.cursor.x - avt.viewport.x)
-		   - (num * fontwidth), LINEHEIGHT,
-		   screen, avt.cursor.x, avt.cursor.y);
+  avt_graphic_segment (screen, avt.cursor.x + (num * fontwidth), avt.cursor.y,
+		       avt.viewport.w - (avt.cursor.x - avt.viewport.x)
+		       - (num * fontwidth), LINEHEIGHT,
+		       screen, avt.cursor.x, avt.cursor.y);
 
   avt_bar (screen, avt.viewport.x + avt.viewport.w - (num * fontwidth),
 	   avt.cursor.y, num * fontwidth, LINEHEIGHT,
@@ -3014,12 +3033,12 @@ avt_delete_lines (int line, int num)
   if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
-  avt_get_segment (screen, avt.viewport.x,
-		   avt.viewport.y + ((line - 1 + num) * LINEHEIGHT),
-		   avt.viewport.w,
-		   avt.viewport.h - ((line - 1 + num) * LINEHEIGHT),
-		   screen, avt.viewport.x,
-		   avt.viewport.y + ((line - 1) * LINEHEIGHT));
+  avt_graphic_segment (screen, avt.viewport.x,
+		       avt.viewport.y + ((line - 1 + num) * LINEHEIGHT),
+		       avt.viewport.w,
+		       avt.viewport.h - ((line - 1 + num) * LINEHEIGHT),
+		       screen, avt.viewport.x,
+		       avt.viewport.y + ((line - 1) * LINEHEIGHT));
 
   avt_bar (screen, avt.viewport.x,
 	   avt.viewport.y + avt.viewport.h - (num * LINEHEIGHT),
@@ -3048,11 +3067,12 @@ avt_insert_lines (int line, int num)
   if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
-  avt_get_segment (screen, avt.viewport.x,
-		   avt.viewport.y + ((line - 1) * LINEHEIGHT), avt.viewport.w,
-		   avt.viewport.h - ((line - 1 + num) * LINEHEIGHT), screen,
-		   avt.viewport.x,
-		   avt.viewport.y + ((line - 1 + num) * LINEHEIGHT));
+  avt_graphic_segment (screen, avt.viewport.x,
+		       avt.viewport.y + ((line - 1) * LINEHEIGHT),
+		       avt.viewport.w,
+		       avt.viewport.h - ((line - 1 + num) * LINEHEIGHT),
+		       screen, avt.viewport.x,
+		       avt.viewport.y + ((line - 1 + num) * LINEHEIGHT));
 
   avt_bar (screen, avt.viewport.x,
 	   avt.viewport.y + ((line - 1) * LINEHEIGHT),
@@ -4863,7 +4883,7 @@ avt_show_button (int x, int y, enum avt_button_type type,
   button->background =
     avt_get_area (pos.x, pos.y, BASE_BUTTON_WIDTH, BASE_BUTTON_HEIGHT);
 
-  avt_put_image (base_button, screen, pos.x, pos.y);
+  avt_put_graphic (base_button, screen, pos.x, pos.y);
 
   switch (type)
     {
@@ -4938,8 +4958,8 @@ avt_clear_buttons (void)
 
       if (button->background)
 	{
-	  avt_put_image (button->background, screen,
-			 button->x + window.x, button->y + window.y);
+	  avt_put_graphic (button->background, screen,
+			   button->x + window.x, button->y + window.y);
 	  avt_update_area (button->x + window.x, button->y + window.y,
 			   BASE_BUTTON_WIDTH, BASE_BUTTON_HEIGHT);
 	  avt_free_graphic (button->background);
@@ -5608,7 +5628,7 @@ avt_move_in (void)
 	  if (pos.x != oldx)
 	    {
 	      // draw
-	      avt_put_image (avt.avatar_image, screen, pos.x, pos.y);
+	      avt_put_graphic (avt.avatar_image, screen, pos.x, pos.y);
 
 	      // update
 	      if ((oldx + avt.avatar_image->w) >= screen->w)
@@ -5683,7 +5703,7 @@ avt_move_out (void)
 	  if (pos.x != oldx)
 	    {
 	      // draw
-	      avt_put_image (avt.avatar_image, screen, pos.x, pos.y);
+	      avt_put_graphic (avt.avatar_image, screen, pos.x, pos.y);
 
 	      // update
 	      if ((pos.x + avt.avatar_image->w) >= screen->w)
@@ -5998,7 +6018,7 @@ avt_show_image (avt_graphic * image)
    * if image is larger than the screen,
    * just the upper left part is shown, as far as it fits
    */
-  avt_put_image (image, screen, pos.x, pos.y);
+  avt_put_graphic (image, screen, pos.x, pos.y);
   avt_update_all ();
   avt_checkevent ();
 }
@@ -6208,7 +6228,7 @@ avt_put_raw_image (avt_graphic * image, int x, int y,
       return AVT_FAILURE;
     }
 
-  avt_put_image (image, dest, x, y);
+  avt_put_graphic (image, dest, x, y);
 
   avt_free_graphic (dest);
 
@@ -6319,7 +6339,7 @@ avt_put_raw_image_xpm (char **xpm, int x, int y,
       return AVT_FAILURE;
     }
 
-  avt_put_image (src, dest, x, y);
+  avt_put_graphic (src, dest, x, y);
 
   avt_free_graphic (dest);
   avt_free_graphic (src);
@@ -6777,13 +6797,13 @@ avt_credits_up (avt_graphic * last_line)
   while (moved <= LINEHEIGHT)
     {
       // move screen up
-      avt_get_segment (screen, window.x, window.y + pixel,
-		       window.w, window.h - pixel, screen, window.x,
-		       window.y);
+      avt_graphic_segment (screen, window.x, window.y + pixel,
+			   window.w, window.h - pixel, screen, window.x,
+			   window.y);
 
       if (last_line)
-	avt_put_image (last_line, screen, window.x,
-		       window.y + window.h - moved);
+	avt_put_graphic (last_line, screen, window.x,
+			 window.y + window.h - moved);
 
       avt_update_window ();
 
