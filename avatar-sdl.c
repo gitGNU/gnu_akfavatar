@@ -424,9 +424,10 @@ avt_fill (avt_graphic * s, int color)
     *p = color;
 }
 
-// TODO
+// TODO: remove
 static inline void
-avt_put_image (avt_graphic * source, avt_graphic * destination, int x, int y)
+avt_put_image_sdl (SDL_Surface * source, avt_graphic * destination, int x,
+		   int y)
 {
   SDL_Rect d;
 
@@ -436,16 +437,67 @@ avt_put_image (avt_graphic * source, avt_graphic * destination, int x, int y)
   SDL_BlitSurface (source, NULL, destination, &d);
 }
 
+#if true
+
+static inline void
+avt_put_image (avt_graphic * source, avt_graphic * destination, int x, int y)
+{
+  avt_put_image_sdl (source, destination, x, y);
+}
+
+#else
+
+static void
+avt_put_image (avt_graphic * source, avt_graphic * destination, int x, int y)
+{
+  if (source == destination or not source or not destination
+      or x > destination->w or y > destination->h)
+    return;
+
+  if (x < 0 or y < 0)
+    return;			// TODO: support using part of the image
+
+  int width = source->w;
+  if (x + width > destination->w)
+    width = destination->w - x;
+
+  int height = source->h;
+  if (y + height > destination->h)
+    height = destination->h - y;
+
+  if (width <= 0 or height <= 0)
+    return;
+
+  bool opaque = ((source->flags bitand SDL_SRCCOLORKEY) == 0);
+
+  for (int line = 0; line < height; line++)
+    {
+      uint32_t *s, *d;
+
+      s = (uint32_t *) source->pixels + (line * source->w);
+      d = (uint32_t *) destination->pixels
+	+ ((y + line) * destination->w) + x;
+
+      if (opaque)
+	memcpy (d, s, width * sizeof (uint32_t));
+      else			// transparent
+	{
+	  uint32_t color_key = source->format->colorkey;
+
+	  for (int i = 0; i < width; i++, s++, d++)
+	    if (*s != color_key)
+	      *d = *s;
+	}
+    }
+}
+
+#endif
+
 // import an SDL_Surface into the internal format
 static inline avt_graphic *
 avt_import_sdl_surface (SDL_Surface * s)
 {
-  avt_graphic *gr;
-
-  gr = avt_new_graphic (s->w, s->h);
-  avt_put_image (s, gr, 0, 0);
-
-  return gr;
+  return (avt_graphic *) SDL_DisplayFormat (s);
 }
 
 // TODO
@@ -4572,7 +4624,7 @@ avt_get_pointer_position (int *x, int *y)
 
 static void
 update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
-		 avt_graphic * plain_menu, avt_graphic * bar)
+		 avt_graphic * plain_menu, SDL_Surface * bar)
 {
   SDL_Rect s, t;
 
@@ -4596,7 +4648,7 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
 	{
 	  t.x = avt.viewport.x;
 	  t.y = avt.viewport.y + ((line_nr - 1) * LINEHEIGHT);
-	  avt_put_image (bar, screen, t.x, t.y);
+	  avt_put_image_sdl (bar, screen, t.x, t.y);
 	  avt_update_area (t.x, t.y, avt.viewport.w, LINEHEIGHT);
 	}
     }
@@ -4606,7 +4658,8 @@ extern int
 avt_choice (int *result, int start_line, int items, int key,
 	    bool back, bool forward)
 {
-  avt_graphic *plain_menu, *bar;
+  avt_graphic *plain_menu;
+  SDL_Surface *bar;
   SDL_Color barcolor;
   int last_key;
   int end_line;
@@ -5919,7 +5972,7 @@ avt_show_image (avt_graphic * image)
    * if image is larger than the screen,
    * just the upper left part is shown, as far as it fits
    */
-  avt_put_image (image, screen, pos.x, pos.y);
+  avt_put_image_sdl (image, screen, pos.x, pos.y);
   avt_update_all ();
   avt_checkevent ();
 }
@@ -6062,7 +6115,7 @@ static avt_graphic *
 avt_import_image (void *image_data, int width, int height,
 		  int bytes_per_pixel)
 {
-  avt_graphic *image;
+  SDL_Surface *image;
 
   image = NULL;
 
@@ -6155,7 +6208,7 @@ avt_put_raw_image (avt_graphic * image, int x, int y,
       return AVT_FAILURE;
     }
 
-  avt_put_image (image, dest, x, y);
+  avt_put_image_sdl (image, dest, x, y);
 
   avt_free_graphic (dest);
 
@@ -6266,7 +6319,7 @@ avt_put_raw_image_xpm (char **xpm, int x, int y,
       return AVT_FAILURE;
     }
 
-  avt_put_image (src, dest, x, y);
+  avt_put_image_sdl (src, dest, x, y);
 
   avt_free_graphic (dest);
   avt_free_graphic (src);
