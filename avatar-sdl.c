@@ -590,7 +590,7 @@ avt_update_window (void)
 static inline void
 avt_update_textfield (void)
 {
-  if (not avt.hold_updates)
+  if (not avt.hold_updates and avt.textfield.x >= 0)
     avt_update_area (avt.textfield.x, avt.textfield.y,
 		     avt.textfield.w, avt.textfield.h);
 }
@@ -598,7 +598,7 @@ avt_update_textfield (void)
 static inline void
 avt_update_viewport (void)
 {
-  if (not avt.hold_updates)
+  if (not avt.hold_updates and avt.viewport.x >= 0)
     avt_update_area (avt.viewport.x, avt.viewport.y,
 		     avt.viewport.w, avt.viewport.h);
 }
