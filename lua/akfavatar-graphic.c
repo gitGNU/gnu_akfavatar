@@ -50,16 +50,11 @@ extern "C"
 }
 #endif
 
-struct color
-{
-  uint8_t blue, green, red, alpha;
-};
-
 typedef struct graphic
 {
-  int width, height;
-  int thickness;		// thickness of pen
-  int htextalign, vtextalign;	// alignment for text
+  short width, height;
+  short thickness;		// thickness of pen
+  short htextalign, vtextalign;	// alignment for text
   double penx, peny;		// position of pen
   double heading;		// heading of the turtle
   uint32_t color;		// drawing color
