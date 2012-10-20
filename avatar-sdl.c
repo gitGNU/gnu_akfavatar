@@ -1152,20 +1152,29 @@ avt_put_image_xbm (avt_graphic * gr, short x, short y,
 		   const unsigned char *bits, int width, int height,
 		   int colornr)
 {
-  if (x < 0 or y < 0)
+  // if it doesn't fit horizontally, display nothing
+  // use avt_load_image_xbm to get horizontal clipping
+  if (x < 0 or x + width > gr->w)
     return;
+
+  int yoffset = 0;
+  if (y < 0)
+    {
+      yoffset = (-y);
+      height -= yoffset;
+      y = 0;
+    }
 
   if (y + height > gr->h)
     height = gr->h - y;
 
-  // TODO: cannot mess with width that easily
-  if (x + width > gr->w)
+  if (width <= 0 or height <= 0)
     return;
 
   for (int dy = 0; dy < height; dy++)
     {
       int dx = 0;
-      uint32_t *p = avt_pixel (gr, x, y + dy);
+      uint32_t *p = avt_pixel (gr, x, y + dy + yoffset);
 
       while (dx < width)
 	{
