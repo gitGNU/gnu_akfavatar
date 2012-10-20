@@ -373,12 +373,12 @@ avt_free_graphic (avt_graphic * gr)
   SDL_FreeSurface ((SDL_Surface *) gr);
 }
 
-// Fast putpixel with no checks
+// returns the pixel position, no checks
 // INSECURE
-static inline void
-avt_putpixel (avt_graphic * s, int x, int y, int color)
+static inline uint32_t *
+avt_pixel (avt_graphic * s, int x, int y)
 {
-  *((uint32_t *) s->pixels + y * s->w + x) = color;
+  return ((uint32_t *) s->pixels + y * s->w + x);
 }
 
 // secure
@@ -413,7 +413,7 @@ avt_bar (avt_graphic * s, int x, int y, int width, int height, int color)
     {
       uint32_t *p;
 
-      p = (uint32_t *) s->pixels + ((y + ny) * s->w) + x;
+      p = avt_pixel (s, x, y + ny);
 
       for (int nx = width; nx > 0; nx--, p++)
 	*p = color;
@@ -512,11 +512,8 @@ avt_graphic_segment (avt_graphic * source, int xoffset, int yoffset,
 	{
 	  uint32_t *s, *d;
 
-	  s = (uint32_t *) source->pixels + ((line + yoffset) * source->w)
-	    + xoffset;
-
-	  d = (uint32_t *) destination->pixels + ((y + line) * destination->w)
-	    + x;
+	  s = avt_pixel (source, xoffset, line + yoffset);
+	  d = avt_pixel (destination, x, y + line);
 
 	  if (opaque)
 	    memmove (d, s, width * sizeof (uint32_t));
@@ -530,11 +527,8 @@ avt_graphic_segment (avt_graphic * source, int xoffset, int yoffset,
 	{
 	  uint32_t *s, *d;
 
-	  s = (uint32_t *) source->pixels + ((line + yoffset) * source->w)
-	    + xoffset;
-
-	  d = (uint32_t *) destination->pixels + ((y + line) * destination->w)
-	    + x;
+	  s = avt_pixel (source, xoffset, line + yoffset);
+	  d = avt_pixel (destination, x, y + line);
 
 	  if (opaque)
 	    memmove (d, s, width * sizeof (uint32_t));
@@ -961,7 +955,7 @@ avt_load_image_xpm (char **xpm)
       for (int line = 0; line < height; line++)
 	{
 	  // point to beginning of the line
-	  pix = (uint32_t *) img->pixels + (line * img->w);
+	  pix = avt_pixel (img, 0, line);
 	  xpm_data = (uint8_t *) xpm[ncolors + 1 + line];
 
 	  for (int pos = width; pos > 0; pos--, pix++, xpm_data++)
@@ -976,7 +970,7 @@ avt_load_image_xpm (char **xpm)
       for (int line = 0; line < height; line++)
 	{
 	  // point to beginning of the line
-	  pix = (uint32_t *) img->pixels + (line * img->w);
+	  pix = avt_pixel (img, 0, line);
 	  xpm_line = (uint8_t *) xpm[ncolors + 1 + line];
 
 	  for (int pos = 0; pos < width; pos++, pix++)
@@ -1153,7 +1147,7 @@ avt_xbm_bytes_per_line (int width)
   return ((width + 7) / 8);
 }
 
-// TODO: check if it fits! (uses insecure putpixel)
+// TODO: check if it fits!
 static void
 avt_put_image_xbm (avt_graphic * img, short x, short y,
 		   const unsigned char *bits, int width, int height,
@@ -1169,7 +1163,7 @@ avt_put_image_xbm (avt_graphic * img, short x, short y,
 	{
 	  for (int bit = 1; bit <= 0x80 and dx < width; bit <<= 1, dx++)
 	    if (*bits bitand bit)
-	      avt_putpixel (img, x + dx, y + dy, colornr);
+	      *avt_pixel (img, x + dx, y + dy) = colornr;
 
 	  bits++;
 	}
@@ -1652,41 +1646,6 @@ avt_set_status (int status)
   _avt_STATUS = status;
 }
 
-// taken from the SDL documentation
-// TODO: simplify
-/*
- * Return the pixel value at (x, y)
- * NOTE: The surface must be locked before calling this!
- */
-static int
-avt_getpixel (avt_graphic * surface, int x, int y)
-{
-  int bpp = surface->format->BytesPerPixel;
-  // Here p is the address to the pixel we want to retrieve
-  uint8_t *p = (uint8_t *) surface->pixels + y * surface->pitch + x * bpp;
-
-  switch (bpp)
-    {
-    case 1:
-      return *p;
-
-    case 2:
-      return *(uint16_t *) p;
-
-    case 3:
-      if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-	return p[0] << 16 | p[1] << 8 | p[2];
-      else
-	return p[0] | p[1] << 8 | p[2] << 16;
-
-    case 4:
-      return *(uint32_t *) p;
-
-    default:
-      return 0;			// shouldn't happen, but avoids warnings
-    }
-}
-
 // avoid using the libc
 static int
 avt_strwidth (const wchar_t * m)
@@ -1708,7 +1667,7 @@ avt_show_text_cursor (bool on)
     {
       if (on)
 	{
-	  int bg_color;
+	  uint32_t bg_color;
 
 	  // save character under cursor
 	  avt_graphic_segment (screen, avt.cursor.x, avt.cursor.y,
@@ -1716,14 +1675,17 @@ avt_show_text_cursor (bool on)
 			       0);
 
 	  // assume lower right corner is the background color
-	  bg_color = avt_getpixel (avt.cursor_character,
-				   fontwidth - 1, fontheight - 1);
+	  bg_color = *avt_pixel (avt.cursor_character,
+				 fontwidth - 1, fontheight - 1);
 
 	  // show text-cursor
 	  for (int y = avt.cursor.y + fontheight - 1; y >= avt.cursor.y; y--)
 	    for (int x = avt.cursor.x + fontwidth - 1; x >= avt.cursor.x; x--)
-	      if (bg_color == avt_getpixel (screen, x, y))
-		avt_putpixel (screen, x, y, avt.cursor_color);
+	      {
+		register uint32_t *p = avt_pixel (screen, x, y);
+		if (bg_color == *p)
+		  *p = avt.cursor_color;
+	      }
 
 	  avt_update_area (avt.cursor.x, avt.cursor.y, fontwidth, fontheight);
 	}
@@ -3510,10 +3472,10 @@ avt_drawchar (avt_char ch, avt_graphic * surface)
 
       // leftmost bit set, gets shifted to the right in the for loop
       uint16_t scanbit = 0x8000;
-      for (int x = 0; x < fontwidth; x++, scanbit >>= 1)
+      uint32_t *p = avt_pixel (surface, avt.cursor.x, avt.cursor.y + y);
+      for (int x = 0; x < fontwidth; x++, p++, scanbit >>= 1)
 	if (line bitand scanbit)
-	  avt_putpixel (surface, avt.cursor.x + x, avt.cursor.y + y,
-			avt.text_color);
+	  *p = avt.text_color;
     }				// for (int y...
 }
 
@@ -6371,18 +6333,7 @@ avt_init_SDL (void)
 static avt_graphic *
 avt_make_transparent (avt_graphic * image)
 {
-  int32_t color;
-
-  if (SDL_MUSTLOCK (image))
-    SDL_LockSurface (image);
-
-  // get color of upper left corner
-  color = avt_getpixel (image, 0, 0);
-
-  if (SDL_MUSTLOCK (image))
-    SDL_UnlockSurface (image);
-
-  avt_set_color_key (image, color);
+  avt_set_color_key (image, *avt_pixel (image, 0, 0));
 
   return image;
 }
@@ -6411,6 +6362,7 @@ avt_set_avatar_image (avt_graphic * image)
     }
 
   // import the avatar image
+  // TODO: check
   if (image)
     {
       // convert image to display-format for faster drawing
