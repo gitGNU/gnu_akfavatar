@@ -1840,7 +1840,7 @@ avt_show_name (void)
       avt.text_background_color = AVT_COLOR_TAN;
 
       if (AVT_FOOTER == avt.avatar_mode or AVT_HEADER == avt.avatar_mode)
-	x = ((window.x + window.w) / 2) + (avt.avatar_image->w / 2)
+	x = window.x + (window.w / 2) + (avt.avatar_image->w / 2)
 	  + BUTTON_DISTANCE;
       else			// left
 	x = window.x + AVATAR_MARGIN + avt.avatar_image->w + BUTTON_DISTANCE;
@@ -1895,7 +1895,7 @@ avt_draw_avatar (void)
       if (avt.avatar_image)
 	{
 	  if (AVT_FOOTER == avt.avatar_mode or AVT_HEADER == avt.avatar_mode)
-	    pos.x = ((window.x + window.w) / 2) - (avt.avatar_image->w / 2);
+	    pos.x = window.x + (window.w / 2) - (avt.avatar_image->w / 2);
 	  else			// left
 	    pos.x = window.x + AVATAR_MARGIN;
 
@@ -5665,7 +5665,7 @@ avt_move_in (void)
       start_time = avt_ticks ();
 
       if (AVT_FOOTER == avt.avatar_mode or AVT_HEADER == avt.avatar_mode)
-	destination = ((window.x + window.w) / 2) - (avt.avatar_image->w / 2);
+	destination = window.x + (window.w / 2) - (avt.avatar_image->w / 2);
       else			// left
 	destination = window.x + AVATAR_MARGIN;
 
@@ -5725,7 +5725,7 @@ avt_move_out (void)
 
       if (AVT_FOOTER == avt.avatar_mode or AVT_HEADER == avt.avatar_mode)
 	start_position =
-	  ((window.x + window.w) / 2) - (avt.avatar_image->w / 2);
+	  window.x + (window.w / 2) - (avt.avatar_image->w / 2);
       else
 	start_position = window.x + AVATAR_MARGIN;
 

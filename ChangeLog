@@ -1,3 +1,7 @@
+2012-10-20  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-sdl.c: fix centering header/footer
+
 2012-10-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lots of refactoring not further documented
