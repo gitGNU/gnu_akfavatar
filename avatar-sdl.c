@@ -4707,32 +4707,28 @@ avt_get_pointer_position (int *x, int *y)
 // TODO: free from SDL
 static void
 update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
-		 SDL_Surface * plain_menu, SDL_Surface * bar)
+		 avt_graphic * plain_menu, SDL_Surface * bar)
 {
-  SDL_Rect s, t;
-
   if (line_nr != old_line)
     {
       // restore oldline
       if (old_line >= menu_start and old_line <= menu_end)
 	{
-	  s.x = 0;
-	  s.y = (old_line - 1) * LINEHEIGHT;
-	  s.w = avt.viewport.w;
-	  s.h = LINEHEIGHT;
-	  t.x = avt.viewport.x;
-	  t.y = avt.viewport.y + s.y;
-	  SDL_BlitSurface (plain_menu, &s, sdl_screen, &t);
-	  avt_update_area (t.x, t.y, avt.viewport.w, LINEHEIGHT);
+	  avt_graphic_segment (plain_menu, 0, (old_line - 1) * LINEHEIGHT,
+			       avt.viewport.w, LINEHEIGHT,
+			       screen, avt.viewport.x,
+			       avt.viewport.y + (old_line - 1) * LINEHEIGHT);
+	  avt_update_area (avt.viewport.x,
+			   avt.viewport.y + (old_line - 1) * LINEHEIGHT,
+			   avt.viewport.w, LINEHEIGHT);
 	}
 
       // show bar
       if (line_nr >= menu_start and line_nr <= menu_end)
 	{
-	  t.x = avt.viewport.x;
-	  t.y = avt.viewport.y + ((line_nr - 1) * LINEHEIGHT);
-	  avt_put_image_sdl (bar, sdl_screen, t.x, t.y);
-	  avt_update_area (t.x, t.y, avt.viewport.w, LINEHEIGHT);
+	  int y = avt.viewport.y + ((line_nr - 1) * LINEHEIGHT);
+	  avt_put_image_sdl (bar, sdl_screen, avt.viewport.x, y);
+	  avt_update_area (avt.viewport.x, y, avt.viewport.w, LINEHEIGHT);
 	}
     }
 }
@@ -4742,7 +4738,7 @@ extern int
 avt_choice (int *result, int start_line, int items, int key,
 	    bool back, bool forward)
 {
-  SDL_Surface *plain_menu = NULL;
+  avt_graphic *plain_menu;
   SDL_Surface *bar;
   SDL_Color barcolor;
   int last_key;
@@ -4751,19 +4747,8 @@ avt_choice (int *result, int start_line, int items, int key,
 
   if (screen and _avt_STATUS == AVT_NORMAL)
     {
-      SDL_Rect src;
-      src.x = avt.viewport.x;
-      src.y = avt.viewport.y;
-      src.w = avt.viewport.w;
-      src.h = avt.viewport.h;
-      plain_menu =
-	SDL_CreateRGBSurface (SDL_SWSURFACE, src.w, src.h,
-			      sdl_screen->format->BitsPerPixel,
-			      sdl_screen->format->Rmask,
-			      sdl_screen->format->Gmask,
-			      sdl_screen->format->Bmask,
-			      sdl_screen->format->Amask);
-      SDL_BlitSurface (sdl_screen, &src, plain_menu, NULL);
+      plain_menu = avt_get_area (avt.viewport.x, avt.viewport.y,
+				 avt.viewport.w, avt.viewport.h);
 
       // prepare transparent bar
       bar = SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_SRCALPHA | SDL_RLEACCEL,
@@ -4772,7 +4757,7 @@ avt_choice (int *result, int start_line, int items, int key,
 
       if (not bar)
 	{
-	  SDL_FreeSurface (plain_menu);
+	  avt_free_graphic (plain_menu);
 	  avt_set_error ("out of memory");
 	  _avt_STATUS = AVT_ERROR;
 	  return _avt_STATUS;
@@ -4868,7 +4853,7 @@ avt_choice (int *result, int start_line, int items, int key,
       avt_set_pointer_buttons_key (0);
       avt_clear_keys ();
 
-      SDL_FreeSurface (plain_menu);
+      avt_free_graphic (plain_menu);
       SDL_FreeSurface (bar);
     }
 
@@ -7122,8 +7107,7 @@ avt_set_icon (char **xpm)
   icon = SDL_CreateRGBSurfaceFrom (gr->pixels,
 				   gr->w, gr->h, 32,
 				   gr->w * sizeof (uint32_t),
-				   0x00FF0000, 0x0000FF00, 0x000000FF,
-				   0);
+				   0x00FF0000, 0x0000FF00, 0x000000FF, 0);
 
   SDL_WM_SetIcon (icon, NULL);
 
