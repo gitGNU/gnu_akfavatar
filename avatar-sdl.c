@@ -222,7 +222,8 @@ enum avt_button_type
   btn_eject, btn_circle
 };
 
-static SDL_Surface *screen;
+static SDL_Surface *sdl_screen;
+static avt_graphic *screen;
 static avt_graphic *base_button;
 static avt_graphic *raw_image;
 static SDL_Cursor *mpointer;
@@ -591,8 +592,9 @@ avt_set_color_key (avt_graphic * s, int color)
 static inline void
 avt_update_area (int x, int y, int width, int height)
 {
-  // FIXME
-  SDL_UpdateRect (screen, x, y, width, height);
+  // sdl_screen has the pixel-information of screen
+  // other implementations might need to copy it
+  SDL_UpdateRect (sdl_screen, x, y, width, height);
 }
 
 static inline void
@@ -6952,8 +6954,10 @@ avt_quit (void)
       avt_free_graphic (avt.cursor_character);
       avt.cursor_character = NULL;
       avt_alert_func = NULL;
+      avt_free_graphic (screen);
+      screen = NULL;
       SDL_Quit ();
-      screen = NULL;		// it was freed by SDL_Quit
+      sdl_screen = NULL;		// it was freed by SDL_Quit
       avt.avatar_visible = false;
       avt.textfield.x = avt.textfield.y = avt.textfield.w = avt.textfield.h =
 	-1;
@@ -7153,19 +7157,19 @@ avt_start (const char *title, const char *shortname, int mode)
 
   if (avt.mode == AVT_FULLSCREENNOSWITCH)
     {
-      screen = SDL_SetVideoMode (0, 0, COLORDEPTH, screenflags);
+      sdl_screen = SDL_SetVideoMode (0, 0, COLORDEPTH, screenflags);
 
       // fallback if 0,0 is not supported yet (before SDL-1.2.10)
-      if (screen and (screen->w == 0 or screen->h == 0))
-	screen =
+      if (sdl_screen and (sdl_screen->w == 0 or sdl_screen->h == 0))
+	sdl_screen =
 	  SDL_SetVideoMode (MINIMALWIDTH, MINIMALHEIGHT, COLORDEPTH,
 			    screenflags);
     }
   else
-    screen =
+    sdl_screen =
       SDL_SetVideoMode (MINIMALWIDTH, MINIMALHEIGHT, COLORDEPTH, screenflags);
 
-  if (not screen)
+  if (not sdl_screen)
     {
       avt_set_error ("error initializing AKFAvatar");
       _avt_STATUS = AVT_ERROR;
@@ -7173,19 +7177,28 @@ avt_start (const char *title, const char *shortname, int mode)
     }
 
   // assure we really get what we need
-  if (SDL_MUSTLOCK (screen) or screen->format->BitsPerPixel != 32)
+  if (SDL_MUSTLOCK (sdl_screen) or sdl_screen->format->BitsPerPixel != 32)
     {
       avt_set_error ("error initializing AKFAvatar");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
 
-  if (screen->w < MINIMALWIDTH or screen->h < MINIMALHEIGHT)
+  if (sdl_screen->w < MINIMALWIDTH or sdl_screen->h < MINIMALHEIGHT)
     {
       avt_set_error ("screen too small");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
+
+  // set up a graphic with the same pixel data
+  screen = avt_data_to_graphic (sdl_screen->pixels, sdl_screen->w, sdl_screen->h);
+
+  // FIXME
+  avt.background_color = avt.backgroundcolornr;
+
+  avt_fill (screen, avt.backgroundcolornr);
+  avt_update_all ();
 
   // size of the window (not to be confused with the variable window
   windowmode_size.x = windowmode_size.y = 0;	// unused
@@ -7194,11 +7207,6 @@ avt_start (const char *title, const char *shortname, int mode)
 
   avt_avatar_window ();
   avt_set_mouse_pointer ();
-
-  avt.background_color = SDL_MapRGB (screen->format,
-				     avt_red (avt.backgroundcolornr),
-				     avt_green (avt.backgroundcolornr),
-				     avt_blue (avt.backgroundcolornr));
 
   avt_normal_text ();
 
