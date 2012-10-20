@@ -4704,22 +4704,21 @@ avt_get_pointer_position (int *x, int *y)
   SDL_GetMouseState (x, y);
 }
 
-// TODO: free from SDL
 static void
 update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
-		 avt_graphic * plain_menu, SDL_Surface * bar)
+		 avt_graphic * plain_menu)
 {
   if (line_nr != old_line)
     {
       // restore oldline
       if (old_line >= menu_start and old_line <= menu_end)
 	{
-	  avt_graphic_segment (plain_menu, 0, (old_line - 1) * LINEHEIGHT,
+	  int y = (old_line - 1) * LINEHEIGHT;
+	  avt_graphic_segment (plain_menu, 0, y,
 			       avt.viewport.w, LINEHEIGHT,
 			       screen, avt.viewport.x,
-			       avt.viewport.y + (old_line - 1) * LINEHEIGHT);
-	  avt_update_area (avt.viewport.x,
-			   avt.viewport.y + (old_line - 1) * LINEHEIGHT,
+			       avt.viewport.y + y);
+	  avt_update_area (avt.viewport.x, avt.viewport.y + y,
 			   avt.viewport.w, LINEHEIGHT);
 	}
 
@@ -4727,20 +4726,23 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
       if (line_nr >= menu_start and line_nr <= menu_end)
 	{
 	  int y = avt.viewport.y + ((line_nr - 1) * LINEHEIGHT);
-	  avt_put_image_sdl (bar, sdl_screen, avt.viewport.x, y);
+	  for (int i = LINEHEIGHT - 1; i >= 0; i--)
+	    {
+	      uint32_t *p = avt_pixel (screen, avt.viewport.x, y + i);
+	      for (int j = avt.viewport.w - 1; j >= 0; j--, p++)
+	        *p = avt_darker (*p, 0x20);
+	    }
+
 	  avt_update_area (avt.viewport.x, y, avt.viewport.w, LINEHEIGHT);
 	}
     }
 }
 
-// TODO: free from SDL
 extern int
 avt_choice (int *result, int start_line, int items, int key,
 	    bool back, bool forward)
 {
   avt_graphic *plain_menu;
-  SDL_Surface *bar;
-  SDL_Color barcolor;
   int last_key;
   int end_line;
   int line_nr, old_line;
@@ -4749,25 +4751,6 @@ avt_choice (int *result, int start_line, int items, int key,
     {
       plain_menu = avt_get_area (avt.viewport.x, avt.viewport.y,
 				 avt.viewport.w, avt.viewport.h);
-
-      // prepare transparent bar
-      bar = SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_SRCALPHA | SDL_RLEACCEL,
-				  avt.viewport.w, LINEHEIGHT, 8, 0, 0, 0,
-				  128);
-
-      if (not bar)
-	{
-	  avt_free_graphic (plain_menu);
-	  avt_set_error ("out of memory");
-	  _avt_STATUS = AVT_ERROR;
-	  return _avt_STATUS;
-	}
-
-      // set color for bar and make it transparent
-      barcolor = avt_sdlcolor (avt.cursor_color);
-      SDL_FillRect (bar, NULL, 0);
-      SDL_SetColors (bar, &barcolor, 0, 1);
-      SDL_SetAlpha (bar, SDL_SRCALPHA | SDL_RLEACCEL, 128);
 
       end_line = start_line + items - 1;
 
@@ -4801,7 +4784,7 @@ avt_choice (int *result, int start_line, int items, int key,
 		  else
 		    line_nr++;
 		  update_menu_bar (start_line, end_line, line_nr,
-				   old_line, plain_menu, bar);
+				   old_line, plain_menu);
 		  old_line = line_nr;
 		}
 	      else if (forward)
@@ -4816,7 +4799,7 @@ avt_choice (int *result, int start_line, int items, int key,
 		  else
 		    line_nr--;
 		  update_menu_bar (start_line, end_line, line_nr,
-				   old_line, plain_menu, bar);
+				   old_line, plain_menu);
 		  old_line = line_nr;
 		}
 	      else if (back)
@@ -4843,7 +4826,7 @@ avt_choice (int *result, int start_line, int items, int key,
 	      if (line_nr != old_line)
 		{
 		  update_menu_bar (start_line, end_line, line_nr, old_line,
-				   plain_menu, bar);
+				   plain_menu);
 		  old_line = line_nr;
 		}
 	    }
@@ -4854,7 +4837,6 @@ avt_choice (int *result, int start_line, int items, int key,
       avt_clear_keys ();
 
       avt_free_graphic (plain_menu);
-      SDL_FreeSurface (bar);
     }
 
   return _avt_STATUS;
