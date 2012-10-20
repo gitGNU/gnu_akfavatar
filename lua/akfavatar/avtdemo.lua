@@ -241,8 +241,10 @@ local function command(cmd)
     local value, line = string.match(a, "^(%d+)%s+(.+)$")
     if txt then txt = string.sub(txt, 1, -value-1) .. line end
   elseif "right-to-left"==c then
+    if not initialized then initialize() end
     avt.right_to_left(true)
   elseif "left-to-right"==c then
+    if not initialized then initialize() end
     avt.right_to_left(false)
   elseif "credits"==c then
      credits(a)
