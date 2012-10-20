@@ -247,7 +247,7 @@ struct avt_settings
   int text_delay, flip_page_delay;
 
   int ballooncolor;
-  int backgroundcolornr;
+  int background_color;
   int text_color;
   int text_background_color;
   int cursor_color;		// color for cursor and menu-bar
@@ -255,9 +255,6 @@ struct avt_settings
 
   avt_char pointer_motion_key;	// key simulated be pointer motion
   avt_char pointer_button_key;	// key simulated for mouse button 1-3
-
-  // colors mapped for the screen
-  uint32_t background_color;
 
   bool newline_mode;		// when off, you need an extra CR
   bool underlined, bold, inverse;	// text underlined, bold?
@@ -292,7 +289,7 @@ struct avt_settings
 
 
 static struct avt_settings avt = {
-  .backgroundcolornr = DEFAULT_COLOR,
+  .background_color = DEFAULT_COLOR,
   .ballooncolor = AVT_BALLOON_COLOR,
   .cursor_color = AVT_CURSOR_COLOR,
   .textdir_rtl = AVT_LEFT_TO_RIGHT
@@ -2098,7 +2095,7 @@ avt_draw_balloon (void)
   avt.viewport = avt.textfield;
 
   // first draw shadow
-  avt_draw_balloon2 (SHADOWOFFSET, avt_darker (avt.backgroundcolornr, 0x20));
+  avt_draw_balloon2 (SHADOWOFFSET, avt_darker (avt.background_color, 0x20));
 
   avt_draw_balloon2 (0, avt.ballooncolor);
 
@@ -6641,12 +6638,10 @@ avt_set_background_color (int color)
 {
   if (color >= 0)
     {
-      avt.backgroundcolornr = color;
+      avt.background_color = color;
 
       if (screen)
 	{
-	  avt.background_color = color;
-
 	  if (avt.textfield.x >= 0)
 	    {
 	      avt.avatar_visible = false;	// force to redraw everything
@@ -6663,7 +6658,7 @@ avt_set_background_color (int color)
 extern int
 avt_get_background_color (void)
 {
-  return avt.backgroundcolornr;
+  return avt.background_color;
 }
 
 extern void
@@ -6857,7 +6852,7 @@ avt_credits (const wchar_t * text, bool centered)
 {
   wchar_t line[80];
   avt_graphic *last_line;
-  int old_backgroundcolornr;
+  int old_background_color;
   avt_keyhandler old_keyhandler;
   avt_mousehandler old_mousehandler;
   const wchar_t *p;
@@ -6867,7 +6862,7 @@ avt_credits (const wchar_t * text, bool centered)
     return _avt_STATUS;
 
   // store old background color
-  old_backgroundcolornr = avt.backgroundcolornr;
+  old_background_color = avt.background_color;
 
   // deactivate mous/key- handlers
   old_keyhandler = avt.ext_keyhandler;
@@ -6952,7 +6947,7 @@ avt_credits (const wchar_t * text, bool centered)
   avt_avatar_window ();
 
   // back to normal (also sets variables!)
-  avt_set_background_color (old_backgroundcolornr);
+  avt_set_background_color (old_background_color);
   avt_normal_text ();
   avt_clear_screen ();
 
@@ -7267,10 +7262,7 @@ avt_start (const char *title, const char *shortname, int mode)
   screen =
     avt_data_to_graphic (sdl_screen->pixels, sdl_screen->w, sdl_screen->h);
 
-  // FIXME
-  avt.background_color = avt.backgroundcolornr;
-
-  avt_fill (screen, avt.backgroundcolornr);
+  avt_fill (screen, avt.background_color);
   avt_update_all ();
 
   // size of the window (not to be confused with the variable window
