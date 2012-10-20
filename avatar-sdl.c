@@ -335,7 +335,8 @@ void (*avt_quit_audio_func) (void) AVT_HIDDEN = NULL;
 static int avt_pause (void);
 static void avt_drawchar (avt_char ch, avt_graphic * surface);
 static void avt_analyze_event (SDL_Event * event);
-
+static void avt_highlight_area (int x, int y, int width, int height,
+				int amount);
 //-----------------------------------------------------------------------------
 
 static void
@@ -1744,26 +1745,14 @@ avt_show_text_cursor (bool on)
     {
       if (on)
 	{
-	  uint32_t bg_color;
-
 	  // save character under cursor
 	  avt_graphic_segment (screen, avt.cursor.x, avt.cursor.y,
 			       fontwidth, fontheight, avt.cursor_character, 0,
 			       0);
 
-	  // assume lower right corner is the background color
-	  bg_color = *avt_pixel (avt.cursor_character,
-				 fontwidth - 1, fontheight - 1);
-
 	  // show text-cursor
-	  for (int y = avt.cursor.y + fontheight - 1; y >= avt.cursor.y; y--)
-	    for (int x = avt.cursor.x + fontwidth - 1; x >= avt.cursor.x; x--)
-	      {
-		register uint32_t *p = avt_pixel (screen, x, y);
-		if (bg_color == *p)
-		  *p = avt.cursor_color;
-	      }
-
+	  avt_highlight_area (avt.cursor.x, avt.cursor.y, fontwidth,
+			      fontheight, 0x50);
 	  avt_update_area (avt.cursor.x, avt.cursor.y, fontwidth, fontheight);
 	}
       else
@@ -1940,6 +1929,19 @@ avt_darker (int color, int amount)
   b = b > amount ? b - amount : 0;
 
   return avt_rgb (r, g, b);
+}
+
+// TODO: make darker or brighter depending on balloon color?
+static void
+avt_highlight_area (int x, int y, int width, int height, int amount)
+{
+  for (int dy = height - 1; dy >= 0; dy--)
+    {
+      uint32_t *p = avt_pixel (screen, x, y + dy);
+
+      for (int dx = width - 1; dx >= 0; dx--, p++)
+	*p = avt_darker (*p, amount);
+    }
 }
 
 static void
@@ -4716,8 +4718,7 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
 	  int y = (old_line - 1) * LINEHEIGHT;
 	  avt_graphic_segment (plain_menu, 0, y,
 			       avt.viewport.w, LINEHEIGHT,
-			       screen, avt.viewport.x,
-			       avt.viewport.y + y);
+			       screen, avt.viewport.x, avt.viewport.y + y);
 	  avt_update_area (avt.viewport.x, avt.viewport.y + y,
 			   avt.viewport.w, LINEHEIGHT);
 	}
@@ -4726,13 +4727,8 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
       if (line_nr >= menu_start and line_nr <= menu_end)
 	{
 	  int y = avt.viewport.y + ((line_nr - 1) * LINEHEIGHT);
-	  for (int i = LINEHEIGHT - 1; i >= 0; i--)
-	    {
-	      uint32_t *p = avt_pixel (screen, avt.viewport.x, y + i);
-	      for (int j = avt.viewport.w - 1; j >= 0; j--, p++)
-	        *p = avt_darker (*p, 0x20);
-	    }
-
+	  avt_highlight_area (avt.viewport.x, y, avt.viewport.w, LINEHEIGHT,
+			      0x20);
 	  avt_update_area (avt.viewport.x, y, avt.viewport.w, LINEHEIGHT);
 	}
     }
