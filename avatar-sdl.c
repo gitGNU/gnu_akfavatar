@@ -1157,11 +1157,10 @@ avt_put_image_xbm (avt_graphic * gr, short x, short y,
   if (x < 0 or x + width > gr->w)
     return;
 
-  int yoffset = 0;
   if (y < 0)
     {
-      yoffset = (-y);
-      height -= yoffset;
+      bits += (-y) * avt_xbm_bytes_per_line (width);
+      height -= (-y);
       y = 0;
     }
 
@@ -1174,7 +1173,7 @@ avt_put_image_xbm (avt_graphic * gr, short x, short y,
   for (int dy = 0; dy < height; dy++)
     {
       int dx = 0;
-      uint32_t *p = avt_pixel (gr, x, y + dy + yoffset);
+      uint32_t *p = avt_pixel (gr, x, y + dy);
 
       while (dx < width)
 	{
