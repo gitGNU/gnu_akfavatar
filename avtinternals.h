@@ -24,6 +24,7 @@
 
 #include "akfavatar.h"
 #include <stdio.h>		/* FILE */
+#include <stdint.h>
 #include <iso646.h>
 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -69,6 +70,15 @@
 #endif // not big endian system
 #endif // no endian.h
 #endif // not AVT_BYTE_ORDER
+
+typedef struct avt_graphic
+{
+  short w, h;
+  bool transparent;
+  bool free_pixels;
+  uint32_t color_key;
+  uint32_t *pixels;
+} avt_graphic;
 
 
 struct avt_audio

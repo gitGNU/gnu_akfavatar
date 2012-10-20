@@ -211,10 +211,6 @@ struct avt_area
   short x, y, w, h;
 };
 
-// FIXME
-// it will be replaced with an internal structure later
-typedef SDL_Surface avt_graphic;
-
 enum avt_button_type
 {
   btn_cancel, btn_yes, btn_no, btn_right, btn_left, btn_down, btn_up,
@@ -345,33 +341,82 @@ static void avt_analyze_event (SDL_Event * event);
 
 //-----------------------------------------------------------------------------
 
-static inline avt_graphic *
-avt_new_graphic (short width, short height)
+static void
+avt_free_graphic (avt_graphic * gr)
 {
-  // FIXME
-  // this shall be the only format accepted for now
-  // it will be replaced with an internal structure later
-  return (avt_graphic *)
-    SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 32,
-			  0x00FF0000, 0x0000FF00, 0x000000FF, 0);
+  if (gr)
+    {
+      if (gr->free_pixels)
+	free (gr->pixels);
+
+      free (gr);
+    }
 }
 
 // use data for pixels
 // data may olny be freed after avt_free_graphic is called on this
-static inline avt_graphic *
+static avt_graphic *
 avt_data_to_graphic (void *data, short width, short height)
 {
-  return (avt_graphic *)
-    SDL_CreateRGBSurfaceFrom (data, width, height, 32,
-			      width * sizeof (uint32_t),
-			      0x00FF0000, 0x0000FF00, 0x000000FF, 0);
+  avt_graphic *gr;
+
+  gr = (avt_graphic *) malloc (sizeof (*gr));
+
+  if (gr)
+    {
+      gr->w = width;
+      gr->h = height;
+      gr->transparent = false;
+      gr->free_pixels = false;
+      gr->color_key = 0xFFFFFFFF;	// dummy
+      gr->pixels = (uint32_t *) data;
+    }
+
+  return gr;
 }
 
-static inline void
-avt_free_graphic (avt_graphic * gr)
+static avt_graphic *
+avt_new_graphic (short width, short height)
 {
-  // FIXME
-  SDL_FreeSurface ((SDL_Surface *) gr);
+  avt_graphic *gr;
+
+  gr = avt_data_to_graphic (NULL, width, height);
+
+  if (gr)
+    {
+      gr->pixels = (uint32_t *) malloc (width * height * sizeof (uint32_t));
+
+      if (not gr->pixels)
+	{
+	  avt_free_graphic (gr);
+	  return NULL;
+	}
+
+      gr->free_pixels = true;
+    }
+
+  return gr;
+}
+
+static avt_graphic *
+avt_copy_graphic (avt_graphic * gr)
+{
+  avt_graphic *result;
+
+  if (not gr)
+    return NULL;
+
+  result = avt_new_graphic (gr->w, gr->h);
+
+  if (result)
+    {
+      memcpy (result->pixels, gr->pixels, gr->w * gr->h * sizeof (uint32_t));
+
+      result->color_key = gr->color_key;
+      result->transparent = gr->transparent;
+    }
+
+  return result;
 }
 
 // returns the pixel position, no checks
@@ -379,7 +424,7 @@ avt_free_graphic (avt_graphic * gr)
 static inline uint32_t *
 avt_pixel (avt_graphic * s, int x, int y)
 {
-  return ((uint32_t *) s->pixels + y * s->w + x);
+  return s->pixels + y * s->w + x;
 }
 
 // secure
@@ -434,7 +479,7 @@ avt_fill (avt_graphic * s, int color)
 
 // TODO: remove
 static inline void
-avt_put_image_sdl (SDL_Surface * source, avt_graphic * destination, int x,
+avt_put_image_sdl (SDL_Surface * source, SDL_Surface * destination, int x,
 		   int y)
 {
   SDL_Rect d;
@@ -502,8 +547,8 @@ avt_graphic_segment (avt_graphic * source, int xoffset, int yoffset,
   if (width <= 0 or height <= 0)
     return;
 
-  bool opaque = ((source->flags bitand SDL_SRCCOLORKEY) == 0);
-  uint32_t color_key = source->format->colorkey;
+  bool opaque = not source->transparent;
+  uint32_t color_key = source->color_key;
 
   // overlap allowed, so we must take care about the direction we go
 
@@ -540,17 +585,29 @@ avt_graphic_segment (avt_graphic * source, int xoffset, int yoffset,
 }
 
 static inline void
-avt_put_graphic (avt_graphic * source, avt_graphic * destination, int x,
-		 int y)
+avt_put_graphic (avt_graphic * source, avt_graphic * destination,
+		 int x, int y)
 {
   avt_graphic_segment (source, 0, 0, INT_MAX, INT_MAX, destination, x, y);
 }
 
 // import an SDL_Surface into the internal format
-static inline avt_graphic *
+// This is ugly!
+static avt_graphic *
 avt_import_sdl_surface (SDL_Surface * s)
 {
-  return (avt_graphic *) SDL_DisplayFormat (s);
+  avt_graphic *gr;
+  SDL_Surface *d;
+
+  d = SDL_DisplayFormat (s);	// TODO: use SDL_PixelFormat
+  gr = avt_new_graphic (d->w, d->h);
+  if (gr)
+    memcpy (gr->pixels, d->pixels, d->w * d->h * sizeof (uint32_t));
+
+  SDL_FreeSurface (d);
+  // s is freed by the caller
+
+  return gr;
 }
 
 // saves the area into a new graphic
@@ -581,10 +638,13 @@ avt_get_window (void)
 }
 
 static inline void
-avt_set_color_key (avt_graphic * s, int color)
+avt_set_color_key (avt_graphic * gr, int color)
 {
-  // FIXME
-  SDL_SetColorKey ((SDL_Surface *) s, SDL_SRCCOLORKEY, color);
+  if (gr)
+    {
+      gr->color_key = color;
+      gr->transparent = true;
+    }
 }
 
 // this shall be the only function to update the window/screen
@@ -1384,6 +1444,8 @@ done:
   return img;
 }
 
+// TODO: write BMP loader
+
 static avt_graphic *
 avt_load_image_avtdata (avt_data * data)
 {
@@ -1433,10 +1495,10 @@ load_image_init (void)
 
 // helper functions
 
-static avt_graphic *
+static SDL_Surface *
 avt_load_image_RW (SDL_RWops * src, int freesrc)
 {
-  avt_graphic *image;
+  SDL_Surface *image;
 
   image = NULL;
 
@@ -2185,7 +2247,10 @@ avt_resize (int w, int h)
   oldwindowimage = avt_get_window ();
 
   // resize screen
-  screen = SDL_SetVideoMode (w, h, COLORDEPTH, screenflags);
+  avt_free_graphic (screen);
+  sdl_screen = SDL_SetVideoMode (w, h, COLORDEPTH, screenflags);
+  screen =
+    avt_data_to_graphic (sdl_screen->pixels, sdl_screen->w, sdl_screen->h);
 
   avt_free_screen ();
 
@@ -4642,9 +4707,10 @@ avt_get_pointer_position (int *x, int *y)
   SDL_GetMouseState (x, y);
 }
 
+// TODO: free from SDL
 static void
 update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
-		 avt_graphic * plain_menu, SDL_Surface * bar)
+		 SDL_Surface * plain_menu, SDL_Surface * bar)
 {
   SDL_Rect s, t;
 
@@ -4659,7 +4725,7 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
 	  s.h = LINEHEIGHT;
 	  t.x = avt.viewport.x;
 	  t.y = avt.viewport.y + s.y;
-	  SDL_BlitSurface (plain_menu, &s, screen, &t);
+	  SDL_BlitSurface (plain_menu, &s, sdl_screen, &t);
 	  avt_update_area (t.x, t.y, avt.viewport.w, LINEHEIGHT);
 	}
 
@@ -4668,17 +4734,18 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
 	{
 	  t.x = avt.viewport.x;
 	  t.y = avt.viewport.y + ((line_nr - 1) * LINEHEIGHT);
-	  avt_put_image_sdl (bar, screen, t.x, t.y);
+	  avt_put_image_sdl (bar, sdl_screen, t.x, t.y);
 	  avt_update_area (t.x, t.y, avt.viewport.w, LINEHEIGHT);
 	}
     }
 }
 
+// TODO: free from SDL
 extern int
 avt_choice (int *result, int start_line, int items, int key,
 	    bool back, bool forward)
 {
-  avt_graphic *plain_menu;
+  SDL_Surface *plain_menu = NULL;
   SDL_Surface *bar;
   SDL_Color barcolor;
   int last_key;
@@ -4687,9 +4754,19 @@ avt_choice (int *result, int start_line, int items, int key,
 
   if (screen and _avt_STATUS == AVT_NORMAL)
     {
-      // get a copy of the viewport
-      plain_menu = avt_get_area (avt.viewport.x, avt.viewport.y,
-				 avt.viewport.w, avt.viewport.h);
+      SDL_Rect src;
+      src.x = avt.viewport.x;
+      src.y = avt.viewport.y;
+      src.w = avt.viewport.w;
+      src.h = avt.viewport.h;
+      plain_menu =
+	SDL_CreateRGBSurface (SDL_SWSURFACE, src.w, src.h,
+			      sdl_screen->format->BitsPerPixel,
+			      sdl_screen->format->Rmask,
+			      sdl_screen->format->Gmask,
+			      sdl_screen->format->Bmask,
+			      sdl_screen->format->Amask);
+      SDL_BlitSurface (sdl_screen, &src, plain_menu, NULL);
 
       // prepare transparent bar
       bar = SDL_CreateRGBSurface (SDL_SWSURFACE | SDL_SRCALPHA | SDL_RLEACCEL,
@@ -4698,7 +4775,7 @@ avt_choice (int *result, int start_line, int items, int key,
 
       if (not bar)
 	{
-	  avt_free_graphic (plain_menu);
+	  SDL_FreeSurface (plain_menu);
 	  avt_set_error ("out of memory");
 	  _avt_STATUS = AVT_ERROR;
 	  return _avt_STATUS;
@@ -4794,8 +4871,8 @@ avt_choice (int *result, int start_line, int items, int key,
       avt_set_pointer_buttons_key (0);
       avt_clear_keys ();
 
-      avt_free_graphic (plain_menu);
-      avt_free_graphic (bar);
+      SDL_FreeSurface (plain_menu);
+      SDL_FreeSurface (bar);
     }
 
   return _avt_STATUS;
@@ -6380,23 +6457,7 @@ avt_set_avatar_image (avt_graphic * image)
     }
 
   // import the avatar image
-  // TODO: check
-  if (image)
-    {
-      // convert image to display-format for faster drawing
-      if (image->flags & SDL_SRCALPHA)
-	avt.avatar_image = SDL_DisplayFormatAlpha (image);
-      else
-	avt.avatar_image = SDL_DisplayFormat (image);
-
-      if (not avt.avatar_image)
-	{
-	  avt_set_error ("couldn't load avatar");
-	  _avt_STATUS = AVT_ERROR;
-	  return _avt_STATUS;
-	}
-    }
-
+  avt.avatar_image = avt_copy_graphic (image);
   calculate_balloonmaxheight ();
 
   // set actual balloon size to the maximum size
@@ -6465,7 +6526,7 @@ avt_avatar_image (avt_graphic * image)
     return AVT_FAILURE;
 
   // if it's not yet transparent, make it transparent
-  if (not (image->flags & (SDL_SRCCOLORKEY | SDL_SRCALPHA)))
+  if (not image->transparent)
     avt_make_transparent (image);
 
   avt_set_avatar_image (image);
@@ -6584,9 +6645,7 @@ avt_set_background_color (int color)
 
       if (screen)
 	{
-	  avt.background_color =
-	    SDL_MapRGB (screen->format, avt_red (color),
-			avt_green (color), avt_blue (color));
+	  avt.background_color = color;
 
 	  if (avt.textfield.x >= 0)
 	    {
@@ -6957,7 +7016,7 @@ avt_quit (void)
       avt_free_graphic (screen);
       screen = NULL;
       SDL_Quit ();
-      sdl_screen = NULL;		// it was freed by SDL_Quit
+      sdl_screen = NULL;	// it was freed by SDL_Quit
       avt.avatar_visible = false;
       avt.textfield.x = avt.textfield.y = avt.textfield.w = avt.textfield.h =
 	-1;
@@ -7031,7 +7090,7 @@ avt_set_title (const char *title, const char *shortname)
 // width must be a multiple of 8
 #define xbm_bytes(img)  ((img##_width / 8) * img##_height)
 
-static void
+static inline void
 avt_set_mouse_pointer (void)
 {
   unsigned char mp[xbm_bytes (mpointer)];
@@ -7056,6 +7115,25 @@ avt_set_mouse_pointer (void)
 			       mpointer_x_hot, mpointer_y_hot);
 
   SDL_SetCursor (mpointer);
+}
+
+static inline void
+avt_set_icon (char **xpm)
+{
+  SDL_Surface *icon;
+  avt_graphic *gr;
+
+  gr = avt_load_image_xpm (xpm);
+  icon = SDL_CreateRGBSurfaceFrom (gr->pixels,
+				   gr->w, gr->h, 32,
+				   gr->w * sizeof (uint32_t),
+				   0x00FF0000, 0x0000FF00, 0x000000FF,
+				   0);
+
+  SDL_WM_SetIcon (icon, NULL);
+
+  SDL_FreeSurface (icon);
+  avt_free_graphic (gr);
 }
 
 extern void
@@ -7091,8 +7169,6 @@ avt_reset ()
 extern int
 avt_start (const char *title, const char *shortname, int mode)
 {
-  avt_graphic *icon;
-
   // already initialized?
   if (screen)
     {
@@ -7125,11 +7201,7 @@ avt_start (const char *title, const char *shortname, int mode)
     shortname = title;
 
   avt_set_title (title, shortname);
-
-  // register icon
-  icon = avt_load_image_xpm (akfavatar_xpm);
-  SDL_WM_SetIcon (icon, NULL);
-  avt_free_graphic (icon);
+  avt_set_icon (akfavatar_xpm);
 
   // Initialize the display
   screenflags = SDL_SWSURFACE | SDL_RESIZABLE;
@@ -7192,7 +7264,8 @@ avt_start (const char *title, const char *shortname, int mode)
     }
 
   // set up a graphic with the same pixel data
-  screen = avt_data_to_graphic (sdl_screen->pixels, sdl_screen->w, sdl_screen->h);
+  screen =
+    avt_data_to_graphic (sdl_screen->pixels, sdl_screen->w, sdl_screen->h);
 
   // FIXME
   avt.background_color = avt.backgroundcolornr;
