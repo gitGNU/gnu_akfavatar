@@ -486,6 +486,7 @@ start_screen (void)
   language = avta_get_language ();
   german = (language and strcmp ("de", language) == 0);
 
+  avt_lock_updates (true);
   avt_clear_screen ();
   avt_set_balloon_color (AVT_COLOR_START);
   avt_avatar_image_xpm (akfavatar_logo_xpm);
@@ -534,6 +535,8 @@ start_screen (void)
     avt_say_mb (": Ende/zurück");
   else
     avt_say_mb (": end/back");
+
+  avt_lock_updates (false);
 
   if (avt_wait_button () != AVT_NORMAL)
     exit (EXIT_SUCCESS);
