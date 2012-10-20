@@ -1147,23 +1147,31 @@ avt_xbm_bytes_per_line (int width)
   return ((width + 7) / 8);
 }
 
-// TODO: check if it fits!
 static void
-avt_put_image_xbm (avt_graphic * img, short x, short y,
+avt_put_image_xbm (avt_graphic * gr, short x, short y,
 		   const unsigned char *bits, int width, int height,
 		   int colornr)
 {
-  int dx;
+  if (x < 0 or y < 0)
+    return;
+
+  if (y + height > gr->h)
+    height = gr->h - y;
+
+  // TODO: cannot mess with width that easily
+  if (x + width > gr->w)
+    return;
 
   for (int dy = 0; dy < height; dy++)
     {
-      dx = 0;
+      int dx = 0;
+      uint32_t *p = avt_pixel (gr, x, y + dy);
 
       while (dx < width)
 	{
-	  for (int bit = 1; bit <= 0x80 and dx < width; bit <<= 1, dx++)
+	  for (int bit = 1; bit <= 0x80 and dx < width; bit <<= 1, dx++, p++)
 	    if (*bits bitand bit)
-	      *avt_pixel (img, x + dx, y + dy) = colornr;
+	      *p = colornr;
 
 	  bits++;
 	}
