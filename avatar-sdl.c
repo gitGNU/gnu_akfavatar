@@ -129,7 +129,7 @@ static int errno;
 #pragma GCC poison  avt_avatar_image_default
 
 
-#define COLORDEPTH 32
+#define COLORDEPTH  (CHAR_BIT * sizeof (avt_color))
 
 #if defined(VGA)
 #  define MINIMALWIDTH 640
@@ -172,9 +172,9 @@ static int errno;
 #  elif (WCHAR_MAX <= 65535U)
 #    if (AVT_BIG_ENDIAN == AVT_BYTE_ORDER)
 #      define WCHAR_ENCODING "UTF-16BE"
-#    else // SDL_BYTEORDER != SDL_BIG_ENDIAN
+#    else // little endian
 #      define WCHAR_ENCODING "UTF-16LE"
-#    endif // SDL_BYTEORDER != SDL_BIG_ENDIAN
+#    endif // little endian
 #  else	// (WCHAR_MAX > 65535U)
 #    if (AVT_BIG_ENDIAN == AVT_BYTE_ORDER)
 #      define WCHAR_ENCODING "UTF-32BE"
@@ -190,6 +190,9 @@ static int errno;
  * encoding
  */
 #define MB_DEFAULT_ENCODING "UTF-8"
+
+// special value for the color_key
+#define AVT_TRANSPARENT  0xFFFFFFFF
 
 // only defined in later SDL versions
 #ifndef SDL_BUTTON_WHEELUP
@@ -245,11 +248,11 @@ struct avt_settings
   // delay values for printing text and flipping the page
   int text_delay, flip_page_delay;
 
-  int ballooncolor;
-  int background_color;
-  int text_color;
-  int text_background_color;
-  int bitmap_color;		// color for bitmaps
+  avt_color ballooncolor;
+  avt_color background_color;
+  avt_color text_color;
+  avt_color text_background_color;
+  avt_color bitmap_color;	// color for bitmaps
 
   avt_char pointer_motion_key;	// key simulated be pointer motion
   avt_char pointer_button_key;	// key simulated for mouse button 1-3
@@ -363,7 +366,7 @@ avt_data_to_graphic (void *data, short width, short height)
       gr->h = height;
       gr->transparent = false;
       gr->free_pixels = false;
-      gr->color_key = 0xFFFFFFFF;	// dummy
+      gr->color_key = AVT_TRANSPARENT;
       gr->pixels = (avt_color *) data;
     }
 
@@ -424,7 +427,8 @@ avt_pixel (avt_graphic * s, int x, int y)
 
 // secure
 static void
-avt_bar (avt_graphic * s, int x, int y, int width, int height, int color)
+avt_bar (avt_graphic * s, int x, int y, int width, int height,
+	 avt_color color)
 {
   if (x > s->w or y > s->h)
     return;
@@ -463,7 +467,7 @@ avt_bar (avt_graphic * s, int x, int y, int width, int height, int color)
 
 // secure
 static inline void
-avt_fill (avt_graphic * s, int color)
+avt_fill (avt_graphic * s, avt_color color)
 {
   avt_color *p;
 
@@ -530,7 +534,6 @@ avt_graphic_segment (avt_graphic * source, int xoffset, int yoffset,
     return;
 
   bool opaque = not source->transparent;
-  avt_color color_key = source->color_key;
 
   // overlap allowed, so we must take care about the direction we go
 
@@ -546,7 +549,7 @@ avt_graphic_segment (avt_graphic * source, int xoffset, int yoffset,
 	  if (opaque)
 	    memmove (d, s, width * sizeof (avt_color));
 	  else			// transparent
-	    avt_line_move (d, s, width, color_key);
+	    avt_line_move (d, s, width, source->color_key);
 	}
     }
   else				// yoffset < y
@@ -561,7 +564,7 @@ avt_graphic_segment (avt_graphic * source, int xoffset, int yoffset,
 	  if (opaque)
 	    memmove (d, s, width * sizeof (avt_color));
 	  else			// transparent
-	    avt_line_move (d, s, width, color_key);
+	    avt_line_move (d, s, width, source->color_key);
 	}
     }
 }
@@ -619,12 +622,14 @@ avt_get_window (void)
   return avt_get_area (window.x, window.y, window.w, window.h);
 }
 
+// the color_key is a color, which should be transparent
+// it can be AVT_TRANSPARENT, which doesn't conflict with real colors
 static inline void
-avt_set_color_key (avt_graphic * gr, int color)
+avt_set_color_key (avt_graphic * gr, avt_color color_key)
 {
   if (gr)
     {
-      gr->color_key = color;
+      gr->color_key = color_key;
       gr->transparent = true;
     }
 }
@@ -772,7 +777,7 @@ avt_free_xpm_tree (union xpm_codes *tree, int depth, int cpp)
 }
 
 static inline SDL_Color
-avt_sdlcolor (int colornr)
+avt_sdlcolor (avt_color colornr)
 {
   SDL_Color color;
 
@@ -972,8 +977,7 @@ avt_load_image_xpm (char **xpm)
 	    colornr = strtol (&color_name[1], NULL, 16);
 	  else if (strcasecmp (color_name, "None") == 0)
 	    {
-	      // some weird color, that hopefully doesn't conflict
-	      colornr = 0x1A2A3A;
+	      colornr = AVT_TRANSPARENT;
 	      avt_set_color_key (img, colornr);
 	    }
 	  else if (strcasecmp (color_name, "black") == 0)
@@ -1194,7 +1198,7 @@ avt_xbm_bytes_per_line (int width)
 static void
 avt_put_image_xbm (avt_graphic * gr, short x, short y,
 		   const unsigned char *bits, int width, int height,
-		   int colornr)
+		   avt_color color)
 {
   // if it doesn't fit horizontally, display nothing
   // use avt_load_image_xbm to get horizontal clipping
@@ -1223,7 +1227,7 @@ avt_put_image_xbm (avt_graphic * gr, short x, short y,
 	{
 	  for (int bit = 1; bit <= 0x80 and dx < width; bit <<= 1, dx++, p++)
 	    if (*bits bitand bit)
-	      *p = colornr;
+	      *p = color;
 
 	  bits++;
 	}
@@ -1236,14 +1240,9 @@ avt_put_image_xbm (avt_graphic * gr, short x, short y,
  */
 static avt_graphic *
 avt_load_image_xbm (const unsigned char *bits, int width, int height,
-		    int color)
+		    avt_color color)
 {
-  int background_color;
   avt_graphic *image;
-
-  // background color is the complement of color, to assure it is different
-  // later it is made transparent
-  background_color = (compl color) bitand 0xFFFFFF;
 
   image = avt_new_graphic (width, height);
 
@@ -1253,15 +1252,15 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
       return NULL;
     }
 
-  avt_fill (image, background_color);
+  avt_fill (image, AVT_TRANSPARENT);
+  avt_set_color_key (image, AVT_TRANSPARENT);
   avt_put_image_xbm (image, 0, 0, bits, width, height, color);
-  avt_set_color_key (image, background_color);
 
   return image;
 }
 
 static avt_graphic *
-avt_load_image_xbm_data (avt_data * src, int freesrc, int color)
+avt_load_image_xbm_data (avt_data * src, int freesrc, avt_color color)
 {
   unsigned char *bits;
   int width, height;
@@ -1797,7 +1796,7 @@ static void
 avt_show_name (void)
 {
   int x, y;
-  int old_text_color, old_background_color;
+  avt_color old_text_color, old_background_color;
   wchar_t *p;
 
   if (screen and avt.avatar_image and avt.name)
@@ -1900,7 +1899,7 @@ avt_show_avatar (void)
 
 // return a darker color
 static inline int
-avt_darker (int color, int amount)
+avt_darker (avt_color color, int amount)
 {
   int r, g, b;
 
@@ -4837,7 +4836,7 @@ avt_lock_updates (bool lock)
 
 static inline void
 avt_button_inlay (int x, int y, const unsigned char *bits,
-		  int width, int height, int color)
+		  int width, int height, avt_color color)
 {
   avt_put_image_xbm (screen,
 		     x + (BASE_BUTTON_WIDTH / 2) - (width / 2),
@@ -4848,7 +4847,7 @@ avt_button_inlay (int x, int y, const unsigned char *bits,
 // coordinates are relative to window
 static void
 avt_show_button (int x, int y, enum avt_button_type type,
-		 avt_char key, int color)
+		 avt_char key, avt_color color)
 {
   struct avt_position pos;
   int buttonnr;
@@ -6425,7 +6424,7 @@ avt_avatar_image_xbm (const unsigned char *bits,
 {
   avt_graphic *image;
 
-  if (width <= 0 or height <= 0 or color < 0)
+  if (width <= 0 or height <= 0 or color < 0 or color > 0xFFFFFF)
     {
       avt_set_error ("invalid parameters");
       _avt_STATUS = AVT_ERROR;
@@ -7172,7 +7171,7 @@ avt_start (const char *title, const char *shortname, int mode)
 
   // assure we really get what we need
   if (SDL_MUSTLOCK (sdl_screen)
-      or sdl_screen->format->BitsPerPixel != CHAR_BIT * sizeof (avt_color))
+      or sdl_screen->format->BitsPerPixel != COLORDEPTH)
     {
       avt_set_error ("error initializing AKFAvatar");
       _avt_STATUS = AVT_ERROR;
