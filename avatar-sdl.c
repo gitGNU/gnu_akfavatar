@@ -472,19 +472,6 @@ avt_fill (avt_graphic * s, int color)
     *p = color;
 }
 
-// TODO: remove
-static inline void
-avt_put_image_sdl (SDL_Surface * source, SDL_Surface * destination, int x,
-		   int y)
-{
-  SDL_Rect d;
-
-  d.x = x;
-  d.y = y;
-
-  SDL_BlitSurface (source, NULL, destination, &d);
-}
-
 static inline void
 avt_line_move (uint32_t * d, uint32_t * s, int width, uint32_t color_key)
 {
