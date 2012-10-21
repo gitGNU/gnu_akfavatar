@@ -6152,17 +6152,6 @@ avt_image_max_height (void)
   return screen->h;
 }
 
-static avt_graphic *
-avt_import_image (void *image_data, int width, int height,
-		  int bytes_per_pixel)
-{
-  // TODO: only 4 bytes per pixel allowed!
-  if (bytes_per_pixel != 4)
-    return NULL;
-
-  return avt_data_to_graphic (image_data, width, height);
-}
-
 /*
  * show raw image
  * only 4 Bytes per pixel supported (0RGB)
@@ -6187,7 +6176,7 @@ avt_show_raw_image (void *image_data, int width, int height,
     avt_release_raw_image ();
 
   if (not raw_image)
-    raw_image = avt_import_image (image_data, width, height, bytes_per_pixel);
+    raw_image = avt_data_to_graphic (image_data, width, height);
 
   if (not raw_image)
     {
@@ -6204,18 +6193,11 @@ avt_show_raw_image (void *image_data, int width, int height,
 
 static int
 avt_put_raw_image (avt_graphic * image, int x, int y,
-		   void *image_data, int width, int height,
-		   int bytes_per_pixel)
+		   void *image_data, int width, int height)
 {
   avt_graphic *dest;
 
-  if (bytes_per_pixel != 4)
-    {
-      avt_set_error ("wrong number of bytes_per_pixel for raw image");
-      return AVT_FAILURE;
-    }
-
-  dest = avt_import_image (image_data, width, height, bytes_per_pixel);
+  dest = avt_data_to_graphic (image_data, width, height);
 
   if (not dest)
     {
@@ -6249,8 +6231,7 @@ avt_put_raw_image_file (const char *file, int x, int y,
 
   if (image)
     {
-      status = avt_put_raw_image (image, x, y, image_data, width, height,
-				  bytes_per_pixel);
+      status = avt_put_raw_image (image, x, y, image_data, width, height);
 
       avt_free_graphic (image);
     }
@@ -6274,8 +6255,7 @@ avt_put_raw_image_stream (avt_stream * stream, int x, int y,
 
   if (image)
     {
-      status = avt_put_raw_image (image, x, y, image_data, width, height,
-				  bytes_per_pixel);
+      status = avt_put_raw_image (image, x, y, image_data, width, height);
 
       avt_free_graphic (image);
     }
@@ -6299,8 +6279,7 @@ avt_put_raw_image_data (void *img, size_t imgsize, int x, int y,
 
   if (image)
     {
-      status = avt_put_raw_image (image, x, y, image_data, width, height,
-				  bytes_per_pixel);
+      status = avt_put_raw_image (image, x, y, image_data, width, height);
 
       avt_free_graphic (image);
     }
@@ -6325,7 +6304,7 @@ avt_put_raw_image_xpm (char **xpm, int x, int y,
   if (not src)
     return AVT_FAILURE;
 
-  dest = avt_import_image (image_data, width, height, bytes_per_pixel);
+  dest = avt_data_to_graphic (image_data, width, height);
 
   if (not dest)
     {
