@@ -71,13 +71,15 @@
 #endif // no endian.h
 #endif // not AVT_BYTE_ORDER
 
+typedef uint32_t avt_color;
+
 typedef struct avt_graphic
 {
   short w, h;
   bool transparent;
   bool free_pixels;
-  uint32_t color_key;
-  uint32_t *pixels;
+  avt_color color_key;
+  avt_color *pixels;
 } avt_graphic;
 
 

@@ -364,7 +364,7 @@ avt_data_to_graphic (void *data, short width, short height)
       gr->transparent = false;
       gr->free_pixels = false;
       gr->color_key = 0xFFFFFFFF;	// dummy
-      gr->pixels = (uint32_t *) data;
+      gr->pixels = (avt_color *) data;
     }
 
   return gr;
@@ -379,7 +379,7 @@ avt_new_graphic (short width, short height)
 
   if (gr)
     {
-      gr->pixels = (uint32_t *) malloc (width * height * sizeof (uint32_t));
+      gr->pixels = (avt_color *) malloc (width * height * sizeof (avt_color));
 
       if (not gr->pixels)
 	{
@@ -405,7 +405,7 @@ avt_copy_graphic (avt_graphic * gr)
 
   if (result)
     {
-      memcpy (result->pixels, gr->pixels, gr->w * gr->h * sizeof (uint32_t));
+      memcpy (result->pixels, gr->pixels, gr->w * gr->h * sizeof (avt_color));
 
       result->color_key = gr->color_key;
       result->transparent = gr->transparent;
@@ -416,7 +416,7 @@ avt_copy_graphic (avt_graphic * gr)
 
 // returns the pixel position, no checks
 // INSECURE
-static inline uint32_t *
+static inline avt_color *
 avt_pixel (avt_graphic * s, int x, int y)
 {
   return s->pixels + y * s->w + x;
@@ -452,7 +452,7 @@ avt_bar (avt_graphic * s, int x, int y, int width, int height, int color)
 
   for (int ny = 0; ny < height; ny++)
     {
-      uint32_t *p;
+      avt_color *p;
 
       p = avt_pixel (s, x, y + ny);
 
@@ -465,7 +465,7 @@ avt_bar (avt_graphic * s, int x, int y, int width, int height, int color)
 static inline void
 avt_fill (avt_graphic * s, int color)
 {
-  uint32_t *p;
+  avt_color *p;
 
   p = s->pixels;
   for (int i = (s->w * s->h); i > 0; --i, p++)
@@ -473,7 +473,7 @@ avt_fill (avt_graphic * s, int color)
 }
 
 static inline void
-avt_line_move (uint32_t * d, uint32_t * s, int width, uint32_t color_key)
+avt_line_move (avt_color * d, avt_color * s, int width, avt_color color_key)
 {
   if (s > d)
     {
@@ -530,7 +530,7 @@ avt_graphic_segment (avt_graphic * source, int xoffset, int yoffset,
     return;
 
   bool opaque = not source->transparent;
-  uint32_t color_key = source->color_key;
+  avt_color color_key = source->color_key;
 
   // overlap allowed, so we must take care about the direction we go
 
@@ -538,13 +538,13 @@ avt_graphic_segment (avt_graphic * source, int xoffset, int yoffset,
     {
       for (int line = 0; line < height; line++)
 	{
-	  uint32_t *s, *d;
+	  avt_color *s, *d;
 
 	  s = avt_pixel (source, xoffset, line + yoffset);
 	  d = avt_pixel (destination, x, y + line);
 
 	  if (opaque)
-	    memmove (d, s, width * sizeof (uint32_t));
+	    memmove (d, s, width * sizeof (avt_color));
 	  else			// transparent
 	    avt_line_move (d, s, width, color_key);
 	}
@@ -553,13 +553,13 @@ avt_graphic_segment (avt_graphic * source, int xoffset, int yoffset,
     {
       for (int line = height - 1; line >= 0; line--)
 	{
-	  uint32_t *s, *d;
+	  avt_color *s, *d;
 
 	  s = avt_pixel (source, xoffset, line + yoffset);
 	  d = avt_pixel (destination, x, y + line);
 
 	  if (opaque)
-	    memmove (d, s, width * sizeof (uint32_t));
+	    memmove (d, s, width * sizeof (avt_color));
 	  else			// transparent
 	    avt_line_move (d, s, width, color_key);
 	}
@@ -584,7 +584,7 @@ avt_import_sdl_surface (SDL_Surface * s)
   d = SDL_DisplayFormat (s);	// TODO: use SDL_PixelFormat
   gr = avt_new_graphic (d->w, d->h);
   if (gr)
-    memcpy (gr->pixels, d->pixels, d->w * d->h * sizeof (uint32_t));
+    memcpy (gr->pixels, d->pixels, d->w * d->h * sizeof (avt_color));
 
   SDL_FreeSurface (d);
   // s is freed by the caller
@@ -789,7 +789,7 @@ avt_load_image_xpm (char **xpm)
   avt_graphic *img;
   int width, height, ncolors, cpp;
   union xpm_codes *codes;
-  uint32_t *colors;
+  avt_color *colors;
   int code_nr;
 
   codes = NULL;
@@ -846,9 +846,9 @@ avt_load_image_xpm (char **xpm)
   // get memory for colors table (palette)
   // note: for 1 character per pixel we use the character-32 as index
   if (cpp == 1)
-    colors = (uint32_t *) malloc (XPM_NR_CODES * sizeof (uint32_t));
+    colors = (avt_color *) malloc (XPM_NR_CODES * sizeof (avt_color));
   else
-    colors = (uint32_t *) malloc (ncolors * sizeof (uint32_t));
+    colors = (avt_color *) malloc (ncolors * sizeof (avt_color));
 
   if (not colors)
     {
@@ -993,7 +993,7 @@ avt_load_image_xpm (char **xpm)
   // process pixeldata
   if (cpp == 1)			// the easiest case
     {
-      uint32_t *pix;
+      avt_color *pix;
       uint8_t *xpm_data;
 
       for (int line = 0; line < height; line++)
@@ -1008,7 +1008,7 @@ avt_load_image_xpm (char **xpm)
     }
   else				// cpp != 1
     {
-      uint32_t *pix;
+      avt_color *pix;
       uint8_t *xpm_line;
 
       for (int line = 0; line < height; line++)
@@ -1188,7 +1188,7 @@ avt_load_image_xpm_data (avt_data * src, int freesrc)
 static inline int
 avt_xbm_bytes_per_line (int width)
 {
-  return ((width + 7) / 8);
+  return ((width + CHAR_BIT - 1) / CHAR_BIT);
 }
 
 static void
@@ -1217,7 +1217,7 @@ avt_put_image_xbm (avt_graphic * gr, short x, short y,
   for (int dy = 0; dy < height; dy++)
     {
       int dx = 0;
-      uint32_t *p = avt_pixel (gr, x, y + dy);
+      avt_color *p = avt_pixel (gr, x, y + dy);
 
       while (dx < width)
 	{
@@ -1921,7 +1921,7 @@ avt_highlight_area (int x, int y, int width, int height, int amount)
 {
   for (int dy = height - 1; dy >= 0; dy--)
     {
-      uint32_t *p = avt_pixel (screen, x, y + dy);
+      avt_color *p = avt_pixel (screen, x, y + dy);
 
       for (int dx = width - 1; dx >= 0; dx--, p++)
 	*p = avt_darker (*p, amount);
@@ -1929,7 +1929,7 @@ avt_highlight_area (int x, int y, int width, int height, int amount)
 }
 
 static void
-avt_draw_balloon2 (int offset, uint32_t ballooncolor)
+avt_draw_balloon2 (int offset, avt_color ballooncolor)
 {
   struct avt_area shape;
 
@@ -3516,14 +3516,14 @@ avt_drawchar (avt_char ch, avt_graphic * surface)
 
   for (int y = 0; y < fontheight; y++)
     {
-      if (fontwidth > 8)
+      if (fontwidth > CHAR_BIT)
 	{
 	  line = *(const uint16_t *) font_line;
 	  font_line += 2;
 	}
       else
 	{
-	  line = *font_line << 8;
+	  line = *font_line << CHAR_BIT;
 	  font_line++;
 	}
 
@@ -3538,7 +3538,7 @@ avt_drawchar (avt_char ch, avt_graphic * surface)
 
       // leftmost bit set, gets shifted to the right in the for loop
       uint16_t scanbit = 0x8000;
-      uint32_t *p = avt_pixel (surface, avt.cursor.x, avt.cursor.y + y);
+      avt_color *p = avt_pixel (surface, avt.cursor.x, avt.cursor.y + y);
       for (int x = 0; x < fontwidth; x++, p++, scanbit >>= 1)
 	if (line bitand scanbit)
 	  *p = avt.text_color;
@@ -6152,6 +6152,8 @@ avt_image_max_height (void)
   return screen->h;
 }
 
+// TODO: replace raw image functions with avt_graphic functions
+
 /*
  * show raw image
  * only 4 Bytes per pixel supported (0RGB)
@@ -7008,8 +7010,8 @@ avt_set_title (const char *title, const char *shortname)
    ((b) & 0x02) << 5 | \
    ((b) & 0x01) << 7)
 
-// width must be a multiple of 8
-#define xbm_bytes(img)  ((img##_width / 8) * img##_height)
+// width must be a multiple of CHAR_BIT
+#define xbm_bytes(img)  ((img##_width / CHAR_BIT) * img##_height)
 
 static inline void
 avt_set_mouse_pointer (void)
@@ -7046,8 +7048,9 @@ avt_set_icon (char **xpm)
 
   gr = avt_load_image_xpm (xpm);
   icon = SDL_CreateRGBSurfaceFrom (gr->pixels,
-				   gr->w, gr->h, 32,
-				   gr->w * sizeof (uint32_t),
+				   gr->w, gr->h,
+				   CHAR_BIT * sizeof (avt_color),
+				   gr->w * sizeof (avt_color),
 				   0x00FF0000, 0x0000FF00, 0x000000FF, 0);
 
   SDL_WM_SetIcon (icon, NULL);
