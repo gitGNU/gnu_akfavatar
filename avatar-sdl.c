@@ -97,7 +97,6 @@
 #define AVT_COLOR_TAN           0xD2B48C
 
 #define AVT_BUTTON_COLOR        0x665533
-#define AVT_CURSOR_COLOR        0xF28919
 #define AVT_BALLOON_COLOR       AVT_COLOR_FLORAL_WHITE
 
 #define NOT_BOLD   false
@@ -250,7 +249,6 @@ struct avt_settings
   int background_color;
   int text_color;
   int text_background_color;
-  int cursor_color;		// color for cursor and menu-bar
   int bitmap_color;		// color for bitmaps
 
   avt_char pointer_motion_key;	// key simulated be pointer motion
@@ -291,7 +289,6 @@ struct avt_settings
 static struct avt_settings avt = {
   .background_color = DEFAULT_COLOR,
   .ballooncolor = AVT_BALLOON_COLOR,
-  .cursor_color = AVT_CURSOR_COLOR,
   .textdir_rtl = AVT_LEFT_TO_RIGHT
 };
 
@@ -7107,7 +7104,6 @@ avt_reset ()
   avt.text_delay = 0;
   avt.bitmap_color = AVT_COLOR_BLACK;
   avt.ballooncolor = AVT_BALLOON_COLOR;
-  avt.cursor_color = 0xF28919;
   avt.pointer_motion_key = 0;
   avt.pointer_button_key = 0;
 
