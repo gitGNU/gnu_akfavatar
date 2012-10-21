@@ -782,18 +782,6 @@ avt_free_xpm_tree (union xpm_codes *tree, int depth, int cpp)
   free (tree);
 }
 
-static inline SDL_Color
-avt_sdlcolor (avt_color colornr)
-{
-  SDL_Color color;
-
-  color.r = avt_red (colornr);
-  color.g = avt_green (colornr);
-  color.b = avt_blue (colornr);
-
-  return color;
-}
-
 static avt_graphic *
 avt_load_image_xpm (char **xpm)
 {
