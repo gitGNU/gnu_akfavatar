@@ -75,7 +75,7 @@ typedef uint_least32_t avt_color;
 
 typedef struct avt_graphic
 {
-  short w, h;
+  short width, height;
   bool transparent;
   bool free_pixels;
   avt_color color_key;
