@@ -71,7 +71,7 @@
 #endif // no endian.h
 #endif // not AVT_BYTE_ORDER
 
-typedef uint32_t avt_color;
+typedef uint_least32_t avt_color;
 
 typedef struct avt_graphic
 {

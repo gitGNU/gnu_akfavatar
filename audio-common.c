@@ -83,7 +83,7 @@ avt_free_audio (avt_audio * snd)
 static avt_audio *alert_sound;
 
 // table for decoding mu-law
-static const int16_t mulaw_decode[256] = {
+static const int_least16_t mulaw_decode[256] = {
   -32124, -31100, -30076, -29052, -28028, -27004, -25980, -24956, -23932,
   -22908, -21884, -20860, -19836, -18812, -17788, -16764, -15996, -15484,
   -14972, -14460, -13948, -13436, -12924, -12412, -11900, -11388, -10876,
@@ -110,7 +110,7 @@ static const int16_t mulaw_decode[256] = {
 };
 
 // table for decoding A-law
-static const int16_t alaw_decode[256] = {
+static const int_least16_t alaw_decode[256] = {
   -5504, -5248, -6016, -5760, -4480, -4224, -4992, -4736, -7552, -7296, -8064,
   -7808, -6528, -6272, -7040, -6784, -2752, -2624, -3008, -2880, -2240,
   -2112, -2496, -2368, -3776, -3648, -4032, -3904, -3264, -3136, -3520,
@@ -268,11 +268,11 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
 
     case AVT_AUDIO_MULAW:	// mu-law, logarithmic PCM
       {
-	uint8_t *restrict in;
-	int16_t *restrict out;
+	uint_least8_t *restrict in;
+	int_least16_t *restrict out;
 
-	in = (uint8_t *) data;
-	out = (int16_t *) (snd->sound + old_size);
+	in = (uint_least8_t *) data;
+	out = (int_least16_t *) (snd->sound + old_size);
 
 	for (size_t i = data_size; i > 0; i--)
 	  *out++ = mulaw_decode[*in++];
@@ -281,11 +281,11 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
 
     case AVT_AUDIO_ALAW:	// A-law, logarithmic PCM
       {
-	uint8_t *restrict in;
-	int16_t *restrict out;
+	uint_least8_t *restrict in;
+	int_least16_t *restrict out;
 
-	in = (uint8_t *) data;
-	out = (int16_t *) (snd->sound + old_size);
+	in = (uint_least8_t *) data;
+	out = (int_least16_t *) (snd->sound + old_size);
 
 	for (size_t i = data_size; i > 0; i--)
 	  *out++ = alaw_decode[*in++];
@@ -294,11 +294,11 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
 
     case AVT_AUDIO_S16LE:
       {
-	uint8_t *restrict in;
-	uint16_t *restrict out;
+	uint_least8_t *restrict in;
+	uint_least16_t *restrict out;
 
-	in = (uint8_t *) data;
-	out = (uint16_t *) (snd->sound + old_size);
+	in = (uint_least8_t *) data;
+	out = (uint_least16_t *) (snd->sound + old_size);
 
 	for (size_t i = out_size / 2; i > 0; i--, in += 2)
 	  *out++ = (in[1] << 8) | in[0];
@@ -307,11 +307,11 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
 
     case AVT_AUDIO_S16BE:
       {
-	uint8_t *restrict in;
-	uint16_t *restrict out;
+	uint_least8_t *restrict in;
+	uint_least16_t *restrict out;
 
-	in = (uint8_t *) data;
-	out = (uint16_t *) (snd->sound + old_size);
+	in = (uint_least8_t *) data;
+	out = (uint_least16_t *) (snd->sound + old_size);
 
 	for (size_t i = out_size / 2; i > 0; i--, in += 2)
 	  *out++ = (in[0] << 8) | in[1];
@@ -322,11 +322,11 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
 
     case AVT_AUDIO_S24LE:
       {
-	uint8_t *restrict in;
-	uint16_t *restrict out;
+	uint_least8_t *restrict in;
+	uint_least16_t *restrict out;
 
-	in = (uint8_t *) data;
-	out = (uint16_t *) (snd->sound + old_size);
+	in = (uint_least8_t *) data;
+	out = (uint_least16_t *) (snd->sound + old_size);
 
 	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 3)
 	  *out++ = (in[2] << 8) | in[1];
@@ -335,11 +335,11 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
 
     case AVT_AUDIO_S24BE:
       {
-	uint8_t *restrict in;
-	uint16_t *restrict out;
+	uint_least8_t *restrict in;
+	uint_least16_t *restrict out;
 
-	in = (uint8_t *) data;
-	out = (uint16_t *) (snd->sound + old_size);
+	in = (uint_least8_t *) data;
+	out = (uint_least16_t *) (snd->sound + old_size);
 
 	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 3)
 	  *out++ = (in[0] << 8) | in[1];
@@ -348,11 +348,11 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
 
     case AVT_AUDIO_S32LE:
       {
-	uint8_t *restrict in;
-	uint16_t *restrict out;
+	uint_least8_t *restrict in;
+	uint_least16_t *restrict out;
 
-	in = (uint8_t *) data;
-	out = (uint16_t *) (snd->sound + old_size);
+	in = (uint_least8_t *) data;
+	out = (uint_least16_t *) (snd->sound + old_size);
 
 	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 4)
 	  *out++ = (in[3] << 8) | in[2];
@@ -361,11 +361,11 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
 
     case AVT_AUDIO_S32BE:
       {
-	uint8_t *restrict in;
-	uint16_t *restrict out;
+	uint_least8_t *restrict in;
+	uint_least16_t *restrict out;
 
-	in = (uint8_t *) data;
-	out = (uint16_t *) (snd->sound + old_size);
+	in = (uint_least8_t *) data;
+	out = (uint_least16_t *) (snd->sound + old_size);
 
 	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 4)
 	  *out++ = (in[0] << 8) | in[1];
@@ -552,14 +552,14 @@ avt_free_audio (avt_audio * snd)
 
 // if size is unknown use 0 or MAXIMUM_SIZE for maxsize
 static avt_audio *
-avt_load_audio_block (avt_data * src, uint32_t maxsize,
+avt_load_audio_block (avt_data * src, uint_least32_t maxsize,
 		      int samplingrate, int audio_type, int channels,
 		      int playmode)
 {
   avt_audio *audio;
   int n;
-  uint32_t rest;
-  uint8_t data[24 * 1024];
+  uint_least32_t rest;
+  uint_least8_t data[24 * 1024];
 
   audio = avt_prepare_raw_audio (maxsize, samplingrate, audio_type, channels);
 
@@ -596,9 +596,9 @@ avt_load_audio_block (avt_data * src, uint32_t maxsize,
 
 
 static avt_audio *
-avt_load_au (avt_data * src, uint32_t maxsize, int playmode)
+avt_load_au (avt_data * src, uint_least32_t maxsize, int playmode)
 {
-  uint32_t head_size, audio_size, encoding, samplingrate, channels;
+  uint_least32_t head_size, audio_size, encoding, samplingrate, channels;
   int audio_type;
 
   if (not src)
@@ -678,14 +678,14 @@ avt_load_au (avt_data * src, uint32_t maxsize, int playmode)
 
 // The Wave format is so stupid - don't ever use it!
 static avt_audio *
-avt_load_wave (avt_data * src, uint32_t maxsize, int playmode)
+avt_load_wave (avt_data * src, uint_least32_t maxsize, int playmode)
 {
   int audio_type;
   char identifier[4];
   bool wrong_chunk;
-  uint32_t chunk_size, chunk_end;
-  uint32_t samplingrate;
-  uint16_t encoding, channels, bits_per_sample;
+  uint_least32_t chunk_size, chunk_end;
+  uint_least32_t samplingrate;
+  uint_least16_t encoding, channels, bits_per_sample;
 
   if (not src)
     return NULL;
@@ -777,7 +777,7 @@ avt_load_wave (avt_data * src, uint32_t maxsize, int playmode)
 
 // src gets always closed
 static avt_audio *
-avt_load_audio_general (avt_data * src, uint32_t maxsize, int playmode)
+avt_load_audio_general (avt_data * src, uint_least32_t maxsize, int playmode)
 {
   struct avt_audio *s;
   int start;

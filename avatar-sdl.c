@@ -754,7 +754,7 @@ static struct
 // for xpm codes
 union xpm_codes
 {
-  uint32_t nr;
+  uint_least32_t nr;
   union xpm_codes *next;
 };
 
@@ -998,13 +998,13 @@ avt_load_image_xpm (char **xpm)
   if (cpp == 1)			// the easiest case
     {
       avt_color *pix;
-      uint8_t *xpm_data;
+      uint_least8_t *xpm_data;
 
       for (int line = 0; line < height; line++)
 	{
 	  // point to beginning of the line
 	  pix = avt_pixel (img, 0, line);
-	  xpm_data = (uint8_t *) xpm[ncolors + 1 + line];
+	  xpm_data = (uint_least8_t *) xpm[ncolors + 1 + line];
 
 	  for (int pos = width; pos > 0; pos--, pix++, xpm_data++)
 	    *pix = colors[*xpm_data - 32];
@@ -1013,18 +1013,18 @@ avt_load_image_xpm (char **xpm)
   else				// cpp != 1
     {
       avt_color *pix;
-      uint8_t *xpm_line;
+      uint_least8_t *xpm_line;
 
       for (int line = 0; line < height; line++)
 	{
 	  // point to beginning of the line
 	  pix = avt_pixel (img, 0, line);
-	  xpm_line = (uint8_t *) xpm[ncolors + 1 + line];
+	  xpm_line = (uint_least8_t *) xpm[ncolors + 1 + line];
 
 	  for (int pos = 0; pos < width; pos++, pix++)
 	    {
 	      union xpm_codes *table;
-	      uint8_t c;
+	      uint_least8_t c;
 
 	      c = '\0';
 	      // find code in codes table
@@ -2013,7 +2013,7 @@ avt_draw_balloon2 (int offset, avt_color ballooncolor)
 static void
 avt_draw_balloon (void)
 {
-  int16_t centered_y;
+  short centered_y;
 
   if (not avt.avatar_visible)
     avt_draw_avatar ();
@@ -3496,13 +3496,13 @@ avt_combining (avt_char ch)
 static void
 avt_drawchar (avt_char ch, avt_graphic * surface)
 {
-  const uint8_t *font_line;	// pixel line from font definition
-  uint16_t line;		// normalized pixel line might get modified
+  const uint_least8_t *font_line;	// pixel line from font definition
+  uint_least16_t line;		// normalized pixel line might get modified
 
-  font_line = (const uint8_t *) avt_get_font_char ((int) ch);
+  font_line = (const uint_least8_t *) avt_get_font_char ((int) ch);
 
   if (not font_line)
-    font_line = (const uint8_t *) avt_get_font_char (0);
+    font_line = (const uint_least8_t *) avt_get_font_char (0);
 
   if (not avt_combining (ch))
     {
@@ -3517,7 +3517,7 @@ avt_drawchar (avt_char ch, avt_graphic * surface)
     {
       if (fontwidth > CHAR_BIT)
 	{
-	  line = *(const uint16_t *) font_line;
+	  line = *(const uint_least16_t *) font_line;
 	  font_line += 2;
 	}
       else
@@ -3536,7 +3536,7 @@ avt_drawchar (avt_char ch, avt_graphic * surface)
 	line = compl line;
 
       // leftmost bit set, gets shifted to the right in the for loop
-      uint16_t scanbit = 0x8000;
+      uint_least16_t scanbit = 0x8000;
       avt_color *p = avt_pixel (surface, avt.cursor.x, avt.cursor.y + y);
       for (int x = 0; x < fontwidth; x++, p++, scanbit >>= 1)
 	if (line bitand scanbit)
@@ -5614,7 +5614,7 @@ avt_move_in (void)
 
       while (pos.x > destination)
 	{
-	  int16_t oldx = pos.x;
+	  short oldx = pos.x;
 
 	  // move
 	  pos.x = screen->w - ((avt_ticks () - start_time) / MOVE_DELAY);
@@ -5687,7 +5687,7 @@ avt_move_out (void)
 
       while (pos.x < screen->w)
 	{
-	  int16_t oldx;
+	  short oldx;
 
 	  oldx = pos.x;
 
