@@ -2238,20 +2238,20 @@ avt_resize (int w, int h)
   oldwindowimage = avt_get_window ();
 
   // resize screen
-  avt_free_graphic (screen);
   sdl_screen = SDL_SetVideoMode (w, h, COLORDEPTH, screenflags);
-  screen =
-    avt_data_to_graphic (sdl_screen->pixels, sdl_screen->w, sdl_screen->h);
+  screen->pixels = sdl_screen->pixels;
+  screen->width = sdl_screen->w;
+  screen->height = sdl_screen->h;
 
   avt_free_screen ();
 
   // new position of the window on the screen
   window.x =
-    screen->width >
-    window.width ? (screen->width / 2) - (window.width / 2) : 0;
+    screen->width > window.width
+    ? (screen->width / 2) - (window.width / 2) : 0;
   window.y =
-    screen->height >
-    window.height ? (screen->height / 2) - (window.height / 2) : 0;
+    screen->height > window.height
+    ? (screen->height / 2) - (window.height / 2) : 0;
 
   // restore image
   avt_put_graphic (oldwindowimage, screen, window.x, window.y);
