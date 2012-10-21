@@ -34,6 +34,7 @@
 #include <string.h>
 #include <errno.h>
 #include <iso646.h>
+#include <limits.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -57,14 +58,13 @@ typedef struct graphic
   short htextalign, vtextalign;	// alignment for text
   double penx, peny;		// position of pen
   double heading;		// heading of the turtle
-  uint32_t color;		// drawing color
-  uint32_t background;		// background color
-  uint32_t data[];		// data - flexible array member (C99)
+  avt_color color;		// drawing color
+  avt_color background;		// background color
+  avt_color data[];		// data - flexible array member (C99)
 } graphic;
 
 // Bytes per pixel
-#define BPP  4
-#define OPAQUE  0xFF
+#define BPP  (sizeof (avt_color))
 
 #ifndef M_PI
 #define M_PI  3.14159265358979323846
@@ -148,7 +148,7 @@ center (graphic * gr)
 
 // fast putpixel with color, no check
 static inline void
-putpixelcolor (graphic * gr, int x, int y, int width, uint32_t col)
+putpixelcolor (graphic * gr, int x, int y, int width, avt_color col)
 {
   *(gr->data + (y * width) + x) = col;
 }
@@ -161,7 +161,7 @@ putpixel (graphic * gr, int x, int y)
 }
 
 static inline bool
-equal_colors (uint32_t a, uint32_t b)
+equal_colors (avt_color a, avt_color b)
 {
   return a == b;
 }
@@ -170,8 +170,8 @@ equal_colors (uint32_t a, uint32_t b)
 static void
 clear_graphic (graphic * gr)
 {
-  uint32_t *p;
-  uint32_t color;
+  avt_color *p;
+  avt_color color;
 
   color = gr->background;
   p = gr->data;
@@ -185,8 +185,8 @@ static void
 bar (graphic * gr, int x1, int y1, int x2, int y2)
 {
   int x, y, width, height;
-  uint32_t *data, *p;
-  uint32_t color;
+  avt_color *data, *p;
+  avt_color color;
 
   width = gr->width;
   height = gr->height;
@@ -217,8 +217,8 @@ disc (graphic * gr, double x, double y, double radius)
   int i;
   double xv, yv;
   double r2;
-  uint32_t *data, *p;
-  uint32_t color;
+  avt_color *data, *p;
+  avt_color color;
 
   width = gr->width;
   height = gr->height;
@@ -508,7 +508,7 @@ vertical_line (graphic * gr, int x, int y1, int y2)
 	}
       else
 	{
-	  uint32_t color = gr->color;
+	  avt_color color = gr->color;
 	  int width = gr->width;
 
 	  for (y = y1; y <= y2; y++)
@@ -545,8 +545,8 @@ horizontal_line (graphic * gr, int x1, int x2, int y)
 	}
       else
 	{
-	  uint32_t *p;
-	  uint32_t color;
+	  avt_color *p;
+	  avt_color color;
 
 	  color = gr->color;
 	  p = gr->data + (y * width) + x1;
@@ -606,7 +606,7 @@ sloped_line (graphic * gr, double x1, double x2, double y1, double y2)
       else
 	{
 	  double x, y;
-	  uint32_t color = gr->color;
+	  avt_color color = gr->color;
 	  int width = gr->width;
 
 	  for (x = x1, y = y1; x <= x2; x++, y += delta_y)
@@ -656,7 +656,7 @@ sloped_line (graphic * gr, double x1, double x2, double y1, double y2)
       else
 	{
 	  double x, y;
-	  uint32_t color = gr->color;
+	  avt_color color = gr->color;
 	  int width = gr->width;
 
 	  for (y = y1, x = x1; y <= y2; y++, x += delta_x)
@@ -783,7 +783,7 @@ lgraphic_getpixel (lua_State * L)
   if (visible (gr, x, y))
     {
       char color[8];
-      uint32_t *p;
+      avt_color *p;
       p = gr->data + (y * gr->width) + x;
       sprintf (color, "#%02X%02X%02X",
 	       avt_red (*p), avt_green (*p), avt_blue (*p));
@@ -812,7 +812,7 @@ lgraphic_getpixelrgb (lua_State * L)
 
   if (visible (gr, x, y))
     {
-      uint32_t *p;
+      avt_color *p;
       p = gr->data + (y * gr->width) + x;
       lua_pushinteger (L, (int) avt_red (*p));
       lua_pushinteger (L, (int) avt_green (*p));
@@ -1040,7 +1040,7 @@ lgraphic_text (lua_State * L)
   int x, y;
   int width;
   int fontwidth, fontheight;
-  uint32_t color;
+  avt_color color;
 
   gr = get_graphic (L, 1);
   s = luaL_checklstring (L, 2, &len);
@@ -1125,14 +1125,14 @@ lgraphic_text (lua_State * L)
       // display character
       for (int ly = 0; ly < fontheight; ly++)
 	{
-	  if (fontwidth > 8)
+	  if (fontwidth > CHAR_BIT)
 	    {
 	      line = *(const uint16_t *) font_line;
 	      font_line += 2;
 	    }
 	  else
 	    {
-	      line = *font_line << 8;
+	      line = *font_line << CHAR_BIT;
 	      font_line++;
 	    }
 
@@ -1291,7 +1291,7 @@ lgraphic_put (lua_State * L)
   graphic *gr, *gr2;
   int xoffset, yoffset, lines;
   int source_width, target_width, source_height, target_height;
-  uint32_t *source, *target;
+  avt_color *source, *target;
 
   gr = get_graphic (L, 1);
   gr2 = get_graphic (L, 2);
@@ -1374,7 +1374,7 @@ lgraphic_put_transparency (lua_State * L)
   graphic *gr, *gr2;
   int xoffset, yoffset, lines;
   int source_width, target_width, source_height, target_height;
-  uint32_t *source, *target;
+  avt_color *source, *target;
 
   gr = get_graphic (L, 1);
   gr2 = get_graphic (L, 2);
@@ -1410,8 +1410,8 @@ lgraphic_put_transparency (lua_State * L)
     {
       int x, y;
       int xstart, show_width;	// for horizontal cropping
-      uint32_t foreground, background;
-      uint32_t *ps, *pt;
+      avt_color foreground, background;
+      avt_color *ps, *pt;
 
       xstart = 0;
       show_width = source_width;
@@ -1549,7 +1549,7 @@ lgraphic_get (lua_State * L)
   int x1, y1, x2, y2;
   int source_width, target_width, source_height, target_height;
   int bytes, y;
-  uint32_t *source, *target;
+  avt_color *source, *target;
 
   gr = get_graphic (L, 1);
 
@@ -1628,7 +1628,7 @@ static int
 lgraphic_shift_vertically (lua_State * L)
 {
   graphic *gr;
-  uint32_t *data, *area;
+  avt_color *data, *area;
   int lines;
   int width, height;
 
@@ -1664,7 +1664,7 @@ lgraphic_shift_vertically (lua_State * L)
   if (area)
     {
       int i;
-      uint32_t color = gr->background;
+      avt_color color = gr->background;
 
       for (i = 0; i < lines * width; i++)
 	*area++ = color;
@@ -1678,7 +1678,7 @@ static int
 lgraphic_shift_horizontally (lua_State * L)
 {
   graphic *gr;
-  uint32_t *data, *area;
+  avt_color *data, *area;
   int columns;
   int width, height;
 
@@ -1714,8 +1714,8 @@ lgraphic_shift_horizontally (lua_State * L)
   if (area)
     {
       int x, y;
-      uint32_t *p;
-      uint32_t color = gr->background;
+      avt_color *p;
+      avt_color color = gr->background;
 
       for (y = 0; y < height; y++)
 	{
@@ -1733,7 +1733,7 @@ static int
 lgraphic_export_ppm (lua_State * L)
 {
   graphic *gr;
-  uint32_t *p;
+  avt_color *p;
   const char *fname;
   FILE *f;
 
@@ -1750,9 +1750,11 @@ lgraphic_export_ppm (lua_State * L)
   p = gr->data;
   for (size_t i = gr->height * gr->width; i > 0; i--, p++)
     {
-      putc (avt_red (*p), f);
-      putc (avt_green (*p), f);
-      putc (avt_blue (*p), f);
+      register avt_color color = *p;
+
+      putc (avt_red (color), f);
+      putc (avt_green (color), f);
+      putc (avt_blue (color), f);
     }
 
   if (fclose (f) != 0)

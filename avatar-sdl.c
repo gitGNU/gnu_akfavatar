@@ -7171,7 +7171,8 @@ avt_start (const char *title, const char *shortname, int mode)
     }
 
   // assure we really get what we need
-  if (SDL_MUSTLOCK (sdl_screen) or sdl_screen->format->BitsPerPixel != 32)
+  if (SDL_MUSTLOCK (sdl_screen)
+      or sdl_screen->format->BitsPerPixel != CHAR_BIT * sizeof (avt_color))
     {
       avt_set_error ("error initializing AKFAvatar");
       _avt_STATUS = AVT_ERROR;
