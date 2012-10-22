@@ -115,11 +115,13 @@ enum avt_button_type
 };
 
 static SDL_Surface *sdl_screen;
+static struct avt_settings *avt;
+static short int mode;		// whether fullscreen or window or ...
 static SDL_Cursor *mpointer;
 static struct avt_area window;	// if screen is in fact larger
 static struct avt_area windowmode_size;	// size of the whole window (screen)
 static uint32_t screenflags;	// flags for the screen
-static int fontwidth, fontheight, fontunderline;
+static int fontwidth, fontheight;
 
 // Note: any event should have an associated key, so key == event
 
@@ -482,21 +484,21 @@ avt_resize (int w, int h)
   avt_free_graphic (oldwindowimage);
 
   // recalculate textfield & viewport positions
-  if (avt.textfield.x >= 0)
+  if (avt->textfield.x >= 0)
     {
-      avt.textfield.x = avt.textfield.x - oldwindow.x + window.x;
-      avt.textfield.y = avt.textfield.y - oldwindow.y + window.y;
+      avt->textfield.x = avt->textfield.x - oldwindow.x + window.x;
+      avt->textfield.y = avt->textfield.y - oldwindow.y + window.y;
 
-      avt.viewport.x = avt.viewport.x - oldwindow.x + window.x;
-      avt.viewport.y = avt.viewport.y - oldwindow.y + window.y;
+      avt->viewport.x = avt->viewport.x - oldwindow.x + window.x;
+      avt->viewport.y = avt->viewport.y - oldwindow.y + window.y;
 
-      if (avt.textdir_rtl)
-	avt.linestart = avt.viewport.x + avt.viewport.width - fontwidth;
+      if (avt->textdir_rtl)
+	avt->linestart = avt->viewport.x + avt->viewport.width - fontwidth;
       else
-	avt.linestart = avt.viewport.x;
+	avt->linestart = avt->viewport.x;
 
-      avt.cursor.x = avt.cursor.x - oldwindow.x + window.x;
-      avt.cursor.y = avt.cursor.y - oldwindow.y + window.y;
+      avt->cursor.x = avt->cursor.x - oldwindow.x + window.x;
+      avt->cursor.y = avt->cursor.y - oldwindow.y + window.y;
     }
 
   // set windowmode_size
@@ -517,7 +519,7 @@ avt_resize (int w, int h)
 extern void
 avt_toggle_fullscreen (void)
 {
-  if (avt.mode != AVT_FULLSCREENNOSWITCH)
+  if (mode != AVT_FULLSCREENNOSWITCH)
     {
       // toggle bit for fullscreenmode
       screenflags = screenflags xor SDL_FULLSCREEN;
@@ -526,24 +528,24 @@ avt_toggle_fullscreen (void)
 	{
 	  screenflags = screenflags bitor SDL_NOFRAME;
 	  avt_resize (window.width, window.height);
-	  avt.mode = AVT_FULLSCREEN;
+	  mode = AVT_FULLSCREEN;
 	}
       else
 	{
 	  screenflags = screenflags bitand compl SDL_NOFRAME;
 	  avt_resize (windowmode_size.width, windowmode_size.height);
-	  avt.mode = AVT_WINDOW;
+	  mode = AVT_WINDOW;
 	}
     }
 }
 
 // switch to fullscreen or window mode
 extern void
-avt_switch_mode (int mode)
+avt_switch_mode (int new_mode)
 {
-  if (screen and mode != avt.mode)
+  if (screen and new_mode != mode)
     {
-      avt.mode = mode;
+      mode = new_mode;
       switch (mode)
 	{
 	case AVT_FULLSCREENNOSWITCH:
@@ -607,7 +609,7 @@ avt_analyze_key (SDL_keysym key)
       break;
 
     case SDLK_ESCAPE:
-      if (avt.reserve_single_keys)
+      if (avt->reserve_single_keys)
 	avt_push_key (AVT_KEY_ESCAPE);
       else
 	{
@@ -630,7 +632,7 @@ avt_analyze_key (SDL_keysym key)
       break;
 
     case SDLK_F11:
-      if (avt.reserve_single_keys)
+      if (avt->reserve_single_keys)
 	avt_push_key (AVT_KEY_F11);
       else
 	{
@@ -781,8 +783,8 @@ avt_analyze_key (SDL_keysym key)
       break;
     }				// switch (key.sym)
 
-  if (avt.ext_keyhandler)
-    avt.ext_keyhandler (key.sym, key.mod, key.unicode);
+  if (avt->ext_keyhandler)
+    avt->ext_keyhandler (key.sym, key.mod, key.unicode);
 }
 
 static void
@@ -790,25 +792,25 @@ avt_call_mouse_handler (SDL_Event * event)
 {
   int x, y;
 
-  if (avt.textfield.x >= 0)
+  if (avt->textfield.x >= 0)
     {
       // if there is a textfield, use the character position
-      x = (event->button.x - avt.textfield.x) / fontwidth + 1;
-      y = (event->button.y - avt.textfield.y) / LINEHEIGHT + 1;
+      x = (event->button.x - avt->textfield.x) / fontwidth + 1;
+      y = (event->button.y - avt->textfield.y) / LINEHEIGHT + 1;
 
       // check if x and y are valid
       if (x >= 1 and x <= AVT_LINELENGTH
-	  and y >= 1 and y <= (avt.textfield.height / LINEHEIGHT))
-	avt.ext_mousehandler (event->button.button,
-			      (event->button.state == SDL_PRESSED), x, y);
+	  and y >= 1 and y <= (avt->textfield.height / LINEHEIGHT))
+	avt->ext_mousehandler (event->button.button,
+			       (event->button.state == SDL_PRESSED), x, y);
     }
   else				// no textfield
     {
       x = event->button.x - window.x;
       y = event->button.y - window.y;
       if (x >= 0 and x <= window.width and y >= 0 and y <= window.height)
-	avt.ext_mousehandler (event->button.button,
-			      (event->button.state == SDL_PRESSED), x, y);
+	avt->ext_mousehandler (event->button.button,
+			       (event->button.state == SDL_PRESSED), x, y);
     }
 }
 
@@ -830,8 +832,8 @@ avt_analyze_event (SDL_Event * event)
 	{
 	  if (not avt_check_buttons (event->button.x, event->button.y))
 	    {
-	      if (avt.pointer_button_key)
-		avt_push_key (avt.pointer_button_key);
+	      if (avt->pointer_button_key)
+		avt_push_key (avt->pointer_button_key);
 	    }
 	}
       else if (SDL_BUTTON_WHEELDOWN == event->button.button)
@@ -839,18 +841,18 @@ avt_analyze_event (SDL_Event * event)
       else if (SDL_BUTTON_WHEELUP == event->button.button)
 	avt_push_key (AVT_KEY_UP);
 
-      if (avt.ext_mousehandler)
+      if (avt->ext_mousehandler)
 	avt_call_mouse_handler (event);
       break;
 
     case SDL_MOUSEBUTTONUP:
-      if (avt.ext_mousehandler)
+      if (avt->ext_mousehandler)
 	avt_call_mouse_handler (event);
       break;
 
     case SDL_MOUSEMOTION:
-      if (avt.pointer_motion_key)
-	avt_push_key (avt.pointer_motion_key);
+      if (avt->pointer_motion_key)
+	avt_push_key (avt->pointer_motion_key);
       break;
 
     case SDL_KEYDOWN:
@@ -1015,8 +1017,8 @@ avt_set_pointer_motion_key (avt_char key)
 {
   avt_char old;
 
-  old = avt.pointer_motion_key;
-  avt.pointer_motion_key = key;
+  old = avt->pointer_motion_key;
+  avt->pointer_motion_key = key;
 
   if (key)
     SDL_EventState (SDL_MOUSEMOTION, SDL_ENABLE);
@@ -1032,8 +1034,8 @@ avt_set_pointer_buttons_key (avt_char key)
 {
   avt_char old;
 
-  old = avt.pointer_button_key;
-  avt.pointer_button_key = key;
+  old = avt->pointer_button_key;
+  avt->pointer_button_key = key;
 
   return old;
 }
@@ -1051,6 +1053,12 @@ avt_set_mouse_visible (bool visible)
     SDL_ShowCursor (SDL_ENABLE);
   else
     SDL_ShowCursor (SDL_DISABLE);
+}
+
+extern int
+avt_get_mode (void)
+{
+  return mode;
 }
 
 extern char *
@@ -1111,17 +1119,22 @@ avt_quit (void)
 extern void
 avt_set_title (const char *title, const char *shortname)
 {
-  // TODO
-#if 0
+  char *encoding;
+
+
+  encoding = avt_get_mb_encoding ();
+
   // check if encoding was set
-  if (output_cd == ICONV_UNINITIALIZED)
-    avt_mb_encoding (MB_DEFAULT_ENCODING);
-#endif
+  if (not encoding)
+    {
+      avt_mb_encoding (MB_DEFAULT_ENCODING);
+      encoding = avt_get_mb_encoding ();
+    }
 
   // check if it's already in correct encoding default="UTF-8"
-  if (strcasecmp ("UTF-8", avt.encoding) == 0
-      or strcasecmp ("UTF8", avt.encoding) == 0
-      or strcasecmp ("CP65001", avt.encoding) == 0)
+  if (strcasecmp ("UTF-8", encoding) == 0
+      or strcasecmp ("UTF8", encoding) == 0
+      or strcasecmp ("CP65001", encoding) == 0)
     SDL_WM_SetCaption (title, shortname);
   else				// convert them to UTF-8
     {
@@ -1130,7 +1143,7 @@ avt_set_title (const char *title, const char *shortname)
 
       if (title and * title)
 	{
-	  if (avt_recode_buffer ("UTF-8", avt.encoding,
+	  if (avt_recode_buffer ("UTF-8", encoding,
 				 my_title, sizeof (my_title),
 				 title, strlen (title)) == (size_t) (-1))
 	    {
@@ -1141,7 +1154,7 @@ avt_set_title (const char *title, const char *shortname)
 
       if (shortname and * shortname)
 	{
-	  if (avt_recode_buffer ("UTF-8", avt.encoding,
+	  if (avt_recode_buffer ("UTF-8", encoding,
 				 my_shortname, sizeof (my_shortname),
 				 shortname,
 				 strlen (shortname)) == (size_t) (-1))
@@ -1216,7 +1229,7 @@ avt_set_icon (char **xpm)
 }
 
 extern int
-avt_start (const char *title, const char *shortname, int mode)
+avt_start (const char *title, const char *shortname, int window_mode)
 {
   // already initialized?
   if (screen)
@@ -1226,12 +1239,9 @@ avt_start (const char *title, const char *shortname, int mode)
       return _avt_STATUS;
     }
 
-  avt.mode = mode;
-  avt_get_font_dimensions (&fontwidth, &fontheight, &fontunderline);
+  avt_get_font_dimensions (&fontwidth, &fontheight, NULL);
 
-  // fine-tuning: avoid conflict between underscore and underlining
-  if (fontheight >= 18)
-    ++fontunderline;
+  mode = window_mode;
 
   if (avt_init_SDL ())
     {
@@ -1253,7 +1263,7 @@ avt_start (const char *title, const char *shortname, int mode)
   screenflags = SDL_SWSURFACE | SDL_RESIZABLE;
 
 #ifndef __WIN32__
-  if (avt.mode == AVT_AUTOMODE)
+  if (mode == AVT_AUTOMODE)
     {
       SDL_Rect **modes;
 
@@ -1270,10 +1280,10 @@ avt_start (const char *title, const char *shortname, int mode)
 
   SDL_ClearError ();
 
-  if (avt.mode >= 1)
+  if (mode >= 1)
     screenflags |= SDL_FULLSCREEN | SDL_NOFRAME;
 
-  if (avt.mode == AVT_FULLSCREENNOSWITCH)
+  if (mode == AVT_FULLSCREENNOSWITCH)
     {
       sdl_screen = SDL_SetVideoMode (0, 0, COLORDEPTH, screenflags);
 
@@ -1311,31 +1321,21 @@ avt_start (const char *title, const char *shortname, int mode)
     }
 
   // set up a graphic with the same pixel data
-  avt_start_common (avt_data_to_graphic
-		    (sdl_screen->pixels, sdl_screen->w, sdl_screen->h));
+  avt = avt_start_common (avt_data_to_graphic
+			  (sdl_screen->pixels, sdl_screen->w, sdl_screen->h));
 
-  // size of the window (not to be confused with the variable window
-  windowmode_size.x = windowmode_size.y = 0;	// unused
-  windowmode_size.width = screen->width;
-  windowmode_size.height = screen->height;
-
-  avt_set_mouse_pointer ();
-
-  avt_normal_text ();
-
-  // set actual balloon size to the maximum size
-  avt.balloonheight = avt.balloonmaxheight;
-  avt.balloonwidth = AVT_LINELENGTH;
-
-  // reserve space for character under text-mode cursor
-  avt.cursor_character = avt_new_graphic (fontwidth, fontheight);
-
-  if (not avt.cursor_character)
+  if (not avt)
     {
-      avt_set_error ("out of memory");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
+
+  // size of the window (not to be confused with the variable window
+  windowmode_size.x = windowmode_size.y = 0;	// unused
+  windowmode_size.width = sdl_screen->w;
+  windowmode_size.height = sdl_screen->h;
+
+  avt_set_mouse_pointer ();
 
   // needed to get the character of the typed key
   SDL_EnableUNICODE (1);

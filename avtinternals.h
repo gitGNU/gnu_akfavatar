@@ -34,6 +34,13 @@
 #define restrict
 #endif
 
+/*
+ * this will be used, when somebody forgets to set the
+ * encoding
+ */
+#define MB_DEFAULT_ENCODING "UTF-8"
+
+
 // AVT_BYTE_ORDER
 #ifdef AVT_BYTE_ORDER
 
@@ -144,7 +151,6 @@ struct avt_settings
 
   char encoding[100];
 
-  short int mode;		// whether fullscreen or window or ...
   short int avatar_mode;
   short int scroll_mode;
   short int textdir_rtl;
@@ -181,10 +187,9 @@ extern void avt_get_pointer_position (int *x, int *y);
 extern int _avt_STATUS;
 extern void (*avt_alert_func) (void);
 extern void (*avt_quit_audio_func) (void);
-extern struct avt_settings avt;
 extern avt_graphic *screen;
 
-extern int avt_start_common (avt_graphic *new_screen);
+extern struct avt_settings *avt_start_common (avt_graphic *new_screen);
 extern void avt_fill (avt_graphic * s, avt_color color);
 extern avt_graphic *avt_get_window (void);
 extern void avt_free_graphic (avt_graphic * gr);

@@ -171,12 +171,6 @@ static int errno;
 
 #endif // not WCHAR_ENCODING
 
-/*
- * this will be used, when somebody forgets to set the
- * encoding
- */
-#define MB_DEFAULT_ENCODING "UTF-8"
-
 // special value for the color_key
 #define AVT_TRANSPARENT  0xFFFFFFFF
 
@@ -188,7 +182,7 @@ enum avt_button_type
 };
 
 
-avt_graphic *screen;  // FIXME
+avt_graphic *screen;		// FIXME
 
 static avt_graphic *base_button;
 static avt_graphic *raw_image;
@@ -201,7 +195,7 @@ static avt_iconv_t input_cd = ICONV_UNINITIALIZED;
 
 
 // FIXME
-struct avt_settings avt = {
+static struct avt_settings avt = {
   .background_color = DEFAULT_COLOR,
   .ballooncolor = AVT_BALLOON_COLOR,
   .textdir_rtl = AVT_LEFT_TO_RIGHT
@@ -1906,12 +1900,6 @@ avt_flash (void)
 
   // make visible again
   avt_update_all ();
-}
-
-extern int
-avt_get_mode (void)
-{
-  return avt.mode;
 }
 
 extern bool
@@ -6023,15 +6011,15 @@ avt_reset ()
     avt_set_avatar_image (NULL);
 }
 
-extern int
-avt_start_common (avt_graphic *new_screen)
+extern struct avt_settings *
+avt_start_common (avt_graphic * new_screen)
 {
   // already initialized?
   if (screen)
     {
       avt_set_error ("AKFAvatar already initialized");
       _avt_STATUS = AVT_ERROR;
-      return _avt_STATUS;
+      return NULL;
     }
 
   avt_reset ();
@@ -6065,12 +6053,12 @@ avt_start_common (avt_graphic *new_screen)
     {
       avt_set_error ("out of memory");
       _avt_STATUS = AVT_ERROR;
-      return _avt_STATUS;
+      return NULL;
     }
 
   // visual flash for the alert
   // when you initialize the audio stuff, you get an audio alert
   avt_alert_func = avt_flash;
 
-  return _avt_STATUS;
+  return &avt;
 }
