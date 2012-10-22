@@ -91,10 +91,10 @@ lua-akfavatar: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
 	     filechooser.o colorchooser.o arch.o langposix.o basedir.o \
 	     libakfavatar.a $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS) -Wl,-E
 
-libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar-default.o avtpalette.o \
-	        font.o version.o avtdata.o audio-common.o
-	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o audio-common.o avtdata.o \
-	             avatar-default.o avtpalette.o font.o version.o
+libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o avatar-default.o \
+	        avtpalette.o font.o version.o avtdata.o audio-common.o
+	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o avatar.o audio-common.o \
+	             avtdata.o avatar-default.o avtpalette.o font.o version.o
 	-$(RANLIB) $@
 
 libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
@@ -105,12 +105,12 @@ libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
 	             colorchooser.o avtvorbis.o stb_vorbis.o langposix.o
 	-$(RANLIB) $@
 
-libakfavatar.so: $(OBJAVATAR).lo $(OBJAUDIO).lo avatar-default.lo avtpalette.lo \
-	         font.lo version.lo avtdata.lo audio-common.lo
+libakfavatar.so: $(OBJAVATAR).lo $(OBJAUDIO).lo avatar.lo avatar-default.lo \
+	         avtpalette.lo font.lo version.lo avtdata.lo audio-common.lo
 	$(CC) -shared \
 	      -Wl,-soname,$(SONAME) -o $(LIBNAME) -fPIC \
-	      $(OBJAVATAR).lo $(OBJAUDIO).lo avatar-default.lo avtpalette.lo \
-	      font.lo version.lo avtdata.lo audio-common.lo \
+	      $(OBJAVATAR).lo $(OBJAUDIO).lo avatar.lo avatar-default.lo \
+	      avtpalette.lo font.lo version.lo avtdata.lo audio-common.lo \
 	      $(SDL_LDFLAGS) $(LDFLAGS)
 	-ln -sf $(LIBNAME) $(SONAME)
 	-ln -sf $(LIBNAME) libakfavatar.so
@@ -168,7 +168,7 @@ basedir.o: $(srcdir)/basedir.c $(srcdir)/avtaddons.h
 basedir.lo: $(srcdir)/basedir.c $(srcdir)/avtaddons.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ $(srcdir)/basedir.c
 
-avatar-sdl.o: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
+avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h \
           $(srcdir)/avtinternals.h version.h rgb.h \
           $(srcdir)/balloonpointer.xbm $(srcdir)/thinkpointer.xbm \
           $(srcdir)/round_upper_left.xbm $(srcdir)/round_upper_right.xbm \
@@ -179,11 +179,14 @@ avatar-sdl.o: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
           $(srcdir)/btn_ff.xbm $(srcdir)/btn_fb.xbm \
           $(srcdir)/btn_pause.xbm $(srcdir)/btn_stop.xbm \
           $(srcdir)/btn_help.xbm $(srcdir)/btn_cancel.xbm \
-          $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm \
-          $(srcdir)/akfavatar.xpm
+          $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm
+	$(CC) -I$(srcdir) -I. $(CFLAGS) -c -o $@ $(srcdir)/avatar.c
+
+avatar-sdl.o: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
+          $(srcdir)/avtinternals.h $(srcdir)/akfavatar.xpm
 	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/avatar-sdl.c
 
-avatar-sdl.lo: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
+avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h \
            $(srcdir)/avtinternals.h version.h rgb.h \
            $(srcdir)/balloonpointer.xbm $(srcdir)/thinkpointer.xbm \
            $(srcdir)/round_upper_left.xbm $(srcdir)/round_upper_right.xbm \
@@ -194,8 +197,11 @@ avatar-sdl.lo: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
            $(srcdir)/btn_ff.xbm $(srcdir)/btn_fb.xbm \
            $(srcdir)/btn_pause.xbm $(srcdir)/btn_stop.xbm \
            $(srcdir)/btn_help.xbm $(srcdir)/btn_cancel.xbm \
-           $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm \
-           $(srcdir)/akfavatar.xpm
+           $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm
+	$(CC) -I$(srcdir) -I. $(CFLAGS) -c -fPIC -o $@ $(srcdir)/avatar.c
+
+avatar-sdl.lo: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
+           $(srcdir)/avtinternals.h $(srcdir)/akfavatar.xpm
 	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -fPIC \
 	   -o $@ $(srcdir)/avatar-sdl.c
 
@@ -740,7 +746,8 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/NEWS \
 	   $(srcdir)/COPYING $(srcdir)/ChangeLog $(srcdir)/lrun \
 	   $(srcdir)/akfoerster-lua-akfavatar.desktop \
-	   $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
+	   $(srcdir)/avatar-sdl.c \
+	   $(srcdir)/avatar.c $(srcdir)/akfavatar.h \
 	   $(srcdir)/audio-sdl.c $(srcdir)/audio-dummy.c \
 	   $(srcdir)/audio-common.c \
 	   $(srcdir)/avtdata.h $(srcdir)/avtdata.c \

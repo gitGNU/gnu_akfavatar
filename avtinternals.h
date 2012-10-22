@@ -94,6 +94,70 @@ struct avt_audio
   bool complete;
 };
 
+struct avt_position
+{
+  short x, y;
+};
+
+struct avt_area
+{
+  short x, y, width, height;
+};
+
+struct avt_settings
+{
+  avt_graphic *avatar_image;
+  avt_graphic *cursor_character;
+  wchar_t *name;
+
+  // for an external keyboard/mouse handlers
+  avt_keyhandler ext_keyhandler;
+  avt_mousehandler ext_mousehandler;
+
+  // delay values for printing text and flipping the page
+  int text_delay, flip_page_delay;
+
+  avt_color ballooncolor;
+  avt_color background_color;
+  avt_color text_color;
+  avt_color text_background_color;
+  avt_color bitmap_color;	// color for bitmaps
+
+  avt_char pointer_motion_key;	// key simulated be pointer motion
+  avt_char pointer_button_key;	// key simulated for mouse button 1-3
+
+  bool newline_mode;		// when off, you need an extra CR
+  bool underlined, bold, inverse;	// text underlined, bold?
+  bool auto_margin;		// automatic new lines?
+  bool avatar_visible;		// avatar visible?
+  bool text_cursor_visible;	// shall the text cursor be visible?
+  bool text_cursor_actually_visible;	// is it actually visible?
+  bool reserve_single_keys;	// reserve single keys?
+  bool markup;			// markup-syntax activated?
+  bool hold_updates;		// holding updates back?
+  bool tab_stops[AVT_LINELENGTH];
+
+  // origin mode
+  // Home: textfield (false) or viewport (true)
+  // avt_initialize sets it to true for backwards compatibility
+  bool origin_mode;
+
+  char encoding[100];
+
+  short int mode;		// whether fullscreen or window or ...
+  short int avatar_mode;
+  short int scroll_mode;
+  short int textdir_rtl;
+  short int linestart;		// beginning of line - depending on text direction
+  short int balloonheight, balloonmaxheight, balloonwidth;
+
+  struct avt_position cursor, saved_position;
+
+  struct avt_area textfield;
+  struct avt_area viewport;	// sub-window in textfield
+};
+
+
 #define AVT_AUDIO_ENDED 1
 #define AVT_TIMEOUT 2
 #define AVT_PUSH_KEY 3
@@ -103,9 +167,34 @@ struct avt_audio
 #define avt_max(a, b) ((a) > (b) ? (a) : (b))
 
 /* avatar-sdl.c */
+extern void avt_update_area (int x, int y, int width, int height);
+extern avt_graphic *avt_load_image_file_sdl (const char *filename);
+extern avt_graphic *avt_load_image_stream_sdl (avt_stream * stream);
+extern avt_graphic *avt_load_image_memory_sdl (void *data, size_t size);
+extern int avt_checkevent (void);
+extern avt_char avt_set_pointer_motion_key (avt_char key);
+extern avt_char avt_set_pointer_buttons_key (avt_char key);
+extern void avt_get_pointer_position (int *x, int *y);
+
+// TODO: reduce external functions
+/* avatar.c */
 extern int _avt_STATUS;
 extern void (*avt_alert_func) (void);
 extern void (*avt_quit_audio_func) (void);
+extern struct avt_settings avt;
+extern avt_graphic *screen;
+
+extern int avt_start_common (avt_graphic *new_screen);
+extern void avt_fill (avt_graphic * s, avt_color color);
+extern avt_graphic *avt_get_window (void);
+extern void avt_free_graphic (avt_graphic * gr);
+extern avt_graphic * avt_load_image_xpm (char **xpm);
+extern void avt_free_screen (void);
+extern void avt_update_all (void);
+extern void avt_put_graphic (avt_graphic * source, avt_graphic * destination,
+		 int x, int y);
+extern bool avt_check_buttons (int x, int y);
+extern void avt_quit_common (void);
 
 /* audio-sdl.c */
 extern void avt_lock_audio (void);

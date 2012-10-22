@@ -1,3 +1,7 @@
+2012-10-22  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c, avatar-sdl.c: split files (still buggy)
+
 2012-10-20  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl.c: fix centering header/footer
