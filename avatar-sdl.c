@@ -696,8 +696,10 @@ calculate_balloonmaxheight (void)
 {
   int avatar_height;
 
-  avatar_height =
-    avt.avatar_image ? avt.avatar_image->height + AVATAR_MARGIN : 0;
+  avatar_height = 0;
+
+  if (avt.avatar_image)
+    avatar_height = avt.avatar_image->height + AVATAR_MARGIN;
 
   avt.balloonmaxheight = (window.height - avatar_height - (2 * TOPMARGIN)
 			  - (2 * BALLOON_INNER_MARGIN)) / LINEHEIGHT;
@@ -719,15 +721,18 @@ calculate_balloonmaxheight (void)
 static void
 avt_avatar_window (void)
 {
-  // window may be smaller than the screen
+  window.x = 0;
+  window.y = 0;
   window.width = MINIMALWIDTH;
   window.height = MINIMALHEIGHT;
-  window.x =
-    screen->width > window.width
-    ? (screen->width / 2) - (window.width / 2) : 0;
-  window.y =
-    screen->height > window.height
-    ? (screen->height / 2) - (window.height / 2) : 0;
+
+  // window may be smaller than the screen
+  if (screen->width > MINIMALWIDTH)
+    window.x = (screen->width / 2) - (MINIMALWIDTH / 2);
+
+  if (screen->height > MINIMALHEIGHT)
+    window.y = (screen->height / 2) - (MINIMALHEIGHT / 2);
+
   calculate_balloonmaxheight ();
 }
 
@@ -2081,9 +2086,10 @@ avt_draw_balloon (void)
 
   avt_draw_balloon2 (0, avt.ballooncolor);
 
-  avt.linestart =
-    (avt.textdir_rtl) ? avt.viewport.x + avt.viewport.width -
-    fontwidth : avt.viewport.x;
+  if (avt.textdir_rtl)
+    avt.linestart = avt.viewport.x + avt.viewport.width - fontwidth;
+  else
+    avt.linestart = avt.viewport.x;
 
   avt.avatar_visible = true;
 
@@ -2126,8 +2132,11 @@ avt_text_direction (int direction)
       else
 	area = avt.textfield;
 
-      avt.linestart =
-	(avt.textdir_rtl) ? area.x + area.width - fontwidth : area.x;
+      if (avt.textdir_rtl)
+	avt.linestart = area.x + area.width - fontwidth;
+      else
+	avt.linestart = area.x;
+
       avt.cursor.x = avt.linestart;
 
       if (avt.text_cursor_visible)
@@ -2234,12 +2243,15 @@ avt_resize (int w, int h)
   avt_free_screen ();
 
   // new position of the window on the screen
-  window.x =
-    screen->width > window.width
-    ? (screen->width / 2) - (window.width / 2) : 0;
-  window.y =
-    screen->height > window.height
-    ? (screen->height / 2) - (window.height / 2) : 0;
+  if (screen->width > window.width)
+    window.x = (screen->width / 2) - (window.width / 2);
+  else
+    window.x = 0;
+
+  if (screen->height > window.height)
+    window.y = (screen->height / 2) - (window.height / 2);
+  else
+    window.y = 0;
 
   // restore image
   avt_put_graphic (oldwindowimage, screen, window.x, window.y);
@@ -2254,9 +2266,10 @@ avt_resize (int w, int h)
       avt.viewport.x = avt.viewport.x - oldwindow.x + window.x;
       avt.viewport.y = avt.viewport.y - oldwindow.y + window.y;
 
-      avt.linestart =
-	(avt.textdir_rtl) ? avt.viewport.x + avt.viewport.width -
-	fontwidth : avt.viewport.x;
+      if (avt.textdir_rtl)
+	avt.linestart = avt.viewport.x + avt.viewport.width - fontwidth;
+      else
+	avt.linestart = avt.viewport.x;
 
       avt.cursor.x = avt.cursor.x - oldwindow.x + window.x;
       avt.cursor.y = avt.cursor.y - oldwindow.y + window.y;
@@ -3126,9 +3139,10 @@ avt_viewport (int x, int y, int width, int height)
   avt.viewport.width = width * fontwidth;
   avt.viewport.height = height * LINEHEIGHT;
 
-  avt.linestart =
-    (avt.textdir_rtl) ? avt.viewport.x + avt.viewport.width -
-    fontwidth : avt.viewport.x;
+  if (avt.textdir_rtl)
+    avt.linestart = avt.viewport.x + avt.viewport.width - fontwidth;
+  else
+    avt.linestart = avt.viewport.x;
 
   avt.cursor.x = avt.linestart;
   avt.cursor.y = avt.viewport.y;
@@ -3177,8 +3191,10 @@ avt_set_origin_mode (bool mode)
   else
     area = avt.textfield;
 
-  avt.linestart =
-    (avt.textdir_rtl) ? area.x + area.width - fontwidth : area.x;
+  if (avt.textdir_rtl)
+    avt.linestart = area.x + area.width - fontwidth;
+  else
+    avt.linestart = area.x;
 
   // cursor to position 1,1
   // when origin mode is off, then it may be outside the viewport (sic)
@@ -3572,8 +3588,10 @@ avt_forward (void)
   if (not screen or avt.textfield.x < 0)
     return _avt_STATUS;
 
-  avt.cursor.x =
-    (avt.textdir_rtl) ? avt.cursor.x - fontwidth : avt.cursor.x + fontwidth;
+  if (avt.textdir_rtl)
+    avt.cursor.x -= fontwidth;
+  else
+    avt.cursor.x += fontwidth;
 
   if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
@@ -3705,9 +3723,10 @@ avt_backspace (void)
 	  if (avt.text_cursor_visible)
 	    avt_show_text_cursor (false);
 
-	  avt.cursor.x =
-	    (avt.textdir_rtl) ? avt.cursor.x + fontwidth : avt.cursor.x -
-	    fontwidth;
+	  if (avt.textdir_rtl)
+	    avt.cursor.x += fontwidth;
+	  else
+	    avt.cursor.x -= fontwidth;
 	}
 
       if (avt.text_cursor_visible)
@@ -5530,10 +5549,10 @@ avt_ask (wchar_t * s, size_t size)
 		  pos--;	// cursor stays where it is
 		  bell ();
 		}
+	      else if (avt.textdir_rtl)
+		avt.cursor.x -= fontwidth;
 	      else
-		avt.cursor.x =
-		  (avt.textdir_rtl) ? avt.cursor.x -
-		  fontwidth : avt.cursor.x + fontwidth;
+		avt.cursor.x += fontwidth;
 	    }
 	}
     }
@@ -6006,15 +6025,19 @@ avt_show_image (avt_graphic * image)
   // eventually increase inner window - never decrease!
   if (image->width > window.width)
     {
-      window.width =
-	(image->width <= screen->width) ? image->width : screen->width;
+      if (image->width <= screen->width)
+	window.width = image->width;
+      else
+	window.width = screen->width;
       window.x = (screen->width / 2) - (window.width / 2);
     }
 
   if (image->height > window.height)
     {
-      window.height =
-	(image->height <= screen->height) ? image->height : screen->height;
+      if (image->height <= screen->height)
+	window.height = image->height;
+      else
+	window.height = screen->height;
       window.y = (screen->height / 2) - (window.height / 2);
     }
 
