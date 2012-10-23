@@ -2964,17 +2964,19 @@ avt_put_char (avt_char ch)
     case 0x0020:		// SP: space
       if (avt.auto_margin)
 	check_auto_margin ();
-      if (not avt.underlined and not avt.inverse)
-	avt_clearchar ();
-      else			// underlined or inverse
+
+      if (avt.cursor.x < avt.viewport.x + avt.viewport.width)
 	{
-	  if (avt.cursor.x < avt.viewport.x + avt.viewport.width)
+	  if (not avt.underlined and not avt.inverse)
+	    avt_clearchar ();
+	  else			// underlined or inverse
 	    {
+
 	      avt_drawchar (0x0020, avt.screen);
 	      avt_showchar ();
 	    }
+	  avt_forward ();
 	}
-      avt_forward ();
       /*
        * no delay for the space char
        * it'd be annoying if you have a sequence of spaces
