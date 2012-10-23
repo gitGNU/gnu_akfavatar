@@ -5968,6 +5968,17 @@ avt_quit_common (void)
       avt_quit_audio_func = NULL;
     }
 
+  avt_release_raw_image ();
+
+  // close conversion descriptors
+  if (output_cd != ICONV_UNINITIALIZED)
+    avt_iconv_close (output_cd);
+  if (input_cd != ICONV_UNINITIALIZED)
+    avt_iconv_close (input_cd);
+  output_cd = input_cd = ICONV_UNINITIALIZED;
+
+  avt.encoding[0] = '\0';
+
   if (avt.screen)
     {
       avt_free_graphic (base_button);
