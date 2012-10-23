@@ -36,7 +36,6 @@
 
 #include "akfavatar.h"
 #include "avtinternals.h"
-#include "avtdata.h"
 #include "SDL.h"
 
 #include <limits.h>
@@ -54,8 +53,6 @@
 #ifdef LINK_SDL_IMAGE
 #  include "SDL_image.h"
 #endif
-
-#define AVT_XBM_INFO(img)  img##_bits, img##_width, img##_height
 
 #define LINEHEIGHT (fontheight)	// + something, if you want
 
@@ -96,8 +93,6 @@ static int errno;
 #  define MOVE_DELAY 1.8
 #endif // not VGA
 
-#define BALLOONPOINTER_OFFSET 20
-
 // only defined in later SDL versions
 #ifndef SDL_BUTTON_WHEELUP
 #  define SDL_BUTTON_WHEELUP 4
@@ -106,22 +101,6 @@ static int errno;
 #ifndef SDL_BUTTON_WHEELDOWN
 #  define SDL_BUTTON_WHEELDOWN 5
 #endif
-
-enum avt_button_type
-{
-  btn_cancel, btn_yes, btn_no, btn_right, btn_left, btn_down, btn_up,
-  btn_fastforward, btn_fastbackward, btn_stop, btn_pause, btn_help,
-  btn_eject, btn_circle
-};
-
-static SDL_Surface *sdl_screen;
-static struct avt_settings *avt;
-static short int mode;		// whether fullscreen or window or ...
-static SDL_Cursor *mpointer;
-static struct avt_area window;	// if screen is in fact larger
-static struct avt_area windowmode_size;	// size of the whole window (screen)
-static uint32_t screenflags;	// flags for the screen
-static int fontwidth, fontheight;
 
 // Note: any event should have an associated key, so key == event
 
@@ -133,23 +112,14 @@ struct avt_key_buffer
   avt_char buffer[AVT_KEYBUFFER_SIZE];
 };
 
+static SDL_Surface *sdl_screen;
+static struct avt_settings *avt;
+static short int mode;		// whether fullscreen or window or ...
+static SDL_Cursor *mpointer;
+static struct avt_area windowmode_size;	// size of the whole window (screen)
+static uint32_t screenflags;	// flags for the screen
+static int fontwidth, fontheight;
 static struct avt_key_buffer avt_keys;
-
-struct avt_button
-{
-  short int x, y;
-  avt_char key;
-  avt_graphic *background;
-};
-
-#if defined(__GNUC__) and not defined(__WIN32__)
-#  define AVT_HIDDEN __attribute__((__visibility__("hidden")))
-#else
-#  define AVT_HIDDEN
-#endif // __GNUC__
-
-// 0 = normal; 1 = quit-request; -1 = error
-int _avt_STATUS AVT_HIDDEN;
 
 // forward declaration
 static int avt_pause (void);
@@ -301,7 +271,6 @@ avt_load_image_RW (SDL_RWops * src, int freesrc)
   return image;
 }
 
-
 /*
  * try to load the library SDL_image dynamically
  * (XPM and uncompressed BMP files can always be loaded)
@@ -404,7 +373,7 @@ avt_load_image_memory_sdl (void *data, size_t size)
   return avt_load_image_rw (SDL_RWFromMem (data, size));
 }
 
-#if 0
+// TODO: get it working again
 #ifdef USE_SDL_ICONV
 static size_t
 avt_iconv (avt_iconv_t cd,
@@ -441,10 +410,10 @@ avt_iconv (avt_iconv_t cd,
   return r;
 }
 #endif // USE_SDL_ICONV
-#endif
 
+// FIXME
 static void
-avt_resize (int w, int h)
+avt_resize_sdl (int w, int h)
 {
   avt_graphic *oldwindowimage;
   struct avt_area oldwindow;
@@ -527,13 +496,13 @@ avt_toggle_fullscreen (void)
       if ((screenflags bitand SDL_FULLSCREEN) != 0)
 	{
 	  screenflags = screenflags bitor SDL_NOFRAME;
-	  avt_resize (window.width, window.height);
+	  avt_resize_sdl (window.width, window.height);
 	  mode = AVT_FULLSCREEN;
 	}
       else
 	{
 	  screenflags = screenflags bitand compl SDL_NOFRAME;
-	  avt_resize (windowmode_size.width, windowmode_size.height);
+	  avt_resize_sdl (windowmode_size.width, windowmode_size.height);
 	  mode = AVT_WINDOW;
 	}
     }
@@ -554,7 +523,7 @@ avt_switch_mode (int new_mode)
 	    {
 	      screenflags =
 		screenflags bitor SDL_FULLSCREEN bitor SDL_NOFRAME;
-	      avt_resize (window.width, window.height);
+	      avt_resize_sdl (window.width, window.height);
 	    }
 	  break;
 
@@ -563,13 +532,12 @@ avt_switch_mode (int new_mode)
 	    {
 	      screenflags =
 		screenflags bitand compl (SDL_FULLSCREEN bitor SDL_NOFRAME);
-	      avt_resize (windowmode_size.width, windowmode_size.height);
+	      avt_resize_sdl (windowmode_size.width, windowmode_size.height);
 	    }
 	  break;
 	}
     }
 }
-
 
 // push key into buffer
 extern void
@@ -824,7 +792,7 @@ avt_analyze_event (SDL_Event * event)
       break;
 
     case SDL_VIDEORESIZE:
-      avt_resize (event->resize.w, event->resize.h);
+      avt_resize_sdl (event->resize.w, event->resize.h);
       break;
 
     case SDL_MOUSEBUTTONDOWN:
@@ -898,16 +866,6 @@ avt_checkevent (void)
 
   while (SDL_PollEvent (&event))
     avt_analyze_event (&event);
-
-  return _avt_STATUS;
-}
-
-// checks for events
-extern int
-avt_update (void)
-{
-  if (screen)
-    avt_checkevent ();
 
   return _avt_STATUS;
 }
@@ -1098,12 +1056,6 @@ avt_init_SDL (void)
 extern void
 avt_quit (void)
 {
-  if (avt_quit_audio_func)
-    {
-      (*avt_quit_audio_func) ();
-      avt_quit_audio_func = NULL;
-    }
-
   avt_quit_common ();
   load_image_done ();
 
@@ -1120,7 +1072,6 @@ extern void
 avt_set_title (const char *title, const char *shortname)
 {
   char *encoding;
-
 
   encoding = avt_get_mb_encoding ();
 
@@ -1179,6 +1130,7 @@ avt_set_title (const char *title, const char *shortname)
    ((b) & 0x02) << 5 | \
    ((b) & 0x01) << 7)
 
+// FIXME
 // width must be a multiple of CHAR_BIT
 #define xbm_bytes(img)  ((img##_width / CHAR_BIT) * img##_height)
 
@@ -1309,13 +1261,6 @@ avt_start (const char *title, const char *shortname, int window_mode)
       or sdl_screen->format->BitsPerPixel != COLORDEPTH)
     {
       avt_set_error ("error initializing AKFAvatar");
-      _avt_STATUS = AVT_ERROR;
-      return _avt_STATUS;
-    }
-
-  if (sdl_screen->w < MINIMALWIDTH or sdl_screen->h < MINIMALHEIGHT)
-    {
-      avt_set_error ("screen too small");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }

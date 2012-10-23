@@ -183,10 +183,10 @@ enum avt_button_type
 
 
 avt_graphic *screen;		// FIXME
+struct avt_area window;	// if screen is in fact larger
 
 static avt_graphic *base_button;
 static avt_graphic *raw_image;
-static struct avt_area window;	// if screen is in fact larger
 static int fontwidth, fontheight, fontunderline;
 
 // conversion descriptors for text input and output
@@ -1926,7 +1926,6 @@ avt_check_buttons (int x, int y)
   return false;
 }
 
-#if 0
 // checks for events
 extern int
 avt_update (void)
@@ -1936,7 +1935,6 @@ avt_update (void)
 
   return _avt_STATUS;
 }
-#endif
 
 extern int
 avt_where_x (void)
@@ -6028,6 +6026,13 @@ avt_start_common (avt_graphic * new_screen)
     screen = new_screen;
   else
     screen = avt_new_graphic (MINIMALWIDTH, MINIMALHEIGHT);
+
+  if (screen->width < MINIMALWIDTH or screen->height < MINIMALHEIGHT)
+    {
+      avt_set_error ("screen too small");
+      _avt_STATUS = AVT_ERROR;
+      return NULL;
+    }
 
   avt_fill (screen, avt.background_color);
   avt_update_all ();

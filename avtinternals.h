@@ -188,6 +188,7 @@ extern int _avt_STATUS;
 extern void (*avt_alert_func) (void);
 extern void (*avt_quit_audio_func) (void);
 extern avt_graphic *screen;
+extern struct avt_area window;	// if screen is in fact larger
 
 extern struct avt_settings *avt_start_common (avt_graphic *new_screen);
 extern void avt_fill (avt_graphic * s, avt_color color);
