@@ -5959,6 +5959,11 @@ avt_credits_mb (const char *txt, bool centered)
   return _avt_STATUS;
 }
 
+extern struct avt_settings *avt_get_settings (void)
+{
+  return &avt;
+}
+
 extern void
 avt_quit_common (void)
 {
