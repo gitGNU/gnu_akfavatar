@@ -355,19 +355,19 @@ avt_load_image_rw (SDL_RWops * RW)
   return result;
 }
 
-extern avt_graphic *
+static avt_graphic *
 avt_load_image_file_sdl (const char *filename)
 {
   return avt_load_image_rw (SDL_RWFromFile (filename, "rb"));
 }
 
-extern avt_graphic *
+static avt_graphic *
 avt_load_image_stream_sdl (avt_stream * stream)
 {
   return avt_load_image_rw (SDL_RWFromFP ((FILE *) stream, 0));
 }
 
-extern avt_graphic *
+static avt_graphic *
 avt_load_image_memory_sdl (void *data, size_t size)
 {
   return avt_load_image_rw (SDL_RWFromMem (data, size));
@@ -1060,6 +1060,12 @@ avt_quit (void)
   avt_quit_common ();
   load_image_done ();
 
+  avt->load_image_file = NULL;
+  avt->load_image_stream = NULL;
+  avt->load_image_memory = NULL;
+
+  avt = NULL;
+
   if (sdl_screen)
     {
       SDL_FreeCursor (mpointer);
@@ -1277,6 +1283,10 @@ avt_start (const char *title, const char *shortname, int window_mode)
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
+
+  avt->load_image_file = &avt_load_image_file_sdl;
+  avt->load_image_stream = &avt_load_image_stream_sdl;
+  avt->load_image_memory = &avt_load_image_memory_sdl;
 
   // size of the window (not to be confused with the variable window
   windowmode_size.x = windowmode_size.y = 0;	// unused

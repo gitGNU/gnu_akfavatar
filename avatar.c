@@ -1291,8 +1291,8 @@ avt_load_image_file (const char *filename)
 
   image = avt_load_image_avtdata (avt_data_open_file (filename));
 
-  if (not image)
-    image = avt_load_image_file_sdl (filename);
+  if (not image and avt.load_image_file)
+    image = (*avt.load_image_file) (filename);
 
   return image;
 }
@@ -1305,8 +1305,8 @@ avt_load_image_stream (avt_stream * stream)
   image =
     avt_load_image_avtdata (avt_data_open_stream ((FILE *) stream, false));
 
-  if (not image)
-    image = avt_load_image_stream_sdl ((FILE *) stream);
+  if (not image and avt.load_image_stream)
+    image = (*avt.load_image_stream) (stream);
 
   return image;
 }
@@ -1318,8 +1318,8 @@ avt_load_image_memory (void *data, size_t size)
 
   image = avt_load_image_avtdata (avt_data_open_memory (data, size));
 
-  if (not image)
-    image = avt_load_image_memory_sdl (data, size);
+  if (not image and avt.load_image_memory)
+    image = (*avt.load_image_memory) (data, size);
 
   return image;
 }

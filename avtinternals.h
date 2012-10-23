@@ -118,6 +118,11 @@ struct avt_settings
   avt_graphic *cursor_character;
   wchar_t *name;
 
+  // image loaders from the backend
+  avt_graphic *(*load_image_file) (const char *filename);
+  avt_graphic *(*load_image_stream) (avt_stream * stream);
+  avt_graphic *(*load_image_memory) (void *data, size_t size);
+
   // for an external keyboard/mouse handlers
   avt_keyhandler ext_keyhandler;
   avt_mousehandler ext_mousehandler;
@@ -176,9 +181,6 @@ struct avt_settings
 
 /* avatar-sdl.c */
 extern void avt_update_area (int x, int y, int width, int height);
-extern avt_graphic *avt_load_image_file_sdl (const char *filename);
-extern avt_graphic *avt_load_image_stream_sdl (avt_stream * stream);
-extern avt_graphic *avt_load_image_memory_sdl (void *data, size_t size);
 extern int avt_checkevent (void);
 extern avt_char avt_set_pointer_motion_key (avt_char key);
 extern avt_char avt_set_pointer_buttons_key (avt_char key);
