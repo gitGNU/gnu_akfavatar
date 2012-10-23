@@ -113,6 +113,7 @@ struct avt_area
 
 struct avt_settings
 {
+  avt_graphic *screen;
   avt_graphic *avatar_image;
   avt_graphic *cursor_character;
   wchar_t *name;
@@ -159,6 +160,7 @@ struct avt_settings
 
   struct avt_position cursor, saved_position;
 
+  struct avt_area window;	// if screen is in fact larger
   struct avt_area textfield;
   struct avt_area viewport;	// sub-window in textfield
 };
@@ -187,7 +189,6 @@ extern void avt_get_pointer_position (int *x, int *y);
 extern int _avt_STATUS;
 extern void (*avt_alert_func) (void);
 extern void (*avt_quit_audio_func) (void);
-extern avt_graphic *screen;
 extern struct avt_area window;	// if screen is in fact larger
 
 extern struct avt_settings *avt_start_common (avt_graphic *new_screen);

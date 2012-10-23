@@ -196,7 +196,7 @@ avt_import_sdl_surface (SDL_Surface * s)
 extern void
 avt_update_area (int x, int y, int width, int height)
 {
-  // sdl_screen has the pixel-information of screen
+  // sdl_screen already has the pixel-information of avt->screen
   // other implementations might need to copy it
   SDL_UpdateRect (sdl_screen, x, y, width, height);
 }
@@ -426,48 +426,48 @@ avt_resize_sdl (int w, int h)
     h = MINIMALHEIGHT;
 
   // save the window
-  oldwindow = window;
+  oldwindow = avt->window;
   oldwindowimage = avt_get_window ();
 
   // resize screen
   sdl_screen = SDL_SetVideoMode (w, h, COLORDEPTH, screenflags);
-  screen->pixels = sdl_screen->pixels;
-  screen->width = sdl_screen->w;
-  screen->height = sdl_screen->h;
+  avt->screen->pixels = sdl_screen->pixels;
+  avt->screen->width = sdl_screen->w;
+  avt->screen->height = sdl_screen->h;
 
   avt_free_screen ();
 
   // new position of the window on the screen
-  if (screen->width > window.width)
-    window.x = (screen->width / 2) - (window.width / 2);
+  if (avt->screen->width > avt->window.width)
+    avt->window.x = (avt->screen->width / 2) - (avt->window.width / 2);
   else
-    window.x = 0;
+    avt->window.x = 0;
 
-  if (screen->height > window.height)
-    window.y = (screen->height / 2) - (window.height / 2);
+  if (avt->screen->height > avt->window.height)
+    avt->window.y = (avt->screen->height / 2) - (avt->window.height / 2);
   else
-    window.y = 0;
+    avt->window.y = 0;
 
   // restore image
-  avt_put_graphic (oldwindowimage, screen, window.x, window.y);
+  avt_put_graphic (oldwindowimage, avt->screen, avt->window.x, avt->window.y);
   avt_free_graphic (oldwindowimage);
 
   // recalculate textfield & viewport positions
   if (avt->textfield.x >= 0)
     {
-      avt->textfield.x = avt->textfield.x - oldwindow.x + window.x;
-      avt->textfield.y = avt->textfield.y - oldwindow.y + window.y;
+      avt->textfield.x = avt->textfield.x - oldwindow.x + avt->window.x;
+      avt->textfield.y = avt->textfield.y - oldwindow.y + avt->window.y;
 
-      avt->viewport.x = avt->viewport.x - oldwindow.x + window.x;
-      avt->viewport.y = avt->viewport.y - oldwindow.y + window.y;
+      avt->viewport.x = avt->viewport.x - oldwindow.x + avt->window.x;
+      avt->viewport.y = avt->viewport.y - oldwindow.y + avt->window.y;
 
       if (avt->textdir_rtl)
 	avt->linestart = avt->viewport.x + avt->viewport.width - fontwidth;
       else
 	avt->linestart = avt->viewport.x;
 
-      avt->cursor.x = avt->cursor.x - oldwindow.x + window.x;
-      avt->cursor.y = avt->cursor.y - oldwindow.y + window.y;
+      avt->cursor.x = avt->cursor.x - oldwindow.x + avt->window.x;
+      avt->cursor.y = avt->cursor.y - oldwindow.y + avt->window.y;
     }
 
   // set windowmode_size
@@ -496,7 +496,7 @@ avt_toggle_fullscreen (void)
       if ((screenflags bitand SDL_FULLSCREEN) != 0)
 	{
 	  screenflags = screenflags bitor SDL_NOFRAME;
-	  avt_resize_sdl (window.width, window.height);
+	  avt_resize_sdl (avt->window.width, avt->window.height);
 	  mode = AVT_FULLSCREEN;
 	}
       else
@@ -512,7 +512,7 @@ avt_toggle_fullscreen (void)
 extern void
 avt_switch_mode (int new_mode)
 {
-  if (screen and new_mode != mode)
+  if (avt and new_mode != mode)
     {
       mode = new_mode;
       switch (mode)
@@ -523,7 +523,7 @@ avt_switch_mode (int new_mode)
 	    {
 	      screenflags =
 		screenflags bitor SDL_FULLSCREEN bitor SDL_NOFRAME;
-	      avt_resize_sdl (window.width, window.height);
+	      avt_resize_sdl (avt->window.width, avt->window.height);
 	    }
 	  break;
 
@@ -774,9 +774,10 @@ avt_call_mouse_handler (SDL_Event * event)
     }
   else				// no textfield
     {
-      x = event->button.x - window.x;
-      y = event->button.y - window.y;
-      if (x >= 0 and x <= window.width and y >= 0 and y <= window.height)
+      x = event->button.x - avt->window.x;
+      y = event->button.y - avt->window.y;
+      if (x >= 0 and x <= avt->window.width and y >= 0 and y <=
+	  avt->window.height)
 	avt->ext_mousehandler (event->button.button,
 			       (event->button.state == SDL_PRESSED), x, y);
     }
@@ -887,7 +888,7 @@ avt_timeout (uint32_t intervall, void *param)
 extern int
 avt_wait (size_t milliseconds)
 {
-  if (screen and _avt_STATUS == AVT_NORMAL)
+  if (avt and _avt_STATUS == AVT_NORMAL)
     {
       if (milliseconds <= 500)	// short delay
 	{
@@ -1174,6 +1175,8 @@ avt_set_icon (char **xpm)
 				   gr->width * sizeof (avt_color),
 				   0x00FF0000, 0x0000FF00, 0x000000FF, 0);
 
+  // TODO: set color key
+
   SDL_WM_SetIcon (icon, NULL);
 
   SDL_FreeSurface (icon);
@@ -1184,7 +1187,7 @@ extern int
 avt_start (const char *title, const char *shortname, int window_mode)
 {
   // already initialized?
-  if (screen)
+  if (avt)
     {
       avt_set_error ("AKFAvatar already initialized");
       _avt_STATUS = AVT_ERROR;
