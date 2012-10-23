@@ -38,6 +38,8 @@
 #include <iso646.h>
 #include <string.h>
 #include <strings.h>
+#include <errno.h>
+#include <iconv.h>
 
 // include images
 #include "btn.xpm"
@@ -93,23 +95,6 @@
 
 #define SHADOWOFFSET 5
 
-// Note errno is only used for iconv and may not be the external errno!
-
-#ifndef USE_SDL_ICONV
-#  include <errno.h>
-#  include <iconv.h>
-#  define avt_iconv_t             iconv_t
-#  define avt_iconv_open          iconv_open
-#  define avt_iconv_close         iconv_close
-#  define avt_iconv               iconv
-#else // USE_SDL_ICONV
-static int errno;
-#  define avt_iconv_t             SDL_iconv_t
-#  define avt_iconv_open          SDL_iconv_open
-#  define avt_iconv_close         SDL_iconv_close
-   // avt_iconv implemented below
-#endif // USE_SDL_ICONV
-
 // for static linking avoid to drag in unneeded object files
 #pragma GCC poison  avt_colorname avt_palette avt_colors
 #pragma GCC poison  avt_avatar_image_default
@@ -137,7 +122,7 @@ static int errno;
 
 #define BALLOONPOINTER_OFFSET 20
 
-#define ICONV_UNINITIALIZED   (avt_iconv_t)(-1)
+#define ICONV_UNINITIALIZED   (iconv_t)(-1)
 
 /* try to guess WCHAR_ENCODING,
  * based on WCHAR_MAX or __WCHAR_MAX__ if it is available
@@ -186,8 +171,8 @@ static avt_graphic *raw_image;
 static int fontwidth, fontheight, fontunderline;
 
 // conversion descriptors for text input and output
-static avt_iconv_t output_cd = ICONV_UNINITIALIZED;
-static avt_iconv_t input_cd = ICONV_UNINITIALIZED;
+static iconv_t output_cd = ICONV_UNINITIALIZED;
+static iconv_t input_cd = ICONV_UNINITIALIZED;
 
 
 // FIXME
@@ -3229,10 +3214,10 @@ avt_mb_encoding (const char *encoding)
 
   //  if it is already open, close it first
   if (output_cd != ICONV_UNINITIALIZED)
-    avt_iconv_close (output_cd);
+    iconv_close (output_cd);
 
   // initialize the conversion framework
-  output_cd = avt_iconv_open (WCHAR_ENCODING, encoding);
+  output_cd = iconv_open (WCHAR_ENCODING, encoding);
 
   // check if it was successfully initialized
   if (output_cd == ICONV_UNINITIALIZED)
@@ -3246,15 +3231,15 @@ avt_mb_encoding (const char *encoding)
 
   //  if it is already open, close it first
   if (input_cd != ICONV_UNINITIALIZED)
-    avt_iconv_close (input_cd);
+    iconv_close (input_cd);
 
   // initialize the conversion framework
-  input_cd = avt_iconv_open (encoding, WCHAR_ENCODING);
+  input_cd = iconv_open (encoding, WCHAR_ENCODING);
 
   // check if it was successfully initialized
   if (input_cd == ICONV_UNINITIALIZED)
     {
-      avt_iconv_close (output_cd);
+      iconv_close (output_cd);
       output_cd = ICONV_UNINITIALIZED;
       avt_set_error ("encoding not supported for input");
       _avt_STATUS = AVT_ERROR;
@@ -3307,7 +3292,7 @@ avt_mb_decode_buffer (wchar_t * dest, size_t dest_size,
       inbuf++;
       inbytesleft--;
       returncode =
-	avt_iconv (output_cd, &restbuf, &rest_bytes, &outbuf, &outbytesleft);
+	iconv (output_cd, &restbuf, &rest_bytes, &outbuf, &outbytesleft);
 
       if (returncode != (size_t) (-1))
 	rest_bytes = 0;
@@ -3323,7 +3308,7 @@ avt_mb_decode_buffer (wchar_t * dest, size_t dest_size,
 
   // do the conversion
   returncode =
-    avt_iconv (output_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+    iconv (output_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
 
   // handle invalid characters
   while (returncode == (size_t) (-1) and errno == EILSEQ)
@@ -3336,7 +3321,7 @@ avt_mb_decode_buffer (wchar_t * dest, size_t dest_size,
       outbuf += sizeof (wchar_t);
       outbytesleft -= sizeof (wchar_t);
       returncode =
-	avt_iconv (output_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+	iconv (output_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
     }
 
   // check for incomplete sequences and put them into the rest_buffer
@@ -3421,7 +3406,7 @@ avt_mb_encode_buffer (char *dest, size_t dest_size, const wchar_t * src,
   outbuf = dest;
 
   // do the conversion
-  (void) avt_iconv (input_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+  (void) iconv (input_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
   // ignore errors
 
   // terminate outbuf
@@ -3470,7 +3455,7 @@ avt_recode_buffer (const char *tocode, const char *fromcode,
 		   char *dest, size_t dest_size, const char *src,
 		   size_t src_size)
 {
-  avt_iconv_t cd;
+  iconv_t cd;
   char *outbuf, *inbuf;
   size_t inbytesleft, outbytesleft;
   size_t returncode;
@@ -3487,8 +3472,8 @@ avt_recode_buffer (const char *tocode, const char *fromcode,
   if (not fromcode)
     fromcode = avt.encoding;
 
-  cd = avt_iconv_open (tocode, fromcode);
-  if (cd == (avt_iconv_t) (-1))
+  cd = iconv_open (tocode, fromcode);
+  if (cd == (iconv_t) (-1))
     return (size_t) (-1);
 
   inbuf = (char *) src;
@@ -3502,20 +3487,19 @@ avt_recode_buffer (const char *tocode, const char *fromcode,
   outbuf = dest;
 
   // do the conversion
-  returncode = avt_iconv (cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+  returncode = iconv (cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
 
   // jump over invalid characters
   while (returncode == (size_t) (-1) and errno == EILSEQ)
     {
       inbuf++;
       inbytesleft--;
-      returncode =
-	avt_iconv (cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+      returncode = iconv (cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
     }
 
   // ignore E2BIG - just put in as much as fits
 
-  avt_iconv_close (cd);
+  iconv_close (cd);
 
   // terminate outbuf (4 Bytes were reserved)
   memset (outbuf, 0, 4);
@@ -3528,7 +3512,7 @@ extern size_t
 avt_recode (const char *tocode, const char *fromcode,
 	    char **dest, const char *src, size_t src_size)
 {
-  avt_iconv_t cd;
+  iconv_t cd;
   char *outbuf, *inbuf;
   size_t dest_size;
   size_t inbytesleft, outbytesleft;
@@ -3551,8 +3535,8 @@ avt_recode (const char *tocode, const char *fromcode,
   if (not fromcode)
     fromcode = avt.encoding;
 
-  cd = avt_iconv_open (tocode, fromcode);
-  if (cd == (avt_iconv_t) (-1))
+  cd = iconv_open (tocode, fromcode);
+  if (cd == (iconv_t) (-1))
     return (size_t) (-1);
 
   inbuf = (char *) src;
@@ -3569,7 +3553,7 @@ avt_recode (const char *tocode, const char *fromcode,
 
   if (not * dest)
     {
-      avt_iconv_close (cd);
+      iconv_close (cd);
       return -1;
     }
 
@@ -3579,8 +3563,7 @@ avt_recode (const char *tocode, const char *fromcode,
   // do the conversion
   while (inbytesleft > 0)
     {
-      returncode =
-	avt_iconv (cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+      returncode = iconv (cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
 
       // check for fatal errors
       if (returncode == (size_t) (-1))
@@ -3594,7 +3577,7 @@ avt_recode (const char *tocode, const char *fromcode,
 	      *dest = (char *) realloc (*dest, dest_size);
 	      if (not * dest)
 		{
-		  avt_iconv_close (cd);
+		  iconv_close (cd);
 		  return (size_t) (-1);
 		}
 
@@ -3616,7 +3599,7 @@ avt_recode (const char *tocode, const char *fromcode,
 	  }
     }
 
-  avt_iconv_close (cd);
+  iconv_close (cd);
 
   // terminate outbuf (4 Bytes were reserved)
   memset (outbuf, 0, 4);
@@ -3684,8 +3667,8 @@ avt_say_mb_len (const char *txt, size_t len)
       rest_bytes_left = rest_bytes;
 
       nconv =
-	avt_iconv (output_cd, &rest_buf, &rest_bytes_left, &outbuf,
-		   &outbytesleft);
+	iconv (output_cd, &rest_buf, &rest_bytes_left, &outbuf,
+	       &outbytesleft);
       err = errno;
 
       if (nconv != (size_t) (-1))	// no error
@@ -3707,8 +3690,7 @@ avt_say_mb_len (const char *txt, size_t len)
       outbuf = (char *) wctext;
       outbytesleft = sizeof (wctext);
 
-      nconv =
-	avt_iconv (output_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+      nconv = iconv (output_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
       err = errno;
 
       avt_say_len (wctext,
@@ -4662,7 +4644,7 @@ avt_ask_mb (char *s, size_t size)
   outbytesleft = size;
 
   // do the conversion
-  avt_iconv (input_cd, &inbuf, &inbytesleft, &s, &outbytesleft);
+  iconv (input_cd, &inbuf, &inbytesleft, &s, &outbytesleft);
 
   return _avt_STATUS;
 }
@@ -5959,7 +5941,8 @@ avt_credits_mb (const char *txt, bool centered)
   return _avt_STATUS;
 }
 
-extern struct avt_settings *avt_get_settings (void)
+extern struct avt_settings *
+avt_get_settings (void)
 {
   return &avt;
 }
@@ -5977,9 +5960,9 @@ avt_quit_common (void)
 
   // close conversion descriptors
   if (output_cd != ICONV_UNINITIALIZED)
-    avt_iconv_close (output_cd);
+    iconv_close (output_cd);
   if (input_cd != ICONV_UNINITIALIZED)
-    avt_iconv_close (input_cd);
+    iconv_close (input_cd);
   output_cd = input_cd = ICONV_UNINITIALIZED;
 
   avt.encoding[0] = '\0';

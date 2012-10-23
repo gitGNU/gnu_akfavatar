@@ -56,23 +56,6 @@
 
 #define LINEHEIGHT (fontheight)	// + something, if you want
 
-// Note errno is only used for iconv and may not be the external errno!
-
-#ifndef USE_SDL_ICONV
-#  include <errno.h>
-#  include <iconv.h>
-#  define avt_iconv_t             iconv_t
-#  define avt_iconv_open          iconv_open
-#  define avt_iconv_close         iconv_close
-#  define avt_iconv               iconv
-#else // USE_SDL_ICONV
-static int errno;
-#  define avt_iconv_t             SDL_iconv_t
-#  define avt_iconv_open          SDL_iconv_open
-#  define avt_iconv_close         SDL_iconv_close
-   // avt_iconv implemented below
-#endif // USE_SDL_ICONV
-
 #define COLORDEPTH  (CHAR_BIT * sizeof (avt_color))
 
 #if defined(VGA)
@@ -372,44 +355,6 @@ avt_load_image_memory_sdl (void *data, size_t size)
 {
   return avt_load_image_rw (SDL_RWFromMem (data, size));
 }
-
-// TODO: get it working again
-#ifdef USE_SDL_ICONV
-static size_t
-avt_iconv (avt_iconv_t cd,
-	   char **inbuf, size_t * inbytesleft,
-	   char **outbuf, size_t * outbytesleft)
-{
-  size_t r;
-
-  r = SDL_iconv (cd, inbuf, inbytesleft, outbuf, outbytesleft);
-
-  switch (r)
-    {
-    case SDL_ICONV_E2BIG:
-      errno = E2BIG;
-      r = (size_t) (-1);
-      break;
-
-    case SDL_ICONV_EILSEQ:
-      errno = EILSEQ;
-      r = (size_t) (-1);
-      break;
-
-    case SDL_ICONV_EINVAL:
-      errno = EINVAL;
-      r = (size_t) (-1);
-      break;
-
-    case SDL_ICONV_ERROR:
-      errno = EBADMSG;		// ???
-      r = (size_t) (-1);
-      break;
-    }
-
-  return r;
-}
-#endif // USE_SDL_ICONV
 
 // FIXME
 static void
