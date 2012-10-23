@@ -1175,7 +1175,7 @@ avt_set_icon (char **xpm)
 				   gr->width * sizeof (avt_color),
 				   0x00FF0000, 0x0000FF00, 0x000000FF, 0);
 
-  // TODO: set color key
+  SDL_SetColorKey (icon, SDL_SRCCOLORKEY, 0xFFFFFFFF);
 
   SDL_WM_SetIcon (icon, NULL);
 
