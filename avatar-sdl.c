@@ -85,16 +85,6 @@
 #  define SDL_BUTTON_WHEELDOWN 5
 #endif
 
-// Note: any event should have an associated key, so key == event
-
-#define AVT_KEYBUFFER_SIZE  512
-
-struct avt_key_buffer
-{
-  unsigned short int position, end;
-  avt_char buffer[AVT_KEYBUFFER_SIZE];
-};
-
 static SDL_Surface *sdl_screen;
 static struct avt_settings *avt;
 static short int mode;		// whether fullscreen or window or ...
@@ -102,7 +92,6 @@ static SDL_Cursor *mpointer;
 static struct avt_area windowmode_size;	// size of the whole window (screen)
 static uint32_t screenflags;	// flags for the screen
 static int fontwidth, fontheight;
-static struct avt_key_buffer avt_keys;
 
 // forward declaration
 static int avt_pause (void);
@@ -356,7 +345,7 @@ avt_load_image_memory_sdl (void *data, size_t size)
   return avt_load_image_rw (SDL_RWFromMem (data, size));
 }
 
-// FIXME
+// TODO: simplify
 static void
 avt_resize_sdl (int w, int h)
 {
@@ -484,20 +473,10 @@ avt_switch_mode (int new_mode)
     }
 }
 
-// push key into buffer
-extern void
-avt_push_key (avt_char key)
+static void
+avt_button_pushed (void)
 {
   SDL_Event event;
-  int new_end;
-
-  new_end = (avt_keys.end + 1) % AVT_KEYBUFFER_SIZE;
-
-  // if buffer is not full
-  if (new_end != avt_keys.position)
-    {
-      avt_keys.buffer[avt_keys.end] = key;
-      avt_keys.end = new_end;
 
       /*
        * Send some event to satisfy avt_wait_key,
@@ -507,7 +486,6 @@ avt_push_key (avt_char key)
       event.type = SDL_USEREVENT;
       event.user.code = AVT_PUSH_KEY;
       SDL_PushEvent (&event);
-    }
 }
 
 static inline void
@@ -744,6 +722,7 @@ avt_analyze_event (SDL_Event * event)
     case SDL_MOUSEBUTTONDOWN:
       if (event->button.button <= 3)
 	{
+	  // FIXME ???
 	  if (not avt_check_buttons (event->button.x, event->button.y))
 	    {
 	      if (avt->pointer_button_key)
@@ -879,41 +858,16 @@ avt_ticks (void)
 }
 
 
-static inline void
+extern void
 avt_wait_key (void)
 {
   SDL_Event event;
 
-  while (_avt_STATUS == AVT_NORMAL and avt_keys.position == avt_keys.end)
+  while (_avt_STATUS == AVT_NORMAL and not avt_key_pressed ())
     {
       SDL_WaitEvent (&event);
       avt_analyze_event (&event);
     }
-}
-
-extern int
-avt_key (avt_char * ch)
-{
-  avt_wait_key ();
-
-  if (ch)
-    *ch = avt_keys.buffer[avt_keys.position];
-
-  avt_keys.position = (avt_keys.position + 1) % AVT_KEYBUFFER_SIZE;
-
-  return _avt_STATUS;
-}
-
-extern bool
-avt_key_pressed (void)
-{
-  return (avt_keys.position != avt_keys.end);
-}
-
-extern void
-avt_clear_keys (void)
-{
-  avt_keys.position = avt_keys.end = 0;
 }
 
 extern avt_char

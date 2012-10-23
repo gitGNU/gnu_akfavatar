@@ -151,6 +151,17 @@
 // special value for the color_key
 #define AVT_TRANSPARENT  0xFFFFFFFF
 
+// Note: any event should have an associated key, so key == event
+
+#define AVT_KEYBUFFER_SIZE  512
+
+struct avt_key_buffer
+{
+  unsigned short int position, end;
+  avt_char buffer[AVT_KEYBUFFER_SIZE];
+};
+
+
 enum avt_button_type
 {
   btn_cancel, btn_yes, btn_no, btn_right, btn_left, btn_down, btn_up,
@@ -161,6 +172,7 @@ enum avt_button_type
 static avt_graphic *base_button;
 static avt_graphic *raw_image;
 static int fontwidth, fontheight, fontunderline;
+static struct avt_key_buffer avt_keys;
 
 // conversion descriptors for text input and output
 static iconv_t output_cd = ICONV_UNINITIALIZED;
@@ -203,6 +215,47 @@ static void avt_drawchar (avt_char ch, avt_graphic * surface);
 static void avt_highlight_area (int x, int y, int width, int height,
 				int amount);
 //-----------------------------------------------------------------------------
+
+// push key into buffer
+extern void
+avt_push_key (avt_char key)
+{
+  int new_end;
+
+  new_end = (avt_keys.end + 1) % AVT_KEYBUFFER_SIZE;
+
+  // if buffer is not full
+  if (new_end != avt_keys.position)
+    {
+      avt_keys.buffer[avt_keys.end] = key;
+      avt_keys.end = new_end;
+    }
+}
+
+extern int
+avt_key (avt_char * ch)
+{
+  avt_wait_key ();
+
+  if (ch)
+    *ch = avt_keys.buffer[avt_keys.position];
+
+  avt_keys.position = (avt_keys.position + 1) % AVT_KEYBUFFER_SIZE;
+
+  return _avt_STATUS;
+}
+
+extern bool
+avt_key_pressed (void)
+{
+  return (avt_keys.position != avt_keys.end);
+}
+
+extern void
+avt_clear_keys (void)
+{
+  avt_keys.position = avt_keys.end = 0;
+}
 
 extern void
 avt_free_graphic (avt_graphic * gr)

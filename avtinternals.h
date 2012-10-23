@@ -181,6 +181,7 @@ struct avt_settings
 
 /* avatar-sdl.c */
 extern void avt_update_area (int x, int y, int width, int height);
+extern void avt_wait_key (void);
 extern int avt_checkevent (void);
 extern avt_char avt_set_pointer_motion_key (avt_char key);
 extern avt_char avt_set_pointer_buttons_key (avt_char key);
