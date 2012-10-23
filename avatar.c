@@ -2968,8 +2968,11 @@ avt_put_char (avt_char ch)
 	avt_clearchar ();
       else			// underlined or inverse
 	{
-	  avt_drawchar (0x0020, avt.screen);
-	  avt_showchar ();
+	  if (avt.cursor.x < avt.viewport.x + avt.viewport.width)
+	    {
+	      avt_drawchar (0x0020, avt.screen);
+	      avt_showchar ();
+	    }
 	}
       avt_forward ();
       /*
@@ -2989,11 +2992,16 @@ avt_put_char (avt_char ch)
 	    {
 	      if (avt.auto_margin)
 		check_auto_margin ();
-	      avt_drawchar (ch, avt.screen);
-	      avt_showchar ();
-	      if (avt.text_delay)
-		avt_wait (avt.text_delay);
-	      avt_forward ();
+
+	      if (avt.cursor.x < avt.viewport.x + avt.viewport.width)
+		{
+		  avt_drawchar (ch, avt.screen);
+		  avt_showchar ();
+		  if (avt.text_delay)
+		    avt_wait (avt.text_delay);
+		  avt_forward ();
+		}
+
 	      avt_checkevent ();
 	    }			// if not markup
 	}			// if (ch > 0x0020)
