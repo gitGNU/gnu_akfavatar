@@ -73,7 +73,7 @@ avtdata.o: $(srcdir)/avtdata.c $(srcdir)/avtdata.h
 basedir.o: $(srcdir)/basedir.c $(srcdir)/avtaddons.h
 	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/basedir.c
 
-avatar-sdl.o: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
+avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h \
              $(srcdir)/avtinternals.h version.h rgb.h \
              $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
              $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
@@ -84,8 +84,12 @@ avatar-sdl.o: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
              $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm \
              $(srcdir)/balloonpointer.xbm $(srcdir)/thinkpointer.xbm \
              $(srcdir)/round_upper_left.xbm $(srcdir)/round_upper_right.xbm \
-             $(srcdir)/round_lower_left.xbm $(srcdir)/round_lower_right.xbm \
-             $(srcdir)/akfavatar.xpm
+             $(srcdir)/round_lower_left.xbm $(srcdir)/round_lower_right.xbm
+	$(CC) -c -I$(srcdir) -I. -I$(srcdir)/mingw $(CFLAGS) $(SDL_CFLAGS) \
+	    -o $@ $(srcdir)/avatar.c
+
+avatar-sdl.o: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
+             $(srcdir)/avtinternals.h $(srcdir)/akfavatar.xpm
 	$(CC) -c -I$(srcdir) -I. -I$(srcdir)/mingw $(CFLAGS) $(SDL_CFLAGS) \
 	    -o $@ $(srcdir)/avatar-sdl.c
 
@@ -118,17 +122,18 @@ iconv.exe: $(srcdir)/mingw/win_iconv.c
 iconv: iconv.exe
 
 # static library
-libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o audio-common.o avatar-default.o \
-	  avtdata.o font.o avtpalette.o win_iconv.o version.o
-	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o audio-common.o avatar-default.o \
-	  avtdata.o font.o avtpalette.o win_iconv.o version.o
+libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o audio-common.o \
+	  avatar-default.o avtdata.o font.o avtpalette.o win_iconv.o version.o
+	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o avatar.o audio-common.o \
+	avatar-default.o avtdata.o font.o avtpalette.o win_iconv.o version.o
 	$(RANLIB) $@
 
-akfavatar.dll: $(OBJAVATAR).o $(OBJAUDIO).o audio-common.o avatar-default.o \
-	  avtdata.o font.o libinfo.o avtpalette.o win_iconv.o version.o
-	$(CC) -shared -o $@ $(OBJAVATAR).o $(OBJAUDIO).o avatar-default.o \
-	        avtdata.o audio-common.o font.o avtpalette.o win_iconv.o \
-	        version.o libinfo.o \
+akfavatar.dll: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o audio-common.o \
+	  avatar-default.o avtdata.o font.o libinfo.o avtpalette.o \
+	  win_iconv.o version.o
+	$(CC) -shared -o $@ $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
+	        avatar-default.o avtdata.o audio-common.o font.o avtpalette.o \
+	        win_iconv.o version.o libinfo.o \
 	        -Wl,-no-undefined,--enable-runtime-pseudo-reloc \
 	        -Wl,--output-def,akfavatar.def \
 	        -Wl,--out-implib,libakfavatar.dll.a \

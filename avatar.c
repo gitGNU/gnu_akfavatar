@@ -124,14 +124,6 @@
 
 #define ICONV_UNINITIALIZED   (iconv_t)(-1)
 
-/* try to guess WCHAR_ENCODING,
- * based on WCHAR_MAX or __WCHAR_MAX__ if it is available
- * note: newer SDL versions include stdint.h if available
- */
-#if not defined(WCHAR_MAX) and defined(__WCHAR_MAX__)
-#  define WCHAR_MAX __WCHAR_MAX__
-#endif
-
 #ifndef WCHAR_ENCODING
 
 #  ifndef WCHAR_MAX
