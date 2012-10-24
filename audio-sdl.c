@@ -40,6 +40,7 @@
 // lower audio buffer size for lower latency, but it could become choppy
 #define OUTPUT_BUFFER 4096
 
+static struct avt_settings *avt;
 static bool avt_audio_initialized;
 
 // current sound
@@ -49,6 +50,8 @@ static volatile int32_t soundleft = 0;	// Length of left unplayed audio data
 static volatile bool loop = false;
 static volatile bool playing = false;
 static avt_char audio_key;
+
+static void avt_quit_audio_sdl (void);
 
 // this is the callback function
 static void
@@ -101,8 +104,9 @@ avt_start_audio (void)
 
       // set this before calling anything from this lib
       avt_audio_initialized = true;
-      avt_activate_audio_alert ();
-      avt_quit_audio_func = avt_quit_audio;
+
+      avt = avt_start_audio_common ();
+      avt->quit_audio_backend = &avt_quit_audio_sdl;
     }
 
   audio_key = 0;
@@ -133,12 +137,11 @@ avt_stop_audio (void)
   current_sound.sound = NULL;
 }
 
-extern void
-avt_quit_audio (void)
+static void
+avt_quit_audio_sdl (void)
 {
   if (avt_audio_initialized)
     {
-      avt_quit_audio_func = NULL;
       SDL_CloseAudio ();
       soundpos = 0;
       soundleft = 0;
@@ -147,8 +150,8 @@ avt_quit_audio (void)
       loop = false;
       playing = false;
       SDL_QuitSubSystem (SDL_INIT_AUDIO);
-      avt_deactivate_audio_alert ();
       avt_audio_initialized = false;
+      avt = NULL;
     }
 }
 

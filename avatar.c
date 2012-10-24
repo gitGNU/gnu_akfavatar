@@ -186,9 +186,6 @@ static struct avt_button avt_buttons[MAX_BUTTONS];
 // 0 = normal; 1 = quit-request; -1 = error
 int _avt_STATUS AVT_HIDDEN;
 
-void (*avt_alert_func) (void) AVT_HIDDEN = NULL;
-void (*avt_quit_audio_func) (void) AVT_HIDDEN = NULL;
-
 // forward declaration
 static void avt_drawchar (avt_char ch, avt_graphic * surface);
 static void avt_darker_area (int x, int y, int width, int height, int amount);
@@ -568,8 +565,8 @@ avt_release_raw_image (void)
 static inline void
 bell (void)
 {
-  if (avt_alert_func)
-    (*avt_alert_func) ();
+  if (avt.alert)
+    (*avt.alert) ();
 }
 
 static int
@@ -4274,7 +4271,6 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   size_t horizontal;
   struct avt_settings old_settings;
   bool quit;
-  void (*old_alert_func) (void);
   struct avt_position button;
 
   if (not avt.screen)
@@ -4339,8 +4335,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   avt.ext_mousehandler = NULL;
 
   // temporarily disable the alert function
-  old_alert_func = avt_alert_func;
-  avt_alert_func = NULL;
+  avt.alert = NULL;
 
   avt_set_text_delay (0);
   if (avt.markup)
@@ -4469,7 +4464,6 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
     _avt_STATUS = AVT_NORMAL;
 
   avt_clear_buttons ();
-  avt_alert_func = old_alert_func;
   avt = old_settings;
   avt_activate_cursor (avt.text_cursor_visible);
 
@@ -6025,10 +6019,10 @@ avt_get_settings (void)
 extern void
 avt_quit (void)
 {
-  if (avt_quit_audio_func)
+  if (avt.quit_audio)
     {
-      (*avt_quit_audio_func) ();
-      avt_quit_audio_func = NULL;
+      (*avt.quit_audio) ();
+      avt.quit_audio = NULL;
     }
 
   avt_release_raw_image ();
@@ -6052,7 +6046,7 @@ avt_quit (void)
       avt.avatar_image = NULL;
       avt_free_graphic (avt.cursor_character);
       avt.cursor_character = NULL;
-      avt_alert_func = NULL;
+      avt.alert = NULL;
       avt_free_graphic (avt.screen);
       avt.screen = NULL;
       avt.avatar_visible = false;
@@ -6165,7 +6159,7 @@ avt_start_common (avt_graphic * new_screen)
 
   // visual flash for the alert
   // when you initialize the audio stuff, you get an audio alert
-  avt_alert_func = avt_flash;
+  avt.alert = &avt_flash;
 
   return &avt;
 }

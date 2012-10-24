@@ -81,6 +81,7 @@ avt_free_audio (avt_audio * snd)
 
 // short sound for the "avt_bell" function
 static avt_audio *alert_sound;
+static struct avt_settings *avt;
 
 // table for decoding mu-law
 static const int_least16_t mulaw_decode[256] = {
@@ -144,21 +145,8 @@ audio_alert (void)
     avt_play_audio (alert_sound, AVT_PLAY);
 }
 
-extern int
-avt_activate_audio_alert (void)
-{
-  if (not alert_sound)
-    alert_sound = avt_load_audio_data (&avt_alert_data,
-				       avt_alert_data_size, AVT_LOAD);
-
-  if (alert_sound)
-    avt_alert_func = audio_alert;
-
-  return _avt_STATUS;
-}
-
 extern void
-avt_deactivate_audio_alert (void)
+avt_quit_audio (void)
 {
   if (alert_sound)
     {
@@ -166,7 +154,21 @@ avt_deactivate_audio_alert (void)
       alert_sound = NULL;
     }
 
-  avt_alert_func = avt_flash;
+  if (avt)
+    {
+      avt->alert = &avt_flash;
+
+      if (avt->quit_audio_backend)
+	{
+	  (*avt->quit_audio_backend) ();
+	  avt->quit_audio_backend = NULL;
+	}
+
+      // no need to call it again automatically
+      avt->quit_audio = NULL;
+    }
+
+  avt = NULL;
 }
 
 static size_t
@@ -813,6 +815,23 @@ avt_load_audio_general (avt_data * src, uint_least32_t maxsize, int playmode)
 
   avt_data_close (src);
   return s;
+}
+
+extern struct avt_settings *
+avt_start_audio_common (void)
+{
+  avt = avt_get_settings ();
+
+  if (not alert_sound)
+    alert_sound = avt_load_audio_data (&avt_alert_data,
+				       avt_alert_data_size, AVT_LOAD);
+
+  if (alert_sound)
+    avt->alert = &audio_alert;
+
+  avt->quit_audio = &avt_quit_audio;
+
+  return avt;
 }
 
 #endif // not NO_AUDIO

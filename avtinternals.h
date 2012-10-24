@@ -138,6 +138,9 @@ struct avt_settings
   wchar_t *name;
 
   void (*quit_backend) (void);
+  void (*quit_audio) (void);
+  void (*quit_audio_backend) (void);
+  void (*alert) (void);
 
   // image loaders from the backend
   avt_graphic *(*load_image_file) (const char *filename);
@@ -206,8 +209,6 @@ extern void avt_get_pointer_position (int *x, int *y);
 // TODO: reduce external functions
 /* avatar.c */
 extern int _avt_STATUS;
-extern void (*avt_alert_func) (void);
-extern void (*avt_quit_audio_func) (void);
 
 extern struct avt_settings *avt_start_common (avt_graphic *new_screen);
 extern struct avt_settings *avt_get_settings (void);
@@ -220,7 +221,6 @@ extern void avt_update_all (void);
 extern void avt_put_graphic (avt_graphic * source, avt_graphic * destination,
 		 int x, int y);
 extern bool avt_check_buttons (int x, int y);
-extern void avt_quit_common (void);
 extern avt_graphic *avt_new_graphic (short width, short height);
 extern avt_graphic *avt_data_to_graphic (void *data, short width, short height);
 
@@ -229,8 +229,7 @@ extern void avt_lock_audio (void);
 extern void avt_unlock_audio (avt_audio *snd);
 
 /* audio-common */
-extern int avt_activate_audio_alert (void);
-extern void avt_deactivate_audio_alert (void);
+extern struct avt_settings *avt_start_audio_common (void);
 
 /* avtposix.c / avtwindows.c */
 /* currently not used */
