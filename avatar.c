@@ -212,8 +212,7 @@ void (*avt_quit_audio_func) (void) AVT_HIDDEN = NULL;
 
 // forward declaration
 static void avt_drawchar (avt_char ch, avt_graphic * surface);
-static void avt_highlight_area (int x, int y, int width, int height,
-				int amount);
+static void avt_darker_area (int x, int y, int width, int height, int amount);
 //-----------------------------------------------------------------------------
 
 // push key into buffer
@@ -1413,8 +1412,8 @@ avt_show_text_cursor (bool on)
 			       0);
 
 	  // show text-cursor
-	  avt_highlight_area (avt.cursor.x, avt.cursor.y, fontwidth,
-			      fontheight, 0x50);
+	  avt_darker_area (avt.cursor.x, avt.cursor.y, fontwidth,
+			   fontheight, 0x50);
 	  avt_update_area (avt.cursor.x, avt.cursor.y, fontwidth, fontheight);
 	}
       else
@@ -1598,10 +1597,34 @@ avt_darker (avt_color color, int amount)
   return avt_rgb (r, g, b);
 }
 
-// TODO: make darker or brighter depending on balloon color?
+// secure
 static void
-avt_highlight_area (int x, int y, int width, int height, int amount)
+avt_darker_area (int x, int y, int width, int height, int amount)
 {
+  if (x > avt.screen->width or y > avt.screen->height)
+    return;
+
+  if (x < 0)
+    {
+      width -= (-x);
+      x = 0;
+    }
+
+  if (y < 0)
+    {
+      height -= (-y);
+      y = 0;
+    }
+
+  if (x + width > avt.screen->width)
+    width = avt.screen->width - x;
+
+  if (y + height > avt.screen->height)
+    height = avt.screen->height - y;
+
+  if (width <= 0 or height <= 0)
+    return;
+
   for (int dy = height - 1; dy >= 0; dy--)
     {
       avt_color *p = avt_pixel (avt.screen, x, y + dy);
@@ -2679,6 +2702,12 @@ avt_drawchar (avt_char ch, avt_graphic * surface)
 {
   const uint_least8_t *font_line;	// pixel line from font definition
   uint_least16_t line;		// normalized pixel line might get modified
+
+  // only draw character when it fully fits
+  if (avt.cursor.x < 0 or avt.cursor.y < 0
+      or avt.cursor.x > surface->width - fontwidth
+      or avt.cursor.y > surface->height - fontheight)
+    return;
 
   font_line = (const uint_least8_t *) avt_get_font_char ((int) ch);
 
@@ -3829,8 +3858,8 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
       if (line_nr >= menu_start and line_nr <= menu_end)
 	{
 	  int y = avt.viewport.y + ((line_nr - 1) * LINEHEIGHT);
-	  avt_highlight_area (avt.viewport.x, y, avt.viewport.width,
-			      LINEHEIGHT, 0x20);
+	  avt_darker_area (avt.viewport.x, y, avt.viewport.width,
+			   LINEHEIGHT, 0x20);
 	  avt_update_area (avt.viewport.x, y, avt.viewport.width, LINEHEIGHT);
 	}
     }
