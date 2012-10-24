@@ -771,13 +771,6 @@ avt_wait (size_t milliseconds)
   return _avt_STATUS;
 }
 
-// TODO: rewrite
-extern size_t
-avt_ticks (void)
-{
-  return (size_t) SDL_GetTicks ();
-}
-
 extern void
 avt_wait_key (void)
 {

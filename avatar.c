@@ -40,6 +40,7 @@
 #include <strings.h>
 #include <errno.h>
 #include <iconv.h>
+#include <sys/time.h>
 
 // include images
 #include "btn.xpm"
@@ -149,6 +150,7 @@ enum avt_button_type
 static avt_graphic *base_button;
 static avt_graphic *raw_image;
 static int fontwidth, fontheight, fontunderline;
+static size_t start_ticks;
 static struct avt_key_buffer avt_keys;
 
 // conversion descriptors for text input and output
@@ -231,6 +233,17 @@ extern void
 avt_clear_keys (void)
 {
   avt_keys.position = avt_keys.end = 0;
+}
+
+extern size_t
+avt_ticks (void)
+{
+  struct timeval now;
+
+  // POSIX.1-2001
+  gettimeofday (&now, NULL);
+
+  return ((now.tv_sec) * 1000 + (now.tv_usec) / 1000) - start_ticks;
 }
 
 extern void
@@ -6104,6 +6117,9 @@ avt_start_common (avt_graphic * new_screen)
       _avt_STATUS = AVT_ERROR;
       return NULL;
     }
+
+  if (not start_ticks)
+    start_ticks = avt_ticks ();
 
   avt_reset ();
 
