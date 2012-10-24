@@ -988,7 +988,8 @@ avt_set_icon (char **xpm)
 				   gr->width * sizeof (avt_color),
 				   0x00FF0000, 0x0000FF00, 0x000000FF, 0);
 
-  SDL_SetColorKey (icon, SDL_SRCCOLORKEY, 0xFFFFFFFF);
+  if (gr->transparent)
+    SDL_SetColorKey (icon, SDL_SRCCOLORKEY, gr->color_key);
 
   SDL_WM_SetIcon (icon, NULL);
 
