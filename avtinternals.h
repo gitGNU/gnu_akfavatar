@@ -201,7 +201,6 @@ struct avt_settings
 /* avatar-sdl.c */
 extern void avt_update_area (int x, int y, int width, int height);
 extern void avt_wait_key (void);
-extern int avt_checkevent (void);
 extern avt_char avt_set_pointer_motion_key (avt_char key);
 extern avt_char avt_set_pointer_buttons_key (avt_char key);
 extern void avt_get_pointer_position (int *x, int *y);
@@ -221,8 +220,6 @@ extern void avt_update_all (void);
 extern void avt_put_graphic (avt_graphic * source, avt_graphic * destination,
 		 int x, int y);
 extern bool avt_check_buttons (int x, int y);
-extern avt_graphic *avt_new_graphic (short width, short height);
-extern avt_graphic *avt_data_to_graphic (void *data, short width, short height);
 
 /* audio-sdl.c */
 extern void avt_lock_audio (void);

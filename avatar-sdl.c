@@ -38,6 +38,7 @@
 #include "avtinternals.h"
 #include "SDL.h"
 
+#include <stdlib.h>
 #include <limits.h>
 #include <iso646.h>
 
@@ -77,25 +78,6 @@ static int avt_pause (void);
 static void avt_analyze_event (SDL_Event * event);
 //-----------------------------------------------------------------------------
 
-
-// import an SDL_Surface into the internal format
-// This is ugly!
-static avt_graphic *
-avt_import_sdl_surface (SDL_Surface * s)
-{
-  avt_graphic *gr;
-  SDL_Surface *d;
-
-  d = SDL_DisplayFormat (s);	// TODO: use SDL_PixelFormat
-  gr = avt_new_graphic (d->w, d->h);
-  if (gr)
-    memcpy (gr->pixels, d->pixels, d->w * d->h * sizeof (avt_color));
-
-  SDL_FreeSurface (d);
-  // s is freed by the caller
-
-  return gr;
-}
 
 // this shall be the only function to update the window/screen
 // all values as 0 shall update everything
@@ -219,13 +201,47 @@ load_image_done (void)
 
 // sdl image loaders
 
+
+// import an SDL_Surface into the internal format
+// This is ugly!
+static inline avt_graphic *
+avt_import_sdl_surface (SDL_Surface * s)
+{
+  avt_graphic *gr;
+  SDL_Surface *d;
+
+  d = SDL_DisplayFormat (s);	// TODO: use SDL_PixelFormat
+
+  gr = (avt_graphic *) malloc (sizeof (*gr));
+  if (gr)
+    {
+      gr->width = d->w;
+      gr->height = d->h;
+      gr->transparent = ((d->flags bitand SDL_SRCCOLORKEY) != 0);
+      gr->color_key = d->format->colorkey;
+      gr->pixels = (avt_color *) malloc (d->w * d->h * sizeof (avt_color));
+      if (gr->pixels)
+	memcpy (gr->pixels, d->pixels, d->w * d->h * sizeof (avt_color));
+      else
+	{
+	  free (gr);
+	  gr = NULL;
+	}
+    }
+
+  SDL_FreeSurface (d);
+  // s is freed by the caller
+
+  return gr;
+}
+
 static inline avt_graphic *
 avt_load_image_rw (SDL_RWops * RW)
 {
   SDL_Surface *image;
   avt_graphic *result;
 
-  if (not RW)
+  if (not avt or not RW)
     return NULL;
 
   result = NULL;
@@ -341,6 +357,9 @@ avt_resize_sdl (int w, int h)
 extern void
 avt_toggle_fullscreen (void)
 {
+  if (not avt)
+    return;
+
   if (mode != AVT_FULLSCREENNOSWITCH)
     {
       // toggle bit for fullscreenmode
@@ -704,12 +723,15 @@ avt_pause (void)
 }
 
 extern int
-avt_checkevent (void)
+avt_update (void)
 {
   SDL_Event event;
 
-  while (SDL_PollEvent (&event))
-    avt_analyze_event (&event);
+  if (avt)
+    {
+      while (SDL_PollEvent (&event))
+	avt_analyze_event (&event);
+    }
 
   return _avt_STATUS;
 }
@@ -737,7 +759,7 @@ avt_wait (size_t milliseconds)
       if (milliseconds <= 500)	// short delay
 	{
 	  SDL_Delay (milliseconds);
-	  avt_checkevent ();
+	  avt_update ();
 	}
       else			// longer
 	{
@@ -776,10 +798,13 @@ avt_wait_key (void)
 {
   SDL_Event event;
 
-  while (_avt_STATUS == AVT_NORMAL and not avt_key_pressed ())
+  if (avt)
     {
-      SDL_WaitEvent (&event);
-      avt_analyze_event (&event);
+      while (_avt_STATUS == AVT_NORMAL and not avt_key_pressed ())
+	{
+	  SDL_WaitEvent (&event);
+	  avt_analyze_event (&event);
+	}
     }
 }
 
@@ -787,6 +812,9 @@ extern avt_char
 avt_set_pointer_motion_key (avt_char key)
 {
   avt_char old;
+
+  if (not avt)
+    return 0;
 
   old = avt->pointer_motion_key;
   avt->pointer_motion_key = key;
@@ -805,6 +833,9 @@ avt_set_pointer_buttons_key (avt_char key)
 {
   avt_char old;
 
+  if (not avt)
+    return 0;
+
   old = avt->pointer_button_key;
   avt->pointer_button_key = key;
 
@@ -814,16 +845,22 @@ avt_set_pointer_buttons_key (avt_char key)
 extern void
 avt_get_pointer_position (int *x, int *y)
 {
-  SDL_GetMouseState (x, y);
+  if (avt)
+    SDL_GetMouseState (x, y);
+  else
+    *x = *y = 0;
 }
 
 extern void
 avt_set_mouse_visible (bool visible)
 {
-  if (visible)
-    SDL_ShowCursor (SDL_ENABLE);
-  else
-    SDL_ShowCursor (SDL_DISABLE);
+  if (avt)
+    {
+      if (visible)
+	SDL_ShowCursor (SDL_ENABLE);
+      else
+	SDL_ShowCursor (SDL_DISABLE);
+    }
 }
 
 extern int
@@ -885,6 +922,9 @@ extern void
 avt_set_title (const char *title, const char *shortname)
 {
   char *encoding;
+
+  if (not avt)
+    return;
 
   encoding = avt_get_mb_encoding ();
 
@@ -988,6 +1028,26 @@ avt_set_icon (char **xpm)
 
   SDL_FreeSurface (icon);
   avt_free_graphic (gr);
+}
+
+static inline avt_graphic *
+avt_data_to_graphic (void *data, short width, short height)
+{
+  avt_graphic *gr;
+
+  gr = (avt_graphic *) malloc (sizeof (*gr));
+
+  if (gr)
+    {
+      gr->width = width;
+      gr->height = height;
+      gr->transparent = false;
+      gr->free_pixels = false;
+      gr->color_key = 0xFFFFFFFF;
+      gr->pixels = (avt_color *) data;
+    }
+
+  return gr;
 }
 
 extern int

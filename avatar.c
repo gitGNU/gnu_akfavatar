@@ -258,7 +258,7 @@ avt_free_graphic (avt_graphic * gr)
 
 // use data for pixels
 // data may olny be freed after avt_free_graphic is called on this
-extern avt_graphic *
+static avt_graphic *
 avt_data_to_graphic (void *data, short width, short height)
 {
   avt_graphic *gr;
@@ -278,7 +278,7 @@ avt_data_to_graphic (void *data, short width, short height)
   return gr;
 }
 
-extern avt_graphic *
+static avt_graphic *
 avt_new_graphic (short width, short height)
 {
   avt_graphic *gr;
@@ -1971,16 +1971,6 @@ avt_check_buttons (int x, int y)
   return false;
 }
 
-// checks for events
-extern int
-avt_update (void)
-{
-  if (avt.screen)
-    avt_checkevent ();
-
-  return _avt_STATUS;
-}
-
 extern int
 avt_where_x (void)
 {
@@ -3021,7 +3011,7 @@ avt_put_char (avt_char ch)
 		  avt_forward ();
 		}
 
-	      avt_checkevent ();
+	      avt_update ();
 	    }			// if not markup
 	}			// if (ch > 0x0020)
     }				// switch
@@ -3076,7 +3066,7 @@ avt_say (const wchar_t * txt)
 
   // nothing to do, when there is no text 
   if (not txt or not * txt)
-    return avt_checkevent ();
+    return avt_update ();
 
   // no textfield? => draw balloon
   if (avt.textfield.x < 0)
@@ -3118,7 +3108,7 @@ avt_say_len (const wchar_t * txt, size_t len)
   // nothing to do, when txt == NULL
   // but do allow a text to start with zeros here
   if (not avt.screen or not txt or _avt_STATUS != AVT_NORMAL)
-    return avt_checkevent ();
+    return avt_update ();
 
   // no textfield? => draw balloon
   if (avt.textfield.x < 0)
@@ -4781,7 +4771,7 @@ avt_move_in (void)
 	    }
 
 	  // check event
-	  if (avt_checkevent ())
+	  if (avt_update ())
 	    return _avt_STATUS;
 	}
 
@@ -4859,7 +4849,7 @@ avt_move_out (void)
 	    }
 
 	  // check event
-	  if (avt_checkevent ())
+	  if (avt_update ())
 	    return _avt_STATUS;
 	}
     }
@@ -5164,7 +5154,7 @@ avt_show_image (avt_graphic * image)
    */
   avt_put_graphic (image, avt.screen, pos.x, pos.y);
   avt_update_all ();
-  avt_checkevent ();
+  avt_update ();
 }
 
 
@@ -5859,7 +5849,7 @@ avt_credits_up (avt_graphic * last_line)
 
       avt_update_window ();
 
-      if (avt_checkevent ())
+      if (avt_update ())
 	return;
 
       moved += pixel;
