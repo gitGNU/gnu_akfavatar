@@ -150,7 +150,7 @@ enum avt_button_type
 static avt_graphic *base_button;
 static avt_graphic *raw_image;
 static int fontwidth, fontheight, fontunderline;
-static size_t start_ticks;
+static struct timeval start_ticks;
 static struct avt_key_buffer avt_keys;
 
 // conversion descriptors for text input and output
@@ -243,7 +243,8 @@ avt_ticks (void)
   // POSIX.1-2001
   gettimeofday (&now, NULL);
 
-  return ((now.tv_sec) * 1000 + (now.tv_usec) / 1000) - start_ticks;
+  return ((now.tv_sec - start_ticks.tv_sec) * 1000)
+    + ((now.tv_usec - start_ticks.tv_usec) / 1000);
 }
 
 extern void
@@ -6118,8 +6119,8 @@ avt_start_common (avt_graphic * new_screen)
       return NULL;
     }
 
-  if (not start_ticks)
-    start_ticks = avt_ticks ();
+  if (not start_ticks.tv_sec)
+    gettimeofday (&start_ticks, NULL);
 
   avt_reset ();
 
