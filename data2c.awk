@@ -45,7 +45,7 @@ BEGIN \
     {
       if (NF > 1)
       {
-        if (size == 0) print "const char " name "[] ="
+        if (size == 0) print "static const unsigned char " name "[] ="
 
         printf "\t\""
 
@@ -62,7 +62,7 @@ BEGIN \
   close(cmd)
 
   if (size > 0)
-    print "\t;\n\nconst int " name "_size = " size ";"
+    print "\t;\n\n#define " name "_size  " size
 
   exit
 }
