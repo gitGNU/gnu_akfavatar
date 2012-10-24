@@ -29,6 +29,25 @@
 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
+#if defined(VGA)
+#  define MINIMALWIDTH 640
+#  define MINIMALHEIGHT 480
+#  define TOPMARGIN 25
+#  define BALLOON_INNER_MARGIN 10
+#  define AVATAR_MARGIN 10
+   // Delay for moving in or out - the higher, the slower
+#  define MOVE_DELAY 2.5
+#else
+#  define MINIMALWIDTH 800
+#  define MINIMALHEIGHT 600
+#  define TOPMARGIN 25
+#  define BALLOON_INNER_MARGIN 15
+#  define AVATAR_MARGIN 20
+   // Delay for moving in or out - the higher, the slower
+#  define MOVE_DELAY 1.8
+#endif // not VGA
+
+
 // define an empty restrict unless the compiler is in C99 mode
 #if not defined(__STDC_VERSION__) or __STDC_VERSION__ < 199901L
 #define restrict
@@ -118,6 +137,8 @@ struct avt_settings
   avt_graphic *cursor_character;
   wchar_t *name;
 
+  void (*quit_backend) (void);
+
   // image loaders from the backend
   avt_graphic *(*load_image_file) (const char *filename);
   avt_graphic *(*load_image_stream) (avt_stream * stream);
@@ -170,11 +191,6 @@ struct avt_settings
   struct avt_area viewport;	// sub-window in textfield
 };
 
-
-#define AVT_AUDIO_ENDED 1
-#define AVT_TIMEOUT 2
-#define AVT_PUSH_KEY 3
-
 #define avt_isblank(c)  ((c) == ' ' or (c) == '\t')
 #define avt_min(a, b) ((a) < (b) ? (a) : (b))
 #define avt_max(a, b) ((a) > (b) ? (a) : (b))
@@ -205,6 +221,8 @@ extern void avt_put_graphic (avt_graphic * source, avt_graphic * destination,
 		 int x, int y);
 extern bool avt_check_buttons (int x, int y);
 extern void avt_quit_common (void);
+extern avt_graphic *avt_new_graphic (short width, short height);
+extern avt_graphic *avt_data_to_graphic (void *data, short width, short height);
 
 /* audio-sdl.c */
 extern void avt_lock_audio (void);

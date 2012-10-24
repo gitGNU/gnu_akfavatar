@@ -91,34 +91,11 @@
 
 #define AVT_XBM_INFO(img)  img##_bits, img##_width, img##_height
 
-#define LINEHEIGHT (fontheight)	// + something, if you want
-
 #define SHADOWOFFSET 5
 
 // for static linking avoid to drag in unneeded object files
 #pragma GCC poison  avt_colorname avt_palette avt_colors
 #pragma GCC poison  avt_avatar_image_default
-
-
-#define COLORDEPTH  (CHAR_BIT * sizeof (avt_color))
-
-#if defined(VGA)
-#  define MINIMALWIDTH 640
-#  define MINIMALHEIGHT 480
-#  define TOPMARGIN 25
-#  define BALLOON_INNER_MARGIN 10
-#  define AVATAR_MARGIN 10
-   // Delay for moving in or out - the higher, the slower
-#  define MOVE_DELAY 2.5
-#else
-#  define MINIMALWIDTH 800
-#  define MINIMALHEIGHT 600
-#  define TOPMARGIN 25
-#  define BALLOON_INNER_MARGIN 15
-#  define AVATAR_MARGIN 20
-   // Delay for moving in or out - the higher, the slower
-#  define MOVE_DELAY 1.8
-#endif // not VGA
 
 #define BALLOONPOINTER_OFFSET 20
 
@@ -270,7 +247,7 @@ avt_free_graphic (avt_graphic * gr)
 
 // use data for pixels
 // data may olny be freed after avt_free_graphic is called on this
-static avt_graphic *
+extern avt_graphic *
 avt_data_to_graphic (void *data, short width, short height)
 {
   avt_graphic *gr;
@@ -290,7 +267,7 @@ avt_data_to_graphic (void *data, short width, short height)
   return gr;
 }
 
-static avt_graphic *
+extern avt_graphic *
 avt_new_graphic (short width, short height)
 {
   avt_graphic *gr;
@@ -592,7 +569,7 @@ calculate_balloonmaxheight (void)
     avatar_height = avt.avatar_image->height + AVATAR_MARGIN;
 
   avt.balloonmaxheight = (avt.window.height - avatar_height - (2 * TOPMARGIN)
-			  - (2 * BALLOON_INNER_MARGIN)) / LINEHEIGHT;
+			  - (2 * BALLOON_INNER_MARGIN)) / fontheight;
 
   // check, whether image is too high
   // at least 10 lines
@@ -1706,7 +1683,7 @@ avt_draw_balloon2 (int offset, avt_color ballooncolor)
       position.x = avt.window.x + avt.avatar_image->width
 	+ (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET + offset;
 
-      position.y = avt.window.y + (avt.balloonmaxheight * LINEHEIGHT)
+      position.y = avt.window.y + (avt.balloonmaxheight * fontheight)
 	+ (2 * BALLOON_INNER_MARGIN) + TOPMARGIN + offset;
 
       // only draw the balloonpointer, when it fits
@@ -1742,7 +1719,7 @@ avt_draw_balloon (void)
       else
 	avt.textfield.y =
 	  avt.window.y +
-	  ((avt.balloonmaxheight - avt.balloonheight) * LINEHEIGHT) +
+	  ((avt.balloonmaxheight - avt.balloonheight) * fontheight) +
 	  TOPMARGIN + BALLOON_INNER_MARGIN;
 
       // in separate or heading mode it might also be better to center it
@@ -2013,9 +1990,9 @@ avt_where_y (void)
   if (avt.screen and avt.textfield.x >= 0)
     {
       if (avt.origin_mode)
-	return ((avt.cursor.y - avt.viewport.y) / LINEHEIGHT) + 1;
+	return ((avt.cursor.y - avt.viewport.y) / fontheight) + 1;
       else
-	return ((avt.cursor.y - avt.textfield.y) / LINEHEIGHT) + 1;
+	return ((avt.cursor.y - avt.textfield.y) / fontheight) + 1;
     }
   else
     return -1;
@@ -2097,11 +2074,11 @@ avt_move_y (int y)
       else
 	area = avt.textfield;
 
-      avt.cursor.y = (y - 1) * LINEHEIGHT + area.y;
+      avt.cursor.y = (y - 1) * fontheight + area.y;
 
       // max-pos exeeded?
-      if (avt.cursor.y > area.y + area.height - LINEHEIGHT)
-	avt.cursor.y = area.y + area.height - LINEHEIGHT;
+      if (avt.cursor.y > area.y + area.height - fontheight)
+	avt.cursor.y = area.y + area.height - fontheight;
 
       if (avt.text_cursor_visible)
 	avt_show_text_cursor (true);
@@ -2130,14 +2107,14 @@ avt_move_xy (int x, int y)
 	area = avt.textfield;
 
       avt.cursor.x = (x - 1) * fontwidth + area.x;
-      avt.cursor.y = (y - 1) * LINEHEIGHT + area.y;
+      avt.cursor.y = (y - 1) * fontheight + area.y;
 
       // max-pos exeeded?
       if (avt.cursor.x > area.x + area.width - fontwidth)
 	avt.cursor.x = area.x + area.width - fontwidth;
 
-      if (avt.cursor.y > area.y + area.height - LINEHEIGHT)
-	avt.cursor.y = area.y + area.height - LINEHEIGHT;
+      if (avt.cursor.y > area.y + area.height - fontheight)
+	avt.cursor.y = area.y + area.height - fontheight;
 
       if (avt.text_cursor_visible)
 	avt_show_text_cursor (true);
@@ -2168,12 +2145,12 @@ avt_insert_spaces (int num)
 
   avt_graphic_segment (avt.screen, avt.cursor.x, avt.cursor.y,
 		       avt.viewport.width - (avt.cursor.x - avt.viewport.x)
-		       - (num * fontwidth), LINEHEIGHT,
+		       - (num * fontwidth), fontheight,
 		       avt.screen, avt.cursor.x + (num * fontwidth),
 		       avt.cursor.y);
 
   avt_bar (avt.screen, avt.cursor.x, avt.cursor.y,
-	   num * fontwidth, LINEHEIGHT, avt.text_background_color);
+	   num * fontwidth, fontheight, avt.text_background_color);
 
   if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
@@ -2197,12 +2174,12 @@ avt_delete_characters (int num)
   avt_graphic_segment (avt.screen, avt.cursor.x + (num * fontwidth),
 		       avt.cursor.y,
 		       avt.viewport.width - (avt.cursor.x - avt.viewport.x) -
-		       (num * fontwidth), LINEHEIGHT, avt.screen,
+		       (num * fontwidth), fontheight, avt.screen,
 		       avt.cursor.x, avt.cursor.y);
 
   avt_bar (avt.screen,
 	   avt.viewport.x + avt.viewport.width - (num * fontwidth),
-	   avt.cursor.y, num * fontwidth, LINEHEIGHT,
+	   avt.cursor.y, num * fontwidth, fontheight,
 	   avt.text_background_color);
 
   if (avt.text_cursor_visible)
@@ -2226,7 +2203,7 @@ avt_erase_characters (int num)
 
   int x = (avt.textdir_rtl) ? avt.cursor.x - (num * fontwidth) : avt.cursor.x;
 
-  avt_bar (avt.screen, x, avt.cursor.y, num * fontwidth, LINEHEIGHT,
+  avt_bar (avt.screen, x, avt.cursor.y, num * fontwidth, fontheight,
 	   avt.text_background_color);
 
   if (avt.text_cursor_visible)
@@ -2234,7 +2211,7 @@ avt_erase_characters (int num)
 
   // update area
   if (not avt.hold_updates)
-    avt_update_area (x, avt.cursor.y, num * fontwidth, LINEHEIGHT);
+    avt_update_area (x, avt.cursor.y, num * fontwidth, fontheight);
 }
 
 extern void
@@ -2245,25 +2222,25 @@ avt_delete_lines (int line, int num)
     return;
 
   if (not avt.origin_mode)
-    line -= (avt.viewport.y - avt.textfield.y) / LINEHEIGHT;
+    line -= (avt.viewport.y - avt.textfield.y) / fontheight;
 
   // check if values are sane
-  if (line < 1 or num < 1 or line > (avt.viewport.height / LINEHEIGHT))
+  if (line < 1 or num < 1 or line > (avt.viewport.height / fontheight))
     return;
 
   if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
   avt_graphic_segment (avt.screen, avt.viewport.x,
-		       avt.viewport.y + ((line - 1 + num) * LINEHEIGHT),
+		       avt.viewport.y + ((line - 1 + num) * fontheight),
 		       avt.viewport.width,
-		       avt.viewport.height - ((line - 1 + num) * LINEHEIGHT),
+		       avt.viewport.height - ((line - 1 + num) * fontheight),
 		       avt.screen, avt.viewport.x,
-		       avt.viewport.y + ((line - 1) * LINEHEIGHT));
+		       avt.viewport.y + ((line - 1) * fontheight));
 
   avt_bar (avt.screen, avt.viewport.x,
-	   avt.viewport.y + avt.viewport.height - (num * LINEHEIGHT),
-	   avt.viewport.width, num * LINEHEIGHT, avt.text_background_color);
+	   avt.viewport.y + avt.viewport.height - (num * fontheight),
+	   avt.viewport.width, num * fontheight, avt.text_background_color);
 
   if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
@@ -2279,25 +2256,25 @@ avt_insert_lines (int line, int num)
     return;
 
   if (not avt.origin_mode)
-    line -= (avt.viewport.y - avt.textfield.y) / LINEHEIGHT;
+    line -= (avt.viewport.y - avt.textfield.y) / fontheight;
 
   // check if values are sane
-  if (line < 1 or num < 1 or line > (avt.viewport.height / LINEHEIGHT))
+  if (line < 1 or num < 1 or line > (avt.viewport.height / fontheight))
     return;
 
   if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
   avt_graphic_segment (avt.screen, avt.viewport.x,
-		       avt.viewport.y + ((line - 1) * LINEHEIGHT),
+		       avt.viewport.y + ((line - 1) * fontheight),
 		       avt.viewport.width,
-		       avt.viewport.height - ((line - 1 + num) * LINEHEIGHT),
+		       avt.viewport.height - ((line - 1 + num) * fontheight),
 		       avt.screen, avt.viewport.x,
-		       avt.viewport.y + ((line - 1 + num) * LINEHEIGHT));
+		       avt.viewport.y + ((line - 1 + num) * fontheight));
 
   avt_bar (avt.screen, avt.viewport.x,
-	   avt.viewport.y + ((line - 1) * LINEHEIGHT),
-	   avt.viewport.width, num * LINEHEIGHT, avt.text_background_color);
+	   avt.viewport.y + ((line - 1) * fontheight),
+	   avt.viewport.width, num * fontheight, avt.text_background_color);
 
   if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
@@ -2320,9 +2297,9 @@ avt_viewport (int x, int y, int width, int height)
     avt_show_text_cursor (false);
 
   avt.viewport.x = avt.textfield.x + ((x - 1) * fontwidth);
-  avt.viewport.y = avt.textfield.y + ((y - 1) * LINEHEIGHT);
+  avt.viewport.y = avt.textfield.y + ((y - 1) * fontheight);
   avt.viewport.width = width * fontwidth;
-  avt.viewport.height = height * LINEHEIGHT;
+  avt.viewport.height = height * fontheight;
 
   if (avt.textdir_rtl)
     avt.linestart = avt.viewport.x + avt.viewport.width - fontwidth;
@@ -2613,16 +2590,16 @@ avt_scroll_up (void)
     {
     case -1:
       // move cursor outside of balloon
-      avt.cursor.y += LINEHEIGHT;
+      avt.cursor.y += fontheight;
       break;
     case 1:
-      avt_delete_lines (((avt.viewport.y - avt.textfield.y) / LINEHEIGHT) + 1,
+      avt_delete_lines (((avt.viewport.y - avt.textfield.y) / fontheight) + 1,
 			1);
 
       if (avt.origin_mode)
-	avt.cursor.y = avt.viewport.y + avt.viewport.height - LINEHEIGHT;
+	avt.cursor.y = avt.viewport.y + avt.viewport.height - fontheight;
       else
-	avt.cursor.y = avt.textfield.y + avt.textfield.height - LINEHEIGHT;
+	avt.cursor.y = avt.textfield.y + avt.textfield.height - fontheight;
 
       if (avt.newline_mode)
 	avt.cursor.x = avt.linestart;
@@ -2661,10 +2638,10 @@ avt_new_line (void)
   /* if the cursor is at the last line of the viewport
    * scroll up
    */
-  if (avt.cursor.y == avt.viewport.y + avt.viewport.height - LINEHEIGHT)
+  if (avt.cursor.y == avt.viewport.y + avt.viewport.height - fontheight)
     avt_scroll_up ();
   else
-    avt.cursor.y += LINEHEIGHT;
+    avt.cursor.y += fontheight;
 
   if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
@@ -3845,22 +3822,22 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
       // restore oldline
       if (old_line >= menu_start and old_line <= menu_end)
 	{
-	  int y = (old_line - 1) * LINEHEIGHT;
+	  int y = (old_line - 1) * fontheight;
 	  avt_graphic_segment (plain_menu, 0, y,
-			       avt.viewport.width, LINEHEIGHT,
+			       avt.viewport.width, fontheight,
 			       avt.screen, avt.viewport.x,
 			       avt.viewport.y + y);
 	  avt_update_area (avt.viewport.x, avt.viewport.y + y,
-			   avt.viewport.width, LINEHEIGHT);
+			   avt.viewport.width, fontheight);
 	}
 
       // show bar
       if (line_nr >= menu_start and line_nr <= menu_end)
 	{
-	  int y = avt.viewport.y + ((line_nr - 1) * LINEHEIGHT);
+	  int y = avt.viewport.y + ((line_nr - 1) * fontheight);
 	  avt_darker_area (avt.viewport.x, y, avt.viewport.width,
-			   LINEHEIGHT, 0x20);
-	  avt_update_area (avt.viewport.x, y, avt.viewport.width, LINEHEIGHT);
+			   fontheight, 0x20);
+	  avt_update_area (avt.viewport.x, y, avt.viewport.width, fontheight);
 	}
     }
 }
@@ -3946,9 +3923,9 @@ avt_choice (int *result, int start_line, int items, int key,
 
 	      if (x >= avt.viewport.x
 		  and x <= avt.viewport.x + avt.viewport.width
-		  and y >= avt.viewport.y + ((start_line - 1) * LINEHEIGHT)
-		  and y < avt.viewport.y + (end_line * LINEHEIGHT))
-		line_nr = ((y - avt.viewport.y) / LINEHEIGHT) + 1;
+		  and y >= avt.viewport.y + ((start_line - 1) * fontheight)
+		  and y < avt.viewport.y + (end_line * fontheight))
+		line_nr = ((y - avt.viewport.y) / fontheight) + 1;
 
 	      if (line_nr != old_line)
 		{
@@ -4243,7 +4220,7 @@ avt_pager_screen (const wchar_t * txt, size_t pos, size_t len,
   for (int line_nr = 0; line_nr < avt.balloonheight; line_nr++)
     {
       avt.cursor.x = avt.linestart;
-      avt.cursor.y = line_nr * LINEHEIGHT + avt.textfield.y;
+      avt.cursor.y = line_nr * fontheight + avt.textfield.y;
       pos = avt_pager_line (txt, pos, len, horizontal);
     }
 
@@ -4391,7 +4368,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 	      avt_delete_lines (1, 1);
 	      avt.cursor.x = avt.linestart;
 	      avt.cursor.y =
-		(avt.balloonheight - 1) * LINEHEIGHT + avt.textfield.y;
+		(avt.balloonheight - 1) * fontheight + avt.textfield.y;
 	      pos = avt_pager_line (txt, pos, len, horizontal);
 	      avt.hold_updates = false;
 	      avt_update_textfield ();
@@ -4537,7 +4514,7 @@ avt_ask (wchar_t * s, size_t size)
   /* if the cursor is beyond the end of the viewport,
    * get a new page
    */
-  if (avt.cursor.y > avt.viewport.y + avt.viewport.height - LINEHEIGHT)
+  if (avt.cursor.y > avt.viewport.y + avt.viewport.height - fontheight)
     avt_flip_page ();
 
   // maxlen is the rest of line
@@ -5861,7 +5838,7 @@ avt_credits_up (avt_graphic * last_line)
   tickinterval = CREDITDELAY;
   next_time = avt_ticks () + tickinterval;
 
-  while (moved <= LINEHEIGHT)
+  while (moved <= fontheight)
     {
       // move screen up
       avt_graphic_segment (avt.screen, avt.window.x, avt.window.y + pixel,
@@ -5885,7 +5862,7 @@ avt_credits_up (avt_graphic * last_line)
       else
 	{
 	  // move more pixels at once and give more time next time
-	  if (pixel < LINEHEIGHT - moved)
+	  if (pixel < fontheight - moved)
 	    {
 	      pixel++;
 	      tickinterval += CREDITDELAY;
@@ -5935,7 +5912,7 @@ avt_credits (const wchar_t * text, bool centered)
   // horizontal values unchanged
 
   // last line added to credits
-  last_line = avt_new_graphic (avt.window.width, LINEHEIGHT);
+  last_line = avt_new_graphic (avt.window.width, fontheight);
 
   if (not last_line)
     {
@@ -5989,7 +5966,7 @@ avt_credits (const wchar_t * text, bool centered)
 
   // scroll up until screen is empty
   for (int i = 0;
-       i < avt.window.height / LINEHEIGHT and _avt_STATUS == AVT_NORMAL; i++)
+       i < avt.window.height / fontheight and _avt_STATUS == AVT_NORMAL; i++)
     avt_credits_up (NULL);
 
   avt_free_graphic (last_line);
@@ -6032,7 +6009,7 @@ avt_get_settings (void)
 }
 
 extern void
-avt_quit_common (void)
+avt_quit (void)
 {
   if (avt_quit_audio_func)
     {
@@ -6051,6 +6028,8 @@ avt_quit_common (void)
 
   avt.encoding[0] = '\0';
 
+  avt_set_error ("15ce822f94d7e8e4281f1c2bcdd7c56d");
+
   if (avt.screen)
     {
       avt_free_graphic (base_button);
@@ -6065,6 +6044,16 @@ avt_quit_common (void)
       avt.avatar_visible = false;
       avt_no_textfield ();
     }
+
+  if (avt.quit_backend)
+    {
+      (*avt.quit_backend) ();
+      avt.quit_backend = NULL;
+    }
+
+  avt.load_image_file = NULL;
+  avt.load_image_stream = NULL;
+  avt.load_image_memory = NULL;
 }
 
 extern void

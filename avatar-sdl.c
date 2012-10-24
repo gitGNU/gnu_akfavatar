@@ -39,11 +39,7 @@
 #include "SDL.h"
 
 #include <limits.h>
-#include <stdlib.h>
-#include <stdint.h>
 #include <iso646.h>
-#include <string.h>
-#include <strings.h>
 
 // include images
 #include "akfavatar.xpm"
@@ -54,27 +50,10 @@
 #  include "SDL_image.h"
 #endif
 
-#define LINEHEIGHT (fontheight)	// + something, if you want
-
 #define COLORDEPTH  (CHAR_BIT * sizeof (avt_color))
 
-#if defined(VGA)
-#  define MINIMALWIDTH 640
-#  define MINIMALHEIGHT 480
-#  define TOPMARGIN 25
-#  define BALLOON_INNER_MARGIN 10
-#  define AVATAR_MARGIN 10
-   // Delay for moving in or out - the higher, the slower
-#  define MOVE_DELAY 2.5
-#else
-#  define MINIMALWIDTH 800
-#  define MINIMALHEIGHT 600
-#  define TOPMARGIN 25
-#  define BALLOON_INNER_MARGIN 15
-#  define AVATAR_MARGIN 20
-   // Delay for moving in or out - the higher, the slower
-#  define MOVE_DELAY 1.8
-#endif // not VGA
+#define AVT_TIMEOUT 1
+#define AVT_PUSH_KEY 2
 
 // only defined in later SDL versions
 #ifndef SDL_BUTTON_WHEELUP
@@ -90,7 +69,7 @@ static struct avt_settings *avt;
 static short int mode;		// whether fullscreen or window or ...
 static SDL_Cursor *mpointer;
 static struct avt_area windowmode_size;	// size of the whole window (screen)
-static uint32_t screenflags;	// flags for the screen
+static Uint32 screenflags;	// flags for the screen
 static int fontwidth, fontheight;
 
 // forward declaration
@@ -98,51 +77,6 @@ static int avt_pause (void);
 static void avt_analyze_event (SDL_Event * event);
 //-----------------------------------------------------------------------------
 
-
-// use data for pixels
-// data may olny be freed after avt_free_graphic is called on this
-static avt_graphic *
-avt_data_to_graphic (void *data, short width, short height)
-{
-  avt_graphic *gr;
-
-  gr = (avt_graphic *) malloc (sizeof (*gr));
-
-  if (gr)
-    {
-      gr->width = width;
-      gr->height = height;
-      gr->transparent = false;
-      gr->free_pixels = false;
-      gr->color_key = 0xFFFFFFFF;
-      gr->pixels = (avt_color *) data;
-    }
-
-  return gr;
-}
-
-static avt_graphic *
-avt_new_graphic (short width, short height)
-{
-  avt_graphic *gr;
-
-  gr = avt_data_to_graphic (NULL, width, height);
-
-  if (gr)
-    {
-      gr->pixels = (avt_color *) malloc (width * height * sizeof (avt_color));
-
-      if (not gr->pixels)
-	{
-	  avt_free_graphic (gr);
-	  return NULL;
-	}
-
-      gr->free_pixels = true;
-    }
-
-  return gr;
-}
 
 // import an SDL_Surface into the internal format
 // This is ugly!
@@ -211,14 +145,6 @@ load_image_initialize (void)
     }
 }
 
-// speedup
-static inline void
-load_image_init (void)
-{
-  if (not load_image.initialized)
-    load_image_initialize ();
-}
-
 #define load_image_done(void)	// empty
 
 #else // not LINK_SDL_IMAGE
@@ -273,14 +199,6 @@ load_image_initialize (void)
     }
 }
 
-// speedup
-static inline void
-load_image_init (void)
-{
-  if (not load_image.initialized)
-    load_image_initialize ();
-}
-
 #ifndef _SDL_loadso_h
 #  define load_image_done(void)	// empty
 #else // _SDL_loadso_h
@@ -299,7 +217,6 @@ load_image_done (void)
 
 #endif // not LINK_SDL_IMAGE
 
-
 // sdl image loaders
 
 static inline avt_graphic *
@@ -313,7 +230,9 @@ avt_load_image_rw (SDL_RWops * RW)
 
   result = NULL;
 
-  load_image_init ();
+  if (not load_image.initialized)
+    load_image_initialize ();
+
   image = load_image.rw (RW, 0);
 
   SDL_RWclose (RW);
@@ -478,14 +397,14 @@ avt_button_pushed (void)
 {
   SDL_Event event;
 
-      /*
-       * Send some event to satisfy avt_wait_key,
-       * but no keyboard event to avoid endless loops!
-       * Pushing a key also should have no side effects!
-       */
-      event.type = SDL_USEREVENT;
-      event.user.code = AVT_PUSH_KEY;
-      SDL_PushEvent (&event);
+  /*
+   * Send some event to satisfy avt_wait_key,
+   * but no keyboard event to avoid endless loops!
+   * Pushing a key also should have no side effects!
+   */
+  event.type = SDL_USEREVENT;
+  event.user.code = AVT_PUSH_KEY;
+  SDL_PushEvent (&event);
 }
 
 static inline void
@@ -687,11 +606,11 @@ avt_call_mouse_handler (SDL_Event * event)
     {
       // if there is a textfield, use the character position
       x = (event->button.x - avt->textfield.x) / fontwidth + 1;
-      y = (event->button.y - avt->textfield.y) / LINEHEIGHT + 1;
+      y = (event->button.y - avt->textfield.y) / fontheight + 1;
 
       // check if x and y are valid
       if (x >= 1 and x <= AVT_LINELENGTH
-	  and y >= 1 and y <= (avt->textfield.height / LINEHEIGHT))
+	  and y >= 1 and y <= (avt->textfield.height / fontheight))
 	avt->ext_mousehandler (event->button.button,
 			       (event->button.state == SDL_PRESSED), x, y);
     }
@@ -796,8 +715,8 @@ avt_checkevent (void)
 }
 
 // send a timeout event
-static uint32_t
-avt_timeout (uint32_t intervall, void *param)
+static Uint32
+avt_timeout (Uint32 intervall, void *param)
 {
   SDL_Event event;
 
@@ -809,6 +728,7 @@ avt_timeout (uint32_t intervall, void *param)
   return 0;
 }
 
+// TODO: rewrite
 extern int
 avt_wait (size_t milliseconds)
 {
@@ -851,12 +771,12 @@ avt_wait (size_t milliseconds)
   return _avt_STATUS;
 }
 
+// TODO: rewrite
 extern size_t
 avt_ticks (void)
 {
   return (size_t) SDL_GetTicks ();
 }
-
 
 extern void
 avt_wait_key (void)
@@ -943,8 +863,6 @@ avt_init_SDL (void)
        */
       SDL_putenv ("SDL_NOMOUSE=1");
 
-      avt_set_error ("15ce822f94d7e8e4281f1c2bcdd7c56d");
-
       if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
 	_avt_STATUS = AVT_ERROR;
     }
@@ -953,17 +871,13 @@ avt_init_SDL (void)
 }
 
 
-extern void
-avt_quit (void)
+static void
+avt_quit_sdl (void)
 {
-  avt_quit_common ();
-  load_image_done ();
-
-  avt->load_image_file = NULL;
-  avt->load_image_stream = NULL;
-  avt->load_image_memory = NULL;
-
+  // you cannot rely on avt any more here
   avt = NULL;
+
+  load_image_done ();
 
   if (sdl_screen)
     {
@@ -989,9 +903,9 @@ avt_set_title (const char *title, const char *shortname)
     }
 
   // check if it's already in correct encoding default="UTF-8"
-  if (strcasecmp ("UTF-8", encoding) == 0
-      or strcasecmp ("UTF8", encoding) == 0
-      or strcasecmp ("CP65001", encoding) == 0)
+  if (SDL_strcasecmp ("UTF-8", encoding) == 0
+      or SDL_strcasecmp ("UTF8", encoding) == 0
+      or SDL_strcasecmp ("CP65001", encoding) == 0)
     SDL_WM_SetCaption (title, shortname);
   else				// convert them to UTF-8
     {
@@ -1002,11 +916,8 @@ avt_set_title (const char *title, const char *shortname)
 	{
 	  if (avt_recode_buffer ("UTF-8", encoding,
 				 my_title, sizeof (my_title),
-				 title, strlen (title)) == (size_t) (-1))
-	    {
-	      memcpy (my_title, title, sizeof (my_title));
-	      my_title[sizeof (my_title) - 1] = '\0';
-	    }
+				 title, SDL_strlen (title)) == (size_t) (-1))
+	    SDL_strlcpy (my_title, title, sizeof (my_title));
 	}
 
       if (shortname and * shortname)
@@ -1014,11 +925,8 @@ avt_set_title (const char *title, const char *shortname)
 	  if (avt_recode_buffer ("UTF-8", encoding,
 				 my_shortname, sizeof (my_shortname),
 				 shortname,
-				 strlen (shortname)) == (size_t) (-1))
-	    {
-	      memcpy (my_shortname, shortname, sizeof (my_shortname));
-	      my_shortname[sizeof (my_shortname) - 1] = '\0';
-	    }
+				 SDL_strlen (shortname)) == (size_t) (-1))
+	    SDL_strlcpy (my_shortname, shortname, sizeof (my_shortname));
 	}
 
       SDL_WM_SetCaption (my_title, my_shortname);
@@ -1183,6 +1091,9 @@ avt_start (const char *title, const char *shortname, int window_mode)
       return _avt_STATUS;
     }
 
+  avt->quit_backend = &avt_quit_sdl;
+
+  // optionally register image loaders
   avt->load_image_file = &avt_load_image_file_sdl;
   avt->load_image_stream = &avt_load_image_stream_sdl;
   avt->load_image_memory = &avt_load_image_memory_sdl;
