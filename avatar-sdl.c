@@ -211,6 +211,7 @@ load_image_done (void)
 static inline avt_graphic *
 avt_import_sdl_surface (SDL_Surface * s)
 {
+  Uint32 flags;
   avt_graphic *gr;
   SDL_Surface *d;
   SDL_PixelFormat format = {
@@ -222,16 +223,18 @@ avt_import_sdl_surface (SDL_Surface * s)
     0, SDL_ALPHA_OPAQUE
   };
 
+  flags = SDL_SWSURFACE bitor (s->flags bitand SDL_SRCCOLORKEY);
+
   // convert into the internally used pixel format
-  d = SDL_ConvertSurface (s, &format, SDL_SWSURFACE);
+  d = SDL_ConvertSurface (s, &format, flags);
 
   gr = (avt_graphic *) malloc (sizeof (*gr));
   if (gr)
     {
       gr->width = d->w;
       gr->height = d->h;
-      gr->transparent = ((d->flags bitand SDL_SRCCOLORKEY) != 0);
-      gr->color_key = d->format->colorkey;
+      gr->transparent = ((s->flags bitand SDL_SRCCOLORKEY) != 0);
+      gr->color_key = s->format->colorkey;
       gr->pixels = (avt_color *) malloc (d->w * d->h * sizeof (avt_color));
       if (gr->pixels)
 	memcpy (gr->pixels, d->pixels, d->w * d->h * sizeof (avt_color));
