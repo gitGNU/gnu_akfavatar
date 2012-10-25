@@ -26,7 +26,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#define inline
+// undefine to deactivate imageloaders including SDL_Image
+#define IMAGELOADERS
 
 #define _ISOC99_SOURCE
 #define _POSIX_C_SOURCE 200112L
@@ -38,6 +39,7 @@
 #include "avtinternals.h"
 #include "SDL.h"
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <limits.h>
 #include <iso646.h>
@@ -47,7 +49,7 @@
 #include "mpointer.xbm"
 #include "mpointer_mask.xbm"
 
-#ifdef LINK_SDL_IMAGE
+#if defined(LINK_SDL_IMAGE) and defined(IMAGELOADERS)
 #  include "SDL_image.h"
 #endif
 
@@ -88,6 +90,9 @@ avt_update_area (int x, int y, int width, int height)
   // other implementations might need to copy it
   SDL_UpdateRect (sdl_screen, x, y, width, height);
 }
+
+
+#ifdef IMAGELOADERS
 
 // for dynamically loading SDL_image
 #ifndef AVT_SDL_IMAGE_LIB
@@ -279,6 +284,11 @@ avt_load_image_memory_sdl (void *data, size_t size)
 {
   return avt_load_image_rw (SDL_RWFromMem (data, size));
 }
+
+#else // not IMAGELOADERS
+#define load_image_done(void)	// empty
+#endif // not IMAGELOADERS
+
 
 // TODO: simplify
 static void
@@ -1147,10 +1157,12 @@ avt_start (const char *title, const char *shortname, int window_mode)
 
   avt->quit_backend = &avt_quit_sdl;
 
+#ifdef IMAGELOADERS
   // optionally register image loaders
   avt->load_image_file = &avt_load_image_file_sdl;
   avt->load_image_stream = &avt_load_image_stream_sdl;
   avt->load_image_memory = &avt_load_image_memory_sdl;
+#endif
 
   // size of the window (not to be confused with the variable window
   windowmode_size.x = windowmode_size.y = 0;	// unused
