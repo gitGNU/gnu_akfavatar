@@ -208,14 +208,22 @@ load_image_done (void)
 
 
 // import an SDL_Surface into the internal format
-// This is ugly!
 static inline avt_graphic *
 avt_import_sdl_surface (SDL_Surface * s)
 {
   avt_graphic *gr;
   SDL_Surface *d;
+  SDL_PixelFormat format = {
+    NULL,
+    CHAR_BIT * sizeof (avt_color), sizeof (avt_color),
+    0, 0, 0, 0,
+    16, 8, 0, 0,
+    0x00FF0000, 0x0000FF00, 0x000000FF, 0,
+    0, SDL_ALPHA_OPAQUE
+  };
 
-  d = SDL_DisplayFormat (s);	// TODO: use SDL_PixelFormat
+  // convert into the internally used pixel format
+  d = SDL_ConvertSurface (s, &format, SDL_SWSURFACE);
 
   gr = (avt_graphic *) malloc (sizeof (*gr));
   if (gr)
