@@ -310,7 +310,7 @@ avt_resize_sdl (int w, int h)
 
   // resize screen
   sdl_screen = SDL_SetVideoMode (w, h, COLORDEPTH, screenflags);
-  avt->screen->pixels = sdl_screen->pixels;
+  avt->screen->pixels = (avt_color *) sdl_screen->pixels;
   avt->screen->width = sdl_screen->w;
   avt->screen->height = sdl_screen->h;
 
@@ -655,7 +655,6 @@ avt_analyze_event (SDL_Event * event)
     case SDL_MOUSEBUTTONDOWN:
       if (event->button.button <= 3)
 	{
-	  // FIXME ???
 	  if (not avt_check_buttons (event->button.x, event->button.y))
 	    {
 	      if (avt->pointer_button_key)
@@ -990,9 +989,7 @@ avt_set_title (const char *title, const char *shortname)
    ((b) & 0x02) << 5 | \
    ((b) & 0x01) << 7)
 
-// FIXME
-// width must be a multiple of CHAR_BIT
-#define xbm_bytes(img)  ((img##_width / CHAR_BIT) * img##_height)
+#define xbm_bytes(img)  (((img##_width+CHAR_BIT-1) / CHAR_BIT) * img##_height)
 
 static inline void
 avt_set_mouse_pointer (void)

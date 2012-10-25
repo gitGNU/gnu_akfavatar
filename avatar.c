@@ -158,7 +158,6 @@ static iconv_t output_cd = ICONV_UNINITIALIZED;
 static iconv_t input_cd = ICONV_UNINITIALIZED;
 
 
-// FIXME
 static struct avt_settings avt = {
   .background_color = DEFAULT_COLOR,
   .ballooncolor = AVT_BALLOON_COLOR,
@@ -653,6 +652,7 @@ avt_load_image_xpm (char **xpm)
   avt_color *colors;
   int code_nr;
 
+  cpp = 0;
   codes = NULL;
   colors = NULL;
   img = NULL;
