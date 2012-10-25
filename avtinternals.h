@@ -220,6 +220,7 @@ extern void avt_update_all (void);
 extern void avt_put_graphic (avt_graphic * source, avt_graphic * destination,
 		 int x, int y);
 extern bool avt_check_buttons (int x, int y);
+extern void avt_add_key (avt_char key);
 
 /* audio-sdl.c */
 extern void avt_lock_audio (void);

@@ -191,9 +191,9 @@ static void avt_drawchar (avt_char ch, avt_graphic * surface);
 static void avt_darker_area (int x, int y, int width, int height, int amount);
 //-----------------------------------------------------------------------------
 
-// push key into buffer
+// add key into buffer
 extern void
-avt_push_key (avt_char key)
+avt_add_key (avt_char key)
 {
   int new_end;
 
