@@ -124,8 +124,9 @@ local function clock()
     gr:draw(pointerlength)
 
     gr:show()
-  until false
+  until avt.key_pressed()
 
+  avt.clear_keys()
 end
 
 clock()

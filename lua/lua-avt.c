@@ -1141,11 +1141,33 @@ lavt_get_key (lua_State * L)
 {
   avt_char ch;
 
-  is_initialized ();
   check (avt_key (&ch));
 
   lua_pushinteger (L, (lua_Integer) ch);
   return 1;
+}
+
+// checks whether a key is waiting in the buffer
+static int
+lavt_key_pressed (lua_State * L)
+{
+  lua_pushboolean (L, avt_key_pressed ());
+  return 1;
+}
+
+static int
+lavt_clear_keys (lua_State * L)
+{
+  avt_clear_keys ();
+  return 0;
+}
+
+static int
+lavt_push_key (lua_State * L)
+{
+  is_initialized ();
+  avt_push_key (luaL_checkinteger (L, 1));
+  return 0;
 }
 
 /*
@@ -2374,6 +2396,9 @@ static const luaL_Reg akfavtlib[] = {
   {"pager", lavt_pager},
   {"choice", lavt_choice},
   {"get_key", lavt_get_key},
+  {"key_pressed", lavt_key_pressed},
+  {"clear_keys", lavt_clear_keys},
+  {"push_key", lavt_push_key},
   {"newline", lavt_newline},
   {"version", lavt_version},
   {"copyright", lavt_copyright},

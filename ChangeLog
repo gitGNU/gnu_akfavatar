@@ -4,6 +4,9 @@
 
 	* akfavatar.h (avt_elapsed): new macro
 
+	* lua/lua-avt.c (lavt_key_pressed, lavt_clear_keys, lavt_push_key):
+	new functions
+
 2012-10-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* data2c.awk: use static
