@@ -7,6 +7,7 @@
   - regression: the navigation bar cannot handle the pause key anymore
 
   C-API changes:
+    - all deprecated functions removed
     - avt_update() is much faster
     - new macro: avt_elapsed
     - new functions: avt_key_pressed, avt_push_key, avt_clear_keys,

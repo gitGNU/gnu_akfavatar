@@ -48,15 +48,6 @@ avt_prepare_raw_audio (size_t capacity,
   return NULL;
 }
 
-#ifndef DISABLE_DEPRECATED
-extern avt_audio *
-avt_load_raw_audio_data (void *data, size_t data_size,
-			 int samplingrate, int audio_type, int channels)
-{
-  return NULL;
-}
-#endif
-
 extern int
 avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
 {
@@ -472,36 +463,6 @@ avt_prepare_raw_audio (size_t capacity,
 
   return s;
 }
-
-#ifndef DISABLE_DEPRECATED
-extern avt_audio *
-avt_load_raw_audio_data (void *data, size_t data_size,
-			 int samplingrate, int audio_type, int channels)
-{
-  struct avt_audio *s;
-
-  // use NULL, if we have nothing to add, yet
-  if (not data_size)
-    data = NULL;
-  else if (not data)
-    data_size = 0;
-
-  s = avt_prepare_raw_audio (data_size, samplingrate, audio_type, channels);
-
-  if (s)
-    {
-      if (avt_add_raw_audio_data (s, data, data_size) == AVT_NORMAL)
-	avt_finalize_raw_audio (s);
-      else
-	{
-	  avt_free_audio (s);
-	  s = NULL;
-	}
-    }
-
-  return s;
-}
-#endif
 
 extern void
 avt_finalize_raw_audio (avt_audio * snd)
