@@ -761,6 +761,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/audio-sdl.c $(srcdir)/audio-dummy.c \
 	   $(srcdir)/audio-common.c \
 	   $(srcdir)/avtdata.h $(srcdir)/avtdata.c \
+	   $(srcdir)/avttiming.c \
 	   $(srcdir)/basedir.c \
 	   $(srcdir)/avtinternals.h $(srcdir)/avtpalette.c \
 	   $(srcdir)/avatar-default.c $(srcdir)/avtccio.c $(srcdir)/avtcwio.c \
