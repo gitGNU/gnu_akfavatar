@@ -92,9 +92,11 @@ lua-akfavatar: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
 	     libakfavatar.a $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS) -Wl,-E
 
 libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o avatar-default.o \
-	        avtpalette.o font.o version.o avtdata.o audio-common.o
+	        avtpalette.o font.o version.o avtdata.o audio-common.o \
+	        avttiming.o
 	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o avatar.o audio-common.o \
-	             avtdata.o avatar-default.o avtpalette.o font.o version.o
+	             avtdata.o avatar-default.o avtpalette.o font.o version.o \
+	             avttiming.o
 	-$(RANLIB) $@
 
 libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
@@ -106,11 +108,13 @@ libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
 	-$(RANLIB) $@
 
 libakfavatar.so: $(OBJAVATAR).lo $(OBJAUDIO).lo avatar.lo avatar-default.lo \
-	         avtpalette.lo font.lo version.lo avtdata.lo audio-common.lo
+	         avtpalette.lo font.lo version.lo avtdata.lo audio-common.lo \
+	         avttiming.lo
 	$(CC) -shared \
 	      -Wl,-soname,$(SONAME) -o $(LIBNAME) -fPIC \
 	      $(OBJAVATAR).lo $(OBJAUDIO).lo avatar.lo avatar-default.lo \
 	      avtpalette.lo font.lo version.lo avtdata.lo audio-common.lo \
+	      avttiming.lo \
 	      $(SDL_LDFLAGS) $(LDFLAGS)
 	-ln -sf $(LIBNAME) $(SONAME)
 	-ln -sf $(LIBNAME) libakfavatar.so
@@ -161,6 +165,12 @@ avtdata.o: $(srcdir)/avtdata.c $(srcdir)/avtdata.h
 
 avtdata.lo: $(srcdir)/avtdata.c $(srcdir)/avtdata.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ $(srcdir)/avtdata.c
+
+avttiming.o: $(srcdir)/avttiming.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avttiming.c
+
+avttiming.lo: $(srcdir)/avttiming.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ $(srcdir)/avttiming.c
 
 basedir.o: $(srcdir)/basedir.c $(srcdir)/avtaddons.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/basedir.c

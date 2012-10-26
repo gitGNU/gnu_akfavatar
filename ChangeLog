@@ -1,3 +1,7 @@
+2012-10-26  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avttiming.c: new file
+
 2012-10-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* data2c.awk: use static
