@@ -755,15 +755,16 @@ avt_timeout (Uint32 intervall, void *param)
   return 0;
 }
 
-// TODO: rewrite
 extern int
 avt_wait (size_t milliseconds)
 {
+  // for times longer than half a second it should check for events
+
   if (avt and _avt_STATUS == AVT_NORMAL)
     {
       if (milliseconds <= 500)	// short delay
 	{
-	  SDL_Delay (milliseconds);
+	  avt_delay (milliseconds);
 	  avt_update ();
 	}
       else			// longer

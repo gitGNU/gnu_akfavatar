@@ -222,6 +222,9 @@ extern void avt_put_graphic (avt_graphic * source, avt_graphic * destination,
 extern bool avt_check_buttons (int x, int y);
 extern void avt_add_key (avt_char key);
 
+/* avttiming.c */
+extern void avt_delay (int milliseconds); // only for under a second
+
 /* audio-sdl.c */
 extern void avt_lock_audio (void);
 extern void avt_unlock_audio (avt_audio *snd);

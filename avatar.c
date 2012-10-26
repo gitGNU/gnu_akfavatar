@@ -1920,7 +1920,7 @@ avt_flash (void)
   // fill the whole screen with color
   avt_fill (avt.screen, 0xFFFF00);
   avt_update_all ();
-  avt_wait (150);
+  avt_delay (150);
 
   // fill the whole screen with background color
   avt_fill (avt.screen, avt.background_color);
@@ -2993,7 +2993,7 @@ avt_put_char (avt_char ch)
 		  avt_drawchar (ch, avt.screen);
 		  avt_showchar ();
 		  if (avt.text_delay)
-		    avt_wait (avt.text_delay);
+		    avt_delay (avt.text_delay);
 		  avt_forward ();
 		}
 
@@ -5842,7 +5842,7 @@ avt_credits_up (avt_graphic * last_line)
       now = avt_ticks ();
 
       if (next_time > now)
-	avt_wait (next_time - now);
+	avt_delay (next_time - now);
       else
 	{
 	  // move more pixels at once and give more time next time
