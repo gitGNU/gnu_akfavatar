@@ -226,6 +226,9 @@ AVT_API int avt_wait (size_t milliseconds);
 /* counter, which is increased every millisecond */
 AVT_API size_t avt_ticks (void);
 
+/* returnes elapsed time since start_ticks in milliseconds */
+#define avt_elapsed(start_ticks)  (avt_ticks()-(start_ticks))
+
 /***********************************************************************/
 /* say or ask stuff with wchar_t (Unicode) */
 

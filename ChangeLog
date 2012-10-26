@@ -2,6 +2,8 @@
 
 	* avttiming.c: new file
 
+	* akfavatar.h (avt_elapsed): new macro
+
 2012-10-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* data2c.awk: use static

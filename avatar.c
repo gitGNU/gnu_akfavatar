@@ -4733,8 +4733,7 @@ avt_move_in (void)
 	  short oldx = pos.x;
 
 	  // move
-	  pos.x =
-	    avt.screen->width - ((avt_ticks () - start_time) / MOVE_DELAY);
+	  pos.x = avt.screen->width - (avt_elapsed (start_time) / MOVE_DELAY);
 
 	  if (pos.x != oldx)
 	    {
@@ -4812,7 +4811,7 @@ avt_move_out (void)
 	  oldx = pos.x;
 
 	  // move
-	  pos.x = start_position + ((avt_ticks () - start_time) / MOVE_DELAY);
+	  pos.x = start_position + (avt_elapsed (start_time) / MOVE_DELAY);
 
 	  if (pos.x != oldx)
 	    {
