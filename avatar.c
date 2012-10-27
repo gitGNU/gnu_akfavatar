@@ -1435,7 +1435,11 @@ avt_clear_screen (void)
   if (avt.screen)
     {
       avt_free_screen ();
-      avt_update_all ();
+
+      if (avt.clear_screen)
+	(*avt.clear_screen) (avt.background_color);
+      else
+	avt_update_all ();
     }
 
   // undefine textfield / viewport
@@ -6034,6 +6038,7 @@ avt_quit (void)
       avt.quit_backend = NULL;
     }
 
+  avt.clear_screen = NULL;
   avt.load_image_file = NULL;
   avt.load_image_stream = NULL;
   avt.load_image_memory = NULL;

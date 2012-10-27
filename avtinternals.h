@@ -142,6 +142,8 @@ struct avt_settings
   void (*quit_audio_backend) (void);
   void (*alert) (void);
 
+  void (*clear_screen) (avt_color background_color);
+
   // image loaders from the backend
   avt_graphic *(*load_image_file) (const char *filename);
   avt_graphic *(*load_image_stream) (avt_stream * stream);
