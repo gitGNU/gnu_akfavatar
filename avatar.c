@@ -510,7 +510,7 @@ avt_set_color_key (avt_graphic * gr, avt_color color_key)
 extern void
 avt_update_all (void)
 {
-  avt_update_area (0, 0, 0, 0);
+  avt_update_area (0, 0, avt.screen->width, avt.screen->height);
 }
 
 static inline void

@@ -82,7 +82,6 @@ static void avt_analyze_event (SDL_Event * event);
 
 
 // this shall be the only function to update the window/screen
-// all values as 0 shall update everything
 extern void
 avt_update_area (int x, int y, int width, int height)
 {
