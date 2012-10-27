@@ -46,13 +46,6 @@ avt_start_audio (void)
 }
 
 extern void
-avt_quit_audio (void)
-{
-  // if you implement sound, call avt_deactivate_audio_alert ();
-  no_audio ();
-}
-
-extern void
 avt_stop_audio (void)
 {
   no_audio ();

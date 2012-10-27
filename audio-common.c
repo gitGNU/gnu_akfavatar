@@ -64,6 +64,11 @@ avt_free_audio (avt_audio * snd)
 {
 }
 
+extern void
+avt_quit_audio (void)
+{
+}
+
 #define avt_load_audio_general(a,b,c)  NULL
 
 #else // not NO_AUDIO
