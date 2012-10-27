@@ -1169,6 +1169,8 @@ avt_start (const char *title, const char *shortname, int window_mode)
 
   avt->quit_backend = &avt_quit_sdl;
 
+  avt_update_all ();
+
 #ifdef IMAGELOADERS
   // optionally register image loaders
   avt->load_image_file = &avt_load_image_file_sdl;

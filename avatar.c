@@ -6103,7 +6103,6 @@ avt_start_common (avt_graphic * new_screen)
     }
 
   avt_fill (avt.screen, avt.background_color);
-  avt_update_all ();
 
   avt_get_font_dimensions (&fontwidth, &fontheight, &fontunderline);
 
