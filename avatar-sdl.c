@@ -434,6 +434,10 @@ avt_switch_mode (int new_mode)
 static inline void
 avt_analyze_key (SDL_keysym key)
 {
+  avt_char ch;
+
+  ch = 0;
+
   // return immediately to avoid the external key handler
 
   switch (key.sym)
@@ -444,7 +448,7 @@ avt_analyze_key (SDL_keysym key)
 
     case SDLK_ESCAPE:
       if (avt->reserve_single_keys)
-	avt_add_key (AVT_KEY_ESCAPE);
+	ch = AVT_KEY_ESCAPE;
       else
 	{
 	  _avt_STATUS = AVT_QUIT;
@@ -461,13 +465,13 @@ avt_analyze_key (SDL_keysym key)
       else
 	{
 	  if (key.unicode)
-	    avt_add_key (key.unicode);
+	    ch = key.unicode;
 	}
       break;
 
     case SDLK_F11:
       if (avt->reserve_single_keys)
-	avt_add_key (AVT_KEY_F11);
+	ch = AVT_KEY_F11;
       else
 	{
 	  avt_toggle_fullscreen ();
@@ -482,7 +486,7 @@ avt_analyze_key (SDL_keysym key)
 	  return;
 	}
       else
-	avt_add_key (AVT_KEY_ENTER);
+	ch = AVT_KEY_ENTER;
       break;
 
     case SDLK_f:
@@ -494,54 +498,54 @@ avt_analyze_key (SDL_keysym key)
       else
 	{
 	  if (key.unicode)
-	    avt_add_key (key.unicode);
+	    ch = key.unicode;
 	}
       break;
 
     case SDLK_UP:
     case SDLK_KP8:
       if (key.unicode)
-	avt_add_key (key.unicode);
+	ch = key.unicode;
       else
-	avt_add_key (AVT_KEY_UP);
+	ch = AVT_KEY_UP;
       break;
 
     case SDLK_DOWN:
     case SDLK_KP2:
       if (key.unicode)
-	avt_add_key (key.unicode);
+	ch = key.unicode;
       else
-	avt_add_key (AVT_KEY_DOWN);
+	ch = AVT_KEY_DOWN;
       break;
 
     case SDLK_RIGHT:
     case SDLK_KP6:
       if (key.unicode)
-	avt_add_key (key.unicode);
+	ch = key.unicode;
       else
-	avt_add_key (AVT_KEY_RIGHT);
+	ch = AVT_KEY_RIGHT;
       break;
 
     case SDLK_LEFT:
     case SDLK_KP4:
       if (key.unicode)
-	avt_add_key (key.unicode);
+	ch = key.unicode;
       else
-	avt_add_key (AVT_KEY_LEFT);
+	ch = AVT_KEY_LEFT;
       break;
 
     case SDLK_INSERT:
     case SDLK_KP0:
       if (key.unicode)
-	avt_add_key (key.unicode);
+	ch = key.unicode;
       else
-	avt_add_key (AVT_KEY_INSERT);
+	ch = AVT_KEY_INSERT;
       break;
 
     case SDLK_DELETE:
     case SDLK_KP_PERIOD:
       if (key.unicode)
-	avt_add_key (key.unicode);
+	ch = key.unicode;
       else
 	avt_add_key (AVT_KEY_DELETE);
       break;
@@ -549,49 +553,49 @@ avt_analyze_key (SDL_keysym key)
     case SDLK_HOME:
     case SDLK_KP7:
       if (key.unicode)
-	avt_add_key (key.unicode);
+	ch = key.unicode;
       else
-	avt_add_key (AVT_KEY_HOME);
+	ch = AVT_KEY_HOME;
       break;
 
     case SDLK_END:
     case SDLK_KP1:
       if (key.unicode)
-	avt_add_key (key.unicode);
+	ch = key.unicode;
       else
-	avt_add_key (AVT_KEY_END);
+	ch = AVT_KEY_END;
       break;
 
     case SDLK_PAGEUP:
     case SDLK_KP9:
       if (key.unicode)
-	avt_add_key (key.unicode);
+	ch = key.unicode;
       else
-	avt_add_key (AVT_KEY_PAGEUP);
+	ch = AVT_KEY_PAGEUP;
       break;
 
     case SDLK_PAGEDOWN:
     case SDLK_KP3:
       if (key.unicode)
-	avt_add_key (key.unicode);
+	ch = key.unicode;
       else
-	avt_add_key (AVT_KEY_PAGEDOWN);
+	ch = AVT_KEY_PAGEDOWN;
       break;
 
     case SDLK_BACKSPACE:
-      avt_add_key (AVT_KEY_BACKSPACE);
+      ch = AVT_KEY_BACKSPACE;
       break;
 
     case SDLK_HELP:
-      avt_add_key (AVT_KEY_HELP);
+      ch = AVT_KEY_HELP;
       break;
 
     case SDLK_MENU:
-      avt_add_key (AVT_KEY_MENU);
+      ch = AVT_KEY_MENU;
       break;
 
     case SDLK_EURO:
-      avt_add_key (0x20AC);
+      ch = 0x20AC;
       break;
 
     case SDLK_F1:
@@ -608,17 +612,22 @@ avt_analyze_key (SDL_keysym key)
     case SDLK_F13:
     case SDLK_F14:
     case SDLK_F15:
-      avt_add_key (AVT_KEY_F1 + (key.sym - SDLK_F1));
+      ch = AVT_KEY_F1 + (key.sym - SDLK_F1);
       break;
 
     default:
       if (key.unicode)
-	avt_add_key (key.unicode);
+	ch = key.unicode;
       break;
     }				// switch (key.sym)
 
-  if (avt->ext_keyhandler)
-    avt->ext_keyhandler (key.sym, key.mod, key.unicode);
+  if (ch)
+    {
+      avt_add_key (ch);
+
+      if (avt->ext_keyhandler)
+	avt->ext_keyhandler (ch);
+    }
 }
 
 static void

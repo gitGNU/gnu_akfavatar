@@ -949,7 +949,7 @@ AVT_API void avt_reserve_single_keys (bool onoff);
  * type for keyhandler
  * see avt_register_keyhandler
  */
-typedef void (*avt_keyhandler) (int sym, int mod, int unicode);
+typedef void (*avt_keyhandler) (avt_char unicode);
 
 /* register an external keyhandler */
 AVT_API void avt_register_keyhandler (avt_keyhandler handler);

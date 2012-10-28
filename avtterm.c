@@ -26,7 +26,6 @@
 #include "avtinternals.h"
 #include "avttermsys.h"
 #include "avtaddons.h"
-#include "SDL_keysym.h"
 #include <wchar.h>
 #include <errno.h>
 #include <stdio.h>
@@ -302,7 +301,7 @@ avta_term_send (const char *buf, size_t count)
   do { dec_cursor_seq[2]=c; avta_term_send(dec_cursor_seq, 3); } while(0)
 
 static void
-prg_keyhandler (int sym, int mod, int unicode)
+prg_keyhandler (int key)
 {
   // TODO: support application_keypad
 
@@ -310,112 +309,112 @@ prg_keyhandler (int sym, int mod, int unicode)
     {
       idle = false;		// avoid reentrance
 
-      switch (sym)
+      switch (key)
 	{
-	case SDLK_UP:
+	case AVT_KEY_UP:
 	  send_cursor_seq ('A');
 	  break;
 
-	case SDLK_DOWN:
+	case AVT_KEY_DOWN:
 	  send_cursor_seq ('B');
 	  break;
 
-	case SDLK_RIGHT:
+	case AVT_KEY_RIGHT:
 	  send_cursor_seq ('C');
 	  break;
 
-	case SDLK_LEFT:
+	case AVT_KEY_LEFT:
 	  send_cursor_seq ('D');
 	  break;
 
-	case SDLK_INSERT:
+	case AVT_KEY_INSERT:
 	  avta_term_send_literal (KEY_INSERT);
 	  break;
 
-	case SDLK_HOME:
+	case AVT_KEY_HOME:
 	  avta_term_send_literal (KEY_HOME);
 	  break;
 
-	case SDLK_END:
+	case AVT_KEY_END:
 	  avta_term_send_literal (KEY_END);
 	  break;
 
-	case SDLK_PAGEUP:
+	case AVT_KEY_PAGEUP:
 	  avta_term_send_literal (KEY_PAGEUP);
 	  break;
 
-	case SDLK_PAGEDOWN:
+	case AVT_KEY_PAGEDOWN:
 	  avta_term_send_literal (KEY_PAGEDOWN);
 	  break;
 
-	case SDLK_F1:
+	case AVT_KEY_F1:
 	  avta_term_send_literal (KEY_F1);
 	  break;
 
-	case SDLK_F2:
+	case AVT_KEY_F2:
 	  avta_term_send_literal (KEY_F1);
 	  break;
 
-	case SDLK_F3:
+	case AVT_KEY_F3:
 	  avta_term_send_literal (KEY_F3);
 	  break;
 
-	case SDLK_F4:
+	case AVT_KEY_F4:
 	  avta_term_send_literal (KEY_F4);
 	  break;
 
-	case SDLK_F5:
+	case AVT_KEY_F5:
 	  avta_term_send_literal (KEY_F5);
 	  break;
 
-	case SDLK_F6:
+	case AVT_KEY_F6:
 	  avta_term_send_literal (KEY_F6);
 	  break;
 
-	case SDLK_F7:
+	case AVT_KEY_F7:
 	  avta_term_send_literal (KEY_F7);
 	  break;
 
-	case SDLK_F8:
+	case AVT_KEY_F8:
 	  avta_term_send_literal (KEY_F8);
 	  break;
 
-	case SDLK_F9:
+	case AVT_KEY_F9:
 	  avta_term_send_literal (KEY_F9);
 	  break;
 
-	case SDLK_F10:
+	case AVT_KEY_F10:
 	  avta_term_send_literal (KEY_F10);
 	  break;
 
-	case SDLK_F11:
+	case AVT_KEY_F11:
 	  avta_term_send_literal (KEY_F11);
 	  break;
 
-	case SDLK_F12:
+	case AVT_KEY_F12:
 	  avta_term_send_literal (KEY_F12);
 	  break;
 
-	case SDLK_F13:
+	case AVT_KEY_F13:
 	  avta_term_send_literal (KEY_F13);
 	  break;
 
-	case SDLK_F14:
+	case AVT_KEY_F14:
 	  avta_term_send_literal (KEY_F14);
 	  break;
 
-	case SDLK_F15:
+	case AVT_KEY_F15:
 	  avta_term_send_literal (KEY_F15);
 	  break;
 
 	default:
-	  if (unicode)
+	  if (key)
 	    {
 	      wchar_t ch;
 	      char mbstring[8];
 	      int length;
 
-	      ch = (wchar_t) unicode;
+	      ch = (wchar_t) key;
 	      length =
 		avt_mb_encode_buffer (mbstring, sizeof (mbstring), &ch, 1);
 	      if (length > 0)
