@@ -301,7 +301,7 @@ avta_term_send (const char *buf, size_t count)
   do { dec_cursor_seq[2]=c; avta_term_send(dec_cursor_seq, 3); } while(0)
 
 static void
-prg_keyhandler (int key)
+prg_keyhandler (avt_char key)
 {
   // TODO: support application_keypad
 
