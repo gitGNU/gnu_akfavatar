@@ -4311,8 +4311,6 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   avt.text_cursor_visible = false;
   avt.auto_margin = false;
   avt.reserve_single_keys = false;
-  avt.ext_keyhandler = NULL;
-  avt.ext_mousehandler = NULL;
 
   // temporarily disable the alert function
   avt.alert = NULL;
@@ -5708,18 +5706,6 @@ avt_reserve_single_keys (bool onoff)
 }
 
 extern void
-avt_register_keyhandler (avt_keyhandler handler)
-{
-  avt.ext_keyhandler = handler;
-}
-
-extern void
-avt_register_mousehandler (avt_mousehandler handler)
-{
-  avt.ext_mousehandler = handler;
-}
-
-extern void
 avt_set_text_color (int colornr)
 {
   avt.text_color = colornr;
@@ -5866,8 +5852,6 @@ avt_credits (const wchar_t * text, bool centered)
   wchar_t line[80];
   avt_graphic *last_line;
   int old_background_color;
-  avt_keyhandler old_keyhandler;
-  avt_mousehandler old_mousehandler;
   const wchar_t *p;
   int length;
 
@@ -5876,12 +5860,6 @@ avt_credits (const wchar_t * text, bool centered)
 
   // store old background color
   old_background_color = avt.background_color;
-
-  // deactivate mous/key- handlers
-  old_keyhandler = avt.ext_keyhandler;
-  old_mousehandler = avt.ext_mousehandler;
-  avt.ext_keyhandler = NULL;
-  avt.ext_mousehandler = NULL;
 
   // needed to handle resizing correctly
   avt_no_textfield ();
@@ -5963,9 +5941,6 @@ avt_credits (const wchar_t * text, bool centered)
   avt_set_background_color (old_background_color);
   avt_normal_text ();
   avt_clear_screen ();
-
-  avt.ext_keyhandler = old_keyhandler;
-  avt.ext_mousehandler = old_mousehandler;
 
   return _avt_STATUS;
 }

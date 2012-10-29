@@ -8,6 +8,7 @@
 
   C-API changes:
     - all deprecated functions removed
+    - also removed: avt_register_keyhandler, avt_register_mousehandler
     - avt_update() is much faster
     - new macro: avt_elapsed
     - new functions: avt_key_pressed, avt_push_key, avt_clear_keys,

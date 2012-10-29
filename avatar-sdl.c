@@ -434,12 +434,6 @@ avt_switch_mode (int new_mode)
 static inline void
 avt_analyze_key (SDL_keysym key)
 {
-  avt_char ch;
-
-  ch = 0;
-
-  // return immediately to avoid the external key handler
-
   switch (key.sym)
     {
     case SDLK_PAUSE:
@@ -448,7 +442,7 @@ avt_analyze_key (SDL_keysym key)
 
     case SDLK_ESCAPE:
       if (avt->reserve_single_keys)
-	ch = AVT_KEY_ESCAPE;
+	avt_add_key (AVT_KEY_ESCAPE);
       else
 	{
 	  _avt_STATUS = AVT_QUIT;
@@ -465,13 +459,13 @@ avt_analyze_key (SDL_keysym key)
       else
 	{
 	  if (key.unicode)
-	    ch = key.unicode;
+	    avt_add_key (key.unicode);
 	}
       break;
 
     case SDLK_F11:
       if (avt->reserve_single_keys)
-	ch = AVT_KEY_F11;
+	avt_add_key (AVT_KEY_F11);
       else
 	{
 	  avt_toggle_fullscreen ();
@@ -486,7 +480,7 @@ avt_analyze_key (SDL_keysym key)
 	  return;
 	}
       else
-	ch = AVT_KEY_ENTER;
+	avt_add_key (AVT_KEY_ENTER);
       break;
 
     case SDLK_f:
@@ -498,54 +492,54 @@ avt_analyze_key (SDL_keysym key)
       else
 	{
 	  if (key.unicode)
-	    ch = key.unicode;
+	    avt_add_key (key.unicode);
 	}
       break;
 
     case SDLK_UP:
     case SDLK_KP8:
       if (key.unicode)
-	ch = key.unicode;
+	avt_add_key (key.unicode);
       else
-	ch = AVT_KEY_UP;
+	avt_add_key (AVT_KEY_UP);
       break;
 
     case SDLK_DOWN:
     case SDLK_KP2:
       if (key.unicode)
-	ch = key.unicode;
+	avt_add_key (key.unicode);
       else
-	ch = AVT_KEY_DOWN;
+	avt_add_key (AVT_KEY_DOWN);
       break;
 
     case SDLK_RIGHT:
     case SDLK_KP6:
       if (key.unicode)
-	ch = key.unicode;
+	avt_add_key (key.unicode);
       else
-	ch = AVT_KEY_RIGHT;
+	avt_add_key (AVT_KEY_RIGHT);
       break;
 
     case SDLK_LEFT:
     case SDLK_KP4:
       if (key.unicode)
-	ch = key.unicode;
+	avt_add_key (key.unicode);
       else
-	ch = AVT_KEY_LEFT;
+	avt_add_key (AVT_KEY_LEFT);
       break;
 
     case SDLK_INSERT:
     case SDLK_KP0:
       if (key.unicode)
-	ch = key.unicode;
+	avt_add_key (key.unicode);
       else
-	ch = AVT_KEY_INSERT;
+	avt_add_key (AVT_KEY_INSERT);
       break;
 
     case SDLK_DELETE:
     case SDLK_KP_PERIOD:
       if (key.unicode)
-	ch = key.unicode;
+	avt_add_key (key.unicode);
       else
 	avt_add_key (AVT_KEY_DELETE);
       break;
@@ -553,49 +547,49 @@ avt_analyze_key (SDL_keysym key)
     case SDLK_HOME:
     case SDLK_KP7:
       if (key.unicode)
-	ch = key.unicode;
+	avt_add_key (key.unicode);
       else
-	ch = AVT_KEY_HOME;
+	avt_add_key (AVT_KEY_HOME);
       break;
 
     case SDLK_END:
     case SDLK_KP1:
       if (key.unicode)
-	ch = key.unicode;
+	avt_add_key (key.unicode);
       else
-	ch = AVT_KEY_END;
+	avt_add_key (AVT_KEY_END);
       break;
 
     case SDLK_PAGEUP:
     case SDLK_KP9:
       if (key.unicode)
-	ch = key.unicode;
+	avt_add_key (key.unicode);
       else
-	ch = AVT_KEY_PAGEUP;
+	avt_add_key (AVT_KEY_PAGEUP);
       break;
 
     case SDLK_PAGEDOWN:
     case SDLK_KP3:
       if (key.unicode)
-	ch = key.unicode;
+	avt_add_key (key.unicode);
       else
-	ch = AVT_KEY_PAGEDOWN;
+	avt_add_key (AVT_KEY_PAGEDOWN);
       break;
 
     case SDLK_BACKSPACE:
-      ch = AVT_KEY_BACKSPACE;
+      avt_add_key (AVT_KEY_BACKSPACE);
       break;
 
     case SDLK_HELP:
-      ch = AVT_KEY_HELP;
+      avt_add_key (AVT_KEY_HELP);
       break;
 
     case SDLK_MENU:
-      ch = AVT_KEY_MENU;
+      avt_add_key (AVT_KEY_MENU);
       break;
 
     case SDLK_EURO:
-      ch = 0x20AC;
+      avt_add_key (0x20AC);
       break;
 
     case SDLK_F1:
@@ -612,50 +606,14 @@ avt_analyze_key (SDL_keysym key)
     case SDLK_F13:
     case SDLK_F14:
     case SDLK_F15:
-      ch = AVT_KEY_F1 + (key.sym - SDLK_F1);
+      avt_add_key (AVT_KEY_F1 + (key.sym - SDLK_F1));
       break;
 
     default:
       if (key.unicode)
-	ch = key.unicode;
+	avt_add_key (key.unicode);
       break;
     }				// switch (key.sym)
-
-  if (ch)
-    {
-      avt_add_key (ch);
-
-      if (avt->ext_keyhandler)
-	avt->ext_keyhandler (ch);
-    }
-}
-
-static void
-avt_call_mouse_handler (SDL_Event * event)
-{
-  int x, y;
-
-  if (avt->textfield.x >= 0)
-    {
-      // if there is a textfield, use the character position
-      x = (event->button.x - avt->textfield.x) / fontwidth + 1;
-      y = (event->button.y - avt->textfield.y) / fontheight + 1;
-
-      // check if x and y are valid
-      if (x >= 1 and x <= AVT_LINELENGTH
-	  and y >= 1 and y <= (avt->textfield.height / fontheight))
-	avt->ext_mousehandler (event->button.button,
-			       (event->button.state == SDL_PRESSED), x, y);
-    }
-  else				// no textfield
-    {
-      x = event->button.x - avt->window.x;
-      y = event->button.y - avt->window.y;
-      if (x >= 0 and x <= avt->window.width and y >= 0 and y <=
-	  avt->window.height)
-	avt->ext_mousehandler (event->button.button,
-			       (event->button.state == SDL_PRESSED), x, y);
-    }
 }
 
 static void
@@ -684,14 +642,6 @@ avt_analyze_event (SDL_Event * event)
 	avt_add_key (AVT_KEY_DOWN);
       else if (SDL_BUTTON_WHEELUP == event->button.button)
 	avt_add_key (AVT_KEY_UP);
-
-      if (avt->ext_mousehandler)
-	avt_call_mouse_handler (event);
-      break;
-
-    case SDL_MOUSEBUTTONUP:
-      if (avt->ext_mousehandler)
-	avt_call_mouse_handler (event);
       break;
 
     case SDL_MOUSEMOTION:

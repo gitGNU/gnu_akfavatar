@@ -96,9 +96,6 @@ static const char *default_encoding;
 
 static int prg_input;		// file descriptor for program input
 
-// in idle loop?
-static bool idle;
-
 // maximum coordinates
 static int max_x, max_y;
 static int region_min_y, region_max_y;
@@ -207,6 +204,171 @@ avta_term_update_size (void)
     }
 }
 
+/*
+static void
+prg_mousehandler (int button, bool pressed, int x, int y)
+{
+  if (button <= 3 and ((mouse_mode == 1 and pressed) or mouse_mode == 2))
+    {
+      char code[7];
+      int b;
+
+      if (mouse_mode == 2 and not pressed)
+	b = 3;			// button released
+      else
+	b = button - 1;
+
+      snprintf (code, sizeof (code), CSI "M%c%c%c",
+		(char) (040 + b), (char) (040 + x), (char) (040 + y));
+      avta_term_send (&code[0], sizeof (code) - 1);
+    }
+}
+*/
+
+extern void
+avta_term_send (const char *buf, size_t count)
+{
+  ssize_t r;
+
+  if (prg_input > 0)
+    {
+      do
+	{
+	  r = write (prg_input, buf, count);
+	  if (r > 0)
+	    {
+	      count -= r;
+	      buf += r;
+	    }
+	}
+      while (r > 0 and count > 0);
+    }
+}
+
+#define send_cursor_seq(c)  \
+  do { dec_cursor_seq[2]=c; avta_term_send(dec_cursor_seq, 3); } while(0)
+
+static void
+process_key (avt_char key)
+{
+  // TODO: support application_keypad
+
+  if (prg_input <= 0)
+    return;
+
+  switch (key)
+    {
+    case AVT_KEY_UP:
+      send_cursor_seq ('A');
+      break;
+
+    case AVT_KEY_DOWN:
+      send_cursor_seq ('B');
+      break;
+
+    case AVT_KEY_RIGHT:
+      send_cursor_seq ('C');
+      break;
+
+    case AVT_KEY_LEFT:
+      send_cursor_seq ('D');
+      break;
+
+    case AVT_KEY_INSERT:
+      avta_term_send_literal (KEY_INSERT);
+      break;
+
+    case AVT_KEY_HOME:
+      avta_term_send_literal (KEY_HOME);
+      break;
+
+    case AVT_KEY_END:
+      avta_term_send_literal (KEY_END);
+      break;
+
+    case AVT_KEY_PAGEUP:
+      avta_term_send_literal (KEY_PAGEUP);
+      break;
+
+    case AVT_KEY_PAGEDOWN:
+      avta_term_send_literal (KEY_PAGEDOWN);
+      break;
+
+    case AVT_KEY_F1:
+      avta_term_send_literal (KEY_F1);
+      break;
+
+    case AVT_KEY_F2:
+      avta_term_send_literal (KEY_F1);
+      break;
+
+    case AVT_KEY_F3:
+      avta_term_send_literal (KEY_F3);
+      break;
+
+    case AVT_KEY_F4:
+      avta_term_send_literal (KEY_F4);
+      break;
+
+    case AVT_KEY_F5:
+      avta_term_send_literal (KEY_F5);
+      break;
+
+    case AVT_KEY_F6:
+      avta_term_send_literal (KEY_F6);
+      break;
+
+    case AVT_KEY_F7:
+      avta_term_send_literal (KEY_F7);
+      break;
+
+    case AVT_KEY_F8:
+      avta_term_send_literal (KEY_F8);
+      break;
+
+    case AVT_KEY_F9:
+      avta_term_send_literal (KEY_F9);
+      break;
+
+    case AVT_KEY_F10:
+      avta_term_send_literal (KEY_F10);
+      break;
+
+    case AVT_KEY_F11:
+      avta_term_send_literal (KEY_F11);
+      break;
+
+    case AVT_KEY_F12:
+      avta_term_send_literal (KEY_F12);
+      break;
+
+    case AVT_KEY_F13:
+      avta_term_send_literal (KEY_F13);
+      break;
+
+    case AVT_KEY_F14:
+      avta_term_send_literal (KEY_F14);
+      break;
+
+    case AVT_KEY_F15:
+      avta_term_send_literal (KEY_F15);
+      break;
+
+    default:
+      if (key)
+	{
+	  wchar_t ch;
+	  char mbstring[8];
+	  int length;
+
+	  ch = (wchar_t) key;
+	  length = avt_mb_encode_buffer (mbstring, sizeof (mbstring), &ch, 1);
+	  if (length > 0)
+	    avta_term_send (mbstring, length);
+	}			// if (key)
+    }				// switch
+}
+
 #define clear_textbuffer(void)  get_character(-1)
 
 static wint_t
@@ -241,14 +403,21 @@ get_character (int fd)
 	    {
 	      if (cursor_active)
 		avt_activate_cursor (true);
-	      idle = true;
+
 	      do
 		{
 		  nread = read (fd, &filebuf, sizeof (filebuf));
+
+		  while (avt_key_pressed ())
+		    {
+		      avt_char key;
+		      avt_key (&key);
+		      process_key (key);
+		    }
 		}
 	      while (nread == -1 and errno == EAGAIN
 		     and avt_update () == AVT_NORMAL);
-	      idle = false;
+
 	      if (cursor_active)
 		avt_activate_cursor (false);
 	    }
@@ -275,175 +444,6 @@ get_character (int fd)
   while (ch == L'\0');
 
   return ch;
-}
-
-extern void
-avta_term_send (const char *buf, size_t count)
-{
-  ssize_t r;
-
-  if (prg_input > 0)
-    {
-      do
-	{
-	  r = write (prg_input, buf, count);
-	  if (r > 0)
-	    {
-	      count -= r;
-	      buf += r;
-	    }
-	}
-      while (r > 0 and count > 0);
-    }
-}
-
-#define send_cursor_seq(c)  \
-  do { dec_cursor_seq[2]=c; avta_term_send(dec_cursor_seq, 3); } while(0)
-
-static void
-prg_keyhandler (avt_char key)
-{
-  // TODO: support application_keypad
-
-  if (idle and prg_input > 0)
-    {
-      idle = false;		// avoid reentrance
-
-      switch (key)
-	{
-	case AVT_KEY_UP:
-	  send_cursor_seq ('A');
-	  break;
-
-	case AVT_KEY_DOWN:
-	  send_cursor_seq ('B');
-	  break;
-
-	case AVT_KEY_RIGHT:
-	  send_cursor_seq ('C');
-	  break;
-
-	case AVT_KEY_LEFT:
-	  send_cursor_seq ('D');
-	  break;
-
-	case AVT_KEY_INSERT:
-	  avta_term_send_literal (KEY_INSERT);
-	  break;
-
-	case AVT_KEY_HOME:
-	  avta_term_send_literal (KEY_HOME);
-	  break;
-
-	case AVT_KEY_END:
-	  avta_term_send_literal (KEY_END);
-	  break;
-
-	case AVT_KEY_PAGEUP:
-	  avta_term_send_literal (KEY_PAGEUP);
-	  break;
-
-	case AVT_KEY_PAGEDOWN:
-	  avta_term_send_literal (KEY_PAGEDOWN);
-	  break;
-
-	case AVT_KEY_F1:
-	  avta_term_send_literal (KEY_F1);
-	  break;
-
-	case AVT_KEY_F2:
-	  avta_term_send_literal (KEY_F1);
-	  break;
-
-	case AVT_KEY_F3:
-	  avta_term_send_literal (KEY_F3);
-	  break;
-
-	case AVT_KEY_F4:
-	  avta_term_send_literal (KEY_F4);
-	  break;
-
-	case AVT_KEY_F5:
-	  avta_term_send_literal (KEY_F5);
-	  break;
-
-	case AVT_KEY_F6:
-	  avta_term_send_literal (KEY_F6);
-	  break;
-
-	case AVT_KEY_F7:
-	  avta_term_send_literal (KEY_F7);
-	  break;
-
-	case AVT_KEY_F8:
-	  avta_term_send_literal (KEY_F8);
-	  break;
-
-	case AVT_KEY_F9:
-	  avta_term_send_literal (KEY_F9);
-	  break;
-
-	case AVT_KEY_F10:
-	  avta_term_send_literal (KEY_F10);
-	  break;
-
-	case AVT_KEY_F11:
-	  avta_term_send_literal (KEY_F11);
-	  break;
-
-	case AVT_KEY_F12:
-	  avta_term_send_literal (KEY_F12);
-	  break;
-
-	case AVT_KEY_F13:
-	  avta_term_send_literal (KEY_F13);
-	  break;
-
-	case AVT_KEY_F14:
-	  avta_term_send_literal (KEY_F14);
-	  break;
-
-	case AVT_KEY_F15:
-	  avta_term_send_literal (KEY_F15);
-	  break;
-
-	default:
-	  if (key)
-	    {
-	      wchar_t ch;
-	      char mbstring[8];
-	      int length;
-
-	      ch = (wchar_t) key;
-	      length =
-		avt_mb_encode_buffer (mbstring, sizeof (mbstring), &ch, 1);
-	      if (length > 0)
-		avta_term_send (mbstring, length);
-	    }			// if (unicode)
-	}			// switch
-
-      idle = true;
-    }				// if (idle...)
-}
-
-// TODO: clicking works only for xterm
-static void
-prg_mousehandler (int button, bool pressed, int x, int y)
-{
-  if (button <= 3 and ((mouse_mode == 1 and pressed) or mouse_mode == 2))
-    {
-      char code[7];
-      int b;
-
-      if (mouse_mode == 2 and not pressed)
-	b = 3;			// button released
-      else
-	b = button - 1;
-
-      snprintf (code, sizeof (code), CSI "M%c%c%c",
-		(char) (040 + b), (char) (040 + x), (char) (040 + y));
-      avta_term_send (&code[0], sizeof (code) - 1);
-    }
 }
 
 /*
@@ -1415,8 +1415,6 @@ avta_term_run (int fd)
   dec_cursor_seq[0] = '\033';
   dec_cursor_seq[1] = '[';
   dec_cursor_seq[2] = ' ';	// to be filled later
-  avt_register_keyhandler (prg_keyhandler);
-  avt_register_mousehandler (prg_mousehandler);
   avt_set_mouse_visible (false);	// TODO: just wheel supported
 
   reset_terminal ();
@@ -1457,9 +1455,6 @@ avta_term_run (int fd)
   avt_newline_mode (true);
   avt_lock_updates (false);
 
-  // release handlers
-  avt_register_mousehandler (NULL);
-  avt_register_keyhandler (NULL);
   prg_input = -1;
 }
 

@@ -946,31 +946,6 @@ AVT_API int avt_credits_mb (const char *text, bool centered);
 AVT_API void avt_reserve_single_keys (bool onoff);
 
 /*
- * type for keyhandler
- * see avt_register_keyhandler
- */
-typedef void (*avt_keyhandler) (avt_char unicode);
-
-/* register an external keyhandler */
-AVT_API void avt_register_keyhandler (avt_keyhandler handler);
-
-/*
- * type for mousehandler
- * see avt_register_mousehandler
- */
-typedef void (*avt_mousehandler) (int button, bool pressed,
-                                  int x, int y);
-
-/*
- * register an external mousehandler
- *
- * it is only called, when a mouse-button is pressed or released
- * The coordinates are the character positions if it's inside of
- * the balloon or -1, -1 otherwise.
- */
-AVT_API void avt_register_mousehandler (avt_mousehandler handler);
-
-/*
  * returns pointer to character definition of given codepoint
  * either defined as unsigned char or unsigned short,
  * depending on the fonts width

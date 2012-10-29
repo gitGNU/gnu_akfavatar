@@ -1,7 +1,9 @@
-2012-10-28  Andreas K. Foerster  <info@akfoerster.de>
+2012-10-29  Andreas K. Foerster  <info@akfoerster.de>
 
-	* akfavatar.h, avatar.c, avatar-sdl.c (avt_keyhandler):
-	just one parateter avt_char
+	* akfavatar.h, avatar.c, avatar-sdl.c
+	(avt_register_keyhandler, avt_register_mousehandler):
+	removed
+	avtterm.c: adapted
 
 2012-10-26  Andreas K. Foerster  <info@akfoerster.de>
 

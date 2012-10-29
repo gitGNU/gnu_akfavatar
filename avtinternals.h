@@ -149,10 +149,6 @@ struct avt_settings
   avt_graphic *(*load_image_stream) (avt_stream * stream);
   avt_graphic *(*load_image_memory) (void *data, size_t size);
 
-  // for an external keyboard/mouse handlers
-  avt_keyhandler ext_keyhandler;
-  avt_mousehandler ext_mousehandler;
-
   // delay values for printing text and flipping the page
   int text_delay, flip_page_delay;
 
