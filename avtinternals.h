@@ -219,6 +219,7 @@ extern void avt_put_graphic (avt_graphic * source, avt_graphic * destination,
 		 int x, int y);
 extern bool avt_check_buttons (int x, int y);
 extern void avt_add_key (avt_char key);
+extern void avt_resized (void);
 
 /* avttiming.c */
 extern void avt_delay (int milliseconds); // only for under a second

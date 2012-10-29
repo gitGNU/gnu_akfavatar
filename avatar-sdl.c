@@ -299,75 +299,44 @@ avt_load_image_memory_sdl (void *data, size_t size)
 #define load_image_done(void)	// empty
 #endif // not IMAGELOADERS
 
-
-// TODO: simplify
 static void
-avt_resize_sdl (int w, int h)
+avt_resize_sdl (int width, int height)
 {
   avt_graphic *oldwindowimage;
-  struct avt_area oldwindow;
   SDL_Event event;
 
   // minimal size
-  if (w < MINIMALWIDTH)
-    w = MINIMALWIDTH;
-  if (h < MINIMALHEIGHT)
-    h = MINIMALHEIGHT;
+  if (width < MINIMALWIDTH)
+    width = MINIMALWIDTH;
+  if (height < MINIMALHEIGHT)
+    height = MINIMALHEIGHT;
 
   // save the window
-  oldwindow = avt->window;
   oldwindowimage = avt_get_window ();
 
   // resize screen
-  sdl_screen = SDL_SetVideoMode (w, h, COLORDEPTH, screenflags);
+  sdl_screen = SDL_SetVideoMode (width, height, COLORDEPTH, screenflags);
   avt->screen->pixels = (avt_color *) sdl_screen->pixels;
   avt->screen->width = sdl_screen->w;
   avt->screen->height = sdl_screen->h;
 
+  // recalculate positions
+  avt_resized ();
+
+  // restore image in new position
   avt_free_screen ();
-
-  // new position of the window on the screen
-  if (avt->screen->width > avt->window.width)
-    avt->window.x = (avt->screen->width / 2) - (avt->window.width / 2);
-  else
-    avt->window.x = 0;
-
-  if (avt->screen->height > avt->window.height)
-    avt->window.y = (avt->screen->height / 2) - (avt->window.height / 2);
-  else
-    avt->window.y = 0;
-
-  // restore image
   avt_put_graphic (oldwindowimage, avt->screen, avt->window.x, avt->window.y);
   avt_free_graphic (oldwindowimage);
 
-  // recalculate textfield & viewport positions
-  if (avt->textfield.x >= 0)
-    {
-      avt->textfield.x = avt->textfield.x - oldwindow.x + avt->window.x;
-      avt->textfield.y = avt->textfield.y - oldwindow.y + avt->window.y;
-
-      avt->viewport.x = avt->viewport.x - oldwindow.x + avt->window.x;
-      avt->viewport.y = avt->viewport.y - oldwindow.y + avt->window.y;
-
-      if (avt->textdir_rtl)
-	avt->linestart = avt->viewport.x + avt->viewport.width - fontwidth;
-      else
-	avt->linestart = avt->viewport.x;
-
-      avt->cursor.x = avt->cursor.x - oldwindow.x + avt->window.x;
-      avt->cursor.y = avt->cursor.y - oldwindow.y + avt->window.y;
-    }
+  // make all changes visible
+  avt_update_all ();
 
   // set windowmode_size
   if ((screenflags & SDL_FULLSCREEN) == 0)
     {
-      windowmode_size.width = w;
-      windowmode_size.height = h;
+      windowmode_size.width = width;
+      windowmode_size.height = height;
     }
-
-  // make all changes visible
-  avt_update_all ();
 
   // ignore one resize event here to avoid recursive calling
   while (SDL_PollEvent (&event) and event.type != SDL_VIDEORESIZE)

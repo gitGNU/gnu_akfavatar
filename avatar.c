@@ -560,6 +560,43 @@ avt_update_viewport (void)
 		     avt.viewport.width, avt.viewport.height);
 }
 
+// recalculate positions after screen has been resized
+extern void
+avt_resized (void)
+{
+  struct avt_area oldwindow;
+
+  oldwindow = avt.window;
+
+  // new position of the window on the screen
+  if (avt.screen->width > avt.window.width)
+    avt.window.x = (avt.screen->width / 2) - (avt.window.width / 2);
+  else
+    avt.window.x = 0;
+
+  if (avt.screen->height > avt.window.height)
+    avt.window.y = (avt.screen->height / 2) - (avt.window.height / 2);
+  else
+    avt.window.y = 0;
+
+  // recalculate textfield & viewport positions
+  if (avt.textfield.x >= 0)
+    {
+      avt.textfield.x = avt.textfield.x - oldwindow.x + avt.window.x;
+      avt.textfield.y = avt.textfield.y - oldwindow.y + avt.window.y;
+
+      avt.viewport.x = avt.viewport.x - oldwindow.x + avt.window.x;
+      avt.viewport.y = avt.viewport.y - oldwindow.y + avt.window.y;
+
+      if (avt.textdir_rtl)
+	avt.linestart = avt.viewport.x + avt.viewport.width - fontwidth;
+      else
+	avt.linestart = avt.viewport.x;
+
+      avt.cursor.x = avt.cursor.x - oldwindow.x + avt.window.x;
+      avt.cursor.y = avt.cursor.y - oldwindow.y + avt.window.y;
+    }
+}
 
 static inline void
 avt_release_raw_image (void)
