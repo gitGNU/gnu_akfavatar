@@ -91,6 +91,23 @@ lua-akfavatar: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
 	     filechooser.o colorchooser.o arch.o langposix.o basedir.o \
 	     libakfavatar.a $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS) -Wl,-E
 
+# lua-akfavatar for Linux framebuffer
+lua-akfavatar-linuxfb: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
+                   filechooser.o colorchooser.o langposix.o basedir.o \
+                   avatar-linuxfb.o audio-dummy.o libakfavatar.a
+	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
+	     filechooser.o colorchooser.o arch.o langposix.o basedir.o \
+	     avatar-linuxfb.o audio-dummy.o libakfavatar.a \
+	     $(LUA_LDFLAGS) $(LDFLAGS) -ldl -Wl,-E
+
+avatar-linuxfb.o: $(srcdir)/avatar-linuxfb.c $(srcdir)/akfavatar.h \
+          $(srcdir)/avtinternals.h
+	$(CC) -I$(srcdir) -I. $(CFLAGS) -c -o $@ $(srcdir)/avatar-linuxfb.c
+
+avatar-linuxfb.lo: $(srcdir)/avatar-linuxfb.c $(srcdir)/akfavatar.h \
+          $(srcdir)/avtinternals.h
+	$(CC) -I$(srcdir) -I. $(CFLAGS) -c -fPIC -o $@ $(srcdir)/avatar-linuxfb.c
+
 libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o avatar-default.o \
 	        avtpalette.o font.o version.o avtdata.o audio-common.o \
 	        avttiming.o
