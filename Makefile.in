@@ -94,19 +94,21 @@ lua-akfavatar: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
 # lua-akfavatar for Linux framebuffer
 lua-akfavatar-linuxfb: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
                    filechooser.o colorchooser.o langposix.o basedir.o \
-                   avatar-linuxfb.o audio-dummy.o libakfavatar.a
-	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
+                   avatar-linuxfb.o audio-dummy.o audio-common-dummy.o \
+                   libakfavatar.a
+	-$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
 	     filechooser.o colorchooser.o arch.o langposix.o basedir.o \
-	     avatar-linuxfb.o audio-dummy.o libakfavatar.a \
+	     avatar-linuxfb.o audio-dummy.o audio-common-dummy.o \
+	     libakfavatar.a \
 	     $(LUA_LDFLAGS) $(LDFLAGS) -ldl -Wl,-E
 
 avatar-linuxfb.o: $(srcdir)/avatar-linuxfb.c $(srcdir)/akfavatar.h \
           $(srcdir)/avtinternals.h
-	$(CC) -I$(srcdir) -I. $(CFLAGS) -c -o $@ $(srcdir)/avatar-linuxfb.c
+	-$(CC) -I$(srcdir) -I. $(CFLAGS) -c -o $@ $(srcdir)/avatar-linuxfb.c
 
 avatar-linuxfb.lo: $(srcdir)/avatar-linuxfb.c $(srcdir)/akfavatar.h \
           $(srcdir)/avtinternals.h
-	$(CC) -I$(srcdir) -I. $(CFLAGS) -c -fPIC -o $@ $(srcdir)/avatar-linuxfb.c
+	-$(CC) -I$(srcdir) -I. $(CFLAGS) -c -fPIC -o $@ $(srcdir)/avatar-linuxfb.c
 
 libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o avatar-default.o \
 	        avtpalette.o font.o version.o avtdata.o audio-common.o \
@@ -263,6 +265,11 @@ audio-common.o: $(srcdir)/audio-common.c $(srcdir)/akfavatar.h \
 audio-common.lo: $(srcdir)/audio-common.c $(srcdir)/akfavatar.h \
 	         $(srcdir)/avtinternals.h $(srcdir)/avtdata.h alert.c
 	$(CC) -I. -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ $(srcdir)/audio-common.c
+
+audio-common-dummy.o: $(srcdir)/audio-common.c $(srcdir)/akfavatar.h \
+	        $(srcdir)/avtinternals.h $(srcdir)/avtdata.h alert.c
+	$(CC) -DNO_AUDIO -I. -I$(srcdir) $(CFLAGS) -c -o $@ \
+	  $(srcdir)/audio-common.c
 
 font.c: $(srcdir)/$(FONT) $(srcdir)/bdf2c.awk
 	$(AWK) -f $(srcdir)/bdf2c.awk -v prefix="avt_" $(srcdir)/$(FONT) > $@
@@ -773,7 +780,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/NEWS \
 	   $(srcdir)/COPYING $(srcdir)/ChangeLog $(srcdir)/lrun \
 	   $(srcdir)/akfoerster-lua-akfavatar.desktop \
-	   $(srcdir)/avatar-sdl.c \
+	   $(srcdir)/avatar-sdl.c $(srcdir)/avatar-linuxfb.c \
 	   $(srcdir)/avatar.c $(srcdir)/akfavatar.h \
 	   $(srcdir)/audio-sdl.c $(srcdir)/audio-dummy.c \
 	   $(srcdir)/audio-common.c \
@@ -943,7 +950,7 @@ dist: about $(srcdir)/alert.au
 	rm -rf $(PKGNAME)/
 	bzip2 -f $(PKGNAME).src.tar
 
-dist-bin-default: all pdf
+dist-bin-default: all lua-akfavatar-linuxfb pdf
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/lua
 	mkdir $(BINPKGNAME)/lua/documentation
@@ -956,6 +963,7 @@ dist-bin-default: all pdf
 	#-ln -sf $(LIBNAME) $(BINPKGNAME)/$(SONAME)
 	#cp lua-akfavatar.so $(BINPKGNAME)/lua/
 	cp lua-akfavatar $(BINPKGNAME)/
+	-ln lua-akfavatar-linuxfb $(BINPKGNAME)/
 	cp $(srcdir)/avtcmd $(BINPKGNAME)/
 	cp base64.so akfavatar-vorbis.so $(BINPKGNAME)/lua/
 	cp akfavatar-graphic.so $(BINPKGNAME)/lua/
