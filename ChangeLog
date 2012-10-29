@@ -5,6 +5,8 @@
 	removed
 	avtterm.c: adapted
 
+	* akfavatar.h, avatar.c (avt_get_key): new function, replaces avt_key
+
 2012-10-26  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avttiming.c: new file

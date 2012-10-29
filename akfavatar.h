@@ -301,15 +301,14 @@ AVT_API int avt_ask (wchar_t *s, size_t size);
 
 /*
  * get a character from the keyboard
+ * waits until a key is pressed
  * see AVT_KEY constants for function keys
- * ch is a pointer to one character, not a string
- * ch may be NULL, if you just want to wait for any key
  */
-AVT_API int avt_key (avt_char *ch);
+extern avt_char avt_get_key (void);
 
 /*
  * check if a key was pressed (or an event happened)
- * the key should then be fetched with avt_key
+ * the key should then be fetched with avt_get_key
  */
 AVT_API bool avt_key_pressed (void);
 
@@ -1106,6 +1105,8 @@ AVT_API avt_char avt_set_audio_end_key (avt_char key);
 #else
 #  define AVT_DEPRECATED
 #endif /* __GNUC__ */
+
+AVT_API int avt_key (avt_char *ch) AVT_DEPRECATED;
 
 #endif /* DISABLE_DEPRECATED */
 

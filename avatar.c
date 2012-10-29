@@ -204,6 +204,8 @@ avt_add_key (avt_char key)
     }
 }
 
+#ifndef DISABLE_DEPRECATED
+
 extern int
 avt_key (avt_char * ch)
 {
@@ -215,6 +217,21 @@ avt_key (avt_char * ch)
   avt_keys.position = (avt_keys.position + 1) % AVT_KEYBUFFER_SIZE;
 
   return _avt_STATUS;
+}
+
+#endif
+
+extern avt_char
+avt_get_key (void)
+{
+  avt_char ch;
+
+  avt_wait_key ();
+
+  ch = avt_keys.buffer[avt_keys.position];
+  avt_keys.position = (avt_keys.position + 1) % AVT_KEYBUFFER_SIZE;
+
+  return ch;
 }
 
 extern bool
@@ -3866,7 +3883,7 @@ avt_choice (int *result, int start_line, int items, int key,
 	{
 	  avt_char ch;
 
-	  avt_key (&ch);
+	  ch = avt_get_key ();
 
 	  if (key and (ch >= key) and (ch <= last_key))
 	    *result = (int) (ch - key + 1);
@@ -4339,10 +4356,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 
   while (not quit and _avt_STATUS == AVT_NORMAL)
     {
-      avt_char ch;
-      avt_key (&ch);
-
-      switch (ch)
+      switch (avt_get_key ())
 	{
 	case AVT_KEY_ESCAPE:	// needed for the button
 	  quit = true;
@@ -4527,8 +4541,10 @@ avt_ask (wchar_t * s, size_t size)
       // show cursor
       avt_show_text_cursor (true);
 
-      if (avt_key (&ch) != AVT_NORMAL)
-	break;
+      ch = avt_get_key ();
+
+      if (_avt_STATUS != AVT_NORMAL)
+        break;
 
       switch (ch)
 	{
@@ -4864,7 +4880,7 @@ avt_wait_button (void)
   old_buttons_key = avt_set_pointer_buttons_key (AVT_KEY_ENTER);
 
   avt_clear_keys ();
-  avt_key (NULL);
+  avt_get_key ();
 
   avt_clear_buttons ();
   avt_set_pointer_motion_key (old_motion_key);
@@ -5007,7 +5023,7 @@ avt_navigate (const char *buttons)
   while (result < 0 and _avt_STATUS == AVT_NORMAL)
     {
       avt_char ch;
-      avt_key (&ch);
+      ch = avt_get_key ();
 
       switch (ch)
 	{
@@ -5084,7 +5100,7 @@ avt_decide (void)
   while (result < 0 and _avt_STATUS == AVT_NORMAL)
     {
       avt_char ch;
-      avt_key (&ch);
+      ch = avt_get_key ();
 
       if (L'-' == ch or L'0' == ch or AVT_KEY_BACKSPACE == ch
 	  or AVT_KEY_ESCAPE == ch)

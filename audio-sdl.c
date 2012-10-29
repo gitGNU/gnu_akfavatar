@@ -262,7 +262,7 @@ avt_wait_audio_end (void)
   loop = false;
 
   while (playing and _avt_STATUS == AVT_NORMAL)
-    avt_key (NULL);		// end of audio also sends a pseudo key
+    avt_get_key ();		// end of audio also sends a pseudo key
 
   audio_key = old_audio_key;
 

@@ -10,9 +10,10 @@
     - all deprecated functions removed
     - also removed: avt_register_keyhandler, avt_register_mousehandler
     - avt_update() is much faster
-    - new macro: avt_elapsed
+    - avt_get_key replaces avt_key
     - new functions: avt_key_pressed, avt_push_key, avt_clear_keys,
       avt_set_audio_end_key, avt_combining
+    - new macro: avt_elapsed
 
   Lua-API changes:
     - new functions: avt.combining, avt.key_pressed, avt.clear_keys,

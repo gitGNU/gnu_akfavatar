@@ -409,11 +409,7 @@ get_character (int fd)
 		  nread = read (fd, &filebuf, sizeof (filebuf));
 
 		  while (avt_key_pressed ())
-		    {
-		      avt_char key;
-		      avt_key (&key);
-		      process_key (key);
-		    }
+		    process_key (avt_get_key ());
 		}
 	      while (nread == -1 and errno == EAGAIN
 		     and avt_update () == AVT_NORMAL);
