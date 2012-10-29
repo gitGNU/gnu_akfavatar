@@ -227,21 +227,12 @@ avt_import_sdl_surface (SDL_Surface * s)
   // convert into the internally used pixel format
   d = SDL_ConvertSurface (s, &format, flags);
 
-  gr = (avt_graphic *) malloc (sizeof (*gr));
+  gr = avt_new_graphic (d->w, d->h);
   if (gr)
     {
-      gr->width = d->w;
-      gr->height = d->h;
       gr->transparent = ((s->flags bitand SDL_SRCCOLORKEY) != 0);
       gr->color_key = s->format->colorkey;
-      gr->pixels = (avt_color *) malloc (d->w * d->h * sizeof (avt_color));
-      if (gr->pixels)
-	memcpy (gr->pixels, d->pixels, d->w * d->h * sizeof (avt_color));
-      else
-	{
-	  free (gr);
-	  gr = NULL;
-	}
+      memcpy (gr->pixels, d->pixels, d->w * d->h * sizeof (avt_color));
     }
 
   SDL_FreeSurface (d);
@@ -956,26 +947,6 @@ avt_set_icon (char **xpm)
 
   SDL_FreeSurface (icon);
   avt_free_graphic (gr);
-}
-
-static inline avt_graphic *
-avt_data_to_graphic (void *data, short width, short height)
-{
-  avt_graphic *gr;
-
-  gr = (avt_graphic *) malloc (sizeof (*gr));
-
-  if (gr)
-    {
-      gr->width = width;
-      gr->height = height;
-      gr->transparent = false;
-      gr->free_pixels = false;
-      gr->color_key = 0xFFFFFFFF;
-      gr->pixels = (avt_color *) data;
-    }
-
-  return gr;
 }
 
 extern int

@@ -267,7 +267,7 @@ avt_free_graphic (avt_graphic * gr)
 
 // use data for pixels
 // data may olny be freed after avt_free_graphic is called on this
-static avt_graphic *
+extern avt_graphic *
 avt_data_to_graphic (void *data, short width, short height)
 {
   avt_graphic *gr;
@@ -287,7 +287,7 @@ avt_data_to_graphic (void *data, short width, short height)
   return gr;
 }
 
-static avt_graphic *
+extern avt_graphic *
 avt_new_graphic (short width, short height)
 {
   avt_graphic *gr;

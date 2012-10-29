@@ -209,13 +209,15 @@ extern int _avt_STATUS;
 
 extern struct avt_settings *avt_start_common (avt_graphic *new_screen);
 extern struct avt_settings *avt_get_settings (void);
+extern avt_graphic *avt_data_to_graphic (void *data, short width, short height);
+extern avt_graphic *avt_new_graphic (short width, short height);
 extern void avt_fill (avt_graphic * s, avt_color color);
 extern avt_graphic *avt_get_window (void);
 extern void avt_free_graphic (avt_graphic * gr);
-extern avt_graphic * avt_load_image_xpm (char **xpm);
+extern avt_graphic *avt_load_image_xpm (char **xpm);
 extern void avt_free_screen (void);
 extern void avt_update_all (void);
-extern void avt_put_graphic (avt_graphic * source, avt_graphic * destination,
+extern void avt_put_graphic (avt_graphic *source, avt_graphic *destination,
 		 int x, int y);
 extern bool avt_check_buttons (int x, int y);
 extern void avt_add_key (avt_char key);
