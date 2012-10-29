@@ -1139,8 +1139,14 @@ lavt_ask (lua_State * L)
 static int
 lavt_get_key (lua_State * L)
 {
-  lua_pushinteger (L, (lua_Integer) avt_get_key ());
-  check (avt_get_status ());
+  avt_char key;
+
+  key = avt_get_key ();
+
+  if (key == AVT_KEY_NONE)
+    check (avt_get_status ());
+
+  lua_pushinteger (L, key);
 
   return 1;
 }

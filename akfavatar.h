@@ -72,10 +72,11 @@
 #define AVT_RIGHT_TO_LEFT 1
 
 /*
- * for avt_get_key(&k)
+ * for avt_get_key()
  * note: F11 is normally used to toggle fullscreen mode!
  * note: most keyboards don't have all those keys
  */
+#define AVT_KEY_NONE      0x0000  /* on error or quit request */
 #define AVT_KEY_ENTER     0x000D
 #define AVT_KEY_ESCAPE    0x001B  /* only if single keys are reserved */
 #define AVT_KEY_BACKSPACE 0x0008
@@ -299,10 +300,14 @@ AVT_API bool avt_combining (avt_char ch);
  */
 AVT_API int avt_ask (wchar_t *s, size_t size);
 
+/***********************************************************************/
+/* key or event handling */
+
 /*
  * get a character from the keyboard
  * waits until a key is pressed
- * see AVT_KEY constants for function keys
+ * see AVT_KEY_ constants for function keys
+ * on error or a quit request it returns AVT_KEY_NONE
  */
 extern avt_char avt_get_key (void);
 

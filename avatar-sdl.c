@@ -444,56 +444,35 @@ avt_analyze_key (SDL_keysym key)
       if (avt->reserve_single_keys)
 	avt_add_key (AVT_KEY_ESCAPE);
       else
-	{
-	  _avt_STATUS = AVT_QUIT;
-	  return;
-	}
+	_avt_STATUS = AVT_QUIT;
       break;
 
     case SDLK_q:
       if (key.mod & KMOD_LALT)
-	{
-	  _avt_STATUS = AVT_QUIT;
-	  return;
-	}
-      else
-	{
-	  if (key.unicode)
-	    avt_add_key (key.unicode);
-	}
+	_avt_STATUS = AVT_QUIT;
+      else if (key.unicode)
+	avt_add_key (key.unicode);
       break;
 
     case SDLK_F11:
       if (avt->reserve_single_keys)
 	avt_add_key (AVT_KEY_F11);
       else
-	{
-	  avt_toggle_fullscreen ();
-	  return;
-	}
+	avt_toggle_fullscreen ();
       break;
 
     case SDLK_RETURN:
       if (key.mod & KMOD_LALT)
-	{
-	  avt_toggle_fullscreen ();
-	  return;
-	}
+	avt_toggle_fullscreen ();
       else
 	avt_add_key (AVT_KEY_ENTER);
       break;
 
     case SDLK_f:
       if ((key.mod & KMOD_CTRL) and (key.mod & KMOD_LALT))
-	{
-	  avt_toggle_fullscreen ();
-	  return;
-	}
-      else
-	{
-	  if (key.unicode)
-	    avt_add_key (key.unicode);
-	}
+	avt_toggle_fullscreen ();
+      else if (key.unicode)
+	avt_add_key (key.unicode);
       break;
 
     case SDLK_UP:

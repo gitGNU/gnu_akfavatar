@@ -226,10 +226,17 @@ avt_get_key (void)
 {
   avt_char ch;
 
+  ch = AVT_KEY_NONE;
   avt_wait_key ();
 
-  ch = avt_keys.buffer[avt_keys.position];
-  avt_keys.position = (avt_keys.position + 1) % AVT_KEYBUFFER_SIZE;
+  // avt_wait_key might also return on error or a quit request
+  // whithout adding something to the key buffer...
+
+  if (avt_keys.position != avt_keys.end)
+    {
+      ch = avt_keys.buffer[avt_keys.position];
+      avt_keys.position = (avt_keys.position + 1) % AVT_KEYBUFFER_SIZE;
+    }
 
   return ch;
 }
@@ -4544,7 +4551,7 @@ avt_ask (wchar_t * s, size_t size)
       ch = avt_get_key ();
 
       if (_avt_STATUS != AVT_NORMAL)
-        break;
+	break;
 
       switch (ch)
 	{
