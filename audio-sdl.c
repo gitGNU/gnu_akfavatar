@@ -38,7 +38,7 @@
 #include <iso646.h>
 
 // lower audio buffer size for lower latency, but it could become choppy
-#define OUTPUT_BUFFER 4096
+#define OUTPUT_BUFFER 1024
 
 static struct avt_settings *avt;
 static bool avt_audio_initialized;
