@@ -61,7 +61,7 @@ static iconv_t conv;
 
 //-----------------------------------------------------------------------------
 
-// this shall be the only function to update the window/screen
+// TODO: support other bitdepths
 extern void
 avt_update_area (int x, int y, int width, int height)
 {
@@ -300,6 +300,7 @@ avt_set_error (const char *message)
   error_msg[sizeof (error_msg) - 1] = '\0';
 }
 
+// TODO: support other bitdepths
 static void
 avt_clear_screen_fb (avt_color color)
 {
