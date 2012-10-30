@@ -445,8 +445,13 @@ if [ x"${CC}" = x ] ; then		# Let the user override the test.
 	   [ -x /usr/bin/gcc ] ||
 	   [ -x /usr/local/bin/gcc ] ; then
 		CC="gcc -std=gnu99"
-	else
+	else		# clang is fine, too
+		if [ -x /usr/bin/clang ] ||
+		   [ -x /usr/local/bin/clang ] ; then
+		CC="clang"
+		else
 		CC="c99"
+		fi
 	fi
 fi
 
