@@ -38,7 +38,7 @@ local function draw_clockface(gr, radius, color)
   avt.set_bitmap_color("dark blue")
   clockface:put_file(avt.search("gnu-head.xbm"),
     clockface:width() / 2 - 268 / 2,
-    clockface:height() / 2 - 253)
+    clockface:height() / 4 - (253/2) + 20)
 
   -- draw minute points
   for minute=1,60 do
