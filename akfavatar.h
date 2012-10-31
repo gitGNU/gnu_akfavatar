@@ -828,8 +828,6 @@ AVT_API int avt_show_image_xpm (char **xpm);
 AVT_API int avt_show_image_xbm (const unsigned char *bits,
                                 int width, int height, int color);
 
-/* TODO: replace raw image functions with avt_graphic functions */
-
 /*
  * show raw image
  * only 4 Bytes per pixel supported (0RGB)

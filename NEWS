@@ -11,6 +11,9 @@
     - also removed: avt_register_keyhandler, avt_register_mousehandler
     - avt_update() is much faster
     - avt_get_key replaces avt_key
+    - modified: avt_show_raw_image, avt_put_raw_image_file,
+      avt_put_raw_image_stream, avt_put_raw_image_data, avt_put_raw_image_xpm
+      don't have the bpp parameter any mor, only 4 Bytes per pixel accepted
     - new functions: avt_key_pressed, avt_push_key, avt_clear_keys,
       avt_set_audio_end_key, avt_combining
     - new macro: avt_elapsed
