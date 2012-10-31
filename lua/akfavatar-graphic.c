@@ -966,7 +966,7 @@ lgraphic_show (lua_State * L)
   int status;
 
   gr = get_graphic (L, 1);
-  status = avt_show_raw_image (&gr->data, gr->width, gr->height, BPP);
+  status = avt_show_raw_image (&gr->data, gr->width, gr->height);
 
   if (status <= AVT_ERROR)
     {
@@ -1457,7 +1457,7 @@ lgraphic_put_file (lua_State * L)
   yoffset = luaL_optint (L, 4, 1) - 1;
 
   avt_put_raw_image_file (filename, xoffset, yoffset,
-			  &gr->data, gr->width, gr->height, BPP);
+			  &gr->data, gr->width, gr->height);
 
   return 0;
 }
@@ -1523,7 +1523,7 @@ lgraphic_put_image (lua_State * L)
       if (xpm)
 	{
 	  avt_put_raw_image_xpm (xpm, xoffset, yoffset,
-				 &gr->data, gr->width, gr->height, BPP);
+				 &gr->data, gr->width, gr->height);
 	  free (xpm);
 	}
     }
@@ -1534,7 +1534,7 @@ lgraphic_put_image (lua_State * L)
 
       data = (char *) luaL_checklstring (L, 2, &len);
       avt_put_raw_image_data (data, len, xoffset, yoffset,
-			      &gr->data, gr->width, gr->height, BPP);
+			      &gr->data, gr->width, gr->height);
     }
 
   return 0;

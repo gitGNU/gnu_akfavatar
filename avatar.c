@@ -5345,17 +5345,10 @@ avt_image_max_height (void)
  * only 4 Bytes per pixel supported (0RGB)
  */
 extern int
-avt_show_raw_image (void *image_data, int width, int height,
-		    int bytes_per_pixel)
+avt_show_raw_image (void *image_data, int width, int height)
 {
   if (not avt.screen or _avt_STATUS != AVT_NORMAL or not image_data)
     return _avt_STATUS;
-
-  if (bytes_per_pixel != 4)
-    {
-      avt_set_error ("wrong number of bytes_per_pixel for raw image");
-      return AVT_FAILURE;
-    }
 
   // check if it's a different image
   if (raw_image
@@ -5402,8 +5395,7 @@ avt_put_raw_image (avt_graphic * image, int x, int y,
 
 extern int
 avt_put_raw_image_file (const char *file, int x, int y,
-			void *image_data, int width, int height,
-			int bytes_per_pixel)
+			void *image_data, int width, int height)
 {
   int status;
   avt_graphic *image;
@@ -5429,8 +5421,7 @@ avt_put_raw_image_file (const char *file, int x, int y,
 
 extern int
 avt_put_raw_image_stream (avt_stream * stream, int x, int y,
-			  void *image_data, int width, int height,
-			  int bytes_per_pixel)
+			  void *image_data, int width, int height)
 {
   int status;
   avt_graphic *image;
@@ -5453,8 +5444,7 @@ avt_put_raw_image_stream (avt_stream * stream, int x, int y,
 
 extern int
 avt_put_raw_image_data (void *img, size_t imgsize, int x, int y,
-			void *image_data, int width, int height,
-			int bytes_per_pixel)
+			void *image_data, int width, int height)
 {
   int status;
   avt_graphic *image;
@@ -5477,8 +5467,7 @@ avt_put_raw_image_data (void *img, size_t imgsize, int x, int y,
 
 extern int
 avt_put_raw_image_xpm (char **xpm, int x, int y,
-		       void *image_data, int width, int height,
-		       int bytes_per_pixel)
+		       void *image_data, int width, int height)
 {
   avt_graphic *src, *dest;
 

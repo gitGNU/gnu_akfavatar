@@ -834,8 +834,7 @@ AVT_API int avt_show_image_xbm (const unsigned char *bits,
  * show raw image
  * only 4 Bytes per pixel supported (0RGB)
  */
-AVT_API int avt_show_raw_image (void *image_data, int width, int height,
-                                int bytes_per_pixel);
+AVT_API int avt_show_raw_image (void *image_data, int width, int height);
 
 
 /*
@@ -844,20 +843,16 @@ AVT_API int avt_show_raw_image (void *image_data, int width, int height,
  */
 
 AVT_API int avt_put_raw_image_file (const char *file, int x, int y,
-                                    void *image_data, int width, int height,
-                                    int bytes_per_pixel);
+                                    void *image_data, int width, int height);
 
 AVT_API int avt_put_raw_image_stream (avt_stream * stream, int x, int y,
-                                      void *image_data, int width, int height,
-                                      int bytes_per_pixel);
+                                      void *image_data, int width, int height);
 
 AVT_API int avt_put_raw_image_data (void *img, size_t imgsize, int x, int y,
-                                    void *image_data, int width, int height,
-                                    int bytes_per_pixel);
+                                    void *image_data, int width, int height);
 
 AVT_API int avt_put_raw_image_xpm (char **xpm, int x, int y,
-                                   void *image_data, int width, int height,
-                                   int bytes_per_pixel);
+                                   void *image_data, int width, int height);
 
 /***********************************************************************/
 /* high-level functions */
