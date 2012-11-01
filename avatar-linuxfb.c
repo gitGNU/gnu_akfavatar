@@ -62,7 +62,19 @@ static iconv_t conv;
 
 //-----------------------------------------------------------------------------
 
-// TODO: support other bitdepths
+static inline uint32_t
+pack_pixel (uint32_t color)
+{
+  return
+    ((avt_red (color) >> (8 - var_info.red.length)) bitand 0xFF)
+    << var_info.red.offset
+    bitor ((avt_green (color) >> (8 - var_info.green.length)) bitand 0xFF)
+    << var_info.green.offset
+    bitor ((avt_blue (color) >> (8 - var_info.blue.length)) bitand 0xFF)
+    << var_info.blue.offset;
+}
+
+// TODO: support 24 bit per pixel (cannot test)
 extern void
 avt_update_area (int x, int y, int width, int height)
 {
@@ -74,9 +86,31 @@ avt_update_area (int x, int y, int width, int height)
   screen_width = avt->screen->width;
   bytes = width * sizeof (avt_color);
 
-  for (int ly = 0; ly < height; ly++)
-    memcpy (fb + (y + ly) * fix_info.line_length + x * bytes_per_pixel,
-	    pixels + (y + ly) * screen_width + x, bytes);
+  switch (var_info.bits_per_pixel)
+    {
+    case 32:
+      for (int ly = 0; ly < height; ly++)
+	memcpy (fb + (y + ly) * fix_info.line_length + x * bytes_per_pixel,
+		pixels + (y + ly) * screen_width + x, bytes);
+      break;
+
+    case 15:
+    case 16:
+      pixels = avt->screen->pixels + (y * screen_width);
+      int x2 = x + width;
+
+      for (int ly = 0; ly < height; ly++)
+	{
+	  uint16_t *p = (uint16_t *)
+	    (fb + (y + ly) * fix_info.line_length + x * bytes_per_pixel);
+
+	  for (int lx = x; lx < x2; lx++)
+	    *p++ = pack_pixel (pixels[lx]);
+
+	  pixels += screen_width;
+	}
+      break;
+    }
 }
 
 // switch to fullscreen or window mode
@@ -382,9 +416,11 @@ avt_start (const char *title, const char *shortname, int window_mode)
   ioctl (screen_fd, FBIOGET_VSCREENINFO, &var_info);
 
   // check bits per pixel
-  if (var_info.bits_per_pixel != 32)
+  if (var_info.bits_per_pixel != 32
+      and var_info.bits_per_pixel != 15
+      and var_info.bits_per_pixel != 16)
     {
-      avt_set_error ("need 32 bit per pixel");
+      avt_set_error ("unsupported pixel depth");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
