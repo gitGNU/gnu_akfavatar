@@ -122,12 +122,12 @@ struct avt_audio
 
 struct avt_position
 {
-  short x, y;
+  int x, y;
 };
 
 struct avt_area
 {
-  short x, y, width, height;
+  int x, y, width, height;
 };
 
 struct avt_settings
