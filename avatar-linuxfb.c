@@ -58,7 +58,7 @@ static int screen_fd, tty;
 static uint8_t *fb;		// frame buffer
 static struct termios terminal_settings;
 static char error_msg[256];
-static iconv_t conv;
+static iconv_t conv = (iconv_t) (-1);
 
 //-----------------------------------------------------------------------------
 
@@ -74,39 +74,47 @@ pack_pixel (uint32_t color)
     << var_info.blue.offset;
 }
 
-// TODO: support 24 bit per pixel (cannot test)
+// TODO: support 24 bit per pixel (can't test)
 extern void
 avt_update_area (int x, int y, int width, int height)
 {
-  avt_color *pixels;
-  int bytes;			// bytes per scanline
   int screen_width;
+  int x2;
+  avt_color *pixels;
+  uint8_t *fbp;
 
-  pixels = avt->screen->pixels;
   screen_width = avt->screen->width;
-  bytes = width * sizeof (avt_color);
+  pixels = avt->screen->pixels + (y * screen_width);
+  fbp = fb + y * fix_info.line_length + x * bytes_per_pixel;
+  x2 = x + width;
 
   switch (var_info.bits_per_pixel)
     {
     case 32:
       for (int ly = 0; ly < height; ly++)
-	memcpy (fb + (y + ly) * fix_info.line_length + x * bytes_per_pixel,
-		pixels + (y + ly) * screen_width + x, bytes);
+	{
+	  uint32_t *p = (uint32_t *) fbp;
+
+	  // in this mode it might be superfluous to repack pixels,
+	  // but I want to play save
+	  for (int lx = x; lx < x2; lx++)
+	    *p++ = pack_pixel (pixels[lx]);
+
+	  fbp += fix_info.line_length;
+	  pixels += screen_width;
+	}
       break;
 
     case 15:
     case 16:
-      pixels = avt->screen->pixels + (y * screen_width);
-      int x2 = x + width;
-
       for (int ly = 0; ly < height; ly++)
 	{
-	  uint16_t *p = (uint16_t *)
-	    (fb + (y + ly) * fix_info.line_length + x * bytes_per_pixel);
+	  uint16_t *p = (uint16_t *) fbp;
 
 	  for (int lx = x; lx < x2; lx++)
 	    *p++ = pack_pixel (pixels[lx]);
 
+	  fbp += fix_info.line_length;
 	  pixels += screen_width;
 	}
       break;
@@ -350,15 +358,32 @@ beep (void)
 static void
 avt_quit_fb (void)
 {
-  iconv_close (conv);
+  if (conv != (iconv_t) (-1))
+    {
+      iconv_close (conv);
+      conv = (iconv_t) (-1);
+    }
 
-  munmap (fb, fix_info.smem_len);
-  close (screen_fd);
+  if (fb)
+    {
+      munmap (fb, fix_info.smem_len);
+      fb = NULL;
+    }
 
-  ioctl (tty, KDSETMODE, KD_TEXT);
-  tcsetattr (tty, TCSANOW, &terminal_settings);
-  write (tty, "\033[H\033[2J", 7);	// home and clear screen
-  close (tty);
+  if (screen_fd > 0)
+    {
+      close (screen_fd);
+      screen_fd = -1;
+    }
+
+  if (tty > 0)
+    {
+      ioctl (tty, KDSETMODE, KD_TEXT);
+      tcsetattr (tty, TCSANOW, &terminal_settings);
+      write (tty, "\033[H\033[2J", 7);	// home and clear screen
+      close (tty);
+      tty = -1;
+    }
 
   avt->alert = &avt_flash;
 }
@@ -415,18 +440,21 @@ avt_start (const char *title, const char *shortname, int window_mode)
   ioctl (screen_fd, FBIOGET_FSCREENINFO, &fix_info);
   ioctl (screen_fd, FBIOGET_VSCREENINFO, &var_info);
 
-  // check bits per pixel
-  if (var_info.bits_per_pixel != 32
-      and var_info.bits_per_pixel != 15
-      and var_info.bits_per_pixel != 16)
+  // check screen format
+  if (fix_info.type != FB_TYPE_PACKED_PIXELS
+      or (var_info.bits_per_pixel != 32
+	  and var_info.bits_per_pixel != 15
+	  and var_info.bits_per_pixel != 16))
     {
-      avt_set_error ("unsupported pixel depth");
+      avt_quit_fb ();
+      avt_set_error ("unsupported screen format");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
 
   if (var_info.xres < MINIMALWIDTH or var_info.yres < MINIMALHEIGHT)
     {
+      avt_quit_fb ();
       avt_set_error ("screen too small");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
@@ -436,13 +464,12 @@ avt_start (const char *title, const char *shortname, int window_mode)
 
   fb = mmap (NULL, fix_info.smem_len, PROT_WRITE, MAP_SHARED, screen_fd, 0);
 
-  ioctl (tty, KDSETMODE, KD_GRAPHICS);
-
   // keyboard
   struct termios settings;
 
   if (tcgetattr (tty, &settings) < 0)
     {
+      avt_quit_fb ();
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
@@ -452,11 +479,13 @@ avt_start (const char *title, const char *shortname, int window_mode)
   cfmakeraw (&settings);
 
   tcsetattr (tty, TCSANOW, &settings);
+  ioctl (tty, KDSETMODE, KD_GRAPHICS);
 
   avt = avt_start_common (avt_new_graphic (var_info.xres, var_info.yres));
 
   if (not avt)
     {
+      avt_quit_fb ();
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
