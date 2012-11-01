@@ -50,13 +50,14 @@
 #include <fcntl.h>
 #include <termios.h>
 
-
 static struct avt_settings *avt;
-static struct fb_var_screeninfo screeninfo;
-static char error_msg[256];
+static struct fb_var_screeninfo var_info;
+static struct fb_fix_screeninfo fix_info;
+static short bytes_per_pixel;
 static int screen_fd, tty;
-static avt_color *fb;		// frame buffer
+static uint8_t *fb;		// frame buffer
 static struct termios terminal_settings;
+static char error_msg[256];
 static iconv_t conv;
 
 //-----------------------------------------------------------------------------
@@ -74,7 +75,7 @@ avt_update_area (int x, int y, int width, int height)
   bytes = width * sizeof (avt_color);
 
   for (int ly = 0; ly < height; ly++)
-    memcpy (fb + (y + ly) * screeninfo.xres + x,
+    memcpy (fb + (y + ly) * fix_info.line_length + x * bytes_per_pixel,
 	    pixels + (y + ly) * screen_width + x, bytes);
 }
 
@@ -300,14 +301,6 @@ avt_set_error (const char *message)
   error_msg[sizeof (error_msg) - 1] = '\0';
 }
 
-// TODO: support other bitdepths
-static void
-avt_clear_screen_fb (avt_color color)
-{
-  for (int i = screeninfo.xres * screeninfo.yres - 1; i >= 0; i--)
-    fb[i] = color;
-}
-
 extern void
 avt_set_title (const char *title, const char *shortname)
 {
@@ -325,7 +318,7 @@ avt_quit_fb (void)
 {
   iconv_close (conv);
 
-  munmap (fb, screeninfo.xres * screeninfo.yres * sizeof (avt_color));
+  munmap (fb, fix_info.smem_len);
   close (screen_fd);
 
   ioctl (tty, KDSETMODE, KD_TEXT);
@@ -376,7 +369,6 @@ avt_start (const char *title, const char *shortname, int window_mode)
 
   tty = open ("/dev/tty", O_RDWR | O_NONBLOCK);
 
-
   if (not tty)
     {
       close (screen_fd);
@@ -385,29 +377,28 @@ avt_start (const char *title, const char *shortname, int window_mode)
       return _avt_STATUS;
     }
 
-  // get screeninfo
-  ioctl (screen_fd, FBIOGET_VSCREENINFO, &screeninfo);
+  // get info
+  ioctl (screen_fd, FBIOGET_FSCREENINFO, &fix_info);
+  ioctl (screen_fd, FBIOGET_VSCREENINFO, &var_info);
 
   // check bits per pixel
-  if (screeninfo.bits_per_pixel != CHAR_BIT * sizeof (avt_color))
+  if (var_info.bits_per_pixel != 32)
     {
       avt_set_error ("need 32 bit per pixel");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
 
-
-  if (screeninfo.xres < MINIMALWIDTH or screeninfo.yres < MINIMALHEIGHT)
+  if (var_info.xres < MINIMALWIDTH or var_info.yres < MINIMALHEIGHT)
     {
       avt_set_error ("screen too small");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
 
-  fb = (avt_color *)
-    mmap (NULL,
-	  screeninfo.xres * screeninfo.yres *
-	  sizeof (avt_color), PROT_WRITE, MAP_SHARED, screen_fd, 0);
+  bytes_per_pixel = (var_info.bits_per_pixel + CHAR_BIT - 1) / CHAR_BIT;
+
+  fb = mmap (NULL, fix_info.smem_len, PROT_WRITE, MAP_SHARED, screen_fd, 0);
 
   ioctl (tty, KDSETMODE, KD_GRAPHICS);
 
@@ -426,7 +417,7 @@ avt_start (const char *title, const char *shortname, int window_mode)
 
   tcsetattr (tty, TCSANOW, &settings);
 
-  avt = avt_start_common (avt_new_graphic (screeninfo.xres, screeninfo.yres));
+  avt = avt_start_common (avt_new_graphic (var_info.xres, var_info.yres));
 
   if (not avt)
     {
@@ -437,9 +428,8 @@ avt_start (const char *title, const char *shortname, int window_mode)
   // do not change for big endian!
   conv = iconv_open ("UTF-32LE", "UTF-8");
 
-  avt_clear_screen_fb (avt->background_color);
+  memset (fb, 0, fix_info.smem_len);
   avt->quit_backend = &avt_quit_fb;
-  avt->clear_screen = &avt_clear_screen_fb;
   avt->alert = &beep;		// just remove this line, if you don't like it
 
   return _avt_STATUS;
