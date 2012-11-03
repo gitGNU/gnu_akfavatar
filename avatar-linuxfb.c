@@ -364,7 +364,7 @@ avt_quit_fb (void)
       conv = (iconv_t) (-1);
     }
 
-  if (fb)
+  if (fb and fb != MAP_FAILED)
     {
       munmap (fb, fix_info.smem_len);
       fb = NULL;
@@ -385,7 +385,8 @@ avt_quit_fb (void)
       tty = -1;
     }
 
-  avt->alert = &avt_flash;
+  if (avt)
+    avt->alert = &avt_flash;
 }
 
 extern int
@@ -415,11 +416,11 @@ avt_start (const char *title, const char *shortname, int window_mode)
     {
       screen_fd = open ("/dev/fb0", O_RDWR);
 
-      if (not screen_fd)
+      if (screen_fd < 0)
 	screen_fd = open ("/dev/fb/0", O_RDWR);
     }
 
-  if (not screen_fd)
+  if (screen_fd < 0)
     {
       avt_set_error ("Error opening framebuffer");
       _avt_STATUS = AVT_ERROR;
@@ -428,10 +429,18 @@ avt_start (const char *title, const char *shortname, int window_mode)
 
   tty = open ("/dev/tty", O_RDWR | O_NONBLOCK);
 
-  if (not tty)
+  if (tty < 0)
     {
       close (screen_fd);
       avt_set_error ("Error opening /dev/tty");
+      _avt_STATUS = AVT_ERROR;
+      return _avt_STATUS;
+    }
+
+  if (tcgetattr (tty, &terminal_settings) < 0)
+    {
+      close (screen_fd);
+      close (tty);
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
@@ -464,20 +473,17 @@ avt_start (const char *title, const char *shortname, int window_mode)
 
   fb = mmap (NULL, fix_info.smem_len, PROT_WRITE, MAP_SHARED, screen_fd, 0);
 
-  // keyboard
-  struct termios settings;
-
-  if (tcgetattr (tty, &settings) < 0)
+  if (MAP_FAILED == fb)
     {
       avt_quit_fb ();
+      avt_set_error ("mmap failed");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
 
-  terminal_settings = settings;
-
+  // set terminal in graphic mode with raw keyboard
+  struct termios settings = terminal_settings;
   cfmakeraw (&settings);
-
   tcsetattr (tty, TCSANOW, &settings);
   ioctl (tty, KDSETMODE, KD_GRAPHICS);
 
