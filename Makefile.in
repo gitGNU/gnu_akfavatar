@@ -96,11 +96,11 @@ lua-akfavatar-linuxfb: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
                    filechooser.o colorchooser.o langposix.o basedir.o \
                    avatar-linuxfb.o audio-dummy.o audio-common-dummy.o \
                    libakfavatar.a
-	-$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
+	-$(CC) -s -o $@ lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
 	     filechooser.o colorchooser.o arch.o langposix.o basedir.o \
 	     avatar-linuxfb.o audio-dummy.o audio-common-dummy.o \
 	     libakfavatar.a \
-	     $(LUA_LDFLAGS) $(LDFLAGS) -ldl -Wl,-E
+	     $(LUA_LDFLAGS) $(LDFLAGS)
 
 avatar-linuxfb.o: $(srcdir)/avatar-linuxfb.c $(srcdir)/akfavatar.h \
           $(srcdir)/avtinternals.h
