@@ -105,6 +105,34 @@ avt_update_area (int x, int y, int width, int height)
 	}
       break;
 
+    case 24:
+      for (int ly = 0; ly < height; ly++)
+	{
+	  uint8_t *p = fbp;
+
+	  for (int lx = x; lx < x2; lx++)
+	    {
+	      register uint32_t color = pixels[lx];
+
+	      if (AVT_BIG_ENDIAN == AVT_BYTE_ORDER)
+		{
+		  *p++ = avt_red (color);
+		  *p++ = avt_green (color);
+		  *p++ = avt_blue (color);
+		}
+	      else		// little endian
+		{
+		  *p++ = avt_blue (color);
+		  *p++ = avt_green (color);
+		  *p++ = avt_red (color);
+		}
+	    }
+
+	  fbp += fix_info.line_length;
+	  pixels += screen_width;
+	}
+      break;
+
     case 15:
     case 16:
       for (int ly = 0; ly < height; ly++)
@@ -450,10 +478,7 @@ avt_start (const char *title, const char *shortname, int window_mode)
   ioctl (screen_fd, FBIOGET_VSCREENINFO, &var_info);
 
   // check screen format
-  if (fix_info.type != FB_TYPE_PACKED_PIXELS
-      or (var_info.bits_per_pixel != 32
-	  and var_info.bits_per_pixel != 15
-	  and var_info.bits_per_pixel != 16))
+  if (fix_info.type != FB_TYPE_PACKED_PIXELS or var_info.bits_per_pixel < 15)
     {
       avt_quit_fb ();
       avt_set_error ("unsupported screen format");
