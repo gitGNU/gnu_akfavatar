@@ -696,6 +696,7 @@ clean:
 mostlyclean: clean
 	-rm -f example
 	-rm -f lua-akfavatar lua-akfavatar-bin lua-akfavatar-dyn
+	-rm -f lua-akfavatar-linuxfb
 	-rm -f a.out *.a *.so
 	-rm -f *.dll
 	-rm -f $(LIBNAME) $(SONAME)
