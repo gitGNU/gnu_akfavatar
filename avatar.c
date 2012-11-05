@@ -966,7 +966,7 @@ done:
 }
 
 static avt_graphic *
-avt_load_image_xpm_data (avt_data * src, int freesrc)
+avt_load_image_xpm_data (avt_data * src)
 {
   int start;
   char head[9];
@@ -991,10 +991,7 @@ avt_load_image_xpm_data (avt_data * src, int freesrc)
   if (avt_data_read (src, head, sizeof (head), 1) < 1
       or memcmp (head, "/* XPM */", 9) != 0)
     {
-      if (freesrc)
-	avt_data_close (src);
-      else
-	avt_data_seek (src, start, SEEK_SET);
+      avt_data_seek (src, start, SEEK_SET);
 
       return NULL;
     }
@@ -1086,9 +1083,6 @@ avt_load_image_xpm_data (avt_data * src, int freesrc)
   if (line)
     free (line);
 
-  if (freesrc)
-    avt_data_close (src);
-
   return img;
 }
 
@@ -1163,7 +1157,7 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
 }
 
 static avt_graphic *
-avt_load_image_xbm_data (avt_data * src, int freesrc, avt_color color)
+avt_load_image_xbm_data (avt_data * src, avt_color color)
 {
   unsigned char *bits;
   int width, height;
@@ -1189,10 +1183,7 @@ avt_load_image_xbm_data (avt_data * src, int freesrc, avt_color color)
   if (avt_data_read (src, line, 1, sizeof (line) - 1) < 1
       or memcmp (line, "#define", 7) != 0)
     {
-      if (freesrc)
-	avt_data_close (src);
-      else
-	avt_data_seek (src, start, SEEK_SET);
+      avt_data_seek (src, start, SEEK_SET);
 
       return NULL;
     }
@@ -1320,15 +1311,354 @@ done:
   if (bits)
     free (bits);
 
-  if (freesrc)
-    avt_data_close (src);
-  else if (error)
+  if (error)
     avt_data_seek (src, start, SEEK_SET);
 
   return img;
 }
 
-// TODO: write BMP loader
+static inline short
+get_right_shift (uint32_t mask)
+{
+  register short shift;
+
+  shift = 0;
+
+  while ((mask >> shift) > 255)
+    shift++;
+
+  return shift;
+}
+
+static inline short
+get_left_shift (uint32_t mask)
+{
+  register short shift;
+
+  shift = 0;
+
+  while ((mask << shift) < 0x80)
+    shift++;
+
+  return shift;
+}
+
+static avt_graphic *
+avt_load_image_bmp_data (avt_data * src)
+{
+  avt_graphic *image;
+  long start;
+  uint32_t bits_offset, info_size, compression;
+  uint32_t colors_used, colors_important;
+  int32_t width, height;
+  uint32_t red_mask, green_mask, blue_mask;
+  uint16_t bits_per_pixel;
+  char magic[2];
+  avt_color palette[256];
+
+  image = NULL;
+  red_mask = green_mask = blue_mask = 0;
+
+  start = avt_data_tell (src);
+
+  avt_data_read (src, magic, sizeof (magic), 1);
+  if (memcmp ("BM", magic, 2) != 0)
+    goto done;
+
+  // skip filesize (4) and reserved (4)
+  avt_data_seek (src, 2 * 4, SEEK_CUR);
+
+  bits_offset = avt_data_read32le (src);
+
+  info_size = avt_data_read32le (src);
+
+  if (info_size == 12)
+    {
+      // old OS/2 format
+      width = avt_data_read16le (src);
+      height = avt_data_read16le (src);	// negative for top-down
+
+      // skip planes (unused for BMP)
+      if (!avt_data_seek (src, 2, SEEK_CUR))
+	goto done;
+
+      bits_per_pixel = avt_data_read16le (src);
+      compression = 0;
+      colors_used = colors_important = 0;
+    }
+  else				// info_size > 12
+    {
+      width = avt_data_read32le (src);
+      height = avt_data_read32le (src);	// negative for top-down
+
+      // skip planes (unused for BMP)
+      if (!avt_data_seek (src, 2, SEEK_CUR))
+	goto done;
+
+      bits_per_pixel = avt_data_read16le (src);
+      compression = avt_data_read32le (src);
+
+      if (!avt_data_seek (src, 3 * 4, SEEK_CUR))
+	goto done;
+
+      colors_used = avt_data_read32le (src);
+      colors_important = avt_data_read32le (src);
+    }
+
+  // just uncompressed allowed for now
+  if (compression != 0 and compression != 3)
+    goto done;
+
+  if (compression == 3)
+    {
+      red_mask = avt_data_read32le (src);
+      green_mask = avt_data_read32le (src);
+      blue_mask = avt_data_read32le (src);
+    }
+  else if (bits_per_pixel <= 8)	// read palette
+    {
+      if (!avt_data_seek (src, start + 14 + info_size, SEEK_SET))
+	goto done;
+
+      if (colors_used == 0)
+	colors_used = 1 << bits_per_pixel;
+
+      memset (palette, 0, sizeof (palette));
+      for (uint16_t color = 0; color < colors_used; color++)
+	palette[color] = avt_data_read32le (src) bitand 0xFFFFFF;
+    }
+
+  // go to image data
+  if (!avt_data_seek (src, start + bits_offset, SEEK_SET))
+    goto done;
+
+  int y, direction;
+
+  // if height is positive it's bottom-up
+  if (height > 0)
+    {
+      y = height - 1;
+      direction = -1;
+    }
+  else				// top-down
+    {
+      y = 0;
+      direction = 1;
+    }
+
+  height = abs (height);
+
+  switch (bits_per_pixel)
+    {
+    case 1:
+      {
+	image = avt_new_graphic (width, height);
+	if (not image)
+	  goto done;
+
+	int remainder = ((width + 7) / 8) % 4;
+
+	while (y >= 0 and y < height)
+	  {
+	    avt_color *p = image->pixels + y * image->width;
+
+	    for (int x = 0; x < width; x += 8)
+	      {
+		uint8_t value = avt_data_read8 (src);
+		uint8_t bitmask = 0x80;
+		for (int bit = 0; bit < 8; bit++, bitmask >>= 1)
+		  if (x + bit < width - 1)
+		    *p++ = palette[(value bitand bitmask) != 0];
+	      }
+
+	    if (remainder)
+	      avt_data_seek (src, 4 - remainder, SEEK_CUR);
+
+	    y += direction;
+	  }
+      }
+      break;
+
+    case 4:
+      {
+	image = avt_new_graphic (width, height);
+	if (not image)
+	  goto done;
+
+	int remainder = (width / 2 + width % 2) % 4;
+
+	while (y >= 0 and y < height)
+	  {
+	    avt_color *p = image->pixels + y * image->width;
+
+	    for (int x = 0; x < width; x += 2)
+	      {
+		uint16_t value = avt_data_read8 (src);
+		*p++ = palette[value >> 4 bitand 0xF];
+		if (x < width - 1)
+		  *p++ = palette[value bitand 0xF];
+	      }
+
+	    if (remainder)
+	      avt_data_seek (src, 4 - remainder, SEEK_CUR);
+
+	    y += direction;
+	  }
+      }
+      break;
+
+    case 8:
+      {
+	image = avt_new_graphic (width, height);
+	if (not image)
+	  goto done;
+
+	int remainder = width % 4;
+
+	while (y >= 0 and y < height)
+	  {
+	    avt_color *p = image->pixels + y * image->width;
+
+	    for (int x = 0; x < width; x++, p++)
+	      {
+		uint16_t color = avt_data_read8 (src);
+		*p = palette[color];
+	      }
+
+	    if (remainder)
+	      avt_data_seek (src, 4 - remainder, SEEK_CUR);
+
+	    y += direction;
+	  }
+      }
+      break;
+
+    case 16:			// TODO: this is inefficient
+      {
+	uint32_t red, green, blue;
+
+	if (compression != 3)
+	  {
+	    red_mask = 0x7C00;
+	    green_mask = 0x03E0;
+	    blue_mask = 0x001F;
+	  }
+
+	image = avt_new_graphic (width, height);
+	if (not image)
+	  goto done;
+
+	int remainder = (2 * width) % 4;
+
+	while (y >= 0 and y < height)
+	  {
+	    avt_color *p = image->pixels + y * image->width;
+
+	    for (int x = 0; x < width; x++, p++)
+	      {
+		uint16_t color16 = avt_data_read16le (src);
+
+		if (red_mask > 255)
+		  red = (color16 & red_mask) >> get_right_shift (red_mask);
+		else
+		  red = (color16 & red_mask) << get_left_shift (red_mask);
+
+		if (green_mask > 255)
+		  green =
+		    (color16 & green_mask) >> get_right_shift (green_mask);
+		else
+		  green =
+		    (color16 & green_mask) << get_left_shift (green_mask);
+
+		if (blue_mask > 255)
+		  blue = (color16 & blue_mask) >> get_right_shift (blue_mask);
+		else
+		  blue = (color16 & blue_mask) << get_left_shift (blue_mask);
+
+		*p = avt_rgb (red, green, blue);
+	      }
+
+	    if (remainder)
+	      avt_data_seek (src, 4 - remainder, SEEK_CUR);
+
+	    y += direction;
+	  }
+      }
+      break;
+
+    case 24:
+      {
+	uint8_t red, green, blue;
+
+	image = avt_new_graphic (width, height);
+	if (not image)
+	  goto done;
+
+	int remainder = (3 * width) % 4;
+
+	while (y >= 0 and y < height)
+	  {
+	    avt_color *p = image->pixels + y * image->width;
+
+	    for (int x = 0; x < width; x++, p++)
+	      {
+		blue = avt_data_read8 (src);
+		green = avt_data_read8 (src);
+		red = avt_data_read8 (src);
+		*p = avt_rgb (red, green, blue);
+	      }
+
+	    if (remainder)
+	      avt_data_seek (src, 4 - remainder, SEEK_CUR);
+
+	    y += direction;
+	  }
+      }
+      break;
+
+    case 32:
+      {
+	short red_shift, green_shift, blue_shift;
+
+	if (compression != 3)
+	  {
+	    red_mask = 0x00FF0000;
+	    green_mask = 0x0000FF00;
+	    blue_mask = 0x000000FF;
+	  }
+
+	red_shift = get_right_shift (red_mask);
+	green_shift = get_right_shift (green_mask);
+	blue_shift = get_right_shift (blue_mask);
+
+	image = avt_new_graphic (width, height);
+	if (not image)
+	  goto done;
+
+	while (y >= 0 and y < height)
+	  {
+	    avt_color *p = image->pixels + y * image->width;
+
+	    for (int x = 0; x < width; x++, p++)
+	      {
+		register uint32_t color = avt_data_read32le (src);
+		*p = avt_rgb ((color & red_mask) >> red_shift,
+			      (color & green_mask) >> green_shift,
+			      (color & blue_mask) >> blue_shift);
+	      }
+
+	    y += direction;
+	  }
+      }
+      break;
+    }
+
+done:
+  if (not image)
+    avt_data_seek (src, start, SEEK_SET);
+
+  return image;
+}
 
 static avt_graphic *
 avt_load_image_avtdata (avt_data * data)
@@ -1338,10 +1668,13 @@ avt_load_image_avtdata (avt_data * data)
   if (not data)
     return NULL;
 
-  image = avt_load_image_xpm_data (data, false);
+  image = avt_load_image_xpm_data (data);
 
   if (not image)
-    image = avt_load_image_xbm_data (data, false, avt.bitmap_color);
+    image = avt_load_image_xbm_data (data, avt.bitmap_color);
+
+  if (not image)
+    image = avt_load_image_bmp_data (data);
 
   avt_data_close (data);
 

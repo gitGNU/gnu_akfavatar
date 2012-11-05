@@ -135,26 +135,6 @@ load_image_initialize (void)
 
 #else // not LINK_SDL_IMAGE
 
-// helper functions
-
-static SDL_Surface *
-avt_load_image_RW (SDL_RWops * src, int freesrc)
-{
-  SDL_Surface *image;
-
-  image = NULL;
-
-  if (src)
-    {
-      image = SDL_LoadBMP_RW (src, 0);
-
-      if (freesrc)
-	SDL_RWclose (src);
-    }
-
-  return image;
-}
-
 /*
  * try to load the library SDL_image dynamically
  * (XPM and uncompressed BMP files can always be loaded)
@@ -166,7 +146,7 @@ load_image_initialize (void)
     {
       // first load defaults from plain SDL
       load_image.handle = NULL;
-      load_image.rw = avt_load_image_RW;
+      load_image.rw = NULL;
 
 #ifndef NO_SDL_IMAGE
 // loadso.h is only available with SDL 1.2.6 or higher
@@ -250,12 +230,14 @@ avt_load_image_rw (SDL_RWops * RW)
   if (not avt or not RW)
     return NULL;
 
+  image = NULL;
   result = NULL;
 
   if (not load_image.initialized)
     load_image_initialize ();
 
-  image = load_image.rw (RW, 0);
+  if (load_image.rw)
+    image = (*load_image.rw) (RW, 0);
 
   SDL_RWclose (RW);
 

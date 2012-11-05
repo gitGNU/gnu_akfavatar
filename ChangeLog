@@ -1,3 +1,7 @@
+2012-11-05  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_load_image_bmp_data): new function
+
 2012-10-29  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c, avatar-sdl.c
