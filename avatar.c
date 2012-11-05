@@ -1473,7 +1473,7 @@ avt_load_image_bmp_data (avt_data * src)
 		uint8_t value = avt_data_read8 (src);
 		uint8_t bitmask = 0x80;
 		for (int bit = 0; bit < 8; bit++, bitmask >>= 1)
-		  if (x + bit < width - 1)
+		  if (x + bit < width)
 		    *p++ = palette[(value bitand bitmask) != 0];
 	      }
 
