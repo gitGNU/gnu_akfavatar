@@ -1324,8 +1324,11 @@ get_right_shift (uint32_t mask)
 
   shift = 0;
 
-  while ((mask >> shift) > 255)
-    shift++;
+  while ((mask bitand 1) == 0)
+    {
+      shift++;
+      mask >>= 1;
+    }
 
   return shift;
 }
@@ -1337,8 +1340,11 @@ get_left_shift (uint32_t mask)
 
   shift = 0;
 
-  while ((mask << shift) < 0x80)
-    shift++;
+  while ((mask bitand 0x80) == 0)
+    {
+      shift++;
+      mask <<= 1;
+    }
 
   return shift;
 }
@@ -1533,9 +1539,10 @@ avt_load_image_bmp_data (avt_data * src)
       }
       break;
 
-    case 16:			// TODO: this is inefficient
+    case 16:
       {
-	uint32_t red, green, blue;
+	short red_right, green_right, blue_right;
+	short red_left, green_left, blue_left;
 
 	if (compression != 3)
 	  {
@@ -1543,6 +1550,14 @@ avt_load_image_bmp_data (avt_data * src)
 	    green_mask = 0x03E0;
 	    blue_mask = 0x001F;
 	  }
+
+	// colors get shifted right and then left again
+	red_right = get_right_shift (red_mask);
+	red_left = get_left_shift (red_mask >> red_right);
+	green_right = get_right_shift (green_mask);
+	green_left = get_left_shift (green_mask >> green_right);
+	blue_right = get_right_shift (blue_mask);
+	blue_left = get_left_shift (blue_mask >> blue_right);
 
 	image = avt_new_graphic (width, height);
 	if (not image)
@@ -1556,26 +1571,12 @@ avt_load_image_bmp_data (avt_data * src)
 
 	    for (int x = 0; x < width; x++, p++)
 	      {
-		uint16_t color16 = avt_data_read16le (src);
+		register uint16_t color = avt_data_read16le (src);
 
-		if (red_mask > 255)
-		  red = (color16 & red_mask) >> get_right_shift (red_mask);
-		else
-		  red = (color16 & red_mask) << get_left_shift (red_mask);
-
-		if (green_mask > 255)
-		  green =
-		    (color16 & green_mask) >> get_right_shift (green_mask);
-		else
-		  green =
-		    (color16 & green_mask) << get_left_shift (green_mask);
-
-		if (blue_mask > 255)
-		  blue = (color16 & blue_mask) >> get_right_shift (blue_mask);
-		else
-		  blue = (color16 & blue_mask) << get_left_shift (blue_mask);
-
-		*p = avt_rgb (red, green, blue);
+		*p =
+		  avt_rgb ((color & red_mask) >> red_right << red_left,
+			   (color & green_mask) >> green_right << green_left,
+			   (color & blue_mask) >> blue_right << blue_left);
 	      }
 
 	    if (remainder)
