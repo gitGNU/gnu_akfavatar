@@ -1430,8 +1430,24 @@ avt_load_image_bmp_data (avt_data * src)
 	colors_used = 1 << bits_per_pixel;
 
       memset (palette, 0, sizeof (palette));
-      for (uint16_t color = 0; color < colors_used; color++)
-	palette[color] = avt_data_read32le (src) bitand 0xFFFFFF;
+
+      if (info_size != 12)
+	{
+	  for (uint16_t color = 0; color < colors_used; color++)
+	    palette[color] = avt_data_read32le (src) bitand 0xFFFFFF;
+	}
+      else			// old OS/2 format
+	{
+	  uint8_t red, green, blue;
+
+	  for (uint16_t color = 0; color < colors_used; color++)
+	    {
+	      blue = avt_data_read8 (src);
+	      green = avt_data_read8 (src);
+	      red = avt_data_read8 (src);
+	      palette[color] = avt_rgb (red, green, blue);
+	    }
+	}
     }
 
   // go to image data
