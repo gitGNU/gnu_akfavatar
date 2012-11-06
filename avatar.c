@@ -1355,11 +1355,10 @@ avt_load_image_bmp_data (avt_data * src)
   avt_graphic *image;
   long start;
   uint32_t bits_offset, info_size, compression;
-  uint32_t colors_used, colors_important;
+  uint32_t colors_used;
   int32_t width, height;
   uint32_t red_mask, green_mask, blue_mask;
   uint16_t bits_per_pixel;
-  char magic[2];
   avt_color palette[256];
 
   image = NULL;
@@ -1367,8 +1366,8 @@ avt_load_image_bmp_data (avt_data * src)
 
   start = avt_data_tell (src);
 
-  avt_data_read (src, magic, sizeof (magic), 1);
-  if (memcmp ("BM", magic, 2) != 0)
+  // check magic number ("BM")
+  if (avt_data_read16le (src) != 0x4D42)
     goto done;
 
   // skip filesize (4) and reserved (4)
@@ -1385,12 +1384,11 @@ avt_load_image_bmp_data (avt_data * src)
       height = avt_data_read16le (src);	// negative for top-down
 
       // skip planes (unused for BMP)
-      if (!avt_data_seek (src, 2, SEEK_CUR))
-	goto done;
+      avt_data_seek (src, 2, SEEK_CUR);
 
       bits_per_pixel = avt_data_read16le (src);
       compression = 0;
-      colors_used = colors_important = 0;
+      colors_used = 0;
     }
   else				// info_size > 12
     {
@@ -1398,17 +1396,16 @@ avt_load_image_bmp_data (avt_data * src)
       height = avt_data_read32le (src);	// negative for top-down
 
       // skip planes (unused for BMP)
-      if (!avt_data_seek (src, 2, SEEK_CUR))
-	goto done;
+      avt_data_seek (src, 2, SEEK_CUR);
 
       bits_per_pixel = avt_data_read16le (src);
       compression = avt_data_read32le (src);
 
-      if (!avt_data_seek (src, 3 * 4, SEEK_CUR))
-	goto done;
+      // skip image data size and pixels per meter (x an y)
+      avt_data_seek (src, 3 * 4, SEEK_CUR);
 
       colors_used = avt_data_read32le (src);
-      colors_important = avt_data_read32le (src);
+      avt_data_seek (src, 4, SEEK_CUR);	// important colors
     }
 
   // just uncompressed allowed for now
@@ -1417,14 +1414,17 @@ avt_load_image_bmp_data (avt_data * src)
 
   if (compression == 3)
     {
+      // masks, just for 16 or 32 bit per pixel allowed
       red_mask = avt_data_read32le (src);
       green_mask = avt_data_read32le (src);
       blue_mask = avt_data_read32le (src);
     }
-  else if (bits_per_pixel <= 8)	// read palette
+  else if (bits_per_pixel <= 8)
     {
-      if (!avt_data_seek (src, start + 14 + info_size, SEEK_SET))
-	goto done;
+      // read palette, needed when bits per pixel <= 8
+
+      //  skip end of header
+      avt_data_seek (src, start + 14 + info_size, SEEK_SET);
 
       if (colors_used == 0)
 	colors_used = 1 << bits_per_pixel;
@@ -1435,8 +1435,7 @@ avt_load_image_bmp_data (avt_data * src)
     }
 
   // go to image data
-  if (!avt_data_seek (src, start + bits_offset, SEEK_SET))
-    goto done;
+  avt_data_seek (src, start + bits_offset, SEEK_SET);
 
   int y, direction;
 
@@ -1446,7 +1445,7 @@ avt_load_image_bmp_data (avt_data * src)
       y = height - 1;
       direction = -1;
     }
-  else				// top-down
+  else				// else top-down
     {
       y = 0;
       direction = 1;
@@ -5671,8 +5670,6 @@ avt_image_max_height (void)
 {
   return avt.screen->height;
 }
-
-// TODO: replace raw image functions with avt_graphic functions
 
 /*
  * show raw image
