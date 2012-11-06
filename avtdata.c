@@ -21,6 +21,7 @@
  */
 
 #include "avtdata.h"
+#include "avtinternals.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -125,6 +126,8 @@ avt_data_read8 (avt_data * d)
 }
 
 
+#if AVT_BIG_ENDIAN == AVT_BYTE_ORDER
+
 // read little endian 16 bit value
 extern uint16_t
 avt_data_read16le (avt_data * d)
@@ -134,18 +137,6 @@ avt_data_read16le (avt_data * d)
   avt_data_read (d, &data, sizeof (data), 1);
 
   return data[1] << 8 | data[0];
-}
-
-
-// read big endian 16 bit value
-extern uint16_t
-avt_data_read16be (avt_data * d)
-{
-  uint8_t data[2];
-
-  avt_data_read (d, &data, sizeof (data), 1);
-
-  return data[0] << 8 | data[1];
 }
 
 
@@ -161,6 +152,67 @@ avt_data_read32le (avt_data * d)
 }
 
 
+// read big endian 16 bit value
+extern uint16_t
+avt_data_read16be (avt_data * d)
+{
+  uint16_t data;
+
+  avt_data_read (d, &data, sizeof (data), 1);
+
+  return data;
+}
+
+
+// read big endian 32 bit value
+extern uint32_t
+avt_data_read32be (avt_data * d)
+{
+  uint32_t data;
+
+  avt_data_read (d, &data, sizeof (data), 1);
+
+  return data;
+}
+
+
+#else  // little endian
+
+// read little endian 16 bit value
+extern uint16_t
+avt_data_read16le (avt_data * d)
+{
+  uint16_t data;
+
+  avt_data_read (d, &data, sizeof (data), 1);
+
+  return data;
+}
+
+
+// read little endian 32 bit value
+extern uint32_t
+avt_data_read32le (avt_data * d)
+{
+  uint32_t data;
+
+  avt_data_read (d, &data, sizeof (data), 1);
+
+  return data;
+}
+
+// read big endian 16 bit value
+extern uint16_t
+avt_data_read16be (avt_data * d)
+{
+  uint8_t data[2];
+
+  avt_data_read (d, &data, sizeof (data), 1);
+
+  return data[0] << 8 | data[1];
+}
+
+
 // read big endian 32 bit value
 extern uint32_t
 avt_data_read32be (avt_data * d)
@@ -171,6 +223,8 @@ avt_data_read32be (avt_data * d)
 
   return data[0] << 24 | data[1] << 16 | data[2] << 8 | data[3];
 }
+
+#endif  // little endian
 
 
 extern long
