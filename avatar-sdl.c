@@ -73,6 +73,8 @@ static short int mode;		// whether fullscreen or window or ...
 static SDL_Cursor *mpointer;
 static struct avt_area windowmode_size;	// size of the whole window (screen)
 static Uint32 screenflags;	// flags for the screen
+
+static bool reserve_single_keys;
 static avt_char pointer_button_key;	// key simulated for mouse button 1-3
 static avt_char pointer_motion_key;	// key simulated be pointer motion
 
@@ -331,7 +333,7 @@ avt_toggle_fullscreen (void)
       if ((screenflags bitand SDL_FULLSCREEN) != 0)
 	{
 	  screenflags = screenflags bitor SDL_NOFRAME;
-	  avt_resize_sdl (avt->window.width, avt->window.height);
+	  avt_resize_sdl (MINIMALWIDTH, MINIMALHEIGHT);
 	  mode = AVT_FULLSCREEN;
 	}
       else
@@ -358,7 +360,7 @@ avt_switch_mode (int new_mode)
 	    {
 	      screenflags =
 		screenflags bitor SDL_FULLSCREEN bitor SDL_NOFRAME;
-	      avt_resize_sdl (avt->window.width, avt->window.height);
+	      avt_resize_sdl (MINIMALWIDTH, MINIMALHEIGHT);
 	    }
 	  break;
 
@@ -384,7 +386,7 @@ avt_analyze_key (SDL_keysym key)
       break;
 
     case SDLK_ESCAPE:
-      if (avt->reserve_single_keys)
+      if (reserve_single_keys)
 	avt_add_key (AVT_KEY_ESCAPE);
       else
 	_avt_STATUS = AVT_QUIT;
@@ -398,7 +400,7 @@ avt_analyze_key (SDL_keysym key)
       break;
 
     case SDLK_F11:
-      if (avt->reserve_single_keys)
+      if (reserve_single_keys)
 	avt_add_key (AVT_KEY_F11);
       else
 	avt_toggle_fullscreen ();
@@ -710,6 +712,12 @@ avt_wait_key (void)
 	  avt_analyze_event (&event);
 	}
     }
+}
+
+extern void
+avt_reserve_single_keys (bool onoff)
+{
+  reserve_single_keys = onoff;
 }
 
 extern avt_char

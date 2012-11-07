@@ -4720,7 +4720,6 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 
   avt.text_cursor_visible = false;
   avt.auto_margin = false;
-  avt.reserve_single_keys = false;
 
   // temporarily disable the alert function
   avt.alert = NULL;
@@ -6096,12 +6095,6 @@ avt_set_bitmap_color (int color)
 }
 
 extern void
-avt_reserve_single_keys (bool onoff)
-{
-  avt.reserve_single_keys = onoff;
-}
-
-extern void
 avt_set_text_color (int colornr)
 {
   avt.text_color = colornr;
@@ -6428,7 +6421,6 @@ extern void
 avt_reset ()
 {
   _avt_STATUS = AVT_NORMAL;
-  avt.reserve_single_keys = false;
   avt.newline_mode = true;
   avt.auto_margin = true;
   avt.origin_mode = true;	// for backwards compatibility
@@ -6440,6 +6432,7 @@ avt_reset ()
   avt.ballooncolor = AVT_BALLOON_COLOR;
 
   avt_clear_keys ();
+  avt_reserve_single_keys (false);
   avt_set_pointer_buttons_key (0);
   avt_set_pointer_motion_key (0);
   avt_clear_screen ();		// also resets some variables

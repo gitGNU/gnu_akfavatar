@@ -59,6 +59,7 @@ static uint8_t *fb;		// frame buffer
 static struct termios terminal_settings;
 static char error_msg[256];
 static iconv_t conv = (iconv_t) (-1);
+static bool reserve_single_keys;
 
 //-----------------------------------------------------------------------------
 
@@ -204,7 +205,7 @@ escape (void)
   if (read (tty, &sequence, sizeof (sequence)) < 0)
     {
       // real Escape key
-      if (avt->reserve_single_keys)
+      if (reserve_single_keys)
 	result = AVT_KEY_ESCAPE;
       else
 	_avt_STATUS = AVT_QUIT;
@@ -325,6 +326,12 @@ avt_wait_key (void)
       avt_update ();
     }
   while (_avt_STATUS == AVT_NORMAL and not avt_key_pressed ());
+}
+
+extern void
+avt_reserve_single_keys (bool onoff)
+{
+  reserve_single_keys = onoff;
 }
 
 extern avt_char

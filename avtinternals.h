@@ -164,7 +164,6 @@ struct avt_settings
   bool avatar_visible;		// avatar visible?
   bool text_cursor_visible;	// shall the text cursor be visible?
   bool text_cursor_actually_visible;	// is it actually visible?
-  bool reserve_single_keys;	// reserve single keys?
   bool markup;			// markup-syntax activated?
   bool hold_updates;		// holding updates back?
   bool tab_stops[AVT_LINELENGTH];
