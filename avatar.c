@@ -132,6 +132,16 @@
 
 #define AVT_KEYBUFFER_SIZE  512
 
+struct avt_position
+{
+  int x, y;
+};
+
+struct avt_area
+{
+  int x, y, width, height;
+};
+
 struct avt_settings
 {
   avt_graphic *screen;

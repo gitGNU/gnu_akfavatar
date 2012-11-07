@@ -70,7 +70,7 @@
 static SDL_Surface *sdl_screen;
 static short int mode;		// whether fullscreen or window or ...
 static SDL_Cursor *mpointer;
-static struct avt_area windowmode_size;	// size of the whole window (screen)
+static int windowmode_width, windowmode_height;
 static Uint32 screenflags;	// flags for the screen
 
 static bool reserve_single_keys;
@@ -285,11 +285,11 @@ avt_resize_sdl (avt_graphic *screen, int width, int height)
   screen->width = sdl_screen->w;
   screen->height = sdl_screen->h;
 
-  // set windowmode_size
+  // set size of windowmode
   if ((screenflags & SDL_FULLSCREEN) == 0)
     {
-      windowmode_size.width = width;
-      windowmode_size.height = height;
+      windowmode_width = width;
+      windowmode_height = height;
     }
 
   // ignore one resize event here to avoid recursive calling
@@ -317,7 +317,7 @@ avt_toggle_fullscreen (void)
       else
 	{
 	  screenflags = screenflags bitand compl SDL_NOFRAME;
-	  avt_resize (windowmode_size.width, windowmode_size.height);
+	  avt_resize (windowmode_width, windowmode_height);
 	  mode = AVT_WINDOW;
 	}
     }
@@ -347,7 +347,7 @@ avt_switch_mode (int new_mode)
 	    {
 	      screenflags =
 		screenflags bitand compl (SDL_FULLSCREEN bitor SDL_NOFRAME);
-	      avt_resize (windowmode_size.width, windowmode_size.height);
+	      avt_resize (windowmode_width, windowmode_height);
 	    }
 	  break;
 	}
@@ -1012,9 +1012,8 @@ avt_start (const char *title, const char *shortname, int window_mode)
 #endif
 
   // size of the window (not to be confused with the variable window
-  windowmode_size.x = windowmode_size.y = 0;	// unused
-  windowmode_size.width = sdl_screen->w;
-  windowmode_size.height = sdl_screen->h;
+  windowmode_width = sdl_screen->w;
+  windowmode_height = sdl_screen->h;
 
   avt_set_mouse_pointer ();
 

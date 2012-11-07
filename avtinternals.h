@@ -120,16 +120,6 @@ struct avt_audio
   bool complete;
 };
 
-struct avt_position
-{
-  int x, y;
-};
-
-struct avt_area
-{
-  int x, y, width, height;
-};
-
 #define avt_isblank(c)  ((c) == ' ' or (c) == '\t')
 #define avt_min(a, b) ((a) < (b) ? (a) : (b))
 #define avt_max(a, b) ((a) > (b) ? (a) : (b))
