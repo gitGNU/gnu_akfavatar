@@ -32,21 +32,10 @@
 #if defined(VGA)
 #  define MINIMALWIDTH 640
 #  define MINIMALHEIGHT 480
-#  define TOPMARGIN 25
-#  define BALLOON_INNER_MARGIN 10
-#  define AVATAR_MARGIN 10
-   // Delay for moving in or out - the higher, the slower
-#  define MOVE_DELAY 2.5
 #else
 #  define MINIMALWIDTH 800
 #  define MINIMALHEIGHT 600
-#  define TOPMARGIN 25
-#  define BALLOON_INNER_MARGIN 15
-#  define AVATAR_MARGIN 20
-   // Delay for moving in or out - the higher, the slower
-#  define MOVE_DELAY 1.8
 #endif // not VGA
-
 
 // define an empty restrict unless the compiler is in C99 mode
 #if not defined(__STDC_VERSION__) or __STDC_VERSION__ < 199901L

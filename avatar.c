@@ -66,6 +66,20 @@
 
 #define COPYRIGHTYEAR "2012"
 
+#if MINIMALWIDTH < 800
+#  define TOPMARGIN 25
+#  define BALLOON_INNER_MARGIN 10
+#  define AVATAR_MARGIN 10
+   // Delay for moving in or out - the higher, the slower
+#  define MOVE_DELAY 2.5
+#else // MINIMALWIDTH >= 800
+#  define TOPMARGIN 25
+#  define BALLOON_INNER_MARGIN 15
+#  define AVATAR_MARGIN 20
+   // Delay for moving in or out - the higher, the slower
+#  define MOVE_DELAY 1.8
+#endif // MINIMALWIDTH >= 800
+
 #define BASE_BUTTON_WIDTH 32
 #define BASE_BUTTON_HEIGHT 32
 
