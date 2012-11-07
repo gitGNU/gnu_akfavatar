@@ -814,6 +814,7 @@ avt_quit_sdl (void)
   // you cannot rely on avt any more here
   avt = NULL;
 
+  avt_image_loader_functions (NULL, NULL, NULL);
   load_image_done ();
 
   if (sdl_screen)
