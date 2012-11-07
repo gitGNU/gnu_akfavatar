@@ -6438,10 +6438,10 @@ avt_reset ()
   avt.text_delay = 0;
   avt.bitmap_color = AVT_COLOR_BLACK;
   avt.ballooncolor = AVT_BALLOON_COLOR;
-  avt.pointer_motion_key = 0;
-  avt.pointer_button_key = 0;
 
   avt_clear_keys ();
+  avt_set_pointer_buttons_key (0);
+  avt_set_pointer_motion_key (0);
   avt_clear_screen ();		// also resets some variables
   avt_normal_text ();
   avt_reset_tab_stops ();

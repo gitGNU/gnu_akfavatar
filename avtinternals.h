@@ -158,9 +158,6 @@ struct avt_settings
   avt_color text_background_color;
   avt_color bitmap_color;	// color for bitmaps
 
-  avt_char pointer_motion_key;	// key simulated be pointer motion
-  avt_char pointer_button_key;	// key simulated for mouse button 1-3
-
   bool newline_mode;		// when off, you need an extra CR
   bool underlined, bold, inverse;	// text underlined, bold?
   bool auto_margin;		// automatic new lines?

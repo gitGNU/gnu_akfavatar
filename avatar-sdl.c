@@ -74,6 +74,8 @@ static SDL_Cursor *mpointer;
 static struct avt_area windowmode_size;	// size of the whole window (screen)
 static Uint32 screenflags;	// flags for the screen
 static int fontwidth, fontheight;
+static avt_char pointer_button_key;	// key simulated for mouse button 1-3
+static avt_char pointer_motion_key;	// key simulated be pointer motion
 
 // forward declaration
 static int avt_pause (void);
@@ -555,8 +557,8 @@ avt_analyze_event (SDL_Event * event)
 	{
 	  if (not avt_check_buttons (event->button.x, event->button.y))
 	    {
-	      if (avt->pointer_button_key)
-		avt_add_key (avt->pointer_button_key);
+	      if (pointer_button_key)
+		avt_add_key (pointer_button_key);
 	    }
 	}
       else if (SDL_BUTTON_WHEELDOWN == event->button.button)
@@ -566,8 +568,8 @@ avt_analyze_event (SDL_Event * event)
       break;
 
     case SDL_MOUSEMOTION:
-      if (avt->pointer_motion_key)
-	avt_add_key (avt->pointer_motion_key);
+      if (pointer_motion_key)
+	avt_add_key (pointer_motion_key);
       break;
 
     case SDL_KEYDOWN:
@@ -716,11 +718,8 @@ avt_set_pointer_motion_key (avt_char key)
 {
   avt_char old;
 
-  if (not avt)
-    return 0;
-
-  old = avt->pointer_motion_key;
-  avt->pointer_motion_key = key;
+  old = pointer_motion_key;
+  pointer_motion_key = key;
 
   if (key)
     SDL_EventState (SDL_MOUSEMOTION, SDL_ENABLE);
@@ -736,11 +735,8 @@ avt_set_pointer_buttons_key (avt_char key)
 {
   avt_char old;
 
-  if (not avt)
-    return 0;
-
-  old = avt->pointer_button_key;
-  avt->pointer_button_key = key;
+  old = pointer_button_key;
+  pointer_button_key = key;
 
   return old;
 }
