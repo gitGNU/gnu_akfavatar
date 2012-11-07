@@ -130,64 +130,6 @@ struct avt_area
   int x, y, width, height;
 };
 
-struct avt_settings
-{
-  avt_graphic *screen;
-  avt_graphic *avatar_image;
-  avt_graphic *cursor_character;
-  wchar_t *name;
-
-  void (*quit_backend) (void);
-  void (*quit_audio) (void);
-  void (*alert) (void);
-
-  void (*clear_screen) (avt_color background_color);
-  void (*resize) (avt_graphic *screen, int width, int height);
-
-  // image loaders from the backend
-  avt_graphic *(*load_image_file) (const char *filename);
-  avt_graphic *(*load_image_stream) (avt_stream * stream);
-  avt_graphic *(*load_image_memory) (void *data, size_t size);
-
-  // delay values for printing text and flipping the page
-  int text_delay, flip_page_delay;
-
-  avt_color ballooncolor;
-  avt_color background_color;
-  avt_color text_color;
-  avt_color text_background_color;
-  avt_color bitmap_color;	// color for bitmaps
-
-  bool newline_mode;		// when off, you need an extra CR
-  bool underlined, bold, inverse;	// text underlined, bold?
-  bool auto_margin;		// automatic new lines?
-  bool avatar_visible;		// avatar visible?
-  bool text_cursor_visible;	// shall the text cursor be visible?
-  bool text_cursor_actually_visible;	// is it actually visible?
-  bool markup;			// markup-syntax activated?
-  bool hold_updates;		// holding updates back?
-  bool tab_stops[AVT_LINELENGTH];
-
-  // origin mode
-  // Home: textfield (false) or viewport (true)
-  // avt_initialize sets it to true for backwards compatibility
-  bool origin_mode;
-
-  char encoding[100];
-
-  short int avatar_mode;
-  short int scroll_mode;
-  short int textdir_rtl;
-  short int linestart;		// beginning of line - depending on text direction
-  short int balloonheight, balloonmaxheight, balloonwidth;
-
-  struct avt_position cursor, saved_position;
-
-  struct avt_area window;	// if screen is in fact larger
-  struct avt_area textfield;
-  struct avt_area viewport;	// sub-window in textfield
-};
-
 #define avt_isblank(c)  ((c) == ' ' or (c) == '\t')
 #define avt_min(a, b) ((a) < (b) ? (a) : (b))
 #define avt_max(a, b) ((a) > (b) ? (a) : (b))
@@ -213,8 +155,7 @@ extern void avt_image_loader_functions (
           avt_graphic * (*stream) (avt_stream * stream),
           avt_graphic * (*memory) (void *data, size_t size));
 
-extern struct avt_settings *avt_start_common (avt_graphic *new_screen);
-extern struct avt_settings *avt_get_settings (void);
+extern int avt_start_common (avt_graphic *new_screen);
 extern avt_graphic *avt_data_to_graphic (void *data, short width, short height);
 extern avt_graphic *avt_new_graphic (short width, short height);
 extern void avt_fill (avt_graphic * s, avt_color color);
@@ -237,7 +178,7 @@ extern void avt_lock_audio (void);
 extern void avt_unlock_audio (avt_audio *snd);
 
 /* audio-common */
-extern struct avt_settings *avt_start_audio_common (void);
+extern int avt_start_audio_common (void);
 extern void avt_quit_audio_backend_function (void (*f) (void));
 
 /* avtposix.c / avtwindows.c */

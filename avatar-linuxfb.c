@@ -76,7 +76,7 @@ pack_pixel (uint32_t color)
 
 // TODO: support 24 bit per pixel (can't test)
 extern void
-avt_update_area (avt_graphic *screen, int x, int y, int width, int height)
+avt_update_area (avt_graphic * screen, int x, int y, int width, int height)
 {
   int screen_width;
   int x2;
@@ -520,12 +520,15 @@ avt_start (const char *title, const char *shortname, int window_mode)
 
   avt_start_common (avt_new_graphic (var_info.xres, var_info.yres));
 
+  if (_avt_STATUS != AVT_NORMAL)
+    return _avt_STATUS;
+
   // do not change for big endian!
   conv = iconv_open ("UTF-32LE", "UTF-8");
 
   memset (fb, 0, fix_info.smem_len);
   avt_quit_backend_function (&avt_quit_fb);
-  avt_alert_function(&beep);		// just remove this line, if you don't like it
+  avt_alert_function (&beep);	// just remove this line, if you don't like it
 
   return _avt_STATUS;
 }

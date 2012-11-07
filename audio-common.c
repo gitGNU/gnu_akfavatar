@@ -785,7 +785,7 @@ avt_load_audio_general (avt_data * src, uint_least32_t maxsize, int playmode)
   return s;
 }
 
-extern struct avt_settings *
+extern int
 avt_start_audio_common (void)
 {
   if (not alert_sound)
@@ -797,7 +797,7 @@ avt_start_audio_common (void)
 
   avt_quit_audio_function (&avt_quit_audio);
 
-  return avt_get_settings ();
+  return _avt_STATUS;
 }
 
 #endif // not NO_AUDIO

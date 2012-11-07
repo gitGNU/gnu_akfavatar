@@ -301,7 +301,7 @@ avt_resize_sdl (avt_graphic *screen, int width, int height)
 extern void
 avt_toggle_fullscreen (void)
 {
-  if (not avt)
+  if (not sdl_screen)
     return;
 
   if (mode != AVT_FULLSCREENNOSWITCH)
@@ -593,7 +593,7 @@ avt_update (void)
 {
   SDL_Event event;
 
-  if (avt)
+  if (sdl_screen)
     {
       while (SDL_PollEvent (&event))
 	avt_analyze_event (&event);
@@ -683,7 +683,7 @@ avt_wait_key (void)
 {
   SDL_Event event;
 
-  if (avt)
+  if (sdl_screen)
     {
       while (_avt_STATUS == AVT_NORMAL and not avt_key_pressed ())
 	{
@@ -730,7 +730,7 @@ avt_set_pointer_buttons_key (avt_char key)
 extern void
 avt_get_pointer_position (int *x, int *y)
 {
-  if (avt)
+  if (sdl_screen)
     SDL_GetMouseState (x, y);
   else
     *x = *y = 0;
@@ -739,7 +739,7 @@ avt_get_pointer_position (int *x, int *y)
 extern void
 avt_set_mouse_visible (bool visible)
 {
-  if (avt)
+  if (sdl_screen)
     {
       if (visible)
 	SDL_ShowCursor (SDL_ENABLE);
@@ -810,9 +810,6 @@ extern void
 avt_set_title (const char *title, const char *shortname)
 {
   char *encoding;
-
-  if (not avt)
-    return;
 
   encoding = avt_get_mb_encoding ();
 
@@ -920,7 +917,7 @@ extern int
 avt_start (const char *title, const char *shortname, int window_mode)
 {
   // already initialized?
-  if (avt)
+  if (sdl_screen)
     {
       avt_set_error ("AKFAvatar already initialized");
       _avt_STATUS = AVT_ERROR;
@@ -1000,14 +997,11 @@ avt_start (const char *title, const char *shortname, int window_mode)
     }
 
   // set up a graphic with the same pixel data
-  avt = avt_start_common (avt_data_to_graphic
+  avt_start_common (avt_data_to_graphic
 			  (sdl_screen->pixels, sdl_screen->w, sdl_screen->h));
 
-  if (not avt)
-    {
-      _avt_STATUS = AVT_ERROR;
-      return _avt_STATUS;
-    }
+  if (_avt_STATUS != AVT_NORMAL)
+    return _avt_STATUS;
 
   avt_resize_function (&avt_resize_sdl);
   avt_quit_backend_function (&avt_quit_sdl);
