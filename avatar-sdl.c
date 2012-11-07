@@ -68,7 +68,6 @@
 #endif
 
 static SDL_Surface *sdl_screen;
-static struct avt_settings *avt;
 static short int mode;		// whether fullscreen or window or ...
 static SDL_Cursor *mpointer;
 static struct avt_area windowmode_size;	// size of the whole window (screen)
@@ -230,7 +229,7 @@ avt_load_image_rw (SDL_RWops * RW)
   SDL_Surface *image;
   avt_graphic *result;
 
-  if (not avt or not RW)
+  if (not sdl_screen or not RW)
     return NULL;
 
   image = NULL;
@@ -328,7 +327,7 @@ avt_toggle_fullscreen (void)
 extern void
 avt_switch_mode (int new_mode)
 {
-  if (avt and new_mode != mode)
+  if (sdl_screen and new_mode != mode)
     {
       mode = new_mode;
       switch (mode)
@@ -621,7 +620,7 @@ avt_wait (size_t milliseconds)
 {
   // for times longer than half a second it should check for events
 
-  if (avt and _avt_STATUS == AVT_NORMAL)
+  if (sdl_screen and _avt_STATUS == AVT_NORMAL)
     {
       if (milliseconds <= 500)	// short delay
 	{
@@ -789,9 +788,6 @@ avt_init_SDL (void)
 static void
 avt_quit_sdl (void)
 {
-  // you cannot rely on avt any more here
-  avt = NULL;
-
   avt_image_loader_functions (NULL, NULL, NULL);
   load_image_done ();
 
