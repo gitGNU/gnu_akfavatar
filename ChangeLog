@@ -1,3 +1,8 @@
+2012-11-07  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h: don't include SDL.h
+	lua/lua-akfavatar-prg.c, example.c: include SDL.h conditionally
+
 2012-11-05  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_load_image_bmp_data): new function

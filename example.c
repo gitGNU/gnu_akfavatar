@@ -23,6 +23,11 @@
  * AKFoerster
  */
 
+/* SDL redefines main on some systems */
+#if defined(_WIN32) || defined(__APPLE__) || defined(macintosh)
+#  include "SDL.h"
+#endif
+
 // include the akfavatar library functions
 #include "akfavatar.h"
 

@@ -35,6 +35,11 @@
 #include <errno.h>
 #include <iso646.h>
 
+/* SDL redefines main on some systems */
+#if defined(_WIN32) || defined(__APPLE__) || defined(macintosh)
+#  include "SDL.h"
+#endif
+
 #ifdef _WIN32
 #include <windows.h>
 #endif

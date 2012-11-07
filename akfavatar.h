@@ -29,11 +29,6 @@
 #ifndef AKFAVATAR_H
 #define AKFAVATAR_H
 
-/* SDL redefines main on some systems */
-#if defined(_WIN32) || defined(__APPLE__) || defined(macintosh)
-#  include "SDL.h"
-#endif
-
 /* to get the systems definition of wchar_t */
 #include <stddef.h>
 
