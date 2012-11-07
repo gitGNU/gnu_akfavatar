@@ -73,7 +73,6 @@ static short int mode;		// whether fullscreen or window or ...
 static SDL_Cursor *mpointer;
 static struct avt_area windowmode_size;	// size of the whole window (screen)
 static Uint32 screenflags;	// flags for the screen
-static int fontwidth, fontheight;
 static avt_char pointer_button_key;	// key simulated for mouse button 1-3
 static avt_char pointer_motion_key;	// key simulated be pointer motion
 
@@ -937,8 +936,6 @@ avt_start (const char *title, const char *shortname, int window_mode)
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
-
-  avt_get_font_dimensions (&fontwidth, &fontheight, NULL);
 
   mode = window_mode;
 
