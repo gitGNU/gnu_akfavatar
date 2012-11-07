@@ -1002,8 +1002,6 @@ avt_start (const char *title, const char *shortname, int window_mode)
   avt_resize_function (&avt_resize_sdl);
   avt_quit_backend_function (&avt_quit_sdl);
 
-  avt_update_all ();
-
 #ifdef IMAGELOADERS
   // optionally register image loaders
   avt_image_loader_functions (&avt_load_image_file_sdl,

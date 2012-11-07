@@ -502,7 +502,7 @@ avt_bar (avt_graphic * s, int x, int y, int width, int height,
 }
 
 // secure
-extern void
+static inline void
 avt_fill (avt_graphic * s, avt_color color)
 {
   avt_color *p;
@@ -510,6 +510,16 @@ avt_fill (avt_graphic * s, avt_color color)
   p = s->pixels;
   for (int i = (s->width * s->height); i > 0; --i, p++)
     *p = color;
+}
+
+/*
+ * fills the screen with the background color,
+ * but doesn't update the screen yet
+ */
+static inline void
+avt_free_screen (void)
+{
+  avt_fill (avt.screen, avt.background_color);
 }
 
 static inline void
@@ -605,7 +615,7 @@ avt_graphic_segment (avt_graphic * source, int xoffset, int yoffset,
     }
 }
 
-extern void
+static inline void
 avt_put_graphic (avt_graphic * source, avt_graphic * destination,
 		 int x, int y)
 {
@@ -633,7 +643,7 @@ avt_get_area (int x, int y, int width, int height)
   return result;
 }
 
-extern avt_graphic *
+static inline avt_graphic *
 avt_get_window (void)
 {
   return avt_get_area (avt.window.x, avt.window.y, avt.window.width,
@@ -652,7 +662,7 @@ avt_set_color_key (avt_graphic * gr, avt_color color_key)
     }
 }
 
-extern void
+static inline void
 avt_update_all (void)
 {
   avt_update_area (avt.screen, 0, 0, avt.screen->width, avt.screen->height);
@@ -1982,16 +1992,6 @@ avt_no_textfield (void)
   avt.textfield.x = avt.textfield.y
     = avt.textfield.width = avt.textfield.height = -1;
   avt.viewport = avt.textfield;
-}
-
-/*
- * fills the screen with the background color,
- * but doesn't update the screen yet
- */
-extern void
-avt_free_screen (void)
-{
-  avt_fill (avt.screen, avt.background_color);
 }
 
 extern void
