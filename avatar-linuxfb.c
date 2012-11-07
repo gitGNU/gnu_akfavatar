@@ -74,9 +74,8 @@ pack_pixel (uint32_t color)
     << var_info.blue.offset;
 }
 
-// TODO: support 24 bit per pixel (can't test)
-extern void
-avt_update_area (avt_graphic * screen, int x, int y, int width, int height)
+static void
+update_area_fb (avt_graphic * screen, int x, int y, int width, int height)
 {
   int screen_width;
   int x2;
@@ -316,8 +315,8 @@ avt_push_key (avt_char key)
 }
 
 // TODO: use select?
-extern void
-avt_wait_key (void)
+static void
+wait_key_fb (void)
 {
   do
     {
@@ -390,7 +389,7 @@ beep (void)
 }
 
 static void
-avt_quit_fb (void)
+quit_fb (void)
 {
   if (conv != (iconv_t) (-1))
     {
@@ -485,7 +484,7 @@ avt_start (const char *title, const char *shortname, int window_mode)
   // check screen format
   if (fix_info.type != FB_TYPE_PACKED_PIXELS or var_info.bits_per_pixel < 15)
     {
-      avt_quit_fb ();
+      quit_fb ();
       avt_set_error ("unsupported screen format");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
@@ -493,7 +492,7 @@ avt_start (const char *title, const char *shortname, int window_mode)
 
   if (var_info.xres < MINIMALWIDTH or var_info.yres < MINIMALHEIGHT)
     {
-      avt_quit_fb ();
+      quit_fb ();
       avt_set_error ("screen too small");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
@@ -505,7 +504,7 @@ avt_start (const char *title, const char *shortname, int window_mode)
 
   if (MAP_FAILED == fb)
     {
-      avt_quit_fb ();
+      quit_fb ();
       avt_set_error ("mmap failed");
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
@@ -517,8 +516,17 @@ avt_start (const char *title, const char *shortname, int window_mode)
   tcsetattr (tty, TCSANOW, &settings);
   ioctl (tty, KDSETMODE, KD_GRAPHICS);
 
-  avt_start_common (avt_new_graphic (var_info.xres, var_info.yres),
-                    &avt_quit_fb, NULL);
+  struct avt_backend backend = {
+    .update_area = &update_area_fb,
+    .quit = &quit_fb,
+    .wait_key = &wait_key_fb,
+    .resize = NULL,
+    .graphic_file = NULL,
+    .graphic_stream = NULL,
+    .graphic_memory = NULL
+  };
+
+  avt_start_common (avt_new_graphic (var_info.xres, var_info.yres), &backend);
 
   if (_avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;

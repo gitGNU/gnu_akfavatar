@@ -84,8 +84,8 @@ static void avt_analyze_event (SDL_Event * event);
 
 
 // this shall be the only function to update the window/screen
-extern void
-avt_update_area (avt_graphic * screen, int x, int y, int width, int height)
+static void
+update_area_sdl (avt_graphic * screen, int x, int y, int width, int height)
 {
   // sdl_screen already has the pixel-information of screen
   // other implementations might need to copy pixels here
@@ -253,19 +253,19 @@ avt_load_image_rw (SDL_RWops * RW)
 }
 
 static avt_graphic *
-avt_load_image_file_sdl (const char *filename)
+load_image_file_sdl (const char *filename)
 {
   return avt_load_image_rw (SDL_RWFromFile (filename, "rb"));
 }
 
 static avt_graphic *
-avt_load_image_stream_sdl (avt_stream * stream)
+load_image_stream_sdl (avt_stream * stream)
 {
   return avt_load_image_rw (SDL_RWFromFP ((FILE *) stream, 0));
 }
 
 static avt_graphic *
-avt_load_image_memory_sdl (void *data, size_t size)
+load_image_memory_sdl (void *data, size_t size)
 {
   return avt_load_image_rw (SDL_RWFromMem (data, size));
 }
@@ -275,7 +275,7 @@ avt_load_image_memory_sdl (void *data, size_t size)
 #endif // not IMAGELOADERS
 
 static void
-avt_resize_sdl (avt_graphic * screen, int width, int height)
+resize_sdl (avt_graphic * screen, int width, int height)
 {
   SDL_Event event;
 
@@ -667,7 +667,7 @@ avt_push_key (avt_char key)
   avt_add_key (key);
 
   /*
-   * Send some event to satisfy avt_wait_key,
+   * Send some event to satisfy wait_key,
    * but no keyboard event to avoid endless loops!
    * Pushing a key also should have no side effects!
    */
@@ -677,8 +677,8 @@ avt_push_key (avt_char key)
 }
 
 
-extern void
-avt_wait_key (void)
+static void
+wait_key_sdl (void)
 {
   SDL_Event event;
 
@@ -786,9 +786,8 @@ avt_init_SDL (void)
 
 
 static void
-avt_quit_sdl (void)
+quit_sdl (void)
 {
-  avt_image_loader_functions (NULL, NULL, NULL);
   load_image_done ();
 
   if (sdl_screen)
@@ -990,20 +989,29 @@ avt_start (const char *title, const char *shortname, int window_mode)
       return _avt_STATUS;
     }
 
+  struct avt_backend sdl_backend = {
+    .update_area = &update_area_sdl,
+    .quit = &quit_sdl,
+    .wait_key = &wait_key_sdl,
+    .resize = &resize_sdl,
+#ifdef IMAGELOADERS
+    .graphic_file = &load_image_file_sdl,
+    .graphic_stream = &load_image_stream_sdl,
+    .graphic_memory = &load_image_memory_sdl
+#else
+    .graphic_file = NULL,
+    .graphic_stream = NULL,
+    .graphic_memory = NULL
+#endif
+  };
+
   // set up a graphic with the same pixel data
   avt_start_common (avt_data_to_graphic
 		    (sdl_screen->pixels, sdl_screen->w, sdl_screen->h),
-		    &avt_quit_sdl, &avt_resize_sdl);
+		    &sdl_backend);
 
   if (_avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
-
-#ifdef IMAGELOADERS
-  // optionally register image loaders
-  avt_image_loader_functions (&avt_load_image_file_sdl,
-			      &avt_load_image_stream_sdl,
-			      &avt_load_image_memory_sdl);
-#endif
 
   // size of the window (not to be confused with the variable window
   windowmode_width = sdl_screen->w;

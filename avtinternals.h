@@ -109,13 +109,23 @@ struct avt_audio
   bool complete;
 };
 
+struct avt_backend
+{
+  void (*update_area) (avt_graphic *screen, int x, int y, int width, int height);
+  void (*quit) (void);
+  void (*wait_key) (void);
+  void (*resize) (avt_graphic * screen, int width, int height);
+
+  avt_graphic *(*graphic_file) (const char *filename);
+  avt_graphic *(*graphic_stream) (avt_stream *stream);
+  avt_graphic *(*graphic_memory) (void *data, size_t size);
+};
+
 #define avt_isblank(c)  ((c) == ' ' or (c) == '\t')
 #define avt_min(a, b) ((a) < (b) ? (a) : (b))
 #define avt_max(a, b) ((a) > (b) ? (a) : (b))
 
 /* avatar-sdl.c */
-extern void avt_update_area (avt_graphic *screen, int x, int y, int width, int height);
-extern void avt_wait_key (void);
 extern avt_char avt_set_pointer_motion_key (avt_char key);
 extern avt_char avt_set_pointer_buttons_key (avt_char key);
 extern void avt_get_pointer_position (int *x, int *y);
@@ -125,14 +135,9 @@ extern int _avt_STATUS;
 
 extern void avt_quit_audio_function (void (*f) (void));
 extern void avt_alert_function (void (*f) (void));
-extern void avt_image_loader_functions (
-          avt_graphic * (*file) (const char *filename),
-          avt_graphic * (*stream) (avt_stream * stream),
-          avt_graphic * (*memory) (void *data, size_t size));
 
-extern int avt_start_common (avt_graphic *new_screen,
-                             void (*quit) (void),
-                             void (*resize) (avt_graphic * screen, int width, int height));
+extern int avt_start_common (avt_graphic *new_screen, 
+                             struct avt_backend *pbackend);
 extern avt_graphic *avt_data_to_graphic (void *data, short width, short height);
 extern avt_graphic *avt_new_graphic (short width, short height);
 extern void avt_free_graphic (avt_graphic * gr);
