@@ -420,7 +420,6 @@ avt_quit_fb (void)
     }
 
   avt_alert_function (&avt_flash);
-  avt_quit_backend_function (NULL);
 }
 
 extern int
@@ -518,7 +517,8 @@ avt_start (const char *title, const char *shortname, int window_mode)
   tcsetattr (tty, TCSANOW, &settings);
   ioctl (tty, KDSETMODE, KD_GRAPHICS);
 
-  avt_start_common (avt_new_graphic (var_info.xres, var_info.yres));
+  avt_start_common (avt_new_graphic (var_info.xres, var_info.yres),
+                    &avt_quit_fb, NULL);
 
   if (_avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -527,7 +527,7 @@ avt_start (const char *title, const char *shortname, int window_mode)
   conv = iconv_open ("UTF-32LE", "UTF-8");
 
   memset (fb, 0, fix_info.smem_len);
-  avt_quit_backend_function (&avt_quit_fb);
+
   avt_alert_function (&beep);	// just remove this line, if you don't like it
 
   return _avt_STATUS;

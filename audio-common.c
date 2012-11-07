@@ -39,14 +39,6 @@
 // absolute maximum size for audio data
 #define MAXIMUM_SIZE  0xFFFFFFFFU
 
-static void (*quit_audio_backend) (void);
-
-extern void
-avt_quit_audio_backend_function (void (*f) (void))
-{
-  quit_audio_backend = f;
-}
-
 #ifdef NO_AUDIO
 
 extern avt_audio *
@@ -85,6 +77,7 @@ avt_quit_audio (void)
 
 // short sound for the "avt_bell" function
 static avt_audio *alert_sound;
+static void (*quit_audio_backend) (void);
 
 // table for decoding mu-law
 static const int_least16_t mulaw_decode[256] = {
@@ -786,7 +779,7 @@ avt_load_audio_general (avt_data * src, uint_least32_t maxsize, int playmode)
 }
 
 extern int
-avt_start_audio_common (void)
+avt_start_audio_common (void (*quit_backend) (void))
 {
   if (not alert_sound)
     alert_sound = avt_load_audio_data (&avt_alert_data,
@@ -795,6 +788,7 @@ avt_start_audio_common (void)
   if (alert_sound)
     avt_alert_function (&audio_alert);
 
+  quit_audio_backend = quit_backend;
   avt_quit_audio_function (&avt_quit_audio);
 
   return _avt_STATUS;

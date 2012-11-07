@@ -104,8 +104,7 @@ avt_start_audio (void)
       // set this before calling anything from this lib
       avt_audio_initialized = true;
 
-      avt_start_audio_common ();
-      avt_quit_audio_backend_function (&avt_quit_audio_sdl);
+      avt_start_audio_common (&avt_quit_audio_sdl);
     }
 
   audio_key = 0;
@@ -141,7 +140,6 @@ avt_quit_audio_sdl (void)
       playing = false;
       SDL_QuitSubSystem (SDL_INIT_AUDIO);
       avt_audio_initialized = false;
-      avt_quit_audio_backend_function (NULL);
     }
 }
 

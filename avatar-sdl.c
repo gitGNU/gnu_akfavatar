@@ -275,7 +275,7 @@ avt_load_image_memory_sdl (void *data, size_t size)
 #endif // not IMAGELOADERS
 
 static void
-avt_resize_sdl (avt_graphic *screen, int width, int height)
+avt_resize_sdl (avt_graphic * screen, int width, int height)
 {
   SDL_Event event;
 
@@ -798,8 +798,6 @@ avt_quit_sdl (void)
       SDL_Quit ();
       sdl_screen = NULL;	// it was freed by SDL_Quit
     }
-
-  avt_quit_backend_function (NULL);
 }
 
 extern void
@@ -994,13 +992,11 @@ avt_start (const char *title, const char *shortname, int window_mode)
 
   // set up a graphic with the same pixel data
   avt_start_common (avt_data_to_graphic
-			  (sdl_screen->pixels, sdl_screen->w, sdl_screen->h));
+		    (sdl_screen->pixels, sdl_screen->w, sdl_screen->h),
+		    &avt_quit_sdl, &avt_resize_sdl);
 
   if (_avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
-
-  avt_resize_function (&avt_resize_sdl);
-  avt_quit_backend_function (&avt_quit_sdl);
 
 #ifdef IMAGELOADERS
   // optionally register image loaders

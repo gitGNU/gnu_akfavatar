@@ -123,10 +123,6 @@ extern void avt_get_pointer_position (int *x, int *y);
 /* avatar.c */
 extern int _avt_STATUS;
 
-extern void avt_quit_backend_function (void (*f) (void));
-extern void avt_clear_screen_function (void (*f) (avt_color background_color));
-extern void avt_resize_function (
-     void (*f) (avt_graphic * screen, int width, int height));
 extern void avt_quit_audio_function (void (*f) (void));
 extern void avt_alert_function (void (*f) (void));
 extern void avt_image_loader_functions (
@@ -134,7 +130,9 @@ extern void avt_image_loader_functions (
           avt_graphic * (*stream) (avt_stream * stream),
           avt_graphic * (*memory) (void *data, size_t size));
 
-extern int avt_start_common (avt_graphic *new_screen);
+extern int avt_start_common (avt_graphic *new_screen,
+                             void (*quit) (void),
+                             void (*resize) (avt_graphic * screen, int width, int height));
 extern avt_graphic *avt_data_to_graphic (void *data, short width, short height);
 extern avt_graphic *avt_new_graphic (short width, short height);
 extern void avt_free_graphic (avt_graphic * gr);
@@ -151,8 +149,7 @@ extern void avt_lock_audio (void);
 extern void avt_unlock_audio (avt_audio *snd);
 
 /* audio-common */
-extern int avt_start_audio_common (void);
-extern void avt_quit_audio_backend_function (void (*f) (void));
+extern int avt_start_audio_common (void (*quit_backend) (void));
 
 /* avtposix.c / avtwindows.c */
 /* currently not used */

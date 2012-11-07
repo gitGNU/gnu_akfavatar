@@ -164,11 +164,9 @@ struct avt_settings
   wchar_t *name;
 
   void (*quit_backend) (void);
+  void (*resize) (avt_graphic * screen, int width, int height);
   void (*quit_audio) (void);
   void (*alert) (void);
-
-  void (*clear_screen) (avt_color background_color);
-  void (*resize) (avt_graphic *screen, int width, int height);
 
   // image loaders from the backend
   avt_graphic *(*load_image_file) (const char *filename);
@@ -276,27 +274,9 @@ avt_alert_function (void (*f) (void))
 }
 
 extern void
-avt_quit_backend_function (void (*f) (void))
-{
-  avt.quit_backend = f;
-}
-
-extern void
-avt_resize_function (void (*f) (avt_graphic * screen, int width, int height))
-{
-  avt.resize = f;
-}
-
-extern void
 avt_quit_audio_function (void (*f) (void))
 {
   avt.quit_audio = f;
-}
-
-extern void
-avt_clear_screen_function (void (*f) (avt_color background_color))
-{
-  avt.clear_screen = f;
 }
 
 extern void
@@ -2000,11 +1980,7 @@ avt_clear_screen (void)
   if (avt.screen)
     {
       avt_free_screen ();
-
-      if (avt.clear_screen)
-	(*avt.clear_screen) (avt.background_color);
-      else
-	avt_update_all ();
+      avt_update_all ();
     }
 
   // undefine textfield / viewport
@@ -6559,7 +6535,6 @@ avt_quit (void)
       avt.quit_backend = NULL;
     }
 
-  avt.clear_screen = NULL;
   avt.resize = NULL;
   avt.load_image_file = NULL;
   avt.load_image_stream = NULL;
@@ -6605,7 +6580,10 @@ avt_reset ()
 }
 
 extern int
-avt_start_common (avt_graphic * new_screen)
+avt_start_common (avt_graphic * new_screen,
+		  void (*quit) (void),
+		  void (*resize) (avt_graphic * screen,
+				  int width, int height))
 {
   // already initialized?
   if (avt.screen)
@@ -6654,6 +6632,9 @@ avt_start_common (avt_graphic * new_screen)
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
+
+  avt.quit_backend = quit;
+  avt.resize = resize;
 
   // visual flash for the alert
   // when you initialize the audio stuff, you get an audio alert
