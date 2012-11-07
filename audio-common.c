@@ -39,6 +39,14 @@
 // absolute maximum size for audio data
 #define MAXIMUM_SIZE  0xFFFFFFFFU
 
+static void (*quit_audio_backend) (void);
+
+extern void
+avt_quit_audio_backend_function (void (*f) (void))
+{
+  quit_audio_backend = f;
+}
+
 #ifdef NO_AUDIO
 
 extern avt_audio *
@@ -77,7 +85,6 @@ avt_quit_audio (void)
 
 // short sound for the "avt_bell" function
 static avt_audio *alert_sound;
-static struct avt_settings *avt;
 
 // table for decoding mu-law
 static const int_least16_t mulaw_decode[256] = {
@@ -150,21 +157,16 @@ avt_quit_audio (void)
       alert_sound = NULL;
     }
 
-  if (avt)
+  avt_alert_function (&avt_flash);
+
+  if (quit_audio_backend)
     {
-      avt->alert = &avt_flash;
-
-      if (avt->quit_audio_backend)
-	{
-	  (*avt->quit_audio_backend) ();
-	  avt->quit_audio_backend = NULL;
-	}
-
-      // no need to call it again automatically
-      avt->quit_audio = NULL;
+      (*quit_audio_backend) ();
+      quit_audio_backend = NULL;
     }
 
-  avt = NULL;
+  // no need to call it again automatically
+  avt_quit_audio_function (NULL);
 }
 
 static size_t
@@ -786,18 +788,16 @@ avt_load_audio_general (avt_data * src, uint_least32_t maxsize, int playmode)
 extern struct avt_settings *
 avt_start_audio_common (void)
 {
-  avt = avt_get_settings ();
-
   if (not alert_sound)
     alert_sound = avt_load_audio_data (&avt_alert_data,
 				       avt_alert_data_size, AVT_LOAD);
 
   if (alert_sound)
-    avt->alert = &audio_alert;
+    avt_alert_function (&audio_alert);
 
-  avt->quit_audio = &avt_quit_audio;
+  avt_quit_audio_function (&avt_quit_audio);
 
-  return avt;
+  return avt_get_settings ();
 }
 
 #endif // not NO_AUDIO

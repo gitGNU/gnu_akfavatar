@@ -86,7 +86,7 @@ static void avt_analyze_event (SDL_Event * event);
 
 // this shall be the only function to update the window/screen
 extern void
-avt_update_area (avt_graphic *screen, int x, int y, int width, int height)
+avt_update_area (avt_graphic * screen, int x, int y, int width, int height)
 {
   // sdl_screen already has the pixel-information of screen
   // other implementations might need to copy pixels here
@@ -275,6 +275,7 @@ avt_load_image_memory_sdl (void *data, size_t size)
 #define load_image_done(void)	// empty
 #endif // not IMAGELOADERS
 
+// TODO: rewrite
 static void
 avt_resize_sdl (int width, int height)
 {
@@ -822,6 +823,8 @@ avt_quit_sdl (void)
       SDL_Quit ();
       sdl_screen = NULL;	// it was freed by SDL_Quit
     }
+
+  avt_quit_backend_function (NULL);
 }
 
 extern void
@@ -1027,15 +1030,15 @@ avt_start (const char *title, const char *shortname, int window_mode)
       return _avt_STATUS;
     }
 
-  avt->quit_backend = &avt_quit_sdl;
+  avt_quit_backend_function (&avt_quit_sdl);
 
   avt_update_all ();
 
 #ifdef IMAGELOADERS
   // optionally register image loaders
-  avt->load_image_file = &avt_load_image_file_sdl;
-  avt->load_image_stream = &avt_load_image_stream_sdl;
-  avt->load_image_memory = &avt_load_image_memory_sdl;
+  avt_image_loader_functions (&avt_load_image_file_sdl,
+			      &avt_load_image_stream_sdl,
+			      &avt_load_image_memory_sdl);
 #endif
 
   // size of the window (not to be confused with the variable window

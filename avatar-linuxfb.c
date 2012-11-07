@@ -50,7 +50,6 @@
 #include <fcntl.h>
 #include <termios.h>
 
-static struct avt_settings *avt;
 static struct fb_var_screeninfo var_info;
 static struct fb_fix_screeninfo fix_info;
 static short bytes_per_pixel;
@@ -420,15 +419,15 @@ avt_quit_fb (void)
       tty = -1;
     }
 
-  if (avt)
-    avt->alert = &avt_flash;
+  avt_alert_function (&avt_flash);
+  avt_quit_backend_function (NULL);
 }
 
 extern int
 avt_start (const char *title, const char *shortname, int window_mode)
 {
   // already initialized?
-  if (avt)
+  if (screen_fd > 0)
     {
       avt_set_error ("AKFAvatar already initialized");
       _avt_STATUS = AVT_ERROR;
@@ -519,21 +518,14 @@ avt_start (const char *title, const char *shortname, int window_mode)
   tcsetattr (tty, TCSANOW, &settings);
   ioctl (tty, KDSETMODE, KD_GRAPHICS);
 
-  avt = avt_start_common (avt_new_graphic (var_info.xres, var_info.yres));
-
-  if (not avt)
-    {
-      avt_quit_fb ();
-      _avt_STATUS = AVT_ERROR;
-      return _avt_STATUS;
-    }
+  avt_start_common (avt_new_graphic (var_info.xres, var_info.yres));
 
   // do not change for big endian!
   conv = iconv_open ("UTF-32LE", "UTF-8");
 
   memset (fb, 0, fix_info.smem_len);
-  avt->quit_backend = &avt_quit_fb;
-  avt->alert = &beep;		// just remove this line, if you don't like it
+  avt_quit_backend_function (&avt_quit_fb);
+  avt_alert_function(&beep);		// just remove this line, if you don't like it
 
   return _avt_STATUS;
 }

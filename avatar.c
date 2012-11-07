@@ -188,6 +188,40 @@ static void avt_drawchar (avt_char ch, avt_graphic * surface);
 static void avt_darker_area (int x, int y, int width, int height, int amount);
 //-----------------------------------------------------------------------------
 
+extern void
+avt_alert_function (void (*f) (void))
+{
+  avt.alert = f;
+}
+
+extern void
+avt_quit_backend_function (void (*f) (void))
+{
+  avt.quit_backend = f;
+}
+
+extern void
+avt_quit_audio_function (void (*f) (void))
+{
+  avt.quit_audio = f;
+}
+
+extern void
+avt_clear_screen_function (void (*f) (avt_color background_color))
+{
+  avt.clear_screen = f;
+}
+
+extern void
+avt_image_loader_functions (avt_graphic * (*file) (const char *filename),
+			    avt_graphic * (*stream) (avt_stream * stream),
+			    avt_graphic * (*memory) (void *data, size_t size))
+{
+  avt.load_image_file = file;
+  avt.load_image_stream = stream;
+  avt.load_image_memory = memory;
+}
+
 // add key into buffer
 extern void
 avt_add_key (avt_char key)
