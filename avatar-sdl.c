@@ -275,38 +275,16 @@ avt_load_image_memory_sdl (void *data, size_t size)
 #define load_image_done(void)	// empty
 #endif // not IMAGELOADERS
 
-// TODO: rewrite
 static void
-avt_resize_sdl (int width, int height)
+avt_resize_sdl (avt_graphic *screen, int width, int height)
 {
-  avt_graphic *oldwindowimage;
   SDL_Event event;
-
-  // minimal size
-  if (width < MINIMALWIDTH)
-    width = MINIMALWIDTH;
-  if (height < MINIMALHEIGHT)
-    height = MINIMALHEIGHT;
-
-  // save the window
-  oldwindowimage = avt_get_window ();
 
   // resize screen
   sdl_screen = SDL_SetVideoMode (width, height, COLORDEPTH, screenflags);
-  avt->screen->pixels = (avt_color *) sdl_screen->pixels;
-  avt->screen->width = sdl_screen->w;
-  avt->screen->height = sdl_screen->h;
-
-  // recalculate positions
-  avt_resized ();
-
-  // restore image in new position
-  avt_free_screen ();
-  avt_put_graphic (oldwindowimage, avt->screen, avt->window.x, avt->window.y);
-  avt_free_graphic (oldwindowimage);
-
-  // make all changes visible
-  avt_update_all ();
+  screen->pixels = (avt_color *) sdl_screen->pixels;
+  screen->width = sdl_screen->w;
+  screen->height = sdl_screen->h;
 
   // set windowmode_size
   if ((screenflags & SDL_FULLSCREEN) == 0)
@@ -334,13 +312,13 @@ avt_toggle_fullscreen (void)
       if ((screenflags bitand SDL_FULLSCREEN) != 0)
 	{
 	  screenflags = screenflags bitor SDL_NOFRAME;
-	  avt_resize_sdl (MINIMALWIDTH, MINIMALHEIGHT);
+	  avt_resize (MINIMALWIDTH, MINIMALHEIGHT);
 	  mode = AVT_FULLSCREEN;
 	}
       else
 	{
 	  screenflags = screenflags bitand compl SDL_NOFRAME;
-	  avt_resize_sdl (windowmode_size.width, windowmode_size.height);
+	  avt_resize (windowmode_size.width, windowmode_size.height);
 	  mode = AVT_WINDOW;
 	}
     }
@@ -361,7 +339,7 @@ avt_switch_mode (int new_mode)
 	    {
 	      screenflags =
 		screenflags bitor SDL_FULLSCREEN bitor SDL_NOFRAME;
-	      avt_resize_sdl (MINIMALWIDTH, MINIMALHEIGHT);
+	      avt_resize (MINIMALWIDTH, MINIMALHEIGHT);
 	    }
 	  break;
 
@@ -370,7 +348,7 @@ avt_switch_mode (int new_mode)
 	    {
 	      screenflags =
 		screenflags bitand compl (SDL_FULLSCREEN bitor SDL_NOFRAME);
-	      avt_resize_sdl (windowmode_size.width, windowmode_size.height);
+	      avt_resize (windowmode_size.width, windowmode_size.height);
 	    }
 	  break;
 	}
@@ -551,7 +529,7 @@ avt_analyze_event (SDL_Event * event)
       break;
 
     case SDL_VIDEORESIZE:
-      avt_resize_sdl (event->resize.w, event->resize.h);
+      avt_resize (event->resize.w, event->resize.h);
       break;
 
     case SDL_MOUSEBUTTONDOWN:
@@ -1031,6 +1009,7 @@ avt_start (const char *title, const char *shortname, int window_mode)
       return _avt_STATUS;
     }
 
+  avt_resize_function (&avt_resize_sdl);
   avt_quit_backend_function (&avt_quit_sdl);
 
   avt_update_all ();

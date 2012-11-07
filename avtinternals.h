@@ -142,6 +142,7 @@ struct avt_settings
   void (*alert) (void);
 
   void (*clear_screen) (avt_color background_color);
+  void (*resize) (avt_graphic *screen, int width, int height);
 
   // image loaders from the backend
   avt_graphic *(*load_image_file) (const char *filename);
@@ -203,6 +204,8 @@ extern int _avt_STATUS;
 
 extern void avt_quit_backend_function (void (*f) (void));
 extern void avt_clear_screen_function (void (*f) (avt_color background_color));
+extern void avt_resize_function (
+     void (*f) (avt_graphic * screen, int width, int height));
 extern void avt_quit_audio_function (void (*f) (void));
 extern void avt_alert_function (void (*f) (void));
 extern void avt_image_loader_functions (
@@ -224,7 +227,7 @@ extern void avt_put_graphic (avt_graphic *source, avt_graphic *destination,
 		 int x, int y);
 extern bool avt_check_buttons (int x, int y);
 extern void avt_add_key (avt_char key);
-extern void avt_resized (void);
+extern void avt_resize (int width, int height);
 
 /* avttiming.c */
 extern void avt_delay (int milliseconds); // only for under a second

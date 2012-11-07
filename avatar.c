@@ -201,6 +201,12 @@ avt_quit_backend_function (void (*f) (void))
 }
 
 extern void
+avt_resize_function (void (*f) (avt_graphic * screen, int width, int height))
+{
+  avt.resize = f;
+}
+
+extern void
 avt_quit_audio_function (void (*f) (void))
 {
   avt.quit_audio = f;
@@ -595,7 +601,7 @@ avt_update_viewport (void)
 }
 
 // recalculate positions after screen has been resized
-extern void
+static void
 avt_resized (void)
 {
   struct avt_area oldwindow;
@@ -629,6 +635,38 @@ avt_resized (void)
 
       avt.cursor.x = avt.cursor.x - oldwindow.x + avt.window.x;
       avt.cursor.y = avt.cursor.y - oldwindow.y + avt.window.y;
+    }
+}
+
+extern void
+avt_resize (int width, int height)
+{
+  if (avt.resize)
+    {
+      avt_graphic *oldwindowimage;
+
+      // minimal size
+      if (width < MINIMALWIDTH)
+	width = MINIMALWIDTH;
+      if (height < MINIMALHEIGHT)
+	height = MINIMALHEIGHT;
+
+      // save the window
+      oldwindowimage = avt_get_window ();
+
+      (*avt.resize) (avt.screen, width, height);
+
+      // recalculate positions
+      avt_resized ();
+
+      // restore image in new position
+      avt_free_screen ();
+      avt_put_graphic (oldwindowimage, avt.screen,
+		       avt.window.x, avt.window.y);
+      avt_free_graphic (oldwindowimage);
+
+      // make all changes visible
+      avt_update_all ();
     }
 }
 
@@ -6447,6 +6485,7 @@ avt_quit (void)
     }
 
   avt.clear_screen = NULL;
+  avt.resize = NULL;
   avt.load_image_file = NULL;
   avt.load_image_stream = NULL;
   avt.load_image_memory = NULL;
