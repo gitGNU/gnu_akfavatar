@@ -534,21 +534,21 @@ avt_set_color_key (avt_graphic * gr, avt_color color_key)
 extern void
 avt_update_all (void)
 {
-  avt_update_area (0, 0, avt.screen->width, avt.screen->height);
+  avt_update_area (avt.screen, 0, 0, avt.screen->width, avt.screen->height);
 }
 
 static inline void
 avt_update_window (void)
 {
-  avt_update_area (avt.window.x, avt.window.y, avt.window.width,
-		   avt.window.height);
+  avt_update_area (avt.screen, avt.window.x, avt.window.y,
+		   avt.window.width, avt.window.height);
 }
 
 static inline void
 avt_update_textfield (void)
 {
   if (not avt.hold_updates and avt.textfield.x >= 0)
-    avt_update_area (avt.textfield.x, avt.textfield.y,
+    avt_update_area (avt.screen, avt.textfield.x, avt.textfield.y,
 		     avt.textfield.width, avt.textfield.height);
 }
 
@@ -556,7 +556,7 @@ static inline void
 avt_update_viewport (void)
 {
   if (not avt.hold_updates and avt.viewport.x >= 0)
-    avt_update_area (avt.viewport.x, avt.viewport.y,
+    avt_update_area (avt.screen, avt.viewport.x, avt.viewport.y,
 		     avt.viewport.width, avt.viewport.height);
 }
 
@@ -1796,16 +1796,18 @@ avt_show_text_cursor (bool on)
 			       0);
 
 	  // show text-cursor
-	  avt_darker_area (avt.cursor.x, avt.cursor.y, fontwidth,
-			   fontheight, 0x50);
-	  avt_update_area (avt.cursor.x, avt.cursor.y, fontwidth, fontheight);
+	  avt_darker_area (avt.cursor.x, avt.cursor.y,
+			   fontwidth, fontheight, 0x50);
+	  avt_update_area (avt.screen, avt.cursor.x, avt.cursor.y,
+			   fontwidth, fontheight);
 	}
       else
 	{
 	  // restore saved character
-	  avt_put_graphic (avt.cursor_character, avt.screen, avt.cursor.x,
-			   avt.cursor.y);
-	  avt_update_area (avt.cursor.x, avt.cursor.y, fontwidth, fontheight);
+	  avt_put_graphic (avt.cursor_character, avt.screen,
+			   avt.cursor.x, avt.cursor.y);
+	  avt_update_area (avt.screen, avt.cursor.x, avt.cursor.y,
+			   fontwidth, fontheight);
 	}
 
       avt.text_cursor_actually_visible = on;
@@ -2558,8 +2560,8 @@ avt_insert_spaces (int num)
 
   // update line
   if (not avt.hold_updates)
-    avt_update_area (avt.viewport.x, avt.cursor.y, avt.viewport.width,
-		     fontheight);
+    avt_update_area (avt.screen, avt.viewport.x, avt.cursor.y,
+		     avt.viewport.width, fontheight);
 }
 
 extern void
@@ -2588,8 +2590,8 @@ avt_delete_characters (int num)
 
   // update line
   if (not avt.hold_updates)
-    avt_update_area (avt.viewport.x, avt.cursor.y, avt.viewport.width,
-		     fontheight);
+    avt_update_area (avt.screen, avt.viewport.x, avt.cursor.y,
+		     avt.viewport.width, fontheight);
 }
 
 extern void
@@ -2612,7 +2614,8 @@ avt_erase_characters (int num)
 
   // update area
   if (not avt.hold_updates)
-    avt_update_area (x, avt.cursor.y, num * fontwidth, fontheight);
+    avt_update_area (avt.screen, x, avt.cursor.y,
+		     num * fontwidth, fontheight);
 }
 
 extern void
@@ -2830,7 +2833,7 @@ avt_clear_up (void)
     }
 
   if (not avt.hold_updates)
-    avt_update_area (avt.viewport.x, avt.viewport.y + fontheight,
+    avt_update_area (avt.screen, avt.viewport.x, avt.viewport.y + fontheight,
 		     avt.viewport.width, avt.cursor.y);
 }
 
@@ -2859,7 +2862,8 @@ avt_clear_down (void)
     }
 
   if (not avt.hold_updates)
-    avt_update_area (avt.viewport.x, avt.cursor.y, avt.viewport.width,
+    avt_update_area (avt.screen, avt.viewport.x, avt.cursor.y,
+		     avt.viewport.width,
 		     avt.viewport.height - (avt.cursor.y - avt.viewport.y));
 }
 
@@ -2897,7 +2901,7 @@ avt_clear_eol (void)
     }
 
   if (not avt.hold_updates)
-    avt_update_area (x, avt.cursor.y, width, fontheight);
+    avt_update_area (avt.screen, x, avt.cursor.y, width, fontheight);
 }
 
 // clear beginning of line
@@ -2935,7 +2939,7 @@ avt_clear_bol (void)
     }
 
   if (not avt.hold_updates)
-    avt_update_area (x, avt.cursor.y, width, fontheight);
+    avt_update_area (avt.screen, x, avt.cursor.y, width, fontheight);
 }
 
 extern void
@@ -2959,8 +2963,8 @@ avt_clear_line (void)
     }
 
   if (not avt.hold_updates)
-    avt_update_area (avt.viewport.x, avt.cursor.y, avt.viewport.width,
-		     fontheight);
+    avt_update_area (avt.screen, avt.viewport.x, avt.cursor.y,
+		     avt.viewport.width, fontheight);
 }
 
 extern int
@@ -3144,7 +3148,8 @@ avt_showchar (void)
 {
   if (not avt.hold_updates)
     {
-      avt_update_area (avt.cursor.x, avt.cursor.y, fontwidth, fontheight);
+      avt_update_area (avt.screen, avt.cursor.x, avt.cursor.y,
+		       fontwidth, fontheight);
       avt.text_cursor_actually_visible = false;
     }
 }
@@ -4228,7 +4233,7 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
 			       avt.viewport.width, fontheight,
 			       avt.screen, avt.viewport.x,
 			       avt.viewport.y + y);
-	  avt_update_area (avt.viewport.x, avt.viewport.y + y,
+	  avt_update_area (avt.screen, avt.viewport.x, avt.viewport.y + y,
 			   avt.viewport.width, fontheight);
 	}
 
@@ -4238,7 +4243,8 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
 	  int y = avt.viewport.y + ((line_nr - 1) * fontheight);
 	  avt_darker_area (avt.viewport.x, y, avt.viewport.width,
 			   fontheight, 0x20);
-	  avt_update_area (avt.viewport.x, y, avt.viewport.width, fontheight);
+	  avt_update_area (avt.screen, avt.viewport.x, y,
+			   avt.viewport.width, fontheight);
 	}
     }
 }
@@ -4464,7 +4470,8 @@ avt_show_button (int x, int y, enum avt_button_type type,
       break;
     }
 
-  avt_update_area (pos.x, pos.y, BASE_BUTTON_WIDTH, BASE_BUTTON_HEIGHT);
+  avt_update_area (avt.screen, pos.x, pos.y,
+		   BASE_BUTTON_WIDTH, BASE_BUTTON_HEIGHT);
 }
 
 static void
@@ -4481,7 +4488,8 @@ avt_clear_buttons (void)
 	  avt_put_graphic (button->background, avt.screen,
 			   button->x + avt.window.x,
 			   button->y + avt.window.y);
-	  avt_update_area (button->x + avt.window.x, button->y + avt.window.y,
+	  avt_update_area (avt.screen, button->x + avt.window.x,
+			   button->y + avt.window.y,
 			   BASE_BUTTON_WIDTH, BASE_BUTTON_HEIGHT);
 	  avt_free_graphic (button->background);
 	  button->background = NULL;
@@ -5152,10 +5160,11 @@ avt_move_in (void)
 
 	      // update
 	      if ((oldx + avt.avatar_image->width) >= avt.screen->width)
-		avt_update_area (pos.x, pos.y, avt.screen->width - pos.x,
+		avt_update_area (avt.screen, pos.x, pos.y,
+				 avt.screen->width - pos.x,
 				 avt.avatar_image->height);
 	      else
-		avt_update_area (pos.x, pos.y,
+		avt_update_area (avt.screen, pos.x, pos.y,
 				 avt.avatar_image->width + (oldx - pos.x),
 				 avt.avatar_image->height);
 
@@ -5230,10 +5239,11 @@ avt_move_out (void)
 
 	      // update
 	      if ((pos.x + avt.avatar_image->width) >= avt.screen->width)
-		avt_update_area (oldx, pos.y, avt.screen->width - oldx,
+		avt_update_area (avt.screen, oldx, pos.y,
+				 avt.screen->width - oldx,
 				 avt.avatar_image->height);
 	      else
-		avt_update_area (oldx, pos.y,
+		avt_update_area (avt.screen, oldx, pos.y,
 				 avt.avatar_image->width + pos.x - oldx,
 				 avt.avatar_image->height);
 

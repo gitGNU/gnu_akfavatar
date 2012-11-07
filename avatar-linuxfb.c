@@ -77,15 +77,15 @@ pack_pixel (uint32_t color)
 
 // TODO: support 24 bit per pixel (can't test)
 extern void
-avt_update_area (int x, int y, int width, int height)
+avt_update_area (avt_graphic *screen, int x, int y, int width, int height)
 {
   int screen_width;
   int x2;
   avt_color *pixels;
   uint8_t *fbp;
 
-  screen_width = avt->screen->width;
-  pixels = avt->screen->pixels + (y * screen_width);
+  screen_width = screen->width;
+  pixels = screen->pixels + (y * screen_width);
   fbp = fb + y * fix_info.line_length + x * bytes_per_pixel;
   x2 = x + width;
 

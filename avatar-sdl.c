@@ -86,10 +86,10 @@ static void avt_analyze_event (SDL_Event * event);
 
 // this shall be the only function to update the window/screen
 extern void
-avt_update_area (int x, int y, int width, int height)
+avt_update_area (avt_graphic *screen, int x, int y, int width, int height)
 {
-  // sdl_screen already has the pixel-information of avt->screen
-  // other implementations might need to copy it
+  // sdl_screen already has the pixel-information of screen
+  // other implementations might need to copy pixels here
   SDL_UpdateRect (sdl_screen, x, y, width, height);
 }
 

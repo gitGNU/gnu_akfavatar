@@ -193,7 +193,7 @@ struct avt_settings
 #define avt_max(a, b) ((a) > (b) ? (a) : (b))
 
 /* avatar-sdl.c */
-extern void avt_update_area (int x, int y, int width, int height);
+extern void avt_update_area (avt_graphic *screen, int x, int y, int width, int height);
 extern void avt_wait_key (void);
 extern avt_char avt_set_pointer_motion_key (avt_char key);
 extern avt_char avt_set_pointer_buttons_key (avt_char key);
