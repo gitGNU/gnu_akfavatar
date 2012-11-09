@@ -50,7 +50,7 @@ all: $(TARGET)
 dist-bin: $(DISTBIN)
 
 default: libakfavatar.so libakfavatar.a libavtaddons.a example about \
-	lua-akfavatar lua-akfavatar-dyn \
+	lua-akfavatar lua-akfavatar-dyn lua-akfavatar-linuxfb \
 	lua-akfavatar.so base64.so akfavatar-term.so \
 	akfavatar-vorbis.so akfavatar-graphic.so
 	@echo '*'

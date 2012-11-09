@@ -133,8 +133,8 @@ extern void avt_get_pointer_position (int *x, int *y);
 /* avatar.c */
 extern int _avt_STATUS;
 
-extern void avt_quit_audio_function (void (*f) (void));
-extern void avt_alert_function (void (*f) (void));
+extern void avt_quit_audio_function (void (*) (void));
+extern void avt_alert_function (void (*) (void));
 
 extern int avt_start_common (avt_graphic *new_screen, 
                              struct avt_backend *pbackend);
