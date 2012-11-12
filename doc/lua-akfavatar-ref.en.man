@@ -929,6 +929,12 @@ audio = avt.load_audio_file(filename) or avt.silent()
 In this example you get a silent sound when the file could not be read.
 .PP
 .TP
+.B avt.alert()
+Returns a pseudo audio element, that calls
+.B avt.bell()
+when you play it.
+.PP
+.TP
 .BI "avt.audio_playing(" [audio_data] )
 Checks if the audio is currently playing.
 If

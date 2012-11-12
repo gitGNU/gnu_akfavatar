@@ -1449,6 +1449,13 @@ lavt_silent (lua_State * L)
   return 1;
 }
 
+static int
+lavt_alert (lua_State * L)
+{
+  make_audio_element (L, (avt_audio *) & avt_bell);
+  return 1;
+}
+
 /*
  * loads an audio file
  * supported: AU and Wave
@@ -1609,7 +1616,12 @@ laudio_play (lua_State * L)
   audio = (avt_audio **) luaL_checkudata (L, 1, AUDIODATA);
 
   if (audio and * audio)
-    avt_play_audio (*audio, AVT_PLAY);	// no check!
+    {
+      if (*audio == (avt_audio *) & avt_bell)
+	avt_bell ();
+      else
+	avt_play_audio (*audio, AVT_PLAY);	// no check!
+    }
 
   // store reference to audio, so it isn't garbage collected while playing
   lua_pushvalue (L, 1);
@@ -1626,7 +1638,7 @@ laudio_loop (lua_State * L)
 
   audio = (avt_audio **) luaL_checkudata (L, 1, AUDIODATA);
 
-  if (audio and * audio)
+  if (audio and * audio and * audio != (avt_audio *) & avt_bell)
     avt_play_audio (*audio, AVT_LOOP);	// no check!
 
   // store reference to audio, so it isn't garbage collected while playing
@@ -1643,7 +1655,7 @@ laudio_free (lua_State * L)
   avt_audio **audio;
 
   audio = (avt_audio **) luaL_checkudata (L, 1, AUDIODATA);
-  if (audio and * audio)
+  if (audio and * audio and * audio != (avt_audio *) & avt_bell)
     {
       avt_free_audio (*audio);
       *audio = NULL;
@@ -1676,7 +1688,9 @@ laudio_tostring (lua_State * L)
 
   audio = (avt_audio **) luaL_checkudata (L, 1, AUDIODATA);
 
-  if (audio and * audio)
+  if (audio and * audio and * audio == (avt_audio *) & avt_bell)
+    lua_pushfstring (L, AUDIODATA ", alert (%p)", audio);
+  else if (audio and * audio)
     lua_pushfstring (L, AUDIODATA " (%p)", audio);
   else
     lua_pushfstring (L, AUDIODATA ", silent (%p)", audio);
@@ -2487,6 +2501,7 @@ static const luaL_Reg akfavtlib[] = {
   {"load_audio", lavt_load_audio},
   {"load_base_audio", lavt_load_audio},
   {"silent", lavt_silent},
+  {"alert", lavt_alert},
   {"audio_playing", laudio_playing},
   {"wait_audio_end", lavt_wait_audio_end},
   {"stop_audio", lavt_stop_audio},

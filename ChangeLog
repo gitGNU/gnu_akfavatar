@@ -1,3 +1,7 @@
+2012-11-12  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/lua-avt.c (lavt_alert): new function
+
 2012-11-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h: don't include SDL.h

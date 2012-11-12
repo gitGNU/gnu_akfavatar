@@ -20,7 +20,7 @@
 
   Lua-API changes:
     - new functions: avt.combining, avt.key_pressed, avt.clear_keys,
-      avt.push_key, avt.set_audio_end_key
+      avt.push_key, avt.set_audio_end_key, avt.alert
 
 
 * AKFAvatar 0.22.1

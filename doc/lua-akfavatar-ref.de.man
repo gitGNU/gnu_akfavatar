@@ -981,6 +981,12 @@ In diesem Beispiel bekommt man einen stillen Klang, wenn die Datei nicht
 gelesen werden konnte.
 .PP
 .TP
+.B avt.alert()
+Gibt ein Pseudo-Audio-Element zurück, welches
+.B avt.bell()
+aufruft, wenn man es abspielt.
+.PP
+.TP
 .BI "avt.audio_playing(" [Audiodaten] )
 Überprüft, ob Audiodaten gerade abgespielt werden.
 Wenn

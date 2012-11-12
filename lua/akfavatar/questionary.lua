@@ -19,7 +19,7 @@ avt.translations["Questions: %d, correct: %d (%d%%)"] = {
     de = "Fragen: %d, davon richtig: %d (%d%%)"}
 
 local positive = avt.load_audio_file(avt.search("positive.au")) or avt.silent()
-local negative = avt.load_audio_file(avt.search("negative.au")) or avt.silent()
+local negative = avt.load_audio_file(avt.search("negative.au")) or avt.alert()
 local count = { questions = 0, right = 0 }
 local L = avt.translate
 
