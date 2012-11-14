@@ -308,11 +308,10 @@ avt_wait (size_t milliseconds)
       start = avt_ticks ();
       elapsed = 0;
 
-      FD_ZERO (&input_set);
-      FD_SET (tty, &input_set);
-
       do
 	{
+	  FD_ZERO (&input_set);
+	  FD_SET (tty, &input_set);
 	  timeout.tv_sec = (milliseconds - elapsed) / 1000;
 	  timeout.tv_usec = ((milliseconds - elapsed) % 1000) * 1000;
 
@@ -337,11 +336,11 @@ wait_key_fb (void)
 {
   fd_set input_set;
 
-  FD_ZERO (&input_set);
-  FD_SET (tty, &input_set);
-
   while (_avt_STATUS == AVT_NORMAL and not avt_key_pressed ())
     {
+      FD_ZERO (&input_set);
+      FD_SET (tty, &input_set);
+
       select (FD_SETSIZE, &input_set, NULL, NULL, NULL);
       avt_update ();
     }
