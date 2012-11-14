@@ -47,6 +47,7 @@
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <sys/ioctl.h>
+#include <sys/select.h>
 #include <fcntl.h>
 #include <termios.h>
 
@@ -159,6 +160,12 @@ extern void
 avt_toggle_fullscreen (void)
 {
   // only 1 mode
+}
+
+extern int
+avt_get_mode (void)
+{
+  return AVT_FULLSCREENNOSWITCH;
 }
 
 static avt_char
@@ -284,7 +291,6 @@ avt_update (void)
   return _avt_STATUS;
 }
 
-// TODO
 extern int
 avt_wait (size_t milliseconds)
 {
@@ -295,14 +301,26 @@ avt_wait (size_t milliseconds)
     }
   else
     {
-      size_t start = avt_ticks ();
+      size_t start, elapsed;
+      fd_set input_set;
+      struct timeval timeout;
+
+      start = avt_ticks ();
+      elapsed = 0;
+
+      FD_ZERO (&input_set);
+      FD_SET (tty, &input_set);
 
       do
 	{
-	  avt_delay (10);
+	  timeout.tv_sec = (milliseconds - elapsed) / 1000;
+	  timeout.tv_usec = ((milliseconds - elapsed) % 1000) * 1000;
+
+	  select (FD_SETSIZE, &input_set, NULL, NULL, &timeout);
 	  avt_update ();
+	  elapsed = avt_elapsed (start);
 	}
-      while (avt_elapsed (start) < milliseconds);
+      while (elapsed < milliseconds);
     }
 
   return _avt_STATUS;
@@ -314,16 +332,19 @@ avt_push_key (avt_char key)
   avt_add_key (key);
 }
 
-// TODO: use select?
 static void
 wait_key_fb (void)
 {
-  do
+  fd_set input_set;
+
+  FD_ZERO (&input_set);
+  FD_SET (tty, &input_set);
+
+  while (_avt_STATUS == AVT_NORMAL and not avt_key_pressed ())
     {
-      avt_delay (10);
+      select (FD_SETSIZE, &input_set, NULL, NULL, NULL);
       avt_update ();
     }
-  while (_avt_STATUS == AVT_NORMAL and not avt_key_pressed ());
 }
 
 extern void
@@ -357,12 +378,6 @@ avt_set_mouse_visible (bool visible)
   // no mouse
 }
 
-extern int
-avt_get_mode (void)
-{
-  return AVT_FULLSCREEN;
-}
-
 extern char *
 avt_get_error (void)
 {
@@ -379,6 +394,7 @@ avt_set_error (const char *message)
 extern void
 avt_set_title (const char *title, const char *shortname)
 {
+  // nothing to do
 }
 
 static void
