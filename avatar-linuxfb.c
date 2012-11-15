@@ -302,7 +302,7 @@ avt_update (void)
 extern int
 avt_wait (size_t milliseconds)
 {
-  if (milliseconds < 1000)
+  if (milliseconds <= 500)
     {
       avt_delay (milliseconds);
       avt_update ();
@@ -327,7 +327,7 @@ avt_wait (size_t milliseconds)
 	  avt_update ();
 	  elapsed = avt_elapsed (start);
 	}
-      while (elapsed < milliseconds);
+      while (elapsed < milliseconds and _avt_STATUS == AVT_NORMAL);
     }
 
   return _avt_STATUS;
