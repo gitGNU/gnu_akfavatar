@@ -377,7 +377,11 @@ avt_set_pointer_buttons_key (avt_char key)
 extern void
 avt_get_pointer_position (int *x, int *y)
 {
-  *x = *y = 0;
+  if (x)
+    *x = 0;
+
+  if (y)
+    *y = 0;
 }
 
 extern void

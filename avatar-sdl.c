@@ -734,7 +734,13 @@ avt_get_pointer_position (int *x, int *y)
   if (sdl_screen)
     SDL_GetMouseState (x, y);
   else
-    *x = *y = 0;
+    {
+      if (x)
+	*x = 0;
+
+      if (y)
+	*y = 0;
+    }
 }
 
 extern void
