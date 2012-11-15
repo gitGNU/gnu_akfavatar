@@ -624,7 +624,9 @@ avt_wait (size_t milliseconds)
     {
       if (milliseconds <= 500)	// short delay
 	{
-	  avt_delay (milliseconds);
+	  if (_avt_STATUS == AVT_NORMAL)
+	    avt_delay (milliseconds);
+
 	  avt_update ();
 	}
       else			// longer

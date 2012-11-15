@@ -55,7 +55,7 @@ static struct fb_var_screeninfo var_info;
 static struct fb_fix_screeninfo fix_info;
 static short bytes_per_pixel;
 static int screen_fd, tty;
-static uint_least8_t *fb;		// frame buffer
+static uint_least8_t *fb;	// frame buffer
 static struct termios terminal_settings;
 static char error_msg[256];
 static iconv_t conv = (iconv_t) (-1);
@@ -304,10 +304,12 @@ avt_wait (size_t milliseconds)
 {
   if (milliseconds <= 500)
     {
-      avt_delay (milliseconds);
+      if (_avt_STATUS == AVT_NORMAL)
+	avt_delay (milliseconds);
+
       avt_update ();
     }
-  else
+  else				// longer time
     {
       size_t start, elapsed;
       fd_set input_set;
@@ -316,7 +318,7 @@ avt_wait (size_t milliseconds)
       start = avt_ticks ();
       elapsed = 0;
 
-      do
+      while (elapsed < milliseconds and _avt_STATUS == AVT_NORMAL)
 	{
 	  FD_ZERO (&input_set);
 	  FD_SET (tty, &input_set);
@@ -327,7 +329,6 @@ avt_wait (size_t milliseconds)
 	  avt_update ();
 	  elapsed = avt_elapsed (start);
 	}
-      while (elapsed < milliseconds and _avt_STATUS == AVT_NORMAL);
     }
 
   return _avt_STATUS;
