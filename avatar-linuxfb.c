@@ -55,7 +55,7 @@ static struct fb_var_screeninfo var_info;
 static struct fb_fix_screeninfo fix_info;
 static short bytes_per_pixel;
 static int screen_fd, tty;
-static uint8_t *fb;		// frame buffer
+static uint_least8_t *fb;		// frame buffer
 static struct termios terminal_settings;
 static char error_msg[256];
 static iconv_t conv = (iconv_t) (-1);
@@ -63,25 +63,13 @@ static bool reserve_single_keys;
 
 //-----------------------------------------------------------------------------
 
-static inline uint32_t
-pack_pixel (uint32_t color)
-{
-  return
-    ((avt_red (color) >> (8 - var_info.red.length)) bitand 0xFF)
-    << var_info.red.offset
-    bitor ((avt_green (color) >> (8 - var_info.green.length)) bitand 0xFF)
-    << var_info.green.offset
-    bitor ((avt_blue (color) >> (8 - var_info.blue.length)) bitand 0xFF)
-    << var_info.blue.offset;
-}
-
 static void
 update_area_fb (avt_graphic * screen, int x, int y, int width, int height)
 {
   int screen_width;
   int x2;
   avt_color *pixels;
-  uint8_t *fbp;
+  uint_least8_t *fbp;
 
   screen_width = screen->width;
   pixels = screen->pixels + (y * screen_width);
@@ -93,12 +81,18 @@ update_area_fb (avt_graphic * screen, int x, int y, int width, int height)
     case 32:
       for (int ly = 0; ly < height; ly++)
 	{
-	  uint32_t *p = (uint32_t *) fbp;
+	  uint_least32_t *p = (uint_least32_t *) fbp;
 
 	  // in this mode it might be superfluous to repack pixels,
 	  // but I want to play save
 	  for (int lx = x; lx < x2; lx++)
-	    *p++ = pack_pixel (pixels[lx]);
+	    {
+	      register avt_color color = pixels[lx];
+
+	      *p++ = (avt_red (color) << var_info.red.offset)
+		bitor (avt_green (color) << var_info.green.offset)
+		bitor (avt_blue (color) << var_info.blue.offset);
+	    }
 
 	  fbp += fix_info.line_length;
 	  pixels += screen_width;
@@ -108,11 +102,11 @@ update_area_fb (avt_graphic * screen, int x, int y, int width, int height)
     case 24:
       for (int ly = 0; ly < height; ly++)
 	{
-	  uint8_t *p = fbp;
+	  uint_least8_t *p = fbp;
 
 	  for (int lx = x; lx < x2; lx++)
 	    {
-	      register uint32_t color = pixels[lx];
+	      register avt_color color = pixels[lx];
 
 	      if (AVT_BIG_ENDIAN == AVT_BYTE_ORDER)
 		{
@@ -137,14 +131,28 @@ update_area_fb (avt_graphic * screen, int x, int y, int width, int height)
     case 16:
       for (int ly = 0; ly < height; ly++)
 	{
-	  uint16_t *p = (uint16_t *) fbp;
+	  uint_least16_t *p = (uint_least16_t *) fbp;
 
 	  for (int lx = x; lx < x2; lx++)
-	    *p++ = pack_pixel (pixels[lx]);
+	    {
+	      register avt_color color = pixels[lx];
+
+	      *p++ = ((avt_red (color) >> (8 - var_info.red.length)))
+		<< var_info.red.offset
+		bitor (avt_green (color) >> (8 - var_info.green.length))
+		<< var_info.green.offset
+		bitor (avt_blue (color) >> (8 - var_info.blue.length))
+		<< var_info.blue.offset;
+	    }
 
 	  fbp += fix_info.line_length;
 	  pixels += screen_width;
 	}
+      break;
+
+    default:
+      avt_set_error ("unsupported screen format");
+      _avt_STATUS = AVT_ERROR;
       break;
     }
 }
@@ -171,14 +179,14 @@ avt_get_mode (void)
 static avt_char
 utf8 (char c)
 {
-  uint8_t inbuf[4];
-  uint8_t outbuf[4];
+  uint_least8_t inbuf[4];
+  uint_least8_t outbuf[4];
   size_t inbytes, outbytes;
   avt_char result;
 
   result = 0;
   memset (inbuf, 0, sizeof (inbuf));
-  inbuf[0] = (uint8_t) c;
+  inbuf[0] = (uint_least8_t) c;
   inbytes = read (tty, inbuf + 1, sizeof (inbuf) - 2) + 1;
 
   if (inbytes >= 2)
@@ -268,7 +276,7 @@ escape (void)
 extern int
 avt_update (void)
 {
-  uint8_t c;
+  uint_least8_t c;
   avt_char key;
 
   key = AVT_KEY_NONE;
