@@ -136,8 +136,7 @@ extern int _avt_STATUS;
 extern void avt_quit_audio_function (void (*) (void));
 extern void avt_alert_function (void (*) (void));
 
-extern int avt_start_common (avt_graphic *new_screen, 
-                             struct avt_backend *pbackend);
+extern struct avt_backend *avt_start_common (avt_graphic *new_screen);
 extern avt_graphic *avt_data_to_graphic (void *data, short width, short height);
 extern avt_graphic *avt_new_graphic (short width, short height);
 extern void avt_free_graphic (avt_graphic * gr);

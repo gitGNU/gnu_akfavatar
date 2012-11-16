@@ -452,6 +452,8 @@ quit_fb (void)
 extern int
 avt_start (const char *title, const char *shortname, int window_mode)
 {
+  struct avt_backend *backend;
+
   // already initialized?
   if (screen_fd > 0)
     {
@@ -544,20 +546,18 @@ avt_start (const char *title, const char *shortname, int window_mode)
   tcsetattr (tty, TCSANOW, &settings);
   ioctl (tty, KDSETMODE, KD_GRAPHICS);
 
-  struct avt_backend backend = {
-    .update_area = &update_area_fb,
-    .quit = &quit_fb,
-    .wait_key = &wait_key_fb,
-    .resize = NULL,
-    .graphic_file = NULL,
-    .graphic_stream = NULL,
-    .graphic_memory = NULL
-  };
+  backend = avt_start_common (avt_new_graphic (var_info.xres, var_info.yres));
 
-  avt_start_common (avt_new_graphic (var_info.xres, var_info.yres), &backend);
+  if (not backend or _avt_STATUS != AVT_NORMAL)
+    {
+      quit_fb ();
+      _avt_STATUS = AVT_ERROR;
+      return _avt_STATUS;
+    }
 
-  if (_avt_STATUS != AVT_NORMAL)
-    return _avt_STATUS;
+  backend->update_area = &update_area_fb;
+  backend->quit = &quit_fb;
+  backend->wait_key = &wait_key_fb;
 
   // do not change for big endian!
   conv = iconv_open ("UTF-32LE", "UTF-8");

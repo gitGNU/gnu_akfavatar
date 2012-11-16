@@ -917,6 +917,8 @@ avt_set_icon (char **xpm)
 extern int
 avt_start (const char *title, const char *shortname, int window_mode)
 {
+  struct avt_backend *backend;
+
   // already initialized?
   if (sdl_screen)
     {
@@ -997,29 +999,24 @@ avt_start (const char *title, const char *shortname, int window_mode)
       return _avt_STATUS;
     }
 
-  struct avt_backend sdl_backend = {
-    .update_area = &update_area_sdl,
-    .quit = &quit_sdl,
-    .wait_key = &wait_key_sdl,
-    .resize = &resize_sdl,
-#ifdef IMAGELOADERS
-    .graphic_file = &load_image_file_sdl,
-    .graphic_stream = &load_image_stream_sdl,
-    .graphic_memory = &load_image_memory_sdl
-#else
-    .graphic_file = NULL,
-    .graphic_stream = NULL,
-    .graphic_memory = NULL
-#endif
-  };
-
   // set up a graphic with the same pixel data
-  avt_start_common (avt_data_to_graphic
-		    (sdl_screen->pixels, sdl_screen->w, sdl_screen->h),
-		    &sdl_backend);
+  backend = avt_start_common (avt_data_to_graphic (sdl_screen->pixels,
+						   sdl_screen->w,
+						   sdl_screen->h));
 
-  if (_avt_STATUS != AVT_NORMAL)
+  if (not backend or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
+
+  backend->update_area = &update_area_sdl;
+  backend->quit = &quit_sdl;
+  backend->wait_key = &wait_key_sdl;
+  backend->resize = &resize_sdl;
+
+#ifdef IMAGELOADERS
+  backend->graphic_file = &load_image_file_sdl;
+  backend->graphic_stream = &load_image_stream_sdl;
+  backend->graphic_memory = &load_image_memory_sdl;
+#endif
 
   // size of the window (not to be confused with the variable window
   windowmode_width = sdl_screen->w;

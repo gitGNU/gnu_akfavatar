@@ -6568,26 +6568,15 @@ avt_reset ()
     avt_set_avatar_image (NULL);
 }
 
-extern int
-avt_start_common (avt_graphic * new_screen, struct avt_backend *pbackend)
+extern struct avt_backend *
+avt_start_common (avt_graphic * new_screen)
 {
   // already initialized?
   if (avt.screen)
     {
       avt_set_error ("AKFAvatar already initialized");
       _avt_STATUS = AVT_ERROR;
-      return _avt_STATUS;
-    }
-
-  // copy the backend data
-  backend = *pbackend;
-
-  // check essential backend functions
-  if (not backend.update_area or not backend.wait_key)
-    {
-      avt_set_error ("backend function missing");
-      _avt_STATUS = AVT_ERROR;
-      return _avt_STATUS;
+      return NULL;
     }
 
   avt_reset ();
@@ -6601,7 +6590,7 @@ avt_start_common (avt_graphic * new_screen, struct avt_backend *pbackend)
     {
       avt_set_error ("screen too small");
       _avt_STATUS = AVT_ERROR;
-      return _avt_STATUS;
+      return NULL;
     }
 
   avt_fill (avt.screen, avt.background_color);
@@ -6627,12 +6616,12 @@ avt_start_common (avt_graphic * new_screen, struct avt_backend *pbackend)
     {
       avt_set_error ("out of memory");
       _avt_STATUS = AVT_ERROR;
-      return _avt_STATUS;
+      return NULL;
     }
 
   // visual flash for the alert
   // when you initialize the audio stuff, you get an audio alert
   avt.alert = &avt_flash;
 
-  return _avt_STATUS;
+  return &backend;
 }
