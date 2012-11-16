@@ -164,7 +164,7 @@ struct avt_settings
   wchar_t *name;
 
   void (*quit_audio) (void);
-  void (*alert) (void);
+  void (*bell) (void);
 
   // delay values for printing text and flipping the page
   int text_delay, flip_page_delay;
@@ -262,9 +262,9 @@ static void avt_darker_area (int x, int y, int width, int height, int amount);
 //-----------------------------------------------------------------------------
 
 extern void
-avt_alert_function (void (*f) (void))
+avt_bell_function (void (*f) (void))
 {
-  avt.alert = f;
+  avt.bell = f;
 }
 
 extern void
@@ -739,8 +739,8 @@ avt_release_raw_image (void)
 static inline void
 bell (void)
 {
-  if (avt.alert)
-    (*avt.alert) ();
+  if (avt.bell)
+    avt.bell ();
 }
 
 static int
@@ -4846,8 +4846,8 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   avt.text_cursor_visible = false;
   avt.auto_margin = false;
 
-  // temporarily disable the alert function
-  avt.alert = NULL;
+  // temporarily disable the bell function
+  avt.bell = NULL;
 
   avt_set_text_delay (0);
   if (avt.markup)
@@ -6527,7 +6527,7 @@ avt_quit (void)
       avt.avatar_image = NULL;
       avt_free_graphic (avt.cursor_character);
       avt.cursor_character = NULL;
-      avt.alert = NULL;
+      avt.bell = NULL;
       avt_free_graphic (avt.screen);
       avt.screen = NULL;
       avt.avatar_visible = false;
@@ -6644,9 +6644,9 @@ avt_start_common (avt_graphic * new_screen)
       return NULL;
     }
 
-  // visual flash for the alert
-  // when you initialize the audio stuff, you get an audio alert
-  avt.alert = &avt_flash;
+  // visual flash for the bell
+  // when you initialize the audio stuff, you get an audio bell
+  avt.bell = &avt_flash;
 
   return &backend;
 }

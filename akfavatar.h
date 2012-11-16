@@ -207,6 +207,12 @@ AVT_API int avt_move_out (void);
  */
 AVT_API void avt_bell (void);
 
+/*
+ * set a function for the bell
+ * this is for avt_bell(), or "\a", also used internally
+ */
+AVT_API void avt_bell_function (void (*) (void));
+
 /* visual flash of the screen */
 AVT_API void avt_flash (void);
 

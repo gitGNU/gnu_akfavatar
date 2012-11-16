@@ -445,7 +445,7 @@ quit_fb (void)
       tty = -1;
     }
 
-  avt_alert_function (&avt_flash);
+  avt_bell_function (&avt_flash);
 }
 
 extern int
@@ -563,7 +563,7 @@ avt_start (const char *title, const char *shortname, int window_mode)
 
   memset (fb, 0, fix_info.smem_len);
 
-  avt_alert_function (&beep);	// just remove this line, if you don't like it
+  avt_bell_function (&beep);	// just remove this line, if you don't like it
 
   return _avt_STATUS;
 }

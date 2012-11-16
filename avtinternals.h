@@ -134,7 +134,6 @@ extern void avt_get_pointer_position (int *x, int *y);
 extern int _avt_STATUS;
 
 extern void avt_quit_audio_function (void (*) (void));
-extern void avt_alert_function (void (*) (void));
 
 extern struct avt_backend *avt_start_common (avt_graphic *new_screen);
 extern avt_graphic *avt_data_to_graphic (void *data, short width, short height);

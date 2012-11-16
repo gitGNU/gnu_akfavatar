@@ -1,3 +1,8 @@
+2012-11-16  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_bell_function): new function
+	renamed from avt_alert:function, put into official API
+
 2012-11-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c (lavt_alert): new function
