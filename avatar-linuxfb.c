@@ -441,7 +441,6 @@ quit_fb (void)
     {
       ioctl (tty, KDSETMODE, KD_TEXT);
       tcsetattr (tty, TCSANOW, &terminal_settings);
-      write (tty, "\033[H\033[2J", 7);	// home and clear screen
       close (tty);
       tty = -1;
     }
