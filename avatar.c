@@ -6481,6 +6481,22 @@ avt_credits_mb (const char *txt, bool centered)
   return _avt_STATUS;
 }
 
+// must be replaced by the backend
+static void
+update_area_error (avt_graphic *screen, int x, int y, int width, int height)
+{
+  avt_set_error ("backend function missing");
+  _avt_STATUS = AVT_ERROR;
+}
+
+// must be replaced by the backend
+static void
+default_error_function (void)
+{
+  avt_set_error ("backend function missing");
+  _avt_STATUS = AVT_ERROR;
+}
+
 extern void
 avt_quit (void)
 {
@@ -6578,6 +6594,15 @@ avt_start_common (avt_graphic * new_screen)
       _avt_STATUS = AVT_ERROR;
       return NULL;
     }
+
+  /*
+   * The backend structure is a static variable.
+   * So it is automatically initialized,
+   * which is okay for most functions except the following.
+   * Those must be replaced by the backend.
+   */
+  backend.update_area = &update_area_error;
+  backend.wait_key = &default_error_function;
 
   avt_reset ();
 
