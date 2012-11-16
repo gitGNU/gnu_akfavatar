@@ -154,7 +154,7 @@ avt_quit_audio (void)
 
   if (quit_audio_backend)
     {
-      (*quit_audio_backend) ();
+      quit_audio_backend ();
       quit_audio_backend = NULL;
     }
 

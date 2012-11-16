@@ -239,7 +239,7 @@ avt_load_image_rw (SDL_RWops * RW)
     load_image_initialize ();
 
   if (load_image.rw)
-    image = (*load_image.rw) (RW, 0);
+    image = load_image.rw (RW, 0);
 
   SDL_RWclose (RW);
 
