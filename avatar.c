@@ -5240,8 +5240,11 @@ avt_input_mb (char *s, size_t size, const char *default_text, int mode)
   if (input_cd == ICONV_UNINITIALIZED)
     avt_mb_encoding (MB_DEFAULT_ENCODING);
 
-  avt_mb_decode_buffer (ws_default_text, sizeof (ws_default_text),
-			default_text, strlen (default_text) + 1);
+  ws_default_text[0] = L'\0';
+
+  if (default_text and default_text[0] != L'\0')
+    avt_mb_decode_buffer (ws_default_text, sizeof (ws_default_text),
+			  default_text, strlen (default_text) + 1);
 
   ch = avt_input (ws, sizeof (ws), ws_default_text, mode);
 
