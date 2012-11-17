@@ -38,6 +38,7 @@
 #include <iso646.h>
 #include <string.h>
 #include <strings.h>
+#include <wchar.h>
 #include <errno.h>
 #include <iconv.h>
 
@@ -5014,14 +5015,17 @@ avt_pager_mb (const char *txt, size_t len, int startline)
   return _avt_STATUS;
 }
 
+// TODO: mode needs more testing
+// TODO: no mb function yet
 // size in Bytes!
-extern int
-avt_ask (wchar_t * s, size_t size)
+extern avt_char
+avt_input (wchar_t * s, size_t size, const wchar_t * default_text, int mode)
 {
   avt_char ch;
   size_t len, maxlen, pos;
   int old_textdir;
   bool insert_mode;
+  bool finished;
 
   if (not avt.screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -5035,7 +5039,8 @@ avt_ask (wchar_t * s, size_t size)
   if (avt.textfield.x < 0)
     avt_draw_balloon ();
 
-  /* if the cursor is beyond the end of the viewport,
+  /*
+   * if the cursor is beyond the end of the viewport,
    * get a new page
    */
   if (avt.cursor.y > avt.viewport.y + avt.viewport.height - fontheight)
@@ -5055,24 +5060,44 @@ avt_ask (wchar_t * s, size_t size)
   // clear the input field
   avt_erase_characters (maxlen);
 
-  len = pos = 0;
-  insert_mode = true;
-  memset (s, 0, size);
-  ch = 0;
-
-  do
+  // copy default_text into s as far as it fits
+  if (default_text and default_text[0] != L'\0')
     {
-      // show cursor
+      wcsncpy (s, default_text, size / sizeof (wchar_t));
+      s[size / sizeof (wchar_t) - 1] = L'\0';
+      avt_say (s);
+    }
+  else				// no default_text
+    memset (s, 0, size);
+
+  len = wcslen (s);
+  pos = len;
+  insert_mode = true;
+  finished = false;
+  ch = AVT_KEY_NONE;
+
+  while (not finished and _avt_STATUS == AVT_NORMAL)
+    {
       avt_show_text_cursor (true);
 
       ch = avt_get_key ();
 
       if (_avt_STATUS != AVT_NORMAL)
-	break;
+	{
+	  ch = AVT_KEY_NONE;
+	  break;
+	}
 
       switch (ch)
 	{
 	case AVT_KEY_ENTER:
+	  finished = true;
+	  break;
+
+	case AVT_KEY_UP:
+	case AVT_KEY_DOWN:
+	  if (mode > 0)
+	    finished = true;
 	  break;
 
 	case AVT_KEY_HOME:
@@ -5186,11 +5211,9 @@ avt_ask (wchar_t * s, size_t size)
 	    }
 	}
     }
-  while ((ch != AVT_KEY_ENTER) and (_avt_STATUS == AVT_NORMAL));
 
   s[len] = L'\0';
 
-  // delete cursor
   avt_show_text_cursor (false);
 
   if (not avt.newline_mode)
@@ -5200,6 +5223,14 @@ avt_ask (wchar_t * s, size_t size)
 
   avt.textdir_rtl = old_textdir;
 
+  return ch;
+}
+
+// size in Bytes!
+extern int
+avt_ask (wchar_t * s, size_t size)
+{
+  avt_input (s, size, NULL, 0);
   return _avt_STATUS;
 }
 
@@ -5217,7 +5248,7 @@ avt_ask_mb (char *s, size_t size)
   if (input_cd == ICONV_UNINITIALIZED)
     avt_mb_encoding (MB_DEFAULT_ENCODING);
 
-  avt_ask (ws, sizeof (ws));
+  avt_input (ws, sizeof (ws), NULL, 0);
 
   s[0] = '\0';
 

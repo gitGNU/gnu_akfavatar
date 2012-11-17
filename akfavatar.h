@@ -301,6 +301,16 @@ AVT_API bool avt_combining (avt_char ch);
  */
 AVT_API int avt_ask (wchar_t *s, size_t size);
 
+/*
+ * get a string with a default text
+ * if mode is 0 input is ended with Enter
+ * if mode is larger than 0 also up and down arrow keys end input
+ * returns the key which ended input, or AVT_KEY_NONE on quit request
+ */
+AVT_API avt_char avt_input (wchar_t *result, size_t size,
+                            const wchar_t *default_text,
+                            int mode);
+
 /***********************************************************************/
 /* key or event handling */
 
