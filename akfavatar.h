@@ -395,6 +395,16 @@ AVT_API int avt_tell_mb_len (const char *txt, size_t len);
  */
 AVT_API int avt_ask_mb (char *s, size_t size);
 
+/*
+ * get a string with a default text
+ * if mode is 0 input is ended with Enter
+ * if mode is larger than 0 also up and down arrow keys end input
+ * returns the key which ended input, or AVT_KEY_NONE on quit request
+ */
+AVT_API avt_char avt_input_mb (char *s, size_t size,
+                               const char *default_text,
+                               int mode);
+
 /***********************************************************************/
 /* convert text encodings */
 

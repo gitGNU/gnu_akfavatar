@@ -5226,6 +5226,37 @@ avt_input (wchar_t * s, size_t size, const wchar_t * default_text, int mode)
   return ch;
 }
 
+extern avt_char
+avt_input_mb (char *s, size_t size, const char *default_text, int mode)
+{
+  avt_char ch;
+  wchar_t ws[size];
+  wchar_t ws_default_text[size];
+
+  if (not avt.screen or _avt_STATUS != AVT_NORMAL)
+    return _avt_STATUS;
+
+  // check if encoding was set
+  if (input_cd == ICONV_UNINITIALIZED)
+    avt_mb_encoding (MB_DEFAULT_ENCODING);
+
+  avt_mb_decode_buffer (ws_default_text, sizeof (ws_default_text),
+			default_text, strlen (default_text) + 1);
+
+  ch = avt_input (ws, sizeof (ws), ws_default_text, mode);
+
+  s[0] = '\0';
+
+  // if a halt is requested, don't bother with the conversion
+  if (_avt_STATUS != AVT_NORMAL)
+    return AVT_KEY_NONE;
+
+  avt_mb_encode_buffer (s, size, ws, wcslen (ws));
+
+  return ch;
+}
+
+
 // size in Bytes!
 extern int
 avt_ask (wchar_t * s, size_t size)
