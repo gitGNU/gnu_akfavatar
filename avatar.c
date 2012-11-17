@@ -1549,7 +1549,8 @@ avt_load_image_bmp_data (avt_data * src)
     }
   else if (bits_per_pixel <= 8)
     {
-      // read palette, needed when bits per pixel <= 8
+      // read palette
+      // a palette is required when bits per pixel <= 8
 
       //  skip end of header
       avt_data_seek (src, start + 14 + info_size, SEEK_SET);
@@ -1580,6 +1581,12 @@ avt_load_image_bmp_data (avt_data * src)
 
   // go to image data
   avt_data_seek (src, start + bits_offset, SEEK_SET);
+
+  /*
+   * An image can be stored from bottom to top or from top to bottom.
+   * This makes absolutely no technical sense, as far as I can tell.
+   * I think it's only there to discourage reimplementations.
+   */
 
   int y, direction;
 
@@ -6502,7 +6509,7 @@ avt_quit (void)
 {
   if (avt.quit_audio)
     {
-      (*avt.quit_audio) ();
+      avt.quit_audio ();
       avt.quit_audio = NULL;
     }
 
