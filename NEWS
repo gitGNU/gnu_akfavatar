@@ -4,6 +4,7 @@
   - bugfix: lua-akfavatar also resets the charset
   - avt_update() is much faster
   - experimental support for combining characters (Unicode)
+  - lua/interactive_lua.lua supports scrolling back in a history list
   - regression: the navigation bar cannot handle the pause key anymore
 
   C-API changes:
@@ -20,6 +21,7 @@
     - new macro: avt_elapsed
 
   Lua-API changes:
+    - the function avt.ask was extended (yet undocumented)
     - new functions: avt.combining, avt.key_pressed, avt.clear_keys,
       avt.push_key, avt.set_audio_end_key, avt.alert
 

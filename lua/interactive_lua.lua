@@ -7,7 +7,34 @@ avt = require "lua-akfavatar"
 print = avt.print --> redefine the print command
 say = print --> an alias that fits better
 
+local history = {}
+
 local function interactive (cmd)
+
+  local function input (prompt)
+    local pos = 0
+
+    avt.save_position ()
+    local line, ch = avt.ask (prompt, nil, 1)
+
+    while ch == 0xF000 or ch == 0xF001 do
+      if ch == 0xF000 then
+        if history[pos+1] then
+          pos = pos + 1
+        end
+      elseif ch == 0xF001 then
+        if history[pos] then
+          pos = pos - 1
+        end
+      end
+      avt.restore_position ()
+      line, ch = avt.ask (prompt, history[pos], 1)
+    end
+
+    if line ~= "" then table.insert (history, 1, line) end
+
+    return line
+  end
 
   local function error_message (...)
     avt.bell ()
@@ -29,9 +56,9 @@ local function interactive (cmd)
 
   if not cmd then --> first line
     -- replace "=" at the beginning with "return "
-    cmd = string.gsub (avt.ask ("> "), "^=", "return ", 1)
+    cmd = string.gsub (input ("> "), "^=", "return ", 1)
   else
-    local cmd2 = avt.ask (">> ")
+    local cmd2 = input (">> ")
     if cmd2 == "" then return "" end --> empty line cancels command
     cmd = cmd .. " " .. cmd2
   end

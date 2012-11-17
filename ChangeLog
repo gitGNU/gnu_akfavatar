@@ -2,6 +2,8 @@
 
 	* akfavatar.h, avatar.c (avt_input, avt_input_mb): new functions
 
+	* lua/lua-avt.c (lavt_ask): extended
+
 2012-11-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_bell_function): new function

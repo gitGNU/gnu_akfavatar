@@ -1122,17 +1122,27 @@ static int
 lavt_ask (lua_State * L)
 {
   char buf[4 * AVT_LINELENGTH + 1];
-  const char *question;
+  const char *question, *default_text;
+  int mode;
   size_t len;
+  avt_char ch;
 
   is_initialized ();
   question = lua_tolstring (L, 1, &len);
+  default_text = lua_tostring (L, 2);
+  mode = luaL_optint (L, 3, 0);
+
   if (question)
     check (avt_say_mb_len (question, len));
-  check (avt_ask_mb (buf, sizeof (buf)));
+
+  ch = avt_input_mb (buf, sizeof (buf), default_text, mode);
+
+  check (avt_get_status ());
 
   lua_pushstring (L, buf);
-  return 1;
+  lua_pushinteger (L, (int) ch);
+
+  return 2;
 }
 
 // returns a pressed key (unicode-value)
