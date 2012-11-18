@@ -5098,6 +5098,10 @@ avt_input (wchar_t * s, size_t size, const wchar_t * default_text,
 
       switch (ch)
 	{
+	case AVT_KEY_ESCAPE:
+	  finished = true;
+	  break;
+
 	case AVT_KEY_ENTER:
 	  finished = true;
 	  avt_show_text_cursor (false);
@@ -5223,6 +5227,8 @@ avt_input (wchar_t * s, size_t size, const wchar_t * default_text,
     }
 
   s[len] = L'\0';
+
+  avt_show_text_cursor (false);
 
   avt.textdir_rtl = old_textdir;
 
