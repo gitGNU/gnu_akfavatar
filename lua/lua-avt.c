@@ -1123,19 +1123,23 @@ lavt_ask (lua_State * L)
 {
   char buf[4 * AVT_LINELENGTH + 1];
   const char *question, *default_text;
-  int mode;
+  int position, mode;
   size_t len;
   avt_char ch;
 
   is_initialized ();
   question = lua_tolstring (L, 1, &len);
   default_text = lua_tostring (L, 2);
-  mode = luaL_optint (L, 3, 0);
+  position = luaL_optint (L, 3, -1);
+  mode = luaL_optint (L, 4, 0);
 
   if (question)
     check (avt_say_mb_len (question, len));
 
-  ch = avt_input_mb (buf, sizeof (buf), default_text, mode);
+  if (position > 0)
+    position--;			// C is 0-based
+
+  ch = avt_input_mb (buf, sizeof (buf), default_text, position, mode);
 
   check (avt_get_status ());
 

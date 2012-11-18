@@ -15,7 +15,7 @@ local function interactive (cmd)
     local pos = 0
 
     avt.save_position ()
-    local line, ch = avt.ask (prompt, nil, 1)
+    local line, ch = avt.ask (prompt, nil, -1, 1)
 
     while ch == 0xF000 or ch == 0xF001 do
       if ch == 0xF000 then
@@ -28,7 +28,7 @@ local function interactive (cmd)
         end
       end
       avt.restore_position ()
-      line, ch = avt.ask (prompt, history[pos], 1)
+      line, ch = avt.ask (prompt, history[pos], -1, 1)
     end
 
     if line ~= "" then table.insert (history, 1, line) end

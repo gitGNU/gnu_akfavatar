@@ -5015,11 +5015,10 @@ avt_pager_mb (const char *txt, size_t len, int startline)
   return _avt_STATUS;
 }
 
-// TODO: mode needs more testing
-// TODO: no mb function yet
 // size in Bytes!
 extern avt_char
-avt_input (wchar_t * s, size_t size, const wchar_t * default_text, int mode)
+avt_input (wchar_t * s, size_t size, const wchar_t * default_text,
+	   int position, int mode)
 {
   avt_char ch;
   size_t len, maxlen, pos;
@@ -5060,18 +5059,27 @@ avt_input (wchar_t * s, size_t size, const wchar_t * default_text, int mode)
   // clear the input field
   avt_erase_characters (maxlen);
 
+  if (position < 0)
+    position = INT_MAX;
+
   // copy default_text into s as far as it fits
   if (default_text and default_text[0] != L'\0')
     {
       wcsncpy (s, default_text, size / sizeof (wchar_t));
       s[size / sizeof (wchar_t) - 1] = L'\0';
+      len = wcslen (s);
+      pos = avt_min (len, (size_t) position);
+
+      int startx = avt.cursor.x;
       avt_say (s);
+      avt.cursor.x = startx + (pos * fontwidth);
     }
   else				// no default_text
-    memset (s, 0, size);
+    {
+      memset (s, 0, size);
+      len = pos = 0;
+    }
 
-  len = wcslen (s);
-  pos = len;
   insert_mode = true;
   finished = false;
   ch = AVT_KEY_NONE;
@@ -5092,6 +5100,8 @@ avt_input (wchar_t * s, size_t size, const wchar_t * default_text, int mode)
 	{
 	case AVT_KEY_ENTER:
 	  finished = true;
+	  avt_show_text_cursor (false);
+	  avt_new_line ();
 	  break;
 
 	case AVT_KEY_UP:
@@ -5214,20 +5224,14 @@ avt_input (wchar_t * s, size_t size, const wchar_t * default_text, int mode)
 
   s[len] = L'\0';
 
-  avt_show_text_cursor (false);
-
-  if (not avt.newline_mode)
-    avt_carriage_return ();
-
-  avt_new_line ();
-
   avt.textdir_rtl = old_textdir;
 
   return ch;
 }
 
 extern avt_char
-avt_input_mb (char *s, size_t size, const char *default_text, int mode)
+avt_input_mb (char *s, size_t size, const char *default_text,
+	      int position, int mode)
 {
   avt_char ch;
   wchar_t ws[size];
@@ -5246,7 +5250,7 @@ avt_input_mb (char *s, size_t size, const char *default_text, int mode)
     avt_mb_decode_buffer (ws_default_text, sizeof (ws_default_text),
 			  default_text, strlen (default_text) + 1);
 
-  ch = avt_input (ws, sizeof (ws), ws_default_text, mode);
+  ch = avt_input (ws, sizeof (ws), ws_default_text, position, mode);
 
   s[0] = '\0';
 
@@ -5264,7 +5268,7 @@ avt_input_mb (char *s, size_t size, const char *default_text, int mode)
 extern int
 avt_ask (wchar_t * s, size_t size)
 {
-  avt_input (s, size, NULL, 0);
+  avt_input (s, size, NULL, -1, 0);
   return _avt_STATUS;
 }
 
@@ -5282,7 +5286,7 @@ avt_ask_mb (char *s, size_t size)
   if (input_cd == ICONV_UNINITIALIZED)
     avt_mb_encoding (MB_DEFAULT_ENCODING);
 
-  avt_input (ws, sizeof (ws), NULL, 0);
+  avt_input (ws, sizeof (ws), NULL, -1, 0);
 
   s[0] = '\0';
 
