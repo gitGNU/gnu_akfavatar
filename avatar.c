@@ -5190,10 +5190,12 @@ avt_input (wchar_t * s, size_t size, const wchar_t * default_text,
 	  break;
 
 	default:
+	  // if valid character
 	  if (pos < maxlen and ch >= 32 and avt_get_font_char (ch) != NULL)
 	    {
 	      // delete cursor
 	      avt_show_text_cursor (false);
+
 	      if (insert_mode and pos < len)
 		{
 		  avt_insert_spaces (1);
@@ -5207,6 +5209,7 @@ avt_input (wchar_t * s, size_t size, const wchar_t * default_text,
 		    memmove (&s[pos + 1], &s[pos],
 			     (len - pos - 1) * sizeof (wchar_t));
 		}
+
 	      s[pos] = (wchar_t) ch;
 	      avt_drawchar (ch, avt.screen);
 	      avt_showchar ();
@@ -5223,6 +5226,8 @@ avt_input (wchar_t * s, size_t size, const wchar_t * default_text,
 	      else
 		avt.cursor.x += fontwidth;
 	    }
+
+	  break;
 	}
     }
 
