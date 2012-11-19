@@ -86,6 +86,13 @@
 #endif // no endian.h
 #endif // not AVT_BYTE_ORDER
 
+#if defined(__GNUC__) and not defined(_WIN32)
+#  define AVT_HIDDEN __attribute__((__visibility__("hidden")))
+#else
+#  define AVT_HIDDEN
+#endif // __GNUC__
+
+
 typedef uint_least32_t avt_color;
 
 typedef struct avt_graphic
@@ -125,24 +132,24 @@ struct avt_backend
 #define avt_min(a, b) ((a) < (b) ? (a) : (b))
 #define avt_max(a, b) ((a) > (b) ? (a) : (b))
 
-/* avatar-sdl.c */
+/* backend */
 extern avt_char avt_set_pointer_motion_key (avt_char key);
 extern avt_char avt_set_pointer_buttons_key (avt_char key);
 extern void avt_get_pointer_position (int *x, int *y);
 
 /* avatar.c */
-extern int _avt_STATUS;
+extern int _avt_STATUS AVT_HIDDEN;
 
 extern void avt_quit_audio_function (void (*) (void));
 
-extern struct avt_backend *avt_start_common (avt_graphic *new_screen);
-extern avt_graphic *avt_data_to_graphic (void *data, short width, short height);
-extern avt_graphic *avt_new_graphic (short width, short height);
-extern void avt_free_graphic (avt_graphic * gr);
-extern avt_graphic *avt_load_image_xpm (char **xpm);
-extern bool avt_check_buttons (int x, int y);
-extern void avt_add_key (avt_char key);
-extern void avt_resize (int width, int height);
+extern struct avt_backend *avt_start_common (avt_graphic *new_screen) AVT_HIDDEN;
+extern avt_graphic *avt_data_to_graphic (void *data, short width, short height) AVT_HIDDEN;
+extern avt_graphic *avt_new_graphic (short width, short height) AVT_HIDDEN;
+extern void avt_free_graphic (avt_graphic * gr) AVT_HIDDEN;
+extern avt_graphic *avt_load_image_xpm (char **xpm) AVT_HIDDEN;
+extern bool avt_check_buttons (int x, int y) AVT_HIDDEN;
+extern void avt_add_key (avt_char key) AVT_HIDDEN;
+extern void avt_resize (int width, int height) AVT_HIDDEN;
 
 /*
  * get a string with a default text
@@ -167,14 +174,14 @@ extern avt_char avt_input_mb (char *s, size_t size,
 
 
 /* avttiming.c */
-extern void avt_delay (int milliseconds); // only for under a second
+extern void avt_delay (int milliseconds) AVT_HIDDEN; // only for under a second
 
 /* audio-sdl.c */
-extern void avt_lock_audio (void);
-extern void avt_unlock_audio (avt_audio *snd);
+extern void avt_lock_audio (void) AVT_HIDDEN;
+extern void avt_unlock_audio (avt_audio *snd) AVT_HIDDEN;
 
 /* audio-common */
-extern int avt_start_audio_common (void (*quit_backend) (void));
+extern int avt_start_audio_common (void (*quit_backend) (void)) AVT_HIDDEN;
 
 /* avtposix.c / avtwindows.c */
 /* currently not used */

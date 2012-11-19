@@ -248,14 +248,8 @@ struct avt_button
 
 static struct avt_button avt_buttons[MAX_BUTTONS];
 
-#if defined(__GNUC__) and not defined(__WIN32__)
-#  define AVT_HIDDEN __attribute__((__visibility__("hidden")))
-#else
-#  define AVT_HIDDEN
-#endif // __GNUC__
-
 // 0 = normal; 1 = quit-request; -1 = error
-int _avt_STATUS AVT_HIDDEN;
+int _avt_STATUS;
 
 // forward declaration
 static void avt_drawchar (avt_char ch, avt_graphic * surface);
