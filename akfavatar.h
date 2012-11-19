@@ -301,21 +301,6 @@ AVT_API bool avt_combining (avt_char ch);
  */
 AVT_API int avt_ask (wchar_t *s, size_t size);
 
-/*
- * get a string with a default text
- *
- * position can be -1 for at the end or 0 for at the beginning,
- * 1 for behind first character and so on
- *
- * if mode is 0 input is ended with Enter
- * if mode is 1 input is also ended by up and down arrow keys
- *
- * returns the key which ended input, or AVT_KEY_NONE on quit request
- */
-AVT_API avt_char avt_input (wchar_t *result, size_t size,
-                            const wchar_t *default_text,
-                            int position, int mode);
-
 /***********************************************************************/
 /* key or event handling */
 
@@ -399,21 +384,6 @@ AVT_API int avt_tell_mb_len (const char *txt, size_t len);
  * for UTF-8 encoding s should have a capacity of 4 * LINELENGTH Bytes
  */
 AVT_API int avt_ask_mb (char *s, size_t size);
-
-/*
- * get a string with a default text
- *
- * position can be -1 for at the end or 0 for at the beginning,
- * 1 for behind first character and so on
- *
- * if mode is 0 input is ended with Enter
- * if mode is 1 input is also ended by up and down arrow keys
- *
- * returns the key which ended input, or AVT_KEY_NONE on quit request
- */
-AVT_API avt_char avt_input_mb (char *s, size_t size,
-                               const char *default_text,
-                               int position, int mode);
 
 /***********************************************************************/
 /* convert text encodings */

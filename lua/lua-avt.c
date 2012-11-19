@@ -27,6 +27,7 @@
 
 #include "akfavatar.h"
 #include "avtaddons.h"
+#include "avtinternals.h"  // for avt_input_mb
 
 #ifdef __cplusplus
 extern "C"
