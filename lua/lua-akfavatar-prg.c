@@ -246,8 +246,21 @@ reset (void)
   avt_set_balloon_color (AVT_COLOR_SAY);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
   avt_quit_audio ();
-  avt_mb_encoding("UTF-8");
+  avt_mb_encoding ("UTF-8");
   avt_set_title ("Lua-AKFAvatar", "AKFAvatar");
+}
+
+static bool
+check_textfile (const char *filename, const char *ext)
+{
+  return strncasecmp (filename, "README", 6) == 0
+    or strncasecmp (filename, "COPYING", 7) == 0
+    or strcasecmp (filename, "AUTHORS") == 0
+    or strcasecmp (filename, "NEWS") == 0
+    or strcasecmp (filename, "ChangeLog") == 0
+    or (ext and
+	(strcasecmp (ext, EXT_ABOUT) == 0
+	 or strcasecmp (ext, ".txt") == 0 or strcasecmp (ext, ".text") == 0));
 }
 
 // check if this program can handle the file
@@ -256,10 +269,10 @@ check_filename (const char *filename)
 {
   const char *ext = strrchr (filename, '.');
 
-  return (ext and (strcasecmp (EXT_LUA, ext) == 0
-		   or strcasecmp (EXT_DEMO, ext) == 0
-		   or strcasecmp (EXT_EXEC, ext) == 0
-		   or strcasecmp (EXT_ABOUT, ext) == 0));
+  return check_textfile (filename, ext)
+    or (ext and (strcasecmp (EXT_LUA, ext) == 0
+		 or strcasecmp (EXT_DEMO, ext) == 0
+		 or strcasecmp (EXT_EXEC, ext) == 0));
 }
 
 
@@ -439,11 +452,9 @@ ask_file (void)
 
       ext = strrchr (filename, '.');
 
-      if (not ext)
-	return false;		// shouldn't happen
-      else if (strcasecmp (EXT_DEMO, ext) == 0)
+      if (ext and strcasecmp (EXT_DEMO, ext) == 0)
 	avtdemo (filename);
-      else if (strcasecmp (EXT_EXEC, ext) == 0)
+      else if (ext and strcasecmp (EXT_EXEC, ext) == 0)
 	{
 	  if (run_executable (filename) != 0)
 	    {
@@ -451,7 +462,7 @@ ask_file (void)
 	      lua_pop (L, 1);
 	    }
 	}
-      else if (strcasecmp (EXT_ABOUT, ext) == 0)
+      else if (check_textfile (filename, ext))
 	show_text (filename);
       else			// assume Lua code
 	{

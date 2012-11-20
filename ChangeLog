@@ -1,3 +1,8 @@
+2012-11-20  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/lua-akfavatar-prg.c (check_filename, ask_file):
+	also accept some kinds of text files
+
 2012-11-17  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtinternals.h, avatar.c (avt_input, avt_input_mb): new functions
