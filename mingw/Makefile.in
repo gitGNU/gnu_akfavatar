@@ -1,8 +1,8 @@
 # This file is in the Public Domain - AKFoerster
 
 # for make dist-bin
-lua_dll = $(srcdir)/misc/lua52.dll
-sdl_dll = $(srcdir)/misc/SDL.dll
+lua_dll = $(srcdir)/misc/$(ARCH)/lua52.dll
+sdl_dll = $(srcdir)/misc/$(ARCH)/SDL.dll
 
 ROFF = groff
 
