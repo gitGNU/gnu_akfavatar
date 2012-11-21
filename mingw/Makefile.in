@@ -548,5 +548,5 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	strip $(BINPKGNAME)/akfavatar-vorbis.dll
 	strip $(BINPKGNAME)/base64.dll
 	-rm -f $(BINPKGNAME).w32.zip
-	zip -9vr $(BINPKGNAME).w32.zip $(BINPKGNAME)/
+	zip -9vr $(BINPKGNAME).windows.${ARCH}.zip $(BINPKGNAME)/
 	rm -r $(BINPKGNAME)/

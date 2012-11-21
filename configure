@@ -227,6 +227,23 @@ esac
 # cross-compile
 case ${hosttype} in
 
+  x86_64*-mingw* | amd64*-mingw*)
+           SYSTEM="mingw"
+           ARCH="amd64"
+           TARGET="mingw"
+           DISTBIN="dist-mingw"
+
+           if [ -x /usr/bin/x86_64-w64-mingw32-gcc ]
+           then
+             CC="/usr/bin/x86_64-w64-mingw32-gcc -std=gnu99"
+             AR=/usr/bin/x86_64-w64-mingw32-ar
+             STRIP=/usr/bin/x86_64-w64-mingw32-strip
+             RANLIB=/usr/bin/x86_64-w64-mingw32-ranlib
+             WINDRES=/usr/bin/x86_64-w64-mingw32-windres
+             [ -d /usr/x86_64-w64-mingw32 ] && prefix=/usr/x86_64-w64-mingw32
+           fi
+           ;;
+
   *mingw* | *MINGW*) 
            SYSTEM="mingw"
            ARCH="x86"
@@ -292,14 +309,30 @@ esac
 
 # cross-compile
 case ${hosttype} in
-  *x86* | *i?86*)  # private hack
-      SDL_CFLAGS="-I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT"
-      SDL_LDFLAGS="-L/usr/lib32 -lSDL -lpthread"
-      ;;
+   x86_64*-mingw* | amd64*-mingw*)
+     # find sdl-config for cross-compiling
+     if [ -x /usr/local/x86_64-w64-mingw32/bin/sdl-config ]
+     then
+       SDL_CFLAGS=`/usr/local/x86_64-w64-mingw32/bin/sdl-config --cflags`
+       SDL_LDFLAGS=`/usr/local/x86_64-w64-mingw32/bin/sdl-config --libs`
+     elif [ -x /usr/local/cross-tools/amd64-mingw32/bin/sdl-config ]
+     then
+       SDL_CFLAGS=`/usr/local/cross-tools/amd64-mingw32/bin/sdl-config --cflags`
+       SDL_LDFLAGS=`/usr/local/cross-tools/amd64-mingw32/bin/sdl-config --libs`
+     else
+       # most probably not the correct directories
+       SDL_CFLAGS="-I/usr/include/SDL -D_GNU_SOURCE=1 -Dmain=SDL_main"
+       SDL_LDFLAGS="-L/usr/lib -lmingw32 -lSDLmain -lSDL -mwindows"
+     fi
+     ;;
 
    *mingw* | *MINGW*)
      # find sdl-config for cross-compiling
-     if [ -x /usr/local/cross-tools/i386-mingw32/bin/sdl-config ]
+     if [ -x /usr/local/i686-w64-mingw32/bin/sdl-config ]
+     then
+       SDL_CFLAGS=`/usr/local/i686-w64-mingw32/bin/sdl-config --cflags`
+       SDL_LDFLAGS=`/usr/local/i686-w64-mingw32/bin/sdl-config --libs`
+     elif [ -x /usr/local/cross-tools/i386-mingw32/bin/sdl-config ]
      then
        SDL_CFLAGS=`/usr/local/cross-tools/i386-mingw32/bin/sdl-config --cflags`
        SDL_LDFLAGS=`/usr/local/cross-tools/i386-mingw32/bin/sdl-config --libs`
@@ -313,6 +346,11 @@ case ${hosttype} in
        SDL_LDFLAGS="-L/usr/lib -lmingw32 -lSDLmain -lSDL -mwindows"
      fi
      ;;
+
+  *x86* | *i?86*)  # private hack
+      SDL_CFLAGS="-I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT"
+      SDL_LDFLAGS="-L/usr/lib32 -lSDL -lpthread"
+      ;;
 
    *)
       SDL_CFLAGS=`sdl-config --cflags`
@@ -340,18 +378,34 @@ then
   test x"$TARGET" = x"mingw" && TARGET="mingw-nolua" || TARGET="nolua"
   LUA_CFLAGS=""
   LUA_LDFLAGS=""
-elif [ x"$TARGET" = x"mingw" -a -r /usr/local/cross-tools/i386-mingw32/include/lua.h ]
+elif [ -n "${hosttype}" ]
 then
-  LUA_CFLAGS="-I/usr/local/cross-tools/i386-mingw32/include"
-  LUA_LDFLAGS="-L/usr/local/cross-tools/i386-mingw32/lib -llua52"
-elif [ x"$SYSTEM" = x"mingw" ]
-then
-  LUA_CFLAGS=""
-  LUA_LDFLAGS="-llua52"
-elif [ x"${hosttype}" = x"x86" ] # private hack
-then
-  LUA_CFLAGS=""
-  LUA_LDFLAGS="-llua -lm -ldl -Wl,-E" # static lib!
+  case ${hosttype} in
+    x86_64*-mingw* | amd64*-mingw*)
+      LUA_CFLAGS="-I/usr/local/x86_64-w64-mingw32/include"
+      LUA_LDFLAGS="-L/usr/local/x86_64-w64-mingw32/lib -llua52"
+      ;;
+
+    *mingw* | *MINGW*)
+      LUA_CFLAGS="-I/usr/local/i686-w64-mingw32/include"
+      LUA_LDFLAGS="-L/usr/local/i686-w64-mingw32/lib -llua52"
+      ;;
+
+    *x86* | *i?86*)
+      LUA_CFLAGS=""
+      LUA_LDFLAGS="-llua -lm -ldl -Wl,-E"
+      ;;
+
+    *)
+      LUA_CFLAGS=""
+      if [ x"$SYSTEM" = x"mingw" ]
+      then
+        LUA_LDFLAGS="-llua52"
+      else
+        LUA_LDFLAGS="-llua -lm -ldl -Wl,-E" # assume static lib!
+      fi
+      ;;
+  esac
 elif [ x"$STATIC_LUA" = x"yes" ]
 then
   LUA_CFLAGS=""
