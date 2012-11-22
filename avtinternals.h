@@ -133,23 +133,24 @@ struct avt_backend
 #define avt_max(a, b) ((a) > (b) ? (a) : (b))
 
 /* backend */
+/* these functions may be moved to the official API */
 extern avt_char avt_set_pointer_motion_key (avt_char key);
 extern avt_char avt_set_pointer_buttons_key (avt_char key);
 extern void avt_get_pointer_position (int *x, int *y);
 
 /* avatar.c */
-extern int _avt_STATUS AVT_HIDDEN;
+AVT_HIDDEN extern int _avt_STATUS;
 
-extern void avt_quit_audio_function (void (*) (void));
+AVT_HIDDEN extern void avt_quit_audio_function (void (*) (void));
 
-extern struct avt_backend *avt_start_common (avt_graphic *new_screen) AVT_HIDDEN;
-extern avt_graphic *avt_data_to_graphic (void *data, short width, short height) AVT_HIDDEN;
-extern avt_graphic *avt_new_graphic (short width, short height) AVT_HIDDEN;
-extern void avt_free_graphic (avt_graphic * gr) AVT_HIDDEN;
-extern avt_graphic *avt_load_image_xpm (char **xpm) AVT_HIDDEN;
-extern bool avt_check_buttons (int x, int y) AVT_HIDDEN;
-extern void avt_add_key (avt_char key) AVT_HIDDEN;
-extern void avt_resize (int width, int height) AVT_HIDDEN;
+AVT_HIDDEN extern struct avt_backend *avt_start_common (avt_graphic *new_screen);
+AVT_HIDDEN extern avt_graphic *avt_data_to_graphic (void *data, short width, short height);
+AVT_HIDDEN extern avt_graphic *avt_new_graphic (short width, short height);
+AVT_HIDDEN extern void avt_free_graphic (avt_graphic * gr);
+AVT_HIDDEN extern avt_graphic *avt_load_image_xpm (char **xpm);
+AVT_HIDDEN extern bool avt_check_buttons (int x, int y);
+AVT_HIDDEN extern void avt_add_key (avt_char key);
+AVT_HIDDEN extern void avt_resize (int width, int height);
 
 /*
  * get a string with a default text
@@ -161,6 +162,10 @@ extern void avt_resize (int width, int height) AVT_HIDDEN;
  * if mode is 1 input is also ended by up and down arrow keys
  *
  * returns the key which ended input, or AVT_KEY_NONE on quit request
+ */
+/*
+ * these functions may be moved to the official API,
+ * but they still may change
  */
 extern avt_char avt_input (wchar_t *result, size_t size,
                             const wchar_t *default_text,
@@ -174,14 +179,14 @@ extern avt_char avt_input_mb (char *s, size_t size,
 
 
 /* avttiming.c */
-extern void avt_delay (int milliseconds) AVT_HIDDEN; // only for under a second
+AVT_HIDDEN extern void avt_delay (int milliseconds); // only for under a second
 
 /* audio-sdl.c */
-extern void avt_lock_audio (void) AVT_HIDDEN;
-extern void avt_unlock_audio (avt_audio *snd) AVT_HIDDEN;
+AVT_HIDDEN extern void avt_lock_audio (void);
+AVT_HIDDEN extern void avt_unlock_audio (avt_audio *snd);
 
 /* audio-common */
-extern int avt_start_audio_common (void (*quit_backend) (void)) AVT_HIDDEN;
+AVT_HIDDEN extern int avt_start_audio_common (void (*quit_backend) (void));
 
 /* avtposix.c / avtwindows.c */
 /* currently not used */

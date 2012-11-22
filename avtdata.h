@@ -24,6 +24,7 @@
 #ifndef AVTDATA_H
 #define AVTDATA_H
 
+#include "avtinternals.h"
 #include <stdio.h>		// FILE
 #include <stdint.h>
 
@@ -35,32 +36,32 @@ typedef union avt_data avt_data;
 
 // open a stream
 // if autoclose is true avt_data_close closes the stream with fclose
-avt_data *avt_data_open_stream (FILE * stream, bool autoclose);
+AVT_HIDDEN avt_data *avt_data_open_stream (FILE * stream, bool autoclose);
 
 // open a file for reading in binary mode
-avt_data *avt_data_open_file (const char *filename);
+AVT_HIDDEN avt_data *avt_data_open_file (const char *filename);
 
 // read data from memory
 // the memory area must be kept available until closed
-avt_data *avt_data_open_memory (const void *memory, size_t size);
+AVT_HIDDEN avt_data *avt_data_open_memory (const void *memory, size_t size);
 
 // closes the data construct
 // eventually also closes the stream with fclose
-void avt_data_close (avt_data *d);
+AVT_HIDDEN void avt_data_close (avt_data *d);
 
 // read data
-size_t avt_data_read (avt_data *d, void *data, size_t size, size_t number);
+AVT_HIDDEN size_t avt_data_read (avt_data *d, void *data, size_t size, size_t number);
 
-bool avt_data_seek (avt_data *d, long offset, int whence);
-long avt_data_tell (avt_data *d);
+AVT_HIDDEN bool avt_data_seek (avt_data *d, long offset, int whence);
+AVT_HIDDEN long avt_data_tell (avt_data *d);
 
 // read values of specific size and endianness 
 // le = Little Endian, be = Big Endian
-uint8_t  avt_data_read8    (avt_data *d);
-uint16_t avt_data_read16le (avt_data *d);
-uint16_t avt_data_read16be (avt_data *d);
-uint32_t avt_data_read32le (avt_data *d);
-uint32_t avt_data_read32be (avt_data *d);
+AVT_HIDDEN uint8_t  avt_data_read8    (avt_data *d);
+AVT_HIDDEN uint16_t avt_data_read16le (avt_data *d);
+AVT_HIDDEN uint16_t avt_data_read16be (avt_data *d);
+AVT_HIDDEN uint32_t avt_data_read32le (avt_data *d);
+AVT_HIDDEN uint32_t avt_data_read32be (avt_data *d);
 
 #define avt_data_rewind(d)  avt_data_seek((d), 0, SEEK_SET)
 
