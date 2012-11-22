@@ -5363,8 +5363,8 @@ avt_move_in (void)
 				     avt.avatar_image->height);
 	      else
 		backend.update_area (avt.screen, pos.x, pos.y,
-				     avt.avatar_image->width + (oldx -
-								pos.x),
+				     avt.avatar_image->width
+				     + (oldx - pos.x),
 				     avt.avatar_image->height);
 
 	      // delete (not visibly yet)
@@ -5443,8 +5443,9 @@ avt_move_out (void)
 				     avt.avatar_image->height);
 	      else
 		backend.update_area (avt.screen, oldx, pos.y,
-				     avt.avatar_image->width + pos.x -
-				     oldx, avt.avatar_image->height);
+				     avt.avatar_image->width
+				     + pos.x - oldx,
+				     avt.avatar_image->height);
 
 	      // delete (not visibly yet)
 	      avt_bar (avt.screen, pos.x, pos.y,
