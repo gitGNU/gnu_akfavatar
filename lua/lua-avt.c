@@ -1123,6 +1123,24 @@ static int
 lavt_ask (lua_State * L)
 {
   char buf[4 * AVT_LINELENGTH + 1];
+  const char *question;
+  size_t len;
+
+  is_initialized ();
+  question = lua_tolstring (L, 1, &len);
+  if (question)
+    check (avt_say_mb_len (question, len));
+  check (avt_ask_mb (buf, sizeof (buf)));
+
+  lua_pushstring (L, buf);
+  return 1;
+}
+
+// undocumented since API may still change
+static int
+lavt_input (lua_State * L)
+{
+  char buf[4 * AVT_LINELENGTH + 1];
   const char *question, *default_text;
   int position, mode;
   size_t len;
@@ -2424,6 +2442,7 @@ static const luaL_Reg akfavtlib[] = {
   {"printable", lavt_printable},
   {"combining", lavt_combining},
   {"ask", lavt_ask},
+  {"input", lavt_input},
   {"navigate", lavt_navigate},
   {"decide", lavt_decide},
   {"pager", lavt_pager},
