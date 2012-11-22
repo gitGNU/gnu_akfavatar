@@ -1,0 +1,3 @@
+LIBRARY AKFAvatar-Vorbis
+EXPORTS
+  luaopen_vorbis

@@ -45,7 +45,6 @@ tests
 *.deb
 *.dll
 *.exe
-*.def
 version.texi
 *.t2d
 *.aux

@@ -1,0 +1,3 @@
+LIBRARY Lua-AKFAvatar
+EXPORTS
+  luaopen_akfavatar

@@ -136,12 +136,11 @@ libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o audio-common.o \
 akfavatar.dll: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o audio-common.o \
 	  avatar-default.o avtdata.o font.o libinfo.o avtpalette.o \
 	  avttiming.o win_iconv.o version.o
-	$(CC) -shared -o $@ $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
+	$(CC) -shared -o $@ $(srcdir)/mingw/akfavatar.def \
+	        $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
 	        avatar-default.o avtdata.o audio-common.o font.o avtpalette.o \
 	        avttiming.o win_iconv.o version.o libinfo.o \
 	        -Wl,-no-undefined,--enable-runtime-pseudo-reloc \
-	        -Wl,--exclude-symbols,_avt_STATUS \
-	        -Wl,--output-def,akfavatar.def \
 	        -Wl,--out-implib,libakfavatar.dll.a \
 	        $(SDL_LDFLAGS) $(LDFLAGS)
 
@@ -202,8 +201,10 @@ lua-akfavatar-prg-info.o: $(srcdir)/mingw/lua-akfavatar-prg.rc version.h \
 	$(WINDRES) -I. -I$(srcdir)/mingw -o $@ -i $(srcdir)/mingw/lua-akfavatar-prg.rc
 
 lua-akfavatar.dll: lua-avt.o filechooser.o askdrive.o colorchooser.o \
-	           langwindows.o basedir.o lua-akfavatar-dll-info.o
-	$(CC) -o $@ -shared lua-avt.o filechooser.o askdrive.o \
+	           langwindows.o basedir.o lua-akfavatar-dll-info.o \
+	           $(srcdir)/mingw/lua-akfavatar.def
+	$(CC) -o $@ -shared $(srcdir)/mingw/lua-akfavatar.def \
+	     lua-avt.o filechooser.o askdrive.o \
 	     colorchooser.o langwindows.o basedir.o lua-akfavatar-dll-info.o \
 	     -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS) -mwindows
 
@@ -227,8 +228,10 @@ lua-akfavatar-prg.o: $(srcdir)/lua/lua-akfavatar-prg.c $(srcdir)/akfavatar.h \
 	 $(srcdir)/lua/lua-akfavatar-prg.c
 
 akfavatar-vorbis.dll: akfavatar-vorbis.o avtvorbis.o stb_vorbis.o \
-	             akfavatar-vorbis-info.o
-	$(CC) -o $@ -shared akfavatar-vorbis.o avtvorbis.o stb_vorbis.o \
+	             akfavatar-vorbis-info.o \
+	             $(srcdir)/mingw/akfavatar-vorbis.def
+	$(CC) -o $@ -shared $(srcdir)/mingw/akfavatar-vorbis.def \
+	  akfavatar-vorbis.o avtvorbis.o stb_vorbis.o \
 	  akfavatar-vorbis-info.o \
 	  -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS)
 
@@ -251,7 +254,8 @@ stb_vorbis.o: $(srcdir)/stb_vorbis.c
 	  -c -o $@ $(srcdir)/stb_vorbis.c
 
 akfavatar-graphic.dll: akfavatar-graphic.o akfavatar-graphic-info.o
-	$(CC) -o $@ -shared akfavatar-graphic.o akfavatar-graphic-info.o \
+	$(CC) -o $@ -shared -Wl,--export-all-symbols \
+	   akfavatar-graphic.o akfavatar-graphic-info.o \
 	   -L. -lakfavatar -lm $(LUA_LDFLAGS) $(LDFLAGS)
 
 akfavatar-graphic.o: $(srcdir)/lua/akfavatar-graphic.c $(srcdir)/akfavatar.h
