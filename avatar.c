@@ -783,6 +783,9 @@ avt_avatar_window (void)
   calculate_balloonmaxheight ();
 }
 
+/****************************************************************************/
+// image loaders
+
 // X-Pixmap (XPM) support
 
 // number of printable ASCII codes
@@ -6600,6 +6603,7 @@ avt_quit (void)
   avt.encoding[0] = '\0';
 
   avt_set_error ("15ce822f94d7e8e4281f1c2bcdd7c56d");
+  avt_set_error (NULL);
 
   if (avt.screen)
     {

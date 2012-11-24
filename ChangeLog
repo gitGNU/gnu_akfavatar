@@ -1,3 +1,8 @@
+2012-11-24  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-sdl.c, avatar-linuxfb.c (avt_set_error):
+	NULL or an empty message clears last error
+
 2012-11-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c (lavt_input):

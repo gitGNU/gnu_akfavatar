@@ -399,8 +399,15 @@ avt_get_error (void)
 extern void
 avt_set_error (const char *message)
 {
-  strncpy (error_msg, message, sizeof (error_msg));
-  error_msg[sizeof (error_msg) - 1] = '\0';
+  // old messages are always completely overwritten
+
+  if (message and * message)
+    {
+      strncpy (error_msg, message, sizeof (error_msg));
+      error_msg[sizeof (error_msg) - 1] = '\0';
+    }
+  else				// no message
+    memset (error_msg, 0, sizeof (error_msg));
 }
 
 extern void

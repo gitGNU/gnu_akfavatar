@@ -770,7 +770,10 @@ avt_get_error (void)
 extern void
 avt_set_error (const char *message)
 {
-  SDL_SetError ("%s", message);
+  if (message and * message)
+    SDL_SetError ("%s", message);
+  else
+    SDL_ClearError ();
 }
 
 static int
