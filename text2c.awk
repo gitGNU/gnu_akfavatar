@@ -3,10 +3,10 @@
 # Convert textfile into C-code (new awk)
 #
 # Example-Usage:
-# ./text2c README > readme.c
-# ./text2c name=info_txt README > readme.c
+# ./text2c README > readme.h
+# ./text2c name=info_txt README > readme.h
 #
-# Copyright (c) 2009 Andreas K. Foerster
+# Copyright (c) 2009,2012 Andreas K. Foerster
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
 # notice and this notice are preserved.  This file is offered as-is,
@@ -21,7 +21,7 @@ NR == 1 {
 
   if (name == "") name = "text"
 
-  print "const char " name "[] ="
+  print "static const char " name "[] ="
 }
 
 {
@@ -30,6 +30,9 @@ NR == 1 {
 
   # mask quotation marks
   gsub (/\"/, "\\\"")
+
+  # mask page-breaks
+  gsub (/\f/, "\\f")
 
   # print with quotation marks and \n at the end
   print "\"" $0 "\\n\""
