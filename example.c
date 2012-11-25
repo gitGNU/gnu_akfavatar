@@ -37,7 +37,7 @@
 
 
 // XPM files are valid C-Code!
-#include <data/female_user.xpm>
+#include "data/female_user.xpm"
 
 
 #define PRGNAME  "AKFAvatar example program"
@@ -45,7 +45,7 @@
 
 // Prototypes
 static void say (char *msg);
-static void run_plot (void);
+static void plot (void);
 
 
 /*
@@ -62,8 +62,6 @@ main (int argc, char *argv[])
   (void) argc;
   (void) argv;
 
-  // for static linking it is beneficial to avoid avt_colorname
-  avt_set_background_color (0xFFC0CB);
   avt_mb_encoding ("UTF-8");
 
   // initialize it
@@ -73,36 +71,26 @@ main (int argc, char *argv[])
       exit (EXIT_FAILURE);
     }
 
-  // set the avatar
-  avt_avatar_image_xpm (female_user_xpm);
-
   // clean up when the program exits
   atexit (avt_quit);
 
-  run_plot ();
+  plot ();
 
   return EXIT_SUCCESS;
 }
 
 
 static void
-say (char *msg)
-{
-  /*
-   * tell the message
-   * and if there is quit-request or a fatal error, stop the program
-   * (note: fatal errors are unlikely after initialization)
-   */
-  if (avt_say_mb (msg))
-    exit (EXIT_SUCCESS);
-}
-
-
-static void
-run_plot (void)
+plot (void)
 {
   char name[AVT_LINELENGTH + 1];
   // AVT_LINELENGTH is the maximum length of one line in a balloon
+
+  // set the avatar
+  avt_avatar_image_xpm (female_user_xpm);
+
+  // for static linking it is beneficial to avoid avt_colorname
+  avt_set_background_color (0xFFC0CB);
 
   if (avt_move_in ())
     exit (EXIT_SUCCESS);
@@ -136,4 +124,17 @@ run_plot (void)
   avt_wait_button ();
   avt_move_out ();
   avt_wait (AVT_SECONDS (0.75));
+}
+
+
+static void
+say (char *msg)
+{
+  /*
+   * tell the message
+   * and if there is quit-request or a fatal error, stop the program
+   * (note: fatal errors are unlikely after initialization)
+   */
+  if (avt_say_mb (msg))
+    exit (EXIT_SUCCESS);
 }
