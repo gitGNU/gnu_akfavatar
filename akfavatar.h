@@ -6,7 +6,7 @@
  *
  * other software:
  * required:
- *  SDL1.2 (recommended: SDL1.2.11 or later (but not 1.3 or 2.0!))
+ *  SDL1.2 (SDL1.2.11 or later (but not 1.3 or 2.0!))
  * optional/deprecated:
  *  SDL_image1.2 (support may be removed in future versions)
  *
@@ -170,7 +170,8 @@ AVT_API void avt_button_quit (void);
 /* On error these functions return AVT_FAILURE without changing the status */
 
 /*
- * X-Pixmaps (XPM), X Bitmaps (XBM) and uncompressed BMP are always supported
+ * supported formats:
+ * X-Pixmaps (XPM), X Bitmaps (XBM) and uncompressed BMP
  */
 
 AVT_API int avt_avatar_image_default (void);
@@ -217,7 +218,7 @@ AVT_API void avt_bell_function (void (*) (void));
 AVT_API void avt_flash (void);
 
 /*
- * update, ie handle events
+ * update, ie. handle events
  * use this in a longer loop in your program
  */
 AVT_API int avt_update (void);
@@ -310,7 +311,7 @@ AVT_API int avt_ask (wchar_t *s, size_t size);
  * see AVT_KEY_ constants for function keys
  * on error or a quit request it returns AVT_KEY_NONE
  */
-extern avt_char avt_get_key (void);
+AVT_API avt_char avt_get_key (void);
 
 /*
  * check if a key was pressed (or an event happened)
@@ -319,7 +320,7 @@ extern avt_char avt_get_key (void);
 AVT_API bool avt_key_pressed (void);
 
 /* clear key buffer */
-void avt_clear_keys (void);
+AVT_API void avt_clear_keys (void);
 
 /* push key or event */
 AVT_API void avt_push_key (avt_char key);
@@ -381,7 +382,7 @@ AVT_API int avt_tell_mb_len (const char *txt, size_t len);
  * get string (just one line)
  * converted to the given encoding
  *
- * for UTF-8 encoding s should have a capacity of 4 * LINELENGTH Bytes
+ * for UTF-8 encoding s should have a capacity of 4 * (LINELENGTH+1) Bytes
  */
 AVT_API int avt_ask_mb (char *s, size_t size);
 
@@ -552,6 +553,7 @@ AVT_API void avt_set_bitmap_color (int color);
  * use NULL for the unchanged part
  * in newer SDL-versions it depends on avt_mb_encoding()
  * if possible stick to ASCII for compatibility
+ * backends may ignore this information
  */
 AVT_API void avt_set_title (const char *title, const char *shortname);
 
@@ -562,10 +564,10 @@ AVT_API void avt_set_title (const char *title, const char *shortname);
 AVT_API int avt_set_avatar_name (const wchar_t *name);
 AVT_API int avt_set_avatar_name_mb (const char *name);
 
-/* switch to fullscreen or window mode */
+/* switch to fullscreen or window mode (if available) */
 AVT_API void avt_switch_mode (int mode);
 
-/* toggle fullscreen mode */
+/* toggle fullscreen mode (if available) */
 AVT_API void avt_toggle_fullscreen (void);
 
 /* get screen mode */
@@ -582,7 +584,7 @@ AVT_API void avt_set_balloon_width (int width);
 AVT_API void avt_set_balloon_height (int height);
 
 
-/* values for avt_avatar_mode */
+/* values for avt_set_avatar_mode */
 #define AVT_SAY 0
 #define AVT_THINK 1
 #define AVT_HEADER 2
@@ -603,7 +605,8 @@ AVT_API void avt_text_direction (int direction);
 
 /*
  * delay time for text-writing
- * default: AVT_DEFAULT_TEXT_DELAY
+ * may be AVT_DEFAULT_TEXT_DELAY
+ * or 0 to switch it off
  */
 AVT_API void avt_set_text_delay (int delay);
 
@@ -816,7 +819,8 @@ AVT_API void avt_lock_updates (bool lock);
 /* On error these functions return AVT_FAILURE without changing the status */
 
 /*
- * X-Pixmaps (XPM), X Bitmaps (XBM) and uncompressed BMP are always supported
+ * supported formats:
+ * X-Pixmaps (XPM), X Bitmaps (XBM) and uncompressed BMP
  */
 
 AVT_API int avt_image_max_width (void);
@@ -1081,16 +1085,62 @@ AVT_API void avt_pause_audio (bool pause);
 
 /*
  * Is this sound currently playing?
- * Use NULL for any sound
+ * Use NULL to check for any sound
  */
 AVT_API bool avt_audio_playing (avt_audio *snd);
 
 /*
- * automatically push a key when audio ends
- * set to 0 to stop it
+ * send a key when audio ends
+ * set to AVT_KEY_NONE to stop it
  * it returns the previous key
  */
 AVT_API avt_char avt_set_audio_end_key (avt_char key);
+
+/***********************************************************************/
+/* experimental */
+/* these functions will likely change or being removed in later versions */
+/* so use them with care, don't rely on them */
+
+/* backend */
+
+/*
+ * send a key when one of the buttons of the pointer (mouse) is pressed
+ * set to AVT_KEY_NONE to stop it
+ * it returns the previous key
+ */
+AVT_API avt_char avt_set_pointer_buttons_key (avt_char key);
+
+/*
+ * send a key when the pointer (mouse) is moved
+ * set to AVT_KEY_NONE to stop it
+ * it returns the previous key
+ */
+AVT_API avt_char avt_set_pointer_motion_key (avt_char key);
+
+/*
+ * get the current pointer position (absolute position)
+ */
+AVT_API void avt_get_pointer_position (int *x, int *y);
+
+/*
+ * get a string with a default text
+ *
+ * position can be -1 for at the end or 0 for at the beginning,
+ * 1 for behind first character and so on
+ *
+ * if mode is 0 input is ended with Enter
+ * if mode is 1 input is also ended by up and down arrow keys
+ *
+ * returns the key which ended input, or AVT_KEY_NONE on quit request
+ */
+AVT_API avt_char avt_input (wchar_t *result, size_t size,
+                            const wchar_t *default_text,
+                            int position, int mode);
+
+
+AVT_API avt_char avt_input_mb (char *s, size_t size,
+                               const char *default_text,
+                               int position, int mode);
 
 /***********************************************************************/
 /* deprecated functions - only for backward comatibility */

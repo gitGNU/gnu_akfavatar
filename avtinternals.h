@@ -132,12 +132,6 @@ struct avt_backend
 #define avt_min(a, b) ((a) < (b) ? (a) : (b))
 #define avt_max(a, b) ((a) > (b) ? (a) : (b))
 
-/* backend */
-/* these functions may be moved to the official API */
-extern avt_char avt_set_pointer_motion_key (avt_char key);
-extern avt_char avt_set_pointer_buttons_key (avt_char key);
-extern void avt_get_pointer_position (int *x, int *y);
-
 /* avatar.c */
 AVT_HIDDEN extern int _avt_STATUS;
 
@@ -151,31 +145,6 @@ AVT_HIDDEN extern avt_graphic *avt_load_image_xpm (char **xpm);
 AVT_HIDDEN extern bool avt_check_buttons (int x, int y);
 AVT_HIDDEN extern void avt_add_key (avt_char key);
 AVT_HIDDEN extern void avt_resize (int width, int height);
-
-/*
- * get a string with a default text
- *
- * position can be -1 for at the end or 0 for at the beginning,
- * 1 for behind first character and so on
- *
- * if mode is 0 input is ended with Enter
- * if mode is 1 input is also ended by up and down arrow keys
- *
- * returns the key which ended input, or AVT_KEY_NONE on quit request
- */
-/*
- * these functions may be moved to the official API,
- * but they still may change
- */
-extern avt_char avt_input (wchar_t *result, size_t size,
-                            const wchar_t *default_text,
-                            int position, int mode);
-
-
-extern avt_char avt_input_mb (char *s, size_t size,
-                               const char *default_text,
-                               int position, int mode);
-
 
 
 /* avttiming.c */

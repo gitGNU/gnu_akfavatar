@@ -20,6 +20,9 @@
       don't have the bpp parameter any mor, only 4 Bytes per pixel accepted
     - new functions: avt_key_pressed, avt_push_key, avt_clear_keys,
       avt_set_audio_end_key, avt_combining, avt_bell_function
+    - new experimental functions: avt_set_pointer_buttons_key,
+      avt_set_pointer_motion_key, avt_get_pointer_position,
+      avt_char avt_input, avt_input_mb
     - new macro: avt_elapsed
 
   Lua-API changes:
