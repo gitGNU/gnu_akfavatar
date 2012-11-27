@@ -55,9 +55,14 @@
 #define AVT_LITTLE_ENDIAN  1234
 #define AVT_BIG_ENDIAN     4321
 
-#else
+#elif defined(__BYTE_ORDER__) and defined(__ORDER_LITTLE_ENDIAN__) \
+       and defined(__ORDER_BIG_ENDIAN__)
 
-#if defined(__GLIBC__) or defined(__UCLIBC__) or defined(__dietlibc__)
+#define AVT_LITTLE_ENDIAN  __ORDER_LITTLE_ENDIAN__
+#define AVT_BIG_ENDIAN     __ORDER_BIG_ENDIAN__
+#define AVT_BYTE_ORDER     __BYTE_ORDER__
+
+#elif defined(__GLIBC__) or defined(__UCLIBC__) or defined(__dietlibc__)
 
 #include <endian.h>
 
@@ -83,7 +88,6 @@
 #define AVT_BYTE_ORDER  AVT_LITTLE_ENDIAN
 
 #endif // not big endian system
-#endif // no endian.h
 #endif // not AVT_BYTE_ORDER
 
 #if defined(__GNUC__) and not defined(_WIN32)
