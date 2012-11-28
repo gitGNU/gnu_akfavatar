@@ -561,16 +561,16 @@ avt_start (const char *title, const char *shortname, int window_mode)
       return _avt_STATUS;
     }
 
-  backend->update_area = &update_area_fb;
-  backend->quit = &quit_fb;
-  backend->wait_key = &wait_key_fb;
+  backend->update_area = update_area_fb;
+  backend->quit = quit_fb;
+  backend->wait_key = wait_key_fb;
 
   // do not change for big endian!
   conv = iconv_open ("UTF-32LE", "UTF-8");
 
   memset (fb, 0, fix_info.smem_len);
 
-  avt_bell_function (&beep);	// just remove this line, if you don't like it
+  avt_bell_function (beep);	// just remove this line, if you don't like it
 
   return _avt_STATUS;
 }

@@ -6732,7 +6732,7 @@ avt_start_common (avt_graphic * new_screen)
 
   // visual flash for the bell
   // when you initialize the audio stuff, you get an audio bell
-  avt.bell = &avt_flash;
+  avt.bell = avt_flash;
 
   return &backend;
 }

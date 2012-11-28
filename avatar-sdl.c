@@ -1010,15 +1010,15 @@ avt_start (const char *title, const char *shortname, int window_mode)
   if (not backend or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  backend->update_area = &update_area_sdl;
-  backend->quit = &quit_sdl;
-  backend->wait_key = &wait_key_sdl;
-  backend->resize = &resize_sdl;
+  backend->update_area = update_area_sdl;
+  backend->quit = quit_sdl;
+  backend->wait_key = wait_key_sdl;
+  backend->resize = resize_sdl;
 
 #ifdef IMAGELOADERS
-  backend->graphic_file = &load_image_file_sdl;
-  backend->graphic_stream = &load_image_stream_sdl;
-  backend->graphic_memory = &load_image_memory_sdl;
+  backend->graphic_file = load_image_file_sdl;
+  backend->graphic_stream = load_image_stream_sdl;
+  backend->graphic_memory = load_image_memory_sdl;
 #endif
 
   // size of the window (not to be confused with the variable window

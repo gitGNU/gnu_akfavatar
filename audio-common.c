@@ -150,7 +150,7 @@ avt_quit_audio (void)
       alert_sound = NULL;
     }
 
-  avt_bell_function (&avt_flash);
+  avt_bell_function (avt_flash);
 
   if (quit_audio_backend)
     {
@@ -786,10 +786,10 @@ avt_start_audio_common (void (*quit_backend) (void))
 				       avt_alert_data_size, AVT_LOAD);
 
   if (alert_sound)
-    avt_bell_function (&audio_alert);
+    avt_bell_function (audio_alert);
 
   quit_audio_backend = quit_backend;
-  avt_quit_audio_function (&avt_quit_audio);
+  avt_quit_audio_function (avt_quit_audio);
 
   return _avt_STATUS;
 }
