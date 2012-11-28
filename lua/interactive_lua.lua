@@ -17,12 +17,12 @@ local function interactive (cmd)
     avt.save_position ()
     local line, ch = avt.input (prompt, nil, -1, 1)
 
-    while ch == 0xF000 or ch == 0xF001 do
-      if ch == 0xF000 then
+    while ch == 0xEA00 or ch == 0xEA01 do
+      if ch == 0xEA00 then
         if history[pos+1] then
           pos = pos + 1
         end
-      elseif ch == 0xF001 then
+      elseif ch == 0xEA01 then
         if history[pos] then
           pos = pos - 1
         end

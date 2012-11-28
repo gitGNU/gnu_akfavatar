@@ -278,7 +278,7 @@ local function play()
 
   local function select_slot()
     local key
-    local left, right, down, enter = 0xF003, 0xF002, 0xF001, 0x0D
+    local left, right, down, enter = 0xEA03, 0xEA02, 0xEA01, 0x0D
 
     repeat
       above(column, player)
