@@ -72,9 +72,34 @@ update_area_fb (avt_graphic * screen, int x, int y, int width, int height)
   uint_least8_t *fbp;
 
   screen_width = screen->width;
+
+  if (x > screen_width or y > screen->height)
+    return;
+
+  if (x < 0)
+    {
+      width -= (-x);
+      x = 0;
+    }
+
+  if (y < 0)
+    {
+      height -= (-y);
+      y = 0;
+    }
+
+  if (y + height > screen->height)
+    height = screen->height - y;
+
+  if (width <= 0 or height <= 0)
+    return;
+
   pixels = screen->pixels + (y * screen_width);
   fbp = fb + y * fix_info.line_length + x * bytes_per_pixel;
   x2 = x + width;
+
+  if (x2 > screen_width)
+    x2 = screen_width;
 
   switch (var_info.bits_per_pixel)
     {
