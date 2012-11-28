@@ -4379,6 +4379,7 @@ avt_choice (int *result, int start_line, int items, int key,
   int last_key;
   int end_line;
   int line_nr, old_line;
+  int x, y;			// pointer position
 
   if (avt.screen and _avt_STATUS == AVT_NORMAL)
     {
@@ -4399,6 +4400,20 @@ avt_choice (int *result, int start_line, int items, int key,
       avt_clear_keys ();
       avt_set_pointer_motion_key (0xF802);
       avt_set_pointer_buttons_key (AVT_KEY_ENTER);
+
+      // check pointer position
+      avt_get_pointer_position (&x, &y);
+
+      if (x >= avt.viewport.x
+	  and x <= avt.viewport.x + avt.viewport.width
+	  and y >= avt.viewport.y + ((start_line - 1) * fontheight)
+	  and y < avt.viewport.y + (end_line * fontheight))
+	{
+	  line_nr = ((y - avt.viewport.y) / fontheight) + 1;
+	  update_menu_bar (start_line, end_line, line_nr, old_line,
+			   plain_menu);
+	  old_line = line_nr;
+	}
 
       while ((*result == -1) and (_avt_STATUS == AVT_NORMAL))
 	{
@@ -4447,7 +4462,6 @@ avt_choice (int *result, int start_line, int items, int key,
 	    *result = line_nr - start_line + 1;
 	  else if (0xF802 == ch)	// mouse motion
 	    {
-	      int x, y;
 	      avt_get_pointer_position (&x, &y);
 
 	      if (x >= avt.viewport.x
