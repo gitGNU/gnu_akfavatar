@@ -76,32 +76,32 @@
 #define AVT_KEY_ESCAPE    0x001B  /* only if single keys are reserved */
 #define AVT_KEY_BACKSPACE 0x0008
 #define AVT_KEY_DELETE    0x007F
-#define AVT_KEY_UP        0xF000
-#define AVT_KEY_DOWN      0xF001
-#define AVT_KEY_RIGHT     0xF002
-#define AVT_KEY_LEFT      0xF003
-#define AVT_KEY_INSERT    0xF004
-#define AVT_KEY_HOME      0xF005
-#define AVT_KEY_END       0xF006
-#define AVT_KEY_PAGEUP    0xF007
-#define AVT_KEY_PAGEDOWN  0xF008
-#define AVT_KEY_HELP      0xF009
-#define AVT_KEY_MENU      0xF00A
-#define AVT_KEY_F1        0xF0F1
-#define AVT_KEY_F2        0xF0F2
-#define AVT_KEY_F3        0xF0F3
-#define AVT_KEY_F4        0xF0F4
-#define AVT_KEY_F5        0xF0F5
-#define AVT_KEY_F6        0xF0F6
-#define AVT_KEY_F7        0xF0F7
-#define AVT_KEY_F8        0xF0F8
-#define AVT_KEY_F9        0xF0F9
-#define AVT_KEY_F10       0xF0FA
-#define AVT_KEY_F11       0xF0FB  /* only if single keys are reserved */
-#define AVT_KEY_F12       0xF0FC
-#define AVT_KEY_F13       0xF0FD
-#define AVT_KEY_F14       0xF0FE
-#define AVT_KEY_F15       0xF0FF
+#define AVT_KEY_UP        0xEA00
+#define AVT_KEY_DOWN      0xEA01
+#define AVT_KEY_RIGHT     0xEA02
+#define AVT_KEY_LEFT      0xEA03
+#define AVT_KEY_INSERT    0xEA04
+#define AVT_KEY_HOME      0xEA05
+#define AVT_KEY_END       0xEA06
+#define AVT_KEY_PAGEUP    0xEA07
+#define AVT_KEY_PAGEDOWN  0xEA08
+#define AVT_KEY_HELP      0xEA09
+#define AVT_KEY_MENU      0xEA0A
+#define AVT_KEY_F1        0xEAF1
+#define AVT_KEY_F2        0xEAF2
+#define AVT_KEY_F3        0xEAF3
+#define AVT_KEY_F4        0xEAF4
+#define AVT_KEY_F5        0xEAF5
+#define AVT_KEY_F6        0xEAF6
+#define AVT_KEY_F7        0xEAF7
+#define AVT_KEY_F8        0xEAF8
+#define AVT_KEY_F9        0xEAF9
+#define AVT_KEY_F10       0xEAFA
+#define AVT_KEY_F11       0xEAFB  /* may be reserved for toggling fullscreen */
+#define AVT_KEY_F12       0xEAFC
+#define AVT_KEY_F13       0xEAFD
+#define AVT_KEY_F14       0xEAFE
+#define AVT_KEY_F15       0xEAFF
 
 /* example: avt_wait(AVT_SECONDS(2.5)) waits 2.5 seconds */
 #define AVT_SECONDS(x) ((x)*1000)

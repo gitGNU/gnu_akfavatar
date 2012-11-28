@@ -253,7 +253,7 @@ avt_wait_audio_end (void)
     return _avt_STATUS;
 
   old_audio_key = audio_key;
-  audio_key = 0xF050;
+  audio_key = 0xE903;
 
   // end the loop, but wait for end of sound
   loop = false;

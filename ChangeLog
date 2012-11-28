@@ -1,3 +1,8 @@
+2012-11-28  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h:
+	key codes have been changed not to conflict with the corporate zone
+
 2012-11-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* text2c.awk: make static variable, support page-breaks

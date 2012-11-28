@@ -9,6 +9,7 @@
   - support for combining characters (Unicode)
   - lua/interactive_lua.lua supports scrolling back in a history list
   - regression: the navigation bar cannot handle the pause key anymore
+  - key codes have been changed not to conflict with the corporate zone
 
   C-API changes:
     - all deprecated functions removed
