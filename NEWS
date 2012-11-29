@@ -29,7 +29,7 @@
   Lua-API changes:
     - the function avt.ask was extended (yet undocumented)
     - new functions: avt.combining, avt.key_pressed, avt.clear_keys,
-      avt.push_key, avt.set_audio_end_key, avt.alert
+      avt.push_key, avt.set_audio_end_key, avt.alert, avt.getcwd
     - new table: avt.key with key codes
 
 

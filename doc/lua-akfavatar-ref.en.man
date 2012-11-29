@@ -1080,6 +1080,8 @@ and an error message.
 .PP
 .TP
 .BI "avt.get_directory()"
+.TQ
+.BI "avt.getcwd()"
 Returns the current working directory.
 On error it returns
 .I nil

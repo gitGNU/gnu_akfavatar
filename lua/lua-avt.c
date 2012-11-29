@@ -2558,6 +2558,7 @@ static const luaL_Reg akfavtlib[] = {
   {"file_selection", lavt_file_selection},
   {"color_selection", lavt_color_selection},
   {"get_directory", lavt_getcwd},
+  {"getcwd", lavt_getcwd},
   {"set_directory", lavt_chdir},
   {"chdir", lavt_chdir},
   {"directory_entries", lavt_directory_entries},
