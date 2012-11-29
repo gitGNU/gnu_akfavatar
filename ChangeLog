@@ -1,3 +1,8 @@
+2012-11-29  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/lua-avt.c (luaopen_akfavatar_embedded):
+	new table avt.key with key codes
+
 2012-11-28  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h:

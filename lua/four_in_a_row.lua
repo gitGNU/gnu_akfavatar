@@ -278,17 +278,16 @@ local function play()
 
   local function select_slot()
     local key
-    local left, right, down, enter = 0xEA03, 0xEA02, 0xEA01, 0x0D
 
     repeat
       above(column, player)
       screen:show()
       key=avt.get_key()
-      if left==key and column>1 then column = column - 1
-      elseif right==key and column<7 then column = column + 1
+      if avt.key.left==key and column>1 then column = column - 1
+      elseif avt.key.right==key and column<7 then column = column + 1
       elseif key>=0x31 and key<=0x37 then column = key - 0x30
       end
-    until down==key or enter==key
+    until avt.key.down==key or avt.key.enter==key
   end -- select_slot
 
   draw_board()

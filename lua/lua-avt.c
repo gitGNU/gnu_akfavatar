@@ -27,7 +27,7 @@
 
 #include "akfavatar.h"
 #include "avtaddons.h"
-#include "avtinternals.h"  // for avt_input_mb
+#include "avtinternals.h"	// for avt_input_mb
 
 #ifdef __cplusplus
 extern "C"
@@ -2651,6 +2651,50 @@ set_datapath (lua_State * L)
 
 #endif // not _WIN32
 
+static inline void
+key_table (lua_State * L)
+{
+  lua_createtable (L, 0, 30);
+
+  lua_pushinteger (L, AVT_KEY_ENTER);
+  lua_setfield (L, -2, "enter");
+  lua_pushinteger (L, AVT_KEY_ESCAPE);
+  lua_setfield (L, -2, "escape");
+  lua_pushinteger (L, AVT_KEY_BACKSPACE);
+  lua_setfield (L, -2, "backspace");
+  lua_pushinteger (L, AVT_KEY_DELETE);
+  lua_setfield (L, -2, "delete");
+  lua_pushinteger (L, AVT_KEY_UP);
+  lua_setfield (L, -2, "up");
+  lua_pushinteger (L, AVT_KEY_DOWN);
+  lua_setfield (L, -2, "down");
+  lua_pushinteger (L, AVT_KEY_RIGHT);
+  lua_setfield (L, -2, "right");
+  lua_pushinteger (L, AVT_KEY_LEFT);
+  lua_setfield (L, -2, "left");
+  lua_pushinteger (L, AVT_KEY_INSERT);
+  lua_setfield (L, -2, "insert");
+  lua_pushinteger (L, AVT_KEY_HOME);
+  lua_setfield (L, -2, "home");
+  lua_pushinteger (L, AVT_KEY_END);
+  lua_setfield (L, -2, "end");
+  lua_pushinteger (L, AVT_KEY_PAGEUP);
+  lua_setfield (L, -2, "pageup");
+  lua_pushinteger (L, AVT_KEY_PAGEDOWN);
+  lua_setfield (L, -2, "pagedown");
+  lua_pushinteger (L, AVT_KEY_HELP);
+  lua_setfield (L, -2, "help");
+  lua_pushinteger (L, AVT_KEY_MENU);
+  lua_setfield (L, -2, "menu");
+
+  // f1 - f15
+  for (int i = 1; i <= 15; i++)
+    {
+      lua_pushfstring (L, "f%d", i);
+      lua_pushinteger (L, (AVT_KEY_F1 - 1) + i);
+      lua_rawset (L, -3);
+    }
+}
 
 /*
  * use this as entry point when embedding this in
@@ -2684,8 +2728,13 @@ luaopen_akfavatar_embedded (lua_State * L)
       lua_setfield (L, -2, "language");
     }
 
+  // empty table for translations
   lua_newtable (L);
   lua_setfield (L, -2, "translations");
+
+  // key table
+  key_table (L);
+  lua_setfield (L, -2, "key");
 
   // type for audio data
   luaL_newmetatable (L, AUDIODATA);
