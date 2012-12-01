@@ -70,8 +70,8 @@ avtpalette.o: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
 avtdata.o: $(srcdir)/avtdata.c $(srcdir)/avtdata.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtdata.c
 
-avttiming.o: $(srcdir)/avttiming.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
-	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avttiming.c
+windowstiming.o: $(srcdir)/mingw/windowstiming.c $(srcdir)/akfavatar.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/mingw/windowstiming.c
 
 basedir.o: $(srcdir)/basedir.c $(srcdir)/avtaddons.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/basedir.c
@@ -127,19 +127,19 @@ iconv: iconv.exe
 # static library
 libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o audio-common.o \
 	  avatar-default.o avtdata.o font.o avtpalette.o win_iconv.o \
-	  avttiming.o version.o
+	  windowstiming.o version.o
 	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o avatar.o audio-common.o \
 	avatar-default.o avtdata.o font.o avtpalette.o win_iconv.o version.o \
-	avttiming.o
+	windowstiming.o
 	$(RANLIB) $@
 
 akfavatar.dll: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o audio-common.o \
 	  avatar-default.o avtdata.o font.o libinfo.o avtpalette.o \
-	  avttiming.o win_iconv.o version.o
+	  windowstiming.o win_iconv.o version.o
 	$(CC) -shared -o $@ $(srcdir)/mingw/akfavatar.def \
 	        $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
 	        avatar-default.o avtdata.o audio-common.o font.o avtpalette.o \
-	        avttiming.o win_iconv.o version.o libinfo.o \
+	        windowstiming.o win_iconv.o version.o libinfo.o \
 	        -Wl,-no-undefined,--enable-runtime-pseudo-reloc \
 	        -Wl,--out-implib,libakfavatar.dll.a \
 	        $(SDL_LDFLAGS) $(LDFLAGS)

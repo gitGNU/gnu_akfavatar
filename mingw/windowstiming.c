@@ -1,5 +1,5 @@
 /*
- * timing functions for AKFAvatar
+ * Windows timing functions for AKFAvatar
  * Copyright (c) 2012 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
@@ -18,50 +18,30 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#define _ISOC99_SOURCE
-#define _POSIX_C_SOURCE 200112L
-
 #include "akfavatar.h"
+#include <windows.h>
 #include <iso646.h>
-#include <time.h>
-#include <sys/time.h>
 
-
-static struct timeval start_ticks;
+static DWORD start_ticks;
 
 extern size_t
 avt_ticks (void)
 {
-  struct timeval now;
+  DWORD now;
 
-  // conforming to POSIX.1-2001
-  gettimeofday (&now, NULL);
+  now = GetTickCount ();
 
-  if (not start_ticks.tv_sec)
+  if (not start_ticks)
     start_ticks = now;
 
-  return ((now.tv_sec - start_ticks.tv_sec) * 1000)
-    + ((now.tv_usec - start_ticks.tv_usec) / 1000);
+  if (now >= start_ticks)
+    return (now - start_ticks);
+  else				// overrun
+    return (now + (0xFFFFFFFFu - start_ticks));
 }
 
-
-// conforming to POSIX.1-2001
 extern void
 avt_delay (int milliseconds)
 {
-  struct timespec time, remaining;
-  int r;
-
-  if (milliseconds <= 0)
-    return;
-
-  remaining.tv_sec = milliseconds / 1000;
-  remaining.tv_nsec = (milliseconds % 1000) * 1000000;
-
-  do
-    {
-      time = remaining;
-      r = nanosleep (&time, &remaining);
-    }
-  while (r == -1);
+  Sleep (milliseconds);
 }
