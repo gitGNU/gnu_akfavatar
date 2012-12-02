@@ -507,7 +507,7 @@ start_screen (void)
   avt_set_balloon_color (AVT_COLOR_START);
   avt_avatar_image_xpm (akfavatar_logo_xpm);
   avt_set_avatar_mode (AVT_HEADER);
-  avt_set_balloon_size (9, 80);
+  avt_set_balloon_size (10, 80);
   avt_underlined (true);
   avt_bold (true);
   avt_say_mb (PRGNAME);
@@ -521,6 +521,13 @@ start_screen (void)
   avt_new_line ();
   avt_say_mb (LUA_COPYRIGHT);
   avt_new_line ();
+  avt_new_line ();
+  if (german)
+    avt_say_mb ("Verfügbar für GNU/Linux und Windows, "
+		"leicht portierbar auf andere Systme");
+  else
+    avt_say_mb ("Available for GNU/Linux and Windows, "
+		"easily portable to other systems");
   avt_new_line ();
   avt_say_mb ("Homepage: ");
   avt_underlined (true);
