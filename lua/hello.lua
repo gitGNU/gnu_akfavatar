@@ -1,11 +1,7 @@
 #!/usr/bin/env lua-akfavatar
 
--- Copyright (c) 2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
--- License: GPL version 3 or later
-
--- Note: Since this is a trivial example, you don't have to keep my
--- Copyright notice, but you may replace it with your own.
-
+-- This file is dedicated to the Public Domain (CC0)
+-- http://creativecommons.org/publicdomain/zero/1.0/
 
 local avt = require "lua-akfavatar" --> gives access to the avt. comands
 
