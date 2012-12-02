@@ -467,6 +467,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(srcdir)/lua/textview.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/hexviewer.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/hello.lua $(BINPKGNAME)/lua/
+	cp $(srcdir)/lua/greeting.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/story1-en.lua $(srcdir)/lua/story1-de.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/fs-quiz-en.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/fs-quiz-de.lua $(BINPKGNAME)/lua/

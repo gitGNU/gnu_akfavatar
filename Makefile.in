@@ -834,6 +834,7 @@ dist: about $(srcdir)/alert.au
 	ln $(srcdir)/lua/lua-avt.c $(srcdir)/lua/lua-akfavatar-prg.c \
 	   $(srcdir)/lua/interactive_lua.lua \
 	   $(srcdir)/lua/hello.lua \
+	   $(srcdir)/lua/greeting.lua \
 	   $(srcdir)/lua/fullscreen.lua \
 	   $(srcdir)/lua/audioplayer.lua \
 	   $(srcdir)/lua/function_plotter.lua \
@@ -982,6 +983,7 @@ dist-bin-default: all lua-akfavatar-linuxfb pdf
 	ln $(srcdir)/lua/four_in_a_row.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/multiplication.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/hello.lua $(BINPKGNAME)/lua/
+	ln $(srcdir)/lua/greeting.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/man.lua $(srcdir)/lua/textview.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/hexviewer.lua $(BINPKGNAME)/lua/
 	ln $(srcdir)/lua/story1-en.lua $(srcdir)/lua/story1-de.lua $(BINPKGNAME)/lua/
