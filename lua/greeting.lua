@@ -14,6 +14,11 @@ avt.translations = {
 
 local L = avt.translate
 
+avt.encoding("UTF-8")
+avt.title(L"Greeting")
+avt.start()
+avt.avatar_image_file(avt.search "female_user.xpm")
+
 -- try to get realname for a username - nil on error
 -- works on POSIX compatible systems, if the name is set
 local function get_realname(username)
@@ -32,6 +37,9 @@ local function get_realname(username)
 
   f:close()
 
+  -- eventually recode name from system specific charset
+  if name then name = avt.recode(name, "") end
+
   return name
 end
 
@@ -41,10 +49,6 @@ local username =
   os.getenv "LOGNAME" or os.getenv "USER" or os.getenv "USERNAME"
 
 local realname = get_realname(username)
-
-avt.title(L"Greeting")
-avt.start()
-avt.avatar_image_file(avt.search "female_user.xpm")
 
 -- both realname and username may still be nil!
 avt.tell(string.format(L"Hello %s!", realname or username or L"you"))
