@@ -2,7 +2,7 @@
  * AKFAvatar library - for giving your programs a graphical Avatar
  * Copyright (c) 2007,2008,2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
  *
- * required standards: C99
+ * required standards: C99, POSIX.1-2001
  *
  * This file is part of AKFAvatar
  *
@@ -6582,7 +6582,7 @@ avt_credits_mb (const char *txt, bool centered)
 
 // must be replaced by the backend
 static void
-update_area_error (avt_graphic * screen, int x, int y, int width, int height)
+default_error_function (void)
 {
   avt_set_error ("backend function missing");
   _avt_STATUS = AVT_ERROR;
@@ -6590,10 +6590,9 @@ update_area_error (avt_graphic * screen, int x, int y, int width, int height)
 
 // must be replaced by the backend
 static void
-default_error_function (void)
+update_area_error (avt_graphic * screen, int x, int y, int width, int height)
 {
-  avt_set_error ("backend function missing");
-  _avt_STATUS = AVT_ERROR;
+  default_error_function ();
 }
 
 extern void
