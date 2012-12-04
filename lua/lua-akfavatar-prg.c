@@ -180,15 +180,29 @@ static void
 handle_require_options (int argc, char *argv[])
 {
   int i;
+  char *name, *p;
 
   for (i = 1; i < argc and argv[i][0] == '-'; i++)
     {
       if (strncmp (argv[i], "-l", 2) == 0)
 	{
 	  if (argv[i][2] != '\0')
-	    require (argv[i] + 2, 0);
+	    name = argv[i] + 2;
 	  else
-	    require (argv[++i], 0);
+	    name = argv[++i];
+
+	  if (not name)
+	    fatal ("'-l' needs argument", NULL);
+
+	  require (name, 1);
+
+	  // strip section from name
+	  p = strrchr (name, '.');
+	  if (p)
+	    name = p + 1;
+
+	  // set name as global variable
+	  lua_setglobal (L, name);
 	}
     }
 }
