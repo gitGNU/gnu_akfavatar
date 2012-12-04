@@ -349,7 +349,7 @@ case ${hosttype} in
 
   *x86* | *i?86*)  # private hack
       SDL_CFLAGS="-I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT"
-      SDL_LDFLAGS="-L/usr/lib32 -lSDL -lpthread"
+      SDL_LDFLAGS="-L/usr/local/lib32 -L/usr/lib32 -lSDL -lpthread"
       ;;
 
    *)
