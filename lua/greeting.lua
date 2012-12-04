@@ -8,9 +8,24 @@ local avt = require "lua-akfavatar"
 -- translations for expressions
 avt.translations = {
   ["Greeting"] = { de="Grüßen" },
-  ["Hello %s!"] = { de="Hallo %s!" },
-  ["you"] = { de="du da" }
+  ["Hello %s!"] = {
+    de="Hallo %s!",
+    nl="Hallo %s!",
+    tr="Merhaba %s!",
+    it="Ciao, %s!",
+    pl="Cześć %s!",
+    pt="Olá %s!",
+    es="¡Hola, %s!",
+    fr="Salut %s!",
+    sv="Hej %s!",
+    da="Hej %s!",
+    el="Καλημέρα %s!",
+    ru="Здравствуй, %s!",
+    bg="Здравей, %s!"},
+  ["unknown"] = { de="Unbekannter" }
   }
+
+-- please send corrections and further translations to info@akfoerster.de
 
 local L = avt.translate
 
@@ -51,6 +66,7 @@ local username =
 local realname = get_realname(username)
 
 -- both realname and username may still be nil!
-avt.tell(string.format(L"Hello %s!", realname or username or L"you"))
+avt.tell(string.format(L"Hello %s!",
+         realname or username or L"unknown"))
 
 avt.wait_button()
