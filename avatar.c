@@ -259,7 +259,13 @@ static void avt_darker_area (int x, int y, int width, int height, int amount);
 extern void
 avt_bell_function (void (*f) (void))
 {
-  avt.bell = f;
+  if (f != avt_bell)
+    avt.bell = f;
+  else				// error
+    {
+      avt_set_error ("bell function cannot be avt_bell (recursive call)");
+      _avt_STATUS = AVT_ERROR;
+    }
 }
 
 extern void
