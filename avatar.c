@@ -4901,10 +4901,13 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
       switch (avt_get_key ())
 	{
 	case AVT_KEY_ESCAPE:	// needed for the button
+	case L'q':
+	case AVT_KEY_BACKSPACE:	// my 'special' number keyboard
 	  quit = true;
 	  break;
 
 	case AVT_KEY_DOWN:
+	case L'2':
 	  if (pos < len)	// if it's not the end
 	    {
 	      avt.hold_updates = true;
@@ -4919,6 +4922,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 	  break;
 
 	case AVT_KEY_UP:
+	case L'8':
 	  {
 	    int start_pos;
 
@@ -4942,6 +4946,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 	  break;
 
 	case AVT_KEY_PAGEDOWN:
+	case L'3':
 	case L' ':
 	case L'f':
 	  if (pos < len)
@@ -4957,32 +4962,33 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 	  break;
 
 	case AVT_KEY_PAGEUP:
+	case L'9':
 	case L'b':
 	  pos = avt_pager_lines_back (txt, pos, 2 * avt.balloonheight + 1);
 	  pos = avt_pager_screen (txt, pos, len, horizontal);
 	  break;
 
 	case AVT_KEY_HOME:
+	case L'7':
 	  horizontal = 0;
 	  pos = avt_pager_screen (txt, 0, len, horizontal);
 	  break;
 
 	case AVT_KEY_END:
+	case L'1':
 	  pos = avt_pager_lines_back (txt, len, avt.balloonheight + 1);
 	  pos = avt_pager_screen (txt, pos, len, horizontal);
 	  break;
 
-	case L'q':
-	  quit = true;		// Q with any combination-key quits
-	  break;
-
 	case AVT_KEY_RIGHT:
+	case L'6':
 	  horizontal++;
 	  pos = avt_pager_lines_back (txt, pos, avt.balloonheight + 1);
 	  pos = avt_pager_screen (txt, pos, len, horizontal);
 	  break;
 
 	case AVT_KEY_LEFT:
+	case L'4':
 	  if (horizontal)
 	    {
 	      horizontal--;

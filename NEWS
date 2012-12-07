@@ -8,6 +8,7 @@
   - bugfix: lua-akfavatar option -l sets a global variable
   - avt_update() is much faster
   - support for combining characters (Unicode)
+  - The pager supports numbers (number-pad when NumLock is on)
   - lua/interactive_lua.lua supports scrolling back in a history list
   - regression: the navigation bar cannot handle the pause key anymore
   - key codes have been changed not to conflict with the corporate zone
