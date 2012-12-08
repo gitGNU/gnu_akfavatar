@@ -296,6 +296,7 @@ AVT_API bool avt_combining (avt_char ch);
  */
 AVT_API int avt_ask (wchar_t *s, size_t size);
 
+
 /***********************************************************************/
 /* key or event handling */
 
@@ -380,6 +381,7 @@ AVT_API int avt_tell_mb_len (const char *txt, size_t len);
  */
 AVT_API int avt_ask_mb (char *s, size_t size);
 
+
 /***********************************************************************/
 /* convert text encodings */
 
@@ -455,6 +457,7 @@ AVT_API size_t avt_recode_buffer (const char *tocode, const char *fromcode,
 /* free memory allocated by this library */
 AVT_API void avt_free (void *ptr);
 
+
 /***********************************************************************/
 /* informational stuff */
 
@@ -482,8 +485,15 @@ AVT_API const char *avt_copyright (void);
 /* get license information */
 AVT_API const char *avt_license (void);
 
+
 /***********************************************************************/
 /* colors */
+
+/*
+ * colors can always be used as 6-digit hexadecimal number,
+ * for example 0xFFFFFF for white, 0x000000 for black
+ * first 2 digits are for red, then 2 digits for green, then 2 for blue
+ */
 
 /*
  * returns a color number for the given values for red, green and blue
@@ -539,6 +549,7 @@ AVT_API void avt_set_text_background_ballooncolor (void);
 /* the background is always transparent */
 AVT_API void avt_set_bitmap_color (int color);
 
+
 /***********************************************************************/
 /* settings */
 
@@ -576,7 +587,6 @@ AVT_API int avt_get_mode (void);
 AVT_API void avt_set_balloon_size (int height, int width);
 AVT_API void avt_set_balloon_width (int width);
 AVT_API void avt_set_balloon_height (int height);
-
 
 /* values for avt_set_avatar_mode */
 #define AVT_SAY 0
@@ -709,6 +719,7 @@ AVT_API void avt_restore_position (void);
 /* set a viewport (sub-area of the textarea) */
 AVT_API void avt_viewport (int x, int y, int width, int height);
 
+
 /***********************************************************************/
 /* activities inside the balloon */
 
@@ -806,6 +817,7 @@ AVT_API void avt_insert_lines (int line, int num);
  */
 AVT_API void avt_lock_updates (bool lock);
 
+
 /***********************************************************************/
 /* showing images without the avatar */
 /* you should call avt_wait or avt_wait_button or avt_get_key thereafter */
@@ -827,29 +839,6 @@ AVT_API int avt_show_image_xpm (char **xpm);
 AVT_API int avt_show_image_xbm (const unsigned char *bits,
                                 int width, int height, int color);
 
-/*
- * show raw image
- * only 4 Bytes per pixel supported (0RGB)
- */
-AVT_API int avt_show_raw_image (void *image_data, int width, int height);
-
-
-/*
- * put an image onto a raw image
- * only 4 Bytes per pixel supported (0RGB)
- */
-
-AVT_API int avt_put_raw_image_file (const char *file, int x, int y,
-                                    void *image_data, int width, int height);
-
-AVT_API int avt_put_raw_image_stream (avt_stream * stream, int x, int y,
-                                      void *image_data, int width, int height);
-
-AVT_API int avt_put_raw_image_data (void *img, size_t imgsize, int x, int y,
-                                    void *image_data, int width, int height);
-
-AVT_API int avt_put_raw_image_xpm (char **xpm, int x, int y,
-                                   void *image_data, int width, int height);
 
 /***********************************************************************/
 /* high-level functions */
@@ -932,6 +921,7 @@ AVT_API int avt_pager_mb (const char *txt, size_t len, int startline);
 AVT_API int avt_credits (const wchar_t *text, bool centered);
 AVT_API int avt_credits_mb (const char *text, bool centered);
 
+
 /***********************************************************************/
 /* plumbing */
 
@@ -960,6 +950,7 @@ AVT_API void *avt_get_font_char (int ch);
  */
 AVT_API void avt_get_font_dimensions (int *width, int *height, 
                                       int *baseline);
+
 
 /***********************************************************************/
 /* audio output */
@@ -1096,6 +1087,7 @@ AVT_API bool avt_audio_playing (avt_audio *snd);
  */
 AVT_API avt_char avt_set_audio_end_key (avt_char key);
 
+
 /***********************************************************************/
 /* experimental */
 /* these functions will likely change or being removed in later versions */
@@ -1141,6 +1133,29 @@ AVT_API avt_char avt_input (wchar_t *result, size_t size,
 AVT_API avt_char avt_input_mb (char *s, size_t size,
                                const char *default_text,
                                int position, int mode);
+
+/*
+ * show raw image
+ * only 4 Bytes per pixel supported (0RGB)
+ */
+AVT_API int avt_show_raw_image (void *image_data, int width, int height);
+
+/*
+ * put an image onto a raw image
+ * only 4 Bytes per pixel supported (0RGB)
+ */
+AVT_API int avt_put_raw_image_file (const char *file, int x, int y,
+                                    void *image_data, int width, int height);
+
+AVT_API int avt_put_raw_image_stream (avt_stream * stream, int x, int y,
+                                      void *image_data, int width, int height);
+
+AVT_API int avt_put_raw_image_data (void *img, size_t imgsize, int x, int y,
+                                    void *image_data, int width, int height);
+
+AVT_API int avt_put_raw_image_xpm (char **xpm, int x, int y,
+                                   void *image_data, int width, int height);
+
 
 /***********************************************************************/
 /* deprecated functions - only for backward comatibility */
