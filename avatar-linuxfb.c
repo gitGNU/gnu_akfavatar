@@ -4,7 +4,7 @@
  *
  * This file is only for systems with the kernel Linux.
  * Screen and keyboard are supported, but mouse support is missing.
- * The framebuffer must have 32 bit per pixel.
+ * The framebuffer must have 32, 24, 16 or 15 bit per pixel.
  *
  * This file is part of AKFAvatar
  *

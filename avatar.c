@@ -4397,7 +4397,7 @@ avt_choice (int *result, int start_line, int items, int key,
       if (key)
 	last_key = key + items - 1;
       else
-	last_key = 0;
+	last_key = AVT_KEY_NONE;
 
       line_nr = -1;
       old_line = 0;
@@ -4437,6 +4437,7 @@ avt_choice (int *result, int start_line, int items, int key,
 		    line_nr = start_line;
 		  else
 		    line_nr++;
+
 		  update_menu_bar (start_line, end_line, line_nr,
 				   old_line, plain_menu);
 		  old_line = line_nr;

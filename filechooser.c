@@ -362,7 +362,8 @@ start:
 	    }
 
 	  avt_lock_updates (false);
-	  if (avt_choice (&menu_entry, 1, idx, 0, (page_nr > 0), (d != NULL)))
+	  if (avt_choice (&menu_entry, 1, idx, AVT_KEY_NONE,
+			  (page_nr > 0), (d != NULL)))
 	    break;
 
 	  if (page_nr == 0 and menu_entry == 1)	// path-bar
