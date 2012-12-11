@@ -180,9 +180,12 @@ static void
 handle_require_options (int argc, char *argv[])
 {
   int i;
-  char *name, *variable, *p;
+  char *name, *p;
+  char variable[256];
 
-  name = variable = NULL;
+  name = NULL;
+  variable[0] = '\0';
+
   for (i = 1; i < argc and argv[i][0] == '-'; i++)
     {
       if (strncmp (argv[i], "-l", 2) == 0)
@@ -195,19 +198,22 @@ handle_require_options (int argc, char *argv[])
 	  if (not name)
 	    fatal ("'-l' needs argument", NULL);
 
+	  strncpy (variable, name, sizeof (variable));
+	  variable[sizeof (variable) - 1] = '\0';
+
 	  p = strchr (name, '=');
 	  if (p)
+	    name = p + 1;
+
+	  p = strchr (variable, '=');
+	  if (p)
+	    *p = '\0';
+
+	  p = strrchr (variable, '.');
+	  if (p)
 	    {
-	      variable = name;
-	      *p = '\0';
-	      name = p + 1;
-	    }
-	  else
-	    {
-	      variable = name;
-	      p = strrchr (variable, '.');
-	      if (p)
-		variable = p + 1;
+	      ++p;
+	      memmove (variable, p, strlen (p) + 1);
 	    }
 
 	  require (name, 1);
