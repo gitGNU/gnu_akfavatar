@@ -57,7 +57,7 @@ static short bytes_per_pixel;
 static int screen_fd, tty;
 static uint_least8_t *fb;	// frame buffer
 static struct termios terminal_settings;
-static char error_msg[256];
+static char error_message[256];
 static iconv_t conv = (iconv_t) (-1);
 static bool reserve_single_keys;
 
@@ -418,21 +418,19 @@ avt_set_mouse_visible (bool visible)
 extern char *
 avt_get_error (void)
 {
-  return &error_msg[0];
+  return &error_message[0];
 }
 
 extern void
 avt_set_error (const char *message)
 {
   // old messages are always completely overwritten
+  // for strncpy I leave the last byte untouched
 
   if (message and * message)
-    {
-      strncpy (error_msg, message, sizeof (error_msg));
-      error_msg[sizeof (error_msg) - 1] = '\0';
-    }
+    strncpy (error_message, message, sizeof (error_message) - 1);
   else				// no message
-    memset (error_msg, 0, sizeof (error_msg));
+    memset (error_message, 0, sizeof (error_message));
 }
 
 extern void
@@ -484,6 +482,8 @@ extern int
 avt_start (const char *title, const char *shortname, int window_mode)
 {
   struct avt_backend *backend;
+
+  avt_set_error (NULL);
 
   // already initialized?
   if (screen_fd > 0)
