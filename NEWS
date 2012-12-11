@@ -5,7 +5,7 @@
 
   - bugfix: fix for XPM images with more than 256 colors
   - bugfix: lua-akfavatar also resets the charset
-  - bugfix: lua-akfavatar option -l sets a global variable
+  - bugfix/change: lua-akfavatar option -l sets a global variable
   - avt_update() is much faster
   - support for combining characters (Unicode)
   - The pager supports numbers (number-pad when NumLock is on)

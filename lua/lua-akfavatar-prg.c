@@ -103,7 +103,7 @@ help (void)
   puts (" -f, --fullscreen          fullscreen mode (unless script given)");
   puts
     (" -F, --Fullscreen          full fullscreen mode (unless script given)");
-  puts (" -l name                   require library 'name'");
+  puts (" -l [var=]name             require library 'name'");
   puts
     (" --dir=<directory>         start in directory (for the filechooser)");
   exit (EXIT_SUCCESS);
@@ -180,8 +180,9 @@ static void
 handle_require_options (int argc, char *argv[])
 {
   int i;
-  char *name, *p;
+  char *name, *variable, *p;
 
+  name = variable = NULL;
   for (i = 1; i < argc and argv[i][0] == '-'; i++)
     {
       if (strncmp (argv[i], "-l", 2) == 0)
@@ -194,15 +195,23 @@ handle_require_options (int argc, char *argv[])
 	  if (not name)
 	    fatal ("'-l' needs argument", NULL);
 
-	  require (name, 1);
-
-	  // strip section from name
-	  p = strrchr (name, '.');
+	  p = strchr (name, '=');
 	  if (p)
-	    name = p + 1;
+	    {
+	      variable = name;
+	      *p = '\0';
+	      name = p + 1;
+	    }
+	  else
+	    {
+	      variable = name;
+	      p = strrchr (variable, '.');
+	      if (p)
+		variable = p + 1;
+	    }
 
-	  // set name as global variable
-	  lua_setglobal (L, name);
+	  require (name, 1);
+	  lua_setglobal (L, variable);
 	}
     }
 }

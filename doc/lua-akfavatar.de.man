@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "lua-akfavatar" 1 2012-08-04 AKFAvatar
+.TH "lua-akfavatar" 1 2012-12-11 AKFAvatar
 .
 .SH NAME
 lua-akfavatar \- Lua-Interpreter für die AKFAvatar-Benutzeroberfläche
@@ -91,10 +91,12 @@ zeigt eine kurze Hilfe an
 --version
 zeigt die Version an
 .TP
-.RI "-l " Name
+.RI "-l " "[var=]Name"
 ruft
 .BI require( \[dq]name\[dq] )
 auf, bevor das Skript ausgeführt wird.
+Definiert eine globale Variable mit dem Namen
+.IR Name " oder " var .
 Das wird üblicherweise verwendet, um Bibliotheken zu laden.
 .TP
 -f
