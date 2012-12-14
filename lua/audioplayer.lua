@@ -36,7 +36,9 @@ avt.set_balloon_color("tan")
 -- open URL with the tool "curl"
 -- returns file handle
 local function open_url(url)
-  return assert(io.popen(downloader .. " " .. url, "r"))
+  -- Windows needs the "rb" mode - most system don't accept it
+  return assert(io.popen(downloader .. " " .. url, "rb")
+            or io.popen(downloader .. " " .. url, "r"))
 end
 
 local function get_url(url) -- might not work on Windows
@@ -67,7 +69,7 @@ local function load_audio(url)
   local audio
 
   if string.find(url, "^https?://") or string.find(url, "^s?ftps?://") then
-    audio = avt.load_audio_string(get_url(url), "play")
+    audio = avt.load_audio(get_url(url), "play")
   else
     audio = avt.load_audio_file(handle_list_entry(url), "play")
   end
