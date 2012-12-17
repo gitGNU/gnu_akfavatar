@@ -8,6 +8,7 @@
 
 #define _ISOC99_SOURCE
 #define _POSIX_C_SOURCE 200112L
+#define _GNU_SOURCE		// for memrchr
 
 #include "avtaddons.h"
 #include <string.h>
@@ -21,11 +22,15 @@ extern int
 avta_base_directory (char *name, size_t size)
 {
   char *p;
+  ssize_t nchars;
 
   // readlink conforms to POSIX.1-2001
-  // "/proc/self/exe" is linux specific
-  if (readlink ("/proc/self/exe", name, size) == -1
-      or not (p = strrchr (name, '/')))
+  // "/proc/self/exe" is Linux specific
+  // note: name does not get terminated
+  nchars = readlink ("/proc/self/exe", name, size);
+
+  // memrchr is a GNU extension
+  if (nchars == -1 or not (p = memrchr (name, '/', nchars)))
     {
       name[0] = '\0';
       return -1;
