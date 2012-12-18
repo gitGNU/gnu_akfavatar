@@ -760,7 +760,6 @@ avt_load_audio_general (avt_data * src, uint_least32_t maxsize, int playmode)
   if (src->read (src, head, sizeof (head), 1) != 1)
     {
       avt_set_error ("cannot read head of audio data");
-      src->close (src);
       return NULL;
     }
 
@@ -777,7 +776,6 @@ avt_load_audio_general (avt_data * src, uint_least32_t maxsize, int playmode)
       avt_set_error ("audio data neither in AU nor WAVE format");
     }
 
-  src->close (src);
   return s;
 }
 
@@ -803,29 +801,75 @@ avt_start_audio_common (void (*quit_backend) (void))
 extern avt_audio *
 avt_load_audio_file (const char *file, int playmode)
 {
-  return avt_load_audio_general (avt_data_open_file (file),
-				 MAXIMUM_SIZE, playmode);
+  avt_audio *r;
+  avt_data *d;
+
+  r = NULL;
+  d = avt_data_new ();
+
+  if (d)
+    {
+      d->open_file (d, file);
+      r = avt_load_audio_general (d, MAXIMUM_SIZE, playmode);
+      d->close (d);
+    }
+
+  return r;
 }
 
 extern avt_audio *
 avt_load_audio_part (avt_stream * stream, size_t maxsize, int playmode)
 {
-  return
-    avt_load_audio_general (avt_data_open_stream ((FILE *) stream, false),
-			    maxsize, playmode);
+  avt_audio *r;
+  avt_data *d;
+
+  r = NULL;
+  d = avt_data_new ();
+
+  if (d)
+    {
+      d->open_stream (d, (FILE *) stream, false);
+      r = avt_load_audio_general (d, maxsize, playmode);
+      d->close (d);
+    }
+
+  return r;
 }
 
 extern avt_audio *
 avt_load_audio_stream (avt_stream * stream, int playmode)
 {
-  return
-    avt_load_audio_general (avt_data_open_stream ((FILE *) stream, false),
-			    MAXIMUM_SIZE, playmode);
+  avt_audio *r;
+  avt_data *d;
+
+  r = NULL;
+  d = avt_data_new ();
+
+  if (d)
+    {
+      d->open_stream (d, (FILE *) stream, false);
+      r = avt_load_audio_general (d, MAXIMUM_SIZE, playmode);
+      d->close (d);
+    }
+
+  return r;
 }
 
 extern avt_audio *
 avt_load_audio_data (const void *data, size_t datasize, int playmode)
 {
-  return avt_load_audio_general (avt_data_open_memory (data, datasize),
-				 datasize, playmode);
+  avt_audio *r;
+  avt_data *d;
+
+  r = NULL;
+  d = avt_data_new ();
+
+  if (d)
+    {
+      d->open_memory (d, data, datasize);
+      r = avt_load_audio_general (d, datasize, playmode);
+      d->close (d);
+    }
+
+  return r;
 }

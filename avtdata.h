@@ -40,7 +40,19 @@ struct avt_data
 {
   // public
 
+  // open a stream
+  // if autoclose is true avt_data_close closes the stream with fclose
+  void (*open_stream) (avt_data *self, FILE * stream, bool autoclose);
+
+  // open a file for reading in binary mode
+  void (*open_file) (avt_data *self, const char *filename);
+
+  // read data from memory
+  // the memory area must be kept available until closed
+  void (*open_memory) (avt_data *self, const void *memory, size_t size);
+
   void (*big_endian) (avt_data *self, bool big_endian);
+
   void (*close) (avt_data *self);
   bool (*seek) (avt_data *self, long offset, int whence);
   long (*tell) (avt_data *self);
@@ -70,16 +82,6 @@ struct avt_data
   };
 };
 
-
-// open a stream
-// if autoclose is true avt_data_close closes the stream with fclose
-AVT_HIDDEN avt_data *avt_data_open_stream (FILE * stream, bool autoclose);
-
-// open a file for reading in binary mode
-AVT_HIDDEN avt_data *avt_data_open_file (const char *filename);
-
-// read data from memory
-// the memory area must be kept available until closed
-AVT_HIDDEN avt_data *avt_data_open_memory (const void *memory, size_t size);
+AVT_HIDDEN avt_data *avt_data_new (void);
 
 #endif // AVTDATA_H

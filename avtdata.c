@@ -261,67 +261,61 @@ method_big_endian (avt_data * d, bool big_endian)
 }
 
 
-extern avt_data *
-avt_data_open_stream (FILE * stream, bool autoclose)
+static void
+method_open_stream (avt_data * d, FILE * stream, bool autoclose)
 {
-  avt_data *d;
+  if (!d || !stream)
+    return;
 
-  if (!stream)
-    return NULL;
+  d->close = method_close_stream;
+  d->read = method_read_stream;
+  d->tell = method_tell_stream;
+  d->seek = method_seek_stream;
 
-  d = (avt_data *) malloc (sizeof (avt_data));
-
-  if (d)
-    {
-      d->big_endian = method_big_endian;
-      d->read8 = method_read8;
-      // those shall not work unless endianess is set
-      d->read16 = NULL;
-      d->read32 = NULL;
-      d->close = method_close_stream;
-      d->read = method_read_stream;
-      d->tell = method_tell_stream;
-      d->seek = method_seek_stream;
-      d->stream.data = stream;
-      d->stream.start = ftell (stream);
-      d->stream.autoclose = autoclose;
-    }
-
-  return d;
+  d->stream.data = stream;
+  d->stream.start = ftell (stream);
+  d->stream.autoclose = autoclose;
 }
 
 
-extern avt_data *
-avt_data_open_file (const char *filename)
+static void
+method_open_file (avt_data * d, const char *filename)
 {
-  return avt_data_open_stream (fopen (filename, "rb"), true);
+  d->open_stream (d, fopen (filename, "rb"), true);
 }
 
 
-extern avt_data *
-avt_data_open_memory (const void *memory, size_t size)
+static void
+method_open_memory (avt_data * d, const void *memory, size_t size)
 {
-  avt_data *d;
-
   if (memory == NULL || size == 0)
-    return NULL;
+    return;
+
+  d->close = method_close_memory;
+  d->read = method_read_memory;
+  d->tell = method_tell_memory;
+  d->seek = method_seek_memory;
+
+  d->memory.data = (const unsigned char *) memory;
+  d->memory.position = 0;
+  d->memory.size = size;
+}
+
+extern avt_data *
+avt_data_new (void)
+{
+  avt_data *d;
 
   d = (avt_data *) malloc (sizeof (avt_data));
 
   if (d)
     {
+      memset (d, 0, sizeof (avt_data));
+      d->open_stream = method_open_stream;
+      d->open_file = method_open_file;
+      d->open_memory = method_open_memory;
       d->big_endian = method_big_endian;
       d->read8 = method_read8;
-      // those shall not work unless endianess is set
-      d->read16 = NULL;
-      d->read32 = NULL;
-      d->close = method_close_memory;
-      d->read = method_read_memory;
-      d->tell = method_tell_memory;
-      d->seek = method_seek_memory;
-      d->memory.data = (const unsigned char *) memory;
-      d->memory.position = 0;
-      d->memory.size = size;
     }
 
   return d;
