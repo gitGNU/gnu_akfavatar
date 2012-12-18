@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>		// memcpy
+#include <iso646.h>
 
 #ifndef __cplusplus
 #include <stdbool.h>
@@ -67,10 +68,11 @@ method_read_memory (avt_data * d, void *data, size_t size, size_t number)
   size_t position = d->memory.position;
   size_t datasize = d->memory.size;
 
+  // not all readable?
   if (position + all > datasize)
     {
       // at least 1 element readable?
-      if (position < datasize && (datasize - position) >= size)
+      if (position < datasize and (datasize - position) >= size)
 	{
 	  // integer division ignores the rest
 	  number = (datasize - position) / size;
@@ -110,7 +112,7 @@ method_read16le (avt_data * d)
 
   d->read (d, &data, sizeof (data), 1);
 
-  return data[1] << 8 | data[0];
+  return data[1] << 8 bitor data[0];
 }
 
 
@@ -122,7 +124,7 @@ method_read32le (avt_data * d)
 
   d->read (d, &data, sizeof (data), 1);
 
-  return data[3] << 24 | data[2] << 16 | data[1] << 8 | data[0];
+  return data[3] << 24 bitor data[2] << 16 bitor data[1] << 8 bitor data[0];
 }
 
 
@@ -183,7 +185,7 @@ method_read16be (avt_data * d)
 
   d->read (d, &data, sizeof (data), 1);
 
-  return data[0] << 8 | data[1];
+  return data[0] << 8 bitor data[1];
 }
 
 
@@ -195,7 +197,7 @@ method_read32be (avt_data * d)
 
   d->read (d, &data, sizeof (data), 1);
 
-  return data[0] << 24 | data[1] << 16 | data[2] << 8 | data[3];
+  return data[0] << 24 bitor data[1] << 16 bitor data[2] << 8 bitor data[3];
 }
 
 #endif // little endian
@@ -264,7 +266,7 @@ method_big_endian (avt_data * d, bool big_endian)
 static void
 method_open_stream (avt_data * d, FILE * stream, bool autoclose)
 {
-  if (!d || !stream)
+  if (not d or not stream)
     return;
 
   d->close = method_close_stream;
@@ -288,7 +290,7 @@ method_open_file (avt_data * d, const char *filename)
 static void
 method_open_memory (avt_data * d, const void *memory, size_t size)
 {
-  if (memory == NULL || size == 0)
+  if (not memory or not size)
     return;
 
   d->close = method_close_memory;
@@ -296,7 +298,7 @@ method_open_memory (avt_data * d, const void *memory, size_t size)
   d->tell = method_tell_memory;
   d->seek = method_seek_memory;
 
-  d->memory.data = (const unsigned char *) memory;
+  d->memory.data = memory;
   d->memory.position = 0;
   d->memory.size = size;
 }
@@ -306,7 +308,7 @@ avt_data_new (void)
 {
   avt_data *d;
 
-  d = (avt_data *) malloc (sizeof (avt_data));
+  d = malloc (sizeof (avt_data));
 
   if (d)
     {
@@ -314,6 +316,7 @@ avt_data_new (void)
       d->open_stream = method_open_stream;
       d->open_file = method_open_file;
       d->open_memory = method_open_memory;
+      d->close = method_close_memory;
       d->big_endian = method_big_endian;
       d->read8 = method_read8;
     }
