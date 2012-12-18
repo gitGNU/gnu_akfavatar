@@ -42,6 +42,7 @@ method_close_stream (avt_data * d)
   if (d->stream.autoclose)
     fclose (d->stream.data);
 
+  memset (d, 0, sizeof (avt_data));
   free (d);
 }
 
@@ -49,6 +50,7 @@ method_close_stream (avt_data * d)
 static void
 method_close_memory (avt_data * d)
 {
+  memset (d, 0, sizeof (avt_data));
   free (d);
 }
 
@@ -262,7 +264,6 @@ method_big_endian (avt_data * d, bool big_endian)
     }
 }
 
-
 static void
 method_open_stream (avt_data * d, FILE * stream, bool autoclose)
 {
@@ -277,6 +278,10 @@ method_open_stream (avt_data * d, FILE * stream, bool autoclose)
   d->stream.data = stream;
   d->stream.start = ftell (stream);
   d->stream.autoclose = autoclose;
+
+  d->open_stream = NULL;
+  d->open_file = NULL;
+  d->open_memory = NULL;
 }
 
 
@@ -301,6 +306,10 @@ method_open_memory (avt_data * d, const void *memory, size_t size)
   d->memory.data = memory;
   d->memory.position = 0;
   d->memory.size = size;
+
+  d->open_stream = NULL;
+  d->open_file = NULL;
+  d->open_memory = NULL;
 }
 
 extern avt_data *
