@@ -26,7 +26,6 @@
 #include "avtdata.h"
 #include "avtinternals.h"
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdint.h>
 #include <string.h>		// memcpy
 #include <iso646.h>
