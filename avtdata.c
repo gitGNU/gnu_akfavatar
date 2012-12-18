@@ -43,7 +43,6 @@ method_close_stream (avt_data * d)
     fclose (d->stream.data);
 
   memset (d, 0, sizeof (avt_data));
-  free (d);
 }
 
 
@@ -51,7 +50,6 @@ static void
 method_close_memory (avt_data * d)
 {
   memset (d, 0, sizeof (avt_data));
-  free (d);
 }
 
 
@@ -295,7 +293,7 @@ method_open_file (avt_data * d, const char *filename)
 static void
 method_open_memory (avt_data * d, const void *memory, size_t size)
 {
-  if (not memory or not size)
+  if (not d or not memory or not size)
     return;
 
   d->close = method_close_memory;
@@ -312,13 +310,9 @@ method_open_memory (avt_data * d, const void *memory, size_t size)
   d->open_memory = NULL;
 }
 
-extern avt_data *
-avt_data_new (void)
+extern void
+avt_data_new (avt_data * d)
 {
-  avt_data *d;
-
-  d = malloc (sizeof (avt_data));
-
   if (d)
     {
       memset (d, 0, sizeof (avt_data));
@@ -329,6 +323,4 @@ avt_data_new (void)
       d->big_endian = method_big_endian;
       d->read8 = method_read8;
     }
-
-  return d;
 }

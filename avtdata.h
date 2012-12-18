@@ -82,6 +82,6 @@ struct avt_data
   };
 };
 
-AVT_HIDDEN avt_data *avt_data_new (void);
+AVT_HIDDEN void avt_data_new (avt_data *);
 
 #endif // AVTDATA_H
