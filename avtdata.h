@@ -54,11 +54,8 @@ struct avt_data
 
   union
   {
-    int type;
-
     struct
     {
-      int type;			// overlays type
       FILE *data;
       size_t start;
       bool autoclose;
@@ -66,7 +63,6 @@ struct avt_data
 
     struct
     {
-      int type;			// overlays type
       const unsigned char *data;
       size_t size;
       size_t position;

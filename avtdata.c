@@ -34,62 +34,55 @@
 #include <stdbool.h>
 #endif
 
-#define AVT_DATA_STREAM 1
-#define AVT_DATA_MEMORY 2
+
+static void
+method_close_stream (avt_data * d)
+{
+  if (d->stream.autoclose)
+    fclose (d->stream.data);
+
+  free (d);
+}
 
 
 static void
-method_close (avt_data * d)
+method_close_memory (avt_data * d)
 {
-  if (d)
-    {
-      if (AVT_DATA_STREAM == d->type && d->stream.autoclose)
-	fclose (d->stream.data);
-
-      free (d);
-    }
+  free (d);
 }
 
 
 static size_t
-method_read (avt_data * d, void *data, size_t size, size_t number)
+method_read_stream (avt_data * d, void *data, size_t size, size_t number)
+{
+  return fread (data, size, number, d->stream.data);
+}
+
+
+static size_t
+method_read_memory (avt_data * d, void *data, size_t size, size_t number)
 {
   size_t result = 0;
+  size_t all = size * number;
+  size_t position = d->memory.position;
+  size_t datasize = d->memory.size;
 
-  if (!d)
-    return 0;
-
-  switch (d->type)
+  if (position + all > datasize)
     {
-    case AVT_DATA_STREAM:
-      result = fread (data, size, number, d->stream.data);
-      break;
-
-    case AVT_DATA_MEMORY:
-      {
-	size_t all = size * number;
-	size_t position = d->memory.position;
-	size_t datasize = d->memory.size;
-
-	if (position + all > datasize)
-	  {
-	    // at least 1 element readable?
-	    if (position < datasize && (datasize - position) >= size)
-	      {
-		// integer division ignores the rest
-		number = (datasize - position) / size;
-		all = size * number;
-	      }
-	    else
-	      break;		// nothing readable
-	  }
-
-	memcpy (data, d->memory.data + position, all);
-	d->memory.position += all;
-	result = number;
-      }
-      break;
+      // at least 1 element readable?
+      if (position < datasize && (datasize - position) >= size)
+	{
+	  // integer division ignores the rest
+	  number = (datasize - position) / size;
+	  all = size * number;
+	}
+      else
+	return 0;		// nothing readable
     }
+
+  memcpy (data, d->memory.data + position, all);
+  d->memory.position += all;
+  result = number;
 
   return result;
 }
@@ -209,60 +202,45 @@ method_read32be (avt_data * d)
 
 
 static long
-method_tell (avt_data * d)
+method_tell_stream (avt_data * d)
 {
-  long result = -1;
+  return ftell (d->stream.data) - d->stream.start;
+}
 
-  if (!d)
+
+static long
+method_tell_memory (avt_data * d)
+{
+  if (d->memory.position <= d->memory.size)
+    return d->memory.position;
+  else
     return -1;
-
-  switch (d->type)
-    {
-    case AVT_DATA_STREAM:
-      result = ftell (d->stream.data) - d->stream.start;
-      break;
-
-    case AVT_DATA_MEMORY:
-      if (d->memory.position <= d->memory.size)
-	result = d->memory.position;
-      break;
-    }
-
-  return result;
 }
 
 
 static bool
-method_seek (avt_data * d, long offset, int whence)
+method_seek_stream (avt_data * d, long offset, int whence)
 {
-  bool okay = false;
+  if (SEEK_SET == whence)
+    offset += d->stream.start;
 
-  if (!d)
-    return false;
-
-  switch (d->type)
-    {
-    case AVT_DATA_STREAM:
-      if (SEEK_SET == whence)
-	offset += d->stream.start;
-
-      okay = (fseek (d->stream.data, offset, whence) > -1);
-      break;
-
-    case AVT_DATA_MEMORY:
-      if (SEEK_SET == whence)
-	d->memory.position = offset;
-      else if (SEEK_CUR == whence)
-	d->memory.position += offset;
-      else if (SEEK_END == whence)
-	d->memory.position = d->memory.size - offset;
-
-      okay = (d->memory.position <= d->memory.size);
-      break;
-    }
-
-  return okay;
+  return (fseek (d->stream.data, offset, whence) > -1);
 }
+
+
+static bool
+method_seek_memory (avt_data * d, long offset, int whence)
+{
+  if (SEEK_SET == whence)
+    d->memory.position = offset;
+  else if (SEEK_CUR == whence)
+    d->memory.position += offset;
+  else if (SEEK_END == whence)
+    d->memory.position = d->memory.size - offset;
+
+  return (d->memory.position <= d->memory.size);
+}
+
 
 static void
 method_big_endian (avt_data * d, bool big_endian)
@@ -282,23 +260,6 @@ method_big_endian (avt_data * d, bool big_endian)
     }
 }
 
-static void
-initialize (avt_data * d)
-{
-  if (d)
-    {
-      d->big_endian = method_big_endian;
-      d->close = method_close;
-      d->seek = method_seek;
-      d->tell = method_tell;
-      d->read = method_read;
-      d->read8 = method_read8;
-
-      // those shall not work unless endianess is set
-      d->read16 = NULL;
-      d->read32 = NULL;
-    }
-}
 
 extern avt_data *
 avt_data_open_stream (FILE * stream, bool autoclose)
@@ -312,8 +273,15 @@ avt_data_open_stream (FILE * stream, bool autoclose)
 
   if (d)
     {
-      initialize (d);
-      d->type = AVT_DATA_STREAM;
+      d->big_endian = method_big_endian;
+      d->read8 = method_read8;
+      // those shall not work unless endianess is set
+      d->read16 = NULL;
+      d->read32 = NULL;
+      d->close = method_close_stream;
+      d->read = method_read_stream;
+      d->tell = method_tell_stream;
+      d->seek = method_seek_stream;
       d->stream.data = stream;
       d->stream.start = ftell (stream);
       d->stream.autoclose = autoclose;
@@ -342,8 +310,15 @@ avt_data_open_memory (const void *memory, size_t size)
 
   if (d)
     {
-      initialize (d);
-      d->type = AVT_DATA_MEMORY;
+      d->big_endian = method_big_endian;
+      d->read8 = method_read8;
+      // those shall not work unless endianess is set
+      d->read16 = NULL;
+      d->read32 = NULL;
+      d->close = method_close_memory;
+      d->read = method_read_memory;
+      d->tell = method_tell_memory;
+      d->seek = method_seek_memory;
       d->memory.data = (const unsigned char *) memory;
       d->memory.position = 0;
       d->memory.size = size;
