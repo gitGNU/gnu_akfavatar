@@ -77,7 +77,7 @@ basedir.o: $(srcdir)/basedir.c $(srcdir)/avtaddons.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/basedir.c
 
 avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h \
-             $(srcdir)/avtinternals.h version.h rgb.h \
+             $(srcdir)/avtinternals.h $(srcdir)/avtdata.h version.h rgb.h \
              $(srcdir)/btn.xpm $(srcdir)/btn_yes.xbm $(srcdir)/btn_no.xbm \
              $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
              $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \

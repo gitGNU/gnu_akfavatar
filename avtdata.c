@@ -20,6 +20,9 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#define _ISOC99_SOURCE
+#define _POSIX_C_SOURCE 200112L
+
 #include "avtdata.h"
 #include "avtinternals.h"
 #include <stdio.h>
@@ -35,30 +38,8 @@
 #define AVT_DATA_MEMORY 2
 
 
-union avt_data
-{
-  int type;
-
-  struct
-  {
-    int type;			// overlays type
-    FILE *data;
-    size_t start;
-    bool autoclose;
-  } stream;
-
-  struct
-  {
-    int type;			// overlays type
-    const unsigned char *data;
-    size_t size;
-    size_t position;
-  } memory;
-};
-
-
-extern void
-avt_data_close (avt_data * d)
+static void
+method_close (avt_data * d)
 {
   if (d)
     {
@@ -70,8 +51,8 @@ avt_data_close (avt_data * d)
 }
 
 
-extern size_t
-avt_data_read (avt_data * d, void *data, size_t size, size_t number)
+static size_t
+method_read (avt_data * d, void *data, size_t size, size_t number)
 {
   size_t result = 0;
 
@@ -115,12 +96,12 @@ avt_data_read (avt_data * d, void *data, size_t size, size_t number)
 
 
 // read 8 bit value
-extern uint8_t
-avt_data_read8 (avt_data * d)
+static uint_least8_t
+method_read8 (avt_data * d)
 {
-  uint8_t data;
+  uint_least8_t data;
 
-  avt_data_read (d, &data, sizeof (data), 1);
+  d->read (d, &data, sizeof (data), 1);
 
   return data;
 }
@@ -129,106 +110,106 @@ avt_data_read8 (avt_data * d)
 #if AVT_BIG_ENDIAN == AVT_BYTE_ORDER
 
 // read little endian 16 bit value
-extern uint16_t
-avt_data_read16le (avt_data * d)
+static uint_least16_t
+method_read16le (avt_data * d)
 {
-  uint8_t data[2];
+  uint_least8_t data[2];
 
-  avt_data_read (d, &data, sizeof (data), 1);
+  d->read (d, &data, sizeof (data), 1);
 
   return data[1] << 8 | data[0];
 }
 
 
 // read little endian 32 bit value
-extern uint32_t
-avt_data_read32le (avt_data * d)
+static uint_least32_t
+method_read32le (avt_data * d)
 {
-  uint8_t data[4];
+  uint_least8_t data[4];
 
-  avt_data_read (d, &data, sizeof (data), 1);
+  d->read (d, &data, sizeof (data), 1);
 
   return data[3] << 24 | data[2] << 16 | data[1] << 8 | data[0];
 }
 
 
 // read big endian 16 bit value
-extern uint16_t
-avt_data_read16be (avt_data * d)
+static uint_least16_t
+method_read16be (avt_data * d)
 {
-  uint16_t data;
+  uint_least16_t data;
 
-  avt_data_read (d, &data, sizeof (data), 1);
+  d->read (d, &data, sizeof (data), 1);
 
   return data;
 }
 
 
 // read big endian 32 bit value
-extern uint32_t
-avt_data_read32be (avt_data * d)
+static uint_least32_t
+method_read32be (avt_data * d)
 {
-  uint32_t data;
+  uint_least32_t data;
 
-  avt_data_read (d, &data, sizeof (data), 1);
+  d->read (d, &data, sizeof (data), 1);
 
   return data;
 }
 
 
-#else  // little endian
+#else // little endian
 
 // read little endian 16 bit value
-extern uint16_t
-avt_data_read16le (avt_data * d)
+static uint_least16_t
+method_read16le (avt_data * d)
 {
-  uint16_t data;
+  uint_least16_t data;
 
-  avt_data_read (d, &data, sizeof (data), 1);
+  d->read (d, &data, sizeof (data), 1);
 
   return data;
 }
 
 
 // read little endian 32 bit value
-extern uint32_t
-avt_data_read32le (avt_data * d)
+static uint_least32_t
+method_read32le (avt_data * d)
 {
-  uint32_t data;
+  uint_least32_t data;
 
-  avt_data_read (d, &data, sizeof (data), 1);
+  d->read (d, &data, sizeof (data), 1);
 
   return data;
 }
 
 // read big endian 16 bit value
-extern uint16_t
-avt_data_read16be (avt_data * d)
+static uint_least16_t
+method_read16be (avt_data * d)
 {
-  uint8_t data[2];
+  uint_least8_t data[2];
 
-  avt_data_read (d, &data, sizeof (data), 1);
+  d->read (d, &data, sizeof (data), 1);
 
   return data[0] << 8 | data[1];
 }
 
 
 // read big endian 32 bit value
-extern uint32_t
-avt_data_read32be (avt_data * d)
+static uint_least32_t
+method_read32be (avt_data * d)
 {
-  uint8_t data[4];
+  uint_least8_t data[4];
 
-  avt_data_read (d, &data, sizeof (data), 1);
+  d->read (d, &data, sizeof (data), 1);
 
   return data[0] << 24 | data[1] << 16 | data[2] << 8 | data[3];
 }
 
-#endif  // little endian
+#endif // little endian
 
 
-extern long
-avt_data_tell (avt_data * d)
+static long
+method_tell (avt_data * d)
 {
   long result = -1;
 
@@ -251,8 +232,8 @@ avt_data_tell (avt_data * d)
 }
 
 
-extern bool
-avt_data_seek (avt_data * d, long offset, int whence)
+static bool
+method_seek (avt_data * d, long offset, int whence)
 {
   bool okay = false;
 
@@ -283,6 +264,41 @@ avt_data_seek (avt_data * d, long offset, int whence)
   return okay;
 }
 
+static void
+method_big_endian (avt_data * d, bool big_endian)
+{
+  if (d)
+    {
+      if (big_endian)
+	{
+	  d->read16 = method_read16be;
+	  d->read32 = method_read32be;
+	}
+      else
+	{
+	  d->read16 = method_read16le;
+	  d->read32 = method_read32le;
+	}
+    }
+}
+
+static void
+initialize (avt_data * d)
+{
+  if (d)
+    {
+      d->big_endian = method_big_endian;
+      d->close = method_close;
+      d->seek = method_seek;
+      d->tell = method_tell;
+      d->read = method_read;
+      d->read8 = method_read8;
+
+      // those shall not work unless endianess is set
+      d->read16 = NULL;
+      d->read32 = NULL;
+    }
+}
 
 extern avt_data *
 avt_data_open_stream (FILE * stream, bool autoclose)
@@ -296,6 +312,7 @@ avt_data_open_stream (FILE * stream, bool autoclose)
 
   if (d)
     {
+      initialize (d);
       d->type = AVT_DATA_STREAM;
       d->stream.data = stream;
       d->stream.start = ftell (stream);
@@ -325,6 +342,7 @@ avt_data_open_memory (const void *memory, size_t size)
 
   if (d)
     {
+      initialize (d);
       d->type = AVT_DATA_MEMORY;
       d->memory.data = (const unsigned char *) memory;
       d->memory.position = 0;

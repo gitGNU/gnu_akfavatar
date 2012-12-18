@@ -198,7 +198,7 @@ basedir.lo: $(srcdir)/basedir.c $(srcdir)/avtaddons.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ $(srcdir)/basedir.c
 
 avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h \
-          $(srcdir)/avtinternals.h version.h rgb.h \
+          $(srcdir)/avtinternals.h $(srcdir)/avtdata.h version.h rgb.h \
           $(srcdir)/balloonpointer.xbm $(srcdir)/thinkpointer.xbm \
           $(srcdir)/round_upper_left.xbm $(srcdir)/round_upper_right.xbm \
           $(srcdir)/round_lower_left.xbm $(srcdir)/round_lower_right.xbm \
@@ -216,7 +216,7 @@ avatar-sdl.o: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
 	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/avatar-sdl.c
 
 avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h \
-           $(srcdir)/avtinternals.h version.h rgb.h \
+           $(srcdir)/avtinternals.h $(srcdir)/avtdata.h version.h rgb.h \
            $(srcdir)/balloonpointer.xbm $(srcdir)/thinkpointer.xbm \
            $(srcdir)/round_upper_left.xbm $(srcdir)/round_upper_right.xbm \
            $(srcdir)/round_lower_left.xbm $(srcdir)/round_lower_right.xbm \

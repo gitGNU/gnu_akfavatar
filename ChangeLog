@@ -1,3 +1,8 @@
+2012-12-18  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtdata.h, avtdata.c: use object oriented approach
+	avatar.c, audio-common.c: adapted
+
 2012-12-11  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-akfavatar-prg.c (handle_require_options):
