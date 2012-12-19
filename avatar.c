@@ -1842,10 +1842,10 @@ avt_load_image_file (const char *filename)
   avt_graphic *image;
   avt_data d;
 
-  avt_data_new (&d);
+  avt_data_init (&d);
   d.open_file (&d, filename);
   image = avt_load_image_avtdata (&d);
-  d.close (&d);
+  d.done (&d);
 
   if (not image and backend.graphic_file)
     image = backend.graphic_file (filename);
@@ -1859,10 +1859,10 @@ avt_load_image_stream (avt_stream * stream)
   avt_graphic *image;
   avt_data d;
 
-  avt_data_new (&d);
+  avt_data_init (&d);
   d.open_stream (&d, (FILE *) stream, false);
   image = avt_load_image_avtdata (&d);
-  d.close (&d);
+  d.done (&d);
 
   if (not image and backend.graphic_stream)
     image = backend.graphic_stream (stream);
@@ -1876,10 +1876,10 @@ avt_load_image_memory (void *data, size_t size)
   avt_graphic *image;
   avt_data d;
 
-  avt_data_new (&d);
+  avt_data_init (&d);
   d.open_memory (&d, data, size);
   image = avt_load_image_avtdata (&d);
-  d.close (&d);
+  d.done (&d);
 
   if (not image and backend.graphic_memory)
     image = backend.graphic_memory (data, size);

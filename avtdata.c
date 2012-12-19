@@ -36,7 +36,7 @@
 
 
 static void
-method_close_stream (avt_data * d)
+method_done_stream (avt_data * d)
 {
   if (d->stream.autoclose)
     fclose (d->stream.data);
@@ -46,7 +46,7 @@ method_close_stream (avt_data * d)
 
 
 static void
-method_close_memory (avt_data * d)
+method_done_memory (avt_data * d)
 {
   memset (d, 0, sizeof (avt_data));
 }
@@ -267,7 +267,7 @@ method_open_stream (avt_data * d, FILE * stream, bool autoclose)
   if (not d or not stream)
     return;
 
-  d->close = method_close_stream;
+  d->done = method_done_stream;
   d->read = method_read_stream;
   d->tell = method_tell_stream;
   d->seek = method_seek_stream;
@@ -295,7 +295,7 @@ method_open_memory (avt_data * d, const void *memory, size_t size)
   if (not d or not memory or not size)
     return;
 
-  d->close = method_close_memory;
+  d->done = method_done_memory;
   d->read = method_read_memory;
   d->tell = method_tell_memory;
   d->seek = method_seek_memory;
@@ -310,7 +310,7 @@ method_open_memory (avt_data * d, const void *memory, size_t size)
 }
 
 extern void
-avt_data_new (avt_data * d)
+avt_data_init (avt_data * d)
 {
   if (d)
     {
@@ -318,7 +318,7 @@ avt_data_new (avt_data * d)
       d->open_stream = method_open_stream;
       d->open_file = method_open_file;
       d->open_memory = method_open_memory;
-      d->close = method_close_memory;
+      d->done = method_done_memory;
       d->big_endian = method_big_endian;
       d->read8 = method_read8;
     }

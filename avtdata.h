@@ -53,7 +53,7 @@ struct avt_data
 
   void (*big_endian) (avt_data *self, bool big_endian);
 
-  void (*close) (avt_data *self);
+  void (*done) (avt_data *self); // destructor
   bool (*seek) (avt_data *self, long offset, int whence);
   long (*tell) (avt_data *self);
   size_t (*read) (avt_data *self, void *data,
@@ -82,6 +82,6 @@ struct avt_data
   };
 };
 
-AVT_HIDDEN void avt_data_new (avt_data *);
+AVT_HIDDEN void avt_data_init (avt_data *); // constructor
 
 #endif // AVTDATA_H
