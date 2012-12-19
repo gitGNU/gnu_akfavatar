@@ -891,7 +891,7 @@ AVT_API bool avt_decide (void);
  * example:
  *   r = avt_navigate ("lxr");
  *   if (r < 32) exit (0);
- *   select (r) ...
+ *   switch (r) ...
  */
 AVT_API int avt_navigate (const char *buttons);
 
@@ -948,12 +948,14 @@ AVT_API void *avt_get_font_char (int ch);
  * get height, width and baseline of a character
  * the font is a fixed width font
  */
-AVT_API void avt_get_font_dimensions (int *width, int *height, 
+AVT_API void avt_get_font_dimensions (int *width, int *height,
                                       int *baseline);
 
 
 /***********************************************************************/
 /* audio output */
+
+/* Note: The interface for audio output may change in future versions */
 
 /* for playmode parameters */
 #define AVT_LOAD 0

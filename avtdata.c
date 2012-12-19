@@ -261,11 +261,11 @@ method_big_endian (avt_data * d, bool big_endian)
     }
 }
 
-static void
+static bool
 method_open_stream (avt_data * d, FILE * stream, bool autoclose)
 {
   if (not d or not stream)
-    return;
+    return false;
 
   d->done = method_done_stream;
   d->read = method_read_stream;
@@ -279,21 +279,23 @@ method_open_stream (avt_data * d, FILE * stream, bool autoclose)
   d->open_stream = NULL;
   d->open_file = NULL;
   d->open_memory = NULL;
+
+  return true;
 }
 
 
-static void
+static bool
 method_open_file (avt_data * d, const char *filename)
 {
-  d->open_stream (d, fopen (filename, "rb"), true);
+  return d->open_stream (d, fopen (filename, "rb"), true);
 }
 
 
-static void
+static bool
 method_open_memory (avt_data * d, const void *memory, size_t size)
 {
   if (not d or not memory or not size)
-    return;
+    return false;
 
   d->done = method_done_memory;
   d->read = method_read_memory;
@@ -307,6 +309,8 @@ method_open_memory (avt_data * d, const void *memory, size_t size)
   d->open_stream = NULL;
   d->open_file = NULL;
   d->open_memory = NULL;
+
+  return true;
 }
 
 extern void

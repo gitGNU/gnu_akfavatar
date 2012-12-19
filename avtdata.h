@@ -42,25 +42,30 @@ struct avt_data
 
   // open a stream
   // if autoclose is true avt_data_close closes the stream with fclose
-  void (*open_stream) (avt_data *self, FILE * stream, bool autoclose);
+  bool (*open_stream) (avt_data * self, FILE * stream, bool autoclose);
 
   // open a file for reading in binary mode
-  void (*open_file) (avt_data *self, const char *filename);
+  bool (*open_file) (avt_data * self, const char *filename);
 
   // read data from memory
   // the memory area must be kept available until closed
-  void (*open_memory) (avt_data *self, const void *memory, size_t size);
+  bool (*open_memory) (avt_data * self, const void *memory, size_t size);
 
-  void (*big_endian) (avt_data *self, bool big_endian);
+  void (*big_endian) (avt_data * self, bool big_endian);
 
-  void (*done) (avt_data *self); // destructor
-  bool (*seek) (avt_data *self, long offset, int whence);
-  long (*tell) (avt_data *self);
-  size_t (*read) (avt_data *self, void *data,
-		  size_t size, size_t number);
-  uint_least8_t (*read8) (avt_data *self);
-  uint_least16_t (*read16) (avt_data *self);
-  uint_least32_t (*read32) (avt_data *self);
+  void (*done) (avt_data * self);	// destructor
+
+  bool (*seek) (avt_data * self, long offset, int whence);
+
+  long (*tell) (avt_data * self);
+
+  size_t (*read) (avt_data * self, void *data, size_t size, size_t number);
+
+  uint_least8_t (*read8) (avt_data * self);
+
+  uint_least16_t (*read16) (avt_data * self);
+
+  uint_least32_t (*read32) (avt_data * self);
 
   // private
 
@@ -82,6 +87,6 @@ struct avt_data
   };
 };
 
-AVT_HIDDEN void avt_data_init (avt_data *); // constructor
+AVT_HIDDEN void avt_data_init (avt_data *);	// constructor
 
 #endif // AVTDATA_H
