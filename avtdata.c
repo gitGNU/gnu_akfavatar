@@ -306,6 +306,9 @@ method_open_stream (avt_data * d, FILE * stream, bool autoclose)
 static bool
 method_open_file (avt_data * d, const char *filename)
 {
+  if (not d or not filename or d->seek)
+    return false;
+
   return d->open_stream (d, fopen (filename, "rb"), true);
 }
 
