@@ -34,21 +34,40 @@
 #include <stdbool.h>
 #endif
 
+// reset virtual methods
+static inline void
+reset (avt_data * d)
+{
+  d->seek = NULL;
+  d->tell = NULL;
+  d->read = NULL;
+  d->read8 = NULL;
+  d->read16 = NULL;
+  d->read32 = NULL;
+}
 
 static void
 method_done_stream (avt_data * d)
 {
   if (d->stream.autoclose)
-    fclose (d->stream.data);
+    {
+      fclose (d->stream.data);
+      d->stream.data = NULL;
+      d->stream.autoclose = false;
+    }
 
-  memset (d, 0, sizeof (avt_data));
+  reset (d);
 }
 
 
 static void
 method_done_memory (avt_data * d)
 {
-  memset (d, 0, sizeof (avt_data));
+  d->memory.data = NULL;
+  d->memory.position = 0;
+  d->memory.size = 0;
+
+  reset (d);
 }
 
 
@@ -264,7 +283,7 @@ method_big_endian (avt_data * d, bool big_endian)
 static bool
 method_open_stream (avt_data * d, FILE * stream, bool autoclose)
 {
-  if (not d or not stream)
+  if (not d or not stream or d->seek)
     return false;
 
   d->done = method_done_stream;
@@ -294,7 +313,7 @@ method_open_file (avt_data * d, const char *filename)
 static bool
 method_open_memory (avt_data * d, const void *memory, size_t size)
 {
-  if (not d or not memory or not size)
+  if (not d or not memory or not size or d->seek)
     return false;
 
   d->done = method_done_memory;
@@ -318,7 +337,7 @@ avt_data_init (avt_data * d)
 {
   if (d)
     {
-      memset (d, 0, sizeof (avt_data));
+      reset (d);
       d->open_stream = method_open_stream;
       d->open_file = method_open_file;
       d->open_memory = method_open_memory;
