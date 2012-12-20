@@ -21,27 +21,29 @@
 extern int
 avta_base_directory (char *name, size_t size)
 {
-  char *p;
   ssize_t nchars;
 
   // readlink conforms to POSIX.1-2001
   // "/proc/self/exe" is Linux specific
-  // note: name does not get terminated
+  // note: name does not get terminated here
   nchars = readlink ("/proc/self/exe", name, size);
 
-  // memrchr is a GNU extension
-  if (nchars == -1 or not (p = memrchr (name, '/', nchars)))
+  // find last '/'
+  while (nchars > 0 and name[nchars] != '/')
+    --nchars;
+
+  if (nchars <= 0)
     {
       name[0] = '\0';
       return -1;
     }
 
-  // cut filename off
-  *p = '\0';
+  // cut off the file name - finally terminating the string
+  name[nchars] = '\0';
 
-  // eventually also strip subdirectory /bin
-  if (memcmp ("/bin", p - 4, 5) == 0)
-    *(p - 4) = '\0';
+  // eventually also strip last subdirectory "/bin"
+  if (memcmp ("/bin", &name[nchars - 4], 5) == 0)
+    name[nchars - 4] = '\0';
 
   return 0;
 }
@@ -63,13 +65,13 @@ avta_base_directory (char *name, size_t size)
       name[0] = '\0';
       return -1;
     }
-  else
-    *p = '\0';			// cut filename off
+
+  *p = '\0';			// cut filename off
 
   return 0;
 }
 
-#else // not __linux__ and not _WIN32
+#else // no way to find the base directory
 
 extern int
 avta_base_directory (char *name, size_t size)
