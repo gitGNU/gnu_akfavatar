@@ -1169,9 +1169,12 @@ avt_load_image_xpm_data (avt_data * src)
 
 	  if (linepos >= linecapacity)
 	    {
+	      register char *new_line;
 	      linecapacity += 100;
-	      line = (char *) realloc (line, linecapacity);
-	      if (not line)
+	      new_line = (char *) realloc (line, linecapacity);
+	      if (new_line)
+		line = new_line;
+	      else
 		error = end = true;
 	    }
 	}
@@ -1185,9 +1188,12 @@ avt_load_image_xpm_data (avt_data * src)
 	  linenr++;
 	  if (linenr >= linecount)	// leave one line reserved
 	    {
+	      register char **new_xpm;
 	      linecount += 512;
-	      xpm = (char **) realloc (xpm, linecount * sizeof (*xpm));
-	      if (not xpm)
+	      new_xpm = (char **) realloc (xpm, linecount * sizeof (*xpm));
+	      if (new_xpm)
+	        xpm = new_xpm;
+	      else
 		error = end = true;
 	    }
 	}

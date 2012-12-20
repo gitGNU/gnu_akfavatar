@@ -1488,9 +1488,12 @@ import_xpm (lua_State * L, int index)
 
       if (linenr >= linecount)	// leave one line reserved
 	{
+	  register char **new_xpm;
 	  linecount += 512;
-	  xpm = (char **) realloc (xpm, linecount * sizeof (*xpm));
-	  if (not xpm)
+	  new_xpm = (char **) realloc (xpm, linecount * sizeof (*xpm));
+	  if (new_xpm)
+	    xpm = new_xpm;
+	  else
 	    return NULL;
 	}
 

@@ -76,9 +76,13 @@ avta_vprintf (const char *format, va_list ap)
   /* do we need more size? */
   if (n >= BUFSIZ)
     {
-      str = (char *) realloc (str, n + 1);
-      if (str)
-	n = vsnprintf (str, n, format, ap);
+      register char *new_str;
+      new_str = (char *) realloc (str, n + 1);
+      if (new_str)
+	{
+	  str = new_str;
+	  n = vsnprintf (str, n, format, ap);
+	}
       else
 	n = -1;
     }
