@@ -228,10 +228,9 @@ prg_mousehandler (int button, bool pressed, int x, int y)
 extern void
 avta_term_send (const char *buf, size_t count)
 {
-  ssize_t r;
-
   if (prg_input > 0)
     {
+      ssize_t r;
       do
 	{
 	  r = write (prg_input, buf, count);

@@ -1192,7 +1192,7 @@ avt_load_image_xpm_data (avt_data * src)
 	      linecount += 512;
 	      new_xpm = (char **) realloc (xpm, linecount * sizeof (*xpm));
 	      if (new_xpm)
-	        xpm = new_xpm;
+		xpm = new_xpm;
 	      else
 		error = end = true;
 	    }
@@ -2012,18 +2012,16 @@ avt_clear_screen (void)
 static void
 avt_show_name (void)
 {
-  int x, y;
-  avt_color old_text_color, old_background_color;
-  wchar_t *p;
-
   if (avt.screen and avt.avatar_image and avt.name)
     {
       // save old character colors
-      old_text_color = avt.text_color;
-      old_background_color = avt.text_background_color;
+      avt_color old_text_color = avt.text_color;
+      avt_color old_background_color = avt.text_background_color;
 
       avt.text_color = AVT_COLOR_BLACK;
       avt.text_background_color = AVT_COLOR_TAN;
+
+      int x, y;
 
       if (AVT_FOOTER == avt.avatar_mode or AVT_HEADER == avt.avatar_mode)
 	x =
@@ -2050,7 +2048,7 @@ avt_show_name (void)
       avt.cursor.x = x + NAME_PADDING;
       avt.cursor.y = y + NAME_PADDING;
 
-      p = avt.name;
+      wchar_t *p = avt.name;
       while (*p)
 	{
 	  avt_drawchar ((avt_char) * p++, avt.screen);
@@ -4340,15 +4338,13 @@ avt_say_mb_len (const char *txt, size_t len)
 extern int
 avt_tell_mb_len (const char *txt, size_t len)
 {
-  wchar_t *wctext;
-  int wclen;
-
   if (avt.screen and _avt_STATUS == AVT_NORMAL)
     {
       if (not len)
 	len = strlen (txt);
 
-      wclen = avt_mb_decode (&wctext, txt, len);
+      wchar_t *wctext;
+      int wclen = avt_mb_decode (&wctext, txt, len);
 
       if (wctext)
 	{
@@ -4404,26 +4400,22 @@ extern int
 avt_choice (int *result, int start_line, int items, int key,
 	    bool back, bool forward)
 {
-  avt_graphic *plain_menu;
-  int last_key;
-  int end_line;
-  int line_nr, old_line;
-  int x, y;			// pointer position
-
   if (avt.screen and _avt_STATUS == AVT_NORMAL)
     {
+      avt_graphic *plain_menu;
       plain_menu = avt_get_area (avt.viewport.x, avt.viewport.y,
 				 avt.viewport.width, avt.viewport.height);
 
-      end_line = start_line + items - 1;
+      int end_line = start_line + items - 1;
 
+      int last_key;
       if (key)
 	last_key = key + items - 1;
       else
 	last_key = AVT_KEY_NONE;
 
-      line_nr = -1;
-      old_line = 0;
+      int line_nr = -1;
+      int old_line = 0;
       *result = -1;
 
       avt_clear_keys ();
@@ -4431,6 +4423,7 @@ avt_choice (int *result, int start_line, int items, int key,
       avt_set_pointer_buttons_key (AVT_KEY_ENTER);
 
       // check pointer position
+      int x, y;
       avt_get_pointer_position (&x, &y);
 
       if (x >= avt.viewport.x
@@ -5042,15 +5035,13 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 extern int
 avt_pager_mb (const char *txt, size_t len, int startline)
 {
-  wchar_t *wctext;
-  int wclen;
-
   if (avt.screen and txt and _avt_STATUS == AVT_NORMAL)
     {
       if (not len)
 	len = strlen (txt);
 
-      wclen = avt_mb_decode (&wctext, txt, len);
+      wchar_t *wctext;
+      int wclen = avt_mb_decode (&wctext, txt, len);
 
       if (wctext)
 	{
@@ -6247,8 +6238,6 @@ avt_avatar_image_stream (avt_stream * stream)
 extern int
 avt_set_avatar_name (const wchar_t * name)
 {
-  int size;
-
   // clear old name
   if (avt.name)
     {
@@ -6259,7 +6248,7 @@ avt_set_avatar_name (const wchar_t * name)
   // copy name
   if (name and * name)
     {
-      size = (avt_strwidth (name) + 1) * sizeof (wchar_t);
+      int size = (avt_strwidth (name) + 1) * sizeof (wchar_t);
       avt.name = (wchar_t *) malloc (size);
       memcpy (avt.name, name, size);
     }

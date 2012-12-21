@@ -485,9 +485,6 @@ lgraphic_center (lua_State * L)
 static void
 vertical_line (graphic * gr, int x, int y1, int y2)
 {
-  int y;
-  int height;
-
   if (visible_x (gr, x))
     {
       if (y1 > y2)		// swap
@@ -497,13 +494,13 @@ vertical_line (graphic * gr, int x, int y1, int y2)
 	  y2 = ty;
 	}
 
-      height = gr->height;
+      int height = gr->height;
       y1 = RANGE (y1, 0, height - 1);
       y2 = RANGE (y2, 0, height - 1);
 
       if (gr->thickness > 0)
 	{
-	  for (y = y1; y <= y2; y++)
+	  for (int y = y1; y <= y2; y++)
 	    putdot (gr, x, y);
 	}
       else
@@ -511,7 +508,7 @@ vertical_line (graphic * gr, int x, int y1, int y2)
 	  avt_color color = gr->color;
 	  int width = gr->width;
 
-	  for (y = y1; y <= y2; y++)
+	  for (int y = y1; y <= y2; y++)
 	    if (visible_y (gr, y))
 	      putpixelcolor (gr, x, y, width, color);
 	}
@@ -522,9 +519,6 @@ vertical_line (graphic * gr, int x, int y1, int y2)
 static void
 horizontal_line (graphic * gr, int x1, int x2, int y)
 {
-  int x;
-  int width;
-
   if (visible_y (gr, y))
     {
       if (x1 > x2)		// swap
@@ -534,13 +528,13 @@ horizontal_line (graphic * gr, int x1, int x2, int y)
 	  x2 = tx;
 	}
 
-      width = gr->width;
+      int width = gr->width;
       x1 = RANGE (x1, 0, width - 1);
       x2 = RANGE (x2, 0, width - 1);
 
       if (gr->thickness > 0)
 	{
-	  for (x = x1; x <= x2; x++)
+	  for (int x = x1; x <= x2; x++)
 	    putdot (gr, x, y);
 	}
       else
@@ -551,7 +545,7 @@ horizontal_line (graphic * gr, int x1, int x2, int y)
 	  color = gr->color;
 	  p = gr->data + (y * width) + x1;
 
-	  for (x = x1; x <= x2; x++)
+	  for (int x = x1; x <= x2; x++)
 	    *p++ = color;
 	}
     }
