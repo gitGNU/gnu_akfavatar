@@ -25,7 +25,7 @@ local text_wait = 2700
 local image_wait = 7000
 
 
-local audio, initialized, moved_in, avatar, avatarname
+local audio, mute, initialized, moved_in, avatar, avatarname
 local ballooncolor, textcolor, title, archive, target_time, txt
 
 local function initialize()
@@ -126,12 +126,14 @@ local function credits(name)
 end
 
 local function load_audio(name)
+  if not mute then
     if archive then
       local size = archive:seek(name)
       audio = avt.load_audio_stream(archive.file, size) or avt.silent()
     else --> not an archive
       audio = avt.load_audio_file(avt.search(name)) or avt.silent()
     end
+  end
 end
 
 local function show_image(name)
@@ -291,11 +293,12 @@ local function get_script(demofile)
   return script
 end
 
-local function avtdemo(demofile)
+local function avtdemo(demofile, silent)
   if not demofile then return end
 
   -- reset settings
   audio = avt.silent()
+  mute = silent
   initialized = false
   moved_in = false
   txt = nil
