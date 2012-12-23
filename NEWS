@@ -1,7 +1,8 @@
-* AKFAvatar testing
+* AKFAvatar 0.23.0
 
   The code was made less dependend on SDL. There is a new experimantal
-  backend for a Linux framebuffer device, but without mouse support or audio.
+  backend for a Linux framebuffer device, but without mouse support or audio
+  (of course you can call an external audio-player in your scripts).
 
   - bugfix: fix for XPM images with more than 256 colors
   - bugfix: lua-akfavatar also resets the charset
@@ -11,7 +12,7 @@
   - The pager supports numbers (number-pad when NumLock is on)
   - lua/interactive_lua.lua supports scrolling back in a history list
   - regression: the navigation bar cannot handle the pause key anymore
-  - key codes have been changed not to conflict with the corporate zone
+  - key codes have been changed not to conflict with the "corporate zone"
 
   C-API changes:
     - all deprecated functions removed

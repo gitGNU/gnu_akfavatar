@@ -1,3 +1,9 @@
+------------------------------------------------------------------------
+
+2012-12-23  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.23.0 released
+
 2012-12-18  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtdata.h, avtdata.c: use object oriented approach

@@ -9,10 +9,10 @@
 
 # Version and name
 VERSION=0
-SUBVERSION=22
-REVISION=1
-BUILD=17 # set to 0 for official releases
-VARIANT="-testing"
+SUBVERSION=23
+REVISION=0
+BUILD=0 # set to 0 for official releases
+#VARIANT="-testing"
 LIBNAME=libakfavatar.so.${VERSION}.${SUBVERSION}.${REVISION}
 SONAME=libakfavatar.so.${VERSION}.${SUBVERSION}
 
