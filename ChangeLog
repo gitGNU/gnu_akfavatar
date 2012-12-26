@@ -1,3 +1,8 @@
+2012-12-26  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtdata.h, avtdata.c: don't use anonymous union
+	(this was standardized in C11, but not yet in C99)
+
 ------------------------------------------------------------------------
 
 2012-12-23  Andreas K. Foerster  <info@akfoerster.de>

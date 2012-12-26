@@ -49,11 +49,11 @@ reset (avt_data * d)
 static void
 method_done_stream (avt_data * d)
 {
-  if (d->stream.autoclose)
+  if (d->field.stream.autoclose)
     {
-      fclose (d->stream.data);
-      d->stream.data = NULL;
-      d->stream.autoclose = false;
+      fclose (d->field.stream.data);
+      d->field.stream.data = NULL;
+      d->field.stream.autoclose = false;
     }
 
   reset (d);
@@ -63,9 +63,9 @@ method_done_stream (avt_data * d)
 static void
 method_done_memory (avt_data * d)
 {
-  d->memory.data = NULL;
-  d->memory.position = 0;
-  d->memory.size = 0;
+  d->field.memory.data = NULL;
+  d->field.memory.position = 0;
+  d->field.memory.size = 0;
 
   reset (d);
 }
@@ -74,7 +74,7 @@ method_done_memory (avt_data * d)
 static size_t
 method_read_stream (avt_data * d, void *data, size_t size, size_t number)
 {
-  return fread (data, size, number, d->stream.data);
+  return fread (data, size, number, d->field.stream.data);
 }
 
 
@@ -83,8 +83,8 @@ method_read_memory (avt_data * d, void *data, size_t size, size_t number)
 {
   size_t result = 0;
   size_t all = size * number;
-  size_t position = d->memory.position;
-  size_t datasize = d->memory.size;
+  size_t position = d->field.memory.position;
+  size_t datasize = d->field.memory.size;
 
   // not all readable?
   if (position + all > datasize)
@@ -100,8 +100,8 @@ method_read_memory (avt_data * d, void *data, size_t size, size_t number)
 	return 0;		// nothing readable
     }
 
-  memcpy (data, d->memory.data + position, all);
-  d->memory.position += all;
+  memcpy (data, d->field.memory.data + position, all);
+  d->field.memory.position += all;
   result = number;
 
   return result;
@@ -224,15 +224,15 @@ method_read32be (avt_data * d)
 static long
 method_tell_stream (avt_data * d)
 {
-  return ftell (d->stream.data) - d->stream.start;
+  return ftell (d->field.stream.data) - d->field.stream.start;
 }
 
 
 static long
 method_tell_memory (avt_data * d)
 {
-  if (d->memory.position <= d->memory.size)
-    return d->memory.position;
+  if (d->field.memory.position <= d->field.memory.size)
+    return d->field.memory.position;
   else
     return -1;
 }
@@ -242,9 +242,9 @@ static bool
 method_seek_stream (avt_data * d, long offset, int whence)
 {
   if (SEEK_SET == whence)
-    offset += d->stream.start;
+    offset += d->field.stream.start;
 
-  return (fseek (d->stream.data, offset, whence) > -1);
+  return (fseek (d->field.stream.data, offset, whence) > -1);
 }
 
 
@@ -252,13 +252,13 @@ static bool
 method_seek_memory (avt_data * d, long offset, int whence)
 {
   if (SEEK_SET == whence)
-    d->memory.position = offset;
+    d->field.memory.position = offset;
   else if (SEEK_CUR == whence)
-    d->memory.position += offset;
+    d->field.memory.position += offset;
   else if (SEEK_END == whence)
-    d->memory.position = d->memory.size - offset;
+    d->field.memory.position = d->field.memory.size - offset;
 
-  return (d->memory.position <= d->memory.size);
+  return (d->field.memory.position <= d->field.memory.size);
 }
 
 
@@ -291,9 +291,9 @@ method_open_stream (avt_data * d, FILE * stream, bool autoclose)
   d->tell = method_tell_stream;
   d->seek = method_seek_stream;
 
-  d->stream.data = stream;
-  d->stream.start = ftell (stream);
-  d->stream.autoclose = autoclose;
+  d->field.stream.data = stream;
+  d->field.stream.start = ftell (stream);
+  d->field.stream.autoclose = autoclose;
 
   d->open_stream = NULL;
   d->open_file = NULL;
@@ -324,9 +324,9 @@ method_open_memory (avt_data * d, const void *memory, size_t size)
   d->tell = method_tell_memory;
   d->seek = method_seek_memory;
 
-  d->memory.data = memory;
-  d->memory.position = 0;
-  d->memory.size = size;
+  d->field.memory.data = memory;
+  d->field.memory.position = 0;
+  d->field.memory.size = size;
 
   d->open_stream = NULL;
   d->open_file = NULL;

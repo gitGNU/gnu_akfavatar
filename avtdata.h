@@ -84,7 +84,7 @@ struct avt_data
       size_t size;
       size_t position;
     } memory;
-  };
+  } field;
 };
 
 AVT_HIDDEN void avt_data_init (avt_data *);	// constructor
