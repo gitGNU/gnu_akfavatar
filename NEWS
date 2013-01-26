@@ -1,3 +1,7 @@
+* AKFAvatar-testing
+
+  - avoid recursive calls of the bell
+
 * AKFAvatar 0.23.0
 
   The code was made less dependend on SDL. There is a new experimantal

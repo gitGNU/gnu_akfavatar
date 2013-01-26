@@ -741,7 +741,15 @@ static inline void
 bell (void)
 {
   if (avt.bell)
-    avt.bell ();
+    {
+      void (*temp_bell) (void);
+
+      // block recursion
+      temp_bell = avt.bell;
+      avt.bell = NULL;
+      temp_bell ();
+      avt.bell = temp_bell;
+    }
 }
 
 static int
