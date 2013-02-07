@@ -1,6 +1,6 @@
 2013-02-07  Andreas K. Foerster  <info@akfoerster.de>
 
-	* avatar.c (avt_bar3d, avt_brighter)
+	* avatar.c (avt_bar3d, avt_border3d, avt_brighter)
 	(avt_horizontal_line, avt_vertical_line): new functions
 	(avt_show_name): adapted
 

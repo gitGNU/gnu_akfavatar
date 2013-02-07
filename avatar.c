@@ -542,9 +542,9 @@ avt_vertical_line (avt_graphic * s, int x, int y, int height, avt_color color)
     *avt_pixel (s, x, y + ny) = color;
 }
 
-// like avt_bar bit with 3d effect
+// border with 3d effect
 static void
-avt_bar3d (avt_graphic * s, int x, int y, int width, int height,
+avt_border3d (avt_graphic * s, int x, int y, int width, int height,
 	   avt_color color, bool pressed)
 {
   avt_color c1, c2;
@@ -560,8 +560,6 @@ avt_bar3d (avt_graphic * s, int x, int y, int width, int height,
       c2 = avt_brighter (color, 0x37);
     }
 
-  avt_bar (s, x, y, width, height, color);
-
   for (int i = 0; i < BORDER_3D_WIDTH; ++i)
     {
       // lower right
@@ -573,6 +571,15 @@ avt_bar3d (avt_graphic * s, int x, int y, int width, int height,
       avt_horizontal_line (s, x + i, y + i, width - (2 * i), c2);
       avt_vertical_line (s, x + i, y + i, height - (2 * i), c2);
     }
+}
+
+// like avt_bar bit with 3d effect
+static void
+avt_bar3d (avt_graphic * s, int x, int y, int width, int height,
+	   avt_color color, bool pressed)
+{
+  avt_bar (s, x, y, width, height, color);
+  avt_border3d (s, x, y, width, height, color, pressed);
 }
 
 // move a line up or down
