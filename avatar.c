@@ -108,6 +108,9 @@
 
 #define SHADOWOFFSET 5
 
+// border width for 3d bars
+#define BORDER_3D_WIDTH 2
+
 // for static linking avoid to drag in unneeded object files
 #pragma GCC poison  avt_colorname avt_palette avt_colors
 #pragma GCC poison  avt_avatar_image_default
@@ -253,6 +256,8 @@ int _avt_STATUS;
 
 // forward declaration
 static void avt_drawchar (avt_char ch, avt_graphic * surface);
+static inline int avt_darker (avt_color color, int amount);
+static inline int avt_brighter (avt_color color, int amount);
 static void avt_darker_area (int x, int y, int width, int height, int amount);
 //-----------------------------------------------------------------------------
 
@@ -487,6 +492,90 @@ avt_free_screen (void)
   avt_fill (avt.screen, avt.background_color);
 }
 
+// secure
+static void
+avt_horizontal_line (avt_graphic * s, int x, int y, int width,
+		     avt_color color)
+{
+  if (x > s->width)
+    return;
+
+  if (x < 0)
+    {
+      width -= (-x);
+      x = 0;
+    }
+
+  if (x + width > s->width)
+    width = s->width - x;
+
+  if (width <= 0)
+    return;
+
+  avt_color *p;
+  p = avt_pixel (s, x, y);
+
+  for (int nx = width; nx > 0; --nx, p++)
+    *p = color;
+}
+
+// secure
+static void
+avt_vertical_line (avt_graphic * s, int x, int y, int height, avt_color color)
+{
+  if (y > s->height)
+    return;
+
+  if (y < 0)
+    {
+      height -= (-y);
+      y = 0;
+    }
+
+  if (y + height > s->height)
+    height = s->height - y;
+
+  if (height <= 0)
+    return;
+
+  for (int ny = 0; ny < height; ny++)
+    *avt_pixel (s, x, y + ny) = color;
+}
+
+// like avt_bar bit with 3d effect
+static void
+avt_bar3d (avt_graphic * s, int x, int y, int width, int height,
+	   avt_color color, bool pressed)
+{
+  avt_color c1, c2;
+
+  if (pressed)
+    {
+      c1 = avt_brighter (color, 0x37);
+      c2 = avt_darker (color, 0x37);
+    }
+  else
+    {
+      c1 = avt_darker (color, 0x37);
+      c2 = avt_brighter (color, 0x37);
+    }
+
+  avt_bar (s, x, y, width, height, color);
+
+  for (int i = 0; i < BORDER_3D_WIDTH; ++i)
+    {
+      // lower right
+      avt_horizontal_line (s, x + i, y + height - 1 - i, width - (2 * i), c1);
+      avt_vertical_line (s, x + width - 1 - i, y + i, height - (2 * i), c1);
+
+      // upper left
+      // defined later, so it's dominant when overlapping
+      avt_horizontal_line (s, x + i, y + i, width - (2 * i), c2);
+      avt_vertical_line (s, x + i, y + i, height - (2 * i), c2);
+    }
+}
+
+// move a line up or down
 static inline void
 avt_line_move (avt_color * d, avt_color * s, int width, avt_color color_key)
 {
@@ -2015,7 +2104,7 @@ avt_clear_screen (void)
   avt.avatar_visible = false;
 }
 
-#define NAME_PADDING 3
+#define NAME_PADDING (BORDER_3D_WIDTH + 3)
 
 static void
 avt_show_name (void)
@@ -2032,13 +2121,11 @@ avt_show_name (void)
       int x, y;
 
       if (AVT_FOOTER == avt.avatar_mode or AVT_HEADER == avt.avatar_mode)
-	x =
-	  avt.window.x + (avt.window.width / 2) +
-	  (avt.avatar_image->width / 2) + BUTTON_DISTANCE;
+	x = avt.window.x + (avt.window.width / 2)
+	  + (avt.avatar_image->width / 2) + BUTTON_DISTANCE;
       else			// left
-	x =
-	  avt.window.x + AVATAR_MARGIN + avt.avatar_image->width +
-	  BUTTON_DISTANCE;
+	x = avt.window.x + AVATAR_MARGIN + avt.avatar_image->width
+	  + BUTTON_DISTANCE;
 
       if (AVT_HEADER == avt.avatar_mode)
 	y = avt.window.y + TOPMARGIN + avt.avatar_image->height
@@ -2048,9 +2135,10 @@ avt_show_name (void)
 	  - fontheight - 2 * NAME_PADDING;
 
       // draw sign
-      avt_bar (avt.screen, x, y,
-	       (avt_strwidth (avt.name) * fontwidth) + 2 * NAME_PADDING,
-	       fontheight + 2 * NAME_PADDING, avt.text_background_color);
+      avt_bar3d (avt.screen, x, y,
+		 (avt_strwidth (avt.name) * fontwidth) + 2 * NAME_PADDING,
+		 fontheight + 2 * NAME_PADDING, avt.text_background_color,
+		 false);
 
       // show name
       avt.cursor.x = x + NAME_PADDING;
@@ -2139,6 +2227,15 @@ avt_darker (avt_color color, int amount)
   b = b > amount ? b - amount : 0;
 
   return avt_rgb (r, g, b);
+}
+
+// return a brighter color
+static inline int
+avt_brighter (avt_color color, int amount)
+{
+  return avt_rgb (avt_min (avt_red (color) + amount, 255),
+		  avt_min (avt_green (color) + amount, 255),
+		  avt_min (avt_blue (color) + amount, 255));
 }
 
 // secure

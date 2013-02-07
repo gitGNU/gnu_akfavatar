@@ -1,6 +1,12 @@
+2013-02-07  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_bar3d, avt_brighter)
+	(avt_horizontal_line, avt_vertical_line): new functions
+	(avt_show_name): adapted
+
 2013-01-26  Andreas K. Foerster  <info@akfoerster.de>
 
-	* avatar (bell): block recursion
+	* avatar.c (bell): block recursion
 
 2012-12-26  Andreas K. Foerster  <info@akfoerster.de>
 
