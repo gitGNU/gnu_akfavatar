@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "akfavatar-graphic" 3 2012-07-21 AKFAvatar
+.TH "akfavatar-graphic" 3 2013-02-08 AKFAvatar
 .
 .SH NAME
 akfavatar-graphic \- module to display graphics in Lua-AKFAvatar
@@ -276,6 +276,24 @@ as the upper left corner and
 .I "x2, y2"
 as the lower right corner.
 .br
+The pen position is not changed.
+.PP
+.TP
+.IB gr :border3d( "x1, y1, x2, y2 [, pressed]" )
+Draws 3d border with
+.I "x1, y1"
+as the upper left corner and
+.I "x2, y2"
+as the lower right corner.
+.IP
+The setting for thickness is ignored, it is always the same.
+.IP
+if
+.I pressed
+is
+.B true
+the border is presented as being pressed.
+.IP
 The pen position is not changed.
 .PP
 .TP

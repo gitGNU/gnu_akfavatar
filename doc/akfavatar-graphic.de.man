@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "akfavatar-graphic" 3 2012-07-21 AKFAvatar
+.TH "akfavatar-graphic" 3 2013-02-08 AKFAvatar
 .
 .SH NAME
 akfavatar-graphic \- Modul für die Anzeige von Grafiken unter Lua-AKFAvatar
@@ -285,6 +285,25 @@ als obere linke Ecke und
 .I "x2, y2"
 als untere rechte Ecke.
 .br
+Die Stift-Position wird nicht verändert.
+.PP
+.TP
+.IB gr :border3d( "x1, y1, x2, y2 [, gedrückt]" )
+Zeichnet einen 3D-Rahmen mit
+.I "x1, y1"
+als obere linke Ecke und
+.I "x2, y2"
+als untere rechte Ecke.
+.IP
+Die Einstellung der Stift-Dicke wird ignoriert,
+der Rahmen ist immer gleich dick.
+.IP
+Wenn
+.I gedrückt
+auf
+.B true
+gesetzt wird, wird der Rahmen nach innen gedrückt dargestellt.
+.IP
 Die Stift-Position wird nicht verändert.
 .PP
 .TP
