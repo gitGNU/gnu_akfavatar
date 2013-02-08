@@ -495,52 +495,39 @@ avt_free_screen (void)
 
 // secure
 static void
-avt_horizontal_line (avt_graphic * s, int x, int y, int width,
-		     avt_color color)
+avt_horizontal_line (avt_graphic * s, int x1, int x2, int y1, avt_color color)
 {
-  if (x > s->width)
+  if (x1 > s->width)
     return;
 
-  if (x < 0)
-    {
-      width -= (-x);
-      x = 0;
-    }
+  if (x1 < 0)
+    x1 = 0;
 
-  if (x + width > s->width)
-    width = s->width - x;
-
-  if (width <= 0)
-    return;
+  if (x2 >= s->width)
+    x2 = s->width - 1;
 
   avt_color *p;
-  p = avt_pixel (s, x, y);
+  p = avt_pixel (s, x1, y1);
 
-  for (int nx = width; nx > 0; --nx, p++)
+  for (int nx = x1; nx <= x2; ++nx, ++p)
     *p = color;
 }
 
 // secure
 static void
-avt_vertical_line (avt_graphic * s, int x, int y, int height, avt_color color)
+avt_vertical_line (avt_graphic * s, int x1, int y1, int y2, avt_color color)
 {
-  if (y > s->height)
+  if (y1 >= s->height)
     return;
 
-  if (y < 0)
-    {
-      height -= (-y);
-      y = 0;
-    }
+  if (y1 < 0)
+    y1 = 0;
 
-  if (y + height > s->height)
-    height = s->height - y;
+  if (y2 >= s->height)
+    y2 = s->height - 1;
 
-  if (height <= 0)
-    return;
-
-  for (int ny = 0; ny < height; ny++)
-    *avt_pixel (s, x, y + ny) = color;
+  for (int ny = y1; ny <= y2; ny++)
+    *avt_pixel (s, x1, ny) = color;
 }
 
 // border with 3d effect
@@ -549,6 +536,7 @@ avt_border3d (avt_graphic * s, int x, int y, int width, int height,
 	      avt_color color, bool pressed)
 {
   avt_color c1, c2;
+  int x2, y2;
 
   if (not pressed)
     {
@@ -561,16 +549,19 @@ avt_border3d (avt_graphic * s, int x, int y, int width, int height,
       c2 = avt_brighter (color, BORDER_3D_INTENSITY);
     }
 
+  x2 = x + width - 1;
+  y2 = y + height - 1;
+
   for (int i = 0; i < BORDER_3D_WIDTH; ++i)
     {
       // lower right
-      avt_horizontal_line (s, x + i, y + height - 1 - i, width - i - i, c2);
-      avt_vertical_line (s, x + width - 1 - i, y + i, height - i - i, c2);
+      avt_horizontal_line (s, x + i, x2 - i, y + height - 1 - i, c2);
+      avt_vertical_line (s, x + width - 1 - i, y + i, y2 - i, c2);
 
       // upper left
       // defined later, so it's dominant when overlapping
-      avt_horizontal_line (s, x + i, y + i, width - i - i, c1);
-      avt_vertical_line (s, x + i, y + i, height - i - i, c1);
+      avt_horizontal_line (s, x + i, x2 - i, y + i, c1);
+      avt_vertical_line (s, x + i, y + i, y2 - i, c1);
     }
 }
 
