@@ -48,7 +48,7 @@ Koordinaten fangen mit 1, 1 in der oberen linken Ecke an.
 .IP \(en
 Man kann es auch nach Art der Turtle-Grafik verwenden.
 .IP \(en
-Die Stiftbreite, Position, Ausrichtung, Stift-Farbe und Hintergrund-Farbe sind
+Die Stiftbreite, Position, Ausrichtung, Stiftfarbe und Hintergrundfarbe sind
 für jede Grafik einzeln festgelegt.
 .IP \(en
 Der Code ist nicht auf Geschwindigkeit optimiert.
@@ -146,7 +146,7 @@ Löscht die Grafik.
 .br
 Wenn eine
 .I Farbe
-angegeben ist, wird diese zur neuen Hintergrund-Farbe.
+angegeben ist, wird diese zur neuen Hintergrundfarbe.
 .br
 Die Stift-Position wird nicht verändert.
 .PP
@@ -294,7 +294,7 @@ Zeichnet einen 3D-Rahmen mit
 als obere linke Ecke und
 .I "x2, y2"
 als untere rechte Ecke.
-.IP
+Die Farbe basiert auf der Hintergrundfarbe der Grafik.
 Die Einstellung der Stift-Dicke wird ignoriert,
 der Rahmen ist immer gleich dick.
 .IP

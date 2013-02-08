@@ -285,7 +285,7 @@ Draws 3d border with
 as the upper left corner and
 .I "x2, y2"
 as the lower right corner.
-.IP
+The color is based on the background color of the graphic.
 The setting for thickness is ignored, it is always the same.
 .IP
 if
