@@ -109,7 +109,8 @@
 #define SHADOWOFFSET 5
 
 // border width for 3d bars
-#define BORDER_3D_WIDTH 2
+#define BORDER_3D_WIDTH 3
+#define BORDER_3D_INTENSITY 0x37
 
 // for static linking avoid to drag in unneeded object files
 #pragma GCC poison  avt_colorname avt_palette avt_colors
@@ -545,31 +546,31 @@ avt_vertical_line (avt_graphic * s, int x, int y, int height, avt_color color)
 // border with 3d effect
 static void
 avt_border3d (avt_graphic * s, int x, int y, int width, int height,
-	   avt_color color, bool pressed)
+	      avt_color color, bool pressed)
 {
   avt_color c1, c2;
 
-  if (pressed)
+  if (not pressed)
     {
-      c1 = avt_brighter (color, 0x37);
-      c2 = avt_darker (color, 0x37);
+      c1 = avt_brighter (color, BORDER_3D_INTENSITY);
+      c2 = avt_darker (color, BORDER_3D_INTENSITY);
     }
-  else
+  else				// pressed
     {
-      c1 = avt_darker (color, 0x37);
-      c2 = avt_brighter (color, 0x37);
+      c1 = avt_darker (color, BORDER_3D_INTENSITY);
+      c2 = avt_brighter (color, BORDER_3D_INTENSITY);
     }
 
   for (int i = 0; i < BORDER_3D_WIDTH; ++i)
     {
       // lower right
-      avt_horizontal_line (s, x + i, y + height - 1 - i, width - (2 * i), c1);
-      avt_vertical_line (s, x + width - 1 - i, y + i, height - (2 * i), c1);
+      avt_horizontal_line (s, x + i, y + height - 1 - i, width - i - i, c2);
+      avt_vertical_line (s, x + width - 1 - i, y + i, height - i - i, c2);
 
       // upper left
       // defined later, so it's dominant when overlapping
-      avt_horizontal_line (s, x + i, y + i, width - (2 * i), c2);
-      avt_vertical_line (s, x + i, y + i, height - (2 * i), c2);
+      avt_horizontal_line (s, x + i, y + i, width - i - i, c1);
+      avt_vertical_line (s, x + i, y + i, height - i - i, c1);
     }
 }
 
@@ -578,7 +579,10 @@ static void
 avt_bar3d (avt_graphic * s, int x, int y, int width, int height,
 	   avt_color color, bool pressed)
 {
-  avt_bar (s, x, y, width, height, color);
+  avt_bar (s, x + BORDER_3D_WIDTH, y + BORDER_3D_WIDTH,
+	   width - (2 * BORDER_3D_WIDTH), height - (2 * BORDER_3D_WIDTH),
+	   color);
+
   avt_border3d (s, x, y, width, height, color, pressed);
 }
 
