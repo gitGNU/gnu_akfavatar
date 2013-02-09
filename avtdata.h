@@ -24,9 +24,6 @@
 #ifndef AVTDATA_H
 #define AVTDATA_H
 
-#define _ISOC99_SOURCE
-
-#include "avtinternals.h"
 #include <stdio.h>		// FILE
 #include <stdint.h>
 
@@ -87,6 +84,6 @@ struct avt_data
   } field;
 };
 
-AVT_HIDDEN void avt_data_init (avt_data *);	// constructor
+void avt_data_init (avt_data *);	// constructor
 
 #endif // AVTDATA_H

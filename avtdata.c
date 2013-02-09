@@ -23,8 +23,8 @@
 #define _ISOC99_SOURCE
 #define _POSIX_C_SOURCE 200112L
 
-#include "avtdata.h"
 #include "avtinternals.h"
+#include "avtdata.h"
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>		// memcpy

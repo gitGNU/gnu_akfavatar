@@ -29,6 +29,11 @@
 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
+// the following symbols should not be exported by the library
+#pragma GCC visibility push(hidden)
+
+#include "avtdata.h"  // to get the hidden visibility
+
 #if defined(VGA)
 #  define MINIMALWIDTH 640
 #  define MINIMALHEIGHT 480
@@ -90,12 +95,6 @@
 #endif // not big endian system
 #endif // not AVT_BYTE_ORDER
 
-#if defined(__GNUC__) and not defined(_WIN32)
-#  define AVT_HIDDEN __attribute__((__visibility__("hidden")))
-#else
-#  define AVT_HIDDEN
-#endif // __GNUC__
-
 
 typedef uint_least32_t avt_color;
 
@@ -136,38 +135,41 @@ struct avt_backend
 #define avt_min(a, b) ((a) < (b) ? (a) : (b))
 #define avt_max(a, b) ((a) > (b) ? (a) : (b))
 
+
 /* avatar.c */
-AVT_HIDDEN extern int _avt_STATUS;
+extern int _avt_STATUS;
 
-AVT_HIDDEN extern void avt_quit_audio_function (void (*) (void));
+void avt_quit_audio_function (void (*) (void));
 
-AVT_HIDDEN extern struct avt_backend *avt_start_common (avt_graphic *new_screen);
-AVT_HIDDEN extern avt_graphic *avt_data_to_graphic (void *data, short width, short height);
-AVT_HIDDEN extern avt_graphic *avt_new_graphic (short width, short height);
-AVT_HIDDEN extern void avt_free_graphic (avt_graphic * gr);
-AVT_HIDDEN extern avt_graphic *avt_load_image_xpm (char **xpm);
-AVT_HIDDEN extern bool avt_check_buttons (int x, int y);
-AVT_HIDDEN extern void avt_add_key (avt_char key);
-AVT_HIDDEN extern void avt_resize (int width, int height);
+struct avt_backend *avt_start_common (avt_graphic *new_screen);
+avt_graphic *avt_data_to_graphic (void *data, short width, short height);
+avt_graphic *avt_new_graphic (short width, short height);
+void avt_free_graphic (avt_graphic * gr);
+avt_graphic *avt_load_image_xpm (char **xpm);
+bool avt_check_buttons (int x, int y);
+void avt_add_key (avt_char key);
+void avt_resize (int width, int height);
 
 
 /* avttiming.c */
-AVT_HIDDEN extern void avt_delay (int milliseconds); // only for under a second
+void avt_delay (int milliseconds); // only for under a second
 
 /* audio-sdl.c */
-AVT_HIDDEN extern void avt_lock_audio (void);
-AVT_HIDDEN extern void avt_unlock_audio (avt_audio *snd);
+void avt_lock_audio (void);
+void avt_unlock_audio (avt_audio *snd);
 
 /* audio-common */
-AVT_HIDDEN extern int avt_start_audio_common (void (*quit_backend) (void));
+int avt_start_audio_common (void (*quit_backend) (void));
 
 /* avtposix.c / avtwindows.c */
 /* currently not used */
-extern void get_user_home (char *home_dir, size_t size);
-extern void edit_file (const char *name, const char *encoding);
-extern FILE *open_config_file (const char *name, bool writing);
+void get_user_home (char *home_dir, size_t size);
+void edit_file (const char *name, const char *encoding);
+FILE *open_config_file (const char *name, bool writing);
 
 /* mingw/askdrive.c */
-extern int avta_ask_drive (int max_idx);
+int avta_ask_drive (int max_idx);
+
+#pragma GCC visibility pop
 
 #endif /* AVTINTERNALS_H */
