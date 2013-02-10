@@ -2950,11 +2950,33 @@ avt_viewport (int x, int y, int width, int height)
   if (avt.textfield.x < 0)
     avt_draw_balloon ();
 
+  // make coordinates 0-offset
+  --x;
+  --y;
+
+  // sanitize values
+
+  if (x < 0)
+    x = 0;
+  else if (x >= avt.balloonwidth)
+    x = avt.balloonwidth - 1;
+
+  if (y < 0)
+    y = 0;
+  else if (y >= avt.balloonheight)
+    y = avt.balloonheight - 1;
+
+  if (width <= 0 or width > avt.balloonwidth - x)
+    width = avt.balloonwidth - x;
+
+  if (height <= 0 or height > avt.balloonheight - y)
+    height = avt.balloonheight - y;
+
   if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
-  avt.viewport.x = avt.textfield.x + ((x - 1) * fontwidth);
-  avt.viewport.y = avt.textfield.y + ((y - 1) * fontheight);
+  avt.viewport.x = avt.textfield.x + (x * fontwidth);
+  avt.viewport.y = avt.textfield.y + (y * fontheight);
   avt.viewport.width = width * fontwidth;
   avt.viewport.height = height * fontheight;
 

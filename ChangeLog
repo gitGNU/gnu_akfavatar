@@ -1,3 +1,7 @@
+2013-02-10  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_viewport): fix: sanitize parameters
+
 2013-02-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtinternals.h, avtdata.h:
