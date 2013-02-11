@@ -3,6 +3,10 @@
   - avoid recursive calls of the bell
   - name sign with 3d effect
 
+  Lua-API changes:
+    - Module "akfavatar-graphic"
+      - new methods: gr:border3d
+
 * AKFAvatar 0.23.0
 
   The code was made less dependend on SDL. There is a new experimantal

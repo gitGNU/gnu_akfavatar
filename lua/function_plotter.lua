@@ -2,7 +2,7 @@
 
 --[[-------------------------------------------------------------------
 Function Plotter for AKFAvatar
-Copyright (c) 2011,2012 Andreas K. Foerster <info@akfoerster.de>
+Copyright (c) 2011,2012,2013 Andreas K. Foerster <info@akfoerster.de>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -181,9 +181,9 @@ end
 
 local function textplate(s)
   local fwidth, fheight = gr:font_size()
-  local p, pwidth, pheight = graphic.new((#s*fwidth)+8, fheight+8, "gold")
+  local p = graphic.new((#s*fwidth)+8, fheight+8, "gold")
 
-  p:border3d(1, 1, pwidth, pheight)
+  p:border3d(false)
   p:center()
   p:textalign("center", "center")
   p:color "black"

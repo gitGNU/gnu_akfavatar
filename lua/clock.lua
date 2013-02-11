@@ -2,7 +2,7 @@
 
 --[[-------------------------------------------------------------------
 Clock for AKFAvatar
-Copyright (c) 2011,2012 Andreas K. Foerster <info@akfoerster.de>
+Copyright (c) 2011,2012,2013 Andreas K. Foerster <info@akfoerster.de>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ avt.start()
 
 local function draw_clockface(gr, radius, color)
   local clockface = gr:duplicate()
+  local width, height = gr:size()
 
   clockface:home()
   clockface:color("floral white")
@@ -37,8 +38,8 @@ local function draw_clockface(gr, radius, color)
   -- background image
   avt.set_bitmap_color("dark blue")
   clockface:put_file(avt.search("gnu-head.xbm"),
-    clockface:width() / 2 - 268 / 2,
-    clockface:height() / 4 - (253/2) + 20)
+    width / 2 - 268 / 2,
+    height / 4 - (253/2) + 20)
 
   -- draw minute points
   for minute=1,60 do
@@ -60,16 +61,25 @@ local function draw_clockface(gr, radius, color)
     clockface:disc(7)
   end
 
-  -- show date
-  clockface:home()
-  clockface:heading(180)
-  clockface:move(radius / 2)
-  os.setlocale("", "time") --> for the formatting of the date
-  clockface:text(os.date("%x", timestamp))
-
   -- middle dot
   clockface:home()
   clockface:disc(10)
+
+  -- show date
+  local fwidth, fheight = gr:font_size()
+  os.setlocale("", "time") --> for the formatting of the date
+  local date = os.date("%x", timestamp)
+  local date_plate, plate_width, plate_height
+      = graphic.new(#date*fwidth + 15, fheight + 15, "grey90")
+
+  date_plate:border3d(true)
+  date_plate:center()
+  date_plate:textalign("center", "center")
+  date_plate:color("black")
+  date_plate:text(date)
+  clockface:put(date_plate,
+    width / 2 - plate_width / 2,
+    height * 3/4 - plate_height / 2)
 
   return clockface
 end -- draw clockface
@@ -101,9 +111,9 @@ local function clock()
 
     oldtime = timestamp
 
-    gr:put(clockface) --> overwrites everything
-
     local time = date("*t", timestamp)
+
+    gr:put(clockface) --> overwrites everything
 
     -- hours pointer
     gr:home()

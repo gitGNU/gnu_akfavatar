@@ -151,6 +151,21 @@ angegeben ist, wird diese zur neuen Hintergrundfarbe.
 Die Stift-Position wird nicht verändert.
 .PP
 .TP
+.IB gr :border3d( "[gedrückt]" )
+Zeichnet einen 3D-Rahmen um die Grafik.
+Die Farbe basiert auf der Hintergrundfarbe der Grafik.
+Die Einstellung der Stift-Dicke wird ignoriert,
+der Rahmen ist immer 3 Pixel dick.
+.IP
+Wenn
+.I gedrückt
+auf
+.B true
+gesetzt wird, wird der Rahmen nach innen gedrückt dargestellt.
+.IP
+Die Stift-Position wird nicht verändert.
+.PP
+.TP
 .IB gr :putpixel( "[x, y]" )
 Setzt einen Pixel an den angegebenen Koordinaten, oder bei der aktuellen
 Stift-Position.
@@ -285,25 +300,6 @@ als obere linke Ecke und
 .I "x2, y2"
 als untere rechte Ecke.
 .br
-Die Stift-Position wird nicht verändert.
-.PP
-.TP
-.IB gr :border3d( "x1, y1, x2, y2 [, gedrückt]" )
-Zeichnet einen 3D-Rahmen mit
-.I "x1, y1"
-als obere linke Ecke und
-.I "x2, y2"
-als untere rechte Ecke.
-Die Farbe basiert auf der Hintergrundfarbe der Grafik.
-Die Einstellung der Stift-Dicke wird ignoriert,
-der Rahmen ist immer gleich dick.
-.IP
-Wenn
-.I gedrückt
-auf
-.B true
-gesetzt wird, wird der Rahmen nach innen gedrückt dargestellt.
-.IP
 Die Stift-Position wird nicht verändert.
 .PP
 .TP

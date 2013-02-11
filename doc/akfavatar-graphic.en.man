@@ -147,6 +147,20 @@ is given, then that becomes the new background color.
 The pen position is not changed.
 .PP
 .TP
+.IB gr :border3d( "[pressed]" )
+Draws 3d border around the graphic.
+The color is based on the background color.
+The setting for thickness is ignored, it is always the 3 pixels.
+.IP
+if
+.I pressed
+is
+.B true
+the border is presented as being pressed.
+.IP
+The pen position is not changed.
+.PP
+.TP
 .IB gr :putpixel( "[x, y]" )
 Puts a pixel at the given coordinates or at the current pen position.
 .br
@@ -276,24 +290,6 @@ as the upper left corner and
 .I "x2, y2"
 as the lower right corner.
 .br
-The pen position is not changed.
-.PP
-.TP
-.IB gr :border3d( "x1, y1, x2, y2 [, pressed]" )
-Draws 3d border with
-.I "x1, y1"
-as the upper left corner and
-.I "x2, y2"
-as the lower right corner.
-The color is based on the background color of the graphic.
-The setting for thickness is ignored, it is always the same.
-.IP
-if
-.I pressed
-is
-.B true
-the border is presented as being pressed.
-.IP
 The pen position is not changed.
 .PP
 .TP

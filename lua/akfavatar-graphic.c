@@ -916,23 +916,22 @@ avt_brighter (avt_color color, unsigned int amount)
 
 #define BORDER_3D_INTENSITY 0x37
 
-// gr:border3d (x1, y1, x2, y2, pressed)
+// gr:border3d (pressed)
 static int
 lgraphic_border3d (lua_State * L)
 {
   graphic *gr;
-  int x1, y1, x2, y2;
   avt_color old_color;
+  short x2, y2;
   short old_thickness;
   bool pressed;
 
   gr = get_graphic (L, 1);
 
-  x1 = luaL_checkint (L, 2) - 1;
-  y1 = luaL_checkint (L, 3) - 1;
-  x2 = luaL_checkint (L, 4) - 1;
-  y2 = luaL_checkint (L, 5) - 1;
-  pressed = lua_toboolean (L, 6);
+  pressed = lua_toboolean (L, 2);
+
+  x2 = gr->width - 1;
+  y2 = gr->height - 1;
 
   old_thickness = gr->thickness;
   old_color = gr->color;
@@ -946,8 +945,8 @@ lgraphic_border3d (lua_State * L)
       else
         gr->color = avt_darker (gr->background, BORDER_3D_INTENSITY);
 
-      horizontal_line (gr, x1 + i, x2 - i, y2 - i);
-      vertical_line (gr, x2 - i, y1 + i, y2 - i);
+      horizontal_line (gr, i, x2 - i, y2 - i);
+      vertical_line (gr, x2 - i, i, x2 - i);
 
       // upper left
       // defined later, so it's dominant when overlapping
@@ -956,8 +955,8 @@ lgraphic_border3d (lua_State * L)
       else
         gr->color = avt_brighter (gr->background, BORDER_3D_INTENSITY);
 
-      horizontal_line (gr, x1 + i, x2 - i, y1 + i);
-      vertical_line (gr, x1 + i, y1 + i, y2 - i);
+      horizontal_line (gr, i, x2 - i, i);
+      vertical_line (gr, i, i, y2 - i);
     }
 
   gr->thickness = old_thickness;
