@@ -113,6 +113,11 @@ local function clock()
 
     local time = date("*t", timestamp)
 
+    -- at midnight update the date
+    if time.hour == 0 and time.min == 0 and time.sec == 0 then
+      clockface = draw_clockface(gr, radius, color)
+    end
+
     gr:put(clockface) --> overwrites everything
 
     -- hours pointer
