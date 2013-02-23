@@ -1,4 +1,10 @@
-2013-02-11  Andreas K. Foerster  <info@akfoerster.de>#
+2013-02-23  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtmenu.c: new file
+	akfavatar.h: adapted
+	lua/lua-avt.c (lavt_menu): adapted
+
+2013-02-11  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar-graphic.c (lgraphic_border3d):
 	no coordinates, always draws around the graphic

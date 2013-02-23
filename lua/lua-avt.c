@@ -1,6 +1,7 @@
 /*
  * Lua 5.2 binding for AKFAvatar
- * Copyright (c) 2008,2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2008,2009,2010,2011,2012,2013
+ * Andreas K. Foerster <info@akfoerster.de>
  *
  * required standards: C99, POSIX.1-2001
  *
@@ -2022,171 +2023,42 @@ lavt_launch (lua_State * L)
 // ---------------------------------------------------------
 // high level functions
 
-// three arrows up
-#define BACK L"\x2191 \x2191 \x2191"
-
-// three arrows down
-#define CONTINUE L"\x2193 \x2193 \x2193"
-
-#define MARK(S) \
-         do { \
-           avt_set_text_background_color (markcolor); \
-           avt_clear_line (); \
-           avt_move_x (mid_x-(sizeof(S)/sizeof(wchar_t)-1)/2); \
-           avt_say(S); \
-           avt_normal_text(); \
-         } while(0)
-
-// return a darker color
-static inline int
-darker (int color, int amount)
+static void
+show_menu_item (int nr, void *data)
 {
-  int r, g, b;
+  lua_State *L = data;
+  const char *item_desc;
+  size_t len;
 
-  r = avt_red (color);
-  g = avt_green (color);
-  b = avt_blue (color);
+  // table is in position 1 on the stack
+  lua_rawgeti (L, 1, nr);
 
-  r = r > amount ? r - amount : 0;
-  g = g > amount ? g - amount : 0;
-  b = b > amount ? b - amount : 0;
+  if (lua_istable (L, -1))
+    {
+      lua_rawgeti (L, -1, 1);
+      item_desc = lua_tolstring (L, -1, &len);
+      lua_pop (L, 1);		// pop value
+    }
+  else				// only string given
+    item_desc = lua_tolstring (L, -1, &len);
 
-  return avt_rgb (r, g, b);
+  if (item_desc)
+    avt_say_mb_len (item_desc, len);
+
+  lua_pop (L, 1);		// pop item from stack
 }
 
 static int
 lavt_menu (lua_State * L)
 {
-  long int item_nr;
-  const char *item_desc;
-  int markcolor;
-  int start_line, menu_start;
-  int max_idx, items, page_nr, items_per_page;
   int choice;
-  int mid_x;
-  size_t len;
-  bool old_auto_margin, old_newline_mode;
-  bool small;
-
   is_initialized ();
   luaL_checktype (L, 1, LUA_TTABLE);
 
-  avt_set_text_delay (0);
-  avt_normal_text ();
-  avt_lock_updates (true);
-
-  markcolor = darker (avt_get_balloon_color (), 0x22);
-
-  start_line = avt_where_y ();
-  if (start_line < 1)		// no balloon yet?
-    start_line = 1;
-
-  mid_x = avt_get_max_x () / 2;	// used by MARK()
-  max_idx = avt_get_max_y () - start_line + 1;
-
-  // check, if it's a short menu
-  lua_rawgeti (L, 1, max_idx + 1);
-  small = (bool) lua_isnil (L, -1);
-  lua_pop (L, 1);
-
-  item_desc = NULL;
-  items = 0;
-  item_nr = 0;
-  page_nr = 0;
-  items_per_page = small ? max_idx : max_idx - 2;
-
-  old_auto_margin = avt_get_auto_margin ();
-  avt_set_auto_margin (false);
-  old_newline_mode = avt_get_newline_mode ();
-  avt_newline_mode (true);
-
-  while (not item_nr)
-    {
-      avt_move_xy (1, start_line);
-      avt_clear_down ();
-
-      items = 0;
-
-      if (not small)
-	{
-	  if (page_nr > 0)
-	    MARK (BACK);
-	  else
-	    MARK (L"");
-
-	  items = 1;
-	}
-
-      for (int i = 1; i <= items_per_page; i++)
-	{
-	  lua_rawgeti (L, 1, i + (page_nr * items_per_page));
-	  if (lua_istable (L, -1))
-	    {
-	      lua_rawgeti (L, -1, 1);
-	      item_desc = lua_tolstring (L, -1, &len);
-	      lua_pop (L, 1);	// pop value
-	    }
-	  else			// only string given
-	    item_desc = lua_tolstring (L, -1, &len);
-
-	  if (item_desc)
-	    {
-	      if (not small or i > 1)
-		avt_new_line ();
-	      avt_say_mb_len (item_desc, len);
-	      items++;
-	    }
-
-	  lua_pop (L, 1);	// pop item from stack
-	  // from now on item_desc should not be dereferenced
-
-	  if (not item_desc)
-	    break;
-	}
-
-      // are there more items?
-      if (item_desc)
-	{
-	  lua_rawgeti (L, 1, (page_nr + 1) * items_per_page + 1);
-	  if (not lua_isnil (L, -1))
-	    {
-	      avt_new_line ();
-	      MARK (CONTINUE);
-	      items = max_idx;
-	    }
-	  lua_pop (L, 1);	// pop item description from stack
-	}
-
-      menu_start = start_line;
-      if (not small and page_nr == 0)
-	{
-	  menu_start++;
-	  items--;
-	}
-
-      avt_lock_updates (false);
-      check (avt_choice (&choice, menu_start, items, 0,
-			 (page_nr > 0), (not small and item_desc != NULL)));
-      avt_lock_updates (true);
-
-      if (page_nr == 0)
-	choice++;
-
-      if (not small and choice == 1 and page_nr > 0)
-	page_nr--;		// page back
-      else if (not small and choice == max_idx)
-	page_nr += (item_desc == NULL) ? 0 : 1;	// page forward
-      else
-	item_nr = choice - 1 + (page_nr * items_per_page);
-    }
-
-  avt_set_auto_margin (old_auto_margin);
-  avt_newline_mode (old_newline_mode);
-  avt_clear ();
-  avt_lock_updates (false);
+  check(avt_menu(lua_rawlen (L, 1), &choice, show_menu_item, L));
 
   // check item_nr
-  lua_rawgeti (L, 1, item_nr);
+  lua_rawgeti (L, 1, choice);
   if (lua_istable (L, -1))
     {
       int item, nresults, table;
@@ -2212,7 +2084,7 @@ lavt_menu (lua_State * L)
     }
   else				// not a table
     {
-      lua_pushinteger (L, item_nr);
+      lua_pushinteger (L, choice);
       return 1;
     }
 }

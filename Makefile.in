@@ -1,5 +1,6 @@
 # Makefile template for AKFAvatar
-# Copyright (C) 2007,2008,2009,2010,2011,2012 Andreas K. Foerster
+# Copyright (C) 2007,2008,2009,2010,2011,2012,2013
+# Andreas K. Foerster
 #
 # This Makefile template is free software; you have unlimited permission
 # to copy, distribute and modify it.
@@ -73,7 +74,7 @@ version.h: $(srcdir)/configure
 
 # when you use the static lib you have to link with SDL
 example: $(srcdir)/example.c libakfavatar.a
-	$(CC) -I$(srcdir) $(CFLAGS) -s -o $@ $(srcdir)/example.c \
+	$(CC) -I$(srcdir) $(CFLAGS) -o $@ $(srcdir)/example.c \
 	  libakfavatar.a $(SDL_LDFLAGS) $(LDFLAGS)
 
 # lua-akfavatar dynamically linked
@@ -112,10 +113,10 @@ avatar-linuxfb.lo: $(srcdir)/avatar-linuxfb.c $(srcdir)/akfavatar.h \
 
 libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o avatar-default.o \
 	        avtpalette.o font.o version.o avtdata.o audio-common.o \
-	        avttiming.o
+	        avttiming.o avtmenu.o
 	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o avatar.o audio-common.o \
 	             avtdata.o avatar-default.o avtpalette.o font.o version.o \
-	             avttiming.o
+	             avttiming.o avtmenu.o
 	-$(RANLIB) $@
 
 libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
@@ -128,12 +129,12 @@ libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
 
 libakfavatar.so: $(OBJAVATAR).lo $(OBJAUDIO).lo avatar.lo avatar-default.lo \
 	         avtpalette.lo font.lo version.lo avtdata.lo audio-common.lo \
-	         avttiming.lo
+	         avttiming.lo avtmenu.lo
 	$(CC) -shared \
 	      -Wl,-soname,$(SONAME) -o $(LIBNAME) -fPIC \
 	      $(OBJAVATAR).lo $(OBJAUDIO).lo avatar.lo avatar-default.lo \
 	      avtpalette.lo font.lo version.lo avtdata.lo audio-common.lo \
-	      avttiming.lo \
+	      avttiming.lo avtmenu.lo \
 	      $(SDL_LDFLAGS) $(LDFLAGS)
 	-ln -sf $(LIBNAME) $(SONAME)
 	-ln -sf $(LIBNAME) libakfavatar.so
@@ -151,6 +152,13 @@ $(srcdir)/alert.au: $(ALERT)
 alert.c: $(srcdir)/alert.au $(srcdir)/data2c.awk
 	$(AWK) -f $(srcdir)/data2c.awk -v name=avt_alert_data \
 	  $(srcdir)/alert.au > $@
+
+avtmenu.o: $(srcdir)/avtmenu.c $(srcdir)/akfavatar.h \
+	       $(srcdir)/avtinternals.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtmenu.c
+
+avtmenu.lo: $(srcdir)/avtmenu.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/avtmenu.c
 
 filechooser.o: $(srcdir)/filechooser.c $(srcdir)/akfavatar.h \
 	       $(srcdir)/avtaddons.h $(srcdir)/avtinternals.h
@@ -787,6 +795,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/audio-common.c \
 	   $(srcdir)/avtdata.h $(srcdir)/avtdata.c \
 	   $(srcdir)/avttiming.c \
+	   $(srcdir)/avtmenu.c \
 	   $(srcdir)/basedir.c \
 	   $(srcdir)/avtinternals.h $(srcdir)/avtpalette.c \
 	   $(srcdir)/avatar-default.c $(srcdir)/avtccio.c $(srcdir)/avtcwio.c \

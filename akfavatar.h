@@ -1,6 +1,7 @@
 /*
  * AKFAvatar library - for giving your programs a graphical Avatar
- * Copyright (c) 2007,2008,2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007,2008,2009,2010,2011,2012,2013
+ * Andreas K. Foerster <info@akfoerster.de>
  *
  * required standards: C99
  *
@@ -1095,7 +1096,9 @@ AVT_API avt_char avt_set_audio_end_key (avt_char key);
 /* these functions will likely change or being removed in later versions */
 /* so use them with care, don't rely on them */
 
-/* backend */
+AVT_API int avt_menu (int number, int *choice,
+	  void (*show) (int nr, void *data),
+	  void *data);
 
 /*
  * send a key when one of the buttons of the pointer (mouse) is pressed
