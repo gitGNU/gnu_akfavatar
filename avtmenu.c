@@ -102,63 +102,47 @@ avt_menu (int number, int *choice,
 
       items = 0;
 
-      if (not small)
+      if (page_nr > 0)
 	{
-	  if (page_nr > 0)
-	    MARK (BACK);
-	  else
-	    MARK (L"");
-
+	  MARK (BACK);
 	  items = 1;
 	}
 
-      for (int i = 1; i <= items_per_page; i++)
+      do
 	{
-	  if (not small or i > 1)
-	    avt_new_line ();
-	  show (i + (page_nr * items_per_page), data);
 	  items++;
-
-	  // end reached?
-	  if ((small and items == number)
-	      or items + (page_nr * items_per_page) > number)
-	    break;
+	  if (items > 1)
+	    avt_new_line ();
+	  show (items + (page_nr * items_per_page), data);
 	}
+      while (items <= items_per_page
+             and items + (page_nr * items_per_page) != number);
 
       // are there more items?
-      if (not small and items + (page_nr * items_per_page) <= number)
+      if (number > items + (page_nr * items_per_page))
 	{
 	  avt_new_line ();
 	  MARK (CONTINUE);
 	  items = max_idx;
 	}
 
-      int menu_start = start_line;
-      if (not small and page_nr == 0)
-	{
-	  menu_start++;
-	  items--;
-	}
-
       avt_lock_updates (false);
       int page_choice;		// choice for this page
-      if (AVT_NORMAL !=
-	  avt_choice (&page_choice, menu_start, items, 0,
+      if (avt_choice (&page_choice, start_line, items, AVT_KEY_NONE,
 		      page_nr > 0,
 		      not small and (items == max_idx or page_nr == 0)))
 	return AVT_FAILURE;
 
       avt_lock_updates (true);
 
-      if (page_nr == 0)
-	page_choice++;
-
-      if (not small and page_choice == 1 and page_nr > 0)
+      if (page_nr > 0 and page_choice == 1)
 	page_nr--;		// page back
       else if (not small and page_choice == max_idx)
 	page_nr++;		// page forward
+      else if (page_nr == 0)
+	result = page_choice;
       else
-	result = page_choice - 1 + (page_nr * items_per_page);
+	result = page_choice + (page_nr * items_per_page);
     }
 
   avt_set_auto_margin (old_auto_margin);
