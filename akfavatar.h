@@ -1096,9 +1096,9 @@ AVT_API avt_char avt_set_audio_end_key (avt_char key);
 /* these functions will likely change or being removed in later versions */
 /* so use them with care, don't rely on them */
 
-AVT_API int avt_menu (int number, int *choice,
-	  void (*show) (int nr, void *data),
-	  void *data);
+AVT_API int avt_menu (int *choice, int items,
+                      void (*show) (int nr, void *data),
+                      void *data);
 
 /*
  * send a key when one of the buttons of the pointer (mouse) is pressed

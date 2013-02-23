@@ -58,7 +58,7 @@ avt_darker (avt_color color, int amount)
 }
 
 extern int
-avt_menu (int number, int *choice,
+avt_menu (int *choice, int number,
 	  void (*show) (int nr, void *data), void *data)
 {
   // check required parameters

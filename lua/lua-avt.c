@@ -2055,7 +2055,7 @@ lavt_menu (lua_State * L)
   is_initialized ();
   luaL_checktype (L, 1, LUA_TTABLE);
 
-  check(avt_menu(lua_rawlen (L, 1), &choice, show_menu_item, L));
+  check(avt_menu(&choice, lua_rawlen (L, 1), show_menu_item, L));
 
   // check item_nr
   lua_rawgeti (L, 1, choice);
