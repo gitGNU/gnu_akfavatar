@@ -258,8 +258,6 @@ int _avt_STATUS;
 
 // forward declaration
 static void avt_drawchar (avt_char ch, avt_graphic * surface);
-static inline int avt_darker (avt_color color, int amount);
-static inline int avt_brighter (avt_color color, int amount);
 static void avt_darker_area (int x, int y, int width, int height, int amount);
 //-----------------------------------------------------------------------------
 
@@ -2213,32 +2211,6 @@ avt_show_avatar (void)
       avt_no_textfield ();
       avt.avatar_visible = true;
     }
-}
-
-// return a darker color
-static inline int
-avt_darker (avt_color color, int amount)
-{
-  int r, g, b;
-
-  r = avt_red (color);
-  g = avt_green (color);
-  b = avt_blue (color);
-
-  r = r > amount ? r - amount : 0;
-  g = g > amount ? g - amount : 0;
-  b = b > amount ? b - amount : 0;
-
-  return avt_rgb (r, g, b);
-}
-
-// return a brighter color
-static inline int
-avt_brighter (avt_color color, int amount)
-{
-  return avt_rgb (avt_min (avt_red (color) + amount, 255),
-		  avt_min (avt_green (color) + amount, 255),
-		  avt_min (avt_blue (color) + amount, 255));
 }
 
 // secure

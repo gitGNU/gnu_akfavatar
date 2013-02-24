@@ -230,23 +230,6 @@ get_directory (struct dirent ***list)
   return entries;
 }
 
-// return a darker color
-static inline avt_color
-avt_darker (avt_color color, int amount)
-{
-  int r, g, b;
-
-  r = avt_red (color);
-  g = avt_green (color);
-  b = avt_blue (color);
-
-  r = r > amount ? r - amount : 0;
-  g = g > amount ? g - amount : 0;
-  b = b > amount ? b - amount : 0;
-
-  return avt_rgb (r, g, b);
-}
-
 // show entry nr
 static void
 show (int nr, void *data)

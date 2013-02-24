@@ -170,6 +170,35 @@ FILE *open_config_file (const char *name, bool writing);
 /* mingw/askdrive.c */
 int avta_ask_drive (int max_idx);
 
+/* inline functions */
+
+// return a darker color
+static inline avt_color
+avt_darker (avt_color color, int amount)
+{
+  int r, g, b;
+
+  r = avt_red (color);
+  g = avt_green (color);
+  b = avt_blue (color);
+
+  r = r > amount ? r - amount : 0;
+  g = g > amount ? g - amount : 0;
+  b = b > amount ? b - amount : 0;
+
+  return avt_rgb (r, g, b);
+}
+
+// return a brighter color
+static inline avt_color
+avt_brighter (avt_color color, int amount)
+{
+  return avt_rgb (avt_min (avt_red (color) + amount, 255),
+		  avt_min (avt_green (color) + amount, 255),
+		  avt_min (avt_blue (color) + amount, 255));
+}
+
+
 #pragma GCC visibility pop
 
 #endif /* AVTINTERNALS_H */

@@ -888,32 +888,6 @@ lgraphic_rectangle (lua_State * L)
   return 0;
 }
 
-// return a darker color
-static inline int
-avt_darker (avt_color color, unsigned int amount)
-{
-  avt_color r, g, b;
-
-  r = avt_red (color);
-  g = avt_green (color);
-  b = avt_blue (color);
-
-  r = r > amount ? r - amount : 0;
-  g = g > amount ? g - amount : 0;
-  b = b > amount ? b - amount : 0;
-
-  return avt_rgb (r, g, b);
-}
-
-// return a brighter color
-static inline int
-avt_brighter (avt_color color, unsigned int amount)
-{
-  return avt_rgb (avt_min (avt_red (color) + amount, 0xFF),
-		  avt_min (avt_green (color) + amount, 0xFF),
-		  avt_min (avt_blue (color) + amount, 0xFF));
-}
-
 #define BORDER_3D_INTENSITY 0x37
 
 // gr:border3d (pressed)
