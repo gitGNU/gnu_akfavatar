@@ -2024,14 +2024,13 @@ lavt_launch (lua_State * L)
 // high level functions
 
 static void
-show_menu_item (int nr, void *data)
+show_menu_item (int nr, void *L)
 {
-  lua_State *L = data;
   const char *item_desc;
   size_t len;
 
-  // table is in position 1 on the stack
-  lua_rawgeti (L, 1, nr);
+  // get nr from table on top of the stack
+  lua_rawgeti (L, -1, nr);
 
   if (lua_istable (L, -1))
     {
@@ -2045,7 +2044,8 @@ show_menu_item (int nr, void *data)
   if (item_desc)
     avt_say_mb_len (item_desc, len);
 
-  lua_pop (L, 1);		// pop item from stack
+  // pop item from stack
+  lua_pop (L, 1);
 }
 
 static int
@@ -2055,7 +2055,7 @@ lavt_menu (lua_State * L)
   is_initialized ();
   luaL_checktype (L, 1, LUA_TTABLE);
 
-  check(avt_menu(&choice, lua_rawlen (L, 1), show_menu_item, L));
+  check (avt_menu (&choice, lua_rawlen (L, 1), show_menu_item, L));
 
   // check item_nr
   lua_rawgeti (L, 1, choice);
