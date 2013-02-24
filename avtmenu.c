@@ -89,9 +89,7 @@ avt_menu (int *choice, int items,
   int items_per_page = small ? max_idx : max_idx - 2;
 
   bool old_auto_margin = avt_get_auto_margin ();
-  bool old_newline_mode = avt_get_newline_mode ();
   avt_set_auto_margin (false);
-  avt_newline_mode (true);
 
   while (not result)
     {
@@ -146,7 +144,6 @@ avt_menu (int *choice, int items,
     }
 
   avt_set_auto_margin (old_auto_margin);
-  avt_newline_mode (old_newline_mode);
   avt_clear ();
   avt_lock_updates (false);
 
