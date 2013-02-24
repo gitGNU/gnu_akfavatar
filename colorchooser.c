@@ -1,6 +1,7 @@
 /*
  * colorchooser - colorchooser dialog for AKFAvatar
- * Copyright (c) 2009,2010,2012 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2009,2010,2012,2013
+ * Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -19,47 +20,31 @@
  */
 
 #include "akfavatar.h"
-#include <stdio.h>		// for sprintf
+#include <stdio.h>		// for snprintf
+#include <wchar.h>
 #include <iso646.h>
 
-// House symbol
-#define HOME L"\x2302"
-
-// Keyboard symbol (not int the 7x14 font)
-// #define KEYBOARD L" \x2328 "
+#define WIDTH 35
 
 // Manual input
 #define MANUAL L" > "
 
-// three arrows up
-#define BACK L"\x2191 \x2191 \x2191"
-
-// three arrows down
-#define CONTINUE L"\x2193 \x2193 \x2193"
-
 // entries or marks that are not colors
-#define marked_text(S) \
-         do { avt_set_text_background_color (0xDDDDDD); \
-         avt_say (S); avt_normal_text (); } while(0)
-
-#define marked_line(S) \
-         do { \
-           avt_set_text_background_color (0xDDDDDD); \
-           avt_clear_line (); \
-           avt_move_x (mid_x-(sizeof(S)/sizeof(wchar_t)-1)/2); \
-           avt_say(S); \
-           avt_normal_text(); \
-         } while(0)
-
+static inline void
+marked_text (const wchar_t * s)
+{
+  avt_set_text_background_color (0xDDDDDD);
+  avt_say (s);
+  avt_normal_text ();
+}
 
 static char *
 manual_entry (void)
 {
-  static char manual_color[80];	// must be static!
+  static char manual_color[WIDTH + 1 - 2];	// must be static!
 
   avt_set_balloon_height (1);
   avt_say (L"> ");
-  avt_lock_updates (false);
 
   if (avt_ask_mb (manual_color, sizeof (manual_color)) != AVT_NORMAL)
     return NULL;
@@ -71,109 +56,53 @@ manual_entry (void)
     return NULL;
 }
 
+static void
+show_color (int nr, void *data)
+{
+  (void) data;
+
+  if (nr == 1)
+    marked_text (MANUAL);
+  else
+    {
+      const char *color_name;
+      int colornr;
+
+      // nr - 2, because manual entry and 0-based
+      color_name = avt_palette (nr - 2, &colornr);
+
+      if (color_name)
+	{
+	  // show colored spaces
+	  avt_set_text_background_color (colornr);
+	  avt_say (L"  ");
+	  avt_set_text_background_ballooncolor ();
+	  avt_forward ();
+
+	  char desc[AVT_LINELENGTH + 1];
+	  snprintf (desc, sizeof (desc), "#%06X: %s\n", colornr, color_name);
+
+	  avt_say_mb (desc);
+	}
+    }
+}
+
 extern const char *
 avta_color_selection (void)
 {
-  const char *result, *color_name;
-  char desc[AVT_LINELENGTH];
-  int colornr;
-  int i;
-  int mid_x;
-  int max_idx, items, offset, page_nr;
+  const char *result;
   int choice;
-  bool old_auto_margin;
-
-  avt_set_text_delay (0);
-  avt_normal_text ();
-  avt_lock_updates (true);
 
   // set maximum size
-  avt_set_balloon_size (0, 35);
+  avt_set_balloon_size (0, WIDTH);
 
-  result = color_name = NULL;
-  max_idx = avt_get_max_y ();
-  mid_x = avt_get_max_x () / 2;	// for marked_line()
+  if (avt_menu (&choice, avt_palette_size () + 1, show_color, NULL))
+    return NULL;
 
-  page_nr = 0;
-
-  old_auto_margin = avt_get_auto_margin ();
-  avt_set_auto_margin (false);
-
-  while (not result)
-    {
-      avt_clear ();
-
-      if (page_nr > 0)
-	marked_line (BACK);
-      else
-	marked_line (HOME);
-
-      avt_new_line ();
-      items = offset = 1;
-
-      if (page_nr == 0)
-	{
-	  marked_text (MANUAL);
-	  avt_new_line ();
-	  items++;
-	  offset++;
-	}
-
-      for (i = 0; i < max_idx - offset - 1; i++)
-	{
-	  color_name =
-	    avt_palette (i + (page_nr * (max_idx - offset)), &colornr);
-
-	  if (color_name)
-	    {
-	      // show colored spaces
-	      avt_set_text_background_color (colornr);
-	      avt_say (L"  ");
-	      avt_set_text_background_ballooncolor ();
-	      avt_forward ();
-
-	      snprintf (desc, sizeof (desc), "#%06X: %s\n",
-			colornr, color_name);
-
-	      // show description
-	      avt_say_mb (desc);
-	      items++;
-	    }
-	}
-
-      if (color_name != NULL)
-	{
-	  marked_line (CONTINUE);
-	  items = max_idx;
-	}
-
-      avt_lock_updates (false);
-      if (avt_choice (&choice, 1, items, 0,
-		      (page_nr > 0), (color_name != NULL)))
-	break;
-      else
-	avt_lock_updates (true);
-
-      if (choice == 1 and page_nr > 0)
-	page_nr--;		// page back
-      else if (choice == 1)
-	break;			// home
-      else if (choice == max_idx)
-	page_nr += (color_name == NULL) ? 0 : 1;	// page forward
-      else if (page_nr == 0 and choice == 2)
-	{
-	  result = (const char *) manual_entry ();
-	  break;
-	}
-      else
-	result =
-	  avt_palette (choice - 1 - offset
-		       + (page_nr * (max_idx - offset)), NULL);
-    }
-
-  avt_set_auto_margin (old_auto_margin);
-  avt_clear ();
-  avt_lock_updates (false);
+  if (choice == 1)
+    result = (const char *) manual_entry ();
+  else
+    result = avt_palette (choice - 2, NULL);
 
   return result;
 }

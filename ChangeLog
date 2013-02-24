@@ -2,6 +2,8 @@
 
 	* akfavatar.h, avtpalette.c (avt_palette_size): new function
 
+	* colorchooser.c: use avt_menu
+
 2013-02-23  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtmenu.c: new file
