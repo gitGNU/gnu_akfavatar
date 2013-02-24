@@ -144,7 +144,6 @@ avt_menu (int *choice, int items,
     }
 
   avt_set_auto_margin (old_auto_margin);
-  avt_clear ();
   avt_lock_updates (false);
 
   if (choice)

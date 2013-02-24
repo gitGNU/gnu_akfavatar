@@ -4,6 +4,8 @@
 
 	* colorchooser.c: use avt_menu
 
+	* filechooser.c: use avt_menu
+
 2013-02-23  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtmenu.c: new file
