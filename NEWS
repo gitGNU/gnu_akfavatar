@@ -3,6 +3,9 @@
   - avoid recursive calls of the bell
   - name sign with 3d effect
 
+  C-API changes:
+    - new functions: avt_menu, avt_palette_size
+
   Lua-API changes:
     - Module "akfavatar-graphic"
       - new methods: gr:border3d

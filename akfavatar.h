@@ -522,6 +522,9 @@ AVT_API int avt_colorname (const char *name);
  */
 AVT_API const char *avt_palette (int entry, int *color);
 
+/* get the size of the palette (number of entries) */
+AVT_API size_t avt_palette_size (void);
+
 /*
  * define the background color
  * can and should be called before avt_start

@@ -27,6 +27,12 @@
 #include <strings.h>		// strcasecmp
 #include <iso646.h>
 
+extern size_t
+avt_palette_size (void)
+{
+  return sizeof (avt_colors) / sizeof (avt_colors[0]);
+}
+
 extern int
 avt_colorname (const char *name)
 {
