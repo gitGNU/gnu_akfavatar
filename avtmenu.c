@@ -58,11 +58,11 @@ avt_darker (avt_color color, int amount)
 }
 
 extern int
-avt_menu (int *choice, int number,
+avt_menu (int *choice, int items,
 	  void (*show) (int nr, void *data), void *data)
 {
   // check required parameters
-  if (number <= 0 or not show)
+  if (items <= 0 or not show)
     return AVT_FAILURE;
 
   avt_set_text_delay (0);
@@ -79,7 +79,7 @@ avt_menu (int *choice, int number,
   int max_idx = avt_get_max_y () - start_line + 1;
 
   // check if it's a short menu
-  bool small = (number <= max_idx);
+  bool small = (items <= max_idx);
 
   if (choice)
     *choice = 0;
@@ -95,42 +95,42 @@ avt_menu (int *choice, int number,
 
   while (not result)
     {
-      int items;
+      int page_items;
 
       avt_move_xy (1, start_line);
       avt_clear_down ();
 
-      items = 0;
+      page_items = 0;
 
       if (page_nr > 0)
 	{
 	  MARK (BACK);
-	  items = 1;
+	  page_items = 1;
 	}
 
       do
 	{
-	  items++;
-	  if (items > 1)
-	    avt_new_line ();
-	  show (items + (page_nr * items_per_page), data);
+	  avt_move_xy (1, start_line + page_items);
+	  avt_clear_line ();
+	  page_items++;
+	  show (page_items + (page_nr * items_per_page), data);
 	}
-      while (items <= items_per_page
-             and items + (page_nr * items_per_page) != number);
+      while (page_items <= items_per_page
+	     and page_items + (page_nr * items_per_page) != items);
 
       // are there more items?
-      if (number > items + (page_nr * items_per_page))
+      if (items > page_items + (page_nr * items_per_page))
 	{
-	  avt_new_line ();
+	  avt_move_xy (1, start_line + page_items);
 	  MARK (CONTINUE);
-	  items = max_idx;
+	  page_items = max_idx;
 	}
 
       avt_lock_updates (false);
       int page_choice;		// choice for this page
-      if (avt_choice (&page_choice, start_line, items, AVT_KEY_NONE,
+      if (avt_choice (&page_choice, start_line, page_items, AVT_KEY_NONE,
 		      page_nr > 0,
-		      not small and (items == max_idx or page_nr == 0)))
+		      not small and (page_items == max_idx or page_nr == 0)))
 	return AVT_FAILURE;
 
       avt_lock_updates (true);
