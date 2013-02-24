@@ -86,6 +86,7 @@ EXPORTS
     avt_mb_encode
     avt_mb_encode_buffer
     avt_mb_encoding
+    avt_menu
     avt_move_in
     avt_move_out
     avt_move_x
@@ -99,6 +100,7 @@ EXPORTS
     avt_pager
     avt_pager_mb
     avt_palette
+    avt_palette_size
     avt_pause_audio
     avt_play_audio
     avt_prepare_raw_audio
