@@ -20,6 +20,7 @@
  */
 
 #include "akfavatar.h"
+#include "avtinternals.h"
 #include <stdio.h>		// for snprintf
 #include <wchar.h>
 #include <iso646.h>
@@ -28,15 +29,6 @@
 
 // Manual input
 #define MANUAL L" > "
-
-// entries or marks that are not colors
-static inline void
-marked_text (const wchar_t * s)
-{
-  avt_set_text_background_color (0xDDDDDD);
-  avt_say (s);
-  avt_normal_text ();
-}
 
 static char *
 manual_entry (void)
@@ -59,10 +51,14 @@ manual_entry (void)
 static void
 show_color (int nr, void *data)
 {
-  (void) data;
+  avt_color *darker = data;
 
   if (nr == 1)
-    marked_text (MANUAL);
+    {
+      avt_set_text_background_color (*darker);
+      avt_say (MANUAL);
+      avt_normal_text ();
+    }
   else
     {
       const char *color_name;
@@ -92,11 +88,14 @@ avta_color_selection (void)
 {
   const char *result;
   int choice;
+  avt_color darker;
+
+  darker = avt_darker (avt_get_balloon_color (), 0x22);
 
   // set maximum size
   avt_set_balloon_size (0, WIDTH);
 
-  if (avt_menu (&choice, avt_palette_size () + 1, show_color, NULL))
+  if (avt_menu (&choice, avt_palette_size () + 1, show_color, &darker))
     return NULL;
 
   if (choice == 1)
