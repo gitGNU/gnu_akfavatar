@@ -900,18 +900,32 @@ AVT_API bool avt_decide (void);
 AVT_API int avt_navigate (const char *buttons);
 
 /*
- * avt_choice - use for menus
- * result:        result code, first item is 1
+ * avt_choice - use for short menus
+ * result:        result item, first item is 1
  * start_line:    line, where choice begins
  * items:         number of items/lines
  * key:           first key, like '1' or 'a', 0 for no keys
  * back, forward: whether first/last entry is a back/forward function
  *
- * returns AVT_ERROR and sets _avt_STATUS when it cannot get enough memory
+ * returns AVT_FAILURE or AVT_ERROR on error
  */
 AVT_API int
 avt_choice (int *result, int start_line, int items, int key,
             bool back, bool forward);
+
+/*
+ * avt_menu - use for long menus
+ * result:        result item, first item is 1
+ * items:         number of items/lines
+ * show:          function for showing an entry with given nr in one line
+ * data:          data passed to the function show (may be NULL)
+ *
+ * returns AVT_FAILURE or AVT_ERROR on error
+ */
+AVT_API int
+avt_menu (int *result, int items,
+          void (*show) (int nr, void *data),
+          void *data);
 
 /*
  * show longer text with a text-viewer application
@@ -1098,10 +1112,6 @@ AVT_API avt_char avt_set_audio_end_key (avt_char key);
 /* experimental */
 /* these functions will likely change or being removed in later versions */
 /* so use them with care, don't rely on them */
-
-AVT_API int avt_menu (int *choice, int items,
-                      void (*show) (int nr, void *data),
-                      void *data);
 
 /*
  * send a key when one of the buttons of the pointer (mouse) is pressed
