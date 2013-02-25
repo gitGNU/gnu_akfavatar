@@ -117,10 +117,10 @@ filter_dirent (FILTER_DIRENT_T * d)
   // allow nothing that starts with a dot
   if (d == NULL or d->d_name[0] == '.')
     return false;
-  else if (is_dirent_directory (d))
+  else if (not custom_filter or is_dirent_directory (d))
     return true;
   else
-    return (custom_filter == NULL or (*custom_filter) (d->d_name));
+    return custom_filter (d->d_name);
 }
 
 #else // _WIN32
@@ -129,14 +129,13 @@ static int
 filter_dirent (const struct dirent *d)
 {
   // don't allow "." and ".." and apply custom_filter
-  if (d == NULL)
+  if (d == NULL or strcmp (".", d->d_name) == 0 or strcmp ("..", d->d_name) ==
+      0)
     return false;
-  else if (strcmp (".", d->d_name) == 0 or strcmp ("..", d->d_name) == 0)
-    return false;
-  else if (is_dirent_directory (d))
+  else if (not custom_filter or is_dirent_directory (d))
     return true;
   else
-    return (custom_filter == NULL or (*custom_filter) (d->d_name));
+    return custom_filter (d->d_name);
 }
 
 static inline bool
@@ -171,12 +170,12 @@ get_directory (struct dirent ***list)
   entries = max_entries = 0;
 
   dir = opendir (".");
-  if (dir == NULL)
+  if (not dir)
     return -1;
 
   while ((d = readdir (dir)))
     {
-      // need mor memory?
+      // need more memory?
       if (entries >= max_entries)
 	{
 	  struct dirent **tmp;
@@ -285,11 +284,19 @@ avta_file_selection (char *filename, int filename_size, avta_filter filter)
 
   rcode = -1;
 
-  if (filename == NULL or filename_size <= 0)
+  if (not filename or filename_size <= 0)
     return -1;
 
   memset (filename, 0, filename_size);
   markcolor = avt_darker (avt_get_balloon_color (), 0x22);
+
+  strncpy (old_encoding, avt_get_mb_encoding (), sizeof (old_encoding));
+  old_encoding[sizeof (old_encoding) - 1] = '\0';
+
+  // set the systems default encoding
+  // this also catches earlier errors
+  if (avt_mb_encoding (NULL) != AVT_NORMAL)
+    return -1;
 
   // don't show the balloon
   avt_show_avatar ();
@@ -300,26 +307,18 @@ avta_file_selection (char *filename, int filename_size, avta_filter filter)
   custom_filter = filter;
   namelist = NULL;
 
-  strncpy (old_encoding, avt_get_mb_encoding (), sizeof (old_encoding));
-  old_encoding[sizeof (old_encoding) - 1] = '\0';
-
-  // set the systems default encoding
-  // this also catches earlier errors
-  if (avt_mb_encoding (NULL) != AVT_NORMAL)
-    goto quit;
-
   while (rcode < 0)
     {
       entries = get_directory (&namelist);
       if (entries < 0)
-	goto quit;
+	break;
 
       avt_move_xy (1, 1);
       // entry 1 is directory name, entry 2 is parent directory
       if (avt_menu (&choice, entries + 2, show, namelist))
-	goto quit;
+	break;
 
-      if (choice == 1)		// path
+      if (1 == choice)		// path
 	{
 	  char dirname[AVT_LINELENGTH + 1];
 
@@ -331,30 +330,29 @@ avta_file_selection (char *filename, int filename_size, avta_filter filter)
 	  if (*dirname)
 	    chdir (dirname);
 	}
-      else if (choice == 2)	// parent directory
+      else if (2 == choice)	// parent directory
 	{
 	  if (HAS_DRIVE_LETTERS and is_root_dir ())	// ask for drive?
 	    {
 	      if (avta_ask_drive (avt_get_max_y ()) != AVT_NORMAL)
-		goto quit;
+		break;
 
 	      avt_set_balloon_size (0, 0);
 	    }
 	  else
 	    chdir ("..");
 	}
-      else if (strlen (namelist[choice - 3]->d_name) < (size_t) filename_size)
+      else			// normal entry
 	{
-	  strcpy (filename, namelist[choice - 3]->d_name);
+	  struct dirent *d = namelist[choice - 3];
 
-	  // directory chosen?
-	  if (is_directory (filename))
+	  if (is_dirent_directory (d))
+	    chdir (d->d_name);
+	  else if (strlen (d->d_name) < (size_t) filename_size)
 	    {
-	      chdir (filename);
-	      memset (filename, 0, filename_size);
+	      strcpy (filename, d->d_name);
+	      rcode = 0;	// found
 	    }
-	  else
-	    rcode = 0;		// found
 	}
 
       // free namelist
@@ -364,7 +362,6 @@ avta_file_selection (char *filename, int filename_size, avta_filter filter)
       namelist = NULL;
     }
 
-quit:
   if (namelist)
     {
       while (entries--)
