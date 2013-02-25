@@ -4512,7 +4512,8 @@ avt_choice (int *result, int start_line, int items, int key,
   if (_avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
-  if (not avt.screen or start_line <= 0 or items <= 0)
+  if (not avt.screen or start_line <= 0 or items <= 0
+      or start_line + items - 1 > avt.balloonheight)
     return AVT_FAILURE;
 
   avt_graphic *plain_menu;

@@ -1,3 +1,7 @@
+2013-02-25  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_choice): fix: check values
+
 2013-02-24  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avtpalette.c (avt_palette_size): new function
