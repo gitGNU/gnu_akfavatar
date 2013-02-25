@@ -4502,114 +4502,125 @@ extern int
 avt_choice (int *result, int start_line, int items, int key,
 	    bool back, bool forward)
 {
-  if (avt.screen and _avt_STATUS == AVT_NORMAL)
+  int res;			// shadow for result
+
+  res = -1;
+
+  if (result)
+    *result = -1;
+
+  if (_avt_STATUS != AVT_NORMAL)
+    return _avt_STATUS;
+
+  if (not avt.screen or start_line <= 0 or items <= 0)
+    return AVT_FAILURE;
+
+  avt_graphic *plain_menu;
+  plain_menu = avt_get_area (avt.viewport.x, avt.viewport.y,
+			     avt.viewport.width, avt.viewport.height);
+
+  int end_line = start_line + items - 1;
+
+  int last_key;
+  if (key)
+    last_key = key + items - 1;
+  else
+    last_key = AVT_KEY_NONE;
+
+  int line_nr = -1;
+  int old_line = 0;
+
+  avt_clear_keys ();
+  avt_set_pointer_motion_key (0xE902);
+  avt_set_pointer_buttons_key (AVT_KEY_ENTER);
+
+  // check pointer position
+  int x, y;
+  avt_get_pointer_position (&x, &y);
+
+  if (x >= avt.viewport.x
+      and x <= avt.viewport.x + avt.viewport.width
+      and y >= avt.viewport.y + ((start_line - 1) * fontheight)
+      and y < avt.viewport.y + (end_line * fontheight))
     {
-      avt_graphic *plain_menu;
-      plain_menu = avt_get_area (avt.viewport.x, avt.viewport.y,
-				 avt.viewport.width, avt.viewport.height);
-
-      int end_line = start_line + items - 1;
-
-      int last_key;
-      if (key)
-	last_key = key + items - 1;
-      else
-	last_key = AVT_KEY_NONE;
-
-      int line_nr = -1;
-      int old_line = 0;
-      *result = -1;
-
-      avt_clear_keys ();
-      avt_set_pointer_motion_key (0xE902);
-      avt_set_pointer_buttons_key (AVT_KEY_ENTER);
-
-      // check pointer position
-      int x, y;
-      avt_get_pointer_position (&x, &y);
-
-      if (x >= avt.viewport.x
-	  and x <= avt.viewport.x + avt.viewport.width
-	  and y >= avt.viewport.y + ((start_line - 1) * fontheight)
-	  and y < avt.viewport.y + (end_line * fontheight))
-	{
-	  line_nr = ((y - avt.viewport.y) / fontheight) + 1;
-	  update_menu_bar (start_line, end_line, line_nr, old_line,
-			   plain_menu);
-	  old_line = line_nr;
-	}
-
-      while ((*result == -1) and (_avt_STATUS == AVT_NORMAL))
-	{
-	  avt_char ch;
-
-	  ch = avt_get_key ();
-
-	  if (key and (ch >= key) and (ch <= last_key))
-	    *result = (int) (ch - key + 1);
-	  else if (AVT_KEY_DOWN == ch)
-	    {
-	      if (line_nr != end_line)
-		{
-		  if (line_nr < start_line or line_nr > end_line)
-		    line_nr = start_line;
-		  else
-		    line_nr++;
-
-		  update_menu_bar (start_line, end_line, line_nr,
-				   old_line, plain_menu);
-		  old_line = line_nr;
-		}
-	      else if (forward)
-		*result = items;
-	    }
-	  else if (AVT_KEY_UP == ch)
-	    {
-	      if (line_nr != start_line)
-		{
-		  if (line_nr < start_line or line_nr > end_line)
-		    line_nr = end_line;
-		  else
-		    line_nr--;
-		  update_menu_bar (start_line, end_line, line_nr,
-				   old_line, plain_menu);
-		  old_line = line_nr;
-		}
-	      else if (back)
-		*result = 1;
-	    }
-	  else if (back and (AVT_KEY_PAGEUP == ch))
-	    *result = 1;
-	  else if (forward and (AVT_KEY_PAGEDOWN == ch))
-	    *result = items;
-	  else if ((AVT_KEY_ENTER == ch or AVT_KEY_RIGHT == ch)
-		   and line_nr >= start_line and line_nr <= end_line)
-	    *result = line_nr - start_line + 1;
-	  else if (0xE902 == ch)	// mouse motion
-	    {
-	      avt_get_pointer_position (&x, &y);
-
-	      if (x >= avt.viewport.x
-		  and x <= avt.viewport.x + avt.viewport.width
-		  and y >= avt.viewport.y + ((start_line - 1) * fontheight)
-		  and y < avt.viewport.y + (end_line * fontheight))
-		line_nr = ((y - avt.viewport.y) / fontheight) + 1;
-
-	      if (line_nr != old_line)
-		{
-		  update_menu_bar (start_line, end_line, line_nr, old_line,
-				   plain_menu);
-		  old_line = line_nr;
-		}
-	    }
-	}			// while
-
-      avt_set_pointer_motion_key (0);
-      avt_set_pointer_buttons_key (0);
-      avt_clear_keys ();
-
-      avt_free_graphic (plain_menu);
+      line_nr = ((y - avt.viewport.y) / fontheight) + 1;
+      update_menu_bar (start_line, end_line, line_nr, old_line, plain_menu);
+      old_line = line_nr;
     }
+
+  while (res == -1 and _avt_STATUS == AVT_NORMAL)
+    {
+      avt_char ch;
+
+      ch = avt_get_key ();
+
+      if (key and (ch >= key) and (ch <= last_key))
+	res = (int) (ch - key + 1);
+      else if (AVT_KEY_DOWN == ch)
+	{
+	  if (line_nr != end_line)
+	    {
+	      if (line_nr < start_line or line_nr > end_line)
+		line_nr = start_line;
+	      else
+		line_nr++;
+
+	      update_menu_bar (start_line, end_line, line_nr,
+			       old_line, plain_menu);
+	      old_line = line_nr;
+	    }
+	  else if (forward)
+	    res = items;
+	}
+      else if (AVT_KEY_UP == ch)
+	{
+	  if (line_nr != start_line)
+	    {
+	      if (line_nr < start_line or line_nr > end_line)
+		line_nr = end_line;
+	      else
+		line_nr--;
+	      update_menu_bar (start_line, end_line, line_nr,
+			       old_line, plain_menu);
+	      old_line = line_nr;
+	    }
+	  else if (back)
+	    res = 1;
+	}
+      else if (back and (AVT_KEY_PAGEUP == ch))
+	res = 1;
+      else if (forward and (AVT_KEY_PAGEDOWN == ch))
+	res = items;
+      else if ((AVT_KEY_ENTER == ch or AVT_KEY_RIGHT == ch)
+	       and line_nr >= start_line and line_nr <= end_line)
+	res = line_nr - start_line + 1;
+      else if (0xE902 == ch)	// mouse motion
+	{
+	  avt_get_pointer_position (&x, &y);
+
+	  if (x >= avt.viewport.x
+	      and x <= avt.viewport.x + avt.viewport.width
+	      and y >= avt.viewport.y + ((start_line - 1) * fontheight)
+	      and y < avt.viewport.y + (end_line * fontheight))
+	    line_nr = ((y - avt.viewport.y) / fontheight) + 1;
+
+	  if (line_nr != old_line)
+	    {
+	      update_menu_bar (start_line, end_line, line_nr, old_line,
+			       plain_menu);
+	      old_line = line_nr;
+	    }
+	}
+    }				// while
+
+  avt_set_pointer_motion_key (AVT_KEY_NONE);
+  avt_set_pointer_buttons_key (AVT_KEY_NONE);
+  avt_clear_keys ();
+
+  avt_free_graphic (plain_menu);
+
+  if (result)
+    *result = res;
 
   return _avt_STATUS;
 }
