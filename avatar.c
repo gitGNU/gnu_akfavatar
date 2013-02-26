@@ -363,6 +363,11 @@ avt_data_to_graphic (void *data, short width, short height)
 {
   avt_graphic *gr;
 
+  if (width <= 0 or height <= 0)
+    return NULL;
+
+  // data may be NULL (see avt_new_graphic)
+
   gr = (avt_graphic *) malloc (sizeof (*gr));
 
   if (gr)
@@ -1428,23 +1433,21 @@ avt_load_image_xbm_data (avt_data * src, avt_color color)
   line[sizeof (line) - 1] = '\0';
 
   // search for width and height
-  {
-    char *p;
-    p = strstr (line, "_width ");
-    if (p)
-      width = atoi (p + 7);
-    else
-      error = end = true;
+  char *p;
+  p = strstr (line, "_width ");
+  if (p)
+    width = atoi (p + 7);
+  else
+    error = end = true;
 
-    p = strstr (line, "_height ");
-    if (p)
-      height = atoi (p + 8);
-    else
-      error = end = true;
+  p = strstr (line, "_height ");
+  if (p)
+    height = atoi (p + 8);
+  else
+    error = end = true;
 
-    if (strstr (line, " short ") != NULL)
-      X10 = true;
-  }
+  if (strstr (line, " short ") != NULL)
+    X10 = true;
 
   if (error)
     goto done;
@@ -3466,7 +3469,8 @@ avt_clear_tab_stops (void)
 extern void
 avt_set_tab (int x, bool onoff)
 {
-  avt.tab_stops[x - 1] = onoff;
+  if (x > 0 and x <= AVT_LINELENGTH)
+    avt.tab_stops[x - 1] = onoff;
 }
 
 // advance to next tabstop
@@ -3474,28 +3478,31 @@ extern void
 avt_next_tab (void)
 {
   int x;
-  int i;
 
   // here we count zero based
   x = avt_where_x () - 1;
 
   if (avt.textdir_rtl)		// right to left
     {
-      for (i = x; i >= 0; i--)
+      for (int i = x; i >= 0; i--)
 	{
 	  if (avt.tab_stops[i])
-	    break;
+	    {
+	      avt_move_x (i);
+	      break;
+	    }
 	}
-      avt_move_x (i);
     }
   else				// left to right
     {
-      for (i = x + 1; i < AVT_LINELENGTH; i++)
+      for (int i = x + 1; i < AVT_LINELENGTH; i++)
 	{
 	  if (avt.tab_stops[i])
-	    break;
+	    {
+	      avt_move_x (i + 1);
+	      break;
+	    }
 	}
-      avt_move_x (i + 1);
     }
 }
 
@@ -3504,28 +3511,31 @@ extern void
 avt_last_tab (void)
 {
   int x;
-  int i;
 
   // here we count zero based
   x = avt_where_x () - 1;
 
   if (avt.textdir_rtl)		// right to left
     {
-      for (i = x; i < AVT_LINELENGTH; i++)
+      for (int i = x; i < AVT_LINELENGTH; i++)
 	{
 	  if (avt.tab_stops[i])
-	    break;
+	    {
+	      avt_move_x (i);
+	      break;
+	    }
 	}
-      avt_move_x (i);
     }
   else				// left to right
     {
-      for (i = x + 1; i >= 0; i--)
+      for (int i = x + 1; i >= 0; i--)
 	{
 	  if (avt.tab_stops[i])
-	    break;
+	    {
+	      avt_move_x (i + 1);
+	      break;
+	    }
 	}
-      avt_move_x (i + 1);
     }
 }
 
@@ -3602,7 +3612,8 @@ avt_put_char (avt_char ch)
       bell ();
       break;
 
-      /* ignore BOM here
+      /*
+       * ignore BOM here
        * must be handled outside of the library
        */
     case 0xFEFF:
@@ -3633,7 +3644,6 @@ avt_put_char (avt_char ch)
 	    avt_clearchar ();
 	  else			// underlined or inverse
 	    {
-
 	      avt_drawchar (0x0020, avt.screen);
 	      avt_showchar ();
 	    }
@@ -6705,7 +6715,7 @@ avt_credits_mb (const char *txt, bool centered)
 {
   wchar_t *wctext;
 
-  if (avt.screen and _avt_STATUS == AVT_NORMAL)
+  if (avt.screen and _avt_STATUS == AVT_NORMAL and txt and * txt)
     {
       avt_mb_decode (&wctext, txt, strlen (txt) + 1);
 
