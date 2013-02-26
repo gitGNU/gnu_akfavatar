@@ -350,7 +350,8 @@ lua-akfavatar-prg.o: $(srcdir)/lua/lua-akfavatar-prg.c $(srcdir)/akfavatar.h \
 	$(CC) -I$(srcdir) $(CFLAGS) $(LUA_CFLAGS) -c -o $@ \
 	  $(srcdir)/lua/lua-akfavatar-prg.c
 
-lua-avt.o: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h
+lua-avt.o: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h \
+            $(srcdir)/avtinternals.h
 	$(CC) -I$(srcdir) $(CFLAGS) $(LUA_CFLAGS) -c -o $@ \
 	  $(srcdir)/lua/lua-avt.c
 

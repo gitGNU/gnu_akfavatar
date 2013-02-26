@@ -218,7 +218,8 @@ lua-akfavatar-dll-info.o: $(srcdir)/mingw/lua-akfavatar-dll.rc version.h
 base64.dll: lbase64.o
 	$(CC) -o $@ -shared lbase64.o $(LUA_LDFLAGS) $(LDFLAGS)
 
-lua-avt.o: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h
+lua-avt.o: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h \
+            $(srcdir)/avtinternals.h
 	$(CC) -I$(srcdir) $(CFLAGS) $(LUA_CFLAGS) -c -o $@ \
 	  $(srcdir)/lua/lua-avt.c
 

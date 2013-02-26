@@ -5,6 +5,9 @@
 
   C-API changes:
     - new functions: avt_menu, avt_palette_size
+    - avtaddons:
+      - avta_file_selection and avta_filter have a new parameter "data",
+        which is passed along
 
   Lua-API changes:
     - Module "akfavatar-graphic"

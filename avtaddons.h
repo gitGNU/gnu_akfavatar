@@ -1,6 +1,7 @@
 /*
  * different addons for AKFAvatar
- * Copyright (c) 2007,2008,2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007,2008,2009,2010,2011,2012,2013
+ * Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -85,16 +86,17 @@ AVT_ADDON const char *avta_color_selection (void);
  * file-chooser for AKFAvatar
  **********************************************************************/
 
-typedef bool (*avta_filter) (const char *filename);
+typedef bool (*avta_filter) (const char *filename, void *data);
 
 /*
  * file selection
  * starts in current working directory - changes the working directory
  * if filter is NULL it shows all files (but no hidden files)
+ * data is passed to the filter (may be NULL)
  * returns 0 on success or -1 on error
  */
 AVT_ADDON int avta_file_selection (char *filename, int filename_size,
-                                   avta_filter filter);
+                                   avta_filter filter, void *data);
 
 
 /**********************************************************************

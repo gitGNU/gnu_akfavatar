@@ -1875,20 +1875,17 @@ lavt_subprogram (lua_State * L)
 
 // avt.file_selection (filter)
 
-// we need to temporarily store a pointer to the Lua_state :-(
-static lua_State *tmp_lua_state;
-
 // call the function at index 1 with the filename
 static bool
-file_filter (const char *filename)
+file_filter (const char *filename, void *L)
 {
   bool result;
 
-  lua_pushvalue (tmp_lua_state, 1);	// push func again, to keep it
-  lua_pushstring (tmp_lua_state, filename);	// parameter
-  lua_call (tmp_lua_state, 1, 1);
-  result = to_bool (tmp_lua_state, -1);
-  lua_pop (tmp_lua_state, 1);	// pop result, leave func on stack
+  lua_pushvalue (L, 1);	// push func again, to keep it
+  lua_pushstring (L, filename);	// parameter
+  lua_call (L, 1, 1);
+  result = to_bool (L, -1);
+  lua_pop (L, 1);	// pop result, leave func on stack
 
   return result;
 }
@@ -1906,16 +1903,14 @@ lavt_file_selection (lua_State * L)
   else
     {
       luaL_checktype (L, 1, LUA_TFUNCTION);
-      tmp_lua_state = L;
       filter = &file_filter;
     }
 
-  if (avta_file_selection (filename, sizeof (filename), filter) > -1)
+  if (avta_file_selection (filename, sizeof (filename), filter, L) > -1)
     lua_pushstring (L, filename);
   else
     lua_pushnil (L);
 
-  tmp_lua_state = NULL;
   return 1;
 }
 

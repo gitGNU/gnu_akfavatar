@@ -1,3 +1,8 @@
+2013-02-26  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtaddons.h, filechooser.c (avta_file_selection, avta_filter):
+	new option data
+
 2013-02-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_choice): fix: check values

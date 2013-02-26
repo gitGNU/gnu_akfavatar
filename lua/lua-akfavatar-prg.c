@@ -20,6 +20,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
 #define _ISOC99_SOURCE
 #define _POSIX_C_SOURCE 200112L
 
@@ -294,7 +296,7 @@ check_textfile (const char *filename, const char *ext)
 
 // check if this program can handle the file
 static bool
-check_filename (const char *filename)
+check_filename (const char *filename, void *data)
 {
   const char *ext = strrchr (filename, '.');
 
@@ -467,7 +469,7 @@ ask_file (void)
   avt_set_avatar_mode (AVT_HEADER);
   avt_set_balloon_size (0, 0);
 
-  if (avta_file_selection (filename, sizeof (filename), &check_filename))
+  if (avta_file_selection (filename, sizeof (filename), &check_filename, NULL))
     return false;
 
   if (*filename)

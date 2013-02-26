@@ -109,7 +109,7 @@ show_directory (avt_color markcolor)
 #endif
 
 static int
-filter_dirent (FILTER_DIRENT_T * d, avta_filter filter)
+filter_dirent (FILTER_DIRENT_T * d, avta_filter filter, void *filter_data)
 {
   // allow nothing that starts with a dot
   if (not d or d->d_name[0] == '.')
@@ -117,13 +117,13 @@ filter_dirent (FILTER_DIRENT_T * d, avta_filter filter)
   else if (not filter or is_dirent_directory (d))
     return true;
   else
-    return filter (d->d_name);
+    return filter (d->d_name, filter_data);
 }
 
 #else // _WIN32
 
 static int
-filter_dirent (const struct dirent *d, avta_filter filter)
+filter_dirent (const struct dirent *d, avta_filter filter, void *filter_data)
 {
   // don't allow "." and ".." and apply filter
   if (not d or strcmp (".", d->d_name) == 0 or strcmp ("..", d->d_name) == 0)
@@ -131,7 +131,7 @@ filter_dirent (const struct dirent *d, avta_filter filter)
   else if (not filter or is_dirent_directory (d))
     return true;
   else
-    return filter (d->d_name);
+    return filter (d->d_name, filter_data);
 }
 
 static inline bool
@@ -153,7 +153,7 @@ compare_dirent (const void *a, const void *b)
 }
 
 static int
-get_directory (struct dirent ***list, avta_filter filter)
+get_directory (struct dirent ***list, avta_filter filter, void *filter_data)
 {
   int max_entries;
   struct dirent **mylist;
@@ -198,7 +198,7 @@ get_directory (struct dirent ***list, avta_filter filter)
 	  mylist = tmp;
 	}
 
-      if (filter_dirent (d, filter))
+      if (filter_dirent (d, filter, filter_data))
 	{
 	  struct dirent *n;
 
@@ -271,7 +271,8 @@ show (int nr, void *fc_data)
  * return -1 on error or 0 on success
  */
 extern int
-avta_file_selection (char *filename, int filename_size, avta_filter filter)
+avta_file_selection (char *filename, int filename_size,
+		     avta_filter filter, void *filter_data)
 {
   int rcode;			// return code
   int choice;
@@ -304,7 +305,7 @@ avta_file_selection (char *filename, int filename_size, avta_filter filter)
 
   while (rcode < 0)
     {
-      entries = get_directory (&data.namelist, filter);
+      entries = get_directory (&data.namelist, filter, filter_data);
       if (entries < 0)
 	break;
 
