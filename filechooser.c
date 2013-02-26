@@ -50,21 +50,18 @@
 #  define avta_ask_drive(max_idx) 0	// dummy
 #endif
 
-// variable for custom filter
-static avta_filter custom_filter = NULL;
-static avt_color markcolor;
-
-static inline void
-marked (void)
+struct avt_fc_data
 {
-  avt_set_text_background_color (markcolor);
-}
+  avt_color markcolor;
+  struct dirent **namelist;
+};
+
 
 // entries or marks that are not files
 static inline void
-marked_text (wchar_t * s)
+marked_text (wchar_t * s, avt_color markcolor)
 {
-  marked ();
+  avt_set_text_background_color (markcolor);
   avt_say (s);
   avt_normal_text ();
 }
@@ -90,13 +87,13 @@ is_directory (const char *name)
 #endif // _DIRENT_HAVE_D_TYPE
 
 static void
-show_directory (void)
+show_directory (avt_color markcolor)
 {
   char dirname[4096];
 
   if (getcwd (dirname, sizeof (dirname)))
     {
-      marked ();
+      avt_set_text_background_color (markcolor);
       avt_clear_line ();
       avt_say_mb (dirname);
       avt_normal_text ();
@@ -112,30 +109,29 @@ show_directory (void)
 #endif
 
 static int
-filter_dirent (FILTER_DIRENT_T * d)
+filter_dirent (FILTER_DIRENT_T * d, avta_filter filter)
 {
   // allow nothing that starts with a dot
-  if (d == NULL or d->d_name[0] == '.')
+  if (not d or d->d_name[0] == '.')
     return false;
-  else if (not custom_filter or is_dirent_directory (d))
+  else if (not filter or is_dirent_directory (d))
     return true;
   else
-    return custom_filter (d->d_name);
+    return filter (d->d_name);
 }
 
 #else // _WIN32
 
 static int
-filter_dirent (const struct dirent *d)
+filter_dirent (const struct dirent *d, avta_filter filter)
 {
-  // don't allow "." and ".." and apply custom_filter
-  if (d == NULL or strcmp (".", d->d_name) == 0 or strcmp ("..", d->d_name) ==
-      0)
+  // don't allow "." and ".." and apply filter
+  if (not d or strcmp (".", d->d_name) == 0 or strcmp ("..", d->d_name) == 0)
     return false;
-  else if (not custom_filter or is_dirent_directory (d))
+  else if (not filter or is_dirent_directory (d))
     return true;
   else
-    return custom_filter (d->d_name);
+    return filter (d->d_name);
 }
 
 static inline bool
@@ -157,7 +153,7 @@ compare_dirent (const void *a, const void *b)
 }
 
 static int
-get_directory (struct dirent ***list)
+get_directory (struct dirent ***list, avta_filter filter)
 {
   int max_entries;
   struct dirent **mylist;
@@ -202,7 +198,7 @@ get_directory (struct dirent ***list)
 	  mylist = tmp;
 	}
 
-      if (filter_dirent (d))
+      if (filter_dirent (d, filter))
 	{
 	  struct dirent *n;
 
@@ -231,19 +227,20 @@ get_directory (struct dirent ***list)
 
 // show entry nr
 static void
-show (int nr, void *data)
+show (int nr, void *fc_data)
 {
+  struct avt_fc_data *data = fc_data;
+  avt_color markcolor = data->markcolor;
+
   if (1 == nr)
-    show_directory ();
+    show_directory (markcolor);
   else if (2 == nr)
-    marked_text (PARENT_DIRECTORY);
+    marked_text (PARENT_DIRECTORY, markcolor);
   else
     {
-      struct dirent *d;
-      int max_x;
+      struct dirent *d = data->namelist[nr - 3];
+      int max_x = avt_get_max_x ();
 
-      max_x = avt_get_max_x ();
-      d = ((struct dirent **) data)[nr - 3];
       avt_say_mb (d->d_name);
 
       // is it a directory?
@@ -253,16 +250,16 @@ show (int nr, void *data)
 	  if (avt_where_x () > max_x - 1)
 	    {
 	      avt_move_x (max_x - 1);
-	      marked_text (LONGER);
+	      marked_text (LONGER, markcolor);
 	    }
-	  marked_text (DIRECTORY);
+	  marked_text (DIRECTORY, markcolor);
 	}
       else			// not directory
 	{
 	  if (avt_where_x () > max_x)
 	    {
 	      avt_move_x (max_x);
-	      marked_text (LONGER);
+	      marked_text (LONGER, markcolor);
 	    }
 	}
     }
@@ -280,7 +277,7 @@ avta_file_selection (char *filename, int filename_size, avta_filter filter)
   int choice;
   int entries;
   char old_encoding[100];
-  struct dirent **namelist;
+  struct avt_fc_data data;
 
   rcode = -1;
 
@@ -288,7 +285,8 @@ avta_file_selection (char *filename, int filename_size, avta_filter filter)
     return -1;
 
   memset (filename, 0, filename_size);
-  markcolor = avt_darker (avt_get_balloon_color (), 0x22);
+  data.markcolor = avt_darker (avt_get_balloon_color (), 0x22);
+  data.namelist = NULL;
 
   strncpy (old_encoding, avt_get_mb_encoding (), sizeof (old_encoding));
   old_encoding[sizeof (old_encoding) - 1] = '\0';
@@ -304,18 +302,15 @@ avta_file_selection (char *filename, int filename_size, avta_filter filter)
   // set maximum size
   avt_set_balloon_size (0, 0);
 
-  custom_filter = filter;
-  namelist = NULL;
-
   while (rcode < 0)
     {
-      entries = get_directory (&namelist);
+      entries = get_directory (&data.namelist, filter);
       if (entries < 0)
 	break;
 
       avt_move_xy (1, 1);
       // entry 1 is directory name, entry 2 is parent directory
-      if (avt_menu (&choice, entries + 2, show, namelist))
+      if (avt_menu (&choice, entries + 2, show, &data))
 	break;
 
       if (1 == choice)		// path
@@ -323,7 +318,7 @@ avta_file_selection (char *filename, int filename_size, avta_filter filter)
 	  char dirname[AVT_LINELENGTH + 1];
 
 	  avt_move_xy (1, 1);
-	  marked ();
+	  avt_set_text_background_color (data.markcolor);
 	  avt_clear_line ();
 	  avt_ask_mb (dirname, sizeof (dirname));
 	  avt_normal_text ();
@@ -344,7 +339,7 @@ avta_file_selection (char *filename, int filename_size, avta_filter filter)
 	}
       else			// normal entry
 	{
-	  struct dirent *d = namelist[choice - 3];
+	  struct dirent *d = data.namelist[choice - 3];
 
 	  if (is_dirent_directory (d))
 	    chdir (d->d_name);
@@ -357,20 +352,19 @@ avta_file_selection (char *filename, int filename_size, avta_filter filter)
 
       // free namelist
       while (entries--)
-	free (namelist[entries]);
-      free (namelist);
-      namelist = NULL;
+	free (data.namelist[entries]);
+      free (data.namelist);
+      data.namelist = NULL;
     }
 
-  if (namelist)
+  if (data.namelist)
     {
       while (entries--)
-	free (namelist[entries]);
-      free (namelist);
-      namelist = NULL;
+	free (data.namelist[entries]);
+      free (data.namelist);
+      data.namelist = NULL;
     }
 
-  custom_filter = NULL;
   avt_mb_encoding (old_encoding);
 
   return rcode;
