@@ -1,3 +1,7 @@
+2013-03-11  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (screen): screen is a separate static variable again
+
 2013-02-26  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtaddons.h, filechooser.c (avta_file_selection, avta_filter):
