@@ -112,11 +112,11 @@ avatar-linuxfb.lo: $(srcdir)/avatar-linuxfb.c $(srcdir)/akfavatar.h \
 	-$(CC) -I$(srcdir) -I. $(CFLAGS) -c -fPIC -o $@ $(srcdir)/avatar-linuxfb.c
 
 libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o avatar-default.o \
-	        avtpalette.o font.o version.o avtdata.o audio-common.o \
-	        avttiming.o avtmenu.o
-	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o avatar.o audio-common.o \
-	             avtdata.o avatar-default.o avtpalette.o font.o version.o \
-	             avttiming.o avtmenu.o
+	        avtencoding.o avtpalette.o font.o version.o avtdata.o \
+	        audio-common.o avttiming.o avtmenu.o
+	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o avatar.o avtencoding.o \
+	             audio-common.o avtdata.o avatar-default.o avtpalette.o \
+	             font.o version.o avttiming.o avtmenu.o
 	-$(RANLIB) $@
 
 libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
@@ -128,13 +128,13 @@ libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
 	-$(RANLIB) $@
 
 libakfavatar.so: $(OBJAVATAR).lo $(OBJAUDIO).lo avatar.lo avatar-default.lo \
-	         avtpalette.lo font.lo version.lo avtdata.lo audio-common.lo \
-	         avttiming.lo avtmenu.lo
+	         avtencoding.lo avtpalette.lo font.lo version.lo avtdata.lo \
+	         audio-common.lo avttiming.lo avtmenu.lo
 	$(CC) -shared \
 	      -Wl,-soname,$(SONAME) -o $(LIBNAME) -fPIC \
 	      $(OBJAVATAR).lo $(OBJAUDIO).lo avatar.lo avatar-default.lo \
-	      avtpalette.lo font.lo version.lo avtdata.lo audio-common.lo \
-	      avttiming.lo avtmenu.lo \
+	      avtencoding.lo avtpalette.lo font.lo version.lo avtdata.lo \
+	      audio-common.lo avttiming.lo avtmenu.lo \
 	      $(SDL_LDFLAGS) $(LDFLAGS)
 	-ln -sf $(LIBNAME) $(SONAME)
 	-ln -sf $(LIBNAME) libakfavatar.so
@@ -248,6 +248,13 @@ avatar-default.o: $(srcdir)/avatar-default.c $(srcdir)/akfavatar.h
 avatar-default.lo: $(srcdir)/avatar-default.c $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -fPIC -o $@ \
 	  $(srcdir)/avatar-default.c
+
+
+avtencoding.o: $(srcdir)/avtencoding.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtencoding.c
+
+avtencoding.lo: $(srcdir)/avtencoding.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ $(srcdir)/avtencoding.c
 
 audio-sdl.o: $(srcdir)/audio-sdl.c $(srcdir)/akfavatar.h \
 	        $(srcdir)/avtinternals.h
@@ -796,6 +803,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/audio-common.c \
 	   $(srcdir)/avtdata.h $(srcdir)/avtdata.c \
 	   $(srcdir)/avttiming.c \
+	   $(srcdir)/avtencoding.c \
 	   $(srcdir)/avtmenu.c \
 	   $(srcdir)/basedir.c \
 	   $(srcdir)/avtinternals.h $(srcdir)/avtpalette.c \

@@ -2,6 +2,9 @@
 
 	* avatar.c (screen): screen is a separate static variable again
 
+	* avtencoding.c: new file
+	avatar.c: adapted
+
 2013-02-26  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtaddons.h, filechooser.c (avta_file_selection, avta_filter):

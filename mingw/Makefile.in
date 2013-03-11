@@ -91,8 +91,11 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h \
              $(srcdir)/balloonpointer.xbm $(srcdir)/thinkpointer.xbm \
              $(srcdir)/round_upper_left.xbm $(srcdir)/round_upper_right.xbm \
              $(srcdir)/round_lower_left.xbm $(srcdir)/round_lower_right.xbm
-	$(CC) -c -I$(srcdir) -I. -I$(srcdir)/mingw $(CFLAGS) \
-	    -o $@ $(srcdir)/avatar.c
+	$(CC) -c -I$(srcdir) -I. $(CFLAGS) -o $@ $(srcdir)/avatar.c
+
+avtencoding.o: $(srcdir)/avtencoding.c $(srcdir)/akfavatar.h \
+                  $(srcdir)/avtinternals.h
+	$(CC) -c -I$(srcdir) -I$(srcdir)/mingw $(CFLAGS) -o $@ $(srcdir)/avtencoding.c
 
 avatar-sdl.o: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
              $(srcdir)/avtinternals.h $(srcdir)/akfavatar.xpm
@@ -128,20 +131,20 @@ iconv.exe: $(srcdir)/mingw/win_iconv.c
 iconv: iconv.exe
 
 # static library
-libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o audio-common.o \
-	  avatar-default.o avtdata.o font.o avtpalette.o win_iconv.o \
-	  windowstiming.o avtmenu.o version.o
-	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o avatar.o audio-common.o \
-	avatar-default.o avtdata.o font.o avtpalette.o win_iconv.o version.o \
-	windowstiming.o avtmenu.o
+libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o avtencoding.o \
+	  audio-common.o avatar-default.o avtdata.o font.o avtpalette.o \
+	  win_iconv.o windowstiming.o avtmenu.o version.o
+	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o avatar.o avtencoding.o \
+	audio-common.o avatar-default.o avtdata.o font.o avtpalette.o \
+	win_iconv.o version.o windowstiming.o avtmenu.o
 	$(RANLIB) $@
 
-akfavatar.dll: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o audio-common.o \
-	  avatar-default.o avtdata.o font.o libinfo.o avtpalette.o \
-	  windowstiming.o win_iconv.o avtmenu.o version.o \
+akfavatar.dll: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o avtencoding.o \
+	  audio-common.o avatar-default.o avtdata.o font.o libinfo.o \
+	  avtpalette.o windowstiming.o win_iconv.o avtmenu.o version.o \
 	  $(srcdir)/mingw/akfavatar.def
 	$(CC) -shared -o $@ $(srcdir)/mingw/akfavatar.def \
-	        $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
+	        $(OBJAVATAR).o $(OBJAUDIO).o avatar.o avtencoding.o \
 	        avatar-default.o avtdata.o audio-common.o font.o avtpalette.o \
 	        windowstiming.o win_iconv.o avtmenu.o version.o libinfo.o \
 	        -Wl,-no-undefined,--enable-runtime-pseudo-reloc \
