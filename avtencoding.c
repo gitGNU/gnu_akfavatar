@@ -745,3 +745,29 @@ avt_mb_close (void)
 
   memset (avt_encoding, 0, sizeof (avt_encoding));
 }
+
+/*
+ * Note: in the beginning I only had avt_pager_mb
+ * and converted it line by line to save memory.
+ * But that broke with UTF-16 and UTF-32.
+ */
+extern int
+avt_pager_mb (const char *txt, size_t len, int startline)
+{
+  if (txt and _avt_STATUS == AVT_NORMAL and avt_initialized ())
+    {
+      if (not len)
+	len = strlen (txt);
+
+      wchar_t *wctext;
+      int wclen = avt_mb_decode (&wctext, txt, len);
+
+      if (wctext)
+	{
+	  avt_pager (wctext, wclen, startline);
+	  free (wctext);
+	}
+    }
+
+  return _avt_STATUS;
+}

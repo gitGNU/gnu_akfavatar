@@ -4540,32 +4540,6 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   return _avt_STATUS;
 }
 
-/*
- * Note: in the beginning I only had avt_pager_mb
- * and converted it line by line to save memory.
- * But that broke with UTF-16 and UTF-32.
- */
-extern int
-avt_pager_mb (const char *txt, size_t len, int startline)
-{
-  if (screen and txt and _avt_STATUS == AVT_NORMAL)
-    {
-      if (not len)
-	len = strlen (txt);
-
-      wchar_t *wctext;
-      int wclen = avt_mb_decode (&wctext, txt, len);
-
-      if (wctext)
-	{
-	  avt_pager (wctext, wclen, startline);
-	  free (wctext);
-	}
-    }
-
-  return _avt_STATUS;
-}
-
 // size in Bytes!
 extern avt_char
 avt_input (wchar_t * s, size_t size, const wchar_t * default_text,
