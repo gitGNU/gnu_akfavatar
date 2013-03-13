@@ -25,6 +25,7 @@
 #include "avtinternals.h"
 
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <wchar.h>
 #include <iconv.h>
@@ -70,6 +71,10 @@ static char avt_encoding[100];
 // conversion descriptors for text input and output
 static iconv_t output_cd = ICONV_UNINITIALIZED;
 static iconv_t input_cd = ICONV_UNINITIALIZED;
+
+static char rest_buffer[10];
+static size_t rest_bytes = 0;
+
 
 extern int
 avt_mb_encoding (const char *encoding)
@@ -142,8 +147,6 @@ extern size_t
 avt_mb_decode_buffer (wchar_t * dest, size_t dest_size,
 		      const char *src, size_t src_size)
 {
-  static char rest_buffer[10];
-  static size_t rest_bytes = 0;
   char *outbuf;
   char *inbuf, *restbuf;
   size_t inbytesleft, outbytesleft;
@@ -504,9 +507,6 @@ avt_say_mb_len (const char *txt, size_t len)
   char *inbuf, *outbuf;
   size_t inbytesleft, outbytesleft, nconv;
   int err;
-
-  static char rest_buffer[10];
-  static size_t rest_bytes = 0;
 
   if (_avt_STATUS != AVT_NORMAL or not avt_initialized ())
     return _avt_STATUS;
