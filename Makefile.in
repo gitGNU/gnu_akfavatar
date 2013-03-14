@@ -109,7 +109,7 @@ avatar-linuxfb.o: $(srcdir)/avatar-linuxfb.c $(srcdir)/akfavatar.h \
 
 avatar-linuxfb.lo: $(srcdir)/avatar-linuxfb.c $(srcdir)/akfavatar.h \
           $(srcdir)/avtinternals.h
-	-$(CC) -I$(srcdir) -I. $(CFLAGS) -c -fPIC -o $@ $(srcdir)/avatar-linuxfb.c
+	-$(CC) -I$(srcdir) -I. $(CFLAGS) -c -fpic -o $@ $(srcdir)/avatar-linuxfb.c
 
 libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o avatar-default.o \
 	        avtencoding.o avtpalette.o font.o version.o avtdata.o \
@@ -133,7 +133,7 @@ libakfavatar.so: $(OBJAVATAR).lo $(OBJAUDIO).lo avatar.lo avatar-default.lo \
 	         audio-common.lo avttiming.lo avtmenu.lo avtxbm.lo avtxpm.lo \
 	         avtbmp.lo
 	$(CC) -shared \
-	      -Wl,-soname,$(SONAME) -o $(LIBNAME) -fPIC \
+	      -Wl,-soname,$(SONAME) -o $(LIBNAME) -fpic \
 	      $(OBJAVATAR).lo $(OBJAUDIO).lo avatar.lo avatar-default.lo \
 	      avtencoding.lo avtpalette.lo font.lo version.lo avtdata.lo \
 	      audio-common.lo avttiming.lo avtmenu.lo avtxbm.lo avtxpm.lo \
@@ -146,7 +146,7 @@ version.o: $(srcdir)/version.c $(srcdir)/akfavatar.h version.h
 	$(CC) $(CFLAGS) -c -o $@ -I. $(srcdir)/version.c
 
 version.lo: $(srcdir)/version.c $(srcdir)/akfavatar.h version.h
-	$(CC) $(CFLAGS) -fPIC -c -o $@ -I. $(srcdir)/version.c
+	$(CC) $(CFLAGS) -fpic -c -o $@ -I. $(srcdir)/version.c
 
 # alert.au should be in the sourcecode-distribution
 $(srcdir)/alert.au: $(ALERT)
@@ -188,25 +188,25 @@ avtpalette.o: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
 
 avtpalette.lo: $(srcdir)/avtpalette.c rgb.h $(srcdir)/akfavatar.h \
 	       $(srcdir)/avtinternals.h
-	$(CC) -I$(srcdir) -I. $(CFLAGS) -c -fPIC -o $@ $(srcdir)/avtpalette.c
+	$(CC) -I$(srcdir) -I. $(CFLAGS) -c -fpic -o $@ $(srcdir)/avtpalette.c
 
 avtdata.o: $(srcdir)/avtdata.c $(srcdir)/avtdata.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtdata.c
 
 avtdata.lo: $(srcdir)/avtdata.c $(srcdir)/avtdata.h
-	$(CC) -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ $(srcdir)/avtdata.c
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/avtdata.c
 
 avttiming.o: $(srcdir)/avttiming.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avttiming.c
 
 avttiming.lo: $(srcdir)/avttiming.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
-	$(CC) -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ $(srcdir)/avttiming.c
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/avttiming.c
 
 basedir.o: $(srcdir)/basedir.c $(srcdir)/avtaddons.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/basedir.c
 
 basedir.lo: $(srcdir)/basedir.c $(srcdir)/avtaddons.h
-	$(CC) -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ $(srcdir)/basedir.c
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/basedir.c
 
 avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h \
           $(srcdir)/avtinternals.h $(srcdir)/avtdata.h version.h rgb.h \
@@ -238,18 +238,18 @@ avatar.lo: $(srcdir)/avatar.c $(srcdir)/akfavatar.h \
            $(srcdir)/btn_pause.xbm $(srcdir)/btn_stop.xbm \
            $(srcdir)/btn_help.xbm $(srcdir)/btn_cancel.xbm \
            $(srcdir)/btn_eject.xbm $(srcdir)/btn_circle.xbm
-	$(CC) -I$(srcdir) -I. $(CFLAGS) -c -fPIC -o $@ $(srcdir)/avatar.c
+	$(CC) -I$(srcdir) -I. $(CFLAGS) -c -fpic -o $@ $(srcdir)/avatar.c
 
 avatar-sdl.lo: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \
            $(srcdir)/avtinternals.h $(srcdir)/akfavatar.xpm
-	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -fPIC \
+	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -fpic \
 	   -o $@ $(srcdir)/avatar-sdl.c
 
 avatar-default.o: $(srcdir)/avatar-default.c $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $(srcdir)/avatar-default.c
 
 avatar-default.lo: $(srcdir)/avatar-default.c $(srcdir)/akfavatar.h
-	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -fPIC -o $@ \
+	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -fpic -o $@ \
 	  $(srcdir)/avatar-default.c
 
 
@@ -257,25 +257,25 @@ avtencoding.o: $(srcdir)/avtencoding.c $(srcdir)/akfavatar.h $(srcdir)/avtintern
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtencoding.c
 
 avtencoding.lo: $(srcdir)/avtencoding.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
-	$(CC) -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ $(srcdir)/avtencoding.c
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/avtencoding.c
 
 avtxbm.o: $(srcdir)/avtxbm.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtxbm.c
 
 avtxbm.lo: $(srcdir)/avtxbm.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
-	$(CC) -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ $(srcdir)/avtxbm.c
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/avtxbm.c
 
 avtxpm.o: $(srcdir)/avtxpm.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtxpm.c
 
 avtxpm.lo: $(srcdir)/avtxpm.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
-	$(CC) -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ $(srcdir)/avtxpm.c
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/avtxpm.c
 
 avtbmp.o: $(srcdir)/avtbmp.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtbmp.c
 
 avtbmp.lo: $(srcdir)/avtbmp.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
-	$(CC) -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ $(srcdir)/avtbmp.c
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/avtbmp.c
 
 audio-sdl.o: $(srcdir)/audio-sdl.c $(srcdir)/akfavatar.h \
 	        $(srcdir)/avtinternals.h
@@ -283,7 +283,7 @@ audio-sdl.o: $(srcdir)/audio-sdl.c $(srcdir)/akfavatar.h \
 
 audio-sdl.lo: $(srcdir)/audio-sdl.c $(srcdir)/akfavatar.h \
 	         $(srcdir)/avtinternals.h
-	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -fPIC -o $@ \
+	$(CC) -I$(srcdir) -I. $(CFLAGS) $(SDL_CFLAGS) -c -fpic -o $@ \
 	  $(srcdir)/audio-sdl.c
 
 audio-dummy.o: $(srcdir)/audio-dummy.c $(srcdir)/akfavatar.h \
@@ -292,7 +292,7 @@ audio-dummy.o: $(srcdir)/audio-dummy.c $(srcdir)/akfavatar.h \
 
 audio-dummy.lo: $(srcdir)/audio-dummy.c $(srcdir)/akfavatar.h \
 	         $(srcdir)/avtinternals.h
-	$(CC) -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ $(srcdir)/audio-dummy.c
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/audio-dummy.c
 
 audio-common.o: $(srcdir)/audio-common.c $(srcdir)/akfavatar.h \
 	        $(srcdir)/avtinternals.h $(srcdir)/avtdata.h alert.c
@@ -300,7 +300,7 @@ audio-common.o: $(srcdir)/audio-common.c $(srcdir)/akfavatar.h \
 
 audio-common.lo: $(srcdir)/audio-common.c $(srcdir)/akfavatar.h \
 	         $(srcdir)/avtinternals.h $(srcdir)/avtdata.h alert.c
-	$(CC) -I. -I$(srcdir) $(CFLAGS) -c -fPIC -o $@ $(srcdir)/audio-common.c
+	$(CC) -I. -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/audio-common.c
 
 audio-common-dummy.o: $(srcdir)/audio-common.c $(srcdir)/akfavatar.h \
 	        $(srcdir)/avtinternals.h $(srcdir)/avtdata.h alert.c
@@ -314,7 +314,7 @@ font.o: font.c
 	$(CC) $(CFLAGS) -c -o $@ font.c
 
 font.lo: font.c
-	$(CC) $(CFLAGS) -c -fPIC -o $@ font.c
+	$(CC) $(CFLAGS) -c -fpic -o $@ font.c
 
 avtccio.o: $(srcdir)/avtccio.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtccio.c
