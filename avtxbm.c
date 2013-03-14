@@ -144,13 +144,13 @@ avt_load_image_xbm_data (avt_data * src, avt_color color)
   char *p;
   p = strstr (line, "_width ");
   if (p)
-    width = atoi (p + 7);
+    width = strtol (p + 7, NULL, 0);
   else
     error = end = true;
 
   p = strstr (line, "_height ");
   if (p)
-    height = atoi (p + 8);
+    height = strtol (p + 8, NULL, 0);
   else
     error = end = true;
 
