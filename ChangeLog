@@ -1,3 +1,8 @@
+2013-03-15  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtxbm.c, avtxpm.c, avtbmp.c: new files
+	avatar.c: adapted
+
 2013-03-11  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (screen): screen is a separate static variable again

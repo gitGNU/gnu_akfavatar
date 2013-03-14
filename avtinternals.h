@@ -23,6 +23,7 @@
 #define AVTINTERNALS_H
 
 #include "akfavatar.h"
+#include <limits.h>
 #include <stdio.h>		/* FILE */
 #include <stdint.h>
 #include <iso646.h>
@@ -41,6 +42,14 @@
 #  define MINIMALWIDTH 800
 #  define MINIMALHEIGHT 600
 #endif // not VGA
+
+// special value for the color_key
+#define AVT_TRANSPARENT  0xFFFFFFFF
+
+#define AVT_COLOR_BLACK         0x000000
+#define AVT_COLOR_WHITE         0xFFFFFF
+#define AVT_COLOR_FLORAL_WHITE  0xFFFAF0
+#define AVT_COLOR_TAN           0xD2B48C
 
 // define an empty restrict unless the compiler is in C99 mode
 #if not defined(__STDC_VERSION__) or __STDC_VERSION__ < 199901L
@@ -150,6 +159,23 @@ bool avt_check_buttons (int x, int y);
 void avt_add_key (avt_char key);
 void avt_resize (int width, int height);
 
+/* avtxbm.c */
+void avt_put_image_xbm (avt_graphic * gr, short x, short y,
+                        const unsigned char *bits, int width, int height,
+                        avt_color color);
+
+avt_graphic *avt_load_image_xbm (const unsigned char *bits,
+                                 int width, int height,
+                                 avt_color color);
+
+avt_graphic *avt_load_image_xbm_data (avt_data * src, avt_color color);
+
+/* avtxpm.c */
+avt_graphic *avt_load_image_xpm_data (avt_data * src);
+
+/* avtbmp.c */
+avt_graphic *avt_load_image_bmp_data (avt_data * src);
+
 /* avtencoding.c */
 extern void avt_mb_close (void);
 
@@ -171,6 +197,7 @@ FILE *open_config_file (const char *name, bool writing);
 
 /* mingw/askdrive.c */
 int avta_ask_drive (int max_idx);
+
 
 /* inline functions */
 
@@ -200,6 +227,31 @@ avt_brighter (avt_color color, int amount)
 		  avt_min (avt_blue (color) + amount, 255));
 }
 
+// returns the pixel position, no checks
+// INSECURE
+static inline avt_color *
+avt_pixel (avt_graphic * s, int x, int y)
+{
+  return s->pixels + y * s->width + x;
+}
+
+// the color_key is a color, which should be transparent
+// it can be AVT_TRANSPARENT, which doesn't conflict with real colors
+static inline void
+avt_set_color_key (avt_graphic * gr, avt_color color_key)
+{
+  if (gr)
+    {
+      gr->color_key = color_key;
+      gr->transparent = true;
+    }
+}
+
+static inline int
+avt_xbm_bytes_per_line (int width)
+{
+  return ((width + CHAR_BIT - 1) / CHAR_BIT);
+}
 
 #pragma GCC visibility pop
 
