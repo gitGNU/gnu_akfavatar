@@ -1190,23 +1190,12 @@ avt_draw_balloon2 (int offset, avt_color ballooncolor)
     {
       struct avt_position position;
       unsigned char *bits;
-      unsigned short height;
 
+      // balloonpointer and thinkpointer must have the same size!
       if (avt.avatar_mode == AVT_THINK)
 	bits = thinkpointer_bits;
       else
 	bits = balloonpointer_bits;
-
-      // balloonpointer and thinkpointer must have the same size!
-      height = balloonpointer_height;
-
-      // if the balloonpointer is too large, cut it
-      if (balloonpointer_height > (avt.avatar_image->height / 2))
-	{
-	  bits += avt_xbm_bytes_per_line (balloonpointer_width)
-	    * (balloonpointer_height - (avt.avatar_image->height / 2));
-	  height -= (balloonpointer_height - (avt.avatar_image->height / 2));
-	}
 
       position.x = avt.window.x + avt.avatar_image->width
 	+ (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET + offset;
@@ -1214,11 +1203,18 @@ avt_draw_balloon2 (int offset, avt_color ballooncolor)
       position.y = avt.window.y + (avt.balloonmaxheight * fontheight)
 	+ (2 * BALLOON_INNER_MARGIN) + TOPMARGIN + offset;
 
+      short y_offset = 0;
+
+      // if the balloonpointer is too large, cut it
+      if (balloonpointer_height > (avt.avatar_image->height / 2))
+	y_offset = balloonpointer_height - (avt.avatar_image->height / 2);
+
       // only draw the balloonpointer, when it fits
       if (position.x + balloonpointer_width + BALLOONPOINTER_OFFSET
 	  + BALLOON_INNER_MARGIN < avt.window.x + avt.window.width)
-	avt_put_image_xbm (screen, position.x, position.y,
-			   bits, balloonpointer_width, height, ballooncolor);
+	avt_put_image_xbm_part (screen, position.x, position.y, y_offset,
+				bits, balloonpointer_width,
+				balloonpointer_height, ballooncolor);
     }
 }
 

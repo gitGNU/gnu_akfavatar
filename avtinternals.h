@@ -23,7 +23,6 @@
 #define AVTINTERNALS_H
 
 #include "akfavatar.h"
-#include <limits.h>
 #include <stdio.h>		/* FILE */
 #include <stdint.h>
 #include <iso646.h>
@@ -164,6 +163,11 @@ void avt_put_image_xbm (avt_graphic * gr, short x, short y,
                         const unsigned char *bits, int width, int height,
                         avt_color color);
 
+void avt_put_image_xbm_part (avt_graphic * gr, short x, short y,
+                        short y_offset,
+                        const unsigned char *bits, int width, int height,
+                        avt_color color);
+
 avt_graphic *avt_load_image_xbm (const unsigned char *bits,
                                  int width, int height,
                                  avt_color color);
@@ -245,12 +249,6 @@ avt_set_color_key (avt_graphic * gr, avt_color color_key)
       gr->color_key = color_key;
       gr->transparent = true;
     }
-}
-
-static inline int
-avt_xbm_bytes_per_line (int width)
-{
-  return ((width + CHAR_BIT - 1) / CHAR_BIT);
 }
 
 #pragma GCC visibility pop

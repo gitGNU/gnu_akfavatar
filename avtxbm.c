@@ -41,6 +41,12 @@ avt_fill (avt_graphic * s, avt_color color)
     *p = color;
 }
 
+static inline int
+avt_xbm_bytes_per_line (int width)
+{
+  return (width + 7) / 8;
+}
+
 extern void
 avt_put_image_xbm (avt_graphic * gr, short x, short y,
 		   const unsigned char *bits, int width, int height,
@@ -78,6 +84,17 @@ avt_put_image_xbm (avt_graphic * gr, short x, short y,
 	  bits++;
 	}
     }
+}
+
+extern void
+avt_put_image_xbm_part (avt_graphic * gr, short x, short y, short y_offset,
+			const unsigned char *bits, int width, int height,
+			avt_color color)
+{
+  bits += avt_xbm_bytes_per_line (width) * y_offset;
+  height -= y_offset;
+
+  avt_put_image_xbm (gr, x, y, bits, width, height, color);
 }
 
 /*
