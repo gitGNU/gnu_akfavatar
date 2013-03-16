@@ -29,17 +29,6 @@
 #include <stdbool.h>
 #include <iso646.h>
 
-// secure
-static inline void
-avt_fill (avt_graphic * s, avt_color color)
-{
-  avt_color *p;
-
-  p = s->pixels;
-  for (int i = (s->width * s->height); i > 0; --i, p++)
-    *p = color;
-}
-
 static inline int
 avt_xbm_bytes_per_line (int width)
 {

@@ -1,3 +1,8 @@
+2013-03-16  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtgraphic.h, avtgraphic.c: new files
+	avatar.c: adapted
+
 2013-03-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtxbm.c, avtxpm.c, avtbmp.c: new files

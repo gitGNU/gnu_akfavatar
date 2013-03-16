@@ -94,10 +94,6 @@
 
 #define SHADOWOFFSET 5
 
-// border width for 3d bars
-#define BORDER_3D_WIDTH 3
-#define BORDER_3D_INTENSITY 0x37
-
 // for static linking avoid to drag in unneeded object files
 #pragma GCC poison  avt_colorname avt_palette avt_colors
 #pragma GCC poison  avt_avatar_image_default
@@ -207,7 +203,6 @@ int _avt_STATUS;
 
 // forward declaration
 static void avt_drawchar (avt_char ch, avt_graphic * surface);
-static void avt_darker_area (int x, int y, int width, int height, int amount);
 //-----------------------------------------------------------------------------
 
 extern void
@@ -293,141 +288,6 @@ avt_clear_keys (void)
   avt_keys.position = avt_keys.end = 0;
 }
 
-extern void
-avt_free_graphic (avt_graphic * gr)
-{
-  if (gr)
-    {
-      if (gr->free_pixels)
-	free (gr->pixels);
-
-      free (gr);
-    }
-}
-
-// use data for pixels
-// data may olny be freed after avt_free_graphic is called on this
-extern avt_graphic *
-avt_data_to_graphic (void *data, short width, short height)
-{
-  avt_graphic *gr;
-
-  if (width <= 0 or height <= 0)
-    return NULL;
-
-  // data may be NULL (see avt_new_graphic)
-
-  gr = (avt_graphic *) malloc (sizeof (*gr));
-
-  if (gr)
-    {
-      gr->width = width;
-      gr->height = height;
-      gr->transparent = false;
-      gr->free_pixels = false;
-      gr->color_key = AVT_TRANSPARENT;
-      gr->pixels = (avt_color *) data;
-    }
-
-  return gr;
-}
-
-extern avt_graphic *
-avt_new_graphic (short width, short height)
-{
-  avt_graphic *gr;
-
-  gr = avt_data_to_graphic (NULL, width, height);
-
-  if (gr)
-    {
-      gr->pixels = (avt_color *) malloc (width * height * sizeof (avt_color));
-
-      if (not gr->pixels)
-	{
-	  avt_free_graphic (gr);
-	  return NULL;
-	}
-
-      gr->free_pixels = true;
-    }
-
-  return gr;
-}
-
-static avt_graphic *
-avt_copy_graphic (avt_graphic * gr)
-{
-  avt_graphic *result;
-
-  if (not gr)
-    return NULL;
-
-  result = avt_new_graphic (gr->width, gr->height);
-
-  if (result)
-    {
-      memcpy (result->pixels, gr->pixels,
-	      gr->width * gr->height * sizeof (avt_color));
-
-      result->color_key = gr->color_key;
-      result->transparent = gr->transparent;
-    }
-
-  return result;
-}
-
-// secure
-static void
-avt_bar (avt_graphic * s, int x, int y, int width, int height,
-	 avt_color color)
-{
-  if (x > s->width or y > s->height)
-    return;
-
-  if (x < 0)
-    {
-      width += x;
-      x = 0;
-    }
-
-  if (y < 0)
-    {
-      height += y;
-      y = 0;
-    }
-
-  if (x + width > s->width)
-    width = s->width - x;
-
-  if (y + height > s->height)
-    height = s->height - y;
-
-  if (width <= 0 or height <= 0)
-    return;
-
-  for (int ny = 0; ny < height; ny++)
-    {
-      avt_color *p;
-
-      p = avt_pixel (s, x, y + ny);
-
-      for (int nx = width; nx > 0; nx--, p++)
-	*p = color;
-    }
-}
-
-// secure
-static inline void
-avt_fill (avt_graphic * s, avt_color color)
-{
-  avt_color *p;
-
-  p = s->pixels;
-  for (int i = (s->width * s->height); i > 0; --i, p++)
-    *p = color;
-}
-
 /*
  * fills the screen with the background color,
  * but doesn't update the screen yet
@@ -436,191 +296,6 @@ static inline void
 avt_free_screen (void)
 {
   avt_fill (screen, avt.background_color);
-}
-
-// secure
-static void
-avt_horizontal_line (avt_graphic * s, int x1, int x2, int y1, avt_color color)
-{
-  if (x1 > s->width)
-    return;
-
-  if (x1 < 0)
-    x1 = 0;
-
-  if (x2 >= s->width)
-    x2 = s->width - 1;
-
-  avt_color *p;
-  p = avt_pixel (s, x1, y1);
-
-  for (int nx = x1; nx <= x2; ++nx, ++p)
-    *p = color;
-}
-
-// secure
-static void
-avt_vertical_line (avt_graphic * s, int x1, int y1, int y2, avt_color color)
-{
-  if (y1 >= s->height)
-    return;
-
-  if (y1 < 0)
-    y1 = 0;
-
-  if (y2 >= s->height)
-    y2 = s->height - 1;
-
-  for (int ny = y1; ny <= y2; ny++)
-    *avt_pixel (s, x1, ny) = color;
-}
-
-// border with 3d effect
-static void
-avt_border3d (avt_graphic * s, int x, int y, int width, int height,
-	      avt_color color, bool pressed)
-{
-  avt_color c1, c2;
-  int x2, y2;
-
-  if (not pressed)
-    {
-      c1 = avt_brighter (color, BORDER_3D_INTENSITY);
-      c2 = avt_darker (color, BORDER_3D_INTENSITY);
-    }
-  else				// pressed
-    {
-      c1 = avt_darker (color, BORDER_3D_INTENSITY);
-      c2 = avt_brighter (color, BORDER_3D_INTENSITY);
-    }
-
-  x2 = x + width - 1;
-  y2 = y + height - 1;
-
-  for (int i = 0; i < BORDER_3D_WIDTH; ++i)
-    {
-      // lower right
-      avt_horizontal_line (s, x + i, x2 - i, y + height - 1 - i, c2);
-      avt_vertical_line (s, x + width - 1 - i, y + i, y2 - i, c2);
-
-      // upper left
-      // defined later, so it's dominant when overlapping
-      avt_horizontal_line (s, x + i, x2 - i, y + i, c1);
-      avt_vertical_line (s, x + i, y + i, y2 - i, c1);
-    }
-}
-
-// like avt_bar bit with 3d effect
-static void
-avt_bar3d (avt_graphic * s, int x, int y, int width, int height,
-	   avt_color color, bool pressed)
-{
-  avt_bar (s, x + BORDER_3D_WIDTH, y + BORDER_3D_WIDTH,
-	   width - (2 * BORDER_3D_WIDTH), height - (2 * BORDER_3D_WIDTH),
-	   color);
-
-  avt_border3d (s, x, y, width, height, color, pressed);
-}
-
-// move a line up or down
-static inline void
-avt_line_move (avt_color * d, avt_color * s, int width, avt_color color_key)
-{
-  if (s > d)
-    {
-      for (int i = width; i > 0; i--, s++, d++)
-	if (*s != color_key)
-	  *d = *s;
-    }
-  else
-    {
-      s += width - 1;
-      d += width - 1;
-      for (int i = width; i > 0; i--, s--, d--)
-	if (*s != color_key)
-	  *d = *s;
-    }
-}
-
-static void
-avt_graphic_segment (avt_graphic * source, int xoffset, int yoffset,
-		     int width, int height, avt_graphic * destination,
-		     int x, int y)
-{
-  if (not source or not destination
-      or x > destination->width or y > destination->height)
-    return;
-
-  if (width > source->width)
-    width = source->width;
-
-  if (height > source->height)
-    height = source->height;
-
-  if (y < 0)
-    {
-      yoffset += (-y);
-      height -= (-y);
-      y = 0;
-    }
-
-  if (x < 0)
-    {
-      xoffset += (-x);
-      width -= (-x);
-      x = 0;
-    }
-
-  if (x + width > destination->width)
-    width = destination->width - x;
-
-  if (y + height > destination->height)
-    height = destination->height - y;
-
-  if (width <= 0 or height <= 0)
-    return;
-
-  bool opaque = not source->transparent;
-
-  // overlap allowed, so we must take care about the direction we go
-
-  if (yoffset >= y)
-    {
-      for (int line = 0; line < height; line++)
-	{
-	  avt_color *s, *d;
-
-	  s = avt_pixel (source, xoffset, line + yoffset);
-	  d = avt_pixel (destination, x, y + line);
-
-	  if (opaque)
-	    memmove (d, s, width * sizeof (avt_color));
-	  else			// transparent
-	    avt_line_move (d, s, width, source->color_key);
-	}
-    }
-  else				// yoffset < y
-    {
-      for (int line = height - 1; line >= 0; line--)
-	{
-	  avt_color *s, *d;
-
-	  s = avt_pixel (source, xoffset, line + yoffset);
-	  d = avt_pixel (destination, x, y + line);
-
-	  if (opaque)
-	    memmove (d, s, width * sizeof (avt_color));
-	  else			// transparent
-	    avt_line_move (d, s, width, source->color_key);
-	}
-    }
-}
-
-static inline void
-avt_put_graphic (avt_graphic * source, avt_graphic * destination,
-		 int x, int y)
-{
-  avt_graphic_segment (source, 0, 0, INT_MAX, INT_MAX, destination, x, y);
 }
 
 // saves the area into a new graphic
@@ -945,7 +620,7 @@ avt_show_text_cursor (bool on)
 			       0);
 
 	  // show text-cursor
-	  avt_darker_area (avt.cursor.x, avt.cursor.y,
+	  avt_darker_area (screen, avt.cursor.x, avt.cursor.y,
 			   fontwidth, fontheight, 0x50);
 	  backend.update_area (screen, avt.cursor.x, avt.cursor.y,
 			       fontwidth, fontheight);
@@ -1099,43 +774,6 @@ avt_show_avatar (void)
 
       avt_no_textfield ();
       avt.avatar_visible = true;
-    }
-}
-
-// secure
-static void
-avt_darker_area (int x, int y, int width, int height, int amount)
-{
-  if (x > screen->width or y > screen->height)
-    return;
-
-  if (x < 0)
-    {
-      width -= (-x);
-      x = 0;
-    }
-
-  if (y < 0)
-    {
-      height -= (-y);
-      y = 0;
-    }
-
-  if (x + width > screen->width)
-    width = screen->width - x;
-
-  if (y + height > screen->height)
-    height = screen->height - y;
-
-  if (width <= 0 or height <= 0)
-    return;
-
-  for (int dy = height - 1; dy >= 0; dy--)
-    {
-      avt_color *p = avt_pixel (screen, x, y + dy);
-
-      for (int dx = width - 1; dx >= 0; dx--, p++)
-	*p = avt_darker (*p, amount);
     }
 }
 
@@ -2828,7 +2466,7 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
       if (line_nr >= menu_start and line_nr <= menu_end)
 	{
 	  int y = avt.viewport.y + ((line_nr - 1) * fontheight);
-	  avt_darker_area (avt.viewport.x, y, avt.viewport.width,
+	  avt_darker_area (screen, avt.viewport.x, y, avt.viewport.width,
 			   fontheight, 0x20);
 	  backend.update_area (screen, avt.viewport.x, y,
 			       avt.viewport.width, fontheight);
@@ -4464,7 +4102,7 @@ avt_put_raw_image_xpm (char **xpm, int x, int y,
 static avt_graphic *
 avt_make_transparent (avt_graphic * image)
 {
-  avt_set_color_key (image, *avt_pixel (image, 0, 0));
+  avt_set_color_key (image, *image->pixels);
 
   return image;
 }

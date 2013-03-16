@@ -33,6 +33,7 @@
 #pragma GCC visibility push(hidden)
 
 #include "avtdata.h"  // to get the hidden visibility
+#include "avtgraphic.h"
 
 #if defined(VGA)
 #  define MINIMALWIDTH 640
@@ -41,9 +42,6 @@
 #  define MINIMALWIDTH 800
 #  define MINIMALHEIGHT 600
 #endif // not VGA
-
-// special value for the color_key
-#define AVT_TRANSPARENT  0xFFFFFFFF
 
 #define AVT_COLOR_BLACK         0x000000
 #define AVT_COLOR_WHITE         0xFFFFFF
@@ -104,18 +102,6 @@
 #endif // not AVT_BYTE_ORDER
 
 
-typedef uint_least32_t avt_color;
-
-typedef struct avt_graphic
-{
-  short width, height;
-  bool transparent;
-  bool free_pixels;
-  avt_color color_key;
-  avt_color *pixels;
-} avt_graphic;
-
-
 struct avt_audio
 {
   unsigned char *sound;		/* Pointer to sound data */
@@ -143,42 +129,14 @@ struct avt_backend
 #define avt_min(a, b) ((a) < (b) ? (a) : (b))
 #define avt_max(a, b) ((a) > (b) ? (a) : (b))
 
-
 /* avatar.c */
 extern int _avt_STATUS;
 
 void avt_quit_audio_function (void (*) (void));
-
 struct avt_backend *avt_start_common (avt_graphic *new_screen);
-avt_graphic *avt_data_to_graphic (void *data, short width, short height);
-avt_graphic *avt_new_graphic (short width, short height);
-void avt_free_graphic (avt_graphic * gr);
-avt_graphic *avt_load_image_xpm (char **xpm);
 bool avt_check_buttons (int x, int y);
 void avt_add_key (avt_char key);
 void avt_resize (int width, int height);
-
-/* avtxbm.c */
-void avt_put_image_xbm (avt_graphic * gr, short x, short y,
-                        const unsigned char *bits, int width, int height,
-                        avt_color color);
-
-void avt_put_image_xbm_part (avt_graphic * gr, short x, short y,
-                        short y_offset,
-                        const unsigned char *bits, int width, int height,
-                        avt_color color);
-
-avt_graphic *avt_load_image_xbm (const unsigned char *bits,
-                                 int width, int height,
-                                 avt_color color);
-
-avt_graphic *avt_load_image_xbm_data (avt_data * src, avt_color color);
-
-/* avtxpm.c */
-avt_graphic *avt_load_image_xpm_data (avt_data * src);
-
-/* avtbmp.c */
-avt_graphic *avt_load_image_bmp_data (avt_data * src);
 
 /* avtencoding.c */
 extern void avt_mb_close (void);
@@ -201,55 +159,6 @@ FILE *open_config_file (const char *name, bool writing);
 
 /* mingw/askdrive.c */
 int avta_ask_drive (int max_idx);
-
-
-/* inline functions */
-
-// return a darker color
-static inline avt_color
-avt_darker (avt_color color, int amount)
-{
-  int r, g, b;
-
-  r = avt_red (color);
-  g = avt_green (color);
-  b = avt_blue (color);
-
-  r = r > amount ? r - amount : 0;
-  g = g > amount ? g - amount : 0;
-  b = b > amount ? b - amount : 0;
-
-  return avt_rgb (r, g, b);
-}
-
-// return a brighter color
-static inline avt_color
-avt_brighter (avt_color color, int amount)
-{
-  return avt_rgb (avt_min (avt_red (color) + amount, 255),
-		  avt_min (avt_green (color) + amount, 255),
-		  avt_min (avt_blue (color) + amount, 255));
-}
-
-// returns the pixel position, no checks
-// INSECURE
-static inline avt_color *
-avt_pixel (avt_graphic * s, int x, int y)
-{
-  return s->pixels + y * s->width + x;
-}
-
-// the color_key is a color, which should be transparent
-// it can be AVT_TRANSPARENT, which doesn't conflict with real colors
-static inline void
-avt_set_color_key (avt_graphic * gr, avt_color color_key)
-{
-  if (gr)
-    {
-      gr->color_key = color_key;
-      gr->transparent = true;
-    }
-}
 
 #pragma GCC visibility pop
 
