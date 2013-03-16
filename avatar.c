@@ -298,32 +298,11 @@ avt_free_screen (void)
   avt_fill (screen, avt.background_color);
 }
 
-// saves the area into a new graphic
-// the result should be freed with avt_free_graphic
-static avt_graphic *
-avt_get_area (int x, int y, int width, int height)
-{
-  avt_graphic *result;
-
-  result = avt_new_graphic (width, height);
-
-  if (not result)
-    {
-      avt_set_error ("out of memory");
-      _avt_STATUS = AVT_ERROR;
-      return NULL;
-    }
-
-  avt_graphic_segment (screen, x, y, width, height, result, 0, 0);
-
-  return result;
-}
-
 static inline avt_graphic *
 avt_get_window (void)
 {
-  return avt_get_area (avt.window.x, avt.window.y, avt.window.width,
-		       avt.window.height);
+  return avt_get_area (screen, avt.window.x, avt.window.y,
+		       avt.window.width, avt.window.height);
 }
 
 static inline void
@@ -2493,7 +2472,7 @@ avt_choice (int *result, int start_line, int items, int key,
     return AVT_FAILURE;
 
   avt_graphic *plain_menu;
-  plain_menu = avt_get_area (avt.viewport.x, avt.viewport.y,
+  plain_menu = avt_get_area (screen, avt.viewport.x, avt.viewport.y,
 			     avt.viewport.width, avt.viewport.height);
 
   int end_line = start_line + items - 1;
@@ -2656,7 +2635,8 @@ avt_show_button (int x, int y, enum avt_button_type type,
   pos.y = y + avt.window.y;
 
   button->background =
-    avt_get_area (pos.x, pos.y, BASE_BUTTON_WIDTH, BASE_BUTTON_HEIGHT);
+    avt_get_area (screen, pos.x, pos.y,
+		  BASE_BUTTON_WIDTH, BASE_BUTTON_HEIGHT);
 
   avt_put_graphic (base_button, screen, pos.x, pos.y);
 

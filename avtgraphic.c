@@ -350,6 +350,22 @@ avt_put_graphic (avt_graphic * source, avt_graphic * destination,
   avt_graphic_segment (source, 0, 0, INT_MAX, INT_MAX, destination, x, y);
 }
 
+// saves the area into a new graphic
+// the result should be freed with avt_free_graphic
+extern avt_graphic *
+avt_get_area (avt_graphic * gr, int x, int y, int width, int height)
+{
+  avt_graphic *result;
+
+  result = avt_new_graphic (width, height);
+
+  if (result)
+    avt_graphic_segment (gr, x, y, width, height, result, 0, 0);
+
+  return result;
+}
+
+
 // secure
 extern void
 avt_darker_area (avt_graphic * gr, int x, int y, int width, int height,

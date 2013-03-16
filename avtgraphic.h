@@ -65,6 +65,11 @@ void avt_graphic_segment (avt_graphic *source, int xoffset, int yoffset,
 
 avt_graphic *avt_copy_graphic (avt_graphic *gr);
 
+// saves the area into a new graphic
+// the result should be freed with avt_free_graphic
+avt_graphic *avt_get_area (avt_graphic * gr, int x, int y,
+                           int width, int height);
+
 void avt_bar3d (avt_graphic *s, int x, int y, int width, int height,
                 avt_color color, bool pressed);
 
