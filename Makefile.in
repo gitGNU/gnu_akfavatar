@@ -265,22 +265,22 @@ avtgraphic.o: $(srcdir)/avtgraphic.c $(srcdir)/avtgraphic.h $(srcdir)/avtdata.h
 avtgraphic.lo: $(srcdir)/avtgraphic.c $(srcdir)/avtgraphic.h $(srcdir)/avtdata.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/avtgraphic.c
 
-avtxbm.o: $(srcdir)/avtxbm.c $(srcdir)/akfavatar.h $(srcdir)/avtgraphic.h
+avtxbm.o: $(srcdir)/avtxbm.c $(srcdir)/avtgraphic.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtxbm.c
 
-avtxbm.lo: $(srcdir)/avtxbm.c $(srcdir)/akfavatar.h $(srcdir)/avtgraphic.h
+avtxbm.lo: $(srcdir)/avtxbm.c $(srcdir)/avtgraphic.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/avtxbm.c
 
-avtxpm.o: $(srcdir)/avtxpm.c $(srcdir)/akfavatar.h $(srcdir)/avtgraphic.h
+avtxpm.o: $(srcdir)/avtxpm.c $(srcdir)/avtgraphic.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtxpm.c
 
-avtxpm.lo: $(srcdir)/avtxpm.c $(srcdir)/akfavatar.h $(srcdir)/avtgraphic.h
+avtxpm.lo: $(srcdir)/avtxpm.c $(srcdir)/avtgraphic.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/avtxpm.c
 
-avtbmp.o: $(srcdir)/avtbmp.c $(srcdir)/akfavatar.h $(srcdir)/avtgraphic.h
+avtbmp.o: $(srcdir)/avtbmp.c $(srcdir)/avtgraphic.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtbmp.c
 
-avtbmp.lo: $(srcdir)/avtbmp.c $(srcdir)/akfavatar.h $(srcdir)/avtgraphic.h
+avtbmp.lo: $(srcdir)/avtbmp.c $(srcdir)/avtgraphic.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/avtbmp.c
 
 audio-sdl.o: $(srcdir)/audio-sdl.c $(srcdir)/akfavatar.h \

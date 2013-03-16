@@ -97,13 +97,13 @@ avtencoding.o: $(srcdir)/avtencoding.c $(srcdir)/akfavatar.h \
                   $(srcdir)/avtinternals.h
 	$(CC) -c -I$(srcdir) -I$(srcdir)/mingw $(CFLAGS) -o $@ $(srcdir)/avtencoding.c
 
-avtxbm.o: $(srcdir)/avtxbm.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
+avtxbm.o: $(srcdir)/avtxbm.c $(srcdir)/avtgraphic.h
 	$(CC) -c -I$(srcdir) $(CFLAGS) -o $@ $(srcdir)/avtxbm.c
 
-avtxpm.o: $(srcdir)/avtxpm.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
+avtxpm.o: $(srcdir)/avtxpm.c $(srcdir)/avtgraphic.h
 	$(CC) -c -I$(srcdir) $(CFLAGS) -o $@ $(srcdir)/avtxpm.c
 
-avtbmp.o: $(srcdir)/avtbmp.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
+avtbmp.o: $(srcdir)/avtbmp.c $(srcdir)/avtgraphic.h
 	$(CC) -c -I$(srcdir) $(CFLAGS) -o $@ $(srcdir)/avtbmp.c
 
 avatar-sdl.o: $(srcdir)/avatar-sdl.c $(srcdir)/akfavatar.h \

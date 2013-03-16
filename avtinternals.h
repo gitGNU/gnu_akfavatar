@@ -1,6 +1,7 @@
 /*
  * internal prototypes for AKFAvatar
- * Copyright (c) 2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2010,2011,2012,2013
+ * Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  * This file is not part of the official API
@@ -125,7 +126,6 @@ struct avt_backend
   avt_graphic *(*graphic_memory) (void *data, size_t size);
 };
 
-#define avt_isblank(c)  ((c) == ' ' or (c) == '\t')
 #define avt_min(a, b) ((a) < (b) ? (a) : (b))
 #define avt_max(a, b) ((a) > (b) ? (a) : (b))
 

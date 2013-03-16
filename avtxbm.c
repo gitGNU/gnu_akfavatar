@@ -21,8 +21,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "akfavatar.h"
-#include "avtinternals.h"
+#include "avtgraphic.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -97,15 +96,12 @@ avt_load_image_xbm (const unsigned char *bits, int width, int height,
 
   image = avt_new_graphic (width, height);
 
-  if (not image)
+  if (image)
     {
-      avt_set_error ("out of memory");
-      return NULL;
+      avt_fill (image, AVT_TRANSPARENT);
+      avt_set_color_key (image, AVT_TRANSPARENT);
+      avt_put_image_xbm (image, 0, 0, bits, width, height, color);
     }
-
-  avt_fill (image, AVT_TRANSPARENT);
-  avt_set_color_key (image, AVT_TRANSPARENT);
-  avt_put_image_xbm (image, 0, 0, bits, width, height, color);
 
   return image;
 }
@@ -175,8 +171,8 @@ avt_load_image_xbm_data (avt_data * src, avt_color color)
   // this catches different errors
   if (not bits)
     {
-      avt_set_error ("out of memory");
       error = end = true;
+      goto done;
     }
 
   // search start of bitmap part

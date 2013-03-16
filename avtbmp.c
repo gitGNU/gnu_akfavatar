@@ -21,8 +21,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "akfavatar.h"
-#include "avtinternals.h"
+#include "avtgraphic.h"
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -161,7 +160,7 @@ avt_load_image_bmp_data (avt_data * src)
 	      blue = src->read8 (src);
 	      green = src->read8 (src);
 	      red = src->read8 (src);
-	      palette[color] = avt_rgb (red, green, blue);
+	      palette[color] = (red << 16) | (green << 8) | blue;
 	    }
 	}
     }
@@ -311,9 +310,9 @@ avt_load_image_bmp_data (avt_data * src)
 		register uint16_t color = src->read16 (src);
 
 		*p =
-		  avt_rgb ((color & red_mask) >> red_right << red_left,
-			   (color & green_mask) >> green_right << green_left,
-			   (color & blue_mask) >> blue_right << blue_left);
+		  ((color & red_mask) >> red_right << red_left) << 16
+		  | ((color & green_mask) >> green_right << green_left) << 8
+		  | (color & blue_mask) >> blue_right << blue_left;
 	      }
 
 	    if (remainder)
@@ -343,7 +342,7 @@ avt_load_image_bmp_data (avt_data * src)
 		blue = src->read8 (src);
 		green = src->read8 (src);
 		red = src->read8 (src);
-		*p = avt_rgb (red, green, blue);
+		*p = (red << 16) | (green << 8) | blue;
 	      }
 
 	    if (remainder)
@@ -380,9 +379,9 @@ avt_load_image_bmp_data (avt_data * src)
 	    for (int x = 0; x < width; x++, p++)
 	      {
 		register uint32_t color = src->read32 (src);
-		*p = avt_rgb ((color & red_mask) >> red_shift,
-			      (color & green_mask) >> green_shift,
-			      (color & blue_mask) >> blue_shift);
+		*p = ((color & red_mask) >> red_shift) << 16
+		  | ((color & green_mask) >> green_shift) << 8
+		  | (color & blue_mask) >> blue_shift;
 	      }
 
 	    y += direction;
@@ -397,4 +396,3 @@ done:
 
   return image;
 }
-

@@ -21,14 +21,15 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "akfavatar.h"
-#include "avtinternals.h"
+#include "avtgraphic.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
 #include <iso646.h>
+
+#define avt_isblank(c)  ((c) == ' ' or (c) == '\t')
 
 // number of printable ASCII codes
 #define XPM_NR_CODES (126 - 32 + 1)
@@ -92,19 +93,13 @@ avt_load_image_xpm (char **xpm)
   // check values and limit sizes to avoid exessive memory usage
   if (width < 1 or height < 1 or ncolors < 1 or cpp < 1
       or ncolors > 0xFFFFFF or cpp > 4 or width > 10000 or height > 10000)
-    {
-      avt_set_error ("error in XPM data");
-      goto done;
-    }
+    goto done;
 
   // create target surface
   img = avt_new_graphic (width, height);
 
   if (not img)
-    {
-      avt_set_error ("out of memory");
-      goto done;
-    }
+    goto done;
 
   // get memory for codes table
   if (cpp > 1)
@@ -112,7 +107,6 @@ avt_load_image_xpm (char **xpm)
       codes = (union xpm_codes *) calloc (XPM_NR_CODES, sizeof (*codes));
       if (not codes)
 	{
-	  avt_set_error ("out of memory");
 	  avt_free_graphic (img);
 	  img = NULL;
 	  goto done;
@@ -128,7 +122,6 @@ avt_load_image_xpm (char **xpm)
 
   if (not colors)
     {
-      avt_set_error ("out of memory");
       avt_free_graphic (img);
       img = NULL;
       goto done;
@@ -143,7 +136,6 @@ avt_load_image_xpm (char **xpm)
 
       if (xpm[colornr] == NULL)
 	{
-	  avt_set_error ("error in XPM data");
 	  avt_free_graphic (img);
 	  img = NULL;
 	  goto done;
@@ -242,7 +234,7 @@ avt_load_image_xpm (char **xpm)
 	    color_name[color_name_pos++] = *p++;
 	  color_name[color_name_pos] = '\0';
 
-	  colornr = AVT_COLOR_BLACK;
+	  colornr = 0x000000;	// black
 
 	  if (color_name[0] == '#')
 	    colornr = strtol (&color_name[1], NULL, 16);
@@ -252,9 +244,9 @@ avt_load_image_xpm (char **xpm)
 	      avt_set_color_key (img, colornr);
 	    }
 	  else if (strcasecmp (color_name, "black") == 0)
-	    colornr = AVT_COLOR_BLACK;
+	    colornr = 0x000000;
 	  else if (strcasecmp (color_name, "white") == 0)
-	    colornr = AVT_COLOR_WHITE;
+	    colornr = 0xFFFFFF;
 
 	  /*
 	   * Note: don't use avt_colorname,
@@ -369,18 +361,12 @@ avt_load_image_xpm_data (avt_data * src)
   linecapacity = 100;
   line = (char *) malloc (linecapacity);
   if (not line)
-    {
-      avt_set_error ("out of memory");
-      return NULL;
-    }
+    return NULL;
 
   linecount = 512;		// can be extended later
   xpm = (char **) malloc (linecount * sizeof (*xpm));
   if (not xpm)
-    {
-      avt_set_error ("out of memory");
-      error = end = true;
-    }
+    error = end = true;
 
   while (not end)
     {

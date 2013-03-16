@@ -1,6 +1,6 @@
 /*
  * access to a palette of color definitions
- * Copyright (c) 2012 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2012,2013 Andreas K. Foerster <info@akfoerster.de>
  *
  * required standards: C99, POSIX.1-2001
  *
@@ -26,6 +26,8 @@
 #include <stdlib.h>
 #include <strings.h>		// strcasecmp
 #include <iso646.h>
+
+#define avt_isblank(c)  ((c) == ' ' or (c) == '\t')
 
 extern size_t
 avt_palette_size (void)
