@@ -39,9 +39,9 @@ BEGIN {
             "get_font_dimensions (int *width, int *height, int *baseline);"
       print "#endif"
       if (width <= 8)
-        print "\nstatic const uint8_t font[] = {"
+        print "\nstatic const uint_least8_t font[] = {"
       else
-        print "\nstatic const uint16_t font[] = {"
+        print "\nstatic const uint_least16_t font[] = {"
      started = 1
     }
   else print ""
