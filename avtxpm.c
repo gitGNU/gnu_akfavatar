@@ -27,6 +27,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include <strings.h>
 #include <iso646.h>
 
 #define avt_isblank(c)  ((c) == ' ' or (c) == '\t')
