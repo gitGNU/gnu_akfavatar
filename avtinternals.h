@@ -28,8 +28,6 @@
 #include <stdint.h>
 #include <iso646.h>
 
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-
 // the following symbols should not be exported by the library
 #pragma GCC visibility push(hidden)
 

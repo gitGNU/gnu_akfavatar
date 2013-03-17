@@ -186,6 +186,8 @@ update_area_fb (avt_graphic * screen, int x, int y, int width, int height)
 extern void
 avt_switch_mode (int new_mode)
 {
+  (void) new_mode;
+
   // only 1 mode
 }
 
@@ -389,6 +391,8 @@ avt_reserve_single_keys (bool onoff)
 extern avt_char
 avt_set_pointer_motion_key (avt_char key)
 {
+  (void) key;
+
   return 0;
 }
 
@@ -396,6 +400,8 @@ avt_set_pointer_motion_key (avt_char key)
 extern avt_char
 avt_set_pointer_buttons_key (avt_char key)
 {
+  (void) key;
+
   return 0;
 }
 
@@ -412,6 +418,8 @@ avt_get_pointer_position (int *x, int *y)
 extern void
 avt_set_mouse_visible (bool visible)
 {
+  (void) visible;
+
   // no mouse
 }
 
@@ -436,6 +444,9 @@ avt_set_error (const char *message)
 extern void
 avt_set_title (const char *title, const char *shortname)
 {
+  (void) title;
+  (void) shortname;
+
   // nothing to do
 }
 
@@ -482,6 +493,10 @@ extern int
 avt_start (const char *title, const char *shortname, int window_mode)
 {
   struct avt_backend *backend;
+
+  (void) title;
+  (void) shortname;
+  (void) window_mode;
 
   avt_set_error (NULL);
 

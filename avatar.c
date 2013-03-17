@@ -4553,6 +4553,12 @@ default_error_function (void)
 static void
 update_area_error (avt_graphic * screen, int x, int y, int width, int height)
 {
+  (void) screen;
+  (void) x;
+  (void) y;
+  (void) width;
+  (void) height;
+
   default_error_function ();
 }
 

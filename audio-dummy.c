@@ -54,6 +54,8 @@ avt_stop_audio (void)
 extern avt_char
 avt_set_audio_end_key (avt_char key)
 {
+  (void) key;
+
   no_audio ();
 
   return 0;
@@ -69,6 +71,9 @@ avt_wait_audio_end (void)
 extern int
 avt_play_audio (avt_audio * snd, int playmode)
 {
+  (void) snd;
+  (void) playmode;
+
   no_audio ();
   return _avt_STATUS;
 }
@@ -82,18 +87,24 @@ avt_lock_audio (void)
 extern void
 avt_unlock_audio (avt_audio * snd)
 {
+  (void) snd;
+
   no_audio ();
 }
 
 extern void
 avt_pause_audio (bool pause)
 {
+  (void) pause;
+
   no_audio ();
 }
 
 extern bool
 avt_audio_playing (avt_audio * snd)
 {
+  (void) snd;
+
   no_audio ();
   return false;
 }

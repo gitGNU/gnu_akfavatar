@@ -56,6 +56,8 @@ static void avt_quit_audio_sdl (void);
 static void
 fill_audio (void *userdata, uint8_t * stream, int len)
 {
+  (void) userdata;
+
   // only play, when there is data left
   if (soundleft <= 0)
     {

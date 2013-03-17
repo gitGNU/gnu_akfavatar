@@ -87,6 +87,8 @@ static void avt_analyze_event (SDL_Event * event);
 static void
 update_area_sdl (avt_graphic * screen, int x, int y, int width, int height)
 {
+  (void) screen;
+
   // sdl_screen already has the pixel-information of screen
   // other implementations might need to copy pixels here
   SDL_UpdateRect (sdl_screen, x, y, width, height);
@@ -606,6 +608,9 @@ static Uint32
 avt_timeout (Uint32 intervall, void *param)
 {
   SDL_Event event;
+
+  (void) intervall;
+  (void) param;
 
   event.type = SDL_USEREVENT;
   event.user.code = AVT_TIMEOUT;
