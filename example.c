@@ -33,7 +33,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <wchar.h>
 
 
 // XPM files are valid C-Code!
@@ -44,7 +44,6 @@
 #define PRGSHORTNAME  "AKFAvatar"
 
 // Prototypes
-static void say (char *msg);
 static void plot (void);
 
 
@@ -62,7 +61,6 @@ main (int argc, char *argv[])
   (void) argc;
   (void) argv;
 
-  avt_mb_encoding ("UTF-8");
 
   // initialize it
   if (avt_start (PRGNAME, PRGSHORTNAME, AVT_AUTOMODE))
@@ -83,7 +81,7 @@ main (int argc, char *argv[])
 static void
 plot (void)
 {
-  char name[AVT_LINELENGTH + 1];
+  wchar_t name[AVT_LINELENGTH + 1];
   // AVT_LINELENGTH is the maximum length of one line in a balloon
 
   // set the avatar
@@ -102,39 +100,29 @@ plot (void)
   avt_set_balloon_size (1, 50);
 
   // ask for a name
-  say ("What's your name? ");
-  if (avt_ask_mb (name, sizeof (name)))
+  avt_say (L"What's your name? ");
+  if (avt_ask (name, sizeof (name)))
     exit (EXIT_SUCCESS);
 
   // if no name was given, call him "stranger" ;-)
   if (!name[0])
-    strcpy (name, "stranger");
+    wcscpy (name, L"stranger");
 
   avt_set_balloon_size (6, 50);
   // clear the balloon
   avt_clear ();
-  say ("Hello ");
-  say (name);
-  say (",\n\n");
-  say ("I am the avatar (the incarnation) of your program.\n"
-       "It is sooo easy to program me...\n\n"
-       "I am longing for being programmed by you!");
+  avt_say (L"Hello ");
+  avt_say (name);
+  avt_say (L",\n\n");
+  avt_say (L"I am the avatar (the incarnation) of your program.\n"
+	   L"It is sooo easy to program me...\n\n"
+	   L"I am longing for being programmed by you!");
 
   // wait for a key, move out and wait some time
-  avt_wait_button ();
+  // checking the return code here also catches earlier quit-requests
+  if (avt_wait_button ())
+    exit (EXIT_SUCCESS);
+
   avt_move_out ();
   avt_wait (AVT_SECONDS (0.75));
-}
-
-
-static void
-say (char *msg)
-{
-  /*
-   * tell the message
-   * and if there is quit-request or a fatal error, stop the program
-   * (note: fatal errors are unlikely after initialization)
-   */
-  if (avt_say_mb (msg))
-    exit (EXIT_SUCCESS);
 }

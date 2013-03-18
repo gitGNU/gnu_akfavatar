@@ -4,6 +4,7 @@
   - name sign with 3d effect
 
   C-API changes:
+    - avt_set_title: no automatic charset conversion
     - new functions: avt_menu, avt_palette_size
     - avtaddons:
       - avta_file_selection and avta_filter have a new parameter "data",

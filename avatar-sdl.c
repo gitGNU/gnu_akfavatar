@@ -818,46 +818,8 @@ quit_sdl (void)
 extern void
 avt_set_title (const char *title, const char *shortname)
 {
-  char *encoding;
-
-  encoding = avt_get_mb_encoding ();
-
-  // check if encoding was set
-  if (not encoding)
-    {
-      avt_mb_encoding (MB_DEFAULT_ENCODING);
-      encoding = avt_get_mb_encoding ();
-    }
-
-  // check if it's already in correct encoding default="UTF-8"
-  if (SDL_strcasecmp ("UTF-8", encoding) == 0
-      or SDL_strcasecmp ("UTF8", encoding) == 0
-      or SDL_strcasecmp ("CP65001", encoding) == 0)
-    SDL_WM_SetCaption (title, shortname);
-  else				// convert them to UTF-8
-    {
-      char my_title[260];
-      char my_shortname[84];
-
-      if (title and * title)
-	{
-	  if (avt_recode_buffer ("UTF-8", encoding,
-				 my_title, sizeof (my_title),
-				 title, SDL_strlen (title)) == (size_t) (-1))
-	    SDL_strlcpy (my_title, title, sizeof (my_title));
-	}
-
-      if (shortname and * shortname)
-	{
-	  if (avt_recode_buffer ("UTF-8", encoding,
-				 my_shortname, sizeof (my_shortname),
-				 shortname,
-				 SDL_strlen (shortname)) == (size_t) (-1))
-	    SDL_strlcpy (my_shortname, shortname, sizeof (my_shortname));
-	}
-
-      SDL_WM_SetCaption (my_title, my_shortname);
-    }
+  // assumes UTF-8
+  SDL_WM_SetCaption (title, shortname);
 }
 
 

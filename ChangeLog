@@ -3,6 +3,10 @@
 	* avatar.c (avt_quit_encoding_function): new function
 	avatar.c (avt_quit), avtencoding.c: adapted
 
+	* avatar-sdl.c (avt_set_title): don't even try to recode
+
+	* example.c: only use wide characters
+
 2013-03-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtgraphic.h, avtgraphic.c: new files

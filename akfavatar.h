@@ -560,8 +560,8 @@ AVT_API void avt_set_bitmap_color (int color);
 /*
  * change the title and/or the shortname
  * use NULL for the unchanged part
- * in newer SDL-versions it depends on avt_mb_encoding()
  * if possible stick to ASCII for compatibility
+ * SDL accepts UTF-8
  * backends may ignore this information
  */
 AVT_API void avt_set_title (const char *title, const char *shortname);
