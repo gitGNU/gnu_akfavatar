@@ -1,3 +1,8 @@
+2013-03-18  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_quit_encoding_function): new function
+	avatar.c (avt_quit), avtencoding.c: adapted
+
 2013-03-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtgraphic.h, avtgraphic.c: new files

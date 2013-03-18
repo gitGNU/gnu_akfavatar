@@ -76,9 +76,26 @@ static char rest_buffer[10];
 static size_t rest_bytes = 0;
 
 
+static void
+avt_mb_quit (void)
+{
+  // close conversion descriptors
+  if (output_cd != ICONV_UNINITIALIZED)
+    iconv_close (output_cd);
+
+  if (input_cd != ICONV_UNINITIALIZED)
+    iconv_close (input_cd);
+
+  output_cd = input_cd = ICONV_UNINITIALIZED;
+
+  memset (avt_encoding, 0, sizeof (avt_encoding));
+}
+
 extern int
 avt_mb_encoding (const char *encoding)
 {
+  avt_quit_encoding_function (avt_mb_quit);
+
   if (not encoding)
     encoding = "";
 
@@ -729,21 +746,6 @@ avt_credits_mb (const char *txt, bool centered)
     }
 
   return _avt_STATUS;
-}
-
-extern void
-avt_mb_close (void)
-{
-  // close conversion descriptors
-  if (output_cd != ICONV_UNINITIALIZED)
-    iconv_close (output_cd);
-
-  if (input_cd != ICONV_UNINITIALIZED)
-    iconv_close (input_cd);
-
-  output_cd = input_cd = ICONV_UNINITIALIZED;
-
-  memset (avt_encoding, 0, sizeof (avt_encoding));
 }
 
 /*

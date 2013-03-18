@@ -131,13 +131,11 @@ struct avt_backend
 extern int _avt_STATUS;
 
 void avt_quit_audio_function (void (*) (void));
+void avt_quit_encoding_function (void (*) (void));
 struct avt_backend *avt_start_common (avt_graphic *new_screen);
 bool avt_check_buttons (int x, int y);
 void avt_add_key (avt_char key);
 void avt_resize (int width, int height);
-
-/* avtencoding.c */
-extern void avt_mb_close (void);
 
 /* avttiming.c */
 void avt_delay (int milliseconds); // only for under a second

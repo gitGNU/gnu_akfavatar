@@ -121,6 +121,7 @@ struct avt_settings
   wchar_t *name;
 
   void (*quit_audio) (void);
+  void (*quit_encoding) (void);
   void (*bell) (void);
 
   // delay values for printing text and flipping the page
@@ -215,6 +216,12 @@ avt_bell_function (void (*f) (void))
       avt_set_error ("bell function cannot be avt_bell (recursive call)");
       _avt_STATUS = AVT_ERROR;
     }
+}
+
+extern void
+avt_quit_encoding_function (void (*f) (void))
+{
+  avt.quit_encoding = f;
 }
 
 extern void
@@ -4565,8 +4572,11 @@ update_area_error (avt_graphic * screen, int x, int y, int width, int height)
 extern void
 avt_quit (void)
 {
-  // FIXME
-  avt_mb_close ();
+  if (avt.quit_encoding)
+    {
+       avt.quit_encoding ();
+       avt.quit_encoding = NULL;
+    }
 
   if (avt.quit_audio)
     {
