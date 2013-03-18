@@ -143,7 +143,6 @@ typedef void avt_stream;
  *
  * mode is either AVT_WINDOW or AVT_FULLSCREEN or AVT_FULLSCREENNOSWITCH.
  * title and/or shortname may be NULL
- * avt_mb_encoding() may influence title/shortname
  */
 AVT_API int avt_start (const char *title, const char *shortname, int mode);
 
