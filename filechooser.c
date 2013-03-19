@@ -90,13 +90,21 @@ static void
 show_directory (avt_color markcolor)
 {
   char dirname[4096];
+  wchar_t wide_name[AVT_LINELENGTH];
+  size_t len;
 
   if (getcwd (dirname, sizeof (dirname)))
     {
-      avt_set_text_background_color (markcolor);
-      avt_clear_line ();
-      avt_say_mb (dirname);
-      avt_normal_text ();
+      len = mbstowcs (wide_name, dirname,
+		      sizeof (wide_name) / sizeof (wide_name[0]));
+
+      if (len != (size_t) (-1))
+	{
+	  avt_set_text_background_color (markcolor);
+	  avt_clear_line ();
+	  avt_say_len (wide_name, len);
+	  avt_normal_text ();
+	}
     }
 }
 
@@ -240,8 +248,12 @@ show (int nr, void *fc_data)
     {
       struct dirent *d = data->namelist[nr - 3];
       int max_x = avt_get_max_x ();
+      wchar_t name[256];
+      size_t len;
 
-      avt_say_mb (d->d_name);
+      len = mbstowcs (name, d->d_name, sizeof (name) / sizeof (name[0]));
+      if (len != (size_t) (-1))
+	avt_say_len (name, len);
 
       // is it a directory?
       if (is_dirent_directory (d))
@@ -277,7 +289,6 @@ avta_file_selection (char *filename, int filename_size,
   int rcode;			// return code
   int choice;
   int entries;
-  char old_encoding[100];
   struct avt_fc_data data;
 
   rcode = -1;
@@ -288,14 +299,6 @@ avta_file_selection (char *filename, int filename_size,
   memset (filename, 0, filename_size);
   data.markcolor = avt_darker (avt_get_balloon_color (), 0x22);
   data.namelist = NULL;
-
-  strncpy (old_encoding, avt_get_mb_encoding (), sizeof (old_encoding));
-  old_encoding[sizeof (old_encoding) - 1] = '\0';
-
-  // set the systems default encoding
-  // this also catches earlier errors
-  if (avt_mb_encoding (NULL) != AVT_NORMAL)
-    return -1;
 
   // don't show the balloon
   avt_show_avatar ();
@@ -316,15 +319,23 @@ avta_file_selection (char *filename, int filename_size,
 
       if (1 == choice)		// path
 	{
-	  char dirname[AVT_LINELENGTH + 1];
+	  wchar_t dirname[AVT_LINELENGTH + 1];
 
 	  avt_move_xy (1, 1);
 	  avt_set_text_background_color (data.markcolor);
 	  avt_clear_line ();
-	  avt_ask_mb (dirname, sizeof (dirname));
+	  avt_ask (dirname, sizeof (dirname));
 	  avt_normal_text ();
 	  if (*dirname)
-	    chdir (dirname);
+	    {
+	      char name[AVT_LINELENGTH + 1];
+
+	      if (wcstombs (name, dirname, sizeof (name)) != (size_t) (-1))
+		{
+		  name[sizeof (name) - 1] = '\0';
+		  chdir (name);
+		}
+	    }
 	}
       else if (2 == choice)	// parent directory
 	{
@@ -365,8 +376,6 @@ avta_file_selection (char *filename, int filename_size,
       free (data.namelist);
       data.namelist = NULL;
     }
-
-  avt_mb_encoding (old_encoding);
 
   return rcode;
 }

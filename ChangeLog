@@ -1,3 +1,8 @@
+2013-03-19  Andreas K. Foerster  <info@akfoerster.de>
+
+	* filechooser.c:
+	use locale dependend multibyte functions instead of iconv
+
 2013-03-18  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_quit_encoding_function): new function
