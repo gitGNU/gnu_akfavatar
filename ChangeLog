@@ -1,6 +1,6 @@
 2013-03-19  Andreas K. Foerster  <info@akfoerster.de>
 
-	* filechooser.c:
+	* filechooser.c, colorchooser.c:
 	use locale dependend multibyte functions instead of iconv
 
 2013-03-18  Andreas K. Foerster  <info@akfoerster.de>

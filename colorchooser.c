@@ -21,7 +21,7 @@
 
 #include "akfavatar.h"
 #include "avtinternals.h"
-#include <stdio.h>		// for snprintf
+#include <stdlib.h>
 #include <wchar.h>
 #include <iso646.h>
 
@@ -34,12 +34,15 @@ static char *
 manual_entry (void)
 {
   static char manual_color[WIDTH + 1 - 2];	// must be static!
+  wchar_t name[WIDTH + 1 - 2];
 
   avt_set_balloon_height (1);
   avt_say (L"> ");
 
-  if (avt_ask_mb (manual_color, sizeof (manual_color)) != AVT_NORMAL)
+  if (avt_ask (name, sizeof (name)) != AVT_NORMAL)
     return NULL;
+
+  wcstombs (manual_color, name, sizeof (manual_color));
 
   // check, if it's a valid color name
   if (avt_colorname (manual_color) > -1)
@@ -75,10 +78,11 @@ show_color (int nr, void *data)
 	  avt_set_text_background_ballooncolor ();
 	  avt_forward ();
 
-	  char desc[AVT_LINELENGTH + 1];
-	  snprintf (desc, sizeof (desc), "#%06X: %s\n", colornr, color_name);
+	  wchar_t desc[AVT_LINELENGTH + 1];
+	  swprintf (desc, sizeof (desc) / sizeof (desc[0]),
+		    L"#%06X: %s\n", colornr, color_name);
 
-	  avt_say_mb (desc);
+	  avt_say (desc);
 	}
     }
 }
