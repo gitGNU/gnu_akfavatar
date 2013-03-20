@@ -3301,9 +3301,9 @@ avt_input (wchar_t * s, size_t size, const wchar_t * default_text,
 
 	      if (insert_mode and pos < len)
 		{
-		  avt_insert_spaces (1);
 		  if (len < maxlen)
 		    {
+		      avt_insert_spaces (1);
 		      memmove (&s[pos + 1], &s[pos],
 			       (len - pos) * sizeof (wchar_t));
 		      len++;
@@ -4588,8 +4588,8 @@ avt_quit (void)
 {
   if (avt.quit_encoding)
     {
-       avt.quit_encoding ();
-       avt.quit_encoding = NULL;
+      avt.quit_encoding ();
+      avt.quit_encoding = NULL;
     }
 
   if (avt.quit_audio)

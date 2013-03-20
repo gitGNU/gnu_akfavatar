@@ -3,6 +3,8 @@
 	* akfavatar.h, avatar.c (avt_wide_copyright, avt_wide_license):
 	new functions
 
+	* avatar.c (avt_input): fix display bug
+
 2013-03-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* filechooser.c, colorchooser.c:
