@@ -1,3 +1,8 @@
+2013-03-20  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_wide_copyright, avt_wide_license):
+	new functions
+
 2013-03-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* filechooser.c, colorchooser.c:

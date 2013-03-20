@@ -481,9 +481,11 @@ AVT_API const char *avt_version (void);
 
 /* get copyright information */
 AVT_API const char *avt_copyright (void);
+AVT_API const wchar_t *avt_wide_copyright (void);
 
 /* get license information */
 AVT_API const char *avt_license (void);
+AVT_API const wchar_t *avt_wide_license (void);
 
 
 /***********************************************************************/

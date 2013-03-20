@@ -65,6 +65,7 @@
 #include "btn_circle.xbm"
 
 #define COPYRIGHTYEAR "2013"
+#define WIDE_COPYRIGHTYEAR L"1013"
 
 #if MINIMALWIDTH < 800
 #  define TOPMARGIN 25
@@ -571,6 +572,19 @@ avt_license (void)
 {
   return "GPLv3+: GNU GPL version 3 or later "
     "<http://gnu.org/licenses/gpl.html>";
+}
+
+extern const wchar_t *
+avt_wide_copyright (void)
+{
+  return L"Copyright \u00A9 " WIDE_COPYRIGHTYEAR L" Andreas K. F\u00F6rster";
+}
+
+extern const wchar_t *
+avt_wide_license (void)
+{
+  return L"GPLv3+: GNU GPL version 3 or later "
+    L"<http://gnu.org/licenses/gpl.html>";
 }
 
 extern bool
