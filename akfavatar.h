@@ -33,7 +33,7 @@
 /* to get the systems definition of wchar_t */
 #include <stddef.h>
 
-#ifndef __cplusplus
+#if !defined(__cplusplus) && !defined(__bool_true_false_are_defined)
 #include <stdbool.h>
 #endif
 
