@@ -1856,7 +1856,6 @@ static void
 avt_drawchar (avt_char ch, avt_graphic * surface)
 {
   const uint_least8_t *font_line;	// pixel line from font definition
-  uint_least16_t line;		// normalized pixel line might get modified
 
   // only draw character when it fully fits
   if (avt.cursor.x < 0 or avt.cursor.y < 0
@@ -1864,10 +1863,10 @@ avt_drawchar (avt_char ch, avt_graphic * surface)
       or avt.cursor.y > surface->height - fontheight)
     return;
 
-  font_line = (const uint_least8_t *) avt_get_font_char ((int) ch);
+  font_line = avt_get_font_char ((int) ch);
 
   if (not font_line)
-    font_line = (const uint_least8_t *) avt_get_font_char (0);
+    font_line = avt_get_font_char (0);
 
   if (not avt_combining (ch))
     {
@@ -1880,6 +1879,8 @@ avt_drawchar (avt_char ch, avt_graphic * surface)
 
   for (int y = 0; y < fontheight; y++)
     {
+      uint_least16_t line;		// normalized pixel line might get modified
+
       if (fontwidth > CHAR_BIT)
 	{
 	  line = *(const uint_least16_t *) font_line;
