@@ -65,7 +65,7 @@
 #include "btn_circle.xbm"
 
 #define COPYRIGHTYEAR "2013"
-#define WIDE_COPYRIGHTYEAR L"1013"
+#define WIDE_COPYRIGHTYEAR L"2013"
 
 #if MINIMALWIDTH < 800
 #  define TOPMARGIN 25
