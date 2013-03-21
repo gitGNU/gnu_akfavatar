@@ -545,50 +545,50 @@ start_screen (void)
   avt_normal_text ();
   avt_new_line ();
   avt_new_line ();
-  avt_say_mb ("AKFAvatar ");
+  avt_say (L"AKFAvatar ");
   avt_say_mb (avt_version ());
   avt_say (L", ");
-  avt_say_mb (avt_copyright ());
+  avt_say (avt_wide_copyright ());
   avt_new_line ();
   avt_say_mb (LUA_COPYRIGHT);
   avt_new_line ();
   avt_new_line ();
   if (german)
-    avt_say_mb ("Verfügbar für GNU/Linux und Windows, "
+    avt_say (L"Verf\u00FCgbar f\u00FCr GNU/Linux und Windows, "
 		"leicht portierbar auf andere Systme");
   else
-    avt_say_mb ("Available for GNU/Linux and Windows, "
+    avt_say (L"Available for GNU/Linux and Windows, "
 		"easily portable to other systems");
   avt_new_line ();
-  avt_say_mb ("Homepage: ");
+  avt_say (L"Homepage: ");
   avt_underlined (true);
   if (german)
-    avt_say_mb ("http://akfavatar.nongnu.org/akfavatar.de.html");
+    avt_say (L"http://akfavatar.nongnu.org/akfavatar.de.html");
   else
-    avt_say_mb ("http://akfavatar.nongnu.org/");
+    avt_say (L"http://akfavatar.nongnu.org/");
   avt_underlined (false);
   avt_new_line ();
   if (german)
-    avt_say_mb ("Lizenz: ");
+    avt_say (L"Lizenz: ");
   else
-    avt_say_mb ("License: ");
-  avt_say_mb (avt_license ());
+    avt_say (L"License: ");
+  avt_say (avt_wide_license ());
   avt_new_line ();
   avt_new_line ();
   avt_bold (true);
-  avt_say_mb ("F11");
+  avt_say (L"F11");
   avt_bold (false);
   if (german)
-    avt_say_mb (": Vollbild, ");
+    avt_say (L": Vollbild, ");
   else
-    avt_say_mb (": Fullscreen, ");
+    avt_say (L": Fullscreen, ");
   avt_bold (true);
-  avt_say_mb ("Esc");
+  avt_say (L"Esc");
   avt_bold (false);
   if (german)
-    avt_say_mb (": Ende/zurück");
+    avt_say (L": Ende/zur\u00FCck");
   else
-    avt_say_mb (": end/back");
+    avt_say (L": end/back");
 
   avt_lock_updates (false);
 
