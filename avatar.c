@@ -2349,9 +2349,9 @@ avt_tell_len (const wchar_t * txt, size_t len)
 	{
 	case L'\n':
 	case L'\v':
-	case L'\x0085':	// NEL: NExt Line
-	case L'\x2028':	// LS: Line Separator
-	case L'\x2029':	// PS: Paragraph Separator
+	case L'\x85':	// NEL: NExt Line
+	case L'\u2028':	// LS: Line Separator
+	case L'\u2029':	// PS: Paragraph Separator
 	  if (width < line_length)
 	    width = line_length;
 	  line_length = 0;
@@ -2374,12 +2374,12 @@ avt_tell_len (const wchar_t * txt, size_t len)
 	  break;
 
 	case L'\a':
-	case L'\xFEFF':
-	case L'\x200E':
-	case L'\x200F':
-	case L'\x200B':
-	case L'\x200C':
-	case L'\x200D':
+	case L'\uFEFF':
+	case L'\u200E':
+	case L'\u200F':
+	case L'\u200B':
+	case L'\u200C':
+	case L'\u200D':
 	  // no width
 	  break;
 
@@ -2755,7 +2755,7 @@ static inline bool
 avt_is_linebreak (wchar_t c)
 {
   return (c == L'\n' or c == L'\v' or c == L'\x85'
-	  or c == L'\x2028' or c == L'\x2029');
+	  or c == L'\u2028' or c == L'\u2029');
 }
 
 // checks for formfeed or text separators
@@ -2770,8 +2770,8 @@ static inline bool
 avt_is_invisible (wchar_t c)
 {
   return (c == L'\a'
-	  or c == L'\xFEFF' or c == L'\x200E' or c == L'\x200F'
-	  or c == L'\x200B' or c == L'\x200C' or c == L'\x200D');
+	  or c == L'\uFEFF' or c == L'\u200E' or c == L'\u200F'
+	  or c == L'\u200B' or c == L'\u200C' or c == L'\u200D');
 }
 
 static size_t

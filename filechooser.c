@@ -34,13 +34,13 @@
 #include <iso646.h>
 
 // black left-pointing pointer
-#define PARENT_DIRECTORY L" \x25C4 "
+#define PARENT_DIRECTORY L" \u25C4 "
 
 // black right-pointing pointer
-#define DIRECTORY L"\x25BA"
+#define DIRECTORY L"\u25BA"
 
 // 3 dots
-#define LONGER L"\x2026"
+#define LONGER L"\u2026"
 
 #ifdef _WIN32
 #  define HAS_DRIVE_LETTERS true

@@ -27,10 +27,10 @@
 #include <iso646.h>
 
 // three arrows up
-#define BACK L"\x2191    \x2191    \x2191"
+#define BACK L"\u2191    \u2191    \u2191"
 
 // three arrows down
-#define CONTINUE L"\x2193    \x2193    \x2193"
+#define CONTINUE L"\u2193    \u2193    \u2193"
 
 #define MARK(S) \
          do { \
