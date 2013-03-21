@@ -478,6 +478,7 @@ AVT_API void avt_set_error (const char *message);
 
 /* which version of the linked library is used? */
 AVT_API const char *avt_version (void);
+AVT_API const wchar_t *avt_wide_version (void);
 
 /* get copyright information */
 AVT_API const char *avt_copyright (void);

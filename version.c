@@ -26,3 +26,9 @@ avt_version (void)
 {
   return AVTVERSIONSTR;
 }
+
+extern const wchar_t *
+avt_wide_version (void)
+{
+  return AVTVERSIONWIDESTR;
+}

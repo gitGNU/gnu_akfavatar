@@ -5,7 +5,7 @@
 
   C-API changes:
     - avt_set_title: no automatic charset conversion
-    - new functions: avt_wide_copyright, avt_wide_license,
+    - new functions: avt_wide_copyright, avt_wide_license, avt_wide_version,
       avt_menu, avt_palette_size
     - avtaddons:
       - avta_file_selection and avta_filter have a new parameter "data",

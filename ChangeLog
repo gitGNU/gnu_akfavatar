@@ -1,3 +1,7 @@
+2013-03-21  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, version.c (avt_wide_version): new function
+
 2013-03-20  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, avatar.c (avt_wide_copyright, avt_wide_license):

@@ -546,7 +546,7 @@ start_screen (void)
   avt_new_line ();
   avt_new_line ();
   avt_say (L"AKFAvatar ");
-  avt_say_mb (avt_version ());
+  avt_say (avt_wide_version ());
   avt_say (L", ");
   avt_say (avt_wide_copyright ());
   avt_new_line ();
