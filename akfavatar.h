@@ -501,7 +501,7 @@ AVT_API const wchar_t *avt_wide_license (void);
 /*
  * returns a color number for the given values for red, green and blue
  * with these base colors you can mix any deliberate color
- * the values must be in the range of 0-255
+ * the values must be in the range of 0-255 (0x00-0xFF)
  */
 #define avt_rgb(red, green, blue) \
    ((((red)&0xFF)<<16) | (((green)&0xFF)<<8) | ((blue)&0xFF))
@@ -948,8 +948,11 @@ AVT_API int avt_credits_mb (const char *text, bool centered);
 /*
  * set a function for the bell
  * this is for avt_bell(), or "\a", also used internally
+ *
+ * set to avt_flash to get a visual bell
+ * set to NULL to disable the bell
  */
-AVT_API void avt_bell_function (void (*) (void));
+AVT_API void avt_bell_function (void (*f) (void));
 
 /*
  * reserve single keys (Esc, F11)
