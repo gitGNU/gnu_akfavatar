@@ -78,11 +78,14 @@ show_color (int nr, void *data)
 	  avt_set_text_background_ballooncolor ();
 	  avt_forward ();
 
-	  wchar_t desc[AVT_LINELENGTH + 1];
-	  swprintf (desc, sizeof (desc) / sizeof (desc[0]),
-		    L"#%06X: %s", colornr, color_name);
+	  // don't draw in the multibyte stuff, it's all just 7-bit ASCII
+	  // swprintf is broken in MinGW
+	  char desc[WIDTH + 1];
+	  snprintf (desc, sizeof (desc), "#%06X: %s", colornr, color_name);
 
-	  avt_say (desc);
+	  char *p = &desc[0];
+	  while (*p)
+	    avt_put_char (*p++);
 	}
     }
 }

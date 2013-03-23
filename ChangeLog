@@ -1,3 +1,7 @@
+2013-03-23  Andreas K. Foerster  <info@akfoerster.de>
+
+	* colorchooser.c (show_color): fix that works for MinGW
+
 2013-03-21  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h, version.c (avt_wide_version): new function
