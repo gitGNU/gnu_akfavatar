@@ -175,3 +175,6 @@ EXPORTS
     avt_wait_button
     avt_where_x
     avt_where_y
+    avt_wide_copyright
+    avt_wide_license
+    avt_wide_version
