@@ -65,7 +65,6 @@
 #include "btn_circle.xbm"
 
 #define COPYRIGHTYEAR "2013"
-#define WIDE_COPYRIGHTYEAR L"2013"
 
 #if MINIMALWIDTH < 800
 #  define TOPMARGIN 25
@@ -577,7 +576,7 @@ avt_license (void)
 extern const wchar_t *
 avt_wide_copyright (void)
 {
-  return L"Copyright \u00A9 " WIDE_COPYRIGHTYEAR L" Andreas K. F\u00F6rster";
+  return L"Copyright \u00A9 " COPYRIGHTYEAR L" Andreas K. F\u00F6rster";
 }
 
 extern const wchar_t *
