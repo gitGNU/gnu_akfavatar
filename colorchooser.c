@@ -80,7 +80,7 @@ show_color (int nr, void *data)
 
 	  wchar_t desc[AVT_LINELENGTH + 1];
 	  swprintf (desc, sizeof (desc) / sizeof (desc[0]),
-		    L"#%06X: %s\n", colornr, color_name);
+		    L"#%06X: %s", colornr, color_name);
 
 	  avt_say (desc);
 	}
