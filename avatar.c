@@ -1878,7 +1878,7 @@ avt_drawchar (avt_char ch, avt_graphic * surface)
 
   for (int y = 0; y < fontheight; y++)
     {
-      uint_least16_t line;		// normalized pixel line might get modified
+      uint_least16_t line;	// normalized pixel line might get modified
 
       if (fontwidth > CHAR_BIT)
 	{
@@ -2348,7 +2348,7 @@ avt_tell_len (const wchar_t * txt, size_t len)
 	{
 	case L'\n':
 	case L'\v':
-	case L'\x85':	// NEL: NExt Line
+	case L'\x85':		// NEL: NExt Line
 	case L'\u2028':	// LS: Line Separator
 	case L'\u2029':	// PS: Paragraph Separator
 	  if (width < line_length)
@@ -3156,8 +3156,8 @@ avt_input (wchar_t * s, size_t size, const wchar_t * default_text,
       ((avt.viewport.x + avt.viewport.width) - avt.cursor.x) / fontwidth;
 
   // does it fit in the buffer size?
-  if (maxlen > size / sizeof (wchar_t) - 1)
-    maxlen = size / sizeof (wchar_t) - 1;
+  if (maxlen > (size / sizeof (s[0])) - 1)
+    maxlen = (size / sizeof (s[0])) - 1;
 
   // clear the input field
   avt_erase_characters (maxlen);
@@ -3168,8 +3168,8 @@ avt_input (wchar_t * s, size_t size, const wchar_t * default_text,
   // copy default_text into s as far as it fits
   if (default_text and default_text[0] != L'\0')
     {
-      wcsncpy (s, default_text, size / sizeof (wchar_t));
-      s[size / sizeof (wchar_t) - 1] = L'\0';
+      wcsncpy (s, default_text, size / sizeof (s[0]));
+      s[(size / sizeof (s[0])) - 1] = L'\0';
       len = wcslen (s);
       pos = avt_min (len, (size_t) position);
 
@@ -3244,8 +3244,7 @@ avt_input (wchar_t * s, size_t size, const wchar_t * default_text,
 	      avt_show_text_cursor (false);
 	      avt_backspace ();
 	      avt_delete_characters (1);
-	      memmove (&s[pos], &s[pos + 1],
-		       (len - pos - 1) * sizeof (wchar_t));
+	      memmove (&s[pos], &s[pos + 1], (len - pos - 1) * sizeof (s[0]));
 	      len--;
 	    }
 	  else
@@ -3257,8 +3256,7 @@ avt_input (wchar_t * s, size_t size, const wchar_t * default_text,
 	    {
 	      avt_show_text_cursor (false);
 	      avt_delete_characters (1);
-	      memmove (&s[pos], &s[pos + 1],
-		       (len - pos - 1) * sizeof (wchar_t));
+	      memmove (&s[pos], &s[pos + 1], (len - pos - 1) * sizeof (s[0]));
 	      len--;
 	    }
 	  else
@@ -3305,12 +3303,12 @@ avt_input (wchar_t * s, size_t size, const wchar_t * default_text,
 		    {
 		      avt_insert_spaces (1);
 		      memmove (&s[pos + 1], &s[pos],
-			       (len - pos) * sizeof (wchar_t));
+			       (len - pos) * sizeof (s[0]));
 		      len++;
 		    }
 		  else		// len >= maxlen
 		    memmove (&s[pos + 1], &s[pos],
-			     (len - pos - 1) * sizeof (wchar_t));
+			     (len - pos - 1) * sizeof (s[0]));
 		}
 
 	      s[pos] = (wchar_t) ch;
@@ -4245,8 +4243,8 @@ avt_set_avatar_name (const wchar_t * name)
   // copy name
   if (name and * name)
     {
-      int size = (wcslen (name) + 1) * sizeof (wchar_t);
-      avt.name = (wchar_t *) malloc (size);
+      int size = (wcslen (name) + 1) * sizeof (name[0]);
+      avt.name = malloc (size);
       memcpy (avt.name, name, size);
     }
 

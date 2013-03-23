@@ -181,7 +181,7 @@ avt_mb_decode_buffer (wchar_t * dest, size_t dest_size,
   inbuf = (char *) src;
 
   // leave room for terminator
-  outbytesleft = dest_size - sizeof (wchar_t);
+  outbytesleft = dest_size - sizeof (dest[0]);
   outbuf = (char *) dest;
 
   restbuf = (char *) rest_buffer;
@@ -201,8 +201,8 @@ avt_mb_decode_buffer (wchar_t * dest, size_t dest_size,
 	{
 	  *((wchar_t *) outbuf) = L'\uFFFD';
 
-	  outbuf += sizeof (wchar_t);
-	  outbytesleft -= sizeof (wchar_t);
+	  outbuf += sizeof (dest[0]);
+	  outbytesleft -= sizeof (dest[0]);
 	  rest_bytes = 0;
 	}
     }
@@ -219,8 +219,8 @@ avt_mb_decode_buffer (wchar_t * dest, size_t dest_size,
 
       *((wchar_t *) outbuf) = L'\uFFFD';
 
-      outbuf += sizeof (wchar_t);
-      outbytesleft -= sizeof (wchar_t);
+      outbuf += sizeof (dest[0]);
+      outbytesleft -= sizeof (dest[0]);
       returncode =
 	iconv (output_cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
     }
@@ -230,7 +230,7 @@ avt_mb_decode_buffer (wchar_t * dest, size_t dest_size,
       and inbytesleft <= sizeof (rest_buffer))
     {
       rest_bytes = inbytesleft;
-      memcpy ((void *) &rest_buffer, inbuf, rest_bytes);
+      memcpy (&rest_buffer, inbuf, rest_bytes);
     }
 
   // ignore E2BIG - just put in as much as fits
@@ -238,7 +238,7 @@ avt_mb_decode_buffer (wchar_t * dest, size_t dest_size,
   // terminate outbuf
   *((wchar_t *) outbuf) = L'\0';
 
-  return ((dest_size - sizeof (wchar_t) - outbytesleft) / sizeof (wchar_t));
+  return ((dest_size - sizeof (dest[0]) - outbytesleft) / sizeof (dest[0]));
 }
 
 // size in bytes
@@ -266,7 +266,7 @@ avt_mb_decode (wchar_t ** dest, const char *src, size_t src_size)
   if (dest_size < 8)
     dest_size = 8;
 
-  *dest = (wchar_t *) malloc (dest_size);
+  *dest = malloc (dest_size);
 
   if (not * dest)
     return (size_t) (-1);
@@ -299,7 +299,7 @@ avt_mb_encode_buffer (char *dest, size_t dest_size, const wchar_t * src,
   if (input_cd == ICONV_UNINITIALIZED)
     avt_mb_encoding (MB_DEFAULT_ENCODING);
 
-  inbytesleft = len * sizeof (wchar_t);
+  inbytesleft = len * sizeof (src[0]);
   inbuf = (char *) src;
 
   // leave room for terminator
@@ -334,7 +334,7 @@ avt_mb_encode (char **dest, const wchar_t * src, size_t len)
   // UTF-8 may need 4 bytes per character
   // +1 for the terminator
   dest_size = len * 4 + 1;
-  *dest = (char *) malloc (dest_size);
+  *dest = malloc (dest_size);
 
   if (not * dest)
     return (size_t) (-1);
@@ -450,7 +450,7 @@ avt_recode (const char *tocode, const char *fromcode,
 
   // guess it's the same size
   dest_size = src_size + 4;
-  *dest = (char *) malloc (dest_size);
+  *dest = malloc (dest_size);
 
   if (not * dest)
     {
@@ -565,7 +565,7 @@ avt_say_mb_len (const char *txt, size_t len)
       if (nconv != (size_t) (-1))	// no error
 	{
 	  avt_say_len (wctext,
-		       (sizeof (wctext) - outbytesleft) / sizeof (wchar_t));
+		       (sizeof (wctext) - outbytesleft) / sizeof (wctext[0]));
 	  rest_bytes = 0;
 	}
       else if (err != EINVAL)	// any error, but incomplete sequence
@@ -585,7 +585,7 @@ avt_say_mb_len (const char *txt, size_t len)
       err = errno;
 
       avt_say_len (wctext,
-		   (sizeof (wctext) - outbytesleft) / sizeof (wchar_t));
+		   (sizeof (wctext) - outbytesleft) / sizeof (wctext[0]));
 
       if (nconv == (size_t) (-1))
 	{
@@ -699,7 +699,7 @@ avt_ask_mb (char *s, size_t size)
 
   // prepare the buffer
   inbuf = (char *) &ws;
-  inbytesleft = (wcslen (ws) + 1) * sizeof (wchar_t);
+  inbytesleft = (wcslen (ws) + 1) * sizeof (ws[0]);
   outbytesleft = size;
 
   // do the conversion
