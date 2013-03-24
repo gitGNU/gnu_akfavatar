@@ -57,6 +57,30 @@ struct avt_fc_data
 };
 
 
+// show a string interpreted according to the locale LC_CTYPE
+static void
+show_string (char *string)
+{
+  size_t len;
+  size_t nbytes;
+  mbstate_t state;
+  wchar_t ch;
+
+  len = strlen (string);
+  memset (&state, 0, sizeof (state));
+
+  while ((nbytes = mbrtowc (&ch, string, len, &state)) != 0)
+    {
+      if (nbytes >= (size_t) (-2))
+	break;  // stop when string has invalid characters
+
+      avt_put_char (ch);
+
+      len -= nbytes;
+      string += nbytes;
+    }
+}
+
 // entries or marks that are not files
 static inline void
 marked_text (wchar_t * s, avt_color markcolor)
@@ -90,21 +114,13 @@ static void
 show_directory (avt_color markcolor)
 {
   char dirname[4096];
-  wchar_t wide_name[AVT_LINELENGTH];
-  size_t len;
 
   if (getcwd (dirname, sizeof (dirname)))
     {
-      len = mbstowcs (wide_name, dirname,
-		      sizeof (wide_name) / sizeof (wide_name[0]));
-
-      if (len != (size_t) (-1))
-	{
-	  avt_set_text_background_color (markcolor);
-	  avt_clear_line ();
-	  avt_say_len (wide_name, len);
-	  avt_normal_text ();
-	}
+      avt_set_text_background_color (markcolor);
+      avt_clear_line ();	// mark the line
+      show_string (dirname);
+      avt_normal_text ();
     }
 }
 
@@ -248,12 +264,8 @@ show (int nr, void *fc_data)
     {
       struct dirent *d = data->namelist[nr - 3];
       int max_x = avt_get_max_x ();
-      wchar_t name[256];
-      size_t len;
 
-      len = mbstowcs (name, d->d_name, sizeof (name) / sizeof (name[0]));
-      if (len != (size_t) (-1))
-	avt_say_len (name, len);
+      show_string (d->d_name);
 
       // is it a directory?
       if (is_dirent_directory (d))
