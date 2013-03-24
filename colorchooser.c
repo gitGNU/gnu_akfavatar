@@ -33,7 +33,7 @@
 static char *
 manual_entry (void)
 {
-  static char manual_color[WIDTH + 1 - 2];	// must be static!
+  static char color[WIDTH + 1 - 2];	// must be static!
   wchar_t name[WIDTH + 1 - 2];
 
   avt_set_balloon_height (1);
@@ -42,11 +42,18 @@ manual_entry (void)
   if (avt_ask (name, sizeof (name)) != AVT_NORMAL)
     return NULL;
 
-  wcstombs (manual_color, name, sizeof (manual_color));
+  // we just need ASCII
+  for (size_t i = 0; i < sizeof (color); ++i)
+    {
+      register wchar_t ch;
+
+      ch = name[i];
+      color[i] = (ch < 127) ? ch : '?';
+    }
 
   // check, if it's a valid color name
-  if (avt_colorname (manual_color) > -1)
-    return manual_color;
+  if (avt_colorname (color) > -1)
+    return color;
   else
     return NULL;
 }
