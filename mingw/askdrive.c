@@ -1,7 +1,8 @@
 /* 
  * askdrive - windows specific function:
  * ask for drive letter for avtfilechooser
- * Copyright (c) 2007,2008,2009,2010,2012 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007,2008,2009,2010,2012,2013
+ * Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -28,17 +29,12 @@
 int
 avta_ask_drive (int max_idx)
 {
-  char drive[4] = "X:";
   int drives[26];
-  int choice;
-  int i, number;
-  int status;
-
-  status = AVT_NORMAL;
+  int number;
 
   /* what drives are accessible? */
   number = 0;
-  for (i = 1; i <= 26; i++)
+  for (int i = 1; i <= 26; i++)
     {
       if (!_chdrive (i))
 	{
@@ -57,19 +53,21 @@ ask:
 
   /* show double arrow up */
   avt_next_tab ();
-  avt_say (L"\x21D1");
+  avt_put_char (L'\u21D1');
 
   /* show drives */
-  for (i = 0; i < number; i++)
+  for (int i = 0; i < number; i++)
     {
-      drive[0] = drives[i] + 'A' - 1;
       avt_new_line ();
       avt_next_tab ();
-      avt_say_mb (drive);
+      avt_put_char (drives[i] - 1 + 'A');
+      avt_put_char (L':');
     }
 
   avt_lock_updates (false);
-  status = avt_choice (&choice, 1, number + 1, 0, false, false);
+
+  int choice;
+  int status = avt_choice (&choice, 1, number + 1, 0, false, false);
 
   if (choice == 1)		/* home selected */
     status = AVT_QUIT;
