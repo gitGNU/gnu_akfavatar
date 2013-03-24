@@ -59,7 +59,7 @@ struct avt_fc_data
 
 // show a string interpreted according to the locale LC_CTYPE
 static void
-show_string (char *string)
+show_string (const char *string)
 {
   size_t len;
   size_t nbytes;
@@ -72,7 +72,7 @@ show_string (char *string)
   while ((nbytes = mbrtowc (&ch, string, len, &state)) != 0)
     {
       if (nbytes >= (size_t) (-2))
-	break;  // stop when string has invalid characters
+	break;			// stop when string has invalid characters
 
       avt_put_char (ch);
 
