@@ -49,6 +49,9 @@ manual_entry (void)
 
       ch = name[i];
       color[i] = (ch < 127) ? ch : '?';
+
+      if (ch == L'\0')
+	break;
     }
 
   // check, if it's a valid color name
