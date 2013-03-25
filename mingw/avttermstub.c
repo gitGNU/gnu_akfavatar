@@ -1,6 +1,6 @@
 /*
  * avttermstub - dummy stub replacing avtterm
- * Copyright (c) 2009, 2010 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2009, 2010, 2013 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -23,30 +23,37 @@
 
 extern int
 avta_term_start (const char *system_encoding,
-		 const char *working_dir,
-		 char *prg_argv[])
+		 const char *working_dir, char *prg_argv[])
 {
+  (void) system_encoding;
+  (void) working_dir;
+  (void) prg_argv;
+
   return -1;
 }
 
 extern void
 avta_term_run (int fd)
 {
+  (void) fd;
 }
 
 extern void
 avta_term_register_apc (avta_term_apc_cmd command)
 {
+  (void) command;
 }
 
 extern void
 avta_term_nocolor (bool nocolor)
 {
+  (void) nocolor;
 }
 
 extern void
 avta_term_slowprint (bool on)
 {
+  (void) on;
 }
 
 extern void
@@ -57,4 +64,6 @@ avta_term_update_size (void)
 extern void
 avta_term_send (const char *buf, size_t count)
 {
+  (void) buf;
+  (void) count;
 }

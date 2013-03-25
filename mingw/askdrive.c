@@ -36,7 +36,7 @@ avta_ask_drive (int max_idx)
   number = 0;
   for (int i = 1; i <= 26; i++)
     {
-      if (!_chdrive (i))
+      if (_chdrive (i) == 0)
 	{
 	  drives[number] = i;
 	  number++;
@@ -75,7 +75,7 @@ ask:
   if (status == AVT_NORMAL)
     {
       if (_chdrive (drives[choice - 1 - 1]) < 0)
-        goto ask;
+	goto ask;
     }
 
   return status;
