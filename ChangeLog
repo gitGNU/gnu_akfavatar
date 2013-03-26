@@ -1,3 +1,8 @@
+2013-03-26  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_put_char, avt_say, avt_say_len):
+	move interpretation of UTF-16 surrogates to a lower level
+
 2013-03-23  Andreas K. Foerster  <info@akfoerster.de>
 
 	* colorchooser.c (show_color): fix that works for MinGW

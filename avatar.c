@@ -2089,12 +2089,37 @@ avt_backspace (void)
 }
 
 /*
+ * writes a printable character to the textfield -
+ * no interpretation of control characters
+ */
+static void
+avt_put_raw_char (avt_char ch)
+{
+  if (avt.auto_margin)
+    check_auto_margin ();
+
+  if (avt.cursor.x < avt.viewport.x + avt.viewport.width)
+    {
+      avt_drawchar (ch, screen);
+      avt_showchar ();
+      if (avt.text_delay)
+	avt_delay (avt.text_delay);
+      avt_forward ();
+    }
+
+  avt_update ();
+}
+
+/*
  * writes a character to the textfield -
  * interprets control characters
+ * interprets UTF-16 surrogate characters
  */
 extern int
 avt_put_char (avt_char ch)
 {
+  static avt_char high_surrogate;	// for UTF-16
+
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
 
@@ -2178,28 +2203,25 @@ avt_put_char (avt_char ch)
     default:
       if (ch > 0x0020 or ch == 0x0000)
 	{
-	  if (avt.markup and ch == 0x005F)	// '_'
+	  if (0xD800 <= ch and ch <= 0xDBFF)	// UTF-16 high surrogate
+	    {
+	      high_surrogate = ch;
+	      return _avt_STATUS;
+	    }
+	  else			// UTF-16 low surrogate
+	  if (high_surrogate and 0xDC00 <= ch and ch <= 0xDFFF)
+	    avt_put_raw_char (((high_surrogate & 0x3FF) << 10)
+			      + (ch & 0x3FF) + 0x10000);
+	  else if (avt.markup and ch == 0x005F)	// '_'
 	    avt.underlined = not avt.underlined;
 	  else if (avt.markup and ch == 0x002A)	// '*'
 	    avt.bold = not avt.bold;
 	  else			// not a markup character
-	    {
-	      if (avt.auto_margin)
-		check_auto_margin ();
-
-	      if (avt.cursor.x < avt.viewport.x + avt.viewport.width)
-		{
-		  avt_drawchar (ch, screen);
-		  avt_showchar ();
-		  if (avt.text_delay)
-		    avt_delay (avt.text_delay);
-		  avt_forward ();
-		}
-
-	      avt_update ();
-	    }			// if not markup
+	    avt_put_raw_char (ch);
 	}			// if (ch > 0x0020)
     }				// switch
+
+  high_surrogate = 0;
 
   return _avt_STATUS;
 }
@@ -2267,16 +2289,10 @@ avt_say (const wchar_t * txt)
 	}
       else
 	{
-	  avt_char c = (avt_char) * txt;
-	  if (0xD800 <= *txt and * txt <= 0xDBFF)	// UTF-16 high surrogate
-	    {
-	      c = ((*txt & 0x3FF) << 10) + (*(txt + 1) & 0x3FF) + 0x10000;
-	      txt++;
-	    }
-
-	  if (avt_put_char (c))
+	  if (avt_put_char (*txt) != AVT_NORMAL)
 	    break;
 	}
+
       txt++;
     }
 
@@ -2310,15 +2326,7 @@ avt_say_len (const wchar_t * txt, size_t len)
 	}
       else
 	{
-	  avt_char c = (avt_char) * txt;
-	  if (0xD800 <= *txt and * txt <= 0xDBFF)	// UTF-16 high surrogate
-	    {
-	      c = ((*txt & 0x3FF) << 10) + (*(txt + 1) & 0x3FF) + 0x10000;
-	      txt++;
-	      i++;
-	    }
-
-	  if (avt_put_char (c))
+	  if (avt_put_char (*txt) != AVT_NORMAL)
 	    break;
 	}
     }
