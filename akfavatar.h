@@ -271,6 +271,7 @@ AVT_API int avt_tell_len (const wchar_t *txt, size_t len);
  * if there is no balloon, it is drawn
  * if there is no avatar, it is shown (not moved in)
  * interprets control characters, but not for overstrike-text
+ * UTF-16 surrogate characters are interpreted too
  */
 AVT_API int avt_put_char (avt_char ch);
 
