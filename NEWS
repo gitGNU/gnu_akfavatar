@@ -1,10 +1,13 @@
 * AKFAvatar-testing
 
+  - fixed vulnerabilities
   - avoid recursive calls of the bell
+  - split source code for better maintainablitity
   - name sign with 3d effect
 
   C-API changes:
     - avt_set_title: no automatic charset conversion
+    - avt_put_char: support for UTF-16 surrogate characters
     - new functions: avt_wide_copyright, avt_wide_license, avt_wide_version,
       avt_menu, avt_palette_size
     - avtaddons:
