@@ -1,5 +1,7 @@
 * AKFAvatar-testing
 
+* AKFAvatar 0.23.1
+
   - fixed vulnerabilities
   - avoid recursive calls of the bell
   - split source code for better maintainablitity
