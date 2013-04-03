@@ -1,3 +1,10 @@
+2013-04-03  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-linuxfb.c (update_area_32bit, update_area_24bit)
+	(update_area_16bit): new functions replace update_area_fb
+
+------------------------------------------------------------------------
+
 2013-03-27  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.23.1 released

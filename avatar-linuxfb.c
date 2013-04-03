@@ -63,122 +63,130 @@ static bool reserve_single_keys;
 
 //-----------------------------------------------------------------------------
 
-static void
-update_area_fb (avt_graphic * screen, int x, int y, int width, int height)
+static inline void
+normalize_coordinates (avt_graphic * screen, int *x, int *y, int *width,
+		       int *height)
 {
-  int screen_width;
-  int x2;
-  avt_color *pixels;
-  uint_least8_t *fbp;
-
-  screen_width = screen->width;
-
-  if (x > screen_width or y > screen->height)
-    return;
-
-  if (x < 0)
+  if (*x < 0)
     {
-      width -= (-x);
-      x = 0;
+      *width -= (-*x);
+      *x = 0;
     }
 
-  if (y < 0)
+  if (*x + *width > screen->width)
+    *width = screen->width - *x;
+
+  if (*y < 0)
     {
-      height -= (-y);
-      y = 0;
+      height -= (-*y);
+      *y = 0;
     }
 
-  if (y + height > screen->height)
-    height = screen->height - y;
+  if (*y + *height > screen->height)
+    *height = screen->height - *y;
+}
 
-  if (width <= 0 or height <= 0)
+static void
+update_area_32bit (avt_graphic * screen, int x, int y, int width, int height)
+{
+  normalize_coordinates (screen, &x, &y, &width, &height);
+
+  if (width <= 0 or height <= 0 or x > screen->width or y > screen->height)
     return;
 
-  pixels = screen->pixels + (y * screen_width);
-  fbp = fb + y * fix_info.line_length + x * bytes_per_pixel;
-  x2 = x + width;
+  avt_color *pixels = screen->pixels + (y * screen->width);
+  uint_least8_t *fbp = fb + y * fix_info.line_length + x * bytes_per_pixel;
+  int x2 = x + width;
 
-  if (x2 > screen_width)
-    x2 = screen_width;
-
-  switch (var_info.bits_per_pixel)
+  for (int ly = 0; ly < height; ly++)
     {
-    case 32:
-      for (int ly = 0; ly < height; ly++)
+      uint_least32_t *p = (uint_least32_t *) fbp;
+
+      // in this mode it might be superfluous to repack pixels,
+      // but I want to play save
+      for (int lx = x; lx < x2; lx++)
 	{
-	  uint_least32_t *p = (uint_least32_t *) fbp;
+	  register avt_color color = pixels[lx];
 
-	  // in this mode it might be superfluous to repack pixels,
-	  // but I want to play save
-	  for (int lx = x; lx < x2; lx++)
-	    {
-	      register avt_color color = pixels[lx];
-
-	      *p++ = (avt_red (color) << var_info.red.offset)
-		bitor (avt_green (color) << var_info.green.offset)
-		bitor (avt_blue (color) << var_info.blue.offset);
-	    }
-
-	  fbp += fix_info.line_length;
-	  pixels += screen_width;
+	  *p++ = (avt_red (color) << var_info.red.offset)
+	    bitor (avt_green (color) << var_info.green.offset)
+	    bitor (avt_blue (color) << var_info.blue.offset);
 	}
-      break;
 
-    case 24:
-      for (int ly = 0; ly < height; ly++)
+      fbp += fix_info.line_length;
+      pixels += screen->width;
+    }
+}
+
+static void
+update_area_24bit (avt_graphic * screen, int x, int y, int width, int height)
+{
+  normalize_coordinates (screen, &x, &y, &width, &height);
+
+  if (width <= 0 or height <= 0 or x > screen->width or y > screen->height)
+    return;
+
+  avt_color *pixels = screen->pixels + (y * screen->width);
+  uint_least8_t *fbp = fb + y * fix_info.line_length + x * bytes_per_pixel;
+  int x2 = x + width;
+
+  for (int ly = 0; ly < height; ly++)
+    {
+      uint_least8_t *p = fbp;
+
+      for (int lx = x; lx < x2; lx++)
 	{
-	  uint_least8_t *p = fbp;
+	  register avt_color color = pixels[lx];
 
-	  for (int lx = x; lx < x2; lx++)
+	  if (AVT_BIG_ENDIAN == AVT_BYTE_ORDER)
 	    {
-	      register avt_color color = pixels[lx];
-
-	      if (AVT_BIG_ENDIAN == AVT_BYTE_ORDER)
-		{
-		  *p++ = avt_red (color);
-		  *p++ = avt_green (color);
-		  *p++ = avt_blue (color);
-		}
-	      else		// little endian
-		{
-		  *p++ = avt_blue (color);
-		  *p++ = avt_green (color);
-		  *p++ = avt_red (color);
-		}
+	      *p++ = avt_red (color);
+	      *p++ = avt_green (color);
+	      *p++ = avt_blue (color);
 	    }
-
-	  fbp += fix_info.line_length;
-	  pixels += screen_width;
+	  else			// little endian
+	    {
+	      *p++ = avt_blue (color);
+	      *p++ = avt_green (color);
+	      *p++ = avt_red (color);
+	    }
 	}
-      break;
 
-    case 15:
-    case 16:
-      for (int ly = 0; ly < height; ly++)
+      fbp += fix_info.line_length;
+      pixels += screen->width;
+    }
+}
+
+static void
+update_area_16bit (avt_graphic * screen, int x, int y, int width, int height)
+{
+  normalize_coordinates (screen, &x, &y, &width, &height);
+
+  if (width <= 0 or height <= 0 or x > screen->width or y > screen->height)
+    return;
+
+  avt_color *pixels = screen->pixels + (y * screen->width);
+  uint_least8_t *fbp = fb + y * fix_info.line_length + x * bytes_per_pixel;
+  int x2 = x + width;
+
+  for (int ly = 0; ly < height; ly++)
+    {
+      uint_least16_t *p = (uint_least16_t *) fbp;
+
+      for (int lx = x; lx < x2; lx++)
 	{
-	  uint_least16_t *p = (uint_least16_t *) fbp;
+	  register avt_color color = pixels[lx];
 
-	  for (int lx = x; lx < x2; lx++)
-	    {
-	      register avt_color color = pixels[lx];
-
-	      *p++ = ((avt_red (color) >> (8 - var_info.red.length)))
-		<< var_info.red.offset
-		bitor (avt_green (color) >> (8 - var_info.green.length))
-		<< var_info.green.offset
-		bitor (avt_blue (color) >> (8 - var_info.blue.length))
-		<< var_info.blue.offset;
-	    }
-
-	  fbp += fix_info.line_length;
-	  pixels += screen_width;
+	  *p++ = ((avt_red (color) >> (8 - var_info.red.length)))
+	    << var_info.red.offset
+	    bitor (avt_green (color) >> (8 - var_info.green.length))
+	    << var_info.green.offset
+	    bitor (avt_blue (color) >> (8 - var_info.blue.length))
+	    << var_info.blue.offset;
 	}
-      break;
 
-    default:
-      avt_set_error ("unsupported screen format");
-      _avt_STATUS = AVT_ERROR;
-      break;
+      fbp += fix_info.line_length;
+      pixels += screen->width;
     }
 }
 
@@ -454,7 +462,7 @@ static void
 beep (void)
 {
   // this is agent \007 with the license to beep ;-)
-  write (tty, "\007", 1);
+  (void) write (tty, "\007", 1);
 }
 
 static void
@@ -486,7 +494,7 @@ quit_fb (void)
       tty = -1;
     }
 
-  avt_bell_function (&avt_flash);
+  avt_bell_function (avt_flash);
 }
 
 extern int
@@ -601,7 +609,28 @@ avt_start (const char *title, const char *shortname, int window_mode)
       return _avt_STATUS;
     }
 
-  backend->update_area = update_area_fb;
+  switch (var_info.bits_per_pixel)
+    {
+    case 32:
+      backend->update_area = update_area_32bit;
+      break;
+
+    case 24:
+      backend->update_area = update_area_24bit;
+      break;
+
+    case 16:
+    case 15:
+      backend->update_area = update_area_16bit;
+      break;
+
+    default:
+      quit_fb ();
+      avt_set_error ("unsupported screen format");
+      _avt_STATUS = AVT_ERROR;
+      return _avt_STATUS;
+    }
+
   backend->quit = quit_fb;
   backend->wait_key = wait_key_fb;
 
