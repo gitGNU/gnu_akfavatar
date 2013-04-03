@@ -59,7 +59,7 @@ struct avt_fc_data
 
 // show a string interpreted according to the locale LC_CTYPE
 static void
-show_string (const char *string)
+show_multibyte_string (const char *string)
 {
   size_t len;
   size_t nbytes;
@@ -119,8 +119,24 @@ show_directory (avt_color markcolor)
     {
       avt_set_text_background_color (markcolor);
       avt_clear_line ();	// mark the line
-      show_string (dirname);
+      show_multibyte_string (dirname);
       avt_normal_text ();
+    }
+}
+
+static void
+change_directory (const wchar_t * dirname)
+{
+  if (dirname and * dirname)
+    {
+      char name[AVT_LINELENGTH + 1];
+
+      if (wcstombs (name, dirname, sizeof (name)) != (size_t) (-1))
+	{
+	  name[sizeof (name) - 1] = '\0';
+	  if (chdir (name) == -1)
+	    avt_bell ();
+	}
     }
 }
 
@@ -168,6 +184,38 @@ is_root_dir (void)
 }
 
 #endif // _WIN32
+
+static void
+show_info (void)
+{
+  avt_set_balloon_size (4, 70);
+  avt_say (L"AKFAvatar ");
+  avt_say (avt_wide_version ());
+  avt_new_line ();
+  avt_say (avt_wide_copyright ());
+  avt_new_line ();
+  avt_new_line ();
+  avt_say (avt_wide_license ());
+  avt_wait_button ();
+  avt_set_balloon_size (0, 0);
+}
+
+static void
+ask_directory (avt_color markcolor)
+{
+  wchar_t dirname[AVT_LINELENGTH + 1];
+
+  avt_move_xy (1, 1);
+  avt_set_text_background_color (markcolor);
+  avt_clear_line ();
+  avt_ask (dirname, sizeof (dirname));
+  avt_normal_text ();
+
+  if (wcscmp (dirname, L"about:akfavatar") == 0)
+    show_info ();
+  else
+    change_directory (dirname);
+}
 
 static int
 compare_dirent (const void *a, const void *b)
@@ -265,7 +313,7 @@ show (int nr, void *fc_data)
       struct dirent *d = data->namelist[nr - 3];
       int max_x = avt_get_max_x ();
 
-      show_string (d->d_name);
+      show_multibyte_string (d->d_name);
 
       // is it a directory?
       if (is_dirent_directory (d))
@@ -330,25 +378,7 @@ avta_file_selection (char *filename, int filename_size,
 	break;
 
       if (1 == choice)		// path
-	{
-	  wchar_t dirname[AVT_LINELENGTH + 1];
-
-	  avt_move_xy (1, 1);
-	  avt_set_text_background_color (data.markcolor);
-	  avt_clear_line ();
-	  avt_ask (dirname, sizeof (dirname));
-	  avt_normal_text ();
-	  if (*dirname)
-	    {
-	      char name[AVT_LINELENGTH + 1];
-
-	      if (wcstombs (name, dirname, sizeof (name)) != (size_t) (-1))
-		{
-		  name[sizeof (name) - 1] = '\0';
-		  chdir (name);
-		}
-	    }
-	}
+	ask_directory (data.markcolor);
       else if (2 == choice)	// parent directory
 	{
 	  if (HAS_DRIVE_LETTERS and is_root_dir ())	// ask for drive?
@@ -358,15 +388,18 @@ avta_file_selection (char *filename, int filename_size,
 
 	      avt_set_balloon_size (0, 0);
 	    }
-	  else
-	    chdir ("..");
+	  else if (chdir ("..") == -1)
+	    avt_bell ();
 	}
       else			// normal entry
 	{
 	  struct dirent *d = data.namelist[choice - 3];
 
 	  if (is_dirent_directory (d))
-	    chdir (d->d_name);
+	    {
+	      if (chdir (d->d_name))
+		avt_bell ();
+	    }
 	  else if (strlen (d->d_name) < (size_t) filename_size)
 	    {
 	      strcpy (filename, d->d_name);
