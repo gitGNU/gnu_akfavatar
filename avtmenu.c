@@ -26,6 +26,8 @@
 #include <stdbool.h>
 #include <iso646.h>
 
+#define SCROLL_DELAY 10
+
 // three arrows up
 #define BACK L"\u2191    \u2191    \u2191"
 
@@ -51,7 +53,6 @@ avt_menu (int *choice, int items,
 
   avt_set_text_delay (0);
   avt_normal_text ();
-  avt_lock_updates (true);
 
   avt_color markcolor = avt_darker (avt_get_balloon_color (), 0x22);
 
@@ -72,63 +73,144 @@ avt_menu (int *choice, int items,
   int page_nr = 0;
   int items_per_page = small ? max_idx : max_idx - 2;
 
+  // move the screen?
+  enum
+  { MOVE_NONE, MOVE_UP, MOVE_DOWN } move = MOVE_NONE;
+
   bool old_auto_margin = avt_get_auto_margin ();
   avt_set_auto_margin (false);
 
+  avt_move_xy (1, start_line);
+  avt_clear_down ();
+
   while (not result)
     {
-      int page_items;
+      int page_items = 0;
 
-      avt_move_xy (1, start_line);
-      avt_clear_down ();
-
-      page_items = 0;
-
-      if (page_nr > 0)
+      switch (move)
 	{
-	  MARK (BACK);
+	case MOVE_NONE:
 	  page_items = 1;
-	}
+	  avt_lock_updates (true);
+	  avt_move_xy (1, start_line);
 
-      do
-	{
-	  avt_move_xy (1, start_line + page_items);
-	  avt_clear_line ();
-	  page_items++;
-	  show (page_items + (page_nr * items_per_page), data);
-	}
-      while (page_items <= items_per_page
-	     and page_items + (page_nr * items_per_page) != items);
+	  if (page_nr > 0)
+	    MARK (BACK);
+	  else
+	    {
+	      avt_clear_line ();
+	      show (page_items, data);
+	    }
 
-      // are there more items?
-      if (items > page_items + (page_nr * items_per_page))
-	{
-	  avt_move_xy (1, start_line + page_items);
-	  MARK (CONTINUE);
+	  for (int i = items_per_page; i > 0; --i)
+	    {
+	      if (page_items + (page_nr * items_per_page) != items)
+		{
+		  avt_move_xy (1, start_line + page_items);
+		  page_items++;
+		  show (page_items + (page_nr * items_per_page), data);
+		}
+	    }
+
+	  // are there more items?
+	  if (items > page_items + (page_nr * items_per_page))
+	    {
+	      avt_move_xy (1, start_line + max_idx);
+	      MARK (CONTINUE);
+	      page_items = max_idx;
+	    }
+
+	  avt_lock_updates (false);
+	  break;
+
+	case MOVE_UP:
+	  page_items = 1;
+	  avt_move_xy (1, start_line + max_idx);
+
+	  if (page_nr > 0)
+	    MARK (BACK);
+	  else
+	    {
+	      avt_clear_line ();
+	      show (page_items, data);
+	    }
+
+	  for (int i = items_per_page; i > 0; --i)
+	    {
+	      avt_move_xy (1, start_line + max_idx);
+	      avt_delete_lines (start_line, 1);
+
+	      if (page_items + (page_nr * items_per_page) != items)
+		{
+		  page_items++;
+		  show (page_items + (page_nr * items_per_page), data);
+		}
+
+	      avt_delay (SCROLL_DELAY);
+	    }
+
+	  avt_delete_lines (start_line, 1);
+
+	  // are there more items?
+	  if (items > page_items + (page_nr * items_per_page))
+	    {
+	      avt_move_xy (1, start_line + max_idx);
+	      MARK (CONTINUE);
+	      page_items = max_idx;
+	    }
+	  break;
+
+	case MOVE_DOWN:
 	  page_items = max_idx;
+	  avt_move_xy (1, start_line);
+	  MARK (CONTINUE);
+
+	  for (int i = items_per_page; i > 0; --i)
+	    {
+	      avt_move_xy (1, start_line);
+	      avt_insert_lines (start_line, 1);
+
+	      page_items--;
+	      show (page_items + (page_nr * items_per_page), data);
+
+	      avt_delay (SCROLL_DELAY);
+	    }
+
+	  avt_insert_lines (start_line, 1);
+	  avt_move_xy (1, start_line);
+
+	  if (page_nr > 0)
+	    MARK (BACK);
+	  else
+	    show (1, data);
+
+	  page_items = max_idx;
+	  break;
 	}
 
-      avt_lock_updates (false);
       int page_choice;		// choice for this page
       if (avt_choice (&page_choice, start_line, page_items, AVT_KEY_NONE,
 		      page_nr > 0,
 		      not small and (page_items == max_idx or page_nr == 0)))
-	return AVT_FAILURE;
-
-      avt_lock_updates (true);
+	break;
 
       if (page_nr > 0 and page_choice == 1)
-	page_nr--;		// page back
+	{
+	  page_nr--;		// page back
+	  move = MOVE_DOWN;
+	}
       else if (not small and page_choice == max_idx)
-	page_nr++;		// page forward
+	{
+	  page_nr++;		// page forward
+	  move = MOVE_UP;
+	}
       else if (page_nr == 0)
 	result = page_choice;
       else
 	result = page_choice + (page_nr * items_per_page);
-    }
+    }				// while
 
   avt_set_auto_margin (old_auto_margin);
-  avt_lock_updates (false);
 
   if (choice)
     *choice = result;
