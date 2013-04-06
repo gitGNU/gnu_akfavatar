@@ -461,8 +461,12 @@ avt_set_title (const char *title, const char *shortname)
 static void
 beep (void)
 {
+  ssize_t r;
+
   // this is agent \007 with the license to beep ;-)
-  (void) write (tty, "\007", 1);
+  do
+    r = write (tty, "\007", 1);
+  while (r < 0 and errno == EINTR);
 }
 
 static void
