@@ -469,7 +469,8 @@ ask_file (void)
   avt_set_avatar_mode (AVT_HEADER);
   avt_set_balloon_size (0, 0);
 
-  if (avta_file_selection (filename, sizeof (filename), &check_filename, NULL))
+  if (avta_file_selection
+      (filename, sizeof (filename), &check_filename, NULL))
     return false;
 
   if (*filename)
@@ -508,9 +509,12 @@ ask_file (void)
 	    }
 	}
 
-      // go back to the lua directory if it was changedby the script
-      if (lua_dir[0] != '\0')
-	chdir (lua_dir);
+      // go back to the lua directory if it was changed by the script
+      if (*lua_dir)
+	if (chdir (lua_dir) < 0)
+	  {
+	    // ignore error
+	  }
 
       // script may have called avt.quit()
       if (avt_initialized ())
@@ -555,10 +559,10 @@ start_screen (void)
   avt_new_line ();
   if (german)
     avt_say (L"Verf\u00FCgbar f\u00FCr GNU/Linux und Windows, "
-		"leicht portierbar auf andere Systme");
+	     "leicht portierbar auf andere Systeme");
   else
     avt_say (L"Available for GNU/Linux and Windows, "
-		"easily portable to other systems");
+	     "easily portable to other systems");
   avt_new_line ();
   avt_say (L"Homepage: ");
   avt_underlined (true);
@@ -634,14 +638,16 @@ local_lua_dir (void)
   return chdir (basedir);
 }
 
-static void
+static int
 find_scripts (void)
 {
   if (directory)
-    chdir (directory);		// don't try any other!
+    return chdir (directory);	// don't try any other!
   else if (local_lua_dir () < 0
 	   and chdir ("/usr/local/share/akfavatar/lua") < 0)
-    chdir ("/usr/share/akfavatar/lua");
+    return chdir ("/usr/share/akfavatar/lua");
+
+  return 0;
 }
 
 
