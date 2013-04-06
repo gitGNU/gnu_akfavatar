@@ -65,13 +65,12 @@ get_user_shell (void)
   shell = getenv ("SHELL");
 
   // when the variable is not set, dig deeper
-  if (shell == NULL or * shell == '\0')
+  if (not shell or not * shell)
     {
       struct passwd *user_data;
 
       user_data = getpwuid (getuid ());
-      if (user_data != NULL and user_data->pw_shell != NULL
-	  and * user_data->pw_shell != '\0')
+      if (user_data and user_data->pw_shell and * user_data->pw_shell)
 	shell = user_data->pw_shell;
       else
 	shell = "/bin/sh";	// default shell
@@ -91,7 +90,7 @@ avta_term_initialize (int *input_fd, int width, int height,
   struct termios settings;
   char *shell = "/bin/sh";
 
-  if (prg_argv == NULL)
+  if (not prg_argv)
     shell = get_user_shell ();
 
 #ifdef USE_OPENPTY
@@ -193,9 +192,12 @@ avta_term_initialize (int *input_fd, int width, int height,
 	putenv ("TERM=" TERM);
 
       if (working_dir)
-	(void) chdir (working_dir);
+	if (chdir (working_dir) < 0)
+	  {
+	    // ignore error
+	  }
 
-      if (prg_argv == NULL)	// execute shell
+      if (not prg_argv)		// execute shell
 	execl (shell, shell, (char *) NULL);
       else			// execute the command
 	execvp (prg_argv[0], (char *const *) prg_argv);
