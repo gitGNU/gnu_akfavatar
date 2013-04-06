@@ -1,3 +1,7 @@
+2013-04-06  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_put_char): improved support for UTF-16
+
 2013-04-04  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtmenu.c: animated forward/backward scrolling

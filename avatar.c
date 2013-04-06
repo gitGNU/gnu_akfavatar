@@ -2205,13 +2205,24 @@ avt_put_char (avt_char ch)
 	{
 	  if (0xD800 <= ch and ch <= 0xDBFF)	// UTF-16 high surrogate
 	    {
-	      high_surrogate = ch;
-	      return _avt_STATUS;
+	      if (not high_surrogate)
+		{
+		  high_surrogate = ch;
+		  // return to avoid resetting high_surrogate
+		  return _avt_STATUS;
+		}
+	      else		// repeated use of high surrogate
+		avt_put_raw_char (BROKEN_WCHAR);
 	    }
 	  else			// UTF-16 low surrogate
-	  if (high_surrogate and 0xDC00 <= ch and ch <= 0xDFFF)
-	    avt_put_raw_char (((high_surrogate & 0x3FF) << 10)
-			      + (ch & 0x3FF) + 0x10000);
+	  if (0xDC00 <= ch and ch <= 0xDFFF)
+	    {
+	      if (high_surrogate)
+		avt_put_raw_char (((high_surrogate & 0x3FF) << 10)
+				  + (ch & 0x3FF) + 0x10000);
+	      else		// separated low surrogate
+		avt_put_raw_char (BROKEN_WCHAR);
+	    }
 	  else if (avt.markup and ch == 0x005F)	// '_'
 	    avt.underlined = not avt.underlined;
 	  else if (avt.markup and ch == 0x002A)	// '*'

@@ -53,11 +53,13 @@
 #endif
 
 /*
- * this will be used, when somebody forgets to set the
- * encoding
+ * this will be used by  the *_mb functions
+ * when no encoding was set
  */
 #define MB_DEFAULT_ENCODING "UTF-8"
 
+// used, when the encoding is broken
+#define BROKEN_WCHAR  L'\uFFFD'
 
 // AVT_BYTE_ORDER
 #ifdef AVT_BYTE_ORDER

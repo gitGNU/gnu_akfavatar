@@ -199,7 +199,7 @@ avt_mb_decode_buffer (wchar_t * dest, size_t dest_size,
 	rest_bytes = 0;
       else if (errno != EINVAL)
 	{
-	  *((wchar_t *) outbuf) = L'\uFFFD';
+	  *((wchar_t *) outbuf) = BROKEN_WCHAR;
 
 	  outbuf += sizeof (dest[0]);
 	  outbytesleft -= sizeof (dest[0]);
@@ -217,7 +217,7 @@ avt_mb_decode_buffer (wchar_t * dest, size_t dest_size,
       inbuf++;
       inbytesleft--;
 
-      *((wchar_t *) outbuf) = L'\uFFFD';
+      *((wchar_t *) outbuf) = BROKEN_WCHAR;
 
       outbuf += sizeof (dest[0]);
       outbytesleft -= sizeof (dest[0]);
