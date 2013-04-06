@@ -137,6 +137,8 @@ change_directory (const wchar_t * dirname)
 	  if (chdir (name) == -1)
 	    avt_bell ();
 	}
+      else
+	avt_bell ();
     }
 }
 
