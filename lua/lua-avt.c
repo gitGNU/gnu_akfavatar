@@ -1881,11 +1881,11 @@ file_filter (const char *filename, void *L)
 {
   bool result;
 
-  lua_pushvalue (L, 1);	// push func again, to keep it
+  lua_pushvalue (L, 1);		// push func again, to keep it
   lua_pushstring (L, filename);	// parameter
   lua_call (L, 1, 1);
   result = to_bool (L, -1);
-  lua_pop (L, 1);	// pop result, leave func on stack
+  lua_pop (L, 1);		// pop result, leave func on stack
 
   return result;
 }
@@ -1933,9 +1933,19 @@ lavt_chdir (lua_State * L)
   path = lua_tostring (L, 1);
 
   if (path and * path)
-    chdir (path);		// chdir() conforms to POSIX.1-2001
+    {
+      // chdir() conforms to POSIX.1-2001
+      if (chdir (path) == -1)
+	{
+	  int e = errno;
+	  lua_pushnil (L);
+	  lua_pushstring (L, strerror (e));
+	  return 2;
+	}
+    }
 
-  return 0;
+  lua_pushboolean (L, true);
+  return 1;
 }
 
 static int

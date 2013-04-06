@@ -2,6 +2,9 @@
 
 	* avatar.c (avt_put_char): improved support for UTF-16
 
+	* lua/lua-avt.c (lavt_chdir):
+	returns true or nil and an error message
+
 2013-04-04  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtmenu.c: animated forward/backward scrolling

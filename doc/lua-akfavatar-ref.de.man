@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar Referenz" 3 2012-11-19 AKFAvatar
+.TH "Lua-AKFAvatar Referenz" 3 2013-04-06 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar Referenz \- AKFAvatar spezifische Funktionen für Lua
@@ -1160,6 +1160,12 @@ Setzt das Arbeitsverzeichnis auf
 .IR Verzeichnis .
 .RI "Wenn " Verzeichnis " " nil
 ist, ein Leerstring oder nicht angegeben ist, wird nichts ausgeführt.
+.IP
+Gibt bei Erfolg
+.I true
+zurück oder bei einem Fehler
+.I nil
+und eine Fehlermeldung.
 .IP
 .B Beispiel:
 .EX
