@@ -2224,9 +2224,9 @@ avt_put_char (avt_char ch)
 	    }
 	  else if (high_surrogate)
 	    avt_put_raw_char (BROKEN_WCHAR);	// spurious high surrogate
-	  else if (avt.markup and ch == 0x005F)	// '_'
+	  else if (avt.markup and ch == L'_')
 	    avt.underlined = not avt.underlined;
-	  else if (avt.markup and ch == 0x002A)	// '*'
+	  else if (avt.markup and ch == L'*')
 	    avt.bold = not avt.bold;
 	  else			// not a markup character
 	    avt_put_raw_char (ch);
