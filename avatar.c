@@ -2214,8 +2214,7 @@ avt_put_char (avt_char ch)
 	      else		// repeated use of high surrogate
 		avt_put_raw_char (BROKEN_WCHAR);
 	    }
-	  else			// UTF-16 low surrogate
-	  if (0xDC00 <= ch and ch <= 0xDFFF)
+	  else if (0xDC00 <= ch and ch <= 0xDFFF)	// UTF-16 low surrogate
 	    {
 	      if (high_surrogate)
 		avt_put_raw_char (((high_surrogate & 0x3FF) << 10)
@@ -2223,6 +2222,8 @@ avt_put_char (avt_char ch)
 	      else		// separated low surrogate
 		avt_put_raw_char (BROKEN_WCHAR);
 	    }
+	  else if (high_surrogate)
+	    avt_put_raw_char (BROKEN_WCHAR);	// spurious high surrogate
 	  else if (avt.markup and ch == 0x005F)	// '_'
 	    avt.underlined = not avt.underlined;
 	  else if (avt.markup and ch == 0x002A)	// '*'
