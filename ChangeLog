@@ -1,3 +1,7 @@
+2013-04-29  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/audioplayer.lua (pls): fix PLS playlist support
+
 2013-04-06  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_put_char): improved support for UTF-16

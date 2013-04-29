@@ -132,7 +132,7 @@ local function m3u(url) --> M3U Playlist
   return list
 end
 
-local function pls(filename) --> PLS ShoutCast Playlist
+local function pls(url) --> PLS ShoutCast Playlist
   local list = {}
   local file
 
