@@ -1,3 +1,7 @@
+2013-05-01  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/audioplayer.lua: improved playlist support
+
 2013-04-29  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/audioplayer.lua (pls): fix PLS playlist support

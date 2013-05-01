@@ -112,6 +112,7 @@ end
 
 local function m3u(url) --> M3U Playlist
   local list = {}
+  local titles = {}
   local file
 
   if string.find(url, "^https?://") or string.find(url, "^s?ftps?://") then
@@ -125,15 +126,26 @@ local function m3u(url) --> M3U Playlist
   for line in file:lines() do
     if not string.find(line, "^%s*#") then 
       table.insert(list, handle_list_entry(line))
+    else
+      local title = string.match(line, "^%s*#EXTINF:%d*,%s*(.*)$")
+      if title then
+        table.insert(titles, title)
+      end
     end
   end
 
   file:close()
-  return list
+
+  if titles == {} then
+    titles = nil
+  end
+
+  return list, titles
 end
 
 local function pls(url) --> PLS ShoutCast Playlist
   local list = {}
+  local titles = {}
   local file
 
   if string.find(url, "^https?://") or string.find(url, "^s?ftps?://") then
@@ -152,15 +164,31 @@ local function pls(url) --> PLS ShoutCast Playlist
   for line in file:lines() do
     local number, path = string.match(line, "^%s*File(%d+)=(.*)$")
     if number and path then
-      list[tonumber(number)] = handle_list_entry(path)
+      number = tonumber(number)
+      path = handle_list_entry(path)
+      list[number] = path
+      if not titles[number] then
+        titles[number] = path
+      end
+    else --> not a File entry
+      local title
+      number, title = string.match(line, "^%s*Title(%d+)=(.*)$")
+      if number and title then
+        titles[tonumber(number)] = title
+      end
     end
   end
 
   file:close()
-  return list
+
+  if titles == {} then
+    titles = nil
+  end
+
+  return list, titles
 end
 
-local function play_list(list) --> plays a list of files (but no playlists)
+local function play_list(list, titles) --> plays a list of files (but no playlists)
   local filename, audio, button
   local number = 1
 
@@ -169,6 +197,12 @@ local function play_list(list) --> plays a list of files (but no playlists)
 
   -- just one entry?
   if not list[2] then return play_single(list[1]) end
+
+  -- eventually show playlist
+  ::playlist::
+  if titles then
+    number = avt.menu(titles)
+  end
 
   show_cover()
 
@@ -203,6 +237,11 @@ local function play_list(list) --> plays a list of files (but no playlists)
 
   avt.stop_audio()
   if audio then audio:free() end
+
+  if titles then
+    button = nil
+    goto playlist
+  end
 end -- play_list
 
 local function play(e) --> play file or list

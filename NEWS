@@ -1,6 +1,8 @@
 * AKFAvatar-testing
 
   - paging through menus is animated
+  - fix: audioplayer.lua accepts PLS playlists again
+  - lua/audioplayer.lua: improved playlist support
 
   Lua-API changes:
     - avt.set_directory or avt.chdir return true on success
