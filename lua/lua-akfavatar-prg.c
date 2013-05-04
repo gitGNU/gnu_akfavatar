@@ -1,6 +1,7 @@
 /*
  * Starter for Lua-AKFAvatar programs in Lua
- * Copyright (c) 2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2009,2010,2011,2012,2013
+ * Andreas K. Foerster <info@akfoerster.de>
  *
  * required standards: C99, POSIX.1-2001
  *
@@ -558,11 +559,9 @@ start_screen (void)
   avt_new_line ();
   avt_new_line ();
   if (german)
-    avt_say (L"Verf\u00FCgbar f\u00FCr GNU/Linux und Windows, "
-	     "leicht portierbar auf andere Systeme");
+    avt_say (L"Verf\u00FCgbar f\u00FCr GNU\u2764Linux und Windows.");
   else
-    avt_say (L"Available for GNU/Linux and Windows, "
-	     "easily portable to other systems");
+    avt_say (L"Available for GNU\u2764Linux and Windows.");
   avt_new_line ();
   avt_say (L"Homepage: ");
   avt_underlined (true);
