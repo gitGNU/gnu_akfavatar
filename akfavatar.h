@@ -227,9 +227,37 @@ AVT_API size_t avt_ticks (void);
 #define avt_elapsed(start_ticks)  (avt_ticks()-(start_ticks))
 
 /***********************************************************************/
+/* handling of single characters */
+
+/*
+ * writes a single character in the balloon
+ * if there is no balloon, it is drawn
+ * if there is no avatar, it is shown (not moved in)
+ * interprets control characters, but not for overstrike-text
+ * UTF-16 surrogate characters are interpreted too
+ */
+AVT_API int avt_put_char (avt_char ch);
+
+/*
+ * checks whether the given character is printable
+ * returns false on unknown or control characters
+ */
+AVT_API bool avt_is_printable (avt_char ch);
+
+/*
+ * checks whether the given character is a combining character
+ * combining characters are added to the previous character
+ * they don't take space
+ *
+ * not all combining characters of Unicode supported
+ */
+AVT_API bool avt_combining (avt_char ch);
+
+
+/***********************************************************************/
 /* say or ask stuff with wchar_t */
 /* the encoding can be UTF-32 or UTF-16 
- * depending on the system specific size of wchar_t
+ * depending on the systems specific size of wchar_t
  */
 
 /*
@@ -270,60 +298,11 @@ AVT_API int avt_tell (const wchar_t *txt);
 AVT_API int avt_tell_len (const wchar_t *txt, size_t len);
 
 /*
- * writes a single character in the balloon
- * if there is no balloon, it is drawn
- * if there is no avatar, it is shown (not moved in)
- * interprets control characters, but not for overstrike-text
- * UTF-16 surrogate characters are interpreted too
- */
-AVT_API int avt_put_char (avt_char ch);
-
-/*
- * checks whether the given character is printable
- * returns false on unknown or control characters
- */
-AVT_API bool avt_is_printable (avt_char ch);
-
-/*
- * checks whether the given character is a combining character
- * combining characters are added to the previous character
- * they don't take space
- *
- * not all combining characters of Unicode supported
- */
-AVT_API bool avt_combining (avt_char ch);
-
-/*
  * get string (just one line)
  * the maximum length is LINELENGTH-1
  * size is the size of s in bytes (not the length)
  */
 AVT_API int avt_ask (wchar_t *s, size_t size);
-
-
-/***********************************************************************/
-/* key or event handling */
-
-/*
- * get a character from the keyboard
- * waits until a key is pressed
- * see AVT_KEY_ constants for function keys
- * on error or a quit request it returns AVT_KEY_NONE
- */
-AVT_API avt_char avt_get_key (void);
-
-/*
- * check if a key was pressed (or an event happened)
- * the key should then be fetched with avt_get_key
- */
-AVT_API bool avt_key_pressed (void);
-
-/* clear key buffer */
-AVT_API void avt_clear_keys (void);
-
-/* push key or event */
-AVT_API void avt_push_key (avt_char key);
-
 
 /***********************************************************************/
 /* say or ask stuff with multi-byte encodings */
@@ -460,6 +439,30 @@ AVT_API size_t avt_recode_buffer (const char *tocode, const char *fromcode,
 
 /* free memory allocated by this library */
 AVT_API void avt_free (void *ptr);
+
+
+/***********************************************************************/
+/* key or event handling */
+
+/*
+ * get a character from the keyboard
+ * waits until a key is pressed
+ * see AVT_KEY_ constants for function keys
+ * on error or a quit request it returns AVT_KEY_NONE
+ */
+AVT_API avt_char avt_get_key (void);
+
+/*
+ * check if a key was pressed (or an event happened)
+ * the key should then be fetched with avt_get_key
+ */
+AVT_API bool avt_key_pressed (void);
+
+/* clear key buffer */
+AVT_API void avt_clear_keys (void);
+
+/* push key or event */
+AVT_API void avt_push_key (avt_char key);
 
 
 /***********************************************************************/
