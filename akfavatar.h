@@ -326,7 +326,7 @@ AVT_API void avt_push_key (avt_char key);
 
 
 /***********************************************************************/
-/* say or ask stuff with multy-byte encodings */
+/* say or ask stuff with multi-byte encodings */
 
 /*
  * set encoding for mb functions
@@ -394,7 +394,7 @@ AVT_API int avt_ask_mb (char *s, size_t size);
  * size in bytes
  * returns number of characters in dest (without the termination zero)
  * or (size_t)(-1) on error
- * incomplete multibyte sequences can be completed the next turn
+ * incomplete multi-byte sequences can be completed the next turn
  * dest must be freed by caller with avt_free
  */
 AVT_API size_t avt_mb_decode (wchar_t **dest, const char *src, size_t src_size);
@@ -404,7 +404,7 @@ AVT_API size_t avt_mb_decode (wchar_t **dest, const char *src, size_t src_size);
  * sizes in bytes
  * returns number of characters in dest (without the termination zero)
  * or (size_t)(-1) on error
- * incomplete multibyte sequences can be completed the next turn
+ * incomplete multi-byte sequences can be completed the next turn
  * dest gets as much as fits
  * dest should have a size of (src + 1) * 4
  */
