@@ -201,6 +201,7 @@ local function play_list(list, titles) --> plays a list of files (but no playlis
   -- eventually show playlist
   ::playlist::
   if titles then
+    avt.set_balloon_size (rawlen (titles), 0)
     number = avt.menu(titles)
   end
 

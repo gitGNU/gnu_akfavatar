@@ -2129,31 +2129,31 @@ avt_put_char (avt_char ch)
 
   switch (ch)
     {
-    case 0x000A:		// LF: Line Feed
-    case 0x000B:		// VT: Vertical Tab
-    case 0x0085:		// NEL: NExt Line
-    case 0x2028:		// LS: Line Separator
-    case 0x2029:		// PS: Paragraph Separator
+    case L'\n':		// LF: Line Feed
+    case L'\v':		// VT: Vertical Tab
+    case L'\x85':		// NEL: NExt Line
+    case L'\u2028':		// LS: Line Separator
+    case L'\u2029':		// PS: Paragraph Separator
       avt_new_line ();
       break;
 
-    case 0x000D:		// CR: Carriage Return
+    case L'\r':		// CR: Carriage Return
       avt_carriage_return ();
       break;
 
-    case 0x000C:		// FF: Form Feed
+    case L'\f':		// FF: Form Feed
       avt_flip_page ();
       break;
 
-    case 0x0009:		// HT: Horizontal Tab
+    case L'\t':		// HT: Horizontal Tab
       avt_next_tab ();
       break;
 
-    case 0x0008:		// BS: Back Space
+    case L'\b':		// BS: Back Space
       avt_backspace ();
       break;
 
-    case 0x0007:		// BEL
+    case L'\a':		// BEL
       bell ();
       break;
 
@@ -2161,25 +2161,25 @@ avt_put_char (avt_char ch)
        * ignore BOM here
        * must be handled outside of the library
        */
-    case 0xFEFF:
+    case L'\uFEFF':
       break;
 
       // LRM/RLM: only supported at the beginning of a line
-    case 0x200E:		// LEFT-TO-RIGHT MARK (LRM)
+    case L'\u200E':		// LEFT-TO-RIGHT MARK (LRM)
       avt_text_direction (AVT_LEFT_TO_RIGHT);
       break;
 
-    case 0x200F:		// RIGHT-TO-LEFT MARK (RLM)
+    case L'\u200F':		// RIGHT-TO-LEFT MARK (RLM)
       avt_text_direction (AVT_RIGHT_TO_LEFT);
       break;
 
       // other ignorable (invisible) characters
-    case 0x200B:
-    case 0x200C:
-    case 0x200D:
+    case L'\u200B':
+    case L'\u200C':
+    case L'\u200D':
       break;
 
-    case 0x0020:		// SP: space
+    case L' ':			// SP: space
       if (avt.auto_margin)
 	check_auto_margin ();
 

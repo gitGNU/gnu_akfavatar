@@ -227,7 +227,10 @@ AVT_API size_t avt_ticks (void);
 #define avt_elapsed(start_ticks)  (avt_ticks()-(start_ticks))
 
 /***********************************************************************/
-/* say or ask stuff with wchar_t (Unicode) */
+/* say or ask stuff with wchar_t */
+/* the encoding can be UTF-32 or UTF-16 
+ * depending on the system specific size of wchar_t
+ */
 
 /*
  * prints a L'\0' terminated string in the balloon
