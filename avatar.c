@@ -4472,7 +4472,7 @@ avt_credits_up (avt_graphic * last_line)
 	  // move more pixels at once and give more time next time
 	  if (pixel < fontheight - moved)
 	    {
-	      pixel++;
+	      ++pixel;
 	      tickinterval += CREDITDELAY;
 	    }
 	}
@@ -4533,16 +4533,14 @@ avt_credits (const wchar_t * text, bool centered)
       while (*p and not avt_is_linebreak (*p))
 	{
 	  if (*p >= L' ' and length < 80)
-	    {
-	      line[length] = *p;
-	      length++;
-	    }
+	    line[length++] = *p;
 
-	  p++;
+	  ++p;
 	}
 
       // skip linebreak
-      p++;
+      if (*p)
+	++p;
 
       // draw line
       if (centered)
@@ -4554,7 +4552,7 @@ avt_credits (const wchar_t * text, bool centered)
       avt_fill (last_line, AVT_COLOR_BLACK);
 
       // print on last_line
-      for (int i = 0; i < length; i++, avt.cursor.x += fontwidth)
+      for (int i = 0; i < length; ++i, avt.cursor.x += fontwidth)
 	avt_drawchar ((avt_char) line[i], last_line);
 
       avt_credits_up (last_line);
