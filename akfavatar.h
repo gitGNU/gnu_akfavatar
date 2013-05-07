@@ -320,7 +320,7 @@ AVT_API int avt_ask (wchar_t *s, size_t size);
  * prints a 0 terminated string in the balloon
  * if there is no balloon, it is drawn
  * if there is no avatar, it is shown (not moved in)
- * interprets control chars including overstrike-text
+ * interprets control chars
  */
 AVT_API int avt_say_l1 (const char *txt);
 
@@ -336,7 +336,7 @@ AVT_API int avt_say_l1_len (const char *txt, size_t len);
  * prints a 0 terminated string in the balloon
  * if there is no balloon, it is drawn
  * if there is no avatar, it is shown (not moved in)
- * interprets control chars including overstrike-text
+ * interprets control chars
  */
 AVT_API int avt_tell_l1 (const char *txt);
 
