@@ -2157,6 +2157,10 @@ avt_put_char (avt_char ch)
       bell ();
       break;
 
+    case L'\x1A':		// SUB (substitute)
+      avt_put_raw_char ('\0');
+      break;
+
       /*
        * ignore BOM here
        * must be handled outside of the library
@@ -2174,6 +2178,7 @@ avt_put_char (avt_char ch)
       break;
 
       // other ignorable (invisible) characters
+    case L'\x7F':
     case L'\u200B':
     case L'\u200C':
     case L'\u200D':
@@ -2393,6 +2398,7 @@ avt_tell_len (const wchar_t * txt, size_t len)
 	  break;
 
 	case L'\a':
+	case L'\x7F':
 	case L'\uFEFF':
 	case L'\u200E':
 	case L'\u200F':
@@ -2419,8 +2425,8 @@ avt_tell_len (const wchar_t * txt, size_t len)
 	  // else fall through
 
 	default:
-	  if ((*p >= 32 or * p == 0) and (*p < 0xD800 or * p > 0xDBFF)
-	      and not avt_combining (*p))
+	  if ((*p >= 32 or * p == 0 or * p == 0x1A)
+	      and (*p < 0xD800 or * p > 0xDBFF) and not avt_combining (*p))
 	    {
 	      line_length++;
 	      if (avt.auto_margin and line_length > AVT_LINELENGTH)
