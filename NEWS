@@ -6,7 +6,8 @@
 
   C-API changes:
     new functions: avt_say_l1, avt_say_l1_len, avt_ask_l1,
-    avt_tell_l1, avt_tell_l1_len, avt_set_avatar_name_l1
+    avt_tell_l1, avt_tell_l1_len, avt_set_avatar_name_l1,
+    avt_pager_l1
 
   Lua-API changes:
     - avt.set_directory or avt.chdir return true on success

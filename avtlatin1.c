@@ -26,6 +26,7 @@
 #include "akfavatar.h"
 #include "avtinternals.h"
 
+#include <stdlib.h>
 #include <string.h>
 #include <iso646.h>
 
@@ -133,6 +134,7 @@ avt_tell_l1 (const char *txt)
   return _avt_STATUS;
 }
 
+
 extern int
 avt_set_avatar_name_l1 (const char *name)
 {
@@ -148,6 +150,28 @@ avt_set_avatar_name_l1 (const char *name)
 	wide[i] = (wchar_t) n[i];
 
       avt_set_avatar_name (wide);
+    }
+
+  return _avt_STATUS;
+}
+
+
+extern int
+avt_pager_l1 (const char *txt, size_t len, int startline)
+{
+  if (txt and _avt_STATUS == AVT_NORMAL and avt_initialized ())
+    {
+      if (not len)
+	len = strlen (txt);
+
+      wchar_t *wctext = malloc (len * sizeof (wchar_t));
+      const unsigned char *t = (const unsigned char *) txt;
+
+      for (size_t i = 0; i < len; ++i)
+	wctext[i] = (wchar_t) t[i];
+
+      avt_pager (wctext, len, startline);
+      free (wctext);
     }
 
   return _avt_STATUS;

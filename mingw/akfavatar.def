@@ -99,6 +99,7 @@ EXPORTS
     avt_next_tab
     avt_normal_text
     avt_pager
+    avt_pager_l1
     avt_pager_mb
     avt_palette
     avt_palette_size
