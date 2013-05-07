@@ -132,3 +132,23 @@ avt_tell_l1 (const char *txt)
 
   return _avt_STATUS;
 }
+
+extern int
+avt_set_avatar_name_l1 (const char *name)
+{
+  if (not name or not * name)
+    avt_set_avatar_name (NULL);
+  else
+    {
+      size_t len = strlen (name);
+      wchar_t wide[len];
+      const unsigned char *n = (const unsigned char *) name;
+
+      for (size_t i = 0; i < len; ++i)
+	wide[i] = (wchar_t) n[i];
+
+      avt_set_avatar_name (wide);
+    }
+
+  return _avt_STATUS;
+}

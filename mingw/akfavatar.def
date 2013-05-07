@@ -130,6 +130,7 @@ EXPORTS
     avt_set_auto_margin
     avt_set_avatar_mode
     avt_set_avatar_name
+    avt_set_avatar_name_l1
     avt_set_avatar_name_mb
     avt_set_background_color
     avt_set_balloon_color
