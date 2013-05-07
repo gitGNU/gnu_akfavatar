@@ -4,6 +4,10 @@
   - fix: audioplayer.lua accepts PLS playlists again
   - lua/audioplayer.lua: improved playlist support
 
+  C-API changes:
+    new functions: avt_say_l1, avt_say_l1_len, avt_ask_l1,
+    avt_tell_l1, avt_tell_l1_len
+
   Lua-API changes:
     - avt.set_directory or avt.chdir return true on success
       or nil and an error message on error

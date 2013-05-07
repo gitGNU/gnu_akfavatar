@@ -304,6 +304,24 @@ AVT_API int avt_tell_len (const wchar_t *txt, size_t len);
  */
 AVT_API int avt_ask (wchar_t *s, size_t size);
 
+
+/***********************************************************************/
+/* say stuff with latin1 (ISO-8859-1) encoding */
+/* can also be used for plain US-ASCII */
+
+/*
+ * this is faster and more reliable than the _mb functions,
+ * but limited to one encoding
+ */
+
+/* it currently does not support overstrike text */
+
+AVT_API int avt_say_l1 (const char *txt);
+AVT_API int avt_say_l1_len (const char *txt, size_t len);
+AVT_API int avt_ask_l1 (char *s, size_t size);
+AVT_API int avt_tell_l1 (const char *txt);
+AVT_API int avt_tell_l1_len (const char *txt, size_t len);
+
 /***********************************************************************/
 /* say or ask stuff with multi-byte encodings */
 

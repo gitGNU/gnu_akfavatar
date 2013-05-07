@@ -4,6 +4,7 @@ EXPORTS
     avt_add_raw_audio_data
     avt_ask
     avt_ask_mb
+    avt_ask_l1
     avt_audio_playing
     avt_avatar_image_data
     avt_avatar_image_default
@@ -123,6 +124,8 @@ EXPORTS
     avt_say_len
     avt_say_mb
     avt_say_mb_len
+    avt_say_l1
+    avt_say_l1_len
     avt_set_audio_end_key
     avt_set_auto_margin
     avt_set_avatar_mode
@@ -163,6 +166,8 @@ EXPORTS
     avt_tell_len
     avt_tell_mb
     avt_tell_mb_len
+    avt_tell_l1
+    avt_tell_l1_len
     avt_text_direction
     avt_ticks
     avt_toggle_fullscreen
