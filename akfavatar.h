@@ -316,13 +316,58 @@ AVT_API int avt_ask (wchar_t *s, size_t size);
 
 /* it currently does not support overstrike text */
 
+/*
+ * prints a 0 terminated string in the balloon
+ * if there is no balloon, it is drawn
+ * if there is no avatar, it is shown (not moved in)
+ * interprets control chars including overstrike-text
+ */
 AVT_API int avt_say_l1 (const char *txt);
+
+/*
+ * the same with a given length
+ * the string needn't be terminated then
+ * and can contain binary zeros
+ */
 AVT_API int avt_say_l1_len (const char *txt, size_t len);
-AVT_API int avt_ask_l1 (char *s, size_t size);
+
+/*
+ * sets the balloon size so that the text fits exactly
+ * prints a 0 terminated string in the balloon
+ * if there is no balloon, it is drawn
+ * if there is no avatar, it is shown (not moved in)
+ * interprets control chars including overstrike-text
+ */
 AVT_API int avt_tell_l1 (const char *txt);
+
+/*
+ * the same with a given length
+ * the string needn't be terminated then
+ * and can contain binary zeros
+ */
 AVT_API int avt_tell_l1_len (const char *txt, size_t len);
+
+/*
+ * get string (just one line)
+ * converted to ISO-8859-1
+ * nonexisting characters are replaced with SUB ('\x1A')
+ */
+AVT_API int avt_ask_l1 (char *s, size_t size);
+
+/*
+ * set name for the avatar
+ * set to NULL to clear the name
+ */
 AVT_API int avt_set_avatar_name_l1 (const char *name);
+
+/*
+ * show longer text with a text-viewer application
+ * if len is 0, assume 0-terminated string
+ * startline is only used, when it is greater than 1
+ */
 AVT_API int avt_pager_l1 (const char *txt, size_t len, int startline);
+
+/* show final credits */
 AVT_API int avt_credits_l1 (const char *txt, bool centered);
 
 /***********************************************************************/
