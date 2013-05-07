@@ -32,6 +32,7 @@ EXPORTS
     avt_combining
     avt_copyright
     avt_credits
+    avt-credits_l1
     avt_credits_mb
     avt_decide
     avt_delete_characters

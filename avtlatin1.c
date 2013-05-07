@@ -26,7 +26,9 @@
 #include "akfavatar.h"
 #include "avtinternals.h"
 
+#include <stddef.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <iso646.h>
 
@@ -165,13 +167,41 @@ avt_pager_l1 (const char *txt, size_t len, int startline)
 	len = strlen (txt);
 
       wchar_t *wctext = malloc (len * sizeof (wchar_t));
-      const unsigned char *t = (const unsigned char *) txt;
 
-      for (size_t i = 0; i < len; ++i)
-	wctext[i] = (wchar_t) t[i];
+      if (wctext)
+	{
+	  const unsigned char *t = (const unsigned char *) txt;
 
-      avt_pager (wctext, len, startline);
-      free (wctext);
+	  for (size_t i = 0; i < len; ++i)
+	    wctext[i] = (wchar_t) t[i];
+
+	  avt_pager (wctext, len, startline);
+	  free (wctext);
+	}
+    }
+
+  return _avt_STATUS;
+}
+
+
+extern int
+avt_credits_l1 (const char *txt, bool centered)
+{
+  if (_avt_STATUS == AVT_NORMAL and txt and * txt and avt_initialized ())
+    {
+      size_t len = strlen (txt);
+      wchar_t *wctext = malloc ((len + 1) * sizeof (wchar_t));
+
+      if (wctext)
+	{
+	  const unsigned char *t = (const unsigned char *) txt;
+
+	  for (size_t i = 0; i <= len; ++i)
+	    wctext[i] = (wchar_t) t[i];
+
+	  avt_credits (wctext, centered);
+	  free (wctext);
+	}
     }
 
   return _avt_STATUS;

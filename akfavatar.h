@@ -323,6 +323,7 @@ AVT_API int avt_tell_l1 (const char *txt);
 AVT_API int avt_tell_l1_len (const char *txt, size_t len);
 AVT_API int avt_set_avatar_name_l1 (const char *name);
 AVT_API int avt_pager_l1 (const char *txt, size_t len, int startline);
+AVT_API int avt_credits_l1 (const char *txt, bool centered);
 
 /***********************************************************************/
 /* say or ask stuff with multi-byte encodings */
