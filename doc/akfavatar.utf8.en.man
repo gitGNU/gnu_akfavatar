@@ -191,7 +191,7 @@ Converts an UTF-8
 into Latin-1 (ISO-8859-1).
 Characters which cannot be converted are replaced with the
 .I replacement
-string if given, or they are ignored.
+string if given, or they are replaced with "\\x1A".
 .PP
 .SH "SEE ALSO"
 .BR lua-akfavatar (1)

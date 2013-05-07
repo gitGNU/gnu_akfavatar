@@ -202,7 +202,8 @@ Konvertiert einen UTF-8
 nach Latin-1 (ISO-8859-1).
 Zeichen, die nicht konvertiert werden können, werden durch den
 .IR Ersatz -String
-ersetzt, oder ignoriert, wenn kein
+ersetzt,
+oder durch "\\x1A" wenn kein
 .IR Ersatz -String
 angegeben ist.
 .PP

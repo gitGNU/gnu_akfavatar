@@ -7,6 +7,9 @@
 	* avatar.c (avt_put_char, avt_tell_len):
 	do show SUB ('\x1A'), do not show DEL ('\x7F')
 
+	* lua/akfavatar/utf8.lua (u8.to_latin1):
+	use SUB ("\x1A") as default replacement
+
 2013-05-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/audioplayer.lua: improved playlist support

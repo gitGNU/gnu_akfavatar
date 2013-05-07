@@ -309,7 +309,7 @@ end
 
 
 function u8.to_latin1 (s, replacement)
-  replacement = replacement or ""
+  replacement = replacement or "\x1A"
   return (string.gsub(s, "[\192-\244][\128-\191]+",
             function (c)
               local value = u8.codepoint(c)
