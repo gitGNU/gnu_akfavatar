@@ -306,12 +306,12 @@ AVT_API int avt_ask (wchar_t *s, size_t size);
 
 
 /***********************************************************************/
-/* say stuff with latin1 (ISO-8859-1) encoding */
+/* say stuff with UTF-8 or latin1 (ISO-8859-1) encoding */
 /* can also be used for plain US-ASCII */
 
 /*
  * this is faster and more reliable than the _mb functions,
- * but limited to one encoding
+ * but limited
  */
 
 /* it currently does not support overstrike text */
@@ -323,6 +323,7 @@ AVT_API int avt_ask (wchar_t *s, size_t size);
  * interprets control chars
  */
 AVT_API int avt_say_l1 (const char *txt);
+AVT_API int avt_say_u8 (const char *txt);
 
 /*
  * the same with a given length
@@ -330,6 +331,7 @@ AVT_API int avt_say_l1 (const char *txt);
  * and can contain binary zeros
  */
 AVT_API int avt_say_l1_len (const char *txt, size_t len);
+AVT_API int avt_say_u8_len (const char *txt, size_t len);
 
 /*
  * sets the balloon size so that the text fits exactly
@@ -339,6 +341,7 @@ AVT_API int avt_say_l1_len (const char *txt, size_t len);
  * interprets control chars
  */
 AVT_API int avt_tell_l1 (const char *txt);
+AVT_API int avt_tell_u8 (const char *txt);
 
 /*
  * the same with a given length
@@ -346,19 +349,21 @@ AVT_API int avt_tell_l1 (const char *txt);
  * and can contain binary zeros
  */
 AVT_API int avt_tell_l1_len (const char *txt, size_t len);
+AVT_API int avt_tell_u8_len (const char *txt, size_t len);
 
 /*
  * get string (just one line)
- * converted to ISO-8859-1
  * nonexisting characters are replaced with SUB ('\x1A')
  */
 AVT_API int avt_ask_l1 (char *s, size_t size);
+AVT_API int avt_ask_u8 (char *s, size_t size);
 
 /*
  * set name for the avatar
  * set to NULL to clear the name
  */
 AVT_API int avt_set_avatar_name_l1 (const char *name);
+AVT_API int avt_set_avatar_name_u8 (const char *name);
 
 /*
  * show longer text with a text-viewer application
@@ -366,12 +371,16 @@ AVT_API int avt_set_avatar_name_l1 (const char *name);
  * startline is only used, when it is greater than 1
  */
 AVT_API int avt_pager_l1 (const char *txt, size_t len, int startline);
+AVT_API int avt_pager_u8 (const char *txt, size_t len, int startline);
 
 /* show final credits */
 AVT_API int avt_credits_l1 (const char *txt, bool centered);
+AVT_API int avt_credits_u8 (const char *txt, bool centered);
 
 /***********************************************************************/
 /* say or ask stuff with multi-byte encodings */
+
+/* These functions might be removed in future versions */
 
 /*
  * set encoding for mb functions
@@ -433,6 +442,8 @@ AVT_API int avt_ask_mb (char *s, size_t size);
 
 /***********************************************************************/
 /* convert text encodings */
+
+/* These functions might be removed in future versions */
 
 /*
  * decode a string into wchar_t

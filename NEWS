@@ -5,9 +5,12 @@
   - lua/audioplayer.lua: improved playlist support
 
   C-API changes:
-    new functions: avt_say_l1, avt_say_l1_len, avt_ask_l1,
-    avt_tell_l1, avt_tell_l1_len, avt_set_avatar_name_l1,
-    avt_pager_l1, avt_credits_l1
+    new functions: avt_say_u8, avt_say_u8_len, avt_ask_u8,
+    avt_tell_u8, avt_tell_u8_len, avt_set_avatar_name_u8,
+    avt_pager_u8, avt_credits_u8,
+    avt_say_l1, avt_say_l1_len, avt_ask_l1, avt_tell_l1,
+    avt_tell_l1_len, avt_set_avatar_name_l1, avt_pager_l1,
+    avt_credits_l1
 
   Lua-API changes:
     - avt.set_directory or avt.chdir return true on success
