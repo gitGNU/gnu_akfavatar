@@ -144,7 +144,7 @@ utf8_to_unicode (const char *utf8, avt_char * ch)
 
 // no support for UTF-16 surrogates!
 // that would make things only more complicated
-static void
+static size_t
 utf8_to_wchar (const char *txt, size_t len, wchar_t * wide, size_t wide_len)
 {
   size_t charnum = 0;
@@ -169,7 +169,9 @@ utf8_to_wchar (const char *txt, size_t len, wchar_t * wide, size_t wide_len)
       ++charnum;
     }
 
-  wide[wide_len - 1] = L'\0';
+  wide[charnum] = L'\0';
+
+  return charnum;
 }
 
 
@@ -272,10 +274,8 @@ avt_tell_u8_len (const char *txt, size_t len)
       if (not len or len > 0x80000000)
 	len = strlen (txt);
 
-      size_t chars = utf8_chars_len (txt, len);
-
-      wchar_t wide[chars + 1];
-      utf8_to_wchar (txt, len, wide, chars + 1);
+      wchar_t wide[len + 1];
+      size_t chars = utf8_to_wchar (txt, len, wide, len);
 
       avt_tell_len (wide, chars);
     }
@@ -302,11 +302,9 @@ avt_set_avatar_name_u8 (const char *name)
   else
     {
       size_t len = strlen (name);
-      size_t chars = utf8_chars_len (name, len);
-      wchar_t wide[chars + 1];
+      wchar_t wide[len + 1];
 
-      utf8_to_wchar (name, len, wide, chars + 1);
-
+      utf8_to_wchar (name, len, wide, len);
       avt_set_avatar_name (wide);
     }
 
@@ -322,12 +320,11 @@ avt_pager_u8 (const char *txt, size_t len, int startline)
       if (not len)
 	len = strlen (txt);
 
-      size_t chars = utf8_chars_len (txt, len);
-      wchar_t *wctext = malloc ((chars + 1) * sizeof (wchar_t));
+      wchar_t *wctext = malloc ((len + 1) * sizeof (wchar_t));
 
       if (wctext)
 	{
-	  utf8_to_wchar (txt, len, wctext, chars + 1);
+	  size_t chars = utf8_to_wchar (txt, len, wctext, len);
 	  avt_pager (wctext, chars, startline);
 	  free (wctext);
 	}
@@ -342,12 +339,12 @@ avt_credits_u8 (const char *txt, bool centered)
 {
   if (_avt_STATUS == AVT_NORMAL and txt and * txt and avt_initialized ())
     {
-      size_t chars = utf8_chars (txt);
-      wchar_t *wctext = malloc ((chars + 1) * sizeof (wchar_t));
+      size_t len = strlen (txt);
+      wchar_t *wctext = malloc ((len + 1) * sizeof (wchar_t));
 
       if (wctext)
 	{
-	  utf8_to_wchar (txt, strlen (txt), wctext, chars + 1);
+	  utf8_to_wchar (txt, len, wctext, len);
 	  avt_credits (wctext, centered);
 	  free (wctext);
 	}
