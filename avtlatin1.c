@@ -35,6 +35,15 @@
 // substitution character for characters not available in Latin-1
 #define SUB '\x1A'
 
+static void
+lat1_to_wide (const char *l1, wchar_t * wide, size_t len)
+{
+  const unsigned char *t = (const unsigned char *) l1;
+
+  for (size_t i = 0; i < len; ++i)
+    wide[i] = (wchar_t) t[i];
+}
+
 
 extern int
 avt_say_l1 (const char *txt)
@@ -46,15 +55,10 @@ avt_say_l1 (const char *txt)
   if (not txt or not * txt)
     return avt_update ();
 
-  const unsigned char *p = (const unsigned char *) txt;
-
-  while (*p)
-    {
-      if (avt_put_char (*p) != AVT_NORMAL)
-	break;
-
-      ++p;
-    }
+  size_t len = strlen (txt);
+  wchar_t wide[len];
+  lat1_to_wide (txt, wide, len);
+  avt_say_len (wide, len);
 
   return _avt_STATUS;
 }
@@ -68,11 +72,9 @@ avt_say_l1_len (const char *txt, size_t len)
   if (not txt or _avt_STATUS != AVT_NORMAL or not avt_initialized ())
     return avt_update ();
 
-  const unsigned char *p = (const unsigned char *) txt;
-
-  for (size_t i = 0; i < len; i++, p++)
-    if (avt_put_char (*p) != AVT_NORMAL)
-      break;
+  wchar_t wide[len];
+  lat1_to_wide (txt, wide, len);
+  avt_say_len (wide, len);
 
   return _avt_STATUS;
 }
@@ -115,11 +117,7 @@ avt_tell_l1_len (const char *txt, size_t len)
 	len = strlen (txt);
 
       wchar_t wide[len];
-      const unsigned char *t = (const unsigned char *) txt;
-
-      for (size_t i = 0; i < len; ++i)
-	wide[i] = (wchar_t) t[i];
-
+      lat1_to_wide (txt, wide, len);
       avt_tell_len (wide, len);
     }
 
@@ -146,10 +144,7 @@ avt_set_avatar_name_l1 (const char *name)
     {
       size_t len = strlen (name);
       wchar_t wide[len];
-      const unsigned char *n = (const unsigned char *) name;
-
-      for (size_t i = 0; i < len; ++i)
-	wide[i] = (wchar_t) n[i];
+      lat1_to_wide (name, wide, len);
 
       avt_set_avatar_name (wide);
     }
@@ -170,11 +165,7 @@ avt_pager_l1 (const char *txt, size_t len, int startline)
 
       if (wctext)
 	{
-	  const unsigned char *t = (const unsigned char *) txt;
-
-	  for (size_t i = 0; i < len; ++i)
-	    wctext[i] = (wchar_t) t[i];
-
+	  lat1_to_wide (txt, wctext, len);
 	  avt_pager (wctext, len, startline);
 	  free (wctext);
 	}
@@ -194,11 +185,7 @@ avt_credits_l1 (const char *txt, bool centered)
 
       if (wctext)
 	{
-	  const unsigned char *t = (const unsigned char *) txt;
-
-	  for (size_t i = 0; i <= len; ++i)
-	    wctext[i] = (wchar_t) t[i];
-
+	  lat1_to_wide (txt, wctext, len);
 	  avt_credits (wctext, centered);
 	  free (wctext);
 	}

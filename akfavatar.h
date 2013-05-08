@@ -309,12 +309,7 @@ AVT_API int avt_ask (wchar_t *s, size_t size);
 /* say stuff with UTF-8 or latin1 (ISO-8859-1) encoding */
 /* can also be used for plain US-ASCII */
 
-/*
- * this is faster and more reliable than the _mb functions,
- * but limited
- */
-
-/* it currently does not support overstrike text */
+/* this is reliable than the _mb functions, but limited */
 
 /*
  * prints a 0 terminated string in the balloon

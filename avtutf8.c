@@ -228,16 +228,11 @@ avt_say_u8 (const char *txt)
   if (not txt or not * txt)
     return avt_update ();
 
-  while (*txt)
-    {
-      avt_char ch;
+  size_t len = strlen (txt);
 
-      size_t bytes = utf8_to_unicode (txt, &ch);
-      if (not bytes or avt_put_char (ch) != AVT_NORMAL)
-	break;
-
-      txt += bytes;
-    }
+  wchar_t wide[len + 1];
+  size_t chars = utf8_to_wchar (txt, len, wide, len);
+  avt_say_len (wide, chars);
 
   return _avt_STATUS;
 }
@@ -251,15 +246,11 @@ avt_say_u8_len (const char *txt, size_t len)
   if (not txt or _avt_STATUS != AVT_NORMAL or not avt_initialized ())
     return avt_update ();
 
-  while (len)
+  if (len)
     {
-      avt_char ch;
-      size_t bytes = utf8_to_unicode (txt, &ch);
-      if (not bytes or avt_put_char (ch) != AVT_NORMAL or bytes > len)
-	break;
-
-      txt += bytes;
-      len -= bytes;
+      wchar_t wide[len + 1];
+      size_t chars = utf8_to_wchar (txt, len, wide, len);
+      avt_say_len (wide, chars);
     }
 
   return _avt_STATUS;
