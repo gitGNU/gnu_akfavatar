@@ -47,16 +47,6 @@ lat1_to_wide (const char *l1, wchar_t * wide, size_t len)
 
 
 extern int
-avt_say_l1 (const char *txt)
-{
-  if (txt and * txt)
-    avt_say_l1_len (txt, strlen (txt));
-
-  return _avt_STATUS;
-}
-
-
-extern int
 avt_say_l1_len (const char *txt, size_t len)
 {
   // nothing to do, when txt == NULL
@@ -70,6 +60,16 @@ avt_say_l1_len (const char *txt, size_t len)
       lat1_to_wide (txt, wide, len);
       avt_say_len (wide, len);
     }
+
+  return _avt_STATUS;
+}
+
+
+extern int
+avt_say_l1 (const char *txt)
+{
+  if (txt and * txt)
+    avt_say_l1_len (txt, strlen (txt));
 
   return _avt_STATUS;
 }

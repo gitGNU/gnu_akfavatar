@@ -136,8 +136,6 @@ utf8_to_wchar (const char *txt, size_t len, wchar_t * wide, size_t wide_len)
 static void
 wchar_to_utf8 (const wchar_t * txt, size_t len, char *utf8, size_t utf8_size)
 {
-  memset (utf8, '\0', utf8_size);
-
   size_t p = 0;			// position in utf8 string
 
   for (size_t i = 0; i < len; ++i)
@@ -177,16 +175,6 @@ wchar_to_utf8 (const wchar_t * txt, size_t len, char *utf8, size_t utf8_size)
 
 
 extern int
-avt_say_u8 (const char *txt)
-{
-  if (txt and * txt)
-    avt_say_u8_len (txt, strlen (txt));
-
-  return _avt_STATUS;
-}
-
-
-extern int
 avt_say_u8_len (const char *txt, size_t len)
 {
   // nothing to do, when txt == NULL
@@ -200,6 +188,16 @@ avt_say_u8_len (const char *txt, size_t len)
       size_t chars = utf8_to_wchar (txt, len, wide, len + 1);
       avt_say_len (wide, chars);
     }
+
+  return _avt_STATUS;
+}
+
+
+extern int
+avt_say_u8 (const char *txt)
+{
+  if (txt and * txt)
+    avt_say_u8_len (txt, strlen (txt));
 
   return _avt_STATUS;
 }

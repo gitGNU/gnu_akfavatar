@@ -2131,7 +2131,7 @@ avt_put_char (avt_char ch)
     {
     case L'\n':		// LF: Line Feed
     case L'\v':		// VT: Vertical Tab
-    case L'\x85':		// NEL: NExt Line
+    case 0x85:			// NEL: NExt Line
     case L'\u2028':		// LS: Line Separator
     case L'\u2029':		// PS: Paragraph Separator
       avt_new_line ();
@@ -2157,8 +2157,18 @@ avt_put_char (avt_char ch)
       bell ();
       break;
 
-    case L'\x1A':		// SUB (substitute)
-      avt_put_raw_char ('\0');
+    case 0x1A:			// SUB (substitute)
+      avt_put_raw_char (BROKEN_WCHAR);
+      break;
+
+      // reserved codepoints
+    case 0xFFFE:
+    case 0xFFFF:
+    case 0x1FFFE:
+    case 0x1FFFF:
+    case 0x10FFFE:
+    case 0x10FFFF:
+      avt_put_raw_char (BROKEN_WCHAR);
       break;
 
       /*
@@ -2178,7 +2188,7 @@ avt_put_char (avt_char ch)
       break;
 
       // other ignorable (invisible) characters
-    case L'\x7F':
+    case 0x7F:
     case L'\u200B':
     case L'\u200C':
     case L'\u200D':

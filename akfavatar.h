@@ -120,8 +120,11 @@
  * type for single characters
  * assuming at least 32-bit systems
  * on Windows wchar_t/wint_t is not large enough for Unicode
+ *
+ * should be compatible with char32_t in C11,
+ * but I try to be as backward compatible as possible here
  */
-typedef int avt_char;
+typedef unsigned int avt_char;
 
 /* general type for audio data */
 typedef struct avt_audio avt_audio;
@@ -352,7 +355,8 @@ AVT_API int avt_tell_u8_len (const char *txt, size_t len);
 
 /*
  * get string (just one line)
- * nonexisting characters are replaced with SUB ('\x1A')
+ * For Latin-1 nonexisting characters are replaced with SUB ('\x1A')
+ * UTF-8 needs up to 4 bytes per character
  */
 AVT_API int avt_ask_l1 (char *s, size_t size);
 AVT_API int avt_ask_u8 (char *s, size_t size);
