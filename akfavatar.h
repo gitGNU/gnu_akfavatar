@@ -999,7 +999,7 @@ AVT_API int avt_navigate (const char *buttons);
  * returns AVT_FAILURE or AVT_ERROR on error
  */
 AVT_API int
-avt_choice (int *result, int start_line, int items, int key,
+avt_choice (int *result, int start_line, int items, avt_char key,
             bool back, bool forward);
 
 /*

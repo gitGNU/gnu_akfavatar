@@ -2511,7 +2511,7 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
 }
 
 extern int
-avt_choice (int *result, int start_line, int items, int key,
+avt_choice (int *result, int start_line, int items, avt_char key,
 	    bool back, bool forward)
 {
   int res;			// shadow for result
@@ -2534,7 +2534,7 @@ avt_choice (int *result, int start_line, int items, int key,
 
   int end_line = start_line + items - 1;
 
-  int last_key;
+  avt_char last_key;
   if (key)
     last_key = key + items - 1;
   else
