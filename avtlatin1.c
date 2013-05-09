@@ -35,6 +35,7 @@
 // substitution character for characters not available in Latin-1
 #define SUB '\x1A'
 
+// result is not terminated unless len includes the terminator
 static void
 lat1_to_wide (const char *l1, wchar_t * wide, size_t len)
 {
@@ -48,17 +49,8 @@ lat1_to_wide (const char *l1, wchar_t * wide, size_t len)
 extern int
 avt_say_l1 (const char *txt)
 {
-  if (_avt_STATUS != AVT_NORMAL or not avt_initialized ())
-    return _avt_STATUS;
-
-  // nothing to do, when there is no text 
-  if (not txt or not * txt)
-    return avt_update ();
-
-  size_t len = strlen (txt);
-  wchar_t wide[len];
-  lat1_to_wide (txt, wide, len);
-  avt_say_len (wide, len);
+  if (txt and * txt)
+    avt_say_l1_len (txt, strlen (txt));
 
   return _avt_STATUS;
 }
@@ -72,9 +64,12 @@ avt_say_l1_len (const char *txt, size_t len)
   if (not txt or _avt_STATUS != AVT_NORMAL or not avt_initialized ())
     return avt_update ();
 
-  wchar_t wide[len];
-  lat1_to_wide (txt, wide, len);
-  avt_say_len (wide, len);
+  if (len)
+    {
+      wchar_t wide[len];
+      lat1_to_wide (txt, wide, len);
+      avt_say_len (wide, len);
+    }
 
   return _avt_STATUS;
 }
@@ -87,7 +82,7 @@ avt_ask_l1 (char *s, size_t size)
     {
       wchar_t buf[size];
 
-      *s = '\0';
+      memset (s, '\0', size);
 
       if (avt_ask (buf, sizeof (buf)) != AVT_NORMAL)
 	return _avt_STATUS;
@@ -143,8 +138,8 @@ avt_set_avatar_name_l1 (const char *name)
   else
     {
       size_t len = strlen (name);
-      wchar_t wide[len];
-      lat1_to_wide (name, wide, len);
+      wchar_t wide[len + 1];
+      lat1_to_wide (name, wide, len + 1);
 
       avt_set_avatar_name (wide);
     }
@@ -185,7 +180,7 @@ avt_credits_l1 (const char *txt, bool centered)
 
       if (wctext)
 	{
-	  lat1_to_wide (txt, wctext, len);
+	  lat1_to_wide (txt, wctext, len + 1);
 	  avt_credits (wctext, centered);
 	  free (wctext);
 	}

@@ -299,17 +299,21 @@ AVT_API int avt_tell_len (const wchar_t *txt, size_t len);
 
 /*
  * get string (just one line)
- * the maximum length is LINELENGTH-1
+ * the maximum length is AVT_LINELENGTH+1
  * size is the size of s in bytes (not the length)
  */
 AVT_API int avt_ask (wchar_t *s, size_t size);
 
 
 /***********************************************************************/
-/* say stuff with UTF-8 or latin1 (ISO-8859-1) encoding */
-/* can also be used for plain US-ASCII */
+/* say or ask stuff with UTF-8 or latin1 (ISO-8859-1) encoding */
 
-/* this is reliable than the _mb functions, but limited */
+/* this is more reliable than the mb functions, but limited */
+
+/*
+ * For plain US-ASCII prefer the l1 functions,
+ * but avoid unnessesary mixing.
+ */
 
 /*
  * prints a 0 terminated string in the balloon

@@ -27,48 +27,6 @@
 #include <string.h>
 #include <iso646.h>
 
-// returns number of individual UTF-8 characters
-// in a '\0' terminated string
-// (wrong on invalid encodings)
-static size_t
-utf8_chars (const char *text)
-{
-  size_t len = 0;
-  const unsigned char *u = (const unsigned char *) text;
-
-  while (*u)
-    {
-      if ((*u bitand 0xC0) != 0x80)
-	++len;
-
-      ++u;
-    }
-
-  return len;
-}
-
-
-// returns number of individual UTF-8 characters
-// in a string with a given size
-// (wrong on invalid encodings)
-static size_t
-utf8_chars_len (const char *text, size_t size)
-{
-  size_t len = 0;
-  const unsigned char *u = (const unsigned char *) text;
-
-  for (size_t i = 0; i < size; ++i)
-    {
-      if ((*u bitand 0xC0) != 0x80)
-	++len;
-
-      ++u;
-    }
-
-  return len;
-}
-
-
 // check number of bytes in char up to max_bytes
 static size_t
 check_char_length (const unsigned char *utf8, size_t max_bytes)
@@ -221,18 +179,8 @@ wchar_to_utf8 (const wchar_t * txt, size_t len, char *utf8, size_t utf8_size)
 extern int
 avt_say_u8 (const char *txt)
 {
-  if (_avt_STATUS != AVT_NORMAL or not avt_initialized ())
-    return _avt_STATUS;
-
-  // nothing to do, when there is no text 
-  if (not txt or not * txt)
-    return avt_update ();
-
-  size_t len = strlen (txt);
-
-  wchar_t wide[len + 1];
-  size_t chars = utf8_to_wchar (txt, len, wide, len);
-  avt_say_len (wide, chars);
+  if (txt and * txt)
+    avt_say_u8_len (txt, strlen (txt));
 
   return _avt_STATUS;
 }
@@ -249,7 +197,7 @@ avt_say_u8_len (const char *txt, size_t len)
   if (len)
     {
       wchar_t wide[len + 1];
-      size_t chars = utf8_to_wchar (txt, len, wide, len);
+      size_t chars = utf8_to_wchar (txt, len, wide, len + 1);
       avt_say_len (wide, chars);
     }
 
@@ -266,7 +214,7 @@ avt_tell_u8_len (const char *txt, size_t len)
 	len = strlen (txt);
 
       wchar_t wide[len + 1];
-      size_t chars = utf8_to_wchar (txt, len, wide, len);
+      size_t chars = utf8_to_wchar (txt, len, wide, len + 1);
 
       avt_tell_len (wide, chars);
     }
@@ -295,7 +243,7 @@ avt_set_avatar_name_u8 (const char *name)
       size_t len = strlen (name);
       wchar_t wide[len + 1];
 
-      utf8_to_wchar (name, len, wide, len);
+      utf8_to_wchar (name, len, wide, len + 1);
       avt_set_avatar_name (wide);
     }
 
@@ -315,7 +263,7 @@ avt_pager_u8 (const char *txt, size_t len, int startline)
 
       if (wctext)
 	{
-	  size_t chars = utf8_to_wchar (txt, len, wctext, len);
+	  size_t chars = utf8_to_wchar (txt, len, wctext, len + 1);
 	  avt_pager (wctext, chars, startline);
 	  free (wctext);
 	}
@@ -335,7 +283,7 @@ avt_credits_u8 (const char *txt, bool centered)
 
       if (wctext)
 	{
-	  utf8_to_wchar (txt, len, wctext, len);
+	  utf8_to_wchar (txt, len, wctext, len + 1);
 	  avt_credits (wctext, centered);
 	  free (wctext);
 	}
@@ -350,12 +298,12 @@ avt_ask_u8 (char *s, size_t size)
 {
   if (s and size)
     {
+      memset (s, '\0', size);
+
       wchar_t buf[size];
 
-      if (avt_ask (buf, sizeof (buf)) != AVT_NORMAL)
-	return _avt_STATUS;
-
-      wchar_to_utf8 (buf, sizeof (buf), s, size);
+      if (avt_ask (buf, sizeof (buf)) == AVT_NORMAL)
+	wchar_to_utf8 (buf, sizeof (buf), s, size);
     }
 
   return _avt_STATUS;
