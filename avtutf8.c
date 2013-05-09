@@ -49,49 +49,47 @@ utf8_to_unicode (const char *utf8, avt_char * ch)
   avt_char c = BROKEN_WCHAR;
   const unsigned char *u8 = (const unsigned char *) utf8;
 
-  if (not utf8)
-    return 0;
-
-  if (*u8 <= 0x7F)
+  if (*u8 <= 0x7Fu)
     {
-      bytes = 1;
+      bytes = 1u;
       c = *u8;
     }
-  else if (*u8 <= 0xBF)
-    bytes = 1;			// runaway continuation byte
-  else if (*u8 <= 0xDF)
+  else if (*u8 <= 0xBFu)
+    bytes = 1u;			// runaway continuation byte
+  else if (*u8 <= 0xDFu)
     {
       bytes = check_char_length (u8, 2);
-      if (bytes == 2)
-	c = ((u8[0] bitand compl 0xC0) << 6) bitor (u8[1] bitand compl 0x80);
+      if (bytes == 2u)
+	c = ((u8[0] bitand compl 0xC0u) << 6)
+	  bitor (u8[1] bitand compl 0x80u);
     }
-  else if (*u8 <= 0xEF)
+  else if (*u8 <= 0xEFu)
     {
       bytes = check_char_length (u8, 3);
-      if (bytes == 3)
-	c = ((u8[0] bitand compl 0xE0) << (2 * 6))
-	  bitor ((u8[1] bitand compl 0x80) << 6)
-	  bitor (u8[2] bitand compl 0x80);
+      if (bytes == 3u)
+	c = ((u8[0] bitand compl 0xE0u) << (2 * 6))
+	  bitor ((u8[1] bitand compl 0x80u) << 6)
+	  bitor (u8[2] bitand compl 0x80u);
     }
-  else if (*u8 <= 0xF4)
+  else if (*u8 <= 0xF4u)
     {
       bytes = check_char_length (u8, 4);
-      if (bytes == 4)
-	c = ((u8[0] bitand compl 0xF0) << (3 * 6))
-	  bitor ((u8[1] bitand compl 0x80) << (2 * 6))
-	  bitor ((u8[2] bitand compl 0x80) << 6)
-	  bitor (u8[3] bitand compl 0x80);
+      if (bytes == 4u)
+	c = ((u8[0] bitand compl 0xF0u) << (3 * 6))
+	  bitor ((u8[1] bitand compl 0x80u) << (2 * 6))
+	  bitor ((u8[2] bitand compl 0x80u) << 6)
+	  bitor (u8[3] bitand compl 0x80u);
     }
-  else if (*u8 <= 0xFB)		// no valid Unicode
+  else if (*u8 <= 0xFBu)	// no valid Unicode
     bytes = check_char_length (u8, 5);
-  else if (*u8 <= 0xFD)		// no valid Unicode
+  else if (*u8 <= 0xFDu)	// no valid Unicode
     bytes = check_char_length (u8, 6);
   else
     bytes = 1;			// skip invalid byte
 
   // checks for security
-  if (c > 0x10FFFF
-      or (bytes >= 2 and c <= 0x7F) or (bytes >= 3 and c <= 0x7FF))
+  if (c > 0x10FFFFu
+      or (bytes >= 2u and c <= 0x7Fu) or (bytes >= 3u and c <= 0x7FFu))
     c = BROKEN_WCHAR;
 
   if (ch)
@@ -114,7 +112,7 @@ utf8_to_wchar (const char *txt, size_t len, wchar_t * wide, size_t wide_len)
       if (not bytes)
 	break;
 
-      if (sizeof (wchar_t) >= 3 or ch <= 0xFFFF)
+      if (sizeof (wchar_t) >= 3 or ch <= 0xFFFFu)
 	wide[charnum] = ch;
       else
 	wide[charnum] = BROKEN_WCHAR;
@@ -149,21 +147,21 @@ wchar_to_utf8 (const wchar_t * txt, size_t len, char *utf8, size_t utf8_size)
 	utf8[p++] = (char) ch;
       else if (ch <= L'\x7FF' and p + 2 < utf8_size)
 	{
-	  utf8[p++] = 0xC0 bitor (ch >> 6);
-	  utf8[p++] = 0x80 bitor (ch bitand 0x3F);
+	  utf8[p++] = 0xC0u bitor (ch >> 6);
+	  utf8[p++] = 0x80u bitor (ch bitand 0x3Fu);
 	}
       else if (ch <= L'\xFFFF' and p + 3 < utf8_size)
 	{
-	  utf8[p++] = 0xE0 bitor (ch >> (2 * 6));
-	  utf8[p++] = 0x80 bitor ((ch >> 6) bitand 0x3F);
-	  utf8[p++] = 0x80 bitor (ch bitand 0x3F);
+	  utf8[p++] = 0xE0u bitor (ch >> (2 * 6));
+	  utf8[p++] = 0x80u bitor ((ch >> 6) bitand 0x3Fu);
+	  utf8[p++] = 0x80u bitor (ch bitand 0x3Fu);
 	}
       else if (p + 4 < utf8_size)
 	{
-	  utf8[p++] = 0xF0 bitor (ch >> (3 * 6));
-	  utf8[p++] = 0x80 bitor ((ch >> (2 * 6)) bitand 0x3F);
-	  utf8[p++] = 0x80 bitor ((ch >> 6) bitand 0x3F);
-	  utf8[p++] = 0x80 bitor (ch bitand 0x3F);
+	  utf8[p++] = 0xF0u bitor (ch >> (3 * 6));
+	  utf8[p++] = 0x80u bitor ((ch >> (2 * 6)) bitand 0x3Fu);
+	  utf8[p++] = 0x80u bitor ((ch >> 6) bitand 0x3Fu);
+	  utf8[p++] = 0x80u bitor (ch bitand 0x3Fu);
 	}
 
       if (not ch)
@@ -208,7 +206,7 @@ avt_tell_u8_len (const char *txt, size_t len)
 {
   if (txt)
     {
-      if (not len or len > 0x80000000)
+      if (not len or len > 0x80000000u)
 	len = strlen (txt);
 
       wchar_t wide[len + 1];
