@@ -89,6 +89,7 @@ utf8_to_unicode (const char *utf8, avt_char * ch)
 
   // checks for security
   if (c > 0x10FFFFu
+      or (c >= 0xD800u and c <= 0xDFFFu)
       or (bytes >= 2u and c <= 0x7Fu) or (bytes >= 3u and c <= 0x7FFu))
     c = BROKEN_WCHAR;
 
