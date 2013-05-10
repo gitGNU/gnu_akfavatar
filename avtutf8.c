@@ -98,6 +98,7 @@ utf8_to_unicode (const char *utf8, avt_char * ch)
   return bytes;
 }
 
+// result is not terminated unless len includes the terminator
 // no support for UTF-16 surrogates!
 // that would make things only more complicated
 static size_t
@@ -124,8 +125,6 @@ utf8_to_wchar (const char *txt, size_t len, wchar_t * wide, size_t wide_len)
       len -= bytes;
       ++charnum;
     }
-
-  wide[charnum] = L'\0';
 
   return charnum;
 }
@@ -182,8 +181,8 @@ avt_say_u8_len (const char *txt, size_t len)
 
   if (len)
     {
-      wchar_t wide[len + 1];
-      size_t chars = utf8_to_wchar (txt, len, wide, len + 1);
+      wchar_t wide[len];
+      size_t chars = utf8_to_wchar (txt, len, wide, len);
       avt_say_len (wide, chars);
     }
 
@@ -209,8 +208,8 @@ avt_tell_u8_len (const char *txt, size_t len)
       if (not len or len > 0x80000000u)
 	len = strlen (txt);
 
-      wchar_t wide[len + 1];
-      size_t chars = utf8_to_wchar (txt, len, wide, len + 1);
+      wchar_t wide[len];
+      size_t chars = utf8_to_wchar (txt, len, wide, len);
 
       avt_tell_len (wide, chars);
     }
@@ -236,10 +235,10 @@ avt_set_avatar_name_u8 (const char *name)
     avt_set_avatar_name (NULL);
   else
     {
-      size_t len = strlen (name);
-      wchar_t wide[len + 1];
+      size_t len = strlen (name) + 1;	// with terminator
+      wchar_t wide[len];
 
-      utf8_to_wchar (name, len, wide, len + 1);
+      utf8_to_wchar (name, len, wide, len);
       avt_set_avatar_name (wide);
     }
 
@@ -255,11 +254,11 @@ avt_pager_u8 (const char *txt, size_t len, int startline)
       if (not len)
 	len = strlen (txt);
 
-      wchar_t *wctext = malloc ((len + 1) * sizeof (wchar_t));
+      wchar_t *wctext = malloc (len * sizeof (wchar_t));
 
       if (wctext)
 	{
-	  size_t chars = utf8_to_wchar (txt, len, wctext, len + 1);
+	  size_t chars = utf8_to_wchar (txt, len, wctext, len);
 	  avt_pager (wctext, chars, startline);
 	  free (wctext);
 	}
@@ -274,12 +273,12 @@ avt_credits_u8 (const char *txt, bool centered)
 {
   if (_avt_STATUS == AVT_NORMAL and txt and * txt and avt_initialized ())
     {
-      size_t len = strlen (txt);
-      wchar_t *wctext = malloc ((len + 1) * sizeof (wchar_t));
+      size_t len = strlen (txt) + 1;	// with terminator
+      wchar_t *wctext = malloc (len * sizeof (wchar_t));
 
       if (wctext)
 	{
-	  utf8_to_wchar (txt, len, wctext, len + 1);
+	  utf8_to_wchar (txt, len, wctext, len);
 	  avt_credits (wctext, centered);
 	  free (wctext);
 	}
