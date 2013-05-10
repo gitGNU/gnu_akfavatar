@@ -2127,6 +2127,10 @@ avt_put_char (avt_char ch)
   if (avt.textfield.x < 0)
     avt_draw_balloon ();
 
+  // check for spurious high surrogate
+  if (high_surrogate and (ch < 0xDC00 or ch > 0xDFFF))
+    avt_put_raw_char (BROKEN_WCHAR);
+
   switch (ch)
     {
     case L'\n':		// LF: Line Feed
@@ -2237,8 +2241,6 @@ avt_put_char (avt_char ch)
 	      else		// separated low surrogate
 		avt_put_raw_char (BROKEN_WCHAR);
 	    }
-	  else if (high_surrogate)
-	    avt_put_raw_char (BROKEN_WCHAR);	// spurious high surrogate
 	  else if (avt.markup and ch == L'_')
 	    avt.underlined = not avt.underlined;
 	  else if (avt.markup and ch == L'*')
