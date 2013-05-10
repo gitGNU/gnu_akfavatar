@@ -131,6 +131,7 @@ utf8_to_wchar (const char *txt, size_t len, wchar_t * wide, size_t wide_len)
 }
 
 
+// again no support for UTF-16 surrogates! (marked as broken chars)
 static void
 wchar_to_utf8 (const wchar_t * txt, size_t len, char *utf8, size_t utf8_size)
 {
@@ -140,7 +141,7 @@ wchar_to_utf8 (const wchar_t * txt, size_t len, char *utf8, size_t utf8_size)
     {
       register wchar_t ch = txt[i];
 
-      if (ch > 0x10FFFF)
+      if (ch > 0x10FFFF or (ch >= 0xD800 and ch <= 0xDFFF))
 	ch = BROKEN_WCHAR;
 
       if (ch <= L'\x7F' and p + 1 < utf8_size)
