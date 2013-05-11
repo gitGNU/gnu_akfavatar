@@ -5,7 +5,8 @@
   - lua/audioplayer.lua: improved playlist support
 
   C-API changes:
-    - avt_char is unsigned now, avt_choice adapted
+    - avt_char is uint_least32_t now, avt_choice adapted
+      should be compatible with char32_t in C11
     - new functions: avt_say_u8, avt_say_u8_len, avt_ask_u8,
       avt_tell_u8, avt_tell_u8_len, avt_set_avatar_name_u8,
       avt_pager_u8, avt_credits_u8,

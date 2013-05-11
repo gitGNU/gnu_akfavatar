@@ -1,3 +1,7 @@
+2013-05-11  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.c: avt_char is uint_least32_t now
+
 2013-05-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_put_char): fix handling spurious high surrogate
