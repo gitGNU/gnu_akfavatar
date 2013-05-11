@@ -3,6 +3,8 @@
 	* akfavatar.c: avt_char is uint_least32_t now
 
 	* avatar-linuxfb.c (utf8_to_unicode): new function
+	(avt_start): select UTF-8 mode
+	(quit_fb): reset terminal
 
 2013-05-10  Andreas K. Foerster  <info@akfoerster.de>
 

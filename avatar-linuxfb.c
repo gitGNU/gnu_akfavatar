@@ -22,9 +22,14 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ * This file is system specific, so it may use system specific extensions
+ * including GNU extesions
+ */
+
 #define _ISOC99_SOURCE
 #define _POSIX_C_SOURCE 200112L
-#define _BSD_SOURCE
+#define _GNU_SOURCE
 
 // don't make functions deprecated for this file
 #define _AVT_USE_DEPRECATED
@@ -475,12 +480,8 @@ avt_set_title (const char *title, const char *shortname)
 static void
 beep (void)
 {
-  ssize_t r;
-
   // this is agent \007 with the license to beep ;-)
-  do
-    r = write (tty, "\007", 1);
-  while (r < 0 and errno == EINTR);
+  TEMP_FAILURE_RETRY (write (tty, "\007", 1));
 }
 
 static void
@@ -502,6 +503,7 @@ quit_fb (void)
     {
       ioctl (tty, KDSETMODE, KD_TEXT);
       tcsetattr (tty, TCSANOW, &terminal_settings);
+      TEMP_FAILURE_RETRY (write (tty, "\033c", 2));	// Reset
       close (tty);
       tty = -1;
     }
@@ -605,6 +607,9 @@ avt_start (const char *title, const char *shortname, int window_mode)
       _avt_STATUS = AVT_ERROR;
       return _avt_STATUS;
     }
+
+  // Select UTF-8 mode for input
+  TEMP_FAILURE_RETRY (write (tty, "\033%G", 3));
 
   // set terminal in graphic mode with raw keyboard
   struct termios settings = terminal_settings;
