@@ -39,7 +39,6 @@
 #include <limits.h>
 #include <iso646.h>
 #include <errno.h>
-#include <iconv.h>
 #include <unistd.h>
 
 #include <linux/fb.h>
@@ -58,7 +57,6 @@ static int screen_fd, tty;
 static uint_least8_t *fb;	// frame buffer
 static struct termios terminal_settings;
 static char error_message[256];
-static iconv_t conv = (iconv_t) (-1);
 static bool reserve_single_keys;
 
 //-----------------------------------------------------------------------------
@@ -211,29 +209,45 @@ avt_get_mode (void)
   return AVT_FULLSCREENNOSWITCH;
 }
 
+// this version is stripped down
+// see avtutf8.c for a more complete version
+static avt_char
+utf8_to_unicode (const char *utf8)
+{
+  avt_char c = BROKEN_WCHAR;
+  const unsigned char *u8 = (const unsigned char *) utf8;
+
+  if (*u8 <= 0x7Fu)
+    c = *u8;
+  else if (*u8 <= 0xDFu)
+    c = ((u8[0] bitand compl 0xC0u) << 6) bitor (u8[1] bitand compl 0x80u);
+  else if (*u8 <= 0xEFu)
+    c = ((u8[0] bitand compl 0xE0u) << (2 * 6))
+      bitor ((u8[1] bitand compl 0x80u) << 6)
+      bitor (u8[2] bitand compl 0x80u);
+  else if (*u8 <= 0xF4u)
+    c = ((u8[0] bitand compl 0xF0u) << (3 * 6))
+      bitor ((u8[1] bitand compl 0x80u) << (2 * 6))
+      bitor ((u8[2] bitand compl 0x80u) << 6)
+      bitor (u8[3] bitand compl 0x80u);
+
+  return c;
+}
+
 static avt_char
 utf8 (char c)
 {
-  uint_least8_t inbuf[4];
-  uint_least8_t outbuf[4];
-  size_t inbytes, outbytes;
+  char inbuf[4];
+  size_t inbytes;
   avt_char result;
 
-  result = 0;
-  memset (inbuf, 0, sizeof (inbuf));
-  inbuf[0] = (uint_least8_t) c;
-  inbytes = read (tty, inbuf + 1, sizeof (inbuf) - 2) + 1;
+  result = AVT_KEY_NONE;
+  memset (inbuf, '\0', sizeof (inbuf));
+  inbuf[0] = c;
+  inbytes = read (tty, inbuf + 1, sizeof (inbuf) - 1);
 
-  if (inbytes >= 2)
-    {
-      char *inptr = (char *) inbuf;
-      char *outptr = (char *) outbuf;
-      outbytes = sizeof (outbuf);
-
-      if (iconv (conv, &inptr, &inbytes, &outptr, &outbytes) != (size_t) (-1))
-	result =
-	  outbuf[0] | outbuf[1] << 8 | outbuf[2] << 16 | outbuf[3] << 24;
-    }
+  if (inbytes > 0)
+    result = utf8_to_unicode (inbuf);
 
   return result;
 }
@@ -472,12 +486,6 @@ beep (void)
 static void
 quit_fb (void)
 {
-  if (conv != (iconv_t) (-1))
-    {
-      iconv_close (conv);
-      conv = (iconv_t) (-1);
-    }
-
   if (fb and fb != MAP_FAILED)
     {
       munmap (fb, fix_info.smem_len);
@@ -637,9 +645,6 @@ avt_start (const char *title, const char *shortname, int window_mode)
 
   backend->quit = quit_fb;
   backend->wait_key = wait_key_fb;
-
-  // do not change for big endian!
-  conv = iconv_open ("UTF-32LE", "UTF-8");
 
   memset (fb, 0, fix_info.smem_len);
 

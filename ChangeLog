@@ -2,6 +2,8 @@
 
 	* akfavatar.c: avt_char is uint_least32_t now
 
+	* avatar-linuxfb.c (utf8_to_unicode): new function
+
 2013-05-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_put_char): fix handling spurious high surrogate
