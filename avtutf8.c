@@ -100,8 +100,6 @@ utf8_to_unicode (const char *utf8, avt_char * ch)
 }
 
 // result is not terminated unless len includes the terminator
-// no support for UTF-16 surrogates!
-// that would make things only more complicated
 static size_t
 utf8_to_wchar (const char *txt, size_t len, wchar_t * wide, size_t wide_len)
 {
@@ -116,8 +114,14 @@ utf8_to_wchar (const char *txt, size_t len, wchar_t * wide, size_t wide_len)
 
       if (sizeof (wchar_t) >= 3 or ch <= 0xFFFFu)
 	wide[charnum] = ch;
-      else
-	wide[charnum] = BROKEN_WCHAR;
+      else if (charnum + 1 < wide_len)	// UTF-16 surrogates
+	{
+	  avt_char c = ch - 0x10000u;
+
+	  wide[charnum] = 0xD800 bitor ((c >> 10) bitand 0x3FF);
+	  ++charnum;
+	  wide[charnum] = 0xDC00 bitor (c bitand 0x3FF);
+	}
 
       if (bytes > len)
 	bytes = len;
@@ -196,8 +200,13 @@ avt_say_u8_len (const char *txt, size_t len)
 
   if (len)
     {
-      wchar_t wide[len];
-      size_t chars = utf8_to_wchar (txt, len, wide, len);
+      size_t wide_len = len;
+
+      if (sizeof (wchar_t) < 4)
+	wide_len *= 2;		// space for UTF-16 surrogates
+
+      wchar_t wide[wide_len];
+      size_t chars = utf8_to_wchar (txt, len, wide, wide_len);
       avt_say_len (wide, chars);
     }
 
@@ -223,8 +232,13 @@ avt_tell_u8_len (const char *txt, size_t len)
       if (not len or len > 0x80000000u)
 	len = strlen (txt);
 
-      wchar_t wide[len];
-      size_t chars = utf8_to_wchar (txt, len, wide, len);
+      size_t wide_len = len;
+
+      if (sizeof (wchar_t) < 4)
+	wide_len *= 2;		// space for UTF-16 surrogates
+
+      wchar_t wide[wide_len];
+      size_t chars = utf8_to_wchar (txt, len, wide, wide_len);
 
       avt_tell_len (wide, chars);
     }
@@ -237,7 +251,7 @@ extern int
 avt_tell_u8 (const char *txt)
 {
   if (txt and * txt)
-    avt_tell_u8_len (txt, 0);
+    avt_tell_u8_len (txt, strlen (txt));
 
   return _avt_STATUS;
 }
@@ -251,15 +265,26 @@ avt_set_avatar_name_u8 (const char *name)
   else
     {
       size_t len = strlen (name) + 1;	// with terminator
-      wchar_t wide[len];
 
-      utf8_to_wchar (name, len, wide, len);
+      size_t wide_len = len;
+
+      if (sizeof (wchar_t) < 4)
+	wide_len *= 2;		// space for UTF-16 surrogates
+
+      wchar_t wide[wide_len];
+
+      utf8_to_wchar (name, len, wide, wide_len);
       avt_set_avatar_name (wide);
     }
 
   return _avt_STATUS;
 }
 
+/*
+ * The pager and credits may be used with longer texts, so I use malloc.
+ * Wide strings are up to 4 bytes per char,
+ * in UTF-32 but also in UTF-16, because of surrogate codes.
+ */
 
 extern int
 avt_pager_u8 (const char *txt, size_t len, int startline)
@@ -269,11 +294,11 @@ avt_pager_u8 (const char *txt, size_t len, int startline)
       if (not len)
 	len = strlen (txt);
 
-      wchar_t *wctext = malloc (len * sizeof (wchar_t));
+      wchar_t *wctext = malloc (len * 4);
 
       if (wctext)
 	{
-	  size_t chars = utf8_to_wchar (txt, len, wctext, len);
+	  size_t chars = utf8_to_wchar (txt, len, wctext, len * 4);
 	  avt_pager (wctext, chars, startline);
 	  free (wctext);
 	}
@@ -289,11 +314,11 @@ avt_credits_u8 (const char *txt, bool centered)
   if (_avt_STATUS == AVT_NORMAL and txt and * txt and avt_initialized ())
     {
       size_t len = strlen (txt) + 1;	// with terminator
-      wchar_t *wctext = malloc (len * sizeof (wchar_t));
+      wchar_t *wctext = malloc (len * 4);
 
       if (wctext)
 	{
-	  utf8_to_wchar (txt, len, wctext, len);
+	  utf8_to_wchar (txt, len, wctext, len * 4);
 	  avt_credits (wctext, centered);
 	  free (wctext);
 	}
