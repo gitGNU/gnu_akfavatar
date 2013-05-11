@@ -131,7 +131,6 @@ utf8_to_wchar (const char *txt, size_t len, wchar_t * wide, size_t wide_len)
 }
 
 
-// again no support for UTF-16 surrogates! (marked as broken chars)
 static void
 wchar_to_utf8 (const wchar_t * txt, size_t len, char *utf8, size_t utf8_size)
 {
@@ -139,19 +138,33 @@ wchar_to_utf8 (const wchar_t * txt, size_t len, char *utf8, size_t utf8_size)
 
   for (size_t i = 0; i < len; ++i)
     {
-      register wchar_t ch = txt[i];
+      register avt_char ch = txt[i];
 
-      if (ch > 0x10FFFF or (ch >= 0xD800 and ch <= 0xDFFF))
+      // support UTF-16
+      // if and only if wchar_t is < 3, otherwise optimized away
+      if (sizeof (wchar_t) < 3 and 0xD800u <= ch and ch <= 0xDBFFu)
+	{
+	  avt_char ch2 = txt[i + 1];
+
+	  if (0xDC00u <= ch2 and ch2 <= 0xDFFFu)
+	    {
+	      ch = (((ch bitand 0x3FFu) << 10) bitor (ch2 bitand 0x3FFu))
+		+ 0x10000u;
+	      ++i;
+	    }
+	}
+
+      if (ch > 0x10FFFFu or (ch >= 0xD800u and ch <= 0xDFFFu))
 	ch = BROKEN_WCHAR;
 
-      if (ch <= L'\x7F' and p + 1 < utf8_size)
+      if (ch <= 0x7Fu and p + 1 < utf8_size)
 	utf8[p++] = (char) ch;
-      else if (ch <= L'\x7FF' and p + 2 < utf8_size)
+      else if (ch <= 0x7FFu and p + 2 < utf8_size)
 	{
 	  utf8[p++] = 0xC0u bitor (ch >> 6);
 	  utf8[p++] = 0x80u bitor (ch bitand 0x3Fu);
 	}
-      else if (ch <= L'\xFFFF' and p + 3 < utf8_size)
+      else if (ch <= 0xFFFFu and p + 3 < utf8_size)
 	{
 	  utf8[p++] = 0xE0u bitor (ch >> (2 * 6));
 	  utf8[p++] = 0x80u bitor ((ch >> 6) bitand 0x3Fu);
