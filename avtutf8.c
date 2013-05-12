@@ -46,7 +46,7 @@ check_char_length (const unsigned char *utf8, size_t max_bytes)
 
 
 // reads next char from utf8 and places code in ch
-// returns number of bytes read from utf8 or 0 on fatal error
+// returns number of bytes read from utf8
 static size_t
 utf8_to_unicode (const char *utf8, avt_char * ch)
 {
@@ -97,8 +97,7 @@ utf8_to_unicode (const char *utf8, avt_char * ch)
       or (bytes >= 2u and c <= 0x7Fu) or (bytes >= 3u and c <= 0x7FFu))
     c = BROKEN_WCHAR;
 
-  if (ch)
-    *ch = c;
+  *ch = c;
 
   return bytes;
 }
