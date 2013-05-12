@@ -27,6 +27,10 @@
 #include <string.h>
 #include <iso646.h>
 
+#define UNICODE_MAXIMUM  (0x10FFFFu)
+#define SURROGATE_MIN (0xD800u)
+#define SURROGATE_MAX (0xDFFFu)
+
 // check number of bytes in char up to max_bytes
 static size_t
 check_char_length (const unsigned char *utf8, size_t max_bytes)
@@ -58,14 +62,14 @@ utf8_to_unicode (const char *utf8, avt_char * ch)
     bytes = 1u;			// runaway continuation byte
   else if (*u8 <= 0xDFu)
     {
-      bytes = check_char_length (u8, 2);
+      bytes = check_char_length (u8, 2u);
       if (bytes == 2u)
 	c = ((u8[0] bitand compl 0xC0u) << 6)
 	  bitor (u8[1] bitand compl 0x80u);
     }
   else if (*u8 <= 0xEFu)
     {
-      bytes = check_char_length (u8, 3);
+      bytes = check_char_length (u8, 3u);
       if (bytes == 3u)
 	c = ((u8[0] bitand compl 0xE0u) << (2 * 6))
 	  bitor ((u8[1] bitand compl 0x80u) << 6)
@@ -73,7 +77,7 @@ utf8_to_unicode (const char *utf8, avt_char * ch)
     }
   else if (*u8 <= 0xF4u)
     {
-      bytes = check_char_length (u8, 4);
+      bytes = check_char_length (u8, 4u);
       if (bytes == 4u)
 	c = ((u8[0] bitand compl 0xF0u) << (3 * 6))
 	  bitor ((u8[1] bitand compl 0x80u) << (2 * 6))
@@ -81,15 +85,15 @@ utf8_to_unicode (const char *utf8, avt_char * ch)
 	  bitor (u8[3] bitand compl 0x80u);
     }
   else if (*u8 <= 0xFBu)	// no valid Unicode
-    bytes = check_char_length (u8, 5);
+    bytes = check_char_length (u8, 5u);
   else if (*u8 <= 0xFDu)	// no valid Unicode
-    bytes = check_char_length (u8, 6);
+    bytes = check_char_length (u8, 6u);
   else
     bytes = 1;			// skip invalid byte
 
   // checks for security
-  if (c > 0x10FFFFu
-      or (c >= 0xD800u and c <= 0xDFFFu)
+  if (c > UNICODE_MAXIMUM
+      or (c >= SURROGATE_MIN and c <= SURROGATE_MAX)
       or (bytes >= 2u and c <= 0x7Fu) or (bytes >= 3u and c <= 0x7FFu))
     c = BROKEN_WCHAR;
 
@@ -158,7 +162,8 @@ wchar_to_utf8 (const wchar_t * txt, size_t len, char *utf8, size_t utf8_size)
 	    }
 	}
 
-      if (ch > 0x10FFFFu or (ch >= 0xD800u and ch <= 0xDFFFu))
+      if (ch > UNICODE_MAXIMUM
+	  or (ch >= SURROGATE_MIN and ch <= SURROGATE_MAX))
 	ch = BROKEN_WCHAR;
 
       if (ch <= 0x7Fu and p + 1 < utf8_size)
