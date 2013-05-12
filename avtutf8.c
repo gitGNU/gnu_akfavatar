@@ -28,8 +28,9 @@
 #include <iso646.h>
 
 #define UNICODE_MAXIMUM  (0x10FFFFu)
-#define SURROGATE_MIN (0xD800u)
-#define SURROGATE_MAX (0xDFFFu)
+
+#define surrogate(ch)  ((ch) >= 0xD800u and (ch) <= 0xDFFFu)
+
 
 // check number of bytes in char up to max_bytes
 static size_t
@@ -92,8 +93,7 @@ utf8_to_unicode (const char *utf8, avt_char * ch)
     bytes = 1;			// skip invalid byte
 
   // checks for security
-  if (c > UNICODE_MAXIMUM
-      or (c >= SURROGATE_MIN and c <= SURROGATE_MAX)
+  if (c > UNICODE_MAXIMUM or surrogate (c)
       or (bytes >= 2u and c <= 0x7Fu) or (bytes >= 3u and c <= 0x7FFu))
     c = BROKEN_WCHAR;
 
@@ -162,8 +162,7 @@ wchar_to_utf8 (const wchar_t * txt, size_t len, char *utf8, size_t utf8_size)
 	    }
 	}
 
-      if (ch > UNICODE_MAXIMUM
-	  or (ch >= SURROGATE_MIN and ch <= SURROGATE_MAX))
+      if (ch > UNICODE_MAXIMUM or surrogate (ch))
 	ch = BROKEN_WCHAR;
 
       if (ch <= 0x7Fu and p + 1 < utf8_size)
