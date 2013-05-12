@@ -303,7 +303,8 @@ avt_pager_u8 (const char *txt, size_t len, int startline)
 
       if (wctext)
 	{
-	  size_t chars = utf8_to_wchar (txt, len, wctext, len * 4);
+	  size_t chars =
+	    utf8_to_wchar (txt, len, wctext, len * 4 / sizeof (wchar_t));
 	  avt_pager (wctext, chars, startline);
 	  free (wctext);
 	}
@@ -323,7 +324,7 @@ avt_credits_u8 (const char *txt, bool centered)
 
       if (wctext)
 	{
-	  utf8_to_wchar (txt, len, wctext, len * 4);
+	  utf8_to_wchar (txt, len, wctext, len * 4 / sizeof (wchar_t));
 	  avt_credits (wctext, centered);
 	  free (wctext);
 	}
