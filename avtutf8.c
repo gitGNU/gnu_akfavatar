@@ -112,18 +112,15 @@ utf8_to_wchar (const char *txt, size_t len, wchar_t * wide, size_t wide_len)
     {
       avt_char ch;
       size_t bytes = utf8_to_unicode (txt, &ch);
-      if (not bytes)
-	break;
 
       if (sizeof (wchar_t) >= 3 or ch <= 0xFFFFu)
 	wide[charnum] = ch;
       else if (charnum + 1 < wide_len)	// UTF-16 surrogates
 	{
-	  avt_char c = ch - 0x10000u;
-
-	  wide[charnum] = 0xD800 bitor ((c >> 10) bitand 0x3FF);
+	  ch -= 0x10000u;
+	  wide[charnum] = 0xD800 bitor ((ch >> 10) bitand 0x3FF);
 	  ++charnum;
-	  wide[charnum] = 0xDC00 bitor (c bitand 0x3FF);
+	  wide[charnum] = 0xDC00 bitor (ch bitand 0x3FF);
 	}
 
       if (bytes > len)
