@@ -2119,6 +2119,7 @@ extern int
 avt_put_char (avt_char ch)
 {
   static avt_char high_surrogate;	// for UTF-16
+  static avt_char last, prev;	// last and previous character
 
   if (not screen or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -2126,6 +2127,15 @@ avt_put_char (avt_char ch)
   // no textfield? => draw balloon
   if (avt.textfield.x < 0)
     avt_draw_balloon ();
+
+  // overstrike technique
+  if (last == L'\b')
+    {
+      if (prev == L'_')
+	avt.underlined = true;
+      else if (prev == ch)
+	avt.bold = true;
+    }
 
   // check for spurious high surrogate
   if (high_surrogate and (ch < 0xDC00 or ch > 0xDFFF))
@@ -2227,7 +2237,7 @@ avt_put_char (avt_char ch)
 	      if (not high_surrogate)
 		{
 		  high_surrogate = ch;
-		  // return to avoid resetting high_surrogate
+		  // return to avoid resetting chars
 		  return _avt_STATUS;
 		}
 	      else		// repeated use of high surrogate
@@ -2250,44 +2260,20 @@ avt_put_char (avt_char ch)
 	}			// if (ch > 0x0020)
     }				// switch
 
-  high_surrogate = 0;
-
-  return _avt_STATUS;
-}
-
-/*
- * bold can be stored as b\bbo\bol\bld\bd
- * underlinded as _\bu_\bn_\bd_\be_\br_\bl_\bi_\bn_\be_\bd
- */
-static int
-avt_overstrike (const wchar_t * txt)
-{
-  int r;
-
-  r = 0;
-
-  // check if all conditions are met
-  if (not * txt or not * (txt + 1) or not * (txt + 2) or * (txt + 1) != L'\b')
-    r = -1;
-  else
+  // overstrike technique
+  if (last == L'\b')
     {
-      if (*txt == L'_')
-	{
-	  avt.underlined = true;
-	  if (avt_put_char ((avt_char) * (txt + 2)))
-	    r = -1;
-	  avt.underlined = false;
-	}
-      else if (*txt == *(txt + 2))
-	{
-	  avt.bold = true;
-	  if (avt_put_char ((avt_char) * txt))
-	    r = -1;
-	  avt.bold = false;
-	}
+      if (prev == L'_')
+	avt.underlined = false;
+      else if (prev == ch)
+	avt.bold = false;
     }
 
-  return r;
+  high_surrogate = 0;
+  prev = last;
+  last = ch;
+
+  return _avt_STATUS;
 }
 
 /*
@@ -2310,17 +2296,8 @@ avt_say (const wchar_t * txt)
 
   while (*txt)
     {
-      if (*(txt + 1) == L'\b')
-	{
-	  if (avt_overstrike (txt))
-	    break;
-	  txt += 2;
-	}
-      else
-	{
-	  if (avt_put_char (*txt) != AVT_NORMAL)
-	    break;
-	}
+      if (avt_put_char (*txt) != AVT_NORMAL)
+	break;
 
       txt++;
     }
@@ -2346,18 +2323,8 @@ avt_say_len (const wchar_t * txt, size_t len)
 
   for (size_t i = 0; i < len; i++, txt++)
     {
-      if (*(txt + 1) == L'\b' and i < len - 1)
-	{
-	  if (avt_overstrike (txt))
-	    break;
-	  txt += 2;
-	  i += 2;
-	}
-      else
-	{
-	  if (avt_put_char (*txt) != AVT_NORMAL)
-	    break;
-	}
+      if (avt_put_char (*txt) != AVT_NORMAL)
+	break;
     }
 
   return _avt_STATUS;

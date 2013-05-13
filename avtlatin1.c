@@ -41,8 +41,8 @@ lat1_to_wide (const char *l1, wchar_t * wide, size_t len)
 {
   const unsigned char *t = (const unsigned char *) l1;
 
-  for (size_t i = 0; i < len; ++i)
-    wide[i] = (wchar_t) t[i];
+  while (len--)
+    *wide++ = (wchar_t) (*t++);
 }
 
 
@@ -54,12 +54,11 @@ avt_say_l1_len (const char *txt, size_t len)
   if (not txt or _avt_STATUS != AVT_NORMAL or not avt_initialized ())
     return avt_update ();
 
-  if (len)
-    {
-      wchar_t wide[len];
-      lat1_to_wide (txt, wide, len);
-      avt_say_len (wide, len);
-    }
+  const unsigned char *p = (const unsigned char *) txt;
+
+  while (len--)
+    if (avt_put_char (*p++) != AVT_NORMAL)
+      break;
 
   return _avt_STATUS;
 }
@@ -68,8 +67,17 @@ avt_say_l1_len (const char *txt, size_t len)
 extern int
 avt_say_l1 (const char *txt)
 {
-  if (txt and * txt)
-    avt_say_l1_len (txt, strlen (txt));
+  if (_avt_STATUS != AVT_NORMAL or not avt_initialized ())
+    return _avt_STATUS;
+
+  if (not txt or not * txt)
+    return avt_update ();
+
+  const unsigned char *p = (const unsigned char *) txt;
+
+  while (*p)
+    if (avt_put_char (*p++) != AVT_NORMAL)
+      break;
 
   return _avt_STATUS;
 }

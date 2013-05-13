@@ -1,3 +1,8 @@
+2013-05-13  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_put_char): put overstrike technique there
+	callers adapted
+
 2013-05-11  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.c: avt_char is uint_least32_t now
