@@ -3,6 +3,8 @@
 	* avatar.c (avt_put_char): put overstrike technique there
 	callers adapted
 
+	* lua/lua-avt.c: use _u8 and _l1 functions
+
 2013-05-11  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.c: avt_char is uint_least32_t now
