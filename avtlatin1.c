@@ -37,28 +37,28 @@
 
 // result is not terminated unless len includes the terminator
 static void
-lat1_to_wide (const char *l1, wchar_t * wide, size_t len)
+lat1_to_wide (wchar_t * dest, const char *src, size_t len)
 {
-  const unsigned char *t = (const unsigned char *) l1;
+  const unsigned char *t = (const unsigned char *) src;
 
   while (len--)
-    *wide++ = (wchar_t) (*t++);
+    *dest++ = (wchar_t) (*t++);
 }
 
 
 static void
-wide_to_lat1 (const wchar_t * wide, char *s, size_t len)
+wide_to_lat1 (char *dest, const wchar_t * src, size_t len)
 {
   for (size_t i = 0; i < len; ++i)
     {
-      register wchar_t ch = wide[i];
-      s[i] = (ch <= L'\xFF') ? (char) ch : SUB;
+      register wchar_t ch = src[i];
+      dest[i] = (ch <= L'\xFF') ? (char) ch : SUB;
 
       if (not ch)
 	break;
     }
 
-  s[len - 1] = '\0';
+  dest[len - 1] = '\0';
 }
 
 
@@ -108,7 +108,7 @@ avt_tell_l1_len (const char *txt, size_t len)
 	len = strlen (txt);
 
       wchar_t wide[len];
-      lat1_to_wide (txt, wide, len);
+      lat1_to_wide (wide, txt, len);
       avt_tell_len (wide, len);
     }
 
@@ -135,7 +135,7 @@ avt_set_avatar_name_l1 (const char *name)
     {
       size_t len = strlen (name);
       wchar_t wide[len + 1];
-      lat1_to_wide (name, wide, len + 1);
+      lat1_to_wide (wide, name, len + 1);
 
       avt_set_avatar_name (wide);
     }
@@ -156,7 +156,7 @@ avt_pager_l1 (const char *txt, size_t len, int startline)
 
       if (wctext)
 	{
-	  lat1_to_wide (txt, wctext, len);
+	  lat1_to_wide (wctext, txt, len);
 	  avt_pager (wctext, len, startline);
 	  free (wctext);
 	}
@@ -176,7 +176,7 @@ avt_credits_l1 (const char *txt, bool centered)
 
       if (wctext)
 	{
-	  lat1_to_wide (txt, wctext, len + 1);
+	  lat1_to_wide (wctext, txt, len + 1);
 	  avt_credits (wctext, centered);
 	  free (wctext);
 	}
@@ -200,14 +200,14 @@ avt_input_l1 (char *s, size_t size, const char *default_text,
       wcs_default_text[0] = L'\0';
 
       if (default_text and * default_text)
-	lat1_to_wide (default_text, wcs_default_text, size);
+	lat1_to_wide (wcs_default_text, default_text, size);
 
       ch = avt_input (buf, sizeof (buf), wcs_default_text, position, mode);
 
       if (_avt_STATUS != AVT_NORMAL)
 	return AVT_KEY_NONE;
 
-      wide_to_lat1 (buf, s, size);
+      wide_to_lat1 (s, buf, size);
     }
 
   return ch;

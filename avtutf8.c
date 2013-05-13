@@ -48,11 +48,11 @@ check_char_length (const unsigned char *utf8, size_t max_bytes)
 // reads next char from utf8 and places code in ch
 // returns number of bytes read from utf8
 static size_t
-utf8_to_unicode (const char *utf8, avt_char * ch)
+utf8_to_unicode (avt_char * ch, const char *src)
 {
   size_t bytes = 0;
   avt_char c = BROKEN_WCHAR;
-  const unsigned char *u8 = (const unsigned char *) utf8;
+  const unsigned char *u8 = (const unsigned char *) src;
 
   if (*u8 <= 0x7Fu)
     {
@@ -104,30 +104,30 @@ utf8_to_unicode (const char *utf8, avt_char * ch)
 
 // result is not terminated unless len includes the terminator
 static size_t
-utf8_to_wchar (const char *txt, size_t len, wchar_t * wide, size_t wide_len)
+utf8_to_wchar (wchar_t * dest, size_t dest_len, const char *src, size_t src_len)
 {
   size_t charnum = 0;
 
-  while (len and charnum < wide_len)
+  while (src_len and charnum < dest_len)
     {
       avt_char ch;
-      size_t bytes = utf8_to_unicode (txt, &ch);
+      size_t bytes = utf8_to_unicode (&ch, src);
 
       if (sizeof (wchar_t) >= 3 or ch <= 0xFFFFu)
-	wide[charnum] = ch;
-      else if (charnum + 1 < wide_len)	// UTF-16 surrogates
+	dest[charnum] = ch;
+      else if (charnum + 1 < dest_len)	// UTF-16 surrogates
 	{
 	  ch -= 0x10000u;
-	  wide[charnum] = 0xD800 bitor ((ch >> 10) bitand 0x3FF);
+	  dest[charnum] = 0xD800 bitor ((ch >> 10) bitand 0x3FF);
 	  ++charnum;
-	  wide[charnum] = 0xDC00 bitor (ch bitand 0x3FF);
+	  dest[charnum] = 0xDC00 bitor (ch bitand 0x3FF);
 	}
 
-      if (bytes > len)
-	bytes = len;
+      if (bytes > src_len)
+	bytes = src_len;
 
-      txt += bytes;
-      len -= bytes;
+      src += bytes;
+      src_len -= bytes;
       ++charnum;
     }
 
@@ -136,19 +136,19 @@ utf8_to_wchar (const char *txt, size_t len, wchar_t * wide, size_t wide_len)
 
 
 static void
-wchar_to_utf8 (const wchar_t * txt, size_t len, char *utf8, size_t utf8_size)
+wchar_to_utf8 (char *dest, size_t dest_len, const wchar_t * src, size_t src_len)
 {
   size_t p = 0;			// position in utf8 string
 
-  for (size_t i = 0; i < len; ++i)
+  for (size_t i = 0; i < src_len; ++i)
     {
-      register avt_char ch = txt[i];
+      register avt_char ch = src[i];
 
       // support UTF-16
       // if and only if wchar_t is < 3, otherwise optimized away
       if (sizeof (wchar_t) < 3 and 0xD800u <= ch and ch <= 0xDBFFu)
 	{
-	  avt_char ch2 = txt[i + 1];
+	  avt_char ch2 = src[i + 1];
 
 	  if (0xDC00u <= ch2 and ch2 <= 0xDFFFu)
 	    {
@@ -161,32 +161,32 @@ wchar_to_utf8 (const wchar_t * txt, size_t len, char *utf8, size_t utf8_size)
       if (ch > UNICODE_MAXIMUM or surrogate (ch))
 	ch = BROKEN_WCHAR;
 
-      if (ch <= 0x7Fu and p + 1 < utf8_size)
-	utf8[p++] = (char) ch;
-      else if (ch <= 0x7FFu and p + 2 < utf8_size)
+      if (ch <= 0x7Fu and p + 1 < dest_len)
+	dest[p++] = (char) ch;
+      else if (ch <= 0x7FFu and p + 2 < dest_len)
 	{
-	  utf8[p++] = 0xC0u bitor (ch >> 6);
-	  utf8[p++] = 0x80u bitor (ch bitand 0x3Fu);
+	  dest[p++] = 0xC0u bitor (ch >> 6);
+	  dest[p++] = 0x80u bitor (ch bitand 0x3Fu);
 	}
-      else if (ch <= 0xFFFFu and p + 3 < utf8_size)
+      else if (ch <= 0xFFFFu and p + 3 < dest_len)
 	{
-	  utf8[p++] = 0xE0u bitor (ch >> (2 * 6));
-	  utf8[p++] = 0x80u bitor ((ch >> 6) bitand 0x3Fu);
-	  utf8[p++] = 0x80u bitor (ch bitand 0x3Fu);
+	  dest[p++] = 0xE0u bitor (ch >> (2 * 6));
+	  dest[p++] = 0x80u bitor ((ch >> 6) bitand 0x3Fu);
+	  dest[p++] = 0x80u bitor (ch bitand 0x3Fu);
 	}
-      else if (p + 4 < utf8_size)
+      else if (p + 4 < dest_len)
 	{
-	  utf8[p++] = 0xF0u bitor (ch >> (3 * 6));
-	  utf8[p++] = 0x80u bitor ((ch >> (2 * 6)) bitand 0x3Fu);
-	  utf8[p++] = 0x80u bitor ((ch >> 6) bitand 0x3Fu);
-	  utf8[p++] = 0x80u bitor (ch bitand 0x3Fu);
+	  dest[p++] = 0xF0u bitor (ch >> (3 * 6));
+	  dest[p++] = 0x80u bitor ((ch >> (2 * 6)) bitand 0x3Fu);
+	  dest[p++] = 0x80u bitor ((ch >> 6) bitand 0x3Fu);
+	  dest[p++] = 0x80u bitor (ch bitand 0x3Fu);
 	}
 
       if (not ch)
 	break;
     }
 
-  utf8[utf8_size - 1] = '\0';
+  dest[dest_len - 1] = '\0';
 }
 
 
@@ -201,7 +201,7 @@ avt_say_u8_len (const char *txt, size_t len)
   while (len)
     {
       avt_char ch;
-      size_t bytes = utf8_to_unicode (txt, &ch);
+      size_t bytes = utf8_to_unicode (&ch, txt);
 
       if (avt_put_char (ch) != AVT_NORMAL or bytes > len)
 	break;
@@ -226,7 +226,7 @@ avt_say_u8 (const char *txt)
   while (*txt)
     {
       avt_char ch;
-      size_t bytes = utf8_to_unicode (txt, &ch);
+      size_t bytes = utf8_to_unicode (&ch, txt);
 
       if (avt_put_char (ch) != AVT_NORMAL)
 	break;
@@ -252,7 +252,7 @@ avt_tell_u8_len (const char *txt, size_t len)
 	wide_len *= 2;		// space for UTF-16 surrogates
 
       wchar_t wide[wide_len];
-      size_t chars = utf8_to_wchar (txt, len, wide, wide_len);
+      size_t chars = utf8_to_wchar (wide, wide_len, txt, len);
 
       avt_tell_len (wide, chars);
     }
@@ -287,7 +287,7 @@ avt_set_avatar_name_u8 (const char *name)
 
       wchar_t wide[wide_len];
 
-      utf8_to_wchar (name, len, wide, wide_len);
+      utf8_to_wchar (wide, wide_len, name, len);
       avt_set_avatar_name (wide);
     }
 
@@ -313,7 +313,7 @@ avt_pager_u8 (const char *txt, size_t len, int startline)
       if (wctext)
 	{
 	  size_t chars =
-	    utf8_to_wchar (txt, len, wctext, len * 4 / sizeof (wchar_t));
+	    utf8_to_wchar (wctext, len * 4 / sizeof (wchar_t), txt, len);
 	  avt_pager (wctext, chars, startline);
 	  free (wctext);
 	}
@@ -333,7 +333,7 @@ avt_credits_u8 (const char *txt, bool centered)
 
       if (wctext)
 	{
-	  utf8_to_wchar (txt, len, wctext, len * 4 / sizeof (wchar_t));
+	  utf8_to_wchar (wctext, len * 4 / sizeof (wchar_t), txt, len);
 	  avt_credits (wctext, centered);
 	  free (wctext);
 	}
@@ -357,15 +357,15 @@ avt_input_u8 (char *s, size_t size, const char *default_text,
       wcs_default_text[0] = L'\0';
 
       if (default_text and * default_text)
-	utf8_to_wchar (default_text, strlen (default_text) + 1,
-		       wcs_default_text, size);
+	utf8_to_wchar (wcs_default_text, size,
+		       default_text, strlen (default_text) + 1);
 
       ch = avt_input (buf, sizeof (buf), wcs_default_text, position, mode);
 
       if (_avt_STATUS != AVT_NORMAL)
 	return AVT_KEY_NONE;
 
-      wchar_to_utf8 (buf, sizeof (buf), s, size);
+      wchar_to_utf8 (s, size, buf, sizeof (buf));
     }
 
   return ch;
