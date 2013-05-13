@@ -133,7 +133,7 @@ error_box (const char *msg)
   avt_set_text_delay (0);
   avt_lock_updates (false);
   avt_bell ();
-  avt_tell_mb (msg);
+  avt_tell_u8 (msg);		// FIXME
   avt_wait_button ();
 }
 
@@ -265,7 +265,6 @@ check_options (int argc, char *argv[])
 static void
 initialize (void)
 {
-  avt_mb_encoding ("UTF-8");
   if (avt_start ("Lua-AKFAvatar", "AKFAvatar", mode))
     fatal ("cannot initialize graphics", avt_get_error ());
 }
@@ -278,7 +277,6 @@ reset (void)
   avt_set_balloon_color (AVT_COLOR_SAY);
   avt_text_direction (AVT_LEFT_TO_RIGHT);
   avt_quit_audio ();
-  avt_mb_encoding ("UTF-8");
   avt_set_title ("Lua-AKFAvatar", "AKFAvatar");
 }
 
@@ -546,7 +544,7 @@ start_screen (void)
   avt_set_balloon_size (10, 80);
   avt_underlined (true);
   avt_bold (true);
-  avt_say_mb (PRGNAME);
+  avt_say_u8 (PRGNAME);
   avt_normal_text ();
   avt_new_line ();
   avt_new_line ();
@@ -555,7 +553,7 @@ start_screen (void)
   avt_say (L", ");
   avt_say (avt_wide_copyright ());
   avt_new_line ();
-  avt_say_mb (LUA_COPYRIGHT);
+  avt_say_u8 (LUA_COPYRIGHT);
   avt_new_line ();
   avt_new_line ();
   if (german)
