@@ -46,6 +46,22 @@ lat1_to_wide (const char *l1, wchar_t * wide, size_t len)
 }
 
 
+static void
+wide_to_lat1 (const wchar_t * wide, char *s, size_t len)
+{
+  for (size_t i = 0; i < len; ++i)
+    {
+      register wchar_t ch = wide[i];
+      s[i] = (ch <= L'\xFF') ? (char) ch : SUB;
+
+      if (not ch)
+	break;
+    }
+
+  s[len - 1] = '\0';
+}
+
+
 extern int
 avt_say_l1_len (const char *txt, size_t len)
 {
@@ -191,16 +207,7 @@ avt_input_l1 (char *s, size_t size, const char *default_text,
       if (_avt_STATUS != AVT_NORMAL)
 	return AVT_KEY_NONE;
 
-      for (size_t i = 0; i < size; ++i)
-	{
-	  register wchar_t ch = buf[i];
-	  s[i] = (ch <= L'\xFF') ? (char) ch : SUB;
-
-	  if (not ch)
-	    break;
-	}
-
-      s[size - 1] = '\0';
+      wide_to_lat1 (buf, s, size);
     }
 
   return ch;
