@@ -343,18 +343,40 @@ avt_credits_u8 (const char *txt, bool centered)
 }
 
 
+extern avt_char
+avt_input_u8 (char *s, size_t size, const char *default_text,
+	      int position, int mode)
+{
+  avt_char ch = AVT_KEY_NONE;
+
+  if (s and size)
+    {
+      wchar_t buf[size], wcs_default_text[size];
+
+      memset (s, '\0', size);
+      wcs_default_text[0] = L'\0';
+
+      if (default_text and * default_text)
+	utf8_to_wchar (default_text, strlen (default_text) + 1,
+		       wcs_default_text, size);
+
+      ch = avt_input (buf, sizeof (buf), wcs_default_text, position, mode);
+
+      if (_avt_STATUS != AVT_NORMAL)
+	return AVT_KEY_NONE;
+
+      wchar_to_utf8 (buf, sizeof (buf), s, size);
+    }
+
+  return ch;
+}
+
+
 extern int
 avt_ask_u8 (char *s, size_t size)
 {
   if (s and size)
-    {
-      memset (s, '\0', size);
-
-      wchar_t buf[size];
-
-      if (avt_ask (buf, sizeof (buf)) == AVT_NORMAL)
-	wchar_to_utf8 (buf, sizeof (buf), s, size);
-    }
+    avt_input_u8 (s, size, NULL, -1, 0);
 
   return _avt_STATUS;
 }

@@ -1237,6 +1237,14 @@ AVT_API avt_char avt_input (wchar_t *result, size_t size,
                             const wchar_t *default_text,
                             int position, int mode);
 
+AVT_API avt_char avt_input_l1 (char *result, size_t size,
+                               const char *default_text,
+                               int position, int mode);
+
+AVT_API avt_char avt_input_u8 (char *result, size_t size,
+                               const char *default_text,
+                               int position, int mode);
+
 
 AVT_API avt_char avt_input_mb (char *s, size_t size,
                                const char *default_text,

@@ -84,34 +84,6 @@ avt_say_l1 (const char *txt)
 
 
 extern int
-avt_ask_l1 (char *s, size_t size)
-{
-  if (s and size)
-    {
-      wchar_t buf[size];
-
-      memset (s, '\0', size);
-
-      if (avt_ask (buf, sizeof (buf)) != AVT_NORMAL)
-	return _avt_STATUS;
-
-      for (size_t i = 0; i < size; ++i)
-	{
-	  register wchar_t ch = buf[i];
-	  s[i] = (ch <= L'\xFF') ? (char) ch : SUB;
-
-	  if (not ch)
-	    break;
-	}
-
-      s[size - 1] = '\0';
-    }
-
-  return _avt_STATUS;
-}
-
-
-extern int
 avt_tell_l1_len (const char *txt, size_t len)
 {
   if (txt)
@@ -193,6 +165,53 @@ avt_credits_l1 (const char *txt, bool centered)
 	  free (wctext);
 	}
     }
+
+  return _avt_STATUS;
+}
+
+
+extern avt_char
+avt_input_l1 (char *s, size_t size, const char *default_text,
+	      int position, int mode)
+{
+  avt_char ch = AVT_KEY_NONE;
+
+  if (s and size)
+    {
+      wchar_t buf[size], wcs_default_text[size];
+
+      memset (s, '\0', size);
+      wcs_default_text[0] = L'\0';
+
+      if (default_text and * default_text)
+	lat1_to_wide (default_text, wcs_default_text, size);
+
+      ch = avt_input (buf, sizeof (buf), wcs_default_text, position, mode);
+
+      if (_avt_STATUS != AVT_NORMAL)
+	return AVT_KEY_NONE;
+
+      for (size_t i = 0; i < size; ++i)
+	{
+	  register wchar_t ch = buf[i];
+	  s[i] = (ch <= L'\xFF') ? (char) ch : SUB;
+
+	  if (not ch)
+	    break;
+	}
+
+      s[size - 1] = '\0';
+    }
+
+  return ch;
+}
+
+
+extern int
+avt_ask_l1 (char *s, size_t size)
+{
+  if (s and size)
+    avt_input_l1 (s, size, NULL, -1, 0);
 
   return _avt_STATUS;
 }
