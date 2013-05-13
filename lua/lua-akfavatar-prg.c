@@ -120,6 +120,12 @@ quit (void)
   lua_close (L);
 }
 
+// dirty :-(
+#ifdef _WIN32
+#define error_msg(s)  avt_tell_l1(s)
+#else
+#define error_msg(s)  avt_tell_u8(s)
+#endif
 
 static void
 error_box (const char *msg)
@@ -133,7 +139,7 @@ error_box (const char *msg)
   avt_set_text_delay (0);
   avt_lock_updates (false);
   avt_bell ();
-  avt_tell_u8 (msg);		// FIXME
+  error_msg (msg);
   avt_wait_button ();
 }
 
