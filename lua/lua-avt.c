@@ -75,13 +75,21 @@ extern "C"
 
 static bool initialized = false;
 
-static int (*say) (const char *txt, size_t len);
-static int (*tell) (const char *txt, size_t len);
-static int (*set_avatar_name) (const char *name);
-static int (*pager) (const char *txt, size_t len, int startline);
-static int (*credits) (const char *txt, bool centered);
-static avt_char (*input) (char *result, size_t size,
-			  const char *default_text, int position, int mode);
+static struct
+{
+  int (*say) (const char *txt, size_t len);
+
+  int (*tell) (const char *txt, size_t len);
+
+  int (*set_avatar_name) (const char *name);
+
+  int (*pager) (const char *txt, size_t len, int startline);
+
+  int (*credits) (const char *txt, bool centered);
+
+    avt_char (*input) (char *result, size_t size,
+		       const char *default_text, int position, int mode);
+} intl;
 
 static const char *const modes[] =
   { "auto", "window", "fullscreen", "fullscreen no switch", NULL };
@@ -348,34 +356,34 @@ lavt_colors (lua_State * L)
 static void
 use_utf8 (void)
 {
-  say = avt_say_u8_len;
-  tell = avt_tell_u8_len;
-  input = avt_input_u8;
-  pager = avt_pager_u8;
-  credits = avt_credits_u8;
-  set_avatar_name = avt_set_avatar_name_u8;
+  intl.say = avt_say_u8_len;
+  intl.tell = avt_tell_u8_len;
+  intl.input = avt_input_u8;
+  intl.pager = avt_pager_u8;
+  intl.credits = avt_credits_u8;
+  intl.set_avatar_name = avt_set_avatar_name_u8;
 }
 
 static void
 use_latin1 (void)
 {
-  say = avt_say_l1_len;
-  tell = avt_tell_l1_len;
-  input = avt_input_l1;
-  pager = avt_pager_l1;
-  credits = avt_credits_l1;
-  set_avatar_name = avt_set_avatar_name_l1;
+  intl.say = avt_say_l1_len;
+  intl.tell = avt_tell_l1_len;
+  intl.input = avt_input_l1;
+  intl.pager = avt_pager_l1;
+  intl.credits = avt_credits_l1;
+  intl.set_avatar_name = avt_set_avatar_name_l1;
 }
 
 static void
 use_mb (void)
 {
-  say = avt_say_mb_len;
-  tell = avt_tell_mb_len;
-  input = avt_input_mb;
-  pager = avt_pager_mb;
-  credits = avt_credits_mb;
-  set_avatar_name = avt_set_avatar_name_mb;
+  intl.say = avt_say_mb_len;
+  intl.tell = avt_tell_mb_len;
+  intl.input = avt_input_mb;
+  intl.pager = avt_pager_mb;
+  intl.credits = avt_credits_mb;
+  intl.set_avatar_name = avt_set_avatar_name_mb;
 }
 
 // change the used encoding (iconv)
@@ -413,9 +421,9 @@ lavt_encoding (lua_State * L)
 static int
 lavt_get_encoding (lua_State * L)
 {
-  if (say == avt_say_u8_len)
+  if (intl.say == avt_say_u8_len)
     lua_pushliteral (L, "UTF-8");
-  else if (say == avt_say_l1_len)
+  else if (intl.say == avt_say_l1_len)
     lua_pushliteral (L, "ISO-8859-1");
   else
     lua_pushstring (L, avt_get_mb_encoding ());
@@ -531,7 +539,7 @@ lavt_avatar_image_file (lua_State * L)
 static int
 lavt_set_avatar_name (lua_State * L)
 {
-  check (set_avatar_name (lua_tostring (L, 1)));
+  check (intl.set_avatar_name (lua_tostring (L, 1)));
   return 0;
 }
 
@@ -1178,7 +1186,7 @@ static int
 lavt_credits (lua_State * L)
 {
   is_initialized ();
-  check (credits (luaL_checkstring (L, 1), to_bool (L, 2)));
+  check (intl.credits (luaL_checkstring (L, 1), to_bool (L, 2)));
 
   return 0;
 }
@@ -1202,9 +1210,9 @@ lavt_ask (lua_State * L)
   is_initialized ();
   question = lua_tolstring (L, 1, &len);
   if (question)
-    check (say (question, len));
+    check (intl.say (question, len));
 
-  (void) input (buf, sizeof (buf), NULL, -1, 0);
+  (void) intl.input (buf, sizeof (buf), NULL, -1, 0);
   check (avt_get_status ());
 
   lua_pushstring (L, buf);
@@ -1228,12 +1236,12 @@ lavt_input (lua_State * L)
   mode = luaL_optint (L, 4, 0);
 
   if (question)
-    check (say (question, len));
+    check (intl.say (question, len));
 
   if (position > 0)
     position--;			// C is 0-based
 
-  ch = input (buf, sizeof (buf), default_text, position, mode);
+  ch = intl.input (buf, sizeof (buf), default_text, position, mode);
 
   check (avt_get_status ());
 
@@ -1373,7 +1381,7 @@ lavt_say (lua_State * L)
     {
       s = luaL_checklstring (L, i, &len);
       if (s)
-	check (say (s, len));
+	check (intl.say (s, len));
     }
 
   return 0;
@@ -1403,7 +1411,7 @@ lavt_print (lua_State * L)
 	{
 	  if (i > 1)
 	    avt_next_tab ();
-	  check (say (s, len));
+	  check (intl.say (s, len));
 	}
     }
 
@@ -1424,7 +1432,7 @@ lavt_tell (lua_State * L)
 
   s = luaL_checklstring (L, 1, &len);
   if (s)
-    check (tell (s, len));
+    check (intl.tell (s, len));
 
   return 0;
 }
@@ -1452,7 +1460,7 @@ lavt_say_unicode (lua_State * L)
 	{
 	  s = luaL_checklstring (L, i, &len);
 	  if (s)
-	    check (say (s, len));
+	    check (intl.say (s, len));
 	}
     }
 
@@ -1490,7 +1498,7 @@ lavt_pager (lua_State * L)
   if (s)
     {
       lua_gc (L, LUA_GCCOLLECT, 0);	// full garbage collection
-      check (pager (s, len, startline));
+      check (intl.pager (s, len, startline));
     }
 
   return 0;
@@ -2118,7 +2126,7 @@ show_menu_item (int nr, void *L)
     item_desc = lua_tolstring (L, -1, &len);
 
   if (item_desc)
-    say (item_desc, len);
+    intl.say (item_desc, len);
 
   // pop item from stack
   lua_pop (L, 1);
