@@ -2175,6 +2175,10 @@ avt_put_char (avt_char ch)
 
   switch (ch)
     {
+    case 0:
+      avt_put_raw_char (0);
+      break;
+
     case L'\n':		// LF: Line Feed
     case L'\v':		// VT: Vertical Tab
     case 0x85:			// NEL: NExt Line
@@ -2234,7 +2238,6 @@ avt_put_char (avt_char ch)
       break;
 
       // other ignorable (invisible) characters
-    case 0x7F:
     case L'\u200B':
     case L'\u200C':
     case L'\u200D':
@@ -2262,7 +2265,8 @@ avt_put_char (avt_char ch)
       break;
 
     default:
-      if (ch > 0x0020 or ch == 0x0000)
+      // if not a control character
+      if (ch > 0x20 and (ch < 0x7F or ch >= 0xA0))
 	{
 	  if (avt.markup and ch == L'_')
 	    avt.underlined = not avt.underlined;
