@@ -120,12 +120,16 @@ quit (void)
   lua_close (L);
 }
 
-// dirty :-(
-#ifdef _WIN32
-#define error_msg(s)  avt_tell_l1(s)
-#else
-#define error_msg(s)  avt_tell_u8(s)
-#endif
+// error message might include localized system strings
+static void
+error_msg (const char *msg)
+{
+  size_t len = strlen (msg);
+  wchar_t message[len];
+
+  mbstowcs (message, msg, len);
+  avt_tell (message);
+}
 
 static void
 error_box (const char *msg)
