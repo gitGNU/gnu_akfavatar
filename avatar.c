@@ -2137,9 +2137,41 @@ avt_put_char (avt_char ch)
 	avt.bold = true;
     }
 
+  // UTF-16 surrogates
+  if (0xD800 <= ch and ch <= 0xDFFF)
+    {
+      if (ch <= 0xDBFF)		// high surrogate
+	{
+	  if (high_surrogate)
+	    avt_put_raw_char (BROKEN_WCHAR);	// spurious high surrogate
+
+	  high_surrogate = ch;
+
+	  // return immediately to avoid resetting chars
+	  return _avt_STATUS;
+	}
+      else			// low surrogate
+	{
+	  if (high_surrogate)
+	    ch = (((high_surrogate bitand 0x3FF) << 10)
+		  bitor (ch bitand 0x3FF)) + 0x10000;
+	  else			// separated low surrogate
+	    ch = BROKEN_WCHAR;
+
+	  high_surrogate = 0;
+	}
+    }
+
   // check for spurious high surrogate
-  if (high_surrogate and (ch < 0xDC00 or ch > 0xDFFF))
-    avt_put_raw_char (BROKEN_WCHAR);
+  if (high_surrogate)
+    {
+      avt_put_raw_char (BROKEN_WCHAR);
+      high_surrogate = 0;
+    }
+
+  // outside the Unicode range?
+  if (ch > 0x10FFFF)
+    ch = BROKEN_WCHAR;
 
   switch (ch)
     {
@@ -2232,26 +2264,7 @@ avt_put_char (avt_char ch)
     default:
       if (ch > 0x0020 or ch == 0x0000)
 	{
-	  if (0xD800 <= ch and ch <= 0xDBFF)	// UTF-16 high surrogate
-	    {
-	      if (not high_surrogate)
-		{
-		  high_surrogate = ch;
-		  // return to avoid resetting chars
-		  return _avt_STATUS;
-		}
-	      else		// repeated use of high surrogate
-		avt_put_raw_char (BROKEN_WCHAR);
-	    }
-	  else if (0xDC00 <= ch and ch <= 0xDFFF)	// UTF-16 low surrogate
-	    {
-	      if (high_surrogate)
-		avt_put_raw_char (((high_surrogate & 0x3FF) << 10)
-				  + (ch & 0x3FF) + 0x10000);
-	      else		// separated low surrogate
-		avt_put_raw_char (BROKEN_WCHAR);
-	    }
-	  else if (avt.markup and ch == L'_')
+	  if (avt.markup and ch == L'_')
 	    avt.underlined = not avt.underlined;
 	  else if (avt.markup and ch == L'*')
 	    avt.bold = not avt.bold;
@@ -2269,7 +2282,6 @@ avt_put_char (avt_char ch)
 	avt.bold = false;
     }
 
-  high_surrogate = 0;
   prev = last;
   last = ch;
 
