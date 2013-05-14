@@ -107,7 +107,7 @@ quit (lua_State * L)
 {
   if (avt_get_status () <= AVT_ERROR)
     {
-      return luaL_error (L, "%s", avt_get_error ());
+      return luaL_error (L, "akfavatar: %s", avt_get_error ());
     }
   else				// stop requested
     {
@@ -1631,8 +1631,9 @@ lavt_load_audio_stream (lua_State * L)
   maxsize = lua_tounsigned (L, 2);	// nothing or 0 allowed
   playmode = luaL_checkoption (L, 3, "load", playmodes);
 
-  if (stream->closef == NULL)
-    return luaL_error (L, "attempt to use a closed file");
+  // try to use closed file?
+  if (not stream->closef)
+    return luaL_error (L, "load_audio_stream: %s", strerror (EBADF));
 
   if (not avt_audio_playing (NULL))
     audio_not_playing (L);
