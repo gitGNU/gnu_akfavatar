@@ -166,7 +166,7 @@ AVT_API void avt_button_quit (void);
 
 
 /***********************************************************************/
-/* setting an avatar image */
+/* setting an avatar image or a banner */
 
 /* On error these functions return AVT_FAILURE without changing the status */
 
@@ -177,7 +177,7 @@ AVT_API void avt_button_quit (void);
 
 AVT_API int avt_avatar_image_default (void);
 AVT_API int avt_avatar_image_none (void);
-AVT_API int avt_avatar_image_xpm (char **xpm);
+AVT_API int avt_avatar_image_xpm (char **);
 AVT_API int avt_avatar_image_xbm (const unsigned char *bits,
                                   int width, int height, int color);
 AVT_API int avt_avatar_image_data (void *img, size_t imgsize);
@@ -228,36 +228,10 @@ AVT_API size_t avt_ticks (void);
 #define avt_elapsed(start_ticks)  (avt_ticks()-(start_ticks))
 
 /***********************************************************************/
-/* handling of single characters */
-
-/*
- * writes a single character in the balloon
- * if there is no balloon, it is drawn
- * if there is no avatar, it is shown (not moved in)
- * interprets control characters, but not for overstrike-text
- * UTF-16 surrogate characters are interpreted too
- */
-AVT_API int avt_put_char (avt_char ch);
-
-/*
- * checks whether the given character is printable
- * returns false on unknown or control characters
- */
-AVT_API bool avt_is_printable (avt_char ch);
-
-/*
- * checks whether the given character is a combining character
- * combining characters are added to the previous character
- * they don't take space
- *
- * not all combining characters of Unicode supported
- */
-AVT_API bool avt_combining (avt_char ch);
-
-
-/***********************************************************************/
 /* say or ask stuff with wchar_t */
-/* the encoding can be UTF-32 or UTF-16 
+
+/*
+ * the encoding can be UTF-32 or UTF-16
  * depending on the systems specific size of wchar_t
  */
 
@@ -516,7 +490,39 @@ AVT_API size_t avt_recode_buffer (const char *tocode, const char *fromcode,
                                   const char *src, size_t src_size);
 
 /* free memory allocated by this library */
-AVT_API void avt_free (void *ptr);
+AVT_API void avt_free (void *);
+
+
+/***********************************************************************/
+/* handling of single characters */
+
+/*
+ * writes a single character in the balloon
+ * if there is no balloon, it is drawn
+ * if there is no avatar, it is shown (not moved in)
+ * interprets control characters, but not for overstrike-text
+ * UTF-16 surrogate characters are interpreted too
+ *
+ * You can use this directly for characters from
+ * US-ASCII, ISO-8859-1, UTF-16 or UTF-32
+ * except that UTF-32 doesn't allow UTF-16 surrogate characters
+ */
+AVT_API int avt_put_char (avt_char);
+
+/*
+ * checks whether the given character is printable
+ * returns false on unknown or control characters
+ */
+AVT_API bool avt_is_printable (avt_char);
+
+/*
+ * checks whether the given character is a combining character
+ * combining characters are added to the previous character
+ * they don't take space
+ *
+ * not all combining characters of Unicode supported
+ */
+AVT_API bool avt_combining (avt_char);
 
 
 /***********************************************************************/
@@ -540,7 +546,7 @@ AVT_API bool avt_key_pressed (void);
 AVT_API void avt_clear_keys (void);
 
 /* push key or event */
-AVT_API void avt_push_key (avt_char key);
+AVT_API void avt_push_key (avt_char);
 
 
 /***********************************************************************/
@@ -553,7 +559,7 @@ AVT_API bool avt_initialized (void);
 AVT_API int avt_get_status (void);
 
 /* set status */
-AVT_API void avt_set_status (int status);
+AVT_API void avt_set_status (int);
 
 /* get error message */
 AVT_API char *avt_get_error (void);
@@ -689,7 +695,7 @@ AVT_API void avt_set_balloon_height (int height);
 AVT_API void avt_set_avatar_mode (int mode);
 
 /* activate the text cursor? (default: no) */
-AVT_API void avt_activate_cursor (bool on);
+AVT_API void avt_activate_cursor (bool);
 
 /*
  * set text direction
@@ -712,19 +718,19 @@ AVT_API void avt_set_text_delay (int delay);
 AVT_API void avt_set_flip_page_delay (int delay);
 
 /* set underlined mode on or off */
-AVT_API void avt_underlined (bool onoff);
+AVT_API void avt_underlined (bool);
 
 /* get underlined mode */
 AVT_API bool avt_get_underlined (void);
 
 /* set bold mode on or off (not recommended) */
-AVT_API void avt_bold (bool onoff);
+AVT_API void avt_bold (bool);
 
 /* get bold mode */
 AVT_API bool avt_get_bold (void);
 
 /* set inverse mode on or off */
-AVT_API void avt_inverse (bool onoff);
+AVT_API void avt_inverse (bool);
 
 /* get inverse mode */
 AVT_API bool avt_get_inverse (void);
@@ -739,7 +745,7 @@ AVT_API void avt_normal_text (void);
  * in markup mode the character "_" toggles the underlined mode
  * and the character "*" toggles the bold mode on or off
  */
-AVT_API void avt_markup (bool onoff);
+AVT_API void avt_markup (bool);
 
 /*
  * set scroll mode
@@ -773,7 +779,7 @@ AVT_API bool avt_get_origin_mode (void);
  * with this you can switch the mouse pointer on or off
  * use this after avt_register_mousehandler
  */
-AVT_API void avt_set_mouse_visible (bool visible);
+AVT_API void avt_set_mouse_visible (bool);
 
 
 /***********************************************************************/
@@ -885,7 +891,7 @@ AVT_API void avt_reset_tab_stops (void);
 AVT_API void avt_clear_tab_stops (void);
 
 /* set or clear a tab in position x */
-AVT_API void avt_set_tab (int x, bool onoff);
+AVT_API void avt_set_tab (int x, bool);
 
 /*
  * delete num lines, starting from line
@@ -906,7 +912,7 @@ AVT_API void avt_insert_lines (int line, int num);
  * when set to true, the text_delay is set to 0
  * use with care!
  */
-AVT_API void avt_lock_updates (bool lock);
+AVT_API void avt_lock_updates (bool);
 
 
 /***********************************************************************/
@@ -1037,20 +1043,20 @@ AVT_API int avt_credits_mb (const char *text, bool centered);
  * set to avt_flash to get a visual bell
  * set to NULL to disable the bell
  */
-AVT_API void avt_bell_function (void (*f) (void));
+AVT_API void avt_bell_function (void (*func) (void));
 
 /*
  * reserve single keys (Esc, F11)
  * use this with avt_register_keyhandler
  */
-AVT_API void avt_reserve_single_keys (bool onoff);
+AVT_API void avt_reserve_single_keys (bool);
 
 /*
  * returns pointer to character definition of given codepoint
  * either defined as unsigned char or unsigned short,
  * depending on the fonts width
  */
-AVT_API void *avt_get_font_char (int ch);
+AVT_API void *avt_get_font_char (int);
 
 /*
  * get height, width and baseline of a character
@@ -1182,7 +1188,7 @@ AVT_API int avt_wait_audio_end (void);
 AVT_API void avt_stop_audio (void);
 
 /* pause/resume audio */
-AVT_API void avt_pause_audio (bool pause);
+AVT_API void avt_pause_audio (bool);
 
 /*
  * Is this sound currently playing?
