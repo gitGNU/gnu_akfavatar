@@ -70,6 +70,8 @@ EXPORTS
     avt_image_max_width
     avt_initialized
     avt_input
+    avt_input_l1
+    avt_input_u8
     avt_input_mb
     avt_insert_lines
     avt_insert_spaces
