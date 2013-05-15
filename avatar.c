@@ -2306,10 +2306,6 @@ avt_say (const wchar_t * txt)
   if (not txt or not * txt)
     return avt_update ();
 
-  // no textfield? => draw balloon
-  if (avt.textfield.x < 0)
-    avt_draw_balloon ();
-
   while (*txt)
     {
       if (avt_put_char (*txt) != AVT_NORMAL)
@@ -2332,10 +2328,6 @@ avt_say_len (const wchar_t * txt, size_t len)
   // but do allow a text to start with zeros here
   if (not screen or not txt or _avt_STATUS != AVT_NORMAL)
     return avt_update ();
-
-  // no textfield? => draw balloon
-  if (avt.textfield.x < 0)
-    avt_draw_balloon ();
 
   for (size_t i = 0; i < len; i++, txt++)
     {
