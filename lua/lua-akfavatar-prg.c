@@ -567,9 +567,9 @@ start_screen (void)
   avt_new_line ();
   avt_new_line ();
   if (german)
-    avt_say (L"Verf\u00FCgbar f\u00FCr GNU\u2764Linux und Windows.");
+    avt_say (L"Verf\u00FCgbar f\u00FCr GNU\u2665Linux und Windows.");
   else
-    avt_say (L"Available for GNU\u2764Linux and Windows.");
+    avt_say (L"Available for GNU\u2665Linux and Windows.");
   avt_new_line ();
   avt_say (L"Homepage: ");
   avt_underlined (true);
