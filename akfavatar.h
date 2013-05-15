@@ -228,20 +228,26 @@ AVT_API size_t avt_ticks (void);
 #define avt_elapsed(start_ticks)  (avt_ticks()-(start_ticks))
 
 /***********************************************************************/
-/* say or ask stuff with wchar_t */
+/* say or ask stuff */
 
 /*
- * the encoding can be UTF-32 or UTF-16
- * depending on the systems specific size of wchar_t
+ * The encoding for wchar can be UTF-32 or UTF-16.
+ * The functions with u8 are for UTF-8 encoded strings.
+ * The functions with l1 are for strings encoded as ISO-8859-1 (ISO Latin-1).
+ *
+ * For plain US-ASCII prefer the l1 functions,
+ * but avoid unnessesary mixing.
  */
 
 /*
- * prints a L'\0' terminated string in the balloon
+ * prints a zero terminated string in the balloon
  * if there is no balloon, it is drawn
  * if there is no avatar, it is shown (not moved in)
  * interprets control chars including overstrike-text
  */
 AVT_API int avt_say (const wchar_t *txt);
+AVT_API int avt_say_u8 (const char *txt);
+AVT_API int avt_say_l1 (const char *txt);
 
 /*
  * writes string with given length in the balloon
@@ -251,15 +257,19 @@ AVT_API int avt_say (const wchar_t *txt);
  * interprets control characters including overstrike-text
  */
 AVT_API int avt_say_len (const wchar_t *txt, size_t len);
+AVT_API int avt_say_u8_len (const char *txt, size_t len);
+AVT_API int avt_say_l1_len (const char *txt, size_t len);
 
 /*
  * sets the balloon size so that the text fits exactly
- * prints a L'\0' terminated string in the balloon
+ * prints a zero terminated string in the balloon
  * if there is no balloon, it is drawn
  * if there is no avatar, it is shown (not moved in)
  * interprets control characters including overstrike-text
  */
 AVT_API int avt_tell (const wchar_t *txt);
+AVT_API int avt_tell_u8 (const char *txt);
+AVT_API int avt_tell_l1 (const char *txt);
 
 /*
  * sets the balloon size so that the text fits exactly
@@ -271,6 +281,8 @@ AVT_API int avt_tell (const wchar_t *txt);
  * interprets control characters including overstrike-text
  */
 AVT_API int avt_tell_len (const wchar_t *txt, size_t len);
+AVT_API int avt_tell_u8_len (const char *txt, size_t len);
+AVT_API int avt_tell_l1_len (const char *txt, size_t len);
 
 /*
  * get string (just one line)
@@ -278,79 +290,9 @@ AVT_API int avt_tell_len (const wchar_t *txt, size_t len);
  * size is the size of s in bytes (not the length)
  */
 AVT_API int avt_ask (wchar_t *s, size_t size);
-
-
-/***********************************************************************/
-/* say or ask stuff with UTF-8 or latin1 (ISO-8859-1) encoding */
-
-/* this is more reliable than the mb functions, but limited */
-
-/*
- * For plain US-ASCII prefer the l1 functions,
- * but avoid unnessesary mixing.
- */
-
-/*
- * prints a 0 terminated string in the balloon
- * if there is no balloon, it is drawn
- * if there is no avatar, it is shown (not moved in)
- * interprets control chars
- */
-AVT_API int avt_say_l1 (const char *txt);
-AVT_API int avt_say_u8 (const char *txt);
-
-/*
- * the same with a given length
- * the string needn't be terminated then
- * and can contain binary zeros
- */
-AVT_API int avt_say_l1_len (const char *txt, size_t len);
-AVT_API int avt_say_u8_len (const char *txt, size_t len);
-
-/*
- * sets the balloon size so that the text fits exactly
- * prints a 0 terminated string in the balloon
- * if there is no balloon, it is drawn
- * if there is no avatar, it is shown (not moved in)
- * interprets control chars
- */
-AVT_API int avt_tell_l1 (const char *txt);
-AVT_API int avt_tell_u8 (const char *txt);
-
-/*
- * the same with a given length
- * the string needn't be terminated then
- * and can contain binary zeros
- */
-AVT_API int avt_tell_l1_len (const char *txt, size_t len);
-AVT_API int avt_tell_u8_len (const char *txt, size_t len);
-
-/*
- * get string (just one line)
- * For Latin-1 nonexisting characters are replaced with SUB ('\x1A')
- * UTF-8 needs up to 4 bytes per character
- */
-AVT_API int avt_ask_l1 (char *s, size_t size);
 AVT_API int avt_ask_u8 (char *s, size_t size);
+AVT_API int avt_ask_l1 (char *s, size_t size);
 
-/*
- * set name for the avatar
- * set to NULL to clear the name
- */
-AVT_API int avt_set_avatar_name_l1 (const char *name);
-AVT_API int avt_set_avatar_name_u8 (const char *name);
-
-/*
- * show longer text with a text-viewer application
- * if len is 0, assume 0-terminated string
- * startline is only used, when it is greater than 1
- */
-AVT_API int avt_pager_l1 (const char *txt, size_t len, int startline);
-AVT_API int avt_pager_u8 (const char *txt, size_t len, int startline);
-
-/* show final credits */
-AVT_API int avt_credits_l1 (const char *txt, bool centered);
-AVT_API int avt_credits_u8 (const char *txt, bool centered);
 
 /***********************************************************************/
 /* say or ask stuff with multi-byte encodings */
@@ -504,8 +446,8 @@ AVT_API void avt_free (void *);
  * UTF-16 surrogate characters are interpreted too
  *
  * You can use this directly for characters from
- * US-ASCII, ISO-8859-1, UTF-16 or UTF-32
- * except that UTF-32 doesn't allow UTF-16 surrogate characters
+ * US-ASCII, ISO-8859-1, UCS-2, UTF-16 or UTF-32 (=UCS-4)
+ * except that UTF-32/UCS-4 don't allow UTF-16 surrogate characters
  */
 AVT_API int avt_put_char (avt_char);
 
@@ -664,6 +606,8 @@ AVT_API void avt_set_title (const char *title, const char *shortname);
  * set to NULL to clear the name
  */
 AVT_API int avt_set_avatar_name (const wchar_t *name);
+AVT_API int avt_set_avatar_name_u8 (const char *name);
+AVT_API int avt_set_avatar_name_l1 (const char *name);
 AVT_API int avt_set_avatar_name_mb (const char *name);
 
 /* switch to fullscreen or window mode (if available) */
@@ -1026,10 +970,14 @@ avt_menu (int *result, int items,
  * startline is only used, when it is greater than 1
  */
 AVT_API int avt_pager (const wchar_t *txt, size_t len, int startline);
+AVT_API int avt_pager_u8 (const char *txt, size_t len, int startline);
+AVT_API int avt_pager_l1 (const char *txt, size_t len, int startline);
 AVT_API int avt_pager_mb (const char *txt, size_t len, int startline);
 
 /* show final credits */
 AVT_API int avt_credits (const wchar_t *text, bool centered);
+AVT_API int avt_credits_u8 (const char *txt, bool centered);
+AVT_API int avt_credits_l1 (const char *txt, bool centered);
 AVT_API int avt_credits_mb (const char *text, bool centered);
 
 
