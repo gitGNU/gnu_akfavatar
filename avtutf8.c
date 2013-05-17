@@ -104,7 +104,8 @@ utf8_to_unicode (avt_char * ch, const char *src)
 
 // result is not terminated unless len includes the terminator
 static size_t
-utf8_to_wchar (wchar_t * dest, size_t dest_len, const char *src, size_t src_len)
+utf8_to_wchar (wchar_t * dest, size_t dest_len, const char *src,
+	       size_t src_len)
 {
   size_t charnum = 0;
 
@@ -136,7 +137,8 @@ utf8_to_wchar (wchar_t * dest, size_t dest_len, const char *src, size_t src_len)
 
 
 static void
-wchar_to_utf8 (char *dest, size_t dest_len, const wchar_t * src, size_t src_len)
+wchar_to_utf8 (char *dest, size_t dest_len, const wchar_t * src,
+	       size_t src_len)
 {
   size_t p = 0;			// position in utf8 string
 
@@ -342,7 +344,7 @@ avt_credits_u8 (const char *txt, bool centered)
   return _avt_STATUS;
 }
 
-// FIXME: handle overlong default text
+
 extern avt_char
 avt_input_u8 (char *s, size_t size, const char *default_text,
 	      int position, int mode)
@@ -357,8 +359,11 @@ avt_input_u8 (char *s, size_t size, const char *default_text,
       wcs_default_text[0] = L'\0';
 
       if (default_text and * default_text)
-	utf8_to_wchar (wcs_default_text, size,
-		       default_text, strlen (default_text) + 1);
+	{
+	  size_t len = avt_min (strlen (default_text), AVT_LINELENGTH);
+	  utf8_to_wchar (wcs_default_text, size, default_text, len + 1);
+	  wcs_default_text[AVT_LINELENGTH] = L'\0';
+	}
 
       ch = avt_input (buf, sizeof (buf), wcs_default_text, position, mode);
 
