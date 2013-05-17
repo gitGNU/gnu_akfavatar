@@ -360,7 +360,9 @@ avt_input_u8 (char *s, size_t size, const char *default_text,
 
       if (default_text and * default_text)
 	{
-	  size_t len = avt_min (strlen (default_text), AVT_LINELENGTH);
+	  size_t len = strlen (default_text);
+	  if (AVT_LINELENGTH)
+	    len = AVT_LINELENGTH;
 	  utf8_to_wchar (wcs_default_text, size, default_text, len + 1);
 	  wcs_default_text[AVT_LINELENGTH] = L'\0';
 	}

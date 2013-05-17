@@ -201,7 +201,9 @@ avt_input_l1 (char *s, size_t size, const char *default_text,
 
       if (default_text and * default_text)
 	{
-	  size_t len = avt_min (strlen (default_text), AVT_LINELENGTH);
+	  size_t len = strlen (default_text);
+	  if (len > AVT_LINELENGTH)
+	    len = AVT_LINELENGTH;
 	  lat1_to_wide (wcs_default_text, default_text, len + 1);
 	  wcs_default_text[AVT_LINELENGTH] = L'\0';
 	}
