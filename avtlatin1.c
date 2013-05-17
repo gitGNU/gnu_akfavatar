@@ -186,6 +186,7 @@ avt_credits_l1 (const char *txt, bool centered)
 }
 
 
+// FIXME: handle overlong default text
 extern avt_char
 avt_input_l1 (char *s, size_t size, const char *default_text,
 	      int position, int mode)
@@ -194,13 +195,13 @@ avt_input_l1 (char *s, size_t size, const char *default_text,
 
   if (s and size)
     {
-      wchar_t buf[size], wcs_default_text[size];
+      wchar_t buf[size], wcs_default_text[AVT_LINELENGTH + 1];
 
       memset (s, '\0', size);
       wcs_default_text[0] = L'\0';
 
       if (default_text and * default_text)
-	lat1_to_wide (wcs_default_text, default_text, size);
+	lat1_to_wide (wcs_default_text, default_text, strlen(default_text) + 1);
 
       ch = avt_input (buf, sizeof (buf), wcs_default_text, position, mode);
 
