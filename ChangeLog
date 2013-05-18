@@ -1,3 +1,7 @@
+2013-05-18  Andreas K. Foerster  <info@akfoerster.de>
+
+	* charmaps.c, cp1252.c: new files
+
 2013-05-13  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_put_char): put overstrike technique there

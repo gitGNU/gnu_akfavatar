@@ -125,10 +125,12 @@ libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o avatar-default.o \
 
 libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
                 avtccio.o avtcwio.o avtreadfile.o basedir.o \
-                colorchooser.o avtvorbis.o stb_vorbis.o langposix.o
+                colorchooser.o avtvorbis.o stb_vorbis.o langposix.o \
+                charmaps.o cp1252.o
 	$(AR) rcu $@ filechooser.o avtterm.o avttermsys.o arch.o \
 	             avtccio.o avtcwio.o avtreadfile.o basedir.o \
-	             colorchooser.o avtvorbis.o stb_vorbis.o langposix.o
+	             colorchooser.o avtvorbis.o stb_vorbis.o langposix.o \
+	             charmaps.o cp1252.o
 	-$(RANLIB) $@
 
 libakfavatar.so: $(OBJAVATAR).lo $(OBJAUDIO).lo avatar.lo avatar-default.lo \
@@ -182,6 +184,12 @@ colorchooser.o: $(srcdir)/colorchooser.c $(srcdir)/avtaddons.h $(srcdir)/akfavat
 colorchooser.lo: $(srcdir)/colorchooser.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -fpic -o $@ \
 	  $(srcdir)/colorchooser.c
+
+charmaps.o: $(srcdir)/charmaps.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/charmaps.c
+
+cp1252.o: $(srcdir)/cp1252.c $(srcdir)/avtaddons.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/cp1252.c
 
 rgb.h: $(srcdir)/rgb.txt $(srcdir)/rgb2c.awk
 	$(AWK) -f $(srcdir)/rgb2c.awk -v name="avt_colors" \
@@ -849,6 +857,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/avtdata.h $(srcdir)/avtdata.c \
 	   $(srcdir)/avttiming.c \
 	   $(srcdir)/avtencoding.c $(srcdir)/avtlatin1.c $(srcdir)/avtutf8.c \
+	   $(srcdir)/charmaps.c $(srcdir)/cp1252.c \
 	   $(srcdir)/avtmenu.c \
 	   $(srcdir)/basedir.c \
 	   $(srcdir)/avtinternals.h $(srcdir)/avtpalette.c \
