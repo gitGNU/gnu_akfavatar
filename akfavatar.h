@@ -253,6 +253,16 @@ struct avt_charenc
  */
 AVT_API struct avt_charenc *avt_charencoding (struct avt_charenc *);
 
+/*
+ * try to recode from fromcode to tocode
+ * copies as much as fits
+ * result is terminated
+ */
+AVT_API size_t avt_recode_char (struct avt_charenc *tocode,
+                                char *dest, size_t dest_size,
+                                struct avt_charenc *fromcode,
+                                const char *src, size_t src_size);
+
 /* character converter for UTF-8 */
 AVT_API struct avt_charenc *avt_utf8 (void);
 

@@ -46,8 +46,10 @@ avt_charencoding (struct avt_charenc *encoding)
 
 
 // result is not terminated unless len includes the terminator
+// TODO: make saver
 static size_t
-char_to_wchar (wchar_t * dest, const char *src, size_t len)
+char_to_wchar (struct avt_charenc *convert,
+	       wchar_t * dest, const char *src, size_t len)
 {
   size_t characters = 0;
 
@@ -82,7 +84,8 @@ char_to_wchar (wchar_t * dest, const char *src, size_t len)
 
 
 static void
-wchar_to_char (char *dest, const wchar_t * src, size_t len)
+wchar_to_char (struct avt_charenc *convert,
+	       char *dest, const wchar_t * src, size_t len)
 {
   while (len)
     {
@@ -180,8 +183,8 @@ avt_tell_char_len (const char *txt, size_t len)
       if (not len or len > 0x80000000)
 	len = strlen (txt);
 
-      wchar_t wide[len * (4 / sizeof (wchar_t))];
-      size_t chars = char_to_wchar (wide, txt, len);
+      wchar_t wide[len * 4 / sizeof (wchar_t)];
+      size_t chars = char_to_wchar (convert, wide, txt, len);
       status = avt_tell_len (wide, chars);
     }
 
@@ -214,9 +217,9 @@ avt_set_avatar_name_char (const char *name)
     {
       size_t len = strlen (name);
 
-      wchar_t wide[(len + 1) * (4 / sizeof (wchar_t))];
+      wchar_t wide[(len + 1) * 4 / sizeof (wchar_t)];
 
-      char_to_wchar (wide, name, len + 1);
+      char_to_wchar (convert, wide, name, len + 1);
       status = avt_set_avatar_name (wide);
     }
 
@@ -244,7 +247,7 @@ avt_pager_char (const char *txt, size_t len, int startline)
 
       if (wctext)
 	{
-	  size_t chars = char_to_wchar (wctext, txt, len);
+	  size_t chars = char_to_wchar (convert, wctext, txt, len);
 	  status = avt_pager (wctext, chars, startline);
 	  free (wctext);
 	}
@@ -268,7 +271,7 @@ avt_credits_char (const char *txt, bool centered)
 
       if (wctext)
 	{
-	  char_to_wchar (wctext, txt, len + 1);
+	  char_to_wchar (convert, wctext, txt, len + 1);
 	  status = avt_credits (wctext, centered);
 	  free (wctext);
 	}
@@ -288,7 +291,7 @@ avt_input_char (char *s, size_t size, const char *default_text,
   if (s and size)
     {
       wchar_t buf[size];
-      wchar_t wcs_default_text[(AVT_LINELENGTH + 1) * (4 / sizeof (wchar_t))];
+      wchar_t wcs_default_text[(AVT_LINELENGTH + 1) * 4 / sizeof (wchar_t)];
 
       memset (s, '\0', size);
       wcs_default_text[0] = L'\0';
@@ -299,7 +302,7 @@ avt_input_char (char *s, size_t size, const char *default_text,
 	  if (len > AVT_LINELENGTH)
 	    len = AVT_LINELENGTH;
 
-	  char_to_wchar (wcs_default_text, default_text, len);
+	  char_to_wchar (convert, wcs_default_text, default_text, len);
 	  wcs_default_text[len] = L'\0';
 	}
 
@@ -310,7 +313,7 @@ avt_input_char (char *s, size_t size, const char *default_text,
 	return AVT_KEY_NONE;
 
       // size - 1 to keep the terminator
-      wchar_to_char (s, buf, size - 1);
+      wchar_to_char (convert, s, buf, size - 1);
     }
 
   return ch;
@@ -324,4 +327,27 @@ avt_ask_char (char *s, size_t size)
     avt_input_char (s, size, NULL, -1, 0);
 
   return avt_get_status ();
+}
+
+
+extern size_t
+avt_recode_char (struct avt_charenc *tocode,
+		 char *dest, size_t dest_size,
+		 struct avt_charenc *fromcode,
+		 const char *src, size_t src_size)
+{
+  size_t chars;
+  wchar_t temp[src_size * 4 / sizeof (wchar_t)];
+
+  // first decode to wchar and then to the target encoding
+  chars = char_to_wchar (fromcode, temp, src, src_size);
+
+  // copy as much as fits, but not more
+  if (chars >= dest_size)
+    chars = dest_size - 1;
+
+  wchar_to_char (tocode, dest, temp, chars);
+  dest[chars] = '\0';
+
+  return chars;
 }
