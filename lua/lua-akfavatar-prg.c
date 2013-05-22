@@ -554,7 +554,7 @@ start_screen (void)
   avt_set_balloon_size (10, 80);
   avt_underlined (true);
   avt_bold (true);
-  avt_say_u8 (PRGNAME);
+  avt_say (L"" PRGNAME);
   avt_normal_text ();
   avt_new_line ();
   avt_new_line ();
@@ -563,7 +563,7 @@ start_screen (void)
   avt_say (L", ");
   avt_say (avt_wide_copyright ());
   avt_new_line ();
-  avt_say_u8 (LUA_COPYRIGHT);
+  avt_say (L"" LUA_COPYRIGHT);
   avt_new_line ();
   avt_new_line ();
   if (german)

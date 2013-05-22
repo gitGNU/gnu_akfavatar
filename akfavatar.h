@@ -228,15 +228,43 @@ AVT_API size_t avt_ticks (void);
 #define avt_elapsed(start_ticks)  (avt_ticks()-(start_ticks))
 
 /***********************************************************************/
+/* character encodings */
+
+struct avt_charenc
+{
+  /*
+   * convert one char to unicode (avt_char)
+   * returns number of bytes read, 0 on error
+   */
+  size_t (*to_unicode) (avt_char *, const char *);
+
+  /*
+   * convert an unicode character
+   * dest must have enough space
+   * returns number of bytes written
+   */
+  size_t (*from_unicode) (char *, avt_char);
+};
+
+/*
+ * set a new charconverter
+ * returns the old one
+ * use NULL to just query the old one
+ */
+AVT_API struct avt_charenc *avt_charencoding (struct avt_charenc *);
+
+/* character converter for UTF-8 */
+AVT_API struct avt_charenc *avt_utf8 (void);
+
+/* character converter for ISO-8859-1 (Latin-1) */
+AVT_API struct avt_charenc *avt_latin1 (void);
+
+/***********************************************************************/
 /* say or ask stuff */
 
 /*
- * The encoding for wchar can be UTF-32 or UTF-16.
- * The functions with u8 are for UTF-8 encoded strings.
- * The functions with l1 are for strings encoded as ISO-8859-1 (ISO Latin-1).
- *
- * For plain US-ASCII prefer the l1 functions,
- * but avoid unnessesary mixing.
+ * The encoding for wchar can be UTF-32 or UTF-16, native endian.
+ * The encoding for char must have been set with avt_charconverter()
  */
 
 /*
@@ -246,8 +274,7 @@ AVT_API size_t avt_ticks (void);
  * interprets control chars including overstrike-text
  */
 AVT_API int avt_say (const wchar_t *txt);
-AVT_API int avt_say_u8 (const char *txt);
-AVT_API int avt_say_l1 (const char *txt);
+AVT_API int avt_say_char (const char *txt);
 
 /*
  * writes string with given length in the balloon
@@ -257,8 +284,7 @@ AVT_API int avt_say_l1 (const char *txt);
  * interprets control characters including overstrike-text
  */
 AVT_API int avt_say_len (const wchar_t *txt, size_t len);
-AVT_API int avt_say_u8_len (const char *txt, size_t len);
-AVT_API int avt_say_l1_len (const char *txt, size_t len);
+AVT_API int avt_say_char_len (const char *txt, size_t len);
 
 /*
  * sets the balloon size so that the text fits exactly
@@ -268,8 +294,7 @@ AVT_API int avt_say_l1_len (const char *txt, size_t len);
  * interprets control characters including overstrike-text
  */
 AVT_API int avt_tell (const wchar_t *txt);
-AVT_API int avt_tell_u8 (const char *txt);
-AVT_API int avt_tell_l1 (const char *txt);
+AVT_API int avt_tell_char (const char *txt);
 
 /*
  * sets the balloon size so that the text fits exactly
@@ -281,8 +306,7 @@ AVT_API int avt_tell_l1 (const char *txt);
  * interprets control characters including overstrike-text
  */
 AVT_API int avt_tell_len (const wchar_t *txt, size_t len);
-AVT_API int avt_tell_u8_len (const char *txt, size_t len);
-AVT_API int avt_tell_l1_len (const char *txt, size_t len);
+AVT_API int avt_tell_char_len (const char *txt, size_t len);
 
 /*
  * get string (just one line)
@@ -290,8 +314,7 @@ AVT_API int avt_tell_l1_len (const char *txt, size_t len);
  * size is the size of s in bytes (not the length)
  */
 AVT_API int avt_ask (wchar_t *s, size_t size);
-AVT_API int avt_ask_u8 (char *s, size_t size);
-AVT_API int avt_ask_l1 (char *s, size_t size);
+AVT_API int avt_ask_char (char *s, size_t size);
 
 
 /***********************************************************************/
@@ -606,8 +629,7 @@ AVT_API void avt_set_title (const char *title, const char *shortname);
  * set to NULL to clear the name
  */
 AVT_API int avt_set_avatar_name (const wchar_t *name);
-AVT_API int avt_set_avatar_name_u8 (const char *name);
-AVT_API int avt_set_avatar_name_l1 (const char *name);
+AVT_API int avt_set_avatar_name_char (const char *name);
 AVT_API int avt_set_avatar_name_mb (const char *name);
 
 /* switch to fullscreen or window mode (if available) */
@@ -970,14 +992,13 @@ avt_menu (int *result, int items,
  * startline is only used, when it is greater than 1
  */
 AVT_API int avt_pager (const wchar_t *txt, size_t len, int startline);
-AVT_API int avt_pager_u8 (const char *txt, size_t len, int startline);
-AVT_API int avt_pager_l1 (const char *txt, size_t len, int startline);
+AVT_API int avt_pager_char (const char *txt, size_t len, int startline);
+
 AVT_API int avt_pager_mb (const char *txt, size_t len, int startline);
 
 /* show final credits */
 AVT_API int avt_credits (const wchar_t *text, bool centered);
-AVT_API int avt_credits_u8 (const char *txt, bool centered);
-AVT_API int avt_credits_l1 (const char *txt, bool centered);
+AVT_API int avt_credits_char (const char *txt, bool centered);
 AVT_API int avt_credits_mb (const char *text, bool centered);
 
 
@@ -1191,14 +1212,9 @@ AVT_API avt_char avt_input (wchar_t *result, size_t size,
                             const wchar_t *default_text,
                             int position, int mode);
 
-AVT_API avt_char avt_input_l1 (char *result, size_t size,
-                               const char *default_text,
-                               int position, int mode);
-
-AVT_API avt_char avt_input_u8 (char *result, size_t size,
-                               const char *default_text,
-                               int position, int mode);
-
+AVT_API avt_char avt_input_char (char *result, size_t size,
+                                 const char *default_text,
+                                 int position, int mode);
 
 AVT_API avt_char avt_input_mb (char *s, size_t size,
                                const char *default_text,

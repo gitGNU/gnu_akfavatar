@@ -54,31 +54,18 @@ struct avt_char_map
   wchar_t table[];
 };
 
-/* set the map (NULL (default) = ISO-8859-1) */
-AVT_ADDON void avt_set_char_map (const struct avt_char_map *map);
-
-AVT_ADDON int avt_say_map_len (const char *txt, size_t len);
-AVT_ADDON int avt_say_map (const char *txt);
-
-AVT_ADDON int avt_tell_map_len (const char *txt, size_t len);
-AVT_ADDON int avt_tell_map (const char *txt);
-
-AVT_ADDON int avt_set_avatar_name_map (const char *name);
-
-AVT_ADDON int avt_pager_map (const char *txt, size_t len, int startline);
-
-AVT_ADDON int avt_credits_map (const char *txt, bool centered);
-
-AVT_ADDON avt_char avt_input_map (char *s, size_t size,
-                                  const char *default_text,
-                                  int position, int mode);
-
-AVT_ADDON int avt_ask_map (char *s, size_t size);
-
+/*
+ * sets a character map and returns a converter
+ *
+ * it always returns the same converter
+ * only one character map can be active at a time
+ */
+AVT_ADDON struct avt_charenc *avt_charmap (const struct avt_char_map *);
 
 /*
- * map for Windows codepage 1252
+ * Map for Windows codepage 1252
  * Microsoft calls this "ANSI", though it's not an ANSI standard
+ * It is based on ISO-8859-1 with nonstandard extensions
  */
 AVT_ADDON const struct avt_char_map avt_cp1252;
 

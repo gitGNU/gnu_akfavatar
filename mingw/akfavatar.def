@@ -4,8 +4,7 @@ EXPORTS
     avt_add_raw_audio_data
     avt_ask
     avt_ask_mb
-    avt_ask_l1
-    avt_ask_u8
+    avt_ask_char
     avt_audio_playing
     avt_avatar_image_data
     avt_avatar_image_default
@@ -19,6 +18,7 @@ EXPORTS
     avt_bell_function
     avt_bold
     avt_button_quit
+    avt_charencoding
     avt_choice
     avt_clear
     avt_clear_bol
@@ -33,8 +33,7 @@ EXPORTS
     avt_combining
     avt_copyright
     avt_credits
-    avt_credits_l1
-    avt_credits_u8
+    avt_credits_char
     avt_credits_mb
     avt_decide
     avt_delete_characters
@@ -70,8 +69,7 @@ EXPORTS
     avt_image_max_width
     avt_initialized
     avt_input
-    avt_input_l1
-    avt_input_u8
+    avt_input_char
     avt_input_mb
     avt_insert_lines
     avt_insert_spaces
@@ -80,6 +78,7 @@ EXPORTS
     avt_key
     avt_key_pressed
     avt_last_tab
+    avt_latin1
     avt_license
     avt_load_audio_data
     avt_load_audio_file
@@ -104,8 +103,7 @@ EXPORTS
     avt_next_tab
     avt_normal_text
     avt_pager
-    avt_pager_l1
-    avt_pager_u8
+    avt_pager_char
     avt_pager_mb
     avt_palette
     avt_palette_size
@@ -131,16 +129,13 @@ EXPORTS
     avt_say_len
     avt_say_mb
     avt_say_mb_len
-    avt_say_u8
-    avt_say_u8_len
-    avt_say_l1
-    avt_say_l1_len
+    avt_say_char
+    avt_say_char_len
     avt_set_audio_end_key
     avt_set_auto_margin
     avt_set_avatar_mode
     avt_set_avatar_name
-    avt_set_avatar_name_l1
-    avt_set_avatar_name_u8
+    avt_set_avatar_name_char
     avt_set_avatar_name_mb
     avt_set_background_color
     avt_set_balloon_color
@@ -177,15 +172,14 @@ EXPORTS
     avt_tell_len
     avt_tell_mb
     avt_tell_mb_len
-    avt_tell_l1
-    avt_tell_l1_len
-    avt_tell_u8
-    avt_tell_u8_len
+    avt_tell_char
+    avt_tell_char_len
     avt_text_direction
     avt_ticks
     avt_toggle_fullscreen
     avt_underlined
     avt_update
+    avt_utf8
     avt_version
     avt_viewport
     avt_wait

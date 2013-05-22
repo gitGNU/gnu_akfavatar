@@ -24,207 +24,32 @@
  */
 
 #include "akfavatar.h"
-#include "avtinternals.h"
 
-#include <stddef.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
-#include <iso646.h>
+#define INVALID_CHAR '\x1A'
 
-// substitution character for characters not available in Latin-1
-#define SUB '\x1A'
-
-// result is not terminated unless len includes the terminator
-static void
-lat1_to_wide (wchar_t * dest, const char *src, size_t len)
+static size_t
+lat1_to_unicode (avt_char * dest, const char *src)
 {
-  const unsigned char *t = (const unsigned char *) src;
-
-  while (len--)
-    *dest++ = (wchar_t) (*t++);
+  *dest = (avt_char) ((unsigned char) *src);
+  return 1;
 }
 
 
-static void
-wide_to_lat1 (char *dest, const wchar_t * src, size_t len)
+static size_t
+lat1_from_unicode (char *dest, avt_char src)
 {
-  for (size_t i = 0; i < len; ++i)
-    {
-      register wchar_t ch = src[i];
-      dest[i] = (ch <= L'\xFF') ? (char) ch : SUB;
-
-      if (not ch)
-	break;
-    }
-
-  dest[len - 1] = '\0';
+  *dest = (src <= 0xFFu) ? (char) src : INVALID_CHAR;
+  return 1;
 }
 
 
-extern int
-avt_say_l1_len (const char *txt, size_t len)
+extern struct avt_charenc *
+avt_latin1 (void)
 {
-  // nothing to do, when txt == NULL
-  // but do allow a text to start with zeros here
-  if (not txt or _avt_STATUS != AVT_NORMAL or not avt_initialized ())
-    return avt_update ();
+  static struct avt_charenc converter;
 
-  const unsigned char *p = (const unsigned char *) txt;
+  converter.to_unicode = lat1_to_unicode;
+  converter.from_unicode = lat1_from_unicode;
 
-  while (len--)
-    if (avt_put_char (*p++) != AVT_NORMAL)
-      break;
-
-  return _avt_STATUS;
-}
-
-
-extern int
-avt_say_l1 (const char *txt)
-{
-  if (_avt_STATUS != AVT_NORMAL or not avt_initialized ())
-    return _avt_STATUS;
-
-  if (not txt or not * txt)
-    return avt_update ();
-
-  const unsigned char *p = (const unsigned char *) txt;
-
-  while (*p)
-    if (avt_put_char (*p++) != AVT_NORMAL)
-      break;
-
-  return _avt_STATUS;
-}
-
-
-extern int
-avt_tell_l1_len (const char *txt, size_t len)
-{
-  if (txt)
-    {
-      if (not len or len > 0x80000000)
-	len = strlen (txt);
-
-      wchar_t wide[len];
-      lat1_to_wide (wide, txt, len);
-      avt_tell_len (wide, len);
-    }
-
-  return _avt_STATUS;
-}
-
-
-extern int
-avt_tell_l1 (const char *txt)
-{
-  if (txt and * txt)
-    avt_tell_l1_len (txt, 0);
-
-  return _avt_STATUS;
-}
-
-
-extern int
-avt_set_avatar_name_l1 (const char *name)
-{
-  if (not name or not * name)
-    avt_set_avatar_name (NULL);
-  else
-    {
-      size_t len = strlen (name);
-      wchar_t wide[len + 1];
-      lat1_to_wide (wide, name, len + 1);
-
-      avt_set_avatar_name (wide);
-    }
-
-  return _avt_STATUS;
-}
-
-
-extern int
-avt_pager_l1 (const char *txt, size_t len, int startline)
-{
-  if (txt and _avt_STATUS == AVT_NORMAL and avt_initialized ())
-    {
-      if (not len)
-	len = strlen (txt);
-
-      wchar_t *wctext = malloc (len * sizeof (wchar_t));
-
-      if (wctext)
-	{
-	  lat1_to_wide (wctext, txt, len);
-	  avt_pager (wctext, len, startline);
-	  free (wctext);
-	}
-    }
-
-  return _avt_STATUS;
-}
-
-
-extern int
-avt_credits_l1 (const char *txt, bool centered)
-{
-  if (_avt_STATUS == AVT_NORMAL and txt and * txt and avt_initialized ())
-    {
-      size_t len = strlen (txt);
-      wchar_t *wctext = malloc ((len + 1) * sizeof (wchar_t));
-
-      if (wctext)
-	{
-	  lat1_to_wide (wctext, txt, len + 1);
-	  avt_credits (wctext, centered);
-	  free (wctext);
-	}
-    }
-
-  return _avt_STATUS;
-}
-
-
-extern avt_char
-avt_input_l1 (char *s, size_t size, const char *default_text,
-	      int position, int mode)
-{
-  avt_char ch = AVT_KEY_NONE;
-
-  if (s and size)
-    {
-      wchar_t buf[size], wcs_default_text[AVT_LINELENGTH + 1];
-
-      memset (s, '\0', size);
-      wcs_default_text[0] = L'\0';
-
-      if (default_text and * default_text)
-	{
-	  size_t len = strlen (default_text);
-	  if (len > AVT_LINELENGTH)
-	    len = AVT_LINELENGTH;
-	  lat1_to_wide (wcs_default_text, default_text, len + 1);
-	  wcs_default_text[AVT_LINELENGTH] = L'\0';
-	}
-
-      ch = avt_input (buf, sizeof (buf), wcs_default_text, position, mode);
-
-      if (_avt_STATUS != AVT_NORMAL)
-	return AVT_KEY_NONE;
-
-      wide_to_lat1 (s, buf, size);
-    }
-
-  return ch;
-}
-
-
-extern int
-avt_ask_l1 (char *s, size_t size)
-{
-  if (s and size)
-    avt_input_l1 (s, size, NULL, -1, 0);
-
-  return _avt_STATUS;
+  return &converter;
 }

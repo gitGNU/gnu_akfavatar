@@ -97,6 +97,9 @@ avtencoding.o: $(srcdir)/avtencoding.c $(srcdir)/akfavatar.h \
                   $(srcdir)/avtinternals.h
 	$(CC) -c -I$(srcdir) -I$(srcdir)/mingw $(CFLAGS) -o $@ $(srcdir)/avtencoding.c
 
+charencoding.o: $(srcdir)/charencoding.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
+	$(CC) -c -I$(srcdir) $(CFLAGS) -o $@ $(srcdir)/charencoding.c
+
 avtutf8.o: $(srcdir)/avtutf8.c $(srcdir)/akfavatar.h \
                   $(srcdir)/avtinternals.h
 	$(CC) -c -I$(srcdir) $(CFLAGS) -o $@ $(srcdir)/avtutf8.c
@@ -152,26 +155,26 @@ iconv: iconv.exe
 
 # static library
 libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
-	  avtencoding.o avtlatin1.o avtutf8.o \
+	  avtencoding.o avtlatin1.o avtutf8.o charencoding.o \
 	  audio-common.o avatar-default.o avtdata.o font.o avtpalette.o \
 	  win_iconv.o windowstiming.o avtmenu.o version.o avtxbm.o avtxpm.o \
 	  avtbmp.o avtgraphic.o
 	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
-	avtencoding.o avtlatin1.o avtutf8.o \
+	avtencoding.o avtlatin1.o avtutf8.o charencoding.o \
 	audio-common.o avatar-default.o avtdata.o font.o avtpalette.o \
 	win_iconv.o version.o windowstiming.o avtmenu.o avtxbm.o avtxpm.o \
 	avtbmp.o avtgraphic.o
 	$(RANLIB) $@
 
 akfavatar.dll: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
-	  avtencoding.o avtlatin1.o avtutf8.o \
+	  avtencoding.o avtlatin1.o avtutf8.o charencoding.o \
 	  audio-common.o avatar-default.o avtdata.o font.o libinfo.o \
 	  avtpalette.o windowstiming.o win_iconv.o avtmenu.o version.o \
 	  avtxbm.o avtxpm.o avtbmp.o avtgraphic.o \
 	  $(srcdir)/mingw/akfavatar.def
 	$(CC) -shared -o $@ $(srcdir)/mingw/akfavatar.def \
 	        $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
-	        avtencoding.o avtlatin1.o avtutf8.o \
+	        avtencoding.o avtlatin1.o avtutf8.o charencoding.o \
 	        avatar-default.o avtdata.o audio-common.o font.o avtpalette.o \
 	        windowstiming.o win_iconv.o avtmenu.o avtxbm.o avtxpm.o \
 	        avtbmp.o avtgraphic.o version.o libinfo.o \

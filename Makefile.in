@@ -112,12 +112,12 @@ avatar-linuxfb.lo: $(srcdir)/avatar-linuxfb.c $(srcdir)/akfavatar.h \
 	-$(CC) -I$(srcdir) -I. $(CFLAGS) -c -fpic -o $@ $(srcdir)/avatar-linuxfb.c
 
 libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o avatar-default.o \
-	        avtlatin1.o avtutf8.o avtencoding.o \
+	        avtlatin1.o avtutf8.o avtencoding.o charencoding.o \
 	        avtpalette.o font.o version.o avtdata.o \
 	        audio-common.o avttiming.o avtmenu.o avtxbm.o avtxpm.o avtbmp.o \
 	        avtgraphic.o
 	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
-	             avtlatin1.o avtutf8.o avtencoding.o \
+	             avtlatin1.o avtutf8.o avtencoding.o charencoding.o \
 	             audio-common.o avtdata.o avatar-default.o avtpalette.o \
 	             font.o version.o avttiming.o avtmenu.o avtxbm.o avtxpm.o \
 	             avtbmp.o avtgraphic.o
@@ -134,14 +134,14 @@ libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
 	-$(RANLIB) $@
 
 libakfavatar.so: $(OBJAVATAR).lo $(OBJAUDIO).lo avatar.lo avatar-default.lo \
-	         avtlatin1.lo avtutf8.lo avtencoding.lo \
+	         avtlatin1.lo avtutf8.lo avtencoding.lo charencoding.lo \
 	         avtpalette.lo font.lo version.lo avtdata.lo \
 	         audio-common.lo avttiming.lo avtmenu.lo avtxbm.lo avtxpm.lo \
 	         avtbmp.lo avtgraphic.lo
 	$(CC) -shared \
 	      -Wl,-soname,$(SONAME) -o $(LIBNAME) -fpic \
 	      $(OBJAVATAR).lo $(OBJAUDIO).lo avatar.lo avatar-default.lo \
-	      avtlatin1.lo avtutf8.lo avtencoding.lo \
+	      avtlatin1.lo avtutf8.lo avtencoding.lo charencoding.lo \
 	      avtpalette.lo font.lo version.lo avtdata.lo \
 	      audio-common.lo avttiming.lo avtmenu.lo avtxbm.lo avtxpm.lo \
 	      avtbmp.lo avtgraphic.lo \
@@ -184,6 +184,12 @@ colorchooser.o: $(srcdir)/colorchooser.c $(srcdir)/avtaddons.h $(srcdir)/akfavat
 colorchooser.lo: $(srcdir)/colorchooser.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -fpic -o $@ \
 	  $(srcdir)/colorchooser.c
+
+charencoding.o: $(srcdir)/charencoding.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/charencoding.c
+
+charencoding.lo: $(srcdir)/charencoding.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/charencoding.c
 
 charmaps.o: $(srcdir)/charmaps.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/charmaps.c
