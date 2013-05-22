@@ -6,6 +6,9 @@
 
 	* sysencoding.c: new file
 
+	* avatar.c: remove all positioning variables from avt_settings
+	(fixes bug with resizing of pager)
+
 2013-05-18  Andreas K. Foerster  <info@akfoerster.de>
 
 	* charmaps.c, cp1252.c: new files
