@@ -69,6 +69,12 @@ AVT_ADDON struct avt_charenc *avt_charmap (const struct avt_char_map *);
  */
 AVT_ADDON const struct avt_char_map avt_cp1252;
 
+/*
+ * use the systems charset as encoding
+ * depends on the locale for LC_CTYPE
+ */
+AVT_ADDON struct avt_charenc *avt_systemencoding (void);
+
 
 /**********************************************************************
  * Section: avtccio

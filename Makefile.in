@@ -126,11 +126,11 @@ libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o avatar-default.o \
 libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
                 avtccio.o avtcwio.o avtreadfile.o basedir.o \
                 colorchooser.o avtvorbis.o stb_vorbis.o langposix.o \
-                charmaps.o cp1252.o
+                charmaps.o cp1252.o sysencoding.o
 	$(AR) rcu $@ filechooser.o avtterm.o avttermsys.o arch.o \
 	             avtccio.o avtcwio.o avtreadfile.o basedir.o \
 	             colorchooser.o avtvorbis.o stb_vorbis.o langposix.o \
-	             charmaps.o cp1252.o
+	             charmaps.o cp1252.o sysencoding.o
 	-$(RANLIB) $@
 
 libakfavatar.so: $(OBJAVATAR).lo $(OBJAUDIO).lo avatar.lo avatar-default.lo \
@@ -190,6 +190,12 @@ charencoding.o: $(srcdir)/charencoding.c $(srcdir)/avtaddons.h $(srcdir)/akfavat
 
 charencoding.lo: $(srcdir)/charencoding.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/charencoding.c
+
+sysencoding.o: $(srcdir)/sysencoding.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/sysencoding.c
+
+sysencoding.lo: $(srcdir)/sysencoding.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/sysencoding.c
 
 charmaps.o: $(srcdir)/charmaps.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/charmaps.c
@@ -863,6 +869,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/avtdata.h $(srcdir)/avtdata.c \
 	   $(srcdir)/avttiming.c \
 	   $(srcdir)/avtencoding.c $(srcdir)/avtlatin1.c $(srcdir)/avtutf8.c \
+	   $(srcdir)/charencoding.c $(srcdir)/sysencoding.c \
 	   $(srcdir)/charmaps.c $(srcdir)/cp1252.c \
 	   $(srcdir)/avtmenu.c \
 	   $(srcdir)/basedir.c \

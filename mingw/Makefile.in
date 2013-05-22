@@ -100,6 +100,9 @@ avtencoding.o: $(srcdir)/avtencoding.c $(srcdir)/akfavatar.h \
 charencoding.o: $(srcdir)/charencoding.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
 	$(CC) -c -I$(srcdir) $(CFLAGS) -o $@ $(srcdir)/charencoding.c
 
+sysencoding.o: $(srcdir)/sysencoding.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
+	$(CC) -c -I$(srcdir) $(CFLAGS) -o $@ $(srcdir)/sysencoding.c
+
 avtutf8.o: $(srcdir)/avtutf8.c $(srcdir)/akfavatar.h \
                   $(srcdir)/avtinternals.h
 	$(CC) -c -I$(srcdir) $(CFLAGS) -o $@ $(srcdir)/avtutf8.c
@@ -220,11 +223,11 @@ cp1252.o: $(srcdir)/cp1252.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 libavtaddons.a: filechooser.o askdrive.o arch.o avttermstub.o \
                 avtccio.o avtcwio.o avtreadfile.o basedir.o \
                 colorchooser.o avtvorbis.o stb_vorbis.o langwindows.o \
-                charmaps.o cp1252.o
+                charmaps.o cp1252.o sysencoding.o
 	$(AR) rcu $@ filechooser.o askdrive.o arch.o avttermstub.o \
 	             avtccio.o avtcwio.o basedir.o \
 	             avtreadfile.o colorchooser.o avtvorbis.o stb_vorbis.o \
-	             langwindows.o charmaps.o cp1252.o
+	             langwindows.o charmaps.o cp1252.o sysencoding.o
 	-$(RANLIB) $@
 
 example: example.exe

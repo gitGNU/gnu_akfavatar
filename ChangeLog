@@ -4,6 +4,8 @@
 	all encoding stuff rewritten
 	lua/lua-avt.c: reset to use the _mb functions again for now
 
+	* sysencoding.c: new file
+
 2013-05-18  Andreas K. Foerster  <info@akfoerster.de>
 
 	* charmaps.c, cp1252.c: new files
