@@ -131,12 +131,12 @@ avt_say_char_len (const char *txt, size_t len)
       avt_char ch;
       size_t num = convert->to_unicode (&ch, txt);
 
+      status = avt_put_char (ch);
+      if (status != AVT_NORMAL or num > len)
+	break;
+
       txt += num;
       len -= num;
-
-      status = avt_put_char (ch);
-      if (status != AVT_NORMAL)
-	break;
     }
 
   return status;
@@ -158,10 +158,12 @@ avt_say_char (const char *txt)
     {
       avt_char ch;
       size_t num = convert->to_unicode (&ch, txt);
-      txt += num;
+
       status = avt_put_char (ch);
       if (status != AVT_NORMAL)
 	break;
+
+      txt += num;
     }
 
   return status;
