@@ -116,12 +116,8 @@ struct avt_area
 
 struct avt_settings
 {
-  avt_graphic *avatar_image;
-  avt_graphic *cursor_character;
   wchar_t *name;
 
-  void (*quit_audio) (void);
-  void (*quit_encoding) (void);
   void (*bell) (void);
 
   // delay values for printing text and flipping the page
@@ -151,7 +147,6 @@ struct avt_settings
   short int avatar_mode;
   short int scroll_mode;
   short int textdir_rtl;
-  short int linestart;		// beginning of line - depending on text direction
   short int balloonheight, balloonmaxheight, balloonwidth;
 };
 
@@ -171,16 +166,22 @@ enum avt_button_type
 static avt_graphic *screen;
 static avt_graphic *base_button;
 static avt_graphic *raw_image;
+static avt_graphic *avatar_image;
+static avt_graphic *cursor_character;
 static int fontwidth, fontheight, fontunderline;
 
 static struct avt_area window;	// if screen is in fact larger
 static struct avt_area textfield;
 static struct avt_area viewport;	// sub-window in textfield
 static struct avt_position cursor, saved_position;
+static short int linestart;	// beginning of line - depending on text direction
 
 static struct avt_key_buffer avt_keys;
 
 static struct avt_backend backend;
+
+static void (*quit_audio) (void);
+static void (*quit_encoding) (void);
 
 static struct avt_settings avt = {
   .background_color = DEFAULT_COLOR,
@@ -221,13 +222,13 @@ avt_bell_function (void (*f) (void))
 extern void
 avt_quit_encoding_function (void (*f) (void))
 {
-  avt.quit_encoding = f;
+  quit_encoding = f;
 }
 
 extern void
 avt_quit_audio_function (void (*f) (void))
 {
-  avt.quit_audio = f;
+  quit_audio = f;
 }
 
 // add key into buffer
@@ -370,9 +371,9 @@ avt_resized (void)
       viewport.y = viewport.y - oldwindow.y + window.y;
 
       if (avt.textdir_rtl)
-	avt.linestart = viewport.x + viewport.width - fontwidth;
+	linestart = viewport.x + viewport.width - fontwidth;
       else
-	avt.linestart = viewport.x;
+	linestart = viewport.x;
 
       cursor.x = cursor.x - oldwindow.x + window.x;
       cursor.y = cursor.y - oldwindow.y + window.y;
@@ -442,8 +443,8 @@ calculate_balloonmaxheight (void)
 
   avatar_height = 0;
 
-  if (avt.avatar_image)
-    avatar_height = avt.avatar_image->height + AVATAR_MARGIN;
+  if (avatar_image)
+    avatar_height = avatar_image->height + AVATAR_MARGIN;
 
   avt.balloonmaxheight = (window.height - avatar_height - (2 * TOPMARGIN)
 			  - (2 * BALLOON_INNER_MARGIN)) / fontheight;
@@ -454,8 +455,8 @@ calculate_balloonmaxheight (void)
     {
       avt_set_error ("Avatar image too large");
       _avt_STATUS = AVT_ERROR;
-      avt_free_graphic (avt.avatar_image);
-      avt.avatar_image = NULL;
+      avt_free_graphic (avatar_image);
+      avatar_image = NULL;
     }
 
   return _avt_STATUS;
@@ -615,8 +616,7 @@ avt_show_text_cursor (bool on)
 	{
 	  // save character under cursor
 	  avt_graphic_segment (screen, cursor.x, cursor.y,
-			       fontwidth, fontheight, avt.cursor_character, 0,
-			       0);
+			       fontwidth, fontheight, cursor_character, 0, 0);
 
 	  // show text-cursor
 	  avt_darker_area (screen, cursor.x, cursor.y,
@@ -624,10 +624,10 @@ avt_show_text_cursor (bool on)
 	  backend.update_area (screen, cursor.x, cursor.y,
 			       fontwidth, fontheight);
 	}
-      else
+      else			// off
 	{
 	  // restore saved character
-	  avt_put_graphic (avt.cursor_character, screen, cursor.x, cursor.y);
+	  avt_put_graphic (cursor_character, screen, cursor.x, cursor.y);
 	  backend.update_area (screen, cursor.x, cursor.y,
 			       fontwidth, fontheight);
 	}
@@ -671,7 +671,7 @@ avt_clear_screen (void)
 static void
 avt_show_name (void)
 {
-  if (screen and avt.avatar_image and avt.name)
+  if (screen and avatar_image and avt.name)
     {
       // save old character colors
       avt_color old_text_color = avt.text_color;
@@ -684,13 +684,12 @@ avt_show_name (void)
 
       if (AVT_FOOTER == avt.avatar_mode or AVT_HEADER == avt.avatar_mode)
 	x = window.x + (window.width / 2)
-	  + (avt.avatar_image->width / 2) + BUTTON_DISTANCE;
+	  + (avatar_image->width / 2) + BUTTON_DISTANCE;
       else			// left
-	x = window.x + AVATAR_MARGIN + avt.avatar_image->width
-	  + BUTTON_DISTANCE;
+	x = window.x + AVATAR_MARGIN + avatar_image->width + BUTTON_DISTANCE;
 
       if (AVT_HEADER == avt.avatar_mode)
-	y = window.y + TOPMARGIN + avt.avatar_image->height
+	y = window.y + TOPMARGIN + avatar_image->height
 	  - fontheight - 2 * NAME_PADDING;
       else
 	y = window.y + window.height - AVATAR_MARGIN
@@ -737,11 +736,10 @@ avt_draw_avatar (void)
 
       avt_avatar_window ();
 
-      if (avt.avatar_image)
+      if (avatar_image)
 	{
 	  if (AVT_FOOTER == avt.avatar_mode or AVT_HEADER == avt.avatar_mode)
-	    pos.x =
-	      window.x + (window.width / 2) - (avt.avatar_image->width / 2);
+	    pos.x = window.x + (window.width / 2) - (avatar_image->width / 2);
 	  else			// left
 	    pos.x = window.x + AVATAR_MARGIN;
 
@@ -749,10 +747,9 @@ avt_draw_avatar (void)
 	    pos.y = window.y + TOPMARGIN;
 	  else			// bottom
 	    pos.y =
-	      window.y + window.height - avt.avatar_image->height -
-	      AVATAR_MARGIN;
+	      window.y + window.height - avatar_image->height - AVATAR_MARGIN;
 
-	  avt_put_graphic (avt.avatar_image, screen, pos.x, pos.y);
+	  avt_put_graphic (avatar_image, screen, pos.x, pos.y);
 	}
 
       if (avt.name)
@@ -819,7 +816,7 @@ avt_draw_balloon2 (int offset, avt_color ballooncolor)
 
   // draw balloonpointer
   // only if there is an avatar image
-  if (avt.avatar_image
+  if (avatar_image
       and AVT_FOOTER != avt.avatar_mode and AVT_HEADER != avt.avatar_mode)
     {
       struct avt_position position;
@@ -831,7 +828,7 @@ avt_draw_balloon2 (int offset, avt_color ballooncolor)
       else
 	bits = balloonpointer_bits;
 
-      position.x = window.x + avt.avatar_image->width
+      position.x = window.x + avatar_image->width
 	+ (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET + offset;
 
       position.y = window.y + (avt.balloonmaxheight * fontheight)
@@ -840,8 +837,8 @@ avt_draw_balloon2 (int offset, avt_color ballooncolor)
       short y_offset = 0;
 
       // if the balloonpointer is too large, cut it
-      if (balloonpointer_height > (avt.avatar_image->height / 2))
-	y_offset = balloonpointer_height - (avt.avatar_image->height / 2);
+      if (balloonpointer_height > (avatar_image->height / 2))
+	y_offset = balloonpointer_height - (avatar_image->height / 2);
 
       // only draw the balloonpointer, when it fits
       if (position.x + balloonpointer_width + BALLOONPOINTER_OFFSET
@@ -864,14 +861,14 @@ avt_draw_balloon (void)
   textfield.height = (avt.balloonheight * fontheight);
   centered_y = window.y + (window.height / 2) - (textfield.height / 2);
 
-  if (not avt.avatar_image)
+  if (not avatar_image)
     textfield.y = centered_y;	// middle of the window
   else
     {
       // align with balloon
       if (AVT_HEADER == avt.avatar_mode)
 	textfield.y =
-	  window.y + avt.avatar_image->height + AVATAR_MARGIN +
+	  window.y + avatar_image->height + AVATAR_MARGIN +
 	  TOPMARGIN + BALLOON_INNER_MARGIN;
       else
 	textfield.y =
@@ -890,24 +887,24 @@ avt_draw_balloon (void)
     window.x + (window.width / 2) - (avt.balloonwidth * fontwidth / 2);
 
   // align horizontally with balloonpointer
-  if (avt.avatar_image
+  if (avatar_image
       and AVT_FOOTER != avt.avatar_mode and AVT_HEADER != avt.avatar_mode)
     {
       // left border not aligned with balloon pointer?
       if (textfield.x >
-	  window.x + avt.avatar_image->width + (2 * AVATAR_MARGIN) +
+	  window.x + avatar_image->width + (2 * AVATAR_MARGIN) +
 	  BALLOONPOINTER_OFFSET)
 	textfield.x =
-	  window.x + avt.avatar_image->width + (2 * AVATAR_MARGIN) +
+	  window.x + avatar_image->width + (2 * AVATAR_MARGIN) +
 	  BALLOONPOINTER_OFFSET;
 
       // right border not aligned with balloon pointer?
       if (textfield.x + textfield.width <
-	  window.x + avt.avatar_image->width + balloonpointer_width
+	  window.x + avatar_image->width + balloonpointer_width
 	  + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET)
 	{
 	  textfield.x =
-	    window.x + avt.avatar_image->width - textfield.width
+	    window.x + avatar_image->width - textfield.width
 	    + balloonpointer_width
 	    + (2 * AVATAR_MARGIN) + BALLOONPOINTER_OFFSET;
 
@@ -929,14 +926,14 @@ avt_draw_balloon (void)
   avt_draw_balloon2 (0, avt.ballooncolor);
 
   if (avt.textdir_rtl)
-    avt.linestart = viewport.x + viewport.width - fontwidth;
+    linestart = viewport.x + viewport.width - fontwidth;
   else
-    avt.linestart = viewport.x;
+    linestart = viewport.x;
 
   avt.avatar_visible = true;
 
   // cursor at top 
-  cursor.x = avt.linestart;
+  cursor.x = linestart;
   cursor.y = viewport.y;
 
   // reset saved position
@@ -975,11 +972,11 @@ avt_text_direction (int direction)
 	area = textfield;
 
       if (avt.textdir_rtl)
-	avt.linestart = area.x + area.width - fontwidth;
+	linestart = area.x + area.width - fontwidth;
       else
-	avt.linestart = area.x;
+	linestart = area.x;
 
-      cursor.x = avt.linestart;
+      cursor.x = linestart;
 
       if (avt.text_cursor_visible)
 	avt_show_text_cursor (true);
@@ -1150,7 +1147,7 @@ avt_home_position (void)
   if (not screen or textfield.x < 0)
     return true;		// about to be set to home position
   else
-    return (cursor.y == viewport.y and cursor.x == avt.linestart);
+    return (cursor.y == viewport.y and cursor.x == linestart);
 }
 
 // this always means the full textfield
@@ -1468,11 +1465,11 @@ avt_viewport (int x, int y, int width, int height)
   viewport.height = height * fontheight;
 
   if (avt.textdir_rtl)
-    avt.linestart = viewport.x + viewport.width - fontwidth;
+    linestart = viewport.x + viewport.width - fontwidth;
   else
-    avt.linestart = viewport.x;
+    linestart = viewport.x;
 
-  cursor.x = avt.linestart;
+  cursor.x = linestart;
   cursor.y = viewport.y;
 
   if (avt.text_cursor_visible)
@@ -1520,13 +1517,13 @@ avt_set_origin_mode (bool mode)
     area = textfield;
 
   if (avt.textdir_rtl)
-    avt.linestart = area.x + area.width - fontwidth;
+    linestart = area.x + area.width - fontwidth;
   else
-    avt.linestart = area.x;
+    linestart = area.x;
 
   // cursor to position 1,1
   // when origin mode is off, then it may be outside the viewport (sic)
-  cursor.x = avt.linestart;
+  cursor.x = linestart;
   cursor.y = area.y;
 
   // reset saved position
@@ -1557,7 +1554,7 @@ avt_clear (void)
   avt_bar (screen, viewport.x, viewport.y,
 	   viewport.width, viewport.height, avt.text_background_color);
 
-  cursor.x = avt.linestart;
+  cursor.x = linestart;
 
   if (avt.origin_mode)
     cursor.y = viewport.y;
@@ -1734,7 +1731,7 @@ avt_flip_page (void)
     return _avt_STATUS;
 
   // do nothing when the textfield is already empty
-  if (cursor.x == avt.linestart and cursor.y == viewport.y)
+  if (cursor.x == linestart and cursor.y == viewport.y)
     return _avt_STATUS;
 
   /* the viewport must be updated,
@@ -1765,7 +1762,7 @@ avt_scroll_up (void)
 	cursor.y = textfield.y + textfield.height - fontheight;
 
       if (avt.newline_mode)
-	cursor.x = avt.linestart;
+	cursor.x = linestart;
       break;
     case 0:
       avt_flip_page ();
@@ -1779,7 +1776,7 @@ avt_carriage_return (void)
   if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
-  cursor.x = avt.linestart;
+  cursor.x = linestart;
 
   if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
@@ -1796,7 +1793,7 @@ avt_new_line (void)
     avt_show_text_cursor (false);
 
   if (avt.newline_mode)
-    cursor.x = avt.linestart;
+    cursor.x = linestart;
 
   /* if the cursor is at the last line of the viewport
    * scroll up
@@ -2057,7 +2054,7 @@ avt_backspace (void)
 {
   if (screen and textfield.x >= 0)
     {
-      if (cursor.x != avt.linestart)
+      if (cursor.x != linestart)
 	{
 	  if (avt.text_cursor_visible)
 	    avt_show_text_cursor (false);
@@ -2873,7 +2870,7 @@ avt_pager_screen (const wchar_t * txt, size_t pos, size_t len,
 
   for (int line_nr = 0; line_nr < avt.balloonheight; line_nr++)
     {
-      cursor.x = avt.linestart;
+      cursor.x = linestart;
       cursor.y = line_nr * fontheight + textfield.y;
       pos = avt_pager_line (txt, pos, len, horizontal);
     }
@@ -3015,7 +3012,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 	    {
 	      avt.hold_updates = true;
 	      avt_delete_lines (1, 1);
-	      cursor.x = avt.linestart;
+	      cursor.x = linestart;
 	      cursor.y = (avt.balloonheight - 1) * fontheight + textfield.y;
 	      pos = avt_pager_line (txt, pos, len, horizontal);
 	      avt.hold_updates = false;
@@ -3037,7 +3034,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 	      {
 		avt.hold_updates = true;
 		avt_insert_lines (1, 1);
-		cursor.x = avt.linestart;
+		cursor.x = linestart;
 		cursor.y = textfield.y;
 		avt_pager_line (txt, start_pos, len, horizontal);
 		avt.hold_updates = false;
@@ -3352,7 +3349,7 @@ avt_move_in (void)
   // (not only the window!)
   avt_clear_screen ();
 
-  if (avt.avatar_image)
+  if (avatar_image)
     {
       struct avt_position pos;
       short destination;
@@ -3364,13 +3361,13 @@ avt_move_in (void)
 	pos.y = window.y + TOPMARGIN;
       else			// bottom
 	pos.y =
-	  window.y + window.height - avt.avatar_image->height - AVATAR_MARGIN;
+	  window.y + window.height - avatar_image->height - AVATAR_MARGIN;
 
       start_time = avt_ticks ();
 
       if (AVT_FOOTER == avt.avatar_mode or AVT_HEADER == avt.avatar_mode)
 	destination =
-	  window.x + (window.width / 2) - (avt.avatar_image->width / 2);
+	  window.x + (window.width / 2) - (avatar_image->width / 2);
       else			// left
 	destination = window.x + AVATAR_MARGIN;
 
@@ -3384,22 +3381,21 @@ avt_move_in (void)
 	  if (pos.x != oldx)
 	    {
 	      // draw
-	      avt_put_graphic (avt.avatar_image, screen, pos.x, pos.y);
+	      avt_put_graphic (avatar_image, screen, pos.x, pos.y);
 
 	      // update
-	      if ((oldx + avt.avatar_image->width) >= screen->width)
+	      if ((oldx + avatar_image->width) >= screen->width)
 		backend.update_area (screen, pos.x, pos.y,
 				     screen->width - pos.x,
-				     avt.avatar_image->height);
+				     avatar_image->height);
 	      else
 		backend.update_area (screen, pos.x, pos.y,
-				     avt.avatar_image->width
-				     + (oldx - pos.x),
-				     avt.avatar_image->height);
+				     avatar_image->width
+				     + (oldx - pos.x), avatar_image->height);
 
 	      // delete (not visibly yet)
 	      avt_bar (screen, pos.x, pos.y,
-		       avt.avatar_image->width, avt.avatar_image->height,
+		       avatar_image->width, avatar_image->height,
 		       avt.background_color);
 	    }
 
@@ -3424,7 +3420,7 @@ avt_move_out (void)
   // needed to remove the balloon
   avt_show_avatar ();
 
-  if (avt.avatar_image)
+  if (avatar_image)
     {
       struct avt_position pos;
       size_t start_time;
@@ -3432,7 +3428,7 @@ avt_move_out (void)
 
       if (AVT_FOOTER == avt.avatar_mode or AVT_HEADER == avt.avatar_mode)
 	start_position =
-	  window.x + (window.width / 2) - (avt.avatar_image->width / 2);
+	  window.x + (window.width / 2) - (avatar_image->width / 2);
       else
 	start_position = window.x + AVATAR_MARGIN;
 
@@ -3442,13 +3438,13 @@ avt_move_out (void)
 	pos.y = window.y + TOPMARGIN;
       else			// bottom
 	pos.y =
-	  window.y + window.height - avt.avatar_image->height - AVATAR_MARGIN;
+	  window.y + window.height - avatar_image->height - AVATAR_MARGIN;
 
       start_time = avt_ticks ();
 
       // delete (not visibly yet)
-      avt_bar (screen, pos.x, pos.y, avt.avatar_image->width,
-	       avt.avatar_image->height, avt.background_color);
+      avt_bar (screen, pos.x, pos.y, avatar_image->width,
+	       avatar_image->height, avt.background_color);
 
       while (pos.x < screen->width)
 	{
@@ -3462,22 +3458,21 @@ avt_move_out (void)
 	  if (pos.x != oldx)
 	    {
 	      // draw
-	      avt_put_graphic (avt.avatar_image, screen, pos.x, pos.y);
+	      avt_put_graphic (avatar_image, screen, pos.x, pos.y);
 
 	      // update
-	      if ((pos.x + avt.avatar_image->width) >= screen->width)
+	      if ((pos.x + avatar_image->width) >= screen->width)
 		backend.update_area (screen, oldx, pos.y,
 				     screen->width - oldx,
-				     avt.avatar_image->height);
+				     avatar_image->height);
 	      else
 		backend.update_area (screen, oldx, pos.y,
-				     avt.avatar_image->width
-				     + pos.x - oldx,
-				     avt.avatar_image->height);
+				     avatar_image->width
+				     + pos.x - oldx, avatar_image->height);
 
 	      // delete (not visibly yet)
 	      avt_bar (screen, pos.x, pos.y,
-		       avt.avatar_image->width, avt.avatar_image->height,
+		       avatar_image->width, avatar_image->height,
 		       avt.background_color);
 	    }
 
@@ -4106,10 +4101,10 @@ avt_set_avatar_image (avt_graphic * image)
     avt_clear_screen ();
 
   // free old image
-  if (avt.avatar_image)
+  if (avatar_image)
     {
-      avt_free_graphic (avt.avatar_image);
-      avt.avatar_image = NULL;
+      avt_free_graphic (avatar_image);
+      avatar_image = NULL;
     }
 
   if (avt.name)
@@ -4119,7 +4114,7 @@ avt_set_avatar_image (avt_graphic * image)
     }
 
   // import the avatar image
-  avt.avatar_image = avt_copy_graphic (image);
+  avatar_image = avt_copy_graphic (image);
   calculate_balloonmaxheight ();
 
   // set actual balloon size to the maximum size
@@ -4571,16 +4566,16 @@ update_area_error (avt_graphic * screen, int x, int y, int width, int height)
 extern void
 avt_quit (void)
 {
-  if (avt.quit_encoding)
+  if (quit_encoding)
     {
-      avt.quit_encoding ();
-      avt.quit_encoding = NULL;
+      quit_encoding ();
+      quit_encoding = NULL;
     }
 
-  if (avt.quit_audio)
+  if (quit_audio)
     {
-      avt.quit_audio ();
-      avt.quit_audio = NULL;
+      quit_audio ();
+      quit_audio = NULL;
     }
 
   avt_release_raw_image ();
@@ -4592,10 +4587,10 @@ avt_quit (void)
     {
       avt_free_graphic (base_button);
       base_button = NULL;
-      avt_free_graphic (avt.avatar_image);
-      avt.avatar_image = NULL;
-      avt_free_graphic (avt.cursor_character);
-      avt.cursor_character = NULL;
+      avt_free_graphic (avatar_image);
+      avatar_image = NULL;
+      avt_free_graphic (cursor_character);
+      cursor_character = NULL;
       avt.bell = NULL;
       avt_free_graphic (screen);
       screen = NULL;
@@ -4649,7 +4644,7 @@ avt_reset ()
   avt_set_mouse_visible (true);
   avt_set_avatar_name (NULL);
 
-  if (avt.avatar_image)
+  if (avatar_image)
     avt_set_avatar_image (NULL);
 }
 
@@ -4704,9 +4699,9 @@ avt_start_common (avt_graphic * new_screen)
   avt.balloonwidth = AVT_LINELENGTH;
 
   // reserve space for character under text-mode cursor
-  avt.cursor_character = avt_new_graphic (fontwidth, fontheight);
+  cursor_character = avt_new_graphic (fontwidth, fontheight);
 
-  if (not avt.cursor_character)
+  if (not cursor_character)
     {
       avt_set_error ("out of memory");
       _avt_STATUS = AVT_ERROR;
