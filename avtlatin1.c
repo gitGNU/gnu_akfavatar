@@ -36,8 +36,11 @@ lat1_to_unicode (avt_char * dest, const char *src)
 
 
 static size_t
-lat1_from_unicode (char *dest, avt_char src)
+lat1_from_unicode (char *dest, size_t size, avt_char src)
 {
+  if (size == 0)
+    return 0;
+
   *dest = (src <= 0xFFu) ? (char) src : INVALID_CHAR;
   return 1;
 }
@@ -48,6 +51,7 @@ avt_latin1 (void)
 {
   static struct avt_charenc converter;
 
+  converter.data = NULL;
   converter.to_unicode = lat1_to_unicode;
   converter.from_unicode = lat1_from_unicode;
 

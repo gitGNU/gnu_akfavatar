@@ -46,8 +46,11 @@ map_to_unicode (avt_char * dest, const char *src)
 
 
 static size_t
-map_from_unicode (char *dest, avt_char src)
+map_from_unicode (char *dest, size_t size, avt_char src)
 {
+  if (size == 0)
+    return 0;
+
   if (not map or src < (avt_char) map->start
       or (src <= 0xFF and src > (avt_char) map->end))
     *dest = (char) src;
@@ -77,6 +80,7 @@ avt_charmap (const struct avt_char_map *m)
   static struct avt_charenc converter;
 
   map = m;
+  converter.data = (void *) m;
   converter.to_unicode = map_to_unicode;
   converter.from_unicode = map_from_unicode;
 

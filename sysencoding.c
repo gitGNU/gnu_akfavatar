@@ -54,9 +54,17 @@ system_to_unicode (avt_char * dest, const char *src)
 
 
 static size_t
-system_from_unicode (char *dest, avt_char src)
+system_from_unicode (char *dest, size_t size, avt_char src)
 {
   int r;
+
+  // enough space?
+  if (size < MB_CUR_MAX)
+    return 0;
+
+  // wchar_t is too small?
+  if (sizeof (wchar_t) <= 2 and src > 0xFFFF)
+    src = BROKEN_WCHAR;
 
   r = wctomb (dest, (wchar_t) src);
 
@@ -66,6 +74,9 @@ system_from_unicode (char *dest, avt_char src)
 
       if (r <= 0)
 	r = wctomb (dest, L'\x1A');
+
+      if (r < 0)
+	r = 0;
     }
 
   return (size_t) r;
@@ -77,6 +88,7 @@ avt_systemencoding (void)
 {
   static struct avt_charenc converter;
 
+  converter.data = NULL;
   converter.to_unicode = system_to_unicode;
   converter.from_unicode = system_from_unicode;
 

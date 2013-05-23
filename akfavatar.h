@@ -232,6 +232,8 @@ AVT_API size_t avt_ticks (void);
 
 struct avt_charenc
 {
+  void *data;
+
   /*
    * convert one char to unicode (avt_char)
    * returns number of bytes read, 0 on error
@@ -240,10 +242,9 @@ struct avt_charenc
 
   /*
    * convert an unicode character
-   * dest must have enough space
-   * returns number of bytes written
+   * returns number of bytes written or 0 on error
    */
-  size_t (*from_unicode) (char *, avt_char);
+  size_t (*from_unicode) (char *, size_t, avt_char);
 };
 
 /*

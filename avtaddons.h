@@ -72,6 +72,8 @@ AVT_ADDON const struct avt_char_map avt_cp1252;
 /*
  * use the systems charset as encoding
  * depends on the locale for LC_CTYPE
+ *
+ * use with care!
  */
 AVT_ADDON struct avt_charenc *avt_systemencoding (void);
 

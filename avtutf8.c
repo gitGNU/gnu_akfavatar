@@ -104,7 +104,7 @@ utf8_to_unicode (avt_char * ch, const char *src)
 
 
 static size_t
-utf8_from_unicode (char *dest, avt_char ch)
+utf8_from_unicode (char *dest, size_t dest_size, avt_char ch)
 {
   size_t size = 0;
 
@@ -112,25 +112,25 @@ utf8_from_unicode (char *dest, avt_char ch)
   if (ch > UNICODE_MAXIMUM or surrogate (ch))
     ch = BROKEN_WCHAR;
 
-  if (ch <= 0x7Fu)
+  if (ch <= 0x7Fu and dest_size >= 1)
     {
       *dest = (char) ch;
       size = 1;
     }
-  else if (ch <= 0x7FFu)
+  else if (ch <= 0x7FFu and dest_size >= 2)
     {
       *dest++ = 0xC0u bitor (ch >> 6);
       *dest = 0x80u bitor (ch bitand 0x3Fu);
       size = 2;
     }
-  else if (ch <= 0xFFFFu)
+  else if (ch <= 0xFFFFu and dest_size >= 3)
     {
       *dest++ = 0xE0u bitor (ch >> (2 * 6));
       *dest++ = 0x80u bitor ((ch >> 6) bitand 0x3Fu);
       *dest = 0x80u bitor (ch bitand 0x3Fu);
       size = 3;
     }
-  else
+  else if (dest_size >= 4)
     {
       *dest++ = 0xF0u bitor (ch >> (3 * 6));
       *dest++ = 0x80u bitor ((ch >> (2 * 6)) bitand 0x3Fu);
@@ -147,6 +147,7 @@ avt_utf8 (void)
 {
   static struct avt_charenc converter;
 
+  converter.data = NULL;
   converter.to_unicode = utf8_to_unicode;
   converter.from_unicode = utf8_from_unicode;
 

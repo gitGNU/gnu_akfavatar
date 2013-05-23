@@ -85,9 +85,9 @@ char_to_wchar (wchar_t * dest, size_t dest_len,
 
 
 static void
-wchar_to_char (char *dest, const wchar_t * src, size_t len)
+wchar_to_char (char *dest, size_t dest_len, const wchar_t * src, size_t src_len)
 {
-  while (len)
+  while (src_len and dest_len)
     {
       avt_char ch = (avt_char) * src;
 
@@ -103,17 +103,19 @@ wchar_to_char (char *dest, const wchar_t * src, size_t len)
 		+ 0x10000u;
 
 	      ++src;
+	      --src_len;
 	    }
 	}
 
-      size_t bytes = convert->from_unicode (dest, ch);
+      size_t bytes = convert->from_unicode (dest, dest_len, ch);
 
-      if (not * src)
+      if (not bytes)
 	break;
 
-      ++src;
       dest += bytes;
-      --len;
+      dest_len -= bytes;
+      ++src;
+      --src_len;
     }
 }
 
@@ -314,7 +316,7 @@ avt_input_char (char *s, size_t size, const char *default_text,
 	return AVT_KEY_NONE;
 
       // size - 1 to keep the terminator
-      wchar_to_char (s, buf, size - 1);
+      wchar_to_char (s, size, buf, size - 1);
     }
 
   return ch;
@@ -331,7 +333,6 @@ avt_ask_char (char *s, size_t size)
 }
 
 
-// TODO: check!
 extern size_t
 avt_recode_char (struct avt_charenc *tocode,
 		 char *dest, size_t dest_size,
@@ -345,16 +346,16 @@ avt_recode_char (struct avt_charenc *tocode,
       avt_char ch;
 
       size_t nsrc = fromcode->to_unicode (&ch, src);
-      size_t ndest = tocode->from_unicode (dest, ch);
+      size_t ndest = tocode->from_unicode (dest, dest_size, ch);
 
-      if (ndest > dest_size)
+      if (not ndest)
         break;
 
       dest_size -= ndest;
       dest += ndest;
       result_size += ndest;
 
-      if (nsrc > src_size)
+      if (not nsrc or nsrc > src_size)
 	break;
 
       src_size -= nsrc;
