@@ -120,6 +120,7 @@ EXPORTS
     avt_quit_audio
     avt_recode
     avt_recode_buffer
+    avt_recode_char
     avt_reserve_single_keys
     avt_reset
     avt_reset_tab_stops

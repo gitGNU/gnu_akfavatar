@@ -194,8 +194,14 @@ sysencoding.lo: $(srcdir)/sysencoding.c $(srcdir)/avtaddons.h $(srcdir)/akfavata
 charmaps.o: $(srcdir)/charmaps.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/charmaps.c
 
+charmaps.lo: $(srcdir)/charmaps.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/charmaps.c
+
 cp1252.o: $(srcdir)/cp1252.c $(srcdir)/avtaddons.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/cp1252.c
+
+cp1252.lo: $(srcdir)/cp1252.c $(srcdir)/avtaddons.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/cp1252.c
 
 rgb.h: $(srcdir)/rgb.txt $(srcdir)/rgb2c.awk
 	$(AWK) -f $(srcdir)/rgb2c.awk -v name="avt_colors" \
@@ -421,9 +427,10 @@ lua-avt.o: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h \
 
 # Lua-Modules
 lua-akfavatar.so: lua-avt.lo filechooser.lo colorchooser.lo basedir.lo \
-                  langposix.lo
+                  langposix.lo cp1252.lo sysencoding.lo charmaps.lo
 	$(CC) -o $@ -shared -fpic lua-avt.lo filechooser.lo colorchooser.lo \
-	     basedir.lo langposix.lo -L. -lakfavatar $(LDFLAGS)
+	     basedir.lo langposix.lo cp1252.lo charmaps.lo sysencoding.lo \
+	     -L. -lakfavatar $(LDFLAGS)
 
 akfavatar-vorbis.so: akfavatar-vorbis.lo avtvorbis.lo stb_vorbis.lo
 	$(CC) -o $@ -shared -fpic akfavatar-vorbis.lo avtvorbis.lo stb_vorbis.lo \
