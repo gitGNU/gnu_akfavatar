@@ -28,13 +28,13 @@
 #include <iso646.h>
 
 
-static struct avt_charenc *convert;
+static const struct avt_charenc *convert;
 
 
-extern struct avt_charenc *
-avt_charencoding (struct avt_charenc *encoding)
+extern const struct avt_charenc *
+avt_charencoding (const struct avt_charenc *encoding)
 {
-  struct avt_charenc *old;
+  const struct avt_charenc *old;
 
   old = convert;
 
@@ -335,9 +335,9 @@ avt_ask_char (char *s, size_t size)
 
 
 extern size_t
-avt_recode_char (struct avt_charenc *tocode,
+avt_recode_char (const struct avt_charenc *tocode,
 		 char *dest, size_t dest_size,
-		 struct avt_charenc *fromcode,
+		 const struct avt_charenc *fromcode,
 		 const char *src, size_t src_size)
 {
   size_t result_size = 0;

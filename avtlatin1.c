@@ -24,11 +24,13 @@
  */
 
 #include "akfavatar.h"
+#include <stddef.h>
 
 #define INVALID_CHAR '\x1A'
 
 static size_t
-lat1_to_unicode (struct avt_charenc *self, avt_char * dest, const char *src)
+lat1_to_unicode (const struct avt_charenc *self, avt_char * dest,
+		 const char *src)
 {
   (void) self;
 
@@ -38,7 +40,7 @@ lat1_to_unicode (struct avt_charenc *self, avt_char * dest, const char *src)
 
 
 static size_t
-lat1_from_unicode (struct avt_charenc *self, char *dest, size_t size,
+lat1_from_unicode (const struct avt_charenc *self, char *dest, size_t size,
 		   avt_char src)
 {
   (void) self;
@@ -51,14 +53,15 @@ lat1_from_unicode (struct avt_charenc *self, char *dest, size_t size,
 }
 
 
-extern struct avt_charenc *
+static const struct avt_charenc converter = {
+  .data = NULL,
+  .to_unicode = lat1_to_unicode,
+  .from_unicode = lat1_from_unicode
+};
+
+
+extern const struct avt_charenc *
 avt_latin1 (void)
 {
-  static struct avt_charenc converter;
-
-  converter.data = NULL;
-  converter.to_unicode = lat1_to_unicode;
-  converter.from_unicode = lat1_from_unicode;
-
   return &converter;
 }

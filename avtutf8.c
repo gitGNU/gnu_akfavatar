@@ -45,7 +45,8 @@ check_char_length (const unsigned char *utf8, size_t max_bytes)
 // reads next char from utf8 and places code in ch
 // returns number of bytes read from src
 static size_t
-utf8_to_unicode (struct avt_charenc *self, avt_char * ch, const char *src)
+utf8_to_unicode (const struct avt_charenc *self, avt_char * ch,
+		 const char *src)
 {
   (void) self;
 
@@ -103,8 +104,8 @@ utf8_to_unicode (struct avt_charenc *self, avt_char * ch, const char *src)
 
 
 static size_t
-utf8_from_unicode (struct avt_charenc *self, char *dest, size_t dest_size,
-		   avt_char ch)
+utf8_from_unicode (const struct avt_charenc *self, char *dest,
+		   size_t dest_size, avt_char ch)
 {
   (void) self;
 
@@ -144,14 +145,14 @@ utf8_from_unicode (struct avt_charenc *self, char *dest, size_t dest_size,
   return size;
 }
 
-extern struct avt_charenc *
+static const struct avt_charenc converter = {
+  .data = NULL,
+  .to_unicode = utf8_to_unicode,
+  .from_unicode = utf8_from_unicode
+};
+
+extern const struct avt_charenc *
 avt_utf8 (void)
 {
-  static struct avt_charenc converter;
-
-  converter.data = NULL;
-  converter.to_unicode = utf8_to_unicode;
-  converter.from_unicode = utf8_from_unicode;
-
   return &converter;
 }

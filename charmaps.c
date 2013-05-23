@@ -26,7 +26,8 @@
 
 
 extern size_t
-map_to_unicode (struct avt_charenc *self, avt_char * dest, const char *src)
+map_to_unicode (const struct avt_charenc *self, avt_char * dest,
+		const char *src)
 {
   const struct avt_char_map *map = self->data;
   const unsigned char s = (const unsigned char) *src;
@@ -41,7 +42,7 @@ map_to_unicode (struct avt_charenc *self, avt_char * dest, const char *src)
 
 
 extern size_t
-map_from_unicode (struct avt_charenc *self, char *dest,
+map_from_unicode (const struct avt_charenc *self, char *dest,
 		  size_t size, avt_char src)
 {
   const struct avt_char_map *map = self->data;

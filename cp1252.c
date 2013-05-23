@@ -39,14 +39,15 @@ static const struct avt_char_map cp1252 = {
 };
 
 
-extern struct avt_charenc *
+static const struct avt_charenc converter = {
+  .data = (void *) &cp1252,
+  .to_unicode = map_to_unicode,
+  .from_unicode = map_from_unicode
+};
+
+
+extern const struct avt_charenc *
 avt_cp1252 (void)
 {
-  static struct avt_charenc converter;
-
-  converter.data = (void *) &cp1252;
-  converter.to_unicode = map_to_unicode;
-  converter.from_unicode = map_from_unicode;
-
   return &converter;
 }

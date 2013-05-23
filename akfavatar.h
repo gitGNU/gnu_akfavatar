@@ -299,8 +299,8 @@ AVT_API int avt_ask_char (char *s, size_t size);
 struct avt_charenc
 {
   void *data;
-  size_t (*to_unicode) (struct avt_charenc *self, avt_char *, const char *);
-  size_t (*from_unicode) (struct avt_charenc *self, char *, size_t, avt_char);
+  size_t (*to_unicode) (const struct avt_charenc *self, avt_char *, const char *);
+  size_t (*from_unicode) (const struct avt_charenc *self, char *, size_t, avt_char);
 };
 
 /*
@@ -308,22 +308,23 @@ struct avt_charenc
  * returns the old one
  * use NULL to just query the old one
  */
-AVT_API struct avt_charenc *avt_charencoding (struct avt_charenc *);
+AVT_API const struct avt_charenc *
+avt_charencoding (const struct avt_charenc *);
 
 /* get a character converter for UTF-8 */
-AVT_API struct avt_charenc *avt_utf8 (void);
+AVT_API const struct avt_charenc *avt_utf8 (void);
 
 /* get a character converter for ISO-8859-1 (Latin-1) */
-AVT_API struct avt_charenc *avt_latin1 (void);
+AVT_API const struct avt_charenc *avt_latin1 (void);
 
 /*
  * try to recode from fromcode to tocode
  * copies as much as fits
  * result is terminated
  */
-AVT_API size_t avt_recode_char (struct avt_charenc *tocode,
+AVT_API size_t avt_recode_char (const struct avt_charenc *tocode,
                                 char *dest, size_t dest_size,
-                                struct avt_charenc *fromcode,
+                                const struct avt_charenc *fromcode,
                                 const char *src, size_t src_size);
 
 /***********************************************************************/

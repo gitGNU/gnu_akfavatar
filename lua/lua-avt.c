@@ -337,10 +337,10 @@ lavt_colors (lua_State * L)
   return 3;
 }
 
-static struct avt_charenc *
+static const struct avt_charenc *
 encodingname (const char *name)
 {
-  struct avt_charenc *result = NULL;
+  const struct avt_charenc *result = NULL;
 
   if (not name)
     result = avt_charencoding (NULL);	// current encoding
@@ -370,7 +370,7 @@ static int
 lavt_encoding (lua_State * L)
 {
   const char *name = luaL_checkstring (L, 1);
-  struct avt_charenc *encoding = encodingname (name);
+  const struct avt_charenc *encoding = encodingname (name);
 
   if (not encoding)
     return luaL_error (L, "encoding: %s: %s", name, strerror (EINVAL));

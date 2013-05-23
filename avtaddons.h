@@ -53,7 +53,7 @@
  * Microsoft calls this "ANSI", though it's not an ANSI standard
  * It is based on ISO-8859-1 with nonstandard extensions
  */
-AVT_ADDON struct avt_charenc *avt_cp1252 (void);
+AVT_ADDON const struct avt_charenc *avt_cp1252 (void);
 
 /*
  * use the systems charset as encoding
@@ -61,7 +61,7 @@ AVT_ADDON struct avt_charenc *avt_cp1252 (void);
  *
  * use with care!
  */
-AVT_ADDON struct avt_charenc *avt_systemencoding (void);
+AVT_ADDON const struct avt_charenc *avt_systemencoding (void);
 
 /*
  * the following definitions are only for internal use
@@ -74,11 +74,11 @@ struct avt_char_map
   avt_char table[];
 };
 
-AVT_ADDON size_t map_to_unicode (struct avt_charenc *self,
+AVT_ADDON size_t map_to_unicode (const struct avt_charenc *self,
                                  avt_char *dest,
                                  const char *src);
 
-AVT_ADDON size_t map_from_unicode (struct avt_charenc *self,
+AVT_ADDON size_t map_from_unicode (const struct avt_charenc *self,
                                    char *dest, size_t size,
                                    avt_char src);
 

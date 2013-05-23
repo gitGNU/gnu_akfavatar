@@ -28,15 +28,15 @@
 #include <stdlib.h>
 #include <limits.h>
 
-static size_t
-system_to_unicode (struct avt_charenc *self, avt_char * dest, const char *src)
-{
-  int r;
-  wchar_t ch;
 
+static size_t
+system_to_unicode (const struct avt_charenc *self, avt_char * dest,
+		   const char *src)
+{
   (void) self;
 
-  r = mbtowc (&ch, src, MB_LEN_MAX);
+  wchar_t ch;
+  int r = mbtowc (&ch, src, MB_LEN_MAX);
 
   if (r == 0)
     {
@@ -49,18 +49,16 @@ system_to_unicode (struct avt_charenc *self, avt_char * dest, const char *src)
       r = 1;
     }
 
-  *dest = ch;
+  *dest = (avt_char) ch;
 
   return (size_t) r;
 }
 
 
 static size_t
-system_from_unicode (struct avt_charenc *self, char *dest, size_t size,
+system_from_unicode (const struct avt_charenc *self, char *dest, size_t size,
 		     avt_char src)
 {
-  int r;
-
   (void) self;
 
   // enough space?
@@ -71,7 +69,7 @@ system_from_unicode (struct avt_charenc *self, char *dest, size_t size,
   if (sizeof (wchar_t) <= 2 and src > 0xFFFF)
     src = BROKEN_WCHAR;
 
-  r = wctomb (dest, (wchar_t) src);
+  int r = wctomb (dest, (wchar_t) src);
 
   if (r <= 0)
     {
@@ -88,14 +86,15 @@ system_from_unicode (struct avt_charenc *self, char *dest, size_t size,
 }
 
 
-extern struct avt_charenc *
+static const struct avt_charenc converter = {
+  .data = NULL,
+  .to_unicode = system_to_unicode,
+  .from_unicode = system_from_unicode
+};
+
+
+extern const struct avt_charenc *
 avt_systemencoding (void)
 {
-  static struct avt_charenc converter;
-
-  converter.data = NULL;
-  converter.to_unicode = system_to_unicode;
-  converter.from_unicode = system_from_unicode;
-
   return &converter;
 }
