@@ -22,9 +22,6 @@
 #include "avtinternals.h"
 
 #include <stddef.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
 #include <iso646.h>
 
 #define UNICODE_MAXIMUM  (0x10FFFFu)
@@ -46,7 +43,7 @@ check_char_length (const unsigned char *utf8, size_t max_bytes)
 
 
 // reads next char from utf8 and places code in ch
-// returns number of bytes read from utf8
+// returns number of bytes read from src
 static size_t
 utf8_to_unicode (struct avt_charenc *self, avt_char * ch, const char *src)
 {
@@ -140,7 +137,7 @@ utf8_from_unicode (struct avt_charenc *self, char *dest, size_t dest_size,
       *dest++ = 0xF0u bitor (ch >> (3 * 6));
       *dest++ = 0x80u bitor ((ch >> (2 * 6)) bitand 0x3Fu);
       *dest++ = 0x80u bitor ((ch >> 6) bitand 0x3Fu);
-      *dest++ = 0x80u bitor (ch bitand 0x3Fu);
+      *dest = 0x80u bitor (ch bitand 0x3Fu);
       size = 4;
     }
 
