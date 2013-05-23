@@ -28,16 +28,21 @@
 #define INVALID_CHAR '\x1A'
 
 static size_t
-lat1_to_unicode (avt_char * dest, const char *src)
+lat1_to_unicode (struct avt_charenc *self, avt_char * dest, const char *src)
 {
+  (void) self;
+
   *dest = (avt_char) ((unsigned char) *src);
   return 1;
 }
 
 
 static size_t
-lat1_from_unicode (char *dest, size_t size, avt_char src)
+lat1_from_unicode (struct avt_charenc *self, char *dest, size_t size,
+		   avt_char src)
 {
+  (void) self;
+
   if (size == 0)
     return 0;
 

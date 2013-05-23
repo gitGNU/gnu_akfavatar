@@ -1,7 +1,7 @@
 #include "avtaddons.h"
 
-const struct avt_char_map avt_cp1252 = {
-  .start = 128, .end = 159,
+static const struct avt_char_map cp1252 = {
+  .start = 128,.end = 159,
   .table = {
 	    L'\u20AC',		// Euro
 	    INVALID_WCHAR,
@@ -37,3 +37,16 @@ const struct avt_char_map avt_cp1252 = {
 	    L'\u0178',		// Y diaresis
 	    }
 };
+
+
+extern struct avt_charenc *
+avt_cp1252 (void)
+{
+  static struct avt_charenc converter;
+
+  converter.data = (void *) &cp1252;
+  converter.to_unicode = map_to_unicode;
+  converter.from_unicode = map_from_unicode;
+
+  return &converter;
+}

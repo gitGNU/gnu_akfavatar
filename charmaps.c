@@ -24,14 +24,13 @@
 #include <stddef.h>
 #include <iso646.h>
 
-static const struct avt_char_map *map;
 
-
-static size_t
-map_to_unicode (avt_char * dest, const char *src)
+extern size_t
+map_to_unicode (struct avt_charenc *self, avt_char * dest, const char *src)
 {
-  avt_char c;
+  const struct avt_char_map *map = self->data;
   const unsigned char s = (const unsigned char) *src;
+  avt_char c;
 
   if (map and s >= map->start and s <= map->end)
     c = (avt_char) map->table[s - map->start];
@@ -45,9 +44,12 @@ map_to_unicode (avt_char * dest, const char *src)
 }
 
 
-static size_t
-map_from_unicode (char *dest, size_t size, avt_char src)
+extern size_t
+map_from_unicode (struct avt_charenc *self, char *dest,
+		  size_t size, avt_char src)
 {
+  const struct avt_char_map *map = self->data;
+
   if (size == 0)
     return 0;
 
@@ -71,18 +73,4 @@ map_from_unicode (char *dest, size_t size, avt_char src)
     }
 
   return 1;
-}
-
-
-extern struct avt_charenc *
-avt_charmap (const struct avt_char_map *m)
-{
-  static struct avt_charenc converter;
-
-  map = m;
-  converter.data = (void *) m;
-  converter.to_unicode = map_to_unicode;
-  converter.from_unicode = map_from_unicode;
-
-  return &converter;
 }

@@ -238,13 +238,13 @@ struct avt_charenc
    * convert one char to unicode (avt_char)
    * returns number of bytes read, 0 on error
    */
-  size_t (*to_unicode) (avt_char *, const char *);
+  size_t (*to_unicode) (struct avt_charenc *self, avt_char *, const char *);
 
   /*
    * convert an unicode character
    * returns number of bytes written or 0 on error
    */
-  size_t (*from_unicode) (char *, size_t, avt_char);
+  size_t (*from_unicode) (struct avt_charenc *self, char *, size_t, avt_char);
 };
 
 /*
@@ -253,6 +253,12 @@ struct avt_charenc
  * use NULL to just query the old one
  */
 AVT_API struct avt_charenc *avt_charencoding (struct avt_charenc *);
+
+/* get a character converter for UTF-8 */
+AVT_API struct avt_charenc *avt_utf8 (void);
+
+/* get a character converter for ISO-8859-1 (Latin-1) */
+AVT_API struct avt_charenc *avt_latin1 (void);
 
 /*
  * try to recode from fromcode to tocode
@@ -263,12 +269,6 @@ AVT_API size_t avt_recode_char (struct avt_charenc *tocode,
                                 char *dest, size_t dest_size,
                                 struct avt_charenc *fromcode,
                                 const char *src, size_t src_size);
-
-/* character converter for UTF-8 */
-AVT_API struct avt_charenc *avt_utf8 (void);
-
-/* character converter for ISO-8859-1 (Latin-1) */
-AVT_API struct avt_charenc *avt_latin1 (void);
 
 /***********************************************************************/
 /* say or ask stuff */

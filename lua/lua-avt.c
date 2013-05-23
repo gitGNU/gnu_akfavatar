@@ -360,7 +360,7 @@ encodingname (const char *name)
     result = avt_latin1 ();
   else if (strcasecmp ("WINDOWS-1252", name) == 0
 	   or strcasecmp ("CP1252", name) == 0 or strcmp ("1252", name) == 0)
-    result = avt_charmap (&avt_cp1252);
+    result = avt_cp1252 ();
 
   return result;
 }

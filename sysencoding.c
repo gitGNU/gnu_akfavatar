@@ -29,10 +29,12 @@
 #include <limits.h>
 
 static size_t
-system_to_unicode (avt_char * dest, const char *src)
+system_to_unicode (struct avt_charenc *self, avt_char * dest, const char *src)
 {
   int r;
   wchar_t ch;
+
+  (void) self;
 
   r = mbtowc (&ch, src, MB_LEN_MAX);
 
@@ -54,9 +56,12 @@ system_to_unicode (avt_char * dest, const char *src)
 
 
 static size_t
-system_from_unicode (char *dest, size_t size, avt_char src)
+system_from_unicode (struct avt_charenc *self, char *dest, size_t size,
+		     avt_char src)
 {
   int r;
+
+  (void) self;
 
   // enough space?
   if (size < MB_CUR_MAX)
