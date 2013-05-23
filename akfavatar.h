@@ -228,54 +228,12 @@ AVT_API size_t avt_ticks (void);
 #define avt_elapsed(start_ticks)  (avt_ticks()-(start_ticks))
 
 /***********************************************************************/
-/* character encodings */
-
-struct avt_charenc
-{
-  void *data;
-
-  /*
-   * convert one char to unicode (avt_char)
-   * returns number of bytes read, 0 on error
-   */
-  size_t (*to_unicode) (struct avt_charenc *self, avt_char *, const char *);
-
-  /*
-   * convert an unicode character
-   * returns number of bytes written or 0 on error
-   */
-  size_t (*from_unicode) (struct avt_charenc *self, char *, size_t, avt_char);
-};
-
-/*
- * set a new charconverter
- * returns the old one
- * use NULL to just query the old one
- */
-AVT_API struct avt_charenc *avt_charencoding (struct avt_charenc *);
-
-/* get a character converter for UTF-8 */
-AVT_API struct avt_charenc *avt_utf8 (void);
-
-/* get a character converter for ISO-8859-1 (Latin-1) */
-AVT_API struct avt_charenc *avt_latin1 (void);
-
-/*
- * try to recode from fromcode to tocode
- * copies as much as fits
- * result is terminated
- */
-AVT_API size_t avt_recode_char (struct avt_charenc *tocode,
-                                char *dest, size_t dest_size,
-                                struct avt_charenc *fromcode,
-                                const char *src, size_t src_size);
-
-/***********************************************************************/
 /* say or ask stuff */
 
 /*
- * The encoding for wchar can be UTF-32 or UTF-16, native endian.
- * The encoding for char must have been set with avt_charconverter()
+ * The encoding for wchar_t can be UTF-32 or UTF-16, native endian.
+ * The encoding for char must have been set with
+ * avt_charencoding() (see below)
  */
 
 /*
@@ -327,6 +285,46 @@ AVT_API int avt_tell_char_len (const char *txt, size_t len);
 AVT_API int avt_ask (wchar_t *s, size_t size);
 AVT_API int avt_ask_char (char *s, size_t size);
 
+
+/***********************************************************************/
+/* character encodings */
+
+/*
+ * To set the encoding to UTF-8, just use this:
+ *   avt_charencoding (avt_utf8 ());
+ *
+ * More converters are available in avtaddons...
+ */
+
+struct avt_charenc
+{
+  void *data;
+  size_t (*to_unicode) (struct avt_charenc *self, avt_char *, const char *);
+  size_t (*from_unicode) (struct avt_charenc *self, char *, size_t, avt_char);
+};
+
+/*
+ * set a new charconverter
+ * returns the old one
+ * use NULL to just query the old one
+ */
+AVT_API struct avt_charenc *avt_charencoding (struct avt_charenc *);
+
+/* get a character converter for UTF-8 */
+AVT_API struct avt_charenc *avt_utf8 (void);
+
+/* get a character converter for ISO-8859-1 (Latin-1) */
+AVT_API struct avt_charenc *avt_latin1 (void);
+
+/*
+ * try to recode from fromcode to tocode
+ * copies as much as fits
+ * result is terminated
+ */
+AVT_API size_t avt_recode_char (struct avt_charenc *tocode,
+                                char *dest, size_t dest_size,
+                                struct avt_charenc *fromcode,
+                                const char *src, size_t src_size);
 
 /***********************************************************************/
 /* say or ask stuff with multi-byte encodings */
