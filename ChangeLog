@@ -1,3 +1,7 @@
+2013-05-23  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/lua-avt.c: use new char functions
+
 2013-05-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* charencoding.c: new file

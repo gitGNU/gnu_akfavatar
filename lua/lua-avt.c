@@ -46,6 +46,7 @@ extern "C"
 #include <stdio.h>
 #include <stdlib.h>		// for exit and wchar_t
 #include <string.h>		// for strcmp, memcmp, strerror()
+#include <strings.h>		// for strcasecmp
 #include <errno.h>
 #include <iso646.h>
 
@@ -336,22 +337,62 @@ lavt_colors (lua_State * L)
   return 3;
 }
 
-// change the used encoding (iconv)
+static struct avt_charenc *
+encodingname (const char *name)
+{
+  struct avt_charenc *result = NULL;
+
+  if (not name)
+    result = avt_charencoding (NULL);	// current encoding
+  else if (not * name or strcasecmp ("char", name) == 0)
+    result = avt_systemencoding ();
+  else if (strcasecmp ("UTF-8", name) == 0
+	   or strcasecmp ("UTF8", name) == 0 or strcasecmp ("U8", name) == 0)
+    result = avt_utf8 ();
+  else if (strcasecmp ("ISO-8859-1", name) == 0
+	   or strcasecmp ("ISO-8859 1", name) == 0
+	   or strcasecmp ("ISO-8859-1", name) == 0
+	   or strcasecmp ("ISO_8859_1", name) == 0
+	   or strcasecmp ("ISO_8859 1", name) == 0
+	   or strcasecmp ("Latin-1", name) == 0
+	   or strcasecmp ("Latin1", name) == 0
+	   or strcasecmp ("L1", name) == 0)
+    result = avt_latin1 ();
+  else if (strcasecmp ("WINDOWS-1252", name) == 0
+	   or strcasecmp ("CP1252", name) == 0 or strcmp ("1252", name) == 0)
+    result = avt_charmap (&avt_cp1252);
+
+  return result;
+}
+
+// change the used encoding
 static int
 lavt_encoding (lua_State * L)
 {
-  check (avt_mb_encoding (luaL_checkstring (L, 1)));
+  const char *name = luaL_checkstring (L, 1);
+  struct avt_charenc *encoding = encodingname (name);
+
+  if (not encoding)
+    return luaL_error (L, "encoding: %s: %s", name, strerror (EINVAL));
+
+  avt_charencoding (encoding);
+
+  // put encoding name into registry
+  lua_pushvalue (L, 1);
+  lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-encoding");
+
   return 0;
 }
 
-// get the current encoding (iconv)
+// get the current encoding
 static int
 lavt_get_encoding (lua_State * L)
 {
-  lua_pushstring (L, avt_get_mb_encoding ());
+  lua_getfield (L, LUA_REGISTRYINDEX, "AKFAvatar-encoding");
   return 1;
 }
 
+// FIXME
 // recode from one given encoding to another
 // avt.recode (string, fromcode [,tocode])
 static int
@@ -461,7 +502,7 @@ lavt_avatar_image_file (lua_State * L)
 static int
 lavt_set_avatar_name (lua_State * L)
 {
-  check (avt_set_avatar_name_mb (lua_tostring (L, 1)));
+  check (avt_set_avatar_name_char (lua_tostring (L, 1)));
   return 0;
 }
 
@@ -1108,7 +1149,7 @@ static int
 lavt_credits (lua_State * L)
 {
   is_initialized ();
-  check (avt_credits_mb (luaL_checkstring (L, 1), to_bool (L, 2)));
+  check (avt_credits_char (luaL_checkstring (L, 1), to_bool (L, 2)));
 
   return 0;
 }
@@ -1132,8 +1173,8 @@ lavt_ask (lua_State * L)
   is_initialized ();
   question = lua_tolstring (L, 1, &len);
   if (question)
-    check (avt_say_mb_len (question, len));
-  check (avt_ask_mb (buf, sizeof (buf)));
+    check (avt_say_char_len (question, len));
+  check (avt_ask_char (buf, sizeof (buf)));
 
   lua_pushstring (L, buf);
   return 1;
@@ -1156,12 +1197,12 @@ lavt_input (lua_State * L)
   mode = luaL_optint (L, 4, 0);
 
   if (question)
-    check (avt_say_mb_len (question, len));
+    check (avt_say_char_len (question, len));
 
   if (position > 0)
     position--;			// C is 0-based
 
-  ch = avt_input_mb (buf, sizeof (buf), default_text, position, mode);
+  ch = avt_input_char (buf, sizeof (buf), default_text, position, mode);
 
   check (avt_get_status ());
 
@@ -1301,7 +1342,7 @@ lavt_say (lua_State * L)
     {
       s = luaL_checklstring (L, i, &len);
       if (s)
-	check (avt_say_mb_len (s, len));
+	check (avt_say_char_len (s, len));
     }
 
   return 0;
@@ -1331,7 +1372,7 @@ lavt_print (lua_State * L)
 	{
 	  if (i > 1)
 	    avt_next_tab ();
-	  check (avt_say_mb_len (s, len));
+	  check (avt_say_char_len (s, len));
 	}
     }
 
@@ -1352,7 +1393,7 @@ lavt_tell (lua_State * L)
 
   s = luaL_checklstring (L, 1, &len);
   if (s)
-    check (avt_tell_mb_len (s, len));
+    check (avt_tell_char_len (s, len));
 
   return 0;
 }
@@ -1380,7 +1421,7 @@ lavt_say_unicode (lua_State * L)
 	{
 	  s = luaL_checklstring (L, i, &len);
 	  if (s)
-	    check (avt_say_mb_len (s, len));
+	    check (avt_say_char_len (s, len));
 	}
     }
 
@@ -1418,7 +1459,7 @@ lavt_pager (lua_State * L)
   if (s)
     {
       lua_gc (L, LUA_GCCOLLECT, 0);	// full garbage collection
-      check (avt_pager_mb (s, len, startline));
+      check (avt_pager_char (s, len, startline));
     }
 
   return 0;
@@ -2047,7 +2088,7 @@ show_menu_item (int nr, void *L)
     item_desc = lua_tolstring (L, -1, &len);
 
   if (item_desc)
-    avt_say_mb_len (item_desc, len);
+    avt_say_char_len (item_desc, len);
 
   // pop item from stack
   lua_pop (L, 1);

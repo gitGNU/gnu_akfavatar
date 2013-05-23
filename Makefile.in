@@ -78,29 +78,23 @@ example: $(srcdir)/example.c libakfavatar.a
 	  libakfavatar.a $(SDL_LDFLAGS) $(LDFLAGS)
 
 # lua-akfavatar dynamically linked
-lua-akfavatar-dyn: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
-                   filechooser.o colorchooser.o basedir.o langposix.o
-	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
-	     filechooser.o colorchooser.o arch.o basedir.o langposix.o \
-	     -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS)
+lua-akfavatar-dyn: lua-akfavatar-prg.o lua-avt.o libavtaddons.a
+	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o \
+	     libavtaddons.a -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS)
 
 # lua-akfavatar statically linked with AKFAvatar
-lua-akfavatar: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
-                   filechooser.o colorchooser.o langposix.o basedir.o \
-                   libakfavatar.a
-	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
-	     filechooser.o colorchooser.o arch.o langposix.o basedir.o \
-	     libakfavatar.a $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS) -Wl,-E
+lua-akfavatar: lua-akfavatar-prg.o lua-avt.o libavtaddons.a libakfavatar.a
+	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o \
+	     libavtaddons.a libakfavatar.a \
+	     $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS) -Wl,-E
 
 # lua-akfavatar for Linux framebuffer
-lua-akfavatar-linuxfb: lua-akfavatar-prg.o lua-avt.o avtreadfile.o arch.o \
-                   filechooser.o colorchooser.o langposix.o basedir.o \
-                   avatar-linuxfb.o audio-dummy.o audio-common-dummy.o \
-                   libakfavatar.a
-	-$(CC) -s -o $@ lua-akfavatar-prg.o lua-avt.o avtreadfile.o \
-	     filechooser.o colorchooser.o arch.o langposix.o basedir.o \
-	     avatar-linuxfb.o audio-dummy.o audio-common-dummy.o \
-	     libakfavatar.a \
+lua-akfavatar-linuxfb: lua-akfavatar-prg.o lua-avt.o avatar-linuxfb.o \
+	           audio-dummy.o audio-common-dummy.o \
+                   libavtaddons.a libakfavatar.a
+	-$(CC) -s -o $@ lua-akfavatar-prg.o lua-avt.o avatar-linuxfb.o \
+	     audio-dummy.o audio-common-dummy.o \
+	     libavtaddons.a libakfavatar.a \
 	     $(LUA_LDFLAGS) $(LDFLAGS)
 
 avatar-linuxfb.o: $(srcdir)/avatar-linuxfb.c $(srcdir)/akfavatar.h \
