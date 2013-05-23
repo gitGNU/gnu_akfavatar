@@ -342,6 +342,9 @@ avt_recode_char (struct avt_charenc *tocode,
 {
   size_t result_size = 0;
 
+  // reserve 1 byte for terminator
+  --dest_size;
+
   while (src_size and dest_size)
     {
       avt_char ch;
