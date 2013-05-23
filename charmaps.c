@@ -30,15 +30,11 @@ map_to_unicode (struct avt_charenc *self, avt_char * dest, const char *src)
 {
   const struct avt_char_map *map = self->data;
   const unsigned char s = (const unsigned char) *src;
-  avt_char c;
 
   if (map and s >= map->start and s <= map->end)
-    c = (avt_char) map->table[s - map->start];
+    *dest = map->table[s - map->start];
   else
-    c = (avt_char) s;
-
-  if (dest)
-    *dest = c;
+    *dest = (avt_char) s;
 
   return 1;
 }
@@ -53,18 +49,17 @@ map_from_unicode (struct avt_charenc *self, char *dest,
   if (size == 0)
     return 0;
 
-  if (not map or src < (avt_char) map->start
-      or (src <= 0xFF and src > (avt_char) map->end))
+  if (not map or src < map->start or (src <= 0xFF and src > map->end))
     *dest = (char) src;
   else				// search table
     {
       char dch = INVALID_CHAR;
 
-      for (int j = map->end - map->start; j >= 0; --j)
+      for (int i = map->end - map->start; i >= 0; --i)
 	{
-	  if (src == (avt_char) map->table[j])
+	  if (src == map->table[i])
 	    {
-	      dch = map->start + j;
+	      dch = map->start + i;
 	      break;
 	    }
 	}

@@ -70,8 +70,8 @@ AVT_ADDON struct avt_charenc *avt_systemencoding (void);
 
 struct avt_char_map
 {
-  int start, end;
-  wchar_t table[];
+  unsigned short start, end;
+  avt_char table[];
 };
 
 AVT_ADDON size_t map_to_unicode (struct avt_charenc *self,
