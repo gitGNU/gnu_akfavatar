@@ -392,20 +392,16 @@ lavt_get_encoding (lua_State * L)
   return 1;
 }
 
-// FIXME
 // recode from one given encoding to another
 // avt.recode (string, fromcode [,tocode])
 static int
 lavt_recode (lua_State * L)
 {
-  const char *fromcode, *tocode;
-  char *string, *result;
   size_t len;
-  size_t result_size;
 
-  string = (char *) luaL_checklstring (L, 1, &len);
-  fromcode = lua_tostring (L, 2);	// may be nil
-  tocode = lua_tostring (L, 3);	// optional
+  const char *string = luaL_checklstring (L, 1, &len);
+  const char *fromcode = lua_tostring (L, 2);	// may be nil
+  const char *tocode = lua_tostring (L, 3);	// optional
 
   if (not fromcode and not tocode)
     {
@@ -413,15 +409,16 @@ lavt_recode (lua_State * L)
       return 1;
     }
 
-  result_size = avt_recode (tocode, fromcode, &result, string, len);
+  char result[len * 4];
+  size_t result_size = avt_recode_char (encodingname (tocode),
+					result, len * 4,
+					encodingname (fromcode),
+					string, len);
 
-  if (result_size == (size_t) (-1))
-    lua_pushnil (L);
+  if (result_size)
+    lua_pushlstring (L, result, result_size);
   else
-    {
-      lua_pushlstring (L, result, result_size);
-      avt_free (result);
-    }
+    lua_pushnil (L);
 
   return 1;
 }
