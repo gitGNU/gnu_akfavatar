@@ -55,6 +55,15 @@
 AVT_ADDON const struct avt_charenc *avt_iso8859_2 (void);
 
 /*
+ * KOI8-R, KOI8-U
+ * Cyrillic alphabet for Russian and Ukrainian
+ *
+ * see also RFC 2489, RFC 2319
+ */
+AVT_ADDON const struct avt_charenc *avt_koi8r (void);
+AVT_ADDON const struct avt_charenc *avt_koi8u (void);
+
+/*
  * Map for Windows codepage 1252
  * Microsoft calls this "ANSI", though it's not an ANSI standard
  * It is based on ISO-8859-1 with nonstandard extensions
