@@ -34,7 +34,7 @@ static const struct avt_char_map cp1252 = {
 	    L'\u0153',		// oe ligature
 	    INVALID_WCHAR,
 	    L'\u017E',		// z caron (?)
-	    L'\u0178',		// Y diaresis
+	    L'\u0178'		// Y diaresis
 	    }
 };
 

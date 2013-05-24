@@ -120,11 +120,11 @@ libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o avatar-default.o \
 libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
                 avtccio.o avtcwio.o avtreadfile.o basedir.o \
                 colorchooser.o avtvorbis.o stb_vorbis.o langposix.o \
-                charmaps.o cp1252.o sysencoding.o
+                charmaps.o ISO-8859-2.o cp1252.o sysencoding.o
 	$(AR) rcu $@ filechooser.o avtterm.o avttermsys.o arch.o \
 	             avtccio.o avtcwio.o avtreadfile.o basedir.o \
 	             colorchooser.o avtvorbis.o stb_vorbis.o langposix.o \
-	             charmaps.o cp1252.o sysencoding.o
+	             charmaps.o ISO-8859-2.o cp1252.o sysencoding.o
 	-$(RANLIB) $@
 
 libakfavatar.so: $(OBJAVATAR).lo $(OBJAUDIO).lo avatar.lo avatar-default.lo \
@@ -196,6 +196,12 @@ charmaps.o: $(srcdir)/charmaps.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 
 charmaps.lo: $(srcdir)/charmaps.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/charmaps.c
+
+ISO-8859-2.o: $(srcdir)/ISO-8859-2.c $(srcdir)/avtaddons.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/ISO-8859-2.c
+
+ISO-8859-2.lo: $(srcdir)/ISO-8859-2.c $(srcdir)/avtaddons.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/ISO-8859-2.c
 
 cp1252.o: $(srcdir)/cp1252.c $(srcdir)/avtaddons.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/cp1252.c
@@ -427,9 +433,11 @@ lua-avt.o: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h \
 
 # Lua-Modules
 lua-akfavatar.so: lua-avt.lo filechooser.lo colorchooser.lo basedir.lo \
-                  langposix.lo cp1252.lo sysencoding.lo charmaps.lo
+                  langposix.lo cp1252.lo ISO-8859-2.lo \
+                  sysencoding.lo charmaps.lo
 	$(CC) -o $@ -shared -fpic lua-avt.lo filechooser.lo colorchooser.lo \
-	     basedir.lo langposix.lo cp1252.lo charmaps.lo sysencoding.lo \
+	     basedir.lo langposix.lo cp1252.lo ISO-8859-2.lo \
+	     charmaps.lo sysencoding.lo \
 	     -L. -lakfavatar $(LDFLAGS)
 
 akfavatar-vorbis.so: akfavatar-vorbis.lo avtvorbis.lo stb_vorbis.lo
@@ -871,6 +879,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/avttiming.c \
 	   $(srcdir)/avtencoding.c $(srcdir)/avtlatin1.c $(srcdir)/avtutf8.c \
 	   $(srcdir)/charencoding.c $(srcdir)/sysencoding.c \
+	   $(srcdir)/charmaps.c $(srcdir)/ISO-8859-2.c \
 	   $(srcdir)/charmaps.c $(srcdir)/cp1252.c \
 	   $(srcdir)/avtmenu.c \
 	   $(srcdir)/basedir.c \

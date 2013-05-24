@@ -49,6 +49,12 @@
 #define INVALID_WCHAR L'\uFFFD'
 
 /*
+ * ISO-8859-2
+ * For eastern European languages
+ */
+AVT_ADDON const struct avt_charenc *avt_iso8859_2 (void);
+
+/*
  * Map for Windows codepage 1252
  * Microsoft calls this "ANSI", though it's not an ANSI standard
  * It is based on ISO-8859-1 with nonstandard extensions
