@@ -354,10 +354,27 @@ encodingname (const char *name)
 	   or strcasecmp ("ISO-8859-1", name) == 0
 	   or strcasecmp ("ISO_8859_1", name) == 0
 	   or strcasecmp ("ISO_8859 1", name) == 0
+	   or strcasecmp ("ISO8859-1", name) == 0
+	   or strcasecmp ("ISO8859 1", name) == 0
 	   or strcasecmp ("Latin-1", name) == 0
 	   or strcasecmp ("Latin1", name) == 0
 	   or strcasecmp ("L1", name) == 0)
     result = avt_latin1 ();
+  else if (strcasecmp ("ISO-8859-2", name) == 0
+	   or strcasecmp ("ISO-8859 2", name) == 0
+	   or strcasecmp ("ISO-8859-2", name) == 0
+	   or strcasecmp ("ISO_8859_2", name) == 0
+	   or strcasecmp ("ISO_8859 2", name) == 0
+	   or strcasecmp ("ISO8859-2", name) == 0
+	   or strcasecmp ("ISO8859 2", name) == 0
+	   or strcasecmp ("Latin-2", name) == 0
+	   or strcasecmp ("Latin2", name) == 0
+	   or strcasecmp ("L2", name) == 0)
+    result = avt_iso8859_2 ();
+  else if (strcasecmp ("KOI8-R", name) == 0)
+    result = avt_koi8r ();
+  else if (strcasecmp ("KOI8-U", name) == 0)
+    result = avt_koi8u ();
   else if (strcasecmp ("WINDOWS-1252", name) == 0
 	   or strcasecmp ("CP1252", name) == 0 or strcmp ("1252", name) == 0)
     result = avt_cp1252 ();
