@@ -124,11 +124,11 @@ quit (void)
 static void
 error_msg (const char *msg)
 {
-  size_t len = strlen (msg);
+  size_t len = strlen (msg) + 1;
   wchar_t message[len];
 
-  mbstowcs (message, msg, len);
-  avt_tell (message);
+  size_t wlen = mbstowcs (message, msg, len);
+  avt_tell_len (message, wlen);
 }
 
 static void
