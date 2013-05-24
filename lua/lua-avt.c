@@ -400,24 +400,33 @@ lavt_recode (lua_State * L)
   size_t len;
 
   const char *string = luaL_checklstring (L, 1, &len);
-  const char *fromcode = lua_tostring (L, 2);	// may be nil
-  const char *tocode = lua_tostring (L, 3);	// optional
 
-  if (not fromcode and not tocode)
+  // both strings may be nil or ""
+  const struct avt_charenc *from = encodingname (lua_tostring (L, 2));
+  const struct avt_charenc *to = encodingname (lua_tostring (L, 3));
+
+  // but the result must not be NULL
+  if (not from or not to)
     {
       lua_pushnil (L);
       return 1;
     }
 
-  char result[len * 4];
-  size_t result_size = avt_recode_char (encodingname (tocode),
-					result, len * 4,
-					encodingname (fromcode),
-					string, len);
+  size_t result_size = len * 6;	// guessing
+  char *result = malloc (result_size);
+  if (result)
+    {
+      size_t result_len = avt_recode_char (to, result, result_size,
+					   from, string, len);
 
-  if (result_size)
-    lua_pushlstring (L, result, result_size);
-  else
+      if (result_len)
+	lua_pushlstring (L, result, result_len);
+      else
+	lua_pushnil (L);
+
+      free (result);
+    }
+  else				// out of memory
     lua_pushnil (L);
 
   return 1;
