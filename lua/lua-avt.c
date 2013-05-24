@@ -1598,8 +1598,7 @@ lavt_load_audio_stream (lua_State * L)
   playmode = luaL_checkoption (L, 3, "load", playmodes);
 
   // try to use closed file?
-  if (not stream->closef)
-    return luaL_error (L, "load_audio_stream: %s", strerror (EBADF));
+  luaL_argcheck (L, stream->closef, 1, "closed file");
 
   if (not avt_audio_playing (NULL))
     audio_not_playing (L);
