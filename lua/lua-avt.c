@@ -372,8 +372,7 @@ lavt_encoding (lua_State * L)
   const char *name = luaL_checkstring (L, 1);
   const struct avt_charenc *encoding = encodingname (name);
 
-  if (not encoding)
-    return luaL_error (L, "encoding: %s: %s", name, strerror (EINVAL));
+  luaL_argcheck (L, encoding, 1, "unsupported encoding");
 
   avt_charencoding (encoding);
 
