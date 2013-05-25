@@ -61,7 +61,7 @@ static const struct avt_charenc converter = {
 
 
 extern const struct avt_charenc *
-avt_latin1 (void)
+avt_iso8859_1 (void)
 {
   return &converter;
 }

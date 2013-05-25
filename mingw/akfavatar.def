@@ -75,10 +75,10 @@ EXPORTS
     avt_insert_spaces
     avt_inverse
     avt_is_printable
+    avt_iso8859_1
     avt_key
     avt_key_pressed
     avt_last_tab
-    avt_latin1
     avt_license
     avt_load_audio_data
     avt_load_audio_file

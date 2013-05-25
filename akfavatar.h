@@ -293,7 +293,7 @@ AVT_API int avt_ask_char (char *s, size_t size);
  * To set the encoding to UTF-8, just use this:
  *   avt_charencoding (avt_utf8 ());
  *
- * More converters are available in avtaddons...
+ * Additional encodings are available in avtaddons...
  */
 
 struct avt_charenc
@@ -304,18 +304,18 @@ struct avt_charenc
 };
 
 /*
- * set a new charconverter
+ * set a new character encoding
  * returns the old one
  * use NULL to just query the old one
  */
 AVT_API const struct avt_charenc *
 avt_charencoding (const struct avt_charenc *);
 
-/* get a character converter for UTF-8 */
+/* character encoding for UTF-8 */
 AVT_API const struct avt_charenc *avt_utf8 (void);
 
-/* get a character converter for ISO-8859-1 (Latin-1) */
-AVT_API const struct avt_charenc *avt_latin1 (void);
+/* character encoding for ISO-8859-1 (ISO Latin-1) */
+AVT_API const struct avt_charenc *avt_iso8859_1 (void);
 
 /*
  * try to recode from fromcode to tocode

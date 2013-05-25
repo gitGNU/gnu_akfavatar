@@ -359,7 +359,7 @@ encodingname (const char *name)
 	   or strcasecmp ("Latin-1", name) == 0
 	   or strcasecmp ("Latin1", name) == 0
 	   or strcasecmp ("L1", name) == 0)
-    result = avt_latin1 ();
+    result = avt_iso8859_1 ();
   else if (strcasecmp ("ISO-8859-2", name) == 0
 	   or strcasecmp ("ISO-8859 2", name) == 0
 	   or strcasecmp ("ISO-8859-2", name) == 0
