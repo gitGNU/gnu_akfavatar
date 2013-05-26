@@ -371,6 +371,17 @@ encodingname (const char *name)
 	   or strcasecmp ("Latin2", name) == 0
 	   or strcasecmp ("L2", name) == 0)
     result = avt_iso8859_2 ();
+  else if (strcasecmp ("ISO-8859-3", name) == 0
+	   or strcasecmp ("ISO-8859 3", name) == 0
+	   or strcasecmp ("ISO-8859-3", name) == 0
+	   or strcasecmp ("ISO_8859_3", name) == 0
+	   or strcasecmp ("ISO_8859 3", name) == 0
+	   or strcasecmp ("ISO8859-3", name) == 0
+	   or strcasecmp ("ISO8859 3", name) == 0
+	   or strcasecmp ("Latin-3", name) == 0
+	   or strcasecmp ("Latin3", name) == 0
+	   or strcasecmp ("L3", name) == 0)
+    result = avt_iso8859_3 ();
   else if (strcasecmp ("ISO-8859-4", name) == 0
 	   or strcasecmp ("ISO-8859 4", name) == 0
 	   or strcasecmp ("ISO-8859-4", name) == 0
