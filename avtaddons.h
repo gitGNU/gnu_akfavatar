@@ -55,6 +55,12 @@
 AVT_ADDON const struct avt_charenc *avt_iso8859_2 (void);
 
 /*
+ * ISO-8859-4 (ISO Latin-4)
+ * For northern European languages
+ */
+AVT_ADDON const struct avt_charenc *avt_iso8859_4 (void);
+
+/*
  * ISO-8859-7
  * For modern Greek
  */
