@@ -424,6 +424,9 @@ encodingname (const char *name)
     result = avt_koi8r ();
   else if (strcasecmp ("KOI8-U", name) == 0)
     result = avt_koi8u ();
+  else if (strcasecmp ("CP437", name) == 0
+	   or strcasecmp ("IBM437", name) == 0 or strcmp ("437", name) == 0)
+    result = avt_cp437 ();
   else if (strcasecmp ("WINDOWS-1252", name) == 0
 	   or strcasecmp ("CP1252", name) == 0 or strcmp ("1252", name) == 0)
     result = avt_cp1252 ();

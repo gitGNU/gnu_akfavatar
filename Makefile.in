@@ -122,14 +122,14 @@ libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
                 colorchooser.o avtvorbis.o stb_vorbis.o langposix.o \
                 charmaps.o ISO-8859-2.o ISO-8859-3.o ISO-8859-4.o \
                 ISO-8859-5.o ISO-8859-7.o ISO-8859-15.o \
-                KOI8-R.o KOI8-U.o cp1252.o \
+                KOI8-R.o KOI8-U.o cp437.o cp1252.o \
                 sysencoding.o
 	$(AR) rcu $@ filechooser.o avtterm.o avttermsys.o arch.o \
 	             avtccio.o avtcwio.o avtreadfile.o basedir.o \
 	             colorchooser.o avtvorbis.o stb_vorbis.o langposix.o \
 	             charmaps.o ISO-8859-2.o ISO-8859-3.o ISO-8859-4.o \
 	             ISO-8859-5.o ISO-8859-7.o ISO-8859-15.o \
-	             KOI8-R.o KOI8-U.o cp1252.o \
+	             KOI8-R.o KOI8-U.o cp437.o cp1252.o \
 	             sysencoding.o
 	-$(RANLIB) $@
 
@@ -262,6 +262,12 @@ KOI8-U.o: $(srcdir)/KOI8-U.c $(srcdir)/avtaddons.h
 
 KOI8-U.lo: $(srcdir)/KOI8-U.c $(srcdir)/avtaddons.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/KOI8-U.c
+
+cp437.o: $(srcdir)/cp437.c $(srcdir)/avtaddons.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/cp437.c
+
+cp437.lo: $(srcdir)/cp437.c $(srcdir)/avtaddons.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/cp437.c
 
 cp1252.o: $(srcdir)/cp1252.c $(srcdir)/avtaddons.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/cp1252.c
@@ -481,7 +487,7 @@ lua-avt.o: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h \
 
 # Lua-Modules
 lua-akfavatar.so: lua-avt.lo filechooser.lo colorchooser.lo basedir.lo \
-                  langposix.lo cp1252.lo ISO-8859-2.lo ISO-8859-3.lo \
+                  langposix.lo cp437.lo cp1252.lo ISO-8859-2.lo ISO-8859-3.lo \
                   ISO-8859-4.lo ISO-8859-5.lo ISO-8859-7.lo \
                   ISO-8859-15.lo \
                   KOI8-R.lo KOI8-U.lo \
@@ -490,7 +496,7 @@ lua-akfavatar.so: lua-avt.lo filechooser.lo colorchooser.lo basedir.lo \
 	     basedir.lo langposix.lo ISO-8859-2.lo ISO-8859-3.lo \
 	     ISO-8859-4.lo ISO-8859-5.lo ISO-8859-7.lo \
 	     ISO-8859-15.lo \
-	     KOI8-R.lo KOI8-U.lo cp1252.lo \
+	     KOI8-R.lo KOI8-U.lo cp437.lo cp1252.lo \
 	     charmaps.lo sysencoding.lo \
 	     -L. -lakfavatar $(LDFLAGS)
 
@@ -938,7 +944,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/ISO-8859-5.c $(srcdir)/ISO-8859-7.c \
 	   $(srcdir)/ISO-8859-15.c \
 	   $(srcdir)/KOI8-R.c $(srcdir)/KOI8-U.c \
-	   $(srcdir)/charmaps.c $(srcdir)/cp1252.c \
+	   $(srcdir)/charmaps.c $(srcdir)/cp437.c $(srcdir)/cp1252.c \
 	   $(srcdir)/avtmenu.c \
 	   $(srcdir)/basedir.c \
 	   $(srcdir)/avtinternals.h $(srcdir)/avtpalette.c \

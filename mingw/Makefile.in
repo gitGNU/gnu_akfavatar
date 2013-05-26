@@ -241,6 +241,9 @@ KOI8-R.o: $(srcdir)/KOI8-R.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 KOI8-U.o: $(srcdir)/KOI8-U.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/KOI8-U.c
 
+cp437.o: $(srcdir)/cp437.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
+	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/cp437.c
+
 cp1252.o: $(srcdir)/cp1252.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/cp1252.c
 
@@ -249,14 +252,14 @@ libavtaddons.a: filechooser.o askdrive.o arch.o avttermstub.o \
                 colorchooser.o avtvorbis.o stb_vorbis.o langwindows.o \
                 charmaps.o ISO-8859-2.o ISO-8859-3.o ISO-8859-4.o \
                 ISO-8859-5.o ISO-8859-7.o ISO-8859-15.o \
-                cp1252.o KOI8-R.o KOI8-U.o sysencoding.o
+                cp437.o cp1252.o KOI8-R.o KOI8-U.o sysencoding.o
 	$(AR) rcu $@ filechooser.o askdrive.o arch.o avttermstub.o \
 	             avtccio.o avtcwio.o basedir.o \
 	             avtreadfile.o colorchooser.o avtvorbis.o stb_vorbis.o \
 	             langwindows.o charmaps.o ISO-8859-2.o ISO-8859-3.o \
 	             ISO-8859-4.o ISO-8859-5.o ISO-8859-7.o \
 	             ISO-8859-15.o \
-	             cp1252.o KOI8-R.o KOI8-U.o sysencoding.o
+	             cp437.o cp1252.o KOI8-R.o KOI8-U.o sysencoding.o
 	-$(RANLIB) $@
 
 example: example.exe
@@ -276,14 +279,15 @@ lua-akfavatar-prg-info.o: $(srcdir)/mingw/lua-akfavatar-prg.rc version.h \
 	$(WINDRES) -I. -I$(srcdir)/mingw -o $@ -i $(srcdir)/mingw/lua-akfavatar-prg.rc
 
 lua-akfavatar.dll: lua-avt.o filechooser.o askdrive.o colorchooser.o \
-	           langwindows.o basedir.o sysencoding.o cp1252.o \
+	           langwindows.o basedir.o sysencoding.o cp437.o cp1252.o \
 	           ISO-8859-2.o ISO-8859-3.o ISO-8859-4.o ISO-8859-5.o \
 	           ISO-8859-7.o \
 	           ISO-8859-15.o KOI8-R.o KOI8-U.o \
 	           charmaps.o lua-akfavatar-dll-info.o \
 	           $(srcdir)/mingw/lua-akfavatar.def
 	$(CC) -o $@ -shared $(srcdir)/mingw/lua-akfavatar.def \
-	     lua-avt.o filechooser.o askdrive.o sysencoding.o cp1252.o \
+	     lua-avt.o filechooser.o askdrive.o sysencoding.o \
+	     cp437.o cp1252.o \
 	     ISO-8859-2.o ISO-8859-3.o ISO-8859-4.o ISO-8859-5.o \
 	     ISO-8859-7.o \
 	     ISO-8859-15.o KOI8-R.o KOI8-U.o charmaps.o \

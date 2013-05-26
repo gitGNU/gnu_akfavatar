@@ -98,6 +98,16 @@ AVT_ADDON const struct avt_charenc *avt_koi8r (void);
 AVT_ADDON const struct avt_charenc *avt_koi8u (void);
 
 /*
+ * Code page 437 (IBM437)
+ * This is the native charset of IBM-PC compatibles.
+ * It is the built in charset for the textconsole.
+ * It is used for .nfo files.
+ *
+ * The characters 0-31 are interpreted as control characters
+ */
+AVT_ADDON const struct avt_charenc *avt_cp437 (void);
+
+/*
  * Map for Windows codepage 1252
  * Microsoft calls this "ANSI", though it's not an ANSI standard
  * It is based on ISO-8859-1 with nonstandard extensions
