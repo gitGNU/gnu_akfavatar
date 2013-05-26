@@ -1,9 +1,8 @@
 #include "avtaddons.h"
 
 static const struct avt_char_map map = {
-  .start = 0xA0,.end = 0xFF,
+  .start = 0xA1,.end = 0xFF,
   .table = {
-	    0x00A0,		// 0xA0
 	    0x0104,		// 0xA1
 	    0x02D8,		// 0xA2
 	    0x0141,		// 0xA3
