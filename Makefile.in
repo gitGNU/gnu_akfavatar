@@ -120,12 +120,14 @@ libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o avatar-default.o \
 libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
                 avtccio.o avtcwio.o avtreadfile.o basedir.o \
                 colorchooser.o avtvorbis.o stb_vorbis.o langposix.o \
-                charmaps.o ISO-8859-2.o KOI8-R.o KOI8-U.o cp1252.o \
+                charmaps.o ISO-8859-2.o ISO-8859-15.o \
+                KOI8-R.o KOI8-U.o cp1252.o \
                 sysencoding.o
 	$(AR) rcu $@ filechooser.o avtterm.o avttermsys.o arch.o \
 	             avtccio.o avtcwio.o avtreadfile.o basedir.o \
 	             colorchooser.o avtvorbis.o stb_vorbis.o langposix.o \
-	             charmaps.o ISO-8859-2.o KOI8-R.o KOI8-U.o cp1252.o \
+	             charmaps.o ISO-8859-2.o ISO-8859-15.o \
+	             KOI8-R.o KOI8-U.o cp1252.o \
 	             sysencoding.o
 	-$(RANLIB) $@
 
@@ -199,11 +201,29 @@ charmaps.o: $(srcdir)/charmaps.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 charmaps.lo: $(srcdir)/charmaps.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/charmaps.c
 
+UTF-8.o: $(srcdir)/UTF-8.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/UTF-8.c
+
+UTF-8.lo: $(srcdir)/UTF-8.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/UTF-8.c
+
+ISO-8859-1.o: $(srcdir)/ISO-8859-1.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/ISO-8859-1.c
+
+ISO-8859-1.lo: $(srcdir)/ISO-8859-1.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/ISO-8859-1.c
+
 ISO-8859-2.o: $(srcdir)/ISO-8859-2.c $(srcdir)/avtaddons.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/ISO-8859-2.c
 
 ISO-8859-2.lo: $(srcdir)/ISO-8859-2.c $(srcdir)/avtaddons.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/ISO-8859-2.c
+
+ISO-8859-15.o: $(srcdir)/ISO-8859-15.c $(srcdir)/avtaddons.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/ISO-8859-15.c
+
+ISO-8859-15.lo: $(srcdir)/ISO-8859-15.c $(srcdir)/avtaddons.h
+	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/ISO-8859-15.c
 
 KOI8-R.o: $(srcdir)/KOI8-R.c $(srcdir)/avtaddons.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/KOI8-R.c
@@ -302,18 +322,6 @@ avtencoding.o: $(srcdir)/avtencoding.c $(srcdir)/akfavatar.h $(srcdir)/avtintern
 
 avtencoding.lo: $(srcdir)/avtencoding.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/avtencoding.c
-
-ISO-8859-1.o: $(srcdir)/ISO-8859-1.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
-	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/ISO-8859-1.c
-
-ISO-8859-1.lo: $(srcdir)/ISO-8859-1.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
-	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/ISO-8859-1.c
-
-UTF-8.o: $(srcdir)/UTF-8.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
-	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/UTF-8.c
-
-UTF-8.lo: $(srcdir)/UTF-8.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
-	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/UTF-8.c
 
 avtgraphic.o: $(srcdir)/avtgraphic.c $(srcdir)/avtgraphic.h $(srcdir)/avtdata.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtgraphic.c
@@ -447,10 +455,12 @@ lua-avt.o: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h \
 
 # Lua-Modules
 lua-akfavatar.so: lua-avt.lo filechooser.lo colorchooser.lo basedir.lo \
-                  langposix.lo cp1252.lo ISO-8859-2.lo KOI8-R.lo KOI8-U.lo \
+                  langposix.lo cp1252.lo ISO-8859-2.lo ISO-8859-15.lo \
+                  KOI8-R.lo KOI8-U.lo \
                   sysencoding.lo charmaps.lo
 	$(CC) -o $@ -shared -fpic lua-avt.lo filechooser.lo colorchooser.lo \
-	     basedir.lo langposix.lo cp1252.lo ISO-8859-2.lo KOI8-R.lo KOI8-U.lo \
+	     basedir.lo langposix.lo ISO-8859-2.lo ISO-8859-15.lo \
+	     KOI8-R.lo KOI8-U.lo cp1252.lo \
 	     charmaps.lo sysencoding.lo \
 	     -L. -lakfavatar $(LDFLAGS)
 
@@ -891,9 +901,10 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/audio-common.c \
 	   $(srcdir)/avtdata.h $(srcdir)/avtdata.c \
 	   $(srcdir)/avttiming.c \
-	   $(srcdir)/avtencoding.c $(srcdir)/ISO-8859-1.c $(srcdir)/UTF-8.c \
+	   $(srcdir)/avtencoding.c $(srcdir)/UTF-8.c \
 	   $(srcdir)/charencoding.c $(srcdir)/sysencoding.c \
-	   $(srcdir)/ISO-8859-2.c \
+	   $(srcdir)/ISO-8859-1.c $(srcdir)/ISO-8859-2.c \
+	   $(srcdir)/ISO-8859-15.c \
 	   $(srcdir)/KOI8-R.c $(srcdir)/KOI8-U.c \
 	   $(srcdir)/charmaps.c $(srcdir)/cp1252.c \
 	   $(srcdir)/avtmenu.c \

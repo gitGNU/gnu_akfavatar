@@ -49,10 +49,19 @@
 #define INVALID_WCHAR L'\uFFFD'
 
 /*
- * ISO-8859-2
+ * ISO-8859-2 (ISO Latin-2)
  * For eastern European languages
  */
 AVT_ADDON const struct avt_charenc *avt_iso8859_2 (void);
+
+/*
+ * ISO-8859-15 (ISO Latin-9)
+ * For western European languages
+ *
+ * Much like ISO-8859-1, but with Euro currency sign,
+ * oe ligatue, s and z with caron and Y diaresis
+ */
+AVT_ADDON const struct avt_charenc *avt_iso8859_15 (void);
 
 /*
  * KOI8-R, KOI8-U
