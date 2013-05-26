@@ -67,6 +67,13 @@ AVT_ADDON const struct avt_charenc *avt_iso8859_3 (void);
 AVT_ADDON const struct avt_charenc *avt_iso8859_4 (void);
 
 /*
+ * ISO-8859-5 (Cyrillic)
+ *
+ * see also KOI8-R and KOI8-U, which are more widely used
+ */
+AVT_ADDON const struct avt_charenc *avt_iso8859_5 (void);
+
+/*
  * ISO-8859-7
  * For modern Greek
  */
