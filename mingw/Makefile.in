@@ -147,26 +147,26 @@ iconv: iconv.exe
 
 # static library
 libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
-	  avtencoding.o ISO-8859-1.o UTF-8.o charencoding.o \
+	  avtencoding.o ASCII.o ISO-8859-1.o UTF-8.o charencoding.o \
 	  audio-common.o avatar-default.o avtdata.o font.o avtpalette.o \
 	  win_iconv.o windowstiming.o avtmenu.o version.o avtxbm.o avtxpm.o \
 	  avtbmp.o avtgraphic.o
 	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
-	avtencoding.o ISO-8859-1.o UTF-8.o charencoding.o \
+	avtencoding.o ASCII.o ISO-8859-1.o UTF-8.o charencoding.o \
 	audio-common.o avatar-default.o avtdata.o font.o avtpalette.o \
 	win_iconv.o version.o windowstiming.o avtmenu.o avtxbm.o avtxpm.o \
 	avtbmp.o avtgraphic.o
 	$(RANLIB) $@
 
 akfavatar.dll: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
-	  avtencoding.o ISO-8859-1.o UTF-8.o charencoding.o \
+	  avtencoding.o ASCII.o ISO-8859-1.o UTF-8.o charencoding.o \
 	  audio-common.o avatar-default.o avtdata.o font.o libinfo.o \
 	  avtpalette.o windowstiming.o win_iconv.o avtmenu.o version.o \
 	  avtxbm.o avtxpm.o avtbmp.o avtgraphic.o \
 	  $(srcdir)/mingw/akfavatar.def
 	$(CC) -shared -o $@ $(srcdir)/mingw/akfavatar.def \
 	        $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
-	        avtencoding.o ISO-8859-1.o UTF-8.o charencoding.o \
+	        avtencoding.o ASCII.o ISO-8859-1.o UTF-8.o charencoding.o \
 	        avatar-default.o avtdata.o audio-common.o font.o avtpalette.o \
 	        windowstiming.o win_iconv.o avtmenu.o avtxbm.o avtxpm.o \
 	        avtbmp.o avtgraphic.o version.o libinfo.o \
@@ -212,6 +212,9 @@ sysencoding.o: $(srcdir)/sysencoding.c $(srcdir)/akfavatar.h $(srcdir)/avtintern
 UTF-8.o: $(srcdir)/UTF-8.c $(srcdir)/akfavatar.h \
                   $(srcdir)/avtinternals.h
 	$(CC) -c -I$(srcdir) $(CFLAGS) -o $@ $(srcdir)/UTF-8.c
+
+ASCII.o: $(srcdir)/ASCII.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
+	$(CC) -c -I$(srcdir) $(CFLAGS) -o $@ $(srcdir)/ASCII.c
 
 ISO-8859-1.o: $(srcdir)/ISO-8859-1.c $(srcdir)/akfavatar.h \
                   $(srcdir)/avtinternals.h

@@ -349,6 +349,9 @@ encodingname (const char *name)
   else if (strcasecmp ("UTF-8", name) == 0
 	   or strcasecmp ("UTF8", name) == 0 or strcasecmp ("U8", name) == 0)
     result = avt_utf8 ();
+  else if (strcasecmp ("US-ASCII", name) == 0
+	   or strcasecmp ("ASCII", name) == 0)
+    result = avt_ascii ();
   else if (strcasecmp ("ISO-8859-1", name) == 0
 	   or strcasecmp ("ISO-8859 1", name) == 0
 	   or strcasecmp ("ISO-8859-1", name) == 0

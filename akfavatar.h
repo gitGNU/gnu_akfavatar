@@ -317,6 +317,9 @@ AVT_API const struct avt_charenc *avt_utf8 (void);
 /* character encoding for ISO-8859-1 (ISO Latin-1) */
 AVT_API const struct avt_charenc *avt_iso8859_1 (void);
 
+/* character encoding for plain old ASCII */
+AVT_API const struct avt_charenc *avt_ascii (void);
+
 /*
  * try to recode from fromcode to tocode
  * copies as much as fits

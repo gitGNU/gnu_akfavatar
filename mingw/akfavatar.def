@@ -2,6 +2,7 @@ LIBRARY AKFAvatar
 EXPORTS
     avt_activate_cursor
     avt_add_raw_audio_data
+    avt_ascii
     avt_ask
     avt_ask_mb
     avt_ask_char
