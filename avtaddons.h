@@ -99,6 +99,11 @@ AVT_ADDON const struct avt_charenc *avt_koi8u (void);
 AVT_ADDON const struct avt_charenc *avt_cp437 (void);
 
 /*
+ * Map for Windows codepage 1251 (Cyrillic)
+ */
+AVT_ADDON const struct avt_charenc *avt_cp1251 (void);
+
+/*
  * Map for Windows codepage 1252
  * Microsoft calls this "ANSI", though it's not an ANSI standard
  * It is based on ISO-8859-1 with nonstandard extensions
