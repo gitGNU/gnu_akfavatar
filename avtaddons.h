@@ -49,61 +49,26 @@
 #define INVALID_WCHAR L'\uFFFD'
 
 /*
- * ISO-8859-2 (ISO Latin-2)
- * For eastern European languages
+ * ISO-8859
+ * -2 (ISO Latin-2) For eastern European languages
+ * -3 (ISO Latin-3) For southern European languages
+ * -4 (ISO Latin-4) For northern European languages
+ * -5 (ISO Cyrillic) see also KOI8-R and KOI8-U, which are more widely used
+ * -7 (ISO Greek) For modern Greek
+ * -9 (ISO Latin-5) For Turkish
+ * -10 (Latin-6) For Nordic languages
+ * -13 (Latin-7) For Baltic languages
+ * -15 (ISO Latin-9) For western European languages (with Euro)
  */
+
 AVT_ADDON const struct avt_charenc *avt_iso8859_2 (void);
-
-/*
- * ISO-8859-3 (ISO Latin-3)
- * For southern European languages
- */
 AVT_ADDON const struct avt_charenc *avt_iso8859_3 (void);
-
-/*
- * ISO-8859-4 (ISO Latin-4)
- * For northern European languages
- */
 AVT_ADDON const struct avt_charenc *avt_iso8859_4 (void);
-
-/*
- * ISO-8859-5 (Cyrillic)
- *
- * see also KOI8-R and KOI8-U, which are more widely used
- */
 AVT_ADDON const struct avt_charenc *avt_iso8859_5 (void);
-
-/*
- * ISO-8859-7
- * For modern Greek
- */
 AVT_ADDON const struct avt_charenc *avt_iso8859_7 (void);
-
-/*
- * ISO-8859-9 (Latin-5)
- * For Turkish
- */
 AVT_ADDON const struct avt_charenc *avt_iso8859_9 (void);
-
-/*
- * ISO-8859-10 (Latin-6)
- * For Nordic languages
- */
 AVT_ADDON const struct avt_charenc *avt_iso8859_10 (void);
-
-/*
- * ISO-8859-13 (Latin-7)
- * For Nordic languages
- */
 AVT_ADDON const struct avt_charenc *avt_iso8859_13 (void);
-
-/*
- * ISO-8859-15 (ISO Latin-9)
- * For western European languages
- *
- * Much like ISO-8859-1, but with Euro currency sign,
- * oe ligatue, s and z with caron and Y diaresis
- */
 AVT_ADDON const struct avt_charenc *avt_iso8859_15 (void);
 
 /*
