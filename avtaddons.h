@@ -50,18 +50,19 @@
 
 /*
  * ISO-8859
- * -2 (ISO Latin-2) For eastern European languages
- * -3 (ISO Latin-3) For southern European languages
- * -4 (ISO Latin-4) For northern European languages
- * -5 (ISO Cyrillic) see also KOI8-R and KOI8-U, which are more widely used
- * -7 (ISO Greek) For modern Greek
- * -8 (ISO Hebrew) For modern Hebrew/Yiddish (use with care!)
- * -9 (ISO Latin-5) For Turkish
+ * -2 (Latin-2) For eastern European languages
+ * -3 (Latin-3) For southern European languages
+ * -4 (Latin-4) For northern European languages
+ * -5 (Cyrillic) see also KOI8-R and KOI8-U, which are more widely used
+ * -7 (Greek) For modern Greek
+ * -8 (Hebrew) For modern Hebrew/Yiddish (use with care!)
+ * -9 (Latin-5) For Turkish
  * -10 (Latin-6) For Nordic languages
+ * -11 (Thai)
  * -13 (Latin-7) For Baltic languages
  * -14 (Latin-8) For Celtic languages
- * -15 (ISO Latin-9) For western European languages (with Euro)
- * -16 (ISO Latin-10) For south-eastern European languages
+ * -15 (Latin-9) For western European languages (with Euro)
+ * -16 (Latin-10) For south-eastern European languages
  */
 
 AVT_ADDON const struct avt_charenc *avt_iso8859_2 (void);
@@ -72,6 +73,7 @@ AVT_ADDON const struct avt_charenc *avt_iso8859_7 (void);
 AVT_ADDON const struct avt_charenc *avt_iso8859_8 (void);
 AVT_ADDON const struct avt_charenc *avt_iso8859_9 (void);
 AVT_ADDON const struct avt_charenc *avt_iso8859_10 (void);
+AVT_ADDON const struct avt_charenc *avt_iso8859_11 (void);
 AVT_ADDON const struct avt_charenc *avt_iso8859_13 (void);
 AVT_ADDON const struct avt_charenc *avt_iso8859_14 (void);
 AVT_ADDON const struct avt_charenc *avt_iso8859_15 (void);

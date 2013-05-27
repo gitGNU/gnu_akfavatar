@@ -442,6 +442,14 @@ encodingname (const char *name)
 	   or strcasecmp ("Latin6", name) == 0
 	   or strcasecmp ("L6", name) == 0)
     result = avt_iso8859_10 ();
+  else if (strcasecmp ("ISO-8859-11", name) == 0
+	   or strcasecmp ("ISO-8859 11", name) == 0
+	   or strcasecmp ("ISO-8859-11", name) == 0
+	   or strcasecmp ("ISO_8859_11", name) == 0
+	   or strcasecmp ("ISO_8859 11", name) == 0
+	   or strcasecmp ("ISO8859-11", name) == 0
+	   or strcasecmp ("ISO8859 11", name) == 0)
+    result = avt_iso8859_11 ();
   else if (strcasecmp ("ISO-8859-13", name) == 0
 	   or strcasecmp ("ISO-8859 13", name) == 0
 	   or strcasecmp ("ISO-8859-13", name) == 0
