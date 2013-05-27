@@ -92,6 +92,12 @@ AVT_ADDON const struct avt_charenc *avt_iso8859_9 (void);
 AVT_ADDON const struct avt_charenc *avt_iso8859_10 (void);
 
 /*
+ * ISO-8859-13 (Latin-7)
+ * For Nordic languages
+ */
+AVT_ADDON const struct avt_charenc *avt_iso8859_13 (void);
+
+/*
  * ISO-8859-15 (ISO Latin-9)
  * For western European languages
  *
