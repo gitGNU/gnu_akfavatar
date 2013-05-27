@@ -60,6 +60,7 @@
  * -13 (Latin-7) For Baltic languages
  * -14 (Latin-8) For Celtic languages
  * -15 (ISO Latin-9) For western European languages (with Euro)
+ * -16 (ISO Latin-10) For south-eastern European languages
  */
 
 AVT_ADDON const struct avt_charenc *avt_iso8859_2 (void);
@@ -72,6 +73,7 @@ AVT_ADDON const struct avt_charenc *avt_iso8859_10 (void);
 AVT_ADDON const struct avt_charenc *avt_iso8859_13 (void);
 AVT_ADDON const struct avt_charenc *avt_iso8859_14 (void);
 AVT_ADDON const struct avt_charenc *avt_iso8859_15 (void);
+AVT_ADDON const struct avt_charenc *avt_iso8859_16 (void);
 
 /*
  * KOI8-R, KOI8-U
