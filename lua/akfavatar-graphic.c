@@ -1,6 +1,7 @@
 /*
  * AKFAvatar graphic API
- * Copyright (c) 2011,2012 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2011,2012,2013
+ * Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -915,9 +916,9 @@ lgraphic_border3d (lua_State * L)
     {
       // lower right
       if (pressed)
-        gr->color = avt_brighter (gr->background, BORDER_3D_INTENSITY);
+	gr->color = avt_brighter (gr->background, BORDER_3D_INTENSITY);
       else
-        gr->color = avt_darker (gr->background, BORDER_3D_INTENSITY);
+	gr->color = avt_darker (gr->background, BORDER_3D_INTENSITY);
 
       horizontal_line (gr, i, x2 - i, y2 - i);
       vertical_line (gr, x2 - i, i, x2 - i);
@@ -925,9 +926,9 @@ lgraphic_border3d (lua_State * L)
       // upper left
       // defined later, so it's dominant when overlapping
       if (pressed)
-        gr->color = avt_darker (gr->background, BORDER_3D_INTENSITY);
+	gr->color = avt_darker (gr->background, BORDER_3D_INTENSITY);
       else
-        gr->color = avt_brighter (gr->background, BORDER_3D_INTENSITY);
+	gr->color = avt_brighter (gr->background, BORDER_3D_INTENSITY);
 
       horizontal_line (gr, i, x2 - i, i);
       vertical_line (gr, i, i, y2 - i);
@@ -1077,24 +1078,16 @@ lgraphic_font_size (lua_State * L)
 static int
 lgraphic_text (lua_State * L)
 {
-  graphic *gr;
-  const char *s;
+  graphic *gr = get_graphic (L, 1);
   size_t len;
-  wchar_t *wctext, *wc;
-  int wclen;
-  int x, y;
-  int width;
+  const char *s = luaL_checklstring (L, 2, &len);
+  int x = luaL_optint (L, 3, (int) gr->penx + 1) - 1;
+  int y = luaL_optint (L, 4, (int) gr->peny + 1) - 1;
+
+  avt_color color = gr->color;
+  int width = gr->width;
+
   int fontwidth, fontheight;
-  avt_color color;
-
-  gr = get_graphic (L, 1);
-  s = luaL_checklstring (L, 2, &len);
-  x = luaL_optint (L, 3, (int) gr->penx + 1) - 1;
-  y = luaL_optint (L, 4, (int) gr->peny + 1) - 1;
-
-  color = gr->color;
-  width = gr->width;
-
   avt_get_font_dimensions (&fontwidth, &fontheight, NULL);
 
   switch (gr->vtextalign)
@@ -1115,8 +1108,8 @@ lgraphic_text (lua_State * L)
   if (y < 0 or y >= gr->height - fontheight)
     return 0;
 
-  wclen = avt_mb_decode (&wctext, s, (int) len);
-  if (not wctext)
+  size_t txt_width = avt_width_char (s, len);
+  if (not txt_width)
     return 0;
 
   switch (gr->htextalign)
@@ -1125,31 +1118,39 @@ lgraphic_text (lua_State * L)
       break;
 
     case HA_CENTER:
-      x -= wclen * fontwidth / 2;
+      x -= txt_width * fontwidth / 2;
       break;
 
     case HA_RIGHT:
-      x -= wclen * fontwidth;
+      x -= txt_width * fontwidth;
       break;
     }
 
   // horizontally outside visible area? (cannot show partly)
-  if (wclen <= 0 or x >= width - fontwidth or x + (wclen * fontwidth) < 0)
-    {
-      avt_free (wctext);
-      return 0;
-    }
+  if (x >= width - fontwidth or x + ((int) txt_width * fontwidth) < 0)
+    return 0;
 
-  wc = wctext;
+  // get current encoding
+  const struct avt_charenc *convert = avt_charencoding (NULL);
+  if (not convert)
+    return 0;
 
   // actally display the text
-  for (int i = 0; i < wclen; i++, wc++, x += fontwidth)
+  while (len)
     {
       const uint8_t *font_line;	// pixel line from font definition
       uint16_t line;		// normalized pixel line might get modified
 
+      avt_char wc;
+      size_t bytes = convert->to_unicode (convert, &wc, s);
+      if (bytes > len)
+	break;
+
+      len -= bytes;
+      s += bytes;
+
       // check if it's a combining character
-      if (avt_combining (*wc))
+      if (avt_combining (wc))
 	x -= fontwidth;
 
       // still before visible area?
@@ -1163,7 +1164,7 @@ lgraphic_text (lua_State * L)
 	break;
 
       // get the definition
-      font_line = (const uint8_t *) avt_get_font_char ((int) *wc);
+      font_line = (const uint8_t *) avt_get_font_char (wc);
       if (not font_line)
 	font_line = (const uint8_t *) avt_get_font_char (0);
 
@@ -1187,9 +1188,9 @@ lgraphic_text (lua_State * L)
 	    if (line bitand scanbit)
 	      putpixelcolor (gr, x + lx, y + ly, width, color);
 	}			// for (int ly...
-    }				// for (int i
 
-  avt_free (wctext);
+      x += fontwidth;
+    }				// while
 
   return 0;
 }
