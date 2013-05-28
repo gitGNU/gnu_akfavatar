@@ -2833,6 +2833,11 @@ luaopen_akfavatar_embedded (lua_State * L)
   lua_setmetatable (L, -2);
   lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-silence");
 
+  // initialize charset
+  avt_charencoding (avt_ascii ());
+  lua_pushliteral (L, "ASCII");
+  lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-encoding");
+
   return 1;
 }
 
