@@ -268,6 +268,9 @@ KOI8-U.o: $(srcdir)/KOI8-U.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 cp437.o: $(srcdir)/cp437.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/cp437.c
 
+cp1250.o: $(srcdir)/cp1250.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
+	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/cp1250.c
+
 cp1251.o: $(srcdir)/cp1251.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) $(CFLAGS) -c -o $@ $(srcdir)/cp1251.c
 
@@ -281,7 +284,8 @@ libavtaddons.a: filechooser.o askdrive.o arch.o avttermstub.o \
                 ISO-8859-5.o ISO-8859-7.o ISO-8859-8.o ISO-8859-9.o \
                 ISO-8859-10.o ISO-8859-11.o \
                 ISO-8859-13.o ISO-8859-14.o ISO-8859-15.o ISO-8859-16.o \
-                cp437.o cp1251.o cp1252.o KOI8-R.o KOI8-U.o sysencoding.o
+                cp437.o cp1250.o cp1251.o cp1252.o KOI8-R.o KOI8-U.o \
+                sysencoding.o
 	$(AR) rcu $@ filechooser.o askdrive.o arch.o avttermstub.o \
 	             avtccio.o avtcwio.o basedir.o \
 	             avtreadfile.o colorchooser.o avtvorbis.o stb_vorbis.o \
@@ -289,7 +293,8 @@ libavtaddons.a: filechooser.o askdrive.o arch.o avttermstub.o \
 	             ISO-8859-4.o ISO-8859-5.o ISO-8859-7.o ISO-8859-8.o \
 	             ISO-8859-9.o \
 	             ISO-8859-10.o ISO-8859-11.o ISO-8859-13.o ISO-8859-14.o \
-	             ISO-8859-15.o ISO-8859-16.o cp437.o cp1251.o cp1252.o \
+	             ISO-8859-15.o ISO-8859-16.o \
+	             cp437.o cp1250.o cp1251.o cp1252.o \
 	             KOI8-R.o KOI8-U.o sysencoding.o
 	-$(RANLIB) $@
 
@@ -311,7 +316,7 @@ lua-akfavatar-prg-info.o: $(srcdir)/mingw/lua-akfavatar-prg.rc version.h \
 
 lua-akfavatar.dll: lua-avt.o filechooser.o askdrive.o colorchooser.o \
 	           langwindows.o basedir.o sysencoding.o cp437.o \
-	           cp1251.o cp1252.o \
+	           cp1250.o cp1251.o cp1252.o \
 	           ISO-8859-2.o ISO-8859-3.o ISO-8859-4.o ISO-8859-5.o \
 	           ISO-8859-7.o ISO-8859-8.o ISO-8859-9.o ISO-8859-10.o \
 	           ISO-8859-11.o ISO-8859-13.o ISO-8859-14.o ISO-8859-15.o \
@@ -320,7 +325,7 @@ lua-akfavatar.dll: lua-avt.o filechooser.o askdrive.o colorchooser.o \
 	           $(srcdir)/mingw/lua-akfavatar.def
 	$(CC) -o $@ -shared $(srcdir)/mingw/lua-akfavatar.def \
 	     lua-avt.o filechooser.o askdrive.o sysencoding.o \
-	     cp437.o cp1251.o cp1252.o \
+	     cp437.o cp1250.o cp1251.o cp1252.o \
 	     ISO-8859-2.o ISO-8859-3.o ISO-8859-4.o ISO-8859-5.o \
 	     ISO-8859-7.o ISO-8859-8.o ISO-8859-9.o ISO-8859-10.o \
 	     ISO-8859-11.o ISO-8859-13.o \

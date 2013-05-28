@@ -89,6 +89,10 @@ AVT_ADDON const struct avt_charenc *avt_koi8r (void);
 AVT_ADDON const struct avt_charenc *avt_koi8u (void);
 
 /*
+ * Vendor specific encodings
+ */
+
+/*
  * Code page 437 (IBM437)
  * This is the native charset of IBM-PC compatibles.
  * It is the built in charset for the textconsole.
@@ -99,15 +103,15 @@ AVT_ADDON const struct avt_charenc *avt_koi8u (void);
 AVT_ADDON const struct avt_charenc *avt_cp437 (void);
 
 /*
- * Map for Windows codepage 1251 (Cyrillic)
+ * Maps for Microsoft Windows codepages
+ * 1250 (central an eastern European)
+ * 1251 (Cyrillic)
+ * 1252 (Western languages)
+ *
+ * Microsoft calls them "ANSI", though they are _not_ ANSI standards!
  */
+AVT_ADDON const struct avt_charenc *avt_cp1250 (void);
 AVT_ADDON const struct avt_charenc *avt_cp1251 (void);
-
-/*
- * Map for Windows codepage 1252
- * Microsoft calls this "ANSI", though it's not an ANSI standard
- * It is based on ISO-8859-1 with nonstandard extensions
- */
 AVT_ADDON const struct avt_charenc *avt_cp1252 (void);
 
 /*
