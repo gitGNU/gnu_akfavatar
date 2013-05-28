@@ -377,6 +377,9 @@ avt_width_char (const char *txt, size_t len)
   avt_char ch;
   size_t width, bytes;
 
+  if (not convert)
+    return 0;
+
   width = 0;
 
   while (len)
