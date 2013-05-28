@@ -1,10 +1,11 @@
 /*
  * C-specific functions for AKFAvatar (multibyte characters)
- * Copyright (c) 2007, 2009, 2010 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007,2009,2010,2013
+ * Andreas K. Foerster <info@akfoerster.de>
  *
  * the calling program must have used avt_initialize before calling 
  * any of these functions.
- * These functions also require avt_mb_encoding to be used before 
+ * These functions also require avt_charencoding to be used before 
  * calling them.
  *
  * This file is part of AKFAvatar
@@ -47,7 +48,7 @@ avta_vprintf (const char *format, va_list ap)
 
   if (n > -1)
     {
-      avt_say_mb_len (strp, n);
+      avt_say_char_len (strp, n);
       free (strp);
     }
 
@@ -88,7 +89,7 @@ avta_vprintf (const char *format, va_list ap)
     }
 
   if (str && n > -1)
-    avt_say_mb_len (str, n);
+    avt_say_char_len (str, n);
 
   if (str)
     free (str);
@@ -122,7 +123,7 @@ avta_putchar (int c)
 
   ch = c;
   if (c >= 0)
-    avt_say_mb_len ((char *) &ch, 1);
+    avt_say_char_len ((char *) &ch, 1);
 
   /* return the unsigned char! */
   return (int) ch;
@@ -131,7 +132,7 @@ avta_putchar (int c)
 extern int
 avta_puts (const char *s)
 {
-  avt_say_mb (s);
+  avt_say_char (s);
   avt_new_line ();
 
   /* return a non-negative number on success */
@@ -143,7 +144,7 @@ avta_vscanf (const char *format, va_list ap)
 {
   char str[4 * AVT_LINELENGTH + 1];
 
-  avt_ask_mb (str, sizeof (str));
+  avt_ask_char (str, sizeof (str));
   return vsscanf (str, format, ap);
 }
 
