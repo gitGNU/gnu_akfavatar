@@ -1193,7 +1193,7 @@ dist: about $(srcdir)/alert.au
 	rm -rf $(PKGNAME)/
 	bzip2 -f $(PKGNAME).src.tar
 
-dist-bin-default: all lua-akfavatar-linuxfb pdf
+dist-bin-default: all pdf
 	mkdir $(BINPKGNAME)
 	mkdir $(BINPKGNAME)/lua
 	mkdir $(BINPKGNAME)/lua/documentation
@@ -1206,7 +1206,6 @@ dist-bin-default: all lua-akfavatar-linuxfb pdf
 	#-ln -sf $(LIBNAME) $(BINPKGNAME)/$(SONAME)
 	#cp lua-akfavatar.so $(BINPKGNAME)/lua/
 	cp lua-akfavatar $(BINPKGNAME)/
-	-ln lua-akfavatar-linuxfb $(BINPKGNAME)/
 	cp $(srcdir)/avtcmd $(BINPKGNAME)/
 	cp base64.so akfavatar-vorbis.so $(BINPKGNAME)/lua/
 	cp akfavatar-graphic.so $(BINPKGNAME)/lua/
