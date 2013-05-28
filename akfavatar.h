@@ -330,6 +330,12 @@ AVT_API size_t avt_recode_char (const struct avt_charenc *tocode,
                                 const struct avt_charenc *fromcode,
                                 const char *src, size_t src_size);
 
+/*
+ * try to calculate the visual width of a string
+ * experimental: use with care!
+ */
+AVT_API size_t avt_width_char (const char *txt, size_t len);
+
 /***********************************************************************/
 /* say or ask stuff with multi-byte encodings */
 

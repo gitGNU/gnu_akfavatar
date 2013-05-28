@@ -370,3 +370,29 @@ avt_recode_char (const struct avt_charenc *tocode,
 
   return result_size;
 }
+
+extern size_t
+avt_width_char (const char *txt, size_t len)
+{
+  avt_char ch;
+  size_t width, bytes;
+
+  width = 0;
+
+  while (len)
+    {
+      bytes = convert->to_unicode (convert, &ch, txt);
+
+      if (ch >= 0x20 and (ch < 0x7F or ch >= 0xA0) and not avt_combining (ch))
+	++width;
+      else if (ch == L'\b' and width > 0)
+	--width;
+
+      if (bytes > len)
+	break;
+
+      len -= bytes;
+    }
+
+  return width;
+}
