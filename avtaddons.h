@@ -41,7 +41,7 @@
 #endif
 
 /**********************************************************************
- * Section: character maps
+ * Section: character encodings
  * support for single byte charsets via tables
  **********************************************************************/
 
@@ -125,8 +125,8 @@ AVT_ADDON const struct avt_charenc *avt_systemencoding (void);
 
 struct avt_char_map
 {
-  unsigned short start, end;
-  avt_char table[];
+  unsigned short int start, end;
+  uint_least16_t table[];         // limited to the BMP!
 };
 
 AVT_ADDON size_t map_to_unicode (const struct avt_charenc *self,
