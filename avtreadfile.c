@@ -1,6 +1,6 @@
 /*
  * reading data from a file
- * Copyright (c) 2009, 2010 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2009, 2010, 2013 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -185,7 +185,7 @@ avta_pager_file (const char *file_name, int startline)
   len = avta_read_datafile (file_name, (void **) &txt);
 
   if (len > 0)
-    avt_pager_mb (txt, len, startline);
+    avt_pager_char (txt, len, startline);
 
   if (txt)
     free (txt);
@@ -206,7 +206,7 @@ avta_pager_command (const char *command, int startline)
   len = avta_read_command (command, &txt);
 
   if (len > 0)
-    avt_pager_mb (txt, len, startline);
+    avt_pager_char (txt, len, startline);
 
   if (txt)
     free (txt);
