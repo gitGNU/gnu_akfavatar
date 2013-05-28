@@ -503,6 +503,12 @@ encodingname (const char *name)
 	   or strcasecmp ("OEM437", name) == 0
 	   or strcasecmp ("PC-8", name) == 0 or strcmp ("437", name) == 0)
     result = avt_cp437 ();
+  else if (strcasecmp ("CP850", name) == 0
+	   or strcasecmp ("IBM850", name) == 0
+	   or strcasecmp ("OEM850", name) == 0
+	   or strcasecmp ("DOS-Latin-1", name) == 0
+	   or strcmp ("850", name) == 0)
+    result = avt_cp850 ();
   else if (strcasecmp ("WINDOWS-1250", name) == 0
 	   or strcasecmp ("CP1250", name) == 0 or strcmp ("1250", name) == 0)
     result = avt_cp1250 ();

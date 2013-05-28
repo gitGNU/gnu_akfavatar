@@ -103,6 +103,15 @@ AVT_ADDON const struct avt_charenc *avt_koi8u (void);
 AVT_ADDON const struct avt_charenc *avt_cp437 (void);
 
 /*
+ * Code page 850 (IBM850, DOS-Latin-1)
+ * This has all characters of ISO Latin-1,
+ * but in different positions.
+ *
+ * The characters 0-31 are interpreted as control characters
+ */
+AVT_ADDON const struct avt_charenc *avt_cp850 (void);
+
+/*
  * Maps for Microsoft Windows codepages
  * 1250 (central an eastern European)
  * 1251 (Cyrillic)
