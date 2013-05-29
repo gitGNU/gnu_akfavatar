@@ -1,7 +1,3 @@
-2013-05-28  Andreas K. Foerster  <info@akfoerster.de>
-
-	* akfavatar.h, charencoding.c (avt_width_char): new function
-
 2013-05-23  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c: use new char functions

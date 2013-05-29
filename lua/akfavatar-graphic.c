@@ -1073,6 +1073,31 @@ lgraphic_font_size (lua_State * L)
   return 3;
 }
 
+static size_t
+get_text_width (const struct avt_charenc *convert, const char *txt, size_t len)
+{
+  avt_char ch;
+  size_t width, bytes;
+
+  width = 0;
+
+  while (len)
+    {
+      bytes = convert->to_unicode (convert, &ch, txt);
+
+      if (ch >= 0x20 and (ch < 0x7F or ch >= 0xA0) and not avt_combining (ch))
+	++width;
+      else if (ch == L'\b')
+        --width;
+
+      if (bytes > len)
+	break;
+
+      len -= bytes;
+    }
+
+  return width;
+}
 
 // gr:text (string [,x ,y])
 static int
@@ -1108,7 +1133,12 @@ lgraphic_text (lua_State * L)
   if (y < 0 or y >= gr->height - fontheight)
     return 0;
 
-  size_t txt_width = avt_width_char (s, len);
+  // get current encoding
+  const struct avt_charenc *convert = avt_charencoding (NULL);
+  if (not convert)
+    return 0;
+
+  size_t txt_width = get_text_width (convert, s, len);
   if (not txt_width)
     return 0;
 
@@ -1130,11 +1160,6 @@ lgraphic_text (lua_State * L)
   if (x >= width - fontwidth or x + ((int) txt_width * fontwidth) < 0)
     return 0;
 
-  // get current encoding
-  const struct avt_charenc *convert = avt_charencoding (NULL);
-  if (not convert)
-    return 0;
-
   // actally display the text
   while (len)
     {
@@ -1149,9 +1174,13 @@ lgraphic_text (lua_State * L)
       len -= bytes;
       s += bytes;
 
-      // check if it's a combining character
-      if (avt_combining (wc))
+      // check if it's a backspace or a combining character
+      if (wc == L'\b' or avt_combining (wc))
 	x -= fontwidth;
+
+      // ignore all other control characters
+      if (wc < 0x20 or (wc >= 0x7F and wc < 0xA0))
+	continue;
 
       // still before visible area?
       // cannot display character just partly
