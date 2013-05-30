@@ -28,13 +28,9 @@ Needed
    on Windows.  On Debian or derived distributions, you must have the package
    "ncurses-term" installed.
 
- * iconv
-   integrated in GNU libc
-
 Optional
 
-  * GNU-Pascal or Free Pascal
-      http://www.gnu-pascal.de/
+  * Free Pascal
       http://www.freepascal.org/
 
 
@@ -43,18 +39,10 @@ INSTALLATION
 Compiling
 
 Run "./configure". If that succeeds run "make" to create the binaries.
-For Unix systems there are scripts, so you can use it without installing.
+You can use it without installing.
 
 
 Compiling - special cases
-
-On some systems you need the use the parameter "--with-iconv" with
-"./configure" to get full iconv support (iconv is a charset-encoding
-converter). This software (AKFAvatar) does an educated guess to get the
-internal encoding for wchar_t right.  In some cases it might not work.
-You might then provide that information with this option, like this
-"--with-iconv=UCS-4LE".  On many systems you can get a list with the
-command "iconv -l".  If "WCHAR_T" or "wchar_t" is on the list, use that.
 
 If you want to use it on devices with a small display (eg. netbooks), use the
 parameter "--enable-size=vga" with configure. 
@@ -63,6 +51,9 @@ The value "vga" means a size of 640*480 pixels.
 
 Installing
 
+You can use it without installing.
+
+But if you want to install it:
 On a GNU/Linux system first make sure "/usr/local/lib" is mentioned in
 the file "/etc/ld.so.conf"; either directly or indirectly. Also make sure
 that "/usr/local/bin" is in your "PATH" evironment variable.
@@ -85,8 +76,7 @@ programs.
 OTHER SYSTEMS
 
  * BSD
-   Older versions of AKFAvatar were tested on FreeBSD.  To get iconv
-   support, install libiconv and use "./configure --with-iconv".
+   Older versions of AKFAvatar were tested on FreeBSD.
 
  * Windows / ReactOS
    These systems are just partly supported.  I provide binaries which are
@@ -94,5 +84,5 @@ OTHER SYSTEMS
    Windows yet, so you're on your own here.  I'm sorry.
    Especially the terminal emulation doesn't work on Windows.
 
-   The Windows-specific charsets like "WINDOWS-1252", also known as "MS-ANSI"
-   are supported since version 0.19.0.
+   Some Windows-specific charsets like "WINDOWS-1252" are supported since
+   version 0.19.0.
