@@ -23,7 +23,6 @@ pkgname=akfavatar
 srctrigger=avatar-sdl.c
 SIZE=DEFAULT
 OPENPTY=
-FORCE_ICONV=
 WCHAR_ENCODING=
 SDL_IMAGE="yes"
 LINK_SDL_IMAGE="no"
@@ -102,7 +101,6 @@ while [ x"$1" != x ] ; do
 		echo "  --sysconfdir=DIR      read-only single-machine data directory [${sysconfdir}]"
 		echo "  --host=mingw          cross-compile with mingw (experimental)"
 		echo "  --with-openpty        use openpty instead of posix_openpt"
-		echo "  --with-iconv[=enc]    force use of external iconv (normally not needed)"
 		echo "  --with-static-lua     try to link Lua statically"
 		echo "  --disable-audio       disable audio support"
 		echo "  --disable-sdl-image   disable support for SDL_image completely"
@@ -161,9 +159,6 @@ while [ x"$1" != x ] ; do
 	AWK=*)      AWK=${optarg} ;;
 
 	--with-openpty) OPENPTY="yes" ;;
-	--with-iconv) FORCE_ICONV="yes" ;;
-	--with-iconv=*) FORCE_ICONV="yes"; WCHAR_ENCODING=${optarg} ;;
-	--with-iconv) FORCE_ICONV="yes" ;;
 	--with-static-lua) STATIC_LUA="yes" ;;
 	--enable-lua=no | \
 	--disable-lua | \
@@ -282,10 +277,6 @@ case ${hosttype} in
            fi
            ;;
 esac
-
-[ x"$FORCE_ICONV" = x"yes" ] && CFLAGS="$CFLAGS -DFORCE_ICONV=1"
-[ -n "$WCHAR_ENCODING" ] \
-  && CFLAGS="$CFLAGS -DWCHAR_ENCODING=\\\"$WCHAR_ENCODING\\\""
 
 ###################################################################################
 # SDL
