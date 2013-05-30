@@ -124,8 +124,8 @@ static const struct avt_char_map map = {
 
 static const struct avt_charenc converter = {
   .data = (void *) &map,
-  .to_unicode = map_to_unicode,
-  .from_unicode = map_from_unicode
+  .decode = map_to_unicode,
+  .encode = map_from_unicode
 };
 
 

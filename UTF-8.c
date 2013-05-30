@@ -147,8 +147,8 @@ utf8_from_unicode (const struct avt_charenc *self, char *dest,
 
 static const struct avt_charenc converter = {
   .data = NULL,
-  .to_unicode = utf8_to_unicode,
-  .from_unicode = utf8_from_unicode
+  .decode = utf8_to_unicode,
+  .encode = utf8_from_unicode
 };
 
 extern const struct avt_charenc *

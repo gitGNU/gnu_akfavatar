@@ -299,8 +299,8 @@ AVT_API int avt_ask_char (char *s, size_t size);
 struct avt_charenc
 {
   void *data;
-  size_t (*to_unicode) (const struct avt_charenc *self, avt_char *, const char *);
-  size_t (*from_unicode) (const struct avt_charenc *self, char *, size_t, avt_char);
+  size_t (*decode) (const struct avt_charenc *self, avt_char *, const char *);
+  size_t (*encode) (const struct avt_charenc *self, char *, size_t, avt_char);
 };
 
 /*

@@ -1083,7 +1083,7 @@ get_text_width (const struct avt_charenc *convert, const char *txt, size_t len)
 
   while (len)
     {
-      bytes = convert->to_unicode (convert, &ch, txt);
+      bytes = convert->decode (convert, &ch, txt);
 
       if (ch >= 0x20 and (ch < 0x7F or ch >= 0xA0) and not avt_combining (ch))
 	++width;
@@ -1167,7 +1167,7 @@ lgraphic_text (lua_State * L)
       uint16_t line;		// normalized pixel line might get modified
 
       avt_char wc;
-      size_t bytes = convert->to_unicode (convert, &wc, s);
+      size_t bytes = convert->decode (convert, &wc, s);
       if (bytes > len)
 	break;
 

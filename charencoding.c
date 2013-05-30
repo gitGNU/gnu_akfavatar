@@ -55,7 +55,7 @@ char_to_wchar (wchar_t * dest, size_t dest_len,
   while (src_len and dest_len)
     {
       avt_char ch;
-      size_t num = convert->to_unicode (convert, &ch, src);
+      size_t num = convert->decode (convert, &ch, src);
 
       if (sizeof (wchar_t) >= 3 or ch <= 0xFFFFu)
 	*dest = (wchar_t) ch;
@@ -108,7 +108,7 @@ wchar_to_char (char *dest, size_t dest_len,
 	    }
 	}
 
-      size_t bytes = convert->from_unicode (convert, dest, dest_len, ch);
+      size_t bytes = convert->encode (convert, dest, dest_len, ch);
 
       if (not bytes)
 	break;
@@ -135,7 +135,7 @@ avt_say_char_len (const char *txt, size_t len)
   while (len)
     {
       avt_char ch;
-      size_t num = convert->to_unicode (convert, &ch, txt);
+      size_t num = convert->decode (convert, &ch, txt);
 
       status = avt_put_char (ch);
       if (status != AVT_NORMAL or num > len)
@@ -163,7 +163,7 @@ avt_say_char (const char *txt)
   while (*txt)
     {
       avt_char ch;
-      size_t num = convert->to_unicode (convert, &ch, txt);
+      size_t num = convert->decode (convert, &ch, txt);
 
       status = avt_put_char (ch);
       if (status != AVT_NORMAL)
@@ -349,8 +349,8 @@ avt_recode_char (const struct avt_charenc *tocode,
     {
       avt_char ch;
 
-      size_t nsrc = fromcode->to_unicode (fromcode, &ch, src);
-      size_t ndest = tocode->from_unicode (tocode, dest, dest_size, ch);
+      size_t nsrc = fromcode->decode (fromcode, &ch, src);
+      size_t ndest = tocode->encode (tocode, dest, dest_size, ch);
 
       if (not ndest)
 	break;

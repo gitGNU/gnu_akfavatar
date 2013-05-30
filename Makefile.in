@@ -226,124 +226,124 @@ ISO-8859-1.o: $(srcdir)/ISO-8859-1.c $(srcdir)/akfavatar.h $(srcdir)/avtinternal
 ISO-8859-1.lo: $(srcdir)/ISO-8859-1.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/ISO-8859-1.c
 
-ISO-8859-2.o: $(srcdir)/ISO-8859-2.c $(srcdir)/avtaddons.h
+ISO-8859-2.o: $(srcdir)/ISO-8859-2.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/ISO-8859-2.c
 
-ISO-8859-2.lo: $(srcdir)/ISO-8859-2.c $(srcdir)/avtaddons.h
+ISO-8859-2.lo: $(srcdir)/ISO-8859-2.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/ISO-8859-2.c
 
-ISO-8859-3.o: $(srcdir)/ISO-8859-3.c $(srcdir)/avtaddons.h
+ISO-8859-3.o: $(srcdir)/ISO-8859-3.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/ISO-8859-3.c
 
-ISO-8859-3.lo: $(srcdir)/ISO-8859-3.c $(srcdir)/avtaddons.h
+ISO-8859-3.lo: $(srcdir)/ISO-8859-3.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/ISO-8859-3.c
 
-ISO-8859-4.o: $(srcdir)/ISO-8859-4.c $(srcdir)/avtaddons.h
+ISO-8859-4.o: $(srcdir)/ISO-8859-4.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/ISO-8859-4.c
 
-ISO-8859-4.lo: $(srcdir)/ISO-8859-4.c $(srcdir)/avtaddons.h
+ISO-8859-4.lo: $(srcdir)/ISO-8859-4.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/ISO-8859-4.c
 
-ISO-8859-5.o: $(srcdir)/ISO-8859-4.c $(srcdir)/avtaddons.h
+ISO-8859-5.o: $(srcdir)/ISO-8859-4.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/ISO-8859-5.c
 
-ISO-8859-5.lo: $(srcdir)/ISO-8859-5.c $(srcdir)/avtaddons.h
+ISO-8859-5.lo: $(srcdir)/ISO-8859-5.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/ISO-8859-5.c
 
-ISO-8859-7.o: $(srcdir)/ISO-8859-7.c $(srcdir)/avtaddons.h
+ISO-8859-7.o: $(srcdir)/ISO-8859-7.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/ISO-8859-7.c
 
-ISO-8859-7.lo: $(srcdir)/ISO-8859-7.c $(srcdir)/avtaddons.h
+ISO-8859-7.lo: $(srcdir)/ISO-8859-7.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/ISO-8859-7.c
 
-ISO-8859-8.o: $(srcdir)/ISO-8859-8.c $(srcdir)/avtaddons.h
+ISO-8859-8.o: $(srcdir)/ISO-8859-8.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/ISO-8859-8.c
 
-ISO-8859-8.lo: $(srcdir)/ISO-8859-8.c $(srcdir)/avtaddons.h
+ISO-8859-8.lo: $(srcdir)/ISO-8859-8.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/ISO-8859-8.c
 
-ISO-8859-9.o: $(srcdir)/ISO-8859-9.c $(srcdir)/avtaddons.h
+ISO-8859-9.o: $(srcdir)/ISO-8859-9.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/ISO-8859-9.c
 
-ISO-8859-9.lo: $(srcdir)/ISO-8859-9.c $(srcdir)/avtaddons.h
+ISO-8859-9.lo: $(srcdir)/ISO-8859-9.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/ISO-8859-9.c
 
-ISO-8859-10.o: $(srcdir)/ISO-8859-10.c $(srcdir)/avtaddons.h
+ISO-8859-10.o: $(srcdir)/ISO-8859-10.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/ISO-8859-10.c
 
-ISO-8859-10.lo: $(srcdir)/ISO-8859-10.c $(srcdir)/avtaddons.h
+ISO-8859-10.lo: $(srcdir)/ISO-8859-10.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/ISO-8859-10.c
 
-ISO-8859-11.o: $(srcdir)/ISO-8859-11.c $(srcdir)/avtaddons.h
+ISO-8859-11.o: $(srcdir)/ISO-8859-11.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/ISO-8859-11.c
 
-ISO-8859-11.lo: $(srcdir)/ISO-8859-11.c $(srcdir)/avtaddons.h
+ISO-8859-11.lo: $(srcdir)/ISO-8859-11.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/ISO-8859-11.c
 
-ISO-8859-13.o: $(srcdir)/ISO-8859-13.c $(srcdir)/avtaddons.h
+ISO-8859-13.o: $(srcdir)/ISO-8859-13.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/ISO-8859-13.c
 
-ISO-8859-13.lo: $(srcdir)/ISO-8859-13.c $(srcdir)/avtaddons.h
+ISO-8859-13.lo: $(srcdir)/ISO-8859-13.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/ISO-8859-13.c
 
-ISO-8859-14.o: $(srcdir)/ISO-8859-14.c $(srcdir)/avtaddons.h
+ISO-8859-14.o: $(srcdir)/ISO-8859-14.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/ISO-8859-14.c
 
-ISO-8859-14.lo: $(srcdir)/ISO-8859-14.c $(srcdir)/avtaddons.h
+ISO-8859-14.lo: $(srcdir)/ISO-8859-14.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/ISO-8859-14.c
 
-ISO-8859-15.o: $(srcdir)/ISO-8859-15.c $(srcdir)/avtaddons.h
+ISO-8859-15.o: $(srcdir)/ISO-8859-15.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/ISO-8859-15.c
 
-ISO-8859-15.lo: $(srcdir)/ISO-8859-15.c $(srcdir)/avtaddons.h
+ISO-8859-15.lo: $(srcdir)/ISO-8859-15.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/ISO-8859-15.c
 
-ISO-8859-16.o: $(srcdir)/ISO-8859-16.c $(srcdir)/avtaddons.h
+ISO-8859-16.o: $(srcdir)/ISO-8859-16.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/ISO-8859-16.c
 
-ISO-8859-16.lo: $(srcdir)/ISO-8859-16.c $(srcdir)/avtaddons.h
+ISO-8859-16.lo: $(srcdir)/ISO-8859-16.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/ISO-8859-16.c
 
-KOI8-R.o: $(srcdir)/KOI8-R.c $(srcdir)/avtaddons.h
+KOI8-R.o: $(srcdir)/KOI8-R.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/KOI8-R.c
 
-KOI8-R.lo: $(srcdir)/KOI8-R.c $(srcdir)/avtaddons.h
+KOI8-R.lo: $(srcdir)/KOI8-R.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/KOI8-R.c
 
-KOI8-U.o: $(srcdir)/KOI8-U.c $(srcdir)/avtaddons.h
+KOI8-U.o: $(srcdir)/KOI8-U.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/KOI8-U.c
 
-KOI8-U.lo: $(srcdir)/KOI8-U.c $(srcdir)/avtaddons.h
+KOI8-U.lo: $(srcdir)/KOI8-U.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/KOI8-U.c
 
-cp437.o: $(srcdir)/cp437.c $(srcdir)/avtaddons.h
+cp437.o: $(srcdir)/cp437.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/cp437.c
 
-cp437.lo: $(srcdir)/cp437.c $(srcdir)/avtaddons.h
+cp437.lo: $(srcdir)/cp437.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/cp437.c
 
-cp850.o: $(srcdir)/cp850.c $(srcdir)/avtaddons.h
+cp850.o: $(srcdir)/cp850.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/cp850.c
 
-cp850.lo: $(srcdir)/cp850.c $(srcdir)/avtaddons.h
+cp850.lo: $(srcdir)/cp850.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/cp850.c
 
-cp1250.o: $(srcdir)/cp1250.c $(srcdir)/avtaddons.h
+cp1250.o: $(srcdir)/cp1250.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/cp1250.c
 
-cp1250.lo: $(srcdir)/cp1250.c $(srcdir)/avtaddons.h
+cp1250.lo: $(srcdir)/cp1250.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/cp1250.c
 
-cp1251.o: $(srcdir)/cp1251.c $(srcdir)/avtaddons.h
+cp1251.o: $(srcdir)/cp1251.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/cp1251.c
 
-cp1251.lo: $(srcdir)/cp1251.c $(srcdir)/avtaddons.h
+cp1251.lo: $(srcdir)/cp1251.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/cp1251.c
 
-cp1252.o: $(srcdir)/cp1252.c $(srcdir)/avtaddons.h
+cp1252.o: $(srcdir)/cp1252.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/cp1252.c
 
-cp1252.lo: $(srcdir)/cp1252.c $(srcdir)/avtaddons.h
+cp1252.lo: $(srcdir)/cp1252.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/cp1252.c
 
 rgb.h: $(srcdir)/rgb.txt $(srcdir)/rgb2c.awk

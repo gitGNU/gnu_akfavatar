@@ -119,8 +119,8 @@ lat5_from_unicode (const struct avt_charenc *self, char *dest, size_t size,
 
 static const struct avt_charenc converter = {
   .data = NULL,
-  .to_unicode = lat5_to_unicode,
-  .from_unicode = lat5_from_unicode
+  .decode = lat5_to_unicode,
+  .encode = lat5_from_unicode
 };
 
 

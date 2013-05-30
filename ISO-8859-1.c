@@ -55,8 +55,8 @@ lat1_from_unicode (const struct avt_charenc *self, char *dest, size_t size,
 
 static const struct avt_charenc converter = {
   .data = NULL,
-  .to_unicode = lat1_to_unicode,
-  .from_unicode = lat1_from_unicode
+  .decode = lat1_to_unicode,
+  .encode = lat1_from_unicode
 };
 
 

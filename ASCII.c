@@ -26,7 +26,7 @@
 #define INVALID_CHAR '\x1A'
 
 static size_t
-ascii_to_unicode (const struct avt_charenc *self, avt_char * dest,
+ascii_decode (const struct avt_charenc *self, avt_char * dest,
 		 const char *src)
 {
   (void) self;
@@ -38,7 +38,7 @@ ascii_to_unicode (const struct avt_charenc *self, avt_char * dest,
 
 
 static size_t
-ascii_from_unicode (const struct avt_charenc *self, char *dest, size_t size,
+ascii_encode (const struct avt_charenc *self, char *dest, size_t size,
 		   avt_char src)
 {
   (void) self;
@@ -54,8 +54,8 @@ ascii_from_unicode (const struct avt_charenc *self, char *dest, size_t size,
 
 static const struct avt_charenc converter = {
   .data = NULL,
-  .to_unicode = ascii_to_unicode,
-  .from_unicode = ascii_from_unicode
+  .decode = ascii_decode,
+  .encode = ascii_encode
 };
 
 

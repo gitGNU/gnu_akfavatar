@@ -65,7 +65,7 @@ system_from_unicode (const struct avt_charenc *self, char *dest, size_t size,
   if (size < MB_CUR_MAX)
     return 0;
 
-  // wchar_t is too small?
+  // wchar_t is too small? - limit to BMP
   if (sizeof (wchar_t) <= 2 and src > 0xFFFF)
     src = BROKEN_WCHAR;
 
@@ -88,8 +88,8 @@ system_from_unicode (const struct avt_charenc *self, char *dest, size_t size,
 
 static const struct avt_charenc converter = {
   .data = NULL,
-  .to_unicode = system_to_unicode,
-  .from_unicode = system_from_unicode
+  .decode = system_to_unicode,
+  .encode = system_from_unicode
 };
 
 
