@@ -22,10 +22,8 @@
 #include "avtaddons.h"
 
 extern int
-avta_term_start (const char *system_encoding,
-		 const char *working_dir, char *prg_argv[])
+avta_term_start (const char *working_dir, char *prg_argv[])
 {
-  (void) system_encoding;
   (void) working_dir;
   (void) prg_argv;
 

@@ -1,6 +1,7 @@
 /*
  * avtterm - terminal emulation for AKFAAvatar
- * Copyright (c) 2007,2008,2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007,2008,2009,2010,2011,2012,2013
+ * Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -31,6 +32,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <iso646.h>
+#include <stdint.h>
 
 // size for input buffer
 #define INBUFSIZE 1024
@@ -91,8 +93,10 @@
 #define KEY_F15       CSI "27~"
 #endif
 
+const struct avt_charenc *convert;
+
 // default encoding - either system encoding or given per parameters
-static const char *default_encoding;
+static const struct avt_charenc *default_encoding;
 
 static int prg_input;		// file descriptor for program input
 
@@ -120,7 +124,7 @@ static bool faint;
 static bool vt100graphics;
 
 // G0 and G1 charset encoding (linux-specific)
-static const char *G0, *G1;
+static const struct avt_charenc *G0, *G1;
 
 // sequence for DEC cursor keys (either Esc[A or EscOA)
 static char dec_cursor_seq[3];
@@ -130,7 +134,7 @@ static int mouse_mode;
 
 static bool application_keypad;
 
-static const wchar_t vt100trans[] = {
+static const uint_least16_t vt100trans[] = {
   0x00A0, 0x25C6, 0x2592, 0x2409, 0x240C, 0x240D,
   0x240A, 0x00B0, 0x00B1, 0x2424, 0x240B,
   0x2518, 0x2510, 0x250C, 0x2514, 0x253C,
@@ -139,22 +143,33 @@ static const wchar_t vt100trans[] = {
   0x2264, 0x2265, 0x03C0, 0x2260, 0x00A3, 0x00B7
 };
 
+static size_t
+vt100_decode (const struct avt_charenc *self, avt_char * ch, const char *s)
+{
+  const uint_least16_t *trans = (const uint_least16_t *) self;
+
+  if (*s < 95 or * s > 126)
+    *ch = (avt_char) * s;
+  else
+    *ch = trans[*s - 95];
+
+  return 1;
+}
+
+static const struct avt_charenc vt100_converter = {
+  .data = (void *) &vt100trans,
+  .decode = vt100_decode,
+  .encode = NULL
+};
+
 // handler for APC commands
 static avta_term_apc_cmd apc_cmd_handler;
 
-static void
-set_encoding (const char *encoding)
+static inline void
+set_encoding (const struct avt_charenc *encoding)
 {
-  vt100graphics = (strcmp (VT100, encoding) == 0);
-
-  if (vt100graphics)
-    avt_mb_encoding ("US-ASCII");
-  else if (avt_mb_encoding (encoding))
-    {
-      // try a fallback
-      avt_set_status (AVT_NORMAL);
-      avt_mb_encoding ("US-ASCII");
-    }
+  convert = encoding;
+  avt_charencoding (encoding);
 }
 
 extern void
@@ -356,17 +371,55 @@ process_key (avt_char key)
     default:
       if (key)
 	{
-	  wchar_t ch;
-	  char mbstring[8];
-	  int length;
+	  char mbstring[16];
+	  size_t length;
 
-	  ch = (wchar_t) key;
-	  length = avt_mb_encode_buffer (mbstring, sizeof (mbstring), &ch, 1);
+	  length =
+	    convert->encode (convert, mbstring, sizeof (mbstring), key);
 	  if (length > 0)
 	    avta_term_send (mbstring, length);
 	}			// if (key)
     }				// switch
 }
+
+// FIXME: do I really need a buffer???
+static size_t
+decode_buffer (wchar_t * dest, size_t dest_len,
+	       const char *src, size_t src_len)
+{
+  size_t characters = 0;
+
+  while (src_len and dest_len)
+    {
+      avt_char ch;
+      size_t num = convert->decode (convert, &ch, src);
+
+      if (sizeof (wchar_t) >= 3 or ch <= 0xFFFFu)
+	*dest = (wchar_t) ch;
+      else if (dest_len > 1)	// UTF-16 surrogates
+	{
+	  ch -= 0x10000u;
+	  *dest = 0xD800 bitor ((ch >> 10) bitand 0x3FF);
+	  ++dest;
+	  --dest_len;
+	  *dest = 0xDC00 bitor (ch bitand 0x3FF);
+	  ++characters;
+	}
+
+      ++dest;
+      --dest_len;
+      ++characters;
+
+      if (num > src_len)
+	break;
+
+      src += num;
+      src_len -= num;
+    }
+
+  return characters;
+}
+
 
 #define clear_textbuffer(void)  get_character(-1)
 
@@ -422,8 +475,8 @@ get_character (int fd)
 	  else			// nread != -1
 	    {
 	      textbuffer_len =
-		avt_mb_decode_buffer (textbuffer, sizeof (textbuffer),
-				      (const char *) &filebuf, nread);
+		decode_buffer (textbuffer, sizeof (textbuffer),
+			       (const char *) &filebuf, nread);
 	      textbuffer_pos = 0;
 	    }
 
@@ -740,8 +793,8 @@ reset_terminal (void)
   activate_cursor (true);
   avt_set_scroll_mode (1);
   vt100graphics = false;
-  G0 = "ISO-8859-1";
-  G1 = VT100;
+  G0 = avt_iso8859_1 ();
+  G1 = &vt100_converter;
   set_encoding (default_encoding);	// not G0!
 
   // like vt102
@@ -1231,7 +1284,7 @@ escape_sequence (int fd, avt_char last_character)
   wchar_t ch;
   static int saved_text_color, saved_text_background_color;
   static bool saved_underline_state, saved_bold_state;
-  static const char *saved_G0, *saved_G1;
+  static const struct avt_charenc *saved_G0, *saved_G1;
 
   ch = get_character (fd);
 
@@ -1278,7 +1331,7 @@ escape_sequence (int fd, avt_char last_character)
 	if (ch2 == L'@')
 	  set_encoding (G0);	// unsure
 	else if (ch2 == L'G' or ch2 == L'8' /* obsolete */ )
-	  set_encoding ("UTF-8");
+	  set_encoding (avt_utf8 ());
 	/* else if (ch2 == L'B')
 	   set_encoding ("UTF-1"); */// does anybody use that?
       }
@@ -1291,13 +1344,13 @@ escape_sequence (int fd, avt_char last_character)
 
 	ch2 = get_character (fd);
 	if (ch2 == L'B')
-	  G0 = "ISO-8859-1";
+	  G0 = avt_iso8859_1 ();
 	else if (ch2 == L'0')
-	  G0 = VT100;
+	  G0 = &vt100_converter;
 	else if (ch2 == L'U')
-	  G0 = "IBM437";
+	  G0 = avt_cp437 ();
 	else if (ch2 == L'K')
-	  G0 = "UTF-8";		// "user-defined"
+	  G0 = avt_utf8 ();	// "user-defined"
       }
       break;
 
@@ -1307,13 +1360,13 @@ escape_sequence (int fd, avt_char last_character)
 
 	ch2 = get_character (fd);
 	if (ch2 == L'B')
-	  G1 = "ISO-8859-1";
+	  G1 = avt_iso8859_1 ();
 	else if (ch2 == L'0')
-	  G1 = VT100;
+	  G1 = &vt100_converter;
 	else if (ch2 == L'U')
-	  G1 = "IBM437";
+	  G1 = avt_cp437 ();
 	else if (ch2 == L'K')
-	  G1 = "UTF-8";		// "user-defined"
+	  G1 = avt_utf8 ();	// "user-defined"
       }
       break;
 
@@ -1453,12 +1506,12 @@ avta_term_run (int fd)
   prg_input = -1;
 }
 
+
 extern int
-avta_term_start (const char *system_encoding, const char *working_dir,
-		 char *prg_argv[])
+avta_term_start (const char *working_dir, char *prg_argv[])
 {
   clear_textbuffer ();
-  default_encoding = system_encoding;
+  default_encoding = avt_systemencoding ();
 
   max_x = avt_get_max_x ();
   max_y = avt_get_max_y ();

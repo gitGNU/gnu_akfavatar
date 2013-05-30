@@ -1,7 +1,8 @@
 /*
  * AKFAvatar Terminal emulation for Lua 5.2
  * ATTENTION: this is work in progress, ie. not finished yet
- * Copyright (c) 2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2010,2011,2012,2013
+ * Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -85,7 +86,6 @@ lterm_execute (lua_State * L)
 {
   int fd;
   int n;
-  char encoding[80];
   char *argv[256];
 
   if (not avt_initialized ())
@@ -93,17 +93,6 @@ lterm_execute (lua_State * L)
 
   // set all locale settings
   setlocale (LC_ALL, "");
-
-#ifdef NO_LANGINFO
-  // get encoding from AKFAvatar settings
-  strncpy (encoding, avt_get_mb_encoding (), sizeof (encoding));
-#else
-  // get encoding from system settings, needs LC_CTYPE to be set correctly
-  // conforming to SUSv2, POSIX.1-2001
-  strncpy (encoding, nl_langinfo (CODESET), sizeof (encoding));
-#endif
-
-  encoding[sizeof (encoding) - 1] = '\0';	// enforce termination
 
   n = lua_gettop (L);		// number of options
 
@@ -117,10 +106,10 @@ lterm_execute (lua_State * L)
 	argv[i] = (char *) luaL_checkstring (L, i + 1);
       argv[n] = NULL;
 
-      fd = avta_term_start (encoding, startdir, argv);
+      fd = avta_term_start (startdir, argv);
     }
   else				// start shell
-    fd = avta_term_start (encoding, startdir, NULL);
+    fd = avta_term_start (startdir, NULL);
 
 
   if (fd != -1)
@@ -263,19 +252,29 @@ lterm_decide (lua_State * L)
 static int
 APC_command (wchar_t * command)
 {
-  char *mbstring;
-  int size;
+  char mbstring[4097];
+  size_t len;
+  char *p;
 
   if (not term_L)
     return -1;
 
-  // get mbstring from command (in current encoding)
-  size = avt_mb_encode (&mbstring, command, wcslen (command));
+  const struct avt_charenc *convert = avt_charencoding (NULL);
 
-  if (size > -1)
+  // get mbstring from command
+  len = 0;
+  p = mbstring;
+
+  while (*command and len < sizeof (mbstring))
     {
-      int ret = luaL_loadbufferx (term_L, mbstring, size, mbstring, "t");
-      free (mbstring);
+      len += convert->encode (convert, p, sizeof (mbstring) - len, *command);
+      p += len;
+      ++command;
+    }
+
+  if (len)
+    {
+      int ret = luaL_loadbufferx (term_L, mbstring, len, mbstring, "t");
 
       if (ret != LUA_OK)
 	return lua_error (term_L);

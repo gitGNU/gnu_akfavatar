@@ -357,8 +357,7 @@ typedef int (*avta_term_apc_cmd) (wchar_t*);
  * returns file-descriptor for output of the process
  * or -1 on error (also if not supported at all)
  */
-AVT_ADDON int avta_term_start (const char *system_encoding, 
-			       const char *working_dir,
+AVT_ADDON int avta_term_start (const char *working_dir,
 			       char *prg_argv[]);
 
 AVT_ADDON void avta_term_run (int fd);
