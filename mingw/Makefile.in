@@ -21,11 +21,11 @@ u2d = sed -i -e 's/$$/\r/'
 SHELL = /bin/sh
 .SUFFIXES:
 
-all: akfavatar.dll libakfavatar.a libavtaddons.a about example.exe iconv.exe \
+all: akfavatar.dll libakfavatar.a libavtaddons.a about example.exe \
      lua-akfavatar.exe lua-akfavatar.dll base64.dll akfavatar-vorbis.dll \
      akfavatar-graphic.dll
 
-nolua: akfavatar.dll libakfavatar.a libavtaddons.a about example.exe iconv.exe
+nolua: akfavatar.dll libakfavatar.a libavtaddons.a about example.exe
 
 
 Makefile: $(srcdir)/configure $(srcdir)/mingw/Makefile.in ./config.status
@@ -93,10 +93,6 @@ avatar.o: $(srcdir)/avatar.c $(srcdir)/akfavatar.h \
              $(srcdir)/round_lower_left.xbm $(srcdir)/round_lower_right.xbm
 	$(CC) -c -I$(srcdir) -I. $(CFLAGS) -o $@ $(srcdir)/avatar.c
 
-avtencoding.o: $(srcdir)/avtencoding.c $(srcdir)/akfavatar.h \
-                  $(srcdir)/avtinternals.h
-	$(CC) -c -I$(srcdir) -I$(srcdir)/mingw $(CFLAGS) -o $@ $(srcdir)/avtencoding.c
-
 charencoding.o: $(srcdir)/charencoding.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
 	$(CC) -c -I$(srcdir) $(CFLAGS) -o $@ $(srcdir)/charencoding.c
 
@@ -137,38 +133,30 @@ font.c: $(srcdir)/$(FONT) $(srcdir)/bdf2c.awk
 font.o: font.c
 	$(CC) -c $(CFLAGS) -o $@ font.c
 
-win_iconv.o: $(srcdir)/mingw/win_iconv.c
-	$(CC) -c $(CFLAGS) -o $@ $(srcdir)/mingw/win_iconv.c
-
-iconv.exe: $(srcdir)/mingw/win_iconv.c
-	$(CC) -DMAKE_EXE -o $@ $(CFLAGS) $(srcdir)/mingw/win_iconv.c
-
-iconv: iconv.exe
-
 # static library
 libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
-	  avtencoding.o ASCII.o ISO-8859-1.o UTF-8.o charencoding.o \
+	  ASCII.o ISO-8859-1.o UTF-8.o charencoding.o \
 	  audio-common.o avatar-default.o avtdata.o font.o avtpalette.o \
-	  win_iconv.o windowstiming.o avtmenu.o version.o avtxbm.o avtxpm.o \
+	  windowstiming.o avtmenu.o version.o avtxbm.o avtxpm.o \
 	  avtbmp.o avtgraphic.o
 	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
-	avtencoding.o ASCII.o ISO-8859-1.o UTF-8.o charencoding.o \
+	ASCII.o ISO-8859-1.o UTF-8.o charencoding.o \
 	audio-common.o avatar-default.o avtdata.o font.o avtpalette.o \
-	win_iconv.o version.o windowstiming.o avtmenu.o avtxbm.o avtxpm.o \
+	version.o windowstiming.o avtmenu.o avtxbm.o avtxpm.o \
 	avtbmp.o avtgraphic.o
 	$(RANLIB) $@
 
 akfavatar.dll: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
-	  avtencoding.o ASCII.o ISO-8859-1.o UTF-8.o charencoding.o \
+	  ASCII.o ISO-8859-1.o UTF-8.o charencoding.o \
 	  audio-common.o avatar-default.o avtdata.o font.o libinfo.o \
-	  avtpalette.o windowstiming.o win_iconv.o avtmenu.o version.o \
+	  avtpalette.o windowstiming.o avtmenu.o version.o \
 	  avtxbm.o avtxpm.o avtbmp.o avtgraphic.o \
 	  $(srcdir)/mingw/akfavatar.def
 	$(CC) -shared -o $@ $(srcdir)/mingw/akfavatar.def \
 	        $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
-	        avtencoding.o ASCII.o ISO-8859-1.o UTF-8.o charencoding.o \
+	        ASCII.o ISO-8859-1.o UTF-8.o charencoding.o \
 	        avatar-default.o avtdata.o audio-common.o font.o avtpalette.o \
-	        windowstiming.o win_iconv.o avtmenu.o avtxbm.o avtxpm.o \
+	        windowstiming.o avtmenu.o avtxbm.o avtxpm.o \
 	        avtbmp.o avtgraphic.o version.o libinfo.o \
 	        -Wl,-no-undefined,--enable-runtime-pseudo-reloc \
 	        -Wl,--out-implib,libakfavatar.dll.a \
@@ -548,7 +536,6 @@ mostlyclean: clean
 	-rm -f akfavatar.h.ps akfavatar.h.pdf
 	-rm -f avtaddons.h.ps avtaddons.h.pdf
 	-rm -f lua-akfavatar.exe
-	-rm -f iconv.exe
 	-rm -f config-mingw
 	-rm -f akfavatar.pc avtaddons.pc
 

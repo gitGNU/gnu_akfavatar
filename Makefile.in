@@ -106,12 +106,12 @@ avatar-linuxfb.lo: $(srcdir)/avatar-linuxfb.c $(srcdir)/akfavatar.h \
 	-$(CC) -I$(srcdir) -I. $(CFLAGS) -c -fpic -o $@ $(srcdir)/avatar-linuxfb.c
 
 libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o avatar-default.o \
-	        ASCII.o ISO-8859-1.o UTF-8.o avtencoding.o charencoding.o \
+	        ASCII.o ISO-8859-1.o UTF-8.o charencoding.o \
 	        avtpalette.o font.o version.o avtdata.o \
 	        audio-common.o avttiming.o avtmenu.o avtxbm.o avtxpm.o avtbmp.o \
 	        avtgraphic.o
 	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
-	             ASCII.o ISO-8859-1.o UTF-8.o avtencoding.o charencoding.o \
+	             ASCII.o ISO-8859-1.o UTF-8.o charencoding.o \
 	             audio-common.o avtdata.o avatar-default.o avtpalette.o \
 	             font.o version.o avttiming.o avtmenu.o avtxbm.o avtxpm.o \
 	             avtbmp.o avtgraphic.o
@@ -139,14 +139,14 @@ libavtaddons.a: filechooser.o avtterm.o avttermsys.o arch.o \
 	-$(RANLIB) $@
 
 libakfavatar.so: $(OBJAVATAR).lo $(OBJAUDIO).lo avatar.lo avatar-default.lo \
-	         ASCII.lo ISO-8859-1.lo UTF-8.lo avtencoding.lo charencoding.lo \
+	         ASCII.lo ISO-8859-1.lo UTF-8.lo charencoding.lo \
 	         avtpalette.lo font.lo version.lo avtdata.lo \
 	         audio-common.lo avttiming.lo avtmenu.lo avtxbm.lo avtxpm.lo \
 	         avtbmp.lo avtgraphic.lo
 	$(CC) -shared \
 	      -Wl,-soname,$(SONAME) -o $(LIBNAME) -fpic \
 	      $(OBJAVATAR).lo $(OBJAUDIO).lo avatar.lo avatar-default.lo \
-	      ASCII.lo ISO-8859-1.lo UTF-8.lo avtencoding.lo charencoding.lo \
+	      ASCII.lo ISO-8859-1.lo UTF-8.lo charencoding.lo \
 	      avtpalette.lo font.lo version.lo avtdata.lo \
 	      audio-common.lo avttiming.lo avtmenu.lo avtxbm.lo avtxpm.lo \
 	      avtbmp.lo avtgraphic.lo \
@@ -419,12 +419,6 @@ avatar-default.o: $(srcdir)/avatar-default.c $(srcdir)/akfavatar.h
 avatar-default.lo: $(srcdir)/avatar-default.c $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) -c -fpic -o $@ \
 	  $(srcdir)/avatar-default.c
-
-avtencoding.o: $(srcdir)/avtencoding.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
-	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtencoding.c
-
-avtencoding.lo: $(srcdir)/avtencoding.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h
-	$(CC) -I$(srcdir) $(CFLAGS) -c -fpic -o $@ $(srcdir)/avtencoding.c
 
 avtgraphic.o: $(srcdir)/avtgraphic.c $(srcdir)/avtgraphic.h $(srcdir)/avtdata.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtgraphic.c
@@ -953,7 +947,6 @@ mostlyclean: clean
 	-rm -f audioplayer.de.pdf audioplayer.de.ps audioplayer.de.dvi
 	-rm -f audioplayer.en.pdf audioplayer.en.ps audioplayer.en.dvi
 	-rm -f lua-akfavatar.exe
-	-rm -f iconv.exe
 	-rm -f config-mingw
 	-rm -f akfavatar.pc avtaddons.pc
 
@@ -1011,9 +1004,8 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/audio-common.c \
 	   $(srcdir)/avtdata.h $(srcdir)/avtdata.c \
 	   $(srcdir)/avttiming.c \
-	   $(srcdir)/avtencoding.c $(srcdir)/UTF-8.c \
 	   $(srcdir)/charencoding.c $(srcdir)/sysencoding.c \
-	   $(srcdir)/ASCII.c \
+	   $(srcdir)/UTF-8.c $(srcdir)/ASCII.c \
 	   $(srcdir)/ISO-8859-1.c $(srcdir)/ISO-8859-2.c \
 	   $(srcdir)/ISO-8859-3.c $(srcdir)/ISO-8859-4.c \
 	   $(srcdir)/ISO-8859-5.c $(srcdir)/ISO-8859-7.c \
@@ -1182,7 +1174,6 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/mingw/langwindows.c \
 	   $(srcdir)/mingw/windowstiming.c \
 	   $(srcdir)/mingw/avttermstub.c $(srcdir)/mingw/askdrive.c \
-	   $(srcdir)/mingw/win_iconv.c $(srcdir)/mingw/iconv.h \
 	   $(srcdir)/mingw/akfavatar.def $(srcdir)/mingw/lua-akfavatar.def \
 	   $(srcdir)/mingw/akfavatar-vorbis.def \
 	   $(srcdir)/mingw/Makefile.in $(srcdir)/mingw/README \

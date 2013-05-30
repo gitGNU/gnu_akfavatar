@@ -4,7 +4,6 @@ EXPORTS
     avt_add_raw_audio_data
     avt_ascii
     avt_ask
-    avt_ask_mb
     avt_ask_char
     avt_audio_playing
     avt_avatar_image_data
@@ -35,7 +34,6 @@ EXPORTS
     avt_copyright
     avt_credits
     avt_credits_char
-    avt_credits_mb
     avt_decide
     avt_delete_characters
     avt_delete_lines
@@ -57,7 +55,6 @@ EXPORTS
     avt_get_key
     avt_get_max_x
     avt_get_max_y
-    avt_get_mb_encoding
     avt_get_mode
     avt_get_newline_mode
     avt_get_origin_mode
@@ -71,7 +68,6 @@ EXPORTS
     avt_initialized
     avt_input
     avt_input_char
-    avt_input_mb
     avt_insert_lines
     avt_insert_spaces
     avt_inverse
@@ -87,11 +83,6 @@ EXPORTS
     avt_load_audio_stream
     avt_lock_updates
     avt_markup
-    avt_mb_decode
-    avt_mb_decode_buffer
-    avt_mb_encode
-    avt_mb_encode_buffer
-    avt_mb_encoding
     avt_menu
     avt_move_in
     avt_move_out
@@ -105,7 +96,6 @@ EXPORTS
     avt_normal_text
     avt_pager
     avt_pager_char
-    avt_pager_mb
     avt_palette
     avt_palette_size
     avt_pause_audio
@@ -119,8 +109,6 @@ EXPORTS
     avt_put_raw_image_xpm
     avt_quit
     avt_quit_audio
-    avt_recode
-    avt_recode_buffer
     avt_recode_char
     avt_reserve_single_keys
     avt_reset
@@ -129,8 +117,6 @@ EXPORTS
     avt_save_position
     avt_say
     avt_say_len
-    avt_say_mb
-    avt_say_mb_len
     avt_say_char
     avt_say_char_len
     avt_set_audio_end_key
@@ -138,7 +124,6 @@ EXPORTS
     avt_set_avatar_mode
     avt_set_avatar_name
     avt_set_avatar_name_char
-    avt_set_avatar_name_mb
     avt_set_background_color
     avt_set_balloon_color
     avt_set_balloon_height
@@ -172,8 +157,6 @@ EXPORTS
     avt_switch_mode
     avt_tell
     avt_tell_len
-    avt_tell_mb
-    avt_tell_mb_len
     avt_tell_char
     avt_tell_char_len
     avt_text_direction

@@ -330,146 +330,6 @@ AVT_API size_t avt_recode_char (const struct avt_charenc *tocode,
                                 const struct avt_charenc *fromcode,
                                 const char *src, size_t src_size);
 
-/***********************************************************************/
-/* say or ask stuff with multi-byte encodings */
-
-/* These functions might be removed in future versions */
-
-/*
- * set encoding for mb functions
- * NULL or "" sets the systems default encoding (use with care!)
- */
-AVT_API int avt_mb_encoding (const char *encoding);
-
-/*
- * get the encoding, NULL if none set
- * you should make a copy of the result immediately
- */
-AVT_API char* avt_get_mb_encoding (void);
-
-/*
- * prints a 0 terminated string in the balloon
- * if there is no balloon, it is drawn
- * if there is no avatar, it is shown (not moved in)
- * interprets control chars including overstrike-text
- *
- * converts from a given charset encoding
- * (see avt_mb_encoding)
- */
-AVT_API int avt_say_mb (const char *txt);
-
-/*
- * the same with a given length
- * the string needn't be terminated then
- * and can contain binary zeros
- */
-AVT_API int avt_say_mb_len (const char *txt, size_t len);
-
-/*
- * sets the balloon size so that the text fits exactly
- * prints a 0 terminated string in the balloon
- * if there is no balloon, it is drawn
- * if there is no avatar, it is shown (not moved in)
- * interprets control chars including overstrike-text
- *
- * converts from a given charset encoding
- * (see avt_mb_encoding)
- */
-AVT_API int avt_tell_mb (const char *txt);
-
-/*
- * the same with a given length
- * the string needn't be terminated then
- * and can contain binary zeros
- */
-AVT_API int avt_tell_mb_len (const char *txt, size_t len);
-
-/*
- * get string (just one line)
- * converted to the given encoding
- *
- * for UTF-8 encoding s should have a capacity of 4 * (LINELENGTH+1) Bytes
- */
-AVT_API int avt_ask_mb (char *s, size_t size);
-
-
-/***********************************************************************/
-/* convert text encodings */
-
-/* These functions might be removed in future versions */
-
-/*
- * decode a string into wchar_t
- * size in bytes
- * returns number of characters in dest (without the termination zero)
- * or (size_t)(-1) on error
- * incomplete multi-byte sequences can be completed the next turn
- * dest must be freed by caller with avt_free
- */
-AVT_API size_t avt_mb_decode (wchar_t **dest, const char *src, size_t src_size);
-
-/*
- * decode a string into wchar_t with a fixed buffer
- * sizes in bytes
- * returns number of characters in dest (without the termination zero)
- * or (size_t)(-1) on error
- * incomplete multi-byte sequences can be completed the next turn
- * dest gets as much as fits
- * dest should have a size of (src + 1) * 4
- */
-AVT_API size_t avt_mb_decode_buffer (wchar_t *dest, size_t dest_size,
-                                     const char *src, size_t src_size);
-
-/*
- * encode a string from wchar_t
- * len is the length
- * returns the size of dest (without the termination zero)
- * or (size_t)(-1) on error
- * dest must be freed by caller with avt_free
- * (the size of dest may be much more than needed)
- */
-AVT_API size_t avt_mb_encode (char **dest, const wchar_t *src, size_t len);
-
-/*
- * encode a string from wchar_t with a fixed buffer
- * len is the length
- * returns the size of dest (without the termination zero)
- * or (size_t)(-1) on error
- * dest gets as much as fits (terminator reserved)
- * (in UTF-8 a character can have up to 4 bytes)
- */
-AVT_API size_t avt_mb_encode_buffer (char *dest, size_t dest_size,
-                                     const wchar_t *src, size_t len);
-
-/*
- * recode string
- * if either tocode or fromcode is NULL, it uses the current mb_encoding
- * the empty string is accepted as normal enconding name
- * the string src must not have incomplete characters at the end
- *
- * returns the size of dest (without the termination zeros)
- * or (size_t)(-1) on error
- * dest must be freed with avt_free
- */
-AVT_API size_t avt_recode (const char *tocode, const char *fromcode,
-                           char **dest, const char *src, size_t src_size);
-
-/*
- * recode a string with a fixed buffer
- * otherwise the same as avt_recode
- *
- * returns the size of dest (without the termination zeros)
- * or (size_t)(-1) on error
- * dest gets as much as fits
- * 4 Bytes in the dest buffer are reserved for a terminator
- */
-AVT_API size_t avt_recode_buffer (const char *tocode, const char *fromcode,
-                                  char *dest, size_t dest_size,
-                                  const char *src, size_t src_size);
-
-/* free memory allocated by this library */
-AVT_API void avt_free (void *);
-
 
 /***********************************************************************/
 /* handling of single characters */
@@ -1047,6 +907,9 @@ AVT_API void *avt_get_font_char (int);
 AVT_API void avt_get_font_dimensions (int *width, int *height,
                                       int *baseline);
 
+
+/* free memory allocated by this library */
+AVT_API void avt_free (void *);
 
 /***********************************************************************/
 /* audio output */

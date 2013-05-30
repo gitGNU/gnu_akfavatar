@@ -1,3 +1,7 @@
+2013-05-30  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtencoding.c, mingw/win_iconv.c: removed at last
+
 2013-05-23  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c: use new char functions
