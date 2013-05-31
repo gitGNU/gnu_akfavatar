@@ -128,8 +128,8 @@ avt_say_char_len (const char *txt, size_t len)
 
   // nothing to do when not txt
   // but do allow a text to start with zeros here
-  if (not convert or not txt or status != AVT_NORMAL
-      or not avt_initialized ())
+  if (not convert or not convert->decode
+      or not txt or status != AVT_NORMAL or not avt_initialized ())
     return avt_update ();
 
   while (len)
@@ -157,7 +157,7 @@ avt_say_char (const char *txt)
   if (not avt_initialized ())
     return status;
 
-  if (not convert or not txt or not * txt)
+  if (not convert or not convert->decode or not txt or not * txt)
     return avt_update ();
 
   while (*txt)
@@ -181,7 +181,7 @@ avt_tell_char_len (const char *txt, size_t len)
 {
   int status = avt_get_status ();
 
-  if (convert and txt and status == AVT_NORMAL)
+  if (convert and convert->decode and txt and status == AVT_NORMAL)
     {
       if (not len or len > 0x80000000)
 	len = strlen (txt);
@@ -201,7 +201,7 @@ avt_tell_char (const char *txt)
 {
   int status = avt_get_status ();
 
-  if (convert and txt and * txt)
+  if (convert and convert->decode and txt and * txt)
     status = avt_tell_char_len (txt, strlen (txt));
 
   return status;
@@ -215,7 +215,7 @@ avt_set_avatar_name_char (const char *name)
 
   if (not name or not * name)
     status = avt_set_avatar_name (NULL);
-  else if (not convert)
+  else if (not convert or not convert->decode)
     status = avt_get_status ();
   else
     {
@@ -241,7 +241,8 @@ avt_pager_char (const char *txt, size_t len, int startline)
 {
   int status = avt_get_status ();
 
-  if (convert and txt and status == AVT_NORMAL and avt_initialized ())
+  if (convert and convert->decode
+      and txt and status == AVT_NORMAL and avt_initialized ())
     {
       if (not len)
 	len = strlen (txt);
@@ -267,8 +268,8 @@ avt_credits_char (const char *txt, bool centered)
 {
   int status = avt_get_status ();
 
-  if (status == AVT_NORMAL and convert and
-      txt and * txt and avt_initialized ())
+  if (status == AVT_NORMAL and convert and convert->decode
+      and txt and * txt and avt_initialized ())
     {
       size_t len = strlen (txt);
 
@@ -294,7 +295,7 @@ avt_input_char (char *s, size_t size, const char *default_text,
   int status = avt_get_status ();
   avt_char ch = AVT_KEY_NONE;
 
-  if (s and size)
+  if (s and size and convert and convert->encode)
     {
       wchar_t buf[size];
       size_t dtlen = (AVT_LINELENGTH + 1) * 4 / sizeof (wchar_t);
