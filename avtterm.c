@@ -44,9 +44,6 @@
 // claim to be a vt100 with advanced video
 #define DS  CSI "?1;2c"
 
-// Vt100 graphics is handled internaly
-#define VT100 "VT100 graphics"
-
 #define TERM_LINUX 1
 
 #ifdef TERM_LINUX
@@ -119,9 +116,6 @@ static bool nocolor;
 static int text_color;
 static int text_background_color;
 static bool faint;
-
-// use vt100 graphics?
-static bool vt100graphics;
 
 // G0 and G1 charset encoding (linux-specific)
 static const struct avt_charenc *G0, *G1;
@@ -794,7 +788,6 @@ reset_terminal (void)
   avt_set_auto_margin (true);
   activate_cursor (true);
   avt_set_scroll_mode (1);
-  vt100graphics = false;
   G0 = avt_iso8859_1 ();
   G1 = &vt100_converter;
   set_encoding (default_encoding);	// not G0!
@@ -1488,9 +1481,6 @@ avta_term_run (int fd)
 	{
 	  if (insert_mode)
 	    avt_insert_spaces (1);
-
-	  if (vt100graphics and (ch >= 95 and ch <= 126))
-	    ch = vt100trans[ch - 95];
 
 	  last_character = (avt_char) ch;
 
