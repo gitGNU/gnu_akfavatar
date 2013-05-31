@@ -146,18 +146,20 @@ static const uint_least16_t vt100trans[] = {
 static size_t
 vt100_decode (const struct avt_charenc *self, avt_char * ch, const char *s)
 {
-  const uint_least16_t *trans = (const uint_least16_t *) self;
+  (void) self;
 
-  if (*s < 95 or * s > 126)
+  if (*s < 95)
     *ch = (avt_char) * s;
+  else if (*s <= 126)
+    *ch = vt100trans[*s - 95];
   else
-    *ch = trans[*s - 95];
+    *ch = BROKEN_WCHAR;
 
   return 1;
 }
 
 static const struct avt_charenc vt100_converter = {
-  .data = (void *) &vt100trans,
+  .data = (void *) &vt100trans,	// not used
   .decode = vt100_decode,
   .encode = NULL
 };
