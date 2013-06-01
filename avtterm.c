@@ -378,7 +378,7 @@ process_key (avt_char key)
     }				// switch
 }
 
-// FIXME: do I really need a buffer???
+// FIXME: handle incomplete characters
 static size_t
 decode_buffer (wchar_t * dest, size_t dest_len,
 	       const char *src, size_t src_len)
@@ -1502,8 +1502,9 @@ avta_term_run (int fd)
 extern int
 avta_term_start (const char *working_dir, char *prg_argv[])
 {
-  clear_textbuffer ();
   default_encoding = avt_systemencoding ();
+  set_encoding (default_encoding);
+  clear_textbuffer ();
 
   max_x = avt_get_max_x ();
   max_y = avt_get_max_y ();
