@@ -33,6 +33,7 @@
 #include <string.h>
 #include <iso646.h>
 #include <stdint.h>
+#include <limits.h>
 
 // size for input buffer
 #define INBUFSIZE 1024
@@ -383,7 +384,6 @@ process_key (avt_char key)
 
 #define clear_textbuffer(void)  get_character(-1)
 
-// FIXME: handle incomplete characters
 static avt_char
 get_character (int fd)
 {
@@ -397,13 +397,27 @@ get_character (int fd)
       return AVT_EOF;
     }
 
-  if (filebuf_pos >= filebuf_len)
+  // need to get more characters?
+  if (filebuf_pos >= filebuf_len
+      or (filebuf_len > sizeof (filebuf) - MB_LEN_MAX
+	  and filebuf_pos > filebuf_len - MB_LEN_MAX))
     {
       // update
       if (text_delay == 0)
 	avt_lock_updates (false);
 
-      ssize_t nread = read (fd, &filebuf, sizeof (filebuf));
+      size_t offset = 0;
+      char *p = filebuf;
+
+      // move trailing rest to beginning
+      if (filebuf_len > filebuf_pos)
+	{
+	  offset = filebuf_len - filebuf_pos;
+	  memmove (filebuf, filebuf + filebuf_pos, offset);
+	  p += offset;
+	}
+
+      ssize_t nread = read (fd, p, sizeof (filebuf) - offset);
 
       // waiting for data
       if (nread == -1 and errno == EAGAIN)
@@ -413,7 +427,7 @@ get_character (int fd)
 
 	  do
 	    {
-	      nread = read (fd, &filebuf, sizeof (filebuf));
+	      nread = read (fd, p, sizeof (filebuf) - offset);
 
 	      while (avt_key_pressed ())
 		process_key (avt_get_key ());
@@ -431,7 +445,7 @@ get_character (int fd)
 	  return AVT_EOF;
 	}
 
-      filebuf_len = nread;
+      filebuf_len = offset + nread;
       filebuf_pos = 0;
 
       if (text_delay == 0)
