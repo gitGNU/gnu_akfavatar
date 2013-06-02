@@ -380,30 +380,6 @@ process_key (avt_char key)
     }				// switch
 }
 
-static size_t
-decode_buffer (avt_char * dest, size_t dest_len,
-	       const char *src, size_t src_len)
-{
-  size_t characters = 0;
-
-  while (src_len and dest_len)
-    {
-      size_t num = convert->decode (convert, dest, src);
-
-      ++dest;
-      --dest_len;
-      ++characters;
-
-      if (num > src_len)
-	break;
-
-      src += num;
-      src_len -= num;
-    }
-
-  return characters;
-}
-
 
 #define clear_textbuffer(void)  get_character(-1)
 
@@ -411,70 +387,60 @@ decode_buffer (avt_char * dest, size_t dest_len,
 static avt_char
 get_character (int fd)
 {
-  static avt_char textbuffer[INBUFSIZE + 1];	// +1 for terminator
-  static size_t textbuffer_pos = 0;
-  static size_t textbuffer_len = 0;
-  avt_char ch;
+  static char filebuf[INBUFSIZE + 1];
+  static size_t filebuf_pos = 0;
+  static size_t filebuf_len = 0;
 
   if (fd == -1)			// clear textbuffer
     {
-      textbuffer_pos = textbuffer_len = 0;
+      filebuf_pos = filebuf_len = 0;
       return AVT_EOF;
     }
 
-  do
+  if (filebuf_pos >= filebuf_len)
     {
-      if (textbuffer_pos >= textbuffer_len)
+      // update
+      if (text_delay == 0)
+	avt_lock_updates (false);
+
+      ssize_t nread = read (fd, &filebuf, sizeof (filebuf));
+
+      // waiting for data
+      if (nread == -1 and errno == EAGAIN)
 	{
-	  char filebuf[INBUFSIZE];
-	  ssize_t nread;
+	  if (cursor_active)
+	    avt_activate_cursor (true);
 
-	  // update
-	  if (text_delay == 0)
-	    avt_lock_updates (false);
-
-	  nread = read (fd, &filebuf, sizeof (filebuf));
-
-	  // waiting for data
-	  if (nread == -1 and errno == EAGAIN)
+	  do
 	    {
-	      if (cursor_active)
-		avt_activate_cursor (true);
+	      nread = read (fd, &filebuf, sizeof (filebuf));
 
-	      do
-		{
-		  nread = read (fd, &filebuf, sizeof (filebuf));
-
-		  while (avt_key_pressed ())
-		    process_key (avt_get_key ());
-		}
-	      while (nread == -1 and errno == EAGAIN
-		     and avt_update () == AVT_NORMAL);
-
-	      if (cursor_active)
-		avt_activate_cursor (false);
+	      while (avt_key_pressed ())
+		process_key (avt_get_key ());
 	    }
+	  while (nread == -1 and errno == EAGAIN
+		 and avt_update () == AVT_NORMAL);
 
-	  if (nread == -1)
-	    textbuffer_len = (size_t) (-1);
-	  else			// nread != -1
-	    {
-	      textbuffer_len =
-		decode_buffer (textbuffer, sizeof (textbuffer),
-			       (const char *) &filebuf, nread);
-	      textbuffer_pos = 0;
-	    }
-
-	  if (text_delay == 0)
-	    avt_lock_updates (true);
+	  if (cursor_active)
+	    avt_activate_cursor (false);
 	}
 
-      if (textbuffer_len == (size_t) (-1))
-	ch = AVT_EOF;
-      else
-	ch = textbuffer[textbuffer_pos++];
+      if (nread < 0)
+	{
+	  filebuf_len = filebuf_pos = 0;
+	  return AVT_EOF;
+	}
+
+      filebuf_len = nread;
+      filebuf_pos = 0;
+
+      if (text_delay == 0)
+	avt_lock_updates (true);
     }
-  while (ch == L'\0');
+
+  avt_char ch;
+  size_t num = convert->decode (convert, &ch, filebuf + filebuf_pos);
+  filebuf_pos += num;
 
   return ch;
 }
