@@ -90,6 +90,8 @@
 #define KEY_F15       CSI "27~"
 #endif
 
+#define AVT_EOF (0xFFFFFFFFu)
+
 const struct avt_charenc *convert;
 
 // default encoding - either system encoding or given per parameters
@@ -378,29 +380,15 @@ process_key (avt_char key)
     }				// switch
 }
 
-// FIXME: handle incomplete characters
 static size_t
-decode_buffer (wchar_t * dest, size_t dest_len,
+decode_buffer (avt_char * dest, size_t dest_len,
 	       const char *src, size_t src_len)
 {
   size_t characters = 0;
 
   while (src_len and dest_len)
     {
-      avt_char ch;
-      size_t num = convert->decode (convert, &ch, src);
-
-      if (sizeof (wchar_t) >= 3 or ch <= 0xFFFFu)
-	*dest = (wchar_t) ch;
-      else if (dest_len > 1)	// UTF-16 surrogates
-	{
-	  ch -= 0x10000u;
-	  *dest = 0xD800 bitor ((ch >> 10) bitand 0x3FF);
-	  ++dest;
-	  --dest_len;
-	  *dest = 0xDC00 bitor (ch bitand 0x3FF);
-	  ++characters;
-	}
+      size_t num = convert->decode (convert, dest, src);
 
       ++dest;
       --dest_len;
@@ -419,18 +407,19 @@ decode_buffer (wchar_t * dest, size_t dest_len,
 
 #define clear_textbuffer(void)  get_character(-1)
 
-static wint_t
+// FIXME: handle incomplete characters
+static avt_char
 get_character (int fd)
 {
-  static wchar_t textbuffer[INBUFSIZE + 1];	// +1 for terminator
+  static avt_char textbuffer[INBUFSIZE + 1];	// +1 for terminator
   static size_t textbuffer_pos = 0;
   static size_t textbuffer_len = 0;
-  wchar_t ch;
+  avt_char ch;
 
   if (fd == -1)			// clear textbuffer
     {
       textbuffer_pos = textbuffer_len = 0;
-      return WEOF;
+      return AVT_EOF;
     }
 
   do
@@ -481,7 +470,7 @@ get_character (int fd)
 	}
 
       if (textbuffer_len == (size_t) (-1))
-	ch = WEOF;
+	ch = AVT_EOF;
       else
 	ch = textbuffer[textbuffer_pos++];
     }
@@ -817,7 +806,7 @@ full_reset (void)
 static void
 CSI_sequence (int fd, avt_char last_character)
 {
-  wchar_t ch;
+  avt_char ch;
   char sequence[80];
   unsigned int pos = 0;
 
@@ -1217,7 +1206,7 @@ CSI_sequence (int fd, avt_char last_character)
 static void
 APC_sequence (int fd)
 {
-  wchar_t ch, old;
+  avt_char ch, old;
   wchar_t command[1024];
   unsigned int p;
 
@@ -1232,7 +1221,7 @@ APC_sequence (int fd)
       old = ch;
       ch = get_character (fd);
       if (ch >= L' ' and ch != L'\x9c' and (old != L'\033' or ch != L'\\'))
-	command[p++] = ch;
+	command[p++] = (wchar_t) ch;
     }
 
   command[p] = L'\0';
@@ -1248,7 +1237,7 @@ APC_sequence (int fd)
 static void
 OSC_sequence (int fd)
 {
-  wchar_t ch, old;
+  avt_char ch, old;
 
   ch = get_character (fd);
 
@@ -1276,7 +1265,7 @@ OSC_sequence (int fd)
 static void
 escape_sequence (int fd, avt_char last_character)
 {
-  wchar_t ch;
+  avt_char ch;
   static int saved_text_color, saved_text_background_color;
   static bool saved_underline_state, saved_bold_state;
   static const struct avt_charenc *saved_G0, *saved_G1;
@@ -1320,7 +1309,7 @@ escape_sequence (int fd, avt_char last_character)
 
     case L'%':			// select charset
       {
-	wchar_t ch2;
+	avt_char ch2;
 
 	ch2 = get_character (fd);
 	if (ch2 == L'@')
@@ -1335,7 +1324,7 @@ escape_sequence (int fd, avt_char last_character)
       // Note: this is not compatible to ISO 2022!
     case L'(':			// set G0
       {
-	wchar_t ch2;
+	avt_char ch2;
 
 	ch2 = get_character (fd);
 	if (ch2 == L'B')
@@ -1351,7 +1340,7 @@ escape_sequence (int fd, avt_char last_character)
 
     case L')':			// set G1
       {
-	wchar_t ch2;
+	avt_char ch2;
 
 	ch2 = get_character (fd);
 	if (ch2 == L'B')
@@ -1445,7 +1434,7 @@ extern void
 avta_term_run (int fd)
 {
   bool stop;
-  wint_t ch;
+  avt_char ch;
   avt_char last_character;
 
   // check, if fd is valid
@@ -1463,7 +1452,7 @@ avta_term_run (int fd)
   reset_terminal ();
   avt_lock_updates (true);
 
-  while ((ch = get_character (fd)) != WEOF and not stop)
+  while ((ch = get_character (fd)) != AVT_EOF and not stop)
     {
       if (ch == L'\033')	// Esc
 	escape_sequence (fd, last_character);
