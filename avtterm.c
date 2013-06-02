@@ -399,8 +399,7 @@ get_character (int fd)
 
   // need to get more characters?
   if (filebuf_pos >= filebuf_len
-      or (filebuf_len > sizeof (filebuf) - MB_LEN_MAX
-	  and filebuf_pos > filebuf_len - MB_LEN_MAX))
+      or (filebuf_pos >= sizeof (filebuf) - MB_LEN_MAX))
     {
       // update
       if (text_delay == 0)
