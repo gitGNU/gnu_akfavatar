@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar Referenz" 3 2013-04-06 AKFAvatar
+.TH "Lua-AKFAvatar Referenz" 3 2013-06-03 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar Referenz \- AKFAvatar spezifische Funktionen für Lua
@@ -77,15 +77,23 @@ kann man dann die folgenden Funktionen abrufen.
 .TP
 .BI "avt.encoding(" encoding )
 Legt die Text-Kodierung fest.
-Wenn diese Funktion nicht verwendet wird, wird "UTF-8" verwendet.
+Wenn diese Funktion nicht verwendet wird, wird nur "ASCII" unterstützt.
+.IP
+Unterstützte Kodierungen:
+.br
+ASCII, UTF-8,
+.br
+ISO-8859-1, -2, -3, -4, -5, -7, -8, -9, -10, -11, -13, -14, -15, -16,
+.br
+KOI8-R, KOI8-U,
+.br
+IBM437 (PC-8), IBM850 (DOS-Latin-1),
+.br
+WINDOWS-1250, WINDOWS-1251, WINDOWS-1252
 .PP
 .TP
 .BI "avt.get_encoding()"
 Fragt die Text-Kodierung ab.
-.IP
-Wenn noch keine gesetzt worden ist, wird
-.I nil
-zurückgegeben.
 .PP
 .TP
 .BI "avt.title(" "Titel [,Kurzname]" )
