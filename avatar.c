@@ -2203,12 +2203,6 @@ avt_put_char (avt_char ch)
       avt_put_raw_char (BROKEN_WCHAR);
       break;
 
-      /*
-       * ignore BOM here
-       * must be handled outside of the library
-       */
-    case L'\uFEFF':
-      break;
 
       // LRM/RLM: only supported at the beginning of a line
     case L'\u200E':		// LEFT-TO-RIGHT MARK (LRM)
@@ -2219,10 +2213,16 @@ avt_put_char (avt_char ch)
       avt_text_direction (AVT_RIGHT_TO_LEFT);
       break;
 
-      // other ignorable (invisible) characters
+      // invisible characters
+    case L'\uFEFF':		// ZWNBSP, also used as byte order mark (BOM)
     case L'\u200B':
     case L'\u200C':
     case L'\u200D':
+    case L'\u2060':
+    case L'\u2061':
+    case L'\u2062':
+    case L'\u2063':
+    case L'\u2064':
       break;
 
     case L' ':			// SP: space

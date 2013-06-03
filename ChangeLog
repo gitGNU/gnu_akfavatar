@@ -1,3 +1,7 @@
+2013-06-03  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_put_char): handle more invisible chars
+
 2013-05-30  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtencoding.c, mingw/win_iconv.c: removed at last
