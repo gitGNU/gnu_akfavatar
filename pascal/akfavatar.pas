@@ -1,6 +1,7 @@
 {*
  * Pascal binding to the AKFAvatar library version 0.22.0
- * Copyright (c) 2007,2008,2009,2011,2012 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007,2008,2009,2011,2012,2013
+ * Andreas K. Foerster <info@akfoerster.de>
  *
  * Can be used with GNU-Pascal or FreePascal
  *
@@ -26,10 +27,10 @@ CRT compatiblity
 supported: 
 ClrScr, ClrEol, GotoXY, WhereX, WhereY, Delay, TextColor, TextBackground,
 NormVideo, HighVideo, LowVideo, TextAttr, NoSound, (ReadKey), KeyPressed,
-Window, DelLine, InsLine, AssignCrt, ScreenSize, CheckBreak
+Window, DelLine, InsLine, AssignCrt, ScreenSize
 
 dummies for:
-CheckEof, CheckSnow, DirectVideo, Sound
+CheckBreak, CheckEof, CheckSnow, DirectVideo, Sound
 
 no support planned for:
 - TextMode, LastMode:
@@ -176,6 +177,7 @@ procedure setTextDelay(delay: integer);
 procedure setFlipPageDelay(delay: integer);
 
 { change the encoding }
+{ supported 'ASCII', 'ISO-8859-1', 'UTF-8' }
 procedure setEncoding(const newEncoding: string);
 function getEncoding: string;
 
@@ -475,6 +477,7 @@ implementation
   type 
     CString = PChar;
     CBoolean = Boolean; { not cbool! }
+    avt_char = Cuint32;
 
   {$IfDef CPU64}
     type Csize_t = Cuint64;
@@ -491,6 +494,8 @@ implementation
   {$else}
     type Cint = CInteger;
   {$EndIf}
+
+  type avt_char = CInteger;
 {$EndIf}
 
 var OldTextAttr : byte;
@@ -499,10 +504,7 @@ var isMonochrome : boolean;
 var fullscreen, initialized: boolean;
 var InputBuffer: array [ 0 .. (4 * LineLength) + 2] of char;
 var ScrSize : TScreenSize;
-
-const KeyboardBufferSize = 40;
-var KeyboardBuffer: array [ 0 .. KeyboardBufferSize-1 ] of char;
-var KeyboardBufferRead, KeyboardBufferWrite: integer;
+var encoding: string[80];
 
 { for sound generator }
 const 
@@ -529,24 +531,30 @@ procedure avt_set_text_delay(delay: Cint);
 procedure avt_set_flip_page_delay(delay: Cint);
   libakfavatar 'avt_set_flip_page_delay';
 
-function avt_say_mb_len(t: pointer; size: Csize_t): Cint;
-  libakfavatar 'avt_say_mb_len';
+function avt_say_char_len(t: pointer; size: Csize_t): Cint;
+  libakfavatar 'avt_say_char_len';
 
-function avt_tell_mb_len(t: pointer; len: Csize_t): Cint;
-  libakfavatar 'avt_tell_mb_len';
+function avt_tell_char_len(t: pointer; len: Csize_t): Cint;
+  libakfavatar 'avt_tell_char_len';
 
 procedure avt_clear; libakfavatar 'avt_clear';
 
 procedure avt_clear_eol; libakfavatar 'avt_clear_eol';
 
-function avt_mb_encoding(encoding: CString): Cint;
-  libakfavatar 'avt_mb_encoding';
+function avt_charencoding(encoding: Pointer): Pointer;
+  libakfavatar 'avt_charencoding';
 
-function avt_get_mb_encoding(): CString;
-  libakfavatar 'avt_get_mb_encoding';
+function avt_utf8: Pointer;
+  libakfavatar 'avt_utf8';
 
-function avt_ask_mb(t: pointer; size: Csize_t): Cint;
-  libakfavatar 'avt_ask_mb';
+function avt_iso8859_1: Pointer;
+  libakfavatar 'avt_iso8859_1';
+
+function avt_ascii: Pointer;
+  libakfavatar 'avt_ascii';
+
+function avt_ask_char(t: pointer; size: Csize_t): Cint;
+  libakfavatar 'avt_ask_char';
 
 function avt_wait(milliseconds: Csize_t): Cint; 
   libakfavatar 'avt_wait';
@@ -583,8 +591,8 @@ function avt_show_image_xbm(bits: pointer; width, height: Cint;
 function avt_avatar_image_xpm(data: Pointer): Cint;
   libakfavatar 'avt_avatar_image_xpm';
 
-function avt_set_avatar_name_mb(name: CString): Cint;
-  libakfavatar 'avt_set_avatar_name_mb';
+function avt_set_avatar_name_char(name: CString): Cint;
+  libakfavatar 'avt_set_avatar_name_char';
 
 function avt_show_image_file(FileName: CString): Cint;
   libakfavatar 'avt_show_image_file';
@@ -712,11 +720,14 @@ procedure avt_delete_lines(line, num: Cint);
 procedure avt_insert_lines(line, num: Cint);
   libakfavatar 'avt_insert_lines';
 
-procedure avt_text_direction(direction: Cint); 
+procedure avt_text_direction(direction: Cint);
   libakfavatar 'avt_text_direction';
-  
-procedure avt_register_keyhandler(handler: pointer);
-  libakfavatar 'avt_register_keyhandler';
+
+function avt_get_key: avt_char; libakfavatar 'avt_get_key';
+
+function avt_key_pressed: CBoolean; libakfavatar 'avt_key_pressed';
+
+procedure avt_clear_keys; libakfavatar 'avt_clear_keys';
 
 procedure avt_set_scroll_mode(mode: Cint); 
   libakfavatar 'avt_set_scroll_mode';
@@ -730,8 +741,8 @@ function avt_choice(var result: Cint;
                     back, fwrd: CBoolean): Cint; 
   libakfavatar 'avt_choice';
 
-procedure avt_pager_mb(txt: CString; len: Csize_t; startline: Cint); 
-  libakfavatar 'avt_pager_mb';
+procedure avt_pager_char(txt: CString; len: Csize_t; startline: Cint); 
+  libakfavatar 'avt_pager_char';
 
 function avt_navigate(buttons: CString): Cint;
   libakfavatar 'avt_navigate';
@@ -780,12 +791,24 @@ end;
 
 procedure setEncoding(const newEncoding: string);
 begin
-avt_mb_encoding(String2CString(newEncoding))
+encoding := Upcase(newEncoding);
+
+if (encoding = 'UTF-8') or (encoding = 'UTF8') then
+  avt_charencoding(avt_utf8)
+else if (encoding = 'ISO-8859-1') 
+       or (encoding = 'ISO-8859 1') 
+       or (encoding = 'ISO8859-1')
+       or (encoding = 'ISO8859 1') then
+  avt_charencoding(avt_iso8859_1)
+else begin
+     avt_charencoding(avt_ascii);
+     encoding := 'ASCII'
+     end
 end;
 
 function getEncoding: string;
 begin
-getEncoding := CString2String(avt_get_mb_encoding)
+getEncoding := encoding
 end;
 
 procedure setTextDelay(delay: integer);
@@ -925,13 +948,13 @@ end;
 procedure AvatarName(const Name: string);
 begin
 if not initialized then initializeAvatar;
-avt_set_avatar_name_mb(String2CString(Name))
+avt_set_avatar_name_char(String2CString(Name))
 end;
 
 procedure Tell(const txt: string);
 begin
 if not initialized then initializeAvatar;
-avt_tell_mb_len(String2CString(txt), length(txt))
+avt_tell_char_len(String2CString(txt), length(txt))
 end;
 
 procedure TextColor(Color: Byte);
@@ -1164,7 +1187,7 @@ begin
 if not initialized then initializeAvatar;
 { getting the string-length in pascal is lightweight }
 { converting to a CString would be more heavy }
-avt_pager_mb(addr(txt[1]), length(txt), startline)
+avt_pager_char(addr(txt[1]), length(txt), startline)
 end;
 
 procedure PagerFile(const filename: string; startline: integer);
@@ -1182,7 +1205,7 @@ if size > 0 then GetMem(buf, size);
 BlockRead(f, buf^, size, numread);
 close(f);
 
-avt_pager_mb(buf, numread, startline);
+avt_pager_char(buf, numread, startline);
 if size > 0 then FreeMem(buf, size)
 end;
 
@@ -1404,13 +1427,21 @@ begin
 avt_activate_cursor(true)
 end;
 
-procedure KeyHandler(sym, modifiers, unicode: Cint); 
-{$IfDef FPC} cdecl; {$EndIf}
+function KeyPressed: boolean;
 begin
-{$IfDef Debug}
-  WriteLn(stderr, 'sym: ', sym, ' modifiers: ', modifiers,
-          ' unicode: ', unicode);
-{$EndIf}
+if not initialized then initializeAvatar;
+
+if avt_wait(1)<>0 then Halt;
+
+KeyPressed := avt_key_pressed
+end;
+
+function ReadKey: char;
+var unicode: avt_char;
+begin
+if not initialized then initializeAvatar;
+
+unicode := avt_get_key;
 
 { CheckBreak, CheckEsc }
 if (CheckBreak and (unicode=3)) or 
@@ -1420,38 +1451,15 @@ if (CheckBreak and (unicode=3)) or
   Halt
   end;
 
-{ put ISO-8859-1 characters into buffer }
-if (unicode>0) and (unicode<=255) then
-  begin
-  KeyBoardBuffer[KeyboardBufferWrite] := chr(unicode);
-  KeyboardBufferWrite := (KeyboardBufferWrite + 1) mod KeyboardBufferSize
-  end
-end;
-
-function KeyPressed: boolean;
-begin
-if not initialized then initializeAvatar;
-
-if avt_wait(1)<>0 then Halt;
-
-KeyPressed := (KeyboardBufferRead <> KeyboardBufferWrite)
-end;
-
-function ReadKey: char;
-begin
-if not initialized then initializeAvatar;
-
-{ wait for key to be pressed }
-while KeyboardBufferRead=KeyboardBufferWrite do 
-  if avt_wait(1)<>0 then Halt;
-
-ReadKey := KeyboardBuffer [KeyboardBufferRead];
-KeyboardBufferRead := (KeyboardBufferRead + 1) mod KeyboardBufferSize
+if unicode <= 255 then
+  ReadKey := chr(unicode)
+else
+  ReadKey := chr(0)
 end;
 
 procedure ClearKeys;
 begin
-KeyboardBufferRead := KeyboardBufferWrite
+avt_clear_keys
 end;
 
 procedure SetScrollMode(mode: integer);
@@ -1531,7 +1539,7 @@ end;
 
     if TextAttr<>OldTextAttr then UpdateTextAttr;
 
-    avt_say_mb_len(F.BufPtr, F.BufPos);
+    avt_say_char_len(F.BufPtr, F.BufPos);
     F.BufPos := 0; { everything read }
     end;
 
@@ -1543,7 +1551,7 @@ end;
   if not initialized then initializeAvatar;
   if TextAttr<>OldTextAttr then UpdateTextAttr;
 
-  avt_ask_mb(F.BufPtr, F.BufSize);
+  avt_ask_char(F.BufPtr, F.BufSize);
 
   F.BufPos := 0;
   F.BufEnd := strlen(F.BufPtr^) + 2;
@@ -1553,10 +1561,10 @@ end;
 
   F.BufPtr^ [F.BufEnd-2] := #13;
   F.BufPtr^ [F.BufEnd-1] := #10;
-  
+
   { clear KeyBoardBuffer }
-  KeyboardBufferRead := KeyboardBufferWrite;
-  
+  avt_clear_keys;
+
   fpc_io_read := 0
   end;
 
@@ -1596,7 +1604,7 @@ end;
     if not initialized then initializeAvatar;
     if TextAttr<>OldTextAttr then UpdateTextAttr;
 
-    avt_say_mb_len(Addr(Buffer), size)
+    avt_say_char_len(Addr(Buffer), size)
     end;
 
   gpc_io_write := size
@@ -1610,7 +1618,7 @@ end;
   if not initialized then initializeAvatar;
   if TextAttr<>OldTextAttr then UpdateTextAttr;
 
-  avt_ask_mb(addr(InputBuffer), sizeof(InputBuffer));
+  avt_ask_char(addr(InputBuffer), sizeof(InputBuffer));
 
   i := 0;
   while (InputBuffer [i] <> chr(0)) and (i < size-1) do
@@ -1643,8 +1651,6 @@ Initialization
   fullscreen := false;
   initialized := false;
   isMonochrome := false;
-  KeyboardBufferRead := 0;
-  KeyboardBufferWrite := 0;
   RawSoundBuf := NIL;
   GenSound := NIL;
 
@@ -1665,11 +1671,10 @@ Initialization
 
   checkParameters;
 
-  avt_mb_encoding(DefaultEncoding);
+  setEncoding(DefaultEncoding);
   avt_set_scroll_mode(1);
-  
-  avt_reserve_single_keys(true); { Esc is handled in the KeyHandler }
-  avt_register_keyhandler(@KeyHandler);
+
+  avt_reserve_single_keys(true); { FIXME: Esc is handled in the KeyHandler }
 
   { redirect i/o to Avatar }
   { do they have to be closed? Problems under Windows then }
