@@ -1,5 +1,5 @@
 {*
- * Pascal binding to the AKFAvatar library version 0.22.0
+ * Pascal binding to the AKFAvatar library version 0.24.0
  * Copyright (c) 2007,2008,2009,2011,2012,2013
  * Andreas K. Foerster <info@akfoerster.de>
  *
@@ -177,7 +177,6 @@ procedure setTextDelay(delay: integer);
 procedure setFlipPageDelay(delay: integer);
 
 { change the encoding }
-{ supported 'ASCII', 'ISO-8859-1', 'UTF-8' }
 procedure setEncoding(const newEncoding: string);
 function getEncoding: string;
 
@@ -458,8 +457,9 @@ implementation
 {$IfDef FPC}
   uses DOS, Strings, CTypes;
 
-  {$MACRO ON}  
+  {$MACRO ON}
   {$Define libakfavatar:=cdecl; external 'akfavatar' name}
+  {$Define libavtaddons:=cdecl; external 'avtaddons' name}
 {$EndIf}
 
 {$IfDef __GPC__}
@@ -467,9 +467,11 @@ implementation
 
   {$IfNDef NoLink}
     {$L akfavatar}
+    {$L avtaddons}
   {$EndIf}
 
   {$Define libakfavatar external name}
+  {$Define libavtaddons external name}
 {$EndIf}
 
 
@@ -547,11 +549,28 @@ function avt_charencoding(encoding: Pointer): Pointer;
 function avt_utf8: Pointer;
   libakfavatar 'avt_utf8';
 
-function avt_iso8859_1: Pointer;
-  libakfavatar 'avt_iso8859_1';
-
-function avt_ascii: Pointer;
-  libakfavatar 'avt_ascii';
+function avt_ascii: Pointer; libakfavatar 'avt_ascii';
+function avt_iso8859_1: Pointer; libakfavatar 'avt_iso8859_1';
+function avt_iso8859_2: Pointer; libavtaddons 'avt_iso8859_2';
+function avt_iso8859_3: Pointer; libavtaddons 'avt_iso8859_3';
+function avt_iso8859_4: Pointer; libavtaddons 'avt_iso8859_4';
+function avt_iso8859_5: Pointer; libavtaddons 'avt_iso8859_5';
+function avt_iso8859_7: Pointer; libavtaddons 'avt_iso8859_7';
+function avt_iso8859_8: Pointer; libavtaddons 'avt_iso8859_8';
+function avt_iso8859_9: Pointer; libavtaddons 'avt_iso8859_9';
+function avt_iso8859_10: Pointer; libavtaddons 'avt_iso8859_10';
+function avt_iso8859_11: Pointer; libavtaddons 'avt_iso8859_11';
+function avt_iso8859_13: Pointer; libavtaddons 'avt_iso8859_13';
+function avt_iso8859_14: Pointer; libavtaddons 'avt_iso8859_14';
+function avt_iso8859_15: Pointer; libavtaddons 'avt_iso8859_15';
+function avt_iso8859_16: Pointer; libavtaddons 'avt_iso8859_16';
+function avt_koi8r: Pointer; libavtaddons 'avt_koi8r';
+function avt_koi8u: Pointer; libavtaddons 'avt_koi8u';
+function avt_cp437: Pointer; libavtaddons 'avt_cp437';
+function avt_cp850: Pointer; libavtaddons 'avt_cp850';
+function avt_cp1250: Pointer; libavtaddons 'avt_cp1250';
+function avt_cp1251: Pointer; libavtaddons 'avt_cp1251';
+function avt_cp1252: Pointer; libavtaddons 'avt_cp1252';
 
 function avt_ask_char(t: pointer; size: Csize_t): Cint;
   libakfavatar 'avt_ask_char';
@@ -795,11 +814,124 @@ encoding := Upcase(newEncoding);
 
 if (encoding = 'UTF-8') or (encoding = 'UTF8') then
   avt_charencoding(avt_utf8)
-else if (encoding = 'ISO-8859-1') 
-       or (encoding = 'ISO-8859 1') 
+else if (encoding = 'ISO-8859-1')
+       or (encoding = 'ISO-8859 1')
        or (encoding = 'ISO8859-1')
-       or (encoding = 'ISO8859 1') then
+       or (encoding = 'ISO8859 1')
+       or (encoding = 'LATIN-1')
+       or (encoding = 'L1') then
   avt_charencoding(avt_iso8859_1)
+else if (encoding = 'ISO-8859-2')
+       or (encoding = 'ISO-8859 2')
+       or (encoding = 'ISO8859-2')
+       or (encoding = 'ISO8859 2')
+       or (encoding = 'LATIN-2')
+       or (encoding = 'L2') then
+  avt_charencoding(avt_iso8859_2)
+else if (encoding = 'ISO-8859-3')
+       or (encoding = 'ISO-8859 3')
+       or (encoding = 'ISO8859-3')
+       or (encoding = 'ISO8859 3')
+       or (encoding = 'LATIN-3')
+       or (encoding = 'L3') then
+  avt_charencoding(avt_iso8859_3)
+else if (encoding = 'ISO-8859-4')
+       or (encoding = 'ISO-8859 4')
+       or (encoding = 'ISO8859-4')
+       or (encoding = 'ISO8859 4')
+       or (encoding = 'LATIN-4')
+       or (encoding = 'L4') then
+  avt_charencoding(avt_iso8859_4)
+else if (encoding = 'ISO-8859-5')
+       or (encoding = 'ISO-8859 5')
+       or (encoding = 'ISO8859-5')
+       or (encoding = 'ISO8859 5') then
+  avt_charencoding(avt_iso8859_5)
+else if (encoding = 'ISO-8859-7')
+       or (encoding = 'ISO-8859 7')
+       or (encoding = 'ISO8859-7')
+       or (encoding = 'ISO8859 7') then
+  avt_charencoding(avt_iso8859_7)
+else if (encoding = 'ISO-8859-8')
+       or (encoding = 'ISO-8859 8')
+       or (encoding = 'ISO8859-8')
+       or (encoding = 'ISO8859 8') then
+  avt_charencoding(avt_iso8859_8)
+else if (encoding = 'ISO-8859-9')
+       or (encoding = 'ISO-8859 9')
+       or (encoding = 'ISO8859-9')
+       or (encoding = 'ISO8859 9')
+       or (encoding = 'LATIN-4')
+       or (encoding = 'L4') then
+  avt_charencoding(avt_iso8859_9)
+else if (encoding = 'ISO-8859-10')
+       or (encoding = 'ISO-8859 10')
+       or (encoding = 'ISO8859-10')
+       or (encoding = 'ISO8859 10')
+       or (encoding = 'LATIN-6')
+       or (encoding = 'L6') then
+  avt_charencoding(avt_iso8859_10)
+else if (encoding = 'ISO-8859-11')
+       or (encoding = 'ISO-8859 11')
+       or (encoding = 'ISO8859-11')
+       or (encoding = 'ISO8859 11') then
+  avt_charencoding(avt_iso8859_11)
+else if (encoding = 'ISO-8859-13')
+       or (encoding = 'ISO-8859 13')
+       or (encoding = 'ISO8859-13')
+       or (encoding = 'ISO8859 13')
+       or (encoding = 'LATIN-7')
+       or (encoding = 'L7') then
+  avt_charencoding(avt_iso8859_13)
+else if (encoding = 'ISO-8859-14')
+       or (encoding = 'ISO-8859 14')
+       or (encoding = 'ISO8859-14')
+       or (encoding = 'ISO8859 14')
+       or (encoding = 'LATIN-8')
+       or (encoding = 'L8') then
+  avt_charencoding(avt_iso8859_14)
+else if (encoding = 'ISO-8859-15')
+       or (encoding = 'ISO-8859 15')
+       or (encoding = 'ISO8859-15')
+       or (encoding = 'ISO8859 15')
+       or (encoding = 'LATIN-9')
+       or (encoding = 'L9') then
+  avt_charencoding(avt_iso8859_15)
+else if (encoding = 'ISO-8859-16')
+       or (encoding = 'ISO-8859 16')
+       or (encoding = 'ISO8859-16')
+       or (encoding = 'ISO8859 16')
+       or (encoding = 'LATIN-10')
+       or (encoding = 'L10') then
+  avt_charencoding(avt_iso8859_16)
+else if (encoding = 'KOI8-R') then
+  avt_charencoding(avt_koi8r)
+else if (encoding = 'KOI8-U') then
+  avt_charencoding(avt_koi8u)
+else if (encoding = 'CP437')
+     or (encoding = 'IBM437')
+     or (encoding = 'OEM437')
+     or (encoding = 'PC-8')
+     or (encoding = '437') then
+  avt_charencoding(avt_cp437)
+else if (encoding = 'CP850')
+     or (encoding = 'IBM850')
+     or (encoding = 'OEM850')
+     or (encoding = 'DOS-LATIN-1')
+     or (encoding = '850') then
+  avt_charencoding(avt_cp850)
+else if (encoding = 'WINDOWS-1250')
+     or (encoding = 'CP1250')
+     or (encoding = '1250') then
+  avt_charencoding(avt_cp1250)
+else if (encoding = 'WINDOWS-1251')
+     or (encoding = 'CP1251')
+     or (encoding = '1251') then
+  avt_charencoding(avt_cp1251)
+else if (encoding = 'WINDOWS-1252')
+     or (encoding = 'CP1252')
+     or (encoding = '1252') then
+  avt_charencoding(avt_cp1252)
 else begin
      avt_charencoding(avt_ascii);
      encoding := 'ASCII'
