@@ -1444,8 +1444,8 @@ if not initialized then initializeAvatar;
 unicode := avt_get_key;
 
 { CheckBreak, CheckEsc }
-if (CheckBreak and (unicode=3)) or 
-   (CheckEsc and (unicode=27)) then 
+if (CheckBreak and (unicode=3)) or
+   (CheckEsc and (unicode=27)) then
   begin
   FastQuit := true;
   Halt
@@ -1579,8 +1579,8 @@ end;
          F.Mode := fmInput;
          F.InOutFunc := @fpc_io_read;
          F.FlushFunc := @fpc_io_dummy; { sic }
-	 F.BufPtr    := @InputBuffer;
-	 F.BufSize   := SizeOf(InputBuffer);
+         F.BufPtr    := @InputBuffer;
+         F.BufSize   := SizeOf(InputBuffer);
          end;
 
   F.BufPos := F.BufEnd;
@@ -1693,7 +1693,7 @@ Finalization
   NoSound;
 
   if initialized and not FastQuit then
-    if avt_get_status = 0 then 
+    if avt_get_status = 0 then
       begin
       { wait for key, when balloon is visible }
       if avt_where_x >= 0 then 
