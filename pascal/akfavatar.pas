@@ -176,7 +176,8 @@ procedure setBalloonColorName(const Name: string);
 procedure setTextDelay(delay: integer);
 procedure setFlipPageDelay(delay: integer);
 
-{ change the encoding }
+{ change the character encoding }
+{ use empty string ('') for the systems default encoding }
 procedure setEncoding(const newEncoding: string);
 function getEncoding: string;
 
@@ -571,6 +572,7 @@ function avt_cp850: Pointer; libavtaddons 'avt_cp850';
 function avt_cp1250: Pointer; libavtaddons 'avt_cp1250';
 function avt_cp1251: Pointer; libavtaddons 'avt_cp1251';
 function avt_cp1252: Pointer; libavtaddons 'avt_cp1252';
+function avt_systemencoding: Pointer; libavtaddons 'avt_systemencoding';
 
 function avt_ask_char(t: pointer; size: Csize_t): Cint;
   libakfavatar 'avt_ask_char';
@@ -812,7 +814,9 @@ procedure setEncoding(const newEncoding: string);
 begin
 encoding := Upcase(newEncoding);
 
-if (encoding = 'UTF-8') or (encoding = 'UTF8') then
+if (encoding = '') or (encoding = 'CHAR') then
+  avt_charencoding(avt_systemencoding)
+else if (encoding = 'UTF-8') or (encoding = 'UTF8') then
   avt_charencoding(avt_utf8)
 else if (encoding = 'ISO-8859-1')
        or (encoding = 'ISO-8859 1')
