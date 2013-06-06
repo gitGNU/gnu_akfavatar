@@ -812,7 +812,12 @@ end;
 
 procedure setEncoding(const newEncoding: string);
 begin
-encoding := Upcase(newEncoding);
+
+{$IfDef __GPC__}
+  encoding := UpcaseStr(newEncoding);
+{$Else} { FPC }
+  encoding := Upcase(newEncoding);
+{$EndIf}
 
 if (encoding = '') or (encoding = 'CHAR') then
   avt_charencoding(avt_systemencoding)
