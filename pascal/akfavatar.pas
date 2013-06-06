@@ -1767,7 +1767,7 @@ end;
   inc(i);
   
   { clear KeyBoardBuffer }
-  KeyboardBufferRead := KeyboardBufferWrite;
+  avt_clear_keys;
 
   gpc_io_read := i
   end;
