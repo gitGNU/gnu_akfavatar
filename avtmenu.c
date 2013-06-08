@@ -83,6 +83,7 @@ avt_menu (int *choice, int items,
   avt_move_xy (1, start_line);
 
   // display speed test
+  avt_lock_updates (false);
   size_t delay = avt_ticks ();
   avt_clear_down ();
   delay = avt_elapsed (delay);
