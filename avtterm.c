@@ -168,7 +168,7 @@ static inline void
 set_encoding (const struct avt_charenc *encoding)
 {
   convert = encoding;
-  avt_charencoding (encoding);
+  avt_char_encoding (encoding);
 }
 
 extern void

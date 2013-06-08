@@ -544,8 +544,8 @@ procedure avt_clear; libakfavatar 'avt_clear';
 
 procedure avt_clear_eol; libakfavatar 'avt_clear_eol';
 
-function avt_charencoding(encoding: Pointer): Pointer;
-  libakfavatar 'avt_charencoding';
+function avt_char_encoding(encoding: Pointer): Pointer;
+  libakfavatar 'avt_char_encoding';
 
 function avt_utf8: Pointer;
   libakfavatar 'avt_utf8';
@@ -820,129 +820,129 @@ begin
 {$EndIf}
 
 if (encoding = '') or (encoding = 'CHAR') then
-  avt_charencoding(avt_systemencoding)
+  avt_char_encoding(avt_systemencoding)
 else if (encoding = 'UTF-8') or (encoding = 'UTF8') then
-  avt_charencoding(avt_utf8)
+  avt_char_encoding(avt_utf8)
 else if (encoding = 'ISO-8859-1')
        or (encoding = 'ISO-8859 1')
        or (encoding = 'ISO8859-1')
        or (encoding = 'ISO8859 1')
        or (encoding = 'LATIN-1')
        or (encoding = 'L1') then
-  avt_charencoding(avt_iso8859_1)
+  avt_char_encoding(avt_iso8859_1)
 else if (encoding = 'ISO-8859-2')
        or (encoding = 'ISO-8859 2')
        or (encoding = 'ISO8859-2')
        or (encoding = 'ISO8859 2')
        or (encoding = 'LATIN-2')
        or (encoding = 'L2') then
-  avt_charencoding(avt_iso8859_2)
+  avt_char_encoding(avt_iso8859_2)
 else if (encoding = 'ISO-8859-3')
        or (encoding = 'ISO-8859 3')
        or (encoding = 'ISO8859-3')
        or (encoding = 'ISO8859 3')
        or (encoding = 'LATIN-3')
        or (encoding = 'L3') then
-  avt_charencoding(avt_iso8859_3)
+  avt_char_encoding(avt_iso8859_3)
 else if (encoding = 'ISO-8859-4')
        or (encoding = 'ISO-8859 4')
        or (encoding = 'ISO8859-4')
        or (encoding = 'ISO8859 4')
        or (encoding = 'LATIN-4')
        or (encoding = 'L4') then
-  avt_charencoding(avt_iso8859_4)
+  avt_char_encoding(avt_iso8859_4)
 else if (encoding = 'ISO-8859-5')
        or (encoding = 'ISO-8859 5')
        or (encoding = 'ISO8859-5')
        or (encoding = 'ISO8859 5') then
-  avt_charencoding(avt_iso8859_5)
+  avt_char_encoding(avt_iso8859_5)
 else if (encoding = 'ISO-8859-7')
        or (encoding = 'ISO-8859 7')
        or (encoding = 'ISO8859-7')
        or (encoding = 'ISO8859 7') then
-  avt_charencoding(avt_iso8859_7)
+  avt_char_encoding(avt_iso8859_7)
 else if (encoding = 'ISO-8859-8')
        or (encoding = 'ISO-8859 8')
        or (encoding = 'ISO8859-8')
        or (encoding = 'ISO8859 8') then
-  avt_charencoding(avt_iso8859_8)
+  avt_char_encoding(avt_iso8859_8)
 else if (encoding = 'ISO-8859-9')
        or (encoding = 'ISO-8859 9')
        or (encoding = 'ISO8859-9')
        or (encoding = 'ISO8859 9')
        or (encoding = 'LATIN-4')
        or (encoding = 'L4') then
-  avt_charencoding(avt_iso8859_9)
+  avt_char_encoding(avt_iso8859_9)
 else if (encoding = 'ISO-8859-10')
        or (encoding = 'ISO-8859 10')
        or (encoding = 'ISO8859-10')
        or (encoding = 'ISO8859 10')
        or (encoding = 'LATIN-6')
        or (encoding = 'L6') then
-  avt_charencoding(avt_iso8859_10)
+  avt_char_encoding(avt_iso8859_10)
 else if (encoding = 'ISO-8859-11')
        or (encoding = 'ISO-8859 11')
        or (encoding = 'ISO8859-11')
        or (encoding = 'ISO8859 11') then
-  avt_charencoding(avt_iso8859_11)
+  avt_char_encoding(avt_iso8859_11)
 else if (encoding = 'ISO-8859-13')
        or (encoding = 'ISO-8859 13')
        or (encoding = 'ISO8859-13')
        or (encoding = 'ISO8859 13')
        or (encoding = 'LATIN-7')
        or (encoding = 'L7') then
-  avt_charencoding(avt_iso8859_13)
+  avt_char_encoding(avt_iso8859_13)
 else if (encoding = 'ISO-8859-14')
        or (encoding = 'ISO-8859 14')
        or (encoding = 'ISO8859-14')
        or (encoding = 'ISO8859 14')
        or (encoding = 'LATIN-8')
        or (encoding = 'L8') then
-  avt_charencoding(avt_iso8859_14)
+  avt_char_encoding(avt_iso8859_14)
 else if (encoding = 'ISO-8859-15')
        or (encoding = 'ISO-8859 15')
        or (encoding = 'ISO8859-15')
        or (encoding = 'ISO8859 15')
        or (encoding = 'LATIN-9')
        or (encoding = 'L9') then
-  avt_charencoding(avt_iso8859_15)
+  avt_char_encoding(avt_iso8859_15)
 else if (encoding = 'ISO-8859-16')
        or (encoding = 'ISO-8859 16')
        or (encoding = 'ISO8859-16')
        or (encoding = 'ISO8859 16')
        or (encoding = 'LATIN-10')
        or (encoding = 'L10') then
-  avt_charencoding(avt_iso8859_16)
+  avt_char_encoding(avt_iso8859_16)
 else if (encoding = 'KOI8-R') then
-  avt_charencoding(avt_koi8r)
+  avt_char_encoding(avt_koi8r)
 else if (encoding = 'KOI8-U') then
-  avt_charencoding(avt_koi8u)
+  avt_char_encoding(avt_koi8u)
 else if (encoding = 'CP437')
      or (encoding = 'IBM437')
      or (encoding = 'OEM437')
      or (encoding = 'PC-8')
      or (encoding = '437') then
-  avt_charencoding(avt_cp437)
+  avt_char_encoding(avt_cp437)
 else if (encoding = 'CP850')
      or (encoding = 'IBM850')
      or (encoding = 'OEM850')
      or (encoding = 'DOS-LATIN-1')
      or (encoding = '850') then
-  avt_charencoding(avt_cp850)
+  avt_char_encoding(avt_cp850)
 else if (encoding = 'WINDOWS-1250')
      or (encoding = 'CP1250')
      or (encoding = '1250') then
-  avt_charencoding(avt_cp1250)
+  avt_char_encoding(avt_cp1250)
 else if (encoding = 'WINDOWS-1251')
      or (encoding = 'CP1251')
      or (encoding = '1251') then
-  avt_charencoding(avt_cp1251)
+  avt_char_encoding(avt_cp1251)
 else if (encoding = 'WINDOWS-1252')
      or (encoding = 'CP1252')
      or (encoding = '1252') then
-  avt_charencoding(avt_cp1252)
+  avt_char_encoding(avt_cp1252)
 else begin
-     avt_charencoding(avt_ascii);
+     avt_char_encoding(avt_ascii);
      encoding := 'ASCII'
      end
 end;

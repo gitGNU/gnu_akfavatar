@@ -343,7 +343,7 @@ encodingname (const char *name)
   const struct avt_charenc *result = NULL;
 
   if (not name)
-    result = avt_charencoding (NULL);	// current encoding
+    result = avt_char_encoding (NULL);	// current encoding
   else if (not * name or strcasecmp ("char", name) == 0)
     result = avt_systemencoding ();
   else if (strcasecmp ("UTF-8", name) == 0
@@ -531,7 +531,7 @@ lavt_encoding (lua_State * L)
 
   luaL_argcheck (L, encoding, 1, "unsupported encoding");
 
-  avt_charencoding (encoding);
+  avt_char_encoding (encoding);
 
   // put encoding name into registry
   lua_pushvalue (L, 1);
@@ -2834,7 +2834,7 @@ luaopen_akfavatar_embedded (lua_State * L)
   lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-silence");
 
   // initialize charset
-  avt_charencoding (avt_ascii ());
+  avt_char_encoding (avt_ascii ());
   lua_pushliteral (L, "ASCII");
   lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-encoding");
 

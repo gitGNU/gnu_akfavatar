@@ -259,7 +259,7 @@ APC_command (wchar_t * command)
   if (not term_L)
     return -1;
 
-  const struct avt_charenc *convert = avt_charencoding (NULL);
+  const struct avt_charenc *convert = avt_char_encoding (NULL);
 
   // get mbstring from command
   len = 0;

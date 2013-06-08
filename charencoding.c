@@ -32,7 +32,7 @@ static const struct avt_charenc *convert;
 
 
 extern const struct avt_charenc *
-avt_charencoding (const struct avt_charenc *encoding)
+avt_char_encoding (const struct avt_charenc *encoding)
 {
   const struct avt_charenc *old;
 

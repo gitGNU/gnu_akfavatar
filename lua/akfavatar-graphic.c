@@ -1134,7 +1134,7 @@ lgraphic_text (lua_State * L)
     return 0;
 
   // get current encoding
-  const struct avt_charenc *convert = avt_charencoding (NULL);
+  const struct avt_charenc *convert = avt_char_encoding (NULL);
   if (not convert)
     return 0;
 

@@ -5,7 +5,7 @@
  *
  * the calling program must have used avt_initialize before calling 
  * any of these functions.
- * These functions also require avt_charencoding to be used before 
+ * These functions also require avt_char_encoding to be used before 
  * calling them.
  *
  * This file is part of AKFAvatar

@@ -233,7 +233,7 @@ AVT_API size_t avt_ticks (void);
 /*
  * The encoding for wchar_t can be UTF-32 or UTF-16, native endian.
  * The encoding for char must have been set with
- * avt_charencoding() (see below)
+ * avt_char_encoding() (see below)
  */
 
 /*
@@ -291,7 +291,7 @@ AVT_API int avt_ask_char (char *s, size_t size);
 
 /*
  * To set the encoding to UTF-8, just use this:
- *   avt_charencoding (avt_utf8 ());
+ *   avt_char_encoding (avt_utf8 ());
  *
  * Additional encodings are available in avtaddons...
  */
@@ -309,7 +309,7 @@ struct avt_charenc
  * use NULL to just query the old one
  */
 AVT_API const struct avt_charenc *
-avt_charencoding (const struct avt_charenc *);
+avt_char_encoding (const struct avt_charenc *);
 
 /* character encoding for UTF-8 */
 AVT_API const struct avt_charenc *avt_utf8 (void);
