@@ -18,7 +18,7 @@ EXPORTS
     avt_bell_function
     avt_bold
     avt_button_quit
-    avt_charencoding
+    avt_char_encoding
     avt_choice
     avt_clear
     avt_clear_bol
