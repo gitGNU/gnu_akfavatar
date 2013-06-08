@@ -461,8 +461,12 @@ show_text (const char *filename)
   avt_avatar_image_none ();
   avt_set_balloon_size (0, 0);
   avt_set_balloon_color (AVT_COLOR_TEXT);
+
   // text file must be UTF-8 encoded (or plain ASCII)
+  const struct avt_charenc *old;
+  old = avt_char_encoding (avt_utf8 ());
   avta_pager_file (filename, 1);
+  avt_char_encoding (old);
 }
 
 static bool
