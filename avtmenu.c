@@ -81,11 +81,19 @@ avt_menu (int *choice, int items,
   avt_set_auto_margin (false);
 
   avt_move_xy (1, start_line);
+
+  // display speed test
+  size_t delay = avt_ticks ();
   avt_clear_down ();
+  delay = avt_elapsed (delay);
 
   while (not result)
     {
       int page_items = 0;
+
+      // don't animate if display speed is slow
+      if (delay >= 200)
+	move = MOVE_NONE;
 
       switch (move)
 	{
@@ -93,6 +101,7 @@ avt_menu (int *choice, int items,
 	  page_items = 1;
 	  avt_lock_updates (true);
 	  avt_move_xy (1, start_line);
+	  avt_clear_down ();
 
 	  if (page_nr > 0)
 	    MARK (BACK);
