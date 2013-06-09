@@ -107,13 +107,9 @@ type TScreenSize = record x, y: integer end;
 }
 var TextAttr : byte;
 
-{ methods to stop the program }
-var
-  CheckBreak: boolean; { compatible to CRT }
-  CheckEsc: boolean;
-
-{ compatible to the CRT unit }
+{ compatible to the CRT unit, but no effect }
 var 
+  CheckBreak: boolean;
   CheckEof: boolean;
   CheckSnow: boolean;
   DirectVideo: boolean;
@@ -122,6 +118,9 @@ var
 { Just for reading! }
 { These variables are only set after the avatar is visible }
 var WindMin, WindMax: word;
+
+{ Reserve single keys? Such as Esc or F11 }
+procedure reserve_single_keys(onoff: Boolean);
 
 { load the default Avatar image }
 { This causes the library to be initialized }
@@ -791,6 +790,11 @@ procedure avt_set_avatar_mode(mode: Cint);
   end;
 
 {$EndIf}
+
+procedure reserve_single_keys(onoff: Boolean);
+begin
+avt_reserve_single_keys (onoff)
+end;
 
 procedure setBackgroundColor(red, green, blue: byte);
 begin
@@ -1586,9 +1590,7 @@ if not initialized then initializeAvatar;
 
 unicode := avt_get_key;
 
-{ CheckBreak, CheckEsc }
-if (CheckBreak and (unicode=3)) or
-   (CheckEsc and (unicode=27)) then
+if (CheckBreak and (unicode=3)) then
   begin
   FastQuit := true;
   Halt
@@ -1607,9 +1609,7 @@ if not initialized then initializeAvatar;
 
 unicode := avt_get_key;
 
-{ CheckBreak, CheckEsc }
-if (CheckBreak and (unicode=3)) or
-   (CheckEsc and (unicode=27)) then
+if (CheckBreak and (unicode=3)) then
   begin
   FastQuit := true;
   Halt
@@ -1823,7 +1823,6 @@ Initialization
  
   TextAttr := $F0;
   OldTextAttr := TextAttr;
-  CheckEsc := true;
   CheckBreak := true;
   CheckEof := false;
   CheckSnow := true;
@@ -1834,8 +1833,6 @@ Initialization
 
   setEncoding(DefaultEncoding);
   avt_set_scroll_mode(1);
-
-  avt_reserve_single_keys(true); { FIXME: Esc is handled in the KeyHandler }
 
   { redirect i/o to Avatar }
   { do they have to be closed? Problems under Windows then }

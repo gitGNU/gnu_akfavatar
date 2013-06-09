@@ -21,7 +21,8 @@
       or nil and an error message on error
 
   Pascal-API changes:
-    - new procedures/functions: ReadKeyCode
+    - variable CheckEsc removed
+    - new procedures/functions: ReadKeyCode, reserve-single-keys
 
 
 * AKFAvatar 0.23.1

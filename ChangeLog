@@ -2,6 +2,9 @@
 
 	* pascal/akfavatar.pas (ReadKeyCode): new function
 
+	* pascal/akfavatar.pas (reserve_single_keys): new function
+	(CheckEsc): removed
+
 2013-06-04  Andreas K. Foerster  <info@akfoerster.de>
 
 	* pascal/akfavatar.pas: updated
