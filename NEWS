@@ -20,6 +20,10 @@
     - avt.set_directory or avt.chdir return true on success
       or nil and an error message on error
 
+  Pascal-API changes:
+    - new procedures/functions: ReadKeyCode
+
+
 * AKFAvatar 0.23.1
 
   - fixed vulnerabilities

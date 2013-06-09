@@ -70,6 +70,7 @@
 
 /*
  * for avt_get_key()
+ * note: AKFAvatar reserves the codepoints 0xEA00-0xEFFF for function keys
  * note: F11 is normally used to toggle fullscreen mode!
  * note: most keyboards don't have all those keys
  */

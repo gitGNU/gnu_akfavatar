@@ -221,9 +221,11 @@ procedure CursorOn;
 procedure CursorOff;
 
 { keyboard handling }
-{ partly CRT compatible - only Latin1 chars so far }
+{ partly CRT compatible }
+{ For function keys ReadKeyCode returns a value between $EA00 and $EFFF }
 function KeyPressed: boolean;
-function ReadKey: char;
+function ReadKey: char;  { only ISO-8859-1, otherwise chr(0) }
+function ReadKeyCode: LongInt; { Unicode value }
 
 { clear the keyboard buffer }
 procedure ClearKeys;
@@ -1596,6 +1598,24 @@ if unicode <= 255 then
   ReadKey := chr(unicode)
 else
   ReadKey := chr(0)
+end;
+
+function ReadKeyCode: LongInt;
+var unicode: avt_char;
+begin
+if not initialized then initializeAvatar;
+
+unicode := avt_get_key;
+
+{ CheckBreak, CheckEsc }
+if (CheckBreak and (unicode=3)) or
+   (CheckEsc and (unicode=27)) then
+  begin
+  FastQuit := true;
+  Halt
+  end;
+
+ReadKeyCode := unicode
 end;
 
 procedure ClearKeys;
