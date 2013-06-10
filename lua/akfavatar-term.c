@@ -20,8 +20,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-
 #define _ISOC99_SOURCE
 #define _POSIX_C_SOURCE 200112L
 
@@ -153,6 +151,8 @@ lterm_startdir (lua_State * L)
 static int
 lterm_homedir (lua_State * L)
 {
+  (void) L;
+
   char *home;
 
   home = getenv ("HOME");

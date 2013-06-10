@@ -21,8 +21,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-
 #define _ISOC99_SOURCE
 #define _POSIX_C_SOURCE 200112L
 
@@ -307,6 +305,8 @@ check_textfile (const char *filename, const char *ext)
 static bool
 check_filename (const char *filename, void *data)
 {
+  (void) data;
+
   const char *ext = strrchr (filename, '.');
 
   return check_textfile (filename, ext)

@@ -21,8 +21,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-
 #define _ISOC99_SOURCE
 #define _POSIX_C_SOURCE 200112L
 
@@ -238,6 +236,8 @@ lavt_start (lua_State * L)
 static int
 lavt_quit (lua_State * L)
 {
+  (void) L;
+
   avt_quit ();
   initialized = false;
   return 0;
@@ -887,6 +887,8 @@ lavt_markup (lua_State * L)
 static int
 lavt_normal_text (lua_State * L)
 {
+  (void) L;
+
   avt_normal_text ();
   return 0;
 }
@@ -1053,6 +1055,8 @@ lavt_set_text_background_color (lua_State * L)
 static int
 lavt_set_text_background_ballooncolor (lua_State * L)
 {
+  (void) L;
+
   avt_set_text_background_ballooncolor ();
   return 0;
 }
@@ -1401,6 +1405,8 @@ lavt_key_pressed (lua_State * L)
 static int
 lavt_clear_keys (lua_State * L)
 {
+  (void) L;
+
   avt_clear_keys ();
   return 0;
 }
