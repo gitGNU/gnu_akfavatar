@@ -3398,15 +3398,13 @@ avt_move_in (void)
 		       avatar_image->width, avatar_image->height,
 		       avt.background_color);
 	    }
-
-	  // check event
-	  if (avt_update ())
-	    return _avt_STATUS;
 	}
 
       // final position
       avt_show_avatar ();
     }
+
+  avt_update ();
 
   return _avt_STATUS;
 }
@@ -3475,15 +3473,12 @@ avt_move_out (void)
 		       avatar_image->width, avatar_image->height,
 		       avt.background_color);
 	    }
-
-	  // check event
-	  if (avt_update ())
-	    return _avt_STATUS;
 	}
     }
 
   // fill the whole screen with background color
   avt_clear_screen ();
+  avt_update ();
 
   return _avt_STATUS;
 }

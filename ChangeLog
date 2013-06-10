@@ -1,3 +1,8 @@
+2013-06-10  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_move_in, avt_move_out):
+	don't check for events while moving (bug workaround)
+
 2013-06-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* pascal/akfavatar.pas (ReadKeyCode): new function
