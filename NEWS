@@ -2,6 +2,7 @@
 
   - paging through menus is animated
   - fix: window resizing for the pager works again
+  - fix: switching fullscreen mode while avatar moves in or out
   - fix: avt_credits sometimes got the end wrong
   - fix: audioplayer.lua accepts PLS playlists again
   - lua/audioplayer.lua: improved playlist support

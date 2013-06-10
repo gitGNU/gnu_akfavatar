@@ -3378,7 +3378,7 @@ avt_move_in (void)
 	  // move
 	  pos.x = screen->width - (avt_elapsed (start_time) / MOVE_DELAY);
 
-	  if (pos.x != oldx)
+	  if (pos.x != oldx and pos.x > destination)
 	    {
 	      // draw
 	      avt_put_graphic (avatar_image, screen, pos.x, pos.y);
@@ -3398,13 +3398,15 @@ avt_move_in (void)
 		       avatar_image->width, avatar_image->height,
 		       avt.background_color);
 	    }
+
+	  // check event
+	  if (avt_update ())
+	    return _avt_STATUS;
 	}
 
       // final position
       avt_show_avatar ();
     }
-
-  avt_update ();
 
   return _avt_STATUS;
 }
@@ -3453,7 +3455,7 @@ avt_move_out (void)
 	  // move
 	  pos.x = start_position + (avt_elapsed (start_time) / MOVE_DELAY);
 
-	  if (pos.x != oldx)
+	  if (pos.x != oldx and pos.x < screen->width)
 	    {
 	      // draw
 	      avt_put_graphic (avatar_image, screen, pos.x, pos.y);
@@ -3473,12 +3475,15 @@ avt_move_out (void)
 		       avatar_image->width, avatar_image->height,
 		       avt.background_color);
 	    }
+
+	  // check event
+	  if (avt_update ())
+	    return _avt_STATUS;
 	}
     }
 
   // fill the whole screen with background color
   avt_clear_screen ();
-  avt_update ();
 
   return _avt_STATUS;
 }
