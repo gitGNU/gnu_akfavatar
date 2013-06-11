@@ -2236,7 +2236,8 @@ avt_put_char (avt_char ch)
       break;
 
     default:
-      if ((ch bitand 0xFFFE) == 0xFFFE)	// noncharacter?
+      // noncharacter?
+      if (ch >= 0x10FFFE or (ch bitand 0xFFFE) == 0xFFFE)
 	avt_put_raw_char (BROKEN_WCHAR);
       // if not a control character
       else if (ch > 0x20 and (ch < 0x7F or ch >= 0xA0))
