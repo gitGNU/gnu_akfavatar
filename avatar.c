@@ -2193,17 +2193,6 @@ avt_put_char (avt_char ch)
       avt_put_raw_char (BROKEN_WCHAR);
       break;
 
-      // reserved codepoints
-    case 0xFFFE:
-    case 0xFFFF:
-    case 0x1FFFE:
-    case 0x1FFFF:
-    case 0x10FFFE:
-    case 0x10FFFF:
-      avt_put_raw_char (BROKEN_WCHAR);
-      break;
-
-
       // LRM/RLM: only supported at the beginning of a line
     case L'\u200E':		// LEFT-TO-RIGHT MARK (LRM)
       avt_text_direction (AVT_LEFT_TO_RIGHT);
@@ -2247,8 +2236,10 @@ avt_put_char (avt_char ch)
       break;
 
     default:
+      if ((ch bitand 0xFFFE) == 0xFFFE)	// noncharacter?
+	avt_put_raw_char (BROKEN_WCHAR);
       // if not a control character
-      if (ch > 0x20 and (ch < 0x7F or ch >= 0xA0))
+      else if (ch > 0x20 and (ch < 0x7F or ch >= 0xA0))
 	{
 	  if (avt.markup and ch == L'_')
 	    avt.underlined = not avt.underlined;

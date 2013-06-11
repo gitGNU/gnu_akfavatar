@@ -1,3 +1,7 @@
+2013-06-11  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_put_char): better test for noncharacters
+
 2013-06-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_move_in, avt_move_out): fixed
