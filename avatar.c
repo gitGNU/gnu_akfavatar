@@ -3352,7 +3352,7 @@ avt_move_in (void)
   if (avatar_image)
     {
       struct avt_position pos;
-      short destination;
+      int destination;
       size_t start_time;
 
       pos.x = screen->width;
@@ -3373,7 +3373,7 @@ avt_move_in (void)
 
       while (pos.x > destination)
 	{
-	  short oldx = pos.x;
+	  int oldx = pos.x;
 
 	  // move
 	  pos.x = screen->width - (avt_elapsed (start_time) / MOVE_DELAY);
@@ -3424,7 +3424,7 @@ avt_move_out (void)
     {
       struct avt_position pos;
       size_t start_time;
-      short start_position;
+      int start_position;
 
       if (AVT_FOOTER == avt.avatar_mode or AVT_HEADER == avt.avatar_mode)
 	start_position =
@@ -3448,7 +3448,7 @@ avt_move_out (void)
 
       while (pos.x < screen->width)
 	{
-	  short oldx;
+	  int oldx;
 
 	  oldx = pos.x;
 
