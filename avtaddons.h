@@ -98,6 +98,8 @@ AVT_ADDON const struct avt_charenc *avt_koi8u (void);
  * It is the built in charset for the textconsole.
  * It is used for .nfo files.
  *
+ * implemented for comatibility with textconsole programs
+ *
  * The characters 0-31 are interpreted as control characters
  */
 AVT_ADDON const struct avt_charenc *avt_cp437 (void);
@@ -106,6 +108,8 @@ AVT_ADDON const struct avt_charenc *avt_cp437 (void);
  * Code page 850 (IBM850, DOS-Latin-1)
  * This has all characters of ISO Latin-1,
  * but in different positions.
+ *
+ * used for textconsole programs under Windows in Western-Europe
  *
  * The characters 0-31 are interpreted as control characters
  */
@@ -118,6 +122,8 @@ AVT_ADDON const struct avt_charenc *avt_cp850 (void);
  * 1252 (Western languages)
  *
  * Microsoft calls them "ANSI", though they are _not_ ANSI standards!
+ *
+ * implemented, because they are widely used
  */
 AVT_ADDON const struct avt_charenc *avt_cp1250 (void);
 AVT_ADDON const struct avt_charenc *avt_cp1251 (void);
@@ -128,6 +134,8 @@ AVT_ADDON const struct avt_charenc *avt_cp1252 (void);
  * depends on the locale for LC_CTYPE
  *
  * use with care!
+ * just use it for filenames and messages from the system
+ * on some systems it is badly supported
  */
 AVT_ADDON const struct avt_charenc *avt_systemencoding (void);
 
