@@ -8,9 +8,8 @@ in a balloon.  There can also be recorded audio files, so that the user
 even can hear, what it is saying.
 
 Applications for AKFAvatar can be written in Lua, an easy to learn scripting
-language.  It has an interface for C programs, which can also be used for
-Objective-C or C++.  Furthermore there are bindings for Free Pascal and
-GNU Pascal.
+language.  It has an interface for C programs.
+Furthermore there are bindings for Free Pascal.
 
 AKFAvatar already comes with quite a few ready to use applications and modules.
 There is for example a text-viewer, a module to make question-answer exercises
