@@ -2077,6 +2077,20 @@ avt_backspace (void)
 static void
 avt_put_raw_char (avt_char ch)
 {
+  if (avt.markup)
+    {
+      if (ch == L'_')
+	{
+	  avt.underlined = not avt.underlined;
+	  return;
+	}
+      else if (ch == L'*')
+	{
+	  avt.bold = not avt.bold;
+	  return;
+	}
+    }
+
   if (avt.auto_margin)
     check_auto_margin ();
 
@@ -2241,14 +2255,7 @@ avt_put_char (avt_char ch)
 	avt_put_raw_char (BROKEN_WCHAR);
       // if not a control character
       else if (ch > 0x20 and (ch < 0x7F or ch >= 0xA0))
-	{
-	  if (avt.markup and ch == L'_')
-	    avt.underlined = not avt.underlined;
-	  else if (avt.markup and ch == L'*')
-	    avt.bold = not avt.bold;
-	  else			// not a markup character
-	    avt_put_raw_char (ch);
-	}			// if (ch > 0x0020)
+	avt_put_raw_char (ch);
     }				// switch
 
   // overstrike technique
