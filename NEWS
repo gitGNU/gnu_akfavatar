@@ -19,7 +19,7 @@
 
   Pascal-API changes:
     - variable CheckEsc removed
-    - new procedures/functions: ReadKeyCode, reserve_single_keys
+    - new procedures/functions: Menu, ReadKeyCode, reserve_single_keys
 
 
 * AKFAvatar 0.23.1

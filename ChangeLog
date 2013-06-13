@@ -1,3 +1,7 @@
+2013-06-14  Andreas K. Foerster  <info@akfoerster.de>
+
+	* pascal/akfavatar.pas (Menu): new function
+
 2013-06-11  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c (avt_put_char): better test for noncharacters

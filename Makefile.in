@@ -1053,6 +1053,7 @@ dist: about $(srcdir)/alert.au
 	mkdir $(PKGNAME)/pascal
 	ln $(srcdir)/pascal/README $(srcdir)/pascal/akfavatar.pas \
 	   $(srcdir)/pascal/example.pas \
+	   $(srcdir)/pascal/menuexample.pas \
 	   $(srcdir)/pascal/multiply.pas \
 	   $(srcdir)/pascal/positive.inc $(srcdir)/pascal/negative.inc \
 	   $(srcdir)/pascal/teacher.inc \

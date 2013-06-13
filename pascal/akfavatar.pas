@@ -440,6 +440,9 @@ function Navigate(buttons: String): char;
 function Choice(start_line, items: integer; startkey: char;
                 back, fwrd: boolean): integer;
 
+type TMenuEntry = procedure (Nr: Integer);
+function Menu(items: Integer; Entry: TMenuEntry): Integer;
+
 { show a very long text in a pager }
 { You can navigate with up/down, page up/page down keys,
   Home and End keys, and even with the mouse-wheel }
@@ -762,6 +765,10 @@ function avt_choice(var res: Cint;
                     start_line, items, key: Cint;
                     back, fwrd: CBoolean): Cint; 
   libakfavatar 'avt_choice';
+
+function avt_menu(var res: Cint; items: Cint;
+                  show: Pointer; data: Pointer): Cint;
+  libakfavatar 'avt_menu';
 
 procedure avt_pager_char(txt: CString; len: Csize_t; startline: Cint); 
   libakfavatar 'avt_pager_char';
@@ -1647,6 +1654,28 @@ if not initialized then initializeAvatar;
 if avt_choice(res, start_line, items, Cint(startkey),
               back, fwrd)<>0 then Halt;
 Choice := res
+end;
+
+procedure MenuEntry(Nr: Cint; data: Pointer); {$IfNDef __GPC__} cdecl; {$EndIf}
+var show: TMenuEntry;
+begin
+show := TMenuEntry(data);
+show(Nr)
+end;
+
+function Menu(items: Integer; Entry: TMenuEntry): Integer;
+var res: Cint;
+begin
+if not initialized then initializeAvatar;
+
+res := 0;
+{$IfDef __GPC__}
+if avt_menu(res, items, @MenuEntry, @Entry)<>0 then Halt;
+{$Else}
+if avt_menu(res, items, @MenuEntry, Entry)<>0 then Halt;
+{$EndIf}
+
+Menu := res
 end;
 
 procedure LockUpdates(lock: boolean);
