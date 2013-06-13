@@ -758,7 +758,7 @@ function avt_get_scroll_mode: Cint;
   libakfavatar 'avt_get_scroll_mode';
 
 
-function avt_choice(var result: Cint;
+function avt_choice(var res: Cint;
                     start_line, items, key: Cint;
                     back, fwrd: CBoolean): Cint; 
   libakfavatar 'avt_choice';
@@ -1258,48 +1258,48 @@ avt_clear_eol
 end;
 
 function ShowImageFile(FileName: string): boolean;
-var result : Cint;
+var res : Cint;
 begin
 if not initialized then initializeAvatar;
-result := avt_show_image_file(String2CString(FileName));
+res := avt_show_image_file(String2CString(FileName));
 
-if result = 1 then Halt; { halt requested }
-if result = 0 
+if res = 1 then Halt; { halt requested }
+if res = 0 
   then ShowImageFile := true { success }
   else ShowImageFile := false { failure }
 end;
 
 procedure ShowImageData(data: pointer; size: LongInt);
-var result : Cint;
+var res : Cint;
 begin
 if not initialized then initializeAvatar;
 
-result := avt_show_image_data(data, size);
-if result = 1 then Halt; { halt requested }
+res := avt_show_image_data(data, size);
+if res = 1 then Halt; { halt requested }
 
 { ignore failure to show image }
 end;
 
 procedure ShowImageXPM(data: pointer);
-var result : Cint;
+var res : Cint;
 begin
 if not initialized then initializeAvatar;
 
-result := avt_show_image_xpm(data);
-if result = 1 then Halt; { halt requested }
+res := avt_show_image_xpm(data);
+if res = 1 then Halt; { halt requested }
 
 { ignore failure to show image }
 end;
 
 procedure ShowImageXBM(bits: pointer; width, height: integer; 
                        colorname: string);
-var result : Cint;
+var res : Cint;
 begin
 if not initialized then initializeAvatar;
 
-result := avt_show_image_xbm(bits, width, height, 
+res := avt_show_image_xbm(bits, width, height, 
                     avt_colorname(String2CString(colorname)));
-if result = 1 then Halt; { halt requested }
+if res = 1 then Halt; { halt requested }
 
 { ignore failure to show image }
 end;
@@ -1641,12 +1641,12 @@ end;
 
 function Choice(start_line, items: integer; startkey: char;
                 back, fwrd: boolean): integer;
-var result: Cint;
+var res: Cint;
 begin
 if not initialized then initializeAvatar;
-if avt_choice(result, start_line, items, Cint(startkey),
+if avt_choice(res, start_line, items, Cint(startkey),
               back, fwrd)<>0 then Halt;
-Choice := result
+Choice := res
 end;
 
 procedure LockUpdates(lock: boolean);
@@ -1662,12 +1662,12 @@ if avt_get_status<>0 then Halt
 end;
 
 function Navigate(buttons: String): char;
-var result: Cint;
+var res: Cint;
 begin
 if not initialized then initializeAvatar;
-result := avt_navigate(String2CString(buttons));
+res := avt_navigate(String2CString(buttons));
 if avt_get_status<>0 then Halt;
-Navigate := chr(result)
+Navigate := chr(res)
 end;
 
 { ---------------------------------------------------------------------}
