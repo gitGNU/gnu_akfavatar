@@ -353,7 +353,7 @@ avt_recode_char (const struct avt_charenc *tocode,
       size_t nsrc = fromcode->decode (fromcode, &ch, src);
       size_t ndest = tocode->encode (tocode, dest, dest_size, ch);
 
-      if (not ndest)
+      if (not ndest or ndest > dest_size)
 	break;
 
       dest_size -= ndest;
@@ -367,7 +367,7 @@ avt_recode_char (const struct avt_charenc *tocode,
       src += nsrc;
     }
 
-  dest[result_size] = '\0';
+  *dest = '\0';
 
   return result_size;
 }
