@@ -1,6 +1,6 @@
 /*
  * get language code for Windows 2000 or newer
- * Copyright (c) 2012 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2012,2013 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -24,7 +24,7 @@
 // returns 2-letter language code according ISO 639-1
 // or NULL if unknown
 extern const char *
-avta_get_language (void)
+avt_get_language (void)
 {
   int nr;
   const char *lang;

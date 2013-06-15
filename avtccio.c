@@ -39,7 +39,7 @@
    || defined (__NetBSD__)  || defined (__OpenBSD__)
 
 extern int
-avta_vprintf (const char *format, va_list ap)
+avt_vprintf (const char *format, va_list ap)
 {
   char *strp;
   int n;
@@ -63,7 +63,7 @@ avta_vprintf (const char *format, va_list ap)
  */
 
 extern int
-avta_vprintf (const char *format, va_list ap)
+avt_vprintf (const char *format, va_list ap)
 {
   char *str;
   int n;
@@ -100,24 +100,24 @@ avta_vprintf (const char *format, va_list ap)
 #endif /* not __USE_GNU */
 
 extern int
-avta_printf (const char *format, ...)
+avt_printf (const char *format, ...)
 {
   va_list ap;
   int n;
 
   va_start (ap, format);
-  n = avta_vprintf (format, ap);
+  n = avt_vprintf (format, ap);
   va_end (ap);
 
   return n;
 }
 
 /*
- * do not use avt_put_character here,
+ * do not use avt_put_char here,
  * because it doesn't depend on the chosen encoding!
  */
 extern int
-avta_putchar (int c)
+avt_putchar_char (int c)
 {
   unsigned char ch;
 
@@ -130,7 +130,7 @@ avta_putchar (int c)
 }
 
 extern int
-avta_puts (const char *s)
+avt_puts (const char *s)
 {
   avt_say_char (s);
   avt_new_line ();
@@ -140,7 +140,7 @@ avta_puts (const char *s)
 }
 
 extern int
-avta_vscanf (const char *format, va_list ap)
+avt_vscanf (const char *format, va_list ap)
 {
   char str[4 * AVT_LINELENGTH + 1];
 
@@ -149,13 +149,13 @@ avta_vscanf (const char *format, va_list ap)
 }
 
 extern int
-avta_scanf (const char *format, ...)
+avt_scanf (const char *format, ...)
 {
   va_list ap;
   int n;
 
   va_start (ap, format);
-  n = avta_vscanf (format, ap);
+  n = avt_vscanf (format, ap);
   va_end (ap);
 
   return n;

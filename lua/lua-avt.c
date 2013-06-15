@@ -2102,7 +2102,7 @@ static int
 lavt_file_selection (lua_State * L)
 {
   char filename[256];
-  avta_filter filter;
+  avt_filter filter;
 
   is_initialized ();
 
@@ -2114,7 +2114,7 @@ lavt_file_selection (lua_State * L)
       filter = &file_filter;
     }
 
-  if (avta_file_selection (filename, sizeof (filename), filter, L) > -1)
+  if (avt_file_selection (filename, sizeof (filename), filter, L) > -1)
     lua_pushstring (L, filename);
   else
     lua_pushnil (L);
@@ -2125,7 +2125,7 @@ lavt_file_selection (lua_State * L)
 static int
 lavt_color_selection (lua_State * L)
 {
-  lua_pushstring (L, avta_color_selection ());
+  lua_pushstring (L, avt_color_selection ());
   return 1;
 }
 
@@ -2681,7 +2681,7 @@ set_datapath (lua_State * L)
   char *avtdatapath;
   char basedir[4097];
 
-  avta_base_directory (basedir, sizeof (basedir));
+  avt_base_directory (basedir, sizeof (basedir));
   avtdatapath = getenv (AVTDATAPATH);
 
   if (not avtdatapath)
@@ -2706,7 +2706,7 @@ set_datapath (lua_State * L)
   char *avtdatapath;
   char basedir[4097];
 
-  avta_base_directory (basedir, sizeof (basedir));
+  avt_base_directory (basedir, sizeof (basedir));
 
   // if basedir is /usr or /usr/local, ignore it
   if (*basedir and (strcmp ("/usr/local", basedir) == 0
@@ -2810,7 +2810,7 @@ luaopen_akfavatar_embedded (lua_State * L)
   lua_setfield (L, -2, "dirsep");
 
   // avt.language
-  const char *language = avta_get_language ();
+  const char *language = avt_get_language ();
   if (language)
     {
       lua_pushstring (L, language);

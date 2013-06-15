@@ -1,6 +1,7 @@
 /* 
  * some functions for handling ar archives
- * Copyright (c) 2008,2011,2012 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2008,2011,2012,2013
+ * Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -26,7 +27,7 @@
 #include <iso646.h>
 
 /*
- * some weird systems needs O_BINARY, most others not
+ * some weird systems need O_BINARY, most others not
  * so I define a dummy value for sane systems
  */
 #ifndef O_BINARY
@@ -34,7 +35,7 @@
 #endif
 
 /* structure of an ar member header */
-struct avta_arch_member
+struct avt_arch_member
 {
   char name[16];
   char date[12];
@@ -49,7 +50,7 @@ struct avta_arch_member
  * or -1 on error
  */
 int
-avta_arch_open (const char *archive)
+avt_arch_open (const char *archive)
 {
   int fd;
   ssize_t nread;
@@ -74,11 +75,11 @@ avta_arch_open (const char *archive)
 /* finds a member in the archive */
 /* returns size of the file, or 0 if not found or on error */
 size_t
-avta_arch_find_member (int fd, const char *member)
+avt_arch_find_member (int fd, const char *member)
 {
   size_t name_length;
   size_t skip_size;
-  struct avta_arch_member header;
+  struct avt_arch_member header;
 
   name_length = strlen (member);
 
@@ -122,10 +123,10 @@ avta_arch_find_member (int fd, const char *member)
  * returns size of first member
  */
 size_t
-avta_arch_first_member (int fd, char *member)
+avt_arch_first_member (int fd, char *member)
 {
   size_t size;
-  struct avta_arch_member header;
+  struct avt_arch_member header;
   char *end;
 
   lseek (fd, 8, SEEK_SET);	/* go to first entry */
@@ -165,7 +166,7 @@ avta_arch_first_member (int fd, char *member)
  * returns NULL on error
  */
 char *
-avta_arch_get_member (int fd, size_t size)
+avt_arch_get_member (int fd, size_t size)
 {
   ssize_t nread;
   size_t remain;
@@ -212,7 +213,7 @@ avta_arch_get_member (int fd, size_t size)
  * returns NULL on error
  */
 char *
-avta_arch_get_data (const char *archive, const char *member, size_t * size)
+avt_arch_get_data (const char *archive, const char *member, size_t * size)
 {
   int fd;
   size_t msize;
@@ -222,14 +223,14 @@ avta_arch_get_data (const char *archive, const char *member, size_t * size)
   if (size)
     *size = 0;
 
-  fd = avta_arch_open (archive);
+  fd = avt_arch_open (archive);
   if (fd < 0)
     return NULL;
 
-  msize = avta_arch_find_member (fd, member);
+  msize = avt_arch_find_member (fd, member);
 
   if (msize > 0)
-    buf = avta_arch_get_member (fd, msize);
+    buf = avt_arch_get_member (fd, msize);
 
   close (fd);
 

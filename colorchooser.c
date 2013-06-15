@@ -101,7 +101,7 @@ show_color (int nr, void *data)
 }
 
 extern const char *
-avta_color_selection (void)
+avt_color_selection (void)
 {
   const char *result;
   int choice;

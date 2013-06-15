@@ -166,12 +166,12 @@ AVT_ADDON size_t map_from_unicode (const struct avt_charenc *self,
  * avt_mb_encoding before calling any of these functions.
  **********************************************************************/
 
-AVT_ADDON int avta_printf (const char *format, ...);
-AVT_ADDON int avta_putchar (int c);
-AVT_ADDON int avta_puts (const char *s);
-AVT_ADDON int avta_scanf (const char *format, ...);
-AVT_ADDON int avta_vprintf (const char *format, va_list ap);
-AVT_ADDON int avta_vscanf (const char *format, va_list ap);
+AVT_ADDON int avt_printf (const char *format, ...);
+AVT_ADDON int avt_putchar_char (int c);
+AVT_ADDON int avt_puts (const char *s);
+AVT_ADDON int avt_scanf (const char *format, ...);
+AVT_ADDON int avt_vprintf (const char *format, va_list ap);
+AVT_ADDON int avt_vscanf (const char *format, va_list ap);
 
 
 /**********************************************************************
@@ -182,12 +182,12 @@ AVT_ADDON int avta_vscanf (const char *format, va_list ap);
  * any of these functions.
  **********************************************************************/
 
-AVT_ADDON int avta_wprintf (const wchar_t *format, ...);
-AVT_ADDON wint_t avta_putwchar (wchar_t c);
-AVT_ADDON int avta_putws (const wchar_t *s);
-AVT_ADDON int avta_wscanf (const wchar_t *format, ...);
-AVT_ADDON int avta_vwprintf (const wchar_t *format, va_list ap);
-AVT_ADDON int avta_vwscanf (const wchar_t *format, va_list ap);
+AVT_ADDON int avt_wprintf (const wchar_t *format, ...);
+AVT_ADDON wint_t avt_putwchar (wchar_t c);
+AVT_ADDON int avt_putws (const wchar_t *s);
+AVT_ADDON int avt_wscanf (const wchar_t *format, ...);
+AVT_ADDON int avt_vwprintf (const wchar_t *format, va_list ap);
+AVT_ADDON int avt_vwscanf (const wchar_t *format, va_list ap);
 
 
 /**********************************************************************
@@ -195,7 +195,7 @@ AVT_ADDON int avta_vwscanf (const wchar_t *format, va_list ap);
  * color-chooser for AKFAvatar
  **********************************************************************/
 
-AVT_ADDON const char *avta_color_selection (void);
+AVT_ADDON const char *avt_color_selection (void);
 
 
 /**********************************************************************
@@ -203,7 +203,7 @@ AVT_ADDON const char *avta_color_selection (void);
  * file-chooser for AKFAvatar
  **********************************************************************/
 
-typedef bool (*avta_filter) (const char *filename, void *data);
+typedef bool (*avt_filter) (const char *filename, void *data);
 
 /*
  * file selection
@@ -212,8 +212,8 @@ typedef bool (*avta_filter) (const char *filename, void *data);
  * data is passed to the filter (may be NULL)
  * returns 0 on success or -1 on error
  */
-AVT_ADDON int avta_file_selection (char *filename, int filename_size,
-                                   avta_filter filter, void *data);
+AVT_ADDON int avt_file_selection (char *filename, int filename_size,
+                                  avt_filter filter, void *data);
 
 
 /**********************************************************************
@@ -229,13 +229,13 @@ AVT_ADDON int avta_file_selection (char *filename, int filename_size,
  * returns length of the string without the terminating zeros,
  * or -1 on error
  */
-AVT_ADDON int avta_read_textfile (const char *file_name, char **buffer);
+AVT_ADDON int avt_read_textfile (const char *file_name, char **buffer);
 
 /*
  * read a data file
  * returns the size of the buffer in bytes, or -1 on error
  */
-AVT_ADDON int avta_read_datafile (const char *file_name, void **buffer);
+AVT_ADDON int avt_read_datafile (const char *file_name, void **buffer);
 
 /*
  * get the output of the command (not for interactive programs)
@@ -243,20 +243,20 @@ AVT_ADDON int avta_read_datafile (const char *file_name, void **buffer);
  * returns length of the string without the terminating zeros,
  * or -1 on error
  */
-AVT_ADDON int avta_read_command (const char *command, char **buffer);
+AVT_ADDON int avt_read_command (const char *command, char **buffer);
 
 /*
  * run pager on file with current encoding and balloon-size
  * returns 0 on success or -1 on error
  */
-AVT_ADDON int avta_pager_file (const char *file_name, int startline);
+AVT_ADDON int avt_pager_file (const char *file_name, int startline);
 
 /*
  * run pager on output of command with current encoding and 
  * balloon-size
  * returns 0 on success or -1 on error
  */
-AVT_ADDON int avta_pager_command (const char *command, int startline);
+AVT_ADDON int avt_pager_command (const char *command, int startline);
 
 
 /**********************************************************************
@@ -264,20 +264,20 @@ AVT_ADDON int avta_pager_command (const char *command, int startline);
  * Ogg Vorbis support for AKFAvatar based on stb_vorbis
  **********************************************************************/
 
-AVT_ADDON avt_audio *avta_load_vorbis_file (char *filename, int playmode);
+AVT_ADDON avt_audio *avt_load_vorbis_file (char *filename, int playmode);
 
-AVT_ADDON avt_audio *avta_load_vorbis_data (void *data,
-                                            int datasize,
-                                            int playmode);
+AVT_ADDON avt_audio *avt_load_vorbis_data (void *data,
+                                           int datasize,
+                                           int playmode);
 
 /*
  * read from a stream at current position size bytes maximum
  * if size is 0 then get the rest of the file
  * on error it restores the file position and returns NULL
  */
-AVT_ADDON avt_audio *avta_load_vorbis_stream (avt_stream *stream,
-                                              size_t size,
-                                              int playmode);
+AVT_ADDON avt_audio *avt_load_vorbis_stream (avt_stream *stream,
+                                             size_t size,
+                                             int playmode);
 
 
 /**********************************************************************
@@ -286,10 +286,10 @@ AVT_ADDON avt_audio *avta_load_vorbis_stream (avt_stream *stream,
  **********************************************************************/
 
 /*
- * returns 2-letter lowercase language code according ISO 639-1
+ * returns lowercase language code according ISO 639-1
  * or NULL if unknown
  */
-AVT_ADDON const char *avta_get_language (void);
+AVT_ADDON const char *avt_get_language (void);
 
 /**********************************************************************
  * Section: base directory
@@ -302,7 +302,7 @@ AVT_ADDON const char *avta_get_language (void);
  * name should be a buffer of the given size
  * returns 0 on success and -1 on error
  */
-AVT_ADDON int avta_base_directory (char *name, size_t size);
+AVT_ADDON int avt_base_directory (char *name, size_t size);
 
 /**********************************************************************
  * Section: arch
@@ -313,7 +313,7 @@ AVT_ADDON int avta_base_directory (char *name, size_t size);
  * return file descriptor, if it's an archive
  * or -1 on error
  */
-AVT_ADDON int avta_arch_open (const char *archive);
+AVT_ADDON int avt_arch_open (const char *archive);
 
 /*
  * finds a member in the archive 
@@ -321,7 +321,7 @@ AVT_ADDON int avta_arch_open (const char *archive);
  * the member name may not be longer than 15 characters 
  * returns size of the member, or 0 if not found 
  */
-AVT_ADDON size_t avta_arch_find_member (int fd, const char *member);
+AVT_ADDON size_t avt_arch_find_member (int fd, const char *member);
 
 /*
  * finds first archive member
@@ -330,7 +330,7 @@ AVT_ADDON size_t avta_arch_find_member (int fd, const char *member);
  * member must have at least 16 bytes
  * returns size of first member
  */
-AVT_ADDON size_t avta_arch_first_member (int fd, char *member);
+AVT_ADDON size_t avt_arch_first_member (int fd, char *member);
 
 /*
  * read in whole member
@@ -338,7 +338,7 @@ AVT_ADDON size_t avta_arch_first_member (int fd, char *member);
  * the result gets some binary zeros added, so it can be used as string
  * returns NULL on error
  */
-AVT_ADDON char *avta_arch_get_member (int fd, size_t size);
+AVT_ADDON char *avt_arch_get_member (int fd, size_t size);
 
 /*
  * read in whole member of a named archive
@@ -347,8 +347,8 @@ AVT_ADDON char *avta_arch_get_member (int fd, size_t size);
  * if size is not NULL it gets the size of the member without the terminator
  * returns NULL on error
  */
-AVT_ADDON char *avta_arch_get_data (const char *archive, const char *member,
-                                    size_t *size);
+AVT_ADDON char *avt_arch_get_data (const char *archive, const char *member,
+                                   size_t *size);
 
 
 /**********************************************************************
@@ -357,7 +357,7 @@ AVT_ADDON char *avta_arch_get_data (const char *archive, const char *member,
  * (not available for MinGW)
  **********************************************************************/
 
-typedef int (*avta_term_apc_cmd) (wchar_t*);
+typedef int (*avt_term_apc_cmd) (wchar_t*);
 
 /*
  * execute a subprocess, visible in the balloon
@@ -365,16 +365,15 @@ typedef int (*avta_term_apc_cmd) (wchar_t*);
  * returns file-descriptor for output of the process
  * or -1 on error (also if not supported at all)
  */
-AVT_ADDON int avta_term_start (const char *working_dir,
-			       char *prg_argv[]);
+AVT_ADDON int avt_term_start (const char *working_dir, char *prg_argv[]);
 
-AVT_ADDON void avta_term_run (int fd);
+AVT_ADDON void avt_term_run (int fd);
 
-AVT_ADDON void avta_term_nocolor (bool nocolor);
+AVT_ADDON void avt_term_nocolor (bool nocolor);
 
 
 /* register handler for APC commands (optional) */
-AVT_ADDON void avta_term_register_apc (avta_term_apc_cmd command);
+AVT_ADDON void avt_term_register_apc (avt_term_apc_cmd command);
 
 /*
  * the following functions are only meant to be called
@@ -382,19 +381,19 @@ AVT_ADDON void avta_term_register_apc (avta_term_apc_cmd command);
  */
 
 /* APC: (de)activate slowprint mode */
-AVT_ADDON void avta_term_slowprint (bool on);
+AVT_ADDON void avt_term_slowprint (bool on);
 
 /* APC: send data to stdin of the running program */
-AVT_ADDON void avta_term_send (const char *buf, size_t count);
+AVT_ADDON void avt_term_send (const char *buf, size_t count);
 
 /* APC: send string literal to stdin of the running program */
-#define avta_term_send_literal(l)  avta_term_send("" l, sizeof(l)-1)
+#define avt_term_send_literal(l)  avt_term_send("" l, sizeof(l)-1)
 
 /*
  * APC: update size of textarea
  * call this after you have changed the size of the balloon
  */
-AVT_ADDON void avta_term_update_size (void);
+AVT_ADDON void avt_term_update_size (void);
 
 
 #endif /* AVTADDONS_H */

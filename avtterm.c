@@ -162,7 +162,7 @@ static const struct avt_charenc vt100_converter = {
 };
 
 // handler for APC commands
-static avta_term_apc_cmd apc_cmd_handler;
+static avt_term_apc_cmd apc_cmd_handler;
 
 static inline void
 set_encoding (const struct avt_charenc *encoding)
@@ -172,13 +172,13 @@ set_encoding (const struct avt_charenc *encoding)
 }
 
 extern void
-avta_term_nocolor (bool on)
+avt_term_nocolor (bool on)
 {
   nocolor = on;
 }
 
 extern void
-avta_term_slowprint (bool on)
+avt_term_slowprint (bool on)
 {
   if (on)
     text_delay = AVT_DEFAULT_TEXT_DELAY;
@@ -196,7 +196,7 @@ activate_cursor (bool on)
 }
 
 extern void
-avta_term_update_size (void)
+avt_term_update_size (void)
 {
   if (prg_input > 0)
     {
@@ -208,7 +208,7 @@ avta_term_update_size (void)
 	  max_x = new_max_x;
 	  max_y = new_max_y;
 
-	  avta_term_size (prg_input, max_y, max_x);
+	  avt_term_size (prg_input, max_y, max_x);
 
 	  if (region_max_y > max_y)
 	    region_max_y = max_y;
@@ -234,13 +234,13 @@ prg_mousehandler (int button, bool pressed, int x, int y)
 
       snprintf (code, sizeof (code), CSI "M%c%c%c",
 		(char) (040 + b), (char) (040 + x), (char) (040 + y));
-      avta_term_send (&code[0], sizeof (code) - 1);
+      avt_term_send (&code[0], sizeof (code) - 1);
     }
 }
 */
 
 extern void
-avta_term_send (const char *buf, size_t count)
+avt_term_send (const char *buf, size_t count)
 {
   if (prg_input > 0)
     {
@@ -259,7 +259,7 @@ avta_term_send (const char *buf, size_t count)
 }
 
 #define send_cursor_seq(c)  \
-  do { dec_cursor_seq[2]=c; avta_term_send(dec_cursor_seq, 3); } while(0)
+  do { dec_cursor_seq[2]=c; avt_term_send(dec_cursor_seq, 3); } while(0)
 
 static void
 process_key (avt_char key)
@@ -288,83 +288,83 @@ process_key (avt_char key)
       break;
 
     case AVT_KEY_INSERT:
-      avta_term_send_literal (KEY_INSERT);
+      avt_term_send_literal (KEY_INSERT);
       break;
 
     case AVT_KEY_HOME:
-      avta_term_send_literal (KEY_HOME);
+      avt_term_send_literal (KEY_HOME);
       break;
 
     case AVT_KEY_END:
-      avta_term_send_literal (KEY_END);
+      avt_term_send_literal (KEY_END);
       break;
 
     case AVT_KEY_PAGEUP:
-      avta_term_send_literal (KEY_PAGEUP);
+      avt_term_send_literal (KEY_PAGEUP);
       break;
 
     case AVT_KEY_PAGEDOWN:
-      avta_term_send_literal (KEY_PAGEDOWN);
+      avt_term_send_literal (KEY_PAGEDOWN);
       break;
 
     case AVT_KEY_F1:
-      avta_term_send_literal (KEY_F1);
+      avt_term_send_literal (KEY_F1);
       break;
 
     case AVT_KEY_F2:
-      avta_term_send_literal (KEY_F1);
+      avt_term_send_literal (KEY_F1);
       break;
 
     case AVT_KEY_F3:
-      avta_term_send_literal (KEY_F3);
+      avt_term_send_literal (KEY_F3);
       break;
 
     case AVT_KEY_F4:
-      avta_term_send_literal (KEY_F4);
+      avt_term_send_literal (KEY_F4);
       break;
 
     case AVT_KEY_F5:
-      avta_term_send_literal (KEY_F5);
+      avt_term_send_literal (KEY_F5);
       break;
 
     case AVT_KEY_F6:
-      avta_term_send_literal (KEY_F6);
+      avt_term_send_literal (KEY_F6);
       break;
 
     case AVT_KEY_F7:
-      avta_term_send_literal (KEY_F7);
+      avt_term_send_literal (KEY_F7);
       break;
 
     case AVT_KEY_F8:
-      avta_term_send_literal (KEY_F8);
+      avt_term_send_literal (KEY_F8);
       break;
 
     case AVT_KEY_F9:
-      avta_term_send_literal (KEY_F9);
+      avt_term_send_literal (KEY_F9);
       break;
 
     case AVT_KEY_F10:
-      avta_term_send_literal (KEY_F10);
+      avt_term_send_literal (KEY_F10);
       break;
 
     case AVT_KEY_F11:
-      avta_term_send_literal (KEY_F11);
+      avt_term_send_literal (KEY_F11);
       break;
 
     case AVT_KEY_F12:
-      avta_term_send_literal (KEY_F12);
+      avt_term_send_literal (KEY_F12);
       break;
 
     case AVT_KEY_F13:
-      avta_term_send_literal (KEY_F13);
+      avt_term_send_literal (KEY_F13);
       break;
 
     case AVT_KEY_F14:
-      avta_term_send_literal (KEY_F14);
+      avt_term_send_literal (KEY_F14);
       break;
 
     case AVT_KEY_F15:
-      avta_term_send_literal (KEY_F15);
+      avt_term_send_literal (KEY_F15);
       break;
 
     default:
@@ -376,7 +376,7 @@ process_key (avt_char key)
 	  length =
 	    convert->encode (convert, mbstring, sizeof (mbstring), key);
 	  if (length > 0)
-	    avta_term_send (mbstring, length);
+	    avt_term_send (mbstring, length);
 	}			// if (key)
     }				// switch
 }
@@ -765,7 +765,7 @@ reset_terminal (void)
 
   avt_reset_tab_stops ();
   ansi_graphic_code (0);
-  avta_term_slowprint (false);
+  avt_term_slowprint (false);
   dec_cursor_seq[0] = '\033';
   dec_cursor_seq[1] = '[';
 }
@@ -866,7 +866,7 @@ CSI_sequence (int fd, avt_char last_character)
 
     case L'c':			// DA
       if (sequence[0] == 'c')
-	avta_term_send_literal (DS);
+	avt_term_send_literal (DS);
       else if (sequence[0] == '?')
 	{			// I have no real infos about that :-(
 	  if (sequence[1] == '1' and sequence[2] == 'c')
@@ -984,7 +984,7 @@ CSI_sequence (int fd, avt_char last_character)
 	      activate_cursor (on);
 	      break;
 	    case 56:		// AKFAvatar extension
-	      avta_term_slowprint (on);
+	      avt_term_slowprint (on);
 	      break;
 	    case 66:
 	      application_keypad = on;
@@ -1063,7 +1063,7 @@ CSI_sequence (int fd, avt_char last_character)
 
     case L'n':			// DSR
       if (sequence[0] == '5' and sequence[1] == 'n')
-	avta_term_send_literal (CSI "0n");	// device okay
+	avt_term_send_literal (CSI "0n");	// device okay
       // CSI "3n" for failure
       else if (sequence[0] == '6' and sequence[1] == 'n')
 	{
@@ -1071,7 +1071,7 @@ CSI_sequence (int fd, avt_char last_character)
 	  char s[80];
 	  snprintf (s, sizeof (s), CSI "%d;%dR",
 		    avt_where_x (), avt_where_y ());
-	  avta_term_send (s, strlen (s));
+	  avt_term_send (s, strlen (s));
 	}
       // other values are unknown
       break;
@@ -1137,7 +1137,7 @@ CSI_sequence (int fd, avt_char last_character)
 	  avt_set_balloon_size (height, width);
 	  max_x = avt_get_max_x ();
 	  max_y = avt_get_max_y ();
-	  avta_term_size (prg_input, max_y, max_x);
+	  avt_term_size (prg_input, max_y, max_x);
 	  if (region_max_y > max_y)
 	    region_max_y = max_y;
 	  if (region_min_y > max_y)
@@ -1374,7 +1374,7 @@ escape_sequence (int fd, avt_char last_character)
       break;
 
     case L'Z':			// DECID
-      avta_term_send_literal (DS);
+      avt_term_send_literal (DS);
       break;
 
       // OSC: Operating System Command
@@ -1404,13 +1404,13 @@ escape_sequence (int fd, avt_char last_character)
 }
 
 extern void
-avta_term_register_apc (avta_term_apc_cmd command)
+avt_term_register_apc (avt_term_apc_cmd command)
 {
   apc_cmd_handler = command;
 }
 
 extern void
-avta_term_run (int fd)
+avt_term_run (int fd)
 {
   bool stop;
   avt_char ch;
@@ -1456,7 +1456,7 @@ avta_term_run (int fd)
 	}
     }
 
-  avta_closeterm (fd);
+  avt_closeterm (fd);
 
   activate_cursor (false);
   avt_reserve_single_keys (false);
@@ -1468,7 +1468,7 @@ avta_term_run (int fd)
 
 
 extern int
-avta_term_start (const char *working_dir, char *prg_argv[])
+avt_term_start (const char *working_dir, char *prg_argv[])
 {
   default_encoding = avt_systemencoding ();
   set_encoding (default_encoding);
@@ -1485,6 +1485,6 @@ avta_term_start (const char *working_dir, char *prg_argv[])
     return -1;
 
   return
-    avta_term_initialize (&prg_input, max_x, max_y, nocolor,
-			  working_dir, prg_argv);
+    avt_term_initialize (&prg_input, max_x, max_y, nocolor,
+			 working_dir, prg_argv);
 }

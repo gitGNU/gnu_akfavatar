@@ -27,11 +27,11 @@ avt.translations = {
 
 local L = avt.translate
 
-avt.encoding("UTF-8")
 avt.title(L"Audio-Player")
 avt.start()
 avt.start_audio()
 avt.set_balloon_color("tan")
+avt.encoding("UTF-8")
 
 -- open URL with the tool "curl"
 -- returns file handle

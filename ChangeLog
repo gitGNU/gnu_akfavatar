@@ -1,3 +1,8 @@
+2013-06-15  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtaddons.h: also use avt_ as prefix
+	all code adapted
+
 2013-06-14  Andreas K. Foerster  <info@akfoerster.de>
 
 	* pascal/akfavatar.pas (Menu): new function

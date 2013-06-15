@@ -12,6 +12,7 @@
     - avt_char is uint_least32_t now, avt_choice adapted
       should be compatible with char32_t in C11
     - functions with *_mb* replaced with functions *_char*
+    - avtadons.h also uses the prefix avt_ for everything
 
   Lua-API changes:
     - avt.set_directory or avt.chdir return true on success

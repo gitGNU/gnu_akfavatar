@@ -19,7 +19,7 @@
 #include <unistd.h>
 
 extern int
-avta_base_directory (char *name, size_t size)
+avt_base_directory (char *name, size_t size)
 {
   ssize_t nchars;
 
@@ -53,7 +53,7 @@ avta_base_directory (char *name, size_t size)
 #include <windows.h>
 
 extern int
-avta_base_directory (char *name, size_t size)
+avt_base_directory (char *name, size_t size)
 {
   char *p;
   DWORD len;
@@ -74,7 +74,7 @@ avta_base_directory (char *name, size_t size)
 #else // no way to find the base directory
 
 extern int
-avta_base_directory (char *name, size_t size)
+avt_base_directory (char *name, size_t size)
 {
   // no general known way to find a base directory
   // well, I could search the PATH for argv[0], but...

@@ -2,7 +2,7 @@
  * AKFAvatar Ogg Vorbis decoder
  * based on stb_vorbis
  * ATTENTION: this is work in progress, ie. not finished yet
- * Copyright (c) 2011,2012 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2011,2012,2013 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -106,7 +106,7 @@ load_vorbis (stb_vorbis * vorbis, int playmode)
 }
 
 extern avt_audio *
-avta_load_vorbis_stream (avt_stream * stream, size_t size, int playmode)
+avt_load_vorbis_stream (avt_stream * stream, size_t size, int playmode)
 {
   FILE *f;
   int error;
@@ -153,7 +153,7 @@ avta_load_vorbis_stream (avt_stream * stream, size_t size, int playmode)
 }
 
 extern avt_audio *
-avta_load_vorbis_file (char *filename, int playmode)
+avt_load_vorbis_file (char *filename, int playmode)
 {
   FILE *f;
   avt_audio *audio_data;
@@ -166,14 +166,14 @@ avta_load_vorbis_file (char *filename, int playmode)
   if (not f)
     return NULL;
 
-  audio_data = avta_load_vorbis_stream (f, 0, playmode);
+  audio_data = avt_load_vorbis_stream (f, 0, playmode);
   fclose (f);
 
   return audio_data;
 }
 
 extern avt_audio *
-avta_load_vorbis_data (void *data, int datasize, int playmode)
+avt_load_vorbis_data (void *data, int datasize, int playmode)
 {
   int error;
   stb_vorbis *vorbis;

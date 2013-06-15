@@ -1,6 +1,6 @@
 /*
  * C-specific functions for AKFAvatar (wide characters)
- * Copyright (c) 2007 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007,2013 Andreas K. Foerster <info@akfoerster.de>
  *
  * the calling program must have used avt_initialize before calling 
  * any of these functions.
@@ -38,7 +38,7 @@
 #endif
 
 extern int
-avta_vwprintf (const wchar_t * format, va_list ap)
+avt_vwprintf (const wchar_t * format, va_list ap)
 {
   wchar_t str[AVT_PRINTF_MAXLEN];
   int n;
@@ -53,27 +53,27 @@ avta_vwprintf (const wchar_t * format, va_list ap)
 }
 
 extern int
-avta_wprintf (const wchar_t * format, ...)
+avt_wprintf (const wchar_t * format, ...)
 {
   va_list ap;
   int n;
 
   va_start (ap, format);
-  n = avta_vwprintf (format, ap);
+  n = avt_vwprintf (format, ap);
   va_end (ap);
 
   return n;
 }
 
 extern wint_t
-avta_putwchar (wchar_t c)
+avt_putwchar (wchar_t c)
 {
   avt_put_char ((avt_char) c);
   return c;
 }
 
 extern int
-avta_putws (const wchar_t * s)
+avt_putws (const wchar_t * s)
 {
   avt_say (s);
   avt_new_line ();
@@ -83,7 +83,7 @@ avta_putws (const wchar_t * s)
 }
 
 extern int
-avta_vwscanf (const wchar_t * format, va_list ap)
+avt_vwscanf (const wchar_t * format, va_list ap)
 {
   wchar_t str[AVT_LINELENGTH + 1];
 
@@ -92,13 +92,13 @@ avta_vwscanf (const wchar_t * format, va_list ap)
 }
 
 extern int
-avta_wscanf (const wchar_t * format, ...)
+avt_wscanf (const wchar_t * format, ...)
 {
   va_list ap;
   int n;
 
   va_start (ap, format);
-  n = avta_vwscanf (format, ap);
+  n = avt_vwscanf (format, ap);
   va_end (ap);
 
   return n;

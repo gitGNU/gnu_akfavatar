@@ -1,7 +1,7 @@
 /*
  * AKFAvatar Ogg Vorbis decoder
  * based on stb_vorbis
- * Copyright (c) 2011,2012 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2011,2012,2013 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -93,7 +93,7 @@ lvorbis_load_file (lua_State * L)
   filename = (char *) luaL_checkstring (L, 1);
   playmode = luaL_checkoption (L, 2, "load", playmodes);
 
-  audio_data = avta_load_vorbis_file (filename, playmode);
+  audio_data = avt_load_vorbis_file (filename, playmode);
 
   if (not audio_data)
     {
@@ -121,7 +121,7 @@ lvorbis_load_stream (lua_State * L)
   if (not stream->closef)
     return luaL_error (L, "attempt to use a closed file");
 
-  audio_data = avta_load_vorbis_stream (stream->f, size, playmode);
+  audio_data = avt_load_vorbis_stream (stream->f, size, playmode);
 
   if (not audio_data)
     {
@@ -145,7 +145,7 @@ lvorbis_load (lua_State * L)
   vorbis_data = (void *) luaL_checklstring (L, 1, &len);
   playmode = luaL_checkoption (L, 2, "load", playmodes);
 
-  audio_data = avta_load_vorbis_data (vorbis_data, (int) len, playmode);
+  audio_data = avt_load_vorbis_data (vorbis_data, (int) len, playmode);
 
   if (not audio_data)
     {
@@ -172,7 +172,7 @@ lvorbis_load_file_chain (lua_State * L)
       filename = (char *) luaL_checkstring (L, 1);
       playmode = luaL_checkoption (L, 2, "load", playmodes);
 
-      audio_data = avta_load_vorbis_file (filename, playmode);
+      audio_data = avt_load_vorbis_file (filename, playmode);
 
       if (not audio_data)
 	{
@@ -214,7 +214,7 @@ lvorbis_load_stream_chain (lua_State * L)
   if (not stream->closef)
     return luaL_error (L, "attempt to use a closed file");
 
-  audio_data = avta_load_vorbis_stream (stream->f, maxsize, playmode);
+  audio_data = avt_load_vorbis_stream (stream->f, maxsize, playmode);
 
   if (not audio_data)
     {
@@ -254,7 +254,7 @@ lvorbis_load_chain (lua_State * L)
 
       vorbis_data = (void *) luaL_checklstring (L, 1, &len);
       playmode = luaL_checkoption (L, 2, "load", playmodes);
-      audio_data = avta_load_vorbis_data (vorbis_data, (int) len, playmode);
+      audio_data = avt_load_vorbis_data (vorbis_data, (int) len, playmode);
 
       if (not audio_data)	// call old avt.load_audio
 	{

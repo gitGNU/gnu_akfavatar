@@ -22,7 +22,7 @@
 #include "avtaddons.h"
 
 extern int
-avta_term_start (const char *working_dir, char *prg_argv[])
+avt_term_start (const char *working_dir, char *prg_argv[])
 {
   (void) working_dir;
   (void) prg_argv;
@@ -31,36 +31,36 @@ avta_term_start (const char *working_dir, char *prg_argv[])
 }
 
 extern void
-avta_term_run (int fd)
+avt_term_run (int fd)
 {
   (void) fd;
 }
 
 extern void
-avta_term_register_apc (avta_term_apc_cmd command)
+avt_term_register_apc (avt_term_apc_cmd command)
 {
   (void) command;
 }
 
 extern void
-avta_term_nocolor (bool nocolor)
+avt_term_nocolor (bool nocolor)
 {
   (void) nocolor;
 }
 
 extern void
-avta_term_slowprint (bool on)
+avt_term_slowprint (bool on)
 {
   (void) on;
 }
 
 extern void
-avta_term_update_size (void)
+avt_term_update_size (void)
 {
 }
 
 extern void
-avta_term_send (const char *buf, size_t count)
+avt_term_send (const char *buf, size_t count)
 {
   (void) buf;
   (void) count;

@@ -47,7 +47,7 @@
 #else
 #  define HAS_DRIVE_LETTERS false
 #  define is_root_dir(void) false	// dummy
-#  define avta_ask_drive(max_idx) 0	// dummy
+#  define avt_ask_drive(max_idx) 0	// dummy
 #endif
 
 struct avt_fc_data
@@ -151,7 +151,7 @@ change_directory (const wchar_t * dirname)
 #endif
 
 static int
-filter_dirent (FILTER_DIRENT_T * d, avta_filter filter, void *filter_data)
+filter_dirent (FILTER_DIRENT_T * d, avt_filter filter, void *filter_data)
 {
   // allow nothing that starts with a dot
   if (not d or d->d_name[0] == '.')
@@ -165,7 +165,7 @@ filter_dirent (FILTER_DIRENT_T * d, avta_filter filter, void *filter_data)
 #else // _WIN32
 
 static int
-filter_dirent (const struct dirent *d, avta_filter filter, void *filter_data)
+filter_dirent (const struct dirent *d, avt_filter filter, void *filter_data)
 {
   // don't allow "." and ".." and apply filter
   if (not d or strcmp (".", d->d_name) == 0 or strcmp ("..", d->d_name) == 0)
@@ -227,7 +227,7 @@ compare_dirent (const void *a, const void *b)
 }
 
 static int
-get_directory (struct dirent ***list, avta_filter filter, void *filter_data)
+get_directory (struct dirent ***list, avt_filter filter, void *filter_data)
 {
   int max_entries;
   struct dirent **mylist;
@@ -345,8 +345,8 @@ show (int nr, void *fc_data)
  * return -1 on error or 0 on success
  */
 extern int
-avta_file_selection (char *filename, int filename_size,
-		     avta_filter filter, void *filter_data)
+avt_file_selection (char *filename, int filename_size,
+		     avt_filter filter, void *filter_data)
 {
   int rcode;			// return code
   int choice;
@@ -385,7 +385,7 @@ avta_file_selection (char *filename, int filename_size,
 	{
 	  if (HAS_DRIVE_LETTERS and is_root_dir ())	// ask for drive?
 	    {
-	      if (avta_ask_drive (avt_get_max_y ()) != AVT_NORMAL)
+	      if (avt_ask_drive (avt_get_max_y ()) != AVT_NORMAL)
 		break;
 
 	      avt_set_balloon_size (0, 0);

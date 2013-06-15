@@ -333,7 +333,7 @@ change_searchpaths (void)
 {
   char basedir[4097];
 
-  avta_base_directory (basedir, sizeof (basedir));
+  avt_base_directory (basedir, sizeof (basedir));
 
   // if basedir is nonstandard, add to Lua searchpaths
   if (*basedir and strcmp ("/usr", basedir) != 0
@@ -413,7 +413,7 @@ run_executable (const char *filename)
   size_t size;
   char *script, *start;
 
-  script = avta_arch_get_data (filename, NAME_EXEC, &size);
+  script = avt_arch_get_data (filename, NAME_EXEC, &size);
 
   if (not script)
     {
@@ -465,7 +465,7 @@ show_text (const char *filename)
   // text file must be UTF-8 encoded (or plain ASCII)
   const struct avt_charenc *old;
   old = avt_char_encoding (avt_utf8 ());
-  avta_pager_file (filename, 1);
+  avt_pager_file (filename, 1);
   avt_char_encoding (old);
 }
 
@@ -482,7 +482,7 @@ ask_file (void)
   avt_set_avatar_mode (AVT_HEADER);
   avt_set_balloon_size (0, 0);
 
-  if (avta_file_selection
+  if (avt_file_selection
       (filename, sizeof (filename), &check_filename, NULL))
     return false;
 
@@ -547,7 +547,7 @@ start_screen (void)
   const char *language;
   bool german;
 
-  language = avta_get_language ();
+  language = avt_get_language ();
   german = (language and strcmp ("de", language) == 0);
 
   avt_lock_updates (true);
@@ -640,7 +640,7 @@ local_lua_dir (void)
 {
   char basedir[4097];
 
-  if (avta_base_directory (basedir, sizeof (basedir)) == -1)
+  if (avt_base_directory (basedir, sizeof (basedir)) == -1)
     return -1;
 
   strcat (basedir, LUA_DIRSEP);

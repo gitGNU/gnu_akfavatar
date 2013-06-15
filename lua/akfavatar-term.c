@@ -104,16 +104,16 @@ lterm_execute (lua_State * L)
 	argv[i] = (char *) luaL_checkstring (L, i + 1);
       argv[n] = NULL;
 
-      fd = avta_term_start (startdir, argv);
+      fd = avt_term_start (startdir, argv);
     }
   else				// start shell
-    fd = avta_term_start (startdir, NULL);
+    fd = avt_term_start (startdir, NULL);
 
 
   if (fd != -1)
     {
       term_L = L;
-      avta_term_run (fd);
+      avt_term_run (fd);
       term_L = NULL;
     }
 
@@ -197,7 +197,7 @@ static int
 lterm_color (lua_State * L)
 {
   luaL_checktype (L, 1, LUA_TBOOLEAN);
-  avta_term_nocolor (not lua_toboolean (L, 1));
+  avt_term_nocolor (not lua_toboolean (L, 1));
 
   return 0;
 }
@@ -214,7 +214,7 @@ lterm_send (lua_State * L)
       luaL_error (L, "send: only for Application Program Commands (APC)");
 
   buf = luaL_checklstring (L, 1, &len);
-  avta_term_send (buf, len);
+  avt_term_send (buf, len);
 
   return 0;
 }
@@ -239,7 +239,7 @@ lterm_decide (lua_State * L)
     buf = lua_tolstring (L, 2, &len);
 
   if (buf)
-    avta_term_send (buf, len);
+    avt_term_send (buf, len);
 
   return 0;
 }
@@ -280,7 +280,7 @@ APC_command (wchar_t * command)
 	return lua_error (term_L);
 
       lua_call (term_L, 0, 0);
-      avta_term_update_size ();	// in case the size changed
+      avt_term_update_size ();	// in case the size changed
     }
 
   return 0;
@@ -303,6 +303,6 @@ luaopen_term (lua_State * L)
 {
   term_L = NULL;
   luaL_newlib (L, termlib);
-  avta_term_register_apc (APC_command);
+  avt_term_register_apc (APC_command);
   return 1;
 }

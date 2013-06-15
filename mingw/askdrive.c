@@ -27,7 +27,7 @@
 
 /* ask for drive letter */
 int
-avta_ask_drive (int max_idx)
+avt_ask_drive (int max_idx)
 {
   int drives[26];
   int number;

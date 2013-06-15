@@ -1,6 +1,6 @@
 /*
  * avtposix - system specific functions for avatarsay (posix?)
- * Copyright (c) 2009, 2010 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2009,2010,2013 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -47,9 +47,9 @@ edit_file (const char *name, const char *encoding)
   args[1] = (char *) name;
   args[2] = (char *) NULL;
 
-  fd = avta_term_start (encoding, NULL, args);
+  fd = avt_term_start (encoding, NULL, args);
   if (fd > -1)
-    avta_term_run (fd);
+    avt_term_run (fd);
 }
 
 // get user's home direcory

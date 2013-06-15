@@ -1,6 +1,7 @@
 /*
  * avttermsys - system specific functions for terminal emulation
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007,2008,2009,2010,2011,2013
+ * Andreas K. Foerster <info@akfoerster.de>
  *
  * required standards: C99 or C++, POSIX.1-2001
  *
@@ -45,7 +46,7 @@
 
 // set terminal size
 extern void
-avta_term_size (int fd, int height, int width)
+avt_term_size (int fd, int height, int width)
 {
 #ifdef TIOCSWINSZ
   struct winsize size;
@@ -80,7 +81,7 @@ get_user_shell (void)
 }
 
 extern int
-avta_term_initialize (int *input_fd, int width, int height,
+avt_term_initialize (int *input_fd, int width, int height,
 		      bool monochrome, const char *working_dir,
 		      char *prg_argv[])
 {
@@ -152,7 +153,7 @@ avta_term_initialize (int *input_fd, int width, int height,
       return -1;
     }
 
-  avta_term_size (master, height, width);
+  avt_term_size (master, height, width);
 
   //--------------------------------------------------------
   childpid = fork ();
@@ -217,7 +218,7 @@ avta_term_initialize (int *input_fd, int width, int height,
 }
 
 extern void
-avta_closeterm (int fd)
+avt_closeterm (int fd)
 {
   // close file descriptor
   (void) close (fd);

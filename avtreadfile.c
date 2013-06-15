@@ -96,7 +96,7 @@ read_stream (FILE * f, char **buffer, bool terminate)
 }
 
 extern int
-avta_read_textfile (const char *file_name, char **buffer)
+avt_read_textfile (const char *file_name, char **buffer)
 {
   FILE *f;
   char *buf;
@@ -126,7 +126,7 @@ avta_read_textfile (const char *file_name, char **buffer)
 }
 
 extern int
-avta_read_datafile (const char *file_name, void **buffer)
+avt_read_datafile (const char *file_name, void **buffer)
 {
   FILE *f;
   char *buf;
@@ -151,7 +151,7 @@ avta_read_datafile (const char *file_name, void **buffer)
 }
 
 extern int
-avta_read_command (const char *command, char **buffer)
+avt_read_command (const char *command, char **buffer)
 {
   FILE *f;
   char *buf;
@@ -176,13 +176,13 @@ avta_read_command (const char *command, char **buffer)
 }
 
 extern int
-avta_pager_file (const char *file_name, int startline)
+avt_pager_file (const char *file_name, int startline)
 {
   char *txt;
   int len;
 
   txt = NULL;
-  len = avta_read_datafile (file_name, (void **) &txt);
+  len = avt_read_datafile (file_name, (void **) &txt);
 
   if (len > 0)
     avt_pager_char (txt, len, startline);
@@ -197,13 +197,13 @@ avta_pager_file (const char *file_name, int startline)
 }
 
 extern int
-avta_pager_command (const char *command, int startline)
+avt_pager_command (const char *command, int startline)
 {
   char *txt;
   int len;
 
   txt = NULL;
-  len = avta_read_command (command, &txt);
+  len = avt_read_command (command, &txt);
 
   if (len > 0)
     avt_pager_char (txt, len, startline);
