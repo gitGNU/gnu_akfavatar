@@ -18,13 +18,9 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Latin-1 is just a small subset of the supported characters,
- * but it's still widely used and easy to implement
- */
-
 #include "akfavatar.h"
 #include "avtinternals.h"
+#include <wchar.h>
 #include <stdlib.h>
 #include <limits.h>
 
@@ -36,14 +32,14 @@ system_to_unicode (const struct avt_charenc *self, avt_char * dest,
   (void) self;
 
   wchar_t ch;
-  int r = mbtowc (&ch, src, MB_LEN_MAX);
+  size_t r = mbrtowc (&ch, src, MB_LEN_MAX, NULL);
 
   if (r == 0)
     {
       ch = L'\0';
       r = 1;
     }
-  else if (r < 0)
+  else if (r == (size_t) (-1) or r == (size_t) (-2))
     {
       ch = BROKEN_WCHAR;
       r = 1;
@@ -69,16 +65,16 @@ system_from_unicode (const struct avt_charenc *self, char *dest, size_t size,
   if (sizeof (wchar_t) <= 2 and src > 0xFFFF)
     src = BROKEN_WCHAR;
 
-  int r = wctomb (dest, (wchar_t) src);
+  size_t r = wcrtomb (dest, (wchar_t) src, NULL);
 
-  if (r <= 0)
+  if (r == (size_t) (-1))
     {
-      r = wctomb (dest, BROKEN_WCHAR);
+      r = wcrtomb (dest, BROKEN_WCHAR, NULL);
 
-      if (r <= 0)
-	r = wctomb (dest, L'\x1A');
+      if (r == (size_t) (-1))
+	r = wcrtomb (dest, L'\x1A', NULL);
 
-      if (r < 0)
+      if (r == (size_t) (-1))
 	r = 0;
     }
 
