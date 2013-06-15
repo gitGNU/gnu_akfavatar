@@ -30,14 +30,14 @@
  * returns file-descriptor for the output of the process or -1 on error
  * both file-descriptors can be the same
  */
-extern int avta_term_initialize (int *input_fd, int width, int height,
-				 bool monochrome,
-				 const char *working_dir,
-				 char *prg_argv[]);
+extern int avt_term_initialize (int *input_fd, int width, int height,
+                                bool monochrome,
+                                const char *working_dir,
+                                char *prg_argv[]);
 
 // tell the terminal the new size of the balloon
 // (this may be a dummy function)
-extern void avta_term_size (int fd, int height, int width);
+extern void avt_term_size (int fd, int height, int width);
 
 // close terminal
-extern void avta_closeterm (int fd);
+extern void avt_closeterm (int fd);
