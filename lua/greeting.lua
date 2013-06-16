@@ -53,7 +53,7 @@ local function get_realname(username)
   f:close()
 
   -- eventually recode name from system specific charset
-  if name then name = avt.recode(name, "") end
+  if name then name = avt.recode(name, "SYSTEM") end
 
   return name
 end

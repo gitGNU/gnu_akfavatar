@@ -1,3 +1,7 @@
+2013-06-16  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/lua-avt.c (encodingname): accept SYSTEM
+
 2013-06-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtaddons.h: also use avt_ as prefix

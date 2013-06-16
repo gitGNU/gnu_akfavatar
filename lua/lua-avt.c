@@ -344,7 +344,8 @@ encodingname (const char *name)
 
   if (not name)
     result = avt_char_encoding (NULL);	// current encoding
-  else if (not * name or strcasecmp ("char", name) == 0)
+  else if (not * name or strcasecmp ("system", name) == 0
+	   or strcasecmp ("char", name) == 0)
     result = avt_systemencoding ();
   else if (strcasecmp ("UTF-8", name) == 0
 	   or strcasecmp ("UTF8", name) == 0 or strcasecmp ("U8", name) == 0)

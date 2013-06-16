@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar reference" 3 2013-06-03 AKFAvatar
+.TH "Lua-AKFAvatar reference" 3 2013-06-16 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar reference \- AKFAvatar specific functions for Lua
@@ -87,6 +87,8 @@ KOI8-R, KOI8-U,
 IBM437 (PC-8), IBM850 (DOS-Latin-1),
 .br
 WINDOWS-1250, WINDOWS-1251, WINDOWS-1252
+.br
+SYSTEM
 .PP
 .TP
 .BI "avt.get_encoding()"
@@ -1134,9 +1136,9 @@ It does not contain "." or "..".
 Note: the names are in a system specific encoding.
 To display the names you either have to change the encoding
 of the display with
-.B "avt.encoding("""")"
+.B "avt.encoding(""SYSTEM"")"
 or convert the names like this:
-.BR "avt.say(avt.recode(name, """"))" .
+.BR "avt.say(avt.recode(name, ""SYSTEM""))" .
 .PP
 .TP
 .BI "avt.entry_type(" entry )
@@ -1189,7 +1191,7 @@ else, then use
 .IP
 To encode to or from the systems default encoding
 (for example for filenames) use an empty string
-.RB ( """""" ).
+.RB ( """""" "), or " """SYSTEM""" .
 .IP
 Returns the recoded string or
 .I nil

@@ -2,7 +2,7 @@
 
 --[[---------------------------------------------------------------------
 Audio player for AKFvatar
-Copyright (c) 2011,2012 Andreas K. Foerster <info@akfoerster.de>
+Copyright (c) 2011,2012,2013 Andreas K. Foerster <info@akfoerster.de>
 License: GPL version 3 or later
 
 Supported audio formats: Ogg Vorbis, Wave, AU
@@ -294,9 +294,10 @@ local function play_select()
       if not string.find(v, "^%.") then
         if supported_file(v) then
           table.insert(audio_files, v)
-          table.insert(menu, {avt.recode(v, ""), v})
+          table.insert(menu, {avt.recode(v, "SYSTEM"), v})
         elseif avt.entry_type(v) == "directory" then
-          table.insert(menu, {avt.recode(v, "") .. "\xE2\x96\xBA", v .. "/"})
+          table.insert(menu, {avt.recode(v, "SYSTEM") .. "\xE2\x96\xBA",
+                              v .. "/"})
         end
       end
     end
