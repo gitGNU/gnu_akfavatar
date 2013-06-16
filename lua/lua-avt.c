@@ -569,22 +569,31 @@ lavt_recode (lua_State * L)
       return 1;
     }
 
-  size_t result_size = len * 6;	// guessing
-  char *result = malloc (result_size);
-  if (result)
+  luaL_Buffer buffer;
+  luaL_buffinit (L, &buffer);
+
+  while (len)
     {
-      size_t result_len = avt_recode_char (to, result, result_size,
-					   from, string, len);
+      avt_char ch;
+      size_t nsrc = from->decode (from, &ch, string);
 
-      if (result_len)
-	lua_pushlstring (L, result, result_len);
+      if (not nsrc or nsrc > len)
+	break;
+
+      string += nsrc;
+      len -= nsrc;
+
+      // enough space for 1 char in any encoding
+      char dest[17];
+      size_t ndest = to->encode (to, dest, sizeof (dest), ch);
+      if (ndest == 1)
+	luaL_addchar (&buffer, dest[0]);
       else
-	lua_pushnil (L);
-
-      free (result);
+	luaL_addlstring (&buffer, dest, ndest);
     }
-  else				// out of memory
-    lua_pushnil (L);
+
+  // turn buffer into final string
+  luaL_pushresult (&buffer);
 
   return 1;
 }
