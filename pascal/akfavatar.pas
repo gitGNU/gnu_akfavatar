@@ -832,7 +832,7 @@ begin
   encoding := Upcase(newEncoding);
 {$EndIf}
 
-if (encoding = '') or (encoding = 'CHAR') then
+if (encoding = '') or (encoding = 'SYSTEM') or (encoding = 'CHAR') then
   avt_char_encoding(avt_systemencoding)
 else if (encoding = 'UTF-8') or (encoding = 'UTF8') then
   avt_char_encoding(avt_utf8)
