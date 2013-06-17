@@ -119,6 +119,7 @@ static bool nocolor;
 static int text_color;
 static int text_background_color;
 static bool faint;
+static bool dark_background;
 
 // G0 and G1 charset encoding (linux-specific)
 static const struct avt_charenc *G0, *G1;
@@ -530,6 +531,7 @@ set_foreground_color (int color)
       break;
     case 15:			// white
       avt_set_text_color (0xFFFFFF);
+      break;
     }
 }
 
@@ -585,6 +587,7 @@ set_background_color (int color)
       break;
     case 15:			// ballooncolor
       avt_set_text_background_ballooncolor ();
+      break;
     }
 }
 
@@ -595,8 +598,16 @@ ansi_graphic_code (int mode)
     {
     case 0:			// normal
       faint = false;
-      text_color = 0;
-      text_background_color = 0xF;
+      if (dark_background)
+	{
+	  text_color = 7;
+	  text_background_color = 0;
+	}
+      else
+	{
+	  text_color = 0;
+	  text_background_color = 0xF;
+	}
       avt_normal_text ();
       set_foreground_color (text_color);
       set_background_color (text_background_color);
@@ -678,13 +689,13 @@ ansi_graphic_code (int mode)
       break;
 
     case 38:			// foreground normal, underlined
-      text_color = 0;
+      text_color = dark_background ? 7 : 0;
       set_foreground_color (text_color);
       avt_underlined (true);
       break;
 
     case 39:			// foreground normal
-      text_color = 0;
+      text_color = dark_background ? 7 : 0;
       set_foreground_color (text_color);
       avt_underlined (false);
       break;
@@ -1466,6 +1477,13 @@ avt_term_run (int fd)
   prg_input = -1;
 }
 
+static void
+check_background_color (void)
+{
+  int color = avt_get_balloon_color ();
+  dark_background =
+    ((avt_red (color) + avt_green (color) + avt_blue (color)) / 3) < 128;
+}
 
 extern int
 avt_term_start (const char *working_dir, char *prg_argv[])
@@ -1473,6 +1491,7 @@ avt_term_start (const char *working_dir, char *prg_argv[])
   default_encoding = avt_systemencoding ();
   set_encoding (default_encoding);
   clear_textbuffer ();
+  check_background_color ();
 
   max_x = avt_get_max_x ();
   max_y = avt_get_max_y ();
