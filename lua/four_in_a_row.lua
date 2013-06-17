@@ -283,7 +283,6 @@ local function speed_test()
   local delay = avt.ticks()
   screen:show ()
   if avt.ticks() - delay > 100 then slow = true; end
-  slow = true
 end
 
 local function play()
