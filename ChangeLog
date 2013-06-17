@@ -1,6 +1,17 @@
 2013-06-17  Andreas K. Foerster  <info@akfoerster.de>
 
-	* avtterm.c (check_background_color): new function
+	* avtgraphic.h, avtgraphic.c (avt_darker, avt_brighter):
+	normal functions
+
+	* avtgraphic.h, avtgraphic.c (avt_brightness): new function
+
+	* avtgraphic.h, avtgraphic.c (avt_brighter_area): new function
+	avatar.c (avt_show_text_cursor): light cursor on dark balloon
+
+	* avatar.c (avt_show_text_cursor, update_menu_bar):
+	work well with a dark balloon color
+
+	* avtterm.c: work well with a dark balloon color
 
 2013-06-16  Andreas K. Foerster  <info@akfoerster.de>
 

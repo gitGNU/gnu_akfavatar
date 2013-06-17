@@ -52,7 +52,6 @@ avt_menu (int *choice, int items,
     return AVT_FAILURE;
 
   avt_set_text_delay (0);
-  avt_normal_text ();
 
   avt_color markcolor = avt_darker (avt_get_balloon_color (), 0x22);
 

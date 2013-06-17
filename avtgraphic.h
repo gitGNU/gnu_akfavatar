@@ -75,50 +75,22 @@ void avt_bar3d (avt_graphic *s, int x, int y, int width, int height,
 
 void avt_fill (avt_graphic *gr, avt_color color);
 
+// returns the maximum color value (red, green or blue)
+int avt_brightness (avt_color color);
+
+avt_color avt_darker (avt_color color, int amount);
+
+avt_color avt_brighter (avt_color color, int amount);
+
 void avt_darker_area (avt_graphic *gr, int x, int y,
                       int width, int height, int amount);
 
+void avt_brighter_area (avt_graphic *gr, int x, int y,
+                        int width, int height, int amount);
+
 /* inline functions */
 
-/* return a darker color */
-static inline avt_color
-avt_darker (avt_color color, int amount)
-{
-  register int r, g, b;
-
-  r = (color >> 16) & 0xFF;
-  g = (color >> 8) & 0xFF;
-  b = color & 0xFF;
-
-  r = r > amount ? r - amount : 0;
-  g = g > amount ? g - amount : 0;
-  b = b > amount ? b - amount : 0;
-
-  return (r << 16) | (g << 8) | b;
-}
-
 /* return a brighter color */
-static inline avt_color
-avt_brighter (avt_color color, int amount)
-{
-  register int r, g, b;
-
-  r = ((color >> 16) & 0xFF) + amount;
-  g = ((color >> 8) & 0xFF) + amount;
-  b = (color & 0xFF) + amount;
-
-  if (r > 0xFF)
-    r = 0xFF;
-
-  if (g > 0xFF)
-    g = 0xFF;
-
-  if (b > 0xFF)
-    b = 0xFF;
-
-  return (r << 16) | (g << 8) | b;
-}
-
 /* returns the pixel position, no checks */
 /* INSECURE */
 static inline avt_color *

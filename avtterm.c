@@ -1477,21 +1477,13 @@ avt_term_run (int fd)
   prg_input = -1;
 }
 
-static void
-check_background_color (void)
-{
-  int color = avt_get_balloon_color ();
-  dark_background =
-    ((avt_red (color) + avt_green (color) + avt_blue (color)) / 3) < 128;
-}
-
 extern int
 avt_term_start (const char *working_dir, char *prg_argv[])
 {
   default_encoding = avt_systemencoding ();
   set_encoding (default_encoding);
   clear_textbuffer ();
-  check_background_color ();
+  dark_background = (avt_brightness (avt_get_balloon_color ()) < 0x88);
 
   max_x = avt_get_max_x ();
   max_y = avt_get_max_y ();

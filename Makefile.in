@@ -584,9 +584,9 @@ lbase64.lo: $(srcdir)/lua/lbase64.c
 	$(CC) -I$(srcdir) $(CFLAGS) $(LUA_CFLAGS) -fpic -c -o $@ \
 	  $(srcdir)/lua/lbase64.c
 
-akfavatar-term.so: akfavatar-term.lo avtterm.lo avttermsys.lo
+akfavatar-term.so: akfavatar-term.lo avtterm.lo avttermsys.lo avtgraphic.lo
 	$(CC) -o $@ -shared -fpic akfavatar-term.lo avtterm.lo avttermsys.lo \
-	     $(LDFLAGS)
+	     avtgraphic.lo $(LDFLAGS)
 
 akfavatar-term.lo: $(srcdir)/lua/akfavatar-term.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -c -fpic -o $@ \

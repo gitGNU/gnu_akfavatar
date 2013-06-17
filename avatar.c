@@ -619,8 +619,13 @@ avt_show_text_cursor (bool on)
 			       fontwidth, fontheight, cursor_character, 0, 0);
 
 	  // show text-cursor
-	  avt_darker_area (screen, cursor.x, cursor.y,
-			   fontwidth, fontheight, 0x50);
+	  if (avt_brightness (avt.ballooncolor) >= 0x88)
+	    avt_darker_area (screen, cursor.x, cursor.y,
+			     fontwidth, fontheight, 0x50);
+	  else
+	    avt_brighter_area (screen, cursor.x, cursor.y,
+			       fontwidth, fontheight, 0xAA);
+
 	  backend.update_area (screen, cursor.x, cursor.y,
 			       fontwidth, fontheight);
 	}
@@ -2459,8 +2464,14 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
       if (line_nr >= menu_start and line_nr <= menu_end)
 	{
 	  int y = viewport.y + ((line_nr - 1) * fontheight);
-	  avt_darker_area (screen, viewport.x, y, viewport.width,
-			   fontheight, 0x20);
+
+	  if (avt_brightness (avt.ballooncolor) >= 0x88)
+	    avt_darker_area (screen, viewport.x, y, viewport.width,
+			     fontheight, 0x20);
+	  else
+	    avt_brighter_area (screen, viewport.x, y, viewport.width,
+			       fontheight, 0x88);
+
 	  backend.update_area (screen, viewport.x, y,
 			       viewport.width, fontheight);
 	}
