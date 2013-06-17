@@ -29,6 +29,8 @@ Keys:
 local avt = require "lua-akfavatar"
 local graphic = require "akfavatar-graphic"
 
+local slow = false
+
 local color = {
   background = "default",
   board = "saddle brown",
@@ -152,12 +154,18 @@ local function drop(column)
 
   if number < 6 then
     number = number + 1
-    for i=6,number,-1 do
-      clear_position(column, i+1)
-      chip_position(column, i)
+    if slow then
+      chip_position(column, number)
       screen:show()
-      avt.wait(0.025)
+    else
+      for i=6,number,-1 do
+        clear_position(column, i+1)
+        chip_position(column, i)
+        screen:show()
+        avt.wait(0.025)
+      end
     end
+
     chips = chips + 1
     filled[column] = number
     board[column][number] = player
@@ -271,6 +279,13 @@ local function next_player()
   if player==1 then player=2 else player=1 end
 end
 
+-- check speed of display
+local function speed_test()
+  local delay = avt.ticks()
+  screen:show ()
+  if avt.ticks() - delay > 100 then slow = true; end
+  slow = true
+end
 
 local function play()
   local won = false
@@ -291,6 +306,7 @@ local function play()
   end -- select_slot
 
   draw_board()
+  speed_test()
 
   repeat
     select_slot()
