@@ -156,7 +156,6 @@ local function drop(column)
     number = number + 1
     if slow then
       chip_position(column, number)
-      screen:show()
     else
       for i=6,number,-1 do
         clear_position(column, i+1)
