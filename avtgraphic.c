@@ -21,6 +21,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "akfavatar.h"
 #include "avtgraphic.h"
 
 #include <limits.h>
@@ -28,61 +29,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <iso646.h>
-
-#define avt_max3(a,b,c) \
-  ((a) > (b) ? ((a) > (c) ? (a) : (c)) : (b) > (c) ? (b) : (c))
-
-// returns the maximum color value (red, green or blue)
-extern int
-avt_brightness (avt_color color)
-{
-  avt_color red, green, blue;
-
-  red = (color >> 16) bitand 0xFF;
-  green = (color >> 8) bitand 0xFF;
-  blue = color bitand 0xFF;
-
-  return avt_max3 (red, green, blue);
-}
-
-
-extern inline avt_color
-avt_darker (avt_color color, int amount)
-{
-  register int r, g, b;
-
-  r = (color >> 16) & 0xFF;
-  g = (color >> 8) & 0xFF;
-  b = color & 0xFF;
-
-  r = r > amount ? r - amount : 0;
-  g = g > amount ? g - amount : 0;
-  b = b > amount ? b - amount : 0;
-
-  return (r << 16) | (g << 8) | b;
-}
-
-/* return a brighter color */
-extern inline avt_color
-avt_brighter (avt_color color, int amount)
-{
-  register int r, g, b;
-
-  r = ((color >> 16) & 0xFF) + amount;
-  g = ((color >> 8) & 0xFF) + amount;
-  b = (color & 0xFF) + amount;
-
-  if (r > 0xFF)
-    r = 0xFF;
-
-  if (g > 0xFF)
-    g = 0xFF;
-
-  if (b > 0xFF)
-    b = 0xFF;
-
-  return (r << 16) | (g << 8) | b;
-}
 
 extern void
 avt_free_graphic (avt_graphic * gr)

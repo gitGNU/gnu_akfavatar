@@ -75,13 +75,6 @@ void avt_bar3d (avt_graphic *s, int x, int y, int width, int height,
 
 void avt_fill (avt_graphic *gr, avt_color color);
 
-// returns the maximum color value (red, green or blue)
-int avt_brightness (avt_color color);
-
-avt_color avt_darker (avt_color color, int amount);
-
-avt_color avt_brighter (avt_color color, int amount);
-
 void avt_darker_area (avt_graphic *gr, int x, int y,
                       int width, int height, int amount);
 

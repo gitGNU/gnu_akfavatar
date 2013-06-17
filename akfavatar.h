@@ -485,6 +485,12 @@ AVT_API void avt_set_text_background_ballooncolor (void);
 /* the background is always transparent */
 AVT_API void avt_set_bitmap_color (int color);
 
+AVT_API int avt_darker (int color, int amount);
+
+AVT_API int avt_brighter (int color, int amount);
+
+/* returns the maximum color value (red, green or blue) */
+AVT_API int avt_brightness (int color);
 
 /***********************************************************************/
 /* settings */

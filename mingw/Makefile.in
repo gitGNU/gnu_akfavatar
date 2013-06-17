@@ -99,6 +99,9 @@ charencoding.o: $(srcdir)/charencoding.c $(srcdir)/akfavatar.h $(srcdir)/avtinte
 avtgraphic.o: $(srcdir)/avtgraphic.c $(srcdir)/avtgraphic.h
 	$(CC) -c -I$(srcdir) $(CFLAGS) -o $@ $(srcdir)/avtgraphic.c
 
+avtcolors.o: $(srcdir)/avtcolors.c $(srcdir)/akfavatar.h
+	$(CC) -c -I$(srcdir) $(CFLAGS) -o $@ $(srcdir)/avtcolors.c
+
 avtxbm.o: $(srcdir)/avtxbm.c $(srcdir)/avtgraphic.h
 	$(CC) -c -I$(srcdir) $(CFLAGS) -o $@ $(srcdir)/avtxbm.c
 
@@ -138,26 +141,26 @@ libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
 	  ASCII.o ISO-8859-1.o UTF-8.o charencoding.o \
 	  audio-common.o avatar-default.o avtdata.o font.o avtpalette.o \
 	  windowstiming.o avtmenu.o version.o avtxbm.o avtxpm.o \
-	  avtbmp.o avtgraphic.o
+	  avtbmp.o avtgraphic.o avtcolors.o
 	$(AR) rcu $@ $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
 	ASCII.o ISO-8859-1.o UTF-8.o charencoding.o \
 	audio-common.o avatar-default.o avtdata.o font.o avtpalette.o \
 	version.o windowstiming.o avtmenu.o avtxbm.o avtxpm.o \
-	avtbmp.o avtgraphic.o
+	avtbmp.o avtgraphic.o avtcolors.o
 	$(RANLIB) $@
 
 akfavatar.dll: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
 	  ASCII.o ISO-8859-1.o UTF-8.o charencoding.o \
 	  audio-common.o avatar-default.o avtdata.o font.o libinfo.o \
 	  avtpalette.o windowstiming.o avtmenu.o version.o \
-	  avtxbm.o avtxpm.o avtbmp.o avtgraphic.o \
+	  avtxbm.o avtxpm.o avtbmp.o avtgraphic.o avtcolors.o \
 	  $(srcdir)/mingw/akfavatar.def
 	$(CC) -shared -o $@ $(srcdir)/mingw/akfavatar.def \
 	        $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
 	        ASCII.o ISO-8859-1.o UTF-8.o charencoding.o \
 	        avatar-default.o avtdata.o audio-common.o font.o avtpalette.o \
 	        windowstiming.o avtmenu.o avtxbm.o avtxpm.o \
-	        avtbmp.o avtgraphic.o version.o libinfo.o \
+	        avtbmp.o avtgraphic.o avtcolors.o version.o libinfo.o \
 	        -Wl,-no-undefined,--enable-runtime-pseudo-reloc \
 	        -Wl,--out-implib,libakfavatar.dll.a \
 	        $(SDL_LDFLAGS) $(LDFLAGS)

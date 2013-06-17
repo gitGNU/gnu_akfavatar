@@ -17,6 +17,8 @@ EXPORTS
     avt_bell
     avt_bell_function
     avt_bold
+    avt_brighter
+    avt_brightness
     avt_button_quit
     avt_char_encoding
     avt_choice
@@ -34,6 +36,7 @@ EXPORTS
     avt_copyright
     avt_credits
     avt_credits_char
+    avt_darker
     avt_decide
     avt_delete_characters
     avt_delete_lines

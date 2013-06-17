@@ -124,6 +124,7 @@ struct avt_settings
   int text_delay, flip_page_delay;
 
   avt_color ballooncolor;
+  avt_color balloon_brightness;
   avt_color background_color;
   avt_color text_color;
   avt_color text_background_color;
@@ -619,7 +620,7 @@ avt_show_text_cursor (bool on)
 			       fontwidth, fontheight, cursor_character, 0, 0);
 
 	  // show text-cursor
-	  if (avt_brightness (avt.ballooncolor) >= 0x88)
+	  if (avt.balloon_brightness >= 0x88)
 	    avt_darker_area (screen, cursor.x, cursor.y,
 			     fontwidth, fontheight, 0x50);
 	  else
@@ -2465,7 +2466,7 @@ update_menu_bar (int menu_start, int menu_end, int line_nr, int old_line,
 	{
 	  int y = viewport.y + ((line_nr - 1) * fontheight);
 
-	  if (avt_brightness (avt.ballooncolor) >= 0x88)
+	  if (avt.balloon_brightness >= 0x88)
 	    avt_darker_area (screen, viewport.x, y, viewport.width,
 			     fontheight, 0x20);
 	  else
@@ -4261,6 +4262,7 @@ avt_set_balloon_color (int color)
   if (color >= 0)
     {
       avt.ballooncolor = color;
+      avt.balloon_brightness = avt_brightness (color);
 
       if (screen)
 	{
@@ -4642,6 +4644,7 @@ avt_reset ()
   avt.text_delay = 0;
   avt.bitmap_color = AVT_COLOR_BLACK;
   avt.ballooncolor = AVT_BALLOON_COLOR;
+  avt.balloon_brightness = avt_brightness (AVT_BALLOON_COLOR);
 
   avt_clear_keys ();
   avt_reserve_single_keys (false);
