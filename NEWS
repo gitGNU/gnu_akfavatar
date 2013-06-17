@@ -1,6 +1,7 @@
 * AKFAvatar-testing
 
   - paging through menus is animated
+  - terminal doesn't drain the battery so much anymore
   - fix: window resizing for the pager works again
   - fix: switching fullscreen mode while avatar moves in or out
   - fix: avt_credits sometimes got the end wrong

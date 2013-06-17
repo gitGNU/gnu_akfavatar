@@ -433,7 +433,7 @@ get_character (int fd)
 		process_key (avt_get_key ());
 	    }
 	  while (nread == -1 and errno == EAGAIN
-		 and avt_update () == AVT_NORMAL);
+		 and avt_wait (10) == AVT_NORMAL);
 
 	  if (cursor_active)
 	    avt_activate_cursor (false);
