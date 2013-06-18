@@ -87,7 +87,7 @@ marked_text (wchar_t * s, avt_color markcolor)
 {
   avt_set_text_background_color (markcolor);
   avt_say (s);
-  avt_normal_text ();
+  avt_set_text_background_ballooncolor ();
 }
 
 static bool
@@ -120,7 +120,7 @@ show_directory (avt_color markcolor)
       avt_set_text_background_color (markcolor);
       avt_clear_line ();	// mark the line
       show_multibyte_string (dirname);
-      avt_normal_text ();
+      avt_set_text_background_ballooncolor ();
     }
 }
 
@@ -211,7 +211,7 @@ ask_directory (avt_color markcolor)
   avt_set_text_background_color (markcolor);
   avt_clear_line ();
   avt_ask (dirname, sizeof (dirname));
-  avt_normal_text ();
+  avt_set_text_background_ballooncolor ();
 
   if (wcscmp (dirname, L"about:akfavatar") == 0)
     show_info ();
@@ -346,7 +346,7 @@ show (int nr, void *fc_data)
  */
 extern int
 avt_file_selection (char *filename, int filename_size,
-		     avt_filter filter, void *filter_data)
+		    avt_filter filter, void *filter_data)
 {
   int rcode;			// return code
   int choice;
@@ -358,8 +358,15 @@ avt_file_selection (char *filename, int filename_size,
   if (not filename or filename_size <= 0)
     return -1;
 
+  avt_set_text_background_ballooncolor ();
   memset (filename, 0, filename_size);
-  data.markcolor = avt_darker (avt_get_balloon_color (), 0x22);
+
+  data.markcolor = avt_get_balloon_color ();
+  if (avt_brightness (data.markcolor) >= 0x88)
+    data.markcolor = avt_darker (data.markcolor, 0x20);
+  else
+    data.markcolor = avt_brighter (data.markcolor, 0x88);
+
   data.namelist = NULL;
 
   // don't show the balloon

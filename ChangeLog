@@ -5,7 +5,7 @@
 	* avtterm.c (set_foreground_color):
 	make dark foreground colors a little less dark
 
-	* avtmenu.c: work with dark background
+	* avtmenu.c, filechooser.c: work with dark background
 
 2013-06-17  Andreas K. Foerster  <info@akfoerster.de>
 
