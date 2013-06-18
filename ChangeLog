@@ -1,3 +1,7 @@
+2013-06-18  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtterm.c (get_character): check for keys even when busy
+
 2013-06-17  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtgraphic.h, avtgraphic.c (avt_darker, avt_brighter):

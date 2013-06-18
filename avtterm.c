@@ -456,6 +456,9 @@ get_character (int fd)
   size_t num = convert->decode (convert, &ch, filebuf + filebuf_pos);
   filebuf_pos += num;
 
+  while (avt_key_pressed ())
+    process_key (avt_get_key ());
+
   return ch;
 }
 
