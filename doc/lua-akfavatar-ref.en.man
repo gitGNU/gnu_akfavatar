@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar reference" 3 2013-06-16 AKFAvatar
+.TH "Lua-AKFAvatar reference" 3 2013-06-18 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar reference \- AKFAvatar specific functions for Lua
@@ -1196,6 +1196,16 @@ To encode to or from the systems default encoding
 Returns the recoded string or
 .I nil
 on error.
+.IP
+.B Attention:
+Converting to UTF-8 is always possible.
+Converting to other encodings however can fail.
+Characters which cannot be converted are replaced with
+the control character
+.IR "SUB " ( """\ex1A""" ).
+So to make sure that everyting worked well, you can search
+for that character in the resulting string.
+If it is there, something went most probably wrong.
 .PP
 .TP
 .BI "avt.right_to_left(" true | false )

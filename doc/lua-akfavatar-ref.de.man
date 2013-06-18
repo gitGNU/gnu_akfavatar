@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar Referenz" 3 2013-06-16 AKFAvatar
+.TH "Lua-AKFAvatar Referenz" 3 2013-06-18 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar Referenz \- AKFAvatar spezifische Funktionen für Lua
@@ -1262,7 +1262,18 @@ angeben.
 .IP
 Gibt den kodierten String zurück, oder
 .IR nil ,
-falls er nicht umkodiert werden konnte.
+bei schweren Fehlern.
+.IP
+.B Achtung:
+Nach UTF-8 zu konvertieren ist immer möglich.
+Nach anderen Kodierungen zu konvertieren, kann jedoch fehlschlagen.
+Zeichen, die nicht konvertiert werden können,
+werden durch das Steuerzeichen
+.IR "SUB " ( """\ex1A""" )
+ersetzt.
+Um sicher zu stellen, dass die Konvertierung verlustfrei ablief,
+kann man überprüfen, dass dieses Zeichen im Ausgabestring
+nicht vorkommt.
 .PP
 .TP
 .BI "avt.right_to_left(" true | false )
