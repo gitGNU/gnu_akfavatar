@@ -8,6 +8,7 @@
   - fix: audioplayer.lua accepts PLS playlists again
   - fix: Pascal binding works again, extended
   - lua/audioplayer.lua: improved playlist support
+  - lua/multiplication.lua: more authentic
 
   C-API changes:
     - avt_char is uint_least32_t now, avt_choice adapted

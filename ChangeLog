@@ -7,6 +7,8 @@
 
 	* avtmenu.c, filechooser.c: work with dark background
 
+	* lua/multiplication.lua: more authentic
+
 2013-06-17  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtgraphic.h, avtgraphic.c (avt_darker, avt_brighter):

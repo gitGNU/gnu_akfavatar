@@ -1,9 +1,20 @@
 #!/usr/bin/env lua-akfavatar
 
--- Copyright (c) 2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2009,2010,2011,2012,2013 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
 local avt = require "lua-akfavatar"
+
+local image_file = "teacher.xpm"
+local board_width = 80
+local text_offset = 20
+
+-- colors can be names or numbers
+local background_color = "tan"
+local board_color = 0x005500
+local text_color = "white"
+local correct_color = 0xCCFFCC
+local wrong_color = 0xFFCCCC
 
 local positive = avt.load_audio_file(avt.search("positive.au")) or avt.silent()
 local negative = avt.load_audio_file(avt.search("negative.au")) or avt.alert()
@@ -61,30 +72,39 @@ local endRequest = false
 
 local exercise = "multiplication"
 
-function answerposition()
+local function answerposition()
   -- previous line, column 30
-  avt.move_xy(30, avt.where_y()-1)
+  avt.move_xy(text_offset + 30, avt.where_y()-1)
 end
 
-function AskWhatToExercise()
-  avt.tell(L"What to exercise?",
-          "\n1) ", L"Multiplication",
-          " (", random_minimum, "-", random_maximum, ")",
-          "\n2) ", L"Multiples of " , "...",
-          "\n3) ", L"Division",
-          " (", random_minimum, "-", random_maximum, ")",
-          "\n4) ", L"Division by ", "...")
+local function write(...)
+  avt.move_x(text_offset)
+  avt.say(...)
+end
 
-  local c = avt.choice(2, 4, "1")
+local function AskWhatToExercise()
+  avt.clear()
+  write(L"What to exercise?")
+  avt.newline()
+  avt.newline()
+  write("1) ", L"Multiplication",
+        " (", random_minimum, "-", random_maximum, ")\n")
+  write("2) ", L"Multiples of " , "...\n")
+  write("3) ", L"Division",
+        " (", random_minimum, "-", random_maximum, ")\n")
+  write("4) ", L"Division by ", "...")
+
+  local c = avt.choice(3, 4, "1")
 
   if c == 1 then
     exercise = "multiplication"
     specific_table = nil
   elseif c == 2 then
     exercise = "multiplication"
-    avt.set_balloon_size(1, 20)
+
     repeat
       avt.clear ()
+      avt.move_x(text_offset)
       specific_table = tonumber(avt.ask(L"Multiples of "))
     until specific_table
   elseif c == 3 then
@@ -92,9 +112,10 @@ function AskWhatToExercise()
     specific_table = nil
   elseif c == 4 then
     exercise = "division"
-    avt.set_balloon_size(1, 20)
+
     repeat
       avt.clear ()
+      avt.move_x(text_offset)
       specific_table = tonumber(avt.ask(L"Division by "))
     until specific_table
   else endRequest = true
@@ -103,40 +124,39 @@ function AskWhatToExercise()
   avt.clear()
 end
 
-function sayCorrect()
+local function sayCorrect()
   positive()
-  avt.set_text_color("dark green")
   answerposition()
+  avt.set_text_color(correct_color)
   avt.say(L"correct")
   avt.clear_eol()
+  avt.set_text_color(text_color)
   avt.newline()
-  avt.normal_text()
 end
 
-function sayWrong()
+local function sayWrong()
   negative()
   answerposition()
-  avt.set_text_color("dark red")
+  avt.set_text_color(wrong_color)
   avt.say(L"wrong")
   avt.clear_eol()
+  avt.set_text_color(text_color)
   avt.newline()
-  avt.normal_text()
 end
 
-function sayUnknown()
+local function sayUnknown()
   question()
   answerposition()
-  avt.set_text_color("gray30")
   avt.say(L"???")
   avt.clear_eol()
   avt.newline()
-  avt.normal_text()
 end
 
-function askResult(task)
+local function askResult(task)
   local result
 
   repeat
+    avt.move_x(text_offset)
     local line = avt.ask(task)
     if line == "" then endRequest = true end
     result = tonumber(line)
@@ -146,13 +166,11 @@ function askResult(task)
   return result
 end
 
-function query()
+local function query()
   local counter = 0
   local a, b, c, e
   local tries
   local isCorrect
-
-  avt.set_balloon_size(4, 40)
 
   while not endRequest do
     counter = counter + 1
@@ -185,15 +203,17 @@ function query()
 
       tries = tries + 1
       if tries >= maximum_tries and not isCorrect then -- help
-        avt.set_text_color("dark red")
+        avt.set_text_color(wrong_color)
         avt.inverse(true)
         avt.bold(true)
         if exercise == "multiplication" then
-          avt.say(string.format("%2d) %d%s%d=%d", counter, a, L"×", b, c))
+          write(string.format("%2d) %d%s%d=%d ", counter, a, L"×", b, c))
         elseif exercise == "division" then
-          avt.say(string.format("%2d) %d%s%d=%d ", counter, c, L"÷", a, b))
+          write(string.format("%2d) %d%s%d=%d ", counter, c, L"÷", a, b))
         end --> if exercise
-        avt.normal_text()
+        avt.inverse(false)
+        avt.bold(false)
+        avt.set_text_color(text_color)
         avt.newline()
         isCorrect = true  --> the teacher is always right ;-)
       end --> if tries >= maximum_tries
@@ -201,20 +221,24 @@ function query()
   end --> while not endRequest
 end
 
-function WantToContinue()
-  avt.tell(L"Do you want to take another exercise?")
+local function WantToContinue()
+  avt.clear()
+  write(L"Do you want to take another exercise?")
 
   return avt.decide()
 end
 
-function initialize()
+local function initialize()
   avt.encoding("UTF-8")
   avt.title("AKFAvatar: " .. L"Multiply", L"Multiply")
-  avt.set_background_color("tan")
-  avt.set_balloon_color("floral white")
+  avt.set_background_color(background_color)
   avt.start()
   avt.start_audio()
-  avt.avatar_image_file(avt.search("teacher.xpm"))
+  avt.set_balloon_color(board_color)
+  avt.set_text_color(text_color)
+  avt.avatar_image_file(avt.search(image_file))
+  avt.set_avatar_mode("footer")
+  avt.set_balloon_size (0, board_width)
   avt.move_in()
 
   -- initialize the random number generator
