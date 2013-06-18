@@ -40,7 +40,7 @@
            avt_clear_line (); \
            avt_move_x (mid_x-(sizeof(S)/sizeof(wchar_t)-1)/2); \
            avt_say(S); \
-           avt_normal_text(); \
+           avt_set_text_background_ballooncolor(); \
          } while(0)
 
 extern int
@@ -53,7 +53,13 @@ avt_menu (int *choice, int items,
 
   avt_set_text_delay (0);
 
-  avt_color markcolor = avt_darker (avt_get_balloon_color (), 0x22);
+  avt_set_text_background_ballooncolor ();
+
+  avt_color markcolor = avt_get_balloon_color ();
+  if (avt_brightness (markcolor) >= 0x88)
+    markcolor = avt_darker (markcolor, 0x20);
+  else
+    markcolor = avt_brighter (markcolor, 0x88);
 
   int start_line = avt_where_y ();
   if (start_line < 1)		// no balloon yet?
