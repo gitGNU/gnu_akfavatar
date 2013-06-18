@@ -2986,13 +2986,9 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
   avt.bell = NULL;
 
   avt_set_text_delay (0);
-  if (avt.markup)
-    {
-      avt_normal_text ();
-      avt.markup = true;
-    }
-  else
-    avt_normal_text ();
+
+  avt.text_background_color = avt.ballooncolor;
+  avt.underlined = avt.bold = avt.inverse = false;
 
   // show first screen
   pos = avt_pager_screen (txt, pos, len, horizontal);
