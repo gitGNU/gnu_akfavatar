@@ -32,7 +32,6 @@
 
 /* to get the systems definition of wchar_t */
 #include <stddef.h>
-#include <stdint.h>
 
 #if !defined(__cplusplus) && !defined(__bool_true_false_are_defined)
 #include <stdbool.h>
@@ -123,7 +122,7 @@
  * On Windows wchar_t/wint_t is not large enough for Unicode
  * it should be compatible with char32_t in C11.
  */
-typedef uint_least32_t avt_char;
+typedef unsigned int avt_char;
 
 /* general type for audio data */
 typedef struct avt_audio avt_audio;
