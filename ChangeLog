@@ -2,6 +2,9 @@
 
 	* avtterm.c (get_character): check for keys even when busy
 
+	* avtterm.c (set_foreground_color):
+	make dark foreground colors a little less dark
+
 2013-06-17  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtgraphic.h, avtgraphic.c (avt_darker, avt_brighter):

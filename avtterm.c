@@ -488,25 +488,25 @@ set_foreground_color (int color)
       if (not faint)
 	avt_set_text_color (0x000000);
       else
-	avt_set_text_color (0x888888);
+	avt_set_text_color (0xAAAAAA);
       break;
     case 1:			// red
-      avt_set_text_color (0x880000);
+      avt_set_text_color (0xAA0000);
       break;
     case 2:			// green
-      avt_set_text_color (0x008800);
+      avt_set_text_color (0x00AA00);
       break;
     case 3:			// brown
-      avt_set_text_color (0x888800);
+      avt_set_text_color (0xAAAA00);
       break;
     case 4:			// blue
-      avt_set_text_color (0x000088);
+      avt_set_text_color (0x0000AA);
       break;
     case 5:			// magenta
-      avt_set_text_color (0x880088);
+      avt_set_text_color (0xAA00AA);
       break;
     case 6:			// cyan
-      avt_set_text_color (0x008888);
+      avt_set_text_color (0x00AAAA);
       break;
     case 7:			// lightgray
       avt_set_text_color (0xCCCCCC);
