@@ -21,7 +21,7 @@ local question = avt.load_audio_file(avt.search("question.au")) or avt.alert()
 -- edit to your needs:
 local random_minimum = 1
 local random_maximum = 10
-local maximum_tries = 3
+local maximum_tries = 2
 
 avt.translations = {
 
