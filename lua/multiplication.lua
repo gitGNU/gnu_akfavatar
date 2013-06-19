@@ -6,8 +6,6 @@
 local avt = require "lua-akfavatar"
 
 local image_file = "teacher.xpm"
-local board_width = 80
-local text_offset = 20
 
 -- colors can be names or numbers
 local background_color = "tan"
@@ -74,25 +72,19 @@ local exercise = "multiplication"
 
 local function answerposition()
   -- previous line, column 30
-  avt.move_xy(text_offset + 30, avt.where_y()-1)
-end
-
-local function write(...)
-  avt.move_x(text_offset)
-  avt.say(...)
+  avt.move_xy(30, avt.where_y()-1)
 end
 
 local function AskWhatToExercise()
   avt.clear()
-  write(L"What to exercise?")
-  avt.newline()
-  avt.newline()
-  write("1) ", L"Multiplication",
-        " (", random_minimum, "-", random_maximum, ")\n")
-  write("2) ", L"Multiples of " , "...\n")
-  write("3) ", L"Division",
-        " (", random_minimum, "-", random_maximum, ")\n")
-  write("4) ", L"Division by ", "...")
+  avt.set_text_delay(0)
+  avt.say(L"What to exercise?", "\n\n",
+          "1) ", L"Multiplication",
+          " (", random_minimum, "-", random_maximum, ")\n",
+          "2) ", L"Multiples of " , "...\n",
+          "3) ", L"Division",
+          " (", random_minimum, "-", random_maximum, ")\n",
+          "4) ", L"Division by ", "...")
 
   local c = avt.choice(3, 4, "1")
 
@@ -104,7 +96,6 @@ local function AskWhatToExercise()
 
     repeat
       avt.clear ()
-      avt.move_x(text_offset)
       specific_table = tonumber(avt.ask(L"Multiples of "))
     until specific_table
   elseif c == 3 then
@@ -115,13 +106,13 @@ local function AskWhatToExercise()
 
     repeat
       avt.clear ()
-      avt.move_x(text_offset)
       specific_table = tonumber(avt.ask(L"Division by "))
     until specific_table
   else endRequest = true
   end
 
   avt.clear()
+  avt.set_text_delay()
 end
 
 local function sayCorrect()
@@ -156,7 +147,6 @@ local function askResult(task)
   local result
 
   repeat
-    avt.move_x(text_offset)
     local line = avt.ask(task)
     if line == "" then endRequest = true end
     result = tonumber(line)
@@ -207,9 +197,9 @@ local function query()
         avt.inverse(true)
         avt.bold(true)
         if exercise == "multiplication" then
-          write(string.format("%2d) %d%s%d=%d ", counter, a, L"×", b, c))
+          avt.say(string.format("%2d) %d%s%d=%d ", counter, a, L"×", b, c))
         elseif exercise == "division" then
-          write(string.format("%2d) %d%s%d=%d ", counter, c, L"÷", a, b))
+          avt.say(string.format("%2d) %d%s%d=%d ", counter, c, L"÷", a, b))
         end --> if exercise
         avt.inverse(false)
         avt.bold(false)
@@ -223,7 +213,7 @@ end
 
 local function WantToContinue()
   avt.clear()
-  write(L"Do you want to take another exercise?")
+  avt.say(L"Do you want to take another exercise?")
 
   return avt.decide()
 end
@@ -234,12 +224,16 @@ local function initialize()
   avt.set_background_color(background_color)
   avt.start()
   avt.start_audio()
-  avt.set_balloon_color(board_color)
-  avt.set_text_color(text_color)
+
   avt.avatar_image_file(avt.search(image_file))
   avt.set_avatar_mode("footer")
-  avt.set_balloon_size (0, board_width)
   avt.move_in()
+
+  avt.set_balloon_color(board_color)
+  avt.set_text_color(text_color)
+  avt.set_balloon_size (0, 80)
+  avt.viewport(20, 1, 40, avt.get_max_y())
+  avt.set_text_delay()
 
   -- initialize the random number generator
   math.randomseed(os.time())
@@ -256,4 +250,3 @@ repeat
 until not WantToContinue()
 
 avt.move_out()
-
