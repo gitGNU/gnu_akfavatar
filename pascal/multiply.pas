@@ -112,7 +112,7 @@ repeat
     else Write(q_division_by, ' ');
 
   SpecificTable := askNumber;
-until SpecificTable > 0
+until (SpecificTable > 0) or endRequest
 end;
 
 procedure AskWhatToExercise;
@@ -162,7 +162,8 @@ var isCorrect: boolean;
 begin
 counter := 0;
 
-repeat
+while not endRequest do
+  begin
   inc(counter);
   if SpecificTable <= 0 then
     a := GetRandomNumber(a_minimum, a_maximum)
@@ -218,7 +219,7 @@ repeat
              end
       end
   until isCorrect or endRequest
-until endRequest
+end
 end;
 
 function WantToContinue: boolean;
