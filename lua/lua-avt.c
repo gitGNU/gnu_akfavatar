@@ -2800,8 +2800,11 @@ key_table (lua_State * L)
  * an AKFAvatar application
  * uses no auto-cleanup when lua is closed
  */
+#ifdef MODULE
+static
+#endif
 int
-luaopen_akfavatar_embedded (lua_State * L)
+open_lua_akfavatar (lua_State * L)
 {
   avt_audio **audio;
 
@@ -2857,6 +2860,8 @@ luaopen_akfavatar_embedded (lua_State * L)
   return 1;
 }
 
+#ifdef MODULE
+
 /*
  * entry point when calling it as module
  * automatically closes AKFAvatar when Lua is closed
@@ -2864,7 +2869,7 @@ luaopen_akfavatar_embedded (lua_State * L)
 int
 luaopen_akfavatar (lua_State * L)
 {
-  luaopen_akfavatar_embedded (L);
+  open_lua_akfavatar (L);
 
   /*
    * use some dummy userdata to register a
@@ -2879,3 +2884,5 @@ luaopen_akfavatar (lua_State * L)
 
   return 1;
 }
+
+#endif

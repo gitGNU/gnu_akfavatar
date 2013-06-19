@@ -308,7 +308,7 @@ lua-akfavatar-prg-info.o: $(srcdir)/mingw/lua-akfavatar-prg.rc version.h \
 	    $(srcdir)/mingw/akfavatar.ico
 	$(WINDRES) -I. -I$(srcdir)/mingw -o $@ -i $(srcdir)/mingw/lua-akfavatar-prg.rc
 
-lua-akfavatar.dll: lua-avt.o filechooser.o askdrive.o colorchooser.o \
+lua-akfavatar.dll: lua-avt-module.o filechooser.o askdrive.o colorchooser.o \
 	           langwindows.o basedir.o sysencoding.o \
 	           cp437.o cp850.o cp1250.o cp1251.o cp1252.o \
 	           ISO-8859-2.o ISO-8859-3.o ISO-8859-4.o ISO-8859-5.o \
@@ -318,7 +318,7 @@ lua-akfavatar.dll: lua-avt.o filechooser.o askdrive.o colorchooser.o \
 	           charmaps.o lua-akfavatar-dll-info.o \
 	           $(srcdir)/mingw/lua-akfavatar.def
 	$(CC) -o $@ -shared $(srcdir)/mingw/lua-akfavatar.def \
-	     lua-avt.o filechooser.o askdrive.o sysencoding.o \
+	     lua-avt-module.o filechooser.o askdrive.o sysencoding.o \
 	     cp437.o cp850.o cp1250.o cp1251.o cp1252.o \
 	     ISO-8859-2.o ISO-8859-3.o ISO-8859-4.o ISO-8859-5.o \
 	     ISO-8859-7.o ISO-8859-8.o ISO-8859-9.o ISO-8859-10.o \
@@ -337,6 +337,11 @@ base64.dll: lbase64.o
 lua-avt.o: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h \
             $(srcdir)/avtinternals.h
 	$(CC) -I$(srcdir) $(CFLAGS) $(LUA_CFLAGS) -c -o $@ \
+	  $(srcdir)/lua/lua-avt.c
+
+lua-avt-module.o: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h \
+            $(srcdir)/avtinternals.h
+	$(CC) -I$(srcdir) $(CFLAGS) $(LUA_CFLAGS) -DMODULE -c -o $@ \
 	  $(srcdir)/lua/lua-avt.c
 
 lbase64.o: $(srcdir)/lua/lbase64.c

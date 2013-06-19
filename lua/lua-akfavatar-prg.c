@@ -77,7 +77,7 @@ extern "C"
 #define AVT_COLOR_SELECTOR    AVT_COLOR_TEXT
 
 // from lua-avt.c
-extern int luaopen_akfavatar_embedded (lua_State * L);
+extern int open_lua_akfavatar (lua_State * L);
 
 static lua_State *L;
 static int mode = AVT_AUTOMODE;
@@ -374,7 +374,7 @@ initialize_lua (void)
   lua_gc (L, LUA_GCRESTART, 0);
 
   // load lua-akfavatar
-  luaL_requiref (L, "lua-akfavatar", luaopen_akfavatar_embedded, false);
+  luaL_requiref (L, "lua-akfavatar", open_lua_akfavatar, false);
   lua_pop (L, 1);
 
   change_searchpaths ();

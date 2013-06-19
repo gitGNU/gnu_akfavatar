@@ -606,8 +606,8 @@ akfavatar-graphic.lo: $(srcdir)/lua/akfavatar-graphic.c $(srcdir)/akfavatar.h
 	  $(srcdir)/lua/akfavatar-graphic.c
 
 lua-avt.lo: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h
-	  $(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -c -fpic -o $@ \
-	  $(srcdir)/lua/lua-avt.c
+	  $(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -DMODULE \
+	    -c -fpic -o $@ $(srcdir)/lua/lua-avt.c
 
 installdirs:
 	-[ -d $(DESTDIR)$(includedir) ]  || $(INSTALL) -d $(DESTDIR)$(includedir)
