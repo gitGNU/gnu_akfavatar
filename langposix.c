@@ -59,6 +59,7 @@ avt_get_language (void)
 	    * the range.
 	    *
 	    * The first non-letter stops the parsing.
+	    * That also catches the terminator.
 	    */
 
 	  *p = c;
