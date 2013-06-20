@@ -286,8 +286,9 @@ AVT_ADDON avt_audio *avt_load_vorbis_stream (avt_stream *stream,
  **********************************************************************/
 
 /*
- * returns lowercase language code according ISO 639-1
- * or NULL if unknown
+ * returns lowercase language code
+ * (should be ISO 639-1 or ISO 639-2)
+ * or NULL on error
  */
 AVT_ADDON const char *avt_get_language (void);
 

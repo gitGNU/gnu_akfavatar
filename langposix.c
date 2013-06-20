@@ -1,5 +1,5 @@
 /*
- * get language code for POSIX compatible systems
+ * get language code for POSIX compatible systems (only ASCII!)
  * Copyright (c) 2012,2013 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
@@ -22,22 +22,12 @@
 #include <locale.h>
 #include <iso646.h>
 
-// the macros assume that latin letters are in a continuous ordered block
-// like in ASCII based charsets, but not in EBCDIC
+static char language[21] = "";
 
-#define checkalpha(c) \
-  (((c) >= 'A' and (c) <= 'Z') or ((c) >= 'a' and (c) <= 'z'))
-
-#define lowercase(c) \
-  (((c) >= 'A' and (c) <= 'Z') ? (c) + ('a' - 'A') : (c))
-
-// returns 2-letter language code according ISO 639-1
-// or NULL if unknown
+// returns  language code (lowercase), or NULL on error
 extern const char *
 avt_get_language (void)
 {
-  static char language[3] = "";
-
   if (not * language)
     {
       char *locale;
@@ -48,14 +38,38 @@ avt_get_language (void)
 	  and not (locale = getenv ("LANG")))
 	locale = setlocale (LC_MESSAGES, NULL);
 
-      // check if it starts with two letters, followed by a non-letter
-      if (not locale or not checkalpha (locale[0]) or not
-	  checkalpha (locale[1]) or checkalpha (locale[2]))
+      if (not locale or not * locale)
 	return NULL;
 
-      language[0] = lowercase (locale[0]);
-      language[1] = lowercase (locale[1]);
-      language[2] = '\0';
+      char *p = language;
+      char *l = locale;
+      size_t length = sizeof (language) - 1;
+
+      while (length--)
+	{
+	  char c = *l bitor 0x20;
+	  if (c < 'a' or c > 'z')
+	    break;
+
+	   /*
+	    * The code above uses the fact that in ASCII
+	    * upper case letters differ in only one bit
+	    * from lower case letters, so it sets the bit
+	    * to make it lowercase and after that checks
+	    * the range.
+	    *
+	    * The first non-letter stops the parsing.
+	    */
+
+	  *p = c;
+	  ++p;
+	  ++l;
+	}
+
+      *p = '\0';
+
+      if (not * language)
+	return NULL;
     }
 
   return (const char *) language;

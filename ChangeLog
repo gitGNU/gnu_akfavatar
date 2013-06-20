@@ -1,3 +1,7 @@
+2013-06-20  Andreas K. Foerster  <info@akfoerster.de>
+
+	* langposix.c (avt_get_language): support longer language codes
+
 2013-06-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c: new macro MODULE
