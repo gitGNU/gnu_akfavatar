@@ -64,7 +64,6 @@
  * -15 (Latin-9) For western European languages (with Euro)
  * -16 (Latin-10) For south-eastern European languages
  */
-
 AVT_ADDON const struct avt_charenc *avt_iso8859_2 (void);
 AVT_ADDON const struct avt_charenc *avt_iso8859_3 (void);
 AVT_ADDON const struct avt_charenc *avt_iso8859_4 (void);
@@ -106,10 +105,10 @@ AVT_ADDON const struct avt_charenc *avt_cp437 (void);
 
 /*
  * Code page 850 (IBM850, DOS-Latin-1)
- * This has all characters of ISO Latin-1,
+ * This has all printable characters of ISO Latin-1,
  * but in different positions.
  *
- * used for textconsole programs under Windows in Western-Europe
+ * used for textconsole programs under Windows in western Europe
  *
  * The characters 0-31 are interpreted as control characters
  */
