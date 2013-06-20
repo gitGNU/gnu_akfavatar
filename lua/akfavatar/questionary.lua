@@ -1,4 +1,4 @@
--- Copyright (c) 2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2010,2011,2012,2013 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
 local avt = require "lua-akfavatar"
@@ -118,6 +118,9 @@ local function questionary(qa)
       end
     end
   end
+
+  avt.set_avatar_mode "say"
+  avt.encoding "UTF-8"
 
   if qa.lang then avt.language = qa.lang end
 
