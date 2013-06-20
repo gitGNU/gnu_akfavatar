@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar reference" 3 2013-06-18 AKFAvatar
+.TH "Lua-AKFAvatar reference" 3 2013-06-20 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar reference \- AKFAvatar specific functions for Lua
@@ -1161,7 +1161,7 @@ Broken links are treated like not existing entries.
 .TP
 .BI "avt.language"
 This variable contains a language code for messages.
-It is a two-letter code conforming to ISO 639-1.
+It should be a two-letter code conforming to ISO 639-1.
 The variable is not set, when the language could not be
 detected.
 .PP

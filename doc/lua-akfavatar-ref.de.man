@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar Referenz" 3 2013-06-18 AKFAvatar
+.TH "Lua-AKFAvatar Referenz" 3 2013-06-20 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar Referenz \- AKFAvatar spezifische Funktionen für Lua
@@ -1226,7 +1226,8 @@ Kaputte Links werden wie nicht existierende Einträge behandelt.
 .TP
 .BI "avt.language"
 Diese Variable enthält einen Sprachcode für Meldungen.
-Es handelt sich um eine Kennung mit zwei Buchstaben gemäß ISO 639-1.
+Es sollte sich um eine Kennung mit zwei Buchstaben gemäß
+ISO 639-1 handeln.
 Wenn die Sprache nicht ermittelt werden konnte, ist die Variable
 nicht gesetzt.
 .PP
