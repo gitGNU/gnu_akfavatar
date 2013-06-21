@@ -151,7 +151,7 @@ vt100_decode (const struct avt_charenc *self, avt_char * ch, const char *s)
   else if (*s <= 126)
     *ch = vt100trans[*s - 95];
   else
-    *ch = BROKEN_WCHAR;
+    *ch = AVT_INVALID_WCHAR;
 
   return 1;
 }

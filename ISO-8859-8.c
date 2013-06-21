@@ -23,7 +23,7 @@
 static const struct avt_char_map map = {
   .start = 0xA1,.end = 0xFF,
   .table = {
-	    INVALID_WCHAR,	// 0xA1
+	    AVT_INVALID_WCHAR,	// 0xA1
 	    0x00A2,		// 0xA2
 	    0x00A3,		// 0xA3
 	    0x00A4,		// 0xA4
@@ -53,38 +53,38 @@ static const struct avt_char_map map = {
 	    0x00BC,		// 0xBC
 	    0x00BD,		// 0xBD
 	    0x00BE,		// 0xBE
-	    INVALID_WCHAR,	// 0xBF
-	    INVALID_WCHAR,	// 0xC0
-	    INVALID_WCHAR,	// 0xC1
-	    INVALID_WCHAR,	// 0xC2
-	    INVALID_WCHAR,	// 0xC3
-	    INVALID_WCHAR,	// 0xC4
-	    INVALID_WCHAR,	// 0xC5
-	    INVALID_WCHAR,	// 0xC5
-	    INVALID_WCHAR,	// 0xC7
-	    INVALID_WCHAR,	// 0xC8
-	    INVALID_WCHAR,	// 0xC9
-	    INVALID_WCHAR,	// 0xCA
-	    INVALID_WCHAR,	// 0xCB
-	    INVALID_WCHAR,	// 0xCC
-	    INVALID_WCHAR,	// 0xCD
-	    INVALID_WCHAR,	// 0xCE
-	    INVALID_WCHAR,	// 0xCF
-	    INVALID_WCHAR,	// 0xD0
-	    INVALID_WCHAR,	// 0xD1
-	    INVALID_WCHAR,	// 0xD2
-	    INVALID_WCHAR,	// 0xD3
-	    INVALID_WCHAR,	// 0xD4
-	    INVALID_WCHAR,	// 0xD5
-	    INVALID_WCHAR,	// 0xD6
-	    INVALID_WCHAR,	// 0xD7
-	    INVALID_WCHAR,	// 0xD8
-	    INVALID_WCHAR,	// 0xD9
-	    INVALID_WCHAR,	// 0xDA
-	    INVALID_WCHAR,	// 0xDB
-	    INVALID_WCHAR,	// 0xDC
-	    INVALID_WCHAR,	// 0xDD
-	    INVALID_WCHAR,	// 0xDE
+	    AVT_INVALID_WCHAR,	// 0xBF
+	    AVT_INVALID_WCHAR,	// 0xC0
+	    AVT_INVALID_WCHAR,	// 0xC1
+	    AVT_INVALID_WCHAR,	// 0xC2
+	    AVT_INVALID_WCHAR,	// 0xC3
+	    AVT_INVALID_WCHAR,	// 0xC4
+	    AVT_INVALID_WCHAR,	// 0xC5
+	    AVT_INVALID_WCHAR,	// 0xC5
+	    AVT_INVALID_WCHAR,	// 0xC7
+	    AVT_INVALID_WCHAR,	// 0xC8
+	    AVT_INVALID_WCHAR,	// 0xC9
+	    AVT_INVALID_WCHAR,	// 0xCA
+	    AVT_INVALID_WCHAR,	// 0xCB
+	    AVT_INVALID_WCHAR,	// 0xCC
+	    AVT_INVALID_WCHAR,	// 0xCD
+	    AVT_INVALID_WCHAR,	// 0xCE
+	    AVT_INVALID_WCHAR,	// 0xCF
+	    AVT_INVALID_WCHAR,	// 0xD0
+	    AVT_INVALID_WCHAR,	// 0xD1
+	    AVT_INVALID_WCHAR,	// 0xD2
+	    AVT_INVALID_WCHAR,	// 0xD3
+	    AVT_INVALID_WCHAR,	// 0xD4
+	    AVT_INVALID_WCHAR,	// 0xD5
+	    AVT_INVALID_WCHAR,	// 0xD6
+	    AVT_INVALID_WCHAR,	// 0xD7
+	    AVT_INVALID_WCHAR,	// 0xD8
+	    AVT_INVALID_WCHAR,	// 0xD9
+	    AVT_INVALID_WCHAR,	// 0xDA
+	    AVT_INVALID_WCHAR,	// 0xDB
+	    AVT_INVALID_WCHAR,	// 0xDC
+	    AVT_INVALID_WCHAR,	// 0xDD
+	    AVT_INVALID_WCHAR,	// 0xDE
 	    0x2017,		// 0xDF
 	    0x05D0,		// 0xE0
 	    0x05D1,		// 0xE1
@@ -113,11 +113,11 @@ static const struct avt_char_map map = {
 	    0x05E8,		// 0xF8
 	    0x05E9,		// 0xF9
 	    0x05EA,		// 0xFA
-	    INVALID_WCHAR,	// 0xFB
-	    INVALID_WCHAR,	// 0xFC
+	    AVT_INVALID_WCHAR,	// 0xFB
+	    AVT_INVALID_WCHAR,	// 0xFC
 	    0x200E,		// 0xFD
 	    0x200F,		// 0xFE
-	    INVALID_WCHAR	// 0xFF
+	    AVT_INVALID_WCHAR	// 0xFF
 	    }
 };
 

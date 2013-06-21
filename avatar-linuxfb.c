@@ -219,7 +219,7 @@ avt_get_mode (void)
 static avt_char
 utf8_to_unicode (const char *utf8)
 {
-  avt_char c = BROKEN_WCHAR;
+  avt_char c = AVT_INVALID_WCHAR;
   const unsigned char *u8 = (const unsigned char *) utf8;
 
   if (*u8 <= 0x7Fu)

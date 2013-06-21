@@ -24,7 +24,7 @@ static const struct avt_char_map map = {
   .start = 128,.end = 159,
   .table = {
 	    0x20AC,		// Euro
-	    INVALID_WCHAR,
+	    AVT_INVALID_WCHAR,
 	    0x201A,		// single low 9 quotation mark
 	    0x0192,		// function symbol
 	    0x201E,		// double low 9 quotation mark
@@ -36,10 +36,10 @@ static const struct avt_char_map map = {
 	    0x0160,		// S caron
 	    0x2039,		// single left-pointing angle quotation mark
 	    0x0152,		// Oe ligature
-	    INVALID_WCHAR,
+	    AVT_INVALID_WCHAR,
 	    0x017D,		// Z caron
-	    INVALID_WCHAR,
-	    INVALID_WCHAR,
+	    AVT_INVALID_WCHAR,
+	    AVT_INVALID_WCHAR,
 	    0x2018,		// left single quotation mark
 	    0x2019,		// right single quotation mark
 	    0x201C,		// left double quotation mark
@@ -52,7 +52,7 @@ static const struct avt_char_map map = {
 	    0x0161,		// s caron
 	    0x203A,		// singe right-pointing angle quotation mark
 	    0x0153,		// oe ligature
-	    INVALID_WCHAR,
+	    AVT_INVALID_WCHAR,
 	    0x017E,		// z caron (?)
 	    0x0178		// Y diaresis
 	    }

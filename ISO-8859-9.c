@@ -105,11 +105,11 @@ lat5_from_unicode (const struct avt_charenc *self, char *dest, size_t size,
     case 0x00F0:
     case 0x00FD:
     case 0x00FE:
-      *dest = INVALID_CHAR;
+      *dest = AVT_INVALID_CHAR;
       break;
 
     default:
-      *dest = (src <= 0xFFu) ? (char) src : INVALID_CHAR;
+      *dest = (src <= 0xFFu) ? (char) src : AVT_INVALID_CHAR;
       break;
     }
 

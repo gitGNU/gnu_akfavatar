@@ -67,6 +67,10 @@
 #define AVT_LEFT_TO_RIGHT 0
 #define AVT_RIGHT_TO_LEFT 1
 
+/* characters used for invalid input */
+#define AVT_INVALID_CHAR '\x1A'
+#define AVT_INVALID_WCHAR L'\uFFFD'
+
 /*
  * for avt_get_key()
  * note: AKFAvatar reserves the codepoints 0xEA00-0xEFFF for function keys

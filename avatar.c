@@ -2145,7 +2145,7 @@ avt_put_char (avt_char ch)
       if (ch <= 0xDBFF)		// high surrogate
 	{
 	  if (high_surrogate)
-	    avt_put_raw_char (BROKEN_WCHAR);	// spurious high surrogate
+	    avt_put_raw_char (AVT_INVALID_WCHAR);	// spurious high surrogate
 
 	  high_surrogate = ch;
 
@@ -2158,7 +2158,7 @@ avt_put_char (avt_char ch)
 	    ch = (((high_surrogate bitand 0x3FF) << 10)
 		  bitor (ch bitand 0x3FF)) + 0x10000;
 	  else			// separated low surrogate
-	    ch = BROKEN_WCHAR;
+	    ch = AVT_INVALID_WCHAR;
 
 	  high_surrogate = 0;
 	}
@@ -2167,13 +2167,13 @@ avt_put_char (avt_char ch)
   // check for spurious high surrogate
   if (high_surrogate)
     {
-      avt_put_raw_char (BROKEN_WCHAR);
+      avt_put_raw_char (AVT_INVALID_WCHAR);
       high_surrogate = 0;
     }
 
   // outside the Unicode range?
   if (ch > 0x10FFFF)
-    ch = BROKEN_WCHAR;
+    ch = AVT_INVALID_WCHAR;
 
   switch (ch)
     {
@@ -2210,7 +2210,7 @@ avt_put_char (avt_char ch)
       break;
 
     case 0x1A:			// SUB (substitute)
-      avt_put_raw_char (BROKEN_WCHAR);
+      avt_put_raw_char (AVT_INVALID_WCHAR);
       break;
 
       // LRM/RLM: only supported at the beginning of a line
@@ -2258,7 +2258,7 @@ avt_put_char (avt_char ch)
     default:
       // noncharacter?
       if (ch >= 0x10FFFE or (ch bitand 0xFFFE) == 0xFFFE)
-	avt_put_raw_char (BROKEN_WCHAR);
+	avt_put_raw_char (AVT_INVALID_WCHAR);
       // if not a control character
       else if (ch > 0x20 and (ch < 0x7F or ch >= 0xA0))
 	avt_put_raw_char (ch);

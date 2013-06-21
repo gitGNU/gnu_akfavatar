@@ -36,7 +36,7 @@ static const struct avt_char_map map = {
 	    0x00AB,		// 0xAB
 	    0x00AC,		// 0xAC
 	    0x00AD,		// 0xAD
-	    INVALID_WCHAR,	// 0xAE
+	    AVT_INVALID_WCHAR,	// 0xAE
 	    0x2015,		// 0xAF
 	    0x00B0,		// 0xB0
 	    0x00B1,		// 0xB1
@@ -72,7 +72,7 @@ static const struct avt_char_map map = {
 	    0x039F,		// 0xCF
 	    0x03A0,		// 0xD0
 	    0x03A1,		// 0xD1
-	    INVALID_WCHAR,	// 0xD2
+	    AVT_INVALID_WCHAR,	// 0xD2
 	    0x03A3,		// 0xD3
 	    0x03A4,		// 0xD4
 	    0x03A5,		// 0xD5
@@ -117,7 +117,7 @@ static const struct avt_char_map map = {
 	    0x03CC,		// 0xFC
 	    0x03CD,		// 0xFD
 	    0x03CE,		// 0xFE
-	    INVALID_WCHAR	// 0xFF
+	    AVT_INVALID_WCHAR	// 0xFF
 	    }
 };
 

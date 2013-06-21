@@ -41,7 +41,7 @@ system_to_unicode (const struct avt_charenc *self, avt_char * dest,
     }
   else if (r == (size_t) (-1) or r == (size_t) (-2))
     {
-      ch = BROKEN_WCHAR;
+      ch = AVT_INVALID_WCHAR;
       r = 1;
     }
 
@@ -63,13 +63,13 @@ system_from_unicode (const struct avt_charenc *self, char *dest, size_t size,
 
   // wchar_t is too small? - limit to BMP
   if (sizeof (wchar_t) <= 2 and src > 0xFFFF)
-    src = BROKEN_WCHAR;
+    src = AVT_INVALID_WCHAR;
 
   size_t r = wcrtomb (dest, (wchar_t) src, NULL);
 
   if (r == (size_t) (-1))
     {
-      r = wcrtomb (dest, BROKEN_WCHAR, NULL);
+      r = wcrtomb (dest, AVT_INVALID_WCHAR, NULL);
 
       if (r == (size_t) (-1))
 	r = wcrtomb (dest, L'\x1A', NULL);

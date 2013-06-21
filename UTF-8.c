@@ -51,7 +51,7 @@ utf8_to_unicode (const struct avt_charenc *self, avt_char * ch,
   (void) self;
 
   size_t bytes = 0;
-  avt_char c = BROKEN_WCHAR;
+  avt_char c = AVT_INVALID_WCHAR;
   const unsigned char *u8 = (const unsigned char *) src;
 
   if (*u8 <= 0x7Fu)
@@ -95,7 +95,7 @@ utf8_to_unicode (const struct avt_charenc *self, avt_char * ch,
   // checks for security
   if (c > UNICODE_MAXIMUM or surrogate (c)
       or (bytes >= 2u and c <= 0x7Fu) or (bytes >= 3u and c <= 0x7FFu))
-    c = BROKEN_WCHAR;
+    c = AVT_INVALID_WCHAR;
 
   *ch = c;
 
@@ -113,7 +113,7 @@ utf8_from_unicode (const struct avt_charenc *self, char *dest,
 
   // this also ensures that there is never more than 4 bytes
   if (ch > UNICODE_MAXIMUM or surrogate (ch))
-    ch = BROKEN_WCHAR;
+    ch = AVT_INVALID_WCHAR;
 
   if (ch <= 0x7Fu and dest_size >= 1)
     {

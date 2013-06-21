@@ -31,7 +31,7 @@ ascii_decode (const struct avt_charenc *self, avt_char * dest,
 {
   (void) self;
 
-  *dest = ((*src bitand 0x80) == 0) ? *src : BROKEN_WCHAR;
+  *dest = ((*src bitand 0x80) == 0) ? *src : AVT_INVALID_WCHAR;
 
   return 1;
 }
@@ -46,7 +46,7 @@ ascii_encode (const struct avt_charenc *self, char *dest, size_t size,
   if (size == 0)
     return 0;
 
-  *dest = (src < 0x80) ? (char) src : INVALID_CHAR;
+  *dest = (src < 0x80) ? (char) src : AVT_INVALID_CHAR;
 
   return 1;
 }

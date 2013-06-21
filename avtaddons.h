@@ -45,9 +45,6 @@
  * support for single byte charsets via tables
  **********************************************************************/
 
-#define INVALID_CHAR '\x1A'
-#define INVALID_WCHAR L'\uFFFD'
-
 /*
  * ISO-8859
  * -2 (Latin-2) For eastern European languages

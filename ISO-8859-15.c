@@ -123,11 +123,11 @@ lat9_from_unicode (const struct avt_charenc *self, char *dest, size_t size,
     case 0x00BC:
     case 0x00BD:
     case 0x00BE:
-      *dest = INVALID_CHAR;
+      *dest = AVT_INVALID_CHAR;
       break;
 
     default:
-      *dest = (src <= 0xFFu) ? (char) src : INVALID_CHAR;
+      *dest = (src <= 0xFFu) ? (char) src : AVT_INVALID_CHAR;
       break;
     }
 

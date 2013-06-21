@@ -54,7 +54,7 @@ map_from_unicode (const struct avt_charenc *self, char *dest,
     *dest = (char) src;
   else				// search table
     {
-      char dch = INVALID_CHAR;
+      char dch = AVT_INVALID_CHAR;
 
       for (int i = map->end - map->start; i >= 0; --i)
 	{

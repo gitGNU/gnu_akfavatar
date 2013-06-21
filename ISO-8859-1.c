@@ -26,8 +26,6 @@
 #include "akfavatar.h"
 #include <stddef.h>
 
-#define INVALID_CHAR '\x1A'
-
 static size_t
 lat1_to_unicode (const struct avt_charenc *self, avt_char * dest,
 		 const char *src)
@@ -48,7 +46,7 @@ lat1_from_unicode (const struct avt_charenc *self, char *dest, size_t size,
   if (size == 0)
     return 0;
 
-  *dest = (src <= 0xFFu) ? (char) src : INVALID_CHAR;
+  *dest = (src <= 0xFFu) ? (char) src : AVT_INVALID_CHAR;
   return 1;
 }
 
