@@ -11,13 +11,15 @@
   - lua/multiplication.lua: more authentic
 
   C-API changes:
-    - avt_char is uint_least32_t now, avt_choice adapted
+    - avt_char is unsigned int now, avt_choice adapted
       should be compatible with char32_t in C11
     - functions with *_mb* replaced with functions *_char*
     - new functions: avt_darker, avt_brighter, avt_brightness
     - avtadons.h also uses the prefix avt_ for everything
 
   Lua-API changes:
+    - The default encoding is now ASCII
+      to encourage always using avt.encoding()
     - avt.set_directory or avt.chdir return true on success
       or nil and an error message on error
 
