@@ -34,11 +34,12 @@
 #include <string.h>
 #include <fcntl.h>
 
-#if defined(AVTADDONS_DLL) && defined(__cplusplus)
-#  define AVT_ADDON  extern "C"
-#else
-#  define AVT_ADDON  extern
+/* some of these functions are used as parameters */
+#ifdef __cplusplus
+extern "C" {
 #endif
+
+#define AVT_ADDON  extern
 
 /**********************************************************************
  * Section: character encodings
@@ -392,5 +393,8 @@ AVT_ADDON void avt_term_send (const char *buf, size_t count);
  */
 AVT_ADDON void avt_term_update_size (void);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* AVTADDONS_H */

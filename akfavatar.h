@@ -113,10 +113,10 @@
 #define AVT_SECONDS(x) ((x)*1000)
 
 #ifdef __cplusplus
-#  define AVT_API  extern "C"
-#else
-#  define AVT_API  extern
+extern "C" {
 #endif
+
+#define AVT_API  extern
 
 /***********************************************************************/
 /* type definitions */
@@ -1145,5 +1145,9 @@ AVT_API int avt_put_raw_image_xpm (char **xpm, int x, int y,
 AVT_API int avt_key (avt_char *ch) AVT_DEPRECATED;
 
 #endif /* DISABLE_DEPRECATED */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* AKFAVATAR_H */

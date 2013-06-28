@@ -1,3 +1,8 @@
+2013-06-28  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avtaddons.h:
+	define everything as extern "C" for C++
+
 2013-06-20  Andreas K. Foerster  <info@akfoerster.de>
 
 	* langposix.c (avt_get_language): support longer language codes
