@@ -27,6 +27,30 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ * Table of contents
+ *
+ * - definitions
+ * - initialization / finalization
+ * - setting an avatar image or a banner
+ * - actions without or outside the balloon
+ * - say or ask stuff
+ * - character encodings
+ * - handling of single characters
+ * - key or event handling
+ * - informational stuff
+ * - colors
+ * - settings
+ * - handle coordinates inside the balloon
+ * - activities inside the balloon
+ * - showing images without the avatar
+ * - high-level functions
+ * - plumbing
+ * - audio output
+ * - experimental
+ * - deprecated functions - only for backward comatibility
+ */
+
 #ifndef AKFAVATAR_H
 #define AKFAVATAR_H
 
