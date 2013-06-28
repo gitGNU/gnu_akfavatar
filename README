@@ -15,7 +15,7 @@ AKFAvatar already comes with quite a few ready to use applications and modules.
 There is for example a text-viewer, a module to make question-answer exercises
 and there are many more things you could do with it...
 
-For POSIX-compatible operating systems there is a manpage viewer, and 
+For POSIX-compatible operating systems there is a manpage viewer, and
 there is even a terminal emulator.  So you can run many existing terminal
 based programs in this fancy environment.
 ----------------------------------------------------------------------------
@@ -27,6 +27,6 @@ See the file AUTHORS for contributors to this package.
 
 See the file INSTALL for compilation and installation instructions.
 
-The directory pascal/ contains code for GNU-Pascal and Free Pascal.
+The directory pascal/ contains code for Free Pascal.
 See the file pascal/README for instructions.
 
