@@ -1,12 +1,12 @@
-* AKFAvatar-testing
+* AKFAvatar 0.24.0
 
-  - paging through menus is animated
-  - fix: terminal doesn't use so much cPU time anymore
+  - fix: terminal doesn't use so much CPU time anymore
   - fix: window resizing for the pager works again
   - fix: switching fullscreen mode while avatar moves in or out
   - fix: avt_credits sometimes got the end wrong
   - fix: audioplayer.lua accepts PLS playlists again
   - fix: Pascal binding works again, extended
+  - paging through menus is animated
   - lua/audioplayer.lua: improved playlist support
   - lua/multiplication.lua: more authentic
 
