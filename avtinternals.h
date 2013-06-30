@@ -153,7 +153,7 @@ void edit_file (const char *name, const char *encoding);
 FILE *open_config_file (const char *name, bool writing);
 
 /* mingw/askdrive.c */
-int avta_ask_drive (int max_idx);
+int avt_ask_drive (int max_idx);
 
 #pragma GCC visibility pop
 
