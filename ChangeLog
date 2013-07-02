@@ -1,3 +1,10 @@
+2013-07-02  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/hexviewer.lua (printable): new function
+	turn control characters into control pictures
+
+------------------------------------------------------------------------
+
 2013-06-30  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.24.0 released

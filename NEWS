@@ -1,3 +1,7 @@
+* AKFAvatar-testing
+
+  - lua/hexviewer.lua: show more characters
+
 * AKFAvatar 0.24.0
 
   - fix: terminal doesn't use so much CPU time anymore

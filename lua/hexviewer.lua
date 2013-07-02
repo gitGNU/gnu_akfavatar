@@ -1,6 +1,6 @@
 #!/usr/bin/env lua-akfavatar
 
--- Copyright (c) 2012 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2012, 2013 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
 local avt = require "lua-akfavatar"
@@ -43,6 +43,33 @@ local data = f:read(limit)
 f:close()
 
 
+-- turn text into all printable characters
+local function printable(t)
+  -- replace soft hyphen (otherwise not shown)
+  t = string.gsub(t, "\173", "-")
+
+  -- treat 8-Bit input as WINDOWS-1252
+  -- we have no way to check the real encoding
+  -- ISO-8859-1 would have more unprintable characters
+  -- and UTF-8 cannot represent single bytes
+  t = avt.recode(t, "WINDOWS-1252")
+
+  -- turn C0 control characters into Control Pictures
+  t = string.gsub(t, "[\0-\31\127]",
+    function(s)
+      local b = string.byte(s)
+
+      if b <= 31 then
+        return "\xE2\x90" .. string.char(0x80 + b)
+      else --> b == \127 (Del)
+        return "\xE2\x90\xA1"
+      end
+    end)
+
+  return t
+end
+
+
 local function line(offset)
   local l, b
 
@@ -64,8 +91,7 @@ local function line(offset)
   if len < 57 then l = l .. string.rep(" ", 57 - len) end
 
   l = l .. " \xE2\x95\x91 "
-      .. string.gsub(string.sub(data, offset+1, offset+16),
-                     "[\1-\31\127-\255]", "\0")
+      .. printable(string.sub(data, offset+1, offset+16))
 
   return l
 end
