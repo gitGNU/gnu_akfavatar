@@ -1,6 +1,6 @@
 #!/usr/bin/env lua-akfavatar
 
--- Copyright (c) 2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2010,2011,2012,2013 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
 -- this gives an impression over which characters are available
@@ -79,6 +79,7 @@ local function block(f, t)
 end
 
 local function all_slowprint()
+  avt.clear()
   avt.set_text_delay()
   block(0x0000, 0xFFFF)
   -- note: Unicode copdepoints can be up to 0x10FFFF,

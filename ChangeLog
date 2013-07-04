@@ -1,5 +1,9 @@
 2013-07-02  Andreas K. Foerster  <info@akfoerster.de>
 
+	* lua/characters_overview.lua (all_slowprint): fix: clear
+
+2013-07-02  Andreas K. Foerster  <info@akfoerster.de>
+
 	* lua/hexviewer.lua (printable): new function
 	turn control characters into control pictures
 
