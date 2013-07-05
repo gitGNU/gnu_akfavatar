@@ -1167,6 +1167,8 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/doc/audioplayer.en.man \
 	   $(srcdir)/doc/audioplayer.de.man \
 	   $(srcdir)/doc/Homepage.desktop \
+	   $(srcdir)/doc/Lua-Homepage.desktop \
+	   $(srcdir)/doc/Programming_in_Lua.desktop \
 	   $(srcdir)/doc/Lua-doc.desktop \
 	   $(PKGNAME)/doc/
 
@@ -1185,7 +1187,8 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/mingw/akfavatar.def $(srcdir)/mingw/lua-akfavatar.def \
 	   $(srcdir)/mingw/akfavatar-vorbis.def \
 	   $(srcdir)/mingw/Makefile.in $(srcdir)/mingw/README \
-	   $(srcdir)/mingw/Homepage.url $(srcdir)/mingw/Lua-doc.url \
+	   $(srcdir)/mingw/Homepage.url $(srcdir)/mingw/Lua-Homepage.url \
+	   $(srcdir)/mingw/Lua-doc.url $(srcdir)/mingw/Programming_in_Lua.url \
 	   $(PKGNAME)/mingw/
 
 	tar -cvf $(PKGNAME).src.tar $(PKGNAME)/
@@ -1306,6 +1309,8 @@ dist-bin-default: all pdf
 	ln $(srcdir)/doc/audioplayer.de.man $(BINPKGNAME)/doc/
 	ln $(srcdir)/doc/Homepage.desktop $(BINPKGNAME)/doc/
 	ln $(srcdir)/doc/Lua-doc.desktop $(BINPKGNAME)/doc/
+	ln $(srcdir)/doc/Lua-Homepage.desktop $(BINPKGNAME)/doc/
+	ln $(srcdir)/doc/Programming_in_Lua.desktop $(BINPKGNAME)/doc/
 	ln $(srcdir)/lua/akfavatar/dir.??.about \
 	   $(srcdir)/lua/akfavatar/utf8.lua \
 	   $(srcdir)/lua/akfavatar/person.lua \
