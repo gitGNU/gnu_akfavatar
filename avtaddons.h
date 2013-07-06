@@ -79,6 +79,7 @@ AVT_ADDON const struct avt_charenc *avt_iso8859_16 (void);
 /*
  * KOI8-R, KOI8-U
  * Cyrillic alphabet for Russian and Ukrainian
+ * KOI stands for "Код Обмена Информацией, 8 бит"
  *
  * see also RFC 1489, RFC 2319
  */
