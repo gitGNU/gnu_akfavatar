@@ -1,10 +1,10 @@
 #!/usr/bin/env lua-akfavatar
 
--- Copyright (c) 2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2010,2011,2012,2013
+-- Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
 local avt = require "lua-akfavatar"
-local utf8 = require "akfavatar.utf8"
 
 avt.title("Text Viewer")
 avt.start()
@@ -46,7 +46,13 @@ if arg[1]
 
 local text = io.read("*all")
 
+if avt.detect_utf8(text, 5120) then
+  avt.encoding("UTF-8")
+else
+  avt.encoding("WINDOWS-1252")
+end
+
 -- note: WINDOWS-1252 is a superset of ISO-8859-1
 -- you should not use WINDOWS-1252 for your own texts, though!
-avt.encoding(utf8.check_unicode(text) or "WINDOWS-1252")
+
 avt.pager(text)
