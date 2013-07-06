@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar Referenz" 3 2013-06-20 AKFAvatar
+.TH "Lua-AKFAvatar Referenz" 3 2013-07-06 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar Referenz \- AKFAvatar spezifische Funktionen für Lua
@@ -1275,6 +1275,16 @@ ersetzt.
 Um sicher zu stellen, dass die Konvertierung verlustfrei ablief,
 kann man überprüfen, dass dieses Zeichen im Ausgabestring
 nicht vorkommt.
+.PP
+.TP
+.BI "avt.detect_utf8(" "String [, Maximallänge]" )
+Prüft, of
+.I String
+gültiges UTF-8 (oder ASCII) ist.
+.IP
+Geprüft werden bis zu
+.I Maximallänge
+Bytes, aber eine unvollständige Sequenz wird noch abgeschlossen.
 .PP
 .TP
 .BI "avt.right_to_left(" true | false )

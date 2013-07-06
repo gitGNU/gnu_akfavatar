@@ -40,6 +40,7 @@ EXPORTS
     avt_decide
     avt_delete_characters
     avt_delete_lines
+    avt_detect_utf8
     avt_erase_characters
     avt_finalize_raw_audio
     avt_flash

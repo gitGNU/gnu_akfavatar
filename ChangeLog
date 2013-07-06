@@ -1,3 +1,9 @@
+2013-07-06  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, UTF-8.c (avt_detect_utf8): new function
+
+	* lua/lua_avt.c (lavt_detect_utf8): new function
+
 2013-07-02  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/characters_overview.lua (all_slowprint): fix: clear

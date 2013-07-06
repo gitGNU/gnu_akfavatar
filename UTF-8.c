@@ -156,3 +156,39 @@ avt_utf8 (void)
 {
   return &converter;
 }
+
+
+extern bool
+avt_detect_utf8 (const char *str, size_t size)
+{
+  const unsigned char *s = (const unsigned char *) str;
+
+  while (size)
+    {
+      register unsigned char ch = *s;
+      size_t bytes = 1;
+
+      if (ch >= 0x80)
+	{
+	  // continuation byte / single byte intro
+	  if (ch <= 0xC1)
+	    return false;
+
+	  // count continuation bytes
+	  bytes = check_char_length (s, 6);
+
+	  if (bytes > 4 or ch >= 0xF5
+	      or (ch <= 0xDF and bytes > 2) or (ch <= 0xEF and bytes > 3))
+	    return false;
+	}
+
+      // incomplete sequence at the end is okay!
+      if (bytes >= size)
+	break;
+
+      s += bytes;
+      size -= bytes;
+    }
+
+  return true;
+}

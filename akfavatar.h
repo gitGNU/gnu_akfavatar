@@ -358,6 +358,18 @@ AVT_API size_t avt_recode_char (const struct avt_charenc *tocode,
                                 const struct avt_charenc *fromcode,
                                 const char *src, size_t src_size);
 
+/*
+ * checks for UTF-8
+ *
+ * size can be smaller than the actual string length
+ * it is okay if size ends in the middle of a sequence
+ *
+ * returns false if invalid UTF-8 sequence is detected
+ * returns true for valid UTF-8 or plain ASCII
+ * doesn't check for overlong sequences or all invalid characters
+ */
+AVT_API bool avt_detect_utf8 (const char *str, size_t size);
+
 
 /***********************************************************************/
 /* handling of single characters */

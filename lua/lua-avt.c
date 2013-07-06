@@ -599,6 +599,23 @@ lavt_recode (lua_State * L)
 }
 
 
+static int
+lavt_detect_utf8 (lua_State * L)
+{
+  size_t len;
+
+  const char *string = luaL_checklstring (L, 1, &len);
+  size_t max_length = lua_tointeger(L, 1);
+
+  if (not max_length or max_length > len)
+    max_length = len;
+
+  lua_pushboolean (L, (int) avt_detect_utf8 (string, max_length));
+
+  return 1;
+}
+
+
 // set avatar image from data (string or table)
 static int
 lavt_avatar_image (lua_State * L)
@@ -2559,6 +2576,7 @@ static const luaL_Reg akfavtlib[] = {
   {"encoding", lavt_encoding},
   {"get_encoding", lavt_get_encoding},
   {"recode", lavt_recode},
+  {"detect_utf8", lavt_detect_utf8},
   {"title", lavt_set_title},
   {"set_title", lavt_set_title},
   {"set_text_delay", lavt_set_text_delay},

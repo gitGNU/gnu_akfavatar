@@ -2,6 +2,12 @@
 
   - lua/hexviewer.lua: show more characters
 
+  C-API changes:
+    - new functions: avt_detect_utf8
+
+  Lua-API changes:
+    - new functions: avt.detect_utf8
+
 * AKFAvatar 0.24.0
 
   - fix: terminal doesn't use so much CPU time anymore
