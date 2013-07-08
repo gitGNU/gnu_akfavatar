@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar Referenz" 3 2013-07-06 AKFAvatar
+.TH "Lua-AKFAvatar Referenz" 3 2013-07-08 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar Referenz \- AKFAvatar spezifische Funktionen für Lua
@@ -260,6 +260,12 @@ hingegen repräsentiert hier das Euro-Währungszeichen.
 .IP
 Übrigens werden eine Gruppe von Unicode-Zahlen effektiver verarbeitet
 als Strings.
+.PP
+.TP
+.BI "avt.toutf8(" Codepoint )
+Nimmt den angegebenen Unicode
+.I Codepoint
+und gibt das Zeichen als UTF-8 kodierten String zurück.
 .PP
 .TP
 .BI "avt.printable(" Codepoint )

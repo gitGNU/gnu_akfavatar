@@ -605,7 +605,7 @@ lavt_detect_utf8 (lua_State * L)
   size_t len;
 
   const char *string = luaL_checklstring (L, 1, &len);
-  size_t max_length = lua_tointeger(L, 1);
+  size_t max_length = lua_tointeger (L, 1);
 
   if (not max_length or max_length > len)
     max_length = len;
@@ -1624,6 +1624,23 @@ lavt_say_unicode (lua_State * L)
 }
 
 static int
+lavt_toutf8 (lua_State * L)
+{
+  const struct avt_charenc *utf8;
+  char result[8];
+  size_t len;
+
+  utf8 = avt_utf8 ();
+
+  len = utf8->encode (utf8, result, sizeof (result),
+		      luaL_checkunsigned (L, 1));
+
+  lua_pushlstring (L, result, len);
+
+  return 1;
+}
+
+static int
 lavt_printable (lua_State * L)
 {
   lua_pushboolean (L,
@@ -2554,6 +2571,7 @@ static const luaL_Reg akfavtlib[] = {
   {"print", lavt_print},
   {"tell", lavt_tell},
   {"say_unicode", lavt_say_unicode},
+  {"toutf8", lavt_toutf8},
   {"printable", lavt_printable},
   {"combining", lavt_combining},
   {"ask", lavt_ask},
@@ -2821,7 +2839,7 @@ key_table (lua_State * L)
 #ifdef MODULE
 static
 #endif
-int
+  int
 open_lua_akfavatar (lua_State * L)
 {
   avt_audio **audio;

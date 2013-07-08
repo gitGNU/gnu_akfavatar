@@ -60,9 +60,9 @@ local function printable(t)
       local b = string.byte(s)
 
       if b <= 31 then
-        return "\xE2\x90" .. string.char(0x80 + b)
+        return avt.toutf8 (0x2400 + b)
       else --> b == \127 (Del)
-        return "\xE2\x90\xA1"
+        return avt.toutf8 (0x2421)
       end
     end)
 
@@ -75,13 +75,13 @@ local function line(offset)
 
   local center = offset+8
 
-  l = string.format("%05X \xE2\x95\x91", offset)
+  l = string.format("%05X ║", offset)
 
   for position = offset+1, offset+16 do
     b = string.byte(data, position)
     if not b then break end
     l = l .. string.format(" %02X", b)
-    if position == center then l = l .. " \xE2\x94\x82" end
+    if position == center then l = l .. " │" end
   end
 
   -- hack to count actual utf-8 characters
@@ -90,7 +90,7 @@ local function line(offset)
   -- eventually fill space
   if len < 57 then l = l .. string.rep(" ", 57 - len) end
 
-  l = l .. " \xE2\x95\x91 "
+  l = l .. " ║ "
       .. printable(string.sub(data, offset+1, offset+16))
 
   return l

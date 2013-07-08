@@ -1,13 +1,12 @@
 #!/usr/bin/env lua-akfavatar
 
--- Copyright (c) 2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2010,2011,2012,2013 Andreas K. Foerster <info@akfoerster.de>
 -- License: GPL version 3 or later
 
 -- this gives an impression over which characters are available
 -- note: the version for lower resolutions has less characters!
 
 local avt = require "lua-akfavatar"
-local utf8 = require "akfavatar.utf8"
 
 avt.encoding("UTF-8")
 avt.title("characters tables")
@@ -20,7 +19,7 @@ local function block_list(f, t)
   
   for unicode = f, t do
     if avt.printable(unicode) then
-      local u8 = utf8.char(unicode)
+      local u8 = avt.toutf8(unicode)
       local hex = string.format("0x%X", unicode)
       local xml = string.format("&#x%X;", unicode)
 
