@@ -605,7 +605,7 @@ lavt_detect_utf8 (lua_State * L)
   size_t len;
 
   const char *string = luaL_checklstring (L, 1, &len);
-  size_t max_length = lua_tointeger (L, 1);
+  size_t max_length = lua_tounsigned (L, 1);
 
   if (not max_length or max_length > len)
     max_length = len;
@@ -1442,7 +1442,7 @@ static int
 lavt_push_key (lua_State * L)
 {
   is_initialized ();
-  avt_push_key (luaL_checkinteger (L, 1));
+  avt_push_key (luaL_checkunsigned (L, 1));
   return 0;
 }
 
@@ -1611,7 +1611,7 @@ lavt_say_unicode (lua_State * L)
        * convert strings to numbers
        */
       if (lua_type (L, i) == LUA_TNUMBER)
-	check (avt_put_char ((avt_char) lua_tointeger (L, i)));
+	check (avt_put_char ((avt_char) lua_tounsigned (L, i)));
       else
 	{
 	  s = luaL_checklstring (L, i, &len);
@@ -1645,7 +1645,7 @@ lavt_printable (lua_State * L)
 {
   lua_pushboolean (L,
 		   (int) avt_is_printable ((avt_char)
-					   luaL_checkinteger (L, 1)));
+					   luaL_checkunsigned (L, 1)));
   return 1;
 }
 
@@ -1653,7 +1653,8 @@ static int
 lavt_combining (lua_State * L)
 {
   lua_pushboolean (L,
-		   (int) avt_combining ((avt_char) luaL_checkinteger (L, 1)));
+		   (int) avt_combining ((avt_char)
+					luaL_checkunsigned (L, 1)));
   return 1;
 }
 
@@ -1990,7 +1991,7 @@ laudio_tostring (lua_State * L)
 static int
 lavt_set_audio_end_key (lua_State * L)
 {
-  lua_pushinteger (L, avt_set_audio_end_key (luaL_checkint (L, 1)));
+  lua_pushinteger (L, avt_set_audio_end_key (luaL_checkunsigned (L, 1)));
   return 1;
 }
 
