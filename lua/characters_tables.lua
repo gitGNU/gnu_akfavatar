@@ -16,17 +16,12 @@ local function block_list(f, t)
   local list = "╔═══╤════════╤══════════╤══════════════╗\n" ..
                "║ c │ number │ XML/HTML │    UTF-8     ║\n" ..
                "╠═══╪════════╪══════════╪══════════════╣\n"
-  
+
   for unicode = f, t do
     if avt.printable(unicode) then
       local u8 = avt.toutf8(unicode)
       local hex = string.format("0x%X", unicode)
       local xml = string.format("&#x%X;", unicode)
-
-      local u8_lua = ""
-      for i=1, string.len(u8) do
-        u8_lua = u8_lua .. string.format("\\%03d", string.byte(u8, i))
-      end
 
       local u8_c = ""
       for i=1, string.len(u8) do
