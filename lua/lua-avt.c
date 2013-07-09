@@ -73,6 +73,9 @@ extern "C"
 
 static bool initialized = false;
 
+// needed several times
+static const struct avt_charenc *utf8;
+
 static const char *const modes[] =
   { "auto", "window", "fullscreen", "fullscreen no switch", NULL };
 
@@ -349,7 +352,7 @@ encodingname (const char *name)
     result = avt_systemencoding ();
   else if (strcasecmp ("UTF-8", name) == 0
 	   or strcasecmp ("UTF8", name) == 0 or strcasecmp ("U8", name) == 0)
-    result = avt_utf8 ();
+    result = utf8;
   else if (strcasecmp ("US-ASCII", name) == 0
 	   or strcasecmp ("ASCII", name) == 0)
     result = avt_ascii ();
@@ -1626,10 +1629,7 @@ lavt_say_unicode (lua_State * L)
 static int
 lavt_toutf8 (lua_State * L)
 {
-  const struct avt_charenc *utf8;
   int nr;
-
-  utf8 = avt_utf8 ();
 
   // number of parameters
   nr = lua_gettop (L);
@@ -1665,6 +1665,51 @@ lavt_toutf8 (lua_State * L)
     }
 
   return 1;
+}
+
+static int
+lavt_utf8_iteration (lua_State * L)
+{
+  const char *str = lua_tostring (L, 1);
+  size_t pos = lua_tounsigned (L, lua_upvalueindex (1));
+
+  str += pos;
+
+  avt_char ch;
+  size_t len = utf8->decode (utf8, &ch, str);
+
+  if (ch and len)
+    {
+      // update position upvalue
+      lua_pushunsigned (L, pos + len);
+      lua_replace (L, lua_upvalueindex (1));
+
+      lua_pushunsigned (L, ch);
+    }
+  else
+    lua_pushnil (L);
+
+  return 1;
+}
+
+/*
+ * iterator function for UTF-8 strings
+ * example:
+ *   for c in avt.utf8codepoints(s) do avt.say_unicode(c, 10) end
+ */
+static int
+lavt_utf8codepoints (lua_State * L)
+{
+  size_t len;
+  const char *str;
+
+  str = luaL_checklstring (L, 1, &len);
+
+  lua_pushunsigned (L, 0);	// start position
+  lua_pushcclosure (L, lavt_utf8_iteration, 1);
+  lua_pushlstring (L, str, len);
+
+  return 2;
 }
 
 static int
@@ -2600,6 +2645,7 @@ static const luaL_Reg akfavtlib[] = {
   {"tell", lavt_tell},
   {"say_unicode", lavt_say_unicode},
   {"toutf8", lavt_toutf8},
+  {"utf8codepoints", lavt_utf8codepoints},
   {"printable", lavt_printable},
   {"combining", lavt_combining},
   {"ask", lavt_ask},
@@ -2915,6 +2961,8 @@ open_lua_akfavatar (lua_State * L)
   luaL_getmetatable (L, AUDIODATA);
   lua_setmetatable (L, -2);
   lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-silence");
+
+  utf8 = avt_utf8 ();
 
   // initialize charset
   avt_char_encoding (avt_ascii ());

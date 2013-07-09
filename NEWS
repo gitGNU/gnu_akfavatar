@@ -6,7 +6,7 @@
     - new functions: avt_detect_utf8
 
   Lua-API changes:
-    - new functions: avt.toutf8, avt.detect_utf8
+    - new functions: avt.toutf8, avt.detect_utf8, avt.utf8codepoints
 
 * AKFAvatar 0.24.0
 

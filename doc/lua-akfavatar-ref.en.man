@@ -414,6 +414,19 @@ Takes one or more Unicode
 .I codepoints
 and returns an UTF-8 encoded string for that.
 .PP
+.TP
+.BI "avt.utf8codepoints(" str )
+This can be used to get all Unicode codepoints
+from an UTF-8 encoded string as numbers.
+.IP
+Example:
+.EX
+  for c in avt.utf8codepoints(s) do
+    avt.say_unicode(c)
+    avt.newline()
+  end
+.EE
+.PP
 .SS Sizes and positions
 .TP
 .BI "avt.set_balloon_size(" "[height] [, width]" )

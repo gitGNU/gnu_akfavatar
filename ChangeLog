@@ -1,3 +1,8 @@
+2013-07-09  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/lua_avt.c (lavt_utf8codepoints, lavt_utf8_iteration):
+	new functions
+
 2013-07-08  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua_avt.c (lavt_toutf8): new function

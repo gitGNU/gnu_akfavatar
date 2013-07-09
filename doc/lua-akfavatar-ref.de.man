@@ -435,6 +435,19 @@ Nimmt einen oder mehrere angegebene Unicode
 .I Codepoints
 und gibt diese als UTF-8 kodierten String zurück.
 .PP
+.TP
+.BI "avt.utf8codepoints(" str )
+Kann verwendet werden, um alle Unicode Codepoints
+von einem UTF-8 kodierten String als Zahlen zu erhalten.
+.IP
+Beispiel:
+.EX
+  for c in avt.utf8codepoints(s) do
+    avt.say_unicode(c)
+    avt.newline()
+  end
+.EE
+.PP
 .SS Größen und Positionen
 .TP
 .BI "avt.set_balloon_size(" "[Höhe] [, Breite]" )
