@@ -1670,15 +1670,23 @@ lavt_toutf8 (lua_State * L)
 static int
 lavt_utf8_iteration (lua_State * L)
 {
-  const char *str = lua_tostring (L, 1);
+  size_t sl;
+  const char *str = lua_tolstring (L, 1, &sl);
   size_t pos = lua_tounsigned (L, lua_upvalueindex (1));
+
+  // end reached?
+  if (pos >= sl)
+    {
+      lua_pushnil (L);
+      return 1;
+    }
 
   str += pos;
 
   avt_char ch;
   size_t len = utf8->decode (utf8, &ch, str);
 
-  if (ch and len)
+  if (len)
     {
       // update position upvalue
       lua_pushunsigned (L, pos + len);
