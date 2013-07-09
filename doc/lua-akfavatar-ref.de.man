@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar Referenz" 3 2013-07-08 AKFAvatar
+.TH "Lua-AKFAvatar Referenz" 3 2013-07-09 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar Referenz \- AKFAvatar spezifische Funktionen für Lua
@@ -229,74 +229,6 @@ avt.tell("Drei Äpfel kosten ", 3 * Apfelpreis, " Euro.").
 Diese Funktion hat noch immer Probleme mit Tabulatoren ("\et").
 .PP
 .TP
-.BI "avt.say_unicode(" ... )
-Schreibt Text in der Sprechblase mit spezieller Unterstützung für 
-Unicode-Zeichen.
-.IP
-Dieser Befehl ist ähnlich wie
-.BR avt.say() .
-Strings werden auf die selbe Weise behandelt, abhängig von der eingestellten
-Kodierung, aber Zahlen werden als Unicode-Codepoint interpretiert,
-unabhängig von der eingestellten Kodierung.
-.IP
-Man kann das verwenden, um Zeichen zu verwenden, die in der eingestellten
-Kodierung nicht zur Verfügung stehen.
-Manchmal ist es aber auch einfach nur einfacher.
-.IP
-.B Beispiel:
-.EX
-avt.say_unicode("Drei Äpfel kosten ",
-                tostring(3 * Apfelpreis), 0x20AC,
-                ".\en").
-.EE
-.IP
-Wie man hier sieht, muss man
-.B tostring()
-verwenden, wenn nummerische Angaben als solche angezeigt werden sollen.
-Die Zahl
-.I 0x20AC
-hingegen repräsentiert hier das Euro-Währungszeichen.
-(Das `0x' leitet hexadezimale Zahlen ein.)
-.IP
-Übrigens werden eine Gruppe von Unicode-Zahlen effektiver verarbeitet
-als Strings.
-.PP
-.TP
-.BI "avt.toutf8(" Codepoint )
-Nimmt den angegebenen Unicode
-.I Codepoint
-und gibt das Zeichen als UTF-8 kodierten String zurück.
-.PP
-.TP
-.BI "avt.printable(" Codepoint )
-Überprüft ob der angegebene
-.I Codepoint
-ein druckbares Unicode-Zeichen darstellt.
-Es gibt
-.I true
-zurück, wenn das der Fall ist, oder
-.IR false ,
-wenn die Schriftart kein druckbares Zeichen dafür hat
-(es kann trotzdem ein unterstütztes Steuerzeichen sein).
-Diese Funktion ist unabhängig von der eingestellten Kodierung.
-Sie kann zusammen mit
-.B "avt.say_unicode(...)"
-eingesetzt werden.
-.PP
-.TP
-.BI "avt.combining(" Codepoint )
-Überprüft ob der angegebene
-.I Codepoint
-ein kombinierendes Unicode-Zeichen darstellt
-und als solches behandelt wird.
-Es gibt
-.I true
-zurück, wenn das der Fall ist, oder
-.IR false ,
-wenn es nicht als solches unterstützt wird.
-Das Ergebnis gilt nur für unterstützte Zeichen.
-.PP
-.TP
 .BI "avt.newline()"
 Beginne eine neue Zeile.
 Das selbe, wie "\en" in
@@ -314,7 +246,6 @@ Um den Langsamschreibmodus zu daktivieren, kann man den Wert
 .I Verzögerung
 verwenden.
 .PP
-.TP
 .TP
 .BI "avt.clear()"
 Löscht das Text-Feld oder den Bereich.
@@ -424,6 +355,85 @@ werden kann.
 .IP
 Lua-AKFAvatar braucht nicht initialisiert sein, um diese
 Funktion zu verwenden.
+.PP
+.SS Unicode
+.TP
+.BI "avt.say_unicode(" ... )
+Schreibt Text in der Sprechblase mit spezieller Unterstützung für 
+Unicode-Zeichen.
+.IP
+Dieser Befehl ist ähnlich wie
+.BR avt.say() .
+Strings werden auf die selbe Weise behandelt, abhängig von der eingestellten
+Kodierung, aber Zahlen werden als Unicode-Codepoint interpretiert,
+unabhängig von der eingestellten Kodierung.
+.IP
+Man kann das verwenden, um Zeichen zu verwenden, die in der eingestellten
+Kodierung nicht zur Verfügung stehen.
+Manchmal ist es aber auch einfach nur einfacher.
+.IP
+.B Beispiel:
+.EX
+avt.say_unicode("Drei Äpfel kosten ",
+                tostring(3 * Apfelpreis), 0x20AC,
+                ".\en").
+.EE
+.IP
+Wie man hier sieht, muss man
+.B tostring()
+verwenden, wenn nummerische Angaben als solche angezeigt werden sollen.
+Die Zahl
+.I 0x20AC
+hingegen repräsentiert hier das Euro-Währungszeichen.
+(Das `0x' leitet hexadezimale Zahlen ein.)
+.IP
+Übrigens werden eine Gruppe von Unicode-Zahlen effektiver verarbeitet
+als Strings.
+.PP
+.TP
+.BI "avt.printable(" Codepoint )
+Überprüft ob der angegebene
+.I Codepoint
+ein druckbares Unicode-Zeichen darstellt.
+Es gibt
+.I true
+zurück, wenn das der Fall ist, oder
+.IR false ,
+wenn die Schriftart kein druckbares Zeichen dafür hat
+(es kann trotzdem ein unterstütztes Steuerzeichen sein).
+Diese Funktion ist unabhängig von der eingestellten Kodierung.
+Sie kann zusammen mit
+.B "avt.say_unicode(...)"
+eingesetzt werden.
+.PP
+.TP
+.BI "avt.combining(" Codepoint )
+Überprüft ob der angegebene
+.I Codepoint
+ein kombinierendes Unicode-Zeichen darstellt
+und als solches behandelt wird.
+Es gibt
+.I true
+zurück, wenn das der Fall ist, oder
+.IR false ,
+wenn es nicht als solches unterstützt wird.
+Das Ergebnis gilt nur für unterstützte Zeichen.
+.PP
+.TP
+.BI "avt.detect_utf8(" "String [, Maximallänge]" )
+Prüft, of
+.I String
+gültiges UTF-8 (oder ASCII) ist.
+.IP
+Geprüft werden bis zu
+.I Maximallänge
+Bytes, aber eine unvollständige Sequenz wird noch abgeschlossen.
+.PP
+.TP
+.BI "avt.toutf8(" "Codepoint [, ...]" )
+Nimmt einen oder mehrere angegebene Unicode
+.I Codepoints
+und gibt diese als UTF-8 kodierten String zurück.
 .PP
 .SS Größen und Positionen
 .TP
@@ -1281,16 +1291,6 @@ ersetzt.
 Um sicher zu stellen, dass die Konvertierung verlustfrei ablief,
 kann man überprüfen, dass dieses Zeichen im Ausgabestring
 nicht vorkommt.
-.PP
-.TP
-.BI "avt.detect_utf8(" "String [, Maximallänge]" )
-Prüft, of
-.I String
-gültiges UTF-8 (oder ASCII) ist.
-.IP
-Geprüft werden bis zu
-.I Maximallänge
-Bytes, aber eine unvollständige Sequenz wird noch abgeschlossen.
 .PP
 .TP
 .BI "avt.right_to_left(" true | false )

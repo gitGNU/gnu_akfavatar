@@ -1627,15 +1627,42 @@ static int
 lavt_toutf8 (lua_State * L)
 {
   const struct avt_charenc *utf8;
-  char result[8];
-  size_t len;
+  int nr;
 
   utf8 = avt_utf8 ();
 
-  len = utf8->encode (utf8, result, sizeof (result),
-		      luaL_checkunsigned (L, 1));
+  // number of parameters
+  nr = lua_gettop (L);
 
-  lua_pushlstring (L, result, len);
+  if (nr <= 1)
+    {
+      char buf[6];
+      size_t len;
+      len = utf8->encode (utf8, buf, sizeof (buf), luaL_checkunsigned (L, 1));
+      lua_pushlstring (L, buf, len);
+    }
+  else				// more than 1 codepoint
+    {
+      char buf[6];
+      luaL_Buffer buffer;
+
+      luaL_buffinit (L, &buffer);
+
+      for (int i = 1; i <= nr; ++i)
+	{
+	  size_t len;
+
+	  len = utf8->encode (utf8, buf, sizeof (buf),
+			      luaL_checkunsigned (L, i));
+
+	  if (len == 1)
+	    luaL_addchar (&buffer, buf[0]);
+	  else
+	    luaL_addlstring (&buffer, buf, len);
+	}
+
+      luaL_pushresult (&buffer);
+    }
 
   return 1;
 }

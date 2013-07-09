@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar reference" 3 2013-07-08 AKFAvatar
+.TH "Lua-AKFAvatar reference" 3 2013-07-09 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar reference \- AKFAvatar specific functions for Lua
@@ -225,71 +225,6 @@ avt.tell("Three apples cost ", 3 * appleprice, " Euros.").
 This function still has problems with tabs ("\et").
 .PP
 .TP
-.BI "avt.say_unicode(" ... )
-Prints text in the balloon with special support for Unicode characters.
-.IP
-This command is very similar to
-.BR avt.say() .
-Strings are handled in the same way, depending on the selected encoding,
-but numbers are interpreted as Unicode codepoints, independent from the
-selected encoding.
-.IP
-This can be used to insert characters, which are not available in
-the current string encoding.  Sometimes it is also just easier to
-use.
-.IP
-.B Example:
-.EX
-avt.say_unicode("Three apples cost ",
-                tostring(3 * appleprice), 0x20AC,
-                ".\en").
-.EE
-.IP
-As you can see, you have to use 
-.B tostring()
-when nummerical expressions are to be shown as numbers.  
-The number
-.I 0x20AC
-however represents the Euro currency sign.
-(The `0x' introduces hexadecimal numbers.)
-.IP
-By the way, a bunch of unicode numbers are handled much more efficiently
-than strings.
-.PP
-.TP
-.BI "avt.toutf8(" codepoint )
-Takes the given Unicode
-.I codepoint
-and returns an UTF-8 encoded string for that character.
-.PP
-.TP
-.BI "avt.printable(" codepoint )
-Checks whether the given
-.I codepoint
-represents a printable Unicode character.
-It returns 
-.I true
-when this is the case or
-.I false
-if the font doesn't have a printable glyph for it (it may be a
-supported control character).
-This function is independent from the chosen encoding.
-It can be used together with
-.BR "avt.say_unicode(...)" .
-.PP
-.TP
-.BI "avt.combining(" codepoint )
-Checks whether the given
-.I codepoint
-represents a combining Unicode character and is treated as such.
-It returns 
-.I true
-when this is the case or
-.I false
-if not.
-It is only really applicable for supported characters.
-.PP
-.TP
 .BI "avt.newline()"
 Start a new line. It is the same as "\en" in
 .BR avt.say() ,
@@ -402,6 +337,82 @@ but the module is not required, but optional.
 That means, it is not an error, when it cannot be loaded.
 .IP
 Lua-AKFAvatar need not be initialized to use this function.
+.PP
+.SS Unicode
+.TP
+.BI "avt.say_unicode(" ... )
+Prints text in the balloon with special support for Unicode characters.
+.IP
+This command is very similar to
+.BR avt.say() .
+Strings are handled in the same way, depending on the selected encoding,
+but numbers are interpreted as Unicode codepoints, independent from the
+selected encoding.
+.IP
+This can be used to insert characters, which are not available in
+the current string encoding.  Sometimes it is also just easier to
+use.
+.IP
+.B Example:
+.EX
+avt.say_unicode("Three apples cost ",
+                tostring(3 * appleprice), 0x20AC,
+                ".\en").
+.EE
+.IP
+As you can see, you have to use 
+.B tostring()
+when nummerical expressions are to be shown as numbers.  
+The number
+.I 0x20AC
+however represents the Euro currency sign.
+(The `0x' introduces hexadecimal numbers.)
+.IP
+By the way, a bunch of unicode numbers are handled much more efficiently
+than strings.
+.PP
+.TP
+.BI "avt.printable(" codepoint )
+Checks whether the given
+.I codepoint
+represents a printable Unicode character.
+It returns 
+.I true
+when this is the case or
+.I false
+if the font doesn't have a printable glyph for it (it may be a
+supported control character).
+This function is independent from the chosen encoding.
+It can be used together with
+.BR "avt.say_unicode(...)" .
+.PP
+.TP
+.BI "avt.combining(" codepoint )
+Checks whether the given
+.I codepoint
+represents a combining Unicode character and is treated as such.
+It returns 
+.I true
+when this is the case or
+.I false
+if not.
+It is only really applicable for supported characters.
+.PP
+.TP
+.BI "avt.detect_utf8(" "string [, maxlength]" )
+Detect if
+.I string
+is valid UTF-8 (or ASCII).
+.IP
+Checks up to
+.I maxlength
+bytes, but it finishes to check an incomplete sequence.
+.PP
+.TP
+.BI "avt.toutf8(" "codepoint [, ...]" )
+Takes one or more Unicode
+.I codepoints
+and returns an UTF-8 encoded string for that.
 .PP
 .SS Sizes and positions
 .TP
@@ -1212,16 +1223,6 @@ the control character
 So to make sure that everyting worked well, you can search
 for that character in the resulting string.
 If it is there, something went most probably wrong.
-.PP
-.TP
-.BI "avt.detect_utf8(" "string [, maxlength]" )
-Detect if
-.I string
-is valid UTF-8 (or ASCII).
-.IP
-Checks up to
-.I maxlength
-bytes, but it finishes to check an incomplete sequence.
 .PP
 .TP
 .BI "avt.right_to_left(" true | false )
