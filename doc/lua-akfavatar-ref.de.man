@@ -444,6 +444,7 @@ Beispiel:
 .EX
   for c in avt.utf8codepoints(s) do
     avt.say_unicode(c)
+    avt.say(string.format(" = U+%04X", c))
     avt.newline()
   end
 .EE
