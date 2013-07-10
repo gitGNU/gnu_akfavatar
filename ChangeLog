@@ -1,3 +1,7 @@
+2013-07-10  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/interactive_lua.lua: fix handling of incomplete lines
+
 2013-07-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua_avt.c (lavt_utf8codepoints, lavt_utf8_iteration):

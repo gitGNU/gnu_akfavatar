@@ -1,6 +1,7 @@
 * AKFAvatar-testing
 
   - lua/hexviewer.lua: show more characters
+  - lua/interactive_lua.lua: fix handling of incomplete lines
 
   C-API changes:
     - new functions: avt_detect_utf8

@@ -67,8 +67,8 @@ local function interactive (cmd)
 
   if func then show (pcall(func))
     else --> error
-      -- '<eof>' at the end means the command is incomplete
-      if (string.find(err, "'<eof>'$"))
+      -- <eof> at the end means the command is incomplete
+      if (string.find(err, "<eof>"))
         then return interactive (cmd)
         else error_message (err)
       end
