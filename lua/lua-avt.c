@@ -1670,32 +1670,25 @@ lavt_toutf8 (lua_State * L)
 static int
 lavt_utf8_iteration (lua_State * L)
 {
-  size_t sl;
-  const char *str = lua_tolstring (L, 1, &sl);
+  size_t len;
+  const char *str = lua_tolstring (L, 1, &len);
   size_t pos = lua_tounsigned (L, lua_upvalueindex (1));
 
   // end reached?
-  if (pos >= sl)
+  if (pos >= len)
     {
       lua_pushnil (L);
       return 1;
     }
 
-  str += pos;
-
   avt_char ch;
-  size_t len = utf8->decode (utf8, &ch, str);
+  size_t bytes = utf8->decode (utf8, &ch, str + pos);
 
-  if (len)
-    {
-      // update position upvalue
-      lua_pushunsigned (L, pos + len);
-      lua_replace (L, lua_upvalueindex (1));
+  // update position upvalue
+  lua_pushunsigned (L, pos + bytes);
+  lua_replace (L, lua_upvalueindex (1));
 
-      lua_pushunsigned (L, ch);
-    }
-  else
-    lua_pushnil (L);
+  lua_pushunsigned (L, ch);
 
   return 1;
 }
@@ -1708,14 +1701,13 @@ lavt_utf8_iteration (lua_State * L)
 static int
 lavt_utf8codepoints (lua_State * L)
 {
-  size_t len;
-  const char *str;
-
-  str = luaL_checklstring (L, 1, &len);
+  luaL_checkstring (L, 1);
 
   lua_pushunsigned (L, 0);	// start position
   lua_pushcclosure (L, lavt_utf8_iteration, 1);
-  lua_pushlstring (L, str, len);
+
+  // push parameter string
+  lua_pushvalue (L, 1);
 
   return 2;
 }
