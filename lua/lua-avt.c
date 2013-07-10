@@ -73,6 +73,8 @@ extern "C"
 
 static bool initialized = false;
 
+static lua_CFunction old_panic;
+
 // needed several times
 static const struct avt_charenc *utf8;
 
@@ -85,6 +87,19 @@ static const char *const playmodes[] = { "load", "play", "loop", NULL };
 // "check()" checks the returned status code
 #define check(X)  do { if ((X) != AVT_NORMAL) quit (L); } while (0)
 #define is_initialized(void)  if (not initialized) auto_initialize(L)
+
+static int
+panic (lua_State * L)
+{
+  if (initialized)
+    {
+      avt_quit ();
+      initialized = false;
+    }
+
+  old_panic (L);
+  return 0;
+}
 
 // for internal use only
 static int
@@ -2968,6 +2983,8 @@ open_lua_akfavatar (lua_State * L)
   avt_char_encoding (avt_ascii ());
   lua_pushliteral (L, "ASCII");
   lua_setfield (L, LUA_REGISTRYINDEX, "AKFAvatar-encoding");
+
+  old_panic = lua_atpanic (L, panic);
 
   return 1;
 }

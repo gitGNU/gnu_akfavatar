@@ -2,6 +2,9 @@
 
 	* lua/interactive_lua.lua: fix handling of incomplete lines
 
+	* lua/lua_avt.c (open_lua_akfavatar, panic):
+	register a panic function
+
 2013-07-09  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua_avt.c (lavt_utf8codepoints, lavt_utf8_iteration):
