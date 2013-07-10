@@ -30,7 +30,6 @@ avt.set_balloon_color("tan")
 local filename = arg[1]
 
 if not filename then
-  avt.say(L"Hex Viewer")
   avt.set_directory(os.getenv("HOME") or os.getenv("USERPROFILE"))
   filename = avt.file_selection()
   if not filename or filename=="" then return end
