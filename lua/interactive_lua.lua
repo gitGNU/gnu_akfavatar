@@ -84,9 +84,8 @@ avt.start_audio()
 avt.avatar_image_file(avt.search("computer.xpm") or "default")
 avt.set_avatar_mode("footer")
 
--- avt.move_in ()
 avt.underlined(true)
 avt.say(_VERSION, " / AKFAvatar ", avt.version (), "\n\n")
-avt.normal_text ()
+avt.underlined(false)
 
 while true do interactive () end
