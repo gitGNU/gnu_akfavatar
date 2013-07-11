@@ -26,6 +26,7 @@
 
 #include "akfavatar.h"
 #include "avtaddons.h"
+#include "avtinternals.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -472,7 +473,7 @@ show_text (const char *filename)
 
   if (len > 0)
     {
-      if (not avt_detect_utf8 (txt, len))
+      if (not avt_detect_utf8 (txt, avt_min (len, 5120)))
 	avt_char_encoding (avt_cp1252 ());
 
       avt_pager_char (txt, len, 1);
