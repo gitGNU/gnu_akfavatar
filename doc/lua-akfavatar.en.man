@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "lua-akfavatar" 1 2012-12-11 AKFAvatar
+.TH "lua-akfavatar" 1 2013-07-11 AKFAvatar
 .
 .SH NAME
 lua-akfavatar \- Lua interpreter for the AKFAvatar user interface
@@ -38,7 +38,7 @@ lua-akfavatar \- Lua interpreter for the AKFAvatar user interface
 .BI "lua-akfavatar [" options "] [" " script " "[" args "] ]"
 .
 .SH DESCRIPTION
-The program Lua-AKFAvatar is the Lua interpreter for the AKFAvatar
+The program lua-akfavatar is the Lua interpreter for the AKFAvatar
 user interface.
 It loads and executes Lua scripts in source form (not bytecode).
 Either Lua scripts can be loaded or
@@ -73,6 +73,11 @@ These can be simple text files encoded in UTF-8 or plain ASCII.
 They can use the "overstrike" technique for bold or underlined text.
 You can for example use the text-setting system "groff" to generate
 such files.
+.br
+Furthermore GNU info files
+with the file extension
+.RB \[dq] .info \[dq]
+can be shown as text (no support for hyperlinks).
 .
 .SH OPTIONS
 .TP

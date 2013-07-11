@@ -298,7 +298,9 @@ check_textfile (const char *filename, const char *ext)
     or strcasecmp (filename, "ChangeLog") == 0
     or (ext and
 	(strcasecmp (ext, EXT_ABOUT) == 0
-	 or strcasecmp (ext, ".txt") == 0 or strcasecmp (ext, ".text") == 0));
+	 or strcasecmp (ext, ".txt") == 0
+	 or strcasecmp (ext, ".text") == 0
+	 or strcasecmp (ext, ".info") == 0));
 }
 
 // check if this program can handle the file
@@ -327,7 +329,6 @@ check_filename (const char *filename, void *data)
   * Here I do it for GNU/Linux.
   * I don't know how to do it on other systems.
   */
-
 static void
 change_searchpaths (void)
 {
@@ -482,8 +483,7 @@ ask_file (void)
   avt_set_avatar_mode (AVT_HEADER);
   avt_set_balloon_size (0, 0);
 
-  if (avt_file_selection
-      (filename, sizeof (filename), &check_filename, NULL))
+  if (avt_file_selection (filename, sizeof (filename), &check_filename, NULL))
     return false;
 
   if (*filename)

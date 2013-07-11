@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "lua-akfavatar" 1 2012-12-11 AKFAvatar
+.TH "lua-akfavatar" 1 2013-07-11 AKFAvatar
 .
 .SH NAME
 lua-akfavatar \- Lua-Interpreter für die AKFAvatar-Benutzeroberfläche
@@ -78,6 +78,13 @@ Man kann auch die \[Bq]overstrike\[lq]-Technik verwenden, um Text fett
 oder unterstrichen darstellen zu können.
 Man kann zum Beispiel das Textsatzsystem \[Bq]groff\[lq] verwenden,
 um solche Dateien zu erstellen.
+.br
+Außerdem können GNU info Dateien
+mit der Dateiendung
+.RB \[dq] .info \[dq]
+als Text dargestellt werden
+(keine Unterstützung für Querverweise).
+
 .
 .SH OPTIONEN
 .TP
