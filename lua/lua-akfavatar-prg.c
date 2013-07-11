@@ -466,7 +466,21 @@ show_text (const char *filename)
   // text file must be UTF-8 encoded (or plain ASCII)
   const struct avt_charenc *old;
   old = avt_char_encoding (avt_utf8 ());
-  avt_pager_file (filename, 1);
+
+  char *txt = NULL;
+  int len = avt_read_datafile (filename, (void **) &txt);
+
+  if (len > 0)
+    {
+      if (not avt_detect_utf8 (txt, len))
+	avt_char_encoding (avt_cp1252 ());
+
+      avt_pager_char (txt, len, 1);
+    }
+
+  if (txt)
+    free (txt);
+
   avt_char_encoding (old);
 }
 

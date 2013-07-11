@@ -3,6 +3,9 @@
 	* lua/lua-akfavatar-prg.c (check_textfile):
 	treat .info files as plain text
 
+	* lua/lua-akfavatar-prg.c (show_text):
+	check if it's really UTF-8, otherwise fall back to CP1252
+
 2013-07-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/interactive_lua.lua: fix handling of incomplete lines
