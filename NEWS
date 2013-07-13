@@ -1,5 +1,6 @@
 * AKFAvatar-testing
 
+  - text cursor modified
   - lua-akfavatar: GNU .info files can be shown as plain text (no hyperlinks)
   - lua/hexviewer.lua: show more characters
   - lua/interactive_lua.lua: fix handling of incomplete lines

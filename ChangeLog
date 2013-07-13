@@ -2,6 +2,8 @@
 
 	* lua/multiplication.lua: clear board (no scrolling)
 
+	* avatar.c (avt_show_text_cursor): text cursor modified
+
 2013-07-11  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-akfavatar-prg.c (check_textfile):

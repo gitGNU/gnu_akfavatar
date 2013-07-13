@@ -620,15 +620,16 @@ avt_show_text_cursor (bool on)
 			       fontwidth, fontheight, cursor_character, 0, 0);
 
 	  // show text-cursor
-	  if (avt.balloon_brightness >= 0x88)
-	    avt_darker_area (screen, cursor.x, cursor.y,
-			     fontwidth, fontheight, 0x50);
-	  else
-	    avt_brighter_area (screen, cursor.x, cursor.y,
-			       fontwidth, fontheight, 0xAA);
+	  for (int y = 0; y < 2; ++y)
+	    {
+	      avt_color *p;
+	      p = avt_pixel (screen, cursor.x, cursor.y + fontunderline + y);
+	      for (int x = 0; x < fontwidth; ++x, ++p)
+		*p = avt.text_color;
+	    }
 
-	  backend.update_area (screen, cursor.x, cursor.y,
-			       fontwidth, fontheight);
+	  backend.update_area (screen, cursor.x, cursor.y + fontunderline,
+			       fontwidth, 2);
 	}
       else			// off
 	{
