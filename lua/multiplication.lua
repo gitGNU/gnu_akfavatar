@@ -67,6 +67,7 @@ avt.translations = {
 local L = avt.translate  -- abbreviation
 local specific_table = nil
 local endRequest = false
+local board_bottom
 
 local exercise = "multiplication"
 
@@ -143,6 +144,13 @@ local function sayUnknown()
   avt.newline()
 end
 
+local function eventually_clear_board()
+  if avt.where_y() > board_bottom then
+    avt.wait(2.5)
+    avt.clear()
+  end
+end
+
 local function askResult(task)
   local result
 
@@ -179,6 +187,8 @@ local function query()
 
     -- repeat asking the same question until correct
     repeat
+      eventually_clear_board()
+
       if exercise == "multiplication" then
         e = askResult(string.format("%2d) %d%s%d=", counter, a, L"×", b))
         isCorrect = (e == c)
@@ -193,6 +203,7 @@ local function query()
 
       tries = tries + 1
       if tries >= maximum_tries and not isCorrect then -- help
+        eventually_clear_board()
         avt.set_text_color(wrong_color)
         avt.inverse(true)
         avt.bold(true)
@@ -232,7 +243,9 @@ local function initialize()
   avt.set_balloon_color(board_color)
   avt.set_text_color(text_color)
   avt.set_balloon_size (0, 80)
-  avt.viewport(20, 1, 40, avt.get_max_y())
+  board_bottom = avt.get_max_y()
+  avt.viewport(20, 1, 40, board_bottom)
+  avt.set_scroll_mode(-1) --> board gets cleared manually
   avt.set_text_delay()
 
   -- initialize the random number generator

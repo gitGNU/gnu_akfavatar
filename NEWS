@@ -3,6 +3,7 @@
   - lua-akfavatar: GNU .info files can be shown as plain text (no hyperlinks)
   - lua/hexviewer.lua: show more characters
   - lua/interactive_lua.lua: fix handling of incomplete lines
+  - lua/multiplication.lua: clear board (no scrolling)
 
   C-API changes:
     - new functions: avt_detect_utf8

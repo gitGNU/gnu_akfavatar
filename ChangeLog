@@ -1,3 +1,7 @@
+2013-07-13  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/multiplication.lua: clear board (no scrolling)
+
 2013-07-11  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-akfavatar-prg.c (check_textfile):
