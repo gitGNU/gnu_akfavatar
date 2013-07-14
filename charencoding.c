@@ -18,6 +18,13 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ * ATTENTION:
+ * In this file I assume, that no single byte encoding
+ * uses characters outside of the BMP (Basic Multilingual Plane).
+ * UTF-8 is okay.
+ */
+
 #include "akfavatar.h"
 #include "avtaddons.h"
 #include "avtinternals.h"
@@ -220,7 +227,7 @@ avt_set_avatar_name_char (const char *name)
   else
     {
       size_t len = strlen (name);
-      size_t wlen = (len + 1) * 4 / sizeof (wchar_t);
+      size_t wlen = len + 1;
       wchar_t wide[wlen];
 
       char_to_wchar (wide, wlen, name, len + 1);
@@ -248,12 +255,12 @@ avt_pager_char (const char *txt, size_t len, int startline)
 	len = strlen (txt);
 
       // no terminator needed
-      wchar_t *wctext = malloc (len * 4);
+      // ignore UTF-16 surrogates, UTF-8 would also have 4 Bytes then
+      wchar_t *wctext = malloc (len * sizeof (wchar_t));
 
       if (wctext)
 	{
-	  size_t wlen = len * 4 / sizeof (wchar_t);
-	  size_t chars = char_to_wchar (wctext, wlen, txt, len);
+	  size_t chars = char_to_wchar (wctext, len, txt, len);
 	  status = avt_pager (wctext, chars, startline);
 	  free (wctext);
 	}
@@ -273,11 +280,11 @@ avt_credits_char (const char *txt, bool centered)
     {
       size_t len = strlen (txt);
 
-      wchar_t *wctext = malloc ((len + 1) * 4);
+      size_t wlen = len + 1;
+      wchar_t *wctext = malloc (wlen * sizeof (wchar));
 
       if (wctext)
 	{
-	  size_t wlen = (len + 1) * 4 / sizeof (wchar_t);
 	  char_to_wchar (wctext, wlen, txt, len + 1);
 	  status = avt_credits (wctext, centered);
 	  free (wctext);
