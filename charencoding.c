@@ -281,7 +281,7 @@ avt_credits_char (const char *txt, bool centered)
       size_t len = strlen (txt);
 
       size_t wlen = len + 1;
-      wchar_t *wctext = malloc (wlen * sizeof (wchar));
+      wchar_t *wctext = malloc (wlen * sizeof (wchar_t));
 
       if (wctext)
 	{
