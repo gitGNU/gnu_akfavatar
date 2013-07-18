@@ -1,3 +1,8 @@
+2013-07-18  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_put_char, avt_put_raw_char):
+	full check if inside viewport
+
 2013-07-13  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/multiplication.lua: clear board (no scrolling)

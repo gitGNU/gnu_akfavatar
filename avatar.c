@@ -2101,7 +2101,8 @@ avt_put_raw_char (avt_char ch)
   if (avt.auto_margin)
     check_auto_margin ();
 
-  if (cursor.x < viewport.x + viewport.width)
+  if (cursor.x < viewport.x + viewport.width
+      and cursor.y < viewport.y + viewport.height)
     {
       avt_drawchar (ch, screen);
       avt_showchar ();
@@ -2172,8 +2173,8 @@ avt_put_char (avt_char ch)
       high_surrogate = 0;
     }
 
-  // outside the Unicode range?
-  if (ch > 0x10FFFF)
+  // noncharacter?
+  if (ch >= 0x10FFFE or (ch bitand 0xFFFE) == 0xFFFE)
     ch = AVT_INVALID_WCHAR;
 
   switch (ch)
@@ -2239,13 +2240,14 @@ avt_put_char (avt_char ch)
       if (avt.auto_margin)
 	check_auto_margin ();
 
-      if (cursor.x < viewport.x + viewport.width)
+      if (cursor.x < viewport.x + viewport.width
+	  and cursor.y < viewport.y + viewport.height)
 	{
 	  if (not avt.underlined and not avt.inverse)
 	    avt_clearchar ();
 	  else			// underlined or inverse
 	    {
-	      avt_drawchar (0x0020, screen);
+	      avt_drawchar (L' ', screen);
 	      avt_showchar ();
 	    }
 	  avt_forward ();
@@ -2257,11 +2259,7 @@ avt_put_char (avt_char ch)
       break;
 
     default:
-      // noncharacter?
-      if (ch >= 0x10FFFE or (ch bitand 0xFFFE) == 0xFFFE)
-	avt_put_raw_char (AVT_INVALID_WCHAR);
-      // if not a control character
-      else if (ch > 0x20 and (ch < 0x7F or ch >= 0xA0))
+      if (ch > 0x20 and (ch < 0x7F or ch >= 0xA0))
 	avt_put_raw_char (ch);
     }				// switch
 
