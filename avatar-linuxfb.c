@@ -55,6 +55,12 @@
 #include <fcntl.h>
 #include <termios.h>
 
+#define AVT_FAILURE_RETRY(c) \
+  do { long int r; \
+    do r = (long int) (c); \
+    while (r == -1 and errno == EINTR); \
+  } while (0)
+
 static struct fb_var_screeninfo var_info;
 static struct fb_fix_screeninfo fix_info;
 static short bytes_per_pixel;
@@ -481,7 +487,7 @@ static void
 beep (void)
 {
   // this is agent \007 with the license to beep ;-)
-  TEMP_FAILURE_RETRY (write (tty, "\007", 1));
+  AVT_FAILURE_RETRY (write (tty, "\007", 1));
 }
 
 static void
@@ -503,7 +509,7 @@ quit_fb (void)
     {
       ioctl (tty, KDSETMODE, KD_TEXT);
       tcsetattr (tty, TCSANOW, &terminal_settings);
-      TEMP_FAILURE_RETRY (write (tty, "\033c", 2));	// Reset
+      AVT_FAILURE_RETRY (write (tty, "\033c", 2));	// Reset
       close (tty);
       tty = -1;
     }
@@ -609,7 +615,7 @@ avt_start (const char *title, const char *shortname, int window_mode)
     }
 
   // Select UTF-8 mode for input
-  TEMP_FAILURE_RETRY (write (tty, "\033%G", 3));
+  AVT_FAILURE_RETRY (write (tty, "\033%G", 3));
 
   // set terminal in graphic mode with raw keyboard
   struct termios settings = terminal_settings;
