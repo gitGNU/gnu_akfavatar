@@ -672,12 +672,12 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	$(u2d) $(BINPKGNAME)/doc/*.txt
 	$(u2d) $(BINPKGNAME)/lua/*.lua
 	$(u2d) $(BINPKGNAME)/lua/akfavatar/*.lua
-	strip $(BINPKGNAME)/akfavatar.dll
-	strip $(BINPKGNAME)/lua-akfavatar.exe
-	-strip $(BINPKGNAME)/lua-akfavatar.dll
-	#strip $(BINPKGNAME)/akfavatar-graphic.dll
-	strip $(BINPKGNAME)/akfavatar-vorbis.dll
-	strip $(BINPKGNAME)/base64.dll
+	strip --strip-unneeded $(BINPKGNAME)/akfavatar.dll
+	strip --strip-unneeded $(BINPKGNAME)/lua-akfavatar.exe
+	-strip --strip-unneeded $(BINPKGNAME)/lua-akfavatar.dll
+	#strip --strip-unneeded $(BINPKGNAME)/akfavatar-graphic.dll
+	strip --strip-unneeded $(BINPKGNAME)/akfavatar-vorbis.dll
+	strip --strip-unneeded $(BINPKGNAME)/base64.dll
 	-rm -f $(BINPKGNAME).w32.zip
 	zip -9vr $(BINPKGNAME).windows.${ARCH}.zip $(BINPKGNAME)/
 	rm -r $(BINPKGNAME)/
