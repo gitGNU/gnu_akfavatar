@@ -86,7 +86,7 @@ lua-akfavatar-dyn: lua-akfavatar-prg.o lua-avt.o libavtaddons.a
 lua-akfavatar: lua-akfavatar-prg.o lua-avt.o libavtaddons.a libakfavatar.a
 	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o \
 	     libavtaddons.a libakfavatar.a \
-	     $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS) -Wl,-E
+	     -L. $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS)
 
 # lua-akfavatar for Linux framebuffer
 lua-akfavatar-linuxfb: lua-akfavatar-prg.o lua-avt.o avatar-linuxfb.o \
@@ -95,7 +95,7 @@ lua-akfavatar-linuxfb: lua-akfavatar-prg.o lua-avt.o avatar-linuxfb.o \
 	-$(CC) -s -o $@ lua-akfavatar-prg.o lua-avt.o avatar-linuxfb.o \
 	     audio-dummy.o audio-common-dummy.o \
 	     libavtaddons.a libakfavatar.a \
-	     $(LUA_LDFLAGS) $(LDFLAGS)
+	     -L. $(LUA_LDFLAGS) $(LDFLAGS)
 
 avatar-linuxfb.o: $(srcdir)/avatar-linuxfb.c $(srcdir)/akfavatar.h \
           $(srcdir)/avtinternals.h
