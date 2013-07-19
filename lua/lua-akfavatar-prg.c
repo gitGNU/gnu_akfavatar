@@ -364,6 +364,16 @@ change_searchpaths (void)
 #endif // not __linux__
 
 static void
+preload_module (lua_State * L, const char *modname, lua_CFunction function)
+{
+  lua_getglobal (L, "package");
+  lua_getfield (L, -1, "preload");
+  lua_pushcfunction (L, function);
+  lua_setfield (L, -2, modname);
+  lua_pop (L, 2);
+}
+
+static void
 initialize_lua (void)
 {
   L = luaL_newstate ();
@@ -378,6 +388,9 @@ initialize_lua (void)
   // load lua-akfavatar
   luaL_requiref (L, "lua-akfavatar", open_lua_akfavatar, false);
   lua_pop (L, 1);
+
+  extern int luaopen_graphic (lua_State * L);
+  preload_module (L, "akfavatar-graphic", luaopen_graphic);
 
   change_searchpaths ();
 }

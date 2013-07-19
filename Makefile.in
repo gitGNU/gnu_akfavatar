@@ -52,7 +52,7 @@ dist-bin: $(DISTBIN)
 
 default: libakfavatar.so libakfavatar.a libavtaddons.a example about \
 	lua-akfavatar lua-akfavatar-dyn lua-akfavatar-linuxfb \
-	base64.so akfavatar-term.so akfavatar-vorbis.so akfavatar-graphic.so
+	base64.so akfavatar-term.so akfavatar-vorbis.so
 	@echo '*'
 	@echo '* use "make install" or "make install-strip"'
 	@echo '* with root-privileges to install it.'
@@ -77,22 +77,24 @@ example: $(srcdir)/example.c libakfavatar.a
 	  libakfavatar.a $(SDL_LDFLAGS) $(LDFLAGS)
 
 # lua-akfavatar dynamically linked
-lua-akfavatar-dyn: lua-akfavatar-prg.o lua-avt.o libavtaddons.a
-	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o \
+lua-akfavatar-dyn: lua-akfavatar-prg.o lua-avt.o libavtaddons.a \
+	           akfavatar-graphic.o
+	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o akfavatar-graphic.o \
 	     libavtaddons.a -L. -lakfavatar $(LUA_LDFLAGS) $(LDFLAGS)
 
 # lua-akfavatar statically linked with AKFAvatar
-lua-akfavatar: lua-akfavatar-prg.o lua-avt.o libavtaddons.a libakfavatar.a
-	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o \
+lua-akfavatar: lua-akfavatar-prg.o lua-avt.o libavtaddons.a libakfavatar.a \
+	       akfavatar-graphic.o
+	$(CC) -o $@ lua-akfavatar-prg.o lua-avt.o akfavatar-graphic.o \
 	     libavtaddons.a libakfavatar.a \
 	     -L. $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS)
 
 # lua-akfavatar for Linux framebuffer
 lua-akfavatar-linuxfb: lua-akfavatar-prg.o lua-avt.o avatar-linuxfb.o \
-	           audio-dummy.o audio-common-dummy.o \
+	           audio-dummy.o audio-common-dummy.o akfavatar-graphic.o \
                    libavtaddons.a libakfavatar.a
 	-$(CC) -s -o $@ lua-akfavatar-prg.o lua-avt.o avatar-linuxfb.o \
-	     audio-dummy.o audio-common-dummy.o \
+	     audio-dummy.o audio-common-dummy.o akfavatar-graphic.o \
 	     libavtaddons.a libakfavatar.a \
 	     -L. $(LUA_LDFLAGS) $(LDFLAGS)
 
@@ -604,6 +606,10 @@ akfavatar-graphic.lo: $(srcdir)/lua/akfavatar-graphic.c $(srcdir)/akfavatar.h
 	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -c -fpic -o $@ \
 	  $(srcdir)/lua/akfavatar-graphic.c
 
+akfavatar-graphic.o: $(srcdir)/lua/akfavatar-graphic.c $(srcdir)/akfavatar.h
+	$(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -c -o $@ \
+	  $(srcdir)/lua/akfavatar-graphic.c
+
 lua-avt.lo: $(srcdir)/lua/lua-avt.c $(srcdir)/akfavatar.h
 	  $(CC) -I$(srcdir) $(CFLAGS) $(SDL_CFLAGS) $(LUA_CFLAGS) -DMODULE \
 	    -c -fpic -o $@ $(srcdir)/lua/lua-avt.c
@@ -656,11 +662,11 @@ install: libakfavatar.so libakfavatar.a lua-akfavatar-dyn \
 	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
 	$(INSTALL_DATA) libavtaddons.a $(DESTDIR)$(libdir)
 	-$(INSTALL_PROGRAM) lua-akfavatar-dyn $(DESTDIR)$(bindir)/lua-akfavatar
-	-$(INSTALL_DATA) lua-akfavatar.so $(DESTDIR)$(LUA_CPATH)
+#	-$(INSTALL_DATA) lua-akfavatar.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) base64.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) akfavatar-vorbis.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) akfavatar-term.so $(DESTDIR)$(LUA_CPATH)
-	-$(INSTALL_DATA) akfavatar-graphic.so $(DESTDIR)$(LUA_CPATH)
+#	-$(INSTALL_DATA) akfavatar-graphic.so $(DESTDIR)$(LUA_CPATH)
 	-$(LDCONFIG) $(libdir)
 	@echo '*'
 	@echo '* make install-desktop-menu: to install lua-akfavatar in a desktop menu'
@@ -674,11 +680,11 @@ install-strip: libakfavatar.so libakfavatar.a lua-akfavatar-dyn \
 	$(INSTALL_DATA) libakfavatar.a $(DESTDIR)$(libdir)
 	$(INSTALL_DATA) libavtaddons.a $(DESTDIR)$(libdir)
 	-$(INSTALL_PROGRAM) -s lua-akfavatar-dyn $(DESTDIR)$(bindir)/lua-akfavatar
-	-$(INSTALL_DATA) -s lua-akfavatar.so $(DESTDIR)$(LUA_CPATH)
+#	-$(INSTALL_DATA) -s lua-akfavatar.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) -s base64.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) -s akfavatar-vorbis.so $(DESTDIR)$(LUA_CPATH)
 	-$(INSTALL_DATA) -s akfavatar-term.so $(DESTDIR)$(LUA_CPATH)
-	-$(INSTALL_DATA) -s akfavatar-graphic.so $(DESTDIR)$(LUA_CPATH)
+#	-$(INSTALL_DATA) -s akfavatar-graphic.so $(DESTDIR)$(LUA_CPATH)
 	-$(LDCONFIG) $(libdir)
 	@echo '*'
 	@echo '* use "make install-desktop-menu" to install lua-akfavatar in a desktop menu'
@@ -1209,7 +1215,7 @@ dist-bin-default: all pdf
 	cp lua-akfavatar $(BINPKGNAME)/
 	cp $(srcdir)/avtcmd $(BINPKGNAME)/
 	cp base64.so akfavatar-vorbis.so $(BINPKGNAME)/lua/
-	cp akfavatar-graphic.so $(BINPKGNAME)/lua/
+#	cp akfavatar-graphic.so $(BINPKGNAME)/lua/
 	cp akfavatar-term.so $(BINPKGNAME)/lua/
 	ln $(srcdir)/akfoerster-lua-akfavatar.desktop $(BINPKGNAME)/
 	ln $(srcdir)/akfavatar.xpm $(srcdir)/lua.xpm $(BINPKGNAME)

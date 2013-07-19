@@ -22,8 +22,7 @@ SHELL = /bin/sh
 .SUFFIXES:
 
 all: akfavatar.dll libakfavatar.a libavtaddons.a about example.exe \
-     lua-akfavatar.exe base64.dll akfavatar-vorbis.dll \
-     akfavatar-graphic.dll
+     lua-akfavatar.exe base64.dll akfavatar-vorbis.dll
 
 nolua: akfavatar.dll libakfavatar.a libavtaddons.a about example.exe
 
@@ -299,9 +298,9 @@ example.exe: $(srcdir)/example.c akfavatar.dll icon.o
 			icon.o -L. -lakfavatar $(SDL_LDFLAGS) $(LDFLAGS)
 
 lua-akfavatar.exe: lua-akfavatar-prg.o lua-akfavatar-prg-info.o lua-avt.o \
-	           libavtaddons.a
+	           akfavatar-graphic.o libavtaddons.a
 	$(CC) -o $@ lua-akfavatar-prg.o lua-akfavatar-prg-info.o \
-	    lua-avt.o libavtaddons.a -L. -lakfavatar \
+	    akfavatar-graphic.o lua-avt.o libavtaddons.a -L. -lakfavatar \
 	    $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS)
 
 lua-akfavatar-prg-info.o: $(srcdir)/mingw/lua-akfavatar-prg.rc version.h \
@@ -581,7 +580,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	#cp lua-akfavatar.dll $(BINPKGNAME)/
 	cp base64.dll $(BINPKGNAME)/
 	cp akfavatar-vorbis.dll $(BINPKGNAME)/
-	cp akfavatar-graphic.dll $(BINPKGNAME)/
+	#cp akfavatar-graphic.dll $(BINPKGNAME)/
 	cp $(srcdir)/lua/fullscreen.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/multiplication.lua $(BINPKGNAME)/lua/
 	cp $(srcdir)/lua/interactive_lua.lua $(BINPKGNAME)/lua/
@@ -676,7 +675,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	strip $(BINPKGNAME)/akfavatar.dll
 	strip $(BINPKGNAME)/lua-akfavatar.exe
 	-strip $(BINPKGNAME)/lua-akfavatar.dll
-	strip $(BINPKGNAME)/akfavatar-graphic.dll
+	#strip $(BINPKGNAME)/akfavatar-graphic.dll
 	strip $(BINPKGNAME)/akfavatar-vorbis.dll
 	strip $(BINPKGNAME)/base64.dll
 	-rm -f $(BINPKGNAME).w32.zip

@@ -1,5 +1,6 @@
 * AKFAvatar-testing
 
+  - Lua module "akfavatar-graphic" included in executable
   - text cursor modified
   - lua-akfavatar: GNU .info files can be shown as plain text (no hyperlinks)
   - lua/hexviewer.lua: show more characters
