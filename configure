@@ -407,7 +407,7 @@ then
 elif [ x"$STATIC_LUA" = x"yes" ]
 then
   LUA_CFLAGS=""
-  if [ -a -r /usr/lib/liblua5.2.a ]
+  if [ -r /usr/lib/liblua5.2.a ]
   then
     LUA_LDFLAGS="/usr/lib/liblua5.2.a -lm -ldl -Wl,-E"
   elif [ -r /usr/lib/liblua-5.2.a ]
