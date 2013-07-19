@@ -90,12 +90,10 @@ lua-akfavatar: lua-akfavatar-prg.o lua-avt.o libavtaddons.a libakfavatar.a \
 	     -L. $(LUA_LDFLAGS) $(SDL_LDFLAGS) $(LDFLAGS)
 
 # lua-akfavatar for Linux framebuffer
-lua-akfavatar-linuxfb: lua-akfavatar-prg.o lua-avt.o avatar-linuxfb.o \
-	           audio-dummy.o audio-common-dummy.o akfavatar-graphic.o \
-                   libavtaddons.a libakfavatar.a
-	-$(CC) -s -o $@ lua-akfavatar-prg.o lua-avt.o avatar-linuxfb.o \
-	     audio-dummy.o audio-common-dummy.o akfavatar-graphic.o \
-	     libavtaddons.a libakfavatar.a \
+lua-akfavatar-linuxfb: lua-akfavatar-prg.o lua-avt.o akfavatar-graphic.o \
+                   libakfavatar-linuxfb.a libavtaddons.a
+	-$(CC) -s -o $@ lua-akfavatar-prg.o lua-avt.o akfavatar-graphic.o \
+	     libakfavatar-linuxfb.a libavtaddons.a \
 	     -L. $(LUA_LDFLAGS) $(LDFLAGS)
 
 avatar-linuxfb.o: $(srcdir)/avatar-linuxfb.c $(srcdir)/akfavatar.h \
@@ -105,6 +103,19 @@ avatar-linuxfb.o: $(srcdir)/avatar-linuxfb.c $(srcdir)/akfavatar.h \
 avatar-linuxfb.lo: $(srcdir)/avatar-linuxfb.c $(srcdir)/akfavatar.h \
           $(srcdir)/avtinternals.h
 	-$(CC) -I$(srcdir) -I. $(CFLAGS) -c -fpic -o $@ $(srcdir)/avatar-linuxfb.c
+
+libakfavatar-linuxfb.a: avatar-linuxfb.o audio-dummy.o audio-common-dummy.o \
+	        avatar.o avatar-default.o \
+	        ASCII.o ISO-8859-1.o UTF-8.o charencoding.o \
+	        avtpalette.o font.o version.o avtdata.o \
+	        avttiming.o avtmenu.o avtxbm.o avtxpm.o avtbmp.o \
+	        avtgraphic.o avtcolors.o
+	$(AR) rcu $@ avatar-linuxfb.o audio-dummy.o audio-common-dummy.o \
+	             avatar.o ASCII.o ISO-8859-1.o UTF-8.o charencoding.o \
+	             avtdata.o avatar-default.o avtpalette.o \
+	             font.o version.o avttiming.o avtmenu.o avtxbm.o avtxpm.o \
+	             avtbmp.o avtgraphic.o avtcolors.o
+	-$(RANLIB) $@
 
 libakfavatar.a: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o avatar-default.o \
 	        ASCII.o ISO-8859-1.o UTF-8.o charencoding.o \
