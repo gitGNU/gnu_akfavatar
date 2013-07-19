@@ -52,8 +52,7 @@ dist-bin: $(DISTBIN)
 
 default: libakfavatar.so libakfavatar.a libavtaddons.a example about \
 	lua-akfavatar lua-akfavatar-dyn lua-akfavatar-linuxfb \
-	lua-akfavatar.so base64.so akfavatar-term.so \
-	akfavatar-vorbis.so akfavatar-graphic.so
+	base64.so akfavatar-term.so akfavatar-vorbis.so akfavatar-graphic.so
 	@echo '*'
 	@echo '* use "make install" or "make install-strip"'
 	@echo '* with root-privileges to install it.'

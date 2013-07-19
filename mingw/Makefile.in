@@ -22,7 +22,7 @@ SHELL = /bin/sh
 .SUFFIXES:
 
 all: akfavatar.dll libakfavatar.a libavtaddons.a about example.exe \
-     lua-akfavatar.exe lua-akfavatar.dll base64.dll akfavatar-vorbis.dll \
+     lua-akfavatar.exe base64.dll akfavatar-vorbis.dll \
      akfavatar-graphic.dll
 
 nolua: akfavatar.dll libakfavatar.a libavtaddons.a about example.exe
