@@ -77,9 +77,6 @@ extern "C"
 #define AVT_COLOR_START       AVT_COLOR_TEXT
 #define AVT_COLOR_SELECTOR    AVT_COLOR_TEXT
 
-// from lua-avt.c
-extern int open_lua_akfavatar (lua_State * L);
-
 static lua_State *L;
 static int mode = AVT_AUTOMODE;
 static char *directory;
@@ -364,12 +361,20 @@ change_searchpaths (void)
 #endif // not __linux__
 
 static void
-preload_module (lua_State * L, const char *modname, lua_CFunction function)
+preload_modules (void)
 {
   lua_getglobal (L, "package");
   lua_getfield (L, -1, "preload");
-  lua_pushcfunction (L, function);
-  lua_setfield (L, -2, modname);
+
+  extern int open_lua_akfavatar (lua_State * L);
+  lua_pushcfunction (L, open_lua_akfavatar);
+  lua_setfield (L, -2, "lua-akfavatar");
+
+  extern int luaopen_graphic (lua_State * L);
+  lua_pushcfunction (L, luaopen_graphic);
+  lua_setfield (L, -2, "akfavatar-graphic");
+
+  // pop package.preload
   lua_pop (L, 2);
 }
 
@@ -381,16 +386,12 @@ initialize_lua (void)
     fatal ("cannot open Lua", "not enough memory");
 
   luaL_checkversion (L);
+
   lua_gc (L, LUA_GCSTOP, 0);
   luaL_openlibs (L);
   lua_gc (L, LUA_GCRESTART, 0);
 
-  // load lua-akfavatar
-  luaL_requiref (L, "lua-akfavatar", open_lua_akfavatar, false);
-  lua_pop (L, 1);
-
-  extern int luaopen_graphic (lua_State * L);
-  preload_module (L, "akfavatar-graphic", luaopen_graphic);
+  preload_modules ();
 
   change_searchpaths ();
 }
