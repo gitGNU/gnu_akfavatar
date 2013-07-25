@@ -82,6 +82,26 @@ static int mode = AVT_AUTOMODE;
 static char *directory;
 
 
+// if you want to link modules into the executable, add them here
+static void
+preload_modules (void)
+{
+  // this is a shortcut for getting package.preload
+  lua_getfield (L, LUA_REGISTRYINDEX, "_PRELOAD");
+
+  extern int open_lua_akfavatar (lua_State * L);
+  lua_pushcfunction (L, open_lua_akfavatar);
+  lua_setfield (L, -2, "lua-akfavatar");
+
+  extern int luaopen_graphic (lua_State * L);
+  lua_pushcfunction (L, luaopen_graphic);
+  lua_setfield (L, -2, "akfavatar-graphic");
+
+  // pop _PRELOAD
+  lua_pop (L, 1);
+}
+
+
 static void
 version (void)
 {
@@ -359,24 +379,6 @@ change_searchpaths (void)
 #else // not __linux__
 #define change_searchpaths(void)
 #endif // not __linux__
-
-static void
-preload_modules (void)
-{
-  lua_getglobal (L, "package");
-  lua_getfield (L, -1, "preload");
-
-  extern int open_lua_akfavatar (lua_State * L);
-  lua_pushcfunction (L, open_lua_akfavatar);
-  lua_setfield (L, -2, "lua-akfavatar");
-
-  extern int luaopen_graphic (lua_State * L);
-  lua_pushcfunction (L, luaopen_graphic);
-  lua_setfield (L, -2, "akfavatar-graphic");
-
-  // pop package.preload
-  lua_pop (L, 2);
-}
 
 static void
 initialize_lua (void)
