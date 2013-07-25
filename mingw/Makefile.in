@@ -507,13 +507,15 @@ clean:
 	-rm -f pascal/link.res pascal/ppas.sh
 
 mostlyclean: clean
-	-rm -f example
-	-rm -f lua-akfavatar lua-akfavatar-bin
-	-rm -f a.out *.a *.so
-	-rm -f *.dll
+	-rm -f libakfavatar.a libavtaddons.a
+	-rm -f libakfavatar.so
+	-rm -f akfavatar-term.so akfavatar-vorbis.so akfavatar-graphic.so
+	-rm -f base64.so
+	-rm -f libakfavatar.dll libakfavatar.dll.a
+	-rm -f akfavatar-term.dll akfavatar-vorbis.dll akfavatar-graphic.dll
+	-rm -f base64.dll
 	-rm -f $(LIBNAME) $(SONAME)
 	-rm -f version.h
-	-rm -f version.texi
 	-rm -f multiply-bin multiply
 	-rm -f multiplizieren-bin multiplizieren
 	-rm -f multiplizieren.exe multiply.exe example.exe
