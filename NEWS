@@ -6,6 +6,9 @@
   - lua/hexviewer.lua: show more characters
   - lua/interactive_lua.lua: fix handling of incomplete lines
   - lua/multiplication.lua: clear board (no scrolling)
+  - configure accepts the option --with-linuxfb
+    which then builds for the Linux framebuffer without the SDL
+    (no mouse and no audio support yet)
 
   C-API changes:
     - new functions: avt_detect_utf8

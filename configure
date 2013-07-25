@@ -28,6 +28,7 @@ SDL_IMAGE="yes"
 LINK_SDL_IMAGE="no"
 NO_LUA="no"
 STATIC_LUA="no"
+USE_LINUXFB="no"
 NO_DEPRECATED="no"
 FONT="9x18.bdf"
 OBJAVATAR="avatar-sdl"
@@ -101,6 +102,7 @@ while [ x"$1" != x ] ; do
 		echo "  --sysconfdir=DIR      read-only single-machine data directory [${sysconfdir}]"
 		echo "  --host=mingw          cross-compile with mingw (experimental)"
 		echo "  --with-openpty        use openpty instead of posix_openpt"
+		echo "  --with-linuxfb        build for linux framebuffer (no mouse, no sound)"
 		echo "  --with-static-lua     try to link Lua statically"
 		echo "  --disable-audio       disable audio support"
 		echo "  --disable-sdl-image   disable support for SDL_image completely"
@@ -160,6 +162,7 @@ while [ x"$1" != x ] ; do
 
 	--with-openpty) OPENPTY="yes" ;;
 	--with-static-lua) STATIC_LUA="yes" ;;
+	--with-linuxfb) USE_LINUXFB="yes" ;;
 	--enable-lua=no | \
 	--disable-lua | \
 	--disable-lua=yes) NO_LUA="yes" ;;
@@ -279,86 +282,108 @@ case ${hosttype} in
 esac
 
 ###################################################################################
-# SDL
+# linux framebuffer
 
-# Check for SDL version
-sdlversion=`sdl-config --version`
-case ${sdlversion} in
-  "")    echo "SDL develop environment not found" 1>&2
-         echo "I need version 1.2.x (x >= 6)" 1>&2 
-         exit 1 ;;
-  1.2.*) sdlrevision=`echo ${sdlversion} | sed -e 's,.\..\.,,'`
-         if test ${sdlrevision} -ge 6
-         then
-           echo "SDL ${sdlversion} found - okay" 1>&2 
-	 else
-	   echo "SDL ${sdlversion} found - not everything supported" 1>&2
-	 fi ;;
-  *)     echo "SDL ${sdlversion} found - but I need 1.2.x (x >= 6)" 1>&2
-         exit 1 ;;
-esac
+if [ x"$USE_LINUXFB" = x"yes" ]
+then
 
-# cross-compile
-case ${hosttype} in
-   x86_64*-mingw* | amd64*-mingw*)
-     # find sdl-config for cross-compiling
-     if [ -x /usr/local/x86_64-w64-mingw32/bin/sdl-config ]
-     then
-       SDL_CFLAGS=`/usr/local/x86_64-w64-mingw32/bin/sdl-config --cflags`
-       SDL_LDFLAGS=`/usr/local/x86_64-w64-mingw32/bin/sdl-config --libs`
-     elif [ -x /usr/local/cross-tools/amd64-mingw32/bin/sdl-config ]
-     then
-       SDL_CFLAGS=`/usr/local/cross-tools/amd64-mingw32/bin/sdl-config --cflags`
-       SDL_LDFLAGS=`/usr/local/cross-tools/amd64-mingw32/bin/sdl-config --libs`
-     else
-       # most probably not the correct directories
-       SDL_CFLAGS="-I/usr/include/SDL -D_GNU_SOURCE=1 -Dmain=SDL_main"
-       SDL_LDFLAGS="-L/usr/lib -lmingw32 -lSDLmain -lSDL -mwindows"
-     fi
-     ;;
+  if [ x"$SYSTEM" != x"gnu-linux" ]
+  then
+    echo "linuxfb only available for Linux based systems" 1>&2
+    exit 1
+  fi
 
-   *mingw* | *MINGW*)
-     # find sdl-config for cross-compiling
-     if [ -x /usr/local/i686-w64-mingw32/bin/sdl-config ]
-     then
-       SDL_CFLAGS=`/usr/local/i686-w64-mingw32/bin/sdl-config --cflags`
-       SDL_LDFLAGS=`/usr/local/i686-w64-mingw32/bin/sdl-config --libs`
-     elif [ -x /usr/local/cross-tools/i386-mingw32/bin/sdl-config ]
-     then
-       SDL_CFLAGS=`/usr/local/cross-tools/i386-mingw32/bin/sdl-config --cflags`
-       SDL_LDFLAGS=`/usr/local/cross-tools/i386-mingw32/bin/sdl-config --libs`
-     elif [ -x /usr/i586-mingw32msvc/bin/sdl-config ]
-     then
-       SDL_CFLAGS=`/usr/i586-mingw32msvc/bin/sdl-config --cflags`
-       SDL_LDFLAGS=`/usr/i586-mingw32msvc/bin/sdl-config --libs`
-     else
-       # most probably not the correct directories
-       SDL_CFLAGS="-I/usr/include/SDL -D_GNU_SOURCE=1 -Dmain=SDL_main"
-       SDL_LDFLAGS="-L/usr/lib -lmingw32 -lSDLmain -lSDL -mwindows"
-     fi
-     ;;
-
-  *x86* | *i?86*)  # private hack
-      SDL_CFLAGS="-I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT"
-      SDL_LDFLAGS="-L/usr/local/lib32 -L/usr/lib32 -lSDL -lpthread"
-      ;;
-
-   *)
-      SDL_CFLAGS=`sdl-config --cflags`
-      SDL_LDFLAGS=`sdl-config --libs`
-      ;;
-esac
-
-if [ x"$SDL_IMAGE" = x"no" ]
-then 
-  SDL_CFLAGS="$SDL_CFLAGS -DNO_SDL_IMAGE"
-  LINK_SDL_IMAGE="no"
+  OBJAVATAR="avatar-linuxfb"
+  OBJAUDIO="audio-dummy"
+  NO_AUDIO="yes"
 fi
 
-if [ x"$LINK_SDL_IMAGE" = x"yes" ] 
-then 
-  SDL_CFLAGS="$SDL_CFLAGS -DLINK_SDL_IMAGE"
-  SDL_LDFLAGS="$SDL_LDFLAGS -lSDL_image"
+###################################################################################
+# SDL
+
+
+if [ x"$USE_LINUXFB" != x"yes" ]
+then
+
+  # Check for SDL version
+  sdlversion=`sdl-config --version`
+  case ${sdlversion} in
+    "")    echo "SDL develop environment not found" 1>&2
+           echo "I need version 1.2.x (x >= 6)" 1>&2
+           exit 1 ;;
+    1.2.*) sdlrevision=`echo ${sdlversion} | sed -e 's,.\..\.,,'`
+           if test ${sdlrevision} -ge 6
+           then
+             echo "SDL ${sdlversion} found - okay" 1>&2
+           else
+             echo "SDL ${sdlversion} found - not everything supported" 1>&2
+           fi ;;
+    *)     echo "SDL ${sdlversion} found - but I need 1.2.x (x >= 6)" 1>&2
+           exit 1 ;;
+  esac
+
+  # cross-compile
+  case ${hosttype} in
+     x86_64*-mingw* | amd64*-mingw*)
+       # find sdl-config for cross-compiling
+       if [ -x /usr/local/x86_64-w64-mingw32/bin/sdl-config ]
+       then
+         SDL_CFLAGS=`/usr/local/x86_64-w64-mingw32/bin/sdl-config --cflags`
+         SDL_LDFLAGS=`/usr/local/x86_64-w64-mingw32/bin/sdl-config --libs`
+       elif [ -x /usr/local/cross-tools/amd64-mingw32/bin/sdl-config ]
+       then
+         SDL_CFLAGS=`/usr/local/cross-tools/amd64-mingw32/bin/sdl-config --cflags`
+         SDL_LDFLAGS=`/usr/local/cross-tools/amd64-mingw32/bin/sdl-config --libs`
+       else
+         # most probably not the correct directories
+         SDL_CFLAGS="-I/usr/include/SDL -D_GNU_SOURCE=1 -Dmain=SDL_main"
+         SDL_LDFLAGS="-L/usr/lib -lmingw32 -lSDLmain -lSDL -mwindows"
+       fi
+       ;;
+
+     *mingw* | *MINGW*)
+       # find sdl-config for cross-compiling
+       if [ -x /usr/local/i686-w64-mingw32/bin/sdl-config ]
+       then
+         SDL_CFLAGS=`/usr/local/i686-w64-mingw32/bin/sdl-config --cflags`
+         SDL_LDFLAGS=`/usr/local/i686-w64-mingw32/bin/sdl-config --libs`
+       elif [ -x /usr/local/cross-tools/i386-mingw32/bin/sdl-config ]
+       then
+         SDL_CFLAGS=`/usr/local/cross-tools/i386-mingw32/bin/sdl-config --cflags`
+         SDL_LDFLAGS=`/usr/local/cross-tools/i386-mingw32/bin/sdl-config --libs`
+       elif [ -x /usr/i586-mingw32msvc/bin/sdl-config ]
+       then
+         SDL_CFLAGS=`/usr/i586-mingw32msvc/bin/sdl-config --cflags`
+         SDL_LDFLAGS=`/usr/i586-mingw32msvc/bin/sdl-config --libs`
+       else
+         # most probably not the correct directories
+         SDL_CFLAGS="-I/usr/include/SDL -D_GNU_SOURCE=1 -Dmain=SDL_main"
+         SDL_LDFLAGS="-L/usr/lib -lmingw32 -lSDLmain -lSDL -mwindows"
+       fi
+       ;;
+
+    *x86* | *i?86*)  # private hack
+        SDL_CFLAGS="-I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT"
+        SDL_LDFLAGS="-L/usr/local/lib32 -L/usr/lib32 -lSDL -lpthread"
+        ;;
+
+     *)
+        SDL_CFLAGS=`sdl-config --cflags`
+        SDL_LDFLAGS=`sdl-config --libs`
+        ;;
+  esac
+
+  if [ x"$SDL_IMAGE" = x"no" ]
+  then
+    SDL_CFLAGS="$SDL_CFLAGS -DNO_SDL_IMAGE"
+    LINK_SDL_IMAGE="no"
+  fi
+
+  if [ x"$LINK_SDL_IMAGE" = x"yes" ]
+  then
+    SDL_CFLAGS="$SDL_CFLAGS -DLINK_SDL_IMAGE"
+    SDL_LDFLAGS="$SDL_LDFLAGS -lSDL_image"
+  fi
 fi
 
 ########################################################################################

@@ -1,3 +1,7 @@
+2013-07-25  Andreas K. Foerster  <info@akfoerster.de>
+
+	* configure: accept --with-linuxfb
+
 2013-07-19  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-akfavatar-prg.c (preload_module): new function
