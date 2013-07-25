@@ -95,13 +95,17 @@ plot (void)
   if (!name[0])
     wcscpy (name, L"stranger");
 
-  avt_set_balloon_size (2, 50);
+  avt_set_balloon_size (7, 37);
 
   // clear the balloon
   avt_clear ();
   avt_say (L"Hello ");
   avt_say (name);
-  avt_say (L",\nnice to meet you!");
+  avt_say (L",\nnice to meet you!\n\n"
+           L"This example program is written in C.\n"
+           L"To write your own C programs you need\n"
+           L"the source package for AKFAvatar\n"
+           L"and of course a C compiler.");
 
   // wait for a key, move out and wait some time
   // checking the return code here also catches earlier quit-requests
