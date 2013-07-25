@@ -22,6 +22,7 @@
 
 #define _ISOC99_SOURCE
 #define _POSIX_C_SOURCE 200112L
+#define _XOPEN_SOURCE 600
 
 #include "akfavatar.h"
 #include "avtaddons.h"
