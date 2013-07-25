@@ -295,7 +295,7 @@ example: example.exe
 
 example.exe: $(srcdir)/example.c akfavatar.dll icon.o
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) -I$(srcdir) -o $@ $(srcdir)/example.c \
-			icon.o -L. -lakfavatar $(SDL_LDFLAGS) $(LDFLAGS)
+			icon.o -L. -lakfavatar $(SDL_LDFLAGS) $(LDFLAGS) -s
 
 lua-akfavatar.exe: lua-akfavatar-prg.o lua-akfavatar-prg-info.o lua-avt.o \
 	           akfavatar-graphic.o libavtaddons.a
@@ -576,6 +576,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	cp $(sdl_dll) $(BINPKGNAME)/
 	cp $(lua_dll) $(BINPKGNAME)/
 	cp akfavatar.dll $(BINPKGNAME)/
+	cp example.exe $(BINPKGNAME)/
 	cp lua-akfavatar.exe $(BINPKGNAME)/
 	#cp lua-akfavatar.dll $(BINPKGNAME)/
 	cp base64.dll $(BINPKGNAME)/

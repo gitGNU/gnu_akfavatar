@@ -74,7 +74,7 @@ version.h: $(srcdir)/configure
 # when you use the static lib you have to link with SDL
 example: $(srcdir)/example.c libakfavatar.a
 	$(CC) -I$(srcdir) $(CFLAGS) -o $@ $(srcdir)/example.c \
-	  libakfavatar.a $(SDL_LDFLAGS) $(LDFLAGS)
+	  libakfavatar.a $(SDL_LDFLAGS) $(LDFLAGS) -s
 
 # lua-akfavatar dynamically linked
 lua-akfavatar-dyn: lua-akfavatar-prg.o lua-avt.o libavtaddons.a \
