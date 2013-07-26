@@ -5,6 +5,7 @@ lua_dll = $(srcdir)/misc/$(ARCH)/lua52.dll
 sdl_dll = $(srcdir)/misc/$(ARCH)/SDL.dll
 
 ROFF = groff
+STRIP = strip
 
 DEFAULT_COLOR = 0xE0D5C5
 
@@ -675,12 +676,12 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	$(u2d) $(BINPKGNAME)/doc/*.txt
 	$(u2d) $(BINPKGNAME)/lua/*.lua
 	$(u2d) $(BINPKGNAME)/lua/akfavatar/*.lua
-	strip --strip-unneeded $(BINPKGNAME)/akfavatar.dll
-	strip --strip-unneeded $(BINPKGNAME)/lua-akfavatar.exe
-	-strip --strip-unneeded $(BINPKGNAME)/lua-akfavatar.dll
-	#strip --strip-unneeded $(BINPKGNAME)/akfavatar-graphic.dll
-	strip --strip-unneeded $(BINPKGNAME)/akfavatar-vorbis.dll
-	strip --strip-unneeded $(BINPKGNAME)/base64.dll
+	$(STRIP) -d $(BINPKGNAME)/akfavatar.dll
+	$(STRIP) -d $(BINPKGNAME)/lua-akfavatar.exe
+	-$(STRIP) -d $(BINPKGNAME)/lua-akfavatar.dll
+	-$(STRIP) -d $(BINPKGNAME)/akfavatar-graphic.dll
+	$(STRIP) -d $(BINPKGNAME)/akfavatar-vorbis.dll
+	$(STRIP) -d $(BINPKGNAME)/base64.dll
 	-rm -f $(BINPKGNAME).w32.zip
 	zip -9vr $(BINPKGNAME).windows.${ARCH}.zip $(BINPKGNAME)/
 	rm -r $(BINPKGNAME)/
