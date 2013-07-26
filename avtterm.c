@@ -19,6 +19,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#define _ISOC99_SOURCE
+#define _XOPEN_SOURCE 600
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
 #endif

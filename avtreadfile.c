@@ -18,10 +18,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* feature test macro needed for popen/pclose */
-#ifndef _POSIX_C_SOURCE
-#  define _POSIX_C_SOURCE 2
-#endif
+#define _ISOC99_SOURCE
+#define _XOPEN_SOURCE 600
 
 #include "akfavatar.h"
 #include "avtaddons.h"

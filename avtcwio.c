@@ -21,9 +21,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ISOC99_SOURCE
-#  define _ISOC99_SOURCE
-#endif
+#define _ISOC99_SOURCE
+#define _XOPEN_SOURCE 600
 
 #include "avtaddons.h"
 #include <stdio.h>
