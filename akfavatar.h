@@ -660,10 +660,7 @@ AVT_API bool avt_get_auto_margin (void);
 AVT_API void avt_set_origin_mode (bool mode);
 AVT_API bool avt_get_origin_mode (void);
 
-/*
- * with this you can switch the mouse pointer on or off
- * use this after avt_register_mousehandler
- */
+/* with this you can switch the mouse pointer on or off */
 AVT_API void avt_set_mouse_visible (bool);
 
 
@@ -933,10 +930,7 @@ AVT_API int avt_credits_mb (const char *text, bool centered);
  */
 AVT_API void avt_bell_function (void (*func) (void));
 
-/*
- * reserve single keys (Esc, F11)
- * use this with avt_register_keyhandler
- */
+/* reserve single keys (Esc, F11) */
 AVT_API void avt_reserve_single_keys (bool);
 
 /*
