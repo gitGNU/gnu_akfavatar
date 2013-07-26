@@ -48,6 +48,12 @@ If you want to use it on devices with a small display (eg. netbooks), use the
 parameter "--enable-size=vga" with configure. 
 The value "vga" means a size of 640*480 pixels.
 
+You can also compile it to run directly on the Linux famebuffer without the SDL.
+For this use the parameter "--with-linuxfb" with configure.
+Note that this really only runs on a framebuffer and not under X!
+Also note that there is currently no support for the mouse or for sound,
+only graphics and keyboard is supported -- and the beeper beeps.
+
 
 Installing
 
