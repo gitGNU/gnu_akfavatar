@@ -58,7 +58,8 @@ system_from_unicode (const struct avt_charenc *self, char *dest, size_t size,
   (void) self;
 
   // enough space?
-  if (size < MB_CUR_MAX)
+  // note MB_CUR_MAX may be a function
+  if (size < MB_LEN_MAX and size < MB_CUR_MAX)
     return 0;
 
   // wchar_t is too small? - limit to BMP
