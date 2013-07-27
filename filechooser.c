@@ -57,30 +57,6 @@ struct avt_fc_data
 };
 
 
-// show a string interpreted according to the locale LC_CTYPE
-static void
-show_multibyte_string (const char *string)
-{
-  size_t len;
-  size_t nbytes;
-  mbstate_t state;
-  wchar_t ch;
-
-  len = strlen (string);
-  memset (&state, 0, sizeof (state));
-
-  while ((nbytes = mbrtowc (&ch, string, len, &state)) != 0)
-    {
-      if (nbytes >= (size_t) (-2))
-	break;			// stop when string has invalid characters
-
-      avt_put_char (ch);
-
-      len -= nbytes;
-      string += nbytes;
-    }
-}
-
 // entries or marks that are not files
 static inline void
 marked_text (wchar_t * s, avt_color markcolor)
@@ -119,26 +95,8 @@ show_directory (avt_color markcolor)
     {
       avt_set_text_background_color (markcolor);
       avt_clear_line ();	// mark the line
-      show_multibyte_string (dirname);
+      avt_say_char (dirname);
       avt_set_text_background_ballooncolor ();
-    }
-}
-
-static void
-change_directory (const wchar_t * dirname)
-{
-  if (dirname and * dirname)
-    {
-      char name[AVT_LINELENGTH + 1];
-
-      if (wcstombs (name, dirname, sizeof (name)) != (size_t) (-1))
-	{
-	  name[sizeof (name) - 1] = '\0';
-	  if (chdir (name) == -1)
-	    avt_bell ();
-	}
-      else
-	avt_bell ();
     }
 }
 
@@ -205,18 +163,21 @@ show_info (void)
 static void
 ask_directory (avt_color markcolor)
 {
-  wchar_t dirname[AVT_LINELENGTH + 1];
+  char dirname[AVT_LINELENGTH * 4 + 1];
 
   avt_move_xy (1, 1);
   avt_set_text_background_color (markcolor);
   avt_clear_line ();
-  avt_ask (dirname, sizeof (dirname));
+  avt_ask_char (dirname, sizeof (dirname));
   avt_set_text_background_ballooncolor ();
 
-  if (wcscmp (dirname, L"about:akfavatar") == 0)
+  if (strcmp (dirname, "about:akfavatar") == 0)
     show_info ();
   else
-    change_directory (dirname);
+    {
+      if (chdir (dirname) == -1)
+	avt_bell ();
+    }
 }
 
 static int
@@ -315,7 +276,7 @@ show (int nr, void *fc_data)
       struct dirent *d = data->namelist[nr - 3];
       int max_x = avt_get_max_x ();
 
-      show_multibyte_string (d->d_name);
+      avt_say_char (d->d_name);
 
       // is it a directory?
       if (is_dirent_directory (d))
@@ -352,6 +313,7 @@ avt_file_selection (char *filename, int filename_size,
   int choice;
   int entries;
   struct avt_fc_data data;
+  const struct avt_charenc *old_encoding;
 
   rcode = -1;
 
@@ -360,6 +322,8 @@ avt_file_selection (char *filename, int filename_size,
 
   avt_set_text_background_ballooncolor ();
   memset (filename, 0, filename_size);
+
+  old_encoding = avt_char_encoding (avt_systemencoding ());
 
   data.markcolor = avt_get_balloon_color ();
   if (avt_brightness (data.markcolor) >= 0x88)
@@ -430,6 +394,8 @@ avt_file_selection (char *filename, int filename_size,
       free (data.namelist);
       data.namelist = NULL;
     }
+
+  avt_char_encoding (old_encoding);
 
   return rcode;
 }
