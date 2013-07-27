@@ -63,6 +63,7 @@ system_from_unicode (const struct avt_charenc *self, char *dest, size_t size,
     return 0;
 
   // wchar_t is too small? - limit to BMP
+  // note UTF-16 is handled in charencoding.c
   if (sizeof (wchar_t) <= 2 and src > 0xFFFF)
     src = AVT_INVALID_WCHAR;
 
