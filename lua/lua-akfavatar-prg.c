@@ -139,7 +139,6 @@ quit (void)
 static void
 error_box (const char *msg)
 {
-  avt_bell ();
   avt_set_status (AVT_NORMAL);
   avt_avatar_image_none ();
   avt_set_balloon_color (AVT_COLOR_ERROR);
@@ -148,9 +147,14 @@ error_box (const char *msg)
   avt_set_scroll_mode (-1);
   avt_set_text_delay (0);
   avt_lock_updates (false);
+  avt_bell ();
 
   // error message might include localized system strings
-  avt_char_encoding (avt_systemencoding ());
+  if (avt_detect_utf8 (msg, strlen (msg)))
+    avt_char_encoding (avt_utf8 ());
+  else
+    avt_char_encoding (avt_systemencoding ());
+
   avt_tell_char (msg);
   avt_wait_button ();
 }
