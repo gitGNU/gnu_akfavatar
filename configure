@@ -24,11 +24,12 @@ srctrigger=avatar-sdl.c
 SIZE=DEFAULT
 OPENPTY=
 WCHAR_ENCODING=
+USE_LINUXFB="no"
+USE_SDL="yes"
 SDL_IMAGE="yes"
 LINK_SDL_IMAGE="no"
 NO_LUA="no"
 STATIC_LUA="no"
-USE_LINUXFB="no"
 NO_DEPRECATED="no"
 FONT="9x18.bdf"
 OBJAVATAR="avatar-sdl"
@@ -295,6 +296,7 @@ then
 
   OBJAVATAR="avatar-linuxfb"
   OBJAUDIO="audio-dummy"
+  USE_SDL="no"
   NO_AUDIO="yes"
 fi
 
@@ -302,7 +304,7 @@ fi
 # SDL
 
 
-if [ x"$USE_LINUXFB" != x"yes" ]
+if [ x"$USE_SDL" = x"yes" ]
 then
 
   # Check for SDL version
