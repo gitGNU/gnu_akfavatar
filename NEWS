@@ -1,10 +1,10 @@
-* AKFAvatar-testing
+* AKFAvatar 0.24.1
 
+  - fix: lua/interactive_lua.lua: fix handling of incomplete lines
   - Lua module "akfavatar-graphic" included in executable
   - text cursor modified
   - lua-akfavatar: GNU .info files can be shown as plain text (no hyperlinks)
-  - lua/hexviewer.lua: show more characters
-  - fix: lua/interactive_lua.lua: fix handling of incomplete lines
+  - lua/hexviewer.lua: show more characters on the right side
   - lua/multiplication.lua: clear board (no scrolling)
   - configure accepts the option --with-linuxfb
     which then builds for the Linux framebuffer without the SDL

@@ -1,3 +1,7 @@
+2013-07-29  Andreas K. Foerster  <info@akfoerster.de>
+
+	* version 0.24.1 released
+
 2013-07-25  Andreas K. Foerster  <info@akfoerster.de>
 
 	* configure: accept --with-linuxfb
