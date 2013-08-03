@@ -1,3 +1,12 @@
+* AKFAvatar-testing
+
+  - lua/four_in_a_row.lua: mouse support
+
+  Lua-API changes:
+    - Module "akfavatar-graphic":
+      - new functions: graphic.set_pointer_buttons_key,
+        graphic.get_pointer_position
+
 * AKFAvatar 0.24.1
 
   - fix: lua/interactive_lua.lua: fix handling of incomplete lines

@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "akfavatar-graphic" 3 2013-02-08 AKFAvatar
+.TH "akfavatar-graphic" 3 2013-08-03 AKFAvatar
 .
 .SH NAME
 akfavatar-graphic \- Modul für die Anzeige von Grafiken unter Lua-AKFAvatar
@@ -81,6 +81,21 @@ local gr, width, height = graphic.new()
 .B "graphic.fullsize()"
 Gibt die erforderliche Breite und Höhe zurück, so dass das Bild das gesamte
 Fenster füllt.
+.PP
+.TP
+.BI "graphic.set_pointer_buttons_key(" Taste )
+Setzt eine Tasten-Code (als Zahl), die ausgegeben werden soll,
+wenn eine Maustaste gedrückt wurde.
+Gibt den vorherigen Tasten-Code zurück.
+.IP
+.B Hinweis:
+Man kann einen Wert zwischen 0xE000 und 0xE9FF verwenden, um Konflikte
+mit echten Tasten-Codes zu vermeiden.
+.PP
+.TP
+.B "graphic.get_pointer_position()"
+Gibt die x und y Koordinaten der Maus-Position zurück,
+relativ zur zuletzt gezeigten Grafik.
 .PP
 .TP
 .IB gr :show()

@@ -73,6 +73,7 @@ logo:put_file(avt.search("akf64.xpm"))
 
 local score = {[1] = 0, [2] = 0}
 local player = 1
+local mouse = 0xE800
 
 local screen, width, height = graphic.new()
 local fwidth, fheight = graphic.font_size()
@@ -299,6 +300,13 @@ local function play()
       if avt.key.left==key and column>1 then column = column - 1
       elseif avt.key.right==key and column<7 then column = column + 1
       elseif key>=0x31 and key<=0x37 then column = key - 0x30
+      elseif mouse==key then
+        local x = graphic.get_pointer_position() - boardxoffset
+        if x > 0 and x < 7*fieldsize then
+          column = math.ceil(x / fieldsize)
+          above(column, player)
+          key = avt.key.down
+        end
       end
     until avt.key.down==key or avt.key.enter==key
   end -- select_slot
@@ -321,4 +329,5 @@ local function play()
 end
 
 
+graphic.set_pointer_buttons_key (mouse)
 repeat play() until false

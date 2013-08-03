@@ -1,3 +1,11 @@
+2013-08-03  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/akfavatar-graphic.c (lgraphic_set_pointer_buttons_key)
+	(lgraphic_get_pointer_position): new functions
+	(luaopen_graphic, lgraphic_show):adapted
+
+------------------------------------------------------------------------
+
 2013-07-29  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.24.1 released

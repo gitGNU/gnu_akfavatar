@@ -54,15 +54,19 @@ extern "C"
 
 typedef struct graphic
 {
-  short width, height;
-  short thickness;		// thickness of pen
-  short htextalign, vtextalign;	// alignment for text
+  short int width, height;
+  short int thickness;		// thickness of pen
+  short int htextalign, vtextalign;	// alignment for text
   double penx, peny;		// position of pen
   double heading;		// heading of the turtle
   avt_color color;		// drawing color
   avt_color background;		// background color
   avt_color data[];		// data - flexible array member (C99)
 } graphic;
+
+
+// size of last shown graphic
+static short int shown_width, shown_height;
 
 // Bytes per pixel
 #define BPP  (sizeof (avt_color))
@@ -1012,7 +1016,11 @@ lgraphic_show (lua_State * L)
   int status;
 
   gr = get_graphic (L, 1);
-  status = avt_show_raw_image (&gr->data, gr->width, gr->height);
+
+  shown_width = gr->width;
+  shown_height = gr->height;
+
+  status = avt_show_raw_image (&gr->data, shown_width, shown_height);
 
   if (status <= AVT_ERROR)
     {
@@ -1074,7 +1082,8 @@ lgraphic_font_size (lua_State * L)
 }
 
 static size_t
-get_text_width (const struct avt_charenc *convert, const char *txt, size_t len)
+get_text_width (const struct avt_charenc *convert,
+		const char *txt, size_t len)
 {
   avt_char ch;
   size_t width, bytes;
@@ -1088,7 +1097,7 @@ get_text_width (const struct avt_charenc *convert, const char *txt, size_t len)
       if (ch >= 0x20 and (ch < 0x7F or ch >= 0xA0) and not avt_combining (ch))
 	++width;
       else if (ch == L'\b')
-        --width;
+	--width;
 
       if (bytes > len)
 	break;
@@ -1841,11 +1850,43 @@ lgraphic_export_ppm (lua_State * L)
   return 0;
 }
 
+static int
+lgraphic_set_pointer_buttons_key (lua_State * L)
+{
+  lua_pushunsigned (L,
+		    avt_set_pointer_buttons_key (luaL_checkunsigned (L, 1)));
+
+  return 1;
+}
+
+static int
+lgraphic_get_pointer_position (lua_State * L)
+{
+  int x, y;
+
+  avt_get_pointer_position (&x, &y);
+
+  // make coordiates relative to last shown graphic
+  if (shown_width > 0)
+    {
+      x -= (avt_image_max_width () / 2) - (shown_width / 2);
+      y -= (avt_image_max_height () / 2) - (shown_height / 2);
+    }
+
+  lua_pushinteger (L, x);
+  lua_pushinteger (L, y);
+
+  return 2;
+}
+
+
 
 static const luaL_Reg graphiclib[] = {
   {"new", lgraphic_new},
   {"fullsize", lgraphic_fullsize},
   {"font_size", lgraphic_font_size},
+  {"set_pointer_buttons_key", lgraphic_set_pointer_buttons_key},
+  {"get_pointer_position", lgraphic_get_pointer_position},
   {NULL, NULL}
 };
 
@@ -1903,6 +1944,8 @@ static const luaL_Reg graphiclib_methods[] = {
 int
 luaopen_graphic (lua_State * L)
 {
+  shown_width = shown_height = -1;
+
   luaL_newlib (L, graphiclib);
 
   luaL_newmetatable (L, GRAPHICDATA);
