@@ -81,21 +81,26 @@ static lua_State *L;
 static int mode = AVT_AUTOMODE;
 static char *directory;
 
+// sets a function with a name in the table at the top of the stack
+static inline void
+set_function (const char *name, lua_CFunction func)
+{
+  lua_pushcfunction (L, func);
+  lua_setfield (L, -2, name);
+}
 
 // if you want to link modules into the executable, add them here
 static void
 preload_modules (void)
 {
   // this is a shortcut for getting package.preload
-  lua_getfield (L, LUA_REGISTRYINDEX, "_PRELOAD");
+  luaL_getsubtable (L, LUA_REGISTRYINDEX, "_PRELOAD");
 
   extern int open_lua_akfavatar (lua_State * L);
-  lua_pushcfunction (L, open_lua_akfavatar);
-  lua_setfield (L, -2, "lua-akfavatar");
+  set_function ("lua-akfavatar", open_lua_akfavatar);
 
   extern int luaopen_graphic (lua_State * L);
-  lua_pushcfunction (L, luaopen_graphic);
-  lua_setfield (L, -2, "akfavatar-graphic");
+  set_function ("akfavatar-graphic", luaopen_graphic);
 
   // pop _PRELOAD
   lua_pop (L, 1);
