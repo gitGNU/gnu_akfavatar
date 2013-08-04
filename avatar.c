@@ -3507,7 +3507,7 @@ avt_wait_button (void)
 		   window.height - BASE_BUTTON_HEIGHT - AVATAR_MARGIN,
 		   btn_right, AVT_KEY_ENTER, AVT_BUTTON_COLOR);
 
-  old_motion_key = avt_set_pointer_motion_key (0);	// ignore moves
+  old_motion_key = avt_set_pointer_motion_key (AVT_KEY_NONE);
   old_buttons_key = avt_set_pointer_buttons_key (AVT_KEY_ENTER);
 
   avt_clear_keys ();
@@ -4643,8 +4643,8 @@ avt_reset ()
 
   avt_clear_keys ();
   avt_reserve_single_keys (false);
-  avt_set_pointer_buttons_key (0);
-  avt_set_pointer_motion_key (0);
+  avt_set_pointer_buttons_key (AVT_KEY_NONE);
+  avt_set_pointer_motion_key (AVT_KEY_NONE);
   avt_clear_screen ();		// also resets some variables
   avt_normal_text ();
   avt_reset_tab_stops ();
