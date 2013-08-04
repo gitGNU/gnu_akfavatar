@@ -5,6 +5,9 @@
 
 	* akfavatar.h, avatar.c (avt_peep_key): new function
 
+	* avatar-sdl.c (avt_analyze_event):
+	add pointer_motion_key only if it isn't there yet
+
 2013-08-03  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar-graphic.c (lgraphic_set_pointer_buttons_key)
