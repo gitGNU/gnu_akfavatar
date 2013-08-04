@@ -1860,13 +1860,27 @@ lgraphic_set_pointer_buttons_key (lua_State * L)
 }
 
 static int
+lgraphic_set_pointer_motion_key (lua_State * L)
+{
+  lua_pushunsigned (L,
+		    avt_set_pointer_motion_key (luaL_checkunsigned (L, 1)));
+
+  return 1;
+}
+
+static int
 lgraphic_get_pointer_position (lua_State * L)
 {
   int x, y;
 
   avt_get_pointer_position (&x, &y);
 
-  // make coordiates relative to last shown graphic
+  /*
+   * make coordiates relative to last shown graphic
+   *
+   * this must be calculated here, because the window
+   * size might have changed
+   */
   if (shown_width > 0)
     {
       x -= (avt_image_max_width () / 2) - (shown_width / 2);
@@ -1886,6 +1900,7 @@ static const luaL_Reg graphiclib[] = {
   {"fullsize", lgraphic_fullsize},
   {"font_size", lgraphic_font_size},
   {"set_pointer_buttons_key", lgraphic_set_pointer_buttons_key},
+  {"set_pointer_motion_key", lgraphic_set_pointer_motion_key},
   {"get_pointer_position", lgraphic_get_pointer_position},
   {NULL, NULL}
 };

@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "akfavatar-graphic" 3 2013-08-03 AKFAvatar
+.TH "akfavatar-graphic" 3 2013-08-04 AKFAvatar
 .
 .SH NAME
 akfavatar-graphic \- module to display graphics in Lua-AKFAvatar
@@ -83,13 +83,18 @@ Returns the width and height for a graphic so that it fills the whole window.
 .PP
 .TP
 .BI "graphic.set_pointer_buttons_key(" key )
-Sets a key-code (as number) which should be pressed when any mouse button is
+Sets a key-code (as number) which should be returned when any mouse button is
 pressed.
 Returns the previous key-code.
 .IP
 .B Hint:
 Use something between 0xE000 and 0xE9FF to avoid conflicting
 with real key-codes.
+.PP
+.TP
+.BI "graphic.set_pointer_motion_key(" key )
+Sets a key-code (as number) which should be returned when the mouse is moved.
+Returns the previous key-code.
 .PP
 .TP
 .B "graphic.get_pointer_position()"

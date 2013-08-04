@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "akfavatar-graphic" 3 2013-08-03 AKFAvatar
+.TH "akfavatar-graphic" 3 2013-08-04 AKFAvatar
 .
 .SH NAME
 akfavatar-graphic \- Modul für die Anzeige von Grafiken unter Lua-AKFAvatar
@@ -91,6 +91,12 @@ Gibt den vorherigen Tasten-Code zurück.
 .B Hinweis:
 Man kann einen Wert zwischen 0xE000 und 0xE9FF verwenden, um Konflikte
 mit echten Tasten-Codes zu vermeiden.
+.PP
+.TP
+.BI "graphic.set_pointer_motion_key(" Taste )
+Setzt eine Tasten-Code (als Zahl), die ausgegeben werden soll,
+wenn die Maus bewegt wurde.
+Gibt den vorherigen Tasten-Code zurück.
 .PP
 .TP
 .B "graphic.get_pointer_position()"
