@@ -285,6 +285,15 @@ avt_get_key (void)
   return ch;
 }
 
+extern avt_char
+avt_peep_key (void)
+{
+  if (avt_keys.position != avt_keys.end)
+    return avt_keys.buffer[avt_keys.position];
+  else
+    return AVT_KEY_NONE;
+}
+
 extern bool
 avt_key_pressed (void)
 {

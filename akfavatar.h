@@ -420,6 +420,12 @@ AVT_API avt_char avt_get_key (void);
  */
 AVT_API bool avt_key_pressed (void);
 
+/*
+ * look up the last key in the buffer without removing it
+ * if the buffer is empty it returns AVT_KEY_NONE
+ */
+AVT_API avt_char avt_peep_key (void);
+
 /* clear key buffer */
 AVT_API void avt_clear_keys (void);
 
