@@ -134,6 +134,7 @@ void avt_quit_encoding_function (void (*) (void));
 struct avt_backend *avt_start_common (avt_graphic *new_screen);
 bool avt_check_buttons (int x, int y);
 void avt_add_key (avt_char key);
+avt_char avt_last_key (void);
 void avt_resize (int width, int height);
 
 /* avttiming.c */

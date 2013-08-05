@@ -549,7 +549,7 @@ avt_analyze_event (SDL_Event * event)
       break;
 
     case SDL_MOUSEMOTION:
-      if (pointer_motion_key and pointer_motion_key != avt_peep_key ())
+      if (pointer_motion_key and pointer_motion_key != avt_last_key ())
 	avt_add_key (pointer_motion_key);
       break;
 

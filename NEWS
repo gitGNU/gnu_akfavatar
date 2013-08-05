@@ -2,9 +2,6 @@
 
   - lua/four_in_a_row.lua: mouse support
 
-  C-API changes:
-    - new functions: avt_peep_key
-
   Lua-API changes:
     - Module "akfavatar-graphic":
       - new functions: graphic.set_pointer_buttons_key,
