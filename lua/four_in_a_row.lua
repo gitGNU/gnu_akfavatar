@@ -4,7 +4,7 @@
 Four in a Row
 Game for 2 players (no computer-logic yet)
 
-Copyright (c) 2011,2012 Andreas K. Foerster <info@akfoerster.de>
+Copyright (c) 2011,2012,2013 Andreas K. Foerster <info@akfoerster.de>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -28,8 +28,6 @@ Keys:
 
 local avt = require "lua-akfavatar"
 local graphic = require "akfavatar-graphic"
-
-local slow = false
 
 local color = {
   background = "default",
@@ -73,6 +71,7 @@ logo:put_file(avt.search("akf64.xpm"))
 
 local score = {[1] = 0, [2] = 0}
 local player = 1
+local slow = false
 local mouse = 0xE800
 
 local screen, width, height = graphic.new()
@@ -215,9 +214,22 @@ local function draw_board()
   screen:put(logo, width - logo:width() - 5, 5)
 end -- draw_board
 
+local function show_winning_row(column, row)
+  success() --> play sound
+
+  -- draw connector - pen position assumed to be at start
+  screen:color(color.connector)
+  screen:thickness(4)
+  screen:disc(10)
+  screen:lineto(get_position(column, row))
+  screen:disc(10)
+
+  score[player] = score[player] + 1
+  show_score()
+end
 
 -- check whether there are 4 in a row for last player
-local function check(column)
+local function check(column, player, board, simulate)
   local row = filled[column]
   local num
 
@@ -229,14 +241,7 @@ local function check(column)
       if 1==num then --> possible start of success-row
         screen:moveto(get_position(c, r))
       elseif 4==num then --> success
-        success() --> play sound
-        screen:color(color.connector)
-        screen:thickness(4)
-        screen:disc(10)
-        screen:lineto(get_position(c, r))
-        screen:disc(10)
-        score[player] = score[player] + 1
-        show_score()
+        if not simulate then show_winning_row(c, r) end
         return true
       end
     end
@@ -317,7 +322,7 @@ local function play()
   repeat
     select_slot()
     if drop(column, player) then
-      won=check(column, player)
+      won=check(column, player, board)
       if not won then next_player() end
     end
   until won or chips == 42
