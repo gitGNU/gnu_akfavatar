@@ -291,36 +291,38 @@ local function speed_test()
   if avt.ticks() - delay > 100 then slow = true; end
 end
 
+local function select_slot(column)
+  local key
+
+  repeat
+    above(column, player)
+    screen:show()
+    key=avt.get_key()
+    if avt.key.left==key and column>1 then column = column - 1
+    elseif avt.key.right==key and column<7 then column = column + 1
+    elseif key>=0x31 and key<=0x37 then column = key - 0x30
+    elseif mouse==key then
+      local x = graphic.get_pointer_position() - boardxoffset
+      if x > 0 and x < 7*fieldsize then
+        column = math.ceil(x / fieldsize)
+        above(column, player)
+        key = avt.key.down
+      end
+    end
+  until avt.key.down==key or avt.key.enter==key
+
+ return column
+end -- select_slot
+
 local function play()
   local won = false
   local column = 4
-
-  local function select_slot()
-    local key
-
-    repeat
-      above(column, player)
-      screen:show()
-      key=avt.get_key()
-      if avt.key.left==key and column>1 then column = column - 1
-      elseif avt.key.right==key and column<7 then column = column + 1
-      elseif key>=0x31 and key<=0x37 then column = key - 0x30
-      elseif mouse==key then
-        local x = graphic.get_pointer_position() - boardxoffset
-        if x > 0 and x < 7*fieldsize then
-          column = math.ceil(x / fieldsize)
-          above(column, player)
-          key = avt.key.down
-        end
-      end
-    until avt.key.down==key or avt.key.enter==key
-  end -- select_slot
 
   draw_board()
   speed_test()
 
   repeat
-    select_slot()
+    column = select_slot(column)
     if drop(column, player) then
       won=check(column, player, board)
       if not won then next_player() end
