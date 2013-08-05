@@ -289,7 +289,14 @@ extern avt_char
 avt_last_key (void)
 {
   if (avt_keys.position != avt_keys.end)
-    return avt_keys.buffer[avt_keys.end - 1];
+    {
+      int end = avt_keys.end;
+
+      if (end == 0)
+	end = AVT_KEYBUFFER_SIZE;
+
+      return avt_keys.buffer[end - 1];
+    }
   else
     return AVT_KEY_NONE;
 }
