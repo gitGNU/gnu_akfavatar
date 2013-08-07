@@ -1,5 +1,6 @@
 * AKFAvatar-testing
 
+  - lua/four_in_a_row.lua: play against computer
   - lua/four_in_a_row.lua: mouse support
 
   Lua-API changes:

@@ -1,5 +1,8 @@
-2013-08-05  Andreas K. Foerster  <info@akfoerster.de>
+2013-08-07  Andreas K. Foerster  <info@akfoerster.de>
 
+	* lua/four_in_a_row.lua: play against computer
+
+2013-08-05  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c, avtinternals.h (avt_last_key): new function
 

@@ -2,7 +2,7 @@
 
 --[[---------------------------------------------------------------------
 Four in a Row
-Game for 2 players (no computer-logic yet)
+Game for 1 or 2 players
 
 Copyright (c) 2011,2012,2013 Andreas K. Foerster <info@akfoerster.de>
 
@@ -40,7 +40,7 @@ local color = {
 
 -- false for no sound
 local sound = {
-  success = "hahaha.au",
+  success = "hey.au",
   remis = "question.au",
   full = "harrumph.au"
   }
@@ -48,12 +48,16 @@ local sound = {
 avt.translations = {
   -- avoid trademarked names
   ["Four in a row"] = {
-    de = "Vier in einer Reihe",
-    },
+    de = "Vier in einer Reihe"},
+
+  ["1 Player"] = {
+    de = "1 Spieler"},
+
+  ["2 Players"] = {
+    de = "2 Spieler"},
 
   ["keys:"] = {
-    de = "Tasten:",
-  }
+    de = "Tasten:"}
 }
 
 ------------------------------------------------------------------------
@@ -70,6 +74,7 @@ local logo = graphic.new(64, 64)
 logo:put_file(avt.search("akf64.xpm"))
 
 local score = {[1] = 0, [2] = 0}
+local players = 2
 local player = 1
 local slow = false
 local mouse = 0xE800
@@ -84,6 +89,7 @@ local boardyoffset = 1 + fieldsize
 local filled = {} -- how many chips in a column
 local chips = 0 -- how many chips alltogether
 local board = {}
+local holes = {}
 
 local success = avt.load_audio_file(avt.search(sound.success)) or avt.alert()
 local remis = avt.load_audio_file(avt.search(sound.remis)) or avt.alert()
@@ -182,6 +188,7 @@ local function clear_board()
       clear_position(col, row)
       filled[col] = 0
       board[col] = {}
+      holes[col] = {}
       end
     end
 
@@ -229,7 +236,7 @@ local function show_winning_row(column, row)
 end
 
 -- check whether there are 4 in a row for last player
-local function check(column, player, board, simulate)
+local function check(column)
   local row = filled[column]
   local num
 
@@ -241,7 +248,7 @@ local function check(column, player, board, simulate)
       if 1==num then --> possible start of success-row
         screen:moveto(get_position(c, r))
       elseif 4==num then --> success
-        if not simulate then show_winning_row(c, r) end
+        show_winning_row(c, r)
         return true
       end
     end
@@ -270,7 +277,7 @@ local function check(column, player, board, simulate)
 
   -- check for descending diagonal line
   num=0
-  local r = row + column
+  r = row + column
   for c=1,7 do
     r = r - 1
     if won(c, r) then return true end
@@ -284,12 +291,14 @@ local function next_player()
   if player==1 then player=2 else player=1 end
 end
 
+
 -- check speed of display
 local function speed_test()
   local delay = avt.ticks()
   screen:show ()
   if avt.ticks() - delay > 100 then slow = true; end
 end
+
 
 local function select_slot(column)
   local key
@@ -314,6 +323,147 @@ local function select_slot(column)
  return column
 end -- select_slot
 
+
+-- analyze line of chips
+-- TODO: repeat search
+local function analyze(line)
+  local l = {}
+  local result = {}
+
+  -- turn line into a string
+  for p=1,7 do
+    if not line[p] then
+      l[p] = "." -- empty
+    elseif line[p] == player then
+      l[p] = "P" -- Player
+    else
+      l[p] = "O" -- Oponent
+    end
+  end
+
+  local str = table.concat(l)
+
+  -- now do some pattern matching on the string
+  local pos
+
+  pos = string.find(str, ".PPP.", 1, true)
+  if pos then
+    result[pos] = player
+    result[pos+4] = player
+    return result
+  end
+
+  pos = string.find(str, "PPP.", 1, true)
+  if pos then
+    result[pos+3] = player
+    return result
+  end
+
+  pos = string.find(str, ".PPP", 1, true)
+  if pos then
+    result[pos] = player
+    return result
+  end
+
+  pos = string.find(str, "P.PP", 1, true)
+  if pos then
+    result[pos+1] = player
+    return result
+  end
+
+  pos = string.find(str, "PP.P", 1, true)
+  if pos then
+    result[pos+2] = player
+    return result
+  end
+
+  return result
+end
+
+
+local function mark_hole(column, row, pl)
+  if pl and column>0 and row>0 and column<=7 and row<=6 then
+    local h = holes[column][row]
+    if h and h ~= pl then
+      holes[column][row] = 3 -- hole for both players
+    else
+      holes[column][row] = pl
+    end
+  end
+end
+
+
+local function seek_hole(column)
+  local row = filled[column]
+  local line -- line to analyze
+
+  -- check for horizontal line
+  line = {}
+  for c=1,7 do line[c] = board[c][row] end
+  line = analyze(line)
+  for c=1,7 do mark_hole(c, row, line[c]) end
+
+  -- check for vertical line
+  line = {}
+  for r=1,6 do line[r] = board[column][r] end
+  line = analyze(line)
+  for r=1,6 do mark_hole(column, r, line[r]) end
+
+  -- check for ascending diagonal line
+  local r = row - column
+  for c=1,7 do r=r+1; line[c] = board[c][r] end
+  line = analyze(line)
+  r = row - column
+  for c=1,7 do r=r+1; mark_hole(c, r, line[c]) end
+
+  -- check for descending diagonal line
+  line={}
+  r = row + column
+  for c=1,7 do r = r - 1; line[c] = board[c][r] end
+  line = analyze(line)
+  r = row + column
+  for c=1,7 do r = r - 1; mark_hole(c, r, line[c]) end
+end
+
+
+-- computer logic
+local function compute(column)
+
+  if chips==0 then
+    return 4
+  elseif chips==1 then -- one chip -> go next to it
+    for c=1,6 do
+      if board[c][1] then return (c+1) end
+    end
+  end
+
+  -- look if I can win
+  for c=1,7 do
+    local f = holes[c][filled[c]+1]
+    if f==player or f==3 then return c end
+  end
+
+  -- close direct threats
+  for c=1,7 do
+    if holes[c][filled[c]+1] then return c end
+  end
+
+  -- seek field that is not indirectly threatend
+  for i, c in ipairs{4,3,5,2,6,1,7} do
+    if c~=column and filled[c]<6 and not holes[c][filled[c]+2] then
+      return c
+    end
+  end
+
+  -- last resort: find any free column
+  for i, c in ipairs{4,3,5,2,6,1,7} do
+    if filled[c] < 6 then return c end
+  end
+
+  return c -- should never be reached
+end
+
+
 local function play()
   local won = false
   local column = 4
@@ -322,10 +472,18 @@ local function play()
   speed_test()
 
   repeat
-    column = select_slot(column)
+    if 2==players or 1==player
+      then column = select_slot(column)
+      else column = compute(column)
+    end
+
+
     if drop(column, player) then
-      won=check(column, player, board)
-      if not won then next_player() end
+      won=check(column)
+      if not won then
+        if 1==players then seek_hole(column) end
+        next_player()
+      end
     end
   until won or chips == 42
 
@@ -335,6 +493,12 @@ local function play()
   avt.get_key()
 end
 
+
+avt.tell(L"Four in a row", "\n",
+         L"1 Player", "\n",
+         L"2 Players")
+
+players = avt.choice(2, 2, "1")
 
 graphic.set_pointer_buttons_key (mouse)
 repeat play() until false
