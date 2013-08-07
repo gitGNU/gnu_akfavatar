@@ -462,12 +462,17 @@ local function compute(column)
     end
   end
 
+  -- if column is not indirectly threatend, use that
+  if filled[column]<6 and not holes[column][filled[column]+2] then
+    return column
+  end
+
   -- last resort: find any free column
   for i, c in ipairs{4,3,5,2,6,1,7} do
     if filled[c] < 6 then return c end
   end
 
-  return c -- should never be reached
+  return column -- should never be reached
 end
 
 
