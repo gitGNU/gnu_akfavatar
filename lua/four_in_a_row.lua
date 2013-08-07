@@ -526,5 +526,9 @@ avt.tell(L"Four in a row", "\n",
 
 players = avt.choice(2, 2, "1")
 
-graphic.set_pointer_buttons_key (mouse)
+
+if graphic.set_pointer_buttons_key then
+  graphic.set_pointer_buttons_key (mouse)
+end
+
 repeat play() until false
