@@ -326,7 +326,6 @@ end -- select_slot
 
 
 -- analyze line of chips
--- TODO: repeat search
 local function analyze(line)
   local l = {}
   local result = {}
@@ -346,6 +345,13 @@ local function analyze(line)
 
   -- now do some pattern matching on the string
   local pos
+
+  pos = string.find(str, "P.PP.P", 1, true)
+  if pos then
+    result[pos+1] = player
+    result[pos+4] = player
+    return result
+  end
 
   pos = string.find(str, ".PPP.", 1, true)
   if pos then
