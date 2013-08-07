@@ -467,6 +467,14 @@ local function compute(column)
     return column
   end
 
+  -- eventually give up an own threat
+  local oponent = next_player(player)
+  for i, c in ipairs{4,3,5,2,6,1,7} do
+    if filled[c]<6 and not holes[c][filled[c]+2]==oponent then
+      return c
+    end
+  end
+
   -- last resort: find any free column
   for i, c in ipairs{4,3,5,2,6,1,7} do
     if filled[c] < 6 then return c end
