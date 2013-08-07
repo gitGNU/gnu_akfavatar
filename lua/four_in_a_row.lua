@@ -76,6 +76,7 @@ logo:put_file(avt.search("akf64.xpm"))
 local score = {[1] = 0, [2] = 0}
 local players = 2
 local player = 1
+local who_starts = 1
 local slow = false
 local mouse = 0xE800
 
@@ -287,8 +288,8 @@ local function check(column)
 end
 
 
-local function next_player()
-  if player==1 then player=2 else player=1 end
+local function next_player(player)
+  if player==1 then return 2 else return 1 end
 end
 
 
@@ -471,25 +472,31 @@ local function play()
   draw_board()
   speed_test()
 
+  player = who_starts
+
   repeat
     if 2==players or 1==player
       then column = select_slot(column)
       else column = compute(column)
     end
 
-
     if drop(column, player) then
       won=check(column)
       if not won then
         if 1==players then seek_hole(column) end
-        next_player()
+        player = next_player(player)
       end
     end
   until won or chips == 42
 
   if not won then remis() end
 
+  who_starts = next_player(who_starts)
+
   screen:show()
+
+  avt.wait_audio_end()
+  avt.clear_keys()
   avt.get_key()
 end
 
