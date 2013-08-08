@@ -24,6 +24,8 @@ Keys:
   left / right - choose column
   1 - 7 - choose column
   enter / down - drop chip
+
+Mouse supported for AkFAvatar-9.24.2 or higher
 --]]--------------------------------------------------------------------
 
 local avt = require "lua-akfavatar"
@@ -417,6 +419,7 @@ local function seek_hole(column)
   for r=1,6 do mark_hole(column, r, line[r]) end
 
   -- check for ascending diagonal line
+  line = {}
   local r = row - column
   for c=1,7 do r=r+1; line[c] = board[c][r] end
   line = analyze(line)
@@ -424,7 +427,7 @@ local function seek_hole(column)
   for c=1,7 do r=r+1; mark_hole(c, r, line[c]) end
 
   -- check for descending diagonal line
-  line={}
+  line = {}
   r = row + column
   for c=1,7 do r = r - 1; line[c] = board[c][r] end
   line = analyze(line)
