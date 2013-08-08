@@ -534,6 +534,8 @@ players = avt.choice(2, 2, "1")
 
 if graphic.set_pointer_buttons_key then
   graphic.set_pointer_buttons_key (mouse)
+else
+  avt.set_mouse_visible(false)
 end
 
 repeat play() until false
