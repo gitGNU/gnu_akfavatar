@@ -42,7 +42,8 @@ local color = {
 
 -- false for no sound
 local sound = {
-  success = "hey.au",
+  human_wins = "hey.au",
+  computer_wins = "hahaha.au",
   remis = "question.au",
   full = "harrumph.au"
   }
@@ -94,7 +95,8 @@ local chips = 0 -- how many chips alltogether
 local board = {}
 local holes = {}
 
-local success = avt.load_audio_file(avt.search(sound.success)) or avt.alert()
+local human_wins = avt.load_audio_file(avt.search(sound.human_wins)) or avt.alert()
+local computer_wins = avt.alert() -- loaded only when needed
 local remis = avt.load_audio_file(avt.search(sound.remis)) or avt.alert()
 local full = avt.load_audio_file(avt.search(sound.full)) or avt.alert()
 
@@ -226,7 +228,8 @@ end -- draw_board
 
 
 local function show_winning_row(column, row)
-  success() --> play sound
+  -- play sound
+  if players==2 or player==1 then human_wins() else computer_wins() end
 
   -- draw connector - pen position assumed to be at start
   screen:color(color.connector)
@@ -531,6 +534,10 @@ avt.tell(L"Four in a row", "\n",
 
 players = avt.choice(2, 2, "1")
 
+if players==1 then
+  computer_wins = avt.load_audio_file(avt.search(sound.computer_wins))
+     or avt.alert()
+end
 
 if graphic.set_pointer_buttons_key then
   graphic.set_pointer_buttons_key (mouse)
