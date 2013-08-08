@@ -456,6 +456,7 @@ local function compute(column)
   end
 
   -- seek field that is not indirectly threatend
+  -- avoid current column
   for i, c in ipairs{4,3,5,2,6,1,7} do
     if c~=column and filled[c]<6 and not holes[c][filled[c]+2] then
       return c
@@ -467,10 +468,9 @@ local function compute(column)
     return column
   end
 
-  -- eventually give up an own threat
-  local oponent = next_player(player)
+  -- all are indirectly threatened => give up an own threat
   for i, c in ipairs{4,3,5,2,6,1,7} do
-    if filled[c]<6 and not holes[c][filled[c]+2]==oponent then
+    if holes[c][filled[c]+2]==player then
       return c
     end
   end
