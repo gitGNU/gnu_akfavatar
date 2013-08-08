@@ -224,6 +224,7 @@ local function draw_board()
   screen:put(logo, width - logo:width() - 5, 5)
 end -- draw_board
 
+
 local function show_winning_row(column, row)
   success() --> play sound
 
@@ -237,6 +238,7 @@ local function show_winning_row(column, row)
   score[player] = score[player] + 1
   show_score()
 end
+
 
 -- check whether there are 4 in a row for last player
 local function check(column)
@@ -299,7 +301,7 @@ end
 local function speed_test()
   local delay = avt.ticks()
   screen:show ()
-  if avt.ticks() - delay > 100 then slow = true; end
+  if avt.ticks() - delay > 100 then slow = true end
 end
 
 
@@ -478,8 +480,8 @@ local function compute(column)
     end
   end
 
-  -- last resort: find any free column
-  for i, c in ipairs{4,3,5,2,6,1,7} do
+  -- last resort: find any free column - game lost
+  for c=1,7 do
     if filled[c] < 6 then return c end
   end
 
