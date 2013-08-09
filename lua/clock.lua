@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 local avt = require "lua-akfavatar"
 local graphic = require "akfavatar-graphic"
 
+local resized = 0xE800
+
 avt.title("Clock")
 avt.start()
 
@@ -86,6 +88,7 @@ end -- draw clockface
 
 
 local function clock()
+  ::start::
   local color = "saddle brown"
   local s = math.min(graphic.fullsize())
   local gr, width, height = graphic.new(s, s)
@@ -141,7 +144,11 @@ local function clock()
     gr:show()
   until avt.key_pressed()
 
-  avt.clear_keys()
+  if resized==avt.get_key() then goto start end
+end
+
+if graphic.set_resize_key then
+  graphic.set_resize_key(resized)
 end
 
 clock()

@@ -25,7 +25,7 @@ Keys:
   1 - 7 - choose column
   enter / down - drop chip
 
-Mouse supported for AkFAvatar-9.24.2 or higher
+Mouse supported for AKFAvatar-9.24.2 or higher
 --]]--------------------------------------------------------------------
 
 local avt = require "lua-akfavatar"
@@ -82,6 +82,7 @@ local player = 1
 local who_starts = 1
 local slow = false
 local mouse = 0xE800
+local resized = 0xE801
 
 local screen, width, height = graphic.new()
 local fwidth, fheight = graphic.font_size()
@@ -209,8 +210,6 @@ local function draw_board()
              boardxoffset + boardwidth + 10,
              height)
 
-  clear_board()
-
   -- show numbers
   screen:color(color.numbers)
   screen:textalign("left", "top")
@@ -224,7 +223,36 @@ local function draw_board()
   show_score()
 
   screen:put(logo, width - logo:width() - 5, 5)
+  -- board must still be cleard!
+
 end -- draw_board
+
+
+local function redraw()
+  screen, width, height = graphic.new()
+  fieldsize = height / 7
+  radius = fieldsize / 2 - 10
+  boardwidth, boardheight = fieldsize * 7, height - fieldsize
+  boardxoffset = 1 + width/2 - boardwidth/2
+  boardyoffset = 1 + fieldsize
+
+  draw_board()
+
+  local current_player = player
+
+  for row=1,6 do
+    for col=1,7 do
+      player = board[col][row]
+      if player then
+        chip_position(col, row)
+      else
+        clear_position(col, row)
+      end
+    end
+  end
+
+  player = current_player
+end
 
 
 local function show_winning_row(column, row)
@@ -325,6 +353,8 @@ local function select_slot(column)
         above(column, player)
         key = avt.key.down
       end
+    elseif resized==key then
+      redraw()
     end
   until avt.key.down==key or avt.key.enter==key
 
@@ -497,6 +527,7 @@ local function play()
   local column = 4
 
   draw_board()
+  clear_board()
   speed_test()
 
   player = who_starts
@@ -524,7 +555,7 @@ local function play()
 
   avt.wait_audio_end()
   avt.clear_keys()
-  avt.get_key()
+  if resized==avt.get_key() then redraw() end
 end
 
 
@@ -540,9 +571,13 @@ if players==1 then
 end
 
 if graphic.set_pointer_buttons_key then
-  graphic.set_pointer_buttons_key (mouse)
+  graphic.set_pointer_buttons_key(mouse)
 else
   avt.set_mouse_visible(false)
+end
+
+if graphic.set_resize_key then
+  graphic.set_resize_key(resized)
 end
 
 repeat play() until false

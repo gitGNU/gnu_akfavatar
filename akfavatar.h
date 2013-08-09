@@ -1095,6 +1095,13 @@ AVT_API avt_char avt_set_audio_end_key (avt_char key);
 /* so use them with care, don't rely on them */
 
 /*
+ * send a key when the window is resized
+ * set to AVT_KEY_NONE to stop it
+ * it returns the previous key
+ */
+AVT_API avt_char avt_set_resize_key (avt_char key);
+
+/*
  * send a key when one of the buttons of the pointer (mouse) is pressed
  * set to AVT_KEY_NONE to stop it
  * it returns the previous key

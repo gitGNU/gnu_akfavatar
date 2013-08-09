@@ -149,6 +149,8 @@ struct avt_settings
   short int scroll_mode;
   short int textdir_rtl;
   short int balloonheight, balloonmaxheight, balloonwidth;
+
+  avt_char resize_key;
 };
 
 struct avt_key_buffer
@@ -425,8 +427,24 @@ avt_resize (int width, int height)
 
       // make all changes visible
       avt_update_all ();
+
+      if (avt.resize_key and avt.resize_key != avt_last_key ())
+	avt_push_key (avt.resize_key);
     }
 }
+
+
+extern avt_char
+avt_set_resize_key (avt_char key)
+{
+  avt_char old;
+
+  old = avt.resize_key;
+  avt.resize_key = key;
+
+  return old;
+}
+
 
 static inline void
 avt_release_raw_image (void)
@@ -4659,6 +4677,7 @@ avt_reset ()
 
   avt_clear_keys ();
   avt_reserve_single_keys (false);
+  avt.resize_key = AVT_KEY_NONE;
   avt_set_pointer_buttons_key (AVT_KEY_NONE);
   avt_set_pointer_motion_key (AVT_KEY_NONE);
   avt_clear_screen ();		// also resets some variables

@@ -1,3 +1,10 @@
+2013-08-09  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h, avatar.c (avt_set_resize_key): new function
+	lua/akfavatar-graphic.c (lgraphic_set_resize_key): new function
+	lua/four_in_a_row.lua: adapted
+	lua/clock.lua: adapted
+
 2013-08-07  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/four_in_a_row.lua: play against computer

@@ -1893,12 +1893,20 @@ lgraphic_get_pointer_position (lua_State * L)
   return 2;
 }
 
+static int
+lgraphic_set_resize_key (lua_State * L)
+{
+  lua_pushunsigned (L, avt_set_resize_key (luaL_checkunsigned (L, 1)));
+
+  return 1;
+}
 
 
 static const luaL_Reg graphiclib[] = {
   {"new", lgraphic_new},
   {"fullsize", lgraphic_fullsize},
   {"font_size", lgraphic_font_size},
+  {"set_resize_key", lgraphic_set_resize_key},
   {"set_pointer_buttons_key", lgraphic_set_pointer_buttons_key},
   {"set_pointer_motion_key", lgraphic_set_pointer_motion_key},
   {"get_pointer_position", lgraphic_get_pointer_position},

@@ -1,12 +1,14 @@
 * AKFAvatar-testing
 
+  - lua/clock.lua: resizing works (with some delay)
+  - lua/four_in_a_row.lua: mouse support / resizing
   - lua/four_in_a_row.lua: play against computer
-  - lua/four_in_a_row.lua: mouse support
 
   Lua-API changes:
     - Module "akfavatar-graphic":
       - new functions: graphic.set_pointer_buttons_key,
-        graphic.set_pointer_motion_key, graphic.get_pointer_position
+        graphic.set_pointer_motion_key, graphic.get_pointer_position,
+        graphic.set_resize_key
 
 * AKFAvatar 0.24.1
 
