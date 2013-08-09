@@ -553,9 +553,10 @@ local function play()
 
   screen:show()
 
-  avt.wait_audio_end()
-  avt.clear_keys()
-  if resized==avt.get_key() then redraw() end
+  repeat
+    local key = avt.get_key()
+    if resized==key then redraw(); screen:show() end
+  until key~=resized
 end
 
 
