@@ -73,11 +73,16 @@ avt.set_background_color(color.background)
 avt.start()
 avt.start_audio()
 
+avt.tell(L"Four in a row", "\n",
+         L"1 Player", "\n",
+         L"2 Players")
+
+local players = avt.choice(2, 2, "1")
+
 local logo = graphic.new(64, 64)
 logo:put_file(avt.search("akf64.xpm"))
 
 local score = {[1] = 0, [2] = 0}
-local players = 2
 local player = 1
 local who_starts = 1
 local slow = false
@@ -97,9 +102,14 @@ local board = {}
 local holes = {}
 
 local human_wins = avt.load_audio_file(avt.search(sound.human_wins)) or avt.alert()
-local computer_wins = avt.alert() -- loaded only when needed
 local remis = avt.load_audio_file(avt.search(sound.remis)) or avt.alert()
 local full = avt.load_audio_file(avt.search(sound.full)) or avt.alert()
+
+local computer_wins = avt.alert()
+if players==1 then
+  computer_wins = avt.load_audio_file(avt.search(sound.computer_wins))
+     or avt.alert()
+end
 
 
 local function show_keys()
@@ -559,17 +569,6 @@ local function play()
   until key~=resized
 end
 
-
-avt.tell(L"Four in a row", "\n",
-         L"1 Player", "\n",
-         L"2 Players")
-
-players = avt.choice(2, 2, "1")
-
-if players==1 then
-  computer_wins = avt.load_audio_file(avt.search(sound.computer_wins))
-     or avt.alert()
-end
 
 if graphic.set_pointer_buttons_key then
   graphic.set_pointer_buttons_key(mouse)
