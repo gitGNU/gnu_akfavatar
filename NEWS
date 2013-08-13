@@ -1,4 +1,4 @@
-* AKFAvatar-testing
+* AKFAvatar 0.24.2
 
   - lua/clock.lua: resizing works (with some delay)
   - lua/four_in_a_row.lua: mouse support / resizing
