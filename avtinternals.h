@@ -136,6 +136,7 @@ bool avt_check_buttons (int x, int y);
 void avt_add_key (avt_char key);
 avt_char avt_last_key (void);
 void avt_resize (int width, int height);
+void avt_update_all (void);
 
 /* avttiming.c */
 void avt_delay (int milliseconds); // only for under a second

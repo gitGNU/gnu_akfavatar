@@ -1,7 +1,8 @@
 /*
  * AKFAvatar - library for showing an avatar who says things in a balloon
  * this part is for the audio-output
- * Copyright (c) 2007,2008,2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007,2008,2009,2010,2011,2012,2013
+ * Andreas K. Foerster <info@akfoerster.de>
  *
  * required standards: C99
  *
@@ -81,13 +82,25 @@ fill_audio (void *userdata, uint8_t * stream, int len)
     }
 
   // Copy as much data as possible
-  if (len > soundleft)
-    len = soundleft;
+  if (len <= soundleft)
+    {
+      SDL_memcpy (stream, current_sound.sound + soundpos, len);
 
-  SDL_memcpy (stream, current_sound.sound + soundpos, len);
+      soundpos += len;
+      soundleft -= len;
+    }
+  else				// len > soundleft
+    {
+      SDL_memcpy (stream, current_sound.sound + soundpos, soundleft);
 
-  soundpos += len;
-  soundleft -= len;
+      // silence rest
+      SDL_memset (stream + soundleft,
+		  (AVT_AUDIO_U8 != current_sound.audio_type) ? 0 : 128,
+		  len - soundleft);
+
+
+      soundleft = 0;
+    }
 }
 
 // must be called AFTER avt_start!

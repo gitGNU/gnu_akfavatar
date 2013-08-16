@@ -1,12 +1,13 @@
 /*
  * AKFAvatar SDL backend
- * Copyright (c) 2007,2008,2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007,2008,2009,2010,2011,2012,2013
+ * Andreas K. Foerster <info@akfoerster.de>
  *
  * required standards: C99
  *
  * other software:
  * required:
- *  SDL1.2.11 or later (but not 1.3!)
+ *  SDL1.2.11 or later
  * optional (deprecated):
  *  SDL_image1.2
  *
@@ -29,8 +30,11 @@
 #define _ISOC99_SOURCE
 #define _XOPEN_SOURCE 600
 
+// FIXME: just for porting
+#if SDL_MAJOR_VERSION < 2
 // undefine to deactivate imageloaders including SDL_Image
 #define IMAGELOADERS
+#endif
 
 // don't make functions deprecated for this file
 #define _AVT_USE_DEPRECATED
@@ -58,6 +62,7 @@
 #define AVT_TIMEOUT 1
 #define AVT_PUSH_KEY 2
 
+#if SDL_MAJOR_VERSION < 2
 // only defined in later SDL versions
 #ifndef SDL_BUTTON_WHEELUP
 #  define SDL_BUTTON_WHEELUP 4
@@ -66,12 +71,23 @@
 #ifndef SDL_BUTTON_WHEELDOWN
 #  define SDL_BUTTON_WHEELDOWN 5
 #endif
+#endif // SDL1
 
+#if SDL_MAJOR_VERSION >= 2
+static SDL_Window *sdl_window;
+static SDL_Renderer *sdl_renderer;
+static SDL_Texture *sdl_screen;
+static const struct avt_charenc *utf8;
+#else // SDL-1.2
 static SDL_Surface *sdl_screen;
-static short int mode;		// whether fullscreen or window or ...
+#endif
+
 static SDL_Cursor *mpointer;
-static int windowmode_width, windowmode_height;
+
 static Uint32 screenflags;	// flags for the screen
+
+static short int mode;		// whether fullscreen or window or ...
+static int windowmode_width, windowmode_height;
 
 static bool reserve_single_keys;
 static avt_char pointer_button_key;	// key simulated for mouse button 1-3
@@ -82,6 +98,64 @@ static int avt_pause (void);
 static void avt_analyze_event (SDL_Event * event);
 //-----------------------------------------------------------------------------
 
+
+#if SDL_MAJOR_VERSION >= 2
+
+// this shall be the only function to update the window/screen
+static void
+update_area_sdl (avt_graphic * screen, int x, int y, int width, int height)
+{
+  SDL_Rect rect;
+  int screen_width, screen_height;
+
+  screen_width = screen->width;
+  screen_height = screen->height;
+
+  if (x < 0)
+    {
+      width -= (-x);
+      x = 0;
+    }
+
+  if (x + width > screen_width)
+    width = screen_width - x;
+
+  if (y < 0)
+    {
+      height -= (-y);
+      y = 0;
+    }
+
+  if (y + height > screen_height)
+    height = screen_height - y;
+
+  if (width <= 0 or height <= 0 or x > screen_width or y > screen_height)
+    return;
+
+  rect.x = x;
+  rect.y = y;
+  rect.w = width;
+  rect.h = height;
+
+  SDL_UpdateTexture (sdl_screen, &rect,
+		     screen->pixels + (y * screen_width) + x,
+		     MINIMALWIDTH * sizeof (avt_color));
+
+  if (width != screen_width or height != screen_height)
+    SDL_RenderCopy (sdl_renderer, sdl_screen, &rect, &rect);
+  else				// update all
+    {
+      int c = avt_get_background_color ();
+      SDL_SetRenderDrawColor (sdl_renderer, avt_red (c), avt_green (c),
+			      avt_blue (c), 255);
+      SDL_RenderClear (sdl_renderer);
+      SDL_RenderCopy (sdl_renderer, sdl_screen, NULL, NULL);
+    }
+
+  SDL_RenderPresent (sdl_renderer);
+}
+
+#else // SDL-1.2
 
 // this shall be the only function to update the window/screen
 static void
@@ -94,6 +168,7 @@ update_area_sdl (avt_graphic * screen, int x, int y, int width, int height)
   SDL_UpdateRect (sdl_screen, x, y, width, height);
 }
 
+#endif // SDL-1.2
 
 #ifdef IMAGELOADERS
 
@@ -189,6 +264,46 @@ load_image_done (void)
 
 // sdl image loaders
 
+#if SDL_MAJOR_VERSION >= 2
+
+// import an SDL_Surface into the internal format
+static inline avt_graphic *
+avt_import_sdl_surface (SDL_Surface * s)
+{
+  Uint32 flags;
+  avt_graphic *gr;
+  SDL_Surface *d;
+  SDL_PixelFormat format = {
+    SDL_PIXELFORMAT_ARGB8888,
+    NULL,
+    CHAR_BIT * sizeof (avt_color), sizeof (avt_color),
+    {0, 0}
+    ,
+    0x00FF0000, 0x0000FF00, 0x000000FF, 0,
+    0, 0, 0, 0,
+    16, 8, 0, 0,
+    0, NULL
+  };
+
+  flags = 0;			// unused
+
+  // convert into the internally used pixel format
+  d = SDL_ConvertSurface (s, &format, flags);
+
+  gr = avt_new_graphic (d->w, d->h);
+  if (gr)
+    {
+      gr->transparent = (SDL_GetColorKey (s, &gr->color_key) == 0);
+      memcpy (gr->pixels, d->pixels, d->w * d->h * sizeof (avt_color));
+    }
+
+  SDL_FreeSurface (d);
+  // s is freed by the caller
+
+  return gr;
+}
+
+#else // SDL-1.2
 
 // import an SDL_Surface into the internal format
 static inline avt_graphic *
@@ -224,6 +339,7 @@ avt_import_sdl_surface (SDL_Surface * s)
 
   return gr;
 }
+#endif // SDL-1.2
 
 static inline avt_graphic *
 avt_load_image_rw (SDL_RWops * RW)
@@ -275,6 +391,57 @@ load_image_memory_sdl (void *data, size_t size)
 #else // not IMAGELOADERS
 #define load_image_done(void)	// empty
 #endif // not IMAGELOADERS
+
+
+#if SDL_MAJOR_VERSION >= 2
+
+extern void
+avt_toggle_fullscreen (void)
+{
+  if (not sdl_screen)
+    return;
+
+  // toggle bit for fullscreenmode
+  screenflags = screenflags xor SDL_WINDOW_FULLSCREEN_DESKTOP;
+
+  SDL_SetWindowFullscreen (sdl_window, screenflags);
+
+  if ((screenflags bitand SDL_WINDOW_FULLSCREEN_DESKTOP) != 0)
+    mode = AVT_FULLSCREEN;
+  else
+    mode = AVT_WINDOW;
+}
+
+extern void
+avt_switch_mode (int new_mode)
+{
+  if (sdl_screen and new_mode != mode)
+    {
+      mode = new_mode;
+      switch (mode)
+	{
+	case AVT_FULLSCREENNOSWITCH:
+	case AVT_FULLSCREEN:
+	  if ((screenflags bitand SDL_WINDOW_FULLSCREEN_DESKTOP) == 0)
+	    {
+	      screenflags = screenflags bitor SDL_WINDOW_FULLSCREEN_DESKTOP;
+	      SDL_SetWindowFullscreen (sdl_window, screenflags);
+	    }
+	  break;
+
+	case AVT_WINDOW:
+	  if ((screenflags bitand SDL_WINDOW_FULLSCREEN_DESKTOP) != 0)
+	    {
+	      screenflags =
+		screenflags bitand compl (SDL_WINDOW_FULLSCREEN_DESKTOP);
+	      SDL_SetWindowFullscreen (sdl_window, screenflags);
+	    }
+	  break;
+	}
+    }
+}
+
+#else // SDL-1.2
 
 static void
 resize_sdl (avt_graphic * screen, int width, int height)
@@ -356,10 +523,12 @@ avt_switch_mode (int new_mode)
     }
 }
 
+#endif // SDL-1.2
+
 static inline void
-avt_analyze_key (SDL_keysym key)
+avt_analyze_key (Sint32 keycode, Uint16 mod)
 {
-  switch (key.sym)
+  switch (keycode)
     {
     case SDLK_PAUSE:
       avt_pause ();
@@ -373,10 +542,8 @@ avt_analyze_key (SDL_keysym key)
       break;
 
     case SDLK_q:
-      if (key.mod & KMOD_LALT)
+      if (mod & KMOD_LALT)
 	_avt_STATUS = AVT_QUIT;
-      else if (key.unicode)
-	avt_add_key (key.unicode);
       break;
 
     case SDLK_F11:
@@ -387,98 +554,99 @@ avt_analyze_key (SDL_keysym key)
       break;
 
     case SDLK_RETURN:
-      if (key.mod & KMOD_LALT)
+      if (mod & KMOD_LALT)
 	avt_toggle_fullscreen ();
       else
 	avt_add_key (AVT_KEY_ENTER);
       break;
 
     case SDLK_f:
-      if ((key.mod & KMOD_CTRL) and (key.mod & KMOD_LALT))
+      if ((mod & KMOD_CTRL) and (mod & KMOD_LALT))
 	avt_toggle_fullscreen ();
-      else if (key.unicode)
-	avt_add_key (key.unicode);
       break;
 
     case SDLK_UP:
-    case SDLK_KP8:
-      if (key.unicode)
-	avt_add_key (key.unicode);
-      else
-	avt_add_key (AVT_KEY_UP);
+      avt_add_key (AVT_KEY_UP);
       break;
 
     case SDLK_DOWN:
-    case SDLK_KP2:
-      if (key.unicode)
-	avt_add_key (key.unicode);
-      else
-	avt_add_key (AVT_KEY_DOWN);
+      avt_add_key (AVT_KEY_DOWN);
       break;
 
     case SDLK_RIGHT:
-    case SDLK_KP6:
-      if (key.unicode)
-	avt_add_key (key.unicode);
-      else
-	avt_add_key (AVT_KEY_RIGHT);
+      avt_add_key (AVT_KEY_RIGHT);
       break;
 
     case SDLK_LEFT:
-    case SDLK_KP4:
-      if (key.unicode)
-	avt_add_key (key.unicode);
-      else
-	avt_add_key (AVT_KEY_LEFT);
+      avt_add_key (AVT_KEY_LEFT);
       break;
 
     case SDLK_INSERT:
-    case SDLK_KP0:
-      if (key.unicode)
-	avt_add_key (key.unicode);
-      else
-	avt_add_key (AVT_KEY_INSERT);
+      avt_add_key (AVT_KEY_INSERT);
       break;
 
     case SDLK_DELETE:
-    case SDLK_KP_PERIOD:
-      if (key.unicode)
-	avt_add_key (key.unicode);
-      else
-	avt_add_key (AVT_KEY_DELETE);
+      avt_add_key (AVT_KEY_DELETE);
       break;
 
     case SDLK_HOME:
-    case SDLK_KP7:
-      if (key.unicode)
-	avt_add_key (key.unicode);
-      else
-	avt_add_key (AVT_KEY_HOME);
+      avt_add_key (AVT_KEY_HOME);
       break;
 
     case SDLK_END:
-    case SDLK_KP1:
-      if (key.unicode)
-	avt_add_key (key.unicode);
-      else
-	avt_add_key (AVT_KEY_END);
+      avt_add_key (AVT_KEY_END);
       break;
 
     case SDLK_PAGEUP:
-    case SDLK_KP9:
-      if (key.unicode)
-	avt_add_key (key.unicode);
-      else
-	avt_add_key (AVT_KEY_PAGEUP);
+      avt_add_key (AVT_KEY_PAGEUP);
       break;
 
     case SDLK_PAGEDOWN:
-    case SDLK_KP3:
-      if (key.unicode)
-	avt_add_key (key.unicode);
-      else
-	avt_add_key (AVT_KEY_PAGEDOWN);
+      avt_add_key (AVT_KEY_PAGEDOWN);
       break;
+
+#if SDL_MAJOR_VERSION < 2
+
+    case SDLK_KP0:
+      avt_add_key (AVT_KEY_INSERT);
+      break;
+
+    case SDLK_KP1:
+      avt_add_key (AVT_KEY_END);
+      break;
+
+    case SDLK_KP2:
+      avt_add_key (AVT_KEY_DOWN);
+      break;
+
+    case SDLK_KP3:
+      avt_add_key (AVT_KEY_PAGEDOWN);
+      break;
+
+    case SDLK_KP4:
+      avt_add_key (AVT_KEY_LEFT);
+      break;
+
+    case SDLK_KP6:
+      avt_add_key (AVT_KEY_RIGHT);
+      break;
+
+    case SDLK_KP7:
+      avt_add_key (AVT_KEY_HOME);
+      break;
+
+    case SDLK_KP8:
+      avt_add_key (AVT_KEY_UP);
+      break;
+
+    case SDLK_KP9:
+      avt_add_key (AVT_KEY_PAGEUP);
+      break;
+
+    case SDLK_KP_PERIOD:
+      avt_add_key (AVT_KEY_DELETE);
+      break;
+#endif
 
     case SDLK_BACKSPACE:
       avt_add_key (AVT_KEY_BACKSPACE);
@@ -492,9 +660,11 @@ avt_analyze_key (SDL_keysym key)
       avt_add_key (AVT_KEY_MENU);
       break;
 
+#if SDL_MAJOR_VERSION < 2
     case SDLK_EURO:
       avt_add_key (0x20AC);
       break;
+#endif
 
     case SDLK_F1:
     case SDLK_F2:
@@ -510,12 +680,7 @@ avt_analyze_key (SDL_keysym key)
     case SDLK_F13:
     case SDLK_F14:
     case SDLK_F15:
-      avt_add_key (AVT_KEY_F1 + (key.sym - SDLK_F1));
-      break;
-
-    default:
-      if (key.unicode)
-	avt_add_key (key.unicode);
+      avt_add_key (AVT_KEY_F1 + (keycode - SDLK_F1));
       break;
     }				// switch (key.sym)
 }
@@ -529,10 +694,6 @@ avt_analyze_event (SDL_Event * event)
       _avt_STATUS = AVT_QUIT;
       break;
 
-    case SDL_VIDEORESIZE:
-      avt_resize (event->resize.w, event->resize.h);
-      break;
-
     case SDL_MOUSEBUTTONDOWN:
       if (event->button.button <= 3)
 	{
@@ -542,10 +703,12 @@ avt_analyze_event (SDL_Event * event)
 		avt_add_key (pointer_button_key);
 	    }
 	}
+#if SDL_MAJOR_VERSION < 2
       else if (SDL_BUTTON_WHEELDOWN == event->button.button)
 	avt_add_key (AVT_KEY_DOWN);
       else if (SDL_BUTTON_WHEELUP == event->button.button)
 	avt_add_key (AVT_KEY_UP);
+#endif
       break;
 
     case SDL_MOUSEMOTION:
@@ -553,9 +716,65 @@ avt_analyze_event (SDL_Event * event)
 	avt_add_key (pointer_motion_key);
       break;
 
-    case SDL_KEYDOWN:
-      avt_analyze_key (event->key.keysym);
+#if SDL_MAJOR_VERSION >= 2
+    case SDL_WINDOWEVENT:
+      switch (event->window.event)
+	{
+	case SDL_WINDOWEVENT_SHOWN:
+	case SDL_WINDOWEVENT_EXPOSED:
+	case SDL_WINDOWEVENT_SIZE_CHANGED:
+	  avt_update_all ();	// redraw
+	  break;
+	}
       break;
+
+    case SDL_KEYDOWN:
+      avt_analyze_key (event->key.keysym.sym, event->key.keysym.mod);
+      break;
+
+    case SDL_TEXTINPUT:
+      {
+	char *text = event->text.text;
+	while (*text)
+	  {
+	    avt_char ch;
+	    size_t s = utf8->decode (utf8, &ch, text);
+	    avt_add_key (ch);
+	    text += s;
+	  }
+      }
+      break;
+
+    case SDL_MOUSEWHEEL:
+      if (event->wheel.y < 0)
+	for (int i = -(event->wheel.y); i > 0; --i)
+	  avt_add_key (AVT_KEY_DOWN);
+      else if (event->wheel.y > 0)
+	for (int i = event->wheel.y; i > 0; --i)
+	  avt_add_key (AVT_KEY_UP);
+
+      if (event->wheel.x < 0)
+	for (int i = -(event->wheel.x); i > 0; --i)
+	  avt_add_key (AVT_KEY_LEFT);
+      else if (event->wheel.x > 0)
+	for (int i = event->wheel.x; i > 0; --i)
+	  avt_add_key (AVT_KEY_RIGHT);
+      break;
+
+#else // SDL-1.2
+
+    case SDL_VIDEORESIZE:
+      avt_resize (event->resize.w, event->resize.h);
+      break;
+
+    case SDL_KEYDOWN:
+      if (event->key.keysym.
+	  unicode and not (event->key.keysym.mod bitand KMOD_LALT))
+	avt_add_key (event->key.keysym.unicode);
+      else
+	avt_analyze_key (event->key.keysym.sym, event->key.keysym.mod);
+      break;
+#endif
     }				// switch (event->type)
 }
 
@@ -736,16 +955,30 @@ avt_set_pointer_buttons_key (avt_char key)
 extern void
 avt_get_pointer_position (int *x, int *y)
 {
-  if (sdl_screen)
-    SDL_GetMouseState (x, y);
-  else
-    {
-      if (x)
-	*x = 0;
+  int mx, my;
 
-      if (y)
-	*y = 0;
+  mx = my = 0;
+
+  if (sdl_screen)
+    {
+#if SDL_MAJOR_VERSION >= 2
+      // compute scale
+      int wx, wy;
+      SDL_GetWindowSize (sdl_window, &wx, &wy);
+      SDL_GetMouseState (&mx, &my);
+
+      mx = mx * MINIMALWIDTH / wx;
+      my = my * MINIMALHEIGHT / wy;
+#else
+      SDL_GetMouseState (&mx, &my);
+#endif
     }
+
+  if (x)
+    *x = mx;
+
+  if (y)
+    *y = my;
 }
 
 extern void
@@ -769,7 +1002,7 @@ avt_get_mode (void)
 extern char *
 avt_get_error (void)
 {
-  return SDL_GetError ();
+  return (char *) SDL_GetError ();
 }
 
 extern void
@@ -787,11 +1020,13 @@ avt_init_SDL (void)
   // only if not already initialized
   if (SDL_WasInit (SDL_INIT_VIDEO | SDL_INIT_TIMER) == 0)
     {
+#if SDL_MAJOR_VERSION < 2
       /* don't try to use the mouse
        * might be needed for the fbcon driver
        * the mouse still works, it is just not required
        */
       SDL_putenv ("SDL_NOMOUSE=1");
+#endif
 
       if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
 	_avt_STATUS = AVT_ERROR;
@@ -818,8 +1053,12 @@ quit_sdl (void)
 extern void
 avt_set_title (const char *title, const char *shortname)
 {
+#if SDL_MAJOR_VERSION >= 2
+  SDL_SetWindowTitle (sdl_window, title);
+#else
   // assumes UTF-8
   SDL_WM_SetCaption (title, shortname);
+#endif
 }
 
 
@@ -875,10 +1114,21 @@ avt_set_icon (char **xpm)
 				   gr->width * sizeof (avt_color),
 				   0x00FF0000, 0x0000FF00, 0x000000FF, 0);
 
+#if SDL_MAJOR_VERSION >= 2
+
+  if (gr->transparent)
+    SDL_SetColorKey (icon, SDL_TRUE, gr->color_key);
+
+  SDL_SetWindowIcon (sdl_window, icon);
+
+#else // SDL-1.2
+
   if (gr->transparent)
     SDL_SetColorKey (icon, SDL_SRCCOLORKEY, gr->color_key);
 
   SDL_WM_SetIcon (icon, NULL);
+
+#endif
 
   SDL_FreeSurface (icon);
   avt_free_graphic (gr);
@@ -912,8 +1162,60 @@ avt_start (const char *title, const char *shortname, int window_mode)
   if (not shortname)
     shortname = title;
 
-  avt_set_title (title, shortname);
+#if SDL_MAJOR_VERSION >= 2
+  screenflags = SDL_WINDOW_RESIZABLE;
+
+  if (mode >= 1)
+    screenflags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+
+  sdl_window =
+    SDL_CreateWindow (title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		      MINIMALWIDTH, MINIMALHEIGHT, screenflags);
+
+  if (not sdl_window)
+    {
+      avt_set_error ("error creating window");
+      _avt_STATUS = AVT_ERROR;
+      return _avt_STATUS;
+    }
+
   avt_set_icon (akfavatar_xpm);
+
+  sdl_renderer = SDL_CreateRenderer (sdl_window, -1, 0);
+
+  if (not sdl_renderer)
+    {
+      avt_set_error ("error creating renderer");
+      _avt_STATUS = AVT_ERROR;
+      return _avt_STATUS;
+    }
+
+  SDL_SetHint (SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+  SDL_RenderSetLogicalSize (sdl_renderer, MINIMALWIDTH, MINIMALHEIGHT);
+
+  sdl_screen = SDL_CreateTexture (sdl_renderer, SDL_PIXELFORMAT_ARGB8888,
+				  SDL_TEXTUREACCESS_STREAMING,
+				  MINIMALWIDTH, MINIMALHEIGHT);
+
+  if (not sdl_screen)
+    {
+      avt_set_error ("error creating screen texture");
+      _avt_STATUS = AVT_ERROR;
+      return _avt_STATUS;
+    }
+
+  // set up a new graphic to draw to
+  backend = avt_start_common (avt_new_graphic (MINIMALWIDTH, MINIMALHEIGHT));
+
+  // size of the window (not to be confused with the variable window)
+  windowmode_width = MINIMALWIDTH;
+  windowmode_height = MINIMALHEIGHT;
+
+  utf8 = avt_utf8 ();
+
+#else // SDL-1.2
+
+  avt_set_title (title, shortname);
 
   // Initialize the display
   screenflags = SDL_SWSURFACE | SDL_RESIZABLE;
@@ -934,6 +1236,7 @@ avt_start (const char *title, const char *shortname, int window_mode)
     }
 #endif
 
+  avt_set_icon (akfavatar_xpm);
   SDL_ClearError ();
 
   if (mode >= 1)
@@ -969,10 +1272,22 @@ avt_start (const char *title, const char *shortname, int window_mode)
       return _avt_STATUS;
     }
 
+  // needed to get the character of the typed key
+  SDL_EnableUNICODE (1);
+
+  // key repeat mode
+  SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+
   // set up a graphic with the same pixel data
   backend = avt_start_common (avt_data_to_graphic (sdl_screen->pixels,
 						   sdl_screen->w,
 						   sdl_screen->h));
+
+  // size of the window (not to be confused with the variable window)
+  windowmode_width = sdl_screen->w;
+  windowmode_height = sdl_screen->h;
+
+#endif /* SDL-1.2 */
 
   if (not backend or _avt_STATUS != AVT_NORMAL)
     return _avt_STATUS;
@@ -980,7 +1295,9 @@ avt_start (const char *title, const char *shortname, int window_mode)
   backend->update_area = update_area_sdl;
   backend->quit = quit_sdl;
   backend->wait_key = wait_key_sdl;
+#if SDL_MAJOR_VERSION < 2
   backend->resize = resize_sdl;
+#endif
 
 #ifdef IMAGELOADERS
   backend->graphic_file = load_image_file_sdl;
@@ -988,17 +1305,7 @@ avt_start (const char *title, const char *shortname, int window_mode)
   backend->graphic_memory = load_image_memory_sdl;
 #endif
 
-  // size of the window (not to be confused with the variable window
-  windowmode_width = sdl_screen->w;
-  windowmode_height = sdl_screen->h;
-
   avt_set_mouse_pointer ();
-
-  // needed to get the character of the typed key
-  SDL_EnableUNICODE (1);
-
-  // key repeat mode
-  SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
   // ignore what we don't use
   SDL_EventState (SDL_MOUSEMOTION, SDL_IGNORE);
