@@ -141,7 +141,7 @@ update_area_sdl (avt_graphic * screen, int x, int y, int width, int height)
 		     screen->pixels + (y * screen_width) + x,
 		     MINIMALWIDTH * sizeof (avt_color));
 
-  if (width != screen_width or height != screen_height)
+  if (width < screen_width or height < screen_height)
     SDL_RenderCopy (sdl_renderer, sdl_screen, &rect, &rect);
   else				// update all
     {
