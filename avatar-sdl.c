@@ -11,6 +11,11 @@
  * optional (deprecated):
  *  SDL_image1.2
  *
+ * ATTENTION
+ * Support for SDL2 is very problematic and I don't know, what it is
+ * Stay away from it!
+ *
+ *
  * This file is part of AKFAvatar
  *
  * AKFAvatar is free software; you can redistribute it and/or modify
@@ -30,12 +35,6 @@
 #define _ISOC99_SOURCE
 #define _XOPEN_SOURCE 600
 
-// FIXME: just for porting
-#if SDL_MAJOR_VERSION < 2
-// undefine to deactivate imageloaders including SDL_Image
-#define IMAGELOADERS
-#endif
-
 // don't make functions deprecated for this file
 #define _AVT_USE_DEPRECATED
 
@@ -53,6 +52,19 @@
 #include "mpointer.xbm"
 #include "mpointer_mask.xbm"
 
+
+#if SDL_MAJOR_VERSION >= 2
+#define SDL2
+#warning "SDL2 support is still problematic, use SDL-1.2"
+#endif
+
+// FIXME: just for porting
+#ifndef SDL2
+// undefine to deactivate imageloaders including SDL_Image
+#define IMAGELOADERS
+#endif
+
+
 #if defined(LINK_SDL_IMAGE) and defined(IMAGELOADERS)
 #  include "SDL_image.h"
 #endif
@@ -62,7 +74,7 @@
 #define AVT_TIMEOUT 1
 #define AVT_PUSH_KEY 2
 
-#if SDL_MAJOR_VERSION < 2
+#ifndef SDL2
 // only defined in later SDL versions
 #ifndef SDL_BUTTON_WHEELUP
 #  define SDL_BUTTON_WHEELUP 4
@@ -73,7 +85,7 @@
 #endif
 #endif // SDL1
 
-#if SDL_MAJOR_VERSION >= 2
+#ifdef SDL2
 static SDL_Window *sdl_window;
 static SDL_Renderer *sdl_renderer;
 static SDL_Texture *sdl_screen;
@@ -99,7 +111,7 @@ static void avt_analyze_event (SDL_Event * event);
 //-----------------------------------------------------------------------------
 
 
-#if SDL_MAJOR_VERSION >= 2
+#ifdef SDL2
 
 // this shall be the only function to update the window/screen
 static void
@@ -264,7 +276,7 @@ load_image_done (void)
 
 // sdl image loaders
 
-#if SDL_MAJOR_VERSION >= 2
+#ifdef SDL2
 
 // import an SDL_Surface into the internal format
 static inline avt_graphic *
@@ -393,7 +405,7 @@ load_image_memory_sdl (void *data, size_t size)
 #endif // not IMAGELOADERS
 
 
-#if SDL_MAJOR_VERSION >= 2
+#ifdef SDL2
 
 extern void
 avt_toggle_fullscreen (void)
@@ -605,7 +617,7 @@ avt_analyze_key (Sint32 keycode, Uint16 mod)
       avt_add_key (AVT_KEY_PAGEDOWN);
       break;
 
-#if SDL_MAJOR_VERSION < 2
+#ifndef SDL2
 
     case SDLK_KP0:
       avt_add_key (AVT_KEY_INSERT);
@@ -660,7 +672,7 @@ avt_analyze_key (Sint32 keycode, Uint16 mod)
       avt_add_key (AVT_KEY_MENU);
       break;
 
-#if SDL_MAJOR_VERSION < 2
+#ifndef SDL2
     case SDLK_EURO:
       avt_add_key (0x20AC);
       break;
@@ -703,7 +715,7 @@ avt_analyze_event (SDL_Event * event)
 		avt_add_key (pointer_button_key);
 	    }
 	}
-#if SDL_MAJOR_VERSION < 2
+#ifndef SDL2
       else if (SDL_BUTTON_WHEELDOWN == event->button.button)
 	avt_add_key (AVT_KEY_DOWN);
       else if (SDL_BUTTON_WHEELUP == event->button.button)
@@ -716,7 +728,7 @@ avt_analyze_event (SDL_Event * event)
 	avt_add_key (pointer_motion_key);
       break;
 
-#if SDL_MAJOR_VERSION >= 2
+#ifdef SDL2
     case SDL_WINDOWEVENT:
       switch (event->window.event)
 	{
@@ -961,7 +973,7 @@ avt_get_pointer_position (int *x, int *y)
 
   if (sdl_screen)
     {
-#if SDL_MAJOR_VERSION >= 2
+#ifdef SDL2
       // compute scale
       int wx, wy;
       SDL_GetWindowSize (sdl_window, &wx, &wy);
@@ -1020,7 +1032,7 @@ avt_init_SDL (void)
   // only if not already initialized
   if (SDL_WasInit (SDL_INIT_VIDEO | SDL_INIT_TIMER) == 0)
     {
-#if SDL_MAJOR_VERSION < 2
+#ifndef SDL2
       /* don't try to use the mouse
        * might be needed for the fbcon driver
        * the mouse still works, it is just not required
@@ -1053,7 +1065,7 @@ quit_sdl (void)
 extern void
 avt_set_title (const char *title, const char *shortname)
 {
-#if SDL_MAJOR_VERSION >= 2
+#ifdef SDL2
   SDL_SetWindowTitle (sdl_window, title);
 #else
   // assumes UTF-8
@@ -1114,7 +1126,7 @@ avt_set_icon (char **xpm)
 				   gr->width * sizeof (avt_color),
 				   0x00FF0000, 0x0000FF00, 0x000000FF, 0);
 
-#if SDL_MAJOR_VERSION >= 2
+#ifdef SDL2
 
   if (gr->transparent)
     SDL_SetColorKey (icon, SDL_TRUE, gr->color_key);
@@ -1162,7 +1174,7 @@ avt_start (const char *title, const char *shortname, int window_mode)
   if (not shortname)
     shortname = title;
 
-#if SDL_MAJOR_VERSION >= 2
+#ifdef SDL2
   screenflags = SDL_WINDOW_RESIZABLE;
 
   if (mode >= 1)
@@ -1295,7 +1307,7 @@ avt_start (const char *title, const char *shortname, int window_mode)
   backend->update_area = update_area_sdl;
   backend->quit = quit_sdl;
   backend->wait_key = wait_key_sdl;
-#if SDL_MAJOR_VERSION < 2
+#ifndef SDL2
   backend->resize = resize_sdl;
 #endif
 
