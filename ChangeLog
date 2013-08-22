@@ -1,3 +1,8 @@
+2013-08-22  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c (avt_input), avatar-sdl.c (textinput_sdl):
+	eventually support screen keyboard
+
 2013-08-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl.c, audio-sdl.c, avatar.c: start porting to SDL2

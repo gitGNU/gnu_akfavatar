@@ -153,7 +153,7 @@ update_area_sdl (avt_graphic * screen, int x, int y, int width, int height)
     {
       int c = avt_get_background_color ();
       SDL_SetRenderDrawColor (sdl_renderer, avt_red (c), avt_green (c),
-			      avt_blue (c), 255);
+			      avt_blue (c), SDL_ALPHA_OPAQUE);
       SDL_RenderClear (sdl_renderer);
       SDL_RenderCopy (sdl_renderer, sdl_screen, &rect, &rect);
     }
@@ -999,6 +999,18 @@ avt_set_mouse_visible (bool visible)
     }
 }
 
+#ifdef SDL2
+// start or stop text input
+static void
+textinput_sdl (bool start)
+{
+  if (start)
+    SDL_StartTextInput ();
+  else
+    SDL_StopTextInput ();
+}
+#endif
+
 extern int
 avt_get_mode (void)
 {
@@ -1303,7 +1315,9 @@ avt_start (const char *title, const char *shortname, int window_mode)
   backend->update_area = update_area_sdl;
   backend->quit = quit_sdl;
   backend->wait_key = wait_key_sdl;
-#ifndef SDL2
+#ifdef SDL2
+  backend->textinput = textinput_sdl;
+#else // SDL-1.2
   backend->resize = resize_sdl;
 #endif
 
