@@ -11,11 +11,6 @@
  * optional (deprecated):
  *  SDL_image1.2
  *
- * ATTENTION
- * Support for SDL2 is very problematic and I don't know, what it is
- * Stay away from it!
- *
- *
  * This file is part of AKFAvatar
  *
  * AKFAvatar is free software; you can redistribute it and/or modify
@@ -53,9 +48,8 @@
 #include "mpointer_mask.xbm"
 
 
-#if SDL_MAJOR_VERSION >= 2
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 #define SDL2
-#warning "SDL2 support is still problematic, use SDL-1.2"
 #endif
 
 // FIXME: just for porting
