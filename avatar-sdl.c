@@ -155,7 +155,7 @@ update_area_sdl (avt_graphic * screen, int x, int y, int width, int height)
       SDL_SetRenderDrawColor (sdl_renderer, avt_red (c), avt_green (c),
 			      avt_blue (c), 255);
       SDL_RenderClear (sdl_renderer);
-      SDL_RenderCopy (sdl_renderer, sdl_screen, NULL, NULL);
+      SDL_RenderCopy (sdl_renderer, sdl_screen, &rect, &rect);
     }
 
   SDL_RenderPresent (sdl_renderer);
@@ -774,8 +774,8 @@ avt_analyze_event (SDL_Event * event)
       break;
 
     case SDL_KEYDOWN:
-      if (event->key.keysym.
-	  unicode and not (event->key.keysym.mod bitand KMOD_LALT))
+      if (event->key.keysym.unicode
+	  and not (event->key.keysym.mod bitand KMOD_LALT))
 	avt_add_key (event->key.keysym.unicode);
       else
 	avt_analyze_key (event->key.keysym.sym, event->key.keysym.mod);
@@ -1186,6 +1186,8 @@ avt_start (const char *title, const char *shortname, int window_mode)
     }
 
   avt_set_icon (akfavatar_xpm);
+
+  SDL_SetWindowMinimumSize (sdl_window, MINIMALWIDTH, MINIMALHEIGHT);
 
   sdl_renderer = SDL_CreateRenderer (sdl_window, -1, 0);
 
