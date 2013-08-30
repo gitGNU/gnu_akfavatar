@@ -48,7 +48,7 @@
 #include "mpointer_mask.xbm"
 
 
-#if SDL_VERSION_ATLEAST(2, 0, 0)
+#if SDL_VERSION_ATLEAST(1, 3, 0)
 #define SDL2
 #endif
 
