@@ -773,8 +773,11 @@ avt_analyze_event (SDL_Event * event)
       avt_resize (event->resize.w, event->resize.h);
       break;
 
+#define ESC  (27)
+
     case SDL_KEYDOWN:
       if (event->key.keysym.unicode
+          and event->key.keysym.unicode != ESC
 	  and not (event->key.keysym.mod bitand KMOD_LALT))
 	avt_add_key (event->key.keysym.unicode);
       else
