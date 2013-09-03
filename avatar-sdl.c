@@ -611,6 +611,10 @@ avt_analyze_key (Sint32 keycode, Uint16 mod)
       avt_add_key (AVT_KEY_PAGEDOWN);
       break;
 
+    case SDLK_KP_ENTER:
+      avt_add_key (AVT_KEY_ENTER);
+      break;
+
 #ifdef SDL2
 
       // Checking for NumLock is unreliable!
