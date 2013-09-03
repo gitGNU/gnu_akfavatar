@@ -611,7 +611,62 @@ avt_analyze_key (Sint32 keycode, Uint16 mod)
       avt_add_key (AVT_KEY_PAGEDOWN);
       break;
 
-#ifndef SDL2
+#ifdef SDL2
+
+      // Checking for NumLock is unreliable!
+      // So I check if the key caused a text-input event.
+
+    case SDLK_KP_0:
+      if (not SDL_HasEvent (SDL_TEXTINPUT))
+	avt_add_key (AVT_KEY_INSERT);
+      break;
+
+    case SDLK_KP_1:
+      if (not SDL_HasEvent (SDL_TEXTINPUT))
+	avt_add_key (AVT_KEY_END);
+      break;
+
+    case SDLK_KP_2:
+      if (not SDL_HasEvent (SDL_TEXTINPUT))
+	avt_add_key (AVT_KEY_DOWN);
+      break;
+
+    case SDLK_KP_3:
+      if (not SDL_HasEvent (SDL_TEXTINPUT))
+	avt_add_key (AVT_KEY_PAGEDOWN);
+      break;
+
+    case SDLK_KP_4:
+      if (not SDL_HasEvent (SDL_TEXTINPUT))
+	avt_add_key (AVT_KEY_LEFT);
+      break;
+
+    case SDLK_KP_6:
+      if (not SDL_HasEvent (SDL_TEXTINPUT))
+	avt_add_key (AVT_KEY_RIGHT);
+      break;
+
+    case SDLK_KP_7:
+      if (not SDL_HasEvent (SDL_TEXTINPUT))
+	avt_add_key (AVT_KEY_HOME);
+      break;
+
+    case SDLK_KP_8:
+      if (not SDL_HasEvent (SDL_TEXTINPUT))
+	avt_add_key (AVT_KEY_UP);
+      break;
+
+    case SDLK_KP_9:
+      if (not SDL_HasEvent (SDL_TEXTINPUT))
+	avt_add_key (AVT_KEY_PAGEUP);
+      break;
+
+    case SDLK_KP_PERIOD:
+      if (not SDL_HasEvent (SDL_TEXTINPUT))
+	avt_add_key (AVT_KEY_DELETE);
+      break;
+
+#else // SDL-1.2
 
     case SDLK_KP0:
       avt_add_key (AVT_KEY_INSERT);
@@ -652,6 +707,11 @@ avt_analyze_key (Sint32 keycode, Uint16 mod)
     case SDLK_KP_PERIOD:
       avt_add_key (AVT_KEY_DELETE);
       break;
+
+    case SDLK_EURO:
+      avt_add_key (0x20AC);
+      break;
+
 #endif
 
     case SDLK_BACKSPACE:
@@ -665,12 +725,6 @@ avt_analyze_key (Sint32 keycode, Uint16 mod)
     case SDLK_MENU:
       avt_add_key (AVT_KEY_MENU);
       break;
-
-#ifndef SDL2
-    case SDLK_EURO:
-      avt_add_key (0x20AC);
-      break;
-#endif
 
     case SDLK_F1:
     case SDLK_F2:
