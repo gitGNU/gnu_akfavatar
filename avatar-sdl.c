@@ -683,9 +683,6 @@ avt_analyze_key (Sint32 keycode, Uint16 mod)
     case SDLK_F9:
     case SDLK_F10:
     case SDLK_F12:
-    case SDLK_F13:
-    case SDLK_F14:
-    case SDLK_F15:
       avt_add_key (AVT_KEY_F1 + (keycode - SDLK_F1));
       break;
     }				// switch (key.sym)
