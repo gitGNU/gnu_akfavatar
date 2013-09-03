@@ -634,8 +634,9 @@ avt_analyze_key (Sint32 keycode, Uint16 mod)
 
 #ifdef SDL2
 
-    case SDLK_v:		// ctrl + v
-      if ((mod & KMOD_CTRL) and SDL_HasClipboardText ())
+      // ctrl + alt + v  (get clipboard text)
+    case SDLK_v:
+      if ((mod & KMOD_CTRL) and (mod & KMOD_LALT) and SDL_HasClipboardText ())
 	avt_add_text (SDL_GetClipboardText ());
       break;
 
@@ -766,6 +767,13 @@ avt_analyze_key (Sint32 keycode, Uint16 mod)
       avt_add_key (AVT_KEY_F1 + (keycode - SDLK_F1));
       break;
     }				// switch (key.sym)
+
+#ifdef SDL2
+  // Ctrl + letter
+  if ((mod & KMOD_CTRL) and (mod & KMOD_LALT) == 0
+      and (keycode >= SDLK_a and keycode <= SDLK_z))
+    avt_add_key (keycode - (SDLK_a - 1));
+#endif
 }
 
 static void
