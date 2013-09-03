@@ -205,6 +205,8 @@ avt_play_audio (avt_audio * snd, int playmode)
   SDL_CloseAudio ();
   SDL_LockAudio ();
 
+  SDL_memset (&audiospec, 0, sizeof (audiospec));
+
   // load sound
   current_sound = *snd;
 
