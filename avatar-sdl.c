@@ -1068,7 +1068,7 @@ avt_set_title (const char *title, const char *shortname)
 }
 
 static inline void
-reverse_bytes (unsigned char *bytes, size_t length)
+reverse_bits (unsigned char *bytes, size_t length)
 {
   while (length--)
     {
@@ -1089,9 +1089,9 @@ reverse_bytes (unsigned char *bytes, size_t length)
 static inline void
 avt_set_mouse_pointer (void)
 {
-  // we need the bytes reversed :-(
-  reverse_bytes (mpointer_bits, sizeof (mpointer_bits));
-  reverse_bytes (mpointer_mask_bits, sizeof (mpointer_mask_bits));
+  // we need the bits reversed :-(
+  reverse_bits (mpointer_bits, sizeof (mpointer_bits));
+  reverse_bits (mpointer_mask_bits, sizeof (mpointer_mask_bits));
 
   mpointer = SDL_CreateCursor (mpointer_bits, mpointer_mask_bits,
 			       mpointer_width, mpointer_height,
