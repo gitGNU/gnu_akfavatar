@@ -1067,40 +1067,33 @@ avt_set_title (const char *title, const char *shortname)
 #endif
 }
 
+static inline void
+reverse_bytes (unsigned char *bytes, size_t length)
+{
+  while (length--)
+    {
+      register unsigned char b = *bytes;
 
-#define reverse_byte(b) \
-  (((b) & 0x80) >> 7 | \
-   ((b) & 0x40) >> 5 | \
-   ((b) & 0x20) >> 3 | \
-   ((b) & 0x10) >> 1 | \
-   ((b) & 0x08) << 1 | \
-   ((b) & 0x04) << 3 | \
-   ((b) & 0x02) << 5 | \
-   ((b) & 0x01) << 7)
+      *bytes = (b bitand 0x80) >> 7
+	bitor (b bitand 0x40) >> 5
+	bitor (b bitand 0x20) >> 3
+	bitor (b bitand 0x10) >> 1
+	bitor (b bitand 0x08) << 1
+	bitor (b bitand 0x04) << 3
+	bitor (b bitand 0x02) << 5 bitor (b bitand 0x01) << 7;
 
-#define xbm_bytes(img)  (((img##_width+CHAR_BIT-1) / CHAR_BIT) * img##_height)
+      ++bytes;
+    }
+}
 
 static inline void
 avt_set_mouse_pointer (void)
 {
-  unsigned char mp[xbm_bytes (mpointer)];
-  unsigned char mp_mask[xbm_bytes (mpointer_mask)];
-
   // we need the bytes reversed :-(
+  reverse_bytes (mpointer_bits, sizeof (mpointer_bits));
+  reverse_bytes (mpointer_mask_bits, sizeof (mpointer_mask_bits));
 
-  for (int i = 0; i < xbm_bytes (mpointer); i++)
-    {
-      register unsigned char b = mpointer_bits[i];
-      mp[i] = reverse_byte (b);
-    }
-
-  for (int i = 0; i < xbm_bytes (mpointer_mask); i++)
-    {
-      register unsigned char b = mpointer_mask_bits[i];
-      mp_mask[i] = reverse_byte (b);
-    }
-
-  mpointer = SDL_CreateCursor (mp, mp_mask,
+  mpointer = SDL_CreateCursor (mpointer_bits, mpointer_mask_bits,
 			       mpointer_width, mpointer_height,
 			       mpointer_x_hot, mpointer_y_hot);
 
