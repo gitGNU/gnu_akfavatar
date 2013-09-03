@@ -447,6 +447,19 @@ avt_switch_mode (int new_mode)
     }
 }
 
+// add text (UTF-8) into keyboard buffer
+static inline void
+avt_add_text (const char *text)
+{
+  while (*text)
+    {
+      avt_char ch;
+      size_t s = utf8->decode (utf8, &ch, text);
+      avt_add_key (ch);
+      text += s;
+    }
+}
+
 #else // SDL-1.2
 
 static void
@@ -616,6 +629,11 @@ avt_analyze_key (Sint32 keycode, Uint16 mod)
       break;
 
 #ifdef SDL2
+
+    case SDLK_v:		// ctrl + v
+      if ((mod & KMOD_CTRL) and SDL_HasClipboardText ())
+	avt_add_text (SDL_GetClipboardText ());
+      break;
 
       // Checking for NumLock is unreliable!
       // So I check if the key caused a text-input event.
@@ -794,16 +812,7 @@ avt_analyze_event (SDL_Event * event)
       break;
 
     case SDL_TEXTINPUT:
-      {
-	char *text = event->text.text;
-	while (*text)
-	  {
-	    avt_char ch;
-	    size_t s = utf8->decode (utf8, &ch, text);
-	    avt_add_key (ch);
-	    text += s;
-	  }
-      }
+      avt_add_text (event->text.text);
       break;
 
     case SDL_MOUSEWHEEL:
