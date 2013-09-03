@@ -774,7 +774,7 @@ avt_analyze_event (SDL_Event * event)
 
     case SDL_KEYDOWN:
       if (event->key.keysym.unicode
-          and event->key.keysym.unicode != ESC
+	  and event->key.keysym.unicode != ESC
 	  and not (event->key.keysym.mod bitand KMOD_LALT))
 	avt_add_key (event->key.keysym.unicode);
       else
@@ -999,18 +999,6 @@ avt_set_mouse_visible (bool visible)
     }
 }
 
-#ifdef SDL2
-// start or stop text input
-static void
-textinput_sdl (bool start)
-{
-  if (start)
-    SDL_StartTextInput ();
-  else
-    SDL_StopTextInput ();
-}
-#endif
-
 extern int
 avt_get_mode (void)
 {
@@ -1233,6 +1221,8 @@ avt_start (const char *title, const char *shortname, int window_mode)
 
   utf8 = avt_utf8 ();
 
+  SDL_StartTextInput ();
+
 #else // SDL-1.2
 
   avt_set_title (title, shortname);
@@ -1315,9 +1305,7 @@ avt_start (const char *title, const char *shortname, int window_mode)
   backend->update_area = update_area_sdl;
   backend->quit = quit_sdl;
   backend->wait_key = wait_key_sdl;
-#ifdef SDL2
-  backend->textinput = textinput_sdl;
-#else // SDL-1.2
+#ifndef SDL2
   backend->resize = resize_sdl;
 #endif
 

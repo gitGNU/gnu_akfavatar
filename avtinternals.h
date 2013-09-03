@@ -117,7 +117,6 @@ struct avt_backend
   void (*quit) (void);
   void (*wait_key) (void);
   void (*resize) (avt_graphic * screen, int width, int height);
-  void (*textinput) (bool startstop);
 
   avt_graphic *(*graphic_file) (const char *filename);
   avt_graphic *(*graphic_stream) (avt_stream *stream);

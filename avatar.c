@@ -3213,10 +3213,6 @@ avt_input (wchar_t * s, size_t size, const wchar_t * default_text,
       len = pos = 0;
     }
 
-  // eventually activate screen keyboard
-  if (backend.textinput)
-    backend.textinput (true);
-
   insert_mode = true;
   finished = false;
   ch = AVT_KEY_NONE;
@@ -3367,10 +3363,6 @@ avt_input (wchar_t * s, size_t size, const wchar_t * default_text,
     }
 
   s[len] = L'\0';
-
-  // eventually deactivate screen keyboard
-  if (backend.textinput)
-    backend.textinput (false);
 
   avt_show_text_cursor (false);
 
