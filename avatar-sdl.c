@@ -579,6 +579,10 @@ avt_analyze_key (Sint32 keycode, Uint16 mod)
 	avt_add_key (AVT_KEY_ENTER);
       break;
 
+    case SDLK_TAB:
+      avt_add_key (0x0009);
+      break;
+
     case SDLK_f:
       if ((mod & KMOD_CTRL) and (mod & KMOD_LALT))
 	avt_toggle_fullscreen ();
