@@ -802,7 +802,8 @@ avt_analyze_event (SDL_Event * event)
       break;
 
     case SDL_MOUSEBUTTONDOWN:
-      if (event->button.button <= 3)
+      if (SDL_BUTTON_LEFT == event->button.button
+	  or SDL_BUTTON_RIGHT == event->button.button)
 	{
 	  if (not avt_check_buttons (event->button.x, event->button.y))
 	    {
@@ -810,7 +811,10 @@ avt_analyze_event (SDL_Event * event)
 		avt_add_key (pointer_button_key);
 	    }
 	}
-#ifndef SDL2
+#ifdef SDL2
+      else if (SDL_BUTTON_MIDDLE == event->button.button)
+	avt_add_clipboard ();
+#else // SDL-1.2
       else if (SDL_BUTTON_WHEELDOWN == event->button.button)
 	avt_add_key (AVT_KEY_DOWN);
       else if (SDL_BUTTON_WHEELUP == event->button.button)
