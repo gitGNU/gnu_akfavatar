@@ -460,6 +460,22 @@ avt_add_text (const char *text)
     }
 }
 
+// add text from clipboard to key buffer
+// up to 512 characters - rest is ignored
+static inline void
+avt_add_clipboard (void)
+{
+  char *text;
+
+  text = SDL_GetClipboardText ();
+
+  if (text)
+    {
+      avt_add_text (text);
+      SDL_free (text);
+    }
+}
+
 #else // SDL-1.2
 
 static void
@@ -634,10 +650,10 @@ avt_analyze_key (Sint32 keycode, Uint16 mod)
 
 #ifdef SDL2
 
-      // ctrl + alt + v  (get clipboard text)
+      // alt + v  (get clipboard text)
     case SDLK_v:
-      if ((mod & KMOD_CTRL) and (mod & KMOD_LALT) and SDL_HasClipboardText ())
-	avt_add_text (SDL_GetClipboardText ());
+      if (mod & KMOD_LALT)
+	avt_add_clipboard ();
       break;
 
       // Checking for NumLock is unreliable!
