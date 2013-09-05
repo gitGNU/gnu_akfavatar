@@ -1188,13 +1188,16 @@ reverse_bits (unsigned char *bytes, size_t length)
 static inline void
 avt_prepare_mouse_cursors (void)
 {
-  // we need the bits reversed :-(
-  reverse_bits (mfinger_bits, sizeof (mfinger_bits));
-  reverse_bits (mfinger_mask_bits, sizeof (mfinger_mask_bits));
+  if (not mouse_finger)
+    {
+      // we need the bits reversed :-(
+      reverse_bits (mfinger_bits, sizeof (mfinger_bits));
+      reverse_bits (mfinger_mask_bits, sizeof (mfinger_mask_bits));
 
-  mouse_finger = SDL_CreateCursor (mfinger_bits, mfinger_mask_bits,
-				   mfinger_width, mfinger_height,
-				   mfinger_x_hot, mfinger_y_hot);
+      mouse_finger = SDL_CreateCursor (mfinger_bits, mfinger_mask_bits,
+				       mfinger_width, mfinger_height,
+				       mfinger_x_hot, mfinger_y_hot);
+    }
 }
 
 static inline void
