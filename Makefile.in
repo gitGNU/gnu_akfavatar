@@ -1030,6 +1030,7 @@ dist: about $(srcdir)/alert.au
 	   $(srcdir)/lua.xpm \
 	   $(srcdir)/btn.xpm $(srcdir)/btn_up.xbm $(srcdir)/btn_down.xbm \
 	   $(srcdir)/mpointer.xbm $(srcdir)/mpointer_mask.xbm \
+	   $(srcdir)/mfinger.xbm $(srcdir)/mfinger_mask.xbm \
 	   $(srcdir)/btn_left.xbm $(srcdir)/btn_right.xbm \
 	   $(srcdir)/btn_no.xbm $(srcdir)/btn_yes.xbm \
 	   $(srcdir)/btn_cancel.xbm $(srcdir)/btn_ff.xbm $(srcdir)/btn_fb.xbm \

@@ -1,3 +1,8 @@
+2013-09-05  Andreas K. Foerster  <info@akfoerster.de>
+
+	* mfinger.xbm, mfinger_mask.xbm: new files
+	avatar-sdl.c: adapted
+
 2013-08-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl.c, audio-sdl.c, avatar.c: start porting to SDL2

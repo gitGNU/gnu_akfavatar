@@ -44,8 +44,8 @@
 
 // include images
 #include "akfavatar.xpm"
-#include "mpointer.xbm"
-#include "mpointer_mask.xbm"
+#include "mfinger.xbm"
+#include "mfinger_mask.xbm"
 
 
 #if SDL_VERSION_ATLEAST(1, 3, 0)
@@ -88,7 +88,7 @@ static const struct avt_charenc *utf8;
 static SDL_Surface *sdl_screen;
 #endif
 
-static SDL_Cursor *mpointer;
+static SDL_Cursor *mouse_finger;
 
 static Uint32 screenflags;	// flags for the screen
 
@@ -1148,8 +1148,8 @@ quit_sdl (void)
 
   if (sdl_screen)
     {
-      SDL_FreeCursor (mpointer);
-      mpointer = NULL;
+      SDL_FreeCursor (mouse_finger);
+      mouse_finger = NULL;
       SDL_Quit ();
       sdl_screen = NULL;	// it was freed by SDL_Quit
     }
@@ -1186,17 +1186,15 @@ reverse_bits (unsigned char *bytes, size_t length)
 }
 
 static inline void
-avt_set_mouse_pointer (void)
+avt_prepare_mouse_cursors (void)
 {
   // we need the bits reversed :-(
-  reverse_bits (mpointer_bits, sizeof (mpointer_bits));
-  reverse_bits (mpointer_mask_bits, sizeof (mpointer_mask_bits));
+  reverse_bits (mfinger_bits, sizeof (mfinger_bits));
+  reverse_bits (mfinger_mask_bits, sizeof (mfinger_mask_bits));
 
-  mpointer = SDL_CreateCursor (mpointer_bits, mpointer_mask_bits,
-			       mpointer_width, mpointer_height,
-			       mpointer_x_hot, mpointer_y_hot);
-
-  SDL_SetCursor (mpointer);
+  mouse_finger = SDL_CreateCursor (mfinger_bits, mfinger_mask_bits,
+				   mfinger_width, mfinger_height,
+				   mfinger_x_hot, mfinger_y_hot);
 }
 
 static inline void
@@ -1407,7 +1405,8 @@ avt_start (const char *title, const char *shortname, int window_mode)
   backend->graphic_memory = load_image_memory_sdl;
 #endif
 
-  avt_set_mouse_pointer ();
+  avt_prepare_mouse_cursors ();
+  SDL_SetCursor (mouse_finger);
 
   // ignore what we don't use
   SDL_EventState (SDL_MOUSEMOTION, SDL_IGNORE);
