@@ -518,8 +518,8 @@ var encoding: string[80];
 
 { for sound generator }
 const 
-  SampleRate = 44100;
-  BufMax = 4 * Samplerate;
+  SampleRate = 48000;
+  BufMax = Samplerate - 1;  { 1 second }
 
 type TRawSoundBuf = array[0..BufMax] of SmallInt;
 
@@ -1532,12 +1532,12 @@ begin
 if RawSoundBuf=NIL then New(RawSoundBuf);
 
 for i := 0 to BufMax do
-  RawSoundBuf^[i] := trunc(Amplitude * sin(2*pi*frequency*i/Samplerate));
+  RawSoundBuf^[i] := trunc(Amplitude * sin(2*pi*frequency*i/SampleRate));
 
 if GenSound<>NIL then avt_free_audio(GenSound);
 
-GenSound := avt_prepare_raw_audio(BufMax, SampleRate, AVT_AUDIO_S16SYS, Mono);
-avt_add_raw_audio_data(GenSound, RawSoundBuf, BufMax);
+GenSound := avt_prepare_raw_audio(BufMax + 1, SampleRate, AVT_AUDIO_S16SYS, Mono);
+avt_add_raw_audio_data(GenSound, RawSoundBuf, BufMax + 1);
 avt_finalize_raw_audio(GenSound);
 
 avt_play_audio(GenSound, AVT_LOOP)
