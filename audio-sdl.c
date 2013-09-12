@@ -89,7 +89,19 @@ fill_audio (void *userdata, uint8_t * stream, int len)
       soundpos += len;
       soundleft -= len;
     }
-  else				// len > soundleft
+  else if (loop)
+    {
+      SDL_memcpy (stream, current_sound.sound + soundpos, soundleft);
+
+      stream += soundleft;
+      len -= soundleft;
+
+      SDL_memcpy (stream, current_sound.sound, len);
+
+      soundpos = len;
+      soundleft = current_sound.length - len;
+    }
+  else				// len > soundleft (end)
     {
       SDL_memcpy (stream, current_sound.sound + soundpos, soundleft);
 

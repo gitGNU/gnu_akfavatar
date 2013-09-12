@@ -1,3 +1,7 @@
+2013-09-12  Andreas K. Foerster  <info@akfoerster.de>
+
+	* audio-sdl.c (fill_audio): improve audio loop
+
 2013-09-05  Andreas K. Foerster  <info@akfoerster.de>
 
 	* mfinger.xbm, mfinger_mask.xbm: new files
