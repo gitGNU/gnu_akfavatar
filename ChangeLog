@@ -2,6 +2,8 @@
 
 	* audio-sdl.c (fill_audio): improve audio loop
 
+	* pascal/akfavatar.pas: fix sound support
+
 2013-09-05  Andreas K. Foerster  <info@akfoerster.de>
 
 	* mfinger.xbm, mfinger_mask.xbm: new files

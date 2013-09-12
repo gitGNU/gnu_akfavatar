@@ -26,11 +26,11 @@ CRT compatiblity
 
 supported: 
 ClrScr, ClrEol, GotoXY, WhereX, WhereY, Delay, TextColor, TextBackground,
-NormVideo, HighVideo, LowVideo, TextAttr, NoSound, (ReadKey), KeyPressed,
+NormVideo, HighVideo, LowVideo, TextAttr, Sound, NoSound, (ReadKey), KeyPressed,
 Window, DelLine, InsLine, AssignCrt, ScreenSize
 
 dummies for:
-CheckBreak, CheckEof, CheckSnow, DirectVideo, Sound
+CheckBreak, CheckEof, CheckSnow, DirectVideo
 
 no support planned for:
 - TextMode, LastMode:
@@ -338,16 +338,19 @@ procedure FreeSound(snd: pointer);
 { constants for audio_type }
 const
   AVT_AUDIO_UNKNOWN = 0;
-  AVT_AUDIO_U8      = 1;  { unsigned 8 Bit }
-  AVT_AUDIO_S8      = 2;  { signed 8 Bit }
-  AVT_AUDIO_U16LE   = 3;  { unsigned 16 Bit little endian }
-  AVT_AUDIO_U16BE   = 4;  { unsigned 16 Bit big endian }
-  AVT_AUDIO_U16SYS  = 5;  { unsigned 16 Bit system's endianess }
-  AVT_AUDIO_S16LE   = 6;  { signed 16 Bit little endian }
-  AVT_AUDIO_S16BE   = 7;  { signed 16 Bit big endian }
-  AVT_AUDIO_S16SYS  = 8;  { signed 16 Bit system's endianess }
-  AVT_AUDIO_MULAW   = 100;  { 8 Bit mu-law (u-law) }
-  AVT_AUDIO_ALAW    = 101;  { 8 Bit A-Law }
+  AVT_AUDIO_U8      = 1;   { unsigned 8 Bit }
+  AVT_AUDIO_S8      = 2;   { signed 8 Bit }
+  AVT_AUDIO_S16LE   = 3;   { signed 16 Bit little endian }
+  AVT_AUDIO_S16BE   = 4;   { signed 16 Bit big endian }
+  AVT_AUDIO_S16SYS  = 5;   { signed 16 Bit system's endianess }
+  AVT_AUDIO_S24LE   = 6;   { signed 24 Bit little endian }
+  AVT_AUDIO_S24BE   = 7;   { signed 24 Bit big endian }
+  AVT_AUDIO_S24SYS  = 8;   { signed 24 Bit system's endianess }
+  AVT_AUDIO_S32LE   = 9;   { signed 32 Bit little endian }
+  AVT_AUDIO_S32BE   = 10;  { signed 32 Bit big endian }
+  AVT_AUDIO_S32SYS  = 11;  { signed 32 Bit system's endianess }
+  AVT_AUDIO_MULAW   = 100; { 8 Bit mu-law (u-law) }
+  AVT_AUDIO_ALAW    = 101; { 8 Bit A-Law }
 
 function LoadRawSoundData(data:pointer; size: LongInt;
            samplingrate, audio_type, channels: integer): pointer;
@@ -1521,7 +1524,6 @@ end;
 
 procedure Sound(frequency: integer);
 const
-  S16SYS = 8;
   Mono = 1;
   Volume = 75; { volume in percent }
   Amplitude = Volume * 32767 div 100;
@@ -1534,11 +1536,11 @@ for i := 0 to BufMax do
 
 if GenSound<>NIL then avt_free_audio(GenSound);
 
-GenSound := avt_prepare_raw_audio(BufMax, SampleRate, S16SYS, Mono);
+GenSound := avt_prepare_raw_audio(BufMax, SampleRate, AVT_AUDIO_S16SYS, Mono);
 avt_add_raw_audio_data(GenSound, RawSoundBuf, BufMax);
 avt_finalize_raw_audio(GenSound);
 
-avt_play_audio(GenSound, 2)
+avt_play_audio(GenSound, AVT_LOOP)
 end;
 
 procedure NoSound;

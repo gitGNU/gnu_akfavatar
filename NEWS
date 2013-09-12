@@ -1,5 +1,6 @@
 * AKFAvatar-testing
 
+  - fix: Pascal sound support
   - support for SDL2 with automatic resising of the graphics
   - SDL2: support for pasting text from clipboard (Alt+V, middle mouse button)
 
