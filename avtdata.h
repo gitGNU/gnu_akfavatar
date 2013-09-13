@@ -1,6 +1,6 @@
 /*
  * data handling
- * Copyright (c) 2012 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2012,2013 Andreas K. Foerster <info@akfoerster.de>
  *
  * required standards: C99
  *
@@ -63,6 +63,8 @@ struct avt_data
   uint_least16_t (*read16) (avt_data * self);
 
   uint_least32_t (*read32) (avt_data * self);
+
+  int (*fileno) (avt_data * self);
 
   // private
 

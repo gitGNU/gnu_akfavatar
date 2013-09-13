@@ -1,6 +1,6 @@
 /*
  * data reading abstraction
- * Copyright (c) 2012 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2012,2013 Andreas K. Foerster <info@akfoerster.de>
  *
  * required standards: C99
  *
@@ -44,6 +44,7 @@ reset (avt_data * d)
   d->read8 = NULL;
   d->read16 = NULL;
   d->read32 = NULL;
+  d->fileno = NULL;
 }
 
 static void
@@ -262,6 +263,21 @@ method_seek_memory (avt_data * d, long offset, int whence)
 }
 
 
+static int
+method_fileno_stream (avt_data * d)
+{
+  return fileno (d->field.stream.data);
+}
+
+
+static int
+method_fileno_memory (avt_data * d)
+{
+  (void) d;
+  return -1;
+}
+
+
 static void
 method_big_endian (avt_data * d, bool big_endian)
 {
@@ -290,6 +306,7 @@ method_open_stream (avt_data * d, FILE * stream, bool autoclose)
   d->read = method_read_stream;
   d->tell = method_tell_stream;
   d->seek = method_seek_stream;
+  d->fileno = method_fileno_stream;
 
   d->field.stream.data = stream;
   d->field.stream.start = ftell (stream);
@@ -323,6 +340,7 @@ method_open_memory (avt_data * d, const void *memory, size_t size)
   d->read = method_read_memory;
   d->tell = method_tell_memory;
   d->seek = method_seek_memory;
+  d->fileno = method_fileno_memory;
 
   d->field.memory.data = memory;
   d->field.memory.position = 0;

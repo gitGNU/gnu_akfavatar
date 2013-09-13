@@ -1,3 +1,7 @@
+2013-09-13  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtdata.h, avtdata.c (fileno): new method
+
 2013-09-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* audio-sdl.c (fill_audio): improve audio loop
