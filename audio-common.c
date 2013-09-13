@@ -33,7 +33,7 @@
 
 #include <stdlib.h>		// malloc / realloc / free
 #include <stdint.h>
-#include <string.h>		// memcmp / memcpy
+#include <string.h>		// memcmp / memcpy / memset
 #include <iso646.h>
 
 // absolute maximum size for audio data
@@ -263,9 +263,11 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
   switch (snd->audio_type)
     {
     case AVT_AUDIO_S16SYS:
+    case AVT_AUDIO_S16LE:
+    case AVT_AUDIO_S16BE:
     case AVT_AUDIO_U8:
     case AVT_AUDIO_S8:
-      // linear PCM, same bit size and endianness
+      // linear PCM, same bit size
       memcpy (snd->sound + old_size, data, out_size);
       break;
 
@@ -294,32 +296,6 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
 	  *out++ = alaw_decode[*in++];
 	break;
       }
-
-    case AVT_AUDIO_S16LE:
-      {
-	uint_least8_t *restrict in;
-	uint_least16_t *restrict out;
-
-	in = (uint_least8_t *) data;
-	out = (uint_least16_t *) (snd->sound + old_size);
-
-	for (size_t i = out_size / 2; i > 0; i--, in += 2)
-	  *out++ = (in[1] << 8) | in[0];
-      }
-      break;
-
-    case AVT_AUDIO_S16BE:
-      {
-	uint_least8_t *restrict in;
-	uint_least16_t *restrict out;
-
-	in = (uint_least8_t *) data;
-	out = (uint_least16_t *) (snd->sound + old_size);
-
-	for (size_t i = out_size / 2; i > 0; i--, in += 2)
-	  *out++ = (in[0] << 8) | in[1];
-      }
-      break;
 
       // the following ones are all converted to 16 bits
 
@@ -444,6 +420,8 @@ avt_prepare_raw_audio (size_t capacity,
       avt_set_error ("out of memory");
       return NULL;
     }
+
+  memset (s, 0, sizeof (struct avt_audio));
 
   s->length = 0;
   s->audio_type = audio_type;

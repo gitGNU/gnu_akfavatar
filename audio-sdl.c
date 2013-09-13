@@ -232,6 +232,14 @@ avt_play_audio (avt_audio * snd, int playmode)
       audiospec.format = AUDIO_S8;
       break;
 
+    case AVT_AUDIO_S16LE:
+      audiospec.format = AUDIO_S16LSB;
+      break;
+
+    case AVT_AUDIO_S16BE:
+      audiospec.format = AUDIO_S16MSB;
+      break;
+
     default:			// all other get converted
       audiospec.format = AUDIO_S16SYS;
       break;
