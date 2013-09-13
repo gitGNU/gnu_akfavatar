@@ -332,7 +332,7 @@ avt_get_window (void)
 		       window.width, window.height);
 }
 
-extern inline void
+extern void
 avt_update_all (void)
 {
   backend.update_area (screen, 0, 0, screen->width, screen->height);
