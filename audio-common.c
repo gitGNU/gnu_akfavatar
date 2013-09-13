@@ -35,6 +35,15 @@
 #include <stdint.h>
 #include <string.h>		// memcmp / memcpy / memset
 #include <iso646.h>
+#include <unistd.h>		// evtl. defines _POSIX_MAPPED_FILES
+
+#ifdef _POSIX_MAPPED_FILES
+#include <sys/mman.h>
+#else // no mmap
+#define MAP_FAILED  ((void*)(-1))
+#define mmap(addr,length,prot,flags,fd,offset)  MAP_FAILED
+#define munmap(addr, length)  (-1)
+#endif
 
 // absolute maximum size for audio data
 #define MAXIMUM_SIZE  0xFFFFFFFFU
@@ -428,6 +437,8 @@ avt_prepare_raw_audio (size_t capacity,
   s->samplingrate = samplingrate;
   s->channels = channels;
   s->complete = false;
+  s->mmap_address = NULL;
+  s->mmap_length = 0;
 
   // reserve memory
   unsigned char *sound_data = NULL;
@@ -493,7 +504,10 @@ avt_free_audio (avt_audio * snd)
 	avt_stop_audio ();
 
       // free the sound data
-      free (snd->sound);
+      if (snd->mmap_length)
+	munmap (snd->mmap_address, snd->mmap_length);
+      else
+	free (snd->sound);
 
       // free the rest
       free (snd);
@@ -543,6 +557,60 @@ avt_load_audio_block (avt_data * src, uint_least32_t maxsize,
 
   return audio;
 }
+
+
+#ifdef _POSIX_MAPPED_FILES
+
+static avt_audio *
+avt_mmap_audio (avt_data * src, int samplingrate, int audio_type,
+		int channels, int playmode)
+{
+  avt_audio *audio;
+  int fd;
+  void *mmap_address;
+  long length, pos;
+
+  fd = src->fileno (src);
+
+  // not a file?
+  if (fd < 0)
+    return NULL;
+
+  pos = src->tell (src);
+  if (pos < 0 or not src->seek (src, 0, SEEK_END))
+    return NULL;		// stream not seekable
+
+  length = src->tell (src);
+  src->seek (src, pos, SEEK_SET);
+
+  mmap_address = mmap (NULL, length, PROT_READ, MAP_PRIVATE, fd, 0);
+
+  if (MAP_FAILED == mmap_address)
+    return NULL;
+
+  audio = avt_prepare_raw_audio (0, samplingrate, audio_type, channels);
+
+  if (not audio)
+    {
+      munmap (mmap_address, length);
+      return NULL;
+    }
+
+  audio->mmap_address = mmap_address;
+  audio->mmap_length = length;
+  audio->sound = ((unsigned char *) mmap_address) + pos;
+  audio->capacity = audio->length = length - pos;
+  audio->complete = true;
+
+  if (playmode != AVT_LOAD)
+    avt_play_audio (audio, playmode);
+
+  return audio;
+}
+
+#else // no mapped files
+#define avt_mmap_audio(src,rate,type,channels,mode)  (NULL)
+#endif
 
 
 static avt_audio *
@@ -623,8 +691,18 @@ avt_load_au (avt_data * src, uint_least32_t maxsize, int playmode)
    * 23-26: ADPCM variants
    */
 
-  return avt_load_audio_block (src, audio_size, samplingrate, audio_type,
-			       channels, playmode);
+  avt_audio *audio = NULL;
+
+  // try to map file
+  if (encoding == 2 or encoding == 3)
+    audio = avt_mmap_audio (src, samplingrate, audio_type,
+			    channels, playmode);
+
+  if (not audio)
+    audio = avt_load_audio_block (src, audio_size, samplingrate, audio_type,
+				  channels, playmode);
+
+  return audio;
 }
 
 
@@ -725,8 +803,19 @@ avt_load_wave (avt_data * src, uint_least32_t maxsize, int playmode)
   if (chunk_size < maxsize)
     maxsize = chunk_size;
 
-  return avt_load_audio_block (src, maxsize, samplingrate,
-			       audio_type, channels, playmode);
+
+  avt_audio *audio = NULL;
+
+  // try to map file
+  if (encoding == 1 and bits_per_sample <= 16)
+    audio = avt_mmap_audio (src, samplingrate, audio_type,
+			    channels, playmode);
+
+  if (not audio)
+    audio = avt_load_audio_block (src, maxsize, samplingrate, audio_type,
+				  channels, playmode);
+
+  return audio;
 }
 
 // src gets always closed

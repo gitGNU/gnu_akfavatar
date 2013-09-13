@@ -109,6 +109,8 @@ struct avt_audio
   int samplingrate;
   int channels;
   bool complete;
+  void *mmap_address;
+  size_t mmap_length;
 };
 
 struct avt_backend

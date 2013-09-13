@@ -2,6 +2,9 @@
 
 	* avtdata.h, avtdata.c (fileno): new method
 
+	* audio-common.c:
+	try to use mmap for WAV or AU files with LPCM <=16Bit
+
 2013-09-12  Andreas K. Foerster  <info@akfoerster.de>
 
 	* audio-sdl.c (fill_audio): improve audio loop
