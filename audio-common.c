@@ -581,8 +581,15 @@ avt_mmap_audio (avt_data * src, size_t maxsize, int samplingrate,
   if (MAP_FAILED == mmap_address)
     return NULL;
 
-  // on some older systems remove "posix_" and "POSIX_"
+  // advise that access will be sequential
+#ifdef POSIX_MADV_SEQUENTIAL
   posix_madvise (mmap_address, length, POSIX_MADV_SEQUENTIAL);
+#else
+#ifdef MADV_SEQUENTIAL
+  // BSD
+  madvise (mmap_address, length, MADV_SEQUENTIAL);
+#endif
+#endif
 
   audio = avt_prepare_raw_audio (0, samplingrate, audio_type, channels);
 
