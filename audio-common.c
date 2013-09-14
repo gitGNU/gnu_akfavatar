@@ -581,6 +581,9 @@ avt_mmap_audio (avt_data * src, size_t maxsize, int samplingrate,
   if (MAP_FAILED == mmap_address)
     return NULL;
 
+  // on some older systems remove "posix_" and "POSIX_"
+  posix_madvise (mmap_address, length, POSIX_MADV_SEQUENTIAL);
+
   audio = avt_prepare_raw_audio (0, samplingrate, audio_type, channels);
 
   if (not audio)
