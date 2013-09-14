@@ -510,7 +510,7 @@ avt_free_audio (avt_audio * snd)
 
 // if size is unknown use 0 or MAXIMUM_SIZE for maxsize
 static avt_audio *
-avt_load_audio_block (avt_data * src, uint_least32_t maxsize,
+avt_load_audio_block (avt_data * src, size_t maxsize,
 		      int samplingrate, int audio_type, int channels,
 		      int playmode)
 {
@@ -555,8 +555,8 @@ avt_load_audio_block (avt_data * src, uint_least32_t maxsize,
 #ifdef _POSIX_MAPPED_FILES
 
 static avt_audio *
-avt_mmap_audio (avt_data * src, int samplingrate, int audio_type,
-		int channels, int playmode)
+avt_mmap_audio (avt_data * src, size_t maxsize, int samplingrate,
+		int audio_type, int channels, int playmode)
 {
   avt_audio *audio;
   int fd;
@@ -589,10 +589,13 @@ avt_mmap_audio (avt_data * src, int samplingrate, int audio_type,
       return NULL;
     }
 
+  if (not maxsize or maxsize >= MAXIMUM_SIZE)
+    maxsize = length - pos;
+
   audio->mmap_address = mmap_address;
   audio->mmap_length = length;
   audio->sound = ((unsigned char *) mmap_address) + pos;
-  audio->capacity = audio->length = length - pos;
+  audio->capacity = audio->length = maxsize;
   audio->complete = true;
 
   if (playmode != AVT_LOAD)
@@ -607,7 +610,7 @@ avt_mmap_audio (avt_data * src, int samplingrate, int audio_type,
 
 
 static avt_audio *
-avt_load_au (avt_data * src, uint_least32_t maxsize, int playmode)
+avt_load_au (avt_data * src, size_t maxsize, int playmode)
 {
   uint_least32_t head_size, audio_size, encoding, samplingrate, channels;
   int audio_type;
@@ -688,7 +691,7 @@ avt_load_au (avt_data * src, uint_least32_t maxsize, int playmode)
 
   // try to map file
   if (encoding == 2 or encoding == 3)
-    audio = avt_mmap_audio (src, samplingrate, audio_type,
+    audio = avt_mmap_audio (src, audio_size, samplingrate, audio_type,
 			    channels, playmode);
 
   if (not audio)
@@ -701,7 +704,7 @@ avt_load_au (avt_data * src, uint_least32_t maxsize, int playmode)
 
 // The Wave format is so stupid - don't ever use it!
 static avt_audio *
-avt_load_wave (avt_data * src, uint_least32_t maxsize, int playmode)
+avt_load_wave (avt_data * src, size_t maxsize, int playmode)
 {
   int audio_type;
   char identifier[4];
@@ -796,12 +799,11 @@ avt_load_wave (avt_data * src, uint_least32_t maxsize, int playmode)
   if (chunk_size < maxsize)
     maxsize = chunk_size;
 
-
   avt_audio *audio = NULL;
 
   // try to map file
   if (encoding == 1 and bits_per_sample <= 16)
-    audio = avt_mmap_audio (src, samplingrate, audio_type,
+    audio = avt_mmap_audio (src, maxsize, samplingrate, audio_type,
 			    channels, playmode);
 
   if (not audio)
@@ -813,7 +815,7 @@ avt_load_wave (avt_data * src, uint_least32_t maxsize, int playmode)
 
 // src gets always closed
 static avt_audio *
-avt_load_audio_general (avt_data * src, uint_least32_t maxsize, int playmode)
+avt_load_audio_general (avt_data * src, size_t maxsize, int playmode)
 {
   struct avt_audio *s;
   int start;
