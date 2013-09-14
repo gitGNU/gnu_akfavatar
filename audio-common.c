@@ -1,7 +1,8 @@
 /*
  * AKFAvatar - library for showing an avatar who says things in a balloon
  * this part is for audio, independent of the backend
- * Copyright (c) 2007,2008,2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007,2008,2009,2010,2011,2012,2013
+ * Andreas K. Foerster <info@akfoerster.de>
  *
  * required standards: C99
  *
@@ -88,7 +89,7 @@ avt_quit_audio (void)
 {
 }
 
-#define avt_load_audio_general(a,b,c)  NULL
+#define avt_load_audio_general(a,b,c)  (NULL)
 
 #else // not NO_AUDIO
 
@@ -391,10 +392,6 @@ avt_prepare_raw_audio (size_t capacity,
     {
       switch (audio_type)
 	{
-	case AVT_AUDIO_S16LE:
-	  audio_type = AVT_AUDIO_S16SYS;
-	  break;
-
 	case AVT_AUDIO_S24SYS:
 	  audio_type = AVT_AUDIO_S24LE;
 	  break;
@@ -408,10 +405,6 @@ avt_prepare_raw_audio (size_t capacity,
     {
       switch (audio_type)
 	{
-	case AVT_AUDIO_S16BE:
-	  audio_type = AVT_AUDIO_S16SYS;
-	  break;
-
 	case AVT_AUDIO_S24SYS:
 	  audio_type = AVT_AUDIO_S24BE;
 	  break;
