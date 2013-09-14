@@ -605,7 +605,7 @@ avt_mmap_audio (avt_data * src, size_t maxsize, int samplingrate,
 }
 
 #else // no mapped files
-#define avt_mmap_audio(src,rate,type,channels,mode)  (NULL)
+#define avt_mmap_audio(src,maxsize,rate,type,channels,mode)  (NULL)
 #endif
 
 
