@@ -38,7 +38,7 @@
 #include <iso646.h>
 #include <unistd.h>		// evtl. defines _POSIX_MAPPED_FILES
 
-#ifdef _POSIX_MAPPED_FILES
+#if _POSIX_MAPPED_FILES > 0
 #include <sys/mman.h>
 #else // no mmap
 #define MAP_FAILED  ((void*)(-1))
@@ -552,7 +552,7 @@ avt_load_audio_block (avt_data * src, size_t maxsize,
 }
 
 
-#ifdef _POSIX_MAPPED_FILES
+#if _POSIX_MAPPED_FILES > 0
 
 static avt_audio *
 avt_mmap_audio (avt_data * src, size_t maxsize, int samplingrate,
