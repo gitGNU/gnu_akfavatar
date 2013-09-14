@@ -614,6 +614,8 @@ avt_start (const char *title, const char *shortname, int window_mode)
       return _avt_STATUS;
     }
 
+  posix_madvise (fb, fix_info.smem_len, POSIX_MADV_WILLNEED);
+
   // Select UTF-8 mode for input
   AVT_FAILURE_RETRY (write (tty, "\033%G", 3));
 
