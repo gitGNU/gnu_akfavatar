@@ -570,14 +570,22 @@ avt_mmap_audio (avt_data * src, size_t maxsize, int samplingrate,
     return NULL;
 
   pos = src->tell (src);
-  if (pos < 0 or not src->seek (src, 0, SEEK_END))
-    return NULL;		// stream not seekable
+  if (pos < 0)
+    return NULL;
 
-  length = src->tell (src);
-  src->seek (src, pos, SEEK_SET);
+  if (maxsize and maxsize < MAXIMUM_SIZE)
+    length = maxsize + pos;
+  else				// get length of file
+    {
+      if (not src->seek (src, 0, SEEK_END))
+	return NULL;		// stream not seekable
+
+      length = src->tell (src);
+      maxsize = length - pos;
+      src->seek (src, pos, SEEK_SET);
+    }
 
   mmap_address = mmap (NULL, length, PROT_READ, MAP_PRIVATE, fd, 0);
-
   if (MAP_FAILED == mmap_address)
     return NULL;
 
@@ -590,15 +598,11 @@ avt_mmap_audio (avt_data * src, size_t maxsize, int samplingrate,
 #endif
 
   audio = avt_prepare_raw_audio (0, samplingrate, audio_type, channels);
-
   if (not audio)
     {
       munmap (mmap_address, length);
       return NULL;
     }
-
-  if (not maxsize or maxsize >= MAXIMUM_SIZE)
-    maxsize = length - pos;
 
   audio->mmap_address = mmap_address;
   audio->mmap_length = length;
@@ -826,7 +830,7 @@ static avt_audio *
 avt_load_audio_general (avt_data * src, size_t maxsize, int playmode)
 {
   struct avt_audio *s;
-  int start;
+  long start;
   char head[16];
 
   if (not src)
