@@ -57,7 +57,8 @@ avt_prepare_raw_audio (size_t capacity,
 {
   (void) capacity;
   (void) samplingrate;
-  (void) audio_type, (void) channels;
+  (void) audio_type;
+  (void) channels;
 
   return NULL;
 }
