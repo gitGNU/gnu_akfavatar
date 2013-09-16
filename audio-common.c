@@ -38,14 +38,17 @@
 #include <iso646.h>
 #include <unistd.h>		// evtl. defines _POSIX_MAPPED_FILES
 
-#if 0 // _POSIX_MAPPED_FILES > 0
+#if _POSIX_MAPPED_FILES > 0
 #include <sys/mman.h>
 #define avt_munmap(addr, length)  munmap(addr, length)
 #else // no mmap
 #define avt_munmap(addr, length)
 #endif
 
-// absolute maximum size for audio data
+// big files may be read directly from disk
+#define BIG_AUDIO (2*(1<<20))	// 2MB
+
+// maximum size for audio data
 #define MAXIMUM_SIZE  0xFFFFFFFFU
 
 #ifdef NO_AUDIO
@@ -739,10 +742,10 @@ avt_load_au (avt_data * src, size_t maxsize, int playmode)
 
   avt_audio *audio = NULL;
 
-  // if it doesn't need conversion read directly from file
-  if (encoding == 2 or encoding == 3)
+  // if it doesn't need conversion evtl. read directly from file
+  if (BIG_AUDIO <= audio_size and (encoding == 2 or encoding == 3))
     {
-      audio = avt_mmap_audio (src, maxsize, samplingrate, audio_type,
+      audio = avt_mmap_audio (src, audio_size, samplingrate, audio_type,
 			      channels, playmode);
 
       if (not audio)
@@ -857,8 +860,8 @@ avt_load_wave (avt_data * src, size_t maxsize, int playmode)
 
   avt_audio *audio = NULL;
 
-  // if it doesn't need conversion read directly from file
-  if (encoding == 1 and bits_per_sample <= 16)
+  // if it doesn't need conversion evtl. read directly from file
+  if (BIG_AUDIO <= maxsize and encoding == 1 and bits_per_sample <= 16)
     {
       audio = avt_mmap_audio (src, maxsize, samplingrate, audio_type,
 			      channels, playmode);

@@ -3,7 +3,7 @@
   - fix: Pascal sound support
   - support for SDL2 with automatic resising of the graphics
   - SDL2: support for pasting text from clipboard (Alt+V, middle mouse button)
-  - audio: for WAV or AU files with LPCM <= 16 Bit read directly from file
+  - audio: big WAV or AU files with LPCM <= 16Bit read directly from file
 
 * AKFAvatar 0.24.2
 
