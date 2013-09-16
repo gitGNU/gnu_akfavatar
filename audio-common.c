@@ -416,7 +416,7 @@ avt_prepare_raw_audio (size_t capacity,
     }
 
   // get memory for struct
-  s = calloc (sizeof (struct avt_audio), 1);
+  s = calloc (1, sizeof (struct avt_audio));
   if (not s)
     {
       avt_set_error ("out of memory");
