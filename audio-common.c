@@ -32,7 +32,7 @@
 #include "avtinternals.h"
 #include "avtdata.h"
 
-#include <stdlib.h>		// malloc / realloc / free
+#include <stdlib.h>		// malloc / calloc / realloc / free
 #include <stdint.h>
 #include <string.h>		// memcmp / memcpy / memset
 #include <iso646.h>
@@ -416,14 +416,12 @@ avt_prepare_raw_audio (size_t capacity,
     }
 
   // get memory for struct
-  s = (struct avt_audio *) malloc (sizeof (struct avt_audio));
+  s = calloc (sizeof (struct avt_audio), 1);
   if (not s)
     {
       avt_set_error ("out of memory");
       return NULL;
     }
-
-  memset (s, 0, sizeof (struct avt_audio));
 
   s->length = 0;
   s->audio_type = audio_type;
@@ -440,7 +438,7 @@ avt_prepare_raw_audio (size_t capacity,
   if (capacity > 0 and capacity < MAXIMUM_SIZE)
     {
       real_capacity = avt_required_audio_size (s, capacity);
-      sound_data = (unsigned char *) malloc (real_capacity);
+      sound_data = malloc (real_capacity);
 
       if (not sound_data)
 	{
