@@ -38,11 +38,11 @@
 #include <iso646.h>
 #include <unistd.h>		// evtl. defines _POSIX_MAPPED_FILES
 
-#if _POSIX_MAPPED_FILES > 0
+#if 0 // _POSIX_MAPPED_FILES > 0
 #include <sys/mman.h>
 #define avt_munmap(addr, length)  munmap(addr, length)
 #else // no mmap
-#define avt_munmap(addr, length)  (-1)
+#define avt_munmap(addr, length)
 #endif
 
 // absolute maximum size for audio data

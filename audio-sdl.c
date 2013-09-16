@@ -119,12 +119,17 @@ static void
 fetch_audio (void *userdata, uint8_t * stream, int len)
 {
   avt_data *s = userdata;
+  int r;
 
-  if (s->read (s, stream, 1, len) <= 0)
+  r = s->read (s, stream, 1, len);
+
+  if (r < len)
     {
       s->seek (s, current_sound.startpos, SEEK_SET);
 
-      if (not loop)
+      if (loop)
+	s->read (s, stream + r, 1, len - r);
+      else			// no loop
 	{
 	  SDL_PauseAudio (1);
 	  playing = false;
