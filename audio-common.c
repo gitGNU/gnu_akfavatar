@@ -40,10 +40,9 @@
 
 #if _POSIX_MAPPED_FILES > 0
 #include <sys/mman.h>
+#define avt_munmap(addr, length)  munmap(addr, length)
 #else // no mmap
-#define MAP_FAILED  ((void*)(-1))
-#define mmap(addr,length,prot,flags,fd,offset)  MAP_FAILED
-#define munmap(addr, length)  (-1)
+#define avt_munmap(addr, length)  (-1)
 #endif
 
 // absolute maximum size for audio data
@@ -499,7 +498,7 @@ avt_free_audio (avt_audio * snd)
 
       // free the sound data
       if (snd->mmap_length)
-	munmap (snd->mmap_address, snd->mmap_length);
+	avt_munmap (snd->mmap_address, snd->mmap_length);
       else
 	free (snd->sound);
 
@@ -553,7 +552,7 @@ avt_load_audio_block (avt_data * src, size_t maxsize,
 }
 
 
-#if _POSIX_MAPPED_FILES > 0
+#ifdef MAP_FAIlED
 
 static avt_audio *
 avt_mmap_audio (avt_data * src, size_t maxsize, int samplingrate,
@@ -601,7 +600,7 @@ avt_mmap_audio (avt_data * src, size_t maxsize, int samplingrate,
   audio = avt_prepare_raw_audio (0, samplingrate, audio_type, channels);
   if (not audio)
     {
-      munmap (mmap_address, length);
+      avt_munmap (mmap_address, length);
       return NULL;
     }
 
@@ -613,6 +612,11 @@ avt_mmap_audio (avt_data * src, size_t maxsize, int samplingrate,
 
   if (playmode != AVT_LOAD)
     avt_play_audio (audio, playmode);
+
+  /*
+   * note: It is okay to close the original file
+   * after the mapping is established
+   */
 
   return audio;
 }
