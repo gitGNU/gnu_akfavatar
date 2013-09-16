@@ -33,6 +33,7 @@
 
 #include "akfavatar.h"
 #include "avtinternals.h"
+#include "avtdata.h"
 #include "SDL.h"
 #include "SDL_audio.h"
 
@@ -110,6 +111,27 @@ fill_audio (void *userdata, uint8_t * stream, int len)
 		  len - soundleft);
 
       soundleft = 0;
+    }
+}
+
+// callback for data streams
+static void
+fetch_audio (void *userdata, uint8_t * stream, int len)
+{
+  avt_data *s = userdata;
+
+  if (s->read (s, stream, 1, len) <= 0)
+    {
+      s->seek (s, current_sound.startpos, SEEK_SET);
+
+      if (not loop)
+	{
+	  SDL_PauseAudio (1);
+	  playing = false;
+
+	  if (audio_key)
+	    avt_push_key (audio_key);
+	}
     }
 }
 
@@ -245,9 +267,18 @@ avt_play_audio (avt_audio * snd, int playmode)
 
   audiospec.freq = snd->samplingrate;
   audiospec.channels = snd->channels;
-  audiospec.callback = fill_audio;
   audiospec.samples = OUTPUT_BUFFER;
-  audiospec.userdata = &current_sound;	// not really used
+
+  if (snd->data)
+    {
+      audiospec.callback = fetch_audio;
+      audiospec.userdata = snd->data;
+    }
+  else				// memory based reading
+    {
+      audiospec.callback = fill_audio;
+      audiospec.userdata = NULL;
+    }
 
   loop = (playmode == AVT_LOOP);
 

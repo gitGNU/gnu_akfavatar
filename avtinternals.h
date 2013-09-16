@@ -31,7 +31,7 @@
 // the following symbols should not be exported by the library
 #pragma GCC visibility push(hidden)
 
-#include "avtdata.h"  // to get the hidden visibility
+#include "avtdata.h"		// to get the hidden visibility
 #include "avtgraphic.h"
 
 #if defined(VGA)
@@ -92,7 +92,7 @@
 
 #define AVT_BYTE_ORDER  AVT_BIG_ENDIAN
 
-#else  // assume little endian as default
+#else // assume little endian as default
 
 #define AVT_BYTE_ORDER  AVT_LITTLE_ENDIAN
 
@@ -109,19 +109,22 @@ struct avt_audio
   int samplingrate;
   int channels;
   bool complete;
-  void *mmap_address;
-  size_t mmap_length;
+  void *mmap_address;		/* just for mmapped data */
+  size_t mmap_length;		/* just for mmapped data */
+  avt_data *data;		/* when reading directly from file */
+  size_t startpos;		/* when reading directly from file */
 };
 
 struct avt_backend
 {
-  void (*update_area) (avt_graphic *screen, int x, int y, int width, int height);
+  void (*update_area) (avt_graphic * screen, int x, int y, int width,
+		       int height);
   void (*quit) (void);
   void (*wait_key) (void);
   void (*resize) (avt_graphic * screen, int width, int height);
 
   avt_graphic *(*graphic_file) (const char *filename);
-  avt_graphic *(*graphic_stream) (avt_stream *stream);
+  avt_graphic *(*graphic_stream) (avt_stream * stream);
   avt_graphic *(*graphic_memory) (void *data, size_t size);
 };
 
@@ -131,9 +134,9 @@ struct avt_backend
 /* avatar.c */
 extern int _avt_STATUS;
 
-void avt_quit_audio_function (void (*) (void));
-void avt_quit_encoding_function (void (*) (void));
-struct avt_backend *avt_start_common (avt_graphic *new_screen);
+void avt_quit_audio_function (void (*)(void));
+void avt_quit_encoding_function (void (*)(void));
+struct avt_backend *avt_start_common (avt_graphic * new_screen);
 bool avt_check_buttons (int x, int y);
 void avt_add_key (avt_char key);
 avt_char avt_last_key (void);
@@ -141,11 +144,11 @@ void avt_resize (int width, int height);
 void avt_update_all (void);
 
 /* avttiming.c */
-void avt_delay (int milliseconds); // only for under a second
+void avt_delay (int milliseconds);	// only for under a second
 
 /* audio-sdl.c */
 void avt_lock_audio (void);
-void avt_unlock_audio (avt_audio *snd);
+void avt_unlock_audio (avt_audio * snd);
 
 /* audio-common */
 int avt_start_audio_common (void (*quit_backend) (void));

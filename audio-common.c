@@ -497,6 +497,11 @@ avt_free_audio (avt_audio * snd)
       // free the sound data
       if (snd->mmap_length)
 	avt_munmap (snd->mmap_address, snd->mmap_length);
+      else if (snd->data)
+	{
+	  snd->data->done (snd->data);
+	  free (snd->data);
+	}
       else
 	free (snd->sound);
 
@@ -624,6 +629,35 @@ avt_mmap_audio (avt_data * src, size_t maxsize, int samplingrate,
 #define avt_mmap_audio(src,maxsize,rate,type,channels,mode)  (NULL)
 #endif
 
+static avt_audio *
+avt_fetch_audio_data (avt_data * src, int samplingrate, int audio_type,
+		      int channels, int playmode)
+{
+  avt_audio *audio;
+  avt_data *data;
+
+  // make a copy of the data source
+  data = malloc (sizeof (*data));
+  if (not data)
+    return NULL;
+
+  memcpy (data, src, sizeof (*data));
+
+  audio = avt_prepare_raw_audio (0, samplingrate, audio_type, channels);
+  if (not audio)
+    {
+      free (data);
+      return NULL;
+    }
+
+  audio->data = data;
+  audio->startpos = src->tell (src);
+
+  if (playmode != AVT_LOAD)
+    avt_play_audio (audio, playmode);
+
+  return audio;
+}
 
 static avt_audio *
 avt_load_au (avt_data * src, size_t maxsize, int playmode)
@@ -705,10 +739,16 @@ avt_load_au (avt_data * src, size_t maxsize, int playmode)
 
   avt_audio *audio = NULL;
 
-  // try to map file
+  // if it doesn't need conversion read directly from file
   if (encoding == 2 or encoding == 3)
-    audio = avt_mmap_audio (src, audio_size, samplingrate, audio_type,
-			    channels, playmode);
+    {
+      audio = avt_mmap_audio (src, maxsize, samplingrate, audio_type,
+			      channels, playmode);
+
+      if (not audio)
+	audio = avt_fetch_audio_data (src, samplingrate, audio_type,
+				      channels, playmode);
+    }
 
   if (not audio)
     audio = avt_load_audio_block (src, audio_size, samplingrate, audio_type,
@@ -817,10 +857,16 @@ avt_load_wave (avt_data * src, size_t maxsize, int playmode)
 
   avt_audio *audio = NULL;
 
-  // try to map file
+  // if it doesn't need conversion read directly from file
   if (encoding == 1 and bits_per_sample <= 16)
-    audio = avt_mmap_audio (src, maxsize, samplingrate, audio_type,
-			    channels, playmode);
+    {
+      audio = avt_mmap_audio (src, maxsize, samplingrate, audio_type,
+			      channels, playmode);
+
+      if (not audio)
+	audio = avt_fetch_audio_data (src, samplingrate, audio_type,
+				      channels, playmode);
+    }
 
   if (not audio)
     audio = avt_load_audio_block (src, maxsize, samplingrate, audio_type,
@@ -899,7 +945,9 @@ avt_load_audio_file (const char *file, int playmode)
   avt_data_init (&d);
   if (d.open_file (&d, file))
     r = avt_load_audio_general (&d, MAXIMUM_SIZE, playmode);
-  d.done (&d);
+
+  if (not r->data)
+    d.done (&d);
 
   return r;
 }
@@ -918,7 +966,9 @@ avt_load_audio_part (avt_stream * stream, size_t maxsize, int playmode)
   avt_data_init (&d);
   if (d.open_stream (&d, (FILE *) stream, false))
     r = avt_load_audio_general (&d, maxsize, playmode);
-  d.done (&d);
+
+  if (not r->data)
+    d.done (&d);
 
   return r;
 }
@@ -936,7 +986,9 @@ avt_load_audio_stream (avt_stream * stream, int playmode)
   avt_data_init (&d);
   if (d.open_stream (&d, (FILE *) stream, false))
     r = avt_load_audio_general (&d, MAXIMUM_SIZE, playmode);
-  d.done (&d);
+
+  if (not r->data)
+    d.done (&d);
 
   return r;
 }
@@ -954,7 +1006,9 @@ avt_load_audio_data (const void *data, size_t datasize, int playmode)
   avt_data_init (&d);
   if (d.open_memory (&d, data, datasize))
     r = avt_load_audio_general (&d, datasize, playmode);
-  d.done (&d);
+
+  if (not r->data)
+    d.done (&d);
 
   return r;
 }
