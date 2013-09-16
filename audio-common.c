@@ -550,7 +550,7 @@ avt_load_audio_block (avt_data * src, size_t maxsize,
 }
 
 
-#ifdef MAP_FAIlED
+#ifdef MAP_FAILED
 
 static avt_audio *
 avt_mmap_audio (avt_data * src, size_t maxsize, int samplingrate,
@@ -620,6 +620,7 @@ avt_mmap_audio (avt_data * src, size_t maxsize, int samplingrate,
 }
 
 #else // no mapped files
+#warning "No memory mapping for audio files available"
 #define avt_mmap_audio(src,maxsize,rate,type,channels,mode)  (NULL)
 #endif
 
