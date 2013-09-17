@@ -118,17 +118,18 @@ fill_audio (void *userdata, uint8_t * stream, int len)
 static void
 fetch_audio (void *userdata, uint8_t * stream, int len)
 {
-  avt_data *s = userdata;
+  avt_audio *snd = userdata;
+  avt_data *d = snd->data;
   int r;
 
-  r = s->read (s, stream, 1, len);
+  r = d->read (d, stream, 1, len);
 
   if (r < len)
     {
-      s->seek (s, current_sound.startpos, SEEK_SET);
+      d->seek (d, snd->startpos, SEEK_SET);
 
       if (loop)
-	s->read (s, stream + r, 1, len - r);
+	d->read (d, stream + r, 1, len - r);
       else			// no loop
 	{
 	  SDL_PauseAudio (1);
@@ -273,17 +274,12 @@ avt_play_audio (avt_audio * snd, int playmode)
   audiospec.freq = snd->samplingrate;
   audiospec.channels = snd->channels;
   audiospec.samples = OUTPUT_BUFFER;
+  audiospec.userdata = snd;
 
   if (snd->data)
-    {
-      audiospec.callback = fetch_audio;
-      audiospec.userdata = snd->data;
-    }
+    audiospec.callback = fetch_audio;
   else				// memory based reading
-    {
-      audiospec.callback = fill_audio;
-      audiospec.userdata = NULL;
-    }
+    audiospec.callback = fill_audio;
 
   loop = (playmode == AVT_LOOP);
 
