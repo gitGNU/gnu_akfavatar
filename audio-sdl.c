@@ -54,82 +54,25 @@ static avt_char audio_key;
 
 static void avt_quit_audio_sdl (void);
 
-// this is the callback function
+
+// callback for get method
 static void
-fill_audio (void *userdata, uint8_t * stream, int len)
-{
-  (void) userdata;
-
-  // only play, when there is data left
-  if (soundleft <= 0)
-    {
-      if (not current_sound.complete)
-	return;
-      else if (loop)
-	{
-	  // rewind to beginning
-	  soundpos = 0;
-	  soundleft = current_sound.length;
-	}
-      else			// finished
-	{
-	  SDL_PauseAudio (1);	// shut up
-	  playing = false;
-
-	  if (audio_key)
-	    avt_push_key (audio_key);
-	  return;
-	}
-    }
-
-  // Copy as much data as possible
-  if (len <= soundleft)
-    {
-      SDL_memcpy (stream, current_sound.sound + soundpos, len);
-
-      soundpos += len;
-      soundleft -= len;
-    }
-  else if (loop)
-    {
-      SDL_memcpy (stream, current_sound.sound + soundpos, soundleft);
-
-      len -= soundleft;
-
-      SDL_memcpy (stream + soundleft, current_sound.sound, len);
-
-      soundpos = len;
-      soundleft = current_sound.length - len;
-    }
-  else				// end of sound
-    {
-      SDL_memcpy (stream, current_sound.sound + soundpos, soundleft);
-
-      // silence rest
-      SDL_memset (stream + soundleft,
-		  (AVT_AUDIO_U8 != current_sound.audio_type) ? 0 : 128,
-		  len - soundleft);
-
-      soundleft = 0;
-    }
-}
-
-// callback for data streams
-static void
-fetch_audio (void *userdata, uint8_t * stream, int len)
+get_audio (void *userdata, uint8_t * stream, int len)
 {
   avt_audio *snd = userdata;
-  avt_data *d = snd->data;
   int r;
 
-  r = d->read (d, stream, 1, len);
+  r = snd->get (snd, stream, len);
 
   if (r < len)
     {
-      d->seek (d, snd->startpos, SEEK_SET);
+      // rewind
+      snd->position = 0;
+      if (snd->data)
+        snd->data->seek (snd->data, snd->startpos, SEEK_SET);
 
       if (loop)
-	d->read (d, stream + r, 1, len - r);
+	snd->get (snd, stream + r, len - r);
       else			// no loop
 	{
 	  SDL_PauseAudio (1);
@@ -274,12 +217,8 @@ avt_play_audio (avt_audio * snd, int playmode)
   audiospec.freq = snd->samplingrate;
   audiospec.channels = snd->channels;
   audiospec.samples = OUTPUT_BUFFER;
+  audiospec.callback = get_audio;
   audiospec.userdata = snd;
-
-  if (snd->data)
-    audiospec.callback = fetch_audio;
-  else				// memory based reading
-    audiospec.callback = fill_audio;
 
   loop = (playmode == AVT_LOOP);
 

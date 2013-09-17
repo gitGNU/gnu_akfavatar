@@ -38,6 +38,8 @@
 #include <iso646.h>
 #include <unistd.h>		// evtl. defines _POSIX_MAPPED_FILES
 
+#undef _POSIX_MAPPED_FILES
+
 #if _POSIX_MAPPED_FILES > 0
 #include <sys/mman.h>
 #define avt_munmap(addr, length)  munmap(addr, length)
@@ -378,6 +380,26 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
   return avt_update ();
 }
 
+static size_t
+method_get_audio_memory (avt_audio * restrict s, void *restrict data, size_t size)
+{
+  if (s->position + size > s->length)
+    size = s->length - s->position;
+
+  memcpy (data, s->sound + s->position, size);
+  s->position += size;
+
+  return size;
+}
+
+
+static size_t
+method_get_audio_data (avt_audio * restrict s, void *restrict data, size_t size)
+{
+  return s->data->read (s->data, data, 1, size);
+}
+
+
 extern avt_audio *
 avt_prepare_raw_audio (size_t capacity,
 		       int samplingrate, int audio_type, int channels)
@@ -433,6 +455,7 @@ avt_prepare_raw_audio (size_t capacity,
   s->complete = false;
   s->mmap_address = NULL;
   s->mmap_length = 0;
+  s->get = method_get_audio_memory;
 
   // reserve memory
   unsigned char *sound_data = NULL;
@@ -512,6 +535,7 @@ avt_free_audio (avt_audio * snd)
       free (snd);
     }
 }
+
 
 
 // if size is unknown use 0 or MAXIMUM_SIZE for maxsize
@@ -655,6 +679,7 @@ avt_fetch_audio_data (avt_data * src, int samplingrate, int audio_type,
 
   audio->data = data;
   audio->startpos = src->tell (src);
+  audio->get = method_get_audio_data;
 
   if (playmode != AVT_LOAD)
     avt_play_audio (audio, playmode);

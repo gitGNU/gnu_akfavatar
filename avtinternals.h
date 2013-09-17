@@ -109,6 +109,8 @@ struct avt_audio
   int samplingrate;
   int channels;
   bool complete;
+  size_t (*get) (avt_audio *self, void *data, size_t size);
+  size_t position;
   void *mmap_address;		/* just for mmapped data */
   size_t mmap_length;		/* just for mmapped data */
   avt_data *data;		/* when reading directly from file */
