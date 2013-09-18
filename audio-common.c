@@ -376,8 +376,9 @@ method_get_audio_data (avt_audio * restrict s, void *restrict data,
 }
 
 
+// get mu-law or A-law audio as 16bit from memory
 static size_t
-method_get_mulaw_memory (avt_audio * restrict s, void *restrict data,
+method_get_law_memory (avt_audio * restrict s, void *restrict data,
 			 size_t size)
 {
   size_t bytes = size / 2;
@@ -404,8 +405,9 @@ method_get_mulaw_memory (avt_audio * restrict s, void *restrict data,
 }
 
 
+// get mu-law or A-law audio as 16bit from data
 static size_t
-method_get_mulaw_data (avt_audio * restrict s, void *restrict data,
+method_get_law_data (avt_audio * restrict s, void *restrict data,
 		       size_t size)
 {
   size_t bytes = size / 2;
@@ -489,7 +491,7 @@ avt_prepare_raw_audio (size_t capacity,
     {
     case AVT_AUDIO_MULAW:
     case AVT_AUDIO_ALAW:
-      s->get = method_get_mulaw_memory;
+      s->get = method_get_law_memory;
       break;
 
     default:
@@ -723,7 +725,7 @@ avt_fetch_audio_data (avt_data * src, int samplingrate, int audio_type,
     {
     case AVT_AUDIO_MULAW:
     case AVT_AUDIO_ALAW:
-      audio->get = method_get_mulaw_data;
+      audio->get = method_get_law_data;
       break;
 
     default:
