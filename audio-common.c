@@ -53,6 +53,10 @@
 // maximum size for audio data
 #define MAXIMUM_SIZE  0xFFFFFFFFU
 
+// type for 16 bit samples
+typedef int_fast16_t sample16;
+
+
 #ifdef NO_AUDIO
 
 extern avt_audio *
@@ -105,7 +109,7 @@ static avt_audio *alert_sound;
 static void (*quit_audio_backend) (void);
 
 // table for decoding mu-law
-static const int_fast16_t mulaw_decode[256] = {
+static const sample16 mulaw_decode[256] = {
   -32124, -31100, -30076, -29052, -28028, -27004, -25980, -24956, -23932,
   -22908, -21884, -20860, -19836, -18812, -17788, -16764, -15996, -15484,
   -14972, -14460, -13948, -13436, -12924, -12412, -11900, -11388, -10876,
@@ -132,7 +136,7 @@ static const int_fast16_t mulaw_decode[256] = {
 };
 
 // table for decoding A-law
-static const int_fast16_t alaw_decode[256] = {
+static const sample16 alaw_decode[256] = {
   -5504, -5248, -6016, -5760, -4480, -4224, -4992, -4736, -7552, -7296, -8064,
   -7808, -6528, -6272, -7040, -6784, -2752, -2624, -3008, -2880, -2240,
   -2112, -2496, -2368, -3776, -3648, -4032, -3904, -3264, -3136, -3520,
@@ -381,7 +385,7 @@ method_get_mulaw_memory (avt_audio * restrict s, void *restrict data,
   if (s->position + bytes > s->length)
     bytes = s->length - s->position;
 
-  const int_fast16_t *decode;
+  const sample16 *decode;
 
   if (AVT_AUDIO_MULAW == s->audio_type)
     decode = &mulaw_decode[0];
@@ -409,7 +413,7 @@ method_get_mulaw_data (avt_audio * restrict s, void *restrict data,
   uint_least8_t samples[bytes];
   size_t b = s->data->read (s->data, &samples, sizeof (samples[0]), bytes);
 
-  const int_fast16_t *decode;
+  const sample16 *decode;
 
   if (AVT_AUDIO_MULAW == s->audio_type)
     decode = &mulaw_decode[0];
