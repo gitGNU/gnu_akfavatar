@@ -376,45 +376,23 @@ static size_t
 method_get_mulaw_memory (avt_audio * restrict s, void *restrict data,
 			 size_t size)
 {
-  size_t bytes, b;
-  int_least16_t *d;
-  uint_least8_t *sound;
-
-  bytes = size / 2;
+  size_t bytes = size / 2;
 
   if (s->position + bytes > s->length)
     bytes = s->length - s->position;
 
-  sound = s->sound + s->position;
-  d = data;
-  b = bytes;
+  const int_fast16_t *decode;
+
+  if (AVT_AUDIO_MULAW == s->audio_type)
+    decode = &mulaw_decode[0];
+  else
+    decode = &alaw_decode[0];
+
+  uint_least8_t *sound = s->sound + s->position;
+  int_least16_t *d = data;
+  size_t b = bytes;
   while (b--)
-    *d++ = mulaw_decode[*sound++];
-
-  s->position += bytes;
-
-  return bytes * 2;
-}
-
-
-static size_t
-method_get_alaw_memory (avt_audio * restrict s, void *restrict data,
-			size_t size)
-{
-  size_t bytes, b;
-  int_least16_t *d;
-  uint_least8_t *sound;
-
-  bytes = size / 2;
-
-  if (s->position + bytes > s->length)
-    bytes = s->length - s->position;
-
-  sound = s->sound + s->position;
-  d = data;
-  b = bytes;
-  while (b--)
-    *d++ = alaw_decode[*sound++];
+    *d++ = decode[*sound++];
 
   s->position += bytes;
 
@@ -431,30 +409,17 @@ method_get_mulaw_data (avt_audio * restrict s, void *restrict data,
   uint_least8_t samples[bytes];
   size_t b = s->data->read (s->data, &samples, sizeof (samples[0]), bytes);
 
-  uint_least8_t *sample = &samples[0];
+  const int_fast16_t *decode;
 
-  int_least16_t *d = data;
-  while (bytes--)
-    *d++ = mulaw_decode[*sample++];
-
-  return b * 2;
-}
-
-
-static size_t
-method_get_alaw_data (avt_audio * restrict s, void *restrict data,
-		      size_t size)
-{
-  size_t bytes = size / 2;
-
-  uint_least8_t samples[bytes];
-  size_t b = s->data->read (s->data, &samples, sizeof (samples[0]), bytes);
+  if (AVT_AUDIO_MULAW == s->audio_type)
+    decode = &mulaw_decode[0];
+  else
+    decode = &alaw_decode[0];
 
   uint_least8_t *sample = &samples[0];
-
   int_least16_t *d = data;
   while (bytes--)
-    *d++ = alaw_decode[*sample++];
+    *d++ = decode[*sample++];
 
   return b * 2;
 }
@@ -519,11 +484,8 @@ avt_prepare_raw_audio (size_t capacity,
   switch (audio_type)
     {
     case AVT_AUDIO_MULAW:
-      s->get = method_get_mulaw_memory;
-      break;
-
     case AVT_AUDIO_ALAW:
-      s->get = method_get_alaw_memory;
+      s->get = method_get_mulaw_memory;
       break;
 
     default:
@@ -756,11 +718,8 @@ avt_fetch_audio_data (avt_data * src, int samplingrate, int audio_type,
   switch (audio_type)
     {
     case AVT_AUDIO_MULAW:
-      audio->get = method_get_mulaw_data;
-      break;
-
     case AVT_AUDIO_ALAW:
-      audio->get = method_get_alaw_data;
+      audio->get = method_get_mulaw_data;
       break;
 
     default:
