@@ -105,7 +105,7 @@ static avt_audio *alert_sound;
 static void (*quit_audio_backend) (void);
 
 // table for decoding mu-law
-static const int_least16_t mulaw_decode[256] = {
+static const int_fast16_t mulaw_decode[256] = {
   -32124, -31100, -30076, -29052, -28028, -27004, -25980, -24956, -23932,
   -22908, -21884, -20860, -19836, -18812, -17788, -16764, -15996, -15484,
   -14972, -14460, -13948, -13436, -12924, -12412, -11900, -11388, -10876,
@@ -132,7 +132,7 @@ static const int_least16_t mulaw_decode[256] = {
 };
 
 // table for decoding A-law
-static const int_least16_t alaw_decode[256] = {
+static const int_fast16_t alaw_decode[256] = {
   -5504, -5248, -6016, -5760, -4480, -4224, -4992, -4736, -7552, -7296, -8064,
   -7808, -6528, -6272, -7040, -6784, -2752, -2624, -3008, -2880, -2240,
   -2112, -2496, -2368, -3776, -3648, -4032, -3904, -3264, -3136, -3520,
@@ -194,11 +194,6 @@ avt_required_audio_size (avt_audio * snd, size_t data_size)
 
   switch (snd->audio_type)
     {
-    case AVT_AUDIO_MULAW:
-    case AVT_AUDIO_ALAW:
-      out_size = 2 * data_size;	// one byte becomes 2 bytes
-      break;
-
     case AVT_AUDIO_S24SYS:
     case AVT_AUDIO_S24LE:
     case AVT_AUDIO_S24BE:
@@ -282,35 +277,10 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
     case AVT_AUDIO_S16BE:
     case AVT_AUDIO_U8:
     case AVT_AUDIO_S8:
-      // linear PCM, same bit size
+    case AVT_AUDIO_MULAW:	// mu-law, logarithmic PCM
+    case AVT_AUDIO_ALAW:	// A-law, logarithmic PCM
       memcpy (snd->sound + old_size, data, out_size);
       break;
-
-    case AVT_AUDIO_MULAW:	// mu-law, logarithmic PCM
-      {
-	uint_least8_t *restrict in;
-	int_least16_t *restrict out;
-
-	in = (uint_least8_t *) data;
-	out = (int_least16_t *) (snd->sound + old_size);
-
-	for (size_t i = data_size; i > 0; i--)
-	  *out++ = mulaw_decode[*in++];
-	break;
-      }
-
-    case AVT_AUDIO_ALAW:	// A-law, logarithmic PCM
-      {
-	uint_least8_t *restrict in;
-	int_least16_t *restrict out;
-
-	in = (uint_least8_t *) data;
-	out = (int_least16_t *) (snd->sound + old_size);
-
-	for (size_t i = data_size; i > 0; i--)
-	  *out++ = alaw_decode[*in++];
-	break;
-      }
 
       // the following ones are all converted to 16 bits
 
@@ -381,7 +351,8 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
 }
 
 static size_t
-method_get_audio_memory (avt_audio * restrict s, void *restrict data, size_t size)
+method_get_audio_memory (avt_audio * restrict s, void *restrict data,
+			 size_t size)
 {
   if (s->position + size > s->length)
     size = s->length - s->position;
@@ -394,9 +365,98 @@ method_get_audio_memory (avt_audio * restrict s, void *restrict data, size_t siz
 
 
 static size_t
-method_get_audio_data (avt_audio * restrict s, void *restrict data, size_t size)
+method_get_audio_data (avt_audio * restrict s, void *restrict data,
+		       size_t size)
 {
   return s->data->read (s->data, data, 1, size);
+}
+
+
+static size_t
+method_get_mulaw_memory (avt_audio * restrict s, void *restrict data,
+			 size_t size)
+{
+  size_t bytes, b;
+  int_least16_t *d;
+  uint_least8_t *sound;
+
+  bytes = size / 2;
+
+  if (s->position + bytes > s->length)
+    bytes = s->length - s->position;
+
+  sound = s->sound + s->position;
+  d = data;
+  b = bytes;
+  while (b--)
+    *d++ = mulaw_decode[*sound++];
+
+  s->position += bytes;
+
+  return bytes * 2;
+}
+
+
+static size_t
+method_get_alaw_memory (avt_audio * restrict s, void *restrict data,
+			size_t size)
+{
+  size_t bytes, b;
+  int_least16_t *d;
+  uint_least8_t *sound;
+
+  bytes = size / 2;
+
+  if (s->position + bytes > s->length)
+    bytes = s->length - s->position;
+
+  sound = s->sound + s->position;
+  d = data;
+  b = bytes;
+  while (b--)
+    *d++ = alaw_decode[*sound++];
+
+  s->position += bytes;
+
+  return bytes * 2;
+}
+
+
+static size_t
+method_get_mulaw_data (avt_audio * restrict s, void *restrict data,
+		       size_t size)
+{
+  size_t bytes = size / 2;
+
+  uint_least8_t samples[bytes];
+  size_t b = s->data->read (s->data, &samples, sizeof (samples[0]), bytes);
+
+  uint_least8_t *sample = &samples[0];
+
+  int_least16_t *d = data;
+  while (bytes--)
+    *d++ = mulaw_decode[*sample++];
+
+  return b * 2;
+}
+
+
+static size_t
+method_get_alaw_data (avt_audio * restrict s, void *restrict data,
+		      size_t size)
+{
+  size_t bytes = size / 2;
+
+  uint_least8_t samples[bytes];
+  size_t b = s->data->read (s->data, &samples, sizeof (samples[0]), bytes);
+
+  uint_least8_t *sample = &samples[0];
+
+  int_least16_t *d = data;
+  while (bytes--)
+    *d++ = alaw_decode[*sample++];
+
+  return b * 2;
 }
 
 
@@ -455,7 +515,20 @@ avt_prepare_raw_audio (size_t capacity,
   s->complete = false;
   s->mmap_address = NULL;
   s->mmap_length = 0;
-  s->get = method_get_audio_memory;
+
+  switch (audio_type)
+    {
+    case AVT_AUDIO_MULAW:
+      s->get = method_get_mulaw_memory;
+      break;
+
+    case AVT_AUDIO_ALAW:
+      s->get = method_get_alaw_memory;
+      break;
+
+    default:
+      s->get = method_get_audio_memory;
+    }
 
   // reserve memory
   unsigned char *sound_data = NULL;
@@ -679,7 +752,20 @@ avt_fetch_audio_data (avt_data * src, int samplingrate, int audio_type,
 
   audio->data = data;
   audio->startpos = src->tell (src);
-  audio->get = method_get_audio_data;
+
+  switch (audio_type)
+    {
+    case AVT_AUDIO_MULAW:
+      audio->get = method_get_mulaw_data;
+      break;
+
+    case AVT_AUDIO_ALAW:
+      audio->get = method_get_alaw_data;
+      break;
+
+    default:
+      audio->get = method_get_audio_data;
+    }
 
   if (playmode != AVT_LOAD)
     avt_play_audio (audio, playmode);
@@ -768,7 +854,7 @@ avt_load_au (avt_data * src, size_t maxsize, int playmode)
   avt_audio *audio = NULL;
 
   // if it doesn't need conversion evtl. read directly from file
-  if (BIG_AUDIO <= audio_size and (encoding == 2 or encoding == 3))
+  if (BIG_AUDIO <= audio_size and encoding != 4 and encoding != 5)
     {
       audio = avt_mmap_audio (src, audio_size, samplingrate, audio_type,
 			      channels, playmode);
@@ -886,7 +972,7 @@ avt_load_wave (avt_data * src, size_t maxsize, int playmode)
   avt_audio *audio = NULL;
 
   // if it doesn't need conversion evtl. read directly from file
-  if (BIG_AUDIO <= maxsize and encoding == 1 and bits_per_sample <= 16)
+  if (BIG_AUDIO <= maxsize and bits_per_sample <= 16)
     {
       audio = avt_mmap_audio (src, maxsize, samplingrate, audio_type,
 			      channels, playmode);
