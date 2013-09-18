@@ -379,7 +379,7 @@ method_get_audio_data (avt_audio * restrict s, void *restrict data,
 // get mu-law or A-law audio as 16bit from memory
 static size_t
 method_get_law_memory (avt_audio * restrict s, void *restrict data,
-			 size_t size)
+		       size_t size)
 {
   size_t bytes = size / 2;
 
@@ -393,8 +393,8 @@ method_get_law_memory (avt_audio * restrict s, void *restrict data,
   else
     decode = &alaw_decode[0];
 
-  uint_least8_t *sound = s->sound + s->position;
-  int_least16_t *d = data;
+  uint_least8_t *restrict sound = s->sound + s->position;
+  int_least16_t *restrict d = data;
   size_t b = bytes;
   while (b--)
     *d++ = decode[*sound++];
@@ -407,13 +407,15 @@ method_get_law_memory (avt_audio * restrict s, void *restrict data,
 
 // get mu-law or A-law audio as 16bit from data
 static size_t
-method_get_law_data (avt_audio * restrict s, void *restrict data,
-		       size_t size)
+method_get_law_data (avt_audio * restrict s, void *restrict data, size_t size)
 {
   size_t bytes = size / 2;
 
   uint_least8_t samples[bytes];
   size_t b = s->data->read (s->data, &samples, sizeof (samples[0]), bytes);
+
+  if (not b)
+    return 0;
 
   const sample16 *decode;
 
@@ -422,12 +424,100 @@ method_get_law_data (avt_audio * restrict s, void *restrict data,
   else
     decode = &alaw_decode[0];
 
-  uint_least8_t *sample = &samples[0];
-  int_least16_t *d = data;
+  uint_least8_t *restrict sample = &samples[0];
+  int_least16_t *restrict d = data;
   while (bytes--)
     *d++ = decode[*sample++];
 
   return b * 2;
+}
+
+
+static size_t
+method_get_bit24be_data (avt_audio * restrict s, void *restrict data,
+			 size_t size)
+{
+  size_t bytes = size / sizeof (uint_least16_t) * 3;
+
+  uint_least8_t samples[bytes];
+  size_t b = s->data->read (s->data, &samples, sizeof (samples[0]), bytes);
+
+  if (not b)
+    return 0;
+
+  uint_least8_t *restrict in = samples;
+  uint_least16_t *restrict out = data;
+
+  for (size_t i = size / sizeof (*out); i > 0; i--, in += 3)
+    *out++ = (in[0] << 8) | in[1];
+
+  return b / 3 * sizeof (uint_least16_t);
+}
+
+
+static size_t
+method_get_bit24le_data (avt_audio * restrict s, void *restrict data,
+			 size_t size)
+{
+  size_t bytes = size / sizeof (uint_least16_t) * 3;
+
+  uint_least8_t samples[bytes];
+  size_t b = s->data->read (s->data, &samples, sizeof (samples[0]), bytes);
+
+  if (not b)
+    return 0;
+
+  uint_least8_t *restrict in = samples;
+  uint_least16_t *restrict out = data;
+
+  for (size_t i = size / sizeof (*out); i > 0; i--, in += 3)
+    *out++ = (in[2] << 8) | in[1];
+
+  return b / 3 * sizeof (uint_least16_t);
+}
+
+
+static size_t
+method_get_bit32be_data (avt_audio * restrict s, void *restrict data,
+			 size_t size)
+{
+  size_t bytes = size * 2;
+
+  uint_least8_t samples[bytes];
+  size_t b = s->data->read (s->data, &samples, sizeof (samples[0]), bytes);
+
+  if (not b)
+    return 0;
+
+  uint_least8_t *restrict in = samples;
+  uint_least16_t *restrict out = data;
+
+  for (size_t i = size / sizeof (*out); i > 0; i--, in += 4)
+    *out++ = (in[0] << 8) | in[1];
+
+  return b / 2;
+}
+
+
+static size_t
+method_get_bit32le_data (avt_audio * restrict s, void *restrict data,
+			 size_t size)
+{
+  size_t bytes = size * 2;
+
+  uint_least8_t samples[bytes];
+  size_t b = s->data->read (s->data, &samples, sizeof (samples[0]), bytes);
+
+  if (not b)
+    return 0;
+
+  uint_least8_t *restrict in = samples;
+  uint_least16_t *restrict out = data;
+
+  for (size_t i = size / sizeof (*out); i > 0; i--, in += 4)
+    *out++ = (in[3] << 8) | in[2];
+
+  return b / 2;
 }
 
 
@@ -634,6 +724,10 @@ avt_mmap_audio (avt_data * src, size_t maxsize, int samplingrate,
   void *mmap_address;
   long length, pos;
 
+  // not for more than 16 bit
+  if (audio_type > AVT_AUDIO_S16SYS and audio_type < AVT_AUDIO_MULAW)
+    return NULL;
+
   fd = src->fileno (src);
 
   // not a file?
@@ -728,6 +822,22 @@ avt_fetch_audio_data (avt_data * src, int samplingrate, int audio_type,
       audio->get = method_get_law_data;
       break;
 
+    case AVT_AUDIO_S24BE:
+      audio->get = method_get_bit24be_data;
+      break;
+
+    case AVT_AUDIO_S24LE:
+      audio->get = method_get_bit24le_data;
+      break;
+
+    case AVT_AUDIO_S32BE:
+      audio->get = method_get_bit32be_data;
+      break;
+
+    case AVT_AUDIO_S32LE:
+      audio->get = method_get_bit32le_data;
+      break;
+
     default:
       audio->get = method_get_audio_data;
     }
@@ -819,7 +929,7 @@ avt_load_au (avt_data * src, size_t maxsize, int playmode)
   avt_audio *audio = NULL;
 
   // if it doesn't need conversion evtl. read directly from file
-  if (BIG_AUDIO <= audio_size and encoding != 4 and encoding != 5)
+  if (BIG_AUDIO <= audio_size)
     {
       audio = avt_mmap_audio (src, audio_size, samplingrate, audio_type,
 			      channels, playmode);
@@ -937,7 +1047,7 @@ avt_load_wave (avt_data * src, size_t maxsize, int playmode)
   avt_audio *audio = NULL;
 
   // if it doesn't need conversion evtl. read directly from file
-  if (BIG_AUDIO <= maxsize and bits_per_sample <= 16)
+  if (BIG_AUDIO <= maxsize)
     {
       audio = avt_mmap_audio (src, maxsize, samplingrate, audio_type,
 			      channels, playmode);

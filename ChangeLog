@@ -4,9 +4,12 @@
 
 	* avtdata.h, avtdata.c: method read24
 
+	* audio-common.c, audio-sdl.c:
+	read all supported WAV or AU files directly from file
+
 2013-09-16  Andreas K. Foerster  <info@akfoerster.de>
 
-	* audio-common.c, audio-sdl.c avtinternals.h:
+	* audio-common.c, audio-sdl.c, avtinternals.h:
 	read WAV or AU files with LPCM <=16Bit directly from file
 
 2013-09-13  Andreas K. Foerster  <info@akfoerster.de>
