@@ -38,7 +38,7 @@
 #include <iso646.h>
 #include <unistd.h>		// evtl. defines _POSIX_MAPPED_FILES
 
-#undef _POSIX_MAPPED_FILES
+//#undef _POSIX_MAPPED_FILES
 
 #if _POSIX_MAPPED_FILES > 0
 #include <sys/mman.h>
