@@ -2,6 +2,8 @@
 
 	* avtdata.h, avtdata.c: don't store stream start position
 
+	* avtdata.h, avtdata.c: method read24
+
 2013-09-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* audio-common.c, audio-sdl.c avtinternals.h:

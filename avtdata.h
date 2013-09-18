@@ -62,6 +62,8 @@ struct avt_data
 
   uint_least16_t (*read16) (avt_data * self);
 
+  uint_least32_t (*read24) (avt_data * self);
+
   uint_least32_t (*read32) (avt_data * self);
 
   int (*fileno) (avt_data * self);
