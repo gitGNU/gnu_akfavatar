@@ -73,7 +73,6 @@ struct avt_data
     struct
     {
       FILE *data;
-      size_t start;
       bool autoclose;
     } stream;
 

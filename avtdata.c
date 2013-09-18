@@ -225,7 +225,7 @@ method_read32be (avt_data * d)
 static long
 method_tell_stream (avt_data * d)
 {
-  return ftell (d->field.stream.data) - d->field.stream.start;
+  return ftell (d->field.stream.data);
 }
 
 
@@ -242,9 +242,6 @@ method_tell_memory (avt_data * d)
 static bool
 method_seek_stream (avt_data * d, long offset, int whence)
 {
-  if (SEEK_SET == whence)
-    offset += d->field.stream.start;
-
   return (fseek (d->field.stream.data, offset, whence) > -1);
 }
 
@@ -309,7 +306,6 @@ method_open_stream (avt_data * d, FILE * stream, bool autoclose)
   d->fileno = method_fileno_stream;
 
   d->field.stream.data = stream;
-  d->field.stream.start = ftell (stream);
   d->field.stream.autoclose = autoclose;
 
   d->open_stream = NULL;

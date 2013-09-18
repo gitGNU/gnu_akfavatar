@@ -1,3 +1,7 @@
+2013-09-18  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtdata.h, avtdata.c: don't store stream start position
+
 2013-09-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* audio-common.c, audio-sdl.c avtinternals.h:
