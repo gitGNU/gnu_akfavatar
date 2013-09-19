@@ -358,18 +358,13 @@ static size_t
 method_get_audio_memory (avt_audio * restrict s, void *restrict data,
 			 size_t size)
 {
-  size_t real_size = size;
+  if (s->position + size > s->length)
+    size = s->length - s->position;
 
-  if (s->position + real_size > s->length)
-    real_size = s->length - s->position;
+  memcpy (data, s->sound + s->position, size);
+  s->position += size;
 
-  memcpy (data, s->sound + s->position, real_size);
-  s->position += real_size;
-
-  if (real_size < size)
-    memset (((uint8_t *) data) + real_size, 0, size - real_size);
-
-  return real_size;
+  return size;
 }
 
 
@@ -377,12 +372,7 @@ static size_t
 method_get_audio_data (avt_audio * restrict s, void *restrict data,
 		       size_t size)
 {
-  size_t r = s->data->read (s->data, data, 1, size);
-
-  if (r < size)
-    memset (((uint8_t *) data) + r, 0, size - r);
-
-  return r;
+  return s->data->read (s->data, data, 1, size);
 }
 
 
@@ -411,12 +401,7 @@ method_get_law_memory (avt_audio * restrict s, void *restrict data,
 
   s->position += bytes;
 
-  bytes *= 2;
-
-  if (bytes < size)
-    memset ((uint8_t *) data + bytes, 0, size - bytes);
-
-  return bytes;
+  return bytes * 2;
 }
 
 
@@ -430,10 +415,7 @@ method_get_law_data (avt_audio * restrict s, void *restrict data, size_t size)
   size_t b = s->data->read (s->data, &samples, sizeof (samples[0]), bytes);
 
   if (not b)
-    {
-      memset (data, 0, size);
-      return 0;
-    }
+    return 0;
 
   const sample16 *decode;
 
@@ -447,11 +429,7 @@ method_get_law_data (avt_audio * restrict s, void *restrict data, size_t size)
   while (bytes--)
     *d++ = decode[*sample++];
 
-  b *= 2;
-  if (b < size)
-    memset (((uint8_t *) data) + b, 0, size - b);
-
-  return b;
+  return b * 2;
 }
 
 
@@ -465,10 +443,7 @@ method_get_bit24be_data (avt_audio * restrict s, void *restrict data,
   size_t b = s->data->read (s->data, &samples, sizeof (samples[0]), bytes);
 
   if (not b)
-    {
-      memset (data, 0, size);
-      return 0;
-    }
+    return 0;
 
   uint_least8_t *restrict in = samples;
   uint_least16_t *restrict out = data;
@@ -476,11 +451,7 @@ method_get_bit24be_data (avt_audio * restrict s, void *restrict data,
   for (size_t i = size / sizeof (*out); i > 0; i--, in += 3)
     *out++ = (in[0] << 8) | in[1];
 
-  b = b / 3 * sizeof (uint_least16_t);
-  if (b < size)
-    memset (((uint8_t *) data) + b, 0, size - b);
-
-  return b;
+  return b / 3 * sizeof (uint_least16_t);
 }
 
 
@@ -494,10 +465,7 @@ method_get_bit24le_data (avt_audio * restrict s, void *restrict data,
   size_t b = s->data->read (s->data, &samples, sizeof (samples[0]), bytes);
 
   if (not b)
-    {
-      memset (data, 0, size);
-      return 0;
-    }
+    return 0;
 
   uint_least8_t *restrict in = samples;
   uint_least16_t *restrict out = data;
@@ -505,11 +473,7 @@ method_get_bit24le_data (avt_audio * restrict s, void *restrict data,
   for (size_t i = size / sizeof (*out); i > 0; i--, in += 3)
     *out++ = (in[2] << 8) | in[1];
 
-  b = b / 3 * sizeof (uint_least16_t);
-  if (b < size)
-    memset (((uint8_t *) data) + b, 0, size - b);
-
-  return b;
+  return b / 3 * sizeof (uint_least16_t);
 }
 
 
@@ -523,10 +487,7 @@ method_get_bit32be_data (avt_audio * restrict s, void *restrict data,
   size_t b = s->data->read (s->data, &samples, sizeof (samples[0]), bytes);
 
   if (not b)
-    {
-      memset (data, 0, size);
-      return 0;
-    }
+    return 0;
 
   uint_least8_t *restrict in = samples;
   uint_least16_t *restrict out = data;
@@ -534,11 +495,7 @@ method_get_bit32be_data (avt_audio * restrict s, void *restrict data,
   for (size_t i = size / sizeof (*out); i > 0; i--, in += 4)
     *out++ = (in[0] << 8) | in[1];
 
-  b /= 2;
-  if (b < size)
-    memset (((uint8_t *) data) + b, 0, size - b);
-
-  return b;
+  return b / 2;
 }
 
 
@@ -552,10 +509,7 @@ method_get_bit32le_data (avt_audio * restrict s, void *restrict data,
   size_t b = s->data->read (s->data, &samples, sizeof (samples[0]), bytes);
 
   if (not b)
-    {
-      memset (data, 0, size);
-      return 0;
-    }
+    return 0;
 
   uint_least8_t *restrict in = samples;
   uint_least16_t *restrict out = data;
@@ -563,11 +517,7 @@ method_get_bit32le_data (avt_audio * restrict s, void *restrict data,
   for (size_t i = size / sizeof (*out); i > 0; i--, in += 4)
     *out++ = (in[3] << 8) | in[2];
 
-  b /= 2;
-  if (b < size)
-    memset (((uint8_t *) data) + b, 0, size - b);
-
-  return b;
+  return b / 2;
 }
 
 

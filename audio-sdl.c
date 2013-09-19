@@ -66,20 +66,31 @@ get_audio (void *userdata, uint8_t * stream, int len)
 
   if (r < len)
     {
-      // rewind
-      snd->position = 0;
-      if (snd->data)
-        snd->data->seek (snd->data, snd->startpos, SEEK_SET);
-
       if (loop)
-	snd->get (snd, stream + r, len - r);
+	{
+	  // rewind
+	  snd->position = 0;
+	  if (snd->data)
+	    snd->data->seek (snd->data, snd->startpos, SEEK_SET);
+
+	  snd->get (snd, stream + r, len - r);
+	}
       else			// no loop
 	{
-	  SDL_PauseAudio (1);
-	  playing = false;
+	  // clear rest of buffer
+	  if (AVT_AUDIO_U8 == snd->audio_type)
+	    SDL_memset (stream + r, 128, len - r);
+	  else
+	    SDL_memset (stream + r, 0, len - r);
 
-	  if (audio_key)
-	    avt_push_key (audio_key);
+	  if (r <= 0)		// nothing left
+	    {
+	      SDL_PauseAudio (1);
+	      playing = false;
+
+	      if (audio_key)
+		avt_push_key (audio_key);
+	    }
 	}
     }
 }
@@ -187,6 +198,11 @@ avt_play_audio (avt_audio * snd, int playmode)
   SDL_LockAudio ();
 
   SDL_memset (&audiospec, 0, sizeof (audiospec));
+
+  // rewind
+  snd->position = 0;
+  if (snd->data)
+    snd->data->seek (snd->data, snd->startpos, SEEK_SET);
 
   // load sound
   current_sound = *snd;
