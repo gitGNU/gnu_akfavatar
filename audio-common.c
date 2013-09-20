@@ -191,6 +191,30 @@ avt_quit_audio (void)
   avt_quit_audio_function (NULL);
 }
 
+static void
+method_done_memory (avt_audio * s)
+{
+  if (s->sound)
+    free (s->sound);
+}
+
+static void
+method_done_data (avt_audio * s)
+{
+  if (s->data)
+    {
+      s->data->done (s->data);
+      free (s->data);
+    }
+}
+
+static void
+method_done_mmap (avt_audio * s)
+{
+  if (s->size2)
+    avt_munmap (s->address, s->size2);
+}
+
 static size_t
 avt_required_audio_size (avt_audio * snd, size_t data_size)
 {
@@ -245,13 +269,13 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
     avt_lock_audio ();
 
   // eventually get more memory for output buffer
-  if (new_size > snd->capacity)
+  if (new_size > snd->size2)
     {
       void *new_sound;
       size_t new_capacity;
 
       // get twice the capacity
-      new_capacity = 2 * snd->capacity;
+      new_capacity = 2 * snd->size2;
 
       /*
        * the capacity must never be lower than new_size
@@ -270,7 +294,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
 	}
 
       snd->sound = (unsigned char *) new_sound;
-      snd->capacity = new_capacity;
+      snd->size2 = new_capacity;
     }
 
   // convert or copy the data
@@ -347,6 +371,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
     }
 
   snd->length = new_size;
+  snd->done = method_done_memory;
 
   if (active)
     avt_unlock_audio (snd);
@@ -520,7 +545,6 @@ method_get_bit32le_data (avt_audio * restrict s, void *restrict data,
   return b / 2;
 }
 
-
 extern avt_audio *
 avt_prepare_raw_audio (size_t capacity,
 		       int samplingrate, int audio_type, int channels)
@@ -574,8 +598,6 @@ avt_prepare_raw_audio (size_t capacity,
   s->samplingrate = samplingrate;
   s->channels = channels;
   s->complete = false;
-  s->mmap_address = NULL;
-  s->mmap_length = 0;
 
   switch (audio_type)
     {
@@ -603,10 +625,12 @@ avt_prepare_raw_audio (size_t capacity,
 	  free (s);
 	  return NULL;
 	}
+
+      s->done = method_done_memory;
     }
 
   s->sound = sound_data;
-  s->capacity = real_capacity;
+  s->size2 = real_capacity;
 
   return s;
 }
@@ -621,7 +645,7 @@ avt_finalize_raw_audio (avt_audio * snd)
     avt_lock_audio ();
 
   // eventually free unneeded memory
-  if (snd->capacity > snd->length)
+  if (snd->size2 > snd->length)
     {
       void *new_sound;
       size_t new_capacity;
@@ -632,7 +656,7 @@ avt_finalize_raw_audio (avt_audio * snd)
       if (new_sound)
 	{
 	  snd->sound = (unsigned char *) new_sound;
-	  snd->capacity = new_capacity;
+	  snd->size2 = new_capacity;
 	}
     }
 
@@ -652,15 +676,8 @@ avt_free_audio (avt_audio * snd)
 	avt_stop_audio ();
 
       // free the sound data
-      if (snd->mmap_length)
-	avt_munmap (snd->mmap_address, snd->mmap_length);
-      else if (snd->data)
-	{
-	  snd->data->done (snd->data);
-	  free (snd->data);
-	}
-      else
-	free (snd->sound);
+      if (snd->done)
+	snd->done (snd);
 
       // free the rest
       free (snd);
@@ -721,7 +738,7 @@ avt_mmap_audio (avt_data * src, size_t maxsize,
 {
   avt_audio *audio;
   int fd;
-  void *mmap_address;
+  void *address;
   long length, pos;
 
   // not for more than 16 bit
@@ -750,29 +767,30 @@ avt_mmap_audio (avt_data * src, size_t maxsize,
       src->seek (src, pos, SEEK_SET);
     }
 
-  mmap_address = mmap (NULL, length, PROT_READ, MAP_PRIVATE, fd, 0);
-  if (MAP_FAILED == mmap_address)
+  address = mmap (NULL, length, PROT_READ, MAP_PRIVATE, fd, 0);
+  if (MAP_FAILED == address)
     return NULL;
 
   // advise that access will be sequential
 #if defined(POSIX_MADV_SEQUENTIAL)
-  posix_madvise (mmap_address, length, POSIX_MADV_SEQUENTIAL);
+  posix_madvise (address, length, POSIX_MADV_SEQUENTIAL);
 #elif defined(MADV_SEQUENTIAL)
   // BSD
-  madvise (mmap_address, length, MADV_SEQUENTIAL);
+  madvise (address, length, MADV_SEQUENTIAL);
 #endif
 
   audio = avt_prepare_raw_audio (0, samplingrate, audio_type, channels);
   if (not audio)
     {
-      avt_munmap (mmap_address, length);
+      avt_munmap (address, length);
       return NULL;
     }
 
-  audio->mmap_address = mmap_address;
-  audio->mmap_length = length;
-  audio->sound = ((unsigned char *) mmap_address) + pos;
-  audio->capacity = audio->length = maxsize;
+  audio->address = address;
+  audio->size2 = length;
+  audio->done = method_done_mmap;
+  audio->sound = ((unsigned char *) address) + pos;
+  audio->length = maxsize;
   audio->complete = true;
 
   if (playmode != AVT_LOAD)
@@ -814,6 +832,7 @@ avt_fetch_audio_data (avt_data * src, int samplingrate,
 
   audio->data = data;
   audio->startpos = src->tell (src);
+  audio->done = method_done_data;
 
   switch (audio_type)
     {
