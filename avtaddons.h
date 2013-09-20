@@ -275,6 +275,7 @@ AVT_ADDON avt_audio *avt_load_vorbis_data (void *data,
  */
 AVT_ADDON avt_audio *avt_load_vorbis_stream (avt_stream *stream,
                                              size_t size,
+                                             bool autoclose,
                                              int playmode);
 
 

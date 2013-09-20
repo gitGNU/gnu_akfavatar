@@ -20,6 +20,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "avtinternals.h"
 #include "akfavatar.h"
 #include "avtaddons.h"
 #include <stdio.h>
@@ -35,6 +36,9 @@
  * but you may want to set this to AVT_AUDIO_MONO to save memory
  */
 #define MAX_CHANNELS  AVT_AUDIO_STEREO
+
+// aprox. 2MB
+#define BIG_AUDIO (2*(1<<20)/sizeof(short)/AVT_AUDIO_STEREO)
 
 static avt_audio *
 load_vorbis (stb_vorbis * vorbis, int playmode)
@@ -105,8 +109,64 @@ load_vorbis (stb_vorbis * vorbis, int playmode)
   return audio;
 }
 
+static size_t
+method_get_vorbis (avt_audio * restrict s, void *restrict data, size_t size)
+{
+  int n;
+
+  n = stb_vorbis_get_samples_short_interleaved (s->address, s->channels,
+						(short *) data,
+						size / sizeof (short));
+
+  return n * sizeof (short) * s->channels;
+}
+
+static void
+method_rewind_vorbis (avt_audio * s)
+{
+  stb_vorbis_seek_start (s->address);
+}
+
+static void
+method_done_vorbis (avt_audio * s)
+{
+  stb_vorbis_close (s->address);
+}
+
+// TODO
+static avt_audio *
+open_vorbis (stb_vorbis * vorbis, int playmode)
+{
+  avt_audio *audio;
+  stb_vorbis_info info;
+
+  info = stb_vorbis_get_info (vorbis);
+
+  if (info.channels > MAX_CHANNELS)
+    info.channels = MAX_CHANNELS;
+
+  audio = avt_prepare_raw_audio (0, info.sample_rate,
+				 AVT_AUDIO_S16SYS, info.channels);
+
+  if (not audio)
+    return NULL;
+
+  audio->address = (void *) vorbis;
+  audio->get = method_get_vorbis;
+  audio->rewind = method_rewind_vorbis;
+  audio->done = method_done_vorbis;
+
+  // if not started yet, start it
+  if (playmode != AVT_LOAD)
+    avt_play_audio (audio, playmode);
+
+  return audio;
+}
+
+
 extern avt_audio *
-avt_load_vorbis_stream (avt_stream * stream, size_t size, int playmode)
+avt_load_vorbis_stream (avt_stream * stream, size_t size, bool autoclose,
+			int playmode)
 {
   FILE *f;
   int error;
@@ -136,17 +196,22 @@ avt_load_vorbis_stream (avt_stream * stream, size_t size, int playmode)
     }
 
   fseek (f, start, SEEK_SET);
-  vorbis = stb_vorbis_open_file_section (f, 0, &error, NULL, size);
 
-  if (vorbis)
-    {
-      audio_data = load_vorbis (vorbis, playmode);
-      stb_vorbis_close (vorbis);
-    }
-  else				// error
+  vorbis = stb_vorbis_open_file_section (f, autoclose, &error, NULL, size);
+
+  if (not vorbis)
     {
       fseek (f, start, SEEK_SET);
-      audio_data = NULL;
+      return NULL;
+    }
+
+  if (BIG_AUDIO <= stb_vorbis_stream_length_in_samples (vorbis))
+    audio_data = open_vorbis (vorbis, playmode);
+  else				// small file
+    {
+      // load and decode into memory
+      audio_data = load_vorbis (vorbis, playmode);
+      stb_vorbis_close (vorbis);
     }
 
   return audio_data;
@@ -166,8 +231,7 @@ avt_load_vorbis_file (char *filename, int playmode)
   if (not f)
     return NULL;
 
-  audio_data = avt_load_vorbis_stream (f, 0, playmode);
-  fclose (f);
+  audio_data = avt_load_vorbis_stream (f, 0, true, playmode);
 
   return audio_data;
 }
@@ -177,7 +241,6 @@ avt_load_vorbis_data (void *data, int datasize, int playmode)
 {
   int error;
   stb_vorbis *vorbis;
-  avt_audio *audio_data;
 
   // check content, must be plain vorbis with no other streams
   if (not data or datasize <= 0
@@ -190,8 +253,5 @@ avt_load_vorbis_data (void *data, int datasize, int playmode)
   if (vorbis == NULL)
     return NULL;
 
-  audio_data = load_vorbis (vorbis, playmode);
-  stb_vorbis_close (vorbis);
-
-  return audio_data;
+  return open_vorbis (vorbis, playmode);
 }

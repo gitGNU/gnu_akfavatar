@@ -1,3 +1,11 @@
+2013-09-20  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtaddons.h, avtvorbis.c (avt_load_vorbis_stream):
+	new parameter autoclose
+
+	* avtaddons.h, avtvorbis.c:
+	read big audio files directly from file while playing
+
 2013-09-18  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtdata.h, avtdata.c: don't store stream start position

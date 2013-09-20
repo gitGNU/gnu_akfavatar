@@ -1,6 +1,6 @@
 * AKFAvatar-testing
 
-  - audio: big WAV or AU files are read directly from file while playing
+  - audio: big audio files are read directly from file while playing
   - fix: Pascal sound support fixed
   - SDL2: support for SDL2 with automatic resizing of the graphics
   - SDL2: support for pasting text from clipboard (Alt+V, middle mouse button)
