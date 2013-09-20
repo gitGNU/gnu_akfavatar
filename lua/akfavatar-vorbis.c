@@ -43,12 +43,6 @@ extern "C"
 }
 #endif
 
-
-#define STB_VORBIS_HEADER_ONLY 1
-#define STB_VORBIS_NO_PUSHDATA_API 1
-
-#include "stb_vorbis.c"
-
 // internal name for audio data
 #define AUDIODATA   "AKFAvatar-Audio"
 
@@ -121,7 +115,7 @@ lvorbis_load_stream (lua_State * L)
   if (not stream->closef)
     return luaL_error (L, "attempt to use a closed file");
 
-  audio_data = avt_load_vorbis_stream (stream->f, size, playmode);
+  audio_data = avt_load_vorbis_stream (stream->f, size, false, playmode);
 
   if (not audio_data)
     {
@@ -214,7 +208,7 @@ lvorbis_load_stream_chain (lua_State * L)
   if (not stream->closef)
     return luaL_error (L, "attempt to use a closed file");
 
-  audio_data = avt_load_vorbis_stream (stream->f, maxsize, playmode);
+  audio_data = avt_load_vorbis_stream (stream->f, maxsize, false, playmode);
 
   if (not audio_data)
     {
