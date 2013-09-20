@@ -68,11 +68,7 @@ get_audio (void *userdata, uint8_t * stream, int len)
     {
       if (loop)
 	{
-	  // rewind
-	  snd->position = 0;
-	  if (snd->data)
-	    snd->data->seek (snd->data, snd->startpos, SEEK_SET);
-
+	  snd->rewind (snd);
 	  snd->get (snd, stream + r, len - r);
 	}
       else			// no loop
@@ -199,10 +195,7 @@ avt_play_audio (avt_audio * snd, int playmode)
 
   SDL_memset (&audiospec, 0, sizeof (audiospec));
 
-  // rewind
-  snd->position = 0;
-  if (snd->data)
-    snd->data->seek (snd->data, snd->startpos, SEEK_SET);
+  snd->rewind (snd);
 
   // load sound
   current_sound = *snd;

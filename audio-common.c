@@ -215,6 +215,19 @@ method_done_mmap (avt_audio * s)
     avt_munmap (s->address, s->size2);
 }
 
+static void
+method_rewind_memory (avt_audio * s)
+{
+  s->position = 0;
+}
+
+static void
+method_rewind_data (avt_audio * s)
+{
+  if (s->data)
+    s->data->seek (s->data, s->position, SEEK_SET);
+}
+
 static size_t
 avt_required_audio_size (avt_audio * snd, size_t data_size)
 {
@@ -598,6 +611,7 @@ avt_prepare_raw_audio (size_t capacity,
   s->samplingrate = samplingrate;
   s->channels = channels;
   s->complete = false;
+  s->rewind = method_rewind_memory;
 
   switch (audio_type)
     {
@@ -831,7 +845,8 @@ avt_fetch_audio_data (avt_data * src, int samplingrate,
     }
 
   audio->data = data;
-  audio->startpos = src->tell (src);
+  audio->position = src->tell (src);	// start position
+  audio->rewind = method_rewind_data;
   audio->done = method_done_data;
 
   switch (audio_type)
