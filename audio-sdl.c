@@ -45,7 +45,7 @@
 static bool avt_audio_initialized;
 
 // current sound
-static struct avt_audio current_sound;
+static struct avt_audio *current_sound;
 static volatile int32_t soundpos = 0;	// Current play position
 static volatile int32_t soundleft = 0;	// Length of left unplayed audio data
 static volatile bool loop = false;
@@ -125,8 +125,7 @@ avt_stop_audio (void)
   soundleft = 0;
   loop = false;
   audio_key = 0;
-  current_sound.length = 0;
-  current_sound.sound = NULL;
+  current_sound = NULL;
 }
 
 static void
@@ -137,8 +136,7 @@ avt_quit_audio_sdl (void)
       SDL_CloseAudio ();
       soundpos = 0;
       soundleft = 0;
-      current_sound.length = 0;
-      current_sound.sound = NULL;
+      current_sound = NULL;
       loop = false;
       playing = false;
       SDL_QuitSubSystem (SDL_INIT_AUDIO);
@@ -157,9 +155,9 @@ avt_unlock_audio (avt_audio * snd)
 {
   size_t old_length;
 
-  old_length = current_sound.length;
-  current_sound = *snd;
-  soundleft += current_sound.length - old_length;
+  old_length = current_sound->length;
+  current_sound = snd;
+  soundleft += current_sound->length - old_length;
 
   SDL_UnlockAudio ();
 }
@@ -168,7 +166,7 @@ avt_unlock_audio (avt_audio * snd)
 extern bool
 avt_audio_playing (avt_audio * snd)
 {
-  if (snd and snd->sound != current_sound.sound)
+  if (snd and snd != current_sound)
     return false;		// not same sound
 
   return playing;
@@ -198,7 +196,7 @@ avt_play_audio (avt_audio * snd, int playmode)
   snd->rewind (snd);
 
   // load sound
-  current_sound = *snd;
+  current_sound = snd;
 
   switch (snd->audio_type)
     {
@@ -234,7 +232,7 @@ avt_play_audio (avt_audio * snd, int playmode)
   if (SDL_OpenAudio (&audiospec, NULL) == 0)
     {
       soundpos = 0;
-      soundleft = current_sound.length;
+      soundleft = current_sound->length;
       SDL_UnlockAudio ();
       playing = true;
       SDL_PauseAudio (0);
