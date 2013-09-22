@@ -427,9 +427,9 @@ method_get_law_memory (avt_audio * restrict s, void *restrict data,
   const sample16 *decode;
 
   if (AVT_AUDIO_MULAW == s->audio_type)
-    decode = &mulaw_decode[0];
+    decode = mulaw_decode;
   else
-    decode = &alaw_decode[0];
+    decode = alaw_decode;
 
   uint_least8_t *restrict sound = s->sound + s->position;
   int_least16_t *restrict d = data;
@@ -458,11 +458,11 @@ method_get_law_data (avt_audio * restrict s, void *restrict data, size_t size)
   const sample16 *decode;
 
   if (AVT_AUDIO_MULAW == s->audio_type)
-    decode = &mulaw_decode[0];
+    decode = mulaw_decode;
   else
-    decode = &alaw_decode[0];
+    decode = alaw_decode;
 
-  uint_least8_t *restrict sample = &samples[0];
+  uint_least8_t *restrict sample = samples;
   int_least16_t *restrict d = data;
   while (bytes--)
     *d++ = decode[*sample++];
