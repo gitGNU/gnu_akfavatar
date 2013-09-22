@@ -44,10 +44,8 @@
 
 static bool avt_audio_initialized;
 
-// current sound
-static struct avt_audio *current_sound;
+static volatile avt_audio *current_sound;
 static volatile bool loop = false;
-static volatile bool playing = false;
 static avt_char audio_key;
 
 static void avt_quit_audio_sdl (void);
@@ -81,7 +79,6 @@ get_audio (void *userdata, uint8_t * stream, int len)
 	    {
 	      SDL_PauseAudio (1);
 	      current_sound = NULL;
-	      playing = false;
 
 	      if (audio_key)
 		avt_push_key (audio_key);
@@ -119,7 +116,6 @@ extern void
 avt_stop_audio (void)
 {
   SDL_CloseAudio ();
-  playing = false;
   loop = false;
   audio_key = 0;
   current_sound = NULL;
@@ -133,7 +129,6 @@ avt_quit_audio_sdl (void)
       SDL_CloseAudio ();
       current_sound = NULL;
       loop = false;
-      playing = false;
       SDL_QuitSubSystem (SDL_INIT_AUDIO);
       avt_audio_initialized = false;
     }
@@ -156,10 +151,7 @@ avt_unlock_audio (avt_audio * snd)
 extern bool
 avt_audio_playing (avt_audio * snd)
 {
-  if (snd and snd != current_sound)
-    return false;		// not same sound
-
-  return playing;
+  return (current_sound and (not snd or current_sound == snd));
 }
 
 extern int
@@ -222,7 +214,6 @@ avt_play_audio (avt_audio * snd, int playmode)
   if (SDL_OpenAudio (&audiospec, NULL) == 0)
     {
       SDL_UnlockAudio ();
-      playing = true;
       SDL_PauseAudio (0);
       return _avt_STATUS;
     }
@@ -250,7 +241,7 @@ avt_wait_audio_end (void)
 {
   avt_char old_audio_key;
 
-  if (not playing)
+  if (not current_sound)
     return _avt_STATUS;
 
   old_audio_key = audio_key;
@@ -259,7 +250,7 @@ avt_wait_audio_end (void)
   // end the loop, but wait for end of sound
   loop = false;
 
-  while (playing and _avt_STATUS == AVT_NORMAL)
+  while (current_sound and _avt_STATUS == AVT_NORMAL)
     avt_get_key ();		// end of audio also sends a pseudo key
 
   audio_key = old_audio_key;
