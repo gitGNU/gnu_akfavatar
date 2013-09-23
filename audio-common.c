@@ -194,38 +194,38 @@ avt_quit_audio (void)
 static void
 method_done_memory (avt_audio * s)
 {
-  if (s->sound)
-    free (s->sound);
+  if (s->info.memory.sound)
+    free (s->info.memory.sound);
 }
 
 static void
 method_done_data (avt_audio * s)
 {
-  if (s->data)
+  if (s->info.data.data)
     {
-      s->data->done (s->data);
-      free (s->data);
+      s->info.data.data->done (s->info.data.data);
+      free (s->info.data.data);
     }
 }
 
 static void
 method_done_mmap (avt_audio * s)
 {
-  if (s->size2)
-    avt_munmap (s->address, s->size2);
+  if (s->info.mmap.map_length)
+    avt_munmap (s->info.mmap.address, s->info.mmap.map_length);
 }
 
 static void
 method_rewind_memory (avt_audio * s)
 {
-  s->position = 0;
+  s->info.memory.position = 0;
 }
 
 static void
 method_rewind_data (avt_audio * s)
 {
-  if (s->data)
-    s->data->seek (s->data, s->position, SEEK_SET);
+  if (s->info.data.data)
+    s->info.data.data->seek (s->info.data.data, s->info.data.start, SEEK_SET);
 }
 
 static size_t
@@ -273,7 +273,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
     }
 
   out_size = avt_required_audio_size (snd, data_size);
-  old_size = snd->length;
+  old_size = snd->info.memory.length;
   new_size = old_size + out_size;
 
   // if it's currently playing, lock it
@@ -282,13 +282,13 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
     avt_lock_audio ();
 
   // eventually get more memory for output buffer
-  if (new_size > snd->size2)
+  if (new_size > snd->info.memory.capacity)
     {
       void *new_sound;
       size_t new_capacity;
 
       // get twice the capacity
-      new_capacity = 2 * snd->size2;
+      new_capacity = 2 * snd->info.memory.capacity;
 
       /*
        * the capacity must never be lower than new_size
@@ -297,7 +297,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
       if (new_capacity < new_size)
 	new_capacity = new_size;
 
-      new_sound = realloc (snd->sound, new_capacity);
+      new_sound = realloc (snd->info.memory.sound, new_capacity);
 
       if (not new_sound)
 	{
@@ -306,8 +306,8 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
 	  return _avt_STATUS;
 	}
 
-      snd->sound = (unsigned char *) new_sound;
-      snd->size2 = new_capacity;
+      snd->info.memory.sound = (unsigned char *) new_sound;
+      snd->info.memory.capacity = new_capacity;
     }
 
   // convert or copy the data
@@ -320,7 +320,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
     case AVT_AUDIO_S8:
     case AVT_AUDIO_MULAW:	// mu-law, logarithmic PCM
     case AVT_AUDIO_ALAW:	// A-law, logarithmic PCM
-      memcpy (snd->sound + old_size, data, out_size);
+      memcpy (snd->info.memory.sound + old_size, data, out_size);
       break;
 
       // the following ones are all converted to 16 bits
@@ -331,7 +331,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
 	uint_least16_t *restrict out;
 
 	in = (uint_least8_t *) data;
-	out = (uint_least16_t *) (snd->sound + old_size);
+	out = (uint_least16_t *) (snd->info.memory.sound + old_size);
 
 	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 3)
 	  *out++ = (in[2] << 8) | in[1];
@@ -344,7 +344,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
 	uint_least16_t *restrict out;
 
 	in = (uint_least8_t *) data;
-	out = (uint_least16_t *) (snd->sound + old_size);
+	out = (uint_least16_t *) (snd->info.memory.sound + old_size);
 
 	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 3)
 	  *out++ = (in[0] << 8) | in[1];
@@ -357,7 +357,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
 	uint_least16_t *restrict out;
 
 	in = (uint_least8_t *) data;
-	out = (uint_least16_t *) (snd->sound + old_size);
+	out = (uint_least16_t *) (snd->info.memory.sound + old_size);
 
 	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 4)
 	  *out++ = (in[3] << 8) | in[2];
@@ -370,7 +370,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
 	uint_least16_t *restrict out;
 
 	in = (uint_least8_t *) data;
-	out = (uint_least16_t *) (snd->sound + old_size);
+	out = (uint_least16_t *) (snd->info.memory.sound + old_size);
 
 	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 4)
 	  *out++ = (in[0] << 8) | in[1];
@@ -383,7 +383,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
       return _avt_STATUS;
     }
 
-  snd->length = new_size;
+  snd->info.memory.length = new_size;
   snd->done = method_done_memory;
 
   if (active)
@@ -396,11 +396,11 @@ static size_t
 method_get_audio_memory (avt_audio * restrict s, void *restrict data,
 			 size_t size)
 {
-  if (s->position + size > s->length)
-    size = s->length - s->position;
+  if (s->info.memory.position + size > s->info.memory.length)
+    size = s->info.memory.length - s->info.memory.position;
 
-  memcpy (data, s->sound + s->position, size);
-  s->position += size;
+  memcpy (data, s->info.memory.sound + s->info.memory.position, size);
+  s->info.memory.position += size;
 
   return size;
 }
@@ -410,7 +410,7 @@ static size_t
 method_get_audio_data (avt_audio * restrict s, void *restrict data,
 		       size_t size)
 {
-  return s->data->read (s->data, data, 1, size);
+  return s->info.data.data->read (s->info.data.data, data, 1, size);
 }
 
 
@@ -421,8 +421,8 @@ method_get_law_memory (avt_audio * restrict s, void *restrict data,
 {
   size_t bytes = size / 2;
 
-  if (s->position + bytes > s->length)
-    bytes = s->length - s->position;
+  if (s->info.memory.position + bytes > s->info.memory.length)
+    bytes = s->info.memory.length - s->info.memory.position;
 
   const sample16 *decode;
 
@@ -431,13 +431,17 @@ method_get_law_memory (avt_audio * restrict s, void *restrict data,
   else
     decode = alaw_decode;
 
-  uint_least8_t *restrict sound = s->sound + s->position;
-  int_least16_t *restrict d = data;
+  uint_least8_t *restrict sound;
+  int_least16_t *restrict d;
+
+  sound = s->info.memory.sound + s->info.memory.position;
+  d = data;
+
   size_t b = bytes;
   while (b--)
     *d++ = decode[*sound++];
 
-  s->position += bytes;
+  s->info.memory.position += bytes;
 
   return bytes * 2;
 }
@@ -450,8 +454,10 @@ method_get_law_data (avt_audio * restrict s, void *restrict data, size_t size)
   size_t bytes = size / 2;
 
   uint_least8_t samples[bytes];
-  size_t b = s->data->read (s->data, &samples, sizeof (samples[0]), bytes);
+  size_t b;
 
+  b = s->info.data.data->read (s->info.data.data, &samples,
+			       sizeof (samples[0]), bytes);
   if (not b)
     return 0;
 
@@ -478,8 +484,10 @@ method_get_bit24be_data (avt_audio * restrict s, void *restrict data,
   size_t bytes = size / sizeof (uint_least16_t) * 3;
 
   uint_least8_t samples[bytes];
-  size_t b = s->data->read (s->data, &samples, sizeof (samples[0]), bytes);
+  size_t b;
 
+  b = s->info.data.data->read (s->info.data.data, &samples,
+			       sizeof (samples[0]), bytes);
   if (not b)
     return 0;
 
@@ -500,7 +508,10 @@ method_get_bit24le_data (avt_audio * restrict s, void *restrict data,
   size_t bytes = size / sizeof (uint_least16_t) * 3;
 
   uint_least8_t samples[bytes];
-  size_t b = s->data->read (s->data, &samples, sizeof (samples[0]), bytes);
+  size_t b;
+
+  b = s->info.data.data->read (s->info.data.data, &samples,
+			       sizeof (samples[0]), bytes);
 
   if (not b)
     return 0;
@@ -522,8 +533,10 @@ method_get_bit32be_data (avt_audio * restrict s, void *restrict data,
   size_t bytes = size * 2;
 
   uint_least8_t samples[bytes];
-  size_t b = s->data->read (s->data, &samples, sizeof (samples[0]), bytes);
+  size_t b;
 
+  b = s->info.data.data->read (s->info.data.data, &samples,
+			       sizeof (samples[0]), bytes);
   if (not b)
     return 0;
 
@@ -544,8 +557,10 @@ method_get_bit32le_data (avt_audio * restrict s, void *restrict data,
   size_t bytes = size * 2;
 
   uint_least8_t samples[bytes];
-  size_t b = s->data->read (s->data, &samples, sizeof (samples[0]), bytes);
+  size_t b;
 
+  b = s->info.data.data->read (s->info.data.data, &samples,
+			       sizeof (samples[0]), bytes);
   if (not b)
     return 0;
 
@@ -606,11 +621,9 @@ avt_prepare_raw_audio (size_t capacity,
       return NULL;
     }
 
-  s->length = 0;
   s->audio_type = audio_type;
   s->samplingrate = samplingrate;
   s->channels = channels;
-  s->complete = false;
   s->rewind = method_rewind_memory;
 
   switch (audio_type)
@@ -624,12 +637,12 @@ avt_prepare_raw_audio (size_t capacity,
       s->get = method_get_audio_memory;
     }
 
-  // reserve memory
-  unsigned char *sound_data = NULL;
-  size_t real_capacity = 0;
-
+  // eventually reserve memory
   if (capacity > 0 and capacity < MAXIMUM_SIZE)
     {
+      unsigned char *sound_data;
+      size_t real_capacity;
+
       real_capacity = avt_required_audio_size (s, capacity);
       sound_data = malloc (real_capacity);
 
@@ -641,10 +654,9 @@ avt_prepare_raw_audio (size_t capacity,
 	}
 
       s->done = method_done_memory;
+      s->info.memory.sound = sound_data;
+      s->info.memory.capacity = real_capacity;
     }
-
-  s->sound = sound_data;
-  s->size2 = real_capacity;
 
   return s;
 }
@@ -659,22 +671,20 @@ avt_finalize_raw_audio (avt_audio * snd)
     avt_lock_audio ();
 
   // eventually free unneeded memory
-  if (snd->size2 > snd->length)
+  if (snd->info.memory.capacity > snd->info.memory.length)
     {
       void *new_sound;
       size_t new_capacity;
 
-      new_capacity = snd->length;
-      new_sound = realloc (snd->sound, new_capacity);
+      new_capacity = snd->info.memory.length;
+      new_sound = realloc (snd->info.memory.sound, new_capacity);
 
       if (new_sound)
 	{
-	  snd->sound = (unsigned char *) new_sound;
-	  snd->size2 = new_capacity;
+	  snd->info.memory.sound = (unsigned char *) new_sound;
+	  snd->info.memory.capacity = new_capacity;
 	}
     }
-
-  snd->complete = true;
 
   if (active)
     avt_unlock_audio (snd);
@@ -800,12 +810,11 @@ avt_mmap_audio (avt_data * src, size_t maxsize,
       return NULL;
     }
 
-  audio->address = address;
-  audio->size2 = length;
+  audio->info.mmap.address = address;
+  audio->info.mmap.map_length = length;
   audio->done = method_done_mmap;
-  audio->sound = ((unsigned char *) address) + pos;
-  audio->length = maxsize;
-  audio->complete = true;
+  audio->info.mmap.sound = ((unsigned char *) address) + pos;
+  audio->info.mmap.length = maxsize;
 
   if (playmode != AVT_LOAD)
     avt_play_audio (audio, playmode);
@@ -844,8 +853,8 @@ avt_fetch_audio_data (avt_data * src, int samplingrate,
       return NULL;
     }
 
-  audio->data = data;
-  audio->position = src->tell (src);	// start position
+  audio->info.data.data = data;
+  audio->info.data.start = src->tell (src);
   audio->rewind = method_rewind_data;
   audio->done = method_done_data;
 
@@ -1154,6 +1163,11 @@ avt_start_audio_common (void (*quit_backend) (void))
 
 #endif // not NO_AUDIO
 
+static inline bool
+no_data_needed (avt_audio * s)
+{
+  return (s->done != method_done_data);
+}
 
 extern avt_audio *
 avt_load_audio_file (const char *file, int playmode)
@@ -1169,7 +1183,7 @@ avt_load_audio_file (const char *file, int playmode)
   if (d.open_file (&d, file))
     r = avt_load_audio_general (&d, MAXIMUM_SIZE, playmode);
 
-  if (not r or not r->data)
+  if (not r or no_data_needed (r))
     d.done (&d);
 
   return r;
@@ -1190,7 +1204,7 @@ avt_load_audio_part (avt_stream * stream, size_t maxsize, int playmode)
   if (d.open_stream (&d, (FILE *) stream, false))
     r = avt_load_audio_general (&d, maxsize, playmode);
 
-  if (not r or not r->data)
+  if (not r or no_data_needed (r))
     d.done (&d);
 
   return r;
@@ -1210,7 +1224,7 @@ avt_load_audio_stream (avt_stream * stream, int playmode)
   if (d.open_stream (&d, (FILE *) stream, false))
     r = avt_load_audio_general (&d, MAXIMUM_SIZE, playmode);
 
-  if (not r or not r->data)
+  if (not r or no_data_needed (r))
     d.done (&d);
 
   return r;
@@ -1230,7 +1244,7 @@ avt_load_audio_data (const void *data, size_t datasize, int playmode)
   if (d.open_memory (&d, data, datasize))
     r = avt_load_audio_general (&d, datasize, playmode);
 
-  if (not r or not r->data)
+  if (not r or no_data_needed (r))
     d.done (&d);
 
   return r;

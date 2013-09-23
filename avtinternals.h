@@ -102,23 +102,42 @@
 
 struct avt_audio
 {
-  unsigned char *sound;		/* Pointer to sound data */
-  size_t length;		/* Length of sound data in bytes */
   int audio_type;		/* Type of raw data */
   int samplingrate;
   int channels;
-  bool complete;
 
   size_t (*get) (avt_audio *self, void *data, size_t size);
   void (*rewind) (avt_audio *self);
   void (*done) (avt_audio *self);
 
   /* data for backends */
-  /* may have different meanings */
-  void *address;
-  avt_data *data;
-  size_t size2;
-  size_t position;
+  union
+  {
+    void *state;
+
+    struct
+    {
+      unsigned char *sound;
+      size_t position;
+      size_t length;
+      size_t capacity;
+    } memory;
+
+    struct
+    {
+      unsigned char *sound;
+      size_t position;
+      size_t length;
+      size_t map_length;
+      void *address;
+    } mmap;
+
+    struct
+    {
+      avt_data *data;
+      size_t start;
+    } data;
+  } info;
 };
 
 struct avt_backend

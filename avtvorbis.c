@@ -114,7 +114,7 @@ method_get_vorbis (avt_audio * restrict s, void *restrict data, size_t size)
 {
   int n;
 
-  n = stb_vorbis_get_samples_short_interleaved (s->address, s->channels,
+  n = stb_vorbis_get_samples_short_interleaved (s->info.state, s->channels,
 						(short *) data,
 						size / sizeof (short));
 
@@ -124,16 +124,15 @@ method_get_vorbis (avt_audio * restrict s, void *restrict data, size_t size)
 static void
 method_rewind_vorbis (avt_audio * s)
 {
-  stb_vorbis_seek_start (s->address);
+  stb_vorbis_seek_start (s->info.state);
 }
 
 static void
 method_done_vorbis (avt_audio * s)
 {
-  stb_vorbis_close (s->address);
+  stb_vorbis_close (s->info.state);
 }
 
-// TODO
 static avt_audio *
 open_vorbis (stb_vorbis * vorbis, int playmode)
 {
@@ -151,12 +150,11 @@ open_vorbis (stb_vorbis * vorbis, int playmode)
   if (not audio)
     return NULL;
 
-  audio->address = (void *) vorbis;
+  audio->info.state = (void *) vorbis;
   audio->get = method_get_vorbis;
   audio->rewind = method_rewind_vorbis;
   audio->done = method_done_vorbis;
 
-  // if not started yet, start it
   if (playmode != AVT_LOAD)
     avt_play_audio (audio, playmode);
 
