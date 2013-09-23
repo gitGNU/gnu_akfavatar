@@ -502,12 +502,12 @@ avttermsys.lo: $(srcdir)/avttermsys.c $(srcdir)/avttermsys.h \
 arch.o: $(srcdir)/arch.c $(srcdir)/avtaddons.h
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/arch.c
 
-avtvorbis.o: $(srcdir)/avtvorbis.c $(srcdir)/avtaddons.h $(srcdir)/akfavatar.h \
-	     $(srcdir)/stb_vorbis.c
+avtvorbis.o: $(srcdir)/avtvorbis.c $(srcdir)/avtaddons.h $(srcdir)/avtinternals.h \
+	        $(srcdir)/akfavatar.h $(srcdir)/stb_vorbis.c
 	$(CC) -I$(srcdir) $(CFLAGS) -c -o $@ $(srcdir)/avtvorbis.c
 
-avtvorbis.lo: $(srcdir)/avtvorbis.c $(srcdir)/akfavatar.h $(srcdir)/avtaddons.h \
-	      $(srcdir)/stb_vorbis.c
+avtvorbis.lo: $(srcdir)/avtvorbis.c $(srcdir)/akfavatar.h $(srcdir)/avtinternals.h \
+	      $(srcdir)/avtaddons.h $(srcdir)/stb_vorbis.c
 	$(CC) -I$(srcdir) $(CFLAGS) -fpic -c -o $@ $(srcdir)/avtvorbis.c
 
 stb_vorbis.o: $(srcdir)/stb_vorbis.c
