@@ -30,8 +30,11 @@
 
 #include "akfavatar.h"
 #include "avtinternals.h"
-#include "avtdata.h"
 
+
+#ifndef NO_AUDIO
+
+#include "avtdata.h"
 #include <stdlib.h>		// malloc / calloc / realloc / free
 #include <stdint.h>
 #include <string.h>		// memcmp / memcpy / memset
@@ -39,6 +42,8 @@
 #include <unistd.h>		// evtl. defines _POSIX_MAPPED_FILES
 
 //#undef _POSIX_MAPPED_FILES
+
+#include "alert.c"
 
 #if _POSIX_MAPPED_FILES > 0
 #include <sys/mman.h>
@@ -55,54 +60,6 @@
 
 // type for 16 bit samples
 typedef int_fast16_t sample16;
-
-
-#ifdef NO_AUDIO
-
-extern avt_audio *
-avt_prepare_raw_audio (size_t capacity,
-		       int samplingrate, int audio_type, int channels)
-{
-  (void) capacity;
-  (void) samplingrate;
-  (void) audio_type;
-  (void) channels;
-
-  return NULL;
-}
-
-extern int
-avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
-{
-  (void) snd;
-  (void) data;
-  (void) data_size;
-
-  return AVT_FAILURE;
-}
-
-extern void
-avt_finalize_raw_audio (avt_audio * snd)
-{
-  (void) snd;
-}
-
-extern void
-avt_free_audio (avt_audio * snd)
-{
-  (void) snd;
-}
-
-extern void
-avt_quit_audio (void)
-{
-}
-
-#define avt_load_audio_general(a,b,c)  (NULL)
-
-#else // not NO_AUDIO
-
-#include "alert.c"
 
 // short sound for the "avt_bell" function
 static avt_audio *alert_sound;
@@ -1161,8 +1118,6 @@ avt_start_audio_common (void (*quit_backend) (void))
   return _avt_STATUS;
 }
 
-#endif // not NO_AUDIO
-
 static inline bool
 no_data_needed (avt_audio * s)
 {
@@ -1174,8 +1129,6 @@ avt_load_audio_file (const char *file, int playmode)
 {
   avt_audio *r;
   avt_data d;
-
-  (void) playmode;
 
   r = NULL;
 
@@ -1195,9 +1148,6 @@ avt_load_audio_part (avt_stream * stream, size_t maxsize, int playmode)
   avt_audio *r;
   avt_data d;
 
-  (void) playmode;
-  (void) maxsize;
-
   r = NULL;
 
   avt_data_init (&d);
@@ -1215,8 +1165,6 @@ avt_load_audio_stream (avt_stream * stream, int playmode)
 {
   avt_audio *r;
   avt_data d;
-
-  (void) playmode;
 
   r = NULL;
 
@@ -1236,8 +1184,6 @@ avt_load_audio_data (const void *data, size_t datasize, int playmode)
   avt_audio *r;
   avt_data d;
 
-  (void) playmode;
-
   r = NULL;
 
   avt_data_init (&d);
@@ -1249,3 +1195,85 @@ avt_load_audio_data (const void *data, size_t datasize, int playmode)
 
   return r;
 }
+
+#else // NO_AUDIO
+
+extern avt_audio *
+avt_prepare_raw_audio (size_t capacity,
+		       int samplingrate, int audio_type, int channels)
+{
+  (void) capacity;
+  (void) samplingrate;
+  (void) audio_type;
+  (void) channels;
+
+  return NULL;
+}
+
+extern int
+avt_add_raw_audio_data (avt_audio * snd, void *data, size_t data_size)
+{
+  (void) snd;
+  (void) data;
+  (void) data_size;
+
+  return AVT_FAILURE;
+}
+
+extern void
+avt_finalize_raw_audio (avt_audio * snd)
+{
+  (void) snd;
+}
+
+extern void
+avt_free_audio (avt_audio * snd)
+{
+  (void) snd;
+}
+
+extern void
+avt_quit_audio (void)
+{
+}
+
+extern avt_audio *
+avt_load_audio_file (const char *file, int playmode)
+{
+  (void) file;
+  (void) playmode;
+
+  return NULL;
+}
+
+extern avt_audio *
+avt_load_audio_part (avt_stream * stream, size_t maxsize, int playmode)
+{
+  (void) playmode;
+  (void) maxsize;
+  (void) stream;
+
+  return NULL;
+}
+
+extern avt_audio *
+avt_load_audio_stream (avt_stream * stream, int playmode)
+{
+  (void) playmode;
+  (void) stream;
+
+  return NULL;
+}
+
+extern avt_audio *
+avt_load_audio_data (const void *data, size_t datasize, int playmode)
+{
+  (void) data;
+  (void) datasize;
+  (void) playmode;
+
+  return NULL;
+}
+
+
+#endif // NO_AUDIO
