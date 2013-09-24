@@ -58,15 +58,15 @@
 // maximum size for audio data
 #define MAXIMUM_SIZE  0xFFFFFFFFU
 
-// type for 16 bit samples
-typedef int_fast16_t sample16;
+// type for 16 bit samples (speed optimized)
+typedef int_fast16_t sample16fast;
 
 // short sound for the "avt_bell" function
 static avt_audio *alert_sound;
 static void (*quit_audio_backend) (void);
 
 // table for decoding mu-law
-static const sample16 mulaw_decode[256] = {
+static const sample16fast mulaw_decode[256] = {
   -32124, -31100, -30076, -29052, -28028, -27004, -25980, -24956, -23932,
   -22908, -21884, -20860, -19836, -18812, -17788, -16764, -15996, -15484,
   -14972, -14460, -13948, -13436, -12924, -12412, -11900, -11388, -10876,
@@ -93,7 +93,7 @@ static const sample16 mulaw_decode[256] = {
 };
 
 // table for decoding A-law
-static const sample16 alaw_decode[256] = {
+static const sample16fast alaw_decode[256] = {
   -5504, -5248, -6016, -5760, -4480, -4224, -4992, -4736, -7552, -7296, -8064,
   -7808, -6528, -6272, -7040, -6784, -2752, -2624, -3008, -2880, -2240,
   -2112, -2496, -2368, -3776, -3648, -4032, -3904, -3264, -3136, -3520,
@@ -172,6 +172,7 @@ method_done_mmap (avt_audio * s)
     avt_munmap (s->info.mmap.address, s->info.mmap.map_length);
 }
 
+// also used for mmap
 static void
 method_rewind_memory (avt_audio * s)
 {
@@ -349,6 +350,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
   return avt_update ();
 }
 
+// also used for mmap
 static size_t
 method_get_audio_memory (avt_audio * restrict s, void *restrict data,
 			 size_t size)
@@ -371,7 +373,7 @@ method_get_audio_data (avt_audio * restrict s, void *restrict data,
 }
 
 
-// get mu-law or A-law audio as 16bit from memory
+// get mu-law or A-law audio as 16bit from memory/mmap
 static size_t
 method_get_law_memory (avt_audio * restrict s, void *restrict data,
 		       size_t size)
@@ -381,7 +383,7 @@ method_get_law_memory (avt_audio * restrict s, void *restrict data,
   if (s->info.memory.position + bytes > s->info.memory.length)
     bytes = s->info.memory.length - s->info.memory.position;
 
-  const sample16 *decode;
+  const sample16fast *decode;
 
   if (AVT_AUDIO_MULAW == s->audio_type)
     decode = mulaw_decode;
@@ -418,7 +420,7 @@ method_get_law_data (avt_audio * restrict s, void *restrict data, size_t size)
   if (not b)
     return 0;
 
-  const sample16 *decode;
+  const sample16fast *decode;
 
   if (AVT_AUDIO_MULAW == s->audio_type)
     decode = mulaw_decode;
@@ -638,7 +640,7 @@ avt_finalize_raw_audio (avt_audio * snd)
 
       if (new_sound)
 	{
-	  snd->info.memory.sound = (unsigned char *) new_sound;
+	  snd->info.memory.sound = new_sound;
 	  snd->info.memory.capacity = new_capacity;
 	}
     }
