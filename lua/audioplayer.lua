@@ -6,12 +6,22 @@ Copyright (c) 2011,2012,2013 Andreas K. Foerster <info@akfoerster.de>
 License: GPL version 3 or later
 
 Supported audio formats: Ogg Vorbis, Wave, AU
+Supported decoders: flac, opusdec, mpg123, (mpg321, madplay)
 Supported playlist formats: M3U, PLS
 --]]--------------------------------------------------------------------
 
 local avt = require "lua-akfavatar"
 local vorbis = avt.optional "akfavatar-vorbis"
 local default_cover = assert(avt.search("audio1.xpm"))
+
+-- use $input for input file name, $output for AU or WAVE output files
+-- comment out if you don't even want those files to show up
+local decoder_flac = "flac --decode --silent --force --output-name='$output' '$input'"
+local decoder_opus = "opusdec --quiet --force-wav '$input' '$output'"
+local decoder_mpeg = "mpg123 --quiet --au '$output' '$input'"
+--local decoder_mpeg = "mpg321 --quiet --au '$output' '$input'"
+--local decoder_mpeg = "madplay -q -o 'wave:$output' '$input'"
+-- note: madplay supports only 8 bit for the snd format, so avoid that
 
 -- downloader application
 -- url is appended, data should be dumped to stdout
@@ -32,6 +42,19 @@ avt.start()
 avt.start_audio()
 avt.set_balloon_color("tan")
 avt.encoding("UTF-8")
+
+local function tempname()
+  local tmp = os.tmpname()
+
+  -- for Windows
+  if string.find(tmp, "^\\") then
+    tmp = os.getenv("TMP") .. tmp
+  end
+
+  -- print ("tmp:", tmp)
+
+  return tmp
+end
 
 -- open URL with the tool "curl"
 -- returns file handle
@@ -65,11 +88,36 @@ local function handle_list_entry(s)
   return s
 end
 
-local function load_audio(url)
-  local audio
+local function load_decoder(decoder, url)
+  local tmp = tempname()
 
-  if string.find(url, "^https?://") or string.find(url, "^s?ftps?://") then
+  local decode = string.gsub(decoder, "%$(%w+)",
+                   {output=tmp, input=handle_list_entry(url)})
+
+  local audio = nil
+  if os.execute(decode) then
+    audio = avt.load_audio_file(tmp, "play")
+  end
+
+  -- remove a file while it is opened works on most systems
+  -- it is just really removed after closing
+  os.remove(tmp)
+
+  return audio
+end
+
+local function load_audio(url)
+  local audio = nil
+  local u = string.lower(url)
+
+  if string.find(u, "^https?://") or string.find(u, "^s?ftps?://") then
     audio = avt.load_audio(get_url(url), "play")
+  elseif string.find(u, "%.flac?$") then
+    audio = load_decoder(decoder_flac, url)
+  elseif string.find(u, "%.opus$") then
+    audio = load_decoder(decoder_opus, url)
+  elseif string.find(u, "%.mp[123]$") then
+    audio = load_decoder(decoder_mpeg, url)
   else
     audio = avt.load_audio_file(handle_list_entry(url), "play")
   end
@@ -85,7 +133,7 @@ local function play_single(filename) --> play a single file
   audio = load_audio(filename)
 
   if not audio then
-    avt.tell("unsupported audio file")
+    avt.tell("cannot play audio file")
     avt.wait_button()
     return
   end
@@ -266,6 +314,9 @@ end
 local function supported_file(n)
   n = string.lower(n)
   return (vorbis and string.find(n, "%.ogg$"))
+         or (decoder_flac and string.find(n, "%.flac?$"))
+         or (decoder_opus and string.find(n, "%.opus$"))
+         or (decoder_mpeg and string.find(n, "%.mp[123]$"))
          or string.find(n, "%.au$")
          or string.find(n, "%.snd$")
          or string.find(n, "%.wav$")
