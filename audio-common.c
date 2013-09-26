@@ -58,12 +58,15 @@
 // maximum size for audio data
 #define MAXIMUM_SIZE  0xFFFFFFFFU
 
-// type for 16 bit samples (speed optimized)
-typedef int_fast16_t sample16fast;
-
 // short sound for the "avt_bell" function
 static avt_audio *alert_sound;
 static void (*quit_audio_backend) (void);
+
+// type for 16 bit samples (speed optimized)
+typedef int_fast16_t sample16fast;
+
+// pointer to the active mu-law or A-law decoding table
+static const sample16fast *law_decoder;
 
 // table for decoding mu-law
 static const sample16fast mulaw_decode[256] = {
@@ -383,13 +386,6 @@ method_get_law_memory (avt_audio * restrict s, void *restrict data,
   if (s->info.memory.position + bytes > s->info.memory.length)
     bytes = s->info.memory.length - s->info.memory.position;
 
-  const sample16fast *decode;
-
-  if (AVT_AUDIO_MULAW == s->audio_type)
-    decode = mulaw_decode;
-  else
-    decode = alaw_decode;
-
   uint_least8_t *restrict sound;
   int_least16_t *restrict d;
 
@@ -398,7 +394,7 @@ method_get_law_memory (avt_audio * restrict s, void *restrict data,
 
   size_t b = bytes;
   while (b--)
-    *d++ = decode[*sound++];
+    *d++ = law_decoder[*sound++];
 
   s->info.memory.position += bytes;
 
@@ -420,17 +416,10 @@ method_get_law_data (avt_audio * restrict s, void *restrict data, size_t size)
   if (not b)
     return 0;
 
-  const sample16fast *decode;
-
-  if (AVT_AUDIO_MULAW == s->audio_type)
-    decode = mulaw_decode;
-  else
-    decode = alaw_decode;
-
   uint_least8_t *restrict sample = samples;
   int_least16_t *restrict d = data;
   while (bytes--)
-    *d++ = decode[*sample++];
+    *d++ = law_decoder[*sample++];
 
   return b * 2;
 }
@@ -588,7 +577,12 @@ avt_prepare_raw_audio (size_t capacity,
   switch (audio_type)
     {
     case AVT_AUDIO_MULAW:
+      law_decoder = mulaw_decode;
+      s->get = method_get_law_memory;
+      break;
+
     case AVT_AUDIO_ALAW:
+      law_decoder = alaw_decode;
       s->get = method_get_law_memory;
       break;
 
@@ -820,7 +814,12 @@ avt_fetch_audio_data (avt_data * src, int samplingrate,
   switch (audio_type)
     {
     case AVT_AUDIO_MULAW:
+      law_decoder = mulaw_decode;
+      audio->get = method_get_law_data;
+      break;
+
     case AVT_AUDIO_ALAW:
+      law_decoder = alaw_decode;
       audio->get = method_get_law_data;
       break;
 
