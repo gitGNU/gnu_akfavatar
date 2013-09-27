@@ -1031,7 +1031,7 @@ aufruft, wenn man es abspielt.
 Erzeugt ein Audio-Element mit einem einsekündigen Ton
 der angegebenen
 .I Frequenz
-(auf eine Ganzzahl gerundet)
+(in Hertz (Hz), auf eine Ganzzahl gerundet)
 mit der angegebenen
 .I Lautstärke
 (0-100, Vorgabe 75).
