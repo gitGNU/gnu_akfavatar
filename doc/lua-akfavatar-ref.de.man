@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar Referenz" 3 2013-07-09 AKFAvatar
+.TH "Lua-AKFAvatar Referenz" 3 2013-09-27 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar Referenz \- AKFAvatar spezifische Funktionen für Lua
@@ -1025,6 +1025,23 @@ gelesen werden konnte.
 Gibt ein Pseudo-Audio-Element zurück, welches
 .B avt.bell()
 aufruft, wenn man es abspielt.
+.PP
+.TP
+.BI "avt.frequency(" "Frequenz [, Lautstärke]" )
+Erzeugt ein Audio-Element mit einem einsekündigen Ton
+der angegebenen
+.I Frequenz
+(auf eine Ganzzahl gerundet)
+mit der angegebenen
+.I Lautstärke
+(0-100, Vorgabe 75).
+Dieses Audio-Element kann problemlos als Audio-Schleife
+wiedergegeben werden.
+.IP
+.B Beispiel:
+.EX
+avt.frequency(440):loop()
+.EE
 .PP
 .TP
 .BI "avt.audio_playing(" [Audiodaten] )

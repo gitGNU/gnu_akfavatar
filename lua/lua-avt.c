@@ -47,12 +47,18 @@ extern "C"
 #include <strings.h>		// for strcasecmp
 #include <errno.h>
 #include <iso646.h>
+#include <stdint.h>
+#include <math.h>
 
 #include <unistd.h>		// for chdir, getcwd, execlp, readlink
 #include <dirent.h>		// opendir, readdir, closedir
 
 #include <sys/types.h>
 #include <sys/stat.h>
+
+#ifndef M_PI
+#define M_PI  3.14159265358979323846
+#endif
 
 // MinGW and Wine don't know ENOMSG
 #ifndef ENOMSG
@@ -1833,6 +1839,39 @@ lavt_alert (lua_State * L)
   return 1;
 }
 
+static int
+lavt_frequency (lua_State * L)
+{
+  const int samplingrate = 48000;
+
+  // round the frequency, so a loop with 1 second has no jumps
+  lua_Number frequency = round (luaL_checknumber (L, 1));
+  lua_Number volume = luaL_optnumber (L, 2, 75.0);
+
+  luaL_argcheck (L, frequency > 0 and frequency <= (samplingrate / 2), 1,
+		 "frequency out of range");
+  luaL_argcheck (L, volume >= 0 and volume <= 100.0, 2,
+		 "volume out of range (0-100)");
+
+  lua_Number amplitude = (volume / 100.0) * INT_LEAST16_MAX;
+  int_least16_t buf[samplingrate];
+  for (int i = 0; i < samplingrate; ++i)
+    {
+      buf[i] =
+	round (amplitude * sin (i * 2.0 * M_PI * frequency / samplingrate));
+    }
+
+  avt_audio *sound = avt_prepare_raw_audio (sizeof (buf), samplingrate,
+					    AVT_AUDIO_S16SYS,
+					    AVT_AUDIO_MONO);
+
+  avt_add_raw_audio_data (sound, buf, sizeof (buf));
+  avt_finalize_raw_audio (sound);
+  make_audio_element (L, sound);
+
+  return 1;
+}
+
 /*
  * loads an audio file
  * supported: AU and Wave
@@ -2759,6 +2798,7 @@ static const luaL_Reg akfavtlib[] = {
   {"load_base_audio", lavt_load_audio},
   {"silent", lavt_silent},
   {"alert", lavt_alert},
+  {"frequency", lavt_frequency},
   {"audio_playing", laudio_playing},
   {"wait_audio_end", lavt_wait_audio_end},
   {"stop_audio", lavt_stop_audio},

@@ -5,6 +5,9 @@
   - SDL2: support for SDL2 with automatic resizing of the graphics
   - SDL2: support for pasting text from clipboard (Alt+V, middle mouse button)
 
+  Lua-API changes:
+    - new functions: avt.frequency
+
 * AKFAvatar 0.24.2
 
   - lua/clock.lua: resizing works (with some delay)

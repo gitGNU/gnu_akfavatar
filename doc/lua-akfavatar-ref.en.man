@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar reference" 3 2013-07-09 AKFAvatar
+.TH "Lua-AKFAvatar reference" 3 2013-09-27 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar reference \- AKFAvatar specific functions for Lua
@@ -974,6 +974,21 @@ In this example you get a silent sound when the file could not be read.
 Returns a pseudo audio element, that calls
 .B avt.bell()
 when you play it.
+.PP
+.TP
+.BI "avt.frequency(" "frequency [, volume]" )
+Generates an audio element with a 1 second tone of the given
+.I frequency
+(rounded to an integer)
+with the given
+.I volume
+(0-100, default 75).
+This audio element can be played cleanly as an audio loop.
+.IP
+.B Example:
+.EX
+avt.frequency(440):loop()
+.EE
 .PP
 .TP
 .BI "avt.audio_playing(" [audio_data] )
