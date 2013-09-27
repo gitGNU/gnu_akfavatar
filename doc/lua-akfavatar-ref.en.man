@@ -1023,10 +1023,6 @@ Stops the audio output immediately.
 Plays the
 .I audio
 data.
-The
-.I audio
-must have been loaded by
-.BR avt.load_audio_file() " or " avt.load_audio_string() .
 .IP
 Only one sound can be played at the same time.
 When you play another sound the previous one is stopped.
@@ -1047,10 +1043,7 @@ end
 .IB audio ":loop()"
 Plays
 .I audio
-data in a loop.  The 
-.I audio
-must have been loaded by
-.BR avt.load_audio_file() " or " avt.load_audio_string() .
+data in a loop.
 .IP
 This is for example useful for short pieces of music.
 .IP

@@ -1078,11 +1078,6 @@ Die Audio-Ausgabe wird
 Spielt die Audiodaten
 .I audio
 ab.
-Die Audiodaten
-.I audio
-müssen mit
-.BR avt.load_audio_file() " oder " avt.load_audio_string()
-geladen worden sein.
 .IP
 Es kann nur ein Klang gleichzeitig abgespielt werden.
 Wenn man einen anderen Klang abspielt, wird der vorherige
@@ -1106,11 +1101,6 @@ end
 Spielt die Audiodaten
 .I audio
 in einer Schleife ab.
-Die Audiodaten
-.I audio
-müssen mit
-.BR avt.load_audio_file() " oder " avt.load_audio_string()
-geladen worden sein.
 .IP
 Das ist zum Beispiel für eine kurze Musik-Sequenz nützlich.
 .IP
