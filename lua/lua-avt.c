@@ -1848,12 +1848,14 @@ lavt_frequency (lua_State * L)
   lua_Number frequency = round (luaL_checknumber (L, 1));
   lua_Number volume = luaL_optnumber (L, 2, 75.0);
 
-  luaL_argcheck (L, frequency > 0 and frequency <= (samplingrate / 2), 1,
+  luaL_argcheck (L, frequency > 0.0 and frequency <= (samplingrate / 2.0), 1,
 		 "frequency out of range");
-  luaL_argcheck (L, volume >= 0 and volume <= 100.0, 2,
+  luaL_argcheck (L, volume >= 0.0 and volume <= 100.0, 2,
 		 "volume out of range (0-100)");
 
-  lua_Number amplitude = (volume / 100.0) * INT_LEAST16_MAX;
+  lua_Number amplitude = volume * ((double) INT_LEAST16_MAX / 100.0);
+
+  // 1 second buffer
   int_least16_t buf[samplingrate];
   for (int i = 0; i < samplingrate; ++i)
     {
