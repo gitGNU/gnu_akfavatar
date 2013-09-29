@@ -1028,14 +1028,14 @@ aufruft, wenn man es abspielt.
 .PP
 .TP
 .BI "avt.frequency(" "Frequenz [, Lautstärke]" )
-Erzeugt ein Audio-Element mit einem einsekündigen Ton
-der angegebenen
+Erzeugt ein Audio-Element mit einem kurzen Ton
+in der angegebenen
 .I Frequenz
 (in Hertz (Hz), auf eine Ganzzahl gerundet)
 mit der angegebenen
 .I Lautstärke
 (0-100, Vorgabe 75).
-Dieses Audio-Element kann problemlos als Audio-Schleife
+Dieses Audio-Element kann problemlos als Schleife
 wiedergegeben werden.
 .IP
 .B Beispiel:

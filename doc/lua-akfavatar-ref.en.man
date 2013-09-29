@@ -977,7 +977,7 @@ when you play it.
 .PP
 .TP
 .BI "avt.frequency(" "frequency [, volume]" )
-Generates an audio element with a 1 second tone of the given
+Generates an audio element with a short tone of the given
 .I frequency
 (in hertz (Hz), rounded to an integer)
 with the given
