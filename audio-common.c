@@ -707,7 +707,7 @@ avt_load_audio_block (avt_data * src, size_t maxsize,
 }
 
 
-#ifdef MAP_FAILED
+#if _POSIX_MAPPED_FILES > 0
 
 static avt_audio *
 avt_mmap_audio (avt_data * src, size_t maxsize,
