@@ -26,6 +26,7 @@
 #include "avtinternals.h"
 #include "avtdata.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <string.h>		// memcpy
 #include <iso646.h>
@@ -413,4 +414,15 @@ avt_data_init (avt_data * d)
       d->big_endian = method_big_endian;
       d->read8 = method_read8;
     }
+}
+
+extern avt_data *
+avt_data_dup (avt_data * d)
+{
+  avt_data *n = malloc (sizeof (*d));
+
+  if (n)
+    memcpy (n, d, sizeof (*d));
+
+  return n;
 }

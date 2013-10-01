@@ -793,11 +793,9 @@ avt_fetch_audio_data (avt_data * src, int samplingrate,
   avt_data *data;
 
   // make a copy of the data source
-  data = malloc (sizeof (*data));
+  data = avt_data_dup (src);
   if (not data)
     return NULL;
-
-  memcpy (data, src, sizeof (*data));
 
   audio = avt_prepare_raw_audio (0, samplingrate, audio_type, channels);
   if (not audio)

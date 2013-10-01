@@ -89,4 +89,8 @@ struct avt_data
 
 void avt_data_init (avt_data *);	// constructor
 
+// duplicate the data element
+// the result must be freed by the caller after calling done
+avt_data *avt_data_dup (avt_data * d);
+
 #endif // AVTDATA_H
