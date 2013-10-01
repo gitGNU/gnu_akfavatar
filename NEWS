@@ -2,6 +2,7 @@
 
   - audio: big audio files are read directly from file while playing
   - fix: Pascal sound support fixed
+  - configure: new option --with-sdl2
   - SDL2: support for SDL2 with automatic resizing of the graphics
   - SDL2: support for pasting text from clipboard (Alt+V, middle mouse button)
 

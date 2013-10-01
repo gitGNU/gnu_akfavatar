@@ -1,3 +1,7 @@
+2013-10-01  Andreas K. Foerster  <info@akfoerster.de>
+
+	* configure: new option --with-sdl2
+
 2013-09-27  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c (lavt_frequency): new function

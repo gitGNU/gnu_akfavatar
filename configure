@@ -59,6 +59,7 @@ CPPFLAGS=
 CFLAGS='-O2'
 CXXFLAGS='-O2'
 LDFLAGS=
+SDL_CONFIG='sdl-config'
 AVATARSAY_LDFLAGS=
 WINDRES='windres'
 INSTALL='install'
@@ -103,6 +104,7 @@ while [ x"$1" != x ] ; do
 		echo "  --sysconfdir=DIR      read-only single-machine data directory [${sysconfdir}]"
 		echo "  --host=mingw          cross-compile with mingw (experimental)"
 		echo "  --with-openpty        use openpty instead of posix_openpt"
+		echo "  --with-sdl2           use SDL2"
 		echo "  --with-linuxfb        build for linux framebuffer (no mouse, no sound)"
 		echo "  --with-static-lua     try to link Lua statically"
 		echo "  --disable-audio       disable audio support"
@@ -164,6 +166,7 @@ while [ x"$1" != x ] ; do
 	--with-openpty) OPENPTY="yes" ;;
 	--with-static-lua) STATIC_LUA="yes" ;;
 	--with-linuxfb) USE_LINUXFB="yes" ;;
+	--with-sdl2) SDL_CONFIG="sdl2-config" ;;
 	--enable-lua=no | \
 	--disable-lua | \
 	--disable-lua=yes) NO_LUA="yes" ;;
@@ -308,18 +311,15 @@ if [ x"$USE_SDL" = x"yes" ]
 then
 
   # Check for SDL version
-  sdlversion=`sdl-config --version`
+  sdlversion=`${SDL_CONFIG} --version`
   case ${sdlversion} in
     "")    echo "SDL develop environment not found" 1>&2
            echo "I need version 1.2.x (x >= 6)" 1>&2
            exit 1 ;;
-    1.2.*) sdlrevision=`echo ${sdlversion} | sed -e 's,.\..\.,,'`
-           if test ${sdlrevision} -ge 6
-           then
-             echo "SDL ${sdlversion} found - okay" 1>&2
-           else
-             echo "SDL ${sdlversion} found - not everything supported" 1>&2
-           fi ;;
+    1.2.* | 2.*)
+           echo "SDL ${sdlversion} found - okay" 1>&2
+           ;;
+
     *)     echo "SDL ${sdlversion} found - but I need 1.2.x (x >= 6)" 1>&2
            exit 1 ;;
   esac
@@ -328,14 +328,14 @@ then
   case ${hosttype} in
      x86_64*-mingw* | amd64*-mingw*)
        # find sdl-config for cross-compiling
-       if [ -x /usr/local/x86_64-w64-mingw32/bin/sdl-config ]
+       if [ -x /usr/local/x86_64-w64-mingw32/bin/${SDL_CONFIG} ]
        then
-         SDL_CFLAGS=`/usr/local/x86_64-w64-mingw32/bin/sdl-config --cflags`
-         SDL_LDFLAGS=`/usr/local/x86_64-w64-mingw32/bin/sdl-config --libs`
-       elif [ -x /usr/local/cross-tools/amd64-mingw32/bin/sdl-config ]
+         SDL_CFLAGS=`/usr/local/x86_64-w64-mingw32/bin/${SDL_CONFIG} --cflags`
+         SDL_LDFLAGS=`/usr/local/x86_64-w64-mingw32/bin/${SDL_CONFIG} --libs`
+       elif [ -x /usr/local/cross-tools/amd64-mingw32/bin/${SDL_CONFIG} ]
        then
-         SDL_CFLAGS=`/usr/local/cross-tools/amd64-mingw32/bin/sdl-config --cflags`
-         SDL_LDFLAGS=`/usr/local/cross-tools/amd64-mingw32/bin/sdl-config --libs`
+         SDL_CFLAGS=`/usr/local/cross-tools/amd64-mingw32/bin/${SDL_CONFIG} --cflags`
+         SDL_LDFLAGS=`/usr/local/cross-tools/amd64-mingw32/bin/${SDL_CONFIG} --libs`
        else
          # most probably not the correct directories
          SDL_CFLAGS="-I/usr/include/SDL -D_GNU_SOURCE=1 -Dmain=SDL_main"
@@ -345,18 +345,18 @@ then
 
      *mingw* | *MINGW*)
        # find sdl-config for cross-compiling
-       if [ -x /usr/local/i686-w64-mingw32/bin/sdl-config ]
+       if [ -x /usr/local/i686-w64-mingw32/bin/${SDL_CONFIG} ]
        then
-         SDL_CFLAGS=`/usr/local/i686-w64-mingw32/bin/sdl-config --cflags`
-         SDL_LDFLAGS=`/usr/local/i686-w64-mingw32/bin/sdl-config --libs`
-       elif [ -x /usr/local/cross-tools/i386-mingw32/bin/sdl-config ]
+         SDL_CFLAGS=`/usr/local/i686-w64-mingw32/bin/${SDL_CONFIG} --cflags`
+         SDL_LDFLAGS=`/usr/local/i686-w64-mingw32/bin/${SDL_CONFIG} --libs`
+       elif [ -x /usr/local/cross-tools/i386-mingw32/bin/${SDL_CONFIG} ]
        then
-         SDL_CFLAGS=`/usr/local/cross-tools/i386-mingw32/bin/sdl-config --cflags`
-         SDL_LDFLAGS=`/usr/local/cross-tools/i386-mingw32/bin/sdl-config --libs`
-       elif [ -x /usr/i586-mingw32msvc/bin/sdl-config ]
+         SDL_CFLAGS=`/usr/local/cross-tools/i386-mingw32/bin/${SDL_CONFIG} --cflags`
+         SDL_LDFLAGS=`/usr/local/cross-tools/i386-mingw32/bin/${SDL_CONFIG} --libs`
+       elif [ -x /usr/i586-mingw32msvc/bin/${SDL_CONFIG} ]
        then
-         SDL_CFLAGS=`/usr/i586-mingw32msvc/bin/sdl-config --cflags`
-         SDL_LDFLAGS=`/usr/i586-mingw32msvc/bin/sdl-config --libs`
+         SDL_CFLAGS=`/usr/i586-mingw32msvc/bin/${SDL_CONFIG} --cflags`
+         SDL_LDFLAGS=`/usr/i586-mingw32msvc/bin/${SDL_CONFIG} --libs`
        else
          # most probably not the correct directories
          SDL_CFLAGS="-I/usr/include/SDL -D_GNU_SOURCE=1 -Dmain=SDL_main"
@@ -370,8 +370,8 @@ then
         ;;
 
      *)
-        SDL_CFLAGS=`sdl-config --cflags`
-        SDL_LDFLAGS=`sdl-config --libs`
+        SDL_CFLAGS=`${SDL_CONFIG} --cflags`
+        SDL_LDFLAGS=`${SDL_CONFIG} --libs`
         ;;
   esac
 
