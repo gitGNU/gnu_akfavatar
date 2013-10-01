@@ -365,8 +365,14 @@ then
        ;;
 
     *x86* | *i?86*)  # private hack
-        SDL_CFLAGS="-I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT"
-        SDL_LDFLAGS="-L/usr/local/lib32 -L/usr/lib32 -lSDL -lpthread"
+        if [ x"$SDL_CONFIG" = x"sdl2-config" ]
+        then
+          SDL_CFLAGS="-I/usr/local/include/SDL2 -D_REENTRANT"
+          SDL_LDFLAGS="-L/usr/local/lib32 -L/usr/lib32 -lSDL2 -lpthread"
+        else
+          SDL_CFLAGS="-I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT"
+          SDL_LDFLAGS="-L/usr/local/lib32 -L/usr/lib32 -lSDL -lpthread"
+        fi
         ;;
 
      *)
@@ -630,7 +636,7 @@ EOF
 rm -f Makefile
 cat > Makefile << EOF
 # Makefile for AKFAvatar
-# Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 Andreas K. Foerster
+# Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Andreas K. Foerster
 # Copyright (C) 2003, 2004, 2005, 2006, 2007 Antonio Diaz Diaz.
 # This file was generated automatically by configure. Do not edit.
 #
