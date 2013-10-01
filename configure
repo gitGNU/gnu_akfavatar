@@ -685,8 +685,20 @@ OBJAUDIO = ${OBJAUDIO}
 EOF
 
 case ${SYSTEM} in
- mingw)   cat ${srcdir}/mingw/Makefile.in >> Makefile ;;
- *)       cat ${srcdir}/Makefile.in >> Makefile ;;
+ mingw)
+   echo 'lua_dll = $(srcdir)/misc/$(ARCH)/lua52.dll' >> Makefile
+
+   if [ x"$SDL_CONFIG" = x"sdl2-config" ]
+   then
+     echo 'sdl_dll = $(srcdir)/misc/$(ARCH)/SDL2.dll' >> Makefile
+   else
+     echo 'sdl_dll = $(srcdir)/misc/$(ARCH)/SDL.dll' >> Makefile
+   fi
+
+   cat ${srcdir}/mingw/Makefile.in >> Makefile
+   ;;
+
+ *) cat ${srcdir}/Makefile.in >> Makefile ;;
 esac
 
 
