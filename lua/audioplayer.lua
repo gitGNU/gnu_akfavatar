@@ -16,11 +16,11 @@ local default_cover = assert(avt.search("audio1.xpm"))
 
 -- use $input for input file name, $output for AU or WAVE output files
 -- comment out if you don't even want those files to show up
-local decoder_flac = "flac --decode --silent --force --output-name='$output' '$input'"
-local decoder_opus = "opusdec --quiet --force-wav '$input' '$output'"
-local decoder_mpeg = "mpg123 --quiet --au '$output' '$input'"
---local decoder_mpeg = "mpg321 --quiet --au '$output' '$input'"
---local decoder_mpeg = "madplay -q -o 'wave:$output' '$input'"
+local decoder_flac = 'flac --decode --silent --force --output-name="$output" "$input"'
+local decoder_opus = 'opusdec --quiet --force-wav "$input" "$output"'
+local decoder_mpeg = 'mpg123 --quiet --au "$output" "$input"'
+--local decoder_mpeg = 'mpg321 --quiet --au "$output" "$input"'
+--local decoder_mpeg = 'madplay -q -o "wave:$output" "$input"'
 -- note: madplay supports only 8 bit for the snd format, so avoid that
 
 -- downloader application
