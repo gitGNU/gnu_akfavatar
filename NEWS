@@ -1,6 +1,8 @@
 * AKFAvatar-testing
 
   - audio: big audio files are read directly from file while playing
+  - audio: AU and WAV data can be read from non-seekable streams
+    (loaded into memory)
   - fix: Pascal sound support fixed
   - configure: new option --with-sdl2
   - SDL2: support for SDL2 with automatic resizing of the graphics
