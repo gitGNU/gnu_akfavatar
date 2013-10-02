@@ -354,6 +354,36 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
   return avt_update ();
 }
 
+extern void
+avt_finalize_raw_audio (avt_audio * snd)
+{
+  if (not snd->info.memory.sound or snd->done != method_done_memory)
+    return;
+
+  bool active = avt_audio_playing (snd);
+  if (active)
+    avt_lock_audio ();
+
+  // eventually free unneeded memory
+  if (snd->info.memory.capacity > snd->info.memory.length)
+    {
+      void *new_sound;
+      size_t new_capacity;
+
+      new_capacity = snd->info.memory.length;
+      new_sound = realloc (snd->info.memory.sound, new_capacity);
+
+      if (new_sound)
+	{
+	  snd->info.memory.sound = new_sound;
+	  snd->info.memory.capacity = new_capacity;
+	}
+    }
+
+  if (active)
+    avt_unlock_audio (snd);
+}
+
 // also used for mmap
 static size_t
 method_get_audio_memory (avt_audio * restrict s, void *restrict data,
@@ -616,36 +646,6 @@ avt_prepare_raw_audio (size_t capacity,
 }
 
 extern void
-avt_finalize_raw_audio (avt_audio * snd)
-{
-  if (not snd->info.memory.sound or snd->done != method_done_memory)
-    return;
-
-  bool active = avt_audio_playing (snd);
-  if (active)
-    avt_lock_audio ();
-
-  // eventually free unneeded memory
-  if (snd->info.memory.capacity > snd->info.memory.length)
-    {
-      void *new_sound;
-      size_t new_capacity;
-
-      new_capacity = snd->info.memory.length;
-      new_sound = realloc (snd->info.memory.sound, new_capacity);
-
-      if (new_sound)
-	{
-	  snd->info.memory.sound = new_sound;
-	  snd->info.memory.capacity = new_capacity;
-	}
-    }
-
-  if (active)
-    avt_unlock_audio (snd);
-}
-
-extern void
 avt_free_audio (avt_audio * snd)
 {
   if (snd)
@@ -662,8 +662,6 @@ avt_free_audio (avt_audio * snd)
       free (snd);
     }
 }
-
-
 
 // if size is unknown use 0 or MAXIMUM_SIZE for maxsize
 static avt_audio *
@@ -715,25 +713,21 @@ static avt_audio *
 avt_mmap_audio (avt_data * src, size_t maxsize,
 		int samplingrate, int audio_type, int channels, int playmode)
 {
-  avt_audio *audio;
-  int fd;
-  void *address;
-  long length, pos;
-
   // not for more than 16 bit
   if (audio_type > AVT_AUDIO_S16SYS and audio_type < AVT_AUDIO_MULAW)
     return NULL;
 
-  fd = src->fileno (src);
+  int fd = src->fileno (src);
 
   // not a file?
   if (fd < 0)
     return NULL;
 
-  pos = src->tell (src);
+  long pos = src->tell (src);
   if (pos < 0)
     return NULL;
 
+  long length;
   if (maxsize and maxsize < MAXIMUM_SIZE)
     length = maxsize + pos;
   else				// get length of file
@@ -746,7 +740,7 @@ avt_mmap_audio (avt_data * src, size_t maxsize,
       src->seek (src, pos, SEEK_SET);
     }
 
-  address = mmap (NULL, length, PROT_READ, MAP_PRIVATE, fd, 0);
+  void *address = mmap (NULL, length, PROT_READ, MAP_PRIVATE, fd, 0);
   if (MAP_FAILED == address)
     return NULL;
 
@@ -758,6 +752,7 @@ avt_mmap_audio (avt_data * src, size_t maxsize,
   madvise (address, length, MADV_SEQUENTIAL);
 #endif
 
+  avt_audio *audio;
   audio = avt_prepare_raw_audio (0, samplingrate, audio_type, channels);
   if (not audio)
     {
@@ -791,15 +786,12 @@ static avt_audio *
 avt_fetch_audio_data (avt_data * src, int samplingrate,
 		      int audio_type, int channels, int playmode)
 {
-  avt_audio *audio;
-  avt_data *data;
-
   // make a copy of the data source
-  data = avt_data_dup (src);
+  avt_data *data = avt_data_dup (src);
   if (not data)
     return NULL;
 
-  audio = avt_prepare_raw_audio (0, samplingrate, audio_type, channels);
+  avt_audio *audio = avt_prepare_raw_audio (0, samplingrate, audio_type, channels);
   if (not audio)
     {
       free (data);
@@ -852,9 +844,6 @@ avt_fetch_audio_data (avt_data * src, int samplingrate,
 static avt_audio *
 avt_load_au (avt_data * src, size_t maxsize, int playmode)
 {
-  uint_least32_t head_size, audio_size, encoding, samplingrate, channels;
-  int audio_type;
-
   if (not src)
     return NULL;
 
@@ -868,6 +857,7 @@ avt_load_au (avt_data * src, size_t maxsize, int playmode)
       return NULL;
     }
 
+  uint_least32_t head_size, audio_size, encoding, samplingrate, channels;
   head_size = src->read32 (src);
   audio_size = src->read32 (src);
   encoding = src->read32 (src);
@@ -887,6 +877,7 @@ avt_load_au (avt_data * src, size_t maxsize, int playmode)
     }
 
   // Note: linear PCM is always assumed to be signed and big endian
+  int audio_type;
   switch (encoding)
     {
     case 1:			// mu-law
@@ -948,7 +939,7 @@ avt_load_au (avt_data * src, size_t maxsize, int playmode)
 }
 
 
-// The Wave format is so stupid - don't ever use it!
+// The AU format is much simpler and cleaner than WAV
 static avt_audio *
 avt_load_wave (avt_data * src, size_t maxsize, int playmode)
 {
@@ -1065,7 +1056,6 @@ avt_load_wave (avt_data * src, size_t maxsize, int playmode)
   return audio;
 }
 
-// src gets always closed
 static avt_audio *
 avt_load_audio_general (avt_data * src, size_t maxsize, int playmode)
 {
