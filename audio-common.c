@@ -223,7 +223,8 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
   size_t old_size, new_size, out_size;
   bool active;
 
-  if (_avt_STATUS != AVT_NORMAL or not snd or not data or not data_size)
+  if (_avt_STATUS != AVT_NORMAL or not snd or not data or not data_size
+      or (snd->done != method_done_memory and snd->info.memory.sound))
     return avt_update ();
 
   // audio structure must have been created with avt_prepare_raw_audio
@@ -617,9 +618,10 @@ avt_prepare_raw_audio (size_t capacity,
 extern void
 avt_finalize_raw_audio (avt_audio * snd)
 {
-  bool active;
+  if (not snd->info.memory.sound or snd->done != method_done_memory)
+    return;
 
-  active = avt_audio_playing (snd);
+  bool active = avt_audio_playing (snd);
   if (active)
     avt_lock_audio ();
 
