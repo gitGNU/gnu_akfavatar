@@ -3,6 +3,8 @@
 	* audio-common.c (avt_add_raw_audio_data, avt_finalize_raw_audio):
 	security checks
 
+	* avtdata.c (skip): new method
+
 2013-10-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* configure: new option --with-sdl2

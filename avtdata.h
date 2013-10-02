@@ -58,6 +58,8 @@ struct avt_data
 
   size_t (*read) (avt_data * self, void *data, size_t size, size_t number);
 
+  void (*skip) (avt_data * self, size_t size);
+
   uint_least8_t (*read8) (avt_data * self);
 
   uint_least16_t (*read16) (avt_data * self);

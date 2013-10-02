@@ -79,6 +79,23 @@ method_read_stream (avt_data * d, void *data, size_t size, size_t number)
   return fread (data, size, number, d->field.stream.data);
 }
 
+static void
+method_skip_stream (avt_data * d, size_t size)
+{
+  uint8_t dummy;
+
+  while (size--)
+    {
+      if (fread (&dummy, 1, 1, d->field.stream.data) < 1)
+	break;
+    }
+}
+
+static void
+method_skip_memory (avt_data * d, size_t size)
+{
+  d->field.memory.position += size;
+}
 
 static size_t
 method_read_memory (avt_data * d, void *data, size_t size, size_t number)
@@ -353,6 +370,7 @@ method_open_stream (avt_data * d, FILE * stream, bool autoclose)
 
   d->done = method_done_stream;
   d->read = method_read_stream;
+  d->skip = method_skip_stream;
   d->tell = method_tell_stream;
   d->seek = method_seek_stream;
   d->fileno = method_fileno_stream;
@@ -386,6 +404,7 @@ method_open_memory (avt_data * d, const void *memory, size_t size)
 
   d->done = method_done_memory;
   d->read = method_read_memory;
+  d->skip = method_skip_memory;
   d->tell = method_tell_memory;
   d->seek = method_seek_memory;
   d->fileno = method_fileno_memory;
