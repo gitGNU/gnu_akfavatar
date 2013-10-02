@@ -1839,31 +1839,33 @@ lavt_alert (lua_State * L)
   return 1;
 }
 
+
+#define GENERATOR_RATE  48000
+// 1 second buffer -> as many samples as the samplingrate
+#define GENERATOR_SAMPLES  GENERATOR_RATE
+
 static int
 lavt_frequency (lua_State * L)
 {
-  const int samplingrate = 48000;
-
   // round the frequency, so a loop with 1 second has no jumps
   lua_Number frequency = round (luaL_checknumber (L, 1));
   lua_Number volume = luaL_optnumber (L, 2, 75.0);
 
-  luaL_argcheck (L, frequency > 0.0 and frequency <= (samplingrate / 2.0), 1,
-		 "frequency out of range");
+  luaL_argcheck (L, frequency > 0.0 and frequency <= (GENERATOR_RATE / 2.0),
+		 1, "frequency out of range");
   luaL_argcheck (L, volume >= 0.0 and volume <= 100.0, 2,
 		 "volume out of range (0-100)");
 
   lua_Number amplitude = volume * ((double) INT_LEAST16_MAX / 100.0);
 
-  // 1 second buffer
-  int_least16_t buf[samplingrate];
-  for (int i = 0; i < samplingrate; ++i)
+  int_least16_t buf[GENERATOR_SAMPLES];
+  for (int i = 0; i < GENERATOR_SAMPLES; ++i)
     {
       buf[i] =
-	round (amplitude * sin (i * 2.0 * M_PI * frequency / samplingrate));
+	round (amplitude * sin (i * 2.0 * M_PI * frequency / GENERATOR_RATE));
     }
 
-  avt_audio *sound = avt_prepare_raw_audio (sizeof (buf), samplingrate,
+  avt_audio *sound = avt_prepare_raw_audio (sizeof (buf), GENERATOR_RATE,
 					    AVT_AUDIO_S16SYS,
 					    AVT_AUDIO_MONO);
 
