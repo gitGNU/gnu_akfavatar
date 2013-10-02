@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar Referenz" 3 2013-09-27 AKFAvatar
+.TH "Lua-AKFAvatar Referenz" 3 2013-10-02 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar Referenz \- AKFAvatar spezifische Funktionen für Lua
@@ -960,7 +960,6 @@ und eine Fehlermelung zurückgegeben.
 .TQ
 .BI "avt.load_base_audio_stream(" "Datei [,Größe [,Abspielmodus]]" )
 Liest Audio-Daten von einer geöffneten Datei.
-Die Datei muss durchsuchbar sein.
 .IP
 Lua-Module können Unterstützung für weitere Audio-Formate zu
 .B "avt.load_audio_stream()"
