@@ -786,6 +786,12 @@ static avt_audio *
 avt_fetch_audio_data (avt_data * src, int samplingrate,
 		      int audio_type, int channels, int playmode)
 {
+  int start = src->tell (src);
+
+  // on non seekable streams rewind would be impossible
+  if (start < 0)
+    return NULL;
+
   // make a copy of the data source
   avt_data *data = avt_data_dup (src);
   if (not data)
@@ -799,7 +805,7 @@ avt_fetch_audio_data (avt_data * src, int samplingrate,
     }
 
   audio->info.data.data = data;
-  audio->info.data.start = src->tell (src);
+  audio->info.data.start = start;
   audio->rewind = method_rewind_data;
   audio->done = method_done_data;
 
@@ -849,15 +855,8 @@ avt_load_au (avt_data * src, size_t maxsize, int playmode)
 
   src->big_endian (src, true);
 
-  // check magic ".snd"
-  if (src->read32 (src) != 0x2e736e64)
-    {
-      avt_set_error ("Data is not an AU audio file"
-		     " (maybe old raw data format?)");
-      return NULL;
-    }
-
   uint_least32_t head_size, audio_size, encoding, samplingrate, channels;
+  // magic value is already read
   head_size = src->read32 (src);
   audio_size = src->read32 (src);
   encoding = src->read32 (src);
@@ -866,7 +865,7 @@ avt_load_au (avt_data * src, size_t maxsize, int playmode)
 
   // skip the rest of the header
   if (head_size > 24)
-    src->seek (src, head_size - 24, SEEK_CUR);
+    src->skip (src, head_size - 24);
 
   if (maxsize < 0xFFFFFFFFU)
     {
@@ -946,7 +945,7 @@ avt_load_wave (avt_data * src, size_t maxsize, int playmode)
   int audio_type;
   char identifier[4];
   bool wrong_chunk;
-  uint_least32_t chunk_size, chunk_end;
+  uint_least32_t chunk_size;
   uint_least32_t samplingrate;
   uint_least16_t encoding, channels, bits_per_sample;
 
@@ -955,11 +954,8 @@ avt_load_wave (avt_data * src, size_t maxsize, int playmode)
 
   src->big_endian (src, false);
 
-  if (src->read (src, &identifier, sizeof (identifier), 1) != 1
-      or memcmp ("RIFF", identifier, sizeof (identifier)) != 0)
-    return NULL;		// not a RIFF file
-
   /*
+   * magic value RIFF is already read
    * this chunk contains the rest,
    * so chunk_size should be the file size - 8
    */
@@ -975,11 +971,9 @@ avt_load_wave (avt_data * src, size_t maxsize, int playmode)
       if (src->read (src, &identifier, sizeof (identifier), 1) != 1)
 	return NULL;		// no format chunk found
       chunk_size = src->read32 (src);
-      chunk_end = src->tell (src) + chunk_size;
-      chunk_end += (chunk_end % 2);	// padding to even addresses
       wrong_chunk = (memcmp ("fmt ", identifier, sizeof (identifier)) != 0);
       if (wrong_chunk)
-	src->seek (src, chunk_end, SEEK_SET);
+	src->skip (src, chunk_size + (chunk_size % 2));
     }
   while (wrong_chunk);
 
@@ -989,14 +983,16 @@ avt_load_wave (avt_data * src, size_t maxsize, int playmode)
   src->read32 (src);		// bytes_per_second
   src->read16 (src);		// block_align
   bits_per_sample = src->read16 (src);	// just for PCM
-  src->seek (src, chunk_end, SEEK_SET);
+
+  if (chunk_size > 16)
+    src->skip (src, (chunk_size + (chunk_size % 2) - 16));
 
   switch (encoding)
     {
     case 1:			// PCM
       // smaller numbers are already right-padded
       if (bits_per_sample <= 8)
-	audio_type = AVT_AUDIO_U8;	// unsigned
+	audio_type = AVT_AUDIO_U8;	// unsigned!
       else if (bits_per_sample <= 16)
 	audio_type = AVT_AUDIO_S16LE;	// signed
       else if (bits_per_sample <= 24)
@@ -1025,11 +1021,9 @@ avt_load_wave (avt_data * src, size_t maxsize, int playmode)
       if (src->read (src, &identifier, sizeof (identifier), 1) != 1)
 	return NULL;		// no data chunk found
       chunk_size = src->read32 (src);
-      chunk_end = src->tell (src) + chunk_size;
-      chunk_end += (chunk_end % 2);	// padding to even addresses
       wrong_chunk = (memcmp ("data", identifier, sizeof (identifier)) != 0);
       if (wrong_chunk)
-	src->seek (src, chunk_end, SEEK_SET);
+	src->skip (src, chunk_size + (chunk_size % 2));
     }
   while (wrong_chunk);
 
@@ -1059,30 +1053,23 @@ avt_load_wave (avt_data * src, size_t maxsize, int playmode)
 static avt_audio *
 avt_load_audio_general (avt_data * src, size_t maxsize, int playmode)
 {
-  struct avt_audio *s;
-  long start;
-  char head[16];
-
   if (not src)
     return NULL;
 
   if (not maxsize)
     maxsize = MAXIMUM_SIZE;
 
-  start = src->tell (src);
-
+  char head[4];
   if (src->read (src, head, sizeof (head), 1) != 1)
     {
       avt_set_error ("cannot read head of audio data");
       return NULL;
     }
 
-  src->seek (src, start, SEEK_SET);
-
-  if (memcmp (&head[0], ".snd", 4) == 0)
+  struct avt_audio *s;
+  if (memcmp (head, ".snd", 4) == 0)
     s = avt_load_au (src, maxsize, playmode);
-  else if (memcmp (&head[0], "RIFF", 4) == 0
-	   and memcmp (&head[8], "WAVE", 4) == 0)
+  else if (memcmp (head, "RIFF", 4) == 0)
     s = avt_load_wave (src, maxsize, playmode);
   else
     {

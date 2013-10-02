@@ -5,6 +5,9 @@
 
 	* avtdata.c (skip): new method
 
+	* audio-common.c:
+	make AU and WAV data readable from non-seekable streams
+
 2013-10-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* configure: new option --with-sdl2
