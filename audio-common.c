@@ -938,6 +938,9 @@ avt_load_au (avt_data * src, size_t maxsize, int playmode)
 }
 
 
+// round up to next even value
+#define even(x)  ((x) + ((x) & 1))
+
 // The AU format is much simpler and cleaner than WAV
 static avt_audio *
 avt_load_wave (avt_data * src, size_t maxsize, int playmode)
@@ -973,7 +976,7 @@ avt_load_wave (avt_data * src, size_t maxsize, int playmode)
       chunk_size = src->read32 (src);
       wrong_chunk = (memcmp ("fmt ", identifier, sizeof (identifier)) != 0);
       if (wrong_chunk)
-	src->skip (src, chunk_size + (chunk_size % 2));
+	src->skip (src, even(chunk_size));
     }
   while (wrong_chunk);
 
@@ -985,7 +988,7 @@ avt_load_wave (avt_data * src, size_t maxsize, int playmode)
   bits_per_sample = src->read16 (src);	// just for PCM
 
   if (chunk_size > 16)
-    src->skip (src, (chunk_size + (chunk_size % 2) - 16));
+    src->skip (src, even(chunk_size) - 16);
 
   switch (encoding)
     {
@@ -1023,7 +1026,7 @@ avt_load_wave (avt_data * src, size_t maxsize, int playmode)
       chunk_size = src->read32 (src);
       wrong_chunk = (memcmp ("data", identifier, sizeof (identifier)) != 0);
       if (wrong_chunk)
-	src->skip (src, chunk_size + (chunk_size % 2));
+	src->skip (src, even(chunk_size));
     }
   while (wrong_chunk);
 
