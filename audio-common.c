@@ -847,6 +847,8 @@ avt_fetch_audio_data (avt_data * src, int samplingrate,
   return audio;
 }
 
+
+// keep it working on non-seekable streams
 static avt_audio *
 avt_load_au (avt_data * src, size_t maxsize, int playmode)
 {
@@ -867,7 +869,7 @@ avt_load_au (avt_data * src, size_t maxsize, int playmode)
   if (head_size > 24)
     src->skip (src, head_size - 24);
 
-  if (maxsize < 0xFFFFFFFFU)
+  if (maxsize < MAXIMUM_SIZE)
     {
       maxsize -= head_size;
 
@@ -942,6 +944,7 @@ avt_load_au (avt_data * src, size_t maxsize, int playmode)
 #define even(x)  ((x) + ((x) & 1))
 
 // The AU format is much simpler and cleaner than WAV
+// keep it working on non-seekable streams
 static avt_audio *
 avt_load_wave (avt_data * src, size_t maxsize, int playmode)
 {
@@ -1053,6 +1056,7 @@ avt_load_wave (avt_data * src, size_t maxsize, int playmode)
   return audio;
 }
 
+// keep it working on non-seekable streams
 static avt_audio *
 avt_load_audio_general (avt_data * src, size_t maxsize, int playmode)
 {
