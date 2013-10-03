@@ -1,6 +1,7 @@
 * AKFAvatar-testing
 
   - audio: big audio files are read directly from file while playing
+    (if possible via mmap)
   - audio: AU and WAV data can be read from non-seekable streams
     (loaded into memory)
   - fix: Pascal sound support fixed
