@@ -797,7 +797,8 @@ avt_fetch_audio_data (avt_data * src, int samplingrate,
   if (not data)
     return NULL;
 
-  avt_audio *audio = avt_prepare_raw_audio (0, samplingrate, audio_type, channels);
+  avt_audio *audio;
+  audio = avt_prepare_raw_audio (0, samplingrate, audio_type, channels);
   if (not audio)
     {
       free (data);
@@ -847,6 +848,34 @@ avt_fetch_audio_data (avt_data * src, int samplingrate,
   return audio;
 }
 
+// find a suitable audio loader
+static avt_audio *
+avt_audio_loader (avt_data * src, size_t audio_size, int samplingrate,
+		  int audio_type, int channels, int playmode)
+{
+  avt_audio *audio = NULL;
+
+  if (src->fileno (src) < 0)	// already in memory?
+    audio = avt_fetch_audio_data (src, samplingrate, audio_type,
+				  channels, playmode);
+  else if (BIG_AUDIO <= audio_size)
+    {
+      // try to get large audio data while playing
+      audio = avt_mmap_audio (src, audio_size, samplingrate, audio_type,
+			      channels, playmode);
+
+      if (not audio)
+	audio = avt_fetch_audio_data (src, samplingrate, audio_type,
+				      channels, playmode);
+    }
+
+  // if nothing else worked, read it into memory
+  if (not audio)
+    audio = avt_load_audio_block (src, audio_size, samplingrate, audio_type,
+				  channels, playmode);
+
+  return audio;
+}
 
 // keep it working on non-seekable streams
 static avt_audio *
@@ -919,24 +948,8 @@ avt_load_au (avt_data * src, size_t maxsize, int playmode)
    * 23-26: ADPCM variants
    */
 
-  avt_audio *audio = NULL;
-
-  // if it doesn't need conversion evtl. read directly from file
-  if (BIG_AUDIO <= audio_size)
-    {
-      audio = avt_mmap_audio (src, audio_size, samplingrate, audio_type,
-			      channels, playmode);
-
-      if (not audio)
-	audio = avt_fetch_audio_data (src, samplingrate, audio_type,
-				      channels, playmode);
-    }
-
-  if (not audio)
-    audio = avt_load_audio_block (src, audio_size, samplingrate, audio_type,
-				  channels, playmode);
-
-  return audio;
+  return avt_audio_loader (src, audio_size, samplingrate, audio_type,
+			   channels, playmode);
 }
 
 
@@ -979,7 +992,7 @@ avt_load_wave (avt_data * src, size_t maxsize, int playmode)
       chunk_size = src->read32 (src);
       wrong_chunk = (memcmp ("fmt ", identifier, sizeof (identifier)) != 0);
       if (wrong_chunk)
-	src->skip (src, even(chunk_size));
+	src->skip (src, even (chunk_size));
     }
   while (wrong_chunk);
 
@@ -991,7 +1004,7 @@ avt_load_wave (avt_data * src, size_t maxsize, int playmode)
   bits_per_sample = src->read16 (src);	// just for PCM
 
   if (chunk_size > 16)
-    src->skip (src, even(chunk_size) - 16);
+    src->skip (src, even (chunk_size) - 16);
 
   switch (encoding)
     {
@@ -1029,31 +1042,15 @@ avt_load_wave (avt_data * src, size_t maxsize, int playmode)
       chunk_size = src->read32 (src);
       wrong_chunk = (memcmp ("data", identifier, sizeof (identifier)) != 0);
       if (wrong_chunk)
-	src->skip (src, even(chunk_size));
+	src->skip (src, even (chunk_size));
     }
   while (wrong_chunk);
 
   if (chunk_size < maxsize)
     maxsize = chunk_size;
 
-  avt_audio *audio = NULL;
-
-  // if it doesn't need conversion evtl. read directly from file
-  if (BIG_AUDIO <= maxsize)
-    {
-      audio = avt_mmap_audio (src, maxsize, samplingrate, audio_type,
-			      channels, playmode);
-
-      if (not audio)
-	audio = avt_fetch_audio_data (src, samplingrate, audio_type,
-				      channels, playmode);
-    }
-
-  if (not audio)
-    audio = avt_load_audio_block (src, maxsize, samplingrate, audio_type,
-				  channels, playmode);
-
-  return audio;
+  return avt_audio_loader (src, maxsize, samplingrate, audio_type, channels,
+			   playmode);
 }
 
 // keep it working on non-seekable streams

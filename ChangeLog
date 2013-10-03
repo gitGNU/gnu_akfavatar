@@ -1,3 +1,8 @@
+2013-10-03  Andreas K. Foerster  <info@akfoerster.de>
+
+	* audio-common.c (avt_audio_loader): new function
+	(avt_load_au, avt_load_wave): adapted
+
 2013-10-02  Andreas K. Foerster  <info@akfoerster.de>
 
 	* audio-common.c (avt_add_raw_audio_data, avt_finalize_raw_audio):
