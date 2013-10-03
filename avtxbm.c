@@ -111,7 +111,7 @@ avt_load_image_xbm_data (avt_data * src, avt_color color)
 {
   unsigned char *bits;
   int width, height;
-  int start;
+  long start;
   unsigned int bytes, bmpos;
   char line[1024];
   avt_graphic *img;

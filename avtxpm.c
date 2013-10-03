@@ -329,7 +329,7 @@ done:
 extern avt_graphic *
 avt_load_image_xpm_data (avt_data * src)
 {
-  int start;
+  long start;
   char head[9];
   char **xpm;
   char *line;
