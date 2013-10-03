@@ -316,12 +316,20 @@ method_seek_stream (avt_data * d, long offset, int whence)
 static bool
 method_seek_memory (avt_data * d, long offset, int whence)
 {
-  if (SEEK_SET == whence)
-    d->field.memory.position = offset;
-  else if (SEEK_CUR == whence)
-    d->field.memory.position += offset;
-  else if (SEEK_END == whence)
-    d->field.memory.position = d->field.memory.size - offset;
+  switch (whence)
+    {
+    case SEEK_SET:
+      d->field.memory.position = offset;
+      break;
+
+    case SEEK_CUR:
+      d->field.memory.position += offset;
+      break;
+
+    case SEEK_END:
+      d->field.memory.position = d->field.memory.size - offset;
+      break;
+    }
 
   return (d->field.memory.position <= d->field.memory.size);
 }
