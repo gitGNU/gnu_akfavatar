@@ -45,7 +45,7 @@ reset (avt_data * d)
   d->read8 = NULL;
   d->read16 = NULL;
   d->read32 = NULL;
-  d->fileno = NULL;
+  d->filenumber = NULL;
 }
 
 static void
@@ -328,14 +328,14 @@ method_seek_memory (avt_data * d, long offset, int whence)
 
 
 static int
-method_fileno_stream (avt_data * d)
+method_filenumber_stream (avt_data * d)
 {
   return fileno (d->field.stream.data);
 }
 
 
 static int
-method_fileno_memory (avt_data * d)
+method_filenumber_memory (avt_data * d)
 {
   (void) d;
   return -1;
@@ -373,7 +373,7 @@ method_open_stream (avt_data * d, FILE * stream, bool autoclose)
   d->skip = method_skip_stream;
   d->tell = method_tell_stream;
   d->seek = method_seek_stream;
-  d->fileno = method_fileno_stream;
+  d->filenumber = method_filenumber_stream;
 
   d->field.stream.data = stream;
   d->field.stream.autoclose = autoclose;
@@ -407,7 +407,7 @@ method_open_memory (avt_data * d, const void *memory, size_t size)
   d->skip = method_skip_memory;
   d->tell = method_tell_memory;
   d->seek = method_seek_memory;
-  d->fileno = method_fileno_memory;
+  d->filenumber = method_filenumber_memory;
 
   d->field.memory.data = memory;
   d->field.memory.position = 0;

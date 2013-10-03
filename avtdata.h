@@ -68,7 +68,7 @@ struct avt_data
 
   uint_least32_t (*read32) (avt_data * self);
 
-  int (*fileno) (avt_data * self);
+  int (*filenumber) (avt_data * self);
 
   // private
 

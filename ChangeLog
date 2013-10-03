@@ -5,6 +5,9 @@
 
 	* lua/akfavatar/avtdemo.lua: fix: read audio into memory
 
+	* avtdata.h, avtdata.c (filenumber):
+	renamed from fileno (had problems with macro in some libc)
+
 2013-10-02  Andreas K. Foerster  <info@akfoerster.de>
 
 	* audio-common.c (avt_add_raw_audio_data, avt_finalize_raw_audio):

@@ -717,7 +717,7 @@ avt_mmap_audio (avt_data * src, size_t maxsize,
   if (audio_type > AVT_AUDIO_S16SYS and audio_type < AVT_AUDIO_MULAW)
     return NULL;
 
-  int fd = src->fileno (src);
+  int fd = src->filenumber (src);
 
   // not a file?
   if (fd < 0)
@@ -855,7 +855,7 @@ avt_audio_loader (avt_data * src, size_t audio_size, int samplingrate,
 {
   avt_audio *audio = NULL;
 
-  if (src->fileno (src) < 0)	// already in memory?
+  if (src->filenumber (src) < 0)	// already in memory?
     audio = avt_fetch_audio_data (src, samplingrate, audio_type,
 				  channels, playmode);
   else if (BIG_AUDIO <= audio_size)
