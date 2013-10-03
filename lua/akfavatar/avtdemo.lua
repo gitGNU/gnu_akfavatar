@@ -1,6 +1,6 @@
 --[[-------------------------------------------------------------------
 Moldule for making demos for Lua-AKFAvatar
-Copyright (c) 2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
+Copyright (c) 2010,2011,2012,2013 Andreas K. Foerster <info@akfoerster.de>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -128,8 +128,8 @@ end
 local function load_audio(name)
   if not mute then
     if archive then
-      local size = archive:seek(name)
-      audio = avt.load_audio_stream(archive.file, size) or avt.silent()
+      -- read audio into memory, else fileaccess gets confused
+      audio = avt.load_audio(archive:get(name)) or avt.silent()
     else --> not an archive
       audio = avt.load_audio_file(avt.search(name)) or avt.silent()
     end

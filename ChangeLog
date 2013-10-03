@@ -3,6 +3,8 @@
 	* audio-common.c (avt_audio_loader): new function
 	(avt_load_au, avt_load_wave): adapted
 
+	* lua/akfavatar/avtdemo.lua: fix: read audio into memory
+
 2013-10-02  Andreas K. Foerster  <info@akfoerster.de>
 
 	* audio-common.c (avt_add_raw_audio_data, avt_finalize_raw_audio):
