@@ -1,3 +1,7 @@
+2013-10-04  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avtdata.h, avtdata.c: remove read24 again
+
 2013-10-03  Andreas K. Foerster  <info@akfoerster.de>
 
 	* audio-common.c (avt_audio_loader): new function

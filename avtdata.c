@@ -153,18 +153,6 @@ method_read16le (avt_data * d)
 }
 
 
-// read little endian 24 bit value
-static uint_least32_t
-method_read24le (avt_data * d)
-{
-  uint_least8_t data[3];
-
-  d->read (d, &data, sizeof (data), 1);
-
-  return data[2] << 16 bitor data[1] << 8 bitor data[0];
-}
-
-
 // read little endian 32 bit value
 static uint_least32_t
 method_read32le (avt_data * d)
@@ -186,18 +174,6 @@ method_read16be (avt_data * d)
   d->read (d, &data, sizeof (data), 1);
 
   return data;
-}
-
-
-// read big endian 24 bit value
-static uint_least32_t
-method_read24be (avt_data * d)
-{
-  uint_least32_t data;
-
-  d->read (d, &data, 3, 1);
-
-  return (data >> 8);
 }
 
 
@@ -227,18 +203,6 @@ method_read16le (avt_data * d)
 }
 
 
-// read little endian 24 bit value
-static uint_least32_t
-method_read24le (avt_data * d)
-{
-  uint_least32_t data;
-
-  d->read (d, &data, 3, 1);
-
-  return (data bitand 0xFFFFFF00);
-}
-
-
 // read little endian 32 bit value
 static uint_least32_t
 method_read32le (avt_data * d)
@@ -260,18 +224,6 @@ method_read16be (avt_data * d)
   d->read (d, &data, sizeof (data), 1);
 
   return data[0] << 8 bitor data[1];
-}
-
-
-// read big endian 24 bit value
-static uint_least32_t
-method_read24be (avt_data * d)
-{
-  uint_least8_t data[3];
-
-  d->read (d, &data, sizeof (data), 1);
-
-  return data[0] << 16 bitor data[1] << 8 bitor data[2];
 }
 
 
@@ -358,13 +310,11 @@ method_big_endian (avt_data * d, bool big_endian)
       if (big_endian)
 	{
 	  d->read16 = method_read16be;
-	  d->read24 = method_read24be;
 	  d->read32 = method_read32be;
 	}
       else
 	{
 	  d->read16 = method_read16le;
-	  d->read24 = method_read24le;
 	  d->read32 = method_read32le;
 	}
     }
