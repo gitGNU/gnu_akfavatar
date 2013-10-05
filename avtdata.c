@@ -79,16 +79,20 @@ method_read_stream (avt_data * d, void *data, size_t size, size_t number)
   return fread (data, size, number, d->field.stream.data);
 }
 
+// skip also works on nonseekable streams
 static void
 method_skip_stream (avt_data * d, size_t size)
 {
-  uint8_t dummy;
+  char buffer[BUFSIZ];
 
-  while (size--)
+  while (size > sizeof (buffer))
     {
-      if (fread (&dummy, 1, 1, d->field.stream.data) < 1)
-	break;
+      fread (buffer, sizeof (buffer), 1, d->field.stream.data);
+      size -= sizeof (buffer);
     }
+
+   // size <= sizeof(buffer)
+   fread (buffer, 1, size, d->field.stream.data);
 }
 
 static void

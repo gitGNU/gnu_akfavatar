@@ -58,6 +58,7 @@ struct avt_data
 
   size_t (*read) (avt_data * self, void *data, size_t size, size_t number);
 
+  // skip also works on nonseekable streams
   void (*skip) (avt_data * self, size_t size);
 
   uint_least8_t (*read8) (avt_data * self);
