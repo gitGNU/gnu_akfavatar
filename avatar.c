@@ -2148,6 +2148,48 @@ avt_put_raw_char (avt_char ch)
   avt_update ();
 }
 
+// handles UTF-16 surrogates
+// returns final character or 0xD800 if still incomplete
+static avt_char
+avt_utf16_surrogate (avt_char ch)
+{
+  static avt_char lead;		// lead surrogate
+
+  if (0xD800 <= ch and ch <= 0xDFFF)
+    {
+      if (ch <= 0xDBFF)		// lead surrogate
+	{
+	  // spurious lead surrogate?
+	  if (lead)
+	    avt_put_raw_char (AVT_INVALID_WCHAR);
+
+	  lead = ch;
+
+	  // return sentinel
+	  return 0xD800;
+	}
+      else			// trail surrogate
+	{
+	  if (lead)
+	    ch = (((lead bitand 0x3FF) << 10)
+		  bitor (ch bitand 0x3FF)) + 0x10000;
+	  else			// single trail surrogate
+	    ch = AVT_INVALID_WCHAR;
+
+	  lead = 0;
+	}
+    }
+
+  // check for spurious lead surrogate
+  if (lead)
+    {
+      avt_put_raw_char (AVT_INVALID_WCHAR);
+      lead = 0;
+    }
+
+  return ch;
+}
+
 /*
  * writes a character to the textfield -
  * interprets control characters
@@ -2156,7 +2198,6 @@ avt_put_raw_char (avt_char ch)
 extern int
 avt_put_char (avt_char ch)
 {
-  static avt_char high_surrogate;	// for UTF-16
   static avt_char last, prev;	// last and previous character
 
   if (not screen or _avt_STATUS != AVT_NORMAL)
@@ -2175,37 +2216,9 @@ avt_put_char (avt_char ch)
 	avt.bold = true;
     }
 
-  // UTF-16 surrogates
-  if (0xD800 <= ch and ch <= 0xDFFF)
-    {
-      if (ch <= 0xDBFF)		// high surrogate
-	{
-	  if (high_surrogate)
-	    avt_put_raw_char (AVT_INVALID_WCHAR);	// spurious high surrogate
-
-	  high_surrogate = ch;
-
-	  // return immediately to avoid resetting chars
-	  return _avt_STATUS;
-	}
-      else			// low surrogate
-	{
-	  if (high_surrogate)
-	    ch = (((high_surrogate bitand 0x3FF) << 10)
-		  bitor (ch bitand 0x3FF)) + 0x10000;
-	  else			// separated low surrogate
-	    ch = AVT_INVALID_WCHAR;
-
-	  high_surrogate = 0;
-	}
-    }
-
-  // check for spurious high surrogate
-  if (high_surrogate)
-    {
-      avt_put_raw_char (AVT_INVALID_WCHAR);
-      high_surrogate = 0;
-    }
+  ch = avt_utf16_surrogate (ch);
+  if (ch == 0xD800)		// still incomplete?
+    return _avt_STATUS;
 
   // noncharacter?
   if (ch >= 0x10FFFE or (ch bitand 0xFFFE) == 0xFFFE)
@@ -2245,19 +2258,19 @@ avt_put_char (avt_char ch)
       bell ();
       break;
 
-    case 0x0E:		// SO (Shift Out)
+    case 0x0E:			// SO (Shift Out)
       avt.underlined = true;
       break;
 
-    case 0x0F:		// SI (Shift In)
+    case 0x0F:			// SI (Shift In)
       avt.underlined = false;
       break;
 
-    case 0x11:		// DC1 (Device Control 1)
+    case 0x11:			// DC1 (Device Control 1)
       avt.bold = true;
       break;
 
-    case 0x12:		// DC2 (Device Control 2)
+    case 0x12:			// DC2 (Device Control 2)
       avt.bold = false;
       break;
 
