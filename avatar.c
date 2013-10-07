@@ -2245,6 +2245,22 @@ avt_put_char (avt_char ch)
       bell ();
       break;
 
+    case 0x0E:		// SO (Shift Out)
+      avt.underlined = true;
+      break;
+
+    case 0x0F:		// SI (Shift In)
+      avt.underlined = false;
+      break;
+
+    case 0x11:		// DC1 (Device Control 1)
+      avt.bold = true;
+      break;
+
+    case 0x12:		// DC2 (Device Control 2)
+      avt.bold = false;
+      break;
+
     case 0x1A:			// SUB (substitute)
       avt_put_raw_char (AVT_INVALID_WCHAR);
       break;

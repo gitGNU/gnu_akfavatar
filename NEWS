@@ -5,6 +5,8 @@
   - audio: AU and WAV data can be read from non-seekable streams
     (loaded into memory)
   - fix: Pascal sound support fixed
+  - the control characters SO/SI switch underlined mode on/off;
+    the control characters DC1/DC2 switch bold mode on/off
   - configure: new option --with-sdl2
   - SDL2: support for SDL2 with automatic resizing of the graphics
   - SDL2: support for pasting text from clipboard (Alt+V, middle mouse button)
