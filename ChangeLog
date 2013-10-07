@@ -8,6 +8,8 @@
 	* avatar.c (avt_put_char):
 	for testing purposes make plane 16 mirror plane 0
 
+	* lua/akfavatar-term.c (APC_command): fixed
+
 2013-10-04  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avtdata.h, avtdata.c: remove read24 again

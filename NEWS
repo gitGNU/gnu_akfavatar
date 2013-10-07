@@ -13,6 +13,7 @@
 
   Lua-API changes:
     - new functions: avt.frequency
+    - module "akfavatar-term": fix APC interface
 
 * AKFAvatar 0.24.2
 

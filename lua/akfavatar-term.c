@@ -252,36 +252,39 @@ lterm_decide (lua_State * L)
 static int
 APC_command (wchar_t * command)
 {
-  char mbstring[4097];
-  size_t len;
-  char *p;
-
-  if (not term_L)
+  if (not term_L or not command or not * command)
     return -1;
 
   const struct avt_charenc *convert = avt_char_encoding (NULL);
 
-  // get mbstring from command
-  len = 0;
-  p = mbstring;
+  size_t rest = 4097;
+  char *mbstring = malloc (rest);
+  if (not mbstring)
+    return -1;
 
-  while (*command and len < sizeof (mbstring))
+  char *restrict p = mbstring;
+  wchar_t *restrict c = command;
+  size_t len = 0;
+
+  while (*c and rest > 0)
     {
-      len += convert->encode (convert, p, sizeof (mbstring) - len, *command);
-      p += len;
-      ++command;
+      size_t l = convert->encode (convert, p, rest, *c);
+      p += l;
+      len += l;
+      rest -= l;
+      ++c;
     }
 
-  if (len)
-    {
-      int ret = luaL_loadbufferx (term_L, mbstring, len, mbstring, "t");
+  *p = '\0';
 
-      if (ret != LUA_OK)
-	return lua_error (term_L);
+  int ret = luaL_loadbufferx (term_L, mbstring, len, mbstring, "t");
+  free (mbstring);
 
-      lua_call (term_L, 0, 0);
-      avt_term_update_size ();	// in case the size changed
-    }
+  if (ret != LUA_OK)
+    return lua_error (term_L);
+
+  lua_call (term_L, 0, 0);
+  avt_term_update_size ();	// in case the size changed
 
   return 0;
 }
