@@ -2225,8 +2225,7 @@ avt_put_char (avt_char ch)
     ch = AVT_INVALID_WCHAR;
 
   // for testing purposes make plane 16 mirror plane 0
-  if (ch >= 0x100000)
-    ch -= 0x100000;
+  ch = ch bitand 0x0FFFFF;
 
   switch (ch)
     {
