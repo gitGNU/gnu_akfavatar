@@ -29,6 +29,8 @@ Options:
  -s, --sync       synchronize the working directory with lua-akfavatar
 
 Examples:
+  avtcmd "avt.avatar_image_file(avt.search('female_user.xpm'))"
+  avtcmd "avt.set_avatar_name 'Lieschen Mueller'"
 
 Report bugs to <bug-akfavatar@akfoerster.de>
 EOF
