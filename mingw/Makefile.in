@@ -157,7 +157,7 @@ akfavatar.dll: $(OBJAVATAR).o $(OBJAUDIO).o avatar.o \
 	        avatar-default.o avtdata.o audio-common.o font.o avtpalette.o \
 	        windowstiming.o avtmenu.o avtxbm.o avtxpm.o \
 	        avtbmp.o avtgraphic.o avtcolors.o version.o libinfo.o \
-	        -Wl,-no-undefined,--enable-runtime-pseudo-reloc \
+	        -Wl,--no-undefined,--enable-runtime-pseudo-reloc \
 	        -Wl,--out-implib,libakfavatar.dll.a \
 	        $(SDL_LDFLAGS) $(LDFLAGS)
 
