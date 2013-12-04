@@ -183,6 +183,7 @@ AVT_API void avt_reset (void);
 /*
  * quit the avatar system
  * can be used with atexit
+ * it's okay to call it more than once
  */
 AVT_API void avt_quit (void);
 
