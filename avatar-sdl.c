@@ -147,16 +147,8 @@ update_area_sdl (avt_graphic * screen, int x, int y, int width, int height)
 		     screen->pixels + (y * screen_width) + x,
 		     MINIMALWIDTH * sizeof (avt_color));
 
-  if (width < screen_width or height < screen_height)
-    SDL_RenderCopy (sdl_renderer, sdl_screen, &rect, &rect);
-  else				// update all
-    {
-      int c = avt_get_background_color ();
-      SDL_SetRenderDrawColor (sdl_renderer, avt_red (c), avt_green (c),
-			      avt_blue (c), SDL_ALPHA_OPAQUE);
-      SDL_RenderClear (sdl_renderer);
-      SDL_RenderCopy (sdl_renderer, sdl_screen, &rect, &rect);
-    }
+  SDL_RenderClear (sdl_renderer);
+  SDL_RenderCopy (sdl_renderer, sdl_screen, NULL, NULL);
 
   SDL_RenderPresent (sdl_renderer);
 }
@@ -1155,6 +1147,13 @@ quit_sdl (void)
     }
 }
 
+static void
+background_color_sdl (int c)
+{
+  SDL_SetRenderDrawColor (sdl_renderer, avt_red (c), avt_green (c),
+			  avt_blue (c), SDL_ALPHA_OPAQUE);
+}
+
 extern void
 avt_set_title (const char *title, const char *shortname)
 {
@@ -1308,6 +1307,8 @@ avt_start (const char *title, const char *shortname, int window_mode)
   // set up a new graphic to draw to
   backend = avt_start_common (avt_new_graphic (MINIMALWIDTH, MINIMALHEIGHT));
 
+  background_color_sdl (avt_get_background_color ());
+
   // size of the window (not to be confused with the variable window)
   windowmode_width = MINIMALWIDTH;
   windowmode_height = MINIMALHEIGHT;
@@ -1398,6 +1399,7 @@ avt_start (const char *title, const char *shortname, int window_mode)
   backend->update_area = update_area_sdl;
   backend->quit = quit_sdl;
   backend->wait_key = wait_key_sdl;
+  backend->background_color = background_color_sdl;
 #ifndef SDL2
   backend->resize = resize_sdl;
 #endif

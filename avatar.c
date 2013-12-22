@@ -4352,6 +4352,9 @@ avt_set_background_color (int color)
 
       if (screen)
 	{
+	  if (backend.background_color)
+	    backend.background_color(color);
+
 	  if (textfield.x >= 0)
 	    {
 	      avt.avatar_visible = false;	// force to redraw everything

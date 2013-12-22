@@ -146,6 +146,7 @@ struct avt_backend
 		       int height);
   void (*quit) (void);
   void (*wait_key) (void);
+  void (*background_color) (int);
   void (*resize) (avt_graphic * screen, int width, int height);
 
   avt_graphic *(*graphic_file) (const char *filename);
