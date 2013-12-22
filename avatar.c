@@ -4743,8 +4743,8 @@ avt_start_common (avt_graphic * new_screen)
    * which is okay for most functions except the following.
    * Those must be replaced by the backend.
    */
-  backend.update_area = &update_area_error;
-  backend.wait_key = &default_error_function;
+  backend.update_area = update_area_error;
+  backend.wait_key = default_error_function;
 
   avt_reset ();
 
