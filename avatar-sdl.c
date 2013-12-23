@@ -1147,12 +1147,14 @@ quit_sdl (void)
     }
 }
 
+#ifdef SDL2
 static void
-background_color_sdl (int c)
+background_color_sdl (avt_color c)
 {
   SDL_SetRenderDrawColor (sdl_renderer, avt_red (c), avt_green (c),
 			  avt_blue (c), SDL_ALPHA_OPAQUE);
 }
+#endif
 
 extern void
 avt_set_title (const char *title, const char *shortname)
@@ -1399,8 +1401,9 @@ avt_start (const char *title, const char *shortname, int window_mode)
   backend->update_area = update_area_sdl;
   backend->quit = quit_sdl;
   backend->wait_key = wait_key_sdl;
+#ifdef SDL2
   backend->background_color = background_color_sdl;
-#ifndef SDL2
+#else
   backend->resize = resize_sdl;
 #endif
 
