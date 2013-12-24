@@ -152,6 +152,7 @@ avt_menu (int *choice, int items,
 
 	  for (int i = items_per_page; i > 0; --i)
 	    {
+	      avt_lock_updates (true);
 	      avt_move_xy (1, start_line + max_idx);
 	      avt_delete_lines (start_line, 1);
 
@@ -161,9 +162,11 @@ avt_menu (int *choice, int items,
 		  show (page_items + (page_nr * items_per_page), data);
 		}
 
+	      avt_lock_updates (false);
 	      avt_delay (SCROLL_DELAY);
 	    }
 
+	  avt_lock_updates (true);
 	  avt_delete_lines (start_line, 1);
 
 	  // are there more items?
@@ -173,6 +176,7 @@ avt_menu (int *choice, int items,
 	      MARK (CONTINUE);
 	      page_items = max_idx;
 	    }
+	  avt_lock_updates (false);
 	  break;
 
 	case MOVE_DOWN:
@@ -182,15 +186,18 @@ avt_menu (int *choice, int items,
 
 	  for (int i = items_per_page; i > 0; --i)
 	    {
+	      avt_lock_updates (true);
 	      avt_move_xy (1, start_line);
 	      avt_insert_lines (start_line, 1);
 
 	      page_items--;
 	      show (page_items + (page_nr * items_per_page), data);
 
+	      avt_lock_updates (false);
 	      avt_delay (SCROLL_DELAY);
 	    }
 
+	  avt_lock_updates (true);
 	  avt_insert_lines (start_line, 1);
 	  avt_move_xy (1, start_line);
 
@@ -200,6 +207,7 @@ avt_menu (int *choice, int items,
 	    show (1, data);
 
 	  page_items = max_idx;
+	  avt_lock_updates (false);
 	  break;
 	}
 
