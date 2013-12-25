@@ -255,7 +255,7 @@ local function play_list(list, titles) --> plays a list of files (but no playlis
 
   show_cover()
 
-  while list[number] and button ~= "s" do
+  while list[number] and button ~= "s" and button ~= "x" do
 
     repeat -- get entry
       filename = list[number]
@@ -269,11 +269,19 @@ local function play_list(list, titles) --> plays a list of files (but no playlis
     if not audio then return end
 
     repeat
-      button = avt.navigate("bpsf")
+      if titles then
+        button = avt.navigate("bfpsx")
+      else
+        button = avt.navigate("bfps")
+      end
 
       if button == "p" then
         avt.pause_audio(true)
-        button = avt.navigate("brsf")
+        if titles then
+          button = avt.navigate("bfrsx")
+        else
+          button = avt.navigate("bfrs")
+        end
         if button == "r" then avt.pause_audio(false) end
       end
 
@@ -287,7 +295,7 @@ local function play_list(list, titles) --> plays a list of files (but no playlis
   avt.stop_audio()
   if audio then audio:free() end
 
-  if titles then
+  if titles and button ~= "x" then
     button = nil
     goto playlist
   end
