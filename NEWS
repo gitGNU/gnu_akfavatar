@@ -1,4 +1,4 @@
-* AKFAvatar-testing
+* AKFAvatar 0.24.3
 
   - audio: big audio files are read directly from file while playing
     (if possible via mmap)
