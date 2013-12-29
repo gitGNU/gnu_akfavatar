@@ -111,7 +111,6 @@ static void avt_analyze_event (SDL_Event * event);
 static void
 update_area_sdl (avt_graphic * screen, int x, int y, int width, int height)
 {
-  SDL_Rect rect;
   int screen_width, screen_height;
 
   screen_width = screen->width;
@@ -138,18 +137,30 @@ update_area_sdl (avt_graphic * screen, int x, int y, int width, int height)
   if (width <= 0 or height <= 0 or x > screen_width or y > screen_height)
     return;
 
+  SDL_Rect rect;
   rect.x = x;
   rect.y = y;
   rect.w = width;
   rect.h = height;
 
-  SDL_UpdateTexture (sdl_screen, &rect,
-		     screen->pixels + (y * screen_width) + x,
-		     MINIMALWIDTH * sizeof (avt_color));
+  int sdl_screen_pitch;
+  void *sdl_screen_pixels;
+  SDL_LockTexture (sdl_screen, &rect, &sdl_screen_pixels, &sdl_screen_pitch);
+
+  avt_color *pixels;
+  pixels = screen->pixels + (y * screen_width) + x;
+
+  while (height--)
+    {
+      SDL_memcpy (sdl_screen_pixels, pixels, width * sizeof (avt_color));
+      pixels += screen_width;
+      sdl_screen_pixels = (char *) sdl_screen_pixels + sdl_screen_pitch;
+    }
+
+  SDL_UnlockTexture (sdl_screen);
 
   SDL_RenderClear (sdl_renderer);
   SDL_RenderCopy (sdl_renderer, sdl_screen, NULL, NULL);
-
   SDL_RenderPresent (sdl_renderer);
 }
 

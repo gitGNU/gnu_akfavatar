@@ -1,3 +1,7 @@
+2013-12-29  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar-sdl.c (update_area_sdl): optimization
+
 2013-12-26  Andreas K. Foerster  <info@akfoerster.de>
 
 	* version 0.24.3 released
