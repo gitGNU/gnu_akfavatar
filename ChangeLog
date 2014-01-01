@@ -4,6 +4,8 @@
 	don't update each character when not in slowprint mode
 	(avt_update_line): new function
 
+	* avatar.c (dirty_line): new variable
+
 2013-12-29  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl.c (update_area_sdl): optimization

@@ -172,6 +172,7 @@ static avt_graphic *raw_image;
 static avt_graphic *avatar_image;
 static avt_graphic *cursor_character;
 static int fontwidth, fontheight, fontunderline;
+static bool dirty_line;
 
 static struct avt_area window;	// if screen is in fact larger
 static struct avt_area textfield;
@@ -343,6 +344,7 @@ extern void
 avt_update_all (void)
 {
   backend.update_area (screen, 0, 0, screen->width, screen->height);
+  dirty_line = false;
 }
 
 static inline void
@@ -350,24 +352,29 @@ avt_update_window (void)
 {
   backend.update_area (screen, window.x, window.y,
 		       window.width, window.height);
+  dirty_line = false;
 }
 
 static inline void
 avt_update_textfield (void)
 {
   if (not avt.hold_updates and textfield.x >= 0)
-    backend.update_area (screen, textfield.x, textfield.y,
-			 textfield.width, textfield.height);
+    {
+      backend.update_area (screen, textfield.x, textfield.y,
+			   textfield.width, textfield.height);
+      dirty_line = false;
+    }
 }
 
 static void
 avt_update_line (void)
 {
-  if (not avt.hold_updates and textfield.x >= 0 and cursor.x != linestart)
+  if (dirty_line and not avt.hold_updates and textfield.x >= 0)
     {
       backend.update_area (screen, viewport.x, cursor.y,
 			   viewport.width, fontheight);
       avt.text_cursor_actually_visible = false;
+      dirty_line = false;
     }
 }
 
@@ -375,8 +382,11 @@ static inline void
 avt_update_viewport (void)
 {
   if (not avt.hold_updates and viewport.x >= 0)
-    backend.update_area (screen, viewport.x, viewport.y,
-			 viewport.width, viewport.height);
+    {
+      backend.update_area (screen, viewport.x, viewport.y,
+			   viewport.width, viewport.height);
+      dirty_line = false;
+    }
 }
 
 // recalculate positions after screen has been resized
@@ -1979,6 +1989,7 @@ avt_showchar (void)
     {
       backend.update_area (screen, cursor.x, cursor.y, fontwidth, fontheight);
       avt.text_cursor_actually_visible = false;
+      dirty_line = false;
     }
 }
 
@@ -2171,6 +2182,7 @@ avt_put_raw_char (avt_char ch)
   if (cursor.x < viewport.x + viewport.width
       and cursor.y < viewport.y + viewport.height)
     {
+      dirty_line = true;
       avt_drawchar (ch, screen);
       if (avt.text_delay)
 	{
