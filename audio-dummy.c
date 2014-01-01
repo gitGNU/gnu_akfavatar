@@ -1,7 +1,8 @@
 /*
  * AKFAvatar - library for showing an avatar who says things in a balloon
  * this part contains dummy audio functions
- * Copyright (c) 2007,2008,2009,2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007,2008,2009,2010,2011,2012,2013,2014
+ + Andreas K. Foerster <info@akfoerster.de>
  *
  * required standards: C99
  *

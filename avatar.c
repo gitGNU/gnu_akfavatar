@@ -1,6 +1,6 @@
 /*
  * AKFAvatar library - for giving your programs a graphical Avatar
- * Copyright (c) 2007,2008,2009,2010,2011,2012,2013
+ * Copyright (c) 2007,2008,2009,2010,2011,2012,2013,2014
  * Andreas K. Foerster <info@akfoerster.de>
  *
  * required standards: C99, POSIX.1-2001
@@ -64,7 +64,7 @@
 #include "btn_eject.xbm"
 #include "btn_circle.xbm"
 
-#define COPYRIGHTYEAR "2013"
+#define COPYRIGHTYEAR "2014"
 
 #if MINIMALWIDTH < 800
 #  define TOPMARGIN 25

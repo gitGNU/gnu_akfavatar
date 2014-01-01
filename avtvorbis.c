@@ -2,7 +2,7 @@
  * AKFAvatar Ogg Vorbis decoder
  * based on stb_vorbis
  * ATTENTION: this is work in progress, ie. not finished yet
- * Copyright (c) 2011,2012,2013 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2011,2012,2013,2014 Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
