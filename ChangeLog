@@ -1,3 +1,9 @@
+2014-01-01  Andreas K. Foerster  <info@akfoerster.de>
+
+	* avatar.c: new update strategy
+	don't update each character when not in slowprint mode
+	(avt_update_line): new function
+
 2013-12-29  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar-sdl.c (update_area_sdl): optimization

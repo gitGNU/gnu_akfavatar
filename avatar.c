@@ -208,6 +208,7 @@ int _avt_STATUS;
 
 // forward declaration
 static void avt_drawchar (avt_char ch, avt_graphic * surface);
+static void avt_update_line (void);
 //-----------------------------------------------------------------------------
 
 extern void
@@ -255,6 +256,9 @@ avt_add_key (avt_char key)
 extern int
 avt_key (avt_char * ch)
 {
+  if (not avt.text_delay)
+    avt_update_line ();
+
   backend.wait_key ();
 
   if (ch)
@@ -271,6 +275,9 @@ extern avt_char
 avt_get_key (void)
 {
   avt_char ch;
+
+  if (not avt.text_delay)
+    avt_update_line ();
 
   ch = AVT_KEY_NONE;
   backend.wait_key ();
@@ -351,6 +358,17 @@ avt_update_textfield (void)
   if (not avt.hold_updates and textfield.x >= 0)
     backend.update_area (screen, textfield.x, textfield.y,
 			 textfield.width, textfield.height);
+}
+
+static void
+avt_update_line (void)
+{
+  if (not avt.hold_updates and textfield.x >= 0 and cursor.x != linestart)
+    {
+      backend.update_area (screen, viewport.x, cursor.y,
+			   viewport.width, fontheight);
+      avt.text_cursor_actually_visible = false;
+    }
 }
 
 static inline void
@@ -1007,6 +1025,9 @@ avt_text_direction (int direction)
       if (avt.text_cursor_visible)
 	avt_show_text_cursor (false);
 
+      if (not avt.text_delay)
+	avt_update_line ();
+
       if (avt.origin_mode)
 	area = viewport;
       else
@@ -1474,6 +1495,8 @@ avt_viewport (int x, int y, int width, int height)
   // if there's no balloon, draw it
   if (textfield.x < 0)
     avt_draw_balloon ();
+  else if (not avt.text_delay)
+    avt_update_line ();
 
   // make coordinates 0-offset
   --x;
@@ -1551,6 +1574,9 @@ avt_set_origin_mode (bool mode)
 
   if (avt.text_cursor_visible and textfield.x >= 0)
     avt_show_text_cursor (false);
+
+  if (not avt.text_delay)
+    avt_update_line ();
 
   if (avt.origin_mode)
     area = viewport;
@@ -1817,6 +1843,9 @@ avt_carriage_return (void)
   if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
+  if (not avt.text_delay)
+    avt_update_line ();
+
   cursor.x = linestart;
 
   if (avt.text_cursor_visible)
@@ -1833,16 +1862,19 @@ avt_new_line (void)
   if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
-  if (avt.newline_mode)
-    cursor.x = linestart;
-
   /* if the cursor is at the last line of the viewport
    * scroll up
    */
   if (cursor.y == viewport.y + viewport.height - fontheight)
     avt_scroll_up ();
   else
-    cursor.y += fontheight;
+    {
+      avt_update_line ();
+      cursor.y += fontheight;
+    }
+
+  if (avt.newline_mode)
+    cursor.x = linestart;
 
   if (avt.text_cursor_visible)
     avt_show_text_cursor (true);
@@ -2087,7 +2119,8 @@ avt_clearchar (void)
 {
   avt_bar (screen, cursor.x, cursor.y, fontwidth, fontheight,
 	   avt.text_background_color);
-  avt_showchar ();
+  if (avt.text_delay)
+    avt_showchar ();
 }
 
 extern void
@@ -2139,9 +2172,11 @@ avt_put_raw_char (avt_char ch)
       and cursor.y < viewport.y + viewport.height)
     {
       avt_drawchar (ch, screen);
-      avt_showchar ();
       if (avt.text_delay)
-	avt_delay (avt.text_delay);
+	{
+	  avt_showchar ();
+	  avt_delay (avt.text_delay);
+	}
       avt_forward ();
     }
 
@@ -2314,7 +2349,8 @@ avt_put_char (avt_char ch)
 	  else			// underlined or inverse
 	    {
 	      avt_drawchar (L' ', screen);
-	      avt_showchar ();
+	      if (avt.text_delay)
+		avt_showchar ();
 	    }
 	  avt_forward ();
 	}
@@ -2366,6 +2402,9 @@ avt_say (const wchar_t * txt)
       txt++;
     }
 
+  if (not avt.text_delay)
+    avt_update_line ();
+
   return _avt_STATUS;
 }
 
@@ -2386,6 +2425,9 @@ avt_say_len (const wchar_t * txt, size_t len)
       if (avt_put_char (*txt) != AVT_NORMAL)
 	break;
     }
+
+  if (not avt.text_delay)
+    avt_update_line ();
 
   return _avt_STATUS;
 }
@@ -2561,6 +2603,9 @@ avt_choice (int *result, int start_line, int items, avt_char key,
   if (not screen or start_line <= 0 or items <= 0
       or start_line + items - 1 > avt.balloonheight)
     return AVT_FAILURE;
+
+  if (not avt.text_delay)
+    avt_update_line ();
 
   avt_graphic *plain_menu;
   plain_menu = avt_get_area (screen, viewport.x, viewport.y,
@@ -3210,6 +3255,8 @@ avt_input (wchar_t * s, size_t size, const wchar_t * default_text,
    */
   if (cursor.y > viewport.y + viewport.height - fontheight)
     avt_flip_page ();
+  else if (not avt.text_delay)
+    avt_update_line ();
 
   // maxlen is the rest of line
   if (avt.textdir_rtl)
@@ -4353,7 +4400,7 @@ avt_set_background_color (int color)
       if (screen)
 	{
 	  if (backend.background_color)
-	    backend.background_color(color);
+	    backend.background_color (color);
 
 	  if (textfield.x >= 0)
 	    {
