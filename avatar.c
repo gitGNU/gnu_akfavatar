@@ -257,8 +257,7 @@ avt_add_key (avt_char key)
 extern int
 avt_key (avt_char * ch)
 {
-  if (not avt.text_delay)
-    avt_update_line ();
+  avt_update_line ();
 
   backend.wait_key ();
 
@@ -277,8 +276,7 @@ avt_get_key (void)
 {
   avt_char ch;
 
-  if (not avt.text_delay)
-    avt_update_line ();
+  avt_update_line ();
 
   ch = AVT_KEY_NONE;
   backend.wait_key ();
@@ -1035,8 +1033,7 @@ avt_text_direction (int direction)
       if (avt.text_cursor_visible)
 	avt_show_text_cursor (false);
 
-      if (not avt.text_delay)
-	avt_update_line ();
+      avt_update_line ();
 
       if (avt.origin_mode)
 	area = viewport;
@@ -1505,7 +1502,7 @@ avt_viewport (int x, int y, int width, int height)
   // if there's no balloon, draw it
   if (textfield.x < 0)
     avt_draw_balloon ();
-  else if (not avt.text_delay)
+  else
     avt_update_line ();
 
   // make coordinates 0-offset
@@ -1585,8 +1582,7 @@ avt_set_origin_mode (bool mode)
   if (avt.text_cursor_visible and textfield.x >= 0)
     avt_show_text_cursor (false);
 
-  if (not avt.text_delay)
-    avt_update_line ();
+  avt_update_line ();
 
   if (avt.origin_mode)
     area = viewport;
@@ -1853,8 +1849,7 @@ avt_carriage_return (void)
   if (avt.text_cursor_visible)
     avt_show_text_cursor (false);
 
-  if (not avt.text_delay)
-    avt_update_line ();
+  avt_update_line ();
 
   cursor.x = linestart;
 
@@ -2414,8 +2409,7 @@ avt_say (const wchar_t * txt)
       txt++;
     }
 
-  if (not avt.text_delay)
-    avt_update_line ();
+  avt_update_line ();
 
   return _avt_STATUS;
 }
@@ -2438,8 +2432,7 @@ avt_say_len (const wchar_t * txt, size_t len)
 	break;
     }
 
-  if (not avt.text_delay)
-    avt_update_line ();
+  avt_update_line ();
 
   return _avt_STATUS;
 }
@@ -2616,8 +2609,7 @@ avt_choice (int *result, int start_line, int items, avt_char key,
       or start_line + items - 1 > avt.balloonheight)
     return AVT_FAILURE;
 
-  if (not avt.text_delay)
-    avt_update_line ();
+  avt_update_line ();
 
   avt_graphic *plain_menu;
   plain_menu = avt_get_area (screen, viewport.x, viewport.y,
@@ -3267,7 +3259,7 @@ avt_input (wchar_t * s, size_t size, const wchar_t * default_text,
    */
   if (cursor.y > viewport.y + viewport.height - fontheight)
     avt_flip_page ();
-  else if (not avt.text_delay)
+  else
     avt_update_line ();
 
   // maxlen is the rest of line
