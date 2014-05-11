@@ -47,6 +47,7 @@ static bool avt_audio_initialized;
 static volatile avt_audio *current_sound;
 static volatile bool loop = false;
 static avt_char audio_key;
+static SDL_AudioSpec oldspec;
 
 static void avt_quit_audio_sdl (void);
 
@@ -55,10 +56,9 @@ static void avt_quit_audio_sdl (void);
 static void
 get_audio (void *userdata, uint8_t * stream, int len)
 {
-  avt_audio *snd = userdata;
-  int r;
-
-  r = snd->get (snd, stream, len);
+  (void) userdata;
+  avt_audio *snd = (avt_audio *) current_sound;
+  int r = snd->get (snd, stream, len);
 
   if (r < len)
     {
@@ -77,7 +77,7 @@ get_audio (void *userdata, uint8_t * stream, int len)
 
 	  if (r <= 0)		// nothing left
 	    {
-	      SDL_PauseAudio (1);
+	      SDL_PauseAudio (SDL_TRUE);
 	      current_sound = NULL;
 
 	      if (audio_key)
@@ -100,6 +100,8 @@ avt_start_audio (void)
 	  return _avt_STATUS;
 	}
 
+      SDL_memset (&oldspec, 0, sizeof (oldspec));
+
       // set this before calling anything from this lib
       avt_audio_initialized = true;
 
@@ -115,7 +117,7 @@ avt_start_audio (void)
 extern void
 avt_stop_audio (void)
 {
-  SDL_CloseAudio ();
+  SDL_PauseAudio (SDL_TRUE);
   loop = false;
   audio_key = 0;
   current_sound = NULL;
@@ -128,6 +130,7 @@ avt_quit_audio_sdl (void)
     {
       SDL_CloseAudio ();
       current_sound = NULL;
+      SDL_memset (&oldspec, 0, sizeof (oldspec));
       loop = false;
       SDL_QuitSubSystem (SDL_INIT_AUDIO);
       avt_audio_initialized = false;
@@ -157,28 +160,16 @@ avt_audio_playing (avt_audio * snd)
 extern int
 avt_play_audio (avt_audio * snd, int playmode)
 {
-  SDL_AudioSpec audiospec;
-
-  if (not avt_audio_initialized)
-    return _avt_STATUS;
-
-  // no sound? - just ignore it
-  if (not snd)
+  if (not avt_audio_initialized or not snd)
     return _avt_STATUS;
 
   if (playmode != AVT_PLAY and playmode != AVT_LOOP)
     return AVT_FAILURE;
 
-  // close audio, in case it is left open
-  SDL_CloseAudio ();
-  SDL_LockAudio ();
-
-  SDL_memset (&audiospec, 0, sizeof (audiospec));
-
   snd->rewind (snd);
 
-  // load sound
-  current_sound = snd;
+  SDL_AudioSpec audiospec;
+  SDL_memset (&audiospec, 0, sizeof (audiospec));
 
   switch (snd->audio_type)
     {
@@ -207,22 +198,32 @@ avt_play_audio (avt_audio * snd, int playmode)
   audiospec.channels = snd->channels;
   audiospec.samples = OUTPUT_BUFFER;
   audiospec.callback = get_audio;
-  audiospec.userdata = snd;
 
   loop = (playmode == AVT_LOOP);
 
-  if (SDL_OpenAudio (&audiospec, NULL) == 0)
+  SDL_LockAudio ();
+
+  // load sound
+  current_sound = snd;
+
+  if (audiospec.freq != oldspec.freq
+      or audiospec.channels != oldspec.channels
+      or audiospec.format != oldspec.format)
     {
-      SDL_UnlockAudio ();
-      SDL_PauseAudio (0);
-      return _avt_STATUS;
+      SDL_CloseAudio ();
+      if (SDL_OpenAudio (&audiospec, NULL) != 0)
+	{
+	  avt_set_error ("error opening audio device");
+	  _avt_STATUS = AVT_ERROR;
+	  return _avt_STATUS;
+	}
     }
-  else
-    {
-      avt_set_error ("error opening audio device");
-      _avt_STATUS = AVT_ERROR;
-      return _avt_STATUS;
-    }
+
+  SDL_UnlockAudio ();
+  SDL_PauseAudio (SDL_FALSE);
+  oldspec = audiospec;
+
+  return _avt_STATUS;
 }
 
 extern avt_char

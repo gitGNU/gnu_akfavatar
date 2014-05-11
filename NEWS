@@ -1,3 +1,8 @@
+* AKFAvatar-testing
+
+ - optimized printing of text (line buffered)
+ - audio-data with same specs as former one is played with less latency
+
 * AKFAvatar 0.24.3
 
   - audio: big audio files are read directly from file while playing

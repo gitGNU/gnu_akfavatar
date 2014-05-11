@@ -1,3 +1,8 @@
+2014-05-11  Andreas K. Foerster  <info@akfoerster.de>
+
+	* audio-sdl.c:
+	reopen audio-device only when the audio format changes
+
 2014-01-01  Andreas K. Foerster  <info@akfoerster.de>
 
 	* avatar.c: new update strategy
