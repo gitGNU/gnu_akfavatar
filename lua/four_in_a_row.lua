@@ -4,7 +4,7 @@
 Four in a Row
 Game for 1 or 2 players
 
-Copyright (c) 2011,2012,2013 Andreas K. Foerster <info@akfoerster.de>
+Copyright (c) 2011,2012,2013,2014 Andreas K. Foerster <info@akfoerster.de>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -40,12 +40,13 @@ local color = {
   connector = "green"
   }
 
--- false for no sound
+-- use false for no sound
 local sound = {
-  human_wins = "hey.au",
+  human_wins    = "hey.au",
   computer_wins = "hahaha.au",
-  remis = "question.au",
-  full = "harrumph.au"
+  remis         = "question.au",
+  full          = "harrumph.au",
+  clack         = "clack.au"
   }
 
 avt.translations = {
@@ -104,6 +105,7 @@ local holes = {}
 local human_wins = avt.load_audio_file(avt.search(sound.human_wins)) or avt.alert()
 local remis = avt.load_audio_file(avt.search(sound.remis)) or avt.alert()
 local full = avt.load_audio_file(avt.search(sound.full)) or avt.alert()
+local clack = avt.load_audio_file(avt.search(sound.clack)) or avt.silent()
 
 local computer_wins = avt.alert()
 if players==1 then
@@ -182,11 +184,12 @@ local function drop(column)
       for i=6,number,-1 do
         clear_position(column, i+1)
         chip_position(column, i)
-        screen:show()
         avt.wait(0.025)
+        screen:show()
       end
     end
 
+    clack()
     chips = chips + 1
     filled[column] = number
     board[column][number] = player

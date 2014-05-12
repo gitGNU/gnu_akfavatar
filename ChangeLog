@@ -1,3 +1,7 @@
+2014-05-12  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/four_in_a_row.lua: clack sound
+
 2014-05-11  Andreas K. Foerster  <info@akfoerster.de>
 
 	* audio-sdl.c:

@@ -639,6 +639,7 @@ dist-bin: all $(lua_dll) $(sdl_dll)
 	   $(srcdir)/data/question.au $(srcdir)/data/sad.au \
 	   $(srcdir)/data/hey.au $(srcdir)/data/okay.au \
 	   $(srcdir)/data/hahaha.au $(srcdir)/data/game_over.au \
+	   $(srcdir)/data/clack.au \
 	   $(BINPKGNAME)/data/
 	cp lua-akfavatar.en.pdf $(BINPKGNAME)/doc/
 	cp lua-akfavatar.de.pdf $(BINPKGNAME)/doc/
