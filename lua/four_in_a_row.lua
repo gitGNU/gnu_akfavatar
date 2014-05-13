@@ -25,7 +25,7 @@ Keys:
   1 - 7 - choose column
   enter / down - drop chip
 
-Mouse supported for AKFAvatar-9.24.2 or higher
+Mouse supported for AKFAvatar-0.24.2 or higher
 --]]--------------------------------------------------------------------
 
 local avt = require "lua-akfavatar"
