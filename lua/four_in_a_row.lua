@@ -189,7 +189,7 @@ local function drop(column)
       end
     end
 
-    clack()
+    if not avt.audio_playing() then clack() end
     chips = chips + 1
     filled[column] = number
     board[column][number] = player
@@ -486,6 +486,9 @@ end
 
 -- computer logic
 local function compute(column)
+
+  -- not too fast, we have time
+  avt.wait_audio_end()
 
   if chips==0 then
     return 4
