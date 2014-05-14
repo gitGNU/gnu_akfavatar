@@ -7,13 +7,13 @@ REQUIREMENTS
 
 Needed
 
- * SDL-1.2.11 or higher
+ * SDL-1.2.11 or higher or SDL-2.0.0 or higher
+     http://libsdl.org/download-2.0.php
      http://libsdl.org/download-1.2.php
    You need the "Runtime Libraries" as well as the "Development Libraries"!
-   The serieses 1.3 and 2.0 are _not_ backward compatible!
 
    Of course SDL needs a graphical environment to run in.
-   For example the X-Window-System or a Linux framebuffer-device...
+   For example the X-Window-System...
 
  * Lua-5.2.x
      http://lua.org/
@@ -38,14 +38,15 @@ INSTALLATION
 
 Compiling
 
-Run "./configure". If that succeeds run "make" to create the binaries.
+Run "./configure" for SDL-1.2 or "./configure --with-sdl2" for
+SDL-2. If that succeeds run "make" to create the binaries.
 You can use it without installing.
 
 
 Compiling - special cases
 
 If you want to use it on devices with a small display (eg. netbooks), use the
-parameter "--enable-size=vga" with configure. 
+parameter "--enable-size=vga" with configure.
 The value "vga" means a size of 640*480 pixels.
 
 You can also compile it to run directly on the Linux famebuffer without the SDL.
