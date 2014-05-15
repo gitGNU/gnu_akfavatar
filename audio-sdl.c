@@ -47,7 +47,7 @@ static bool avt_audio_initialized;
 static volatile avt_audio *current_sound;
 static volatile bool loop = false;
 static avt_char audio_key;
-static SDL_AudioSpec oldspec;
+static SDL_AudioSpec audiospec;
 
 static void avt_quit_audio_sdl (void);
 
@@ -100,7 +100,7 @@ avt_start_audio (void)
 	  return _avt_STATUS;
 	}
 
-      SDL_memset (&oldspec, 0, sizeof (oldspec));
+      SDL_memset (&audiospec, 0, sizeof (audiospec));
 
       // set this before calling anything from this lib
       avt_audio_initialized = true;
@@ -130,7 +130,7 @@ avt_quit_audio_sdl (void)
     {
       SDL_CloseAudio ();
       current_sound = NULL;
-      SDL_memset (&oldspec, 0, sizeof (oldspec));
+      SDL_memset (&audiospec, 0, sizeof (audiospec));
       loop = false;
       SDL_QuitSubSystem (SDL_INIT_AUDIO);
       avt_audio_initialized = false;
@@ -168,60 +168,56 @@ avt_play_audio (avt_audio * snd, int playmode)
 
   snd->rewind (snd);
 
-  SDL_AudioSpec audiospec;
-  SDL_memset (&audiospec, 0, sizeof (audiospec));
+  unsigned int format;
 
   switch (snd->audio_type)
     {
     case AVT_AUDIO_U8:
-      audiospec.format = AUDIO_U8;
+      format = AUDIO_U8;
       break;
 
     case AVT_AUDIO_S8:
-      audiospec.format = AUDIO_S8;
+      format = AUDIO_S8;
       break;
 
     case AVT_AUDIO_S16LE:
-      audiospec.format = AUDIO_S16LSB;
+      format = AUDIO_S16LSB;
       break;
 
     case AVT_AUDIO_S16BE:
-      audiospec.format = AUDIO_S16MSB;
+      format = AUDIO_S16MSB;
       break;
 
     default:			// all other get converted
-      audiospec.format = AUDIO_S16SYS;
+      format = AUDIO_S16SYS;
       break;
     }
 
-  audiospec.freq = snd->samplingrate;
-  audiospec.channels = snd->channels;
-  audiospec.samples = OUTPUT_BUFFER;
-  audiospec.callback = get_audio;
-
-  loop = (playmode == AVT_LOOP);
-
-  SDL_LockAudio ();
-
-  // load sound
-  current_sound = snd;
-
-  if (audiospec.freq != oldspec.freq
-      or audiospec.channels != oldspec.channels
-      or audiospec.format != oldspec.format)
+  // eventually (re)open audio device
+  if (snd->samplingrate != audiospec.freq
+      or snd->channels != audiospec.channels or format != audiospec.format)
     {
       SDL_CloseAudio ();
+
+      audiospec.format = format;
+      audiospec.freq = snd->samplingrate;
+      audiospec.channels = snd->channels;
+      audiospec.samples = OUTPUT_BUFFER;
+      audiospec.callback = get_audio;
+
       if (SDL_OpenAudio (&audiospec, NULL) != 0)
 	{
+	  SDL_memset (&audiospec, 0, sizeof (audiospec));
 	  avt_set_error ("error opening audio device");
 	  _avt_STATUS = AVT_ERROR;
 	  return _avt_STATUS;
 	}
     }
 
-  SDL_UnlockAudio ();
+  // load sound
+  current_sound = snd;
+  loop = (playmode == AVT_LOOP);
   SDL_PauseAudio (SDL_FALSE);
-  oldspec = audiospec;
 
   return _avt_STATUS;
 }
