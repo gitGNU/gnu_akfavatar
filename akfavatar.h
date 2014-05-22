@@ -133,6 +133,8 @@
 #define AVT_KEY_F14       0xEAFE
 #define AVT_KEY_F15       0xEAFF
 
+#define AVT_KEY_F(n)      (0xEAF0+(n))
+
 /* example: avt_wait(AVT_SECONDS(2.5)) waits 2.5 seconds */
 #define AVT_SECONDS(x) ((x)*1000)
 

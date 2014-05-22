@@ -1,3 +1,7 @@
+2014-05-22  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h (AVT_KEY_F): new macro
+
 2014-05-15  Andreas K. Foerster  <info@akfoerster.de>
 
 	* audio-sdl.c: optimized further

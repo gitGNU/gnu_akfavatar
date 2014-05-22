@@ -3,6 +3,9 @@
  - optimized printing of text (line buffered)
  - audio-data with same specs as former one is played with less latency
 
+  C-API changes:
+    - new macro: AVT_KEY_F
+
 * AKFAvatar 0.24.3
 
   - audio: big audio files are read directly from file while playing
