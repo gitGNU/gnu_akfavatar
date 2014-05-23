@@ -189,28 +189,6 @@ method_rewind_data (avt_audio * s)
     s->info.data.data->seek (s->info.data.data, s->info.data.start, SEEK_SET);
 }
 
-// TODO
-static size_t
-avt_required_audio_size (avt_audio * snd, size_t data_size)
-{
-  size_t out_size;
-
-  switch (snd->audio_type)
-    {
-    case AVT_AUDIO_S24SYS:
-    case AVT_AUDIO_S24LE:
-    case AVT_AUDIO_S24BE:
-      out_size = (data_size * 2) / 3;	// reduced to 16 Bit
-      break;
-
-    default:
-      out_size = data_size;
-      break;
-    }
-
-  return out_size;
-}
-
 extern int
 avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
 			size_t data_size)
@@ -229,7 +207,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
       return AVT_FAILURE;
     }
 
-  out_size = avt_required_audio_size (snd, data_size);
+  out_size = data_size;
   old_size = snd->info.memory.length;
   new_size = old_size + out_size;
 
@@ -267,56 +245,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
       snd->info.memory.capacity = new_capacity;
     }
 
-  // TODO
-  // convert or copy the data
-  switch (snd->audio_type)
-    {
-    case AVT_AUDIO_S16SYS:
-    case AVT_AUDIO_S16LE:
-    case AVT_AUDIO_S16BE:
-    case AVT_AUDIO_U8:
-    case AVT_AUDIO_S8:
-    case AVT_AUDIO_S32LE:
-    case AVT_AUDIO_S32BE:
-    case AVT_AUDIO_MULAW:	// mu-law, logarithmic PCM
-    case AVT_AUDIO_ALAW:	// A-law, logarithmic PCM
-      memcpy (snd->info.memory.sound + old_size, data, out_size);
-      break;
-
-      // the following ones are all converted to 16 bits
-
-    case AVT_AUDIO_S24LE:
-      {
-	uint_least8_t *restrict in;
-	uint_least16_t *restrict out;
-
-	in = (uint_least8_t *) data;
-	out = (uint_least16_t *) (snd->info.memory.sound + old_size);
-
-	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 3)
-	  *out++ = (in[2] << 8) | in[1];
-      }
-      break;
-
-    case AVT_AUDIO_S24BE:
-      {
-	uint_least8_t *restrict in;
-	uint_least16_t *restrict out;
-
-	in = (uint_least8_t *) data;
-	out = (uint_least16_t *) (snd->info.memory.sound + old_size);
-
-	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 3)
-	  *out++ = (in[0] << 8) | in[1];
-      }
-      break;
-
-    default:
-      avt_set_error ("Internal error");
-      _avt_STATUS = AVT_ERROR;
-      return _avt_STATUS;
-    }
-
+  memcpy (snd->info.memory.sound + old_size, data, out_size);
   snd->info.memory.length = new_size;
   snd->done = method_done_memory;
 
@@ -428,55 +357,6 @@ method_get_law_data (avt_audio * restrict s, void *restrict data, size_t size)
 }
 
 
-static size_t
-method_get_bit24be_data (avt_audio * restrict s, void *restrict data,
-			 size_t size)
-{
-  size_t bytes = size / sizeof (uint_least16_t) * 3;
-
-  uint_least8_t samples[bytes];
-  size_t b;
-
-  b = s->info.data.data->read (s->info.data.data, &samples,
-			       sizeof (samples[0]), bytes);
-  if (not b)
-    return 0;
-
-  uint_least8_t *restrict in = samples;
-  uint_least16_t *restrict out = data;
-
-  for (size_t i = size / sizeof (*out); i > 0; i--, in += 3)
-    *out++ = (in[0] << 8) | in[1];
-
-  return b / 3 * sizeof (uint_least16_t);
-}
-
-
-static size_t
-method_get_bit24le_data (avt_audio * restrict s, void *restrict data,
-			 size_t size)
-{
-  size_t bytes = size / sizeof (uint_least16_t) * 3;
-
-  uint_least8_t samples[bytes];
-  size_t b;
-
-  b = s->info.data.data->read (s->info.data.data, &samples,
-			       sizeof (samples[0]), bytes);
-
-  if (not b)
-    return 0;
-
-  uint_least8_t *restrict in = samples;
-  uint_least16_t *restrict out = data;
-
-  for (size_t i = size / sizeof (*out); i > 0; i--, in += 3)
-    *out++ = (in[2] << 8) | in[1];
-
-  return b / 3 * sizeof (uint_least16_t);
-}
-
-
 extern avt_audio *
 avt_prepare_raw_audio (size_t capacity,
 		       int samplingrate, int audio_type, int channels)
@@ -490,7 +370,6 @@ avt_prepare_raw_audio (size_t capacity,
       return NULL;
     }
 
-  // TODO
   // adjustments for later optimizations
   if (AVT_LITTLE_ENDIAN == AVT_BYTE_ORDER)
     {
@@ -552,10 +431,7 @@ avt_prepare_raw_audio (size_t capacity,
   if (capacity > 0 and capacity < MAXIMUM_SIZE)
     {
       unsigned char *sound_data;
-      size_t real_capacity;
-
-      real_capacity = avt_required_audio_size (s, capacity);
-      sound_data = malloc (real_capacity);
+      sound_data = malloc (capacity);
 
       if (not sound_data)
 	{
@@ -566,7 +442,7 @@ avt_prepare_raw_audio (size_t capacity,
 
       s->done = method_done_memory;
       s->info.memory.sound = sound_data;
-      s->info.memory.capacity = real_capacity;
+      s->info.memory.capacity = capacity;
     }
 
   return s;
@@ -640,10 +516,6 @@ static avt_audio *
 avt_mmap_audio (avt_data * src, size_t maxsize,
 		int samplingrate, int audio_type, int channels, int playmode)
 {
-  // not for 24 bit
-  if (audio_type >= AVT_AUDIO_S24LE and audio_type <= AVT_AUDIO_S24SYS)
-    return NULL;
-
   int fd = src->filenumber (src);
 
   // not a file?
@@ -747,14 +619,6 @@ avt_fetch_audio_data (avt_data * src, int samplingrate,
     case AVT_AUDIO_ALAW:
       law_decoder = alaw_decode;
       audio->get = method_get_law_data;
-      break;
-
-    case AVT_AUDIO_S24BE:
-      audio->get = method_get_bit24be_data;
-      break;
-
-    case AVT_AUDIO_S24LE:
-      audio->get = method_get_bit24le_data;
       break;
 
     default:

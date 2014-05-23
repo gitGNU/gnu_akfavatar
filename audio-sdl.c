@@ -51,8 +51,8 @@ static SDL_AudioSpec audiospec;
 
 static void avt_quit_audio_sdl (void);
 
+// callbacks
 
-// callback
 static void
 get_audio (void *userdata, uint8_t * stream, int len)
 {
@@ -87,9 +87,117 @@ get_audio (void *userdata, uint8_t * stream, int len)
     }
 }
 
-#ifndef AUDIO_S32LSB
+#ifdef AUDIO_S32LSB
 
-// TODO - FIXME
+static void
+get_audio24 (void *userdata, uint8_t * stream, int len)
+{
+  (void) userdata;
+  avt_audio *snd = (avt_audio *) current_sound;
+  uint32_t *p;
+  uint8_t buffer[(len * 3) / sizeof (*p)];
+  uint8_t *b;
+  int r;
+
+get_sound:
+  r = snd->get (snd, buffer, (len * 3) / sizeof (*p));
+  r /= 3;			// number of samples read
+
+  b = buffer;
+  p = (uint16_t *) stream;
+
+  // big or little endian?
+  if (AVT_AUDIO_S24BE == snd->audio_type)
+    {
+      for (int i = r; i; --i, ++p, b += 3)
+	*p = b[0] << 24 | b[1] << 16 | b[2] << 8;
+    }
+  else
+    {
+      for (int i = r; i; --i, ++p, b += 3)
+	*p = b[2] << 24 | b[1] << 16 | b[0] << 8;
+    }
+
+  if (r < len / (int) sizeof (*p))
+    {
+      if (loop)
+	{
+	  snd->rewind (snd);
+	  stream += r * sizeof (*p);
+	  len -= r * sizeof (*p);
+	  if (len > 0)
+	    goto get_sound;
+	}
+      else			// no loop
+	{
+	  if (r <= 0)		// nothing left
+	    {
+	      SDL_PauseAudio (SDL_TRUE);
+	      current_sound = NULL;
+
+	      if (audio_key)
+		avt_push_key (audio_key);
+	    }
+	}
+    }
+}
+
+#else // no 32bit support
+
+static void
+get_audio24 (void *userdata, uint8_t * stream, int len)
+{
+  (void) userdata;
+  avt_audio *snd = (avt_audio *) current_sound;
+  uint16_t *p;
+  uint8_t buffer[len * 3 / sizeof (*p)];
+  uint8_t *b;
+  int r;
+
+get_sound:
+  r = snd->get (snd, buffer, (len * 3) / sizeof (*p));
+  r /= 3;			// number of samples read
+
+  b = buffer;
+  p = (uint16_t *) stream;
+
+  // big or little endian?
+  if (AVT_AUDIO_S24BE == snd->audio_type)
+    {
+      for (int i = r; i; --i, ++p, b += 3)
+	*p = b[0] << 8 | b[1];
+    }
+  else
+    {
+      for (int i = r; i; --i, ++p, b += 3)
+	*p = b[2] << 8 | b[1];
+    }
+
+  if (r < len / (int) sizeof (*p))
+    {
+      if (loop)
+	{
+	  snd->rewind (snd);
+	  stream += r * sizeof (*p);
+	  len -= r * sizeof (*p);
+	  if (len > 0)
+	    goto get_sound;
+	}
+      else			// no loop
+	{
+	  if (r <= 0)		// nothing left
+	    {
+	      SDL_PauseAudio (SDL_TRUE);
+	      current_sound = NULL;
+
+	      if (audio_key)
+		avt_push_key (audio_key);
+	    }
+	}
+    }
+}
+
+
 static void
 get_audio32 (void *userdata, uint8_t * stream, int len)
 {
@@ -121,7 +229,7 @@ get_sound:
 
   if (r < len / (int) sizeof (*p))
     {
-      if (loop)			// FIXME
+      if (loop)
 	{
 	  snd->rewind (snd);
 	  stream += r * sizeof (*p);
@@ -143,7 +251,8 @@ get_sound:
     }
 }
 
-#endif
+#endif // no 32bit support
+
 
 // must be called AFTER avt_start!
 extern int
@@ -248,6 +357,14 @@ avt_play_audio (avt_audio * snd, int playmode)
 
 #ifdef AUDIO_S32LSB
 
+    case AVT_AUDIO_S24LE:
+      format = AUDIO_S32SYS;
+      break;
+
+    case AVT_AUDIO_S24BE:
+      format = AUDIO_S32SYS;
+      break;
+
     case AVT_AUDIO_S32LE:
       format = AUDIO_S32LSB;
       break;
@@ -263,11 +380,23 @@ avt_play_audio (avt_audio * snd, int playmode)
       break;
     }
 
+  void *callback = get_audio;
+
+  if (AVT_AUDIO_S24LE == snd->audio_type
+      or AVT_AUDIO_S24BE == snd->audio_type)
+    callback = get_audio24;
+
+#ifndef AUDIO_S32LSB
+  if (AVT_AUDIO_S32LE == snd->audio_type
+      or AVT_AUDIO_S32BE == snd->audio_type)
+    callback = get_audio32;
+#endif
+
   // eventually (re)open audio device
   if (snd->samplingrate != audiospec.freq
-      or snd->channels != audiospec.channels or format != audiospec.format
-      or (snd->audio_type > AVT_AUDIO_S16SYS
-	  and snd->audio_type < AVT_AUDIO_MULAW))
+      or snd->channels != audiospec.channels
+      or format != audiospec.format
+      or callback != (void *) audiospec.callback)
     {
       SDL_CloseAudio ();
 
@@ -275,13 +404,7 @@ avt_play_audio (avt_audio * snd, int playmode)
       audiospec.freq = snd->samplingrate;
       audiospec.channels = snd->channels;
       audiospec.samples = OUTPUT_BUFFER;
-      audiospec.callback = get_audio;
-
-#ifndef AUDIO_S32LSB
-      if (AVT_AUDIO_S32LE == snd->audio_type
-	  or AVT_AUDIO_S32BE == snd->audio_type)
-	audiospec.callback = get_audio32;
-#endif
+      audiospec.callback = callback;
 
       if (SDL_OpenAudio (&audiospec, NULL) != 0)
 	{
