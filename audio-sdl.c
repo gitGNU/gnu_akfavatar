@@ -134,12 +134,20 @@ get_sound:
 	  if (len > 0)
 	    goto get_sound;
 	}
-      else if (r <= 0)		// nothing left
-	audio_ended ();
+      else
+	{
+	  // clear rest of buffer
+	  SDL_memset (stream + (r * sizeof (*p)), 0, len - (r * sizeof (*p)));
+
+	  if (r <= 0)		// nothing left
+	    audio_ended ();
+	}
     }
 }
 
 #else // no 32bit support
+
+// SDL-1.2 cleared the buffer before calling the callback
 
 // convert to 16bit
 
