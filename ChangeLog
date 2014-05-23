@@ -1,3 +1,8 @@
+2014-05-23  Andreas K. Foerster  <info@akfoerster.de>
+
+	* audio-common.c, audio-sdl.c:
+	improved support for 24 and 32 bit audio
+
 2014-05-22  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h (AVT_KEY_F): new macro

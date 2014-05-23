@@ -51,6 +51,16 @@ static SDL_AudioSpec audiospec;
 
 static void avt_quit_audio_sdl (void);
 
+static void
+audio_ended (void)
+{
+  SDL_PauseAudio (SDL_TRUE);
+  current_sound = NULL;
+
+  if (audio_key)
+    avt_push_key (audio_key);
+}
+
 // callbacks
 
 static void
@@ -76,18 +86,14 @@ get_audio (void *userdata, uint8_t * stream, int len)
 	    SDL_memset (stream + r, 0, len - r);
 
 	  if (r <= 0)		// nothing left
-	    {
-	      SDL_PauseAudio (SDL_TRUE);
-	      current_sound = NULL;
-
-	      if (audio_key)
-		avt_push_key (audio_key);
-	    }
+	    audio_ended ();
 	}
     }
 }
 
 #ifdef AUDIO_S32LSB
+
+// convert to 32bit
 
 static void
 get_audio24 (void *userdata, uint8_t * stream, int len)
@@ -104,7 +110,7 @@ get_sound:
   r /= 3;			// number of samples read
 
   b = buffer;
-  p = (uint16_t *) stream;
+  p = (uint32_t *) stream;
 
   // big or little endian?
   if (AVT_AUDIO_S24BE == snd->audio_type)
@@ -128,21 +134,14 @@ get_sound:
 	  if (len > 0)
 	    goto get_sound;
 	}
-      else			// no loop
-	{
-	  if (r <= 0)		// nothing left
-	    {
-	      SDL_PauseAudio (SDL_TRUE);
-	      current_sound = NULL;
-
-	      if (audio_key)
-		avt_push_key (audio_key);
-	    }
-	}
+      else if (r <= 0)		// nothing left
+	audio_ended ();
     }
 }
 
 #else // no 32bit support
+
+// convert to 16bit
 
 static void
 get_audio24 (void *userdata, uint8_t * stream, int len)
@@ -183,17 +182,8 @@ get_sound:
 	  if (len > 0)
 	    goto get_sound;
 	}
-      else			// no loop
-	{
-	  if (r <= 0)		// nothing left
-	    {
-	      SDL_PauseAudio (SDL_TRUE);
-	      current_sound = NULL;
-
-	      if (audio_key)
-		avt_push_key (audio_key);
-	    }
-	}
+      else if (r <= 0)		// nothing left
+	audio_ended ();
     }
 }
 
@@ -237,17 +227,8 @@ get_sound:
 	  if (len > 0)
 	    goto get_sound;
 	}
-      else			// no loop
-	{
-	  if (r <= 0)		// nothing left
-	    {
-	      SDL_PauseAudio (SDL_TRUE);
-	      current_sound = NULL;
-
-	      if (audio_key)
-		avt_push_key (audio_key);
-	    }
-	}
+      else if (r <= 0)		// nothing left
+	audio_ended ();
     }
 }
 
