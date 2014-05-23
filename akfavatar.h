@@ -978,10 +978,6 @@ AVT_API void avt_quit_audio (void);
  * AU or Wave (*.au, *.snd, *.wav)
  * linear PCM with up to 32Bit, mu-law, A-law
  * mono or stereo
- *
- * the current implementation can only play sounds with
- * up to 16Bit precision, but files with more bits can
- * be imported.
  */
 
 /*

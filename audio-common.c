@@ -189,6 +189,7 @@ method_rewind_data (avt_audio * s)
     s->info.data.data->seek (s->info.data.data, s->info.data.start, SEEK_SET);
 }
 
+// TODO
 static size_t
 avt_required_audio_size (avt_audio * snd, size_t data_size)
 {
@@ -200,12 +201,6 @@ avt_required_audio_size (avt_audio * snd, size_t data_size)
     case AVT_AUDIO_S24LE:
     case AVT_AUDIO_S24BE:
       out_size = (data_size * 2) / 3;	// reduced to 16 Bit
-      break;
-
-    case AVT_AUDIO_S32SYS:
-    case AVT_AUDIO_S32LE:
-    case AVT_AUDIO_S32BE:
-      out_size = data_size / 2;	// reduced to 16 Bit
       break;
 
     default:
@@ -272,6 +267,7 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
       snd->info.memory.capacity = new_capacity;
     }
 
+  // TODO
   // convert or copy the data
   switch (snd->audio_type)
     {
@@ -280,6 +276,8 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
     case AVT_AUDIO_S16BE:
     case AVT_AUDIO_U8:
     case AVT_AUDIO_S8:
+    case AVT_AUDIO_S32LE:
+    case AVT_AUDIO_S32BE:
     case AVT_AUDIO_MULAW:	// mu-law, logarithmic PCM
     case AVT_AUDIO_ALAW:	// A-law, logarithmic PCM
       memcpy (snd->info.memory.sound + old_size, data, out_size);
@@ -309,32 +307,6 @@ avt_add_raw_audio_data (avt_audio * snd, void *restrict data,
 	out = (uint_least16_t *) (snd->info.memory.sound + old_size);
 
 	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 3)
-	  *out++ = (in[0] << 8) | in[1];
-      }
-      break;
-
-    case AVT_AUDIO_S32LE:
-      {
-	uint_least8_t *restrict in;
-	uint_least16_t *restrict out;
-
-	in = (uint_least8_t *) data;
-	out = (uint_least16_t *) (snd->info.memory.sound + old_size);
-
-	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 4)
-	  *out++ = (in[3] << 8) | in[2];
-      }
-      break;
-
-    case AVT_AUDIO_S32BE:
-      {
-	uint_least8_t *restrict in;
-	uint_least16_t *restrict out;
-
-	in = (uint_least8_t *) data;
-	out = (uint_least16_t *) (snd->info.memory.sound + old_size);
-
-	for (size_t i = out_size / sizeof (*out); i > 0; i--, in += 4)
 	  *out++ = (in[0] << 8) | in[1];
       }
       break;
@@ -505,65 +477,20 @@ method_get_bit24le_data (avt_audio * restrict s, void *restrict data,
 }
 
 
-static size_t
-method_get_bit32be_data (avt_audio * restrict s, void *restrict data,
-			 size_t size)
-{
-  size_t bytes = size * 2;
-
-  uint_least8_t samples[bytes];
-  size_t b;
-
-  b = s->info.data.data->read (s->info.data.data, &samples,
-			       sizeof (samples[0]), bytes);
-  if (not b)
-    return 0;
-
-  uint_least8_t *restrict in = samples;
-  uint_least16_t *restrict out = data;
-
-  for (size_t i = size / sizeof (*out); i > 0; i--, in += 4)
-    *out++ = (in[0] << 8) | in[1];
-
-  return b / 2;
-}
-
-
-static size_t
-method_get_bit32le_data (avt_audio * restrict s, void *restrict data,
-			 size_t size)
-{
-  size_t bytes = size * 2;
-
-  uint_least8_t samples[bytes];
-  size_t b;
-
-  b = s->info.data.data->read (s->info.data.data, &samples,
-			       sizeof (samples[0]), bytes);
-  if (not b)
-    return 0;
-
-  uint_least8_t *restrict in = samples;
-  uint_least16_t *restrict out = data;
-
-  for (size_t i = size / sizeof (*out); i > 0; i--, in += 4)
-    *out++ = (in[3] << 8) | in[2];
-
-  return b / 2;
-}
-
 extern avt_audio *
 avt_prepare_raw_audio (size_t capacity,
 		       int samplingrate, int audio_type, int channels)
 {
   struct avt_audio *s;
 
+  // TODO
   if (channels < 1 or channels > 2)
     {
       avt_set_error ("only 1 or 2 channels supported");
       return NULL;
     }
 
+  // TODO
   // adjustments for later optimizations
   if (AVT_LITTLE_ENDIAN == AVT_BYTE_ORDER)
     {
@@ -713,8 +640,8 @@ static avt_audio *
 avt_mmap_audio (avt_data * src, size_t maxsize,
 		int samplingrate, int audio_type, int channels, int playmode)
 {
-  // not for more than 16 bit
-  if (audio_type > AVT_AUDIO_S16SYS and audio_type < AVT_AUDIO_MULAW)
+  // not for 24 bit
+  if (audio_type >= AVT_AUDIO_S24LE and audio_type <= AVT_AUDIO_S24SYS)
     return NULL;
 
   int fd = src->filenumber (src);
@@ -828,14 +755,6 @@ avt_fetch_audio_data (avt_data * src, int samplingrate,
 
     case AVT_AUDIO_S24LE:
       audio->get = method_get_bit24le_data;
-      break;
-
-    case AVT_AUDIO_S32BE:
-      audio->get = method_get_bit32be_data;
-      break;
-
-    case AVT_AUDIO_S32LE:
-      audio->get = method_get_bit32le_data;
       break;
 
     default:
