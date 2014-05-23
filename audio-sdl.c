@@ -80,10 +80,7 @@ get_audio (void *userdata, uint8_t * stream, int len)
       else			// no loop
 	{
 	  // clear rest of buffer
-	  if (AVT_AUDIO_U8 == snd->audio_type)
-	    SDL_memset (stream + r, 128, len - r);
-	  else
-	    SDL_memset (stream + r, 0, len - r);
+	  SDL_memset (stream + r, audiospec.silence, len - r);
 
 	  if (r <= 0)		// nothing left
 	    audio_ended ();
@@ -137,7 +134,8 @@ get_sound:
       else
 	{
 	  // clear rest of buffer
-	  SDL_memset (stream + (r * sizeof (*p)), 0, len - (r * sizeof (*p)));
+	  SDL_memset (stream + (r * sizeof (*p)),
+		      audiospec.silence, len - (r * sizeof (*p)));
 
 	  if (r <= 0)		// nothing left
 	    audio_ended ();
