@@ -64,6 +64,8 @@ audio_ended (void)
 
 // callbacks
 
+// Working with unsigned values to avoid undefined behaviour
+
 static void
 get_audio (void *userdata, uint8_t * stream, int len)
 {
@@ -91,7 +93,7 @@ get_audio (void *userdata, uint8_t * stream, int len)
 
 #ifdef AUDIO_S32LSB
 
-// convert to 32bit, least sgnificant byte will be 0
+// convert to 32bit, least significant byte will be 0
 
 static void
 get_audio24 (void *userdata, uint8_t * stream, int len)
@@ -114,7 +116,7 @@ get_sound:
   if (AVT_AUDIO_S24BE == snd->audio_type)
     {
       for (int i = r; i; --i, ++p, b += 3)
-        {
+	{
 	  register uint32_t sample = *((uint32_t *) b);
 	  *p = SDL_SwapBE32 (sample) & 0xFFFFFF00u;
 	}
@@ -122,7 +124,7 @@ get_sound:
   else
     {
       for (int i = r; i; --i, ++p, b += 3)
-        {
+	{
 	  register uint32_t sample = *((uint32_t *) b);
 	  *p = SDL_SwapLE32 (sample) << 8;
 	}
