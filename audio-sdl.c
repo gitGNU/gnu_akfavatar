@@ -91,7 +91,7 @@ get_audio (void *userdata, uint8_t * stream, int len)
 
 #ifdef AUDIO_S32LSB
 
-// convert to 32bit
+// convert to 32bit, least sgnificant byte will be 0
 
 static void
 get_audio24 (void *userdata, uint8_t * stream, int len)
@@ -114,12 +114,18 @@ get_sound:
   if (AVT_AUDIO_S24BE == snd->audio_type)
     {
       for (int i = r; i; --i, ++p, b += 3)
-	*p = b[0] << 24 | b[1] << 16 | b[2] << 8;
+        {
+	  register uint32_t sample = *((uint32_t *) b);
+	  *p = SDL_SwapBE32 (sample) & 0xFFFFFF00u;
+	}
     }
   else
     {
       for (int i = r; i; --i, ++p, b += 3)
-	*p = b[2] << 24 | b[1] << 16 | b[0] << 8;
+        {
+	  register uint32_t sample = *((uint32_t *) b);
+	  *p = SDL_SwapLE32 (sample) << 8;
+	}
     }
 
   if (r < len / (int) sizeof (*p))
@@ -148,7 +154,7 @@ get_sound:
 
 // SDL-1.2 cleared the buffer before calling the callback
 
-// convert to 16bit
+// convert to 16bit by dropping the least significant byte(s)
 
 static void
 get_audio24 (void *userdata, uint8_t * stream, int len)
@@ -171,12 +177,18 @@ get_sound:
   if (AVT_AUDIO_S24BE == snd->audio_type)
     {
       for (int i = r; i; --i, ++p, b += 3)
-	*p = b[0] << 8 | b[1];
+	{
+	  register uint16_t sample = *((uint16_t *) b);
+	  *p = SDL_SwapBE16 (sample);
+	}
     }
   else
     {
       for (int i = r; i; --i, ++p, b += 3)
-	*p = b[2] << 8 | b[1];
+	{
+	  register uint16_t sample = *((uint16_t *) (b + 1));
+	  *p = SDL_SwapLE16 (sample);
+	}
     }
 
   if (r < len / (int) sizeof (*p))
