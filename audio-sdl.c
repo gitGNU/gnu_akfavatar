@@ -40,7 +40,8 @@
 #include <iso646.h>
 
 // lower audio buffer size for lower latency, but it could become choppy
-#define OUTPUT_BUFFER 2048
+// this is the number of samples, not bytes
+#define OUTPUT_BUFFER 1024
 
 static bool avt_audio_initialized;
 
