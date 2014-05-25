@@ -186,9 +186,11 @@ get_sound:
     }
   else
     {
+      // skip one byte, so we iterate on every second byte of a sample
+      ++b;
       for (int i = r; i; --i, ++p, b += 3)
 	{
-	  register uint16_t sample = *((uint16_t *) (b + 1));
+	  register uint16_t sample = *((uint16_t *) b);
 	  *p = SDL_SwapLE16 (sample);
 	}
     }
