@@ -71,14 +71,20 @@ get_audio (void *userdata, uint8_t * stream, int len)
 {
   (void) userdata;
   avt_audio *snd = (avt_audio *) current_sound;
-  int r = snd->get (snd, stream, len);
+  int r;
+
+get_sound:
+  r = snd->get (snd, stream, len);
 
   if (r < len)
     {
       if (loop)
 	{
 	  snd->rewind (snd);
-	  snd->get (snd, stream + r, len - r);
+	  stream += r;
+	  len -= r;
+	  if (len > 0)
+	    goto get_sound;
 	}
       else			// no loop
 	{
