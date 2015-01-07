@@ -29,7 +29,7 @@
 .  hy \\n(HY
 ..
 .
-.TH "Lua-AKFAvatar Referenz" 3 2013-10-02 AKFAvatar
+.TH "Lua-AKFAvatar Referenz" 3 2015-01-07 AKFAvatar
 .
 .SH NAME
 Lua-AKFAvatar Referenz \- AKFAvatar spezifische Funktionen für Lua
@@ -1489,11 +1489,7 @@ Beendet AKFAvatar und führt das angegebene
 .I Programm
 aus.
 Diese Funktion kehrt niemals zurück.
-Entweder das Programm läuft, oder es wird ein fataler Fehler angezeigt.
-.IP
-Wenn man Fehler mit
-.B pcall
-abfangen will, muss man danach AKFAvatar neu initialisieren...
+Das Programm wird auf jeden Fall beendet.
 .PP
 .SH Übersetzungen
 Um Übersetzungen für Lua-AKFAvatar Skripte zu schreiben, muss man erstmal die

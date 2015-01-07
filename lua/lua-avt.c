@@ -21,6 +21,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#define _GNU_SOURCE
 #define _ISOC99_SOURCE
 #define _XOPEN_SOURCE 600
 
@@ -2381,26 +2382,36 @@ lavt_launch (lua_State * L)
 {
   int n = lua_gettop (L);		// number of options
 
-  char *argv[n + 1];
+  char *prg, *argv[n + 1];
 
   // program must be given
-  argv[0] = (char *) luaL_checkstring (L, 1);
+  prg = (char *) luaL_checkstring (L, 1);
 
-  // collect arguments
-  for (int i = 1; i < n; i++)
+  // collect arguments, including command name again
+  for (int i = 0; i < n; i++)
     argv[i] = (char *) lua_tostring (L, i + 1);
   argv[n] = NULL;
 
   avt_quit ();			// close window / graphic mode
   initialized = false;
 
-  // don't close lua state - it is still needed
+  // close open files if possible
+  // there is unfortunately no standard way
+#if defined(__GLIBC__) or defined(__UCLIBC__) or defined(__FreeBSD__)
+  fcloseall ();
+#elif defined(_WIN32)
+  _fcloseall ();
+#else
+  // at least flush output buffers
+  // (while mandated by C standard, but doesn't work on Windows)
+  fflush (NULL);
+#endif
 
-  // conforming to POSIX.1-2001
-  execvp (argv[0], argv);
+  // run it, conforming to POSIX.1-2001
+  execvp (prg, argv);
 
-  // execvp only returns in case of an error
-  return luaL_error (L, "launch: %s: %s", argv[0], strerror (errno));
+  // nothing else we could do, even stderr should be closed
+  exit (EXIT_FAILURE);
 }
 
 // ---------------------------------------------------------
