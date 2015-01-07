@@ -1171,6 +1171,7 @@ extern void
 avt_set_title (const char *title, const char *shortname)
 {
 #ifdef SDL2
+  (void) shortname;
   SDL_SetWindowTitle (sdl_window, title);
 #else
   // assumes UTF-8
