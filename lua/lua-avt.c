@@ -1,6 +1,6 @@
 /*
  * Lua 5.2 binding for AKFAvatar
- * Copyright (c) 2008,2009,2010,2011,2012,2013
+ * Copyright (c) 2008,2009,2010,2011,2012,2013,2015
  * Andreas K. Foerster <info@akfoerster.de>
  *
  * required standards: C99, POSIX.1-2001
@@ -2379,20 +2379,15 @@ lavt_getcwd (lua_State * L)
 static int
 lavt_launch (lua_State * L)
 {
-  char *argv[256];
-  int i, n;
+  int n = lua_gettop (L);		// number of options
+
+  char *argv[n + 1];
 
   // program must be given
   argv[0] = (char *) luaL_checkstring (L, 1);
 
-  n = lua_gettop (L);		// number of options
-
-  // number of arguments is already limited in Lua, but I want to be save
-  if (n > 255)
-    return luaL_error (L, "launch: %s", strerror (E2BIG));
-
   // collect arguments
-  for (i = 1; i < n; i++)
+  for (int i = 1; i < n; i++)
     argv[i] = (char *) lua_tostring (L, i + 1);
   argv[n] = NULL;
 
