@@ -2380,20 +2380,20 @@ lavt_getcwd (lua_State * L)
 static int
 lavt_launch (lua_State * L)
 {
-  int n = lua_gettop (L);		// number of options
+  luaL_checktype (L, 1, LUA_TSTRING);
 
-  char *prg, *argv[n + 1];
+  int n = lua_gettop (L);	// number of options
 
-  // program must be given
-  prg = (char *) luaL_checkstring (L, 1);
+  char *argv[n + 1];
 
-  // collect arguments, including command name again
+  // collect arguments, including command name
   for (int i = 0; i < n; i++)
     argv[i] = (char *) lua_tostring (L, i + 1);
   argv[n] = NULL;
 
   avt_quit ();			// close window / graphic mode
   initialized = false;
+  lua_close (L);
 
   // close open files if possible
   // there is unfortunately no standard way
@@ -2408,10 +2408,11 @@ lavt_launch (lua_State * L)
 #endif
 
   // run it, conforming to POSIX.1-2001
-  execvp (prg, argv);
+  execvp (argv[0], argv);
 
   // nothing else we could do, even stderr should be closed
   exit (EXIT_FAILURE);
+  return 0;
 }
 
 // ---------------------------------------------------------
