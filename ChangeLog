@@ -1,3 +1,11 @@
+2015-01-10  Andreas K. Foerster  <info@akfoerster.de>
+
+	* configure:
+	new option: --with-sdl1.2, default to sdl2
+
+	* lua/lua.avt (lavt_launch):
+	try to close or flush all files, never return
+
 2014-05-23  Andreas K. Foerster  <info@akfoerster.de>
 
 	* audio-common.c, audio-sdl.c:

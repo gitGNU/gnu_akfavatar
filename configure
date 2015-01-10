@@ -59,7 +59,7 @@ CPPFLAGS=
 CFLAGS='-O2'
 CXXFLAGS='-O2'
 LDFLAGS=
-SDL_CONFIG='sdl-config'
+SDL_CONFIG='sdl2-config'
 AVATARSAY_LDFLAGS=
 WINDRES='windres'
 INSTALL='install'
@@ -104,6 +104,7 @@ while [ x"$1" != x ] ; do
 		echo "  --sysconfdir=DIR      read-only single-machine data directory [${sysconfdir}]"
 		echo "  --host=mingw          cross-compile with mingw (experimental)"
 		echo "  --with-openpty        use openpty instead of posix_openpt"
+		echo "  --with-sdl1.2         use SDL1.2 (support will be removed!)"
 		echo "  --with-sdl2           use SDL2"
 		echo "  --with-linuxfb        build for linux framebuffer (no mouse, no sound)"
 		echo "  --with-static-lua     try to link Lua statically"
@@ -166,6 +167,7 @@ while [ x"$1" != x ] ; do
 	--with-openpty) OPENPTY="yes" ;;
 	--with-static-lua) STATIC_LUA="yes" ;;
 	--with-linuxfb) USE_LINUXFB="yes" ;;
+	--with-sdl1.2) SDL_CONFIG="sdl-config" ;;
 	--with-sdl2) SDL_CONFIG="sdl2-config" ;;
 	--enable-lua=no | \
 	--disable-lua | \
