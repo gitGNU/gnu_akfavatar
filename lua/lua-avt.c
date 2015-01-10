@@ -2393,7 +2393,11 @@ lavt_launch (lua_State * L)
 
   avt_quit ();			// close window / graphic mode
   initialized = false;
-  lua_close (L);
+
+  /*
+   * do not close the lua state!
+   * argv has pointers into it.
+   */
 
   // close open files if possible
   // there is unfortunately no standard way
