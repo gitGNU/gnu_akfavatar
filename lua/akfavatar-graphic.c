@@ -1,6 +1,6 @@
 /*
  * AKFAvatar graphic API
- * Copyright (c) 2011,2012,2013
+ * Copyright (c) 2011,2012,2013,2015
  * Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
@@ -277,8 +277,8 @@ lgraphic_new (lua_State * L)
   int colornr;
   graphic *gr;
 
-  width = luaL_optint (L, 1, avt_image_max_width ());
-  height = luaL_optint (L, 2, avt_image_max_height ());
+  width = luaL_optnumber (L, 1, avt_image_max_width ());
+  height = luaL_optnumber (L, 2, avt_image_max_height ());
 
   if (lua_isnoneornil (L, 3))
     colornr = avt_get_background_color ();
@@ -387,9 +387,9 @@ lgraphic_rgb (lua_State * L)
   graphic *gr;
   int red, green, blue;
 
-  red = luaL_checkint (L, 2);
-  green = luaL_checkint (L, 3);
-  blue = luaL_checkint (L, 4);
+  red = luaL_checkinteger (L, 2);
+  green = luaL_checkinteger (L, 3);
+  blue = luaL_checkinteger (L, 4);
 
   luaL_argcheck (L, red >= 0 and red <= 255,
 		 2, "value between 0 and 255 expected");
@@ -426,7 +426,7 @@ lgraphic_thickness (lua_State * L)
 {
   int s;
 
-  s = luaL_checkint (L, 2) - 1;
+  s = luaL_checknumber (L, 2) - 1.0;
   get_graphic (L, 1)->thickness = (s > 0) ? s : 0;
 
   return 0;
@@ -758,8 +758,8 @@ lgraphic_putpixel (lua_State * L)
   int x, y;
 
   gr = get_graphic (L, 1);
-  x = luaL_optint (L, 2, gr->penx + 1) - 1;
-  y = luaL_optint (L, 3, gr->peny + 1) - 1;
+  x = luaL_optnumber (L, 2, gr->penx + 1) - 1.0;
+  y = luaL_optnumber (L, 3, gr->peny + 1) - 1.0;
 
   if (visible (gr, x, y))
     putpixel (gr, x, y);
@@ -776,8 +776,8 @@ lgraphic_getpixel (lua_State * L)
   int x, y;
 
   gr = get_graphic (L, 1);
-  x = luaL_optint (L, 2, gr->penx + 1) - 1;
-  y = luaL_optint (L, 3, gr->peny + 1) - 1;
+  x = luaL_optnumber (L, 2, gr->penx + 1) - 1.0;
+  y = luaL_optnumber (L, 3, gr->peny + 1) - 1.0;
 
   if (visible (gr, x, y))
     {
@@ -806,8 +806,8 @@ lgraphic_getpixelrgb (lua_State * L)
   int x, y;
 
   gr = get_graphic (L, 1);
-  x = luaL_optint (L, 2, (int) gr->penx + 1) - 1;
-  y = luaL_optint (L, 3, (int) gr->peny + 1) - 1;
+  x = luaL_optnumber (L, 2, (int) gr->penx + 1) - 1.0;
+  y = luaL_optnumber (L, 3, (int) gr->peny + 1) - 1.0;
 
   if (visible (gr, x, y))
     {
@@ -835,8 +835,8 @@ lgraphic_putdot (lua_State * L)
   int x, y;
 
   gr = get_graphic (L, 1);
-  x = luaL_optint (L, 2, (int) gr->penx + 1) - 1;
-  y = luaL_optint (L, 3, (int) gr->peny + 1) - 1;
+  x = luaL_optnumber (L, 2, (int) gr->penx + 1) - 1.0;
+  y = luaL_optnumber (L, 3, (int) gr->peny + 1) - 1.0;
 
   // macros evaluate the values more than once!
   if (visible (gr, x, y))
@@ -860,10 +860,10 @@ lgraphic_bar (lua_State * L)
 
   gr = get_graphic (L, 1);
 
-  x1 = luaL_checkint (L, 2) - 1;
-  y1 = luaL_checkint (L, 3) - 1;
-  x2 = luaL_checkint (L, 4) - 1;
-  y2 = luaL_checkint (L, 5) - 1;
+  x1 = luaL_checknumber (L, 2) - 1.0;
+  y1 = luaL_checknumber (L, 3) - 1.0;
+  x2 = luaL_checknumber (L, 4) - 1.0;
+  y2 = luaL_checknumber (L, 5) - 1.0;
 
   bar (gr, x1, y1, x2, y2);
 
@@ -880,10 +880,10 @@ lgraphic_rectangle (lua_State * L)
 
   gr = get_graphic (L, 1);
 
-  x1 = luaL_checkint (L, 2) - 1;
-  y1 = luaL_checkint (L, 3) - 1;
-  x2 = luaL_checkint (L, 4) - 1;
-  y2 = luaL_checkint (L, 5) - 1;
+  x1 = luaL_checknumber (L, 2) - 1.0;
+  y1 = luaL_checknumber (L, 3) - 1.0;
+  x2 = luaL_checknumber (L, 4) - 1.0;
+  y2 = luaL_checknumber (L, 5) - 1.0;
 
   horizontal_line (gr, x1, x2, y1);
   vertical_line (gr, x2, y1, y2);
@@ -1115,8 +1115,8 @@ lgraphic_text (lua_State * L)
   graphic *gr = get_graphic (L, 1);
   size_t len;
   const char *s = luaL_checklstring (L, 2, &len);
-  int x = luaL_optint (L, 3, (int) gr->penx + 1) - 1;
-  int y = luaL_optint (L, 4, (int) gr->peny + 1) - 1;
+  int x = luaL_optnumber (L, 3, (int) gr->penx + 1) - 1.0;
+  int y = luaL_optnumber (L, 4, (int) gr->peny + 1) - 1.0;
 
   avt_color color = gr->color;
   int width = gr->width;
@@ -1383,8 +1383,8 @@ lgraphic_put (lua_State * L)
   if (gr == gr2)
     return 0;			// do nothing
 
-  xoffset = luaL_optint (L, 3, 1) - 1;
-  yoffset = luaL_optint (L, 4, 1) - 1;
+  xoffset = luaL_optnumber (L, 3, 1) - 1.0;
+  yoffset = luaL_optnumber (L, 4, 1) - 1.0;
 
   source = gr2->data;
   target = gr->data;
@@ -1466,8 +1466,8 @@ lgraphic_put_transparency (lua_State * L)
   if (gr == gr2)
     return 0;			// do nothing
 
-  xoffset = luaL_optint (L, 3, 1) - 1;
-  yoffset = luaL_optint (L, 4, 1) - 1;
+  xoffset = luaL_optnumber (L, 3, 1) - 1.0;
+  yoffset = luaL_optnumber (L, 4, 1) - 1.0;
 
   source = gr2->data;
   target = gr->data;
@@ -1537,8 +1537,8 @@ lgraphic_put_file (lua_State * L)
 
   gr = get_graphic (L, 1);
   filename = luaL_checkstring (L, 2);
-  xoffset = luaL_optint (L, 3, 1) - 1;
-  yoffset = luaL_optint (L, 4, 1) - 1;
+  xoffset = luaL_optnumber (L, 3, 1) - 1.0;
+  yoffset = luaL_optnumber (L, 4, 1) - 1.0;
 
   avt_put_raw_image_file (filename, xoffset, yoffset,
 			  &gr->data, gr->width, gr->height);
@@ -1600,8 +1600,8 @@ lgraphic_put_image (lua_State * L)
 
   gr = get_graphic (L, 1);
 
-  xoffset = luaL_optint (L, 3, 1) - 1;
-  yoffset = luaL_optint (L, 4, 1) - 1;
+  xoffset = luaL_optnumber (L, 3, 1) - 1.0;
+  yoffset = luaL_optnumber (L, 4, 1) - 1.0;
 
   if (lua_istable (L, 2))	// assume XPM table
     {
@@ -1640,10 +1640,10 @@ lgraphic_get (lua_State * L)
 
   gr = get_graphic (L, 1);
 
-  x1 = luaL_checkint (L, 2) - 1;
-  y1 = luaL_checkint (L, 3) - 1;
-  x2 = luaL_checkint (L, 4) - 1;
-  y2 = luaL_checkint (L, 5) - 1;
+  x1 = luaL_checknumber (L, 2) - 1.0;
+  y1 = luaL_checknumber (L, 3) - 1.0;
+  x2 = luaL_checknumber (L, 4) - 1.0;
+  y2 = luaL_checknumber (L, 5) - 1.0;
 
   source_width = gr->width;
   source_height = gr->height;
@@ -1724,7 +1724,7 @@ lgraphic_shift_vertically (lua_State * L)
   data = gr->data;
   width = gr->width;
   height = gr->height;
-  lines = luaL_checkint (L, 2);
+  lines = luaL_checknumber (L, 2);
 
   // move pen position
   gr->peny += (double) lines;
@@ -1774,7 +1774,7 @@ lgraphic_shift_horizontally (lua_State * L)
   data = gr->data;
   width = gr->width;
   height = gr->height;
-  columns = luaL_checkint (L, 2);
+  columns = luaL_checknumber (L, 2);
 
   // move pen position
   gr->penx += (double) columns;
@@ -1853,8 +1853,7 @@ lgraphic_export_ppm (lua_State * L)
 static int
 lgraphic_set_pointer_buttons_key (lua_State * L)
 {
-  lua_pushunsigned (L,
-		    avt_set_pointer_buttons_key (luaL_checkunsigned (L, 1)));
+  lua_pushinteger (L, avt_set_pointer_buttons_key (luaL_checkinteger (L, 1)));
 
   return 1;
 }
@@ -1862,8 +1861,7 @@ lgraphic_set_pointer_buttons_key (lua_State * L)
 static int
 lgraphic_set_pointer_motion_key (lua_State * L)
 {
-  lua_pushunsigned (L,
-		    avt_set_pointer_motion_key (luaL_checkunsigned (L, 1)));
+  lua_pushinteger (L, avt_set_pointer_motion_key (luaL_checkinteger (L, 1)));
 
   return 1;
 }
@@ -1896,7 +1894,7 @@ lgraphic_get_pointer_position (lua_State * L)
 static int
 lgraphic_set_resize_key (lua_State * L)
 {
-  lua_pushunsigned (L, avt_set_resize_key (luaL_checkunsigned (L, 1)));
+  lua_pushinteger (L, avt_set_resize_key (luaL_checkinteger (L, 1)));
 
   return 1;
 }

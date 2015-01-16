@@ -1,3 +1,8 @@
+2015-01-16  Andreas K. Foerster  <info@akfoerster.de>
+
+	* lua/lua-avt.c, lua/akfavatar-graphic.c:
+	adapted for Lua-5.3 (Lua-5.2 still supported too)
+
 2015-01-10  Andreas K. Foerster  <info@akfoerster.de>
 
 	* configure:

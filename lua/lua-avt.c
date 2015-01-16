@@ -312,7 +312,7 @@ lavt_get_color (lua_State * L)
   char RGB[8];
   int colornr;
 
-  name = avt_palette (luaL_checkint (L, 1), &colornr);
+  name = avt_palette (luaL_checkinteger (L, 1), &colornr);
 
   if (name)
     {
@@ -630,7 +630,7 @@ lavt_detect_utf8 (lua_State * L)
   size_t len;
 
   const char *string = luaL_checklstring (L, 1, &len);
-  size_t max_length = lua_tounsigned (L, 1);
+  size_t max_length = lua_tointeger (L, 1);
 
   if (not max_length or max_length > len)
     max_length = len;
@@ -804,7 +804,7 @@ lavt_right_to_left (lua_State * L)
 static int
 lavt_set_text_delay (lua_State * L)
 {
-  avt_set_text_delay (luaL_optint (L, 1, AVT_DEFAULT_TEXT_DELAY));
+  avt_set_text_delay (luaL_optinteger (L, 1, AVT_DEFAULT_TEXT_DELAY));
   return 0;
 }
 
@@ -813,7 +813,7 @@ lavt_set_text_delay (lua_State * L)
 static int
 lavt_set_flip_page_delay (lua_State * L)
 {
-  avt_set_flip_page_delay (luaL_optint (L, 1, AVT_DEFAULT_TEXT_DELAY));
+  avt_set_flip_page_delay (luaL_optinteger (L, 1, AVT_DEFAULT_TEXT_DELAY));
   return 0;
 }
 
@@ -1171,7 +1171,7 @@ static int
 lavt_move_x (lua_State * L)
 {
   is_initialized ();
-  avt_move_x (luaL_checkint (L, 1));
+  avt_move_x (luaL_checkinteger (L, 1));
   return 0;
 }
 
@@ -1180,7 +1180,7 @@ static int
 lavt_move_y (lua_State * L)
 {
   is_initialized ();
-  avt_move_y (luaL_checkint (L, 1));
+  avt_move_y (luaL_checkinteger (L, 1));
   return 0;
 }
 
@@ -1189,7 +1189,7 @@ static int
 lavt_move_xy (lua_State * L)
 {
   is_initialized ();
-  avt_move_xy (luaL_checkint (L, 1), luaL_checkint (L, 2));
+  avt_move_xy (luaL_checkinteger (L, 1), luaL_checkinteger (L, 2));
   return 0;
 }
 
@@ -1252,7 +1252,7 @@ static int
 lavt_set_tab (lua_State * L)
 {
   is_initialized ();
-  avt_set_tab (luaL_checkint (L, 1), check_bool (L, 2));
+  avt_set_tab (luaL_checkinteger (L, 1), check_bool (L, 2));
   return 0;
 }
 
@@ -1264,7 +1264,7 @@ static int
 lavt_delete_lines (lua_State * L)
 {
   is_initialized ();
-  avt_delete_lines (luaL_checkint (L, 1), luaL_checkint (L, 2));
+  avt_delete_lines (luaL_checkinteger (L, 1), luaL_checkinteger (L, 2));
   return 0;
 }
 
@@ -1276,7 +1276,7 @@ static int
 lavt_insert_lines (lua_State * L)
 {
   is_initialized ();
-  avt_insert_lines (luaL_checkint (L, 1), luaL_checkint (L, 2));
+  avt_insert_lines (luaL_checkinteger (L, 1), luaL_checkinteger (L, 2));
   return 0;
 }
 
@@ -1411,8 +1411,8 @@ lavt_input (lua_State * L)
   is_initialized ();
   question = lua_tolstring (L, 1, &len);
   default_text = lua_tostring (L, 2);
-  position = luaL_optint (L, 3, -1);
-  mode = luaL_optint (L, 4, 0);
+  position = luaL_optinteger (L, 3, -1);
+  mode = luaL_optinteger (L, 4, 0);
 
   if (question)
     check (avt_say_char_len (question, len));
@@ -1467,7 +1467,7 @@ static int
 lavt_push_key (lua_State * L)
 {
   is_initialized ();
-  avt_push_key (luaL_checkunsigned (L, 1));
+  avt_push_key (luaL_checkinteger (L, 1));
   return 0;
 }
 
@@ -1539,7 +1539,7 @@ lavt_choice (lua_State * L)
   c = lua_tostring (L, 3);
 
   check (avt_choice (&result,
-		     luaL_checkint (L, 1), luaL_checkint (L, 2),
+		     luaL_checkinteger (L, 1), luaL_checkinteger (L, 2),
 		     (c) ? c[0] : 0, to_bool (L, 4), to_bool (L, 5)));
 
   lua_pushinteger (L, result);
@@ -1636,7 +1636,7 @@ lavt_say_unicode (lua_State * L)
        * convert strings to numbers
        */
       if (lua_type (L, i) == LUA_TNUMBER)
-	check (avt_put_char ((avt_char) lua_tounsigned (L, i)));
+	check (avt_put_char ((avt_char) lua_tointeger (L, i)));
       else
 	{
 	  s = luaL_checklstring (L, i, &len);
@@ -1660,7 +1660,7 @@ lavt_toutf8 (lua_State * L)
     {
       char buf[6];
       size_t len;
-      len = utf8->encode (utf8, buf, sizeof (buf), luaL_checkunsigned (L, 1));
+      len = utf8->encode (utf8, buf, sizeof (buf), luaL_checkinteger (L, 1));
       lua_pushlstring (L, buf, len);
     }
   else				// more than 1 codepoint
@@ -1675,7 +1675,7 @@ lavt_toutf8 (lua_State * L)
 	  size_t len;
 
 	  len = utf8->encode (utf8, buf, sizeof (buf),
-			      luaL_checkunsigned (L, i));
+			      luaL_checkinteger (L, i));
 
 	  if (len == 1)
 	    luaL_addchar (&buffer, buf[0]);
@@ -1694,7 +1694,7 @@ lavt_utf8_iteration (lua_State * L)
 {
   size_t len;
   const char *str = lua_tolstring (L, 1, &len);
-  size_t pos = lua_tounsigned (L, lua_upvalueindex (1));
+  size_t pos = lua_tointeger (L, lua_upvalueindex (1));
 
   // end reached?
   if (pos >= len)
@@ -1707,10 +1707,10 @@ lavt_utf8_iteration (lua_State * L)
   size_t bytes = utf8->decode (utf8, &ch, str + pos);
 
   // update position upvalue
-  lua_pushunsigned (L, pos + bytes);
+  lua_pushinteger (L, pos + bytes);
   lua_replace (L, lua_upvalueindex (1));
 
-  lua_pushunsigned (L, ch);
+  lua_pushinteger (L, ch);
 
   return 1;
 }
@@ -1725,7 +1725,7 @@ lavt_utf8codepoints (lua_State * L)
 {
   luaL_checkstring (L, 1);
 
-  lua_pushunsigned (L, 0);	// start position
+  lua_pushinteger (L, 0);	// start position
   lua_pushcclosure (L, lavt_utf8_iteration, 1);
 
   // push parameter string
@@ -1739,7 +1739,7 @@ lavt_printable (lua_State * L)
 {
   lua_pushboolean (L,
 		   (int) avt_is_printable ((avt_char)
-					   luaL_checkunsigned (L, 1)));
+					   luaL_checkinteger (L, 1)));
   return 1;
 }
 
@@ -1748,7 +1748,7 @@ lavt_combining (lua_State * L)
 {
   lua_pushboolean (L,
 		   (int) avt_combining ((avt_char)
-					luaL_checkunsigned (L, 1)));
+					luaL_checkinteger (L, 1)));
   return 1;
 }
 
@@ -1933,7 +1933,7 @@ lavt_load_audio_stream (lua_State * L)
   int playmode;
 
   stream = (luaL_Stream *) luaL_checkudata (L, 1, LUA_FILEHANDLE);
-  maxsize = lua_tounsigned (L, 2);	// nothing or 0 allowed
+  maxsize = lua_tointeger (L, 2);	// nothing or 0 allowed
   playmode = luaL_checkoption (L, 3, "load", playmodes);
 
   // try to use closed file?
@@ -2122,7 +2122,7 @@ laudio_tostring (lua_State * L)
 static int
 lavt_set_audio_end_key (lua_State * L)
 {
-  lua_pushinteger (L, avt_set_audio_end_key (luaL_checkunsigned (L, 1)));
+  lua_pushinteger (L, avt_set_audio_end_key (luaL_checkinteger (L, 1)));
   return 1;
 }
 
@@ -2134,16 +2134,16 @@ lavt_set_audio_end_key (lua_State * L)
 static int
 lavt_viewport (lua_State * L)
 {
-  avt_viewport (luaL_checkint (L, 1),
-		luaL_checkint (L, 2),
-		luaL_checkint (L, 3), luaL_checkint (L, 4));
+  avt_viewport (luaL_checkinteger (L, 1),
+		luaL_checkinteger (L, 2),
+		luaL_checkinteger (L, 3), luaL_checkinteger (L, 4));
   return 0;
 }
 
 static int
 lavt_set_scroll_mode (lua_State * L)
 {
-  avt_set_scroll_mode (luaL_checkint (L, 1));
+  avt_set_scroll_mode (luaL_checkinteger (L, 1));
   return 0;
 }
 
@@ -2207,7 +2207,7 @@ static int
 lavt_insert_spaces (lua_State * L)
 {
   is_initialized ();
-  avt_insert_spaces (luaL_checkint (L, 1));
+  avt_insert_spaces (luaL_checkinteger (L, 1));
   return 0;
 }
 
@@ -2215,7 +2215,7 @@ static int
 lavt_delete_characters (lua_State * L)
 {
   is_initialized ();
-  avt_delete_characters (luaL_checkint (L, 1));
+  avt_delete_characters (luaL_checkinteger (L, 1));
   return 0;
 }
 
@@ -2223,7 +2223,7 @@ static int
 lavt_erase_characters (lua_State * L)
 {
   is_initialized ();
-  avt_erase_characters (luaL_checkint (L, 1));
+  avt_erase_characters (luaL_checkinteger (L, 1));
   return 0;
 }
 
