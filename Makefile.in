@@ -1,5 +1,5 @@
 # Makefile template for AKFAvatar
-# Copyright (C) 2007,2008,2009,2010,2011,2012,2013
+# Copyright (C) 2007,2008,2009,2010,2011,2012,2013,2015
 # Andreas K. Foerster
 #
 # This Makefile template is free software; you have unlimited permission
@@ -14,8 +14,8 @@ INSTALL_PROGRAM = $(INSTALL) -c -m 755
 INSTALL_DATA = $(INSTALL) -c -m 644
 
 # does not depend on prefix!
-LUA_PATH = /usr/local/share/lua/5.2/
-LUA_CPATH = /usr/local/lib/lua/5.2/
+LUA_PATH = /usr/local/share/lua/5.3/
+LUA_CPATH = /usr/local/lib/lua/5.3/
 
 SOX = sox
 ROFF = groff
