@@ -1,6 +1,6 @@
 #!/bin/sh
 # configure script for AKFAvatar - library and program for using an avatar
-# Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Andreas K. Foerster
+# Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2015 Andreas K. Foerster
 # Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008 Antonio Diaz Diaz.
 #
 # This configure script is free software; you have unlimited permission
@@ -11,7 +11,7 @@
 VERSION=0
 SUBVERSION=24
 REVISION=3
-BUILD=1 # set to 0 for official releases
+BUILD=2 # set to 0 for official releases
 VARIANT="-testing"
 LIBNAME=libakfavatar.so.${VERSION}.${SUBVERSION}.${REVISION}
 SONAME=libakfavatar.so.${VERSION}.${SUBVERSION}
@@ -409,18 +409,18 @@ then
   case ${hosttype} in
     x86_64*-mingw* | amd64*-mingw*)
       LUA_CFLAGS="-I/usr/local/x86_64-w64-mingw32/include"
-      LUA_LDFLAGS="-L/usr/local/x86_64-w64-mingw32/lib -llua52"
+      LUA_LDFLAGS="-L/usr/local/x86_64-w64-mingw32/lib -llua53"
       ;;
 
     *mingw* | *MINGW*)
       if [ -d /usr/local/i686-w64-mingw32/include ]
       then
         LUA_CFLAGS="-I/usr/local/i686-w64-mingw32/include"
-        LUA_LDFLAGS="-L/usr/local/i686-w64-mingw32/lib -llua52"
+        LUA_LDFLAGS="-L/usr/local/i686-w64-mingw32/lib -llua53"
       elif [ -d /usr/local/cross-tools/i386-mingw32/include ]
       then
         LUA_CFLAGS="-I/usr/local/cross-tools/i386-mingw32/include"
-        LUA_LDFLAGS="-L/usr/local/cross-tools/i386-mingw32/lib -llua52"
+        LUA_LDFLAGS="-L/usr/local/cross-tools/i386-mingw32/lib -llua53"
       fi
       ;;
 
@@ -433,7 +433,7 @@ then
       LUA_CFLAGS=""
       if [ x"$SYSTEM" = x"mingw" ]
       then
-        LUA_LDFLAGS="-llua52"
+        LUA_LDFLAGS="-llua53"
       else
         LUA_LDFLAGS="-llua -lm -ldl -Wl,-E" # assume static lib!
       fi
@@ -442,12 +442,12 @@ then
 elif [ x"$STATIC_LUA" = x"yes" ]
 then
   LUA_CFLAGS=""
-  if [ -r /usr/lib/liblua5.2.a ]
+  if [ -r /usr/lib/liblua5.3.a ]
   then
-    LUA_LDFLAGS="/usr/lib/liblua5.2.a -lm -ldl -Wl,-E"
-  elif [ -r /usr/lib/liblua-5.2.a ]
+    LUA_LDFLAGS="/usr/lib/liblua5.3.a -lm -ldl -Wl,-E"
+  elif [ -r /usr/lib/liblua-5.3.a ]
   then
-    LUA_LDFLAGS="/usr/lib/liblua-5.2.a -lm -ldl -Wl,-E"
+    LUA_LDFLAGS="/usr/lib/liblua-5.3.a -lm -ldl -Wl,-E"
   elif [ -r /usr/lib/liblua.a ]
   then
     LUA_LDFLAGS="/usr/lib/liblua.a -lm -ldl -Wl,-E"
@@ -458,23 +458,23 @@ then
     echo "static Lua not found" 1>&2
     exit 1
   fi
-elif pkg-config --exists lua-5.2  # FreeBSD 8.0
+elif pkg-config --exists lua-5.3  # FreeBSD 8.0
 then
-  LUA_CFLAGS=`pkg-config lua-5.2 --cflags`
-  LUA_LDFLAGS=`pkg-config lua-5.2 --libs`
-elif pkg-config --exists lua5.2  # Debian
+  LUA_CFLAGS=`pkg-config lua-5.3 --cflags`
+  LUA_LDFLAGS=`pkg-config lua-5.3 --libs`
+elif pkg-config --exists lua5.3  # Debian
 then
-  LUA_CFLAGS=`pkg-config lua5.2 --cflags`
-  LUA_LDFLAGS=`pkg-config lua5.2 --libs`
+  LUA_CFLAGS=`pkg-config lua5.3 --cflags`
+  LUA_LDFLAGS=`pkg-config lua5.3 --libs`
 elif pkg-config --exists lua  # Fedora
 then
   # hope it's the correct version
   LUA_CFLAGS=`pkg-config lua --cflags`
   LUA_LDFLAGS=`pkg-config lua --libs`
-elif [ -r /usr/include/lua5.2/lua.h -a /usr/lib/liblua5.2.so ]
+elif [ -r /usr/include/lua5.3/lua.h -a /usr/lib/liblua5.3.so ]
 then
-  LUA_CFLAGS="-I/usr/include/lua5.2"
-  LUA_LDFLAGS="-llua5.2"
+  LUA_CFLAGS="-I/usr/include/lua5.3"
+  LUA_LDFLAGS="-llua5.3"
 elif [ -r /usr/include/lua.h -a /usr/lib/liblua.a ]
 then
   LUA_CFLAGS=""
@@ -694,7 +694,7 @@ EOF
 
 case ${SYSTEM} in
  mingw)
-   echo 'lua_dll = $(srcdir)/misc/$(ARCH)/lua52.dll' >> Makefile
+   echo 'lua_dll = $(srcdir)/misc/$(ARCH)/lua53.dll' >> Makefile
 
    if [ x"$SDL_CONFIG" = x"sdl2-config" ]
    then

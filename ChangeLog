@@ -3,6 +3,8 @@
 	* lua/akfavatar-vorbis.c:
 	adapted for Lua-5.3
 
+	* configure: default to Lua-5.3
+
 2015-01-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c, lua/akfavatar-graphic.c:
