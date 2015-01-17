@@ -1,7 +1,8 @@
 /*
  * AKFAvatar Ogg Vorbis decoder
  * based on stb_vorbis
- * Copyright (c) 2011,2012,2013 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2011,2012,2013,2015
+ * Andreas K. Foerster <info@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -103,13 +104,13 @@ static int
 lvorbis_load_stream (lua_State * L)
 {
   luaL_Stream *stream;
-  lua_Unsigned size;
+  lua_Integer size;
   avt_audio *audio_data;
   int playmode;
 
   collect_garbage (L);
   stream = (luaL_Stream *) luaL_checkudata (L, 1, LUA_FILEHANDLE);
-  size = lua_tounsigned (L, 2);	// nothing or 0 allowed
+  size = lua_tointeger (L, 2);	// nothing or 0 allowed
   playmode = luaL_checkoption (L, 3, "load", playmodes);
 
   if (not stream->closef)
@@ -197,12 +198,12 @@ static int
 lvorbis_load_stream_chain (lua_State * L)
 {
   luaL_Stream *stream;
-  lua_Unsigned maxsize;
+  lua_Integer maxsize;
   avt_audio *audio_data;
   int playmode;
 
   stream = (luaL_Stream *) luaL_checkudata (L, 1, LUA_FILEHANDLE);
-  maxsize = lua_tounsigned (L, 2);	// nothing or 0 allowed
+  maxsize = lua_tointeger (L, 2);	// nothing or 0 allowed
   playmode = luaL_checkoption (L, 3, "load", playmodes);
 
   if (not stream->closef)
@@ -214,7 +215,7 @@ lvorbis_load_stream_chain (lua_State * L)
     {
       lua_getfield (L, LUA_REGISTRYINDEX, "AVTVORBIS-old_load_audio_stream");
       lua_pushvalue (L, 1);	// push stream handle
-      lua_pushunsigned (L, maxsize);
+      lua_pushinteger (L, maxsize);
       lua_pushstring (L, playmodes[playmode]);
 
       if (lua_pcall (L, 3, 1, 0) != 0)
