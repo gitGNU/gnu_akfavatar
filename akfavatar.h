@@ -552,7 +552,6 @@ AVT_API void avt_set_title (const char *title, const char *shortname);
  */
 AVT_API int avt_set_avatar_name (const wchar_t *name);
 AVT_API int avt_set_avatar_name_char (const char *name);
-AVT_API int avt_set_avatar_name_mb (const char *name);
 
 /* switch to fullscreen or window mode (if available) */
 AVT_API void avt_switch_mode (int mode);
@@ -913,13 +912,9 @@ avt_menu (int *result, int items,
 AVT_API int avt_pager (const wchar_t *txt, size_t len, int startline);
 AVT_API int avt_pager_char (const char *txt, size_t len, int startline);
 
-AVT_API int avt_pager_mb (const char *txt, size_t len, int startline);
-
 /* show final credits */
 AVT_API int avt_credits (const wchar_t *text, bool centered);
 AVT_API int avt_credits_char (const char *txt, bool centered);
-AVT_API int avt_credits_mb (const char *text, bool centered);
-
 
 /***********************************************************************/
 /* plumbing */
@@ -1137,10 +1132,6 @@ AVT_API avt_char avt_input (wchar_t *result, size_t size,
 AVT_API avt_char avt_input_char (char *result, size_t size,
                                  const char *default_text,
                                  int position, int mode);
-
-AVT_API avt_char avt_input_mb (char *s, size_t size,
-                               const char *default_text,
-                               int position, int mode);
 
 /*
  * show raw image
