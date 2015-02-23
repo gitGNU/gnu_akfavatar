@@ -534,6 +534,20 @@ AVT_API int avt_brighter (int color, int amount);
 /* returns the maximum color value (red, green or blue) */
 AVT_API int avt_brightness (int color);
 
+
+/* some nice colors */
+#define AVT_BLACK              0x000000
+#define AVT_WHITE              0xFFFFFF
+#define AVT_FLORAL_WHITE       0xFFFAF0
+#define AVT_ANTIQUE_WHITE      0xFAEBD7
+#define AVT_LINEN              0xFAF0E6
+#define AVT_SIENNA             0xA0522D
+#define AVT_GRAY               0xBEBEBE
+#define AVT_SLATE_GRAY         0x708090
+#define AVT_LIGHT_SKY_BLUE     0x87CEFA
+#define AVT_PINK               0xFFC0CB
+#define AVT_SEA_GREEN          0x2E8B57
+
 /***********************************************************************/
 /* settings */
 

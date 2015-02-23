@@ -1,3 +1,7 @@
+2015-02-23  Andreas K. Foerster  <info@akfoerster.de>
+
+	* akfavatar.h: define some nice color macros
+
 2015-01-17  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/akfavatar-vorbis.c:
