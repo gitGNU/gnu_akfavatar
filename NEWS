@@ -3,6 +3,7 @@
  - optimized printing of text (line buffered)
  - audio-data with same specs as former one is played with less latency
  - improved support for 24 and 32 bit audio
+ - new file Bücher.lua for reading German books from my server (needs curl)
 
   C-API changes:
     - new macro: AVT_KEY_F
