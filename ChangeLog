@@ -2,6 +2,9 @@
 
 	* lua/Bücher.lua: new file (needs curl)
 
+	* avatar.c (avt_pager, avt_pager_screen, avt_pager_line):
+	improve handling of underline an bold
+
 2015-02-23  Andreas K. Foerster  <info@akfoerster.de>
 
 	* akfavatar.h: define some nice color macros

@@ -2899,8 +2899,6 @@ avt_pager_line (const wchar_t * txt, size_t pos, size_t len,
 
   tpos = txt + pos;
 
-  avt.underlined = avt.bold = false;
-
   // handle pagebreaks
   if (avt_is_pagebreak (*tpos))
     {
@@ -2989,6 +2987,7 @@ static size_t
 avt_pager_screen (const wchar_t * txt, size_t pos, size_t len,
 		  size_t horizontal)
 {
+  avt.underlined = avt.bold = false;
   avt.hold_updates = true;
   avt_bar (screen, textfield.x, textfield.y,
 	   textfield.width, textfield.height, avt.text_background_color);
@@ -3154,6 +3153,7 @@ avt_pager (const wchar_t * txt, size_t len, int startline)
 	    else
 	      {
 		avt.hold_updates = true;
+		avt.underlined = avt.bold = false;
 		avt_insert_lines (1, 1);
 		cursor.x = linestart;
 		cursor.y = textfield.y;
