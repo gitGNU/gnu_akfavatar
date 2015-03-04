@@ -45,8 +45,16 @@ avt.translations = {
     de="Tut mir leid, aber das Programm 'curl' wird benötigt, "
             .."um eine Verbindung zum Internet aufzubauen."},
 
-  ["Sorry, but the webserver reported an error."] = {
-    de="Tut mir leid, aber der Webserver meldete einen Fehler."},
+  ["Sorry, but I couldn't find the server name."] = {
+    de="Tut mir leid, aber der Name des Servers konnte "
+       .."nicht gefunden werden."},
+
+  ["Sorry, but I couldn't connect to the server."] = {
+    de="Tut mir leid, aber ich konnte keine Verbindung "
+       .."zum Server aufbauen."},
+
+  ["Sorry, but the server reported an error."] = {
+    de="Tut mir leid, aber der Server meldete einen Fehler."},
   
   ["Sorry, but curl ended with error code %d."] = {
     de="Tut mir leid, aber curl endete mit Fehlercode %d."},
@@ -75,8 +83,12 @@ local function fetch(name)
     if 127==n then
       error(L("Sorry, but the program 'curl' is needed to connect "
             .."to the Internet."), 0)
+    elseif 6==n then
+      error(L"Sorry, but I couldn't find the server name.", 0)
+    elseif 7==n then
+      eroor(L"Sorry, but I couldn't connect to the server.", 0)
     elseif 22==n then
-      error(L"Sorry, but the webserver reported an error.", 0)
+      error(L"Sorry, but the server reported an error.", 0)
     else
       error(string.format(L"Sorry, but curl ended with error code %d.", n), 0);
     end
