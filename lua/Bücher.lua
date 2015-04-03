@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 local avt = require "lua-akfavatar"
 
 local URL = "http://akfoerster.de/lesen/index"
-local downloader = "curl -sLf --compressed -A 'AKFAvatar'"
+local downloader = "curl -sL --compressed -A 'AKFAvatar'"
 local name, directory
 
 avt.translations = {
@@ -53,9 +53,6 @@ avt.translations = {
     de="Tut mir leid, aber ich konnte keine Verbindung "
        .."zum Server aufbauen."},
 
-  ["Sorry, but the server reported an error."] = {
-    de="Tut mir leid, aber der Server meldete einen Fehler."},
-  
   ["Sorry, but curl ended with error code %d."] = {
     de="Tut mir leid, aber curl endete mit Fehlercode %d."},
 
@@ -87,8 +84,6 @@ local function fetch(name)
       error(L"Sorry, but I couldn't find the server name.", 0)
     elseif 7==n then
       eroor(L"Sorry, but I couldn't connect to the server.", 0)
-    elseif 22==n then
-      error(L"Sorry, but the server reported an error.", 0)
     else
       error(string.format(L"Sorry, but curl ended with error code %d.", n), 0);
     end
@@ -102,6 +97,10 @@ local function fetch(name)
   -- redirection file
   local redirect = data:match("^%s*>%s*(%S+)%s*[\r\n]")
   if redirect then return fetch(redirect); end
+
+  if data:match("^%*") then
+    error(data, 0)
+  end
 
   return data
 end
