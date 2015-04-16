@@ -177,7 +177,7 @@ avt_detect_utf8 (const char *str, size_t size)
 	  // count continuation bytes
 	  bytes = check_char_length (s, 6);
 
-	  if (bytes > 4
+	  if (bytes < 2 or bytes > 4
 	      or (ch <= 0xDF and bytes > 2) or (ch <= 0xEF and bytes > 3))
 	    return false;
 	}

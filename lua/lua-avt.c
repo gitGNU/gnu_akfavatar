@@ -630,7 +630,7 @@ lavt_detect_utf8 (lua_State * L)
   size_t len;
 
   const char *string = luaL_checklstring (L, 1, &len);
-  size_t max_length = lua_tointeger (L, 1);
+  size_t max_length = lua_tointeger (L, 2);
 
   if (not max_length or max_length > len)
     max_length = len;
