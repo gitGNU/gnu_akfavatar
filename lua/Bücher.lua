@@ -152,8 +152,8 @@ local function show(name)
 end
 
 
-local function index()
-  local idx = postprocess(fetch("index"))
+local function index(name)
+  local idx = postprocess(fetch(name or "index"))
   local t = {}
   for line in idx:gmatch("(.-)\r?\n") do
     local short, title = line:match("^(%S+)%s*(.*)$")
@@ -198,8 +198,10 @@ avt.set_background_color("sienna")
 avt.start()
 avt.set_balloon_color("antique white")
 
-if not name or name=="" then
-  name = index()
+if not name then
+  repeat
+    name = index(name)
+  until not name:match("^index")
 end
 
 show(name)
