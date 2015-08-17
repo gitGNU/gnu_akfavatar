@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 local avt = require "lua-akfavatar"
 
-local URL = "http://akfoerster.de/lesen/index"
+local URL = "http://akfoerster.de/antiqua/index"
 local downloader = "curl -sL --compressed -A 'AKFAvatar'"
 local name, directory
 
