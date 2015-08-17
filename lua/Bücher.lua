@@ -157,7 +157,7 @@ local function index(name)
   local t = {}
   for line in idx:gmatch("(.-)\r?\n") do
     local short, title = line:match("^(%S+)%s*(.*)$")
-    if short and short~="" then
+    if short and short~="" and not short:match("[:/]") then
       if not title or title=="" then title = short end
       table.insert(t, {title, short})
     end
