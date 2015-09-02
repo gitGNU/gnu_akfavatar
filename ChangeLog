@@ -1,3 +1,7 @@
+2015-09-02  Andreas K. Foerster  <akf@akfoerster.de>
+
+	* avtdata.c: optimized for gcc
+
 2015-04-16  Andreas K. Foerster  <info@akfoerster.de>
 
 	* lua/lua-avt.c (lavt_detect_utf8): fixed

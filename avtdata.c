@@ -36,6 +36,16 @@
 #include <stdbool.h>
 #endif
 
+#if defined(__GNUC__) \
+  and ((__GNUC__ > 4) or ((__GNUC__ == 4) and (__GNUC_MINOR__ >= 8)))
+#define akf_bswap16(x)  __builtin_bswap16(x)
+#define akf_bswap32(x)  __builtin_bswap32(x)
+#else
+#define akf_bswap16(x)  (((x)<<8|(x)>>8)&0xFFFF)
+#define akf_bswap32(x)  \
+  (((x)<<24)|(((x)&0xFF00)<<8)|(((x)&0xFF0000)>>8)|((x)>>24))
+#endif
+
 // reset virtual methods
 static inline void
 reset (avt_data * d)
@@ -92,8 +102,8 @@ method_skip_stream (avt_data * d, size_t size)
       size -= sizeof (buffer);
     }
 
-   // size <= sizeof(buffer)
-   fread (buffer, 1, size, d->field.stream.data);
+  // size <= sizeof(buffer)
+  fread (buffer, 1, size, d->field.stream.data);
 }
 
 static void
@@ -144,35 +154,9 @@ method_read8 (avt_data * d)
 }
 
 
-#if AVT_BIG_ENDIAN == AVT_BYTE_ORDER
-
-// read little endian 16 bit value
+// read 16 bit value
 static uint_least16_t
-method_read16le (avt_data * d)
-{
-  uint_least8_t data[2];
-
-  d->read (d, &data, sizeof (data), 1);
-
-  return data[1] << 8 bitor data[0];
-}
-
-
-// read little endian 32 bit value
-static uint_least32_t
-method_read32le (avt_data * d)
-{
-  uint_least8_t data[4];
-
-  d->read (d, &data, sizeof (data), 1);
-
-  return data[3] << 24 bitor data[2] << 16 bitor data[1] << 8 bitor data[0];
-}
-
-
-// read big endian 16 bit value
-static uint_least16_t
-method_read16be (avt_data * d)
+method_read16 (avt_data * d)
 {
   uint_least16_t data;
 
@@ -182,35 +166,21 @@ method_read16be (avt_data * d)
 }
 
 
-// read big endian 32 bit value
-static uint_least32_t
-method_read32be (avt_data * d)
-{
-  uint_least32_t data;
-
-  d->read (d, &data, sizeof (data), 1);
-
-  return data;
-}
-
-
-#else // little endian
-
-// read little endian 16 bit value
+// read 16 bit value with bytes swapped
 static uint_least16_t
-method_read16le (avt_data * d)
+method_read16swap (avt_data * d)
 {
   uint_least16_t data;
 
   d->read (d, &data, sizeof (data), 1);
 
-  return data;
+  return akf_bswap16 (data);
 }
 
 
-// read little endian 32 bit value
+// read 32 bit value
 static uint_least32_t
-method_read32le (avt_data * d)
+method_read32 (avt_data * d)
 {
   uint_least32_t data;
 
@@ -220,30 +190,16 @@ method_read32le (avt_data * d)
 }
 
 
-// read big endian 16 bit value
-static uint_least16_t
-method_read16be (avt_data * d)
-{
-  uint_least8_t data[2];
-
-  d->read (d, &data, sizeof (data), 1);
-
-  return data[0] << 8 bitor data[1];
-}
-
-
-// read big endian 32 bit value
+// read 32 bit value with bytes swapped
 static uint_least32_t
-method_read32be (avt_data * d)
+method_read32swap (avt_data * d)
 {
-  uint_least8_t data[4];
+  uint_least32_t data;
 
   d->read (d, &data, sizeof (data), 1);
 
-  return data[0] << 24 bitor data[1] << 16 bitor data[2] << 8 bitor data[3];
+  return akf_bswap32 (data);
 }
-
-#endif // little endian
 
 
 static long
@@ -307,6 +263,8 @@ method_filenumber_memory (avt_data * d)
 }
 
 
+#if AVT_BIG_ENDIAN == AVT_BYTE_ORDER
+
 static void
 method_big_endian (avt_data * d, bool big_endian)
 {
@@ -314,16 +272,39 @@ method_big_endian (avt_data * d, bool big_endian)
     {
       if (big_endian)
 	{
-	  d->read16 = method_read16be;
-	  d->read32 = method_read32be;
+	  d->read16 = method_read16;
+	  d->read32 = method_read32;
 	}
       else
 	{
-	  d->read16 = method_read16le;
-	  d->read32 = method_read32le;
+	  d->read16 = method_read16swap;
+	  d->read32 = method_read32swap;
 	}
     }
 }
+
+#else // little endian
+
+static void
+method_big_endian (avt_data * d, bool big_endian)
+{
+  if (d)
+    {
+      if (big_endian)
+	{
+	  d->read16 = method_read16swap;
+	  d->read32 = method_read32swap;
+	}
+      else
+	{
+	  d->read16 = method_read16;
+	  d->read32 = method_read32;
+	}
+    }
+}
+
+#endif // little endian
+
 
 static bool
 method_open_stream (avt_data * d, FILE * stream, bool autoclose)
