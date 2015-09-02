@@ -263,14 +263,13 @@ method_filenumber_memory (avt_data * d)
 }
 
 
-#if AVT_BIG_ENDIAN == AVT_BYTE_ORDER
-
 static void
 method_big_endian (avt_data * d, bool big_endian)
 {
   if (d)
     {
-      if (big_endian)
+      if ((AVT_BIG_ENDIAN == AVT_BYTE_ORDER and big_endian)
+	  or (AVT_LITTLE_ENDIAN == AVT_BYTE_ORDER and not big_endian))
 	{
 	  d->read16 = method_read16;
 	  d->read32 = method_read32;
@@ -282,28 +281,6 @@ method_big_endian (avt_data * d, bool big_endian)
 	}
     }
 }
-
-#else // little endian
-
-static void
-method_big_endian (avt_data * d, bool big_endian)
-{
-  if (d)
-    {
-      if (big_endian)
-	{
-	  d->read16 = method_read16swap;
-	  d->read32 = method_read32swap;
-	}
-      else
-	{
-	  d->read16 = method_read16;
-	  d->read32 = method_read32;
-	}
-    }
-}
-
-#endif // little endian
 
 
 static bool
