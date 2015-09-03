@@ -38,25 +38,25 @@ struct avt_data
 {
   // public
 
-  void (*done) (avt_data * self);	// destructor
+  void (*done) (avt_data *);	// destructor
 
-  bool (*seek) (avt_data * self, long offset, int whence);
+  int (*filenumber) (avt_data *);
 
-  long (*tell) (avt_data * self);
+  size_t (*read) (avt_data *, void *, size_t size, size_t number);
 
-  size_t (*read) (avt_data * self, void *data, size_t size, size_t number);
+  long (*tell) (avt_data *);
+
+  bool (*seek) (avt_data *, long offset, int whence);
 
   // skip also works on nonseekable streams
-  void (*skip) (avt_data * self, size_t size);
+  void (*skip) (avt_data *, size_t);
 
-  uint_least16_t (*read16) (avt_data * self);
+  // use avt_data_big_endian() before calling one of these
+  uint_least16_t (*read16) (avt_data *);
+  uint_least32_t (*read32) (avt_data *);
 
-  uint_least32_t (*read32) (avt_data * self);
-
-  int (*filenumber) (avt_data * self);
 
   // private
-
   union
   {
     struct
@@ -68,8 +68,7 @@ struct avt_data
     struct
     {
       const uint_least8_t *data;
-      size_t size;
-      size_t position;
+      size_t size, position;
     } memory;
   } priv;
 };
@@ -78,7 +77,7 @@ void avt_data_init (avt_data *);	// constructor
 
 // duplicate the data element
 // the result must be freed by the caller after calling done
-avt_data *avt_data_dup (avt_data * d);
+avt_data *avt_data_dup (avt_data *);
 
 // open a stream
 // if autoclose is true done closes the stream with fclose
