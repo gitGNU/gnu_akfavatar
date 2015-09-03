@@ -21,6 +21,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "akfavatar.h"
 #include "avtgraphic.h"
 
 #include <stdlib.h>
@@ -30,7 +31,7 @@
 #include <iso646.h>
 
 static inline short
-get_right_shift (uint32_t mask)
+get_right_shift (uint_least32_t mask)
 {
   register short shift;
 
@@ -46,7 +47,7 @@ get_right_shift (uint32_t mask)
 }
 
 static inline short
-get_left_shift (uint32_t mask)
+get_left_shift (uint_least32_t mask)
 {
   register short shift;
 
@@ -66,11 +67,11 @@ avt_load_image_bmp_data (avt_data * src)
 {
   avt_graphic *image;
   long start;
-  uint32_t bits_offset, info_size, compression;
-  uint32_t colors_used;
-  int32_t width, height;
-  uint32_t red_mask, green_mask, blue_mask;
-  uint16_t bits_per_pixel;
+  uint_least32_t bits_offset, info_size, compression;
+  uint_least32_t colors_used;
+  int_least32_t width, height;
+  uint_least32_t red_mask, green_mask, blue_mask;
+  uint_least16_t bits_per_pixel;
   avt_color palette[256];
 
   image = NULL;
@@ -148,19 +149,19 @@ avt_load_image_bmp_data (avt_data * src)
 
       if (info_size != 12)
 	{
-	  for (uint16_t color = 0; color < colors_used; color++)
+	  for (uint_least16_t color = 0; color < colors_used; color++)
 	    palette[color] = src->read32 (src) bitand 0xFFFFFF;
 	}
       else			// old OS/2 format
 	{
-	  uint8_t red, green, blue;
+	  uint_least8_t red, green, blue;
 
-	  for (uint16_t color = 0; color < colors_used; color++)
+	  for (uint_least16_t color = 0; color < colors_used; color++)
 	    {
 	      blue = avt_data_read8 (src);
 	      green = avt_data_read8 (src);
 	      red = avt_data_read8 (src);
-	      palette[color] = (red << 16) | (green << 8) | blue;
+	      palette[color] = avt_rgb (red, green, blue);
 	    }
 	}
     }
@@ -206,8 +207,8 @@ avt_load_image_bmp_data (avt_data * src)
 
 	    for (int x = 0; x < width; x += 8)
 	      {
-		uint8_t value = avt_data_read8 (src);
-		uint8_t bitmask = 0x80;
+		uint_least8_t value = avt_data_read8 (src);
+		uint_least8_t bitmask = 0x80;
 		for (int bit = 0; bit < 8; bit++, bitmask >>= 1)
 		  if (x + bit < width)
 		    *p++ = palette[(value bitand bitmask) != 0];
@@ -235,7 +236,7 @@ avt_load_image_bmp_data (avt_data * src)
 
 	    for (int x = 0; x < width; x += 2)
 	      {
-		uint16_t value = avt_data_read8 (src);
+		uint_least8_t value = avt_data_read8 (src);
 		*p++ = palette[value >> 4 bitand 0xF];
 		if (x < width - 1)
 		  *p++ = palette[value bitand 0xF];
@@ -263,7 +264,7 @@ avt_load_image_bmp_data (avt_data * src)
 
 	    for (int x = 0; x < width; x++, p++)
 	      {
-		uint16_t color = avt_data_read8 (src);
+		uint_least8_t color = avt_data_read8 (src);
 		*p = palette[color];
 	      }
 
@@ -307,12 +308,12 @@ avt_load_image_bmp_data (avt_data * src)
 
 	    for (int x = 0; x < width; x++, p++)
 	      {
-		register uint16_t color = src->read16 (src);
+		register uint_least16_t color = src->read16 (src);
 
-		*p =
-		  ((color & red_mask) >> red_right << red_left) << 16
-		  | ((color & green_mask) >> green_right << green_left) << 8
-		  | (color & blue_mask) >> blue_right << blue_left;
+		*p = avt_rgb (((color & red_mask) >> red_right << red_left),
+			      ((color & green_mask) >> green_right <<
+			       green_left),
+			      (color & blue_mask) >> blue_right << blue_left);
 	      }
 
 	    if (remainder)
@@ -325,7 +326,7 @@ avt_load_image_bmp_data (avt_data * src)
 
     case 24:
       {
-	uint8_t red, green, blue;
+	uint_least8_t red, green, blue;
 
 	image = avt_new_graphic (width, height);
 	if (not image)
@@ -342,7 +343,7 @@ avt_load_image_bmp_data (avt_data * src)
 		blue = avt_data_read8 (src);
 		green = avt_data_read8 (src);
 		red = avt_data_read8 (src);
-		*p = (red << 16) | (green << 8) | blue;
+		*p = avt_rgb (red, green, blue);
 	      }
 
 	    if (remainder)
@@ -378,10 +379,10 @@ avt_load_image_bmp_data (avt_data * src)
 
 	    for (int x = 0; x < width; x++, p++)
 	      {
-		register uint32_t color = src->read32 (src);
-		*p = ((color & red_mask) >> red_shift) << 16
-		  | ((color & green_mask) >> green_shift) << 8
-		  | (color & blue_mask) >> blue_shift;
+		register uint_least32_t color = src->read32 (src);
+		*p = avt_rgb (((color & red_mask) >> red_shift),
+			      ((color & green_mask) >> green_shift),
+			      (color & blue_mask) >> blue_shift);
 	      }
 
 	    y += direction;
