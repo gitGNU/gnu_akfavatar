@@ -62,12 +62,10 @@ static void
 method_done_stream (avt_data * d)
 {
   if (d->priv.stream.autoclose)
-    {
-      fclose (d->priv.stream.data);
-      d->priv.stream.data = NULL;
-      d->priv.stream.autoclose = false;
-    }
+    fclose (d->priv.stream.data);
 
+  d->priv.stream.data = NULL;
+  d->priv.stream.autoclose = false;
   reset (d);
 }
 
@@ -282,10 +280,12 @@ avt_data_big_endian (avt_data * d, bool big_endian_data)
 }
 
 
+#define avt_data_opened(d)  ((d)->seek != NULL)
+
 bool
 avt_data_open_stream (avt_data * d, FILE * stream, bool autoclose)
 {
-  if (not d or not stream or d->seek)
+  if (not d or not stream or avt_data_opened (d))
     return false;
 
   d->done = method_done_stream;
@@ -305,7 +305,7 @@ avt_data_open_stream (avt_data * d, FILE * stream, bool autoclose)
 bool
 avt_data_open_file (avt_data * d, const char *filename)
 {
-  if (not d or not filename or d->seek)
+  if (not d or not filename or avt_data_opened (d))
     return false;
 
   return avt_data_open_stream (d, fopen (filename, "rb"), true);
@@ -315,7 +315,7 @@ avt_data_open_file (avt_data * d, const char *filename)
 bool
 avt_data_open_memory (avt_data * d, const void *memory, size_t size)
 {
-  if (not d or not memory or not size or d->seek)
+  if (not d or not memory or not size or avt_data_opened (d))
     return false;
 
   d->done = method_done_memory;

@@ -67,7 +67,7 @@ struct avt_data
 
     struct
     {
-      const unsigned char *data;
+      const uint_least8_t *data;
       size_t size;
       size_t position;
     } memory;
@@ -93,6 +93,7 @@ bool avt_data_open_memory (avt_data *, const void *, size_t);
 
 uint_least8_t avt_dada_read8 (avt_data *);
 
+// set this before using read16 or read32
 void avt_data_big_endian (avt_data *, bool);
 
 #endif // AVTDATA_H
