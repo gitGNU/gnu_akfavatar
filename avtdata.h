@@ -38,19 +38,6 @@ struct avt_data
 {
   // public
 
-  // open a stream
-  // if autoclose is true avt_data_close closes the stream with fclose
-  bool (*open_stream) (avt_data * self, FILE * stream, bool autoclose);
-
-  // open a file for reading in binary mode
-  bool (*open_file) (avt_data * self, const char *filename);
-
-  // read data from memory
-  // the memory area must be kept available until closed
-  bool (*open_memory) (avt_data * self, const void *memory, size_t size);
-
-  void (*big_endian) (avt_data * self, bool big_endian);
-
   void (*done) (avt_data * self);	// destructor
 
   bool (*seek) (avt_data * self, long offset, int whence);
@@ -61,8 +48,6 @@ struct avt_data
 
   // skip also works on nonseekable streams
   void (*skip) (avt_data * self, size_t size);
-
-  uint_least8_t (*read8) (avt_data * self);
 
   uint_least16_t (*read16) (avt_data * self);
 
@@ -94,5 +79,20 @@ void avt_data_init (avt_data *);	// constructor
 // duplicate the data element
 // the result must be freed by the caller after calling done
 avt_data *avt_data_dup (avt_data * d);
+
+// open a stream
+// if autoclose is true done closes the stream with fclose
+bool avt_data_open_stream (avt_data *, FILE *, bool autoclose);
+
+// open a file for reading in binary mode
+bool avt_data_open_file (avt_data *, const char *);
+
+// read data from memory
+// the memory area must be kept available until closed
+bool avt_data_open_memory (avt_data *, const void *, size_t);
+
+uint_least8_t avt_dada_read8 (avt_data *);
+
+void avt_data_big_endian (avt_data *, bool);
 
 #endif // AVTDATA_H

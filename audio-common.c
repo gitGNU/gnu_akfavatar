@@ -1,7 +1,7 @@
 /*
  * AKFAvatar - library for showing an avatar who says things in a balloon
  * this part is for audio, independent of the backend
- * Copyright (c) 2007,2008,2009,2010,2011,2012,2013,2014
+ * Copyright (c) 2007,2008,2009,2010,2011,2012,2013,2014,2015
  * Andreas K. Foerster <info@akfoerster.de>
  *
  * required standards: C99
@@ -667,7 +667,7 @@ avt_load_au (avt_data * src, size_t maxsize, int playmode)
   if (not src)
     return NULL;
 
-  src->big_endian (src, true);
+  avt_data_big_endian (src, true);
 
   uint_least32_t head_size, audio_size, encoding, samplingrate, channels;
   // magic value is already read
@@ -754,7 +754,7 @@ avt_load_wave (avt_data * src, size_t maxsize, int playmode)
   if (not src)
     return NULL;
 
-  src->big_endian (src, false);
+  avt_data_big_endian (src, false);
 
   /*
    * magic value RIFF is already read
@@ -898,7 +898,7 @@ avt_load_audio_file (const char *file, int playmode)
   r = NULL;
 
   avt_data_init (&d);
-  if (d.open_file (&d, file))
+  if (avt_data_open_file (&d, file))
     r = avt_load_audio_general (&d, MAXIMUM_SIZE, playmode);
 
   if (not r or no_data_needed (r))
@@ -916,7 +916,7 @@ avt_load_audio_part (avt_stream * stream, size_t maxsize, int playmode)
   r = NULL;
 
   avt_data_init (&d);
-  if (d.open_stream (&d, (FILE *) stream, false))
+  if (avt_data_open_stream (&d, (FILE *) stream, false))
     r = avt_load_audio_general (&d, maxsize, playmode);
 
   if (not r or no_data_needed (r))
@@ -934,7 +934,7 @@ avt_load_audio_stream (avt_stream * stream, int playmode)
   r = NULL;
 
   avt_data_init (&d);
-  if (d.open_stream (&d, (FILE *) stream, false))
+  if (avt_data_open_stream (&d, (FILE *) stream, false))
     r = avt_load_audio_general (&d, MAXIMUM_SIZE, playmode);
 
   if (not r or no_data_needed (r))
@@ -952,7 +952,7 @@ avt_load_audio_data (const void *data, size_t datasize, int playmode)
   r = NULL;
 
   avt_data_init (&d);
-  if (d.open_memory (&d, data, datasize))
+  if (avt_data_open_memory (&d, data, datasize))
     r = avt_load_audio_general (&d, datasize, playmode);
 
   if (not r or no_data_needed (r))

@@ -1,3 +1,8 @@
+2015-09-03  Andreas K. Foerster  <akf@akfoerster.de>
+
+	* avtdata.h, avtdata.c: static methods
+	callers adapted
+
 2015-09-02  Andreas K. Foerster  <akf@akfoerster.de>
 
 	* avtdata.c: optimized for gcc

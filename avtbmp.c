@@ -1,6 +1,6 @@
 /*
  * BMP support for AKFAvatar
- * Copyright (c) 2007,2008,2009,2010,2011,2012,2013,2014
+ * Copyright (c) 2007,2008,2009,2010,2011,2012,2013,2014,2015
  * Andreas K. Foerster <info@akfoerster.de>
  *
  * required standards: C99, POSIX.1-2001
@@ -78,7 +78,7 @@ avt_load_image_bmp_data (avt_data * src)
 
   start = src->tell (src);
 
-  src->big_endian (src, false);
+  avt_data_big_endian (src, false);
 
   // check magic number ("BM")
   if (src->read16 (src) != 0x4D42)

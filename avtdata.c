@@ -53,7 +53,6 @@ reset (avt_data * d)
   d->seek = NULL;
   d->tell = NULL;
   d->read = NULL;
-  d->read8 = NULL;
   d->read16 = NULL;
   d->read32 = NULL;
   d->filenumber = NULL;
@@ -143,8 +142,8 @@ method_read_memory (avt_data * d, void *data, size_t size, size_t number)
 
 
 // read 8 bit value
-static uint_least8_t
-method_read8 (avt_data * d)
+uint_least8_t
+avt_data_read8 (avt_data * d)
 {
   uint_least8_t data;
 
@@ -263,13 +262,13 @@ method_filenumber_memory (avt_data * d)
 }
 
 
-static void
-method_big_endian (avt_data * d, bool big_endian)
+void
+avt_data_big_endian (avt_data * d, bool big_endian_data)
 {
   if (d)
     {
-      if ((AVT_BIG_ENDIAN == AVT_BYTE_ORDER and big_endian)
-	  or (AVT_LITTLE_ENDIAN == AVT_BYTE_ORDER and not big_endian))
+      if ((AVT_BIG_ENDIAN == AVT_BYTE_ORDER and big_endian_data)
+	  or (AVT_LITTLE_ENDIAN == AVT_BYTE_ORDER and not big_endian_data))
 	{
 	  d->read16 = method_read16;
 	  d->read32 = method_read32;
@@ -283,8 +282,8 @@ method_big_endian (avt_data * d, bool big_endian)
 }
 
 
-static bool
-method_open_stream (avt_data * d, FILE * stream, bool autoclose)
+bool
+avt_data_open_stream (avt_data * d, FILE * stream, bool autoclose)
 {
   if (not d or not stream or d->seek)
     return false;
@@ -299,26 +298,22 @@ method_open_stream (avt_data * d, FILE * stream, bool autoclose)
   d->priv.stream.data = stream;
   d->priv.stream.autoclose = autoclose;
 
-  d->open_stream = NULL;
-  d->open_file = NULL;
-  d->open_memory = NULL;
-
   return true;
 }
 
 
-static bool
-method_open_file (avt_data * d, const char *filename)
+bool
+avt_data_open_file (avt_data * d, const char *filename)
 {
   if (not d or not filename or d->seek)
     return false;
 
-  return d->open_stream (d, fopen (filename, "rb"), true);
+  return avt_data_open_stream (d, fopen (filename, "rb"), true);
 }
 
 
-static bool
-method_open_memory (avt_data * d, const void *memory, size_t size)
+bool
+avt_data_open_memory (avt_data * d, const void *memory, size_t size)
 {
   if (not d or not memory or not size or d->seek)
     return false;
@@ -334,10 +329,6 @@ method_open_memory (avt_data * d, const void *memory, size_t size)
   d->priv.memory.position = 0;
   d->priv.memory.size = size;
 
-  d->open_stream = NULL;
-  d->open_file = NULL;
-  d->open_memory = NULL;
-
   return true;
 }
 
@@ -347,12 +338,7 @@ avt_data_init (avt_data * d)
   if (d)
     {
       reset (d);
-      d->open_stream = method_open_stream;
-      d->open_file = method_open_file;
-      d->open_memory = method_open_memory;
       d->done = method_done_memory;
-      d->big_endian = method_big_endian;
-      d->read8 = method_read8;
     }
 }
 

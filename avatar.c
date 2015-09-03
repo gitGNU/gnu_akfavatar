@@ -573,7 +573,7 @@ avt_load_image_file (const char *filename)
   image = NULL;
 
   avt_data_init (&d);
-  if (d.open_file (&d, filename))
+  if (avt_data_open_file (&d, filename))
     image = avt_load_image_avtdata (&d);
   d.done (&d);
 
@@ -592,7 +592,7 @@ avt_load_image_stream (avt_stream * stream)
   image = NULL;
 
   avt_data_init (&d);
-  if (d.open_stream (&d, (FILE *) stream, false))
+  if (avt_data_open_stream (&d, (FILE *) stream, false))
     image = avt_load_image_avtdata (&d);
   d.done (&d);
 
@@ -611,7 +611,7 @@ avt_load_image_memory (void *data, size_t size)
   image = NULL;
 
   avt_data_init (&d);
-  if (d.open_memory (&d, data, size))
+  if (avt_data_open_memory (&d, data, size))
     image = avt_load_image_avtdata (&d);
   d.done (&d);
 
