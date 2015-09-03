@@ -45,7 +45,7 @@
 
 #include "alert.c"
 
-#if _POSIX_MAPPED_FILES > 0
+#if _POSIX_MAPPED_FILES+0 > 0
 #include <sys/mman.h>
 #define avt_munmap(addr, length)  munmap(addr, length)
 #else // no mmap
@@ -510,7 +510,7 @@ avt_load_audio_block (avt_data * src, size_t maxsize,
 }
 
 
-#if _POSIX_MAPPED_FILES > 0
+#if _POSIX_MAPPED_FILES+0 > 0
 
 static avt_audio *
 avt_mmap_audio (avt_data * src, size_t maxsize,
