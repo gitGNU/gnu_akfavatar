@@ -91,7 +91,7 @@ bool avt_data_open_file (avt_data *, const char *);
 // the memory area must be kept available until closed
 bool avt_data_open_memory (avt_data *, const void *, size_t);
 
-uint_least8_t avt_dada_read8 (avt_data *);
+uint_least8_t avt_data_read8 (avt_data *);
 
 // set this before using read16 or read32
 void avt_data_big_endian (avt_data *, bool);

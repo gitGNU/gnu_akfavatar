@@ -157,9 +157,9 @@ avt_load_image_bmp_data (avt_data * src)
 
 	  for (uint16_t color = 0; color < colors_used; color++)
 	    {
-	      blue = src->read8 (src);
-	      green = src->read8 (src);
-	      red = src->read8 (src);
+	      blue = avt_data_read8 (src);
+	      green = avt_data_read8 (src);
+	      red = avt_data_read8 (src);
 	      palette[color] = (red << 16) | (green << 8) | blue;
 	    }
 	}
@@ -206,7 +206,7 @@ avt_load_image_bmp_data (avt_data * src)
 
 	    for (int x = 0; x < width; x += 8)
 	      {
-		uint8_t value = src->read8 (src);
+		uint8_t value = avt_data_read8 (src);
 		uint8_t bitmask = 0x80;
 		for (int bit = 0; bit < 8; bit++, bitmask >>= 1)
 		  if (x + bit < width)
@@ -235,7 +235,7 @@ avt_load_image_bmp_data (avt_data * src)
 
 	    for (int x = 0; x < width; x += 2)
 	      {
-		uint16_t value = src->read8 (src);
+		uint16_t value = avt_data_read8 (src);
 		*p++ = palette[value >> 4 bitand 0xF];
 		if (x < width - 1)
 		  *p++ = palette[value bitand 0xF];
@@ -263,7 +263,7 @@ avt_load_image_bmp_data (avt_data * src)
 
 	    for (int x = 0; x < width; x++, p++)
 	      {
-		uint16_t color = src->read8 (src);
+		uint16_t color = avt_data_read8 (src);
 		*p = palette[color];
 	      }
 
@@ -339,9 +339,9 @@ avt_load_image_bmp_data (avt_data * src)
 
 	    for (int x = 0; x < width; x++, p++)
 	      {
-		blue = src->read8 (src);
-		green = src->read8 (src);
-		red = src->read8 (src);
+		blue = avt_data_read8 (src);
+		green = avt_data_read8 (src);
+		red = avt_data_read8 (src);
 		*p = (red << 16) | (green << 8) | blue;
 	      }
 
