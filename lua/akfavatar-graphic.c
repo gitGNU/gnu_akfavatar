@@ -1,7 +1,7 @@
 /*
  * AKFAvatar graphic API
  * Copyright (c) 2011,2012,2013,2015
- * Andreas K. Foerster <info@akfoerster.de>
+ * Andreas K. Foerster <akf@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *

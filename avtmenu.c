@@ -1,6 +1,6 @@
 /*
  * menu for AKFAvatar
- * Copyright (c) 2013,2014 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2013,2014 Andreas K. Foerster <akf@akfoerster.de>
  *
  * required standards: C99
  *

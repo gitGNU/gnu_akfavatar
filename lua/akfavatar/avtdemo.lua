@@ -1,6 +1,6 @@
 --[[-------------------------------------------------------------------
 Moldule for making demos for Lua-AKFAvatar
-Copyright (c) 2010,2011,2012,2013 Andreas K. Foerster <info@akfoerster.de>
+Copyright (c) 2010,2011,2012,2013 Andreas K. Foerster <akf@akfoerster.de>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

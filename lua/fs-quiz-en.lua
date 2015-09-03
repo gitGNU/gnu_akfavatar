@@ -1,6 +1,6 @@
 #!/usr/bin/env lua-akfavatar
 
--- Copyright (c) 2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
+-- Copyright (c) 2010,2011,2012 Andreas K. Foerster <akf@akfoerster.de>
 -- License: GPL version 3 or later
 -- with ideas from Arne Babenhauserheide
 

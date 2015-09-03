@@ -25,7 +25,7 @@ avt.translations = {
   ["unknown"] = { de="Unbekannter" }
   }
 
--- please send corrections and further translations to info@akfoerster.de
+-- please send corrections and further translations to akf@akfoerster.de
 
 local L = avt.translate
 

@@ -2,7 +2,7 @@
  * AKFAvatar Terminal emulation for Lua 5.2
  * ATTENTION: this is work in progress, ie. not finished yet
  * Copyright (c) 2010,2011,2012,2013
- * Andreas K. Foerster <info@akfoerster.de>
+ * Andreas K. Foerster <akf@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *

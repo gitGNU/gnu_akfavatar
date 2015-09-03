@@ -1,6 +1,6 @@
 /*
  * get language code for Windows 2000 or newer
- * Copyright (c) 2012,2013 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2012,2013 Andreas K. Foerster <akf@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *

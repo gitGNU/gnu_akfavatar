@@ -1,7 +1,7 @@
 /*
  * AKFAvatar SDL backend
  * Copyright (c) 2007,2008,2009,2010,2011,2012,2013,2014
- * Andreas K. Foerster <info@akfoerster.de>
+ * Andreas K. Foerster <akf@akfoerster.de>
  *
  * required standards: C99
  *

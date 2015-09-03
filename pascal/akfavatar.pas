@@ -1,7 +1,7 @@
 {*
  * Pascal binding to the AKFAvatar library version 0.24.0
  * Copyright (c) 2007,2008,2009,2011,2012,2013
- * Andreas K. Foerster <info@akfoerster.de>
+ * Andreas K. Foerster <akf@akfoerster.de>
  *
  * Can be used with GNU-Pascal or FreePascal
  *

@@ -1,6 +1,6 @@
 /*
  * C-specific functions for AKFAvatar (wide characters)
- * Copyright (c) 2007,2013 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007,2013 Andreas K. Foerster <akf@akfoerster.de>
  *
  * the calling program must have used avt_initialize before calling 
  * any of these functions.

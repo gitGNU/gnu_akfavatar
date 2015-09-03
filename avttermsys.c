@@ -1,7 +1,7 @@
 /*
  * avttermsys - system specific functions for terminal emulation
  * Copyright (c) 2007,2008,2009,2010,2011,2013,2014
- * Andreas K. Foerster <info@akfoerster.de>
+ * Andreas K. Foerster <akf@akfoerster.de>
  *
  * required standards: C99 or C++, POSIX.1-2001
  *

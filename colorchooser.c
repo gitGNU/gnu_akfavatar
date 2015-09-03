@@ -1,7 +1,7 @@
 /*
  * colorchooser - colorchooser dialog for AKFAvatar
  * Copyright (c) 2009,2010,2012,2013
- * Andreas K. Foerster <info@akfoerster.de>
+ * Andreas K. Foerster <akf@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *

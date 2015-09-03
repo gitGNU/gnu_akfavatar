@@ -1,6 +1,6 @@
 {*
  * simple multiplication
- * Copyright (c) 2007,2008,2012,2013 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007,2008,2012,2013 Andreas K. Foerster <akf@akfoerster.de>
  *
  * This example shows how to write programs, that use features of the 
  * AKFAvatar library.

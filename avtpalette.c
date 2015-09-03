@@ -1,6 +1,6 @@
 /*
  * access to a palette of color definitions
- * Copyright (c) 2012,2013 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2012,2013 Andreas K. Foerster <akf@akfoerster.de>
  *
  * required standards: C99, POSIX.1-2001
  *

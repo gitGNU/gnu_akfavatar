@@ -1,7 +1,7 @@
 /*
  * filechooser - filechooser dialog for AKFAvatar
  * Copyright (c) 2008,2009,2010,2011,2012,2013,2014
- * Andreas K. Foerster <info@akfoerster.de>
+ * Andreas K. Foerster <akf@akfoerster.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

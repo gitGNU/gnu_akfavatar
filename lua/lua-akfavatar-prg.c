@@ -1,7 +1,7 @@
 /*
  * Starter for Lua-AKFAvatar programs in Lua
  * Copyright (c) 2009,2010,2011,2012,2013
- * Andreas K. Foerster <info@akfoerster.de>
+ * Andreas K. Foerster <akf@akfoerster.de>
  *
  * required standards: C99, POSIX.1-2001
  *

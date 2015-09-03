@@ -2,7 +2,7 @@
 
 --[[---------------------------------------------------------------------
 Audio player for AKFvatar
-Copyright (c) 2011,2012,2013 Andreas K. Foerster <info@akfoerster.de>
+Copyright (c) 2011,2012,2013 Andreas K. Foerster <akf@akfoerster.de>
 License: GPL version 3 or later
 
 Supported audio formats: Ogg Vorbis, Wave, AU

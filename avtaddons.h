@@ -1,7 +1,7 @@
 /*
  * different addons for AKFAvatar
- * Copyright (c) 2007,2008,2009,2010,2011,2012,2013,2014
- * Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007,2008,2009,2010,2011,2012,2013,2014,2015
+ * Andreas K. Foerster <akf@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *
@@ -115,7 +115,7 @@ AVT_ADDON const struct avt_charenc *avt_cp850 (void);
 
 /*
  * Maps for Microsoft Windows codepages
- * 1250 (central an eastern European)
+ * 1250 (central and eastern European)
  * 1251 (Cyrillic)
  * 1252 (Western languages)
  *

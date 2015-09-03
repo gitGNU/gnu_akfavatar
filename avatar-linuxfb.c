@@ -1,6 +1,6 @@
 /*
  * Linux framebuffer backend for AKFAvatar
- * Copyright (c) 2012,2014 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2012,2014 Andreas K. Foerster <akf@akfoerster.de>
  *
  * This file is only for systems with the kernel Linux.
  * Screen and keyboard are supported, but mouse support is missing.

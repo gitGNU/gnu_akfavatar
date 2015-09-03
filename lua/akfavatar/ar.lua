@@ -3,7 +3,7 @@ Lua module to handle ar archives (unfinished)
 currenty only for reading
 member names are limited to 15 characters
 
-Copyright (c) 2010,2011,2012 Andreas K. Foerster <info@akfoerster.de>
+Copyright (c) 2010,2011,2012 Andreas K. Foerster <akf@akfoerster.de>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

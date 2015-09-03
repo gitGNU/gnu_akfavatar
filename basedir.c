@@ -1,6 +1,6 @@
 /*
  * get base directory of the executable, if possible
- * written 2012 by Andreas K. Foerster <info@akfoerster.de>
+ * written 2012 by Andreas K. Foerster <akf@akfoerster.de>
  *
  * This file is dedicated to the Public Domain (CC0)
  * http://creativecommons.org/publicdomain/zero/1.0/

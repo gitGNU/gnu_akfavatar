@@ -1,6 +1,6 @@
 /* 
  * avtwindows - windows specific functions for avatarsay
- * Copyright (c) 2007, 2008, 2009, 2010 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2007,2008,2009,2010 Andreas K. Foerster <akf@akfoerster.de>
  *
  * There is no additional functionality!
  * these functions are almost only replacements for missing POSIX 

@@ -1,6 +1,6 @@
 /*
  * reading data from a file
- * Copyright (c) 2009, 2010, 2013 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2009,2010,2013 Andreas K. Foerster <akf@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *

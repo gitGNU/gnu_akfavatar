@@ -1,13 +1,13 @@
 /*
  * AKFAvatar library - for giving your programs a graphical Avatar
  * Copyright (c) 2007,2008,2009,2010,2011,2012,2013,2014,2015
- * Andreas K. Foerster <info@akfoerster.de>
+ * Andreas K. Foerster <akf@akfoerster.de>
  *
  * required standards: C99
  *
  * other software:
  * required:
- *  SDL1.2 (SDL1.2.11 or later (but not 1.3 or 2.0!))
+ *  SDL1.2 (SDL1.2.11 or later (but not 1.3!))
  * optional/deprecated:
  *  SDL_image1.2 (support may be removed in future versions)
  *

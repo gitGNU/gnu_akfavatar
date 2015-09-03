@@ -2,7 +2,7 @@
 * lbase64.c
 * base64 encoding and decoding for Lua 5.2
 * Luiz Henrique de Figueiredo <lhf@tecgraf.puc-rio.br>
-* modified by Andreas K. Foerster <info@akfoerster.de>
+* modified by Andreas K. Foerster <akf@akfoerster.de>
 * December 2011
 * This code is hereby placed in the public domain.
 */

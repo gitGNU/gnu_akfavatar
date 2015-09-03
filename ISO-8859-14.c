@@ -1,6 +1,6 @@
 /*
  * ISO-8859-14 (ISO Latin-8) support for AKFAvatar
- * Copyright (c) 2013 Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2013 Andreas K. Foerster <akf@akfoerster.de>
  *
  * This file is part of AKFAvatar
  *

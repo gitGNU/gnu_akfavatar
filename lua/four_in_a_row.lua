@@ -4,7 +4,7 @@
 Four in a Row
 Game for 1 or 2 players
 
-Copyright (c) 2011,2012,2013,2014 Andreas K. Foerster <info@akfoerster.de>
+Copyright (c) 2011,2012,2013,2014 Andreas K. Foerster <akf@akfoerster.de>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
