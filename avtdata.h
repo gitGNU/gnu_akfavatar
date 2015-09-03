@@ -1,7 +1,7 @@
 /*
  * data handling
- * Copyright (c) 2012,2013,2014
- * Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2012,2013,2014,2015
+ * Andreas K. Foerster <akf@akfoerster.de>
  *
  * required standards: C99
  *
@@ -86,7 +86,7 @@ struct avt_data
       size_t size;
       size_t position;
     } memory;
-  } field;
+  } priv;
 };
 
 void avt_data_init (avt_data *);	// constructor

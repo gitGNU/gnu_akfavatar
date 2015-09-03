@@ -1,7 +1,7 @@
 /*
  * data reading abstraction
- * Copyright (c) 2012,2013,2014
- + Andreas K. Foerster <info@akfoerster.de>
+ * Copyright (c) 2012,2013,2014,2015
+ * Andreas K. Foerster <akf@akfoerster.de>
  *
  * required standards: C99
  *
@@ -38,11 +38,11 @@
 
 #if defined(__GNUC__) \
   and ((__GNUC__ > 4) or ((__GNUC__ == 4) and (__GNUC_MINOR__ >= 8)))
-#define akf_bswap16(x)  __builtin_bswap16(x)
-#define akf_bswap32(x)  __builtin_bswap32(x)
+#define avt_data_bswap16(x)  __builtin_bswap16(x)
+#define avt_data_bswap32(x)  __builtin_bswap32(x)
 #else
-#define akf_bswap16(x)  (((x)<<8|(x)>>8)&0xFFFF)
-#define akf_bswap32(x)  \
+#define avt_data_bswap16(x)  (((x)<<8|(x)>>8)&0xFFFF)
+#define avt_data_bswap32(x)  \
   (((x)<<24)|(((x)&0xFF00)<<8)|(((x)&0xFF0000)>>8)|((x)>>24))
 #endif
 
@@ -62,11 +62,11 @@ reset (avt_data * d)
 static void
 method_done_stream (avt_data * d)
 {
-  if (d->field.stream.autoclose)
+  if (d->priv.stream.autoclose)
     {
-      fclose (d->field.stream.data);
-      d->field.stream.data = NULL;
-      d->field.stream.autoclose = false;
+      fclose (d->priv.stream.data);
+      d->priv.stream.data = NULL;
+      d->priv.stream.autoclose = false;
     }
 
   reset (d);
@@ -76,9 +76,9 @@ method_done_stream (avt_data * d)
 static void
 method_done_memory (avt_data * d)
 {
-  d->field.memory.data = NULL;
-  d->field.memory.position = 0;
-  d->field.memory.size = 0;
+  d->priv.memory.data = NULL;
+  d->priv.memory.position = 0;
+  d->priv.memory.size = 0;
 
   reset (d);
 }
@@ -87,7 +87,7 @@ method_done_memory (avt_data * d)
 static size_t
 method_read_stream (avt_data * d, void *data, size_t size, size_t number)
 {
-  return fread (data, size, number, d->field.stream.data);
+  return fread (data, size, number, d->priv.stream.data);
 }
 
 // skip also works on nonseekable streams
@@ -98,18 +98,18 @@ method_skip_stream (avt_data * d, size_t size)
 
   while (size > sizeof (buffer))
     {
-      fread (buffer, sizeof (buffer), 1, d->field.stream.data);
+      fread (buffer, sizeof (buffer), 1, d->priv.stream.data);
       size -= sizeof (buffer);
     }
 
   // size <= sizeof(buffer)
-  fread (buffer, 1, size, d->field.stream.data);
+  fread (buffer, 1, size, d->priv.stream.data);
 }
 
 static void
 method_skip_memory (avt_data * d, size_t size)
 {
-  d->field.memory.position += size;
+  d->priv.memory.position += size;
 }
 
 static size_t
@@ -117,8 +117,8 @@ method_read_memory (avt_data * d, void *data, size_t size, size_t number)
 {
   size_t result = 0;
   size_t all = size * number;
-  size_t position = d->field.memory.position;
-  size_t datasize = d->field.memory.size;
+  size_t position = d->priv.memory.position;
+  size_t datasize = d->priv.memory.size;
 
   // not all readable?
   if (position + all > datasize)
@@ -134,8 +134,8 @@ method_read_memory (avt_data * d, void *data, size_t size, size_t number)
 	return 0;		// nothing readable
     }
 
-  memcpy (data, d->field.memory.data + position, all);
-  d->field.memory.position += all;
+  memcpy (data, d->priv.memory.data + position, all);
+  d->priv.memory.position += all;
   result = number;
 
   return result;
@@ -174,7 +174,7 @@ method_read16swap (avt_data * d)
 
   d->read (d, &data, sizeof (data), 1);
 
-  return akf_bswap16 (data);
+  return avt_data_bswap16 (data);
 }
 
 
@@ -198,22 +198,22 @@ method_read32swap (avt_data * d)
 
   d->read (d, &data, sizeof (data), 1);
 
-  return akf_bswap32 (data);
+  return avt_data_bswap32 (data);
 }
 
 
 static long
 method_tell_stream (avt_data * d)
 {
-  return ftell (d->field.stream.data);
+  return ftell (d->priv.stream.data);
 }
 
 
 static long
 method_tell_memory (avt_data * d)
 {
-  if (d->field.memory.position <= d->field.memory.size)
-    return d->field.memory.position;
+  if (d->priv.memory.position <= d->priv.memory.size)
+    return d->priv.memory.position;
   else
     return -1;
 }
@@ -222,7 +222,7 @@ method_tell_memory (avt_data * d)
 static bool
 method_seek_stream (avt_data * d, long offset, int whence)
 {
-  return (fseek (d->field.stream.data, offset, whence) > -1);
+  return (fseek (d->priv.stream.data, offset, whence) > -1);
 }
 
 
@@ -232,26 +232,26 @@ method_seek_memory (avt_data * d, long offset, int whence)
   switch (whence)
     {
     case SEEK_SET:
-      d->field.memory.position = offset;
+      d->priv.memory.position = offset;
       break;
 
     case SEEK_CUR:
-      d->field.memory.position += offset;
+      d->priv.memory.position += offset;
       break;
 
     case SEEK_END:
-      d->field.memory.position = d->field.memory.size - offset;
+      d->priv.memory.position = d->priv.memory.size - offset;
       break;
     }
 
-  return (d->field.memory.position <= d->field.memory.size);
+  return (d->priv.memory.position <= d->priv.memory.size);
 }
 
 
 static int
 method_filenumber_stream (avt_data * d)
 {
-  return fileno (d->field.stream.data);
+  return fileno (d->priv.stream.data);
 }
 
 
@@ -296,8 +296,8 @@ method_open_stream (avt_data * d, FILE * stream, bool autoclose)
   d->seek = method_seek_stream;
   d->filenumber = method_filenumber_stream;
 
-  d->field.stream.data = stream;
-  d->field.stream.autoclose = autoclose;
+  d->priv.stream.data = stream;
+  d->priv.stream.autoclose = autoclose;
 
   d->open_stream = NULL;
   d->open_file = NULL;
@@ -330,9 +330,9 @@ method_open_memory (avt_data * d, const void *memory, size_t size)
   d->seek = method_seek_memory;
   d->filenumber = method_filenumber_memory;
 
-  d->field.memory.data = memory;
-  d->field.memory.position = 0;
-  d->field.memory.size = size;
+  d->priv.memory.data = memory;
+  d->priv.memory.position = 0;
+  d->priv.memory.size = size;
 
   d->open_stream = NULL;
   d->open_file = NULL;
