@@ -163,7 +163,7 @@ method_done_data (avt_audio * s)
 {
   if (s->info.data.data)
     {
-      s->info.data.data->done (s->info.data.data);
+      avt_data_done (s->info.data.data);
       free (s->info.data.data);
     }
 }
@@ -186,7 +186,7 @@ static void
 method_rewind_data (avt_audio * s)
 {
   if (s->info.data.data)
-    s->info.data.data->seek (s->info.data.data, s->info.data.start, SEEK_SET);
+    avt_data_seek (s->info.data.data, s->info.data.start, SEEK_SET);
 }
 
 extern int
@@ -304,7 +304,7 @@ static size_t
 method_get_audio_data (avt_audio * restrict s, void *restrict data,
 		       size_t size)
 {
-  return s->info.data.data->read (s->info.data.data, data, 1, size);
+  return avt_data_read (s->info.data.data, data, 1, size);
 }
 
 
@@ -343,8 +343,7 @@ method_get_law_data (avt_audio * restrict s, void *restrict data, size_t size)
   uint_least8_t samples[bytes];
   size_t b;
 
-  b = s->info.data.data->read (s->info.data.data, &samples,
-			       sizeof (samples[0]), bytes);
+  b = avt_data_read (s->info.data.data, &samples, sizeof (samples[0]), bytes);
   if (not b)
     return 0;
 
@@ -487,7 +486,8 @@ avt_load_audio_block (avt_data * src, size_t maxsize,
   else
     rest = MAXIMUM_SIZE;
 
-  while ((n = src->read (src, &data, 1, avt_min (sizeof (data), rest))) > 0)
+  while ((n =
+	  avt_data_read (src, &data, 1, avt_min (sizeof (data), rest))) > 0)
     {
       if (avt_add_raw_audio_data (audio, data, n) != AVT_NORMAL)
 	{
@@ -516,13 +516,13 @@ static avt_audio *
 avt_mmap_audio (avt_data * src, size_t maxsize,
 		int samplingrate, int audio_type, int channels, int playmode)
 {
-  int fd = src->filenumber (src);
+  int fd = avt_data_filenumber (src);
 
   // not a file?
   if (fd < 0)
     return NULL;
 
-  long pos = src->tell (src);
+  long pos = avt_data_tell (src);
   if (pos < 0)
     return NULL;
 
@@ -531,12 +531,12 @@ avt_mmap_audio (avt_data * src, size_t maxsize,
     length = maxsize + pos;
   else				// get length of file
     {
-      if (not src->seek (src, 0, SEEK_END))
+      if (not avt_data_seek (src, 0, SEEK_END))
 	return NULL;		// stream not seekable
 
-      length = src->tell (src);
+      length = avt_data_tell (src);
       maxsize = length - pos;
-      src->seek (src, pos, SEEK_SET);
+      avt_data_seek (src, pos, SEEK_SET);
     }
 
   void *address = mmap (NULL, length, PROT_READ, MAP_PRIVATE, fd, 0);
@@ -585,7 +585,7 @@ static avt_audio *
 avt_fetch_audio_data (avt_data * src, int samplingrate,
 		      int audio_type, int channels, int playmode)
 {
-  int start = src->tell (src);
+  int start = avt_data_tell (src);
 
   // on non seekable streams rewind would be impossible
   if (start < 0)
@@ -638,7 +638,7 @@ avt_audio_loader (avt_data * src, size_t audio_size, int samplingrate,
 {
   avt_audio *audio = NULL;
 
-  if (src->filenumber (src) < 0)	// already in memory?
+  if (avt_data_filenumber (src) < 0)	// already in memory?
     audio = avt_fetch_audio_data (src, samplingrate, audio_type,
 				  channels, playmode);
   else if (BIG_AUDIO <= audio_size)
@@ -671,15 +671,15 @@ avt_load_au (avt_data * src, size_t maxsize, int playmode)
 
   uint_least32_t head_size, audio_size, encoding, samplingrate, channels;
   // magic value is already read
-  head_size = src->read32 (src);
-  audio_size = src->read32 (src);
-  encoding = src->read32 (src);
-  samplingrate = src->read32 (src);
-  channels = src->read32 (src);
+  head_size = avt_data_read32 (src);
+  audio_size = avt_data_read32 (src);
+  encoding = avt_data_read32 (src);
+  samplingrate = avt_data_read32 (src);
+  channels = avt_data_read32 (src);
 
   // skip the rest of the header
   if (head_size > 24)
-    src->skip (src, head_size - 24);
+    avt_data_skip (src, head_size - 24);
 
   if (maxsize < MAXIMUM_SIZE)
     {
@@ -761,33 +761,33 @@ avt_load_wave (avt_data * src, size_t maxsize, int playmode)
    * this chunk contains the rest,
    * so chunk_size should be the file size - 8
    */
-  chunk_size = src->read32 (src);
+  chunk_size = avt_data_read32 (src);
 
-  if (src->read (src, &identifier, sizeof (identifier), 1) != 1
+  if (avt_data_read (src, &identifier, sizeof (identifier), 1) != 1
       or memcmp ("WAVE", identifier, sizeof (identifier)) != 0)
     return NULL;		// not a Wave file
 
   // search format chunk
   do
     {
-      if (src->read (src, &identifier, sizeof (identifier), 1) != 1)
+      if (avt_data_read (src, &identifier, sizeof (identifier), 1) != 1)
 	return NULL;		// no format chunk found
-      chunk_size = src->read32 (src);
+      chunk_size = avt_data_read32 (src);
       wrong_chunk = (memcmp ("fmt ", identifier, sizeof (identifier)) != 0);
       if (wrong_chunk)
-	src->skip (src, even (chunk_size));
+	avt_data_skip (src, even (chunk_size));
     }
   while (wrong_chunk);
 
-  encoding = src->read16 (src);
-  channels = src->read16 (src);
-  samplingrate = src->read32 (src);
-  src->read32 (src);		// bytes_per_second
-  src->read16 (src);		// block_align
-  bits_per_sample = src->read16 (src);	// just for PCM
+  encoding = avt_data_read16 (src);
+  channels = avt_data_read16 (src);
+  samplingrate = avt_data_read32 (src);
+  avt_data_read32 (src);	// bytes_per_second
+  avt_data_read16 (src);	// block_align
+  bits_per_sample = avt_data_read16 (src);	// just for PCM
 
   if (chunk_size > 16)
-    src->skip (src, even (chunk_size) - 16);
+    avt_data_skip (src, even (chunk_size) - 16);
 
   switch (encoding)
     {
@@ -820,12 +820,12 @@ avt_load_wave (avt_data * src, size_t maxsize, int playmode)
   // search data chunk - must be after format chunk
   do
     {
-      if (src->read (src, &identifier, sizeof (identifier), 1) != 1)
+      if (avt_data_read (src, &identifier, sizeof (identifier), 1) != 1)
 	return NULL;		// no data chunk found
-      chunk_size = src->read32 (src);
+      chunk_size = avt_data_read32 (src);
       wrong_chunk = (memcmp ("data", identifier, sizeof (identifier)) != 0);
       if (wrong_chunk)
-	src->skip (src, even (chunk_size));
+	avt_data_skip (src, even (chunk_size));
     }
   while (wrong_chunk);
 
@@ -847,7 +847,7 @@ avt_load_audio_general (avt_data * src, size_t maxsize, int playmode)
     maxsize = MAXIMUM_SIZE;
 
   char head[4];
-  if (src->read (src, head, sizeof (head), 1) != 1)
+  if (avt_data_read (src, head, sizeof (head), 1) != 1)
     {
       avt_set_error ("cannot read head of audio data");
       return NULL;

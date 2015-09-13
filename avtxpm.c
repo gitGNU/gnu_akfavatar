@@ -346,13 +346,13 @@ avt_load_image_xpm_data (avt_data * src)
   line = NULL;
   end = error = false;
 
-  start = src->tell (src);
+  start = avt_data_tell (src);
 
   // check if it has an XPM header
-  if (src->read (src, head, sizeof (head), 1) < 1
+  if (avt_data_read (src, head, sizeof (head), 1) < 1
       or memcmp (head, "/* XPM */", 9) != 0)
     {
-      src->seek (src, start, SEEK_SET);
+      avt_data_seek (src, start, SEEK_SET);
 
       return NULL;
     }
@@ -374,7 +374,7 @@ avt_load_image_xpm_data (avt_data * src)
       // skip to next quote
       do
 	{
-	  if (src->read (src, &c, sizeof (c), 1) < 1)
+	  if (avt_data_read (src, &c, sizeof (c), 1) < 1)
 	    end = true;
 	}
       while (not end and c != '"');
@@ -384,7 +384,7 @@ avt_load_image_xpm_data (avt_data * src)
       c = '\0';
       while (not end and c != '"')
 	{
-	  if (src->read (src, &c, sizeof (c), 1) < 1)
+	  if (avt_data_read (src, &c, sizeof (c), 1) < 1)
 	    error = end = true;	// shouldn't happen here
 
 	  if (c != '"')

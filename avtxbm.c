@@ -1,6 +1,6 @@
 /*
  * X-Bitmap (XBM) support for AKFAvatar
- * Copyright (c) 2007,2008,2009,2010,2011,2012,2013
+ * Copyright (c) 2007,2008,2009,2010,2011,2012,2013,2015
  * Andreas K. Foerster <akf@akfoerster.de>
  *
  * required standards: C99, POSIX.1-2001
@@ -127,13 +127,13 @@ avt_load_image_xbm_data (avt_data * src, avt_color color)
   end = error = false;
   width = height = bytes = bmpos = 0;
 
-  start = src->tell (src);
+  start = avt_data_tell (src);
 
   // check if it starts with #define
-  if (src->read (src, line, 1, sizeof (line) - 1) < 1
+  if (avt_data_read (src, line, 1, sizeof (line) - 1) < 1
       or memcmp (line, "#define", 7) != 0)
     {
-      src->seek (src, start, SEEK_SET);
+      avt_data_seek (src, start, SEEK_SET);
 
       return NULL;
     }
@@ -180,11 +180,11 @@ avt_load_image_xbm_data (avt_data * src, avt_color color)
     {
       char c;
 
-      src->seek (src, start, SEEK_SET);
+      avt_data_seek (src, start, SEEK_SET);
 
       do
 	{
-	  if (src->read (src, &c, sizeof (c), 1) < 1)
+	  if (avt_data_read (src, &c, sizeof (c), 1) < 1)
 	    error = end = true;
 	}
       while (c != '{' and not error);
@@ -193,7 +193,7 @@ avt_load_image_xbm_data (avt_data * src, avt_color color)
 	goto done;
 
       // skip newline
-      src->read (src, &c, sizeof (c), 1);
+      avt_data_read (src, &c, sizeof (c), 1);
     }
 
   while (not end and not error)
@@ -206,7 +206,7 @@ avt_load_image_xbm_data (avt_data * src, avt_color color)
       c = '\0';
       while (not end and linepos < sizeof (line) and c != '\n')
 	{
-	  if (src->read (src, &c, sizeof (c), 1) < 1)
+	  if (avt_data_read (src, &c, sizeof (c), 1) < 1)
 	    error = end = true;
 
 	  if (c != '\n' and c != '}')
@@ -260,7 +260,7 @@ done:
     free (bits);
 
   if (error)
-    src->seek (src, start, SEEK_SET);
+    avt_data_seek (src, start, SEEK_SET);
 
   return img;
 }

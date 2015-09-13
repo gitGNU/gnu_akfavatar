@@ -74,6 +74,8 @@ struct avt_data
 };
 
 void avt_data_init (avt_data *);	// constructor
+#define avt_data_done(d) (d)->done(d)
+#define avt_data_filenumber(d) (d)->filenumber(d)
 
 // duplicate the data element
 // the result must be freed by the caller after calling done
@@ -90,7 +92,14 @@ bool avt_data_open_file (avt_data *, const char *);
 // the memory area must be kept available until closed
 bool avt_data_open_memory (avt_data *, const void *, size_t);
 
+#define avt_data_read(d,p,size,number) (d)->read((d),(p),(size),(number))
 uint_least8_t avt_data_read8 (avt_data *);
+#define avt_data_read16(d) (d)->read16(d)
+#define avt_data_read32(d) (d)->read32(d)
+
+#define avt_data_tell(d) (d)->tell(d)
+#define avt_data_seek(d,offset,whence) (d)->seek((d),(offset),(whence))
+#define avt_data_skip(d,size) (d)->skip((d),(size))
 
 // set this before using read16 or read32
 void avt_data_big_endian (avt_data *, bool);

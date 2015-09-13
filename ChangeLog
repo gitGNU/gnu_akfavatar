@@ -1,3 +1,8 @@
+2015-09-13  Andreas K. Foerster  <akf@akfoerster.de>
+
+	* avtdata.h: macros for virtual methods
+	callers adapted
+
 2015-09-03  Andreas K. Foerster  <akf@akfoerster.de>
 
 	* avtdata.h, avtdata.c: static methods
