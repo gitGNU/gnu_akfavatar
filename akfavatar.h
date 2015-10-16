@@ -7,6 +7,7 @@
  *
  * other software:
  * required:
+ *  SDL2
  *  SDL1.2 (SDL1.2.11 or later (but not 1.3!))
  * optional/deprecated:
  *  SDL_image1.2 (support may be removed in future versions)
@@ -56,6 +57,7 @@
 
 /* to get the systems definition of wchar_t */
 #include <stddef.h>
+#include <stdint.h>
 
 #if !defined(__cplusplus) && !defined(__bool_true_false_are_defined)
 #include <stdbool.h>
@@ -149,10 +151,9 @@ extern "C" {
 
 /*
  * type for single characters
- * On Windows wchar_t/wint_t is not large enough for Unicode
  * it should be compatible with char32_t in C11.
  */
-typedef unsigned int avt_char;
+typedef uint_least32_t avt_char;
 
 /* general type for audio data */
 typedef struct avt_audio avt_audio;
