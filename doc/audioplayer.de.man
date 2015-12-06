@@ -3,25 +3,26 @@
 .\"
 .
 .TH "audioplayer.lua" 1 2012-07-25 AKFAvatar
+.nh
 .
 .SH NAME
-audioplayer.lua \- Audio-Abspieler für AKFAvatar
+audioplayer.lua \- Audio-Abspieler f\[:u]r AKFAvatar
 .
 .SH SYNTAX
 .BI "audioplayer.lua [" "Audio-Datei(en)" ]
 .
 .SH BESCHREIBUNG
-Audio-Abspieler für AKFAvatar.
+Audio-Abspieler f\[:u]r AKFAvatar.
 .PP
 .TP
-Unterstützte Audio-Formate:
+Unterst\[:u]tzte Audio-Formate:
 Ogg Vorbis, Wave, AU
 .TP
-Unterstützte Playlisten-Formate:
+Unterst\[:u]tzte Playlisten-Formate:
 M3U, PLS
 .PP
 Dieses Programm kann entweder interaktiv verwendet werden,
-oder Dateien können als Parameter übergeben werden.
+oder Dateien k\[:o]nnen als Parameter \[:u]bergeben werden.
 .PP
 Wenn man es von einem anderen Lua-Programm mit
 .B dofile()
@@ -31,16 +32,16 @@ kann man die globale Variable
 verwenden. Diese sollte entweder eine Zeichenkette,
 oder eine Tabelle mit Zeichenketten enthalten.
 .PP
-Ogg Vorbis wird nur unterstützt, wenn das Modul \[Bq]akfavatar-vorbis\[lq]
-verfügbar ist.
-Es können keine komplexen Dateien mit mehreren Streams abgespielt werden,
+Ogg Vorbis wird nur unterst\[:u]tzt, wenn das Modul \[Bq]akfavatar-vorbis\[lq]
+verf\[:u]gbar ist.
+Es k\[:o]nnen keine komplexen Dateien mit mehreren Streams abgespielt werden,
 nur \[Bq]Vorbis I simple profile\[lq].
 .PP
-Wenn man \[Bq]play all...\[lq] auswählt, oder mehrere Dateien als Parameter
-übergibt, dann werden Playlisten ignoriert.
-Playlisten können auch nicht auf andere Playlisten verweisen.
+Wenn man \[Bq]play all...\[lq] ausw\[:a]hlt, oder mehrere Dateien als Parameter
+\[:u]bergibt, dann werden Playlisten ignoriert.
+Playlisten k\[:o]nnen auch nicht auf andere Playlisten verweisen.
 .PP
-Netzwerk-Adressen werden unterstützt, wenn das Programm \[Bq]curl\[lq] im
+Netzwerk-Adressen werden unterst\[:u]tzt, wenn das Programm \[Bq]curl\[lq] im
 .B PATH
 installiert ist.
 Aber das funktioniert nicht auf allen Systemen.

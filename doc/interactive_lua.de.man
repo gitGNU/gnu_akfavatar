@@ -30,6 +30,7 @@
 ..
 .
 .TH "interactive_lua.lua" 1 2012-07-24 AKFAvatar
+.nh
 .
 .SH NAME
 interactive_lua.lua \- Lua interaktiv mit AKFAvatar verwenden
@@ -45,7 +46,7 @@ Wenn man eine Zeile mit einem Gleichheitszeichen (\[Bq]=\[lq]) einleitet,
 wird das Ergebnis des folgenden Ausdrucks angezeigt.
 Zum Beisiel, wenn man \[Bq]=10/4\[lq] eingibt, gibt er \[Bq]2,5\[lq] aus.
 .PP
-Zu beachten ist, dass das Dezimalzeichen, welches angezeigt wird, abhängig von
+Zu beachten ist, dass das Dezimalzeichen, welches angezeigt wird, abh\[:a]ngig von
 den Sprach-Einstellungen ist.
 Wenn man jedoch einen Dezimalbruch eingeben will, muss man die amerikanische
 Notation mit einem Dezimal-Punkt verwenden!
@@ -56,21 +57,21 @@ Man kann also \[Bq]MB=2^20\[lq] eingeben, und dann kann man das in eigenen
 Berechnungen verwenden. Wenn man wissen will, wieviel 5 Megabytes in Bytes
 sind, kann man \[Bq]=5*MB\[lq] eingeben, das Ergebnis ist dann
 \[Bq]5242880\[lq].
-Man mus auch darauf achten, dass bei Lua die Groß-/Klein-Schreibung wichtig
+Man mus auch darauf achten, dass bei Lua die Gro\[ss]-/Klein-Schreibung wichtig
 ist.
 Das bedeutet, dass \[Bq]MB\[lq] und \[Bq]mb\[lq] unterschiedliche
 Variablen sind.
 .PP
-Die Möglichkeit Zeilen mit einem Gleichheitszeichen einzuleiten ist eine
+Die M\[:o]glichkeit Zeilen mit einem Gleichheitszeichen einzuleiten ist eine
 besondere Eigenschaft des interaktiven Programmes.
 Es kann nicht in Skripten verwendet werden.
 .PP
 Die normale Eingabeaufforderung ist ein \[Bq]>\[lq].
-Wenn man jedoch eine unvollständinge Zeile eingibt, bekommt man eine andere
-Eingabeaufforderung, nämlich \[Bq]>>\[lq].
+Wenn man jedoch eine unvollst\[:a]ndinge Zeile eingibt, bekommt man eine andere
+Eingabeaufforderung, n\[:a]mlich \[Bq]>>\[lq].
 Dann kann man seine Eingabe fortsetzen.
 Wenn man versehentlich bei dieser Eingabeaufforderung landet, kann man
-einfach <Enter> drücken.
+einfach <Enter> dr\[:u]cken.
 Das verwirft die vorherige Eingabe.
 .PP
 Man kann auch seine eigenen Funktionen definieren.
@@ -83,13 +84,13 @@ Zum Beispiel:
   235.61944901923
 .EE
 .PP
-Man kann jeden Lua-Befehl verwenden, einschließlich AKFAvatar-Befehlen.
+Man kann jeden Lua-Befehl verwenden, einschlie\[ss]lich AKFAvatar-Befehlen.
 Zum Beispiel kann man dem Avatar einen Namen geben:
 .EX
   > avt.set_avatar_name("Hugo")
 .EE
 .PP
-Oder, wenn man überhaupt keinen Avatar haben will:
+Oder, wenn man \[:u]berhaupt keinen Avatar haben will:
 .EX
   > avt.avatar_image("none")
 .EE

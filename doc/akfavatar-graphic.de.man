@@ -30,9 +30,10 @@
 ..
 .
 .TH "akfavatar-graphic" 3 2013-08-09 AKFAvatar
+.nh
 .
 .SH NAME
-akfavatar-graphic \- Modul für die Anzeige von Grafiken unter Lua-AKFAvatar
+akfavatar-graphic \- Modul f\[:u]r die Anzeige von Grafiken unter Lua-AKFAvatar
 .
 .SH SYNTAX
 .PP
@@ -40,7 +41,7 @@ local graphic = require "akfavatar-graphic"
 .PP
 .SH BESCHREIBUNG
 .PP
-Modul für Lua-AKFAvatar um Grafiken anzuzeigen.
+Modul f\[:u]r Lua-AKFAvatar um Grafiken anzuzeigen.
 .PP
 .BR Hinweise :
 .IP \(en 2
@@ -49,28 +50,28 @@ Koordinaten fangen mit 1, 1 in der oberen linken Ecke an.
 Man kann es auch nach Art der Turtle-Grafik verwenden.
 .IP \(en
 Die Stiftbreite, Position, Ausrichtung, Stiftfarbe und Hintergrundfarbe sind
-für jede Grafik einzeln festgelegt.
+f\[:u]r jede Grafik einzeln festgelegt.
 .IP \(en
 Der Code ist nicht auf Geschwindigkeit optimiert.
-Man kann zwar Animationen machen, aber es werden keine fließenden Bewegungen.
+Man kann zwar Animationen machen, aber es werden keine flie\[ss]enden Bewegungen.
 .PP
 .SS Funktionen / Methoden
 .TP
-.BI "graphic.new(" "[Breite, Höhe] [, Hintergrundfarbe]" )
+.BI "graphic.new(" "[Breite, H\[:o]he] [, Hintergrundfarbe]" )
 Erzeugt eine neue Grafik (eine Leinwand).
 .IP
 Wenn die 
-.IR Breite " und " Höhe
+.IR Breite " und " H\[:o]he
 nicht angegeben wird, wird das gesamte Fenster bzw. Bildschirm verwendet.
 .br
-Es wird ein dünner, schwarzer Stift ausgewählt und die Position ist in der
+Es wird ein d\[:u]nner, schwarzer Stift ausgew\[:a]hlt und die Position ist in der
 Mitte, nach oben ausgerichtet.
 .br
 Wenn die
 .I Hintergrundfarbe
-nicht angegeben ist, wird diese von AKFAvatar übernommen.
+nicht angegeben ist, wird diese von AKFAvatar \[:u]bernommen.
 .IP
-Gibt die Grafik, die Breite und Höhe zurück (dh. drei Werte).
+Gibt die Grafik, die Breite und H\[:o]he zur\[:u]ck (dh. drei Werte).
 .IP
 Beispiel:
 .EX
@@ -79,14 +80,14 @@ local gr, width, height = graphic.new()
 .PP
 .TP
 .B "graphic.fullsize()"
-Gibt die erforderliche Breite und Höhe zurück, so dass das Bild das gesamte
-Fenster füllt.
+Gibt die erforderliche Breite und H\[:o]he zur\[:u]ck, so dass das Bild das gesamte
+Fenster f\[:u]llt.
 .PP
 .TP
 .BI "graphic.set_resize_key(" Taste )
 Setzt einen Tasten-Code (als Zahl), die ausgegeben werden soll,
-wenn die Fenstergröße verändert wurde.
-Gibt den vorherigen Tasten-Code zurück.
+wenn die Fenstergr\[:o]\[ss]e ver\[:a]ndert wurde.
+Gibt den vorherigen Tasten-Code zur\[:u]ck.
 .IP
 .B Hinweis:
 Man kann einen Wert zwischen 0xE000 und 0xE9FF verwenden, um Konflikte
@@ -95,8 +96,8 @@ mit echten Tasten-Codes zu vermeiden.
 .TP
 .BI "graphic.set_pointer_buttons_key(" Taste )
 Setzt einen Tasten-Code (als Zahl), die ausgegeben werden soll,
-wenn eine Maustaste gedrückt wurde.
-Gibt den vorherigen Tasten-Code zurück.
+wenn eine Maustaste gedr\[:u]ckt wurde.
+Gibt den vorherigen Tasten-Code zur\[:u]ck.
 .IP
 .B Hinweis:
 Man kann einen Wert zwischen 0xE000 und 0xE9FF verwenden, um Konflikte
@@ -106,11 +107,11 @@ mit echten Tasten-Codes zu vermeiden.
 .BI "graphic.set_pointer_motion_key(" Taste )
 Setzt eine Tasten-Code (als Zahl), die ausgegeben werden soll,
 wenn die Maus bewegt wurde.
-Gibt den vorherigen Tasten-Code zurück.
+Gibt den vorherigen Tasten-Code zur\[:u]ck.
 .PP
 .TP
 .B "graphic.get_pointer_position()"
-Gibt die x und y Koordinaten der Maus-Position zurück,
+Gibt die x und y Koordinaten der Maus-Position zur\[:u]ck,
 relativ zur zuletzt gezeigten Grafik.
 .PP
 .TP
@@ -119,28 +120,28 @@ Zeigt die Grafik als Bild nach dem Zeichnen.
 .IP
 .BR Hinweis :
 Man kann auch Zwischenschritte zeigen, dann weiter zeichnen, eine
-Weile warten und dann den nächsten Schritt zeigen und so weiter.
+Weile warten und dann den n\[:a]chsten Schritt zeigen und so weiter.
 Dadurch erzeugt man eine kleine Animation.
-Man sollte die Schritte aber nicht zu klein wählen, sonst wird es
-zu langsam auf langsamen Geräten.
+Man sollte die Schritte aber nicht zu klein w\[:a]hlen, sonst wird es
+zu langsam auf langsamen Ger\[:a]ten.
 .PP
 .TP
 .IB gr :size()
-Gibt die Breite und Höhe der Grafik
+Gibt die Breite und H\[:o]he der Grafik
 .I gr
-zurück.
+zur\[:u]ck.
 .PP
 .TP
 .IB gr :width()
 Gibt die Breite der Grafik
 .I gr
-zurück.
+zur\[:u]ck.
 .PP
 .TP
 .IB gr :height()
-Gibt die Höhe der Grafik
+Gibt die H\[:o]he der Grafik
 .I gr
-zurück.
+zur\[:u]ck.
 .PP
 .TP
 .IB gr :color( Farbname )
@@ -151,10 +152,10 @@ oder eine hexadezimale Angabe, wie zum Beispiel
 .IR 0xFFFF00 " oder " "\[dq]#FFFF00\[dq]" .
 .PP
 .TP
-.IB gr :rgb( "rot, grün, blau" )
+.IB gr :rgb( "rot, gr\[:u]n, blau" )
 Legt die Zeichenfarbe anhand von RGB-Werten fest.
 .br
-Die Werte müssen im Bereich von 0 bis 255 inklusive sein.
+Die Werte m\[:u]ssen im Bereich von 0 bis 255 inklusive sein.
 .br
 Diese Methode ist schneller, als
 .B gr:color()
@@ -169,79 +170,79 @@ Setzt die Zeichenfarbe auf die Hintergrundfarbe (Radiergummi).
 Legt die Dicke des Stiftes fest.
 Der
 .I Wert
-1 ist der dünnste.
+1 ist der d\[:u]nnste.
 .PP
 .TP
 .IB gr :clear( [Farbe] )
-Löscht die Grafik.
+L\[:o]scht die Grafik.
 .br
 Wenn eine
 .I Farbe
 angegeben ist, wird diese zur neuen Hintergrundfarbe.
 .br
-Die Stift-Position wird nicht verändert.
+Die Stift-Position wird nicht ver\[:a]ndert.
 .PP
 .TP
-.IB gr :border3d( "[gedrückt]" )
+.IB gr :border3d( "[gedr\[:u]ckt]" )
 Zeichnet einen 3D-Rahmen um die Grafik.
 Die Farbe basiert auf der Hintergrundfarbe der Grafik.
 Die Einstellung der Stift-Dicke wird ignoriert,
 der Rahmen ist immer 3 Pixel dick.
 .IP
 Wenn
-.I gedrückt
+.I gedr\[:u]ckt
 auf
 .B true
-gesetzt wird, wird der Rahmen nach innen gedrückt dargestellt.
+gesetzt wird, wird der Rahmen nach innen gedr\[:u]ckt dargestellt.
 .IP
-Die Stift-Position wird nicht verändert.
+Die Stift-Position wird nicht ver\[:a]ndert.
 .PP
 .TP
 .IB gr :putpixel( "[x, y]" )
 Setzt einen Pixel an den angegebenen Koordinaten, oder bei der aktuellen
 Stift-Position.
 .br
-Die Stift-Position wird nicht verändert.
+Die Stift-Position wird nicht ver\[:a]ndert.
 .PP
 .TP
 .IB gr :getpixel( "[x, y]" )
 Gibt die Pixelfarbe an den angegebenen Koordinaten oder bei der aktuellen
-Stift-Position zurück.
-Die Farbe wird als String in hexadezimaler RGB-Schreibweise zurückgegeben.
+Stift-Position zur\[:u]ck.
+Die Farbe wird als String in hexadezimaler RGB-Schreibweise zur\[:u]ckgegeben.
 Im Fehlerfall wird
 .I nil
-und eine Fehlermeldung zurückgegeben.
+und eine Fehlermeldung zur\[:u]ckgegeben.
 .br
-Die Stift-Position wird nicht verändert.
+Die Stift-Position wird nicht ver\[:a]ndert.
 .PP
 .TP
 .IB gr :getpixelrgb( "[x, y]" )
 Gibt die Pixelfarbe an den angegebenen Koordinaten oder bei der aktuellen
-Stift-Position zurück.
+Stift-Position zur\[:u]ck.
 .br
-Es werden drei Ganzzahlen für rot, grün und blau, im Bereich von 
-0 bis 255 zurückgegeben.
+Es werden drei Ganzzahlen f\[:u]r rot, gr\[:u]n und blau, im Bereich von 
+0 bis 255 zur\[:u]ckgegeben.
 .br
 Im Fehlerfall wird
 .I nil
-und eine Fehlermeldung zurückgegeben.
+und eine Fehlermeldung zur\[:u]ckgegeben.
 .br
-Die Stift-Position wird nicht verändert.
+Die Stift-Position wird nicht ver\[:a]ndert.
 .PP
 .TP
 .IB gr :putdot( "[x, y]" )
 Setzt einen Punkt an den angegebenen Koordinaten, oder bei der aktuellen
 Stift-Position.
 .br
-Wenn der Stift dünn ist, ist es das gleiche wie
+Wenn der Stift d\[:u]nn ist, ist es das gleiche wie
 .BR gr:putpixel() .
 .br
-Die Stift-Position wird nicht verändert.
+Die Stift-Position wird nicht ver\[:a]ndert.
 .PP
 .TP
 .IB gr :pen_position()
-Gibt die x- und y-Position des Stiftes zurück
-(dh. es werden zwei Werte zurückgegeben).
+Gibt die x- und y-Position des Stiftes zur\[:u]ck
+(dh. es werden zwei Werte zur\[:u]ckgegeben).
 .PP
 .TP
 .IB gr :center()
@@ -315,13 +316,13 @@ gesetzt.
 .PP
 .TP
 .IB gr :bar( "x1, y1, x2, y2" )
-Malt einen ausgefüllten Balken mit
+Malt einen ausgef\[:u]llten Balken mit
 .I "x1, y1"
 als obere linke Ecke und
 .I "x2, y2"
 als untere rechte Ecke.
 .br
-Die Stift-Position wird nicht verändert.
+Die Stift-Position wird nicht ver\[:a]ndert.
 .PP
 .TP
 .IB gr :rectangle( "x1, y1, x2, y2" )
@@ -331,7 +332,7 @@ als obere linke Ecke und
 .I "x2, y2"
 als untere rechte Ecke.
 .br
-Die Stift-Position wird nicht verändert.
+Die Stift-Position wird nicht ver\[:a]ndert.
 .PP
 .TP
 .IB gr :arc( "Radius [, Winkel1] [, Winkel2]" )
@@ -352,38 +353,38 @@ Anfangswinkel (siehe unten bei
 .PP
 .TP
 .IB gr :disc( "Radius [, x, y]" )
-Zeichnet eine Scheibe, dh. einen gefüllten Kreis mit dem angegebenen
+Zeichnet eine Scheibe, dh. einen gef\[:u]llten Kreis mit dem angegebenen
 .I Radius
 und den angegebenen Koordinaten als Mittelpunkt.
 Sind keine Koordinaten angegeben, wird die aktuelle Stift-Position als
 Mittelpunkt verwendet.
 .br
-Die Stift-Position wird nicht verändert.
+Die Stift-Position wird nicht ver\[:a]ndert.
 .PP
 .TP
 .IB gr :text( "Text [, x, y]" )
 Schreibt einen Text, ausgerichtet an der angegebenen Position oder der
 Stift-Position.
 .IP
-Standardmäßig wird der Text an der Postion zentriert.
+Standardm\[:a]\[ss]ig wird der Text an der Postion zentriert.
 Aber das kann man mit
 .B gr:textalign()
-ändern.
+\[:a]ndern.
 .IP
-Die Kodierung wird von den AKFAvatar-Einstellungen übernommen.
+Die Kodierung wird von den AKFAvatar-Einstellungen \[:u]bernommen.
 Andererseits werden keine anderen der dortigen Einstellungen verwendet.
-Die Farbe ist die Zeichenfarbe für die Grafik.
-Es gibt momentan keine einfache Möglichkeit für Fettdruck, Unterstreichen
+Die Farbe ist die Zeichenfarbe f\[:u]r die Grafik.
+Es gibt momentan keine einfache M\[:o]glichkeit f\[:u]r Fettdruck, Unterstreichen
 oder inverse Dastellung.
 .IP
-Man kann sämtliche darstellbaren Zeichen verwenden, aber Steuerzeichen
-werden nicht unterstützt, nichtmal ein Zeilenumbruch.
+Man kann s\[:a]mtliche darstellbaren Zeichen verwenden, aber Steuerzeichen
+werden nicht unterst\[:u]tzt, nichtmal ein Zeilenumbruch.
 .br
-Die Stift-Position wird nicht verändert.
+Die Stift-Position wird nicht ver\[:a]ndert.
 .PP
 .TP
 .IB gr :textalign( "[horizontal] [, vertikal]" )
-Legt die Ausrichtung für
+Legt die Ausrichtung f\[:u]r
 .B gr:text()
 fest.
 .IP
@@ -396,13 +397,13 @@ Die Vorgabe ist "center".
 .IP
 Die Ausrichtung bedeutet, wo der Bezugspunkt ist, zum Beispiel wenn man
 angibt, dass es links ausgerichtet sein soll, ist der Bezugspunkt links,
-aber der Text läuft nach rechts.
+aber der Text l\[:a]uft nach rechts.
 .PP
 .TP
 .B "graphic.font_size()"
 .TQ
 .IB gr :font_size()
-Gibt die Breite, Höhe und die Grundlinie eines Zeichens zurück.
+Gibt die Breite, H\[:o]he und die Grundlinie eines Zeichens zur\[:u]ck.
 Es handelt sich um einen Zeichensatz mit fester Breite, jedes Zeichen hat
 die selbe Breite.
 .PP
@@ -412,17 +413,17 @@ Kopiert eine Grafik auf die Grafik
 .I gr
 bei der angegebenen Position (obere linke Ecke).
 Wenn keine Position angegeben ist, wird es in die obere linke Ecke gesetzt.
-Der vorherige Inhalt wird überschrieben (keine Transparenz).
+Der vorherige Inhalt wird \[:u]berschrieben (keine Transparenz).
 .IP
 Eine Grafik mit der selben Breite und ohne Angabe einer Position zu
-kopieren ist äußerst effizient.
+kopieren ist \[:a]u\[ss]erst effizient.
 Das selbe gilt wenn die Grafik die selbe Breite hat und die
 .IR x -Position
 auf 1 gesetzt ist.
 .PP
 .TP
 .IB gr :put_transparency( "Grafik [, x, y]" )
-Legt eine Grafik über die Grafik
+Legt eine Grafik \[:u]ber die Grafik
 .I gr
 bei der angegebenen Position (obere linke Ecke).
 .br
@@ -458,20 +459,20 @@ Wenn keine Position angegeben ist, wird es in die obere linke Ecke gesetzt.
 .IB gr :get( "x1, y1, x2, y2" )
 Gibt einen Bereich der Grafik
 .I gr
-als neue Grafik zurück.
+als neue Grafik zur\[:u]ck.
 .br
-Die meisten Einstellungen werden ebenfalls kopiert, mit Ausnahme der Größe
+Die meisten Einstellungen werden ebenfalls kopiert, mit Ausnahme der Gr\[:o]\[ss]e
 und der Stift-Position.
 .br
 Der Stift wird auf die Mitte der neuen Grafik gesetzt, nach oben ausgerichtet.
 .br
-Alle Werte müssen im gültigen Bereich liegen.
+Alle Werte m\[:u]ssen im g\[:u]ltigen Bereich liegen.
 .PP
 .TP
 .IB gr :duplicate()
 Gibt ein exaktes Duplikat (eine Kopie) der Grafik 
 .I gr
-zurück.
+zur\[:u]ck.
 .br
 Die Grafik-spezifischen Einstellungen werden ebenfalls kopiert.
 .br
@@ -489,11 +490,11 @@ und einen neuen Vordergrund zeichnen.
 .IB gr :shift_vertically( Zeilen )
 Verschiebt die Grafik vertikal.
 .br
-Ein positiver Wert für
+Ein positiver Wert f\[:u]r
 .I Zeilen
 schiebt sie nach unten.
 .br
-Ein negativer Wert für
+Ein negativer Wert f\[:u]r
 .I Zeilen
 schiebt sie nach oben.
 .br
@@ -503,11 +504,11 @@ Der Stift wird mitbewegt.
 .IB gr :shift_horizontally( Spalten )
 Verschiebt die Grafik horizontal.
 .br
-Ein positiver Wert für
+Ein positiver Wert f\[:u]r
 .I Spalten
 schiebt sie nach rechts.
 .br
-Ein negativer Wert für
+Ein negativer Wert f\[:u]r
 .I Spalten
 schiebt sie nach links.
 .br
@@ -534,59 +535,59 @@ function export(graphic, name)
 end
 .EE
 .IP
-Zunächst exportiert es die Grafik ins PPM-Format.
+Zun\[:a]chst exportiert es die Grafik ins PPM-Format.
 Dann versucht es dieses ins PNG-Format umzuwandeln.
-Falls das gelingt, wird die PPM-Datei gelöscht.
+Falls das gelingt, wird die PPM-Datei gel\[:o]scht.
 Wenn der Anwender \[Bq]netpbm\[lq] oder \[Bq]ImageMagick\[lq] aber
 nicht installiert hat,
 hat er am Ende immer noch die PPM-Datei.
 .PP
 .SS Turtle-Grafik
 .PP
-Um Turtle-Grafik (\[Bq]Schildkröten-Grafik\[lq], manchmal auch 
+Um Turtle-Grafik (\[Bq]Schildkr\[:o]ten-Grafik\[lq], manchmal auch 
 \[Bq]Igel-Grafik\[lq] genannt)
-zu verstehen, muss man sich eine Schildkröte verstellen, die einen Stift trägt.
-Man kann der Schildkröte dann Befehle erteilen in welche Richtung sie sich drehen
+zu verstehen, muss man sich eine Schildkr\[:o]te verstellen, die einen Stift tr\[:a]gt.
+Man kann der Schildkr\[:o]te dann Befehle erteilen in welche Richtung sie sich drehen
 soll und wie weit sie sich zu bewegen hat.
 .PP
 .TP
 .IB gr :heading( Ausrichtung )
-Legt die Ausrichtung der Schildkröte fest.
-Der Wert muss in Grad angegeben werden und die Schildkröte dreht sich im
+Legt die Ausrichtung der Schildkr\[:o]te fest.
+Der Wert muss in Grad angegeben werden und die Schildkr\[:o]te dreht sich im
 Uhrzeigersinn.
 Der Wert 0 bedeutet, sie ist nach oben ausgerichtet,
 90 bedeutet nach rechts.
 .PP
 .TP
 .IB gr :get_heading()
-Gibt die Ausrichtung der Schildkröte zurück
+Gibt die Ausrichtung der Schildkr\[:o]te zur\[:u]ck
 (siehe
 .BR "gr:heading()" ).
 .PP
 .TP
 .IB gr :right( Winkel )
-Drehe die Schildkröte im Uhrzeigersinn um den angegebenen
+Drehe die Schildkr\[:o]te im Uhrzeigersinn um den angegebenen
 .I Winkel
 in Grad.
 .PP
 .TP
 .IB gr :left( Winkel )
-Drehe die Schildkröte gegen den Uhrzeigersinn um den angegebenen
+Drehe die Schildkr\[:o]te gegen den Uhrzeigersinn um den angegebenen
 .I Winkel
 in Grad.
 .PP
 .TP
 .IB gr :draw( Schritte )
-Zeichne eine Linie in die Richtung, in die die Schildköte ausgerichtet ist.
+Zeichne eine Linie in die Richtung, in die die Schildk\[:o]te ausgerichtet ist.
 .PP
 .TP
 .IB gr :move( Schritte )
-Bewege die Schildkröte in die Richtung in der sie ausgerichtet ist, ohne zu
+Bewege die Schildkr\[:o]te in die Richtung in der sie ausgerichtet ist, ohne zu
 zeichnen.
 .PP
 .TP
 .IB gr :home()
-Setzt die Schildkröte in die Mitte der Grafik, nach oben ausgerichtet.
+Setzt die Schildkr\[:o]te in die Mitte der Grafik, nach oben ausgerichtet.
 .PP
 .SH "SIEHE AUCH"
 .BR lua-akfavatar (1)

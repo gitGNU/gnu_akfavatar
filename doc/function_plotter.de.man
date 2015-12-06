@@ -30,19 +30,20 @@
 ..
 .
 .TH "function_plotter.lua" 1 2012-07-24 AKFAvatar
+.nh
 .
 .SH NAME
-function_plotter.lua \- Funktions-Plotter für Lua-AKFAvatar
+function_plotter.lua \- Funktions-Plotter f\[:u]r Lua-AKFAvatar
 .
 .SH SYNTAX
 .BI "function_plotter.lua [" Funktion ]
 .
 .SH BESCHREIBUNG
-Funktions-Plotter für Lua-AKFAvatar.
-Man kann eine Funktion für die Variable
+Funktions-Plotter f\[:u]r Lua-AKFAvatar.
+Man kann eine Funktion f\[:u]r die Variable
 .I x
 angeben, die dann gezeichnet wird.
-Als Beispiel könnte man \[Bq](x/5)^3\[lq] eingeben.
+Als Beispiel k\[:o]nnte man \[Bq](x/5)^3\[lq] eingeben.
 .PP
 Man kann folgende Operatoren verwenden:
 .IP +
@@ -54,7 +55,7 @@ Mal (Multiplikation)
 .IP /
 Geteilt (Division)
 .IP ^
-Hoch (Zum Beispiel \[Bq]x^3\[lq] für x³)
+Hoch (Zum Beispiel \[Bq]x^3\[lq] f\[:u]r x\[S3])
 .IP %
 Modulo (Der Rest einer Division)
 .PP
@@ -73,58 +74,58 @@ Quadratwurzel
 .RI e^ x
 .TP
 .BI log( x )
-Natürlicher Logarithmus
+Nat\[:u]rlicher Logarithmus
 .TP
 .BI log10( x )
 Basis-10 Logarithmus
 .TP
 .BI deg( x )
 In Grad umwandeln
-.RI ( x " im Bogenmaß)"
+.RI ( x " im Bogenma\[ss])"
 .TP
 .BI rad( x )
-Ins Bogenmaß umwandeln
+Ins Bogenma\[ss] umwandeln
 .RI ( x " in Grad)"
 .TP
 .BI sin( x )
 Sinus
-.RI ( x " im Bogenmaß)"
+.RI ( x " im Bogenma\[ss])"
 .TP
 .BI sinh( x )
 Sinus Hyperbolicus
-.RI ( x " im Bogenmaß)"
+.RI ( x " im Bogenma\[ss])"
 .TP
 .BI asin( x )
 Arkussinus
-.RI ( x " im Bogenmaß)"
+.RI ( x " im Bogenma\[ss])"
 .TP
 .BI cos( x )
 Kosinus
-.RI ( x " im Bogenmaß)"
+.RI ( x " im Bogenma\[ss])"
 .TP
 .BI cosh( x )
 Kosinus Hyperbolicus
-.RI ( x " im Bogenmaß)"
+.RI ( x " im Bogenma\[ss])"
 .TP
 .BI acos( x )
 Arkuskosinus
-.RI ( x " im Bogenmaß)"
+.RI ( x " im Bogenma\[ss])"
 .TP
 .BI tan( x )
 Tangens
-.RI ( x " im Bogenmaß)"
+.RI ( x " im Bogenma\[ss])"
 .TP
 .BI tanh( x )
 Tangens Hyperbolicus
-.RI ( x " im Bogenmaß)"
+.RI ( x " im Bogenma\[ss])"
 .TP
 .BI atan( x )
 Arkustangens
-.RI ( x " im Bogenmaß)"
+.RI ( x " im Bogenma\[ss])"
 .PP
 .BR Achtung :
-Der Ausdruck für diese Funktionen muss immer in Klammern stehen!
+Der Ausdruck f\[:u]r diese Funktionen muss immer in Klammern stehen!
 .PP
-Wenn man häufig spezielle Funktionen oder Konstanten benötigt,
-kann man sie einfach im Skript hinzufügen.
+Wenn man h\[:a]ufig spezielle Funktionen oder Konstanten ben\[:o]tigt,
+kann man sie einfach im Skript hinzuf\[:u]gen.
 .PP

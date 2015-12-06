@@ -54,7 +54,7 @@ multiply (multiplication)
 .IP /
 divide (division)
 .IP ^
-exponentation (for example use "x^3" for x³)
+exponentation (for example use "x^3" for x\[S3])
 .IP %
 modulo (the rest of a division)
 .PP

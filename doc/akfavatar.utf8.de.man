@@ -30,65 +30,66 @@
 ..
 .
 .TH "akfavatar.utf8" 3 2012-07-22 AKFAvatar
+.nh
 .
 .SH NAME
-akfavatar.utf8 \- Module für UTF-8 Unterstützung in Lua-AKFAvatar
+akfavatar.utf8 \- Module f\[:u]r UTF-8 Unterst\[:u]tzung in Lua-AKFAvatar
 .
 .SH SYNTAX
 .PP
 local utf8 = require "akfavatar.utf8"
 .PP
 .SH BESCHREIBUNG
-Dieses Modul definiert Funktionen für UTF-8 Strings.
-Viele dieser Funktionen dienen als Ersatz für Funktionen in Luas
+Dieses Modul definiert Funktionen f\[:u]r UTF-8 Strings.
+Viele dieser Funktionen dienen als Ersatz f\[:u]r Funktionen in Luas
 String-Bibliothek.
 .PP
-UTF-8 ist eine Zeichen-Kodierung für Unicode. Ein Zeichen kann mit einem bis
+UTF-8 ist eine Zeichen-Kodierung f\[:u]r Unicode. Ein Zeichen kann mit einem bis
 vier Byte kodiert sein. Darum wird eine besondere Behandlung erforderlich.
-Die meisten Funktionen der String-Bibliothek von Lua können nämlich nur
+Die meisten Funktionen der String-Bibliothek von Lua k\[:o]nnen n\[:a]mlich nur
 mit Kodierungen mit einem Byte pro Zeichen umgehen.
 .PP
 .TP
 .BI utf8.len( String )
-Zählt die Anzahl der Zeichen in einem UTF-8 kodierten
+Z\[:a]hlt die Anzahl der Zeichen in einem UTF-8 kodierten
 .IR String .
 .br
 .BR Hinweis :
-Steuerzeichen und unsichtbare Zeichen werden auch gezählt.
+Steuerzeichen und unsichtbare Zeichen werden auch gez\[:a]hlt.
 .PP
 .TP
 .BI utf8.sub( "String, Anfangszeichen [,Endzeichen]" )
 Wie
 .BR string.sub ,
-aber für UTF-8 Strings.
+aber f\[:u]r UTF-8 Strings.
 .IP
 Gibt den Teilstring von
 .IR Anfangszeichen " bis " Endzeichen
-zurück.
+zur\[:u]ck.
 Falls 
 .IR Anfangszeichen " oder " Endzeichen
-negativ sind, dann werden sie vom Ende des Strings gezählt.
+negativ sind, dann werden sie vom Ende des Strings gez\[:a]hlt.
 .br
-Also, utf8.sub(s, 1, 3) gibt die ersten 3 Zeichen zurück,
-während utf8.sub(s, -3) die letzten 3 Zeichen zurück gibt.
+Also, utf8.sub(s, 1, 3) gibt die ersten 3 Zeichen zur\[:u]ck,
+w\[:a]hrend utf8.sub(s, -3) die letzten 3 Zeichen zur\[:u]ck gibt.
 .PP
 .TP
 .BI utf8.char( ... )
 Wie
 .BR string.char ,
-aber es akzeptiert höhere Werte
-und gibt einen UTF-8 kodierten String zurück.
+aber es akzeptiert h\[:o]here Werte
+und gibt einen UTF-8 kodierten String zur\[:u]ck.
 .PP
 .TP
 .BI utf8.codepoint( String )
 Gibt den Codepoint des ersten Zeichens des
 .IR String s
-zurück.
+zur\[:u]ck.
 .br
 Im Falle eines Fehlers gibt es
 .I nil
-zurück
-(aber das ist keine richtige Gültigkeitsprüfung).
+zur\[:u]ck
+(aber das ist keine richtige G\[:u]ltigkeitspr\[:u]fung).
 .PP
 .TP
 .BI utf8.codepoints( "String [,Anfangszeichen [,Endzeichen]]" )
@@ -97,15 +98,15 @@ Wie
 .br
 Gibt die Unicode-Werte von
 .IR Anfangszeichen " bis " Endzeichen
-zurück.
+zur\[:u]ck.
 .br
-Wenn man nur das erste Zeichen benötigt, sollte man stattdessen
+Wenn man nur das erste Zeichen ben\[:o]tigt, sollte man stattdessen
 .B utf8.codepoint()
 verwenden.
 .PP
 .TP
 .BI utf8.characters( String )
-Iterator für die einzelnen Zeichen eines UTF-8 Strings.
+Iterator f\[:u]r die einzelnen Zeichen eines UTF-8 Strings.
 .br
 Ein Zeichen kann ein Einzelbyte oder Multibyte-String sein.
 .IP
@@ -127,53 +128,53 @@ Kombinationszeichen sind noch problematisch.
 .BI utf8.rep( "String, n" )
 Gibt den
 .I "String n"
-mal wiederholt zurück.
-Dies ist nur ein Alias für
+mal wiederholt zur\[:u]ck.
+Dies ist nur ein Alias f\[:u]r
 .BR string.rep() .
 .PP
 .TP
 .BI utf8.underlined( String )
 Gibt den
 .I String
-unterstrichen zurück (Overstrike-Technik).
+unterstrichen zur\[:u]ck (Overstrike-Technik).
 .PP
 .TP
 .BI utf8.bold( String )
 Gibt den
 .I String
-fett gedruckt zurück (Overstrike-Technik).
+fett gedruckt zur\[:u]ck (Overstrike-Technik).
 .PP
 .TP
 .B utf8.bom
 Byte Order Mark.
 .br
-Das wird bei UTF-8 zwar nicht benötigt,
+Das wird bei UTF-8 zwar nicht ben\[:o]tigt,
 wird aber manchmal als Signatur eingesetzt.
 .PP
 .TP
 .BI utf8.check_bom( String )
-Überprüft, ob der
+\[:U]berpr\[:u]ft, ob der
 .I String
-mit einem UTF-8-BOM anfängt.
+mit einem UTF-8-BOM anf\[:a]ngt.
 .PP
 .TP
 .BI utf8.check( String )
-Überprüft, ob der
+\[:U]berpr\[:u]ft, ob der
 .I String
 in UTF-8 kodiert ist.
 .br
-Es ist nur eine Überprüfung ob UTF-8 oder nicht,
-es ist keine Gültigkeitsüberprüfung.
+Es ist nur eine \[:U]berpr\[:u]fung ob UTF-8 oder nicht,
+es ist keine G\[:u]ltigkeits\[:u]berpr\[:u]fung.
 .br
 .BR Hinweis :
-reines ASCII ist auch gültiges UTF-8.
+reines ASCII ist auch g\[:u]ltiges UTF-8.
 .PP
 .TP
 .BI utf8.check_unicode( String )
-Überprüft den String auf Unicode-Kodierungen.
+\[:U]berpr\[:u]ft den String auf Unicode-Kodierungen.
 .br
 Gibt eines von "UTF-8", "UTF-16BE", UTF-16LE", "UTF-32BE", "UTF-32LE"
-zurück, oder
+zur\[:u]ck, oder
 .IR nil ,
 wenn keine Unicode Kodierung erkannt wird.
 .PP
@@ -181,8 +182,8 @@ wenn keine Unicode Kodierung erkannt wird.
 .BI utf8.from_ncr( String )
 Ersetzt Numeric Character References (NCR) mit UTF-8 Zeichen.
 .br
-Zum Beispiel "&#8364;" (dezimal) oder "&#x20AC;" (hexadezimal) für
-das Euro Währungszeichen.
+Zum Beispiel "&#8364;" (dezimal) oder "&#x20AC;" (hexadezimal) f\[:u]r
+das Euro W\[:a]hrungszeichen.
 .PP
 .TP
 .BI utf8.to_ncr( String )
@@ -200,7 +201,7 @@ von Latin-1 (ISO-8859-1) nach UTF-8.
 Konvertiert einen UTF-8
 .I String
 nach Latin-1 (ISO-8859-1).
-Zeichen, die nicht konvertiert werden können, werden durch den
+Zeichen, die nicht konvertiert werden k\[:o]nnen, werden durch den
 .IR Ersatz -String
 ersetzt,
 oder durch "\\x1A" wenn kein

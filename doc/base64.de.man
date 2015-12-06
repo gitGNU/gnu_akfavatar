@@ -3,6 +3,7 @@
 .\"
 .
 .TH "base64" 7lua 2012-07-25 AKFAvatar
+.nh
 .
 .SH NAME
 base64 \- Lua-Modul zur Base64-Kodierung
@@ -12,22 +13,22 @@ local base64 = require "base64"
 .PP
 .
 .SH BESCHREIBUNG
-Base64 ist eine Methode, um binäre Daten nur mit ASCII-Zeichen darzustellen.
+Base64 ist eine Methode, um bin\[:a]re Daten nur mit ASCII-Zeichen darzustellen.
 Das kann man verwenden, um zum Beispiel Audio-Dateien oder Bilder in
 Lua-Skripten einzubetten, mit Hilfe von langen Strings.
 .PP
 .BR Achtung :
 Die Bild-Formate XPM und XBM siind bereits in einem ASCII-Format und
-können ohne weitere Kodierung in Lua-Skripte eingebettet werden.
+k\[:o]nnen ohne weitere Kodierung in Lua-Skripte eingebettet werden.
 .PP
 .TP
-.BI base64.encode( binär-String )
-Damit kodiert man die Binärdaten in dem
-.I binär-String
+.BI base64.encode( bin\[:a]r-String )
+Damit kodiert man die Bin\[:a]rdaten in dem
+.I bin\[:a]r-String
 mit Base64.
-Das Ergebnis wird als String zurückgegeben.
+Das Ergebnis wird als String zur\[:u]ckgegeben.
 .IP
-Übrigens, auf GNU-Systemen gibt es auch ein Kommandozeilen-Werkzeug namens
+\[:U]brigens, auf GNU-Systemen gibt es auch ein Kommandozeilen-Werkzeug namens
 \[Bq]base64\[lq].
 Damit kann man die Daten auch kodieren.
 .PP
@@ -35,9 +36,9 @@ Damit kann man die Daten auch kodieren.
 .BI base64.decode( Base64-String )
 Damit dekodiert man einen
 .IR Base64-String .
-Die Binärdaten werden als String zurück gegeben.
+Die Bin\[:a]rdaten werden als String zur\[:u]ck gegeben.
 .PP
 .TP
 .B base64.version
-Diese Variable enthält einen Versions-String für das Base64-Modul.
+Diese Variable enth\[:a]lt einen Versions-String f\[:u]r das Base64-Modul.
 .PP

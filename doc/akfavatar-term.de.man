@@ -30,9 +30,10 @@
 ..
 .
 .TH "akfavatar-term" 3 2012-07-21 AKFAvatar
+.nh
 .
 .SH NAME
-akfavatar-term \- Modul zum Ausführen von Terminal-basierten Programmen in AKFAvatar
+akfavatar-term \- Modul zum Ausf\[:u]hren von Terminal-basierten Programmen in AKFAvatar
 .
 .SH SYNTAX
 .PP
@@ -49,41 +50,41 @@ innerhalb von AKFAvatar laufen zu lassen.
 Die Terminal-Emulation emuliert eine Linux-Textkonsole
 (nicht nur auf Linux-basierten Systemen).
 .PP
-Es kann auch dafür verwendet werden, um spezifische Programme für AKFAvatar zu
-schreiben, in Programmiersprachen, die ansonsten nicht unterstützt werden.
-Es gibt ein paar Möglichkeiten mit denen das ausführende Skript und das
-auszuführende Programm miteinander kommunizieren können.
+Es kann auch daf\[:u]r verwendet werden, um spezifische Programme f\[:u]r AKFAvatar zu
+schreiben, in Programmiersprachen, die ansonsten nicht unterst\[:u]tzt werden.
+Es gibt ein paar M\[:o]glichkeiten mit denen das ausf\[:u]hrende Skript und das
+auszuf\[:u]hrende Programm miteinander kommunizieren k\[:o]nnen.
 .PP
 .BR Achtung :
-Dieses Modul steht nicht für allen Plattformen zur Verfügung!
-Insbesondere nicht für Windows.
+Dieses Modul steht nicht f\[:u]r allen Plattformen zur Verf\[:u]gung!
+Insbesondere nicht f\[:u]r Windows.
 .PP
 .TP
 .BI term.startdir( [Verzeichnis] )
-Legt das Anfangsverzeichnis für den nächsten
+Legt das Anfangsverzeichnis f\[:u]r den n\[:a]chsten
 .BR term.execute() -Befehl
 fest.
 Wenn kein
 .I Verzeichnis
-angegeben wird, wird die vorherige Einstellung dadurch gelöscht.
+angegeben wird, wird die vorherige Einstellung dadurch gel\[:o]scht.
 .IP
 .BR Hinweis :
-Das Arbeitsverzeichnis des ausführenden Skriptes und des ausgeführten
-Programmes sind voneinander unabhängig!
+Das Arbeitsverzeichnis des ausf\[:u]hrenden Skriptes und des ausgef\[:u]hrten
+Programmes sind voneinander unabh\[:a]ngig!
 .PP
 .TP
 .B term.homedir()
-Setzt das Anfangsverzeichnis für den nächsten
+Setzt das Anfangsverzeichnis f\[:u]r den n\[:a]chsten
 .BR term.execute() -Befehl
 auf das Heimatverzeichnis des Benutzers.
 .IP
 .BR Hinweis :
-Das Arbeitsverzeichnis des ausführenden Skriptes und des ausgeführten
-Programmes sind voneinander unabhängig!
+Das Arbeitsverzeichnis des ausf\[:u]hrenden Skriptes und des ausgef\[:u]hrten
+Programmes sind voneinander unabh\[:a]ngig!
 .PP
 .TP
 .BI term.color( "true|false" )
-Schaltet die Farbunterstützung ein oder aus.
+Schaltet die Farbunterst\[:u]tzung ein oder aus.
 Der Terminal-Typ mit Farben ist \[Bq]linux\[lq],
 ohne Farben \[Bq]linux-m\[lq].
 .PP
@@ -96,34 +97,34 @@ auf den angegebenen
 .br
 Das hat auch Einfluss auf Programme, die mit
 .BR os.execute() " oder " io.popen()
-ausgeführt werden.
+ausgef\[:u]hrt werden.
 .PP
 .TP
 .BI term.unsetenv( Variable )
-Löscht die angegebene
+L\[:o]scht die angegebene
 .RI Umgebungs variable .
 .br
 Das hat auch Einfluss auf Programme, die mit
 .BR os.execute() " oder " io.popen()
-ausgeführt werden.
+ausgef\[:u]hrt werden.
 .PP
 .TP
 .BI term.execute( "[Programm [, Argumente]]" )
-Führt das angegebene
+F\[:u]hrt das angegebene
 .I Programm
 mit den angegebenen
 .IR Argumente n
 in der Terminal-Emulation aus.
 Wenn kein
 .I Programm
-angegeben wird, wird die Standard-Shell ausgeführt.
+angegeben wird, wird die Standard-Shell ausgef\[:u]hrt.
 .PP
 .SS APC-Schnittstelle
 .PP
 Die \[Bq]Application Program Command\[lq] (APC) Schnittstelle ist
-eine Methode mit der das ausgeführte Programm mit dem Lua-Interpreter
-des ausführenden Programmes kommunizieren kann.
-Um dies zu verwenden sendet das ausgeführte Programm Escape-Sequenzen der Art,
+eine Methode mit der das ausgef\[:u]hrte Programm mit dem Lua-Interpreter
+des ausf\[:u]hrenden Programmes kommunizieren kann.
+Um dies zu verwenden sendet das ausgef\[:u]hrte Programm Escape-Sequenzen der Art,
 wie ESC + \[Bq]_\[lq], gefolgt vom Befehl, abgeschlossen mit 
 ESC + \[Bq]\\\[lq].
 Die Ausgabe muss eventuell noch einen Flush bekommen, um einen sofortigen
@@ -140,19 +141,19 @@ APC (const char *s)
 }
 .EE
 .PP
-Die Befehle können Lua-Funktionsaufrufe sein, insbesondere die 
+Die Befehle k\[:o]nnen Lua-Funktionsaufrufe sein, insbesondere die 
 \[Bq]avt.\[lq]-Befehle von \[Bq]lua-akfavatar\[lq]
 (siehe \[Bq]lua-akfavatar-ref\[lq]).
 .br
-Bis zu 1024 Zeichen können gesendet werden.
-Das bedeutet, man kann keinen komplizierten Code vom ausgeführten Programm
+Bis zu 1024 Zeichen k\[:o]nnen gesendet werden.
+Das bedeutet, man kann keinen komplizierten Code vom ausgef\[:u]hrten Programm
 senden.
 Allerdings kann man im Lua-Skript, das das Programm aufruft globale Funktionen
 definieren, die dann auch mit der APC-Schnittstelle aufrufbar sind.
 .PP
 Als Konvention sollte das aufrufende Skript eine Umgebungsvariable namens
 .I "\[Bq]APC\[lq]"
-definieren, die die verfügbaren Funktionen beschreibt.
+definieren, die die verf\[:u]gbaren Funktionen beschreibt.
 .PP
 Zum Beispiel:
 .PP
@@ -162,22 +163,22 @@ Zum Beispiel:
 .PP
 .TP
 .BI term.send( String )
-Sendet einen String an das ausgeführte Programm, so als ob es von der
-Tastatur eingegeben worden wäre.
+Sendet einen String an das ausgef\[:u]hrte Programm, so als ob es von der
+Tastatur eingegeben worden w\[:a]re.
 Das kann man nur von der APC-Schnittstelle (siehe oben) verwenden.
 .br
-Wenn das ausgeführte Programm zeilenorientiert ist, sollte der String mit
+Wenn das ausgef\[:u]hrte Programm zeilenorientiert ist, sollte der String mit
 einem \[Bq]\\r\[lq] (wie Return) abgeschlossen werden.
 .PP
 .TP
 .BI term.decide( "String1 [,String2]" )
-Zeige Plus-/Minus-Knöpfe und abhängig von dieser Auswahl sende
+Zeige Plus-/Minus-Kn\[:o]pfe und abh\[:a]ngig von dieser Auswahl sende
 .IR String1 " oder " String2
-an das ausgeführte Programm, so als ob es von Tastatur eingegeben
-worden wäre.
+an das ausgef\[:u]hrte Programm, so als ob es von Tastatur eingegeben
+worden w\[:a]re.
 Das kann man nur von der APC-Schnittstelle (siehe oben) verwenden.
 .br
-Wenn das ausgeführte Programm zeilenorientiert ist, sollten beide Strings
+Wenn das ausgef\[:u]hrte Programm zeilenorientiert ist, sollten beide Strings
 angegeben werden und beide mit einem \[Bq]\\r\[lq] (wie Return)
 abgeschlossen werden.
 .PP

@@ -1449,10 +1449,10 @@ avt.encoding("UTF-8")
 avt.translations = {
 
   ["Hello world!"] = {
-    es="¡Hola mundo!",
+    es="\[r!]Hola mundo!",
     fr="Bonjour le monde!",
     de="Hallo Welt!",
-    sv="Hej Världen!",
+    sv="Hej V\[:a]rlden!",
     },
 
   ["That's live!"] = {

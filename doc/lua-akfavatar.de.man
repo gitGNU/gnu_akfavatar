@@ -30,19 +30,20 @@
 ..
 .
 .TH "lua-akfavatar" 1 2013-07-11 AKFAvatar
+.nh
 .
 .SH NAME
-lua-akfavatar \- Lua-Interpreter für die AKFAvatar-Benutzeroberfläche
+lua-akfavatar \- Lua-Interpreter f\[:u]r die AKFAvatar-Benutzeroberfl\[:a]che
 .
 .SH SYNTAX
 .BI "lua-akfavatar [" Optionen "] [" " Skript " "[" Argumente "] ]"
 .
 .SH BESCHREIBUNG
-Das Programm Lua-AKFAvatar ist der Lua Interpreter für die 
-AKFAvatar-Benutzeroberfläche.
-Es lädt und führt Lua-Skripte in Form von Quellcode aus
+Das Programm Lua-AKFAvatar ist der Lua Interpreter f\[:u]r die 
+AKFAvatar-Benutzeroberfl\[:a]che.
+Es l\[:a]dt und f\[:u]hrt Lua-Skripte in Form von Quellcode aus
 (kein Bytecode).
-Es können entweder Lua-Skripte geladen werden oder
+Es k\[:o]nnen entweder Lua-Skripte geladen werden oder
 .RB \[Bq] .avt \[lq]-Demo-Dateien.
 Wenn kein
 .I Skript
@@ -54,7 +55,7 @@ sind im
 .I Skript
 als Strings in der globalen Tabelle namens
 .B arg
-verfügbar.
+verf\[:u]gbar.
 Der Name des
 .IR Skript es
 selber befindet sich in
@@ -72,18 +73,18 @@ Mit dem Dateiauswahl-Dialog kann man auch Anleitungen
 mit der Dateiendung
 .RB \[Bq] .about \[lq]
 sehen.
-Das können einfache Textdateien sein, die in UTF-8 oder reinem ASCII
+Das k\[:o]nnen einfache Textdateien sein, die in UTF-8 oder reinem ASCII
 kodiert sind.
 Man kann auch die \[Bq]overstrike\[lq]-Technik verwenden, um Text fett
-oder unterstrichen darstellen zu können.
+oder unterstrichen darstellen zu k\[:o]nnen.
 Man kann zum Beispiel das Textsatzsystem \[Bq]groff\[lq] verwenden,
 um solche Dateien zu erstellen.
 .br
-Außerdem können GNU info Dateien
+Au\[ss]erdem k\[:o]nnen GNU info Dateien
 mit der Dateiendung
 .RB \[dq] .info \[dq]
 als Text dargestellt werden
-(keine Unterstützung für Querverweise).
+(keine Unterst\[:u]tzung f\[:u]r Querverweise).
 
 .
 .SH OPTIONEN
@@ -101,10 +102,10 @@ zeigt die Version an
 .RI "-l " "[var=]Name"
 ruft
 .BI require( \[dq]name\[dq] )
-auf, bevor das Skript ausgeführt wird.
+auf, bevor das Skript ausgef\[:u]hrt wird.
 Definiert eine globale Variable mit dem Namen
 .IR Name " oder " var .
-Das wird üblicherweise verwendet, um Bibliotheken zu laden.
+Das wird \[:u]blicherweise verwendet, um Bibliotheken zu laden.
 .TP
 -f
 .TQ
@@ -115,7 +116,7 @@ starte im Vollbild Modus
 -F
 .TQ
 --Fullscreen
-starte im Vollbild Modus ohne die Auflösung umzustellen
+starte im Vollbild Modus ohne die Aufl\[:o]sung umzustellen
 (nur wenn kein Skript angegeben ist)
 .TP
 .RI --dir= Verzeichnis
@@ -127,7 +128,7 @@ starte den Dateiauswahl-Dialog in diesem Verzeichnis
 LUA_PATH_5_2
 .TQ
 LUA_PATH
-Suchpfad für Lua-Module.
+Suchpfad f\[:u]r Lua-Module.
 Die Suchmuster werden durch Semikola getrennt.
 Ein Fragezeichen
 .RB ( ? )
@@ -136,17 +137,17 @@ Ein Punkt im Modul-Namen wird durch das Verzeichnis-Trennzeichen
 des Systems ersetzt.
 Zwei Semikola
 .RB ( ;; )
-fügen den Standard-Pfad hinzu.
+f\[:u]gen den Standard-Pfad hinzu.
 .TP
 LUA_CPATH_5_2
 .TQ
 LUA_CPATH
-Suchpfad für C-Module.
+Suchpfad f\[:u]r C-Module.
 Die Syntax ist die selbe wie bei
 .IR LUA_PATH .
 .TP
 AVTDATAPATH
-Suchpfad für Datendateien (Bilder, Audio, Texte...).
+Suchpfad f\[:u]r Datendateien (Bilder, Audio, Texte...).
 Er wird in der Variable
 .B avt.datapath
 abgelegt und kann mit der Funktion
@@ -164,20 +165,20 @@ avt.title("Mein erstes Programm")
 avt.start()
 avt.avatar_image("default")
 avt.say("Hallo du!\en")
-local Name = avt.ask("Wie heißt du denn? ")
-avt.say("Hallo, ", Name, ". Schön dich zu sehen!\en")
+local Name = avt.ask("Wie hei\[ss]t du denn? ")
+avt.say("Hallo, ", Name, ". Sch\[:o]n dich zu sehen!\en")
 avt.wait_button()
 .EE
 .
 .SH SICHERHEIT
-Lua ist eine vollständige Programmiersprache.
-Es gibt keine Sandbox-Beschränkungen.
-Jede vollständige, unbeschränkte Programmiersprache kann dafür
+Lua ist eine vollst\[:a]ndige Programmiersprache.
+Es gibt keine Sandbox-Beschr\[:a]nkungen.
+Jede vollst\[:a]ndige, unbeschr\[:a]nkte Programmiersprache kann daf\[:u]r
 missbraucht werden, um Schadcode zu schreiben.
 Man sollte also immer daran denken, dass Lua-Skripte
 Programme sind und mit der selben Sorgfalt wie andere
 Programme zu behandeln sind.
-Einige andere Dateien für Lua-AKFAvatar können ebenfalls
+Einige andere Dateien f\[:u]r Lua-AKFAvatar k\[:o]nnen ebenfalls
 Code enthalten.
 .
 .SH AUTOREN
@@ -185,7 +186,7 @@ Code enthalten.
 AKFAvatar
 .TQ
 Lua-AKFAvatar
-Andreas K. Förster
+Andreas K. F\[:o]rster
 .IP "Lua"
 R. Ierusalimschy, L. H. de Figueiredo, and W. Celes
 .
